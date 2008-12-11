@@ -1,0 +1,1116 @@
+
+package MIME::Charset;
+use 5.005;
+
+=head1 NAME
+
+MIME::Charset - Charset Informations for MIME
+
+=head1 SYNOPSIS
+
+    use MIME::Charset:
+
+    $charset = MIME::Charset->new("euc-jp");
+
+Getting charset informations:
+
+    $benc = $charset->body_encoding; # e.g. "Q"
+    $cset = $charset->canonical_charset; # e.g. "US-ASCII"
+    $henc = $charset->header_encoding; # e.g. "S"
+    $cset = $charset->output_charset; # e.g. "ISO-2022-JP"
+
+Translating text data:
+
+    ($text, $charset, $encoding) =
+        $charset->header_encode(
+           "\xc9\xc2\xc5\xaa\xc0\xde\xc3\xef\xc5\xaa".
+           "\xc7\xd1\xca\xaa\xbd\xd0\xce\xcf\xb4\xef");
+    # ...returns e.g. (<converted>, "ISO-2022-JP", "B");
+
+    ($text, $charset, $encoding) =
+        $charset->body_encode(
+            "Collectioneur path\xe9tiquement ".
+            "\xe9clectique de d\xe9chets");
+    # ...returns e.g. (<original>, "ISO-8859-1", "QUOTED-PRINTABLE");
+
+    $len = $charset->encoded_header_len(
+        "Perl\xe8\xa8\x80\xe8\xaa\x9e", "b"); # e.g. 28
+
+Manipulating module defaults:
+
+    use MIME::Charset;
+
+    MIME::Charset::alias("csEUCKR", "euc-kr");
+    MIME::Charset::default("iso-8859-1");
+    MIME::Charset::fallback("us-ascii");
+
+Non-OO functions (may be deprecated in near future):
+
+    use MIME::Charset qw(:info);
+
+    $benc = body_encoding("iso-8859-2"); # "Q"
+    $cset = canonical_charset("ANSI X3.4-1968"); # "US-ASCII"
+    $henc = header_encoding("utf-8"); # "S"
+    $cset = output_charset("shift_jis"); # "ISO-2022-JP"
+
+    use MIME::Charset qw(:trans);
+
+    ($text, $charset, $encoding) =
+        header_encode(
+           "\xc9\xc2\xc5\xaa\xc0\xde\xc3\xef\xc5\xaa".
+           "\xc7\xd1\xca\xaa\xbd\xd0\xce\xcf\xb4\xef",
+           "euc-jp");
+    # ...returns (<converted>, "ISO-2022-JP", "B");
+
+    ($text, $charset, $encoding) =
+        body_encode(
+            "Collectioneur path\xe9tiquement ".
+            "\xe9clectique de d\xe9chets",
+            "latin1");
+    # ...returns (<original>, "ISO-8859-1", "QUOTED-PRINTABLE");
+
+    $len = encoded_header_len(
+        "Perl\xe8\xa8\x80\xe8\xaa\x9e", "b", "utf-8"); # 28
+
+=head1 DESCRIPTION
+
+MIME::Charset provides informations about character sets used for
+MIME messages on Internet.
+
+=head2 Definitions
+
+The B<charset> is ``character set'' used in MIME to refer to a
+method of converting a sequence of octets into a sequence of characters.
+It includes both concepts of ``coded character set'' (CCS) and
+``character encoding scheme'' (CES) of ISO/IEC.
+
+The B<encoding> is that used in MIME to refer to a method of representing
+a body part or a header body as sequence(s) of printable US-ASCII
+characters.
+
+=over 4
+
+=cut
+
+use strict;
+use vars qw(@ISA $VERSION @EXPORT @EXPORT_OK %EXPORT_TAGS $Config);
+use Exporter;
+@ISA = qw(Exporter);
+@EXPORT = qw(body_encoding canonical_charset header_encoding output_charset
+	     body_encode encoded_header_len header_encode);
+@EXPORT_OK = qw(alias default fallback recommended);
+%EXPORT_TAGS = (
+		"info" => [qw(body_encoding header_encoding
+			      canonical_charset output_charset)],
+		"trans" =>[ qw(body_encode encoded_header_len
+			       header_encode)],
+		);
+use Carp qw(croak);
+
+use constant USE_ENCODE => ($] >= 5.008001)? 'Encode': '';
+
+my @ENCODE_SUBS = qw(FB_CROAK FB_PERLQQ FB_HTMLCREF FB_XMLCREF
+		     is_utf8 resolve_alias);
+if (USE_ENCODE) {
+    eval "use ".USE_ENCODE." \@ENCODE_SUBS;";
+} else {
+    require MIME::Charset::_Compat;
+    for my $sub (@ENCODE_SUBS) {
+	no strict "refs";
+	*{$sub} = \&{"MIME::Charset::_Compat::$sub"};
+    }
+}
+
+$VERSION = '1.006.2';
+
+######## Private Attributes ########
+
+my $DEFAULT_CHARSET = 'US-ASCII';
+my $FALLBACK_CHARSET = 'UTF-8';
+
+# This table was borrwed from Python email package.
+
+my %CHARSETS = (# input		    header enc body enc output conv
+		'ISO-8859-1' =>		['Q',	'Q',	undef],
+		'ISO-8859-2' =>		['Q',	'Q',	undef],
+		'ISO-8859-3' =>		['Q',	'Q',	undef],
+		'ISO-8859-4' =>		['Q',	'Q',	undef],
+		# ISO-8859-5 is Cyrillic, and not especially used
+		# ISO-8859-6 is Arabic, also not particularly used
+		# ISO-8859-7 is Greek, 'Q' will not make it readable
+		# ISO-8859-8 is Hebrew, 'Q' will not make it readable
+		'ISO-8859-9' =>		['Q',	'Q',	undef],
+		'ISO-8859-10' =>	['Q',	'Q',	undef],
+		# ISO-8859-11 is Thai, 'Q' will not make it readable
+		'ISO-8859-13' =>	['Q',	'Q',	undef],
+		'ISO-8859-14' =>	['Q',	'Q',	undef],
+		'ISO-8859-15' =>	['Q',	'Q',	undef],
+		'WINDOWS-1252' =>	['Q',	'Q',	undef],
+		'VISCII' =>		['Q',	'Q',	undef],
+		'US-ASCII' =>		[undef,	undef,	undef],
+		'BIG5' =>		['B',	'B',	undef],
+		'GB2312' =>		['B',	'B',	undef],
+		'EUC-JP' =>		['B',	undef,	'ISO-2022-JP'],
+		'SHIFT_JIS' =>		['B',	undef,	'ISO-2022-JP'],
+		'ISO-2022-JP' =>	['B',	undef,	undef],
+		'KOI8-R' =>		['B',	'B',	undef],
+		'UTF-8' =>		['S',	'B',	undef],
+		'HZ-GB-2312' =>		['B',	undef,	undef],
+		'UTF-7' =>		['Q',	undef,	undef],
+		'GSM03.38' =>		[undef,	undef,	undef], # not for MIME
+		# We're making this one up to represent raw unencoded 8bit
+		'8BIT' =>		[undef,	'B',	'ISO-8859-1'],
+		);
+
+# Fix some unexpected or unpreferred names returned by
+# Encode::resolve_alias() or used by somebodies else.
+my %CHARSET_ALIASES = (# unpreferred		preferred
+		       "ASCII" =>		"US-ASCII",
+		       "BIG5-ETEN" =>		"BIG5",
+		       "CP1251" =>		"WINDOWS-1251",
+		       "CP1252" =>		"WINDOWS-1252",
+		       "CP936" =>		"GBK",
+		       "CP949" =>		"KS_C_5601-1987",
+		       "EUC-CN" =>		"GB2312",
+		       "KS_C_5601" =>		"KS_C_5601-1987",
+		       "SHIFTJIS" =>		"SHIFT_JIS",
+		       "SHIFTJISX0213" =>	"SHIFT_JISX0213",
+		       "UNICODE-1-1-UTF-7" =>	"UTF-7", # RFC 1642 (obs.)
+		       "UTF8" =>		"UTF-8",
+		       "UTF-8-STRICT" =>	"UTF-8", # Perl internal use
+		       "HZ" =>			"HZ-GB-2312", # RFC 1842
+		       "GSM0338" =>		"GSM03.38",
+		       );
+
+# Some vendors encode characters beyond standardized mappings using extended
+# encoders.  Some other standard encoders need additional encode modules.
+my %ENCODERS = (
+		'EXTENDED' => {
+		    'ISO-8859-1' => [['cp1252'], ],     # Encode::Byte
+		    'ISO-8859-2' => [['cp1250'], ],     # Encode::Byte
+		    'ISO-8859-5' => [['cp1251'], ],     # Encode::Byte
+		    'ISO-8859-6' => [
+				     ['cp1256'],        # Encode::Byte
+				     # ['cp1006'],      # ditto, for Farsi
+				    ],
+		    'ISO-8859-7' => [['cp1253'], ],     # Encode::Byte
+		    'ISO-8859-8' => [['cp1255'], ],     # Encode::Byte
+		    'ISO-8859-9' => [['cp1254'], ],     # Encode::Byte
+		    'ISO-8859-13'=> [['cp1257'], ],     # Encode::Byte
+		    'GB2312'     => [['cp936'], ],      # Encode::CN
+		    'EUC-JP'     => [['cp51932',        'Encode::EUCJPMS'], ],
+		    'ISO-2022-JP'=> [
+				     ['cp50220',        'Encode::EUCJPMS'],
+				     # ['cp50221',      'Encode::EUCJPMS'],
+				     ['iso-2022-jp-ms', 'Encode::ISO2022JPMS'],
+				     ['iso-2022-jp-1'], # Encode::JP (note*)
+				    ],
+		    'SHIFT_JIS'  => [['cp932'], ],      # Encode::JP
+		    'EUC-KR'     => [['cp949'], ],      # Encode::KR
+		    'BIG5'       => [
+				     # ['big5plus',     'Encode::HanExtra'],
+				     # ['big5-2003',    'Encode::HanExtra'], 
+				     ['cp950'],         # Encode::TW
+				     # ['big5-1984',    'Encode::HanExtra'], 
+				    ],
+		    'TIS620'     => [['iso-8859-11'], ], # Encode::Byte; NBSP
+		    'UTF-8'      => [['utf8'], ],       # Special name on Perl
+		},
+		'STANDARD' => {
+		    'GB18030'       => [['gb18030',     'Encode::HanExtra'], ],
+		    'EUC-JISX0213'  => [['euc-jisx0213', 'Encode::JIS2K'], ],
+		    'ISO-2022-JP-3' => [['iso-2022-jp-3', 'Encode::JIS2K'], ],
+		    'SHIFT_JISX0213'=> [['shiftjisx0213', 'Encode::JIS2K'], ],
+		    'EUC-TW'        => [['euc-tw',      'Encode::HanExtra'], ],
+		    'HZ-GB-2312'    => [['hz'], ],	# Encode::CN
+		    'GSM03.38'      => [['gsm0338'], ],	# Encode::GSM0338
+		},
+);
+
+# ISO-2022-* escape sequences etc. to detect charset from unencoded data.
+my @ESCAPE_SEQS = ( 
+		# ISO-2022-* sequences
+		   # escape seq, possible charset
+		   # Following sequences are commonly used.
+		   ["\033\$\@",	"ISO-2022-JP"],	# RFC 1468
+		   ["\033\$B",	"ISO-2022-JP"],	# ditto
+		   ["\033(J",	"ISO-2022-JP"],	# ditto
+		   ["\033(I",	"ISO-2022-JP"],	# ditto (nonstandard)
+		   ["\033\$(D",	"ISO-2022-JP"],	# RFC 2237 (note*)
+		   # Folloing sequences are less commonly used.
+		   ["\033\$)C",	"ISO-2022-KR"],	# RFC 1557
+		   ["\033\$)A",	"ISO-2022-CN"], # RFC 1922
+		   ["\033\$A",	"ISO-2022-CN"], # ditto (nonstandard)
+		   ["\033\$)G",	"ISO-2022-CN"], # ditto
+		   ["\033\$*H",	"ISO-2022-CN"], # ditto
+		   # Other sequences will be used with appropriate charset
+		   # parameters, or hardly used.
+
+		   # note*: This RFC defines ISO-2022-JP-1, superset of 
+		   # ISO-2022-JP.  But that charset name is rarely used.
+		   # OTOH many of encoders for ISO-2022-JP recognize this
+		   # sequence so that comatibility with EUC-JP will be
+		   # guaranteed.
+
+		# Singlebyte 7-bit sequences
+		   # escape seq, possible charset
+		   ["\033e",	"GSM03.38"],	# ESTI GSM 03.38 (note*)
+		   ["\033\012",	"GSM03.38"],	# ditto
+		   ["\033<",	"GSM03.38"],	# ditto
+		   ["\033/",	"GSM03.38"],	# ditto
+		   ["\033>",	"GSM03.38"],	# ditto
+		   ["\033\024",	"GSM03.38"],	# ditto
+		   ["\033(",	"GSM03.38"],	# ditto
+		   ["\033\@",	"GSM03.38"],	# ditto
+		   ["\033)",	"GSM03.38"],	# ditto
+		   ["\033=",	"GSM03.38"],	# ditto
+
+		   # note*: This is not used for MIME message.
+		  );
+
+######## Public Configuration Attributes ########
+
+$Config = {
+    Detect7bit =>      'YES',
+    Mapping =>         'EXTENDED',
+    Replacement =>     'DEFAULT',
+};
+eval { require MIME::Charset::Defaults; };
+
+######## Private Constants ########
+
+my $NON7BITRE = qr{
+    [^\x01-\x7e]
+}x;
+
+my $NONASCIIRE = qr{
+    [^\x09\x0a\x0d\x20\x21-\x7e]
+}x;
+
+my $ISO2022RE = qr{
+    ISO-2022-.+
+}ix;
+
+my $ASCIITRANSRE = qr{
+    HZ-GB-2312 | UTF-7
+}ix;
+
+
+######## Public Functions ########
+
+=head2 Constructor
+
+=item $charset = MIME::Charset->new([CHARSET [, OPTS]])
+
+Create charset object.
+
+OPTS may accept following key-value pairs.
+B<NOTE>:
+When Unicode/multibyte support is disabled (see L<"USE_ENCODE">),
+conversion will not be performed.  So these options do not have any effects.
+
+=over 4
+
+=item Mapping => MAPTYPE
+
+Specify extended mappings actually used for charset names.
+C<"EXTENDED"> uses extended mappings.
+C<"STANDARD"> uses standardized strict mappings.
+Default is C<"EXTENDED">.
+
+=back
+
+=cut
+
+sub new {
+    my $class = shift;
+    my $charset = shift;
+    return bless {}, $class unless $charset;
+    my %params = @_;
+    my $mapping = uc($params{'Mapping'} || $Config->{Mapping});
+
+    $charset = "HZ" if $charset =~ /\bhz.?gb.?2312$/i; # workaround
+    $charset = resolve_alias($charset) || $charset;
+    $charset = $CHARSET_ALIASES{uc($charset)} || uc($charset);
+    my ($henc, $benc, $outcset);
+    my $spec = $CHARSETS{$charset};
+    if ($spec) {
+	($henc, $benc, $outcset) =
+	    ($$spec[0], $$spec[1], USE_ENCODE? $$spec[2]: undef);
+    } else {
+	($henc, $benc, $outcset) = ('S', 'B', undef);
+    }
+    my ($decoder, $encoder);
+    if (USE_ENCODE) {
+	$decoder = _find_encoder($charset, $mapping);
+	$encoder = _find_encoder($outcset, $mapping);
+    } else {
+	$decoder = $encoder = undef;
+    }
+
+    bless {
+	InputCharset => $charset,
+	Decoder => $decoder,
+	HeaderEncoding => $henc,
+	BodyEncoding => $benc,
+	OutputCharset => ($outcset || $charset),
+	Encoder => ($encoder || $decoder),
+    }, $class;
+}
+
+sub _find_encoder($$) {
+    my $charset = uc(shift || "");
+    return undef unless $charset;
+    my $mapping = uc(shift);
+    my ($spec, $name, $module, $encoder);
+
+    my $preserveerr = $@;
+    foreach my $m (('EXTENDED', 'STANDARD')) {
+	next if $m eq 'EXTENDED' and $mapping ne 'EXTENDED';
+	$spec = $ENCODERS{$m}->{$charset};
+	next unless $spec;
+	foreach my $s (@{$spec}) {
+	    ($name, $module) = @{$s};
+	    if ($module) {
+		eval "use $module;";
+		next if $@;
+	    }
+	    $@ = $preserveerr;
+	    $encoder = Encode::find_encoding($name);
+	    return $encoder if ref $encoder;
+	}
+    }
+    $@ = $preserveerr;
+    return Encode::find_encoding($charset);
+}
+
+=head2 Getting Informations of Charsets
+
+=item $charset->body_encoding
+
+=item body_encoding CHARSET
+
+Get recommended transfer-encoding of CHARSET for message body.
+
+Returned value will be one of C<"B"> (BASE64), C<"Q"> (QUOTED-PRINTABLE) or
+C<undef> (might not be transfer-encoded; either 7BIT or 8BIT).  This may
+not be same as encoding for message header.
+
+=cut
+
+sub body_encoding($) {
+    my $self = shift;
+    return undef unless $self;
+    $self = __PACKAGE__->new($self) unless ref $self;
+    $self->{BodyEncoding};
+}
+
+=item $charset->as_string
+
+=item canonical_charset CHARSET
+
+Get canonical name for charset.
+
+=cut
+
+sub canonical_charset($) {
+    my $self = shift;
+    return undef unless $self;
+    $self = __PACKAGE__->new($self) unless ref $self;
+    $self->{InputCharset};
+}
+
+sub as_string($) {
+    my $self = shift;
+    $self->{InputCharset};
+}
+
+=item $charset->decoder
+
+Get L<"Encode::Encoding"> object to decode strings to Unicode by charset.
+
+=cut
+
+sub decoder($) {
+    my $self = shift;
+    $self->{Decoder};
+}
+
+=item $charset->dup
+
+Get a copy of charset object.
+
+=cut
+
+sub dup($) {
+    my $self = shift;
+    my $obj = __PACKAGE__->new(undef);
+    %{$obj} = %{$self};
+    $obj;
+}
+
+=item $charset->encoder([CHARSET])
+
+Get L<"Encode::Encoding"> object to encode Unicode string using compatible
+charset recommended to be used for messages on Internet.
+
+If optional CHARSET is specified, replace encoder (and output charset
+name) of $charset object with those of CHARSET, therefore,
+$charset object will be a converter between original charset and
+new CHARSET.
+
+=cut
+
+sub encoder($$;) {
+    my $self = shift;
+    my $charset = shift;
+    if ($charset) {
+	$charset = __PACKAGE__->new($charset) unless ref $charset;
+	$self->{OutputCharset} = $charset->{InputCharset};
+	$self->{Encoder} = $charset->{Decoder};
+	$self->{BodyEncoding} = $charset->{BodyEncoding};
+	$self->{HeaderEncoding} = $charset->{HeaderEncoding};
+    }
+    $self->{Encoder};
+}
+
+=item $charset->header_encoding
+
+=item header_encoding CHARSET
+
+Get recommended encoding scheme of CHARSET for message header.
+
+Returned value will be one of C<"B">, C<"Q">, C<"S"> (shorter one of either)
+or C<undef> (might not be encoded).  This may not be same as encoding
+for message body.
+
+=cut
+
+sub header_encoding($) {
+    my $self = shift;
+    return undef unless $self;
+    $self = __PACKAGE__->new($self) unless ref $self;
+    $self->{HeaderEncoding};
+}
+
+=item $charset->output_charset
+
+=item output_charset CHARSET
+
+Get a charset which is compatible with given CHARSET and is recommended
+to be used for MIME messages on Internet (if it is known by this module).
+
+When Unicode/multibyte support is disabled (see L<"USE_ENCODE">),
+this function will simply
+return the result of L<"canonical_charset">.
+
+=cut
+
+sub output_charset($) {
+    my $self = shift;
+    return undef unless $self;
+    $self = __PACKAGE__->new($self) unless ref $self;
+    $self->{OutputCharset};
+}
+
+=head2 Translating Text Data
+
+=item $charset->body_encode(STRING [, OPTS])
+
+=item body_encode STRING, CHARSET [, OPTS]
+
+Get converted (if needed) data of STRING and recommended transfer-encoding
+of that data for message body.  CHARSET is the charset by which STRING
+is encoded.
+
+OPTS may accept following key-value pairs.
+B<NOTE>:
+When Unicode/multibyte support is disabled (see L<"USE_ENCODE">),
+conversion will not be performed.  So these options do not have any effects.
+
+=over 4
+
+=item Detect7bit => YESNO
+
+Try auto-detecting 7-bit charset when CHARSET is not given.
+Default is C<"YES">.
+
+=item Replacement => REPLACEMENT
+
+Specifies error handling scheme.  See L<"Error Handling">.
+
+=back
+
+3-item list of (I<converted string>, I<charset for output>,
+I<transfer-encoding>) will be returned.
+I<Transfer-encoding> will be either C<"BASE64">, C<"QUOTED-PRINTABLE">,
+C<"7BIT"> or C<"8BIT">.  If I<charset for output> could not be determined
+and I<converted string> contains non-ASCII byte(s), I<charset for output> will
+be C<undef> and I<transfer-encoding> will be C<"BASE64">.
+I<Charset for output> will be C<"US-ASCII"> if and only if string does not
+contain any non-ASCII bytes.
+
+=cut
+
+sub body_encode {
+    my $self = shift;
+    my $text;
+    if (ref $self) {
+	$text = shift;
+    } else {
+	$text = $self;
+	$self = __PACKAGE__->new(shift);
+    }
+    my ($encoded, $charset) = $self->_text_encode($text, @_);
+    return ($encoded, undef, 'BASE64')
+	unless $charset and $charset->{InputCharset};
+    my $cset = $charset->{OutputCharset};
+
+    # Determine transfer-encoding.
+    my $enc = $charset->{BodyEncoding};
+
+    if (!$enc and $encoded !~ /\x00/) {	# Eliminate hostile NUL character.
+        if ($encoded =~ $NON7BITRE) {	# String contains 8bit char(s).
+            $enc = '8BIT';
+	} elsif ($cset =~ /^($ISO2022RE|$ASCIITRANSRE)$/) {	# 7BIT.
+            $enc = '7BIT';
+        } else {			# Pure ASCII.
+            $enc = '7BIT';
+            $cset = 'US-ASCII';
+        }
+    } elsif ($enc eq 'B') {
+        $enc = 'BASE64';
+    } elsif ($enc eq 'Q') {
+        $enc = 'QUOTED-PRINTABLE';
+    } else {
+        $enc = 'BASE64';
+    }
+    return ($encoded, $cset, $enc);
+}
+
+=item $charset->decode(STRING [,CHECK])
+
+Decode STRING to Unicode.
+
+B<Note>:
+When Unicode/multibyte support is disabled (see L<"USE_ENCODE">),
+this function will die.
+
+=cut
+
+sub decode($$$;) {
+    my $self = shift;
+    my $s = shift;
+    my $check = shift || 0;
+    $self->{Decoder}->decode($s, $check);
+}
+
+=item $charset->encode(STRING [,CHECK])
+
+Encode STRING (Unicode or non-Unicode) using compatible charset recommended
+to be used for messages on Internet (if this module knows it).
+Note that string will be decoded to Unicode then encoded even if compatible charset
+was equal to original charset.
+
+B<Note>:
+When Unicode/multibyte support is disabled (see L<"USE_ENCODE">),
+this function will die.
+
+=cut
+
+sub encode($$$;) {
+    my $self = shift;
+    my $s = shift;
+    my $check = shift || 0;
+
+    unless (is_utf8($s) or $s =~ /[^\x00-\xFF]/) {
+	$s = $self->{Decoder}->decode($s, ($check & 0x1)? FB_CROAK(): 0);
+    }
+    my $enc = $self->{Encoder}->encode($s, $check);
+    Encode::_utf8_off($enc); # workaround for RT #35120
+    $enc;
+}
+
+=item $charset->encoded_header_len(STRING [, ENCODING])
+
+=item encoded_header_len STRING, ENCODING, CHARSET
+
+Get length of encoded STRING for message header
+(without folding).
+
+ENCODING may be one of C<"B">, C<"Q"> or C<"S"> (shorter
+one of either C<"B"> or C<"Q">).
+
+=cut
+
+sub encoded_header_len($$$;) {
+    my $self = shift;
+    my ($encoding, $s);
+    if (ref $self) {
+	$s = shift;
+	$encoding = uc(shift || $self->{HeaderEncoding});
+    } else {
+	$s = $self;
+	$encoding = uc(shift);
+	$self  = shift;
+	$self = __PACKAGE__->new($self) unless ref $self;
+    }
+
+    #FIXME:$encoding === undef
+
+    my $enclen;
+    if ($encoding eq 'Q') {
+        $enclen = _enclen_Q($s);
+    } elsif ($encoding eq "S") {
+        my ($b, $q) = (_enclen_B($s), _enclen_Q($s));
+	$enclen = ($b < $q)? $b: $q;
+    } else { # "B"
+        $enclen = _enclen_B($s);
+    }
+
+    length($self->{OutputCharset})+$enclen+7;
+}
+
+sub _enclen_B($) {
+    int((length(shift) + 2) / 3) * 4;
+}
+
+sub _enclen_Q($) {
+    my $s = shift;
+    my @o = ($s =~ m{([^- !*+/0-9A-Za-z])}gos);
+    length($s) + scalar(@o) * 2;
+}
+
+=item $charset->header_encode(STRING [, OPTS])
+
+=item header_encode STRING, CHARSET [, OPTS]
+
+Get converted (if needed) data of STRING and recommended encoding scheme of
+that data for message headers.  CHARSET is the charset by which STRING
+is encoded.
+
+OPTS may accept following key-value pairs.
+B<NOTE>:
+When Unicode/multibyte support is disabled (see L<"USE_ENCODE">),
+conversion will not be performed.  So these options do not have any effects.
+
+=over 4
+
+=item Detect7bit => YESNO
+
+Try auto-detecting 7-bit charset when CHARSET is not given.
+Default is C<"YES">.
+
+=item Replacement => REPLACEMENT
+
+Specifies error handling scheme.  See L<"Error Handling">.
+
+=back
+
+3-item list of (I<converted string>, I<charset for output>,
+I<encoding scheme>) will be returned.  I<Encoding scheme> will be
+either C<"B">, C<"Q"> or C<undef> (might not be encoded).
+If I<charset for output> could not be determined and I<converted string>
+contains non-ASCII byte(s), I<charset for output> will be C<"8BIT">
+(this is I<not> charset name but a special value to represent unencodable
+data) and I<encoding scheme> will be C<undef> (should not be encoded).
+I<Charset for output> will be C<"US-ASCII"> if and only if string does not
+contain any non-ASCII bytes.
+
+=back
+
+=cut
+
+sub header_encode {
+    my $self = shift;
+    my $text;
+    if (ref $self) {
+	$text = shift;
+    } else {
+	$text = $self;
+	$self = __PACKAGE__->new(shift);
+    }
+    my ($encoded, $charset) = $self->_text_encode($text, @_);
+    return ($encoded, '8BIT', undef)
+	unless $charset and $charset->{InputCharset};
+    my $cset = $charset->{OutputCharset};
+
+    # Determine encoding scheme.
+    my $enc = $charset->{HeaderEncoding};
+
+    if (!$enc and $encoded !~ $NON7BITRE) {
+	unless ($cset =~ /^($ISO2022RE|$ASCIITRANSRE)$/) {	# 7BIT.
+            $cset = 'US-ASCII';
+        }
+    } elsif ($enc eq 'S') {
+	if (_enclen_B($encoded) < _enclen_Q($encoded)) {
+	    $enc = 'B';
+	} else {
+	    $enc = 'Q';
+	}
+    } elsif ($enc !~ /^[BQ]$/) {
+        $enc = 'B';
+    }
+    return ($encoded, $cset, $enc);
+}
+
+sub _text_encode {
+    my $charset = shift;
+    my $s = shift;
+    my %params = @_;
+    my $replacement = uc($params{'Replacement'} || $Config->{Replacement});
+    my $detect7bit = uc($params{'Detect7bit'} || $Config->{Detect7bit});
+    my $encoding = $params{'Encoding'} ||
+	(exists $params{'Encoding'}? undef: 'A'); # undocumented
+
+    if (!$encoding or $encoding ne 'A') { # no 7-bit auto-detection
+	$detect7bit = 'NO';
+    }
+    unless ($charset->{InputCharset}) {
+	if ($s =~ $NON7BITRE) {
+	    return ($s, undef);
+	} elsif ($detect7bit ne "NO") {
+	    $charset = __PACKAGE__->new(&_detect_7bit_charset($s));
+	} else {
+	    $charset = __PACKAGE__->new($DEFAULT_CHARSET,
+					Mapping => 'STANDARD');
+	} 
+    }
+    if (!$encoding or $encoding ne 'A') { # no conversion
+	$charset = $charset->dup;
+	$charset->encoder($charset);
+	$charset->{HeaderEncoding} = $encoding;
+	$charset->{BodyEncoding} = $encoding;
+    }
+    my $check = ($replacement and $replacement =~ /^\d+$/)?
+	$replacement:
+    {
+	'CROAK' => FB_CROAK(),
+	'STRICT' => FB_CROAK(),
+	'FALLBACK' => FB_CROAK(), # special
+	'PERLQQ' => FB_PERLQQ(),
+	'HTMLCREF' => FB_HTMLCREF(),
+	'XMLCREF' => FB_XMLCREF(),
+    }->{$replacement || ""} || 0;
+
+    # Encode data by output charset if required.  If failed, fallback to
+    # fallback charset.
+    my $encoded;
+    if (is_utf8($s) or $s =~ /[^\x00-\xFF]/ or
+	($charset->{InputCharset} || "") ne ($charset->{OutputCharset} || "")) {
+	if ($check & 0x1) { # CROAK or FALLBACK
+	    eval {
+		$encoded = $s;
+		$encoded = $charset->encode($encoded, FB_CROAK());
+	    };
+	    if ($@) {
+		if ($replacement eq "FALLBACK" and $FALLBACK_CHARSET) {
+		    my $cset = __PACKAGE__->new($FALLBACK_CHARSET,
+						Mapping => 'STANDARD');
+		    # croak unknown charset
+		    croak "unknown charset ``$FALLBACK_CHARSET''"
+			unless $cset->{Decoder};
+		    # charset translation
+		    $charset = $charset->dup;
+		    $charset->encoder($cset);
+		    $encoded = $s;
+		    $encoded = $charset->encode($encoded, 0);
+		    # replace input & output charsets with fallback charset
+		    $cset->encoder($cset);
+		    $charset = $cset;
+		} else {
+		    $@ =~ s/ at .+$//;
+		    croak $@;
+		}
+	    }
+	} else {
+	    $encoded = $s;
+	    $encoded = $charset->encode($encoded, $check);
+	}
+    } else {
+        $encoded = $s;
+    }
+
+    if ($encoded !~ /$NONASCIIRE/) { # maybe ASCII
+	# check ``ASCII transformation'' charsets
+	if ($charset->{OutputCharset} =~ /^($ASCIITRANSRE)$/) {
+	    my $u = $encoded;
+	    if (USE_ENCODE) {
+		$u = $charset->encoder->decode($encoded); # dec. by output
+	    } elsif ($encoded =~ /[+~]/) { # workaround for pre-Encode env.
+		$u = "x$u";
+	    }
+	    if ($u eq $encoded) {
+		$charset = $charset->dup;
+		$charset->encoder($DEFAULT_CHARSET);
+	    }
+	} elsif ($charset->{OutputCharset} ne "US-ASCII") {
+	    $charset = $charset->dup;
+	    $charset->encoder($DEFAULT_CHARSET);
+	}
+    }
+
+    return ($encoded, $charset);
+}
+
+sub _detect_7bit_charset($) {
+    return $DEFAULT_CHARSET unless USE_ENCODE;
+    my $s = shift;
+    return $DEFAULT_CHARSET unless $s;
+
+    # Try to detect 7-bit escape sequences.
+    foreach (@ESCAPE_SEQS) {
+	my ($seq, $cset) = @$_;
+	if (index($s, $seq) >= 0) {
+            my $decoder = __PACKAGE__->new($cset);
+            next unless $decoder->{Decoder};
+            eval {
+		my $dummy = $s;
+		$decoder->decode($dummy, FB_CROAK());
+	    };
+	    if ($@) {
+		next;
+	    }
+	    return $decoder->{InputCharset};
+	}
+    }
+
+    # How about HZ, VIQR, UTF-7, ...?
+
+    return $DEFAULT_CHARSET;
+}
+
+=item $charset->undecode(STRING [,CHECK])
+
+Encode Unicode string STRING to byte string by input charset of $charset.
+This is equivalent to C<$charset-E<gt>decoder-E<gt>encode()>.
+
+B<Note>:
+When Unicode/multibyte support is disabled (see L<"USE_ENCODE">),
+this function will die.
+
+=cut
+
+sub undecode($$$;) {
+    my $self = shift;
+    my $s = shift;
+    my $check = shift || 0;
+    my $enc = $self->{Decoder}->encode($s, $check);
+    Encode::_utf8_off($enc); # workaround for RT #35120
+    $enc;
+}
+
+=head2 Manipulating Module Defaults
+
+=over 4
+
+=item alias ALIAS [, CHARSET]
+
+Get/set charset alias for canonical names determined by
+L<"canonical_charset">.
+
+If CHARSET is given and isn't false, ALIAS will be assigned as an alias of
+CHARSET.  Otherwise, alias won't be changed.  In both cases,
+current charset name that ALIAS is assigned will be returned.
+
+=cut
+
+sub alias ($;$) {
+    my $alias = uc(shift);
+    my $charset = uc(shift);
+
+    return $CHARSET_ALIASES{$alias} unless $charset;
+
+    $CHARSET_ALIASES{$alias} = $charset;
+    return $charset;
+}
+
+=item default [CHARSET]
+
+Get/set default charset.
+
+B<Default charset> is used by this module when charset context is
+unknown.  Modules using this module are recommended to use this
+charset when charset context is unknown or implicit default is
+expected.  By default, it is C<"US-ASCII">.
+
+If CHARSET is given and isn't false, it will be set to default charset.
+Otherwise, default charset won't be changed.  In both cases,
+current default charset will be returned.
+
+B<NOTE>: Default charset I<should not> be changed.
+
+=cut
+
+sub default(;$) {
+    my $charset = &canonical_charset(shift);
+
+    if ($charset) {
+	croak "Unknown charset '$charset'"
+	    unless resolve_alias($charset);
+	$DEFAULT_CHARSET = $charset;
+    }
+    return $DEFAULT_CHARSET;
+}
+
+=item fallback [CHARSET]
+
+Get/set fallback charset.
+
+B<Fallback charset> is used by this module when conversion by given
+charset is failed and C<"FALLBACK"> error handling scheme is specified.
+Modules using this module may use this charset as last resort of charset
+for conversion.  By default, it is C<"UTF-8">.
+
+If CHARSET is given and isn't false, it will be set to fallback charset.
+If CHARSET is C<"NONE">, fallback charset will be undefined.
+Otherwise, fallback charset won't be changed.  In any cases,
+current fallback charset will be returned.
+
+B<NOTE>: It I<is> useful that C<"US-ASCII"> is specified as fallback charset,
+since result of conversion will be readable without charset informations.
+
+=cut
+
+sub fallback(;$) {
+    my $charset = &canonical_charset(shift);
+
+    if ($charset eq "NONE") {
+	$FALLBACK_CHARSET = undef;
+    } elsif ($charset) {
+	croak "Unknown charset '$charset'"
+	    unless resolve_alias($charset);
+	$FALLBACK_CHARSET = $charset;
+    }
+    return $FALLBACK_CHARSET;
+}
+
+=item recommended CHARSET [, HEADERENC, BODYENC [, ENCCHARSET]]
+
+Get/set charset profiles.
+
+If optional arguments are given and any of them are not false, profiles
+for CHARSET will be set by those arguments.  Otherwise, profiles
+won't be changed.  In both cases, current profiles for CHARSET will be
+returned as 3-item list of (HEADERENC, BODYENC, ENCCHARSET).
+
+HEADERENC is recommended encoding scheme for message header.
+It may be one of C<"B">, C<"Q">, C<"S"> (shorter one of either) or
+C<undef> (might not be encoded).
+
+BODYENC is recommended transfer-encoding for message body.  It may be
+one of C<"B">, C<"Q"> or C<undef> (might not be transfer-encoded).
+
+ENCCHARSET is a charset which is compatible with given CHARSET and
+is recommended to be used for MIME messages on Internet.
+If conversion is not needed (or this module doesn't know appropriate
+charset), ENCCHARSET is C<undef>.
+
+B<NOTE>: This function in the future releases can accept more optional
+arguments (for example, properties to handle character widths, line folding
+behavior, ...).  So format of returned value may probably be changed.
+Use L<"header_encoding">, L<"body_encoding"> or L<"output_charset"> to get
+particular profile.
+
+=cut
+
+sub recommended ($;$;$;$) {
+    my $charset = &canonical_charset(shift);
+    my $henc = uc(shift) || undef;
+    my $benc = uc(shift) || undef;
+    my $cset = &canonical_charset(shift);
+
+    croak "CHARSET is not specified" unless $charset;
+    croak "Unknown header encoding" unless !$henc or $henc =~ /^[BQS]$/;
+    croak "Unknown body encoding" unless !$benc or $benc =~ /^[BQ]$/;
+
+    if ($henc or $benc or $cset) {
+	$cset = undef if $charset eq $cset;
+	my @spec = ($henc, $benc, USE_ENCODE? $cset: undef);
+	$CHARSETS{$charset} = \@spec;
+	return @spec;
+    } else {
+	$charset = __PACKAGE__->new($charset) unless ref $charset;
+	return map { $charset->{$_} } qw(HeaderEncoding BodyEncoding
+					 OutputCharset);
+    }
+}
+
+=head2 Constants
+
+=item USE_ENCODE
+
+Unicode/multibyte support flag.
+Non-empty string will be set when Unicode and multibyte support is enabled.
+Currently, this flag will be non-empty on Perl 5.8.1 or later and
+empty string on earlier versions of Perl.
+
+=head2 Error Handling
+
+L<"body_encode"> and L<"header_encode"> accept following C<Replacement>
+options:
+
+=item C<"DEFAULT">
+
+Put a substitution character in place of a malformed character.
+For UCM-based encodings, <subchar> will be used.
+
+=item C<"FALLBACK">
+
+Try C<"DEFAULT"> scheme using I<fallback charset> (see L<"fallback">).
+When fallback charset is undefined and conversion causes error,
+code will die on error with an error message.
+
+=item C<"CROAK">
+
+Code will die on error immediately with an error message.
+Therefore, you should trap the fatal error with eval{} unless you
+really want to let it die on error.
+Synonym is C<"STRICT">.
+
+=item C<"PERLQQ">
+
+=item C<"HTMLCREF">
+
+=item C<"XMLCREF">
+
+Use C<FB_PERLQQ>, C<FB_HTMLCREF> or C<FB_XMLCREF>
+scheme defined by L<Encode> module.
+
+=item numeric values
+
+Numeric values are also allowed.
+For more details see L<Encode/Handling Malformed Data>.
+
+=back
+
+If error handling scheme is not specified or unknown scheme is specified,
+C<"DEFAULT"> will be assumed.
+
+=head2 Configuration File
+
+Built-in defaults for option parameters can be overridden by configuration
+file: F<MIME/Charset/Defaults.pm>.
+For more details read F<MIME/Charset/Defaults.pm.sample>.
+
+=head1 VERSION
+
+Consult $VERSION variable.
+
+Development versions of this module may be found at
+L<http://hatuka.nezumi.nu/repos/MIME-Charset/>.
+
+=head1 SEE ALSO
+
+Multipurpose Internet Mail Extensions (MIME).
+
+=head1 AUTHORS
+
+Copyright (C) 2006-2008 Hatuka*nezumi - IKEDA Soji <hatuka(at)nezumi.nu>.
+
+All rights reserved.  This program is free software; you can redistribute
+it and/or modify it under the same terms as Perl itself.
+
+=cut
+
+1;

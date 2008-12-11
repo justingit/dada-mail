@@ -1,0 +1,470 @@
+=head1 CHANGE LOG
+
+=over 4
+
+=item Version 3.022
+
+Behave on Cygwin as on Win32 with regard to defaulting to SMTP sending.
+
+Respect crazy people who put multiple Cc or Bcc headers in message (#30574,
+thanks Pavel V. Rochnyack!)
+
+We no longer rewrite array and hash refs in the send_by_sendmail args so
+aggressively.
+
+Cope with missing local sendmail (thanks to Debian for patching for this, but
+no thanks for not I<sending me> the patch)!
+
+Other minor bug fixes.
+
+=item Version 3.021
+
+Replace Email::Date with Email::Date::Format to limit prereqs
+(Email::Date::Format produced just for this!)
+
+Begin the process of removing use of ExtUtils::TBone for testing
+
+=item Version 3.020
+
+Optimized code for speedup of creation of two-part messages. The internal
+structure of the object has changes, but that won't matter if you were
+using the published interface.  (Sam Tregar)
+
+Removed the "advanced features", ie auto-fallback delivery, from
+send_by_smtp. They didn't belong there in the first place.
+
+=item Version 3.01_06 (2007/07/29)
+
+First release from Perl Email Project.  Updated packaging.
+
+=item Version 3.01_04 (2004/05/05)
+
+Reworked the new send_by_smtp stuff. Documentation modifications.
+
+=item Version 3.01_02 (2003/08/28)
+
+Well, it seems 3.01_01 failed tests on Win32 due to me accidentally
+changing the line ending format to DOSish. Also the way that email
+extraction for SMTP with or without Mail::Address was different (from
+2.117 even).  So ive fixed that.
+
+Anybody depending on the undocumented extract_addrs() is in for a suprise.
+I suggest you look at using Mail::Address.
+
+=item Version 3.01_01 (2003/04/25 - 2003/08/21)
+
+(This version is a test release, if its ok then I'll re-release it as
+3.02)
+
+Patched the pod to use correct entities Thanks to Ed Avis  for the patch.
+Added better support for funky names in the from field when sending via SMTP, thanks to
+prodding by Darren Hemphill and Ollie Gallardo. (Actually I kind of messed this up orginally
+and no doubt Darren wasn't impressed. I ended up using something pretty close to his solution.
+My bad for not paying more attention. Sorry mate.)
+
+08/21: Apparently I never uploaded my changes for this version to CPAN. Sigh.
+
+*** Win32 CHANGES ***
+
+Up until this release the default send() method for all OS'es has been to invoke sendmail
+and pipe the mail to it. This behaviour has now changed on Win32 to default to using SMTP.
+This means that if your /site/lib/Net/libnet.cfg file is properly configured then you can
+use SMTP without specifying a send method explicitly.  This seemed a rational decision as
+most Win32 users who send mails are using an SMTP server and not a tool like sendmail.
+
+*** SMTP CHANGES ***
+
+Jonathan Eunice <jeunice at illuminata dot com> pointed out an interesting bug in the
+interaction between MIME::Lite and Net::SMTP/Net::CMD.  This was that sending a mail
+ending in "\n\n" without additional encoding would cause Net::CMD to send an incorrect
+end of mail signal to the SMTP server which would result in A) The mail failing to be sent due
+to a timeout, and B) MIME::Lite to report that all was well.
+
+This has been fixed by checking to make sure that if the last character sent was \n, but the
+last two chars were not \r\n then the \n is turned into an \r, which Net::CMD then adds an \n
+to and then sends the normal ".\r\n" to terminate the message.  Weird error, that im not
+entirely sure has been resolved properly. Please inform me if this screws anything up that it
+shouldn't.
+
+As stated earlier send_by_smtp wasnt extracting the _real_ email address from the overall fancy
+once specified in the From: field. This is resolved now, fancy display names are now possible
+while using SMTP.
+
+*** Content-Id ***
+
+It was pointed out by alex via CPAN RT that Content-Id needs to have angle brackets around
+it or HTML mails dont show up properly in many mail clients, furthermore the RFC mandates it
+(to be honest im taking his word on this, please feel free to yell at me if this causes trouble),
+so as he suggested I am automatically adding them in they arent provided.
+
+*** sendmail path ***
+
+Dom pointed out via CPAN RT that despite some effort going in to trying to discover the correct
+location of sendmail, that it was still using a bad default. Fixed.
+
+*** Date Stamping ***
+
+Kurt reported via RT that datestamps were not being correctly formatted. His patch has been incorporated
+with only one change, a comment where Perl was spelled PERL :-)
+
+*** Quoted printable fix ***
+
+Klaus Rusch noted a bug in how quoted-printable handled weird \r\n combinations. Fixed now.
+
+=item Version 3.01 (2003/04/25)
+
+Eryq has reappeared long enough to graciously hand over the maintaince of the
+module to me. Thanks.
+
+=item Version 3.00 (2003/04/24)
+
+Eryq has disappeared. His web site remains but he doesnt answer emails.
+
+I have taken it onto myself to take over maintenance until he returns to
+reclaim his excellent work.
+
+I don't intend to develop this in an serious way. I'll patch it if people
+have a patch and generally keep it ticking over, but dont expect new features.
+
+This release has code that actually works with MIME::Lite now. As well as a few
+other minor additions (like a test for this functionailty)
+
+For stuff that could be done, a first place would be to rewrite and extend the
+test suite. It should use Test::More or Test::Builder at the very least.
+
+I also might rip out the preformatted doc pages. It makes the distro way fatter
+than it needs to be. I reckon the package contains the POD in at least three forms.
+A wee tad overkill I think. :-)
+
+=item Version 2.117   (2001/08/20)
+
+The terms-of-use have been placed in the distribution file "COPYING".
+Also, small documentation tweaks were made.
+
+
+=item Version 2.116   (2001/08/17)
+
+Added long-overdue patch which makes the instance method form
+of send() do the right thing when given HOW... arguments.
+I<Thanks to Casey West for the patch.>
+
+=item Version 2.114   (2001/08/16)
+
+New special 'AUTO' content type in new()/build() tells MIME::Lite to
+try and guess the type from file extension.  To make use of
+this, you'll want to install B<MIME::Types>.
+The "AUTO" setting can be made the default default (instead of "TEXT")
+if you set C<$AUTO_CONTENT_TYPE = 1, $PARANOID = 0>.
+I<Thanks to> Ville SkyttE<228> I<for these patches.>
+
+File::Basename is used if it is available.
+I<Thanks to> Ville SkyttE<228> I<for this patch.>
+
+SMTP failures (in send_by_smtp) now add the $smtp-E<gt>message to the
+croak'ed exception, so if things go wrong, you get a better
+idea of what and why.
+I<Thanks to Thomas R. Wyant III for the patch.>
+
+Made a subtle change to C<as_string> which supposedly fixes a
+failed MIME data.t test with Perl 5.004_04 on NT 4 sp6.
+The problem might only exist in this old perl, but as the patch
+author says, not everyone has climbed higher on the Perl ladder.
+I<Thanks to John Gotts for the patch.>
+
+Added C<contrib> directory, with F<MailTool.pm>.
+I<Thanks to Tom Wyant for this contribution.>
+
+Improved HTML documentation (notice the links to
+the individual methods in the top menu).
+
+Corrected some mis-docs.
+
+
+=item Version 2.111   (2001/04/03)
+
+Added long-overdue C<parts()> and C<parts_DFS()> methods.
+
+    No instance method
+       For accessing the subparts?
+    That can't be right.  D'OH!
+
+Added long-overdue auto-verify logic to C<print()> method.
+
+Added long-overdue C<preamble()> method for getting/setting
+the preamble text.
+I<Thanks to Jim Daigle for inspiring this.>
+
+
+=item Version 2.108   (2001/03/30)
+
+New C<field_order()> allows you to set the header order, both on a
+per-message basis, and package-wide.
+I<Thanks to Thomas Stromberg for suggesting this.>
+
+Added code to try and divine "sendmail" path more intelligently.
+I<Thanks to Slaven Rezic for the suggestion.>
+
+
+=item Version 2.107   (2001/03/27)
+
+Fixed serious bug where tainted data with quoted-printable encoding
+was causing infinite loops.  The "fix" untaints the data in question,
+which is not optimal, but it's probably benign in this case.
+I<Thanks to Stefan Sautter for tracking this nasty little beast down.>
+I<Thanks to Larry Geralds for a related patch.>
+
+    "Doctor, O doctor:
+       it's painful when I do *this* --"
+    "Simple: don't *do* that."
+
+Fixed bugs where a non-local C<$_> was being modified... again!
+Will I never learn?
+I<Thanks to Maarten Koskamp for reporting this.>
+
+    Dollar-underscore
+       can poison distant waters;
+   'local' must it be.
+
+Fixed buglet in C<add()> where all value references were being treated
+as arrayrefs, instead of as possibly-self-stringifying object refs.
+Now you can send in an object ref as the 2nd argument.
+I<Thanks to dLux for the bug report.>
+
+    That ref is a string?
+       Operator overload
+    has ruined my day.
+
+Added "Approved" as an acceptable header field for C<new()>, as per RFC1036.
+I<Thanks to Thomax for the suggestion regarding MIME-tools.>
+
+Small improvements to docs to make different uses of attach()
+and various arguments clearer.
+I<Thanks to Sven Rassman and Roland Walter for the suggestions.>
+
+
+=item Version 2.106   (2000/11/21)
+
+Added Alpha version of scrub() to make it easy for people to suppress
+the printing of unwanted MIME attributes (like Content-length).
+I<Thanks to the many people who asked for this.>
+
+Headers with empty-strings for their values are no longer
+printed.  This seems sensible, and helps us implement scrub().
+
+
+=item Version 2.105   (2000/10/14)
+
+The regression-test failure was identified, and it was my fault.
+Apparently some of the \-quoting in my "autoloaded" code was
+making Perl 5.6 unhappy.  For this nesting-related idiocy,
+a nesting kaiku.
+I<Thanks to Scott Schwartz for identifying the problem.>
+
+    In a pattern, my
+       backslash-s dwells peacefully,
+    unambiguous --
+
+       but I embed it
+          in a double-quoted string
+       doubling the backslash --
+
+          interpolating
+             that same double-quoted string
+          in other patterns --
+
+             and, worlds within worlds,
+                I single-quote the function
+             to autoload it --
+
+          changing the meaning
+       of the backslash and the 's';
+    and Five-Point-Six growls.
+
+
+=item Version 2.104   (2000/09/28)
+
+Now attempts to load and use Mail::Address for parsing email
+addresses I<before> falling back to our own method.
+I<Thanks to numerous people for suggesting this.>
+
+    Parsing addresses
+       is too damn hard. One last hope:
+    Let Graham Barr do it!
+
+For the curious, the version of Mail::Address appears
+as the "A" number in the X-Mailer:
+
+    X-Mailer: MIME::Lite 2.104  (A1.15; B2.09; Q2.03)
+
+Added B<FromSender> option to send_by_sendmail().
+I<Thanks to Bill Moseley for suggesting this feature.>
+
+
+=item Version 2.101   (2000/06/06)
+
+Major revision to print_body() and body_as_string() so that
+"body" really means "the part after the header", which is what most
+people would want in this context.  This is B<not> how it was used
+1.x, where "body" only meant "the body of a simple singlepart".
+Hopefully, this change will solve many problems and create very few ones.
+
+Added support for attaching a part to a "message/rfc822", treating
+the "message" type as a multipart-like container.
+
+Now takes care not to include "Bcc:" in header when using send_by_smtp,
+as a safety precaution against qmail's behavior.
+I<Thanks to Tatsuhiko Miyagawa for identifying this problem.>
+
+Improved efficiency of many stringifying operations by using
+string-arrays which are joined, instead of doing multiple appends
+to a scalar.
+
+Cleaned up the "examples" directory.
+
+
+=item Version 1.147   (2000/06/02)
+
+Fixed buglet where lack of Cc:/Bcc: was causing extract_addrs
+to emit "undefined variable" warnings.  Also, lack of a "To:" field
+now causes a croak.
+I<Thanks to David Mitchell for the bug report and suggested patch.>
+
+
+=item Version 1.146   (2000/05/18)
+
+Fixed bug in parsing of addresses; please read the WARNINGS section
+which describes recommended address formats for "To:", "Cc:", etc.
+Also added automatic inclusion of a UT "Date:" at top level unless
+explicitly told not to.
+I<Thanks to Andy Jacobs for the bug report and the suggestion.>
+
+=item Version 1.145   (2000/05/06)
+
+Fixed bug in encode_7bit(): a lingering C</e> modifier was removed.
+I<Thanks to Michael A. Chase for the patch.>
+
+
+=item Version 1.142   (2000/05/02)
+
+Added new, taint-safe invocation of "sendmail", one which also
+sets up the C<-f> option.  Unfortunately, I couldn't make this automatic:
+the change could have broken a lot of code out there which used
+send_by_sendmail() with unusual "sendmail" variants.
+So you'll have to configure "send" to use the new mechanism:
+
+    MIME::Lite->send('sendmail');       ### no args!
+
+I<Thanks to Jeremy Howard for suggesting these features.>
+
+
+=item Version 1.140   (2000/04/27)
+
+Fixed bug in support for "To", "Cc", and "Bcc" in send_by_smtp():
+multiple (comma-separated) addresses should now work fine.
+We try real hard to extract addresses from the flat text strings.
+I<Thanks to John Mason for motivating this change.>
+
+Added automatic verification that attached data files exist,
+done immediately before the "send" action is invoked.
+To turn this off, set $MIME::Lite::AUTO_VERIFY to false.
+
+=item Version 1.137   (2000/03/22)
+
+Added support for "Cc" and "Bcc" in send_by_smtp().
+To turn this off, set $MIME::Lite::AUTO_CC to false.
+I<Thanks to Lucas Maneos for the patch, and tons of others for
+the suggestion.>
+
+Chooses a better default content-transfer-encoding if the content-type
+is "image/*", "audio/*", etc.
+To turn this off, set $MIME::Lite::AUTO_ENCODE to false.
+I<Thanks to many folks for the suggestion.>
+
+Fixed bug in QP-encoding where a non-local C<$_> was being modified.
+I<Thanks to Jochen Stenzel for finding this very obscure bug!>
+
+Removed references to C<$`>, C<$'>, and C<$&> (bad variables
+which slow things down).
+
+Added an example of how to send HTML files with enclosed in-line
+images, per popular demand.
+
+
+=item Version 1.133   (1999/04/17)
+
+Fixed bug in "Data" handling: arrayrefs were not being handled
+properly.
+
+
+=item Version 1.130   (1998/12/14)
+
+Added much larger and more-flexible send() facility.
+I<Thanks to Andrew McRae (and Optimation New Zealand Ltd)
+for the Net::SMTP interface.  Additional thanks to the many folks
+who requested this feature.>
+
+Added get() method for extracting basic attributes.
+
+New... "t" tests!
+
+
+=item Version 1.124   (1998/11/13)
+
+Folded in filehandle (FH) support in build/attach.
+I<Thanks to Miko O'Sullivan for the code.>
+
+
+=item Version 1.122   (1998/01/19)
+
+MIME::Base64 and MIME::QuotedPrint are used if available.
+
+The 7bit encoding no longer does "escapes"; it merely strips 8-bit characters.
+
+
+=item Version 1.121   (1997/04/08)
+
+Filename attribute is now no longer ignored by build().
+I<Thanks to Ian Smith for finding and patching this bug.>
+
+
+=item Version 1.120   (1997/03/29)
+
+Efficiency hack to speed up MIME::Lite::IO_Scalar.
+I<Thanks to David Aspinwall for the patch.>
+
+
+=item Version 1.116   (1997/03/19)
+
+Small bug in our private copy of encode_base64() was patched.
+I<Thanks to Andreas Koenig for pointing this out.>
+
+New, prettier way of specifying mail message headers in C<build()>.
+
+New quiet method to turn off warnings.
+
+Changed "stringify" methods to more-standard "as_string" methods.
+
+
+=item Version 1.112   (1997/03/06)
+
+Added C<read_now()>, and C<binmode()> method for our non-Unix-using brethren:
+file data is now read using binmode() if appropriate.
+I<Thanks to Xiangzhou Wang for pointing out this bug.>
+
+
+=item Version 1.110   (1997/03/06)
+
+Fixed bug in opening the data filehandle.
+
+
+=item Version 1.102   (1997/03/01)
+
+Initial release.
+
+
+=item Version 1.101   (1997/03/01)
+
+Baseline code.
+Originally created: 11 December 1996.  Ho ho ho.
+
+=back

@@ -1,0 +1,283 @@
+=head1 NAME
+
+MIME::Type - Definition of one MIME type
+
+=head1 INHERITANCE
+
+=head1 SYNOPSIS
+
+ use MIME::Types;
+ my $mimetypes = MIME::Types->new;
+ my MIME::Type $plaintext = $mimetypes->type('text/plain');
+ print $plaintext->mediaType;   # text
+ print $plaintext->subType;     # plain
+
+ my @ext = $plaintext->extensions;
+ print "@ext"                   # txt asc c cc h hh cpp
+
+ print $plaintext->encoding     # 8bit
+ if($plaintext->isBinary)       # false
+ if($plaintext->isAscii)        # true
+ if($plaintext->equals('text/plain') {...}
+ if($plaintext eq 'text/plain') # same
+
+ print MIME::Type->simplified('x-appl/x-zip') #  'appl/zip'
+
+=head1 DESCRIPTION
+
+MIME types are used in MIME entities, for instance as part of e-mail
+and HTTP traffic.  Sometimes real knowledge about a mime-type is need.
+Objects of C<MIME::Type> store the information on one such type.
+
+This module is built to conform to the MIME types of RFC's 2045 and 2231.
+It follows the official IANA registry at
+F<http://www.iana.org/assignments/media-types/>
+and the collection kept at F<http://www.ltsw.se/knbase/internet/mime.htp>
+
+=head1 OVERLOADED
+
+overload: B<string comparison>
+
+=over 4
+
+When a MIME::Type object is compared to either a string or an other
+MIME::TYpe, the L<equals()|MIME::Type/"Knowledge"> method is called.  Comparison is smart,
+which means that it extends common string comparison with some
+features which are defined in the related RFCs.
+
+=back
+
+overload: B<stringification>
+
+=over 4
+
+The stringification (use of the object in a place where a string
+is required) will result in the type name, the same as L<type()|MIME::Type/"Attributes">
+returns.
+
+example: use of stringification
+
+ my $mime = MIME::Type->new('text/html');
+ print "$mime\n";   # explicit stringification
+ print $mime;       # implicit stringification
+
+=back
+
+=head1 METHODS
+
+=head2 Initiation
+
+MIME::Type-E<gt>B<new>(OPTIONS)
+
+=over 4
+
+Create (I<instantiate>) a new MIME::Type object which manages one
+mime type.
+
+ Option    --Default
+ encoding    <depends on type>
+ extensions  []
+ simplified  <derived from type>
+ system      undef
+ type        <required>
+
+. encoding => '7bit'|'8bit'|'base64'|'quoted-printable'
+
+=over 4
+
+How must this data be encoded to be transported safely.  The default
+depends on the type: mimes with as main type C<text/> will default
+to C<quoted-printable> and all other to C<base64>.
+
+=back
+
+. extensions => REF-ARRAY
+
+=over 4
+
+An array of extensions which are using this mime.
+
+=back
+
+. simplified => STRING
+
+=over 4
+
+The mime types main- and sub-label can both start with C<x->, to indicate
+that is a non-registered name.  Of course, after registration this flag
+can disappear which adds to the confusion.  The simplified string has the
+C<x-> thingies removed and are translated to lower-case.
+
+=back
+
+. system => REGEX
+
+=over 4
+
+Regular expression which defines for which systems this rule is valid.  The
+REGEX is matched on C<$^O>.
+
+=back
+
+. type => STRING
+
+=over 4
+
+The type which is defined here.  It consists of a I<type> and a I<sub-type>,
+both case-insensitive.  This module will return lower-case, but accept
+upper-case.
+
+=back
+
+=back
+
+=head2 Attributes
+
+$obj-E<gt>B<encoding>
+
+=over 4
+
+Returns the type of encoding which is required to transport data of this
+type safely.
+
+=back
+
+$obj-E<gt>B<extensions>
+
+=over 4
+
+Returns a list of extensions which are known to be used for this
+mime type.
+
+=back
+
+$obj-E<gt>B<simplified>([STRING])
+
+MIME::Type-E<gt>B<simplified>([STRING])
+
+=over 4
+
+Returns the simplified mime type for this object or the specified STRING.
+Mime type names can get officially registered.  Until then, they have to
+carry an C<x-> preamble to indicate that.  Of course, after recognition,
+the C<x-> can disappear.  In many cases, we prefer the simplified version
+of the type.
+
+example: results of simplified()
+
+ my $mime = MIME::Type->new(type => 'x-appl/x-zip');
+ print $mime->simplified;                     # 'appl/zip'
+ print $mime->simplified('text/plain');       # 'text/plain'
+ print MIME::Type->simplified('x-xyz/x-abc'); # 'xyz/abc'
+
+=back
+
+$obj-E<gt>B<system>
+
+=over 4
+
+Returns the regular expression which can be used to determine whether this
+type is active on the system where you are working on.
+
+=back
+
+$obj-E<gt>B<type>
+
+=over 4
+
+Returns the long type of this object, for instance C<'text/plain'>
+
+=back
+
+=head2 Knowledge
+
+$obj-E<gt>B<equals>(STRING|MIME)
+
+=over 4
+
+Compare this mime-type object with a STRING or other object.  In case of
+a STRING, simplification will take place.
+
+=back
+
+$obj-E<gt>B<isAscii>
+
+=over 4
+
+Returns false when the encoding is base64, and true otherwise.  All encodings
+except base64 are text encodings.
+
+=back
+
+$obj-E<gt>B<isBinary>
+
+=over 4
+
+Returns true when the encoding is base64.
+
+=back
+
+$obj-E<gt>B<isRegistered>
+
+=over 4
+
+Mime-types which are not registered by IANA nor defined in RFCs shall
+start with an C<x->.  This counts for as well the media-type as the
+sub-type.  In case either one of the types starts with C<x-> this
+method will return false.
+
+=back
+
+$obj-E<gt>B<isSignature>
+
+=over 4
+
+Returns true when the type is in the list of known signatures.
+
+=back
+
+$obj-E<gt>B<mediaType>
+
+=over 4
+
+The media type of the simplified mime.
+For C<'text/plain'> it will return C<'text'>.
+
+For historical reasons, the C<'mainType'> method still can be used
+to retreive the same value.  However, that method is deprecated.
+
+=back
+
+$obj-E<gt>B<subType>
+
+=over 4
+
+The sub type of the simplified mime.
+For C<'text/plain'> it will return C<'plain'>.
+
+=back
+
+=head1 DIAGNOSTICS
+
+Error: Type parameter is obligatory.
+
+=over 4
+
+When a L<MIME::Type|MIME::Type> object is created, the type itself must be
+specified with the C<type> option flag.
+
+=back
+
+=head1 SEE ALSO
+
+This module is part of MIME-Types distribution version 1.23,
+built on December 17, 2007. Website: F<http://perl.overmeer.net/mimetypes/>
+
+=head1 LICENSE
+
+Copyrights 1999,2001-2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+
