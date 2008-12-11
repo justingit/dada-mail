@@ -1,0 +1,112 @@
+<!-- begin congrats_screen.tmpl -->
+
+<form action="<!-- tmpl_var name="PROGRAM_URL" -->" method="post">
+ 
+<!-- tmpl_unless ROOT_PASS_IS_ENCRYPTED -->
+	 
+	 <p class="error">
+	  <strong>
+	   Warning!
+	  </strong>
+	  Your <!-- tmpl_var name="PROGRAM_NAME" --> Root Password 
+	  ($PROGRAM_ROOT_PASSWORD) has not been encrypted. Please consider 
+	  encrypting your <!-- tmpl_var name="PROGRAM_NAME" --> Root 
+	  Password as soon as possible.
+	  <a href="<!-- tmpl_var name="PROGRAM_URL" -->?f=pass_gen" target="_blank">
+	   Click here 
+	  </a>
+	  (link opens a new window) to encrypt a password, then return here 
+	  and refresh/reload this page when complete. For more information, 
+	  please consult the Config.pm documentation.
+	 </p>
+	 
+<!-- /tmpl_unless -->
+ 
+ <h1>
+  Congratulations, and Welcome to <!-- tmpl_var name="PROGRAM_NAME" -->!
+ </h1>
+ <p>
+  You installed <!-- tmpl_var name="PROGRAM_NAME" --> correctly. The next 
+  thing to do is set up a list or two. Be sure you know your Root Password 
+  before you begin making a new list.
+ </p>
+ <p>
+  <strong>
+   First, please read, understand and agree to the GNU Public License, and 
+   agree not to use Dada Mail for unsolicited email (spam):
+  </strong>
+ </p>
+ <p align="center">
+  <div style="width:95%;height:150px;overflow:auto;border:1px solid black;padding:5px;margin:5px">
+   <!-- tmpl_include name="gpl.tmpl" -->
+  </div>
+ </p>
+ <p align="center">
+  <div style="width:95%;height:150px;overflow:auto;border:1px solid black;padding:5px;margin:5px">
+   <!-- tmpl_include name="no_spam.tmpl" -->
+  </div>
+ </p>
+ 
+<!-- tmpl_if havent_agreed -->
+	 
+	 <p class="error">
+	   Please agree to the terms of the GPL License and 
+	   the no-spam policy by checking the checkbox below:
+	 </p>
+	 
+<!-- /tmpl_if -->
+ 
+ <p>
+  <input type="checkbox" name="agree" value="yes" />
+  I agree to the GPL license and no-SPAM conditions.
+ </p>
+ <input type="hidden" name="f" value="new_list" />
+
+
+ <p>
+  <label for="root_password">
+   Root Password:
+  </label>
+  <br />
+  
+  <input type="password" name="root_password" id="root_password" maxlength="24" />
+  
+  <input type="submit" class="processing" value="Set Up a New List" />
+ </p>
+
+
+
+	 <!-- tmpl_if DISABLE_OUTSIDE_LOGINS --> 
+	     <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" /> 
+	 <!--/tmpl_if--> 
+
+
+
+</form>
+
+
+<hr /> 
+
+<h2>Program Configuration</h2>
+
+<form action="<!-- tmpl_var name="PROGRAM_URL" -->" method="post">
+
+
+If you would like to see more information about your current Program Configuration, enter your <!-- tmpl_var PROGRAM_NAME --> Root Password, below:
+
+<p>
+ <label for="root_password">
+  Root Password:
+ </label>
+ <br />
+ 
+<input type="hidden" name="f" value="setup_info" /> 
+
+ <input type="password" name="root_password" id="root_password" maxlength="24" />
+ 
+ <input type="submit" class="processing" value="Program Configuration Settings" />
+</p>
+
+</form> 
+
+<!-- end congrats_screen.tmpl -->

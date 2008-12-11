@@ -1,0 +1,21 @@
+=pod
+
+=head1 Credits
+
+This list is not complete, started on 9/05
+
+=head1 Justin Simoni - http://justinsimoni.com
+
+Justin is responsible for writing Dada Mail, beginning in his bedroom in Connecticut throughout college and now at his art studio in Denver, CO. 
+
+The original script was 50k and 1 file. The current program is about 6 megs and a few hundred files. It does basically the same thing, with a bell and whistle or two.
+
+He doesn't feel like writing about himself in the third person, so he's going to stop!
+
+=head1 Shane Clintberg at http://a-ok.net
+
+Shane is responsible for most, if not all of the creation/changes/tweaks/optimizations/validations of 
+the HTML::Template templates of 2.10. Thanks, Shane!
+
+
+=cut

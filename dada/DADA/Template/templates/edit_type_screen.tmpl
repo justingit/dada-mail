@@ -1,0 +1,479 @@
+<!-- begin edit_type_screen.tmpl -->
+
+<!-- tmpl_if done -->
+    <!-- tmpl_var GOOD_JOB_MESSAGE -->
+<!--/tmpl_if-->
+
+<p>
+	You can customize many of the email messages 
+<!-- tmpl_var PROGRAM_NAME -->
+	sends. 
+<!-- tmpl_var PROGRAM_NAME -->
+	uses &quot;pseudo tags&quot; to represent data that may change regularly. Use the pseudo tags to represent information like subscription/unsubscription links, or your list name. The entire list of available tags is shown at the end of this page. 
+</p>
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form">
+
+
+<fieldset>
+	<legend>
+		Subscription Confirmation Email 
+	</legend>
+	<p>
+		This email message is sent when someone requests to be subscribed to your list. 
+	</p>
+	
+	<!-- tmpl_if list_settings.no_confirm_email --> 
+		<p class="positive">Closed-Loop Opt-In is Enabled.</p>
+	<!-- tmpl_else --> 
+		<p class="error">Closed-Loop Opt-In is Disabled.</p>
+	<!-- /tmpl_if --> 
+	
+	
+	<p>
+	 <label for="confirmation_message_subject">Subject:</label> <input type="text" name="confirmation_message_subject" id="confirmation_message_subject" value="<!-- tmpl_var confirmation_message_subject escape=HTML -->" class="full" />
+	</p>
+	
+	<p><label for="confirmation_message">PlainText Message:</label>
+<textarea name="confirmation_message" id="confirmation_message" rows="10" cols="50" ><!-- tmpl_var confirmation_message escape=HTML --></textarea> 
+	</p>
+</fieldset>
+<fieldset>
+	<legend>
+		Subscription Successful Email Message 
+	</legend>
+	<p>
+		This email is sent after the person replies to the subscription confirmation email. 
+	</p>
+	
+	<!-- tmpl_if list_settings.send_sub_success_email --> 
+			<p class="positive">Send Subscription Successful Emails  is Enabled.</p>
+	<!-- tmpl_else --> 
+		<p class="error">Send Subscription Successful Emails  is Disabled.</p>
+	<!-- /tmpl_if --> 
+	
+	<p>
+	 <label for="subscribed_message_subject">Subject:</label> <input type="text" name="subscribed_message_subject" id="subscribed_message_subject" value="<!-- tmpl_var subscribed_message_subject escape=HTML -->" class="full" />
+	</p>
+	
+	<p><label for="subscribed_message">PlainText Message:</label>
+	
+	<textarea name="subscribed_message" id="subscribed_message" rows="10" cols="50" ><!-- tmpl_var subscribed_message escape=HTML -->
+</textarea> 
+	</p>
+</fieldset>
+<fieldset>
+	<legend>
+		Unsubscription Confirmation Email 
+	</legend>
+	<p>
+		This email is sent when someone requests to be unsubscribed from your list. 
+	</p>
+	
+	<!-- tmpl_if list_settings.unsub_confirm_email --> 
+			<p class="positive">Closed-Loop Opt-Out is Enabled.</p>
+	<!-- tmpl_else --> 
+		<p class="error">Closed-Loop Opt-Out is Disabled.</p>
+	<!-- /tmpl_if --> 
+	
+
+	
+		<p>
+	 <label for="unsub_confirmation_message_subject">Subject:</label> <input type="text" name="unsub_confirmation_message_subject" id="unsub_confirmation_message_subject" value="<!-- tmpl_var unsub_confirmation_message_subject escape=HTML -->" class="full" />
+	</p>
+	
+	<p><label for="unsub_confirmation_message">PlainText Message:</label>
+	
+	
+<textarea name="unsub_confirmation_message" id="unsub_confirmation_message" rows="10" cols="50" ><!-- tmpl_var unsub_confirmation_message escape=HTML -->
+</textarea> 
+	</p>
+</fieldset>
+<fieldset>
+	<legend>
+		Unsubscription Successful Email Message 
+	</legend>
+	<p>
+		This email is sent after someone unsubscribes from your list. 
+	</p>
+	
+	<!-- tmpl_if list_settings.send_unsub_success_email --> 
+			<p class="positive">Send Unsubscription Successful Emails  is Enabled.</p>
+	<!-- tmpl_else --> 
+		<p class="error">Send Unsubscription Successful Emails  is Disabled.</p>
+	<!-- /tmpl_if --> 
+	
+	
+
+
+		<p>
+	 <label for="unsubscribed_message_subject">Subject:</label> <input type="text" name="unsubscribed_message_subject" id="unsubscribed_message_subject" value="<!-- tmpl_var unsubscribed_message_subject escape=HTML -->" class="full" />
+	</p>
+	
+	<p><label for="unsubscribed_message">PlainText Message:</label>
+	
+	
+<textarea name="unsubscribed_message" id="unsubscribed_message" rows="10" cols="50" ><!-- tmpl_var unsubscribed_message escape=HTML -->
+</textarea> 
+	</p>
+</fieldset>
+<fieldset>
+	<legend>
+		Mailing List Message
+	</legend>
+
+
+
+    <p>
+     <label for="mailing_list_message_from_phrase">From:</label> <input type="text" name="mailing_list_message_from_phrase" id="mailing_list_message_from_phrase" value="<!-- tmpl_var mailing_list_message_from_phrase escape=HTML -->" /> &lt;<!-- tmpl_var list_owner_email -->&gt;
+    </p>
+    
+    <p>
+     <label for="mailing_list_message_to_phrase">To:</label> <input type="text" name="mailing_list_message_to_phrase" id="mailing_list_message_to_phrase" value="<!-- tmpl_var mailing_list_message_to_phrase escape=HTML -->" /> &lt;[subscriber.email]&gt;
+    </p>
+
+    <p>
+     <label for="mailing_list_message_subject">Subject:</label> <input type="text" name="mailing_list_message_subject" id="mailing_list_message_subject" value="<!-- tmpl_var mailing_list_message_subject escape=HTML -->" class="full" />
+    </p>
+    
+	
+	
+
+	<p>
+		<label for="mailing_list_message">
+			PlainText Message: 
+		</label>
+		<br />
+		This is the mailing list message (text version). The bottom of the email should, at minimum, provide how to unsubscribe from the mailing list. 
+	</p>
+	<p>
+<textarea name="mailing_list_message" id="mailing_list_message" rows="10" cols="50" ><!-- tmpl_var mailing_list_message escape=HTML -->
+</textarea> 
+	</p>
+	<p>
+		<label for="mailing_list_message_html">
+			HTML Message:
+		</label>
+		<br />
+		This is the mailing list message (HTML version). The bottom of the email should, at minimum, provide how to unsubscribe from the mailing list. 
+	</p>
+	<p>
+<textarea name="mailing_list_message_html" id="mailing_list_message_html" rows="10" cols="50" ><!-- tmpl_var mailing_list_message_html escape=HTML -->
+</textarea> 
+	</p>
+</fieldset>
+
+
+<fieldset>
+	<legend>
+		
+	List Invitation Message	
+	</legend>
+
+
+
+    <p>
+     <label for="invite_message_from_phrase">From:</label> <input type="text" name="invite_message_from_phrase" id="invite_message_from_phrase" value="<!-- tmpl_var invite_message_from_phrase escape=HTML -->" /> &lt;<!-- tmpl_var list_owner_email -->&gt;
+    </p>
+    
+    <p>
+     <label for="[subscriber.email]">To:</label> <input type="text" name="invite_message_to_phrase" id="invite_message_to_phrase" value="<!-- tmpl_var invite_message_to_phrase escape=HTML -->" /> &lt;[subscriber.email]&gt;
+    </p>
+
+    <p>
+     <label for="invite_message_subject">Subject:</label> <input type="text" name="invite_message_subject" id="invite_message_subject" value="<!-- tmpl_var invite_message_subject escape=HTML -->" class="full" />
+    </p>
+    
+	
+	
+
+	<p> 
+		<label for="invite_message_text">
+			PlainText Message: 
+		</label>
+		 
+	</p>
+	<p>
+<textarea name="invite_message_text" id="invite_message_text" rows="10" cols="50" ><!-- tmpl_var invite_message_text escape=HTML -->
+</textarea> 
+	</p>
+	<p>
+		<label for="invite_message_html">
+			HTML Message:
+		</label>
+			</p>
+	<p>
+<textarea name="invite_message_html" id="invite_message_html" rows="10" cols="50" ><!-- tmpl_var invite_message_html escape=HTML -->
+</textarea> 
+	</p>
+</fieldset>
+
+
+
+
+
+
+
+
+
+<fieldset>
+	<legend>
+		Not Allowed to Post Message
+	</legend>
+
+    <p>
+    <label for="not_allowed_to_post_message_subject">Subject:</label> <input type="text" name="not_allowed_to_post_message_subject" id="not_allowed_to_post_message_subject" value="<!-- tmpl_var not_allowed_to_post_message_subject escape=HTML -->" class="full" />
+    </p>
+    
+    <p><label for="not_allowed_to_post_message">PlainText Message:</label>
+    
+<p>
+	This message is sent out if you use the Dada Bridge Plugin that allows you to send mailing list emails by sending an email to a special address. People who are not allowed to post to the list will receive this message. 
+</p>
+<p>
+<textarea name="not_allowed_to_post_message" id="not_allowed_to_post_message" rows="10" cols="50" ><!-- tmpl_var not_allowed_to_post_message escape=HTML -->
+</textarea> 
+</p>
+</fieldset>
+<fieldset>
+	<legend>
+		You Are Already Subscribed Message: 
+	</legend>
+	<p>
+		This message is sent out only if someone that's already currently subscribed to a list tries to subscribe again and you've set the preferences to send an email out, instead of giving this message in the web browser. 
+<!-- tmpl_if list_settings.email_your_subscribed_msg  -->
+	<p class="positive">
+		Enabled. 
+	</p>
+<!--tmpl_else-->
+	<p class="error">
+		"You are Subscribed" messages are currently shown in the browser and this email message is not sent.  
+	</p>
+<!--/tmpl_if-->
+	</p>
+
+    <p>
+    <label for="you_are_already_subscribed_message_subject">Subject:</label> <input type="text" name="you_are_already_subscribed_message_subject" id="you_are_already_subscribed_message_subject" value="<!-- tmpl_var you_are_already_subscribed_message_subject escape=HTML -->" class="full" />
+    </p>
+    
+    <p><label for="you_are_already_subscribed_message">PlainText Message:</label>
+    
+	<p>
+<textarea name="you_are_already_subscribed_message" id="you_are_already_subscribed_message" rows="10" cols="50" ><!-- tmpl_var you_are_already_subscribed_message escape=HTML -->
+</textarea> 
+	</p>
+</fieldset>
+<fieldset>
+	<legend>
+		Send Archived Message to a Friend Message 
+	</legend>
+
+	<!-- tmpl_if list_settings.archive_send_form --> 
+		<p class="positive">
+		 "Send an Archive" form is Enabled.
+		</p> 
+	<!-- tmpl_else --> 
+	<p class="error">
+	 "Send an Archive" form is Disabled.
+	</p>	
+	<!-- /tmpl_if --> 
+
+    <p>
+        <label for="send_archive_message_subject">Subject:</label> <input type="text" name="send_archive_message_subject" id="send_archive_message_subject" value="<!-- tmpl_var send_archive_message_subject escape=HTML -->" class="full" />
+    </p>
+
+
+
+	<p>
+		<label for="send_archive_message">
+			Send Archived Message to a Friend (Text Version): 
+		</label>
+		<br />
+<textarea name="send_archive_message" id="send_archive_message" rows="10" cols="50" ><!-- tmpl_var send_archive_message escape=HTML -->
+</textarea> 
+	</p>
+	<p>
+		<label for="send_archive_message_html">
+			Send Archived Message to a Friend (HTML Version): 
+		</label>
+		<br />
+<textarea name="send_archive_message_html" id="send_archive_message_html" rows="10" cols="50" ><!-- tmpl_var send_archive_message_html escape=HTML -->
+</textarea> 
+	</p>
+</fieldset>
+
+<fieldset>
+	<legend>
+   <a href="#" onclick="toggleDisplay('adv_options');return false;">
+    +/- 
+   </a> Advanced Options
+   </legend>    
+   
+   <div id="adv_options" style="display:none;width:90%">
+
+<table cellpadding="5">
+	<tr>
+	 <td>
+		<input type="checkbox" id="enable_email_template_expr" name="enable_email_template_expr" value="1" <!-- tmpl_if enable_email_template_expr -->checked="checked"<!--/tmpl_if --> /> 
+	 </td>
+	 <td>
+		
+		<p>
+			<label for="enable_email_template_expr">
+			 Enable use of the advanced templating syntax for email messages. 
+			</label>
+		</p>
+	</td>
+</tr>
+</table>
+	
+</div> 
+
+</fieldset>
+
+
+
+<input type="hidden" name="process" value="1" />
+<input type="hidden" name="f" value="edit_type" />
+<div class="buttonfloat">
+	<input type="reset" class="cautionary" value="Clear All Changes" />
+	<input type="submit" class="alertive" name="revert" value="Revert ALL Text to Defaults" />
+	<input type="submit" class="processing" value="Save All Changes" />
+</div>
+<div class="floatclear">
+</div>
+
+</form>
+
+
+
+<fieldset>
+	<legend>
+   <a href="#" onclick="toggleDisplay('template_tags');return false;">
+    +/- 
+   </a> Available Template Tags
+   </legend>    
+   
+   <div id="template_tags" style="display:none;width:90%">
+	
+	
+	
+<table class="tagchart">
+	<tr align="center">
+		<td>
+			<strong>
+				This Tag 
+			</strong>
+		</td>
+		<td>
+			<strong>
+				Is Replaced With 
+			</strong>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<pre>[message_body]</pre>
+		</td>
+		<td>
+			<strong>
+				Only used (and also required!) in the, &quot;Mailing List Message&quot; templates</strong>. This tag will be replaced by your actual email message. 
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<pre>[list_settings.list_name]</pre> 
+		</td>
+		<td>
+			The name of your list. 
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<pre>[list_settings.info]</pre> 
+		</td>
+		<td>
+			The description of your list. 
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<pre>[list_subscribe_link]</pre> 
+		</td>
+		<td>
+			The subscription link. 
+		</td>
+	</tr>
+	
+	<tr>
+		<td>
+			<pre>[list_unsubscribe_link]</pre> 
+		</td>
+		<td>
+			The unsubscription link. 
+		</td>
+	</tr>
+	
+	<tr>
+		<td>
+			<pre>[list_confirm_subscribe_link]</pre> 
+		</td>
+		<td>
+			The subscription confirmation link. 
+		</td>
+	</tr>
+	<t
+	<tr>
+		<td>
+			<pre>[list_confirm_unsubscribe_link]</pre> 
+		</td>
+		<td>
+			The unsubscription confirmation link. 
+		</td>
+	</tr>
+	
+	<tr>
+		<td>
+			<pre>[list_settings.privacy_policy]</pre> 
+		</td>
+		<td>
+			The privacy policy of your list. 
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<pre>[list_settings.list_owner_email]</pre> 
+		</td>
+		<td>
+			The list owner's email address. 
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<pre>[list_settings.list_admin_email]</pre>
+		</td>
+		<td>
+			The list administrator's email address. 
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<pre>[PROGRAM_URL]</pre>
+		</td>
+		<td>
+			The URL of the program (<a href="&lt;!-- tmpl_var PROGRAM_URL --&gt;" target="_blank">
+<!-- tmpl_var PROGRAM_URL -->
+			</a>
+			). 
+		</td>
+	</tr>
+</table>
+
+</div> 
+
+</fieldset>
+
+<!-- tmpl_include help_link_widget.tmpl --> 
+
+
+<!-- end edit_type_screen.tmpl -->

@@ -1,0 +1,21 @@
+<!-- begin mass_mailing_limit_notice_widget.tmpl --> 
+
+<!-- tmpl_if MAILOUT_AT_ONCE_LIMIT --> 
+	<!-- tmpl_if mailout_will_be_queued --> 
+		<p class="error">
+		 This Mass Mailing will be <strong>queued</strong>. 
+		
+		<p class="error">There are currently 
+		 <strong><!-- tmpl_var active_mailouts --></strong> actively sending Mass Mailing(s) (out of a total of <!-- tmpl_var num_total_mailouts -->)
+		 being sent (<strong><!-- tmpl_var num_list_mailouts --></strong> from this list). 
+		
+			<p class="error">A limit of <strong><!-- tmpl_var MAILOUT_AT_ONCE_LIMIT --></strong> active Mass Mailing(s) 
+		 at one time is currently enforced.</p>
+	<!-- tmpl_else --> 
+		<p class="positive">Your Mass Mailing can begin immediately.</p> 
+	<!-- /tmpl_if --> 
+<!-- tmpl_else --> 
+	<p class="positive">Your Mass Mailing can begin immediately.</p> 
+<!-- /tmpl_if -->
+
+<!-- end mass_mailing_limit_notice_widget.tmpl --> 

@@ -1,0 +1,858 @@
+=pod
+
+=head1 NOTES
+
+=head1 2.10.13
+
+=head2 Removed NDBM_File and ODBM_File from the @AnyDBM_File Config.pm array
+
+Both the NDBM_File and ODBM_File type stinks for what Dada Mail uses it for - it's won't work at all for archiving and is starting to fail pretty regularly with list settings, so it's now recommended that if this is your only option, to set up Dada Mail using the SQL backend(s), especially for list settings/archives, if not for everything currently available. 
+
+If you must use NDBM_File or ODBM_File (for example, you were using it before and are upgrading, just find this line in the B<Config.pm> file: 
+
+ BEGIN { @AnyDBM_File::ISA = qw(DB_File GDBM_File NDBM_File ODBM_File) }
+
+And change it to: 
+
+ BEGIN { @AnyDBM_File::ISA = qw(DB_File GDBM_File NDBM_File ODBM_File NDBM_File ODBM_File SDBM_File) }
+
+
+=head1 2.10.11b
+
+2.10.11b was released to solve a few niggling bugs in the 2.10.11 release. If you're using either: 
+
+=over
+
+=item * The dada_bridge.pl plugin
+
+=item * The SQL backend for List Settings
+
+=back
+
+It's advised to upgrade to this version. See the changes log: 
+
+http://dadamailproject.com/support/documentation/changes.pod.html#2_10_11b
+
+For more information. 
+
+Related to the latter issue: 
+
+If you find that you're having trouble with logging into/out of your mailing list and/or saving and list setting dealing with a password, make sure to reset your cipher keys, by visiting a URL like this: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi?f=reset_cipher_keys>
+
+where, "http://example.com/cgi-bin/dada/mail.cgi" is the URL to your Dada Mail. 
+
+If this does not clear this issue, you may have to manually remove the cipher keys via SQL. The following SQL statement should do the trick: 
+
+ delete from dada_settings where setting = 'cipher_key';
+
+Again, this should only be an issue if you're currently using Dada Mail, 2.10.11. 
+
+If you do not want to install the entire 2.10.11b program over the 2.10.11 version, you can simple replace the following files: 
+
+=over
+
+=item * dada/plugins/dada_bridge.pl
+
+=item * dada/DADA/Config.pm
+
+=item * dada/DADA/MailingList/Settings/baseSQL.pm
+
+=back
+
+but great care should be made in doing so. 
+
+=head1 2.10.11 
+
+=head2 Change in Required Perl Version: 5.6
+
+This release is the first stable release to require at least version 5.6 (sometimes written as 5.00600) of Perl. It's been at least 5 years since ver. 5.6 of Perl was released, so this shouldn't cause too much trouble. 
+
+=head2 Note on version numbering: 
+
+This is version 2.10.11 of the program - NOT 2.11 - 
+
+Most of the new features slated for 2.11 are still in 2.10.11, but are labeled, "Experimental". One exception to this is the B<Auto Pickup of Dropped Mailings> feature, which has been christened, B<Stable>. Do look at the NOTES for version 2.11, as all changes made in the 2.11 alphas are still around for Dada Mail, 2.10.11.
+
+=head2 Removed SDBM_File from the @AnyDBM_File Config.pm array
+
+The SDBM_File type sucks for what Dada Mail uses it for - it's won't work at all for archiving and is starting to fail pretty regularly with list settings, so it's now recommended that if this is your only option, to set up Dada Mail using the SQL backend(s), especially for list settings/archives, if not for everything currently available. 
+
+If you must use SDBM_File (for example, you were using it before and are upgrading, just find this line in the B<Config.pm> file: 
+
+ BEGIN { @AnyDBM_File::ISA = qw(DB_File GDBM_File NDBM_File ODBM_File) }
+
+And change it to: 
+
+ BEGIN { @AnyDBM_File::ISA = qw(DB_File GDBM_File NDBM_File ODBM_File SDBM_File) }
+
+=head2 Mystery Girl
+
+The dada_bounce_handler.pl script has been moved from I<dada/extensions> to I<dada/plugins>, since the script acts more like a plugin, than an extension. 
+
+=head2 Dada-ized FormMail
+
+The Dada-ized FormMail has been updated to use the latest NMS FormMail.pl script available. See the docs - as the form fields needed have changed considerably. 
+
+The Dada-ized FormMail has also been moved in the distribution from: 
+
+I<dada/extras/scripts/FormMail> 
+
+to: 
+
+I<dada/extensions/FormMail> 
+
+It's documentation has also moved to: 
+
+L<http://dadamailproject.com/support/documentation/Dada-ized_FormMail_README.pod.html>
+
+=head2 boilerplate_plugin.cgi
+
+The I<boilerplate_plugin.cgi> script has been moved from: 
+
+I<dada/extras/scripts/boilerplate_plugin.cgi> 
+
+to: 
+
+I<dada/plugins/boilerplate_plugin.cgi> 
+
+=head2 Dada-ized TFmail
+
+TFmail is similar to FormMail, but is quite a bit more configurable and could be more secure to use. If you have a choice, use TFmail - but realize it's a bit more daunting to configure. 
+
+You can view its documentation at: 
+
+L<http://dadamailproject.com/support/documentation/Dada-ized_TFMail_README.pod.html>
+
+=head2 New Plugin: change_root_password.cgi
+
+There's a new plugin called, I<change_root_password.cgi> which allows you to change the Dada Mail Root Password via the list control panel. You'll need to setup Dada Mail using the advanced installation instructions, with an outside config file (.dada_config). See its documnetation at:
+
+L<http://dadamailproject.com/support/documentation/change_root_password.cgi.html> 
+
+for more information. 
+
+=head2 dada_bridge.pl moderation system - Many Changes! 
+
+The moderation system in Dada Mail, pre 2.10.11 really wasn't a moderation system at all, but simply a list of email addresses that can send to an announce-only mailing list, other than the list owner. 
+
+The entire system has basically been scrapped for the time being, and a different system has been put in its place. 
+
+The system in 2.10.11 works by allowing you to enabled/disable moderation and if moderation is enabled, any messages not sent to a discussion mailing list that are from a subscriber of the list will first have to be accepted by the list owner. 
+
+
+=head1 2.11 alpha 3
+
+=head2 Config.pm variable changes
+
+Removed the following Config.pm variables: 
+
+=over
+
+=item * $SMTP_ADDRESS
+
+=item * $SMTP_ERROR_LOG
+
+=item * $SMTP_CONVERSATION_LOG
+
+=item * $SMTP_TRUSTING
+
+=back
+
+Added the variable: 
+
+=over
+
+=item * %CPAN_DEBUG_SETTINGS
+
+=back
+
+
+=head1 2.11 alpha 2 
+
+=head2 Program Changes
+
+=over
+
+=item * Dada Mail will officially need version 5.6 of Perl
+
+=item * Start a mailing at a particular #/email feature DROPPED
+
+Use the auto-pickup feature. Will work MUCH better
+
+=item * Mail::Bulkmail SMTP Backend - DROPPED
+
+We've now completely moved to Net::SMTP
+
+=item * Receive a batch completed email - DROPPED
+
+Batches could theoretically fail mid-batch, but the auto-pickup feature would reload the mailing at the correct email address. This does cause the batch # to be incorrect. To simplify everything, this feature has been dropped. 
+
+Logging in the Dada Mail usage log still happens and the logging is much more verbose, but batches are not numbered. 
+
+=item * $FORK_SMTP_BULK_MAILINGS - DROPPED
+
+This only work with the Mail::Bulkmail backend, which has also been dropped. 
+
+=item * dada_bounce_handler.pl and Mail-DeliveryStatus-BounceParser 
+
+Mystery Girl now takes advantage of the Mail-DeliveryStatus-BounceParser CPAN module, in conjunction with its own bounce parser routines (not replaced, in other words)
+
+More information on Mail-DeliveryStatus-BounceParser:
+
+http://search.cpan.org/~rjbs/Mail-DeliveryStatus-BounceParser/lib/Mail/DeliveryStatus/BounceParser.pm
+
+
+=back
+
+
+
+
+=head1 2.11 alpha 1 
+
+2.11 alpha 1 is currently based on the 2.10.10 Release Candidate 1 version. Any problems found and solved in the 2.10 series after that version will not be reflected in this release. 
+
+Below will attempt to outline any peculiarities of the new features in 2.11: 
+
+Do see: 
+
+    http://dadamailproject.com/features/2_11_dev/index.html
+
+for more information of these features. 
+
+=head2 Auto-Pickup of Mail Sendings
+
+This is most likey the roughest and buggiest newest feature, but it's likely to bring about the most interest as its usefullness cannot be discounted. It needs much testing, feedback, etc. We WANT to hear any problems you've had with the feature. 
+
+This feature is to attempt to solve a shortcoming in the design of Dada Mail, most particularily this (taken from the Roadmap docs): 
+
+I<2.11's main feature will be an overhaul of the mass emailing routines. The problem with the current sending routines is that there is no meta information saved about the sending process, thus, if/when a problem does occur during the process, there's no way to automatically pick up the mailout. This is further made delicate, because in Dada Mail, it's a one shot thing - a mailout starts, and if it doesn't finish, it doesn't finish. This is a really bad spot to be.>
+
+More information:
+
+http://dadamailproject.com/support/documentation/road_map.pod.html#release_of_2_11
+
+Note! That not all the features talked about on the roadmap are currently made. 
+
+To activate this feature, log into your list and go to B<Manage List - Sending Options> and check the option, "Auto-Pickup Dropped List Message Mailings"
+
+There's a related option entitled, "Restart Mailings After Each Batch". Only use this option if you notice that your batches have failed any time the program sleeps for any amount of time. 
+
+We B<seriously, incredibly> recommend enabling batching as well. 
+
+When you send a list message from the list control panel, do so as you normally would, but once the screen refreshes, click the button labeled, B<Monitor Your Mailing!> 
+
+You'll be taken to a screen with a table with the following information:
+
+=over
+
+=item * Message ID
+
+Sort of the internal ID of a mailing list message - also similar to what shows up in the B<Message-ID> header of your mailing list message. 
+
+B<Important Note:> There's a directory created in the directory you set the B<$TMP> Config.pm variable to (or the directory in the B<$FILES> variable if you didn't set this explicitly), that's named the same as this ID. This directory will B<not> be removed automatically when a mailing is finished - a known issue. 
+
+=item * Subject 
+
+The Subject of your message
+
+=item * # Msgs Sent Out
+
+Self-explanitory - should also be quite precise. This number will basically only represent the number of messages handed over to either your SMTP server or the sendmail command and doesn't represent if the message was successfully sent. 
+
+=item * Total # of Messages
+
+The number of messages to send out. This doesn't include any batch confirmation messages, etc. 
+
+=item * % Done
+
+Rough percentage of how far along you are in your mailing. Will be rounded to the nearest whole number, so your shouldn't see anything like, I<45.53424542355234%>
+
+=item * # Msgs To Send
+
+The number of message yet to be sent
+
+=item * Time since last sent Msg
+
+Self-explanitory. If the size of this gap gets too large the auto-pickup mechanism should jump into play and restart your mailing. 
+
+Currently, a mailout is pickup when the time since the last message is sent is B<three times the amount the program usually waits between a batch, plus 60 seconds> 
+
+=back
+
+The, B<Monitor Your Mailing> screen should refresh itself via a simple Javascript hook. If it B<does not>, we'd like to hear from you - let us know your setup, including the browser you are using. 
+
+It is B<OK> to refresh this screen manually, as many times as you'd like. It shouldn't harm your mailing in any way. The refresh will be basically the time between your batches that you've set, if the time is more than 10 seconds. If the time is less than 10 seconds, the screen will refresh every ten seconds. 
+
+If you navigate away from this screen, mailing will still go on - the screen itself B<does not control> a mailout, it simply reports the status of a mailout and will restart a mailout, if needed. If a mailout stops and you are not on this screen, there won't be anything to restart the mailout. 
+
+You can navigate back to this screen by logging back into your list, and going to, B<Send a List Message - Monitor Your Mailings> and selecting the appropriate mailing. As long as you're on the indvidual, B<Monitor Your Mailing> screen, the auto-pickup feature will be in action. 
+
+B<NOTES:>
+
+=over
+
+=item * DO NOT use the B<Mail::Bulkmail> SMTP backend for this feature.
+
+
+It will not work. We're most likely going to stop using the Mail::BulkMail modules as a choice of SMTP backends. 
+
+You can use the B<Net::SMTP> SMTP backend, which should work quite well. 
+
+=item * Batch Complete/Mailing Complete Messages counts off
+
+
+If your mailing has been dropped for whatever reason and auto-picked up, the batch count email messages and how many messages have gone out for that particular mailing will be off completely. B<Known Issue>. Be prepared. If your mailing is dropped many times you WILL get many, I<Batch #1 Complete!> messages. 
+
+The same goes for the B<Mailing Complete!> confirmation message. The total number of messages sent will most likely be completely off. Not to worry. 
+
+=item * Temporary mailing directory will never remove itself
+
+As noted, the directory that's created temporarily for mail sending will never remove itself. If a mailing is completed, it's safe to remove the directory manually. 
+
+=item * Use the batch settings
+
+Please use the batch settings, as the feature hasn't had much testing without them. 
+
+=back
+
+=head2 Domain-Specific Sending Tunings
+
+This feature should be fairly stable. Let us know if you do not see the changes for a specific domain as you've set them. 
+
+The option is located under B<Manage List - Sending Options - Advanced> 
+
+Check, <Bune Mail Sending For Specific Domains>, save your changes and then click on, B<Configure Domain-Specific Sending Tunings...> to actually create your tunings. 
+
+=head2 Better Spam Protection for Discussion Lists
+
+This feature is a part of dada_bridge.pl. Under the header, B<Mailing List Security> check the option: B<Ignore messages labeled as, "SPAM" by SpamAssassin filters.> Note! If you do B<have> access to SpamAssassin, this feature isn't going to work for you.
+
+There's currently two ways to look at the message for the SpamAssassin score. The first one: B<Looking for the embedded SpamAssassin Headers>, is the one you want us, if it's available. It'll look for headers in incoming messages that look like this: 
+
+ X-Spam-Checker-Version: SpamAssassin 3.1.3 (2006-06-01) on 
+	example.com
+ X-Spam-Level: 
+ X-Spam-Status: No, score=-1.8 required=5.5 tests=BAYES_00,FORGED_RCVD_HELO,
+	HTML_MESSAGE,MIME_HTML_ONLY,WHY_WAIT autolearn=no version=3.1.3
+
+It'll read this information and if the B<score> is over what you've set, the program will outright reject the message. Because there's no real warning (it will be logged in the error log), do keep the score somewhat conservatily high. 
+
+The other way you can use this feature is by reading the message itself and manually giving it to the SpamAssassin filters, (B<Use the SpamAssassin Modules directly>). If you can help it, try not to use this feature, as it is slow and uses a lot of memory. 
+
+There's a third option that we haven't implemented yet, and that's to call the spamd daemon directly. We'd like to get this feature implemented, so if you have a server where this is available, let us know; 
+
+=head2 Social Bookmarking + Link Sharking badges in Message Archives
+
+Currently, there's no way to turn off/on the badges - or specify which badges get shown or not, but you can tweak these to your heart's delight in the: 
+
+    dada/DADA/Template/templates/archive_screen.tmpl
+
+Currently, the only badges shown are ones for: 
+
+=over
+
+=item * http://del.icio.us
+
+=item * http://digg.com
+
+=item * http://www.newsvine.com
+
+=item * http://reddit.com
+
+=item * Yahoo!
+
+=item * http://ma.gnolia.com
+
+=back
+
+But, the following can be easily uncommented and utilized: 
+
+=over
+
+=item * http://www.spurl.net
+
+=item * http://wists.com
+
+=item * http://www.simpy.com
+
+=item * http://www.blinklist.com
+
+=item * http://www.furl.net
+
+=item * http://fark.com
+
+=item * http://smarking.com
+
+=item * http://segnalo.com
+
+=back
+
+The badge images  are in the dada/DADA/Template/template directory under the names: 
+
+=over
+
+=item * badge_blinklist.png
+
+=item * badge_blogmarks.png
+
+=item * badge_delicious.png
+
+=item * badge_digg.png
+
+=item * badge_fark.png
+
+=item * badge_furl.png
+
+=item * badge_magnolia.png
+
+=item * badge_newsvine.png
+
+=item * badge_reddit.png
+
+=item * badge_segnalo.png
+
+=item * badge_simpy.png
+
+=item * badge_smarking.png
+
+=item * badge_spurl.png
+
+=item * badge_wists.png
+
+=item * badge_yahoo.png
+
+=back
+
+If you'd like to play around with those...
+
+=head2 CAPTCHA Enhanced email subscription confirmation
+
+More information on CAPTCHA: 
+
+http://en.wikipedia.org/wiki/CAPTCHA
+
+You can set this option in B<Manage List - Mailing List Options> 
+
+You will need the GD CPAN perl modules installed and GD as well for this feature to be available. 
+
+To tweak the CAPTCH image, do see the Config.pm variable, B<$GD_SECURITYIMAGE_PARAMS>. 
+
+The CAPTCHA image will be shown when someone attempts to confirm a subscription to a Dada Mail list. They'll be asked to enter the string of letters/numbers they see in the CAPTCHA image. They  won't be able to subscribe until the successfully do this (there's no limit on how many attempts they can have, although the image will change in every attempt)
+
+
+=head1 2.10.10
+
+=head2 Batching enabled by default for new lists. 
+
+We've decided to enabled sending in batches by default. The default setting is *very* conservative, at 1 message/every 1 second. That'll give you a sending speed of no faster than 3600 emails/hour. Adjust as needed.
+
+=head2 List Subscription Errors - When Are The Catched?
+
+Not to confuse you too much, but Dada Mail has the option to use Double-Opt-In confirmation. We B<strongly> suggest you use it. There's an option to not, but you'll be shooting yourself in the foot if you don't. 
+
+Saying all that, When you don't set the double-opt-in and a subscriber tries to subscribe, Dada Mail will basically fake the confirmation of subscription part, except, that it'll still make sure the email is valid, not already subscribed, not blacklisted, etc, at the, B<subscription> step - which is basically the step we're telling it to skip. 
+
+This doesn't really sound like that bad of a deal - two sets of error checking, B<but>, if you're trying to do something specific at the error checking, like B<redirecting to a URL upon an error>, you'll find that this, just doesn't work. And thus, the bug. 
+
+This bug has been B<fixed> in Dada Mail, but will cause a slightly different behavior in the program - so: 
+
+If you turn off double-opt-in (which you shouldn't), and want to redirect on a  subscription error,  it will work as advertised. If you're using a version below 2.10.10, the error will be trapped and your preferences will be triggered as if you're on the, B<subscription confirmation> step - which should had been skipped. I know. Confusing. 
+
+=head2 List and Dada Mail Root Passwords
+
+There's a slight change on how Dada Mail handles new passwords are accepted and how passwords are handled when you log into a list. 
+
+In the past, if the List Password was the same as the Dada Mail Root Password, the user would be granted login as if they were using the Dada Mail Root Password. This causes a problem, since, perhaps it was purely coincidential the List and Dada Mail Root Password were the same - giving the person who only has the list password right that only someone who logs into using the Dada Mail Root Password usually has. By default, one of these privileges is the deletion of a list in entirely.
+
+To counteract this bug, you can no longer set a List Password that same as the Dada Mail Root Password on list creation.
+
+If the List Password is changed to be the Dada Mail Root Password, upon log in of the list again, the password will only work as a regular List Password. If this comes as a surprise to you, simply reset the List Password as something other than the Dada Mail Root Password. 
+
+=head2 SQL backend for sessions
+
+We've updated the SQL tables for both MySQL and Postgres - if you're using either of these backends, please drop your current sessions (usually called, B<dada_sessions>) table and create the appropriate new table. Should clear up a lot of problems.
+
+=head2 Slight $ADMIN_MENU changes
+
+The Config.pm variable, B<$ADMIN_MENU> holds the information needed to create the left hand menu in the list control panel. 
+
+If you're setting this variable in an outside config file (.dada_config), do note that it has changed slightly. The, B<Sign Into a Different List> menu item has changed. It I<used> to look like this: 
+
+
+	{-Title      => 'Sign In to Another List',
+	 -Title_URL  => "$S_PROGRAM_URL?flavor=sign_in",
+	 -Function   => 'sign_in',
+	 -Activated  => 1,
+	},
+
+It I<now> looks like this: 
+
+	{-Title      => 'Log Into Another List',
+	 -Title_URL  => "$S_PROGRAM_URL?flavor=log_into_another_list",
+	 -Function   => 'log_into_another_list',
+	 -Activated  => 1,
+	},
+
+If you do use this variable in an outside config file, you may want to change the entire variable, or just this little part. 
+
+
+=head1 2.10.9
+
+=head2 %SQL_PARAMS
+
+The %SQL_PARAMS Config.pm variable has a new key/value, it looks like this: 
+
+ session_table    => 'dada_sessions', 
+
+If you have an outside config file, you may want to add it, although the key/value pair will only be 
+used if you're using the new sessions system that uses either the PostgreSQL of MySQL as it's backend. 
+
+
+=head1 2.10.7
+
+The Config.pm variable, B<$DB_TYPE> has been renamed, B<$SUBSCRIBER_DB_TYPE> 
+
+The Config.pm variable, B<$ARCHIVE_EDITOR_URL> has been completely removed. 
+
+=head1 2.10.5
+
+HTMLArea support has been replaced with FCKeditor support. More information on FCKeditor: 
+
+http://www.fckeditor.net/
+
+More information on how to use FCKeditor with Dada Mail: 
+
+http://dadamailproject.com/support/documentation/Config.pm.html#fckeditor_integration___fckeditor_url
+
+=head1 2.10.4
+
+RSS feeds are now 2.0, up from .91; Atom feeds are now 1.0, up from .03.
+
+Atom feeds may not be supported by all feed readers, but .03 has been officially deprecated. 
+
+Best to upgrade the program if you find these features important. 
+
+=head1 2.10.2
+
+Archive Editing has been reimplemented in a plugin, more information: 
+
+http://dadamailproject.com/support/documentation/archive_editor.cgi.html
+
+=head1 2.10.1
+
+=head2 Subscription SQL tables changed!
+
+Refer to: 
+
+ dada/extras/SQL/dada_subscribers.mysql
+
+for MySQL, and: 
+
+ dada/extras/SQL/dada_subscribers.sql
+
+for Postgres users. If you are running 2.9 and above, you may want to make  your archive tables look like this. 
+
+=head1 2.10
+
+=head2 Discussion List Suggestion - Important:
+
+Since discussion list archives send/receiving/archive HTML messages, it's really incredibly suggested (bolded, underline) to check: 
+
+B<Disable Embedded JavaScript in Archived Messages>
+
+in Manage Archives - Archive Options - Advanced
+ 
+ =head2 CSS file changes!
+ 
+ The default_css.css file has been basically rewritten. If you are currently relying heavily on changes to this file, please review the new version before upgrading. 
+
+=head2 %STYLE Config.pm button styles removed!
+
+As documented, the (deprecated) %STYLE variables have been removed. 
+
+=head2 Many new features SQL-centric!
+
+The following features require the Subscriber Postgres/MySQL backend: 
+
+=over
+
+=item * Global List Sending
+
+=item * Global Black List
+
+=item * Global Unsubscribe
+
+=back
+
+The following features require the Archive Postgres/MySQL backend:
+
+=over
+
+=item * Embedded images in web-based archives
+
+=item * Downloadable archives in web-based archives
+
+=item * "View Original Message Source" in admin screen archive messages
+
+=back
+
+It's also suggested that if you use the dada_bridge.pl plugin, to use the SQL backend.
+
+=head1 2.9
+
+=head2 MySQL/Postgres Archive Table Changes! 
+
+The table schema for the archive table in Dada Mail has changed! 
+
+Consult:
+
+ dada/extras/SQL/dada_archives.sql 
+
+for the new schema and update your tables accordingly. 
+
+If you're using the B<Default> DB_File backend for archving, you 
+don't have to do anything special; 
+
+=head2 dada_send.pl has been removed from the distribution
+
+There is NO version of dada_send.pl for Dada Mail 2.9. For an alternative, try the dada_bridge.pl plugin, which provides almost complete overlap of features. 
+
+=head2 Program Usage Log - set by default!
+
+The Program Usage Log, set under, $PROGRAM_USAGE_LOG, has been set to: 
+
+ $PROGRAM_USAGE_LOG ||= $LOGS . '/dada_usage.txt';
+
+by default. 
+
+=head2 setup_list subroutine removed!
+
+If you have outside programs that use this subroutine, you will need to change your program from using this subroutine (example)
+
+ use DADA::App::Guts
+ setup_list({list => $list, 
+             foo  => 'bar', 
+             }); 
+
+to: 
+
+ use DADA::MailingList::Settings; 
+ my $ls = DADA::MailingList::Settings->new(-list => $list); 
+ $ls->save({foo => 'bar'}); 
+						   
+
+to the following method - this is an example from 
+
+=head2 DADA::App::Guts::open_database subroutine removed!
+
+Here's the old style: 
+
+ my %list_info =  open_database(-List => $list); 
+
+Here's the new way of doing things: 
+
+ use DADA::MailingList::Settings
+ my $ls = DADA::MailingList::Settings->new(-List => $list); 
+ my $li = $ls->get; 
+ my %list_info = %$li; 
+
+=head2 check_list_security subroutine changed!
+
+Old Way: 
+
+ my $root_login = check_list_security(-Admin_List      => $admin_list, 
+                                      -Admin_Password  => $admin_password, 
+                                      -IP_Address      => $ENV{REMOTE_ADDR},
+                                      -Function        => 'send_email');
+
+New Way:
+
+
+ my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,  
+                                                     -Function => 'send_email');
+
+=head2 %STYLE Config.pm button styles deprecated!
+
+Consult the default_css.css file in dada/DADA/Template/templates for ALL style information. 
+
+As a guide, here's how the old inline styles relate to the new style classes: 
+
+$STYLE{default_submit} -> input.plain
+
+$STYLE{green_submit} -> input.processing
+
+$STYLE{red_submit} -> input.cautionary
+
+$STYLE{yellow_submit} -> input.alertive
+
+=head2 List Templates default to... Default List Template
+
+There is a new option in the "Manage Appearance - Edit Template" admin screen. The option allows you to " Use the default list template." This may be set as your default for lists that are already created. If you have a list that seems to have suddenly lost its customized template, make sure this option is changed to something like, "  Use This Information For The Template: ".  
+
+=head2 Redirect Links - Path Info'd
+
+Like many of the links that are exposed to email messages, redirect links are now in a path info form, instead of in a query string. Redirect links seemed to be partly broken - most likely because of server upgrade/changes, and 2.9 should help in fixing. this. 
+
+=head2 MIME-Tools - bundled with Dada Mail!
+
+MIME-Tools, the collection of Perl Modules needed by dada_bounce_handler.pl and  the Dada Bridge Plugin are now included with Dada Mail and DO NOT need to be installed separately. 
+
+
+=head2 MIME::Base64 MIME::QuotedPrint - not in distro - may need to install manually
+
+=over
+
+=item * 5/11/05 
+
+
+Although this never came up in testing, the MIME::Base64 and MIME::QuotedPrint modules both are required for Dada Mail and may not be installed on your site-wide Perl libraries. You'll need to install them separately. They live at: 
+
+http://search.cpan.org/~gaas/MIME-Base64-3.05/
+
+B<The Problem> is that there doesn't seem to be a Pure Perl version of MIME::Base64 in the same namespace, it's been moved to: MIME::Base64::PurePerl and there's no hooks in MIME::Base64 to use it, instead of the XS version, like there is in something like, Data::Dumper, or Digest::MD5. So, that's weird. 
+
+I'm going to contact the author about this. 
+
+So, if you find that you need MIME::Base64 and MIME::QuotedPrint, and you can't install Perl modules that need compilation, you can grab the last versions of both modules that had a Pure Perl version to them here: 
+
+http://search.cpan.org/src/GAAS/MIME-Base64-2.23/Base64.pm
+
+And Here: 
+
+http://search.cpan.org/src/GAAS/MIME-Base64-2.23/QuotedPrint.pm
+
+You'll want to name these files, B<Base64.pm> and B<QuotedPrint.pm> respectively and upload them to your: B<DADA/perllib/MIME directory>. 
+
+B<Note:> I haven't done much testing using the 2.23 version of these modules, so YMMV. I tried sending a message with an attachment - attachments are encoded in base64 and it worked just fine; 
+
+I'll try to get a better fix for this soon, 
+
+-JS
+
+=back
+
+=head2 Removed: Plaintext version is created from HTML
+
+Removed the "HTML_and_text" - Plaintext version is created from HTML in the "Send a List Message" basic screen. This is done automatically for you.
+
+=head2 Removed: Resend Archived Message
+
+=head2 Removed: Edit Archived Message
+
+If you need to do any editing, do so *before* upgrading to this beta. Edit is going to be hard to implement, because a MIME editor is non trivial - like, how exactly do you edit a MIME message created by the "Send a Webpage" screen? Answer: You don't. :)
+
+=head2 Removed "attached images are part of the HTML message"
+
+Did this ever work correctly? 
+
+=head2 Many default email templates changed!
+
+If you're upgrading Dada Mail from an older version, and If you haven't made many changes to the default email templates - the text that you can edit in B<Manage Copy - Email Messages>, it's best to reload the email templates. 
+
+This is done by navigating to: B<Manage Copy - Email Messages>, select all the text from each of the textboxes and deleting the content. When you're finished, you can click, "Save all changes". The messages should respawn themselves. 
+
+If you've made many changes to these email messages, consult the Config.pm file to view the default email templates and apply the changes that you like manually. 
+
+Here's one issue that you'll want to B<MAKE SURE> to change: 
+
+In the email subscription/unsubscription messages, you'll use a tag like this: 
+
+ [list_subscription_link]
+
+and 
+
+ [list_unsubscription_link]
+
+
+In this context:
+
+ To confirm this subscription, please follow the below URL:
+ 
+ <[list_unsubscribe_link]>
+ 
+ (Click the URL above or, copy and paste the URL into your browser)
+
+And: 
+
+ To confirm this unsubscription, please follow the below URL:
+ 
+ <[list_unsubscribe_link]> 
+ 
+ (Click the URL above or, copy and paste the URL into your browser)
+
+You will B<NEED> to change these links to: 
+
+ [list_confirm_subscribe_link]
+
+And: 
+
+ [list_confirm_unsubscribe_link]
+
+Respectively, or your subscription process will not work. 
+
+As stated above, if you're comfortable to start with the default email messages, the easiest thing to do is to delete all the content in the Manage Copy -> Email Messages screen and click, "Save all changes". 
+
+
+=head2 Magicbook Changes
+
+Plugins/Extensions that come with Dada Mail have been updated to work with Dada Mail, 2.9, with the exception of the B<dada_digest.pl> script, which currently doesn't work with 2.9. It will return once it has been properly updated. 
+
+Note also the text, while still relevant, hasn't been updated specifically for 2.9 either. 
+
+=head1 * 2.8.10
+
+B<The program name has (obviously) changed. See the separate, "Upgrading Dada Mail from Mojo Mail 2.8.9 and below" doc.> 
+
+The Dada Usage Log format has changed! 
+
+All logged lines will have the Remote IP Address of the client provoking the script (if there is one). The format is: 
+
+time[tab]remote ip address[tab]list[tab]action[tab]details
+
+The B<$DEFAULT_LIST> variable has been removed from Dada Mail. If you want to send a default template,  use the B<$USER_TEMPLATE> variable.
+
+
+
+=head1 * 2.8.9
+
+The Config variable, $PLAIN_TEXT_ENCODING has been removed. The same functionality is now done on a list-per-list basis. You can use the %LIST_SETUP_DEFAULTS key, B<plaintext_encoding> to do the same thing, as well as use B<html_encoding> for HTML messages. These can be tweaked in the B<Sending Options - Advanced> control panel screen. 
+
+
+=head1 * 2.8.2
+
+mojo_send.pl has been put back into the distro, for better or worse. 
+
+I've included CGI.pm, version 2.91 into the distro, since different versions of CGI.pm seem to all have their own unique ways of breaking things, and I'd like to know exactly which funky errors to expect. 
+
+
+=head1 * 2.8
+
+The mojo_send.pl script has been taken out of the distribution because of manjor bugs 
+and security problems. as such, group lists will not be supported in this version. 
+
+It's still uncertain whether group mailing lists will be supported in the future. 
+
+=head1 * 2.7.1 
+
+CipherSaber encryption has been put onto both POP3 passwords stored in Dada Mail's List settings files and for cookie information. You may recieve an error about dividing by zero in the Cipher key. If this happens, go to: 
+
+http://changetoyoursite.com/cgi-bin/mojo/mojo.cgi?reset_cipher_keys
+
+and follow the directions. You also will have to reset your pop3 password manually. 
+
+The Mojofied FormMail has slightly different instructions, best to read the documentation!
+
+=head1 * 2.7
+
+The MySQL and PostgreSQL implementations have been changed! Please take note as 
+previous SQL tables will NOT work until you alter them. 
+
+=head1 * 2.6.4
+
+The outside config file scheme has been changed!
+
+Please refer to the Config.pm docs to see how to use the outside configuration file
+
+=cut

@@ -1,0 +1,8 @@
+From: =?UTF-8?B?Q3JhenkhIMKh4oSiwqPCouKInsKnwrbigKLCqsK6?= <listowner@example.com>
+To: =?UTF-8?B?Q3JhenkhIMKh4oSiwqPCouKInsKnwrbigKLCqsK6?= <listemail@example.com>
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Apple Message framework v929.2)
+Subject: =?UTF-8?B?Q3JhenkhIMKh4oSiwqPCouKInsKnwrbigKLCqsK6?=
+
+Test.

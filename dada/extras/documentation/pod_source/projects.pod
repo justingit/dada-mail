@@ -1,0 +1,201 @@
+=pod
+
+=head1 The Dada Mail Project
+
+Below are a list of projects we'd like to work on for Dada Mail. Dada Mail development is commissioned generally by users, like you. 
+
+=head2 Multiple Fields: Subscriber-Editable Fields
+
+Currently, Dada Mail supports adding/editing/deleting of arbitrary subscriber fields. 
+
+It also supports the list owner logging into the list control panel and editing the subscriber information, on a per-subscriber basis. 
+
+Dada Mail currently does B<not> support the actual subscriber to edit it's own subscriber information and we'd like to add that feature into Dada Mail.
+
+This would also mean we'd have to overhaul the session management part of Dada Mail to not only support admin sessions for the list owner, but to also support sessions for individual users. 
+
+Once completed, individual subscribers will be able to edit their own subscription information, add/edit/remove themselves from mailing lists their subscribed from and view other meta information about their current subscriptions. 
+
+We'd also like to have more advanced web-based features available for subscribers, once logged into Dada Mail, including the option to posting and replying to discussion list messages from within your web browser, having the archive accessible to subscribers only. 
+
+=head2 Multiple Fields: Meta Information
+
+Currently, multiple fields only allow you to set a name and fallback value, per field. 
+
+We'd like to extend these features to include various meta-data about the field itself. For example, we'd like the option to allow you to set if a field is optional or required and what sort of HTML form field should be presented to the would-be subscriber, when they fill out the form itself. 
+
+=head2 Sending Mailing List Messages: Preview
+
+There's currently no way to preview a mailing list message, before you send it. 
+
+We'd like to add one that works really well and is incredibly easy to use. 
+
+We'd like this previewer to allow you work well with the subscriber fields and the advanced Dada Mail templating language, so you can see exactly and instantaneously what your advanced if/unless/loop blocks do to the customized message you're creating. 
+
+=head2 Dada Bridge: Rules
+
+Currently, Dada Bridge isn't completely flexible on letting you specify arbitrary and complex rules when it comes to the email messages it handles. 
+
+We'd like to add in Mail Rules, similiar to Apple's Mail.app application, where you can have Dada Bridge look for specific criteria in messages it receives (who, specifically it's from, specific text it may have, if the message contains attachments) and, depending on the criteria met, have Dada Bridge to something specific to the message (broadcast to the list, reject, flag it for moderation, strip out attachments, forward to another address, etc) 
+
+
+=head2 Dada Bridge: Moderation Enhancements 
+
+Currently, the moderation system is slightly less than rough. It works, but is a little kludgey. We'd like to make it much more easy to use, extendable and convenient. 
+
+Currently, The options for moderation look something like this: 
+
+[ ] Use Moderation
+Messages sent to your discussion list will have to be approved by the List Owner.
+	
+    [ ] Send a Rejection Message
+     The original poster will receive a message stating that the 
+     message was rejected. 
+
+Fairly spartan. 
+
+We'd like to  extend the functionality to include: 
+
+
+    [ ] Use Moderation
+        Messages sent to your discussion list will have to be approved.
+        Send moderation accept/reject messages to: 
+ 
+        [ ] the list owner (recommended)
+        [ ] A separate Moderation list ( View/Add )
+        [ ] A random pool of subscribers
+            Randomly pick [-- 5 --] Subscribers
+            to moderate.
+    
+    [ ] Moderate messages sent by non-subscribers
+    
+    [ ] Allow moderator list to send messages to the entire list
+
+        [ ] Send messages sent by a moderator to all moderators
+
+    [ ] Send a Message Received Confirmation Message
+        The original poster will receive a message stating that the message
+        has  been received, but need moderating. 
+    
+    [ ] Send an Acceptance Message
+        The original poster will receive a message stating that the message 
+        was accepted
+
+    [ ] Send a Rejection Message
+        The original poster will receive a message stating that the message 
+        was rejected. 
+
+All these features should take off much of the burden of moderating from the list owner and spread it to specific moderators, as well as being able to opt for a self-moderating list.
+
+=head2 Dada Bridge: Digest Support and Digest Sublist
+
+Dada Bridge is really missing digest support. Digests should be able to be automatically created and sent to a "digest" sublist. This sublist should also be able to I<reply> to the sublist, and join in on the discussion. Currently, this doesn't happen. 
+
+
+=head2 Mass Mailing Enhancements
+
+=head3 Auto-Ajusting Batch Settings
+
+Currently, Dada Mail's batch settings work by sending the specified amount of messages, and then waiting the specified amount of time. It can then only be estimated how long a mailing could take. 
+
+This leads to a lot of confustion as people find that sending one message could take a few seconds, and their mailing time is much longer than expected. 
+
+It seems like a small feature, but it would be wonderful to be able to tell Dada, "Hey, if we're not sending up to the allowable limit, let's skip the next, "x" rest periods, until we're back on track. 
+
+It would also be nice to bring back batch notifications via email in some way/shape or form. 
+
+
+=head2 Bundle FCKeditor within Dada Mail
+
+It may be possible to somehow bundle FCKeditor within Dada Mail, for a installation-free support. FCKeditor will, "just be available" 
+
+=head2 Smart Groups/Save Partial Sending Options
+
+Being able to save a set of your subscribers, based on a saved query of your subscriber fields would be incredibly helpful to help keep track of various activities of your mailing list. 
+
+Smart Groups can be created/edited/delete and Smart Groups can be used to view a specific part of your mailing list. 
+
+=head2 SOAP Server/Client API
+
+Currently, it's not very easy to work with a Dada Mail mailing list from an outside application. A SOAP API will allow a platform and language neutral way to access part of the Dada Mail API. 
+
+Some major subsets of the Dada MAil API that could be useful in the SOAP API include administration duties, such as Sending a List Message, adding subscribers en-mass, import/exporting a subscription list and handling archived messages. 
+
+The SOAP API could also be useful to add features of Dada Mail into your own application that deal with individual users, such as validating a subscription and subscribing/unsubscribing a subscriber. 
+
+We're hoping to work on the server-side part of this, with a fully documented API and hopefully, a very simple client example. 
+
+=head2 Envelope Sending 
+
+Envelope sending allows you to send one message to a specific domain that will go to more than one user of that domain. 
+
+This allows you to send out a mailing list message to your entire subscriber list *very fast*, since you could, in theory, only have to send a tenth of the messages you currently do now. This would cut down your sending time also by a tenth of what it would currently take. 
+
+The downside of envelope sending is that you would lose absolutely all your mail merging capabilities and each message would have to be generic. This comprimise may be worth it, if raw speed is important to you. If you have a discussion list, the mail merging capabilities may just be a moot feature anyways. 
+
+=head2 Click through Tracking Enhancements 
+
+The Click through Tracker plugin currently tracks the following: 
+
+=over
+
+=item * How many times certain urls are clicked on in your list messages
+
+=item *  How many times a message is opened
+
+=item *  How many subscribers are present every time a message is sent
+
+=item *  "Hard" email Bounces
+
+=back
+
+We'd like to extend the tracking to include Subscriptions and Unsubscriptions. 
+
+We would also like to have the addition of graphing features in Dada Mail, so you can graph the data that's saved in the clickthrough tracker logs in practically any way you'd like. 
+
+=head2 Dada Mail Installer
+
+Currently, there is no installer for Dada Mail - you have to, albeit minimally, edit Dada Mail's source file's manually to get Dada Mail installed. 
+
+Installation should be as easy as uploaded the files to your hosting account, changing the permissions of one or two files and visiting a script in your web-browser that will then go through the steps needed to complete the installation process in a wizard-style, step oriented way, much like applications, like Joomla, Wordpress or Moveable Type. 
+
+The installer should be able to configure Dada Mail using any of the backends, including any of the SQL backends, as well as some of the plugins and extensions that are included in Dada Mail, but currently have to be installed separately of Dada Mail itself. 
+
+=head2 Make Templates Easier to Work With
+
+Most all HTML in Dada Mail is separate from the actual Perl code, but it's still not as accessible as it could be. 
+
+We'd like to have the template files completely separate from the Perl program part of Dada Mail to allow easier editing and theming. Instead of the template files almost hidden far in the program itself, they should simply be in a directory you upload into your public_html directory on your hosting account. 
+
+This would also allow a much richer application experience, as currently, images cannot be used in Dada Mail in a big way for layout and design. 
+
+We'd also like to make a web-based editor for these templates. 
+
+Finally, we'd also like to make all Email Message templates exist outside of the Dada Mail program code an as easy to edit as the HTML screens. 
+
+
+=head2 Under the Hood: Move Dada Mail to a mature Web Framework
+
+Dada Mail does not use an underlying web framework. This is fine on its own, but it does mean that development focuses on features specifically to Dada Mail, as well as common features that most complex web applications have to create. This includes session management, security issues, database interfaces, plugin schemes, AJAX-stuff, form and data validation and a whole bunch of other things that users of a program may never see on the surface of a program, but can make a big difference in making sure an application, like Dada Mail, is easy to add features to and keep bug-free. 
+
+The web application framework I suggest using is CGI::Application:
+
+http://cgi-app.org/
+
+=head2 Under the Hood: SQL backend for Mailing Monitor 
+
+The Mailing Monitor keeps track of your Mass Mailings. It's fairly complex and it's backend is created simply using the filesytem - it's a bunch of files and directories. 
+
+In the name of performance and stability, we'd love to port this to an SQL backend. No new features would initially be added, but the added stability of the SQL backend should help things, such as corrupted mass mailings, given that we have very interesting tools, such as table/row locking and transaction support in the various SQL backends. 
+
+=head2 Under the Hood: Make Dada Mail mod_perl compatible
+
+mod_perl runs a web application, like Dada Mail in a completely persistent environment, which can dramatically increase performance of the web application in a busy server environment. 
+
+=head2 Under the Hood: Making Dada Mail Completely Unicode Compatible
+
+Making a program completely unicode compatible is hard. But, we'd like to do that. 
+
+100% Unicode support would help Dada Mail achieve fantastic language support. 
+
+=cut

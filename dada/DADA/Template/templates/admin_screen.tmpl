@@ -1,0 +1,109 @@
+<!-- begin admin_screen.tmpl -->
+
+
+ <h1>
+  Enter Your List Control Panel
+ </h1>
+ 
+<!-- tmpl_if logged_in_list_name --> 
+
+    <div class="login_message">
+     
+     <p>
+      <em> 
+      Currently logged into: 
+     </em> 
+     </p> 
+     
+     <ul>
+      <li> 
+      <a href="<!-- tmpl_var DEFAULT_ADMIN_SCREEN -->">
+       <!-- tmpl_var logged_in_list_name -->
+      </a>
+     </li> 
+     </ul> 
+     
+      
+      <p>
+       [<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=logout">Logout</a>] 
+      </p>
+      
+     </div> 
+     <div class="floatclear"></div>
+
+
+<!--tmpl_else--> 
+
+    <!-- tmpl_if expr="login_widget eq 'text_box'" -->
+        <!-- tmpl_include name="text_box_login_form.tmpl" -->
+    <!-- tmpl_else -->
+        <!-- tmpl_include name="list_popup_login_form.tmpl" -->
+    <!-- /tmpl_if -->
+    
+    <p>
+     Please be sure 
+     <strong>
+      cookies and JavaScript 
+     </strong>
+     are enabled in your browser.
+    </p>
+    
+    <hr />
+
+<!--/tmpl_if--> 
+
+
+<!-- tmpl_unless no_show_create_new_list --> 
+    
+    
+    
+    <h1>
+     Create a New Mailing List
+    </h1>
+    
+    <!-- tmpl_if expr="list_max_reached == 1" -->
+        
+        <p class="error">
+         You have reached the maximum number of lists that can be created.
+        </p>
+        
+    <!-- tmpl_else -->
+        
+        <p>
+         You will need to know the <!-- tmpl_var name="PROGRAM_NAME" -->
+         Root Password to create a new list.
+        </p>
+        
+        <form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
+         <input type="hidden" name="f" value="new_list" />
+         <table align="center">
+          <tr>
+           <td colspan="2">
+            <p>
+             Type in your 
+              <label for="root_password">
+               <!-- tmpl_var name="PROGRAM_NAME" --> Root Password</label>:
+            </p>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <input type="password" name="root_password" id="root_password" maxlength="24" />
+           </td>
+           <td>
+            <input type="submit" class="plain" value="Create a New List..." />
+           </td>
+          </tr>
+         </table>
+         
+         <!-- tmpl_if DISABLE_OUTSIDE_LOGINS --> 
+             <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" /> 
+         <!--/tmpl_if--> 
+    
+        </form>
+        
+    <!-- /tmpl_if -->
+
+
+<!--/tmpl_unless--> 
+<!-- end admin_screen.tmpl -->

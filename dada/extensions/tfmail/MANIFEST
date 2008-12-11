@@ -1,0 +1,17 @@
+tfmail/TFmail.pl
+tfmail/TFmail_config.pl
+tfmail/GBview.pl
+tfmail/NMStreq.pm
+tfmail/NMSCharset.pm
+tfmail/MIME_Lite.pm
+tfmail/default.trc
+tfmail/gb.trc
+tfmail/email.trt
+tfmail/spage.trt
+tfmail/missing.trt
+tfmail/MANIFEST
+tfmail/README
+tfmail/EXAMPLES
+tfmail/FAQ
+tfmail/ChangeLog
+tfmail/README.dnsbl

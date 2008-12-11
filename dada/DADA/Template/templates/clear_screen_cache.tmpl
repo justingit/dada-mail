@@ -1,0 +1,116 @@
+<!-- begin clear_screen_cache.tmpl --> 
+
+	<p>Screen Caching is currently <strong>
+<!-- tmpl_if cache_active --> 
+
+	enabled.
+	
+<!-- tmpl_else --> 
+
+	disabled.
+
+<!-- /tmpl_if -->
+</strong>
+
+
+<!-- tmpl_if file_list --> 
+	
+	 <div class="buttonfloat">
+	
+	
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST"> 
+		<input type="hidden" name="f" value="clear_screen_cache" /> 
+		<input type="hidden" name="process" value="flush" />
+		<input type="hidden" name="root_password" value="<!-- tmpl_var root_password -->" />
+	
+		 <input type="submit" class="alertive" value="Remove All Cached Screens" />
+	</form> 
+	
+	 </div>
+	 <div class="floatclear"></div>
+		 
+		 
+	<div style="max-height: 300px; overflow: auto; border:1px solid black">
+	
+	<table style="width:100%" cellpadding="2" cellspacing="0" border="0"> 
+	
+	
+	<tr> 
+	  <td></td> 
+	  
+	  <td>Filename</td> 
+	  <td>Size (kb)</td> 
+	 
+	  <td></td> 
+	
+	 </tr> 
+	
+	
+	
+	
+	
+	<!-- tmpl_loop file_list --> 
+	
+		   <tr<!-- tmpl_if name="__odd__" --> style="background-color:#ccf;"<!--/tmpl_if-->>
+	  <td>
+	  
+	  
+	  <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST"> 
+		<input type="hidden" name="f" value="clear_screen_cache" /> 
+		<input type="hidden" name="process" value="remove" />
+		 <input type="hidden" name="root_password" value="<!-- tmpl_var root_password -->" />
+	
+		<input type="hidden" name="filename" value="<!-- tmpl_var name -->" --> 
+		
+		<input type="submit" class="alertive" value="[x]">
+	   </form> 
+	   
+	  </td> 
+	   
+	  
+	  <td><span title="<!-- tmpl_var name -->"><!-- tmpl_var cutoff_name --><!-- tmpl_var dotdot --></span></td> 
+	  <td><!-- tmpl_var size --></td> 
+	 
+	  <td>
+	   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST" target="preview"> 
+		<input type="hidden" name="f" value="clear_screen_cache" /> 
+		<input type="hidden" name="process" value="view" />
+		 <input type="hidden" name="root_password" value="<!-- tmpl_var root_password -->" />
+	
+		<input type="hidden" name="filename" value="<!-- tmpl_var name -->" --> 
+		
+		<input type="submit" class="cautionary" value="View...">
+	   </form> 
+	   
+	  </td> 
+	   
+	 </tr> 
+	
+	<!--/tmpl_loop-->
+	
+	
+	
+	
+	</table> 
+	</div> 
+	
+	
+	<p> 
+	 <strong>
+	  Cached Screen Preview:
+	 </strong> 
+	</p>
+	
+	<iframe height="500" name="preview" width="100%"></iframe>
+	
+<!-- tmpl_else --> 
+
+	<p>
+	 <em> 
+	  There are currently no cached screens.
+	 </em> 
+	</p>
+
+<!--/tmpl_if-->
+
+<!-- end clear_screen_cache.tmpl --> 

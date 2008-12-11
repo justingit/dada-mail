@@ -1,0 +1,522 @@
+=head1 Dada Mail Specific File Formats
+
+The File Formats for much of Dada Mail's list settings, archives, etc are very basic. Having other programs read the information and use it should be relatively easy. 
+
+=head1 List Subscribers
+
+Currently, Dada Mail is shipped with support for three different types of backends for the subscription list. They are: 
+
+=head2 PlainText
+
+The default backend is, B<PlainText>. Each list has one file, named, I<listshortname.list>, where I<listshortname> is the list's short name. This file is saved wherever the I<$FILES> Config.pm variable is set to. This file is where the subscribers to your mailing list are saved. 
+
+
+The internal file format is simply one email address per line, with a newline (in Perl, "\n") separated each line. The end of the file has an extra newline. 
+
+For example: 
+
+ one@example.com
+ two@example.com
+ three@example.com
+  
+
+There are currently two other subscription lists that are associated with a Mailing List. They are the, B<black list> and B<invitation list>. 
+
+The blacklist is saved in a file with the same file format, except it has a, B<black_list> file ending, example: B<listshortname.black_list>. 
+
+The Invitation list has the same file format as the regular subscription list, except that it has a, B<invitelist> file ending, example: <listshortname.invitelist>
+
+
+=head2 Postgres
+
+Dada Mail also supports a Postgres based subscription list backend. 
+
+The specific table schema is described in the I<dada/extras/SQL/dada_subscribers.sql> file in the Dada Mail distribution. 
+
+=over
+
+=item * email_id
+
+is an auto-generated ID number
+
+=item * email
+
+Holds the actual email address
+
+=item * list 
+
+Holds the listshortname the email address is subscribed to
+
+=item * list_type
+
+Holds either, I<list>, I<black_list> or <invitelist> (see the PlainText docs above)
+
+=item * list_status     
+
+Almost always is set to, B<1>. Setting it to something else won't have an affect you may intend. 
+
+=back
+
+=head2 MySQL
+
+Dada Mail also supports a MySQL based subscription list backend. 
+
+The specific table schema is described in the I<ada/extras/SQL/dada_subscribers.mysql> file in the Dada Mail distribution. 
+
+The fields in the schema play the same role as what's described for Postgres, although their structure is slightly different, given the differences of the two SQL products.
+
+
+=head2 See Also: 
+
+=over
+
+=item * DADA::MailingList::Subscribers
+
+L<http://dadamailproject.com/support/documentation/MailingList_Subscribers.pm.html>
+
+=item * DADA::MailingList::Subscribers::PlainText
+
+L<http://dadamailproject.com/support/documentation/MailingList_Subscribers_PlainText.pm.html>
+
+=item * DADA::MailingList::Subscribers::baseSQL
+
+L<http://dadamailproject.com/support/documentation/MailingList_Subscribers_baseSQL.pm.html>
+
+=item * DADA::MailingList::Subscribers::MySQL
+
+L<http://dadamailproject.com/support/documentation/MailingList_Subscribers_MySQL.pm.html>
+
+
+=item * DADA::MailingList::Subscribers::PostgreSQL
+
+L<http://dadamailproject.com/support/documentation/MailingList_Subscribers_PostgreSQL.pm.html>
+
+=back
+
+
+=head1 List Settings
+
+Currently, Dada Mail is shipped with support for three different types of backends for the List Settings. They are: 
+
+=head2 DBM File
+
+The default backend is, B<Db>. 
+
+Dada Mail can support any DBM File format that's support by the CPAN Perl Module, B<AnyDBM_File>. By default, the following types are support by default: 
+
+=over
+
+=item * DB_File
+
+=item * GDBM_File
+
+=item * NDBM_File
+
+=item * ODBM_File
+
+=back
+
+SDBM_File could also be used, but it's own file format limits the amount of information that can be stored per key value and Dada Mail's archived messages are known to go over this, fairly easily. The DBM file type is picked automatically, first trying DB_File, all the way to ODBM_File. You can set this precedence yourself in the Config.pm variable, B<@AnyDBM_File>
+
+More information:
+
+http://dadamailproject.com/support/documentation/Config.pm.html#_anydbm_file
+
+Each list has one file, named, I<mj-listshortname>, where listshortname is the list's short name. This file is saved wherever the I<$FILES> Config.pm variable is set to.
+
+The internal format of list settings is basically: Each key holds a the B<settings name>, the value is the value of the setting itself. 
+
+
+The default key/values are saved in the Config.pm variable, %B<LIST_SETUP_DEFAULTS>. Programically, only the keys that are listed in that hash can be saved in the list settings. 
+
+List Setting values are currently extremely free form. Most of them are simple strings, but some may be either encoded Perl complex data structures, different fields separated by a specific delimeter, or something quite different all together. For the most part, they are simple strings. 
+
+
+=head2 Postgres
+
+Dada Mail also supports a Postgres based list settings backend. 
+
+The specific table schema is described in the I<dada/extras/SQL/dada_settings.sql> file in the Dada Mail distribution. 
+
+
+=over
+
+=item * list
+
+The list shortname associated with the list setting.
+
+=item * setting
+
+The Name of the list setting
+
+=item * value the value of the list setting
+
+=back
+
+
+=head2 MySQL
+
+Dada Mail also supports a MySQL based list settings backend. 
+
+The specific table schema is described in the I<ada/extras/SQL/dada_settings.mysql> file in the Dada Mail distribution. 
+
+The fields in the schema play the same role as what's described for Postgres, although their structure is slightly different, given the differences of the two SQL products.
+
+See Also: 
+
+=over
+
+=item * DADA::MailingList::Settings
+
+L<http://dadamailproject.com/support/documentation/MailingList_Settings.pm.html>
+
+=item * DADA::MailingList::Settings::Db
+
+L<http://dadamailproject.com/support/documentation/MailingList_Settings_Db.pm.html>
+
+=item * DADA::MailingList::Settings::baseSQL
+
+L<http://dadamailproject.com/support/documentation/MailingList_Settings_baseSQL.pm.html>
+
+=item * DADA::MailingList::Settings::MySQL
+
+L<http://dadamailproject.com/support/documentation/MailingList_Settings_MySQL.pm.html>
+
+=back
+
+=head1 Message Archives
+
+Currently, Dada Mail is shipped with support for three different types of backends for the message archives. They are: 
+
+=head2 DBM File
+
+The default backend is, B<Db>. 
+
+Dada Mail can support any DBM File format that's support by the CPAN Perl Module, B<AnyDBM_File>. By default, the following types are support by default: 
+
+=over
+
+=item * DB_File
+
+=item * GDBM_File
+
+=item * NDBM_File
+
+=item * ODBM_File
+
+=back
+
+SDBM_File could also be used, but it's own file format limits the amount of information that can be stored per key value and Dada Mail's archived messages are known to go over this, fairly easily. The DBM file type is picked automatically, first trying DB_File, all the way to ODBM_File. You can set this precedence yourself in the Config.pm variable, B<@AnyDBM_File>
+
+More information:
+
+http://dadamailproject.com/support/documentation/Config.pm.html#_anydbm_file
+
+Each list has one file, named, I<mj-listshortname-archive>, where listshortname is the list's short name. This file is saved wherever the I<$ARCHIVES> Config.pm variable is set to. If the B<$ARCHIVES> variable isn't explicitly set, the value of the B<$FILES> variable is used. 
+
+The internal format of archived messages is basically: Each key holds a simplified message-id for the email message information saved in the value. 
+
+The message id itself is based on the date the message is sent, and the time and date of when it was sent it taken from the key. More information on how this key is created can be found in the I<message_id()> subroutine in DADA::App::Guts: 
+
+http://dadamailproject.com/support/documentation/App_Guts.pm.html#message_id
+
+The value saved is a string, with delimeters to separate the different types of information saved. 
+
+Because the age of this format and the various revisions, the format is quite dirty (for lack of a better word) and shouldn't be used as an example of the pinnacle of using the DBM File format for saving of complex information. 
+
+Anyways...
+
+By default, the delimiter is the string, B<[::]>.
+
+The information that's currently saved, in order of how it is seen in the string is: 
+
+=over
+
+=item * Subject
+
+The message Subject
+
+=item * Message
+
+The actual email message.
+
+B<Note!> That only the main message I<body> is saved in the DBM backend. This backend is not at all MIME-aware, having been made long before Dada Mail become completely MIME aware itself. Look below for more limitations of this format. 
+
+=item * The Format of the email message
+
+Basically states if the email message is a PlainText message, or an HTML  message. This field is fairly free form, being able to accept a Content-Type-like header (text/plain, text/html) or just something like, "Text", or, "HTML". 
+
+=back
+
+An example of the value of a key in the of an archived message DBM would look like this: 
+
+ My Subject![::]The actual text of the message![::]text/plain
+
+Where, B<My Subject!> is the Subject of the message, B<The actual text of the message!> is the actual text of the message and, B<text/plain> is the format of the message. 
+
+There are many limitations and known issues of this backend: 
+
+=over
+
+=item * [::] delimiter
+
+The format of the archived message will most likely break in some ways if either the Subject, Message Body or the Format contains the, B<[::]> delimter. Currently, it doesn't look like there's any escaping of this character from any of the fields before saving. 
+
+=item * MIME messages simplified
+
+This particular backend type does not support saving of MIME messages for a few reasons. The headers of an email message are stripped and only a simplified form of the format of the body of the email message is saved (And this is only text or HTML). We haven't had good results in dumping the entire MIME message as the, "Body" field of this backend. For unknown reasons, this seems to cause the backend to be unstable. A workaround to that particular problem may be just to binary encode the message, before saving, but you'd also have to deal with backwards compatibility of older messages archived. 
+
+=item * Message size
+
+Some of the DBM backends only support a specific # of bytes per key value. This is most notable in the SDBM file type, which is now not currently supported by Dada Mail. 
+
+=item * key 
+
+Keys are created using a simple format based on the date of the message sending. Date information isn't encoded in the value, so this is the only place where it's kept. If two or more messages have the exact same date, only one message will be saved, the other messages will be lost. 
+
+=back
+
+
+=head2 Postgres
+
+Dada Mail also supports a Postgres based archive backend. 
+
+The specific table schema is described in the I<dada/extras/SQL/dada_archives.sql> file in the Dada Mail distribution. 
+
+
+=over
+
+=item * list
+
+The list shortname associated with the archived message.
+
+=item * archive_id                   
+
+Similar to the keys of the DBM-based backend. 
+
+=item * subject                      
+
+The Subject of the message. This field is not necessarily filled in as the, B<raw_msg> contains this information as well. Part of the table for backwards-compatibility.
+
+=item * message      
+
+A simplified version of the Message Body. Not necessarilly filled in, as the B<raw_msg> field contains this information as well. Part of the table for backwards-compatibility
+
+=item * format                        
+
+A simplified version of the Message Content-Type. Not necessarilly filled in, as the B<raw_msg> field contains this information as well. Part of the table for backwards compatibility. 
+
+=item * raw_msg                       
+
+Containts the complete email message, including the email message headers. 
+
+=back
+
+
+A main advantage of using the SQL-based backend is that it suffers from almost none of the shortcomings of the DBM-based backend, save for the message-id collision problem. 
+
+
+=head2 MySQL
+
+Dada Mail also supports a MySQL based archive backend. 
+
+The specific table schema is described in the I<ada/extras/SQL/dada_archives.mysql> file in the Dada Mail distribution. 
+
+The fields in the schema play the same role as what's described for Postgres, although their structure is slightly different, given the differences of the two SQL products.
+
+
+See Also: 
+
+=over
+
+=item * DADA::MailingList::Archives
+
+L<http://dadamailproject.com/support/documentation/MailingList_Archives.pm.html>
+
+=item * DADA::MailingList::Archives::Db
+
+L<http://dadamailproject.com/support/documentation/MailingList_Archives_Db.pm.html>
+
+=item * DADA::MailingList::Archives::baseSQL
+
+L<http://dadamailproject.com/support/documentation/MailingList_Archives_baseSQL.pm.html>
+
+=item * DADA::MailingList::Archives::MySQL
+
+L<http://dadamailproject.com/support/documentation/MailingList_Archives_MySQL.pm.html>
+
+
+=item * DADA::MailingList::Archives::PostgreSQL
+
+L<http://dadamailproject.com/support/documentation/MailingList_Archives_PostgreSQL.pm.html>
+
+=back
+
+=head1 Scheduled Mailings
+
+Currently, Dada Mail supports only one type of backend for its scheduled mailings. Scheduled Mailings itself are created using the B<Beatitude> plugin. 
+
+The file type itself is also a DBM-based file format, with multiple fields for the value. The fields are managed a bit more sophisticatedly, using the CPAN, B<MLDBM>. The value saved is a serialized Perl complex data structure, that looks a bit like this: 
+
+    my %d_form_vals = (
+            message_name           => 'scheduled mailing', 
+            active                  => 0, 
+            mailing_date            => time, 
+            repeat_times            => 1, 
+            repeat_label            => 'days',
+            repeat_mailing          => 0,
+            only_send_to_list_owner => 0,
+            archive_mailings        => 0,
+            only_send_if_diff       => 0,
+            self_destruct           => 0, 
+                    
+            PlainText_ver => {
+                               source                    => 'from_text',
+                               use_email_template        => 1,
+                               only_send_if_defined      => 0,
+                               grab_headers_from_message => 0, 
+                               checksum                  => undef, 
+                               
+                             }, 
+            HTML_ver      => { 				 
+                               source                    => 'from_text',
+                               use_email_template        => 1,
+                               only_send_if_defined      => 0,
+                               grab_headers_from_message => 0, 
+                               checksum                  => undef, 
+                                
+                             },
+            attachments   => [],
+        ); 
+
+See Also: 
+
+=over
+
+=item * Beatitude Plugin
+
+http://dadamailproject.com/support/documentation/scheduled_mailings.pl.html
+
+=item * DADA::MailingList::Schedules
+
+http:///dadamailproject.com/support/documentation/MailingList_Schedules.pm.html
+
+=item *  DADA::MailingList::Schedules::MLDb
+
+http://dadamailproject.com/support/documentation/MailingList_Schedules_MLDb.pm.html
+
+=back
+
+=head1 Backups
+
+By default, automated backups are created for the List Settings, Archives and Schedules backends.
+
+The List Settings are automatically backed up if the backend is the DBM file. 
+
+The List Archives are automatically backed up if the backend is the DBM file. 
+
+The List Schedules are automatically backed up if the backend is the DBM file. 
+
+Backups are not made for the subscription lists. 
+
+Backups are not made for any of the SQL backends.
+
+The backups are file-based and OS platform neutral.
+
+By default, these backups are stored in the directory set in the Config.pm variable, B<$BACKUPS>. If this variable isn't explicitly set, the directory set in the B<$FILES> variable is used. 
+
+The format seems complex at first, but is really quite simple:
+
+Each list has its own directory, named after the B<list's short name>. The contents of this directory will be three other directories, named, B<archives>, B<schedules> and B<settings> - named appropriately for what information they save. 
+
+Contained in any one of those directories is a list of more directories, named after the UNIX time() they were created. 
+
+In any one of these directories is a list of files. Each file is named after the name of the key and its contents are the values from that key. 
+
+You can reload/reset your list archives/schedules/settings by visiting the following URL in your web browser: 
+
+http://example.com/cgi-bin/dada/mail.cgi?f=restore_lists
+
+Where, B<http://example.com/cgi-bin/dada/mail.cgi> 
+
+Is the URL of your Dada Mail installation. 
+
+For more information, see the dada/DADA/App/GenericDBFile/Backup.pm Perl module.
+
+You can set how many copies of backups you'd like to save in the Config.pm variable, %B<BACKUP_HISTORY>
+
+http://dadamailproject.com/support/documentation/Config.pm.html#_backup_history
+
+
+=head1 Usage Logs
+
+The Dada Mail usage logs are saved wherever you've set the Config.pm variable, B<$PROGRAM_USAGE_LOG>
+
+The format is fairly free-form, but does follow some conventions, for example (Instead of newlines, tabs are used): 
+
+ [Tue Jan 16 22:07:54 2007]
+ listshortname
+ 127.0.0.1
+ Subscribed to dadatest.list
+ email1@example.com
+
+B<[Tue Jan 16 22:07:54 2007]> Apache-style date of the action
+
+B<listshortname> the list's shortname of the list being worked with
+
+B<127.0.0.1> the IP Address that the action was started by 
+
+B<Subscribed to dadatest.list> the action itself
+
+B<email1@example.com> More information about the action, in this case, the email subscribed. 
+
+For more information: 
+
+L<http://dadamailproject.com/support/documentation/Logging_Usage.pm.html>
+
+=head1 Error Logs
+
+The Dada Mail error logs are saved whereer you've set the Config.pm variable, B<$PROGRAM_ERROR_LOG>. 
+
+The format is fairly free-form, but usualy has a Apache-style date stamp, followed by the error/warning reported by the program. 
+
+=head1 Session Information
+
+Dada Mail has two methods it can use to keep state for administrative control panel sessions. 
+
+By default, it uses the CPAN CGI::Session module and supports the following CGI::Session backends: 
+
+=over
+
+=item * PlainText
+
+=item * Db (Berkeley DB File, in this case) 
+
+=item * MySQL
+
+=item * PostgreSQL
+
+=back
+
+The other method is currently known as, "Classic" and is basically the system that was in place before we moved to the CGI::Session module. 
+
+This method using no temporary session keeping file, but rather keeps all information in the web browser's cookie. Because this information includes a password (encrypted), it's not suggested that you use this method, but it's there for backwards compatibility. 
+
+=head2 See Also: 
+
+=over
+
+=item * $SESSION_DB_TYPE Config.pm variable: 
+
+L<http://dadamailproject.com/support/documentation/Config.pm.html#_session_db_type>
+
+=item * CGI::Session
+
+L<http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session.pm>
+
+=item * dada/DADA/App/Session.pm
+
+=back
+
+
+=cut

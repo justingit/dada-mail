@@ -1,0 +1,507 @@
+=pod
+
+=head1 Mailing List Sending FAQ
+
+This FAQ specifically tries to answer questions about sending a whole lotta mail, to a whole lotta people, through Dada Mail. 
+
+What's, "a whole lotta mail to a whole latta people?"  Depends on your server setup - if you're on a shared hosting setup, a lot of people could be 500. If you have a dedicated server, it could be over 25,000. Regardless, we're going to be talking about sending out messages to your entire list, instead of just simply how Dada Mail sends a single email message. 
+
+
+This FAQ goes through quite a bit of detail on how to use the batch settings and auto pickup features in Dada Mail. 
+
+We'll also go over how different, separate mailouts interact with each other and what gets sent when. 
+
+=head2 Terminology
+
+We'll be throwing a few words around that you may not be familiar with, so here's a list: 
+
+=over
+
+=item * Mass Mailing
+
+Sending a message to your mailing list. Usually, this means you're entire mailing list, or at least a part of it. 
+
+This type of mailing is a little different from the other types of mailings Dada Mail does, which include subscription and unsubscription requests,  sending archives to individucals, etc. 
+
+=item * Mailout
+
+The same thing as a Mass Mailing. These can be used interchangably.
+
+=back
+
+=head2 Summary (What to do, without the, "Why")
+
+These changes should be done in your list control panel, Under, B<Manage List - Sending List Options>
+
+=over
+
+=item * Enable Batching
+
+=item * To start: Set the batch settings like so: 
+
+=over
+
+=item * Send: 1 message(s) per batch 
+
+=item * and then wait: 8 seconds, before the next batch.
+
+=back
+
+=item * Enable: Auto-Pickup Dropped List Message Mailings 
+
+=back
+
+Thankfuly out of the box, these are the default settings of Dada Mail. 
+
+One last step: 
+
+=over
+
+=item * Click the, "Monitor Your Mailing!" button 
+
+After you've submitted a mailing list message and keep that screen open until your message has completed. 
+
+=back
+
+If you do all these steps, you will be on your way to trouble-free mailing list sending. 
+
+=head1 Sending Messages in Batches
+
+=head2 What's "Batch Sending" 
+
+Batch Sending is used primarily to slow down a mailing and space out message sending over a longer period of time. It has basically two parts to it: 
+
+=over
+
+=item * How many messages get sent out at once (how large your batch is)
+
+=item * How long to wait before mailing another batch
+
+=back
+
+During a Mass Mailing, Dada Mail will send a specific amount of messages out, wait a specific amount of time and then send another, "batch" of messages. 
+
+Batch sending does B<not> work by sending a specific amount of messages during a specific amount of time. Close to that, but not that. 
+
+Batch setting is configured in the list's control panel: Log into your list and go to: B<Manage List - Sending Options>. You should see the settings to change. Pretty simple. 
+
+If you'd like to set a default for all B<new> lists, you may in the B<Config.pm> variable, B<%LIST_SETUP_DEFAULTS>. The key/values are:
+
+=over
+
+=item * enable_bulk_batching
+
+Takes either, 1 to enable, 0 to disable
+
+=item * mass_send_amount
+
+Amount of email messages sent out per batch
+
+=item * bulk_sleep_amount
+
+The amount of time, in seconds, to wait between batches
+
+=back
+
+Pretty straight-forward. For more information on the %LIST_SETUP_DEFAULTS Config.pm variable, see: L<http://dadamailproject.com/support/documentation/Config.pm.html#_list_setup_defaults> 
+
+=head2 Should I send my mailing in batches? What are the benefits?
+
+Yes. Yes you should. 
+
+One benefit of batch sending is that you'll receive a message in your Dada Mail usage logs when a batch is completed, with some verbose information on the status of your list mailing. 
+
+It sort of looks like this (broken up into a few lines: 
+
+ [Fri Oct 13 00:44:41 2006]	listshortname	127.0.0.1	Batch Successfully Completed
+ Subject:Davka Message, Start Time: Mailing Started: 10/13/2006 00:44:11
+ process_has_stalled: 0 should_be_restarted: 0 first_access: 1160721851
+ percent_done: 0 is_batch_locked: 1 last_access: 1160721881 id: 
+ <20061013004408.77295734@example.com> total_sending_out_num: 1014 type: list   
+ total_sent_out: 4
+
+Handy. 
+
+=for html <div class="pod_history">
+
+B<Historical Note - Version 2.10.10 and below:> 
+
+In older versions of Dada Mail, batches were numbered, so the logs would say, "Batch #1 Completed", etc. This is no longer the case, since mailings may stop mid-batch. As explained, this is OK behavior now. Mailings may also re-start mid-batch. This makes numbering batching slightly useless.
+
+=for html </div> 
+
+=head2 Why would I want to throttle down the speed of a mailing by using batching? 
+
+Good question! If you think about it, why wouldn't you want to send as many messages as fast as possible?
+
+Sounds like a good idea, but consider these B<extremely> important points: 
+
+=over
+
+=item * Mail Server Restrictions?
+
+Check up with your host - 
+
+I almost B<guarantee you> that if you're on a shared hosting account - which is probably the vast majority of people who have personal sites, or small business sites, B<you have a limit imposed by the mail server on how many messages you can send out over a period of time>. Guarantee you.  
+
+For el-cheapo hosting accounts - ones that cost between $10 - $60 a month, you're probably limited to B<500 messages/hour>. Don't take this as truth though, check with your B<own> hosting company and get the exact amount that they say is, "OK". Set your batch settings a little lower than what the limit is - since you may receive sub/unsub requests, etc. 
+
+So, if your hosting account limits you to 500/messages an hour, try setting your batches to something like: B<1 message, every 8 seconds>. In fact, that may be the factory default setting. Hey! Aren't we nice. 
+
+A few tell-tale signs your going over you're sending limit: 
+
+=over
+
+=item * Some of your subscribers aren't receiving your message
+
+Like, the last half of your list, something like that. I'm a little wary of reports from people who pick at random subscribers and ask them if they have received the message - there are other reasons why someone wouldn't have gotten a message - but I digress...
+
+=item * You receive a whole lot of bounced messages
+
+Like, the last half of your entire list bounce back and you know, B<know> they'll valid email addresses, with mailboxes attached to them. 
+
+Sometimes the bounce will say something like: 
+
+ user@example.com
+ unrouteable mail domain "example.com"
+
+Real helpful, huh? I<Clearly> you can tell, you've been going over your mail sending quota. Clearly. 
+
+That's one of the dummy things about mail servers and hosting companies - many don't have a good way to tell you when you go over a mail sending quota. Email your hosting company - tell them you'd like an easy way to know when you do. It may help. 
+
+=back
+
+=item * Be Kind to Your Web Server
+
+Sending out a lot of email messages is CPU and memory resource intensive. 
+
+Again, if you're using a shared hosting account, you're going to run into problems just blazing a few million messages - so don't. Usually, you'll have imposed limits on how much B<CPU Time> you're taking up and also actual server memory. If you go over these limits, you're likely to get an angry (but calmly angry) email from your hosting account support team, telling you to knock it off. 
+
+Consider:
+
+Let's say your email message - what you're sending, is 40k is size. You have 25,000 subscribers (a big list, by some scales). In that total mailing, you're moving almost a GIG of information out of the server. That's quite the load. If you try to do this without using batching - meaning, in the course of a few seconds/minutes - first off, unless you have some fat pipes, it's not going to happen and secondly if you do somehow make it out, that's a whole load the server has to take on. 
+
+Now, 25,000 messages at once will B<flood your mail server>. It's going to hate you and probably tell you, in its own little way, to stop - it won't want to process that many messages at once. Sometimes this is by silently dropping the messages you send to it, into the Great Ether of the Intarweb. A big culprit in the, "My messages aren't being delivered" puzzle. It drops messages, because it's better to do this than crash. 
+
+And also consider that every mailing list message sendout that you do, B<will have bounces> - for whatever reason. Sending a whole lot of messages out, will give you many messages coming in - from different places - basically, you'll give yourself a Denial of Service attack. Don't do that. 
+
+So have a heart, batch at something that's realistic. If you're on a shared server, realistic may mean what you're hosting companies impose. Follow their restrictions - don't ever go over. If it's too strict, tell them - ask them what can be done. Use your right as a consumer. Find a better host that'll work and tell your current host about it. Hosting companies are nothing if competitive against each other. By again, B<be realisitic>: For a few bucks a month for hosting, you are not going to get the moon and stars - hopefully, you'll get something realistic. If you need more, consider upgrading to a plan that allows more resources at your disposal. If you have a large enough list, you may have a big enough business to require it. 
+
+=back
+
+
+=head2 Why are the batch settings so limited? 
+
+They're not. 
+
+Currently, without hacking about, you can send 1 to 180 messages and then wait 1 to 180 seconds. Sounds like not a lot of wiggle room, but it should be plenty - 
+
+Consider that one message, every 180 seconds (the slowest setting you can have) is 30 messages B<an hour>. That's slooooow. 
+
+Sending 180 messages, every second (the fastest setting you can have) is a rate of 10800 messages a B<minute> - 648,000 messages an hour. If your mail server can even support that, hats off - unless it's specifically tuned to send copius amounts of mail, there's no way you'll be able to get up to that speed. 
+
+Honestly.
+
+The fastest you're going to get, in pretty good conditions is B<25,000> messages an hour(?) (untested, thus the question mark)
+
+Hope I helped to dispell that myth. 
+
+=head1 Auto Pickup Options
+
+The, B<Auto-Pickup Dropped List Message Mailings> is going to be your best friend. 
+
+Basically, this feature, once enabled will make sure the process of sending out a mailing will succeed to completion. 
+
+You can configure the feature in the list control panel. Log into your list and under B<Manage List - Sending Options>, you should see the settings to change. 
+
+=head2 Why do you need to use the Auto Pickup feature?
+
+Sounds like this feature is something bolted on, to fix a larger, underlying bug in Dada Mail. Hre's the skinny: 
+
+Unlike traditional Mailing List Managers (Mailman, Majordomo, EZelm), B<Dada Mail does not run as a daemon> - (and this is simplifying things) which is a program that is B<always running>, just waiting to do something. 
+
+Daemons usually aren't allowed to run in shared server environments, so that's why Dada Mail isn't one. Shared server environments also usually have a set limit on the amount of memory a program process can consume, how large the process itself can be, how many files it can have open and most importantly for us, B<how long a process can run for>. 
+
+So, that's the kind of environment we're working under. Quite restrictive. 
+
+This poses some problems, for this simple fact: Sending out a message to a lot of people takes a lot of time. If you've read the above, you've realized that you want to B<send your mailing list sendouts in batches>. No question. 
+
+If your subscriber list is long enough to go over the limitation of how long a process can run for - which is pretty easy, your mailing is going to fail, mid way through somewhere, and this is bad.... if! you do not have a way to reload a list that has stopped at a specific part of your list, automatically. Which is what the auto-pickup feature does. So - no fretting. 
+
+
+
+=for html <div class="pod_history"> 
+
+B<Historical Note - Version 2.10.10 and below:> 
+
+To give you some historical background, there was a time (gather 'round kids) when Dada Mail did not have the auto pickup feature, so the best you could do is try to figure out where your message dropped and manually restart it from a specific point in your list. Frustrating. Clunky. Dumb. (dumb programmer).
+
+=for html </div> 
+
+Times have changed and now we have the auto-pickup feature. 
+
+Should you use it? Yes. Please, yes. It's going to help you make a successful mailing list and it'll allow you to send a mailout slower, which, as we went over in the batch sending FAQ's is actually a good thing. 
+
+=head2
+
+How do you use the Auto Pickup Options? 
+
+You can configure the feature in the list control panel. Log into your list and under B<Manage List - Sending Options>, you should see the settings to change. 
+
+You have two settings to which to play with: 
+
+=over
+
+=item * Auto-Pickup Dropped List Message Mailings 
+
+That turns on the feature. Have that checked. 
+
+=item * Restart Mailings After Each Batch 
+
+This setting takes some explaination and we're going to get a little technical. 
+
+=for html <div class="pod_history"> 
+
+B<Historical Note:> 
+
+Usually and historically, Dada Mail would pause between batches by using the C<sleep> Perl function. C<sleep> basically makes the program not do anything, for a specified amount of time. Neat, huh? Problems though: 
+
+=for html </div> 
+
+It's possible that if you have incredibly strict web hosting server, it'll kill any process that attempts to C<sleep>, for any amount of time. This would make your mailout last exactly one batch, which is of no use to use. 
+
+Checking this option will not use the C<sleep> function, but will stop Dada Mail sending out a mailing completely. A mailout will reload and resume when the amount specified in the batch settings has been reached - B<but> you'll need to be on the B<Sending Monitor Screen> for everything to work correctly.
+
+=back
+
+=head2 What is the Sending Monitor Screen and why is it so important for the Auto Pickup feature? 
+
+The B<Sending Monitor Screen> will tell you how far along your mailout has gone. 
+
+In the list control panel, when you send out a message, by pressing the big green, B<Submit Mailing List Message> button on the, B<Send a List Message> screen (and friends), the screen will refresh and you'll see another screen, stating your mailing is on its way! and give you I<another> big green button which is labeled, B<Monitor Your Mailing!>. 
+
+Press that button. 
+
+The screen will refresh again to the B<Sending Monitor Screen> 
+
+Keep the B<Sending Monitor Screen> open until your mailing has finished to make sure your mailout goes to completion. 
+
+The screen should refresh every few seconds to update the status of your mailing. During a refresh, if Dada Mail sees a mailing has been dropped, it will automatically pick up the lost mailing at the exact spot it was dropped. And that's how the auto-pickup feature works. 
+
+B<If you are not on the Sending Monitor screen, the Auto-Pickup feature will not work.> 
+
+B<If you are not on the Sending Monitor screen, the Auto-Pickup feature will not work.> 
+
+B<If you are not on the Sending Monitor screen, the Auto-Pickup feature will not work.> 
+
+=head2 During a mailout, is it safe to navigate away from the Sending Monitor screen? 
+
+Yes! Absolutely. 
+
+The Sending Monitor screen does not control a mailout - it only monitors and reports what's going on. If it finds a mailout has dropped, it I<will> initiate the auto-pickup function and restart your mailing. 
+
+But! If a mailing is dropped, it won't be restarted, until you go back to this Sending Monitor Screen, so it is a good idea to keep it open. 
+
+But, if you do navigate away by mistake, it's not the end of the world, just navigate back. 
+
+=head2 How do you get back to the Sending Monitor screen if you navigate away?
+
+Quite easily:  
+
+Log into your list via the list control panel. Under Send a List Message, click on, B<Monitor Your Mailings>. This screen will give you a list of the mailouts currently active. Click on the subject of the mailout you'd like to monitor. And you're back. 
+
+=head2 Is there an alternative to auto-picking up mailouts, rather than the Sending Monitor screen? 
+
+Indeed there is, 
+
+=head3 The, auto_pickup.pl Extension
+
+See the L<auto_pickup.pl.html> extension. It is run by a cronjob. If this extension is installed and running correctly, you won't have to use the Sending Monitor screen at all. See: 
+
+L<http://dadamailproject.com/support/documentation/auto_pickup.pl.html>
+
+If you do use the, I<Restart Mailings After Each Batch>, this extension isn't really going to work very well, since you're probably going to run it via cron much less than is realistically needed for your mailing to go out in good time. 
+
+=head3 Setting, $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION to, 1
+
+Another option, is to set the Config.pm variable, C<$MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION> to, B<1>. 
+
+When set to, B<1> after every time Dada Mail is run via the, C<mail.cgi> script, the mailing monitor will be run, exactly like the C<auto_pickup.pl> extension and monitor your mailings. This is somewhat of an imperfect option for you, but could come in handy if you cannot or do not know how to set up a cronjob. 
+
+The problem is, you never are guaranteed when Dada Mail is going to be run, so your mailing monitoring will be somewhat lopsided. 
+
+I<This option is currently I<experimental>. 
+
+=head3 Dada Bridge
+
+If you're using the Dada Bridge plugin, it also has the same functionality as the C<auto_pickup.pl> extension built in (although, no report will ever be printed out). Because of this, you won't be absolutely required to run both, but if you want to run both, stagger the timing of the cronjobs - if you're running Dada Bridge every 5 minutes, run the C<auto_pickup.pl> extension every 6. 
+
+=head2 I'm a nerd. Any documentation on the Mailout/Auto Pickup API? 
+
+Indeed, see: L<http://dadamailproject.com/support/documentation/Mail_MailOut.pm.html>
+
+in Dada Mail itself, see the L<auto_pickup.pl> extension noted above, or the C<sending_monitor()> subroutine in the mail.cgi file. 
+
+=head1 Multiple Mailouts at the Same Time
+
+Multiple Mailouts can go on at one time. 
+
+By default (conservatively) Dada Mail only allows you to have B<one> mailout at one time. You can change this in the Config.pm file, under the variable, B<$MAILOUT_AT_ONCE_LIMIT>. Past versions (before ver. 3.0, basically) had no specific limit on the amount of mailouts they supported. 
+
+This is to allow you to have a good idea on how to easily keep below any server restrictions on how much email you can send in a specified  period of time. 
+
+For example, if you're allowed to send 500 messages and hour, and you have your batch settings set to send one message every 8 seconds, that's approx. 450 messages you'll be sending each hour. If you're only allowing one mailout to go out at one time, you'll be sending approx. 450 messages each hour - pretty easy. 
+
+There's a bit of wiggle room for other emails that may get sent out, like subscription and unsubscription requests. 
+
+Any mailouts that have been submitted to Dada Mail that are over the limit set in B<$MAILOUT_AT_ONCE_LIMIT> will be B<Queued>. They'll just wait in line until the number of mailouts is less than the limit. 
+
+One exception to this rule is sending out test mass mailings. Test mailings will go through to completion, without having to wait in the queue. 
+
+The order at which awaiting mailouts are sent is B<usually> chronological, first in, first out. If you submit a mailout that's submitted at 10:00am and submit another mailout at 11:00am, the mailout you submitted at 10:00 am will be sent out first. 
+
+There is one way to change this queue and that's by B<pausing> a mailout. 
+
+Pausing a mailout will basically  move that mailout to the bottom of the queue and it won't ever be reloaded to be sent until after its manually unpaused. 
+
+If you do unpause a mailout, it B<will> jump back in line where it once was. For example, if you have three mailouts, one that is submitted at 10:00am and one at 11:00am and another at 12:00pm and you decide to pause the 10:00am one, it will B<stop sending out> and the mailout submitted at 11:00am will start. The 10:00am mailout will be at the bottom of the queue. 
+
+If you then unpassed the 10:00am one, it will jump back where it once was, but since the 11:00am mailout is going, it won't restart until either the 11:00 am mailout has unexpectantly stopped, or the 11:00am mailout has finished.
+
+=head2 Stale Mailouts
+
+Mailouts can become B<stale>, meaning, they've been inactive in mail sending for a specific period of time and won't automatically restart. This is to stop mailings that, for whatever reason, aren't active not become all of a sudden, active and start sending out a message that may be a little bit old in the news department. 
+
+By default, mailouts that haven't sent anything in a day are considered stale. 
+You may change this time in the Config.pm variable, C<$MAILOUT_STALE_AFTER>, which expresses this time in B<seconds>. 
+
+=head1 Reference: Various Hosting Companies and Email Sending Quotas
+
+If you can help in fleshing this list out, it would be really helpful to me - contact us via the boards: L<http://dadamailproject.com/support/boards> or the mailing list: L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/> and let us know! 
+
+=head2 Bluehost
+
+L<http://bluehost.com>
+
+According to L<http://helpdesk.bluehost.com/kb/index.php?x=&mod_id=2&root=27&id=135> 
+
+=for html <blockquote><em>
+
+
+=head3 Problem
+
+Why do my email messages keep getting returned?
+
+=head3 Solution
+
+If your emails keep getting returned with the message "Unrouteable Domain", then you have exceeded your hourly limit for outbound mail.
+
+There is a default limit on all accounts of 50 messages sent per hour. This is a policy to help control spam on the internet and does not apply to your inbound email. You can receive as many emails as will fit in the accounts quota.
+
+If you have a legitemate need for more email capacity on your account please let us know with a detailed explaination of why and we will gladly accomodate your needs.
+
+=for html </em></blockquote>
+
+Take note of that last response - it looks like they basically want you to let them know what you're doing. That's pretty responsible of them. 
+
+Also take note of this FAQ: L<http://helpdesk.bluehost.com/kb/index.php?x=&mod_id=2&root=27&id=325> 
+
+Which states that you won't want to use SMTP sending on Bluehost. 
+
+Some notes from a BlueHost User: 
+
+=over
+
+=item * Hourly Limit
+
+BlueHost's default limit is a puny 50/hour, in the name of
+spam prevention.  But they will happily lift that to a maximum
+of 500/hour if you call their (excellent, toll-free, 24/7) support
+line and present even a shred of evidence that your need
+is legitimate.
+
+=item * Process Time Limit
+
+But increasing your hourly limit and configuring batch sending
+will still not get you going on BlueHost.  Their servers are
+configured to kill the kind of processes that Dada spawns
+after about one minute.
+
+=back
+
+Where does that leave you?  Two options, I think:
+
+=over
+
+=item * Dedicated IP Address
+
+If you upgrade your BlueHost service to a dedicated IP address
+(at the cost of $30 per year), they lift the process time limit.
+Before the advent of the auto pickup feature, this would have
+been the only solution.
+
+=item * Use Auto Pickup
+
+In theory, auto pickup should do the trick, since any polite-sized
+batch should be completed in under a minute -- long before
+BlueHost kills the sending process.  But I haven't tested this
+approach on BlueHost, so I can't swear that it'll work.
+    
+=back
+
+=head2 Cyboretum
+
+http://www.cyboretum.com
+
+Currently, there is no limit to outbound email sending, B<within reason>. Contact them directly if you have any q's. 
+
+=head2 Dreamhost
+
+L<http://dreamhost.com>
+
+According to L<http://wiki.dreamhost.com/index.php/Smtp-quota> 
+
+=for html <blockquote><em>
+
+
+DreamHost enforces outbound mail quotas. While trying to send mail, if you receive an error message which mentions "Quota Exceeded," you have surpassed your mail sending quota. If you hit this quota 2 or more times, your sending ability will be disabled until you contact support. In your support request, please include your email username and email address.
+
+The outbound quota is 100 recipients / hour.
+
+Please note this is NOT 100 emails per hour. A single email to 100 people in the CC/BCC fields would consume your entire quota. 
+
+=for html </em></blockquote>
+
+For this host, you would definetely want to set batching, at a rate of B<1 email>, every B<37 seconds> or so. This limit is pretty strict. 
+
+
+=head1 Debugging a Failed Mailing List Sendout
+
+=head2 Logs
+
+Set up the various logs available in Dada Mail. We'll be going through the various logs specific for list sending. 
+
+=over
+
+=item * Program Error Log
+
+This log is vitaly important and much of the following advice will center around the error log, so it has to be set up. 
+
+Here's how: 
+
+L<http://dadamailproject.com/support/documentation/Config.pm.html#_program_error_log>
+
+=item * Setup Debugging for various CPAN modules
+
+If you're using SMTP sending, set up the debugging/trace settings for Net::SMTP and Net::POP3. This is done in the Config.pm file, in the variable, B<%CPAN_DEBUG_SETTINGS>. More information: 
+
+    http://dadamailproject.com/support/documentation/Config.pm.html#_cpan_debug_settings
+
+Again, for mail sending, you'll want to set the, B<Net_SMTP> and B<Net_POP3> (if you're using POP-before-SMTP sending> to, B<1>. 
+
+
+=back
+
+
+
+=cut

@@ -1,0 +1,45 @@
+<!-- begin restore_lists_options_screen.tmpl --> 
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+	
+
+<p>
+ <strong> 
+  Before restoring ANY of your list settings, 
+                       please make on server and remote backups of all your 
+                      <!-- tmpl_var PROGRAM_NAME --> 
+ list files, no matter what facility they are in.
+</strong>
+</p>
+
+
+<p>
+	Please also make sure your list settings are indeed corrupted and 
+             not just unreadable because of insufficient file permissions or wrong @AnyDBM_File Config.pm settings.
+</p>
+   
+<!-- tmpl_var restore_list_options --> 
+
+
+<p>
+ <em>
+	*The most recent backup is usually the best
+ </em> 
+</p> 
+
+
+<input type="hidden" name="flavor"        value="restore_lists"                   />
+<input type="hidden" name="root_password" value="<!-- tmpl_var root_password -->" /> 
+<input type="hidden" name="process"       value="true"                            /> 
+ 
+
+<div class="buttonfloat">
+<input type="reset"  class="cautionary" value="Clear Changes" />
+<input type="submit" class="processing" value="Restore Checked List Information" />
+</div> 
+<div class="floatclear"></div>
+
+
+
+
+<!-- end restore_lists_options_screen.tmpl --> 

@@ -1,0 +1,146 @@
+<!-- begin view_archive_index_screen.tmpl --> 
+
+<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+ <input type="hidden" name="f" value="delete_archive" /> 
+
+	
+
+<div style="max-height: 300px; overflow: auto; border:1px solid black">
+ 
+ <table cellpadding="2" cellspacing="0" border="0" width="100%">
+  <tr>
+   <td width="25">
+    <p>&nbsp;</p>
+   </td>
+   
+     <td>
+    <p>
+     <strong>
+      From
+     </strong>
+    </p>
+   </td>
+   
+   
+   
+   <td>
+    <p>
+     <strong>
+      Subject
+     </strong>
+    </p>
+   </td>
+   
+   <td>
+    <p>
+     <strong>
+      Sent
+     </strong>
+    </p>
+   </td>
+  <!-- tmpl_if ARCHIVE_EDITOR_URL --> 
+  <td>
+  &nbsp;
+  </td>
+  
+  <!--/tmpl_if-->
+  
+  
+  </tr>
+  
+  
+
+  <!-- tmpl_loop index_list --> 
+  
+	   <tr<!-- tmpl_if name="__odd__" --> style="background-color:#ccf;"<!--/tmpl_if--> title="<!-- tmpl_var message_blurb -->">
+	    <td width="25">
+	     <input type="checkbox" name="address" value="<!-- tmpl_var id -->" />
+	    </td>
+	    
+	    <td> 
+	     <p>
+			<!-- tmpl_var from -->
+		</p>
+		</td>
+	    
+	    
+	    
+	    <td> 
+	     <p>
+	     <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive&id=<!-- tmpl_var id -->">
+			<!-- tmpl_var subject -->
+			</a>
+		</p>
+		</td>
+		<td>
+		 <p>
+		 <!-- tmpl_var date -->
+		</p>
+		</td> 
+		<td>
+		 <p>
+	      <input type="button" class="cautionary" onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?f=edit_archived_msg&id=<!-- tmpl_var id -->'" value="[edit]"/>
+		  </p>
+		 </td>
+		</tr>
+
+<!-- /tmpl_loop -->
+
+ </table> 
+</div> 
+
+
+ <p align="center">
+  <a href="#" onclick="SetChecked(1);return false;">
+   check all 
+  </a>
+  :: 
+  <a href="#" onclick="SetChecked(0);return false;">
+   uncheck all
+  </a>
+ </p>
+ 
+ <!-- tmpl_var index_nav --> 
+ 
+ 
+ <div class="buttonfloat">
+<input type="submit" class="alertive" value="Delete Checked" />
+
+	 </div>
+	 <div class="floatclear"></div>
+	 
+	 
+
+  </form>
+  
+  
+   <form action="<!-- tmpl_var S_PROGRAM_URL -->">  
+	   <input type="hidden" name="f" value="purge_all_archives" />
+	    <div class="buttonfloat">
+	    
+	   <input type="submit" class="alertive" value="Purge All Archive Messages" />
+	   
+	 </div>
+	 <div class="floatclear"></div>
+	 
+   </form> 
+	  
+	  
+  
+  <!-- tmpl_if show_broken_things --> 
+  <!-- this form currently doesn't work. Uncommenting it will not make it magically work :) -->
+	  
+	  <form action="<!-- tmpl_var S_PROGRAM_URL -->">  
+	   <input type="hidden" name="f" value="edit_archive" />
+	   <input type="hidden" name="new_archive" value="1" />
+	   <input type="submit" class="alertive" value="New Archived Message..." />
+	  </form> 
+		
+	  <!-- end --> 
+  <!--/tmpl_if-->
+	
+
+<!-- tmpl_include help_link_widget.tmpl --> 
+
+
+<!-- end view_archive_index_screen.tmpl --> 

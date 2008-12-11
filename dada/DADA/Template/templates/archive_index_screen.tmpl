@@ -1,0 +1,20 @@
+<!-- begin archive_index_screen.tmpl -->
+
+<!-- tmpl_include name="list_breadcrumbs_widget.tmpl" -->
+
+<!-- tmpl_if entries --> 
+
+
+    <!-- tmpl_include name="archive_list_widget.tmpl" -->
+
+<!-- tmpl_else --> 
+
+    <p class="error">
+     Currently, there are no archived messages.
+    </p>
+
+<!--/tmpl_if-->
+
+<!-- tmpl_include name="archive_footer_widget.tmpl" -->
+
+<!-- end archive_index_screen.tmpl -->

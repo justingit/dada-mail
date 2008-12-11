@@ -1,0 +1,52 @@
+<!-- begin list_breadcrumbs_widget.tmpl -->
+
+<p id="breadcrumbs">
+ <a href="<!-- tmpl_var program_url -->">
+  <!-- tmpl_var program_name -->
+ </a>
+ &#187; 
+ <a href="<!-- tmpl_var program_url -->/list/<!-- tmpl_var list_settings.list -->/">
+  <!-- tmpl_var list_settings.list_name -->
+ </a>
+ 
+<!-- tmpl_if subject -->
+	 
+	 &#187;
+	 <a href="<!-- tmpl_var program_url -->/archive/<!-- tmpl_var list_settings.list -->/">
+	  Archives 
+	 </a>
+	 &#187;
+	 <!-- tmpl_var subject -->
+	 
+<!--/tmpl_if-->
+
+<!-- tmpl_if keyword -->
+	 
+	  &#187;
+	 <a href="<!-- tmpl_var program_url -->/archive/<!-- tmpl_var list_settings.list -->/">
+	  Archives 
+	 </a>
+	 
+	   &#187;
+	 Search results for: 
+	 <em>
+	  <!-- tmpl_var keyword -->
+	 </em>
+	 
+<!--/tmpl_if-->
+
+<!-- tmpl_if flavor_sign_in -->
+	 
+	 &#187; Login
+	 
+<!--/tmpl_if-->
+
+<!-- tmpl_if flavor_archive -->
+	 
+	 &#187; Archives
+	 
+<!--/tmpl_if-->
+
+</p>
+
+<!-- end list_breadcrumbs_widget.tmpl -->

@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <head>
+  <title><!-- tmpl_var title --> - <!-- tmpl_var list_settings.list_name --> - <!-- tmpl_var PROGRAM_NAME --></title>
+  <!-- tmpl_var javascript -->
+  <style type="text/css" media="all">
+   <!--
+    @import "<!-- tmpl_var S_PROGRAM_URL -->/css/";
+   -->
+  </style>
+ 
+ <meta http-equiv="Pragma"  content="no-cache" />
+ <meta http-equiv="Expires" content="-1" />
+
+
+ 
+ </head>
+ 
+ <body id="DadaAdmin" onLoad="init();">
+  <div id="AdminPageWrapper">
+   
+   <div id="Header">
+    <span id="Title">
+ <!-- tmpl_var root_login_message -->
+
+  <!-- tmpl_var title -->
+    </span>
+   
+    <div class="floatclear"></div>
+   </div><!-- ends id="Header" -->
+   
+   <div id="AdminContentWrapper">
+    <div id="AdminContent">
+     
+		<!-- tmpl_var content -->
+
+   
+    </div><!-- ends id="AdminContent" -->
+   </div><!-- ends id="AdminContentWrapper" -->
+   
+   <div id="MenuWrapper">
+    <div id="Menu">
+     <p>
+      <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank">
+	   <!-- tmpl_var list_settings.list_name -->
+	 </a>
+     </p>
+     <!-- tmpl_var login_switch_widget -->
+     <!-- tmpl_var admin_menu -->
+    </div><!-- ends id="Menu" -->
+   </div><!-- ends id="MenuWrapper" -->
+   
+  </div><!-- ends id="AdminPageWrapper" -->
+ </body>
+ 
+</html>

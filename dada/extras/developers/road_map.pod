@@ -1,0 +1,408 @@
+
+=pod
+
+=head1 Road Map For Dada Mail
+
+This roadmap is completely out-of-date is shouldn't be used. 
+
+
+
+=head1 Very Near Future
+
+=head2 Release of 2.11
+
+2.11's main feature will be an overhaul of the mass emailing routines. The problem with the current sending routines is that there is no meta information saved about the sending process, thus, if/when a problem does occur during the process, there's no way to automatically pick up the mailout. This is further made delicate, because in Dada Mail, it's a one shot thing - a mailout starts, and if it doesn't finish, it doesn't finish. This is a really bad spot to be.
+
+This needs to be addressed before the multiple fields project (Ver 3.0, basically) 
+
+Some more details: 
+
+Problems:
+
+=over
+
+=item * Mailing List Messages are hard to stop
+
+=item * Mailing List Messages are hard to control, once sent
+
+=item * Mailing List Messages sometimes stop sending for many reasons
+
+=back
+
+So, I propose the following changes, which are all quite dramatic:
+
+Currently, a mailing list message is sent by first making a temporary list of all the subscribers and some extra meta information to fill in some of the tags - to personalize the message, in other words. This is great and we're going to keep this file around. 
+
+What's going to change is the addition to a few new files: 
+
+=over
+
+=item * A counter
+
+There needs to be a way to simply know how many messages have been sent out if you ask the program. Setting a file that B<just> counts this will work splendidly. 
+
+Knowing where you are on the sending will allow you to stop, pause and restart a mailing from a specific, known point. 
+
+=item * An actual temporary copy of the mailing list message 
+
+One of the problem with Dada Mail's mailing list message sending is that, once it starts, it's hard to stop and impossible to really pause. This is because there isn't any record of what's being sent and (as mentioned above) really where. 
+
+If we have a copy of the message being sent around, we can solve a whole lot of problems. 
+
+=item * Mailing List Messages go out, and can restart themselves if unfinished
+
+Currently, Mailing List Messages are apt to stop by themselves. Many reasons: 
+
+=over
+
+=item * The server killed the process
+
+=item * The mail command generated an error
+
+=item * The server admin killed the process 
+
+=item * Some sort of limitation was reached
+
+either with CPU time, # of messages sent, disk space - lots of reasons.
+
+
+=back
+
+
+These reasons all lead to difficulty in actually debugging a bad mailing list message mailing (say that 5 times fast) 
+
+So, that's all a headache.  To put this all in motion, here's how a mailing list message will be sent to the subscribers: 
+
+You create the message, hit, "Sent to my subscribers". Dada Mail says, "OK, great". 
+
+Dada Mail makes a tmp directory for this specific message. The temp directory holds: 
+
+
+=over
+
+=item * A tmp copy of the list as it stood when you hit the send button, with the necessary meta information used to fill in the customized fields
+
+=item * The counter file
+
+=item * A file that keeps nothing but the total # of subscribers
+
+=item * A temporary copy of the message 
+
+=back
+
+Dada Mail will read in the tmp copy of the message, and send messages, one by one. Each message could be sent with a function that wraps in an eval block, so that if there's a problem its caught. 
+
+No problem - counter gets +1 added. Problem? Counter still gets added, problem logged. 
+
+And this goes on, until sending is complete - the counter file = the total # of subscribers. Once this happens, Dada Mail cleans up after itself. 
+
+What happens if there's a problem? Many of the problems with sending happen are silent, which makes it very difficult to debug. 
+
+Problems can be found by the new logging mechanism being applied (above) and by seeing if the message is finished sending and if the process that was created to send the message is still up and running. 
+
+If there's problems, the program could automatically jumpstart sending - starting with the last email sent, using the tmp copy of the message and just keep chugging along. nothing to it. This could happen until the message is complete. 
+
+There would also be enough information to see where in sending the message is, give an estimate on the time needed to finish, and an option to kill the sending process, without having to kill the actual sending process using the, B<kill> command. 
+
+=back
+
+=head1 Near Future
+
+=head2 Release of Dada Mail, version 3.0! 
+
+Dada Mail, version 3.0 will be basically Dada Mail with multiple subscriber fields support. This seems like only one small feature, but it affects every part of the subscription process, it affects how mass mailings are created, how you administrate the list itself, most everything, except, perhaps archiving. Big. Deal. Very big deal. 
+
+Also, if you want to look at the 4+ history of the Dada Mail 2.x serious, you'll notice that the program is entirely different than it was when released as 2.0 - it's basically has been rewritten a few times, in chunks. So it goes. 
+
+For more information on multiple subscriber fields and Dada Mail, see: 
+
+http://dadamailproject.com/features/multiple_fields.html
+
+More information will be released as the feature gets fleshed out. 
+
+=head1 A Future, Far Far Away
+
+Or, things we really really want to work on, but haven't had time/money (commission us!!!) to get to work on.
+
+=head2 Normalize the release process
+
+At the moment, Dada Mail's release cycles have been tied to the linear fashion that it has been developed:
+
+ ----> 2.8.12 ----> 2.8.13 ----> 2.8.14 ----> 2.8.15 ----> 2.9----> 2.9.1 ----> 2.9.2
+
+This causes major problems: for example: any bug fixes in 2.8.15 couldn't be released until everything needed in 2.9 was completed. The time between 2.8.15's release (November 17th, 2004) and 2.9 release (May 11th, 2005) was almost four months! That's too long for simple bug fixes to be released. Currently, (August 8th, 2005) we're again going long in the tooth with the release schedule.
+
+This impacts many things, including people's interest in Dada Mail:
+
+=over
+
+=item *no new releases - no new news of the program
+
+=item * trust in the program - They won't fix this bug! It's been *months*!
+
+=item * developing problems - I fixed this bug/added this feature, I think, but I can't test it with the new code, this is useless!
+
+=back
+
+etc,
+
+What should happen is a scenario like this: 
+
+There should be a stable release and then any new work that is feature-related will be for the next major release - any bugs found in the last major release will be fixed in its own branch and released as x.x.1, x.x.2, etc. Bug fixes will then be merged into the next major release release. For example:
+
+  
+                                 branch!->/2.10.1 ---- 2.10.x\
+                                         /                    \<-merge!
+  2.9 ----> 2.9.1 ----> 2.9.2 ----> 2.10/----------------------\2.11 
+ 
+
+This will allow us to release bug fix version, that have no new features added, which will lead to fewer surprises from people that don't like surprises in their software, like ISP's and other people that deploy Lots of software.
+
+This idea isn't novel at any length of the imagination. If I'm talking greek, you may want to brush up on CVS branching:
+
+http://cvsbook.red-bean.com/cvsbook.html#Branches
+
+Questions: Why are we using CVS? Because that's what Sourceforge offers. I'm aware of alternatives - some that work much better than CVS, but none are offered by Sourceforge ATM. This may change.
+
+
+=head2 Program-specific stuff
+
+=over
+
+=item * dada_bridge.pl to be integrated within the rest of Dada Mail, taken out of beta
+
+=item * dada_bounce_handler.pl integrated within the rest of Dada Mail
+
+=item * Working with these two features made easierer.
+
+=item * Rest of the HTML out of mail.cgi, perhaps (gasp!) even DADA::App::Errors.pm
+
+=back
+
+=head2 Goals - improvements to current stuff:
+
+=over
+
+=item * Email message and HTML screens out of DADA::Config.pm
+
+These really should be in their own templates, the email messages could be in a sort of simplified email source format: 
+
+ Subject: This is the Subject!
+ 
+ And here's the message!
+
+The list control panel should have a way to edit these that's much better than what's there right now - each message should have its own screen, instead of what's there now: ALL the messages in ONE screen. 
+
+=item * Revisit the templates directory, think of normalizing it with separate 
+      directories based on function of file. (errors, screens, widgets, etc) 
+
+=item * and revisiting the template filenames for the same reason
+
+=item * more "table-based layout to CSS layout conversion to make things 
+      
+clean and customization-friendly
+
+=item * [shane_c:] a "print-friendly" option for archived messages 
+
+(with all URLs spelled out; added footer content [such as the permanent message location, 
+      main-site name & URL, and so on]; everything measured in points instead of 
+      pixels; better fonts, colors and styles for the page; ...the works.)
+
+=item * MORE work on discussion list capabilities
+
+This may be one of the main points of the 2.11 release - 
+
+=over
+
+=item * Flesh Out Moderation
+
+Currently, moderators, don't moderate, they're just allowed to post to the list, without having to be on the list. Whoopee.
+
+There should be two options when moderation is enabled:
+
+[] Moderate all messages
+[] Moderate messages not from list subscribers
+
+And then, moderators should be, "called to duty"
+
+[] Send a notice of approval to ALL moderators
+[] Send a notice of approval to a random moderator
+
+The, "Notice of approval" is just an email saying, "hey, this message needs approval". The message then has two links, one to approval, one to deny and a copy of the message.
+
+I'm also tempted to have an option similar to, "Send a notice of approval to a random moderator" but: 
+
+Send a notice of approval to a random I<Subscriber>
+
+So, a list could moderate itself. Sounds like a more community-focused thingy. 
+
+=item * Allow, "open lists"
+
+Or, lists that you can post to, without actually having to be a subscriber
+
+This would only work if there was some sort of Spam-Prevention hook in Dada Mail. I'll talk about that in my next point, but if this feature was enabled, you'd also want to send a message B<back> to the poster stating, "hey, you're not subscribed, so you're not going to receive any more messages from this list, why B<don't> you subscribe? And the necessary link to do just that. 
+
+=item * Spam Checker
+
+So, we know Spammers fake message headers, and I'm pretty sure that Dada Mail will fall for them, so it would be nice to have a Spam checker that would kick in after all the other verification is complete. Fortunetely, this seems fairly cut-and-dry. According to: 
+
+http://search.cpan.org/~felicity/Mail-SpamAssassin-3.0.4/lib/Mail/SpamAssassin.pm
+
+It's three lines of code to get the status of a message. That's a great API. 
+
+If the message is SPAM, you could either: 
+
+=over
+
+=item * Send a note to the poster saying that the message was rejected, or just: 
+
+=item * Throw the message away
+
+=back
+
+If this was in place, you could have an open list and not feel like it would be suicide. 
+
+=item * Reply from Archives
+
+It would be interesting to have an option to reply to an archived message, so ideas: 
+
+Only have this option available if the message is less than x days old (like, 7) 
+
+Have anyone who enters a valid email be able to reply to a message, but send a confirmation link to the email itself to verify that it exists. The message could also (or only!) give an option to subscribe to the list as well.
+
+This would really make Dada a better communication tool and sort of have one step between the archives being a sort of forum - another mailing list that's also a message board, that's also a blog, that's also a (sort of) CMS. Ohh. 
+
+=back
+
+=item * dada_bridge.pl - accept messages directly
+
+Currently, dada_bridge.pl only accepts messages from a pop3 account. This has some good sides: 
+
+=over
+
+=item * list email is a real email account, giving the list email the same security checks. 
+
+=item * Email messages are most likely valid, since they wouldn't be delivered if they weren't
+
+=back
+
+Some disadvantages I see:
+
+=over
+
+=item * dada_bridge.pl, run via cron runs, even though no messages are waiting, and then, messages are only sent when the crontab runs
+
+=back
+
+I guess it wouldn't be too too hard to accept messages straight from STDIN, as mojo_send.pl/dada_send.pl did, although there goes some of the security/infinite loop checks that have been really nice in dada_bridge.pl
+
+Another option would be to accept messages from a http POST - this would facilitate communication with the dada_bridge.pl script and outside programs... I guess. 
+
+The only hurtles that have to be jumped over to make this work is: 
+
+=over
+
+=item * Have the script ready to accept a message from STDIN/POST
+
+=item * Validate that the message is being sent to a *real* list email - 
+
+Basically, you'll have to lookup each list's list email, until you find it. 
+
+This was different than in dada_send.pl, where the list email B<had> to be: 
+
+listshortname@yourdomain.com
+
+We are NOT going back to that.
+
+=back
+
+=item * Archives
+
+Other than the, "Post reply from archives", some other things I'd like to get done:
+
+=over
+
+=item * Perhaps work on threading - 
+
+My fear is that the amount of time Dada would take to create a proper thread would be longer than is allowable in a CGI environment. We want snappy!
+
+=item * Blog-like intereface
+
+People are accustomed to working with weblogs, Messages stored in Dada Mail exhibit many of the same features as blog posts: 
+
+=over
+
+=item * Title/Subject
+
+=item * Body/Message
+
+=item * Dated
+
+=back
+
+It would be interesting to add more features that are taken from weblogs, like: 
+
+=over
+
+=item * Trackbacks
+
+If there is an easy solution to Trackback spam, this would be an interesting feature to have - it basically would bridge the gap between a mailing list and a blog - a step that Pingbacks sort of are now. 
+
+
+=item * List of messages on one screen, instead of one message per screen
+
+
+=item * URL structure to show posts of a specific time frame - 
+
+Example: 
+
+http://example.com/cgi-bin/dada/mail.cgi/archive/listsn/2005
+
+Would show all messages from 2005, or: 
+
+http://example.com/cgi-bin/dada/mail.cgi/archive/listsn/2005/04
+
+Would show all messages from April of 2005
+
+=item * One of those little calendar widget thingies
+
+=back
+
+All these navigational schemes do not take into mind threading, which is sort of a discussion list/advanced message board (like Slash) idea. That's fine with me - it's just another way of grouping information. 
+
+The other option is to somehow create a B<new> paradign that's either some sort of hybrid of sorting by date/sorting by thread or something so totally completely different that'll blow your socks off. 
+
+=back
+
+=item * Bounce Handler
+
+=over
+
+=item * Move current system to a points-based scorecard
+
+Which is a fancy way of saying, "after x bounces, you get unsubscribed", except that different types of bounces are
+weighted differently. For example: soft bounces, because someone's mailbox is full, may give a particular address a point reduction of, "1". 
+
+If you start out with a score of, "10", it would take 10 soft bounces to get unsubscribed from a list. 
+
+A hard bounce, because the mailbox just isn't there, may give you a score of, "5", or "10".
+
+There's nothing intrinsically hard about this, but there is the issue of where the bounce scores are to be saved. Currently, 
+you cannot save them in the subscriber DB, because it only supports the email address. 
+
+You could create a new db I<mj-listname-bounces> (say), and just base it all on DADA::App::GenericDBFile, which is exactly what that module should be used for. We could add a new method for ++'ing a value of a key and be done with it. 
+
+=back
+
+=back
+
+=head2 Documentation
+
+After the 2.10 release, I'd like to talk more about moving some or most of the documentation into a Wiki that can be edited by anyone. This will stop old lazy bones here to hold up the availability of documentation to the project and give us another thing to play with. 
+
+I probably need someone to step forward as an editor. 
+
+
+Anything else that should be done?
+
+=cut

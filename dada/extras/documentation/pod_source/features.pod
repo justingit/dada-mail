@@ -1,0 +1,167 @@
+=pod
+
+=head1 Dada Mail Feature Set Overview
+
+This document attempt to list all the features in Dada Mail for review of the program and what have you. 
+
+The problem with writing a feature list is what to include! and what not to, to give a good signal-to-noise ratio. 
+
+This also gets confusing, since Dada Mail isn't written much like many other, older mailing list managers, like Majordomo, Mailman and EZMLM are. 
+
+Because of this, we'll start with surveying how Dada Mail is used by its users, and then the nitty gritty details about the features from these perspectives. 
+
+A lot of functionality of Dada Mail happens with the inclusion of plugins and extensions. These plugins and extensions are shipped with Dada Mail, but need to be installed separately. Sometimes, the functionality is made into a plugin, since more configuration is needed to get them up and running. 
+
+This Feature List covers version 3.0 of the program. Other features may sneak in after the 3.0 release that are not documented here. For the most part, features are never removed from the program, without good reason. 
+
+=head1 Dada Mail is Browser Based
+
+Most everything done in Dada Mail is done in your web browser. A lot of old school mailing list managers had an interface to the mailing list via commands sent via email messages. Dada Mail has none of that. At all. 
+
+Dada Mail also does not run as a daemon. The main part of Dada Mail runs like a simple CGI script. The program isn't so simple under the hood, but the way it runs, is. 
+
+You subscribe to a mailing list by filling out an form on an HTML page. You confirm a subscription by clicking a URL in an email message (instead of say, replying). 
+
+You send out a list message by logging into a web-based control panel and filling out Subject and Message fields in an HTML form. There are alternatives to this, where you can actually send a message from your mail reader and we will get this, but by default, you send a message out in your web browser. 
+
+=head1 Benefits to being browser-based
+
+Because Dada Mail is run as a CGI script, the security of the whole system is quite great, compared perhaps to a daemon program running as a trusted user. In no where in Dada Mail do you need to create mail aliases or mail redirects, which means you do not have to interface directly with the Sendmail program config (or something similar). This makes setting up pretty simple and nothing is needed or required by the root administrator of the server.
+
+=head1 A Very Brief Overview of What Dada Mail Does
+
+Generally, Dada Mail does three things pretty darn well - if you're looking for something to do these three things, Dada Mail is something you'd want to use:  
+
+=head2 Keeping a Subscription List
+
+At the very heart of Dada Mail, is the Subscription List. The Subscription List is a list of email addresses that belong to a Mailing List. 
+
+The main reason of using a tool like Dada Mail is to keep this Subscription List accurate, relevant and complete.
+
+Dada Mail has some fancy features to make this pretty easy to do, including full support for closed loop subscriptions, etc, which we'll be getting to soon. Just know that support is there for a lot of fancy things.  
+
+=head2 Sending Messages to a Subscription List
+
+Dada Mail also has the ability to send a email message to all the subscribers it manages in the Subscription List. 
+
+=head2 Archiving Messages sent to the Subscription List
+
+Messages that are sent to the Subscription List are also archived to be viewed, displayed, searched through and resent (if needed). 
+
+=head1 A Very Thourough Review of Features
+
+At the very heart of Dada Mail is the concept of a Mailing List. 
+
+A Dada Mail Mailing List has an identity, called its List Name and it has an owner, called the List Owner, which is an email address that will be associated with most everything that happens with your mailing list.
+
+The Mailing List itself has various parts to it:
+
+The List Settings holds the options and settings that control the behavior of the Mailing List. 
+
+The List Subscribers are the list of email addresses associated with the mailing list. 
+
+The List Archives hold messages that have been sent to the list. 
+
+The List Schedules are messages that are saved, to be sent at a later time or, on a schedule. 
+
+=head2 Mailing List Subscribers
+
+At its very basic, The Mailing List Subscribers are simple a list of email addresses that belong to the mailing list. Behind the scenes, this list of email addresses is saved in a simple plain text file, or in a SQL table.
+
+The main identity of a subscriber is their email address. Arbitrary, custom fields are supported in Dada Mail for List Subscribers (just use an SQL backend). These arbitrary, custom fields can be named/renamed/add/removed at your whim. 
+
+For the most part, Subscribers can be added to your mailing list in two ways, either by the subscriber filling out an HTML subscription form, or by the List owner adding the address in the list control panel. 
+
+Before a subscriber can be subscribed to a list, it does go undergo quite a gauntlet of checks to make sure that the subscriber's address is valid. The follow checks are done in Dada Mail: 
+
+=over
+
+=item * is the email address's form is valid?
+
+=item * is the email address already included?
+
+=item * is the email address on the black list? (a list of addresses that are not allowed to subscribe)
+
+=item * is the email address on the white list? (a list of address that only are allowed to subscribe) 
+
+=item * is the email address's domain part valid, via an MX lookup? 
+
+=item * is the Email List itself reached a set quota of subscribers? 
+
+=item * has the subscriber gone through the confirmation process correctly?
+
+=back
+
+The last point needs a little more explaination. Dada Mail supports a few things to disuade the absuse of its subscription forms and validation process. Double-Opt-In/Closed Loop subscription is supported and is highly suggested. Dada Mail also has a CAPTCHA system in place and has safegaurds against massive amounts of subscription requests from a particular subscriber. 
+
+Unsubscription has the same options, when relevant. 
+
+The list owner has a few choices when adding a subscriber via the list control panel. They may add the subscriber individually, or they may import a list of subscribers (and any fields attached), via an CSV file they either paste into Dada Mail, or select, using a File Upload widget. 
+
+An alternative to the list owner to subscribing an address outright, is the list owner sending a list invitation to a list of would-be subscribers who have just undergone the above checks. This makes sure that the subscriber has knowledge of the subscription and completes a Closed Loop subscription process. As of version 3.0 of Dada Mail, this is generally the suggested way to mass-subscribe an imported list that has not been verified in any other way and the program will seriously disuade you to do otherwise (and hopefully, not too annoyingly) 
+
+=head2 Subscriber Fields 
+
+Dada Mail supports arbitrary custom subscriber fields, so you may save and use information, other than the subscribers' email address. For example, you may create new form fields for the subscriber's first name, last name, city, zip code, favorite color, etc. 
+
+These subscriber field variables can then be used for mail merging in mailing list messages. The syntax for mail merging is quite simple and a whole lot of things can be done with it, including simple branch statements (if/unless/loop) to make custom email messages. 
+
+The subscriber field values can also be used to send a Mailing List Message out to only part of your list, by querying the Subscription List for values. For example, you can query the Subscription List to only send a message to people who live in, "Denver", if you have a, "city" subscriber field. 
+
+=head2 Mailing List Messages
+
+Dada Mail can send messages to your mailing list (just in case you were wondering) 
+
+Dada Mail supports most everything under the sun when it comes to creating a message, but generally, it's done a few ways: 
+
+=head3 Normally
+
+Usually, you're going to send a message using Dada Mail's, "Send a List Message" screen. 
+
+This screens has the option to set a few different headers, including the Subject of your message and also allows you to create a PlainText and/or HTML verson of your Mailing List Message. Dada Mail has support for the FCKeditor (a WYSIWYG editor for your web browser) as a drop in place kind of thing. 
+
+There's also support to include up to three attachments to the message and also to designate who on your mailing list will receive the message, by simple queries of your Mailing List Subscribers. 
+
+You can also create a message and not send it (but have it archvied) 
+
+Dada Mail also supports throttling mailing list sending to an amount of email addresses per batch and to the amount of time to wait between these batches. 
+
+=head3 Send a Webpage
+
+Dada Mail also has a separate screen to allow you to capture the content of a particular URL to use as content in your Mailing List Message. This is done simply by giving Dada Mail the URL to use for the content. 
+
+This screen also gives you the option to embed the various resources used by this page (like images) as attachments in the email message itself.  
+
+=head3 Via your Mail Reader
+
+You can also just send messages through your mail reader, to a special List Address. You'll need to install a plugin called, "Dada Bridge" to have this functionality. This plugin also supports Discussion Lists. 
+
+=head Via Beatitude, the Scheduled Mailer
+
+You can also send messages on a schedule, either one-time or repeating using the plugin called, "Beatitude". Beatitude has many similar options as the, "Send a Webpage" screen and also has options to only send when the various resources it polls are updated. 
+
+=head2 The Mailing List Sending Monitor
+
+A super fancy feature in Dada Mail is its Sending Monitor. The Sending Monitor will give you insight on how many messages are being sent at once, and what the details are on each individual mailing. You have the option to pause, manually restart and remove a mailing. Mailings are also monitored for health, so if for some reason the process of sending has ceased, they'll be restarted automatically. If the information that Dada Mail uses to keep track of a mailing is seen as corrupted, Dada Mail will also automatically stop a mailing, so that something horrible won't happen (for example, having the mailing restart from the very start of your mailing. 
+
+=head2 Mailing List Settings
+
+Each Mailing List set up in Dada Mail has its own settings. These settings cover everything from email sending preferenences, to archive preferences, to subsription list confirmation and pretty much everything else. These settings can be modified via the web-based list control panel. 
+
+=head2 Mailing List Archives
+
+Messages sent to your mailing list are saved. These messages can be viewed publically or privately, edited via the list control panel, resent to individuals and published via an RSS/atom feed. 
+
+=head1 Administration
+
+Dada Mail's main administation is list-based. Any number of mailing lists may be created and administrated on one Dada Mail installation. Each Dada Mail installation is pretty much domain/hosting account-centric, meaning you'll install one copy of Dada Mail, per hosting account you work on. 
+
+=head2 The Mailing List Control Panel
+
+Each List has a separate Mailing List Control Panel. 
+
+Access to this control panel requires the, B<List Password> which is set during creation of a list. Only one list password is tied to any particular list and you may use the main Dada Mail Root Password, set during configuration of the program itself, to access any and all lists. 
+
+Once you've successfully logged into your list control panel, you can do many administative tasks, such as add/edit/delete/search/view your subscribers, send messages out, and change options that affect how your mailing list works. We'll be going through these features, as they appear in the list control panel. The various groupings of features in Dada Mail are called, 'screens'. We'll be using that term a lot. 
+
+=cut

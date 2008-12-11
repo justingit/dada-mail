@@ -1,0 +1,1013 @@
+COPYRIGHT
+
+TFMail
+Copyright 2002 - 2004 London Perl Mongers, All rights reserved
+
+The file MIME_Lite.pm is copyright ZeeGee Software Inc,
+see the file for details.
+
+LICENSE
+
+This script is free software; you are free to redistribute it
+and/or modify it under the same terms as Perl itself.
+
+URL
+
+The most up to date version of this script is available from the nms
+script archive at  <http://nms-cgi.sourceforge.net/>
+
+SUMMARY
+
+TFmail is a script which allows you to receive the results of an
+HTML form submission via an email message.
+
+TFmail is *not* a plug-in replacement for FormMail.pl, although
+it has a lot of the same features.  TFmail is configured via
+text files on the server rather than via hidden form fields, has
+templates for output, and can support HTTP file uploads.
+
+FILES
+
+In this distribution, you will find the following files:
+
+TFmail.pl        - The main Perl script
+TFmail_config.pl - A script to help with setting up the configuration files.
+GBview.pl        - A script that allows TFmail to function as a guestbook
+NMStreq.pm       - A Perl module that TFmail.pl needs
+NMSCharset.pm    - Another Perl module that TFmail.pl needs
+MIME_Lite.pm     - A Perl module that TFmail.pl needs if you want to use
+                   file uploads, unless MIME::Lite is installed on the
+                   server
+default.trc    -   The main configuration file
+gb.trc         -   An example configuration file for a guestbook
+spage.trt      -   The template file that controls the layout of the success
+                   page
+missing.trt    -   The template file that controls the layout of the page
+                   presented to the user if some required fields have been
+                   left blank
+email.trt      -   The template file that controls the layout of the email
+                   body
+README         -   This file. Instructions on how to install and use TFmail
+EXAMPLES       -   Some examples of the use of TFmail
+FAQ            -   Some problems and their solutions
+ChangeLog      -   The change history of these files
+MANIFEST       -   List of files
+
+SCRIPT CONFIGURATION
+
+There are a number of variables that you can change in TFmail.pl which
+alter the way that the program works.
+
+DEBUGGING           - This should be set to 1 whilst you are installing
+                      and testing the script. Once the script is live you
+                      should change it to 0. When set to 1, errors will
+                      be output to the browser. This is a security risk and
+                      should not be used when the script is live.
+
+LIBDIR              - The filesystem path to the location of the .pm files
+                      that come with TFmail.pl.  See the section below on
+                      choosing secure locations for files.
+
+MAILPROG            - The command line that the script should use to fire
+                      up a program that will read an email message from its
+                      standard input, get a list of recipients from the To
+                      header and send the email.  On most UNIX systems, the
+                      correct value will be either:
+
+                        MAILPROG => '/usr/lib/sendmail -oi -t';
+
+                      or
+
+                        MAILPROG => '/usr/sbin/sendmail -oi -t';
+
+                      If your system lacks a suitable sendmail program, then
+                      you can configure TFmail to talk directly to an SMTP
+                      relay rather then using sendmail.
+
+                      For example, if your ISP has a host called
+                      "mailhost.your-isp.net" which will act as an SMTP relay
+                      for the web server, you would set:
+
+                        MAILPROG => 'SMTP:mailhost.your-isp.net';
+
+POSTMASTER          - The email address to use as the 'envelope sender' of
+                      outgoing e-mails.  This address will receive the bounce
+                      messages if there is trouble delivering an e-mail, so
+                      it's important to set this.  If in doubt, set this to
+                      your e-mail address.
+
+CONFIG_ROOT         - The filesystem path to the directory that holds all of
+                      the configuration files and template files for the script.
+                      This must be set to the path to the directory on the
+                      server to which you uploaded the .trc and .trt files.
+
+                      See the section below on choosing secure locations for
+                      files.
+
+SESSION_DIR         - The location where (if you are using sessions as 
+                      described below) the session information will be stored.
+                      This needs to be a directory in which the user that the
+                      TFmail is run as can create and delete files.  You may
+                      want to consider having this a separate directory as it
+                      will make it easier to clean up any orphaned sessions.
+
+                      Again you should see the section on  choosing secure
+                      locations for files.
+                      
+MAX_DEPTH           - The depth of subdirectories under CONFIG_ROOT that
+                      configuration files and templates may be placed.  The
+                      default of 0 is fine for most people.
+
+CONFIG_EXT          - The file extension that configuration files have.  The
+                      default of .trc will work with the sample configuration
+                      files supplied.
+
+TEMPLATE_EXT        - The file extension that template files have.  The default
+                      of .trt will work with the sample template files supplied.
+
+ENABLE_UPLOADS      - Set this to 1 if you wish to use HTTP file uploads to
+                      allow users to upload files via the form and have them
+                      come through to you as attachments to the email.
+
+USE_MIME_LITE       - If you're not using file uploads then you can set this to
+                      0 to prevent TFmail from using the MIME::Lite
+                      perl module.  This may speed the script up in
+                      some cases, and might be desirable if the e-mail
+                      is going to an automated system that doesn't
+                      understand MIME messages.  However, the e-mail
+                      is more likely to be mangled in some way by mail
+                      transport agents if you don't use MIME::Lite.
+
+LOGFILE_ROOT        - The filesystem path to the directory under which log
+                      files can be written.  Leave this set to the empty
+                      string to disable writing to log files.
+
+                      See the section below on choosing secure locations for
+                      files.
+
+LOGFILE_EXT         - The file extension that log files must have.  Default:
+                      .log
+
+HTMLFILE_ROOT       - The filesystem path to the directory under which any 
+                      HTML files that you wish TFmail to modify live.
+                      Leave this set to the empty string unless you want
+                      to use TFmail to modify HTML files on your server.
+
+HTMLFILE_EXT        - The file extension that the HTML files which TFmail
+                      modifies must have.  Default: .html
+
+CHARSET             - The character encoding to use for output documents and
+                      e-mails.  All user input must be encoded with the same
+                      charset or the output may appear garbled.  The default
+                      of 'iso-8859-1' works for many Western languages.  If
+                      you need characters that iso-8859-1 cannot represent
+                      then you might want to consider setting CHARSET to
+                      'utf-8'.
+
+
+SCRIPT INSTALLATION
+
+TFmail is installed by copying the file TFmail.pl into your cgi-bin
+directory. If you don't know where your cgi-bin directory is, then
+please ask your system administrator.
+
+You must also copy NMStreq.pm and MIME_Lite.pm to the server.  You
+should put them in the location that you configured for LIBDIR above.
+Leaving LIBDIR set to '.' and uploading the .pm files into your
+cgi-bin directory will work on most UNIX systems.  See the section
+below on choosing secure locations for files.
+
+You may need to rename TFmail.pl to TFmail.cgi. Again, your system
+administrator will know if this is the case.
+
+You will probably need to turn on execute permissions to the file. You can
+do this by running the command "chmod +x TFmail.pl" from your command
+line. If you don't have command line access to your web server then there
+will probably be an equivalent function in your file transfer program.
+
+
+CHOOSING SECURE LOCATIONS FOR FILES
+
+The TFmail.pl CGI requires many support files, such as the .pm
+files, the .trc configuration files, the .trt output template files
+and possibly some log files and/or the nms_sendmail script.  It's
+important to consider security when choosing locations for these
+files on the web server.
+
+The most important consideration is to prevent an attacker from
+accessing any of these files directly via the web server, and
+hence gaining information about your setup or access to your log
+files.  Since your e-mail address appears in the configuration
+file(s), it's important to protect them.  The log files may
+contain even more sensitive information.
+
+For example, if you were to put your configuration files in a
+'tfmail' subdirectory of your web site, then an attacker would
+be able to read them by typing a URL like
+
+  http://www.your.domain/tfmail/default.trc
+
+into his or her web browser.  That's bad security.
+
+The best place to put all these files is somewhere outside the
+web server's document root.  That eliminates the whole problem
+at a single stroke.
+
+However, if you are using an account on a shared web server then
+you may not have access to any location outside the web server's
+document root.  In that case, you should put all these support
+files into a subdirectory of your site to which the web server
+is configured to deny all access.  Your hosting provider should
+be able to tell you how to block HTTP access to a subdirectory
+of your site.
+
+If you can't configure the web server to deny access to a
+subdirectory of your site, then maybe you can set up a password
+protected subdirectory.  That's almost as good, so long as you
+choose a password that nobody will be able to guess.
+
+Finally, if all else fails, a small amount of security can be
+gained by making the URL to the configuration and other
+support files hard to guess.  For example, if you were to put
+all the configuration files in a subdirectory of your site but
+pick the name 'p5xltfe' instead of 'tfmail', then the attacker
+would need to guess the URL:
+
+  http://www.your.domain/p5xltfe/default.trc
+
+which is harder.  Be aware however that this is a weak form of
+security.  Web server bugs and configuration errors that allow
+this type of precaution to be bypassed are relatively common.
+
+
+THE CONFIGURATION SCRIPT
+
+If you wish, you can upload the TFmail_config.pl script and use
+that to interactively create all the .trt and .trc files that
+you'll need, instead of editing and uploading the .trt and .trc
+files.
+
+See the comments at the top of TFmail_config.pl for directions as
+to how to configure that script.
+
+TFmail_config.pl is quite new, and should be considered to be an
+experimental feature.
+
+
+OUTPUT CUSTOMIZATION
+
+The .trt files are templates used by TFmail to generate the output
+HTML and the body of the email.  You can edit them to change the
+look of the output before uploading them to the CONFIG_ROOT directory.
+
+The character combinations "{=" and "=}" are used to mark template
+directives.  Whenever TFmail encounters a template directive, it
+replaces it with a value.  For example, the template directive
+{= date =} will be replaced with the current date.  There are also
+directives for introducing environment variables and CGI form input
+values, and a few others.
+
+For example, by default TFmail will use the template email.tft to
+generate the body of the email.  By default that template looks
+like this:
+
+
+%% NMS email template file %%
+Below is the result of your feedback form.  It was submitted
+{= by_submitter =}on {= date =}.
+----------------------------------------------------------------------
+
+{= FOREACH input_field =}
+{= name =}: {= value =}
+
+{= END =}
+----------------------------------------------------------------------
+
+
+The first line just tells TFmail that this is indeed a template
+file for an email body - it won't be included in the output.
+
+The {= by_submitter =} directive generates the user's email address
+and real name followed by the string "by ", if there are email
+address and realname inputs in the form.  If TFmail can't work out
+the user's email address then the {= by_submitter =} directive
+produces nothing.  The "by " string was made part of the directive
+output so that the sentence would make sense in either case.  The
+word 'by' can be replaced by setting the "by_submitter_by"
+configuration directive to the required text.
+
+The {= FOREACH input_field =} directive repeats the lines between
+the FOREACH line and the END line for each field in the form who's
+name starts with a letter or a number.
+
+If everything goes OK and the email is sent, TFmail presents a
+success page to the user.  By default, that success page comes
+from the spage.trt template file, which defaults to this:
+
+
+%% NMS html template file %%
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Thank You</title>
+    <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+    <style>
+       h1.title {
+                   text-align : center;
+                }
+    </style>
+  </head>
+  <body>
+    <h1 class="title">Thank You</h1>
+    <p>Below is what you submitted on {= date =}</p>
+    <hr size="1" width="75%" />
+{= FOREACH input_field =}
+    <p><b>{= name =}:</b> {= value =}</p>
+{= END =}
+    <hr size="1" width="75%" />
+    <p align="center">
+      <font size="-1">
+        <a href="http://nms-cgi.sourceforge.net/">TFmail</a>
+        &copy; 2002 London Perl Mongers
+      </font>
+    </p>
+  </body>
+</html>
+
+
+You can change these templates to anything you like, giving you
+full control over the look of the output.  You don't have to
+include the {= FOREACH input_field =} directive or the {= date =}
+directive unless you want to.
+
+You can use "param" directives to get at the values of individual
+CGI parameters.  The directive {= param.foo =} will output the
+value of the "foo" CGI parameter, if there is one.
+
+For example, if your HTML form has only two inputs, "name" and
+"age", then your success page template file might look like this:
+
+%% NMS html template file %%
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Thank You</title>
+  </head>
+  <body>
+    <h1>Thank You {= param.name =}</h1>
+    <p>
+      Thanks {= param.name =} for registering your age
+      as <b>{= param.age =}</b>.  Your results have been
+      added to our database.
+    </p>
+  </body>
+</html>
+
+In a similar way, you can access the CGI environment variables
+via "env" template directives.  For example:
+
+%% NMS html template file %%
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Thank You</title>
+  </head>
+  <body>
+    <h1>Thank You {= param.name =}</h1>
+    <p>
+      Thanks {= param.name =} for registering your age
+      as <b>{= param.age =}</b>.  Your results have been
+      added to our database.
+    </p>
+    <p>
+      Note: we have logged your IP address as {= env.REMOTE_ADDR =},
+      and we will be reporting you to the FBI if you lied about
+      your age.  Have a nice day.
+    </p>
+  </body>
+</html>
+
+You can also use these "param" and "env" template directives
+in the email template, to get finer control over the body of
+the email.
+
+
+CONFIGURATION FILES
+
+TFmail reads its configuration from a configuration file.  By
+default, that file is default.trc in whatever directory you set
+for CONFIG_ROOT above.
+
+If you have several forms on your site using TFmail, each will
+need its own configuration file.  You can control TFmail's choice
+of configuration file via the "_config" hidden form field.  For
+example, if you added the line:
+
+  <input type="hidden" name="_config" value="foo" />
+
+to one of your HTML forms, then TFmail would use foo.trc in the
+CONFIG_ROOT directory as its configuration file when processing
+that form.
+
+The choice of configuration file is the only thing that can be
+configured via a hidden form field.
+
+The first line of the configuration file has to be exactly the
+text:
+
+  %% NMS configuration file %%
+
+Lines starting with '#' are ignored, and configuration values
+are set by putting the name of the configuration setting at
+the start of a line, followed by a ':' character, followed by
+the value for that setting.  The value can be split over
+several lines.
+
+One configuration value that you must set is "recipient", the
+email address to which the form results should be mailed.  For
+example, your configuration file might look like:
+
+%% NMS configuration file %%
+#
+# This is my configuration file
+#
+recipient: me@my.domain
+
+You can have several recipients set, in which case the form
+results will be copied to all of them:
+
+%% NMS configuration file %%
+#
+# This is my configuration file
+#
+recipient: me@my.domain, some-else@my.domain
+
+Other things that can be set in the configuration file are:
+
+email_template              - The template file to use for the body
+                              of the email.  Default: email
+
+success_page_template       - The template file to use for the main
+                              HTML success page, displayed when the
+                              email has been sent.  Default: spage
+
+sort                        - This sets the order in which the
+                              {= FOREACH input_field =} directive processes
+                              the CGI parameters.  It can be the string
+                              'alphabetic' for alphabetic order, or the
+                              string "order:" followed by a comma separated
+                              list of the parameter names.  Default: the
+                              parameters are output in the order in which
+                              they occur in the HTTP request.
+
+print_blank_fields          - If this is set to a true value then fields that
+                              the user left blank will be visited by the
+                              {= FOREACH input_field =} directive.  Normally,
+                              blank fields are suppressed to save space.
+                              Default: 0
+
+subject                     - The subject for the email.  Default:
+                              "WWW Form Submission".  Template directives can
+                              be included in the subject value, see the section
+                              on OUTPUT CUSTOMIZATION below.
+
+email_input                 - The name of the CGI parameter that
+                              will hold the user's email address.
+                              Used by TFmail to set the From field
+                              of the email.  Default: no email_input,
+                              the mail comes from POSTMASTER.
+
+realname_input              - The name of the CGI parameter that will
+                              hold the user's full name.  Used by
+                              TFmail to set the comment part of the
+                              From field of the email if a valid
+                              email address was found in the
+                              email_input input.  Default: none, so
+                              there will be no comment on the From
+                              address.  If you list several inputs here then
+                              their values will be concatenated to make up
+                              the comment.
+
+by_submitter_by             - The phrase added by the {= by_submitter =}
+                              template directive when outputting the user's
+                              email address.  Default: 'by'.
+
+redirect                    - If this configuration value is set, then it
+                              must be a URL and TFmail will generate a
+                              redirect to that URL on success, instead of
+                              using the success page template.
+
+required                    - A comma separated list of the names of inputs
+                              that the user cannot leave blank.  If any of
+                              these are blank, then the submission will not
+                              be accepted and 'missing_template' be displayed.
+                              Default: no fields are required.
+
+missing_template            - The HTML template file used to generate the
+                              page that the user sees if they leave a
+                              required field blank. Default: missing.
+
+missing_fields_redirect     - If this configuration value is set then
+                              it must be a URL and TFmail will generate
+                              a redirect to that URL instead of using a
+                              template if the user leaves a required
+                              field blank. Default: display template.
+
+confirmation_template       - If this field is set then it must be the
+                              name of an email template that will be used
+                              to send a mail back to the user confirming
+                              their submission.  CAUTION: since the user
+                              could give any email address (not just their
+                              own) and submit repeatedly, there is a risk that
+                              some nasty person will use this to mailbomb
+                              a third party.  Only switch this on if you
+                              really need it.  Template directives that
+                              depend on user input will be disabled for this
+                              template, so that this feature can't be used to
+                              send SPAM.  Default: no confirmation email.
+
+confirmation_subject        - The subject for the confirmation email, if it
+                              is activated by the confirmation_template
+                              directive above.
+
+confirmation_email_from     - The email address that the confirmation will
+                              have as the From: address.  Default is the
+                              value of POSTMASTER as configured in the TFmail
+                              program itself.
+
+logfile                     - The name of a file to which data will be
+                              appended for each successful run of the
+                              script.  The name is relative to the
+                              LOGFILE_ROOT directory and does not include
+                              the LOGFILE_EXT file extension.  Default: no
+                              logging.  Note that logging is disabled unless
+                              the LOGFILE_ROOT constant in the script is set.
+
+log_template                - The template file used to construct the text
+                              that gets appended to the log file if the
+                              logfile setting above is set.  Default: log
+
+                              See WRITING TO A LOG FILE below.
+
+modify_html_files           - A list of the names of one or more HTML files
+                              into which TFmail should insert text, relative
+                              to the HTMLFILE_ROOT directory and without the
+                              HTMLFILE_EXT file extension.  See the section
+                              below on inserting text into HTML files.
+
+no_email                    - Set this to a true value to prevent the main
+                              e-mail from being sent.  You might wish to do
+                              that if you're using TFmail.pl to record data
+                              to a log file and don't need it mailed as well.
+
+date_fmt                    - The format that the date will be displayed in. 
+                              This is a string that contains a number
+                              of different 'tags'.  Each tag consists
+                              of a % character followed by a letter.
+                              Each tag represents one way of displaying
+                              a particular part of the date or time. Here
+                              are some common tags:
+
+                              %Y - four digit year (2002)
+                              %y - two digit year (02)
+                              %m - month of the year (01 to 12)
+                              %b - short month name (Jan to Dec)
+                              %B - long month name (January to December)
+                              %d - day of the month (01 to 31)
+                              %a - short day name (Sun to Sat)
+                              %A - long day name (Sunday to Saturday)
+                              %H - hour in 24 hour clock (00 to 23)
+                              %I - hour in 12 hour clock (01 to 12)
+                              %p - AM or PM
+                              %M - minutes (00 to 59)
+                              %S - seconds (00 to 59)
+                              %Z - the name of the local timezone
+
+                              Default: '%A, %B %d, %Y at %H:%M:%S'
+
+bad_method_status          - if this is set to 1 then TFmail will return the
+                             Status code for "Request Method Not Allowed"
+                             rather than an error page if the Request Method
+                             is not 'POST' (optionally 'GET' - see the items
+                             'get_redirect' and 'get_template' below) you
+                             may want to use this if your server is 
+                             configured to give custom error messages. The
+                             default value is 0 meaning the default error page
+                             will be displayed.
+
+bad_method_template        - If this is set then the template will be used as
+                             the content when bad_method_status = 1 and the
+                             request method is invalid (see above.)
+
+get_redirect               - Normally TFmail will only accept a 'POST' method
+                             however if this is set to a valid URL then it
+                             will redirect to the indicated page on a 'GET'
+                             request, you could for example use this to
+                             cause a redirection to your form if someone
+                             has bookmarked the results of a previous
+                             request. See also 'get_template' below.
+
+get_template               - If this is set then it must specify a valid
+                             template that will be used when a 'GET' request
+                             is used, the template will be filled in the
+                             same way as the success page but no further
+                             action (such as sending mail or writing a log)
+                             will be taken.  This might be useful when
+                             creating a multipage form for example or if you 
+                             wanted to have a link to a partly prefilled
+                             form.  If both this and 'get_redirect' are
+                             specified then the 'get_redirect' will take
+                             precedence. If this is set then it is possible
+                             to use the session capabilities as described in
+                             the items below.
+
+session_cookies            - If this is set to 1 and get_template is set then
+                             when the templated page is sent out in response
+                             to a GET request a session is created and a
+                             Cookie is sent with the Session Id which will
+                             be checked when a POST request is sent - TFmail
+                             will abort if the session does not exist or there
+                             is no SessionID cooke.  Some users may turn off
+                             cookies in their browser settings, if this is a
+                             problem to you then you might want to see 
+                             session_field below.
+
+session_field              - this can be set to the name of a hidden field on
+                             your templated form that will contain the
+                             session id when the form is posted.  If this is
+                             set then for a GET request the template directive
+                             {= session_id =} will be available and contain
+                             the Session ID - you would want to create a field
+                             like:
+                              
+                               <input type="hidden" name="SessionID"
+                                      value="{= session_id =}" />
+
+                             where you have session_field set to SessionID.
+
+address_style              - This will specify the style of the address that
+                             is used in the From: address of the main mail
+                             message.  The default (and the previous style
+                             before this option was added) is to create a
+                             form of "$email ($realname)", if it is set to
+                             a value of 1 then the address will be generated
+                             as "$realname <$email>".  You may want to use 
+                             this if you are using a mail client that takes
+                             the same address in the two perfectly valid
+                             styles to be different and you want to sort
+                             by From address, for instance.
+
+locale                     - This when set will determine the locale which is
+                             used when determining the names of months and
+                             days when using {= date =} template directive
+                             the default is to use the locale set on the
+                             server.  A few examples of locale codes are:
+
+                              Catalan           ca_ES
+                              Croatian          hr_HR
+                              Czech             cs_CZ
+                              Danish            da_DK
+                              Dutc              nl_NL
+                              Estonian          et_EE
+                              Finnish           fi_FI
+                              French            fr_FR
+                              Galician          gl_ES
+                              German            de_DE
+                              Greek             el_GR
+                              Hebrew            he_IL
+                              Hungarian         hu_HU
+                              Icelandic         is_IS
+                              Italian           it_IT
+                              Japanese          ja_JP
+                              Korean            ko_KR
+                              Lithuanian        lt_LT
+                              Norwegian         no_NO
+                              Polish            pl_PL
+                              Portuguese        pt_PT
+                              Romanian          ro_RO
+                              Russian           ru_RU
+                              Slovak            sk_SK
+                              Slovenian         sl_SI
+                              Spanish           es_ES
+                              Swedish           sv_SE
+                              Thai              th_TH
+                              Turkish           tr_TR
+
+                            This is not a complete list and your server may
+                            support a different set. 
+
+recipient_input            - This specifies the name of a form field that
+                             the recipient is taken from.  It takes precedence
+                             over any recipient specified in the config.
+                             When this is set ALL templating that allows input
+                             from the form to be introduced into the mail is
+                             switched off and attempting to use a template
+                             for the email that does this will result in an
+                             error.  You should think carefully before using
+                             this as it is only intended for a "recommend this
+                             page" type scenario and is not generally useful.
+
+no_content                 - If this configuration is set to 1 then no HTML
+                             output will be sent to the browser and instead a
+                             204 status will be sent telling the browser that
+                             no content was intended to be sent and it should
+                             not update the current view.  This could be 
+                             useful if, for instance you are using a Flash
+                             form or you have a small subscription box on your
+                             page, on the other hand it may be confusing to
+                             the visitor of your web page as they will have no
+                             feedback that the submission was successful.
+
+block_lists                - This is a space delimited list of DNSBL zones
+                             that list open proxies or exploited computers
+                             that can be used by spammers or crackers to
+                             attempt to anonymously access TFmail, if this
+                             is set and the requesting client appears in one
+                             of the lists then the request will be refused
+                             before any further action is taken - the default
+                             response status is '403 Forbidden' but this
+                             may be altered by setting the block_status
+                             configuration directive.  Care should be taken
+                             in using this item as a lookup on a nonexistent
+                             or overloaded zone could block for some time.
+                             More information on DNSBL and useful zones can
+                             be found in README.dnsbl you got with TFmail.
+
+block_status               - This will set the status that is returned if one
+                             of the configured block_lists has an entry for
+                             the requesting host - the default is
+                             '403 Forbidden' which is probably appropriate
+                              but you may for instance want to use
+                             '404 Not Found', or some other status that will
+                             indicate a permanently unsuccessful request.
+                             Issuing a status beginning with '2' is almost
+                             certainly not appropriate unless for some reason
+                             you want to encourage the client to make further
+                             requests in the belief that this one was
+                             successfull.
+
+blocked_template           - If this is set to a valid template file (as
+                             described above) and block_lists is set then
+                             this will be displayed when the client is blocked.
+
+counter_file               - If this is set to the name of a writable file
+                             then the {= counter =} directive is enabled.
+                             the first time it is referenced in a single
+                             request it will be incremented
+                             
+                             
+INLINE TEMPLATES
+
+If you don't want to have a separate file for each template, you can
+choose to put some or all of the templates directly into the
+configuration file instead, putting a '%' character at the start of
+each line.
+
+For example, rather than having the configuration file line:
+
+
+email_template: my_email_template
+
+
+... and a separate my_email_template.trt file with the text:
+
+
+%% NMS email template file %%
+This is the email.
+
+remote address: {= env.REMOTE_ADDR =}
+user agent:     {= env.HTTP_USER_AGENT =}
+referer:        {= env.HTTP_REFERER =}
+
+The name they entered was: {= param.name =}
+
+
+... you could just have the block:
+
+
+email_template:
+%This is the email.
+%
+%remote address: {= env.REMOTE_ADDR =}
+%user agent:     {= env.HTTP_USER_AGENT =}
+%referer:        {= env.HTTP_REFERER =}
+%
+%The name they entered was: {= param.name =}
+
+
+... in the configuration file.  You can do this for any of the
+configuration variables listed above that expect a template file
+as a value.
+
+Note that you must leave out the %% NMS ???? template file %%
+line when using an inline template like this.
+
+
+WRITING TO A LOG FILE
+
+If you want to keep your log files in /usr/local/tfmail/logs, then
+you would set LOGFILE_ROOT to '/usr/local/tfmail/logs', and you
+might add the following lines to your .trc file:
+
+
+logfile: foo
+log_template:
+%{= date =}|{= env.REMOTE_ADDR =}|{= param.email =}
+
+
+One problem with log files done this way is that the values input
+by the user can contain '|' and newline characters, so it's possible
+for a malicious user to mess up your log files.
+
+However, TFmail will change tag-like constructs such as "<foo>" found
+in the user input into "< foo>" when it writes the log file, so using
+an HTML-like format for log files makes them more resilient:
+
+
+logfile: foo
+log_template:
+%{= date =}<x>{= env.REMOTE_ADDR =}<x>{= param.email =}<eol>
+
+
+FILE UPLOADS
+
+To enable file uploads, you will need to set the ENABLE_UPLOADS constant
+in the script to 1.  You will also need to set the correct encoding in
+your HTML form:
+
+<form method="post" enctype="multipart/form-data" action="/cgi-bin/TFmail.pl">
+...
+
+...and you will need to configure one or more inputs to be file uploads
+in your configuration file.  The configuration directive to make an
+input act as a file upload is upload_*, with the * replaced by the name
+of the input.  The value is a list of acceptable file extensions for
+the uploaded file, with the last one being the default that gets used
+if the uploaded file has another extension.
+
+For example, suppose you want the user to be able to upload a picture.
+You might put in the configuration file:
+
+upload_picture: gif jpg jpeg png xxx
+
+and you might put in the HTML form:
+
+  A picture of yourself:
+  <input type="file" name="picture" />
+
+If you want the MIME content-type of the upload to be recorded in the
+email, then you should add:
+
+  {= content_type.picture =}
+
+to the email template file.
+
+INSERTING TEXT INTO HTML FILES
+
+As well as sending email and writing log files, TFmail can be made to
+insert some text into the middle of an existing HTML file.  The
+HTMLFILE_ROOT constant in the script should be set to the filesystem
+path under which all of the HTML files that you might want TFmail to
+modify reside.
+
+For example, to use TFmail.pl as a guestbook script, with your
+guestbook stored in the file /www/sites/31337/guestbook.html, you
+might set the HTMLFILE_ROOT constant to '/www/sites/31337' and put
+the following in a guestbook.trc file:
+
+
+%% NMS configuration file %%
+
+no_email: 1
+
+modify_html_files: guestbook
+
+htmlfile_template_guestbook:
+%   <p><b>Date:</b>{= date =}</p>
+%   <p><b>Name:</b>{= param.name =}</p>
+%   <p><b>Comments:</b>{= param.comments =}</p>
+%   <hr />
+
+required: name,comments
+
+missing_template:
+%<?xml version="1.0" encoding="iso-8859-1"?>
+%<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+% "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+%<html>
+% <head>
+%  <title>Missing Fields</title>
+%  <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+% </head>
+% <body>
+%  <p>
+%   You must fill in both the <b>name</b> and <b>comments</b> fields.
+%   Please try again.
+%  </p>
+%  <form method="post">
+%   <input type="hidden" name="_config" value="guestbook" />
+%   <p>Your Name: <input type="text" name="name" size="30" value="{= param.name =}" /></p>
+%   <p>
+%    Comments:<br />
+%    <textarea name="comments" cols="60" rows="4">{= param.comments =}</textarea>
+%   </p>
+%   <p><input type="submit" /> * <input type="reset" /></p>
+%  </form>
+%  <hr />
+% </body>
+%</html>
+
+redirect: http://www.your.domain/thankyou.html
+
+
+... and you might put something like this in the guestbook.html file:
+
+
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Guestbook</title>
+  <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+ </head>
+ <body>
+  <h1>Guestbook</h1>
+  <p>Thank you for visiting our pages.  We would love it if you would
+   <a href="addguest.html">Add</a> to this guestbook we are keeping!</p>
+  <hr />
+<!-- NMS insert below -->
+ </body>
+</html>
+
+
+... and addguest.html would probably look something like:
+
+
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+ <head>
+  <title>Add to our Guestbook</title>
+  <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+ </head>
+ <body>
+  <h1>Add to our Guestbook</h1>
+  <p>Fill in the blanks below to add to our guestbook.</p>
+  <hr />
+  <form method="post" action="http://www.your.domain/cgi-bin/TFmail.pl">
+   <input type="hidden" name="_config" value="guestbook" />
+   <p>Your Name: <input type="text" name="name" size="30" /></p>
+   <p>Comments:<br /><textarea name="comments" cols="60" rows="4"></textarea></p>
+   <p><input type="submit" /> * <input type="reset" /></p>
+  </form>
+  <hr />
+ </body>
+</html>
+
+
+ADVANCED GUESTBOOK
+
+The trouble with the guestbook scheme described above is that it writes
+the entries directly into the guestbook HTML file, so you can't change
+the style in which the entries are shown without going back and editing
+all the old entries by hand.
+
+There is an alternative scheme, using the script GBview.pl, which
+formats the guestbook when it is displayed.  GBview.pl also allows you
+to split a long guestbook into multiple pages.
+
+To use the GBview scheme, adapt the example GBview configuration file
+supplied as gb.trc to your requirements, and upload it.  You will also
+need to edit the configuration section of GBview.pl and upload it to
+the same place as TFmail.pl.  Give all the configuration constants in
+GBview.pl the same values that you used for TFmail.pl.
+
+You will need to have the HTMLFILE_ROOT configuration constant set in
+both TFmail and GBview.  Since the HTML file that TFmail rewrites isn't
+viewed directly by the user in this case, it's best to set HTMLFILE_ROOT
+to a location outside of the web server's document root.  See the
+section on CHOOSING SECURE LOCATIONS FOR FILES above.
+
+You will need an addguest.html file, such as the one shown in the
+example above.  You must change the value of the hidden "_config" input
+to "gb" in the HTML form.  You will also need to upload an empty
+gbdata.html file to the HTMLFILE_ROOT directory on the server.
+
+See http://cleaton.net/nms/agb.html for a working example of a guestbook
+of this type.
+
+
+SUPPORT
+
+For support of this script please email:
+
+  <nms-cgi-support@lists.sourceforge.net>
+

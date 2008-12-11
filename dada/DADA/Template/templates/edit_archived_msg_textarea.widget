@@ -1,0 +1,13 @@
+<!-- begin edit_archived_msg_textarea.widget --> 
+
+	<script type="text/javascript">
+		var oFCKeditor = new FCKeditor( '<!-- tmpl_var name -->' ) ;
+		
+		<!-- tmpl_include FCKeditor_default_js_options.tmpl -->
+		
+		oFCKeditor.Value = "<!-- tmpl_var value -->";
+		oFCKeditor.Create() ;
+	
+	</script> 
+
+<!-- end edit_archived_msg_textarea.widget --> 

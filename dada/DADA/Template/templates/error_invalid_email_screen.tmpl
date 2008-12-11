@@ -1,0 +1,23 @@
+<!-- begin error_invalid_email_screen.tmpl --> 
+
+<h1>
+ Invalid Email Address
+</h1> 
+
+<p>
+ The address you gave, 
+ <strong>
+  <!-- tmpl_var subscriber.email -->
+ </strong>, 
+doesn't seem to pass verification. It's possible that you just typed it in
+incorrectly. You may 
+<a href="#" onclick="history.back(); return false">
+	go back
+</a> 
+and resubmit your address, or use the form below:</p> 
+
+<!-- tmpl_var subscription_form --> 
+
+<!-- tmpl_include error_footer_widget.tmpl -->
+
+<!-- end error_invalid_email_screen.tmpl --> 

@@ -1,0 +1,16 @@
+=pod
+
+=head1 Past Documentation
+
+This doc holds URLs for documentation of earlier versions of Dada Mail
+
+=head2 2.10.13
+
+http://mojomail.sourceforge.net/support/documentation/2_10_13
+
+=head2 2.10.12
+
+http://mojomail.sourceforge.net/support/documentation/2.10.12
+
+=cut
+

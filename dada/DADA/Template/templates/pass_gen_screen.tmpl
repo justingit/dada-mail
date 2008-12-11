@@ -1,0 +1,16 @@
+<!-- begin pass_gen_screen.tmpl --> 
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+ <p> 
+  <label for="pw">  
+   Enter
+  </label>
+  a password that you would like to encrypt.<br /> 
+
+  <input type="hidden" name="f" value="pass_gen" />
+  <input type="password" name="pw" id="pw" size="16" />
+  <input type="submit" value="encrypt password"/>
+ </p>
+</form>
+
+<!-- end pass_gen_screen.tmpl --> 

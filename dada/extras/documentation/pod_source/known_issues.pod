@@ -1,0 +1,124 @@
+=pod
+
+=head1 Known Issues
+
+For the complete Bug Tracker, please see: 
+
+L<https://sourceforge.net/tracker/?group_id=13002&atid=113002>
+
+If you'd like, please submit a new bug and comment on current bugs. 
+
+=head2 CGI::Session Problems
+
+CGI::Session is bundled with Dada Mail - you don't have to install it separately. In rare occurances, it doesn't work correctly. You may receive an error like this: 
+
+ Wed Aug 2 19:23:06 2006] mail.cgi: Can't call method
+ "param" on an undefined value at /DADA/App/Session.pm
+ line 261.
+
+I haven't yet figured out what causes this, but there's  two solutions: 
+
+
+Remove the files in the, I<dada/DADA/perllib/CGI/Session*> files and directories
+
+and install B<CGI::Session> and B<CGI::Session::ExpireSessions> manually or via CPAN. 
+
+More information: 
+
+http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session.pm
+
+http://search.cpan.org/~rsavage/CGI-Session-ExpireSessions/lib/CGI/Session/ExpireSessions.pm
+
+or, 
+
+Set the Config.pm variable, B<$SESSION_DB_TYPE> to, "Classic". 
+
+B<Do Note> that only attempt the second solution if you understand that the classic method will pass your list name and B<list password> across the network and save this information (albeit in an encrytped form) in your brower's cookie jar. Not the best situation, but if you're in a pinch, it may be a life-saver - but try to get one of the other options working ASAP. 
+
+=head2 CPAN Perl modules/conflicts
+
+B<Introduction:> 
+
+Dada Mail relies on specific perl libraries that have a compiled version and a pure perl version. Usually, the compiled version is there as an option to enhance the speed of execution of the routines of the library itself. It's a good thing. 
+
+B<Problem:> 
+
+You cannot bundle the compiled version of these libraries within Dada Mail, because they need to be compiled specifically for the OS that Dada Mail will run on, and that list is very large. 
+
+B<Solution?> 
+
+At the moment, Dada Mail comes with a pure perl version of every perl library module that it B<requires>. Here is the list: 
+
+=over
+
+=item * MIME::Base64
+
+=item * MIME::QuotedPrint
+
+=item * Data::Dumper
+
+=item * Digest
+
+=item * Digest::MD5
+
+=back
+
+So, if you do not have these modules installed - it's OK, Dada Mail comes with the pure perl version of them. 
+
+B<Problem With This Solution:> 
+
+The catch 22 to this is: if you HAVE these modules installed - and it's a really good chance you have at least one in the group installed, Dada Mail may produce an error saying basically, "I've got a newer/different/better version already! - whatcha doin'?!" 
+
+B<Solution to the Problem of the First Solution:> 
+
+To counteract this, as of version B<2.9.1> The above modules will be included in Dada Mail, B<but> will not be active. This is done by appending, B<-remove_to_install> to the file name/directory of these perl library modules. To make them active, rename the module to not include, B<-remove_to_install>. 
+
+Examples: 
+
+=over
+
+=item Base64.pm-remove_to_install -> Base64.pm
+
+=item Data-remove_to_install -> Data
+
+(Note: Data is directory)
+
+=back
+
+Easy enough? These files/directories are located in the: B<dada/DADA/perllib> directory of the Dada Mail distribution. 
+
+If you can, install the compiled versions of these modules manually. If you can't/don't know how, rename the files as directed above. It's better to use the compiled version if you can. How to install these modules is a little over the pale of this particular document. 
+
+
+=head2 Outside config file and variables set to 0
+
+If you use the outside config file, and try to set a variable to, 0, it'll most likely fail, 
+this is because in Perldom, 0 basically means, undefined, so the variable won't be used. 
+Easiest fix is to use, 2 instead. 
+
+=head2 SunOS, Dada Mail, and You.
+
+As of at least 2.8.12 (most likely lower) Dada Mail has some issues with file locking and the SunOS. 
+
+I<This issue should be a non-issue in ver. 2.9>
+
+
+=head2 Archive viewing bugs
+
+When viewing the archive web page of a
+plain text message sent with a URL in it that is surrounded
+by "<" and ">" characters, the URL is improperly encoded
+into HTML.
+
+=head2 Send a Webpage
+
+=head3 Assets w/URLS w/Query Strings break
+
+If you're trying to send a webpage with an image, javascript library or stylesheet with a query string ala: 
+
+ <script src="http://example.com/script.js?ver=1234" ></script> 
+
+The, "Send a Webpage" function of Dada Mail most likely won't understand what to do with this and most likely will ignore and remove the script, image or stylesheet. 
+
+=cut
+

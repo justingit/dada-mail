@@ -1,0 +1,51 @@
+<!-- begin search_archive_screen.tmpl -->
+
+<!-- tmpl_include name="list_breadcrumbs_widget.tmpl" -->
+
+<!-- tmpl_if search_results -->
+	
+	<p>
+	 <em>
+	  Found <!-- tmpl_var count --> archived message<!-- tmpl_var ending --> 
+	  when looking for &quot;<!-- tmpl_var keyword -->&quot;:
+	 </em>
+	</p>
+	<ol>
+	 
+	<!-- tmpl_loop summaries --> 
+		 
+		 <li>
+		  <p>
+		   <strong>
+		    <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list -->/<!-- tmpl_var id -->/">
+		     <!-- tmpl_var subject -->
+		    </a>
+		   </strong>
+		   <br />
+		   <em>
+		    Sent <!-- tmpl_var date -->
+		   </em>
+		  </p>
+		  <p>
+		   <!-- tmpl_var summary -->
+		  </p>
+		 </li>
+		 
+	<!--/tmpl_loop-->
+	 
+	</ol>
+	
+<!--tmpl_else-->
+	
+	<p class="error">
+	 No archived messages matched your search.
+	</p>
+	
+<!--/tmpl_if-->
+
+<!-- tmpl_var search_form -->
+<hr />
+
+<!-- tmpl_var archive_subscribe_form -->
+
+<!-- end search_archive_screen.tmpl -->

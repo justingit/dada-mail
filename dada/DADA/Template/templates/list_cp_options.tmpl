@@ -1,0 +1,118 @@
+<!-- begin list_cp_options.tmpl --> 
+
+<!-- tmpl_if done -->
+	<!-- tmpl_var GOOD_JOB_MESSAGE -->
+<!--/tmpl_if -->
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+
+
+<fieldset> 
+
+<legend>FCKeditor Options</legend> 
+
+<!-- tmpl_if FCKEDITOR_URL --> 
+
+ <p class="alert">FCKeditor is currently configured in <!-- tmpl_var PROGRAM_NAME --> at: 
+	<a href="<!-- tmpl_var FCKEDITOR_URL ESCAPE="HTML" -->" target="_blank">
+		<!-- tmpl_var FCKEDITOR_URL ESCAPE="HTML" -->
+	</a>
+</p>
+
+<!-- tmpl_else --> 
+
+	<p class="alert">
+		FCKeditor does not currently seem to be configured in <!-- tmpl_var PROGRAM_NAME -->
+	</p>
+
+<!-- /tmpl_if -->
+
+<table cellpadding="5" border="0"> 
+	<tr> 
+		<td>
+			<p>
+				<input type="checkbox" name="enable_fckeditor" id="enable_fckeditor" <!-- tmpl_if list_settings.enable_fckeditor -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
+			</p>
+		</td>
+		<td>
+			<p>
+				<label for="enable_fckeditor">
+					Enable FCKeditor
+				</label>
+			</p>
+		</td>
+	</tr>
+</table>
+				
+</fieldset> 
+
+
+<!-- tmpl_if comment --> 
+
+
+
+<fieldset> 
+
+<legend>
+List Message Sending Screens
+</legend> 
+
+
+. 
+	
+<table cellpadding="5" border="0"> 
+	<tr> 
+		<td>
+			<p>
+				<input type="checkbox" name="pre_fill_email_templates_in_cp" id="pre_fill_email_templates_in_cp" <!-- tmpl_if list_settings.pre_fill_email_templates_in_cp -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
+			</p>
+		</td>
+		<td>
+			<p>
+				<label for="pre_fill_email_templates_in_cp">
+					 Pre fill out message bodies with the Mailing List Message email templates
+				</label>
+				<br /> 
+				
+				This will take affect in the following screens: 
+				<ul> 
+					<li>
+						Send a List Message
+					</li>
+					<li>
+						Send a Webpage
+					</li>
+					<!--
+						<li>
+							Send a List Invitation
+						</li>
+					-->
+				</ul> 
+				
+			</p>
+		</td>
+	</tr>
+</table>
+</fieldset> 
+
+
+
+<!-- /tmpl_if --> 
+
+<input type="hidden" name="process" value="1" />
+<input type="hidden" name="f"       value="list_cp_options" />
+<div class="buttonfloat">
+ <input type="reset"  class="cautionary" value="Clear Changes" />
+ <input type="submit" class="processing" value="Save Changes" />
+</div>
+<div class="floatclear"></div>
+
+</form> 
+
+
+
+<!-- tmpl_include help_link_widget.tmpl --> 
+
+
+<!-- end list_cp_options.tmpl --> 
+

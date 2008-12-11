@@ -1,0 +1,191 @@
+=pod
+
+=head1 NAME A Sample Subscription Form Using Flash
+
+=head1 CAVEAT! 
+
+This Flash hook was made when Flash 5 was the new kid on the block. It's 
+ways of doing things are probably outdated. 
+
+=head1 INTRODUCTION
+
+Dada Mail now has hooks for Flash that will return an SWF-friendly, XML document
+ to allow you to create a subscription form in the animation itself, 
+ instead of having to use HTML form widgets. All the SWF animation has to do is load 
+ mail.cgi with the correct query string, which looks like this: 
+
+	http://yoursite.com/cgi-bin/dada/mail.cgi?f=subscribe_flash_xml&l=listshortname&e=someone@address.com
+
+Breaking that down, 
+
+=over
+
+=item B<http://yoursite.com/cgi-bin/dada/mail.cgi>
+
+The full URI to where Dada Mail has been B<correctly> installed. Before I 
+get any further, please install Dada Mail and have it  working before 
+trying to make it work in Flash, you'll save yourself so much time. I've found, 
+especially when developing Flash animations on a Mac, that weird and wonderful things
+happen in animations once the word 'XML' enters the picture. 
+
+=item B<f=subscribe_flash_xml>
+
+'f' is short for 'flavor', the hip way to tell Dada Mail what you want it to do, it
+dates back to when Dada was a part of my coffee speak (e.g. Mo' Joe) If you want 
+to geek it, think of 'f' as in function. The flavor we want to use is called 
+'subscribe_flash_xml' This will return a SWF-friendly XML document back to your animation
+
+What do I mean by SWF-friendly? It means the XML doc that gets past back should work for 
+all versions of the Flash 5 player and above, it does not have any newlines in it, or 
+whitespace between tags, so you don't need any groovy undocumented Flash 5 
+XML method calls or #included code. All the tags are lowercase as well. I know, 
+I've been there. I'm on your side, believe me. Oh, and the XML is given to Flash with a 
+content type of 'application/x-www-form-urlencoded'. 
+
+=item B<l=listshortname>
+
+replace 'listshortname' with the list's shortname you want to make the subscription 
+form for. The list's shortname is NOT the list name... shortened. If you created your
+list using version 2.6 and above, you were ask to make a shortname, for things like this. 
+If you created your list with a version below 2.6 than you list's shortname is your list name.
+
+=item B<e=someone@address.com>
+
+'e' is short for email, change it to the email you want to subscribe to. 
+
+Once you sort all that out, it's just a simple call in Actionscript: 
+
+	var Dada = new XML(); 
+	    Dada.load('http://yoursite.com/cgi-bin/dada/mail.cgi?f=subscribe_flash_xml&l=listshortname&e=someone@address.com');
+
+to load up the XML. Well, what does the XML look like? 
+
+=back
+
+=head2 The Returned XML
+
+The XML document for this query: 
+
+	http://yoursite.com/cgi-bin/dada/mail.cgi?f=subscribe_flash_xml&l=listshortname&e=someone@address.com
+
+will look like this: (newlines added for clarity) 
+
+
+	<subscription>
+	 <email>someone@address.com</email>
+	 <status>1</status>
+	 <errors></errors>
+	</subscription>
+
+
+Pretty self-explanitory, (ah, the wonders of meta data) The only elusive 
+thing is the status. A status of 1 means everything checked out. The B<listshortname>
+flavor checks to see if - the list exists, the email is valid, the email is already
+subscribed, if the list is closed and if the email is blacklisted. Possibly better 
+than the self-rolled version you may have been using. 
+
+A query like this: 
+
+	http://yoursite.com/cgi-bin/dada/mail.cgi?f=subscribe_flash_xml&l=listshortname&e=bad
+
+
+Will return something like this: 
+	
+	<subscription>
+	 <email>bad</email>
+	 <status>0</status>
+	  <errors>
+	   <error>invalid_email</error>
+	  </errors>
+	 </subscription>
+
+Pretty slick, eh? 
+
+The error values are as follows:
+
+=over
+
+=item * blacklisted
+
+=item * closed_list
+
+=item * invalid_email
+
+=item * mx_lookup_failed
+
+=item * no_list
+
+=item * subscribed
+
+=item * settings_possibly_corrupted
+
+=item * over_subscription_quota
+
+=item * already_sent_sub_confirmation/already_sent_unsub_confirmation
+
+=back
+
+again, self explainitory. 
+
+=head1 Working Example
+
+There's an .fla file called email_subscription_form.fla In the first frame of Scene 1, there are two variables you
+need to change... have at it. 
+
+The above instructions are meant to be digested by someone who knows what they're doin' in Flash Actionscript.
+Tutorials by me for Flash are up in coming.
+
+=head2 Flash Security Notice! 
+
+If you save the example .fla in anything over version Flash 5, (which is a very very good chance), you'll have to follow the instructions located here: 
+
+http://www.macromedia.com/devnet/flash/articles/fplayer_security_03.html
+
+Generally, you'll need to put a file in your public html directory called, I<crossdomain.xml>, with the following entry:
+
+ <?xml version="1.0"?>
+ <!DOCTYPE cross-domain-policy SYSTEM  "http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd">
+ <cross-domain-policy>
+   <allow-access-from domain="*.example.com" />
+ </cross-domain-policy>
+
+Where, I<example.com> is the domain of the site you have Dada Mail installed. 
+
+
+=head2 DEBUGGING
+
+Sometimes using XML from an outside source within Flash can be difficult to debug, so 
+I made it easy for you to just check out the XML doc in your browser add B<&test=1> to the 
+end of the already-too-large-to-type-yet-again query string and paste that into a web browser. 
+
+
+=head2 FAQS
+
+=over
+
+=item * Is there a sample unsubscription form in Flash? 
+
+No, but just change the query string from: 
+
+ http://yoursite.com/cgi-bin/dada/mail.cgi?f=subscribe_flash_xml&l=listshortname&e=someone@address.com
+
+to:
+
+ http://yoursite.com/cgi-bin/dada/mail.cgi?f=unsubscribe_flash_xml&l=listshortname&e=someone@address.com
+
+in your actionscript.
+
+=item * So, you're a Tweening Nerd Too?! 
+
+Yes. I like to dance on Tuesdays as well. 
+
+=back
+
+
+=head1 AUTHOR
+
+Justin Simoni 
+
+http://justinsimoni.com
+
+=cut

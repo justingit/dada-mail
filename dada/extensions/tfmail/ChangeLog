@@ -1,0 +1,333 @@
+2006-02-09 21:40  gellyfish
+
+	* TFmail.pl (1.38): Fixed the redirect
+
+2006-01-31 09:14  gellyfish
+
+	* TFmail.pl (1.37): Added templating to the redirect configuration
+
+2005-06-21 21:53  gellyfish
+
+	* README (1.36), TFmail.pl (1.36): Fixed call to can_handle_get(),
+	  changed the description of counter_file
+
+2005-06-20 21:59  gellyfish
+
+	* TFmail.pl (1.35): Added Allow: header as per RFC when sending a
+	  405 status ....
+
+2005-05-19 12:07  gellyfish
+
+	* TFmail.pl (1.34): Removed extraneous '$' from $treq in
+	  bad_method_template
+
+2005-05-10 15:26  gellyfish
+
+	* README (1.35), TFmail.pl (1.33):  added {= counter =} directive
+
+2004-10-12 09:37  gellyfish
+
+	* GBview.pl (1.5), NMSCharset.pm (1.2), NMStreq.pm (1.16), README
+	  (1.34), README.dnsbl (1.2), TFmail.pl (1.32): Fixed ambiguity in
+	  README regarding the 'missing' template Changed the
+	  'bad_method_template' and 'blocked_template' handling
+
+2004-10-08 09:08  gellyfish
+
+	* NMStreq.pm (1.15), README (1.33), TFmail.pl (1.31): * Will look
+	  for templates in the same directory as the config * Added
+	  templates for blocked and bad_method
+
+2004-09-21 10:36  gellyfish
+
+	* EXAMPLES (1.2): Added example of having a confirmation page
+
+2004-09-17 10:56  gellyfish
+
+	* TFmail.pl (1.30): Had put a . instead of a comma
+
+2004-09-17 10:48  gellyfish
+
+	* README (1.32), TFmail.pl (1.29): Added the
+	  confirmation_email_from configuration
+
+2004-08-25 09:03  gellyfish
+
+	* README.dnsbl (1.1): Added README.dnsbl
+
+2004-08-25 09:02  gellyfish
+
+	* MANIFEST (1.11), README (1.31), TFmail.pl (1.28): Added the DNSBL
+	  facility
+
+2004-08-24 10:23  gellyfish
+
+	* README (1.30), TFmail.pl (1.27): Added session capability to tie
+	  GET produced form to the POST
+
+2004-08-20 09:00  gellyfish
+
+	* README (1.29), TFmail.pl (1.26): * Added recipient_input * Added
+	  no_content
+
+2004-08-11 09:05  gellyfish
+
+	* NMStreq.pm (1.14), README (1.28), TFmail.pl (1.25): * Added
+	  locale fo strftime * Configurable From: address format
+
+2004-08-10 09:10  gellyfish
+
+	* README (1.27), TFmail.pl (1.24): Added facility to handle GET
+	  requests
+
+2004-07-28 14:57  gellyfish
+
+	* TFmail_config.pl (1.4): * Fixed LOCK/$flock bug in
+	  TFmail_config.pl
+
+2004-04-22 20:30  davorg
+
+	* email.trt (1.4): Changes to circumvent spamassassin rules
+
+2004-04-09 05:27  nickjc
+
+	* TFmail.pl (1.23): bug fix: envelope sender was always empty
+
+2003-11-24 15:28  nickjc
+
+	* README (1.26): Fixed README error found by David DelBiondo
+
+2003-10-26 09:15  nickjc
+
+	* NMStreq.pm (1.13): Cache the result of the {= data =} directive
+	  at the first call, so that all instances of {= data =} get the
+	  same value.
+
+2003-07-22 18:25  nickjc
+
+	* NMStreq.pm (1.12): * reversed accidental change
+
+2003-07-22 18:20  nickjc
+
+	* FAQ (1.1), MANIFEST (1.10), NMStreq.pm (1.11), README (1.25):
+	  added FAQ, contributed by Jameson
+
+2003-06-14 15:54  nickjc
+
+	* README (1.24): documented direct SMTP mailing
+
+2003-06-14 15:50  nickjc
+
+	* TFmail.pl (1.22): added support for direct SMTP mailing
+
+2003-01-09 22:17  nickjc
+
+	* README (1.23): * added date_fmt to README
+
+2003-01-04 14:37  nickjc
+
+	* GBview.pl (1.4): * fix silly errors that prevented compilation
+
+2002-11-17 09:33  nickjc
+
+	* GBview.pl (1.3), TFmail.pl (1.21), TFmail_config.pl (1.3): * use
+	  CGI::header() to generate CGI headers
+
+2002-11-11 13:15  nickjc
+
+	* TFmail_config.pl (1.2): * added log file support to
+	  TFmail_config.pl
+
+2002-11-06 21:46  nickjc
+
+	* README (1.22): * detaint $^X in nms_sendmail docs * tfmail doc
+	  fix
+
+2002-11-04 09:14  nickjc
+
+	* MANIFEST (1.9), README (1.21), TFmail_config.pl (1.1): * added a
+	  TFmail configuration editor
+
+2002-10-17 09:09  nickjc
+
+	* NMStreq.pm (1.10), README (1.20): * doc typos (JF Koh) * better
+	  error message for illegal char in config filename (JF Koh) *
+	  added logfile example to README
+
+2002-10-02 09:10  nickjc
+
+	* README (1.19), TFmail.pl (1.20): * added content_type template
+	  directive for uploads
+
+2002-09-17 20:28  nickjc
+
+	* TFmail.pl (1.19): * better handle inputs with non us-ascii names
+
+2002-08-06 23:05  nickjc
+
+	* README (1.18), TFmail.pl (1.18): * added support for multiple
+	  inputs concatenated into the realname in the	 from field in the
+	  email
+
+2002-08-04 21:09  nickjc
+
+	* README (1.17), TFmail.pl (1.17): * allowed template directives in
+	  the email subject, striping out newlines   and imposing a maximum
+	  length.
+
+2002-07-30 23:47  nickjc
+
+	* README (1.16): * fix README for loss of NMStreqUTF8.pm
+
+2002-07-30 23:38  nickjc
+
+	* GBview.pl (1.2), MANIFEST (1.8), NMSCharset.pm (1.1), NMStreq.pm
+	  (1.9), NMStreqUTF8.pm (1.2), NMStreqWeak.pm (1.3), README (1.15),
+	  TFmail.pl (1.16): * consolidated all the charset dependent text
+	  munging into a single   module
+
+2002-07-21 16:38  nickjc
+
+	* NMStreqWeak.pm (1.2): * bug fix: forgot to escape & in
+	  escape_html
+
+2002-07-19 20:39  nickjc
+
+	* GBview.pl (1.1), MANIFEST (1.7), README (1.14), gb.trc (1.1): *
+	  added enhanced guestbook functionality, with a script to render
+	  the	guestbook at viewing time
+
+2002-07-18 23:17  nickjc
+
+	* NMStreq.pm (1.8), TFmail.pl (1.15): * typo * added IF template
+	  directive
+
+2002-07-17 21:08  nickjc
+
+	* MANIFEST (1.6): * added new file to manifest
+
+2002-07-17 21:08  nickjc
+
+	* NMStreqWeak.pm (1.1), README (1.13), TFmail.pl (1.14): * added
+	  minimal support for charsets other than utf-8 and iso-8859-*
+
+2002-07-10 09:16  nickjc
+
+	* README (1.12), TFmail.pl (1.13): * added guestbook functionality
+
+2002-06-25 21:49  nickjc
+
+	* EXAMPLES (1.1), MANIFEST (1.5), README (1.11): * added an
+	  EXAMPLES file
+
+2002-06-09 22:54  nickjc
+
+	* NMStreq.pm (1.7): * better handling of \r\n line termination in
+	  template/config files
+
+2002-06-09 09:43  nickjc
+
+	* TFmail.pl (1.12): * fixed file uploads, which were broken
+
+2002-06-08 23:28  nickjc
+
+	* NMStreq.pm (1.6): * allow whitespace at the end of config file
+	  header lines
+
+2002-06-08 01:40  nickjc
+
+	* README (1.10): typo
+
+2002-05-30 20:45  nickjc
+
+	* MANIFEST (1.4), NMStreqUTF8.pm (1.1), README (1.9), TFmail.pl
+	  (1.11): * added utf-8 support
+
+2002-05-25 07:54  nickjc
+
+	* MIME_Lite.pm (1.1): * added MIME_Lite.pm (an exact copy of the
+	  MIME::Lite module by ZeeGee	software) with -ko to prevent
+	  ZeeGee's CVS revsion tag being replaced   by ours.  Do not modify
+	  this file.
+
+2002-05-23 22:50  nickjc
+
+	* NMStreq.pm (1.5), README (1.8): * inline templates
+
+2002-05-23 21:50  nickjc
+
+	* NMStreq.pm (1.4), TFmail.pl (1.10): * allow whitespace around
+	  email addresses * typo * better multiline config variable
+	  handling (towards inline templates)
+
+2002-05-20 21:22  nickjc
+
+	* README (1.7): * typos * added section on keeping config files out
+	  of the doc root
+
+2002-05-17 08:54  nickjc
+
+	* README (1.6), TFmail.pl (1.9): * misc typos * made sending the
+	  main e-mail optional
+
+2002-05-15 08:47  nickjc
+
+	* TFmail.pl (1.8): * bug: cofirmation email breaks foreach
+	  directive on success page
+
+2002-05-12 17:49  nickjc
+
+	* README (1.5), TFmail.pl (1.7): * minor bug fixes * added a
+	  configuration directive to allow the 'by' word in the
+	  by_submitter template directive to be changed.
+
+2002-05-07 22:38  nickjc
+
+	* MANIFEST (1.3), NMStreq.pm (1.3), README (1.4), TFmail.pl (1.6),
+	  default.trc (1.2), email.trt (1.3), missing.trt (1.1),
+	  pv_email.trt (1.2), pv_html.trt (1.2), spage.trt (1.2): * typos *
+	  added a FOREACH template directive, cutting down on the   number
+	  of template files required.  * added a default missing.trt to
+	  produce the same page as   FormMail.pl if there are missing
+	  required fields * added a logfile option
+
+2002-05-04 07:59  nickjc
+
+	* TFmail.pl (1.5): * charset iso-8859-1 in the email
+
+2002-05-02 08:50  nickjc
+
+	* README (1.3), TFmail.pl (1.4), email.trt (1.2): * Made use of
+	  MIME::Lite optional * reduced length of dashes in email.trt so
+	  that MIME::Lite won't need   to break those lines using the
+	  'quoted-printable' encoding
+
+2002-04-30 20:42  nickjc
+
+	* NMStreq.pm (1.2), README (1.2), TFmail.pl (1.3): Made the
+	  mailprog config a single variable like in formmail, because I
+	  couldn't get it to work on NT with seperate mailprog and
+	  mailprog_args.
+
+2002-04-30 13:44  nickjc
+
+	* TFmail.pl (1.2): * Changed to quoted-printable encoding for the
+	  main email, in the   hope of better supporting 8bit characters.
+
+2002-04-30 13:04  nickjc
+
+	* MANIFEST (1.2): typo
+
+2002-04-30 09:02  nickjc
+
+	* MANIFEST (1.1.1.1), NMStreq.pm (1.1.1.1), README (1.1.1.1),
+	  TFmail.pl (1.1.1.1), default.trc (1.1.1.1), email.trt (1.1.1.1),
+	  pv_email.trt (1.1.1.1), pv_html.trt (1.1.1.1), spage.trt
+	  (1.1.1.1): Initail import of TFmail.pl.  Highly alpha.
+
+2002-04-30 09:02  nickjc
+
+	* MANIFEST (1.1), NMStreq.pm (1.1), README (1.1), TFmail.pl (1.1),
+	  default.trc (1.1), email.trt (1.1), pv_email.trt (1.1),
+	  pv_html.trt (1.1), spage.trt (1.1): Initial revision
+

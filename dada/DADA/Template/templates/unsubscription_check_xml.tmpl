@@ -1,0 +1,17 @@
+<!-- begin unsubscription_check_xml.tmpl -->
+
+<unsubscription>
+ <email><!-- tmpl_var email --></email>
+ <status><!-- tmpl_var status --></status>
+ <errors>
+  
+<!--tmpl_loop name="errors" -->
+	  
+	  <error><!-- tmpl_var error --></error>
+	  
+<!--/tmpl_loop-->
+  
+ </errors>
+</unsubscription>
+
+<!-- end unsubscription_check_xml.tmpl -->

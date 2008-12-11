@@ -1,0 +1,117 @@
+USING DNS Block Lists (DNSBL) WITH THE NMS TFmail
+=================================================
+
+DNSBL is a mechanism by which the Domain Name System (DNS) can be queried
+for details of a hostname in a particular format, the presence of which
+indicates that the host is of interest to the creators of the queried
+list. The DNSBL system was originally created to control spam (and other
+material from unwanted sources) passing through mail servers. It is only
+concerned with the source of the internet request (that is for instance
+the last mail server a message passed through before reaching the one
+that is doing the check.) The query is performed on the IP address of
+the host in question and the hostname queried for is of the form:
+
+        4.3.2.1.dnsbl.zone.
+
+where the address that is being checked is 1.2.3.4 and the dnsbl zone
+(the name of the DNSBL in the terms of the DNS configuration) is called 
+'dnsbl.zone'.
+
+Quite a number of DNSBLs, with a variety of purpose, have been developed
+over the years: there are lists that have all the IP addresses that are
+are allocated to dial-up internet users and lists of insecure e-mail
+servers (known as Opem SMTP relays) or servers that have been confirmed
+as the source of spam, these are all used in various places to control the
+delivery of e-mail. There is even a DNSBL that returns a positive result
+for any IP address - but this is probably only useful for testing purposes.
+
+Increasingly spammers and crackers are using insecure servers that will
+disguise their origin (known as 'Open HTTP proxies') or computers that
+have been previously cracked or infected with a virus in such a way that
+they can be operated as such a proxy in order to attempt to use Form to
+Email programs (such as TFmail) as a mechanism by which to send spam or
+other annoying e-mail messages without the fear of detection and being
+disconnected by their ISP. Of course  well made programs of this type
+cannot actually be exploited in the way that is intended but it is common
+that people who run these programs receive annoyingly large numbers of
+mail messages that are the otherwise harmless results of attempts to
+exploit the program's potential flaws ( such as can be found in older
+insecure Form to Email programs).
+
+TFmail has the facility to perform a DNSBL query against a specified zone
+(or zones) for the address of the requesting client and to decline the
+request if the clients address has an entry in the configured DNSBL (the
+configuration directive 'block_lists' is discussed in the README.) By 
+specifying a DNSBL zone that contains a list of open proxies and/or
+exploited machines it is probable that the number of bogus spam attempt
+messages that are received by the configured recipient will be reduced. It
+would probably be counter-productive to use a DNSBL that listed dial-up (or
+otherwise dynamically allocated) addresses on the other hand.
+
+Because there may be a significant delay in performing the required
+DNS lookup on the specified DNSBL zone this configuration should be
+done cautiously, the request may wait for a long time if the server that
+provides a DNSBL is unavailable or overloaded (and it should be noted that
+because the DNSBL often interferes with the smooth working of spamming
+operations these servers tend to become the victim of Denial of Service
+(DoS) attacks intended to render the servers inoperable.)
+
+Ideally you should check frequently at the web site of the provider of a
+DNSBL to confirm its status and amend your configuation accordingly.
+
+Currently NMS would recommend using the single DNSBL 'sbl-xbl.spamhaus.org'
+however below is a list of some of the available DNSBLs - you are 
+strongly encouraged to check their policy before using them.
+
+	* Spamhaus Block List <http://www.spamhaus.org/SBL/>
+
+	      sbl.spamhaus.org
+
+	* Relay Stop List <http://relays.visi.com/>
+
+	      relays.visi.com
+
+	* Pan-American Dailup List <http://www.pan-am.ca/pdl/>
+
+	      dialups.visi.com
+
+	* Open Relay Database <http://www.ordb.org/>
+
+	      relays.ordb.org
+
+	* Not Just Another Bogus List <http://njabl.org/>
+
+	      dnsbl.njabl.org
+
+	* Extreme Spam Blocking List <http://www.selwerd.cx/xbl/>
+
+	      xbl.selwerd.cx
+
+	* <http://www.five-ten-sg.com/blackhole.php>
+
+	      blackholes.five-ten-sg.com
+
+	* SpamCop Block List <http://spamcop.net/bl.shtml>
+	
+	      bl.spamcop.net
+
+	* Habeas Infringers List <http://www.habeas.com/services/infringers.htm>
+	
+	      hil.habeas.com
+
+	* RFC-Ignorant ipwhois list  <http://www.rfc-ignorant.org/policy-ipwhois.php>
+	
+	      ipwhois.rfc-ignorant.org
+
+	* Open Proxy Monitor List <http://www.blitzed.org/opm/>
+
+	      wingate.opm.blitzed.org
+	      socks.opm.blitzed.org
+	      http.opm.blitzed.org
+	      opm.blitzed.org
+
+This is far from an exhaustive list of available DNSBLs, please feel free
+to contact the nms-cgi-support@lists.sf.net for more information or to add
+more suitable DNSBLs to the list.
+
+$Id: README.dnsbl,v 1.1 2006/11/26 05:33:10 skazat Exp $

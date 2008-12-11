@@ -1,0 +1,517 @@
+
+This file contains some examples of ways to install and
+configure NMS FormMail.pl.  It is intended to be read in
+conjunction with the README file.
+
+Here's what the configuration section of the FormMail.pl
+script looks like:
+
+
+  # USER CONFIGURATION SECTION
+  # --------------------------
+  # Modify these to your own settings. You might have to
+  # contact your system administrator if you do not run
+  # your own web server. If the purpose of these
+  # parameters seems unclear, please see the README file.
+  #
+  BEGIN
+  {
+    $DEBUGGING         = 1;
+    $emulate_matts_code= 0;
+    $secure            = 1;
+    $allow_empty_ref   = 1;
+    $max_recipients    = 5;
+    $mailprog          = '/usr/lib/sendmail -oi -t';
+    $postmaster        = '';
+    @referers          = qw(dave.org.uk 209.207.222.64 localhost);
+    @allow_mail_to     = qw(you@your.domain some.one.else@your.domain localhost);
+    @recipients        = ();
+    %recipient_alias   = ();
+    @valid_ENV         = qw(REMOTE_HOST REMOTE_ADDR REMOTE_USER HTTP_USER_AGENT);
+    $locale            = '';
+    $charset           = 'iso-8859-1';
+    $date_fmt          = '%A, %B %d, %Y at %H:%M:%S';
+    $style             = '/css/nms.css';
+    $no_content        = 0;
+    $double_spacing    = 1;
+    $wrap_text         = 0;
+    $wrap_style        = 1;
+    $send_confirmation_mail = 0;
+    $confirmation_text = <<'END_OF_CONFIRMATION';
+  From: you@your.com
+  Subject: form submission
+
+  Thank you for your form submission.
+
+  END_OF_CONFIRMATION
+  #
+  # USER CONFIGURATION << END >>
+  # ----------------------------
+  # (no user serviceable parts beyond here)
+
+
+That can be quite scary to look at first thing in the morning,
+but fortunately many of those settings deal with specialized
+features that most people won't use, so you'll probably only
+need to change a few lines.
+
+Everyone will need to ensure that $mailprog, @referers and
+@allow_mail_to are set correctly.  These are described in
+detail in the README file.
+
+It is good practice to also set $postmaster to a valid email
+address, so that you recieve bounce messages if something goes
+wrong with the delivery of the email.
+
+
+EXAMPLE 1: A simple feedback form
+
+This example assumes that you have a single feedback form on
+your home page at the address <http://www.your.domain/homepage/>
+in which people can enter their name and favorite animal, and
+you want all the results to be mailed to you at the address
+<your-name@your.domain>.
+
+First, find out the location of the sendmail binary from your
+system administrator or hosting provider.  For this example,
+I'll assume that the sendmail binary is at /usr/sbin/sendmail.
+
+Now edit the configuration part of FormMail.pl.  The lines that
+need to be changed for this example are:
+
+    $mailprog          = '/usr/sbin/sendmail -oi -t';
+    $postmaster        = 'fred@your.domain';
+    @referers          = qw(www.your.domain);
+    @allow_mail_to     = qw(your-name@your.domain);
+
+So the configuration section should now look like:
+
+
+  # USER CONFIGURATION SECTION
+  # --------------------------
+  # Modify these to your own settings. You might have to
+  # contact your system administrator if you do not run
+  # your own web server. If the purpose of these
+  # parameters seems unclear, please see the README file.
+  #
+  BEGIN
+  {
+    $DEBUGGING         = 1;
+    $emulate_matts_code= 0;
+    $secure            = 1;
+    $allow_empty_ref   = 1;
+    $max_recipients    = 5;
+    $mailprog          = '/usr/sbin/sendmail -oi -t';
+    $postmaster        = 'fred@your.domain';
+    @referers          = qw(www.your.domain);
+    @allow_mail_to     = qw(your-name@your.domain);
+    @recipients        = ();
+    %recipient_alias   = ();
+    @valid_ENV         = qw(REMOTE_HOST REMOTE_ADDR REMOTE_USER HTTP_USER_AGENT);
+    $locale            = '';
+    $charset           = 'iso-8859-1';
+    $date_fmt          = '%A, %B %d, %Y at %H:%M:%S';
+    $style             = '/css/nms.css';
+    $no_content        = 0;
+    $double_spacing    = 1;
+    $wrap_text         = 0;
+    $wrap_style        = 1;
+    $send_confirmation_mail = 0;
+    $confirmation_text = <<'END_OF_CONFIRMATION';
+  From: you@your.com
+  Subject: form submission
+
+  Thank you for your form submission.
+
+  END_OF_CONFIRMATION
+  #
+  # USER CONFIGURATION << END >>
+  # ----------------------------
+  # (no user serviceable parts beyond here)
+
+
+Here is an example of what the HTML source for the form might
+look like:
+
+
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <title>What is your favorite animal ?</title>
+ <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+</head>
+<body>
+ <form method="post" action="/cgi-bin/FormMail.pl">
+  <table>
+   <tr>
+    <td>What is your name ?</td>
+    <td><input type="text" name="name" /></td>
+   </tr>
+   <tr>
+    <td>What is your favorite animal ?</td>
+    <td><input type="text" name="animal" /></td>
+   </tr>
+   <tr>
+    <td colspan="2"><input type="submit" /></td>
+   </tr>
+  </table>
+ </form>
+</body>
+</html>
+
+
+One thing that I've glossed over here is style sheets.  You
+may have noticed that both the FormMail.pl configuration
+section and the example HTML above refer to a style sheet
+called "/css/nms.css".  
+
+Style sheets are files which tell browsers how to format
+and display HTML.  They're particularly good for scripts
+like FormMail.pl because they allow you to alter the look
+of the HTML that the script produces just by altering the
+style sheet, with no need to edit the guts of the script.
+See <http://www.w3.org/Style/CSS/> for more information
+on style sheets.  
+
+If you don't want to use style sheets on your site, then
+you can prevent FormMail.pl from using them by changing
+
+    $style             = '/css/nms.css';
+
+to
+
+    $style             = '';
+
+in the configuration section of the script.
+
+
+EXAMPLE 2: Setting the email subject
+
+If you test the example above, you'll notice that the email
+has the subject "WWW Form Submission".  This example extends
+example 1 by adding a customized email subject line.
+
+No further change to FormMail.pl is required, we just add an
+extra line to the HTML form.  The new line is
+
+  <input type="hidden" name="subject" value="Favorite Animal" />
+
+With this line added, the HTML now looks like:
+
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <title>What is your favorite animal ?</title>
+ <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+</head>
+<body>
+ <form method="post" action="/cgi-bin/FormMail.pl">
+  <input type="hidden" name="subject" value="Favorite Animal" />
+  <table>
+   <tr>
+    <td>What is your name ?</td>
+    <td><input type="text" name="name" /></td>
+   </tr>
+   <tr>
+    <td>What is your favorite animal ?</td>
+    <td><input type="text" name="animal" /></td>
+   </tr>
+   <tr>
+    <td colspan="2"><input type="submit" /></td>
+   </tr>
+  </table>
+ </form>
+</body>
+</html>
+
+
+Since the subject is set in the HTML form rather than in the
+script itself, you can have many different forms on your site,
+each using a different subject for the email.
+
+
+EXAMPLE 3: Copies to multiple recipients
+
+This example extends example 2 by sending a copy of the
+email to each of two different addresses.  For this
+example, I'll assume that you want the mail sent to both
+<your-name@your.domain> and <your-name@somewhere-else.domain>.
+
+There are two different ways to do this, and I'm going to
+show the most secure way.  This approach keeps the email
+addresses out of the HTML, which is desirable because it's
+common practice for the senders of junk email (SPAM) to
+collect target email addresses from web sites.
+
+
+  # USER CONFIGURATION SECTION
+  # --------------------------
+  # Modify these to your own settings. You might have to
+  # contact your system administrator if you do not run
+  # your own web server. If the purpose of these
+  # parameters seems unclear, please see the README file.
+  #
+  BEGIN
+  {
+    $DEBUGGING         = 1;
+    $emulate_matts_code= 0;
+    $secure            = 1;
+    $allow_empty_ref   = 1;
+    $max_recipients    = 5;
+    $mailprog          = '/usr/sbin/sendmail -oi -t';
+    $postmaster        = 'fred@your.domain';
+    @referers          = qw(www.your.domain);
+    @allow_mail_to     = ();
+    @recipients        = ();
+    %recipient_alias   = (
+       'animals' => 'your-name@your.domain,your-name@somewhere-else.domain',
+    );
+    @valid_ENV         = qw(REMOTE_HOST REMOTE_ADDR REMOTE_USER HTTP_USER_AGENT);
+    $locale            = '';
+    $charset           = 'iso-8859-1';
+    $date_fmt          = '%A, %B %d, %Y at %H:%M:%S';
+    $style             = '/css/nms.css';
+    $no_content        = 0;
+    $double_spacing    = 1;
+    $wrap_text         = 0;
+    $wrap_style        = 1;
+    $send_confirmation_mail = 0;
+    $confirmation_text = <<'END_OF_CONFIRMATION';
+  From: you@your.com
+  Subject: form submission
+
+  Thank you for your form submission.
+
+  END_OF_CONFIRMATION
+  #
+  # USER CONFIGURATION << END >>
+  # ----------------------------
+  # (no user serviceable parts beyond here)
+
+
+The lines that have changed from example 1 are:
+
+    @allow_mail_to     = ();
+
+which has changed because the addresses mentioned in %recipient_alias
+below are automatically allowed, so we don't need to explicitly allow
+any addresses, and the single %recipient_alias line has become the 3
+ lines:
+
+    %recipient_alias   = (
+       'animals'  => 'your-name@your.domain,your-name@somewhere-else.domain',
+    );
+
+which tells FormMail.pl that when you tell it that the
+recipient is "animals" via a hidden form field, you really
+mean that the recipients are those two addresses.
+
+The HTML form now has a hidden "recipient" input with a value
+of "animals":
+
+
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <title>What is your favorite animal ?</title>
+ <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+</head>
+<body>
+ <form method="post" action="/cgi-bin/FormMail.pl">
+  <input type="hidden" name="subject" value="Favorite Animal" />
+  <input type="hidden" name="recipient" value="animals" />
+  <table>
+   <tr>
+    <td>What is your name ?</td>
+    <td><input type="text" name="name" /></td>
+   </tr>
+   <tr>
+    <td>What is your favorite animal ?</td>
+    <td><input type="text" name="animal" /></td>
+   </tr>
+   <tr>
+    <td colspan="2"><input type="submit" /></td>
+   </tr>
+  </table>
+ </form>
+</body>
+</html>
+
+
+EXAMPLE 4: Multiple forms with different recipients
+
+This example adds an additional form to the same site, this
+time asking people about their favorite plant.  The results
+of this form get mailed to a new address, <foo@your.domain>.
+
+An extra line in the %recipient_alias part tells FormMail.pl
+how to handle a recipient value of "plants":
+
+    %recipient_alias   = (
+       'animals' => 'your-name@your.domain,your-name@somewhere-else.domain',
+       'plants'  => 'foo@your.domain',
+    );
+
+Putting all that together, the configuration section of the
+script is now:
+
+
+  # USER CONFIGURATION SECTION
+  # --------------------------
+  # Modify these to your own settings. You might have to
+  # contact your system administrator if you do not run
+  # your own web server. If the purpose of these
+  # parameters seems unclear, please see the README file.
+  #
+  BEGIN
+  {
+    $DEBUGGING         = 1;
+    $emulate_matts_code= 0;
+    $secure            = 1;
+    $allow_empty_ref   = 1;
+    $max_recipients    = 5;
+    $mailprog          = '/usr/sbin/sendmail -oi -t';
+    $postmaster        = 'fred@your.domain';
+    @referers          = qw(www.your.domain);
+    @allow_mail_to     = ();
+    @recipients        = ();
+    %recipient_alias   = (
+       'animals' => 'your-name@your.domain,your-name@somewhere-else.domain',
+       'plants'  => 'foo@your.domain',
+    );
+    @valid_ENV         = qw(REMOTE_HOST REMOTE_ADDR REMOTE_USER HTTP_USER_AGENT);
+    $locale            = '';
+    $charset           = 'iso-8859-1';
+    $date_fmt          = '%A, %B %d, %Y at %H:%M:%S';
+    $style             = '/css/nms.css';
+    $no_content        = 0;
+    $double_spacing    = 1;
+    $wrap_text         = 0;
+    $wrap_style        = 1;
+    $send_confirmation_mail = 0;
+    $confirmation_text = <<'END_OF_CONFIRMATION';
+  From: you@your.com
+  Subject: form submission
+
+  Thank you for your form submission.
+
+  END_OF_CONFIRMATION
+  #
+  # USER CONFIGURATION << END >>
+  # ----------------------------
+  # (no user serviceable parts beyond here)
+
+
+Finally, the HTML form for the plants page will look like
+this:
+
+
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <title>What is your favorite plant ?</title>
+ <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+</head>
+<body>
+ <form method="post" action="/cgi-bin/FormMail.pl">
+  <input type="hidden" name="subject" value="Favorite Plant" />
+  <input type="hidden" name="recipient" value="plants" />
+  <table>
+   <tr>
+    <td>What is your name ?</td>
+    <td><input type="text" name="name" /></td>
+   </tr>
+   <tr>
+    <td>What is your favorite plant ?</td>
+    <td><input type="text" name="plant" /></td>
+   </tr>
+   <tr>
+    <td colspan="2"><input type="submit" /></td>
+   </tr>
+  </table>
+ </form>
+</body>
+</html>
+
+
+EXAMPLE 5: You want to be able to reply to the emails
+
+Suppose you have the setup in example 4 working, and you
+decide that you want to ask the visitors to the Favorite
+Plant page for their email address in the form, and have
+FormMail.pl use the address that they enter as the
+'From' address for the email, so that you can hit 'reply'
+in your mail software to mail the visitor and strike up a
+conversation about their favorite plant.
+
+FormMail will do this automatically so long as the input
+where the visitor sets their email address is given the
+name "email".  If the input where the visitor gives their
+name is called "realname" then FormMail will use this as
+the comment part of the email address.
+
+No change is needed to FormMail.pl for this example, we
+just add an "email" field to the form and rename the
+"name" input to "realname":
+
+
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <title>What is your favorite plant ?</title>
+ <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+</head>
+<body>
+ <form method="post" action="/cgi-bin/FormMail.pl">
+  <input type="hidden" name="subject" value="Favorite Plant" />
+  <input type="hidden" name="recipient" value="plants" />
+  <table>
+   <tr>
+    <td>What is your name ?</td>
+    <td><input type="text" name="realname" /></td>
+   </tr>
+   <tr>
+    <td>What is your email address ?</td>
+    <td><input type="text" name="email" /></td>
+   </tr>
+   <tr>
+    <td>What is your favorite plant ?</td>
+    <td><input type="text" name="plant" /></td>
+   </tr>
+   <tr>
+    <td colspan="2"><input type="submit" /></td>
+   </tr>
+  </table>
+ </form>
+</body>
+</html>
+
+
+NOTES
+
+There are many more configuration options for FormMail.pl
+than those used in these examples.  See the README file for
+details.
+
+In all these examples, I've left the value of the $DEBUGGING
+configuration variable set to 1.  It should be changed to 0
+once you have finished setting up your forms, in order to
+restrict the amount of information that a malicious person
+attacking your site can obtain.
+
+In all these examples, I've left the value of the
+$max_recipients configuration variable set to the default
+of 5.  Since the largest number of recipients used in any
+single form in these examples is 2, it could be reduced to
+2 and all of the examples would continue to work.
+

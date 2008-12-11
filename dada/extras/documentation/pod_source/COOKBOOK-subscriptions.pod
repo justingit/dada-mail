@@ -1,0 +1,434 @@
+=pod
+
+=head1 Subscription Cookbook
+
+=head2 How to Subscribe an Email Address to a Mailing List
+
+First off, remember to always use the Dada::MailingList::Subscribers module in your script:
+
+ #!/usr/bin/perl
+ use DADA::MailingList::Subscribers;
+
+If your script isn't in the, I<cgi-bin/dada> directory, make sure to add the library path: 
+
+ #!/usr/bin/perl 
+ 
+ # Adding the lib path to the dada directory: 
+ use lib qw(/home/myaccount/www/cgi-bin/dada); 
+ 
+ use DADA::MailingList::Subscribers;
+
+Easy enough. To create a DADA::MailingList::Subscribers object, you'll need only one thing, 
+the I<listshortname> of the list. For all these examples, we'll use, I<mylist>. 
+
+Create a new DADA::MailingLIst::Subscribers object: 
+
+ #!/usr/bin/perl 
+ 
+ # Adding the lib path to the dada directory: 
+ use lib qw(/home/myaccount/www/cgi-bin/dada); 
+ 
+ use DADA::MailingList::Subscribers;
+ 
+ my $lh = DADA::MailingList::Subscribers->new({-list => 'mylist'}); 
+
+Once you have the DADA::MailingList::Subscribers object, you can simply use the, C<add_subscriber> method, like this: 
+
+ 
+ # add *one* email address to your list: 
+ # add *one* email address to your list: 
+ $lh->add_subscriber(
+ 		{
+			-email => 'user1@example.com', 
+		}
+ );
+
+The, B<-email> paramater takes a string that represents one email address. 
+
+=head2 Testing the validity of an email address, before subscribing
+
+Now, before you add an email address to your list, you may want to make sure 
+that the email address B<should> be added to a mailing list. 
+
+For example, if the address is already subscribed, you won't want to subscribe it twice, 
+so do a quick check that everything is alright: 
+
+ my ($status, $errors) = $lh->subscription_check(
+							{
+								-email => 'user1@example.com'
+							}
+						);
+
+If B<$status> is equal to B<1>, it should be safe to subscribe the email address:
+
+ my $email = 'user1@example.com';
+ my ($status, $errors) = $lh->subscription_check(
+							{
+								-email => $email
+							}
+						);
+ 
+ if($status == 1){ 
+    $lh->add_subscriber(
+	 	{
+			-email => $email,
+		}
+	); 
+ } else { 
+    print "there were problems subscribing $email"; 
+ }
+
+B<$errors> holds a hashref to any problems found, that you can then look at: 
+
+ my ($status, $errors) = $lh->subscription_check(
+							{
+								-email => $email
+							}
+						);
+ 
+ foreach(keys %$errors){ 
+    print "Problem: $_\n";
+ }
+
+For example, the above code may print back:
+
+ Problem: subscribed
+
+This would let you know that the email address is already subscribed. 
+
+In you code you could say something like: 
+
+ my $email = 'user1@example.com';
+ 
+ my ($status, $errors) = $lh->subscription_check(
+							{
+								-email => $email
+							}
+						);
+ 
+ if($status == 1){ 
+    $lh->add_subscriber(
+		{
+			-email => $email
+		}
+	); 
+ } else { 
+    if($errors->{subscribed}){ 
+        print "The email address, $email is already subscribed."; 
+    }   
+ }
+
+
+For more information on the B<subscription_check> method, see: 
+
+L<http://dadamailproject.com/support/documentation/MailingList_Subscribers.pm.html#subscription_check>
+
+=head2 Checking the validty of more than one email address at one time
+
+If you have a large number of email addresses you want to look at one time, consider using the, B<filter_subscribers> method. It takes a reference to an array of email addresses, like B<add_to_email_list>, but returns 5 seperate list refs, with your emails sorted in the following categories: 
+
+=over
+
+=item * Subscribed
+
+=item * Not Subscribed 
+
+=item * Black Listed
+
+=item * Not White Listed (currently, unimplemented, so will always return an empty array ref)
+
+=item * Invalid Addresses
+
+=back
+
+Use it like this:
+ 
+ my = @addresses = qw(
+    user1@example.com
+    user2@example.com
+    dsafjfadskjadfs
+    alreadysubscribed@example.com
+    black_listed@example.com
+ );  
+ 
+ my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid)
+ 	= $lh->filter_subscribers(
+		{
+			-emails => [@addresses],
+		}
+	);
+
+In our example, let's say, B<alreadysubscribed@example.com> is actually subscribed to our mailing list, and B<black_listed@example.com> is actually black_listed from our mailing list. Printing out our results:
+
+ print "Subscribed:\n"; 
+ foreach(@$subscribed){ 
+    print "* $_\n"; 
+ }
+  
+ print "Not Subscribed:\n"; 
+ foreach(@$not_subscribed){ 
+    print "* $_\n"; 
+ }
+  
+ print "Black Listed:\n"; 
+ foreach(@$black_listed){ 
+    print "* $_\n"; 
+ }
+ 
+ print "Invalid Addresses:\n"; 
+ foreach(@$invalid){ 
+    print "* $_\n"; 
+ }
+
+Would print something like this: 
+
+ Subscribed:
+ * alreadysubscribed@example.com
+ Not Subscribed:
+ * user1@example.com
+ * user2@example.com
+ Black Listed:
+ * black_listed@example.com
+ Invalid Addresses:
+ * dsafjfadskjadfs
+
+You could then safely subscribed the addresses that are valid, and aren't already subscribed:
+
+
+ my = @addresses = qw(
+ 
+    user1@example.com
+    user2@example.com
+    dsafjfadskjadfs
+    alreadysubscribed@example.com
+    black_listed@example.com
+ 
+); 
+ 
+ my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid) 
+	= $lh->filter_subscribers(
+		{
+			-emails => [@addresses]
+		}
+	);
+ 
+ foreach(@$not_subscribed){
+	$lh->add_subscriber(
+		{
+			-email => $_, 
+		}
+	); 
+			
+ }
+ 
+ print "Just Subscribed the following addresses:\n";
+ 
+ foreach(@$not_subscribed){ 
+    print "$_\n";
+ }
+
+=head2 Program: dada_add_subscribers - Add Subscribers to a list en mass on the Command Line
+
+The following program ties everything we've learned together - it's a simple script that will take two paramaters:
+
+=over
+
+=item * --list 
+
+The listshortname of the list you want to subscribe addresses to.
+
+=item * --file
+
+A file that holds all the subscribers you'd like subscribed. The addresses should be separated by newlines, spaces, commas, etc. 
+
+=back
+
+This script does a similar job as the list administration, B<add> screen, but on the commandline. It may come useful, if timeouts occure in the web-based version. 
+
+Here's the program - it's meant to be run via the commandline. As it's setup now, you can put it in the, I<cgi-bin/dada/> directory and it'll
+run out of the box. If you want to have it run anywhere else, just change the, I<use lib> line.
+
+ 
+ #!/usr/bin/perl -w
+ use strict; 
+ use 5.006;
+ 
+ use lib qw(./ ./DADA ./DADA/perllib); 
+ 
+ use DADA::Config 3.0.0; 
+ use DADA::MailingList::Subscribers; 
+ use DADA::App::Guts; 
+ 
+ use Getopt::Long; 
+ 
+ my $verbose = 1; 
+ my $list; 
+ my $file;
+ 
+ 
+ GetOptions("verbose=i"    => \$verbose, 
+ 		   "list=s"      => \$list,
+ 		   "file=s"      => \$file,
+ 		); 		
+ 
+ main(); 
+ 
+ 
+ sub main { 
+ 
+ 
+     if(!$list){ 
+     
+         print "You must pass a listshortname in the, '--list' paramater\n"; 
+         exit;
+     }
+     
+     if(DADA::App::Guts::check_if_list_exists(-List => $list) == 0){ 
+     
+         print "Your list does seem to be valid! Double check!\n";
+         
+         print "Available Lists:\n\n"; 
+         
+         foreach(DADA::App::Guts::available_lists()){ 
+             print $_ . "\n"; 
+         }
+         
+         exit; 
+     }
+     
+     if(! $file){ 
+     
+         print "You must pass a path to a file that holds a list of subscribers you'd like to subscirbe!\n"; 
+         exit;
+     }
+     
+     if (! -e $file){ 
+     
+         print "Can't find: $file file!\n"; 
+         
+     }
+ 
+     my $addresses = get_addresses();  
+     
+     
+     my $lh = DADA::MailingList::Subscribers->new(
+				{
+					-list => $list
+				}
+			); 
+     
+     my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid) 
+	= $lh->filter_subscribers(
+		{
+			-emails => $addresses
+		}
+	); 
+     
+     if($verbose){ 
+     
+     
+         if($subscribed->[0]){ 
+             print "\nAlready Subscribed:\n" . '-' x 72 . "\n"; 
+             foreach(@$subscribed){ 
+                 print "\t$_\n"; 
+             }
+         }
+         
+         
+         if($black_listed->[0]){ 
+             print "\nBlack Listed:\n" . '-' x 72 . "\n"; 
+             foreach(@$black_listed){ 
+                 print "\t$_\n"; 
+             }
+         }
+    
+    
+         if($not_white_listed->[0]){ 
+             print "\nNot White Listed:\n" . '-' x 72 . "\n"; 
+             foreach(@$not_white_listed){ 
+                 print "\t$_\n"; 
+             }
+         }
+         
+         if($invalid->[0]){ 
+             print "\nInvalid Emails:\n" . '-' x 72 . "\n"; 
+             foreach(@$invalid){ 
+                 print "\t$_\n"; 
+             }
+         }
+         
+ 
+         if($not_subscribed->[0]){ 
+             print "\nSubscribing the following emails:\n" . '-' x 72 . "\n"; 
+             foreach(@$not_subscribed){ 
+                 print "\t$_\n"; 
+             }
+         }
+         
+         
+    }
+    
+    my $new_email_count = 0; 
+
+	foreach(@$not_subscribed){ 
+		$lh->add_subscriber(
+			{
+				-email => $_, 
+			}
+		): 
+		$new_email_count++; 
+	}
+	
+     print "\n"
+         if $verbose;
+     print "Subscribed $new_email_count address(es);\n\n"
+         if $verbose; 
+   
+ }
+ 
+ 
+ 
+ sub get_addresses { 
+ 
+     open my $ADDRESS_FILE, '<', $file
+         or die "Cannot read file at: '" . $file
+         . "' because: "
+         . $!;
+ 
+     my $addresses = do { local $/; <$ADDRESS_FILE> };
+ 
+     close $ADDRESS_FILE
+         or die "Didn't close: '" . $file . "'properly because: " . $!;
+ 
+     my @new_addresses = split(/\s+|,|;|\n+|\r+/, $addresses);
+ 
+     return \@new_addresses;
+         
+ }
+
+When you're on the command line run the program like this: 
+
+ /home/myaccount/cgi-bin/dada justin> perl dada_add_subscribers.pl --list mylist --file addresses_to_add.txt
+
+=head1 Subscribing an address with Subscriber Fields
+
+Subscribing an address with Subscriber Fields is the same as subscribing an address without them. The only difference is that you pass the fields to the C<add_subscriber> method, like so: 
+
+ $lh->add_subscriber(
+		{
+			-email => 'user1@example.com', 
+			-fields => { 
+				first_name => 'John', 
+				last_name  => 'Doe', 
+			}
+		}
+	); 
+
+
+=head1 See Also
+
+The C<DADA::MailingList::Subscribers> module is fairly heavily documented: 
+
+L<http://dadamailproject.com/support/documentation/MailingList_Subscribers.html>
+
+=cut

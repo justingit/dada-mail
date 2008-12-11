@@ -1,0 +1,75 @@
+<!-- begin text_box_login_form.tmpl -->
+
+<form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
+ <input type="hidden" name="f"       value="login" />
+ <input type="hidden" name="process" value="true" />
+
+<!-- tmpl_if referer --> 
+
+	<input type="hidden" name="referer" value="<!-- tmpl_var referer -->" /> 
+
+<!-- tmpl_else --> 
+
+	<!-- tmpl_if url --> 
+
+		<input type="hidden" name="referer" value="<!-- tmpl_var url --><!-- tmpl_if query_string -->?<!-- tmpl_var query_string --><!-- /tmpl_if --><!-- tmpl_if path_info -->/<!-- tmpl_var path_info --><!-- /tmpl_if -->" /> 
+
+	<!-- tmpl_else --> 
+
+	<!-- /tmpl_if --> 
+
+<!-- /tmpl_if -->
+
+
+ <p>
+  You will need to know your List Short Name and List Password to 
+  access your control panel.
+ </p>
+
+ <table align="center" cellpadding="5">
+  <tr>
+   <td>
+    <p>
+     Type in your 
+     <br />
+     <label for="admin_list">
+      List Short Name:
+     </label>
+    </p>
+   </td>
+   <td rowspan="2">
+    <p>&nbsp;</p>
+   </td>
+   <td>
+    <p>
+     Type in your 
+     <br />
+     <label for="admin_password">
+      List Password:
+     </label>
+    </p>
+   </td>
+  </tr>
+  <tr>
+   <td valign="top">
+    <p>
+     <input type="text" name="admin_list" id="admin_list" size="16" />
+    </p>
+   </td>
+   <td valign="top">
+    <input type="password" name="admin_password" size="16" style="vertical-align:top;" maxlength="24" /><!-- HACK: vertical-align is for IE -->
+    <input type="submit" class="plain" value="Login" />
+   </td>
+  </tr>
+ </table>
+ 
+ 
+	 <!-- tmpl_if DISABLE_OUTSIDE_LOGINS --> 
+	     <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" /> 
+	 <!--/tmpl_if--> 
+
+
+ 
+</form>
+
+<!-- end text_box_login_form.tmpl -->

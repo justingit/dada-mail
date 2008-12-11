@@ -1,0 +1,136 @@
+=pod
+
+=head1 The Dada Mail SPAM FAQ
+
+This document is to highlight, bold and underline the stance of the author and his views on SPAM. 
+
+=over
+
+
+=item * Is Dada Mail created to send SPAM
+
+No, 
+
+Dada Mail has been created to allow people to send email to a subscription list. 
+
+=item * Do you send SPAM
+
+No, 
+
+I do not send SPAM
+
+=item * Does any of the hosting providers that you rent or buy from send SPAM or 
+use any equipment that they own or rent to send SPAM
+
+No, they do not. My hosting providers also, do not send SPAM and have been 
+incredibly understanding with false reports.
+
+My hosting providers businesses are at stake if they are, in fact, blacklisted and they do not appreciate fake reports of SPAM on their system.
+
+My hosting providers understand Dada Mail and thus have no problem with its development. 
+
+=item * I have gotten SPAM email from what I think is Dada Mail, I though you 
+said you don't send SPAM, what's the story?
+
+Dada Mail is not a hosted program, Dada Mail is downloaded and installed on a server and all activity by the program happens at that point. I do not have any control over what people do with the program. 
+
+=item * Is there a backdoor to Dada Mail so that I can hack the installation and give those spamers a lesson? 
+
+No, 
+
+there is no backdoor to Dada Mail. Hacking someone elses site is unethical and probably illegal. An eye for an eye is not the way to go. 
+
+=item * I've gotten SPAM from what I think is Dada Mail, I want off. Can you get me off? 
+
+No, but I can help you get off. 
+
+The default, 'out of the box', distribution that you get from the Dada Mail support website has many, many ways to unsubscribe and unless a SPAMMER actually changes the underlying code of Dada Mail, they should all work:
+
+=over 
+
+=item Default Footer
+
+Each mailing list Message sent using Dada Mail will have a default footer with instructions on how to unsubscribe and a link you can click to unsubscribe yourself.
+
+=item List Headers 
+
+Each mailing list message send using Dada Mail will contain email list headers that look like this: 
+
+	List: the_list
+	List-Archive: http://theirsite.com/cgi-bin/dada/mail.cgif=archive&list=my_list
+	List-ID: 20020331090837
+	List-Owner: <them@theiraddress.com>
+	List-Subscribe: http://theirsite.com/cgi-bin/dada/mail.cgi?f=n&l=my_list
+	List-Unsubscribe: http://theirsite.com/cgi-bin/dada/mail.cgi?f=u&l=my_list
+	List-URL: http://theirsite.com/cgi-bin/dada/mail.cgi?l=my_list
+
+
+There should be a header that says: B<List-Unsubscribe> followed by a link. Visiting that link in a web browser should give you a form to unsubscribe
+
+=item Web Address
+
+You can unsubscribe to any list by visiting a link that looks like this: 
+
+	http://theirsite.com/cgi-bin/dada/mail.cgi?f=u
+
+replacing B<theirsite.com> with the address that the copy Dada Mail was installed
+
+=back 
+
+
+=item * Will reporting SPAM to you help me receive less SPAM? 
+
+Sadly, no. All I can do is give you the above directions and wish you luck. 
+
+=item * Are you liable for SPAM email sent using Dada Mail?
+
+No, 
+
+Dada Mail is released under the GNU Public License, which specificaly states:
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+
+If you have any questions concerning the license, please send for a copy of the license. The Dada Mail distribution from the Dada Mail website should come with this license, you can also view it here: 
+
+http://www.gnu.org/licenses/gpl.html
+
+=item * How do I stop receiving SPAM? 
+
+=over
+
+=item Do not post your email address on a website
+
+=item Do not submit your email address to an online form
+
+=item Use a throwaway email address if you need to do either of the two
+
+
+=back 
+
+
+
+=item * I still think since you are held liable for what your program does, regardless of the license, what do you say about that? 
+
+I like to give this quote out: 
+
+	I think that technologies are morally neutral until we apply them. 
+	It's only when we use them for good or for evil that they become good or
+	 evil 
+		- William Gibson 
+
+I created Dada Mail for people to communicate. For me, Dada Mail is an art project. I have given anyone, anywhere a canvas to voice their dreams and it doesn't cost them anything to use. I want Dada Mail to be used to send out beautiful prose, a life's thesis, updates to the health of a loved one, a cry for help to a righteous cause. Abusing this right I've given you just reflects on the person's character. Dada Mail is a powerful tool, power can be currupted. Please do not be the one that currupts. 
+
+=back
+
+B<Justin Simoni> justin@skazat.com http://skazat.com
+
+=cut
+

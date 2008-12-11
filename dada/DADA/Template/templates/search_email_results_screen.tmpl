@@ -1,0 +1,69 @@
+<!-- begin search_email_results_screen.tmpl --> 
+
+	
+
+	<!-- tmpl_if found --> 
+	
+	
+	<p>
+		 A total of 
+		  <strong><!-- tmpl_var found -->
+		 </strong> email addresses were found when searching for 
+		  <strong><!-- tmpl_var keyword --> 
+		 </strong>
+		 when using 
+		 <strong><!-- tmpl_var method --> 
+		</strong> search.</p>
+		
+		
+	<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+	
+	 <input type="hidden" name="f" value="checker" />
+
+	<!-- tmpl_if adding_to_blacklist --> 
+		<input type="hidden" name="add_to_black_list" value="1" /> 
+	<!--/tmpl_if --> 
+	
+		<p> 
+		 <!-- tmpl_var results --> 
+		</p>
+		
+	<p style="text-align:center">
+		 <a href="#" onclick="SetChecked(1);return false;">check all</a> :: <a href="#" onclick="SetChecked(0);return false;">
+		  uncheck all
+		 </a>
+	</p>
+		
+		<input type="hidden"  name="type" value="<!-- tmpl_var type -->" />
+	    <div class="buttonfloat">
+	    <input type="submit" class="alertive" value="Delete Checked" />
+		</div> 
+		<div class="floatclear"></div>
+
+		
+		</form>
+		 
+		<hr /> 
+
+	
+	<!-- tmpl_else --> 
+	
+		<p>Sorry, no matches were found. You may want to try and revise your search.</p>
+	
+	<!--/tmpl_if--> 
+
+		<p><label for="keyword">Search</label> Again:
+		 <br />
+		 
+		 
+		  
+		 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get">
+		  <input type="hidden" name="f"       value="search_email" /> 
+		  <input type="text"   name="keyword" id="keyword" value="<!-- tmpl_var keyword -->" />
+		  <input type="hidden" name="type"    value="<!-- tmpl_var type -->" /> 
+		  <input type="submit" class="processing" value="Search Again" />  
+	     </form> 
+	  
+	</p>
+
+<!-- end search_email_results_screen.tmpl --> 

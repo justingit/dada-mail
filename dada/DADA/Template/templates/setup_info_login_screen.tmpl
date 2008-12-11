@@ -1,0 +1,25 @@
+<!-- begin setup_info_login_screen.tmpl -->
+
+<!-- tmpl_if incorrect_root_password -->
+	
+	<p class="error">
+	 Incorrect Root Password. Please try again.
+	</p>
+	  
+<!--/tmpl_if-->
+
+<form action="<!-- tmpl_var program_url_guess -->" method="post">
+ <p>
+  Please enter the correct 
+  <label for="root_password">
+   <!-- tmpl_var PROGRAM_NAME --> Root Password 
+  </label>
+  to continue:
+  <br />
+  <input type="hidden" name="f" value="setup_info" />
+  <input type="password" name="root_password" id="root_password" value="" maxlength="24" />
+  <input type="submit" value="Continue..." />
+ </p>
+</form>
+
+<!-- end setup_info_login_screen.tmpl -->

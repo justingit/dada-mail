@@ -1,0 +1,554 @@
+Justin's Personal TODO List
+========================================================================
+DADA TO DO: 
+
+------------
+Key: 
+[ ] To-Do.
+[-] Working.
+[x] Done. 
+[*] Naw...
+
+
+
+[ ] I need a purge button for subscribers. 
+
+
+[ ] Currently, the following sites will be notified: 
+
+is not listing anything... 
+
+
+[ ] It would be nice to have an option that says, "Hey, that email template? Why don't we see it initially in the, "Send a List Message" scrren - so, if I want to tweak it slightly - I can. 
+The problem is, what if someone totally obliterates the, unsub info, thinking that the email template was going to be applied? 
+Perhaps just a warning at the top, "The email template is  plopped down below and won't be applied again"
+
+
+
+[x] Need option to turn FCKEditor off list-by-list - what if for some reason it's not working? Broken Dada Mail.
+
+[x] MIME-Tools require ver 5.8 of Perl, which I'm fine with, but we're still saying we ship needing only 5.6. 
+MIME-Tools is having a hissy fit with IO:: stuff - so I may just ship with an older version of MIME-Tools, to 
+get around that problem - I'll leave, MIME-Tools in DadaMail.pm, but I'll just ship with the older version (5.420)
+
+
+
+Send a Webpage: 
+
+Give options on what to do with Javascript, Stylesheets:
+
+change links to embed
+Remove
+(or, if it's not too hard) Leave alone, thank you very much
+
+Also, sputter back any errors found, hooking into the MIME::Lite::HTML stuff 
+I'll probably have to make my own parse method. Sigh. And include_js method. Stupid. 
+
+Also: 
+
+http://rt.cpan.org/Public/Bug/Display.html?id=36005
+
+
+
+
+========================================================================
+
+[x] "You may only change the Subscriber Fields if you are logged in to an existing list using the Dada Mail Root Password."
+
+
+[x] "Use underscores, instead of spaces - no funny characters, and use lower case characters instead of uppercase.
+========================================================================
+
+
+Make the attachment limit somewhat flexible? 
+
+
+Check in FCKeditor_default_value_widget.tmpl 
+Perhaps fill in with a similar default value that FCKeditor uses, but all on one line? Will that work
+Have the DADA::App::FormatMessages::pre_process_msg_strings() subroutine know about the default_value that can be user-setable. 
+Wooosh! (and that way, also, Beatitude can use this default value, yeah!) 
+
+
+I have to update the perllib stuff, including: 
+
+MIME::Parser
+Time
+Date
+
+
+
+Schedules do not get deleted, when a list gets deleted, which means, if you create  new list with the same shortname, the old schedules will magically work again. 
+
+
+
+Gotta update LWP - perhaps have it not "live" by default. 
+
+I probably have to...  I forgot :) 
+
+This is more of a scratchpad, than anything else.
+
+3.1 
+Change the Clickthrough Tracker to change all the URL's found to Click trackable: 
+
+	http://search.cpan.org/~bdfoy/HTML-SimpleLinkExtor/lib/SimpleLinkExtor.pm
+	
+
+3.0
+
+[x] Probably take the send_email, send_url_email and possibly list_invite and put them into their own modules, ala DADA::App::Subscriptions, so I can call them in other modules (or, whatever) and also have it WAY easier to test with. 
+
+Although, I do see where this is all going - I'm haphazardly reinventing CGI::Application. Hopefully, this'll just get the code *ready* fro CGI::Application, and I just don't keep writing silly modules, like this. 
+
+But, yeah, it would *really* be nice for testing purposes...
+
+[ ] Something has to be done about error messages in the multiple subscribe script. Perhaps have a little ajax window with the error message (the same one you see in the, "there's seems to be a problem, but without the header/footer) when you click a, "Huh?" button, or something. I hates me that extension. 
+
+[ ] It would be really nice to make my own include type for HTML::Template, powered simply by filters - the catch is that 
+I want to be able to pass variables, so the tag would look something like: 
+
+ 	<!-- tmpl_dada_mail_include screen="admin_header" title="Send a List Message" -->
+
+and the filter just looks for: 
+
+ 	<!-- tmpl_dada_mail_include(.*?)-->
+
+And variables are parsed via: 
+
+   my $str        = $1; 
+   my @vars       = split(\s+, $str); 
+   my %named_vars;
+
+   foreach(@vars){ 
+   	 my ($name, $value) = split(':', $_);
+     $value =~ s/^\"|\"$//;
+   }
+  And then pass the vars to HTML::Template (again!) and replace the tag with what that's returned with. 
+
+	I'm assuming you understand how bug-ridden the above is and would not attempt to do copy/paste this. 
+	
+[+] Damn it: 
+http://osdir.com/ml/lang.perl.modules.html-template/2006-12/msg00004.html
+
+[x] Probably make a module named something like, HTML::Template::MyExpr and make that like, one little change. Sigh. 
+
+[x] Perhaps have two mail settings- one for mass mailings, one for everything else.
+#  (Would make things that need to be sent, sent FAST!)
+
+
+[*] Talk to the reCAPTCHA CPAN guy and get 'em to distribute a Pure-Perl compatible version of his module (shouldn't be hard) 
+	[+] Talkin': http://rt.cpan.org/Public/Bug/Display.html?id=31740
+		[+] Meh, it ain't goin anywhere, the PP version Really really needs to be rewritten, because it sucks!
+
+[ ] Get rid of DADA::Template::HTML, since it's stupid and horribly written and being superceded by DADA::Template::Widgets anyways
+	[ ] Add a, "wrap" paramater to DADA::Template::Widgets::screen, so that you can do the things DADA::Template::HTML does, but do it better
+	[ ] Get rid of that option to have <form> tags made - that was stupod
+	[ ] This will also get rid of the problem of these templates being, "different" than the other templates in Dada Mail. Yeah!
+
+[ ] Move DADA::Template::Widgets screen() super subroutine into it's own module, called: 
+	DADA::Template::Screen (or perhaps, HTML::Screen? - naw, how about, Screen... for now...) 
+ 	Make DADA::Template::Screen OO, but have the new() need no params. 
+	Break the screen() subroutine into manageable chunks - right now, it's pretty gigantic (and growing) 
+	[ ] Move DADA::Template::Widgets too: 
+			DADA::Template::Screen::Widgets
+	And I think that would make a whole lot more sense. 
+	
+	[ ] Move DADA::App::FormatMessages' email_template to somewhere else? (and name change) 
+		Perhaps, DADA::Template::Screen, or even, DADA::Template::EmailMessages? 
+		DADA::Template::EmailMessages would just be based on,  DADA::Template::Screen
+		
+	[ ] Remove any screens from (the now dubbed) DADA::Template::Screen::Widgets 
+		And actually Make them *only* widgets
+	
+	Also, (perhaps) make a, widgets parameter for (whatever it gets named) screen subroutine (erm, now method) 
+	so there's an indirect way to call the widgets - just more syntactic sugar, I guess. 
+	
+(This, of course is to be done before the next alpha release. Har Har) 
+
+
+
+[-] Work on Getting rid of the, "Send a List Invitaton" and moving that sort of stuff into the, "Add" Workflow. 
+ [ ] That means we need some way to have a preview of the message that's going to go out
+	[ ] Preview also has to work for the, "Send a LIst Message" screen
+	[ ] Preview has to fill in tags 'n stuff. 
+	[ ] Preview is a difficult feature. OK?
+ [-] It would be nice to have breadcrumbs, so the person going through the, "add" process knows what to expect
+ [ ] I do need to still encode the subscription information in the, "add/verify" screen in a better way than
+     now - currently, I'm using what looks like anonymous hashrefs or something, that's then eval() in - 
+     I'm certain you can see the problem in THAT. 
+
+
+For 2.11 - 
+
+[ ] - probably best to have a unsubscribed list - ONLY to (currently) be used 
+to cull information from people who subscribe-then unsubscribe, then subscribe again...?
+
+- I like the idea better of a one-use pin, if you unsub and resub, the pin has to be regenerated again (and that means, you have to fill in a subscription form again) 
+- I guess I'm going to ship, NOT having an unsubscribe list, but only have pins available for one-use. It may be the same pin, but a confirmation has to be done after a request to confirm.
+
+
+
+I guess it would be really nice to have a new sublist for just digests and have a way for a subscriber to easily move between the two (regular and digest)
+
+I'd also have to make it easy to send out digests. 
+
+I'd als have to mkae it easy for subscribers to update their own information. 
+
+It seems like a lot of work. 
+
+
+
+
+
+[-] - Set settings for archive-> advanced for protecting email addresses. 
+
+ 
+[ ] Work on 3.0 docs (Multiple Fields, Basically) * High Priority * 
+    Flesh out entire API - and that means:
+        [ ] Perl code, 
+        [ ] perl module hierarchy, 
+        [ ] SQL Stuff
+        [ ] Extending Backend
+        [ ] Integration with other systems
+        [ ] everything.
+        
+    Make schematics of screens used to administrate the subscriber backend 
+    and also screens used for individual subscribers. 
+    
+    See: 
+    <http://dadamailproject.com/support/documentation-dada-2_11-alpha_5/projects.pod.html#multiple_subscriber_fields>
+    
+    <http://dadamailproject.com/support/documentation-dada-2_11-alpha_5/Multiple_Fields.pod.html> 
+    
+[ ] Work on Manage Subscribers -> Add Screen * Medium+ Priority * 
+
+    Currently a Time-Out problem when you have a LOT of subscribers and/or a lot of subscribers you'd like to add. 
+    
+    [ ] Break into steps that itself are broken into bit-sized chunks, perhaps the chunks can be sized via time limit. 
+    !!! May not be needed, as the, "filter_subscribers" method has been sped up. 
+    
+    
+    Steps include (but aren't limited to): 
+        * Check for validity (valid form) 
+        * mx_lookup check (perchance, currently, not a part of the admin: add functions (takes too long! currently) 
+        * Check for subscription status
+        * Check for blacklist status
+        
+[ ] Work on Bounce Handler * Medium Priority * 
+    
+    [ x] Update command line interface/docs to match dada_bridge.pl CLI API where features overlap. 
+    [ x] Web-based way to check/parse/score awaiting bounces for use with cronjobs
+    [ x] Web-based way to view scorecard
+    [ x] Web-based way to search through scorecard
+    [ ] Web-based way to remove addresses on scorecard
+
+[ ] Work on dada_bridge.pl * Medium Priority * 
+    
+    [ ] Come up with Catchy Name
+    [ -] Update command line interface/docs to match Bounce Handler CLI API where features overlap. 
+    [ ] Flesh out (finally) extensible moderation system. 
+        Refer to:
+        <http://dadamailproject.com/support/documentation-dada-2_11-alpha_5/projects.pod.html#enhancements_to_the_moderation_system_in_discussion_lists__dada_bridge_pl_>
+    [?] Any Sponsors?
+
+[ ] work on Beatitude
+    [ ] Update command line interface/docs to match dada_bridge.pl CLI API where features overlap. 
+
+
+    
+[ ] Work on Auto-Pickup/Mail Monitor * Medium Priority * 
+
+    [ ] Redesign the mess that is (at least in alpha 5) the Mail Monitor for individual screens. 
+    [ ] Test test test
+    
+[ ] API Changes
+
+ [*] Normalize API's for: 
+    * DADA::MailingList::Subscribers
+    * DADA::MailingList::Settings
+    * DADA::MailingList::Archives
+    * DADA::Mail::Send
+    etc, 
+    
+     For example, they should ALL have  new() method like this: 
+     
+        my $subscriber_handle = DADA::MailingLIst::Subscibrers->new({-list => 'list'});
+     
+     Another example: 
+     
+        my $send_handle = DADA::Mail::Send->new({-list => 'list'});
+     
+     Another example: 
+     
+        my $settings_handle = DADA::MailingList::Settings->new(-list => 'list'); 
+        
+     See what I mean? 
+     
+     Even go so far as making a new object, called simply Dada::MailingList with the same exact API: 
+     
+        my $mailing_list_handle = DADA::MailingList->new(-list => 'list'); 
+        
+      And then you could say: 
+      
+        my $list_settings = $mailing_list_handle->{settings}->get;  #or, whatever. 
+      
+[ ] (Wishlist) Installer for Dada Mail that'll do a virgin install and also upgrade, if you're using an outside config file
+
+      
+[-] Continued Work: Automated Testing Suite 
+
+[ ] Continued Work: API Documentation
+
+
+For Whenever
+
+
+
+
+[ ] Sponsorship can be from YouCanEmailUs.com - a free email service provider
+for nursing homes, retirement centers, and the elderly
+
+
+[ ] Batch settings based on throughput - state an amount of data that can go out at one time and adjust bounce settings to work within that limit. 
+
+[ ] Make general template to set various Email Header options, like Priority, charset, etc, etc, etc
+
+
+[*] Replace MIME::Lite::HTML (The, "Send a Webpage" thingy)( with this: 
+    http://search.cpan.org/~bbc/Email-MIME-CreateHTML/
+    [ ] oh! little problem, that solution is MUCH MUCH more complex. Perhaps have a 
+        way to choose. 
+
+
+2.11 alpha - (old to do) 
+    
+  
+[ ] - Beatitude - needs to be able to read RSS/Atom Feeds
+    http://search.cpan.org/~btrott/XML-Feed/
+    
+[ ] - Archives - need passcode. 
+    Need email address that's subscribed and/or passcode to view archived messages - 
+    This goes for rss/atom feeds as well - how do you do that? 
+        RSS uses basic username:password@somedomain.com authentication. 
+        How do you read that? - CPAN has some stuff, but it requires a *few* modules. 
+        Probably will hold out that for a bit...
+
+[-] It would be nice to have some sort of built-in connection doctor...
+# Added DBI debuggin' to Dada Mail
+
+[ ] Perhaps to add back maxlength for textareas: 
+http://www.quirksmode.org/dom/maxlength.html
+
+[ ] sending a disc. message from the list control panel *still* does not append the, [list] thingy to the subject, if it's supposed to...
+
+[] add a, "resend" button to the archive editor
+[] create a, "drafts" archive.  
+[] enable sending a message straight into STDIN from dada_bridge.pl (perchance)
+[x] add documentation about whiz-bang new FCKeditor stuff (test more)
+
+Archives have the [listshortname], etc appended to subject - used to not, need pref for that. 
+
+
+Perhaps have a: 
+X-Recipient_Name: 
+X-Recipient_Domain:
+header, as another way of figuring out what the origin of bounced messages were (*cough AOL cough*)
+
+(mumblings) 
+
+[-] Hook up Spamassassin to dada_bridge.pl, reject messages that score, "n" on the tests - pref to flat out reject, or bounce back.
+
+May also be good to have in the, "Send a List Message" screen, so you know just how your message will be treated; 
+
+Work on moderation, either a message that needs moderation is sent to one moderator randomly, or to all of the moderators - copy of the message is sent along with the explaning email, and a copy is saved on the server until it's thumb'd up or down. Explaining message has special URL with random digits, so moderators do not have to log into Dada Mail, only click the, "yes", or, "no!" links. 
+
+View archives in blog-mode - messages in a list. Also by /2004/05/06 type URL's and make a little calendar view too! (hell, why not!) 
+
+Consider trackbacking, although it seems, "Dead".
+
+allow replies from the archives themselves, email required - and not posted until an email confirmation is answered. 
+
+[ x ] Think about making a SQL connection/disconnect object, that can be passed whenever a new instance of one of the SQL backends gets called - this should make less connections to the SQL server per run of the program. 
+
+[ ] tag in Send a URL that holds the URL you're sending...
+
+[x ] add option for subscribers to not receive their own message. 
+
+
+[x] Revist clickthrough - make work with query strings and perhaps targeted stuff? (does it break when the <a> tag has a target in it?
+
+[ ] Cleanup routine for MIME-Tools tmp files - say remove everything that's one hour/day old?
+
+
+[x] reformat 7bit to take off annoying wrappage. 
+
+[x] reformat text messages that are US-ASCII or quoted/printable, they have all these strange, =20 thingies - most likely to cut long lines. 
+
+
+
+[x] archived messages need to have inline/attached images shown
+	[x] as well as attachments available to download via a click. 
+	
+Send a List Message/Send a webpage, etc need the same options, "open in a new window, I'm sure, send to multiple lists, send after email x" 
+	
+[] Set $SMTP_TRUSTING to zero by default
+	or do the whole hash way, 
+	or make it a list-centric pref. 
+	( I have to review this cause I forget what this means... :) ) 
+
+[] Add new upload widgets to the advanced send a list message form without refreshing the page and thus losing all yer message stuff (via ajax - http://books.slashdot.org/article.pl?sid=05/08/01/2019247&tid=156&tid=95&tid=6 )
+
+[x] " Sent to the Subscription List." discuss pref on by default. 
+
+[] $ENV{HTTP_REFERER} in Logs; 
+
+[] Replace HTML::FromText with HTML::TextToHTML
+
+[x] Revisit Atom - either get replacement for XML::Atom::SimpleFeed or make it work with (now) .07. *sigh*
+	Ditched XML::Atom::SimpleFeed since it's not into the 1.0 spec - replaced it with my own code and HTML::Template Template. Stole some code for Date generation and such. 
+
+[x] add, "name" and "domain" parts of the email address to the tmp bulk sending file, so we can parse that in and have the correct sub/unsub URL's. 
+
+
+[x] revisit path_info stuff. 
+
+[] http://baby.com.ar/dada-2.9.1_embedding.patch
+	Things to do for the beta
+
+[] wait up on this bug...
+	https://bugzilla.mozilla.org/show_bug.cgi?id=80713 
+
+[x] The, "Add to whitelist" screen does not take on the look and feel of the list - dummy...
+
+[] http://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=everything_else;action=display;num=1118782581;start=0#2
+[] When using a SQL backend and trying to restore from a backup: 
+
+	Can't locate object method "backupToDir" via package "DADA::MailingList::Archives" at force_backup.cgi line 18, <CONFIG> line 1.
+[x] Gotta put the, "new window" and, "are you sure" checkboxes for list invite, send a webpage; 
+
+[x] Widgets.pm warning: warn "$PROGRAM_NAME warning: '$Templates' is not a directory!" 
+	unless -d $Templates; 
+	
+	ANNOYING!!!
+
+[ ] I really need to make the precurser of DADA::App::FormatMessages - 
+	Something like, DADA::App::BuildMessages...
+		(I guess, although MIME::Lite is pretty close...)
+
+[*] Edit Template - UI really not very UI friendly? 
+	Yeah, good Justin, just.... take it out!
+
+
+[*] Add Javascript to disable sending? - on buttons, on buttons...
+	Naw...
+	
+[x] clickthrough: 
+		http://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=everything_else;action=display;num=1111320574;start=0#3
+
+
+[x] Note on Email Confirmation to include the list owner's email address in their addressbook/whitelist; 
+	
+
+[] why is moving from PlainText -> SQL so HARD for the subscribers?! Should be BUILT IN!
+
+[x] List Owner email message about unsubs via bounce handler? 
+
+[-] All that fancy stuff in Send a Webpage? Yeah, gotta do it to Beatitude as well; 
+	
+[x] send to multiple lists at once
+
+[] Yay, also look into Envelop Sending - if:
+	We're using SMTP AND
+		We're using SQL AND!!!!
+			There's no customization in the message, we can do some high fly'n DUDE. 
+
+	Gah. Apparently, RFC2821 states that sites are *required* to take in at the very least (meaning 100 flat) in an envelop sending! 
+	That's *Great!* - but: 
+
+	http://www.python.org/cgi-bin/faqw-mm.py?query=personalization&querytype=simple&casefold=yes&req=search
+	
+	Also says, "have to be careful, setting it above 50 these days" DoH!
+	
+	(it also says, 5's the sweet spot - weird ain't?)
+	
+[-] Moderation in dada_bridge.pl...
+
+[] look for text/enriched to wrap dada templates in dada_bridge.pl?
+
+
+Change the Browser Sig for fetfching.... stuff. 
+
+[] id per email address... - does verp fix this?
+	Sort of - encoded in there
+	Also the nu school unsub url's don't *really* have the email addy in there...
+
+dada_digest - http://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=everything_else;action=display;num=1108658723;start=0#5
+
+
+[-] Test for SMTP Sending - Cause that's really annoying....
+	How about in its own window?
+		Actually, how about in line?!
+		How about AJAX this out? 
+		
+[] s/\n/<p>/ for physical address, privacy policy. 
+
+
+[-]remove Perl Modules that get d/l'd but, still aren't used?  (working on this...) 
+
+BOM ?!
+http://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=sending;action=display;num=1109068887;start=0
+
+todo: http://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=everything_else;action=display;num=1109103844;start=0#1
+
+
+I have to tab out the discussion lists options in dada_bridge.pl - perhaps rename the, "discussion lists" link to be more general, 
+like email address setup? 
+
+" Some good information on the dada_bridge.pl and elaborate more on templates and customizing dadamail to mimick the rest of your website style.
+ 
+The latest magicbook I have is 2.8.12. so maybe this is already in there......
+but I found the templates chapter a bit slim. "
+
+Have to make Mystery Girl a Plugin of Dada Mail w/ admin screen
+
+Work on restore lists functionality - just delete the mj- file, create another one with the "list" 
+setting already in there, and *then* replace it. Easy as pie. 
+
+
+http://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=everything_else;action=display;num=1109605324;start=0#4
+
+
+delete list should have to use a password too?
+
+[x] unsub emails should not have complete unsub stuff on them (pin, basically) 
+
+
+----------
+
+[x] the below is a little... more non-trivial than I thought...
+
+	Think about making a MIME entity viewer. For the archives - 
+	
+	make a standalone viewer that only needs a MIME message, use MIME-Tools to parse it, 
+	use HTML::Template to provide the formatting; 
+	
+	Then make it a part of Dada Mail - 
+	
+	for now, we'll save the raw message within the archives themselves, and if MIME-Tools
+	isn't available, we can fall back to the lame way we're doing it now;
+	
+	We'll get the raw message as a return value of Mail::Send::bulksend, like we're getting the msg id from now; 
+	
+	Good idea? Yes? No?
+
+---
+
+
+Why isn't File::Spec a part of the perllib?!
+
+
+New Mail System: 
+
+Limit # of queued, or awaiting, messages - 1,000 is the absolute max, let's say... 100! 
+We can then just fill until we've met the queue and let a queue runner... run!
+
+

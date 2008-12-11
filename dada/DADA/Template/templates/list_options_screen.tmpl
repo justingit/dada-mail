@@ -1,0 +1,583 @@
+<!-- begin list_options_screen.tmpl -->
+
+<!-- tmpl_if done -->
+	<!-- tmpl_var GOOD_JOB_MESSAGE -->
+<!--/tmpl_if-->
+
+<div style="width:100%"><!-- what's this all about? --> 
+
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form">
+	
+<fieldset>
+
+<legend>
+ General
+</legend>
+
+ <table cellspacing="5">
+  <tr>
+   <td>
+    <p>
+     <input type="checkbox" name="hide_list" id="hide_list" value="1" <!-- tmpl_if hide_list -->checked="checked"<!--/tmpl_if--> />
+    </p>
+   </td>
+   <td>
+    <p>
+     <label for="hide_list">
+      Hide Your List
+     </label>
+     <br />
+     This list will not be listed on the 
+     <a href="<!-- tmpl_var PROGRAM_URL -->" target="_blank">
+      <!-- tmpl_var PROGRAM_NAME --> main screen</a>. 
+     This list will still have a 
+     <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list -->/" target="_blank">
+      list page 
+     </a>
+     and people will still be able to subscribe/unsubscribe 
+     with the proper information.
+    </p>
+    <p>
+     You will also have to manually enter this list's 
+     Short Name when logging onto the list control panel.
+    </p>
+   </td>
+  </tr>
+  <tr>
+   <td>
+    <input type="checkbox" name="closed_list" id="closed_list" value="1" <!-- tmpl_if closed_list --> checked="checked" <!-- /tmpl_if --> />
+   </td>
+   <td>
+    <p>
+     <label for="closed_list">
+      Close Your List
+     </label>
+     <br/>
+     No one will be allowed to subscribe to this list. 
+     Subscribers can only be added via the administration 
+     control panel. People can still unsubscribe at any time.
+    </p>
+   </td>
+  </tr>
+ </table>
+ <table cellspacing="5" <!-- tmpl_unless can_use_mx_lookup -->class="disabled"<!--/tmpl_unless--> >
+  <tr>
+   <td>
+    <input type="checkbox" name="mx_check" id="mx_check" value="1" <!-- tmpl_if mx_check -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless can_use_mx_lookup -->disabled="disabled"<!--/tmpl_unless--> />
+   </td>
+   <td> 
+    <p>
+     <label for="mx_check">
+      Look Up Hostnames When Validating Email Addresses (MX Lookup)
+     </label>
+     <br />
+     When an email address is submitted to be validated, the 
+     domain of the address will be checked for its existence.
+    </p>
+    
+<!-- tmpl_unless can_use_mx_lookup -->
+	    
+	    <p class="error">
+	     <em>
+	      Disabled. The Net::DNS module needs to be installed.
+	     </em>
+	    </p>
+	    
+<!--/tmpl_unless-->
+    
+   </td>
+  </tr>
+ </table>
+ <p>&nbsp;</p>
+</fieldset>
+
+
+
+<fieldset>
+
+<legend>
+ Subscription Confirmations
+</legend>
+
+
+ <table cellspacing="5" width="100%">
+  <tr>
+   <td>
+    <input type="checkbox" name="no_confirm_email" id="no_confirm_email" value="1" <!-- tmpl_if no_confirm_email -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="no_confirm_email">
+      Send Subscription Confirmation Emails (Closed-Loop Opt-In)
+     </label>
+     <br /> 
+     <strong>
+      STRONGLY recommended: 
+     </strong>
+     Subscribers will have to reply to a confirmation email 
+     sent to their address before they are joined to the list.
+    </p>
+   </td>
+  </tr>
+  
+  
+<tr>
+   <td>
+    <input type="checkbox" name="limit_sub_confirm" id="limit_sub_confirm" value="1" <!-- tmpl_if limit_sub_confirm -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="limit_sub_confirm">
+      Limit Subscription Confirmation Sending 
+     </label>
+     <br />
+	When enabled, only one confirmation message can be sent out at one time per subscriber, without the subscriber manually requesting (basically, clicking a button) a new subscription confirmation to be sent. 
+	This helps cut down on unneeded message sending and abuse of the subscription confirmation system. 
+    </p>
+   </td>
+  </tr>
+  
+  
+  
+  
+  <tr>
+   <td>
+    <input type="checkbox" name="email_your_subscribed_msg" id="email_your_subscribed_msg" value="1" <!-- tmpl_if email_your_subscribed_msg -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="email_your_subscribed_msg">
+      If a current subscriber attempts to subscribe again, send a, "You're Already Subscribed!" message via email, instead of showing this error in their web browser. 
+     </label>
+     <br />
+       Usually, if a subscriber attempts to subscribe to a list they're already subscribed to, they'll receive an error stating that they are already subscribed to a particular list. 
+       This could be seen as an easy way for a third party to find out if an individual is subscribed to a list, by simply entering the email address they want to check, when subscribing. 
+      </p>
+      
+      <p>
+       With this option checked, an email will instead be sent to the subscriber, stating they are already subscribed and an error will not be raised by <!-- tmpl_var PROGRAM_NAME --> 
+      </p> 
+       
+   </td>
+  </tr>
+  
+  
+  <tr>
+   <td>
+         <input type="checkbox" name="use_alt_url_sub_confirm_success" id="use_alt_url_sub_confirm_success" value="1" <!-- tmpl_if use_alt_url_sub_confirm_success -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td>
+  
+  
+  <p>
+        <label for="use_alt_url_sub_confirm_success">
+         If the first step of the Closed-Loop Opt-In is successful 
+         (and a Closed-Loop Opt-In Confirmation email is on its way), redirect to this URL:
+        </label>
+        </p>
+        <table cellspacing="5" width="100%">
+         <tr> 
+          <td> 
+           <input type="text" name="alt_url_sub_confirm_success" value="<!-- tmpl_var name="alt_url_sub_confirm_success" escape="HTML" -->" class="full" />
+          </td>
+         </tr> 
+         <tr> 
+          <td>
+           <input type="checkbox" name="alt_url_sub_confirm_success_w_qs" id="alt_url_sub_confirm_success_w_qs" value="1" <!-- tmpl_if alt_url_sub_confirm_success_w_qs -->checked="checked"<!--/tmpl_if--> />
+           <label for="alt_url_sub_confirm_success_w_qs">Redirect with query string</label>
+          </td> 
+         </tr> 
+        </table>
+    
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <input type="checkbox" name="use_alt_url_sub_confirm_failed" id="use_alt_url_sub_confirm_failed" value="1" <!-- tmpl_if use_alt_url_sub_confirm_failed -->checked="checked"<!--/tmpl_if--> />
+      </td>
+      <td width="99%">
+       <p>
+        <label for="use_alt_url_sub_confirm_failed">
+         If the first step of the Closed-Loop Opt-In Confirmation fails, 
+         redirect to this URL:
+        </label>
+       </p>
+       <table cellspacing="5" width="100%"> 
+        <tr> 
+         <td> 
+          <input type="text" name="alt_url_sub_confirm_failed" value="<!-- tmpl_var name="alt_url_sub_confirm_failed" escape="HTML" -->" class="full" />
+         </td>
+        </tr> 
+        <tr> 
+         <td> 
+          <input type="checkbox" name="alt_url_sub_confirm_failed_w_qs" id="alt_url_sub_confirm_failed_w_qs" value="1" <!-- tmpl_if alt_url_sub_confirm_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
+          <label for="alt_url_sub_confirm_failed_w_qs">Redirect with query string</label>
+          </td> 
+         </tr> 
+        </table>
+   </td>
+  </tr>
+ </table>
+</fieldset>
+
+
+
+<fieldset>
+
+<legend>
+  Subscriptions
+</legend>
+
+
+ 
+   <table cellspacing="5">
+
+  <tr>
+   <td>
+    <input type="checkbox" name="get_sub_notice" id="get_sub_notice" value="1" <!-- tmpl_if get_sub_notice -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="get_sub_notice">
+      Receive Subscription Notices
+     </label>
+     <br />
+     Be notified every time someone subscribes to your list with a short email.
+    </p>
+   </td>
+  </tr>
+  <tr>
+   <td>
+    <input type="checkbox" name="send_sub_success_email" id="send_sub_success_email" value="1" <!-- tmpl_if send_sub_success_email -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="send_sub_success_email">
+      Send Subscription Successful Emails
+     </label>
+     <br />
+     After a person subscribes, an email will be sent to them 
+     to announce the subscription.
+    </p>
+   </td>
+  </tr>
+ </table>
+  
+ <table cellspacing="5" <!-- tmpl_unless can_use_captcha -->class="disabled"<!--/tmpl_unless--> >
+
+    <tr>
+   <td>
+    <input type="checkbox" name="captcha_sub" id="captcha_sub" value="1" <!-- tmpl_if captcha_sub -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless can_use_captcha -->disabled="disabled"<!--/tmpl_unless-->/>
+   </td>
+   <td width="99%">
+    <p>
+     <label for="captcha_sub">
+      Enable CAPTCHA'ing
+     </label>
+     <br />
+     Before someone is allowed to subscribe, they will have to type in a random string of letters that appear in an image that they are also
+     presented with. This theoretically stops web-bots from subscribing themselves to your list.
+    </p>
+    
+    
+    <!-- tmpl_unless can_use_captcha -->
+	    
+	    <p class="error">
+	     <em>
+	      Disabled. You need to successfully configure your current CAPTCHA'ing system (<!-- tmpl_var CAPTCHA_TYPE -->)
+	    </em>
+	    </p>
+	    
+    <!--/tmpl_unless-->
+
+
+   </td>
+  </tr>
+ </table>
+ 
+  <table cellspacing="5">
+  <tr>
+   <td>
+    <input type="checkbox" name="use_alt_url_sub_success" id="use_alt_url_sub_success" value="1" <!-- tmpl_if use_alt_url_sub_success -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="use_alt_url_sub_success">
+      If a subscription is successful, redirect to this URL:
+     </label>
+    </p>
+    
+    <table cellspacing="5" width="100%">
+     <tr> 
+      <td>
+       <input type="text" name="alt_url_sub_success" value="<!-- tmpl_var name="alt_url_sub_success" escape="HTML" -->" class="full" />
+      </td> 
+     </tr> 
+     <tr> 
+      <td> 
+       <input type="checkbox" name="alt_url_sub_success_w_qs" id="alt_url_sub_success_w_qs" value="1" <!-- tmpl_if alt_url_sub_success_w_qs -->checked="checked"<!--/tmpl_if--> />
+       <label for="alt_url_sub_success_w_qs">Redirect with query string</label>
+      </td> 
+     </tr> 
+    </table>      
+    
+   </td>
+  </tr>
+  <tr>
+   <td>
+    <input type="checkbox" name="use_alt_url_sub_failed" id="use_alt_url_sub_failed" value="1" <!-- tmpl_if use_alt_url_sub_failed -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="use_alt_url_sub_failed">
+      If a subscription fails, redirect to this URL:
+     </label>
+    </p>     
+     
+  <table cellspacing="5" width="100%">
+	 <tr> 
+	  <td> 
+       <input type="text" name="alt_url_sub_failed" value="<!-- tmpl_var name="alt_url_sub_failed" escape="HTML" -->" class="full" />
+	  </td>
+	 </tr> 
+	 <tr> 
+	  <td>
+	   <input type="checkbox" name="alt_url_sub_failed_w_qs" id="alt_url_sub_failed_w_qs" value="1" <!-- tmpl_if alt_url_sub_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
+	   <label for="alt_url_sub_failed_w_qs">Redirect with query string</label>
+	  </td> 
+	 </tr> 
+	</table>
+
+   </td>
+  </tr>
+ </table>
+
+</fieldset>
+
+
+<fieldset>
+
+<legend>
+Unsubscription Confirmations
+</legend>
+  
+
+ <table cellspacing="5">
+  <tr>
+   <td>
+    <input type="checkbox" name="unsub_confirm_email" id="unsub_confirm_email" value="1" <!-- tmpl_if unsub_confirm_email -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="unsub_confirm_email">
+      Send Unsubscription Confirmation Emails (Closed-Loop Opt-Out)
+     </label>
+    </p>
+   </td>
+  </tr>
+  
+    
+  <tr>
+   <td>
+    <input type="checkbox" name="limit_unsub_confirm" id="limit_unsub_confirm" value="1" <!-- tmpl_if limit_unsub_confirm -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="limit_unsub_confirm">
+      Limit Unsubscription Confirmation Sending 
+     </label>
+     <br />
+	When enabled, only one confirmation message can be sent out at one time per subscriber, without the subscriber manually requesting (basically, clicking a button) a new unsubsciption confirmation to be sent. 
+	This helps cut down on unneeded message sending and abuse of the unsubscription confirmation system. 
+    </p>
+   </td>
+  </tr>
+   
+   
+   
+  <tr>
+   <td>
+
+       <input type="checkbox" name="use_alt_url_unsub_confirm_success" id="use_alt_url_unsub_confirm_success" value="1" <!-- tmpl_if use_alt_url_unsub_confirm_success -->checked="checked"<!--/tmpl_if--> />
+
+
+   </td>
+   <td>
+ 
+       <p>
+        <label for="use_alt_url_unsub_confirm_success">
+         If the first step of the double opt-out is successful 
+         (and a confirmation email is on its way), redirect to this URL:
+         
+        </label>
+        </p>
+        
+        <table cellspacing="5" width="100%">
+         <tr> 
+          <td> 
+           <input type="text" name="alt_url_unsub_confirm_success" value="<!-- tmpl_var name="alt_url_unsub_confirm_success" escape="HTML" -->" class="full" />
+          </td>
+         </tr> 
+         <tr> 
+          <td>
+           <input type="checkbox" name="alt_url_unsub_confirm_success_w_qs" id="alt_url_unsub_confirm_success_w_qs" value="1" <!-- tmpl_if alt_url_unsub_confirm_success_w_qs -->checked="checked"<!--/tmpl_if--> />
+           <label for="alt_url_unsub_confirm_success_w_qs">Redirect with query string</label>
+          </td> 
+         </tr> 
+        </table>
+        
+        
+       
+       
+       
+       
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <input type="checkbox" name="use_alt_url_unsub_confirm_failed" id="use_alt_url_unsub_confirm_failed" value="1" <!-- tmpl_if use_alt_url_unsub_confirm_failed -->checked="checked"<!--/tmpl_if--> />
+      </td>
+      <td width="99%">
+       <p>
+        <label for="use_alt_url_unsub_confirm_failed">
+         If the first step of the double opt-out fails, 
+         redirect to this URL:
+        </label>
+        </p>
+       
+        <table cellspacing="5" width="100%">
+         <tr> 
+          <td> 
+           <input type="text" name="alt_url_unsub_confirm_failed" value="<!-- tmpl_var name="alt_url_unsub_confirm_failed" escape="HTML" -->" class="full" />
+          </td>
+         </tr> 
+         <tr> 
+          <td>
+           <input type="checkbox" name="alt_url_unsub_confirm_failed_w_qs" id="alt_url_unsub_confirm_failed_w_qs" value="1" <!-- tmpl_if alt_url_unsub_confirm_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
+           <label for="alt_url_unsub_confirm_failed_w_qs">Redirect with query string</label>
+          </td> 
+         </tr> 
+        </table>       
+       
+       
+       
+       
+    
+   </td>
+  </tr>
+ </table>
+</fieldset>
+
+
+
+<fieldset>
+
+<legend>
+  Unsubscriptions
+</legend>
+
+
+ <table cellspacing="5">
+  <tr>
+   <td>
+    <input type="checkbox" name="get_unsub_notice" id="get_unsub_notice" value="1" <!-- tmpl_if get_unsub_notice -->checked="checked"<!--/tmpl_if --> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="get_unsub_notice"> 
+      Receive Unsubscription Notices
+     </label>
+     <br />
+     Be notified every time someone unsubscribes to your list with a short email.
+    </p>
+   </td>
+  </tr>
+  <tr>
+   <td>
+    <input type="checkbox" name="send_unsub_success_email" id="send_unsub_success_email" value="1" <!-- tmpl_if send_unsub_success_email -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="send_unsub_success_email">
+      Send Unsubscription Successful Emails
+     </label>
+     <br />
+     After a person unsubscribes, an email will be sent to them 
+     to announce the subscription.
+    </p>
+   </td>
+  </tr>
+  <tr>
+   <td>
+    <input type="checkbox" name="use_alt_url_unsub_success" id="use_alt_url_unsub_success" value="1" <!-- tmpl_if use_alt_url_unsub_success -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="use_alt_url_unsub_success">
+      If an unsubscription is successful, redirect to this URL:
+     </label>
+     </p>
+
+        <table cellspacing="5" width="100%">
+         <tr> 
+          <td> 
+           <input type="text" name="alt_url_unsub_success" value="<!-- tmpl_var name="alt_url_unsub_success" escape="HTML" -->" class="full" />
+          </td>
+         </tr> 
+         <tr> 
+          <td>
+           <input type="checkbox" name="alt_url_unsub_success_w_qs" id="alt_url_unsub_success_w_qs" value="1" <!-- tmpl_if alt_url_unsub_success_w_qs -->checked="checked"<!--/tmpl_if--> />
+           <label for="alt_url_unsub_success_w_qs">Redirect with query string</label>
+          </td> 
+         </tr> 
+        </table>       
+   </td>
+  </tr>
+  <tr>
+   <td>
+    <input type="checkbox" name="use_alt_url_unsub_failed" id="use_alt_url_unsub_failed" value="1" <!-- tmpl_if use_alt_url_unsub_failed -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="use_alt_url_unsub_failed">
+      If an unsubscription fails, redirect to this URL:
+     </label>
+     </p>
+
+    <table cellspacing="5" width="100%">
+	 <tr> 
+	  <td> 
+	   <input type="text" name="alt_url_unsub_failed" value="<!-- tmpl_var name="alt_url_unsub_failed" escape="HTML" -->" class="full" />
+	  </td>
+	 </tr> 
+	 <tr> 
+	  <td>
+	   <input type="checkbox" name="alt_url_unsub_failed_w_qs" id="alt_url_unsub_failed_w_qs" value="1" <!-- tmpl_if alt_url_unsub_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
+	   <label for="alt_url_unsub_failed_w_qs">Redirect with query string</label>
+	  </td> 
+	 </tr> 
+	</table>     
+  
+</td>
+</tr> 
+</table> 
+
+</fieldset>
+
+<hr />
+<div class="floatclear"></div>
+
+<input type="hidden" name="process" value="1" />
+<input type="hidden" name="f"       value="list_options" />
+<div class="buttonfloat">
+ <input type="reset"  class="cautionary" value="Clear Changes" />
+ <input type="submit" class="processing" value="Save List Options" />
+</div>
+<div class="floatclear"></div>
+
+</form> 
+
+<!-- tmpl_include help_link_widget.tmpl --> 
+
+
+<!-- end list_options_screen.tmpl -->

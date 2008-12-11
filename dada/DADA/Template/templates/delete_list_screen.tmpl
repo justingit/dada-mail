@@ -1,0 +1,33 @@
+<!-- begin delete_list_screen.tmpl -->
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+	
+<p>
+ Are you <em>sure</em> you want to totally delete this list?
+</p>
+<p>
+ <strong>
+  This will delete this list and cannot be undone.
+ </strong>
+</p>
+<input type="hidden" name="f"       value="delete_list" />
+<input type="hidden" name="process" value="true" />
+
+<p>
+ <input type="checkbox" name="delete_backups" value="1" checked="checked" />
+ <strong>
+  Delete List Backups
+ </strong>
+</p>
+
+<div class="buttonfloat">
+ <input type="submit" class="alertive" value="Delete List" />
+</div>
+<div class="floatclear"></div>
+
+</form> 
+
+<!-- tmpl_include help_link_widget.tmpl --> 
+
+
+<!-- end delete_list_screen.tmpl -->

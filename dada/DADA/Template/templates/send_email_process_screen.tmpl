@@ -1,0 +1,179 @@
+<!-- begin send_email_process_screen.tmpl -->
+
+	
+
+<!-- tmpl_if archive_no_send --> 
+
+	<!-- tmpl_if process_test -->
+		
+	<p> 
+	 Your message has <strong>not</strong> been saved, and has <strong>not</strong> been sent.
+	</p>
+	
+	<!-- tmpl_else -->
+		
+	<p> 
+	 Your message has been saved, but not sent.
+	</p>
+	
+	
+	<!--/tmpl_if--> 
+	
+	
+<!-- tmpl_else --> 
+
+	<!-- tmpl_if process_test -->
+		
+		<p>
+		 Your 
+		 <strong>
+		  <em>
+		   test 
+		  </em>
+		 </strong>
+		 message is being sent to the test recipient, <!-- tmpl_var test_recipient -->
+		 
+		 <!-- and your Testers list (a href="!-- tmpl_var PROGRAM_URL --?f=view_list&type=testers">view/a) --> 
+		 
+		 .
+		</p>
+		
+	<!-- tmpl_else -->
+		
+		<!-- tmpl_if start_email -->
+			
+			<p>
+			 Your list mailing will be sent to all your list subscribers, 
+			 starting at 
+			 <strong>
+			  <!-- tmpl_var start_email -->
+			 </strong>.
+			</p>
+			
+		<!-- tmpl_else -->
+			
+			<!-- tmpl_if start_num -->
+				
+				<p>
+				 Your list mailing will be sent to all your list subscribers, 
+				 starting at 
+				 <strong>
+				  #<!-- tmpl_var start_num --></strong>.
+				</p>
+				
+			<!--tmpl_else-->
+				
+				<p>
+				 Your message, 
+				 &quot;<strong><!-- tmpl_var message_subject --></strong>&quot;, 
+				 is currently being sent to all your list subscribers.
+				</p>
+				
+			<!--/tmpl_if-->
+			
+		<!--/tmpl_if-->
+		
+	<!--/tmpl_if-->
+
+<!--/tmpl_if-->
+
+<div style="text-align:center">
+ <!-- tmpl_include sending_monitor_button_widget.tmpl -->
+</div> 
+
+	
+	<div class="simplebox" style="width:100%">
+	 <p>
+	  <strong>
+	   
+	<!-- tmpl_if process_test -->
+		   
+		   To: 
+		   <em>
+			<!-- tmpl_var test_recipient -->
+		   </em>
+		   
+	<!-- tmpl_else -->
+		   
+		   To: <!-- tmpl_var list_name -->
+		   
+	<!-- /tmpl_if -->
+	   
+	  </strong>
+	  <br />
+	  <strong>
+	   From: <!-- tmpl_var list_owner_email -->
+	  </strong>
+	  <br /> 
+	  <strong>
+	   Subject: <!-- tmpl_var message_subject -->
+	  </strong>
+	  <br />
+	 </p>
+	 
+	<!-- tmpl_if text_message_body -->
+		 
+		 <hr />
+		 <p>
+		  <strong>
+		   Text Message:
+		  </strong>
+		  <br />
+		  <!-- tmpl_var screen_text_message -->
+		 </p>
+		 
+	<!--/tmpl_if-->
+	
+	<!-- tmpl_if html_message_body -->
+		 
+		 <hr />
+		 <p>
+		  <strong>
+		   HTML Message:
+		  </strong>
+		  <br />
+		  <!-- tmpl_var screen_html_message -->
+		 </p>
+		 
+	<!--/tmpl_if-->
+	
+	<!-- tmpl_if have_attachments -->
+		 
+		 <p>
+		  <strong>
+		   Attachments:
+		  </strong>
+		  <br />
+		  <ul>
+		   
+		<!-- tmpl_loop attachment_names -->
+			   
+			   <li>
+				<!-- tmpl_var name -->
+			   </li>
+			   
+		<!--/tmpl_loop-->
+		   
+		  </ul>
+		 </p>
+		 
+	<!--/tmpl_if -->
+	 
+	</div>
+	
+	<!-- tmpl_if message_archived -->
+		
+		<p>
+		 <em> 
+		  This message has been 
+		  <a href="<!-- tmpl_var S_PROGRAM_URL-->?flavor=view_archive&amp;id=<!-- tmpl_var message_id -->">
+		   archived
+		  </a>
+		  .
+		 </em>
+		</p>
+		
+
+<!--/tmpl_if--> 
+
+<!-- end send_email_process_screen.tmpl -->

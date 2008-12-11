@@ -1,0 +1,158 @@
+<!-- begin archive_options_screen.tmpl -->
+
+<!-- tmpl_if done -->
+	<!-- tmpl_var GOOD_JOB_MESSAGE -->
+<!--/tmpl_if-->
+
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form">
+
+<fieldset> 
+	<legend>Basic Options</legend> 
+	
+<table cellpadding="5">
+ <tr>
+  <td>
+   <input type="checkbox" name="archive_messages" id="archive_messages" value="1" <!-- tmpl_if archive_messages -->checked="checked"<!--/tmpl_if--> />
+  </td>
+  <td>
+   <p>
+    <label for="archive_messages">
+     Archive Your Messages
+    </label>
+    <br />
+    Any messages already archived will still be available to your visitors.
+   </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <input type="checkbox" name="show_archives" id="show_archives" value="1" <!-- tmpl_if show_archives -->checked="checked"<!--/tmpl_if--> />
+  </td>
+  <td>
+   <p>
+    <label for="show_archives">
+     Publicly Display Your Archives
+    </label>
+    <br />
+    Visitors to your site will be able to view your archived list messages 
+    <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list -->" target="_blank">
+     here</a>.
+    Archived messages are always viewable in the list control panel.
+   </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <input type="checkbox" name="archive_subscribe_form" id="archive_subscribe_form" value="1" <!-- tmpl_if archive_subscribe_form -->checked="checked"<!--/tmpl_if--> />
+  </td>
+  <td>
+   <p>
+    <label for="archive_subscribe_form">
+     Add a Subscription Form to the Archive Pages
+    </label>
+    <br />
+    A subscription form will be added with the name of the list and the 
+    description of list at the bottom of every archive page.
+   </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <input type="checkbox" name="archive_search_form" id="archive_search_form" value="1" <!-- tmpl_if archive_search_form -->checked="checked"<!--/tmpl_if--> />
+  </td>
+  <td>
+   <p>
+    <label for="archive_search_form">
+     Add a Search Form to the Archive Pages
+    </label>
+    <br />
+    Allow your visitors to easily search through your list's archives.
+   </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <input type="checkbox" name="archive_send_form" id="archive_send_form" value="1" <!-- tmpl_if archive_send_form -->checked="checked"<!--/tmpl_if--> />
+  </td>
+  <td>
+   <p>
+    <label for="archive_send_form">
+     Add a &quot;Send this Archive to a Friend&quot; Form
+    </label>
+    <br />
+    Visitors will be able to send archived messages they find interesting to friends.
+   </p>
+   
+    <table cellspacing="5" <!-- tmpl_unless can_use_captcha -->class="disabled"<!--/tmpl_unless--> >
+     <tr>
+      <td>
+       <input type="checkbox" name="captcha_archive_send_form" id="captcha_archive_send_form" value="1" <!-- tmpl_if captcha_archive_send_form -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless can_use_captcha -->disabled="disabled"<!--/tmpl_unless-->/>
+      </td>
+      <td>
+       <p>
+        <label for="captcha_archive_send_form">
+         Enable CAPTCHA'ing on the, &quot;Send this Archive to a Friend&quot; Form
+        </label>
+       </p>
+       
+       <!-- tmpl_unless can_use_captcha -->
+	    
+	    <p class="error">
+	     <em>
+	      Disabled. You need to successfully configure your current CAPTCHA'ing system (<!-- tmpl_var CAPTCHA_TYPE -->)
+	     </em>
+	    </p>
+	    
+        <!--/tmpl_unless-->
+
+
+
+      </td>
+     </tr>
+    </table>
+
+
+  </td>
+ </tr>
+ 
+  <tr>
+  <td>
+   <input type="checkbox" name="send_newest_archive" id="send_newest_archive" value="1" <!-- tmpl_if send_newest_archive -->checked="checked"<!--/tmpl_if--> />
+  </td>
+  <td>
+   <p>
+    <label for="send_newest_archive">
+     Send the Newest Archived Message to All New Subscribers. 
+    </label>
+    <br />
+    Visitors that sign up themselves will receive a copy of the last archived message after they complete the subscription process. 
+   </p>
+  </td>
+ </tr>
+ 
+ 
+</table>
+
+</fieldset> 
+
+<p class="link_to_screen">
+ <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=adv_archive_options">
+  Advanced...
+ </a>
+</p>
+<hr />
+
+<input type="hidden" name="process" value="1" />
+<input type="hidden" name="f"       value="archive_options" />
+<div class="buttonfloat">
+ <input type="reset"  class="cautionary" value="Clear Changes">
+ <input type="submit" class="processing" value="Change Archive Options">
+</div>
+<div class="floatclear"></div>
+
+</form> 
+
+<!-- tmpl_include help_link_widget.tmpl --> 
+
+<!-- end archive_options_screen.tmpl -->

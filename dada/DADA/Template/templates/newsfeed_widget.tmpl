@@ -1,0 +1,24 @@
+<!-- begin newsfeed_widget.tmpl --> 
+
+
+<!-- tmpl_if list_settings.publish_archives_rss --> 
+
+    <p style="text-align:right">
+    
+    
+     (archive
+      <a href="<!-- tmpl_var PROGRAM_URL -->/archive_rss/<!-- tmpl_var list_settings.list -->/">
+       rss
+      </a>, 
+      <a href="<!-- tmpl_var PROGRAM_URL -->/archive_atom/<!-- tmpl_var list_settings.list -->/">
+       atom
+      </a>
+      
+      <img src="<!-- tmpl_var PROGRAM_URL -->/img/badge_feed.png/" />     
+     )
+    </p>
+        
+<!-- /tmpl_if --> 
+
+
+<!-- end newsfeed_widget.tmpl --> 

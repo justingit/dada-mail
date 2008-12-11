@@ -1,0 +1,18 @@
+<!-- begin list_search_form_widget.tmpl --> 
+
+    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get">
+     <p>
+      <label for="keyword">
+       Search
+      </label>
+       List for a Particular Address:
+      <br />
+      <input type="text"   name="keyword" id="keyword" value="<!-- tmpl_var keyword default="" escape="HTML" -->" />
+      <input type="hidden" name="f"    value="search_list" />
+      <input type="hidden" name="type" value="<!-- tmpl_var type default="list" -->" />
+      <input type="submit" class="processing" value="Search List" />
+     </p>
+    </form>
+
+
+<!-- end list_search_form_widget.tmpl --> 

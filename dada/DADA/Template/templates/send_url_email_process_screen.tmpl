@@ -1,0 +1,108 @@
+<!-- begin send_url_process_screen.tmpl -->
+
+<!-- tmpl_if problems -->
+	
+	<p class="error">
+	 Problems were encountered when trying to send a webpage. 
+	 This could be because:
+	</p>
+	<ul>
+	 <li>
+	  <p>
+	   The URL you typed in is incorrect.
+	  </p>
+	 </li>
+	 <li>
+	  <p>
+	   It's possible that the URL you are trying to send is blocking 
+	   the request to fetch the needed information.
+	  </p>
+	 </li>
+	 <li>
+	  <p>
+	   The URL you are trying to request may just be temporarily inoperable.
+	  </p>
+	 </li>
+	 <li>
+	  <p>
+	   Sometimes, requests for pages coming from the same server as the 
+	   script that requested them are blocked. This is to prevent infinite 
+	   request loops created by badly written programs. Your system 
+	   administrator will most likely have to change the server settings.
+	  </p>
+	 </li>
+	</ul>
+	
+<!-- tmpl_else -->
+	
+	
+	<!-- tmpl_if archive_no_send --> 
+	
+		<!-- tmpl_if process_test -->
+			
+			<p> 
+			 Your message has <strong>not</strong> been saved, and has <strong>not</strong> been sent.
+			</p>
+		
+		<!-- tmpl_else -->
+			
+			<p> 
+			 Your message has been saved, but not sent.
+			</p>
+			
+			
+		<!--/tmpl_if--> 
+	
+	
+	<!-- tmpl_else --> 
+
+
+		<!-- tmpl_if test -->
+			
+			<p>
+			 Your 
+			 <strong>
+			  <em>
+			   test 
+			  </em>
+			 </strong>
+			 <!-- yeah! no! --> 
+			 <!--  and your Testers list (a href="!-- tmpl_var PROGRAM_URL --?f=view_list&type=testers"view/a) --> 
+			 
+		 message is being sent to the test recipient, <!-- tmpl_var test_recipient -->
+			</p>
+			
+		<!-- tmpl_else -->
+			
+			<p>
+			 Your message is currently being sent to all your list subscribers.
+			</p>
+			
+		<!--/tmpl_if-->
+
+<!--/tmpl_if--> 
+
+
+<div style="text-align:center">
+ <!-- tmpl_include sending_monitor_button_widget.tmpl -->
+</div> 
+
+	<!-- tmpl_if archived -->
+	
+	<p>
+	 <em>
+	  This message has been 
+	  <a href="<!-- tmpl_var S_PROGRAM_URL-->?flavor=view_archive&amp;id=<!-- tmpl_var message_id -->">
+	   archived</a>.
+	 </em>
+	</p>
+	
+	<!--/tmpl_if-->
+	
+<!--/tmpl_if-->
+
+
+
+
+
+<!-- end send_url_process_screen.tmpl -->

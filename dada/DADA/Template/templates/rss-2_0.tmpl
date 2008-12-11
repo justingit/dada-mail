@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+   <channel>
+   <title><!-- tmpl_var name="title" --></title>
+   <link><!-- tmpl_var name="link" --></link>
+   <description><!-- tmpl_var name="description" --></description>
+   <language>en-us</language>
+   <lastBuildDate><!-- tmpl_var lastBuildDate --></lastBuildDate>
+   <generator><!-- tmpl_var name="PROGRAM_NAME" --> <!-- tmpl_var VER --></generator>
+   
+    <!-- tmpl_loop name="rss_entries" -->
+	 
+		<item>
+		 <title><!-- tmpl_var name="entry_title" --></title>
+		 <link><!-- tmpl_var name="entry_link" --></link>
+		 <description><!-- tmpl_var name="entry_description" --><!-- tmpl_var feed_subscription_form --></description>
+		 <pubDate><!-- tmpl_var pub_date --></pubDate>
+		 <guid><!-- tmpl_var name="entry_link" --></guid>
+		</item>
+
+	<!-- /tmpl_loop -->
+
+ </channel>
+</rss>
+

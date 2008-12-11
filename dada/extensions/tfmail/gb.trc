@@ -1,0 +1,137 @@
+%% NMS configuration file %%
+
+# the URL to your HTML form
+gbform_url: http://www.your.domain/addguest.html
+
+# The number of guestbook entries to display per page. Set this
+# to 0 if you don't want a multipage guestbook.
+gbview_perpage: 20
+
+no_email: 1
+
+email_input: email
+realname_input: realname
+
+modify_html_files: gbdata
+gbview_htmlfile: gbdata
+htmlfile_template_gbdata:
+%<entry>
+% <value name="added_date">{= date =}</value>
+% <value name="remote_addr">{= env.REMOTE_ADDR =}</value> 
+% <value name="user_agent">{= env.HTTP_USER_AGENT =}</value> 
+% <value name="param_realname">{= param.realname =}</value> 
+% <value name="param_email">{= param.email =}</value> 
+% <value name="param_comments">{= param.comments =}</value> 
+% <value name="param_country">{= param.country =}</value> 
+%</entry>
+
+required: realname,comments
+
+missing_template:
+%<?xml version="1.0" encoding="iso-8859-1"?>
+%<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+% "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+%<html>
+% <head>
+%  <title>Missing Fields</title>
+%  <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+% </head>
+% <body>
+%  <p>
+%   You must fill in both the <b>realname</b> and <b>comments</b> fields.
+%   Please try again.
+%  </p>
+%  <form method="post">
+%   <input type="hidden" name="_config" value="gb" />
+%   <p>Your name: <input type="text" name="realname" size="30" value="{= param.realname =}" /></p>
+%   <p>Your email address: <input type="text" name="email" size="30" value="{= param.email =}" /></p>
+%   <p>Your country: <input type="text" name="country" size="30" value="{= param.country =}" /></p>
+%   <p>
+%    Comments:<br />
+%    <textarea name="comments" cols="60" rows="4">{= param.comments =}</textarea>
+%   </p>
+%   <p><input type="submit" /> * <input type="reset" /></p>
+%  </form>
+%  <hr />
+% </body>
+%</html>
+
+success_page_template:
+%<?xml version="1.0" encoding="iso-8859-1"?>
+%<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+% "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+%<html>
+% <head>
+%  <title>Thank You</title>
+%  <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+% </head>
+% <body>
+%  <p>Thank you for adding to my <a href="GBview.pl?_config=gb">guestbook</a></p>
+%  <hr />
+% </body>
+%</html>
+
+gbview_template:
+%<?xml version="1.0" encoding="iso-8859-1"?>
+%<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+%    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+%<html xmlns="http://www.w3.org/1999/xhtml">
+%  <head>
+%    <title>My guestbook</title>
+%    <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+%    <style>
+%       h1.title {
+%                   text-align : center;
+%                }
+%    </style>
+%  </head>
+%  <body>
+%   <h1 class="title">My guestbook</h1>
+%
+%{= IF can_go_back =}
+%    <p align="center"><a href="GBview.pl?_config=gb&startat={= prev_page_start =}">[Later Entries]</a></p>
+%{= ELSE =}
+%    <p>Here are some guestbook entries.  If you like, you can
+%    <a href="{= config.gbform_url =}">add one</a>.</p>
+%{= END =}
+%
+%{= IF multiple_pages =}
+%    <p>page {= this_is_page =} of {= page_count =}. Jump to page:
+%    {= FOREACH page =}
+%     {= IF this =}
+%      <b>[{= page =}]</b>
+%     {= ELSE =}
+%      <a href="GBview.pl?_config=gb&startat={= start =}">[{= page =}]</a>
+%     {= END =}
+%    {= END =}
+%    </p>
+%{= END =}
+%
+%    <hr />
+%
+%{= FOREACH entry =}
+%    <p>Added by <b>{= param_realname =}</b> on {= added_date =}</p>
+%   {= IF param_email =}
+%    <p><b>email</b>: <a href="mailto:{= param_email =}">{= param_email =}</a></p>
+%   {= END =}
+%   {= IF param_country =}
+%    <p><b>country</b>: {= param_country =}</p>
+%   {= END =}
+%    <p>{= param_comments =}</p>
+%    <hr />
+%{= END =}
+%
+%{= IF can_go_on =}
+%    <p align="center"><a href="GBview.pl?_config=gb&startat={= next_page_start =}">[Earlier Entries]</a></p>
+%    <hr />
+%{= END =}
+%
+%    <p align="center">
+%      <font size="-1">
+%        <a href="http://nms-cgi.sourceforge.net/">TFmail</a>
+%        &copy; 2002 London Perl Mongers
+%      </font>
+%    </p>
+%  </body>
+%</html>
+

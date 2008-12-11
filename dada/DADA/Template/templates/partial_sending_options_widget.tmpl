@@ -1,0 +1,84 @@
+<!-- begin partial_sending_options_widget.tmpl --> 
+
+<!-- tmpl_if can_have_subscriber_fields --> 
+
+
+    <fieldset>
+     <legend>
+       <a href="#" id="partial_sending_options_widget_label" onclick="toggleDisplay('partial_sending_options_widget', 'partial_sending_options_widget_label');return false;">
+      +/- 
+     </a>Partial Sending Options
+     </legend>    
+     
+     <div id="partial_sending_options_widget" style="display:none;width:90%">
+
+    <p>
+     Send this message to subscribers where the:
+    </p> 
+    
+    <table> 
+    <!-- tmpl_loop fields --> 
+        <tr> 
+         <td> 
+          <p>
+           <strong>
+            <!-- tmpl_var name --> 
+           </strong> 
+          </p>
+         </td> 
+         <td>
+          <p>
+           <select name="field_comparison_type_<!-- tmpl_var name -->" id="field_comparison_type_<!-- tmpl_var name -->"> <!--  onChange="get_partial_list()" -->  
+            
+			<!-- tmpl_if field_comparison_type --> 
+				<option value="<!-- tmpl_var field_comparison_type -->" selected="selected"><!-- tmpl_var field_comparison_type --></option>	
+			<!-- /tmpl_if --> 
+			
+			<option value="like">Is Like</option>
+            <option value="equal_to">Is Equal To</option> 
+           </select> 
+          </p>
+         </td>
+         <td>
+          <p>
+           <input type="text" name="field_value_<!-- tmpl_var name -->" id="field_value_<!-- tmpl_var name -->" value="<!-- tmpl_var field_value -->"/> <!-- onKeyUp="get_partial_list()" -->  
+          </p>
+         </td>
+        </tr> 
+    <!-- /tmpl_loop --> 
+    
+    </table> 
+    
+    <div class="buttonfloat">
+     <input type="button" value="Preview Who's Getting This Message..." class="cautionary" onClick="get_partial_list()" />  
+    </div>
+    
+    <div class="floatclear">
+    </div>
+    
+       <div id="previewMessageReceivers"> 
+        <p>
+       </p>
+      </div> 
+     </div> 
+    </fieldset>
+
+    <script language="Javascript"> 
+    
+        function get_partial_list(){ 
+            external(['f__previewMessageReceivers', <!-- tmpl_loop fields -->'field_comparison_type_<!-- tmpl_var name -->', 'field_value_<!-- tmpl_var name -->',<!-- /tmpl_loop --> 'NO_CACHE'], ['previewMessageReceivers']); 
+            return false;
+        
+        }
+    
+    </script> 
+    
+    
+<!-- tmpl_else --> 
+
+    <!-- Multiple Subscriber Fields isn't support with this backend (Apparently) --> 
+
+<!-- /tmpl_if --> 
+
+    
+<!-- end partial_sending_options_widget.tmpl --> 

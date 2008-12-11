@@ -1,0 +1,97 @@
+<!-- begin list_invite_process_screen.tmpl -->
+
+<!--
+	
+<!-- tmpl_if process_test -->
+	
+	<p>
+	 Your test invitation message is being sent to the test recipient, <!-- tmpl_var test_recipient -->
+
+	 
+	<!-- 
+	 and your Testers list (a href="<!-- tmpl_var PROGRAM_URL -->?f=view_list&type=testers"view/a).
+	--> 
+	
+	.</p>
+	
+<!--tmpl_else-->
+	
+	<p>
+	 <!-- tmpl_var new_email_count --> invitation messages are now being sent. 
+	 The list owner will also get a copy of this invitation message.
+	</p>
+	
+<!--/tmpl_if-->
+
+--> 
+
+
+<div style="text-align:center">
+ <!-- tmpl_include sending_monitor_button_widget.tmpl -->
+</div> 
+
+<!-- tmpl_if comment --> 
+	
+<div class="simplebox" style="width:100%">
+ <p>
+ 
+ 
+
+ 
+ 	<!-- tmpl_if process_test -->
+		   
+		   To: 
+		   <em>
+			<!-- tmpl_var test_recipient -->
+		   </em>
+		   
+	<!-- tmpl_else -->
+		   
+		   To: Invite List
+		   
+	<!-- /tmpl_if -->
+	
+	
+ 
+ 
+  <br />
+  <strong>
+   From: <!-- tmpl_var list_owner_email -->
+  </strong>
+  <br />
+  <strong>
+   Subject: <!-- tmpl_var message_subject -->
+  </strong>
+ </p>
+ 
+<!-- tmpl_if text_message_body -->
+	 
+	 <hr />
+	 <p>
+	  <strong>
+	   Text Message:
+	  </strong>
+	  <br />
+	  <!-- tmpl_var screen_text_message -->
+	 </p>
+	 
+<!--/tmpl_if-->
+
+<!-- tmpl_if html_message_body -->
+	 
+	 <hr />
+	 <p>
+	  <strong>
+	   HTML Message:
+	  </strong>
+	  <br />
+	  <!-- tmpl_var screen_html_message -->
+	 </p>
+	 
+<!--/tmpl_if-->
+ 
+</div>
+
+<!-- /tmpl_if --> 
+
+<!-- end list_invite_process_screen.tmpl -->

@@ -1,0 +1,123 @@
+<!-- begin list_type_switch_widget.tmpl -->
+
+
+
+
+<div id="list_type_switcher">     
+
+
+<div>
+  
+<!-- tmpl_if list_type_isa_list -->
+	  <span>
+	   Subscribers (<!-- tmpl_var list_subscribers_num -->)
+	  </span>
+<!-- tmpl_else -->
+	  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=list&keyword=<!-- tmpl_var keyword escape="HTML" -->">
+	   Subscribers  (<!-- tmpl_var list_subscribers_num -->)
+	  </a>
+<!-- /tmpl_if -->
+  
+</div>
+  
+ <div> 
+ 
+<!-- tmpl_if list_type_isa_black_list -->
+	  <span>
+	   Black List (<!-- tmpl_var black_list_subscribers_num -->)
+	  </span>
+<!-- tmpl_else -->
+	  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=black_list&keyword=<!-- tmpl_var keyword escape="HTML" -->">
+	   Black List (<!-- tmpl_var black_list_subscribers_num -->)
+	  </a>
+<!-- /tmpl_if -->
+  
+ </div>
+ 
+
+<div>   
+<!-- tmpl_if list_type_isa_white_list -->
+	  <span>
+	   White List (<!-- tmpl_var white_list_subscribers_num -->)
+	  </span>
+<!-- tmpl_else -->
+	  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=white_list&keyword=<!-- tmpl_var keyword escape="HTML" -->">
+	   White List (<!-- tmpl_var white_list_subscribers_num -->)
+	  </a>
+<!-- /tmpl_if -->
+  
+ </div>
+ 
+ 
+ 
+ 
+<!-- 
+		DEV: Turning off for now... 
+	 
+	  <div> 
+	
+		<!-- tmpl_if list_type_isa_testers -->
+		  <span>
+		   Testers
+		  </span>
+	<!-- tmpl_else -->
+		  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=testers">
+		   Testers
+		  </a>
+	<!-- /tmpl_if -->
+	  
+	 </div>
+ 
+ --> 
+ 
+
+<!-- 
+
+
+ 
+<!-- tmpl_if enable_moderation -->
+	 <div>
+	  
+	<!-- tmpl_if list_type_isa_moderators -->
+		  <span>
+		   Moderators
+		  </span>
+	<!-- tmpl_else -->
+		  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=moderators">
+		   Moderators
+		  </a>
+	<!-- /tmpl_if -->
+	  
+	
+	</div> 
+	
+	<!--/tmpl_if-->
+ 
+ --> 
+ 
+ <!-- tmpl_if enable_authorized_sending -->
+	 <div>
+	  
+	<!-- tmpl_if list_type_isa_authorized_senders -->
+		  <span>
+		   Authorized Senders (<!-- tmpl_var authorized_senders_num -->)
+		  </span> 
+	<!-- tmpl_else -->
+		  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=authorized_senders&keyword=<!-- tmpl_var keyword escape="HTML" -->">
+		   Authorized Senders (<!-- tmpl_var authorized_senders_num -->)
+		  </a>
+	<!-- /tmpl_if -->
+	  
+	
+	</div> 
+	
+	<!--/tmpl_if-->
+
+ </div> 
+ 
+
+
+ <div class="floatclear"></div>   
+
+
+<!-- end list_type_switch_widget.tmpl --> 

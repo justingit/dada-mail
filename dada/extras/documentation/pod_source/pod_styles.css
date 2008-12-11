@@ -1,0 +1,28 @@
+/* Selector { font: [font-style] [font-variant] [font-weight] [font-size]/[line-height] [font-family] } */
+
+body
+{
+font: 12px/24px verdana, arial, san-serif;
+}
+
+h1{
+font: 500 16px/16px arial, verdana, san-serif;
+}
+
+h2{
+font: 500 14px/14px arial, verdana, san-serif;
+}
+
+pre{
+
+font: 11px/22px monaco, mono, courier-new, courier, fixed; 
+border: 1px dotted black; 
+margin: 20px; 
+padding:5px;
+background-color:#CFC;
+
+}
+
+/*i do not know if this works! */ 
+
+hr(color:black;height:1px;width:66%}

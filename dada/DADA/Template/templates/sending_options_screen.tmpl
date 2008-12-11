@@ -1,0 +1,230 @@
+<!-- begin sending_options_screen.tmpl -->
+
+<p id="breadcrumbs">
+ Manage List  &#187;
+ Sending Options
+</p>
+
+
+<!-- tmpl_if done -->
+	<!-- tmpl_var GOOD_JOB_MESSAGE -->
+<!--/tmpl_if-->
+
+
+<!-- tmpl_if send_via_smtp --> 
+	<p class="positive">Messages are currently being sent via SMTP</p>
+<!-- tmpl_else --> 
+	<p class="positive">Messages are  currently being sent via the sendmail command.</p>
+<!-- /tmpl_if --> 
+
+
+
+<form name="default_form" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
+
+
+
+
+<fieldset>
+
+<legend>
+ Batch Sending Options
+</legend>
+
+
+
+
+<div id="previewBatchSendingSpeed"> 
+</div> 
+
+    
+
+<table> 
+ <tr>
+  <td>
+   <input type="checkbox" name="enable_bulk_batching" id="enable_bulk_batching" value="1" <!-- tmpl_if enable_bulk_batching -->checked="checked"<!--/tmpl_if--> onChange="previewBatchSendingSpeed()" />
+  </td>
+  <td>
+   <p>
+    <label for="enable_bulk_batching">
+     Enable Batch Sending
+    </label>
+   </p>
+   <blockquote> 
+    <p>
+     Send: <!-- tmpl_var mass_send_amount_menu --> message(s) per batch
+     <br /> 
+     and then wait and sleep: <!-- tmpl_var bulk_sleep_amount_menu --> seconds, before the next batch.
+    </p>
+   </blockquote>
+  </td>
+ </tr>
+ 
+ <script language="Javascript"> 
+            
+        function previewBatchSendingSpeed(){ 
+            external(['f__previewBatchSendingSpeed', 'enable_bulk_batching', 'mass_send_amount', 'bulk_sleep_amount',  'NO_CACHE'], ['previewBatchSendingSpeed']); 
+            return false;
+        }
+    
+
+previewBatchSendingSpeed(); 
+
+</script> 
+
+ <tr>
+  <td>
+   <input type="checkbox" name="adjust_batch_sleep_time" id="adjust_batch_sleep_time" value="1" <!-- tmpl_if adjust_batch_sleep_time -->checked="checked"<!--/tmpl_if--> />
+  </td>
+  <td>
+   <p>
+    <label for="adjust_batch_sleep_time">
+     Adjust Sleep Time 
+    </label>
+    <br />
+
+    The time <!-- tmpl_var PROGRAM_NAME --> <code>sleep()</code>s between batches will be adjusted, 
+    depending on how long the batch took to complete.
+   </p>
+  </td>
+ </tr>
+
+
+ 
+ <tr>
+  <td>
+   <input type="checkbox" name="get_finished_notification" id="get_finished_notification" value="1" <!-- tmpl_if get_finished_notification -->checked="checked"<!--/tmpl_if--> />
+  </td>
+  <td>
+   <p>
+    <label for="get_finished_notification">
+     Receive Finishing Message
+    </label>
+    <br />
+    Receive notice via email when <!-- tmpl_var PROGRAM_NAME --> has sent all the messages of a mailout.
+   </p>
+  </td>
+ </tr>
+</table>
+
+
+</fieldset>
+
+<fieldset>
+<legend>
+ Auto Pickup Options
+</legend> 
+
+<table>
+ <tr>
+  <td>
+   <input type="checkbox" name="auto_pickup_dropped_mailings" id="auto_pickup_dropped_mailings" value="1" <!-- tmpl_if auto_pickup_dropped_mailings -->checked="checked"<!--/tmpl_if--> />
+  </td>
+  <td>
+   <p>
+    <label for="auto_pickup_dropped_mailings">
+     Auto-Pickup Dropped List Message Mailings
+    </label>
+    <br />
+    Since sending to your entire list is a long process, it can sometimes gets interrupted by the server and  won't finish to completion.
+    Activating this feature safeguards against this problem by reloading a mailing from the point that it was dropped automatically. 
+    
+    
+    <table>
+     <tr>
+      <td>
+       <input type="checkbox" name="restart_mailings_after_each_batch" id="restart_mailings_after_each_batch" value="1" <!-- tmpl_if restart_mailings_after_each_batch -->checked="checked"<!--/tmpl_if--> />
+      </td>
+      <td>
+       <p>
+        <label for="restart_mailings_after_each_batch">
+         Reload Mailings After Each Batch
+        </label>
+        <br />
+       
+        Instead of having <!-- tmpl_var PROGRAM_NAME --> automatically <code>sleep()</code> between mailings, enabling this option will 
+        reload the mailing between batches manually. 
+	</p>
+	
+	<p>This option should <em>only</em> be used if the, <code>sleep()</code> Perl function is, for whatever reason, not working properly. 
+	   Enabling this option will also <strong>require</strong> you to use the web-based mailing monitor for successfully mailings.
+
+        
+    
+       </p>
+      </td>
+     </tr>
+    
+    </table>
+
+
+    
+   </p>
+  </td> 
+ </tr>
+
+</table>
+
+</fieldset>
+
+
+
+
+<fieldset>
+<legend>
+ SMTP Options
+</legend>
+
+
+<table>
+ <tr>
+  <td>
+   <input type="checkbox" name="send_via_smtp" id="send_via_smtp" value="1" <!-- tmpl_if send_via_smtp -->checked="checked"<!--/tmpl_if--> />
+  </td>
+  <td>
+   <p>
+    <label for="send_via_smtp">
+     Send Email Using SMTP
+    </label>
+    <br />
+    Send messages using a straight SMTP connection instead of through the, sendmail command. Be sure to correctly 
+	configure your SMTP settings. 
+   </p>
+
+<!-- tmpl_if no_smtp_server_set -->   
+	   <p class="error">
+	    Warning! No SMTP Server has been set!
+	   </p>
+<!--/tmpl_if-->
+<p class="link_to_screen">
+    <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=smtp_options">
+     SMTP Sending Options...
+    </a>
+   </p>
+
+  </td>
+ </tr>
+</table> 
+   
+</fieldset>
+
+
+
+<p class="link_to_screen">
+ <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=adv_sending_options">
+  Advanced ...
+ </a>
+</p>
+<input type="hidden" name="process" value="1" />
+<input type="hidden" name="f"       value="sending_options" />
+<div class="buttonfloat">
+ <input type="reset"  class="cautionary" value="Clear Changes" />
+ <input type="submit" class="processing" value="Save Sending Options" />
+</div>
+<div class="floatclear"></div>
+
+</form> 
+
+<!-- tmpl_include help_link_widget.tmpl --> 
+
+
+<!-- end sending_options_screen.tmpl -->

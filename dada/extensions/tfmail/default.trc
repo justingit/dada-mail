@@ -1,0 +1,17 @@
+%% NMS configuration file %%
+#
+# TFmail configuration.
+#
+
+#
+# recipient: the email address(s) to which TFmail should
+# send the results of the form submission.
+#
+recipient: your.email@address.goes.here
+
+#
+# The names of the CGI inputs that TFmail should use to
+# build the From: header of the email.
+#
+email_input:    email
+realname_input: realname

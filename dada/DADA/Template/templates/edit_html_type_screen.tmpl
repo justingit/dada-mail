@@ -1,0 +1,155 @@
+<!-- begin edit_html_type_screen.tmpl -->
+
+<!-- tmpl_if done -->
+	<!-- tmpl_var GOOD_JOB_MESSAGE -->
+<!--/tmpl_if-->
+
+<p>
+ You can customize many of the HTML screens 
+ <!-- tmpl_var PROGRAM_NAME --> produces. <!-- tmpl_var PROGRAM_NAME --> uses 
+ &quot;pseudo tags&quot; to represent data that may change regularly. 
+ A list of relevant tags is shown at the end of this page.
+</p>
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form">
+
+
+
+<fieldset> 
+<legend>
+	Subscription Confirmation Screen:
+ </legend>
+<p>
+	
+	 This text is shown after someone enters their email address 
+ to subscribe to your list.
+</p>
+<p>
+ <textarea name="html_confirmation_message" id="html_confirmation_message" rows="10" cols="50" style="<!-- tmpl_var text_area_style -->"><!-- tmpl_var html_confirmation_message --></textarea> 
+</p>
+
+</fieldset> 
+
+<fieldset> 
+	
+ <legend>Subscription Successful Screen:
+ </legend>
+ 
+<p>
+ This text is shown after the subscriber clicks on the 
+ confirmation email's subscription link.
+</p>
+<p>
+ <textarea name="html_subscribed_message" id="html_subscribed_message" rows="10" cols="50" style="<!-- tmpl_var text_area_style -->"><!-- tmpl_var html_subscribed_message --></textarea>
+</p>
+</fieldset> 
+	
+<fieldset> 
+
+ <legend>Unsubscription Confirmation Screen:
+ </legend>
+ <p>
+ This text is shown after someone enters their email address to 
+ unsubscribe from your list.
+</p>
+ <p>
+ <textarea name="html_unsub_confirmation_message" id="html_unsub_confirmation_message" rows="10" cols="50" style="<!-- tmpl_var text_area_style -->"><!-- tmpl_var html_unsub_confirmation_message --></textarea>
+</p>
+
+</fieldset> 
+<fieldset>
+	<legend>Unsubscription Successful Screen:</legend>
+<p> This text is shown after someone unsubscribes.
+</p>
+<p>
+ <textarea name="html_unsubscribed_message" id="html_unsubscribed_message" rows="10" cols="50" style="<!-- tmpl_var text_area_style -->"><!-- tmpl_var html_unsubscribed_message --></textarea>
+</p>
+</fieldset> 
+
+
+<input type="hidden" name="process" value="1" />
+<input type="hidden" name="f"       value="edit_html_type" />
+<div class="buttonfloat">
+ <input type="reset"  class="cautionary" value="Clear All Changes" />
+ <input type="submit" class="processing" value="Save All Changes" />
+</div>
+<div class="floatclear"></div>
+<hr />
+
+</form>
+<table class="tagchart">
+ <tr align="center">
+  <td>
+   <strong>
+    This Tag
+   </strong>
+  </td>
+  <td>
+   <strong>
+    Is Replaced With
+   </strong>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   [subscriber.email]
+  </td>
+  <td>
+   The email address of the subscriber.
+  </td>
+ </tr>
+ <tr>
+  <td>
+   [list_settings.list_name]
+  </td>
+  <td>
+   The name of your list.
+  </td>
+ </tr>
+ <tr>
+  <td>
+   [list_settings.info]
+  </td>
+  <td>
+   The description of your list.
+  </td>
+ </tr>
+ <tr>
+  <td>
+   [list_settings.privacy_policy]
+  </td>
+  <td>
+   The privacy policy of your list.
+  </td>
+ </tr>
+ <tr>
+  <td>
+   [list_settings.list_owner_email]
+  </td>
+  <td>
+   The list owner's email address.
+  </td>
+ </tr>
+ <tr>
+  <td>
+   [list_settings.list_admin_email]
+  </td>
+  <td>
+   The list administrator's email address.
+  </td>
+ </tr>
+ <tr>
+  <td>
+   [PROGRAM_URL]
+  </td>
+  <td>
+   The URL of the program 
+   (<a href="<!-- tmpl_var PROGRAM_URL -->" target="_blank"><!-- tmpl_var PROGRAM_URL --></a>).
+  </td>
+ </tr>
+</table>
+
+<!-- tmpl_include help_link_widget.tmpl --> 
+
+<!-- end edit_html_type_screen.tmpl -->
+ 

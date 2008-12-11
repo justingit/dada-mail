@@ -1,0 +1,234 @@
+<!-- begin test_layout_screen.tmpl -->
+
+<h1>
+ Heading One
+</h1>
+<h2>
+ Heading Two
+</h2>
+<h3>
+ Heading Three
+</h3>
+
+<p>
+ This is just regular text. It's not very exciting.
+</p>
+<p>
+ <a href="http://www.zombo.com/">
+  This is a link you haven't clicked on. 
+ </a>
+ (At least we hope you haven't!)
+</p>
+<p>
+ <a href="<!-- tmpl_var PROGRAM_URL -->?flavor=test_layout">
+  Click on this link to see what a clicked-on link looks like.
+ </a>
+</p>
+<p class="error">
+ This is an error. Bad boy.
+</p>
+<p class="positive">
+ This should give you some positive reinforcement. Good job!
+</p>
+<p class="small">
+ Here's some small text.
+</p>
+
+<code>
+ Here's some code (&lt;code&gt;).
+</code>
+<pre>Here's some preformatted (&lt;pre&gt;) text.
+And here's some more.</pre>
+
+<p style="text-align:center;">
+ Below this is a horizontal rule:
+</p>
+
+<hr />
+
+<table>
+ <tr>
+  <td>
+   <input type="checkbox" id="test" name="test" />
+  </td>
+  <td>
+   <label for="test">
+    This is a test checkbox!
+   </label>
+   <br />
+   This is the description about what the checkbox does.
+  </td>
+ </tr>
+</table>
+<p>
+ Notice that if you click, &quot;This is a text checkbox!&quot;, 
+ it'll change the state of the checkbox itself. This is done using the 
+ &quot;label&quot; tag, like so:
+</p>
+<code>
+&lt;label for=&quot;test&quot;&gt;This is a test checkbox!&lt;/label&gt;
+</code>
+<p>
+ The checkbox itself has an &quot;id&quot; attribute set to &quot;test&quot;.
+</p>
+
+<p>
+ <label for="textfield1">
+  Here's a text field:
+ </label>
+ <br />
+ <input type="text" id="textfield1" />
+</p>
+<p>
+ <label for="textfield2">
+  Here's a BIG text field:
+ </label>
+ <br />
+ <input type="text" id="textfield2" class="full" />
+</p>
+<p>
+ <label for="textarea1">
+  Here's a textarea field:
+ </label>
+ <br />
+ <textarea name="textarea1" id="textarea1" rows="5">Some text in a textarea!</textarea>
+</p>
+
+<p>
+ And here are some other form widgets:
+</p>
+<table>
+ <tr>
+  <td>
+   <input type="checkbox" name="checkbox2" id="checkbox2">
+   <label for="checkbox2">
+    I like pie.
+   </label>
+  </td>
+  <td>
+   <p>
+    <strong>
+     another checkbox and label
+    </strong>
+    (not contained in a table)
+   </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <input type="radio" name="radiogroup" id="radiobutton1" />
+   <input type="radio" name="radiogroup" />
+   <input type="radio" name="radiogroup" />
+  </td>
+  <td>
+   <label for="radiobutton1">
+    some radio buttons
+   </label>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <input type="text" id="textfield3" />
+   <input type="submit" class="plain" value="Press me!" />
+  </td>
+  <td>
+   <label for="textfield3">
+    a text field with a button
+   </label>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <input type="file" id="filewidget" />
+  </td>
+  <td>
+   <label for="filewidget">
+    a &quot;file upload&quot; widget
+   </label>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <input type="password" id="passwordfield" />
+  </td>
+  <td>
+   <label for="passwordfield">
+    a password field
+   </label>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <select id="dropdown">
+    <option>Yes</option>
+    <option>No</option>
+    <option>Maybe</option>
+    <option>Ask again later</option>
+   </select>
+   <input type="submit" class="plain" value="No, press me!" />
+  </td>
+  <td>
+   <label for="dropdown">
+    a dropdown menu with a button
+   </label>
+  </td>
+ </tr>
+</table>
+<hr />
+
+<!-- REMOVE BELOW THIS (OR COMMENT IT OUT) **BEFORE** A STABLE RELEASE! 
+
+<h2>
+ Layout Bugs to Squash:
+</h2>
+
+<hr />
+
+ REMOVE ABOVE THIS (OR COMMENT IT OUT) **BEFORE** A STABLE RELEASE! -->
+
+<input type="hidden" name="f" value="test_layout" />
+<div class="buttonfloat">
+ <input type="submit" class="plain"      value="plain" />
+ <input type="submit" class="processing" value="processing" />
+ <input type="submit" class="cautionary" value="cautionary" />
+ <input type="submit" class="alertive"   value="alertive" />
+</div>
+
+<p>&nbsp;</p>
+<table class="tagchart">
+ <tr>
+  <td>
+   <strong>a table</strong>
+  </td>
+  <td>
+   filler content, filler content, and more filler content
+  </td>
+ </tr>
+ <tr>
+  <td>
+   with a
+  </td>
+  <td>
+   filler content, filler content, and more filler content
+  </td>
+ </tr>
+ <tr>
+  <td>
+   class of
+  </td>
+  <td>
+   filler content, filler content, and more filler content
+  </td>
+ </tr>
+ <tr>
+  <td>
+   &quot;tagchart&quot
+  </td>
+  <td>
+   filler content, filler content, and more filler content
+  </td>
+ </tr>
+</table>
+
+
+<!-- end test_layout_screen.tmpl -->

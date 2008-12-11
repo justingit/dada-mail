@@ -1,0 +1,45 @@
+=pod
+
+=head1 REQUIREMENTS
+
+Requirements needed to run Dada Mail
+
+Dada Mail requires extremely little to run, but do double-check your setup has the following: 
+
+=head1 Environment
+
+For the most part, Dada Mail is a web application; you interact with it via a web browser and it lives on top of a web server. Dada Mail is a simple CGI app for the most part, it does not currently support mod_perl or even Fast CGI, so those are not prerequisites. 
+
+Dada Mail is not a desktop application. 
+
+When we talk about what operating system, version of Perl, etc that's needed for Dada Mail to run - we're talking about what's needed on the I<server> end. All you need to use Dada Mail is a modern web browser (we suggest Mozilla Firefox)  and because of this, any operating system that can run a modern web browser can be used. 
+
+=head1 Supported Operating Systems
+
+Linux, Free BSD and Mac OS X should all work well. 
+
+SunOS should also work well, but there are some issue with Sun's file locking system and Dada Mail. 
+
+Dada Mail isn't ever tested on a Windows Server or even Apache running on top of Windows. 
+
+Fair warning.
+
+One major stumbling block is Perl for Windows lack of support for the C<fork()> built-in, but this support has gotten better in time. We still don't test Dada Mail on Windows, though. 
+
+You'll also want to use the SQL backend if you ever attempt to run Dada Mail on a Windows-based server
+
+=head1 Perl 
+
+Dada Mail is written in Perl, so you'll want to have Perl, at least version 5.6 for version 3.0.0 and 3.0.1 and Perl version 5.8 for anything above 3.0.1. 
+
+Since Dada Mail is a CGI app, you'll need support for Perl CGI scripts within your web server environment. 
+
+=head1 Mail Transport Agent
+
+Dada Mail can pass messages to send to a sendmail-like command that applications like sendmail, qmail, postfix, exim, etc come with, or it can pass messages using the SMTP protocol. You will need one of these. Dada Mail is not an SMTP server itself. 
+
+=head1 Configuration
+
+There is no auto-installer for Dada Mail that *we* ship. One requirement of Dada Mail, then maybe that you can open up a file in a text editor and make I<extremely simple> changes to it, with regards to file and directory paths on your server. 
+
+=cut

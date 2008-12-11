@@ -1,0 +1,53 @@
+<!-- begin feature_set_screen.tmpl --> 
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form">  
+  
+<!-- tmpl_if done --> 
+
+    <!-- tmpl_var GOOD_JOB_MESSAGE --> 
+
+<!--/tmpl_if--> 
+
+<p>
+The below list of headings correspond to the administration menu and the various screens
+that actually make up the list control panel.</p>
+
+<p>Unchecking any of these options will disable access to them when you log into 
+this list using your <em>List Password</em>. Access to these screens will always be
+available when you log into this list using the <em><!-- tmpl_var PROGRAM_NAME --> Root Password</em>.
+</p>
+
+<!-- tmpl_var feature_set_menu -->
+
+<h2>Options</h2>
+<p> 
+ <input type="radio" name="disabled_screen_view" value="hide" id="hide" <!-- tmpl_if disabled_screen_view_hide -->checked="checked"<!--/tmpl_if--> />
+  <label for="hide">
+   Hide Disabled Screens
+  </label>
+  <br /> 
+ <input type="radio" name="disabled_screen_view" value="grey_out" id="grey_out" <!-- tmpl_if disabled_screen_view_grey_out -->checked="checked"<!--/tmpl_if--> />
+ <label for="grey_out"> 
+  Grey Out Disabled Screens
+ </label>
+</p>
+
+ 
+
+
+<input type="hidden" name="process" value="true" /> 
+<input type="hidden" name="flavor" value="feature_set" /> 
+
+
+<div class="buttonfloat">
+ <input type="reset"  class="cautionary" value="Clear Changes" />
+ <input type="submit" class="processing" value="Save List Options" />
+</div>
+<div class="floatclear"></div>
+
+</form> 
+
+<!-- tmpl_include help_link_widget.tmpl --> 
+
+
+<!-- end feature_set_screen.tmpl -->  

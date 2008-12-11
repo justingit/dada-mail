@@ -1,0 +1,120 @@
+=pod
+
+=head1 README File for Windows Servers
+
+=head1 Before We Begin
+
+This documentation is pretty old and hasn't been tested out with the 3.0 release. We don't install Dada Mail 
+on Windows-based servers, so we don't know exactly what works, what doesn't. Good luck!
+
+
+Please follow these directions to have any hope in getting Dada Mail running on Windows NT. You'll need to make some tweaks to the Config.pm file; all variables, unless otherwise noted are located in the Config.pm file. 
+
+
+B<Please Please Please Note:> Dada Mail is developed for a Unix-centric server in mind. There are a few major differences between a server, like Apache which Dada Mail is tested on extensively and a server, like Microsoft's Internet Information Server, which isn't tested by us at all. At the moment, there is no interest for me (as the developer) to make it work on a Microsoft platform. The reason for this is my lack of time to invest and my lack of a server to test on. 
+
+I leave this as an invitation for a different party. My personal opinion of products from Microsoft really don't have anything to do with it, I just don't want to give the full thumbs up if Dada Mail is flaky on IIS due to me not testing it enough on that particular platform.  
+
+
+=head1 Mail Sending
+
+
+Your most likely going to have to use SMTP for all mailings; Sendmail usually isn't available for Windows.
+
+You may also want to tell Dada Mail use SMTP sending right off the bat, instead of having to configure it everytime you make a list. You do this by adding a new line in the %LIST_SETUP_DEFAULTS hash: 
+
+	%LIST_SETUP_DEFAULTS = (
+		send_via_smtp => 1,
+	); 
+
+These may be other entries in this file, you can put this particular entry either above, or below any other ones: 
+
+	%LIST_SETUP_DEFAULTS = (
+		use_pop_before_smtp => 1,
+		smtp_server         => 'your.smtp_server',
+		
+		
+		send_via_smtp       => 1
+		
+	);
+
+While you're at it, you may also want to add the 'strip_message_headers' and set it to 1:
+
+	%LIST_SETUP_DEFAULTS = (
+		use_pop_before_smtp   => 1,
+		smtp_server         => 'your.smtp_server',
+		send_via_smtp         => 1,
+		strip_message_headers => 1,
+	);
+	
+
+=head1 Use one of the SQL Backends
+
+Don't try running Dada Mail using anything but the SQL backends. It'll just save you much heartache. 
+
+=head1 Windows IIS Server
+
+=head2 No Parse Header Mode (nph)
+
+Perl CGI scripts need to be run in No Parse Header mode, set the $NPH variable to 1:
+
+	$NPH = 1; 
+
+You may also need to rename the mail.cgi script to nph-mail.cgi, but try that after you've done everything else. 
+
+=head2 The "shebang" Line
+
+You may also need to change the first "shebang" line in mail.cgi from: 
+
+	#!/usr/bin/perl
+
+to something like: 
+
+	#!C:/perl/bin/perl.exe
+
+=head2 fork() Issues
+
+Dada Mail uses something called fork() that may or may not be available to Windows Versions of Perl. fork() is very critical to mass mailings.
+
+Documentation and caveats with using fork() on Win32: 
+
+L<http://perldoc.perl.org/perlfork.html>
+
+=head2 File Locking Issues
+
+Your version of Windows my not support File Locking, this is extremely important in keeping the subscription list uncorrupted. You may want to look into using a 
+SQL backend to use as your subscription list. There may also be unknown complications with the templating in Dada Mail as well. YMMV.
+
+=head2 Maually putting the path to Dada Mail's Perl Libraries
+
+Your copy of Dada Mail should be all set to run on a Windows Server. If you still cannot run the program, open up the mail.cgi script and find these two lines:
+
+	use lib './'; #look for the DADA folder in the same directory as the script
+	use lib './DADA';
+
+
+you may have to change these to the full absolute path of where they're at (example:)
+
+	use lib 'D:\somewhere\else\dada'; 
+	use lib 'D:\somewhere\else\dada\DADA';
+
+=head1 More Information
+
+=over
+
+=item * Perlport FAQ on DOS and Derivatives 
+
+
+L<http://perldoc.perl.org/perlport.html#DOS-and-Derivatives>
+
+=back
+
+=head1 Thanks
+
+Thanks goes out to David Wood ( obsidian -> panix.com ) for adding many great points to this FAQ. 
+
+=head1 Last Words
+
+Hazzah!
+
+=cut

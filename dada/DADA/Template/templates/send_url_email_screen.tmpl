@@ -1,0 +1,303 @@
+<!-- begin send_url_screen.tmpl -->
+
+<!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
+
+
+<form name="send_email" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
+ 
+<!-- tmpl_unless can_use_mime_lite_html -->
+	 
+	 <div class="disabled">
+	  <p class="error">
+	   Disabled. The 'MIME::Lite::HTML' Perl Library needs to be installed, or is missing required components. More information below:
+	   
+	  </p>
+	  
+	  <pre> 
+<!-- tmpl_var mime_lite_html_error -->
+	  </pre> 
+	  
+	  
+	 </div>
+	 
+<!-- tmpl_else-->
+	 
+	 <!-- tmpl_unless can_use_lwp_simple -->
+
+
+		  <div class="disabled">
+		  <p class="error">
+		   Disabled. The 'LWP' Perl Library needs to be installed. More information below: 
+		  </p>
+		  
+		  <pre> 
+<!-- tmpl_var lwp_simple_error --> 
+		  </pre> 
+		  
+		  
+		 </div>
+		 
+			<!-- tmpl_else-->
+
+        <!-- tmpl_if list_settings.group_list --> 
+            <p class="positive">
+				Discussion List Support is enabled and Discussion List preferences will be honored.
+        	</p>
+		<!--/tmpl_if--> 
+
+		
+<!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
+
+
+   <fieldset> 
+  
+		 <legend>
+		  Message Body
+		 </legend>
+		 
+		 
+		 
+  <fieldset style="background:#e6e6e6"> 
+  
+		 <legend>
+		  HTML Verson (Your Webpage)
+		 </legend>
+		 
+		 <p>
+		  <input type="radio" name="content_from" id="content_from_url" value="url" checked="checked" />
+			  <label for="content_from_url">
+		   Grab content from this webpage address (URL):
+		  </label>
+		  <br />
+		  <input type="text" name="url" id="url" class="full" value="http://" />
+		 </p>
+		 
+		 <p>
+		  <input type="radio" name="content_from" id="content_from_textarea" value="content_from_textarea" />
+			  <label for="content_from_textarea">
+			   Use the following HTML as content:
+			  </label>
+		  <br />
+		  
+		  <!-- tmpl_if FCKEDITOR_URL --> 
+		
+		  		<!-- tmpl_if list_settings.enable_fckeditor --> 
+
+			 	<script type="text/javascript">
+					<!--
+	  				var oFCKeditor = new FCKeditor( 'html_message_body' ) ;
+				  	<!-- tmpl_include FCKeditor_default_js_options.tmpl -->
+				  	oFCKeditor.Create() ;
+					//-->
+				</script>
+			 
+			<!--tmpl_else--> 
+
+				<textarea name="html_message_body" cols="80" rows="30"  style="<!-- tmpl_var name="text_area_style" -->" id="html_message_body"></textarea>
+			
+			<!--/tmpl_if-->
+
+	 <!--tmpl_else--> 
+
+		  		<textarea name="html_message_body" cols="80" rows="30" style="<!-- tmpl_var name="text_area_style" -->" id="html_message_body"></textarea>
+
+		<!--/tmpl_if--> 
+		 
+		 </p>
+		 <p>
+		  <strong>
+		   <a href="#" onclick="toggleDisplay('adv');return false;">
+			+/- Advanced Options...
+		   </a>
+		  </strong>
+		 </p>
+		 <!-- "display:none" below is controlled by toggleDisplay('adv') -->
+		 <table class="simplebox" id="adv" style="display:none">
+		  <tr>
+		   <td>
+			<p>
+			 <strong>
+			  Images in this Webpage Should:
+			 </strong>
+			</p>
+		   </td>
+		   <td>
+			<p>
+			 <input type="radio" name="url_options" id="extern" value="extern" checked="checked" />
+			  <label for="extern">
+			   have their URLs changed to absolute
+			 </label> 
+			 
+			 
+			 <!-- DEV as far as I can tell, this option doesn't work!
+			 -js
+			 
+			 <br />
+			 <input type="radio" name="url_options" value="location" />
+			 be embedded in the message itself, using the 'Content-Location' header
+			 
+			 --> 
+			 
+			 
+			 <br />
+			 <input type="radio" name="url_options" value="cid" id="cid" />
+			  <label for="cid">
+			   be embedded in the message itself. 
+			 </label>
+			 
+		<!-- tmpl_unless can_display_attachments --> 
+				 
+				 <br />
+				 <p class="error"> 
+				  Warning: your current Archive backend does not support archiving messages with embedded images.
+				  When viewed, these archived messages may be missing images or formatted incorrectly.
+				 </p>
+				 
+		<!--/tmpl_unless--> 
+			 
+			</p>
+		   </td>
+		  </tr>
+		  <tr>
+		   <td colspan="2">
+			<table align="center" class="simplebox">
+			 <tr>
+			  <td>
+			   <p>
+				<strong>
+				 Restricted URL Information
+				</strong>
+				   </p>
+				  </td>
+				  <td>
+			   <p>
+				(
+				<em>
+				 optional
+				</em>
+				)
+			   </p>
+			  </td>
+			 </tr>
+			 <tr>
+			  <td>
+			   <p align="right">
+				<strong>
+				 username:
+				</strong>
+			   </p>
+			  </td>
+			  <td>
+			   <p>
+				<input type="text" name="url_username" />
+			   </p>
+			  </td>
+			 </tr>
+			 <tr>
+			  <td>
+			   <p align="right">
+				<strong>
+				 password:
+				</strong>
+			   </p>
+			  </td>
+			  <td>
+			   <p>
+				<input type="password" name="url_password" />
+			   </p>
+			  </td>
+			 </tr>
+			 <tr>
+			  <td>
+			   <p align="right">
+				<strong>
+				 proxy:
+				</strong>
+			   </p>
+			  </td>
+			  <td>
+			   <p>
+				<input type="password" name="proxy" />
+			   </p>
+			  </td>
+			 </tr>
+			</table>
+		   </td>
+		  </tr>
+		 </table>
+
+
+
+</fieldset> 
+
+
+<!--
+ <p><strong><a href="#" onclick="toggleDisplay('text_message');return false;">+/-</a></strong>
+ <label for="text_message_body">
+   PlainText Version
+  </label>
+ </p>
+ --> 
+ 
+ 
+
+
+
+  <fieldset style="background:#e6e6e6"> 
+
+		 <legend><a href="#" onclick="toggleDisplay('text_message');return false;">+/-</a>
+		  Plain Text Version
+		 </legend>
+  <div id="text_message" style="display:none"> 
+
+ 
+		 <p>
+		  <input type="radio" name="auto_create_plaintext" id="auto_create_plaintext" value="1" checked="checked" />
+		  <label for="auto_create_plaintext">
+		   Create a plain text version automatically
+		  </label>
+		  <br />
+		  <em>
+		   Will NOT work if you use a username/password or proxy.
+		  </em>
+		 </p>
+		 <p>
+		  <input type="radio" name="auto_create_plaintext" id="no_auto_create_plaintext" value="0" />
+		  <label for="no_auto_create_plaintext">
+		   Use the text below as the plain text version:
+		  </label>
+		 </p>
+		 <p>
+		  <textarea name="text_message_body" cols="80" rows="30">This email message requires that your mail reader support HTML.</textarea>
+		 </p>
+		 <input type="hidden" name="f" value="send_url_email" />
+		 
+	</div> 
+	</fieldset> 
+	
+	 </fieldset> 
+
+		<!-- tmpl_if list_settings.archive_messages -->
+			 
+			 <!-- tmpl_include send_email_archive_options_widget.tmpl -->
+			 <hr />
+			 
+		<!--/tmpl_if-->
+		 
+		 
+		 <!-- tmpl_include partial_sending_options_widget.tmpl --> 
+
+         <!-- tmpl_include subscriber_field_tags_listing_widget.tmpl --> 
+
+
+		 <!-- tmpl_include name="send_a_list_message_button_widget.tmpl" -->
+		 
+	<!-- /tmpl_unless -->
+ 
+<!-- /tmpl_unless -->
+
+</form> 
+
+<!-- tmpl_include help_link_widget.tmpl --> 
+
+<!-- end send_url_screen.tmpl -->

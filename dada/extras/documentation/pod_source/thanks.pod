@@ -1,0 +1,48 @@
+=pod
+
+=head1 Thanks
+
+A small list of people that helped out the development of Dada Mail
+
+If anyone is forgotten, please tap me on the shoulder -> dada@skazat.com
+
+I'll be more than happy to put you on the list!
+
+=over
+
+=item * Mark Stosberg and Chris Hardy at http://summersault.com
+
+Summersault is the host for the Dada Mail support site and have also given much insight on the development of the script. Thanks again, guys. 
+
+=item * Brian Hansen 
+
+My former boss, Brian saw quite a bit of potential in Dada Mail and the company has used it in commercial applications and Brian himself has done much to support the program out. 
+
+=item * Earl Ruby of http://knowledgematters.net
+
+Earl Ruby took over the administration of the Dada Mail discussion lists
+
+=item * Steve Mallett of http://OSDir.com
+
+Steve was generous enough to interview Justin Simoni  for Oreilly's Open Source Directory Site. 
+
+=item * Jim Thomason thomasoniii@yahoo.com
+
+Jim wrote the Mail::Bulkmail module, which is the hyper fast SMTP mail sender. It's some pretty hot code and does much of the heavy lifting in Dada Mail. 
+
+=item * ryq eryq@zeegee.com
+
+Dada Mail uses the MIME::Lite module, to make all those pretty HTML and multipart/alternative messages and we're all pretty happy about that.
+
+=item * Bruce Kallick
+
+Thanks to Bruce from http://rudegnu.com for catching grammatical mistakes, of mine and speling errors. 
+
+=back
+
+Thanks for anyone and everyone else that has supported the program along its merry way.
+
+- I<Justin Simoni> 
+
+=cut
+

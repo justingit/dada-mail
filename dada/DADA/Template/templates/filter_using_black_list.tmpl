@@ -1,0 +1,46 @@
+<!-- start filter_using_black_list.tmpl -->
+
+<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+ <input type="hidden" name="process" value="delete" />
+ <input type="hidden" name="f"       value="checker" />
+ <input type="hidden" name="type"    value="list" />
+ <input type="hidden" name="add_to_black_list" value="<!-- tmpl_var add_to_black_list -->" />
+ <p>
+  These addresses are currently subscribed, but are 
+  black listed. Click the checkbox next to the address 
+  to remove them:
+ <p>
+ <div class="buttonfloat">
+  <input type="button" class="cautionary" value="Re-Enter Email List" onclick="history.back()" />
+  <input type="submit" class="processing" value="Unsubscribe Checked Emails" />
+ </div>
+ <div class="floatclear"></div>
+ 
+<!-- tmpl_loop name="filtered" -->
+	 
+	 <input type="checkbox" name="address" value="<!-- tmpl_var email escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" />
+	 &nbsp; 
+	 <label for="<!-- tmpl_var email escape="HTML" -->">
+	  <!-- tmpl_var email -->
+	 </label>
+	 <br />
+	 
+<!--/tmpl_loop-->
+ 
+ <p>
+  <a href="#" onclick="SetChecked(1);return false;">
+   check all
+  </a>
+  :: 
+  <a href="#" onclick="SetChecked(0);return false;">
+   uncheck all
+  </a>
+ </p>
+ <div class="buttonfloat">
+  <input type="button" class="cautionary" value="Re-Enter Email List" onclick="history.back()" />
+  <input type="submit" class="processing" value="Unsubscribe Checked Emails" />
+ </div>
+ <div class="floatclear"></div>
+</form>
+
+<!-- end filter_using_black_list.tmpl -->

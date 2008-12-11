@@ -1,0 +1,45 @@
+<!-- begin confirm_captcha_step_screen.tmpl --> 
+
+
+<!-- tmpl_unless captcha_auth --> 
+
+<p class="error"> 
+ The letters you've submitted didn't seem to correspond to the letters in the image. Please try again:
+</p>
+
+
+<!-- /tmpl_unless --> 
+
+
+
+<p> 
+ As the final step, please type in the string of letters that you see in the below image into the text box:
+</p>
+
+<form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
+
+
+
+<!-- tmpl_var CAPTCHA_string --> 
+
+
+
+
+ <input type="hidden" name="flavor" value="<!-- tmpl_var flavor -->" /> 
+
+ <input type="hidden" name="list" value="<!-- tmpl_var list -->" /> 
+
+ <input type="hidden" name="email" value="<!-- tmpl_var email -->" /> 
+
+ <input type="hidden" name="pin" value="<!-- tmpl_var pin -->" /> 
+
+
+ <p>
+  <input type="submit" value="Subscribe Me!" class="processing" /> 
+ </p>
+
+</form> 
+
+
+
+<!-- end confirm_captcha_step_screen.tmpl --> 

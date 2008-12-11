@@ -1,0 +1,68 @@
+<!-- begin view_list_table_widget.tmpl --> 
+
+<div style="max-height: 200px; overflow: auto; border:1px solid black">
+ 
+ <table cellpadding="2" cellspacing="0" border="0" width="100%">
+  <tr>
+   <td width="25">
+    <p>&nbsp;</p>
+   </td>
+   <td>
+    <p>
+     <strong>
+      Email
+     </strong>
+    </p>
+   </td>
+
+  
+  
+  <!-- tmpl_loop name="field_names" --> 
+
+   <td>
+    <p>
+     <strong>
+      <!-- tmpl_var name --> 
+     </strong>
+    </p>
+   </td>
+   
+    
+  <!--/tmpl_loop --> 
+  </tr>
+
+
+<!-- tmpl_loop name="subscribers" -->
+	   
+	   <tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!--/tmpl_if-->>
+        
+	    <td width="25">
+	     <input type="checkbox" name="address" value="<!-- tmpl_var email -->" />
+	    </td>
+	    <td>
+	     <p>
+	      <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_subscriber&amp;email=<!-- tmpl_var email -->&amp;type=<!-- tmpl_var list_type -->" >
+	       <!-- tmpl_var email -->
+	      </a>
+	     </p>
+	    </td>
+	    
+	    <!-- tmpl_loop name="fields" --> 
+	    
+	    <td>
+	     <p>
+	       <!-- tmpl_var value -->
+	     </p>
+	    </td>
+	    <!-- /tmpl_loop --> 
+	    
+	    
+	   </tr>
+	   
+<!-- /tmpl_loop -->
+   
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+ </div>
+<!-- end  begin view_list_table_widget.tmpl --> 

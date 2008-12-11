@@ -1,0 +1,128 @@
+=pod
+
+=head1 Getting/Setting List Settings
+
+=head2 How to find out what lists are available. 
+
+Before we can use a list, we have to know what lists are available: 
+
+ #!/usr/bin/perl 
+ 
+ # Adding the lib path to the dada directory: 
+ use lib qw(/home/myaccount/www/cgi-bin/dada); 
+ 
+ use DADA::App::Guts; 
+ 
+ my @lists = DADA::App::Guts::available_lists(); 
+ 
+ foreach my $list(@lists){ 
+    
+    # prints the "listshortname" of every list available.
+    print "$_\n";
+  }
+
+For more information on the I<available_lists()> subroutine, see: 
+
+http://dadamailproject.com/support/documentation/App_Guts.pm.html#available_lists
+
+
+=head2 Making Sure a Listshortname is valid
+
+If you already know the listshortname you want to use, you can verify it using, B<list_exists>, like this: 
+
+ #!/usr/bin/perl 
+ 
+ # Adding the lib path to the dada directory: 
+ use lib qw(/home/myaccount/www/cgi-bin/dada); 
+ 
+ use DADA::App::Guts; 
+ 
+ my $list = "justin";
+ 
+ my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list); 
+ 
+ if($list_exists == 1){ 
+ 
+    print "The list does exist!"; 
+    
+ } else { 
+ 
+    print "The list does not exist!"; 
+ }
+
+=head2 Getting Information Stored in the List Settings
+
+Once you have your listshortname, it's pretty easy to get the list settings information. You'll be using the B<DADA::MailingList::Settings> module - getting the list settings uses the, B<get()> method, like this: 
+
+ #!/usr/bin/perl 
+ 
+ # Adding the lib path to the dada directory: 
+ use lib qw(/home/myaccount/www/cgi-bin/dada); 
+ 
+ use DADA::MailingList::Settings; 
+ 
+ 
+ my $list = 'justin'; 
+ 
+ 
+ # I use "$ls" as a shorthand for, "List Settings"
+ my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+  
+  
+ my $li = $ls->get; 
+
+B<$li> is a hashref, the keys hold the name of your list setting, the value, the setting's value. Some ways to use it: 
+
+ # print every list setting saved: 
+ foreach my $setting(keys %$li){ 
+    print $setting . ' => ' . $li->{$setting} . "\n";  
+ }
+ 
+ # print just the list name: 
+ print "This list name is: " . $li->{list_name};
+
+And that's all there is to it. To understand what list settings are available, you may want to look at the Config.pm variable, B<%LIST_SETUP_DEFAULTS>, which
+lists just about every list setting being used in Dada Mail. More information on that variable:
+
+http://dadamailproject.com/support/documentation/Config.pm.html#_list_setup_defaults
+
+More information on the B<get> method: 
+
+http://dadamailproject.com/support/documentation/MailingList_Settings_Db.pm.html#get
+
+=head2 Storing Information in the List Settings
+
+Storing information is as easy as getting that information. You'll want to use the, B<save> method, like so: 
+
+
+ #!/usr/bin/perl 
+  
+ # Adding the lib path to the dada directory: 
+ use lib qw(/home/myaccount/www/cgi-bin/dada); 
+  
+ use DADA::MailingList::Settings; 
+  
+  
+ my $list = 'justin'; 
+  
+  
+ # I use "$ls" as a shorthand for, "List Settings"
+ my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+  
+ 
+ $ls->save(
+            {
+                list_name => "New List Name!", 
+            }
+           ); 
+          
+
+The B<save> method takes a hashref of any list setting you'd like to change the value to. In the above example, we've changed the setting, B<list_name> to, B<New List Name!>
+
+And that's basically all there is to the B<save> method. 
+
+More information on the B<save> method: 
+
+http://dadamailproject.com/support/documentation/MailingList_Settings_Db.pm.html#save
+
+=cut

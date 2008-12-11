@@ -1,0 +1,475 @@
+
+Here are some examples of different ways to use the TFmail
+CGI script.
+
+TFMAIL INSTALLATION
+
+All of the following examples work with a single TFmail
+instalation, as follows:
+
+The directory /home/tfmail/ on a UNIX web server is set
+aside for files related to TFmail.
+
+The following files from the TFmail.pl archive (which is
+available from http://nms-cgi.sourceforge.net/scripts.shtml)
+are installed on the server under the /home/tfmail/
+directory.
+
+  NMSTreq.pm   - installed in /home/tfmail/lib/
+  MIME_Lite.pm - installed in /home/tfmail/lib/
+  spage.trt    - installed in /home/tfmail/cfg/
+  email.trt    - installed in /home/tfmail/cfg/
+
+The CGI script itself, TFmail.pl, is installed in the
+server's cgi-bin directory.  The configuration section at
+the top of the script reads as follows:
+
+  # USER CONFIGURATION SECTION
+  # --------------------------
+  # Modify these to your own settings, see the README file
+  # for detailed instructions.
+
+  use constant DEBUGGING      => 0;
+  use constant LIBDIR         => '/home/tfmail/lib';
+  use constant MAILPROG       => '/usr/lib/sendmail -oi -t';
+  use constant POSTMASTER     => 'tfmail-postmaster@cleaton.net';
+  use constant CONFIG_ROOT    => '/home/tfmail/cfg';
+  use constant MAX_DEPTH      => 0;
+  use constant CONFIG_EXT     => '.trc';
+  use constant TEMPLATE_EXT   => '.trt';
+  use constant ENABLE_UPLOADS => 0;
+  use constant USE_MIME_LITE  => 1;
+  use constant LOGFILE_ROOT   => '';
+  use constant LOGFILE_EXT    => '.log';
+  use constant CHARSET        => 'iso-8859-1';
+
+  # USER CONFIGURATION << END >>
+  # ----------------------------
+  # (no user serviceable parts beyond here)
+   
+
+EXMAPLE 1 - BASIC
+
+This example sets up a simple form to submit to the address
+tfmail-basic@cleaton.net.  The server side configuration
+file for this example is /home/tfmail/cfg/basic.trc, which
+has the following contents:
+
+
+%% NMS configuration file %%
+#
+# basic.trc - A basic example of TFmail setup and
+# configuration.
+#
+
+#
+# recipient: the email address(s) to which TFmail should
+# send the results of the form submission.
+#
+recipient: tfmail-basic@cleaton.net
+
+#
+# subject: the subject line for the e-mail
+#
+subject: TFmail example - basic
+
+#
+# End of basic.trc
+#
+###############################################
+
+
+The HTML form for this example is:
+
+
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>TFmail example</title>
+  <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+  <style>
+    h1.title {
+                text-align : center;
+             }
+  </style>
+ </head>
+ <body>
+  <h1 class="title">TFmail example</h1>
+  <p>Please fill in this form</p>
+  <form method="post" action="/cgi-bin/TFmail.pl">
+   <input type="hidden" name="_config" value="basic" />
+   <table>
+    <tr>
+     <td>Your name:</td>
+     <td><input type="text" name="name" /></td>
+    </tr>
+    <tr>
+     <td>Your age:</td>
+     <td><input type="text" name="age" /></td>
+    </tr>
+    <tr>
+     <td>Your phone number:</td>
+     <td><input type="text" name="phone" /></td>
+    </tr>
+    <tr>
+     <td>Some comments:</td>
+     <td><textarea name="comments" cols="80" rows="6"></textarea></td>
+    </tr>
+   </table>
+   <p><input type="submit" value="Send Comments" /></p>
+  </form>
+  <hr size="1" width="75%" />
+  <p align="center">
+   <font size="-1">
+    <a href="http://nms-cgi.sourceforge.net/">TFmail</a>
+     &copy; 2002 London Perl Mongers
+   </font>
+  </p>
+ </body>
+</html>
+
+
+The hidden "_config" input in the HTML form with a value of "basic"
+tells TFmail.pl to read the configuration from the configuration
+file /home/tfmail/cfg/basic.trc 
+
+There is a test page for this example (with the TFmail.pl script
+modified so that no mail will really be sent) at:
+
+   http://cleaton.net/tfmail/basic.html
+
+
+EXMAPLE 2 - CUSTOM
+
+Now we extend example 1 by taking control of the layout of the
+e-mail body and the HTML success page that the form generates.
+
+The server side configuration file for this example is
+/home/tfmai/cfg/custom.trc, which has the following contents:
+
+
+%% NMS configuration file %%
+#
+# custom.trc - A basic example of TFmail setup and
+# configuration, with the success page and e-mail body
+# customised to suit the form.
+#
+
+#
+# recipient: the email address(s) to which TFmail should
+# send the results of the form submission.
+#
+recipient: tfmail-custom@cleaton.net
+
+#
+# subject: the subject line for the e-mail
+#
+subject: tfmail example - custom
+
+#
+# For this example, we use customised template files to
+# allow us some extra control over the layout of the
+# success page and e-mail.
+email_template:        custom_email
+success_page_template: custom_spage
+
+#
+# End of custom.trc
+#
+###############################################
+
+
+The template file that sets the layout of the email body is
+/home/tfmail/cfg/custom_email.trt, which has the following
+contents:
+
+
+%% NMS email template file %%
+This is a TFmail form submission.  The input values were as
+follows:
+
+{= FOREACH input_field =}
+Input "{= name =}" had value "{= value =}"
+{= END =}
+
+-------------------------------------------------------------
+
+IP address of remote user: {= env.REMOTE_ADDR =}
+User Agent:              : {= env.HTTP_USER_AGENT =}
+Referer:                 : {= env.HTTP_REFERER =}
+
+
+The template file that sets the layout of the success page is
+/home/tfmail/cfg/custom_spage.trt, which has the following
+contents:
+
+
+%% NMS html template file %%
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Thank You</title>
+    <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+    <style>
+       h1.title {
+                   text-align : center;
+                }
+    </style>
+  </head>
+  <body>
+    <h1 class="title">Thank You</h1>
+    <p>This is what you submitted on {= date =}</p>
+    <table border="1" align="center">
+{= FOREACH input_field =}
+    <tr>
+     <td><b>{= name =}</b></td>
+     <td>{= value =}</td>
+    </tr>
+{= END =}
+    </table>
+    <hr size="1" width="75%" />
+  </body>
+</html>
+
+
+The HTML form for this example is the same as example 1, but with
+the value of the "_config" input changed from "basic" to "custom".
+
+There is a test page for this example (with the TFmail.pl script
+modified so that no mail will really be sent) at:
+
+   http://cleaton.net/tfmail/custom.html
+
+
+EXAMPLE 3 - INLINE TEMPLATES
+
+This examples is very similar to example 2, but rather than
+having the success page and email templates in separate files,
+we 'inline' them into the config file.  This cuts down on the
+number of files that need to be uploaded to the server.
+
+The server side configuration file for this example is
+/home/tfmai/cfg/inline.trc, which has the following contents:
+
+
+%% NMS configuration file %%
+#
+# inline.trc - A basic example of TFmail setup and
+# configuration, with the success page and e-mail body
+# customised to suit the form.
+#
+# Inline templates used for both the success page and the
+# e-mail body.
+#
+
+#
+# recipient: the email address(s) to which TFmail should
+# send the results of the form submission.
+#
+recipient: tfmail-inline@cleaton.net
+
+#
+# subject: the subject line for the e-mail
+#
+subject: tfmail example - inline
+
+#
+# For this example, we use customised inline templates to
+# allow us some extra control over the layout of the
+# success page and e-mail.
+
+email_template:
+%This is a TFmail form submission.  The input values were as
+%follows:
+%
+%{= FOREACH input_field =}
+%Input "{= name =}" had value "{= value =}"
+%{= END =}
+%
+%-------------------------------------------------------------
+%
+%IP address of remote user: {= env.REMOTE_ADDR =}
+%User Agent:                {= env.HTTP_USER_AGENT =}
+%Referer:                   {= env.HTTP_REFERER =}
+%
+
+success_page_template:
+%<?xml version="1.0" encoding="iso-8859-1"?>
+%<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+%    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+%<html xmlns="http://www.w3.org/1999/xhtml">
+%  <head>
+%    <title>Thank You</title>
+%    <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+%    <style>
+%       h1.title {
+%                   text-align : center;
+%                }
+%    </style>
+%  </head>
+%  <body>
+%    <h1 class="title">Thank You</h1>
+%    <p>This is what you submitted on {= date =}</p>
+%    <hr size="1" width="75%" />
+%{= FOREACH input_field =}
+%    <p><font color="red">{= name =}</font> <b>=</b> {= value =}</p>
+%{= END =}
+%    <hr size="1" width="75%" />
+%  </body>
+%</html>
+
+#
+# End of inline.trc
+#
+###############################################
+
+The HTML form for this example is the same as example 1, but with
+the value of the "_config" input changed from "basic" to "inline".
+
+There is a test page for this example (with the TFmail.pl script
+modified so that no mail will really be sent) at:
+
+   http://cleaton.net/tfmail/inline.html
+
+EXAMPLE 4 - USING A CONFIRMATION PAGE BEFORE SUBMITTING THE FORM
+
+You may want to have the user check what they have put in the form
+before finally submitting the form and sending the e-mail. The simplest
+way that this can be done, only requiring a single configuration file,
+is to use the get_template configuration directive.  You create a form like:
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>What is your favorite animal ?</title>
+</head>
+<body>
+   <form method="GET" action="/cgi-bin/TFmail.pl">
+    <table>
+      <tr>
+        <td>What is your name ?</td>
+        <td><input type="text" name="message" /></td>
+      </tr>
+      <tr>
+        <td>What is your favorite animal ?</td>
+        <td><input type="text" name="animal" /></td>
+      </tr>
+      <tr>
+        <td colspan="2"><input type="submit" /></td>
+      </tr>
+    </table>
+  </form>
+</body>
+</html>
+
+Note that the 'method' of the form is GET in the above html.  You then
+can have a configuration file like:
+
+%% NMS configuration file %%
+
+recipient: jns@localhost
+
+get_template: gpage
+
+
+(of course you will have another recipient and possibly other settings too).
+The get_template configuration directive specifies a template that will be
+used when the request method is 'GET' rather than the usual 'POST'.
+You then can create a gpage.trt file in the same directory as you have your
+.trc files like:
+
+%% NMS html template file %%
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Confirmation</title>
+  </head>
+  <body>
+   <form method="POST" >
+      This is what you entered, please check and press OK
+      or press 'Back' to amend your answers:
+      <input type="hidden" name="message" value="{= param.message =}" />
+      <p>Name: {= param.message =}</p>
+      <input type="hidden" name="animal" value ="{= param.animal =}"/>
+      <p>Animal: {= param.animal =}</p>
+      <input type="submit" value="OK" />
+   </form>
+  </body>
+</html>
+
+Note that in the above template the method of the form is 'POST'.  This 
+template creates the actual form that does the submission with the
+form values in hidden fields, when the user presses the 'OK' button
+they will be presented with the success page and the e-mail will be sent.
+When the template defined in get_template is displayed as the result of a
+'GET' request, no other action (such as sending an e-mail or writing a
+logfile) is taken, so it is perfectly safe to allow the user to choose
+between pressing 'OK' or using the back button to fix a mistake.
+
+If you have more complicated needs or a large amount of data then you
+may need to use multiple configuration files rather than the simpler
+get_template technique - the example below achieves a similar affect as
+that above but using two configuration files - this time your form will
+be like:
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>What is your favorite animal ?</title>
+</head>
+<body>
+   <form method="POST" action="/cgi-bin/TFmail.pl">
+      <input type="hidden" name="_config" value="confirm" />
+    <table>
+      <tr>
+        <td>What is your name ?</td>
+        <td><input type="text" name="message" /></td>
+      </tr>
+      <tr>
+        <td>What is your favorite animal ?</td>
+        <td><input type="text" name="animal" /></td>
+      </tr>
+      <tr>
+        <td colspan="2"><input type="submit" /></td>
+      </tr>
+    </table>
+  </form>
+</body>
+</html>
+
+Note that this time the method is 'POST' and there is now a hidden field
+called '_config' .  You now need a new configuration file 'confirm.trc'
+which in this example is like:
+
+%% NMS configuration file %%
+
+no_email: 1
+success_page_template: confirm
+
+The 'no_email' directive in the above tells TFmail that you don't want any
+mail to be sent (otherwise it would complain that no recipient was 
+specified). Because you haven't specified any log-file it will take no
+other action than display the confirm.trt template, which is the same as
+the earlier one:
+
+%% NMS html template file %%
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Confirmation</title>
+  </head>
+  <body>
+   <form method="post" >
+      This is what you entered, please check and press OK
+      or press 'Back' to amend your answers:
+      <input type="hidden" name="message" value="{= param.message =}" />
+      <p>Name: {= param.message =}</p>
+      <input type="hidden" name="animal" value ="{= param.animal =}"/>
+      <p>Animal: {= param.animal =}</p>
+      <input type="submit" />
+   </form>
+  </body>
+</html>
+
+The above template then uses the settings in your default.trc configuration
+but you can specify '_config' if you require it.

@@ -1,0 +1,186 @@
+<!-- begin list_invite_screen.tmpl -->
+
+<!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
+
+<form name="send_email" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
+
+
+
+<input type="hidden" name="f" value="list_invite" />
+
+
+
+<p>
+ Manage Subscribers (Subscribers) 
+ Add 
+&#187;
+ Verify 
+&#187;
+ Subscribe/<strong>Invite</strong>
+</p>
+
+
+<fieldset> 
+ <legend>
+	Your Invites
+ </legend>
+
+
+ <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
+
+ <table cellpadding="2" cellspacing="0" border="0" width="100%">
+  <tr>
+   <td width="25">
+    <p>&nbsp;</p>
+   </td>
+   <td>
+   <p>
+    <strong>
+     Email
+   </strong>
+  </p>
+ </td>
+
+<!-- tmpl_loop name="field_names" --> 
+    
+    <td>
+     <p>
+      <strong>
+       <!-- tmpl_var name --> 
+      </strong>
+     </p>
+    </td> 
+<!--/tmpl_loop --> 
+
+  </tr>
+  
+  <!-- tmpl_loop verified_addresses -->
+
+    <tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!--/tmpl_if-->>
+     <td width="25">
+      <input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" />
+     </td>
+     <td>
+      <p>
+<label for="<!-- tmpl_var email -->">
+       <!-- tmpl_var email -->
+</label>
+      </p>
+     </td>
+
+     <!-- tmpl_loop fields --> 
+        
+        <td>
+         <p>
+          <!-- tmpl_var value default="&nbsp;" -->
+         </p>
+        </td>
+    <!-- /tmpl_loop --> 
+  </tr>
+  
+  <!-- tmpl_if __last__ --> 
+  
+  </table>
+  <p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var __counter__ -->&nbsp;</p> 
+  
+  <!-- /tmpl_if --> 
+  
+<!-- /tmpl_loop -->
+
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</div>
+
+
+</fieldset> 
+
+<!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
+
+
+<fieldset>
+<legend>Message Body</legend>
+
+
+ 
+     <fieldset style="background:#e6e6e6"> 
+
+     <legend>
+      <a href="#" onclick="toggleDisplay('html_message');return false;">+   /-</a>HTML Version
+     </legend>
+      
+
+
+			
+ <div id="html_message" style="display:none"> 
+ 
+	<p>
+	 <input type="checkbox" id="use_html_message" name="use_html_message" value="1" /> 
+	 <label for="use_html_message">
+	  Use the HTML Version
+	 </label>
+    </p>
+    
+    <!-- tmpl_if FCKEDITOR_URL --> 
+    
+    <script type="text/javascript">   
+    <!--
+
+        var oFCKeditor = new FCKeditor('html_message_body') ;
+        
+        <!-- tmpl_include FCKeditor_default_js_options.tmpl --> 
+        
+		oFCKeditor.Value = "<!-- tmpl_var invite_message_html_js_escaped -->";
+
+		oFCKeditor.Create() ;
+        //-->
+        </script> 
+
+
+    <!-- tmpl_else--> 
+      <textarea name="html_message_body" cols="80" rows="30" id="html_message_body"><!-- tmpl_var list_settings.invite_message_html escape="HTML" --></textarea>
+    <!--/tmpl_if--> 
+
+</div>
+
+</fieldset> 
+
+ <fieldset style="background:#e6e6e6"> 
+  
+		 <legend>
+		  <a href="#" onclick="toggleDisplay('text_message');return false;">+/-</a>PlainText Version
+		 </legend>
+		 
+ 
+ <div id="text_message"> 
+	
+	<p>
+	 <input type="checkbox" id="use_text_message" name="use_text_message" value="1" checked="checked" /> 
+	 <label for="use_text_message">
+	  Use the PlainText Version
+	 </label>
+    </p>
+	
+	
+  <textarea name="text_message_body" id="text_message_body" cols="80" rows="30"><!-- tmpl_var list_settings.invite_message_text escape="HTML" --></textarea> 
+</div> 
+</fieldset>
+</fieldset>
+
+
+<!-- tmpl_include name="send_a_list_message_button_widget.tmpl" --> 
+
+
+</form> 
+
+<!-- tmpl_if SHOW_HELP_LINKS -->
+	
+	<div id="help_link">
+	 <a href="<!-- tmpl_var HELP_LINKS_URL -->/list_invite.html" target="_blank">
+	  [?] Send a List Invitation
+	 </a>
+	</div>
+	
+<!--/tmpl_if-->
+
+<!-- end list_invite_screen.tmpl -->

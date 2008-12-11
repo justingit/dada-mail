@@ -1,0 +1,46 @@
+<!-- begin archive_list_widget.tmpl -->
+
+<h2>Archives:</h2> 
+
+
+
+<ol>
+ 
+<!-- tmpl_loop entries -->
+	 
+	 <li value="<!-- tmpl_var bullet -->">
+	 <!-- Archive Id: <!-- tmpl_var id --> --> 
+	  <p>
+	   <strong>
+	    <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var uri_escaped_list -->/<!-- tmpl_var id -->/">
+	     <!-- tmpl_var subject -->
+	    </a>
+	   </strong>
+	   <br />
+	   <em>
+	    Sent <!-- tmpl_var date -->
+	   </em>
+	  </p>
+	  
+	<!-- tmpl_if message_blurb -->
+		  
+		  <p>
+		   <em>
+		    <!-- tmpl_var message_blurb -->...
+		   </em>
+		  </p>
+		  
+	<!--/tmpl_if-->
+  
+ </li>
+
+<!--/tmpl_loop-->
+
+</ol>
+
+
+<!-- tmpl_var index_nav --> 
+
+<!-- tmpl_var search_form --> 
+
+<!-- end archive_list_widget.tmpl -->

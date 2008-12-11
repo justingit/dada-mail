@@ -1,0 +1,40 @@
+%% NMS html template file %%
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Missing Fields</title>
+    <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+    <style>
+       h1.title {
+                   text-align : center;
+                }
+    </style>
+  </head>
+  <body>
+    <h1 class="title">Missing Fields</h1>
+    <p>
+      The following fields were left blank in your submission form:
+    </p>
+    <ul>
+{= FOREACH missing_field =}
+      <li>{= name =}</li>
+{= END =}
+    </ul>
+    <p>
+      These fields must be filled in before you can successfully
+      submit the form.
+    </p>
+    <p>
+      Please use your back button to return to the form and
+      try again.
+    </p>
+    <p align="center">
+      <font size="-1">
+        <a href="http://nms-cgi.sourceforge.net/">TFmail</a>
+        &copy; 2002 London Perl Mongers
+      </font>
+    </p>
+  </body>
+</html>

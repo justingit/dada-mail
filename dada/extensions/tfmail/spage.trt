@@ -1,0 +1,30 @@
+%% NMS html template file %%
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Thank You</title>
+    <link rel="stylesheet" type="text/css" href="/css/nms.css" />
+    <style>
+       h1.title {
+                   text-align : center;
+                }
+    </style>
+  </head>
+  <body>
+    <h1 class="title">Thank You</h1>
+    <p>Below is what you submitted on {= date =}</p>
+    <hr size="1" width="75%" />
+{= FOREACH input_field =}
+    <p><b>{= name =}:</b> {= value =}</p>
+{= END =}
+    <hr size="1" width="75%" />
+    <p align="center">
+      <font size="-1">
+        <a href="http://nms-cgi.sourceforge.net/">TFmail</a>
+        &copy; 2002 London Perl Mongers
+      </font>
+    </p>
+  </body>
+</html>

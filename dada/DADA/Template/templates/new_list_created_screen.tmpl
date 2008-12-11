@@ -1,0 +1,165 @@
+<!-- begin new_list_created_screen.tmpl -->
+
+<h1>
+ The following information was recorded:
+</h1>
+<table align="center">
+ <tr>
+  <td>
+   <p>
+    <strong>
+     List Name:
+    </strong>
+   </p>
+  </td>
+  <td>
+   <p>
+    <!-- tmpl_var list_name -->
+   </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <p>
+    <strong>
+     List Short Name:
+    </strong>
+   </p>
+  </td>
+  <td>
+   <p>
+    <!-- tmpl_var list -->
+   </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <p>
+    <strong>
+      Password:
+    </strong>
+   </p>
+  </td>
+  <td>
+   <p>
+    <em>
+     (not shown)
+    </em>
+   </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <p>
+    <strong>
+     List Owner Email Address:
+    </strong>
+   </p>
+  </td>
+  <td>
+   <p>
+    <!-- tmpl_var list_owner_email -->
+   </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <p>
+    <strong>
+     List Information:
+    </strong>
+   </p>
+  </td>
+  <td>
+   <p>
+    <!-- tmpl_var info -->
+   </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <p>
+    <strong>
+     Privacy Policy:
+    </strong>
+   </p>
+  </td>
+  <td>
+   <p>
+    <!-- tmpl_var privacy_policy -->
+   </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <p>
+    <strong>
+     Physical Address:
+    </strong>
+   </p>
+  </td>
+  <td>
+   <p>
+    <!-- tmpl_var physical_address -->
+   </p>
+  </td>
+ </tr>
+</table>
+<hr />
+
+<p>
+ For future reference, here are some relevant URLs for this list. 
+ You may want to bookmark these links now (a new window will open for each link):
+ <br />
+ <strong>
+  <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var SIGN_IN_FLAVOR_NAME -->&amp;list=<!-- tmpl_var escaped_list -->" target="_blank">
+   Sign in to your control panel
+  </a>
+ </strong>
+ <br />
+ <strong>
+  <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var escaped_list -->/" target="_blank">
+   View your message archives
+  </a>
+ </strong>
+</p>
+<hr />
+
+<p>
+ Please log in with the correct password to access your control panel.
+</p>
+
+<table>
+ <tr>
+  <td>
+   <p>
+    <strong>
+     Log into your control panel for list: <!-- tmpl_var list_name -->
+    </strong>
+   </p>
+  </td>
+ </tr>
+ <tr>
+ <td>
+  <p>
+   <label for="admin_password">
+    Password:
+   </label>
+   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST"> 
+    <input type="hidden"   name="f"          value="login" />
+    <input type="hidden"   name="admin_list" value="<!-- tmpl_var list -->" />
+    <input type="password" name="admin_password" id="admin_password" maxlength="24" />
+   
+   
+   <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" /> 
+   
+   
+   
+   <input type="submit" class="plain" value="login" />
+   
+   </form>
+  </td>
+ </tr>
+</table>
+
+<!-- end new_list_created_screen.tmpl -->

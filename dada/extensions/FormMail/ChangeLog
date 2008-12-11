@@ -1,0 +1,262 @@
+2004-08-11 15:09  gellyfish
+
+	* package/formmail_compat/VERSION: Released formmail_compat 3.14c1
+
+2004-08-11 15:09  gellyfish
+
+	* src/formmail/VERSION: Released formmail 3.14
+
+2004-08-11 09:10  gellyfish
+
+	* lib/CGI/NMS/Script/FormMail.pm, src/formmail/FormMail.pl.in,
+	src/formmail/README.in: * Added configurable From: address format.
+
+2004-06-30 10:31  gellyfish
+
+	* package/formmail_compat/VERSION: Upped the version
+
+2004-06-30 10:27  gellyfish
+
+	* src/formmail/VERSION: Released formmail 3.13
+
+2004-06-30 09:40  gellyfish
+
+	* buildtools/inline, lib/CGI/NMS/Script/FormMail.pm,
+	src/formmail/FormMail.pl.in: * locale was being missed from the
+	config * no_content was missed out
+
+2004-03-23 17:58  nickjc
+
+	* lib/CGI/NMS/Mailer/Sendmail.pm: typo
+
+2004-03-16 09:01  gellyfish
+
+	* src/formmail/README.in: Slight typo in README from
+	greg@gngweb.com
+
+2004-03-04 19:37  nickjc
+
+	* package/formmail_compat/VERSION: Released formmail_compat 3.12c1
+
+2004-03-04 19:36  nickjc
+
+	* src/formmail/VERSION: Released formmail 3.12
+
+2004-03-04 19:36  nickjc
+
+	* lib/CGI/NMS/: Script.pm, Script/FormMail.pm: * misc tweaks *
+	forward ported the error page style changes from 2.23
+
+2004-01-30 19:17  nickjc
+
+	* src/formmail/README.in: clarified allow_mail_to/recipient_alias
+	behaviour
+
+2003-12-21 10:32  nickjc
+
+	* package/formmail_compat/VERSION: Released formmail_compat 3.11c1
+
+2003-12-21 10:32  nickjc
+
+	* src/formmail/VERSION: Released formmail 3.11
+
+2003-12-21 10:31  nickjc
+
+	* lib/CGI/NMS/Mailer.pm: handle ipv6 REMOTE_ADDR values
+
+2003-11-20 19:20  nickjc
+
+	* package/formmail_compat/VERSION: Released formmail_compat 3.10c1
+
+2003-11-20 19:19  nickjc
+
+	* buildtools/inline: #! change
+
+2003-11-20 19:17  nickjc
+
+	* src/formmail/VERSION: Released formmail 3.10
+
+2003-11-20 19:17  nickjc
+
+	* lib/CGI/NMS/Script/FormMail.pm: Added configuration variables to
+	have particular config inputs treated as data inputs as well. 
+	Mainly intended for 'email' and 'realname'.
+
+2003-09-11 19:10  nickjc
+
+	* lib/CGI/NMS/Mailer/SMTP.pm: typo soptted by Okan Demirmen
+
+2003-07-21 19:24  nickjc
+
+	* package/formmail_compat/VERSION: Released formmail_compat 3.09c1
+
+2003-07-21 19:24  nickjc
+
+	* src/formmail/VERSION: Released formmail 3.09
+
+2003-07-21 19:23  nickjc
+
+	* lib/CGI/NMS/Validator.pm: * allowed relative URLs like
+	../html/foo.html
+
+2003-07-12 15:01  nickjc
+
+	* lib/CGI/NMS/: Validator.pm, Script.pm, Mailer.pm,
+	Script/FormMail.pm: * fixed typos and spelling errors in POD and
+	comments
+
+2003-06-18 18:29  nickjc
+
+	* package/formmail_compat/VERSION: Released formmail_compat 3.08c1
+
+2003-06-18 18:29  nickjc
+
+	* src/formmail/VERSION: manual version bump to 3.08: release script
+	bugfix fixed line endings in zip archives
+
+2003-06-16 17:56  nickjc
+
+	* package/formmail_compat/VERSION: Released formmail_compat 3.07c1
+
+2003-06-16 17:56  nickjc
+
+	* src/formmail/VERSION: Released formmail 3.07
+
+2003-06-16 17:55  nickjc
+
+	* lib/CGI/NMS/Script/FormMail.pm: bug fix: having email or realname
+	as a required field was broken if $emulate_matts_code was set
+
+2003-06-14 12:37  nickjc
+
+	* package/formmail_compat/VERSION: Released formmail_compat 3.06c1
+
+2003-06-14 12:37  nickjc
+
+	* src/formmail/VERSION: Released formmail 3.06
+
+2003-06-14 12:37  nickjc
+
+	* lib/CGI/NMS/Validator.pm: Allowed '=' and '&' in the virtual path
+	as well as in the query string in validate_url.
+
+2003-04-23 18:18  nickjc
+
+	* package/formmail_compat/VERSION: Released formmail_compat 3.05c1
+
+2003-04-23 18:18  nickjc
+
+	* src/formmail/VERSION: Released formmail 3.05
+
+2003-04-23 18:18  nickjc
+
+	* lib/CGI/NMS/Script/FormMail.pm: Made methods smaller and simpler
+	around where users are most likely to want to override them.
+
+2003-04-21 10:24  nickjc
+
+	* package/formmail_compat/VERSION: Released formmail_compat 3.04c1
+
+2003-04-21 10:24  nickjc
+
+	* src/formmail/VERSION: Released formmail 3.04
+
+2003-04-21 10:23  nickjc
+
+	* lib/CGI/NMS/Script.pm, lib/CGI/NMS/Script/FormMail.pm,
+	src/formmail/FormMail.pl.in: package version number in the email
+	headers
+
+2003-04-15 18:31  nickjc
+
+	* package/formmail_compat/VERSION: Released formmail_compat 3.03c1
+
+2003-04-15 18:31  nickjc
+
+	* src/formmail/VERSION: Released formmail 3.03
+
+2003-04-15 18:29  nickjc
+
+	* lib/CGI/NMS/: Script.pm, Script/FormMail.pm: * typos * redirect
+	bug fix
+
+2003-04-15 18:28  nickjc
+
+	* lib/CGI/NMS/Mailer/SMTP.pm: handle multiline SMTP replies
+	correctly
+
+2003-04-13 12:15  nickjc
+
+	* package/formmail_compat/VERSION: Released formmail_compat 3.02c1
+
+2003-04-13 12:15  nickjc
+
+	* src/formmail/VERSION: Released formmail 3.02
+
+2003-04-13 12:14  nickjc
+
+	* src/formmail/README.in: typo in formmail README
+
+2003-04-13 11:34  nickjc
+
+	* package/formmail_compat/VERSION: * tweaks to new release system
+
+2003-04-13 10:57  nickjc
+
+	* package/formmail_compat/: FormMail.pl.in, MANIFEST, VERSION,
+	SOURCES: * Adapted both types of formmail package to the new
+	version number allocation scheme
+
+2003-04-13 10:47  nickjc
+
+	* src/formmail/: FormMail.pl.in, README.in, VERSION, SOURCES: *
+	changed over to new version allocation and package building system
+
+2003-02-01 14:39  nickjc
+
+	* lib/CGI/NMS/Script.pm: * fix silly syntax error
+
+2003-02-01 14:30  nickjc
+
+	* lib/CGI/NMS/Script.pm: * warn rather than die after displaying
+	the error page, to avoid the double error page problem.  Record
+	SCRIPT_NAME in the error log.
+
+2003-02-01 14:08  nickjc
+
+	* lib/CGI/NMS/Script.pm: * bug fix: a typo caused script headers to
+	be suppressed after the first request under mod_perl
+
+2003-02-01 09:43  nickjc
+
+	* lib/CGI/NMS/Script/FormMail.pm: * worked on release management
+	and test tools
+
+2003-01-29 22:18  nickjc
+
+	* buildtools/inline: * adapted test suite to work by extracting
+	package archives * CGI::NMS::Mailer::ByScheme makefile entry fix *
+	changed a surplus string eval to block eval in buildtools/inline
+
+2003-01-29 21:18  nickjc
+
+	* buildtools/inline, package/formmail_compat/README.manifest,
+	package/formmail_compat/README.install: * compat version of
+	FormMail (with inlined modules) done, still need a mechanism to
+	unpack the generated archives and run tests against the contents as
+	a 'make test' target.
+
+2003-01-24 20:29  nickjc
+
+	* lib/CGI/NMS/: Script.pm, Script/FormMail.pm: * moved the mailer
+	scheme switch out of CGI::NMS::Script, since not all   NMS scripts
+	will send email.
+
+2003-01-13 21:00  nickjc
+
+	* lib/CGI/NMS/Charset.pm, lib/CGI/NMS/Script.pm,
+	lib/CGI/NMS/Mailer.pm, lib/CGI/NMS/Validator.pm,
+	lib/CGI/NMS/Mailer/Sendmail.pm, lib/CGI/NMS/Mailer/SMTP.pm,
+	lib/CGI/NMS/Script/FormMail.pm, src/formmail/EXAMPLES: * Initial
+	checkin of reworked modular formmail
+

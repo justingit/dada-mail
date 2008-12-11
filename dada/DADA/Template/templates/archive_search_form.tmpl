@@ -1,0 +1,17 @@
+<!-- begin archive_search_form.tmpl -->
+
+<form action="<!-- tmpl_var name="PROGRAM_URL" -->" method="post">
+ <p>
+  <label for="keyword">
+   Search 
+  </label>
+  this list's archives:
+  <br />
+  <input type="text"   name="keyword" id="keyword" size="12" />
+  <input type="hidden" name="list" value="<!-- tmpl_var name="list" -->" />
+  <input type="hidden" name="f"    value="search_archive" />
+  <input type="submit" class="processing" value="Search" />
+ </p>
+</form>
+
+<!-- end archive_search_form.tmpl -->

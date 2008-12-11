@@ -1,0 +1,586 @@
+=pod
+
+=head1 Dada Mail Changelog for version 3.x.x
+
+=head1 3.1.0
+
+=head2 Download 3.1.0 
+
+... Forthcoming...
+
+=head2 Changes 3.1.0
+
+=head2 Bug Fixes 3.1.0
+
+=over
+
+=item *  2222381  	 3.0.0 - DADA::App::Guts::available_lists() needs caching
+
+https://sourceforge.net/tracker2/?func=detail&aid=2222381&group_id=13002&atid=113002
+
+=item * 2219954  	 3.0.0 - Guts.pm sub available_lists param, -Dont_Die broken
+
+https://sourceforge.net/tracker2/?func=detail&aid=2219954&group_id=13002&atid=113002
+
+=item *  2219912  	 3.0.0 - DBI attribute: InactiveDestroy used incorrectly
+
+https://sourceforge.net/tracker2/?func=detail&aid=2219912&group_id=13002&atid=113002
+
+=item *  2215463  	 3.0.0 - typo: s/us/use/ in edit_type_screen.tmpl
+
+https://sourceforge.net/tracker2/?func=detail&aid=2215463&group_id=13002&atid=113002
+
+=item * 2202878  	 3.0.0 - don't/won't in privacy policy description
+
+https://sourceforge.net/tracker2/?func=detail&aid=2202878&group_id=13002&atid=113002
+
+=item * 3.0.0 -  This Mass Mailing will be queued msg has wrong info
+
+https://sourceforge.net/tracker2/?func=detail&aid=2204797&group_id=13002&atid=113002
+
+=item * 	 2219972 	3.0.0 - Mailout.pm - associate method broken
+
+https://sourceforge.net/tracker2/?func=detail&aid=2219972&group_id=13002&atid=113002
+
+=item * 3.0.0 - Stale Mailout can still clog up mail queue
+
+https://sourceforge.net/tracker2/?func=detail&aid=2203220&group_id=13002&atid=113002
+
+=item * 3.0.0 - Limited Docs for DADA::MailingList::Settings
+
+https://sourceforge.net/tracker2/?func=detail&aid=2167007&group_id=13002&atid=113002
+
+=item *  2191258  	 3.0.0 - email addresses with newlines are seen as valid
+
+https://sourceforge.net/tracker2/?func=detail&aid=2191258&group_id=13002&atid=113002
+
+=item * 3.0.0 - Beatitude Docs outdated - esp. Cronjob instructions
+
+https://sourceforge.net/tracker2/?func=detail&aid=2119974&group_id=13002&atid=113002
+
+
+=item * 3.0.0 - multiple_subscribe.cgi docs wrong about "lists" para
+
+https://sourceforge.net/tracker2/?func=detail&aid=2183150&group_id=13002&atid=113002
+
+=item * 2185937  	 3.0.0 - qmail_error_5dot5dot1 contains two actions
+
+https://sourceforge.net/tracker2/?func=detail&aid=2185937&group_id=13002&atid=113002
+
+=item * 3.0.0 - SMTP Options POP-before-SMTP Auth Mode option broken
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2167224&group_id=13002&atid=113002
+
+=item * 3.0.0 - POP-before-SMTP test never uses Mode or SSL prefs
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2167227&group_id=13002&atid=113002
+
+=item * 1971599 3.0 b3 - Character Set encoding Email Headers unsupported
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=1971599&group_id=13002&atid=113002
+
+=item * 2167322  	  3.0.0 - DADA::App::POP3Tools _lock_pop3_check error
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2167322&group_id=13002&atid=113002
+
+=item * 2007462  	  3.0.0 - example .dada_config's uncut for %LIST_SETUP_INCLUDE
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2007462&group_id=13002&atid=113002
+
+=item *  3.0.0 - Send last msg to new subscribers msg corrupted?
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=2099456&group_id=13002&atid=113002
+
+=item * [ 2099488 ] 3.0 - Dada Bridge only appends list shortname
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=2099488&group_id=13002&atid=113002
+
+=item * 2030573 	Dadamail 3.0 strips out [endif]
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=2030573&group_id=13002&atid=113002
+
+=item * [ 2104069 ] 3.0.0. - RPC ping urls not list in archive options -> adv.
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=2104069&group_id=13002&atid=113002
+
+=item * 2120407  	  3.0.0 - DADA Mail Admin login problem
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=2120407&group_id=13002&atid=113002
+
+=item *  	  3.0.0 - Log viewer doesn't escape ">" "<" in searches
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2124123&group_id=13002&atid=113002
+
+=item * [ 2147102 ] 3.0.0 - "Open List in New Window" has unwanted linebreak?
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2147102&group_id=13002&atid=113002
+
+=item * [ 2120386 ] 3.0.0 - Scheduled Mailing Time problem with 12 am
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2120386&group_id=13002&atid=113002
+
+=item * 2145145  	  3.0.0 - Send a Webpage msg w/Clickthrough Links Fails
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2145145&group_id=13002&atid=113002
+
+=item * [ 2147406 ] 3.0.0 - POP3 test never uses AUTH_MODE or, USESSL
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2147406&group_id=13002&atid=113002
+
+=item * 2148744  	  3.0.0 - Adv. install Instructions unclear about passwords
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2148744&group_id=13002&atid=113002
+
+=item *  2120035  	  3.0.0 - "Warning! Mailout seems broken!"
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2120035&group_id=13002&atid=113002
+
+I<As noted in the bug report, this may be an ongoing problem, but currently, we're trying to solve
+the problem by adding semaphore locking support for every file (and even the directory)> that makes up 
+the meta data of a mass mailing
+
+=back
+
+=head2 3.1.0 Features
+
+=over
+
+=item * Beatitude - Fetch message from URL has same options as, "Send a Webpage" 
+
+Mostly meaning, you can embed images within the email message itself. 
+
+=item * Mystery Girl
+
+You can now specify the Port Number of the POP3 mail server
+
+=item * Mass Mailings keep their own log
+
+This means, that anything about the mass mailing is logged for that specific mass mailing - 
+this should hopefully make debugging a little bit easier. 
+
+=item * View the Mass Mailing Log from the Mailing Monitor
+
+There's a new link entitled, "Open Mass Mailing Log in a New Window -> "
+
+This functionality is currently extremely rough, but is a pretty easy way to see what, in fact, is going on. 
+
+=item * Slightly Smarter Error Handling for failing sendmail mailings
+
+We've started catching sendmail errors and, if we find an error, we'll exit out of the 
+sending process, for the message to be automatically picked up and the last email 
+that had a problem, to be tried again. It's currently not perfect, but it's a very small 
+step forward.
+
+=item * Slightly better UTF-8 support. 
+
+This version of Dada Mail is currently shipped with all charsets and encodings to, "UTF-8", but Dada Mail itself is far from support this character set completely. 
+
+This is because it is hard. 
+
+
+=back
+
+
+
+=head1 3.0.0
+
+=head2 Download 3.0.0
+
+=over
+
+=item * tar.gz
+
+http://downloads.sourceforge.net/mojomail/dada-3_0_0.tar.gz?use_mirror=voxel
+
+=item * zip
+
+http://downloads.sourceforge.net/mojomail/dada-3_0_0.zip?use_mirror=voxel
+
+=back
+
+These changes are between 3.0.0 RC 1 and 3.0.0
+
+
+=head2 Changes 3.0.0
+
+=head3 Support Site URL Change
+
+Mention of, L<http://mojo.skazat.com> has been changed to, L<http://dadamailproject.com>
+
+=head2 Bug Fixes 3.0.0
+
+=over
+
+=item * 1999560  	  3.0 rc1 - discussion_pop_auth_mode never saved
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1999560&group_id=13002&atid=113002
+
+=back
+
+=head1 3.0.0 - RC 1
+
+
+=head2 Download 3.0.0 RC 1
+
+=over
+
+=item * tar.gz
+
+http://downloads.sourceforge.net/mojomail/dada-3_0_0-rc_1.tar.gz?use_mirror=voxel
+
+=item * zip
+
+http://downloads.sourceforge.net/mojomail/dada-3_0_0-rc_1.zip?use_mirror=voxel
+
+=back
+
+These changes are between 3.0 beta 3 and 3.0.0 RC 1
+
+
+=head2 Changes 3.0.0 RC 1
+
+=head2 Bug Fixes 3.0 RC 1
+
+=over
+
+=item * 3.0 b3 - blog_index.cgi - attempts to show x archives...
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1971594&group_id=13002&atid=113002
+
+=item *  1971596  	  3.0 b3 - "You need to login" form doesn't redirect correctly
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1971596&group_id=13002&atid=113002
+
+=item *  1971606  	  3.0 b3 - Sending Monitor does not do a list exists check!
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1971606&group_id=13002&atid=113002
+
+=item *  1971608  	  3.0 b3 - Authorized Senders function broken in discuss lists
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1971608&group_id=13002&atid=113002
+
+=item *  1973334  	  3.0 b3 - blog_index.cgi - raw subject/messages shown?
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1973334&group_id=13002&atid=113002
+
+=item *  1973868  	  3.0 b3 - Not White Listed Addresses not shown in add->verify
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1973868&group_id=13002&atid=113002
+
+=item *  1973894  	  3.0 b3 - "Double Opt-in" Terminology used in Dada Mail
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1973894&group_id=13002&atid=113002
+
+=item *  1975896  	  3.0 b3 - Test messages can still get stuck in the queue
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1975896&group_id=13002&atid=113002
+
+=item *  1977000  	  3.0 b3 - example_dada_config.tmpl variables gets squashed
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1977000&group_id=13002&atid=113002
+
+=item *  1982831  	  3.0 b3 - mini mailing monitor shows incorrect list mailing #
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1982831&group_id=13002&atid=113002
+
+=item *  1982853  	  3.0 b3 - Deleting a list does not remove mailouts.
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1982853&group_id=13002&atid=113002
+
+=item *  1982864  	  3.0 b3 - White List sublist not removed on list deletion
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1982864&group_id=13002&atid=113002
+
+=item *  1985893  	  3.0 b3 - Wrong login info on one list will break logins
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1985893&group_id=13002&atid=113002
+
+=item *  1988324  	  3.0 b3 - resend confirmation loses extra subscriber info
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1988324&group_id=13002&atid=113002
+
+=item *  1993418  	  3.0 b3 - [plain_list_confirm_subscribe] not backwards compat
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1993418&group_id=13002&atid=113002
+
+=back
+
+=head1 3.0 Beta 3
+
+=head2 Download 3.0 Beta 3
+
+=over
+
+=item * tar.gz
+
+http://downloads.sourceforge.net/mojomail/dada-3_0_beta_3.tar.gz?use_mirror=osdn
+
+=item * zip
+
+http://downloads.sourceforge.net/mojomail/dada-3_0_beta_3.zip?use_mirror=osdn
+
+=back
+
+These changes are between 3.0 beta 2 and 3.0 beta 3
+
+
+=head2 Changes 3.0 Beta 3
+
+=head3 Mailing Monitor
+
+Major changes have been enacted in the mailing monitor. 
+
+The index screen on the mailing monitor now has separate columns for: 
+
+=over
+
+=item * Subject
+
+=item * Created
+
+=item * Paused
+
+=item * Queued
+
+=item * Stale
+
+=item * Broken
+
+=back
+
+The mailing monitor also now sorts the mailouts in the order they were created, instead of their line in the queue. The line in queue method was actually crtically confusing (even to me). 
+
+The mailing monitor also handles, "Broken" mailouts better. There were a few notable problems with the previous revision, including: 
+
+=over
+
+=item * Broken Mailouts messed up the queue
+
+If a mailout was broken, it would never leave the mail queue, so any mass mailings waiting to go out would always be stuck; since the default max number of mailouts is, 1 (this number is configurable) 
+
+=item * Mailing monitor broken with a broken mailing
+
+If you had a broken mailing, it wouldn't show up in the mailing monitor index - essentially breaking it, since information was missing. 
+
+=back
+
+Along with these problems, a lack of notice about a broken mailing plagued the entire interface - probably because of wishful thinking that a mailout would I<NEVER> become broken. Proper feedback should now be in place, in the mailing monitor index, individual mailing monitor screens, as well as the detailed and nerdy printout. 
+
+=head3 Mailing Monitor, continued...
+
+Much work has also been done with the mailing monitor, to deal with broken mass mailings. If a mass mailing is seen as broken, it's now also, "paused" to move it out of the way of the mail queue. 
+
+Feedback is terribly wanted to make sure the mailing monitor and coupled auto-pickup functionality is working for you - so let us know!
+
+=head3 Mailing Monitor  responsiveness
+
+The responsiveness of the, pause and resume buttons, as well as seeing if a mailing is queued should be a bit better now, as the status of the mailouts is checked before a batch is begun and after a batch begins. (before it was only afterwards). Queueing, I want to say, was never checked after a mailout began, which really is a bug. 
+
+The individual mailing monitor screens also have a way to turn off the auto-refresh, which can be annoying, if you're attemting to read the, "Verbose Sending Information" in the screen itself; 
+
+=head3 CPAN module Juggling
+
+The included group of CPAN modules known as, B<MIME-Tools> was downgraded in Dada Mail from version 5.426 to version 5.420. One of the reasons was that versions above 5.420 require Perl, version 5.8 to run and we're still spec'ing Dada Mail to be able to run on Perl, version 5.6. Another reason is the newest version has major conflicts with other bundled CPAN modules, as well as site-wide Perl modules, installed from CPAN. It's quite a headache. 
+
+=head3 blog_index.cgi Plugin
+
+The blog_index.cgi plugin has been refreshed and allows you to now embed the HTML it creates via a javascript library, or as straight HTML. A new menu item in the Admin Contol Panel has been added. 
+
+=head3 "Send a List Message" API
+
+The API used in the, "Send a List Message" screen has been introduced in an... introductory manner, in the, I<Integrating Dada Mail into other Programs> docs: 
+
+L<http://dadamailproject.com/support/documentation/COOKBOOK-integration.pod.html#accessing_the__send_a_list_message_api>
+
+If there's interest, I'll expand on this topic. 
+
+=head3 $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION
+
+A new Config.pm variable, C<$MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION> was introducted. If set to, C<1>, Dada Mail will call the same code as it does in the Mailing Monitor and auto_pick.pl scripts in the mail.cgi script itself, after its finished with whatever else it has to do. 
+
+B<See also:>
+
+L<http://dadamailproject.com/support/documentation/Config.pm.html#_monitor_mailouts_after_every_execution>
+
+=head3 List Control Panel Menu Enhancements
+
+The List Control Panel's Admin Menu menu items have been tweaked. 
+
+The top level title, I<Customize Feature Set> has been moved below a new top level title, I<Manage List Control Panel>. Underneith this same title is a new menu item labeled, I< Options>
+
+=head3 Customize Feature Set Changes
+
+The option, I<Grey Out Disabled Screens> still greys out the titles on the lost control panel's admin menu, but the text is now clickable. Clicking these links will give you an error page, telling the user they don't have access to this screen. 
+
+The order of some of the menu items have also changed. Most notably, the, B<Plugins> and, B<Extensions> items have been moved to be before the, "About Dada Mail", "Logout" and, "Log Into Another List" items. 
+
+=head2 New Admin Screen: Manage List Control Panel - Options
+
+Currently, it's only functionality is to enable and disable FCKeditor support. This new setting currently does not affect Beatitude (but should).
+
+=head2 Bug Fixes 3.0 Beta 3
+
+=over
+
+=item *  1959728  	  3.0 b2 - SMTP sending broken because of missing CPAN module
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1959728&group_id=13002&atid=113002
+
+=back
+
+
+=head3 Open Bugs 3.0 Beta 3
+
+=over  1963127  	  3.0 b2 - Send a Webpage, Assets w/URLS w/Query Strings break
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1963127&group_id=13002&atid=113002
+
+This bug has been added to the, "KNOWN ISSUES" list, as no workaround can be found at present. 
+
+=back
+
+=head1 3.0 Beta 2
+
+=head2 Download 3.0 Beta 2
+
+=over
+
+=item * tar.gz
+
+http://downloads.sourceforge.net/mojomail/dada-3_0_beta_2.tar.gz?use_mirror=osdn
+
+=item * zip
+
+http://downloads.sourceforge.net/mojomail/dada-3_0_beta_2.zip?use_mirror=osdn
+
+=back
+
+These changes are between 3.0 beta 1 and 3.0 beta 2
+
+=head2 Changes 3.0 Beta 2
+
+=head3 Beatitude
+
+The Beatitude-Specific Plugin Config, C<FCKeditor_Support> param has been removed. 
+
+=head3 Dada Mail Admin Menu
+
+The left hand side admin menu now shows how many mailouts per list, and per Dada Mail install, iin the, "Monitor Your Mailings" menu item
+
+=head3 Dada Mail Queueing Notifications
+
+There are now messages on top of the, Send a List Message, Send a Webpage and Send a List Invitation screens to let you know if the limit of 
+individual mass mailings has been reached and if the message you're about to send will be queued. This is to help any confusion about why messages don't go out 
+right away. 
+
+=head2 Bug Fixes
+
+The following bug fixes seem to be fixed, but are still labeled as, I<Pending> in the BugTraq
+
+=head3 General 
+
+=over
+
+=item *  1957601  	  3.0 b1 - included CPAN modules out of date
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1957601&group_id=13002&atid=113002
+
+=item *  1957147  	  3.0 b1 - note that unsub is from bouncing never applied
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1957147&group_id=13002&atid=113002
+
+=item *  1948393  	  3.0 b1 - Default $CAPTCHA_TYPE set to, "reCATPCHA"...
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1948393&group_id=13002&atid=113002
+
+=item *  1948391  	  3.0 b1 - Archive send to a friend CATPCHA directions show...
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1948391&group_id=13002&atid=113002
+
+=back
+
+=head3 Mail Sending
+
+=over
+
+=item *  1957152  	  3.0 b1 - queued msgs get in the way of sending test msgs
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1957152&group_id=13002&atid=113002
+
+=item *  1957026  	  3.0 b1 - sending multiple messages per SMTP con. broken
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1957026&group_id=13002&atid=113002
+
+=item *  1957017  	  3.0 b1 - enabling Clickthrough breaks mass mailings
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1957017&group_id=13002&atid=113002
+
+=back
+
+=head3 Dada Bridge
+
+=over
+
+=item * 3.0 b1 - POP SSL connection is broken
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1951108&group_id=13002&atid=113002
+
+=item *  1950165  	  3.0 b1 - Incorrect API for Net::POP3Tools for quit'ing con.
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1950165&group_id=13002&atid=113002
+
+=item *  1949432  	  3.0 b1 - Authorized Senders enabled breaks discussion lists
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1949432&group_id=13002&atid=113002
+
+
+=back
+
+=head3 Beatitude
+
+=over
+
+=item *  1947601  	  3.0 b1 - FCKEditor enabled falsely gives blank HTML ver
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1947601&group_id=13002&atid=113002
+
+=back
+
+=head3 Mystery Girl (Bounce Handler) 
+
+=over
+
+=item *  1957141  	  3.0 b1 - Bouncing email addy's never removed (SQL backend)
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1957141&group_id=13002&atid=113002
+
+=back
+
+=head3 Multiple Subscribe Extension
+
+=over
+
+=item *  1947602  	  3.0 b1 - $DADA::CONFIG::PROGRAM_URL - used only once?
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1947602&group_id=13002&atid=113002
+
+=back
+
+
+=head3 dada_digest.pl Extension
+
+B<Note:> This extension is currently deprecated. 
+
+=over
+
+=item *  1951409  	  3.0 b1 - dada_digest.pl ext. sends msgs to non-digest list -
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1951409&group_id=13002&atid=113002
+
+=item *  1948424  	  3.0 b1 - dada_digest.pl ext. not fully ported to 3.0 API
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=1948424&group_id=13002&atid=113002
+
+=back
+
+=cut

@@ -1,0 +1,178 @@
+
+TFmail FAQ
+==========
+
+Here are some real life problems with TFmail, with matching solutions.
+
+
+== Problem: ==
+--------------
+when i use the "{= by_submitter =}" tag, it displays this:
+lalal by "jibbajabba@enviromark.ca (Jay Jibba-Jabba)"
+what i'd like to know is if there's a way to reverse those, and have it
+display this:
+lalal by "Jay Jibba-Jabba (jibbajabba@enviromark.ca)"
+ 
+a simple reversal... but as i have very little programming experience, i
+thought it best to ask rather than to fiddle.  My realname_input is as
+follows:
+realname_input: FirstName + LastName  --> (i have a FirstName feild & a
+LastName feild)
+
+==> Solution ==>
+----------------
+instead of arduously modifying the by_submitter function, i used this:
+
+blahblahblah {=param.FirstName =} {=param.LastName =} ({=param.email =}) on {= date =}\
+
+the only drawback is that if the user does not enter an e-mail address, it simply displays
+FirstName + lastName () on data... but this is rectifiable by making the e-mail field
+"required", or by somehow hiding the () if no value entered (below is an solution that may 
+be modified to work to this end, but i tried it straight out and had no luck :*()
+
+
+== Problem ==
+-------------
+when i had my configuration file outputting info with the default coding (=
+name =}: {= value =}) it was fine (it = if a user entered no data in the
+field, it wouldnt show it :)
+ 
+now that i'm using the {= param.name =} value, when a user enters nothing,
+it still outputs a the following:
+example:
+ 
+its still outputs:
+do you like cats?:        (void space here)
+ 
+now i know why this occurs, i was just wondering if there was anything i
+could encapsulate the "do you like cats?" in so that it to would be hidden
+if param.cats was left empty.
+
+==> Solution ==>
+----------------
+i find this BRILLIANT and it needs to be in the next readme file
+
+{= IF param.cats =} 
+do you like cats?:       {= param.cats =}
+{= END =}
+
+so simple yet so effective!  it even hides table rows!
+
+
+== Problem ==
+-------------
+when using the date_fmt: option, is there a way to make it so using %I
+instead of %H does not show the 0 infront of numbers below 9?
+
+example:
+----------
+using date_fmt: %A, %B %d, %Y at %I:%M:%S %p
+gives this: Thursday, July 10, 2003 at 02:38:50 PM
+
+my question is how do i acheive this:
+Thursday, July 10, 2003 at 2:38:50 PM
+
+the difference is from 02:38:50 PM to 2:38:50 PM
+simple aesthetics i know, but still usefull :)
+
+==> Solution ==>
+----------------
+i added this line to my own README file for future use. (in the date_fmt section)
+
+.
+..
+...
+%l - hour in 12 hour clock (1 to 12)
+
+make sure to be FRIGHTENINGLY clear that this is a lowercase L,
+and not a 1 <-- one.  that messed me up.
+
+
+== Problem ==
+-------------
+i find that the section on WHERE to place the actual files apart from the .pl
+files is unclear.  i spent a week trying to get them in a place that would work,
+and then get the path correct in the TFMail.pl file... and the path that works
+for me isnt even part of the README options.  might wanna look those over
+
+==> Solution ==>
+----------------
+i had to put my config files in my var/www/cgi-bin/tfmail/ directory
+and my .pl files in the cgi-bin directory
+
+but my paths in the tfmail.pl file is this:
+use constant DEBUGGING      => 1;
+use constant LIBDIR         => './tfmail/';
+use constant MAILPROG       => '/usr/sbin/sendmail -oi -t';
+use constant POSTMASTER     => 'quotes@enviromark.ca';
+use constant CONFIG_ROOT    => './tfmail/';
+use constant MAX_DEPTH      => 0;
+use constant CONFIG_EXT     => '.trc';
+use constant TEMPLATE_EXT   => '.trt';
+use constant ENABLE_UPLOADS => 0;
+use constant USE_MIME_LITE  => 1;
+use constant LOGFILE_ROOT   => './tfmail/logs/';
+use constant LOGFILE_EXT    => '.log';
+use constant HTMLFILE_ROOT  => '';
+use constant HTMLFILE_EXT   => '.htm';
+use constant CHARSET        => 'iso-8859-1';
+
+for some reason this wont work:
+use constant LIBDIR         => 'tfmail/';
+
+its odd
+
+
+
+== Problem ==
+-------------
+creating a log file is an issue i still have... and still havent been able to do.
+
+Questions:
+do i create a blahbla.log file initially, or does the server create it?
+do i need a seperate template file for my log template or should i inline it
+if i inline it, what template do i inline it in?
+
+==> Solution ==>
+----------------
+
+You need to create the log file yourself initially.
+
+You need a template for the log file.   Like any other template, it can be either
+a seperate file or inlined into the .trc file.  There is no concept of having one
+template inlined into another template.
+
+
+== Problem ==
+-------------
+there is mention of being able to set up a multi-stage form (i.e on multiple pages
+of your site (step one = 1.html, step = 2.html, etc)... but i see no examples of 
+how to do it.  I'd love to be able to do that, or even have a popup box appear based
+on a menu selection with specific questions to answer, but i dont know how to do the 
+tfmail end of it. 
+
+if TFMail can do this, perhaps a detailed explanation of it would help.
+
+==> Solution ==>
+----------------
+
+Basically, you need a seperate config file for each stage.  All but the config
+file for the last stage are configured to send no email.  The output template
+for each stage produces the HTML form for the next stage, including hidden form
+fields to pass values from previous stages along to the next.
+
+The final stage sends the email.
+
+
+== Problem ==
+-------------
+
+oh, and what in the HAY is the tfmail_config.pl file? i havent used it once and dont
+know what its for.
+
+==> Solution ==>
+----------------
+
+tfmail_config.pl is an admin script.  It allows you to interactively generate
+config files and templates on the server, and download log the files.
+

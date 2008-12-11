@@ -1,0 +1,376 @@
+<!-- begin view_list_screen.tmpl -->
+
+<!-- tmpl_include list_type_switch_widget.tmpl -->
+
+<!-- tmpl_if delete_email_count -->
+	
+	<p class="error">
+	 <!-- tmpl_var name="delete_email_count" --> address(es) of your <!-- tmpl_var type_title --> have been unsubscribed.
+	</p>
+	
+<!-- /tmpl_if -->
+
+<!-- tmpl_if email_count -->
+	
+	<p class="positive">
+	 <!-- tmpl_var name="email_count" --> address(es) of your <!-- tmpl_var type_title --> have been subscribed.
+	</p>
+	
+<!-- /tmpl_if -->
+
+<!-- tmpl_if list_type_isa_list -->
+	
+	<h1>
+	 Your Subscription List
+	</h1>
+	<p>
+	 This contains all the current subscribers to your list.
+	</p>
+	
+<!--/tmpl_if-->
+
+<!-- tmpl_if list_type_isa_authorized_senders -->
+	
+	<h1>
+	 Your Authorized Senders
+	</h1>
+	<p>
+	 This shows all email addresses that are allowed to send messages to the list (via the Dada Bridge Plugin) other than the list owner (for announce-only lists) and without moderation. 
+	</p>
+	
+<!--/tmpl_if-->
+
+
+<!-- tmpl_if list_type_isa_white_list -->
+	
+	<h1>
+	 Your White List
+	</h1>
+	<p>
+	 Your whitelist is a list of email addresses that are allowed to subscribe to your list.
+	</p>
+	
+<!--/tmpl_if-->
+
+
+
+<!--
+
+<tmpl_if list_type_isa_testers>
+	
+	<h1>
+	 Your Testers
+	</h1>
+	<p>
+	 The Testers List is a list of addresses send to when sending out test messages.
+	</p>
+	
+</tmpl_if>
+
+--> 
+
+
+<!-- tmpl_if list_type_isa_black_list -->
+	
+	<h1>
+	 Your Blacklist
+	</h1>
+	<p>
+	 A blacklist is a set of rules that say who cannot subscribe to 
+	 your list. You can disallow a single email address by adding that email 
+	 address (you@yours.com) to the blacklist.
+	</p>
+	<p>
+	 You can also use the blacklist to match a part of an email address. 
+	 For example, adding '.com' to the blacklist will disallow 
+	 anyone that has '.com' in their email address.
+	</p>
+		
+	<!-- tmpl_if can_use_global_black_list --> 
+		
+		<!-- tmpl_if GLOBAL_BLACK_LIST -->
+			
+			<p class="positive">
+			 * The Global Blacklist has been enabled.
+			</p>
+			
+		<!--/tmpl_if-->
+		
+	<!--/tmpl_if-->
+	
+	<!-- tmpl_if can_use_global_unsubscribe --> 
+		
+		<!-- tmpl_if GLOBAL_UNSUBSCRIBE -->
+			
+			<p class="positive">
+			 * Global Unsubscribe has been enabled.
+			</p>
+			
+		<!--/tmpl_if-->
+		
+	<!--/tmpl_if-->
+	
+	<!-- tmpl_if black_list_changes_done -->
+	
+		<p class="positive">
+		 Your changes to the blacklist settings were successful!
+		</p>
+		
+	<!--/tmpl_if-->
+	
+<!--/tmpl_if-->
+
+<!-- tmpl_unless num_subscribers -->
+	
+	<p class="error">
+	 Currently, there are no <!-- tmpl_var type_title --> subscribed.
+	</p>
+	
+<!--/tmpl_unless-->
+
+<table width="100%">
+ <tr>
+  <td>
+   <p>
+    <!-- tmpl_var type_title -->
+    <strong>
+     <!-- tmpl_var name="screen_start" -->
+    </strong>
+    to 
+    <strong>
+     <!-- tmpl_var name="screen_finish" -->
+    </strong>
+   </p>
+  </td>
+  <td align="right">
+   <p>
+    Total number of <!-- tmpl_var type_title -->:
+    <strong>
+     <!-- tmpl_var name="num_subscribers" -->
+    </strong>
+    <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
+     add...
+    </a>
+   </p>
+  </td>
+ </tr>
+</table>
+
+
+<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+
+ <!-- tmpl_include view_list_table_widget.tmpl --> 
+ 
+ <!-- tmpl_include view_list_prev_next_table.tmpl -->
+ <p align="center">
+  <a href="#" onclick="SetChecked(1);return false;">
+   check all 
+  </a>
+  :: 
+  <a href="#" onclick="SetChecked(0);return false;">
+   uncheck all
+  </a>
+ </p>
+ <input type=hidden name="process" value="delete" />
+ <input type=hidden name="f"       value="checker" />
+ <input type=hidden name="type" value="<!-- tmpl_var type -->" />
+ <div class="buttonfloat">
+  <input type="submit" class="alertive" value="Unsubscribe Checked Emails" />
+ </div>
+</form>
+<div class="floatclear"></div> 
+<!-- tmpl_if list_type_isa_black_list -->
+
+
+
+
+	<!-- tmpl_if can_filter_subscribers_through_blacklist --> 
+	
+		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="blacklist_filter_form">
+		 <input type="hidden" name="f" value="filter_using_black_list" />
+		 <div class="buttonfloat">
+		  <input type="submit" class="cautionary" value="Filter Subscription List Through Blacklist..." />
+		 </div>
+		</form>
+	<!--/tmpl_if-->
+
+
+	<hr />
+
+
+	
+	
+
+
+	<fieldset>
+
+
+		
+		
+	 <legend>
+		  Black List Options
+     </legend>
+		
+		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="blacklist_option_form">
+		 <input type="hidden" name="f"       value="view_list" />
+		 <input type="hidden" name="type"    value="<!-- tmpl_var type -->" />
+		 <input type="hidden" name="process" value="set_black_list_prefs" />
+		
+		
+		 <table>
+		   <tr>
+		    <td>
+		     <p>
+		      <input type="checkbox" name="black_list" id="black_list" value="1" <!-- tmpl_if black_list -->checked="checked"<!--/tmpl_if--> />
+		     </p>
+		    </td>
+		    <td>
+		     <p>
+		      <label for="black_list">
+		       Activate blacklist rules
+		      </label>
+		     </p>
+		    </td>
+		   </tr>
+		   <tr>
+		    <td>
+		     <p>
+		      <input type="checkbox" name="add_unsubs_to_black_list" id="add_unsubs_to_black_list" value="1" <!-- tmpl_if add_unsubs_to_black_list -->checked="checked"<!--/tmpl_if--> />
+		     </p>
+		    </td>
+		    <td>
+		     <p>
+		      <label for="add_unsubs_to_black_list">
+		       Move email addresses that have just been unsubscribed to the blacklist
+		      </label>
+		     </p>
+		    </td>
+		   </tr>
+		   <tr>
+		    <td>
+		     <p>
+		      <input type="checkbox" name="allow_blacklisted_to_subscribe" id="allow_blacklisted_to_subscribe" value="1" <!-- tmpl_if allow_blacklisted_to_subscribe -->checked="checked"<!--/tmpl_if--> />
+		     </p>
+		    </td>
+		    <td>
+		     <p>
+		      <label for="allow_blacklisted_to_subscribe">
+		       Allow past subscribers to subscribe again, even though they are black listed
+		      </label>
+		      <br />
+		      By selecting both this option <strong>and</strong> the one directly above it, 
+		      you effectively collect a &quot;blacklist-in-waiting&quot; of all unsubscribers 
+		      for possible <em>future</em> use. Otherwise, selecting this option alone is the 
+		      same as disabling your blacklist outright.
+		     </p>
+		    </td>
+		   </tr>
+		   <tr>
+		    <td>
+		     <p>
+		      <input type="checkbox" name="allow_admin_to_subscribe_blacklisted" id="allow_admin_to_subscribe_blacklisted" value="1" <!-- tmpl_if allow_admin_to_subscribe_blacklisted -->checked="checked"<!--/tmpl_if--> />
+		     </p>
+		    </td>
+		    <td>
+		     <p>
+		      <label for="allow_admin_to_subscribe_blacklisted">
+		       Allow administration to subscribe black listed email addresses
+		      </label>
+		     </p>
+		   </td>
+		  </tr>
+		 </table>
+
+		 <div class="buttonfloat">
+		  <input type=reset  class="cautionary" value="Clear Changes" />
+		  <input type=submit class="processing" value="Save Changes" />
+		 </div>
+		 <div class="floatclear"></div>
+		</form>
+	</fieldset>
+
+	
+<!--/tmpl_if-->
+
+
+<!-- tmpl_if list_type_isa_white_list -->
+	
+	<fieldset>
+
+
+
+		 <legend>
+	      White List Options
+		 </legend>
+		
+			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="white_list_option_form">
+			 <input type="hidden" name="f"       value="view_list" />
+			 <input type="hidden" name="type"    value="<!-- tmpl_var type -->" />
+			 <input type="hidden" name="process" value="set_white_list_prefs" />
+
+		 <table>
+		   <tr>
+		    <td>
+		     <p>
+		      <input type="checkbox" name="enable_white_list" id="enable_white_list" value="1" <!-- tmpl_if enable_white_list -->checked="checked"<!--/tmpl_if--> />
+		     </p>
+		    </td>
+		    <td>
+		     <p>
+		      <label for="enable_white_list">
+		       Activate the White List
+		      </label>
+		     </p>
+		    </td>
+		   </tr>
+	      </table> 
+		 <div class="buttonfloat">
+		  <input type=reset  class="cautionary" value="Clear Changes" />
+		  <input type=submit class="processing" value="Save Changes" />
+		 </div>
+		      
+	     </form> 
+	
+	<div class="floatclear"></div> 
+	
+	
+	</fieldset>
+
+<!--/tmpl_if--> 
+
+
+
+<!-- tmpl_include list_search_form_widget.tmpl --> 
+
+
+	<hr />
+
+	<table cellpadding="5">
+	 <tr>
+	  <td>
+	   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" target="_blank">
+	    <input type="hidden" name="f"    value="text_list" />
+	    <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+	    <input type="submit" class="plain" value="Open List in New Window" />
+	   </form>
+	  </td>
+	  <td>
+	   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get">
+	    <input type="hidden" name="f"    value="send_list_to_admin" />
+	    <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+	    <input type="submit" class="plain" value="Send List to List Owner" />
+	   </form>
+	  </td>
+	 </tr>
+	</table>
+
+	<p class="link_to_screen">
+	 <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list_options">
+	  View Options...
+	 </a>
+	</p>
+
+	<!-- tmpl_include help_link_widget.tmpl --> 
+
+
+<!-- end view_list_screen.tmpl -->

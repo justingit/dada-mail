@@ -1,0 +1,171 @@
+=head1 Upgrading Dada Mail from Mojo Mail 2.8.9 and below
+
+
+=head1 The Really Really Good News
+
+2.8.10 of Dada Mail is backwards compatible with all versions below, most of the name changes are superficial (ie, the B<name> was changed, nothing else). This document is to get you familiar with this tweaked interface, both inside and out. It's not too too scary, but is hopefully exhausting. 
+
+=head2 Differences In Terms
+
+So not to have to repeat myself everytime, I'll use a similar notation of 
+
+=over
+
+=item * B<What Something Was Called> -> B<What It's Called Now> 
+
+=back
+
+for all the changes. If there are any notes, I'll provide them after the changed term. 
+
+=head2 Programs, Scripts and Files Renamed
+
+=over
+
+=item * mojo.cgi -> mail.cgi
+
+and..
+
+=item * mojo (folder/directory) -> dada (folder/directory)
+
+=back
+
+This means instead of a url like this: 
+
+ http://heythatsyoursite.com/cgi-bin/mojo/mojo.cgi
+
+you'll now see: 
+
+ http://heythatsyoursite.com/cgi-bin/dada/mail.cgi
+
+Also, the B<MOJO> directory has been renamed, B<DADA>, but we'll get to that in much more detail. 
+
+=over
+
+=item * .mojo_config -> .dada_config
+
+This is only relevant if you use an outside config file. Just remember to rename the outside config file, B<.dada_config>
+
+=item * mojo_send.pl -> dada_send.pl
+
+=item * mojo_bounce_handler.pl -> dada_bounce_handler.pl
+
+The bounce handler's name is still, B<Mystery Girl>, as I'm still in love with Karen O, the lead singer of the Yeah Yeah Yeahs and will see her on November 20th at the Gothic Theatre to put my love for her in words.  
+
+=for html <p>(See the <a href="dada_bounce_handler.pl.html#faqs">Mystery Girl FAQ</a> for more information on <em>that</em>)</p>
+
+=back
+
+These couple few are Magic Book scripts: 
+
+=over 
+
+=item * mojo_backup.pl -> dada_backup.pl
+
+=item * mojo_digest.pl -> dada_digest.pl
+
+=item * mojo_stats.pl  -> dada_stats.pl
+
+=back
+
+=head2 The Four Required Config.pm variables
+
+=over
+
+=item * $MOJO_ROOT_PASSWORD -> $PROGRAM_ROOT_PASSWORD
+
+You'll notice that most everything referring to, "mojo" has been changed to either "Dada", or generically to, "program".
+
+=item * $FILES
+
+No change.
+
+=item * $MAILPROG
+
+No change.
+
+=item * $MOJO_URL -> $PROGRAM_URL
+
+=back
+
+Easy enough. 
+
+=head2 Other Variables
+
+=over
+
+=item * $S_MOJO_URL -> $S_PROGRAM_URL
+
+=item * $MOJO_CONFIG_FILE_DIR -> $PROGRAM_CONFIG_FILE_DIR
+
+=item * $MOJO_ERROR_LOG -> $PROGRAM_ERROR_LOG
+
+=item * $MOJO_LOG -> $PROGRAM_USAGE_LOG
+
+
+=back
+
+
+=head2 Library Directory Structure
+
+The Dada Mail library now goes under the name of DADA instead of MOJO. I am not going to list every single library file, but here are some examples. 
+
+=over
+
+=item * MOJO/Config.pm -> DADA/Config.pm
+
+=item * MOJO/Mail/Send.pm -> DADA/Mail/Send.pm
+
+=item * MOJO/MailingList/Subscribers/Postgres.pm -> DADA/MailingList/Subscribers/Postgres.pm
+
+=back
+
+We're good? Good. Now (and this is the important bit) if you do have a customized program that uses these libraries files, make sure you change those as well, example: 
+
+=over
+
+=item * use MOJO::Config; -> use DADA::Config; 
+
+=item * use MOJO::Mail::Send; -> use DADA::Mail::Send;
+
+=back
+
+etc, etc. 
+
+=head2 List Settings
+
+There's only one list setting that has been renamed: 
+
+=over
+
+=item * mojo_email -> list_owner_email
+
+This is sort of a, "long time comin'" anyways, since the list owner email was always refered to as, B<list owner email> and never mojo_email, except in code. For the time being, there will be a shin in DADA/MailingList/Settings/Db.pm to look for mojo_email is list_owner_email is not set. 
+
+=back
+
+=head2 Template pseudo tags
+
+=over
+
+=item * [mojo] -> [dada]
+
+Again, there will be a check for both for the time being, but when you upgrade, please update your templates with the [dada] tag, instead of the [mojo] tag. 
+
+=back
+
+=head2 And the rest
+
+If I totally missed something, you can make a best guess that any other reference: 
+
+=over
+
+=item * mojo -> dada
+
+=item * Mojo -> Dada
+
+=item * MOJO -> DADA
+
+=back
+
+
+

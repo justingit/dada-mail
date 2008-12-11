@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><!-- tmpl_var title --></title>
+  <link rel="alternate" href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list -->/"/>
+  <link rel="self"      href="<!-- tmpl_var PROGRAM_URL -->/archive_atom/<!-- tmpl_var list -->/"/>
+  
+  <updated><!-- tmpl_var now --></updated>
+  <author>
+    <name><!-- tmpl_var list_name --> List Owner</name>
+    <!-- tmpl_if COMMENT -->If the above doesn't work, use:<email><!-- tmpl_var list_owner_email --></email>
+<!--/tmpl_if--> 
+    <email><!-- tmpl_var list_owner_email_encoded --></email>
+  </author>
+  <id><!-- tmpl_var PROGRAM_URL --></id>
+ 
+  <generator><!-- tmpl_var PROGRAM_NAME --> <!-- tmpl_var VER --></generator>
+<!-- tmpl_loop atom_entries --> 
+
+  <entry>
+    <title><!-- tmpl_var subject --></title>
+    <link rel="alternate" href="<!-- tmpl_var link -->"/>
+    <id><!-- tmpl_var atom_id --></id>
+    
+    <published><!-- tmpl_var updated --></published>
+    <updated><!-- tmpl_var updated --></updated>
+    <content type="html"><!-- tmpl_var message -->
+    	<!-- tmpl_var feed_subscription_form -->     
+    </content>
+  </entry>
+
+<!-- /tmpl_loop --> 
+
+
+</feed> 

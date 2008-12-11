@@ -1,0 +1,266 @@
+=pod
+
+=head1 Email Sending with Dada Mail FAQ
+
+This FAQ attempts to answer questions specifically to sending out email from Dada Mail. 
+
+=head1 Related FAQ's
+
+=over
+
+=item * Mailing List Sending FAQ
+
+http://dadamailproject.com/support/documentation/FAQ-mailing_list_sending.pod.html
+
+=item * General FAQ
+
+http://dadamailproject.com/support/documentation/faq.pod.html
+
+=item * ERROR FAQ
+
+http://dadamailproject.com/support/documentation/faq.pod.html
+
+=back
+
+=head1 General
+
+=head2 What's the difference between the Sendmail Command and SMTP? 
+
+Both SMTP sending and using the sendmail command do the same thing - they send email. 
+
+The SMTP engine will connection directly to an SMTP server. 
+
+The sendmail command will pass an email message to a server utility, which will then connect to the SMTP server. 
+
+=head2 Which one should I use, the sendmail command or SMTP? 
+
+If the sendmail command works, there's no reason to use SMTP directly. 
+
+Some reasons you may want to use SMTP sending: 
+
+=over
+
+=item * Your mail server is located on a different physical computer than you hosting server
+
+=item * You do not have access to the sendmail command
+
+=item * You want more control over when your bounced messages are going
+
+=back
+
+=head1 SMTP Sending 
+
+=head2 What does Dada Mail use for its SMTP Sending? 
+
+Currently, Dada Mail uses the B<Net::SMTP_auth> CPAN module to send email via SMTP. More information: 
+
+L<http://search.cpan.org/~apleiner/Net-SMTP_auth>
+
+In versions prior, it has used the B<Net::SMTP> CPAN module: 
+
+http://search.cpan.org/~gbarr/libnet/Net/SMTP.pm
+
+And the B<Mail::Bulkmail> CPAN module: 
+
+http://search.cpan.org/~jimt/Mail-Bulkmail/Bulkmail.pm
+
+Net::SMTP_auth is a little more flexible than Net::SMTP when it comes to setting the authentication schemes to use and Mail::Bulkmail does not support SASL authentication at all, has some mysterious bugs we couldn't figure out and Dada Mail does much of the rest of the utilities that it packs. 
+
+=head1 SMTP Authentication
+
+One of the main disadvantages of using the, I<Send via SMTP> feature in Dada Mail is actually, setting up a mailing list to use it. Not that you have to jump through flaming hoops to do so, it should be very similar to how you'd set up a desktop mail reader to send messages. But, if you haven't done that, it can be slightly intimidating. 
+
+Currently, there are two different authentication schemes that Dada Mail supports for sending via SMTP. 
+
+B<Note:> Be very wary if your SMTP server requires no authentication. This is also known as an, "open relay" mail server. Any mail sent through an open relay these days will be black listed by spam filters. Because of this fact, most SMTP servers require some sort of authentication.
+
+Only use an SMTP server that does not require authentication when the server has some other way of being selective on who connects to it. For example, your SMTP server may just be, B<localhost> and will only accept B<local> connections. In this setup, it would be OK to use SMTP sending without authentication.
+
+=head1 SASL Authentication.
+
+The first SMTP authentication scheme is called, B<SASL Authentication>. 
+
+Basically, Dada Mail will log into an SMTP mail server and the SMTP mail server will ask for the correct username and password. When Dada Mail gives this to the SMTP mail server, it can then send mail. Pretty simple. 
+
+=head2 What username and password are you supposed to give the SMTP server?
+
+The username and password that you want to give the SMTP server is either: 
+
+=over
+
+=item * The List Owner's Email Address
+
+=item * The List Admin's Email Address
+
+=back
+
+Usually, I check the option in B<Manage List: Sending Options: SMTP Settings>, I<Set the Sender of SMTP Mailings to the List Administration Address>. If I have to use Authentication with the SMTP server, I will then use the B<List Admin's username/password information>
+
+=head2 How do you know you're supposed to use SASL authentication? 
+
+Usually, the documentation provided by your hosting company will tell you if you need to use SASL authentication. If you do not need to use SASL authentication, you'll most likely need to use B<POP-before-SMTP> authentication. 
+
+=head1 POP-before-SMTP Authentication
+
+B<POP-before-SMTP Authentication> is slightly different than SASL Auth. Instead of the SMTP mail server requesting the appropriate username and password to log into the SMTP mail server, you'll instead have to  first, successfully log into the POP mail server. 
+
+To clarify, a POP mail server is usually used to fetch I<received> mail, as opposed to an SMTP mail server, which is used to I<send> mail. So POP mail server: receives mail; SMTP mail server, sends mail. 
+
+The SMTP server will know if you've recently successfully logged into the POP mail server and if so, will allow you to send mail through the SMTP mail server. Sounds weird, right? I think so too. 
+
+Again, you'll probably want to use the B<list owner's email address>'s username/password to log into the POP mail server and again, your hosting company will most likely let you know which authentication is required. 
+
+=head2 Testing Your SMTP Sending
+
+In the B<Manage List:  Sending Options: SMTP Options> list admin screen, you should see  a button labeled, B<Save and Test SMTP Settings...>. Clicking this button will both Save your SMTP settings and test the settings to see if they work. 
+
+Testing basically involves connecting to the SMTP server and attempting to send a message out. 
+
+What you'll see in the test results is the actual communication between the (sometimes POP3 server if you're using POP-before-SMTP auth) SMTP server and Dada Mail. 
+
+Sometimes, you can tell if you'll need SASL authentication when you see something similar to the following line: 
+
+ Net::SMTP=GLOB(0x56054)<<< 250 AUTH LOGIN PLAIN CRAM-MD5
+
+This means, the server requires SASL authentication, in either the, B<LOGIN>, B<PLAIN> or, B<CRAM-MD5> type. B<Note!> that sometimes SMTP servers advertise SASL authentication, but actually B<do not support it>. Confusing? Yes. 
+
+If you have problems with SASL Authentication, you'll usually see a message like this: 
+
+ [Sun Jan 21 17:35:59 2007] mail.cgi: Problems sending via SMTP:  at /Library/WebServer/CGI-Executables/dada/mail.cgi line 3295
+
+If you do ask for help with debugging a problem connection, make sure to B<never post your password> on any public mailing list/message board. It may be difficult to see, since your password will be encoded, but it's easily decoded. 
+
+For example: 
+
+ Net::POP3=GLOB(0x54710)>>> APOP user%example.com 15e134ff8f404386b79613cfd3254d6f
+
+B<15e134ff8f404386b79613cfd3254d6f> is the encoded password.
+
+Another way to continually see these verbose results of ever SMTP connection made is to tweak the Config.pm variable, B<%CPAN_DEBUG_SETTINGS>. The two key/value pairs you'll be interested in are: 
+
+ NET_POP3 => 0, 
+
+ NET_SMTP => 0, 
+
+Change the B<0> to B<1> To have extremely verbose debugging information in your error log (set up your error log as well)
+
+=head2 How can I enable SMTP sending using SSL/TLS? 
+
+You'll need a few things, none of which we can really bundle with Dada Mail (unfortunetly)
+
+=over
+
+=item * The OpenSSL C Library
+
+=item * The IO::Socket::SSL CPAN module
+
+=back
+
+If you were hoping that you can just use SSL connections with Dada Mail - you can, but you'll need a few things already available on your server. The upshot is that these things may already be available. The downshot is, if they're not, it can be difficult to install, if you are not well-versed in administrating your own webserver. But, the support in Dada Mail is there. 
+
+=head1 Bounces
+
+=head2 Is there a bounce handler for Dada Mail? 
+
+Yes, see: 
+
+L<http://dadamailproject.com/support/documentation/dada_bounce_handler.pl.html>
+
+=head2 Where are my bounce messages going? 
+
+B<Short Answer:> 
+
+Bounces will go to which ever email address is set in the B<Return-Path> of your email messages. Look at the source of an email message sent by Dada Mail, to find where the Return-Path header is set. 
+
+B<Longer Answer:> 
+
+A brief tutorial in email sending: 
+
+An email message has basically two parts: the Message Headers and the Message Body. The Message Body is the easiest thing grasp - it's the message itself. The Message Headers all serve different roles, but a few should be familiar to anyone. 
+
+For example, the B<Subject:> header is where the subject of the message is, the B<From> header tells you where the message originated from, the B<To:> header tells you where it's going. Easy enough. I'll throw in two more headers at you, that sometimes do not visually appear when you view a message in your mail reader. 
+
+The first is the B<Reply-To> header. It'll hold a email address, just like the B<From:> and B<To> header. When you reply to a message, and the B<Reply-To> header is present, it'll be sent to that address. If the B<Reply-To> header is not present, your message will be sent to the email address that's present in the, B<From> header. 
+
+The other header I want to talk about is the B<Return-Path> header. This header also contains an email address and serves a similar purpose as the B<Reply-To:> header, but is instead used for automatic response systems - like when a server B<bounces> your message back, or a vacation script sends a note to you. It'll never be used by a real live human being, so it's not something you B<need> to check. 
+
+So, in general: 
+
+=over
+
+=item * Reply-To
+
+Humans! 
+
+=item * Return-Path 
+
+Computers!
+
+=back
+
+Saying all that, Dada Mail's B<list administrator> should be what's being set in its message B<Return-Path>. 
+
+By default, this is probably not the case - you'll have to do some minor tweaks to your list. If you don't, the best bet is that the B<Return-Path> header is set to a email address that is quite foreign to you. 
+
+Depending on how your sending options are setup, you need to do different tweaks. Here they are: 
+
+=over
+
+=item * Setting up the Return-Path when sending via SMTP
+
+In B<Sending Options - SMTP Options> check, 
+
+I<Set the Sender of SMTP mailings to the list administration email address >
+
+You're all done. 
+
+=item * Setting up the Return-Path when sending via the sendmail command line
+
+I<Usually> this works: 
+
+In B<Sending Options - Advanced> check, 
+
+I<Add the Sendmail '-f' flag when sending messages> 
+
+You're all done. 
+
+After checking this option, test and see if mailing is still functioning. Depending on how Sendmail is setup, this could in fact B<stop> messages from being delivered. 
+
+If this doesn't work, uncheck that option and try checking, 
+
+I<Print the 'Return-Path' header in all list emails>
+
+In my findings, this sometimes works for servers running Qmail - although you're not supposed to be able to directly set the B<Return-Path> header. 
+
+=back
+
+And, that's it. 
+
+Now that you know how to set the B<Return-Path> header, put it to some good use! Set up Mystery Girl, the Bounce Handler for Dada Mail: 
+
+http://dadamailproject.com/support/documentation/dada_bounce_handler.pl.html
+
+=head1 Problems
+
+=head2 Write an HTML message, receive it as PlainText
+
+If you write your message in HTML, and it's received what looks like PlainText, a few things may be wrong: 
+
+=over
+
+=item * Your mail reader doesn't support reading the message in HTML and will show the PlainText version of your message. 
+
+That's pretty easy to find out if that's true - if *all* messages you receive are plaintext, it may be a good chance that this is true. 
+
+=item * Your mail reader is just showing you the PlainText version of the message you send out. 
+
+Dada Mail sends both a plain text and HTML version of the message which are both embedded in the email message itself - this is called a multipart/alternative message. Usually, the mail reader will pick the HTML version to show, but, depending on your preferences, it may show the plain text version 
+
+=item *  Something on your hosting account server is stripping the HTML version from your email message
+
+In rare occassions, the mail server will actually strip out the HTML version of your email message, before it actually sends the message to your subscribers. You can try sending a test message in HTML that's extremely simple and see if it goes through and then, continually make a more complex message. It's possible that a specific character is triggering this
+
+=back
+
+=cut
+

@@ -1,0 +1,17 @@
+<!-- begin subscription_check_xml.tmpl -->
+
+<subscription>
+ <email><!-- tmpl_var email --></email> 
+ <status><!-- tmpl_var status --></status>
+ <errors> 
+  
+<!--tmpl_loop name="errors" -->
+	  
+	  <error><!-- tmpl_var error --></error>
+	  
+<!--/tmpl_loop-->
+  
+ </errors>
+</subscription>
+
+<!-- end subscription_check_xml.tmpl -->

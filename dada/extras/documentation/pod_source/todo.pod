@@ -1,0 +1,13 @@
+=pod
+
+
+=head1 NOTE
+
+This to-do list is very old and isn't used anymore. Please see the Road Map:
+
+http://dadamailproject.com/support/documentation/road_map.pod.html
+
+For more up-to-date information. 
+ 
+
+=cut

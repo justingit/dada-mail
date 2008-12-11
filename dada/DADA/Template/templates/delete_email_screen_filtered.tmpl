@@ -1,0 +1,116 @@
+<!-- begin delete_email_screen_filtered.tmpl -->
+
+
+<p>
+ Manage Subscribers (<!-- tmpl_var type_title -->)
+&#187;
+Remove
+&#187;
+ <strong>
+ Verify
+</strong> 
+&#187;
+ Unsubscribe
+</p>
+
+
+<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+ <input type="hidden" name="process" value="delete" />
+ <input type="hidden" name="f"       value="checker" />
+ <input type="hidden" name="type"    value="<!-- tmpl_var type -->" />
+ 
+<!-- tmpl_if should_add_to_black_list -->
+	 
+	 <input type="hidden" name="add_to_black_list" value="1" />
+	
+<!--/tmpl_if-->
+ 
+<!-- tmpl_if have_subscribed_addresses -->
+	 
+	 <p>
+	  These addresses have passed verification. Click the 
+	  checkbox next to an address to remove it:
+	 <p>
+	 
+<!--/tmpl_if--> 
+ 
+ <div class="buttonfloat">
+  <input type="button" class="cautionary" value="Re-Enter Email List" onclick="history.back()" />
+  <input type="submit" class="processing" value="Unsubscribe Checked Emails" />
+ </div>
+ <div class="floatclear"></div>
+ 
+<!-- tmpl_loop name="addresses_to_remove" --> 
+	 
+	 <input type="checkbox" name="address" value="<!-- tmpl_var email -->" checked="checked" /> &nbsp; <!-- tmpl_var email -->
+	 <br />
+	 
+<!--/tmpl_loop-->
+ 
+ <p>
+  <a href="#" onclick="SetChecked(1);return false;">
+   check all
+  </a>
+  ::
+  <a href="#" onclick="SetChecked(0);return false;">
+   uncheck all
+  </a>
+ </p>
+ <div class="buttonfloat">
+  <input type="button" class="cautionary" value="Re-Enter Email List" onclick="history.back()" />
+  <input type="submit" class="processing" value="Unsubscribe Checked Emails" />
+ </div>
+</form> 
+<div class="floatclear"></div>
+
+<!-- tmpl_if not_subscribed_addresses --> 
+	
+	<p>
+	 These addresses are not part of list at present. Either they 
+	 were previously deleted, or were never in the list.
+	</p>
+	
+	<ul>
+	 
+	<!-- tmpl_loop name="not_subscribed_addresses" -->
+		 
+		 <li>
+		  <p>
+		   <!-- tmpl_var email -->
+		  </p>
+		 </li>
+		 
+	<!--/tmpl_loop-->
+	 
+	</ul>
+
+<!--/tmpl_if-->
+
+<!-- tmpl_if have_invalid_addresses -->
+	
+	<p>
+	 These addresses did not go through validation successfully. 
+	 To correct them, push your 
+	 <a href="#" onclick="history.back();return false;">
+	  back button 
+	 </a> 
+	 and enter them again.
+	</p>
+	
+	<ul>
+	 
+	<!-- tmpl_loop name="invalid_addresses" -->
+		 
+		 <li>
+		  <p>
+		   <!-- tmpl_var email -->
+		  </p>
+		 </li>
+		 
+	<!--/tmpl_loop-->
+	 
+	</ul>
+	
+<!--/tmpl_if--> 
+
+<!-- end delete_email_screen_filtered.tmpl -->

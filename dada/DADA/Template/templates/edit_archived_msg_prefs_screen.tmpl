@@ -1,0 +1,60 @@
+<!-- begin edit_archived_msg_prefs_screen.tmpl --> 
+
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+	 <input type="hidden" name="f" value="edit_archived_msg" /> 
+	
+	<!-- tmpl_if done --> 
+	
+	  <!-- tmpl_var GOOD_JOB_MESSAGE --> 
+	  
+	<!--/tmpl_if--> 
+	
+	<p><strong>Editable Headers:</strong></p>
+	
+	<div style="max-height: 200px; width:250px; overflow: auto; border:1px solid black">
+	 <table cellpadding="2" cellspacing="0" border="0" width="100%">
+     
+	<!-- tmpl_loop edit_headers_menu --> 
+	  <tr<!-- tmpl_if name="__odd__" --> style="background-color:#ccf;"<!--/tmpl_if-->>
+
+		    <td width="25">
+
+	 <input type="checkbox" name="editable_header" id="<!-- tmpl_var name ESCAPE="HTML"-->" value="<!-- tmpl_var name ESCAPE="HTML"-->" <!--tmpl_if editable -->checked="checked"<!--/tmpl_if--> />
+	 </td> 
+	 <td> 
+	  
+	 
+	 <label for="<!-- tmpl_var name ESCAPE="HTML"-->"><!-- tmpl_var name --></label>
+	</td> 
+	</tr> 
+	
+	<!--/tmpl_loop--> 
+	
+	
+	</table> 
+	</div>
+	
+	<hr /> 
+		<input type="hidden" name="process" value="prefs" /> 
+
+	<input type="hidden" name="process_prefs" value="1" /> 
+
+<!-- 
+<input type="hidden" name="flavor" value="prefs" /> 
+--> 
+
+	<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
+
+	<div class="buttonfloat">
+	 <input type="reset" class="cautionary"  value="Clear Changes" />
+	 <input type="submit" class="processing" value="Save Changes" />
+	</div>
+	<br />
+	<div class="floatclear"></div>
+	
+	</form> 
+	
+	<p><a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_archived_msg&id=<!-- tmpl_var id -->">&lt;-- Back to the Archived Message</a></p>
+
+<!-- end edit_archived_msg_prefs_screen.tmpl --> 

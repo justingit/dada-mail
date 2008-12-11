@@ -1,0 +1,71 @@
+<!-- begin error_already_sent_sub_confirmation_screen.tmpl --> 
+
+<h1>Problems with Confirmation Request</h1> 
+
+<p>
+ It seems that you were recently sent a confirmation to subscribe to: 
+</p>
+
+
+<p>
+ <blockquote> 
+   <strong>
+    <!-- tmpl_var list_settings.list_name -->   
+   </strong>
+ </blockquote> 
+ 
+<p>
+ Please double-check your inbox for this confirmation email. 
+</p>
+
+<p>If you did not receive this confirmation, make sure that this email 
+address: </p>
+
+ <blockquote>
+ <p>
+  <strong>
+   <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->"><!-- tmpl_var list_settings.list_owner_email --></a>
+  </strong>
+ </p>
+</blockquote>
+
+
+<p>is in your 
+ <strong> 
+  address book
+ </strong> 
+ or 
+ <strong> 
+  whitelist
+ </strong>
+ .
+</p>
+
+<p>
+ <strong> 
+  <a href="<!-- tmpl_var PROGRAM_URL -->/subscriber_help/<!-- tmpl_var list_settings.list -->/">
+   How to add <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->"><!-- tmpl_var list_settings.list_owner_email --></a> to your address book/white list
+  </a>
+ </strong> 
+</p>
+
+<p>
+ You may resend this confirmation by clicking the button below:
+</p>
+
+<form action="<!-- tmpl_var PROGRAM_URL -->" method="POST"> 
+<input type="hidden" name="f" value="resend_conf" />
+
+<input type="hidden" name="list" value="<!-- tmpl_var list_settings.list -->" />
+<input type="hidden" name="email" value="<!-- tmpl_var subscriber.email -->" /> 
+<input type="hidden" name="rm" value="s" /> 
+<input type="hidden" name="auth_code" value="<!-- tmpl_var auth_code -->" /> 
+
+<div style="text-align:center">
+ <input type="submit" value="Resend Subscription Confirmation" /> 
+</div> 
+</form>
+
+<!-- tmpl_include error_footer_widget.tmpl --> 
+
+<!-- end error_already_sent_sub_confirmation_screen.tmpl --> 

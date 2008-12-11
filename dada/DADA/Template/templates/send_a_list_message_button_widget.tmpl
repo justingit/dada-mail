@@ -1,0 +1,42 @@
+<!-- begin send_a_list_message_button_widget.tmpl -->
+
+<div class="buttonfloat">
+ <input type="submit" class="cautionary" onclick="return sendMailingListMessage(this.form, 'test');" name="process" value="Submit Test Message" />
+ <input type="submit" class="processing" onclick="return sendMailingListMessage(this.form);"         name="process" value="Submit Mailing List Message" />
+</div>
+<br />
+<div class="floatclear"></div>
+
+<div class="buttonfloat">
+
+ 
+
+ <input type="checkbox" name="im_sure" id="im_sure" value="1" />
+ <label for="im_sure">
+  I'm sure.
+ </label>
+ <br />
+ <input type="checkbox" name="new_win" id="new_win" value="1" checked="checked" />
+ <label for="new_win">
+  Open in a new window.
+ </label>
+ 
+
+
+</div>
+<div class="floatclear"></div>
+
+<div class="buttonfloat">
+
+<br />
+<br />
+
+
+ <label for="test_recipient">Send Test Messages To:</label>
+ <input type="text" id="test_recipient" name="test_recipient" value="<!-- tmpl_var list_settings.list_owner_email -->" />
+
+</div>
+<div class="floatclear"></div>
+
+
+<!-- end send_a_list_message_button_widget.tmpl -->

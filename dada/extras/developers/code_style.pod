@@ -1,0 +1,323 @@
+=head1 NAME Programming Code Styling for Dada Mail! 
+
+=head1 DESCRIPTION 
+
+This document is to help in understanding how Dada Mail is written. 
+
+Some of the main goals for these guidelines are to: 
+
+=over
+
+=item * Make it easier for multiple people to work on the same project at once
+
+=item * Make it easier to test and debug the program or parts of the program
+
+=item * Set a bar on the level of code Kwelity
+
+=back
+
+
+=pod
+
+=head1 Perl
+
+=over
+
+=item * All code must run under the -T (taint) flag. No exceptions. 
+
+=item * All code, unless specifically noted, should be able to run given the system requirements of Dada Mail.
+
+If any of the code does not, the specific function must be optional. For 
+example, a simple way to see if sending a webpage is supported is to eval() 
+the LWP::Simple module. If it returns no errors, we can use the subroutine 
+that depends on it. For example: 
+
+ my $can_use_lwp_simple; 
+ eval { require LWP::Simple; };
+ $can_use_lwp_simple = 1	
+ 	if !$@;
+
+If there is simply no workaround, the best thing to do would be to make a 
+specific plugin/extension that has the wanted functionality. 
+
+This also encapsulates OS-specific features. For the moment, Dada Mail is 
+Unix-centric and does not work reliably on Windows platforms.
+
+=item * NO inline HTML
+
+There I<is> inline HTML in Dada Mail - we know. It's old code that's 
+currently being pulled out of the program. No new inline HTML code will 
+be accepted into Dada Mail. None. Nada. Zip. 
+
+Please see code that refers to the DADA::Template::Widgets "screen" 
+subroutine for ways to hook in HTML::Template with Dada Mail. See the 
+HTML::Template documentation at: 
+
+http://search.cpan.org/~samtregar/HTML-Template/Template.pm
+
+For information on how to work with HTML::Template documents 
+(hint: it's pretty easy) 
+
+=item * Code Style
+
+While there is no main Perl code style for Dada Mail, code for readability 
+over anything else; code for expandability of features rather than 
+succinctness.
+
+Any advice given in I<Perl Best Practices> by Damian Conway is good advice by us:
+
+http://www.oreilly.com/catalog/perlbp/index.html
+
+=back
+
+=head1 XHTML
+
+Must be valid XHTML 1.0 Transitional
+
+=over
+
+=item * A good summary of XHTML (and how to get there) is available at:
+
+ http://www.w3schools.com/xhtml/xhtml_html.asp
+
+=item * XHTML 1.0 Strict is great if you can manage it
+
+...but not always realistic in practice. For the differences between 
+Strict and Transitional, see:
+
+ http://liorean.web-graphics.com/xhtml/comparison.loose-strict.html
+
+=back
+
+=head1 HTML::Template Templates 
+
+HTML::Template is the templating language used for most all of Dada 
+Mail's screens. Currently there is I<some> inline HTML and we'd like 
+to get rid of all of this ASAP. 
+
+Currently, there are three categories of templates. The first category 
+is for the different top-level (X)HTML document/page types. And the 
+latter two categories, which are the bits and pieces that then get 
+included into those top-level templates, are Dada Mail-centric.
+
+=over
+
+=item 1. top-level templates
+
+Templates that end in "template.tmpl" are the "document containers" for 
+the various types of pages/screens in Dada Mail. Or to put it another 
+way: these are the ones we'd add an ".html" extension to if it weren't 
+for their HTML::Template includes.
+
+These document containers include the bare-minimum (X)HTML structure for 
+the document (e.g.: the doctype, head, and body), plus the general 
+structure of the type of page in question (for instance, separate #Header 
+and #Content sections for default_list_template.tmpl). 
+
+A few extra <div> and <span> "wrappers" can also be found in some of 
+these templates, for CSS customization and cross-browser bugfixing 
+purposes. To keep things as clean and user-friendly as possible, we'd 
+like to keep these "extra" structural wrappers meaningful (like the #Logo 
+and #Title wrappers inside the #Header), and to a minimum (no redundant 
+divs-within-divs, unless there's a I<really> good reason). [At the 
+moment, this is still a work in progress.] 
+
+=item 2. screens
+
+Templates that end in "screen.tmpl" are basically the chunks of code 
+that get inserted into the top-level document templates, and that contain 
+all the interesting, screen-specific content you'll see in your web browser.
+
+NO screens should have form field without a <form></form> tag pair 
+surrounding the form. DO NOT assume that there will be these tags available. 
+
+=item 3. widgets
+
+Templates that end in "widget.tmpl" are parts of a whole screen, and are 
+usually inserted into a screen or another widget using the 
+<!-- tmpl_include ... --> tag. 
+
+The whole idea of a widget is to allow you to use the same snippet of code 
+in more than one template.
+
+If the widget has part of a form in it - i.e.: an input tag of some type - 
+please document this fact somewhere near the top of the script, as it aids 
+debugging. 
+
+NO widgets are allowed to have a unpaired form tag. 
+
+=back
+
+=cut
+
+# thoughts on the above: 
+# 
+# * Even though it's iframed into a screen (arguably, much like a widget), "iframed_archive_screen.tmpl" 
+#   is probably best described as a "top-level" template based on the descriptions above. As I've 
+#   mentioned elsewhere, I'd like to see it renamed to "archived_message_iframe_template.tmpl", once we 
+#   make the move to darcs and file renaming becomes easier. 
+# 
+#   The remainder of this suggested name change will make it alphabetize better with 
+#   "archived_message_print_template.tmpl", once we/I get around to building it. :) 
+# 
+# * I'm thinkin' that "rss_91.tmpl" should also be called a "_template", and "subscription_check_xml.tmpl" 
+#   and "unsubscription_check_xml.tmpl" be called "_screen"s, for much the same reasons. 
+# 
+# * Basically, these two comments are just a TODO: reminder of the work I started at: 
+#   http://a-ok.net/dadadev/2.10.X-suggested_template_renaming.html 
+#   , so I don't forget about it. :) 
+# 
+# -sc 
+
+=pod
+
+=head2 begin/end comments in HTML::Template templates
+
+When making a new template, always put a: 
+
+ <!-- begin templatename.tmpl --> 
+
+tag at the beginning of the file and a: 
+
+ <!-- end templatename.tmpl --> 
+
+tag at the end of the file. This makes it easy for developers and end-users 
+alike to debug or customize things by reading the output source code (using 
+their browser's "view source" feature) and tracking any line back to the 
+template that created it.
+
+=head1 CSS
+
+Must be valid, unless it's an absolutely unavoidable hack. 
+
+Absolutely unavoidable hacks must be well-commented.
+
+=head1 JavaScript
+
+We really I<ought to> avoid the six "bad practices" at:
+
+ http://www.quirksmode.org/blog/archives/2005/06/three_javascrip_1.html
+
+but we haven't quite gotten to #6 yet (I'm thinking here of the admin 
+template's: <body onLoad="init();"> ). And similarly, we should probably 
+also be shooting for "unobstrusive JavaScript" as per:
+
+ http://www.onlinetools.org/articles/unobtrusivejavascript/
+
+but on that front, we're not even close.
+
+Assistance and experience here would be greatly appreciated. :-)
+
+=head1 Commenting Code
+
+=head2 begin/end comments in HTML::Template templates
+
+These are the, 
+
+ <!-- begin templatename.tmpl --> 
+
+and: 
+
+ <!-- end templatename.tmpl --> 
+
+Already discussed. 
+
+=head2 Other
+
+Several other proposed labels have been put into place for development 
+purposes. All are B<optional>.
+
+=over
+
+=item * DEV:/DEV
+
+As of this writing, "DEV:" - usually with the colon, and often ending 
+with the writer's initials - is being used to label temporary 
+inter-developer communication. For example:
+
+ <!-- DEV: added a flaming GIF logo here. what do you think? -js -->
+
+The use of this in combination with TODO has some inter-developer 
+requesting possiblities as well:
+
+ <!-- DEV: TODO: I need a custom variable here instead of this placeholder, 
+      but don't have the Perl chops to create it. 
+      (P.S. - What *is* a chop, anyway?) -sc 
+ -->
+ <!-- DEV: The chop() function in Perl chops off the last character 
+      of a string and returns the character chopped.  Yuck yuck yuck yuck. 
+      
+      More seriously, it's better to use the chomp() subroutine. noob. 
+      -js
+ --> 
+ 
+Generally speaking, all DEV:s should be grokked, resolved and deleted 
+before a stable release. 
+
+B<TIP:> A quick and dirty way to find out all the DEV: comments would be 
+to use the grep utility, like so: 
+
+ grep -r DEV: dada
+
+where, "dada" is the name of your Dada Mail directory. 
+
+B<BBEdit> also has the, I<Multi-File-Search> option. 
+
+=item * HACK 
+
+Used to denote that a particular coding style isn't something that 
+should be followed, but works on the current situation. 
+
+A small description should follow the label, allowing people insight on 
+why a hack was put in place. For example: 
+
+ # HACK - too drunk. 
+
+or,
+
+ # HACK This is old code, put in here where listshortnames were the same as list names and both 
+ # could have spaces in the names. This should be looked at, removed and tested soon.
+ $args{-List} =~ s/ /_/i if $args{-List}; 
+
+=item * HOWTO 
+
+Used to provide a helping hand for folks getting their feet wet in 
+customizing Dada Mail. For example (in mail.cgi):
+
+ # HOWTO: 
+ # To make the default message subject on the "Send a List Message" screen
+ # read: "yourlistname" (without the quotes), change the above variable to:
+ # 
+ # my $message_subject = $li->{list_name};
+
+Basically, HOWTO provides an instructional bridge for people who want to 
+go beyond the customization options available in Config.pm, default_css.css,
+and the default templates, but who aren't yet Perl (or Dada Mail) experts.
+Whether or not you use the HOWTO flag, doing this here and there is a really 
+nice afterthought if you have the time and inclination.
+
+It may be up to the developers to apply the HOWTO labels after a release of 
+a stable distribution, based on answers to questions put forth by users that 
+are pushing the features that Dada Mail does make easily available. These 
+labels could then be compiled in a interesting list of cool things to do 
+with Dada Mail, or reviewed to see if any of the features talked about 
+could - or should - be more easily accessible.
+
+=item * TODO 
+
+Marks an area that needs work. 
+
+=back
+
+Any other ideas are appreciated. I'd rather have TOO MUCH commenting going 
+on than too little. 
+
+=head1 CVS
+
+When you're comitting via CVS and working on a bug/feature request, 
+please put the id of the bug/feature request in the comment of the commit. 
+
+A more verbose commit comment is appreciated, as these commits are combed to 
+make the changelog.
+
+

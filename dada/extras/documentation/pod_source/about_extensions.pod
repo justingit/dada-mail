@@ -1,0 +1,26 @@
+=pod
+
+=head1 NAME 
+
+About Extension Scripts
+
+=head1 DESCRIPTION
+
+B<Extension Scripts> are scripts created to extend the capabilities of 
+Dada Mail. Each extension script has to be installed and each script 
+may need installed differently, but usually you need to upload the 
+script to your hosting account (and usually in a directory in your 
+cgi-bin, like /home/account/cgi-bin/dada/extensions) and change the 
+permissions of the script to 755. Any other variables that need to
+be set will most likely be at the top of the script itself, coupled
+with directions. 
+
+Scripts that end in '.cgi' have been written to be accessed from your
+web browser, just like a normal cgi script. 
+
+Scripts that end in '.pl' have been written to be accessed from the
+command line or by a cron job or having 
+a message piped to it. Many of the scripts that end in '.pl' may
+not work correctly on non-UNIXy servers, like Microsoft IIS. 
+
+=cut

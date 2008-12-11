@@ -1,0 +1,66 @@
+<!-- begin edit_subscribed_screen.tmpl -->
+
+<!-- tmpl_if done -->
+	<!-- tmpl_var GOOD_JOB_MESSAGE -->
+<!--/tmpl_if-->
+
+<p>
+ <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list&amp;type=<!-- tmpl_var type -->">
+ <!-- tmpl_var type_title -->
+ </a> &#187; <!-- tmpl_var email escape="HTML" -->
+</p>
+
+<fieldset> 
+<legend><!-- tmpl_var email escape="HTML" --></legend>
+
+
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+ <input type="hidden" name="email"   value="<!-- tmpl_var email escape="HTML" -->" />
+ <input type="hidden" name="f"       value="edit_subscriber" />
+ <input type="hidden" name="process" value="1" />
+ <input type="hidden" name="type"    value="<!-- tmpl_var type -->" />
+
+
+<!-- tmpl_loop fields --> 
+    <p>
+     <label for="<!-- tmpl_var name escape=HTML -->" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+      <!-- tmpl_var name escape=HTML -->: 
+     </label>
+    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
+    </p>
+<!--/tmpl_loop--> 
+
+ <div class="buttonfloat">
+  <input type="submit" value="Edit Information" class="cautionary" />
+ </div>
+</form>
+<div class="floatclear"></div>
+
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+ <input type="hidden" name="process" value="delete" />
+ <input type="hidden" name="address" value="<!-- tmpl_var email escape="HTML" -->" />
+ <input type="hidden" name="f"       value="checker" />
+ <input type="hidden" name="type"    value="<!-- tmpl_var type -->" />
+ <div class="buttonfloat">
+  <input type="submit" value="Delete Address" class="alertive" />
+ </div>
+</form>
+
+
+</fieldset> 
+
+<!-- tmpl_if log_viewer_plugin_url --> 
+
+    <p style="font-weight:bold;">
+     <a href="#"onClick="external(['process__search','query__<!-- tmpl_var email escape=HTML -->', 'only_content__1','NO_CACHE'], ['log_search_results']); ">
+     <!-- tmpl_var email escape=HTML -->'s Raw Logs Below:
+     </a>
+     </p>
+     
+     
+<div id="log_search_results" style="border:1px solid black;padding:5px"></div> 
+
+<!-- /tmpl_if --> 
+<!-- end edit_subscribed_screen.tmpl -->

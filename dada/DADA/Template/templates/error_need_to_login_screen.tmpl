@@ -1,0 +1,19 @@
+<!-- begin error_need_to_login_screen.tmpl --> 
+
+<h1>
+ You Need to Log In
+</h1> 
+
+<p>
+ I didn't catch the name of your list or its password.
+ I need those to let you into your administration control panel.
+</p>
+
+<!-- tmpl_unless DISABLE_OUTSIDE_LOGINS --> 
+
+	<!-- tmpl_var list_login_form --> 
+	
+<!-- /tmpl_unless --> 
+
+    
+<!-- end error_need_to_login_screen.tmpl --> 

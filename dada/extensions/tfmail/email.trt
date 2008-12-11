@@ -1,0 +1,10 @@
+%% NMS email template file %%
+Web site information request {= by_submitter =}on {= date =}.
+----------------------------------------------------------------------
+
+{= FOREACH input_field =}
+{= name =}: {= value =}
+
+{= END =}
+----------------------------------------------------------------------
+

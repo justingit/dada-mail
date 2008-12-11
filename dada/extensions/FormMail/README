@@ -1,0 +1,548 @@
+
+COPYRIGHT
+
+FormMail Version 3.14c1
+Copyright 2001-2003 London Perl Mongers, All rights reserved
+
+LICENSE
+
+This script is free software; you are free to redistribute it
+and/or modify it under the same terms as Perl itself.
+
+URL
+
+The most up to date version of this script is available from the nms
+script archive at  <http://nms-cgi.sourceforge.net/>
+
+SUMMARY
+
+formmail is a script which allows you to receive the results of an
+HTML form submission via an email message.
+
+FILES
+
+In this distribution, you will find the following files:
+
+FormMail.pl                     - The main Perl script
+README                          - This file. Instructions on how to install and use formmail
+EXAMPLES                        - Some worked examples of ways to set up formmail
+ChangeLog                       - The change history of these files
+MANIFEST                        - List of files
+
+CONFIGURATION
+
+There are a number of variables that you can change in FormMail.pl which
+alter the way that the program works.
+
+$DEBUGGING          - This should be set to 1 whilst you are installing
+                      and testing the script. Once the script is live you
+                      should change it to 0. When set to 1, errors will
+                      be output to the browser. This is a security risk and
+                      should not be used when the script is live.
+
+$emulate_matts_code - When this variable is set to a true value (e.g. 1)
+                      formmail will work in exactly the same way as its
+                      counterpart at Matt's Script Archive. If it is set
+                      to a false value (e.g. 0) then more advanced features
+                      are switched on. We do not recommend changing this
+                      variable to 1, as the resulting drop in security
+                      may leave your formmail open to use as a SPAM relay.
+
+$secure             - When this variable is set to a true value (e.g. 1)
+                      many additional security features are turned on.  We
+                      do not recommend changing this variable to 0, as the
+                      resulting drop in security may leave your formmail
+                      open to use as a SPAM relay.
+
+$allow_empty_ref    - Some web proxies and office firewalls may strip
+                      certain headers from the HTTP request that is sent
+                      by a browser.  Among these is the HTTP_REFERER that
+                      the program uses as an additional check of the
+                      requests validity - this will cause the program to
+                      fail with a 'bad referer' message even though the
+                      configuration seems fine.  In these cases setting
+                      this variable to 1 will stop the program from
+                      complaining about requests where no referer header
+                      was sent while leaving the rest of the security
+                      features intact.
+
+$max_recipients     - The maximum number of e-mail addresses that any
+                      single form should be allowed to send copies of the
+                      e-mail to.  If none of your forms send e-mail to more
+                      than one recipient, then we recommend that you
+                      improve the security of FormMail by reducing this
+                      value to 1.  Setting this variable to 0 removes all
+                      limits on the number of recipients of each e-mail.
+
+$mailprog           - The system command that the script should invoke to
+                      send an outgoing email. This should be the full path
+                      to a program that will read a message from STDIN and
+                      determine the list of message recipients from the
+                      message headers. Any switches that the program
+                      requires should be provided here.
+
+                      A $mailprog setting that works for many UNIX-like
+                      hosts is:
+
+                        $mailprog = '/usr/lib/sendmail -oi -t';
+
+                      Some other UNIX-like hosts need:
+
+                        $mailprog = '/usr/sbin/sendmail -oi -t';
+
+                      If your web server lacks a sendmail binary, you can
+                      use an SMTP relay instead, by setting $mailprog like
+                      this:
+
+                        $mailprog = 'SMTP:mailhost.your.domain';
+
+                      You will need to replace mailhost.your.domain with
+                      the name or IP address of an SMTP server configured
+                      to relay mail for the web server.
+
+                      Your system administrator or hosting provider should
+                      be able to tell you either the path to sendmail on the
+                      web server or the name of a host that will act as an
+                      SMTP relay for the web server.
+
+$postmaster         - The envelope sender address to use for all emails
+                      sent by the script.  This address will recieve bounce
+                      messages if any of the emails cannot be delivered.  If
+                      in doubt, put your own email address here.
+
+@referers           - A list of referring hosts. This should be a list of
+                      the names or IP addresses of all the systems that
+                      will host HTML forms that refer to this formmail
+                      script. Only these hosts will be allowed to use the
+                      formmail script. This can be used to prevent others
+                      from linking to FormMail.pl from their own HTML forms.
+
+                      If you wish to turn off referer checking so that forms
+                      that use this FormMail.pl can reside on any web server
+                      then make this array empty, like this:
+
+                        @referers = ();
+
+@allow_mail_to      - A list of the email addresses that formmail can send
+                      email to. The elements of this list can be either
+                      simple email addresses (like 'you@your.domain') or
+                      domain names (like 'your.domain'). If it's a domain
+                      name then *any* address at the domain will be allowed.
+
+                      Example: to allow mail to be sent to 'you@your.domain'
+                      or any address at the host 'mail.your.domain', you
+                      would set:
+
+                      @allow_mail_to = qw(you@your.domain mail.your.domain);
+
+@recipients         - A list of Perl regular expression patterns that
+                      determine who the script will allow mail to be sent
+                      to in addition to those set in @allow_mail_to. This is
+                      present only for compatibility with the original
+                      formmail script.  We strongly advise against having
+                      anything in @recipients as it's easy to make a mistake
+                      with the regular expression syntax and turn your
+                      formmail into an open SPAM relay.
+
+                      There is an implicit $ at the end of the regular
+                      expression, but you need to include the ^ if you want
+                      it anchored at the start.  Note also that since '.' is
+                      a regular expression metacharacter, you'll need to
+                      escape it before using it in domain names.
+
+                      If that last paragraph makes no sense to you then
+                      please don't put anything in @recipients, stick to
+                      using the less error prone @allow_mail_to.
+
+%recipient_alias    - A hash for predefining a list of recipients in the
+                      script, and then choosing between them using the
+                      recipient form field, while keeping all the email
+                      addresses out of the HTML so that they don't get
+                      collected by address harvesters and sent junk email.
+
+                      For example, suppose you have three forms on your
+                      site, and you want each to submit to a different email
+                      address and you want to keep the addresses hidden.
+                      You might set up %recipient_alias like this:
+
+                      %recipient_alias = (
+                        '1' => 'one@your.domain',
+                        '2' => 'two@your.domain',
+                        '3' => 'three@your.domain',
+                      );
+
+                      In the HTML form that should submit to the recipient
+                      'two@your.domain', you would then set the recipient
+                      with:
+
+                      <input type="hidden" name="recipient" value="2" />
+
+                      The recipients in %recipient_alias are automatically added
+                      to the allowed recipients list, so there's no need to list
+                      them all in @allow_mail_to as well.
+
+@valid_ENV          - A list of all the environment variables that you want
+                      to be able to include in the email. See 'env_report' below.
+
+$locale             - This determines the language that is used in the date - by
+                      default this is blank and the language will probably be
+                      english. The following a list of some possible values,
+                      however it should be stressed that not all of these will
+                      be supported on all systems and also this is not a complete
+                      list:
+
+                            Catalan           ca_ES
+                            Croatian          hr_HR
+                            Czech             cs_CZ
+                            Danish            da_DK
+                            Dutc              nl_NL
+                            Estonian          et_EE
+                            Finnish           fi_FI
+                            French            fr_FR
+                            Galician          gl_ES
+                            German            de_DE
+                            Greek             el_GR
+                            Hebrew            he_IL
+                            Hungarian         hu_HU
+                            Icelandic         is_IS
+                            Italian           it_IT
+                            Japanese          ja_JP
+                            Korean            ko_KR
+                            Lithuanian        lt_LT
+                            Norwegian         no_NO
+                            Polish            pl_PL
+                            Portuguese        pt_PT
+                            Romanian          ro_RO
+                            Russian           ru_RU
+                            Slovak            sk_SK
+                            Slovenian         sl_SI
+                            Spanish           es_ES
+                            Swedish           sv_SE
+                            Thai              th_TH
+                            Turkish           tr_TR
+
+$charset            - The character set to use for output documents.
+
+$date_fmt           - The format that the date will be displayed in. This
+                      is a string that contains a number of different 'tags'.
+                      Each tag consists of a % character followed by a letter.
+                      Each tag represents one way of displaying a particular
+                      part of the date or time. Here are some common tags:
+
+                      %Y - four digit year (2002)
+                      %y - two digit year (02)
+                      %m - month of the year (01 to 12)
+                      %b - short month name (Jan to Dec)
+                      %B - long month name (January to December)
+                      %d - day of the month (01 to 31)
+                      %a - short day name (Sun to Sat)
+                      %A - long day name (Sunday to Saturday)
+                      %H - hour in 24 hour clock (00 to 23)
+                      %I - hour in 12 hour clock (01 to 12)
+                      %p - AM or PM
+                      %M - minutes (00 to 59)
+                      %S - seconds (00 to 59)
+                      %Z - the name of the local timezone
+
+$style              - This is the URL of a CSS stylesheet which will be
+                      used for script generated messages.  This should
+                      probably be the same as the one that you use for all
+                      the other pages.  This should be a local absolute URI
+                      fragment.  Set $style to '0' or the emtpy string if
+                      you don't want to use style sheets.
+
+$no_content         - If this is set to 1 then rather than returning the
+                      HTML confirmation page or doing a redirect the script
+                      will output a header that indicates that no content
+                      will be returned and that the submitted form should
+                      not be replaced.  This should be used carefully as an
+                      unwitting visitor may click the submit button several
+                      times thinking that nothing has happened.
+
+$double_spacing     - If this is set to 1 (as it is by default) then a blank
+                      line is printed after each form value in the e-mail.
+                      Change this value to 0 if you want the e-mail to be
+                      more compact.
+
+$wrap_text          - If this is set to 1 then the content of any long text
+                      fields will be wrapped at around 72 columns in the
+                      e-mail which is sent.  The way that this is done is
+                      controlled by the variable $wrap_style
+
+$wrap_style         - If $wrap_text is set to 1  then
+                      the text will be wrapped in such a way that the left
+                      margin of the text is lined up with the beginning of the
+                      text after the description of the field - that is to
+                      say it is indented by the length of the field name
+                      plus 2.  If it is set to 2 then the subsequent lines
+                      of the text will not be indented at all and will be
+                      flush with the start of the lines.  The choice of style
+                      is really a matter of taste although you might find
+                      that style 1 does not work particularly well if your
+                      e-mail client uses a proportional font where the spaces
+                      of the indent might be smaller than the characters in
+                      the field name.
+
+$address_style      - If this is set to 0 ( or if $emulate_matts_code is set
+                      to 1 ) then the address constructed for the person
+                      filling in the form will be of the format 
+                      "$email ($realname)".  If it is set to 1 then the format
+                      will be "$realname <$email>".
+
+$send_confirmation_mail - If this flag is set to 1 then an additional email
+                          will be sent to the person who submitted the
+                          form.
+
+                          CAUTION: with this feature turned on it's
+                          possible for someone to put someone else's email
+                          address in the form and submit it 5000 times,
+                          causing this script to send a flood of email to a
+                          third party.  This third party is likely to blame
+                          you for the email flood attack.
+
+$confirmation_text      - The header and body of the confirmation email
+                          sent to the person who submits the form, if the
+                          $send_confirmation_mail flag is set. We use a
+                          Perl 'here document' to allow us to configure it
+                          as a single block of text in the script. In the
+                          example below, everything between the lines
+
+                            $confirmation_text = <<'END_OF_CONFIRMATION';
+
+                          and
+
+                          END_OF_CONFIRMATION
+
+                          is treated as part of the email. Everything
+                          before the first blank line is taken as part of
+                          the email header, and everything after the first
+                          blank line is the body of the email.
+
+    $confirmation_text = <<'END_OF_CONFIRMATION';
+  From: you@your.com
+  Subject: form submission
+
+  Thankyou for your form submission.
+
+  END_OF_CONFIRMATION
+
+INSTALLATION
+
+Formmail is installed by copying the file FormMail.pl into your cgi-bin
+directory. If you don't know where your cgi-bin directory is, then please
+ask your system administrator.
+
+You may need to rename FormMail.pl to FormMail.cgi. Again, your system
+administrator will know if this is the case.
+
+You will probably need to turn on execute permissions to the file. You can
+do this by running the command "chmod +x FormMail.pl" from your command
+line. If you don't have command line access to your web server then there
+will probably be an equivalent function in your file transfer program.
+
+FORM CONFIGURATION
+
+To make use of it, you need to write an HTML form that refers to the
+FormMail script. Here's an example which will send mail to the address
+'feedback@your.domain' when someone submits the form:
+
+<form method="post" action="http://your.domain/cgi-bin/FormMail.pl">
+  <input type="hidden" name="recipient" value="feedback@your.domain" />
+  <input type="text" name="feedback" /><br />
+  Please enter your comments<br />
+  <input type="submit" />
+</form>
+
+See how the hidden 'recipient' input in the example above told formmail who
+to send the mail to ? This is how almost all of formmail's configuration
+works. Here's the full list of things you can set with hidden form inputs:
+
+recipient               - The email address to which the form submission
+                          should be sent. If you would like it copied to
+                          more than one recipient then you can separate
+                          multiple email addresses with commas, for
+                          example:
+
+                          <input type="hidden" name="recipient"
+                                value="you@your.domain,me@your.domain" />
+
+                          If you leave the 'recipient' field out of the
+                          form, formmail will send to the first address
+                          listed in the @allow_mail_to configuration
+                          variable (see above).  This allows you to avoid
+                          putting your email address in the form, which
+                          might be desirable if you're concerned about
+                          address harvesters collecting it and sending
+                          you SPAM. This feature is disabled if the
+                          $emulate_matts_code configuration variable is
+                          set to 1.
+
+subject                 - The subject line for the email. For example:
+
+                          <input type="hidden" name="subject"
+                                value="From the feedback form" />
+
+redirect                - If this value is present it should be a URL, and
+                          the user will be redirected there after a
+                          successful form submission.  For example:
+
+                          <input type="hidden" name="redirect"
+                           value="http://www.your.domain/foo.html" />
+
+                          If you don't specify a redirect URL then instead
+                          of redirecting formmail will generate a success
+                          page telling the user that their submission was
+                          successful.
+
+bgcolor                 - The background color for the success page.
+
+background              - The URL of the background image for the success
+                          page.
+
+text_color              - The text color for the success page.
+
+link_color              - The link color for the success page.
+
+vlink_color             - The vlink color for the success page.
+
+alink_color             - The alink color for the success page.
+
+title                   - The title for the success page.
+
+return_link_url         - The target URL for a link at the end of the
+                          success page. This is normally used to provide
+                          a link from the success page back to your main
+                          page or back to the page with the form on. For
+                          example:
+
+                          <input type="hidden" name="return_link_url"
+                           value="/home.html" />
+
+return_link_title       - The label for the return link.  For example:
+
+                          <input type="hidden" name="return_link_title"
+                           value="Back to my home page" />
+
+sort                    - This sets the order in which the submitted form
+                          inputs will appear in the email and on the
+                          success page.  It can be the string 'alphabetic'
+                          for alphabetic order, or the string "order:"
+                          followed by a comma separated list of the input
+                          names, for example:
+
+                          <input type="hidden" name="sort"
+                           value="order:name,email,age,comments" />
+
+                          If "order:" is used you must supply the names of
+                          all of the fields that you want to be in the body of
+                          the mail message.
+
+print_config            - This is mainly used for debugging, and if set it
+                          causes formmail to include a dump of the
+                          specified configuration settings in the email.
+                          For example:
+
+                          <input type="hidden" name="print_config"
+                           value="title,sort" />
+
+                          ... will include whatever values you set for
+                          'title' and 'sort' (if any) in the email.
+
+required                - This is a list of fields that the user must fill
+                          in before they submit the form. If they leave
+                          any of these fields blank then they will be sent
+                          back to the form to try again.  For example:
+
+                          <input type="hidden" name="required"
+                           value="name,comments" />
+
+missing_fields_redirect - If this is set, it must be a URL, and the user
+                          will be redirected there if any of the fields
+                          listed in 'required' are left blank. Use this if
+                          you want finer control over the the error that
+                          the user see's if they miss out a field.
+
+env_report              - This is a list of the CGI environment variables
+                          that should be included in the email.  This is
+                          useful for recording things like the IP address
+                          of the user in the email. Any environment
+                          variables that you want to use in 'env_report' in
+                          any of your forms will need to be in the
+                          @valid_ENV configuration variable described
+                          above.
+
+print_blank_fields      - If this is set then fields that the user left
+                          blank will be included in the email.  Normally,
+                          blank fields are suppressed to save space.
+
+As well as all these hidden inputs, there are a couple of non-hidden
+inputs which get special treatment:
+
+email    - If one of the things you're asking the user to fill in is their
+           email address and you call that input 'email', formmail will use
+           it as the address part of the sender's email address in the
+           email.
+
+realname - If one of the things you're asking the user to fill in is their
+           full name and you call that input 'realname', formmail will use
+           it as the name part of the sender's email address in the email.
+
+COMMON PROBLEMS
+
+* Confusion over the qw operator
+
+In the configuration section at the top of FormMail, we set
+the default list of allowed referers with this line of code:
+
+   @referers = qw(dave.org.uk 209.207.222.64 localhost);
+
+This use of the qw() operator is one way to write lists of
+strings in Perl.  Another way is like this:
+
+   @referers = ('dave.org.uk','209.207.222.64','localhost');
+
+We prefer the first version because it allows use to leave out
+the quote character, but the second version is perfectly valid
+and works exactly the same as the qw() version.  You should
+use whichever version you feel most comfortable with.  Neither
+is better or worse than the other.
+
+What you must not do is try to mix the two, and end up with
+something like:
+
+   @referers = qw('dave.org.uk','209.207.222.64','localhost');
+
+This will not work, and you will see unexpected behavior.  In
+the case of @referers, the script will always display a
+"bad referer" error page.
+
+* Sendmail switches removed
+
+In the configuration section at the top of FormMail, we set
+the default mail program to sendmail with this code:
+
+   $mailprog          = '/usr/lib/sendmail -oi -t';
+
+This is actually two different pieces of information; the
+location of the sendmail binary (/usr/lib/sendmail) and
+the command line switches that must be passed to it in order
+for it to read the list of message recipients from the
+message header (-oi -t).
+
+If your hosting provider or system administrator tells you that
+sendmail is /usr/sbin/sendmail on your system, then you must
+change the $mailprog line to:
+
+   $mailprog          = '/usr/sbin/sendmail -oi -t';
+
+and not:
+
+   $mailprog          = '/usr/sbin/sendmail';
+
+
+SUPPORT
+
+For support of this script please email:
+
+  <nms-cgi-support@lists.sourceforge.net>
+

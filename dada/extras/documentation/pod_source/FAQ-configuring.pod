@@ -1,0 +1,127 @@
+=pod
+
+=head1 Dada Mail Configurations
+
+=head1 Global Configuration
+
+=head2 Where's Dada Mail's Global Configuration Saved? 
+
+Dada Mail's Global Configuration can be saved currently in two places. 
+
+=head3 Config.pm File
+
+The first place is in the C<Config.pm> file, located in the, I<dada/DADA> directory of your Dada Mail. All the default global configuration variables are saved there and you can edit them to customize your Dada Mail. All the variables are well documented, do see: 
+
+L<http://dadamailproject.com/support/documentation/Config.pm/html>
+
+=head3 The .dada_config File
+
+We do highly suggest that you do not edit the C<Config.pm> directly, unless you need to (for, whatever reason), but use The Advanced Installation Method when you do make a new installation of Dada Mail: 
+
+L<http://dadamailproject.com/installation/installation_advanced.html>
+
+=head2 How do I know if Dada Mail is configured in the Config.pm file, or in the .dada_config file? 
+
+If Dada Mail is configured straight in the C<Config.pm> file, more likely than not, the following variables: C<$PROGRAM_ROOT_PASSWORD>, C<$FILES>, C<$MAILPROG> and C<$PROGRAM_URL> will be changed from their defaults, to be values that fit in with your hosting account. 
+
+If these variables are not customized for your specific installation, more likely than not, you're using the Advanced Installation Method and have your global configuration saved in the, C<.dada_config> file. 
+
+=head2 How Do You Find the Global Configuration File? 
+
+=head3 The, $PROGRAM_CONFIG_FILE_DIR variable
+
+The global configuration file (C<.dada_config>) lives in the directory that may be set in the Config.pm's variable, C<$PROGRAM_CONFIG_FILE_DIR>. If this variable is set to, C<$PROGRAM_CONFIG_FILE_DIR>, it's automatically being looked for, so the, C<$PROGRAM_CONFIG_FILE_DIR> variable won't be much help. 
+
+=head3 The, Setup Information, Screen
+
+Another way to find where the C<.dada_config> file is located is to visit your Dada Mail, with the following query string: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi?f=setup_info>
+
+Enter your I<Dada Mail Root Password> and you should similar text to the below: 
+
+ Your  $PROGRAM_CONFIG_FILE_DIR  variable has been set to,
+
+ /home/account/.dada_files/.configs
+
+ Your outside configuration file is being looked for at:
+
+ /home/account/.dada_files/.configs/.dada_config
+
+In this case, your outside configuration file is located at: 
+
+I</home/account/.dada_files/.configs/.dada_config> 
+
+=head2 I'm editing the .dada_config file, but no changes are being seen
+
+When using our Advanced Installation: 
+
+L<http://dadamailproject.com/installation/installation_advanced.html>
+
+
+and Semi-Auto Advanced Installation: 
+
+L<http://dadamailproject.com/installation/installation_adv_semi_auto.html>
+
+Methods, several oft-used global configuration variables are placed in the C<.dada_config> file, but the are not active. To activate them, you must remove the C<=cut> strings that are placed right before and right after the chunk of variables they're inactivating. For example:
+
+ # start cut for plugin configs
+ =cut
+
+ $PLUGIN_CONFIGS = { 
+     
+     Mystery_Girl => { 
+     
+         # A whole bunch of stuff... 
+     
+	 },
+     
+ };
+ 
+ 
+ =cut
+ # end cut for plugin configs
+
+In this case, you want to remove the following lines: 
+
+ # start cut for plugin configs
+ =cut
+
+and, 
+
+ =cut
+ # end cut for plugin configs
+
+=head4 See Also
+
+There's a ReadMe about the example outside config file (C<.dada_config>) located in the Dada Mail distribution at: 
+
+I<dada/extras/examples/example_dada_config-README.txt>
+
+For more technical documentation on the C<$PROGRAM_CONFIG_FILE_DIR> variable, see the C<Config.pm> file's entry: 
+
+L<http://dadamailproject.com/support/documentation/Config.pm.html#_program_config_file_dir>
+
+
+
+=head1 Setting Up Dada Mail
+
+=head2 Can you have multiple instances of Dada Mail with one physical install?
+
+Currently, no. Each instance of Dada Mail requires a separate installation. We hope to have this available as a feature of Dada Mail in the future. 
+
+=head1 List Settings
+
+=head2 How do I set default values for the List Settings? 
+
+See the, C<%LIST_SETUP_DEFAULTS> and C<%LIST_SETUP_INCLUDE> Config.pm variables: 
+
+L<http://dadamailproject.com/support/documentation/Config.pm.html#_list_setup_defaults>
+
+L<http://dadamailproject.com/support/documentation-dada-3_0-beta_3/Config.pm.html#_list_setup_include>
+
+=head2 Is there a way to change the List short name? 
+
+Presently, there isn't. It's basically a global (well, to Dada Mail) unique identifier of your Mailing List, so changing it would either involving changing every single instance used, including all the logs, or, saying, the heck with the past, let's move forward and just changing the various files that refer to the List short name. Either way is messy. It's not impossible, but it's currently not easily possible with hacking about. 
+
+=cut

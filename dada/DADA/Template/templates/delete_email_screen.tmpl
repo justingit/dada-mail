@@ -1,0 +1,95 @@
+<!-- begin delete_email_screen.tmpl -->
+
+<!-- tmpl_include list_type_switch_widget.tmpl -->
+
+<p>
+ Manage Subscribers (<!-- tmpl_var type_title -->)
+&#187;
+ <strong>Remove</strong>
+&#187;
+ Verify
+&#187;
+ Unsubscribe
+</p>
+
+<!-- tmpl_if GLOBAL_UNSUBSCRIBE -->
+	
+	<!-- tmpl_if can_use_global_unsubscribe --> 
+	
+		<p class="positive">
+		 * Global Unsubscribe has been enabled.
+		</p>
+		
+	<!--/tmpl_if-->
+	
+<!--/tmpl_if-->
+
+
+<fieldset>
+	
+	<legend>Remove a Bunch of Subscribers</legend>
+	
+	
+	<fieldset style="background:#e6e6e6">
+	<legend>Paste Addresses Below:</legend>
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+
+    <p>
+      <label for="delete_list">
+            Enter
+     </label> 
+      subscribers you would like to unsubscribe below 
+ (separated with commas, spaces, or new lines):
+</p>
+
+
+
+ <textarea name="delete_list" id="delete_list" rows="5" cols="40"></textarea>
+
+
+ <input type="hidden" name="process" value="1" />
+ <input type="hidden" name="f"       value="delete_email" />
+ <input type="hidden" name="type"    value="<!-- tmpl_var type -->" />
+
+ <div class="buttonfloat">
+  <input type="reset"  class="cautionary" value="Clear Changes" />
+  <input type="submit" class="processing" value="Submit Email List" />
+ </div>
+</form>
+<div class="floatclear"></div>
+
+</fieldset>
+
+<fieldset style="background:#e6e6e6">
+	<legend>Upload From File</legend>
+
+ <p>
+  Alternatively, 
+  <label for="delete_email_file">
+   upload 
+  </label>
+  a text file that contains the addresses you'd like to unsubscribe:
+ </p> 
+
+<form enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+
+ <input type="file" name="delete_email_file" />
+
+ <input type="hidden" name="process" value="1" />
+ <input type="hidden" name="f"       value="delete_email" />
+ <input type="hidden" name="type"    value="<!-- tmpl_var type -->" />
+
+ <div class="buttonfloat">
+  <input type="reset"  class="cautionary" value="Clear Changes" />
+  <input type="submit" class="processing" value="Submit Email List" />
+ </div>
+</form>
+<div class="floatclear"></div>
+
+</fieldset>
+</fieldset>
+
+<!-- tmpl_include help_link_widget.tmpl --> 
+
+
+<!-- end delete_email_screen.tmpl -->

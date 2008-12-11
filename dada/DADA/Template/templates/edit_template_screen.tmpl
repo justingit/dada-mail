@@ -1,0 +1,169 @@
+<!-- begin edit_template_screen.tmpl -->
+
+<!-- tmpl_if done -->
+	<!--tmpl_var GOOD_JOB_MESSAGE -->
+<!--/tmpl_if-->
+
+<p>
+ <!-- tmpl_var PROGRAM_NAME --> uses &quot;tags&quot; to 
+ represent data that may change regularly. These tags are replaced 
+ with the information they represent when shown to your visitors. 
+ A list of relevant tags is shown at the end of this page.
+</p>
+
+
+<form name="the_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+
+<fieldset> 
+	
+
+
+ <table cellpadding="5">
+  <tr>
+   <td>
+    <p>
+     <input type="checkbox" id="apply_list_template_to_html_msgs" name="apply_list_template_to_html_msgs" value="1" <!-- tmpl_if apply_list_template_to_html_msgs -->checked="checked"<!--/tmpl_if--> />
+    </p>
+   </td>
+   <td>
+    <p>
+     <label for="apply_list_template_to_html_msgs">
+      Apply the list template to HTML email messages
+     </label>
+     <br />
+     Normally, the list template is used to format HTML screens 
+     viewed from your Web browser, but it can also be used to 
+     format your HTML email messages.
+    </p>
+   </td>
+  </tr>
+ </table>
+
+ <p>
+  <input type="radio" name="get_template_data" id="from_default_template" value="from_default_template" <!-- tmpl_if get_template_data_from_default_template -->checked="checked"<!--/tmpl_if--> />
+  <label for="from_default_template">
+   Use the default list template
+  </label>
+ </p>
+
+ <p>
+  <input type="radio" name="get_template_data" id="from_template_file" value="from_template_file" <!-- tmpl_if get_template_data_from_template_file -->checked="checked"<!--/tmpl_if--> />
+  <label for="from_template_file">
+   Use this information for the  template:
+  </label>
+  <br />
+  <textarea name="template_info" cols="70" rows="20" style="font-size:11px"><!-- tmpl_var edit_this_template --></textarea>
+ </p>
+ 
+ <!-- tmpl_if can_use_lwp_simple -->
+	 
+	 <p>
+	  <input type="radio" name="get_template_data" id="from_url" value="from_url" <!-- tmpl_if get_template_data_from_url -->checked="checked"<!--/tmpl_if--> />
+	  <label for="from_url">
+	   Use this URL as the template:
+	  </label>
+	  <!-- tmpl_unless template_url_check --> 
+          </p> 
+          <p class="error">* Problems fetching the below URL. Please check the URL and try again:</p><p>
+	  <!--/tmpl_unless-->
+	  
+	  <br />
+	  
+	  <input type="text" id="url_template" name="url_template" value="<!-- tmpl_var url_template escape="HTML" -->" size="65" />
+	 </p>
+	 
+<!--/tmpl_if -->
+ 
+</fieldset> 
+
+
+ <p>
+	
+	<input type="hidden" name="process" value="true" />
+	<input type="hidden" name="f"       value="edit_template" />
+
+  <input type="hidden" name="default_template" value="<!-- tmpl_var default_template escape="HTML" -->" />
+  <div class="buttonfloat">
+   <input type="submit" class="plain"      value="Preview Template"  onclick="preview_template();" />
+   <input type="submit" class="processing" value="Change Template"   onclick="change_template();" />
+   <input type="reset"  class="cautionary" value="Clear Changes" />
+   <input type="button" class="alertive"   value="Revert to Default" onclick="set_to_default();">
+  </div>
+ </p>
+</form> 
+<div class="floatclear"></div>
+<hr />
+
+<table class="tagchart">
+ <tr align="center">
+  <td>
+   <strong>
+    This Tag
+   </strong>
+  </td>
+  <td>
+   <strong>
+    Is Replaced With
+   </strong>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <code>&lt;!-- tmpl_var content  --&gt;</code>
+  </td>
+  <td>
+  
+The content of the screen. 
+
+This tag is 
+   <strong>needed</strong>. Think of this tag as the content of 
+   your webpage.
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <code>&lt;!-- tmpl_var title  --&gt;</code>
+  </td>
+  <td>
+   A brief header describing what the message on the screen is about.
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <code>&lt;!-- tmpl_var PROGRAM_NAME --&gt;</code>
+  </td>
+  <td>
+   The name of the program (<!-- tmpl_var PROGRAM_NAME -->).
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <code>&lt;!-- tmpl_var VER --&gt; </code> 
+  </td>
+  <td>
+   The version of the program (<!-- tmpl_var VER -->).
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <code>&lt;!-- tmpl_var  PROGRAM_URL --&gt;</code>
+  </td>
+  <td>
+   The URL of <!-- tmpl_var PROGRAM_NAME -->
+   (<a href="<!-- tmpl_var PROGRAM_URL -->" target="_blank"><!-- tmpl_var PROGRAM_URL --></a>).
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <code>&lt;!-- tmpl_var default_css --&gt;</code>  
+</td>
+  <td>
+   The Cascading Style Sheet used in <!-- tmpl_var PROGRAM_NAME -->.
+   (<a href="<!-- tmpl_var PROGRAM_URL -->/css" target="_blank">view</a>)
+  </td>
+ </tr>
+</table>
+
+<!-- tmpl_include help_link_widget.tmpl --> 
+
+<!-- end edit_template_screen.tmpl -->

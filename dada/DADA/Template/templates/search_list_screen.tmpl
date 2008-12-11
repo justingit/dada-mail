@@ -1,0 +1,72 @@
+<!-- begin search_list_screen.tmpl --> 
+
+
+<!-- tmpl_include list_type_switch_widget.tmpl -->
+
+
+<h1>
+ Search Results on, &quot;<!-- tmpl_var list_type_label -->&quot; for: <em><!-- tmpl_var keyword escape="HTML" --></em>
+</h1> 
+
+
+<!-- tmpl_if subscribers --> 
+ <form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+
+
+
+<table width="100%">
+ <tr>
+  <td>
+   <p>
+    Search Results 
+    <strong>
+     <!-- tmpl_var name="screen_start" -->
+    </strong>
+    to 
+    <strong>
+     <!-- tmpl_var name="screen_finish" -->
+    </strong>
+   </p>
+  </td>
+  <td align="right">
+   <p>
+    &nbsp;
+    
+   </p>
+  </td>
+ </tr>
+</table>
+
+
+
+  <!-- tmpl_include view_list_table_widget.tmpl -->  
+  <!-- tmpl_include view_list_prev_next_table.tmpl -->
+  
+ <p align="center">
+  <a href="#" onclick="SetChecked(1);return false;">
+   check all 
+  </a>
+  :: 
+  <a href="#" onclick="SetChecked(0);return false;">
+   uncheck all
+  </a>
+ </p>
+ <input type=hidden name="process" value="delete" />
+ <input type=hidden name="f"       value="checker" />
+ <input type=hidden name="type" value="<!-- tmpl_var type -->" />
+ <div class="buttonfloat">
+  <input type="submit" class="processing" value="Unsubscribe Checked Emails" />
+ </div>
+</form>
+
+<!-- tmpl_else --> 
+
+<p class="error"> 
+ No Results Found.
+</p>
+
+<!-- /tmpl_if --> 
+
+<!-- tmpl_include list_search_form_widget.tmpl --> 
+
+<!-- end search_list_screen.tmpl --> 

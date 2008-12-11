@@ -1,0 +1,18 @@
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+MIME-Version: 1.0
+X-Mailer: MIME::Lite 3.01 (F2.74; T1.18; A1.74; B3.07; Q3.07)
+Date: Sun, 23 Dec 2007 19:34:00 UT
+From: "[from_phrase]" <from@example.com>
+To: "[to_phrase]" <to@example.com>
+Subject: [subject]
+
+=20
+
+This is a whole bunch of text to make this a very long line indeed,Var1: <!=
+-- tmpl_var var1 -->
+This is a whole bunch of text to make this a very long line indeed,Var2: [v=
+ar2]
+This is a whole bunch of text to make this a very long line indeed,Var3: [v=
+ar3]

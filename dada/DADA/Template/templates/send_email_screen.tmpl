@@ -1,0 +1,151 @@
+<!-- begin send_email_screen.tmpl -->
+
+<!-- tmpl_if list_settings.group_list --> 
+    <p class="positive">Discussion List Support is enabled and Discussion List preferences will be honored.
+<!--/tmpl_if--> 
+
+<!-- tmpl_unless list_settings.smtp_server -->	
+	<!-- tmpl_if list_settings.send_via_smtp  -->
+		<p class="error">
+		 Warning! No SMTP Server has been set!
+		</p>
+	<!-- /tmpl_if -->
+<!-- /tmpl_unless -->
+
+<!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
+
+ 
+	
+<form name="send_email" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+ 
+ <input type="hidden" name="f" value="send_email" />
+ <input type="hidden" name="advanced" value="yes" />
+	  
+<!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
+
+
+
+
+<fieldset>
+<legend>Message Body</legend>
+
+
+ 
+     <fieldset style="background:#e6e6e6"> 
+
+     <legend>
+      <a href="#" onclick="toggleDisplay('html_message');return false;">+   /-</a> HTML Version
+     </legend>
+      
+		
+ <div id="html_message" style="display:none"> 
+ 
+    <!-- tmpl_if FCKEDITOR_URL -->
+
+		<!-- tmpl_if list_settings.enable_fckeditor --> 
+    
+		    <script type="text/javascript">   
+		    <!--
+
+		        var oFCKeditor = new FCKeditor('html_message_body') ;
+        
+		        <!-- tmpl_include FCKeditor_default_js_options.tmpl --> 
+		        oFCKeditor.Create() ;
+		        //-->
+		        </script> 
+
+		<!-- tmpl_else --> 
+		
+		      <textarea name="html_message_body" cols="80" rows="30" id="html_message_body"></textarea>
+	
+		<!-- /tmpl_if --> 
+	
+    <!-- tmpl_else--> 
+      <textarea name="html_message_body" cols="80" rows="30" id="html_message_body"></textarea>
+    <!--/tmpl_if--> 
+
+</div>
+
+</fieldset> 
+
+
+
+ <fieldset style="background:#e6e6e6"> 
+  
+		 <legend>
+		  <a href="#" onclick="toggleDisplay('text_message');return false;">+/-</a> PlainText Version
+		 </legend>
+		 
+ 
+ <div id="text_message"> 
+  <textarea name="text_message_body" id="text_message_body" cols="80" rows="30"></textarea>
+  
+</div> 
+</fieldset> 
+
+
+</fieldset> 
+
+<!-- tmpl_include send_email_archive_options_widget.tmpl -->
+
+<!-- tmpl_include partial_sending_options_widget.tmpl --> 
+
+<fieldset> 
+
+<legend>
+       <a href="#" id="partial_sending_options_widget_label" onclick="toggleDisplay('file_attachments');return false;">
+      +/- 
+     </a>File Attachments
+</legend>
+
+
+
+<div id="file_attachments" style="display:none"> 
+
+         <p>
+         <input type="file" name="attachment_1"  size="36" /><br /> 
+         <input type="file" name="attachment_2"  size="36" /><br /> 
+         <input type="file" name="attachment_3"  size="36" /><br />          
+         </p>
+         
+	    <input type="hidden" name="attachment" value="1" />
+
+</div> 
+
+
+
+</fieldset> 
+
+<!-- tmpl_if comment --> 
+
+	  <tr>
+	   <td align="right">
+	    <p>
+	     <strong>
+	      Options:
+	     </strong>
+	    </p>
+	   </td>
+	   <td>
+	    <p>
+	     <input type="checkbox" name="apply_template" id="apply_template" value="1"  tmpl_if apply_list_template_to_html_msgs checked="checked" tmpl_if />
+	     <label for="apply_template">
+	      Apply the list template to the HTML message
+	     </label>
+	    </p>
+	   </td>
+	  </tr>
+
+<!-- /tmpl_if --> 
+
+	  
+<!-- tmpl_include subscriber_field_tags_listing_widget.tmpl --> 
+ 
+<!-- tmpl_include name="send_a_list_message_button_widget.tmpl" -->
+ 
+</form>
+
+
+<!-- tmpl_include help_link_widget.tmpl --> 
+
+<!-- end send_email_screen.tmpl -->
