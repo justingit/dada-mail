@@ -283,11 +283,13 @@ sub priority_popup_menu {
 sub list_popup_menu { 
 
 	
-	my %args = (-show_hidden      => 0,
+	my %args = (
+				-show_hidden      => 0,
 				-name             => 'list',
 				-empty_list_check => 0, 
 				-as_checkboxes    => 0, 
-			    @_); 
+			    @_
+				); 
 	my $labels = {}; 
 	
 	require DADA::MailingList::Settings; 

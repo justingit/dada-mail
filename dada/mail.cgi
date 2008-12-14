@@ -1,9 +1,6 @@
 #!/usr/bin/perl 
 package mail;
 
-
-# Test Change from TextMate, saved via the CL! pushed to Github! Yeah!
-
 use strict;
 use 5.8.1; 
 use Encode qw(encode decode);

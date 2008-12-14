@@ -11,346 +11,387 @@
 	
 <!-- /tmpl_if -->
 
-<h2>
- Please fill in all the fields to create your new list.
-</h2>
-
-<!-- tmpl_unless name="help" -->
+<fieldset> 
 	
-	<p style="text-align:right">
-	 <form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
-	  <input type="hidden" name="help" value="yes" />
-	  <input type="hidden" name="f"    value="new_list" />
-	  <input type="hidden" name="root_password" value="<!-- tmpl_var name="root_password" escape="HTML" -->" />
-	  <input type="submit" class="plain" value="Help!" />
-	 </form>
+
+	<h2>
+	 Please fill in all the fields to create your new list.
+	</h2>
+
+	<!-- tmpl_unless name="help" -->
+	
+		<p style="text-align:right">
+		 <form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
+		  <input type="hidden" name="help" value="yes" />
+		  <input type="hidden" name="f"    value="new_list" />
+		  <input type="hidden" name="root_password" value="<!-- tmpl_var name="root_password" escape="HTML" -->" />
+		  <input type="submit" class="plain" value="Help!" />
+		 </form>
+		</p>
+	
+	<!-- /tmpl_unless -->
+
+	<p>
+	 All information except the list's Short Name may be changed at a later time.
 	</p>
-	
-<!-- /tmpl_unless -->
+	<form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
+	 <input type="hidden" name="f"       value="new_list" />
+	 <input type="hidden" name="process" value="true" />
+	 <input type="hidden" name="root_password" value="<!-- tmpl_var name="root_password" escape="HTML" -->" />
 
-<p>
- All information except the list's Short Name may be changed at a later time.
-</p>
-<form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
- <input type="hidden" name="f"       value="new_list" />
- <input type="hidden" name="process" value="true" />
- <input type="hidden" name="root_password" value="<!-- tmpl_var name="root_password" escape="HTML" -->" />
-
- <h2>
-  List Name
- </h2>
+	 <h2>
+	  List Name
+	 </h2>
  
-<!-- tmpl_if name="flags_list_name" -->
+	<!-- tmpl_if name="flags_list_name" -->
 	 
-	 <p class="error">
-	  <em>
-	   You did not fill in a list name.
-	  </em>
-	 </p>
+		 <p class="error">
+		  <em>
+		   You did not fill in a list name.
+		  </em>
+		 </p>
 	 
-<!-- /tmpl_if -->
+	<!-- /tmpl_if -->
 
-<!-- tmpl_if name="flags_list_name_bad_characters" -->
+	<!-- tmpl_if name="flags_list_name_bad_characters" -->
 	 
-	 <p class="error">
-	  <em>
-	   Your list name contains &lt;'s, &gt;'s or, &quot;'s.
-	  </em>
-	 </p>
+		 <p class="error">
+		  <em>
+		   Your list name contains &lt;'s, &gt;'s or, &quot;'s.
+		  </em>
+		 </p>
 	 
-<!-- /tmpl_if -->
+	<!-- /tmpl_if -->
 
-<!-- tmpl_if name="help" -->
+	<!-- tmpl_if name="help" -->
 	 
-	 <p class="positive">
-	  The name of your list is what both people and 
-	  <!-- tmpl_var name="PROGRAM_NAME" --> will use to tell your lists apart.
-	 </p>
+		 <p class="positive">
+		  The name of your list is what both people and 
+		  <!-- tmpl_var name="PROGRAM_NAME" --> will use to tell your lists apart.
+		 </p>
 	 
-<!-- /tmpl_if -->
+	<!-- /tmpl_if -->
  
- <p>
-  What is the list's name? You may change this name any time you like. The list name cannot 
-  contain, &lt;'s, &gt;'s or, &quot;'s. 
-  <br />
-  <input type="text" name="list_name" value="<!-- tmpl_var name="list_name" escape="HTML" -->" class="full" maxlength="250" />
- </p>
+	 <p>
+	  What is the list's name? You may change this name any time you like. The list name cannot 
+	  contain, &lt;'s, &gt;'s or, &quot;'s. 
+	  <br />
+	  <input type="text" name="list_name" value="<!-- tmpl_var name="list_name" escape="HTML" -->" class="full" maxlength="250" />
+	 </p>
 
- <h2>
-  List short name
- </h2>
+	 <h2>
+	  List short name
+	 </h2>
  
-<!-- tmpl_if name="flags_list_exists" -->
+	<!-- tmpl_if name="flags_list_exists" -->
 	 
-	 <p class="error">
-	  <em>
-	   This list Short Name already exists. Please choose a different Short Name.
-	  </em>
+		 <p class="error">
+		  <em>
+		   This list Short Name already exists. Please choose a different Short Name.
+		  </em>
+		 </p>
+	 
+	<!-- /tmpl_if -->
+
+	<!-- tmpl_if name="flags_list" -->
+	 
+		 <p class="error">
+		  <em>
+		   You need to give your list a Short Name.
+		  </em>
+		 </p>
+	 
+	<!-- /tmpl_if -->
+
+	<!-- tmpl_if name="flags_shortname_too_long" -->
+	 
+		 <p class="error">
+		  <em>
+		   Your list Short Name is longer than 16 characters.
+		  </em>
+		 </p>
+	 
+	<!-- /tmpl_if -->
+
+	<!-- tmpl_if name="flags_slashes_in_name" -->
+	 
+		 <p class="error">
+		  <em>
+		   Your list Short Name can't have slashes (&quot;/&quot; or &quot;\&quot;) in the name itself.
+		  </em>
+		 </p>
+	 
+	<!-- /tmpl_if -->
+
+	<!-- tmpl_if name="flags_weird_characters" -->
+	 
+		 <p class="error">
+		  <em>
+		   Your list Short Name appears to have weird characters in the 
+		   name that may create problems. Please use only lowercase 
+		   alphanumeric characters (e.g.: abc123).
+		  </em>
+		 </p>
+	 
+	<!-- /tmpl_if -->
+
+	<!-- tmpl_if name="flags_quotes" -->
+	 
+		 <p class="error">
+		  <em>
+		   Your list Short Name cannot contain quotes.
+		  </em>
+		 </p>
+	 
+	<!-- /tmpl_if -->
+
+	 <p>
+	  What is the list's &quot;Short Name&quot;?
+	  <br />
+	  The list Short Name will be used internally by <!-- tmpl_var name="PROGRAM_NAME" --> 
+	  and will also be used for subscription/unsubscription links and filenames. 
+	  You should make the Short Name <strong>lowercase</strong> 
+	  and no more than 16 characters. Use only alphanumeric characters.
+	  <br />
+	  <input type="text" name="list" value="<!-- tmpl_var name="list" escape="HTML"-->" size="16" maxlength="16" />
 	 </p>
-	 
-<!-- /tmpl_if -->
+	 <hr />
 
-<!-- tmpl_if name="flags_list" -->
-	 
-	 <p class="error">
-	  <em>
-	   You need to give your list a Short Name.
-	  </em>
-	 </p>
-	 
-<!-- /tmpl_if -->
-
-<!-- tmpl_if name="flags_shortname_too_long" -->
-	 
-	 <p class="error">
-	  <em>
-	   Your list Short Name is longer than 16 characters.
-	  </em>
-	 </p>
-	 
-<!-- /tmpl_if -->
-
-<!-- tmpl_if name="flags_slashes_in_name" -->
-	 
-	 <p class="error">
-	  <em>
-	   Your list Short Name can't have slashes (&quot;/&quot; or &quot;\&quot;) in the name itself.
-	  </em>
-	 </p>
-	 
-<!-- /tmpl_if -->
-
-<!-- tmpl_if name="flags_weird_characters" -->
-	 
-	 <p class="error">
-	  <em>
-	   Your list Short Name appears to have weird characters in the 
-	   name that may create problems. Please use only lowercase 
-	   alphanumeric characters (e.g.: abc123).
-	  </em>
-	 </p>
-	 
-<!-- /tmpl_if -->
-
-<!-- tmpl_if name="flags_quotes" -->
-	 
-	 <p class="error">
-	  <em>
-	   Your list Short Name cannot contain quotes.
-	  </em>
-	 </p>
-	 
-<!-- /tmpl_if -->
-
- <p>
-  What is the list's &quot;Short Name&quot;?
-  <br />
-  The list Short Name will be used internally by <!-- tmpl_var name="PROGRAM_NAME" --> 
-  and will also be used for subscription/unsubscription links and filenames. 
-  You should make the Short Name <strong>lowercase</strong> 
-  and no more than 16 characters. Use only alphanumeric characters.
-  <br />
-  <input type="text" name="list" value="<!-- tmpl_var name="list" escape="HTML"-->" size="16" maxlength="16" />
- </p>
- <hr />
-
- <h2>
-  Password
- </h2>
+	 <h2>
+	  Password
+	 </h2>
  
-<!-- tmpl_if name="flags_password" -->
+	<!-- tmpl_if name="flags_password" -->
 	 
-	 <p class="error">
-	  <em>
-	   You need to give your list a password.
-	  </em>
-	 </p>
+		 <p class="error">
+		  <em>
+		   You need to give your list a password.
+		  </em>
+		 </p>
 	 
-<!-- /tmpl_if -->
+	<!-- /tmpl_if -->
 
-<!-- tmpl_if name="flags_password_is_root_password" -->
+	<!-- tmpl_if name="flags_password_is_root_password" -->
 	 
-	 <p class="error">
-	  <em>
-	   The password you have entered is the same as the <!-- tmpl_var PROGRAM_NAME --> 
-	   Root Password. Please pick a different password.
-	  </em>
-	 </p>
+		 <p class="error">
+		  <em>
+		   The password you have entered is the same as the <!-- tmpl_var PROGRAM_NAME --> 
+		   Root Password. Please pick a different password.
+		  </em>
+		 </p>
 	 
-<!-- /tmpl_if -->
+	<!-- /tmpl_if -->
 
-<!-- tmpl_if name="help" -->
+	<!-- tmpl_if name="help" -->
 	 
-	 <p class="positive">
-	  A list password is used to protect your list and its 
-	  subscribers. You'll need to remember this password when 
-	  you log into your list control panel&nbsp;&#8212; the place where you 
-	  can set list options and send list messages. Please make 
-	  your password hard to guess, using upper and lowercase letters 
-	  mixed with numbers. The list password should be no more than 
-	  16 characters long.
-	 </p>
+		 <p class="positive">
+		  A list password is used to protect your list and its 
+		  subscribers. You'll need to remember this password when 
+		  you log into your list control panel&nbsp;&#8212; the place where you 
+		  can set list options and send list messages. Please make 
+		  your password hard to guess, using upper and lowercase letters 
+		  mixed with numbers. The list password should be no more than 
+		  16 characters long.
+		 </p>
 	 
-<!-- /tmpl_if -->
+	<!-- /tmpl_if -->
  
- <p>
-  Please make a password to protect your list:
-  <br />
-  <input type="password" name="password" value="<!-- tmpl_var name="password" escape="HTML"-->" size="16" maxlength="24" />
- </p>
- 
-<!-- tmpl_if name="flags_retype_password" -->
-	 
-	 <p class="error">
-	  <em>
-	   You need to retype your list password.
-	  </em>
+	 <p>
+	  Please make a password to protect your list:
+	  <br />
+	  <input type="password" name="password" value="<!-- tmpl_var name="password" escape="HTML"-->" size="16" maxlength="24" />
 	 </p>
+ 
+	<!-- tmpl_if name="flags_retype_password" -->
 	 
-<!-- /tmpl_if -->
+		 <p class="error">
+		  <em>
+		   You need to retype your list password.
+		  </em>
+		 </p>
+	 
+	<!-- /tmpl_if -->
 
-<!-- tmpl_if name="flags_password_ne_retype_password" -->
+	<!-- tmpl_if name="flags_password_ne_retype_password" -->
 	 
-	 <p class="error">
-	  <em>
-	   The second password doesn't match the first password.
-	  </em>
-	 </p>
+		 <p class="error">
+		  <em>
+		   The second password doesn't match the first password.
+		  </em>
+		 </p>
 	 
-<!-- /tmpl_if -->
+	<!-- /tmpl_if -->
  
- <p>
-  Re-type the password to confirm:
-  <br />
-  <input type="password" name="retype_password" value="<!-- tmpl_var name="retype_password" escape="HTML"-->" size="16" maxlength="24" />
- </p>
- <hr />
+	 <p>
+	  Re-type the password to confirm:
+	  <br />
+	  <input type="password" name="retype_password" value="<!-- tmpl_var name="retype_password" escape="HTML"-->" size="16" maxlength="24" />
+	 </p>
+	 <hr />
 
- <h2>
-  List Owner
- </h2>
+	 <h2>
+	  List Owner
+	 </h2>
  
-<!-- tmpl_if name="flags_invalid_list_owner_email" -->
+	<!-- tmpl_if name="flags_invalid_list_owner_email" -->
 	 
-	 <p class="error">
-	  <em>
-	   You need to give a valid email address for the List Owner.
-	  </em>
-	 </p>
+		 <p class="error">
+		  <em>
+		   You need to give a valid email address for the List Owner.
+		  </em>
+		 </p>
 	 
-<!-- /tmpl_if -->
+	<!-- /tmpl_if -->
 
-<!-- tmpl_if name="help" -->
+	<!-- tmpl_if name="help" -->
 	 
-	 <p class="positive">
-	  The list owner is the person in charge of the list. 
-	  Their email will be used for every message sent by <!-- tmpl_var name="PROGRAM_NAME" -->
-	  when working with your list.
-	 </p>
+		 <p class="positive">
+		  The list owner is the person in charge of the list. 
+		  Their email will be used for every message sent by <!-- tmpl_var name="PROGRAM_NAME" -->
+		  when working with your list.
+		 </p>
 	 
-<!-- /tmpl_if -->
+	<!-- /tmpl_if -->
  
- <p>
-  What email address corresponds to the list owner?
-  (When emails are sent, they are sent using this address.)
-  <br />
-  <input type="text" name="list_owner_email" value="<!-- tmpl_var name="list_owner_email" escape="HTML"-->" class="full" maxlength="100" />
- </p>
- <hr />
- <h2>
-  Description
-</h2>
- 
-<!-- tmpl_if name="flags_list_info" -->
-	 
-	 <p class="error">
-	  <em>
-	   You need to give your list a description.
-	  </em>
+	 <p>
+	  What email address corresponds to the list owner?
+	  (When emails are sent, they are sent using this address.)
+	  <br />
+	  <input type="text" name="list_owner_email" value="<!-- tmpl_var name="list_owner_email" escape="HTML"-->" class="full" maxlength="100" />
 	 </p>
+	 <hr />
+	 <h2>
+	  Description
+	</h2>
+ 
+	<!-- tmpl_if name="flags_list_info" -->
 	 
-<!-- /tmpl_if -->
+		 <p class="error">
+		  <em>
+		   You need to give your list a description.
+		  </em>
+		 </p>
+	 
+	<!-- /tmpl_if -->
 
-<!-- tmpl_if name="help" -->
+	<!-- tmpl_if name="help" -->
 	 
-	 <p class="positive">
-	  A description of your list will tell would-be subscribers 
-	  what your list is about. This information will be shown on the 
-	  <!-- tmpl_var name="PROGRAM_NAME" --> main screen, as well as in 
-          confirmation emails sent to people wishing to subscribe.
+		 <p class="positive">
+		  A description of your list will tell would-be subscribers 
+		  what your list is about. This information will be shown on the 
+		  <!-- tmpl_var name="PROGRAM_NAME" --> main screen, as well as in 
+	          confirmation emails sent to people wishing to subscribe.
+		 </p>
+	 
+	<!-- /tmpl_if -->
+ 
+	 <p>
+	  Please write a brief description of your list:
+	  <br />
+	  <!-- wrap="virtual" --> 
+	  <textarea name="info" cols="50" rows="5"><!-- tmpl_var name="info" escape="HTML"--></textarea>
 	 </p>
-	 
-<!-- /tmpl_if -->
- 
- <p>
-  Please write a brief description of your list:
-  <br />
-  <!-- wrap="virtual" --> 
-  <textarea name="info" cols="50" rows="5"><!-- tmpl_var name="info" escape="HTML"--></textarea>
- </p>
- <hr />
+	 <hr />
 
- <h2>
-  Privacy Policy
- </h2>
+	 <h2>
+	  Privacy Policy
+	 </h2>
  
-<!-- tmpl_if name="flags_privacy_policy" -->
+	<!-- tmpl_if name="flags_privacy_policy" -->
 	 
-	 <p class="error">
-	  <em>
-	   You need to give your list a privacy policy.
-	  </em>
+		 <p class="error">
+		  <em>
+		   You need to give your list a privacy policy.
+		  </em>
+		 </p>
+	 
+	<!-- /tmpl_if -->
+
+	<!-- tmpl_if name="help" -->
+	 
+		 <p class="positive">
+		  A privacy policy allows a subscriber to know exactly how the 
+		  information they submit (their email address) will be used.
+		 </p>
+	 
+	<!-- /tmpl_if -->
+ 
+	 <p>
+	  Please write a privacy policy for your list:
+	  <br />
+	  <!-- wrap="virtual" --> 
+	  <textarea name="privacy_policy" cols="50" rows="5"><!-- tmpl_var name="privacy_policy" escape="HTML"--></textarea>
 	 </p>
-	 
-<!-- /tmpl_if -->
+	 <hr />
 
-<!-- tmpl_if name="help" -->
-	 
-	 <p class="positive">
-	  A privacy policy allows a subscriber to know exactly how the 
-	  information they submit (their email address) will be used.
-	 </p>
-	 
-<!-- /tmpl_if -->
+	 <h2>
+	  Physical Address
+	 </h2>
  
- <p>
-  Please write a privacy policy for your list:
-  <br />
-  <!-- wrap="virtual" --> 
-  <textarea name="privacy_policy" cols="50" rows="5"><!-- tmpl_var name="privacy_policy" escape="HTML"--></textarea>
- </p>
- <hr />
-
- <h2>
-  Physical Address
- </h2>
- 
-<!-- tmpl_if name="flags_physical_address" -->
+	<!-- tmpl_if name="flags_physical_address" -->
 	  
-	 <p class="error">
-	  <em>
-	   You must associate a physical address to your list.
-	  </em>
-	 </p>
+		 <p class="error">
+		  <em>
+		   You must associate a physical address to your list.
+		  </em>
+		 </p>
 	 
-<!-- /tmpl_if -->
+	<!-- /tmpl_if -->
 
-<!-- tmpl_if name="help" -->
+	<!-- tmpl_if name="help" -->
 	 
-	 <p class="positive">
-	  A physical address ties your mailing list to a known business 
-	  or organization, even if that organization is yourself. It 
-	  also helps you conform to recent laws relating to mailing lists.
-	 </p>
+		 <p class="positive">
+		  A physical address ties your mailing list to a known business 
+		  or organization, even if that organization is yourself. It 
+		  also helps you conform to recent laws relating to mailing lists.
+		 </p>
 	 
-<!-- /tmpl_if -->
+	<!-- /tmpl_if -->
  
- <p>
-  Please enter the physical address associated with this mailing list:
-  <br />
-  <!-- wrap="virtual" --> 
-  <textarea name="physical_address" cols="50" rows="5"><!-- tmpl_var name="physical_address" escape="HTML"--></textarea>
- </p>
+	 <p>
+	  Please enter the physical address associated with this mailing list:
+	  <br />
+	  <!-- wrap="virtual" --> 
+	  <textarea name="physical_address" cols="50" rows="5"><!-- tmpl_var name="physical_address" escape="HTML"--></textarea>
+	 </p>
+
+</fieldset> 
+
+
+<!-- tmpl_if lists_exist --> 
+
+	<fieldset>
+
+		<legend>Advanced Options</legend>
+
+	<table> 
+		<tr> 
+			<td> 
+				<p>
+					<input type="checkbox" name="clone_settings" id="clone_settings" value="1"  />
+				</p>
+			</td>
+
+			<td>
+				<p>
+					<label for="clone_settings">
+						Clone settings from this list: <!-- tmpl_var list_popup_menu -->
+					</label>
+				</p> 
+			</td> 
+		</tr> 
+	</td> 
+	</table> 
+
+			
+
+	</fieldset> 
+
+<!-- /tmpl_if --> 
+
+
+
+
  <p style="text-align:center">
   <input type="submit" class="processing" value="    Create Your Mailing List    " />
  </p>
