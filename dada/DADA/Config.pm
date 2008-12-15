@@ -4131,6 +4131,41 @@ preferences.
 	unless keys %LIST_SETUP_OVERRIDES;
 
 
+
+=pod
+
+=head2 @LIST_SETUP_DONT_CLONE
+
+B<@LIST_SETUP_DONT_CLONE> is a list of settings you'd rather not have allowed to be cloned, 
+in the little feature in the, "Create a New List" screen, 
+entitled, "Clone settings from this list:"
+
+=cut
+	
+	
+@LIST_SETUP_DONT_CLONE = qw(
+	
+	list   
+	list_name                               
+	info                                                    
+	list_info                                           
+	list_owner_email                   
+	privacy_policy                     
+	physical_address                   
+	password
+
+	disable_discussion_sending
+	discussion_pop_server  
+	discussion_pop_username
+	discussion_pop_email   
+	discussion_pop_password
+	discussion_pop_auth_mode
+	discussion_pop_use_ssl  	
+	
+	) unless keys %LIST_SETUP_OVERRIDES;
+
+
+
 =pod
 
 =head1 Additional Settings You'll Probably Not Need to Change 

@@ -6880,15 +6880,26 @@ sub new_list {
                 $ending = 's'      if $errors > 1; 
                 $err_word = 'were' if $errors > 1; 
             }
-            
-            
-            print(list_template(-Part       => "header",
-                           -Title      => "Create a New List",
-                      
-                          ));
-         
-                
+
             require DADA::Template::Widgets;
+            
+			my @available_lists = DADA::App::Guts::available_lists(); 
+			my $lists_exist = $#available_lists + 1;  
+			
+			my $list_popup_menu = DADA::Template::Widgets::list_popup_menu(
+										-show_hidden      => 1,
+										-name             => 'clone_settings_from_this_list',
+										-empty_list_check => 1,
+									); 
+									
+            
+            print list_template(
+					-Part       => "header",
+	                -Title      => "Create a New List",
+	               );
+     
+                
+
             print   DADA::Template::Widgets::screen({-screen => 'new_list_screen.tmpl', 
                                                     -vars   => 
                                                                 { 
@@ -6924,13 +6935,20 @@ sub new_list {
                                                                 physical_address                  => $physical_address, 
                                                                 flags_list_name_bad_characters    => $flags->{list_name_bad_characters},
                                                                 
+																lists_exist                       => $lists_exist, 
+																list_popup_menu                   => $list_popup_menu, 
                                                                 }, 
                                                     });
             
-            print(list_template(-Part       => "footer"));
+            print list_template(
+				  	-Part => "footer"
+				   );
     
         }else{
-            user_error(-List => $list, -Error => "invalid_root_password");
+            user_error(
+				-List  => $list, 
+				-Error => "invalid_root_password"
+			);
             return; 
         }
     }else{
@@ -6940,24 +6958,32 @@ sub new_list {
         $list =~ s/\s+$//; 
         $list =~ s/ /_/g;
 
-        my $list_exists = check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle);
-        my ($list_errors,$flags) = check_list_setup(-fields => {list             => $list, 
-                                                                list_name        => $list_name, 
-                                                                list_owner_email => $list_owner_email, 
-                                                                password         => $password, 
-                                                                retype_password  => $retype_password, 
-                                                                info             => $info,
-                                                                privacy_policy   => $privacy_policy,
-                                                                physical_address => $physical_address,
-                                                                }
-                                                    ); 
-        
+        my $list_exists = check_if_list_exists(-List => $list);
+        my ($list_errors,$flags) = check_list_setup(
+										-fields => {
+											list             => $list, 
+                                            list_name        => $list_name, 
+                                            list_owner_email => $list_owner_email, 
+                                            password         => $password, 
+                                            retype_password  => $retype_password, 
+                                            info             => $info,
+                                            privacy_policy   => $privacy_policy,
+                                            physical_address => $physical_address,
+                                        }
+                               		); 
+
         if($list_errors >= 1){
             undef($process);
-            new_list($list_errors, $flags);
+            new_list(
+				$list_errors, 
+				$flags
+			);
         
         }elsif($list_exists >= 1){
-            user_error(-List => $list, -Error => "list_already_exists");
+            user_error(
+				-List  => $list, 
+				-Error => "list_already_exists"
+			);
             return; 
         }else{
         
@@ -6965,24 +6991,49 @@ sub new_list {
             $list_owner_email  = lc_email($list_owner_email);
             $password          = DADA::Security::Password::encrypt_passwd($password); 
             
-            my %new_info = (list             =>   $list, 
+            my $new_info = {
+						#	list             =>   $list, 
                             list_owner_email =>   $list_owner_email,
                             list_name        =>   $list_name,
                             password         =>   $password,
                             info             =>   $info, 
                             privacy_policy   =>   $privacy_policy,
                             physical_address =>   $physical_address, 
-                           );
-            
+                           };
+          
             require DADA::MailingList; 
-            my $ls = DADA::MailingList::Create({%new_info}); 
-                        
+			my $ls; 
+			if($q->param('clone_settings') == 1){ 				
+            	$ls = DADA::MailingList::Create(
+						{
+							-list     => $list, 
+							-settings => $new_info, 
+							-clone    => xss_filter($q->param('clone_settings_from_this_list')), 
+						}
+					); 
+            }
+            else { 
+            	$ls = DADA::MailingList::Create(
+						{
+							-list     => $list, 
+							-settings => $new_info, 
+						}
+					);
+			}
+			
             my $status; 
             
-            require DADA::Logging::Usage;
-            my $log = new DADA::Logging::Usage;
-               $log->mj_log($list, 'List Created', "remote_host:$ENV{REMOTE_HOST}, ip_address:$ENV{REMOTE_ADDR}") if $DADA::Config::LOG{list_lives};     
-            
+			if($DADA::Config::LOG{list_lives}){ 
+	            require DADA::Logging::Usage;
+	            my $log = new DADA::Logging::Usage;
+	               $log->mj_log(
+							$list, 
+							'List Created', 
+							"remote_host:$ENV{REMOTE_HOST}," . 
+							"ip_address:$ENV{REMOTE_ADDR}"
+							);     
+            }
+
             my $li = $ls->get; 
             
             my $escaped_list = uriescape($li->{list}); 

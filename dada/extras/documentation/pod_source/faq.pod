@@ -369,17 +369,6 @@ B<Really Long Answer:>
 
 Going even beyond the considerable CSS control outlined above, Dada Mail is extremely flexible in this respect. Extremely. 
 
-=cut
-
-Check out the free chapter of the Magicbook all about Templates at: 
-
-http://dadamailproject.com/purchase/sample_chapter_templates.html
-
-That'll give you even more information than what's below. 
-
-=cut
-
-
 B<First: Clarification.>
 
 Dada Mail uses different templating systems depending on what needs to be done, but there's basically two types: 

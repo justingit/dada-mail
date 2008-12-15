@@ -136,7 +136,7 @@ This screen also gives you the option to embed the various resources used by thi
 
 You can also just send messages through your mail reader, to a special List Address. You'll need to install a plugin called, "Dada Bridge" to have this functionality. This plugin also supports Discussion Lists. 
 
-=head Via Beatitude, the Scheduled Mailer
+=head3 Via Beatitude, the Scheduled Mailer
 
 You can also send messages on a schedule, either one-time or repeating using the plugin called, "Beatitude". Beatitude has many similar options as the, "Send a Webpage" screen and also has options to only send when the various resources it polls are updated. 
 

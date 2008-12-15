@@ -11,7 +11,7 @@
 	
 <!-- /tmpl_if -->
 
-<fieldset> 
+
 	
 
 	<h2>
@@ -31,14 +31,18 @@
 	
 	<!-- /tmpl_unless -->
 
-	<p>
-	 All information except the list's Short Name may be changed at a later time.
-	</p>
+
 	<form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
 	 <input type="hidden" name="f"       value="new_list" />
 	 <input type="hidden" name="process" value="true" />
 	 <input type="hidden" name="root_password" value="<!-- tmpl_var name="root_password" escape="HTML" -->" />
 
+
+<fieldset> 
+	
+	<p>
+	 All information except the list's Short Name may be changed at a later time.
+	</p>
 	 <h2>
 	  List Name
 	 </h2>
@@ -380,7 +384,6 @@
 				</p> 
 			</td> 
 		</tr> 
-	</td> 
 	</table> 
 
 			
@@ -395,6 +398,8 @@
  <p style="text-align:center">
   <input type="submit" class="processing" value="    Create Your Mailing List    " />
  </p>
+
+
 </form>
 
 <!-- end new_list_screen.tmpl -->

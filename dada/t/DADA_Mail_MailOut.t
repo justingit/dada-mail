@@ -59,7 +59,14 @@ ok(!defined $broken_mailout_two,              'new() returned nothing with a non
 
  my $l_list_params = $list_params; 
    delete($list_params->{retype_password}); 
-my $ls = DADA::MailingList::Create($l_list_params); 
+my $ls = DADA::MailingList::Create(
+	{
+		-list     => $l_list_params->{list}, 
+		-settings => $l_list_params,
+		-test     => 0,
+
+	}
+); 
   
 
 my $mailout = DADA::Mail::MailOut->new({ -list => $list });

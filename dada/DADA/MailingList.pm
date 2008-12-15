@@ -13,54 +13,110 @@ require Exporter;
 use strict;
 use vars qw(@EXPORT);
 
+
+
+
 sub Create {
 
+	# Init.
     my ($args) = @_;
 
-    if ( !$args->{list} ) {
-        croak("You must supply a list name in the 'list' paramater.");
+    if ( !exists( $args->{ -list } )) {
+        croak("You must supply a list name in the '-list' paramater.");
     }
 
-    require DADA::App::Guts;
-    if(     DADA::App::Guts::check_if_list_exists(-List => $args->{list}) == 1){ 
-        croak 'The list, ' . $args->{list} . ' already exists! '; 
+    if ( !exists( $args->{ -settings } )) {
+        croak("You must supply settings in the '-settings' paramater.");
     }
-    
-    
+
+	if( ! exists($args->{-test})) { 
+		$args->{-test} = 1;
+	}
+
+    require DADA::App::Guts;
+    if ( 
+		DADA::App::Guts::check_if_list_exists( -List => $args->{ -list } ) == 1 
+		)
+    {
+        croak 'The list, ' . $args->{ -list } . ' already exists! ';
+    }
+
+	# One last check.... 
+	if(($args->{-test} == 1)) {	
+		my ($errors, $flags) = DADA::App::Guts::check_list_setup(
+			-fields => 
+			{
+				list            => $args->{-list}, 
+				retype_password => $args->{-settings} => 'password', 
+				%{$args->{-settings}},
+			}
+		); 
+		if($errors >= 1){
+			my $e = '';
+			foreach(%$flags){ 
+				$e .= $_ . ', ' if $flags->{$_} == 1; 
+			}
+			croak "Problems creating list: " . $e; 
+		} 
+	}
+	# /One last check.... 	
+
+
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new(
-				{
-        			-list     => $args->{list},
-        			-new_list => 1,	
-				}
-    		);
+        {
+            -list     => $args->{ -list },
+            -new_list => 1,
+        }
+    );
 
-	unless($ls->isa('DADA::MailingList::Settings')){ 
-		croak 'DADA::MailingList::Settings did not give back the right kind of object!'; 
-	}
-	
-    DADA::App::Guts::make_all_list_files( -List => $args->{list} );
-
-    $ls->save($args); 
-    
-	# This is sort of a hack, so that the available_lists() thingy is up to date: 
-	# 
-    DADA::App::Guts::available_lists(-clear_cache => 1);
-    # This is a total hack, but I totally short-sighted this: 
-    
-    foreach(DADA::App::Guts::available_lists()){ 
-                next if $_ eq $args->{list}; 
-                my $l_ls = DADA::MailingList::Settings->new({-list => $_}); 
-                my $l_li = $l_ls->get; 
-                $ls->save({fallback_field_values => $l_li->{fallback_field_values}}); 
-                last; 
+    unless ( $ls->isa('DADA::MailingList::Settings') ) {
+        croak
+'DADA::MailingList::Settings did not give back the right kind of object!';
     }
+
+    DADA::App::Guts::make_all_list_files( -List => $args->{ -list } );
+
+    $args->{ -settings }->{list} = $args->{ -list };
+
+    if ( exists( $args->{ -clone } ) ) {
+        my $clone_ls =
+          DADA::MailingList::Settings->new( { -list => $args->{ -clone }, } );
+        my %to_clone = %{ $clone_ls->params };
+        foreach (@DADA::Config::LIST_SETUP_DONT_CLONE) {
+            if ( exists( $to_clone{$_} ) ) {
+                delete( $to_clone{$_} );
+            }
+        }
+        %{ $args->{ -settings } } = ( %to_clone, %{ $args->{ -settings } } );
+    }
+
+    $ls->save( $args->{ -settings } );
+
+   # This is sort of a hack, so that the available_lists() thingy is up to date:
+   #
+    DADA::App::Guts::available_lists( -clear_cache => 1 );
+
+    # This is a total hack, but I totally short-sighted this:
+    foreach ( DADA::App::Guts::available_lists() ) {
+        next if $_ eq $args->{ -list };
+        my $l_ls = DADA::MailingList::Settings->new( { -list => $_ } );
+        my $l_li = $l_ls->get;
+        $ls->save(
+            { fallback_field_values => $l_li->{fallback_field_values} } );
+        last;
+    }
+
     # / end total hack. I'll have to think of something better...
-            
+
     return $ls;
 
 }
+
+
+
+
 
 sub Remove {
 
@@ -174,7 +230,15 @@ DADA::MailingList - Creates and Removes Dada Mail Mailing Lists
  
  
  # Create!
-  my $ls = DADA::MailingList::Create({ list => 'mylist' }); 
+  my $ls = DADA::MailingList::Create(
+	{ 
+		-list => 'mylist',
+		-settings => 
+			{
+			 	#...
+			},
+	}
+	); 
  
  # $ls is now a DADA::MailingList::Settings object.
  
@@ -190,9 +254,18 @@ This module basically either creates, or removes a list.
 
 =head2 Create
 
- my $ls = DADA::MailingList::Create({ list => 'mylist' });
+ my $ls = DADA::MailingList::Create(
+	{ 
+		-list => 'mylist', 
+		-settings => {
+				# a bunch of settings!
+				}
+	}
+);
 
-Creates all the necessary files for a Dada Mailing List; B<$list> is the 
+Creates all the necessary files for a Dada Mailing List. 
+
+The <-list> paramater should hold  the 
 list shortname of your mailing list - which itself should be no more than 16
 characters and should only include letters/numbers.
 

@@ -17,7 +17,7 @@ ok($@, "calling DADA::MailingList::Create() without any paramaters causes an err
 
 my $list = dada_test_config::create_test_list(); 
 
-eval { DADA::MailingList::Create({list => $list}) }; 
+eval { DADA::MailingList::Create({-list => $list}) }; 
 ok($@, "calling DADA::MailingList::Create() with the list paramater containing a list that exists causes an error!: $@");     
 
 dada_test_config::remove_test_list(); 
@@ -25,9 +25,24 @@ dada_test_config::remove_test_list();
 # This is weird, since we're testing the test suite... but... whatever...
 ok(DADA::App::Guts::check_if_list_exists(-List => $list) == 0, "The Test List has been removed successfully."); 
 
+my $ls; 
 
-my $ls = DADA::MailingList::Create({list => 'mytestlist'});
-ok($ls->isa('DADA::MailingList::Settings')); 
+eval{ $ls = DADA::MailingList::Create({-list => 'mytestlist'}); };
+#ok($ls->isa('DADA::MailingList::Settings')); 
+ok($@, "calling DADA::MailingList::Create() with only the list paramater  causes an error!: $@");     
+
+
+$ls = DADA::MailingList::Create(
+	{
+		-list => 'mytestlist',
+		-settings => {}, 
+		-test     => 0, 
+	}
+);
+#ok($ls->isa('DADA::MailingList::Settings')); 
+
+ok($ls->isa('DADA::MailingList::Settings'), "calling DADA::MailingList::Create() with the -list and -settings paramater worked.");     
+undef $ls; 
 
 
 DADA::MailingList::Remove({-name => 'mytestlist'});
@@ -36,6 +51,49 @@ DADA::MailingList::Remove({-name => 'mytestlist'});
 
 eval { DADA::MailingList::Remove({-name => 'mytestlist'})  }; 
 ok($@, "calling DADA::MailingList::Remove() with a non-existant causes an error!: $@");     
+
+
+
+# This is to test the cloning stuff works. 
+
+$ls = DADA::MailingList::Create(
+	{
+		-list     => 'to_clone',
+		-settings => {
+			alt_url_sub_confirm_success => 'http://example.com/success.html', 
+		}, 
+		-test    => 0, 
+	}
+);
+my $ls2 = DADA::MailingList::Create(
+	{
+		-list     => 'cloned',
+		-settings => {}, 
+		-clone    => 'to_clone', 
+		-test     => 0, 
+	}
+);
+
+ok($ls2->param('alt_url_sub_confirm_success') eq 'http://example.com/success.html', "cloning seems successfuL!"); 
+
+
+
+DADA::MailingList::Remove({-name => 'to_clone'});
+DADA::MailingList::Remove({-name => 'cloned'}); 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 dada_test_config::wipe_out;

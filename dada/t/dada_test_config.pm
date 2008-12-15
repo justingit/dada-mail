@@ -116,7 +116,13 @@ sub create_test_list {
     
     }
     
-    my $ls = DADA::MailingList::Create($local_test_list_vars); 
+    my $ls = DADA::MailingList::Create(
+		{
+			-list     => $local_test_list_vars->{list}, 
+			-settings => $local_test_list_vars,
+			-test     => 0, 
+		}
+	); 
    
    
     if($args->{-remove_subscriber_fields} == 1){ 

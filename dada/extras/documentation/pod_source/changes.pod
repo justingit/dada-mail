@@ -431,7 +431,9 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=1959728&group_id=13002&
 
 =head3 Open Bugs 3.0 Beta 3
 
-=over  1963127  	  3.0 b2 - Send a Webpage, Assets w/URLS w/Query Strings break
+=over  
+
+=item * 1963127  	  3.0 b2 - Send a Webpage, Assets w/URLS w/Query Strings break
 
 http://sourceforge.net/tracker/index.php?func=detail&aid=1963127&group_id=13002&atid=113002
 

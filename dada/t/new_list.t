@@ -88,9 +88,6 @@ my $different_lists = {
     undef($flags);
 
 
-
-
-
     my ($list_errors,$flags) = check_list_setup(-fields => $different_lists->{shortname_too_long});
     ok($list_errors >= 1); 
     ok($flags->{shortname_too_long} == 1); 
@@ -101,7 +98,13 @@ my $different_lists = {
 
     my $test_copy = $different_lists->{normal};
     delete($test_copy->{retype_password});
-    my $ls = DADA::MailingList::Create($test_copy); 
+    my $ls = DADA::MailingList::Create(
+		{
+			-list     => $test_copy->{list}, 
+			-settings => $test_copy,
+			-test     => 0, 
+		}
+	); 
     ok($ls->isa('DADA::MailingList::Settings'), "name list isa DADA::MailingList::Settings!"); 
     
   

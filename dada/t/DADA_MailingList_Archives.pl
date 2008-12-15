@@ -49,11 +49,17 @@ ok($list_errors == 0);
 
 
 # ok ok ok! We'll actually make the list...
-   my $l_list_params = $list_params; 
-   delete($list_params->{retype_password}); 
-   my $ls = DADA::MailingList::Create($l_list_params); 
+my $l_list_params = $list_params; 
+delete($list_params->{retype_password}); 
+my $ls = DADA::MailingList::Create(
+	{
+		-list     => $l_list_params->{list},
+		-settings => $l_list_params, 
+		-test     => 0,
+	}
+); 
 
-   
+  
 # Let's try saving something in the archives: 
 
 # Short and quick...

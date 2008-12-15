@@ -330,7 +330,7 @@ When set to, B<1> after every time Dada Mail is run via the, C<mail.cgi> script,
 
 The problem is, you never are guaranteed when Dada Mail is going to be run, so your mailing monitoring will be somewhat lopsided. 
 
-I<This option is currently I<experimental>. 
+I<This option is currently experimental>. 
 
 =head3 Dada Bridge
 
