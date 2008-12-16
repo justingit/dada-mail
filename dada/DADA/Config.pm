@@ -3193,8 +3193,8 @@ This email message is sent to the list owner, when a mass mailing has finished.
 =cut
 
 
-$MAILING_FINISHED_MESSAGE_SUBJECT = '[list_settings.list_name]  Mailing Complete - [message_subject]'; 
-$MAILING_FINISHED_MESSAGE = <<EOF
+$MAILING_FINISHED_MESSAGE_SUBJECT ||= '[list_settings.list_name]  Mailing Complete - [message_subject]'; 
+$MAILING_FINISHED_MESSAGE ||= <<EOF
 Your List Mailing has been successful!
 -----------------------------------------------------------------------
 Your mailing has reached: [addresses_sent_to] e-mail address(es)
