@@ -3275,8 +3275,7 @@ if($any_subscribers != 0){
 
 print"</p>";
  
-
-$DADA::Config::SHOW_EMAIL_LIST = 0; 
+ 
 my ($everyone, $domains_ref, $count_services_ref) = $lh->list_option_form(-List => $list, -In_Order => $DADA::Config::LIST_IN_ORDER);
 
 if($DADA::Config::SHOW_DOMAIN_TABLE  == 1) { 

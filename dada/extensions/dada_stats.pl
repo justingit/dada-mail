@@ -184,9 +184,8 @@ my @lists = available_lists();
 
 # foreach of our lists here, 
 foreach my $list(@lists){
-       
-    $SHOW_EMAIL_LIST     = 0;    
-    $SHOW_SERVICES_TABLE = 1; 
+    
+	$SHOW_SERVICES_TABLE = 1; 
     $SHOW_DOMAIN_TABLE   = 1; 
     
     my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 

@@ -1904,7 +1904,7 @@ foreach(@DADA::Config::SERVICES){ $SERVICES{$_} = 0; }
 	my $count = 0; 
 
 my $test = 0;
-   $test = $DADA::Config::SHOW_DOMAIN_TABLE + $DADA::Config::SHOW_SERVICES_TABLE + $DADA::Config::SHOW_EMAIL_LIST; 
+   $test = $DADA::Config::SHOW_DOMAIN_TABLE + $DADA::Config::SHOW_SERVICES_TABLE; 
   
 unless ($test == 0){
 
@@ -1921,9 +1921,6 @@ if($args{-In_Order} == 1){
    $sth->execute($self->{list}, $args{-Type}) or croak "cannot do statement! $DBI::errstr\n";   
 			while((my $email) = $sth->fetchrow_array){
 				chomp($email);
-				if($DADA::Config::SHOW_EMAIL_LIST ==1){
-					print "<option value=",$email,">",$email,"</option>\n";
-				}
                 # this is the 'Show Domains' Hash Generator
 				
 				if($DADA::Config::SHOW_DOMAIN_TABLE ==1){
