@@ -543,7 +543,8 @@ sub run {
 	'admin_help'              =>    \&admin_help,        
 	'delete_list'             =>    \&delete_list,        
 	'list_stats'              =>    \&list_stats,  
-	'view_list'               =>    \&view_list,           
+	'view_list'               =>    \&view_list,  
+	'remove_all_subscribers'  =>    \&remove_all_subscribers,          
 	'view_list_options'       =>    \&view_list_options,
 	'edit_subscriber'         =>    \&edit_subscriber,
 	'add'                     =>    \&add,      
@@ -2997,6 +2998,25 @@ sub view_list {
         
     }
 }
+
+
+
+
+sub remove_all_subscribers {
+
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'view_list',
+    );
+    $list = $admin_list;
+	
+    my $type  = xss_filter( $q->param('type') );
+    my $lh    = DADA::MailingList::Subscribers->new( { -list => $list } );
+    my $count = $lh->remove_all_subscribers( { -type => $type, } );
+    print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=view_list&delete_email_count=' . $count .'&type=' . $type);
+	return; 
+}
+
 
 
 

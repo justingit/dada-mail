@@ -175,10 +175,21 @@
  <input type=hidden name="f"       value="checker" />
  <input type=hidden name="type" value="<!-- tmpl_var type -->" />
  <div class="buttonfloat">
-  <input type="submit" class="alertive" value="Unsubscribe Checked Emails" />
+  <input type="submit" class="alertive" value="Unsubscribe Checked Subscribers" />
  </div>
 </form>
 <div class="floatclear"></div> 
+
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get">
+	
+ <input type=hidden name="f"       value="remove_all_subscribers" />
+ <input type=hidden name="type" value="<!-- tmpl_var type -->" />
+ <div class="buttonfloat">
+  <input type="submit" class="alertive" value="Unsubscribe ALL <!-- tmpl_var type_title --> Subscribers" />
+ </div>
+</form>
+<div class="floatclear"></div>
 <!-- tmpl_if list_type_isa_black_list -->
 
 

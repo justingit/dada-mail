@@ -273,9 +273,9 @@ sub get_subscriber {
     
     my $query = 'SELECT * FROM ' . $self->{sql_params}->{subscriber_table} . 
                 " WHERE list_type = '" . $args->{-type} . "' 
-                AND list_status =      1 
-                AND email = '"       . $args->{-email} . "' 
-                AND list = '"        . $self->{list} . "'";
+                  AND list_status =      1 
+                  AND email = '"       . $args->{-email} . "' 
+                 AND list = '"        . $self->{list} . "'";
     
     
     my $sth = $self->{dbh}->prepare($query);
@@ -1832,6 +1832,49 @@ sub remove_from_list {
 	}
 	return $count; 
 }
+
+
+
+
+sub remove_all_subscribers {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    if ( !exists $args->{ -type } ) {
+        $args->{ -type } = 'list';
+    }
+
+    my $query =
+      'SELECT email FROM '
+      . $self->{sql_params}->{subscriber_table}
+      . " WHERE list_type = '"
+      . $args->{ -type } . "' 
+                  AND list_status =      1  
+                  AND list = '" . $self->{list} . "'";
+
+    my $sth = $self->{dbh}->prepare($query);
+
+    $sth->execute()
+      or croak
+      "cannot do statement (at remove_all_subscribers)! $DBI::errstr\n";
+
+    my $count = 0;
+    while ( ( my $email ) = $sth->fetchrow_array ) {
+        $self->remove_subscriber(
+            {
+                -email => $email,
+                -type  => $args->{ -type },
+            }
+        );
+        $count++;
+    }
+
+    return $count;
+}
+
+
+
 
 
 sub list_option_form { 
