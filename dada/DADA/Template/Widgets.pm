@@ -1626,20 +1626,24 @@ sub dada_pseudo_tag_filter {
     
 	if(!defined($$text_ref)){ return; }
 
+	$$text_ref =~ s{\[tmpl_else\]}{<!-- tmpl_else -->}g;
+	
+	# This one doesn't make too much sense:
+	$$text_ref =~ s{\[tmpl_else\s(\w+?)\]}{<!-- tmpl_else $1 -->}g;
+    
 	$$text_ref =~ s{\[((\w+?)|subscriber\.\w+?|list_settings\.\w+?)\]}{<!-- tmpl_var $1 -->}g; # Match 1 or more word (alphanum + _), non-greedy
 
     # I know I said I wasn't going to do it, but I did it. 
-    
-    $$text_ref =~ s{\[tmpl_if\s(\w+?)\]}{<!-- tmpl_if $1 -->}g;
+
+    $$text_ref =~ s{\[tmpl_if\s((\w+?)|subscriber\.\w+?|list_settings\.\w+?)\]}{<!-- tmpl_if $1 -->}g;
     $$text_ref =~ s{\[/tmpl_if\]}{<!-- /tmpl_if -->}g;
     
-    $$text_ref =~ s{\[tmpl_else\s(\w+?)\]}{<!-- tmpl_else $1 -->}g;
     
     
-    $$text_ref =~ s{\[tmpl_unless\s(\w+?)\]}{<!-- tmpl_unless $1 -->}g;
+    $$text_ref =~ s{\[tmpl_unless\s((\w+?)|subscriber\.\w+?|list_settings\.\w+?)\]}{<!-- tmpl_unless $1 -->}g;
     $$text_ref =~ s{\[/tmpl_unless\]}{<!-- /tmpl_unless -->}g;
     
-    $$text_ref =~ s{\[tmpl_loop\s(\w+?)\]}{<!-- tmpl_loop $1 -->}g; 
+    $$text_ref =~ s{\[tmpl_loop\s((\w+?)|subscriber\.\w+?|list_settings\.\w+?)\]}{<!-- tmpl_loop $1 -->}g; 
     $$text_ref =~ s{\[/tmpl_loop\]}{<!-- /tmpl_loop -->}g;
    
    

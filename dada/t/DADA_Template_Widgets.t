@@ -565,6 +565,54 @@ undef $string;
 ### /dada_backwards_compatibility
 
 
+# Bug: [ 2460735 ] 3.0.1 - simple [tmpl_if ...] usage breaks sending
+# https://sourceforge.net/tracker/index.php?func=detail&atid=113002&aid=2460735&group_id=13002
+
+$d = q{ 
+	
+
+	[tmpl_if subscriber.first_name]
+
+	Dear [subscriber.first_name]
+
+	[tmpl_else]
+
+	Dear [subscriber.email]
+
+	[/tmpl_if]
+
+};
+
+my $f = $d; 
+
+DADA::Template::Widgets::dada_pseudo_tag_filter(\$f); 
+
+like($f, qr/\<\!\-\- tmpl_if subscriber\.first_name \-\-\>/, "Looks like the transformation was successful!"); 
+#diag $f; 
+eval { 
+	$r =  DADA::Template::Widgets::screen(
+	   {
+	   -data                     => \$d, 
+	   -list_settings_vars_param => 
+	       {
+	           -list  => $list, 
+	       },
+	   -dada_pseudo_tag_filter => 1, 
+	   }
+	); 
+	#diag $r; 
+	
+};
+
+if($@){ 
+	diag ($@);
+}
+else { 
+	
+}
+ok(!$@, "Good! The simple doc example doesn't give back and error!"); 
+like($r, qr/Dear/); 
+
 
 
 dada_test_config::remove_test_list;
