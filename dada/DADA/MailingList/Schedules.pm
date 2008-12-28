@@ -1,5 +1,5 @@
 package DADA::MailingList::Schedules; 
-
+use strict; 
 
 use lib qw(./ ../ ../../ ../../DADA ../perllib); 
 
@@ -7,7 +7,6 @@ use lib qw(./ ../ ../../ ../../DADA ../perllib);
 use DADA::Config qw(!:DEFAULT); 
 use DADA::App::Guts; 
 use DADA::MailingList::Settings;
-
 use base "DADA::MailingList::Schedules::MLDb";
 
 use Carp qw(croak carp);
@@ -281,46 +280,36 @@ sub mailing_date {
 	
 	my $self = shift; 
 	my $q    = shift; 
-	
-	my $min        = $q->param('mail_minute') || undef; 
-	my $hour       = $q->param('mail_hour')   || undef; 
-	my $mday       = $q->param('mail_day')    || undef; 
-	my $mon        = $q->param('mail_month')  || undef; 
-	my $year       = $q->param('mail_year')   || undef; 
-	my $mail_am_pm = $q->param('mail_am_pm')  || undef; 
-	if(
-		defined($min)         && 
-		defined($hour)        && 		
-		defined($mday)        && 		
-		defined($mon)         && 		
-		defined($year)        &&
-		defined($mail_am_pm) 
-	){ 
 
-# This is a little hacky... 
-if($mail_am_pm eq 'pm'){
-	# But - if the hour is, "12" 
-	# 12 + 12 is, "24" - not, "0' and not just, "12"
-	if($hour != 12){  
-		$hour += 12; 
-	}
-}
-elsif($mail_am_pm eq 'am'){
-	if($hour == 12){ 
-		$hour = 0; 
-	}	
+    my $min        = $q->param('mail_minute') || 0;
+    my $hour       = $q->param('mail_hour')   || 0;
+    my $mday       = $q->param('mail_day')    || 1;
+    my $mon        = $q->param('mail_month')  || 0;
+    my $year       = $q->param('mail_year')   || 0;
+    my $mail_am_pm = $q->param('mail_am_pm')  || 'am';
+
+    # This is a little hacky...
+    if ( $mail_am_pm eq 'pm' ) {
+
+        # But - if the hour is, "12"
+        # 12 + 12 is, "24" - not, "0' and not just, "12"
+        if ( $hour != 12 ) {
+            $hour += 12;
+        }
+    }
+    elsif ( $mail_am_pm eq 'am' ) {
+        if ( $hour == 12 ) {
+            $hour = 0;
+        }
+    }
+
+    $min = int($min);
+    require Time::Local;
+    my $time = Time::Local::timelocal( 0, $min, $hour, $mday, $mon, $year );
+    return $time;
+
 }
 
-		$min = int($min) ;
-		require Time::Local; 
-		my $time = Time::Local::timelocal(0,$min,$hour,$mday,$mon,$year);	
-		return $time; 
-
-	}
-	else { 
-		return time; 
-	}
-}
 
 
 
@@ -492,70 +481,93 @@ returns a reference to an array of times that a schedule saved in $key has to be
 =cut
 
 
-sub mailing_schedule { 
-	my $self = shift; 
-	my $key = shift; 
-	my $today_is = time; 
-	
-	croak "no key $!" if ! $key;
-	 
-	my $r             = $self->get_record($key); 
-	my $sched_mailing = $r->{mailing_date}; 
-	
-	if($r->{repeat_mailing} != 1){ 		
-		return [$r->{mailing_date}] if $r->{mailing_date} > $r->{last_schedule_run};  # not right now, when we last try to run the schdule.
-		return []; 
-	}else{ 
-		return [$r->{mailing_date}] if $r->{repeat_times} < 1;
-		
-		my $timespan = 0; 		   
-		   $timespan = 60                 if $r->{repeat_label}  eq 'minutes'; 	
-		   $timespan = 60 * 60            if $r->{repeat_label}  eq 'hours'; 
-		   $timespan = 60 * 60 * 24       if $r->{repeat_label}  eq 'days';
-		   $timespan = 60 * 60 * 24 * 30  if $r->{repeat_label}  eq 'months';		   
-		   $timespan = 60 * 60 * 24 * 265 if $r->{repeat_label}  eq 'years';	
-		   
-		if($r->{repeat_times}){ 
-			$timespan = ($timespan * $r->{repeat_times});
-		}
-		
-		my $i = 0; 		   
-		my @mailing_times;# = ($r->{mailing_date}); 
-		   @mailing_times   =  ($r->{mailing_date}) if $r->{mailing_date} > $r->{last_schedule_run}; 
-		
-		#Fucker. $r->{repeat_number}     = 1000      if $r->{repeat_number} eq 'indefinite';  
-		
-		
-		$r->{last_schedule_run} = $today_is if ! $r->{last_schedule_run};
-		$r->{repeat_number}     = 0         if ! $r->{repeat_number};
-		   
-		
-		if($r->{repeat_number} eq 'indefinite'){
-			# yeah, we *could* find each and every time a mailing should
-			# go out, until... inifinity, but come now. 
-			# This will just find the next time a mailing should go out. 
-					
-			my $i = 1; 
-			while($i == 1){ 
-				$sched_mailing = ($sched_mailing + $timespan); 
-				if($sched_mailing > $r->{last_schedule_run}){ # should /this/ be $r->{last_mailing}? 
-															  # It doesn't matter, since only one schedule is 
-															  # passed to the scheduled runner. 		 	
-					push(@mailing_times, $sched_mailing); 
-					$i = 0;
-				}
-			}	
-					
-		}else{
-			for($i = 0; $i <= $r->{repeat_number}; $i++){ 
-				$sched_mailing = ($sched_mailing + $timespan); 		   		
-				push(@mailing_times, $sched_mailing) if $sched_mailing > $r->{last_schedule_run};  	
-			}
-		}
-		
-		return \@mailing_times; 
-	}
-} 
+sub mailing_schedule {
+    my $self     = shift;
+    my $key      = shift;
+    my $today_is = time;
+
+    if ( !defined($key) ) {
+        croak "no key $!";
+    }
+
+    my $r             = $self->get_record($key);
+    my $sched_mailing = $r->{mailing_date};
+
+    if ( $r->{repeat_mailing} != 1 ) {
+
+        # not right now, when we last try to run the schedule.
+        if ( $r->{mailing_date} > $r->{last_schedule_run} ) {
+            return [ $r->{mailing_date} ];
+        }
+        else {
+            return [];
+        }
+    }
+    else {
+        if ( $r->{repeat_times} < 1 ) {
+            return [ $r->{mailing_date} ];
+        }
+        else {
+
+            my $timespan = 0;
+            $timespan = 60                 if $r->{repeat_label} eq 'minutes';
+            $timespan = 60 * 60            if $r->{repeat_label} eq 'hours';
+            $timespan = 60 * 60 * 24       if $r->{repeat_label} eq 'days';
+            $timespan = 60 * 60 * 24 * 30  if $r->{repeat_label} eq 'months';
+            $timespan = 60 * 60 * 24 * 265 if $r->{repeat_label} eq 'years';
+
+            if ( $r->{repeat_times} ) {
+                $timespan = ( $timespan * $r->{repeat_times} );
+            }
+
+            my $i = 0;
+            my @mailing_times;    # = ($r->{mailing_date});
+            if ( $r->{mailing_date} > $r->{last_schedule_run} ) {
+                @mailing_times = ( $r->{mailing_date} );
+            }
+
+#Fucker. $r->{repeat_number}     = 1000      if $r->{repeat_number} eq 'indefinite';
+
+            if ( !$r->{last_schedule_run} ) {
+                $r->{last_schedule_run} = $today_is;
+            }
+            if ( !$r->{repeat_number} ) {
+                $r->{repeat_number} = 0;
+            }
+
+            if ( $r->{repeat_number} eq 'indefinite' ) {
+
+                # yeah, we *could* find each and every time a mailing should
+                # go out, until... inifinity, but come now.
+                # This will just find the next time a mailing should go out.
+
+                my $i = 1;
+                while ( $i == 1 ) {
+                    $sched_mailing = ( $sched_mailing + $timespan );
+                    if ( $sched_mailing > $r->{last_schedule_run} )
+                    {    # should /this/ be $r->{last_mailing}?
+                            # It doesn't matter, since only one schedule is
+                            # passed to the scheduled runner.
+                        push ( @mailing_times, $sched_mailing );
+                        $i = 0;
+                    }
+                }
+
+            }
+            else {
+                for ( $i = 0 ; $i <= $r->{repeat_number} ; $i++ ) {
+                    $sched_mailing = ( $sched_mailing + $timespan );
+                    push ( @mailing_times, $sched_mailing )
+                      if $sched_mailing > $r->{last_schedule_run};
+                }
+            }
+
+            return \@mailing_times;
+        }
+
+    }
+}
+
 
 
 
@@ -579,7 +591,6 @@ sub printable_date {
 	
 	my $self = shift; 
 	my $date = shift; 
-	
 	my %mail_month_values = (
 	0  => 'January', 
 	1  => 'February', 
@@ -663,12 +674,11 @@ sub printable_date {
 	}
 	
 	$min = '0' . $min if $min < 10; 
-	#$hour = 12 if $hour == 0; 
-	return $mail_month_values{$mon} . ' ' . $mail_day_values{$mday} . ', ' . ($year + 1900) . ' - ' . $hour . ':' . $min . ' '. $ending; 
+	
+	# # This works?
+	# # return $mail_month_values{$mon} . ' ' . $mail_day_values{$mday} . ', ' . ($year + 1900) . ' - ' . $hour . ':' . $min . ' '. $ending; 
 
-
-
-#return scalar localtime($date); 
+ 	return scalar localtime($date); 
 
 
 #use POSIX 'strftime';

@@ -656,36 +656,63 @@ $r .= DADA::Template::Widgets::screen(
 
 
 	return $r; 
-} 
-	
-
-
-sub schedule_row { 
-	my $key = shift; 
-	my $r; 
-		
-	my $record = $mss->get_record($key);	
-	my $status = ""; 
-	my $mailing_schedule = $mss->mailing_schedule($key);
-		
-	my $row_style = 'background-color:#CCFFCC';
-	   $row_style = 'background-color:#FFFFFF' if (($record->{active} == 0) || (($mailing_schedule->[-1] < int(time))) && ($record->{repeat_number} ne 'indefinite') );	
-	   
-		 if($mailing_schedule->[-1] > int(time)){ 
-		 	if($record->{active} == 0){ 
-		 		$status =  $q->p({-class => 'smallred'},$q->i("This schedule is inactive.")); 
-		 	}else{
-		  		$status =  $q->p({-class => 'smallblack'},$q->i($mss->printable_date($mailing_schedule->[0]))); 
-		 	}
-		 }elsif($record->{repeat_number} eq 'indefinite'){ 
-		  	$status =  $q->p({-class => 'smallblack'},$q->i($mss->printable_date($mailing_schedule->[0]))); 
-		 }else{
-			$status =  $q->p({-class => 'smallred'},$q->i('This scheduled mailing has ended.')); 
-		 }  
-		
-	$r = "<tr style=\"$row_style\"><td><p><strong>" . edit_schedule_href($key, $record) . "</strong></p></td><td>$status</td><td>" . remove_schedule_form(-key   => $key, -label => '[x]') . "</td></tr>"; 
-	return $r; 
 }
+
+
+
+
+sub schedule_row {
+    my $key = shift;
+    my $r;
+
+    my $record           = $mss->get_record($key);
+    my $status           = "";
+    my $mailing_schedule = $mss->mailing_schedule($key);
+
+    my $row_style;
+    if (
+        $record->{active} == 0
+        || ( ( $mailing_schedule->[-1] < int(time) )
+            && $record->{repeat_number} ne 'indefinite' )
+      )
+    {
+
+        $row_style = 'background-color:#fff';
+    }
+    else {
+        $row_style = 'background-color:#cfc';
+    }
+
+    if ( $mailing_schedule->[-1] > int(time) ) {
+        if ( $record->{active} == 0 ) {
+            $status = $q->p( { -class => 'smallred' },
+                $q->i("This schedule is inactive.") );
+        }
+        else {
+            $status = $q->p( { -class => 'smallblack' },
+                $q->i( $mss->printable_date( $mailing_schedule->[0] ) ) );
+        }
+    }
+    elsif ($record->{repeat_mailing} == 1
+        && $record->{repeat_number} eq 'indefinite' )
+    {
+        $status = $q->p( { -class => 'smallblack' },
+            $q->i( $mss->printable_date( $mailing_schedule->[0] ) ) );
+    }
+    else {
+        $status = $q->p( { -class => 'smallred' },
+            $q->i('This scheduled mailing has ended.') );
+    }
+
+    $r =
+      "<tr style=\"$row_style\"><td><p><strong>"
+      . edit_schedule_href( $key, $record )
+      . "</strong></p></td><td>$status</td><td>"
+      . remove_schedule_form( -key => $key, -label => '[x]' )
+      . "</td></tr>";
+    return $r;
+}
+
 
 
 
