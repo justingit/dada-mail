@@ -11,7 +11,6 @@ use CGI::Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT);  
 
 
-
 # A weird fix.
 BEGIN {
    if($] > 5.008){
@@ -26,8 +25,7 @@ use CGI;
 my $q = new CGI; 
    $q->charset($DADA::Config::HTML_CHARSET);
 
-	my $dbi_obj = undef; 
-	my $dbi_handle = undef; ; 
+	my $dbi_handle; 
 
 if(
 	$DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/i || 
@@ -36,13 +34,7 @@ if(
     $DADA::Config::SESSION_DB_TYPE    =~ m/SQL/i 
 ){        
 	require DADA::App::DBIHandle; 
-	if(defined($dbi_obj)){ 
-		carp "Boom. Making this work."; 
-		$dbi_handle = $dbi_obj; 
-	}
-	else { 
-    	$dbi_handle = DADA::App::DBIHandle->new; 
-	}
+    $dbi_handle = DADA::App::DBIHandle->new; 
 }
 
 my $wierd_abs_path = __FILE__; 
@@ -284,12 +276,13 @@ sub list_popup_menu {
 
 	
 	my %args = (
-				-show_hidden      => 0,
-				-name             => 'list',
-				-empty_list_check => 0, 
-				-as_checkboxes    => 0, 
-			    @_
-				); 
+		-show_hidden         => 0,
+		-name                => 'list',
+		-empty_list_check    => 0, 
+		-as_checkboxes       => 0, 
+		-show_list_shortname => 0, 
+	    @_
+	); 
 	my $labels = {}; 
 	
 	require DADA::MailingList::Settings; 
@@ -307,7 +300,12 @@ sub list_popup_menu {
 			my $ls = DADA::MailingList::Settings->new({-list => $list}); 
 			my $li = $ls->get; 
 			next if $args{-show_hidden} == 0 && $li->{hide_list} == 1; 
-			$labels->{$list} = $li->{list_name};
+			if($args{-show_list_shortname} == 1){ 
+				$labels->{$list} = $li->{list_name} . ' (' . $list . ')';
+			}
+			else { 
+				$labels->{$list} = $li->{list_name};				
+			}
 			$l_count++;
 		}
 		my @opt_labels = sort { uc($labels->{$a}) cmp uc($labels->{$b}) } keys %$labels;
@@ -342,33 +340,61 @@ sub list_popup_menu {
 
 sub list_popup_login_form { 
 	
-	my %args = (-show_hidden => 0, -auth_state => undef, @_); 
+	my %args = (
+		-show_hidden => 0, 
+		-auth_state  => undef, 
+		@_,
+	); 
 	
-	my $url          = $ENV{SCRIPT_URI} || $q->url(); 
-	my $referer      = $ENV{HTTP_REFERER}; 
-	my $query_string = $ENV{QUERY_STRING}; 
-	my $path_info    = $ENV{PATH_INFO}; 
-	my $list_popup_menu = list_popup_menu(-name   	            => 'admin_list', 
-				   		                  -show_hidden          => $args{-show_hidden},
-				   		                  -empty_list_check     => 1, 
-				   		                  
-				   		                 );  		                 
-		return screen(
-		    {
-		        -screen => 'list_popup_login_form.tmpl',		
-		        -expr   => 1, 
-		        -vars   => { 
+	my $url             = $ENV{SCRIPT_URI} || $q->url(); 
+	my $referer         = $ENV{HTTP_REFERER}; 
+	my $query_string    = $ENV{QUERY_STRING}; 
+	my $path_info       = $ENV{PATH_INFO}; 
+	
+	my $list_popup_menu = list_popup_menu(
+							-name   	         => 'admin_list', 
+				   		    -show_hidden         => $args{-show_hidden},
+				   		    -empty_list_check    => 1, 
+							-show_list_shortname => 1, 
+				   		   );
+
+		if(show_login_list_textbox() == 1){ 
+			return screen( 
+				{ 
+					-screen => 'text_box_login_form.tmpl', 
+			        -expr   => 1, 
+			        -vars   => { 
+
+			            list_popup_menu => $list_popup_menu, 
+	                    auth_state      => $args{-auth_state},
+						referer         => $referer, 
+						url             => $url, 
+						query_string    => $query_string, 
+						path_info       => $path_info, 
+						show_other_link => _show_other_link(),  
+				    }
+				},	
+			);
+		}
+		else { 
+						  		                 
+			return screen(
+			    {
+			        -screen => 'list_popup_login_form.tmpl',		
+			        -expr   => 1, 
+			        -vars   => { 
 		            
-		            list_popup_menu => $list_popup_menu, 
-                    auth_state      => $args{-auth_state},
-					referer         => $referer, 
-					url             => $url, 
-					query_string    => $query_string, 
-					path_info       => $path_info, 
-			    
-			    }
-			}
-	    ); 
+			            list_popup_menu => $list_popup_menu, 
+	                    auth_state      => $args{-auth_state},
+						referer         => $referer, 
+						url             => $url, 
+						query_string    => $query_string, 
+						path_info       => $path_info, 
+						show_other_link => _show_other_link(),  
+				    }
+				}
+		    ); 
+	}
 }
 
 
@@ -403,15 +429,12 @@ sub default_screen {
 	
 
 	my $labels = {}; 
-	foreach my $l( available_lists(-dbi_handle => $dbi_handle) ){
+	foreach my $l( available_lists() ){
 	        
 	        # This is a weird placement...
 	        if(!$subscriber_fields){ 
 	            require DADA::MailingList::Subscribers; 
-					   $DADA::MailingList::Subscribers::dbi_obj = $dbi_handle; 
-						
 	            my $lh = DADA::MailingList::Subscribers->new({-list => $l}); 
-	
 	            $subscriber_fields = $lh->subscriber_fields; 
 	        }
 	        # /This is a weird placement...
@@ -551,14 +574,14 @@ sub list_page {
 sub admin { 
 
 	my %args = (
-	            -login_widget            => $DADA::Config::LOGIN_WIDGET,
-	            -no_show_create_new_list => 0, 
-				-cgi_obj                 => '', 
-				@_,
-			   ); 
+		-login_widget            => $DADA::Config::LOGIN_WIDGET,
+		-no_show_create_new_list => 0, 
+		-cgi_obj                 => '', 
+		@_,
+	); 
 	
 	my $login_widget = $DADA::Config::LOGIN_WIDGET;
-	
+
     # Why is this so BIG?!
     if($args{-login_widget} eq 'text_box'){ 
         $login_widget = 'text_box';
@@ -569,7 +592,7 @@ sub admin {
     } else { 
         carp "'\$DADA::Config::LOGIN_WIDGET' misconfigured!";
     }
-	
+
 	my @available_lists = available_lists();
 	
     $DADA::Config::LIST_QUOTA = undef if strip($DADA::Config::LIST_QUOTA) eq '';
@@ -584,10 +607,12 @@ sub admin {
      }	
 	
 	
-	my $list_popup_menu = list_popup_menu(-name   	        => 'admin_list', 
-										  -show_hidden      => 0,
-										  -empty_list_check => 1, 
-										 );
+	my $list_popup_menu = list_popup_menu(
+		-name   	         => 'admin_list', 
+		-show_hidden         => 0,
+		-empty_list_check    => 1,
+		-show_list_shortname => 1, 
+	);
 	
 	if(!$list_popup_menu){ 
 	    $login_widget = 'text_box'; # hey Zeus that's a lot of switching aboot. 
@@ -603,33 +628,33 @@ sub admin {
 	
 	
         my $logged_in_list_name = undef; 
-        my ($admin_list, $root_login, $checksout) = check_list_security(-cgi_obj         => $args{-cgi_obj},  
-                                                                        -Function        => 'admin',
-                                                                        -manual_override => 1
-                                                                      );
+        my ($admin_list, $root_login, $checksout) = check_list_security(
+														-cgi_obj         => $args{-cgi_obj},  
+                                                        -Function        => 'admin',
+                                                        -manual_override => 1,
+                                                    );
         if($checksout == 1){ 
             require DADA::MailingList::Settings; 
-                   $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
+            $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
             my $l_ls             = DADA::MailingList::Settings->new({-list => $admin_list}); 
             my $l_li             = $l_ls->get(); 
             $logged_in_list_name = $l_li->{list_name};
         }
-    
-    
+
     return screen(
                     {
                         -screen => 'admin_screen.tmpl',
                         -expr   => 1, 
                         -vars   => { 
-    
+	    
                             login_widget            => $login_widget, 
                             list_popup_menu         => $list_popup_menu,
                             list_max_reached        => $list_max_reached, 
                             auth_state              => $auth_state, 
                             show_other_link         => _show_other_link(),  
                             no_show_create_new_list => $args{-no_show_create_new_list}, 
-                            
                             logged_in_list_name     => $logged_in_list_name, 
+
                             }, 
                         }
 	                );
@@ -640,7 +665,7 @@ sub admin {
 sub _show_other_link { 
 
     require DADA::MailingList::Settings; 
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
+    $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
     
     
     # Basically, if there's at least one list that's hidden, we show the 
@@ -660,6 +685,29 @@ sub _show_other_link {
 
 
 
+sub show_login_list_textbox { 
+	
+	# This means, if all the lists are hidden, we have to show the 
+	# text login box. Yup. 
+	#
+	
+	require DADA::MailingList::Settings; 
+    $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
+    
+    foreach my $list(available_lists(-Dont_Die => 1) ){
+        my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+        my $li = $ls->get; 
+        return 0
+            if $li->{hide_list} == 0; 
+	}
+			
+    return 1;
+	
+}
+
+
+
+
 sub html_archive_list { 
 
 	#  DEV: god, what a mess...
@@ -667,9 +715,7 @@ sub html_archive_list {
 	my $list = shift; 
 	my $t    = "";
 	
-	require DADA::MailingList::Archives;
-	 	    $DADA::MailingList::Archives::dbi_obj = $dbi_handle; 
-	
+	require DADA::MailingList::Archives; 
 	require DADA::MailingList::Settings;
 		   $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
@@ -1225,8 +1271,6 @@ sub screen {
                  exists($args->{-list_settings_vars_param})    # This is a rehash of the last if() statement, but it's here, for clarity...
             ){             
                 require DADA::MailingList::Settings; 
-                       $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
-
                 my $ls = DADA::MailingList::Settings->new(
 							{
                              	-list => $args->{-list_settings_vars_param}->{-list},
@@ -1326,7 +1370,6 @@ sub screen {
 				){ 
   					
             	    require  DADA::MailingList::Subscribers;     
-                            $DADA::MailingList::Subscribers::dbi_obj = $dbi_handle; 
                 
 	                my $lh = DADA::MailingList::Subscribers->new(
 								{
@@ -1349,7 +1392,6 @@ sub screen {
 				if(exists($args->{-subscriber_vars_param}->{-use_fallback_vars})){ 
 					if($args->{-subscriber_vars_param}->{-use_fallback_vars} == 1){ 
 						require DADA::MailingList::Subscribers;
-						       $DADA::MailingList::Subscribers::dbi_obj = $dbi_handle; 
 					  	my $lh = DADA::MailingList::Subscribers->new(
 									{
 		                            	-list => $args->{-subscriber_vars_param}->{-list},
@@ -1382,8 +1424,6 @@ sub screen {
 			if(exists($args->{-subscriber_vars_param}->{-use_fallback_vars})){ 
 				if($args->{-subscriber_vars_param}->{-use_fallback_vars} == 1){ 
 					require DADA::MailingList::Subscribers;
-					       $DADA::MailingList::Subscribers::dbi_obj = $dbi_handle;
-					
 				  	my $lh = DADA::MailingList::Subscribers->new(
 								{
 	                            	-list => $args->{-subscriber_vars_param}->{-list},
@@ -1761,8 +1801,6 @@ sub subscription_form {
     
     my $model_list = $available_lists[0]; 
     require DADA::MailingList::Subscribers; 
-           $DADA::MailingList::Subscribers::dbi_obj = $dbi_handle;
-
     my $model_lh   = DADA::MailingList::Subscribers->new({-list => $model_list});     
     my $subscriber_fields = $model_lh->subscriber_fields(
                                 {
