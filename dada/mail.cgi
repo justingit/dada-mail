@@ -1,5 +1,5 @@
 #!/usr/bin/perl 
-package mail;
+package mail; 
 
 use strict;
 use 5.8.1; 
