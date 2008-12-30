@@ -18,6 +18,8 @@ B<...yes>
 
 I do get this asked a lot, so I'm sorry I have to repeat myself - it's a project for someone else, I'm personally not interested in making it happen. So please understand - at the moment - no, Dada Mail does not work on a Windows Server. 
 
+The largest hurtle is going to be emulation of the C<fork()> Perl subroutine. 
+
 =head2 Does Dada Mail need any special Perl CPAN modules installed? 
 
 Yes it does, but Dada Mail I<should> come with all the CPAN modules that are needed within the distribution itself. 
@@ -36,15 +38,198 @@ Dada Mail does have some modes where it can be run from a command line/cron job,
 
 No. Dada Mail is not an autoresponder.
 
+The closet thing in Dada Mail is going to be B<Beatitude>, which allows you to set mass mailings on a preset schedule, but it does not keep track, on a subscriber-by-subscriber basis, which messages an individual subscriber has received. 
+
+
+
+=head1 Everyday Tasks
+
+=head2 How Do I Create a New List? 
+
+You can create a new list by visiting the administration screen. A link should be on the bottom of the default screen of Dada Mail, if it's not visible, point your browser to this location:
+
+L<http://example.com/cgi-bin/dada/mail.cgi/admin>
+
+Replacing, I<http://example.com/cgi-bin/dada/mail.cgi> with the URL of your own Dada Mail. 
+
+Enter your Dada Mail Root Password in the form entitled, B<Create a New Mailing List>
+
+=head2 How Do I Log Into an Already Existing List? 
+
+You can log into an already existing list by visiting the administration screen. A link should be on the bottom of the default screen of Dada Mail, if it's not visible, point your browser to this location:
+
+L<http://example.com/cgi-bin/dada/mail.cgi/admin>
+
+Replacing, I<http://example.com/cgi-bin/dada/mail.cgi> with the URL of your own Dada Mail. 
+
+Select your list from the popup menu and enter either your B<List Password>, or the B<Dada Mail Root Password> in the form entitled, B<Enter Your List Control Panel>.
+
+The, B<Dada Mail Root Password> can be used to log into any list being administrated by Dada Mail, as well as allowing you to access any adminsitration screens that are not allowed to be accessed when logging in using the B<List Password>. 
+
+If the list you're attempting to access is not listed in the popup menu, you may have made your list, B<hidden>. To log into a hidden list, click the, B<other...> link that's located underneith the popup menu. 
+
+When the screen is refreshed, the popup menu will be replaced by a text box. You can then enter the B<list short name> of the list you want to log into. 
+
+If you do not remember the B<list short name> of the list you want to log into, you can also simply log into any list with your Dada Mail Root Password and once logged in, switch which list you want to work on, by selecting the list you want to work inthe popup menu on the upper left hand side of the List Control Panel. All lists available will be listed in this popup menu. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=head2  How do I delete a list? 
+
+Log into a list using the Dada Mail Root Password. You'll see the option under the, B<Manage List> heading. 
+
+=head2 Can I rename the mail.cgi file?
+
+Yes. You can rename the, B<mail.cgi> file to any other valid filename, like newsletter.cgi or craaaaazyname.cgi. You'll most likely have to keep the file ending either, B<.cgi> or B<.pl>
+
+The only place that this variable is hardcoded is in the, B<PROGRAM_URL> variable - so make sure to change this variable as well to reflect the file name changes.
+
+=head2 How do I fetch/reset the Dada Mail Root Password
+
+There is a plugin, described here: 
+
+L<http://dadamailproject.com/support/documentation/change_root_password.cgi.html>
+
+That will allow you to change the Dada Mail Root Password. 
+
+Other than that plugin, there is currently no way, through the Dada Mail web-based interface to fetch the Dada Mail Root Password - you'll have to actually retrieve it from a config file - here's how:
+
+I<Usually>, The Dada Mail Root Password is stored in the Config.pm file, which itself is located in the, I<dada/DADA/> directory of your cgi-bin. It's under the variable, B<$PROGRAM_ROOT_PASSWORD>. It should look something like this: 
+
+ $PROGRAM_ROOT_PASSWORD ||= 'sneakysneaky'; 
+
+In this case, the Dada Mail Root Password is, B<sneakysneaky>. 
+
+If this variable is set to, B<root_password> and that doesn't work, see if the password isn't set in the outside config file. 
+
+The outside config file is saved in the directory set in the same Config.pm file we are talking about, in a variable called, B<$PROGRAM_CONFIG_FILE_DIR>. That variable should hold the absolute server path to a directory that holds a file named, I<.dada_config>. The file is a plain text file, so open it up in a text editor and again look for the, B<$PROGRAM_ROOT_PASSWORD> variable. 
+
+If, in either of these locations you find that the Dada Mail Root Password has been set to an odd mixture of numbers/letters/dashes, etc - the Dada Mail Root Password is most likely encrypted and there B<is no way to decrypt the password>, so the best you can do is reset it. You can encrypt a password by visiting your Dada Mail with a query string like this: 
+
+http://example.com/cgi-bin/dada/mail.cgi?f=pass_gen
+
+and follow the instructions. 
+
+=head2 Is there any way to stop a mass mailing once it is started? 
+
+Yes. In the list control panel, click on, "Monitor Your Mailings", click on the mailing you want to stop and when on that specific message screen, click the, B<STOP Mailing> button.
+
+2.10.10 and below:
+
+Yes, but not from the web ui. There are two techniques, kill the process outright and removing the temporary copy of the subscriber list. 
+
+=over
+
+=item * Killing the sending process
+
+If you have shell access, issue the B<kill> command with the process id (pid) of the sending process. This id should be writtern down in Dada Mail's usage log - if you haven't set this log explicitly, it should be saved as, I<dada_usage.txt> in whatever directory you set the B<$LOGS> variable to - if you haven't set that variable explicitly, that variable will be set to whatever B<$FILES> is set to (*whew*!)
+
+You'll see an entry in the log that looks sort of like this: 
+
+ [Fri Feb  3 03:45:03 2006]	listshortname		Message pid: 76354	Subject:This is my subject!
+
+The message pid for this message is, B<76354>. You'll then want to type in the B<kill> command: 
+
+ kill 76354
+
+ The exact format of issuing the command my be different for your server, but that's the jist of it. 
+
+=item * Deleting the temporary subscriber list
+
+When mass mailings occur, a temporary file is created, holding all your list subscribers. This keeps the main list free for subscriptions/unsubscriptions while the mailing is going out. Handy. If you remove this file while a mailing is going out, you'll essentially stop the mass mailing. 
+
+This file is saved in whichever directory you set the, B<$TMP> variable to. If you haven't set the variable, it'll be saved in the directory you set the, B<$FILES> variable to. It looks sort of like this: 
+
+ mylist.list.20051120131106.78619561_at_example.com
+
+The format is, your list shortname, the type of list you're sending (usually, 'list'), a whole string of numbers that correspond to the B<Message-id> header of the message you're sending out. 
+
+Remove this file, and you're mailing will stop - you may receive a, "List Completed" message, this is normal. 
+
+=back
+
+=head1 Subscriptions
+
+=head2 How do you add subscribers to Dada Mail? 
+
+There's basically three ways to add subscribers to Dada Mail. 
+
+The first way is by having the list owner log into the List Control Panel and adding subscribers en-mass, via the, B<Manage Subscribers - Add> screen. 
+
+The second way is to provide a subscription form available to visitors of your website. 
+
+The third is to modify an already exisiting program to use Dada Mail's API either directory or indirectly. 
+
+=head3 Adding Subscribers via the List Control Panel
+
+Once logged in, the list owner will want to visit the, B<Manage Subscribers - Add> screen. 
+
+New subscribers should be prepared in CSV format, with the email address being first and any other subscriber fields coming afterwards. The actual order will be listed on this screen. 
+
+If you do not have any subscriber fields, the format needed to give Dada Mail is just, one email address and a newline. 
+
+Click the, B<Verify Subscribers...> button. When the screen refreshes, Dada Mail will give a break down of the addresses that can be subscribed and also the addresses that cannot be subscribed for reasons that include, they're already subscribed, the email address is invalid, or that the address is currently banned from subsribing, amongst other reasons. 
+
+From this point, you can make the choice to either Subscribe the addresses listed, or Send a List Invitation. 
+
+We strongly urge you to not outright subscribe any addresses that you haven't first verified completely via a Closed-Loop subscription process. Thus, you should only use this feature if you're importing an already existing subscription list. 
+
+Rather, you should send a List Invitation. A List Invitation will send out a short email message to the would-be subscribe and allow the subscriber themselves to choose to subscribe to the list. 
+
+=head3 Allowing Visitors to Subscribe
+
+Visitors to your website can subscribe to your mailing list by filling out a List Subscription Form. 
+
+This form is located  on the default screen of Dada Mail (for all lists) and also on the list-specific screen (for just that list)
+
+You can also place this subscription form on any page of an already existing website. The HTML form code can be copied from the List Control Panel screen, located at: B<Manage Appearance - Subscription Form HTML>
+
+And pasting the HTML into your page's source. 
+
+=head4 See Also
+
+There's also a Dada Mail Extension that'll allow someone to subscribe to more than one list: 
+
+L<http://dadamailproject.com/support/documentation/multiple_subscribe.cgi.html> 
+
+And another extension that will allow you to embed an AJAX-enabled subscription form: 
+
+L<http://dadamailproject.com/support/documentation-dada-3_0_1/ajax_include_subscribe.cgi.html>
+
+=head3 Using the Dada Mail API to subscribe new addresses
+
+See the following docs that pertain to using the Dada Mail API directly or indirectly to use its subscription capabilities: 
+
+L<http://dadamailproject.com/support/documentation/COOKBOOK-subscriptions.pod.html>
+
+L<http://dadamailproject.com/support/documentation/COOKBOOK-integration.pod.html>
+
+This will be a more advanced topic. 
+
 =head1 Hosting
 
 =head2 Do you host Dada Mail or do I host Dada Mail? 
 
 Dada Mail is installed on your hosting account; thus, you will be the one hosting it. 
 
+Dada Mail is not really intended to be run locally on your Desktop Computer (unless, say, you're testing it out). You'll want Dada Mail running on a server that's publically available via the web, so that subscription and unsubscription requests can be handled at all times. 
+
 =head2 Do you provide hosting services? 
 
-Personally, no - I do have some suggestions on hosting: 
+Personally, no - I do have some good suggestions on hosting: 
 
 http://dadamailproject.com/support/hosting.html
 
@@ -821,87 +1006,6 @@ http://www.faqs.org/rfcs/rfc2369.html
 
 Basically, Dada Mail sends an email message B<exactly> as you're supposed to send one - no tricks. Mom taught us the best defense is honestly. 
 
-
-=head1 Everyday Tasks
-
-
-=head2  How do I delete a list? 
-
-Log into a list using the Dada Mail Root Password. You'll see the option under the, B<Manage List> heading. 
-
-=head2 Can I rename the mail.cgi file?
-
-Yes. You can rename the, B<mail.cgi> file to any other valid filename, like newsletter.cgi or craaaaazyname.cgi. You'll most likely have to keep the file ending either, B<.cgi> or B<.pl>
-
-The only place that this variable is hardcoded is in the, B<PROGRAM_URL> variable - so make sure to change this variable as well to reflect the file name changes.
-
-=head2 How do I fetch/reset the Dada Mail Root Password
-
-There is a plugin, described here: 
-
-L<http://dadamailproject.com/support/documentation/change_root_password.cgi.html>
-
-That will allow you to change the Dada Mail Root Password. 
-
-Other than that plugin, there is currently no way, through the Dada Mail web-based interface to fetch the Dada Mail Root Password - you'll have to actually retrieve it from a config file - here's how:
-
-I<Usually>, The Dada Mail Root Password is stored in the Config.pm file, which itself is located in the, I<dada/DADA/> directory of your cgi-bin. It's under the variable, B<$PROGRAM_ROOT_PASSWORD>. It should look something like this: 
-
- $PROGRAM_ROOT_PASSWORD ||= 'sneakysneaky'; 
-
-In this case, the Dada Mail Root Password is, B<sneakysneaky>. 
-
-If this variable is set to, B<root_password> and that doesn't work, see if the password isn't set in the outside config file. 
-
-The outside config file is saved in the directory set in the same Config.pm file we are talking about, in a variable called, B<$PROGRAM_CONFIG_FILE_DIR>. That variable should hold the absolute server path to a directory that holds a file named, I<.dada_config>. The file is a plain text file, so open it up in a text editor and again look for the, B<$PROGRAM_ROOT_PASSWORD> variable. 
-
-If, in either of these locations you find that the Dada Mail Root Password has been set to an odd mixture of numbers/letters/dashes, etc - the Dada Mail Root Password is most likely encrypted and there B<is no way to decrypt the password>, so the best you can do is reset it. You can encrypt a password by visiting your Dada Mail with a query string like this: 
-
-http://example.com/cgi-bin/dada/mail.cgi?f=pass_gen
-
-and follow the instructions. 
-
-=head2 Is there any way to stop a mass mailing once it is started? 
-
-Yes. In the list control panel, click on, "Monitor Your Mailings", click on the mailing you want to stop and when on that specific message screen, click the, B<STOP Mailing> button.
-
-2.10.10 and below:
-
-Yes, but not from the web ui. There are two techniques, kill the process outright and removing the temporary copy of the subscriber list. 
-
-=over
-
-=item * Killing the sending process
-
-If you have shell access, issue the B<kill> command with the process id (pid) of the sending process. This id should be writtern down in Dada Mail's usage log - if you haven't set this log explicitly, it should be saved as, I<dada_usage.txt> in whatever directory you set the B<$LOGS> variable to - if you haven't set that variable explicitly, that variable will be set to whatever B<$FILES> is set to (*whew*!)
-
-You'll see an entry in the log that looks sort of like this: 
-
- [Fri Feb  3 03:45:03 2006]	listshortname		Message pid: 76354	Subject:This is my subject!
-
-The message pid for this message is, B<76354>. You'll then want to type in the B<kill> command: 
-
- kill 76354
-
- The exact format of issuing the command my be different for your server, but that's the jist of it. 
-
-=item * Deleting the temporary subscriber list
-
-When mass mailings occur, a temporary file is created, holding all your list subscribers. This keeps the main list free for subscriptions/unsubscriptions while the mailing is going out. Handy. If you remove this file while a mailing is going out, you'll essentially stop the mass mailing. 
-
-This file is saved in whichever directory you set the, B<$TMP> variable to. If you haven't set the variable, it'll be saved in the directory you set the, B<$FILES> variable to. It looks sort of like this: 
-
- mylist.list.20051120131106.78619561_at_example.com
-
-The format is, your list shortname, the type of list you're sending (usually, 'list'), a whole string of numbers that correspond to the B<Message-id> header of the message you're sending out. 
-
-Remove this file, and you're mailing will stop - you may receive a, "List Completed" message, this is normal. 
-
-
-=back
-
-
-
 =head1 List Subscribers
 
 =head2 How many subscribers can Dada Mail handle? 
@@ -1054,7 +1158,7 @@ And run it as a cron job.
 
 See the Mail Sending FAQ at: 
 
-L<http://dadamailproject.com/support/documentation/email_sending.pod.html>
+L<http://dadamailproject.com/support/documentation/FAQ-email_sending.pod.html>
 
 =head1 Archiving
 
@@ -1334,7 +1438,7 @@ If you rock the patches, I'll be happy to give you checkin rights - honestly, yo
 
 =head2 Is there a CVS server I can check in/out of? 
 
-Yes.
+No. We've moved to Git. That information can be accessed here: 
 
-http://dadamailproject.com/download/cvs.html
+L<http://dadamailproject.com/download/git.html>
 
