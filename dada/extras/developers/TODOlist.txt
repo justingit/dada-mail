@@ -11,7 +11,7 @@ Key:
 
 
 
-[ ] I need a purge button for subscribers. 
+[x] I need a purge button for subscribers. 
 
 
 [ ] Currently, the following sites will be notified: 
