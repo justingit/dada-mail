@@ -1,0 +1,72 @@
+I think the best thing about this will be that we've moved to git, so I can work on 3 or 4 separate branched (included the master) and if I don't finish one, or the other, no worries. I can also work on feature x until bored, and work on feature y. I'll probably do this: 
+
+master: bug fixes - whatever I also put in the separate dada-3.x.x repo
+misc_features     - little things that would be nice
+multiple_fields-subscriber_editable_fields - feature #1
+preview_mass_mailing_message - feature #2
+
+Anything else, like a little larger feature, would need its own branch
+
+
+The good thing is that the two features being funded don't have much overlap - not that I'm worried about conflicts (but, that's nice...), but either can be merged with the master when it's well and ready. So... I guess it is because of not-much-overlap. 
+
+
+These two features are currently and actively being worked on
+
+(and this is a rough to-do)
+
+Multiple Fields: Subscriber-Editable Fields
+Branch via Git
+The main trick to this feature is that subscribers will need their own login and session handling
+
+The bad news is that the current session handling needs to be revised. 
+It may behoove us to build a completely need session handling part of Dada Mail that first, only handles subscriber sessions, but has an outlook to work with the list sessioning stuff as well. 
+
+The good news as well is that the current session handler, CGI::Session will work just fine for this new task, so no new backend/SQL table is needed. This will make upgrading a lot easier. 
+
+The other thing that needs to be created is an extensible way to error check the data being giving. At the moment, the data can be pretty free-form, so this isn't a major issue, but an eye should once again be open for upgrade-friendliness. 
+
+Screens needed: 
+
+Subscriber Login
+Subscriber, "Control Panel" - wrapper template will just use the list template? 
+
+It may be a nice time to re-think the List Template - perhaps a two-column design? 
+
+Screens that need modification:
+
+List Template? It would be nice to be able to see that I (as a subscriber) is logged into the system and I can visit my personal control panel that way. 
+
+Things that should be addressed
+
+The pin number is not completely secure - not at the standard I'd like it at. It may be a good idea to harden this system down, for at least the SQL backends. This *would* require changes to the SQL backend, either by added a new field for the, "pin" to be saved, or create a new table that will hold meta information about the subscriber, like the tmp pin number and perhaps other options... The former would be easier, the latter would be more upgrade-friendly
+
+Things that would be nice:
+
+Other than the subscriber-editable fields, it would be nice to do other things with the login, including allowing people to Reply to discussion messages in the archives themselves, as well as having the archives presented in thread-view, instead of the very basic, descending (usually order) 
+
+I think it may be better to start this feature with some non-working prototypes of the design and give it to people to look over. Then, I can start hooking the ideas up!
+
+
+Another really really nice thing may be to start using a more advanced Javascript library, like, Prototype, and make the current JavaScript in Dada Mail more contemporary. Then, I can think about making more fancy things available to that Subscriber Control Panel. 
+
+I may just also put in Gravatar support, so that's one more bling thing. 
+
+
+Sending Mailing List Messages: Preview
+
+Branch via Git
+
+The main trick to this, is that there needs to be a general MIME message viewer - and right now there isn't. There's parts all over Dada Mail that kinda do this, but not really. the good thing is, the heavy lifting of actually templating out a MIME message is already done! For the previewer, we just need to then (one more step), show either the HTML or PlainText version - easy enough!
+
+
+	Tying into the other thing up there, it would be nice if the MIME template 		
+	thingy made would also be used for the archives themseleves, which are a
+	total mess. That's going to have to be on my own time though, so I guess 
+	It's not the highest priority. 
+	
+The other trick is that we need to have testing subscriber fields available to be filled out, so that you can test specific values in them and see what type of effect they have on your message. 
+
+The other nice thing *may* be to have the message, once you've previewed it, then sent to either a test address or the list owner, for a final, once-over that everything looks good. 
+
+I'll probably start this with just popping out a new window, with controls at the top and the preview below that, so you can continue to play with various params? The message itself won't be editable (you can still do that in the, "Send a List Message", screen, but the subscriber field variables will be editable. 
