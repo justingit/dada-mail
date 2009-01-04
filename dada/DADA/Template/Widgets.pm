@@ -1611,7 +1611,6 @@ sub screen {
 	if($args->{-list}){ 
 		$template->param('list', $args->{-list}); 
 	}
-
 	return $template->output();
 }
 

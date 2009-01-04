@@ -1300,7 +1300,7 @@ BEGIN {
 # You CANNOT have this variable in an outside config file - 
 # it MUST be set here. 
 
-$PROGRAM_ERROR_LOG = undef; 
+$PROGRAM_ERROR_LOG = undef;
 
 # Keep this next bit as-is; it's just opening the error file for writing. 
 if($PROGRAM_ERROR_LOG){open (STDERR, ">>$PROGRAM_ERROR_LOG") 

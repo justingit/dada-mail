@@ -96,7 +96,7 @@ sub open_log {
 		
 		
 		chmod($DADA::Config::FILE_CHMOD , $usage_log); 
-		if(open(LOG, ">>usage_log")){ 
+		if(open(LOG, ">>$usage_log")){ 
 			flock(LOG, LOCK_SH);
 		}else{ 
 			 warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER - i can't open my own log at '$DADA::Config::PROGRAM_USAGE_LOG', here's some details: $!";
