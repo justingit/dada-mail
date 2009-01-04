@@ -1543,6 +1543,8 @@ sub screen {
 		
    }else{ 
    
+# warn '$args->{-screen} ' . $args->{-screen}; 
+
    	if($args->{-screen}){ 
 
    		require HTML::Template;
@@ -1609,7 +1611,7 @@ sub screen {
 	if($args->{-list}){ 
 		$template->param('list', $args->{-list}); 
 	}
-				   
+
 	return $template->output();
 }
 
