@@ -61,7 +61,7 @@ BEGIN
   $max_recipients    = 5;
   
   # Dada-ized
-  $mailprog          = $MAILPROG . ' -oi -t';
+  $mailprog          = $DADA::Config::MAILPROG . ' -oi -t';
   # /Dada-ized
   
   $postmaster        = '';
