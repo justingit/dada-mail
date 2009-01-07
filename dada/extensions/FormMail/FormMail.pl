@@ -5,6 +5,10 @@
 
 # Dada-ized
 
+
+$ENV{PATH} = "/bin:/usr/bin"; 
+delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
+
 use lib qw(../../ ../../DADA/perllib ../../../../perllib ../../../../perl); 
 
 use DADA::Config; 
@@ -2139,24 +2143,58 @@ sub dada_mail_subscribe {
 		if(($dada_mail_subscribe_email eq "1") || ($dada_mail_subscribe_email eq "yes")){ 
 			my ($status, $errors) = $lh->subscription_check({-email => $dm_email}); 
 			if($status == 1){ 
-				$lh->add_to_email_list(-Email_Ref => [$dm_email]); 
+				
+				my $fields = {}; 
+				foreach(@{$lh->subscriber_fields}){ 
+					$fields->{$_} = $self->{Form}{$_} ); 
+			    }
+				$lh->add_subscriber(
+				                {
+				                        -email  => $dm_email, 
+										-fields => $fields, 
+				                }
+				 );
+				
+				
+				
 			}
 		}
-		elsif(($dada_mail_confirm_email eq "1") || ($dada_mail_confirm_email eq "yes")){ 
-            my ($status, $errors) = $lh->subscription_check({-email => $dm_email}); 
+		elsif(
+			$dada_mail_confirm_email =-  1   || 
+			$dada_mail_confirm_email eq "yes"
+		){ 
+            my ($status, $errors) = $lh->subscription_check(
+				{
+					-email => $dm_email,
+				}
+			); 
+			
 			if($status == 1){ 
-			    require DADA::MailingList::Settings; 
-			    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-			    
-				require DADA::App::Messages;
-	            DADA::App::Messages::send_confirmation_message(
-					{
-		                -list   => $list, 
-		                -email  => $dm_email, 
-		                -ls_obj => $ls, 
-	        		}
-				);
 				
+			  	require CGI; 
+			    my $local_q = new CGI; 
+			       $local_q->delete_all();
+			       $local_q->param('list', $list); 
+			       $local_q->param('email', $dm_email);
+			       $local_q->param('f', 's'); 
+       
+			    foreach(@{$lh->subscriber_fields}){ 
+					$local_q->param($_, $self->{Form}{$_}; 
+			    }
+    
+			    require   DADA::App::Subscriptions; 
+			    my $das = DADA::App::Subscriptions->new; 
+    
+			    $das->subscribe(
+			         {
+            
+			            -html_output => 0,
+			            -cgi_obj     => $local_q, 
+            
+			         }
+			    );
+				
+	
 			}
 		}
 	}
