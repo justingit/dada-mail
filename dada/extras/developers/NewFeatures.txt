@@ -62,6 +62,9 @@ These major infrastructure changes should probably be addressed before getting t
 dada_subscribers
 Holds multiple entries for each subscriber, each entry just tells you what list and what sublist on that list a subscriber is subscribed to. Yes. 
 
+
+
+
 dada_subscriber_profile
 Holds GLOBAL preferences - right now, we can use: 
 
@@ -80,13 +83,13 @@ dada_subscriber_fields
 
 Holds the arbitrary fields about a subscriber - can/will be edited by the list owner and the subscriber themselves. This sort of leads to the problem of, a list owner can edit information that other list owners have access to - which is sort of weird. 
 
-I guess perhaps there could be a preference that list owners *can't* edit subscriber information, but that's a little whacky. 
+I guess perhaps there could be a preference that list owners *can't* edit subscriber information, but that's a little whacky. (No, actually, I like it) 
 
 There has to be at least a preference that says something like, "hey, what information do I use for new subscribers - they're new information, or their old information"
 
 There also is a problem that of, does the dada_subscriber_fields and dada_subscriber_profile go away, after a subscriber is unsubscribed from all the lists they were subscribed from? Or, does it stay - is their profile still active? 
 
-Perhaps, when a subscriber unsubscribed, the, "You just unsubscribed" screen has a link to the profile.... 
+Perhaps, when a subscriber unsubscribed, the, "You just unsubscribed" screen has a link to the profile.... (if profiles are activated - if not, just delete the profile outright) 
 
 I think I may side that if a subscriber has unsubscribed from ALL lists - that's it, their profile is wiped out to... or have this as a subscriber-controlled pref? 
 
@@ -94,7 +97,7 @@ Ahh, geez, this just got a lot more complex...
 
 So I guess: 
 
-"profile" automatically created upon first subscription - easy enough. Once you've subscribed, you can basically be asked to create a password - and if you don't - if you skip this step, then, whatever, you won't be able to log in (or, we can make a password for ya and send it to ya - or, something)  
+"profile" automatically created upon first subscription - easy enough - or even, "only when needed". Once you've subscribed, you can basically be asked to create a password - and if you don't - if you skip this step, then, whatever, you won't be able to log in (or, we can make a password for ya and send it to ya - or, something - or use the pin number as a password for a little bit)  
 
 What if someone wants to subscribe to another list? Do they have to go through the subscription process *yet again* - that doesn't make too too much sense. Why don't we just say, if they're already subscribed to one list - then good, they can subscribe to any other list now - unless the list is *closed*. Neat. 
 
@@ -104,9 +107,22 @@ This kind of makes the entire subscription process kind of odd - since it's, und
 
 And I have no idea how all this above is going to work on a PlainText list - I may have to, actually drop support for the PlainText backend. Bad idea? Perhaps - but if this is so, then SQLite could be a good default...?
 
+I'm def. not going to give profile support for a plaintext list, but not having support for a profile, and, "not having the profile thingy enabled" is sort of one and the same thing. 
 
 
 
+
+You know? I think it would behoove me to just say something like, 
+
+"each mailing list has it's own rules on how to subscribe" 
+
+And then, let you simple click a link to start the subscription process... *for that one list*
+
+This may just be augmented with an option in each list that says something like, "Allow one-click subscription for members of other lists"
+
+And call it down. That way, I'm not re-writing the entire subscription process stuff and we stay with this weird, hybrid idea. 
+
+*Maybe*, as well as that note, list what each list needs (double opt-in, list-owner approval, you-can't subscribe, because you're blacklisted, closed list, etc etc etc) 
 
 
 
@@ -141,6 +157,151 @@ I think it may be better to start this feature with some non-working prototypes 
 Another really really nice thing may be to start using a more advanced Javascript library, like, Prototype, and make the current JavaScript in Dada Mail more contemporary. Then, I can think about making more fancy things available to that Subscriber Control Panel. 
 
 I may just also put in Gravatar support, so that's one more bling thing. 
+
+
+API Changes
+
+DADA::MailingList::Subscribers
+
+needs to be split up into: 
+
+	DADA::MailingList::Subscribers
+	DADA::MailingList::Subscribers::Fields
+
+and, 
+
+	DADA::MailingList::Subscribers::Profile
+
+added. 
+
+the following D::M::S methods that need to be moved into D::M::S::F: 
+
+	subscriber_fields
+	add_subscriber_field
+	edit_subscriber_field
+	remove_subscriber_field
+	subscriber_field_exists
+	validate_subscriber_field_name
+	validate_remove_subscriber_field_name
+	can_have_subscriber_fields (perhaps?)
+
+These methods could also drop the, "subscriber_" part of their name, but I could call it like: 
+
+my $sh = DADA::MailingList::Subscribers->new(...)
+   $sh->fields->add;
+   $sh->fields->edit;
+   $sh->fields->remove; 
+   $sh->fields->validate_name; 
+
+perhaps?
+
+It would also be nice to add a simple reorder_fields method
+
+
+# THis below will be a lot later, I'm guessing
+I really need a DADA:MailingList::Subscriber object, too:
+
+	$sh->subscriber->add
+	etc...
+
+	And then, 
+
+		$sh->subscriber->profile->password
+
+Although, that *Would* be nice, it's probably information that'll just be returned via the, get_subscriber method atm: 
+
+my $subscriber = $sh->get_subscriber({-email => $email}); 
+
+But, I'd have to change the API a little bit, so it returns something like, 
+
+{
+	email => 'you@yours.com', 
+	fields => {
+				first_name => "Jon", 
+				...
+ 			  },
+	profile => { 
+		password => '1234abcd',  
+		pin      => 'yadda', 
+	
+	},
+};	
+
+
+}
+
+
+or maybe just, 
+
+my $subscriber_profile = $sh->get_subscriber_profile({-email => $email}); 
+
+All of a sudden, it looks like a great idea to make a subscriber object... 
+
+at least for, 
+
+	get
+	edit
+	delete 
+	perhaps...add?
+
+	$sh->subscriber->get();
+
+Well, actually, everthing except like, num_subscribers. heh... 
+
+
+I think it's time for me to do some more, "isa" hasa" research with Perl. 
+
+Has is just, 
+
+use Base... 
+
+stuff, right? 
+
+I don't want to extend an object, I just want an object to have methods to other objects?
+
+Whatever it is, I can make these new objects: 
+
+::Fields
+::Profile
+::Subscriber
+
+and make it hooked up to, 
+
+::Subscribers
+
+easily, Something like,
+ 
+D::M::SubscriberProfile #I'm not sure if I even need this, 
+since I don't need to work with it?
+
+D::M::SubscriberFields
+D::M::Subscribers
+	Subscriber
+		fields() # perhaps (not an object, just a method)
+		profile()# perhaps (not an object, just a method)
+
+# Looks like, Subscriber hasa Fields and hasa Profile and, "Subscribers" just 
+# has a utility method to easily access the Subscriber object? Perhaps it would 
+# just have, "add", and, "get", which would just return a, D::M::Subscriber 
+# object. From there, you can then call, "edit", or, "profile" or, "fields", 
+# (or whatever) 
+
+
+So, basically split up, D::M::Subscribers to, 
+
+D::M::Subscribers
+and, 
+D::M::Subscriber
+and, 
+D::M::SubscriberFields
+
+Which would be easy - all the methods are already written, it's just a organizational/normalization- most of the current methods will go into D::M::Subscriber - ok
+
+And we add, 
+
+profile methods to D::M::Subscriber - no problem!
+
+Do first step - split up, get the tests passing again, AND THEN change the SQL Schema, get the tests passing again, AND THEN, make sure the program actually works - tweak as needed, AND THEN add the new methods, make new tests to pass, AND THEN, add the new functionality. 
 
 
 Sending Mailing List Messages: Preview
