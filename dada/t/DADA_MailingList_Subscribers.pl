@@ -195,7 +195,7 @@ ok($lh->can_have_subscriber_fields == 1 || $lh->can_have_subscriber_fields == 0,
         ok($@, "calling move_subscriber with incorrect -to paramater causes an error!: $@");     
 
         eval { $lh->move_subscriber({-to => 'blahblah', -from => 'yayaya'}); }; 
-        ok($@, "calling move_subscriber wwith incorrect -to and -from paramater causes an error!: $@");     
+        ok($@, "calling move_subscriber with incorrect -to and -from paramater causes an error!: $@");     
         
         eval { $lh->move_subscriber({-to => 'blahblah', -from => 'yayaya', -email => 'whackawhacka'}); }; 
         ok($@, "calling move_subscriber with incorrect list_type in, '-to' causes an error!: $@");   
@@ -247,7 +247,7 @@ ok($lh->can_have_subscriber_fields == 1 || $lh->can_have_subscriber_fields == 0,
     ok($@, "calling copy_subscriber with incorrect -to paramater causes an error!: $@");     
 
     eval { $lh->copy_subscriber({-to => 'blahblah', -from => 'yayaya'}); }; 
-    ok($@, "calling copy_subscriber wwith incorrect -to and -from paramater causes an error!: $@");     
+    ok($@, "calling copy_subscriber with incorrect -to and -from paramater causes an error!: $@");     
     
     eval { $lh->copy_subscriber({-to => 'blahblah', -from => 'yayaya', -email => 'whackawhacka'}); }; 
     ok($@, "calling move_subscriber with incorrect list_type in, '-to' causes an error!: $@");   
