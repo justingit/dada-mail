@@ -304,6 +304,39 @@ profile methods to D::M::Subscriber - no problem!
 Do first step - split up, get the tests passing again, AND THEN change the SQL Schema, get the tests passing again, AND THEN, make sure the program actually works - tweak as needed, AND THEN add the new methods, make new tests to pass, AND THEN, add the new functionality. 
 
 
+TO DO LIST (what's above in todo list form) 
+
+Key: 
+[ ] not finished
+[-] working on
+[+] pending finishing
+[*] done! 
+
+
+[ ] Split up D::ML::Subscribers into: 
+	[ ] D::ML::Subscriber
+	[ ] D::ML::Subscriber::Profile
+	[ ] D::ML::Subscribers
+	[ ] D::ML::SubscriberFields
+
+[ ] Get current test to pass 100% - for now, let's keep backwards 
+compatibility with current API - shouldn't be hard. 
+
+[ ] Change SQL schema 
+[ ] Get tests to pass 100%
+[ ] Figure out migration steps from old schema to new schema, this basically means: 
+	[ ] move column values from dada_subscribers to dada_subscriber_fields
+	[ ] add dada_subscriber_fields and dada_subscriber_profile - fairly easy?
+
+[ ] Add stuff for D::ML::Profile - basically just password? Pin can come later, as that's a big change, but really worth it
+
+[ ] Add session handling things and start working on UI for the actually subscriber to edit their own things. (this to-do needs to be extrapolated
+
+
+
+
+
+
 Sending Mailing List Messages: Preview
 
 Branch via Git
