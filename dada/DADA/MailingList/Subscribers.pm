@@ -469,91 +469,9 @@ sub filter_subscribers_w_meta {
 
 
 
-sub get_fallback_field_values { 
-
-    my $self = shift; 
-    my $v    = {}; 
-    
-    return $v if  $self->can_have_subscriber_fields == 0; 
-    require  DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}});
-    my $li = $ls->get; 
-    
-    
-    my @fallback_fields = split("\n", $li->{fallback_field_values}); 
-    foreach(@fallback_fields){ 
-        my ($n, $val) = split(':', $_); 
-        $v->{$n} = $val; 
-    }
-    
-    return $v; 
-}
 
 
 
-
-sub _save_fallback_value { 
-
-    my $self = shift; 
-    my ($args) = @_; 
-    
-    if(! exists $args->{-field}){ 
-        croak "You MUST pass a value in the -field paramater!"; 
-    }
-
-    if(! exists $args->{-fallback_value}){ 
-        croak "You must pass a value in the -fallback_value paramater!"; 
-    }
-    
- 	require  DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}});
-
-    my $fallback_field_values = $self->get_fallback_field_values;
-    
-    my $fallback_field_clump = ''; 
-	
-	foreach(keys %$fallback_field_values){ 
-		$fallback_field_clump .= $_ . ':' . $fallback_field_values->{$_} . "\n";
-	}
-
-    $args->{-fallback_value} =~ s/\r|\n/ /g;
-    $args->{-fallback_value} =~ s/\://g;
-    
-    $fallback_field_clump .= $args->{-field} . ':' . $args->{-fallback_value} . "\n";
-    
-    $ls->save({fallback_field_values => $fallback_field_clump});
-    
-    return 1; 
-}
-
-
-
-sub _remove_fallback_value { 
-
-    my $self = shift; 
-    my ($args) = @_; 
-    
-    if(! exists $args->{-field}){ 
-        croak "You MUST pass a value in the -field paramater!"; 
-    }
-
-    require DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}}); 
-    my $li = $ls->get; 
-    
-    
-    my $fallback_field_values = $self->get_fallback_field_values;
-    
-
-    my $new_fallback_field_values = '';
-    foreach(keys %$fallback_field_values){ 
-        next if $_ eq $args->{-field}; 
-        $new_fallback_field_values .= $_ . ':' . $fallback_field_values->{$_} . "\n";
-    }
-    $ls->save({fallback_field_values => $new_fallback_field_values}); 
-    
-    return 1; 
-}
 
 
 
