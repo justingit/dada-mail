@@ -24,7 +24,7 @@ isn't good for general use.
 =cut 
 
 
-use lib '../';
+use lib qw(../../ ../../../ ../../perllib);
 use DADA::Config qw(!:DEFAULT); 
 use DADA::App::Guts; 
 use Fcntl qw(LOCK_SH);
