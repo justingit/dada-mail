@@ -46,8 +46,6 @@ LOCK_EX
 LOCK_SH 
 LOCK_NB); 
 
-use DADA::Logging::Usage;
-my $log =  new DADA::Logging::Usage;;
 
 
 require Exporter; 
