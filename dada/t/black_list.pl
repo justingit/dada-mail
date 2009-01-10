@@ -144,7 +144,9 @@ eval {
 
 	
 ok(!$@, "But passing the, -mode => 'writeover' paramater seems to let this happen just fine.");  
-
+if($@){ 
+	diag $@; 
+}
 
 
 
