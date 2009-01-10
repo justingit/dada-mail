@@ -308,22 +308,23 @@ my @statements = split(';', $sql);
 		my $bounce_scores_table = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{bounce_scores_table};
 		
 		
-	#	$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
-	#	$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
-	#	$_ =~ s{CREATE TABLE dada_archives}{CREATE TABLE $archives_table}; 
-	#	$_ =~ s{CREATE TABLE dada_sessions}{CREATE TABLE $session_table}; 
-	#	$_ =~ s{CREATE TABLE dada_bounce_scores}{CREATE TABLE $bounce_scores_table};
-	#	
+		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
+		$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
+		$_ =~ s{CREATE TABLE dada_archives}{CREATE TABLE $archives_table}; 
+		$_ =~ s{CREATE TABLE dada_sessions}{CREATE TABLE $session_table}; 
+		$_ =~ s{CREATE TABLE dada_bounce_scores}{CREATE TABLE $bounce_scores_table};
+		
 #
 #		$_ =~ s{CREATE INDEX dada_settings}{CREATE INDEX $settings_table}g; 
 #		$_ =~ s{CREATE INDEX dada_subscribers}{CREATE INDEX $subscribers_table}g; 
 #		$_ =~ s{CREATE INDEX dada_archives}{CREATE INDEX $archives_table}g; 
 #		$_ =~ s{CREATE INDEX dada_sessions}{CREATE INDEX $session_table}g;
 		
-		$_ =~ s/dada_settings/$settings_table/g; 
-		$_ =~ s/dada_subscribers/$subscribers_table/g; 
-		$_ =~ s/dada_archives/$archives_table/g; 
-		$_ =~ s/dada_sessions/$session_table/g; 
+		#?
+		#$_ =~ s/dada_settings/$settings_table/g; 
+		#$_ =~ s/dada_subscribers/$subscribers_table/g; 
+		#$_ =~ s/dada_archives/$archives_table/g; 
+		#$_ =~ s/dada_sessions/$session_table/g; 
 						
 		if(length($_) > 10){ 
 	    	carp 'query: ' . $_; 
