@@ -117,8 +117,8 @@ sub send_generic_email {
 
 sub send_confirmation_message { 
 
-	my ($args) = @_; 
 
+	my ($args) = @_; 
 	####
 		my $ls;
 		if(exists($args->{-ls_obj})){ 
