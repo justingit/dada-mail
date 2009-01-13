@@ -41,5 +41,19 @@ sub _init  {
 }
 
 
+sub can_have_subscriber_fields { 
+
+    my $self = shift; 
+    return 0; 
+}
+
+
+
+
+sub subscriber_fields { 
+    return []; 
+}
+
+
 1; 
 

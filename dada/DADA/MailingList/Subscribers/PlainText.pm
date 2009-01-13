@@ -22,41 +22,7 @@ LOCK_NB);
 use DADA::App::Guts;
 use DADA::Logging::Usage;
 
-my $log = new DADA::Logging::Usage;
-
-
 use strict; 
-
-
-
-sub new {
-	my $class = shift;
-	
-	my ($args) = @_; 
-	
-	   my $self = {};			
-       bless $self, $class;
-	   $self->_init($args); 
-	   return $self;
-}
-
-sub _init  { 
-	
-    my $self = shift; 
-
-	my ($args) = @_; 
-
-	if(!exists($args->{-ls_obj})){ 
-		require DADA::MailingList::Settings; 
-		$self->{ls} = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
-	}
-	else { 
-		$self->{ls} = $args->{-ls_obj};
-	}
-	
-	$self->{list} = $args->{-list}; 
-
-}
 
 
 
@@ -596,7 +562,7 @@ sub add_to_email_list {
 		print LIST "$_\n";
 		$email_count++;
 		# js - log it
-		$log->mj_log($self->{list},"Subscribed to $write_list.$ending", $_) if (($DADA::Config::LOG{subscriptions}) && ($args{-Mode} ne 'writeover')); 
+		$self->{'log'}->mj_log($self->{list},"Subscribed to $write_list.$ending", $_) if (($DADA::Config::LOG{subscriptions}) && ($args{-Mode} ne 'writeover')); 
 	}
 		close(LIST);
 		return $email_count; 
@@ -748,7 +714,7 @@ sub remove_from_list {
 				  #missed the boat! 
 				  $count++;
 				  # js - log it
-					$log->mj_log($self->{list},"Unsubscribed from $list.$type", $check_this) if $DADA::Config::LOG{subscriptions}; 
+					$self->{'log'}->mj_log($self->{list},"Unsubscribed from $list.$type", $check_this) if $DADA::Config::LOG{subscriptions}; 
 			  }
 		}
 		
@@ -1250,26 +1216,11 @@ sub can_filter_subscribers_through_blacklist {
 	return 0; 
 }
 
-
-
-
 sub can_have_subscriber_fields { 
 
     my $self = shift; 
     return 0; 
 }
-
-
-
-
-sub subscriber_fields { 
-    return []; 
-}
-
-
-
-
-
 
 
 

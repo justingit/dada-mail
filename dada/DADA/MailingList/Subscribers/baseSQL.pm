@@ -9,9 +9,6 @@ use Carp qw(croak carp confess);
 
 use DADA::Config qw(!:DEFAULT);  
 use DADA::App::Guts;
-use DADA::Logging::Usage;
-use DADA::MailingList::SubscriberFields; 
-
 	
 my $email_id         = $DADA::Config::SQL_PARAMS{id_column} || 'email_id';
 
@@ -31,109 +28,6 @@ use Fcntl qw(O_WRONLY
              LOCK_SH 
              LOCK_NB
             ); 
-
-my %fields; 
-
-my $dbi_obj; 
-
-
-
-sub new {
-
-	my $class  = shift;
-	my ($args) = @_; 
-
-	my $self = {};			
-	bless $self, $class;
-	$self->_init($args); 
-	return $self;
-
-}
-
-
-
-
-
-sub _init  { 
-
-    my $self = shift; 
-
-	my ($args) = @_; 
-
-	if(!exists($args->{-ls_obj})){ 
-		require DADA::MailingList::Settings;
-		       $DADA::MaiingList::Settings::dbi_obj = $dbi_obj; 
-		 
-		$self->{ls} = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
-	}
-	else { 
-		$self->{ls} = $args->{-ls_obj};
-	}
-	
-    
-    $self->{'log'}      = new DADA::Logging::Usage;
-    $self->{list}       = $args->{-list};
-
-    $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
-    
-	if(!$dbi_obj){ 
-		#warn "We don't have the dbi_obj"; 
-		require DADA::App::DBIHandle; 
-		$dbi_obj = DADA::App::DBIHandle->new; 
-		$self->{dbh} = $dbi_obj->dbh_obj; 
-	}else{ 
-		#warn "We HAVE the dbi_obj!"; 
-		$self->{dbh} = $dbi_obj->dbh_obj; 
-	}
-	
-	$self->{fields} = DADA::MailingList::SubscriberFields->new({-list => $self->{list}}); 
-		
-		
-	
-}
-
-
-
-
-sub columns { 
-	my $self = shift; 
-	return $self->{fields}->columns; 
-}
-sub subscriber_fields { 
-	my $self = shift; 
-	return $self->{fields}->subscriber_fields;
-}
-sub add_subscriber_field { 
-	my $self = shift; 
-	return $self->{fields}->add_subscriber_field(@_);
-}
-sub edit_subscriber_field { 
-	my $self = shift; 
-	return $self->{fields}->edit_subscriber_field(@_);
-}
-sub remove_subscriber_field { 
-	my $self = shift; 
-	return $self->{fields}->remove_subscriber_field(@_);
-}
-sub subscriber_field_exists { 
-	my $self = shift; 
-	return $self->{fields}->subscriber_field_exists(@_);
-}
-sub validate_subscriber_field_name { 
-	my $self = shift; 
-	return $self->{fields}->validate_subscriber_field_name(@_);
-}
-sub validate_subscriber_field_name { 
-	my $self = shift; 
-	return $self->{fields}->validate_subscriber_field_name(@_);
-}
-sub get_fallback_field_values { 
-	my $self = shift; 
-	return $self->{fields}->get_fallback_field_values(@_);
-}
-
-
-
 
 
 sub open_email_list {  
@@ -1129,18 +1023,18 @@ sub remove_from_list {
 						 
 			if($args{-Type} eq 'black_list'){ 
 				if($DADA::Config::GLOBAL_BLACK_LIST  != 1){ 
-					$query .= 'AND list      = ?'
+					$query .= ' AND list      = ?'
 				}
 			}elsif($args{-Type} eq 'list'){ 
 				if($DADA::Config::GLOBAL_UNSUBSCRIBE  != 1){ 
-					$query .= 'AND list      = ?'
+					$query .= ' AND list      = ?'
 				}
 			}else{ 
-				$query .= 'AND list      = ?'
+				$query .= ' AND list      = ?'
 			}
 			
 			my $sth = $self->{dbh}->prepare($query);   
-										
+			#warn 'query: ' . $query; 
 		   # For a non-SELECT statement, execute returns the number of rows affected, if known. 
 		   my $rv; 
 		   
@@ -1151,7 +1045,7 @@ sub remove_from_list {
 					or croak "cannot do statement (at: remove from list)! $DBI::errstr\n";   
 			   
 		   }else{ 
-		   
+		   	
 		   		$rv = $sth->execute($_, $args{-Type}, $self->{list}) 
 					or croak "cannot do statement (at: remove from list)! $DBI::errstr\n";
 		   }
@@ -1397,7 +1291,7 @@ sub create_mass_sending_file {
 	#	push(@$clean_also_send_to, $_);
 	#}
 	
-	my @f_a_lists = available_lists(-dbi_handle => $dbi_obj); 
+	my @f_a_lists = available_lists(); 
 	my %list_names;    
 	foreach(@f_a_lists){ 
 		my $als = DADA::MailingList::Settings->new({-list => $_}); 

@@ -20,57 +20,111 @@ BEGIN {
 		}
 	}
 }
+use strict; 
+
 use base "DADA::MailingList::Subscribers::$type";
 use DADA::MailingList::Subscriber; 
+use DADA::MailingList::Subscriber::Validate;
+use DADA::MailingList::SubscriberFields; 
 
-use strict; 
 
 use DADA::Logging::Usage;
 my $log = new DADA::Logging::Usage;
 
+
+sub new {
+
+	my $class  = shift;
+	my ($args) = @_; 
+
+	my $self = {};			
+	bless $self, $class;
+	$self->_init($args); 
+	return $self;
+
+}
+
+
+
+
+
+sub _init  { 
+
+    my $self = shift; 
+
+	my ($args) = @_; 
+
+	if(!exists($args->{-ls_obj})){ 
+		require DADA::MailingList::Settings;		 
+		$self->{ls} = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
+	}
+	else { 
+		$self->{ls} = $args->{-ls_obj};
+	}
+	
+    
+    $self->{'log'}      = new DADA::Logging::Usage;
+    $self->{list}       = $args->{-list};
+
+    $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
+    	
+	if($DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/){ 
+	
+		require DADA::App::DBIHandle; 
+		my $dbi_obj = DADA::App::DBIHandle->new; 
+		$self->{dbh} = $dbi_obj->dbh_obj; 
+	}
+	
+	$self->{fields} = DADA::MailingList::SubscriberFields->new({-list => $self->{list}}); 
+		
+		
+	
+}
 
 
 
 sub add_subscriber {
 
     my $self = shift;
-    my ($args) = @_;
-
-    my $dmls =
-      DADA::MailingList::Subscriber->new( { -list => $self->{list} } );
-    my $r = $dmls->add($args);
-    return $r;
-
+	my ($args) = @_;
+	$args->{-list} = $self->{list};
+    my $dmls = DADA::MailingList::Subscriber->add( $args );
+ 	return 1; 
 }
 
 sub get_subscriber {
     my $self = shift;
     my ($args) = @_;
+	$args->{-list} = $self->{list};
+	
 
     my $dmls =
-      DADA::MailingList::Subscriber->new( { -list => $self->{list} } );
-    my $r = $dmls->get($args);
-    return $r;
+      DADA::MailingList::Subscriber->new( $args);
+    my $r =  $dmls->get($args);
+
 }
 
 sub move_subscriber {
     my $self = shift;
     my ($args) = @_;
-
+	$args->{-list} = $self->{list};
+	$args->{-type} = $args->{-from};
     my $dmls =
-      DADA::MailingList::Subscriber->new( { -list => $self->{list} } );
-    my $r = $dmls->move($args);
-    return $r;
+      DADA::MailingList::Subscriber->new( $args );
 
+	#require Data::Dumper; 
+	#die Data::Dumper::Dumper($args); 
+    my $r = $dmls->move($args);
+	return $r; 
+	
 }
 sub edit_subscriber { 
 	my $self = shift;
     my ($args) = @_;
-
+	$args->{-list} = $self->{list};
     my $dmls =
-      DADA::MailingList::Subscriber->new( { -list => $self->{list} } );
-    my $r = $dmls->edit($args);
-    return $r;
+      DADA::MailingList::Subscriber->new( $args );
+   return $dmls->edit($args);
    
 }
 
@@ -80,9 +134,11 @@ sub edit_subscriber {
 sub copy_subscriber { 
 	my $self = shift;
     my ($args) = @_;
-
+	$args->{-list} = $self->{list};
+	$args->{-type} = $args->{-from};
+	
     my $dmls =
-      DADA::MailingList::Subscriber->new( { -list => $self->{list} } );
+      DADA::MailingList::Subscriber->new( $args );
     my $r = $dmls->copy($args);
     return $r;
 }
@@ -95,10 +151,48 @@ sub remove_subscriber {
     my ($args) = @_;
 
     my $dmls =
-      DADA::MailingList::Subscriber->new( { -list => $self->{list} } );
-    my $r = $dmls->remove($args);
-    return $r;
+      DADA::MailingList::Subscriber->new( { %{$args}, -list => $self->{list} } );
+    return  $dmls->remove($args);
 }
+
+
+
+
+
+sub columns { 
+	my $self = shift; 
+	return $self->{fields}->columns; 
+}
+sub subscriber_fields { 
+	my $self = shift; 
+	return $self->{fields}->subscriber_fields;
+}
+sub add_subscriber_field { 
+	my $self = shift; 
+	return $self->{fields}->add_subscriber_field(@_);
+}
+sub edit_subscriber_field { 
+	my $self = shift; 
+	return $self->{fields}->edit_subscriber_field(@_);
+}
+sub remove_subscriber_field { 
+	my $self = shift; 
+	return $self->{fields}->remove_subscriber_field(@_);
+}
+sub subscriber_field_exists { 
+	my $self = shift; 
+	return $self->{fields}->subscriber_field_exists(@_);
+}
+sub validate_subscriber_field_name { 
+	my $self = shift; 
+	return $self->{fields}->validate_subscriber_field_name(@_);
+}
+sub get_fallback_field_values { 
+	my $self = shift; 
+	return $self->{fields}->get_fallback_field_values(@_);
+}
+
+
 
 
 
@@ -125,30 +219,26 @@ sub allowed_list_types {
 sub subscription_check { 
 	my $self = shift;
     my ($args) = @_;
-
     my $dmls =
-      DADA::MailingList::Subscriber->new( { -list => $self->{list} } );
-    my @r = $dmls->subscription_check($args);
-    return @r;
+      DADA::MailingList::Subscriber::Validate->new( { -list => $self->{list} } );
+    return $dmls->subscription_check($args);
 }
 
 sub unsubscription_check {
 	my $self = shift;
     my ($args) = @_;
-
     my $dmls =
-      DADA::MailingList::Subscriber->new( { -list => $self->{list} } );
-    my @r = $dmls->unsubscription_check($args);
-    return @r;
+      DADA::MailingList::Subscriber::Validate->new( { -list => $self->{list} } );
+    return $dmls->unsubscription_check($args);
+
 }
 sub subscription_check_xml { 
 	my $self = shift;
     my ($args) = @_;
-
     my $dmls =
-      DADA::MailingList::Subscriber->new( { -list => $self->{list} } );
-    my @r = $dmls->unsubscription_check($args);
-    return @r;
+      DADA::MailingList::Subscriber::Validate->new( { -list => $self->{list} } );
+    return $dmls->unsubscription_check($args);
+
 }
 
 
@@ -157,11 +247,9 @@ sub subscription_check_xml {
 sub unsubscription_check_xml { 
 	my $self = shift;
     my ($args) = @_;
-
     my $dmls =
-      DADA::MailingList::Subscriber->new( { -list => $self->{list} } );
-    my @r = $dmls->unsubscription_check_xml($args);
-    return @r;
+      DADA::MailingList::Subscriber::Validate->new( { -list => $self->{list} } );
+    return  $dmls->unsubscription_check_xml($args);
 }
 
 

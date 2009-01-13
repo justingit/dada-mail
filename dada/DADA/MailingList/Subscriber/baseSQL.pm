@@ -2,99 +2,19 @@ package DADA::MailingList::Subscriber::baseSQL;
 
 use strict; 
 use lib qw( ../../../../ ../../../../DADA ../../../perllib); 
+use Carp qw(carp croak);
+use DADA::Config; 
+use DADA::App::Guts; 
 
-
-use Carp qw(croak carp confess); 
-
-use DADA::Config qw(!:DEFAULT);  
-use DADA::App::Guts;
-use DADA::Logging::Usage;
-	
-# Gah... 
-use DADA::MailingList::Subscribers; 
-
-my $email_id         = $DADA::Config::SQL_PARAMS{id_column} || 'email_id';
-$DADA::Config::SQL_PARAMS{id_column} ||= 'email_id';
-
-
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL}; 
-
-use Fcntl qw(O_WRONLY  
-             O_TRUNC 
-             O_CREAT 
-             O_CREAT 
-             O_RDWR
-             O_RDONLY
-             LOCK_EX
-             LOCK_SH 
-             LOCK_NB
-            ); 
-
-my %fields; 
-
-my $dbi_obj; 
-
-
-
-sub new {
-
-	my $class  = shift;
-	my ($args) = @_; 
-
-	my $self = {};			
-	bless $self, $class;
-	$self->_init($args); 
-	return $self;
-
-}
-
-
-
-
-
-sub _init  { 
-
-    my $self = shift; 
-
-	my ($args) = @_; 
-
-	if(!exists($args->{-ls_obj})){ 
-		require DADA::MailingList::Settings;
-		       $DADA::MaiingList::Settings::dbi_obj = $dbi_obj; 
-		 
-		$self->{ls} = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
-	}
-	else { 
-		$self->{ls} = $args->{-ls_obj};
-	}
-	
-    
-    $self->{'log'}      = new DADA::Logging::Usage;
-    $self->{list}       = $args->{-list};
-
-    $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
-    
-	if(!$dbi_obj){ 
-		#warn "We don't have the dbi_obj"; 
-		require DADA::App::DBIHandle; 
-		$dbi_obj = DADA::App::DBIHandle->new; 
-		$self->{dbh} = $dbi_obj->dbh_obj; 
-	}else{ 
-		#warn "We HAVE the dbi_obj!"; 
-		$self->{dbh} = $dbi_obj->dbh_obj; 
-	}
-	
-	my $lh = DADA::MailingList::Subscribers->new({-list => $args->{-list}}); 
-	$self->{lh} = $lh;
-}
-
-
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
 
 
 sub add {
 
-    my $self = shift;
+ 	my $class = shift;
+	
     my ($args) = @_;
+	my $lh = DADA::MailingList::Subscribers->new({-list => $args->{-list}});
 
     if ( !exists $args->{ -type } ) {
         $args->{ -type } = 'list';
@@ -112,11 +32,11 @@ sub add {
 
     my $sql_str             = '';
     my $place_holder_string = '';
-    my @order               = @{ $self->{lh}->subscriber_fields };
+    my @order               = @{ $lh->subscriber_fields };
     my @values;
 
     # DEV: This is strange - you should actually get the order and what fields
-    # are valid via the $self->{lh}->subscriber_fields method and croak if any
+    # are valid via the $lh->subscriber_fields method and croak if any
     # fields are trying to be passed that aren't actually available. You know?
     # Maybe not croak - perhaps just, "forget"?
 
@@ -131,7 +51,7 @@ sub add {
     $sql_str =~ s/,$//;
     my $query =
       'INSERT INTO '
-      . $self->{sql_params}->{subscriber_table}
+      . $DADA::Config::SQL_PARAMS{subscriber_table}
       . '(email,list,list_type,list_status'
       . $sql_str . ') 
                 VALUES (?,?,?,?' . $place_holder_string . ')';
@@ -139,44 +59,58 @@ sub add {
     warn 'Query: ' . $query
       if $t;
 
-    my $sth = $self->{dbh}->prepare($query);
+    require DADA::App::DBIHandle;
+     my $dbi_obj = DADA::App::DBIHandle->new;
+     my $dbh = $dbi_obj->dbh_obj;
+    my $sth = $dbh->prepare($query);
 
     $sth->execute(
         $args->{ -email },
-        $self->{list}, $args->{ -type },
+        $args->{-list}, $args->{ -type },
         1, @values
       )
       or croak "cannot do statement (at add_subscriber)! $DBI::errstr\n";
 
     $sth->finish;
 
+	my $added  =  DADA::MailingList::Subscriber->new(
+		{
+			-list  => $args->{-list}, 
+			-email => $args->{-email}, 
+			-type  => $args->{-type},
+		}
+	); 
+
+
     if ( $DADA::Config::LOG{subscriptions} == 1 ) {
-        $self->{'log'}->mj_log(
-            $self->{list},
-            'Subscribed to ' . $self->{list} . '.' . $args->{ -type },
-            $args->{ -email }
+        $added->{'log'}->mj_log(
+            $added->{list},
+            'Subscribed to ' . $added->{list} . '.' . $added->type,
+            $added->email
         );
     }
-
-    return 1;
-
+	return $added; 
+	
 }
+
+
+
 
 sub get {
 
     my $self = shift;
     my ($args) = @_;
 
-    if ( !exists $args->{ -email } ) {
-        croak "You must pass an email in the -email paramater!";
-    }
-    if ( !exists $args->{ -type } ) {
-        $args->{ -type } = 'list';
-    }
-
-    if ( !exists $args->{ -dotted } ) {
-        $args->{ -dotted } = 0;
-    }
+    #if ( !exists $args->{ -email } ) {
+    #    croak "You must pass an email in the -email paramater!";
+    #}
+    #if ( !exists $args->{ -type } ) {
+    #    $args->{ -type } = 'list';
+    #}
+	#
+    #if ( !exists $args->{ -dotted } ) {
+    #    $args->{ -dotted } = 0;
+    #}
 
     my $sub_fields = $self->{lh}->subscriber_fields;
 
@@ -184,9 +118,9 @@ sub get {
       'SELECT * FROM '
       . $self->{sql_params}->{subscriber_table}
       . " WHERE list_type = '"
-      . $args->{ -type } . "' 
+      . $self->type . "' 
                   AND list_status =      1 
-                  AND email = '" . $args->{ -email } . "' 
+                  AND email = '" . $self->email . "' 
                  AND list = '" . $self->{list} . "'";
 
     my $sth = $self->{dbh}->prepare($query);
@@ -238,36 +172,34 @@ sub move {
     if ( !exists $args->{ -to } ) {
         croak "You must pass a value in the -to paramater!";
     }
-    if ( !exists $args->{ -from } ) {
-        croak "You must pass a value in the -from paramater!";
-    }
-    if ( !exists $args->{ -email } ) {
-        croak "You must pass a value in the -email paramater!";
-    }
 
     if ( $self->{lh}->allowed_list_types->{ $args->{ -to } } != 1 ) {
         croak "list_type passed in, -to is not valid";
     }
 
-    if ( $self->{lh}->allowed_list_types->{ $args->{ -from } } != 1 ) {
-        croak "list_type passed in, -from is not valid";
+	# Why wasn't this in before? 
+    my $moved_from_checks_out = 0; 
+    if(! exists($args->{-moved_from_check})){ 
+        $args->{-moved_from_check} = 1; 
     }
 
-    if ( DADA::App::Guts::check_for_valid_email( $args->{ -email } ) == 1 ) {
-        croak "email passed in, -email is not valid";
+    if($self->{lh}->check_for_double_email(-Email => $self->email, -Type => $self->type) == 0){ 
+        
+        if($args->{-moved_from_check} == 1){ 
+            croak $self->email . " is not subscribed to list type, " . $self->type;     
+        }
+        else { 
+            $moved_from_checks_out = 0; 
+        }
     }
+    else { 
+        $moved_from_checks_out = 1; 
+    }
+	# /Why wasn't this in before? 
 
-    if (
-        $self->{lh}->check_for_double_email(
-            -Email      => $args->{ -email },
-            -Type       => $args->{ -from },
-            -Match_Type => 'exact'
-        ) == 0
-      )
-    {
-        croak
-"email passed in, -email is not subscribed to list passed in, '-from'";
-    }
+
+
+
 
     if ( !exists( $args->{ -mode } ) ) {
         $args->{ -mode } = 'writeover_check';
@@ -276,17 +208,18 @@ sub move {
     if ( $args->{ -mode } eq 'writeover' ) {
         if (
             $self->{lh}->check_for_double_email(
-                -Email => $args->{ -email },
+                -Email => $self->email,
                 -Type  => $args->{ -to }
             ) == 1
           )
         {
-            $self->remove(
-                {
-                    -email => $args->{ -email },
-                    -type  => $args->{ -to },
-                }
-            );
+			DADA::MailingList::Subscriber->new(
+				{
+				-list  => $self->{list}, 
+				-email => $self->email,
+                -type  => $args->{ -to },
+				}
+			)->remove; 
         }
     }
     else {
@@ -313,8 +246,8 @@ sub move {
 
     my $rv = $sth->execute(
         $args->{ -to },
-        $args->{ -from },
-        $args->{ -email },
+        $self->type,
+        $self->email,
         $self->{list}
       )
       or croak "cannot do statement (at move_subscriber)! $DBI::errstr\n";
@@ -333,13 +266,21 @@ sub move {
             $self->{list},
             'Moved from:  '
               . $self->{list} . '.'
-              . $args->{ -from } . ' to: '
+              . $self->type . ' to: '
               . $self->{list} . '.'
               . $args->{ -to },
-            $args->{ -email },
+            $self->email,
         );
     }
-
+	# Since this is a reference, this should do what I want - 
+	$self = DADA::MailingList::Subscriber->new(
+		{
+			-email => $self->email, 
+			-type  => $args->{-to},
+			-list  => $self->{list}, 
+		}
+	); 
+	
     return 1;
 }
 

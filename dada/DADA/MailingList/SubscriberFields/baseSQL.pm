@@ -1,93 +1,7 @@
 package DADA::MailingList::SubscriberFields::baseSQL; 
-
-use strict; 
-
 use lib qw(./ ../ ../../ ../../../ ./../../DADA ../../perllib); 
 
-
-use Carp qw(croak carp confess); 
-
-use DADA::Config qw(!:DEFAULT);  
-use DADA::App::Guts;
-use DADA::Logging::Usage;
-		
-	
-my $email_id  = $DADA::Config::SQL_PARAMS{id_column} || 'email_id';
-
-$DADA::Config::SQL_PARAMS{id_column} ||= 'email_id';
-
-
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL}; 
-
-
-use Fcntl qw(O_WRONLY  
-             O_TRUNC 
-             O_CREAT 
-             O_CREAT 
-             O_RDWR
-             O_RDONLY
-             LOCK_EX
-             LOCK_SH 
-             LOCK_NB
-            ); 
-
-my %fields; 
-
-my $dbi_obj; 
-
-
-
-sub new {
-
-	my $class  = shift;
-	my ($args) = @_; 
-
-	my $self = {};			
-	bless $self, $class;
-	$self->_init($args); 
-	return $self;
-
-}
-
-
-
-
-
-sub _init  { 
-
-    my $self = shift; 
-
-	my ($args) = @_; 
-
-	if(!exists($args->{-ls_obj})){ 
-		require DADA::MailingList::Settings;
-		       $DADA::MaiingList::Settings::dbi_obj = $dbi_obj; 
-		 
-		$self->{ls} = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
-	}
-	else { 
-		$self->{ls} = $args->{-ls_obj};
-	}
-	
-    
-    $self->{'log'}      = new DADA::Logging::Usage;
-    $self->{list}       = $args->{-list};
-
-    $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
-    
-	if(!$dbi_obj){ 
-		#warn "We don't have the dbi_obj"; 
-		require DADA::App::DBIHandle; 
-		$dbi_obj = DADA::App::DBIHandle->new; 
-		$self->{dbh} = $dbi_obj->dbh_obj; 
-	}else{ 
-		#warn "We HAVE the dbi_obj!"; 
-		$self->{dbh} = $dbi_obj->dbh_obj; 
-	}
-	
-}
-
-
+use Carp qw(carp croak confess);
 
 sub columns { 
 	
@@ -279,40 +193,7 @@ sub edit_subscriber_field {
 
 
 
-sub remove_subscriber_field { 
 
-    my $self = shift; 
-    
-	delete($self->{cache}->{subscriber_fields}); 
-
-    my ($args) = @_;
-    if(! exists($args->{-field})){ 
-        croak "You MUST pass a field name in, -field!"; 
-    }
-    $args->{-field} = lc($args->{-field}); 
-    
-    $self->validate_remove_subscriber_field_name(
-        {
-        -field      => $args->{-field}, 
-        -die_for_me => 1, 
-        }
-    ); 
-   
-        
-    my $query =  'ALTER TABLE '  . $self->{sql_params}->{subscriber_table} . 
-                ' DROP COLUMN ' . $args->{-field}; 
-    
-    my $sth = $self->{dbh}->prepare($query);    
-    
-    my $rv = $sth->execute() 
-        or croak "cannot do statement! (at: remove_subscriber_field) $DBI::errstr\n";   
- 	
-	$self->_remove_fallback_value({-field => $args->{-field}}); 
-	delete($self->{cache}->{subscriber_fields}); 
-	
-	return 1; 
-	
-}
 
 
 
@@ -590,29 +471,6 @@ sub _remove_fallback_value {
     $ls->save({fallback_field_values => $new_fallback_field_values}); 
     
     return 1; 
-}
-
-
-
-
-sub get_fallback_field_values { 
-
-    my $self = shift; 
-    my $v    = {}; 
-    
-    return $v if  $self->can_have_subscriber_fields == 0; 
-    require  DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}});
-    my $li = $ls->get; 
-    
-    
-    my @fallback_fields = split("\n", $li->{fallback_field_values}); 
-    foreach(@fallback_fields){ 
-        my ($n, $val) = split(':', $_); 
-        $v->{$n} = $val; 
-    }
-    
-    return $v; 
 }
 
 
