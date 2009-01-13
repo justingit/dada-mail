@@ -142,9 +142,7 @@ sub subscribe {
 
 
     
-    require DADA::MailingList::Subscribers; 
-           $DADA::MailingList::Subscribers::dbi_obj = $dbi_handle; 
-        
+    require DADA::MailingList::Subscribers;         
     my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
     
     my $fields = {}; 
