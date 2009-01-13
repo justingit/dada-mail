@@ -205,20 +205,18 @@ ok($lh->can_have_subscriber_fields == 1 || $lh->can_have_subscriber_fields == 0,
 
 
         eval { $lh->move_subscriber({-to => 'list', -from => 'black_list', -email => 'whackawhacka'}); }; 
-        ok($@, "calling move_subscriber with invalid address causes an error!: $@");   
+        ok($@, "calling move_subscriber with invalid address causes an error(!)!: $@");   
         
         
-
-        eval { $lh->move_subscriber({-to => 'list', -from => 'black_list', -email => 'mytest@example.com'}); }; 
-        ok($@, "calling move_subscriber with invalid address causes an error!: $@");  
-        
+		# Erm - but that's not an invalide Address? 
+        eval { $lh->move_subscriber({-to => 'list', -from => 'black_list', -email => 'neverwasinthelist@example.com'}); }; 
+        ok($@, "calling move_subscriber with invalid address causes an error(2)!: $@");  
         
         ok($lh->add_subscriber({
             -email => 'mytest@example.com',
             -type  => 'list', 
         })); 
-    
-    
+       
         ok($lh->add_subscriber({
             -email => 'mytest@example.com',
             -type  => 'black_list', 
