@@ -1376,7 +1376,8 @@ sub screen {
 	                            	-list => $args->{-subscriber_vars_param}->{-list},
 	                         	}
 							); 
-              
+              		
+
 	                $args->{-subscriber_vars} = $lh->get_subscriber(
 	                                                {
 	                                                    -email  => $args->{-subscriber_vars_param}->{-email}, 
@@ -1387,7 +1388,6 @@ sub screen {
                 }
 
             } #if(!exists($args->{-subscriber_vars})){ 
-	
 	
 				if(exists($args->{-subscriber_vars_param}->{-use_fallback_vars})){ 
 					if($args->{-subscriber_vars_param}->{-use_fallback_vars} == 1){ 
