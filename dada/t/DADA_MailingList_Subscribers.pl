@@ -255,12 +255,12 @@ ok($lh->can_have_subscriber_fields == 1 || $lh->can_have_subscriber_fields == 0,
 
 
     eval { $lh->copy_subscriber({-to => 'list', -from => 'black_list', -email => 'whackawhacka'}); }; 
-    ok($@, "calling move_subscriber with invalid address causes an error!: $@");   
+    ok($@, "calling copy_subscriber with invalid address causes an error!: $@");   
     
     
 
     eval { $lh->copy_subscriber({-to => 'list', -from => 'black_list', -email => 'mytest@example.com'}); }; 
-    ok($@, "calling move_subscriber with invalid address causes an error!: $@");  
+    ok($@, "calling copy_subscriber with invalid address causes an error!: $@");  
     
     
     ok($lh->add_subscriber({
@@ -1272,6 +1272,8 @@ SKIP: {
 	ok($status == 0, "Status is 0 ($status)"); 
 
 
+=cut
+
 # Remove All 
 
 foreach my $type( keys %{ $lh->allowed_list_types } ) { 
@@ -1296,6 +1298,7 @@ foreach my $type( keys %{ $lh->allowed_list_types } ) {
 
 }
 
+=cut
 
 
 
