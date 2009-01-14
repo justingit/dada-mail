@@ -77,9 +77,11 @@ sub _init {
 	if ( length( strip( $args->{ -email } ) ) <= 0 ) {
 	    croak("You MUST supply an email address in the -email paramater!");
 	}
-    if(DADA::App::Guts::check_for_valid_email($args->{-email}) == 1){ 
-        croak "email passed in, -email is not valid"; 
-    }
+	if($args->{-type} ne 'black_list'){ 
+	    if(DADA::App::Guts::check_for_valid_email($args->{-email}) == 1){ 
+	        croak "email, '" . $args->{-email} ."' passed in, -email is not valid"; 
+	    }
+	}
 	$self->{email} = $args->{-email};
 	
 #/This is the new stuff, I guess: 
