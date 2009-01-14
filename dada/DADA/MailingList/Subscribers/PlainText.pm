@@ -512,66 +512,6 @@ sub num_subscribers {
 
 
 
-# This has to die. 
-sub add_to_email_list { 
-
-	my $self = shift; 
-	
-	my %args = (-Email_Ref => undef, 
-				-Type      => "list",
-				-Mode      => 'append',
-				@_);
-	
-	my $address = $args{-Email_Ref} || undef;
-	my $email_count = 0;
-	my $ending = $args{-Type}; 
-	my $write_list = $self->{list} || undef; 
-	
-	
-	if($write_list and $address){
-	
-	$write_list =~ s/ /_/i; 
-	#untaint 
-	$write_list = make_safer($write_list); 
-	$write_list =~ /(.*)/; 
-	$write_list = $1; 
-	
-	
-	#untaint 
-	$ending = make_safer($ending); 
-	$ending =~ /(.*)/; 
-	$ending = $1; 
-	
-	
-	if($args{-Mode} eq 'writeover'){ 
-	
-	
-	sysopen(LIST, "$DADA::Config::FILES/$write_list.$ending",  O_WRONLY|O_TRUNC|O_CREAT,  $DADA::Config::FILE_CHMOD ) or 
-				croak "couldn't open $DADA::Config::FILES/$write_list.$ending for writing: $!\n";
-	}else{ 
-	
-	open (LIST, ">>$DADA::Config::FILES/$write_list.$ending") or 
-		croak "couldn't open $DADA::Config::FILES/$write_list.$ending for reading: $!\n";
-	}	
-	
-	
-	flock(LIST, 2);
-	foreach(@$address){
-		chomp($_);
-		$_ = strip($_); 
-		print LIST "$_\n";
-		$email_count++;
-		# js - log it
-		$self->{'log'}->mj_log($self->{list},"Subscribed to $write_list.$ending", $_) if (($DADA::Config::LOG{subscriptions}) && ($args{-Mode} ne 'writeover')); 
-	}
-		close(LIST);
-		return $email_count; 
-	}else{ 
-		carp("$DADA::Config::PROGRAM_NAME $DADA::Config::VER: No list, or list ref was given!");
-		return undef;
-	}
-}
-
 
 
 

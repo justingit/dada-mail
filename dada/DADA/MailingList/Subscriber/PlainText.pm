@@ -6,12 +6,13 @@ use Carp qw(carp croak);
 use DADA::App::Guts; 
 
 
-sub add { 	
+sub add {
 
- 	my $class = shift;
-	
+    my $class = shift;
+
     my ($args) = @_;
-	my $lh = DADA::MailingList::Subscribers->new({-list => $args->{-list}});
+    my $lh =
+      DADA::MailingList::Subscribers->new( { -list => $args->{ -list } } );
 
     if ( !exists $args->{ -type } ) {
         $args->{ -type } = 'list';
@@ -26,32 +27,40 @@ sub add {
     if ( !exists $args->{ -fields } ) {
         $args->{ -fields } = {};
     }
-	        
-     $lh->add_to_email_list(
-     
-        -Email_Ref => [($args->{-email})], 
-	    -Type      => $args->{-type}, 
-     
-     );
 
-	my $added  =  DADA::MailingList::Subscriber->new(
-		{
-			-list  => $args->{-list}, 
-			-email => $args->{-email}, 
-			-type  => $args->{-type},
-		}
-	); 
+    my $write_list = $args->{ -list };
+    $write_list =~ s/ /_/i;
 
+    my $file =
+      make_safer(
+        $DADA::Config::FILES . '/' . $write_list . '.' . $args->{ -type } );
+
+    open my $LIST, '>>', $file
+      or croak "couldn't open $file for reading: $!\n";
+
+    flock( $LIST, 2 );
+
+    chomp( $args->{ -email } );
+    $args->{ -email } = strip( $args->{ -email } );
+    print $LIST $args->{ -email } . "\n";
+
+    close($LIST);
+
+    my $added = DADA::MailingList::Subscriber->new(
+        {
+            -list  => $args->{ -list },
+            -email => $args->{ -email },
+            -type  => $args->{ -type },
+        }
+    );
 
     if ( $DADA::Config::LOG{subscriptions} == 1 ) {
-        $added->{'log'}->mj_log(
-            $added->{list},
+        $added->{'log'}->mj_log( $added->{list},
             'Subscribed to ' . $added->{list} . '.' . $added->type,
-            $added->email
-        );
+            $added->email );
     }
-	return $added;
-	
+    return $added;
+
 }
 
 

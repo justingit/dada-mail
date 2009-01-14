@@ -71,6 +71,8 @@ sub add {
       )
       or croak "cannot do statement (at add_subscriber)! $DBI::errstr\n";
 
+	# And then, basically, make the subscriber field stuff... 
+
     $sth->finish;
 
 	my $added  =  DADA::MailingList::Subscriber->new(

@@ -24,10 +24,15 @@ sub _init {
     my ($args) = @_;
 
 	$self->{list} = $args->{-list};
-	my $lh =
-      DADA::MailingList::Subscribers->new( { -list => $args->{ -list } } );
-    $self->{lh} = $lh;
-
+	if(exists($args->{-lh_obj})){
+		$self->{lh} = $args->{-lh_obj};		
+	}
+	else { 
+		require DADA::MailingList::Subscribers; 
+		my $lh =
+      	DADA::MailingList::Subscribers->new( { -list => $args->{ -list } } );
+    	$self->{lh} = $lh;
+	}
 
 
 
