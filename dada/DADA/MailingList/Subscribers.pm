@@ -192,11 +192,12 @@ sub add_to_email_list {
 
 	my $self = shift; 
 	
-	my %args = (-Email_Ref => undef, 
+	carp "This method (add_to_email_list) is deprecated. Please use, add_subscriber() instead."; 
+	
+	my %args = (-Email_Ref => [], 
 				-Type      => "list",
-				-Mode      => 'append',
 				@_);
-	my $addresses = $args{-Email_Ref} || [];
+	my $addresses = $args{-Email_Ref};
 
 	my $count = 0;
 	require DADA::MailingList::Subscriber; 

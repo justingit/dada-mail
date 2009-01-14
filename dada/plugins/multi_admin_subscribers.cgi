@@ -350,7 +350,12 @@ sub process {
         my ($l_list, $l_email) = split(/\+/, $_, 2);
 
         my $l_lh = DADA::MailingList::Subscribers->new({-list => $l_list}); 
-           $l_lh->add_to_email_list(-Email_Ref => [$l_email]);
+           $l_lh->add_subscriber(
+				{
+					-email => $l_email, 
+					-type  => 'list', 
+				}
+			);
     
     }
     

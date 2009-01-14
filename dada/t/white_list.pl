@@ -35,11 +35,12 @@ ok($li->{enable_white_list} == 1, "white list enabled.");
 
 
 
-my $count = $lh->add_to_email_list(-Email_Ref => [qw(
-                                            test
-                                                 )], 
-                                   -Type     => 'white_list',
-                          );
+my $count = $lh->add_subscriber(
+	{
+		-email => 'test', 
+        -type  => 'white_list',
+     }
+);
  
 ok($count == 1, "added one address to the white list.");                           
 undef($count); 
@@ -83,11 +84,12 @@ undef($r_count);
 
 
 
-my $count = $lh->add_to_email_list(-Email_Ref => [qw(
-                                            test
-                                                 )], 
-                                   -Type     => 'white_list',
-                          );
+my $count = $lh->add_subscriber(
+	{
+		-email => 'test',
+		-type  => 'white_list',
+	}
+);
 ok($count == 1, "added one address to the white list.");                           
 undef($count); 
 
@@ -110,10 +112,12 @@ undef($r_count);
 
 
 
-my $count = $lh->add_to_email_list(-Email_Ref => [qw(example.com)], 
-                                   -Type     => 'white_list',
-                          );
- 
+my $count = $lh->add_subscriber(
+	{
+		-email => 'example.com',
+		-type  => 'white_list',
+     }
+); 
  
 ok($count == 1, "added one address to the white list.");                           
 undef($count); 
@@ -156,11 +160,11 @@ ok($li->{black_list} == 1, "black list enabled.");
 
 
 
-my $count = $lh->add_to_email_list(-Email_Ref => [qw(
-                                            example.com
-                                                 )], 
-                                   -Type     => 'white_list',  
-  
+my $count = $lh->add_subscriber(
+	{
+		-email => 'example.com',
+		-type  => 'white_list',  
+  	}
   );
   
   
@@ -169,11 +173,13 @@ ok($count == 1, "added one address to the white list.");
 undef($count); 
 
 
-my $count = $lh->add_to_email_list(-Email_Ref => [qw(
-                                            example.com
-                                                 )], 
-                                   -Type     => 'black_list',
-                          );
+my $count = $lh->add_subscriber(
+	{
+		-email => 'example.com',   
+		-type  => 'black_list',
+	}
+);
+
 ok($count == 1, "added one address to the black list.");                           
 undef($count); 
 

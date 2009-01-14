@@ -58,8 +58,8 @@ if((!$q->param('old_email'))  || (!$q->param('new_email'))){
 			my $lh = DADA::MailingList::Subscribers->new({-list => $_});
 			if($lh->check_for_double_email(-List => $_, -Email => $old_email) == 1){ 
 				if(check_for_valid_email($new_email) != 1){ 
-					$lh->remove_from_list(-List => $_,  -Email_List => [$old_email]); 
-				    $lh->add_to_email_list(-List => $_, -Email_Ref => [$new_email]); 
+					$lh->remove_from_list(-List => $_,  -Email_List => [$old_email]);
+					 $lh->add_subscriber({-email => $new_email});
 					$report .= $q->p("Your subscribed email has been updated for list:", $q->b($_));
 					$log->mj_log($_,"Subscription Updated", "$old_email to $new_email"); 
 					$check++;

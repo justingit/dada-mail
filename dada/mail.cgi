@@ -8375,9 +8375,15 @@ sub checker {
         if($li->{black_list}               == 1 && 
            $li->{add_unsubs_to_black_list} == 1
            ){ 
-               
-            $lh->add_to_email_list(-Email_Ref => \@address, 
-                                   -Type => 'black_list');
+             
+  			foreach(@address){ 
+				$lh->add_subscriber(
+					{
+						-email => $_, 
+						-type  => 'black_list', 
+					}
+				); 
+			}
         }
     }
     
