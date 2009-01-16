@@ -24,3 +24,4 @@ all_pod_files_ok( all_pod_files( @poddirs ) );
 system('mv', 'perllib', 'DADA/perllib'); 
 
 
+dada_test_config::wipe_out;
