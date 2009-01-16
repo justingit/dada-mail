@@ -512,10 +512,58 @@ sub num_subscribers {
 
 
 
+sub remove_all_subscribers {
 
+    my $self = shift;
+    my ($args) = @_;
 
+    if ( !exists $args->{ -type } ) {
+        $args->{ -type } = 'list';
+    }
+    if ( !exists $args->{ -count } ) {
+        $args->{ -count } = 0;
+    }
 
+	my $num_subscribers = $self->num_subscribers(-Type => $args->{-type});
+	my $count = 1000;
+    if ( $count > $num_subscribers ) {
+        $count = $num_subscribers;
+    }
 
+    $self->open_list_handle( -Type => $args->{ -type } );
+
+    my $i     = 0;
+    my $cache = [];
+    my $email = undef;
+    while ( defined( $email = <LIST> ) ) {
+		chomp($email); 
+        push ( @$cache, $email );
+        $i++;
+        if ( $i >= $count ) {
+            last;
+        }
+    }
+    close(LIST);
+
+    $self->remove_from_list(
+        -Email_List => $cache,
+        -Type       => $args->{ -type },
+    );
+
+    $args->{ -count } = $args->{ -count } + $count;
+    if ( ( $num_subscribers - $count ) == 0 ) {
+        return $args->{ -count };
+    }
+    else {
+        $self->remove_all_subscribers(
+            {
+                -type  => $args->{ -type },
+                -count => $args->{ -count },
+
+            }
+        );
+    }
+}
 
 
 
@@ -708,61 +756,6 @@ sub remove_from_list {
 	} 			 
 }
 
-
-
-
-sub remove_all_subscribers {
-
-    my $self = shift;
-    my ($args) = @_;
-
-    if ( !exists $args->{ -type } ) {
-        $args->{ -type } = 'list';
-    }
-    if ( !exists $args->{ -count } ) {
-        $args->{ -count } = 0;
-    }
-
-	my $num_subscribers = $self->num_subscribers(-Type => $args->{-type});
-	my $count = 1000;
-    if ( $count > $num_subscribers ) {
-        $count = $num_subscribers;
-    }
-
-    $self->open_list_handle( -Type => $args->{ -type } );
-
-    my $i     = 0;
-    my $cache = [];
-    my $email = undef;
-    while ( defined( $email = <LIST> ) ) {
-		chomp($email); 
-        push ( @$cache, $email );
-        $i++;
-        if ( $i >= $count ) {
-            last;
-        }
-    }
-    close(LIST);
-
-    $self->remove_from_list(
-        -Email_List => $cache,
-        -Type       => $args->{ -type },
-    );
-
-    $args->{ -count } = $args->{ -count } + $count;
-    if ( ( $num_subscribers - $count ) == 0 ) {
-        return $args->{ -count };
-    }
-    else {
-        $self->remove_all_subscribers(
-            {
-                -type  => $args->{ -type },
-                -count => $args->{ -count },
-
-            }
-        );
-    }
-}
 
 
 

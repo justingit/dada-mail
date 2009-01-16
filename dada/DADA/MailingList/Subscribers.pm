@@ -145,7 +145,8 @@ sub remove_subscriber {
 
     my $dmls =
       DADA::MailingList::Subscriber->new( { %{$args}, -list => $self->{list} } );
-    return  $dmls->remove($args);
+	$dmls->remove;
+	return 1; 
 }
 
 
@@ -188,31 +189,34 @@ sub get_fallback_field_values {
 
 
 
-sub add_to_email_list { 
+sub add_to_email_list {
 
-	my $self = shift; 
-	
-	carp "This method (add_to_email_list) is deprecated. Please use, add_subscriber() instead."; 
-	
-	my %args = (-Email_Ref => [], 
-				-Type      => "list",
-				@_);
-	my $addresses = $args{-Email_Ref};
+    my $self = shift;
 
-	my $count = 0;
-	require DADA::MailingList::Subscriber; 
-	foreach my $sub(@$addresses){ 
-		chomp($sub); #?
-		DADA::MailingList::Subscriber->add(
-			{
-				-list  => $self->{list},
-				-email => $sub, 
-				-type  => $args{-Type}, 
-			}
-		);
-		$count++; 
-	}
-	return $count; 
+    carp
+"This method (add_to_email_list) is deprecated. Please use, add_subscriber() instead.";
+
+    my %args = (
+        -Email_Ref => [],
+        -Type      => "list",
+        @_
+    );
+    my $addresses = $args{ -Email_Ref };
+
+    my $count = 0;
+    require DADA::MailingList::Subscriber;
+    foreach my $sub (@$addresses) {
+        chomp($sub);    #?
+        DADA::MailingList::Subscriber->add(
+            {
+                -list  => $self->{list},
+                -email => $sub,
+                -type  => $args{ -Type },
+            }
+        );
+        $count++;
+    }
+    return $count;
 }
 
 

@@ -177,4 +177,18 @@ sub move {
 
 
 
+sub remove { 
+	
+	my $self = shift; 
+	# Notice, for the PlainText backend, we're still going with this old chestnut -
+	$self->{lh}->remove_from_list(
+		-Email_List =>[$self->email], 
+		-Type       => $self->type,
+	);
+	return undef; 
+}
+
+
+
+
 1;

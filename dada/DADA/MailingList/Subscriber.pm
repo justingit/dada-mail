@@ -253,20 +253,7 @@ sub copy {
 
 
 
-sub remove { 
-	
-	my $self   = shift;
-	my ($args) = @_; 
 
-	# Kind of a wrapper ATM:
-	
-	return $self->{lh}->remove_from_list(
-		-Email_List => [$self->email], 
-		-Type       => $self->type,
-	);
-	undef $self; #(although, that won't do what I want it to do....
-	
-}
 
 
 
