@@ -332,34 +332,6 @@ sub search_email_list {
     }
 }
 
-sub get_black_list_match {
-    my $self = shift;
-    my @got_black;
-    my @got_white;
-    my $black_list = shift;
-    my $try_this   = shift;
-    if ( $black_list and $try_this ) {
-        my $black;
-        foreach $black (@$black_list) {
-            $black = quotemeta($black);
-            my $try;
-            foreach $try (@$try_this) {
-                my $qm_try = $try;
-
-                next if !$black || $black eq '';
-
-                if ( $qm_try =~ m/$black/i ) {
-                    push ( @got_black, $try );
-                }
-            }
-        }
-        return ( \@got_black );
-    }
-    else {
-        return 0;
-    }
-}
-
 sub fancy_print_out_list {
 
     # DEV: This subroutine is very very messy. Very messy.
