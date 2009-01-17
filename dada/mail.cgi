@@ -542,7 +542,6 @@ sub run {
 	'html_code'               =>    \&html_code,         
 	'admin_help'              =>    \&admin_help,        
 	'delete_list'             =>    \&delete_list,        
-	'list_stats'              =>    \&list_stats,  
 	'view_list'               =>    \&view_list,  
 	'remove_all_subscribers'  =>    \&remove_all_subscribers,          
 	'view_list_options'       =>    \&view_list_options,

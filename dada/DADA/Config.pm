@@ -1851,12 +1851,6 @@ $ADMIN_MENU ||= [
 					 -Activated  => 1,
 					},
 
-					{-Title      => 'Statistics', 
-					 -Title_URL  =>  "$S_PROGRAM_URL?f=list_stats",
-					 -Function   => 'list_stats',
-					 -Activated  => 1,
-					},
-
 					{-Title      => 'Options', 
 					 -Title_URL  =>  "$S_PROGRAM_URL?f=subscription_options",
 					 -Function   => 'subscription_options',
