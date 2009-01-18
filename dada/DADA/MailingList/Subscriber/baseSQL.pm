@@ -320,6 +320,14 @@ sub remove {
       if $DADA::Config::LOG{subscriptions};
 
     undef $self;    #(although, that won't do what I want it to do....
+	#if($rv == 1){ 
+	#	return 1; 
+	#}
+	#else { 
+	#	return 0;
+	#}
+	return $rv;	
+	
 
 }
 
