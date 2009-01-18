@@ -55,7 +55,7 @@ my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid)
 
 
 ok(eq_array($subscribed,       []                                           ) == 1, "Subscribed"); 
-ok(eq_array($not_subscribed,   ['user@example.com']                         ) == 1, "Not Subscribed"); 
+ok(eq_array($not_subscribed,   ['user@example.com']                         ) == 1, "Not Subscribed (user\@example.com)"); 
 ok(eq_array($black_listed,     []                                           ) == 1, "Black Listed"); 
 ok(eq_array($not_white_listed, []                                           ) == 1, "Not White Listed"); 
 ok(eq_array([sort(@$invalid)], [sort('user', 'example.com', '@example.com')]) == 1, "Invalid"); 
@@ -86,7 +86,7 @@ my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid)
 
 
 ok(eq_array($subscribed,        ['user@example.com']                         ) == 1, "Subscribed"); 
-ok(eq_array($not_subscribed,    []                                           ) == 1, "Not Subscribed"); 
+ok(eq_array($not_subscribed,    []                                           ) == 1, "Not Subscribed ()"); 
 ok(eq_array($black_listed,      []                                           ) == 1, "Black Listed"); 
 ok(eq_array($not_white_listed,  []                                           ) == 1, "Not White Listed"); 
 ok(eq_array([sort(@$invalid)],  [sort('user', 'example.com', '@example.com')]) == 1, "Invalid"); 
@@ -97,6 +97,8 @@ undef($not_subscribed);
 undef($black_listed);
 undef($not_white_listed);
 undef($invalid);
+
+
 
 my $r_count = $lh->remove_from_list(-Email_List => ['user@example.com']); 
 ok($r_count == 1, "removed one address (user\@example.com)");                           
@@ -112,9 +114,12 @@ my $li = $ls->get();
 ok($li->{black_list} == 1, "black list enabled."); 
 
 
+# 'user@', '@example.com', '@' , 'u'
 
-foreach my $blacklist_this('user', 'example.com', 'user@', '@example.com', 'user@example.com', 'u', '@'){ 
+foreach my $blacklist_this('user@', '@example.com', 'user@example.com'){ 
 
+	diag '$blacklist_this - ' . $blacklist_this; 
+	
     my $count = $lh->add_to_email_list(-Email_Ref => [
                                                 $blacklist_this
                                                      ], 
@@ -133,8 +138,8 @@ foreach my $blacklist_this('user', 'example.com', 'user@', '@example.com', 'user
 		);
     
     ok(eq_array($subscribed,      []                                           ) == 1, "Subscribed"); 
-    ok(eq_array($not_subscribed,  []                                           ) == 1, "Not Subscribed"); 
-    ok(eq_array($black_listed,    ['user@example.com']                         ) == 1, "Black Listed"); 
+    ok(eq_array($not_subscribed,  []                                           ) == 1, "Not Subscribed ()"); 
+    ok(eq_array($black_listed,    ['user@example.com']                         ) == 1, "Black Listed (user\@example.com)"); 
     ok(eq_array($not_white_listed,[]                                           ) == 1, "Not White Listed"); 
     ok(eq_array([sort(@$invalid)],[sort('user', 'example.com', '@example.com')]) == 1, "Invalid"); 
     
@@ -150,6 +155,8 @@ foreach my $blacklist_this('user', 'example.com', 'user@', '@example.com', 'user
     undef($r_count); 
 
 }
+
+
    $ls->save({black_list => 0}); 
    $li = $ls->get(); 
 ok($li->{black_list} == 0, "black list disabled."); 
@@ -1272,33 +1279,33 @@ SKIP: {
 	ok($status == 0, "Status is 0 ($status)"); 
 
 
-=cut
-
-# Remove All 
-
-foreach my $type( keys %{ $lh->allowed_list_types } ) { 
-	
-	$i = 0;
-	for ( $i = 0 ; $i < 1987 ; $i++ ) {
-
-	        $lh->add_subscriber(
-	            {
-	                -email => 'example' . $i . '@example.com',
-	                -type  => 'list',
-	            }
-	        );
-	}
-	undef $i;
-	$lh->remove_all_subscribers(
-		{
-			-type => 'list',
-		}
-	);
-	ok($lh->num_subscribers == 0, "No subscribers left! in $type"); 
-
-}
-
-=cut
+#=cut
+#
+## Remove All 
+#
+#foreach my $type( keys %{ $lh->allowed_list_types } ) { 
+#	
+#	$i = 0;
+#	for ( $i = 0 ; $i < 1987 ; $i++ ) {
+#
+#	        $lh->add_subscriber(
+#	            {
+#	                -email => 'example' . $i . '@example.com',
+#	                -type  => 'list',
+#	            }
+#	        );
+#	}
+#	undef $i;
+#	$lh->remove_all_subscribers(
+#		{
+#			-type => 'list',
+#		}
+#	);
+#	ok($lh->num_subscribers == 0, "No subscribers left! in $type"); 
+#
+#}
+#
+#=cut
 
 
 
