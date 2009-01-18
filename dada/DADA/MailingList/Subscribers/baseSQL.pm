@@ -26,95 +26,54 @@ use Fcntl qw(O_WRONLY
   LOCK_NB
 );
 
-sub open_email_list {
 
-    # TODO: Remove open_email_list method from Dada Mail
-    # Currently in the program, this method is ONLY used for blacklist stuff;
-    # And white list stuff.
+
+sub inexact_match {
 
     my $self = shift;
-    my %args = (
-        -Type   => 'list',
-        -As_Ref => 0,
-        -Sorted => 1,
-        @_
-    );
+    my ($args) = @_;
+    my $email = cased( $args->{ -email } );
+    my ( $name, $domain ) = split ( '@', $email );
 
-    my $list = $self->{list} || undef;
-    if ($list) {    #why wouldn't there be a list?!
-        my @list = ();
+    my $query .= 'SELECT COUNT(*) ';
 
-        my $query =
-          'SELECT email FROM '
-          . $self->{sql_params}->{subscriber_table}
-          . ' WHERE list_type = ? AND list_status = 1';
+    $query .= ' FROM ' . $self->{sql_params}->{subscriber_table};
 
-       # The idea is, if you have a black_list and the global black list feature
-       # is enabled, then we don't care what list the subscriber is on. Hazzah!
-       #
-        if ( $args{ -Type } eq 'black_list' ) {
-
-            if ($DADA::Config::GLOBAL_BLACK_LIST) {
-
-                #...
-
-            }
-            else {
-
-                $query .= " AND list = ?";
-
-            }
-
-        }
-        else {
-            $query .= " AND list = ?";
-        }
-
-        #
-        ###
-
-        $query .= ' ORDER BY email'
-          if $DADA::Config::LIST_IN_ORDER == 1;
-
-        my $sth = $self->{dbh}->prepare($query);
-
-        if (   $DADA::Config::GLOBAL_BLACK_LIST
-            && $args{ -Type } eq 'black_list' )
-        {
-
-  # The Global Blacklist idea just doesn't need to know what the list to use is.
-  # Thus, the different execute() params.
-
-            $sth->execute( $args{ -Type } )
-              or croak
-              "cannot do statement (at: open email list)! $DBI::errstr\n";
-
-        }
-        else {
-
-            $sth->execute( $args{ -Type }, $self->{list} )
-              or croak
-              "cannot do statement (at: open email list)! $DBI::errstr\n";
-
-        }
-
-        while ( ( my $email ) = $sth->fetchrow_array ) {
-            push ( @list, $email );
-        }
-
-        $sth->finish;
-
-        if ( $args{ -As_Ref } eq "1" ) {
-            return \@list;
-        }
-        else {
-            return @list;
-        }
+    if (   $args->{ -against } eq 'black_list'
+        && $DADA::Config::GLOBAL_BLACK_LIST == 1 )
+    {
+        $query .= ' AND list = ?';
     }
     else {
-        return undef;
+
+        # ...
+    }
+
+    $query .= ' AND list_status = 1';
+ 	$query .= ' AND (email = ? OR email LIKE ? OR email LIKE ?)';
+
+    my $sth = $self->{dbh}->prepare($query);
+
+    $sth->execute(
+        $args->{ -against },
+        $self->{list}, $email,
+        $name . '@%',
+        '%@' . $domain,
+      )
+      or croak "cannot do statment (num_subscribers)! $DBI::errstr\n";
+
+    my @row = $sth->fetchrow_array();
+    $sth->finish;
+
+    if ( $row[0] >= 1 ) {
+        return 1;
+    }
+    else {
+        return 0;
     }
 }
+
+						
 
 sub open_list_handle { my $self = shift; }    # not needed
 sub sort_email_list  { my $self = shift; }    # not needed
