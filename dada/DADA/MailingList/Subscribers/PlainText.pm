@@ -54,64 +54,6 @@ this is used mostly for the black list functions, as its painfully clear that lo
 
 # note. BAD to do on large lists. Bad Bad Bad
 
-sub open_email_list { 
-
-	my $self = shift; 	
-	my %args = (-Type      => 'list',
-				-As_Ref    => 0, 
-				-Sorted    => 1,
-				@_);
-	
-	my $list        = $self->{list} || undef; 
-	my $file_ending = $args{-Type}; 
-	my $want_ref    = $args{-As_Ref}; 
-	   
-	
-	if($list){
-	
-	my @list     = (); 
-	my @bad_list = (); 
-	
-	#untaint 
-	$list = make_safer($list); 
-	$list =~ /(.*)/; 
-	$list = $1; 
-	
-	#untaint 
-	$file_ending = make_safer($file_ending); 
-	$file_ending =~ /(.*)/; 
-	$file_ending = $1; 
-	
-	my $list_name = "$list.$file_ending";
-	sysopen(LIST, "$DADA::Config::FILES/$list_name", O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD )
-	    or croak "couldn't open $DADA::Config::FILES/$list_name for reading: $!\n";
-	 
-	flock(LIST, 1);
-	  @bad_list = <LIST>;
-	close (LIST);
-
-	foreach(@bad_list) { 
-	 $_  =~  s/^\s+|\s+$//o;
-	}
-
-	foreach(@bad_list) { 
-		if ($_ ne ""){ 
-			push(@list, $_); 
-		}
-	}
-
-	 @list = sort(@list); 
-
-	if($want_ref eq "1"){ 
-		return \@list; 
-	}else{ 
-		return @list; 
-	}
-
-	}else{ 
-		return undef;
-	}
-}
 
 
 =pod
