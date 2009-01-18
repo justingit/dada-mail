@@ -243,6 +243,35 @@ sub search_email_list {
 
 }
 
+sub inexact_match {
+
+    my $self = shift;
+    my ($args) = @_;
+    my $email = cased( $args->{ -email } );
+    my ( $name, $domain ) = split ( '@', $email );
+
+	$name = $name . '@'; 
+	$domain = '@' . $domain;
+	
+    $self->open_list_handle( -Type => $args->{ -against } );
+
+    my $found = 0;
+
+    my $sub = undef;
+    while ( defined( $sub = <LIST> ) ) {
+        chomp($sub);
+        if (   $email eq $sub
+            || $name  =~ m/$sub(.*?)/
+            || $domain =~ m/(.*?)$sub/ )
+        {
+            $found = 1;
+            last;
+        }
+    }
+    close(LIST);
+    return $found;
+}
+
 
 =pod
 
