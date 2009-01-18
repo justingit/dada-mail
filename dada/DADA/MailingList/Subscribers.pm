@@ -271,147 +271,167 @@ sub unsubscription_check_xml {
     return $self->{validate}->unsubscription_check_xml($args);
 }
 
+sub filter_subscribers {
 
+    my $self = shift;
+    my ($args) = @_;
 
-# This stays.
-sub filter_subscribers { 
+    my $new_addresses = $args->{ -emails };
 
-	my $self   = shift; 
-	my ($args) = @_; 
-	
-	my $new_addresses = $args->{-emails}; 
+    if ( !exists( $args->{ -type } ) ) {
+        $args->{ -type } = 'list';
+    }
+    my $type = $args->{ -type };
 
-	if(! exists($args->{-type})){ 
-		$args->{-type} = 'list'; 
-	}
-	my $type = $args->{-type}; 
-		
-	require  DADA::MailingList::Settings; 
-	my $ls = DADA::MailingList::Settings->new({-list => $self->{list}}); 
-	my $li = $ls->get; 
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+    my $li = $ls->get;
 
-	require DADA::App::Guts;
+    require DADA::App::Guts;
 
-	my @good_emails   = (); 
-	my @bad_emails    = (); 
+    my @good_emails = ();
+    my @bad_emails  = ();
 
-	my $invalid_email;
+    my $invalid_email;
 
     my $num_subscribers = $self->num_subscribers;
-    
-	foreach my $check_this_address(@$new_addresses) { 
 
+    foreach my $check_this_address (@$new_addresses) {
 
         my $errors = {};
-        my $status = 1; 
-        
-        if($type eq 'black_list'){ 
-            # Yeah... nothing... 
+        my $status = 1;
+
+        if ( $type eq 'black_list' ) {
+
+            # Yeah... nothing...
         }
-        elsif($type eq 'white_list'){ 
-            # Yeah... nothing...             
+        elsif ( $type eq 'white_list' ) {
+
+            # Yeah... nothing...
         }
-        else { 
-            if(DADA::App::Guts::check_for_valid_email($check_this_address) == 1){ 
+        else {
+            if ( DADA::App::Guts::check_for_valid_email($check_this_address) ==
+                1 )
+            {
                 $errors->{invalid_email} = 1;
             }
-            else { 
+            else {
                 $errors->{invalid_email} = 0;
             }
         }
-        
-        if($type ne 'black_list' || $type ne 'authorized_senders' || $type ne 'white_list'){ 
-                if($li->{use_subscription_quota} == 1){ 
-                    if(($num_subscribers + 1) >= $li->{subscription_quota}){ 
-                        $errors->{over_subscription_quota} = 1; 
-                    }
+
+        if (   $type ne 'black_list'
+            || $type ne 'authorized_senders'
+            || $type ne 'white_list' )
+        {
+            if ( $li->{use_subscription_quota} == 1 ) {
+                if ( ( $num_subscribers + 1 ) >= $li->{subscription_quota} ) {
+                    $errors->{over_subscription_quota} = 1;
                 }
             }
-        
-        if( $errors->{invalid_email} == 1 || $errors->{over_subscription_quota} == 1){ 
-            $status = 0; 
         }
-        
-		if ($status != 1){
-			  push(@bad_emails, $check_this_address);
-		}else{    
-			$check_this_address = DADA::App::Guts::lc_email($check_this_address); 
-			push(@good_emails, $check_this_address);
+
+        if (   $errors->{invalid_email} == 1
+            || $errors->{over_subscription_quota} == 1 )
+        {
+            $status = 0;
+        }
+
+        if ( $status != 1 ) {
+            push ( @bad_emails, $check_this_address );
+        }
+        else {
+            $check_this_address =
+              DADA::App::Guts::lc_email($check_this_address);
+            push ( @good_emails, $check_this_address );
+        }
+    }
+
+    my %seen               = ();
+    my @unique_good_emails = grep { !$seen{$_}++ } @good_emails;
+
+    %seen = ();
+    my @unique_bad_emails = grep { !$seen{$_}++ } @bad_emails;
+
+	# Why the sort?
+    @unique_good_emails = sort(@unique_good_emails);
+    @unique_bad_emails  = sort(@unique_bad_emails);
+
+# figure out what unique emails we have from the new list when compared to the old list
+    my ( $unique_ref, $not_unique_ref ) = $self->unique_and_duplicate(
+        -New_List => \@unique_good_emails,
+        -Type     => $type,
+    );
+
+    #initialize
+    my @black_list;
+    my $found_black_list_ref;
+    my $clean_list_ref;
+    my $black_listed_ref = [];
+    my $black_list_ref   = [];
+
+	my $white_listed     = [];
+	my $not_white_listed = [];
+    if ( $li->{black_list} == 1 && $type eq 'list' ) {
+
+		my $found_black_list_ref = [];
+		foreach my $b_email(@$unique_ref) { 
+			my $is_black_listed = $self->inexact_match(
+										{
+											-email   => $b_email, 
+											-against => 'black_list',
+										}
+										);
+			if($is_black_listed == 1){ 
+				push(@$found_black_list_ref, $b_email); 
+			}
 		}
-	}
-  
- # warn  time .  "done!"; 
-  
-	my %seen = (); 
-	my @unique_good_emails = grep { ! $seen{$_}++} @good_emails; 
-	
-	%seen = (); 
-	my @unique_bad_emails = grep { ! $seen{$_}++} @bad_emails; 
-	
-	@unique_good_emails = sort(@unique_good_emails); 
-	@unique_bad_emails  = sort(@unique_bad_emails); 
-	
 		
-	# figure out what unique emails we have from the new list when compared to the old list
-	my ($unique_ref, $not_unique_ref) = $self->unique_and_duplicate(-New_List  => \@unique_good_emails, 
-																	-Type      => $type, 
-													   				);
-		
-	#initialize 
-	my @black_list; 
-	my $found_black_list_ref; 
-	my $clean_list_ref; 
-	my $black_listed_ref = []; 
-	my $black_list_ref   = [];
-	
-	my $white_list_ref;     # file handle?
-	
-	my $found_white_list_ref = [];
-	
-	if($li->{black_list} == 1 && $type eq 'list'){ 
-	
-		#open the black list  
-		# TODO: "open_email_list" needs to be gone, as it pulls the entire list in memory - 
-		# BAD BAD BAD - this is also the ONLY place it's used!!!
-		
-		$black_list_ref = $self->open_email_list(-Type => "black_list", -As_Ref=>1);
-		
-		# now, from that new list of clean emails, see which ones are black listed 
-		($found_black_list_ref) = $self->get_black_list_match($black_list_ref, $unique_ref);
-		
-		#now, tell me which ones still are ok. 
-		($clean_list_ref, $black_listed_ref) = $self->find_unique_elements($unique_ref, $found_black_list_ref); 
-									  
-	}else{ 
+        ( $clean_list_ref, $black_listed_ref ) =
+          $self->find_unique_elements( $unique_ref, $found_black_list_ref );
 
-		$clean_list_ref = $unique_ref; 
+    }
+    else {
 
-	}
-	
-	
-	# The entire white list stuff is pure messed. 
-	
-	if($li->{enable_white_list} == 1 && $type eq 'list'){
-	
-	    
-	   $white_list_ref = $self->open_email_list(-Type => "white_list", -As_Ref=>1);
-	
-		# now, from that new list of clean emails, see which ones are black listed 
-		($found_white_list_ref) = $self->get_black_list_match($white_list_ref, $clean_list_ref);
-	    
-       # now, tell me which ones still are ok. 
-	   ($found_white_list_ref, $clean_list_ref) = $self->find_unique_elements($clean_list_ref, $found_white_list_ref); 
-	   
-	}else{ 
-	    # nothing, really. 
-	    $found_white_list_ref = []; 
-	    
-	}
-	   
-	      # $subscribed,     $not_subscribed, $black_listed,    $not_white_listed, $invalid
-	return ($not_unique_ref, $clean_list_ref, $black_listed_ref, $found_white_list_ref, \@unique_bad_emails); 
+        $clean_list_ref = $unique_ref;
 
-   
+    }
+
+    # The entire white list stuff is pure messed.
+
+    if ( $li->{enable_white_list} == 1 && $type eq 'list' ) {
+
+
+		foreach my $w_email(@$clean_list_ref) { 
+			my $is_white_listed = $self->inexact_match(
+										{
+											-email   => $w_email, 
+											-against => 'white_list',
+										}
+										);
+			if($is_white_listed == 1){ 
+				push(@$white_listed, $w_email); 	
+			}
+			
+		}
+		
+		
+       (
+		 $not_white_listed,
+		 $clean_list_ref,
+		) = 
+         $self->find_unique_elements($clean_list_ref, $white_listed); # It probably doesn't matter what order I give these things in is
+
+    }
+    else {
+
+        # nothing, really.
+        $not_white_listed = [];
+
+    }
+
+		     # $subscribed,         $not_subscribed,   $black_listed,    $not_white_listed,     $invalid
+    return ( $not_unique_ref,       $clean_list_ref,   $black_listed_ref, $not_white_listed, \@unique_bad_emails);
 
 }
 
