@@ -624,11 +624,10 @@ sub remove_from_list {
 			 $check_this = strip($check_this);
 			 $check_this = cased($check_this);
 			 
-			 # unless its in out delete list, 
+			 # unless its in our delete list, 
 			  unless(exists($lookup_table{$check_this})){ 
 				  # print it into the temporary list
-				  print TEMP_LIST $check_this, "\n";
-	
+				  print TEMP_LIST $check_this, "\n";	
 			  }else{
 				  #missed the boat! 
 				  $count++;

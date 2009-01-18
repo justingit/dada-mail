@@ -885,8 +885,11 @@ sub remove_from_list {
                 -type  => $args{ -Type },
             }
         );
-        $s->remove;
-        $count++;
+        
+		my $remove = $s->remove;
+        if($remove == 1){ 
+			$count = $count + 1; 
+		}
     }
     return $count;
 }
