@@ -302,11 +302,12 @@ The SQL password.
 	user             => '',          
 	pass             => '',
 
-	subscriber_table    => 'dada_subscribers',
-	archives_table      => 'dada_archives', 
-	settings_table      => 'dada_settings', 
-	session_table       => 'dada_sessions', 
-	bounce_scores_table => 'dada_bounce_scores', 
+	subscriber_table        => 'dada_subscribers',
+	subscriber_fields_table => 'dada_subscriber_fields', 
+	archives_table          => 'dada_archives', 
+	settings_table          => 'dada_settings', 
+	session_table           => 'dada_sessions', 
+	bounce_scores_table     => 'dada_bounce_scores', 
 
 ) unless keys %SQL_PARAMS; 
 
@@ -1228,7 +1229,7 @@ $DEBUG_TRACE ||= {
     DADA_Mail_MailOut          => 0, 
     DADA_Mail_Send             => 0, 
 	DADA_App_BounceScoreKeeper => 0, 
-      
+    DADA_MailingList_baseSQL   => 1,   
 };
 
 

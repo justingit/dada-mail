@@ -228,12 +228,13 @@ sub copy {
         croak "email passed in, -email ( $args->{-email}) is already subscribed to list passed in, '-to' ($args->{-to})"; 
     }
 
+	# use Data::Dumper; 
+		
     my $copy = DADA::MailingList::Subscriber->add(
         { 
 			-list   => $self->{list},
             -email  => $self->email, 
             -type   => $args->{-to}, 
-			-fields => $self->fields,
         }
     ); 
 

@@ -2,11 +2,12 @@ package DADA::MailingList::SubscriberFields::baseSQL;
 use lib qw(./ ../ ../../ ../../../ ./../../DADA ../../perllib); 
 
 use Carp qw(carp croak confess);
+use DADA::App::Guts; 
 
 sub columns { 
 	
 	my $self = shift; 
-	my $sth = $self->{dbh}->prepare("SELECT * FROM " . $self->{sql_params}->{subscriber_table} ." where (1 = 0)");    
+	my $sth = $self->{dbh}->prepare("SELECT * FROM " . $self->{sql_params}->{subscriber_fields_table} ." WHERE (1 = 0)");    
 	$sth->execute() or confess "cannot do statement (at: columns)! $DBI::errstr\n";  
 	my $i; 
 	my @cols;
@@ -17,9 +18,6 @@ sub columns {
 	return \@cols;
 
 }
-
-
-
 
 
 
@@ -51,6 +49,7 @@ sub subscriber_fields {
     # We just want the fields *other* than what's usually there...
     my %omit_fields = (
         email_id    => 1,
+		fields_id   => 1, 
         email       => 1,
         list        => 1,
         list_type   => 1,
@@ -105,6 +104,168 @@ sub subscriber_fields {
 
 
 
+sub insert { 
+
+    my $self   = shift;
+    my ($args) = @_;
+
+	# use Data::Dumper; 
+	# warn '$args passed to, insert(): ' . Data::Dumper::Dumper($args); 
+
+    if ( !exists $args->{ -email } ) {
+        croak("You MUST supply an email address in the -email paramater!");
+    }
+    if ( length( strip( $args->{ -email } ) ) <= 0 ) {
+        croak("You MUST supply an email address in the -email paramater!");
+    }
+
+    if ( !exists $args->{ -fields } ) {
+		warn 'did you not pass any fields?'; 
+        $args->{ -fields } = {};
+    }
+
+	if($self->exists({-email => $args->{-email}}) >= 1){ 
+		warn "BOOM!"; 
+		$self->drop({-email => $args->{-email}}); 
+	}
+
+    my $sql_str             = '';
+    my $place_holder_string = '';
+    my @order               = @{ $self->subscriber_fields };
+    my @values;
+
+    if ( $order[0] ) {
+        foreach my $field (@order) {
+            $sql_str .= ',' . $field;
+            $place_holder_string .= ',?';
+            push ( @values, $args->{ -fields }->{$field} );
+        }
+    }
+    $sql_str =~ s/,$//;
+    my $query =
+      'INSERT INTO '
+      . $DADA::Config::SQL_PARAMS{subscriber_fields_table}
+      . '(email'
+      . $sql_str . ') 
+        VALUES (?' . $place_holder_string . ')';
+
+    warn 'Query: ' . $query
+     if $t;
+
+    my $sth     = $self->{dbh}->prepare($query);
+
+	# use Data::Dumper; 
+	# warn 'DADA::MailingList::SubscriberFields->insert(): ' . Data::Dumper::Dumper($args->{ -email },@values);
+    $sth->execute(
+        $args->{ -email },
+		@values
+      )
+      or croak "cannot do statement (at insert)! $DBI::errstr\n";
+}
+
+
+
+
+sub get {
+
+    my $self = shift;
+    my ($args) = @_;
+    my $sub_fields = $self->subscriber_fields;
+
+    my $query =
+      'SELECT * FROM '
+      . $self->{sql_params}->{subscriber_fields_table}
+      . " WHERE email = ?";
+
+	warn 'QUERY: ' . $query . ', $args->{-email}: ' . $args->{-email}
+		if $t; 
+
+
+    my $sth = $self->{dbh}->prepare($query);
+		
+
+    $sth->execute($args->{-email})
+      or croak "cannot do statement (at get)! $DBI::errstr\n";
+
+    my $hashref   = {};
+    my $n_hashref = {};
+
+  FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
+        foreach ( @{$sub_fields} ) {
+            $n_hashref->{$_} = $hashref->{$_};
+        }
+        $n_hashref->{email} = $hashref->{email};
+
+        my ( $n, $d ) = split ( '@', $hashref->{email}, 2 );
+        $n_hashref->{email_name}   = $n;
+        $n_hashref->{email_domain} = $d;
+
+        last FETCH;
+    }
+
+    if ( $args->{ -dotted } == 1 ) {
+        my $dotted = {};
+        foreach ( keys %$n_hashref ) {
+            $dotted->{ 'subscriber.' . $_ } = $n_hashref->{$_};
+        }
+        return $dotted;
+    }
+    else {
+        return $n_hashref;
+		
+
+    }
+
+    carp "Didn't fetch the subscriber?!";
+    return undef;
+
+}
+
+
+
+
+sub exists { 
+	my $self   = shift; 
+	my ($args) = @_;
+	
+	my $query = 'SELECT COUNT(*) from ' . $DADA::Config::SQL_PARAMS{subscriber_fields_table}
+    			 . ' WHERE email = ? '; 
+				
+	my $sth     = $self->{dbh}->prepare($query);
+
+	$sth->execute($args->{ -email })
+		or croak "cannot do statement (at exists)! $DBI::errstr\n";	 
+	my @row = $sth->fetchrow_array();
+    $sth->finish;
+   
+   return $row[0];
+}
+
+
+
+sub drop {
+    my $self = shift;
+    my ($args) = @_;
+
+    my $query =
+      'DELETE  from '
+      . $DADA::Config::SQL_PARAMS{subscriber_fields_table}
+      . ' WHERE email = ? ';
+
+	my $sth = $self->{dbh}->prepare($query); 
+    
+	warn 'QUERY: ' . $query . ' ('. $args->{ -email } . ')'
+		if $t; 
+	$sth->execute( $args->{ -email } )
+      or croak "cannot do statment (at drop)! $DBI::errstr\n";
+    my $rv = $sth->finish;
+    return $rv;
+}
+
+
+
+
+
 sub add_subscriber_field { 
 
     my $self = shift; 
@@ -134,7 +295,7 @@ sub add_subscriber_field {
         return undef; 
     }
     
-    my $query =  'ALTER TABLE ' . $self->{sql_params}->{subscriber_table} . 
+    my $query =  'ALTER TABLE ' . $self->{sql_params}->{subscriber_fields_table} . 
                 ' ADD COLUMN ' .  $args->{-field} . 
                 ' TEXT'; 
         
@@ -146,7 +307,8 @@ sub add_subscriber_field {
 	    or croak "cannot do statement (at add_subscriber_field)! $DBI::errstr\n";   
 	
 	
-	if($args->{-fallback_value}){ 
+	if(exists($args->{-fallback_value})){ 
+		warn "fallback field value exists."; 
 	    $self->_save_fallback_value({-field => $args->{-field}, -fallback_value => $args->{-fallback_value}});
 	}
 	
@@ -175,11 +337,11 @@ sub edit_subscriber_field {
 	if($DADA::Config::SUBSCRIBER_DB_TYPE eq 'PostgreSQL') {
 	
 		#ALTER TABLE dada_subscribers RENAME COLUMN oldfoo TO newfoo;
-		$query = 'ALTER TABLE ' . $self->{sql_params}->{subscriber_table} . ' RENAME COLUMN ' . $args->{-old_name} . ' TO ' . $args->{-new_name}; 
+		$query = 'ALTER TABLE ' . $self->{sql_params}->{subscriber_fields_table} . ' RENAME COLUMN ' . $args->{-old_name} . ' TO ' . $args->{-new_name}; 
 	}
 	else { 
 		
-		$query = 'ALTER TABLE ' . $self->{sql_params}->{subscriber_table} . ' CHANGE ' . $args->{-old_name} . ' ' . $args->{-new_name} . '  TEXT'; 
+		$query = 'ALTER TABLE ' . $self->{sql_params}->{subscriber_fields_table} . ' CHANGE ' . $args->{-old_name} . ' ' . $args->{-new_name} . '  TEXT'; 
  
 	}
 #	die '$query ' . $query; 
@@ -219,7 +381,7 @@ sub remove_subscriber_field {
     ); 
    
         
-    my $query =  'ALTER TABLE '  . $self->{sql_params}->{subscriber_table} . 
+    my $query =  'ALTER TABLE '  . $self->{sql_params}->{subscriber_fields_table} . 
                 ' DROP COLUMN ' . $args->{-field}; 
     
     my $sth = $self->{dbh}->prepare($query);    
@@ -328,13 +490,15 @@ sub validate_subscriber_field_name {
 	    $errors->{field_exists} = 0;
 	}
 	
-	my %omit_fields = (email_id     => 1,
-					   email        => 1,
-					   list         => 1,
-					   list_type    => 1,
-					   list_status  => 1, 
-					   email_name   => 1, 
-					   email_domain => 1, );	
+	my %omit_fields = (
+		email_id     => 1,
+		email        => 1,
+		list         => 1,
+		list_type    => 1,
+		list_status  => 1, 
+		email_name   => 1, 
+		email_domain => 1, 
+	);	
 					   
 	if(exists($omit_fields{$args->{-field}})){ 
 	    $errors->{field_is_special_field} = 1; 
@@ -480,6 +644,9 @@ sub _save_fallback_value {
 
     my $self = shift; 
     my ($args) = @_; 
+
+	# use Data::Dumper; 
+	# warn "$args given to _save_fallback_value: " . Data::Dumper::Dumper($args); 
     
     if(! exists $args->{-field}){ 
         croak "You MUST pass a value in the -field paramater!"; 
@@ -489,6 +656,8 @@ sub _save_fallback_value {
         croak "You must pass a value in the -fallback_value paramater!"; 
     }
     
+	warn ' $self->{list} ' .  $self->{list}; 
+	
  	require  DADA::MailingList::Settings; 
     my $ls = DADA::MailingList::Settings->new({-list => $self->{list}});
 

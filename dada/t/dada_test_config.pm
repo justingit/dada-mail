@@ -1,7 +1,7 @@
 package dada_test_config;
 
 
-use lib qw (./); 
+use lib qw (../ ./); 
 
 use __Test_Config_Vars; 
 use Carp qw(croak carp); 
@@ -307,12 +307,14 @@ my @statements = split(';', $sql);
 		my $session_table       = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{session_table};
 		my $bounce_scores_table = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{bounce_scores_table};
 		
+		my $subscriber_fields_table = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{subscriber_fields_table};
 		
 		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
 		$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
 		$_ =~ s{CREATE TABLE dada_archives}{CREATE TABLE $archives_table}; 
 		$_ =~ s{CREATE TABLE dada_sessions}{CREATE TABLE $session_table}; 
 		$_ =~ s{CREATE TABLE dada_bounce_scores}{CREATE TABLE $bounce_scores_table};
+		$_ =~ s{CREATE TABLE dada_subscriber_fields}{CREATE TABLE $subscriber_fields_table};
 		
 #
 #		$_ =~ s{CREATE INDEX dada_settings}{CREATE INDEX $settings_table}g; 
@@ -354,6 +356,9 @@ sub destroy_MySQL_db {
                     or carp "cannot do statement! $DBI::errstr\n";  
 
 		$dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{bounce_scores_table})
+                    or carp "cannot do statement! $DBI::errstr\n";
+
+		$dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{subscriber_fields_table})
                     or carp "cannot do statement! $DBI::errstr\n";
 }
 

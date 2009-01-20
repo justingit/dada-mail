@@ -206,6 +206,7 @@ sub add_to_email_list {
     my $count = 0;
     require DADA::MailingList::Subscriber;
     foreach my $sub (@$addresses) {
+		warn '$sub ' . $sub; 
         chomp($sub);    #?
         DADA::MailingList::Subscriber->add(
             {

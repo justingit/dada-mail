@@ -1413,8 +1413,14 @@ sub screen {
 
 						foreach(keys %$fallback_vars){ 
 							if(! exists($args->{-subscriber_vars}->{$_})){ 
+								
+								warn "I'm putting in a fallback field $_ that equals: " . $fallback_vars->{$_}; 
+								
 								$args->{-subscriber_vars}->{$_} = $fallback_vars->{$_};
 							}	
+							else  { 
+								warn "no need for the fallback var! We're good with: " . $args->{-subscriber_vars}->{$_}; 
+							}
 						}
 					}	
 					

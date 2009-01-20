@@ -84,16 +84,6 @@ sub open_list_handle {
 
 
 
-sub sort_email_list { 	
-
-    carp "sort_email_list is not supported for the plain text backend.";
-    return undef; 
-
-}
-
-
-
-
 sub search_list { 
 
 	my $self = shift; 
@@ -304,8 +294,6 @@ sub print_out_list {
 	my %args = (-Type => 'list',
 				-FH  => \*STDOUT,
 				@_); 
-				
-	$self->sort_email_list(-Type => $args{-Type}) if $DADA::Config::LIST_IN_ORDER == 1; 
 	
 	my $fh = $args{-FH};
 	my $email; 
@@ -338,10 +326,6 @@ sub subscription_list {
 	            '-length' => 100,
 	            -Type     => 'list',
 	            @_); 
-	
-	$self->sort_email_list(-Type => $args{-Type}) 
-		if $DADA::Config::LIST_IN_ORDER == 1; 
-
              
 	my $count = 0; 
 	my $list = []; 

@@ -18,7 +18,6 @@ my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
 use Fcntl qw(O_WRONLY
   O_TRUNC
   O_CREAT
-  O_CREAT
   O_RDWR
   O_RDONLY
   LOCK_EX
@@ -37,30 +36,50 @@ sub inexact_match {
 
     my $query .= 'SELECT COUNT(*) ';
 
-    $query .= ' FROM ' . $self->{sql_params}->{subscriber_table};
-
+    $query .= ' FROM ' . $self->{sql_params}->{subscriber_table} . ' WHERE ';
+	$query .= ' list_type = ? AND'; 
+    $query .= ' list_status = 1';
     if (   $args->{ -against } eq 'black_list'
-        && $DADA::Config::GLOBAL_BLACK_LIST == 1 )
+        	&& $DADA::Config::GLOBAL_BLACK_LIST == 1 )
     {
-        $query .= ' AND list = ?';
+		# ... 
     }
     else {
-
-        # ...
+		$query .= ' AND list = ?';
     }
-
-    $query .= ' AND list_status = 1';
  	$query .= ' AND (email = ? OR email LIKE ? OR email LIKE ?)';
 
+
+
+
+	warn 'Query: ' . $query
+		if $t; 
+		
     my $sth = $self->{dbh}->prepare($query);
 
-    $sth->execute(
-        $args->{ -against },
-        $self->{list}, $email,
-        $name . '@%',
-        '%@' . $domain,
-      )
-      or croak "cannot do statment (num_subscribers)! $DBI::errstr\n";
+   if (   $args->{ -against } eq 'black_list'
+        	&& $DADA::Config::GLOBAL_BLACK_LIST == 1 ){
+			$sth->execute(
+		        $args->{ -against },
+				$email,
+		        $name . '@%',
+		        '%@' . $domain,
+		      )
+		      or croak "cannot do statment (inexact_match)! $DBI::errstr\n";
+		    
+    }
+    else {
+	    $sth->execute(
+	        $args->{ -against },
+	        $self->{list}, 
+			$email,
+	        $name . '@%',
+	        '%@' . $domain,
+
+	      )
+	      or croak "cannot do statment (inexact_match)! $DBI::errstr\n";
+    }
+
 
     my @row = $sth->fetchrow_array();
     $sth->finish;
@@ -73,10 +92,7 @@ sub inexact_match {
     }
 }
 
-						
 
-sub open_list_handle { my $self = shift; }    # not needed
-sub sort_email_list  { my $self = shift; }    # not needed
 
 sub search_list {
 
@@ -92,40 +108,44 @@ sub search_list {
     }
 
     my $r = [];
+	
+	my $st  = $self->{sql_params}->{subscriber_table}; 
+	my $sft =  $self->{sql_params}->{subscriber_fields_table};
+	
 
     my $fields = $self->subscriber_fields;
 
     my $select_fields = '';
     foreach (@$fields) {
-        $select_fields .= ', ' . $_;
+        $select_fields .= ', ' . $sft . '.' . $_;
     }
 
-    my $query =
-      'SELECT email'
-      . $select_fields
-      . ' FROM '
-      . $self->{sql_params}->{subscriber_table}
-      . ' WHERE ( list_type = ? AND list_status = 1 AND list = ? )';
-
-    warn 'query: ' . $query
-      if $t;
+    my $query;
+ 	   $query .= 'SELECT ' . $st . '.email';
+       $query .=  $select_fields;
+       $query .=  ' FROM ';
+       $query .=   $st . ' LEFT JOIN ' . $sft;
+       $query .=  ' ON ';
+	   $query .=   $st . '.email'. ' = '. $sft. '.email'; 
+	   $query .= ' WHERE   ' . $st . '.list_type = ? AND ' . $st . '.list_status = 1 AND ' . $st . '.list = ? ';
 
     if ( $fields->[0] ) {
-
-        $query .= ' AND (email like ?';
-
-        foreach (@$fields) {
-            $query .= ' OR ' . $_ . ' LIKE ? ';
+        $query .= ' AND (' . $st . '.email like ?';
+    	foreach (@$fields) {
+        	$query .= ' OR ' . $sft . '.' . $_ . ' LIKE ? ';
         }
         $query .= ')';
     }
     else {
-        $query .= ' AND (email like ?)';
+        $query .= ' AND (' . $st . '.email like ?)';
     }
 
     if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
-        $query .= ' ORDER BY email';
+        $query .= ' ORDER BY ' . $st  . '.email';
     }
+
+	warn 'query: ' . $query
+    	if $t;
 
     my $sth = $self->{dbh}->prepare($query);
 
@@ -135,8 +155,10 @@ sub search_list {
     }
 
     $sth->execute(
-        $args->{ -type },              $self->{list},
-        '%' . $args->{ -query } . '%', @extra_params
+        $args->{ -type },              
+		$self->{list},
+        '%' . $args->{ -query } . '%',
+ 		@extra_params,
       )
       or croak "cannot do statement (at: search_list)! $DBI::errstr\n";
 
@@ -144,6 +166,9 @@ sub search_list {
     my $count = 0;
 
     while ( $row = $sth->fetchrow_hashref ) {
+
+		# use Data::Dumper; 
+		# warn Data::Dumper::Dumper($row); 
 
         $count++;
         next if $count < $args->{ -start };
@@ -887,6 +912,7 @@ sub remove_from_list {
         );
         
 		my $remove = $s->remove;
+		warn '$remove  for ' . $self->{list} . ', ' .  $args{ -Type } . ', $sub' . $sub . ' :' . $remove; 
         if($remove == 1){ 
 			$count = $count + 1; 
 		}
@@ -938,19 +964,13 @@ sub create_mass_sending_file {
     my $self = shift;
 
     my %args = (
-        -Type      => 'list',
-        -Pin       => 1,
-        -ID        => undef,
-        -Ban       => undef,
-        -Bulk_Test => 0,
-
-        # Disabled, atm
-        # -Sending_Lists    => [],
-
-        -Save_At => undef,
-
+        -Type           => 'list',
+        -Pin            => 1,
+        -ID             => undef,
+        -Ban            => undef,
+        -Bulk_Test      => 0,
+        -Save_At        => undef,
         -Test_Recipient => undef,
-
         -partial_sending => {},
         @_
     );
@@ -958,13 +978,6 @@ sub create_mass_sending_file {
     my $list = $self->{list};
     my $type = $args{ -Type };
 
-    #my $also_send_to = $args{-Sending_Lists};
-    #my $clean_also_send_to = [];
-
-    #foreach(@$also_send_to){
-    #	next if $_ eq $self->{list};
-    #	push(@$clean_also_send_to, $_);
-    #}
 
     my @f_a_lists = available_lists();
     my %list_names;
@@ -1040,54 +1053,55 @@ sub create_mass_sending_file {
         my @merge_fields = @{ $self->subscriber_fields };
         my $merge_field_query;
         foreach (@merge_fields) {
-            $merge_field_query .= ', ' . $_;
+            $merge_field_query .= ', ' . $self->{sql_params}->{subscriber_fields_table}.'.' . $_;
         }
 
-        my $query;
-        $query = "SELECT email, list";
-        $query .= $merge_field_query
-          ;  # $merge_field_query is going to be a bunch of commas, (?, ?, ?...)
-        $query .= " FROM "
-          . $self->{sql_params}->{subscriber_table}
-          . " WHERE list    = ? 
-                         AND list_type = ?
-                         AND list_status= 1";
+		my $st  = $self->{sql_params}->{subscriber_table}; 
+		my $sft =  $self->{sql_params}->{subscriber_fields_table};
 
-        if ( keys %{ $args{ -partial_sending } } ) {
+		my $query; 
+		$query  = 'SELECT '.$st.'.email, '.$st.'.list'; 
+		$query .= $merge_field_query;
+		$query .= ' FROM ' . $st . ' LEFT OUTER JOIN ' . $sft . ' ON ';
+		#$query .= ' FROM ' . $st . ', ' . $sft;
+		#$query .= ' WHERE';
+		$query .=  ' '    . $st . '.email'. ' = '. $sft. '.email'; 
+		$query .= ' WHERE  ';
+		$query .=           $st . '.list = ?';
+		$query .= ' AND ' . $st . '.list_type = ?';
+		$query .= ' AND ' . $st . '.list_status = 1';
 
-            foreach ( keys %{ $args{ -partial_sending } } ) {
-                if ( $args{ -partial_sending }->{$_}->{equal_to} ) {
+		if ( keys %{ $args{ -partial_sending } } ) {
+		    foreach ( keys %{ $args{ -partial_sending } } ) {
+		        if ( $args{ -partial_sending }->{$_}->{equal_to} ) {
+		            $query .= ' AND ' .$sft.'.'. $_ . ' = \''
+		              . $args{ -partial_sending }->{$_}->{equal_to} . '\'';
+		        }
+		        elsif ( $args{ -partial_sending }->{$_}->{like} ) {
 
-                    $query .= ' AND ' . $_ . ' = \''
-                      . $args{ -partial_sending }->{$_}->{equal_to} . '\'';
+		            $query .= ' AND ' .$sft.'.' . $_
+		              . ' LIKE \'%'
+		              . $args{ -partial_sending }->{$_}->{like} . '%\'';
+		        }
+		    }
 
-                    #carp 'QUERY: ' . $query;
+		}
+		$query .= ' ORDER BY '.$st.'.email';
 
-                }
-                elsif ( $args{ -partial_sending }->{$_}->{like} ) {
 
-                    $query .= ' AND ' . $_
-                      . ' LIKE \'%'
-                      . $args{ -partial_sending }->{$_}->{like} . '%\'';
-
-                }
-            }
-
-        }
-
-        #
-
-        $query .= ' ORDER BY email'
-          if $DADA::Config::LIST_IN_ORDER == 1;
-
+		warn 'QUERY: ' . $query
+			if $t; 
+		
         my $sth = $self->{dbh}->prepare($query);
         $sth->execute( $self->{list}, $args{ -Type } )
           or croak
           "cannot do statement (at create mass_sending_file)! $DBI::errstr\n";
-
+	#	$sth->dump_results;
         my $field_ref;
+		
+		
         while ( $field_ref = $sth->fetchrow_hashref ) {
-
+			
             chomp $field_ref->{email};    #new..
 
             unless ( exists( $banned_list{ $field_ref->{email} } ) ) {

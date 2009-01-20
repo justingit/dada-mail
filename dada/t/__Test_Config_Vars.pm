@@ -19,11 +19,12 @@ $TEST_SQL_PARAMS = {
 	    user             => 'dada',          
 	    pass             => 'dada',
     
-	    subscriber_table    => 'test_dada_subscribers',
-	    archives_table      => 'test_dada_archives', 
-	    settings_table      => 'test_dada_settings', 
-	    session_table       => 'test_dada_sessions',
-		bounce_scores_table => 'test_dada_bounce_scores', 
+	    subscriber_table        => 'test_dada_subscribers',
+	    archives_table          => 'test_dada_archives', 
+		subscriber_fields_table => 'test_dada_subscriber_fields', 
+	    settings_table          => 'test_dada_settings', 
+	    session_table           => 'test_dada_sessions',
+		bounce_scores_table     => 'test_dada_bounce_scores', 
 	
 	
 	}, 
@@ -37,22 +38,24 @@ $TEST_SQL_PARAMS = {
 	    user             => 'postgres',          
 	    pass             => '',
     
-	    subscriber_table => 'test_dada_subscribers',
-	    archives_table   => 'test_dada_archives', 
-	    settings_table   => 'test_dada_settings', 
-	    session_table    => 'test_dada_sessions',
-		bounce_scores_table => 'test_dada_bounce_scores', 
+	    subscriber_table 		=> 'test_dada_subscribers',
+		subscriber_fields_table => 'test_dada_subscriber_fields', 
+	    archives_table   		=> 'test_dada_archives', 
+	    settings_table   		=> 'test_dada_settings', 
+	    session_table    		=> 'test_dada_sessions',
+		bounce_scores_table 	=> 'test_dada_bounce_scores', 
 	}, 
 
 	SQLite => {
-		test_enabled     => 0, 
-	    dbtype           => 'SQLite',     # 'mysql' for 'MySQL', 'Pg' for 'PostgreSQL', and 'SQLite' for SQLite  
-		database         => 'test_dada',
-	    subscriber_table => 'test_dada_subscribers',
-	    archives_table   => 'test_dada_archives', 
-	    settings_table   => 'test_dada_settings', 
-	    session_table    => 'test_dada_sessions',
-		bounce_scores_table => 'test_dada_bounce_scores', 
+		test_enabled     		=> 0, 
+	    dbtype    		        => 'SQLite',     # 'mysql' for 'MySQL', 'Pg' for 'PostgreSQL', and 'SQLite' for SQLite  
+		database         		=> 'test_dada',
+	    subscriber_table 		=> 'test_dada_subscribers',
+		subscriber_fields_table => 'test_dada_subscriber_fields', 
+	    archives_table   		=> 'test_dada_archives', 
+	    settings_table   		=> 'test_dada_settings', 
+	    session_table    		=> 'test_dada_sessions',
+		bounce_scores_table 	=> 'test_dada_bounce_scores', 
 	},
 	
 
