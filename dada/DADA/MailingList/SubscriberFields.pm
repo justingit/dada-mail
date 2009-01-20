@@ -6,7 +6,12 @@ use DADA::Config qw(!:DEFAULT);
 BEGIN { 
 	$type = $DADA::Config::SUBSCRIBER_DB_TYPE;
 	if($type =~ m/sql/i){ 
-		$type = 'baseSQL';
+		if ($DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite'){ 
+			$type = 'SQLite'; 
+		}
+		else { 		
+			$type = 'baseSQL';
+		}
 	}
 }
 use base "DADA::MailingList::SubscriberFields::$type";

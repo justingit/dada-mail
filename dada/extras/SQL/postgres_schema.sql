@@ -12,6 +12,12 @@ list_type                        varchar(64),
 list_status                      char(1)
 );
 
+CREATE TABLE dada_subscriber_fields (
+	fields_id			         serial,
+	email                        varchar(320) not null UNIQUE
+);
+	
+
 CREATE TABLE dada_archives (
 list                          varchar(32),
 archive_id                    varchar(32),

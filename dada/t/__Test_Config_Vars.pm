@@ -30,7 +30,7 @@ $TEST_SQL_PARAMS = {
 	}, 
 
 	PostgreSQL => { 
-		test_enabled     => 0, 
+		test_enabled     => 1, 
 		database         => 'dada',
 	    dbserver         => 'localhost', # may just be, "localhost"   	   
 	    port             => '5432',      # mysql: 3306, Postgres: 5432   	   
@@ -47,7 +47,7 @@ $TEST_SQL_PARAMS = {
 	}, 
 
 	SQLite => {
-		test_enabled     		=> 0, 
+		test_enabled     		=> 1, 
 	    dbtype    		        => 'SQLite',     # 'mysql' for 'MySQL', 'Pg' for 'PostgreSQL', and 'SQLite' for SQLite  
 		database         		=> 'test_dada',
 	    subscriber_table 		=> 'test_dada_subscribers',

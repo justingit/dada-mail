@@ -319,10 +319,17 @@ SKIP: {
     my $s = $lh->add_subscriber_field({-field => 'myfield'}); 
     ok($s == 1, "adding a new field is successful"); 
 
+
 #sleep(30); 
 
     ok(eq_array($lh->subscriber_fields, ['myfield']), 'New field is being reported.'); 
     undef($s); 
+#diag "sleeeeeping"; 
+#sleep(400); 
+
+#diag "sleep"; 
+#sleep(400); 
+	
     my $s = $lh->remove_subscriber_field({-field => 'myfield'}); 
     ok($s == 1, "removing a new field is successful"); 
 
@@ -620,7 +627,7 @@ ok(-e $DADA::Config::TMP);
                         first_name => 'Raymond', 
                         last_name  => 'Pettibon', 
                     }
-    })); 
+    }), 'Add Raymond Pettibon'); 
 
     my $sub_info = $lh->get_subscriber({-email => 'raymond.pettibon@example.com'}); 
     ok($sub_info->{first_name} eq 'Raymond'); 
@@ -637,7 +644,7 @@ ok(-e $DADA::Config::TMP);
                         first_name => 'Marcel', 
                         last_name  => 'Duchamp', 
                     }
-    }));
+    }), 'Added Marcel Duchamp');
 
     my $sub_info = $lh->get_subscriber({-email => 'marcel.duchamp@example.com'}); 
     ok($sub_info->{first_name} eq 'Marcel'); 
@@ -651,24 +658,27 @@ ok(-e $DADA::Config::TMP);
                         first_name => 'Man', 
                         last_name  => 'Ray', 
                     }
-    })); 
+    }), 'Add Man Ray'); 
  	ok(-e $DADA::Config::TMP); 
 
+
+
+
+
+
     my $sub_info = $lh->get_subscriber({-email => 'man.ray@example.com'}); 
-    ok($sub_info->{first_name} eq 'Man'); 
-    ok($sub_info->{last_name}  eq 'Ray'); 
+    ok($sub_info->{first_name} eq 'Man', 'first_name Man'); 
+    ok($sub_info->{last_name}  eq 'Ray', 'last_name Ray'); 
     undef($sub_info); 
-
-
 
     ok($lh->add_subscriber({
         -email  => 'no.one@example.com',
         -type   => 'list', 
-    })); 
+    }), 'added no.one@example.com'); 
  
     my $sub_info = $lh->get_subscriber({-email => 'no.one@example.com'}); 
-    ok($sub_info->{first_name} eq ''); 
-    ok($sub_info->{last_name}  eq ''); 
+    ok($sub_info->{first_name} eq '', 'nothing for first_name'); 
+    ok($sub_info->{last_name}  eq '', 'nothing for first_name'); 
     undef($sub_info); 
     
 
@@ -682,7 +692,7 @@ ok(-e $DADA::Config::TMP);
     
     };
     
-	ok(-e $DADA::Config::TMP); 
+	ok(-e $DADA::Config::TMP, 'file exists.'); 
 
 
  

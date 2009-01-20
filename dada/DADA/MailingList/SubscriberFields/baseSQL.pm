@@ -125,7 +125,6 @@ sub insert {
     }
 
 	if($self->exists({-email => $args->{-email}}) >= 1){ 
-		warn "BOOM!"; 
 		$self->drop({-email => $args->{-email}}); 
 	}
 
@@ -161,6 +160,7 @@ sub insert {
 		@values
       )
       or croak "cannot do statement (at insert)! $DBI::errstr\n";
+	$sth->finish;
 }
 
 
@@ -256,9 +256,9 @@ sub drop {
     
 	warn 'QUERY: ' . $query . ' ('. $args->{ -email } . ')'
 		if $t; 
-	$sth->execute( $args->{ -email } )
+	my $rv = $sth->execute( $args->{ -email } )
       or croak "cannot do statment (at drop)! $DBI::errstr\n";
-    my $rv = $sth->finish;
+    $sth->finish;
     return $rv;
 }
 
