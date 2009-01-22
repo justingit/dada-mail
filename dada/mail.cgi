@@ -5870,7 +5870,7 @@ sub subscriber_fields {
      my $ls = DADA::MailingList::Settings->new({-list => $list}); 
      my $li = $ls->get();
     
-     my $fallback_field_values = $lh->get_fallback_field_values;
+     my $fallback_field_values = $lh->{fields}->get_fallback_field_values;
 
      my $field_errors = 0; 
      my $field_error_details = {
@@ -5910,7 +5910,7 @@ sub subscriber_fields {
         foreach(available_lists()){ 
                 next if $_ eq $list; 
                 my $l_lh = DADA::MailingList::Subscribers->new({-list => $_}); 
-                $l_lh->_remove_fallback_value({-field => $field});
+                $l_lh->{fields}->_remove_fallback_value({-field => $field});
                 undef $l_lh;
         }
         ###    
@@ -5934,7 +5934,7 @@ sub subscriber_fields {
             foreach(available_lists()){ 
                 next if $_ eq $list; 
                 my $l_lh = DADA::MailingList::Subscribers->new({-list => $_}); 
-                $l_lh->_save_fallback_value({-field => $field, -fallback_value => $fallback_field_value});
+                $l_lh->{fields}->_save_fallback_value({-field => $field, -fallback_value => $fallback_field_value});
                 undef $l_lh;
             }
             # Whoops.
@@ -5960,7 +5960,7 @@ sub subscriber_fields {
 		}
 		 if($field_errors == 0){
 			  
-             $lh->_remove_fallback_value({-field => $orig_field});          	
+             $lh->{fields}->_remove_fallback_value({-field => $orig_field});          	
 
 			if($orig_field eq $field){ 
 				# ...
@@ -5968,14 +5968,14 @@ sub subscriber_fields {
 			else { 
             	$lh->edit_subscriber_field({-old_name => $orig_field ,-new_name => $field});	
 			}
-			 $lh->_save_fallback_value({  -field => $field, -fallback_value => $fallback_field_value});
+			 $lh->{fields}->_save_fallback_value({  -field => $field, -fallback_value => $fallback_field_value});
 		    
 		
 			foreach(available_lists()){ 
                 next if $_ eq $list; 
                 my $l_lh = DADA::MailingList::Subscribers->new({-list => $_}); 
-                $l_lh->_remove_fallback_value({-field => $orig_field});          	
- 			 	$l_lh->_save_fallback_value({  -field => $field, -fallback_value => $fallback_field_value});
+                $l_lh->{fields}->_remove_fallback_value({-field => $orig_field});          	
+ 			 	$l_lh->{fields}->_save_fallback_value({  -field => $field, -fallback_value => $fallback_field_value});
 				undef $l_lh;
             }
 
