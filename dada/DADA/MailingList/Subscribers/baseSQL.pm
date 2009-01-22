@@ -108,31 +108,33 @@ sub search_list {
     }
 
     my $r = [];
-	
-	my $st  = $self->{sql_params}->{subscriber_table}; 
-	my $sft =  $self->{sql_params}->{subscriber_fields_table};
-	
 
+    my $st     = $self->{sql_params}->{subscriber_table};
+    my $sft    = $self->{sql_params}->{subscriber_fields_table};
     my $fields = $self->subscriber_fields;
-
     my $select_fields = '';
     foreach (@$fields) {
         $select_fields .= ', ' . $sft . '.' . $_;
     }
 
     my $query;
- 	   $query .= 'SELECT ' . $st . '.email';
-       $query .=  $select_fields;
-       $query .=  ' FROM ';
-       $query .=   $st . ' LEFT JOIN ' . $sft;
-       $query .=  ' ON ';
-	   $query .=   $st . '.email'. ' = '. $sft. '.email'; 
-	   $query .= ' WHERE   ' . $st . '.list_type = ? AND ' . $st . '.list_status = 1 AND ' . $st . '.list = ? ';
+    $query .= 'SELECT ' . $st . '.email';
+    $query .= $select_fields;
+    $query .= ' FROM ';
+    $query .= $st . ' LEFT JOIN ' . $sft;
+    $query .= ' ON ';
+    $query .= $st . '.email' . ' = ' . $sft . '.email';
+    $query .= ' WHERE   ' . $st
+      . '.list_type = ? AND '
+      . $st
+      . '.list_status = 1 AND '
+      . $st
+      . '.list = ? ';
 
     if ( $fields->[0] ) {
         $query .= ' AND (' . $st . '.email like ?';
-    	foreach (@$fields) {
-        	$query .= ' OR ' . $sft . '.' . $_ . ' LIKE ? ';
+        foreach (@$fields) {
+            $query .= ' OR ' . $sft . '.' . $_ . ' LIKE ? ';
         }
         $query .= ')';
     }
@@ -141,11 +143,11 @@ sub search_list {
     }
 
     if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
-        $query .= ' ORDER BY ' . $st  . '.email';
+        $query .= ' ORDER BY ' . $st . '.email';
     }
 
-	warn 'query: ' . $query
-    	if $t;
+    warn 'query: ' . $query
+      if $t;
 
     my $sth = $self->{dbh}->prepare($query);
 
@@ -155,10 +157,8 @@ sub search_list {
     }
 
     $sth->execute(
-        $args->{ -type },              
-		$self->{list},
-        '%' . $args->{ -query } . '%',
- 		@extra_params,
+        $args->{ -type },              $self->{list},
+        '%' . $args->{ -query } . '%', @extra_params,
       )
       or croak "cannot do statement (at: search_list)! $DBI::errstr\n";
 
@@ -166,10 +166,7 @@ sub search_list {
     my $count = 0;
 
     while ( $row = $sth->fetchrow_hashref ) {
-
-		# use Data::Dumper; 
-		# warn Data::Dumper::Dumper($row); 
-
+	
         $count++;
         next if $count < $args->{ -start };
         last if $count > ( $args->{ -start } + $args->{'-length'} );
@@ -208,19 +205,19 @@ sub fancy_print_out_list {
 
     if ( !exists( $args->{ -type } ) ) {
         croak
-'you must supply the type of list we are looking at in, the "list" paramater';
+'you must supply the type of list we are looking at in, the "-type" paramater';
     }
 
     if ( !exists( $args->{ -FH } ) ) {
         $args->{ -FH } = \*STDOUT;
     }
+    my $fh = $args->{ -FH };
 
     if ( !exists( $args->{ -partial_listing } ) ) {
         $args->{ -partial_listing } = {};
     }
 
     my $fields = $self->subscriber_fields;
-    my $fh     = $args->{ -FH };
 
     print $fh
 ' <div style="max-height: 250px; overflow: auto; border:1px solid black;background:#fff">';
@@ -234,102 +231,105 @@ sub fancy_print_out_list {
 
     print $fh '</tr>';
 
-    my $count = 0;
-    if ( $self->{list} ) {
-        my $query = "SELECT ";
+    my $count         = 0;
+    my $st            = $self->{sql_params}->{subscriber_table};
+    my $sft           = $self->{sql_params}->{subscriber_fields_table};
+    my $fields        = $self->subscriber_fields;
+    my $select_fields = '';
 
-        # Do I want to do this kludge anymore?
-        #
-        # $query .= "DISTINCT "
-        #	if $args->{-type} eq 'black_list'; # slight kludge.
-
-        $query .= "*  FROM "
-          . $self->{sql_params}->{subscriber_table}
-          . " WHERE list_type = ? AND list_status = 1";
-
-        if (   $DADA::Config::GLOBAL_BLACK_LIST
-            && $args->{ -type } eq 'black_list' )
-        {
-
-            #... Nothin'
-        }
-        else {
-            $query .= " AND list = ?";
-        }
-
-        if ( keys %{ $args->{ -partial_listing } } ) {
-
-            foreach ( keys %{ $args->{ -partial_listing } } ) {
-                if ( $args->{ -partial_listing }->{$_}->{equal_to} ) {
-
-                    $query .= ' AND ' . $_ . ' = \''
-                      . $args->{ -partial_listing }->{$_}->{equal_to} . '\'';
-
-                }
-                elsif ( $args->{ -partial_listing }->{$_}->{like} ) {
-
-                    $query .= ' AND ' . $_
-                      . ' LIKE \'%'
-                      . $args->{ -partial_listing }->{$_}->{like} . '%\'';
-
-                }
-            }
-
-        }
-
-        $query .= ' ORDER BY email'
-          if $DADA::Config::LIST_IN_ORDER == 1;
-
-        my $sth = $self->{dbh}->prepare($query);
-
-        if (   $DADA::Config::GLOBAL_BLACK_LIST
-            && $args->{ -type } eq 'black_list' )
-        {
-
-            $sth->execute( $args->{ -type } )
-              or croak
-              "cannot do statment (for print out list)! $DBI::errstr\n";
-
-        }
-        else {
-
-            $sth->execute( $args->{ -type }, $self->{list} )
-              or croak
-              "cannot do statment (for print out list)! $DBI::errstr\n";
-
-        }
-
-        my $row;
-        while ( $row = $sth->fetchrow_hashref ) {
-
-            my $style = '';
-            if ( $count % 2 == 0 ) {
-                $style = ' style="background-color:#ccf;"';
-            }
-            print $fh '<tr' . $style . '>';
-
-            print $fh '<td><p>' . $row->{email} . '</p></td>';
-
-            foreach (@$fields) {
-
-                print $fh '<td><p>' . $row->{$_} . '</p></td>';
-
-            }
-            print $fh '</tr>';
-
-            $count++;
-        }
-        $sth->finish;
-
-        print $fh '</table>';
-        print $fh '</div>';
-        print $fh '<p style="text-align:right">Total Subscribers: <strong>'
-          . $count
-          . '</strong></p>';
-
-        return $count;
+    foreach (@$fields) {
+        $select_fields .= ', ' . $sft . '.' . $_;
     }
+
+    my $query;
+    $query .= 'SELECT ' . $st . '.email';
+    $query .= $select_fields;
+    $query .= ' FROM ';
+    $query .= $st . ' LEFT JOIN ' . $sft;
+    $query .= ' ON ';
+    $query .= $st . '.email' . ' = ' . $sft . '.email';
+    $query .=
+      ' WHERE   ' . $st . '.list_type = ? AND ' . $st . '.list_status = 1 ';
+
+    if (   $DADA::Config::GLOBAL_BLACK_LIST
+        && $args->{ -type } eq 'black_list' )
+    {
+
+        #... Nothin'
+    }
+    else {
+        $query .= ' AND ' . $st . '.list = ? ';
+
+    }
+    if ( keys %{ $args->{ -partial_listing } } ) {
+
+        foreach ( keys %{ $args->{ -partial_listing } } ) {
+            if ( $args->{ -partial_listing }->{$_}->{equal_to} ) {
+                $query .= ' AND ' . $sft . '.' . $_ . ' = \''
+                  . $args->{ -partial_listing }->{$_}->{equal_to} . '\'';
+            }
+            elsif ( $args->{ -partial_listing }->{$_}->{like} ) {
+                $query .= ' AND ' . $sft . '.' . $_
+                  . ' LIKE \'%'
+                  . $args->{ -partial_listing }->{$_}->{like} . '%\'';
+            }
+        }
+    }
+    if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
+        $query .= ' ORDER BY ' . $st . '.email';
+    }
+
+    warn 'QUERY: ' . $query
+      if $t;
+
+    my $sth = $self->{dbh}->prepare($query);
+
+    if (   $DADA::Config::GLOBAL_BLACK_LIST
+        && $args->{ -type } eq 'black_list' )
+    {
+
+        $sth->execute( $args->{ -type } )
+          or croak "cannot do statment (for print out list)! $DBI::errstr\n";
+
+    }
+    else {
+
+        $sth->execute( $args->{ -type }, $self->{list} )
+          or croak "cannot do statment (for print out list)! $DBI::errstr\n";
+    }
+
+    my $row;
+    while ( $row = $sth->fetchrow_hashref ) {
+
+        my $style = '';
+        if ( $count % 2 == 0 ) {
+            $style = ' style="background-color:#ccf;"';
+        }
+        print $fh '<tr' . $style . '>';
+
+        print $fh '<td><p>' . $row->{email} . '</p></td>';
+
+        foreach (@$fields) {
+
+            print $fh '<td><p>' . $row->{$_} . '</p></td>';
+
+        }
+        print $fh '</tr>';
+
+        $count++;
+    }
+    $sth->finish;
+
+    print $fh '</table>';
+    print $fh '</div>';
+    print $fh '<p style="text-align:right">Total Subscribers: <strong>' . $count
+      . '</strong></p>';
+
+    return $count;
+
 }
+
+
 
 sub print_out_list {
 
@@ -343,16 +343,18 @@ sub print_out_list {
 
     my $count;
 
-    my $query = "SELECT ";
+    my $st  = $self->{sql_params}->{subscriber_table};
+    my $sft = $self->{sql_params}->{subscriber_fields_table};
 
-    # DEV: Do I want to do this kludge anymore?
-    #
-    # $query .= "DISTINCT "
-    #	if $args{-Type} eq 'black_list'; # slight kludge.
-
-    $query .= " *  FROM "
-      . $self->{sql_params}->{subscriber_table}
-      . " WHERE list_type = ? AND list_status = 1";
+    my $query;
+    $query .= 'SELECT * ';
+    $query .= ' FROM ';
+    $query .= $st . ' LEFT JOIN ' . $sft;
+    $query .= ' ON ';
+    $query .= $st . '.email' . ' = ' . $sft . '.email';
+    $query .= ' WHERE ';
+    $query .= $st . '.list_status = 1 ';
+    $query .= ' AND ' . $st . '.list_type = ? ';
 
     if (   $DADA::Config::GLOBAL_BLACK_LIST
         && $args{ -Type } eq 'black_list' )
@@ -361,7 +363,7 @@ sub print_out_list {
         # ...nothin'
     }
     else {
-        $query .= " AND list = ?";
+        $query .= ' AND ' . $st . '.list = ? ';
     }
 
     if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
@@ -480,15 +482,22 @@ sub subscription_list {
     my $count = 0;
     my $list  = [];
 
+    my $st  = $self->{sql_params}->{subscriber_table};
+    my $sft = $self->{sql_params}->{subscriber_fields_table};
+
     my $query = 'SELECT ';
-    $query .= ' * FROM '
-      . $self->{sql_params}->{subscriber_table}
-      . ' WHERE list_type = ? AND list_status = 1';
-    $query .= ' AND list = ?';
+    $query .= ' * FROM ' . $self->{sql_params}->{subscriber_table};
+    $query .= ' LEFT JOIN ' . $sft . ' ON ';
+    $query .= ' ' . $st . '.email' . ' = ' . $sft . '.email';
+    $query .=
+      ' WHERE ' . $st . '.list_type = ? AND ' . $st . '.list_status = 1';
+    $query .= ' AND ' . $st . '.list = ?';
 
     if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
-        $query .= ' ORDER BY email';
+        $query .= ' ORDER BY ' . $st . '.email';
     }
+
+    #	die $query;
 
     my $sth = $self->{dbh}->prepare($query);
 
@@ -736,35 +745,18 @@ sub num_subscribers {
 
     my $query = '';
 
-    # if($args{-Type} eq 'black_list'){  # slight kludge.
-    #	$query .= 'SELECT COUNT(DISTINCT email) ';
-    # }else{
     $query .= 'SELECT COUNT(*) ';
-
-    #}
-
     $query .= ' FROM '
       . $self->{sql_params}->{subscriber_table}
       . ' WHERE list_type = ? AND list_status = 1 ';
 
     $query .= ' AND list = ?';
 
-#   	unless $DADA::Config::GLOBAL_BLACK_LIST  == 1 && $args{-Type} eq 'black_list';
-
     my $sth = $self->{dbh}->prepare($query);
-
-    #if($DADA::Config::GLOBAL_BLACK_LIST  == 1 && $args{-Type} eq 'black_list'){
-    #	$sth->execute($args{-Type})
-    #		or croak "cannot do statment (num_subscribers)! $DBI::errstr\n";
-    #}else{
     $sth->execute( $args{ -Type }, $self->{list} )
       or croak "cannot do statment (num_subscribers)! $DBI::errstr\n";
-
-    #}
-
     @row = $sth->fetchrow_array();
     $sth->finish;
-
     return $row[0];
 }
 
@@ -793,12 +785,17 @@ sub remove_from_list {
                 -type  => $args{ -Type },
             }
         );
-        
-		my $remove = $s->remove;
-		warn '$remove  for ' . $self->{list} . ', ' .  $args{ -Type } . ', $sub' . $sub . ' :' . $remove; 
-        if($remove == 1){ 
-			$count = $count + 1; 
-		}
+
+        my $remove = $s->remove;
+        warn '$remove  for '
+          . $self->{list} . ', '
+          . $args{ -Type }
+          . ', $sub'
+          . $sub . ' :'
+          . $remove;
+        if ( $remove == 1 ) {
+            $count = $count + 1;
+        }
     }
     return $count;
 }
@@ -840,20 +837,18 @@ sub remove_all_subscribers {
     return $count;
 }
 
-
-
 sub create_mass_sending_file {
 
     my $self = shift;
 
     my %args = (
-        -Type           => 'list',
-        -Pin            => 1,
-        -ID             => undef,
-        -Ban            => undef,
-        -Bulk_Test      => 0,
-        -Save_At        => undef,
-        -Test_Recipient => undef,
+        -Type            => 'list',
+        -Pin             => 1,
+        -ID              => undef,
+        -Ban             => undef,
+        -Bulk_Test       => 0,
+        -Save_At         => undef,
+        -Test_Recipient  => undef,
         -partial_sending => {},
         @_
     );
