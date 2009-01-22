@@ -733,14 +733,10 @@ diag $contents;
     close $TMP_SUB_LIST or die $!;
 
 
-    like($contents, qr/Mike::Kelley/); 
-
-
-
-
-    like($contents, qr/Raymond::Pettibon/); 
-    like($contents, qr/Marcel::Duchamp/); 
-    like($contents, qr/Man::Ray/); 
+    like($contents, qr/Mike\,Kelley/); 
+    like($contents, qr/Raymond\,Pettibon/); 
+    like($contents, qr/Marcel\,Duchamp/); 
+    like($contents, qr/Man\,Ray/); 
    # ok($contents =~ m/John\:\:Doe/); 
 
     #my $msg = do { local $/; <$MSG_FILE> };

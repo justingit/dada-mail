@@ -1280,8 +1280,10 @@ sub mass_send {
 
 			my $batch_start_time = time; 
 			
+			require   Text::CSV; 
+							
 			# while we have people on the list.. 
-			while(defined($mail_info = <MAILLIST>)){ 	
+			SUBSCRIBERLOOP: while(defined($mail_info = <MAILLIST>)){ 	
 				chomp($mail_info);	
 				
 				##############################################################
@@ -1317,9 +1319,21 @@ sub mass_send {
 				}
 				#
 				##############################################################
+				
+				my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
-				# get the email, and its pin...
-				my @ml_info      = split('::', $mail_info); 
+				require DADA::App::Guts;
+
+				my @ml_info = undef; 
+				if ($csv->parse($mail_info)) {
+			     	@ml_info = $csv->fields;
+			    } else {
+			        carp $DADA::Config::PROGRAM_NAME . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag ();
+			    	next SUBSCRIBERLOOP;
+				}
+
+
+
 				my $mailing      = $ml_info[0];
 														
 				# keep count of how many people we have
@@ -1350,8 +1364,6 @@ sub mass_send {
                                 $mailing_count . 
                                 '( $mo_counter_at > ($mailing_count - 1 )'
                             if $t; 
-                            
-                           # warn "skipping $mailing_count..."; 
                             next; 
                         } else { 
                         	warn '[' . $self->{list} . '] Mailout:' . 
@@ -1400,13 +1412,10 @@ sub mass_send {
 
 				require DADA::App::FormatMessages; 
 			    my $fm = DADA::App::FormatMessages->new(
-							# -yeah_no_list => 1, 
 							-List        => $self->{list},  
 							-ls_obj      => $self->{ls},
 						); 
-			    
-			
-			
+						
                 my %nfields = $self->_mail_merge(
 				    {
 				        -fields => \%fields,
@@ -1424,10 +1433,6 @@ sub mass_send {
                     -List_File_Size   => -s"$path_to_list",
                     -Sending_To       => $fields{To}, 
                 };
-
-				# What the... 
-				#	print 'From(2)! ' . $nfields{From} . "\n"; 
-
                 
                 warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' sending mail'
                     if $t; 
@@ -1455,11 +1460,7 @@ sub mass_send {
 
                 warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' $new_count set to, ' . $new_count
                 	if $t; 
-               
-               # warn '$new count: '      . $new_count; 
-               # warn '$n_people: '       . $n_people; 
-               # warn '$mailing_count: ' . $mailing_count; 
-               
+        
                if($mailing_count != $new_count){ 
                     carp("Warning: \$mailing_count ($mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
 					$mailout->log("\$mailing_count ($mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
@@ -1470,7 +1471,6 @@ sub mass_send {
 				# I hate to wrap this in yet another If... state ment, but... 
 				if($self->mass_test == 1){ 
 					# Well, for a test, we do nothing, so we can skip the batch settings stuff, since we only send 1 message. 
-					
 				}
 				else {
 				
@@ -1502,27 +1502,16 @@ sub mass_send {
 								if $t;
 			                my $batch_status = $mailout->status; 
 		                
-					       # if($DADA::Config::LOG{mass_mailing_batches}){ 
-				           # 
-					       #    warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' logging mass mailing batches is enabled.'
-					       #         if $t; 
-				            
-                        
-	                            my $batch_log_message = "Subject:$fields{Subject}, Start Time: $log_mail_start_time"; 
-	                               foreach(keys %$batch_status){ 
-	                                    next if $_ eq 'email_fields';
-										next if $_ =~ m/formatted/; 
-	                                    $batch_log_message .= ' ' . $_ . ': ' . $batch_status->{$_}; 
-	                               }
-                            
-	                            #$self->{mj_log}->mj_log(
-	                             #   $self->{list}, 
-	                              #  'Mailout:' . $mailout_id  . ' Batch Successfully Completed', $batch_log_message 
-	                             #); 
-	                            #$self->{mj_log}->close_log;
-                            	$mailout->log('Batch Successfully Completed: ' .  $batch_log_message);
+	                       my $batch_log_message = "Subject:$fields{Subject}, Start Time: $log_mail_start_time"; 
+							foreach(keys %$batch_status){ 
+								next if $_ eq 'email_fields';
+								next if $_ =~ m/formatted/; 
+								$batch_log_message .= ' ' . $_ . ': ' . $batch_status->{$_}; 
+							}
+                         
+                          	$mailout->log('Batch Successfully Completed: ' .  $batch_log_message);
 
-	                        # }
+	                        
                         
 							if($batch_status->{queued_mailout} == 1){  
 								carp '[' . $self->{list} . '] Mailout:' . $mailout_id . ' Mailing has been queued - exit()ing'; 
@@ -1586,7 +1575,6 @@ sub mass_send {
 								if($sleep_for_this_amount > 0){ 
 									sleep $sleep_for_this_amount; 
 								}
-	                            #sleep $self->{ls}->param('bulk_sleep_amount');
 								#
 								#
 								#

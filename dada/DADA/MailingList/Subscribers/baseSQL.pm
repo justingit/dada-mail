@@ -388,8 +388,6 @@ sub print_out_list {
     my $fields = $self->subscriber_fields;
 
     require Text::CSV;
-
-#my $csv = Text::CSV->new; # Why not the params that are set in DADA::App::Guts?
     my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
     my $hashref = {};
@@ -897,11 +895,11 @@ sub create_mass_sending_file {
     #open one file, write to the other.
     my $email;
 
-    sysopen( SENDINGFILE, "$sending_file", O_RDWR | O_CREAT,
-        $DADA::Config::FILE_CHMOD )
-      or croak
-"$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: Cannot create temporary email list file for sending out bulk message: $!";
-    flock( SENDINGFILE, LOCK_EX );
+    open my $SENDINGFILE, '>', $sending_file
+	 or croak
+	"$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: Cannot create temporary email list file for sending out bulk message: $!";
+     chmod($SENDINGFILE, $DADA::Config::FILE_CHMOD );
+     flock( $SENDINGFILE, LOCK_EX );
 
     my $first_email = $self->{ls}->param('list_owner_email');
     if ( $args{'-Bulk_Test'} == 1 && $args{ -Test_Recipient } ) {
@@ -914,13 +912,29 @@ sub create_mass_sending_file {
 
     my $total = 0;
 
-    print SENDINGFILE join ( '::',
-        $first_email, $lo_e_name, $lo_e_domain, $to_pin, $self->{list},
-        $list_names{ $self->{list} }, $n_msg_id, );
-
-    $total++;
+	require Text::CSV;
+	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+	my @lo = ( 
+				$first_email,
+				$lo_e_name, 
+				$lo_e_domain, 
+				$to_pin, 
+				$self->{list},
+				$list_names{$self->{list}},
+				$n_msg_id,
+			);
+	 if ( $csv->combine(@lo) ) {
+	     my $hstring = $csv->string;
+	     print $SENDINGFILE $hstring, "\n";
+	 }
+	 else {
+	     my $err = $csv->error_input;
+	     carp "combine() failed on argument: ", $err, "\n";
+	 }
+	 $total++;
 
     # TODO: these three lines need to be one
+	# And tell me why I have to chomp, "bulk test"
     my $test_test = $args{'-Bulk_Test'};
     chomp($test_test);    #Why Chomp?!
     unless ( $test_test == 1 ) {
@@ -978,40 +992,35 @@ sub create_mass_sending_file {
 
             unless ( exists( $banned_list{ $field_ref->{email} } ) ) {
 
-                my $pin = make_pin( -Email => $field_ref->{email} );
-
-                my ( $e_name, $e_domain ) = split ( '@', $field_ref->{email} );
-
-                print SENDINGFILE "\n" . join (
-                    '::', $field_ref->{email},
-                    $e_name,
-                    $e_domain,
-                    $pin,
-                    $field_ref->{list},
-                    $list_names{ $field_ref->{list} },
-                    $n_msg_id,
-
-                );
-
+				my @sub = (
+					$field_ref->{email},
+					( split ( '@', $field_ref->{email} ) ), 
+					make_pin( -Email => $field_ref->{email} ),
+					$field_ref->{list},
+					$list_names{ $field_ref->{list} },
+					$n_msg_id,
+				);
                 foreach (@merge_fields) {
 
                     if ( defined( $field_ref->{$_} ) ) {
-
                         chomp $field_ref->{$_};
-
-                   # DEV: This really needs to be figured out a little better...
-
                         $field_ref->{$_} =~ s/\n|\r/ /g;
-                        $field_ref->{$_} =~ s/::/:\:/g;
                     }
                     else {
                         $field_ref->{$_} = '';
                     }
 
-                    print SENDINGFILE '::' . $field_ref->{$_};
+                    push(@sub, $field_ref->{$_}); 
 
                 }
-
+				 if ( $csv->combine(@sub) ) {
+				     my $hstring = $csv->string;
+				     print $SENDINGFILE $hstring, "\n";
+				 }
+				 else {
+				     my $err = $csv->error_input;
+				     carp "combine() failed on argument: ", $err, "\n";
+				 }
                 $total++;
             }
 
@@ -1020,7 +1029,7 @@ sub create_mass_sending_file {
         $sth->finish;
     }
 
-    close(SENDINGFILE)
+    close($SENDINGFILE)
       or croak(
 "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error - could not close temporary sending  file '$sending_file' successfully"
       );

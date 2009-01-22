@@ -643,9 +643,10 @@ sub create_mass_sending_file {
 		croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: Cannot open email list for copying, in preparation to send out bulk message: $! "; 
 	flock(LISTFILE, LOCK_SH); 
 		
-	sysopen (SENDINGFILE, "$sending_file",  O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD ) or
+	open my $SENDINGFILE, '>', $sending_file or
 		croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: Cannot create temporary email list file for sending out bulk message: $!"; 
-	flock(SENDINGFILE, LOCK_EX); 	
+	chmod($DADA::Config::FILE_CHMOD, $SENDINGFILE); 	
+	flock($SENDINGFILE, LOCK_EX); 	
 
 
     my $first_email = $li->{list_owner_email}; 
@@ -659,37 +660,52 @@ sub create_mass_sending_file {
 	
 	
 	my $total = 0; 
-	
-	
-	
-	print SENDINGFILE join('::', 
-	                             $first_email,
-	                             $lo_e_name, 
-	                             $lo_e_domain, 
-	                             $to_pin, 
-	                             $list, 
-	                             $self->{ls}->param('list_name'), 
-	                             $n_msg_id, 
-	                       );
+
+	require Text::CSV;
+	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+	my @lo = ( 
+				$first_email,
+				$lo_e_name, 
+				$lo_e_domain, 
+				$to_pin, 
+				$list,
+                $self->{ls}->param('list_name'), 
+				$n_msg_id,
+			);
+	 if ( $csv->combine(@lo) ) {
+	     my $hstring = $csv->string;
+	     print $SENDINGFILE $hstring, "\n";
+	 }
+	 else {
+	     my $err = $csv->error_input;
+	     carp "combine() failed on argument: ", $err, "\n";
+	 }
+
+
 	$total++;
 	
 	if($args{'-Bulk_Test'} != 1){ 
         while(defined($email  = <LISTFILE>)){ 
             chomp($email); 
             unless(exists($banned_list{$email})){
-                
-                my $pin = make_pin(-Email => $email); 
-                my ($e_name, $e_domain) = split('@', $email); 						
-                print SENDINGFILE "\n" . join('::', 
-                                                    $email,
-                                                    $e_name, 
-                                                    $e_domain, 
-                                                    $pin,
-                                                    $list,
-                                                    $self->{ls}->param('list_name'), 
-                                                    $n_msg_id, 
-                                                    
-                                            );
+	
+				my @sub = (
+					$email,
+					( split ( '@', $email ) ), 
+					make_pin( -Email => $email ),
+					$list,
+					$self->{ls}->param('list_name'),
+					$n_msg_id,
+				);
+				if ( $csv->combine(@sub) ) {
+				     my $hstring = $csv->string;
+				     print $SENDINGFILE $hstring, "\n";
+				 }
+				 else {
+				     my $err = $csv->error_input;
+				     carp "combine() failed on argument: ", $err, "\n";
+				 }
+				
                 $total++;
             }
 		}		
@@ -699,7 +715,7 @@ sub create_mass_sending_file {
 	close(LISTFILE) 
 		or croak ("$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error - could not close list file '$list_file'  successfully"); 
 	
-	close(SENDINGFILE) 
+	close($SENDINGFILE) 
 		or croak ("$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error - could not close temporary sending  file '$sending_file' successfully"); 
 	
 	#chmod! 
