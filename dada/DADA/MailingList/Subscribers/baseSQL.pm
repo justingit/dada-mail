@@ -15,7 +15,8 @@ $DADA::Config::SQL_PARAMS{id_column} ||= 'email_id';
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
 
-use Fcntl qw(O_WRONLY
+use Fcntl qw(
+  O_WRONLY
   O_TRUNC
   O_CREAT
   O_RDWR
@@ -24,6 +25,7 @@ use Fcntl qw(O_WRONLY
   LOCK_SH
   LOCK_NB
 );
+
 
 
 
@@ -37,49 +39,47 @@ sub inexact_match {
     my $query .= 'SELECT COUNT(*) ';
 
     $query .= ' FROM ' . $self->{sql_params}->{subscriber_table} . ' WHERE ';
-	$query .= ' list_type = ? AND'; 
+    $query .= ' list_type = ? AND';
     $query .= ' list_status = 1';
     if (   $args->{ -against } eq 'black_list'
-        	&& $DADA::Config::GLOBAL_BLACK_LIST == 1 )
+        && $DADA::Config::GLOBAL_BLACK_LIST == 1 )
     {
-		# ... 
+
+        # ...
     }
     else {
-		$query .= ' AND list = ?';
+        $query .= ' AND list = ?';
     }
- 	$query .= ' AND (email = ? OR email LIKE ? OR email LIKE ?)';
+    $query .= ' AND (email = ? OR email LIKE ? OR email LIKE ?)';
 
+    warn 'Query: ' . $query
+      if $t;
 
-
-
-	warn 'Query: ' . $query
-		if $t; 
-		
     my $sth = $self->{dbh}->prepare($query);
 
-   if (   $args->{ -against } eq 'black_list'
-        	&& $DADA::Config::GLOBAL_BLACK_LIST == 1 ){
-			$sth->execute(
-		        $args->{ -against },
-				$email,
-		        $name . '@%',
-		        '%@' . $domain,
-		      )
-		      or croak "cannot do statment (inexact_match)! $DBI::errstr\n";
-		    
+    if (   $args->{ -against } eq 'black_list'
+        && $DADA::Config::GLOBAL_BLACK_LIST == 1 )
+    {
+        $sth->execute(
+            $args->{ -against },
+            $email,
+            $name . '@%',
+            '%@' . $domain,
+          )
+          or croak "cannot do statment (inexact_match)! $DBI::errstr\n";
+
     }
     else {
-	    $sth->execute(
-	        $args->{ -against },
-	        $self->{list}, 
-			$email,
-	        $name . '@%',
-	        '%@' . $domain,
+        $sth->execute(
+            $args->{ -against },
+            $self->{list},
+            $email,
+            $name . '@%',
+            '%@' . $domain,
 
-	      )
-	      or croak "cannot do statment (inexact_match)! $DBI::errstr\n";
+          )
+          or croak "cannot do statment (inexact_match)! $DBI::errstr\n";
     }
-
 
     my @row = $sth->fetchrow_array();
     $sth->finish;
@@ -91,8 +91,6 @@ sub inexact_match {
         return 0;
     }
 }
-
-
 
 sub search_list {
 
@@ -856,7 +854,6 @@ sub create_mass_sending_file {
     my $list = $self->{list};
     my $type = $args{ -Type };
 
-
     my @f_a_lists = available_lists();
     my %list_names;
     foreach (@f_a_lists) {
@@ -931,55 +928,52 @@ sub create_mass_sending_file {
         my @merge_fields = @{ $self->subscriber_fields };
         my $merge_field_query;
         foreach (@merge_fields) {
-            $merge_field_query .= ', ' . $self->{sql_params}->{subscriber_fields_table}.'.' . $_;
+            $merge_field_query .=
+              ', ' . $self->{sql_params}->{subscriber_fields_table} . '.' . $_;
         }
 
-		my $st  = $self->{sql_params}->{subscriber_table}; 
-		my $sft =  $self->{sql_params}->{subscriber_fields_table};
+        my $st  = $self->{sql_params}->{subscriber_table};
+        my $sft = $self->{sql_params}->{subscriber_fields_table};
 
-		my $query; 
-		$query  = 'SELECT '.$st.'.email, '.$st.'.list'; 
-		$query .= $merge_field_query;
-		$query .= ' FROM ' . $st . ' LEFT OUTER JOIN ' . $sft . ' ON ';
-		#$query .= ' FROM ' . $st . ', ' . $sft;
-		#$query .= ' WHERE';
-		$query .=  ' '    . $st . '.email'. ' = '. $sft. '.email'; 
-		$query .= ' WHERE  ';
-		$query .=           $st . '.list = ?';
-		$query .= ' AND ' . $st . '.list_type = ?';
-		$query .= ' AND ' . $st . '.list_status = 1';
+        my $query;
+        $query = 'SELECT ' . $st . '.email, ' . $st . '.list';
+        $query .= $merge_field_query;
+        $query .= ' FROM ' . $st . ' LEFT OUTER JOIN ' . $sft . ' ON ';
+        $query .= ' ' . $st . '.email' . ' = ' . $sft . '.email';
+        $query .= ' WHERE  ';
+        $query .= $st . '.list = ?';
+        $query .= ' AND ' . $st . '.list_type = ?';
+        $query .= ' AND ' . $st . '.list_status = 1';
 
-		if ( keys %{ $args{ -partial_sending } } ) {
-		    foreach ( keys %{ $args{ -partial_sending } } ) {
-		        if ( $args{ -partial_sending }->{$_}->{equal_to} ) {
-		            $query .= ' AND ' .$sft.'.'. $_ . ' = \''
-		              . $args{ -partial_sending }->{$_}->{equal_to} . '\'';
-		        }
-		        elsif ( $args{ -partial_sending }->{$_}->{like} ) {
+        if ( keys %{ $args{ -partial_sending } } ) {
+            foreach ( keys %{ $args{ -partial_sending } } ) {
+                if ( $args{ -partial_sending }->{$_}->{equal_to} ) {
+                    $query .= ' AND ' . $sft . '.' . $_ . ' = \''
+                      . $args{ -partial_sending }->{$_}->{equal_to} . '\'';
+                }
+                elsif ( $args{ -partial_sending }->{$_}->{like} ) {
 
-		            $query .= ' AND ' .$sft.'.' . $_
-		              . ' LIKE \'%'
-		              . $args{ -partial_sending }->{$_}->{like} . '%\'';
-		        }
-		    }
+                    $query .= ' AND ' . $sft . '.' . $_
+                      . ' LIKE \'%'
+                      . $args{ -partial_sending }->{$_}->{like} . '%\'';
+                }
+            }
 
-		}
-		$query .= ' ORDER BY '.$st.'.email';
+        }
+        $query .= ' ORDER BY ' . $st . '.email';
 
+        warn 'QUERY: ' . $query
+          if $t;
 
-		warn 'QUERY: ' . $query
-			if $t; 
-		
         my $sth = $self->{dbh}->prepare($query);
         $sth->execute( $self->{list}, $args{ -Type } )
           or croak
           "cannot do statement (at create mass_sending_file)! $DBI::errstr\n";
-	#	$sth->dump_results;
+
         my $field_ref;
-		
-		
+
         while ( $field_ref = $sth->fetchrow_hashref ) {
-			
+
             chomp $field_ref->{email};    #new..
 
             unless ( exists( $banned_list{ $field_ref->{email} } ) ) {
@@ -1087,8 +1081,6 @@ sub unique_and_duplicate {
                 push ( @unique, $_ );
             }
         }
-
-        #again, harmony is restored to the force.
         return ( \@unique, \@double );
     }
     else {
