@@ -28,6 +28,15 @@ CREATE TABLE dada_subscriber_fields (
 	email                        varchar(320) not null,
 	CONSTRAINT UNIQUE (email)
 );
+
+CREATE TABLE dada_subscriber_profile (
+	fields_id			         int4 not null primary key auto_increment,
+	email                        varchar(320) not null,
+	password                     text(16),
+	CONSTRAINT UNIQUE (email)
+);
+
+
 	
 	
 	
