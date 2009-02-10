@@ -680,8 +680,7 @@ sub create_mass_sending_file {
 	     my $err = $csv->error_input;
 	     carp "combine() failed on argument: ", $err, "\n";
 	 }
-
-
+	
 	$total++;
 	
 	if($args{'-Bulk_Test'} != 1){ 
