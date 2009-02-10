@@ -108,7 +108,7 @@ sub search_list {
     my $r = [];
 
     my $st     = $self->{sql_params}->{subscriber_table};
-    my $sft    = $self->{sql_params}->{subscriber_fields_table};
+    my $sft    = $self->{sql_params}->{profile_fields_table};
     my $fields = $self->subscriber_fields;
     my $select_fields = '';
     foreach (@$fields) {
@@ -231,7 +231,7 @@ sub fancy_print_out_list {
 
     my $count         = 0;
     my $st            = $self->{sql_params}->{subscriber_table};
-    my $sft           = $self->{sql_params}->{subscriber_fields_table};
+    my $sft           = $self->{sql_params}->{profile_fields_table};
     my $fields        = $self->subscriber_fields;
     my $select_fields = '';
 
@@ -342,7 +342,7 @@ sub print_out_list {
     my $count;
 
     my $st  = $self->{sql_params}->{subscriber_table};
-    my $sft = $self->{sql_params}->{subscriber_fields_table};
+    my $sft = $self->{sql_params}->{profile_fields_table};
 
     my $query;
     $query .= 'SELECT * ';
@@ -479,7 +479,7 @@ sub subscription_list {
     my $list  = [];
 
     my $st  = $self->{sql_params}->{subscriber_table};
-    my $sft = $self->{sql_params}->{subscriber_fields_table};
+    my $sft = $self->{sql_params}->{profile_fields_table};
 
     my $query = 'SELECT ';
     $query .= ' * FROM ' . $self->{sql_params}->{subscriber_table};
@@ -943,11 +943,11 @@ sub create_mass_sending_file {
         my $merge_field_query;
         foreach (@merge_fields) {
             $merge_field_query .=
-              ', ' . $self->{sql_params}->{subscriber_fields_table} . '.' . $_;
+              ', ' . $self->{sql_params}->{profile_fields_table} . '.' . $_;
         }
 
         my $st  = $self->{sql_params}->{subscriber_table};
-        my $sft = $self->{sql_params}->{subscriber_fields_table};
+        my $sft = $self->{sql_params}->{profile_fields_table};
 
         my $query;
         $query = 'SELECT ' . $st . '.email, ' . $st . '.list';

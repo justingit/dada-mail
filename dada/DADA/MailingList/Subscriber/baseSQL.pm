@@ -9,7 +9,7 @@ use DADA::App::Guts;
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
 
 
-sub insert {
+sub add {
 
     my $class = shift;
 
@@ -53,7 +53,7 @@ sub insert {
 	$sth->finish;
 	
 	if ( exists $args->{ -fields } ) {		
-		my $fields = DADA::MailingList::SubscriberFields->new({-list => $args->{ -list }}); 		
+		my $fields = DADA::Profile::Fields->new({-list => $args->{ -list }}); 		
 		$fields->insert(
 			{
 				-email  => $args->{ -email },
@@ -82,8 +82,8 @@ sub get {
 	warn "DADA:MailingList::Subscriber::baseSQL->get() called."; 
     my $self = shift;
     my ($args) = @_;
-    require DADA::MailingList::SubscriberFields; 
-	my $sf = DADA::MailingList::SubscriberFields->new({-list => $self->{list}}); 
+    require DADA::Profile::Fields; 
+	my $sf = DADA::Profile::Fields->new({-list => $self->{list}}); 
 	
 	
 	my $r =  $sf->get($args); 

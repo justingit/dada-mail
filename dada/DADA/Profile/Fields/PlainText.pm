@@ -1,4 +1,4 @@
-package DADA::MailingList::SubscriberFields::PlainText; 
+package DADA::Profile::Fields::PlainText; 
 
 use strict; 
 

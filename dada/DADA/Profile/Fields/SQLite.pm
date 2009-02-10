@@ -1,9 +1,9 @@
-package DADA::MailingList::SubscriberFields::SQLite; 
+package DADA::Profile::Fields::SQLite; 
 use lib qw(./ ../ ../../ ../../../ ./../../DADA ../../perllib); 
 
 use Carp qw(carp croak confess);
 use DADA::App::Guts;
-use base "DADA::MailingList::SubscriberFields::baseSQL"; 
+use base "DADA::Profile::Fields::baseSQL"; 
 use strict; 
 
 sub remove_subscriber_field { 
@@ -67,18 +67,18 @@ sub remove_subscriber_field {
     $self->{dbh}->do('BEGIN TRANSACTION')
  		or croak "cannot do statement $DBI::errstr\n";
     
-	my $q2 = 'CREATE TEMPORARY TABLE ' . $self->{sql_params}->{subscriber_fields_table} . '_backup(fields_id INTEGER, email varchar(320) ' . $make_these_str .')';
+	my $q2 = 'CREATE TEMPORARY TABLE ' . $self->{sql_params}->{profile_fields_table} . '_backup(fields_id INTEGER, email varchar(320) ' . $make_these_str .')';
 	warn '$q2 ' . $q2;
 	$self->{dbh}->do($q2)
 		or croak "cannot do statement $DBI::errstr\n";
 
                             
-    my $q3 = 'INSERT INTO ' . $self->{sql_params}->{subscriber_fields_table} .'_backup SELECT fields_id, ' . $keep_these_str .' FROM '   . $self->{sql_params}->{subscriber_fields_table};
+    my $q3 = 'INSERT INTO ' . $self->{sql_params}->{profile_fields_table} .'_backup SELECT fields_id, ' . $keep_these_str .' FROM '   . $self->{sql_params}->{profile_fields_table};
     warn '$q3 ' . $q3;
 	$self->{dbh}->do($q3)
 		or croak "cannot do statement $DBI::errstr\n";
 		
-    $self->{dbh}->do('DROP TABLE ' . $self->{sql_params}->{subscriber_fields_table})
+    $self->{dbh}->do('DROP TABLE ' . $self->{sql_params}->{profile_fields_table})
 	 	or croak "cannot do statement $DBI::errstr\n";
 
     $self->make_table(); 
@@ -92,10 +92,10 @@ sub remove_subscriber_field {
     }
  
 
-    $self->{dbh}->do('INSERT INTO ' . $self->{sql_params}->{subscriber_fields_table} . ' SELECT fields_id, ' .  $keep_these_str . ' FROM ' .  $self->{sql_params}->{subscriber_fields_table} . '_backup')
+    $self->{dbh}->do('INSERT INTO ' . $self->{sql_params}->{profile_fields_table} . ' SELECT fields_id, ' .  $keep_these_str . ' FROM ' .  $self->{sql_params}->{profile_fields_table} . '_backup')
 		or croak "cannot do statement $DBI::errstr\n";
 
-    $self->{dbh}->do('DROP TABLE '. $self->{sql_params}->{subscriber_fields_table} . '_backup')
+    $self->{dbh}->do('DROP TABLE '. $self->{sql_params}->{profile_fields_table} . '_backup')
  		or croak "cannot do statement $DBI::errstr\n";
     
     $self->{dbh}->do('COMMIT')
@@ -117,7 +117,7 @@ sub make_table {
     my $self = shift; 
     
     $self->{dbh}->do(
-	'CREATE TABLE ' . $self->{sql_params}->{subscriber_fields_table} . '( 
+	'CREATE TABLE ' . $self->{sql_params}->{profile_fields_table} . '( 
 	fields_id			         INTEGER PRIMARY KEY AUTOINCREMENT,
 	email                        varchar(320) not null UNIQUE)' 
 	 )

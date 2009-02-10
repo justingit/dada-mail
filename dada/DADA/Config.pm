@@ -303,7 +303,8 @@ The SQL password.
 	pass             => '',
 
 	subscriber_table        => 'dada_subscribers',
-	subscriber_fields_table => 'dada_subscriber_fields', 
+	profile_table           => 'dada_profile', 
+	profile_fields_table 	=> 'dada_profile_fields', 
 	archives_table          => 'dada_archives', 
 	settings_table          => 'dada_settings', 
 	session_table           => 'dada_sessions', 

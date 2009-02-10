@@ -25,7 +25,7 @@ use strict;
 use base "DADA::MailingList::Subscribers::$type";
 use DADA::MailingList::Subscriber; 
 use DADA::MailingList::Subscriber::Validate;
-use DADA::MailingList::SubscriberFields; 
+use DADA::Profile::Fields; 
 
 
 use DADA::Logging::Usage;
@@ -74,7 +74,7 @@ sub _init  {
 		$self->{dbh} = $dbi_obj->dbh_obj; 
 	}
 	
-	$self->{fields}   = DADA::MailingList::SubscriberFields->new({-list => $self->{list}}); 		
+	$self->{fields}   = DADA::Profile::Fields->new({-list => $self->{list}}); 		
 	$self->{validate} = DADA::MailingList::Subscriber::Validate->new({-list => $self->{list}, -lh_obj => $self}); 		
 }
 

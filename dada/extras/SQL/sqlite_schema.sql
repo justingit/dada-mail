@@ -12,7 +12,7 @@ list_type                        varchar(64),
 list_status                      char(1)
 );
 
-CREATE TABLE dada_subscriber_fields (
+CREATE TABLE dada_profile_fields (
 	fields_id			         INTEGER PRIMARY KEY AUTOINCREMENT,
 	email                        varchar(320) not null UNIQUE
 );

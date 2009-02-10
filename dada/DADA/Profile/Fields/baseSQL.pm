@@ -1,4 +1,4 @@
-package DADA::MailingList::SubscriberFields::baseSQL; 
+package DADA::Profile::Fields::baseSQL; 
 use lib qw(./ ../ ../../ ../../../ ./../../DADA ../../perllib); 
 
 use Carp qw(carp croak confess);
@@ -7,7 +7,7 @@ use DADA::App::Guts;
 sub columns { 
 	
 	my $self = shift; 
-	my $sth = $self->{dbh}->prepare("SELECT * FROM " . $self->{sql_params}->{subscriber_fields_table} ." WHERE (1 = 0)");    
+	my $sth = $self->{dbh}->prepare("SELECT * FROM " . $self->{sql_params}->{profile_fields_table} ." WHERE (1 = 0)");    
 	$sth->execute() or confess "cannot do statement (at: columns)! $DBI::errstr\n";  
 	my $i; 
 	my @cols;
@@ -143,7 +143,7 @@ sub insert {
     $sql_str =~ s/,$//;
     my $query =
       'INSERT INTO '
-      . $DADA::Config::SQL_PARAMS{subscriber_fields_table}
+      . $DADA::Config::SQL_PARAMS{profile_fields_table}
       . '(email'
       . $sql_str . ') 
         VALUES (?' . $place_holder_string . ')';
@@ -154,7 +154,7 @@ sub insert {
     my $sth     = $self->{dbh}->prepare($query);
 
 	# use Data::Dumper; 
-	# warn 'DADA::MailingList::SubscriberFields->insert(): ' . Data::Dumper::Dumper($args->{ -email },@values);
+	# warn 'DADA::Profile::Fields->insert(): ' . Data::Dumper::Dumper($args->{ -email },@values);
     $sth->execute(
         $args->{ -email },
 		@values
@@ -174,7 +174,7 @@ sub get {
 
     my $query =
       'SELECT * FROM '
-      . $self->{sql_params}->{subscriber_fields_table}
+      . $self->{sql_params}->{profile_fields_table}
       . " WHERE email = ?";
 
 	warn 'QUERY: ' . $query . ', $args->{-email}: ' . $args->{-email}
@@ -228,7 +228,7 @@ sub exists {
 	my $self   = shift; 
 	my ($args) = @_;
 	
-	my $query = 'SELECT COUNT(*) from ' . $DADA::Config::SQL_PARAMS{subscriber_fields_table}
+	my $query = 'SELECT COUNT(*) from ' . $DADA::Config::SQL_PARAMS{profile_fields_table}
     			 . ' WHERE email = ? '; 
 				
 	my $sth     = $self->{dbh}->prepare($query);
@@ -249,7 +249,7 @@ sub drop {
 
     my $query =
       'DELETE  from '
-      . $DADA::Config::SQL_PARAMS{subscriber_fields_table}
+      . $DADA::Config::SQL_PARAMS{profile_fields_table}
       . ' WHERE email = ? ';
 
 	my $sth = $self->{dbh}->prepare($query); 
@@ -295,7 +295,7 @@ sub add_subscriber_field {
         return undef; 
     }
     
-    my $query =  'ALTER TABLE ' . $self->{sql_params}->{subscriber_fields_table} . 
+    my $query =  'ALTER TABLE ' . $self->{sql_params}->{profile_fields_table} . 
                 ' ADD COLUMN ' .  $args->{-field} . 
                 ' TEXT'; 
         
@@ -337,11 +337,11 @@ sub edit_subscriber_field {
 	if($DADA::Config::SUBSCRIBER_DB_TYPE eq 'PostgreSQL') {
 	
 		#ALTER TABLE dada_subscribers RENAME COLUMN oldfoo TO newfoo;
-		$query = 'ALTER TABLE ' . $self->{sql_params}->{subscriber_fields_table} . ' RENAME COLUMN ' . $args->{-old_name} . ' TO ' . $args->{-new_name}; 
+		$query = 'ALTER TABLE ' . $self->{sql_params}->{profile_fields_table} . ' RENAME COLUMN ' . $args->{-old_name} . ' TO ' . $args->{-new_name}; 
 	}
 	else { 
 		
-		$query = 'ALTER TABLE ' . $self->{sql_params}->{subscriber_fields_table} . ' CHANGE ' . $args->{-old_name} . ' ' . $args->{-new_name} . '  TEXT'; 
+		$query = 'ALTER TABLE ' . $self->{sql_params}->{profile_fields_table} . ' CHANGE ' . $args->{-old_name} . ' ' . $args->{-new_name} . '  TEXT'; 
  
 	}
 #	die '$query ' . $query; 
@@ -381,7 +381,7 @@ sub remove_subscriber_field {
     ); 
    
         
-    my $query =  'ALTER TABLE '  . $self->{sql_params}->{subscriber_fields_table} . 
+    my $query =  'ALTER TABLE '  . $self->{sql_params}->{profile_fields_table} . 
                 ' DROP COLUMN ' . $args->{-field}; 
     
     my $sth = $self->{dbh}->prepare($query);    

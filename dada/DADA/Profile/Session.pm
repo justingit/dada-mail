@@ -1,4 +1,4 @@
-package DADA::MailingList::Subscriber::Profile::Session;
+package DADA::Profile::Session;
 
 use lib qw (../../../ ../../../DADA/perllib);
 use strict;

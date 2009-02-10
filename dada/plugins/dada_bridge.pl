@@ -2534,7 +2534,7 @@ sub send_invalid_msgs_to_owner {
 						{
 							'subscriber.email' => $from_address, 
 						}
-				,
+				},
 			}	
 		);
 	}else{ 

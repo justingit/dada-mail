@@ -1,4 +1,4 @@
-package DADA::MailingList::SubscriberFields; 
+package DADA::Profile::Fields; 
 use lib qw(../../ ../../DADA ../../perllib);
 use Carp qw(carp croak);
 my $type; 
@@ -14,7 +14,7 @@ BEGIN {
 		}
 	}
 }
-use base "DADA::MailingList::SubscriberFields::$type";
+use base "DADA::Profile::Fields::$type";
 use strict; 
 
 
