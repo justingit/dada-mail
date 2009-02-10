@@ -8,7 +8,8 @@ use DADA::App::Guts;
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
 
-sub add {
+
+sub insert {
 
     my $class = shift;
 
