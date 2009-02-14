@@ -91,6 +91,7 @@ sub _init  {
     $self->{list}       = $args->{-list};
 
     $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
+	
 
 	if($DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/){ 
 		require DADA::App::DBIHandle; 

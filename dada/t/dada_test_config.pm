@@ -216,14 +216,14 @@ my @statements = split(';', $sql,4);
 		my $session_table            = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{session_table};
 		my $bounce_scores_table      = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{bounce_scores_table};
 		my $profile_fields_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_fields_table};
-		my $subscriber_profile_table = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{subscriber_profile_table};
+		my $profile_table = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_table};
 		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
 		$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
 		$_ =~ s{CREATE TABLE dada_archives}{CREATE TABLE $archives_table}; 
 		$_ =~ s{CREATE TABLE dada_sessions}{CREATE TABLE $session_table}; 
 		$_ =~ s{CREATE TABLE dada_bounce_scores}{CREATE TABLE $bounce_scores_table}; 
 		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
-		$_ =~ s{CREATE TABLE dada_profile}{CREATE TABLE $subscriber_profile_table};
+		$_ =~ s{CREATE TABLE dada_profile}{CREATE TABLE $profile_table};
         #print "query: " . $_ . "\n"; 
         my $sth = $dbh->prepare($_); 
 
@@ -359,7 +359,7 @@ sub destroy_MySQL_db {
 		$dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{profile_fields_table})
                     or carp "cannot do statement! $DBI::errstr\n";
 
-		$dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{subscriber_profile_table})
+		$dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{profile_table})
                     or carp "cannot do statement! $DBI::errstr\n";
 			
 }

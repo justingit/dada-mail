@@ -7,8 +7,12 @@ use DADA::App::Guts;
 sub columns { 
 	
 	my $self = shift; 
-	my $sth = $self->{dbh}->prepare("SELECT * FROM " . $self->{sql_params}->{profile_fields_table} ." WHERE (1 = 0)");    
-	$sth->execute() or confess "cannot do statement (at: columns)! $DBI::errstr\n";  
+	my $query = "SELECT * FROM " . $self->{sql_params}->{profile_fields_table} ." WHERE (1 = 0)";
+	warn 'Query: ' . $query; 
+	my $sth = $self->{dbh}->prepare($query);    
+	
+	$sth->execute() 
+		or croak "cannot do statement (at: columns)! $DBI::errstr\n";  
 	my $i; 
 	my @cols;
 	for($i = 1; $i <= $sth->{NUM_OF_FIELDS}; $i++){ 

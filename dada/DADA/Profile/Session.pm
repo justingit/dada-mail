@@ -28,21 +28,16 @@ sub _init {
     $self->{list} = $args->{ -list };
 
     if ( $DADA::Config::SESSION_DB_TYPE =~ /SQL/ ) {
-        if ( !$dbi_obj ) {
-            require DADA::App::DBIHandle;
-            $dbi_obj = DADA::App::DBIHandle->new;
-            $self->{dbh} = $dbi_obj->dbh_obj;
-        }
-        else {
-            $self->{dbh} = $dbi_obj->dbh_obj;
-        }
+    	require DADA::App::DBIHandle;
+       	my  $dbi_obj = DADA::App::DBIHandle->new;
+  		$self->{dbh} = $dbi_obj->dbh_obj; 
     }
 
     # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session.pm
 
     if ( $DADA::Config::SESSION_DB_TYPE =~ m/SQL/i ) {
 
-        if ( $DADA::Config::SESSION_DB_TYPE eq 'PostgreSQL' ) {
+        if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
 
 # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/postgresql.pm
             $self->{dsn}      = 'driver:PostgreSQL';
@@ -54,8 +49,9 @@ sub _init {
             };
 
         }
-        elsif ( $DADA::Config::SESSION_DB_TYPE eq 'MySQL' ) {
+        elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
 
+			
   # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/mysql.pm
             $self->{dsn}      = 'driver:mysql';
             $self->{dsn_args} = {
@@ -66,7 +62,7 @@ sub _init {
             };
 
         }
-        elsif ( $DADA::Config::SESSION_DB_TYPE eq 'SQLite' ) {
+        elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
 
             # http://search.cpan.org/~bmoyles/CGI-Session-SQLite/SQLite.pm
             $self->{dsn} =
@@ -106,81 +102,112 @@ sub _init {
 
 }
 
-=cut
+
 
 sub login_cookie {
 
-    my $self = shift;
+    my $self   = shift;
+	my ($args) = shift; 
 
-    my %args = (
-        -cgi_obj  => undef,
-        -list     => undef,
-        -password => undef,
-        @_
-    );
-
-    die 'no CGI Object (-cgi_obj)' if !$args{ -cgi_obj };
+    die 'no CGI Object (-cgi_obj)' if !$args->{ -cgi_obj };
 
     my $cookie;
 
-    my $q = $args{ -cgi_obj };
+    my $q = $args->{ -cgi_obj };
 
-    my $list = $args{ -list };
 
-    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
+    require CGI::Session;
+    CGI::Session->name('dada_profile');
 
-    my $cipher_pass =
-      DADA::Security::Password::cipher_encrypt( $li->{cipher_key},
-        $args{ -password } );
+    my $session = new CGI::Session( 
+		$self->{dsn}, 
+		$q, 
+		$self->{dsn_args}
+	 );
 
-    if (   $self->{can_use_cgi_session} == 1
-        && $self->{can_use_data_dumper} == 1 )
-    {
+    $session->param( 
+		'email',     
+		$args->{ -email } 
+	);
+    $session->param(
+		'_logged_in', 
+		1 
+	);
 
-        require CGI::Session;
-        CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
+    $session->expire( 
+		$DADA::Config::COOKIE_PARAMS{ -expires } 
+	);
+    $session->expire( 
+		'_logged_in',
+        $DADA::Config::COOKIE_PARAMS{ -expires } );
 
-        my $session = new CGI::Session( $self->{dsn}, $q, $self->{dsn_args} );
+    $cookie = $q->cookie(
+        -name  => 'dada_profile',
+        -value => $session->id,
+       # %DADA::Config::COOKIE_PARAMS
+    );
 
-        $session->param( 'Admin_List',     $args{ -list } );
-        $session->param( 'Admin_Password', $cipher_pass );
-
-        $session->expire( $DADA::Config::COOKIE_PARAMS{ -expires } );
-        $session->expire( 'Admin_Password',
-            $DADA::Config::COOKIE_PARAMS{ -expires } );
-        $session->expire( 'Admin_List',
-            $DADA::Config::COOKIE_PARAMS{ -expires } );
-
-        $cookie = $q->cookie(
-            -name  => $DADA::Config::LOGIN_COOKIE_NAME,
-            -value => $session->id,
-            %DADA::Config::COOKIE_PARAMS
-        );
-
-        # My proposal to address the situation is quit relying on flush() happen
-        # automatically, and recommend that people use an explicit flush()
-        # instead, which works reliably for everyone.
-        $session->flush();
-
-    }
-    else {
-
-        $cookie = $q->cookie(
-            -name  => $DADA::Config::LOGIN_COOKIE_NAME,
-            -value => {
-                admin_list     => $args{ -list },
-                admin_password => $cipher_pass
-            },
-            %DADA::Config::COOKIE_PARAMS
-        );
-    }
+    # My proposal to address the situation is quit relying on flush() happen
+    # automatically, and recommend that people use an explicit flush()
+    # instead, which works reliably for everyone.
+    $session->flush();
 
     return $cookie;
 }
-=cut
 
-sub login          {}
+sub login          {
+
+	my $self   = shift; 
+	my ($args) = @_;
+	my ($status, $errors) = $self->validate_profile_login($args);
+	if($status == 0){ 
+		die "login failed."; 
+	}
+	else { 
+		my $cookie = $self->login_cookie($args); 
+		require Data::Dumper; 
+	#	die Data::Dumper::Dumper($cookie);
+		return $cookie;
+	}
+}
+
 sub logout         {}
-sub validate       {}
+
+sub validate_profile_login { 
+	my $self   = shift; 
+	my ($args) = @_;
+	my $status = 1;  
+	my $errors = { 
+		unknown_user   => 0, 
+		incorrect_pass => 0, 
+	};
+	
+	require DADA::Profile; 
+	my $prof = DADA::Profile->new();
+	if($prof->exists({-email => $args->{-email}})){ 
+		# ...
+	}
+	else { 
+		$status = 0; 
+		$errors->{unknown_user} = 1;		
+	}
+	
+	if($prof->is_valid_password($args)){
+		# ...
+	}
+	else { 
+		$status = 0; 
+		$errors->{incorrect_pass} = 1;		
+	}
+
+	
+
+	
+	return ($status, $errors);
+	
+	
+}
+
+
+
 sub reset_password {}

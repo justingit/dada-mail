@@ -623,6 +623,11 @@ sub run {
 
 	'what_is_dada_mail'       =>    \&what_is_dada_mail, 
 	'adv_dada_mail_setup'     =>    \&adv_dada_mail_setup, 
+	
+	'profile_login'           =>    \&profile_login,
+	'profile'                 =>    \&profile, 
+	
+	
 
 	# these params are the same as above, but are smaller in actual size
 	# this comes into play when you have to create a url using these as parts of it.  
@@ -9139,6 +9144,87 @@ sub adv_dada_mail_setup {
 	print "<p class=\"error\">Make sure to set the variable, \$PROGRAM_CONFIG_FILE_DIR in the <strong>Config.pm</strong> to: <strong>$dada_files_dir/.configs</strong></p>"; 
 		
 }
+
+
+
+
+sub profile_login { 
+
+	if(
+		(
+			!$q->param('email') && 
+			!$q->param('password')
+		)
+		|| $q->param('login_error') == 1
+	)
+	{ 
+		
+		print list_template(-Part => "header",
+	                   -Title => "Profile Login", 
+	    );
+                                        
+	    require DADA::Template::Widgets; 
+	    print DADA::Template::Widgets::screen(
+			{
+				-screen => 'profile_login.tmpl',
+				-vars   => { 
+					email	    => $q->param('email'),
+					login_error => $q->param('login_error'),
+				}
+			}
+		); 
+	    print list_template(
+			-Part => "footer",
+	    );
+    }
+	else { 
+		
+		require DADA::Profile::Session;
+		my $prof_sess = DADA::Profile::Session->new; 
+		
+		my ($status, $errors) = $prof_sess->validate_profile_login(
+			{ 
+				-email    => $q->param('email'),
+				-password => $q->param('password'), 
+				
+			},
+		); 
+
+		if($status == 1){ 
+			my $cookie =$prof_sess->login(
+				{ 
+					-email    => $q->param('email'),
+					-password => $q->param('password'), 
+					-cgi_obj  => $q, 
+
+				},
+			); 
+
+			
+			print $q->header(-cookie  => [$cookie], 
+                              -nph     => $DADA::Config::NPH,
+                              -Refresh =>'0; URL=' . $DADA::Config::PROGRAM_URL . '?f=profile'); 
+                    
+            print $q->start_html(-title=>'Logging On...',
+                                 -BGCOLOR=>'#FFFFFF'
+                                ); 
+            print $q->p($q->a({-href => $DADA::Config::PROGRAM_URL . '?f=profile'}, 'Logging On...')); 
+            print $q->end_html();
+			return;
+		}
+		else { 
+			$q->param('login_error', 1);
+			&profile_login; 
+		}
+	}
+	
+}
+sub profile { 
+	print $q->header(); 
+	print "OMG YR LGGED!"; 
+}
+
+
 
 
 sub what_is_dada_mail { 

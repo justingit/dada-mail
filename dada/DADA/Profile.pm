@@ -25,18 +25,14 @@ sub _init {
     my $self = shift;
 
     my ($args) = @_;
+	$self->{sql_params} = {%DADA::Config::SQL_PARAMS};
 
-    $self->{list} = $args->{ -list };
-    if ( exists( $args->{ -lh_obj } ) ) {
-        $self->{lh} = $args->{ -lh_obj };
-    }
-    else {
-        require DADA::MailingList::Subscribers;
-        my $lh =
-          DADA::MailingList::Subscribers->new( { -list => $args->{ -list } } );
-        $self->{lh} = $lh;
-    }
-
+	my $dbi_obj = undef; 
+	if($DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/){ 
+		require DADA::App::DBIHandle; 
+		$dbi_obj = DADA::App::DBIHandle->new; 
+		$self->{dbh} = $dbi_obj->dbh_obj; 
+	}
 }
 
 
@@ -68,7 +64,7 @@ sub insert {
 
     my $query =
       'INSERT INTO '
-      . $DADA::Config::SQL_PARAMS{subscriber_profile_table}
+      . $DADA::Config::SQL_PARAMS{profile_table}
       . '(email, password) VALUES (?, ?)';
 
     warn 'Query: ' . $query
@@ -96,7 +92,7 @@ sub get {
 
     my $query =
       'SELECT * FROM '
-      . $self->{sql_params}->{subscriber_profile_table}
+      . $self->{sql_params}->{profile_table}
       . " WHERE email = ?";
 
 	warn 'QUERY: ' . $query . ', $args->{-email}: ' . $args->{-email}
@@ -110,17 +106,17 @@ sub get {
       or croak "cannot do statement (at get)! $DBI::errstr\n";
 	
 	my $profile_info = {};
-  	FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
-        foreach ( @{$sub_fields} ) {
-            $profile_info->{$_} = $hashref->{$_};
-        }
-        last FETCH;
+  	FETCH: while ( my $hashref = $sth->fetchrow_hashref ) {
+        
+    	$profile_info->{$_} = $hashref->{$_};
+        
+    last FETCH;
     }
 
     if ( $args->{ -dotted } == 1 ) {
         my $dotted = {};
         foreach ( keys %$profile_info ) {
-            $dotted->{ 'subscriber_profile.' . $_ } = $n_hashref->{$_};
+            $dotted->{ 'subscriber_profile.' . $_ } = $profile_info->{$_};
         }
         return $dotted;
     }
@@ -142,11 +138,14 @@ sub exists {
 	my $self   = shift; 
 	my ($args) = @_;
 	
-	my $query = 'SELECT COUNT(*) from ' . $DADA::Config::SQL_PARAMS{subscriber_profile_table}
+	my $query = 'SELECT COUNT(*) FROM ' . 
+				$DADA::Config::SQL_PARAMS{profile_table}
     			 . ' WHERE email = ? '; 
 				
 	my $sth     = $self->{dbh}->prepare($query);
 
+	warn 'QUERY: ' . $query; 
+	
 	$sth->execute($args->{ -email })
 		or croak "cannot do statement (at exists)! $DBI::errstr\n";	 
 	my @row = $sth->fetchrow_array();
@@ -159,13 +158,49 @@ sub exists {
 
 
 
+sub is_valid_password { 
+	
+	my $self   = shift; 
+	my ($args) = @_; 
+	my $query = 'SELECT email, password FROM ' . 
+				$DADA::Config::SQL_PARAMS{profile_table} . 
+				' WHERE email = ?'; 
+	warn 'QUERY: ' . $query; 
+	
+	my $sth     = $self->{dbh}->prepare($query);
+
+	$sth->execute($args->{ -email })
+		or croak "cannot do statement (at is_valid_password)! $DBI::errstr\n";	 
+		
+	FETCH: while (my $hashref = $sth->fetchrow_hashref ) {
+        
+		warn '$hashref->{password} ' . $hashref->{password} ; 
+		warn '$args->{ -password } ' . $args->{ -password }; 
+    	if($hashref->{password} eq $args->{ -password }){ 
+			$sth->finish; 	
+			return 1; 
+		}
+		else { 
+			$sth->finish; 	
+			return 0; 
+		}
+   
+        last FETCH; # which will never be called...
+    }
+		
+
+}
+
+
+
+
 sub drop {
     my $self = shift;
     my ($args) = @_;
 
     my $query =
       'DELETE  from '
-      . $DADA::Config::SQL_PARAMS{subscriber_profile_table}
+      . $DADA::Config::SQL_PARAMS{profile_table}
       . ' WHERE email = ? ';
 
 	my $sth = $self->{dbh}->prepare($query); 

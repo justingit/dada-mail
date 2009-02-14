@@ -1,0 +1,23 @@
+<!-- being profile_login.tmpl --> 
+
+<!-- tmpl_if login_error --> 
+
+	<h1 style="color:red">Error Logging In! Try again:</h1>
+
+<!-- /tmpl_if --> 
+
+<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" > 
+	
+	<input type="hidden" name="f" value="profile_login" /> 
+
+	<p>
+		<label for="email">Email Address:</label><input type="text" name="email" value="" /> 
+	</p>
+	<p>
+		<label for="password">Password:</label><input type="password" name="password" value="" /> 
+	</p>
+	<input type="submit" value="Login..." /> 
+</form> 
+
+
+<!-- end profile_login.tmpl --> 
