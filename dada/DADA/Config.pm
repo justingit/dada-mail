@@ -182,10 +182,20 @@ $PROGRAM_URL ='http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi';
 # This variable is talked about in length later in this file. 
 # 
 $PROGRAM_CONFIG_FILE_DIR = 'auto'; 
-#------------------
-#leave this alone | 
- _config_import();
-#------------------
+
+#
+#
+#
+#
+#
+#
+#
+#--------------------------------#
+# Leave the below line, alone!
+ _config_import(); # Leave alone! 
+# Leave the above line, alone!
+#--------------------------------#
+
 
 =pod
 
@@ -4540,12 +4550,17 @@ may not work. Instead, try setting it to '2'.
 
 sub _config_import { 
 
+	# There's no user-servicable parts in the subroutine, so don't make any changes, 
+	# unless you're customizing Dada Mail or debugging something interesting. 
+	#
 	if(exists($ENV{NO_DADA_MAIL_CONFIG_IMPORT})){ 
 			if($ENV{NO_DADA_MAIL_CONFIG_IMPORT} == 1){ 
 				return;
 			} 
 	}
-	
+	# Keep this as, 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'
+	# What we're doing is, seeing if you've actually changed the variable from
+	# it's default, and if not, we take a best guess.	
 	if($PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
 		require CGI; 
 		$PROGRAM_URL = CGI::url(); 
@@ -4586,8 +4601,9 @@ sub _config_import {
 		$conf =~ m/(.*)/ms;
 		$conf = $1;	
 		eval  $conf;
-		die "$PROGRAM_NAME $VER ERROR - Outside config file '$CONFIG_FILE' contains errors:\n\n $@ \n\n" if ($@);
-	
+		if ($@) { 
+			die "$PROGRAM_NAME $VER ERROR - Outside config file '$CONFIG_FILE' contains errors:\n\n$@\n\n";
+		}	
 		if($PROGRAM_CONFIG_FILE_DIR eq 'auto') { 
 			if(! defined $PROGRAM_ERROR_LOG){ 
 				$PROGRAM_ERROR_LOG = $LOGS . '/errors.txt'; 
