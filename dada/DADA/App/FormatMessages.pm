@@ -161,7 +161,8 @@ sub _init  {
 	   $parser = optimize_mime_parser($parser); 
 	   
  	$self->{parser} = $parser; 
- 	
+ 	$self->{ls}     = undef; 
+	$self->{list}   = undef;
  	if(exists($args->{-List}) && $args->{-yeah_no_list} == 0){ 
  	    
 
@@ -441,13 +442,12 @@ sub _format_text {
                     );
                 }
                 
-        
 
-				
-				
-				$content = $self->_add_opener_image($content)
-					if $self->{ls}->param('enable_open_msg_logging') == 1            && 
-					   $entity->head->mime_type                      eq 'text/html';
+      			if(defined($self->{list})){
+					if ($self->{ls}->param('enable_open_msg_logging') == 1 && $entity->head->mime_type                      eq 'text/html'){ 
+						$content = $self->_add_opener_image($content);
+					}
+				}
 						   
 		       my $io = $body->open('w');
 				  $io->print( $content );

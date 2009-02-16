@@ -5,6 +5,8 @@ use strict;
 use Carp qw(carp croak);
 use DADA::Config;
 use CGI::Session;
+CGI::Session->name('dada_profile');
+
 
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
@@ -117,7 +119,6 @@ sub login_cookie {
 
 
     require CGI::Session;
-    CGI::Session->name('dada_profile');
 
     my $session = new CGI::Session( 
 		$self->{dsn}, 
@@ -165,13 +166,35 @@ sub login          {
 	}
 	else { 
 		my $cookie = $self->login_cookie($args); 
-		require Data::Dumper; 
+	#	require Data::Dumper; 
 	#	die Data::Dumper::Dumper($cookie);
 		return $cookie;
 	}
 }
 
-sub logout         {}
+sub logout         {
+	
+    my $self   = shift; 
+	my ($args) = @_; 
+	my $q = $args->{-cgi_obj};
+	
+	if($self->is_logged_in($args)){ 
+		my $s = new CGI::Session( 
+			$self->{dsn}, 
+			$q, 
+			$self->{dsn_args}
+		 );
+		$s->delete; 
+		$s->flush; 
+		return 1; 
+	}
+	else { 
+		warn 'profile was never logged in!'; 
+		return 0; 
+	}
+	
+
+}
 
 sub validate_profile_login { 
 	my $self   = shift; 
@@ -199,13 +222,40 @@ sub validate_profile_login {
 		$status = 0; 
 		$errors->{incorrect_pass} = 1;		
 	}
-
-	
-
 	
 	return ($status, $errors);
 	
+}
+
+
+sub is_logged_in { 
 	
+	my $self   = shift; 
+	my ($args) = @_; 
+	my $q = $args->{-cgi_obj};
+	
+	my $s = CGI::Session->load(
+		$self->{dsn}, 
+		$q, 
+		$self->{dsn_args}
+	)
+	or die CGI::Session->errstr();
+		
+    if ( $s->is_expired ) {
+    	return 0; 
+	}
+
+    if ( $s->is_empty ) {
+       	return 0; 
+    }
+
+	if($s->param('_logged_in') == 1){ 
+		return 1; 
+	}
+	else { 
+		return 0; 
+	}
+
 }
 
 

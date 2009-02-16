@@ -33,6 +33,8 @@ CREATE TABLE dada_profile (
 	fields_id			         int4 not null primary key auto_increment,
 	email                        varchar(320) not null,
 	password                     text(16),
+	auth_code                    varchar(64),
+	activated                    char(1), 
 	CONSTRAINT UNIQUE (email)
 );
 

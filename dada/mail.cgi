@@ -624,7 +624,10 @@ sub run {
 	'what_is_dada_mail'       =>    \&what_is_dada_mail, 
 	'adv_dada_mail_setup'     =>    \&adv_dada_mail_setup, 
 	
+	'profile_register'        =>    \&profile_register, 
+	'profile_reset_password'  =>    \&profile_reset_password, 
 	'profile_login'           =>    \&profile_login,
+	'profile_logout'          =>    \&profile_logout, 
 	'profile'                 =>    \&profile, 
 	
 	
@@ -7436,6 +7439,7 @@ sub search_archive {
 
 
 
+
 sub send_archive { 
 
     my $entry        = xss_filter($q->param('entry'));
@@ -9150,38 +9154,63 @@ sub adv_dada_mail_setup {
 
 sub profile_login { 
 
-	if(
-		(
-			!$q->param('email') && 
-			!$q->param('password')
-		)
-		|| $q->param('login_error') == 1
-	)
-	{ 
-		
-		print list_template(-Part => "header",
-	                   -Title => "Profile Login", 
-	    );
-                                        
-	    require DADA::Template::Widgets; 
-	    print DADA::Template::Widgets::screen(
+	my ($args) = @_; 
+	if(! exists($args->{-errors})) { 
+		$args->{-errors} = {};
+	}
+	my $errors = $args->{-errors};
+	
+	###
+	my $named_errs = {};
+	my $all_errors = [];
+	foreach(keys %$errors){ 
+		if($errors->{$_} == 1){ 
+			$named_errs->{'error_' . $_} = 1 ; 
+			push(@$all_errors, {error => $_});
+		}
+	}
+	my @add_errors = $q->param('errors'); 
+	foreach(@add_errors){ 
+		$named_errs->{'error_' . $_} = 1 ; 
+		push(@$all_errors, {error => $_});
+	}
+	###
+	
+	require DADA::Profile::Session;
+	my $prof_sess = DADA::Profile::Session->new;
+	
+	if($q->param('process') != 1){ 
+
+	if($prof_sess->is_logged_in({-cgi_obj => $q})){ 
+		print $q->redirect(
 			{
-				-screen => 'profile_login.tmpl',
-				-vars   => { 
-					email	    => $q->param('email'),
-					login_error => $q->param('login_error'),
-				}
+				-uri => $DADA::Config::PROGRAM_URL . '?f=profile', 
 			}
-		); 
-	    print list_template(
-			-Part => "footer",
-	    );
+			);
+		return;
+	}
+	else { 
+			print list_template(-Part => "header",
+		                   -Title => "Profile Login", 
+		    );
+                                        
+		    require DADA::Template::Widgets; 
+		    print DADA::Template::Widgets::screen(
+				{
+					-screen => 'profile_login.tmpl',
+					-vars   => { 
+						email	    => xss_filter($q->param('email')),
+						errors      => $all_errors, 
+						%$named_errs, 
+					}
+				}
+			); 
+		    print list_template(
+				-Part => "footer",
+		    );
+		}
     }
 	else { 
-		
-		require DADA::Profile::Session;
-		my $prof_sess = DADA::Profile::Session->new; 
-		
 		my ($status, $errors) = $prof_sess->validate_profile_login(
 			{ 
 				-email    => $q->param('email'),
@@ -9191,7 +9220,7 @@ sub profile_login {
 		); 
 
 		if($status == 1){ 
-			my $cookie =$prof_sess->login(
+			my $cookie = $prof_sess->login(
 				{ 
 					-email    => $q->param('email'),
 					-password => $q->param('password'), 
@@ -9199,7 +9228,6 @@ sub profile_login {
 
 				},
 			); 
-
 			
 			print $q->header(-cookie  => [$cookie], 
                               -nph     => $DADA::Config::NPH,
@@ -9214,35 +9242,145 @@ sub profile_login {
 		}
 		else { 
 			$q->param('login_error', 1);
-			&profile_login; 
+			$q->param('process', 0); 
+			profile_login({-errors => $errors}); 
 		}
 	}
 	
 }
-sub profile { 
-	print $q->header(); 
-	print "OMG YR LGGED!"; 
+
+sub profile_register { 
+
+
+	my $email       = xss_filter($q->param('email'));
+	my $email_again = xss_filter($q->param('email_again')); 
+	my $password    = xss_filter($q->param('password')); 
+	require DADA::Profile;
+	my $prof = DADA::Profile->new;
+	
+	my($status, $errors) = $prof->validate_registration(
+		{
+			-email 		 => $email, 
+			-email_again => $email_again, 
+			-password    => $password, 
+		}
+	);
+	if($status == 0){ 
+		my $qs = ''; 
+		foreach(keys %$errors){ 
+			if($errors->{$_} == 1){ 
+				$qs .= '&errors=' . $_; 
+			}
+		}
+		print $q->redirect({
+			-uri => $DADA::Config::PROGRAM_URL . '?f=profile_login' . $qs, 
+		})
+	}
+	else { 
+		$prof->setup_profile(
+			{
+				-email 		 => $email, 
+				-password    => $password, 
+			}
+		); 
+		print $q->header(); 
+		print "Profile Setup! OMG!"; 
+	}
 }
 
 
+sub profile { 
+	
+	require DADA::Profile::Session;
+	my $prof_sess = DADA::Profile::Session->new; 
+	if($prof_sess->is_logged_in({-cgi_obj => $q})){ 
+		# ...
+	}
+	else { 
+		print $q->redirect({
+			-uri => $DADA::Config::PROGRAM_URL . '?f=profile_login&error=not_logged_in', 
+		}); 
+	}	
+	
+	print list_template(-Part => "header",
+                   -Title => "Profile Control Home!", 
+    );
+                                    
+    require DADA::Template::Widgets; 
+    print DADA::Template::Widgets::screen(
+		{
+			-screen => 'profile_login_home.tmpl',
+			-vars   => { 
+				
+			}
+		}
+	); 
+    print list_template(
+		-Part => "footer",
+    );
+}
+
+sub profile_logout { 
+
+	require DADA::Profile::Session;
+	my $prof_sess = DADA::Profile::Session->new;
+	   $prof_sess->logout; 
+	print $q->redirect({
+		-uri => $DADA::Config::PROGRAM_URL . '?f=profile_login', 
+	});
+}
+sub profile_reset_password { 
+
+	my $email = xss_filter($q->param('email')); 
+
+	require DADA::Profile; 
+	my $prof = DADA::Profile->new;
+	
+	if($email){ 
+
+		if($q->param('auth_code')){ 
+			my ($status, $errors) = $prof->validate_profile_activation(
+				{
+					-email     => $email, 
+					-auth_code => xss_filter($q->param('auth_code')), 
+				}
+			); 
+		}
+		else { 
+			
+	
+			if($prof->exists({-email => $email})){
+				$prof->send_profile_activation_email({-email => $email});
+				print $q->header(); 
+				print "check your email, you'll have to reactivate your account!";
+			}
+			else { 
+				print $q->redirect({
+					-uri => $DADA::Config::PROGRAM_URL . '?f=profile_login&errors=unknown_user&email=' . $email, 
+				});
+			}
+		}
+    }
+	else {                      
+		print $q->redirect({
+			-uri => $DADA::Config::PROGRAM_URL . '?f=profile_login', 
+		}); 
+	}
+}
 
 
 sub what_is_dada_mail { 
 
 
     print list_template(-Part => "header",
-                   -Title => "What is Dada Mail?", 
-                   ,   
-           );
+                   		-Title => "What is Dada Mail?",  
+    );
                       
-                      
+                   
     require DADA::Template::Widgets; 
     print DADA::Template::Widgets::screen({-screen => 'what_is_dada_mail.tmpl'}); 
 
-    print list_template(-Part => "footer",
-                   -Title => "What is Dada Mail?", 
-                   ,   
-           );
+    print list_template(-Part => "footer");
               
               
 }

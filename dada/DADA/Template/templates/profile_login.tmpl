@@ -2,13 +2,49 @@
 
 <!-- tmpl_if login_error --> 
 
-	<h1 style="color:red">Error Logging In! Try again:</h1>
-
 <!-- /tmpl_if --> 
+
+<!-- 
+	<!-- tmpl_if errors --> 
+		<h1>YOU HAVE ERRORS!!!</h1> 
+		<ul>
+		<!-- tmpl_loop errors --> 
+			<li><p><!-- tmpl_var error --></p></li>
+		<!-- /tmpl_loop --> 
+		</ul>
+	<!-- /tmpl_if --> 
+--> 
+
+	<!-- tmpl_if errors --> 
+		<h1>Problems Logging In:</h1>
+		<ul>
+		<!-- tmpl_if error_unknown_user --> 
+			<li><p>Email Address unknown. Have you registered?</li>
+		<!-- tmpl_else --> 
+			<!-- tmpl_if error_incorrect_pass --> 
+				<li>
+				 <p>Your password is incorrect. 
+				  <a href="<!-- tmpl_var PROGRAM_URL -->?f=profile_reset_password&email=<!-- tmpl_var email -->">
+					Reset Your Password.
+					</a>
+				 </p>
+				</li>
+			<!-- /tmpl_if -->
+		<!-- /tmpl_if --> 
+		
+		
+		</ul>		
+	<!-- /tmpl_if --> 
+
+<hr /> 
+
+<h1>Log On To Your Profile Control Panel:</h1> 
+
 
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" > 
 	
 	<input type="hidden" name="f" value="profile_login" /> 
+	<input type="hidden" name="process" value="1" /> 
 
 	<p>
 		<label for="email">Email Address:</label><input type="text" name="email" value="" /> 
@@ -17,7 +53,46 @@
 		<label for="password">Password:</label><input type="password" name="password" value="" /> 
 	</p>
 	<input type="submit" value="Login..." /> 
+	</p>
 </form> 
+
+<hr /> 
+
+
+<h1>Haven't Registered?!:</h1> 
+
+<p>Register by subscribing to a list, or by filling in the below stuffy-doo:</p> 
+
+<form action="<!-- tmpl_var PROGRAM_URL -->" methd="post"> 
+	<input type="hidden" name="f" value="profile_register" /> 
+	<p>
+		<label for="email">Email Address:</label><input type="text" name="email" value="" /> 
+	</p>
+	<p>
+		<label for="email_again">Email Address (again):</label><input type="text" name="email_again" value="" /> 
+	</p>
+	<p>
+		<label for="password">Password:</label><input type="password" name="password" value="" /> 
+	</p>
+	</p>
+	<input type="submit" value="Register..." /> 
+	</p>
+		
+</form> 
+
+
+<hr /> 
+
+<h1>Forgot Your Profile Password?</h1> 
+
+
+<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" /> 
+	<input type="hidden" name="f" value='profile_reset_password' /> 
+	<p>Email Address: <input type="text" name="email" value="" /></p> 
+	<input type="submit" value="Send Authorization Code..." /> 
+</form>
+
+<hr /> 
 
 
 <!-- end profile_login.tmpl --> 

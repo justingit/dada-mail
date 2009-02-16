@@ -39,21 +39,25 @@ sub send_generic_email {
 		$args->{-test} = 0;
 	}
 		
-	my $ls; 
-	if (! exists($args->{-ls_obj})){
-		require DADA::MailingList::Settings; 
-		$ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
-	}
-	else { 
-		$ls = $args->{-ls_obj};
-	}
-	my $li = $ls->get;
+	my $ls   = undef; 
+	my $li   = {}; 
+
 	
-	my $expr = 0; 
+	if(exists($args->{-list})){ 		
+		if (! exists($args->{-ls_obj})){
+			require DADA::MailingList::Settings; 
+			$ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
+		}
+		else { 
+			$ls = $args->{-ls_obj};
+		}
+		$li = $ls->get;
+	}
+	
+	my $expr = 0; 	
 	if($li->{enable_email_template_expr} == 1){ 
 		$expr = 1;
 	}
-	
 	
 	if(!exists($args->{-headers})){ 
 		$args->{-headers} = {}; 
@@ -63,17 +67,35 @@ sub send_generic_email {
 	}
 	
 	if(!exists($args->{-tmpl_params})){ 
-		$args->{-tmpl_params} = {-list_settings_vars_param => {-list => $args->{-list}}}, # Dev: Probably could just pass $ls? 
-	}
+		if(exists($args->{-list})){ 
+			$args->{-tmpl_params} = 
+				{
+					-list_settings_vars_param => 
+						{
+							-list => $args->{-list}
+						}
+					}, # Dev: Probably could just pass $ls? 
+		}
+		else { 
+			$args->{-tmpl_params} = {};
+		}
+	}	
+	
 	my $data = { 
 					%{$args->{-headers}},
 					Body => $args->{-body},
 			   }; 
 			
 	require DADA::App::FormatMessages; 
-	my $fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
-   	   $fm->use_header_info(1);
-	   $fm->use_email_templates(0);	
+	my $fm = undef; 
+	if(exists($args->{-list})){ 
+		$fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
+   	}  
+	else { 
+		$fm = DADA::App::FormatMessages->new(-yeah_no_list => 1); 		
+	}
+	$fm->use_header_info(1);
+	$fm->use_email_templates(0);	
 			
 	my ($email_str) = $fm->format_message(
                             -msg => $fm->string_from_dada_style_args(
@@ -97,8 +119,14 @@ sub send_generic_email {
 	require DADA::Mail::Send;  
 	my $mh = DADA::Mail::Send->new(
 				{
-					-list   => $args->{-list}, 
-					-ls_obj => $ls, 
+					(
+						exists($args->{-list})
+					) ? ( 
+						-list   => $args->{-list}, 
+						-ls_obj => $ls,
+					) : 
+					(
+					), 
 				}
 			); 
 				
