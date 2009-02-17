@@ -1,10 +1,6 @@
 <!-- being profile_login.tmpl --> 
 
-<!-- tmpl_if login_error --> 
 
-<!-- /tmpl_if --> 
-
-<!-- 
 	<!-- tmpl_if errors --> 
 		<h1>YOU HAVE ERRORS!!!</h1> 
 		<ul>
@@ -13,24 +9,17 @@
 		<!-- /tmpl_loop --> 
 		</ul>
 	<!-- /tmpl_if --> 
---> 
+	
+	<h1>error_profile_login: <!-- tmpl_var error_profile_login --> </h1> 
+	<h1>error_profile_register: <!-- tmpl_var error_profile_register --></h1>
+<hr /> 
+<hr /> 
+<hr /> 
 
 	<!-- tmpl_if errors --> 
-		<h1>Problems Logging In:</h1>
-		<ul>
-		<!-- tmpl_if error_unknown_user --> 
-			<li><p>Email Address unknown. Have you registered?</li>
-		<!-- tmpl_else --> 
-			<!-- tmpl_if error_incorrect_pass --> 
-				<li>
-				 <p>Your password is incorrect. 
-				  <a href="<!-- tmpl_var PROGRAM_URL -->?f=profile_reset_password&email=<!-- tmpl_var email -->">
-					Reset Your Password.
-					</a>
-				 </p>
-				</li>
-			<!-- /tmpl_if -->
-		<!-- /tmpl_if --> 
+		<h1>Errors!</h1>
+		<p>Why don't cha look below for some details, k?!</p> 
+		<ul> 
 		
 		
 		</ul>		
@@ -40,6 +29,25 @@
 
 <h1>Log On To Your Profile Control Panel:</h1> 
 
+	<!-- tmpl_if error_profile_login --> 
+		<ul> 
+			<!-- tmpl_if error_unknown_user --> 
+			<li>
+				<p class="error">
+					User Unknown - have you registered?
+				</p>
+			</li>
+			<!-- /tmpl_if --> 
+			<!-- tmpl_if error_incorrect_pass --> 
+			<li>
+				<p class="error">
+					Incorrect Password - double check?
+				</p>
+			</li>
+			<!-- /tmpl_if --> 
+			
+		</ul> 
+	<!-- /tmpl_if --> 
 
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" > 
 	
@@ -47,7 +55,7 @@
 	<input type="hidden" name="process" value="1" /> 
 
 	<p>
-		<label for="email">Email Address:</label><input type="text" name="email" value="" /> 
+		<label for="email">Email Address:</label><input type="text" name="email" value="<!-- tmpl_var email -->" /> 
 	</p>
 	<p>
 		<label for="password">Password:</label><input type="password" name="password" value="" /> 
@@ -63,13 +71,39 @@
 
 <p>Register by subscribing to a list, or by filling in the below stuffy-doo:</p> 
 
+<!-- tmpl_if error_profile_register --> 
+	<ul> 
+		<!-- tmpl_if error_invalid_email -->
+		<li>
+			<p class="error">
+				The email address you've entered is not valid.
+			</p> 
+		</li>		
+		<!-- /tmpl_if --> 
+		<!-- tmpl_if error_password_blank --> 
+			<li>
+				<p class="error">
+					You forgot to enter a password.
+				</p> 
+			</li>
+		<!-- /tmpl_if --> 
+		<!-- tmpl_if error_email_no_match --> 
+		<li>
+			<p class="error">
+				The email addresses you've entered do not match.
+			</p> 
+		</li>		
+		<!-- /tmpl_if --> 
+	</ul> 
+<!-- /tmpl_if --> 
+
 <form action="<!-- tmpl_var PROGRAM_URL -->" methd="post"> 
 	<input type="hidden" name="f" value="profile_register" /> 
 	<p>
-		<label for="email">Email Address:</label><input type="text" name="email" value="" /> 
+		<label for="email">Email Address:</label><input type="text" name="email" value="<!-- tmpl_var email -->" /> 
 	</p>
 	<p>
-		<label for="email_again">Email Address (again):</label><input type="text" name="email_again" value="" /> 
+		<label for="email_again">Email Address (again):</label><input type="text" name="email_again" value="<!-- tmpl_var email_again -->" /> 
 	</p>
 	<p>
 		<label for="password">Password:</label><input type="password" name="password" value="" /> 
@@ -88,7 +122,7 @@
 
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" /> 
 	<input type="hidden" name="f" value='profile_reset_password' /> 
-	<p>Email Address: <input type="text" name="email" value="" /></p> 
+	<p>Email Address: <input type="text" name="email" value="<!-- tmpl_var email -->" /></p> 
 	<input type="submit" value="Send Authorization Code..." /> 
 </form>
 

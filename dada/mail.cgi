@@ -624,6 +624,7 @@ sub run {
 	'what_is_dada_mail'       =>    \&what_is_dada_mail, 
 	'adv_dada_mail_setup'     =>    \&adv_dada_mail_setup, 
 	
+	'profile_activate'        =>    \&profile_activate, 
 	'profile_register'        =>    \&profile_register, 
 	'profile_reset_password'  =>    \&profile_reset_password, 
 	'profile_login'           =>    \&profile_login,
@@ -9153,24 +9154,12 @@ sub adv_dada_mail_setup {
 
 
 sub profile_login { 
-
-	my ($args) = @_; 
-	if(! exists($args->{-errors})) { 
-		$args->{-errors} = {};
-	}
-	my $errors = $args->{-errors};
 	
 	###
-	my $named_errs = {};
 	my $all_errors = [];
-	foreach(keys %$errors){ 
-		if($errors->{$_} == 1){ 
-			$named_errs->{'error_' . $_} = 1 ; 
-			push(@$all_errors, {error => $_});
-		}
-	}
-	my @add_errors = $q->param('errors'); 
-	foreach(@add_errors){ 
+	my $named_errs = {};
+	my $errors     = $q->param('errors'); 
+	foreach(@$errors){ 
 		$named_errs->{'error_' . $_} = 1 ; 
 		push(@$all_errors, {error => $_});
 	}
@@ -9199,9 +9188,15 @@ sub profile_login {
 				{
 					-screen => 'profile_login.tmpl',
 					-vars   => { 
-						email	    => xss_filter($q->param('email')),
-						errors      => $all_errors, 
-						%$named_errs, 
+						errors                       => $all_errors, 
+						%$named_errs,
+						email	                     => xss_filter($q->param('email'))            || '',
+						email_again                  => xss_filter($q->param('email_again'))      || '', 
+						error_profile_login          => $q->param('error_profile_login')          || '',  
+						error_profile_register       => $q->param('error_profile_register')       || '',
+						error_profile_activate       => $q->param('error_profile_activate')       || '',
+						error_profile_reset_password => $q->param('error_profile_reset_password') || '', 
+
 					}
 				}
 			); 
@@ -9241,9 +9236,16 @@ sub profile_login {
 			return;
 		}
 		else { 
-			$q->param('login_error', 1);
-			$q->param('process', 0); 
-			profile_login({-errors => $errors}); 
+			my $p_errors = []; 
+			foreach(keys %$errors){ 
+				if($errors->{$_} == 1){ 
+					push(@$p_errors, $_); 
+				}
+			}
+			$q->param('errors',              $p_errors);
+			$q->param('process',             0        ); 
+			$q->param('error_profile_login', 1        ); 
+			profile_login(); 
 		}
 	}
 	
@@ -9255,9 +9257,16 @@ sub profile_register {
 	my $email       = xss_filter($q->param('email'));
 	my $email_again = xss_filter($q->param('email_again')); 
 	my $password    = xss_filter($q->param('password')); 
+	
 	require DADA::Profile;
 	my $prof = DADA::Profile->new;
 	
+	
+	if($prof->exists({-email => $email}) && 
+	   !$prof->is_activated({-email => $email})
+	){ 
+		$prof->drop({-email => $email}); 
+	}
 	my($status, $errors) = $prof->validate_registration(
 		{
 			-email 		 => $email, 
@@ -9266,15 +9275,16 @@ sub profile_register {
 		}
 	);
 	if($status == 0){ 
-		my $qs = ''; 
+		my $p_errors = []; 
 		foreach(keys %$errors){ 
 			if($errors->{$_} == 1){ 
-				$qs .= '&errors=' . $_; 
+				push(@$p_errors, $_); 
 			}
 		}
-		print $q->redirect({
-			-uri => $DADA::Config::PROGRAM_URL . '?f=profile_login' . $qs, 
-		})
+		$q->param('errors',                 $p_errors); 
+		$q->param('error_profile_register',  1        ); 
+		profile_login(); 
+		return; 
 	}
 	else { 
 		$prof->setup_profile(
@@ -9288,6 +9298,41 @@ sub profile_register {
 	}
 }
 
+sub profile_activate { 
+	
+	my $email     = xss_filter($q->param('email')); 
+	my $auth_code = xss_filter($q->param('auth_code'));
+		
+	require DADA::Profile; 
+	my $prof = DADA::Profile->new;
+	
+	if($email && $auth_code){ 
+		my ($status, $errors) = $prof->validate_profile_activation(
+			{
+				-email     => $email, 
+				-auth_code => xss_filter($q->param('auth_code')), 
+			}
+		); 
+		if($status == 1){ 
+			$prof->activate({-email => $email}); 
+			print $q->header(); 
+			print "OMG! Registration is valid!!! - you should be able to login in now , and stuff and stuff!"; 
+		}
+		else {
+			my $p_errors = [];
+			foreach(keys %$errors){ 
+				if($errors->{$_} == 1){ 
+					push(@$p_errors, $_);  
+				}
+			}
+			$q->param('errors',                 $p_errors);
+			$q->param('error_profile_activate', 1        ); 
+			profile_login(); 
+			return; 
+		}
+	}
+}
+
 
 sub profile { 
 	
@@ -9297,9 +9342,10 @@ sub profile {
 		# ...
 	}
 	else { 
-		print $q->redirect({
-			-uri => $DADA::Config::PROGRAM_URL . '?f=profile_login&error=not_logged_in', 
-		}); 
+		$q->param('error_profile_login', 1              ); 
+		$q->param('errors',              ['not_logged_in']); 
+		profile_login(); 
+		return; 
 	}	
 	
 	print list_template(-Part => "header",
@@ -9329,35 +9375,94 @@ sub profile_logout {
 		-uri => $DADA::Config::PROGRAM_URL . '?f=profile_login', 
 	});
 }
+
+
 sub profile_reset_password { 
 
-	my $email = xss_filter($q->param('email')); 
-
+	my $email     = xss_filter($q->param('email')); 
+	my $password  = xss_filter($q->param('password'))  || undef; 
+	my $auth_code = xss_filter($q->param('auth_code')) || undef; 
+	
 	require DADA::Profile; 
 	my $prof = DADA::Profile->new;
 	
 	if($email){ 
-
-		if($q->param('auth_code')){ 
+		
+		if($auth_code){ 
 			my ($status, $errors) = $prof->validate_profile_activation(
 				{
 					-email     => $email, 
-					-auth_code => xss_filter($q->param('auth_code')), 
+					-auth_code => $auth_code, 
 				}
 			); 
+			if($status == 1){ 
+				if(!$password){ 
+					print list_template(-Part => "header",
+				                   -Title => "Profile Control Home!", 
+				    );
+
+				    require DADA::Template::Widgets; 
+				    print DADA::Template::Widgets::screen(
+						{
+							-screen => 'profile_reset_password.tmpl',
+							-vars   => { 
+								email     => $email, 
+								auth_code => $auth_code, 
+							}
+						}
+					); 
+				    print list_template(
+						-Part => "footer",
+				    );
+				}
+				else { 
+					
+					# Reset the Password
+					$prof->update(
+						{
+							-email    => $email, 
+							-password => $password, 
+						}
+					); 
+					# Reactivate the Account
+					$prof->activate({-email => $email}); 
+					# Log The person in. 
+					# Probably pass the needed stuff to profile_login via CGI's param()
+					$q->param('email',    $email);
+					$q->param('password', $password);	
+					$q->param('process',  1); 	
+								
+					# and just called the subroutine itself. Hazzah!
+					profile_login(); 
+					# Go home, kiss the wife. 
+				}
+			}
+			else {
+				my $p_errors = [];
+				foreach(keys %$errors){ 
+					if($errors->{$_} == 1){ 
+						push(@$p_errors, $_); 
+					}
+				}
+				$q->param('error_profile_reset_password', 1); 
+				$q->param('errors', $p_errors); 
+				profile_login(); 
+			}
 		}
 		else { 
 			
 	
 			if($prof->exists({-email => $email})){
-				$prof->send_profile_activation_email({-email => $email});
+				$prof->send_profile_reset_password({-email => $email});
+				$prof->activate({-email => $email, -activate => 0});
 				print $q->header(); 
 				print "check your email, you'll have to reactivate your account!";
 			}
-			else { 
-				print $q->redirect({
-					-uri => $DADA::Config::PROGRAM_URL . '?f=profile_login&errors=unknown_user&email=' . $email, 
-				});
+			else {
+				$q->param('error_profile_reset_password', 1);  
+				$q->param('errors', ['unknown_user']); 
+				$q->param('email', $email); 
+				profile_login(); 
 			}
 		}
     }

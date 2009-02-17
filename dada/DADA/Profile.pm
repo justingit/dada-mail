@@ -110,9 +110,13 @@ sub get {
       or croak "cannot do statement (at get)! $DBI::errstr\n";
 	
 	my $profile_info = {};
-  	FETCH: while ( my $hashref = $sth->fetchrow_hashref ) {
-        
-    	$profile_info->{$_} = $hashref->{$_};
+	my $hashref      = {};
+	
+	#warn $sth->dump_results(undef, undef, undef, *STDERR);
+	 
+  	FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
+        #warn '$hashref->{$_} ' . $hashref->{$_} ;
+    	$profile_info = $hashref;
         
     last FETCH;
     }
@@ -137,6 +141,32 @@ sub get {
 
 
 
+sub is_activated { 
+	my $self   = shift; 
+	my ($args) = @_;
+
+	my $query = 'SELECT activated FROM ' . 
+				$DADA::Config::SQL_PARAMS{profile_table}
+    			 . ' WHERE email = ?'; 
+
+	my $sth     = $self->{dbh}->prepare($query);
+
+	warn 'QUERY: ' . $query; 
+
+	$sth->execute($args->{ -email })
+		or croak "cannot do statement (is_activated)! $DBI::errstr\n";	 
+	my @row = $sth->fetchrow_array();
+
+
+	my $activated = 0; 
+	FETCH: while (my $hashref = $sth->fetchrow_hashref ) {
+    	$activated = $hashref->{activated};
+        last FETCH; 
+    }
+
+    $sth->finish;
+	return $activated; 
+}
 
 sub exists { 
 	my $self   = shift; 
@@ -144,7 +174,7 @@ sub exists {
 	
 	my $query = 'SELECT COUNT(*) FROM ' . 
 				$DADA::Config::SQL_PARAMS{profile_table}
-    			 . ' WHERE email = ? '; 
+    			 . ' WHERE email = ?'; 
 				
 	my $sth     = $self->{dbh}->prepare($query);
 
@@ -178,8 +208,8 @@ sub is_valid_password {
 		
 	FETCH: while (my $hashref = $sth->fetchrow_hashref ) {
         
-		warn '$hashref->{password} ' . $hashref->{password} ; 
-		warn '$args->{ -password } ' . $args->{ -password }; 
+		#warn '$hashref->{password} ' . $hashref->{password} ; 
+	#	warn '$args->{ -password } ' . $args->{ -password }; 
     	if($hashref->{password} eq $args->{ -password }){ 
 			$sth->finish; 	
 			return 1; 
@@ -231,6 +261,33 @@ sub validate_registration {
 	return ($status, $errors);
 	
 }
+
+sub update { 
+	
+	my $self   = shift; 
+	my ($args) = @_;
+	my $orig = $self->get({-email => $args->{-email}});
+	
+	foreach(keys %$orig){ 
+		next if $_ eq 'email'; 
+		if(exists($args->{'-'.$_})){
+			$orig->{$_} = $args->{'-'.$_};
+		}
+	}  	
+	$self->drop({-email => $args->{-email}});
+	$orig->{-email} = $args->{-email}; 
+	
+	# This is kind of strange: 
+	my $new = {}; 
+	foreach(keys %$orig){ 
+		$new->{'-'.$_} = $orig->{$_};
+	}
+	$self->insert($new); 
+	
+}
+
+
+
 sub setup_profile { 
 	my $self   = shift; 
 	my ($args) = @_;
@@ -257,7 +314,7 @@ sub send_profile_activation_email {
 
 Heya, Here's the authorization link to reset your password - click it!
 
-<!-- tmpl_var PROGRAM_URL -->?f=profile_reset_password&email=<!-- tmpl_var email -->&auth_code=<!-- tmpl_var authorization_code --> 
+<!-- tmpl_var PROGRAM_URL -->?f=profile_activate&email=<!-- tmpl_var email -->&auth_code=<!-- tmpl_var authorization_code --> 
 
 -- <!-- tmpl_var PROGRAM_NAME --> 
 
@@ -287,30 +344,117 @@ EOF
 }
 
 
+sub send_profile_reset_password { 
+	my $self   = shift; 
+	my ($args) = @_; 
 
-sub validate_profile_activation {}
+	my $auth_code = $self->set_auth_code($args); 
+	require DADA::App::Messages; 
+	my $msg = <<EOF
+
+Heya, Here's the authorization link to reset your password - click it!
+
+<!-- tmpl_var PROGRAM_URL -->?f=profile_reset_password&email=<!-- tmpl_var email -->&auth_code=<!-- tmpl_var authorization_code --> 
+
+-- <!-- tmpl_var PROGRAM_NAME --> 
+
+EOF
+; 
+
+	DADA::App::Messages::send_generic_email(
+	{
+       -email   => $args->{-email},
+	   -headers => { 
+        	Subject => 'Your Authorization Code! For Resetting your password', 
+			From    => 'justin@skazat.com', 
+			To      => $args->{-email},
+    	},
+		-body      => $msg, 
+		-tmpl_params => { 
+			-vars => {
+					authorization_code => $auth_code,
+					email              => $args->{-email}, 
+			},
+		}, 
+	}
+	);
+
+	return 1; 
+
+}
+
+
+
+sub validate_profile_activation {
+	
+	my $self   = shift; 
+	my ($args) = shift; 
+	
+	my $status = 1; 
+	my $errors = {
+		invalid_auth_code => 0, 
+	};
+	
+	my $profile = $self->get($args); 
+	warn '$profile->{auth_code} ' . $profile->{auth_code}; 
+	warn '$args->{-auth_code}' . $args->{-auth_code}; 
+	
+	if($profile->{auth_code} eq $args->{-auth_code}){ 
+		# ...
+	}
+	else { 
+		$errors->{invalid_auth_code} = 1; 
+		$status                      = 0; 
+	}
+
+	return ($status, $errors); 
+}
+
+
+sub activate { 
+	my $self   = shift; 
+	my ($args) = shift;	
+	
+	if(!exists($args->{-activate})){ 
+		$args->{-activate} = 1;
+	}
+	
+	my $query = 'UPDATE ' . 
+				 $DADA::Config::SQL_PARAMS{profile_table} . 
+				' SET activated    = ? ' . 
+				' WHERE email      = ? ';
+				
+	my $sth = $self->{dbh}->prepare($query); 
+
+	warn 'QUERY: ' . $query
+		if $t; 
+
+	my $rv = $sth->execute($args->{-activate}, $args->{ -email })
+		or croak "cannot do statment (at activate)! $DBI::errstr\n";
+	$sth->finish;
+	return 1; 
+}
 
 sub set_auth_code { 
 	
 	my $self   = shift; 
 	my ($args) = @_;
 	
-	if( ! exists($args->{ -activated } )) {
-		 $args->{ -activated } = 0;
-	}
+	#if( ! exists($args->{ -activated } )) {
+	#	 $args->{ -activated } = 0;
+	#}
 	
 	if($self->exists($args)){ 
 		my $auth_code = $self->rand_str;
 		my $query = 'UPDATE ' . 
 					 $DADA::Config::SQL_PARAMS{profile_table} . 
-					' SET auth_code	   = ?, ' . 
-					'     activated    = ? ' . 
+					' SET auth_code	   = ? ' . 
 					' WHERE email   = ? ';
 		my $sth = $self->{dbh}->prepare($query); 
 
 		warn 'QUERY: ' . $query
 			if $t; 
-		my $rv = $sth->execute( $auth_code, $args->{ -activated }, $args->{ -email } )
+		my $rv = $sth->execute( $auth_code, $args->{ -email } )
 			or croak "cannot do statment (at set_auth_code)! $DBI::errstr\n";
 		$sth->finish;
 		return $auth_code; 
