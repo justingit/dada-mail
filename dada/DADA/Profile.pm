@@ -310,26 +310,15 @@ sub send_profile_activation_email {
 
 	my $auth_code = $self->set_auth_code($args); 
 	require DADA::App::Messages; 
-	my $msg = <<EOF
-
-Heya, Here's the authorization link to reset your password - click it!
-
-<!-- tmpl_var PROGRAM_URL -->?f=profile_activate&email=<!-- tmpl_var email -->&auth_code=<!-- tmpl_var authorization_code --> 
-
--- <!-- tmpl_var PROGRAM_NAME --> 
-
-EOF
-; 
-
 	DADA::App::Messages::send_generic_email(
 	{
        -email   => $args->{-email},
 	   -headers => { 
-        	Subject => 'Your Authorization Code!', 
-			From    => 'justin@skazat.com', 
+        	Subject => $DADA::Config::PROFILE_ACTIVATION_MESSAGE_SUBJECT, 
+			From    => $DADA::Config::PROFILE_EMAIL, 
 			To      => $args->{-email},
     	},
-		-body      => $msg, 
+		-body      => $DADA::Config::PROFILE_ACTIVATION_MESSAGE, 
 		-tmpl_params => { 
 			-vars => {
 					authorization_code => $auth_code,
@@ -350,26 +339,15 @@ sub send_profile_reset_password {
 
 	my $auth_code = $self->set_auth_code($args); 
 	require DADA::App::Messages; 
-	my $msg = <<EOF
-
-Heya, Here's the authorization link to reset your password - click it!
-
-<!-- tmpl_var PROGRAM_URL -->?f=profile_reset_password&email=<!-- tmpl_var email -->&auth_code=<!-- tmpl_var authorization_code --> 
-
--- <!-- tmpl_var PROGRAM_NAME --> 
-
-EOF
-; 
-
 	DADA::App::Messages::send_generic_email(
 	{
        -email   => $args->{-email},
 	   -headers => { 
-        	Subject => 'Your Authorization Code! For Resetting your password', 
-			From    => 'justin@skazat.com', 
+        	Subject => $DADA::Config::PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT, 
+			From    => $DADA::Config::PROFILE_EMAIL, 
 			To      => $args->{-email},
     	},
-		-body      => $msg, 
+		-body      => $DADA::Config::PROFILE_RESET_PASSWORD_MESSAGE, 
 		-tmpl_params => { 
 			-vars => {
 					authorization_code => $auth_code,
@@ -378,9 +356,7 @@ EOF
 		}, 
 	}
 	);
-
 	return 1; 
-
 }
 
 
@@ -396,8 +372,8 @@ sub validate_profile_activation {
 	};
 	
 	my $profile = $self->get($args); 
-	warn '$profile->{auth_code} ' . $profile->{auth_code}; 
-	warn '$args->{-auth_code}' . $args->{-auth_code}; 
+	#warn '$profile->{auth_code} ' . $profile->{auth_code}; 
+	#warn '$args->{-auth_code}' . $args->{-auth_code}; 
 	
 	if($profile->{auth_code} eq $args->{-auth_code}){ 
 		# ...

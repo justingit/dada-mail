@@ -1,6 +1,8 @@
 <!-- being profile_login.tmpl --> 
 
 
+<!-- 
+
 	<!-- tmpl_if errors --> 
 		<h1>YOU HAVE ERRORS!!!</h1> 
 		<ul>
@@ -16,16 +18,14 @@
 <hr /> 
 <hr /> 
 
+--> 
+
 	<!-- tmpl_if errors --> 
-		<h1>Errors!</h1>
-		<p>Why don't cha look below for some details, k?!</p> 
-		<ul> 
-		
-		
-		</ul>		
+		<h1>Problems with your Request</h1>
+	<p class="error">Look below for errors concerning your last request.</p> 
+	
 	<!-- /tmpl_if --> 
 
-<hr /> 
 
 <h1>Log On To Your Profile Control Panel:</h1> 
 
@@ -55,21 +55,27 @@
 	<input type="hidden" name="process" value="1" /> 
 
 	<p>
-		<label for="email">Email Address:</label><input type="text" name="email" value="<!-- tmpl_var email -->" /> 
+		<label for="login_email" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">Email Address:</label><input type="text" name="email" id="login_email" value="<!-- tmpl_var email -->" /> 
 	</p>
 	<p>
-		<label for="password">Password:</label><input type="password" name="password" value="" /> 
-	</p>
-	<input type="submit" value="Login..." /> 
-	</p>
+		<label for="login_password" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">Password:</label><input type="password" name="password" id="login_password" value="" /> 
+
+
+	<div class="buttonfloat">
+		<input type="submit" value="Login Into Your Profile" /> 
+	</div>
+	<div class="floatclear"></div>
+
 </form> 
 
 <hr /> 
 
 
-<h1>Haven't Registered?!:</h1> 
+<h1>Register for a new <!-- tmpl_var PROGRAM_NAME --> Profile</h1> 
 
-<p>Register by subscribing to a list, or by filling in the below stuffy-doo:</p> 
+<p>
+	Register a Profile to easily manage all your <!-- PROGRAM_NAME --> Subscriptions.
+</p> 
 
 <!-- tmpl_if error_profile_register --> 
 	<ul> 
@@ -97,20 +103,22 @@
 	</ul> 
 <!-- /tmpl_if --> 
 
-<form action="<!-- tmpl_var PROGRAM_URL -->" methd="post"> 
+<form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
 	<input type="hidden" name="f" value="profile_register" /> 
 	<p>
-		<label for="email">Email Address:</label><input type="text" name="email" value="<!-- tmpl_var email -->" /> 
+		<label for="register_email" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">Email Address:</label><input type="text" name="email" id="register_email" value="<!-- tmpl_var email -->" /> 
 	</p>
 	<p>
-		<label for="email_again">Email Address (again):</label><input type="text" name="email_again" value="<!-- tmpl_var email_again -->" /> 
+		<label for="register_email_again" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">Email Address (again):</label><input type="text" name="email_again" id="register_email_again" value="<!-- tmpl_var email_again -->" /> 
 	</p>
 	<p>
-		<label for="password">Password:</label><input type="password" name="password" value="" /> 
+		<label for="register_password" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">Password:</label><input type="password" name="password" id="register_password" value="" /> 
 	</p>
-	</p>
-	<input type="submit" value="Register..." /> 
-	</p>
+	
+	<div class="buttonfloat">	
+		<input type="submit" value="Register a New Profile" /> 
+	</div>
+	<div class="floatclear"></div>
 		
 </form> 
 
@@ -122,11 +130,24 @@
 
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" /> 
 	<input type="hidden" name="f" value='profile_reset_password' /> 
-	<p>Email Address: <input type="text" name="email" value="<!-- tmpl_var email -->" /></p> 
-	<input type="submit" value="Send Authorization Code..." /> 
+	<p>
+		<label for="reset_email" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+			Email Address:
+		</label>
+		 <input type="text" id="reset_email" name="reset_email" value="<!-- tmpl_var email -->" />
+	</p> 
+	
+
+	<div class="buttonfloat">	
+		<input type="submit" value="Reset Your Profile Password" /> 
+	</div>
+	<div class="floatclear"></div>
+
+
+
 </form>
 
-<hr /> 
+
 
 
 <!-- end profile_login.tmpl --> 

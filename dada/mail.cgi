@@ -5915,15 +5915,7 @@ sub subscriber_fields {
      
 		###
         $lh->remove_subscriber_field({-field => $field}); 
-        # Yup. It doesn't work here, either. Damn. 
-        foreach(available_lists()){ 
-                next if $_ eq $list; 
-                my $l_lh = DADA::MailingList::Subscribers->new({-list => $_}); 
-                $l_lh->{fields}->_remove_fallback_value({-field => $field});
-                undef $l_lh;
-        }
-        ###    
-
+        
         print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=subscriber_fields&deletion=1&working_field=' . $field}); 
         return; 
      }
@@ -5943,7 +5935,7 @@ sub subscriber_fields {
             foreach(available_lists()){ 
                 next if $_ eq $list; 
                 my $l_lh = DADA::MailingList::Subscribers->new({-list => $_}); 
-                $l_lh->{fields}->_save_fallback_value({-field => $field, -fallback_value => $fallback_field_value});
+                $l_lh->{fields}->save_fallback_value({-field => $field, -fallback_value => $fallback_field_value});
                 undef $l_lh;
             }
             # Whoops.
@@ -5969,7 +5961,7 @@ sub subscriber_fields {
 		}
 		 if($field_errors == 0){
 			  
-             $lh->{fields}->_remove_fallback_value({-field => $orig_field});          	
+             $lh->{fields}->remove_fallback_value({-field => $orig_field});          	
 
 			if($orig_field eq $field){ 
 				# ...
@@ -5977,16 +5969,11 @@ sub subscriber_fields {
 			else { 
             	$lh->edit_subscriber_field({-old_name => $orig_field ,-new_name => $field});	
 			}
-			 $lh->{fields}->_save_fallback_value({  -field => $field, -fallback_value => $fallback_field_value});
+			
+			$lh->{fields}->save_fallback_value({  -field => $field, -fallback_value => $fallback_field_value});
 		    
 		
-			foreach(available_lists()){ 
-                next if $_ eq $list; 
-                my $l_lh = DADA::MailingList::Subscribers->new({-list => $_}); 
-                $l_lh->{fields}->_remove_fallback_value({-field => $orig_field});          	
- 			 	$l_lh->{fields}->_save_fallback_value({  -field => $field, -fallback_value => $fallback_field_value});
-				undef $l_lh;
-            }
+			
 
 			print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=subscriber_fields&edited=1&working_field=' . $field}); 
              return;
@@ -9179,8 +9166,9 @@ sub profile_login {
 		return;
 	}
 	else { 
-			print list_template(-Part => "header",
-		                   -Title => "Profile Login", 
+			print list_template(
+				-Part  => "header",
+		        -Title => "Profile Login", 
 		    );
                                         
 		    require DADA::Template::Widgets; 
@@ -9224,13 +9212,16 @@ sub profile_login {
 				},
 			); 
 			
-			print $q->header(-cookie  => [$cookie], 
-                              -nph     => $DADA::Config::NPH,
-                              -Refresh =>'0; URL=' . $DADA::Config::PROGRAM_URL . '?f=profile'); 
+			print $q->header(
+				-cookie  => [$cookie], 
+                -nph     => $DADA::Config::NPH,
+                -Refresh =>'0; URL=' . $DADA::Config::PROGRAM_URL . '?f=profile'
+			); 
                     
-            print $q->start_html(-title=>'Logging On...',
-                                 -BGCOLOR=>'#FFFFFF'
-                                ); 
+            print $q->start_html(
+				-title=>'Logging On...',
+                -BGCOLOR=>'#FFFFFF'
+            ); 
             print $q->p($q->a({-href => $DADA::Config::PROGRAM_URL . '?f=profile'}, 'Logging On...')); 
             print $q->end_html();
 			return;
@@ -9293,8 +9284,26 @@ sub profile_register {
 				-password    => $password, 
 			}
 		); 
-		print $q->header(); 
-		print "Profile Setup! OMG!"; 
+		print list_template(
+			-Part  => "header",
+	        -Title => "Profile Register Confirm", 
+	    );
+                                    
+	    require DADA::Template::Widgets; 
+	    print DADA::Template::Widgets::screen(
+			{
+				-screen => 'profile_register.tmpl',
+				-vars   => { 
+					
+					email => xss_filter($q->param('email')) || '',
+				}
+			}
+		); 
+	    print list_template(
+			-Part => "footer",
+	    );	
+		
+		
 	}
 }
 
@@ -9310,13 +9319,17 @@ sub profile_activate {
 		my ($status, $errors) = $prof->validate_profile_activation(
 			{
 				-email     => $email, 
-				-auth_code => xss_filter($q->param('auth_code')), 
+				-auth_code => xss_filter($q->param('auth_code')) || '', 
 			}
 		); 
 		if($status == 1){ 
 			$prof->activate({-email => $email}); 
-			print $q->header(); 
-			print "OMG! Registration is valid!!! - you should be able to login in now , and stuff and stuff!"; 
+			my $profile = $prof->get({-email => $email}); 
+			$q->param('password', $profile->{password}); 
+			$q->param('welcome',  1); 
+			$q->param('process',  1); 	
+			profile_login(); 
+			return; 
 		}
 		else {
 			my $p_errors = [];
@@ -9338,8 +9351,49 @@ sub profile {
 	
 	require DADA::Profile::Session;
 	my $prof_sess = DADA::Profile::Session->new; 
+	
 	if($prof_sess->is_logged_in({-cgi_obj => $q})){ 
-		# ...
+		my $email = $prof_sess->get({-cgi_obj => $q}); 
+		
+		
+		require DADA::Profile::Fields; 
+		
+		my $dpf = DADA::Profile::Fields->new; 
+		my $email_fields = $dpf->get({-email => $email}); 
+
+		my $fields = [];
+	    foreach my $field(@{$dpf->subscriber_fields()}){ 
+	        push(@$fields, {
+				name        => $field, 
+				pretty_name => ucfirst(DADA::App::Guts::pretty($field)),
+				value       => $email_fields->{$field}
+				}
+			);
+	    }
+	
+
+	
+	
+	
+			
+		print list_template(-Part => "header",
+	                   -Title => "Profile Control Home!", 
+	    );
+
+	    require DADA::Template::Widgets; 
+	    print DADA::Template::Widgets::screen(
+			{
+				-screen => 'profile_home.tmpl',
+				-vars   => { 
+					welcome           => $q->param('welcome') || '',
+					'profile.email'   => $email,
+					subscriber_fields => $fields, 
+				}
+			}
+		); 
+	    print list_template(
+			-Part => "footer",
+	    );
 	}
 	else { 
 		$q->param('error_profile_login', 1              ); 
@@ -9347,23 +9401,7 @@ sub profile {
 		profile_login(); 
 		return; 
 	}	
-	
-	print list_template(-Part => "header",
-                   -Title => "Profile Control Home!", 
-    );
-                                    
-    require DADA::Template::Widgets; 
-    print DADA::Template::Widgets::screen(
-		{
-			-screen => 'profile_login_home.tmpl',
-			-vars   => { 
-				
-			}
-		}
-	); 
-    print list_template(
-		-Part => "footer",
-    );
+
 }
 
 sub profile_logout { 
@@ -9455,8 +9493,24 @@ sub profile_reset_password {
 			if($prof->exists({-email => $email})){
 				$prof->send_profile_reset_password({-email => $email});
 				$prof->activate({-email => $email, -activate => 0});
-				print $q->header(); 
-				print "check your email, you'll have to reactivate your account!";
+				
+				print list_template(-Part => "header",
+			                   -Title => "Profile Reset Password Confirm", 
+			    );
+
+			    require DADA::Template::Widgets; 
+			    print DADA::Template::Widgets::screen(
+					{
+						-screen => 'profile_reset_password_confirm.tmpl',
+						-vars   => { 
+							email     => $email, 
+						}
+					}
+				); 
+			    print list_template(
+					-Part => "footer",
+			    );
+			
 			}
 			else {
 				$q->param('error_profile_reset_password', 1);  

@@ -258,6 +258,23 @@ sub is_logged_in {
 
 }
 
+sub get { 
+	
+	my $self   = shift; 
+	my ($args) = @_; 
+	my $q = $args->{-cgi_obj};
+	
+	require CGI::Session;
+
+    my $session = new CGI::Session( 
+		$self->{dsn}, 
+		$q, 
+		$self->{dsn_args}
+	 );
+	return $session->param('email'); 
+	
+}
+
 
 
 sub reset_password {}

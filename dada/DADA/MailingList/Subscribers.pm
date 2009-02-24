@@ -1771,8 +1771,8 @@ actually no way to edit a fallback field value, without using this method.
 
 If used on an existing field, make sure to remove the fallback field value first, using, C<_remove_fallback_value>, ala: 
 
- $lh->_remove_fallback_value({-field => 'myfield'});
- $lh->_save_fallback_value({-field => 'myfield'}, -fallback_value => 'new_value');
+ $lh->remove_fallback_value({-field => 'myfield'});
+ $lh->save_fallback_value({-field => 'myfield'}, -fallback_value => 'new_value');
  
 Is called internally, when creating a new field via, C<add_subscriber_field>, so make sure not to call it twice. 
 
@@ -1784,9 +1784,9 @@ Is called internally, when creating a new field via, C<add_subscriber_field>, so
 
 =back
 
-=head2 _remove_fallback_value
+=head2 remove_fallback_value
 
- $lh->_remove_fallback_value(
+ $lh->remove_fallback_value(
 		{
 			-field => 'myfield', 
 		}

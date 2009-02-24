@@ -37,9 +37,9 @@ $DADA::Config::SQL_PARAMS{id_column} ||= 'email_id';
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL}; 
 
 
-use Fcntl qw(O_WRONLY  
+use Fcntl qw(
+			O_WRONLY  
              O_TRUNC 
-             O_CREAT 
              O_CREAT 
              O_RDWR
              O_RDONLY
@@ -74,22 +74,10 @@ sub _init  {
 
     my $self = shift; 
 
-	my ($args) = @_; 
-
-	if(!exists($args->{-ls_obj})){ 
-		require DADA::MailingList::Settings;
-		       $DADA::MaiingList::Settings::dbi_obj = $dbi_obj; 
-		 
-		$self->{ls} = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
-	}
-	else { 
-		$self->{ls} = $args->{-ls_obj};
-	}
-	
+	my ($args) = @_; 	
     
     $self->{'log'}      = new DADA::Logging::Usage;
-    $self->{list}       = $args->{-list};
-
+  
     $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
 	
 
@@ -98,6 +86,8 @@ sub _init  {
 		$dbi_obj = DADA::App::DBIHandle->new; 
 		$self->{dbh} = $dbi_obj->dbh_obj; 
 	}
+	
+	
 }
 
 
@@ -110,10 +100,9 @@ sub get_fallback_field_values {
     
     return $v if  $self->can_have_subscriber_fields == 0; 
     require  DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}});
-    my $li = $ls->get; 
-    
-    
+	my @lists = DADA::App::Guts::available_lists(); 
+    my $ls = DADA::MailingList::Settings->new({-list => $lists[0]});
+    my $li = $ls->get;   
     my @fallback_fields = split("\n", $li->{fallback_field_values}); 
     foreach(@fallback_fields){ 
         my ($n, $val) = split(':', $_); 

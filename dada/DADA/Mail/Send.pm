@@ -164,7 +164,7 @@ sub _init {
 	        my $merge_fields = $lh->subscriber_fields;
 	        $self->{merge_fields} = $merge_fields;
 
-	        $self->{fallback_field_values} = $lh->get_fallback_field_values(); 
+	        $self->{fallback_field_values} = $lh->{fields}->get_fallback_field_values(); 
         
 	        undef $lh; 
 	    ###

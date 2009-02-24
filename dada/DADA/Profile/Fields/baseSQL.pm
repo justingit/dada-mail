@@ -313,7 +313,7 @@ sub add_subscriber_field {
 	
 	if(exists($args->{-fallback_value})){ 
 		warn "fallback field value exists."; 
-	    $self->_save_fallback_value({-field => $args->{-field}, -fallback_value => $args->{-fallback_value}});
+	    $self->save_fallback_value({-field => $args->{-field}, -fallback_value => $args->{-fallback_value}});
 	}
 	
 	delete($self->{cache}->{subscriber_fields}); 
@@ -393,7 +393,7 @@ sub remove_subscriber_field {
     my $rv = $sth->execute() 
         or croak "cannot do statement! (at: remove_subscriber_field) $DBI::errstr\n";   
  	
-	$self->_remove_fallback_value({-field => $args->{-field}}); 
+	$self->remove_fallback_value({-field => $args->{-field}}); 
 	delete($self->{cache}->{subscriber_fields}); 
 	
 	return 1; 
@@ -613,8 +613,23 @@ sub validate_remove_subscriber_field_name {
 
 
 
+sub remove_fallback_value { 
 
-sub _remove_fallback_value { 
+	my $self   = shift; 
+	my ($args) = @_; 
+	foreach my $list(DADA::App::Guts::available_lists()){ 
+		$self->_remove_fallback_value_per_list(
+			{	
+				%$args,
+				-list => $list, 
+				 
+			}
+		); 
+	}
+}
+
+
+sub _remove_fallback_value_per_list { 
 
     my $self = shift; 
     my ($args) = @_; 
@@ -624,7 +639,7 @@ sub _remove_fallback_value {
     }
 
     require DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}}); 
+    my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
     my $li = $ls->get; 
     
     
@@ -643,8 +658,22 @@ sub _remove_fallback_value {
 
 
 
+sub save_fallback_value { 
 
-sub _save_fallback_value { 
+	my $self   = shift; 
+	my ($args) = @_; 
+	foreach my $list(DADA::App::Guts::available_lists()){ 
+		$self->_save_fallback_value_per_list(
+			{	
+				%$args,
+				-list => $list, 
+				 
+			}
+		); 
+	}
+}
+
+sub _save_fallback_value_per_list { 
 
     my $self = shift; 
     my ($args) = @_; 
@@ -660,10 +689,10 @@ sub _save_fallback_value {
         croak "You must pass a value in the -fallback_value paramater!"; 
     }
     
-	warn ' $self->{list} ' .  $self->{list}; 
+	# warn ' $args->{list} ' .  $args->{list}; 
 	
  	require  DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}});
+    my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}});
 
     my $fallback_field_values = $self->get_fallback_field_values;
     

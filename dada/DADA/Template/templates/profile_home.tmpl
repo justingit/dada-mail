@@ -1,0 +1,53 @@
+<!-- begin profile_home.tmpl --> 
+
+<h1>
+	Hello, <!-- tmpl_var profile.email -->!
+</h1>
+
+<!-- tmpl_if welcome --> 
+	<p class="positive">
+	 Welcome to your profile home. From here, you may subscribe/unsubscribe 
+	 to the available mailing lists, as well as update your subscription 
+	information.
+	</p> 
+<!-- /tmpl_if --> 
+
+
+
+<!-- tmpl_if subscriber_fields --> 
+
+   <h1>
+ 	Subscriber Fields
+   </h1>
+	<form> 
+	
+    <!-- tmpl_loop subscriber_fields --> 
+    
+        <p>
+        <label for="<!-- tmpl_var name escape=HTML -->" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+        <!-- tmpl_var pretty_name escape=HTML -->: 
+        </label>
+        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var given_value escape=HTML -->"  />
+        </p>
+
+    <!-- /tmpl_loop -->
+	<div class="buttonfloat">	
+    <input type="submit" value="Update Information" /> 
+	</div>
+	<div class="floatclear"></div>
+	</form>
+
+<!-- /tmpl_if --> 
+
+<hr /> 
+
+<p>
+	<a href="<!-- tmpl_var PROGRAM_URL -->?f=profile_logout">
+		Log Out
+	</a>
+</p> 
+	
+
+
+<!-- end profile_home.tmpl --> 
+
