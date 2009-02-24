@@ -22,13 +22,15 @@ use DADA::App::Messages;
 my $list = dada_test_config::create_test_list;
 my $mh; 
 
-
+#### -list isn't currently a needed parameter (anymore) 
 # Test to see if fail will happen if we don't pass the, -list param: 
 # This will fail: 
-eval {$mh = DADA::Mail::Send->new();};
-ok($@); 
-like($@, qr/You MUST pass the \-list paramater\!/); 
- 
+#eval {$mh = DADA::Mail::Send->new();};
+#ok($@); 
+#like($@, qr/You MUST pass the \-list paramater\!/); 
+
+
+
 
 # Now, we'll see if it's successful when we do pass that param: 
 $mh = DADA::Mail::Send->new(

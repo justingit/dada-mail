@@ -1,6 +1,6 @@
 package DADA::MailingList::Subscribers;
 
-use lib qw(./ ../ ../../ ../../DADA ../../perllib);
+use lib qw(./ ../ ../../ ../../DADA ../../perllib ../../../ ../../../perllib);
 
 
 use Carp qw(carp croak);

@@ -22,6 +22,7 @@ $TEST_SQL_PARAMS = {
 	    subscriber_table        => 'test_dada_subscribers',
 	    archives_table          => 'test_dada_archives', 
 		profile_fields_table 	=> 'test_dada_profile_fields', 
+		profile_table           => 'test_dada_profile', 
 	    settings_table          => 'test_dada_settings', 
 	    session_table           => 'test_dada_sessions',
 		bounce_scores_table     => 'test_dada_bounce_scores', 
@@ -30,7 +31,7 @@ $TEST_SQL_PARAMS = {
 	}, 
 
 	PostgreSQL => { 
-		test_enabled     => 1, 
+		test_enabled     => 0, 
 		database         => 'dada',
 	    dbserver         => 'localhost', # may just be, "localhost"   	   
 	    port             => '5432',      # mysql: 3306, Postgres: 5432   	   
@@ -39,6 +40,7 @@ $TEST_SQL_PARAMS = {
 	    pass             => '',
     
 	    subscriber_table 		=> 'test_dada_subscribers',
+		profile_table           => 'test_dada_profile', 
 		profile_fields_table 	=> 'test_dada_profile_fields', 
 	    archives_table   		=> 'test_dada_archives', 
 	    settings_table   		=> 'test_dada_settings', 
@@ -51,6 +53,7 @@ $TEST_SQL_PARAMS = {
 	    dbtype    		        => 'SQLite',     # 'mysql' for 'MySQL', 'Pg' for 'PostgreSQL', and 'SQLite' for SQLite  
 		database         		=> 'test_dada',
 	    subscriber_table 		=> 'test_dada_subscribers',
+		profile_table           => 'test_dada_profile', 
 		profile_fields_table 	=> 'test_dada_profile_fields', 
 	    archives_table   		=> 'test_dada_archives', 
 	    settings_table   		=> 'test_dada_settings', 

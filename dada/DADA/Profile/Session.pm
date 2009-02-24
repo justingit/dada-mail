@@ -206,8 +206,8 @@ sub validate_profile_login {
 	};
 	
 	require DADA::Profile; 
-	my $prof = DADA::Profile->new();
-	if($prof->exists({-email => $args->{-email}})){ 
+	my $prof = DADA::Profile->new({-email => $args->{-email}});
+	if($prof->exists()){ 
 		# ...
 	}
 	else { 

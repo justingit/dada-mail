@@ -11,6 +11,12 @@
 	information.
 	</p> 
 <!-- /tmpl_if --> 
+<!-- tmpl_if edit --> 
+	<p class="positive">
+		Your changes have been saved!
+	</p> 
+<!-- /tmpl_if --> 
+
 
 
 
@@ -19,15 +25,18 @@
    <h1>
  	Subscriber Fields
    </h1>
-	<form> 
-	
+	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
+		<input type="hidden" name="f"        value="profile" /> 
+		<input type="hidden" name="process"  value="edit_subscriber_fields" /> 
+
+		
     <!-- tmpl_loop subscriber_fields --> 
     
         <p>
         <label for="<!-- tmpl_var name escape=HTML -->" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
         <!-- tmpl_var pretty_name escape=HTML -->: 
         </label>
-        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var given_value escape=HTML -->"  />
+        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
         </p>
 
     <!-- /tmpl_loop -->
@@ -40,6 +49,36 @@
 <!-- /tmpl_if --> 
 
 <hr /> 
+
+<h1>Subscriptions</h1> 
+
+<!-- tmpl_loop subscriptions --> 
+
+	<!-- tmpl_if subscribed --> 
+
+	<h2>
+		<!-- tmpl_var list_name --> 
+	</h2> 
+	
+	<p>
+		<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list -->">
+			List Home Page
+		</a>
+		 | 
+		<a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list -->">
+			Archives
+		</a>
+		| 
+		<a href="<!-- tmpl_var PROGRAM_URL -->?f=u&list=<!-- tmpl_var list -->&email=<!-- tmpl_var email -->">
+			Unsubscribe
+		</a>
+	</p>
+	
+	<!-- /tmpl_if --> 
+<!-- /tmpl_loop -->
+
+<hr /> 
+ 
 
 <p>
 	<a href="<!-- tmpl_var PROGRAM_URL -->?f=profile_logout">

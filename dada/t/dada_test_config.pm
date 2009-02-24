@@ -215,8 +215,9 @@ my @statements = split(';', $sql,4);
 		my $archives_table           = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{archives_table}; 
 		my $session_table            = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{session_table};
 		my $bounce_scores_table      = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{bounce_scores_table};
-		my $profile_fields_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_fields_table};
-		my $profile_table = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_table};
+		my $profile_fields_table     = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_fields_table};
+		my $profile_table            = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_table};  
+		
 		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
 		$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
 		$_ =~ s{CREATE TABLE dada_archives}{CREATE TABLE $archives_table}; 
@@ -224,6 +225,8 @@ my @statements = split(';', $sql,4);
 		$_ =~ s{CREATE TABLE dada_bounce_scores}{CREATE TABLE $bounce_scores_table}; 
 		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
 		$_ =~ s{CREATE TABLE dada_profile}{CREATE TABLE $profile_table};
+		
+		
         #print "query: " . $_ . "\n"; 
         my $sth = $dbh->prepare($_); 
 

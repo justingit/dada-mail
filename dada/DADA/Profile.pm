@@ -28,6 +28,14 @@ sub _init {
     my ($args) = @_;
 	$self->{sql_params} = {%DADA::Config::SQL_PARAMS};
 
+	if(!exists($args->{-email})){ 
+		croak "you must pass an email address in, '-email'"; 
+	}
+	else { 
+		$self->{email} = $args->{-email}; 
+	}
+
+
 	my $dbi_obj = undef; 
 	if($DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/){ 
 		require DADA::App::DBIHandle; 
@@ -42,12 +50,12 @@ sub insert {
     my $self   = shift;
     my ($args) = @_;
 
-    if ( !exists $args->{ -email } ) {
-        croak("You MUST supply an email address in the -email paramater!");
-    }
-    if ( length( strip( $args->{ -email } ) ) <= 0 ) {
-        croak("You MUST supply an email address in the -email paramater!");
-    }
+#    if ( !exists $self->{ email } ) {
+#        croak("You MUST supply an email address in the -email paramater!");
+#    }
+#    if ( length( strip( $args->{ -email } ) ) <= 0 ) {
+#        croak("You MUST supply an email address in the -email paramater!");
+#    }
 
     if ( !exists ( $args->{ -password } ) ) {
 	    $args->{ -password } = '';
@@ -73,7 +81,7 @@ sub insert {
     my $sth     = $self->{dbh}->prepare($query);
 
     $sth->execute(
-        $args->{ -email },
+        $self->{  email },
 		$args->{ -password },
 		$args->{ -auth_code },
 		$args->{ -activated }, 
@@ -99,14 +107,14 @@ sub get {
       . $self->{sql_params}->{profile_table}
       . " WHERE email = ?";
 
-	warn 'QUERY: ' . $query . ', $args->{-email}: ' . $args->{-email}
+	warn 'QUERY: ' . $query
 		if $t; 
 
 
     my $sth = $self->{dbh}->prepare($query);
 		
 
-    $sth->execute($args->{-email})
+    $sth->execute($self->{email})
       or croak "cannot do statement (at get)! $DBI::errstr\n";
 	
 	my $profile_info = {};
@@ -137,6 +145,60 @@ sub get {
     carp "Didn't fetch the subscriber profile?!";
     return undef;
 
+}
+
+
+
+sub subscribed_to { 
+
+	my $self   = shift; 
+	my ($args) = @_; 
+	my $subscriptions = [];
+	my @available_lists = DADA::App::Guts::available_lists(); 
+	
+	require DADA::MailingList::Subscribers; 
+	require DADA::MailingList::Settings; 
+	
+	my $list_names = {};
+	
+	foreach(@available_lists){ 
+		my $lh = DADA::MailingList::Subscribers->new({-list => $_});
+		 
+		if($lh->check_for_double_email(
+          -Email => $self->{email},
+          #-Type  => $args->{ -type }
+        )){ 
+			push(@$subscriptions, $_); 
+		}
+		
+		# This needs its own method...
+	
+			my $ls = DADA::MailingList::Settings->new({-list => $_}); 
+			$list_names->{$_} = $ls->param('list_name'); 
+		
+	}
+	
+	if($args->{-html_tmpl_params}){ 
+		my $lt = {};
+		my $html_tmpl = [];
+		foreach(@$subscriptions){ 
+			$lt->{$_} = 1; 
+		}
+		foreach(@available_lists){ 
+			if(exists($lt->{$_})){ 
+				push(@$html_tmpl, {PROGRAM_URL => $DADA::Config::PROGRAM_URL, list => $_, list_name => $list_names->{$_}, subscribed => 1, email => $self->{email} });
+			}
+			else { 
+				push(@$html_tmpl, {PROGRAM_URL => $DADA::Config::PROGRAM_URL, list => $_, list_name =>  $list_names->{$_}, subscribed => 0, email => $self->{email} });
+			}
+		}
+		return $html_tmpl; 
+	}
+	else { 
+		return $subscriptions;
+	}
+	
+	
 }
 
 
@@ -180,7 +242,7 @@ sub exists {
 
 	warn 'QUERY: ' . $query; 
 	
-	$sth->execute($args->{ -email })
+	$sth->execute($self->{email})
 		or croak "cannot do statement (at exists)! $DBI::errstr\n";	 
 	my @row = $sth->fetchrow_array();
     $sth->finish;
@@ -203,7 +265,7 @@ sub is_valid_password {
 	
 	my $sth     = $self->{dbh}->prepare($query);
 
-	$sth->execute($args->{ -email })
+	$sth->execute($self->{ email })
 		or croak "cannot do statement (at is_valid_password)! $DBI::errstr\n";	 
 		
 	FETCH: while (my $hashref = $sth->fetchrow_hashref ) {
@@ -266,7 +328,7 @@ sub update {
 	
 	my $self   = shift; 
 	my ($args) = @_;
-	my $orig = $self->get({-email => $args->{-email}});
+	my $orig = $self->get();
 	
 	foreach(keys %$orig){ 
 		next if $_ eq 'email'; 
@@ -274,8 +336,8 @@ sub update {
 			$orig->{$_} = $args->{'-'.$_};
 		}
 	}  	
-	$self->drop({-email => $args->{-email}});
-	$orig->{-email} = $args->{-email}; 
+	$self->drop();
+	$orig->{-email} = $self->{email}; 
 	
 	# This is kind of strange: 
 	my $new = {}; 
@@ -295,14 +357,16 @@ sub setup_profile {
 
 	$self->insert(
 		{
-			-email     => $args->{-email},
 			-password  => $args->{-password}, 
 		}
 	);
 	# Spit it out:
-	$self->send_profile_activation_email($args);
+	$self->send_profile_activation_email();
 	return 1; 
 }
+
+
+
 
 sub send_profile_activation_email { 
 	my $self   = shift; 
@@ -312,17 +376,17 @@ sub send_profile_activation_email {
 	require DADA::App::Messages; 
 	DADA::App::Messages::send_generic_email(
 	{
-       -email   => $args->{-email},
+       -email   => $self->{email},
 	   -headers => { 
         	Subject => $DADA::Config::PROFILE_ACTIVATION_MESSAGE_SUBJECT, 
 			From    => $DADA::Config::PROFILE_EMAIL, 
-			To      => $args->{-email},
+			To      => $self->{email},
     	},
 		-body      => $DADA::Config::PROFILE_ACTIVATION_MESSAGE, 
 		-tmpl_params => { 
 			-vars => {
 					authorization_code => $auth_code,
-					email              => $args->{-email}, 
+					email              => $self->{email}, 
 			},
 		}, 
 	}
@@ -333,6 +397,8 @@ sub send_profile_activation_email {
 }
 
 
+
+
 sub send_profile_reset_password { 
 	my $self   = shift; 
 	my ($args) = @_; 
@@ -341,17 +407,17 @@ sub send_profile_reset_password {
 	require DADA::App::Messages; 
 	DADA::App::Messages::send_generic_email(
 	{
-       -email   => $args->{-email},
+       -email   => $self->{email},
 	   -headers => { 
         	Subject => $DADA::Config::PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT, 
 			From    => $DADA::Config::PROFILE_EMAIL, 
-			To      => $args->{-email},
+			To      => $self->{email},
     	},
 		-body      => $DADA::Config::PROFILE_RESET_PASSWORD_MESSAGE, 
 		-tmpl_params => { 
 			-vars => {
 					authorization_code => $auth_code,
-					email              => $args->{-email}, 
+					email              => $self->{email}, 
 			},
 		}, 
 	}
@@ -405,7 +471,7 @@ sub activate {
 	warn 'QUERY: ' . $query
 		if $t; 
 
-	my $rv = $sth->execute($args->{-activate}, $args->{ -email })
+	my $rv = $sth->execute($args->{-activate}, $self->{ email })
 		or croak "cannot do statment (at activate)! $DBI::errstr\n";
 	$sth->finish;
 	return 1; 
@@ -430,7 +496,7 @@ sub set_auth_code {
 
 		warn 'QUERY: ' . $query
 			if $t; 
-		my $rv = $sth->execute( $auth_code, $args->{ -email } )
+		my $rv = $sth->execute( $auth_code, $self->{ email } )
 			or croak "cannot do statment (at set_auth_code)! $DBI::errstr\n";
 		$sth->finish;
 		return $auth_code; 
@@ -454,9 +520,9 @@ sub drop {
 
 	my $sth = $self->{dbh}->prepare($query); 
     
-	warn 'QUERY: ' . $query . ' ('. $args->{ -email } . ')'
+	warn 'QUERY: ' . $query . ' ('. $self->{ email } . ')'
 		if $t; 
-	my $rv = $sth->execute( $args->{ -email } )
+	my $rv = $sth->execute( $self->{ email } )
       or croak "cannot do statment (at drop)! $DBI::errstr\n";
     $sth->finish;
     return $rv;

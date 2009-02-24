@@ -344,30 +344,30 @@ sub print_out_list {
     my $st  = $self->{sql_params}->{subscriber_table};
     my $sft = $self->{sql_params}->{profile_fields_table};
 
-    my $query;
-    $query .= 'SELECT * ';
-    $query .= ' FROM ';
-    $query .= $st . ' LEFT JOIN ' . $sft;
-    $query .= ' ON ';
-    $query .= $st . '.email' . ' = ' . $sft . '.email';
-    $query .= ' WHERE ';
-    $query .= $st . '.list_status = 1 ';
-    $query .= ' AND ' . $st . '.list_type = ? ';
+ 	my $fields        = $self->subscriber_fields;
+    my $select_fields = '';
 
-    if (   $DADA::Config::GLOBAL_BLACK_LIST
-        && $args{ -Type } eq 'black_list' )
-    {
+    foreach (@$fields) {
+        $select_fields .= ', ' . $sft . '.' . $_;
+    }
 
-        # ...nothin'
-    }
-    else {
-        $query .= ' AND ' . $st . '.list = ? ';
-    }
+	#my $query .= 'SELECT ' . $st . '.email';
+    my $query .= 'SELECT ' . $st . '.*';
+
+    $query .= $select_fields;
+    $query .= ' FROM ' . $st;
+    $query .= ' LEFT JOIN ' . $sft . ' ON ';
+    $query .= ' ' . $st . '.email' . ' = ' . $sft . '.email';
+    $query .= ' WHERE ' . $st . '.list_type = ? AND ' . $st . '.list_status = 1';
+    $query .= ' AND ' . $st . '.list = ?';
 
     if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
-        $query .= ' ORDER BY email';
+        $query .= ' ORDER BY ' . $st . '.email';
     }
 
+	warn 'query: ' . $query
+	 if $t;
+	
     my $sth = $self->{dbh}->prepare($query);
 
     if (   $DADA::Config::GLOBAL_BLACK_LIST
@@ -481,41 +481,55 @@ sub subscription_list {
     my $st  = $self->{sql_params}->{subscriber_table};
     my $sft = $self->{sql_params}->{profile_fields_table};
 
-    my $query = 'SELECT ';
-    $query .= ' * FROM ' . $self->{sql_params}->{subscriber_table};
+ 	my $fields        = $self->subscriber_fields;
+    my $select_fields = '';
+
+    foreach (@$fields) {
+        $select_fields .= ', ' . $sft . '.' . $_;
+    }
+
+	#my $query .= 'SELECT ' . $st . '.email';
+    my $query .= 'SELECT ' . $st . '.*';
+
+    $query .= $select_fields;
+    $query .= ' FROM ' . $st;
     $query .= ' LEFT JOIN ' . $sft . ' ON ';
     $query .= ' ' . $st . '.email' . ' = ' . $sft . '.email';
-    $query .=
-      ' WHERE ' . $st . '.list_type = ? AND ' . $st . '.list_status = 1';
+    $query .= ' WHERE ' . $st . '.list_type = ? AND ' . $st . '.list_status = 1';
     $query .= ' AND ' . $st . '.list = ?';
 
     if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
         $query .= ' ORDER BY ' . $st . '.email';
     }
 
-    #	die $query;
+	warn 'query: ' . $query
+	 if $t; 
 
-    my $sth = $self->{dbh}->prepare($query);
 
+    my $sth = $self->{dbh}->prepare($query); 
+	
     $sth->execute( $args{ -Type }, $self->{list} )
-      or croak "cannot do statment (for subscription_list 1)! $DBI::errstr\n";
+      or croak "cannot do statment (for subscription_list)! $DBI::errstr\n";
 
+	
     my $hashref;
-    my $merge_fields = $self->subscriber_fields;
     my %mf_lt        = ();
 
-    foreach (@$merge_fields) {
+    foreach (@$fields) {
         $mf_lt{$_} = 1;
     }
 
     while ( $hashref = $sth->fetchrow_hashref ) {
+		#require Data::Dumper; 
+		#die Data::Dumper::Dumper($hashref); 
+		
         $count++;
         next if $count < $args{ -start };
         last if $count > ( $args{ -start } + $args{'-length'} );
 
         $hashref->{fields} = [];
 
-        foreach (@$merge_fields) {
+        foreach (@$fields) {
 
             if ( exists( $mf_lt{$_} ) ) {
                 push (

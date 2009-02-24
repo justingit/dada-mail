@@ -2889,6 +2889,9 @@ sub view_list {
     my $next_screen           = $start+$length; 
     my $subscribers           = $lh->subscription_list( -start => $start, '-length' => $length, -Type => $type); 
     
+	#use Data::Dumper; 
+	#die Data::Dumper::Dumper($subscribers); 
+	
     my $delete_email_count    = $q->param('delete_email_count'); 
     my $email_count           = $q->param('email_count'); 
                                                      
@@ -9250,13 +9253,13 @@ sub profile_register {
 	my $password    = xss_filter($q->param('password')); 
 	
 	require DADA::Profile;
-	my $prof = DADA::Profile->new;
+	my $prof = DADA::Profile->new({-email => $email});
 	
 	
-	if($prof->exists({-email => $email}) && 
-	   !$prof->is_activated({-email => $email})
+	if($prof->exists() && 
+	   !$prof->is_activated()
 	){ 
-		$prof->drop({-email => $email}); 
+		$prof->drop(); 
 	}
 	my($status, $errors) = $prof->validate_registration(
 		{
@@ -9280,7 +9283,6 @@ sub profile_register {
 	else { 
 		$prof->setup_profile(
 			{
-				-email 		 => $email, 
 				-password    => $password, 
 			}
 		); 
@@ -9313,18 +9315,17 @@ sub profile_activate {
 	my $auth_code = xss_filter($q->param('auth_code'));
 		
 	require DADA::Profile; 
-	my $prof = DADA::Profile->new;
+	my $prof = DADA::Profile->new({-email => $email});
 	
 	if($email && $auth_code){ 
 		my ($status, $errors) = $prof->validate_profile_activation(
 			{
-				-email     => $email, 
 				-auth_code => xss_filter($q->param('auth_code')) || '', 
 			}
 		); 
 		if($status == 1){ 
 			$prof->activate({-email => $email}); 
-			my $profile = $prof->get({-email => $email}); 
+			my $profile = $prof->get(); 
 			$q->param('password', $profile->{password}); 
 			$q->param('welcome',  1); 
 			$q->param('process',  1); 	
@@ -9352,48 +9353,68 @@ sub profile {
 	require DADA::Profile::Session;
 	my $prof_sess = DADA::Profile::Session->new; 
 	
+
 	if($prof_sess->is_logged_in({-cgi_obj => $q})){ 
 		my $email = $prof_sess->get({-cgi_obj => $q}); 
 		
-		
 		require DADA::Profile::Fields; 
+		require Dada::Profile; 
 		
-		my $dpf = DADA::Profile::Fields->new; 
-		my $email_fields = $dpf->get({-email => $email}); 
-
-		my $fields = [];
-	    foreach my $field(@{$dpf->subscriber_fields()}){ 
-	        push(@$fields, {
-				name        => $field, 
-				pretty_name => ucfirst(DADA::App::Guts::pretty($field)),
-				value       => $email_fields->{$field}
+		my $prof              = DADA::Profile->new({-email => $email});
+		my $dpf               = DADA::Profile::Fields->new; 
+		my $subscriber_fields = $dpf->subscriber_fields(); 
+		my $email_fields      = $dpf->get({-email => $email}); 		
+		if($q->param('process') eq 'edit_subscriber_fields'){ 
+			
+			my $edited = {}; 
+			foreach(@$subscriber_fields){ 
+				$edited->{$_} = xss_filter($q->param($_)); 
+			}
+			$dpf->insert(
+				{
+					-email  => $email, 
+					-fields => $edited,
 				}
 			);
-	    }
-	
-
-	
-	
-	
+			print $q->redirect({-uri => $DADA::Config::PROGRAM_URL . '?f=profile&edit=1'}); 
 			
-		print list_template(-Part => "header",
-	                   -Title => "Profile Control Home!", 
-	    );
+		}
+		else { 
+		
 
-	    require DADA::Template::Widgets; 
-	    print DADA::Template::Widgets::screen(
-			{
-				-screen => 'profile_home.tmpl',
-				-vars   => { 
-					welcome           => $q->param('welcome') || '',
-					'profile.email'   => $email,
-					subscriber_fields => $fields, 
+
+		
+		   	my $fields = [];
+			foreach my $field(@$subscriber_fields){ 
+		        push(@$fields, {
+					name          => $field, 
+					pretty_name   => ucfirst(DADA::App::Guts::pretty($field)),
+					value         => $email_fields->{$field},
+					}
+				);
+		    }	
+			print list_template(-Part => "header",
+		                   -Title => "Profile Control Home!", 
+		    );
+
+		    require DADA::Template::Widgets; 
+		    print DADA::Template::Widgets::screen(
+				{
+					-screen => 'profile_home.tmpl',
+					-vars   => { 
+
+						'profile.email'   => $email,
+						subscriber_fields => $fields, 
+						subscriptions 	  => $prof->subscribed_to({-html_tmpl_params => 1}),   
+						welcome           => $q->param('welcome') || '',
+						edit              => $q->param('edit')    || '',
+					}
 				}
-			}
-		); 
-	    print list_template(
-			-Part => "footer",
-	    );
+			); 
+		    print list_template(
+				-Part => "footer",
+		    );
+		}
 	}
 	else { 
 		$q->param('error_profile_login', 1              ); 
@@ -9422,14 +9443,13 @@ sub profile_reset_password {
 	my $auth_code = xss_filter($q->param('auth_code')) || undef; 
 	
 	require DADA::Profile; 
-	my $prof = DADA::Profile->new;
+	my $prof = DADA::Profile->new({-email => $email});
 	
 	if($email){ 
 		
 		if($auth_code){ 
 			my ($status, $errors) = $prof->validate_profile_activation(
 				{
-					-email     => $email, 
 					-auth_code => $auth_code, 
 				}
 			); 
@@ -9458,12 +9478,11 @@ sub profile_reset_password {
 					# Reset the Password
 					$prof->update(
 						{
-							-email    => $email, 
 							-password => $password, 
 						}
 					); 
 					# Reactivate the Account
-					$prof->activate({-email => $email}); 
+					$prof->activate(); 
 					# Log The person in. 
 					# Probably pass the needed stuff to profile_login via CGI's param()
 					$q->param('email',    $email);
@@ -9490,9 +9509,9 @@ sub profile_reset_password {
 		else { 
 			
 	
-			if($prof->exists({-email => $email})){
-				$prof->send_profile_reset_password({-email => $email});
-				$prof->activate({-email => $email, -activate => 0});
+			if($prof->exists()){
+				$prof->send_profile_reset_password();
+				$prof->activate({-activate => 0});
 				
 				print list_template(-Part => "header",
 			                   -Title => "Profile Reset Password Confirm", 
