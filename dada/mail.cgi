@@ -9173,8 +9173,23 @@ sub profile_login {
 				-Part  => "header",
 		        -Title => "Profile Login", 
 		    );
-                                        
-		    require DADA::Template::Widgets; 
+            
+			my $can_use_captcha = 0; 
+			my $CAPTCHA_string  = ''; 
+			my $cap             = undef; 
+			if($DADA::Config::PROFILE_ENABLE_CAPTCHA == 1){ 
+				eval { require DADA::Security::AuthenCAPTCHA; };
+				if(!$@){ 
+					$can_use_captcha = 1;        
+				}
+			}
+
+		   if($can_use_captcha == 1){
+				$cap = DADA::Security::AuthenCAPTCHA->new; 
+            	$CAPTCHA_string = $cap->get_html($DADA::Config::RECAPTCHA_PARAMS->{public_key});
+			}
+			         
+   		    require DADA::Template::Widgets; 
 		    print DADA::Template::Widgets::screen(
 				{
 					-screen => 'profile_login.tmpl',
@@ -9187,7 +9202,9 @@ sub profile_login {
 						error_profile_register       => $q->param('error_profile_register')       || '',
 						error_profile_activate       => $q->param('error_profile_activate')       || '',
 						error_profile_reset_password => $q->param('error_profile_reset_password') || '', 
-
+						logged_out                   => $q->param('logged_out') || '',
+						can_use_captcha              => $can_use_captcha, 
+						CAPTCHA_string               => $CAPTCHA_string, 
 					}
 				}
 			); 
@@ -9263,9 +9280,11 @@ sub profile_register {
 	}
 	my($status, $errors) = $prof->validate_registration(
 		{
-			-email 		 => $email, 
-			-email_again => $email_again, 
-			-password    => $password, 
+			-email 		               => $email, 
+			-email_again               => $email_again, 
+			-password                  => $password, 
+	        -recaptcha_challenge_field => $q->param( 'recaptcha_challenge_field' ), 
+	        -recaptcha_response_field  => $q->param( 'recaptcha_response_field'),
 		}
 	);
 	if($status == 0){ 
@@ -9393,8 +9412,9 @@ sub profile {
 					}
 				);
 		    }	
-			print list_template(-Part => "header",
-		                   -Title => "Profile Control Home!", 
+			print list_template(
+				-Part  => "header",
+		        -Title => "Profile", 
 		    );
 
 		    require DADA::Template::Widgets; 
@@ -9418,7 +9438,7 @@ sub profile {
 	}
 	else { 
 		$q->param('error_profile_login', 1              ); 
-		$q->param('errors',              ['not_logged_in']); 
+		$q->param('errors',     ['not_logged_in']); 
 		profile_login(); 
 		return; 
 	}	
@@ -9430,9 +9450,8 @@ sub profile_logout {
 	require DADA::Profile::Session;
 	my $prof_sess = DADA::Profile::Session->new;
 	   $prof_sess->logout; 
-	print $q->redirect({
-		-uri => $DADA::Config::PROGRAM_URL . '?f=profile_login', 
-	});
+	$q->param('logged_out', 1); 
+	profile_login(); 
 }
 
 

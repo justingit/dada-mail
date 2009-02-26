@@ -132,7 +132,7 @@ sub get {
     if ( $args->{ -dotted } == 1 ) {
         my $dotted = {};
         foreach ( keys %$profile_info ) {
-            $dotted->{ 'subscriber_profile.' . $_ } = $profile_info->{$_};
+            $dotted->{ 'profile.' . $_ } = $profile_info->{$_};
         }
         return $dotted;
     }
@@ -298,6 +298,7 @@ sub validate_registration {
 		profile_exists => 0, 
 		invalid_email  => 0, 
 		password_blank => 0, 
+		captcha_failed => 0, 
 	};
 	
 	if($args->{-email} ne $args->{-email_again}){ 
@@ -319,6 +320,32 @@ sub validate_registration {
 		$errors->{password_blank} = 1;
 		$status 				  = 0;		
 	}
+	
+	
+	my $can_use_captcha = 0; 
+	my $cap             = undef; 
+	if($DADA::Config::PROFILE_ENABLE_CAPTCHA == 1){ 
+		eval { require DADA::Security::AuthenCAPTCHA; };
+		if(!$@){ 
+			$can_use_captcha = 1;        
+		}
+	}
+   if($can_use_captcha == 1){
+		$cap = DADA::Security::AuthenCAPTCHA->new; 
+		 my $result = $cap->check_answer(
+                $DADA::Config::RECAPTCHA_PARAMS->{private_key}, 
+                $DADA::Config::RECAPTCHA_PARAMS->{'remote_address'}, 
+                $args->{-recaptcha_challenge_field},  
+                $args->{-recaptcha_response_field},
+            );
+		if($result->{is_valid} == 1){ 
+			# ...
+		}
+		else { 
+			$errors->{captcha_failed} = 1;
+			$status 				  = 0;
+		}
+	}		
 	
 	return ($status, $errors);
 	
@@ -532,8 +559,9 @@ sub drop {
 
 sub rand_str { 
 	my $self = shift; 
+	my $size = shift || 16;
 	require DADA::Security::Password; 
- 	return DADA::Security::Password::generate_rand_string(undef, 16);
+ 	return DADA::Security::Password::generate_rand_string(undef, $size);
 }
 
 

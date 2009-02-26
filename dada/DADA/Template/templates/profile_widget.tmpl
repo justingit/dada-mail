@@ -1,0 +1,12 @@
+<!-- begin profile_widget.tmpl --> 
+
+<p style="text-align:right"> 
+	<!-- tmpl_if is_logged_in --> 
+		Hello, <!-- tmpl_var profile.email --> [<a href="<!-- tmpl_var PROGRAM_URL -->?f=profile">Profile Home</a> | <a href="<!-- tmpl_var PROGRAM_URL -->?f=profile_logout">Logout</a>]
+	<!-- tmpl_else --> 
+		[<a href="<!-- tmpl_var PROGRAM_URL -->?f=profile_login">Register/Log In</a>]
+	<!-- /tmpl_if --> 
+</p> 
+
+<!-- end profile_widget.tmpl --> 
+

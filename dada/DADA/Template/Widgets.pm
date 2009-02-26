@@ -114,7 +114,7 @@ screen
 absolute_path
 subscription_form
 archive_send_form
-
+profile_widget
 _raw_screen
 );
 
@@ -152,6 +152,7 @@ ENV_SERVER_ADMIN              => $ENV{SERVER_ADMIN},
 SHOW_HELP_LINKS               => $DADA::Config::SHOW_HELP_LINKS, 
 HELP_LINKS_URL                => $DADA::Config::HELP_LINKS_URL, 
 
+PROFILE_ENABLED               => $DADA::Config::PROFILE_ENABLED, 
 
 # DEV: Cough! Kludge! Cough!
 LEFT_BRACKET                  => '[',
@@ -947,6 +948,38 @@ sub archive_send_form {
 
 
 
+sub profile_widget { 
+
+	my $scr = ''; 
+	require DADA::Profile::Session;
+	require CGI; 
+	my $q = new CGI; 
+	my $prof_sess = DADA::Profile::Session->new; 
+	my $email     = ''; 
+	
+	my $is_logged_in = 0; 
+	
+	if($prof_sess->is_logged_in({-cgi_obj => $q})){ 
+		$is_logged_in = 1; 
+	    $email        = $prof_sess->get({-cgi_obj => $q}); 
+	}
+	
+	return screen(
+		{
+			-screen => 'profile_widget.tmpl', 
+	        -vars   => { 
+ 				is_logged_in    => $is_logged_in, 
+				'profile.email' => $email,  
+		    }
+		}
+	); 
+	
+}
+
+
+
+
+
 
 =pod
 
@@ -1485,9 +1518,65 @@ sub screen {
     
     
 ###
+
+if(
+     exists($args->{-profile_vars})       || 
+     exists($args->{-profile_vars_param})
+ ){ 
+ 
+     if( !exists($args->{-profile_vars_param}) ){ 
+         # Well, nothing. 
+         $args->{-profile_vars_param} = {}; 
+     }
+     else { 
+         
+         if(
+             !exists($args->{-profile_vars})      &&  # Don't write over something that's already there. 
+              exists($args->{-profile_vars_param})    # This is a rehash of the last if() statement, but it's here, for clarity...
+         ){  
+	         require DADA::Profile; 
+			 my $prof = DADA::Profile->new(
+				{
+					-email => $args->{-profile_vars_param}->{-email},
+				}
+			);
+			if($prof->exists){ 
+             $args->{-profile_vars} = $prof->get(
+				{
+					-dotted => 1,
+				}
+			);
+        	}
+			else { 
+				$args->{-profile_vars} = {};
+			}
+         }
+    }
+    
+
+   if(!exists($args->{-vars}->{profile})){
+     
+         $args->{-vars}->{profile} = [];
+         foreach(keys %{$args->{-profile_vars}}){ 
+             my $nk = $_; 
+             $nk =~ s/profile\.//; 
+             push( @{$args->{-vars}->{profile}}, {name => $nk, value => $args->{-profile_vars}->{$_}});   
+         }
+     }
+ }
+ else { 
+     $args->{-profile_vars}       = {};
+     $args->{-profile_vars_param} = {};
+ }
+
+
+
+
+
+
     
      my $template_vars = {}; 
-        %$template_vars = (%{$args->{-list_settings_vars}}, %{$args->{-subscriber_vars}}, %{$args->{-vars}}); 
+        %$template_vars = (%{$args->{-list_settings_vars}}, %{$args->{-subscriber_vars}}, %{$args->{-profile_vars}}, %{$args->{-vars}}); 
 
     if(exists($args->{-webify_and_santize_these})){ 
         $template_vars = webify_and_santize(
@@ -1678,6 +1767,11 @@ sub dada_pseudo_tag_filter {
 	$$text_ref =~ s{\[tmpl_else\s(\w+?)\]}{<!-- tmpl_else $1 -->}g;
     
 	$$text_ref =~ s{\[((\w+?)|subscriber\.\w+?|list_settings\.\w+?)\]}{<!-- tmpl_var $1 -->}g; # Match 1 or more word (alphanum + _), non-greedy
+
+
+	$$text_ref =~ s{\[(profile\.\w+?)\]}{<!-- tmpl_var $1 -->}g; # Match 1 or more word (alphanum + _), non-greedy
+
+
 
     # I know I said I wasn't going to do it, but I did it. 
 

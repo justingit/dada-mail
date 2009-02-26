@@ -2097,7 +2097,7 @@ sub _make_list_headers {
 				} 
 				else { 
 					
-				$domain = Net::Domain::hostfqdn() || 
+					$domain = Net::Domain::hostfqdn() || 
 					carp "no domain found for: Net::Domain::hostfqdn()";
 				}
 				

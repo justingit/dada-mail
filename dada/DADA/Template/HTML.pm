@@ -53,7 +53,7 @@ admin_header_params
 use strict; 
 use vars qw(@EXPORT); 
 
-my $HTML_Footer =  '<p style="font-size:10px;font-family:Verdana,Arial;text-align:center">Powered by <a href="http://dadamailproject.com" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Dada Mail ' . $DADA::Config::VER . '</a><br />Copyright &copy; 1999-2008, <a href="http://dadamailproject.com/justin" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Simoni Creative</a>.</p>';
+my $HTML_Footer =  '<p style="font-size:10px;font-family:Verdana,Arial;text-align:center">Powered by <a href="http://dadamailproject.com" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Dada Mail ' . $DADA::Config::VER . '</a><br />Copyright &copy; 1999-2009, <a href="http://dadamailproject.com/justin" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Simoni Creative</a>.</p>';
 
 
 
@@ -494,10 +494,11 @@ sub list_template {
 											default_css => DADA::Template::Widgets::screen({-screen => 'default_css.css', -vars => 	$args{-vars} }),
 											title       => $args{-Title}, 
 											# The message tag isn't being used anymore but.... 
-											message     => $args{-Title},
-											content     => '[_dada_content]',
-											mojo        => '[_dada_content]',
-											dada        => '[_dada_content]',
+											message        => $args{-Title},
+											content        => '[_dada_content]',
+											mojo           => '[_dada_content]',
+											dada           => '[_dada_content]',
+											profile_widget => DADA::Template::Widgets::profile_widget(), 
 											
 											%{$args{-vars}},
 									 	 },

@@ -206,7 +206,7 @@ sub send_subscribed_message {
 		$ls = $args->{-ls_obj};
 	}
 	my $li    = $ls->get; 
-	
+
 	send_generic_email (
 		{
 			-list         => $args->{-list}, 
@@ -218,6 +218,7 @@ sub send_subscribed_message {
 			-tmpl_params  => {		
 				-list_settings_vars_param => {-list => $li->{list},},
 				-subscriber_vars_param    => {-list => $li->{list}, -email => $args->{-email}, -type => 'list'},
+				-profile_vars_param       => {-email => $args->{-email}},
 			},
 			-test         => $args->{-test}, 
 		}

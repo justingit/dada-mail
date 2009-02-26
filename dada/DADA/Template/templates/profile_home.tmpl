@@ -19,6 +19,7 @@
 
 
 
+<hr /> 
 
 <!-- tmpl_if subscriber_fields --> 
 
@@ -50,7 +51,20 @@
 
 <hr /> 
 
-<h1>Subscriptions</h1> 
+<h1>Your Subscriptions</h1> 
+
+<!-- this doesn't work right now... 
+	
+	<!-- tmpl_if subscriptions --> 
+
+	<!-- tmpl_else --> 
+		<p class="error">
+			You are not currently subscribed to any list.
+		</p>
+	<!-- /tmpl_if --> 
+
+--> 
+
 
 <!-- tmpl_loop subscriptions --> 
 
@@ -60,32 +74,33 @@
 		<!-- tmpl_var list_name --> 
 	</h2> 
 	
-	<p>
-		<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list -->">
-			List Home Page
+<ul>
+	<li>
+		<p>
+			<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list -->">
+			View List Home Screen
 		</a>
-		 | 
-		<a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list -->">
-			Archives
+		 </p>
+		<li>
+			<p><a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list -->">
+			View Archives
 		</a>
-		| 
+		</p>
+	</li>
+	<li>
+		<p>
 		<a href="<!-- tmpl_var PROGRAM_URL -->?f=u&list=<!-- tmpl_var list -->&email=<!-- tmpl_var email -->">
-			Unsubscribe
+			Unsubscribe from this list
 		</a>
 	</p>
-	
+</li>	
+</ul>
+
 	<!-- /tmpl_if --> 
 <!-- /tmpl_loop -->
 
 <hr /> 
- 
 
-<p>
-	<a href="<!-- tmpl_var PROGRAM_URL -->?f=profile_logout">
-		Log Out
-	</a>
-</p> 
-	
 
 
 <!-- end profile_home.tmpl --> 

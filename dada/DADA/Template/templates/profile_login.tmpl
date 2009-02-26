@@ -20,6 +20,13 @@
 
 --> 
 
+<!-- tmpl_if logged_out --> 
+	<p class="positive">
+		You have logged out. 
+	</p> 
+<!-- /tmpl_if --> 
+
+
 	<!-- tmpl_if errors --> 
 		<h1>Problems with your Request</h1>
 	<p class="error">Look below for errors concerning your last request.</p> 
@@ -27,10 +34,18 @@
 	<!-- /tmpl_if --> 
 
 
-<h1>Log On To Your Profile Control Panel:</h1> 
+<h1>Log Into Your Profile Control Panel:</h1> 
 
 	<!-- tmpl_if error_profile_login --> 
 		<ul> 
+			<!-- tmpl_if errors_not_logged_in --> 
+				
+			<!-- /tmpl_if --> 
+			<li>
+				<p class="error">
+					You'll have to log in, before you can access your profile.
+				</p>
+			</li>			
 			<!-- tmpl_if error_unknown_user --> 
 			<li>
 				<p class="error">
@@ -100,6 +115,13 @@
 			</p> 
 		</li>		
 		<!-- /tmpl_if --> 
+		<!-- tmpl_if error_captcha_failed --> 
+		<li>
+			<p class="error">
+				CAPTCHA Failed. 
+			</p> 
+		</li>
+		<!-- /tmpl_if --> 
 	</ul> 
 <!-- /tmpl_if --> 
 
@@ -114,6 +136,22 @@
 	<p>
 		<label for="register_password" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">Password:</label><input type="password" name="password" id="register_password" value="" /> 
 	</p>
+	
+	
+	<!-- tmpl_if can_use_captcha --> 
+		<p> 
+		 Please type in the string of letters that you see in the below image into the text box:
+		</p>
+	
+		<!-- tmpl_var CAPTCHA_string --> 
+	<!-- tmpl_else --> 
+		<!-- 
+			<p>
+			Can't use CAPTCHA.
+		</p>
+		-->  
+	<!-- /tmpl_if --> 
+	
 	
 	<div class="buttonfloat">	
 		<input type="submit" value="Register a New Profile" /> 

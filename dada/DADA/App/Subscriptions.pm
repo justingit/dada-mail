@@ -731,8 +731,10 @@ sub confirm {
             warn '>>>> >>>> $mail_your_subscribed_msg is set to: ' . $mail_your_subscribed_msg
                 if $t; 
 
-            # We can do an remove from confirm list, and a add to the subscribe list, but why don't we just *move* the darn subscriber? 
-            # (Basically by updating the table and changing the, "list_type" column. Easy enough for me.             
+            # We can do an remove from confirm list, and a add to the subscribe 
+			# list, but why don't we just *move* the darn subscriber? 
+            # (Basically by updating the table and changing the, "list_type" column. 
+			# Easy enough for me.             
             
             warn '>>>> >>>> Moving subscriber from "sub_confirm_list" to "list" '
                 if $t; 
@@ -746,6 +748,19 @@ sub confirm {
                 }
             );
 
+			# Make a profile, if needed, 
+			require DADA::Profile; 
+			my $prof = DADA::Profile->new({-email => $email}); 
+			if(!$prof->exists){ 
+				$self->insert(
+					{
+						-password  => $prof->rand_str(8),
+						-activated => 1, 
+					}
+				); 
+			}
+			# / Make a profile, if needed, 
+			
             warn '>>>> >>>> $li->{send_sub_success_email} is set to: ' . $li->{send_sub_success_email}
                 if $t; 
                 
