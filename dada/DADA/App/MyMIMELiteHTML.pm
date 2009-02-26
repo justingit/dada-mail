@@ -343,7 +343,7 @@ C<MIME::Lite::HTML> can be found here:
 
 http://search.cpan.org/~alian/MIME-Lite-HTML/
 
-Copyright (c) 1999-2008
+Copyright (c) 1999-2009
 Justin Simoni 
 http://justinsimoni.com 
 All rights reserved. 

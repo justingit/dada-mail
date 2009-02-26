@@ -112,7 +112,7 @@ correctly, you should see a subscription update form.
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2008 
+Copyright (c) 1999-2009 
 
 Justin Simoni
 

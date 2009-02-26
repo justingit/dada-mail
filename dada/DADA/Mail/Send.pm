@@ -2890,7 +2890,7 @@ is controlled by C<DADA::Mail::MailOut>. C<DADA::Mail::Send> is quite dumb in wh
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999-2008 Justin Simoni 
+Copyright (c) 1999-2009 Justin Simoni 
 me - justinsimoni.com
 http://justinsimoni.com 
 All rights reserved. 
