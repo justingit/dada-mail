@@ -37,11 +37,11 @@ sub _init {
 
 
 	my $dbi_obj = undef; 
-	if($DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/){ 
+#	if($DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/){ 
 		require DADA::App::DBIHandle; 
 		$dbi_obj = DADA::App::DBIHandle->new; 
 		$self->{dbh} = $dbi_obj->dbh_obj; 
-	}
+#	}
 }
 
 

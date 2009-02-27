@@ -147,8 +147,10 @@ sub subscribe {
     
     my $fields = {}; 
     foreach(@{$lh->subscriber_fields}){ 
-        $fields->{$_} = xss_filter($q->param($_)); 
-    }
+		if(defined($q->param($_))){ 
+        	$fields->{$_} = xss_filter($q->param($_)); 
+		}
+	}
     
     
     $email = lc_email($email);
@@ -175,7 +177,8 @@ sub subscribe {
 	                -email         => $email, 
 	                -type          => 'sub_confirm_list', 
 	                -fields        => $fields,
-	            }
+	            	-confirmed     => 0, 
+				}
 	        );
 
 	        # This is... slightly weird.
@@ -281,9 +284,10 @@ sub subscribe {
                         
         $lh->add_subscriber(
              { 
-                 -email         => $email, 
-                 -type          => 'sub_confirm_list', 
-                 -fields        => $fields,
+                 -email     => $email, 
+                 -type      => 'sub_confirm_list', 
+                 -fields    => $fields,
+	             -confirmed => 0, 
              }
         ); 
         
@@ -745,22 +749,27 @@ sub confirm {
                     -from             => 'sub_confirm_list',
                     -to               => 'list', 
 					-mode             => 'writeover', 
+					-confirmed        => 1, 
                 }
             );
-
-			# Make a profile, if needed, 
-			require DADA::Profile; 
-			my $prof = DADA::Profile->new({-email => $email}); 
-			if(!$prof->exists){ 
-				$self->insert(
-					{
-						-password  => $prof->rand_str(8),
-						-activated => 1, 
-					}
-				); 
-			}
-			# / Make a profile, if needed, 
 			
+			if(
+			   $DADA::Config::PROFILE_ENABLED == 1 && 
+			   $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/
+			){ 
+				# Make a profile, if needed, 
+				require DADA::Profile; 
+				my $prof = DADA::Profile->new({-email => $email}); 
+				if(!$prof->exists){ 
+					$self->insert(
+						{
+							-password  => $prof->rand_str(8),
+							-activated => 1, 
+						}
+					); 
+				}
+				# / Make a profile, if needed, 
+			}
             warn '>>>> >>>> $li->{send_sub_success_email} is set to: ' . $li->{send_sub_success_email}
                 if $t; 
                 

@@ -127,11 +127,23 @@ sub insert {
 		warn 'did you not pass any fields?'; 
         $args->{ -fields } = {};
     }
+	if(!exists($args->{ -confirmed })){ 
+		$args->{ -confirmed } = 1; 
+	}
 
+
+	# See, how I'm doing this, after the confirmed thing? Good idea? 
+	if($args->{ -confirmed } == 0){ 
+		$args->{ -email }  = '*' . $args->{ -email }; 
+	}
+
+	# Yikes, that's a bit harsh, no? 
+	# This is going to lead to all sorts of bugs... 
 	if($self->exists({-email => $args->{-email}}) >= 1){ 
 		$self->drop({-email => $args->{-email}}); 
 	}
-
+	#
+		
     my $sql_str             = '';
     my $place_holder_string = '';
     my @order               = @{ $self->subscriber_fields };

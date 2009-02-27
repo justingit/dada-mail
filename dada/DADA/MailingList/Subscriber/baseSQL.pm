@@ -1,7 +1,7 @@
 package DADA::MailingList::Subscriber::baseSQL;
 
 use strict;
-use lib qw( ../../../../ ../../../../DADA ../../../perllib);
+use lib qw(../../../ ../../../perllib);
 use Carp qw(carp croak);
 use DADA::Config;
 use DADA::App::Guts;
@@ -26,6 +26,10 @@ sub add {
     if ( length( strip( $args->{ -email } ) ) <= 0 ) {
         croak("You MUST supply an email address in the -email paramater!");
     }
+
+	if(!exists($args->{ -confirmed } )){ 
+		$args->{ -confirmed } = 1; 
+	}
 
 #    if ( !exists $args->{ -fields } ) {
 #        $args->{ -fields } = {};
@@ -52,12 +56,15 @@ sub add {
 	or croak "cannot do statement (at add_subscriber)! $DBI::errstr\n";
 	$sth->finish;
 	
-	if ( exists $args->{ -fields } ) {		
+	# use Data::Dumper; 
+	# die Data::Dumper::Dumper($args->{ -fields }); 
+	if ( exists $args->{ -fields } && keys %{$args->{ -fields }}) {		
 		my $fields = DADA::Profile::Fields->new({-list => $args->{ -list }}); 		
 		$fields->insert(
 			{
-				-email  => $args->{ -email },
-				-fields => $args->{ -fields },
+				-email     => $args->{  -email },
+				-fields    => $args->{  -fields },
+				-confirmed =>  $args->{ -confirmed },
 			}
 		); 
 	}
@@ -107,6 +114,32 @@ sub move {
     if ( $self->{lh}->allowed_list_types->{ $args->{ -to } } != 1 ) {
         croak "list_type passed in, -to is not valid";
     }
+	if(!exists($args->{-confirmed})){ 
+		$args->{-confirmed} = 0; 
+	}
+
+	
+	###
+	# This is sort of strange,
+	if($self->{lh}->can_have_subscriber_fields == 1){ 
+		if($args->{-confirmed} == 1){ 
+			require DADA::Profile::Fields; 
+			my $dpf = DADA::Profile::Fields->new;
+			if($dpf->exists({-email => '*' . $self->email})){ 
+				my $fields = $dpf->get({-email => '*' . $self->email});
+				$dpf->drop({-email => '*' . $self->email}); 
+				$dpf->insert(
+					{
+						-email     => $self->{email},
+						-fields    => $fields, 
+						-confirmed => 1, 
+					}
+				); 
+			}
+		}
+	}
+	### And then, do your thing, 
+	
 
     # Why wasn't this in before?
     my $moved_from_checks_out = 0;

@@ -4,7 +4,7 @@
 # Description:  POP3Client module - acts as interface to POP3 server
 # Author:       Sean Dowd <pop3client@dowds.net>
 #
-# Copyright (c) 1999-2008  Sean Dowd.  All rights reserved.
+# Copyright (c) 1999-2009  Sean Dowd.  All rights reserved.
 # This module is free software; you can redistribute it and/or modify
 # it under the same terms as Perl itself.
 #

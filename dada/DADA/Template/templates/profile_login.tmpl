@@ -25,6 +25,11 @@
 		You have logged out. 
 	</p> 
 <!-- /tmpl_if --> 
+<!-- tmpl_if password_changed --> 
+	<p class="positive"> 
+		You've changed your profile password successfully! Please login again:
+	</p> 
+<!-- /tmpl_if --> 
 
 
 	<!-- tmpl_if errors --> 
@@ -64,6 +69,8 @@
 		</ul> 
 	<!-- /tmpl_if --> 
 
+<fieldset> 
+	
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" > 
 	
 	<input type="hidden" name="f" value="profile_login" /> 
@@ -82,6 +89,10 @@
 	<div class="floatclear"></div>
 
 </form> 
+
+</fieldset> 
+
+
 
 <hr /> 
 
@@ -125,6 +136,9 @@
 	</ul> 
 <!-- /tmpl_if --> 
 
+<fieldset> 
+
+
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
 	<input type="hidden" name="f" value="profile_register" /> 
 	<p>
@@ -160,11 +174,13 @@
 		
 </form> 
 
+</fieldset> 
 
 <hr /> 
 
 <h1>Forgot Your Profile Password?</h1> 
 
+<fieldset> 
 
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" > 
 	<input type="hidden" name="f" value='profile_reset_password' /> 
@@ -183,6 +199,7 @@
 
 </form>
 
+</fieldset> 
 
 
 

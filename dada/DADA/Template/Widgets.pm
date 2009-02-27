@@ -1519,57 +1519,63 @@ sub screen {
     
 ###
 
-if(
-     exists($args->{-profile_vars})       || 
-     exists($args->{-profile_vars_param})
- ){ 
+if($DADA::Config::PROFILE_ENABLED == 1 && $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/){ 
+	if(
+	     exists($args->{-profile_vars})       || 
+	     exists($args->{-profile_vars_param})
+	 ){ 
  
-     if( !exists($args->{-profile_vars_param}) ){ 
-         # Well, nothing. 
-         $args->{-profile_vars_param} = {}; 
-     }
-     else { 
+	     if( !exists($args->{-profile_vars_param}) ){ 
+	         # Well, nothing. 
+	         $args->{-profile_vars_param} = {}; 
+	     }
+	     else { 
          
-         if(
-             !exists($args->{-profile_vars})      &&  # Don't write over something that's already there. 
-              exists($args->{-profile_vars_param})    # This is a rehash of the last if() statement, but it's here, for clarity...
-         ){  
-	         require DADA::Profile; 
-			 my $prof = DADA::Profile->new(
-				{
-					-email => $args->{-profile_vars_param}->{-email},
-				}
-			);
-			if($prof->exists){ 
-             $args->{-profile_vars} = $prof->get(
-				{
-					-dotted => 1,
-				}
-			);
-        	}
-			else { 
-				$args->{-profile_vars} = {};
+	         if(
+	             !exists($args->{-profile_vars})      &&  # Don't write over something that's already there. 
+	              exists($args->{-profile_vars_param})    # This is a rehash of the last if() statement, but it's here, for clarity...
+	         ){  
+				if(exists($args->{-profile_vars_param}->{-email})){ 
+			         require DADA::Profile; 
+					 my $prof = DADA::Profile->new(
+						{
+							-email => $args->{-profile_vars_param}->{-email},
+						}
+					);
+					if($prof->exists){ 
+		             $args->{-profile_vars} = $prof->get(
+						{
+							-dotted => 1,
+						}
+					);
+		        	}
+					else { 
+						$args->{-profile_vars} = {};
+					}
+		         }
 			}
-         }
-    }
+	    }
     
 
-   if(!exists($args->{-vars}->{profile})){
+	   if(!exists($args->{-vars}->{profile})){
      
-         $args->{-vars}->{profile} = [];
-         foreach(keys %{$args->{-profile_vars}}){ 
-             my $nk = $_; 
-             $nk =~ s/profile\.//; 
-             push( @{$args->{-vars}->{profile}}, {name => $nk, value => $args->{-profile_vars}->{$_}});   
-         }
-     }
- }
- else { 
-     $args->{-profile_vars}       = {};
-     $args->{-profile_vars_param} = {};
- }
-
-
+	         $args->{-vars}->{profile} = [];
+	         foreach(keys %{$args->{-profile_vars}}){ 
+	             my $nk = $_; 
+	             $nk =~ s/profile\.//; 
+	             push( @{$args->{-vars}->{profile}}, {name => $nk, value => $args->{-profile_vars}->{$_}});   
+	         }
+	     }
+	 }
+	 else { 
+	     $args->{-profile_vars}       = {};
+	     $args->{-profile_vars_param} = {};
+	 }
+}
+else { 
+	$args->{-profile_vars}       = {};
+    $args->{-profile_vars_param} = {};
+}
 
 
 
@@ -1890,6 +1896,10 @@ sub subscription_form {
     if(! exists($args->{-multiple_lists})){ 
         $args->{-multiple_lists} = 0; 
     }
+
+	if(! exists($args->{-show_fields})){ 
+		$args->{-show_fields} = 1; 
+	}
     
     my $li;
     my @available_lists = available_lists(-Dont_Die => 1); 
@@ -1935,11 +1945,6 @@ sub subscription_form {
                $args->{'-flavor_is'} = xss_filter($q->param('set_flavor')); 
         }
 
-
-
-
-        
-
         my $i = 0; 
         foreach my $sf(@$subscriber_fields){ 
             if(defined($q->param($sf))){ 
@@ -1949,6 +1954,20 @@ sub subscription_form {
         }
         undef($i);
 
+
+		require DADA::Profile::Session; 
+		my $sess = DADA::Profile::Session->new; 
+
+		if($sess->is_logged_in){ 
+			my $email = $sess->get; 
+			$args->{-email} = $email;
+			$args->{-show_fields} = 0; 
+			$args->{-profile_logged_in} = 1; 
+		}
+		else { 
+			$args->{-profile_logged_in} = 0; 
+		}
+		
     }
 
 
@@ -1968,7 +1987,8 @@ sub subscription_form {
         $flavor_is_unsubscribe = 1;  
     }
     
-     
+	
+	
     
     if($list){ 
      
@@ -1978,8 +1998,7 @@ sub subscription_form {
         return screen({
             -screen => 'subscription_form_widget.tmpl', 
             -vars   => {
-                            
-                            
+                           
                             single_list              => 1, 
                             
                             subscriber_fields        => $named_subscriber_fields,
@@ -1993,6 +2012,8 @@ sub subscription_form {
                             give_props               => $args->{-give_props}, 
                             ajax_subscribe_extension => $args->{-ajax_subscribe_extension},
                             script_url               => $args->{-script_url}, 
+							show_fields              => $args->{-show_fields}, 
+							profile_logged_in        => $args->{-profile_logged_in}, 
                             
                         }
                     });  
@@ -2016,6 +2037,8 @@ sub subscription_form {
                             ajax_subscribe_extension => $args->{-ajax_subscribe_extension}, 
                             multiple_lists           => $args->{-multiple_lists}, 
                             script_url               => $args->{-script_url}, 
+							show_fields              => $args->{-show_fields}, 
+							profile_logged_in        => $args->{-profile_logged_in}, 
                         }
                     });      
     

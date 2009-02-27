@@ -16,16 +16,27 @@
 		Your changes have been saved!
 	</p> 
 <!-- /tmpl_if --> 
+<!-- tmpl_if errors_change_password --> 
+	<p class="error">
+		There was an error with changing your password - make sure that you re-typed your password correctly. 
+	</p>
+<!-- /tmpl_if --> 
 
 
+</fieldset> 
 
-<hr /> 
+
 
 <!-- tmpl_if subscriber_fields --> 
 
-   <h1>
- 	Subscriber Fields
-   </h1>
+   
+<fieldset> 
+	
+<legend>
+	Subscriber Fields
+</legend> 
+
+
 	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
 		<input type="hidden" name="f"        value="profile" /> 
 		<input type="hidden" name="process"  value="edit_subscriber_fields" /> 
@@ -49,9 +60,14 @@
 
 <!-- /tmpl_if --> 
 
-<hr /> 
+</fieldset> 
 
-<h1>Your Subscriptions</h1> 
+
+	
+<h1>
+Your Subscriptions
+</h1> 
+
 
 <!-- this doesn't work right now... 
 	
@@ -98,8 +114,43 @@
 
 	<!-- /tmpl_if --> 
 <!-- /tmpl_loop -->
-
 <hr /> 
+
+
+<fieldset> 
+	
+<legend>
+Change Your Profile Password
+</legend> 
+
+
+<form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
+	<input type="hidden" name="f"        value="profile" /> 
+	<input type="hidden" name="process"  value="change_password" />
+	
+	  <p>
+        <label for="password" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+        New Password: 
+        </label>
+        <input type="password" name="password" id="password" value=""  />
+        </p>
+
+	  <p>
+        <label for="again_password" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+        New Password Again: 
+        </label>
+        <input type="password" name="again_password" id="again_password" value=""  />
+       </p>
+
+	<div class="buttonfloat">	
+    <input type="submit" value="Change Password" /> 
+	</div>
+	<div class="floatclear"></div>
+
+
+</form>
+
+</fieldset> 
 
 
 

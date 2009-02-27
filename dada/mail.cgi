@@ -5130,7 +5130,7 @@ sub html_code {
 											title              => 'Subscription Form HTML', 
 											
                                             list               => $list, 
-                                            subscription_form  => DADA::Template::Widgets::subscription_form({-list => $list}),  
+                                            subscription_form  => DADA::Template::Widgets::subscription_form({-list => $list, -ignore_cgi => 1}),  
                                             
                                           }
                                         });
@@ -6271,10 +6271,14 @@ sub resend_conf {
 			$q->param('list', $list);
 			$q->param('email', $email); 
 			$q->param('f', 's'); 
-			# And then, the subscriber fields...
-			foreach(keys %$sub_info){ 
-				$q->param($_, $sub_info->{$_});
-			}
+			# I don't think I need this anymore, since the fields are in a 
+			# separate table... 
+			## And then, the subscriber fields...
+			#foreach(keys %$sub_info){ 
+			#	if(defined($sub_info->{$_}) && length($sub_info->{$_}) > 0){
+			#		$q->param($_, $sub_info->{$_});
+			#	}
+			#}
 			&subscribe; 
 	        return; 
     
@@ -9202,6 +9206,7 @@ sub profile_login {
 						error_profile_register       => $q->param('error_profile_register')       || '',
 						error_profile_activate       => $q->param('error_profile_activate')       || '',
 						error_profile_reset_password => $q->param('error_profile_reset_password') || '', 
+						password_changed             => $q->param('password_changed')			  || '', 
 						logged_out                   => $q->param('logged_out') || '',
 						can_use_captcha              => $can_use_captcha, 
 						CAPTCHA_string               => $CAPTCHA_string, 
@@ -9398,6 +9403,26 @@ sub profile {
 			print $q->redirect({-uri => $DADA::Config::PROGRAM_URL . '?f=profile&edit=1'}); 
 			
 		}
+		elsif($q->param('process') eq 'change_password'){ 
+			my $new_password       = xss_filter($q->param('password')); 
+			my $again_new_password = xss_filter($q->param('again_password')); 
+			if(length($new_password) > 0 && $new_password eq $again_new_password){
+				$prof->update({-password => $new_password});
+				$q->param('password_changed', 1);
+				$q->delete('process'); 
+				
+				require DADA::Profile::Session; 
+				my $prof_sess = DADA::Profile::Session->new; 
+			     $prof_sess->logout({-cgi_obj => $q});
+				profile_login();
+			}
+			else { 
+				$q->param('errors_change_password', 1);
+				$q->delete('process'); 
+				profile();
+			}
+		
+		}
 		else { 
 		
 
@@ -9426,8 +9451,9 @@ sub profile {
 						'profile.email'   => $email,
 						subscriber_fields => $fields, 
 						subscriptions 	  => $prof->subscribed_to({-html_tmpl_params => 1}),   
-						welcome           => $q->param('welcome') || '',
-						edit              => $q->param('edit')    || '',
+						welcome           => $q->param('welcome')                     || '',
+						edit              => $q->param('edit')                        || '',
+						errors_change_password => $q->param('errors_change_password') || '', 
 					}
 				}
 			); 

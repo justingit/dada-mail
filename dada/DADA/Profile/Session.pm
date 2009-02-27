@@ -232,8 +232,14 @@ sub is_logged_in {
 	
 	my $self   = shift; 
 	my ($args) = @_; 
-	my $q = $args->{-cgi_obj};
-	
+	my $q; 
+	if(exists($args->{-cgi_obj})){ 
+		$q = $args->{-cgi_obj};
+	}
+	else { 
+		require CGI; 
+		$q = new CGI; 
+	}
 	my $s = CGI::Session->load(
 		$self->{dsn}, 
 		$q, 
@@ -262,8 +268,14 @@ sub get {
 	
 	my $self   = shift; 
 	my ($args) = @_; 
-	my $q = $args->{-cgi_obj};
-	
+	my $q;
+	if(exists($args->{-cgi_obj})){ 
+		$q = $args->{-cgi_obj};
+	}
+	else { 
+		require CGI; 
+		$q = new CGI; 
+	}
 	require CGI::Session;
 
     my $session = new CGI::Session( 
