@@ -529,6 +529,7 @@ sub list_page {
 			    -email          => undef, 
 				-set_flavor     => undef,
 				-error_no_email => undef, 
+				-cgi_obj        => undef, 
 				@_);
     
 
@@ -545,6 +546,7 @@ sub list_page {
 	my $ls = DADA::MailingList::Settings->new({-list => $args{-list}}); 
 	my $li= $ls->get; 
 
+	# allowed_to_view_archives
     my $html_archive_list = html_archive_list($args{-list}); 
     my $template = screen(
         {
@@ -558,6 +560,7 @@ sub list_page {
             error_no_email            => $args{-error_no_email}, 
             set_flavor                => $args{-set_flavor},
             html_archive_list         => $html_archive_list, 
+			#allowed_to_view_archives  => $allowed_to_view_archives,  
         },
         
         -webify_and_santize_these => [qw(list_settings.list_owner_email list_settings.info list_settings.privacy_policy )], 
@@ -724,97 +727,111 @@ sub html_archive_list {
 	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
 	my $li = $ls->get; 
 	
-	my $archive = DADA::MailingList::Archives->new({-list => $list}); 
-	my $entries = $archive->get_archive_entries(); 
+	require DADA::Profile; 
+	my $allowed_to_view_archives = DADA::Profile::allowed_to_view_archives(
+			{
+				-from_session => 1, 
+				-list         => $list, 
+				-ls_obj       => $ls,
+			}
+		);
 	
 	
-	if(defined($entries->[0])) { 
+	if($allowed_to_view_archives == 1){ 
+		
+		my $archive = DADA::MailingList::Archives->new({-list => $list}); 
+		my $entries = $archive->get_archive_entries(); 
+	
+	
+		if(defined($entries->[0])) { 
 	
 
-        my ($begin, $stop) = $archive->create_index(0);
-        my $i;
-        my $stopped_at = $begin;
-        my $num = $begin;
+	        my ($begin, $stop) = $archive->create_index(0);
+	        my $i;
+	        my $stopped_at = $begin;
+	        my $num = $begin;
         
-        $num++; 
-        my @archive_nums; 
-        my @archive_links; 
-        my $th_entries = []; 
+	        $num++; 
+	        my @archive_nums; 
+	        my @archive_links; 
+	        my $th_entries = []; 
     
         
         
-        # iterate and save
-        for($i = $begin; $i <=$stop; $i++){ 
-            my $link; 
+	        # iterate and save
+	        for($i = $begin; $i <=$stop; $i++){ 
+	            my $link; 
             
-            if(defined($entries->[$i])){
+	            if(defined($entries->[$i])){
                 
-                my ($subject, $message, $format, $raw_msg) = $archive->get_archive_info($entries->[$i]); 
+	                my ($subject, $message, $format, $raw_msg) = $archive->get_archive_info($entries->[$i]); 
                 
                 
-                 # THis is stupid: 
-                 # DEV: This is stupid, and I don't think it's a great idea. 
-                    $subject = DADA::Template::Widgets::screen(
-                        {
-                        -data                    => \$subject, 
-                        -vars                     => $li, 
-                        -list_settings_vars       => $li, 
-                        -list_settings_vars_param => {-dot_it => 1},                    
-                        -dada_pseudo_tag_filter   => 1, 
-						-subscriber_vars_param    => {-use_fallback_vars => 1, -list => $li->{list}},
+	                 # THis is stupid: 
+	                 # DEV: This is stupid, and I don't think it's a great idea. 
+	                    $subject = DADA::Template::Widgets::screen(
+	                        {
+	                        -data                    => \$subject, 
+	                        -vars                     => $li, 
+	                        -list_settings_vars       => $li, 
+	                        -list_settings_vars_param => {-dot_it => 1},                    
+	                        -dada_pseudo_tag_filter   => 1, 
+							-subscriber_vars_param    => {-use_fallback_vars => 1, -list => $li->{list}},
 
-                        }
-                    ); 
-                    # That. Sucked.
+	                        }
+	                    ); 
+	                    # That. Sucked.
                 
                 
-                # this is so atrocious.
-                my $date = date_this(-Packed_Date   => $entries->[$i],
-                -Write_Month   => $li->{archive_show_month},
-                -Write_Day     => $li->{archive_show_day},
-                -Write_Year    => $li->{archive_show_year},
-                -Write_H_And_M => $li->{archive_show_hour_and_minute},
-                -Write_Second  => $li->{archive_show_second});
+	                # this is so atrocious.
+	                my $date = date_this(-Packed_Date   => $entries->[$i],
+	                -Write_Month   => $li->{archive_show_month},
+	                -Write_Day     => $li->{archive_show_day},
+	                -Write_Year    => $li->{archive_show_year},
+	                -Write_H_And_M => $li->{archive_show_hour_and_minute},
+	                -Write_Second  => $li->{archive_show_second});
     
     
-                my $entry = { 				
-                        id               => $entries->[$i], 
+	                my $entry = { 				
+	                        id               => $entries->[$i], 
     
-                        date             => $date, 
-                        subject          => $subject,
-                       'format'          => $format, 
-                        list             => $list, 
-                        uri_escaped_list => uriescape($list),
-                        PROGRAM_URL      => $DADA::Config::PROGRAM_URL, 
-                        message_blurb    => $archive->message_blurb(-key => $entries->[$i]),
-                    }; 
+	                        date             => $date, 
+	                        subject          => $subject,
+	                       'format'          => $format, 
+	                        list             => $list, 
+	                        uri_escaped_list => uriescape($list),
+	                        PROGRAM_URL      => $DADA::Config::PROGRAM_URL, 
+	                        message_blurb    => $archive->message_blurb(-key => $entries->[$i]),
+	                    }; 
                 
-                $stopped_at++;
-                push(@archive_nums, $num); 
-                push(@archive_links, $link); 
-                $num++;
+	                $stopped_at++;
+	                push(@archive_nums, $num); 
+	                push(@archive_links, $link); 
+	                $num++;
     
     
-                push(@$th_entries, $entry); 
+	                push(@$th_entries, $entry); 
                     
-            }
-        } 
+	            }
+	        } 
     
-        my $ii; 
+	        my $ii; 
         
-        for($ii=0;$ii<=$#archive_links; $ii++){ 
+	        for($ii=0;$ii<=$#archive_links; $ii++){ 
     
-            my $bullet = $archive_nums[$ii];
+	            my $bullet = $archive_nums[$ii];
             
-            #fix if we're doing reverse chronologic 
-            $bullet = (($#{$entries}+1) - ($archive_nums[$ii]) +1) 
-                if($li->{sort_archives_in_reverse} == 1);
+	            #fix if we're doing reverse chronologic 
+	            $bullet = (($#{$entries}+1) - ($archive_nums[$ii]) +1) 
+	                if($li->{sort_archives_in_reverse} == 1);
     
-            # yeah, whatever. 
-            $th_entries->[$ii]->{bullet} = $bullet; 
+	            # yeah, whatever. 
+	            $th_entries->[$ii]->{bullet} = $bullet; 
             
-        }
-    
+	        }
+    	
+
+
         $t .= screen({-screen => 'archive_list_widget.tmpl', 
                      -vars => {
                                 entries              => $th_entries,
@@ -823,9 +840,25 @@ sub html_archive_list {
                                 publish_archives_rss => ($li->{publish_archives_rss}) ? 1: 0, 
                                 index_nav            => $archive->create_index_nav($stopped_at), 
                                 search_form          => ( ($li->{archive_search_form} eq "1") && (defined($entries->[0])) ) ? $archive->make_search_form($li->{list}) : ' ', 
-                               }
+                               allowed_to_view_archives => 1, 
+							}
                     });  
  
+			}
+	}
+	else { 
+		$t = screen({-screen => 'archive_list_widget.tmpl', 
+                     -vars => {
+                                entries              => [],
+                                list                 => $list, 
+                                list_name            => $li->{list_name}, 
+                                publish_archives_rss => 0,
+                                index_nav            => '', 
+                                search_form          => '', 
+								allowed_to_view_archives => 0, 
+                               }
+                    });  
+
 	}
 	
 	return $t; 
@@ -956,9 +989,7 @@ sub profile_widget {
 	my $q = new CGI; 
 	my $prof_sess = DADA::Profile::Session->new; 
 	my $email     = ''; 
-	
 	my $is_logged_in = 0; 
-	
 	if($prof_sess->is_logged_in({-cgi_obj => $q})){ 
 		$is_logged_in = 1; 
 	    $email        = $prof_sess->get({-cgi_obj => $q}); 
@@ -1431,7 +1462,7 @@ sub screen {
 		                         	}
 								);
 		
-								my $fallback_vars = $lh->get_fallback_field_values; 
+								my $fallback_vars = $lh->get_all_field_attributes; 
 					
 						# This is sort of an odd placement for this, but I'm not sure 
 						# Where I want this yet...  (perhaps $lh->get_fallback_values ?)
@@ -1469,7 +1500,7 @@ sub screen {
 	                         	}
 							);
 
-							my $fallback_vars = $lh->get_fallback_field_values; 
+							my $fallback_vars = $lh->get_all_field_attributes; 
 
 					# This is sort of an odd placement for this, but I'm not sure 
 					# Where I want this yet...  (perhaps $lh->get_fallback_values ?)
@@ -1908,19 +1939,21 @@ sub subscription_form {
     }
     
     
-    
-    my $model_list = $available_lists[0]; 
-    require DADA::MailingList::Subscribers; 
-    my $model_lh   = DADA::MailingList::Subscribers->new({-list => $model_list});     
-    my $subscriber_fields = $model_lh->subscriber_fields(
-                                {
-                                    -show_hidden_fields => 0,
-                                }
-                            ); 
-    
-    my $named_subscriber_fields = [];
+    require DADA::Profile::Fields; 
+    my $dpf = DADA::Profile::Fields->new; 
+	my $subscriber_fields = $dpf->subscriber_fields;
+	my $field_attrs = $dpf->get_all_field_attributes;
+	my $named_subscriber_fields = [];
+
 	foreach(@$subscriber_fields){ 
-	    push(@$named_subscriber_fields, {name => $_, pretty_name => ucfirst(DADA::App::Guts::pretty($_))})
+	    push(
+			@$named_subscriber_fields, 
+				{
+					name        => $_, 
+					pretty_name => $field_attrs->{$_}->{label},
+					label 		=> $field_attrs->{$_}->{label},
+				}
+			)
 	}
 	
 	

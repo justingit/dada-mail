@@ -181,7 +181,16 @@ Edit Field
            </p> 
           </td> 
           
-          
+    
+		 <td> 
+           <p>
+            <strong>
+             Label
+            </strong> 
+           </p> 
+          </td>
+
+      
             <td> 
            <p>
             <strong>
@@ -206,15 +215,35 @@ Edit Field
         <tr <!-- tmpl_if name="__odd__" --> style="background-color:#ccf;"<!--/tmpl_if-->> 
 
 	       <!-- tmpl_if root_login --> 
+				
 
-	             <td style="width:5em"> 
+	             <td style="width:12em"> 
 
-	            <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+	            <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" style="margin: 0pt; display: inline;">
 	             <input type="hidden" name="f" value="subscriber_fields" /> 
 	             <input type="hidden" name="edit_field" value="1" /> 
-	             <input type="hidden" name="field"  value="<!-- tmpl_var name -->" /> 
-	            <input type="submit" value="[edit]" class="cautionary" /> 
+	             <input type="hidden" name="field"  value="<!-- tmpl_var field -->" /> 
+	            <input type="submit" value="[edit]" class="cautionary" style="margin:0px" /> 
 	            </form> 
+	
+				<form style="margin: 0pt; display: inline;">			
+					<input type="hidden" name="f" value="subscriber_fields" /> 
+	             	<input type="hidden" name="process" value="edit_field_order" /> 
+	             	<input type="hidden" name="field"  value="<!-- tmpl_var field -->" />
+					<input type="hidden" name="direction" value="up" /> 
+					<input type="submit" value="^" class="cautionary" style="margin: 0pt;" title="move this field up" />
+				
+				</form>
+				<form style="margin: 0pt; display: inline;">
+					
+					<input type="hidden" name="f" value="subscriber_fields" /> 
+	             	<input type="hidden" name="process" value="edit_field_order" /> 
+	             	<input type="hidden" name="field"  value="<!-- tmpl_var field -->" />
+					<input type="hidden" name="direction" value="down" />
+					
+					<input type="submit" value="v" class="cautionary" style="margin: 0pt;" title="move this field down" />
+				</form>
+				
 	             </td> 
 	
 	        <!--/tmpl_if-->
@@ -223,11 +252,20 @@ Edit Field
          <td> 
           <p>
            <strong>
-           <!-- tmpl_var name --> 
+           <!-- tmpl_var field --> 
            </strong>
           </p> 
          </td> 
          
+
+	    
+         <td> 
+          <p>
+           <!-- tmpl_var label --> 
+          </p>
+         </td>
+
+
          <td> 
           <p>
            <!-- tmpl_var fallback_value --> 
@@ -242,7 +280,7 @@ Edit Field
             <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
              <input type="hidden" name="f" value="subscriber_fields" /> 
              <input type="hidden" name="process" value="delete_field" /> 
-             <input type="hidden" name="field"  value="<!-- tmpl_var name -->" /> 
+             <input type="hidden" name="field"  value="<!-- tmpl_var field -->" /> 
             <input type="submit" value="[X]" class="alertive"  onclick="return removeSubscriberField(this.form);" /> 
             </form> 
              </td> 
@@ -333,6 +371,24 @@ Edit Field
                 </p>
             </td> 
             </tr> 
+
+            <tr> 
+             <td> 
+             
+                <p>
+                 <label for="label">Label</label> 
+                </p>
+               </td> 
+               <td> 
+                <p>
+                    <input type="text" name="field_label" id="field_label"  value="<!-- tmpl_var field_label escape="HTML" -->" class="full" /><br />
+                    <em>This label will be used on public subscription forms</em>
+                </p>
+            
+            </td>
+              </tr>
+
+
             <tr> 
              <td> 
              

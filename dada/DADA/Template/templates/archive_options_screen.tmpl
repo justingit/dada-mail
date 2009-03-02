@@ -13,7 +13,7 @@
 <table cellpadding="5">
  <tr>
   <td>
-   <input type="checkbox" name="archive_messages" id="archive_messages" value="1" <!-- tmpl_if archive_messages -->checked="checked"<!--/tmpl_if--> />
+   <input type="checkbox" name="archive_messages" id="archive_messages" value="1" <!-- tmpl_if list_settings.archive_messages -->checked="checked"<!--/tmpl_if--> />
   </td>
   <td>
    <p>
@@ -27,7 +27,7 @@
  </tr>
  <tr>
   <td>
-   <input type="checkbox" name="show_archives" id="show_archives" value="1" <!-- tmpl_if show_archives -->checked="checked"<!--/tmpl_if--> />
+   <input type="checkbox" name="show_archives" id="show_archives" value="1" <!-- tmpl_if list_settings.show_archives -->checked="checked"<!--/tmpl_if--> />
   </td>
   <td>
    <p>
@@ -40,11 +40,49 @@
      here</a>.
     Archived messages are always viewable in the list control panel.
    </p>
+
+
+
+
+ <table cellspacing="5" <!-- tmpl_unless PROFILE_ENABLED -->class="disabled"<!--/tmpl_unless--> >
+     <tr>
+      <td>
+       <input type="checkbox" name="archives_available_only_to_subscribers" id="archives_available_only_to_subscribers" value="1" <!-- tmpl_if list_settings.archives_available_only_to_subscribers -->checked="checked"<!--/tmpl_if--> />
+      </td>
+      <td>
+       <p>
+        <label for="archives_available_only_to_subscribers">
+         Only Allow Subscribers to View Archived Messages
+        </label><br /> 
+		Only subscribers logged in will be able to view the publicly available archives. 
+       </p>
+
+       <!-- tmpl_unless PROFILE_ENABLED -->
+
+	    <p class="error">
+	     <em>
+	      Disabled. <!-- tmpl_var PROGRAM_NAME --> Profiles are not enabled.
+	     </em>
+	    </p>
+
+        <!--/tmpl_unless-->
+
+
+
+      </td>
+     </tr>
+    </table>
+
+
+
+
+
+
   </td>
  </tr>
  <tr>
   <td>
-   <input type="checkbox" name="archive_subscribe_form" id="archive_subscribe_form" value="1" <!-- tmpl_if archive_subscribe_form -->checked="checked"<!--/tmpl_if--> />
+   <input type="checkbox" name="archive_subscribe_form" id="archive_subscribe_form" value="1" <!-- tmpl_if list_settings.archive_subscribe_form -->checked="checked"<!--/tmpl_if--> />
   </td>
   <td>
    <p>
@@ -59,7 +97,7 @@
  </tr>
  <tr>
   <td>
-   <input type="checkbox" name="archive_search_form" id="archive_search_form" value="1" <!-- tmpl_if archive_search_form -->checked="checked"<!--/tmpl_if--> />
+   <input type="checkbox" name="archive_search_form" id="archive_search_form" value="1" <!-- tmpl_if list_settings.archive_search_form -->checked="checked"<!--/tmpl_if--> />
   </td>
   <td>
    <p>
@@ -73,7 +111,7 @@
  </tr>
  <tr>
   <td>
-   <input type="checkbox" name="archive_send_form" id="archive_send_form" value="1" <!-- tmpl_if archive_send_form -->checked="checked"<!--/tmpl_if--> />
+   <input type="checkbox" name="archive_send_form" id="archive_send_form" value="1" <!-- tmpl_if list_settings.archive_send_form -->checked="checked"<!--/tmpl_if--> />
   </td>
   <td>
    <p>
@@ -87,7 +125,7 @@
     <table cellspacing="5" <!-- tmpl_unless can_use_captcha -->class="disabled"<!--/tmpl_unless--> >
      <tr>
       <td>
-       <input type="checkbox" name="captcha_archive_send_form" id="captcha_archive_send_form" value="1" <!-- tmpl_if captcha_archive_send_form -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless can_use_captcha -->disabled="disabled"<!--/tmpl_unless-->/>
+       <input type="checkbox" name="captcha_archive_send_form" id="captcha_archive_send_form" value="1" <!-- tmpl_if list_settings.captcha_archive_send_form -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless can_use_captcha -->disabled="disabled"<!--/tmpl_unless-->/>
       </td>
       <td>
        <p>
@@ -118,7 +156,7 @@
  
   <tr>
   <td>
-   <input type="checkbox" name="send_newest_archive" id="send_newest_archive" value="1" <!-- tmpl_if send_newest_archive -->checked="checked"<!--/tmpl_if--> />
+   <input type="checkbox" name="send_newest_archive" id="send_newest_archive" value="1" <!-- tmpl_if list_settings.send_newest_archive -->checked="checked"<!--/tmpl_if--> />
   </td>
   <td>
    <p>

@@ -475,7 +475,7 @@ SKIP: {
             ok($s == 1, "adding a new field, " . $_ . "with fallback of, " .  $ff->{$_} . "is successful"); 
             undef $s; 
             
-            my $fallbacks = $lh->get_fallback_field_values; 
+            my $fallbacks = $lh->get_all_field_attributes; 
             
             ok($fallbacks->{$_} eq $ff->{$_}, $ff->{$_} . ' equals: ' . $fallbacks->{$_} . "for: " . $_); 
             
@@ -490,7 +490,7 @@ SKIP: {
        foreach(keys %$ff){ 
        
             ok($lh->remove_subscriber_field({-field => $_}),    'Field, ' . $_ . ' removed successfully'); 
-            my $fallbacks = $lh->get_fallback_field_values; 
+            my $fallbacks = $lh->get_all_field_attributes; 
             ok(!exists($fallbacks->{$_}), "old fallback value for $_ has been removed."); 
      
      }

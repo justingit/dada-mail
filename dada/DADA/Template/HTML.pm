@@ -486,20 +486,38 @@ sub list_template {
 		$list_template = default_template(); 		
 	}
 
+	require DADA::Profile::Session; 
+	require DADA::Profile; 
+	my $prof_sess = DADA::Profile::Session->new; 
+	my $prof_email         = ''; 
+	my $is_logged_in       = 0; 
+	my $subscribed_to_list = 0;
+	if($prof_sess->is_logged_in({-cgi_obj => $q})){ 
+		$is_logged_in = 1; 
+	    $prof_email = $prof_sess->get({-cgi_obj => $q}); 
+		my $prof = DADA::Profile->new({-email => $prof_email}); 
+		$subscribed_to_list = $prof->subscribed_to_list({-list => $list});
+	}
+	
+	
 	my $final_list_template = DADA::Template::Widgets::screen(
 							{
 								-data => \$list_template,
 								-dada_pseudo_tag_filter   => 1, 	
 								-vars => {
-											default_css => DADA::Template::Widgets::screen({-screen => 'default_css.css', -vars => 	$args{-vars} }),
-											title       => $args{-Title}, 
-											# The message tag isn't being used anymore but.... 
-											message        => $args{-Title},
-											content        => '[_dada_content]',
-											mojo           => '[_dada_content]',
-											dada           => '[_dada_content]',
-											profile_widget => DADA::Template::Widgets::profile_widget(), 
+											default_css         => DADA::Template::Widgets::screen({-screen => 'default_css.css', -vars => 	$args{-vars} }),
+											title               => $args{-Title}, 
+											'profile.email'     => $prof_email, 
+											subscribed_to_list  => $subscribed_to_list,
 											
+											# The message tag isn't being used anymore but.... 
+											message             => $args{-Title},
+											content             => '[_dada_content]',
+											mojo                => '[_dada_content]',
+											dada                => '[_dada_content]',
+											profile_widget      => DADA::Template::Widgets::profile_widget(), 
+											show_profile_widget => 1, 
+
 											%{$args{-vars}},
 									 	 },
 								(

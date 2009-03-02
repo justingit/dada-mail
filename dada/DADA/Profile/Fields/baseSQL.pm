@@ -322,17 +322,64 @@ sub add_subscriber_field {
     my $rv = $sth->execute() 
 	    or croak "cannot do statement (at add_subscriber_field)! $DBI::errstr\n";   
 	
-	
-	if(exists($args->{-fallback_value})){ 
-		warn "fallback field value exists."; 
-	    $self->save_fallback_value({-field => $args->{-field}, -fallback_value => $args->{-fallback_value}});
-	}
-	
+	if(!exists($args->{-fallback_value})){ 
+		$args->{-fallback_value} = '';
+	}	
+
+	    $self->save_field_attributes(
+			{
+				-field          => $args->{-field}, 
+				-label          => $args->{-label},
+				-fallback_value => $args->{-fallback_value},
+			}
+		);
+			
 	delete($self->{cache}->{subscriber_fields}); 
 	return 1; 
 }
 
 
+sub save_field_attributes { 
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	my $query = '';
+
+	if($self->field_attributes_exist({-field => $args->{-field}})){
+		$query = 'UPDATE dada_profile_fields_attributes SET (label fallback_value) values(?,?) where field = ?'; 
+	}
+	else { 
+		$query = 'INSERT INTO dada_profile_fields_attributes (label, fallback_value, field) values(?,?,?)'; 
+	}
+	
+    my $sth = $self->{dbh}->prepare($query);    
+
+    my $rv = $sth->execute($args->{-label}, $args->{-fallback_value}, $args->{-field}) 
+	    or croak "cannot do statement (at save_field_attributes)! $DBI::errstr\n";
+	
+}
+
+sub field_attributes_exist { 
+ 
+	my $self   = shift; 
+	my ($args) = @_;
+
+	my $query = 'SELECT COUNT(*) FROM dada_profile_fields_attributes WHERE field = ?'; 
+
+	my $sth     = $self->{dbh}->prepare($query);
+
+	#warn 'QUERY: ' . $query
+	#	it $t; 
+
+	$sth->execute($args->{-field})
+		or croak "cannot do statement (at field_attributes_exist)! $DBI::errstr\n";	 
+	my @row = $sth->fetchrow_array();
+    $sth->finish;
+
+   return $row[0];
+
+
+}
 
 
 sub edit_subscriber_field { 
@@ -369,14 +416,6 @@ sub edit_subscriber_field {
 }
 
 
-
-
-
-
-
-
-
-
 sub remove_subscriber_field { 
 
     my $self = shift; 
@@ -405,13 +444,44 @@ sub remove_subscriber_field {
     my $rv = $sth->execute() 
         or croak "cannot do statement! (at: remove_subscriber_field) $DBI::errstr\n";   
  	
-	$self->remove_fallback_value({-field => $args->{-field}}); 
+	$self->remove_field_attributes({-field => $args->{-field}}); 
 	delete($self->{cache}->{subscriber_fields}); 
 	
 	return 1; 
 	
 }
 
+sub get_all_field_attributes { 
+
+    my $self   = shift; 
+	my ($args) = @_;  
+    my $v    = {}; 
+    
+	#?
+    return $v 
+		if  $self->can_have_subscriber_fields == 0; 
+
+	my $query = 'SELECT * FROM dada_profile_fields_attributes';
+    
+    my $sth = $self->{dbh}->prepare($query);
+    $sth->execute()
+      or croak "cannot do statement (at get_all_field_attributes)! $DBI::errstr\n";
+
+	my $hashref; 
+  FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
+	
+		my $k = $hashref->{field};
+		#delete($hashref->{field}); 
+		$v->{$k} = $hashref;
+		if($v->{$k}->{label} eq ''){ 
+			$v->{$k}->{label} = $hashref->{field};
+		}
+  }
+
+	
+  return $v; 
+
+}
 
 
 
@@ -623,106 +693,84 @@ sub validate_remove_subscriber_field_name {
     
 }
 
+sub change_field_order {
+	 
+    my $self = shift; 
+    my ($args) = @_;
+	
+	# fields
+	# direction
+	
+	my $sf = $self->subscriber_fields; 
+	
+	my $i   = 0; 
+	my $pos = 0; 
+	my $before; 
+	my $after; 
+	my $dir = $args->{-direction}; 
+	foreach my $f(@$sf){ 
+	#	die $f . ' ' . $args->{-field};
+		if($f eq $args->{-field}){ 
+			$pos = $i;  
+	#		die $pos;
+		}
+		else { 
+			$i++;
+		}
+	}
+	
+	if($dir eq 'down'){ 
+		if($pos >= $#$sf){ 
+			return 0;
+		}
+		
+		$before = $args->{-field};
+		$after  = $sf->[$pos+1];
+	}
+	if($dir eq 'up'){ 
+		if($pos <= 0){ 
+			return 0;
+		}
+		$before = $sf->[$pos-1];
+		$after  = $args->{-field};
+	}
+	
+	
+
+	
+#	if($dir eq 'up'){ 
+#		($before, $after) = ($after, $before);
+#	}
+
+	my $query = 'ALTER TABLE dada_profile_fields MODIFY COLUMN ' . $before . ' text AFTER ' . $after;
+#	die $query; 
+	my $sth = $self->{dbh}->prepare($query);    
+	$sth->execute()
+		or croak "cannot do statement (at: change_field_order)! $DBI::errstr\n";
+
+	return 1;
+}
 
 
-sub remove_fallback_value { 
+
+
+sub remove_field_attributes { 
 
 	my $self   = shift; 
 	my ($args) = @_; 
-	foreach my $list(DADA::App::Guts::available_lists()){ 
-		$self->_remove_fallback_value_per_list(
-			{	
-				%$args,
-				-list => $list, 
-				 
-			}
-		); 
-	}
-}
-
-
-sub _remove_fallback_value_per_list { 
-
-    my $self = shift; 
-    my ($args) = @_; 
-    
-    if(! exists $args->{-field}){ 
-        croak "You MUST pass a value in the -field paramater!"; 
-    }
-
-    require DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
-    my $li = $ls->get; 
-    
-    
-    my $fallback_field_values = $self->get_fallback_field_values;
-    
-
-    my $new_fallback_field_values = '';
-    foreach(keys %$fallback_field_values){ 
-        next if $_ eq $args->{-field}; 
-        $new_fallback_field_values .= $_ . ':' . $fallback_field_values->{$_} . "\n";
-    }
-    $ls->save({fallback_field_values => $new_fallback_field_values}); 
-    
-    return 1; 
-}
-
-
-
-sub save_fallback_value { 
-
-	my $self   = shift; 
-	my ($args) = @_; 
-	foreach my $list(DADA::App::Guts::available_lists()){ 
-		$self->_save_fallback_value_per_list(
-			{	
-				%$args,
-				-list => $list, 
-				 
-			}
-		); 
-	}
-}
-
-sub _save_fallback_value_per_list { 
-
-    my $self = shift; 
-    my ($args) = @_; 
-
-	# use Data::Dumper; 
-	# warn "$args given to _save_fallback_value: " . Data::Dumper::Dumper($args); 
-    
-    if(! exists $args->{-field}){ 
-        croak "You MUST pass a value in the -field paramater!"; 
-    }
-
-    if(! exists $args->{-fallback_value}){ 
-        croak "You must pass a value in the -fallback_value paramater!"; 
-    }
-    
-	# warn ' $args->{list} ' .  $args->{list}; 
 	
- 	require  DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}});
-
-    my $fallback_field_values = $self->get_fallback_field_values;
-    
-    my $fallback_field_clump = ''; 
+	my $query = 'DELETE FROM dada_profile_fields_attributes WHERE field = ?'; 
+	my $sth = $self->{dbh}->prepare($query);    
+	$sth->execute($args->{-field})
+		or croak "cannot do statement (at: remove_field_attributes)! $DBI::errstr\n";
 	
-	foreach(keys %$fallback_field_values){ 
-		$fallback_field_clump .= $_ . ':' . $fallback_field_values->{$_} . "\n";
-	}
-
-    $args->{-fallback_value} =~ s/\r|\n/ /g;
-    $args->{-fallback_value} =~ s/\://g;
-    
-    $fallback_field_clump .= $args->{-field} . ':' . $args->{-fallback_value} . "\n";
-    
-    $ls->save({fallback_field_values => $fallback_field_clump});
-    
-    return 1; 
+	return 1; 
 }
+
+
+
+
+
 
 
 

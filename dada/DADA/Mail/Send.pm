@@ -164,7 +164,7 @@ sub _init {
 	        my $merge_fields = $lh->subscriber_fields;
 	        $self->{merge_fields} = $merge_fields;
 
-	        $self->{fallback_field_values} = $lh->{fields}->get_fallback_field_values(); 
+	        $self->{field_attr} = $lh->{fields}->get_all_field_attributes(); 
         
 	        undef $lh; 
 	    ###
@@ -2376,7 +2376,9 @@ sub _mail_merge {
             $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $data->[$i];       
         }
         else { 
-            $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $self->{fallback_field_values}->{$merge_fields->[$i]};            
+            #$subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $self->{fallback_field_values}->{$merge_fields->[$i]};  
+		  	 $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $self->{field_attr}->{$merge_fields->[$i]}->{fallback_value};  
+          
         }
     }
 

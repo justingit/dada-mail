@@ -1,6 +1,15 @@
 <!-- begin archive_list_widget.tmpl -->
 
-<h2>Archives:</h2> 
+<!-- tmpl_if allowed_to_view_archives --> 
+
+<!-- tmpl_else --> 
+
+	<p class="error">
+		Only subscribers may view this list's message archives.
+	</p> 
+	
+<!-- /tmpl_if -->
+
 
 
 

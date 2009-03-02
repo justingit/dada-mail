@@ -1,8 +1,17 @@
 <!-- begin profile_home.tmpl --> 
 
-<h1>
-	Hello, <!-- tmpl_var profile.email -->!
-</h1>
+
+<p style="text-align:right"> 
+	[ <a href="<!-- tmpl_var PROGRAM_URL -->?f=profile_logout">Logout</a>]
+</p>
+
+
+<div class="positive_greeting">
+	<h1 style="text-align:center">
+		Hello, <!-- tmpl_var profile.email -->!
+	</h1>
+</div> 
+
 
 <!-- tmpl_if welcome --> 
 	<p class="positive">
@@ -46,7 +55,7 @@
     
         <p>
         <label for="<!-- tmpl_var name escape=HTML -->" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
-        <!-- tmpl_var pretty_name escape=HTML -->: 
+        <!-- tmpl_var label escape=HTML -->: 
         </label>
         <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
         </p>
@@ -87,25 +96,62 @@ Your Subscriptions
 	<!-- tmpl_if subscribed --> 
 
 	<h2>
-		<!-- tmpl_var list_name --> 
+		<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->">
+			<!-- tmpl_var list_settings.list_name --> 
+		</a>
 	</h2> 
 	
+	<blockquote>
+		<p>
+			<!-- tmpl_var list_settings.info -->
+		</p>
+	</blockquote> 
+
+
+	<ul> 
+	    <!-- tmpl_if list_settings.group_list --> 
+	        <li>
+	         <a href="mailto:<!-- tmpl_var list_settings.discussion_pop_email">
+				Send a message to 
+					<!-- tmpl_var list_settings.discussion_pop_email -->
+				</a>
+			 - this list is a group discussion list 
+	            <!-- tmpl_if list_settings.enable_moderation --> 
+	                (moderated)
+	            <!-- tmpl_else -->
+	                (unmoderated)
+	            <!-- /tmpl_if --> 
+	        </li>
+	    <!-- tmpl_else --> 
+
+	        <li>
+	         This list is an announce-only list.
+	        </li>
+
+	     <!-- /tmpl_if --> 
+	</ul>
+	
+	
 <ul>
+	<!-- 
 	<li>
 		<p>
-			<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list -->">
+			<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->">
 			View List Home Screen
 		</a>
 		 </p>
+		</li>
+	--> 
+	
 		<li>
-			<p><a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list -->">
+				<p><a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list -->">
 			View Archives
 		</a>
 		</p>
 	</li>
 	<li>
 		<p>
-		<a href="<!-- tmpl_var PROGRAM_URL -->?f=u&list=<!-- tmpl_var list -->&email=<!-- tmpl_var email -->">
+		<a href="<!-- tmpl_var PROGRAM_URL -->?f=u&list=<!-- tmpl_var list_settings.list -->&email=<!-- tmpl_var profile.email -->">
 			Unsubscribe from this list
 		</a>
 	</p>

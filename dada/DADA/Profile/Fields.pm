@@ -93,25 +93,6 @@ sub _init  {
 
 
 
-sub get_fallback_field_values { 
-
-    my $self = shift; 
-    my $v    = {}; 
-    
-    return $v if  $self->can_have_subscriber_fields == 0; 
-    require  DADA::MailingList::Settings; 
-	my @lists = DADA::App::Guts::available_lists(); 
-    my $ls = DADA::MailingList::Settings->new({-list => $lists[0]});
-    my $li = $ls->get;   
-    my @fallback_fields = split("\n", $li->{fallback_field_values}); 
-    foreach(@fallback_fields){ 
-        my ($n, $val) = split(':', $_); 
-        $v->{$n} = $val; 
-    }
-    
-    return $v; 
-}
-
 
 
 

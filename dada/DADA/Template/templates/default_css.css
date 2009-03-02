@@ -312,6 +312,12 @@ p.link_to_screen {
 	color:#063;
 }
 
+.positive_greeting { 
+	padding:5px; 
+	border: 1px solid #363;
+	background-color: #CFC;
+}
+
 .simplebox {
 	padding:7px;
 	border:1px solid #000;

@@ -850,10 +850,12 @@ sub list_page {
                 ));    
                                                       
     $scrn .= DADA::Template::Widgets::list_page(-list           => $list, 
+												-cgi_obj        => $q, 
                                                 -email          => $email, 
                                                 -set_flavor     => $set_flavor,
-                                                -error_no_email => $q->param('error_no_email',
-                                               ), 
+                                                -error_no_email => $q->param('error_no_email') || 0,
+											
+        
                                              ); 
                                              
     $scrn .= list_template(-Part => "footer",  -List  => $list);
@@ -883,10 +885,13 @@ sub admin {
     #    if($c->cached('admin')){ $c->show('admin'); return;}
     #}
     
-    my $scrn = (list_template(-Part       => "header",
-                   -Title      => "Administration",
-                 
-          ));
+    my $scrn = list_template(
+		-Part       => "header",
+        -Title      => "Administration",
+		-vars       => { 
+				show_profile_widget => 0, 
+					}
+	);
           
     my $login_widget = $q->param('login_widget') || $DADA::Config::LOGIN_WIDGET; 
     
@@ -1841,7 +1846,9 @@ sub list_options {
     my $get_sub_notice                     =   $q->param("get_sub_notice")                  || 0;  
     my $get_unsub_notice                   =   $q->param("get_unsub_notice")                || 0;  
     my $no_confirm_email                   =   $q->param("no_confirm_email")                || 0;  
+	my $skip_sub_confirm_if_logged_in          =   $q->param('skip_sub_confirm_if_logged_in')       || 0; 
     my $unsub_confirm_email                =   $q->param("unsub_confirm_email")             || 0; 
+	my $skip_unsub_confirm_if_logged_in    =   $q->param('skip_unsub_confirm_if_logged_in') || 0; 
     my $send_unsub_success_email           =   $q->param("send_unsub_success_email")        || 0; 
     my $send_sub_success_email             =   $q->param("send_sub_success_email")          || 0; 
     my $mx_check                           =   $q->param("mx_check")                        || 0;  
@@ -1955,7 +1962,9 @@ sub list_options {
             get_sub_notice                     => $get_sub_notice, 
             get_unsub_notice                   => $get_unsub_notice, 
             no_confirm_email                   => $no_confirm_email,
+			skip_sub_confirm_if_logged_in          => $skip_sub_confirm_if_logged_in, 
             unsub_confirm_email                => $unsub_confirm_email,
+			skip_unsub_confirm_if_logged_in    => $skip_unsub_confirm_if_logged_in, 
             send_unsub_success_email           => $send_unsub_success_email,
             send_sub_success_email             => $send_sub_success_email,
             mx_check                           => $mx_check,
@@ -4344,20 +4353,17 @@ sub archive_options {
                                               -vars   => {
 													screen                    => 'archive_options', 
 													title                     => 'Archive Options', 
-													
                                                     list                      => $list, 
                                                     done                      => $done, 
-                                                    archive_messages          => $li->{archive_messages}, 
-                                                    show_archives             => $li->{show_archives}, 
-                                                    archive_search_form       => $li->{archive_search_form},
-                                                    archive_subscribe_form    => $li->{archive_subscribe_form}, 
-                                                    archive_send_form         => $li->{archive_send_form},
-                                                    captcha_archive_send_form => $li->{captcha_archive_send_form},
                                                     can_use_captcha           => $can_use_captcha,
                                                     CAPTCHA_TYPE              => $DADA::Config::CAPTCHA_TYPE, 
-                                                    send_newest_archive       => $li->{send_newest_archive}, 
                                                         
-                                                      },
+                                                   },
+												-list_settings_vars_param => { 
+													-list    => $list,
+													-dot_it => 1, 
+												},
+												
                                              });
                                              
         print(admin_template_footer(-List => $list));
@@ -4365,7 +4371,8 @@ sub archive_options {
     }else{ 
 
         my $show_archives             = xss_filter($q->param('show_archives'))             || 0;
-        my $archive_messages          = xss_filter($q->param('archive_messages'))          || 0; 
+        my $archives_available_only_to_subscribers = xss_filter($q->param('archives_available_only_to_subscribers')) || 0;
+		my $archive_messages          = xss_filter($q->param('archive_messages'))          || 0; 
         my $archive_subscribe_form    = xss_filter($q->param('archive_subscribe_form'))    || 0; 
         my $archive_search_form       = xss_filter($q->param('archive_search_form'))       || 0; 
         my $archive_send_form         = xss_filter($q->param('archive_send_form'))         || 0; 
@@ -4375,6 +4382,7 @@ sub archive_options {
 
         $ls->save({
             show_archives             => $show_archives,
+			archives_available_only_to_subscribers => $archives_available_only_to_subscribers, 
             archive_messages          => $archive_messages,
             archive_subscribe_form    => $archive_subscribe_form,
             archive_search_form       => $archive_search_form,
@@ -5878,11 +5886,14 @@ sub subscriber_fields {
     
      $list  = $admin_list; 
      
-     my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
+	 require DADA::Profile::Fields; 
+	 my $dpf = DADA::Profile::Fields->new; 
+	 my $subscriber_fields = $dpf->subscriber_fields; 
+
+	 my $fields_attr = $dpf->get_all_field_attributes;
+
      my $ls = DADA::MailingList::Settings->new({-list => $list}); 
      my $li = $ls->get();
-    
-     my $fallback_field_values = $lh->{fields}->get_fallback_field_values;
 
      my $field_errors = 0; 
      my $field_error_details = {
@@ -5899,25 +5910,41 @@ sub subscriber_fields {
 	
      my $edit_field           = xss_filter($q->param('edit_field'));
      
-	 my $field; 
-	 my $fallback_field_value; 
+	 my $field                = ''; 
+	 my $fallback_field_value = ''; 
+	 my $field_label          = ''; 
 	
 	 if($edit_field == 1){ 
 				$field                = xss_filter($q->param('field'));
-				$fallback_field_value = $fallback_field_values->{$field};
+				$fallback_field_value = $fields_attr->{$field}->{fallback_value};
+				$field_label          = $fields_attr->{$field}->{label};
 	 }
 	else { 
 		$field                = xss_filter($q->param('field'));
 		$fallback_field_value = xss_filter($q->param('fallback_field_value'));
+		$field_label          = xss_filter($q->param('field_label'));
 	}
+	
 	 if(!$root_login && defined($process)){ 
          die "You need to log into the list with the root pass to do that!"; 
      }
-
+	
+	 if($process eq 'edit_field_order'){ 
+		my $dir = $q->param('direction') || 'down'; 
+		$dpf->change_field_order(
+			{
+				-field     => $field, 
+				-direction => $dir, 
+			}
+		);
+		print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=subscriber_fields'}); 
+        return; 
+        
+	 }
      if($process eq 'delete_field'){ 
      
 		###
-        $lh->remove_subscriber_field({-field => $field}); 
+        $dpf->remove_subscriber_field({-field => $field}); 
         
         print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=subscriber_fields&deletion=1&working_field=' . $field}); 
         return; 
@@ -5925,24 +5952,22 @@ sub subscriber_fields {
      elsif($process eq 'add_field'){ 
  
         
-        ($field_errors, $field_error_details) = $lh->validate_subscriber_field_name({-field => $field}); 
+        ($field_errors, $field_error_details) = $dpf->validate_subscriber_field_name(
+			{
+				-field => $field
+			}
+		); 
       
         if($field_errors == 0){ 
         
-			### 
-            $lh->add_subscriber_field({-field => $field, -fallback_value => $fallback_field_value}); 
-            # Um. Hmm. This was a stupid shortsight, but the field fallback values are saved in the list settings of one list
-            # So they're only available for ONE list. 
-            # Not all the lists. 
-            # Damnit. 
-            foreach(available_lists()){ 
-                next if $_ eq $list; 
-                my $l_lh = DADA::MailingList::Subscribers->new({-list => $_}); 
-                $l_lh->{fields}->save_fallback_value({-field => $field, -fallback_value => $fallback_field_value});
-                undef $l_lh;
-            }
-            # Whoops.
-            ### /
+            $dpf->add_subscriber_field(
+				{
+					-field => $field, 
+					-fallback_value => $fallback_field_value,
+					-label          => $field_label, 
+				}
+			); 
+			
             print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=subscriber_fields&addition=1&working_field=' . $field}); 
             return;      
          }
@@ -5957,26 +5982,28 @@ sub subscriber_fields {
 		
 		#old name			# new name
 		if($orig_field eq $field){ 
-		 	($field_errors, $field_error_details) = $lh->validate_subscriber_field_name({-field => $field, -skip => [qw(field_exists)]}); 
+		 	($field_errors, $field_error_details) = $dpf->validate_subscriber_field_name({-field => $field, -skip => [qw(field_exists)]}); 
 		}
 		else { 
-			($field_errors, $field_error_details) = $lh->validate_subscriber_field_name({-field => $field}); 			
+			($field_errors, $field_error_details) = $dpf->validate_subscriber_field_name({-field => $field}); 			
 		}
 		 if($field_errors == 0){
 			  
-             $lh->{fields}->remove_fallback_value({-field => $orig_field});          	
+             $dpf->remove_field_attributes({-field => $orig_field});          	
 
 			if($orig_field eq $field){ 
 				# ...
 			}
 			else { 
-            	$lh->edit_subscriber_field({-old_name => $orig_field ,-new_name => $field});	
+            	$dpf->edit_subscriber_field({-old_name => $orig_field ,-new_name => $field});	
 			}
-			
-			$lh->{fields}->save_fallback_value({  -field => $field, -fallback_value => $fallback_field_value});
-		    
-		
-			
+			$dpf->save_field_attributes(
+				{  
+					-field 			=> $field, 
+					-fallback_value => $fallback_field_value,
+					-label          => $field_label, 
+				}
+			);
 
 			print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=subscriber_fields&edited=1&working_field=' . $field}); 
              return;
@@ -5990,8 +6017,16 @@ sub subscriber_fields {
 	 }
     
      my $named_subscriber_fields = [];
-     foreach(@{$lh->subscriber_fields}){ 
-        push(@$named_subscriber_fields, {name => $_, fallback_value => $fallback_field_values->{$_}, root_login => $root_login});
+     foreach(@$subscriber_fields){ 
+        push(
+			@$named_subscriber_fields, 
+				{
+					field          => $_, 
+					fallback_value => $fields_attr->{$_}->{fallback_value}, 
+					label          => $fields_attr->{$_}->{label},  
+					root_login     => $root_login,
+				}
+			);
      }
      
         print admin_template_header(
@@ -6021,8 +6056,9 @@ sub subscriber_fields {
                                                 
                                                        field                            => $field, 
                                                        fallback_field_value             => $fallback_field_value, 
+                                                       field_label                      => $field_label,
                                                        
-                                                       can_have_subscriber_fields       => $lh->can_have_subscriber_fields, 
+													   can_have_subscriber_fields       => $dpf->can_have_subscriber_fields, 
                                                        
                                                        root_login                       => $root_login, 
 
@@ -6832,7 +6868,10 @@ sub archive {
 
     
     # are we dealing with a real list?
-    my $list_exists = check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle);
+    my $list_exists = check_if_list_exists(
+		-List       => $list, 
+		-dbi_handle => $dbi_handle
+	);
 
     if($list_exists == 0){ 
     
@@ -6842,16 +6881,29 @@ sub archive {
             );
             return; 
     }
+	
+	require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+    my $li = $ls->get; 
+    
+
+	require DADA::Profile; 
+	my $allowed_to_view_archives = DADA::Profile::allowed_to_view_archives(
+			{
+				-from_session => 1, 
+				-list         => $list, 
+				-ls_obj       => $ls,
+			}
+		);
+	if($allowed_to_view_archives == 0){ 
+		user_error(-List => $list, -Error => "not_allowed_to_view_archives");
+		return;
+	}
     
     my $start = int($q->param('start')) || 0;
     
     require DADA::Template::Widgets;
 
-    require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
-
-    my $lh = DADA::MailingList::Settings->new({-list => $list}); 
-    my $li = $lh->get; 
     if ($li->{show_archives} == 0){
         user_error(-List => $list, -Error => "no_show_archives");
         return; 
@@ -7277,6 +7329,18 @@ sub archive_bare {
             user_error(-List => $list, -Error => "no_show_archives");
             return;
         }
+		require DADA::Profile; 
+		my $allowed_to_view_archives = DADA::Profile::allowed_to_view_archives(
+				{
+					-from_session => 1, 
+					-list         => $list, 
+					-ls_obj       => $ls,
+				}
+			);
+		if($allowed_to_view_archives == 0){ 
+			user_error(-List => $list, -Error => "not_allowed_to_view_archives");
+			return;
+		}
     }    
     if($la->check_if_entry_exists($id) <= 0) { 
         user_error(-List => $list, -Error => "no_archive_entry");
@@ -7300,7 +7364,7 @@ sub search_archive {
         user_error(-List => $list, -Error => "no_list");
         return;
     }
-        
+       
     require  DADA::MailingList::Settings; 
     my $ls = DADA::MailingList::Settings->new({-list => $list}); 
     my $li = $ls->get; 
@@ -7308,7 +7372,19 @@ sub search_archive {
     if ($li->{show_archives} == 0){
         user_error(-List => $list, -Error => "no_show_archives");
         return; 
-    }   
+    } 
+	require DADA::Profile; 
+	my $allowed_to_view_archives = DADA::Profile::allowed_to_view_archives(
+			{
+				-from_session => 1, 
+				-list         => $list, 
+				-ls_obj       => $ls,
+			}
+		);
+	if($allowed_to_view_archives == 0){ 
+		user_error(-List => $list, -Error => "not_allowed_to_view_archives");
+		return;
+	}  
 
     $keyword = xss_filter($keyword); 
     
@@ -7460,6 +7536,19 @@ sub send_archive {
     my $ls = DADA::MailingList::Settings->new({-list => $list}); 
     my $li = $ls->get; 
     
+	require DADA::Profile; 
+	my $allowed_to_view_archives = DADA::Profile::allowed_to_view_archives(
+			{
+				-from_session => 1, 
+				-list         => $list, 
+				-ls_obj       => $ls,
+			}
+		);
+	if($allowed_to_view_archives == 0){ 
+		user_error(-List => $list, -Error => "not_allowed_to_view_archives");
+		return;
+	}
+	
     # CAPTCHA STUFF
 
     my $captcha_fail    = 0;
@@ -7640,6 +7729,18 @@ sub archive_rss {
     
         }else{ 
     
+			require DADA::Profile; 
+			my $allowed_to_view_archives = DADA::Profile::allowed_to_view_archives(
+					{
+						-from_session => 1, 
+						-list         => $list, 
+						-ls_obj       => $ls,
+					}
+				);
+			if($allowed_to_view_archives == 0){ 
+				return ''; 
+			}
+			
             if($li->{publish_archives_rss} == 0){ 
     
             }else{ 
@@ -9176,6 +9277,9 @@ sub profile_login {
 			print list_template(
 				-Part  => "header",
 		        -Title => "Profile Login", 
+				-vars  => {
+							show_profile_widget => 0, 
+					  	}
 		    );
             
 			my $can_use_captcha = 0; 
@@ -9386,7 +9490,8 @@ sub profile {
 		
 		my $prof              = DADA::Profile->new({-email => $email});
 		my $dpf               = DADA::Profile::Fields->new; 
-		my $subscriber_fields = $dpf->subscriber_fields(); 
+		my $subscriber_fields =  $dpf->subscriber_fields(); 
+		my $field_attr         = $dpf->get_all_field_attributes;
 		my $email_fields      = $dpf->get({-email => $email}); 		
 		if($q->param('process') eq 'edit_subscriber_fields'){ 
 			
@@ -9432,14 +9537,29 @@ sub profile {
 			foreach my $field(@$subscriber_fields){ 
 		        push(@$fields, {
 					name          => $field, 
-					pretty_name   => ucfirst(DADA::App::Guts::pretty($field)),
+					label		  => $field_attr->{$field}->{label},
 					value         => $email_fields->{$field},
 					}
 				);
-		    }	
+		    }
+		
+		   my $subscriptions = $prof->subscribed_to({-html_tmpl_params => 1}),   
+		   my $filled = [];
+		   foreach my $i(@$subscriptions){ 
+				require DADA::MailingList::Settings; 
+				my $ls = DADA::MailingList::Settings->new({-list => $i->{list}});
+				my $li = $ls->get(-dotted => 1); 
+				push(@$filled, {%{$i}, %{$li}, PROGRAM_URL => $DADA::Config::PROGRAM_URL})
+			}
+			#require Data::Dumper; 
+			#die Data::Dumper::Dumper($filled); 
+			
 			print list_template(
 				-Part  => "header",
 		        -Title => "Profile", 
+				-vars  => {
+							show_profile_widget => 0, 
+					  	}
 		    );
 
 		    require DADA::Template::Widgets; 
@@ -9450,10 +9570,11 @@ sub profile {
 
 						'profile.email'   => $email,
 						subscriber_fields => $fields, 
-						subscriptions 	  => $prof->subscribed_to({-html_tmpl_params => 1}),   
+						subscriptions     => $filled, 
 						welcome           => $q->param('welcome')                     || '',
 						edit              => $q->param('edit')                        || '',
 						errors_change_password => $q->param('errors_change_password') || '', 
+						
 					}
 				}
 			); 

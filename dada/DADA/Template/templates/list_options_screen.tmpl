@@ -101,6 +101,7 @@
 
 
  <table cellspacing="5" width="100%">
+	
   <tr>
    <td>
     <input type="checkbox" name="no_confirm_email" id="no_confirm_email" value="1" <!-- tmpl_if no_confirm_email -->checked="checked"<!--/tmpl_if--> />
@@ -121,6 +122,26 @@
   </tr>
   
   
+
+	
+<tr>
+ <td>
+  <input type="checkbox" name="skip_sub_confirm_if_logged_in" id="skip_sub_confirm_if_logged_in" value="1" <!-- tmpl_if skip_sub_confirm_if_logged_in -->checked="checked"<!--/tmpl_if--> />
+ </td>
+ <td width="99%">
+  <p>
+   <label for="skip_sub_confirm_if_logged_in">
+    Skip Subscription Confirmation Process if the subscriber already has a <!-- tmpl_var PROGRAM_NAME --> profile.
+   </label>
+   <br /> 
+	
+	A user that already has a profile may already have a confirmed email address. 
+	The user will still need to be logged in when making the subscription request. 
+  </p>
+ </td>
+</tr>
+
+
 <tr>
    <td>
     <input type="checkbox" name="limit_sub_confirm" id="limit_sub_confirm" value="1" <!-- tmpl_if limit_sub_confirm -->checked="checked"<!--/tmpl_if--> />
@@ -377,6 +398,25 @@ Unsubscription Confirmations
   </tr>
   
     
+
+<tr>
+ <td>
+  <input type="checkbox" name="skip_unsub_confirm_if_logged_in" id="skip_unsub_confirm_if_logged_in" value="1" <!-- tmpl_if skip_unsub_confirm_if_logged_in -->checked="checked"<!--/tmpl_if--> />
+ </td>
+ <td width="99%">
+  <p>
+   <label for="skip_unsub_confirm_if_logged_in">
+    Skip Unsubscription Confirmation Process if the subscriber already has a <!-- tmpl_var PROGRAM_NAME --> profile.
+   </label>
+   <br /> 
+
+	A user that already has a profile may already have a confirmed email address. 
+	The user will still need to be logged in when making the unsubscription request. 
+  </p>
+ </td>
+</tr>
+
+
   <tr>
    <td>
     <input type="checkbox" name="limit_unsub_confirm" id="limit_unsub_confirm" value="1" <!-- tmpl_if limit_unsub_confirm -->checked="checked"<!--/tmpl_if--> />

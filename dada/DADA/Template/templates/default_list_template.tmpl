@@ -34,7 +34,7 @@
  <body id="Dada">
   <div id="PageWrapper">
    
-   <div id="Header">
+   <div id="Header"  onclick="location.href='<!-- tmpl_var PROGRAM_URL -->';" style="cursor:pointer;">
 	
     <span id="Title">
      <!-- tmpl_var title -->
@@ -44,8 +44,23 @@
    
    <div id="Content">
 	
-	<!-- tmpl_var profile_widget --> 
-
+	<!-- tmpl_if show_profile_widget --> 
+		<!-- tmpl_var profile_widget --> 
+	<!-- /tmpl_if --> 
+	
+	<!-- tmpl_if list_settings.list --> 
+		<!-- tmpl_if subscribed_to_list --> 
+		
+			<div class="positive_greeting">
+				<h1 style="text-align:center">
+					You are currently subscribed to, <!-- tmpl_var list_settings.list_name -->!
+				</h1> 
+			</div> 
+		<!-- tmpl_else --> 
+			<!-- <h1>You are not subscribed to this list.</h1> -->
+		<!-- /tmpl_if --> 
+	<!-- /tmpl_if --> 
+	
     <!-- tmpl_var content --> 
 
 	<!-- tmpl_if list_settings.website_name --> 

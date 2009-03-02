@@ -168,10 +168,30 @@ sub subscribe {
                              ); 
 	
 	# This is kind of strange... 
+	my $skip_sub_confirm_if_logged_in = 0; 
+	
+	
 	if($status == 1){ 
 		
-		if($li->{no_confirm_email} == "0"){    
 
+		my $skip_sub_confirm_if_logged_in = 0; 
+		if($li->{skip_sub_confirm_if_logged_in}){
+			require DADA::Profile::Session; 
+			my $sess = DADA::Profile::Session->new; 
+			if($sess->is_logged_in){	
+				my $sess_email = $sess->get;
+				if ($sess_email eq $email){ 
+					# something... 
+					$skip_sub_confirm_if_logged_in = 1;
+				}
+			}
+		}	
+		if(
+			$li->{no_confirm_email}    == 0 || 
+			$skip_sub_confirm_if_logged_in == 1
+		){    
+	
+			
 	        $lh->add_subscriber(
 	            {
 	                -email         => $email, 
@@ -193,7 +213,9 @@ sub subscribe {
 
 	        return; 
 	    }
-	}							
+	}	
+	
+									
 							
      my $mail_your_subscribed_msg = 0; 
      
@@ -962,8 +984,23 @@ sub unsubscribe {
     # This *still* does error check the unsub request
     # just in a different place. 
   
-  
-    if($li->{unsub_confirm_email} != 1){  
+  	my $skip_unsub_confirm_if_logged_in = 0; 
+	if($li->{skip_unsub_confirm_if_logged_in}){
+		require DADA::Profile::Session; 
+		my $sess = DADA::Profile::Session->new; 
+		if($sess->is_logged_in){	
+			my $sess_email = $sess->get;
+			if ($sess_email eq $email){ 
+				# something... 
+				$skip_unsub_confirm_if_logged_in = 1;
+			}
+		}
+	}
+	
+    if(
+		$li->{unsub_confirm_email}       == 0 || 
+		$skip_unsub_confirm_if_logged_in == 1
+	){  
             
         # This is... slightly weird.
         $args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email));  

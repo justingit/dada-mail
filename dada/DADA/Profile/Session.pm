@@ -143,9 +143,8 @@ sub login_cookie {
         $DADA::Config::COOKIE_PARAMS{ -expires } );
 
     $cookie = $q->cookie(
-        -name  => 'dada_profile',
+        %{$DADA::Config::PROFILE_COOKIE_PARAMS},
         -value => $session->id,
-       # %DADA::Config::COOKIE_PARAMS
     );
 
     # My proposal to address the situation is quit relying on flush() happen
@@ -166,8 +165,6 @@ sub login          {
 	}
 	else { 
 		my $cookie = $self->login_cookie($args); 
-	#	require Data::Dumper; 
-	#	die Data::Dumper::Dumper($cookie);
 		return $cookie;
 	}
 }
@@ -238,7 +235,8 @@ sub is_logged_in {
 	}
 	else { 
 		require CGI; 
-		$q = new CGI; 
+		$q = new CGI;
+
 	}
 	my $s = CGI::Session->load(
 		$self->{dsn}, 
@@ -249,10 +247,13 @@ sub is_logged_in {
 		
     if ( $s->is_expired ) {
     	return 0; 
-	}
+
+			}
 
     if ( $s->is_empty ) {
        	return 0; 
+		
+
     }
 
 	if($s->param('_logged_in') == 1){ 

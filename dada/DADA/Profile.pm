@@ -1,10 +1,17 @@
 package DADA::Profile;
 
 use lib qw (../../../ ../../../DADA/perllib);
-use strict;
+
 use Carp qw(carp croak);
 use DADA::Config; 
 use DADA::App::Guts; 
+
+require Exporter; 
+@ISA = qw(Exporter); 
+@EXPORT = qw();
+use strict; 
+use vars qw(@EXPORT);
+
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL}; 
 
@@ -17,6 +24,18 @@ sub new {
     my $self = {};
     bless $self, $class;
     $self->_init($args);
+
+	# This means we want to pull the email we want to use from 
+	# the saved session, but there is no valid session saved, so 
+	# this isn't going to work. 
+	if($args->{-from_session} == 1 && ! defined($args->{-email})){ 
+		return undef; 
+	}
+	if($DADA::Config::PROFILE_ENABLED == 0){ 
+		return undef; 
+	}
+	
+	# Else...
     return $self;
 
 }
@@ -27,6 +46,23 @@ sub _init {
 
     my ($args) = @_;
 	$self->{sql_params} = {%DADA::Config::SQL_PARAMS};
+	
+	if(exists($args->{-from_session})){ 
+		if($args->{-from_session} == 1){ 
+			require DADA::Profile::Session; 
+			my $sess = DADA::Profile::Session->new; 
+			if($sess->is_logged_in){ 
+				$args->{-email} = $sess->get; 
+			}
+			else { 
+				$args->{-email} = undef;
+				return;  
+			}
+		}
+	}
+	else { 
+		$args->{-from_session} = 0;
+	}
 
 	if(!exists($args->{-email})){ 
 		croak "you must pass an email address in, '-email'"; 
@@ -148,11 +184,31 @@ sub get {
 }
 
 
+sub subscribed_to_list { 
+	my $self   = shift; 
+	my ($args) = @_;
+	if(!exists($args->{-list})){ 
+		return 0; 
+	}
+	 
+	my $subscriptions = $self->subscribed_to; 
+	foreach(@$subscriptions){ 
+		if($_ eq $args->{-list}){ 
+			return 1; 
+		}
+	}
+	return 0; 
+	
+}
 
 sub subscribed_to { 
 
 	my $self   = shift; 
 	my ($args) = @_; 
+
+	if(!exists($args->{-type})){ 
+		$args->{-type} = 'list';
+	}
 	my $subscriptions = [];
 	my @available_lists = DADA::App::Guts::available_lists(); 
 	
@@ -166,7 +222,7 @@ sub subscribed_to {
 		 
 		if($lh->check_for_double_email(
           -Email => $self->{email},
-          #-Type  => $args->{ -type }
+          -Type  => $args->{ -type }
         )){ 
 			push(@$subscriptions, $_); 
 		}
@@ -186,10 +242,10 @@ sub subscribed_to {
 		}
 		foreach(@available_lists){ 
 			if(exists($lt->{$_})){ 
-				push(@$html_tmpl, {PROGRAM_URL => $DADA::Config::PROGRAM_URL, list => $_, list_name => $list_names->{$_}, subscribed => 1, email => $self->{email} });
+				push(@$html_tmpl, {'profile.email' => $self->{email}, list => $_, subscribed => 1});
 			}
 			else { 
-				push(@$html_tmpl, {PROGRAM_URL => $DADA::Config::PROGRAM_URL, list => $_, list_name =>  $list_names->{$_}, subscribed => 0, email => $self->{email} });
+				push(@$html_tmpl, {'profile.email' => $self->{email}, list => $_, subscribed => 0});
 			}
 		}
 		return $html_tmpl; 
@@ -229,6 +285,42 @@ sub is_activated {
     $sth->finish;
 	return $activated; 
 }
+
+
+sub allowed_to_view_archives { 
+
+	
+	my ($args) = @_; 
+		
+	if(!exists($args->{-list})){ 
+		croak "You must pass a list in the, '-list' param!"; 
+	}
+	if(!exists($args->{-ls_obj})){ 
+		croak "I haven't made that, yet"; 
+	}
+	
+	if($args->{-ls_obj}->param('archives_available_only_to_subscribers') == 1){ 
+		my $prof = DADA::Profile->new($args);
+		if($prof){ 
+			if($prof->subscribed_to_list({-list => $args->{-list}})){
+				return 1 
+			}
+			else { 
+				return 0;
+			}
+		}
+		else { 
+			return 0; 
+		}
+	}
+	else { 
+		return 1;
+	}
+	
+}
+
+
+
 
 sub exists { 
 	my $self   = shift; 

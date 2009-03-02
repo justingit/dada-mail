@@ -149,17 +149,13 @@ sub remove_subscriber {
 	return 1; 
 }
 
-
-
-
-
 sub columns { 
 	my $self = shift; 
 	return $self->{fields}->columns; 
 }
 sub subscriber_fields { 
 	my $self = shift; 
-	return $self->{fields}->subscriber_fields;
+	return $self->{fields}->subscriber_fields(@_);
 }
 sub add_subscriber_field { 
 	my $self = shift; 
@@ -181,9 +177,9 @@ sub validate_subscriber_field_name {
 	my $self = shift; 
 	return $self->{fields}->validate_subscriber_field_name(@_);
 }
-sub get_fallback_field_values { 
+sub get_all_field_attributes { 
 	my $self = shift; 
-	return $self->{fields}->get_fallback_field_values(@_);
+	return $self->{fields}->get_all_field_attributes(@_);
 }
 
 
@@ -1745,9 +1741,9 @@ The field name is one of the following:
 
 =back
 
-=head2 get_fallback_field_values
+=head2 get_all_field_attributes
 
- my $field_values = $lh->get_fallback_field_values;
+ my $field_values = $lh->get_all_field_attributes;
 
 Returns the name of every subscriber field and its fallback value in the form of a hashref. 
 
@@ -1755,9 +1751,9 @@ The fallback values are actually saved in the List Settings.
 
 Take no arguments.
 
-=head2 _save_fallback_value
+=head2 _save_field_attributes
 
- $lh->_save_fallback_value(
+ $lh->_save_field_attributes(
 		{
 			-field          => $field, 
 			-fallback_value => $fallback_field_value, 
@@ -1769,10 +1765,10 @@ B<Currently marked as a private method>.
 Used to save a new fallback field value for the field set in, C<-field>. I<usually> shouldn't be used alone, but there is 
 actually no way to edit a fallback field value, without using this method. 
 
-If used on an existing field, make sure to remove the fallback field value first, using, C<_remove_fallback_value>, ala: 
+If used on an existing field, make sure to remove the fallback field value first, using, C<_remove_field_attributes>, ala: 
 
- $lh->remove_fallback_value({-field => 'myfield'});
- $lh->save_fallback_value({-field => 'myfield'}, -fallback_value => 'new_value');
+ $lh->remove_field_attributes({-field => 'myfield'});
+ $lh->save_field_attributes({-field => 'myfield'}, -fallback_value => 'new_value');
  
 Is called internally, when creating a new field via, C<add_subscriber_field>, so make sure not to call it twice. 
 
@@ -1784,9 +1780,9 @@ Is called internally, when creating a new field via, C<add_subscriber_field>, so
 
 =back
 
-=head2 remove_fallback_value
+=head2 remove_field_attributes
 
- $lh->remove_fallback_value(
+ $lh->remove_field_attributes(
 		{
 			-field => 'myfield', 
 		}

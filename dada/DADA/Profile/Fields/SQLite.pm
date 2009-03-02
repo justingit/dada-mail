@@ -104,7 +104,7 @@ sub remove_subscriber_field {
     ###
     
 
-	$self->remove_fallback_value({-field => $args->{-field}}); 
+	$self->remove_field_attributes({-field => $args->{-field}}); 
 	
 	return 1; 
 	
