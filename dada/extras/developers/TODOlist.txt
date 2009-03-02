@@ -9,6 +9,9 @@ Key:
 [x] Done. 
 [*] Naw...
 
+[ ] I need to make upgrade notes from Simple Scripts installs. 
+
+[ ] The docs need to be clearer about how to work with HTML templates, and the like, 
 
 
 [x] I need a purge button for subscribers. 
