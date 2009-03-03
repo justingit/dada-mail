@@ -362,9 +362,9 @@ $DBI_PARAMS ||= {
 };
 
 
-$PROFILE_ENABLED        ||= 1; 
-$PROFILE_EMAIL          ||= 'justin@skazat.com'; 
-$PROFILE_ENABLE_CAPTCHA ||= 1; 
+$PROFILE_ENABLED        ||= 0; 
+$PROFILE_EMAIL          ||= undef; 
+$PROFILE_ENABLE_CAPTCHA ||= 0; 
 $PROFILE_COOKIE_PARAMS = {
 	-name   => 'dada_profile',  
     -path    => '/',
