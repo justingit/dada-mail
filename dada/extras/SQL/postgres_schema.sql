@@ -12,10 +12,37 @@ list_type                        varchar(64),
 list_status                      char(1)
 );
 
+
+CREATE TABLE dada_profile (
+	profile_id			         serial,
+	email                        varchar(320) not null UNIQUE,
+	password                     text(16),
+	auth_code                    varchar(64),
+	activated                    char(1), 
+);
+
 CREATE TABLE dada_profile_fields (
 	fields_id			         serial,
 	email                        varchar(320) not null UNIQUE
 );
+
+
+CREATE TABLE dada_profile_fields_attributes ( 
+
+attribute_id 				serial,
+field                       varchar(320) UNIQUE,
+label                       varchar(320),
+fallback_value              varchar(320)
+-- I haven't made the following, but it seems like a pretty good idea... 
+-- sql_col_type              text(16),
+-- default                   mediumtext,
+-- html_form_widget          varchar(320),
+-- required                  char(1),
+-- public                    char(1),
+);
+
+
+
 	
 
 CREATE TABLE dada_archives (

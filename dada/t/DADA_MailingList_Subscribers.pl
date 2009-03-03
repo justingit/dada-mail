@@ -475,10 +475,9 @@ SKIP: {
             ok($s == 1, "adding a new field, " . $_ . "with fallback of, " .  $ff->{$_} . "is successful"); 
             undef $s; 
             
-            my $fallbacks = $lh->get_all_field_attributes; 
+            my $attr = $lh->get_all_field_attributes; 
             
-            ok($fallbacks->{$_} eq $ff->{$_}, $ff->{$_} . ' equals: ' . $fallbacks->{$_} . "for: " . $_); 
-            
+            ok($attr->{$_}->{fallback_value} eq $ff->{$_}, $ff->{$_} . ' equals: ' . $attr->{$_}->{fallback_value} . "for: " . $_); 
             
             # This won't kill us, but it will return an, "undef" 
             my $s = $lh->add_subscriber_field({-field => $_, -fallback_value => $ff->{$_}}); 
@@ -490,8 +489,8 @@ SKIP: {
        foreach(keys %$ff){ 
        
             ok($lh->remove_subscriber_field({-field => $_}),    'Field, ' . $_ . ' removed successfully'); 
-            my $fallbacks = $lh->get_all_field_attributes; 
-            ok(!exists($fallbacks->{$_}), "old fallback value for $_ has been removed."); 
+            my $attr = $lh->get_all_field_attributes; 
+            ok(!exists($attr->{$_}), "old fallback value for $_ has been removed."); 
      
      }
        

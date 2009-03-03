@@ -49,6 +49,7 @@ use lib qw(
             ./DADA/perllib
 			../../../perl
 			../../../perllib
+			/Library/WebServer/CGI-Executables/test_dada
 
 			); 
 
@@ -5888,6 +5889,33 @@ sub subscriber_fields {
      
 	 require DADA::Profile::Fields; 
 	 my $dpf = DADA::Profile::Fields->new; 
+	
+	if($dpf->can_have_subscriber_fields == 0){ 
+		print admin_template_header(
+			-Title      => "Subscriber Fields", 
+			-List       => $list,
+			-Root_Login => $root_login,
+		);
+	     require DADA::Template::Widgets;
+	     print DADA::Template::Widgets::screen(
+			{
+				-screen => 'subscriber_fields.tmpl', 
+				-vars   => {
+					screen                     => 'subscriber_fields',
+					title                      => 'Subscriber Fields',       
+					can_have_subscriber_fields => $dpf->can_have_subscriber_fields, 
+
+				},
+			}
+		);        
+		print admin_template_footer(
+			-List => $list, 
+		);
+		return; 
+	}
+	
+	
+	 # But, if we do....
 	 my $subscriber_fields = $dpf->subscriber_fields; 
 
 	 my $fields_attr = $dpf->get_all_field_attributes;
@@ -6683,6 +6711,7 @@ sub new_list {
             print list_template(
 					-Part       => "header",
 	                -Title      => "Create a New List",
+					-vars 	    => { show_profile_widget => 0,}
 	               );
      
                 
@@ -6834,10 +6863,11 @@ sub new_list {
                    $auth_state = $sast->make_state;
             }
         
-            print(list_template(-Part  => "header",
-                           -Title => "Your New List Has Been Created",
-                           ,   
-                          ));
+            print list_template(
+				-Part  => "header",
+                -Title => "Your New List Has Been Created",
+				-vars  => { show_profile_widget => 0,}
+            );
             
             require DADA::Template::Widgets;
             print DADA::Template::Widgets::screen({-screen => 'new_list_created_screen.tmpl', 
@@ -6864,438 +6894,499 @@ sub new_list {
 
 
 
-sub archive { 
+sub archive {
 
-    
     # are we dealing with a real list?
     my $list_exists = check_if_list_exists(
-		-List       => $list, 
-		-dbi_handle => $dbi_handle
-	);
+        -List       => $list,
+        -dbi_handle => $dbi_handle
+    );
 
-    if($list_exists == 0){ 
-    
+    if ( $list_exists == 0 ) {
+
         print $q->redirect(
             -status => '301 Moved Permanently',
-            -uri    => $DADA::Config::PROGRAM_URL, 
-            );
-            return; 
+            -uri    => $DADA::Config::PROGRAM_URL,
+        );
+        return;
     }
-	
-	require DADA::MailingList::Settings;
-    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-    my $li = $ls->get; 
-    
 
-	require DADA::Profile; 
-	my $allowed_to_view_archives = DADA::Profile::allowed_to_view_archives(
-			{
-				-from_session => 1, 
-				-list         => $list, 
-				-ls_obj       => $ls,
-			}
-		);
-	if($allowed_to_view_archives == 0){ 
-		user_error(-List => $list, -Error => "not_allowed_to_view_archives");
-		return;
-	}
-    
-    my $start = int($q->param('start')) || 0;
-    
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get;
+
+    require DADA::Profile;
+    my $allowed_to_view_archives = DADA::Profile::allowed_to_view_archives(
+        {
+            -from_session => 1,
+            -list         => $list,
+            -ls_obj       => $ls,
+        }
+    );
+    if ( $allowed_to_view_archives == 0 ) {
+        user_error( -List => $list, -Error => "not_allowed_to_view_archives" );
+        return;
+    }
+
+    my $start = int( $q->param('start') ) || 0;
+
     require DADA::Template::Widgets;
 
-    if ($li->{show_archives} == 0){
-        user_error(-List => $list, -Error => "no_show_archives");
-        return; 
+    if ( $li->{show_archives} == 0 ) {
+        user_error( -List => $list, -Error => "no_show_archives" );
+        return;
     }
-    
+
     require DADA::MailingList::Archives;
-           $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
-    
-    my $archive = DADA::MailingList::Archives->new({-list => $list}); 
-    my $entries = $archive->get_archive_entries(); 
-    
-###### These are all little thingies. 
+    $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
 
-    my $archive_send_form = ''; 
-       $archive_send_form = DADA::Template::Widgets::archive_send_form($list,$id, xss_filter($q->param('send_archive_errors')), $li->{captcha_archive_send_form}, xss_filter($q->param('captcha_fail')))
-            if $li->{archive_send_form} == 1 && defined($id);
-            
+    my $archive = DADA::MailingList::Archives->new( { -list => $list } );
+    my $entries = $archive->get_archive_entries();
+
+###### These are all little thingies.
+
+    my $archive_send_form = '';
+    $archive_send_form = DADA::Template::Widgets::archive_send_form(
+        $list, $id,
+        xss_filter( $q->param('send_archive_errors') ),
+        $li->{captcha_archive_send_form},
+        xss_filter( $q->param('captcha_fail') )
+      )
+      if $li->{archive_send_form} == 1 && defined($id);
+
     my $nav_table = '';
-       $nav_table = $archive->make_nav_table(-Id => $id, -List => $li->{list})
-            if defined($id);
-            
-    my $archive_search_form = ''; 
-       $archive_search_form = $archive->make_search_form($li->{list})
-            if $li->{archive_search_form} == 1;
-            
-    
-    my $archive_subscribe_form = ""; 
-       
+    $nav_table = $archive->make_nav_table( -Id => $id, -List => $li->{list} )
+      if defined($id);
 
-    if($li->{hide_list} ne "1"){   
-        $li->{info}     =~ s/\n\n/<p>/gi; 
-        $li->{info}     =~ s/\n/<br \/>/gi; 
-        
-        
-    
-        unless ($li->{archive_subscribe_form} eq "0"){ 
-            $archive_subscribe_form .= "<p>" . $li->{info} . "</p>\n"; 
-        
-            $archive_subscribe_form .= DADA::Template::Widgets::subscription_form({
-                -list       => $li->{list}, 
-                -email      => $email,
-                -give_props => 0, 
-            }
-             );    
-        }    
+    my $archive_search_form = '';
+    $archive_search_form = $archive->make_search_form( $li->{list} )
+      if $li->{archive_search_form} == 1;
+
+    my $archive_subscribe_form = "";
+
+    if ( $li->{hide_list} ne "1" ) {
+        $li->{info} =~ s/\n\n/<p>/gi;
+        $li->{info} =~ s/\n/<br \/>/gi;
+
+        unless ( $li->{archive_subscribe_form} eq "0" ) {
+            $archive_subscribe_form .= "<p>" . $li->{info} . "</p>\n";
+
+            $archive_subscribe_form .=
+              DADA::Template::Widgets::subscription_form(
+                {
+                    -list       => $li->{list},
+                    -email      => $email,
+                    -give_props => 0,
+                }
+              );
+        }
     }
 
-   
-    my $archive_widgets = { 
-                            archive_send_form      => $archive_send_form, 
-                            nav_table              => $nav_table, 
-                            publish_archives_rss   => $li->{publish_archives_rss} ? 1 : 0, 
-                            archive_search_form    => $archive_search_form, 
-                            archive_subscribe_form => $archive_subscribe_form,
-                            };
-                            
+    my $archive_widgets = {
+        archive_send_form      => $archive_send_form,
+        nav_table              => $nav_table,
+        publish_archives_rss   => $li->{publish_archives_rss} ? 1 : 0,
+        archive_search_form    => $archive_search_form,
+        archive_subscribe_form => $archive_subscribe_form,
+    };
 
-#/##### These are all little thingies. 
+    #/##### These are all little thingies.
 
+    if ( !$id ) {
 
-    
-    if(!$id) {
-    
-        # This is strange, because if there is NO id, there wouldn't be a "send a friend this archive" sorta form!?
-        if($li->{archive_send_form}         != 1 && 
-           $li->{captcha_archive_send_form} != 1
-          ){ 
-            if($c->cached('archive/' . $list . '/' . $start)){ $c->show('archive/' . $list . '/' . $start); return;}
+# This is strange, because if there is NO id, there wouldn't be a "send a friend this archive" sorta form!?
+        if (   $li->{archive_send_form} != 1
+            && $li->{captcha_archive_send_form} != 1 )
+        {
+            if ( $c->cached( 'archive/' . $list . '/' . $start ) ) {
+                $c->show( 'archive/' . $list . '/' . $start );
+                return;
+            }
         }
 
-        my $th_entries = []; 
-    
-        my ($begin, $stop) = $archive->create_index($start);
+        my $th_entries = [];
+
+        my ( $begin, $stop ) = $archive->create_index($start);
         my $i;
         my $stopped_at = $begin;
-        my $num = $begin;
-        
-        $num++; 
-        my @archive_nums; 
-        my @archive_links; 
-        
-        
+        my $num        = $begin;
+
+        $num++;
+        my @archive_nums;
+        my @archive_links;
+
         # iterate and save
-        for($i = $begin; $i <=$stop; $i++){ 
-            my $link; 
-            
-            if(defined($entries->[$i])){
-                
-                
-                
-                my ($subject, $message, $format, $raw_msg) = $archive->get_archive_info($entries->[$i]); 
-                
-                
-                # DEV: This is stupid, and I don't think it's a great idea. 
+        for ( $i = $begin ; $i <= $stop ; $i++ ) {
+            my $link;
+
+            if ( defined( $entries->[$i] ) ) {
+
+                my ( $subject, $message, $format, $raw_msg ) =
+                  $archive->get_archive_info( $entries->[$i] );
+
+                # DEV: This is stupid, and I don't think it's a great idea.
                 $subject = DADA::Template::Widgets::screen(
-                {
-                    -data                     => \$subject, 
-                    -vars                     => $li, 
-                    -list_settings_vars       => $li, 
-                    -list_settings_vars_param => {-dot_it => 1},
-                    -dada_pseudo_tag_filter   => 1, 
-					-subscriber_vars_param    => {-use_fallback_vars => 1, -list => $list},
-                },
-				
-                ); 
-                
-                
+                    {
+                        -data                     => \$subject,
+                        -vars                     => $li,
+                        -list_settings_vars       => $li,
+                        -list_settings_vars_param => { -dot_it => 1 },
+                        -dada_pseudo_tag_filter   => 1,
+                        -subscriber_vars_param    =>
+                          { -use_fallback_vars => 1, -list => $list },
+                    },
+
+                );
+
                 # this is so atrocious.
-                my $date = date_this(-Packed_Date   => $archive->_massaged_key($entries->[$i]),
-                -Write_Month   => $li->{archive_show_month},
-                -Write_Day     => $li->{archive_show_day},
-                -Write_Year    => $li->{archive_show_year},
-                -Write_H_And_M => $li->{archive_show_hour_and_minute},
-                -Write_Second  => $li->{archive_show_second});
-                
-                
-                my $entry = {                
-                        id               => $entries->[$i], 
-                        date             => $date, 
-                        subject          => $subject,
-                       'format'          => $format, 
-                        list             => $list, 
-                        uri_escaped_list => uriescape($list),
-                        PROGRAM_URL      => $DADA::Config::PROGRAM_URL, 
-                        message_blurb    => $archive->message_blurb(-key => $entries->[$i]),
-                        
-                        
-                         
-                    }; 
-                
+                my $date = date_this(
+                    -Packed_Date   => $archive->_massaged_key( $entries->[$i] ),
+                    -Write_Month   => $li->{archive_show_month},
+                    -Write_Day     => $li->{archive_show_day},
+                    -Write_Year    => $li->{archive_show_year},
+                    -Write_H_And_M => $li->{archive_show_hour_and_minute},
+                    -Write_Second  => $li->{archive_show_second}
+                );
+
+                my $entry = {
+                    id               => $entries->[$i],
+                    date             => $date,
+                    subject          => $subject,
+                    'format'         => $format,
+                    list             => $list,
+                    uri_escaped_list => uriescape($list),
+                    PROGRAM_URL      => $DADA::Config::PROGRAM_URL,
+                    message_blurb    =>
+                      $archive->message_blurb( -key => $entries->[$i] ),
+
+                };
+
                 $stopped_at++;
-                push(@archive_nums, $num); 
-                push(@archive_links, $link); 
+                push ( @archive_nums,  $num );
+                push ( @archive_links, $link );
                 $num++;
 
+                push ( @$th_entries, $entry );
 
-                push(@$th_entries, $entry); 
-                    
             }
-        } 
-    
-        my $ii; 
-        
-        for($ii=0;$ii<=$#archive_links; $ii++){ 
-    
+        }
+
+        my $ii;
+        for ( $ii = 0 ; $ii <= $#archive_links ; $ii++ ) {
+
             my $bullet = $archive_nums[$ii];
-            
-            #fix if we're doing reverse chronologic 
-            $bullet = (($#{$entries}+1) - ($archive_nums[$ii]) +1) 
-                if($li->{sort_archives_in_reverse} == 1);
 
-            # yeah, whatever. 
-            $th_entries->[$ii]->{bullet} = $bullet; 
-            
+            #fix if we're doing reverse chronologic
+            $bullet = ( ( $#{$entries} + 1 ) - ( $archive_nums[$ii] ) + 1 )
+              if ( $li->{sort_archives_in_reverse} == 1 );
+
+            # yeah, whatever.
+            $th_entries->[$ii]->{bullet} = $bullet;
+
         }
-    
+
         my $index_nav = $archive->create_index_nav($stopped_at);
-        
-        my $scrn = (list_template(-Part       => "header",
-                       , 
-                       -Title => $li->{list_name}  . " Archives",
-                       -List  => $li->{list}));
 
+        require DADA::Profile;
+        my $allowed_to_view_archives = DADA::Profile::allowed_to_view_archives(
+            {
+                -from_session => 1,
+                -list         => $list,
+                -ls_obj       => $ls,
+            }
+        );
 
-        $scrn .=  DADA::Template::Widgets::screen({-screen => 'archive_index_screen.tmpl', 
-                                              -vars   => { 
-                                                list                     => $list, 
-                                                list_name                => $li->{list_name},
-                                                entries                  => $th_entries, 
-                                                index_nav                => $index_nav,
-                                                flavor_archive           => 1, 
-                                                publish_archives_rss   => $li->{publish_archives_rss} ? 1 : 0, 
-												%$archive_widgets, 
-                                                },
-							                    -list_settings_vars       => $li, 
-							                    -list_settings_vars_param => {-dot_it => 1},
-                                             }); 
-        $scrn .= (list_template(-Part      => "footer",
-                       -End_Form  => 0, 
-                       -List      => $li->{list},
-                       -Site_Name => $li->{website_name},
-                       -Site_URL  => $li->{website_url}));
-               
+        my $scrn = (
+            list_template(
+                -Part => "header",
+                ,
+                -Title => $li->{list_name} . " Archives",
+                -List  => $li->{list}
+            )
+        );
 
-        e_print($scrn); 
-        
-        if($li->{archive_send_form}         != 1 && 
-           $li->{captcha_archive_send_form} != 1
-          ){ 
-            $c->cache('archive/' . $list . '/' . $start, \$scrn); 
+        $scrn .= DADA::Template::Widgets::screen(
+            {
+                -screen => 'archive_index_screen.tmpl',
+                -vars   => {
+                    list                     => $list,
+                    list_name                => $li->{list_name},
+                    entries                  => $th_entries,
+                    index_nav                => $index_nav,
+                    flavor_archive           => 1,
+                    allowed_to_view_archives => $allowed_to_view_archives,
+                    publish_archives_rss => $li->{publish_archives_rss} ? 1 : 0,
+
+                    %$archive_widgets,
+
+                },
+                -list_settings_vars       => $li,
+                -list_settings_vars_param => { -dot_it => 1 },
+
+            }
+        );
+        $scrn .= (
+            list_template(
+                -Part      => "footer",
+                -End_Form  => 0,
+                -List      => $li->{list},
+                -Site_Name => $li->{website_name},
+                -Site_URL  => $li->{website_url}
+            )
+        );
+
+        e_print($scrn);
+
+        if (   $li->{archive_send_form} != 1
+            && $li->{captcha_archive_send_form} != 1 )
+        {
+            $c->cache( 'archive/' . $list . '/' . $start, \$scrn );
         }
-        return; 
-        
-    }else{  # There's an id...
-    
-        $id = $archive->newest_entry if $id =~ /newest/i; 
-        $id = $archive->oldest_entry if $id =~ /oldest/i; 
-        
-        if($q->param('extran')){ 
-            
+        return;
+
+    }
+    else {    # There's an id...
+
+        $id = $archive->newest_entry if $id =~ /newest/i;
+        $id = $archive->oldest_entry if $id =~ /oldest/i;
+
+        if ( $q->param('extran') ) {
+
             print $q->redirect(
-            -status => '301 Moved Permanently',
-            -uri    => $DADA::Config::PROGRAM_URL . '/archive/' . $li->{list} . '/' . $id . '/', 
+                -status => '301 Moved Permanently',
+                -uri    => $DADA::Config::PROGRAM_URL
+                  . '/archive/'
+                  . $li->{list} . '/'
+                  . $id . '/',
             );
-            return; 
-        }
-        
-        if($id !~ m/(\d+)/g){ 
-        
-            print $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '/archive/' . $li->{list} . '/');
             return;
         }
-        
-        $id = $archive->_massaged_key($id); 
-        
-        if($li->{archive_send_form}         != 1 && 
-           $li->{captcha_archive_send_form} != 1
-        ){ 
-        
-            if($c->cached('archive/' . $list  .'/' . $id)){ $c->show('archive/' . $list  .'/' . $id); return;}
+
+        if ( $id !~ m/(\d+)/g ) {
+
+            print $q->redirect( -uri => $DADA::Config::PROGRAM_URL
+                  . '/archive/'
+                  . $li->{list}
+                  . '/' );
+            return;
         }
-        
-        
-        my $entry_exists = $archive->check_if_entry_exists($id); 
-        if($entry_exists <= 0){
-            user_error(-List => $list, -Error => "no_archive_entry");
-            return; 
+
+        $id = $archive->_massaged_key($id);
+
+        if (   $li->{archive_send_form} != 1
+            && $li->{captcha_archive_send_form} != 1 )
+        {
+
+            if ( $c->cached( 'archive/' . $list . '/' . $id ) ) {
+                $c->show( 'archive/' . $list . '/' . $id );
+                return;
+            }
         }
-        
-            
-        my ($subject, $message, $format, $raw_msg) = $archive->get_archive_info($id); 
-    
-    
-        # DEV: This is stupid, and I don't think it's a great idea. 
-		$subject = $archive->_parse_in_list_info(-data => $subject);
-       # That. Sucked. 
-     
-    
-        my $scrn = list_template(-Part       => "header",
-                       -Title      => $subject,
-                       -List       => $li->{list}, 
-                     
-                    );
-        
-        
-        my ($massaged_message_for_display, $content_type) = $archive->massaged_msg_for_display(-key => $id, -body_only => 1);
-        
-        my $show_iframe = $li->{html_archives_in_iframe} || 0; 
-        if($content_type eq 'text/plain'){ 
-            $show_iframe = 0; 
-        }        
-        
-        my $header_from      = undef; 
-        my $orig_header_from = undef; 
-        #my $header_date    = undef; 
-        my $header_subject = undef; 
-        
-        my $in_reply_to_id; 
-        my $in_reply_to_subject; 
-        
-                if($raw_msg){ 
-                    $header_from    = $archive->get_header(-header => 'From', -key => $id); 
-                    $orig_header_from = $header_from;
-                    
-                   # DEV: This logic should not be here...
-                   
-                   if($li->{archive_protect_email} eq 'recaptcha_mailhide'){ 
-                        $header_from    = mailhide_encode($header_from);
-                   }
-                   elsif($li->{archive_protect_email} eq 'spam_me_not'){ 
-                        $header_from    = spam_me_not_encode($header_from);
-                   } else { 
-                        $header_from = xss_filter($header_from); 
-                   }
-                   
-                   $header_subject = $archive->get_header(-header => 'Subject', -key => $id); 
-                    
-                    $header_subject =~ s/\r|\n/ /g; 
-                    if(! $header_subject){ 
-                        $header_subject = $DADA::Config::EMAIL_HEADERS{Subject};
-                    }
-                    
-                    
-                    ($in_reply_to_id, $in_reply_to_subject) = $archive->in_reply_to_info(-key => $id); 
-                    
-                    
-                    
-                    # DEV: This is stupid, and I don't think it's a great idea. 
-                    $header_subject      = $archive->_parse_in_list_info(-data => $header_subject);
-					$in_reply_to_subject = $archive->_parse_in_list_info(-data => $in_reply_to_subject);
-                    # That. Sucked. 
-                    $header_subject      = strip(xss_filter($header_subject)); 
-                    $in_reply_to_subject = xss_filter($in_reply_to_subject);
-                    
-                }
-                
-        my $attachments = ($li->{display_attachments} == 1) ? $archive->attachment_list($id) : []; 
-        
-        
+
+        my $entry_exists = $archive->check_if_entry_exists($id);
+        if ( $entry_exists <= 0 ) {
+            user_error( -List => $list, -Error => "no_archive_entry" );
+            return;
+        }
+
+        my ( $subject, $message, $format, $raw_msg ) =
+          $archive->get_archive_info($id);
+
+        # DEV: This is stupid, and I don't think it's a great idea.
+        $subject = $archive->_parse_in_list_info( -data => $subject );
+
+        # That. Sucked.
+
+        my $scrn = list_template(
+            -Part  => "header",
+            -Title => $subject,
+            -List  => $li->{list},
+
+        );
+
+        my ( $massaged_message_for_display, $content_type ) =
+          $archive->massaged_msg_for_display( -key => $id, -body_only => 1 );
+
+        my $show_iframe = $li->{html_archives_in_iframe} || 0;
+        if ( $content_type eq 'text/plain' ) {
+            $show_iframe = 0;
+        }
+
+        my $header_from      = undef;
+        my $orig_header_from = undef;
+
+        #my $header_date    = undef;
+        my $header_subject = undef;
+
+        my $in_reply_to_id;
+        my $in_reply_to_subject;
+
+        if ($raw_msg) {
+            $header_from =
+              $archive->get_header( -header => 'From', -key => $id );
+            $orig_header_from = $header_from;
+
+            # DEV: This logic should not be here...
+
+            if ( $li->{archive_protect_email} eq 'recaptcha_mailhide' ) {
+                $header_from = mailhide_encode($header_from);
+            }
+            elsif ( $li->{archive_protect_email} eq 'spam_me_not' ) {
+                $header_from = spam_me_not_encode($header_from);
+            }
+            else {
+                $header_from = xss_filter($header_from);
+            }
+
+            $header_subject =
+              $archive->get_header( -header => 'Subject', -key => $id );
+
+            $header_subject =~ s/\r|\n/ /g;
+            if ( !$header_subject ) {
+                $header_subject = $DADA::Config::EMAIL_HEADERS{Subject};
+            }
+
+            ( $in_reply_to_id, $in_reply_to_subject ) =
+              $archive->in_reply_to_info( -key => $id );
+
+            # DEV: This is stupid, and I don't think it's a great idea.
+            $header_subject =
+              $archive->_parse_in_list_info( -data => $header_subject );
+            $in_reply_to_subject =
+              $archive->_parse_in_list_info( -data => $in_reply_to_subject );
+
+            # That. Sucked.
+            $header_subject      = strip( xss_filter($header_subject) );
+            $in_reply_to_subject = xss_filter($in_reply_to_subject);
+
+        }
+
+        my $attachments =
+          ( $li->{display_attachments} == 1 )
+          ? $archive->attachment_list($id)
+          : [];
+
         # this is so atrocious.
-                my $date = date_this(-Packed_Date   => $id,
-                -Write_Month   => $li->{archive_show_month},
-                -Write_Day     => $li->{archive_show_day},
-                -Write_Year    => $li->{archive_show_year},
-                -Write_H_And_M => $li->{archive_show_hour_and_minute},
-                -Write_Second  => $li->{archive_show_second});
-                
-        
-        
-         my $can_use_gravatar_url = 0; 
-         my $gravatar_img_url     = ''; 
+        my $date = date_this(
+            -Packed_Date   => $id,
+            -Write_Month   => $li->{archive_show_month},
+            -Write_Day     => $li->{archive_show_day},
+            -Write_Year    => $li->{archive_show_year},
+            -Write_H_And_M => $li->{archive_show_hour_and_minute},
+            -Write_Second  => $li->{archive_show_second}
+        );
 
-		if($li->{enable_gravatars}){ 
-			
-        	 eval {require Gravatar::URL}; 
-	         if(!$@){
-	            $can_use_gravatar_url = 1; 
-            
-            
-	            require Email::Address; 
-	            if (defined($orig_header_from)){; 
-	                    eval { $orig_header_from = (Email::Address->parse($orig_header_from))[0]->address; }
-	                }
-				if(isa_url($li->{default_gravatar_url})){ 
-	            	$gravatar_img_url = Gravatar::URL::gravatar_url(email => $orig_header_from);
-	         	}
-				else { 
-	            	$gravatar_img_url = Gravatar::URL::gravatar_url(email => $orig_header_from, default => $li->{default_gravatar_url});					
-				}
-			}else{ 
-	            $can_use_gravatar_url = 0;
-	         }
-        } 
-         
-         
-        $scrn .=  DADA::Template::Widgets::screen({-screen => 'archive_screen.tmpl', 
-                                                  -vars   => { 
-                                                    list                          => $list, 
-                                                    list_name                     => $li->{list_name}, 
-                                                    id                            => $id, 
-                                                    
-                                                    # DEV. OK - riddle ME why there's two of these... 
-                                                    header_subject                => decode_he($header_subject),
-                                                    subject                       => decode_he($subject), 
-                                                    
-                                                    js_enc_subject                => js_enc($subject), 
-                                                    uri_encoded_subject           => DADA::App::Guts::uriescape($subject), 
-                                                    uri_encoded_url               => DADA::App::Guts::uriescape($DADA::Config::PROGRAM_URL . '/archive/' . $list . '/' . $id .'/'), 
-                                                    archived_msg_url              => $DADA::Config::PROGRAM_NAME . '/archive/' . $list . '/' . $id .'/', 
-                                                    massaged_msg_for_display      => $massaged_message_for_display, 
-                                                    send_archive_success          => $q->param('send_archive_success') ? $q->param('send_archive_success') : undef, 
-                                                    send_archive_errors           => $q->param('send_archive_errors')  ? $q->param('send_archive_errors')  : undef, 
-                                                    show_iframe                   => $show_iframe, 
-                                                    discussion_list               => ($li->{group_list} == 1) ? 1 : 0,
-                                                    #header_from                   => decode_he($header_from), 
-													header_from                   => $header_from, 
-                                                    in_reply_to_id                => $in_reply_to_id, 
-                                                    in_reply_to_subject           => xss_filter($in_reply_to_subject),  
-                                                    attachments                   => $attachments, 
-                                                    date                          => $date,
-                                                    add_social_bookmarking_badges => $li->{add_social_bookmarking_badges}, 
-                                                    can_use_gravatar_url          => $can_use_gravatar_url, 
-                                                    gravatar_img_url              => $gravatar_img_url, 
-                                                    %$archive_widgets, 
-                                                     
-                                                },
-                                                -list_settings_vars       => $li, 
-                                                -list_settings_vars_param => {-dot_it => 1},
-                                             }); 
-        $scrn .= (list_template(-Part      => "footer",
-                       -End_Form  => 0, 
-                       -List      => $li->{list},
-                       -Site_Name => $li->{website_name},
-                       -Site_URL  => $li->{website_url},
-                       
-                       ));   
+        my $can_use_gravatar_url = 0;
+        my $gravatar_img_url     = '';
 
-        e_print($scrn); 
-        
-        if($li->{archive_send_form}         != 1 && 
-           $li->{captcha_archive_send_form} != 1
-        ){  
-            $c->cache('archive/' . $list . '/' . $id, \$scrn); 
-       
+        if ( $li->{enable_gravatars} ) {
+
+            eval { require Gravatar::URL };
+            if ( !$@ ) {
+                $can_use_gravatar_url = 1;
+
+                require Email::Address;
+                if ( defined($orig_header_from) ) {
+                    ;
+                    eval {
+                        $orig_header_from =
+                          ( Email::Address->parse($orig_header_from) )[0]
+                          ->address;
+                    };
+                }
+                if ( isa_url( $li->{default_gravatar_url} ) ) {
+                    $gravatar_img_url =
+                      Gravatar::URL::gravatar_url( email => $orig_header_from );
+                }
+                else {
+                    $gravatar_img_url = Gravatar::URL::gravatar_url(
+                        email   => $orig_header_from,
+                        default => $li->{default_gravatar_url}
+                    );
+                }
+            }
+            else {
+                $can_use_gravatar_url = 0;
+            }
         }
-        
-       return; 
-        
-    
+
+        $scrn .= DADA::Template::Widgets::screen(
+            {
+                -screen => 'archive_screen.tmpl',
+                -vars   => {
+                    list      => $list,
+                    list_name => $li->{list_name},
+                    id        => $id,
+
+                    # DEV. OK - riddle ME why there's two of these...
+                    header_subject => decode_he($header_subject),
+                    subject        => decode_he($subject),
+
+                    js_enc_subject      => js_enc($subject),
+                    uri_encoded_subject => DADA::App::Guts::uriescape($subject),
+                    uri_encoded_url     => DADA::App::Guts::uriescape(
+                        $DADA::Config::PROGRAM_URL
+                          . '/archive/'
+                          . $list . '/'
+                          . $id . '/'
+                    ),
+                    archived_msg_url => $DADA::Config::PROGRAM_NAME
+                      . '/archive/'
+                      . $list . '/'
+                      . $id . '/',
+                    massaged_msg_for_display => $massaged_message_for_display,
+                    send_archive_success => $q->param('send_archive_success')
+                    ? $q->param('send_archive_success')
+                    : undef,
+                    send_archive_errors => $q->param('send_archive_errors')
+                    ? $q->param('send_archive_errors')
+                    : undef,
+                    show_iframe     => $show_iframe,
+                    discussion_list => ( $li->{group_list} == 1 ) ? 1 : 0,
+
+                    #header_from                   => decode_he($header_from),
+                    header_from         => $header_from,
+                    in_reply_to_id      => $in_reply_to_id,
+                    in_reply_to_subject => xss_filter($in_reply_to_subject),
+                    attachments         => $attachments,
+                    date                => $date,
+                    add_social_bookmarking_badges =>
+                      $li->{add_social_bookmarking_badges},
+                    can_use_gravatar_url => $can_use_gravatar_url,
+                    gravatar_img_url     => $gravatar_img_url,
+                    %$archive_widgets,
+
+                },
+                -list_settings_vars       => $li,
+                -list_settings_vars_param => { -dot_it => 1 },
+            }
+        );
+        $scrn .= (
+            list_template(
+                -Part      => "footer",
+                -End_Form  => 0,
+                -List      => $li->{list},
+                -Site_Name => $li->{website_name},
+                -Site_URL  => $li->{website_url},
+
+            )
+        );
+
+        e_print($scrn);
+
+        if (   $li->{archive_send_form} != 1
+            && $li->{captcha_archive_send_form} != 1 )
+        {
+            $c->cache( 'archive/' . $list . '/' . $id, \$scrn );
+
+        }
+
+        return;
+
     }
 
 }
+
 
 
 
@@ -9250,6 +9341,18 @@ sub adv_dada_mail_setup {
 
 sub profile_login { 
 	
+	if(
+		$DADA::Config::PROFILE_ENABLED    != 1      || 
+		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
+	){
+		default(); 
+		return
+	}
+	
+	if($DADA::Config::PROFILE_ENABLED != 1){ 
+		default(); 
+		return
+	}
 	###
 	my $all_errors = [];
 	my $named_errs = {};
@@ -9277,9 +9380,7 @@ sub profile_login {
 			print list_template(
 				-Part  => "header",
 		        -Title => "Profile Login", 
-				-vars  => {
-							show_profile_widget => 0, 
-					  	}
+				-vars  => { show_profile_widget => 0,}
 		    );
             
 			my $can_use_captcha = 0; 
@@ -9373,7 +9474,13 @@ sub profile_login {
 
 sub profile_register { 
 
-
+	if(
+		$DADA::Config::PROFILE_ENABLED    != 1      || 
+		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
+	){		default(); 
+		return
+	}
+	
 	my $email       = xss_filter($q->param('email'));
 	my $email_again = xss_filter($q->param('email_again')); 
 	my $password    = xss_filter($q->param('password')); 
@@ -9439,6 +9546,13 @@ sub profile_register {
 
 sub profile_activate { 
 	
+	if(
+		$DADA::Config::PROFILE_ENABLED    != 1      || 
+		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
+	){		default(); 
+		return
+	}
+	
 	my $email     = xss_filter($q->param('email')); 
 	my $auth_code = xss_filter($q->param('auth_code'));
 		
@@ -9477,6 +9591,12 @@ sub profile_activate {
 
 
 sub profile { 
+	if(
+		$DADA::Config::PROFILE_ENABLED    != 1      || 
+		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
+	){		default(); 
+		return
+	}
 	
 	require DADA::Profile::Session;
 	my $prof_sess = DADA::Profile::Session->new; 
@@ -9594,6 +9714,13 @@ sub profile {
 
 sub profile_logout { 
 
+	if(
+		$DADA::Config::PROFILE_ENABLED    != 1      || 
+		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
+	){		default(); 
+		return
+	}
+	
 	require DADA::Profile::Session;
 	my $prof_sess = DADA::Profile::Session->new;
 	   $prof_sess->logout; 
@@ -9603,6 +9730,13 @@ sub profile_logout {
 
 
 sub profile_reset_password { 
+	
+	if(
+		$DADA::Config::PROFILE_ENABLED    != 1      || 
+		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
+	){		default(); 
+		return
+	}
 
 	my $email     = xss_filter($q->param('email')); 
 	my $password  = xss_filter($q->param('password'))  || undef; 

@@ -51,6 +51,7 @@ SKIP: {
         diag $@; 
     } 
     
-    dada_test_config::destroy_SQLite_db();
+    sleep(5); 
+    #dada_test_config::destroy_SQLite_db();
 
 }

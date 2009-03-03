@@ -7,8 +7,6 @@ use DADA::Config;
 use CGI::Session;
 CGI::Session->name('dada_profile');
 
-
-
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
 
 sub new {
@@ -30,9 +28,9 @@ sub _init {
     $self->{list} = $args->{ -list };
 
     if ( $DADA::Config::SESSION_DB_TYPE =~ /SQL/ ) {
-    	require DADA::App::DBIHandle;
-       	my  $dbi_obj = DADA::App::DBIHandle->new;
-  		$self->{dbh} = $dbi_obj->dbh_obj; 
+        require DADA::App::DBIHandle;
+        my $dbi_obj = DADA::App::DBIHandle->new;
+        $self->{dbh} = $dbi_obj->dbh_obj;
     }
 
     # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session.pm
@@ -53,7 +51,6 @@ sub _init {
         }
         elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
 
-			
   # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/mysql.pm
             $self->{dsn}      = 'driver:mysql';
             $self->{dsn_args} = {
@@ -104,12 +101,10 @@ sub _init {
 
 }
 
-
-
 sub login_cookie {
 
-    my $self   = shift;
-	my ($args) = shift; 
+    my $self = shift;
+    my ($args) = shift;
 
     die 'no CGI Object (-cgi_obj)' if !$args->{ -cgi_obj };
 
@@ -117,35 +112,18 @@ sub login_cookie {
 
     my $q = $args->{ -cgi_obj };
 
-
     require CGI::Session;
 
-    my $session = new CGI::Session( 
-		$self->{dsn}, 
-		$q, 
-		$self->{dsn_args}
-	 );
+    my $session = new CGI::Session( $self->{dsn}, $q, $self->{dsn_args} );
 
-    $session->param( 
-		'email',     
-		$args->{ -email } 
-	);
-    $session->param(
-		'_logged_in', 
-		1 
-	);
+    $session->param( 'email',      $args->{ -email } );
+    $session->param( '_logged_in', 1 );
 
-    $session->expire( 
-		$DADA::Config::COOKIE_PARAMS{ -expires } 
-	);
-    $session->expire( 
-		'_logged_in',
-        $DADA::Config::COOKIE_PARAMS{ -expires } );
+    $session->expire( $DADA::Config::COOKIE_PARAMS{ -expires } );
+    $session->expire( '_logged_in', $DADA::Config::COOKIE_PARAMS{ -expires } );
 
-    $cookie = $q->cookie(
-        %{$DADA::Config::PROFILE_COOKIE_PARAMS},
-        -value => $session->id,
-    );
+    $cookie = $q->cookie( %{$DADA::Config::PROFILE_COOKIE_PARAMS},
+        -value => $session->id, );
 
     # My proposal to address the situation is quit relying on flush() happen
     # automatically, and recommend that people use an explicit flush()
@@ -155,139 +133,124 @@ sub login_cookie {
     return $cookie;
 }
 
-sub login          {
+sub login {
 
-	my $self   = shift; 
-	my ($args) = @_;
-	my ($status, $errors) = $self->validate_profile_login($args);
-	if($status == 0){ 
-		die "login failed."; 
-	}
-	else { 
-		my $cookie = $self->login_cookie($args); 
-		return $cookie;
-	}
+    my $self = shift;
+    my ($args) = @_;
+    my ( $status, $errors ) = $self->validate_profile_login($args);
+    if ( $status == 0 ) {
+        die "login failed.";
+    }
+    else {
+        my $cookie = $self->login_cookie($args);
+        return $cookie;
+    }
 }
 
-sub logout         {
-	
-    my $self   = shift; 
-	my ($args) = @_; 
-	my $q = $args->{-cgi_obj};
-	
-	if($self->is_logged_in($args)){ 
-		my $s = new CGI::Session( 
-			$self->{dsn}, 
-			$q, 
-			$self->{dsn_args}
-		 );
-		$s->delete; 
-		$s->flush; 
-		return 1; 
-	}
-	else { 
-		warn 'profile was never logged in!'; 
-		return 0; 
-	}
-	
+sub logout {
+
+    my $self = shift;
+    my ($args) = @_;
+    my $q = $args->{ -cgi_obj };
+
+    if ( $self->is_logged_in($args) ) {
+        my $s = new CGI::Session( $self->{dsn}, $q, $self->{dsn_args} );
+        $s->delete;
+        $s->flush;
+        return 1;
+    }
+    else {
+        warn 'profile was never logged in!';
+        return 0;
+    }
 
 }
 
-sub validate_profile_login { 
-	my $self   = shift; 
-	my ($args) = @_;
-	my $status = 1;  
-	my $errors = { 
-		unknown_user   => 0, 
-		incorrect_pass => 0, 
-	};
-	
-	require DADA::Profile; 
-	my $prof = DADA::Profile->new({-email => $args->{-email}});
-	if($prof->exists()){ 
-		# ...
-	}
-	else { 
-		$status = 0; 
-		$errors->{unknown_user} = 1;		
-	}
-	
-	if($prof->is_valid_password($args)){
-		# ...
-	}
-	else { 
-		$status = 0; 
-		$errors->{incorrect_pass} = 1;		
-	}
-	
-	return ($status, $errors);
-	
+sub validate_profile_login {
+    my $self = shift;
+    my ($args) = @_;
+    my $status = 1;
+    my $errors = {
+        unknown_user   => 0,
+        incorrect_pass => 0,
+    };
+
+    require DADA::Profile;
+    my $prof = DADA::Profile->new( { -email => $args->{ -email } } );
+    if ( $prof->exists() ) {
+
+        # ...
+    }
+    else {
+        $status = 0;
+        $errors->{unknown_user} = 1;
+    }
+
+    if ( $prof->is_valid_password($args) ) {
+
+        # ...
+    }
+    else {
+        $status = 0;
+        $errors->{incorrect_pass} = 1;
+    }
+
+    return ( $status, $errors );
+
 }
 
+sub is_logged_in {
 
-sub is_logged_in { 
-	
-	my $self   = shift; 
-	my ($args) = @_; 
-	my $q; 
-	if(exists($args->{-cgi_obj})){ 
-		$q = $args->{-cgi_obj};
-	}
-	else { 
-		require CGI; 
-		$q = new CGI;
+    my $self = shift;
+    my ($args) = @_;
+    my $q;
+    if ( exists( $args->{ -cgi_obj } ) ) {
+        $q = $args->{ -cgi_obj };
+    }
+    else {
+        require CGI;
+        $q = new CGI;
 
-	}
-	my $s = CGI::Session->load(
-		$self->{dsn}, 
-		$q, 
-		$self->{dsn_args}
-	)
-	or die CGI::Session->errstr();
-		
+    }
+    my $s = CGI::Session->load( $self->{dsn}, $q, $self->{dsn_args} )
+      or die CGI::Session->errstr();
+
     if ( $s->is_expired ) {
-    	return 0; 
-
-			}
-
-    if ( $s->is_empty ) {
-       	return 0; 
-		
+        return 0;
 
     }
 
-	if($s->param('_logged_in') == 1){ 
-		return 1; 
-	}
-	else { 
-		return 0; 
-	}
+    if ( $s->is_empty ) {
+        return 0;
+
+    }
+
+    if ( $s->param('_logged_in') == 1 ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
 
 }
 
-sub get { 
-	
-	my $self   = shift; 
-	my ($args) = @_; 
-	my $q;
-	if(exists($args->{-cgi_obj})){ 
-		$q = $args->{-cgi_obj};
-	}
-	else { 
-		require CGI; 
-		$q = new CGI; 
-	}
-	require CGI::Session;
+sub get {
 
-    my $session = new CGI::Session( 
-		$self->{dsn}, 
-		$q, 
-		$self->{dsn_args}
-	 );
-	return $session->param('email'); 
-	
+    my $self = shift;
+    my ($args) = @_;
+    my $q;
+    if ( exists( $args->{ -cgi_obj } ) ) {
+        $q = $args->{ -cgi_obj };
+    }
+    else {
+        require CGI;
+        $q = new CGI;
+    }
+    require CGI::Session;
+
+    my $session = new CGI::Session( $self->{dsn}, $q, $self->{dsn_args} );
+    return $session->param('email');
+
 }
 
-
-
-sub reset_password {}
+sub reset_password { }

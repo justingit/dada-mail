@@ -312,13 +312,14 @@ The SQL password.
 	user             => '',          
 	pass             => '',
 
-	subscriber_table        => 'dada_subscribers',
-	profile_table           => 'dada_profile', 
-	profile_fields_table 	=> 'dada_profile_fields', 
-	archives_table          => 'dada_archives', 
-	settings_table          => 'dada_settings', 
-	session_table           => 'dada_sessions', 
-	bounce_scores_table     => 'dada_bounce_scores', 
+	subscriber_table                => 'dada_subscribers',
+	profile_table                   => 'dada_profile', 
+	profile_fields_table 	        => 'dada_profile_fields', 
+	profile_fields_attributes_table => 'dada_profile_fields_attributes',
+	archives_table                  => 'dada_archives', 
+	settings_table                  => 'dada_settings', 
+	session_table                   => 'dada_sessions', 
+	bounce_scores_table             => 'dada_bounce_scores', 
 
 ) unless keys %SQL_PARAMS; 
 

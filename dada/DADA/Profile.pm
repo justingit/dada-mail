@@ -31,7 +31,10 @@ sub new {
 	if($args->{-from_session} == 1 && ! defined($args->{-email})){ 
 		return undef; 
 	}
-	if($DADA::Config::PROFILE_ENABLED == 0){ 
+	if(
+		$DADA::Config::PROFILE_ENABLED    != 1      || 
+		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
+	){ 
 		return undef; 
 	}
 	
@@ -296,27 +299,35 @@ sub allowed_to_view_archives {
 		croak "You must pass a list in the, '-list' param!"; 
 	}
 	if(!exists($args->{-ls_obj})){ 
-		croak "I haven't made that, yet"; 
+		croak "I haven't made that, yet!"; 
 	}
 	
-	if($args->{-ls_obj}->param('archives_available_only_to_subscribers') == 1){ 
-		my $prof = DADA::Profile->new($args);
-		if($prof){ 
-			if($prof->subscribed_to_list({-list => $args->{-list}})){
-				return 1 
+	if(
+		$DADA::Config::PROFILE_ENABLED    != 1      || 
+		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
+	){
+		return 1; 
+	}
+	else { 
+		
+		if($args->{-ls_obj}->param('archives_available_only_to_subscribers') == 1){ 
+			my $prof = DADA::Profile->new($args);
+			if($prof){ 
+				if($prof->subscribed_to_list({-list => $args->{-list}})){
+					return 1 
+				}
+				else { 
+					return 0;
+				}
 			}
 			else { 
-				return 0;
+				return 0; 
 			}
 		}
 		else { 
-			return 0; 
+			return 1;
 		}
 	}
-	else { 
-		return 1;
-	}
-	
 }
 
 

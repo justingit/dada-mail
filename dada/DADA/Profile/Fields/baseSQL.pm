@@ -1,120 +1,122 @@
-package DADA::Profile::Fields::baseSQL; 
-use lib qw(./ ../ ../../ ../../../ ./../../DADA ../../perllib); 
+package DADA::Profile::Fields::baseSQL;
+use lib qw(
+	../../../ 
+	../../perllib
+);
 
 use Carp qw(carp croak confess);
-use DADA::App::Guts; 
+use DADA::App::Guts;
 
-sub columns { 
-	
-	my $self = shift; 
-	my $query = "SELECT * FROM " . $self->{sql_params}->{profile_fields_table} ." WHERE (1 = 0)";
-	warn 'Query: ' . $query; 
-	my $sth = $self->{dbh}->prepare($query);    
-	
-	$sth->execute() 
-		or croak "cannot do statement (at: columns)! $DBI::errstr\n";  
-	my $i; 
-	my @cols;
-	for($i = 1; $i <= $sth->{NUM_OF_FIELDS}; $i++){ 
-		push(@cols, $sth->{NAME}->[$i-1]);
-	} 
-	$sth->finish;
-	return \@cols;
+sub columns {
+
+	# DEV: TODO: CACHE!
+    my $self  = shift;
+    my $query =
+      "SELECT * FROM "
+      . $self->{sql_params}->{profile_fields_table}
+      . " WHERE (1 = 0)";
+    warn 'Query: ' . $query;
+    my $sth = $self->{dbh}->prepare($query);
+
+    $sth->execute()
+      or croak "cannot do statement (at: columns)! $DBI::errstr\n";
+    my $i;
+    my @cols;
+    for ( $i = 1 ; $i <= $sth->{NUM_OF_FIELDS} ; $i++ ) {
+        push ( @cols, $sth->{NAME}->[ $i - 1 ] );
+    }
+    $sth->finish;
+    return \@cols;
 
 }
 
-
-
-sub subscriber_fields { 
+sub subscriber_fields {
 
     my $self = shift;
-    my ($args) = @_; 
-    
-	my $l = [] ;
-	
-	if(exists( $self->{cache}->{subscriber_fields} ) ) { 
-		$l = $self->{cache}->{subscriber_fields};
-	} 
-	else { 
-    	# I'm assuming, "columns" always returns the columns in the same order... 
-	    $l = $self->columns;
-	    $self->{cache}->{subscriber_fields} = $l; 
+    my ($args) = @_;
+
+    my $l = [];
+
+    if ( exists( $self->{cache}->{subscriber_fields} ) ) {
+        $l = $self->{cache}->{subscriber_fields};
+    }
+    else {
+
+       # I'm assuming, "columns" always returns the columns in the same order...
+        $l = $self->columns;
+        $self->{cache}->{subscriber_fields} = $l;
     }
 
+    if ( !exists( $args->{ -show_hidden_fields } ) ) {
+        $args->{ -show_hidden_fields } = 1;
+    }
+    if ( !exists( $args->{ -dotted } ) ) {
+        $args->{ -dotted } = 0;
+    }
 
-    if(! exists($args->{-show_hidden_fields})){ 
-        $args->{-show_hidden_fields} = 1; 
-    }
-    if(! exists($args->{-dotted})){ 
-        $args->{-dotted} = 0; 
-    }
-    
-    
     # We just want the fields *other* than what's usually there...
     my %omit_fields = (
         email_id    => 1,
-		fields_id   => 1, 
+        fields_id   => 1,
         email       => 1,
         list        => 1,
         list_type   => 1,
         list_status => 1
     );
 
-    
     my @r;
-    foreach(@$l){ 
-    
-        if(! exists($omit_fields{$_})){
-    
-            if($args->{-show_hidden_fields} == 1){ 
-                if($args->{-dotted} == 1){ 
-                    push(@r, 'subscriber.' . $_);
+    foreach (@$l) {
+
+        if ( !exists( $omit_fields{$_} ) ) {
+
+            if ( $args->{ -show_hidden_fields } == 1 ) {
+                if ( $args->{ -dotted } == 1 ) {
+                    push ( @r, 'subscriber.' . $_ );
                 }
-                else { 
-                    push(@r, $_);
+                else {
+                    push ( @r, $_ );
                 }
-             }
-             elsif($DADA::Config::HIDDEN_SUBSCRIBER_FIELDS_PREFIX eq undef){ 
-                if($args->{-dotted} == 1){ 
-                    push(@r, 'subscriber.' . $_);
+            }
+            elsif ( $DADA::Config::HIDDEN_SUBSCRIBER_FIELDS_PREFIX eq undef ) {
+                if ( $args->{ -dotted } == 1 ) {
+                    push ( @r, 'subscriber.' . $_ );
                 }
-                else { 
-                
-                    push(@r, $_);
+                else {
+
+                    push ( @r, $_ );
                 }
-             }  
-             else { 
-             
-                if($_ !~ m/^$DADA::Config::HIDDEN_SUBSCRIBER_FIELDS_PREFIX/ && $args->{-show_hidden_fields} == 0){ 
-                    if($args->{-dotted} == 1){ 
-                        push(@r, 'subscriber.' . $_);
+            }
+            else {
+
+                if (   $_ !~ m/^$DADA::Config::HIDDEN_SUBSCRIBER_FIELDS_PREFIX/
+                    && $args->{ -show_hidden_fields } == 0 )
+                {
+                    if ( $args->{ -dotted } == 1 ) {
+                        push ( @r, 'subscriber.' . $_ );
                     }
-                    else { 
-                
-                        push(@r, $_);
+                    else {
+
+                        push ( @r, $_ );
                     }
                 }
-                else { 
-                
-                    # ... 
+                else {
+
+                    # ...
                 }
             }
         }
     }
-    
+
     return \@r;
 }
 
+sub insert {
 
-
-
-sub insert { 
-
-    my $self   = shift;
+    my $self = shift;
     my ($args) = @_;
 
-	# use Data::Dumper; 
-	# warn '$args passed to, insert(): ' . Data::Dumper::Dumper($args); 
+    # use Data::Dumper;
+    # warn '$args passed to, insert(): ' . Data::Dumper::Dumper($args);
 
     if ( !exists $args->{ -email } ) {
         croak("You MUST supply an email address in the -email paramater!");
@@ -124,26 +126,26 @@ sub insert {
     }
 
     if ( !exists $args->{ -fields } ) {
-		warn 'did you not pass any fields?'; 
+        warn 'did you not pass any fields?';
         $args->{ -fields } = {};
     }
-	if(!exists($args->{ -confirmed })){ 
-		$args->{ -confirmed } = 1; 
-	}
+    if ( !exists( $args->{ -confirmed } ) ) {
+        $args->{ -confirmed } = 1;
+    }
 
+    # See, how I'm doing this, after the confirmed thing? Good idea?
+    if ( $args->{ -confirmed } == 0 ) {
+        $args->{ -email } = '*' . $args->{ -email };
+    }
 
-	# See, how I'm doing this, after the confirmed thing? Good idea? 
-	if($args->{ -confirmed } == 0){ 
-		$args->{ -email }  = '*' . $args->{ -email }; 
-	}
+    # Yikes, that's a bit harsh, no?
+    # This is going to lead to all sorts of bugs...
+    if ( $self->exists( { -email => $args->{ -email } } ) >= 1 ) {
+        $self->drop( { -email => $args->{ -email } } );
+    }
 
-	# Yikes, that's a bit harsh, no? 
-	# This is going to lead to all sorts of bugs... 
-	if($self->exists({-email => $args->{-email}}) >= 1){ 
-		$self->drop({-email => $args->{-email}}); 
-	}
-	#
-		
+    #
+
     my $sql_str             = '';
     my $place_holder_string = '';
     my @order               = @{ $self->subscriber_fields };
@@ -165,22 +167,16 @@ sub insert {
         VALUES (?' . $place_holder_string . ')';
 
     warn 'Query: ' . $query
-     if $t;
+      if $t;
 
-    my $sth     = $self->{dbh}->prepare($query);
+    my $sth = $self->{dbh}->prepare($query);
 
-	# use Data::Dumper; 
-	# warn 'DADA::Profile::Fields->insert(): ' . Data::Dumper::Dumper($args->{ -email },@values);
-    $sth->execute(
-        $args->{ -email },
-		@values
-      )
+# use Data::Dumper;
+# warn 'DADA::Profile::Fields->insert(): ' . Data::Dumper::Dumper($args->{ -email },@values);
+    $sth->execute( $args->{ -email }, @values )
       or croak "cannot do statement (at insert)! $DBI::errstr\n";
-	$sth->finish;
+    $sth->finish;
 }
-
-
-
 
 sub get {
 
@@ -193,14 +189,12 @@ sub get {
       . $self->{sql_params}->{profile_fields_table}
       . " WHERE email = ?";
 
-	warn 'QUERY: ' . $query . ', $args->{-email}: ' . $args->{-email}
-		if $t; 
-
+    warn 'QUERY: ' . $query . ', $args->{-email}: ' . $args->{ -email }
+      if $t;
 
     my $sth = $self->{dbh}->prepare($query);
-		
 
-    $sth->execute($args->{-email})
+    $sth->execute( $args->{ -email } )
       or croak "cannot do statement (at get)! $DBI::errstr\n";
 
     my $hashref   = {};
@@ -228,7 +222,6 @@ sub get {
     }
     else {
         return $n_hashref;
-		
 
     }
 
@@ -237,27 +230,24 @@ sub get {
 
 }
 
+sub exists {
+    my $self = shift;
+    my ($args) = @_;
 
+    my $query =
+      'SELECT COUNT(*) from '
+      . $DADA::Config::SQL_PARAMS{profile_fields_table}
+      . ' WHERE email = ? ';
 
+    my $sth = $self->{dbh}->prepare($query);
 
-sub exists { 
-	my $self   = shift; 
-	my ($args) = @_;
-	
-	my $query = 'SELECT COUNT(*) from ' . $DADA::Config::SQL_PARAMS{profile_fields_table}
-    			 . ' WHERE email = ? '; 
-				
-	my $sth     = $self->{dbh}->prepare($query);
-
-	$sth->execute($args->{ -email })
-		or croak "cannot do statement (at exists)! $DBI::errstr\n";	 
-	my @row = $sth->fetchrow_array();
+    $sth->execute( $args->{ -email } )
+      or croak "cannot do statement (at exists)! $DBI::errstr\n";
+    my @row = $sth->fetchrow_array();
     $sth->finish;
-   
-   return $row[0];
+
+    return $row[0];
 }
-
-
 
 sub drop {
     my $self = shift;
@@ -268,527 +258,547 @@ sub drop {
       . $DADA::Config::SQL_PARAMS{profile_fields_table}
       . ' WHERE email = ? ';
 
-	my $sth = $self->{dbh}->prepare($query); 
-    
-	warn 'QUERY: ' . $query . ' ('. $args->{ -email } . ')'
-		if $t; 
-	my $rv = $sth->execute( $args->{ -email } )
+    warn 'QUERY: ' . $query . ' (' . $args->{ -email } . ')';
+
+    #	if $t;
+
+    my $sth = $self->{dbh}->prepare($query);
+
+    my $rv = $sth->execute( $args->{ -email } )
       or croak "cannot do statment (at drop)! $DBI::errstr\n";
     $sth->finish;
     return $rv;
 }
 
+sub add_subscriber_field {
 
+    my $self = shift;
 
-
-
-sub add_subscriber_field { 
-
-    my $self = shift; 
     #DEV: Add testing of parameters!!!!!!
-    
-	delete($self->{cache}->{subscriber_fields}); 
+
+    delete( $self->{cache}->{subscriber_fields} );
 
     my ($args) = @_;
 
-    if(! exists $args->{-field}){ 
-        croak "You must pass a value in the -field paramater!"; 
+    if ( !exists $args->{ -field } ) {
+        croak "You must pass a value in the -field paramater!";
     }
-    
-    $args->{-field} = lc($args->{-field}); 
-    
-    my ($errors, $details) = $self->validate_subscriber_field_name({-field =>  $args->{-field}});
-    
-    
-    if($errors){ 
-        carp "Something's wrong with the field name you're trying to pass (" . $args->{-field} . "). Validate the field name before attempting to add the field with, 'validate_subscriber_field_name' - ";
-        foreach(keys %$details){ 
-            if($details->{$_} ==1){ 
-                carp  $args->{-field} . ' Field Error: ' . $_; 
+
+    $args->{ -field } = lc( $args->{ -field } );
+
+    my ( $errors, $details ) =
+      $self->validate_subscriber_field_name( { -field => $args->{ -field } } );
+
+    if ($errors) {
+        carp "Something's wrong with the field name you're trying to pass ("
+          . $args->{ -field }
+          . "). Validate the field name before attempting to add the field with, 'validate_subscriber_field_name' - ";
+        foreach ( keys %$details ) {
+            if ( $details->{$_} == 1 ) {
+                carp $args->{ -field } . ' Field Error: ' . $_;
             }
         }
-        
-        return undef; 
+
+        return undef;
     }
-    
-    my $query =  'ALTER TABLE ' . $self->{sql_params}->{profile_fields_table} . 
-                ' ADD COLUMN ' .  $args->{-field} . 
-                ' TEXT'; 
-        
-               
-    my $sth = $self->{dbh}->prepare($query);    
 
+    my $query =
+      'ALTER TABLE '
+      . $self->{sql_params}->{profile_fields_table}
+      . ' ADD COLUMN '
+      . $args->{ -field } . ' TEXT';
 
-    my $rv = $sth->execute() 
-	    or croak "cannot do statement (at add_subscriber_field)! $DBI::errstr\n";   
-	
-	if(!exists($args->{-fallback_value})){ 
-		$args->{-fallback_value} = '';
-	}	
+    my $sth = $self->{dbh}->prepare($query);
 
-	    $self->save_field_attributes(
-			{
-				-field          => $args->{-field}, 
-				-label          => $args->{-label},
-				-fallback_value => $args->{-fallback_value},
-			}
-		);
-			
-	delete($self->{cache}->{subscriber_fields}); 
-	return 1; 
+    my $rv = $sth->execute()
+      or croak "cannot do statement (at add_subscriber_field)! $DBI::errstr\n";
+
+    if ( !exists( $args->{ -fallback_value } ) ) {
+        $args->{ -fallback_value } = '';
+    }
+
+    $self->save_field_attributes(
+        {
+            -field          => $args->{ -field },
+            -label          => $args->{ -label },
+            -fallback_value => $args->{ -fallback_value },
+        }
+    );
+
+    delete( $self->{cache}->{subscriber_fields} );
+    return 1;
 }
 
+sub save_field_attributes {
+    my $self = shift;
+    my ($args) = @_;
 
-sub save_field_attributes { 
-	my $self   = shift; 
-	my ($args) = @_; 
-	
-	my $query = '';
+    my $query = '';
 
-	if($self->field_attributes_exist({-field => $args->{-field}})){
-		$query = 'UPDATE dada_profile_fields_attributes SET (label fallback_value) values(?,?) where field = ?'; 
-	}
-	else { 
-		$query = 'INSERT INTO dada_profile_fields_attributes (label, fallback_value, field) values(?,?,?)'; 
-	}
-	
-    my $sth = $self->{dbh}->prepare($query);    
+    if ( $self->field_attributes_exist( { -field => $args->{ -field } } ) ) {
+        $query = 'UPDATE '
+          . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table}
+          . ' SET (label fallback_value) values(?,?) where field = ?';
+    }
+    else {
+        $query =
+          'INSERT INTO '
+          . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table}
+          . ' (label, fallback_value, field) values(?,?,?)';
+    }
 
-    my $rv = $sth->execute($args->{-label}, $args->{-fallback_value}, $args->{-field}) 
-	    or croak "cannot do statement (at save_field_attributes)! $DBI::errstr\n";
-	
+    my $sth = $self->{dbh}->prepare($query);
+
+    my $rv = $sth->execute(
+        $args->{ -label },
+        $args->{ -fallback_value },
+        $args->{ -field }
+      )
+      or croak "cannot do statement (at save_field_attributes)! $DBI::errstr\n";
+
 }
 
-sub field_attributes_exist { 
- 
-	my $self   = shift; 
-	my ($args) = @_;
+sub field_attributes_exist {
 
-	my $query = 'SELECT COUNT(*) FROM dada_profile_fields_attributes WHERE field = ?'; 
+    my $self = shift;
+    my ($args) = @_;
 
-	my $sth     = $self->{dbh}->prepare($query);
+    my $query =
+      'SELECT COUNT(*) FROM '
+      . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table}
+      . ' WHERE field = ?';
 
-	#warn 'QUERY: ' . $query
-	#	it $t; 
+    my $sth = $self->{dbh}->prepare($query);
 
-	$sth->execute($args->{-field})
-		or croak "cannot do statement (at field_attributes_exist)! $DBI::errstr\n";	 
-	my @row = $sth->fetchrow_array();
+    #warn 'QUERY: ' . $query
+    #	it $t;
+
+    $sth->execute( $args->{ -field } )
+      or croak
+      "cannot do statement (at field_attributes_exist)! $DBI::errstr\n";
+    my @row = $sth->fetchrow_array();
     $sth->finish;
 
-   return $row[0];
-
+    return $row[0];
 
 }
 
+sub edit_subscriber_field {
 
-sub edit_subscriber_field { 
+    my $self = shift;
+    my ($args) = @_;
 
-	my $self = shift; 
-	my ($args) = @_; 
-	
-	if(!exists($args->{-old_name})){ 
-		croak "You MUST supply the old field name in the -old_name paramater!"; 
-	}		
+    if ( !exists( $args->{ -old_name } ) ) {
+        croak "You MUST supply the old field name in the -old_name paramater!";
+    }
 
-	if(!exists($args->{-new_name})){ 
-		croak "You MUST supply the new field name in the -new_name paramater!"; 
-	}	
-	
-	my $query; 
-	
-	if($DADA::Config::SUBSCRIBER_DB_TYPE eq 'PostgreSQL') {
-	
-		#ALTER TABLE dada_subscribers RENAME COLUMN oldfoo TO newfoo;
-		$query = 'ALTER TABLE ' . $self->{sql_params}->{profile_fields_table} . ' RENAME COLUMN ' . $args->{-old_name} . ' TO ' . $args->{-new_name}; 
-	}
-	else { 
-		
-		$query = 'ALTER TABLE ' . $self->{sql_params}->{profile_fields_table} . ' CHANGE ' . $args->{-old_name} . ' ' . $args->{-new_name} . '  TEXT'; 
- 
-	}
-#	die '$query ' . $query; 
-	$self->{dbh}->do($query) or croak "cannot do statement (at: edit_subscriber_field)! $DBI::errstr\n";   ;    
+    if ( !exists( $args->{ -new_name } ) ) {
+        croak "You MUST supply the new field name in the -new_name paramater!";
+    }
 
-	delete($self->{cache}->{subscriber_fields});
-	return 1; 
-	
+    my $query;
+
+    if ( $DADA::Config::SUBSCRIBER_DB_TYPE eq 'PostgreSQL' ) {
+
+        #ALTER TABLE dada_subscribers RENAME COLUMN oldfoo TO newfoo;
+        $query =
+          'ALTER TABLE '
+          . $self->{sql_params}->{profile_fields_table}
+          . ' RENAME COLUMN '
+          . $args->{ -old_name } . ' TO '
+          . $args->{ -new_name };
+    }
+    else {
+
+        $query =
+          'ALTER TABLE '
+          . $self->{sql_params}->{profile_fields_table}
+          . ' CHANGE '
+          . $args->{ -old_name } . ' '
+          . $args->{ -new_name }
+          . '  TEXT';
+
+    }
+
+    #	die '$query ' . $query;
+    $self->{dbh}->do($query)
+      or croak
+      "cannot do statement (at: edit_subscriber_field)! $DBI::errstr\n";
+
+    delete( $self->{cache}->{subscriber_fields} );
+    return 1;
+
 }
 
+sub remove_subscriber_field {
 
-sub remove_subscriber_field { 
+    my $self = shift;
 
-    my $self = shift; 
-    
-	delete($self->{cache}->{subscriber_fields}); 
+    delete( $self->{cache}->{subscriber_fields} );
 
     my ($args) = @_;
-    if(! exists($args->{-field})){ 
-        croak "You MUST pass a field name in, -field!"; 
+    if ( !exists( $args->{ -field } ) ) {
+        croak "You MUST pass a field name in, -field!";
     }
-    $args->{-field} = lc($args->{-field}); 
-    
+    $args->{ -field } = lc( $args->{ -field } );
+
     $self->validate_remove_subscriber_field_name(
         {
-        -field      => $args->{-field}, 
-        -die_for_me => 1, 
+            -field      => $args->{ -field },
+            -die_for_me => 1,
         }
-    ); 
-   
-        
-    my $query =  'ALTER TABLE '  . $self->{sql_params}->{profile_fields_table} . 
-                ' DROP COLUMN ' . $args->{-field}; 
-    
-    my $sth = $self->{dbh}->prepare($query);    
-    
-    my $rv = $sth->execute() 
-        or croak "cannot do statement! (at: remove_subscriber_field) $DBI::errstr\n";   
- 	
-	$self->remove_field_attributes({-field => $args->{-field}}); 
-	delete($self->{cache}->{subscriber_fields}); 
-	
-	return 1; 
-	
+    );
+
+    my $query =
+      'ALTER TABLE '
+      . $self->{sql_params}->{profile_fields_table}
+      . ' DROP COLUMN '
+      . $args->{ -field };
+
+    my $sth = $self->{dbh}->prepare($query);
+
+    my $rv = $sth->execute()
+      or croak
+      "cannot do statement! (at: remove_subscriber_field) $DBI::errstr\n";
+
+    $self->remove_field_attributes( { -field => $args->{ -field } } );
+    delete( $self->{cache}->{subscriber_fields} );
+
+    return 1;
+
 }
 
-sub get_all_field_attributes { 
+sub get_all_field_attributes {
 
-    my $self   = shift; 
-	my ($args) = @_;  
-    my $v    = {}; 
-    
-	#?
-    return $v 
-		if  $self->can_have_subscriber_fields == 0; 
+    my $self = shift;
+    my ($args) = @_;
+    my $v = {};
 
-	my $query = 'SELECT * FROM dada_profile_fields_attributes';
-    
+    #?
+    return $v
+      if $self->can_have_subscriber_fields == 0;
+
+    my $query =
+      'SELECT * FROM '
+      . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table};
+
+    warn "QUERY: " . $query;
+
+    #	if $t;
+
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute()
-      or croak "cannot do statement (at get_all_field_attributes)! $DBI::errstr\n";
+      or croak
+      "cannot do statement (at get_all_field_attributes)! $DBI::errstr\n";
 
-	my $hashref; 
+    my $hashref;
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
-	
-		my $k = $hashref->{field};
-		#delete($hashref->{field}); 
-		$v->{$k} = $hashref;
-		if($v->{$k}->{label} eq ''){ 
-			$v->{$k}->{label} = $hashref->{field};
-		}
-  }
 
-	
-  return $v; 
+        my $k = $hashref->{field};
+
+        #delete($hashref->{field});
+        $v->{$k} = $hashref;
+        if ( $v->{$k}->{label} eq '' ) {
+            $v->{$k}->{label} = $hashref->{field};
+        }
+    }
+
+    return $v;
 
 }
 
+sub subscriber_field_exists {
 
+    my $self = shift;
 
-
-sub subscriber_field_exists { 
-
-    my $self = shift; 
-    
     my ($args) = @_;
-    
-    if(! exists($args->{-field})){
-        croak "You must pass a field name in, -field!"; 
+
+    if ( !exists( $args->{ -field } ) ) {
+        croak "You must pass a field name in, -field!";
     }
-    
-    $args->{-field} = lc($args->{-field}); 
-    
-    
-    foreach(@{$self->subscriber_fields}){ 
-        if($_ eq $args->{-field}){ 
-            return 1;    
+
+    $args->{ -field } = lc( $args->{ -field } );
+
+    foreach ( @{ $self->subscriber_fields } ) {
+        if ( $_ eq $args->{ -field } ) {
+            return 1;
         }
     }
     return 0;
 }
 
+sub validate_subscriber_field_name {
 
+    my $self = shift;
 
-sub validate_subscriber_field_name { 
-
-    my $self = shift; 
-    
     my ($args) = @_;
-   
-    if(! exists($args->{-field})){
- 
-        croak "You must pass a field name in, -field!"; 
+
+    if ( !exists( $args->{ -field } ) ) {
+
+        croak "You must pass a field name in, -field!";
     }
-    
-    if(! exists($args->{-skip})){ 
-		$args->{-skip} = [];
-	}
-	
-    $args->{-field} = lc($args->{-field}); 
-    
-    my $errors = {};
-    my $thar_be_errors = 0; 
-    
-     
-	if($args->{-field} eq ""){ 
-		$errors->{field_blank} = 1;
-	}else{ 
-		$errors->{field_blank} = 0;
-	}
-		
-		
-    if(length($args->{-field}) > 64){ 
+
+    if ( !exists( $args->{ -skip } ) ) {
+        $args->{ -skip } = [];
+    }
+
+    $args->{ -field } = lc( $args->{ -field } );
+
+    my $errors         = {};
+    my $thar_be_errors = 0;
+
+    if ( $args->{ -field } eq "" ) {
+        $errors->{field_blank} = 1;
+    }
+    else {
+        $errors->{field_blank} = 0;
+    }
+
+    if ( length( $args->{ -field } ) > 64 ) {
         $errors->{field_name_too_long} = 1;
-    }else{ 
+    }
+    else {
         $errors->{field_name_too_long} = 0;
     }
-    
-    if($args->{-field} =~ m/\/|\\/){ 
+
+    if ( $args->{ -field } =~ m/\/|\\/ ) {
         $errors->{slashes_in_field_name} = 1;
-    }else{ 
+    }
+    else {
         $errors->{slashes_in_field_name} = 0;
     }
 
-
-    if($args->{-field} =~ m/\s/){ 
+    if ( $args->{ -field } =~ m/\s/ ) {
         $errors->{spaces} = 1;
     }
-    else { 
+    else {
         $errors->{spaces} = 0;
     }
-    
-    if($args->{-field} =~ m/\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\+|\=|\>|\<|\-|\0-\037\177-\377/){ 
+
+    if ( $args->{ -field } =~
+        m/\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\+|\=|\>|\<|\-|\0-\037\177-\377/ )
+    {
         $errors->{weird_characters} = 1;
-    }else{ 
+    }
+    else {
         $errors->{weird_characters} = 0;
     }
- 
-    if($args->{-field} =~ m/\"|\'/){ 
+
+    if ( $args->{ -field } =~ m/\"|\'/ ) {
         $errors->{quotes} = 1;
-    }else{ 
+    }
+    else {
         $errors->{quotes} = 0;
     }
-	
-	if($self->subscriber_field_exists({-field => $args->{-field}}) == 1) { 
+
+    if (
+        $self->subscriber_field_exists( { -field => $args->{ -field } } ) == 1 )
+    {
         $errors->{field_exists} = 1;
-	} 
-	else { 
-	    $errors->{field_exists} = 0;
-	}
-	
-	my %omit_fields = (
-		email_id     => 1,
-		email        => 1,
-		list         => 1,
-		list_type    => 1,
-		list_status  => 1, 
-		email_name   => 1, 
-		email_domain => 1, 
-	);	
-					   
-	if(exists($omit_fields{$args->{-field}})){ 
-	    $errors->{field_is_special_field} = 1; 
-	}
-	 else { 
-	    $errors->{field_is_special_field} = 0;
-	 
-	}
-	
-	my $skip_list = {}; 
-	foreach(@{$args->{-skip}}){ 
-		$skip_list->{$_} = 1; 
-	}
-	
-	foreach(keys %$errors){ 
+    }
+    else {
+        $errors->{field_exists} = 0;
+    }
 
-		if(exists($skip_list->{$_})){
-			delete($errors->{$_}); 
-			next;
-		}	
+    my %omit_fields = (
+        email_id     => 1,
+        email        => 1,
+        list         => 1,
+        list_type    => 1,
+        list_status  => 1,
+        email_name   => 1,
+        email_domain => 1,
+    );
 
-	    if($errors->{$_} == 1){ 
-	        $thar_be_errors = 1; 
-	    }
+    if ( exists( $omit_fields{ $args->{ -field } } ) ) {
+        $errors->{field_is_special_field} = 1;
+    }
+    else {
+        $errors->{field_is_special_field} = 0;
 
-	}
-	
-	return ($thar_be_errors, $errors);
+    }
+
+    my $skip_list = {};
+    foreach ( @{ $args->{ -skip } } ) {
+        $skip_list->{$_} = 1;
+    }
+
+    foreach ( keys %$errors ) {
+
+        if ( exists( $skip_list->{$_} ) ) {
+            delete( $errors->{$_} );
+            next;
+        }
+
+        if ( $errors->{$_} == 1 ) {
+            $thar_be_errors = 1;
+        }
+
+    }
+
+    return ( $thar_be_errors, $errors );
 
 }
 
-
-
-
-
-
 sub validate_remove_subscriber_field_name {
 
-    my $self = shift; 
-    
+    my $self = shift;
+
     my ($args) = @_;
-    if(! exists($args->{-field})){ 
-        croak "You must pass a field name in, -field!"; 
+    if ( !exists( $args->{ -field } ) ) {
+        croak "You must pass a field name in, -field!";
     }
 
-    if(! exists($args->{-die_for_me})){ 
-        $args->{-die_for_me} = 0; 
+    if ( !exists( $args->{ -die_for_me } ) ) {
+        $args->{ -die_for_me } = 0;
     }
-    
-    my $thar_be_errors  = 0; 
-    my $errors         = {}; 
-    
+
+    my $thar_be_errors = 0;
+    my $errors         = {};
+
     my %omit_fields = (
         email_id    => 1,
         email       => 1,
         list        => 1,
         list_type   => 1,
         list_status => 1
-    );	
-					   
-	if(exists($omit_fields{$args->{-field}})){ 
-	   #croak 'Cannot remove the special field, $args->{-field}';
-	   $errors->{field_is_special_field} = 1; 
-	} else{ 
-	   $errors->{field_is_special_field} = 0; 
-	}   
-	
-	my $exists = 0;
-	foreach(@{$self->subscriber_fields}){ 
-	    if($args->{-field} eq $_){ 
-	        $exists = 1; 
-	        last; 
-	    }
-	}
-	if($exists == 0){ 
-	   
-        $errors->{field_exists} = 1;  
-        if($args->{-die_for_me} == 1){ 
-            croak "The field you are attempting to unsubscribe from (" . $args->{-field} . ") does not exist";
+    );
+
+    if ( exists( $omit_fields{ $args->{ -field } } ) ) {
+
+        #croak 'Cannot remove the special field, $args->{-field}';
+        $errors->{field_is_special_field} = 1;
+    }
+    else {
+        $errors->{field_is_special_field} = 0;
+    }
+
+    my $exists = 0;
+    foreach ( @{ $self->subscriber_fields } ) {
+        if ( $args->{ -field } eq $_ ) {
+            $exists = 1;
+            last;
         }
     }
-    else { 
-        $errors->{field_exists} = 0; 
-    }
-    
-	# What? How exactly is this reached when *removing* a field? 
-    my $fields = $self->subscriber_fields; 
-    if($#$fields+1 > 100){     
-        $errors->{number_of_fields_limit_reached} = 1; 
-        if($args->{-die_for_me} == 1){ 
-            croak 'You\ve reached the limit of how many subscriber fields are supported! (100)'; 
+    if ( $exists == 0 ) {
+
+        $errors->{field_exists} = 1;
+        if ( $args->{ -die_for_me } == 1 ) {
+            croak "The field you are attempting to unsubscribe from ("
+              . $args->{ -field }
+              . ") does not exist";
         }
     }
-    else { 
-        $errors->{number_of_fields_limit_reached} = 0; 
+    else {
+        $errors->{field_exists} = 0;
+    }
+
+    # What? How exactly is this reached when *removing* a field?
+    my $fields = $self->subscriber_fields;
+    if ( $#$fields + 1 > 100 ) {
+        $errors->{number_of_fields_limit_reached} = 1;
+        if ( $args->{ -die_for_me } == 1 ) {
+            croak
+'You\ve reached the limit of how many subscriber fields are supported! (100)';
+        }
+    }
+    else {
+        $errors->{number_of_fields_limit_reached} = 0;
 
     }
-    
-    foreach(keys %$errors){ 
-	    if($errors->{$_} == 1){ 
-	        $thar_be_errors = 1; 
-	    }
-	}
-	
-	return ($thar_be_errors, $errors);
-    
+
+    foreach ( keys %$errors ) {
+        if ( $errors->{$_} == 1 ) {
+            $thar_be_errors = 1;
+        }
+    }
+
+    return ( $thar_be_errors, $errors );
+
 }
 
 sub change_field_order {
-	 
-    my $self = shift; 
+
+    my $self = shift;
     my ($args) = @_;
-	
-	# fields
-	# direction
-	
-	my $sf = $self->subscriber_fields; 
-	
-	my $i   = 0; 
-	my $pos = 0; 
-	my $before; 
-	my $after; 
-	my $dir = $args->{-direction}; 
-	foreach my $f(@$sf){ 
-	#	die $f . ' ' . $args->{-field};
-		if($f eq $args->{-field}){ 
-			$pos = $i;  
-	#		die $pos;
-		}
-		else { 
-			$i++;
-		}
-	}
-	
-	if($dir eq 'down'){ 
-		if($pos >= $#$sf){ 
-			return 0;
-		}
-		
-		$before = $args->{-field};
-		$after  = $sf->[$pos+1];
-	}
-	if($dir eq 'up'){ 
-		if($pos <= 0){ 
-			return 0;
-		}
-		$before = $sf->[$pos-1];
-		$after  = $args->{-field};
-	}
-	
-	
 
-	
-#	if($dir eq 'up'){ 
-#		($before, $after) = ($after, $before);
-#	}
+    # fields
+    # direction
 
-	my $query = 'ALTER TABLE dada_profile_fields MODIFY COLUMN ' . $before . ' text AFTER ' . $after;
-#	die $query; 
-	my $sth = $self->{dbh}->prepare($query);    
-	$sth->execute()
-		or croak "cannot do statement (at: change_field_order)! $DBI::errstr\n";
+    my $sf = $self->subscriber_fields;
 
-	return 1;
+    my $i   = 0;
+    my $pos = 0;
+    my $before;
+    my $after;
+    my $dir = $args->{ -direction };
+    foreach my $f (@$sf) {
+
+        #	die $f . ' ' . $args->{-field};
+        if ( $f eq $args->{ -field } ) {
+            $pos = $i;
+
+            #		die $pos;
+        }
+        else {
+            $i++;
+        }
+    }
+
+    if ( $dir eq 'down' ) {
+        if ( $pos >= $#$sf ) {
+            return 0;
+        }
+
+        $before = $args->{ -field };
+        $after  = $sf->[ $pos + 1 ];
+    }
+    if ( $dir eq 'up' ) {
+        if ( $pos <= 0 ) {
+            return 0;
+        }
+        $before = $sf->[ $pos - 1 ];
+        $after  = $args->{ -field };
+    }
+
+    #	if($dir eq 'up'){
+    #		($before, $after) = ($after, $before);
+    #	}
+
+    my $query =
+      'ALTER TABLE dada_profile_fields MODIFY COLUMN ' . $before
+      . ' text AFTER '
+      . $after;
+
+    #	die $query;
+    my $sth = $self->{dbh}->prepare($query);
+    $sth->execute()
+      or croak "cannot do statement (at: change_field_order)! $DBI::errstr\n";
+
+    return 1;
 }
 
+sub remove_field_attributes {
 
+    my $self = shift;
+    my ($args) = @_;
 
+    my $query =
+      'DELETE FROM '
+      . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table}
+      . ' WHERE field = ?';
+    my $sth = $self->{dbh}->prepare($query);
+    $sth->execute( $args->{ -field } )
+      or croak
+      "cannot do statement (at: remove_field_attributes)! $DBI::errstr\n";
 
-sub remove_field_attributes { 
-
-	my $self   = shift; 
-	my ($args) = @_; 
-	
-	my $query = 'DELETE FROM dada_profile_fields_attributes WHERE field = ?'; 
-	my $sth = $self->{dbh}->prepare($query);    
-	$sth->execute($args->{-field})
-		or croak "cannot do statement (at: remove_field_attributes)! $DBI::errstr\n";
-	
-	return 1; 
+    return 1;
 }
 
+sub can_have_subscriber_fields {
 
-
-
-
-
-
-
-
-sub can_have_subscriber_fields { 
-
-    my $self = shift; 
-    return 1; 
+    my $self = shift;
+    return 1;
 }
 
-
-
-
-
-
-
-
-
-
-
-1; 
+1;

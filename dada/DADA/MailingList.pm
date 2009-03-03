@@ -40,15 +40,15 @@ sub Create {
     {
         croak 'The list, ' . $args->{ -list } . ' already exists! ';
     }
-
+	
 	# One last check.... 
 	if(($args->{-test} == 1)) {	
 		my ($errors, $flags) = DADA::App::Guts::check_list_setup(
 			-fields => 
 			{
-				list            => $args->{-list}, 
-				retype_password => $args->{-settings} => 'password', 
 				%{$args->{-settings}},
+				list            => $args->{-list}, 
+				retype_password => $args->{-settings}->{'password'},
 			}
 		); 
 		if($errors >= 1){
@@ -56,6 +56,8 @@ sub Create {
 			foreach(%$flags){ 
 				$e .= $_ . ', ' if $flags->{$_} == 1; 
 			}
+		#	use Data::Dumper;
+		#	croak Dumper(%$flags); 
 			croak "Problems creating list: " . $e; 
 		} 
 	}

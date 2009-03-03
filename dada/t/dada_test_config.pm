@@ -186,7 +186,7 @@ sub create_SQLite_db {
 
      %DADA::Config::SQL_PARAMS = %{$__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}};
 foreach(keys  %DADA::Config::SQL_PARAMS){ 
-#print $_ . ' => ' . $DADA::Config::SQL_PARAMS{$_} . "\n"; 
+	print $_ . ' => ' . $DADA::Config::SQL_PARAMS{$_} . "\n"; 
 }
 
     require DADA::App::DBIHandle; 
@@ -204,40 +204,40 @@ foreach(keys  %DADA::Config::SQL_PARAMS){
 
 close(SQL) or croak $!; 
 
-my @statements = split(';', $sql,4); 
+my @statements = split(';', $sql,8); 
 
     my $dbh = $dbi_handle->dbh_obj;
     
     foreach(@statements){ 
-
-		my $settings_table           = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{settings_table}; 
-		my $subscribers_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{subscriber_table}; 
-		my $archives_table           = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{archives_table}; 
-		my $session_table            = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{session_table};
-		my $bounce_scores_table      = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{bounce_scores_table};
-		my $profile_fields_table     = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_fields_table};
-		my $profile_table            = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_table};  
+			
+    	my $settings_table                   = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{settings_table}; 
+		my $subscribers_table    	         = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{subscriber_table}; 
+		my $archives_table          		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{archives_table}; 
+		my $session_table           		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{session_table};
+		my $bounce_scores_table     		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{bounce_scores_table};
+		my $profile_table            		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_table};  
+		my $profile_fields_table             = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_fields_table};
+		my $profile_fields_attributes_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_fields_attributes_table};
 		
 		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
 		$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
 		$_ =~ s{CREATE TABLE dada_archives}{CREATE TABLE $archives_table}; 
 		$_ =~ s{CREATE TABLE dada_sessions}{CREATE TABLE $session_table}; 
-		$_ =~ s{CREATE TABLE dada_bounce_scores}{CREATE TABLE $bounce_scores_table}; 
-		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
+		$_ =~ s{CREATE TABLE dada_bounce_scores}{CREATE TABLE $bounce_scores_table};
 		$_ =~ s{CREATE TABLE dada_profile}{CREATE TABLE $profile_table};
+		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
+		$_ =~ s{CREATE TABLE dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};
 		
-		
-        #print "query: " . $_ . "\n"; 
-        my $sth = $dbh->prepare($_); 
+		print 'query: ' . $_; 
+        my $sth = $dbh->prepare($_) or warn $DBI::errstr; 
 
-
-
-       $sth->execute; 
-    
-    
+       $sth->execute
+			or croak "cannot do statment $DBI::errstr\n"; 
+			#sleep(1);
     }
-    
-    
+	# print "Sleepin!"; 
+	# sleep(60); 
+	
 }
 
 sub destroy_SQLite_db { 
@@ -297,37 +297,27 @@ close(SQL) or croak $!;
 
 my @statements = split(';', $sql); 
 
-
-
-
     my $dbh = $dbi_handle->dbh_obj;
     
     foreach(@statements){ 
-    	my $settings_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{settings_table}; 
-		my $subscribers_table       = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{subscriber_table}; 
-		my $archives_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{archives_table}; 
-		my $session_table           = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{session_table};
-		my $bounce_scores_table     = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{bounce_scores_table};
-		my $profile_fields_table = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_fields_table};
-		
+	
+    	my $settings_table                   = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{settings_table}; 
+		my $subscribers_table    	         = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{subscriber_table}; 
+		my $archives_table          		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{archives_table}; 
+		my $session_table           		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{session_table};
+		my $bounce_scores_table     		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{bounce_scores_table};
+		my $profile_table            		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_table};  
+		my $profile_fields_table             = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_fields_table};
+		my $profile_fields_attributes_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_fields_attributes_table};
+
 		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
 		$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
 		$_ =~ s{CREATE TABLE dada_archives}{CREATE TABLE $archives_table}; 
 		$_ =~ s{CREATE TABLE dada_sessions}{CREATE TABLE $session_table}; 
 		$_ =~ s{CREATE TABLE dada_bounce_scores}{CREATE TABLE $bounce_scores_table};
+		$_ =~ s{CREATE TABLE dada_profile}{CREATE TABLE $profile_table};
 		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
-		
-#
-#		$_ =~ s{CREATE INDEX dada_settings}{CREATE INDEX $settings_table}g; 
-#		$_ =~ s{CREATE INDEX dada_subscribers}{CREATE INDEX $subscribers_table}g; 
-#		$_ =~ s{CREATE INDEX dada_archives}{CREATE INDEX $archives_table}g; 
-#		$_ =~ s{CREATE INDEX dada_sessions}{CREATE INDEX $session_table}g;
-		
-		#?
-		#$_ =~ s/dada_settings/$settings_table/g; 
-		#$_ =~ s/dada_subscribers/$subscribers_table/g; 
-		#$_ =~ s/dada_archives/$archives_table/g; 
-		#$_ =~ s/dada_sessions/$session_table/g; 
+		$_ =~ s{CREATE TABLE dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};	
 						
 		if(length($_) > 10){ 
 	    	carp 'query: ' . $_; 
@@ -346,25 +336,30 @@ sub destroy_MySQL_db {
     my $dbi_handle = DADA::App::DBIHandle->new; 
 
     my $dbh = $dbi_handle->dbh_obj;
-        $dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{subscriber_table})
+        $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{subscriber_table})
             or carp "cannot do statement! $DBI::errstr\n";  
 
-        $dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{archives_table})
-                    or carp "cannot do statement! $DBI::errstr\n";  
-        $dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{settings_table})
-                    or carp "cannot do statement! $DBI::errstr\n";  
-        $dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{session_table})
-                    or carp "cannot do statement! $DBI::errstr\n";  
+        $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{archives_table})
+        	or carp "cannot do statement! $DBI::errstr\n";  
 
-		$dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{bounce_scores_table})
-                    or carp "cannot do statement! $DBI::errstr\n";
+        $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{settings_table})
+        	or carp "cannot do statement! $DBI::errstr\n";  
 
-		$dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{profile_fields_table})
-                    or carp "cannot do statement! $DBI::errstr\n";
+        $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{session_table})
+            or carp "cannot do statement! $DBI::errstr\n";  
 
-		$dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{profile_table})
-                    or carp "cannot do statement! $DBI::errstr\n";
+		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{bounce_scores_table})
+        	or carp "cannot do statement! $DBI::errstr\n";
+
+		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_table})
+			or carp "cannot do statement! $DBI::errstr\n";
 			
+		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_fields_table})
+            or carp "cannot do statement! $DBI::errstr\n";	
+
+		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_fields_attributes_table})
+        	or carp "cannot do statement! $DBI::errstr\n";
+
 }
 
 
@@ -407,25 +402,28 @@ my @statements = split(';', $sql);
     
 	
     foreach(@statements){ 
-    
+   
 
-		my $settings_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{settings_table}; 
-		my $subscribers_table       = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{subscriber_table}; 
-		my $archives_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{archives_table}; 
-		my $session_table           = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{session_table};
-		my $bounce_scores_table     = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{bounce_scores_table};		
-		my $profile_fields_table = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_table};
-				
+	   	my $settings_table                   = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{settings_table}; 
+		my $subscribers_table    	         = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{subscriber_table}; 
+		my $archives_table          		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{archives_table}; 
+		my $session_table           		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{session_table};
+		my $bounce_scores_table     		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{bounce_scores_table};
+		my $profile_table            		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_table};  
+		my $profile_fields_table             = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_table};
+		my $profile_fields_attributes_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_attributes_table};
+
 		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
 		$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
 		$_ =~ s{CREATE TABLE dada_archives}{CREATE TABLE $archives_table}; 
 		$_ =~ s{CREATE TABLE dada_sessions}{CREATE TABLE $session_table}; 
 		$_ =~ s{CREATE TABLE dada_bounce_scores}{CREATE TABLE $bounce_scores_table};
+		$_ =~ s{CREATE TABLE dada_profile}{CREATE TABLE $profile_table};
 		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
+		$_ =~ s{CREATE TABLE dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};
 
-    my $sth = $dbh->prepare($_); #  or croak $DBI::errstr; 
-       $sth->execute or carp $DBI::errstr; 
-    
+	    my $sth = $dbh->prepare($_); #  or croak $DBI::errstr; 
+	       $sth->execute or carp $DBI::errstr; 
     
     }
     
@@ -438,18 +436,30 @@ sub destroy_PostgreSQL_db {
     my $dbi_handle = DADA::App::DBIHandle->new; 
 
     my $dbh = $dbi_handle->dbh_obj;
-        $dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{subscriber_table})
-			or carp "cannot do statement! $DBI::errstr\n";  
-        $dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{archives_table})
-			or carp "cannot do statement! $DBI::errstr\n";  
-        $dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{settings_table})
-			or carp "cannot do statement! $DBI::errstr\n";  
-        $dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{session_table})
-			or carp "cannot do statement! $DBI::errstr\n";  
-		$dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{bounce_scores_table})
-        	or carp "cannot do statement! $DBI::errstr\n";
-		$dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{profile_fields_table})
-        	or carp "cannot do statement! $DBI::errstr\n";
+    $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{subscriber_table})
+        or carp "cannot do statement! $DBI::errstr\n";  
+
+    $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{archives_table})
+    	or carp "cannot do statement! $DBI::errstr\n";  
+
+    $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{settings_table})
+    	or carp "cannot do statement! $DBI::errstr\n";  
+
+    $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{session_table})
+        or carp "cannot do statement! $DBI::errstr\n";  
+
+	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{bounce_scores_table})
+    	or carp "cannot do statement! $DBI::errstr\n";
+
+	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_table})
+		or carp "cannot do statement! $DBI::errstr\n";
+		
+	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_table})
+        or carp "cannot do statement! $DBI::errstr\n";	
+
+	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_attributes_table})
+    	or carp "cannot do statement! $DBI::errstr\n";
+
 
 }
 

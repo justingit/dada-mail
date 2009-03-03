@@ -14,6 +14,11 @@ use vars qw($AUTOLOAD);
 
 my %allowed = (); 
 
+
+# This is an attempt to disable this module on purpose... 
+$DADA::Config::SCREEN_CACHE = 0; 
+
+
 sub new {
 
 	my $that = shift; 

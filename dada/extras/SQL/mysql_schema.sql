@@ -23,11 +23,7 @@ CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(320), list, l
 
 -- Same problem, in very old version of MySQL, this INDEX doesn't seem to work...
 
-CREATE TABLE dada_profile_fields (
-	fields_id			         int4 not null primary key auto_increment,
-	email                        varchar(320) not null,
-	CONSTRAINT UNIQUE (email)
-);
+
 
 CREATE TABLE dada_profile (
 	profile_id			         int4 not null primary key auto_increment,
@@ -38,6 +34,12 @@ CREATE TABLE dada_profile (
 	CONSTRAINT UNIQUE (email)
 );
 
+CREATE TABLE dada_profile_fields (
+	fields_id			         int4 not null primary key auto_increment,
+	email                        varchar(320) not null,
+	CONSTRAINT UNIQUE (email)
+);
+
 CREATE TABLE dada_profile_fields_attributes ( 
 
 attribute_id 				int4 not null primary key auto_increment,
@@ -45,11 +47,11 @@ field                       varchar(320),
 label                       varchar(320),
 fallback_value              varchar(320),
 -- I haven't made the following, but it seems like a pretty good idea... 
---sql_col_type              text(16),
---default                   mediumtext,
---html_form_widget          varchar(320),
---required                  char(1),
---public                    char(1),
+-- sql_col_type              text(16),
+-- default                   mediumtext,
+-- html_form_widget          varchar(320),
+-- required                  char(1),
+-- public                    char(1),
 CONSTRAINT UNIQUE (field)
 );
 

@@ -1522,20 +1522,25 @@ hopefully it does, since we're editing it)
 
 sub check_list_setup {
 
-    my %args = (-fields    => undef,  
-    			-new_list  => 'yes', 
-    			@_); 
+    my %args = (
+		-fields    => undef,  
+    	-new_list  => 'yes', 
+    	@_
+	); 
     		   
 	my %new_list_errors = (); 
 	my $list_errors     = 0;
     my $fields = $args{-fields}; 
-    
+ 
+	
 	if($fields->{list} eq ""){ 
 		$list_errors++;
 		$new_list_errors{list} = 1;
 	}else{ 
 		$new_list_errors{list} = 0;
 	}
+
+
 	
 	if($fields->{list_name} eq ""){ 
 		$list_errors++;
@@ -1543,6 +1548,11 @@ sub check_list_setup {
 	}else{ 
 		$new_list_errors{list_name} = 0;
 	}
+	
+	
+
+	
+	
 	
 	if($fields->{list_name} =~ m/(\>|\<|\")/){ 
 		$list_errors++;
@@ -1552,7 +1562,7 @@ sub check_list_setup {
 	}
 	
 	
-	
+
 	
 	if($args{-new_list} eq "yes") {
 		my $list_exists = check_if_list_exists(-List => $fields->{list}); 
@@ -1564,6 +1574,9 @@ sub check_list_setup {
 		}	
 	}
 
+
+
+	
 	if($args{-new_list} eq "yes") {
 		if(!defined($fields->{password}) || $fields->{password} eq ""){	
 			$list_errors++;
@@ -1573,6 +1586,7 @@ sub check_list_setup {
 		}
 		
 		
+				
 		# it means that the password we're using for the list, 
 		# is the Dada Mail Root Password - doh!
 		if(root_password_verification($fields->{password}) == 1){ 
@@ -1591,17 +1605,17 @@ sub check_list_setup {
 			$new_list_errors{retype_password} = 0;
 		}
 		
+
 		
 		
-		if($fields->{password} ne $fields ->{retype_password}) { 
+		if($fields->{password} ne $fields->{retype_password}) { 
 			 $list_errors++;
 			 $new_list_errors{password_ne_retype_password} = 1;
 		}else{ 
 			 $new_list_errors{password_ne_retype_password} = 0;
 		}
 		
-		
-		
+
 		
 		if(length($fields->{list}) > 16){ 
 			$list_errors++;
@@ -1642,17 +1656,21 @@ sub check_list_setup {
 		$new_list_errors{invalid_list_owner_email} = 0;
 	}
 	
-	
-	if($fields ->{info} eq ""){ 
+	if($fields->{info} eq ""){ 
 		$list_errors++;
 		$new_list_errors{list_info} = 1;
 	}else{ 
 		$new_list_errors{list_info} = 0;
 	}
 	
+		
+
 	
-	if($fields->{privacy_policy} eq ""){ 
+
+		
+	if(length($fields->{privacy_policy}) == 0){ 	
 		$list_errors++;
+	
 		$new_list_errors{privacy_policy} = 1;
 	}else{ 
 		$new_list_errors{privacy_policy} = 0;
@@ -1664,7 +1682,8 @@ sub check_list_setup {
 	}else{ 
 		$new_list_errors{physical_address} = 0;
 	}
-	
+
+
 	
 	return ($list_errors, \%new_list_errors);
 }
