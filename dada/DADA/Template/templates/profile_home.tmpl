@@ -1,6 +1,7 @@
 <!-- begin profile_home.tmpl --> 
 
 
+
 <p style="text-align:right"> 
 	[ <a href="<!-- tmpl_var PROGRAM_URL -->?f=profile_logout">Logout</a>]
 </p>
@@ -11,6 +12,15 @@
 		Hello, <!-- tmpl_var profile.email -->!
 	</h1>
 </div> 
+
+<!-- tmpl_if gravators_enabled --> 
+	<!-- tmpl_if gravatar_img_url --> 
+		<p>
+			<img src="<!-- tmpl_var gravatar_img_url -->" style="float:left" />
+		</p> 
+	<!-- /tmpl_if -->
+<!-- /tmpl_if -->
+<div class="floatclear"></div>
 
 
 <!-- tmpl_if welcome --> 
