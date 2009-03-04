@@ -71,7 +71,7 @@ like($msg, qr/From: \"$li->{list_name}\" \<$lo_name\@$lo_domain\>/, "From: Set C
 like($msg, qr/To:(.*?)$email_name\@$email_domain/, "To: set correctly"); 
 like($msg, qr/Subject\: $li->{list_name} Mailing List Subscription Confirmation/, "Subject: set correctly"); 
 
-my $pin = DADA::App::Guts::make_pin(-Email => $email); 
+my $pin = DADA::App::Guts::make_pin(-Email => $email, -List => $list); 
 
 my $confirm_url = quotemeta($DADA::Config::PROGRAM_URL . '/n/'. $list . '/' . $email_name . '/' . $email_domain . '/'.$pin.'/'); 
 
