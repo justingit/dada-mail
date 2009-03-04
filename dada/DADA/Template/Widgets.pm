@@ -1015,6 +1015,10 @@ sub profile_widget {
 				profiles_enabled => $profiles_enabled,
  				is_logged_in    => $is_logged_in, 
 				'profile.email' => $email,  
+				gravators_enabled => $DADA::Config::PROFILE_GRAVATAR_OPTIONS->{enable_gravators},
+				gravatar_img_url  => gravatar_img_url({-email => $email, -default_gravatar_url => $DADA::Config::PROFILE_GRAVATAR_OPTIONS->{default_gravatar_url}, -size => '30'}),						
+				
+				
 		    }
 		}
 	); 
