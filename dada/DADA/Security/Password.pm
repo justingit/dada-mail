@@ -64,23 +64,24 @@ This function returns 1 if the passwords  match.
 =cut
 
 
-sub check_password { 
+sub check_password {
 #############################################################################
-# dada utility <+>  $password_check  <+>  checks password                   #
+   # dada utility <+>  $password_check  <+>  checks password                   #
 #############################################################################
 
-my $check = 0; 
-my ($epw, $pw)=@_;
+    my $check = 0;
+    my ( $epw, $pw ) = @_;
 
-$DADA::Config::SALT =substr($epw,$DADA::Config::FIRST_SUB, $DADA::Config::SEC_SUB);
-if($epw eq crypt($pw,$DADA::Config::SALT )){ 
-$check = 1; 
+    $DADA::Config::SALT =
+      substr( $epw, $DADA::Config::FIRST_SUB, $DADA::Config::SEC_SUB );
+    if ( $epw eq crypt( $pw, $DADA::Config::SALT ) ) {
+        $check = 1;
+    }
+
+    return $check;
+
 }
 
-
-return $check; 
-
-}
 
 =pod
 
