@@ -218,7 +218,8 @@ sub send_subscribed_message {
 			-tmpl_params  => {		
 				-list_settings_vars_param => {-list => $li->{list},},
 				-subscriber_vars_param    => {-list => $li->{list}, -email => $args->{-email}, -type => 'list'},
-				-profile_vars_param       => {-email => $args->{-email}},
+				#-profile_vars_param       => {-email => $args->{-email}},
+				-vars => $args->{-vars}, 
 			},
 			-test         => $args->{-test}, 
 		}
