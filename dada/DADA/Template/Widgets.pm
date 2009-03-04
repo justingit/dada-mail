@@ -1486,7 +1486,7 @@ sub screen {
 							my ($name, $domain) = split('@', $fallback_vars->{'subscriber.email'}, 2); 
 							$fallback_vars->{'subscriber.email_name'}   = $name; 
 							$fallback_vars->{'subscriber.email_domain'} = $domain; 
-							$fallback_vars->{'subscriber.pin'}          = make_pin(-Email => $fallback_vars->{'subscriber.email'});
+							$fallback_vars->{'subscriber.pin'}          = make_pin(-Email => $fallback_vars->{'subscriber.email'}, $args->{-subscriber_vars_param}->{-list});
 						### /
 
 						foreach(keys %$fallback_vars){ 

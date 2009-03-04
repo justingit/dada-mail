@@ -170,7 +170,7 @@ $q->param('email', '');
 	like($confirm_email, qr/To:(.*?)subscribe\@example.com/, "To: set correctly"); 
 	like($confirm_email, qr/Subject\: Dada Test List Mailing List Subscription Confirmation/, "Subject: set correctly"); 
 	
-	my $pin = DADA::App::Guts::make_pin(-Email => $email); 
+	my $pin = DADA::App::Guts::make_pin(-Email => $email, -List => $list); 
 	
 	my $confirm_url = quotemeta($DADA::Config::PROGRAM_URL . '/n/dadatest/subscribe/example.com/'.$pin.'/'); 
 	

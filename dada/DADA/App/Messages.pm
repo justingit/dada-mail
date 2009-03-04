@@ -173,7 +173,7 @@ sub send_confirmation_message {
 				-list_settings_vars_param => {-list => $args->{-list}},
 	            -subscriber_vars_param    => {-list => $args->{-list}, -email => $args->{-email}, -type => 'sub_confirm_list'},
 	            -vars                     => {
-	                                            'subscriber.pin' => make_pin(-Email => $args->{-email}),
+	                                            'subscriber.pin' => make_pin(-Email => $args->{-email}, -List => $args->{-list}),
 	                                         },
 		
 			},
@@ -261,7 +261,7 @@ sub send_unsub_confirmation_message {
 			-list_settings_vars_param => {-list => $args->{-list}},
             -subscriber_vars_param    => {-list => $args->{-list}, -email => $args->{-email}, -type => 'list'},
             -vars                     => {
-                                            'subscriber.pin'  => make_pin(-Email => $args->{-email}), #DEV: do I need this?
+                                            'subscriber.pin'  => make_pin(-Email => $args->{-email}, -List => $args->{-list}), #DEV: do I need this?
                                          },
 										
 			},

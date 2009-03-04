@@ -655,7 +655,7 @@ sub create_mass_sending_file {
         $first_email = $args{-Test_Recipient};
     }
     
-	my $to_pin = make_pin(-Email => $first_email);
+	my $to_pin = make_pin(-Email => $first_email, -List => $list);
 	my ($lo_e_name, $lo_e_domain) = split('@', $first_email); 
 	
 	
@@ -691,7 +691,7 @@ sub create_mass_sending_file {
 				my @sub = (
 					$email,
 					( split ( '@', $email ) ), 
-					make_pin( -Email => $email ),
+					make_pin( -Email => $email, -List => $list),
 					$list,
 					$self->{ls}->param('list_name'),
 					$n_msg_id,

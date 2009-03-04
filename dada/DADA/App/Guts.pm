@@ -246,11 +246,14 @@ although if you create your own $DADA::Config::PIN_NUM  and $DADA::Config::PIN_W
 sub make_pin {
 	my %args = ( 
 	-Email      => undef, 
+	-List       => undef, 
+	-crypt      => 1, 
 	@_
 	); 
 	
 	
 	my $email = $args{-Email} || undef;
+	my $list  = $args{-List}  || undef; 
 	my $pin = 0; 
 	
 	if($email){ 
@@ -267,7 +270,7 @@ sub make_pin {
 		$pin = unpack("%32C*", $email);
 		
 		# do the same with some word you pick 
-		my $pin_helper = unpack("%32C*", $DADA::Config::PIN_WORD );
+		my $pin_helper = unpack("%32C*", ($DADA::Config::PIN_WORD . $list) );
 		 
 		# make the pin by adding the $pin and $DADA::Config::PIN_NUM ber together, 
 		# multiplying by a number you can pick 
@@ -276,8 +279,19 @@ sub make_pin {
 		$pin = ((($pin + $pin_helper) * $DADA::Config::PIN_NUM ) - $pin_helper); 
 		
 		# give it back. 
-		return $pin; 
+		warn '$email ' . $email; 
+		warn '$list ' . $list; 
+		warn '$pin  '. $pin; 
 		
+		if($args{-crypt} == 1){ 
+			require DADA::Security::Password; 
+			my $enc =  DADA::Security::Password::encrypt_passwd($pin); 
+			warn '$enc ' . $enc; 
+			return $enc; 
+		}
+		else { 
+			return $pin;
+		}
 	}else{ 
 	
 		return undef;
@@ -296,34 +310,47 @@ returns 0 on when the pin is VALID (Weird, yes?), 1 on FAILURE.
 
 =cut
 
-sub check_email_pin { 
+sub check_email_pin {
 
-	my %args = (-Email => undef, 
- 	            -Pin   => undef,
- 	            @_); 
+    my %args = (
+        -Email => undef,
+        -List  => undef,
+        -Pin   => undef,
+        @_
+    );
+
+    my $email = $args{ -Email } || undef;
+    my $list  = $args{ -List }  || undef;
+    my $pin   = $args{ -Pin }   || undef;
+    my $check = 0;
+
+	#die '$email "' . $email . '"'; 
+#	die '$list ' . $list; 
+#	die '$pin  '. $pin;
 	
-	my $email = $args{-Email} || undef;
-	my $pin   = $args{-Pin}   || undef; 
+
+	require DADA::Security::Password; 
 	
-	if(
-	   defined($pin) &&
-	   defined($email)
-	){ 
-		$email = cased($email); 
-		#see how we make a pin, just do the reverse. 
-		my $invalid_pin = 0; 
-		my $check_pin = unpack("%32C*", $email);
-		my $pin_helper = unpack("%32C*", $DADA::Config::PIN_WORD );
-		$check_pin = ((($check_pin + $pin_helper) * $DADA::Config::PIN_NUM ) - $pin_helper);
-	
-	  if ($check_pin != $pin){ 
-	  	$invalid_pin++;
-	  }
-		# How does this even work, if $invalid_pin is added to (++) when it's INVALID? THE FUCK?
-		return  $invalid_pin; 
-	 }else{ 
-		return 1; 
-	}
+    if (   defined($pin)
+        && defined($email) )
+    {
+		my $unencrypted_pin = make_pin( 
+			-Email => $email, 
+			-List  => $list, 
+			-crypt => 0,
+		 );
+		
+	#	die '$unencrypted_pin ' . $unencrypted_pin; 
+        if ( DADA::Security::Password::check_password($pin, $unencrypted_pin) == 1) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }	
+	else {
+    	return 0;
+    }
 }
 
 

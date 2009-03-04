@@ -920,7 +920,7 @@ sub create_mass_sending_file {
         $first_email = $args{ -Test_Recipient };
     }
 
-    my $to_pin = make_pin( -Email => $first_email );
+    my $to_pin = make_pin( -Email => $first_email, -List => $self->{list} );
 
     my ( $lo_e_name, $lo_e_domain ) = split ( '@', $first_email );
 
@@ -1009,7 +1009,7 @@ sub create_mass_sending_file {
 				my @sub = (
 					$field_ref->{email},
 					( split ( '@', $field_ref->{email} ) ), 
-					make_pin( -Email => $field_ref->{email} ),
+					make_pin( -Email => $field_ref->{email}, -List => $self->{list} ),
 					$field_ref->{list},
 					$list_names{ $field_ref->{list} },
 					$n_msg_id,

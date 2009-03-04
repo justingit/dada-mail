@@ -202,7 +202,7 @@ sub subscribe {
 	        );
 
 	        # This is... slightly weird.
-	        $args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email));  
+	        $args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email, -List => $list));  
 
 	        $self->confirm(
 	            {
