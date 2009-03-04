@@ -3,6 +3,7 @@ use lib qw(
 	../../../ 
 	../../perllib
 );
+use strict; 
 
 use Carp qw(carp croak confess);
 use DADA::App::Guts;
@@ -133,18 +134,35 @@ sub insert {
         $args->{ -confirmed } = 1;
     }
 
+	# writeover
+	# preserve,
+	
+	if( !exists($args->{ -mode } ) ) { 
+		$args->{ -mode } = 'writeover';
+	}
+	
     # See, how I'm doing this, after the confirmed thing? Good idea?
     if ( $args->{ -confirmed } == 0 ) {
         $args->{ -email } = '*' . $args->{ -email };
     }
 
-    # Yikes, that's a bit harsh, no?
-    # This is going to lead to all sorts of bugs...
-    if ( $self->exists( { -email => $args->{ -email } } ) >= 1 ) {
-        $self->drop( { -email => $args->{ -email } } );
-    }
-
-    #
+	my $fields_exists = $self->exists( 
+		{
+			-email => $args->{ -email } 
+		} 
+	);
+	
+	if($fields_exists && $args->{-mode} eq 'preserve'){ 
+			return; 
+	}
+	
+	if ($fields_exists) {
+        $self->drop( 
+			{ 
+				-email => $args->{ -email } 
+			} 
+		);
+ 	}
 
     my $sql_str             = '';
     my $place_holder_string = '';
@@ -166,16 +184,15 @@ sub insert {
       . $sql_str . ') 
         VALUES (?' . $place_holder_string . ')';
 
-    warn 'Query: ' . $query
-      if $t;
+    warn 'Query: ' . $query;
+    #  if $t;
 
     my $sth = $self->{dbh}->prepare($query);
 
-# use Data::Dumper;
-# warn 'DADA::Profile::Fields->insert(): ' . Data::Dumper::Dumper($args->{ -email },@values);
     $sth->execute( $args->{ -email }, @values )
       or croak "cannot do statement (at insert)! $DBI::errstr\n";
     $sth->finish;
+ 	
 }
 
 sub get {
@@ -189,8 +206,8 @@ sub get {
       . $self->{sql_params}->{profile_fields_table}
       . " WHERE email = ?";
 
-    warn 'QUERY: ' . $query . ', $args->{-email}: ' . $args->{ -email }
-      if $t;
+    warn 'QUERY: ' . $query . ', $args->{-email}: ' . $args->{ -email };
+    #  if $t;
 
     my $sth = $self->{dbh}->prepare($query);
 
@@ -200,16 +217,15 @@ sub get {
     my $hashref   = {};
     my $n_hashref = {};
 
+    my ( $n, $d ) = split ( '@', $args->{-email}, 2 );
+    $n_hashref->{email_name}   = $n;
+    $n_hashref->{email_domain} = $d;
+
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
         foreach ( @{$sub_fields} ) {
             $n_hashref->{$_} = $hashref->{$_};
         }
         $n_hashref->{email} = $hashref->{email};
-
-        my ( $n, $d ) = split ( '@', $hashref->{email}, 2 );
-        $n_hashref->{email_name}   = $n;
-        $n_hashref->{email_domain} = $d;
-
         last FETCH;
     }
 
@@ -218,6 +234,7 @@ sub get {
         foreach ( keys %$n_hashref ) {
             $dotted->{ 'subscriber.' . $_ } = $n_hashref->{$_};
         }
+
         return $dotted;
     }
     else {

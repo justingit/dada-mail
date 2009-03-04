@@ -3237,484 +3237,498 @@ sub edit_subscriber {
 
 }
 
-sub add  { 
+sub add {
 
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
-                                                        -Function => 'add');
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'add'
+    );
 
-    $list = $admin_list; 
- 
-    my $lh              = DADA::MailingList::Subscribers->new({-list => $list}); 
-    my $fields = [];  
-    foreach my $field(@{$lh->subscriber_fields()}){ 
-        push(@$fields, {name => $field});
+    $list = $admin_list;
+
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+    my $fields = [];
+    foreach my $field ( @{ $lh->subscriber_fields() } ) {
+        push ( @$fields, { name => $field } );
     }
 
-    
     require CGI::Ajax;
-    my $pjx  = new CGI::Ajax('external' => $DADA::Config::S_PROGRAM_URL);
-      
-    
-    if($q->param('process')){ 
-    
-		if($q->param('method') eq 'via_add_one'){ 
-			# We're going to fake the, "via_textarea", buy just make a CSV file, and plunking it 
-			# in the, "new_emails" CGI param. (Hehehe); 
-			
-			my @columns = (); 
-			push(@columns, xss_filter($q->param('email')));
-			foreach(@{$lh->subscriber_fields()}){ 
-				push(@columns, xss_filter($q->param($_)));
-			}
-			require Text::CSV; 
-			#my $csv = Text::CSV->new({binary => 1});
-		    my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+    my $pjx = new CGI::Ajax( 'external' => $DADA::Config::S_PROGRAM_URL );
 
-		 	my $status = $csv->combine(@columns);    # combine columns into a string
-		 	my $line   = $csv->string();             # get the combined string
-			
-			$q->param('new_emails', $line);
-			$q->param('method', 'via_textarea'); 			
-			# End shienanengans. 
-		
-		}
+    if ( $q->param('process') ) {
 
-		if($q->param('method') eq 'via_file_upload'){ 
-			if(strip($q->param('new_email_file')) eq ''){ 
-	            print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=add');
-				return; 
-			}
-		}
-		elsif($q->param('method') eq 'via_textarea'){ 
-			if(strip($q->param('new_emails')) eq ''){ 
-	            print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=add');
-				return;					
-			}	
-		}
+        if ( $q->param('method') eq 'via_add_one' ) {
 
+# We're going to fake the, "via_textarea", buy just make a CSV file, and plunking it
+# in the, "new_emails" CGI param. (Hehehe);
 
+            my @columns = ();
+            push ( @columns, xss_filter( $q->param('email') ) );
+            foreach ( @{ $lh->subscriber_fields() } ) {
+                push ( @columns, xss_filter( $q->param($_) ) );
+            }
+            require Text::CSV;
 
-    
-        # DEV: This whole building of query string is much too messy. 
-        my $qs = '&type=' . $q->param('type') . '&new_email_file=' . $q->param('new_email_file');
-        if(DADA::App::Guts::strip($q->param('new_emails')) ne ""){ 
-                                                                                  # DEV: why is it, "new_emails.txt"? Is that supposed to be a variable?
-            my $outfile = make_safer($DADA::Config::TMP . '/' . $q->param('rand_string') . '-' . 'new_emails.txt');
-            
-		#	die $ENV{'QUERY_STRING'}; 
-		#	die q{ $q->param('new_emails') } . $q->param('new_emails'); 
+            #my $csv = Text::CSV->new({binary => 1});
+            my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
-            open (OUTFILE, '>' . $outfile) 
-                or die("can't write to " . $outfile . ": $!");        
-            
+            my $status =
+              $csv->combine(@columns);    # combine columns into a string
+            my $line = $csv->string();    # get the combined string
 
-			print OUTFILE $q->param('new_emails'); 
-			#require HTML::Entities; 
-            #print OUTFILE HTML::Entities::decode_entities($q->param('new_emails'));
-            close (OUTFILE);
-            chmod(0666, $outfile);  
+            $q->param( 'new_emails', $line );
+            $q->param( 'method',     'via_textarea' );
 
-		#	die ;
-			
-                                                                                                                            # DEV: why is it, "new_emails.txt"? Is that supposed to be a variable?
-            print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=add_email&fn=' . $q->param('rand_string') . '-' . 'new_emails.txt' . $qs);
-            
-            
-            
-            
-        
-        } 
-        else { 
-	
-            
-            if($q->param('method') eq 'via_file_upload') {         
-                upload_that_file($q); 
-            }            
+            # End shienanengans.
+
+        }
+
+        if ( $q->param('method') eq 'via_file_upload' ) {
+            if ( strip( $q->param('new_email_file') ) eq '' ) {
+                print $q->redirect(
+                    -uri => $DADA::Config::S_PROGRAM_URL . '?f=add' );
+                return;
+            }
+        }
+        elsif ( $q->param('method') eq 'via_textarea' ) {
+            if ( strip( $q->param('new_emails') ) eq '' ) {
+                print $q->redirect(
+                    -uri => $DADA::Config::S_PROGRAM_URL . '?f=add' );
+                return;
+            }
+        }
+
+        # DEV: This whole building of query string is much too messy.
+        my $qs = '&type='
+          . $q->param('type')
+          . '&new_email_file='
+          . $q->param('new_email_file');
+        if ( DADA::App::Guts::strip( $q->param('new_emails') ) ne "" ) {
+
+          # DEV: why is it, "new_emails.txt"? Is that supposed to be a variable?
+            my $outfile =
+              make_safer( $DADA::Config::TMP . '/'
+                  . $q->param('rand_string') . '-'
+                  . 'new_emails.txt' );
+
+            #	die $ENV{'QUERY_STRING'};
+            #	die q{ $q->param('new_emails') } . $q->param('new_emails');
+
+            open( OUTFILE, '>' . $outfile )
+              or die ( "can't write to " . $outfile . ": $!" );
+
+            print OUTFILE $q->param('new_emails');
+
+        #require HTML::Entities;
+        #print OUTFILE HTML::Entities::decode_entities($q->param('new_emails'));
+            close(OUTFILE);
+            chmod( 0666, $outfile );
+
+            #	die ;
+
+          # DEV: why is it, "new_emails.txt"? Is that supposed to be a variable?
+            print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+                  . '?f=add_email&fn='
+                  . $q->param('rand_string') . '-'
+                  . 'new_emails.txt'
+                  . $qs );
+
+        }
+        else {
+
+            if ( $q->param('method') eq 'via_file_upload' ) {
+                upload_that_file($q);
+            }
             my $filename = $q->param('new_email_file');
-            $filename =~ s!^.*(\\|\/)!!;  
-            
-            eval {require URI::Escape}; 
-            if(!$@){
-                $filename =  URI::Escape::uri_escape($filename, "\200-\377");
-            }else{ 
-                warn('no URI::Escape is installed!'); 
+            $filename =~ s!^.*(\\|\/)!!;
+
+            eval { require URI::Escape };
+            if ( !$@ ) {
+                $filename = URI::Escape::uri_escape( $filename, "\200-\377" );
+            }
+            else {
+                warn('no URI::Escape is installed!');
             }
             $filename =~ s/\s/%20/g;
-            
 
-       
-            print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=add_email&fn=' . $q->param('rand_string') . '-' . $filename . $qs);
+            print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+                  . '?f=add_email&fn='
+                  . $q->param('rand_string') . '-'
+                  . $filename
+                  . $qs );
 
-    
         }
-    } else { 
-       
-        
-    
-    
-        
-        require  DADA::MailingList::Settings; 
-        my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-        my $li = $ls->get; 
-        
-                                     
-        my $num_subscribers = $lh->num_subscribers;
-          my $subscription_quota_reached = 0; 
-           $subscription_quota_reached = 1
-            if ($li->{use_subscription_quota} == 1) && 
-               ($num_subscribers              >= $li->{subscription_quota}) && 
-               ($num_subscribers               + $li->{subscription_quota} > 1); 
-            
-    
-    
-        my $list_type_switch_widget = $q->popup_menu(-name     => 'type', 
-                                                     '-values' => [keys %list_types], 
-                                                     -labels   => \%list_types, 
-                                                     -default  => $type, 
-                                                     ); 
-  
-		        my $rand_string = generate_rand_string(); 
+    }
+    else {
 
-        my $fields = [];  
-        foreach my $field(@{$lh->subscriber_fields()}){ 
-            push(@$fields, {name => $field});
+        require DADA::MailingList::Settings;
+        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+        my $li = $ls->get;
+
+        my $num_subscribers            = $lh->num_subscribers;
+        my $subscription_quota_reached = 0;
+        $subscription_quota_reached = 1
+          if ( $li->{use_subscription_quota} == 1 )
+          && ( $num_subscribers >= $li->{subscription_quota} )
+          && ( $num_subscribers + $li->{subscription_quota} > 1 );
+
+        my $list_type_switch_widget = $q->popup_menu(
+            -name     => 'type',
+            '-values' => [ keys %list_types ],
+            -labels   => \%list_types,
+            -default  => $type,
+        );
+
+        my $rand_string = generate_rand_string();
+
+        my $fields = [];
+        foreach my $field ( @{ $lh->subscriber_fields() } ) {
+            push ( @$fields, { name => $field } );
         }
 
-	
-        my $scrn = (admin_template_header(      
-              -Title       => "Add",
-              -HTML_Header => 0, 
-              -List        => $list,
-              -Root_Login  => $root_login, 
-              -Form        => 0));
-        
-        
+        my $scrn = (
+            admin_template_header(
+                -Title       => "Add",
+                -HTML_Header => 0,
+                -List        => $list,
+                -Root_Login  => $root_login,
+                -Form        => 0
+            )
+        );
 
-        require     DADA::Template::Widgets;
-         $scrn .= DADA::Template::Widgets::screen({-screen => 'add_screen.tmpl', 
-                                              -vars   => {
-	
-															screen => 'add', 
-															title  => 'Manage Subscribers -> Add', 
-															
-                                                            subscription_quota         => $li->{subscription_quota}, 
-                                                            use_subscription_quota     => $li->{use_subscription_quota}, 
-                                                            subscription_quota_reached => $subscription_quota_reached,
-                                                            num_subscribers            => $num_subscribers, 
-                                                            
-                                                            list_type_isa_list                  => ($type eq 'list')       ? 1 : 0, 
-                                                            list_type_isa_black_list            => ($type eq 'black_list') ? 1 : 0, 
-                                                            list_type_isa_authorized_senders    => ($type eq 'authorized_senders') ? 1 : 0, 
-                                                            list_type_isa_testers               => ($type eq 'testers')    ? 1 : 0, 
-                                                            list_type_isa_white_list            => ($type eq 'white_list') ? 1 : 0, 
-    
-                                                            type                        => $type, 
-                                                            type_title                  => $type_title,
-                                                            flavor                      => 'add', 
-                                                            
-                                                            
-                                                            rand_string                 => $rand_string,
-                                                    
-                                                    
-                                                    
-                                                            enable_white_list           => $li->{enable_white_list}, 
-                                                     
-                                                            enable_authorized_sending   => $li->{enable_authorized_sending},
-                                                            
-                                                            
-                                                             list_subscribers_num            => $lh->num_subscribers(-Type => 'list'), 
-                                                             black_list_subscribers_num      => $lh->num_subscribers(-Type => 'black_list'), 
-                                                             white_list_subscribers_num      => $lh->num_subscribers(-Type => 'white_list'), 
-                                                             authorized_senders_num          => $lh->num_subscribers(-Type => 'authorized_senders'), 
-                                                             
-                                                             fields                           => $fields,
+        require DADA::Template::Widgets;
+        $scrn .= DADA::Template::Widgets::screen(
+            {
+                -screen => 'add_screen.tmpl',
+                -vars   => {
 
-                                                             can_have_subscriber_fields       => $lh->can_have_subscriber_fields, 
+                    screen => 'add',
+                    title  => 'Manage Subscribers -> Add',
 
-                                                     
-                                                      },
-                                             });
-                                             
-            $scrn .= (admin_template_footer(-List => $list));
-            print $pjx->build_html( $q, $scrn, {admin_header_params()});
-   		
+                    subscription_quota         => $li->{subscription_quota},
+                    use_subscription_quota     => $li->{use_subscription_quota},
+                    subscription_quota_reached => $subscription_quota_reached,
+                    num_subscribers            => $num_subscribers,
+
+                    list_type_isa_list => ( $type eq 'list' ) ? 1 : 0,
+                    list_type_isa_black_list => ( $type eq 'black_list' ) ? 1
+                    : 0,
+                    list_type_isa_authorized_senders =>
+                      ( $type eq 'authorized_senders' ) ? 1 : 0,
+                    list_type_isa_testers => ( $type eq 'testers' ) ? 1 : 0,
+                    list_type_isa_white_list => ( $type eq 'white_list' ) ? 1
+                    : 0,
+
+                    type       => $type,
+                    type_title => $type_title,
+                    flavor     => 'add',
+
+                    rand_string => $rand_string,
+
+                    enable_white_list => $li->{enable_white_list},
+
+                    enable_authorized_sending =>
+                      $li->{enable_authorized_sending},
+
+                    list_subscribers_num =>
+                      $lh->num_subscribers( -Type => 'list' ),
+                    black_list_subscribers_num =>
+                      $lh->num_subscribers( -Type => 'black_list' ),
+                    white_list_subscribers_num =>
+                      $lh->num_subscribers( -Type => 'white_list' ),
+                    authorized_senders_num =>
+                      $lh->num_subscribers( -Type => 'authorized_senders' ),
+
+                    fields => $fields,
+
+                    can_have_subscriber_fields =>
+                      $lh->can_have_subscriber_fields,
+
+                },
+            }
+        );
+
+        $scrn .= ( admin_template_footer( -List => $list ) );
+        print $pjx->build_html( $q, $scrn, { admin_header_params() } );
+
     }
 
- 
 }
 
+sub check_status {
 
-sub check_status { 
-  
- #  warn "check status!"; 
-   my $filename = $q->param('new_email_file');
-      $filename =~ s{^(.*)\/}{}; 
- 
-         eval {require URI::Escape}; 
-         if(!$@){
-            $filename =  URI::Escape::uri_escape($filename, "\200-\377");
-         }else{ 
-            warn('no URI::Escape is installed!'); 
-         }
-         $filename =~ s/\s/%20/g;
-         
-    
-    if (! -e  $DADA::Config::TMP . '/' . $filename . '-meta.txt') { 
-        warn "no meta file at: " . $DADA::Config::TMP . '/' . $filename . '-meta.txt';
+    #  warn "check status!";
+    my $filename = $q->param('new_email_file');
+    $filename =~ s{^(.*)\/}{};
+
+    eval { require URI::Escape };
+    if ( !$@ ) {
+        $filename = URI::Escape::uri_escape( $filename, "\200-\377" );
+    }
+    else {
+        warn('no URI::Escape is installed!');
+    }
+    $filename =~ s/\s/%20/g;
+
+    if ( !-e $DADA::Config::TMP . '/' . $filename . '-meta.txt' ) {
+        warn "no meta file at: "
+          . $DADA::Config::TMP . '/'
+          . $filename
+          . '-meta.txt';
         print $q->header();
-    } 
-    else { 
-    
-        chmod ($DADA::Config::FILE_CHMOD, make_safer($DADA::Config::TMP . '/' . $filename  . '-meta.txt')); 
-        
-        open my $META, '<', make_safer($DADA::Config::TMP . '/' . $filename  . '-meta.txt') or die $!;
-        
+    }
+    else {
+
+        chmod( $DADA::Config::FILE_CHMOD,
+            make_safer( $DADA::Config::TMP . '/' . $filename . '-meta.txt' ) );
+
+        open my $META, '<',
+          make_safer( $DADA::Config::TMP . '/' . $filename . '-meta.txt' )
+          or die $!;
+
         my $s = do { local $/; <$META> };
-        my ($bytes_read, $content_length, $per) = split('-', $s, 3); 
-        close ($META); 
-        
-        my $small = 250 - ($per * 2.5); 
-        my $big   = $per * 2.5; 
-        
-        my $r    .= $q->header(); 
-           $r    .= '<div style="width:305px">'; 
-           $r    .= '<h3>File Upload Status: ' . $per        . '% Complete </h3>';
-           $r    .= '<p class="positive">'     . $bytes_read . ' of ' . $content_length . ' bytes</p>';
-           $r    .= '<div style="width:'       . $big        .   'px;height:20px;background-color:#6f0;float:left;border:1px solid black;border-right:0px;"></div>'; 
-           $r    .= '<div style="width:'       . $small      . 'px;height:20px;background-color:#f33;float:left;border:1px solid black;border-left:0px;"></div>';
-           $r    .= '</div>';
-        
-        print $r;  
+        my ( $bytes_read, $content_length, $per ) = split ( '-', $s, 3 );
+        close($META);
+
+        my $small = 250 - ( $per * 2.5 );
+        my $big   = $per * 2.5;
+
+        my $r .= $q->header();
+        $r .= '<div style="width:305px">';
+        $r .= '<h3>File Upload Status: ' . $per . '% Complete </h3>';
+        $r .= '<p class="positive">'
+          . $bytes_read . ' of '
+          . $content_length
+          . ' bytes</p>';
+        $r .= '<div style="width:' . $big
+          . 'px;height:20px;background-color:#6f0;float:left;border:1px solid black;border-right:0px;"></div>';
+        $r .= '<div style="width:' . $small
+          . 'px;height:20px;background-color:#f33;float:left;border:1px solid black;border-left:0px;"></div>';
+        $r .= '</div>';
+
+        print $r;
     }
 }
-    
-    
-    
-    sub dump_meta_file { 
-       my $filename = $q->param('new_email_file');
-          $filename =~ s{^(.*)\/}{}; 
-          
 
-             eval {require URI::Escape}; 
-             if(!$@){
-                $filename =  URI::Escape::uri_escape($filename, "\200-\377");
-             }else{ 
-                warn('no URI::Escape is installed!'); 
-             }
-             $filename =~ s/\s/%20/g;
-             
-        my $full_path_to_filename =  make_safer($DADA::Config::TMP . '/' . $filename . '-meta.txt');
-        
-        my $chmod_check = chmod($DADA::Config::FILE_CHMOD, $full_path_to_filename); 
-        if($chmod_check != 1){ 
-            warn "could not chmod '$full_path_to_filename' correctly."; 
-        }
-        
-        my $unlink_check = unlink($full_path_to_filename);
-        if($unlink_check != 1){ 
-            warn "deleting meta file didn't work for: " . $full_path_to_filename ; 
-        }
+sub dump_meta_file {
+    my $filename = $q->param('new_email_file');
+    $filename =~ s{^(.*)\/}{};
+
+    eval { require URI::Escape };
+    if ( !$@ ) {
+        $filename = URI::Escape::uri_escape( $filename, "\200-\377" );
     }
-    
-    
-    
-    sub generate_rand_string { 
-        
-        #warn "generate_rand_string"; 
-        
-        my $chars = shift || 'aAeEiIoOuUyYabcdefghijkmnopqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
-        my $num   = shift || 1024;
-        
-        require Digest::MD5;
-        
-        my @chars = split '', $chars;
-        my $ran;
-        for(1..$num){ 
-            $ran .= $chars[rand @chars];
-        }
-        return Digest::MD5::md5_hex($ran); 
-     }
+    else {
+        warn('no URI::Escape is installed!');
+    }
+    $filename =~ s/\s/%20/g;
 
-    sub upload_that_file { 
+    my $full_path_to_filename =
+      make_safer( $DADA::Config::TMP . '/' . $filename . '-meta.txt' );
 
-           # warn "upload_that_file"; 
-           # my $q = shift; 
-            
-           
-            my $fh       = $q->upload('new_email_file');
-            
-            # warn '$fh ' . $fh; 
-            
-            
-            my $filename = $q->param('new_email_file');
-               $filename =~ s!^.*(\\|\/)!!;  
-           
-             eval {require URI::Escape}; 
-             if(!$@){
-                $filename =  URI::Escape::uri_escape($filename, "\200-\377");
-             }else{ 
-                warn('no URI::Escape is installed!'); 
-             }
-             $filename =~ s/\s/%20/g;
-            
-            
-            # warn '$filename ' . $filename; 
-            
-            # warn '$q->param(\'rand_string\') '    . $q->param('rand_string'); 
-            # warn '$q->param(\'new_email_file\') ' . $q->param('new_email_file'); 
-            return '' if ! $filename; 
-            
-            my $outfile = make_safer($DADA::Config::TMP . '/' . $q->param('rand_string') . '-' . $filename);
-            
-            # warn ' $outfile ' . $outfile; 
-            
-            open (OUTFILE, '>' . $outfile) 
-                or die("can't write to " . $outfile . ": $!");        
-            
-            while (my $bytesread = read($fh, my $buffer, 1024)) { 
-                
-               # warn $buffer; 
-                
-                print OUTFILE $buffer; 
-            } 
-            
-            close (OUTFILE);
-            chmod(0666, $outfile);  
-            
-      }
+    my $chmod_check =
+      chmod( $DADA::Config::FILE_CHMOD, $full_path_to_filename );
+    if ( $chmod_check != 1 ) {
+        warn "could not chmod '$full_path_to_filename' correctly.";
+    }
 
+    my $unlink_check = unlink($full_path_to_filename);
+    if ( $unlink_check != 1 ) {
+        warn "deleting meta file didn't work for: " . $full_path_to_filename;
+    }
+}
 
+sub generate_rand_string {
 
+    #warn "generate_rand_string";
 
+    my $chars = shift
+      || 'aAeEiIoOuUyYabcdefghijkmnopqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    my $num = shift || 1024;
 
+    require Digest::MD5;
 
+    my @chars = split '', $chars;
+    my $ran;
+    for ( 1 .. $num ) {
+        $ran .= $chars[ rand @chars ];
+    }
+    return Digest::MD5::md5_hex($ran);
+}
 
+sub upload_that_file {
 
+    # warn "upload_that_file";
+    # my $q = shift;
 
+    my $fh = $q->upload('new_email_file');
 
+    # warn '$fh ' . $fh;
 
+    my $filename = $q->param('new_email_file');
+    $filename =~ s!^.*(\\|\/)!!;
 
-sub add_email { 
+    eval { require URI::Escape };
+    if ( !$@ ) {
+        $filename = URI::Escape::uri_escape( $filename, "\200-\377" );
+    }
+    else {
+        warn('no URI::Escape is installed!');
+    }
+    $filename =~ s/\s/%20/g;
 
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q, 
-                                                        -Function => 'add_email');
- 	$list         = $admin_list; 
-    
-    require  DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-    my $li = $ls->get; 
-    
-    my $lh = DADA::MailingList::Subscribers->new({-list => $list});
-	my $subscriber_fields = $lh->subscriber_fields; 
+    # warn '$filename ' . $filename;
 
+    # warn '$q->param(\'rand_string\') '    . $q->param('rand_string');
+    # warn '$q->param(\'new_email_file\') ' . $q->param('new_email_file');
+    return '' if !$filename;
 
-    if(!$process){ 
-    
-        my $new_emails_fn = $q->param('fn'); 
+    my $outfile =
+      make_safer(
+        $DADA::Config::TMP . '/' . $q->param('rand_string') . '-' . $filename );
 
+    # warn ' $outfile ' . $outfile;
+
+    open( OUTFILE, '>' . $outfile )
+      or die ( "can't write to " . $outfile . ": $!" );
+
+    while ( my $bytesread = read( $fh, my $buffer, 1024 ) ) {
+
+        # warn $buffer;
+
+        print OUTFILE $buffer;
+    }
+
+    close(OUTFILE);
+    chmod( 0666, $outfile );
+
+}
+
+sub add_email {
+
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'add_email'
+    );
+    $list = $admin_list;
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get;
+
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+    my $subscriber_fields = $lh->subscriber_fields;
+
+    if ( !$process ) {
+
+        my $new_emails_fn = $q->param('fn');
 
         my $new_emails = [];
         my $new_info   = [];
-        
-        ($new_emails, $new_info) = DADA::App::Guts::csv_subscriber_parse($admin_list, $new_emails_fn);         
-       
-		#require Data::Dumper; 
-		#die Data::Dumper::Dumper($new_info); 
 
-        my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid) 
-			= $lh->filter_subscribers_w_meta(
-				{
-					-emails => $new_info, 
-					-type   => $type
-				}
-			);
+        ( $new_emails, $new_info ) =
+          DADA::App::Guts::csv_subscriber_parse( $admin_list, $new_emails_fn );
+
+        #require Data::Dumper;
+        #die Data::Dumper::Dumper($new_info);
+
+        my (
+            $subscribed,       $not_subscribed, $black_listed,
+            $not_white_listed, $invalid
+          )
+          = $lh->filter_subscribers_w_meta(
+            {
+                -emails => $new_info,
+                -type   => $type
+            }
+          );
 
         my $num_subscribers = $lh->num_subscribers;
-        
-        my $going_over_quota = undef; 
-    
-    
-        # and for some reason, this is its own subroutine...
-        # This is down here, so the status bar won't disapear before this page is loaded (or the below redirect)
-        dump_meta_file(); 
-               
-               $going_over_quota = 1
-                if (($num_subscribers + $#$not_subscribed) >= $li->{subscription_quota}) && 
-                    ($li->{use_subscription_quota} == 1);
-                
-            my $addresses_to_add = 0; 
-               $addresses_to_add = 1
-                 if(defined(@$not_subscribed[0]));
 
+        my $going_over_quota = undef;
 
-            my $field_names = []; 
-            foreach(@$subscriber_fields){ 
-                push(@$field_names, {name => $_}); 
+# and for some reason, this is its own subroutine...
+# This is down here, so the status bar won't disapear before this page is loaded (or the below redirect)
+        dump_meta_file();
+
+        $going_over_quota = 1
+          if ( ( $num_subscribers + $#$not_subscribed ) >=
+            $li->{subscription_quota} )
+          && ( $li->{use_subscription_quota} == 1 );
+
+        my $addresses_to_add = 0;
+        $addresses_to_add = 1
+          if ( defined( @$not_subscribed[0] ) );
+
+        my $field_names = [];
+        foreach (@$subscriber_fields) {
+            push ( @$field_names, { name => $_ } );
+        }
+
+        print admin_template_header(
+            -Title      => "Verify Additions",
+            -List       => $list,
+            -Root_Login => $root_login,
+        );
+        require DADA::Template::Widgets;
+        print DADA::Template::Widgets::screen(
+            {
+                -screen => 'add_email_screen.tmpl',
+                -vars   => {
+
+                    going_over_quota   => $going_over_quota,
+                    field_names        => $field_names,
+                    subscribed         => $subscribed,
+                    not_subscribed     => $not_subscribed,
+                    black_listed       => $black_listed,
+                    not_white_listed   => $not_white_listed,
+                    invalid            => $invalid,
+                    subscription_quota => $li->{subscription_quota},
+                    black_list         => $li->{black_list},
+                    allow_admin_to_subscribe_blacklisted =>
+                      $li->{allow_admin_to_subscribe_blacklisted},
+                    enable_white_list => $li->{enable_white_list},
+                    type_isa_list     => ( $type eq 'list' ) ? 1 : 0,
+                    type              => $type,
+                    type_title        => $type_title,
+                },
             }
-            
-            print admin_template_header(      
-                  	-Title      => "Verify Additions", 
-                  	-List       => $list, 
-                  	-Root_Login => $root_login,
-                  );
-            require DADA::Template::Widgets;
-            print DADA::Template::Widgets::screen(
-					{
-						-screen => 'add_email_screen.tmpl', 
-                        -vars   => {
-							
-							going_over_quota                       => $going_over_quota, 
-							field_names                            => $field_names, 
-							subscribed                             => $subscribed, 
-							not_subscribed                         => $not_subscribed, 
-							black_listed                           => $black_listed, 
-							not_white_listed                       => $not_white_listed, 
-							invalid                                => $invalid,
-							subscription_quota                     => $li->{subscription_quota}, 
-							black_list                             => $li->{black_list}, 
-							allow_admin_to_subscribe_blacklisted   => $li->{allow_admin_to_subscribe_blacklisted},
-							enable_white_list                      => $li->{enable_white_list}, 
-							type_isa_list                          => ($type eq 'list') ? 1 : 0, 
-							type                                   => $type, 
-							type_title                             => $type_title,
-						},
-					}
-				);
-            print admin_template_footer(
-					-List => $list
-				);
+        );
+        print admin_template_footer( -List => $list );
 
-     
-        
-    } else { 
-	
-		if($process =~ /invite/i){ 
-			&list_invite; 
-			return; 
-		}
-		else { 
-    
-	        my @address         = $q->param("address"); 
-	        my $new_email_count = 0; 
+    }
+    else {
 
+        if ( $process =~ /invite/i ) {
+            &list_invite;
+            return;
+        }
+        else {
 
-			
-			# Each Addres is a CSV line... 			
-	        foreach my $a(@address){ 
-				my $info   = $lh->csv_to_cds($a); 		        
-	            $lh->add_subscriber(
-	                { 
-	                    -email   => $info->{email}, 
-	                    -fields  => $info->{fields},
-		                -type    => $type, 
-	                }
-	            ); 
-            
-	            $new_email_count++;
-	        }
-        
-	        print $q->redirect(-uri=> $DADA::Config::S_PROGRAM_URL . '?flavor=view_list&email_count=' . $new_email_count . '&type=' . $type); 
-		}
+            my @address         = $q->param("address");
+            my $new_email_count = 0;
+
+            # Each Addres is a CSV line...
+            foreach my $a (@address) {
+                my $info = $lh->csv_to_cds($a);
+                $lh->add_subscriber(
+                    {
+                        -email 		    => $info->{email},
+                        -fields 		=> $info->{fields},
+                        -type   		=> $type,
+						-fields_options => {-mode => $q->param('fields_options_mode')},
+                    }
+                );
+
+                $new_email_count++;
+            }
+
+            print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+                  . '?flavor=view_list&email_count='
+                  . $new_email_count
+                  . '&type='
+                  . $type );
+        }
     }
 }
 
@@ -6335,14 +6349,6 @@ sub resend_conf {
 			$q->param('list', $list);
 			$q->param('email', $email); 
 			$q->param('f', 's'); 
-			# I don't think I need this anymore, since the fields are in a 
-			# separate table... 
-			## And then, the subscriber fields...
-			#foreach(keys %$sub_info){ 
-			#	if(defined($sub_info->{$_}) && length($sub_info->{$_}) > 0){
-			#		$q->param($_, $sub_info->{$_});
-			#	}
-			#}
 			&subscribe; 
 	        return; 
     

@@ -31,10 +31,6 @@ sub add {
 		$args->{ -confirmed } = 1; 
 	}
 
-#    if ( !exists $args->{ -fields } ) {
-#        $args->{ -fields } = {};
-#    }
-
     my $query =
       'INSERT INTO '
       . $DADA::Config::SQL_PARAMS{subscriber_table}
@@ -56,15 +52,19 @@ sub add {
 	or croak "cannot do statement (at add_subscriber)! $DBI::errstr\n";
 	$sth->finish;
 	
-	# use Data::Dumper; 
-	# die Data::Dumper::Dumper($args->{ -fields }); 
 	if ( exists $args->{ -fields } && keys %{$args->{ -fields }}) {		
-		my $fields = DADA::Profile::Fields->new({-list => $args->{ -list }}); 		
+		my $fields = DADA::Profile::Fields->new(
+			{
+				-list => $args->{ -list }
+			}
+		);
+		 	
 		$fields->insert(
 			{
 				-email     => $args->{  -email },
 				-fields    => $args->{  -fields },
-				-confirmed =>  $args->{ -confirmed },
+				-confirmed => $args->{ -confirmed },
+				-mode      => $args->{ -fields_options }->{-mode}, 
 			}
 		); 
 	}
@@ -86,7 +86,7 @@ sub add {
 }
 
 sub get {
-	warn "DADA:MailingList::Subscriber::baseSQL->get() called."; 
+
     my $self = shift;
     my ($args) = @_;
     require DADA::Profile::Fields; 
