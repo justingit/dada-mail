@@ -39,7 +39,7 @@ List Template? It would be nice to be able to see that I (as a subscriber) is lo
 
 Things that should be addressed
 
-The pin number is not completely secure - not at the standard I'd like it at. It may be a good idea to harden this system down, for at least the SQL backends. This *would* require changes to the SQL backend, either by added a new field for the, "pin" to be saved, or create a new table that will hold meta information about the subscriber, like the tmp pin number and perhaps other options... The former would be easier, the latter would be more upgrade-friendly
+The pin number is not completely secure - not at the standard I'd like it at. It may be a good idea to harden this system down, for at least the SQL backends. This *would* require changes to the SQL backend, either by adding a new field for the, "pin" to be saved, or create a new table that will hold meta information about the subscriber, like the tmp pin number and perhaps other options... The former would be easier, the latter would be more upgrade-friendly
 
 Things that would be nice:
 
