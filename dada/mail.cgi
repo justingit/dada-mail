@@ -408,8 +408,8 @@ if($ENV{PATH_INFO}){
             if $pi_img_string; 
          
     }elsif($info =~ /^(s|n|u)/){ 
-    
-        my ($pi_flavor, $pi_list, $pi_email, $pi_domain, $pi_pin) = split('/', $info); 
+    		
+        my ($pi_flavor, $pi_list, $pi_email, $pi_domain, $pi_pin) = split('/', $info, 5); 
         
         # HACK: If there is no name and a domain, the entire email address is in "email"
         # and there is no domain. 
@@ -9421,6 +9421,7 @@ sub profile_login {
 						logged_out                   => $q->param('logged_out') || '',
 						can_use_captcha              => $can_use_captcha, 
 						CAPTCHA_string               => $CAPTCHA_string, 
+					
 					}
 				}
 			); 
@@ -9700,7 +9701,8 @@ sub profile {
 						welcome           => $q->param('welcome')                     || '',
 						edit              => $q->param('edit')                        || '',
 						errors_change_password => $q->param('errors_change_password') || '', 
-						
+						gravators_enabled => $DADA::Config::PROFILE_GRAVATAR_OPTIONS->{enable_gravators},
+						gravatar_img_url             => gravatar_img_url({-email => $email, -default_gravatar_url => $DADA::Config::PROFILE_GRAVATAR_OPTIONS->{default_gravatar_url}}),						
 					}
 				}
 			); 
@@ -9736,12 +9738,13 @@ sub profile_logout {
 
 
 sub profile_reset_password { 
-	
+
 	if(
 		$DADA::Config::PROFILE_ENABLED    != 1      || 
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
-	){		default(); 
-		return
+	){		
+		default(); 
+		return;
 	}
 
 	my $email     = xss_filter($q->param('email')); 
@@ -9752,7 +9755,6 @@ sub profile_reset_password {
 	my $prof = DADA::Profile->new({-email => $email});
 	
 	if($email){ 
-		
 		if($auth_code){ 
 			my ($status, $errors) = $prof->validate_profile_activation(
 				{
@@ -9814,8 +9816,9 @@ sub profile_reset_password {
 		}
 		else { 
 			
-	
+			
 			if($prof->exists()){
+		
 				$prof->send_profile_reset_password();
 				$prof->activate({-activate => 0});
 				
