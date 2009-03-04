@@ -648,10 +648,14 @@ sub confirm {
     }    
                                                 
     
-    my ($invalid_pin) = check_email_pin(-Email => $email, -Pin => $pin);
-    warn '$invalid_pin set to: ' . $invalid_pin
+    my $is_pin_valid = check_email_pin(
+		-Email => $email, 
+		-List => $list, 
+		-Pin => $pin
+	);
+    warn '$is_pin_valid set to: ' . $is_pin_valid
         if $t; 
-    if ($invalid_pin >= 1) {
+    if ($is_pin_valid == 0) {
         $status = 0; 
         $errors->{invalid_pin} = 1;
         warn '>>>> $errors->{invalid_pin} set to: ' . $errors->{invalid_pin}
@@ -775,6 +779,8 @@ sub confirm {
                 }
             );
 			
+			my $new_pass    = ''; 
+			my $new_profile = 0; 
 			if(
 			   $DADA::Config::PROFILE_ENABLED == 1 && 
 			   $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/
@@ -783,9 +789,11 @@ sub confirm {
 				require DADA::Profile; 
 				my $prof = DADA::Profile->new({-email => $email}); 
 				if(!$prof->exists){ 
-					$self->insert(
+					$new_profile = 1; 
+					$new_pass    = $prof->rand_str(8);
+					$prof->insert(
 						{
-							-password  => $prof->rand_str(8),
+							-password  => $new_pass,
 							-activated => 1, 
 						}
 					); 
@@ -806,6 +814,12 @@ sub confirm {
                         -email        => $email, 
                         -ls_obj       => $ls,
 						-test         => $self->test, 
+						-vars         => {
+											new_profile        => $new_profile, 
+											'profile.email'    =>  $email, 
+											'profile.password' =>  $new_pass,
+											
+									 	 }
 					}
             	); 
             
@@ -1003,7 +1017,7 @@ sub unsubscribe {
 	){  
             
         # This is... slightly weird.
-        $args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email));  
+        $args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email, -List => $list));  
     
         $lh->add_subscriber(
             {
@@ -1276,7 +1290,7 @@ sub unsub_confirm {
         }
     }
     
-    if(check_email_pin(-Email => $email, -Pin => $pin) == 1){ 
+    if(check_email_pin(-Email => $email, -List  => $list, -Pin   => $pin) == 0){ 
          $status = 0; 
          $errors->{invalid_pin} = 1; 
          
