@@ -2005,19 +2005,24 @@ sub subscription_form {
         }
         undef($i);
 
-
-		require DADA::Profile::Session; 
-		my $sess = DADA::Profile::Session->new; 
-
-		if($sess->is_logged_in){ 
-			my $email = $sess->get; 
-			$args->{-email} = $email;
-			$args->{-show_fields} = 0; 
-			$args->{-profile_logged_in} = 1; 
+		$args->{-profile_logged_in} = 0; 
+		if($DADA::Config::PROFILE_ENABLE_MAGIC_SUBSCRIPTION_FORMS == 1) { 
+			require DADA::Profile::Session; 
+			my $sess = DADA::Profile::Session->new; 
+			if($sess->is_logged_in){ 
+				my $email                   = $sess->get; 
+				$args->{-email}             = $email;
+				$args->{-show_fields}       = 0; 
+				$args->{-profile_logged_in} = 1; 
+			}
+			else { 
+				# ...
+			}
 		}
-		else { 
-			$args->{-profile_logged_in} = 0; 
-		}
+		
+		
+		
+		
 		
     }
 
