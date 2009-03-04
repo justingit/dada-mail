@@ -13,19 +13,31 @@ Key:
 
 [ ] The docs need to be clearer about how to work with HTML templates, and the like, 
 
+[ ] double check bug fixes from 3.0.x are in 3.1.x...
+
+(3.1)
+	
+	[x] I need to make an option to says, "Hey that need subscriber fields info? Replace what my be there with, 
+		THIS, or, use what's there, if there's already something there, 
+		Probably per import, for now,
+	[x] Gravatar bells and whistles in the profile screen
+	[ ] CAPTCHA for, "hey, you've already *asked* for this damn subscription! screen - the check at the moment is too simple. 
+	[ ] Remember to move over any changes from 3.0.x to 3.1in POD docs... 
+	[x] Magic Subscription Forms - a way to turn *off*?! 
+	
 
 [x] I need a purge button for subscribers. 
 
 
-[ ] Currently, the following sites will be notified: 
+[x] Currently, the following sites will be notified: 
 
 is not listing anything... 
-
 
 [ ] It would be nice to have an option that says, "Hey, that email template? Why don't we see it initially in the, "Send a List Message" scrren - so, if I want to tweak it slightly - I can. 
 The problem is, what if someone totally obliterates the, unsub info, thinking that the email template was going to be applied? 
 Perhaps just a warning at the top, "The email template is  plopped down below and won't be applied again"
-
+	[ ] I'd also have to make a really really really good check, to make sure that, if there's nothing extra type, the email template isn't used. 
+	
 
 
 [x] Need option to turn FCKEditor off list-by-list - what if for some reason it's not working? Broken Dada Mail.
