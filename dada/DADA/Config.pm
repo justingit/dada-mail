@@ -2728,15 +2728,14 @@ If you're still having trouble, please contact the list owner at:
 
 	<mailto:[list_settings.list_owner_email]>
 
-<!-- tmpl_if PROFILE_ENABLED --> 
+<!-- tmpl_if PROFILE_ENABLED --><!-- tmpl_if new_profile --> 
 You can also log into your profile and update your information: 
 
 	<!-- tmpl_var PROGRAM_URL -->?f=profile_login
 		
 	Username: <!-- tmpl_var profile.email --> 
 	Password: <!-- tmpl_var profile.password --> 
-<!-- /tmpl_if --> 
-
+<!-- /tmpl_if --><!-- /tmpl_if --> 
 The following physical address is associated with this mailing list: 
 
 [list_settings.physical_address]
