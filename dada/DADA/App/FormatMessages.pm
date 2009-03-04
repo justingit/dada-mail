@@ -1057,7 +1057,6 @@ sub _macro_tags {
 	my %args = (-url         => $DADA::Config::PROGRAM_URL, # Really.
 				-email        => undef, 
 				-pin          => undef, 
-				-make_pin     => 0,
 				-list         => $self->{list},
 				-escape_list  => 1,
 				-escape_all   => 0,
@@ -1074,9 +1073,6 @@ sub _macro_tags {
 	#
 	#}
 	
-	if($args{-email} && $args{-make_pin} == 1){ 
-		$args{-pin} = make_pin(-Email => $args{-email}); 
-	}
 
 	if($args{-type} eq 'subscribe'){ 
 	
