@@ -48,68 +48,52 @@ LOCK_NB);
 
 
 
-require Exporter; 
-@ISA = qw(Exporter); 
+require Exporter;
+@ISA = qw(Exporter);
 
 @EXPORT = qw(
-check_for_valid_email
-strip 
-pretty 
-make_pin
-check_email_pin 
-make_template
-delete_list_template
-
-delete_list_info
-
-check_if_list_exists
-available_lists
-archive_message
-uriencode
-js_enc
-
-setup_list
-date_this
-convert_to_ascii
-e_print
-decode_he
-uriescape
-lc_email
-make_safer
-interpolate_string
-webify_plain_text
-check_list_setup
-make_all_list_files
-
-message_id
-
-check_list_security
-user_error
-check_setup
-
-cased
-root_password_verification
-xss_filter
-isa_ip_address
-isa_url
-
-check_referer
-
-escape_for_sending
-
-entity_protected_str
-spam_me_not_encode
-
-
-optimize_mime_parser
-
-mailhide_encode
-
-
-csv_parse
-
-
-
+  check_for_valid_email
+  strip
+  pretty
+  make_pin
+  check_email_pin
+  make_template
+  delete_list_template
+  delete_list_info
+  check_if_list_exists
+  available_lists
+  archive_message
+  uriencode
+  js_enc
+  setup_list
+  date_this
+  convert_to_ascii
+  e_print
+  decode_he
+  uriescape
+  lc_email
+  make_safer
+  interpolate_string
+  webify_plain_text
+  check_list_setup
+  make_all_list_files
+  message_id
+  check_list_security
+  user_error
+  check_setup
+  cased
+  root_password_verification
+  xss_filter
+  isa_ip_address
+  isa_url
+  check_referer
+  escape_for_sending
+  entity_protected_str
+  spam_me_not_encode
+  optimize_mime_parser
+  mailhide_encode
+  gravatar_img_url
+  csv_parse
 );
 
 
