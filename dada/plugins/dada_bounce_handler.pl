@@ -3712,17 +3712,17 @@ sub remove_bounces {
 				
 		$lh->remove_from_list(-Email_List => [@remove_list]);	# As a Fuck son, you sucked.		
 	
-		foreach my $re(@remove_list){ 
-			$lh->add_subscriber(
-				{
-					-email => $re, 
-					-type  => 'black_list', 
-				}
-			);
+		if( ($li->{black_list}               == 1)    && 
+		    ($li->{add_unsubs_to_black_list} == 1) ){
+			foreach my $re(@remove_list){ 
+				$lh->add_subscriber(
+					{
+						-email => $re, 
+						-type  => 'black_list', 
+					}
+				);
+			}
 		}
-		
-			if( ($li->{black_list}               == 1)    && 
-			    ($li->{add_unsubs_to_black_list} == 1) );
 			
 		# Bang Bang Baby, The Bigger The Better.
 		# Bang Bang Baby, The Bigger The Better.
