@@ -630,6 +630,7 @@ sub run {
 	'profile_reset_password'  =>    \&profile_reset_password, 
 	'profile_login'           =>    \&profile_login,
 	'profile_logout'          =>    \&profile_logout, 
+	'profile_help'            =>    \&profile_help, 
 	'profile'                 =>    \&profile, 
 	
 	
@@ -9594,6 +9595,33 @@ sub profile_activate {
 			return; 
 		}
 	}
+}
+
+sub profile_help { 
+
+	if(
+		$DADA::Config::PROFILE_ENABLED    != 1      || 
+		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
+	){		default(); 
+		return;
+	}
+	
+	print list_template(
+		-Part  => "header",
+        -Title => "What are $DADA::Config::PROGRAM_NAME Profiles?", 
+    );
+
+    require DADA::Template::Widgets; 
+    print DADA::Template::Widgets::screen(
+		{
+			-screen => 'profile_help.tmpl',
+			-vars   => { 
+			}
+		}
+	); 
+    print list_template(
+		-Part => "footer",
+    );	
 }
 
 
