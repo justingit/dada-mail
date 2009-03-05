@@ -15,7 +15,7 @@ require Exporter;
 use strict;
 use vars qw(@EXPORT);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_Profile};
 
 sub new {
 
@@ -121,7 +121,7 @@ sub insert {
       . $DADA::Config::SQL_PARAMS{profile_table}
       . '(email, password, auth_code, activated) VALUES (?, ?, ?, ?)';
 
-    warn 'Query: ' . $query
+    warn 'QUERY: ' . $query
       if $t;
 
     my $sth = $self->{dbh}->prepare($query);
@@ -286,7 +286,8 @@ sub is_activated {
 
     my $sth = $self->{dbh}->prepare($query);
 
-    warn 'QUERY: ' . $query;
+    warn 'QUERY: ' . $query
+		if $t; 
 
     $sth->execute( $args->{ -email } )
       or croak "cannot do statement (is_activated)! $DBI::errstr\n";
@@ -355,7 +356,8 @@ sub exists {
 
     my $sth = $self->{dbh}->prepare($query);
 
-    warn 'QUERY: ' . $query;
+    warn 'QUERY: ' . $query
+		if $t; 
 
     $sth->execute( $self->{email} )
       or croak "cannot do statement (at exists)! $DBI::errstr\n";
@@ -377,7 +379,9 @@ sub is_valid_password {
       'SELECT email, password FROM '
       . $DADA::Config::SQL_PARAMS{profile_table}
       . ' WHERE email = ?';
-    warn 'QUERY: ' . $query;
+
+    warn 'QUERY: ' . $query
+		if $t; 
 
     my $sth = $self->{dbh}->prepare($query);
 
@@ -386,8 +390,6 @@ sub is_valid_password {
 
   FETCH: while ( my $hashref = $sth->fetchrow_hashref ) {
 
-        #warn '$hashref->{password} ' . $hashref->{password} ;
-        #	warn '$args->{ -password } ' . $args->{ -password };
         if (
             DADA::Security::Password::check_password(
                 $hashref->{password}, $args->{ -password } ) == 1
@@ -573,9 +575,6 @@ sub validate_profile_activation {
 
     my $profile = $self->get($args);
 
-    #warn '$profile->{auth_code} ' . $profile->{auth_code};
-    #warn '$args->{-auth_code}' . $args->{-auth_code};
-
     if ( $profile->{auth_code} eq $args->{ -auth_code } ) {
 
         # ...
@@ -668,3 +667,4 @@ sub rand_str {
     return DADA::Security::Password::generate_rand_string( undef, $size );
 }
 
+1;

@@ -797,12 +797,12 @@ sub remove_from_list {
         );
 
         my $remove = $s->remove;
-        warn '$remove  for '
-          . $self->{list} . ', '
-          . $args{ -Type }
-          . ', $sub'
-          . $sub . ' :'
-          . $remove;
+#        warn '$remove  for '
+#          . $self->{list} . ', '
+#          . $args{ -Type }
+#          . ', $sub'
+#          . $sub . ' :'
+#          . $remove;
         if ( $remove == 1 ) {
             $count = $count + 1;
         }

@@ -8,6 +8,8 @@ use strict;
 use Carp qw(carp croak confess);
 use DADA::App::Guts;
 
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_Profile_Fields};
+
 sub columns {
 
 	# DEV: TODO: CACHE!
@@ -16,7 +18,9 @@ sub columns {
       "SELECT * FROM "
       . $self->{sql_params}->{profile_fields_table}
       . " WHERE (1 = 0)";
-    warn 'Query: ' . $query;
+    warn 'Query: ' . $query
+		if $t; 
+		
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute()
@@ -116,9 +120,6 @@ sub insert {
     my $self = shift;
     my ($args) = @_;
 
-    # use Data::Dumper;
-    # warn '$args passed to, insert(): ' . Data::Dumper::Dumper($args);
-
     if ( !exists $args->{ -email } ) {
         croak("You MUST supply an email address in the -email paramater!");
     }
@@ -127,7 +128,6 @@ sub insert {
     }
 
     if ( !exists $args->{ -fields } ) {
-        warn 'did you not pass any fields?';
         $args->{ -fields } = {};
     }
     if ( !exists( $args->{ -confirmed } ) ) {
@@ -184,8 +184,8 @@ sub insert {
       . $sql_str . ') 
         VALUES (?' . $place_holder_string . ')';
 
-    warn 'Query: ' . $query;
-    #  if $t;
+    warn 'Query: ' . $query
+ 		if $t;
 
     my $sth = $self->{dbh}->prepare($query);
 
@@ -206,8 +206,8 @@ sub get {
       . $self->{sql_params}->{profile_fields_table}
       . " WHERE email = ?";
 
-    warn 'QUERY: ' . $query . ', $args->{-email}: ' . $args->{ -email };
-    #  if $t;
+    warn 'QUERY: ' . $query . ', $args->{-email}: ' . $args->{ -email }
+		if $t;
 
     my $sth = $self->{dbh}->prepare($query);
 
@@ -275,9 +275,8 @@ sub drop {
       . $DADA::Config::SQL_PARAMS{profile_fields_table}
       . ' WHERE email = ? ';
 
-    warn 'QUERY: ' . $query . ' (' . $args->{ -email } . ')';
-
-    #	if $t;
+    warn 'QUERY: ' . $query . ' (' . $args->{ -email } . ')'
+		if $t;
 
     my $sth = $self->{dbh}->prepare($query);
 
@@ -387,8 +386,8 @@ sub field_attributes_exist {
 
     my $sth = $self->{dbh}->prepare($query);
 
-    #warn 'QUERY: ' . $query
-    #	it $t;
+    warn 'QUERY: ' . $query
+    	if $t;
 
     $sth->execute( $args->{ -field } )
       or croak
@@ -499,9 +498,8 @@ sub get_all_field_attributes {
       'SELECT * FROM '
       . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table};
 
-    warn "QUERY: " . $query;
-
-    #	if $t;
+    warn "QUERY: " . $query
+		if $t;
 
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute()

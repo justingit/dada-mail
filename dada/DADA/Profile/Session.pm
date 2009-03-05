@@ -1,13 +1,13 @@
 package DADA::Profile::Session;
 
-use lib qw (../../../ ../../../DADA/perllib);
+use lib qw (../../ ../../../DADA/perllib);
 use strict;
 use Carp qw(carp croak);
 use DADA::Config;
 use CGI::Session;
 CGI::Session->name('dada_profile');
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_Profile_Session};
 
 sub new {
 
@@ -254,3 +254,5 @@ sub get {
 }
 
 sub reset_password { }
+
+1;
