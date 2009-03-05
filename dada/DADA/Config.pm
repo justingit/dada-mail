@@ -3262,26 +3262,26 @@ Thanks!
 EOF
 ;
 
-$PROFILE_ACTIVATION_MESSAGE_SUBJECT ||= 'Your authorization code for, <!-- tmpl_var email -->'; 
+$PROFILE_ACTIVATION_MESSAGE_SUBJECT ||= 'Profile Authorization Code for, <!-- tmpl_var email -->'; 
 $PROFILE_ACTIVATION_MESSAGE ||= <<EOF
 
-Heya, Here's the authorization link to reset your password - click it!
+Hello, here's the authorization link to reset your Profile Password: 
 
 <!-- tmpl_var PROGRAM_URL -->?f=profile_activate&email=<!-- tmpl_var email -->&auth_code=<!-- tmpl_var authorization_code --> 
 
 -- <!-- tmpl_var PROGRAM_NAME --> 
 
-
 EOF
 ; 
 
-$PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT ||= 'Your Authorization Code! For Resetting your password'; 
+$PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT ||= 'Profile Authorization Code for, <!-- tmpl_var email -->'; 
 $PROFILE_RESET_PASSWORD_MESSAGE ||= <<EOF
-Heya, Here's the authorization link to reset your password - click it!
+Hello, here's the authorization link to reset your Profile Password:
 
 <!-- tmpl_var PROGRAM_URL -->?f=profile_reset_password&email=<!-- tmpl_var email -->&auth_code=<!-- tmpl_var authorization_code --> 
 
 -- <!-- tmpl_var PROGRAM_NAME -->
+
 EOF
 ;
 
