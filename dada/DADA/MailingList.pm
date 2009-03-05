@@ -91,6 +91,12 @@ sub Create {
                 delete( $to_clone{$_} );
             }
         }
+		foreach(keys %to_clone){
+			 if(! exists($DADA::Config::LIST_SETUP_DEFAULTS{$_})){ 
+				warn "Skipping setting: $_ in clone."; 
+                delete( $to_clone{$_} );
+			}
+		}
         %{ $args->{ -settings } } = ( %to_clone, %{ $args->{ -settings } } );
     }
 

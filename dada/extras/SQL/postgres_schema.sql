@@ -16,9 +16,9 @@ list_status                      char(1)
 CREATE TABLE dada_profile (
 	profile_id			         serial,
 	email                        varchar(320) not null UNIQUE,
-	password                     text(16),
+	password                     text,
 	auth_code                    varchar(64),
-	activated                    char(1), 
+	activated                    char(1)
 );
 
 CREATE TABLE dada_profile_fields (

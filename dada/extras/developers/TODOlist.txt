@@ -24,6 +24,7 @@ Key:
 	[ ] CAPTCHA for, "hey, you've already *asked* for this damn subscription! screen - the check at the moment is too simple. 
 	[ ] Remember to move over any changes from 3.0.x to 3.1in POD docs... 
 	[x] Magic Subscription Forms - a way to turn *off*?! 
+	[ ] I need to HTML-ify the list description in the profile screen.
 	
 
 [x] I need a purge button for subscribers. 

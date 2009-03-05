@@ -85,7 +85,7 @@ foreach my $list(DADA::App::Guts::available_lists()){
 				}
 				
 				if($status == 1){ 
-					$lh->add_email(
+					$lh->add_subscriber(
 						{
 							-email => $email, 
 							-type  => $sublist

@@ -9641,7 +9641,7 @@ sub profile {
 		my $email = $prof_sess->get({-cgi_obj => $q}); 
 		
 		require DADA::Profile::Fields; 
-		require Dada::Profile; 
+		require DADA::Profile; 
 		
 		my $prof              = DADA::Profile->new({-email => $email});
 		my $dpf               = DADA::Profile::Fields->new; 
@@ -9704,6 +9704,15 @@ sub profile {
 				require DADA::MailingList::Settings; 
 				my $ls = DADA::MailingList::Settings->new({-list => $i->{list}});
 				my $li = $ls->get(-dotted => 1); 
+				# Ack, this is very awkward: 
+		        
+				#  Ack, this is very awkward: 
+				$li = DADA::Template::Widgets::webify_and_santize(
+					{
+						-vars        => $li, 
+						-to_sanitize => [qw(list_settings.list_owner_email list_settings.info list_settings.privacy_policy )], 
+					}
+				); 
 				push(@$filled, {%{$i}, %{$li}, PROGRAM_URL => $DADA::Config::PROGRAM_URL})
 			}
 			#require Data::Dumper; 

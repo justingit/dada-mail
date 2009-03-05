@@ -220,13 +220,13 @@ sub get {
     my ( $n, $d ) = split ( '@', $args->{-email}, 2 );
     $n_hashref->{email_name}   = $n;
     $n_hashref->{email_domain} = $d;
-
+    $n_hashref->{email}        = $args->{-email};
+    
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
         foreach ( @{$sub_fields} ) {
             $n_hashref->{$_} = $hashref->{$_};
         }
-        $n_hashref->{email} = $hashref->{email};
-        last FETCH;
+		last FETCH;
     }
 
     if ( $args->{ -dotted } == 1 ) {
