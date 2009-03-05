@@ -261,16 +261,10 @@ sub make_pin {
 		# and subtract that number by the $pin helper. 
 		
 		$pin = ((($pin + $pin_helper) * $DADA::Config::PIN_NUM ) - $pin_helper); 
-		
-		# give it back. 
-		warn '$email ' . $email; 
-		warn '$list ' . $list; 
-		warn '$pin  '. $pin; 
-		
+				
 		if($args{-crypt} == 1){ 
 			require DADA::Security::Password; 
 			my $enc =  DADA::Security::Password::encrypt_passwd($pin); 
-			warn '$enc ' . $enc; 
 			return $enc; 
 		}
 		else { 
