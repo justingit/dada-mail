@@ -1,0 +1,94 @@
+=head1 Upgrading Dada Mail 3.0.x to Dada Mail 3.1
+
+=head1 Background
+
+=head1 .dada_config changes
+
+=head2 %SQL_PARAMS
+
+%SQL_PARAMS in .dada_config for 3.0.x: 
+
+	%SQL_PARAMS = ( 
+
+		# May just be, "localhost" 
+		dbserver         => 'localhost',
+		
+		database         => '',
+	
+		# MySQL:      3306
+		# PostgreSQL: 5432      
+		port             => '3306',
+	
+		# MySQL:      mysql 
+		# PostgreSQL: Pg
+		# SQLite:     SQLite
+		dbtype           => 'mysql',  
+	
+		user             => '',          
+		pass             => '',
+
+		subscriber_table    => 'dada_subscribers',
+		archives_table      => 'dada_archives', 
+		settings_table      => 'dada_settings', 
+		session_table       => 'dada_sessions', 
+		bounce_scores_table => 'dada_bounce_scores', 
+
+	);
+
+
+%SQL_PARAMS in .dada_config for 3.1: 
+
+	%SQL_PARAMS = ( 
+
+		# May just be, "localhost" 
+		dbserver         => 'localhost',
+		
+		database         => '',
+	
+		# MySQL:      3306
+		# PostgreSQL: 5432      
+		port             => '3306',
+	
+		# MySQL:      mysql 
+		# PostgreSQL: Pg
+		# SQLite:     SQLite
+		dbtype           => 'mysql',  
+	
+		user             => '',          
+		pass             => '',
+
+		subscriber_table                => 'dada_subscribers',
+		profile_table                   => 'dada_profile', 
+		profile_fields_table 	        => 'dada_profile_fields', 
+		profile_fields_attributes_table => 'dada_profile_fields_attributes',
+		archives_table                  => 'dada_archives', 
+		settings_table                  => 'dada_settings', 
+		session_table                   => 'dada_sessions', 
+		bounce_scores_table             => 'dada_bounce_scores',
+
+	);
+
+New lines: 
+
+		profile_table                   => 'dada_profile', 
+		profile_fields_table 	        => 'dada_profile_fields', 
+		profile_fields_attributes_table => 'dada_profile_fields_attributes',
+
+=head1 New SQL Tables to Create
+
+Make the following tables: 
+
+=over
+
+=item * dada_profile
+
+=item * dada_profile_fields
+ 
+=item * dada_profile_fields_attributes
+
+=back
+
+=head1 New Variables in the List Template 
+
+=head1 $PROFILE Variables
+
