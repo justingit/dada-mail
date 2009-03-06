@@ -1,11 +1,20 @@
 <!-- being profile_login.tmpl --> 
 
 
+
 <p style="text-align:right">
 	<a href="<!-- tmpl_var PROGRAM_URL -->?f=profile_help">
 		What are <!-- tmpl_var PROGRAM_NAME --> Profiles?
 	</a> 
 </p>
+
+
+<!-- tmpl_if welcome --> 
+	<p class="positive">
+		You have successfully registered! Please login with your profile email address and password:
+	</p> 
+<!-- /tmpl_if --> 
+
 <!-- 
 
 	<!-- tmpl_if errors --> 

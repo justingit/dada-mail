@@ -1,0 +1,166 @@
+=pod
+
+=head1 Dada Mail Profiles Overview
+
+Dada Mail Profiles allow subscribers to a Dada Mail list access to their own profile accounts within Dada Mail, where they can view their current subscriptions, update their subscription information (user-editable subscriber fields) and also have additional permissions to subscriber-only features of Dada Mail mailing lists - as an example; archives that are only available to subscribers of a mailing list. 
+
+=head1 Logging into your Dada Mail Profile
+
+A subscriber can log into their profile, by clicking the, I<[Register/Log In]> 
+link that's currently on the top right of the Dada Mail screen: 
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http:///dadamailproject.com/images/features/profile_fields/regist_login_link.jpg" /><br /> 
+<em>The, [Register/Log In] Link</em> 
+</p>
+
+=end html
+
+The Profile Login screen looks like this: 
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http:///dadamailproject.com/images/features/profile_fields/profile_login_scrn.jpg" /><br /> 
+<em>The Profile Login Screen</em> 
+</p>
+
+=end html
+
+There are three separate forms, to log into a profile, register a new profile and to reset a lost password for a profile. Pretty standard stuff. 
+
+Once logged in, your subscriber will find themselves in the Profile Home screen: 
+
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http:///dadamailproject.com/images/features/profile_fields/profile_logged_in.jpg" /><br /> 
+<em>The Profile Home Screen</em> 
+</p>
+
+=end html 
+
+From here, your subscribers can edit their own subscriber fields, view the lists they're subscribed to and also change their profile password. There's also links to each list's archives and a link to unsubscribe from the list. 
+
+Once logged in, a Dada Mail user can navigate throughout and view their logged in status at the upper right hand side of the screen. 
+
+All the subscription forms in Dada Mail will be auto-filled out with the Dada Mail user's email address and the subscriber fields will be hidden (so as not to have the user have to re-type the same information twice) 
+
+
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http:///dadamailproject.com/images/features/profile_fields/default_screen_logged_in.jpg" /><br /> 
+<em>The Default Dada Mail screen with a logged in user</em> 
+</p>
+
+=end html
+
+And that's the new Dada Mail Profiles features, from a user's point of view. 
+
+=head1 List Administration and New Options with Dada Mail Profiles
+
+Since users can now log into Dada Mail, you can now do some fancy things from within your list, concerning list subscribers. 
+
+For example, there are now options to only allow subscribers to view a list's archive: 
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http:///dadamailproject.com/images/features/profile_fields/subscriber_only_archives.jpg" /><br /> 
+<em>Manage Archives - Archive Options</em> 
+</p>
+
+=end html
+
+There's also a new option to skip the closed-loop opt-in system, if a subscriber already has a registered profile: 
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http:///dadamailproject.com/images/features/profile_fields/skip_sub_if_reg.jpg" /><br /> 
+<em>Manage List - Mailing List Options</em> 
+</p>
+
+=end html
+
+This is hopefully, just scratching the surface of what can be done with the new Dada Mail Profile functionality. 
+
+=head1 Other Features to Look Out For
+
+=head2 Subscriber Fields
+
+Subscriber Fields can now have, B<Labels>, so you don't have to use the name of your subscriber field as the label for things like the subscription form. 
+
+Subscriber Fields can now also be easily re-ordered: 
+
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http:///dadamailproject.com/images/features/profile_fields/subscriber_fields.jpg" /><br /> 
+<em>Manage Subscribers - Subsriber Fields</em> 
+</p>
+
+=end html
+
+=head1 Installing Dada Mail 3.1 with Profile Fields
+
+B<Note! This release is currently an alpha-quality release and is not recommended for production servers!> 
+
+We also do not suggest upgrading any previous Dada Mail to this release, as many of the SQL tables have changed and upgrade tools have not been created yet. 
+
+To install, follow the same installation instructions for Dada Mail 3.x at: 
+
+L<http://dadamailproject.com/installation/>
+
+You will need the SQL backend for Dada Mail to take advantage of the new Dada Mail Profiles feature. 
+
+Profile Specific options are located in the C<Config.pm> file, as well as in the example C<.dada_config> file that comes with this release (I<dada/extras/examples/example_dada_config.txt>)
+
+As always, we suggest making the changes in the C<.dada_config> file. The variables look like in the example .dada_config file: 
+
+	# Dada Mail Profile Options
+
+	$PROFILE_ENABLED                         = 1; 
+	$PROFILE_EMAIL                           = ''; 
+	$PROFILE_ENABLE_CAPTCHA                  = 1;
+	$PROFILE_ENABLE_MAGIC_SUBSCRIPTION_FORMS = 1;
+
+	$PROFILE_COOKIE_PARAMS = {
+		-name   => 'dada_profile',  
+	    -path    => '/',
+	    -expires => '+7d',	
+	};
+
+	$PROFILE_GRAVATAR_OPTIONS = {
+		enable_gravators     => 1, 
+		default_gravatar_url => undef, 
+	};
+
+	#/ Dada Mail Profile Options
+
+And are explained in the documentation for the Config.pm file. 
+
+Make sure to set the, C<$PROFILE_EMAIL> variable, or profile registration may not work correctly!
+
+=head1 Feedback Needed 
+
+We'd love to hear from you about these new features. Please post your feedback to our boards: 
+
+http://dadamailproject.com/support/boards
+
+our developer mailing list: 
+
+http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/
+
+Or, send us an email: 
+
+http://dadamailproject.com/contact/
+
+
+=cut

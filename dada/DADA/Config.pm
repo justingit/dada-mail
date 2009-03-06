@@ -361,9 +361,45 @@ $DBI_PARAMS ||= {
 		
 };
 
+=pod
+
+=head2 Dada Mail Profile Options
+
+=head3 $PROFILE_ENABLED
+
+Sets whether profiles are enabled, or not. Set to, C<1> to enable, set to anything else to disable. 
+
+=head3 $PROFILE_EMAIL
+
+When a registration email or reset password email goes out, it'll go out on behalf of this email address. We highly encourage you to fill out this variable, or these email messages may not be sent out correctly. Example: 
+
+ $PROFILE_EMAIL = 'me@mydomain.com'; 
+
+=head3 $PROFILE_ENABLE_CAPTCHA
+
+Registration for Dada Mail Profiles can be verified using a CAPTCHA. We recommend this feature, if it's available. Set this variable to, C<1> to enable CAPTCHA in the registration form. 
+
+=head3 $PROFILE_ENABLE_MAGIC_SUBSCRIPTION_FORMS
+
+"Magic" subscription forms are pre-filled out with the subscriber's email address, if they're logged into Dada Mail. To enable this feature, set this variable to, C<1> 
+
+=head3 $PROFILE_COOKIE_PARAMS
+
+This variable holds a few options to change the behavior of the session management cookie for Dada Mail Profiles. 
+
+=head3 $PROFILE_GRAVATAR_OPTIONS
+
+Gravatars can also be enabled for Dada Mail Profiles. More information: 
+
+L<http://gravatar.com/> 
+
+
+=cut 
+
+
 
 $PROFILE_ENABLED                         ||= 1; 
-$PROFILE_EMAIL                           ||= 'justin@skazat.com'; 
+$PROFILE_EMAIL                           ||= ''; 
 $PROFILE_ENABLE_CAPTCHA                  ||= 1;
 $PROFILE_ENABLE_MAGIC_SUBSCRIPTION_FORMS ||= 1;
 

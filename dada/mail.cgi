@@ -9422,6 +9422,7 @@ sub profile_login {
 						logged_out                   => $q->param('logged_out') || '',
 						can_use_captcha              => $can_use_captcha, 
 						CAPTCHA_string               => $CAPTCHA_string, 
+						welcome                      => $q->param('welcome')					   || '', 
 					
 					}
 				}
@@ -9576,9 +9577,9 @@ sub profile_activate {
 		if($status == 1){ 
 			$prof->activate({-email => $email}); 
 			my $profile = $prof->get(); 
-			$q->param('password', $profile->{password}); 
+			#$q->param('password', $profile->{password}); 
 			$q->param('welcome',  1); 
-			$q->param('process',  1); 	
+			#$q->param('process',  1); 	
 			profile_login(); 
 			return; 
 		}
