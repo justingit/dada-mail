@@ -791,8 +791,7 @@ sub _encode_header {
 	my $value      = shift; 
 	my $new_value  = undef; 
 	
-	
-	if($label eq 'Subject'){ 
+	if($label eq 'Subject' || $label eq 'just_phrase'){ 
 
 		$new_value = 
 			MIME::EncWords::encode_mimewords(
@@ -824,6 +823,7 @@ sub _encode_header {
 		
 		$new_value = join(', ', @new_addresses);
 	}
+		
 	
 	return $new_value; 
 		
@@ -1643,11 +1643,10 @@ sub email_template {
     }
     $screen_vars{-dada_pseudo_tag_filter} = 1; 
     
-	foreach my $header(qw(Subject From To Reply-To Errors-To Return-Path)){ 
-		
-		
+	foreach my $header('Subject', 'From', 'To', 'Reply-To', 'Errors-To', 'Return-Path'){ 
+				
 	    if($args->{-entity}->head->get($header, 0)){ 
-			
+						
             if($header =~ m/From|To|Reply\-To|Return\-Path|Errors\-To/){ 
                 #Special Case - only format the phrase. 
                 require Email::Address; 
@@ -1656,6 +1655,7 @@ sub email_template {
 			        my $phrase = $addresses[0]->phrase; 
 					   $phrase = $self->_decode_header($phrase)
 							if $self->im_encoding_headers; 
+											
 					   $phrase = DADA::Template::Widgets::screen(
                         {
                             %screen_vars,
@@ -1663,16 +1663,29 @@ sub email_template {
 
                         }
                     );
- 					$phrase = $self->_encode_header($header, $phrase)
+					# DEV: It's probably an oversight that this originaly 
+					# passed the phraise to _encode_header, when that sub wants
+					# The entire header and not the phrase, but escapes me 
+					# why it was like that to start out with. 
+					# Passing the entire header does make sure multiple 
+					# addresses in the field get encoded - but does this 
+					# subroutine do that? see: $addresses[0]?! Up there? It 
+					# only looks for the first address.... THAT should probably be patched up
+					# (not that dada mail does anything with >1 address, but still..... 
+					
+					# warn '$phrase before encoding: ' . $phrase; 
+ 					$phrase = $self->_encode_header('just_phrase', $phrase)
 						if $self->im_encoding_headers; 
-
+					# warn '$phrase after encoding: ' . $phrase; 
+					
                     # Munge! 
-                    $phrase =~ s{^\"|\"$}{}g;
+                    $phrase =~ s{^\"|\"$}{}g; # need this still? 
 				    $addresses[0]->phrase($phrase); 
                     
                     
                     my $new_header = $addresses[0]->format; 
-                    
+					# warn ' $new_header ' . $new_header; 
+					 
                     $args->{-entity}->head->delete($header);
                     $args->{-entity}->head->add($header, $new_header); 
                 
