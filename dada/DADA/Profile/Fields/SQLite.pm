@@ -8,8 +8,6 @@ use strict;
 
 sub remove_subscriber_field {
 
-    warn "here in remove_subscriber_field for SQLite";
-
     my $self = shift;
 
     my ($args) = @_;
@@ -63,7 +61,7 @@ sub remove_subscriber_field {
       . $self->{sql_params}->{profile_fields_table}
       . '_backup(fields_id INTEGER, email varchar(320) '
       . $make_these_str . ')';
-    warn '$q2 ' . $q2;
+    
     $self->{dbh}->do($q2)
       or croak "cannot do statement $DBI::errstr\n";
 
@@ -74,7 +72,7 @@ sub remove_subscriber_field {
       . $keep_these_str
       . ' FROM '
       . $self->{sql_params}->{profile_fields_table};
-    warn '$q3 ' . $q3;
+    
     $self->{dbh}->do($q3)
       or croak "cannot do statement $DBI::errstr\n";
 
