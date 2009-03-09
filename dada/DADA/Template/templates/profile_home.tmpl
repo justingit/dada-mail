@@ -53,8 +53,6 @@
 <legend>
 	Subscriber Fields
 </legend> 
-
-
 	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
 		<input type="hidden" name="f"        value="profile" /> 
 		<input type="hidden" name="process"  value="edit_subscriber_fields" /> 
@@ -120,7 +118,7 @@ Your Subscriptions
 	<ul> 
 	    <!-- tmpl_if list_settings.group_list --> 
 	        <li>
-	         <a href="mailto:<!-- tmpl_var list_settings.discussion_pop_email">
+	         <a href="mailto:<!-- tmpl_var list_settings.discussion_pop_email -->">
 				Send a message to 
 					<!-- tmpl_var list_settings.discussion_pop_email -->
 				</a>
