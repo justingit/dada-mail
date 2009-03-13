@@ -3,8 +3,7 @@ package DADA::Template::HTML;
 use lib qw(../../ ../../DADA/perllib); 
 
 use DADA::Config qw(!:DEFAULT);  
-use DADA::App::Guts;
-use DADA::Template::Widgets; 
+use DADA::App::Guts; 
 
 use Carp qw(croak carp); 
 
@@ -138,6 +137,8 @@ sub admin_template_footer {
 
 sub admin_template { 
  
+	require DADA::Template::Widgets; 
+	require DADA::Template::Widgets::Admin_Menu;
 	require CGI; 
 	my $q = CGI->new;
 	   $q->charset($DADA::Config::HTML_CHARSET);
@@ -171,7 +172,6 @@ sub admin_template {
 	}
 		
 	### Admin Menu Creation...
-	require DADA::Template::Widgets::Admin_Menu;
     my $admin_menu; 
 	my $li; 
 	if(!$args{-li}){ 
@@ -286,8 +286,11 @@ sub admin_header_params {
 
 sub default_template { 
  
+	
+	
 	# DEV: should the templates found in the other ways be run through the templating system? I kinda think they should...  
-	if(!$DADA::Config::USER_TEMPLATE){ 			   
+	if(!$DADA::Config::USER_TEMPLATE){ 		
+		require DADA::Template::Widgets; 	   
 		return DADA::Template::Widgets::_raw_screen({-screen => 'default_list_template.tmpl'}); 
 	}else{ 
 		if(DADA::App::Guts::isa_url($DADA::Config::USER_TEMPLATE)){ 
@@ -369,7 +372,7 @@ sub fetch_admin_template {
 		if($file !~ m/^\//){ 
 			$file = $DADA::Config::TEMPLATES  .'/'. $file;
 		}
-		
+		require DADA::Template::Widgets; 
 		$admin_template = DADA::Template::Widgets::_slurp($file); 
 	}
 	
@@ -388,6 +391,7 @@ sub fetch_user_template {
 		return undef;
 	}
 	else { 
+		require DADA::Template::Widgets; 
 		return DADA::Template::Widgets::_slurp($template);
 	}
 
@@ -412,6 +416,7 @@ sub open_template {
 		return undef;
 	}
 	else { 
+		require DADA::Template::Widgets; 
 		return DADA::Template::Widgets::_slurp($template);
 	}
 	
@@ -422,7 +427,7 @@ sub open_template {
 
 sub list_template { 
 
-	use DADA::Template::Widgets; 
+	require DADA::Template::Widgets; 
     require CGI; 
     my $q = CGI->new; 
        $q->charset($DADA::Config::HTML_CHARSET); 

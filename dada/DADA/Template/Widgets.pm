@@ -400,125 +400,124 @@ sub list_popup_login_form {
 
 
 
+sub default_screen {
 
-sub default_screen { 
-	
-	my %args = (
-				-show_hidden        => undef,
-				-name               => undef,
-				-email              => undef, 
-				-set_flavor         => undef,
-				-error_invalid_list => 0, 
-				@_
-				); 
-	
-	require DADA::MailingList::Settings;
-	       $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
+    my %args = (
+        -show_hidden        => undef,
+        -name               => undef,
+        -email              => undef,
+        -set_flavor         => undef,
+        -error_invalid_list => 0,
+        @_
+    );
 
-	use DADA::MailingList::Archives; 
-	       $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
-	       
-    my $subscriber_fields; 
-    
-	
-	my @list_information = ();
-	
-	my $reusable_parser = undef; 
-	
-	# Keeps count of how many visible lists are printed out; 
-	my $l_count = 0;
-	
+    require DADA::MailingList::Settings;
+    require DADA::MailingList::Archives;
 
-	my $labels = {}; 
-	foreach my $l( available_lists() ){
-	        
-	        # This is a weird placement...
-	        if(!$subscriber_fields){ 
-	            require DADA::MailingList::Subscribers; 
-	            my $lh = DADA::MailingList::Subscribers->new({-list => $l}); 
-	            $subscriber_fields = $lh->subscriber_fields; 
-	        }
-	        # /This is a weird placement...
-	        
-			my $ls = DADA::MailingList::Settings->new({-list => $l}); 
-			my $li = $ls->get; 
-			next if $li->{hide_list} == 1; 
-			$labels->{$l} = $li->{list_name};
-			$l_count++;
-		}
-	my @list_in_list_name_order = sort { uc($labels->{$a}) cmp uc($labels->{$b}) } keys %$labels;
-		
-		
-	        
-	#foreach my $list(available_lists(-In_Order => 1)){
-	 
-	 foreach my $list(@list_in_list_name_order){	 
-		my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-		my $all_list_info = $ls->get(); 
-		my $all_list_info_dotted = $ls->get(-dotted => 1);
-		
-		my $ah = DADA::MailingList::Archives->new({-list => $list, (($reusable_parser) ? (-parser => $reusable_parser) : ()) }); 
-		
-	if($all_list_info->{hide_list} != 1){ # should we do this here, or in the template?          
-   
-		 $l_count++; 
-				
-			   # This is strange...
-			   $all_list_info_dotted->{'list_settings.info'}  = webify_plain_text( $all_list_info_dotted->{'list_settings.info'});
-               $all_list_info_dotted->{'list_settings.info'}  = _email_protect( $all_list_info_dotted->{'list_settings.info'});  
-			   
-			   my $ne      = $ah->newest_entry; 
-			   my $subject = $ah->get_archive_subject($ne); 
-	              $subject = $ah ->_parse_in_list_info(-data => $subject);
-                  
-				# These two things are sort of strange. 
-			   $all_list_info_dotted->{newest_archive_blurb}   = $ah->message_blurb(); 
-			   $all_list_info_dotted->{newest_archive_subject} = $subject; 
-			
-			
-			push(@list_information, $all_list_info_dotted);
-			
-			$reusable_parser = $ah->{parser} if ! $reusable_parser; 
-		
-		}	
-	}
-	
-	my $visible_lists = 1; 
-    if($l_count == 0){ 
-        $visible_lists = 0; 
+    my $subscriber_fields;
+    my @list_information = ();
+    my $reusable_parser  = undef;
+
+    # Keeps count of how many visible lists are printed out;
+    my $l_count = 0;
+
+    my $labels = {};
+    foreach my $l ( available_lists() ) {
+
+        # This is a weird placement...
+        if ( !$subscriber_fields ) {
+            require DADA::MailingList::Subscribers;
+            my $lh = DADA::MailingList::Subscribers->new( { -list => $l } );
+            $subscriber_fields = $lh->subscriber_fields;
+        }
+
+        # /This is a weird placement...
+
+        my $ls = DADA::MailingList::Settings->new( { -list => $l } );
+        my $li = $ls->get;
+        next if $li->{hide_list} == 1;
+        $labels->{$l} = $li->{list_name};
+        $l_count++;
+    }
+    my @list_in_list_name_order =
+      sort { uc( $labels->{$a} ) cmp uc( $labels->{$b} ) } keys %$labels;
+
+    foreach my $list (@list_in_list_name_order) {
+        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+        my $all_list_info        = $ls->get();
+        my $all_list_info_dotted = $ls->get( -dotted => 1 );
+
+        my $ah = DADA::MailingList::Archives->new(
+            {
+                -list => $list,
+                ( ($reusable_parser) ? ( -parser => $reusable_parser ) : () )
+            }
+        );
+
+        if ( $all_list_info->{hide_list} != 1 )
+        {    # should we do this here, or in the template?
+
+            $l_count++;
+
+            # This is strange...
+            $all_list_info_dotted->{'list_settings.info'} =
+              webify_plain_text(
+                $all_list_info_dotted->{'list_settings.info'} );
+            $all_list_info_dotted->{'list_settings.info'} =
+              _email_protect( $all_list_info_dotted->{'list_settings.info'} );
+
+            my $ne      = $ah->newest_entry;
+            my $subject = $ah->get_archive_subject($ne);
+            $subject = $ah->_parse_in_list_info( -data => $subject );
+
+            # These two things are sort of strange.
+            $all_list_info_dotted->{newest_archive_blurb} =
+              $ah->message_blurb();
+            $all_list_info_dotted->{newest_archive_subject} = $subject;
+
+            push ( @list_information, $all_list_info_dotted );
+
+            $reusable_parser = $ah->{parser} if !$reusable_parser;
+
+        }
     }
 
-	
-	my $named_subscriber_fields = [];
-	foreach(@$subscriber_fields){ 
-	    push(@$named_subscriber_fields, {name => $_})
-	}
-	
-	my $list_popup_menu = list_popup_menu(-email      => $args{email}, 
-											  -list       => $args{list}, 
-											  -set_flavor => $args{set_flavor},
-											  );
-																	
-   return screen(
-            {
+    my $visible_lists = 1;
+    if ( $l_count == 0 ) {
+        $visible_lists = 0;
+    }
+
+    my $named_subscriber_fields = [];
+    foreach (@$subscriber_fields) {
+        push ( @$named_subscriber_fields, { name => $_ } );
+    }
+
+    my $list_popup_menu = list_popup_menu(
+        -email      => $args{email},
+        -list       => $args{list},
+        -set_flavor => $args{set_flavor},
+    );
+
+    return screen(
+        {
             -screen => 'default_screen.tmpl',
-            -expr   => 1, 
+            -expr   => 1,
             -vars   => {
-            
-                
+
                 list_popup_menu    => $list_popup_menu,
-                email              => $args{-email},
-                set_flavor         => $args{-set_flavor},
+                email              => $args{ -email },
+                set_flavor         => $args{ -set_flavor },
                 list_information   => \@list_information,
-                visible_lists      => $visible_lists, 
-                error_invalid_list => $args{-error_invalid_list}, 
-                fields             => $named_subscriber_fields, 
-                subscription_form  => subscription_form({-give_props => 0}), 
-                
+                visible_lists      => $visible_lists,
+                error_invalid_list => $args{ -error_invalid_list },
+                fields             => $named_subscriber_fields,
+                subscription_form  => subscription_form( { -give_props => 0 } ),
+
             },
         }
-    ); 
+    );
 }
+
 
 
 
