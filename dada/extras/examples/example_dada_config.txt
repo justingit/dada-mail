@@ -31,6 +31,7 @@ $ARCHIVE_DB_TYPE          = 'SQL';
 $SETTINGS_DB_TYPE         = 'SQL'; 
 $SESSION_DB_TYPE          = 'SQL'; 
 $BOUNCE_SCORECARD_DB_TYPE = 'SQL';
+$CLICKTHROUGH_DB_TYPE     = 'SQL'; 
 
 
 %SQL_PARAMS = ( 
@@ -60,6 +61,7 @@ $BOUNCE_SCORECARD_DB_TYPE = 'SQL';
 	settings_table                  => 'dada_settings', 
 	session_table                   => 'dada_sessions', 
 	bounce_scores_table             => 'dada_bounce_scores',
+	clickthrough_urls_table         => 'dada_clickthrough_urls', 
 
 );
 

@@ -52,3 +52,11 @@ field varchar(320) not null UNIQUE,
 label varchar(320),
 fallback_value varchar(320)
 );
+
+CREATE TABLE dada_clickthrough_urls (
+url_id INTEGER PRIMARY KEY AUTOINCREMENT,
+redirect_id varchar(16), 
+msg_id text, 
+url text
+); 
+

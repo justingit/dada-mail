@@ -77,9 +77,15 @@ score                         int4
 ); 
 
 
+CREATE TABLE dada_clickthrough_urls (
+url_id  int4 not null primary key auto_increment, 
+redirect_id varchar(16), 
+msg_id text, 
+url text
+); 
 
 
 CREATE TABLE dada_sessions (
      id CHAR(32) NOT NULL PRIMARY KEY,
      a_session TEXT NOT NULL
-  );
+);

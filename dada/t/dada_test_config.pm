@@ -218,6 +218,7 @@ my @statements = split(';', $sql,8);
 		my $profile_table            		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_table};  
 		my $profile_fields_table             = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_fields_table};
 		my $profile_fields_attributes_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_fields_attributes_table};
+		my $clickthrough_urls_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{clickthrough_urls_table};
 		
 		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
 		$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
@@ -227,6 +228,7 @@ my @statements = split(';', $sql,8);
 		$_ =~ s{CREATE TABLE dada_profile}{CREATE TABLE $profile_table};
 		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
 		$_ =~ s{CREATE TABLE dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};
+		$_ =~ s{CREATE TABLE dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
 		
 		print 'query: ' . $_; 
         my $sth = $dbh->prepare($_) or warn $DBI::errstr; 
@@ -275,7 +277,7 @@ sub create_MySQL_db {
 	$DADA::Config::SUBSCRIBER_DB_TYPE       = 'SQL'; 
 	$DADA::Config::SESSIONS_DB_TYPE         = 'SQL'; 
 	$DADA::Config::BOUNCE_SCORECARD_DB_TYPE = 'SQL';
-  
+	$DADA::Config::CLICKTHROUGH_DB_TYPE     = 'SQL';
    
     %DADA::Config::SQL_PARAMS = %{$__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}};
     
@@ -309,7 +311,8 @@ my @statements = split(';', $sql);
 		my $profile_table            		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_table};  
 		my $profile_fields_table             = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_fields_table};
 		my $profile_fields_attributes_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_fields_attributes_table};
-
+		my $clickthrough_urls_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{clickthrough_urls_table};
+		
 		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
 		$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
 		$_ =~ s{CREATE TABLE dada_archives}{CREATE TABLE $archives_table}; 
@@ -318,6 +321,7 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE dada_profile}{CREATE TABLE $profile_table};
 		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
 		$_ =~ s{CREATE TABLE dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};	
+		$_ =~ s{CREATE TABLE dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
 						
 		if(length($_) > 10){ 
 	    	carp 'query: ' . $_; 
@@ -360,6 +364,8 @@ sub destroy_MySQL_db {
 		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_fields_attributes_table})
         	or carp "cannot do statement! $DBI::errstr\n";
 
+			$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{clickthrough_urls_table})
+	        	or carp "cannot do statement! $DBI::errstr\n";
 }
 
 
@@ -375,7 +381,8 @@ sub create_PostgreSQL_db {
 	$DADA::Config::SUBSCRIBER_DB_TYPE       = 'SQL'; 
 	$DADA::Config::SESSIONS_DB_TYPE         = 'SQL'; 
 	$DADA::Config::BOUNCE_SCORECARD_DB_TYPE = 'SQL';
-    
+    $DADA::Config::CLICKTHROUGH_DB_TYPE     = 'SQL';
+	
      %DADA::Config::SQL_PARAMS = %{$__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}};
     
     
@@ -412,6 +419,7 @@ my @statements = split(';', $sql);
 		my $profile_table            		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_table};  
 		my $profile_fields_table             = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_table};
 		my $profile_fields_attributes_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_attributes_table};
+		my $clickthrough_urls_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{clickthrough_urls_table};
 
 		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
 		$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
@@ -421,6 +429,7 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE dada_profile}{CREATE TABLE $profile_table};
 		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
 		$_ =~ s{CREATE TABLE dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};
+		$_ =~ s{CREATE TABLE dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
 
 	    my $sth = $dbh->prepare($_); #  or croak $DBI::errstr; 
 	       $sth->execute or carp $DBI::errstr; 
@@ -460,6 +469,8 @@ sub destroy_PostgreSQL_db {
 	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_attributes_table})
     	or carp "cannot do statement! $DBI::errstr\n";
 
+		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{clickthrough_urls_table})
+        	or carp "cannot do statement! $DBI::errstr\n";
 
 }
 

@@ -61,6 +61,14 @@ list                          varchar(16),
 score                         int4 
 ); 
 
+CREATE TABLE dada_clickthrough_urls (
+url_id  serial,
+redirect_id varchar(16), 
+msg_id text, 
+url text
+); 
+
+
 
 CREATE TABLE dada_sessions (
     id CHAR(32) NOT NULL PRIMARY KEY,
