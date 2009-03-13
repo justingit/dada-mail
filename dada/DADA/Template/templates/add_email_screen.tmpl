@@ -518,7 +518,18 @@ Invalid Email Addresses
 
 
 <!-- tmpl_if type_isa_list --> 
-  <input type="submit" class="processing" name="process"  value="Subscribe Checked Subscribers >>" onclick="return warnAboutMassSubscription(this.form);" />
+	<!-- tmpl_if list_settings.enable_mass_subscribe --> 
+	
+  		<input type="submit" class="processing" name="process"  value="Subscribe Checked Subscribers >>" onclick="return warnAboutMassSubscription(this.form);" />
+
+	<!-- tmpl_else --> 
+	
+	<input type="button" class="disabled" disabled="disabled"  name="process"  value="Subscribe Checked Subscribers (Disabled) >>"  onclick="return warnAboutMassSubscription(this.form);" />
+		
+	<!-- /tmpl_if --> 
+	
+		
+
 <!-- tmpl_else --> 
 	<input type="submit" class="processing" name="process"  value="Subscribe Checked Subscribers >>" />
 

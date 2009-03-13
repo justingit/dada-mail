@@ -2,8 +2,28 @@
 
 <h1>You Are Unable to Subscribe</h1> 
 
-<p>It seems that your not allowed to subscribe to [list_name] for some reason or another.
-This list may be closed to particular participants.</p>
+<p>It seems that you're email address, 
+
+	<blockquote>
+		<p>
+			<strong>
+			 <!-- tmpl_var email -->
+			</strong>
+		</p>
+	</blockquote> 
+	
+
+May not be allowed to subscribe to:</p>
+
+<blockquote>
+	<p>
+		<strong>
+		 <!-- tmpl_var list_settings.list_name -->
+		</strong>
+	</p>
+</blockquote> 
+
+<p>For one reason or another. This list may be closed to particular participants.</p>
 
 <!-- tmpl_include error_footer_widget.tmpl -->
 
