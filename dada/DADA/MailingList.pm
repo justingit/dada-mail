@@ -269,15 +269,36 @@ This module basically either creates, or removes a list.
 				# a bunch of settings!
 				}
 	}
-);
+ );
+
+or even, 
+
+ my $ls = DADA::MailingList::Create(
+	{ 
+		-list => 'mylist', 
+		-settings => {
+				# a bunch of settings!
+				}
+		-clone => 'my_first_list',
+	}
+ );
+
 
 Creates all the necessary files for a Dada Mailing List. 
 
-The <-list> paramater should hold  the 
+The B<-list> paramater should hold  the 
 list shortname of your mailing list - which itself should be no more than 16
 characters and should only include letters/numbers.
 
-It returns a B<DADA::MailingList::Settings> object.
+The, B<-settings> paramater should hold a hashref with the key/values that make 
+up your list settings. Only keys that are mentioned in the Config.pm's C<%LIST_SETUP_DEFAULTS>
+can be passed - trying to pass keys that aren't mentioned will cause an error. 
+
+The optional, B<-clone> variable will copy list settings from an already existing list, 
+to be used in this new list. Settings mentioned in the Config.pm variable, 
+C<@LIST_SETUP_DONT_CLONE> will not be copied over. 
+
+This method returns a B<DADA::MailingList::Settings> object.
 
 =head2 Remove
 
