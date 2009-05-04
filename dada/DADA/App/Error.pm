@@ -162,6 +162,8 @@ sub cgi_user_error {
 				-vars       => { 
 						PROGRAM_URL           => $DADA::Config::PROGRAM_URL, 
 						S_PROGRAM_URL         => $DADA::Config::S_PROGRAM_URL,
+						show_profile_widget	  => 0,
+				
 				}
 			);
 							
