@@ -328,14 +328,23 @@ sub subscribe {
 
         }else{ 
             
-			require DADA::App::Messages; 
-			DADA::App::Messages::send_you_are_already_subscribed_message(		
-          		{
-                	-list         => $list, 
-	                -email        => $email, 
-	      			-test         => $self->test, 
-        		}
-			);
+			if($errors->{subscribed} == 1 && 
+			   $li->{no_confirm_email} == 0
+			){
+				# 3.0.x code: 
+				$args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email));  
+				# 3.1 code: 
+				#$args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email, -List => $list));  
+				$self->confirm(
+		            {
+		                -html_output => $args->{-html_output}, 
+		                -cgi_obj     => $args->{-cgi_obj},
+		            },
+		        );
+
+		        return;
+			}
+
             
         }
         
@@ -364,16 +373,19 @@ sub subscribe {
                                -List  => $li->{list}
                           );
                                
-               
-               my $s = $li->{html_confirmation_message}; 
-               require DADA::Template::Widgets; 
-               $r .=   DADA::Template::Widgets::screen({ 
-                                                       -data                     => \$s,
-                                                       -list_settings_vars_param => {-list => $li->{list},},
-                                                       -subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'sub_confirm_list'},
-                                                       -dada_pseudo_tag_filter   => 1,             
-               } 
-               ); 
+				my $s; 
+				$s = $li->{html_confirmation_message}; 
+
+				require DADA::Template::Widgets; 
+				$r .=   DADA::Template::Widgets::screen(
+				{ 
+					-data                     => \$s,
+					-list_settings_vars_param => {-list => $li->{list},},
+					-subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'sub_confirm_list'},
+					-dada_pseudo_tag_filter   => 1,             
+				} 
+
+				); 
                 
                 $r .= DADA::Template::HTML::list_template(
                                -Part      => "footer", 
