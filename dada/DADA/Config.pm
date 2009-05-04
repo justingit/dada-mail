@@ -4127,10 +4127,15 @@ encrypted.
     find_spam_assassin_score_by         => 'looking_for_embedded_headers',
     ignore_spam_messages_with_status_of => 6, 
     enable_moderation                   => 0, 
+    moderate_discussion_lists_with      => 'owner_email',	
+    send_moderation_msg                 => 0, 
+    send_moderation_accepted_msg        => 0,     
     send_moderation_rejection_msg       => 0, 
     send_msg_copy_address               => '', 
     
     enable_authorized_sending           => 0, 
+    authorized_sending_no_moderation    => 0,
+    subscriber_sending_no_moderation  => 0,
     
     strip_file_attachments              => 0, 
     file_attachments_to_strip           => '', 

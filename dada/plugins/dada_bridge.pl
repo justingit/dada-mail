@@ -150,6 +150,38 @@ To deny sending this message to the list, click here:
 EOF
 ; 
 
+my $AwaitModeration_Message_Subject = 'Message to: [list_settings.list_name] w/ Subject: [message_subject] is awaiting approval.';
+my $AwaitModeration_Message = <<EOF
+
+Hello, 
+
+Your recent message to [list_settings.list_name] with the subject of: 
+
+    [message_subject]
+    
+is awaiting approval. 
+
+-- [Plugin_Name]
+
+EOF
+  ;
+
+my $Accept_Message_Subject = 'Message to: [list_settings.list_name] w/ Subject: [message_subject] is accepted.';
+my $Accept_Message         = <<EOF
+
+Hello, 
+
+Your recent message to [list_settings.list_name] with the subject of: 
+
+    [message_subject]
+    
+was accepted by the list owner. It will be forwarded to the list soon. 
+
+-- [Plugin_Name]
+
+EOF
+  ;
+
 my $Rejection_Message_Subject = 'Message to: [list_settings.list_name] Subject: [message_subject] rejected.'; 
 my $Rejection_Message = <<EOF
 
@@ -210,7 +242,7 @@ EOF
 $ENV{PATH} = "/bin:/usr/bin"; 
 delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
 
-my $App_Version = '0.0';
+my $App_Version = '3.1.0';
 
 
 $DADA::Config::LIST_SETUP_DEFAULTS{open_discussion_list} = 0; 
@@ -357,6 +389,7 @@ sub cgi_main {
         'cgi_default'             => \&cgi_default, 
         'cgi_show_plugin_config'  => \&cgi_show_plugin_config,
         'test_pop3'               => \&cgi_test_pop3,
+        'awaiting_msgs'          => \&cgi_awaiting_msgs,                    
         'manual_start'            => \&admin_cgi_manual_start, 
         'mod'                     => \&cgi_mod, 
         ); 
@@ -436,6 +469,108 @@ sub cgi_test_pop3 {
 
 
 
+sub cgi_awaiting_msgs {
+
+    print(
+          admin_template_header(
+                                -Title      => "Messages Awaiting Moderation",
+                                -List       => $list,
+                                -Form       => 0,
+                                -Root_Login => $root_login
+          )
+    );
+
+    $run_list = $list;
+    $verbose  = 1;
+    my $popupscript = <<EOF
+<script language="JavaScript">
+<!-- 
+// This is the function that will open the
+// new window when the mouse is moved over the link
+function open_new_window(msgtext) 
+{
+new_window = open("","hoverwindow","width=440,height=300,left=10,top=10");
+
+// open new document 
+  new_window.document.open();
+  
+// Text of the new document
+// Replace your " with ' or \" or your document.write statements will fail
+new_window.document.write("<html><title>Raw View of Message</title>");
+new_window.document.write("<body>");
+new_window.document.write(msgtext);
+new_window.document.write("</body></html>");
+
+// close the document
+  new_window.document.close();  
+}
+
+// -->
+</script> 
+
+EOF
+;   
+
+    print $popupscript . '<br><pre>'; 
+          
+    my $mod = SimpleModeration->new({-List => $list});  
+    my $awaiting_msgs = $mod->awaiting_msgs();
+    print "List of Messages Still Awaiting Moderation:\n\n"
+      if $verbose;
+    foreach (@$awaiting_msgs) {
+        my $messagename = substr($_, length($list)+1);
+        my $parser = $parser;
+        my $entity;
+        eval { $entity = $parser->parse_data($mod->get_msg({-msg_id => $messagename})); };
+        if (!$entity) {
+            croak "no entity found! die'ing!";
+        }
+        my $subject = $entity->head->get('Subject', 0);
+        $subject =~ s/\n//g;
+        my $from = $entity->head->get('From', 0);
+        $from =~ s/\n//g;    
+        my $date = $entity->head->get('Date', 0);
+        $date =~ s/\n//g;            
+        my $messagehdr = 
+            "From: "
+          . $from
+          . "; Subj: "
+          . $subject
+          .  " ; Date: "
+          . $date;  
+#        my $messagetxt = quotemeta($entity->head->get('Body', 0));   
+#        my $view_link = "<a href=\"#\" onMouseOver=\"open_new_window(\'" . $messagehdr . "<br>" . $messagetxt . "\')\">View</a>";  
+        
+        my $confirmation_link =
+            "<a href="       
+          . $Plugin_Config->{Plugin_URL}
+          . '?flavor=mod&list='
+          . $list
+          . '&process=confirm&msg_id='
+          . $messagename
+          . ">Accept</a>";
+          
+        my $deny_link =
+            "<a href="           
+          . $Plugin_Config->{Plugin_URL}
+          . '?flavor=mod&list=' 
+          . $list
+          . '&process=deny&msg_id=' 
+          . $messagename
+          . ">Reject</a>";  
+            
+        print $confirmation_link . " or " . $deny_link. " - " . $messagehdr . "\n"
+          if $verbose;
+    }
+    
+    print '</pre>';
+    print '<p><a href="' . $Plugin_Config->{Plugin_URL} . ' ">Awaiting Message Index...</a></p>';
+
+    print admin_template_footer(-Form => 0,
+                                -List => $list,);
+}
+
+
 
 sub admin_cgi_manual_start { 
 
@@ -513,13 +648,19 @@ sub cgi_mod {
 			}
 		); 
 		
+   			print "<p>Message has been sent!</p>";
+        if ($li->{send_moderation_accepted_msg} == 1) {
+            print "<p>Sending acceptance message!</p>";
+            $mod->send_accept_msg({-msg_id => $msg_id, -parser => $parser});
+        } 		
+        
         $mod->remove_msg(
 				{
 					-msg_id => $msg_id
 				}
 			); 
        
- 			print "<p>Message has been sent!</p>";
+ 			#print "<p>Message has been sent!</p>";
     } 
     elsif($q->param('process') eq 'deny'){ 
 
@@ -543,12 +684,11 @@ sub cgi_mod {
     
     
     } else {
-        print "<p>Moderated message doesn't exist - have you already moderated it?</p>"; 
+        print "<p>Moderated message doesn't exist - most likely it was already moderated.</p>"; 
     }
     
+    print '<p><a href="' . $Plugin_Config->{Plugin_URL} . '?flavor=awaiting_msgs">Awaiting Message Index...</a></p>';
     
-    
-
     print admin_template_footer(-Form    => 0, 
                             -List    => $list,
                             ); 
@@ -617,8 +757,13 @@ sub cgi_default {
 		   $p->{discussion_pop_auth_mode}                   = $q->param('discussion_pop_auth_mode')                   || undef;
 		   $p->{append_discussion_lists_with}               = $q->param('append_discussion_lists_with')               || '';
 		   $p->{enable_moderation}                          = $q->param('enable_moderation')                          || 0; 
-		   $p->{send_moderation_rejection_msg}              = $q->param('send_moderation_rejection_msg')              || 0; 
-		   $p->{enable_authorized_sending}                  = $q->param('enable_authorized_sending')                  || 0; 
+       $p->{moderate_discussion_lists_with}             = $q->param('moderate_discussion_lists_with')             || undef;
+       $p->{send_moderation_msg}                        = $q->param('send_moderation_msg')                        || 0;
+       $p->{send_moderation_accepted_msg}               = $q->param('send_moderation_accepted_msg')               || 0;
+       $p->{send_moderation_rejection_msg}              = $q->param('send_moderation_rejection_msg')              || 0;
+       $p->{enable_authorized_sending}                  = $q->param('enable_authorized_sending')                  || 0;
+       $p->{authorized_sending_no_moderation}           = $q->param('authorized_sending_no_moderation')           || 0;
+       $p->{subscriber_sending_no_moderation}           = $q->param('subscriber_sending_no_moderation')           || 0;
 		   $p->{send_msgs_to_list}                          = $q->param('send_msgs_to_list')                          || 0; 
 		   $p->{send_msg_copy_to}                           = $q->param('send_msg_copy_to')                           || 0; 
 		   $p->{send_msg_copy_address}                      = $q->param('send_msg_copy_address')                      || ''; 
@@ -676,7 +821,7 @@ sub cgi_default {
 	}
     
 	print(admin_template_header(
-		                    -Title      => "Discussion List Options",
+		                    -Title      => "Discussion List (3.1m) Options",
 		                    -List       => $list,
 		                    -Form       => 0,
 		                    -Root_Login => $root_login,
@@ -744,10 +889,15 @@ sub cgi_default {
 					 list_owner_email                  => $li->{list_owner_email}, 
 					 admin_email                       => $li->{admin_email}, 	
 					 enable_moderation                 => $li->{enable_moderation}, 
-					 send_moderation_rejection_msg     => $li->{send_moderation_rejection_msg}, 
-					 
-					 enable_authorized_sending         => $li->{enable_authorized_sending}, 
-					 
+           moderate_discussion_lists_with    => $li->{moderate_discussion_lists_with},
+           send_moderation_msg               => $li->{send_moderation_msg},
+           send_moderation_accepted_msg      => $li->{send_moderation_accepted_msg},
+           send_moderation_rejection_msg     => $li->{send_moderation_rejection_msg},
+
+           enable_authorized_sending         => $li->{enable_authorized_sending},
+           authorized_sending_no_moderation  => $li->{authorized_sending_no_moderation},
+           subscriber_sending_no_moderation  => $li->{subscriber_sending_no_moderation},
+           
 					 send_msgs_to_list                 => $li->{send_msgs_to_list},  
 					 send_msg_copy_to                  => $li->{send_msg_copy_to}, 
 					 send_msg_copy_address             => $li->{send_msg_copy_address}, 
@@ -963,7 +1113,8 @@ sub start {
 			foreach my $msgnum (sort { $a <=> $b } keys %$msgnums) {
 			
 			    $local_msg_viewed++;
-			    print "\tMessage Size: " . $msgnums->{$msgnum} .  "\n";
+			    print "\tMessage Size: " . $msgnums->{$msgnum} .  "\n"
+					if $verbose; 
 			 	if($msgnums->{$msgnum} > $Plugin_Config->{Max_Size_Of_Any_Message}){ 
 			    
 			        print "\t\tWarning! Message size ( " . $msgnums->{$msgnum} . " ) is larger than the maximum size allowed ( " . $Plugin_Config->{Max_Size_Of_Any_Message} . " )\n"
@@ -1523,13 +1674,8 @@ sub validate_msg {
 	    if($li->{enable_moderation}){ 
 			print "\t\tModeration enabled...\n"
 				if $verbose; 
-				
-			if($errors->{msg_not_from_list_owner} == 1){ 
-			
-			    print "\t\tMessage is not from list owner.\n"
-			        if $verbose;
-			        $errors->{needs_moderation} = 1; 
-			}
+			$errors->{needs_moderation} = 1; 
+		#}
 							
 		}else{ 
 			print "\t\tModeration disabled...\n"
@@ -1539,7 +1685,7 @@ sub validate_msg {
 			
 		if($li->{group_list} == 1){
 		
-			print "\t\tDiscussion Support enabled...\n"
+			print "\t\tDiscussion List Support enabled...\n"
 				if $verbose; 
 				
 			#if($li->{enable_authorized_sending} && $errors->{msg_not_from_an_authorized_sender} == 0){ 
@@ -1555,33 +1701,27 @@ sub validate_msg {
 												}
 											);
 			
-				if ($s_errors->{subscribed} != 1){ 
-					
-					print "\t\t*Message is NOT from a subscriber.\n"
-						if $verbose; 
-				    
-				   
-				   if($li->{open_discussion_list} == 1 && $Plugin_Config->{Allow_Open_Discussion_List} == 1){ 
-				    
-				        print "\t\tPostings from non-subscribers is enabled...\n"
-				            if $verbose;
-				        # Just explicitly setting this...
-				        $errors->{msg_not_from_subscriber} = 0;
-				        $errors->{msg_not_from_list_owner} = 0; 
-				    }
-				    else { 
-				    
-				        $errors->{msg_not_from_subscriber} = 1;
-				    }
-				    
-				}else{ 
-					print "\t\t*Message *is* from a current subscriber.\n"
-						if $verbose; 
-
-					$errors->{msg_not_from_subscriber} = 0;
-					$errors->{msg_not_from_list_owner} = 0; 			
-
-				}
+            if ($s_errors->{subscribed} == 1) {
+                print "\t\t * Message *is* from a current subscriber.\n"
+                  if $verbose;
+                $errors->{msg_not_from_list_owner} = 0;
+                if ($li->{subscriber_sending_no_moderation}) {
+                    $errors->{needs_moderation} = 0;
+                } elsif ($errors->{needs_moderation} == 1) {
+                    print "\t\t ** however Message still *requires* moderation!\n"
+                      if $verbose;
+                }
+            } else {
+                print "\t\t * Message is NOT from a subscriber.\n"
+                  if $verbose;
+                if ($li->{open_discussion_list} == 1 && $Plugin_Config->{Allow_Open_Discussion_List} == 1) {
+                    print "\t\tPostings from non-subscribers is enabled...\n"
+                      if $verbose;
+                    $errors->{msg_not_from_list_owner} = 0;
+                } else {
+                    $errors->{msg_not_from_subscriber} = 1;
+                }
+            }
 			#}
 			
 		}else{ 
@@ -1590,56 +1730,32 @@ sub validate_msg {
 		}
 	}
 
-    if($li->{enable_authorized_sending} == 1){ 
-    
+    if ($li->{enable_authorized_sending} == 1) {
+        # cancel out other errors???
         print "\t\tAuthorized Senders List enabled...\n"
-            if $verbose; 
-       # if($errors->{msg_not_from_list_owner} == 0){ 
- 
-		# The f'ing check gets erased from above, so we sort of have to do it again...
-       if(lc_email($from_address) eq lc_email($li->{list_owner_email})){ 
-	
-            print "\t\tSkipping Authorized Senders check - message is from the list owner.\n"
-                if $verbose; 
-            $errors->{msg_not_from_an_authorized_sender} = 0;
-
-        }												  # only skip if we have a discussion list
-		elsif($errors->{msg_not_from_subscriber} == 0 && $li->{group_list} == 1) { 
-			
-            print "\t\tSkipping Authorized Senders check - message is from a Subscriber\n"
-                if $verbose; 
-            $errors->{msg_not_from_an_authorized_sender} = 0;
-	
-		}
-        else { 
-        
-            my ($m_status, $m_errors) = $lh->subscription_check(
-											{
-												-email => $from_address, 
-                                                -type  => 'authorized_senders',
-                                             }
-										);
-            if($m_errors->{subscribed} != 1){ 												   
-                
-               $errors->{msg_not_from_an_authorized_sender} = 1;
-                print "\t\t\t*Message is NOT from an Authorized Sender.\n"
-                    if $verbose; 
-            }else{ 
-                
-                print "\t\t\t*Message *is* from a Authorized Sender!\n"
-                    if $verbose; 
-
-                $errors->{msg_not_from_list_owner} = 0
-                    if $errors->{msg_not_from_list_owner} == 1; 
-
-                $errors->{msg_not_from_subscriber} = 0
-                    if $errors->{msg_not_from_subscriber} == 1; 
-
-                $errors->{needs_moderation} = 0
-                    if $errors->{needs_moderation} == 1; 
+          if $verbose;
+        my ($m_status, $m_errors) =
+          $lh->subscription_check(
+                                  {
+                                   -email => $from_address,
+                                   -type  => 'authorized_senders',
+                                  }
+          );
+        if ($m_errors->{subscribed} == 1) {
+            print "\t\t * Message *is* from an Authorized Sender!\n"
+              if $verbose;
+            $errors->{msg_not_from_list_owner} = 0;
+            $errors->{msg_not_from_subscriber} = 0;
+            if ($li->{authorized_sending_no_moderation}) {
+                $errors->{needs_moderation} = 0;
+            } elsif ($errors->{needs_moderation} == 1) {
+                print "\t\t ** however Message still *requires* moderation!\n"
+                  if $verbose;
             }
+        } else {
+            print "\t\t * Message is NOT from an Authorized Sender!\n"
+              if $verbose;
         }
-
     }
     else { 
         print "\t\tAuthorized Senders List disabled...\n"
@@ -2662,6 +2778,13 @@ sub handle_errors {
 	       
 		   # This is only used once...
 	       $mod->moderation_msg({-msg => $full_msg, -msg_id => $message_id, -subject => $subject, -from => $from, -parser => $parser}); 
+
+        if ($li->{send_moderation_msg} == 1) {
+            print "\t\t * Sending 'awaiting moderation' message!\n\n"
+              if $verbose;
+            $mod->send_moderation_msg({-msg_id => $message_id, -parser => $parser, -subject => $subject});
+        }
+        
 	       my $awaiting_msgs = $mod->awaiting_msgs(); 
 	       
 	       print "\t\tOther awaiting messages:\n\n"
@@ -3004,7 +3127,7 @@ return  q{
     List Email 
    </strong>
    address is the email address you will be sending to, to have your messages 
-   broadcasted to your entire Subscription List. This email account needs to be created, 
+   broadcast to your entire Subscription List. This email account needs to be created, 
    if it's not already available. Make sure this address is not being used 
    for <strong>any</strong> other purpose.
 
@@ -3022,8 +3145,7 @@ return  q{
     &quot;Make this list a discussion list&quot;
    </strong> 
    has been checked, all subscribers can mail to the <strong>List Email</strong>
-   and have their message sent all other subscribers. 
-   Otherwise, only the list owner can email to this address. 
+   and have their message sent to all other subscribers. 
  </p>
 </blockquote> 
 
@@ -3138,6 +3260,8 @@ General
      <label for="disable_discussion_sending">
       Disable sending using this method
      </label>
+          <br /> 
+      ALL e-mails received at (<strong><!-- tmpl_var name="discussion_pop_email" escape="HTML" --></strong>) will be deleted.     
     </p>
    
    
@@ -3259,13 +3383,30 @@ General
       Make this list a discussion list
      </label>
      <br />
-     Everyone subscribed to your list may send messages to everyone else 
-     on your list by posting  messages to the <strong>List Email</strong>
-     (below).
+     Everyone subscribed to your list may post messages for everyone else 
+     on your list by sending  messages to (<strong><!-- tmpl_var name="discussion_pop_email" escape="HTML" --></strong>).
     </p>
   
   
   	 <table width="100%" cellspacing="0" cellpadding="5">
+        <tr> 
+        
+ <!-- tmpl_if Allow_Open_Discussion_List -->
+   <!-- tmpl_if group_list -->  
+        <tr> 
+       <td align="right">
+        <input name="open_discussion_list" id="open_discussion_list" type="checkbox" value="1" <!--tmpl_if open_discussion_list -->checked="checked"<!--/tmpl_if--> />
+       </td>
+       <td>
+        <label for="open_discussion_list">
+         Allow messages to also be posted to the list from non-subscribers.         
+        </label>
+         <br /><em>(opens up list to possible abuse unless moderated)</em> 
+       </td>
+      </tr>
+   <!-- /tmpl_if --> 
+ <!-- /tmpl_if -->  
+   	 
 	<tr> 
    <td align="right">
     <input name="append_list_name_to_subject" id="append_list_name_to_subject" type="checkbox" value="1" <!--tmpl_if append_list_name_to_subject -->checked="checked"<!--/tmpl_if--> />
@@ -3308,7 +3449,7 @@ General
     </label>
     <br />
      A 'Reply-To' header will be added to group list mailings that will direct 
-     replies to list messages back to the list.
+     replies to list messages back to the list address (<strong><!-- tmpl_var name="discussion_pop_email" escape="HTML" --></strong>).
    </td>
   </tr>
    <tr> 
@@ -3336,7 +3477,15 @@ General
     <br />
    </td>
   </tr>
-  
+ </table> 
+      </td>
+  </tr>
+ </table> 
+</fieldset> 
+
+<fieldset> 
+ <legend>List Moderation Options</legend> 
+  <table width="100%" cellspacing="0" cellpadding="5">    
   <tr> 
    <td> 
     <input name="enable_moderation" id="enable_moderation" type="checkbox" value="1" <!--tmpl_if enable_moderation -->checked="checked"<!--/tmpl_if--> /> 
@@ -3346,13 +3495,89 @@ General
      <label for="enable_moderation">
       Use Moderation
      </label>
-     <br /> 
      
-          Messages sent to your discussion list will have to be approved by the List Owner. 
+     <!-- tmpl_if enable_moderation --> 
+       - <a href="<!-- tmpl_var Plugin_URL -->?flavor=awaiting_msgs">View/Manage Messages Awaiting Moderation</a>.
+     <!--/tmpl_if-->
+     
+     <br />      
+          Messages sent to your discussion list will first have to be approved by: 
       </p>
+     <select name="moderate_discussion_lists_with">
+      <option value="owner_email" <!--tmpl_if expr="(moderate_discussion_lists_with eq 'owner_email')" -->selected="selected" <!--/tmpl_if--> >List Owner</option>
+     <!-- tmpl_if enable_authorized_sending --> 
+      <option value="authorized_sender_email"      <!--tmpl_if expr="(moderate_discussion_lists_with eq 'authorized_sender_email')" -->selected="selected" <!--/tmpl_if--> >Authorized Senders</option>
+     <!--/tmpl_if-->
+     </select> 
+     <br />
       
-     
      <table  cellspacing="0" cellpadding="5">
+
+  <!-- tmpl_if enable_authorized_sending -->  
+     <!-- tmpl_if group_list -->          
+      <tr>
+       <td>
+        <input name="authorized_sending_no_moderation" id="authorized_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if authorized_sending_no_moderation -->checked="checked"<!--/tmpl_if--> />
+       </td>
+       <td>
+        <p>
+         <label for="authorized_sending_no_moderation">
+          Allow Authorized Senders to send messages to the entire list without moderation
+         </label><br /> 
+         If not checked, messages from Authorized Senders also require moderation.
+        </p>
+       </td>
+       </tr>     
+     <!--/tmpl_if-->
+   <!--/tmpl_if-->     
+     	   
+ <!-- tmpl_if open_discussion_list -->       
+   <!-- tmpl_if group_list --> 
+      <tr>
+       <td>
+        <input name="subscriber_sending_no_moderation" id="subscriber_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if subscriber_sending_no_moderation -->checked="checked"<!--/tmpl_if--> />
+       </td>
+       <td>
+        <p>
+         <label for="subscriber_sending_no_moderation">
+          Allow Subscribers to send messages to the entire list without moderation
+         </label><br /> 
+         If not checked, messages from Subscribers require moderation.
+        </p>
+       </td>
+       </tr> 
+   <!-- /tmpl_if --> 
+ <!-- /tmpl_if --> 
+      
+     <table  cellspacing="0" cellpadding="5">
+           <tr>
+       <td>
+        <input name="send_moderation_msg" id="send_moderation_msg" type="checkbox" value="1" <!--tmpl_if send_moderation_msg -->checked="checked"<!--/tmpl_if--> />
+       </td>
+       <td>
+        <p>
+         <label for="send_moderation_msg">
+          Send a Message Received, Awaiting Moderation Message
+         </label><br /> 
+         The original poster will receive a message stating that the message has been received, but requires moderation.
+        </p>
+       </td>
+       </tr>
+       
+       <tr>
+       <td>
+        <input name="send_moderation_accepted_msg" id="send_moderation_accepted_msg" type="checkbox" value="1" <!--tmpl_if send_moderation_accepted_msg -->checked="checked"<!--/tmpl_if--> />
+       </td>
+       <td>
+        <p>
+         <label for="send_moderation_accepted_msg">
+          Send an Acceptance Message
+         </label><br /> 
+         The original poster will receive a message stating that the moderated message was accepted.
+        </p>
+       </td>  
+       </tr>
+       
       <tr>
        <td>
         <input name="send_moderation_rejection_msg" id="send_moderation_rejection_msg" type="checkbox" value="1" <!--tmpl_if send_moderation_rejection_msg -->checked="checked"<!--/tmpl_if--> />
@@ -3362,7 +3587,7 @@ General
          <label for="send_moderation_rejection_msg">
           Send a Rejection Message
          </label><br /> 
-         The original poster will receive a message stating that the message was rejected.
+         The original poster will receive a message stating that the moderated message was rejected.
         </p>
        </td>
       </tr>
@@ -3371,22 +3596,6 @@ General
    </td>
   </tr>
  
- <!-- tmpl_if Allow_Open_Discussion_List -->
-        <tr> 
-       <td align="right">
-        <input name="open_discussion_list" id="open_discussion_list" type="checkbox" value="1" <!--tmpl_if open_discussion_list -->checked="checked"<!--/tmpl_if--> />
-       </td>
-       <td>
-        <label for="open_discussion_list">
-         Allow messages to be posted to the list from non-subscribers. 
-        </label>
-        <br />
-       </td>
-      </tr>
- <!-- /tmpl_if -->  
-  
-  
-  
 	</table>
   
   </td>
@@ -3913,6 +4122,159 @@ sub moderation_msg {
 		);
 }
 
+
+
+sub send_moderation_msg {
+
+
+
+    my $self = shift;
+    my ($args) = @_;
+
+    if (!$args->{-msg_id}) {
+        croak "You must supply a message id!";
+    }
+    $args->{-msg_id} =~ s/\@/_at_/g;
+    $args->{-msg_id} =~ s/\>|\<//g;
+    $args->{-msg_id} = DADA::App::Guts::strip($args->{-msg_id});
+
+
+    if (!$args->{-parser}) {
+        croak "You must supply a parser!";
+    }
+
+    # DEV there are two instances of my $parser, and my $entity of them - which one is the correct one?
+
+
+    my $parser = $args->{-parser};
+
+    my $entity;
+    eval { $entity = $parser->parse_data($self->get_msg({-msg_id => $args->{-msg_id}})); };
+    if (!$entity) {
+        croak "no entity found! die'ing!";
+    }
+
+    my $subject = $entity->head->get('Subject', 0);
+    $subject =~ s/\n//g;
+    my $from = $entity->head->get('From', 0);
+    $from =~ s/\n//g;
+
+
+
+
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}});
+    my $li = $ls->get;
+
+    my $reply = MIME::Entity->build(
+                                    Type    => "text/plain",
+                                    To      => $from,
+                                    Subject => $AwaitModeration_Message_Subject,
+                                    Data    => $AwaitModeration_Message,
+    );
+
+    require DADA::App::Messages;
+    DADA::App::Messages::send_generic_email(
+        {
+         -list        => $self->{list},
+         -headers     => {DADA::App::Messages::_mime_headers_from_string($reply->stringify_header),},
+
+
+         -body        => $reply->stringify_body,
+         -tmpl_params => {
+             -list_settings_vars       => $li,
+             -list_settings_vars_param => {-dot_it => 1,},
+             -subscriber_vars          => {
+                 'subscriber.email' => $args->{-from},
+             },
+             -vars => {
+
+
+
+
+
+
+
+                 message_subject => $args->{-subject},
+                 message_from    => $args->{-from},
+                 msg_id          => $args->{-msg_id},
+                 Plugin_Name     => $Plugin_Config->{Plugin_Name},
+
+             }
+         },
+        }
+    );
+}
+
+
+sub send_accept_msg {
+
+
+
+    my $self = shift;
+    my ($args) = @_;
+
+    if (!$args->{-msg_id}) {
+        croak "You must supply a message id!";
+    }
+    $args->{-msg_id} =~ s/\@/_at_/g;
+    $args->{-msg_id} =~ s/\>|\<//g;
+    $args->{-msg_id} = DADA::App::Guts::strip($args->{-msg_id});
+
+    if (!$args->{-parser}) {
+        croak "You must supply a parser!";
+    }
+
+    # DEV there are two instances of my $parser, and my $entity of them - which one is the correct one?
+
+    my $parser = $args->{-parser};
+
+    my $entity;
+    eval { $entity = $parser->parse_data($self->get_msg({-msg_id => $args->{-msg_id}})); };
+    if (!$entity) {
+        croak "no entity found! die'ing!";
+
+    }
+
+    my $subject = $entity->head->get('Subject', 0);
+    $subject =~ s/\n//g;
+    my $from = $entity->head->get('From', 0);
+    $from =~ s/\n//g;
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}});
+    my $li = $ls->get;
+
+    my $reply = MIME::Entity->build(
+                                    Type    => "text/plain",
+                                    To      => $from,
+                                    Subject => $Accept_Message_Subject,
+                                    Data    => $Accept_Message,
+    );
+
+    require DADA::App::Messages;
+    DADA::App::Messages::send_generic_email(
+        {
+         -list        => $self->{list},
+         -headers     => {DADA::App::Messages::_mime_headers_from_string($reply->stringify_header),},
+         -body        => $reply->stringify_body,
+         -tmpl_params => {
+             -list_settings_vars       => $li,
+             -list_settings_vars_param => {-dot_it => 1,},
+             -subscriber_vars          => {
+                 'subscriber.email' => $args->{-from},
+             },
+             -vars => {
+                 message_subject => $subject,
+                 message_from    => $from,
+                 msg_id          => $args->{-msg_id},
+                 Plugin_Name     => $Plugin_Config->{Plugin_Name},
+             }
+         },
+        }
+    );
+}
 
 
 
@@ -4521,9 +4883,17 @@ Sets a hard limit on how large a single message can actually be, before you won'
 
 The text of the email message that gets sent out to the list owner, when they receive an email message that requires moderation. 
 
+=head2 $AwaitModeration_Msg
+
+The text of the email message that gets sent out to the message sender, who has a email message sent to the list that requires moderation. 
+
+=head2 $Moderation_Msg
+
+The text of the email message that gets sent out to the message sender who has a email message sent to the list that was accepted during moderation. 
+
 =head2 $Rejection_Message
 
-The text of the email message that gets sent out to the subscriber who has a email message sent to the list that was rejected during moderation. 
+The text of the email message that gets sent out to the message sender who has a email message sent to the list that was rejected during moderation. 
 
 =head1 DEBUGGING 
 
