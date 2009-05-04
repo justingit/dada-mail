@@ -9,7 +9,20 @@ Key:
 [x] Done. 
 [*] Naw...
 
-[ ] I need to make upgrade notes from Simple Scripts installs. 
+[ ] I need to merge all of the code that creates the query for the subscriber fields into ONE method, because it's getting 
+ 	complicated, it's being used in more than one place, AND people want to change it. A tall order, but probably, well worth it! 
+
+[ ] The, "Your subscriptions" thingy in the Profile thingy has to let you know, if you aren't actually subscribed to any lists. Right now, if you're not, it just looks broken. 
+
+[ ] Need a way to update an email address from the profile, and perhaps auto-merge, if the email address is already subscribed to an address. (it should probably be warned if this happens...) 
+
+[ ] Once the above are done, I need some major testing stuff to be made and then, we gotta wrap this up - probably make the 3.0.x to 3.1 script and call it a beta! 
+	[ ] Some things to remember - the SQL needs new tables AND info has to be moved from one table to another.... sigh. 
+[ ] Man, wouldn't it be nice to have an installer...? Sigh. 
+
+[x] I need to make upgrade notes from Simple Scripts installs. 
+
+
 
 [ ] The docs need to be clearer about how to work with HTML templates, and the like, 
 
