@@ -1613,6 +1613,13 @@ sub email_template {
 	                    {
 	                                %screen_vars,
 	                                -data                   => \$content, 
+									(
+										($args->{-entity}->head->mime_type eq 'text/html') ? 
+										(
+											-webify_these => [qw(list_settings.info list_settings.privacy_policy list_settings.physical_address)], 
+								        ) 
+										: ()
+									),
 
 	                    }
 	                ); 

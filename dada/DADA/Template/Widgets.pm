@@ -1642,6 +1642,14 @@ else {
         )
     }
 
+	if(exists($args->{-webify_these})){ 
+		foreach(@{$args->{-webify_these}}){ 
+	    	$template_vars->{$_} = webify_plain_text($template_vars->{$_});
+	    }
+	}
+
+
+
 	my $template; 
 	
 	if($args->{-expr}){ 
