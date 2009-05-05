@@ -2,6 +2,13 @@
 
 package dada_bridge;
 
+# Some questions I have on the new moderation stuff: 
+# If there are no authorized senders, is the list owner allowed to moderate messages? 
+# is the authorized senders moderation activated? 
+# Can a subscriber moderate their own message? 
+
+
+
 
 use strict;
 $ENV{PATH} = "/bin:/usr/bin"; 
