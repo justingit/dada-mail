@@ -4199,7 +4199,7 @@ sub erase_score_card {
     my @delete_list; 
     
     if($list) { 
-            @delete_list = qw($list); 
+            @delete_list = ($list); 
     }
     else { 
         
