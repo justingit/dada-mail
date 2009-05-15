@@ -2725,6 +2725,8 @@ sub send_invalid_msgs_to_owner {
     my $msg    = shift;
     my $entity = $parser->parse_data($msg);
 
+	require DADA::App::Messages;
+	
     my $rough_from = $entity->head->get( 'From', 0 );
     my $from_address;
     if ( defined($rough_from) ) {
@@ -2759,7 +2761,6 @@ sub send_invalid_msgs_to_owner {
           DADA::App::Messages::_mime_headers_from_string(
             $reply->stringify_header );
 
-        require DADA::App::Messages;
         DADA::App::Messages::send_generic_email(
             {
                 -list    => $list,
