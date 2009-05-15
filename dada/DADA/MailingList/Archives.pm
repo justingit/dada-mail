@@ -1247,8 +1247,6 @@ sub _find_filename_attachment_entity {
 			       $entity->head->mime_attr("content-disposition.filename");
 	
 		if($name){ 
-			warn '$name ' . $name; 
-			warn '$filename ' . $filename; 
 			if($name eq $filename ){ 
 				return $entity; 
 			}
