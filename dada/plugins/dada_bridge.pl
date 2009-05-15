@@ -2699,15 +2699,23 @@ sub send_msg_not_from_subscriber {
     }
 
     if ( $from_address && $from_address ne '' ) {
-        require DADA::App::Messages;
-        DADA::App::Messages::send_not_allowed_to_post_message(
-            {
-                -list       => $list,
-                -email      => $from_address,
-                -attachment => $entity->as_string,
+	
+		require DADA::MailingList::Settings; 
+		my $ls = DADA::MailingList::Settings->new({-list => $list});
+		if($from_address eq $ls->param('discussion_pop_email')) {
+			warn "Message is from List Email ($from_address)? Not sending, 'not_allowed_to_post_message' so to not send message back to list!" ;
+		}
+		else {  	
+	        require DADA::App::Messages;
+	        DADA::App::Messages::send_not_allowed_to_post_message(
+	            {
+	                -list       => $list,
+	                -email      => $from_address,
+	                -attachment => $entity->as_string,
 
-            },
-        );
+	            },
+	        );
+		}
 
     }
     else {
