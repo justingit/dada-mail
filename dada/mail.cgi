@@ -9033,7 +9033,8 @@ sub file_attachment {
                         
                             if($c->cached('view_inline_attachment.' . $list . '.' . $id . '.' . $q->param('cid'))){ $c->show('view_inline_attachment.' . $list . '.' . $id . '.' . $q->param('cid')); return;}
                                 my $scrn =  $la->view_inline_attachment(-id => $q->param('id'), -cid => $q->param('cid')); 
-                                e_print($scrn); 
+                               # e_print($scrn); 
+								print $scrn;
                                 $c->cache('view_inline_attachment.' . $list . '.' . $id . '.' . $q->param('cid'), \$scrn);
                                 return; 
                         }else{ 
@@ -9042,7 +9043,8 @@ sub file_attachment {
                             
                             if($c->cached('view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename') . '.' . $mode)){ $c->show('view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename') . '.' . $mode); return;}
                             my $scrn = $la->view_file_attachment(-id => $q->param('id'), -filename => $q->param('filename'), -mode => $mode); 
-                            e_print($scrn); 
+                            #e_print($scrn); 
+							print $scrn; 
                             $c->cache('view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename') . '.' . $mode, \$scrn);
 
                             

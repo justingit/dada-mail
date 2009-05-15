@@ -1130,7 +1130,7 @@ sub find_attachment_list {
 		my $name = $entity->head->mime_attr("content-type.name") || 
 				   $entity->head->mime_attr("content-disposition.filename");
 		
-		if($name){ 
+		if($name){ 			
 			push(@$attachment_list, {name => $name, list => $self->{name}, id => $id, PROGRAM_URL => $DADA::Config::PROGRAM_URL });
 		}else{ 
 			#warn "no name?!"; 
@@ -1146,19 +1146,19 @@ sub view_file_attachment {
 	
 	my $self = shift;
 	
-	my %args = (-id       => undef, 
-				-filename => undef, 
-				-mode     => 'attachment', 
- 	            @_, 
-	           ); 
-	
+	my %args = (
+		-id       => undef, 
+		-filename => undef, 
+		-mode     => 'attachment', 
+		@_, 
+	); 
 	
 	my $id       = $args{-id}; 
 	my $filename = $args{-filename}; 
 	
 	chomp($filename); 
-	$filename =~ s/ /+/g; # Hack?
-
+	# This leads to all sorts of problems, I think... 
+	$filename =~ s/ /+/g;
 
 	die "archive $id does not exist!"
 		unless $self->check_if_entry_exists($id); 
@@ -1176,22 +1176,41 @@ sub view_file_attachment {
 	}
 	
 	my $entity   = $self->_entity_from_raw_msg($raw_msg);
-
-	my $a_entity = $self->_find_filename_attachment_entity(-filename => $filename, -entity => $entity); 
+	
+	# I don't like how this is called twice.... but, oh well...
+	my $a_entity = undef;
+	$a_entity = $self->_find_filename_attachment_entity(
+		-filename => $filename, 
+		-entity   => $entity
+	); 
+	
+	# We sort of undo what we just did! 
+	if(! defined( $a_entity )){ 
+		$filename =~ s/\+/\%20/g;
+		$a_entity = $self->_find_filename_attachment_entity(
+			-filename => $filename, 
+			-entity   => $entity
+		);		
+	}
+	if(! defined( $a_entity )){ 
+		return $q->header('text/plain') . 'Error: Cannot view attachment!'; 
+	}
+	else { 
 	my $body     = $a_entity->bodyhandle;
 	
 	if($args{-mode} eq 'inline'){ 
 		$r .= $q->header($a_entity->head->mime_type); 
 	}else{ 
 	
-		$r .=  "Content-disposition: attachement; filename=$filename\n";
-   		$r .=  "Content-type: application/octet-stream\n\n";
+			$r .=  "Content-disposition: attachement; filename=$filename\n";
+	   		$r .=  "Content-type: application/octet-stream\n\n";
 	
+		}
+	
+		$r .=  $body->as_string; 
+	
+		return $r; 	
 	}
-	
-	$r .=  $body->as_string; 
-	
-	return $r; 	
 
 }
 
@@ -1216,22 +1235,28 @@ sub _find_filename_attachment_entity {
 			my $i; 
 			foreach $i (0 .. $#parts) {
 				my $part = $parts[$i];
-				my $s_entity = $self->_find_filename_attachment_entity(-entity => $part, -filename => $filename); 
-				
+				my $s_entity = $self->_find_filename_attachment_entity(
+					-entity   => $part, 
+					-filename => $filename
+				); 
 				return $s_entity 
 					if $s_entity; 
-			
 			}
 	}else{ 
 		my $name = $entity->head->mime_attr("content-type.name") || 
 			       $entity->head->mime_attr("content-disposition.filename");
 	
 		if($name){ 
+			warn '$name ' . $name; 
+			warn '$filename ' . $filename; 
 			if($name eq $filename ){ 
 				return $entity; 
 			}
 		}
 	}
+	
+	# If we get here, it means we weren't able to find the attachment, sadly. 
+	return undef; 
 }
 
 
