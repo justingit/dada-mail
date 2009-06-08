@@ -9,6 +9,9 @@ Key:
 [x] Done. 
 [*] Naw...
 
+
+[ ] Auto Clickthrough tracking of links in the clickthrough tracker. (oh, boy) 
+
 [ ] I need to merge all of the code that creates the query for the subscriber fields into ONE method, because it's getting 
  	complicated, it's being used in more than one place, AND people want to change it. A tall order, but probably, well worth it! 
 
