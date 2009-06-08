@@ -4092,7 +4092,7 @@ encrypted.
 
 # List CP -> Options
 	enable_fckeditor                => 1, 
-	enable_mass_subscribe           => 1, 
+	enable_mass_subscribe           => 0, 
     
 
 # Send me the list password.    
@@ -4438,7 +4438,7 @@ and to say that you've got the freshest tools on the Web.
 
 
 $VERSION = 3.1.0; 
-$VER     = '3.1.0 - alpha 1 03/14/08';
+$VER     = '3.1.0 - alpha 05/15/08';
 
 #
 #
