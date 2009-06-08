@@ -6,6 +6,12 @@
 	[ <a href="<!-- tmpl_var PROGRAM_URL -->?f=profile_logout">Logout</a>]
 </p>
 
+<!-- tmpl_if errors --> 
+	<p class="error"> 
+		There was an error with your last request:
+	</p> 
+<!-- /tmpl_if --> 
+
 
 <div class="positive_greeting">
 	<h1 style="text-align:center">
@@ -61,7 +67,7 @@
     <!-- tmpl_loop subscriber_fields --> 
     
         <p>
-        <label for="<!-- tmpl_var name escape=HTML -->" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+        <label for="<!-- tmpl_var name escape=HTML -->" style="width: 10em;float: left;text-align: right;margin-right: 0.5em;display: block">
         <!-- tmpl_var label escape=HTML -->: 
         </label>
         <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
@@ -85,17 +91,16 @@ Your Subscriptions
 </h1> 
 
 
-<!-- this doesn't work right now... 
 	
-	<!-- tmpl_if subscriptions --> 
+	<!-- tmpl_if has_subscriptions --> 
 
 	<!-- tmpl_else --> 
 		<p class="error">
-			You are not currently subscribed to any list.
+			You are not currently subscribed to any mailing list.
 		</p>
 	<!-- /tmpl_if --> 
 
---> 
+
 
 
 <!-- tmpl_loop subscriptions --> 
@@ -163,6 +168,49 @@ Your Subscriptions
 <fieldset> 
 	
 <legend>
+Update Your Email Address
+</legend> 
+
+<p class="positive">
+	Subscriptions using your current email address (<!-- tmpl_var profile.email -->) will be replaced with 
+ 	this new email address: 
+</p>
+
+<!-- tmpl_if errors_update_email_invalid --> 
+
+	<p class="error"> 
+		The email address you submitted is not valid.
+	</p> 
+	
+<!-- /tmpl_if --> 
+
+<form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
+	<input type="hidden" name="f"        value="profile" /> 
+	<input type="hidden" name="process"  value="update_email" />
+	
+	  <p>
+        <label for="password" style="width: 10em;float: left;text-align: right;margin-right: 0.5em;display: block">
+        Your New Email Address: 
+        </label>
+        <input type="text" name="email" id="email" value=""  />
+        </p>
+
+	<div class="buttonfloat">	
+    <input type="submit" value="Confirm and Update New Email Address" /> 
+	</div>
+	<div class="floatclear"></div>
+
+
+</form>
+
+</fieldset>
+
+
+
+
+<fieldset> 
+	
+<legend>
 Change Your Profile Password
 </legend> 
 
@@ -172,14 +220,14 @@ Change Your Profile Password
 	<input type="hidden" name="process"  value="change_password" />
 	
 	  <p>
-        <label for="password" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+        <label for="password" style="width: 10em;float: left;text-align: right;margin-right: 0.5em;display: block">
         New Password: 
         </label>
         <input type="password" name="password" id="password" value=""  />
         </p>
 
 	  <p>
-        <label for="again_password" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+        <label for="again_password" style="width: 10em;float: left;text-align: right;margin-right: 0.5em;display: block">
         New Password Again: 
         </label>
         <input type="password" name="again_password" id="again_password" value=""  />

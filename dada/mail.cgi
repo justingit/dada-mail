@@ -9641,7 +9641,7 @@ sub profile {
 		$DADA::Config::PROFILE_ENABLED    != 1      || 
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
 	){		default(); 
-		return
+		return;
 	}
 	
 	require DADA::Profile::Session;
@@ -9658,7 +9658,8 @@ sub profile {
 		my $dpf               = DADA::Profile::Fields->new; 
 		my $subscriber_fields =  $dpf->subscriber_fields(); 
 		my $field_attr         = $dpf->get_all_field_attributes;
-		my $email_fields      = $dpf->get({-email => $email}); 		
+		my $email_fields      = $dpf->get({-email => $email}); 	
+			
 		if($q->param('process') eq 'edit_subscriber_fields'){ 
 			
 			my $edited = {}; 
@@ -9694,10 +9695,30 @@ sub profile {
 			}
 		
 		}
+		elsif($q->param('process') eq 'update_email'){ 
+			
+			# If we haven't confirmed.... 
+			
+				# Check to make sure the email address is valid. 
+			
+				# Valid? OK! send the confirmaiton email
+			
+				# Not Valid? Geez we better tell someone. 
+				$q->param('process', 0);
+				$q->param('errors_update_email_invalid', 1);  
+				$q->param('errors', 1); 
+				profile();
+			# Oh! We've confirmed? 
+			
+				# We've got to make sure that we can switch the email address in each 
+				# various list - perhaps the new address is blacklisted? Ack. that would be stinky
+				# Another problem: What if the new email address is already subscribed? 
+				# May need a, "replace" function. 
+				# Sigh... 
+				
+			# That's it. 
+		}
 		else { 
-		
-
-
 		
 		   	my $fields = [];
 			foreach my $field(@$subscriber_fields){ 
@@ -9711,13 +9732,21 @@ sub profile {
 		
 		   my $subscriptions = $prof->subscribed_to({-html_tmpl_params => 1}),   
 		   my $filled = [];
+		   my $has_subscriptions = 0; 
+		
 		   foreach my $i(@$subscriptions){ 
+				
+				if($i->{subscribed} == 1){ 
+					$has_subscriptions = 1; 
+				}
+				
 				require DADA::MailingList::Settings; 
 				my $ls = DADA::MailingList::Settings->new({-list => $i->{list}});
 				my $li = $ls->get(-dotted => 1); 
 				# Ack, this is very awkward: 
 		        
 				#  Ack, this is very awkward: 
+				require DADA::Template::Widgets; 
 				$li = DADA::Template::Widgets::webify_and_santize(
 					{
 						-vars        => $li, 
@@ -9742,13 +9771,16 @@ sub profile {
 				{
 					-screen => 'profile_home.tmpl',
 					-vars   => { 
-
+						errors            => $q->param('errors') || 0, 
 						'profile.email'   => $email,
 						subscriber_fields => $fields, 
 						subscriptions     => $filled, 
+						has_subscriptions => $has_subscriptions, 
 						welcome           => $q->param('welcome')                     || '',
 						edit              => $q->param('edit')                        || '',
 						errors_change_password => $q->param('errors_change_password') || '', 
+						errors_update_email_invalid => $q->param('errors_update_email_invalid') || '', 
+						
 						gravators_enabled => $DADA::Config::PROFILE_GRAVATAR_OPTIONS->{enable_gravators},
 						gravatar_img_url             => gravatar_img_url({-email => $email, -default_gravatar_url => $DADA::Config::PROFILE_GRAVATAR_OPTIONS->{default_gravatar_url}}),						
 					}
