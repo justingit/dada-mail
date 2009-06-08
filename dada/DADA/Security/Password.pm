@@ -53,7 +53,7 @@ any variables that don't seem to be here are in the Config.pm file, no really, c
 
 	my $pwcheck = ($encrupted_pass, $unencrypted_pass);
 
-This subroutine checks to see if a encrypted password matches an unencrypoted password. 
+This subroutine checks to see if a encrypted password matches an unencrypted password. 
 Passwords are first encrypted using your systems's crypt() function, the same one probably 
 used for Apache Server Protected Directories and Hosting Directories themselves. The idea is
 the only way to compare a password given to the saved, encrypted password, is to encrypted the 
