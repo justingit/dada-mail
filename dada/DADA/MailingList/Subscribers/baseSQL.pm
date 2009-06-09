@@ -153,7 +153,8 @@ sub search_list {
     foreach (@$fields) {
         push ( @extra_params, '%' . $args->{ -query } . '%' );
     }
-
+	#/
+	
     $sth->execute(
         $args->{ -type },              $self->{list},
         '%' . $args->{ -query } . '%', @extra_params,
@@ -189,6 +190,79 @@ sub search_list {
 
     return $r;
 
+}
+
+
+
+
+sub SQL_subscriber_profile_join_statement { 
+	
+	my $self   = shift; 
+	my ($args) = @_; 
+	# Args 
+	# -partial_listing
+	# -type - perhaps? 
+	
+	# init vars
+	if(!$args->{ -type }){ 
+		$args->{ -type } = 'list'; 
+	}
+	
+    my $subscriber_table     = $self->{sql_params}->{subscriber_table};
+    my $profile_fields_table = $self->{sql_params}->{profile_fields_table};
+	
+	# This is to select which profile fields to return with our query
+	my @merge_fields = @{ $self->subscriber_fields };
+      my $merge_field_query;
+      foreach (@merge_fields) {
+          $merge_field_query .=
+            ', ' . $profile_fields_table . '.' . $_;
+      }
+	#/ This is to select which profile fields to return with our query
+	
+	my $query;
+	$query = 'SELECT ' . $subscriber_table . '.email, ' . $subscriber_table . '.list';
+	$query .= $merge_field_query;
+	$query .= ' FROM ' . $subscriber_table . ' LEFT OUTER JOIN ' . $profile_fields_table . ' ON ';
+	$query .= ' ' . $subscriber_table . '.email' . ' = ' . $profile_fields_table . '.email';
+	$query .= ' WHERE  ';
+	if (   $DADA::Config::GLOBAL_BLACK_LIST
+	       && $args->{ -type } eq 'black_list' )
+	   {
+	       #... Nothin'
+	   }
+	   else {
+	    $query .= $subscriber_table . '.list = ?';
+	   }
+	
+      $query .= ' AND ' . $subscriber_table . '.list_type = ?';
+      $query .= ' AND ' . $subscriber_table . '.list_status = 1';
+
+      if ( keys %{ $args->{ -partial_listing } } ) {
+	
+		  # This *really* needs its own method, as well... 
+          foreach ( keys %{ $args->{ -partial_listing } } ) {
+              if ( $args->{ -partial_listing }->{$_}->{equal_to} ) {
+                  $query .= ' AND ' . $profile_fields_table . '.' . $_ . ' = \''
+                    . $args->{ -partial_listing }->{$_}->{equal_to} . '\'';
+              }
+              elsif ( $args->{ -partial_listing }->{$_}->{like} ) {
+
+                  $query .= ' AND ' . $profile_fields_table . '.' . $_
+                    . ' LIKE \'%'
+                    . $args->{ -partial_listing }->{$_}->{like} . '%\'';
+              }
+          }
+	  	# This *really* needs its own method, as well... 	
+      }
+
+	#if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
+		$query .= ' ORDER BY ' . $subscriber_table . '.email';
+    #}
+
+	warn 'QUERY: ' . $query;
+	#	if $t;
+	return $query; 
 }
 
 
@@ -230,65 +304,21 @@ sub fancy_print_out_list {
     print $fh '</tr>';
 
     my $count         = 0;
-    my $st            = $self->{sql_params}->{subscriber_table};
-    my $sft           = $self->{sql_params}->{profile_fields_table};
-    my $fields        = $self->subscriber_fields;
-    my $select_fields = '';
 
-    foreach (@$fields) {
-        $select_fields .= ', ' . $sft . '.' . $_;
-    }
-
-    my $query;
-    $query .= 'SELECT ' . $st . '.email';
-    $query .= $select_fields;
-    $query .= ' FROM ';
-    $query .= $st . ' LEFT JOIN ' . $sft;
-    $query .= ' ON ';
-    $query .= $st . '.email' . ' = ' . $sft . '.email';
-    $query .=
-      ' WHERE   ' . $st . '.list_type = ? AND ' . $st . '.list_status = 1 ';
-
-    if (   $DADA::Config::GLOBAL_BLACK_LIST
-        && $args->{ -type } eq 'black_list' )
-    {
-
-        #... Nothin'
-    }
-    else {
-        $query .= ' AND ' . $st . '.list = ? ';
-
-    }
-    if ( keys %{ $args->{ -partial_listing } } ) {
-
-        foreach ( keys %{ $args->{ -partial_listing } } ) {
-            if ( $args->{ -partial_listing }->{$_}->{equal_to} ) {
-                $query .= ' AND ' . $sft . '.' . $_ . ' = \''
-                  . $args->{ -partial_listing }->{$_}->{equal_to} . '\'';
-            }
-            elsif ( $args->{ -partial_listing }->{$_}->{like} ) {
-                $query .= ' AND ' . $sft . '.' . $_
-                  . ' LIKE \'%'
-                  . $args->{ -partial_listing }->{$_}->{like} . '%\'';
-            }
-        }
-    }
-    if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
-        $query .= ' ORDER BY ' . $st . '.email';
-    }
-
-    warn 'QUERY: ' . $query
-      if $t;
-
+	my $query = $self->SQL_subscriber_profile_join_statement(
+		{ 
+			-type            => $args->{ -type }, 
+			-partial_listing => $args->{ -partial_listing },
+		}
+	);
+ 
     my $sth = $self->{dbh}->prepare($query);
 
     if (   $DADA::Config::GLOBAL_BLACK_LIST
         && $args->{ -type } eq 'black_list' )
     {
-
         $sth->execute( $args->{ -type } )
           or croak "cannot do statment (for print out list)! $DBI::errstr\n";
-
     }
     else {
 
@@ -341,32 +371,11 @@ sub print_out_list {
 
     my $count;
 
-    my $st  = $self->{sql_params}->{subscriber_table};
-    my $sft = $self->{sql_params}->{profile_fields_table};
-
- 	my $fields        = $self->subscriber_fields;
-    my $select_fields = '';
-
-    foreach (@$fields) {
-        $select_fields .= ', ' . $sft . '.' . $_;
-    }
-
-	#my $query .= 'SELECT ' . $st . '.email';
-    my $query .= 'SELECT ' . $st . '.*';
-
-    $query .= $select_fields;
-    $query .= ' FROM ' . $st;
-    $query .= ' LEFT JOIN ' . $sft . ' ON ';
-    $query .= ' ' . $st . '.email' . ' = ' . $sft . '.email';
-    $query .= ' WHERE ' . $st . '.list_type = ? AND ' . $st . '.list_status = 1';
-    $query .= ' AND ' . $st . '.list = ?';
-
-    if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
-        $query .= ' ORDER BY ' . $st . '.email';
-    }
-
-	warn 'query: ' . $query
-	 if $t;
+	my $query = $self->SQL_subscriber_profile_join_statement(
+		{ 
+			-type            => $args{ -Type }, 
+		}
+	);
 	
     my $sth = $self->{dbh}->prepare($query);
 
@@ -384,6 +393,7 @@ sub print_out_list {
           or croak "cannot do statment (for print out list)! $DBI::errstr\n";
 
     }
+
 
     my $fields = $self->subscriber_fields;
 
@@ -953,6 +963,8 @@ sub create_mass_sending_file {
     chomp($test_test);    #Why Chomp?!
     unless ( $test_test == 1 ) {
 
+=cut
+		#########
         my @merge_fields = @{ $self->subscriber_fields };
         my $merge_field_query;
         foreach (@merge_fields) {
@@ -990,9 +1002,24 @@ sub create_mass_sending_file {
         }
         $query .= ' ORDER BY ' . $st . '.email';
 
-        warn 'QUERY: ' . $query
-          if $t;
+       # warn 'QUERY: ' . $query
+       #   if $t;
+	
+		###################
+=cut
 
+		my $query = $self->SQL_subscriber_profile_join_statement(
+			{ 
+				-type            => $args{ -Type }, 
+				-partial_listing => $args{ -partial_sending },
+			}
+		);
+			
+		
+		#warn 'QUERY1: ' . $query;
+		#warn 'QUERY2: ' . $query2;	
+		#die; 
+		
         my $sth = $self->{dbh}->prepare($query);
         $sth->execute( $self->{list}, $args{ -Type } )
           or croak
@@ -1014,8 +1041,8 @@ sub create_mass_sending_file {
 					$list_names{ $field_ref->{list} },
 					$n_msg_id,
 				);
-                foreach (@merge_fields) {
-
+#                foreach (@merge_fields) {
+				foreach(@{ $self->subscriber_fields }) { 
                     if ( defined( $field_ref->{$_} ) ) {
                         chomp $field_ref->{$_};
                         $field_ref->{$_} =~ s/\n|\r/ /g;
