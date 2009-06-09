@@ -194,6 +194,12 @@
 
 <h1>Forgot Your Profile Password?</h1> 
 
+<!-- tmpl_if error_profile_reset_password --> 
+	 <p class="error">
+		User Unknown - have you registered?
+	</p>
+<!-- /tmpl_if --> 
+
 <fieldset> 
 
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" > 
