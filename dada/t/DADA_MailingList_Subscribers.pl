@@ -711,7 +711,11 @@ ok(-e $DADA::Config::TMP);
     my $mailout = DADA::Mail::MailOut->new({ -list => $list });
     my $rv; 
     eval { $rv = $mailout->create({-fields => $test_msg_fields, -mh_obj => $mh, -list_type => 'list' }) }; 
-    ok(!$@, "Passing  a correct DADA::Mail::Send object does not create an error! - $@"); 
+    
+	if($@){ 
+		diag 'Error returned: ' . $@; 
+	}
+	ok(!$@, "Passing  a correct DADA::Mail::Send object does not create an error! - $@"); 
     ok($rv == 1, " create() returns 1!"); 
 
     my $tmp_sub_list = $mailout->dir . '/' . 'tmp_subscriber_list.txt';
@@ -950,7 +954,10 @@ diag $contents;
     my $l = quotemeta('email: mike.kelley@example.com, First Name: Mike, Last Name: Kelley'); 
     my $l2 = quotemeta('MikeMikeMikeMikeMikeMike'); 
     my $l3 = quotemeta('KelleyKelleyKelleyKelleyKelleyKelleyKelley');
-    ok($contents !~ m/$l/); 
+	
+	diag '$contents: ' . $contents; 
+	
+	ok($contents !~ m/$l/); 
     ok($contents !~ m/$l2/); 
     ok($contents !~ m/$l3/); 
     undef $l;     
@@ -1044,6 +1051,9 @@ diag $contents;
             -Type => 'list',
             -partial_sending => {'last_name' => {'like' =>'a'}},
         );
+
+		diag "file, '$path_to_list': \n" . slurp($path_to_list); 
+
         
         ok($total_sending_out_num == 3, "This file is to send to 3 people ($total_sending_out_num)", ); 
         ok(unlink($path_to_list) == 1, 'Unlinking ' . $path_to_list . ' worked.'); 
@@ -1363,3 +1373,26 @@ foreach my $type( keys %{ $lh->allowed_list_types } ) {
  
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
+
+
+sub slurp { 
+	
+		
+		my ($file) = @_;
+
+        local($/) = wantarray ? $/ : undef;
+        local(*F);
+        my $r;
+        my (@r);
+
+        open(F, "<$file") || die "open $file: $!";
+        @r = <F>;
+        close(F) || die "close $file: $!";
+
+        return $r[0] unless wantarray;
+        return @r;
+
+}
+
+
+
