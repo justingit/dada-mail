@@ -15,7 +15,9 @@ Key:
 [ ] I need to merge all of the code that creates the query for the subscriber fields into ONE method, because it's getting 
  	complicated, it's being used in more than one place, AND people want to change it. A tall order, but probably, well worth it! 
 
-[ ] The, "Your subscriptions" thingy in the Profile thingy has to let you know, if you aren't actually subscribed to any lists. Right now, if you're not, it just looks broken. 
+[-] The, "Your subscriptions" thingy in the Profile thingy has to let you know, if you aren't actually subscribed to any lists. Right now, if you're not, it just looks broken. 
+	[ ] It would also be nice, that if you were the List Owner of a List, you'd also be listed as that. Special things, like that. Sigh. 
+	
 
 [ ] Need a way to update an email address from the profile, and perhaps auto-merge, if the email address is already subscribed to an address. (it should probably be warned if this happens...) 
 
