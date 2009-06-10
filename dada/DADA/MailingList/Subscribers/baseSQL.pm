@@ -107,59 +107,39 @@ sub search_list {
 
     my $r = [];
 
-    my $st     = $self->{sql_params}->{subscriber_table};
-    my $sft    = $self->{sql_params}->{profile_fields_table};
-    my $fields = $self->subscriber_fields;
-    my $select_fields = '';
-    foreach (@$fields) {
-        $select_fields .= ', ' . $sft . '.' . $_;
-    }
+	my $partial_listing = {};
+	
+	my $fields = $self->subscriber_fields;
+	foreach(@$fields){ 
+		$partial_listing->{$_} = {like => $args->{ -query }}; 
+	}
+	# Do I have to do this, explicitly? 
+	$partial_listing->{email} = {like => $args->{ -query }}; 
+	
+	
+	my $query = $self->SQL_subscriber_profile_join_statement(
+		{ 
+			-type            => $args->{ -type }, 
+			-partial_listing => $partial_listing,
+			-search_type     => 'any', 
+		}
+	);
 
-    my $query;
-    $query .= 'SELECT ' . $st . '.email';
-    $query .= $select_fields;
-    $query .= ' FROM ';
-    $query .= $st . ' LEFT JOIN ' . $sft;
-    $query .= ' ON ';
-    $query .= $st . '.email' . ' = ' . $sft . '.email';
-    $query .= ' WHERE   ' . $st
-      . '.list_type = ? AND '
-      . $st
-      . '.list_status = 1 AND '
-      . $st
-      . '.list = ? ';
-
-    if ( $fields->[0] ) {
-        $query .= ' AND (' . $st . '.email like ?';
-        foreach (@$fields) {
-            $query .= ' OR ' . $sft . '.' . $_ . ' LIKE ? ';
-        }
-        $query .= ')';
-    }
-    else {
-        $query .= ' AND (' . $st . '.email like ?)';
-    }
-
-    if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
-        $query .= ' ORDER BY ' . $st . '.email';
-    }
-
-    warn 'query: ' . $query
-      if $t;
 
     my $sth = $self->{dbh}->prepare($query);
 
-    my @extra_params = ();
-    foreach (@$fields) {
-        push ( @extra_params, '%' . $args->{ -query } . '%' );
+	if (   $DADA::Config::GLOBAL_BLACK_LIST
+        && $args->{ -type } eq 'black_list' )
+    {
+        $sth->execute( $args->{ -type } )
+          or croak "cannot do statment (for search_list)! $DBI::errstr\n";
     }
-	#/
-	
-    $sth->execute(
-        $args->{ -type },              $self->{list},
-        '%' . $args->{ -query } . '%', @extra_params,
-      )
-      or croak "cannot do statement (at: search_list)! $DBI::errstr\n";
+    else {
+
+        $sth->execute($self->{list}, $args->{ -type })
+          or croak "cannot do statment (for search_list)! $DBI::errstr\n";
+    }
+
 
     my $row   = {};
     my $count = 0;
@@ -208,6 +188,17 @@ sub SQL_subscriber_profile_join_statement {
 		$args->{ -type } = 'list'; 
 	}
 	
+	my $query_type           = 'AND'; 
+	if(!$args->{-search_type}){ 
+		$args->{-search_type} = 'all'; 
+	}
+	if($args->{-search_type} !~ /any|all/){
+		$args->{-search_type} = 'all'; 		
+	} 	
+	if($args->{-search_type} eq 'any'){ 
+		$query_type = 'OR'; 
+	}
+	
     my $subscriber_table     = $self->{sql_params}->{subscriber_table};
     my $profile_fields_table = $self->{sql_params}->{profile_fields_table};
 	
@@ -238,30 +229,76 @@ sub SQL_subscriber_profile_join_statement {
       $query .= ' AND ' . $subscriber_table . '.list_type = ?';
       $query .= ' AND ' . $subscriber_table . '.list_status = 1';
 
+
+#	  # Maybe a good idea to pre-munge this... 
+#		if ( keys %{ $args->{ -partial_listing } } ) {
+#			foreach ( keys %{ $args->{ -partial_listing } } ) {
+#				if(
+#					($args->{ -partial_listing }->{$_}->{equal_to}) > 0 ||
+#					($args->{ -partial_listing }->{$_}->{like} > 0)	
+#				){ 
+#					# ...
+#				}
+#				else { 
+#					delete($args->{ -partial_listing }->{$_}); 
+#				}
+#								
+#			}
+#			
+#		}
+#			
+#	  #/ 
+
       if ( keys %{ $args->{ -partial_listing } } ) {
 	
 		  # This *really* needs its own method, as well... 
+		  # It's somewhat strange, as this relies on the email address in the 
+		  # profile (I think?) to work, if we're looking for email addresses... 
+		  $query .= ' AND ( '; 
+		  # $query .= ' AND '; 
+		  my @count = keys %{ $args->{ -partial_listing } }; 
+		  my $count = $#count; 
+		  my $i = 0; 
+		
           foreach ( keys %{ $args->{ -partial_listing } } ) {
+			  
+			  # This is to make sure we're always using the email from the
+			  # subscriber table - this stops us from not seeing an email 
+			  # address that doesn't have a profile... 
+			  my $table = $profile_fields_table; 
+			  if($_ eq 'email'){ 
+			  		$table = $subscriber_table;
+			  }
+			  # was the above really necessary...?
+			
               if ( $args->{ -partial_listing }->{$_}->{equal_to} ) {
-                  $query .= ' AND ' . $profile_fields_table . '.' . $_ . ' = \''
+                  $query .=  $table . '.' . $_ . ' = \''
                     . $args->{ -partial_listing }->{$_}->{equal_to} . '\'';
               }
               elsif ( $args->{ -partial_listing }->{$_}->{like} ) {
 
-                  $query .= ' AND ' . $profile_fields_table . '.' . $_
+                  $query .=  $table . '.' . $_
                     . ' LIKE \'%'
                     . $args->{ -partial_listing }->{$_}->{like} . '%\'';
               }
-          }
+			 
+			if($count > $i){ 
+          		$query .= ' '. $query_type .' ';
+			}
+			$i++;
+		}
 	  	# This *really* needs its own method, as well... 	
-      }
+      	$query .= ') '; 
+	}
 
-	#if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
+	if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
 		$query .= ' ORDER BY ' . $subscriber_table . '.email';
-    #}
+    }
 
+	#print '<p><code>QUERY: ' . $query . '</code></p>';
 	warn 'QUERY: ' . $query;
-	#	if $t;
+#		if $t; 
+		
 	return $query; 
 }
 
@@ -322,7 +359,7 @@ sub fancy_print_out_list {
     }
     else {
 
-        $sth->execute( $args->{ -type }, $self->{list} )
+        $sth->execute($self->{list}, $args->{ -type })
           or croak "cannot do statment (for print out list)! $DBI::errstr\n";
     }
 
@@ -389,7 +426,7 @@ sub print_out_list {
     }
     else {
 
-        $sth->execute( $args{ -Type }, $self->{list} )
+        $sth->execute($self->{list}, $args{ -Type } )
           or croak "cannot do statment (for print out list)! $DBI::errstr\n";
 
     }
@@ -487,38 +524,19 @@ sub subscription_list {
     my $email;
     my $count = 0;
     my $list  = [];
+	my $fields        = $self->subscriber_fields;
 
-    my $st  = $self->{sql_params}->{subscriber_table};
-    my $sft = $self->{sql_params}->{profile_fields_table};
+	my $query = $self->SQL_subscriber_profile_join_statement(
+		{ 
+			-type            => $args{ -Type }, 
+		}
+	);
 
- 	my $fields        = $self->subscriber_fields;
-    my $select_fields = '';
-
-    foreach (@$fields) {
-        $select_fields .= ', ' . $sft . '.' . $_;
-    }
-
-	#my $query .= 'SELECT ' . $st . '.email';
-    my $query .= 'SELECT ' . $st . '.*';
-
-    $query .= $select_fields;
-    $query .= ' FROM ' . $st;
-    $query .= ' LEFT JOIN ' . $sft . ' ON ';
-    $query .= ' ' . $st . '.email' . ' = ' . $sft . '.email';
-    $query .= ' WHERE ' . $st . '.list_type = ? AND ' . $st . '.list_status = 1';
-    $query .= ' AND ' . $st . '.list = ?';
-
-    if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
-        $query .= ' ORDER BY ' . $st . '.email';
-    }
-
-	warn 'query: ' . $query
-	 if $t; 
 
 
     my $sth = $self->{dbh}->prepare($query); 
 	
-    $sth->execute( $args{ -Type }, $self->{list} )
+    $sth->execute($self->{list}, $args{ -Type })
       or croak "cannot do statment (for subscription_list)! $DBI::errstr\n";
 
 	
@@ -963,50 +981,7 @@ sub create_mass_sending_file {
     chomp($test_test);    #Why Chomp?!
     unless ( $test_test == 1 ) {
 
-=cut
-		#########
-        my @merge_fields = @{ $self->subscriber_fields };
-        my $merge_field_query;
-        foreach (@merge_fields) {
-            $merge_field_query .=
-              ', ' . $self->{sql_params}->{profile_fields_table} . '.' . $_;
-        }
 
-        my $st  = $self->{sql_params}->{subscriber_table};
-        my $sft = $self->{sql_params}->{profile_fields_table};
-
-        my $query;
-        $query = 'SELECT ' . $st . '.email, ' . $st . '.list';
-        $query .= $merge_field_query;
-        $query .= ' FROM ' . $st . ' LEFT OUTER JOIN ' . $sft . ' ON ';
-        $query .= ' ' . $st . '.email' . ' = ' . $sft . '.email';
-        $query .= ' WHERE  ';
-        $query .= $st . '.list = ?';
-        $query .= ' AND ' . $st . '.list_type = ?';
-        $query .= ' AND ' . $st . '.list_status = 1';
-
-        if ( keys %{ $args{ -partial_sending } } ) {
-            foreach ( keys %{ $args{ -partial_sending } } ) {
-                if ( $args{ -partial_sending }->{$_}->{equal_to} ) {
-                    $query .= ' AND ' . $sft . '.' . $_ . ' = \''
-                      . $args{ -partial_sending }->{$_}->{equal_to} . '\'';
-                }
-                elsif ( $args{ -partial_sending }->{$_}->{like} ) {
-
-                    $query .= ' AND ' . $sft . '.' . $_
-                      . ' LIKE \'%'
-                      . $args{ -partial_sending }->{$_}->{like} . '%\'';
-                }
-            }
-
-        }
-        $query .= ' ORDER BY ' . $st . '.email';
-
-       # warn 'QUERY: ' . $query
-       #   if $t;
-	
-		###################
-=cut
 
 		my $query = $self->SQL_subscriber_profile_join_statement(
 			{ 
