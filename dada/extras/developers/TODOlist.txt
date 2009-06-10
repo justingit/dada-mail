@@ -9,6 +9,7 @@ Key:
 [x] Done. 
 [*] Naw...
 
+[ ] It would be nice if the partial fields could support some sort of dynamic content, like today's date, etc. 
 
 [ ] Auto Clickthrough tracking of links in the clickthrough tracker. (oh, boy) 
 
