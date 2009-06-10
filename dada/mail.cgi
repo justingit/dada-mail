@@ -1034,16 +1034,18 @@ sub previewMessageReceivers {
         
     my $partial_sending = {}; 
     foreach my $field(@$fields){ 
-        if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){ 
-			my $undotted_name = $field->{name}; 
-			   $undotted_name =~ s/^subscriber\.//; 
-            $partial_sending->{$undotted_name} = {equal_to => $q->param('field_value_' . $field->{name})}; 
-        }
-        elsif($q->param('field_comparison_type_' . $field->{name}) eq 'like'){ 
-			my $undotted_name = $field->{name}; 
-			   $undotted_name =~ s/^subscriber\.//;
-            $partial_sending->{$undotted_name} = {like => $q->param('field_value_' . $field->{name})}; 
-        }   
+	#	if( length($q->param('field_value_' . $field->{name})) > 0) { 		
+	        if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){ 
+				my $undotted_name = $field->{name}; 
+				   $undotted_name =~ s/^subscriber\.//; 
+	            $partial_sending->{$undotted_name} = {equal_to => $q->param('field_value_' . $field->{name})}; 
+	        }
+	        elsif($q->param('field_comparison_type_' . $field->{name}) eq 'like'){ 
+				my $undotted_name = $field->{name}; 
+				   $undotted_name =~ s/^subscriber\.//;
+	            $partial_sending->{$undotted_name} = {like => $q->param('field_value_' . $field->{name})}; 
+	        }  
+	#	}
     }
     
     
