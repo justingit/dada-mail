@@ -1195,6 +1195,9 @@ for($i=0;$i<10;$i++){
         }), 'added: example' . $i . '@example.com' );
     
 }
+my $now_n_subs = $lh->num_subscribers; 
+ok($now_n_subs == 10, "10 subscribers right now ($now_n_subs)"); 
+
 
 undef $i;
 
@@ -1205,7 +1208,13 @@ my $results = $lh->search_list(
     }
 ); 
 
-ok($results->[9], "Have 10 results");
+use Data::Dumper; 
+diag "DUMP: " .  Data::Dumper::Dumper($results); 
+
+my @results = @$results; 
+
+
+ok($results->[9], "Have 10 results ($#results)");
 ok(!$results->[10], "Do NOT have 11 results."); 
 
 
