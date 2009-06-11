@@ -5997,7 +5997,7 @@ sub subscriber_fields {
      if($process eq 'delete_field'){ 
      
 		###
-        $dpf->remove_subscriber_field({-field => $field}); 
+        $dpf->remove_field({-field => $field}); 
         
         print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=subscriber_fields&deletion=1&working_field=' . $field}); 
         return; 

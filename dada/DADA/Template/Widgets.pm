@@ -1966,7 +1966,7 @@ sub subscription_form {
     
     require DADA::Profile::Fields; 
     my $dpf = DADA::Profile::Fields->new; 
-	my $subscriber_fields = $dpf->subscriber_fields;
+	my $subscriber_fields = $dpf->fields;
 	my $field_attrs = $dpf->get_all_field_attributes;
 	my $named_subscriber_fields = [];
 

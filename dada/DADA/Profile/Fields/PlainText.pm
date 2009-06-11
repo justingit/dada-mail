@@ -43,17 +43,13 @@ sub get_all_field_attributes {
     return {};
 }
 
-sub subscriber_fields {
+sub fields {
     return [];
 }
 
 sub can_have_subscriber_fields {
     my $self = shift;
     return 0;
-}
-
-sub subscriber_fields {
-    return [];
 }
 
 1;

@@ -6,7 +6,7 @@ use DADA::App::Guts;
 use base "DADA::Profile::Fields::baseSQL";
 use strict;
 
-sub remove_subscriber_field {
+sub remove_field {
 
     my $self = shift;
 
@@ -16,7 +16,7 @@ sub remove_subscriber_field {
     }
     $args->{ -field } = lc( $args->{ -field } );
 
-    $self->validate_remove_subscriber_field_name(
+    $self->validate_remove_field_name(
         {
             -field      => $args->{ -field },
             -die_for_me => 1,
@@ -28,7 +28,7 @@ sub remove_subscriber_field {
     my %omit_fields = ( email => 1, );
 
     my @no_homers = ();
-    foreach ( @{ $self->subscriber_fields } ) {
+    foreach ( @{ $self->fields } ) {
         if ( $_ ne $args->{ -field } ) {
             push ( @no_homers, $_ );
         }
@@ -83,7 +83,7 @@ sub remove_subscriber_field {
     $self->make_table();
 
     foreach (@no_homers) {
-        $self->add_subscriber_field( { -field => $_, } );
+        $self->add_field( { -field => $_, } );
     }
 
     $self->{dbh}->do( 'INSERT INTO '
@@ -103,6 +103,7 @@ sub remove_subscriber_field {
     $self->{dbh}->do('COMMIT')
       or croak "cannot do statement $DBI::errstr\n";
 
+	delete( $self->{cache}->{fields} );
     ###
 
     $self->remove_field_attributes( { -field => $args->{ -field } } );

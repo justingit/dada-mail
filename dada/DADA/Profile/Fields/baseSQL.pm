@@ -10,7 +10,7 @@ use DADA::App::Guts;
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_Profile_Fields};
 
-sub columns {
+sub _columns {
 
 	# DEV: TODO: CACHE!
     my $self  = shift;
@@ -35,21 +35,21 @@ sub columns {
 
 }
 
-sub subscriber_fields {
+sub fields {
 
     my $self = shift;
     my ($args) = @_;
 
     my $l = [];
 
-    if ( exists( $self->{cache}->{subscriber_fields} ) ) {
-        $l = $self->{cache}->{subscriber_fields};
+    if ( exists( $self->{cache}->{fields} ) ) {
+        $l = $self->{cache}->{fields};
     }
     else {
 
        # I'm assuming, "columns" always returns the columns in the same order...
-        $l = $self->columns;
-        $self->{cache}->{subscriber_fields} = $l;
+        $l = $self->_columns;
+        $self->{cache}->{fields} = $l;
     }
 
     if ( !exists( $args->{ -show_hidden_fields } ) ) {
@@ -153,11 +153,11 @@ sub insert {
 	);
 	
 	if($fields_exists && $args->{-mode} eq 'preserve'){ 
-			return; 
+			return 1; 
 	}
 	
 	if ($fields_exists) {
-        $self->drop( 
+        $self->remove( 
 			{ 
 				-email => $args->{ -email } 
 			} 
@@ -166,7 +166,7 @@ sub insert {
 
     my $sql_str             = '';
     my $place_holder_string = '';
-    my @order               = @{ $self->subscriber_fields };
+    my @order               = @{ $self->fields };
     my @values;
 
     if ( $order[0] ) {
@@ -192,6 +192,8 @@ sub insert {
     $sth->execute( $args->{ -email }, @values )
       or croak "cannot do statement (at insert)! $DBI::errstr\n";
     $sth->finish;
+
+	return 1; 
  	
 }
 
@@ -199,8 +201,12 @@ sub get {
 
     my $self = shift;
     my ($args) = @_;
-    my $sub_fields = $self->subscriber_fields;
-
+    my $sub_fields = $self->fields;
+	
+	if(!$args->{ -dotted }){ 
+		$args->{ -dotted } = 0; 
+	}
+	
     my $query =
       'SELECT * FROM '
       . $self->{sql_params}->{profile_fields_table}
@@ -266,7 +272,7 @@ sub exists {
     return $row[0];
 }
 
-sub drop {
+sub remove {
     my $self = shift;
     my ($args) = @_;
 
@@ -281,18 +287,18 @@ sub drop {
     my $sth = $self->{dbh}->prepare($query);
 
     my $rv = $sth->execute( $args->{ -email } )
-      or croak "cannot do statment (at drop)! $DBI::errstr\n";
+      or croak "cannot do statment (at remove)! $DBI::errstr\n";
     $sth->finish;
     return $rv;
 }
 
-sub add_subscriber_field {
+sub add_field {
 
     my $self = shift;
 
     #DEV: Add testing of parameters!!!!!!
 
-    delete( $self->{cache}->{subscriber_fields} );
+    delete( $self->{cache}->{fields} );
 
     my ($args) = @_;
 
@@ -327,7 +333,7 @@ sub add_subscriber_field {
     my $sth = $self->{dbh}->prepare($query);
 
     my $rv = $sth->execute()
-      or croak "cannot do statement (at add_subscriber_field)! $DBI::errstr\n";
+      or croak "cannot do statement (at add_field)! $DBI::errstr\n";
 
     if ( !exists( $args->{ -fallback_value } ) ) {
         $args->{ -fallback_value } = '';
@@ -341,7 +347,7 @@ sub add_subscriber_field {
         }
     );
 
-    delete( $self->{cache}->{subscriber_fields} );
+    delete( $self->{cache}->{fields} );
     return 1;
 }
 
@@ -354,23 +360,50 @@ sub save_field_attributes {
     if ( $self->field_attributes_exist( { -field => $args->{ -field } } ) ) {
         $query = 'UPDATE '
           . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table}
-          . ' SET (label fallback_value) values(?,?) where field = ?';
+          . ' SET label = ? WHERE field = ?';
+
+		 my $sth = $self->{dbh}->prepare($query);
+
+		my $rv = $sth->execute(
+			$args->{ -label },
+			$args->{ -field }
+		)
+		or croak "cannot do statement (at save_field_attributes)! $DBI::errstr\n";
+		
+		undef $sth; 
+		undef $rv; 
+		
+		$query = 'UPDATE '
+          . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table}
+          . ' SET fallback_value = ? WHERE field = ?';
+		 
+		 $sth = $self->{dbh}->prepare($query);
+
+		$rv = $sth->execute(
+			$args->{ -fallback_value },
+			$args->{ -field }
+		)
+		or croak "cannot do statement (at save_field_attributes)! $DBI::errstr\n";
     }
     else {
         $query =
           'INSERT INTO '
           . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table}
           . ' (label, fallback_value, field) values(?,?,?)';
-    }
+   
+		 my $sth = $self->{dbh}->prepare($query);
 
-    my $sth = $self->{dbh}->prepare($query);
+		    my $rv = $sth->execute(
+		        $args->{ -label },
+		        $args->{ -fallback_value },
+		        $args->{ -field }
+		      )
+		      or croak "cannot do statement (at save_field_attributes)! $DBI::errstr\n";
+ 	}
 
-    my $rv = $sth->execute(
-        $args->{ -label },
-        $args->{ -fallback_value },
-        $args->{ -field }
-      )
-      or croak "cannot do statement (at save_field_attributes)! $DBI::errstr\n";
+#	print $query; 
+	
+   
 
 }
 
@@ -441,16 +474,16 @@ sub edit_subscriber_field {
       or croak
       "cannot do statement (at: edit_subscriber_field)! $DBI::errstr\n";
 
-    delete( $self->{cache}->{subscriber_fields} );
+    delete( $self->{cache}->{fields} );
     return 1;
 
 }
 
-sub remove_subscriber_field {
+sub remove_field {
 
     my $self = shift;
 
-    delete( $self->{cache}->{subscriber_fields} );
+    delete( $self->{cache}->{fields} );
 
     my ($args) = @_;
     if ( !exists( $args->{ -field } ) ) {
@@ -458,7 +491,7 @@ sub remove_subscriber_field {
     }
     $args->{ -field } = lc( $args->{ -field } );
 
-    $self->validate_remove_subscriber_field_name(
+    $self->validate_remove_field_name(
         {
             -field      => $args->{ -field },
             -die_for_me => 1,
@@ -475,10 +508,10 @@ sub remove_subscriber_field {
 
     my $rv = $sth->execute()
       or croak
-      "cannot do statement! (at: remove_subscriber_field) $DBI::errstr\n";
+      "cannot do statement! (at: remove_field) $DBI::errstr\n";
 
     $self->remove_field_attributes( { -field => $args->{ -field } } );
-    delete( $self->{cache}->{subscriber_fields} );
+    delete( $self->{cache}->{fields} );
 
     return 1;
 
@@ -534,7 +567,7 @@ sub subscriber_field_exists {
 
     $args->{ -field } = lc( $args->{ -field } );
 
-    foreach ( @{ $self->subscriber_fields } ) {
+    foreach ( @{ $self->fields } ) {
         if ( $_ eq $args->{ -field } ) {
             return 1;
         }
@@ -655,7 +688,7 @@ sub validate_subscriber_field_name {
 
 }
 
-sub validate_remove_subscriber_field_name {
+sub validate_remove_field_name {
 
     my $self = shift;
 
@@ -689,7 +722,7 @@ sub validate_remove_subscriber_field_name {
     }
 
     my $exists = 0;
-    foreach ( @{ $self->subscriber_fields } ) {
+    foreach ( @{ $self->fields } ) {
         if ( $args->{ -field } eq $_ ) {
             $exists = 1;
             last;
@@ -709,7 +742,7 @@ sub validate_remove_subscriber_field_name {
     }
 
     # What? How exactly is this reached when *removing* a field?
-    my $fields = $self->subscriber_fields;
+    my $fields = $self->fields;
     if ( $#$fields + 1 > 100 ) {
         $errors->{number_of_fields_limit_reached} = 1;
         if ( $args->{ -die_for_me } == 1 ) {
@@ -740,7 +773,7 @@ sub change_field_order {
     # fields
     # direction
 
-    my $sf = $self->subscriber_fields;
+    my $sf = $self->fields;
 
     my $i   = 0;
     my $pos = 0;

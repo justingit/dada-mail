@@ -53,11 +53,7 @@ sub add {
 	$sth->finish;
 	
 	if ( exists $args->{ -fields } && keys %{$args->{ -fields }}) {		
-		my $fields = DADA::Profile::Fields->new(
-			{
-				-list => $args->{ -list }
-			}
-		);
+		my $fields = DADA::Profile::Fields->new;
 		 	
 		$fields->insert(
 			{
@@ -90,7 +86,7 @@ sub get {
     my $self = shift;
     my ($args) = @_;
     require DADA::Profile::Fields; 
-	my $sf = DADA::Profile::Fields->new({-list => $self->{list}}); 
+	my $sf = DADA::Profile::Fields->new; 
 	
 	
 	my $r =  $sf->get($args); 
@@ -127,7 +123,7 @@ sub move {
 			my $dpf = DADA::Profile::Fields->new;
 			if($dpf->exists({-email => '*' . $self->email})){ 
 				my $fields = $dpf->get({-email => '*' . $self->email});
-				$dpf->drop({-email => '*' . $self->email}); 
+				$dpf->remove({-email => '*' . $self->email}); 
 				$dpf->insert(
 					{
 						-email     => $self->{email},

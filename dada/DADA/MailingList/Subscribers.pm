@@ -74,7 +74,7 @@ sub _init  {
 		$self->{dbh} = $dbi_obj->dbh_obj; 
 	}
 	
-	$self->{fields}   = DADA::Profile::Fields->new({-list => $self->{list}}); 		
+	$self->{fields}   = DADA::Profile::Fields->new; 		
 	$self->{validate} = DADA::MailingList::Subscriber::Validate->new({-list => $self->{list}, -lh_obj => $self}); 		
 }
 
@@ -155,11 +155,11 @@ sub columns {
 }
 sub subscriber_fields { 
 	my $self = shift; 
-	return $self->{fields}->subscriber_fields(@_);
+	return $self->{fields}->fields(@_);
 }
 sub add_subscriber_field { 
 	my $self = shift; 
-	return $self->{fields}->add_subscriber_field(@_);
+	return $self->{fields}->add_field(@_);
 }
 sub edit_subscriber_field { 
 	my $self = shift; 
@@ -167,7 +167,7 @@ sub edit_subscriber_field {
 }
 sub remove_subscriber_field { 
 	my $self = shift; 
-	return $self->{fields}->remove_subscriber_field(@_);
+	return $self->{fields}->remove_field(@_);
 }
 sub subscriber_field_exists { 
 	my $self = shift; 

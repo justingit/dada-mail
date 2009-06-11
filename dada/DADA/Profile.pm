@@ -113,7 +113,7 @@ sub insert {
 
     # ?
     #	if($self->exists({-email => $args->{-email}}) >= 1){
-    #		$self->drop({-email => $args->{-email}});
+    #		$self->remove({-email => $args->{-email}});
     #	 }
 
     my $query =
@@ -485,7 +485,7 @@ sub update {
             $orig->{$_} = $args->{ '-' . $_ };
         }
     }
-    $self->drop();
+    $self->remove();
     $orig->{ -email } = $self->{email};
 
     # This is kind of strange:
@@ -641,7 +641,7 @@ sub set_auth_code {
 
 }
 
-sub drop {
+sub remove {
     my $self = shift;
     my ($args) = @_;
 
@@ -655,7 +655,7 @@ sub drop {
     warn 'QUERY: ' . $query . ' (' . $self->{email} . ')'
       if $t;
     my $rv = $sth->execute( $self->{email} )
-      or croak "cannot do statment (at drop)! $DBI::errstr\n";
+      or croak "cannot do statment (at remove)! $DBI::errstr\n";
     $sth->finish;
     return $rv;
 }
