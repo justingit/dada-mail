@@ -140,61 +140,76 @@ Unconfirmed profiles are marked as existing, but not, "live" as a way to save th
 
 This method should return, C<1> on success.  
 
-=head2 add_subscriber
+=head2 get
 
- $lh->add_subscriber(
+ my $prof = $pf->get(
 	{
-		-email  => 'user@example.com', 
-		-type   => 'list',
-		-fields => {
-					# ...
-				   },
-	}
-);
+		-email => 'user@example.com', 
+ 	}
+ ); 
 
-C<add_subscriber> adds a subscriber to a sublist. 
+C<get> returns the profile fields for the email address passed in, C<-email> as a hashref. 
 
-C<-email> is required and should hold a valid email address in form of: C<user@example.com>
+C<-email> is a required paramater. Not passing it will cause this method to return, C<undef>. 
 
-C<-type> holds the sublist you want to subscribe the address to, if no sublist is passed, B<list> is used as a default.
+Passing an email that doesn't have a profile saved will also return, C<undef>. Check before by using, C<exists()>
 
-C<-fields> holds the subscription fields you'd like associated with the subscription, passed as a hashref. 
+C<-dotted> is an optional paramter, and will return the keys of the hashref appended with, C<subscriber.>
 
-For example, if you have two fields, B<first_name> and, B<last_name>, you would pass the subscriber fields like this: 
+=head2 exists
 
- $lh->add_subscriber(
+	my $exists = $pf->exists(
+		{
+			-email => 'user@example.com', 
+		}
+	); 
+
+C<exists> return either C<1>, if the profile associated with the email address passed in the C<-email> paramater has a profile
+
+or, C<0> if there is no profile. 
+
+=head2 remove
+
+
+ $pf->remove(
 	{
-		-email  => 'user@example.com', 
-		-type   => 'list',
-		-fields => {
-					first_name => "John", 
-					last_name  => "Doe", 
-				   },
+		-email => 'user@example.com', 
 	}
- );
+ ); 
 
-Passing field values is optional.
+C<remove> removes the profile fields assocaited with the email address passed in the 
+C<-email> paramater. 
 
-Fields that are not actual fields that are being passed will be ignored. 
+C<remove> will return the number of rows removed - this should hopefully be only C<1>. Any larger number 
+would be a serious problem. 
 
-=head3 Diagnostics
+C<-email> is a required paramater. Not passing it will cause this method to return, C<undef>. 
 
-=over
+Passing an email that doesn't have a profile saved will also return, C<undef>. Check before by using, C<exists()>
 
-=item * You must pass an email in the -email paramater!
+=head2 add_field
 
-You forgot to pass an email in the, -email paramater, ie: 
+ $pf->add_field(
+	{
+		-field          => 'myfield', 
+		-fallback_value => 'a default', 
+		-label          => 'My Field!', 
+	}
+ ); 
 
- # DON'T do this:
- $lh->add_subscriber();
+C<add_field()> adds a field to the profile_fields table. 
 
-=item * cannot do statement (at add_subscriber)!
+C<-field> is a required paramater and should be the name of the field you want to 
+create. This field has to be a valid column name for whatever backend you're using. 
+It's suggested that you stick with lowercase, less than 16 character names. 
 
-Something went wrong in the SQL side of things.
+Not passing a name for your field in the C<-field> paramater will cause the an unrecoverable error.
 
-=back
+C<-fallback_value> is an optional paramater, it's a more free form value, used when the profile does not have a value for this profile field. This is usually used in templating
 
+C<-label> is an optional paramater and is used in forms that capture profile fields information as a, "friendlier" version of the field name. 
 
+This method will return C<undef> if there's a problem with the paramaters passed. See also the, C<validate_subscriber_field_name()> method. 
 
 =head1 AUTHOR
 

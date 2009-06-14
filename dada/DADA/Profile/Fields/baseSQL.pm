@@ -206,7 +206,12 @@ sub get {
 	if(!$args->{ -dotted }){ 
 		$args->{ -dotted } = 0; 
 	}
-	
+	if(!exists($args->{-email})){ 
+		return undef; 
+	}
+	if(! $self->exists({-email => $args->{-email}})) {  
+		return undef; 
+	}
     my $query =
       'SELECT * FROM '
       . $self->{sql_params}->{profile_fields_table}
@@ -248,7 +253,7 @@ sub get {
 
     }
 
-    carp "Didn't fetch the subscriber?!";
+    carp "Didn't fetch the profile?!";
     return undef;
 
 }
@@ -273,9 +278,17 @@ sub exists {
 }
 
 sub remove {
+	
     my $self = shift;
     my ($args) = @_;
 
+	if(!exists($args->{-email})){ 
+		return undef; 
+	}
+	if(! $self->exists({-email => $args->{-email}})) {  
+		return undef; 
+	}
+	
     my $query =
       'DELETE  from '
       . $DADA::Config::SQL_PARAMS{profile_fields_table}
@@ -290,6 +303,7 @@ sub remove {
       or croak "cannot do statment (at remove)! $DBI::errstr\n";
     $sth->finish;
     return $rv;
+
 }
 
 sub add_field {
@@ -305,22 +319,33 @@ sub add_field {
     if ( !exists $args->{ -field } ) {
         croak "You must pass a value in the -field paramater!";
     }
-
     $args->{ -field } = lc( $args->{ -field } );
+
+
+    if ( !exists( $args->{ -fallback_value } ) ) {
+        $args->{ -fallback_value } = '';
+    }
+
+    if ( !exists( $args->{ -label } ) ) {
+        $args->{ -label } = '';
+    }
+
 
     my ( $errors, $details ) =
       $self->validate_subscriber_field_name( { -field => $args->{ -field } } );
 
     if ($errors) {
-        carp "Something's wrong with the field name you're trying to pass ("
+		my $err; 
+        $err = "Something's wrong with the field name you're trying to pass ("
           . $args->{ -field }
           . "). Validate the field name before attempting to add the field with, 'validate_subscriber_field_name' - ";
         foreach ( keys %$details ) {
             if ( $details->{$_} == 1 ) {
-                carp $args->{ -field } . ' Field Error: ' . $_;
+                $err .= $args->{ -field } . ' Field Error: ' . $_;
             }
         }
-
+		
+		carp $err; 
         return undef;
     }
 
@@ -334,10 +359,6 @@ sub add_field {
 
     my $rv = $sth->execute()
       or croak "cannot do statement (at add_field)! $DBI::errstr\n";
-
-    if ( !exists( $args->{ -fallback_value } ) ) {
-        $args->{ -fallback_value } = '';
-    }
 
     $self->save_field_attributes(
         {
@@ -401,9 +422,7 @@ sub save_field_attributes {
 		      or croak "cannot do statement (at save_field_attributes)! $DBI::errstr\n";
  	}
 
-#	print $query; 
-	
-   
+	return 1; 
 
 }
 

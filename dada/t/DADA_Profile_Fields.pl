@@ -129,6 +129,153 @@ $pf->insert(
 $prof = $pf->get({-email  => 'user@example.com'}); 
 ok($prof->{one} eq 'a new value', "new field value not saved. ($prof->{one})");
 
+# verify
+ok($pf->exists({-email => 'user@example.com'}) == 1, "exists."); 
+# remove and clean up.
+ok($pf->remove({-email => 'user@example.com'}) == 1, "removed.");
+$pf->remove_field({-field => 'one'}); 
+
+undef $prof; 
+
+
+# C<-confirmed> confirmed can also be passed with a value of either C<1> or, 
+# C<0>, with C<1> being the default if the paramater is not passed. 
+#
+# Unconfirmed profiles are marked as existing, but not, "live" as a way to save 
+# the profile information, until the profile can be confirmed, by a user. 
+
+# (this is sort of a strange idea!) - there's no programmable way to, "confirm"
+# an unconfirmed email...!
+
+$pf->insert(
+	{
+		-email     => 'user@example.com',
+		-confirmed => 0, 
+	}
+);
+ok($pf->exists({-email => '*' . 'user@example.com'}) == 1, "unconfirmed profile exists.");
+ok($pf->remove({-email => '*' . 'user@example.com'}) == 1, "removed.");
+
+###############################################################################
+# get
+
+$pf->add_field({-field => 'one'}); 
+$pf->insert(
+	{
+		-email  => 'user@example.com',
+		-fields => { 
+			'one' => 'value', 
+		}
+	}
+);
+
+# C<get> returns the profile fields for the email address passed in, C<-email> as a hashref. 
+
+$prof = $pf->get({-email  => 'user@example.com'}); 
+ok($prof->{one} eq 'value', "field value passed and saved. ($prof->{one})");
+undef $prof; 
+
+
+# C<-email> is a required paramater. Not passing it will cause this method to return, C<undef>. 
+ok($pf->get eq undef, 'Not passing it will cause this method to return, C<undef>. (' . $pf->get . ')'); 
+undef $prof; 
+
+ok($pf->get({-email => 'donthaveaprofile@example.com'}) eq undef, 'Not passing it will cause this method to return, C<undef>. (' . $pf->get . ')'); 
+undef $prof; 
+
+
+#  C<-dotted> is an optional paramter, and will return the keys of the hashref appended with, C<subscriber.>
+$prof = $pf->get(
+	{
+		-email  => 'user@example.com',
+		-dotted => 1, 
+	}
+); 
+
+ok(exists($prof->{'subscriber.one'}), 'keys are, "dotted"'); 
+ok($prof->{'subscriber.one'} eq 'value', "and has the right value");
+
+
+$pf->remove_field({-field => 'one'}); 
+ok($pf->remove({-email => 'user@example.com'}) == 1, "removed.");
+
+undef $prof; 
+
+###############################################################################
+# exists
+
+ok($pf->exists({-email => 'nothere@example.com'}) == 0, "profile does not exist.");
+
+$pf->insert(
+	{
+		-email  => 'user@example.com',
+		
+	}
+);
+ok($pf->exists({-email => 'user@example.com'}) == 1, "profile exists.");
+ok($pf->remove({-email => 'user@example.com'}) == 1, "removed.");
+
+###############################################################################
+# remove
+
+
+# C<remove> removes the profile fields assocaited with the email address passed in the 
+# C<-email> paramater.
+
+$pf->insert(
+	{
+		-email  => 'user@example.com',
+	}
+);
+ok($pf->remove({-email  => 'user@example.com'}) == 1, "removed the profile."); 
+
+
+# C<-email> is a required paramater. Not passing it will cause this method to return, C<undef>. 
+#
+# Passing an email that doesn't have a profile saved will also return, C<undef>. Check before by using, C<exists()>
+
+ok($pf->remove eq undef, "passing no email returns undef."); 
+ok($pf->exists({-email  => 'nosuchuser@example.com'}) == 0, "exists is returning 0"); 
+ok($pf->remove({-email  => 'nosuchuser@example.com'}) eq undef, "passing an email with no profile fields returns undef"); 
+
+###############################################################################
+# add_field
+
+#C<add_field()> adds a field to the profile_fields table. 
+
+ $pf->add_field(
+	{
+		-field          => 'myfield', 
+		-fallback_value => 'a default', 
+		-label          => 'My Field!', 
+	}
+ ); 
+
+
+#Not passing a name for your field in the C<-field> paramater will cause the an unrecoverable error.
+
+eval { $pf->add_field; }; 
+ok(defined($@), "eval trapped an error"); 
+
+
+# C<-fallback_value> is an optional paramater, it's a more free form value, used when the profile does not have a value for this profile field. This is usually used in templating
+#
+# C<-label> is an optional paramater and is used in forms that capture profile fields information as a, "friendlier" version of the field name. 
+
+ok($pf->field_attributes_exist({-field => 'myfield'}) == 1, "Field Attr. exists.");
+my $f_des = $pf->get_all_field_attributes;
+ok($f_des->{myfield}->{fallback_value} eq 'a default', "Default was saved.");
+ok($f_des->{myfield}->{label} eq 'My Field!', "label was saved.");
+ok($pf->remove_field({-field => 'myfield'}) == 1, "Profile Removed."); 
+
+#This method will return C<undef> if there's a problem with the paramaters passed. See also the, C<validate_subscriber_field_name()> method. 
+
+ok($pf->add_field({-field => "Spaces in the name"}) eq undef, "undef returned with incorrect -field name"); 
+undef $f_des; 
+
+
+
+
 
 
 
