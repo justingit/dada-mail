@@ -171,7 +171,7 @@ sub remove_subscriber_field {
 }
 sub subscriber_field_exists { 
 	my $self = shift; 
-	return $self->{fields}->subscriber_field_exists(@_);
+	return $self->{fields}->field_exists(@_);
 }
 sub validate_subscriber_field_name { 
 	my $self = shift; 

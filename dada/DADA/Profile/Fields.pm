@@ -211,6 +211,76 @@ C<-label> is an optional paramater and is used in forms that capture profile fie
 
 This method will return C<undef> if there's a problem with the paramaters passed. See also the, C<validate_subscriber_field_name()> method. 
 
+=head2 save_field_attributes
+
+ $pf->save_field_attributes(
+	{  
+		-field 			=> 'myfield', 
+		-fallback_value => 'a default', 
+		-label          => 'My Field!',
+	}
+ );
+
+Similar to C<add_field()>, C<save_field_attributes()> saves the fallback value and label for a field. It will not create a new field, 
+but will error if you attempt to save a field attribute to a field that does not exist. 
+
+=head2 edit_subscriber_field
+
+   	$pf->edit_subscriber_field(
+		{
+			-old_name => 'myfield' ,
+			-new_name => 'mynewname',
+		}
+	);	
+	
+C<edit_subscriber_field()> is used to rename a subscriber field. Usually, this means that a column is renamed in table. 
+Various SQL backends do this differently and this method should provide the necessary magic. 
+
+C<-old_name> and C<-new_name> are required paramaters and the method will croak if you do not 
+pass both. 
+
+This method will also croak if either the C<-old_name> does not exist, or the C<-new_name> exists. 
+
+=head2 remove_field 
+
+ $pf->remove_field(
+	{ 
+		-field => 'myfield', 
+	}
+ ); 
+
+C<remove_field> will remove the profile field passed in, C<-field>. 
+
+C<-field> must exist, or the method will croak. 
+
+=head2 change_field_order
+
+ $pf->change_field_order(
+	{
+		-field     => 'myfield', 
+		-direction => 'down', # or, 'up' 
+	}
+ );
+
+C<change_field_order> is used to change the ordering of the profile fields. Profile fields
+are usually in the order as they are stored in the SQL table and this method actually changes that 
+order itself. 
+
+This method is not available for the SQLite or PostgreSQL backend. 
+
+C<-field> should hold the name of the field you'd like to move. 
+
+C<-direction> should be either C<up> or, <down> to denote which direction you'd like the field to be 
+moved. Movements are not circular - if you attempt to push a field down and the field is already the last field, it'll stay 
+the last field and won't pop to the top of the stack. 
+
+This method should return, C<1>, but if a field cannot be moved, it will return, C<0> 
+
+This method will also croak if you pass a field that does not exist, or if you pass no field at all. 
+
+
+
+
 =head1 AUTHOR
 
 Justin Simoni http://dadamailproject.com

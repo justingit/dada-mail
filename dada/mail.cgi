@@ -5941,7 +5941,7 @@ sub subscriber_fields {
 	
 	
 	 # But, if we do....
-	 my $subscriber_fields = $dpf->subscriber_fields; 
+	 my $subscriber_fields = $dpf->fields; 
 
 	 my $fields_attr = $dpf->get_all_field_attributes;
 
@@ -6013,7 +6013,7 @@ sub subscriber_fields {
       
         if($field_errors == 0){ 
         
-            $dpf->add_subscriber_field(
+            $dpf->add_field(
 				{
 					-field => $field, 
 					-fallback_value => $fallback_field_value,
@@ -6122,6 +6122,8 @@ sub subscriber_fields {
 														deletion                         => xss_filter($q->param('deletion')),
 														addition                         => xss_filter($q->param('addition')),
 														edited                           => xss_filter($q->param('edited')), 
+														
+														can_move_columns                 => ($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql') ? 1 : 0, 
 														
 													},
                                              });        
@@ -9658,7 +9660,7 @@ sub profile {
 		
 		my $prof              = DADA::Profile->new({-email => $email});
 		my $dpf               = DADA::Profile::Fields->new; 
-		my $subscriber_fields =  $dpf->subscriber_fields(); 
+		my $subscriber_fields =  $dpf->fields; 
 		my $field_attr         = $dpf->get_all_field_attributes;
 		my $email_fields      = $dpf->get({-email => $email}); 	
 			

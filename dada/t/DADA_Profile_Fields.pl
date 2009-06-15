@@ -262,7 +262,7 @@ ok(defined($@), "eval trapped an error");
 #
 # C<-label> is an optional paramater and is used in forms that capture profile fields information as a, "friendlier" version of the field name. 
 
-ok($pf->field_attributes_exist({-field => 'myfield'}) == 1, "Field Attr. exists.");
+ok($pf->_field_attributes_exist({-field => 'myfield'}) == 1, "Field Attr. exists.");
 my $f_des = $pf->get_all_field_attributes;
 ok($f_des->{myfield}->{fallback_value} eq 'a default', "Default was saved.");
 ok($f_des->{myfield}->{label} eq 'My Field!', "label was saved.");
@@ -275,13 +275,210 @@ undef $f_des;
 
 
 
+###############################################################################
+# save_field_attributes
+
+# Skipping... 
+
+
+###############################################################################
+# _field_attributes_exist
+
+# Skipping... 
+
+###############################################################################
+# edit_subscriber_field
+
+
+
+SKIP: {
+
+    skip "edit_subscriber_field note supported for SQLite" 
+        if $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite'; 
+
+	#C<edit_subscriber_field()> is used to rename a subscriber field. Usually, this means that a column is renamed in table. 
+	#Various SQL backends do this differently and this method should provide the necessary magic. 
+
+	$pf->add_field(
+		{
+			-field          => 'myfield', 
+		}
+	); 
+	ok($pf->field_exists({-field => 'myfield' }) == 1, "Initial field exists."); 
+	ok($pf->field_exists({-field => 'renamedfield' }) == 0, "Renamed field doesn't exist."); 
+
+	ok( 
+	$pf->edit_subscriber_field(
+		{ 
+			-old_name => 'myfield', 
+			-new_name => 'renamedfield', 
+		}
+	) == 1, "edit_subscriber_field returned, '1'"); 
+
+	ok($pf->field_exists({-field => 'renamedfield' }) == 1, "Renamed field exists."); 
+	ok($pf->field_exists({-field => 'myfield' }) == 0, "original field doesn't exist.");
+
+
+	#C<-old_name> and C<-new_name> are required paramaters and the method will croak if you do not 
+	#pass both. 
+
+	eval{$pf->edit_subscriber_field;};
+	ok(defined($@), "unrecoverable error returned(1)"); 
+	eval{$pf->edit_subscriber_field({-old_name => 'myfield',-new_name => 'renamedfield'});};
+	ok(defined($@), "unrecoverable error returned(2)"); 
+
+	#This method will also croak if either the C<-old_name> does not exist, or the C<-new_name> exists. 
+
+	ok($pf->remove_field({-field => 'renamedfield'}) == 1, "field removed."); 
+
+}
+
+###############################################################################
+# remove_field
+
+# C<remove_field> will remove the profile field passed in, C<-field>. 
+#
+# C<-field> must exist, or the method will croak.
+
+ ok($pf->add_field({-field => 'myfield'}) == 1, "Created new field.");
+ ok($pf->remove_field({-field => 'myfield'}) == 1, "Field removed.");
+ ok($pf->field_exists({-field => 'myfield'}) == 0, "Field does not exist.");
+ eval{$pf->remove_field;};
+ ok($@, "eval trapped an error from calling remove_field incorrectly. ( $@ )"); 
+
+
+###############################################################################
+# get_all_field_attributes
+
+
+###############################################################################
+# field_exists
+
+###############################################################################
+# validate_subscriber_field_name
+
+###############################################################################
+# validate_remove_field_name
 
 
 
 
+###############################################################################
+# change_field_order
+
+SKIP: {
+	
+	#C<change_field_order> is used to change the ordering of the profile fields. Profile fields
+	#are usually in the order as they are stored in the SQL table and this method actually changes that 
+	#order itself. 
+
+	
+	
+	#This method is not available for the SQLite or PostgreSQL backend. 
+    skip "edit_subscriber_field note supported for SQLite or PostgreSQL" 
+        if $DADA::Config::SQL_PARAMS{dbtype} =~ m/SQLite|Pg/;
+		
+	ok($pf->add_field({-field => 'one'}) == 1, "Created new field, one.");
+	ok($pf->add_field({-field => 'two'}) == 1, "Created new field, two.");
+	ok($pf->add_field({-field => 'three'}) == 1, "Created new field, three.");
+
+    #	This method will also croak if you pass a field that does not exist, or if you pass no field at all.
+	
+	eval {$pf->change_field_order();};
+	ok($@, "caught error: $@"); 
+
+	eval {$pf->change_field_order({-field => "doesnotexist"});};
+	ok($@, "caught error: $@"); 
 
 
- 
+	#	C<-field> should hold the name of the field you'd like to move. 
+    #
+	#	C<-direction> should be either C<up> or, <down> to denote which direction you'd like the field to be 
+	#	moved. Movements are not circular - if you attempt to push a field down and the field is already the last field, it'll stay 
+	#	the last field and won't pop to the top of the stack. 
+    #
+    #		This method should return, C<1>, but if a field cannot be moved, it will return, C<0> 
+
+	ok(
+	$pf->change_field_order(
+			{ 
+				-field     => 'one', 
+				-direction => 'down', 
+			}
+		) == 1, 
+		"change_field_order() returned, 1"
+	); 
+
+	$fields = $pf->fields; 
+
+	ok($fields->[0] eq 'two', 'first field is two, (' . $fields->[0] . ')');
+	ok($fields->[1] eq 'one', 'second field is one, (' . $fields->[1] . ')'); 
+	ok($fields->[2] eq 'three', 'third field is three, (' . $fields->[2] . ')');
+
+
+	ok(
+		$pf->change_field_order(
+			{ 
+				-field     => 'three', 
+				-direction => 'up', 
+			}
+		) == 1, 
+		"change_field_order() returned, 1"
+	);
+	
+	$fields = $pf->fields; 
+	
+	ok($fields->[0] eq 'two', 'first field is two, (' . $fields->[0] . ')');
+	ok($fields->[1] eq 'three', 'second field is three, (' . $fields->[1] . ')'); 
+	ok($fields->[2] eq 'one', 'third field is one, (' . $fields->[2] . ')');
+	
+
+	
+
+	ok(
+		$pf->change_field_order(
+			{ 
+				-field     => 'one', 
+				-direction => 'down', 
+			}
+		) == 0, 
+		"change_field_order() returned, 0"
+	);
+	
+	$fields = $pf->fields; 
+	
+	
+	ok($fields->[0] eq 'two', 'first field is two, (' . $fields->[0] . ')');
+	ok($fields->[1] eq 'three', 'second field is three, (' . $fields->[1] . ')'); 
+	ok($fields->[2] eq 'one', 'third field is one, (' . $fields->[2] . ')');
+	
+	
+	ok(
+		$pf->change_field_order(
+			{ 
+				-field     => 'two', 
+				-direction => 'up', 
+			}
+		) == 0, 
+		"change_field_order() returned, 0"
+	);
+	
+	$fields = $pf->fields; 
+	
+	
+	ok($fields->[0] eq 'two', 'first field is two, (' . $fields->[0] . ')');
+	ok($fields->[1] eq 'three', 'second field is three, (' . $fields->[1] . ')'); 
+	ok($fields->[2] eq 'one', 'third field is one, (' . $fields->[2] . ')');
+	
+
+	
+	ok($pf->remove_field({-field => 'one'}) == 1, "Removed field, one.");
+	ok($pf->remove_field({-field => 'three'}) == 1, "Removed field, two.");
+	ok($pf->remove_field({-field => 'two'}) == 1, "Removed field, three.");
+	
+	
+}
+
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
 

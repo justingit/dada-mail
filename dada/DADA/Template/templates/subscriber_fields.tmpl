@@ -226,6 +226,9 @@ Edit Field
 	            <input type="submit" value="[edit]" class="cautionary" style="margin:0px" /> 
 	            </form> 
 	
+	
+		<!-- tmpl_if can_move_columns --> 
+		
 				<form style="margin: 0pt; display: inline;">			
 					<input type="hidden" name="f" value="subscriber_fields" /> 
 	             	<input type="hidden" name="process" value="edit_field_order" /> 
@@ -243,6 +246,7 @@ Edit Field
 					
 					<input type="submit" value="v" class="cautionary" style="margin: 0pt;" title="move this field down" />
 				</form>
+				<!-- /tmpl_if --> 
 				
 	             </td> 
 	

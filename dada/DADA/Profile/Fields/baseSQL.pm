@@ -378,7 +378,7 @@ sub save_field_attributes {
 
     my $query = '';
 
-    if ( $self->field_attributes_exist( { -field => $args->{ -field } } ) ) {
+    if ( $self->_field_attributes_exist( { -field => $args->{ -field } } ) ) {
         $query = 'UPDATE '
           . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table}
           . ' SET label = ? WHERE field = ?';
@@ -426,7 +426,7 @@ sub save_field_attributes {
 
 }
 
-sub field_attributes_exist {
+sub _field_attributes_exist {
 
     my $self = shift;
     my ($args) = @_;
@@ -443,7 +443,7 @@ sub field_attributes_exist {
 
     $sth->execute( $args->{ -field } )
       or croak
-      "cannot do statement (at field_attributes_exist)! $DBI::errstr\n";
+      "cannot do statement (at _field_attributes_exist)! $DBI::errstr\n";
     my @row = $sth->fetchrow_array();
     $sth->finish;
 
@@ -459,14 +459,19 @@ sub edit_subscriber_field {
     if ( !exists( $args->{ -old_name } ) ) {
         croak "You MUST supply the old field name in the -old_name paramater!";
     }
-
     if ( !exists( $args->{ -new_name } ) ) {
         croak "You MUST supply the new field name in the -new_name paramater!";
     }
-
+	if(! $self->field_exists({-field => $args->{ -old_name }})){ 
+		croak 'field, ' . $args->{ -old_name } . ' does not exist!'; 
+	}
+	if($self->field_exists({-field => $args->{ -new_name }})){ 
+		croak 'field, ' . $args->{ -new_name } . ' already exists!'; 
+	}
+	
     my $query;
 
-    if ( $DADA::Config::SUBSCRIBER_DB_TYPE eq 'PostgreSQL' ) {
+    if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
 
         #ALTER TABLE dada_subscribers RENAME COLUMN oldfoo TO newfoo;
         $query =
@@ -476,7 +481,7 @@ sub edit_subscriber_field {
           . $args->{ -old_name } . ' TO '
           . $args->{ -new_name };
     }
-    else {
+    elsif($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
 
         $query =
           'ALTER TABLE '
@@ -487,6 +492,10 @@ sub edit_subscriber_field {
           . '  TEXT';
 
     }
+	elsif($DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
+		carp "sorry! renaming columns is currently not available for the SQLite backend!"; 
+		return undef; 
+	}
 
     #	die '$query ' . $query;
     $self->{dbh}->do($query)
@@ -574,7 +583,7 @@ sub get_all_field_attributes {
 
 }
 
-sub subscriber_field_exists {
+sub field_exists {
 
     my $self = shift;
 
@@ -659,7 +668,7 @@ sub validate_subscriber_field_name {
     }
 
     if (
-        $self->subscriber_field_exists( { -field => $args->{ -field } } ) == 1 )
+        $self->field_exists( { -field => $args->{ -field } } ) == 1 )
     {
         $errors->{field_exists} = 1;
     }
@@ -740,18 +749,13 @@ sub validate_remove_field_name {
         $errors->{field_is_special_field} = 0;
     }
 
-    my $exists = 0;
-    foreach ( @{ $self->fields } ) {
-        if ( $args->{ -field } eq $_ ) {
-            $exists = 1;
-            last;
-        }
-    }
+
+	my $exists = $self->field_exists({-field => $args->{ -field }}); 
     if ( $exists == 0 ) {
 
         $errors->{field_exists} = 1;
         if ( $args->{ -die_for_me } == 1 ) {
-            croak "The field you are attempting to unsubscribe from ("
+            croak "The field you are attempting to remove from ("
               . $args->{ -field }
               . ") does not exist";
         }
@@ -789,8 +793,17 @@ sub change_field_order {
     my $self = shift;
     my ($args) = @_;
 
+	delete( $self->{cache}->{fields} );
+	
     # fields
     # direction
+
+    if ( !exists( $args->{ -field } ) ) {
+        croak "You must pass a field name in, -field!";
+    }
+	if(! $self->field_exists({-field => $args->{ -field }})){ 
+		croak 'field, ' . $args->{ -field } . ' does not exist!'; 
+	}
 
     my $sf = $self->fields;
 
@@ -799,6 +812,7 @@ sub change_field_order {
     my $before;
     my $after;
     my $dir = $args->{ -direction };
+	
     foreach my $f (@$sf) {
 
         #	die $f . ' ' . $args->{-field};
@@ -833,14 +847,16 @@ sub change_field_order {
     #	}
 
     my $query =
-      'ALTER TABLE dada_profile_fields MODIFY COLUMN ' . $before
+      'ALTER TABLE ' . $self->{sql_params}->{profile_fields_table} . ' MODIFY COLUMN ' . $before
       . ' text AFTER '
       . $after;
-
+	print 'QUERY ' . $query . "\n"; 
     #	die $query;
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute()
       or croak "cannot do statement (at: change_field_order)! $DBI::errstr\n";
+
+   	delete( $self->{cache}->{fields} );
 
     return 1;
 }
