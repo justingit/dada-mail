@@ -122,8 +122,9 @@ sub move {
 			require DADA::Profile::Fields; 
 			my $dpf = DADA::Profile::Fields->new;
 			if($dpf->exists({-email => '*' . $self->email})){ 
-				my $fields = $dpf->get({-email => '*' . $self->email});
-				$dpf->remove({-email => '*' . $self->email}); 
+				my $dpf2 = DADA::Profile::Fields->new({-email => '*' . $self->email});
+				my $fields = $dpf2->get;
+				$dpf2->remove; 
 				$dpf->insert(
 					{
 						-email     => $self->{email},
