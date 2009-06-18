@@ -1328,9 +1328,8 @@ sub entity_from_dada_style_args {
                                         {
                                             -fields => $args->{-fields},
                                          }
-                                      );
-    
-    
+                                      ); 
+
             return ($self->get_entity(
                             {
                                 -data          => $filename,
@@ -1398,10 +1397,15 @@ sub file_from_dada_style_args {
     my $str = ''; 
     
     require DADA::Security::Password; 
-    
-    my $filename = $DADA::Config::TMP . '/' . 'tmp_msg_ ' . time . '_' . DADA::Security::Password::generate_rand_string(); 
+    my $time = time; 
+	my $filename  =  $DADA::Config::TMP . '/' . 'tmp_msg-';
+	   $filename .= $time;
+	   $filename .= '-';
+	   $filename .= DADA::Security::Password::generate_rand_string(); 	
+
        $filename = make_safer($filename); 
     
+	
     open my $MAIL, '>', $filename or croak $!; 
     
     if(! exists($args->{-fields})){ 
@@ -1480,10 +1484,16 @@ sub get_entity {
 		$args->{-parser_params}->{-input_mechanism} = 'parse_data';
 	}
     if($args->{-parser_params}->{-input_mechanism} eq 'parse_open'){ 
-        eval { $entity = $self->{parser}->parse_open($args->{-data}) };        
+        eval { $entity = $self->{parser}->parse_open($args->{-data}) };       
+ 		if($@){ 
+			carp $@; 
+		}
     }
     else { 
         eval { $entity = $self->{parser}->parse_data($args->{-data}) };
+ 		if($@){ 
+			carp $@; 
+		}
     }
 	
 	if($@){ 

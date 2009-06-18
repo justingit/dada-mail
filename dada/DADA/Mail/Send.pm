@@ -158,16 +158,25 @@ sub _init {
 	        }
 	    }
     
-	    ###
-	        require DADA::MailingList::Subscribers; 
-	        my $lh = DADA::MailingList::Subscribers->new({-list => $self->{list}});
-	        my $merge_fields = $lh->subscriber_fields;
-	        $self->{merge_fields} = $merge_fields;
+	
+        require DADA::MailingList::Subscribers; 
+        my $lh = DADA::MailingList::Subscribers->new({-list => $self->{list}});
+        my $merge_fields = $lh->subscriber_fields;
+				
+        $self->{merge_fields} = $merge_fields;
+		
+		# if($DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/) { 
+			
+			require DADA::ProfileFieldsManager; 
+			my $pfm = DADA::ProfileFieldsManager->new; 
+        	$self->{field_attr} = $pfm->get_all_field_attributes(); 
+       		undef $lh; 
+		#}
+		#else { 
+		#    $self->{field_attr} = {};
+    	#
+		#}
 
-	        $self->{field_attr} = $lh->{fields}->get_all_field_attributes(); 
-        
-	        undef $lh; 
-	    ###
 	}
  }
 
@@ -2412,6 +2421,9 @@ sub _mail_merge {
                                         -parser_params => {-input_mechanism => 'parse_open'}, 
                                     }
                              );
+							
+	carp 'at _mail_merge $filename ' . $filename; 
+	
        
     #warn '$orig_entity->as_string' . $orig_entity->as_string; 
     my $entity = $fm->email_template(

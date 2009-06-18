@@ -250,11 +250,11 @@ sub SQL_subscriber_profile_join_statement {
 #	  #/ 
 
       if ( keys %{ $args->{ -partial_listing } } ) {
-	
+		  my $query_pl = ''; 
 		  # This *really* needs its own method, as well... 
 		  # It's somewhat strange, as this relies on the email address in the 
 		  # profile (I think?) to work, if we're looking for email addresses... 
-		  $query .= ' AND ( '; 
+		  $query_pl .= ' AND ( '; 
 		  # $query .= ' AND '; 
 		  my @count = keys %{ $args->{ -partial_listing } }; 
 		  my $count = $#count; 
@@ -272,23 +272,32 @@ sub SQL_subscriber_profile_join_statement {
 			  # was the above really necessary...?
 			
               if ( $args->{ -partial_listing }->{$_}->{equal_to} ) {
-                  $query .=  $table . '.' . $_ . ' = \''
+                  $query_pl .=  $table . '.' . $_ . ' = \''
                     . $args->{ -partial_listing }->{$_}->{equal_to} . '\'';
               }
               elsif ( $args->{ -partial_listing }->{$_}->{like} ) {
 
-                  $query .=  $table . '.' . $_
+                  $query_pl .=  $table . '.' . $_
                     . ' LIKE \'%'
                     . $args->{ -partial_listing }->{$_}->{like} . '%\'';
               }
 			 
 			if($count > $i){ 
-          		$query .= ' '. $query_type .' ';
+          		$query_pl .= ' '. $query_type .' ';
 			}
 			$i++;
 		}
 	  	# This *really* needs its own method, as well... 	
-      	$query .= ') '; 
+      	$query_pl .= ') '; 
+
+		# This is a bad workaround
+		if($query_pl eq ' AND (  AND  AND ) '){ 
+			# ...
+		}
+		else {
+			$query .= $query_pl; 
+		}
+		
 	}
 
 	if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
@@ -296,8 +305,8 @@ sub SQL_subscriber_profile_join_statement {
     }
 
 	#print '<p><code>QUERY: ' . $query . '</code></p>';
-	warn 'QUERY: ' . $query;
-#		if $t; 
+	warn 'QUERY: ' . $query
+		if $t; 
 		
 	return $query; 
 }

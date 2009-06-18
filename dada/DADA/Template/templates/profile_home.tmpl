@@ -87,11 +87,9 @@
 
 	
 <h1>
-Your Subscriptions
+Your Mailing List Subscriptions
 </h1> 
 
-
-	
 	<!-- tmpl_if has_subscriptions --> 
 
 	<!-- tmpl_else --> 
@@ -162,6 +160,21 @@ Your Subscriptions
 
 	<!-- /tmpl_if --> 
 <!-- /tmpl_loop -->
+
+
+<!-- tmpl_if comment --> 
+
+	<!-- tmpl_if has_subscriptions --> 
+
+	<h1>Unsubscribe from ALL lists</h1> 
+
+	<form><input type="submit" value="Zoom!" /> </form> 
+
+
+	<!-- /tmpl_if -->  
+
+<!-- /tmpl_if --> 
+
 <hr /> 
 
 <!-- 

@@ -1964,10 +1964,11 @@ sub subscription_form {
     }
     
     
-    require DADA::Profile::Fields; 
-    my $dpf = DADA::Profile::Fields->new; 
-	my $subscriber_fields = $dpf->fields;
-	my $field_attrs = $dpf->get_all_field_attributes;
+    require DADA::ProfileFieldsManager; 
+    my $pfm               = DADA::ProfileFieldsManager->new; 
+	my $subscriber_fields = $pfm->fields;
+	my $field_attrs       = $pfm->get_all_field_attributes;
+	
 	my $named_subscriber_fields = [];
 
 	foreach(@$subscriber_fields){ 

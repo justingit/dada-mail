@@ -55,8 +55,6 @@ fallback_value              varchar(320),
 CONSTRAINT UNIQUE (field)
 );
 
-
-
 CREATE TABLE dada_archives (
 list                          varchar(32),
 archive_id                    varchar(32),
@@ -65,26 +63,23 @@ message                       mediumtext,
 format                        text,
 raw_msg                       mediumtext
 );
-
+ 
 CREATE INDEX dada_archives_list_archive_id_index ON dada_archives (list, archive_id);
-
-
+ 
 CREATE TABLE dada_bounce_scores (
 id                            int4 not null primary key auto_increment,
 email                         text, 
 list                          varchar(16),
 score                         int4
 ); 
-
-
+ 
 CREATE TABLE dada_clickthrough_urls (
 url_id  int4 not null primary key auto_increment, 
 redirect_id varchar(16), 
 msg_id text, 
 url text
 ); 
-
-
+ 
 CREATE TABLE dada_sessions (
      id CHAR(32) NOT NULL PRIMARY KEY,
      a_session TEXT NOT NULL

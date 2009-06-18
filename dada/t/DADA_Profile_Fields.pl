@@ -34,34 +34,34 @@ undef $pf;
 my $fields = undef; 
 
 $pf = DADA::Profile::Fields->new; 
-$fields = $pf->fields; 
+$fields = $pf->{manager}->fields; 
 ok($#$fields == -1, "No fields, present (" . $#$fields .")"); 
 
-$pf->add_field(
+$pf->{manager}->add_field(
 	{
 		-field => 'one', 
 	}
 ); 
-$fields = $pf->fields; 
+$fields = $pf->{manager}->fields; 
 ok($#$fields == 0, "1 field present (" . $#$fields .")"); 
 ok($fields->[0] eq 'one', "Field is called, 'one'"); 
 
-$pf->add_field(
+$pf->{manager}->add_field(
 	{
 		-field => 'two', 
 	}
 );
-$fields = $pf->fields; 
+$fields = $pf->{manager}->fields; 
 ok($#$fields == 1, "2 fields present (" . $#$fields .")"); 
 ok($fields->[1] eq 'two', "Field is called, 'two'");
 
-$pf->remove_field({-field => 'one'}); 
-$fields = $pf->fields;
+$pf->{manager}->remove_field({-field => 'one'}); 
+$fields = $pf->{manager}->fields;
 ok($#$fields == 0, "1 field present (" . $#$fields .")"); 
 
 undef $fields; 
-$pf->remove_field({-field => 'two'});
-$fields = $pf->fields;
+$pf->{manager}->remove_field({-field => 'two'});
+$fields = $pf->{manager}->fields;
 ok($#$fields == -1, "0 field present (" . $#$fields .")"); 
 
 
@@ -81,15 +81,19 @@ $pf = DADA::Profile::Fields->new;
 eval { $pf->insert(); };
 ok($@, "calling insert without any paramaters causes an error!: $@");
 
+
 # This method should return, C<1> on success.  
 ok($pf->insert({-email => 'user@example.com'}) == 1, "returning 1 on success"); 
 # verify
 ok($pf->exists({-email => 'user@example.com'}) == 1, "exists."); 
 # remove and clean up.
-ok($pf->remove({-email => 'user@example.com'}) == 1, "removed."); 
+ok($pf->remove == 1, "removed."); 
 
 # C<-fields> holds the profile fields passed as a hashref. It is an optional paramater. 
-$pf->add_field({-field => 'one'}); 
+$pf->{manager}->add_field({-field => 'one'}); 
+undef $pf; 
+
+$pf = DADA::Profile::Fields->new; 
 $pf->insert(
 	{
 		-email  => 'user@example.com',
@@ -98,12 +102,14 @@ $pf->insert(
 		}
 	}
 );
-my $prof = $pf->get({-email  => 'user@example.com'}); 
+my $prof = $pf->get; 
 ok($prof->{one} eq 'value', "field value passed and saved. ($prof->{one})");
 undef $prof; 
+undef $pf; 
 
 # C<-mode> sets the way the new profile will be created and can either be set to, C<writeover> or, C<preserve>
 # When set to, C<writeover>, any existing profile belonging to the email passed in the <-email> paramater will be clobbered. 
+$pf = DADA::Profile::Fields->new; 
 $pf->insert(
 	{
 		-email  => 'user@example.com',
@@ -113,10 +119,13 @@ $pf->insert(
 		-mode => 'writeover', 
 	}
 );
-$prof = $pf->get({-email  => 'user@example.com'}); 
+$prof = $pf->get; 
 ok($prof->{one} eq 'a new value', "field value passed and saved. ($prof->{one})");
+undef $pf; 
+
 
 # When set to, C<preserve>, this method will first look and see if an already existing profile exists and if so, will not create a new one, but simply exit the method and return, 1
+$pf = DADA::Profile::Fields->new; 
 $pf->insert(
 	{
 		-email  => 'user@example.com',
@@ -126,16 +135,18 @@ $pf->insert(
 		-mode => 'preserve', 
 	}
 );
-$prof = $pf->get({-email  => 'user@example.com'}); 
+diag 'fpppm!' . $pf->{email};
+$prof = $pf->get; 
 ok($prof->{one} eq 'a new value', "new field value not saved. ($prof->{one})");
 
 # verify
 ok($pf->exists({-email => 'user@example.com'}) == 1, "exists."); 
 # remove and clean up.
-ok($pf->remove({-email => 'user@example.com'}) == 1, "removed.");
-$pf->remove_field({-field => 'one'}); 
+ok($pf->remove == 1, "removed.");
+$pf->{manager}->remove_field({-field => 'one'}); 
 
 undef $prof; 
+undef $pf; 
 
 
 # C<-confirmed> confirmed can also be passed with a value of either C<1> or, 
@@ -146,7 +157,7 @@ undef $prof;
 
 # (this is sort of a strange idea!) - there's no programmable way to, "confirm"
 # an unconfirmed email...!
-
+$pf = DADA::Profile::Fields->new; 
 $pf->insert(
 	{
 		-email     => 'user@example.com',
@@ -154,12 +165,14 @@ $pf->insert(
 	}
 );
 ok($pf->exists({-email => '*' . 'user@example.com'}) == 1, "unconfirmed profile exists.");
-ok($pf->remove({-email => '*' . 'user@example.com'}) == 1, "removed.");
+ok($pf->remove == 1, "removed.");
+undef $pf; 
 
 ###############################################################################
 # get
 
-$pf->add_field({-field => 'one'}); 
+$pf = DADA::Profile::Fields->new; 
+$pf->{manager}->add_field({-field => 'one'}); 
 $pf->insert(
 	{
 		-email  => 'user@example.com',
@@ -171,23 +184,13 @@ $pf->insert(
 
 # C<get> returns the profile fields for the email address passed in, C<-email> as a hashref. 
 
-$prof = $pf->get({-email  => 'user@example.com'}); 
+$prof = $pf->get; 
 ok($prof->{one} eq 'value', "field value passed and saved. ($prof->{one})");
 undef $prof; 
-
-
-# C<-email> is a required paramater. Not passing it will cause this method to return, C<undef>. 
-ok($pf->get eq undef, 'Not passing it will cause this method to return, C<undef>. (' . $pf->get . ')'); 
-undef $prof; 
-
-ok($pf->get({-email => 'donthaveaprofile@example.com'}) eq undef, 'Not passing it will cause this method to return, C<undef>. (' . $pf->get . ')'); 
-undef $prof; 
-
 
 #  C<-dotted> is an optional paramter, and will return the keys of the hashref appended with, C<subscriber.>
 $prof = $pf->get(
 	{
-		-email  => 'user@example.com',
 		-dotted => 1, 
 	}
 ); 
@@ -196,16 +199,20 @@ ok(exists($prof->{'subscriber.one'}), 'keys are, "dotted"');
 ok($prof->{'subscriber.one'} eq 'value', "and has the right value");
 
 
-$pf->remove_field({-field => 'one'}); 
-ok($pf->remove({-email => 'user@example.com'}) == 1, "removed.");
+$pf->{manager}->remove_field({-field => 'one'}); 
+ok($pf->remove == 1, "removed.");
 
 undef $prof; 
+undef $pf; 
 
 ###############################################################################
 # exists
-
+$pf = DADA::Profile::Fields->new; 
 ok($pf->exists({-email => 'nothere@example.com'}) == 0, "profile does not exist.");
+undef $pf; 
 
+
+$pf = DADA::Profile::Fields->new; 
 $pf->insert(
 	{
 		-email  => 'user@example.com',
@@ -213,7 +220,8 @@ $pf->insert(
 	}
 );
 ok($pf->exists({-email => 'user@example.com'}) == 1, "profile exists.");
-ok($pf->remove({-email => 'user@example.com'}) == 1, "removed.");
+ok($pf->remove == 1, "removed.");
+undef $pf; 
 
 ###############################################################################
 # remove
@@ -221,29 +229,29 @@ ok($pf->remove({-email => 'user@example.com'}) == 1, "removed.");
 
 # C<remove> removes the profile fields assocaited with the email address passed in the 
 # C<-email> paramater.
-
+$pf = DADA::Profile::Fields->new; 
 $pf->insert(
 	{
 		-email  => 'user@example.com',
 	}
 );
-ok($pf->remove({-email  => 'user@example.com'}) == 1, "removed the profile."); 
+ok($pf->remove == 1, "removed the profile."); 
 
 
 # C<-email> is a required paramater. Not passing it will cause this method to return, C<undef>. 
 #
 # Passing an email that doesn't have a profile saved will also return, C<undef>. Check before by using, C<exists()>
 
-ok($pf->remove eq undef, "passing no email returns undef."); 
-ok($pf->exists({-email  => 'nosuchuser@example.com'}) == 0, "exists is returning 0"); 
-ok($pf->remove({-email  => 'nosuchuser@example.com'}) eq undef, "passing an email with no profile fields returns undef"); 
+# ok($pf->remove eq undef, "passing no email returns undef."); 
+#ok($pf->exists({-email  => 'nosuchuser@example.com'}) == 0, "exists is returning 0"); 
+#ok($pf->remove({-email  => 'nosuchuser@example.com'}) eq undef, "passing an email with no profile fields returns undef"); 
 
 ###############################################################################
 # add_field
 
 #C<add_field()> adds a field to the profile_fields table. 
 
- $pf->add_field(
+ $pf->{manager}->add_field(
 	{
 		-field          => 'myfield', 
 		-fallback_value => 'a default', 
@@ -254,7 +262,7 @@ ok($pf->remove({-email  => 'nosuchuser@example.com'}) eq undef, "passing an emai
 
 #Not passing a name for your field in the C<-field> paramater will cause the an unrecoverable error.
 
-eval { $pf->add_field; }; 
+eval { $pf->{manager}->add_field; }; 
 ok(defined($@), "eval trapped an error"); 
 
 
@@ -262,15 +270,15 @@ ok(defined($@), "eval trapped an error");
 #
 # C<-label> is an optional paramater and is used in forms that capture profile fields information as a, "friendlier" version of the field name. 
 
-ok($pf->_field_attributes_exist({-field => 'myfield'}) == 1, "Field Attr. exists.");
-my $f_des = $pf->get_all_field_attributes;
+ok($pf->{manager}->_field_attributes_exist({-field => 'myfield'}) == 1, "Field Attr. exists.");
+my $f_des = $pf->{manager}->get_all_field_attributes;
 ok($f_des->{myfield}->{fallback_value} eq 'a default', "Default was saved.");
 ok($f_des->{myfield}->{label} eq 'My Field!', "label was saved.");
-ok($pf->remove_field({-field => 'myfield'}) == 1, "Profile Removed."); 
+ok($pf->{manager}->remove_field({-field => 'myfield'}) == 1, "Profile Removed."); 
 
 #This method will return C<undef> if there's a problem with the paramaters passed. See also the, C<validate_subscriber_field_name()> method. 
 
-ok($pf->add_field({-field => "Spaces in the name"}) eq undef, "undef returned with incorrect -field name"); 
+ok($pf->{manager}->add_field({-field => "Spaces in the name"}) eq undef, "undef returned with incorrect -field name"); 
 undef $f_des; 
 
 
@@ -299,37 +307,37 @@ SKIP: {
 	#C<edit_subscriber_field()> is used to rename a subscriber field. Usually, this means that a column is renamed in table. 
 	#Various SQL backends do this differently and this method should provide the necessary magic. 
 
-	$pf->add_field(
+	$pf->{manager}->add_field(
 		{
 			-field          => 'myfield', 
 		}
 	); 
-	ok($pf->field_exists({-field => 'myfield' }) == 1, "Initial field exists."); 
-	ok($pf->field_exists({-field => 'renamedfield' }) == 0, "Renamed field doesn't exist."); 
+	ok($pf->{manager}->field_exists({-field => 'myfield' }) == 1, "Initial field exists."); 
+	ok($pf->{manager}->field_exists({-field => 'renamedfield' }) == 0, "Renamed field doesn't exist."); 
 
 	ok( 
-	$pf->edit_subscriber_field(
+	$pf->{manager}->edit_field(
 		{ 
 			-old_name => 'myfield', 
 			-new_name => 'renamedfield', 
 		}
 	) == 1, "edit_subscriber_field returned, '1'"); 
 
-	ok($pf->field_exists({-field => 'renamedfield' }) == 1, "Renamed field exists."); 
-	ok($pf->field_exists({-field => 'myfield' }) == 0, "original field doesn't exist.");
+	ok($pf->{manager}->field_exists({-field => 'renamedfield' }) == 1, "Renamed field exists."); 
+	ok($pf->{manager}->field_exists({-field => 'myfield' }) == 0, "original field doesn't exist.");
 
 
 	#C<-old_name> and C<-new_name> are required paramaters and the method will croak if you do not 
 	#pass both. 
 
-	eval{$pf->edit_subscriber_field;};
+	eval{$pf->{manager}->edit_subscriber_field;};
 	ok(defined($@), "unrecoverable error returned(1)"); 
-	eval{$pf->edit_subscriber_field({-old_name => 'myfield',-new_name => 'renamedfield'});};
+	eval{$pf->{manager}->edit_subscriber_field({-old_name => 'myfield',-new_name => 'renamedfield'});};
 	ok(defined($@), "unrecoverable error returned(2)"); 
 
 	#This method will also croak if either the C<-old_name> does not exist, or the C<-new_name> exists. 
 
-	ok($pf->remove_field({-field => 'renamedfield'}) == 1, "field removed."); 
+	ok($pf->{manager}->remove_field({-field => 'renamedfield'}) == 1, "field removed."); 
 
 }
 
@@ -340,10 +348,10 @@ SKIP: {
 #
 # C<-field> must exist, or the method will croak.
 
- ok($pf->add_field({-field => 'myfield'}) == 1, "Created new field.");
- ok($pf->remove_field({-field => 'myfield'}) == 1, "Field removed.");
- ok($pf->field_exists({-field => 'myfield'}) == 0, "Field does not exist.");
- eval{$pf->remove_field;};
+ ok($pf->{manager}->add_field({-field => 'myfield'}) == 1, "Created new field.");
+ ok($pf->{manager}->remove_field({-field => 'myfield'}) == 1, "Field removed.");
+ ok($pf->{manager}->field_exists({-field => 'myfield'}) == 0, "Field does not exist.");
+ eval{$pf->{manager}->remove_field;};
  ok($@, "eval trapped an error from calling remove_field incorrectly. ( $@ )"); 
 
 
@@ -378,16 +386,16 @@ SKIP: {
     skip "edit_subscriber_field note supported for SQLite or PostgreSQL" 
         if $DADA::Config::SQL_PARAMS{dbtype} =~ m/SQLite|Pg/;
 		
-	ok($pf->add_field({-field => 'one'}) == 1, "Created new field, one.");
-	ok($pf->add_field({-field => 'two'}) == 1, "Created new field, two.");
-	ok($pf->add_field({-field => 'three'}) == 1, "Created new field, three.");
+	ok($pf->{manager}->add_field({-field => 'one'}) == 1, "Created new field, one.");
+	ok($pf->{manager}->add_field({-field => 'two'}) == 1, "Created new field, two.");
+	ok($pf->{manager}->add_field({-field => 'three'}) == 1, "Created new field, three.");
 
     #	This method will also croak if you pass a field that does not exist, or if you pass no field at all.
 	
-	eval {$pf->change_field_order();};
+	eval {$pf->{manager}->change_field_order();};
 	ok($@, "caught error: $@"); 
 
-	eval {$pf->change_field_order({-field => "doesnotexist"});};
+	eval {$pf->{manager}->change_field_order({-field => "doesnotexist"});};
 	ok($@, "caught error: $@"); 
 
 
@@ -400,7 +408,7 @@ SKIP: {
     #		This method should return, C<1>, but if a field cannot be moved, it will return, C<0> 
 
 	ok(
-	$pf->change_field_order(
+	$pf->{manager}->change_field_order(
 			{ 
 				-field     => 'one', 
 				-direction => 'down', 
@@ -409,7 +417,7 @@ SKIP: {
 		"change_field_order() returned, 1"
 	); 
 
-	$fields = $pf->fields; 
+	$fields = $pf->{manager}->fields; 
 
 	ok($fields->[0] eq 'two', 'first field is two, (' . $fields->[0] . ')');
 	ok($fields->[1] eq 'one', 'second field is one, (' . $fields->[1] . ')'); 
@@ -417,7 +425,7 @@ SKIP: {
 
 
 	ok(
-		$pf->change_field_order(
+		$pf->{manager}->change_field_order(
 			{ 
 				-field     => 'three', 
 				-direction => 'up', 
@@ -426,7 +434,7 @@ SKIP: {
 		"change_field_order() returned, 1"
 	);
 	
-	$fields = $pf->fields; 
+	$fields = $pf->{manager}->fields; 
 	
 	ok($fields->[0] eq 'two', 'first field is two, (' . $fields->[0] . ')');
 	ok($fields->[1] eq 'three', 'second field is three, (' . $fields->[1] . ')'); 
@@ -436,7 +444,7 @@ SKIP: {
 	
 
 	ok(
-		$pf->change_field_order(
+		$pf->{manager}->change_field_order(
 			{ 
 				-field     => 'one', 
 				-direction => 'down', 
@@ -445,7 +453,7 @@ SKIP: {
 		"change_field_order() returned, 0"
 	);
 	
-	$fields = $pf->fields; 
+	$fields = $pf->{manager}->fields; 
 	
 	
 	ok($fields->[0] eq 'two', 'first field is two, (' . $fields->[0] . ')');
@@ -454,7 +462,7 @@ SKIP: {
 	
 	
 	ok(
-		$pf->change_field_order(
+		$pf->{manager}->change_field_order(
 			{ 
 				-field     => 'two', 
 				-direction => 'up', 
@@ -463,7 +471,7 @@ SKIP: {
 		"change_field_order() returned, 0"
 	);
 	
-	$fields = $pf->fields; 
+	$fields = $pf->{manager}->fields; 
 	
 	
 	ok($fields->[0] eq 'two', 'first field is two, (' . $fields->[0] . ')');
@@ -472,9 +480,9 @@ SKIP: {
 	
 
 	
-	ok($pf->remove_field({-field => 'one'}) == 1, "Removed field, one.");
-	ok($pf->remove_field({-field => 'three'}) == 1, "Removed field, two.");
-	ok($pf->remove_field({-field => 'two'}) == 1, "Removed field, three.");
+	ok($pf->{manager}->remove_field({-field => 'one'}) == 1, "Removed field, one.");
+	ok($pf->{manager}->remove_field({-field => 'three'}) == 1, "Removed field, two.");
+	ok($pf->{manager}->remove_field({-field => 'two'}) == 1, "Removed field, three.");
 	
 	
 }

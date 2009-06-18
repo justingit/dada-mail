@@ -787,6 +787,7 @@ sub set_controlling_pid {
 		
 	my $old_pid = undef; 
 	
+		
 	if(-e $self->dir . '/' . $file_names->{pid} ){ 
 		$old_pid = _poll($file);
 	}

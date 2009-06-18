@@ -151,35 +151,35 @@ sub remove_subscriber {
 
 sub columns { 
 	my $self = shift; 
-	return $self->{fields}->columns; 
+	return $self->{fields}->{manager}->columns; 
 }
 sub subscriber_fields { 
 	my $self = shift; 
-	return $self->{fields}->fields(@_);
+	return $self->{fields}->{manager}->fields(@_);
 }
 sub add_subscriber_field { 
 	my $self = shift; 
-	return $self->{fields}->add_field(@_);
+	return $self->{fields}->{manager}->add_field(@_);
 }
 sub edit_subscriber_field { 
 	my $self = shift; 
-	return $self->{fields}->edit_subscriber_field(@_);
+	return $self->{fields}->{manager}->edit_subscriber_field(@_);
 }
 sub remove_subscriber_field { 
 	my $self = shift; 
-	return $self->{fields}->remove_field(@_);
+	return $self->{fields}->{manager}->remove_field(@_);
 }
 sub subscriber_field_exists { 
 	my $self = shift; 
-	return $self->{fields}->field_exists(@_);
+	return $self->{fields}->{manager}->field_exists(@_);
 }
 sub validate_subscriber_field_name { 
 	my $self = shift; 
-	return $self->{fields}->validate_subscriber_field_name(@_);
+	return $self->{fields}->{manager}->validate_field_name(@_);
 }
 sub get_all_field_attributes { 
 	my $self = shift; 
-	return $self->{fields}->get_all_field_attributes(@_);
+	return $self->{fields}->{manager}->get_all_field_attributes(@_);
 }
 
 

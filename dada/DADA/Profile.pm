@@ -29,7 +29,9 @@ sub new {
     # This means we want to pull the email we want to use from
     # the saved session, but there is no valid session saved, so
     # this isn't going to work.
-    if ( $args->{ -from_session } == 1 && !defined( $args->{ -email } ) ) {
+    if ( 
+		 $args->{ -from_session } == 1 && 
+		 !defined( $args->{ -email } ) ) {
         return undef;
     }
     if (   $DADA::Config::PROFILE_ENABLED != 1
@@ -74,14 +76,18 @@ sub _init {
         $self->{email} = $args->{ -email };
     }
 
+	if(exists($self->{email})){ 
+		require DADA::Profile::Fields; 
+		$self->{fields} = DADA::Profile::Fields->new({-email => $self->{email}});
+	}
+	
+	
     my $dbi_obj = undef;
 
-    #	if($DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/){
     require DADA::App::DBIHandle;
     $dbi_obj = DADA::App::DBIHandle->new;
     $self->{dbh} = $dbi_obj->dbh_obj;
 
-    #	}
 }
 
 sub insert {
@@ -127,7 +133,8 @@ sub insert {
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute(
-        $self->{email}, $enc_password,
+        $self->{email}, 
+		$enc_password,
         $args->{ -auth_code },
         $args->{ -activated },
       )
@@ -181,7 +188,7 @@ sub get {
 
     }
 
-    carp "Didn't fetch the subscriber profile?!";
+    carp "Didn't fetch the profile?!";
     return undef;
 
 }
@@ -302,6 +309,8 @@ sub is_activated {
     $sth->finish;
     return $activated;
 }
+
+
 
 sub allowed_to_view_archives {
 
@@ -557,7 +566,8 @@ sub send_profile_reset_password {
             -tmpl_params => {
                 -vars => {
                     authorization_code => $auth_code,
-                    email              => $self->{email},
+                   	'profile.email'    => $self->{email},
+					email              => $self->{email},
                 },
             },
         }
@@ -668,3 +678,99 @@ sub rand_str {
 }
 
 1;
+
+
+=pod
+
+=head1 NAME 
+
+DADA::Profile
+
+=head1 SYNOPSIS
+
+
+=head1 DESCRIPTION
+
+
+
+
+=head1 Public Methods
+
+=head2 new
+
+	 my $p = DADA::Profile->new(
+		{ 
+			-email => 'user@example.com', 
+		}
+	); 
+	
+C<new> returns a DADA::Profile object. 
+
+C<new> requires you to either pass the C<-email> paramater, with a valid email 
+address, or the, C<-from_session> paramater, set to, C<1>: 
+
+ my $p = DADA::Profile->new(
+	{ 
+		-from_session => 1, 
+	}
+ );
+
+If invoked this way, the email address needed will be searched for within the 
+saved session information for the particular environement. 
+
+If no email address is passed, or found within the session, this method will croak. 
+
+The email address passed needs not to have a valid profile, but some sort of email address needs to be passed. 
+
+
+=head2 insert 
+
+(blinky blinky under construction!)
+
+ $p->insert(
+	{
+		-password  => 'mypass',
+		-activated => 1, 
+		-auth_code => 1234, 
+	}
+ );
+
+
+
+C<insert>, I<inserts> a profile. It's not specifically used to I<create> new profiles and perhaps a shortcoming of this module (currently). What's strange is that 
+if you attempt to insert two profiles dealing with the same address, you'll probably error out, just with the UNIQUE column of the table design... Gah.
+
+Because of this somewhat sour design of this method, it's recommended you tread lightly and assume that the API will change, if not in the stable release, 
+in a release sooner, rather than later. Outside of this module's code, it's used only once - making it somewhat of a private method, anyways. I'm going to forgo testing
+this method until I figure all that out... </notestomyself>
+
+
+
+
+
+
+=head1 AUTHOR
+
+Justin Simoni http://dadamailproject.com
+
+=head1 LICENCE AND COPYRIGHT
+
+Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, 
+Boston, MA  02111-1307, USA.
+
+=cut 
+

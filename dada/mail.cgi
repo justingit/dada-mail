@@ -5912,8 +5912,11 @@ sub subscriber_fields {
     
      $list  = $admin_list; 
      
-	 require DADA::Profile::Fields; 
-	 my $dpf = DADA::Profile::Fields->new; 
+	require DADA::ProfileFieldsManager; 
+	my $pfm = DADA::ProfileFieldsManager->new; 
+	
+	require DADA::Profile::Fields; 
+	my $dpf = DADA::Profile::Fields->new; 
 	
 	if($dpf->can_have_subscriber_fields == 0){ 
 		print admin_template_header(
@@ -5941,9 +5944,9 @@ sub subscriber_fields {
 	
 	
 	 # But, if we do....
-	 my $subscriber_fields = $dpf->fields; 
+	 my $subscriber_fields = $pfm->fields; 
 
-	 my $fields_attr = $dpf->get_all_field_attributes;
+	 my $fields_attr = $pfm->get_all_field_attributes;
 
      my $ls = DADA::MailingList::Settings->new({-list => $list}); 
      my $li = $ls->get();
@@ -5984,7 +5987,7 @@ sub subscriber_fields {
 	
 	 if($process eq 'edit_field_order'){ 
 		my $dir = $q->param('direction') || 'down'; 
-		$dpf->change_field_order(
+		$pfm->change_field_order(
 			{
 				-field     => $field, 
 				-direction => $dir, 
@@ -5997,7 +6000,7 @@ sub subscriber_fields {
      if($process eq 'delete_field'){ 
      
 		###
-        $dpf->remove_field({-field => $field}); 
+        $pfm->remove_field({-field => $field}); 
         
         print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=subscriber_fields&deletion=1&working_field=' . $field}); 
         return; 
@@ -6005,7 +6008,7 @@ sub subscriber_fields {
      elsif($process eq 'add_field'){ 
  
         
-        ($field_errors, $field_error_details) = $dpf->validate_subscriber_field_name(
+        ($field_errors, $field_error_details) = $pfm->validate_field_name(
 			{
 				-field => $field
 			}
@@ -6013,7 +6016,7 @@ sub subscriber_fields {
       
         if($field_errors == 0){ 
         
-            $dpf->add_field(
+            $pfm->add_field(
 				{
 					-field => $field, 
 					-fallback_value => $fallback_field_value,
@@ -6035,22 +6038,22 @@ sub subscriber_fields {
 		
 		#old name			# new name
 		if($orig_field eq $field){ 
-		 	($field_errors, $field_error_details) = $dpf->validate_subscriber_field_name({-field => $field, -skip => [qw(field_exists)]}); 
+		 	($field_errors, $field_error_details) = $pfm->validate_field_name({-field => $field, -skip => [qw(field_exists)]}); 
 		}
 		else { 
-			($field_errors, $field_error_details) = $dpf->validate_subscriber_field_name({-field => $field}); 			
+			($field_errors, $field_error_details) = $pfm->validate_field_name({-field => $field}); 			
 		}
 		 if($field_errors == 0){
 			  
-             $dpf->remove_field_attributes({-field => $orig_field});          	
+             $pfm->remove_field_attributes({-field => $orig_field});          	
 
 			if($orig_field eq $field){ 
 				# ...
 			}
 			else { 
-            	$dpf->edit_subscriber_field({-old_name => $orig_field ,-new_name => $field});	
+            	$pfm->edit_field({-old_name => $orig_field ,-new_name => $field});	
 			}
-			$dpf->save_field_attributes(
+			$pfm->save_field_attributes(
 				{  
 					-field 			=> $field, 
 					-fallback_value => $fallback_field_value,
@@ -9659,10 +9662,10 @@ sub profile {
 		require DADA::Profile; 
 		
 		my $prof              = DADA::Profile->new({-email => $email});
-		my $dpf               = DADA::Profile::Fields->new; 
-		my $subscriber_fields =  $dpf->fields; 
-		my $field_attr         = $dpf->get_all_field_attributes;
-		my $email_fields      = $dpf->get({-email => $email}); 	
+		my $dpf               = DADA::Profile::Fields->new({-email => $email}); 
+		my $subscriber_fields =  $dpf->{manager}->fields; 
+		my $field_attr         = $dpf->{manager}->get_all_field_attributes;
+		my $email_fields      = $dpf->get; 	
 			
 		if($q->param('process') eq 'edit_subscriber_fields'){ 
 			
@@ -9672,7 +9675,6 @@ sub profile {
 			}
 			$dpf->insert(
 				{
-					-email  => $email, 
 					-fields => $edited,
 				}
 			);
@@ -9915,7 +9917,8 @@ sub profile_reset_password {
 					{
 						-screen => 'profile_reset_password_confirm.tmpl',
 						-vars   => { 
-							email     => $email, 
+							email           => $email, 
+							'profile.email' => $email, 
 						}
 					}
 				); 
