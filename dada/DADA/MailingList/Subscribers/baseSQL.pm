@@ -291,7 +291,8 @@ sub SQL_subscriber_profile_join_statement {
       	$query_pl .= ') '; 
 
 		# This is a bad workaround
-		if($query_pl eq ' AND (  AND  AND ) '){ 
+		if($query_pl eq ' AND (  AND  AND ) ' || $query_pl eq ' AND ( ) '){ 
+				# And I see where this is going... 
 			# ...
 		}
 		else {
