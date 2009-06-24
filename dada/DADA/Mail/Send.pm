@@ -1119,7 +1119,7 @@ sub mass_send {
 					if($DBI::VERSION >= 1.49){ 
 					    my %drivers = DBI->installed_drivers;
 					    foreach my $drh (values %drivers) {
-					        map { $_->{InactiveDestroy} = 1 } @{$_->{ChildHandles}};
+					        map { $drh->{InactiveDestroy} = 1 } @{$drh->{ChildHandles}};
 					    }
 					}
 				#}
