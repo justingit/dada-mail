@@ -106,7 +106,7 @@ sub get {
     my ($args) = @_;
 
 	if(!$self->{email}){ 
-		croak "Cannot use this variable without passing the '-email' param in, new"; 
+		croak "Cannot use this variable without passing the '-email' param in, new (get)"; 
 	}
 
     my $sub_fields = $self->{manager}->fields;
@@ -205,7 +205,7 @@ sub remove {
 	#}
 	
 	if(!$self->{email}){ 
-		croak "Cannot use this variable without passing the '-email' param in, new"; 
+		croak "Cannot use this variable without passing the '-email' param in, new (remove)"; 
 	}
 	
     my $query =

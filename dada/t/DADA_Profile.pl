@@ -31,8 +31,6 @@ ok($@, "Calling new without an -email param creates an error! ($@)");
 
 eval { $p = DADA::Profile->new({-email => 'user@example.com'}); };
 
-
-
 ok($p->isa('DADA::Profile'), 'object is a DADA::Profile');
 
 # These two lines will error out - insert() needs to be rethought.  
@@ -41,6 +39,32 @@ ok($p->isa('DADA::Profile'), 'object is a DADA::Profile');
 
 undef $p; 
 
+
+###############################################################################
+# exists 
+
+my $p = DADA::Profile->new({-email => 'user@example.com'}); 
+ok($p->exists == 0, "The profile does not exist(1)."); 
+ok(DADA::Profile->new({-email => 'user@example.com'})->exists == 0, "The profile does not exist(2).");
+undef $p; 
+
+my $p = DADA::Profile->create(
+	{
+		-email => 'user@example.com', 
+	}
+); 
+undef $p; 
+
+ok(DADA::Profile->new({-email => 'user@example.com'})->exists == 1, "Profile now exists(2).");
+
+my $p = DADA::Profile->new(
+	{
+		-email => 'user@example.com'
+	}
+); 
+ok($p->exists == 1, "Profile now exists(1)."); 
+$p->remove; 
+ok($p->exists == 0, "Profile does not exist, anymore."); 
 
 
 

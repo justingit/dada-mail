@@ -6938,11 +6938,10 @@ sub archive {
     my $li = $ls->get;
 
     require DADA::Profile;
-    my $allowed_to_view_archives = DADA::Profile::allowed_to_view_archives(
+	my $prof = DADA::Profile->new({-from_session => 1}); 
+    my $allowed_to_view_archives = $prof->allowed_to_view_archives(
         {
-            -from_session => 1,
             -list         => $list,
-            -ls_obj       => $ls,
         }
     );
     if ( $allowed_to_view_archives == 0 ) {
@@ -7110,11 +7109,14 @@ sub archive {
         my $index_nav = $archive->create_index_nav($stopped_at);
 
         require DADA::Profile;
-        my $allowed_to_view_archives = DADA::Profile::allowed_to_view_archives(
+		my $prof = DADA::Profile->new(
+			{
+				-from_session => 1
+			}
+		); 
+        my $allowed_to_view_archives = $prof->allowed_to_view_archives(
             {
-                -from_session => 1,
                 -list         => $list,
-                -ls_obj       => $ls,
             }
         );
 
@@ -7443,11 +7445,10 @@ sub archive_bare {
             return;
         }
 		require DADA::Profile; 
-		my $allowed_to_view_archives = DADA::Profile::allowed_to_view_archives(
+		my $prof->DADA::Profile->new({-from_session => 1}); 
+		my $allowed_to_view_archives = $prof->allowed_to_view_archives(
 				{
-					-from_session => 1, 
 					-list         => $list, 
-					-ls_obj       => $ls,
 				}
 			);
 		if($allowed_to_view_archives == 0){ 
@@ -7487,11 +7488,10 @@ sub search_archive {
         return; 
     } 
 	require DADA::Profile; 
-	my $allowed_to_view_archives = DADA::Profile::allowed_to_view_archives(
+	my $prof = DADA::Profile->new({-from_session => 1); 
+	my $allowed_to_view_archives = $prof->allowed_to_view_archives(
 			{
-				-from_session => 1, 
 				-list         => $list, 
-				-ls_obj       => $ls,
 			}
 		);
 	if($allowed_to_view_archives == 0){ 
@@ -7650,11 +7650,11 @@ sub send_archive {
     my $li = $ls->get; 
     
 	require DADA::Profile; 
-	my $allowed_to_view_archives = DADA::Profile::allowed_to_view_archives(
+	my $prof = DADA::Profile->new({-from_session => 1}); 
+	my $allowed_to_view_archives = $prof->allowed_to_view_archives(
 			{
-				-from_session => 1, 
 				-list         => $list, 
-				-ls_obj       => $ls,
+
 			}
 		);
 	if($allowed_to_view_archives == 0){ 
@@ -7843,11 +7843,10 @@ sub archive_rss {
         }else{ 
     
 			require DADA::Profile; 
-			my $allowed_to_view_archives = DADA::Profile::allowed_to_view_archives(
-					{
-						-from_session => 1, 
+			my $prof->DADA::Profile->new({-from_session => 1}); 
+			my $allowed_to_view_archives = $prof->allowed_to_view_archives(
+					{						
 						-list         => $list, 
-						-ls_obj       => $ls,
 					}
 				);
 			if($allowed_to_view_archives == 0){ 
@@ -9520,7 +9519,7 @@ sub profile_register {
 	){ 
 		$prof->drop(); 
 	}
-	my($status, $errors) = $prof->validate_registration(
+	my($status, $errors) = $prof->is_valid_registration(
 		{
 			-email 		               => $email, 
 			-email_again               => $email_again, 
@@ -9586,7 +9585,7 @@ sub profile_activate {
 	my $prof = DADA::Profile->new({-email => $email});
 	
 	if($email && $auth_code){ 
-		my ($status, $errors) = $prof->validate_profile_activation(
+		my ($status, $errors) = $prof->is_valid_activation(
 			{
 				-auth_code => xss_filter($q->param('auth_code')) || '', 
 			}
@@ -9684,8 +9683,13 @@ sub profile {
 		elsif($q->param('process') eq 'change_password'){ 
 			my $new_password       = xss_filter($q->param('password')); 
 			my $again_new_password = xss_filter($q->param('again_password')); 
+			# DEV: See?! Why are we doing this manually? Can we use is_valid_registration() perhaps?
 			if(length($new_password) > 0 && $new_password eq $again_new_password){
-				$prof->update({-password => $new_password});
+				$prof->update(
+					{
+						-password => $new_password,
+					}
+				);
 				$q->param('password_changed', 1);
 				$q->delete('process'); 
 				
@@ -9842,7 +9846,7 @@ sub profile_reset_password {
 	
 	if($email){ 
 		if($auth_code){ 
-			my ($status, $errors) = $prof->validate_profile_activation(
+			my ($status, $errors) = $prof->is_valid_activation(
 				{
 					-auth_code => $auth_code, 
 				}
@@ -9905,7 +9909,7 @@ sub profile_reset_password {
 			
 			if($prof->exists()){
 		
-				$prof->send_profile_reset_password();
+				$prof->send_profile_reset_password_email();
 				$prof->activate({-activate => 0});
 				
 				print list_template(-Part => "header",

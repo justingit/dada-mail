@@ -93,10 +93,8 @@ sub get_subscriber {
     my $self = shift;
     my ($args) = @_;
 	$args->{-list} = $self->{list};
-	
-
     my $dmls =
-      DADA::MailingList::Subscriber->new( $args);
+      DADA::MailingList::Subscriber->new($args);
     return $dmls->get($args);
 
 }

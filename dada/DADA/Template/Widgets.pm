@@ -727,15 +727,16 @@ sub html_archive_list {
 	my $li = $ls->get; 
 	
 	require DADA::Profile; 
-	my $allowed_to_view_archives = DADA::Profile::allowed_to_view_archives(
+	my $prof = DADA::Profile->new(
+		{
+			-from_session => 1, 
+		}
+	); 
+	my $allowed_to_view_archives = $prof->allowed_to_view_archives(
 			{
-				-from_session => 1, 
 				-list         => $list, 
-				-ls_obj       => $ls,
 			}
 		);
-
-	
 	if($allowed_to_view_archives == 1){ 
 		
 		my $archive = DADA::MailingList::Archives->new({-list => $list}); 

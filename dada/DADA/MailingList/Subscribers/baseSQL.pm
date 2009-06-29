@@ -250,16 +250,12 @@ sub SQL_subscriber_profile_join_statement {
 #	  #/ 
 
       if ( keys %{ $args->{ -partial_listing } } ) {
-		  my $query_pl = ''; 
+		 
 		  # This *really* needs its own method, as well... 
 		  # It's somewhat strange, as this relies on the email address in the 
 		  # profile (I think?) to work, if we're looking for email addresses... 
-		  $query_pl .= ' AND ( '; 
-		  # $query .= ' AND '; 
-		  my @count = keys %{ $args->{ -partial_listing } }; 
-		  my $count = $#count; 
-		  my $i = 0; 
 		
+		  my @add_q = (); 
           foreach ( keys %{ $args->{ -partial_listing } } ) {
 			  
 			  # This is to make sure we're always using the email from the
@@ -271,34 +267,28 @@ sub SQL_subscriber_profile_join_statement {
 			  }
 			  # was the above really necessary...?
 			
-              if ( $args->{ -partial_listing }->{$_}->{equal_to} ) {
-                  $query_pl .=  $table . '.' . $_ . ' = \''
-                    . $args->{ -partial_listing }->{$_}->{equal_to} . '\'';
-              }
-              elsif ( $args->{ -partial_listing }->{$_}->{like} ) {
-
-                  $query_pl .=  $table . '.' . $_
-                    . ' LIKE \'%'
-                    . $args->{ -partial_listing }->{$_}->{like} . '%\'';
-              }
-			 
-			if($count > $i){ 
-          		$query_pl .= ' '. $query_type .' ';
+              if (exists( $args->{ -partial_listing }->{$_}->{equal_to}) ) {
+				if(length($args->{ -partial_listing }->{$_}->{equal_to}) > 0){ 	
+               		push(
+							@add_q,  
+							$table . '.' . $_ . ' = \'' . $args->{ -partial_listing }->{$_}->{equal_to} . '\''
+						); 
+              	}
 			}
-			$i++;
+             elsif (exists( $args->{ -partial_listing }->{$_}->{like} )) {
+                  if(length($args->{ -partial_listing }->{$_}->{like}) > 0){ 
+						push(
+							@add_q,  
+							$table . '.' . $_ .  ' LIKE \'%' . $args->{ -partial_listing }->{$_}->{like} . '%\''
+						);
+					}
+              }
 		}
-	  	# This *really* needs its own method, as well... 	
-      	$query_pl .= ') '; 
-
-		# This is a bad workaround
-		if($query_pl eq ' AND (  AND  AND ) ' || $query_pl eq ' AND ( ) '){ 
-				# And I see where this is going... 
-			# ...
-		}
-		else {
+		my $query_pl;
+		if($add_q[0]){ 
+			 $query_pl = ' AND ( ' . join(' ' . $query_type . ' ', @add_q) . ') '; 
 			$query .= $query_pl; 
 		}
-		
 	}
 
 	if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
@@ -307,7 +297,7 @@ sub SQL_subscriber_profile_join_statement {
 
 	#print '<p><code>QUERY: ' . $query . '</code></p>';
 	warn 'QUERY: ' . $query
-		if $t; 
+			if $t; 
 		
 	return $query; 
 }

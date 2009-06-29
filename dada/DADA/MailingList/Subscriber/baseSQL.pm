@@ -86,10 +86,10 @@ sub get {
     my $self = shift;
     my ($args) = @_;
     require DADA::Profile::Fields; 
-	my $sf = DADA::Profile::Fields->new; 
+	my $sf = DADA::Profile::Fields->new($args); 
 	
 	
-	my $r =  $sf->get($args); 
+	my $r =  $sf->get; 
 	
 	# use Data::Dumper; 
 	# warn 'Returning from DADA:MailingList::Subscriber::baseSQL->get(): ' . Data::Dumper::Dumper($r); 

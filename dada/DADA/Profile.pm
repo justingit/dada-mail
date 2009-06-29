@@ -45,6 +45,38 @@ sub new {
 
 }
 
+
+sub exists {
+	
+    my $self = shift;
+    my ($args) = @_;
+
+    my $query =
+      'SELECT COUNT(*) FROM '
+      . $DADA::Config::SQL_PARAMS{profile_table}
+      . ' WHERE email = ?';
+
+    my $sth = $self->{dbh}->prepare($query);
+
+    warn 'QUERY: ' . $query
+		if $t; 
+
+    $sth->execute( $self->{email} )
+      or croak "cannot do statement (at exists)! $DBI::errstr\n";
+    my @row = $sth->fetchrow_array();
+    $sth->finish;
+
+	# autoviv?
+    if($row[0]){ 
+		return 1; 
+	}
+	else { 
+		return 0; 
+	}
+
+}
+
+
 sub _init {
 
     my $self = shift;
@@ -90,8 +122,66 @@ sub _init {
 
 }
 
+sub create { 
+	
+	my $type   = shift; 
+	my ($args) = @_; 
+	
+	if(!exists($args->{-email})){ 
+		croak "You must pass an email in the, -email paramater!"; 
+	}
+	my $p = DADA::Profile->new(
+		{
+			-email => $args->{-email}
+		}
+	);  
+	if($p->exists){ 
+		croak "a profile for, " . $args->{-email} . " already exists!"; 
+	}
+	$p->insert($args); 
+	return $p;
+	
+}
+
+
+
+sub remove {
+	
+    my $self = shift;
+    my ($args) = @_;
+	
+	if(!$self->{email}){ 
+		croak "Cannot use this method without passing the '-email' param in, new (remove)"; 
+	}
+	if(!$self->exists){ 
+		croak "Profile does not exist!"; 
+	}
+	
+    my $query =
+      'DELETE  from '
+      . $DADA::Config::SQL_PARAMS{profile_table}
+      . ' WHERE email = ? ';
+
+	warn 'QUERY: ' . $query . ' (' . $self->{ email } . ')'
+		if $t;
+
+    my $sth = $self->{dbh}->prepare($query);
+
+	my $rv = $sth->execute( $self->{ email } )
+      or croak "cannot do statment (at remove)! $DBI::errstr\n";
+
+    $sth->finish;
+
+    return $rv;
+
+}
+
 sub insert {
 
+	# DEV: No likey this method, at all. What's going on? 
+	# I think the newer, create() method is a whole lot better.
+	# (which.. eh, is just a wrapper for this! Eek!) 
+	
     my $self = shift;
     my ($args) = @_;
 
@@ -150,6 +240,10 @@ sub get {
     my $self = shift;
     my ($args) = @_;
 
+	if(!$self->exists({-email => $args->{-email}})){ 
+		return undef; 
+	}
+
     my $query =
       'SELECT * FROM '
       . $self->{sql_params}->{profile_table}
@@ -166,11 +260,8 @@ sub get {
     my $profile_info = {};
     my $hashref      = {};
 
-    #warn $sth->dump_results(undef, undef, undef, *STDERR);
-
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
 
-        #warn '$hashref->{$_} ' . $hashref->{$_} ;
         $profile_info = $hashref;
 
         last FETCH;
@@ -193,7 +284,27 @@ sub get {
 
 }
 
+sub remove {
+    my $self = shift;
+    my ($args) = @_;
+
+    my $query =
+      'DELETE  from '
+      . $DADA::Config::SQL_PARAMS{profile_table}
+      . ' WHERE email = ? ';
+
+    my $sth = $self->{dbh}->prepare($query);
+
+    warn 'QUERY: ' . $query . ' (' . $self->{email} . ')'
+      if $t;
+    my $rv = $sth->execute( $self->{email} )
+      or croak "cannot do statment (at remove)! $DBI::errstr\n";
+    $sth->finish;
+    return $rv;
+}
+
 sub subscribed_to_list {
+	
     my $self = shift;
     my ($args) = @_;
     if ( !exists( $args->{ -list } ) ) {
@@ -207,7 +318,6 @@ sub subscribed_to_list {
         }
     }
     return 0;
-
 }
 
 sub subscribed_to {
@@ -310,33 +420,63 @@ sub is_activated {
     return $activated;
 }
 
+sub activate {
+    my $self = shift;
+    my ($args) = shift;
+
+	if(!$self->exists){ 
+		croak "Profile does not exist!"; 
+	}
+	
+    if ( !exists( $args->{ -activate } ) ) {
+        $args->{ -activate } = 1;
+    }
+    if($args->{ -activate } != 1 || $args->{ -activate } != 0){ 
+		croak "activate can only be set to 1 or 0!"; 
+	}
+
+    my $query = 'UPDATE '
+      . $DADA::Config::SQL_PARAMS{profile_table}
+      . ' SET activated    = ? '
+      . ' WHERE email      = ? ';
+
+    my $sth = $self->{dbh}->prepare($query);
+
+    warn 'QUERY: ' . $query
+      if $t;
+
+    my $rv = $sth->execute( $args->{ -activate }, $self->{email} )
+      or croak "cannot do statment (at activate)! $DBI::errstr\n";
+    $sth->finish;
+    return 1;
+}
+
+
+
 
 
 sub allowed_to_view_archives {
 
+	my $self = shift; 
     my ($args) = @_;
 
     if ( !exists( $args->{ -list } ) ) {
         croak "You must pass a list in the, '-list' param!";
     }
-    if ( !exists( $args->{ -ls_obj } ) ) {
-        croak "I haven't made that, yet!";
-    }
-
+ 
     if (   $DADA::Config::PROFILE_ENABLED != 1
         || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
     {
         return 1;
     }
     else {
-
-        if ( $args->{ -ls_obj }->param('archives_available_only_to_subscribers')
-            == 1 )
+		require DADA::MailingList::Settings; 
+		my $ls = DADA::MailingList::Settings->new({-list => $args->{ -list }}); 
+        if ( $ls->param('archives_available_only_to_subscribers') == 1 )
         {
-            my $prof = DADA::Profile->new($args);
-            if ($prof) {
+            if ($self->exists) {
                 if (
-                    $prof->subscribed_to_list( { -list => $args->{ -list } } ) )
+                    $self->subscribed_to_list( { -list => $args->{ -list } } ) )
                 {
                     return 1;
                 }
@@ -354,34 +494,15 @@ sub allowed_to_view_archives {
     }
 }
 
-sub exists {
-    my $self = shift;
-    my ($args) = @_;
-
-    my $query =
-      'SELECT COUNT(*) FROM '
-      . $DADA::Config::SQL_PARAMS{profile_table}
-      . ' WHERE email = ?';
-
-    my $sth = $self->{dbh}->prepare($query);
-
-    warn 'QUERY: ' . $query
-		if $t; 
-
-    $sth->execute( $self->{email} )
-      or croak "cannot do statement (at exists)! $DBI::errstr\n";
-    my @row = $sth->fetchrow_array();
-    $sth->finish;
-
-    return $row[0];
-
-}
-
 sub is_valid_password {
 
     my $self = shift;
     my ($args) = @_;
 
+	if(! exists($args->{ -password })){ 
+		return 0; 
+	}
+	
     require DADA::Security::Password;
 
     my $query =
@@ -417,7 +538,7 @@ sub is_valid_password {
 
 }
 
-sub validate_registration {
+sub is_valid_registration {
 
     my $self = shift;
     my ($args) = @_;
@@ -511,8 +632,11 @@ sub setup_profile {
     my ($args) = @_;
 
     # Pop it in,
-
-    $self->insert( { -password => $args->{ -password }, } );
+    $self->insert( 
+		{ 
+			-password => $args->{ -password }, 
+		} 
+	);
 
     # Spit it out:
     $self->send_profile_activation_email();
@@ -547,7 +671,7 @@ sub send_profile_activation_email {
 
 }
 
-sub send_profile_reset_password {
+sub send_profile_reset_password_email {
     my $self = shift;
     my ($args) = @_;
 
@@ -575,7 +699,7 @@ sub send_profile_reset_password {
     return 1;
 }
 
-sub validate_profile_activation {
+sub is_valid_activation {
 
     my $self = shift;
     my ($args) = shift;
@@ -597,41 +721,14 @@ sub validate_profile_activation {
     return ( $status, $errors );
 }
 
-sub activate {
-    my $self = shift;
-    my ($args) = shift;
-
-    if ( !exists( $args->{ -activate } ) ) {
-        $args->{ -activate } = 1;
-    }
-
-    my $query = 'UPDATE '
-      . $DADA::Config::SQL_PARAMS{profile_table}
-      . ' SET activated    = ? '
-      . ' WHERE email      = ? ';
-
-    my $sth = $self->{dbh}->prepare($query);
-
-    warn 'QUERY: ' . $query
-      if $t;
-
-    my $rv = $sth->execute( $args->{ -activate }, $self->{email} )
-      or croak "cannot do statment (at activate)! $DBI::errstr\n";
-    $sth->finish;
-    return 1;
-}
 
 sub set_auth_code {
 
     my $self = shift;
     my ($args) = @_;
 
-    #if( ! exists($args->{ -activated } )) {
-    #	 $args->{ -activated } = 0;
-    #}
-
     if ( $self->exists($args) ) {
-        my $auth_code = $self->rand_str;
+        my $auth_code = $self->_rand_str;
         my $query     = 'UPDATE '
           . $DADA::Config::SQL_PARAMS{profile_table}
           . ' SET auth_code	   = ? '
@@ -646,31 +743,14 @@ sub set_auth_code {
         return $auth_code;
     }
     else {
-        die "user does not exist!";
+        croak "profile for, " . $self->{email} . " does not exist!";
     }
 
 }
 
-sub remove {
-    my $self = shift;
-    my ($args) = @_;
 
-    my $query =
-      'DELETE  from '
-      . $DADA::Config::SQL_PARAMS{profile_table}
-      . ' WHERE email = ? ';
 
-    my $sth = $self->{dbh}->prepare($query);
-
-    warn 'QUERY: ' . $query . ' (' . $self->{email} . ')'
-      if $t;
-    my $rv = $sth->execute( $self->{email} )
-      or croak "cannot do statment (at remove)! $DBI::errstr\n";
-    $sth->finish;
-    return $rv;
-}
-
-sub rand_str {
+sub _rand_str {
     my $self = shift;
     my $size = shift || 16;
     require DADA::Security::Password;
@@ -690,9 +770,6 @@ DADA::Profile
 
 
 =head1 DESCRIPTION
-
-
-
 
 =head1 Public Methods
 
@@ -716,12 +793,41 @@ address, or the, C<-from_session> paramater, set to, C<1>:
  );
 
 If invoked this way, the email address needed will be searched for within the 
-saved session information for the particular environement. 
+saved session information for the particular environment. 
 
 If no email address is passed, or found within the session, this method will croak. 
 
 The email address passed needs not to have a valid profile, but some sort of email address needs to be passed. 
 
+=head2 exists 
+
+ my $prof = DADA::Profile->new({-email => 'user@example.com'}); 
+ if($prof->exists){ 
+	print "you exist!"; 
+ }
+ else { 
+	print "you do not exist!"; 
+ }
+
+or even, 
+
+ if(DADA::Profile->new({-email => 'user@example.com'})->exists){ 
+	print "it's alive!"; 
+ }
+
+C<exists> let's you know if a profile with the email address, C<-email> 
+actually exists. Return C<1> if it does, C<0> if it doesn't. 
+
+=head2 subscribed_to_list 
+
+ $p->subscribed_to_list(
+	{
+		-list => 'my list',
+	}
+ ); 
+
+C<subscribed_to_list> returns C<1> if the profile has a subscription to the list passed in, C<-list> 
+and will return C<0> if they are not subscribed.
 
 =head2 insert 
 
@@ -744,9 +850,248 @@ Because of this somewhat sour design of this method, it's recommended you tread 
 in a release sooner, rather than later. Outside of this module's code, it's used only once - making it somewhat of a private method, anyways. I'm going to forgo testing
 this method until I figure all that out... </notestomyself>
 
+(see create())
 
 
 
+=head2 subscribed_to
+
+ my $subs = $p->subscribed_to; 
+
+C<subscribed_to> returns an array ref of all the lists the profile is subscribed to. 
+
+You can pass a C<-type> param to change which sublists are looked at. The default is, C<list>. 
+
+You can also pass the, C<-html_tmpl_params> paramater (set to, "1") to return back a complex data struture that works well with HTML::Template: 
+
+If our profile was subscribed to the list, I<mylist> this: 
+	
+	my $p = DADA::Profile->new(
+		{
+			-email => 'user@example.com'
+		}
+	); 
+	$p->subscribed_to_list(
+		{
+			-list             => 'my list', 
+			-html_tmpl_params => 1, 
+		}
+	);
+	
+would return, 
+
+ [
+  {
+	'profile.email' => 'user@example.com',
+    list            => 'mylist',
+    subscribed      => 1
+  }
+ ]
+
+=head2 is_activated
+
+ if($p->is_activated){ 
+	print "We are activated!"; 
+ }
+ else { 
+	print "Nope. Not activated.";
+ }
+
+C<-activated> returns either C<1> if the profile is actived, or, C<0>, if the profile is not C<activated>
+
+You can activate a profile using the, C<activate()> method: 
+
+ $p->activate; 
+
+=head2 activate
+
+ $p->activate; 
+
+Or, 
+
+ $p->activate(
+	{
+		-activate => 1, 
+	}
+ ); 
+
+Or, to deactivate: 
+
+ $p->activate(
+	{
+		-activate => 0, 
+	}
+ ); 
+
+C<activate> is used primarily to activate a profile. If no paramaters are passed, 
+the method will activate a profile. 
+
+You may pass the, C<-activate> paramater, set to either C<1> or, C<0> to activate or deactivate the profile. 
+
+=head2 allowed_to_view_archives
+	
+  my $p = DADA::Profile->new({-email => 'user@example.com'}); 
+ if($p->allowed_to_view_archives({-list => 'mylist'})){ 
+	# Show 'em the archives!
+ }
+ else { 
+	# No archives for you!
+ }
+
+C<allowed_to_view_archives> returns either C<1>, if the profile is allowed to view archives for a particular list, or, C<0> if they aren't. 
+
+The, C<-list> paramater is required and needs to be filled out to a specific Dada Mail List (shortname). If no C<-list> paramater is passed, this method will croak. 
+
+Several things will change the return value of this method: 
+
+If Profiles are not enabled (via the, C<$PROFILE_ENABLED> Config.pm variable), this method will always return, C<1>. 
+
+If Profiles are enabled, but the email address you're trying to look up profile information, doesn't actually have a profile, I<and> profiles are  enabled, this method will always return C<0> 
+
+Other than that, this method should return whatever is usually expected. 
+
+=head2 is_valid_password
+
+ if($p->is_valid_password({-password => 'secret'})){ 
+	print "let 'em in!"; 
+ }
+ else { 
+	print "Show them the door!"; 
+ } 
+
+C<is_valid_password> is used to check a passed password (passed in the, C<-password> param), with the stored password. The stored password will be stored in an encrypted form, so don't try to match directly. 
+
+Will return C<1> if the passwords do match and will return C<0> if they do not match, or you forget to pass a password in the, C<-password> param. 
+
+=head2 is_valid_registration
+
+ my ($status, $errors) = $p->is_valid_registration(
+		{
+			-email 		               => 'user@example.com', 
+			-email_again               => 'user@example.com', 
+			-password                  => 'secret', 
+	        -recaptcha_challenge_field => '1234', 
+	        -recaptcha_response_field  => 'abcd', 
+		}
+ ); 
+
+C<is_valid_registration> is used to validate a new registration. This usually means taking information from an HTML form and passing it through this method, to make sure 
+that the information passed is valid, so we can start the registration process. It requires a few paramaters: 
+
+=over
+
+=item * -email
+
+Should hold the email address, associated with the new profile
+
+=item * -email_again
+
+Should match exactly what's passed in the, C<-email> paramater. 
+
+=item * -password
+
+Should hold a valid password. Currently, this just means that I<something> has to be passed in this paramater. 
+
+=back
+
+If CAPTCHA is enabled for Profiles, (via the Config.pm C<$PROFILE_ENABLE_CAPTCHA> variable) the following two paramaters also have to be passed: 
+
+=over
+
+=item * -recaptcha_challenge_field
+
+=item * -recaptcha_response_field
+
+=back 
+
+C<-recaptcha_challenge_field> and C<-recaptcha_response_field> map to the 3rd and 4th arguments you have to pass in C<DADA::Security::AuthenCAPTCHA>'s method, C<check_answer>, which is sadly currently under documented, but 
+follows the same API as Captcha::reCAPTCHA: 
+
+L<http://search.cpan.org/~andya/Captcha-reCAPTCHA/lib/Captcha/reCAPTCHA.pm>
+
+(the C<check_answer> method does, at the very least) 
+
+This method will return an array or two elements. 
+
+The first element, is the status. If it's set to, C<1>, then the information passed will work to create a brand new profile. If it's set to, C<0>, there's something wrong with the information. 
+
+The exact problems will be described in the second element passed, which will be a hashref. The key will describe the problem, and the value will be set to, C<1> if a problem was found. Here's the keys that may be passed: 
+
+=over
+
+=item * email_no_match
+
+C<-email> and, C<-email_again> are not the same. 
+
+=item * invalid_email
+
+The email isn't a valid email address. 
+
+=item * profile_exists
+
+There's already a profile for the email address you're passwing! 
+
+=item * captcha_failed
+
+The captcha test didn't pass. 
+
+=back
+
+If $status returns C<0>, in no way should a new profile be registered. 
+ 
+=head2 update
+
+ $p->update(
+	{
+		-password => 'my_new_password', 
+	}
+ ); 
+
+C<update> simply updates the information for the profile. In its current state, it looks like it should only 
+be used to update the password of a profile, although any information about the profile, except the email address, 
+can be updated. 
+
+Scarily, there's no checks on the validity of the information passed. This should be fixed in the future. 
+
+=head2 setup_profile
+
+=head2 send_profile_activation_email
+
+=head2 send_profile_reset_password_email
+
+=head2 send_profile_reset_password_email
+
+=head2 is_valid_activation
+
+ $p->is_valid_activation(
+	{
+		-auth_code => $auth_code,
+	}
+ );
+
+This method is similar to, C<is_valid_registration>, as it returns a two-element array, the first element set to either C<1>, for validity and C<0> for not, with the second element being 
+a hashref of key/values describing what went wrong. 
+
+In this case, the only thing it's looking for the is the authorization code, which you should pass in the, C<-auth_code> paramater. 
+
+This is the authorization code that used in the email sent out to confirm a new profile. If the authorization code is not current, $status will be set to, C<0> 
+and the second element hashref will have the current key/value pair: 
+
+	invalid_auth_code => 1
+
+Other errors may join, C<invalid_auth_code> in the future. 
+
+=head2 set_auth_code
+
+	$p->set_auth_code; 
+
+C<set_auth_code> sets a new authorization code for the profile you're working on. It takes no arguments. 
+
+But, it will return the authorization code it creates. 
+
+This method will croak if the profile you're trying to set an authorization code doesn't actually exist. 
+
+=head2 
 
 
 =head1 AUTHOR
