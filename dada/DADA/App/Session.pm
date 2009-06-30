@@ -30,21 +30,16 @@ sub _init  {
 	   $self->{can_use_cgi_session} = $self->can_use_cgi_session(); 
 	   $self->{can_use_data_dumper} = $self->can_use_data_dumper(); 
 	
-	if($DADA::Config::SESSION_DB_TYPE =~ /SQL/){ 
-        if(!$dbi_obj){ 
+	if($DADA::Config::SESSION_DB_TYPE =~ m/SQL/){ 
             require DADA::App::DBIHandle; 
-            $dbi_obj = DADA::App::DBIHandle->new; 
-            $self->{dbh} = $dbi_obj->dbh_obj; 
-        }else{ 
-            $self->{dbh} = $dbi_obj->dbh_obj; 
-        }
-	}
+            $self->{dbh} = DADA::App::DBIHandle->new->dbh_obj; 
+  	}
 	
 	# http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session.pm
 
 	if($DADA::Config::SESSION_DB_TYPE =~ m/SQL/i){ 
 		
-		if($DADA::Config::SESSION_DB_TYPE eq 'PostgreSQL'){ 
+        if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
 	
 		   # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/postgresql.pm	
 		   $self->{dsn}      = 'driver:PostgreSQL';
@@ -54,8 +49,8 @@ sub _init  {
 		                        TableName => $DADA::Config::SQL_PARAMS{session_table},
 	                        
 		                       };
-	
-		}elsif($DADA::Config::SESSION_DB_TYPE eq 'MySQL'){ 
+		}
+        elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
 	
 	       # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/mysql.pm
 	 	   $self->{dsn}      = 'driver:mysql';
@@ -65,8 +60,8 @@ sub _init  {
 		                         TableName  => $DADA::Config::SQL_PARAMS{session_table},
 
 		                         };
-		
-		}elsif($DADA::Config::SESSION_DB_TYPE eq 'SQLite'){ 
+		}
+		elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
 
 	      # http://search.cpan.org/~bmoyles/CGI-Session-SQLite/SQLite.pm
 	        $self->{dsn}      = 'driver:SQLite:'; # . ':' . $DADA::Config::FILES . '/' . $database;;
@@ -79,6 +74,7 @@ sub _init  {
 
 		    $CGI::Session::SQLite::TABLE_NAME = 'dada_sessions';
 		}
+		
 	}
 	elsif($DADA::Config::SESSION_DB_TYPE eq 'Db'){ 
 
@@ -456,7 +452,10 @@ sub check_session_list_security {
 		else { 
     	
 		# DEV: This is like, the most annoying thing in the whole wide world: 
-    	## If it's CGI::Session, let's ditch the session cookie...
+    	# If it's CGI::Session, let's ditch the session cookie...
+		# I forget why this was commented out - didn't work?!
+		# I'll add evals around it for now... 
+		
     	if(
 			$self->{can_use_cgi_session} == 1 && 
 			$self->{can_use_data_dumper} == 1
@@ -722,7 +721,7 @@ sub DESTROY {}
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2008 Justin Simoni All rights reserved. 
+Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

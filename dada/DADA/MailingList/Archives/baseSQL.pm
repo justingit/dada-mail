@@ -342,12 +342,13 @@ sub search_entries {
 			     ' WHERE list = ? AND (raw_msg LIKE ? OR subject LIKE ?) ORDER BY archive_id DESC';
 
 	my $sth = $self->{dbh}->prepare($query); 
-	   $sth->execute($self->{name}, '%'.$keyword.'%', '%'.$keyword.'%');
-	   $sth->finish;
+	   $sth->execute($self->{name}, '%'.$keyword.'%', '%'.$keyword.'%')
+			or croak "cannot do statement! $DBI::errstr";
 	while((my $archives_id) = $sth->fetchrow_array){		
 		push(@results, $archives_id); 
 	}
-
+	$sth->finish;
+	
 	return \@results;
 }
 
@@ -499,7 +500,7 @@ sub DESTROY {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2008 Justin Simoni All rights reserved. 
+Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

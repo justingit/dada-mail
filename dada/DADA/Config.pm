@@ -70,13 +70,13 @@ require Exporter;
 our @ISA = qw(Exporter);  
 use vars qw($VER $VERSION $PROGRAM_ROOT_PASSWORD $MAILPROG $FILES $PROGRAM_URL $S_PROGRAM_URL $PLUGIN_CONFIGS $MAIL_SETTINGS $MASS_MAIL_SETTINGS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD  $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE $SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE $SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $SUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIBED_MESSAGE  $CONFIRMATION_MESSAGE  $HTML_CONFIRMATION_MESSAGE 
 $YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE $HTML_UNSUB_CONFIRMATION_MESSAGE $HTML_SUBSCRIBED_MESSAGE $HTML_UNSUBSCRIBED_MESSAGE $ARCHIVES  $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS  $BACKUPS %BACKUP_HISTORY $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION $FCKEDITOR_URL $LOG_VIEWER_PLUGIN_URL $SCREEN_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $SUBSCRIPTION_SUCCESSFUL_COPY $MAILlING_LIST_MESSAGE $MAILlING_LIST_MESSAGE_HTML $ADMIN_MENU $NOT_ALLOWED_TO_POST_MESSAGE $NOT_ALLOWED_TO_POST_NOTICE_MESSAGE $NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT  $MAILING_FINISHED_MESSAGE $MAILING_FINISHED_MESSAGE_SUBJECT $PIN_WORD $PIN_NUM $TEXT_CSV_PARAMS @DOMAINS %SERVICES $SHOW_DOMAIN_TABLE $SHOW_SERVICES_TABLE $GOOD_JOB_MESSAGE  $NO_ONE_SUBSCRIBED  $ALLOW_ROOT_LOGIN $UNSUB_CONFIRMATION_MESSAGE 
-@CHARSETS @PRECEDENCES @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE @SERVICES %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $TEXT_INVITE_MESSAGE $HTML_INVITE_MESSAGE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE 
-%SQL_PARAMS $DBI_PARAMS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS %HTMLFROMTEXT_OPTIONS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER); 
+@CHARSETS @PRECEDENCES @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE @SERVICES %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $TEXT_INVITE_MESSAGE $PROFILE_ACTIVATION_MESSAGE_SUBJECT $PROFILE_ACTIVATION_MESSAGE $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT $PROFILE_RESET_PASSWORD_MESSAGE $HTML_INVITE_MESSAGE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE 
+%SQL_PARAMS $DBI_PARAMS $PROFILE_ENABLED $PROFILE_EMAIL  $PROFILE_ENABLE_CAPTCHA $PROFILE_ENABLE_MAGIC_SUBSCRIPTION_FORMS $PROFILE_COOKIE_PARAMS $PROFILE_GRAVATAR_OPTIONS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS %HTMLFROMTEXT_OPTIONS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER); 
 @EXPORT_OK = qw(
 $VER $VERSION $PROGRAM_ROOT_PASSWORD $MAILPROG $FILES $PROGRAM_URL $S_PROGRAM_URL $PLUGIN_CONFIGS $MAIL_SETTINGS $MASS_MAIL_SETTINGS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD  $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE $SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE $SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $SUBSCRIPTION_NOTICE_MESSAGE  $UNSUBSCRIBED_MESSAGE  $CONFIRMATION_MESSAGE  $HTML_CONFIRMATION_MESSAGE 
 $YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE $HTML_UNSUB_CONFIRMATION_MESSAGE $HTML_SUBSCRIBED_MESSAGE $HTML_UNSUBSCRIBED_MESSAGE $ARCHIVES  $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS  $BACKUPS %BACKUP_HISTORY $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION $FCKEDITOR_URL $LOG_VIEWER_PLUGIN_URL $SCREEN_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $SUBSCRIPTION_SUCCESSFUL_COPY $MAILlING_LIST_MESSAGE $MAILlING_LIST_MESSAGE_HTML $ADMIN_MENU $NOT_ALLOWED_TO_POST_MESSAGE $NOT_ALLOWED_TO_POST_NOTICE_MESSAGE $NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT  $MAILING_FINISHED_MESSAGE $MAILING_FINISHED_MESSAGE_SUBJECT $PIN_WORD $PIN_NUM  $TEXT_CSV_PARAMS @DOMAINS %SERVICES $SHOW_DOMAIN_TABLE $SHOW_SERVICES_TABLE $GOOD_JOB_MESSAGE  $NO_ONE_SUBSCRIBED  $ALLOW_ROOT_LOGIN $UNSUB_CONFIRMATION_MESSAGE 
-@CHARSETS @PRECEDENCES @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE @SERVICES %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $TEXT_INVITE_MESSAGE $HTML_INVITE_MESSAGE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE 
-%SQL_PARAMS $DBI_PARAMS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS %HTMLFROMTEXT_OPTIONS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER
+@CHARSETS @PRECEDENCES @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE @SERVICES %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $TEXT_INVITE_MESSAGE $PROFILE_ACTIVATION_MESSAGE_SUBJECT $PROFILE_ACTIVATION_MESSAGE $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT $PROFILE_RESET_PASSWORD_MESSAGE $HTML_INVITE_MESSAGE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE 
+%SQL_PARAMS $DBI_PARAMS $PROFILE_ENABLED $PROFILE_EMAIL $PROFILE_ENABLE_CAPTCHA $PROFILE_ENABLE_MAGIC_SUBSCRIPTION_FORMS $PROFILE_COOKIE_PARAMS $PROFILE_GRAVATAR_OPTIONS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS %HTMLFROMTEXT_OPTIONS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER
 ); 
 use strict; 
  
@@ -182,10 +182,20 @@ $PROGRAM_URL ='http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi';
 # This variable is talked about in length later in this file. 
 # 
 $PROGRAM_CONFIG_FILE_DIR = 'auto'; 
-#------------------
-#leave this alone | 
- _config_import();
-#------------------
+
+#
+#
+#
+#
+#
+#
+#
+#--------------------------------#
+# Leave the below line, alone!
+ _config_import(); # Leave alone! 
+# Leave the above line, alone!
+#--------------------------------#
+
 
 =pod
 
@@ -214,6 +224,7 @@ $ARCHIVE_DB_TYPE          ||= 'Db';
 $SETTINGS_DB_TYPE         ||= 'Db'; 
 $SESSION_DB_TYPE          ||= 'Db';
 $BOUNCE_SCORECARD_DB_TYPE ||= 'Db';
+$CLICKTHROUGH_DB_TYPE     ||= 'Db'; 
 
 
 
@@ -302,11 +313,15 @@ The SQL password.
 	user             => '',          
 	pass             => '',
 
-	subscriber_table    => 'dada_subscribers',
-	archives_table      => 'dada_archives', 
-	settings_table      => 'dada_settings', 
-	session_table       => 'dada_sessions', 
-	bounce_scores_table => 'dada_bounce_scores', 
+	subscriber_table                => 'dada_subscribers',
+	profile_table                   => 'dada_profile', 
+	profile_fields_table 	        => 'dada_profile_fields', 
+	profile_fields_attributes_table => 'dada_profile_fields_attributes',
+	archives_table                  => 'dada_archives', 
+	settings_table                  => 'dada_settings', 
+	session_table                   => 'dada_sessions', 
+	bounce_scores_table             => 'dada_bounce_scores', 
+	clickthrough_urls_table         => 'dada_clickthrough_urls', 
 
 ) unless keys %SQL_PARAMS; 
 
@@ -348,6 +363,58 @@ $DBI_PARAMS ||= {
 		
 };
 
+=pod
+
+=head2 Dada Mail Profile Options
+
+=head3 $PROFILE_ENABLED
+
+Sets whether profiles are enabled, or not. Set to, C<1> to enable, set to anything else to disable. 
+
+=head3 $PROFILE_EMAIL
+
+When a registration email or reset password email goes out, it'll go out on behalf of this email address. We highly encourage you to fill out this variable, or these email messages may not be sent out correctly. Example: 
+
+ $PROFILE_EMAIL = 'me@mydomain.com'; 
+
+=head3 $PROFILE_ENABLE_CAPTCHA
+
+Registration for Dada Mail Profiles can be verified using a CAPTCHA. We recommend this feature, if it's available. Set this variable to, C<1> to enable CAPTCHA in the registration form. 
+
+=head3 $PROFILE_ENABLE_MAGIC_SUBSCRIPTION_FORMS
+
+"Magic" subscription forms are pre-filled out with the subscriber's email address, if they're logged into Dada Mail. To enable this feature, set this variable to, C<1> 
+
+=head3 $PROFILE_COOKIE_PARAMS
+
+This variable holds a few options to change the behavior of the session management cookie for Dada Mail Profiles. 
+
+=head3 $PROFILE_GRAVATAR_OPTIONS
+
+Gravatars can also be enabled for Dada Mail Profiles. More information: 
+
+L<http://gravatar.com/> 
+
+
+=cut 
+
+
+
+$PROFILE_ENABLED                         ||= 1; 
+$PROFILE_EMAIL                           ||= ''; 
+$PROFILE_ENABLE_CAPTCHA                  ||= 1;
+$PROFILE_ENABLE_MAGIC_SUBSCRIPTION_FORMS ||= 1;
+
+$PROFILE_COOKIE_PARAMS ||= {
+	-name   => 'dada_profile',  
+    -path    => '/',
+    -expires => '+7d',	
+};
+
+$PROFILE_GRAVATAR_OPTIONS ||= {
+	enable_gravators     => 1, 
+	default_gravatar_url => undef, 
+};
 
 =pod
 
@@ -1225,10 +1292,18 @@ $DEBUG_TRACE ||= {
 
 	DADA_App_DBIHandle         => 0, 
     DADA_App_Subscriptions     => 0,
+
+	DADA_Logging_Clickthrough  => 0, 
+	
+	DADA_Profile               => 0, 
+	DADA_Profile_Fields        => 0, 
+	DADA_Profile_Session       => 0, 
     DADA_Mail_MailOut          => 0, 
     DADA_Mail_Send             => 0, 
 	DADA_App_BounceScoreKeeper => 0, 
-      
+    DADA_MailingList_baseSQL   => 0,  
+
+ 
 };
 
 
@@ -1300,7 +1375,7 @@ BEGIN {
 # You CANNOT have this variable in an outside config file - 
 # it MUST be set here. 
 
-$PROGRAM_ERROR_LOG = undef; 
+$PROGRAM_ERROR_LOG = '/Library/WebServer/Documents/.dada_files/.logs/errors.txt'; 
 
 # Keep this next bit as-is; it's just opening the error file for writing. 
 if($PROGRAM_ERROR_LOG){open (STDERR, ">>$PROGRAM_ERROR_LOG") 
@@ -1848,12 +1923,6 @@ $ADMIN_MENU ||= [
 					{-Title      => 'Remove',
 					 -Title_URL  => "$S_PROGRAM_URL?f=delete_email",
 					 -Function   => 'delete_email',
-					 -Activated  => 1,
-					},
-
-					{-Title      => 'Statistics', 
-					 -Title_URL  =>  "$S_PROGRAM_URL?f=list_stats",
-					 -Function   => 'list_stats',
 					 -Activated  => 1,
 					},
 
@@ -2705,6 +2774,14 @@ If you're still having trouble, please contact the list owner at:
 
 	<mailto:[list_settings.list_owner_email]>
 
+<!-- tmpl_if PROFILE_ENABLED --><!-- tmpl_if new_profile --> 
+You can also log into your profile and update your information: 
+
+	<!-- tmpl_var PROGRAM_URL -->?f=profile_login
+		
+	Username: <!-- tmpl_var profile.email --> 
+	Password: <!-- tmpl_var profile.password --> 
+<!-- /tmpl_if --><!-- /tmpl_if --> 
 The following physical address is associated with this mailing list: 
 
 [list_settings.physical_address]
@@ -3228,6 +3305,30 @@ Thanks!
 EOF
 ;
 
+$PROFILE_ACTIVATION_MESSAGE_SUBJECT ||= 'Profile Authorization Code for, <!-- tmpl_var email -->'; 
+$PROFILE_ACTIVATION_MESSAGE ||= <<EOF
+
+Hello, here's the authorization link to reset your Profile Password: 
+
+<!-- tmpl_var PROGRAM_URL -->?f=profile_activate&email=<!-- tmpl_var email -->&auth_code=<!-- tmpl_var authorization_code --> 
+
+-- <!-- tmpl_var PROGRAM_NAME --> 
+
+EOF
+; 
+
+$PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT ||= 'Profile Authorization Code for, <!-- tmpl_var email -->'; 
+$PROFILE_RESET_PASSWORD_MESSAGE ||= <<EOF
+Hello, here's the authorization link to reset your Profile Password:
+
+<!-- tmpl_var PROGRAM_URL -->?f=profile_reset_password&email=<!-- tmpl_var email -->&auth_code=<!-- tmpl_var authorization_code --> 
+
+-- <!-- tmpl_var PROGRAM_NAME -->
+
+EOF
+;
+
+
 
 =pod
 
@@ -3726,9 +3827,10 @@ encrypted.
 	get_unsub_notice                   => 1, 
 	
 	no_confirm_email                   => 1, # Closed-Loop Opt-In 
+	skip_sub_confirm_if_logged_in      => 0, 
 	unsub_confirm_email                => 1, # Closed-Loop Opt-Out
 	                                         # I know, confusing. 
-	
+	skip_unsub_confirm_if_logged_in    => 0, 
 	limit_sub_confirm                  => 1, 
 	limit_unsub_confirm                => 1,  
 	
@@ -3855,6 +3957,7 @@ encrypted.
 
 	archive_messages             => 1,
 	show_archives                => 1,
+	archives_available_only_to_subscribers => 0, 
 	archive_subscribe_form       => 1,
 	archive_search_form          => 1,
 	captcha_archive_send_form    => 0, 
@@ -3989,7 +4092,7 @@ encrypted.
 
 # List CP -> Options
 	enable_fckeditor                => 1, 
-
+	enable_mass_subscribe           => 0, 
     
 
 # Send me the list password.    
@@ -4024,10 +4127,15 @@ encrypted.
     find_spam_assassin_score_by         => 'looking_for_embedded_headers',
     ignore_spam_messages_with_status_of => 6, 
     enable_moderation                   => 0, 
+    moderate_discussion_lists_with      => 'owner_email',	
+    send_moderation_msg                 => 0, 
+    send_moderation_accepted_msg        => 0,     
     send_moderation_rejection_msg       => 0, 
     send_msg_copy_address               => '', 
     
     enable_authorized_sending           => 0, 
+    authorized_sending_no_moderation    => 0,
+    subscriber_sending_no_moderation  => 0,
     
     strip_file_attachments              => 0, 
     file_attachments_to_strip           => '', 
@@ -4330,7 +4438,7 @@ and to say that you've got the freshest tools on the Web.
 
 
 $VERSION = 3.1.0; 
-$VER     = '3.1.0 - 11/05/08 - snapshot';
+$VER     = '3.1.0 - alpha 05/15/08';
 
 #
 #
@@ -4544,12 +4652,17 @@ may not work. Instead, try setting it to '2'.
 
 sub _config_import { 
 
+	# There's no user-servicable parts in the subroutine, so don't make any changes, 
+	# unless you're customizing Dada Mail or debugging something interesting. 
+	#
 	if(exists($ENV{NO_DADA_MAIL_CONFIG_IMPORT})){ 
 			if($ENV{NO_DADA_MAIL_CONFIG_IMPORT} == 1){ 
 				return;
 			} 
 	}
-	
+	# Keep this as, 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'
+	# What we're doing is, seeing if you've actually changed the variable from
+	# it's default, and if not, we take a best guess.	
 	if($PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
 		require CGI; 
 		$PROGRAM_URL = CGI::url(); 
@@ -4590,8 +4703,9 @@ sub _config_import {
 		$conf =~ m/(.*)/ms;
 		$conf = $1;	
 		eval  $conf;
-		die "$PROGRAM_NAME $VER ERROR - Outside config file '$CONFIG_FILE' contains errors:\n\n $@ \n\n" if ($@);
-	
+		if ($@) { 
+			die "$PROGRAM_NAME $VER ERROR - Outside config file '$CONFIG_FILE' contains errors:\n\n$@\n\n";
+		}	
 		if($PROGRAM_CONFIG_FILE_DIR eq 'auto') { 
 			if(! defined $PROGRAM_ERROR_LOG){ 
 				$PROGRAM_ERROR_LOG = $LOGS . '/errors.txt'; 
@@ -4632,7 +4746,7 @@ My name is Justin Simoni
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2008 Justin Simoni All rights reserved. 
+Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

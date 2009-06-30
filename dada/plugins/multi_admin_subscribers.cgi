@@ -350,7 +350,12 @@ sub process {
         my ($l_list, $l_email) = split(/\+/, $_, 2);
 
         my $l_lh = DADA::MailingList::Subscribers->new({-list => $l_list}); 
-           $l_lh->add_to_email_list(-Email_Ref => [$l_email]);
+           $l_lh->add_subscriber(
+				{
+					-email => $l_email, 
+					-type  => 'list', 
+				}
+			);
     
     }
     
@@ -439,7 +444,7 @@ See: http://dadamailproject.com/contact
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2008 Justin Simoni All rights reserved. 
+Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

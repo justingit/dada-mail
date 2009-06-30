@@ -11,7 +11,7 @@ $TEST_SQL_PARAMS = {
 
 	MySQL => { 
 	
-		test_enabled     => 0, 
+		test_enabled     => 1, 
 	    database         => 'test',
 	    dbserver         => 'localhost', # may just be, "localhost"   	   
 	    port             => '3306',      # mysql: 3306, Postgres: 5432   	   
@@ -19,17 +19,20 @@ $TEST_SQL_PARAMS = {
 	    user             => 'dada',          
 	    pass             => 'dada',
     
-	    subscriber_table => 'test_dada_subscribers',
-	    archives_table   => 'test_dada_archives', 
-	    settings_table   => 'test_dada_settings', 
-	    session_table    => 'test_dada_sessions',
-		bounce_scores_table => 'test_dada_bounce_scores', 
-	
+	    subscriber_table 				=> 'test_dada_subscribers',
+		profile_table                   => 'test_dada_profile', 
+		profile_fields_table 	        => 'test_dada_profile_fields', 
+		profile_fields_attributes_table => 'test_dada_profile_fields_attributes',
+	    archives_table   				=> 'test_dada_archives', 
+	    settings_table   				=> 'test_dada_settings', 
+	    session_table    				=> 'test_dada_sessions',
+		bounce_scores_table 			=> 'test_dada_bounce_scores',
+		clickthrough_urls_table         => 'test_dada_clickthrough_urls', 
 	
 	}, 
 
 	PostgreSQL => { 
-		test_enabled     => 0, 
+		test_enabled     => 1, 
 		database         => 'dada',
 	    dbserver         => 'localhost', # may just be, "localhost"   	   
 	    port             => '5432',      # mysql: 3306, Postgres: 5432   	   
@@ -37,22 +40,33 @@ $TEST_SQL_PARAMS = {
 	    user             => 'postgres',          
 	    pass             => '',
     
-	    subscriber_table => 'test_dada_subscribers',
-	    archives_table   => 'test_dada_archives', 
-	    settings_table   => 'test_dada_settings', 
-	    session_table    => 'test_dada_sessions',
-		bounce_scores_table => 'test_dada_bounce_scores', 
+	    subscriber_table 		=> 'test_dada_subscribers',
+		profile_table           => 'test_dada_profile', 
+		profile_fields_table 	=> 'test_dada_profile_fields', 
+		profile_fields_attributes_table => 'test_dada_profile_fields_attributes',
+	    archives_table   		=> 'test_dada_archives', 
+	    settings_table   		=> 'test_dada_settings', 
+	    session_table    		=> 'test_dada_sessions',
+		bounce_scores_table 	=> 'test_dada_bounce_scores',
+		clickthrough_urls_table         => 'test_dada_clickthrough_urls', 
+		
 	}, 
 
 	SQLite => {
-		test_enabled     => 1, 
-	    dbtype           => 'SQLite',     # 'mysql' for 'MySQL', 'Pg' for 'PostgreSQL', and 'SQLite' for SQLite  
-		database         => 'test_dada',
-	    subscriber_table => 'test_dada_subscribers',
-	    archives_table   => 'test_dada_archives', 
-	    settings_table   => 'test_dada_settings', 
-	    session_table    => 'test_dada_sessions',
-		bounce_scores_table => 'test_dada_bounce_scores', 
+		test_enabled     		=> 1, 
+	    dbtype    		        => 'SQLite',     # 'mysql' for 'MySQL', 'Pg' for 'PostgreSQL', and 'SQLite' for SQLite  
+		database         		=> 'test_dada',
+
+	    subscriber_table 		 => 'test_dada_subscribers',
+		profile_table            => 'test_dada_profile', 
+		profile_fields_table 	 => 'test_dada_profile_fields', 
+		profile_fields_attributes_table => 'test_dada_profile_fields_attributes',
+	    archives_table   		 => 'test_dada_archives', 
+	    settings_table   		 => 'test_dada_settings', 
+	    session_table    		 => 'test_dada_sessions',
+		bounce_scores_table 	 => 'test_dada_bounce_scores', 
+		clickthrough_urls_table  => 'test_dada_clickthrough_urls', 
+		
 	},
 	
 

@@ -22,39 +22,7 @@ LOCK_NB);
 use DADA::App::Guts;
 use DADA::Logging::Usage;
 
-my $log = new DADA::Logging::Usage;
-
-
 use strict; 
-
-sub new {
-	my $class = shift;
-	
-	my ($args) = @_; 
-	
-	   my $self = {};			
-       bless $self, $class;
-	   $self->_init($args); 
-	   return $self;
-}
-
-sub _init  { 
-	
-    my $self = shift; 
-
-	my ($args) = @_; 
-
-	if(!exists($args->{-ls_obj})){ 
-		require DADA::MailingList::Settings; 
-		$self->{ls} = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
-	}
-	else { 
-		$self->{ls} = $args->{-ls_obj};
-	}
-	
-	$self->{list} = $args->{-list}; 
-
-}
 
 
 
@@ -86,64 +54,6 @@ this is used mostly for the black list functions, as its painfully clear that lo
 
 # note. BAD to do on large lists. Bad Bad Bad
 
-sub open_email_list { 
-
-	my $self = shift; 	
-	my %args = (-Type      => 'list',
-				-As_Ref    => 0, 
-				-Sorted    => 1,
-				@_);
-	
-	my $list        = $self->{list} || undef; 
-	my $file_ending = $args{-Type}; 
-	my $want_ref    = $args{-As_Ref}; 
-	   
-	
-	if($list){
-	
-	my @list     = (); 
-	my @bad_list = (); 
-	
-	#untaint 
-	$list = make_safer($list); 
-	$list =~ /(.*)/; 
-	$list = $1; 
-	
-	#untaint 
-	$file_ending = make_safer($file_ending); 
-	$file_ending =~ /(.*)/; 
-	$file_ending = $1; 
-	
-	my $list_name = "$list.$file_ending";
-	sysopen(LIST, "$DADA::Config::FILES/$list_name", O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD )
-	    or croak "couldn't open $DADA::Config::FILES/$list_name for reading: $!\n";
-	 
-	flock(LIST, 1);
-	  @bad_list = <LIST>;
-	close (LIST);
-
-	foreach(@bad_list) { 
-	 $_  =~  s/^\s+|\s+$//o;
-	}
-
-	foreach(@bad_list) { 
-		if ($_ ne ""){ 
-			push(@list, $_); 
-		}
-	}
-
-	 @list = sort(@list); 
-
-	if($want_ref eq "1"){ 
-		return \@list; 
-	}else{ 
-		return @list; 
-	}
-
-	}else{ 
-		return undef;
-	}
-}
 
 
 =pod
@@ -171,16 +81,6 @@ sub open_list_handle {
 	    or croak "couldn't open '$path_to_file' for reading: $!\n";
 		   flock(LIST, LOCK_SH);
 }
-
-
-
-sub sort_email_list { 	
-
-    carp "sort_email_list is not supported for the plain text backend.";
-    return undef; 
-
-}
-
 
 
 
@@ -222,115 +122,33 @@ sub search_list {
 
 }
 
+sub inexact_match {
 
-=pod
+    my $self = shift;
+    my ($args) = @_;
+    my $email = cased( $args->{ -email } );
+    my ( $name, $domain ) = split ( '@', $email );
 
-=head2 my $matches = search_email_list(-Method => $method, -Keyword=> $keyword); 
+	$name = $name . '@'; 
+	$domain = '@' . $domain;
+	
+    $self->open_list_handle( -Type => $args->{ -against } );
 
-searching through emails happens here, we can search using three methods, 'domain', where we search 
-for '.com', '.edu' etc, 'service' where we look for things like 'altavista', 'yahoo', 'hotmail' adn things like that. 
-the results will be printed out from here, the function returns how many results have been found. 
- 
+    my $found = 0;
 
-=cut
-
-sub search_email_list { 
-
-	my $self = shift; 
-	
-	my %args = (
-	-Keyword   => undef,
-	-Method    => undef, 
-	-Type      => 'list',
-	-as_string => 0, 
-	
-	@_
-	);
-	my @matches; 
-	my $domain_regex = "(.*)\@(.*)"; 
-	my $found = 0; 
-	
-	my $r = ''; 
-	
-	my $method  = $args{-Method} || "standard"; 
-	my $keyword = $args{-Keyword}; 
-	   $keyword = quotemeta($keyword); 
-	
-	my $type = $args{-Type};
-	
-	if($self->{list}){ 
-	
-	
-	#open the list and grab what we can, 
-	$self->open_list_handle(-Type => $args{-Type});
-	
-	my $email; 
-	
-	if(defined($keyword) && $keyword ne ""){
-	if($method eq "domain"){ 
-		while(defined($email = <LIST>)){ 
-			if($email =~ m/$domain_regex$keyword$/i){ 
-				 
-				 
-				 my $str  = "<input type=\"checkbox\" name=\"address\" value=\"$email\">&nbsp;&nbsp; <a href=\"$DADA::Config::S_PROGRAM_URL?f=edit_subscriber&email=$email&type=$type\">$email</a>  <br />\n";
-				
-					if($args{-as_string} == 1){ 
-						$r .= $str; 
-					}else{ 
-						print $found; 
-					}
-				
-			$found++;
-			}
-		}
-	}elsif($method eq "service"){ 
-		while(defined($email = <LIST>)){ 
-			if($email =~ m/\@$keyword$/i){ 
-				
-				#push(@matches, $email); 
-				my $str  = "<input type=\"checkbox\" name=\"address\" value=\"$email\">&nbsp;&nbsp; <a href=\"$DADA::Config::S_PROGRAM_URL?f=edit_subscriber&email=$email&type=$type\">$email</a> <br />\n";
-				
-				if($args{-as_string} == 1){ 
-					$r .= $str; 
-				}else{ 
-					print $found; 
-				}
-					
-			$found++;  
-			}	   
-		}  
-	}else{ 
-		while(defined($email = <LIST>)){ 
-			if($email =~ m/$keyword/i){ 
-				my $str  = "<input type=\"checkbox\" name=\"address\" value=\"$email\">&nbsp;&nbsp; <a href=\"$DADA::Config::S_PROGRAM_URL?f=edit_subscriber&email=$email&type=$type\">$email</a>  <br />\n";
-				
-				if($args{-as_string} == 1){ 
-					$r .= $str; 
-				}else{ 
-					print $found; 
-				}
-					
-				$found++;
-				}
-			}
-		}
-	}
-	
-	if($args{-as_string} == 1){ 
-		return($found, $r); 	
-	}else{ 
-		return($found); 
-		 
-	}
-					
-	
-	close(LIST); 
-	
-	}else{ 
-	
-	return undef;
-	}
-
+    my $sub = undef;
+    while ( defined( $sub = <LIST> ) ) {
+        chomp($sub);
+        if (   $email eq $sub
+            || $name  =~ m/$sub(.*?)/
+            || $domain =~ m/(.*?)$sub/ )
+        {
+            $found = 1;
+            last;
+        }
+    }
+    close(LIST);
+    return $found;
 }
 
 
@@ -357,46 +175,6 @@ of they match.
 
 
 =cut
- 
-sub get_black_list_match{ 
-
-my $self = shift; 
-
-	my @got_black; 
-	my @got_white; 
-
-	my $black_list = shift; 
-	my $try_this = shift; 
-
-if($black_list and $try_this){ 
-
-	my $black; 
-
-	foreach $black(@$black_list){ 
-			
-		my $try; 
-
-		foreach $try(@$try_this){ 
-			my $qm_try = $try; 
-			#my $s_black = quotemeta($black); 
-			
-            next if ! $black || $black eq ''; 
-			
-			if($qm_try =~ m/$black/i){ 
-				push(@got_black, $try); 
-			}
-		}
-	}
-	return (\@got_black)
-}else{ 
-
-return 0;
-}
-
-}
-
-
-
 
 sub print_out_list { 
 
@@ -405,8 +183,6 @@ sub print_out_list {
 	my %args = (-Type => 'list',
 				-FH  => \*STDOUT,
 				@_); 
-				
-	$self->sort_email_list(-Type => $args{-Type}) if $DADA::Config::LIST_IN_ORDER == 1; 
 	
 	my $fh = $args{-FH};
 	my $email; 
@@ -439,10 +215,6 @@ sub subscription_list {
 	            '-length' => 100,
 	            -Type     => 'list',
 	            @_); 
-	
-	$self->sort_email_list(-Type => $args{-Type}) 
-		if $DADA::Config::LIST_IN_ORDER == 1; 
-
              
 	my $count = 0; 
 	my $list = []; 
@@ -544,112 +316,56 @@ sub num_subscribers {
 
 
 
+sub remove_all_subscribers {
 
-sub add_to_email_list { 
-
-	my $self = shift; 
-	
-	my %args = (-Email_Ref => undef, 
-				-Type      => "list",
-				-Mode      => 'append',
-				@_);
-	
-	my $address = $args{-Email_Ref} || undef;
-	my $email_count = 0;
-	my $ending = $args{-Type}; 
-	my $write_list = $self->{list} || undef; 
-	
-	
-	if($write_list and $address){
-	
-	$write_list =~ s/ /_/i; 
-	#untaint 
-	$write_list = make_safer($write_list); 
-	$write_list =~ /(.*)/; 
-	$write_list = $1; 
-	
-	
-	#untaint 
-	$ending = make_safer($ending); 
-	$ending =~ /(.*)/; 
-	$ending = $1; 
-	
-	
-	if($args{-Mode} eq 'writeover'){ 
-	
-	
-	sysopen(LIST, "$DADA::Config::FILES/$write_list.$ending",  O_WRONLY|O_TRUNC|O_CREAT,  $DADA::Config::FILE_CHMOD ) or 
-				croak "couldn't open $DADA::Config::FILES/$write_list.$ending for writing: $!\n";
-	}else{ 
-	
-	open (LIST, ">>$DADA::Config::FILES/$write_list.$ending") or 
-		croak "couldn't open $DADA::Config::FILES/$write_list.$ending for reading: $!\n";
-	}	
-	
-	
-	flock(LIST, 2);
-	foreach(@$address){
-		chomp($_);
-		$_ = strip($_); 
-		print LIST "$_\n";
-		$email_count++;
-		# js - log it
-		$log->mj_log($self->{list},"Subscribed to $write_list.$ending", $_) if (($DADA::Config::LOG{subscriptions}) && ($args{-Mode} ne 'writeover')); 
-	}
-		close(LIST);
-		return $email_count; 
-	}else{ 
-		carp("$DADA::Config::PROGRAM_NAME $DADA::Config::VER: No list, or list ref was given!");
-		return undef;
-	}
-}
-
-
-
-
-sub add_subscriber { 
-
-    my $self = shift; 
-    
+    my $self = shift;
     my ($args) = @_;
- 
-	if(length(strip($args->{-email})) <= 0){ 
-        croak("You MUST supply an email address in the -email paramater!"); 		
-	}
-	        
-     $self->add_to_email_list(
-     
-        -Email_Ref => [($args->{-email})], 
-	    -Type      => $args->{-type}, 
-     
-     ); 
-}
 
-
-
-
-sub get_subscriber { 
-
-    my $self = shift; 
-    my ($args) = @_;
-    
-    if(! exists $args->{-email}){ 
-        croak "You must pass a email in the -email paramater!"; 
+    if ( !exists $args->{ -type } ) {
+        $args->{ -type } = 'list';
     }
-    if(! exists $args->{-type}){ 
-        $args->{-type} = 'list';
+    if ( !exists $args->{ -count } ) {
+        $args->{ -count } = 0;
     }
-    if(! exists $args->{-dotted}){ 
-        $args->{-dotted} = 0;
-    }    
-    
-    my ($n, $d) = split('@', $args->{-email}, 2);
-        
-    if($args->{-dotted} == 1){     
-        return {'subscriber.email' => $args->{-email}, 'subscriber.email_name' => $n, 'subscriber.email_domain' => $d}; 
-    } else { 
-        return {email => $args->{-email, email_name => $n, email_domain => $d}}; 
-    
+
+	my $num_subscribers = $self->num_subscribers(-Type => $args->{-type});
+	my $count = 1000;
+    if ( $count > $num_subscribers ) {
+        $count = $num_subscribers;
+    }
+
+    $self->open_list_handle( -Type => $args->{ -type } );
+
+    my $i     = 0;
+    my $cache = [];
+    my $email = undef;
+    while ( defined( $email = <LIST> ) ) {
+		chomp($email); 
+        push ( @$cache, $email );
+        $i++;
+        if ( $i >= $count ) {
+            last;
+        }
+    }
+    close(LIST);
+
+    $self->remove_from_list(
+        -Email_List => $cache,
+        -Type       => $args->{ -type },
+    );
+
+    $args->{ -count } = $args->{ -count } + $count;
+    if ( ( $num_subscribers - $count ) == 0 ) {
+        return $args->{ -count };
+    }
+    else {
+        $self->remove_all_subscribers(
+            {
+                -type  => $args->{ -type },
+                -count => $args->{ -count },
+
+            }
+        );
     }
 }
 
@@ -781,16 +497,15 @@ sub remove_from_list {
 			 $check_this = strip($check_this);
 			 $check_this = cased($check_this);
 			 
-			 # unless its in out delete list, 
+			 # unless its in our delete list, 
 			  unless(exists($lookup_table{$check_this})){ 
 				  # print it into the temporary list
-				  print TEMP_LIST $check_this, "\n";
-	
+				  print TEMP_LIST $check_this, "\n";	
 			  }else{
 				  #missed the boat! 
 				  $count++;
 				  # js - log it
-					$log->mj_log($self->{list},"Unsubscribed from $list.$type", $check_this) if $DADA::Config::LOG{subscriptions}; 
+					$self->{'log'}->mj_log($self->{list},"Unsubscribed from $list.$type", $check_this) if $DADA::Config::LOG{subscriptions}; 
 			  }
 		}
 		
@@ -847,61 +562,6 @@ sub remove_from_list {
 
 
 
-sub remove_all_subscribers {
-
-    my $self = shift;
-    my ($args) = @_;
-
-    if ( !exists $args->{ -type } ) {
-        $args->{ -type } = 'list';
-    }
-    if ( !exists $args->{ -count } ) {
-        $args->{ -count } = 0;
-    }
-
-	my $num_subscribers = $self->num_subscribers(-Type => $args->{-type});
-	my $count = 1000;
-    if ( $count > $num_subscribers ) {
-        $count = $num_subscribers;
-    }
-
-    $self->open_list_handle( -Type => $args->{ -type } );
-
-    my $i     = 0;
-    my $cache = [];
-    my $email = undef;
-    while ( defined( $email = <LIST> ) ) {
-		chomp($email); 
-        push ( @$cache, $email );
-        $i++;
-        if ( $i >= $count ) {
-            last;
-        }
-    }
-    close(LIST);
-
-    $self->remove_from_list(
-        -Email_List => $cache,
-        -Type       => $args->{ -type },
-    );
-
-    $args->{ -count } = $args->{ -count } + $count;
-    if ( ( $num_subscribers - $count ) == 0 ) {
-        return $args->{ -count };
-    }
-    else {
-        $self->remove_all_subscribers(
-            {
-                -type  => $args->{ -type },
-                -count => $args->{ -count },
-
-            }
-        );
-    }
-}
-
-
-
 
 =pod
 
@@ -925,110 +585,6 @@ you could theoretically pass the black list, or for the Dada Bridge Plugin, the 
 				
 =cut
 
-
-=pod
-
-=head2 my ($count, \%domains,\%SERVICES) = list_option_form 
-
-this is brand new shiny backend for the 'View List' Control Panel.
-It does a whole bunch of things, 
-first off, it prints each email address in an option tag, for a select box, like this: 
-
- <option value=$email>$email</option>
-
-It will also count how many email addresses match each 'top level domains' and 'services' 
-these are specifies in the Config.pm file in the @DADA::Config::DOMAINS array  and the %SERVICES hash.  You can also turn these off 
-in the Config.pm by setting $DADA::Config::SHOW_DOMAIN_TABLE, $DADA::Config::SHOW_SERVICES_TABLE to 0.
-
-=cut
-
-sub list_option_form { 
-
-	my $self = shift; 
-	
-	my %args = (-Type     =>  'list', 
-	            -In_Order =>  $DADA::Config::LIST_IN_ORDER, 
-	            @_);
-
-
-	if(defined($self->{list})){ 
-	
-	#make the 'Show Domains' Hash
-	my %domains; 
-	foreach(@DADA::Config::DOMAINS){ $domains{$_} = 0; }
-	$domains{Other} = 0;
-	
-	#make the 'Show Services' Hash
-	my %SERVICES; 
-	foreach(@DADA::Config::SERVICES){ $SERVICES{$_} = 0; }
-		
-		my $email;
-		my $count = 0; 
-		my $test = 0;
-		   $test = $DADA::Config::SHOW_DOMAIN_TABLE + $DADA::Config::SHOW_SERVICES_TABLE; 
-		   
-		unless ($test == 0){
-		
-			#this is a stupid, dumb, idiotic idea, but, people want it. 
-			if($args{-In_Order} == 1){
-				$self->sort_email_list(%args);
-			}
-		
-			$self->open_list_handle(-Type => $args{-Type}); 
-
-			while(defined($email = <LIST>)){ 
-			
-				chomp($email);
-                
-                # this is the 'Show Domains' Hash Generator
-				
-				if($DADA::Config::SHOW_DOMAIN_TABLE ==1){
-					my $domain_email = $email;
-					#delete everything before the first . after the @. 
-					$domain_email =~ s/^(.*)@//; 
-					#lowercase the ending..
-					$domain_email = lc($domain_email); 
-					#strip everything before the last . 
-					$domain_email  =~ s/^(.*?)\.//;
-					
-					# hey, if it matches, record it. 
-					if(exists($domains{$domain_email})){ 
-					 $domains{$domain_email}++; 
-					 }else{ 
-					 $domains{Other}++;
-					 } 
-                 }
-        
-
-				# Here be the 'Show Services' Hash Generator; 
-			    if($DADA::Config::SHOW_SERVICES_TABLE == 1){ 
-				    my $services_email = $email;
-					#delete everything before the first . after the @. 
-	                $services_email =~ s/(^.*)@//; 
-	                #lowercase the ending..
-	                $services_email = lc($services_email); 
-
-	                # hey, if it matches, record it. 
-	                if(exists($SERVICES{$services_email})){ 
-	                $SERVICES{$services_email}++ ;
-	                }else{ 
-	                $SERVICES{Other}++;
-	                }
-                }
- 				$count++;
-			}
-	
-		close (LIST);
-	
-		}	
-	
-		return($count, \%domains,\%SERVICES);
-	
-	}else{ 
-		return 0; 
-	}
-
-}
 
 
 sub create_mass_sending_file { 
@@ -1087,9 +643,10 @@ sub create_mass_sending_file {
 		croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: Cannot open email list for copying, in preparation to send out bulk message: $! "; 
 	flock(LISTFILE, LOCK_SH); 
 		
-	sysopen (SENDINGFILE, "$sending_file",  O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD ) or
+	open my $SENDINGFILE, '>', $sending_file or
 		croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: Cannot create temporary email list file for sending out bulk message: $!"; 
-	flock(SENDINGFILE, LOCK_EX); 	
+	chmod($DADA::Config::FILE_CHMOD, $SENDINGFILE); 	
+	flock($SENDINGFILE, LOCK_EX); 	
 
 
     my $first_email = $li->{list_owner_email}; 
@@ -1098,42 +655,56 @@ sub create_mass_sending_file {
         $first_email = $args{-Test_Recipient};
     }
     
-	my $to_pin = make_pin(-Email => $first_email);
+	my $to_pin = make_pin(-Email => $first_email, -List => $list);
 	my ($lo_e_name, $lo_e_domain) = split('@', $first_email); 
 	
 	
 	my $total = 0; 
+
+	require Text::CSV;
+	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+	my @lo = ( 
+				$first_email,
+				$lo_e_name, 
+				$lo_e_domain, 
+				$to_pin, 
+				$list,
+                $self->{ls}->param('list_name'), 
+				$n_msg_id,
+			);
+	 if ( $csv->combine(@lo) ) {
+	     my $hstring = $csv->string;
+	     print $SENDINGFILE $hstring, "\n";
+	 }
+	 else {
+	     my $err = $csv->error_input;
+	     carp "combine() failed on argument: ", $err, "\n";
+	 }
 	
-	
-	
-	print SENDINGFILE join('::', 
-	                             $first_email,
-	                             $lo_e_name, 
-	                             $lo_e_domain, 
-	                             $to_pin, 
-	                             $list, 
-	                             $self->{ls}->param('list_name'), 
-	                             $n_msg_id, 
-	                       );
 	$total++;
 	
 	if($args{'-Bulk_Test'} != 1){ 
         while(defined($email  = <LISTFILE>)){ 
             chomp($email); 
             unless(exists($banned_list{$email})){
-                
-                my $pin = make_pin(-Email => $email); 
-                my ($e_name, $e_domain) = split('@', $email); 						
-                print SENDINGFILE "\n" . join('::', 
-                                                    $email,
-                                                    $e_name, 
-                                                    $e_domain, 
-                                                    $pin,
-                                                    $list,
-                                                    $self->{ls}->param('list_name'), 
-                                                    $n_msg_id, 
-                                                    
-                                            );
+	
+				my @sub = (
+					$email,
+					( split ( '@', $email ) ), 
+					make_pin( -Email => $email, -List => $list),
+					$list,
+					$self->{ls}->param('list_name'),
+					$n_msg_id,
+				);
+				if ( $csv->combine(@sub) ) {
+				     my $hstring = $csv->string;
+				     print $SENDINGFILE $hstring, "\n";
+				 }
+				 else {
+				     my $err = $csv->error_input;
+				     carp "combine() failed on argument: ", $err, "\n";
+				 }
+				
                 $total++;
             }
 		}		
@@ -1143,7 +714,7 @@ sub create_mass_sending_file {
 	close(LISTFILE) 
 		or croak ("$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error - could not close list file '$list_file'  successfully"); 
 	
-	close(SENDINGFILE) 
+	close($SENDINGFILE) 
 		or croak ("$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error - could not close temporary sending  file '$sending_file' successfully"); 
 	
 	#chmod! 
@@ -1292,124 +863,11 @@ sub can_filter_subscribers_through_blacklist {
 	return 0; 
 }
 
-
-
-
 sub can_have_subscriber_fields { 
 
     my $self = shift; 
     return 0; 
 }
-
-
-
-
-sub subscriber_fields { 
-    return []; 
-}
-
-
-
-
-sub move_subscriber { 
-    
-    my $self   = shift; 
-    
-    my ($args) = @_;
-    
-    if(! exists $args->{-to}){ 
-        croak "You must pass a value in the -to paramater!"; 
-    }
-    if(! exists $args->{-from}){ 
-        croak "You must pass a value in the -from paramater!"; 
-    }    
-    if(! exists $args->{-email}){ 
-        croak "You must pass a value in the -email paramater!"; 
-    }
-    
-    if($self->allowed_list_types->{$args->{-to}} != 1){ 
-        croak "list_type passed in, -to is not valid"; 
-    }
-
-    if($self->allowed_list_types->{$args->{-from}} != 1){ 
-        croak "list_type passed in, -from is not valid"; 
-    }
-    
-     if(DADA::App::Guts::check_for_valid_email($args->{-email}) == 1){ 
-        croak "email passed in, -email is not valid"; 
-    }
-    
-    
-    my $moved_from_checks_out = 0; 
-    if(! exists($args->{-moved_from_check})){ 
-        $args->{-moved_from_check} = 1; 
-    }
-    
-    if($self->check_for_double_email(-Email => $args->{-email}, -Type => $args->{-from}) == 0){ 
-        
-        if($args->{-moved_from_check} == 1){ 
-            croak "email passed in, -email is not subscribed to list passed in, '-from'";     
-        }
-        else { 
-            $moved_from_checks_out = 0; 
-        }
-    }
-    else { 
-        $moved_from_checks_out = 1; 
-    }
-
-
-	if(!exists($args->{-mode})){ 
-		$args->{-mode} = 'writeover_check'; 
-	}
-		
-	if($args->{-mode} eq 'writeover'){ 
-		if($self->check_for_double_email(-Email => $args->{-email}, -Type => $args->{-to}) == 1){ 
-			$self->remove_subscriber(
-				{ 
-					-email => $args->{-email},
-					-type  => $args->{-to}, 
-				}
-			); 
-		}
-	}
-	else { 
-	    if($self->check_for_double_email(-Email => $args->{-email}, -Type => $args->{-to}) == 1){ 
-	        croak "email passed in, -email ( $args->{-email}) is already subscribed to list passed in, '-to' ($args->{-to})"; 
-	    }
-	}
-
-   
-   
-   if($moved_from_checks_out){ 
-   
-        $self->remove_from_list(
-            -Email_List =>[$args->{-email}], 
-            -Type       => $args->{-from}
-        );   
-   
-    }
-    
-    $self->add_subscriber(
-        { 
-            -email => $args->{-email}, 
-            -type  => $args->{-to}, 
-        }
-    ); 
-    
-    if ($DADA::Config::LOG{subscriptions}) { 
-        $log->mj_log(
-            $self->{list}, 
-            'Moved from:  ' . $self->{list} . '.' . $args->{-from} . ' to: ' . $self->{list} . '.' . $args->{-to}, 
-            $args->{-email}, 
-        );
-    }
-
-
-	return 1; 
-
-}
-
 
 
 
@@ -1425,7 +883,7 @@ sub DESTROY {}
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2008 Justin Simoni All rights reserved. 
+Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

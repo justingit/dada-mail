@@ -44,7 +44,6 @@ SKIP: {
     if ($@){ 
         diag $@; 
     } 
-    
     dada_test_config::destroy_MySQL_db();
 
 

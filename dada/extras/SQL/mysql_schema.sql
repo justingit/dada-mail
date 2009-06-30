@@ -24,6 +24,37 @@ CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(320), list, l
 -- Same problem, in very old version of MySQL, this INDEX doesn't seem to work...
 
 
+
+CREATE TABLE dada_profile (
+	profile_id			         int4 not null primary key auto_increment,
+	email                        varchar(320) not null,
+	password                     text(16),
+	auth_code                    varchar(64),
+	activated                    char(1), 
+	CONSTRAINT UNIQUE (email)
+);
+
+CREATE TABLE dada_profile_fields (
+	fields_id			         int4 not null primary key auto_increment,
+	email                        varchar(320) not null,
+	CONSTRAINT UNIQUE (email)
+);
+
+CREATE TABLE dada_profile_fields_attributes ( 
+
+attribute_id 				int4 not null primary key auto_increment,
+field                       varchar(320),
+label                       varchar(320),
+fallback_value              varchar(320),
+-- I haven't made the following, but it seems like a pretty good idea... 
+-- sql_col_type              text(16),
+-- default                   mediumtext,
+-- html_form_widget          varchar(320),
+-- required                  char(1),
+-- public                    char(1),
+CONSTRAINT UNIQUE (field)
+);
+
 CREATE TABLE dada_archives (
 list                          varchar(32),
 archive_id                    varchar(32),
@@ -32,21 +63,24 @@ message                       mediumtext,
 format                        text,
 raw_msg                       mediumtext
 );
-
+ 
 CREATE INDEX dada_archives_list_archive_id_index ON dada_archives (list, archive_id);
-
-
+ 
 CREATE TABLE dada_bounce_scores (
 id                            int4 not null primary key auto_increment,
 email                         text, 
 list                          varchar(16),
 score                         int4
 ); 
-
-
-
-
+ 
+CREATE TABLE dada_clickthrough_urls (
+url_id  int4 not null primary key auto_increment, 
+redirect_id varchar(16), 
+msg_id text, 
+url text
+); 
+ 
 CREATE TABLE dada_sessions (
      id CHAR(32) NOT NULL PRIMARY KEY,
      a_session TEXT NOT NULL
-  );
+);

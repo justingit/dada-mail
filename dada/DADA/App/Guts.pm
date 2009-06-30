@@ -27,7 +27,7 @@ noted here.
 
 
 
-use lib qw(../../ ../../perllib); 
+use lib qw(../../ ../ ../../ ../../perllib);
 
 
 
@@ -46,72 +46,54 @@ LOCK_EX
 LOCK_SH 
 LOCK_NB); 
 
-use DADA::Logging::Usage;
-my $log =  new DADA::Logging::Usage;;
 
 
-require Exporter; 
-@ISA = qw(Exporter); 
+require Exporter;
+@ISA = qw(Exporter);
 
 @EXPORT = qw(
-check_for_valid_email
-strip 
-pretty 
-make_pin
-check_email_pin 
-make_template
-delete_list_template
-
-delete_list_info
-
-check_if_list_exists
-available_lists
-archive_message
-uriencode
-js_enc
-
-setup_list
-date_this
-convert_to_ascii
-e_print
-decode_he
-uriescape
-lc_email
-make_safer
-interpolate_string
-webify_plain_text
-check_list_setup
-make_all_list_files
-
-message_id
-
-check_list_security
-user_error
-check_setup
-
-cased
-root_password_verification
-xss_filter
-isa_ip_address
-isa_url
-
-check_referer
-
-escape_for_sending
-
-entity_protected_str
-spam_me_not_encode
-
-
-optimize_mime_parser
-
-mailhide_encode
-
-
-csv_parse
-
-
-
+  check_for_valid_email
+  strip
+  pretty
+  make_pin
+  check_email_pin
+  make_template
+  delete_list_template
+  delete_list_info
+  check_if_list_exists
+  available_lists
+  archive_message
+  uriencode
+  js_enc
+  setup_list
+  date_this
+  convert_to_ascii
+  e_print
+  decode_he
+  uriescape
+  lc_email
+  make_safer
+  interpolate_string
+  webify_plain_text
+  check_list_setup
+  make_all_list_files
+  message_id
+  check_list_security
+  user_error
+  check_setup
+  cased
+  root_password_verification
+  xss_filter
+  isa_ip_address
+  isa_url
+  check_referer
+  escape_for_sending
+  entity_protected_str
+  spam_me_not_encode
+  optimize_mime_parser
+  mailhide_encode
+  gravatar_img_url
+  csv_parse
 );
 
 
@@ -248,11 +230,14 @@ although if you create your own $DADA::Config::PIN_NUM  and $DADA::Config::PIN_W
 sub make_pin {
 	my %args = ( 
 	-Email      => undef, 
+	-List       => undef, 
+	-crypt      => 1, 
 	@_
 	); 
 	
 	
 	my $email = $args{-Email} || undef;
+	my $list  = $args{-List}  || undef; 
 	my $pin = 0; 
 	
 	if($email){ 
@@ -269,17 +254,22 @@ sub make_pin {
 		$pin = unpack("%32C*", $email);
 		
 		# do the same with some word you pick 
-		my $pin_helper = unpack("%32C*", $DADA::Config::PIN_WORD );
+		my $pin_helper = unpack("%32C*", ($DADA::Config::PIN_WORD . $list) );
 		 
 		# make the pin by adding the $pin and $DADA::Config::PIN_NUM ber together, 
 		# multiplying by a number you can pick 
 		# and subtract that number by the $pin helper. 
 		
 		$pin = ((($pin + $pin_helper) * $DADA::Config::PIN_NUM ) - $pin_helper); 
-		
-		# give it back. 
-		return $pin; 
-		
+				
+		if($args{-crypt} == 1){ 
+			require DADA::Security::Password; 
+			my $enc =  DADA::Security::Password::encrypt_passwd($pin); 
+			return $enc; 
+		}
+		else { 
+			return $pin;
+		}
 	}else{ 
 	
 		return undef;
@@ -298,34 +288,47 @@ returns 0 on when the pin is VALID (Weird, yes?), 1 on FAILURE.
 
 =cut
 
-sub check_email_pin { 
+sub check_email_pin {
 
-	my %args = (-Email => undef, 
- 	            -Pin   => undef,
- 	            @_); 
+    my %args = (
+        -Email => undef,
+        -List  => undef,
+        -Pin   => undef,
+        @_
+    );
+
+    my $email = $args{ -Email } || undef;
+    my $list  = $args{ -List }  || undef;
+    my $pin   = $args{ -Pin }   || undef;
+    my $check = 0;
+
+	#die '$email "' . $email . '"'; 
+#	die '$list ' . $list; 
+#	die '$pin  '. $pin;
 	
-	my $email = $args{-Email} || undef;
-	my $pin   = $args{-Pin}   || undef; 
+
+	require DADA::Security::Password; 
 	
-	if(
-	   defined($pin) &&
-	   defined($email)
-	){ 
-		$email = cased($email); 
-		#see how we make a pin, just do the reverse. 
-		my $invalid_pin = 0; 
-		my $check_pin = unpack("%32C*", $email);
-		my $pin_helper = unpack("%32C*", $DADA::Config::PIN_WORD );
-		$check_pin = ((($check_pin + $pin_helper) * $DADA::Config::PIN_NUM ) - $pin_helper);
-	
-	  if ($check_pin != $pin){ 
-	  	$invalid_pin++;
-	  }
-		# How does this even work, if $invalid_pin is added to (++) when it's INVALID? THE FUCK?
-		return  $invalid_pin; 
-	 }else{ 
-		return 1; 
-	}
+    if (   defined($pin)
+        && defined($email) )
+    {
+		my $unencrypted_pin = make_pin( 
+			-Email => $email, 
+			-List  => $list, 
+			-crypt => 0,
+		 );
+		
+	#	die '$unencrypted_pin ' . $unencrypted_pin; 
+        if ( DADA::Security::Password::check_password($pin, $unencrypted_pin) == 1) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }	
+	else {
+    	return 0;
+    }
 }
 
 
@@ -1524,20 +1527,25 @@ hopefully it does, since we're editing it)
 
 sub check_list_setup {
 
-    my %args = (-fields    => undef,  
-    			-new_list  => 'yes', 
-    			@_); 
+    my %args = (
+		-fields    => undef,  
+    	-new_list  => 'yes', 
+    	@_
+	); 
     		   
 	my %new_list_errors = (); 
 	my $list_errors     = 0;
     my $fields = $args{-fields}; 
-    
+ 
+	
 	if($fields->{list} eq ""){ 
 		$list_errors++;
 		$new_list_errors{list} = 1;
 	}else{ 
 		$new_list_errors{list} = 0;
 	}
+
+
 	
 	if($fields->{list_name} eq ""){ 
 		$list_errors++;
@@ -1545,6 +1553,11 @@ sub check_list_setup {
 	}else{ 
 		$new_list_errors{list_name} = 0;
 	}
+	
+	
+
+	
+	
 	
 	if($fields->{list_name} =~ m/(\>|\<|\")/){ 
 		$list_errors++;
@@ -1554,7 +1567,7 @@ sub check_list_setup {
 	}
 	
 	
-	
+
 	
 	if($args{-new_list} eq "yes") {
 		my $list_exists = check_if_list_exists(-List => $fields->{list}); 
@@ -1566,6 +1579,9 @@ sub check_list_setup {
 		}	
 	}
 
+
+
+	
 	if($args{-new_list} eq "yes") {
 		if(!defined($fields->{password}) || $fields->{password} eq ""){	
 			$list_errors++;
@@ -1575,6 +1591,7 @@ sub check_list_setup {
 		}
 		
 		
+				
 		# it means that the password we're using for the list, 
 		# is the Dada Mail Root Password - doh!
 		if(root_password_verification($fields->{password}) == 1){ 
@@ -1593,17 +1610,17 @@ sub check_list_setup {
 			$new_list_errors{retype_password} = 0;
 		}
 		
+
 		
 		
-		if($fields->{password} ne $fields ->{retype_password}) { 
+		if($fields->{password} ne $fields->{retype_password}) { 
 			 $list_errors++;
 			 $new_list_errors{password_ne_retype_password} = 1;
 		}else{ 
 			 $new_list_errors{password_ne_retype_password} = 0;
 		}
 		
-		
-		
+
 		
 		if(length($fields->{list}) > 16){ 
 			$list_errors++;
@@ -1644,17 +1661,21 @@ sub check_list_setup {
 		$new_list_errors{invalid_list_owner_email} = 0;
 	}
 	
-	
-	if($fields ->{info} eq ""){ 
+	if($fields->{info} eq ""){ 
 		$list_errors++;
 		$new_list_errors{list_info} = 1;
 	}else{ 
 		$new_list_errors{list_info} = 0;
 	}
 	
+		
+
 	
-	if($fields->{privacy_policy} eq ""){ 
+
+		
+	if(length($fields->{privacy_policy}) == 0){ 	
 		$list_errors++;
+	
 		$new_list_errors{privacy_policy} = 1;
 	}else{ 
 		$new_list_errors{privacy_policy} = 0;
@@ -1666,7 +1687,8 @@ sub check_list_setup {
 	}else{ 
 		$new_list_errors{physical_address} = 0;
 	}
-	
+
+
 	
 	return ($list_errors, \%new_list_errors);
 }
@@ -2142,6 +2164,33 @@ sub mailhide_encode {
     
 }
 
+sub gravatar_img_url { 
+
+	my ($args) = @_; 
+	my $url = undef; 
+	
+	my $can_use_gravatar_url = 0; 
+	
+	if(!exists($args->{-size})){ 
+		$args->{-size} = 80;
+	}
+	
+    eval {require Gravatar::URL}; 
+    if(!$@){
+		if(isa_url($args->{-default_gravatar_url})){ 
+       		$url = Gravatar::URL::gravatar_url(email => $args->{-email}, default => $args->{-default_gravatar_url}, size => $args->{-size});
+		}
+		else { 
+			$url = Gravatar::URL::gravatar_url(email => $args->{-email}, size => $args->{-size});
+		}
+    }else{ 
+       $can_use_gravatar_url = 0;
+    }
+	
+	return $url; 
+	
+}
+
 
 
 
@@ -2317,7 +2366,7 @@ sub csv_subscriber_parse {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999-2008 Justin Simoni 
+Copyright (c) 1999-2009 Justin Simoni 
 
 http://justinsimoni.com 
 

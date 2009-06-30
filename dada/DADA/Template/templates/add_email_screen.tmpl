@@ -501,6 +501,14 @@ Invalid Email Addresses
 
 
  <div class="buttonfloat">
+  <p>
+	<input type="checkbox" id="fields_options_mode" name="fields_options_mode" value="preserve" />
+	<label for="fields_options_mode">
+		Preserve any current subscriber fields information
+	</label>
+	
+  </p>
+
   <input type="button" class="cautionary" value="<< Re-Enter Email List" onclick="history.back();return false;" />
 
 <!-- tmpl_if type_isa_list --> 
@@ -510,7 +518,18 @@ Invalid Email Addresses
 
 
 <!-- tmpl_if type_isa_list --> 
-  <input type="submit" class="processing" name="process"  value="Subscribe Checked Subscribers >>" onclick="return warnAboutMassSubscription(this.form);" />
+	<!-- tmpl_if list_settings.enable_mass_subscribe --> 
+	
+  		<input type="submit" class="processing" name="process"  value="Subscribe Checked Subscribers >>" onclick="return warnAboutMassSubscription(this.form);" />
+
+	<!-- tmpl_else --> 
+	
+	<input type="button" class="disabled" disabled="disabled"  name="process"  value="Subscribe Checked Subscribers (Disabled) >>"  onclick="return warnAboutMassSubscription(this.form);" />
+		
+	<!-- /tmpl_if --> 
+	
+		
+
 <!-- tmpl_else --> 
 	<input type="submit" class="processing" name="process"  value="Subscribe Checked Subscribers >>" />
 

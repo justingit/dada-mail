@@ -161,7 +161,8 @@ sub _init  {
 	   $parser = optimize_mime_parser($parser); 
 	   
  	$self->{parser} = $parser; 
- 	
+ 	$self->{ls}     = undef; 
+	$self->{list}   = undef;
  	if(exists($args->{-List}) && $args->{-yeah_no_list} == 0){ 
  	    
 
@@ -441,13 +442,12 @@ sub _format_text {
                     );
                 }
                 
-        
 
-				
-				
-				$content = $self->_add_opener_image($content)
-					if $self->{ls}->param('enable_open_msg_logging') == 1            && 
-					   $entity->head->mime_type                      eq 'text/html';
+      			if(defined($self->{list})){
+					if ($self->{ls}->param('enable_open_msg_logging') == 1 && $entity->head->mime_type                      eq 'text/html'){ 
+						$content = $self->_add_opener_image($content);
+					}
+				}
 						   
 		       my $io = $body->open('w');
 				  $io->print( $content );
@@ -791,8 +791,7 @@ sub _encode_header {
 	my $value      = shift; 
 	my $new_value  = undef; 
 	
-	
-	if($label eq 'Subject'){ 
+	if($label eq 'Subject' || $label eq 'just_phrase'){ 
 
 		$new_value = 
 			MIME::EncWords::encode_mimewords(
@@ -824,6 +823,7 @@ sub _encode_header {
 		
 		$new_value = join(', ', @new_addresses);
 	}
+		
 	
 	return $new_value; 
 		
@@ -1057,7 +1057,6 @@ sub _macro_tags {
 	my %args = (-url         => $DADA::Config::PROGRAM_URL, # Really.
 				-email        => undef, 
 				-pin          => undef, 
-				-make_pin     => 0,
 				-list         => $self->{list},
 				-escape_list  => 1,
 				-escape_all   => 0,
@@ -1074,9 +1073,6 @@ sub _macro_tags {
 	#
 	#}
 	
-	if($args{-email} && $args{-make_pin} == 1){ 
-		$args{-pin} = make_pin(-Email => $args{-email}); 
-	}
 
 	if($args{-type} eq 'subscribe'){ 
 	
@@ -1332,9 +1328,8 @@ sub entity_from_dada_style_args {
                                         {
                                             -fields => $args->{-fields},
                                          }
-                                      );
-    
-    
+                                      ); 
+
             return ($self->get_entity(
                             {
                                 -data          => $filename,
@@ -1402,10 +1397,15 @@ sub file_from_dada_style_args {
     my $str = ''; 
     
     require DADA::Security::Password; 
-    
-    my $filename = $DADA::Config::TMP . '/' . 'tmp_msg_ ' . time . '_' . DADA::Security::Password::generate_rand_string(); 
+    my $time = time; 
+	my $filename  =  $DADA::Config::TMP . '/' . 'tmp_msg-';
+	   $filename .= $time;
+	   $filename .= '-';
+	   $filename .= DADA::Security::Password::generate_rand_string(); 	
+
        $filename = make_safer($filename); 
     
+	
     open my $MAIL, '>', $filename or croak $!; 
     
     if(! exists($args->{-fields})){ 
@@ -1484,10 +1484,16 @@ sub get_entity {
 		$args->{-parser_params}->{-input_mechanism} = 'parse_data';
 	}
     if($args->{-parser_params}->{-input_mechanism} eq 'parse_open'){ 
-        eval { $entity = $self->{parser}->parse_open($args->{-data}) };        
+        eval { $entity = $self->{parser}->parse_open($args->{-data}) };       
+ 		if($@){ 
+			carp $@; 
+		}
     }
     else { 
         eval { $entity = $self->{parser}->parse_data($args->{-data}) };
+ 		if($@){ 
+			carp $@; 
+		}
     }
 	
 	if($@){ 
@@ -1617,6 +1623,13 @@ sub email_template {
 	                    {
 	                                %screen_vars,
 	                                -data                   => \$content, 
+									(
+										($args->{-entity}->head->mime_type eq 'text/html') ? 
+										(
+											-webify_these => [qw(list_settings.info list_settings.privacy_policy list_settings.physical_address)], 
+								        ) 
+										: ()
+									),
 
 	                    }
 	                ); 
@@ -1647,11 +1660,10 @@ sub email_template {
     }
     $screen_vars{-dada_pseudo_tag_filter} = 1; 
     
-	foreach my $header(qw(Subject From To Reply-To Errors-To Return-Path)){ 
-		
-		
+	foreach my $header('Subject', 'From', 'To', 'Reply-To', 'Errors-To', 'Return-Path'){ 
+				
 	    if($args->{-entity}->head->get($header, 0)){ 
-			
+						
             if($header =~ m/From|To|Reply\-To|Return\-Path|Errors\-To/){ 
                 #Special Case - only format the phrase. 
                 require Email::Address; 
@@ -1660,6 +1672,7 @@ sub email_template {
 			        my $phrase = $addresses[0]->phrase; 
 					   $phrase = $self->_decode_header($phrase)
 							if $self->im_encoding_headers; 
+											
 					   $phrase = DADA::Template::Widgets::screen(
                         {
                             %screen_vars,
@@ -1667,16 +1680,29 @@ sub email_template {
 
                         }
                     );
- 					$phrase = $self->_encode_header($header, $phrase)
+					# DEV: It's probably an oversight that this originaly 
+					# passed the phraise to _encode_header, when that sub wants
+					# The entire header and not the phrase, but escapes me 
+					# why it was like that to start out with. 
+					# Passing the entire header does make sure multiple 
+					# addresses in the field get encoded - but does this 
+					# subroutine do that? see: $addresses[0]?! Up there? It 
+					# only looks for the first address.... THAT should probably be patched up
+					# (not that dada mail does anything with >1 address, but still..... 
+					
+					# warn '$phrase before encoding: ' . $phrase; 
+ 					$phrase = $self->_encode_header('just_phrase', $phrase)
 						if $self->im_encoding_headers; 
-
+					# warn '$phrase after encoding: ' . $phrase; 
+					
                     # Munge! 
-                    $phrase =~ s{^\"|\"$}{}g;
+                    $phrase =~ s{^\"|\"$}{}g; # need this still? 
 				    $addresses[0]->phrase($phrase); 
                     
                     
                     my $new_header = $addresses[0]->format; 
-                    
+					# warn ' $new_header ' . $new_header; 
+					 
                     $args->{-entity}->head->delete($header);
                     $args->{-entity}->head->add($header, $new_header); 
                 
@@ -1792,7 +1818,7 @@ sub pre_process_msg_strings {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2008 Justin Simoni All rights reserved. 
+Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

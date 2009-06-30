@@ -66,11 +66,16 @@
 
 <!-- tmpl_if list_settings.show_archives -->
 	
-	<!-- tmpl_var html_archive_list -->
+	<h2>Archives:</h2> 
 	
-    <!-- tmpl_if list_settings.publish_archives_rss --> 
- 	    <!-- tmpl_include newsfeed_widget.tmpl -->
-    <!-- /tmpl_if --> 
+	
+		<!-- tmpl_var html_archive_list -->
+	    <!-- tmpl_if list_settings.publish_archives_rss --> 
+	 	    <!-- tmpl_include newsfeed_widget.tmpl -->
+	    <!-- /tmpl_if --> 
+
+
+
     
 <!-- /tmpl_if -->
 

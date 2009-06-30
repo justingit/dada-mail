@@ -42,7 +42,7 @@ ok(log_viewer->test_sub() eq q{Hello, World!});
 # http://sourceforge.net/tracker/index.php?func=detail&aid=2124123&group_id=13002&atid=113002
 
 my $results   = log_viewer::search_logs([$DADA::Config::PROGRAM_USAGE_LOG], 'found', 1);
-my $find_this = quotemeta('&lt;<em class="highlighted">found</em>&gt;'); 
+my $find_this = quotemeta('<em class="highlighted">found</em>'); 
 like($results, qr/$find_this/, "found the stuff, escaped."); 
 
 #/ [ 2124123 ] 3.0.0 - Log viewer doesn't escape ">" "<" in searches

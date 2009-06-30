@@ -144,8 +144,12 @@ $list = dada_test_config::create_test_list;
 	    skip "Multiple Subscriber Fields is not supported with this current backend." 
 	        if $lh->can_have_subscriber_fields == 0;
 	
-	    
-	    ok($lh->add_subscriber_field({-field => 'First_Name'})); 
+	    my $r = $lh->add_subscriber_field({-field => 'First_Name'});
+	    ok($r == 1, "\$r = $r"); 
+	
+#diag "sleeping!";
+#sleep(400); 
+	
 	    ok($lh->add_subscriber_field({-field => 'Last_Name'})); 
     
 	    my @test_files = qw(
@@ -161,8 +165,12 @@ $list = dada_test_config::create_test_list;
     
 	        `cp t/corpus/csv/$test_file $DADA::Config::TMP/$test_file`;
         
+			
 	        my ($new_emails, $new_info) = DADA::App::Guts::csv_subscriber_parse($list, $test_file);
-	        ok($new_emails->[0] eq 'example1@example.com', 'example1@example.com');
+	        
+			use Data::Dumper; 
+			diag Data::Dumper::Dumper($new_emails, $new_info); 
+			ok($new_emails->[0] eq 'example1@example.com', 'example1@example.com');
 	        ok($new_emails->[1] eq 'example2@example.com', 'example2@example.com');
 	        ok($new_emails->[2] eq 'example3@example.com', 'example3@example.com');
         

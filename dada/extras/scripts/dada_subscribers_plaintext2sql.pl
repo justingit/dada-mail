@@ -85,7 +85,12 @@ foreach my $list(DADA::App::Guts::available_lists()){
 				}
 				
 				if($status == 1){ 
-					$lh->add_to_email_list(-Email_Ref => [$email], -Type => $sublist);
+					$lh->add_subscriber(
+						{
+							-email => $email, 
+							-type  => $sublist
+						}
+					);
 					print "\t\t\t\tadded: $email\n";
 				}else{ 
 					print "\t\t\t PROBLEMS with $email: "; 
@@ -154,7 +159,7 @@ ps. backup everything.
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2008 Justin Simoni All rights reserved. 
+Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

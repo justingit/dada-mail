@@ -9,20 +9,55 @@ Key:
 [x] Done. 
 [*] Naw...
 
+[ ] It would be nice if the partial fields could support some sort of dynamic content, like today's date, etc. 
 
+[ ] Auto Clickthrough tracking of links in the clickthrough tracker. (oh, boy) 
+
+[ ] I need to merge all of the code that creates the query for the subscriber fields into ONE method, because it's getting 
+ 	complicated, it's being used in more than one place, AND people want to change it. A tall order, but probably, well worth it! 
+
+[-] The, "Your subscriptions" thingy in the Profile thingy has to let you know, if you aren't actually subscribed to any lists. Right now, if you're not, it just looks broken. 
+	[ ] It would also be nice, that if you were the List Owner of a List, you'd also be listed as that. Special things, like that. Sigh. 
+	
+
+[ ] Need a way to update an email address from the profile, and perhaps auto-merge, if the email address is already subscribed to an address. (it should probably be warned if this happens...) 
+
+[ ] Once the above are done, I need some major testing stuff to be made and then, we gotta wrap this up - probably make the 3.0.x to 3.1 script and call it a beta! 
+	[ ] Some things to remember - the SQL needs new tables AND info has to be moved from one table to another.... sigh. 
+[ ] Man, wouldn't it be nice to have an installer...? Sigh. 
+
+[x] I need to make upgrade notes from Simple Scripts installs. 
+
+
+
+[ ] The docs need to be clearer about how to work with HTML templates, and the like, 
+
+[ ] double check bug fixes from 3.0.x are in 3.1.x...
+
+(3.1)
+	
+	[x] I need to make an option to says, "Hey that need subscriber fields info? Replace what my be there with, 
+		THIS, or, use what's there, if there's already something there, 
+		Probably per import, for now,
+	[x] Gravatar bells and whistles in the profile screen
+	[ ] CAPTCHA for, "hey, you've already *asked* for this damn subscription! screen - the check at the moment is too simple. 
+	[ ] Remember to move over any changes from 3.0.x to 3.1in POD docs... 
+	[x] Magic Subscription Forms - a way to turn *off*?! 
+	[ ] I need to HTML-ify the list description in the profile screen.
+	
 
 [x] I need a purge button for subscribers. 
 
 
-[ ] Currently, the following sites will be notified: 
+[x] Currently, the following sites will be notified: 
 
 is not listing anything... 
-
 
 [ ] It would be nice to have an option that says, "Hey, that email template? Why don't we see it initially in the, "Send a List Message" scrren - so, if I want to tweak it slightly - I can. 
 The problem is, what if someone totally obliterates the, unsub info, thinking that the email template was going to be applied? 
 Perhaps just a warning at the top, "The email template is  plopped down below and won't be applied again"
-
+	[ ] I'd also have to make a really really really good check, to make sure that, if there's nothing extra type, the email template isn't used. 
+	
 
 
 [x] Need option to turn FCKEditor off list-by-list - what if for some reason it's not working? Broken Dada Mail.

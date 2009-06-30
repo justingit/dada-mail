@@ -2,125 +2,134 @@
 
 package dada_bridge;
 
+# Some questions I have on the new moderation stuff:
+# If there are no authorized senders, is the list owner allowed to moderate messages?
+# is the authorized senders moderation activated?
+# Can a subscriber moderate their own message?
 
 use strict;
-$ENV{PATH} = "/bin:/usr/bin"; 
-delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
+$ENV{PATH} = "/bin:/usr/bin";
+delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 
 #---------------------------------------------------------------------#
 # Dada Bridge
 # For instructions, see the pod of this file. try:
 #  pod2text ./dada_bridge.pl | less
 #
-# Or try online: 
+# Or try online:
 #  http://dadamailproject.com/support/documentation/dada_bridge.pl.html
 #
 #---------------------------------------------------------------------#
 # REQUIRED:
-# 
+#
 # It is only required that you read the documentation. All variables
 # that are set here are *optional*
 #---------------------------------------------------------------------#
 
-
-use lib qw(../ ../DADA/perllib ../../../../perl ../../../../perllib); 
-
+use lib qw(../ ../DADA/perllib ../../../../perl ../../../../perllib);
 
 use CGI::Carp qw(fatalsToBrowser);
 use DADA::Config 3.0.0;
 
-use CGI; CGI->nph(1) if $DADA::Config::NPH == 1; my $q = new CGI; $q->charset($DADA::Config::HTML_CHARSET);
+use CGI;
+CGI->nph(1) if $DADA::Config::NPH == 1;
+my $q = new CGI;
+$q->charset($DADA::Config::HTML_CHARSET);
 
 use Fcntl qw(
-    O_CREAT 
-    O_RDWR
-    LOCK_EX
-    LOCK_NB
-); 
+  O_CREAT
+  O_RDWR
+  LOCK_EX
+  LOCK_NB
+);
 
-my $Plugin_Config = {}; 
+my $Plugin_Config = {};
 
-# Usually, this doesn't need to be changed. 
-# But, if you are having trouble saving settings 
-# and are redirected to an 
-# outside page, you may need to set this manually. 
-$Plugin_Config->{Plugin_URL} = $q->url; 
+# Usually, this doesn't need to be changed.
+# But, if you are having trouble saving settings
+# and are redirected to an
+# outside page, you may need to set this manually.
+$Plugin_Config->{Plugin_URL} = $q->url;
 
-
-# Can the checking of awaiting messages to send out happen by invoking this 
-# script from a URL? (CGI mode?) 
-# The URL would look like this: 
+# Can the checking of awaiting messages to send out happen by invoking this
+# script from a URL? (CGI mode?)
+# The URL would look like this:
 #
 # http://example.com/cgi-bin/dada/plugins/dada_bridge.pl?run=1
 
-$Plugin_Config->{Allow_Manual_Run}    = 1; 
+$Plugin_Config->{Allow_Manual_Run} = 1;
 
-# Set a passcode that you'll have to also pass to invoke this script as 
+# Set a passcode that you'll have to also pass to invoke this script as
 # explained above in, "$Plugin_Config->{Allow_Manual_Run}"
 
 $Plugin_Config->{Manual_Run_Passcode} = '';
 
-
-# How many messages does Dada Mail look at, at once? 
+# How many messages does Dada Mail look at, at once?
 #
 $Plugin_Config->{MessagesAtOnce} = 1;
 
-
-# Is there a limit on how large a single email message can be, until we outright # reject it? 
-# In, "octects" (bytes) - this is about 2.5 megs...
+# Is there a limit on how large a single email message can be, until we outright # reject it?
+# In, "octets" (bytes) - this is about 2.5 megs...
 #
-$Plugin_Config->{Max_Size_Of_Any_Message} = 2621440;
+# Soft_Max_Size_Of_Any_Message is the limit to reach before we email the
+# original sending, telling me that the message is too large
 
+$Plugin_Config->{Soft_Max_Size_Of_Any_Message} = 1048576;    # 1   meg
 
-$Plugin_Config->{Plugin_Name} = 'Dada Bridge'; 
+# Max_Size_Of_Any_Message is the limit to reach before we just simply
+# ignore and remove the message. The reason why we'd ignore and remove is that
+# the message is too large to even process!
 
+$Plugin_Config->{Max_Size_Of_Any_Message} = 2621440;         # 2.5 meg
 
-# This is a super super secret, undocumented feature. Why the secrecy? 'cause 
+$Plugin_Config->{Plugin_Name} = 'Dada Bridge';
+
+# This is a super super secret, undocumented feature. Why the secrecy? 'cause
 # we snuck this new feature in a bug-fix only release and this feature hasn't
-# Properly tested. So - big flashing warning. 
-# 
-# What is this feature? If you set the below variable, "$Plugin_Config->{Allow_Open_Discussion_List}" 
-# to, "1", you will be able to have an discussion list that anyone can email a message 
-# to. Why would you want this? I don't know, since the original poster won't be able 
-# to receive or reply to the postings, but hey, you may have an interesting use, so 
-# here it is. 
-# Last caveat: This feature may disappear later in the program's releases (or at 
+# Properly tested. So - big flashing warning.
+#
+# What is this feature? If you set the below variable, "$Plugin_Config->{Allow_Open_Discussion_List}"
+# to, "1", you will be able to have an discussion list that anyone can email a message
+# to. Why would you want this? I don't know, since the original poster won't be able
+# to receive or reply to the postings, but hey, you may have an interesting use, so
+# here it is.
+# Last caveat: This feature may disappear later in the program's releases (or at
 # least, change drastically)
-# If that doesn't scare you and you need the feature, set this variable to, "1". 
+# If that doesn't scare you and you need the feature, set this variable to, "1".
 # You'll have a new option under the Discussion List options to have a
-# discussion list, open for anyone to post. 
+# discussion list, open for anyone to post.
 
-$Plugin_Config->{Allow_Open_Discussion_List} = 0; 
+$Plugin_Config->{Allow_Open_Discussion_List} = 0;
 
-
-# Another Undocumented feature - Room for one more? 
-# When set to, "1" we look to see how many mailouts there are, 
-# And if its above or at the limit, we don't attempt to check 
-# any Dada Bridge list emails for awaiting messages. 
+# Another Undocumented feature - Room for one more?
+# When set to, "1" we look to see how many mailouts there are,
+# And if its above or at the limit, we don't attempt to check
+# any Dada Bridge list emails for awaiting messages.
 # Sounds like a good idea, right? Well, the check has a bug in it, and this
 # This is a kludge
 
-$Plugin_Config->{Room_For_One_More_Check} = 1; 
+$Plugin_Config->{Room_For_One_More_Check} = 1;
 
 # Another Undocumented Feature - Enable Pop3 File Locking?
 # Sometimes, the file lock for the POP3 server doesn't work correctly
 # and you get a stale lock. Setting this config variable to, "0"
-# will disable this plugin's own lock file scheme. Should be fairly safe to use. 
+# will disable this plugin's own lock file scheme. Should be fairly safe to use.
 
-$Plugin_Config->{Enable_POP3_File_Locking} = 1; 
+$Plugin_Config->{Enable_POP3_File_Locking} = 1;
 
-$Plugin_Config->{Save_Incoming_Messages}  = 0; 
+$Plugin_Config->{Save_Incoming_Messages} = 0;
 
-$Plugin_Config->{Check_List_Owner_Return_Path_Header} = 1; 
+$Plugin_Config->{Check_List_Owner_Return_Path_Header} = 1;
 
 # Gmail seems to have problems with this...
-$Plugin_Config->{Check_Multiple_Return_Path_Headers}  = 0;
+$Plugin_Config->{Check_Multiple_Return_Path_Headers} = 0;
 
-# This is the message sent to the List Owner, 
+# This is the message sent to the List Owner,
 # telling them a message is waiting for their
 # Approval! Yeah!
 
-my $Moderation_Msg_Subject = 'Message on: [list_settings.list_name] needs to be moderated. (original message attached)';
+my $Moderation_Msg_Subject =
+'Message on: [list_settings.list_name] needs to be moderated. (original message attached)';
 my $Moderation_Msg = <<EOF
 
 The attached message needs to be moderated:
@@ -140,9 +149,44 @@ To deny sending this message to the list, click here:
 -- [Plugin_Name]
 
 EOF
-; 
+  ;
 
-my $Rejection_Message_Subject = 'Message to: [list_settings.list_name] Subject: [message_subject] rejected.'; 
+my $AwaitModeration_Message_Subject =
+'Message to: [list_settings.list_name] w/ Subject: [message_subject] is awaiting approval.';
+my $AwaitModeration_Message = <<EOF
+
+Hello, 
+
+Your recent message to [list_settings.list_name] with the subject of: 
+
+    [message_subject]
+    
+is awaiting approval. 
+
+-- [Plugin_Name]
+
+EOF
+  ;
+
+my $Accept_Message_Subject =
+'Message to: [list_settings.list_name] w/ Subject: [message_subject] is accepted.';
+my $Accept_Message = <<EOF
+
+Hello, 
+
+Your recent message to [list_settings.list_name] with the subject of: 
+
+    [message_subject]
+    
+was accepted by the list owner. It will be forwarded to the list soon. 
+
+-- [Plugin_Name]
+
+EOF
+  ;
+
+my $Rejection_Message_Subject =
+  'Message to: [list_settings.list_name] Subject: [message_subject] rejected.';
 my $Rejection_Message = <<EOF
 
 Hello, 
@@ -160,993 +204,1237 @@ for more details.
 -- [Plugin_Name]
 
 EOF
-; 
+  ;
 
+my $Message_Too_Big_Subject =
+  'Message to: [list_settings.list_name]  Subject: [original_subject] rejected';
+my $Message_Too_Big_Message = <<EOF
 
+Hello, [subscriber.email], 
+
+We've received a message from you with the Subject,
+
+	[original_subject]
+		
+but couldn't deliver it to the mailing list because the size of the message, 
+
+	[size_of_original_message] kilobytes
+
+is larger than the maximum allowed: 
+
+	[Soft_Max_Size_Of_Any_Message] kilobytes
+
+Please try to resend the message again, but within the maximum size allowed, 
+
+-- [list_settings.list_owner_email]
+
+EOF
+  ;
 
 #
-# There is nothing else to configure in this program. 
+# There is nothing else to configure in this program.
 #---------------------------------------------------------------------#
-
-
-
 
 #---------------------------------------------------------------------#
 
-$ENV{PATH} = "/bin:/usr/bin"; 
-delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
+$ENV{PATH} = "/bin:/usr/bin";
+delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 
-my $App_Version = '0.0';
+my $App_Version = '3.1.0';
 
-
-$DADA::Config::LIST_SETUP_DEFAULTS{open_discussion_list} = 0; 
+$DADA::Config::LIST_SETUP_DEFAULTS{open_discussion_list} = 0;
 
 # Phowaa - let's import *a few* things
 use DADA::Template::HTML;
-use DADA::App::Guts; 
-use DADA::Mail::Send; 
-use DADA::MailingList::Subscribers; 
-use DADA::MailingList::Settings; 
-use DADA::Security::Password;  
-use DADA::App::POP3Tools; 
+use DADA::App::Guts;
+use DADA::Mail::Send;
+use DADA::MailingList::Subscribers;
+use DADA::MailingList::Settings;
+use DADA::Security::Password;
+use DADA::App::POP3Tools;
 use Email::Address;
 use Digest::MD5 qw(md5_hex);
 use MIME::Parser;
-use MIME::Entity; 
-use Getopt::Long; 
+use MIME::Entity;
+use Getopt::Long;
 
 # This is for the reusable DBI handle...
-my $dbi_handle; 
-if(
-	$DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ || 
-	$DADA::Config::ARCHIVE_DB_TYPE    =~ m/SQL/ || 
-	$DADA::Config::SETTINGS_DB_TYPE   =~ m/SQL/ ||
-	$DADA::Config::SESSION_DB_TYPE    =~ m/SQL/ 	
-){        
-    require DADA::App::DBIHandle; 
-    $dbi_handle = DADA::App::DBIHandle->new; 
+my $dbi_handle;
+if (   $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/
+    || $DADA::Config::ARCHIVE_DB_TYPE  =~ m/SQL/
+    || $DADA::Config::SETTINGS_DB_TYPE =~ m/SQL/
+    || $DADA::Config::SESSION_DB_TYPE  =~ m/SQL/ )
+{
+    require DADA::App::DBIHandle;
+    $dbi_handle = DADA::App::DBIHandle->new;
 }
 
 $DADA::MailingList::Subscribers::dbi_obj = $dbi_handle;
 $DADA::MailingList::Settings::dbi_obj    = $dbi_handle;
+
 #$DADA::Mail::Send::dbi_obj               = $dbi_handle;
 
-
 my %Global_Template_Options = (
-		#debug              => 1, 		
-		path                => [$DADA::Config::TEMPLATES],
-		die_on_bad_params   => 0,	
 
-		(
-            ($DADA::Config::CPAN_DEBUG_SETTINGS{HTML_TEMPLATE} == 1) ? 
-                (debug => 1, ) :
-                ()
-        ), 
-        
-        
+    #debug              => 1,
+    path              => [$DADA::Config::TEMPLATES],
+    die_on_bad_params => 0,
+
+    (
+        ( $DADA::Config::CPAN_DEBUG_SETTINGS{HTML_TEMPLATE} == 1 )
+        ? ( debug => 1, )
+        : ()
+    ),
+
 );
 
+my $parser = new MIME::Parser;
+$parser = optimize_mime_parser($parser);
 
-my $parser = new MIME::Parser; 
-   $parser = optimize_mime_parser($parser); 
-
-
-	 
-my $test; 
+my $test;
 
 my $help;
 my $verbose = 0;
-my $debug   = 0; # not used? 
+my $debug   = 0;    # not used?
 my $list;
-my $run_list; 
-my $check_deletions = 0; 
+my $run_list;
+my $check_deletions = 0;
 
-my $root_login = 0; 
+my $root_login = 0;
 
-my $checksums = {}; 
+my $checksums = {};
 
-GetOptions("help"            => \$help, 
-		   "test=s"          => \$test,
-		   "verbose"         => \$verbose,
-		   "list=s"          => \$run_list, 
-		   "check_deletions" => \$check_deletions, 
-		   );
+GetOptions(
+    "help"            => \$help,
+    "test=s"          => \$test,
+    "verbose"         => \$verbose,
+    "list=s"          => \$run_list,
+    "check_deletions" => \$check_deletions,
+);
 
-
-&init_vars; 
+&init_vars;
 
 run()
-	unless caller(); 
+  unless caller();
 
+sub init_vars {
 
+# DEV: This NEEDS to be in its own module - perhaps DADA::App::PluginHelper or something?
 
-sub init_vars { 
+    while ( my $key = each %$Plugin_Config ) {
 
-    # DEV: This NEEDS to be in its own module - perhaps DADA::App::PluginHelper or something?
+        if ( exists( $DADA::Config::PLUGIN_CONFIGS->{'Dada_Bridge'}->{$key} ) )
+        {
 
-     while ( my $key = each %$Plugin_Config ) {
-        
-        if(exists($DADA::Config::PLUGIN_CONFIGS->{'Dada_Bridge'}->{$key})){ 
-        
-            if(defined($DADA::Config::PLUGIN_CONFIGS->{'Dada_Bridge'}->{$key})){ 
-                    
-                $Plugin_Config->{$key} = $DADA::Config::PLUGIN_CONFIGS->{'Dada_Bridge'}->{$key};
-        
+            if (
+                defined(
+                    $DADA::Config::PLUGIN_CONFIGS->{'Dada_Bridge'}->{$key}
+                )
+              )
+            {
+
+                $Plugin_Config->{$key} =
+                  $DADA::Config::PLUGIN_CONFIGS->{'Dada_Bridge'}->{$key};
+
             }
         }
-     }
+    }
 }
 
-
-sub run { 
-	if(!$ENV{GATEWAY_INTERFACE}){ 
-		&cl_main(); 
-	}else{ 
-		&cgi_main(); 
-	}
+sub run {
+    if ( !$ENV{GATEWAY_INTERFACE} ) {
+        &cl_main();
+    }
+    else {
+        &cgi_main();
+    }
 }
 
-
-
-sub test_sub { 
-	return "Hello, World!"; 
+sub test_sub {
+    return "Hello, World!";
 }
-
-
-
 
 sub cgi_main {
 
-    if(keys %{$q->Vars}                         && 
-       $q->param('run')                         && 
-       xss_filter($q->param('run'))        == 1 &&
-       $Plugin_Config->{Allow_Manual_Run}  == 1
-      ) { 
+    if (   keys %{ $q->Vars }
+        && $q->param('run')
+        && xss_filter( $q->param('run') ) == 1
+        && $Plugin_Config->{Allow_Manual_Run} == 1 )
+    {
         cgi_manual_start();
-    } else { 
-	
-        my $admin_list; 
-        
-        ($admin_list, $root_login) = check_list_security(-cgi_obj    => $q,  
-                                                         -Function   => 'dada_bridge',
-                                                         -dbi_handle => $dbi_handle,
-                                                        );
-                                                                                                                
-        $list  = $admin_list; 
-        
-        my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-        my $li = $ls->get(); 
-                                                                  
+    }
+	elsif ($q->param('flavor') eq 'mod'){ 
+		cgi_mod();
+	}
+    else {
+
+        my $admin_list;
+
+        ( $admin_list, $root_login ) = check_list_security(
+            -cgi_obj    => $q,
+            -Function   => 'dada_bridge',
+        );
+
+        $list = $admin_list;
+
+        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+        my $li = $ls->get();
+
         my $flavor = $q->param('flavor') || 'cgi_default';
-        
-        my %Mode = ( 
-        'cgi_default'             => \&cgi_default, 
-        'cgi_show_plugin_config'  => \&cgi_show_plugin_config,
-        'test_pop3'               => \&cgi_test_pop3,
-        'manual_start'            => \&admin_cgi_manual_start, 
-        'mod'                     => \&cgi_mod, 
-        ); 
-        
-        if(exists($Mode{$flavor})) { 
-            $Mode{$flavor}->();  #call the correct subroutine 
-        }else{
+
+        my %Mode = (
+            'cgi_default'            => \&cgi_default,
+            'cgi_show_plugin_config' => \&cgi_show_plugin_config,
+            'test_pop3'              => \&cgi_test_pop3,
+            'awaiting_msgs'          => \&cgi_awaiting_msgs,
+            'manual_start'           => \&admin_cgi_manual_start,
+           # 'mod'                    => \&cgi_mod,
+        );
+
+        if ( exists( $Mode{$flavor} ) ) {
+            $Mode{$flavor}->();    #call the correct subroutine
+        }
+        else {
             &cgi_default;
         }
     }
 }
 
+sub cgi_manual_start {
 
+    if (
+        (
+            xss_filter( $q->param('passcode') ) eq
+            $Plugin_Config->{Manual_Run_Passcode}
+        )
+        || ( $Plugin_Config->{Manual_Run_Passcode} eq '' )
 
+      )
+    {
 
-sub cgi_manual_start { 
-        
-        if(
-            (xss_filter($q->param('passcode')) eq $Plugin_Config->{Manual_Run_Passcode}) ||             
-            ($Plugin_Config->{Manual_Run_Passcode} eq '')
-            
-          ) {
-            
-            print $q->header(); 
-            
-            if(defined(xss_filter($q->param('verbose')))){
-                $verbose = xss_filter($q->param('verbose'));
-            }
-            else { 
-                $verbose = 1;
-            }
-            
-            
-            $check_deletions = 1; 
-            
-            if(xss_filter($q->param(xss_filter('list')))){ 
-            	$run_list        = xss_filter($q->param('list'));
-            }
+        print $q->header();
 
-            print '<pre>'
-                if $verbose; 
-            start();
-            print '</pre>'
-                if $verbose; 
+        if ( defined( xss_filter( $q->param('verbose') ) ) ) {
+            $verbose = xss_filter( $q->param('verbose') );
         }
-        else { 
-            print $q->header(); 
-            print "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Authorization Denied.";
+        else {
+            $verbose = 1;
         }
+
+        $check_deletions = 1;
+
+        if ( xss_filter( $q->param( xss_filter('list') ) ) ) {
+            $run_list = xss_filter( $q->param('list') );
+        }
+
+        print '<pre>'
+          if $verbose;
+        start();
+        print '</pre>'
+          if $verbose;
+    }
+    else {
+        print $q->header();
+        print
+"$DADA::Config::PROGRAM_NAME $DADA::Config::VER Authorization Denied.";
+    }
 }
 
+sub cgi_test_pop3 {
 
+    print(
+        admin_template_header(
+            -Title      => "POP3 Login Test",
+            -List       => $list,
+            -Form       => 0,
+            -Root_Login => $root_login
+        )
+    );
 
+    $run_list = $list;
+    $verbose  = 1;
+    print '<pre>';
+    test_pop3();
+    print '</pre>';
+    print '<p><a href="' . $Plugin_Config->{Plugin_URL} . ' ">Back...</a></p>';
 
-
-
-sub cgi_test_pop3 { 
-
-	print(admin_template_header(-Title      => "POP3 Login Test",
-		                    -List       => $list,
-		                    -Form       => 0,
-		                    -Root_Login => $root_login
-		                    ));
-		                    
-	$run_list = $list;
-	$verbose  = 1; 
-	print '<pre>';
-	test_pop3();
-	print '</pre>';
-	print '<p><a href="' . $Plugin_Config->{Plugin_URL} . ' ">Back...</a></p>';
-	
-	print admin_template_footer(-Form    => 0, 
-							-List    => $list,
-						    );
+    print admin_template_footer(
+        -Form => 0,
+        -List => $list,
+    );
 
 }
 
+sub cgi_awaiting_msgs {
 
+    print(
+        admin_template_header(
+            -Title      => "Messages Awaiting Moderation",
+            -List       => $list,
+            -Form       => 0,
+            -Root_Login => $root_login
+        )
+    );
 
+    $run_list = $list;
+    $verbose  = 1;
+    my $popupscript = <<EOF
+<script language="JavaScript">
+<!-- 
+// This is the function that will open the
+// new window when the mouse is moved over the link
+function open_new_window(msgtext) 
+{
+new_window = open("","hoverwindow","width=440,height=300,left=10,top=10");
 
-sub admin_cgi_manual_start { 
+// open new document 
+  new_window.document.open();
+  
+// Text of the new document
+// Replace your " with ' or \" or your document.write statements will fail
+new_window.document.write("<html><title>Raw View of Message</title>");
+new_window.document.write("<body>");
+new_window.document.write(msgtext);
+new_window.document.write("</body></html>");
 
-	print(admin_template_header(
-							-Title      => "Manually Running Mailing...",
-		                    -List       => $list,
-		                    -Form       => 0,
-		                    -Root_Login => $root_login
-		                    ));
-		                    
-	$run_list        = $list;
-	$verbose         = 1; 
-	$check_deletions = 1; 
+// close the document
+  new_window.document.close();  
+}
 
+// -->
+</script> 
 
-  print '
+EOF
+      ;
+
+    print $popupscript . '<br><pre>';
+
+    my $mod = SimpleModeration->new( { -List => $list } );
+    my $awaiting_msgs = $mod->awaiting_msgs();
+    print "List of Messages Still Awaiting Moderation:\n\n"
+      if $verbose;
+    foreach (@$awaiting_msgs) {
+        my $messagename = substr( $_, length($list) + 1 );
+        my $parser = $parser;
+        my $entity;
+        eval {
+            $entity =
+              $parser->parse_data(
+                $mod->get_msg( { -msg_id => $messagename } ) );
+        };
+        if ( !$entity ) {
+            croak "no entity found! die'ing!";
+        }
+        my $subject = $entity->head->get( 'Subject', 0 );
+        $subject =~ s/\n//g;
+        my $from = $entity->head->get( 'From', 0 );
+        $from =~ s/\n//g;
+        my $date = $entity->head->get( 'Date', 0 );
+        $date =~ s/\n//g;
+        my $messagehdr =
+          "From: " . $from . "; Subj: " . $subject . " ; Date: " . $date;
+
+#        my $messagetxt = quotemeta($entity->head->get('Body', 0));
+#        my $view_link = "<a href=\"#\" onMouseOver=\"open_new_window(\'" . $messagehdr . "<br>" . $messagetxt . "\')\">View</a>";
+
+        my $confirmation_link = "<a href="
+          . $Plugin_Config->{Plugin_URL}
+          . '?flavor=mod&list='
+          . $list
+          . '&process=confirm&msg_id='
+          . $messagename
+          . ">Accept</a>";
+
+        my $deny_link = "<a href="
+          . $Plugin_Config->{Plugin_URL}
+          . '?flavor=mod&list='
+          . $list
+          . '&process=deny&msg_id='
+          . $messagename
+          . ">Reject</a>";
+
+        print $confirmation_link . " or "
+          . $deny_link . " - "
+          . $messagehdr . "\n"
+          if $verbose;
+    }
+
+    print '</pre>';
+    print '<p><a href="'
+      . $Plugin_Config->{Plugin_URL}
+      . ' ">Awaiting Message Index...</a></p>';
+
+    print admin_template_footer(
+        -Form => 0,
+        -List => $list,
+    );
+}
+
+sub admin_cgi_manual_start {
+
+    print(
+        admin_template_header(
+            -Title      => "Manually Running Mailing...",
+            -List       => $list,
+            -Form       => 0,
+            -Root_Login => $root_login
+        )
+    );
+
+    $run_list        = $list;
+    $verbose         = 1;
+    $check_deletions = 1;
+
+    print '
      <p id="breadcrumbs">
-        <a href="'  .  $Plugin_Config->{Plugin_URL} . '">
-            ' . $Plugin_Config->{Plugin_Name} .'
-        </a> &#187; Manually Running Mailing</p>'; 
-        
-        
-        
-        print '<pre>';
-	start();
-	print '</pre>';
-	print '<p><a href="#" onclick="history.back();return false;">Back...</a></p>';
-	 
-	print admin_template_footer(-Form    => 0, 
-							-List    => $list,
-						    ); 
+        <a href="' . $Plugin_Config->{Plugin_URL} . '">
+            ' . $Plugin_Config->{Plugin_Name} . '
+        </a> &#187; Manually Running Mailing</p>';
+
+    print '<pre>';
+    start();
+    print '</pre>';
+    print
+      '<p><a href="#" onclick="history.back();return false;">Back...</a></p>';
+
+    print admin_template_footer(
+        -Form => 0,
+        -List => $list,
+    );
 
 }
 
+sub cgi_mod {
 
+	my ($admin_list, $root_login, $checksout) = check_list_security(    
+		-cgi_obj         => $q,
+        -Function        => 'dada_bridge',
+		-manual_override => 1, 
+    );
 
-
-sub cgi_mod { 
-
-    print(admin_template_header(
-							-Title      => "Moderation",
-		                    -List       => $list,
-		                    -Form       => 0,
-		                    -Root_Login => $root_login
-		                    ));
-	
-	
 	# $list is global, for some reason...
-	if($list ne $q->param('list')){ 
-	    print $q->header(); 
-	    print "<p>Gah. You're either logged into a different list, or not logged in at all!</p>"; 
+	# And I don't quite understand this. I think this is just so, if you're 
+	# logged in, you only work with the list you're logged into. 
+	# This gets annoying, since sometimes you just want to click the link to 
+	# moderate and go about your business. 
+	# For now, we'll just say, "Hey, you stink." 
+	if ( $list ne $q->param('list') ) {
+	#	print $q->header();
+	#	print
+	#	"<p>Gah. You're either logged into a different list, or not logged in at all!</p>";
+		$checksout = 0;
 	}
-										            
-    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-	my $li = $ls->get(); 
 	
-    my $mod = SimpleModeration->new({-List => $list}); 
-	my $msg_id = $q->param('msg_id');     
-
-    my $valid_msg = $mod->is_moderated_msg($msg_id); 
-
-    if($valid_msg == 1){ 
-        print "<p>Message appears to be valid and exists</p>"; 
-        
-    if($q->param('process') eq 'confirm'){ 
-        process(
-			{ 
-				-list  => $list, 
-				-ls    => $ls, 
-				-msg   => $mod->get_msg(
-								{
-									-msg_id => $msg_id
-								}
-							),
-			}
-		); 
-		
-        $mod->remove_msg(
-				{
-					-msg_id => $msg_id
-				}
-			); 
-       
- 			print "<p>Message has been sent!</p>";
-    } 
-    elsif($q->param('process') eq 'deny'){ 
-
-     
-        print "<p>Message has been denied and being removed!</p>"; 
-        if($li->{send_moderation_rejection_msg} == 1){ 
-            print "<p>Sending rejection message!</p>"; 
-            $mod->send_reject_msg({-msg_id => $msg_id, -parser => $parser, -subject => 'Fix Me'}); 
-
-        }
-        
-        #gotta do this, after, since removing it will not make the send rejection message thing to work. 
-        
-        $mod->remove_msg({-msg_id => $msg_id}); 
-           
-           
-    }
-    else{ 
-        print "<p>Invalid action - wazzah?</p>";
-    }
-    
-    
-    } else {
-        print "<p>Moderated message doesn't exist - have you already moderated it?</p>"; 
-    }
-    
-    
-    
-
-    print admin_template_footer(-Form    => 0, 
-                            -List    => $list,
-                            ); 
-
-}
-
-
-
-
-
-
-
-sub validate_list_email { 
+	# We'll use the list that's passed to us. 
+	$list = $q->param('list');
 	
-	my $email  = shift; 
-	   $email = DADA::App::Guts::strip($email); 
-	my $valid = 1; 
-	
-	my @lists = DADA::App::Guts::available_lists; 
-	foreach my $this_list(@lists){ 
-		
-		my $this_ls = DADA::MailingList::Settings->new({-list => $this_list}); 
-		my $this_li = $this_ls->get; 
-		
-		if($this_li->{list_owner_email} eq $email ){ 
-			$valid = 0; 
-		}
-		elsif($this_li->{admin_email} eq $email ){ 
-			$valid = 0; 
-		}
-		
-		next if $this_list eq $list; 
-		
-		if($this_li->{discussion_pop_email} eq $email ){ 
-			$valid = 0; 
-		}		
-	} 
-	
-	return $valid; 
-}
 
- 
-sub cgi_default { 
-
-	
-	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-	my $li = $ls->get(); 
-	my $list_email_validation = 1; 
-	$q->param('saved', 0); 
-	
-	if($q->param('process') eq 'edit') { 
-		
-		# Vaidation, basically. 
-		$list_email_validation = validate_list_email($q->param('discussion_pop_email')); 
-		
-		my $p = {}; 
-		   $p->{disable_discussion_sending}                 = $q->param('disable_discussion_sending')                 || 0; 
-		   $p->{group_list}                                 = $q->param('group_list')                                 || 0; 
-		   $p->{append_list_name_to_subject}                = $q->param('append_list_name_to_subject')                || 0; 
-		   $p->{no_append_list_name_to_subject_in_archives} = $q->param('no_append_list_name_to_subject_in_archives') || 0; 
-		   $p->{add_reply_to}                               = $q->param('add_reply_to')                               || 0; 
-	       $p->{discussion_pop_email}                       = $q->param('discussion_pop_email')                       || undef;
-		   $p->{discussion_pop_server}                      = $q->param('discussion_pop_server')                      || undef;
-		   $p->{discussion_pop_username}                    = $q->param('discussion_pop_username')                    || undef;
-		   $p->{discussion_pop_password}                    = $q->param('discussion_pop_password')                    || undef;
-		   $p->{discussion_pop_auth_mode}                   = $q->param('discussion_pop_auth_mode')                   || undef;
-		   $p->{append_discussion_lists_with}               = $q->param('append_discussion_lists_with')               || '';
-		   $p->{enable_moderation}                          = $q->param('enable_moderation')                          || 0; 
-		   $p->{send_moderation_rejection_msg}              = $q->param('send_moderation_rejection_msg')              || 0; 
-		   $p->{enable_authorized_sending}                  = $q->param('enable_authorized_sending')                  || 0; 
-		   $p->{send_msgs_to_list}                          = $q->param('send_msgs_to_list')                          || 0; 
-		   $p->{send_msg_copy_to}                           = $q->param('send_msg_copy_to')                           || 0; 
-		   $p->{send_msg_copy_address}                      = $q->param('send_msg_copy_address')                      || ''; 
-		   $p->{send_not_allowed_to_post_msg}               = $q->param('send_not_allowed_to_post_msg')               || 0; 
-		   $p->{send_invalid_msgs_to_owner}                 = $q->param('send_invalid_msgs_to_owner')                 || 0; 
-		   $p->{mail_discussion_message_to_poster}          = $q->param('mail_discussion_message_to_poster')          || 0; 
-		   $p->{strip_file_attachments}                     = $q->param('strip_file_attachments')                     || 0; 
-		   $p->{file_attachments_to_strip}                  = $q->param('file_attachments_to_strip')                  || '';
-		   $p->{ignore_spam_messages}                       = $q->param('ignore_spam_messages')                       || 0; 
-		   $p->{ignore_spam_messages_with_status_of}        = $q->param('ignore_spam_messages_with_status_of')        || 0; 
-		   $p->{set_to_header_to_list_address}              = $q->param('set_to_header_to_list_address')              || 0; 
-		   $p->{find_spam_assassin_score_by}                = $q->param('find_spam_assassin_score_by')                || undef; 
-		   $p->{open_discussion_list}                       = $q->param('open_discussion_list')                       || 0; 
-		   $p->{rewrite_anounce_from_header}                = $q->param('rewrite_anounce_from_header')                || 0; 
-		   $p->{discussion_pop_use_ssl}                     = $q->param('discussion_pop_use_ssl')                     || 0; 	
-	
-		   $p->{open_discussion_list}    =  ($Plugin_Config->{Allow_Open_Discussion_List} == 1) ? $p->{open_discussion_list}  : 0;
-		   $p->{discussion_pop_password} =  DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $p->{discussion_pop_password});			
-    
-		
-		if($list_email_validation == 1){ 
-		
-			$ls->save($p); 
-			
-			print $q->redirect(-uri => $Plugin_Config->{Plugin_URL} . '?saved=1'); 	
-			return; 
-		}
-		else { 
-			
-			# rewind
-			# DEV: Beats me why there's these two that need to be explicitly named, 
-			# but the others, aren't:
-			$p->{open_discussion_list}                       = $q->param('open_discussion_list')                       || 0; 
-			$p->{discussion_pop_password}                    = $q->param('discussion_pop_password')                    || undef;
-			
-			foreach(keys %$p){ 
-				$li->{$_} = $p->{$_};
-			}
-			
-			$q->param('saved', 0); 
-			
-		}
-	}
-
-	my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
-	my $auth_senders_count = $lh->num_subscribers(-Type => 'authorized_senders');
-	my $show_authorized_senders_table = 1; 
-	my $authorized_senders = []; 
-	
-	if($auth_senders_count > 100 || $auth_senders_count == 0){ 
-		$show_authorized_senders_table = 0; 
+	if($checksout){ 
+    	print(
+	        admin_template_header(
+	            -Title      => "Moderation",
+	            -List       => $list,
+	            -Root_Login => $root_login
+	        )
+	    );
 	}
 	else { 
-		$authorized_senders           = $lh->subscription_list(-Type => 'authorized_senders')
-	}
-    
-	print(admin_template_header(
-		                    -Title      => "Discussion List Options",
-		                    -List       => $list,
-		                    -Form       => 0,
-		                    -Root_Login => $root_login,
-		                    -li         => $li, 
-		                    
-		                    
-		                    ));
-		                    
 		
-	my $can_use_ssl = 0;
-     eval { require IO::Socket::SSL };
-    if(!$@){ 
+        print list_template(
+			-Part  => "header",
+            -Title => "Moderation",
+        );
+	}
+
+
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get();
+
+    my $mod    = SimpleModeration->new( { -List => $list } );
+    my $msg_id = $q->param('msg_id');
+
+    my $valid_msg = $mod->is_moderated_msg($msg_id);
+
+    if ( $valid_msg == 1 ) {
+        print "<p>Message appears to be valid and exists</p>";
+
+        if ( $q->param('process') eq 'confirm' ) {
+            process(
+                {
+                    -list => $list,
+                    -ls   => $ls,
+                    -msg  => $mod->get_msg( { -msg_id => $msg_id } ),
+                }
+            );
+
+            print "<p>Message has been sent!</p>";
+            if ( $li->{send_moderation_accepted_msg} == 1 ) {
+                print "<p>Sending acceptance message!</p>";
+                $mod->send_accept_msg(
+                    { -msg_id => $msg_id, -parser => $parser } );
+            }
+
+            $mod->remove_msg( { -msg_id => $msg_id } );
+
+            #print "<p>Message has been sent!</p>";
+        }
+        elsif ( $q->param('process') eq 'deny' ) {
+
+            print "<p>Message has been denied and being removed!</p>";
+            if ( $li->{send_moderation_rejection_msg} == 1 ) {
+                print "<p>Sending rejection message!</p>";
+                $mod->send_reject_msg(
+                    {
+                        -msg_id  => $msg_id,
+                        -parser  => $parser,
+                        -subject => 'Fix Me'
+                    }
+                );
+
+            }
+
+#gotta do this, after, since removing it will not make the send rejection message thing to work.
+
+            $mod->remove_msg( { -msg_id => $msg_id } );
+
+        }
+        else {
+            print "<p>Invalid action - wazzah?</p>";
+        }
+
+    }
+    else {
+        print
+"<p>Moderated message doesn't exist - most likely it was already moderated.</p>";
+    }
+
+	if($checksout){ 
+
+	    print '<p><a href="'
+	      . $Plugin_Config->{Plugin_URL}
+	      . '?flavor=awaiting_msgs">Awaiting Message Index...</a></p>';
+
+	    print admin_template_footer(
+	        -Form => 0,
+	        -List => $list,
+	    );
+	}
+	else { 
+		print(
+			list_template(
+				-Part      => "footer"
+			)
+		);
+	}
+
+}
+
+sub validate_list_email {
+
+    my $email = shift;
+    $email = DADA::App::Guts::strip($email);
+    my $valid = 1;
+
+    my @lists = DADA::App::Guts::available_lists;
+    foreach my $this_list (@lists) {
+
+        my $this_ls =
+          DADA::MailingList::Settings->new( { -list => $this_list } );
+        my $this_li = $this_ls->get;
+
+        if ( $this_li->{list_owner_email} eq $email ) {
+            $valid = 0;
+        }
+        elsif ( $this_li->{admin_email} eq $email ) {
+            $valid = 0;
+        }
+
+        next if $this_list eq $list;
+
+        if ( $this_li->{discussion_pop_email} eq $email ) {
+            $valid = 0;
+        }
+    }
+
+    return $valid;
+}
+
+sub cgi_default {
+
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get();
+    my $list_email_validation = 1;
+    $q->param( 'saved', 0 );
+
+    if ( $q->param('process') eq 'edit' ) {
+
+        # Vaidation, basically.
+        $list_email_validation =
+          validate_list_email( $q->param('discussion_pop_email') );
+
+        my $p = {};
+        $p->{disable_discussion_sending} =
+          $q->param('disable_discussion_sending') || 0;
+        $p->{group_list} = $q->param('group_list') || 0;
+        $p->{append_list_name_to_subject} =
+          $q->param('append_list_name_to_subject') || 0;
+        $p->{no_append_list_name_to_subject_in_archives} =
+          $q->param('no_append_list_name_to_subject_in_archives') || 0;
+        $p->{add_reply_to}         = $q->param('add_reply_to')         || 0;
+        $p->{discussion_pop_email} = $q->param('discussion_pop_email') || undef;
+        $p->{discussion_pop_server} = $q->param('discussion_pop_server')
+          || undef;
+        $p->{discussion_pop_username} = $q->param('discussion_pop_username')
+          || undef;
+        $p->{discussion_pop_password} = $q->param('discussion_pop_password')
+          || undef;
+        $p->{discussion_pop_auth_mode} = $q->param('discussion_pop_auth_mode')
+          || undef;
+        $p->{append_discussion_lists_with} =
+          $q->param('append_discussion_lists_with') || '';
+        $p->{enable_moderation} = $q->param('enable_moderation') || 0;
+        $p->{moderate_discussion_lists_with} =
+          $q->param('moderate_discussion_lists_with') || 'list_owner_email';
+        $p->{send_moderation_msg} = $q->param('send_moderation_msg') || 0;
+        $p->{send_moderation_accepted_msg} =
+          $q->param('send_moderation_accepted_msg') || 0;
+        $p->{send_moderation_rejection_msg} =
+          $q->param('send_moderation_rejection_msg') || 0;
+        $p->{enable_authorized_sending} = $q->param('enable_authorized_sending')
+          || 0;
+        $p->{authorized_sending_no_moderation} =
+          $q->param('authorized_sending_no_moderation') || 0;
+        $p->{subscriber_sending_no_moderation} =
+          $q->param('subscriber_sending_no_moderation') || 0;
+        $p->{send_msgs_to_list}     = $q->param('send_msgs_to_list')     || 0;
+        $p->{send_msg_copy_to}      = $q->param('send_msg_copy_to')      || 0;
+        $p->{send_msg_copy_address} = $q->param('send_msg_copy_address') || '';
+        $p->{send_not_allowed_to_post_msg} =
+          $q->param('send_not_allowed_to_post_msg') || 0;
+        $p->{send_invalid_msgs_to_owner} =
+          $q->param('send_invalid_msgs_to_owner') || 0;
+        $p->{mail_discussion_message_to_poster} =
+          $q->param('mail_discussion_message_to_poster') || 0;
+        $p->{strip_file_attachments} = $q->param('strip_file_attachments') || 0;
+        $p->{file_attachments_to_strip} = $q->param('file_attachments_to_strip')
+          || '';
+        $p->{ignore_spam_messages} = $q->param('ignore_spam_messages') || 0;
+        $p->{ignore_spam_messages_with_status_of} =
+          $q->param('ignore_spam_messages_with_status_of') || 0;
+        $p->{set_to_header_to_list_address} =
+          $q->param('set_to_header_to_list_address') || 0;
+        $p->{find_spam_assassin_score_by} =
+          $q->param('find_spam_assassin_score_by') || undef;
+        $p->{open_discussion_list} = $q->param('open_discussion_list') || 0;
+        $p->{rewrite_anounce_from_header} =
+          $q->param('rewrite_anounce_from_header') || 0;
+        $p->{discussion_pop_use_ssl} = $q->param('discussion_pop_use_ssl') || 0;
+
+        $p->{open_discussion_list} =
+          ( $Plugin_Config->{Allow_Open_Discussion_List} == 1 )
+          ? $p->{open_discussion_list}
+          : 0;
+        $p->{discussion_pop_password} =
+          DADA::Security::Password::cipher_encrypt( $li->{cipher_key},
+            $p->{discussion_pop_password} );
+
+        if ( $list_email_validation == 1 ) {
+
+            $ls->save($p);
+
+            print $q->redirect(
+                -uri => $Plugin_Config->{Plugin_URL} . '?saved=1' );
+            return;
+        }
+        else {
+
+         # rewind
+         # DEV: Beats me why there's these two that need to be explicitly named,
+         # but the others, aren't:
+            $p->{open_discussion_list} = $q->param('open_discussion_list') || 0;
+            $p->{discussion_pop_password} = $q->param('discussion_pop_password')
+              || undef;
+
+            foreach ( keys %$p ) {
+                $li->{$_} = $p->{$_};
+            }
+
+            $q->param( 'saved', 0 );
+
+        }
+    }
+
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+    my $auth_senders_count =
+      $lh->num_subscribers( -Type => 'authorized_senders' );
+    my $show_authorized_senders_table = 1;
+    my $authorized_senders            = [];
+
+    if ( $auth_senders_count > 100 || $auth_senders_count == 0 ) {
+        $show_authorized_senders_table = 0;
+    }
+    else {
+        $authorized_senders =
+          $lh->subscription_list( -Type => 'authorized_senders' );
+    }
+
+    print(
+        admin_template_header(
+            -Title      => "Discussion List (3.1m) Options",
+            -List       => $list,
+            -Form       => 0,
+            -Root_Login => $root_login,
+            -li         => $li,
+
+        )
+    );
+
+    my $can_use_ssl = 0;
+    eval { require IO::Socket::SSL };
+    if ( !$@ ) {
         $can_use_ssl = 1;
     }
-    
-	my $discussion_pop_auth_mode_popup =  $q->popup_menu(
-										      		-name     => 'discussion_pop_auth_mode', 
-                                                    -default  => $li->{discussion_pop_auth_mode}, 
-                                                   '-values'  => [qw(BEST PASS APOP CRAM-MD5)],
-                                                    -labels   => {BEST => 'Automatic'},
-                                           );
-	my $spam_level_popup_menu = $q->popup_menu(
-	'-values' => [1..50],
-	-default => $li->{ignore_spam_messages_with_status_of},
-	-name    => 'ignore_spam_messages_with_status_of',
-	); 
 
-	my $curl_location = `which curl`; 
-	   $curl_location = strip(make_safer($curl_location));
-	
-	my $tmpl = default_cgi_template(); 	
-	
-	require DADA::Template::Widgets;                 
-	print   DADA::Template::Widgets::screen(
-		   		{ 
-					-expr => 1, 
-					-data => \$tmpl,
-					-vars => { 
-					
-					authorized_senders                     => $authorized_senders, 
-					show_authorized_senders_table           => $show_authorized_senders_table, 
-					
-				     list_email_validation             => $list_email_validation, 
-					 #GOOD_JOB_MESSAGE                  => $DADA::Config::GOOD_JOB_MESSAGE, 
-					 list     				           => $list,
-					 list_name                         => $li->{list_name}, 
-					 disable_discussion_sending        => $li->{disable_discussion_sending}, 
-					 group_list                        => $li->{group_list},
-					 append_list_name_to_subject       => $li->{append_list_name_to_subject},
-					 add_reply_to                      => $li->{add_reply_to},
-					 discussion_pop_email              => $li->{discussion_pop_email},
-					 discussion_pop_server             => $li->{discussion_pop_server},
-					 discussion_pop_username           => $li->{discussion_pop_username},
-					 discussion_pop_password           => DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $li->{discussion_pop_password}),
-					
-					discussion_pop_auth_mode           => $li->{discussion_pop_auth_mode}, 
-					discussion_pop_auth_mode_popup     => $discussion_pop_auth_mode_popup, 
-					discussion_pop_use_ssl             => $li->{discussion_pop_use_ssl}, 
-					can_use_ssl                        => $can_use_ssl,
-					
-					 append_discussion_lists_with      => $li->{append_discussion_lists_with},
-					 
-					 no_append_list_name_to_subject_in_archives => $li->{no_append_list_name_to_subject_in_archives}, 
-					 
-					 list_owner_email                  => $li->{list_owner_email}, 
-					 admin_email                       => $li->{admin_email}, 	
-					 enable_moderation                 => $li->{enable_moderation}, 
-					 send_moderation_rejection_msg     => $li->{send_moderation_rejection_msg}, 
-					 
-					 enable_authorized_sending         => $li->{enable_authorized_sending}, 
-					 
-					 send_msgs_to_list                 => $li->{send_msgs_to_list},  
-					 send_msg_copy_to                  => $li->{send_msg_copy_to}, 
-					 send_msg_copy_address             => $li->{send_msg_copy_address}, 
-					 send_not_allowed_to_post_msg      => $li->{send_not_allowed_to_post_msg}, 
-					 send_invalid_msgs_to_owner        => $li->{send_invalid_msgs_to_owner},
-					 mail_discussion_message_to_poster => $li->{mail_discussion_message_to_poster}, 
-					 PROGRAM_URL                       => $DADA::Config::PROGRAM_URL, 
-					 archive_messages                  => $li->{archive_messages}, 
-					 
-					 strip_file_attachments            => $li->{strip_file_attachments}, 
-					 file_attachments_to_strip         => $li->{file_attachments_to_strip}, 
-					 
-					 can_use_spam_assassin             => &can_use_spam_assassin(), 
-					 spam_level_popup_menu             => $spam_level_popup_menu, 
-					 
-					 ignore_spam_messages              => $li->{ignore_spam_messages}, 
-					 ignore_spam_messages_with_status_of => $li->{ignore_spam_messages_with_status_of}, 
-					 
-					 find_spam_assassin_score_by_calling_spamassassin_directly         => ($li->{find_spam_assassin_score_by} eq 'calling_spamassassin_directly') ? 1 : 0, 
-					 find_spam_assassin_score_by_looking_for_embedded_headers          => ($li->{find_spam_assassin_score_by} eq 'looking_for_embedded_headers')  ? 1 : 0,       
-					 
-					 set_to_header_to_list_address       => $li->{set_to_header_to_list_address}, 
-					 
-					 open_discussion_list                => ($Plugin_Config->{Allow_Open_Discussion_List} == 1) ? $li->{open_discussion_list} : 0, 
-					 rewrite_anounce_from_header         => $li->{rewrite_anounce_from_header}, 
-					 
-					 Plugin_URL                          => $Plugin_Config->{Plugin_URL}, 
-					 Plugin_Name                         => $Plugin_Config->{Plugin_Name},
-					 Allow_Open_Discussion_List          => $Plugin_Config->{Allow_Open_Discussion_List}, 
-					 Allow_Manual_Run                    => $Plugin_Config->{Allow_Manual_Run}, 
-					 Plugin_URL                          => $Plugin_Config->{Plugin_URL}, 
-					 Manual_Run_Passcode                 => $Plugin_Config->{Manual_Run_Passcode},
-					 
-					 S_PROGRAM_URL                       => $DADA::Config::S_PROGRAM_URL, 
-						curl_location                      => $curl_location, 
-					 saved                             => $q->param('saved'),
-				
-					
-					}
-				}
-					 
-		);
-		
-	print admin_template_footer(
-			-Form => 0, 
-			-List => $list,
-			-li   => $li, 
-		  ); 
-}
+    my $discussion_pop_auth_mode_popup = $q->popup_menu(
+        -name     => 'discussion_pop_auth_mode',
+        -default  => $li->{discussion_pop_auth_mode},
+        '-values' => [qw(BEST PASS APOP CRAM-MD5)],
+        -labels   => { BEST => 'Automatic' },
+    );
+    my $spam_level_popup_menu = $q->popup_menu(
+        '-values' => [ 1 .. 50 ],
+        -default  => $li->{ignore_spam_messages_with_status_of},
+        -name     => 'ignore_spam_messages_with_status_of',
+    );
 
+    my $curl_location = `which curl`;
+    $curl_location = strip( make_safer($curl_location) );
 
+    my $tmpl = default_cgi_template();
 
+    require DADA::Template::Widgets;
+    print DADA::Template::Widgets::screen(
+        {
+            -expr => 1,
+            -data => \$tmpl,
+            -vars => {
 
-sub cl_main { 
-	
-	init(); 
+                authorized_senders            => $authorized_senders,
+                show_authorized_senders_table => $show_authorized_senders_table,
 
-	if($test){ 
+                list_email_validation => $list_email_validation,
 
-		$verbose = 1; 
-		
-		if($test eq 'pop3'){ 
+          #GOOD_JOB_MESSAGE                  => $DADA::Config::GOOD_JOB_MESSAGE,
+                list                       => $list,
+                list_name                  => $li->{list_name},
+                disable_discussion_sending => $li->{disable_discussion_sending},
+                group_list                 => $li->{group_list},
+                append_list_name_to_subject =>
+                  $li->{append_list_name_to_subject},
+                add_reply_to            => $li->{add_reply_to},
+                discussion_pop_email    => $li->{discussion_pop_email},
+                discussion_pop_server   => $li->{discussion_pop_server},
+                discussion_pop_username => $li->{discussion_pop_username},
+                discussion_pop_password =>
+                  DADA::Security::Password::cipher_decrypt(
+                    $li->{cipher_key}, $li->{discussion_pop_password}
+                  ),
 
-			test_pop3(); 	
+                discussion_pop_auth_mode => $li->{discussion_pop_auth_mode},
+                discussion_pop_auth_mode_popup =>
+                  $discussion_pop_auth_mode_popup,
+                discussion_pop_use_ssl => $li->{discussion_pop_use_ssl},
+                can_use_ssl            => $can_use_ssl,
 
-		}else{ 
+                append_discussion_lists_with =>
+                  $li->{append_discussion_lists_with},
 
-			print "I don't know what you want to test!\n\n"; 
-			help(); 
+                no_append_list_name_to_subject_in_archives =>
+                  $li->{no_append_list_name_to_subject_in_archives},
 
-		}
+                list_owner_email               => $li->{list_owner_email},
+                admin_email                    => $li->{admin_email},
+                enable_moderation              => $li->{enable_moderation},
+                moderate_discussion_lists_with =>
+                  $li->{moderate_discussion_lists_with},
+                send_moderation_msg          => $li->{send_moderation_msg},
+                send_moderation_accepted_msg =>
+                  $li->{send_moderation_accepted_msg},
+                send_moderation_rejection_msg =>
+                  $li->{send_moderation_rejection_msg},
 
-	}elsif($help){ 
+                enable_authorized_sending => $li->{enable_authorized_sending},
+                authorized_sending_no_moderation =>
+                  $li->{authorized_sending_no_moderation},
+                subscriber_sending_no_moderation =>
+                  $li->{subscriber_sending_no_moderation},
 
-		help();		
+                send_msgs_to_list            => $li->{send_msgs_to_list},
+                send_msg_copy_to             => $li->{send_msg_copy_to},
+                send_msg_copy_address        => $li->{send_msg_copy_address},
+                send_not_allowed_to_post_msg =>
+                  $li->{send_not_allowed_to_post_msg},
+                send_invalid_msgs_to_owner => $li->{send_invalid_msgs_to_owner},
+                mail_discussion_message_to_poster =>
+                  $li->{mail_discussion_message_to_poster},
+                PROGRAM_URL      => $DADA::Config::PROGRAM_URL,
+                archive_messages => $li->{archive_messages},
 
-	}else{ 
+                strip_file_attachments    => $li->{strip_file_attachments},
+                file_attachments_to_strip => $li->{file_attachments_to_strip},
 
-		start(); 
-		
-		
-		require DADA::Mail::MailOut; 
-		
-		if($list){ 
-		
-		    DADA::Mail::MailOut::monitor_mailout({-verbose => 0, -list => $list});
-        } 
-        else { 
-        
-            DADA::Mail::MailOut::monitor_mailout({-verbose => 0});
-        
+                can_use_spam_assassin => &can_use_spam_assassin(),
+                spam_level_popup_menu => $spam_level_popup_menu,
+
+                ignore_spam_messages => $li->{ignore_spam_messages},
+                ignore_spam_messages_with_status_of =>
+                  $li->{ignore_spam_messages_with_status_of},
+
+                find_spam_assassin_score_by_calling_spamassassin_directly => (
+                    $li->{find_spam_assassin_score_by} eq
+                      'calling_spamassassin_directly'
+                  ) ? 1 : 0,
+                find_spam_assassin_score_by_looking_for_embedded_headers => (
+                    $li->{find_spam_assassin_score_by} eq
+                      'looking_for_embedded_headers'
+                  ) ? 1 : 0,
+
+                set_to_header_to_list_address =>
+                  $li->{set_to_header_to_list_address},
+
+                open_discussion_list =>
+                  ( $Plugin_Config->{Allow_Open_Discussion_List} == 1 )
+                ? $li->{open_discussion_list}
+                : 0,
+                rewrite_anounce_from_header =>
+                  $li->{rewrite_anounce_from_header},
+
+                Plugin_URL                 => $Plugin_Config->{Plugin_URL},
+                Plugin_Name                => $Plugin_Config->{Plugin_Name},
+                Allow_Open_Discussion_List =>
+                  $Plugin_Config->{Allow_Open_Discussion_List},
+                Allow_Manual_Run    => $Plugin_Config->{Allow_Manual_Run},
+                Plugin_URL          => $Plugin_Config->{Plugin_URL},
+                Manual_Run_Passcode => $Plugin_Config->{Manual_Run_Passcode},
+
+                S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL,
+                curl_location => $curl_location,
+                saved         => $q->param('saved'),
+
+            }
         }
-	}
-	
+
+    );
+
+    print admin_template_footer(
+        -Form => 0,
+        -List => $list,
+        -li   => $li,
+    );
 }
 
+sub cl_main {
 
+    init();
 
+    if ($test) {
 
-sub init {};
+        $verbose = 1;
 
+        if ( $test eq 'pop3' ) {
 
+            test_pop3();
 
+        }
+        else {
 
-sub start { 
+            print "I don't know what you want to test!\n\n";
+            help();
 
-	my @lists; 
-	
-	if(!$run_list){ 
-		print "Running all lists - \nTo test an individual list, pass the list shortname in the '--list' parameter...\n\n"
-			if $verbose; 
-		@lists = available_lists(-dbi_handle => $dbi_handle);	
-	}else{ 
-		$lists[0] = $run_list; 
-	}
+        }
 
+    }
+    elsif ($help) {
 
-	require DADA::Mail::MailOut; 
-	my @mailouts = DADA::Mail::MailOut::current_mailouts(); 
-	# DEV: This is wrong, as the number of mailouts will be different from the
-	# number of *active* mailouts. Hmm...
-	
-	# KLUDGE!
-	if($Plugin_Config->{Room_For_One_More_Check} == 1){ 
-	#/KLUDGE!	
- 	   if(($#mailouts + 1) >= $DADA::Config::MAILOUT_AT_ONCE_LIMIT){ 
-			print "There are currently, " . 
-			      ($#mailouts + 1)         .
-			      " mass mailout(s) running or queued. Going to wait until that number falls below, " . 
-			      $DADA::Config::MAILOUT_AT_ONCE_LIMIT . " mass mailout(s) \n"
-					if $verbose;
-			return; 
-		}
-		else { 
-			print "There are currently, " . 
-	      ($#mailouts + 1)         .
-	      " mass mailout(s) running or queued. That's below our limit 
-	        ($DADA::Config::MAILOUT_AT_ONCE_LIMIT), so we can check on awaiting 
-	        messages:\n\n"
-				if $verbose;
-		}
-	#KLUDGE!
-	}
-	else { 
-		print "Skipping, 'Room for one more?' check\n"
-			if $verbose; 
-	}
-	#/KLUDGE!
+        help();
 
-	my $messages_viewed = 0; 
-	QUEUE: foreach my $list (@lists){ 
-	
-					
-		if ($messages_viewed >= $Plugin_Config->{MessagesAtOnce}){ 
-			last; 
-		}
-			
-					
-		print "\n" . '-' x 72 . "\nList: " . $list . "\n"
-			if $verbose;
-		
-		my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-		my $li = $ls->get(); 
-		
-		
-		
-		if($li->{discussion_pop_email} eq $li->{list_owner_email}){ 
-			print "\t\t***Warning!*** Misconfiguration of plugin! The list owner email cannot be the same address as the list email address!\n\t\tSkipping $list...\n"
-				if $verbose; 
-			next; 
-		}
-		
-		
-		next if ! valid_login_information(
-				{
-					-list      => $list, 
-					-list_info => $li
-				}
-			);
-		
-		
-		my $lock_file_fh = undef; 
-		if($Plugin_Config->{Enable_POP3_File_Locking} == 1){
-			$lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
-				{
-					name => 'dada_bridge.lock'
-				}
-			);
-		}
-		
-		my $pop = pop3_login(
-							$list, 
-							$li, 
-							$li->{discussion_pop_server}, 
-							$li->{discussion_pop_username}, 
-							$li->{discussion_pop_password},
-							$li->{discussion_pop_auth_mode}, 
-							$li->{discussion_pop_use_ssl},			
-		); 
-		
-		if(defined($pop)){  
+    }
+    else {
 
-			my $msg_count = $pop->Count;
-			my $msgnums = {};
-			# This is weird - do we get everything out of order, here?
-			for ( my $cntr = 1; $cntr <= $msg_count; $cntr++ ) {
-			    my ($msg_num, $msg_size) = split('\s+', $pop->List($cntr)) ;
-			    $msgnums->{$msg_num} = $msg_size;
-			}
-			
-			my $local_msg_viewed = 0; 
-			
-			# Hmm, we do, but then we sort them numerically here: 
-			foreach my $msgnum (sort { $a <=> $b } keys %$msgnums) {
-			
-			    $local_msg_viewed++;
-			    
-			    if($msgnums->{$msgnum} > $Plugin_Config->{Max_Size_Of_Any_Message}){ 
-			    
-			        print "\tWarning! Message size ( " . $msgnums->{msgnum} . " ) is larger than the maximum size allowed ( " . $Plugin_Config->{Max_Size_Of_Any_Message} . ")"
-			            if $verbose; 
-			        warn  "dada_bridge.pl $App_Version: Warning! Message size ( " . $msgnums->{msgnum} . " ) is larger than the maximum size allowed ( " . $Plugin_Config->{Max_Size_Of_Any_Message} . ")";
-			    
-			    }
-			    else { 
-			    
-                    if ($li->{disable_discussion_sending} != 1){     
-                    
-         
+        start();
+
+        require DADA::Mail::MailOut;
+
+        if ($list) {
+
+            DADA::Mail::MailOut::monitor_mailout(
+                { -verbose => 0, -list => $list } );
+        }
+        else {
+
+            DADA::Mail::MailOut::monitor_mailout( { -verbose => 0 } );
+
+        }
+    }
+
+}
+
+sub init { }
+
+sub start {
+
+    my @lists;
+
+    if ( !$run_list ) {
+        print
+"Running all lists - \nTo test an individual list, pass the list shortname in the '--list' parameter...\n\n"
+          if $verbose;
+        @lists = available_lists( -dbi_handle => $dbi_handle );
+    }
+    else {
+        $lists[0] = $run_list;
+    }
+
+    require DADA::Mail::MailOut;
+    my @mailouts = DADA::Mail::MailOut::current_mailouts();
+
+    # DEV: This is wrong, as the number of mailouts will be different from the
+    # number of *active* mailouts. Hmm...
+
+    # KLUDGE!
+    if ( $Plugin_Config->{Room_For_One_More_Check} == 1 ) {
+
+        #/KLUDGE!
+        if ( ( $#mailouts + 1 ) >= $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
+            print "There are currently, "
+              . ( $#mailouts + 1 )
+              . " mass mailout(s) running or queued. Going to wait until that number falls below, "
+              . $DADA::Config::MAILOUT_AT_ONCE_LIMIT
+              . " mass mailout(s) \n"
+              if $verbose;
+            return;
+        }
+        else {
+            print "Currently, "
+              . ( $#mailouts + 1 )
+              . " mass mailout(s) running or queued. \n\n"
+              . "That's below our limit ($DADA::Config::MAILOUT_AT_ONCE_LIMIT). \n"
+              . "Checking awaiting  messages:\n\n"
+              if $verbose;
+        }
+
+        #KLUDGE!
+    }
+    else {
+        print "Skipping, 'Room for one more?' check\n"
+          if $verbose;
+    }
+
+    #/KLUDGE!
+
+    my $messages_viewed = 0;
+  QUEUE: foreach my $list (@lists) {
+
+        if ( $messages_viewed >= $Plugin_Config->{MessagesAtOnce} ) {
+            last;
+        }
+
+        print "\n" . '-' x 72 . "\nList: " . $list . "\n"
+          if $verbose;
+
+        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+        my $li = $ls->get();
+
+        if ( $li->{discussion_pop_email} eq $li->{list_owner_email} ) {
+            print
+"\t\t***Warning!*** Misconfiguration of plugin! The list owner email cannot be the same address as the list email address!\n\t\tSkipping $list...\n"
+              if $verbose;
+            next;
+        }
+
+        next
+          if !valid_login_information(
+            {
+                -list      => $list,
+                -list_info => $li
+            }
+          );
+
+        my $lock_file_fh = undef;
+        if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
+            $lock_file_fh =
+              DADA::App::POP3Tools::_lock_pop3_check(
+                { name => 'dada_bridge.lock' } );
+        }
+
+        my $pop = pop3_login(
+            $list,                          $li,
+            $li->{discussion_pop_server},   $li->{discussion_pop_username},
+            $li->{discussion_pop_password}, $li->{discussion_pop_auth_mode},
+            $li->{discussion_pop_use_ssl},
+        );
+
+        if ( defined($pop) ) {
+
+            my $msg_count = $pop->Count;
+            my $msgnums   = {};
+
+            # This is weird - do we get everything out of order, here?
+            for ( my $cntr = 1 ; $cntr <= $msg_count ; $cntr++ ) {
+                my ( $msg_num, $msg_size ) = split ( '\s+', $pop->List($cntr) );
+                $msgnums->{$msg_num} = $msg_size;
+            }
+
+            my $local_msg_viewed = 0;
+
+            # Hmm, we do, but then we sort them numerically here:
+            foreach my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
+
+                $local_msg_viewed++;
+                print "\tMessage Size: " . $msgnums->{$msgnum} . "\n"
+                  if $verbose;
+                if ( $msgnums->{$msgnum} >
+                    $Plugin_Config->{Max_Size_Of_Any_Message} )
+                {
+
+                    print "\t\tWarning! Message size ( "
+                      . $msgnums->{$msgnum}
+                      . " ) is larger than the maximum size allowed ( "
+                      . $Plugin_Config->{Max_Size_Of_Any_Message} . " )\n"
+                      if $verbose;
+                    warn "dada_bridge.pl $App_Version: Warning! Message size ( "
+                      . $msgnums->{$msgnum}
+                      . " ) is larger than the maximum size allowed ( "
+                      . $Plugin_Config->{Max_Size_Of_Any_Message} . ")";
+
+                }
+                else {
+
+                    if ( $li->{disable_discussion_sending} != 1 ) {
 
                         my $full_msg = $pop->Retrieve($msgnum);
+                        push (
+                            @{ $checksums->{$list} },
+                            create_checksum( \$full_msg )
+                        );
 
-                        push(@{$checksums->{$list}}, create_checksum(\$full_msg));  
-                        
-                        
-                        eval { 
-                        
-                            # The below line is just for testing purposes...
-                            # die "aaaaaaarrrrgggghhhhh!!!"; 
-	
-                            my ($status, $errors) = validate_msg($list, $full_msg, $li);
-                            if($status){  
-                                
-                                process(
-									{ 
-										-list => $list, 
-										-ls   => $ls, 
-										-msg  => $full_msg,
-									}
-								); 
-                                
-                            }else{  
-                            
-                                print "\tMessage did not pass verification - handling issues...\n"
-                                    if $verbose; 
-                                    
-                                handle_errors($list, $errors, $full_msg, $li);  
-                            
+                        if ( $msgnums->{$msgnum} >
+                            $Plugin_Config->{Soft_Max_Size_Of_Any_Message} )
+                        {
+
+                            print "\t\tWarning! Message size ( "
+                              . $msgnums->{$msgnum}
+                              . " ) is larger than the soft maximum size allowed ( "
+                              . $Plugin_Config->{Soft_Max_Size_Of_Any_Message}
+                              . " )\n"
+                              if $verbose;
+                            warn
+"dada_bridge.pl $App_Version: Warning! Message size ( "
+                              . $msgnums->{$msgnum}
+                              . " ) is larger than the soft maximum size allowed ( "
+                              . $Plugin_Config->{Soft_Max_Size_Of_Any_Message}
+                              . ")";
+
+                            send_msg_too_big( $list, $li, \$full_msg,
+                                $msgnums->{$msgnum} );
+
+                        }
+                        else {
+
+                            eval {
+
+                                # The below line is just for testing purposes...
+                                # die "aaaaaaarrrrgggghhhhh!!!";
+
+                                my ( $status, $errors ) =
+                                  validate_msg( $list, \$full_msg, $li );
+                                if ($status) {
+
+                                    process(
+                                        {
+                                            -list => $list,
+                                            -ls   => $ls,
+                                            -msg  => \$full_msg,
+                                        }
+                                    );
+
+                                }
+                                else {
+
+                                    print
+"\tMessage did not pass verification - handling issues...\n"
+                                      if $verbose;
+
+                                    handle_errors( $list, $errors, $full_msg,
+                                        $li );
+
+                                }
+
+                                append_message_to_file( $full_msg, $list );
+
+                            };
+
+                            if ($@) {
+
+                                warn
+"dada_bridge.pl - irrecoverable error processing message. Skipping message (sorry!): $@";
+                                print
+"dada_bridge.pl - irrecoverable error processing message. Skipping message (sorry!): $@"
+                                  if $verbose;
+
                             }
 
-							append_message_to_file($full_msg, $list); 
-                            
-                         };
-                         
-                         if($@){ 
-                         
-                            warn  "dada_bridge.pl - irrecoverable error processing message. Skipping message (sorry!): $@"; 
-                            print "dada_bridge.pl - irrecoverable error processing message. Skipping message (sorry!): $@"
-                                if $verbose; 
-                                
-                         }
-                        
-                        
-                    }else{  
-                        print "\tThis sending method has been disabled for $list, deleting message... \n" 
-                            if $verbose;
+                        }
+                    }
+                    else {
+                        print
+"\tThis sending method has been disabled for $list, deleting message... \n"
+                          if $verbose;
                     }
                 }
-                
-				$messages_viewed++; 
-				
-				if ($messages_viewed >= $Plugin_Config->{MessagesAtOnce}){ 
-						print "\n\nThe limit has been reached of the amount of messages to be looked at for this execution\n\n"
-							if $verbose;
-						last; 
-				}
-					
-					
-			}
 
+                $messages_viewed++;
 
-			my $delete_msg_count = 0; 
-            
-			foreach my $msgnum_d (sort { $a <=> $b } keys %$msgnums) {  
-				print "\tremoving message from server...\n"
-					 if $verbose;
-				$pop->Delete($msgnum_d);  
-				$delete_msg_count++; 
-				
-				
-				last
-					if $delete_msg_count >= $local_msg_viewed;
-				
-			} 
-			print "\tdisconnecting from POP3 server\n" 
-				if $verbose;
-			
-			$pop->Close();
-			
-			if($Plugin_Config->{Enable_POP3_File_Locking} == 1){	
-				DADA::App::POP3Tools::_unlock_pop3_check(
-					{
-						name => 'dada_bridge.lock',
-						fh   => $lock_file_fh,
-					}
-				);
-			}
-			
-			if($check_deletions){
-				if(keys %$msgnums){ 	
-					message_was_deleted_check($list, $li); 
-				}else{ 
-					print "\tNo messages received, skipping deletion check.\n" 
-						if $verbose;
-				}	
-			}
-		}else{ 
-			print "\tPOP3 connection failed!\n" 
-				if $verbose; 
-		}
-	}	
+                if ( $messages_viewed >= $Plugin_Config->{MessagesAtOnce} ) {
+                    print
+"\n\nThe limit has been reached of the amount of messages to be looked at for this execution\n\n"
+                      if $verbose;
+                    last;
+                }
+
+            }
+
+            my $delete_msg_count = 0;
+
+            foreach my $msgnum_d ( sort { $a <=> $b } keys %$msgnums ) {
+                print "\tRemoving message from server...\n"
+                  if $verbose;
+                $pop->Delete($msgnum_d);
+                $delete_msg_count++;
+
+                last
+                  if $delete_msg_count >= $local_msg_viewed;
+
+            }
+            print "\tDisconnecting from POP3 server\n"
+              if $verbose;
+
+            $pop->Close();
+
+            if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
+                DADA::App::POP3Tools::_unlock_pop3_check(
+                    {
+                        name => 'dada_bridge.lock',
+                        fh   => $lock_file_fh,
+                    }
+                );
+            }
+
+            if ($check_deletions) {
+                if ( keys %$msgnums ) {
+                    message_was_deleted_check( $list, $li );
+                }
+                else {
+                    print "\tNo messages received, skipping deletion check.\n"
+                      if $verbose;
+                }
+            }
+        }
+        else {
+            print "\tPOP3 connection failed!\n"
+              if $verbose;
+        }
+    }
 }
 
+sub message_was_deleted_check {
 
+    # DEV: Nice for testing...
+    #return;
 
+    print "\n\tWaiting 5 seconds before removal check...\n"
+      if $verbose;
 
-sub message_was_deleted_check() { 
-	
-	# DEV: Nice for testing...
-	#return; 
-	 
-	print "\n\tWaiting 5 seconds before removal check...\n"
-		if $verbose; 
-		
-	sleep(5); 
-	
-	my $list = shift;
-	my $li   = shift; 
-	
+    sleep(5);
 
-    my $lock_file_fh = undef; 
-	if($Plugin_Config->{Enable_POP3_File_Locking} == 1){	
-		$lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
-							{
-								name => 'dada_bridge.lock',
-							}
-						);
-	}
-	
-	my $pop = pop3_login(
-					$list, 
-					$li, 
-					$li->{discussion_pop_server},  
-					$li->{discussion_pop_username}, 
-					$li->{discussion_pop_password},
-					$li->{discussion_pop_auth_mode}, 
-					$li->{discussion_pop_use_ssl},
-			);
+    my $list = shift;
+    my $li   = shift;
 
-	if($pop){  
+    my $lock_file_fh = undef;
+    if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
+        $lock_file_fh =
+          DADA::App::POP3Tools::_lock_pop3_check(
+            { name => 'dada_bridge.lock', } );
+    }
 
-		my $msg_count = $pop->Count;
-		my $msgnums = {};
-		
-		for ( my $cntr = 1; $cntr <= $msg_count; $cntr++ ) {
-		    my ($msg_num, $msg_size) = split('\s+', $pop->List($cntr));
-		    $msgnums->{$msg_num} = $msg_size;
-		}
-		
-		foreach my $msgnum (sort { $a <=> $b } keys %$msgnums) {
-			my $msg = $pop->Retrieve($msgnum);
-			
-			my $cs = create_checksum(\$msg); 
-			
-			print "\t\tcs:             $cs\n" 
-				if $verbose; 
-			
+    my $pop = pop3_login(
+        $list,                          $li,
+        $li->{discussion_pop_server},   $li->{discussion_pop_username},
+        $li->{discussion_pop_password}, $li->{discussion_pop_auth_mode},
+        $li->{discussion_pop_use_ssl},
+    );
+
+    if ($pop) {
+
+        my $msg_count = $pop->Count;
+        my $msgnums   = {};
+
+        for ( my $cntr = 1 ; $cntr <= $msg_count ; $cntr++ ) {
+            my ( $msg_num, $msg_size ) = split ( '\s+', $pop->List($cntr) );
+            $msgnums->{$msg_num} = $msg_size;
+        }
+
+        foreach my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
+            my $msg = $pop->Retrieve($msgnum);
+
+            my $cs = create_checksum( \$msg );
+
+            print "\t\tcs:             $cs\n"
+              if $verbose;
+
             my @cs;
-			if(defined(@{$checksums->{$list}})){ 
-			    @cs = @{$checksums->{$list}};
-			}
+            if ( defined( @{ $checksums->{$list} } ) ) {
+                @cs = @{ $checksums->{$list} };
+            }
 
-			foreach my $s_cs(@cs){ 
-			
-				print "\t\tsaved checksum: $s_cs\n"
-						if $verbose; 
-						
-				if($cs eq $s_cs){ 
-					print "\t\tMessage was NOT deleted from POP server! Will attempt to do that now...\n"
-						if $verbose; 
-					$pop->Delete($msgnum);
-				} else { 
-					print "\t\tMessage checksum does not match saved checksum, keeping message for later delivery...\n"
-						if $verbose; 							 
-				}
-			}
-		}	
-		$pop->Close();
-		
-		
-		
-	}else{ 
-		print "POP3 login failed.\n";
-	}
-	
-	
-	if($Plugin_Config->{Enable_POP3_File_Locking} == 1){	
-		DADA::App::POP3Tools::_unlock_pop3_check(
-			{
-				name => 'dada_bridge.lock',
-				fh   => $lock_file_fh, 
-			}
-		);
-	}
-	
-	
+            foreach my $s_cs (@cs) {
+
+                print "\t\tsaved checksum: $s_cs\n"
+                  if $verbose;
+
+                if ( $cs eq $s_cs ) {
+                    print
+"\t\tMessage was NOT deleted from POP server! Will attempt to do that now...\n"
+                      if $verbose;
+                    $pop->Delete($msgnum);
+                }
+                else {
+                    print
+"\t\tMessage checksum does not match saved checksum, keeping message for later delivery...\n"
+                      if $verbose;
+                }
+            }
+        }
+        $pop->Close();
+
+    }
+    else {
+        print "POP3 login failed.\n";
+    }
+
+    if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
+        DADA::App::POP3Tools::_unlock_pop3_check(
+            {
+                name => 'dada_bridge.lock',
+                fh   => $lock_file_fh,
+            }
+        );
+    }
+
 }
 
-
-
-
-sub help { 
-print q{ 
+sub help {
+    print q{ 
 
 arguments: 
 -----------------------------------------------------------
@@ -1201,579 +1489,587 @@ Will check for messages to deliver for list,
 yourlistshortname> and outputting a lot of information on the command line. 
 
 };
-	exit;
+    exit;
 }
 
+sub test_pop3 {
 
+    my $li = shift || undef;
 
+    my @lists;
 
-sub test_pop3 { 
-
-    my $li = shift || undef; 
-    
-	
-	my @lists; 
-	
-	if(!$run_list){ 
-		print "Testing all lists - \nTo test an individual list, pass the list shortname in the '--list' parameter...\n\n"; 
-		@lists = available_lists(-dbi_handle => $dbi_handle);
-	}else{ 
-		push(@lists, $run_list); 
-	}
-
-	foreach my $l(@lists){
-		
-		print "\n" . '-' x 72 . "\nTesting List: '" . $l . "'\n";
-		
-		unless(check_if_list_exists(-List => $l, -dbi_handle => $dbi_handle)){ 
-			print "'$l' does not exist! - skipping\n";
-			next;
-		}
-		
-		if(!$li){ 
-		    my $ls  = DADA::MailingList::Settings->new({-list => $l}); 
-		       $li  = $ls->get();
-		}
-		
-		if($li->{disable_discussion_sending} == 1){ 
-			print "'$l' has this feature disabled - skipping.\n";
-		}else{
-		    
-			my $lock_file_fh = undef; 
-			if($Plugin_Config->{Enable_POP3_File_Locking} == 1){ 
-			
-		    	$lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
-									{
-										name => 'dada_bridge.lock',
-									}
-								);
-			}
-
-			my $pop = pop3_login(
-								 $l,
-			                     $li, 
-								 $li->{discussion_pop_server}, 
-								 $li->{discussion_pop_username}, 
-								 $li->{discussion_pop_password},
-								 $li->{discussion_pop_auth_mode}, 
-								 $li->{discussion_pop_use_ssl},
-								);
-		 	if($pop){
-				$pop->Close();
-				
-				if($Plugin_Config->{Enable_POP3_File_Locking} == 1){
-			 		DADA::App::POP3Tools::_unlock_pop3_check(
-						{
-							name => 'dada_bridge.lock',
-							fh   => $lock_file_fh, 
-						}
-					);
-				}
-			   print "\tLogging off of the POP Server.\n";
-			}
-		}	
-	}
-	print "\n\nPOP3 Login Test Complete.\n\n";
-}
-
-
-
-
-sub pop3_login { 
-
-	my ($l, $li, $server, $username, $password, $auth_mode, $use_ssl) = @_;
-	
-	$password = DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $password);
-	
-	if(!valid_login_information({-list => $l, -list_info => $li})){ 
-			print "Some POP3 Login Information is missing - please double check! (aborting login attempt)\n"
-				if $verbose;
-			return undef; 
-	}else{
-
-		my $pop = undef; 
-		
-		eval { 
-			$pop =  DADA::App::POP3Tools::mail_pop3client_login(
-			    {
-			        server   => $server, 
-			        username => $username, 
-			        password => $password, 
-		        
-			        verbose  => $verbose, 
-					        
-	                USESSL    => $use_ssl,
-	                AUTH_MODE => $auth_mode,		        
-			    }
-			); 
-		};
-		if(!$@){ 
-			return $pop; 
-		}
-		else { 
-			print "Problems Logging in:\n$@"
-				if $verbose; 
-			warn $@; 
-			return undef; 
-		}
-
-	}
-}
-
-
-
-
-sub valid_login_information { 
-
-	my ($args) = @_;
-	
-	my $list = $args->{-list}; 
-	my $li = {}; 
-	if($args->{-list_info}){ 
-	    $li = $args->{-list_info}; 
-	}
-	else { 
-	
-        my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-           $li = $ls->get(); 
+    if ( !$run_list ) {
+        print
+"Testing all lists - \nTo test an individual list, pass the list shortname in the '--list' parameter...\n\n";
+        @lists = available_lists( -dbi_handle => $dbi_handle );
     }
-    
-	return 0 if ! $li->{discussion_pop_server};
-	return 0 if ! $li->{discussion_pop_username};
-	return 0 if ! $li->{discussion_pop_email};
-	return 0 if ! $li->{discussion_pop_password};
-	return 1; 
-}
+    else {
+        push ( @lists, $run_list );
+    }
 
+    foreach my $l (@lists) {
 
+        print "\n" . '-' x 72 . "\nTesting List: '" . $l . "'\n";
 
-
-sub validate_msg { 
-
-	my $list   = shift; 
-	my $msg    = shift || undef;
-	my $li     = shift; 
-	
-	
-	my $status = 1; 
-	my $notice = undef; 
-	
-	# DEV: 
-	# This should *really* mention each and every test....
-	
-	my $errors = {
-		msg_from_list_address                    => 0,
-		list_email_address_is_list_owner_address => 0, 
-		invalid_msg                              => 0, 
-		multiple_return_path_headers             => 0, 
-		x_been_there_header_found                => 0,
-		msg_not_from_list_owner                  => 0, 
-		needs_moderation                         => 0, 
-		subscribed                               => 0, 
-		msg_not_from_subscriber                  => 0, 
-		msg_not_from_list_owner                  => 0, 
-		msg_not_from_an_authorized_sender        => 0, 
-		message_seen_as_spam                     => 0, 
-	}; 
-	
-
-
-	my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
-	
-	if(lc_email($li->{discussion_pop_email}) eq lc_email($li->{list_owner_email})){ 
-		print "\t\t***Warning!*** Misconfiguration of plugin! The list owner email cannot be the same address as the list email address!\n"
-			if $verbose; 
-		$errors->{list_email_address_is_list_owner_address} = 1;
-	}
-	
-	my $message_is_blank = 0; 
-	
-	if(! defined($msg)){ 
-		$message_is_blank = 1; 
-	}
-	elsif($msg eq ''){ 
-		$message_is_blank = 1; 
-	}
-	elsif(length($msg) == 0){ 
-		$message_is_blank = 1; 
-	}
-	if($message_is_blank){ 
-			print "\t\t***Warning!*** Message is blank.\n"
-			if $verbose; 
-		$errors->{blank_message} = 1; 
-		return (0, $errors);
-	}
-	
-		
-	my $entity; 
-	eval { $entity = $parser->parse_data($msg) };
-	
-	if(!$entity){
-		print "\t\tMessage invalid! - no entity found.\n" if $verbose;  
-		$errors->{invalid_msg} = 1;
-		#if($verbose){ 
-		#	print "All Errors: \n" . '-' x 72 . "\n"; 
-		#	foreach(keys %$errors){ 
-		#		"\t*" . $_ . ' => '  . $errors->{$_} . "\n";
-		#	}
-		#}
-		return (0, $errors); 
-	}
-
-    if($Plugin_Config->{Check_Multiple_Return_Path_Headers} == 1){ 
-    
-        if($entity->head->count('Return-Path') > 1) { 
-            print "\t\tMessage has more than one 'Return-Path' header? Malformed email message - will reject!\n"
-                if $verbose; 
-                $errors->{multiple_return_path_headers} = 1;
+        unless (
+            check_if_list_exists( -List => $l, -dbi_handle => $dbi_handle ) )
+        {
+            print "'$l' does not exist! - skipping\n";
+            next;
         }
-    
-    }
-	
-	if($entity->head->count('X-BeenThere')){ 
-	    my $x_been_there_header = $entity->head->get('X-BeenThere', 0);
-	    chomp($x_been_there_header);
-	    
-	    if(lc_email($x_been_there_header) eq lc_email($li->{discussion_pop_email})){ 
-	        print "\t\tMessage is from myself (the, X-BeenThere header has been set), message should be ignored...\n"
-	            if $verbose;
-	        $errors->{x_been_there_header_found} = 1;
-	    } else { 
-	        $errors->{x_been_there_header_found} = 0; 
-        }	     
 
-	}
-	
-	my $rough_from = $entity->head->get('From', 0); 
-	my $from_address = '';
+        if ( !$li ) {
+            my $ls = DADA::MailingList::Settings->new( { -list => $l } );
+            $li = $ls->get();
+        }
 
-	if (defined($rough_from)){; 
-		eval { $from_address = (Email::Address->parse($rough_from))[0]->address; }
-	}
-	
-	print '\t\tWarning! Something\'s wrong with the From address - ' . $@ 
-		if $@ && $verbose;
-		
-	$from_address = lc_email($from_address); 
-	
-	print "\t\tMessage is from: '" . $from_address . "'\n"
-		if $verbose; 
-	
-	if(lc_email($from_address) eq lc_email($li->{list_owner_email})){ 
-		print "\t\t * From: address is the list owner address ; (". $li->{list_owner_email} .')' . "\n"
-			if $verbose;
-		
-            if($Plugin_Config->{Check_List_Owner_Return_Path_Header}){ 
-				($errors, $notice) = 
-					test_Check_List_Owner_Return_Path_Header($entity, $errors, $li); 
-					print $notice
-						if $notice && $verbose; 
+        if ( $li->{disable_discussion_sending} == 1 ) {
+            print "'$l' has this feature disabled - skipping.\n";
+        }
+        else {
+
+            my $lock_file_fh = undef;
+            if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
+
+                $lock_file_fh =
+                  DADA::App::POP3Tools::_lock_pop3_check(
+                    { name => 'dada_bridge.lock', } );
             }
-        
-	}else{ 
-	
-		print "\t\t * From address is NOT from list owner address\n"
-			if $verbose;
-		$errors->{msg_not_from_list_owner} = 1; 
-			
-	    if($li->{enable_moderation}){ 
-			print "\t\tModeration enabled...\n"
-				if $verbose; 
-				
-			if($errors->{msg_not_from_list_owner} == 1){ 
-			
-			    print "\t\tMessage is not from list owner.\n"
-			        if $verbose;
-			        $errors->{needs_moderation} = 1; 
-			}
-							
-		}else{ 
-			print "\t\tModeration disabled...\n"
-				if $verbose; 
-		}
-		
-			
-		if($li->{group_list} == 1){
-		
-			print "\t\tDiscussion Support enabled...\n"
-				if $verbose; 
-				
-			#if($li->{enable_authorized_sending} && $errors->{msg_not_from_an_authorized_sender} == 0){ 
-			#
-		    #	print "\t\tSubscription checked skipped - authorized sending enabled and address passed validation.\n"
-			#	    if $verbose; 
-			#	
-			#}else{ 
-			
-				my ($s_status, $s_errors) = $lh->subscription_check(
-												{
-													-email => $from_address,
-												}
-											);
-			
-				if ($s_errors->{subscribed} != 1){ 
-					
-					print "\t\t*Message is NOT from a subscriber.\n"
-						if $verbose; 
-				    
-				   
-				   if($li->{open_discussion_list} == 1 && $Plugin_Config->{Allow_Open_Discussion_List} == 1){ 
-				    
-				        print "\t\tPostings from non-subscribers is enabled...\n"
-				            if $verbose;
-				        # Just explicitly setting this...
-				        $errors->{msg_not_from_subscriber} = 0;
-				        $errors->{msg_not_from_list_owner} = 0; 
-				    }
-				    else { 
-				    
-				        $errors->{msg_not_from_subscriber} = 1;
-				    }
-				    
-				}else{ 
-					print "\t\t*Message *is* from a current subscriber.\n"
-						if $verbose; 
 
-					$errors->{msg_not_from_subscriber} = 0;
-					$errors->{msg_not_from_list_owner} = 0; 			
+            my $pop = pop3_login(
+                $l,
+                $li,
+                $li->{discussion_pop_server},
+                $li->{discussion_pop_username},
+                $li->{discussion_pop_password},
+                $li->{discussion_pop_auth_mode},
+                $li->{discussion_pop_use_ssl},
+            );
+            if ($pop) {
+                $pop->Close();
 
-				}
-			#}
-			
-		}else{ 
-			print "\t\tDiscussion Support disabled...\n"
-			    if $verbose; 
-		}
-	}
+                if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
+                    DADA::App::POP3Tools::_unlock_pop3_check(
+                        {
+                            name => 'dada_bridge.lock',
+                            fh   => $lock_file_fh,
+                        }
+                    );
+                }
+                print "\tLogging off of the POP Server.\n";
+            }
+        }
+    }
+    print "\n\nPOP3 Login Test Complete.\n\n";
+}
 
-    if($li->{enable_authorized_sending} == 1){ 
-    
+sub pop3_login {
+
+    my ( $l, $li, $server, $username, $password, $auth_mode, $use_ssl ) = @_;
+
+    $password =
+      DADA::Security::Password::cipher_decrypt( $li->{cipher_key}, $password );
+
+    if ( !valid_login_information( { -list => $l, -list_info => $li } ) ) {
+        print
+"Some POP3 Login Information is missing - please double check! (aborting login attempt)\n"
+          if $verbose;
+        return undef;
+    }
+    else {
+
+        my $pop = undef;
+
+        eval {
+            $pop = DADA::App::POP3Tools::mail_pop3client_login(
+                {
+                    server   => $server,
+                    username => $username,
+                    password => $password,
+
+                    verbose => $verbose,
+
+                    USESSL    => $use_ssl,
+                    AUTH_MODE => $auth_mode,
+                }
+            );
+        };
+        if ( !$@ ) {
+            return $pop;
+        }
+        else {
+            print "Problems Logging in:\n$@"
+              if $verbose;
+            warn $@;
+            return undef;
+        }
+
+    }
+}
+
+sub valid_login_information {
+
+    my ($args) = @_;
+
+    my $list = $args->{ -list };
+    my $li   = {};
+    if ( $args->{ -list_info } ) {
+        $li = $args->{ -list_info };
+    }
+    else {
+
+        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+        $li = $ls->get();
+    }
+
+    return 0 if !$li->{discussion_pop_server};
+    return 0 if !$li->{discussion_pop_username};
+    return 0 if !$li->{discussion_pop_email};
+    return 0 if !$li->{discussion_pop_password};
+    return 1;
+}
+
+sub validate_msg {
+
+    my $list = shift;
+    my $msg  = shift;    #ref
+    my $li   = shift;
+
+    my $status = 1;
+    my $notice = undef;
+
+    # DEV:
+    # This should *really* mention each and every test....
+
+    my $errors = {
+        msg_from_list_address                    => 0,
+        list_email_address_is_list_owner_address => 0,
+        invalid_msg                              => 0,
+        multiple_return_path_headers             => 0,
+        x_been_there_header_found                => 0,
+        msg_not_from_list_owner                  => 0,
+        needs_moderation                         => 0,
+        subscribed                               => 0,
+        msg_not_from_subscriber                  => 0,
+        msg_not_from_list_owner                  => 0,
+        msg_not_from_an_authorized_sender        => 0,
+        message_seen_as_spam                     => 0,
+    };
+
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+
+    if ( lc_email( $li->{discussion_pop_email} ) eq
+        lc_email( $li->{list_owner_email} ) )
+    {
+        print
+"\t\t***Warning!*** Misconfiguration of plugin! The list owner email cannot be the same address as the list email address!\n"
+          if $verbose;
+        $errors->{list_email_address_is_list_owner_address} = 1;
+    }
+
+    my $message_is_blank = 0;
+
+    if ( !defined($$msg) ) {
+        $message_is_blank = 1;
+    }
+    elsif ( $$msg eq '' ) {
+        $message_is_blank = 1;
+    }
+    elsif ( length($$msg) == 0 ) {
+        $message_is_blank = 1;
+    }
+    if ($message_is_blank) {
+        print "\t\t***Warning!*** Message is blank.\n"
+          if $verbose;
+        $errors->{blank_message} = 1;
+        return ( 0, $errors );
+    }
+
+    my $entity;
+    eval { $entity = $parser->parse_data($$msg) };
+
+    if ( !$entity ) {
+        print "\t\tMessage invalid! - no entity found.\n" if $verbose;
+        $errors->{invalid_msg} = 1;
+
+        #if($verbose){
+        #	print "All Errors: \n" . '-' x 72 . "\n";
+        #	foreach(keys %$errors){
+        #		"\t*" . $_ . ' => '  . $errors->{$_} . "\n";
+        #	}
+        #}
+        return ( 0, $errors );
+    }
+
+    if ( $Plugin_Config->{Check_Multiple_Return_Path_Headers} == 1 ) {
+
+        if ( $entity->head->count('Return-Path') > 1 ) {
+            print
+"\t\tMessage has more than one 'Return-Path' header? Malformed email message - will reject!\n"
+              if $verbose;
+            $errors->{multiple_return_path_headers} = 1;
+        }
+
+    }
+
+    if ( $entity->head->count('X-BeenThere') ) {
+        my $x_been_there_header = $entity->head->get( 'X-BeenThere', 0 );
+        chomp($x_been_there_header);
+
+        if ( lc_email($x_been_there_header) eq
+            lc_email( $li->{discussion_pop_email} ) )
+        {
+            print
+"\t\tMessage is from myself (the, X-BeenThere header has been set), message should be ignored...\n"
+              if $verbose;
+            $errors->{x_been_there_header_found} = 1;
+        }
+        else {
+            $errors->{x_been_there_header_found} = 0;
+        }
+
+    }
+
+    my $rough_from   = $entity->head->get( 'From', 0 );
+    my $from_address = '';
+
+    if ( defined($rough_from) ) {
+        ;
+        eval {
+            $from_address = ( Email::Address->parse($rough_from) )[0]->address;
+        };
+    }
+
+    print '\t\tWarning! Something\'s wrong with the From address - ' . $@
+      if $@ && $verbose;
+
+    $from_address = lc_email($from_address);
+
+    print "\t\tMessage is from: '" . $from_address . "'\n"
+      if $verbose;
+
+    if ( lc_email($from_address) eq lc_email( $li->{list_owner_email} ) ) {
+        print "\t\t * From: address is the list owner address ; ("
+          . $li->{list_owner_email} . ')' . "\n"
+          if $verbose;
+
+        if ( $Plugin_Config->{Check_List_Owner_Return_Path_Header} ) {
+            ( $errors, $notice ) =
+              test_Check_List_Owner_Return_Path_Header( $entity, $errors, $li );
+            print $notice
+              if $notice && $verbose;
+        }
+
+    }
+    else {
+
+        print "\t\t * From address is NOT from list owner address\n"
+          if $verbose;
+        $errors->{msg_not_from_list_owner} = 1;
+
+        if ( $li->{enable_moderation} ) {
+            print "\t\tModeration enabled...\n"
+              if $verbose;
+            $errors->{needs_moderation} = 1;
+
+            #}
+
+        }
+        else {
+            print "\t\tModeration disabled...\n"
+              if $verbose;
+        }
+
+        if ( $li->{group_list} == 1 ) {
+
+            print "\t\tDiscussion List Support enabled...\n"
+              if $verbose;
+
+#if($li->{enable_authorized_sending} && $errors->{msg_not_from_an_authorized_sender} == 0){
+#
+#	print "\t\tSubscription checked skipped - authorized sending enabled and address passed validation.\n"
+#	    if $verbose;
+#
+#}else{
+
+            my ( $s_status, $s_errors ) =
+              $lh->subscription_check( { -email => $from_address, } );
+
+            if ( $s_errors->{subscribed} == 1 ) {
+                print "\t\t * Message *is* from a current subscriber.\n"
+                  if $verbose;
+                $errors->{msg_not_from_list_owner} = 0;
+                if ( $li->{subscriber_sending_no_moderation} ) {
+                    $errors->{needs_moderation} = 0;
+                }
+                elsif ( $errors->{needs_moderation} == 1 ) {
+                    print
+                      "\t\t ** however Message still *requires* moderation!\n"
+                      if $verbose;
+                }
+            }
+            else {
+                print "\t\t * Message is NOT from a subscriber.\n"
+                  if $verbose;
+                if (   $li->{open_discussion_list} == 1
+                    && $Plugin_Config->{Allow_Open_Discussion_List} == 1 )
+                {
+                    print "\t\tPostings from non-subscribers is enabled...\n"
+                      if $verbose;
+                    $errors->{msg_not_from_list_owner} = 0;
+                }
+                else {
+                    $errors->{msg_not_from_subscriber} = 1;
+                }
+            }
+
+            #}
+
+        }
+        else {
+            print "\t\tDiscussion Support disabled...\n"
+              if $verbose;
+        }
+    }
+
+    if ( $li->{enable_authorized_sending} == 1 ) {
+
+        # cancel out other errors???
         print "\t\tAuthorized Senders List enabled...\n"
-            if $verbose; 
-       # if($errors->{msg_not_from_list_owner} == 0){ 
- 
-		# The f'ing check gets erased from above, so we sort of have to do it again...
-       if(lc_email($from_address) eq lc_email($li->{list_owner_email})){ 
-	
-            print "\t\tSkipping Authorized Senders check - message is from the list owner.\n"
-                if $verbose; 
-            $errors->{msg_not_from_an_authorized_sender} = 0;
-
-        }												  # only skip if we have a discussion list
-		elsif($errors->{msg_not_from_subscriber} == 0 && $li->{group_list} == 1) { 
-			
-            print "\t\tSkipping Authorized Senders check - message is from a Subscriber\n"
-                if $verbose; 
-            $errors->{msg_not_from_an_authorized_sender} = 0;
-	
-		}
-        else { 
-        
-            my ($m_status, $m_errors) = $lh->subscription_check(
-											{
-												-email => $from_address, 
-                                                -type  => 'authorized_senders',
-                                             }
-										);
-            if($m_errors->{subscribed} != 1){ 												   
-                
-               $errors->{msg_not_from_an_authorized_sender} = 1;
-                print "\t\t\t*Message is NOT from an Authorized Sender.\n"
-                    if $verbose; 
-            }else{ 
-                
-                print "\t\t\t*Message *is* from a Authorized Sender!\n"
-                    if $verbose; 
-
-                $errors->{msg_not_from_list_owner} = 0
-                    if $errors->{msg_not_from_list_owner} == 1; 
-
-                $errors->{msg_not_from_subscriber} = 0
-                    if $errors->{msg_not_from_subscriber} == 1; 
-
-                $errors->{needs_moderation} = 0
-                    if $errors->{needs_moderation} == 1; 
+          if $verbose;
+        my ( $m_status, $m_errors ) = $lh->subscription_check(
+            {
+                -email => $from_address,
+                -type  => 'authorized_senders',
+            }
+        );
+        if ( $m_errors->{subscribed} == 1 ) {
+            print "\t\t * Message *is* from an Authorized Sender!\n"
+              if $verbose;
+            $errors->{msg_not_from_list_owner} = 0;
+            $errors->{msg_not_from_subscriber} = 0;
+            if ( $li->{authorized_sending_no_moderation} ) {
+                $errors->{needs_moderation} = 0;
+            }
+            elsif ( $errors->{needs_moderation} == 1 ) {
+                print "\t\t ** however Message still *requires* moderation!\n"
+                  if $verbose;
             }
         }
-
+        else {
+            print "\t\t * Message is NOT from an Authorized Sender!\n"
+              if $verbose;
+        }
     }
-    else { 
+    else {
         print "\t\tAuthorized Senders List disabled...\n"
-            if $verbose;         
+          if $verbose;
     }
-    
-        
-    if ($li->{ignore_spam_messages} == 1){ 
+
+    if ( $li->{ignore_spam_messages} == 1 ) {
         print "\n\t\tSpamAssassin check enabled...\n\n"
-            if $verbose;
+          if $verbose;
 
-        if($li->{find_spam_assassin_score_by} eq 'calling_spamassassin_directly'){ 
-        
+        if ( $li->{find_spam_assassin_score_by} eq
+            'calling_spamassassin_directly' )
+        {
+
             print "\t\tLoading SpamAssassin directly...\n"
-                if $verbose;
-        
-            eval { require Mail::SpamAssassin; }; 
-            if(!$@){ 
-                    
-                if($Mail::SpamAssassin::VERSION <= 2.60 && $Mail::SpamAssassin::VERSION >= 2){ 
-                    require Mail::SpamAssassin::NoMailAudit; 
-                    
-                    # this needs to be optimized...
-                    my $spam_check_message = $entity->as_string; 
-                    my @spam_check_message = split("\n", $spam_check_message); 
-                  
-                    my $mail = Mail::SpamAssassin::NoMailAudit->new(data => \@spam_check_message);
-                      
-                    my $spamtest = Mail::SpamAssassin->new({debug => 'all', local_tests_only => 1, dont_copy_prefs => 1, });
-                  
-                    my $score; 
-                    my $report;
-                    
-                    if($spamtest){ 
-                        my $spam_status;
-                           $spam_status = $spamtest->check($mail);
+              if $verbose;
 
-                        if($spam_status){ 
+            eval { require Mail::SpamAssassin; };
+            if ( !$@ ) {
+
+                if ( $Mail::SpamAssassin::VERSION <= 2.60 && $Mail::SpamAssassin::VERSION >= 2 ) {
+                    require Mail::SpamAssassin::NoMailAudit;
+
+                    # this needs to be optimized...
+                    my $spam_check_message = $entity->as_string;
+                    my @spam_check_message =
+                      split ( "\n", $spam_check_message );
+
+                    my $mail =
+                      Mail::SpamAssassin::NoMailAudit->new(
+                        data => \@spam_check_message );
+
+                    my $spamtest = Mail::SpamAssassin->new(
+                        {
+                            debug            => 'all',
+                            local_tests_only => 1,
+                            dont_copy_prefs  => 1,
+                        }
+                    );
+
+                    my $score;
+                    my $report;
+
+                    if ($spamtest) {
+                        my $spam_status;
+                        $spam_status = $spamtest->check($mail);
+
+                        if ($spam_status) {
                             $score  = $spam_status->get_hits();
                             $report = $spam_status->get_report();
                         }
-                        
-                    }
-            
 
-                    if($score eq undef && $score != 0){ 
-                        print "\t\t\tTrouble parsing scoring information - letting message pass...\n"
-                            if $verbose
-                  
-                    } else { 
-                        
-                        if($score >= $li->{ignore_spam_messages_with_status_of}){
-                            print "\t\t\t Message has *failed* Spam Test (Score of: $score, " . $li->{ignore_spam_messages_with_status_of} . " needed.) - ignoring message.\n"
-                                if $verbose;
-                            
+                    }
+
+                    if ( $score eq undef && $score != 0 ) {
+                        print
+"\t\t\tTrouble parsing scoring information - letting message pass...\n"
+                          if $verbose
+
+                    }
+                    else {
+
+                        if ( $score >=
+                            $li->{ignore_spam_messages_with_status_of} )
+                        {
+                            print
+"\t\t\t Message has *failed* Spam Test (Score of: $score, "
+                              . $li->{ignore_spam_messages_with_status_of}
+                              . " needed.) - ignoring message.\n"
+                              if $verbose;
+
                             $errors->{message_seen_as_spam} = 1;
 
                             print "\n" . $report
-                                if $verbose; 
-                            
-                        }else{ 
-                            $errors->{message_seen_as_spam} = 0;
-                            
-                            print "\t\t\t Message passed! Spam Test (Score of: $score, " . $li->{ignore_spam_messages_with_status_of} . " needed.)\n"
-                                if $verbose;
+                              if $verbose;
+
                         }
-                    
+                        else {
+                            $errors->{message_seen_as_spam} = 0;
+
+                            print
+"\t\t\t Message passed! Spam Test (Score of: $score, "
+                              . $li->{ignore_spam_messages_with_status_of}
+                              . " needed.)\n"
+                              if $verbose;
+                        }
+
                     }
-                    
+
                     undef $mail;
                     undef $spamtest;
                     undef $score;
-                    undef $report; 
-                
-                }else{ 
-                    print "\t\tSpamAssassin 2.60 and below is currently only supported, you have version $Mail::SpamAssassin::VERSION, skipping test\n"
-                        if $verbose;
-                }
-                
-            } else { 
-                print "\t\tSpamAssassin doesn't seem to be available. Skipping test.\n"
-                    if $verbose;
-            }
-            
+                    undef $report;
 
-        } elsif($li->{find_spam_assassin_score_by} eq 'looking_for_embedded_headers'){ 
-        
+                }
+                else {
+                    print
+"\t\tSpamAssassin 2.60 and below is currently only supported, you have version $Mail::SpamAssassin::VERSION, skipping test\n"
+                      if $verbose;
+                }
+
+            }
+            else {
+                print
+"\t\tSpamAssassin doesn't seem to be available. Skipping test.\n"
+                  if $verbose;
+            }
+
+        }
+        elsif ( $li->{find_spam_assassin_score_by} eq
+            'looking_for_embedded_headers' )
+        {
+
             print "\t\tLooking for embedding SpamAssassin Headers...\n"
-                if $verbose;
-           
-           
-           my $score = undef; 
-           if($entity->head->count('X-Spam-Status')){
-               
-               my @x_spam_status_fields = split(' ', $entity->head->get('X-Spam-Status', 0)); 
-               foreach(@x_spam_status_fields){ 
-                   if($_ =~ m/score\=/){ 
-                          $score = $_; 
-                          $score =~ s/score\=//; 
-                          
-                          print "\t\tFound them...\n"
-                            if $verbose;
-                          
-                       last; 
-                    
+              if $verbose;
+
+            my $score = undef;
+            if ( $entity->head->count('X-Spam-Status') ) {
+
+                my @x_spam_status_fields =
+                  split ( ' ', $entity->head->get( 'X-Spam-Status', 0 ) );
+                foreach (@x_spam_status_fields) {
+                    if ( $_ =~ m/score\=/ ) {
+                        $score = $_;
+                        $score =~ s/score\=//;
+
+                        print "\t\tFound them...\n"
+                          if $verbose;
+
+                        last;
+
                     }
-               }
-           }
-           
-           if($score eq undef && $score != 0){ 
-                    
-                print "\t\t\tTrouble parsing scoring information - letting message pass...\n"
-                    if $verbose
-              
-            } else { 
-                
-                if($score >= $li->{ignore_spam_messages_with_status_of}){
-                    print "\t\t\t Message has *failed* Spam Test (Score of: $score, " . $li->{ignore_spam_messages_with_status_of} . " needed.) - ignoring message.\n"
-                        if $verbose;
-                    
+                }
+            }
+
+            if ( $score eq undef && $score != 0 ) {
+
+                print
+"\t\t\tTrouble parsing scoring information - letting message pass...\n"
+                  if $verbose
+
+            }
+            else {
+
+                if ( $score >= $li->{ignore_spam_messages_with_status_of} ) {
+                    print
+"\t\t\t Message has *failed* Spam Test (Score of: $score, "
+                      . $li->{ignore_spam_messages_with_status_of}
+                      . " needed.) - ignoring message.\n"
+                      if $verbose;
+
                     $errors->{message_seen_as_spam} = 1;
-                    
-                    if($verbose){   
+
+                    if ($verbose) {
                         my @x_spam_report = $entity->head->get('X-Spam-Report');
                         print "\n\t";
                         print "$_\n" foreach @x_spam_report;
                     }
-                    
-                   
-                }else{ 
+
+                }
+                else {
                     $errors->{message_seen_as_spam} = 0;
-                    
-                    print "\t\t\t Message passed! Spam Test (Score of: $score, " . $li->{ignore_spam_messages_with_status_of} . " needed.)\n"
-                        if $verbose;
+
+                    print "\t\t\t Message passed! Spam Test (Score of: $score, "
+                      . $li->{ignore_spam_messages_with_status_of}
+                      . " needed.)\n"
+                      if $verbose;
                 }
 
             }
-       } else { 
-       
-            print "\t\t\tDon't know how to find the SpamAssassin score, sorry!\n"
-                if $verbose; 
-       
-       }
-            
-   } else{ 
+        }
+        else {
+
+            print
+              "\t\t\tDon't know how to find the SpamAssassin score, sorry!\n"
+              if $verbose;
+
+        }
+
+    }
+    else {
         print "\n\t\tSpamAssassin check disabled...\n"
-            if $verbose; 
-   }
+          if $verbose;
+    }
 
     print "\n"
-        if $verbose;
-    
-    
+      if $verbose;
 
     # This below probably can't happen anymore...
-	if (lc_email($li->{discussion_pop_email}) eq lc_email($from_address)){ 
-		$errors->{msg_from_list_address} = 1;
-		print "\t\t *WARNING!* Message is from the List Address. That's bad.\n"
-			if $verbose; 
-	}	 
-		
-    foreach(keys %$errors){
-        if($errors->{$_} == 1){ 
-            $status = 0 ;
+    if ( lc_email( $li->{discussion_pop_email} ) eq lc_email($from_address) ) {
+        $errors->{msg_from_list_address} = 1;
+        print "\t\t *WARNING!* Message is from the List Address. That's bad.\n"
+          if $verbose;
+    }
+
+    foreach ( keys %$errors ) {
+        if ( $errors->{$_} == 1 ) {
+            $status = 0;
             last;
         }
-    }	
-    #if($verbose){ 
-	#	print "All Errors: \n" . '-' x 72 . "\n"; 
-	#	foreach(keys %$errors){ 
-	#		"\t*" . $_ . ' => '  . $errors->{$_} . "\n";
-	#	}
-	#}
-	return ($status, $errors); 
+    }
+
+    #if($verbose){
+    #	print "All Errors: \n" . '-' x 72 . "\n";
+    #	foreach(keys %$errors){
+    #		"\t*" . $_ . ' => '  . $errors->{$_} . "\n";
+    #	}
+    #}
+    return ( $status, $errors );
 }
-
-
-
 
 sub test_Check_List_Owner_Return_Path_Header {
 
@@ -1785,12 +2081,13 @@ sub test_Check_List_Owner_Return_Path_Header {
     require Email::Address;
 
     # This has been copied from the main thingy,
-    my $rough_from   = $entity->head->get( 'From', 0 );
-	#$notice .= '$rough_from: ' . $rough_from; 
+    my $rough_from = $entity->head->get( 'From', 0 );
+
+    #$notice .= '$rough_from: ' . $rough_from;
     my $from_address = '';
 
     if ( defined($rough_from) ) {
-        
+
         eval {
             $from_address = ( Email::Address->parse($rough_from) )[0]->address;
         };
@@ -1801,28 +2098,29 @@ sub test_Check_List_Owner_Return_Path_Header {
 
     $from_address = lc_email($from_address);
 
-	# $notice .= '$from_address:  ' . $from_address; 
+    # $notice .= '$from_address:  ' . $from_address;
 
     # /This has been copied from the main thingy,
 
-    my $rough_return_path = undef; 
+    my $rough_return_path = undef;
 
-  	if($entity->head->get( 'Return-Path', 0 )){ 
-		$notice .= q{$entity->head->get( 'Return-Path', 0 ) } . $entity->head->get( 'Return-Path', 0 ); 
-		$rough_return_path = $entity->head->get( 'Return-Path', 0 );
-	}
-	else { 
-		# Strange, but there is no return-path... why?
-		$notice .= "\t\t * No Return Path Found - Skipping Test\n"; 
-		$errors->{list_owner_return_path_set_funny} = 0;
-		return ($errors, $notice); 
-	}
-	
-	
+    if ( $entity->head->get( 'Return-Path', 0 ) ) {
+        $notice .= q{$entity->head->get( 'Return-Path', 0 ) }
+          . $entity->head->get( 'Return-Path', 0 );
+        $rough_return_path = $entity->head->get( 'Return-Path', 0 );
+    }
+    else {
+
+        # Strange, but there is no return-path... why?
+        $notice .= "\t\t * No Return Path Found - Skipping Test\n";
+        $errors->{list_owner_return_path_set_funny} = 0;
+        return ( $errors, $notice );
+    }
+
     my $return_path_address = '';
 
     if ( defined($rough_return_path) ) {
-        
+
         eval {
             $return_path_address =
               ( Email::Address->parse($rough_return_path) )[0]->address;
@@ -1834,21 +2132,27 @@ sub test_Check_List_Owner_Return_Path_Header {
 
         $errors->{list_owner_return_path_set_funny} = 0;
 
-        $notice .= "\t\t * Address set in, From: header, ($from_address) matches, Return-Path address ($return_path_address) Yeah!\n"
+        $notice .=
+"\t\t * Address set in, From: header, ($from_address) matches, Return-Path address ($return_path_address) Yeah!\n"
           if $verbose;
 
     }
     else {
 
-        $notice .= "\t\t * Address set in, From: header, ($from_address) doesn't match, Return-Path address ($return_path_address) ? Why?\n"
+        $notice .=
+"\t\t * Address set in, From: header, ($from_address) doesn't match, Return-Path address ($return_path_address) ? Why?\n"
           if $verbose;
-        warn "\t\t * Address set in, From: header, ($from_address) doesn't match, Return-Path address ($return_path_address) ? Why?\n";
+        warn
+"\t\t * Address set in, From: header, ($from_address) doesn't match, Return-Path address ($return_path_address) ? Why?\n";
 
-        if ( lc_email($return_path_address) eq lc_email($li->{admin_email}) ) {
+        if ( lc_email($return_path_address) eq lc_email( $li->{admin_email} ) )
+        {
 
-            $notice .= "\t\tAh! Ok, The Return-Path is set to the list administrator - I guess that's ok...."
+            $notice .=
+"\t\tAh! Ok, The Return-Path is set to the list administrator - I guess that's ok...."
               if $verbose;
-            warn "\t\tAh! Ok, The Return-Path is set to the list administrator - I guess that's ok....";
+            warn
+"\t\tAh! Ok, The Return-Path is set to the list administrator - I guess that's ok....";
 
             $errors->{list_owner_return_path_set_funny} = 0;
 
@@ -1866,840 +2170,911 @@ sub test_Check_List_Owner_Return_Path_Header {
 
 }
 
+sub send_msg_too_big {
+    my $list         = shift;
+    my $li           = shift;
+    my $full_msg_ref = shift;
+    my $size         = shift;
+    my $entity;
+    eval {
+        $entity = $parser->parse_data($$full_msg_ref);
+        if ( !$entity ) {
+            warn "couldn't create a new entity in send_msg_too_big, passing.";
+        }
 
+        my $from_address =
+          ( Email::Address->parse( $entity->head->get( 'From', 0 ) ) )[0]
+          ->address;
 
+        require DADA::App::Messages;
+        DADA::App::Messages::send_generic_email(
+            {
+                -list    => $list,
+                -headers => {
+                    To      => $from_address,
+                    Subject => $Message_Too_Big_Subject,
+                },
+                -body        => $Message_Too_Big_Message,
+                -tmpl_params => {
+                    -list_settings_vars       => $li,
+                    -list_settings_vars_param => { -dot_it => 1, },
 
-
-sub process { 
-
-	my ($args) = @_; 
-
-	if(!exists($args->{-list})){ 
-		croak "You must pass a -list paramater!"; 
-	}
-	if(!exists($args->{-ls})){ 
-		croak "You must pass a -ls paramater!"; 
-	}
-	if(!exists($args->{-msg})){ 
-		croak "You must pass a -msg paramater!"; 
-	}
-	
-	my $test_mail = 0; 
-	if(exists($args->{-test_mail})){ 
-		$test_mail = $args->{-test_mail};
-	}
-
-	my $list     = $args->{-list}; 
-	my $ls       = $args->{-ls};
-	my $msg      = $args->{-msg}; 	
-	
-	print "\n\t\tProcessing Message...\n" 
-		if $verbose; 
-		
-	if($ls->param('send_msgs_to_list') == 1){ 
-	
-		my $n_msg = dm_format(
-						{ 
-							-list => $list, 
-							-msg  => $msg, 
-							-ls   => $ls,
-						}
-					);
-					
-		print "\t\tMessage being delivered! \n"
-			if $verbose; 
-		
-		my ($msg_id, $saved_message) = deliver(
-											{ 
-												-list      => $list, 
-												-msg       => $n_msg,
-												-ls        => $ls,  
-												-test_mail => $test_mail, 
-											}
-										);
-		archive(
-			{ 
-				-list      => $list, 
-				-ls        => $ls, 
-				-msg       => $n_msg, 
-			    -msg_id    => $msg_id, 
-				-saved_msg => $saved_message
-			}
-		);  
-	
-	}
-	
-	if(
-		$ls->param('send_msg_copy_to') && 
-		$ls->param('send_msg_copy_address')
-	){ 
-		print "\t\t Sending a copy of the message to: " . $ls->param('send_msg_copy_address')  . "\n"
-			if $verbose; 
-			
-		deliver_copy(
-			{
-				-list => $list, 
-				-msg  => $msg,
-			}
-		); 
-	}
-	
-	print "\t\tFinished Processing Message.\n\n"
-		if $verbose; 
-						
-}
-
-
-
-
-sub dm_format { 
-	
-
-	my ($args) = @_; 
-
-	if(!exists($args->{-list})){ 
-		croak "You must pass a -list paramater!"; 
-	}
-	if(!exists($args->{-ls})){ 
-		croak "You must pass a -ls paramater!"; 
-	}
-	if(!exists($args->{-msg})){ 
-		croak "You must pass a -msg paramater!"; 
-	}
-
-	my $list     = $args->{-list}; 
-	my $ls       = $args->{-ls};
-	my $msg      = $args->{-msg};
-	
-	
-	if($ls->param('strip_file_attachments') == 1){ 
-		$msg = strip_file_attachments($msg, $ls);
-	}
-	
-	require DADA::App::FormatMessages; 
-	
-	my $fm = DADA::App::FormatMessages->new(-List => $list); 
-	   $fm->treat_as_discussion_msg(1); 
-	
-	if(
-		$ls->param('group_list')                  == 0 && 
-		$ls->param('rewrite_anounce_from_header') == 0
-	){ 
-	   $fm->reset_from_header(0);
-	}
-	
-	my ($header_str, $body_str) = $fm->format_headers_and_body(-msg => $msg);
-	return $header_str . "\n\n" . $body_str; 
-	
-}
-
-
-
-
-sub strip_file_attachments { 
-
-	my $msg = shift; 
-	my $ls  = shift; 
-	
-		my $entity; 
-	
-	
-	eval { $entity = $parser->parse_data($msg) };
-	if(!$entity){
-		die "no entity found! die'ing!";   
-	}
-	
-	print "\t\t\tStripping banned file attachments...\n\n"
-		if $verbose; 
-	
-	($entity, $ls) = process_stripping_file_attachments($entity, $ls); 
-	
-	return $entity->as_string; 
+                    -subscriber_vars =>
+                      { 'subscriber.email' => $from_address, },
+                    -vars => {
+                        original_subject => $entity->head->get( 'Subject', 0 ),
+                        size_of_original_message =>
+                          sprintf( "%.1f", ( $size / 1024 ) ),
+                        Soft_Max_Size_Of_Any_Message => sprintf(
+                            "%.1f",
+                            (
+                                $Plugin_Config->{Soft_Max_Size_Of_Any_Message} /
+                                  1024
+                            )
+                        ),
+                    }
+                }
+            }
+        );
+    };
+    if ( !$@ ) {
+        return 1;
+    }
+    else {
+        warn "Wasn't able to process message in send_msg_too_big: $@";
+        return 0;
+    }
 
 }
 
+sub process {
 
+    my ($args) = @_;
 
+    if ( !exists( $args->{ -list } ) ) {
+        croak "You must pass a -list paramater!";
+    }
+    if ( !exists( $args->{ -ls } ) ) {
+        croak "You must pass a -ls paramater!";
+    }
+    if ( !exists( $args->{ -msg } ) ) {
+        croak "You must pass a -msg paramater!";
+    }
 
-sub process_stripping_file_attachments { 
+    my $test_mail = 0;
+    if ( exists( $args->{ -test_mail } ) ) {
+        $test_mail = $args->{ -test_mail };
+    }
 
-	my $entity = shift; 
-	my $ls     = shift; 
-	
-	my @att_bl = split(' ', $ls->param('file_attachments_to_strip')); 
-	my $lt = {};
-	
-	foreach(@att_bl){ 
-		
-		$lt->{$_} = lc($lt->{$_}); 
-		$lt->{$_} = 1; 
-	}
+    my $list = $args->{ -list };
+    my $ls   = $args->{ -ls };
+    my $msg  = $args->{ -msg };
 
-	my @parts  = $entity->parts; 
+    print "\n\t\tProcessing Message...\n"
+      if $verbose;
 
-	if(@parts){
-	
-		# multipart... 
-		my $i;
-		foreach $i (0 .. $#parts) {       			
-			($parts[$i], $ls) = process_stripping_file_attachments($parts[$i], $ls);
-			
-	
-		}
-		
-		my @new_parts; 
-		
-		foreach $i (0 .. $#parts) { 
-			if(!$parts[$i]){
+    if ( $ls->param('send_msgs_to_list') == 1 ) {
 
-			}else{ 
-			
-				push(@new_parts, $parts[$i]); 
-			}
-		}
-			
-		$entity->parts(\@new_parts); 	
-		
-		
-		
-		
-		$entity->sync_headers('Length'      =>  'COMPUTE',
-							  'Nonstandard' =>  'ERASE');
-		
+        my $n_msg = dm_format(
+            {
+                -list => $list,
+                -msg  => $msg,
+                -ls   => $ls,
+            }
+        );
 
-		return ($entity, $ls); 
+        print "\t\tMessage being delivered! \n"
+          if $verbose;
 
-			  
-	}else{ 		
-			
-			my $name = $entity->head->mime_attr("content-type.name") || 
-			   $entity->head->mime_attr("content-disposition.filename");
-			   
-			   my $f_ending = $name; 
-			   
-			      $f_ending =~ s/(.*)\.//g;
-						      
-			if($lt->{lc($entity->head->mime_type)} == 1 || $lt->{lc($f_ending)} == 1){ 
-			
-				print "\t\t\t * Stripping attachment with:\n\t\t\t\tname: $name and mime-type:\n\t\t\t\t" . $entity->head->mime_type . "\n";
-				return (undef, $ls);
-			}
-			
-			$entity->sync_headers('Length'      =>  'COMPUTE',
-					      		'Nonstandard' =>  'ERASE');
-			return ($entity, $ls); 
-	}
+        my ( $msg_id, $saved_message ) = deliver(
+            {
+                -list      => $list,
+                -msg       => $n_msg,
+                -ls        => $ls,
+                -test_mail => $test_mail,
+            }
+        );
+        archive(
+            {
+                -list      => $list,
+                -ls        => $ls,
+                -msg       => $n_msg,
+                -msg_id    => $msg_id,
+                -saved_msg => $saved_message
+            }
+        );
 
-	return ($entity, $ls); 
+    }
+
+    if (   $ls->param('send_msg_copy_to')
+        && $ls->param('send_msg_copy_address') )
+    {
+        print "\t\t Sending a copy of the message to: "
+          . $ls->param('send_msg_copy_address') . "\n"
+          if $verbose;
+
+        deliver_copy(
+            {
+                -list => $list,
+                -msg  => $msg,
+            }
+        );
+    }
+
+    print "\t\tFinished Processing Message.\n\n"
+      if $verbose;
+
 }
 
+sub dm_format {
 
+    my ($args) = @_;
 
+    if ( !exists( $args->{ -list } ) ) {
+        croak "You must pass a -list paramater!";
+    }
+    if ( !exists( $args->{ -ls } ) ) {
+        croak "You must pass a -ls paramater!";
+    }
+    if ( !exists( $args->{ -msg } ) ) {
+        croak "You must pass a -msg paramater!";
+    }
 
-sub deliver_copy { 
+    my $list = $args->{ -list };
+    my $ls   = $args->{ -ls };
+    my $msg  = $args->{ -msg };
 
-	print "Delivering Copy...\n"
-		if $verbose; 
-		
+    if ( $ls->param('strip_file_attachments') == 1 ) {
+        $msg = strip_file_attachments( $msg, $ls );
+    }
 
-	my ($args) = @_; 
+    require DADA::App::FormatMessages;
 
-	if(!exists($args->{-list})){ 
-		croak "You must pass a -list paramater!"; 
-	}
-	if(!exists($args->{-ls})){ 
-		croak "You must pass a -ls paramater!"; 
-	}
-	if(!exists($args->{-msg})){ 
-		croak "You must pass a -msg paramater!"; 
-	}
+    my $fm = DADA::App::FormatMessages->new( -List => $list );
+    $fm->treat_as_discussion_msg(1);
 
-	my $list     = $args->{-list}; 
-	my $ls       = $args->{-ls};
-	my $msg      = $args->{-msg};
-	
-	my $test_mail = 0; 
-	if(exists($args->{-test_mail})){ 
-		$test_mail = $args->{-test_mail};
-	}
-	
-	my $mh = DADA::Mail::Send->new(
-					{
-						
-						-list   => $list, 
-						-ls_obj => $ls, 
-					}
-				);
-	
-	#carp "test_mail " . $test_mail; 
-	
-	$mh->test($test_mail); 
-	
-	my $entity; 
-	 
-	eval { $entity = $parser->parse_data($msg) };
-	
-	if(!$entity){
-		print "\t\tMessage sucks!\n" 
-			if $verbose; 
-	
-	}else{
+    if (   $ls->param('group_list') == 0
+        && $ls->param('rewrite_anounce_from_header') == 0 )
+    {
+        $fm->reset_from_header(0);
+    }
 
-		my %headers =  $mh->return_headers($entity->stringify_header);
-	       $headers{To} = $ls->param('send_msg_copy_address');
-		   
-		if($verbose){ 
-			print "\tMessage Details: \n\t" . '-' x 50 . "\n"; 
-			print "\tSubject: " .  $headers{Subject} . "\n";
-		}
-		
-		# Um. I'm not touching that. 
-		my $msg_id = $mh->send(
-			
-						  %headers,
-					      # Trust me on these :) 
+    my ( $header_str, $body_str ) =
+      $fm->format_headers_and_body( -msg => $msg );
 
-					      # These are here so the message doesn't cause an infinite loop BACK to the list - 
-					      
-					      # These are *probably* optional, 
-					      'Bcc'         => '', 
-					      'Cc'          => '', 
-					      
-					      # This'll do the trick, all by itself. 
-					      'X-BeenThere' =>  $ls->param('discussion_pop_email'),
-						  
-						  Body          => $entity->stringify_body,
-				
-				      );
-		
-	}
-	
+    return $header_str . "\n\n" . $body_str;
+
 }
 
+sub strip_file_attachments {
 
+    my $msg = shift;
+    my $ls  = shift;
 
+    my $entity;
 
-sub deliver { 
+    eval { $entity = $parser->parse_data($msg) };
+    if ( !$entity ) {
+        die "no entity found! die'ing!";
+    }
 
-	my ($args) = @_; 
+    print "\t\t\tStripping banned file attachments...\n\n"
+      if $verbose;
 
-	if(!exists($args->{-list})){ 
-		croak "You must pass a -list paramater!"; 
-	}
-	if(!exists($args->{-ls})){ 
-		croak "You must pass a -ls paramater!"; 
-	}
-	if(!exists($args->{-msg})){ 
-		croak "You must pass a -msg paramater!"; 
-	}
+    ( $entity, $ls ) = process_stripping_file_attachments( $entity, $ls );
 
-	my $list     = $args->{-list}; 
-	my $ls       = $args->{-ls};
-	my $msg      = $args->{-msg};
+    return $entity->as_string;
 
-	my $test_mail = 0; 
-	if(exists($args->{-test_mail})){ 
-		$test_mail = $args->{-test_mail};
-	}
-
-	
-	my $mh = DADA::Mail::Send->new(
-			{
-				-list   => $list, 
-				-ls_obj => $ls, 
-			}
-		);
-	
-	$mh->test($test_mail);
-	
-	my $entity; 
-	 
-	eval { $entity = $parser->parse_data($msg) };
-	
-	if(!$entity){
-		print "\t\tMessage sucks!\n" 
-			if $verbose; 
-	
-	}else{
-	
-		my %headers     =  $mh->return_headers($entity->stringify_header);
-	       $headers{To} = $ls->param('list_owner_email');
-		
-		if($verbose){ 
-			print "\tMessage Details: \n\t" . '-' x 50 . "\n"; 
-			print "\tSubject: " .  $headers{Subject} . "\n";
-		}
-		
-		if(
-			$ls->param('group_list')                        == 1 && 
-			$ls->param('mail_discussion_message_to_poster') != 1
-		){ 
-		
-			my $f_a; 
-	
-			if (exists($headers{From})){
-				
-				eval { $f_a = (Email::Address->parse($headers{From}))[0]->address; }
-			}	
-
-			if(!$@){ 
-				print "\tGoing to skip sending original poster ($f_a) a copy of their own  message...\n"
-					if $verbose; 
-				$mh->do_not_send_to([$f_a]);
-			}else{ 
-				print "Problems not sending copy to original sender: $@\n\n" 
-					if $verbose; 
-			}
-		}
-
-		my $msg_id = $mh->mass_send(
-								%headers,
-								  # Trust me on these :) 
-								 Body => $entity->stringify_body,
-				
-				 );
-
-		return ($msg_id, $mh->saved_message); 
-
-	}
-	
 }
 
+sub process_stripping_file_attachments {
 
+    my $entity = shift;
+    my $ls     = shift;
 
+    my @att_bl = split ( ' ', $ls->param('file_attachments_to_strip') );
+    my $lt     = {};
+
+    foreach (@att_bl) {
+
+        $lt->{$_} = lc( $lt->{$_} );
+        $lt->{$_} = 1;
+    }
+
+    my @parts = $entity->parts;
+
+    if (@parts) {
+
+        # multipart...
+        my $i;
+        foreach $i ( 0 .. $#parts ) {
+            ( $parts[$i], $ls ) =
+              process_stripping_file_attachments( $parts[$i], $ls );
+
+        }
+
+        my @new_parts;
+
+        foreach $i ( 0 .. $#parts ) {
+            if ( !$parts[$i] ) {
+
+            }
+            else {
+
+                push ( @new_parts, $parts[$i] );
+            }
+        }
+
+        $entity->parts( \@new_parts );
+
+        $entity->sync_headers(
+            'Length'      => 'COMPUTE',
+            'Nonstandard' => 'ERASE'
+        );
+
+        return ( $entity, $ls );
+
+    }
+    else {
+
+        my $name = $entity->head->mime_attr("content-type.name")
+          || $entity->head->mime_attr("content-disposition.filename");
+
+        my $f_ending = $name;
+
+        $f_ending =~ s/(.*)\.//g;
+
+        if (   $lt->{ lc( $entity->head->mime_type ) } == 1
+            || $lt->{ lc($f_ending) } == 1 )
+        {
+
+            print
+"\t\t\t * Stripping attachment with:\n\t\t\t\tname: $name and mime-type:\n\t\t\t\t"
+              . $entity->head->mime_type . "\n";
+            return ( undef, $ls );
+        }
+
+        $entity->sync_headers(
+            'Length'      => 'COMPUTE',
+            'Nonstandard' => 'ERASE'
+        );
+        return ( $entity, $ls );
+    }
+
+    return ( $entity, $ls );
+}
+
+sub deliver_copy {
+
+    print "Delivering Copy...\n"
+      if $verbose;
+
+    my ($args) = @_;
+
+    if ( !exists( $args->{ -list } ) ) {
+        croak "You must pass a -list paramater!";
+    }
+    if ( !exists( $args->{ -ls } ) ) {
+        croak "You must pass a -ls paramater!";
+    }
+    if ( !exists( $args->{ -msg } ) ) {
+        croak "You must pass a -msg paramater!";
+    }
+
+    my $list = $args->{ -list };
+    my $ls   = $args->{ -ls };
+    my $msg  = $args->{ -msg };
+
+    my $test_mail = 0;
+    if ( exists( $args->{ -test_mail } ) ) {
+        $test_mail = $args->{ -test_mail };
+    }
+
+    my $mh = DADA::Mail::Send->new(
+        {
+
+            -list   => $list,
+            -ls_obj => $ls,
+        }
+    );
+
+    #carp "test_mail " . $test_mail;
+
+    $mh->test($test_mail);
+
+    my $entity;
+
+    eval { $entity = $parser->parse_data($msg) };
+
+    if ( !$entity ) {
+        print "\t\tMessage sucks!\n"
+          if $verbose;
+
+    }
+    else {
+
+        my %headers = $mh->return_headers( $entity->stringify_header );
+        $headers{To} = $ls->param('send_msg_copy_address');
+
+        if ($verbose) {
+            print "\tMessage Details: \n\t" . '-' x 50 . "\n";
+            print "\tSubject: " . $headers{Subject} . "\n";
+        }
+
+        # Um. I'm not touching that.
+        my $msg_id = $mh->send(
+
+            %headers,
+
+            # Trust me on these :)
+
+# These are here so the message doesn't cause an infinite loop BACK to the list -
+
+            # These are *probably* optional,
+            'Bcc' => '',
+            'Cc'  => '',
+
+            # This'll do the trick, all by itself.
+            'X-BeenThere' => $ls->param('discussion_pop_email'),
+
+            Body => $entity->stringify_body,
+
+        );
+
+    }
+
+}
+
+sub deliver {
+
+    my ($args) = @_;
+
+    if ( !exists( $args->{ -list } ) ) {
+        croak "You must pass a -list paramater!";
+    }
+    if ( !exists( $args->{ -ls } ) ) {
+        croak "You must pass a -ls paramater!";
+    }
+    if ( !exists( $args->{ -msg } ) ) {
+        croak "You must pass a -msg paramater!";
+    }
+
+    my $list = $args->{ -list };
+    my $ls   = $args->{ -ls };
+    my $msg  = $args->{ -msg };
+
+    my $test_mail = 0;
+    if ( exists( $args->{ -test_mail } ) ) {
+        $test_mail = $args->{ -test_mail };
+    }
+
+    my $mh = DADA::Mail::Send->new(
+        {
+            -list   => $list,
+            -ls_obj => $ls,
+        }
+    );
+
+    $mh->test($test_mail);
+
+    my $entity;
+
+    eval { $entity = $parser->parse_data($msg) };
+
+    if ( !$entity ) {
+        print "\t\tMessage sucks!\n"
+          if $verbose;
+
+    }
+    else {
+
+        my %headers = $mh->return_headers( $entity->stringify_header );
+        $headers{To} = $ls->param('list_owner_email');
+
+        if ($verbose) {
+            print "\tMessage Details: \n\t" . '-' x 50 . "\n";
+            print "\tSubject: " . $headers{Subject} . "\n";
+        }
+
+        if (   $ls->param('group_list') == 1
+            && $ls->param('mail_discussion_message_to_poster') != 1 )
+        {
+
+            my $f_a;
+
+            if ( exists( $headers{From} ) ) {
+
+                eval {
+                    $f_a =
+                      ( Email::Address->parse( $headers{From} ) )[0]->address;
+                };
+            }
+
+            if ( !$@ ) {
+                print
+"\tGoing to skip sending original poster ($f_a) a copy of their own  message...\n"
+                  if $verbose;
+                $mh->do_not_send_to( [$f_a] );
+            }
+            else {
+                print "Problems not sending copy to original sender: $@\n\n"
+                  if $verbose;
+            }
+        }
+
+        my $msg_id = $mh->mass_send(
+            %headers,
+
+            # Trust me on these :)
+            Body => $entity->stringify_body,
+
+        );
+
+        return ( $msg_id, $mh->saved_message );
+
+    }
+
+}
 
 sub archive {
-	
-	my ($args) = @_; 
 
-	if(!exists($args->{-list})){ 
-		croak "You must pass a -list paramater!"; 
-	}
-	if(!exists($args->{-ls})){ 
-		croak "You must pass a -ls paramater!"; 
-	}
-	if(!exists($args->{-msg})){ 
-		croak "You must pass a -msg paramater!"; 
-	}
-	if(!exists($args->{-msg_id})){ 
-		croak "You must pass a -msg_id paramater!"; 
-	}
-	if(!exists($args->{-saved_msg})){ 
-		croak "You must pass a -saved_msg paramater!"; 
-	}
+    my ($args) = @_;
 
-	my $list      = $args->{-list}; 
-	my $ls        = $args->{-ls};
-	my $msg       = $args->{-msg};
-	my $msg_id    = $args->{-msg_id};
-	my $saved_msg = $args->{-saved_msg};
-	
-	if ($ls->param('archive_messages') == 1){ 
-		
-		require DADA::MailingList::Archives; 
-       
-       # I'm having trouble with the db handle die'ing after we've forked a mailing.
-       # I wonder if telling Mr. Archives here to create  new connection will help things...
-       
-       # $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
-        
-		my $la = DADA::MailingList::Archives->new({-list => $list}); 
-		
-		my $entity;  
-		
-		eval { $entity = $parser->parse_data($msg) };
-			
-		if($entity){
-		
-			my $Subject = $entity->head->get('Subject', 0);
-			if ($ls->param('no_append_list_name_to_subject_in_archives') == 1){    
-				$Subject = $la->strip_subjects_appended_list_name($Subject)
-			}   	 
-			   	
-           eval { 
-
-                $la->set_archive_info(
-                                  $msg_id, 
-                                  $Subject, 
-                                  undef, 
-                                  undef,
-                                  $saved_msg, 
-                                 );
-		  }; 
-		  
-		  if($@){ 
-		      warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! message did not archive correctly!: $@"; 
-		  }
-		}else{ 
-			warn "Problem archiving message..."; 
-		}
-	
-	}	
-}
-
-
-
-
-sub send_msg_not_from_subscriber { 
-
-	my $list   = shift; 
-	my $msg    = shift; 
-	my $entity = $parser->parse_data($msg);
-
-	my $rough_from = $entity->head->get('From', 0); 
-	my $from_address;
-	 	if (defined($rough_from)){; 
-			eval { $from_address = (Email::Address->parse($rough_from))[0]->address; }
-		}
-
-	if($from_address && $from_address ne ''){ 
-			require DADA::App::Messages; 
-			DADA::App::Messages::send_not_allowed_to_post_message(
-				{
-					-list       => $list, 
-					-email      => $from_address,	
-					-attachment => $entity->as_string, 
-				
-				},
-			); 
-			
-	}else{ 
-		warn "Problem with send_msg_not_from_subscriber! There's no address to send to?: " . $rough_from;
-	}
-
-}
-
-
-
-
-sub send_invalid_msgs_to_owner { 
-	
-	my $li     = shift; 
-	my $list   = shift; 
-	my $msg    = shift; 
-	my $entity = $parser->parse_data($msg);
-	
-	my $rough_from = $entity->head->get('From', 0); 
-	my $from_address;
-	 	if (defined($rough_from)){; 
-			eval { $from_address = (Email::Address->parse($rough_from))[0]->address; }
-		}
-
-	if($from_address && $from_address ne ''){ 
-		
-		my $reply = MIME::Entity->build(
-			Type 	=> "multipart/mixed", 
-			From    => $li->{list_owner_email},
-			To      => $li->{list_owner_email},
-			Subject => $DADA::Config::NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT,									
-		);
-		# DEV: If the above works, we'll have to make this a per-list thingy.
-		$reply->attach(
-			Type => 'text/plain', 
-			Data  => $DADA::Config::NOT_ALLOWED_TO_POST_NOTICE_MESSAGE, 
-		); 			
-		$reply->attach( 
-			Type        => 'message/rfc822', 
-			Disposition  => "inline",
-			Data         => $entity->as_string,
-		); 				
-
-		my %msg_headers = DADA::App::Messages::_mime_headers_from_string($reply->stringify_header); 
-		
-		
-		require DADA::App::Messages; 
-		DADA::App::Messages::send_generic_email(
-			{
-				-list                     => $list, 
-				-headers                  => {
-					%msg_headers,
-					# Hack? Or bug somewhere else...
-					#'Content-Type' => 'multipart/mixed', 
-				}, 
-				-body                     => $reply->stringify_body, 
-				-list_settings_vars       => $li, 
-				-list_settings_vars_param => 
-					{
-						-dot_it => 1, 
-					}
-					
-				-subscriber_vars          => 
-					{
-						'subscriber.email' => $from_address, 
-					}
-			}	
-		);
-	}else{ 
-		warn "Problem with send_invalid_msgs_to_owner!";
-	}
-}
-
-
-
-
-sub handle_errors { 
-
-	my $list     = shift; 
-	my $errors   = shift; 
-	my $full_msg = shift; 
-	my $li       = shift; 
-
-
-	my $entity; 
-	eval { $entity = $parser->parse_data($full_msg) };
-	if(!$entity){
-		die "no entity found! die'ing!";   
-	}
-	
-	my $reasons = '';
-	foreach(keys %$errors){ 
-	    $reasons .=  $_ . ', ' 
-	        if $errors->{$_} == 1; 
-	}
-	my $subject     = $entity->head->get('Subject', 0); 
-	   $subject =~ s/\n//g; 
-	my $from        = $entity->head->get('From', 0);
-	   $from =~ s/\n//g;
-	my $message_id  = $entity->head->get('Message-Id', 0);
-       $message_id =~ s/\n//g; 
-       if(!$message_id){ 
-            
-            require DADA::Security::Password; 	
-            
-            my ($f_user, $f_domain) = split('@', $from); 
-            my $fake_message_id = '<' . DADA::App::Guts::message_id() . '.FAKE_MSG_ID' . DADA::Security::Password::generate_rand_string('1234567890') . '@' . $f_domain . '>'; 
-            
-            $message_id = $fake_message_id;
-            $entity->head->replace('Message-ID', $fake_message_id);
-       
-            warn "dada_bridge.pl - message has no Message-Id header!...? Creating FAKE Message-Id ($fake_message_id) , to avoid any conflicts...";
-
-       }
-              
-    warn "dada_bridge.pl rejecting sending of received message - \tFrom: $from\tSubject: $subject\tMessage-ID: $message_id\tReasons: $reasons";	
-	
-	
-	print "\t\tError delivering message! Reasons:\n\n"
-		if $verbose; 
-	foreach(keys %$errors){ 
-		print "\t\t\t" . $_ . "\n" 
-			if $errors->{$_} == 1 && $verbose;
-	}
-	
-	
-	
-	if($errors->{list_owner_return_path_set_funny} == 1){ 
-	
-	    print "\n\n\t\tlist_owner_return_path_set_funny\n\n"
-	        if $verbose;
-	        
-	    # and I'm not going to do anything...
-	
-	}
-	
-	if($errors->{message_seen_as_spam} == 1){ 
-	
-	    print "\n\n\t\t *** Message seen as SPAM - ignoring. ***\n\n"
-	        if $verbose;
-	
-	}
-	elsif ($errors->{multiple_return_path_headers} == 1){ 
-            
-            print "\t\tMessage has multiple 'Return-Path' headers. Ignoring. \n\n"
-                if $verbose; 
-            warn "$DADA::Config::PROGRAM_NAME Error: Message has multiple 'Return-Path' headers. Ignoring.1023";	
-	
-	}
-	elsif ($errors->{msg_from_list_address}){ 
-            
-            
-            print "\t\tmessage was from the list address - will not process! - (ignoring) \n\n"
-                if $verbose; 
-            warn "$DADA::Config::PROGRAM_NAME Error: message was from the list address - will not process! - (ignoring)";
-   }  		
-   elsif(
-		$errors->{msg_not_from_subscriber}           == 1 || 
-		$errors->{msg_not_from_list_owner}           == 1 || 
-		$errors->{msg_not_from_an_authorized_sender} == 1
-		){ 
-            
-        if($li->{send_not_allowed_to_post_msg} == 1){ 
-        
-            print "\t\tmsg_not_from_subscriber on its way! \n\n"
-                if $verbose; 
-            send_msg_not_from_subscriber($list, $full_msg); 
-        
-        }
-        
-        if($li->{send_invalid_msgs_to_owner} == 1){ 
-            print "\t\tinvalid_msgs_to_owner on its way! \n\n"
-                if $verbose; 
-            send_invalid_msgs_to_owner($li, $list, $full_msg); 
-        
-        }
-        
-        
-        #if($errors->{msg_from_list_address}){ 
-        #    warn "$DADA::Config::PROGRAM_NAME Error: message was from the list address - will not process! - (ignoring)";
-        #}  			
-
-    } 
-    elsif($errors->{needs_moderation}){ 
-	    
-	    print "\t\tMessage being saved for moderation by list owner... \n\n"
-	        if $verbose; 
-	    
-	    my $mod = SimpleModeration->new({-List => $list}); 
-	       $mod->save_msg({-msg => $full_msg, -msg_id => $message_id});     
-	       
-		   # This is only used once...
-	       $mod->moderation_msg({-msg => $full_msg, -msg_id => $message_id, -subject => $subject, -from => $from, -parser => $parser}); 
-	       my $awaiting_msgs = $mod->awaiting_msgs(); 
-	       
-	       print "\t\tOther awaiting messages:\n\n"
-	        if $verbose; 
-	        
-	        foreach(@$awaiting_msgs){ 
-	            print "\t\t * " . $_ . "\n"
-	                if $verbose; 
-	       }
-	}
-
-
-}
-
-
-
-
-sub create_checksum { 
- 
-	my $data = shift; 
-	
-	if($] >= 5.008){
-		require Encode;
-		my $cs = md5_hex(Encode::encode_utf8($$data));
-		return $cs;
-	}else{ 			
-		my $cs = md5_hex($$data);
-		return $cs;
-	}
-}
-
-
-
-
-sub can_use_spam_assassin { 
-
-    eval { require Mail::SpamAssassin; }; 
-    
-    if(!$@){ 
-        return 1; 
-    }else{ 
-        return 0; 
+    if ( !exists( $args->{ -list } ) ) {
+        croak "You must pass a -list paramater!";
     }
-    
+    if ( !exists( $args->{ -ls } ) ) {
+        croak "You must pass a -ls paramater!";
+    }
+    if ( !exists( $args->{ -msg } ) ) {
+        croak "You must pass a -msg paramater!";
+    }
+    if ( !exists( $args->{ -msg_id } ) ) {
+        croak "You must pass a -msg_id paramater!";
+    }
+    if ( !exists( $args->{ -saved_msg } ) ) {
+        croak "You must pass a -saved_msg paramater!";
+    }
+
+    my $list      = $args->{ -list };
+    my $ls        = $args->{ -ls };
+    my $msg       = $args->{ -msg };
+    my $msg_id    = $args->{ -msg_id };
+    my $saved_msg = $args->{ -saved_msg };
+
+    if ( $ls->param('archive_messages') == 1 ) {
+
+        require DADA::MailingList::Archives;
+
+# I'm having trouble with the db handle die'ing after we've forked a mailing.
+# I wonder if telling Mr. Archives here to create  new connection will help things...
+
+        # $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
+
+        my $la = DADA::MailingList::Archives->new( { -list => $list } );
+
+        my $entity;
+
+        eval { $entity = $parser->parse_data($msg) };
+
+        if ($entity) {
+
+            my $Subject = $entity->head->get( 'Subject', 0 );
+            if ( $ls->param('no_append_list_name_to_subject_in_archives') == 1 )
+            {
+                $Subject = $la->strip_subjects_appended_list_name($Subject);
+            }
+
+            eval {
+
+                $la->set_archive_info( $msg_id, $Subject, undef, undef,
+                    $saved_msg, );
+            };
+
+            if ($@) {
+                warn
+"$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! message did not archive correctly!: $@";
+            }
+        }
+        else {
+            warn "Problem archiving message...";
+        }
+
+    }
 }
 
+sub send_msg_not_from_subscriber {
 
+    my $list   = shift;
+    my $msg    = shift;
+    my $entity = $parser->parse_data($msg);
 
+    my $rough_from = $entity->head->get( 'From', 0 );
+    my $from_address;
+    if ( defined($rough_from) ) {
+        ;
+        eval {
+            $from_address = ( Email::Address->parse($rough_from) )[0]->address;
+        };
+    }
 
-sub append_message_to_file { 
+    if ( $from_address && $from_address ne '' ) {
 	
-	my $msg  = shift; 
-	my $list = shift;
-	my $rp = find_return_path($msg); 
-	
-	my $file = $DADA::Config::TMP . '/dada_bridge_received_msgs-' . $list . '.mbox'; 
-	
-	print "Saving message at: '$file' \n"
-		if $verbose; 
-	    
-	$file = DADA::App::Guts::make_safer($file); 
-			
-	open(APPENDLOG, ">>$file") or die $!; 
-	chmod($DADA::Config::FILE_CHMOD, $file); 
-	print APPENDLOG 'From ' . $rp . "\n"; 
-	
-	print APPENDLOG $msg . "\n"; 
-	close(APPENDLOG) or die $!; 
+		require DADA::MailingList::Settings; 
+		my $ls = DADA::MailingList::Settings->new({-list => $list});
+		if($from_address eq $ls->param('discussion_pop_email')) {
+			warn "Message is from List Email ($from_address)? Not sending, 'not_allowed_to_post_message' so to not send message back to list!" ;
+		}
+		else {  	
+	        require DADA::App::Messages;
+	        DADA::App::Messages::send_not_allowed_to_post_message(
+	            {
+	                -list       => $list,
+	                -email      => $from_address,
+	                -attachment => $entity->as_string,
 
-	print "Saved. \n"
-		if $verbose;
-		
-    return 1;
-    
+	            },
+	        );
+		}
+
+    }
+    else {
+        warn
+"Problem with send_msg_not_from_subscriber! There's no address to send to?: "
+          . $rough_from;
+    }
+
 }
 
+sub send_invalid_msgs_to_owner {
 
+    my $li     = shift;
+    my $list   = shift;
+    my $msg    = shift;
+    my $entity = $parser->parse_data($msg);
 
+	require DADA::App::Messages;
+	
+    my $rough_from = $entity->head->get( 'From', 0 );
+    my $from_address;
+    if ( defined($rough_from) ) {
+        ;
+        eval {
+            $from_address = ( Email::Address->parse($rough_from) )[0]->address;
+        };
+    }
 
-sub find_return_path { 
-	
-	my $msg = shift; 
-	my $rp; 
-	
-	eval { 
-  	  my $entity = $parser->parse_data($msg);
-		$rp =  $entity->head->get('Return-Path', 0); 
-	
+    if ( $from_address && $from_address ne '' ) {
+
+        my $reply = MIME::Entity->build(
+            Type    => "multipart/mixed",
+            From    => $li->{list_owner_email},
+            To      => $li->{list_owner_email},
+            Subject =>
+              $DADA::Config::NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT,
+        );
+
+        # DEV: If the above works, we'll have to make this a per-list thingy.
+        $reply->attach(
+            Type => 'text/plain',
+            Data => $DADA::Config::NOT_ALLOWED_TO_POST_NOTICE_MESSAGE,
+        );
+        $reply->attach(
+            Type        => 'message/rfc822',
+            Disposition => "inline",
+            Data        => $entity->as_string,
+        );
+
+        my %msg_headers =
+          DADA::App::Messages::_mime_headers_from_string(
+            $reply->stringify_header );
+
+        DADA::App::Messages::send_generic_email(
+            {
+                -list    => $list,
+                -headers => {
+                    %msg_headers,
+
+                    # Hack? Or bug somewhere else...
+                    #'Content-Type' => 'multipart/mixed',
+                },
+                -body        => $reply->stringify_body,
+                -tmpl_params => {
+                    -list_settings_vars       => $li,
+                    -list_settings_vars_param => { -dot_it => 1, },
+
+                    -subscriber_vars => { 'subscriber.email' => $from_address, }
+                },
+            }
+        );
+    }
+    else {
+        warn "Problem with send_invalid_msgs_to_owner!";
+    }
+}
+
+sub handle_errors {
+
+    my $list     = shift;
+    my $errors   = shift;
+    my $full_msg = shift;
+    my $li       = shift;
+
+    my $entity;
+    eval { $entity = $parser->parse_data($full_msg) };
+    if ( !$entity ) {
+        die "no entity found! die'ing!";
+    }
+
+    my $reasons = '';
+    foreach ( keys %$errors ) {
+        $reasons .= $_ . ', '
+          if $errors->{$_} == 1;
+    }
+    my $subject = $entity->head->get( 'Subject', 0 );
+    $subject =~ s/\n//g;
+    my $from = $entity->head->get( 'From', 0 );
+    $from =~ s/\n//g;
+	# $from should probably be simply the email address, not the entire header...  
+	# 
+	eval {
+		$from = (Email::Address->parse($from))[0]->address;
 	};
-	if(!$@){ 
-		chomp $rp;
-		return $rp; 
+    if($@){
+		warn "this was a problem parsing the email address from the header? '$@'"; 
 	}
-	else { 
-		return undef; 
-	}
-}
 
 
 
 
-sub cgi_show_plugin_config { 
+    my $message_id = $entity->head->get( 'Message-Id', 0 );
+    $message_id =~ s/\n//g;
+    if ( !$message_id ) {
 
+        require DADA::Security::Password;
 
-     	print(admin_template_header(
-							-Title      => $Plugin_Config->{Plugin_Name} . " Plugin Configuration",
-		                    -List       => $list,
-		                    -Form       => 0,
-		                    -Root_Login => $root_login
-		                    ));
-	
-	my $tmpl = cgi_show_plugin_config_template(); 
-    
-    my $configs = []; 
-    foreach(sort keys %$Plugin_Config){ 
-        if($_ eq 'Password'){ 
-            push(@$configs, {name => $_, value => '(Not Shown)'});
+        my ( $f_user, $f_domain ) = split ( '@', $from );
+        my $fake_message_id = '<'
+          . DADA::App::Guts::message_id()
+          . '.FAKE_MSG_ID'
+          . DADA::Security::Password::generate_rand_string('1234567890') . '@'
+          . $f_domain . '>';
+
+        $message_id = $fake_message_id;
+        $entity->head->replace( 'Message-ID', $fake_message_id );
+
+        warn
+"dada_bridge.pl - message has no Message-Id header!...? Creating FAKE Message-Id ($fake_message_id) , to avoid any conflicts...";
+
+    }
+
+    warn
+"dada_bridge.pl rejecting sending of received message - \tFrom: $from\tSubject: $subject\tMessage-ID: $message_id\tReasons: $reasons";
+
+    print "\t\tError delivering message! Reasons:\n\n"
+      if $verbose;
+    foreach ( keys %$errors ) {
+        print "\t\t\t" . $_ . "\n"
+          if $errors->{$_} == 1 && $verbose;
+    }
+
+    if ( $errors->{list_owner_return_path_set_funny} == 1 ) {
+
+        print "\n\n\t\tlist_owner_return_path_set_funny\n\n"
+          if $verbose;
+
+        # and I'm not going to do anything...
+
+    }
+
+    if ( $errors->{message_seen_as_spam} == 1 ) {
+
+        print "\n\n\t\t *** Message seen as SPAM - ignoring. ***\n\n"
+          if $verbose;
+
+    }
+    elsif ( $errors->{multiple_return_path_headers} == 1 ) {
+
+        print "\t\tMessage has multiple 'Return-Path' headers. Ignoring. \n\n"
+          if $verbose;
+        warn
+"$DADA::Config::PROGRAM_NAME Error: Message has multiple 'Return-Path' headers. Ignoring.1023";
+
+    }
+    elsif ( $errors->{msg_from_list_address} ) {
+
+        print
+"\t\tmessage was from the list address - will not process! - (ignoring) \n\n"
+          if $verbose;
+        warn
+"$DADA::Config::PROGRAM_NAME Error: message was from the list address - will not process! - (ignoring)";
+    }
+    elsif ($errors->{msg_not_from_subscriber} == 1
+        || $errors->{msg_not_from_list_owner} == 1
+        || $errors->{msg_not_from_an_authorized_sender} == 1 )
+    {
+
+        if ( $li->{send_not_allowed_to_post_msg} == 1 ) {
+
+            print "\t\tmsg_not_from_subscriber on its way! \n\n"
+              if $verbose;
+            send_msg_not_from_subscriber( $list, $full_msg );
+
         }
-        else { 
-            push(@$configs, {name => $_, value => $Plugin_Config->{$_}}); 
+
+        if ( $li->{send_invalid_msgs_to_owner} == 1 ) {
+            print "\t\tinvalid_msgs_to_owner on its way! \n\n"
+              if $verbose;
+            send_invalid_msgs_to_owner( $li, $list, $full_msg );
+
+        }
+
+#if($errors->{msg_from_list_address}){
+#    warn "$DADA::Config::PROGRAM_NAME Error: message was from the list address - will not process! - (ignoring)";
+#}
+
+    }
+    elsif ( $errors->{needs_moderation} ) {
+
+        print "\t\tMessage being saved for moderation by list owner... \n\n"
+          if $verbose;
+
+        my $mod = SimpleModeration->new( { -List => $list } );
+        $mod->save_msg( { -msg => $full_msg, -msg_id => $message_id } );
+
+        # This is only used once...
+        $mod->moderation_msg(
+            {
+                -msg     => $full_msg,
+                -msg_id  => $message_id,
+                -subject => $subject,
+                -from    => $from,
+                -parser  => $parser
+            }
+        );
+
+        if ( $li->{send_moderation_msg} == 1 ) {
+            print "\t\t * Sending 'awaiting moderation' message!\n\n"
+              if $verbose;
+            $mod->send_moderation_msg(
+                {
+                    -msg_id  => $message_id,
+                    -parser  => $parser,
+                    -subject => $subject
+                }
+            );
+        }
+
+        my $awaiting_msgs = $mod->awaiting_msgs();
+
+        print "\t\tOther awaiting messages:\n\n"
+          if $verbose;
+
+        foreach (@$awaiting_msgs) {
+            print "\t\t * " . $_ . "\n"
+              if $verbose;
         }
     }
-	require DADA::Template::Widgets; 
-    print   DADA::Template::Widgets::screen(
-		  		{ 
-			     	-data => \$tmpl, 
-					-vars => { 				
-								Plugin_URL   => $Plugin_Config->{Plugin_URL}, 
-								Plugin_Name  => $Plugin_Config->{Plugin_Name}, 
-								configs      => $configs, 
-     						},
-				},
-    		);
-
-    print admin_template_footer(-Form    => 0, 
-                                -List    => $list,
-                                ); 
-
-
 
 }
 
+sub create_checksum {
 
+    my $data = shift;
 
+    if ( $] >= 5.008 ) {
+        require Encode;
+        my $cs = md5_hex( Encode::encode_utf8($$data) );
+        return $cs;
+    }
+    else {
+        my $cs = md5_hex($$data);
+        return $cs;
+    }
+}
 
-sub cgi_show_plugin_config_template { 
+sub can_use_spam_assassin {
+
+    eval { require Mail::SpamAssassin; };
+
+    if ( !$@ ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+
+}
+
+sub append_message_to_file {
+
+    my $msg  = shift;
+    my $list = shift;
+    my $rp   = find_return_path($msg);
+
+    my $file =
+      $DADA::Config::TMP . '/dada_bridge_received_msgs-' . $list . '.mbox';
+
+    print "Saving message at: '$file' \n"
+      if $verbose;
+
+    $file = DADA::App::Guts::make_safer($file);
+
+    open( APPENDLOG, ">>$file" ) or die $!;
+    chmod( $DADA::Config::FILE_CHMOD, $file );
+    print APPENDLOG 'From ' . $rp . "\n";
+
+    print APPENDLOG $msg . "\n";
+    close(APPENDLOG) or die $!;
+
+    print "Saved. \n"
+      if $verbose;
+
+    return 1;
+
+}
+
+sub find_return_path {
+
+    my $msg = shift;
+    my $rp;
+
+    eval {
+        my $entity = $parser->parse_data($msg);
+        $rp = $entity->head->get( 'Return-Path', 0 );
+
+    };
+    if ( !$@ ) {
+        chomp $rp;
+        return $rp;
+    }
+    else {
+        return undef;
+    }
+}
+
+sub cgi_show_plugin_config {
+
+    print(
+        admin_template_header(
+            -Title => $Plugin_Config->{Plugin_Name} . " Plugin Configuration",
+            -List  => $list,
+            -Form  => 0,
+            -Root_Login => $root_login
+        )
+    );
+
+    my $tmpl = cgi_show_plugin_config_template();
+
+    my $configs = [];
+    foreach ( sort keys %$Plugin_Config ) {
+        if ( $_ eq 'Password' ) {
+            push ( @$configs, { name => $_, value => '(Not Shown)' } );
+        }
+        else {
+            push ( @$configs, { name => $_, value => $Plugin_Config->{$_} } );
+        }
+    }
+    require DADA::Template::Widgets;
+    print DADA::Template::Widgets::screen(
+        {
+            -data => \$tmpl,
+            -vars => {
+                Plugin_URL  => $Plugin_Config->{Plugin_URL},
+                Plugin_Name => $Plugin_Config->{Plugin_Name},
+                configs     => $configs,
+            },
+        },
+    );
+
+    print admin_template_footer(
+        -Form => 0,
+        -List => $list,
+    );
+
+}
+
+sub cgi_show_plugin_config_template {
 
     return q{ 
     
@@ -2746,119 +3121,107 @@ sub cgi_show_plugin_config_template {
         
     };
 
-
 }
 
+sub inject {
 
+    my ($args) = @_;
 
-sub inject { 
+    my $msg       = $args->{ -msg };
+    my $send_test = 0;
+    my $list      = $args->{ -list };
+    my $test_mail = 0;
 
-	my ($args) = @_; 
-	
-	my $msg  = $args->{-msg}; 
-	my $send_test = 0; 
-    my $list = $args->{-list}; 
-	my $test_mail = 0; 
-	
-	if(exists($args->{-send_test})){ 
-		$send_test = $args->{-send_test}; 
-	}
-	if(exists($args->{-verbose})){ 
-		$verbose = $args->{-verbose}; 
-		print "I'm verbosing!\n"; 
-	}
-	if(exists($args->{-test_mail})) {
-		$test_mail = $args->{-test_mail};
-	}
-	
-	my $ls; 
-	if(exists($args->{-ls})){ 
-		$ls = $args->{-ls}; 
-	
-	}
-	else { 
-		require DADA::MailingList::Settings; 
-		$ls = DADA::MailingList::Settings->new({-list => $list});		
-	}
+    if ( exists( $args->{ -send_test } ) ) {
+        $send_test = $args->{ -send_test };
+    }
+    if ( exists( $args->{ -verbose } ) ) {
+        $verbose = $args->{ -verbose };
+        print "I'm verbosing!\n";
+    }
+    if ( exists( $args->{ -test_mail } ) ) {
+        $test_mail = $args->{ -test_mail };
+    }
 
+    my $ls;
+    if ( exists( $args->{ -ls } ) ) {
+        $ls = $args->{ -ls };
 
-	
-	# used later down, there. 
-	my $li = $ls->get; 
-	#	die q{	die $ls->param('disable_discussion_sending');  "} . $ls->param('disable_discussion_sending') . '"'; 
-	if ($ls->param('disable_discussion_sending') != 1){     
-  		my ($status, $errors); 
+    }
+    else {
+        require DADA::MailingList::Settings;
+        $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    }
 
-          eval { 
-          
-               ($status, $errors) = validate_msg(
-										$list, 
-										$msg, 
-										$li
-									);
-              if($status){  
-              	process(
-					{
-						-list      => $list, 
-						-ls        => $ls, 
-						-msg       => $msg,
-						-test_mail => $test_mail, 
-					}
-				);
-				
-				append_message_to_file($msg, $list); 
-				
-				return ($status, $errors);
-				
-              }else{  
-              
-                  print "\tMessage did not pass verification - handling issues...\n"
-                      if $verbose; 
-                      
-                  handle_errors(
-					$list, 
-					$errors, 
-					$msg, 
-					$li
-					);  
-				
-					append_message_to_file($msg, $list); 
-					
-              		return ($status, $errors); 
-				
-              }
-              
-           };
-           
-           if($@){ 
-           
-              warn  "dada_bridge.pl - irrecoverable error processing message. Skipping message (sorry!): $@"; 
-              print "dada_bridge.pl - irrecoverable error processing message. Skipping message (sorry!): $@"
-                  if $verbose; 
-			  return (0, {irrecoverable_error => 1});
-                  
-           }
-			else { 
-				return ($status, $errors); 
-				
-			}
-          
-          
-      }else{  
-          print "\tThis sending method has been disabled for $list, ignoring message... \n" 
+    # used later down, there.
+    my $li = $ls->get;
+
+#	die q{	die $ls->param('disable_discussion_sending');  "} . $ls->param('disable_discussion_sending') . '"';
+    if ( $ls->param('disable_discussion_sending') != 1 ) {
+        my ( $status, $errors );
+
+        eval {
+
+            ( $status, $errors ) = validate_msg( $list, \$msg, $li );
+            if ($status) {
+                process(
+                    {
+                        -list      => $list,
+                        -ls        => $ls,
+                        -msg       => $msg,
+                        -test_mail => $test_mail,
+                    }
+                );
+
+                append_message_to_file( $msg, $list );
+
+                return ( $status, $errors );
+
+            }
+            else {
+
+                print
+                  "\tMessage did not pass verification - handling issues...\n"
+                  if $verbose;
+
+                handle_errors( $list, $errors, $msg, $li );
+
+                append_message_to_file( $msg, $list );
+
+                return ( $status, $errors );
+
+            }
+
+        };
+
+        if ($@) {
+
+            warn
+"dada_bridge.pl - irrecoverable error processing message. Skipping message (sorry!): $@";
+            print
+"dada_bridge.pl - irrecoverable error processing message. Skipping message (sorry!): $@"
               if $verbose;
-			return (0, {disabled => 1}); 
-     }
+            return ( 0, { irrecoverable_error => 1 } );
+
+        }
+        else {
+            return ( $status, $errors );
+
+        }
+
+    }
+    else {
+        print
+"\tThis sending method has been disabled for $list, ignoring message... \n"
+          if $verbose;
+        return ( 0, { disabled => 1 } );
+    }
 
 }
-
-
-
-
 
 sub default_cgi_template {
-	
-return  q{ 
+
+    return q{ 
 
 <!-- tmpl_if saved -->
 	<!-- tmpl_var GOOD_JOB_MESSAGE  -->
@@ -2896,7 +3259,7 @@ return  q{
     List Email 
    </strong>
    address is the email address you will be sending to, to have your messages 
-   broadcasted to your entire Subscription List. This email account needs to be created, 
+   broadcast to your entire Subscription List. This email account needs to be created, 
    if it's not already available. Make sure this address is not being used 
    for <strong>any</strong> other purpose.
 
@@ -2914,8 +3277,7 @@ return  q{
     &quot;Make this list a discussion list&quot;
    </strong> 
    has been checked, all subscribers can mail to the <strong>List Email</strong>
-   and have their message sent all other subscribers. 
-   Otherwise, only the list owner can email to this address. 
+   and have their message sent to all other subscribers. 
  </p>
 </blockquote> 
 
@@ -3030,6 +3392,8 @@ General
      <label for="disable_discussion_sending">
       Disable sending using this method
      </label>
+          <br /> 
+      ALL e-mails received at (<strong><!-- tmpl_var name="discussion_pop_email" escape="HTML" --></strong>) will be deleted.     
     </p>
    
    
@@ -3151,13 +3515,30 @@ General
       Make this list a discussion list
      </label>
      <br />
-     Everyone subscribed to your list may send messages to everyone else 
-     on your list by posting  messages to the <strong>List Email</strong>
-     (below).
+     Everyone subscribed to your list may post messages for everyone else 
+     on your list by sending  messages to (<strong><!-- tmpl_var name="discussion_pop_email" escape="HTML" --></strong>).
     </p>
   
   
   	 <table width="100%" cellspacing="0" cellpadding="5">
+        <tr> 
+        
+ <!-- tmpl_if Allow_Open_Discussion_List -->
+   <!-- tmpl_if group_list -->  
+        <tr> 
+       <td align="right">
+        <input name="open_discussion_list" id="open_discussion_list" type="checkbox" value="1" <!--tmpl_if open_discussion_list -->checked="checked"<!--/tmpl_if--> />
+       </td>
+       <td>
+        <label for="open_discussion_list">
+         Allow messages to also be posted to the list from non-subscribers.         
+        </label>
+         <br /><em>(opens up list to possible abuse unless moderated)</em> 
+       </td>
+      </tr>
+   <!-- /tmpl_if --> 
+ <!-- /tmpl_if -->  
+   	 
 	<tr> 
    <td align="right">
     <input name="append_list_name_to_subject" id="append_list_name_to_subject" type="checkbox" value="1" <!--tmpl_if append_list_name_to_subject -->checked="checked"<!--/tmpl_if--> />
@@ -3200,7 +3581,7 @@ General
     </label>
     <br />
      A 'Reply-To' header will be added to group list mailings that will direct 
-     replies to list messages back to the list.
+     replies to list messages back to the list address (<strong><!-- tmpl_var name="discussion_pop_email" escape="HTML" --></strong>).
    </td>
   </tr>
    <tr> 
@@ -3228,7 +3609,15 @@ General
     <br />
    </td>
   </tr>
-  
+ </table> 
+      </td>
+  </tr>
+ </table> 
+</fieldset> 
+
+<fieldset> 
+ <legend>List Moderation Options</legend> 
+  <table width="100%" cellspacing="0" cellpadding="5">    
   <tr> 
    <td> 
     <input name="enable_moderation" id="enable_moderation" type="checkbox" value="1" <!--tmpl_if enable_moderation -->checked="checked"<!--/tmpl_if--> /> 
@@ -3238,13 +3627,98 @@ General
      <label for="enable_moderation">
       Use Moderation
      </label>
-     <br /> 
      
-          Messages sent to your discussion list will have to be approved by the List Owner. 
+     <!-- tmpl_if enable_moderation --> 
+       - <a href="<!-- tmpl_var Plugin_URL -->?flavor=awaiting_msgs">View/Manage Messages Awaiting Moderation</a>.
+     <!--/tmpl_if-->
+     
+     <br />      
+          Messages sent to your discussion list will first have to be approved by: 
       </p>
-      
-     
+   	  <p>
+ 		<input type="radio" name="moderate_discussion_lists_with" value="list_owner_email" <!--tmpl_if expr="(moderate_discussion_lists_with eq 'list_owner_email')" -->checked="checked" <!--/tmpl_if--> />
+		<label for="">
+			List Owner
+		</label>
+		<br />
+
+ 			<input type="radio" name="moderate_discussion_lists_with" value="authorized_sender_email" <!--tmpl_if expr="(moderate_discussion_lists_with eq 'authorized_sender_email')" -->checked="checked"<!--/tmpl_if--><!-- tmpl_unless enable_authorized_sending -->disabled="disabled"<!-- /tmpl_unless --> />
+			<label for="">
+				List Owner or an Authorized Sender
+			</label>
+			<!-- tmpl_unless enable_authorized_sending --><span class="error">
+	             Disabled. Enable, &quot;Allow Messages Received From Authorized Senders &quot;, to enabled this option.
+	            </span>
+			<!-- /tmpl_unless -->
+		
+		</p>      
      <table  cellspacing="0" cellpadding="5">
+
+  <!-- tmpl_if enable_authorized_sending -->  
+     <!-- tmpl_if group_list -->          
+      <tr>
+       <td>
+        <input name="authorized_sending_no_moderation" id="authorized_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if authorized_sending_no_moderation -->checked="checked"<!--/tmpl_if--> />
+       </td>
+       <td>
+        <p>
+         <label for="authorized_sending_no_moderation">
+          Allow Authorized Senders to send messages to the entire list without moderation
+         </label><br /> 
+         If not checked, messages from Authorized Senders also require moderation.
+        </p>
+       </td>
+       </tr>     
+     <!--/tmpl_if-->
+   <!--/tmpl_if-->     
+     	   
+ <!-- tmpl_if open_discussion_list -->       
+   <!-- tmpl_if group_list --> 
+      <tr>
+       <td>
+        <input name="subscriber_sending_no_moderation" id="subscriber_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if subscriber_sending_no_moderation -->checked="checked"<!--/tmpl_if--> />
+       </td>
+       <td>
+        <p>
+         <label for="subscriber_sending_no_moderation">
+          Allow Subscribers to send messages to the entire list without moderation
+         </label><br /> 
+         If not checked, messages from Subscribers require moderation.
+        </p>
+       </td>
+       </tr> 
+   <!-- /tmpl_if --> 
+ <!-- /tmpl_if --> 
+      
+     <table  cellspacing="0" cellpadding="5">
+           <tr>
+       <td>
+        <input name="send_moderation_msg" id="send_moderation_msg" type="checkbox" value="1" <!--tmpl_if send_moderation_msg -->checked="checked"<!--/tmpl_if--> />
+       </td>
+       <td>
+        <p>
+         <label for="send_moderation_msg">
+          Send a Message Received, Awaiting Moderation Message
+         </label><br /> 
+         The original poster will receive a message stating that the message has been received, but requires moderation.
+        </p>
+       </td>
+       </tr>
+       
+       <tr>
+       <td>
+        <input name="send_moderation_accepted_msg" id="send_moderation_accepted_msg" type="checkbox" value="1" <!--tmpl_if send_moderation_accepted_msg -->checked="checked"<!--/tmpl_if--> />
+       </td>
+       <td>
+        <p>
+         <label for="send_moderation_accepted_msg">
+          Send an Acceptance Message
+         </label><br /> 
+         The original poster will receive a message stating that the moderated message was accepted.
+        </p>
+       </td>  
+       </tr>
+       
       <tr>
        <td>
         <input name="send_moderation_rejection_msg" id="send_moderation_rejection_msg" type="checkbox" value="1" <!--tmpl_if send_moderation_rejection_msg -->checked="checked"<!--/tmpl_if--> />
@@ -3254,7 +3728,7 @@ General
          <label for="send_moderation_rejection_msg">
           Send a Rejection Message
          </label><br /> 
-         The original poster will receive a message stating that the message was rejected.
+         The original poster will receive a message stating that the moderated message was rejected.
         </p>
        </td>
       </tr>
@@ -3263,22 +3737,6 @@ General
    </td>
   </tr>
  
- <!-- tmpl_if Allow_Open_Discussion_List -->
-        <tr> 
-       <td align="right">
-        <input name="open_discussion_list" id="open_discussion_list" type="checkbox" value="1" <!--tmpl_if open_discussion_list -->checked="checked"<!--/tmpl_if--> />
-       </td>
-       <td>
-        <label for="open_discussion_list">
-         Allow messages to be posted to the list from non-subscribers. 
-        </label>
-        <br />
-       </td>
-      </tr>
- <!-- /tmpl_if -->  
-  
-  
-  
 	</table>
   
   </td>
@@ -3581,440 +4039,582 @@ Mailing List Security
 
 }
 
+END {
 
-END { 
-	
-	if(defined ($parser)){ 
-		$parser->filer->purge;
-	}
+    if ( defined($parser) ) {
+        $parser->filer->purge;
+    }
 }
 
 package SimpleModeration;
 
-use strict; 
+use strict;
 
 use Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT);
-use DADA::App::Guts qw(!:DEFAULT); 
+use DADA::App::Guts qw(!:DEFAULT);
 use MIME::Entity;
 
-sub new { 
-	my $class = shift;
-	my $self = {@_};
-	bless $self, $class;  
-
+sub new {
+    my $class = shift;
+    my $self  = {@_};
+    bless $self, $class;
 
     my ($args) = @_;
-    
-    if ( !$args->{-List} ) {
+
+    if ( !$args->{ -List } ) {
         carp
-            "You need to supply a list ->new({-List => your_list}) in the constructor.";
+"You need to supply a list ->new({-List => your_list}) in the constructor.";
         return undef;
     }
     else {
-    
-        $self->{list} = $args->{-List}; 
+
+        $self->{list} = $args->{ -List };
     }
-    
-    
-    $self->init; 
-    
-	return $self;
+
+    $self->init;
+
+    return $self;
 
 }
 
-sub init { 
+sub init {
 
-    my $self = shift; 
-    $self->check_moderation_dir(); 
+    my $self = shift;
+    $self->check_moderation_dir();
 
 }
 
+sub check_moderation_dir {
 
+    # Basically, just makes the tmp directory that we need...
 
+    my $self = shift;
+    if ( -d $self->mod_dir ) {
 
-sub check_moderation_dir { 
+        # Well, ok!
+    }
+    else {
 
-        # Basically, just makes the tmp directory that we need...
-        
-        my $self = shift; 
-        if(-d $self->mod_dir){ 
-            # Well, ok!
-        } else { 
-        
-            croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! Could not create, '" . $self->mod_dir . "'- $!" 
-			    unless mkdir ($self->mod_dir, $DADA::Config::DIR_CHMOD );
-			    
-            chmod($DADA::Config::DIR_CHMOD, $self->mod_dir)
-			    if -d $self->mod_dir; 
-        }
+        croak
+"$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! Could not create, '"
+          . $self->mod_dir . "'- $!"
+          unless mkdir( $self->mod_dir, $DADA::Config::DIR_CHMOD );
+
+        chmod( $DADA::Config::DIR_CHMOD, $self->mod_dir )
+          if -d $self->mod_dir;
+    }
 }
 
+sub awaiting_msgs {
 
+    my $self    = shift;
+    my $pattern = quotemeta( $self->{list} . '-' );
+    my @awaiting_msgs;
+    my %allfiles;
 
+    if ( opendir( MOD_MSGS, $self->mod_dir ) ) {
 
-sub  awaiting_msgs { 
+        %allfiles = map { $_, ( stat($_) )[9] } readdir(MOD_MSGS);
 
-    my $self = shift; 
-    my $pattern = quotemeta($self->{list} . '-'); 
-    my @awaiting_msgs; 
-    my %allfiles; 
-    
-    if(opendir(MOD_MSGS, $self->mod_dir)){ 
+        closedir(MOD_MSGS)
+          or carp "couldn't close: " . $self->mod_dir;
 
-        %allfiles = map { $_ , (stat($_))[9]} readdir(MOD_MSGS);
-			
-        closedir(MOD_MSGS) 
-            or carp "couldn't close: " . $self->mod_dir; 
-            
-        foreach my $key (sort $allfiles{$a} <=> $allfiles{$b}, keys %allfiles) {
-        
-            next if($key =~ /^\.\.?$/); 
-            
-            $key  =~ s(^.*/)();
-            if($key =~ m/$pattern/){  
-                push(@awaiting_msgs, $key); 
+        foreach my $key ( sort $allfiles{$a} <=> $allfiles{$b}, keys %allfiles )
+        {
+
+            next if ( $key =~ /^\.\.?$/ );
+
+            $key =~ s(^.*/)();
+            if ( $key =~ m/$pattern/ ) {
+                push ( @awaiting_msgs, $key );
             }
-        
+
         }
-        
-    }else{
-		carp "could not open " . $self->mod_dir . " $!"; 
-	}
-	
-	return [@awaiting_msgs]; 
-	
+
+    }
+    else {
+        carp "could not open " . $self->mod_dir . " $!";
+    }
+
+    return [@awaiting_msgs];
+
 }
 
+sub save_msg {
 
-
-
-sub save_msg { 
-
-    my $self = shift; 
+    my $self = shift;
     my ($args) = @_;
 
-    if(!$args->{-msg}){ 
-        croak "You must supply a message!"; 
+    if ( !$args->{ -msg } ) {
+        croak "You must supply a message!";
     }
-    
-    if(!$args->{-msg_id}){ 
-        croak "You must supply a message id!"; 
-    }    
-    
-    my $file = $self->mod_msg_filename($args->{-msg_id}); 
-    
+
+    if ( !$args->{ -msg_id } ) {
+        croak "You must supply a message id!";
+    }
+
+    my $file = $self->mod_msg_filename( $args->{ -msg_id } );
+
     open my $MSG_FILE, '>', $file
-        or croak "Cannot write saved raw message at: '" . $file . " because: $!";
-    
-    print $MSG_FILE $args->{-msg}; 
-    
+      or croak "Cannot write saved raw message at: '" . $file . " because: $!";
+
+    print $MSG_FILE $args->{ -msg };
+
     close($MSG_FILE)
-        or croak "Coulnd't close: " . $file . "because: " . $!;
+      or croak "Coulnd't close: " . $file . "because: " . $!;
 
 }
 
+sub moderation_msg {
 
-
-sub moderation_msg { 
-    
-    my $self = shift; 
+    my $self = shift;
     my ($args) = @_;
-    
-    
-    if(!$args->{-msg}){ 
-        croak "You must supply a message!"; 
-    }
-    
-    if(!$args->{-msg_id}){ 
-        croak "You must supply a message id!"; 
-    }
-    $args->{-msg_id} =~ s/\@/_at_/g;
-    $args->{-msg_id} =~ s/\>|\<//g;
-    $args->{-msg_id} = DADA::App::Guts::strip($args->{-msg_id});
-    
-    
-    if(!$args->{-from}){ 
-        croak "You must supply a from!"; 
-    }
-    
-    if(!$args->{-parser}){ 
-        croak "You must supply a parser!"; 
-    }
-    
-    require DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}}); 
-    my $li = $ls->get; 
-    
-    
+    my $reply;
 
-    
-    my $parser = $args->{-parser};
-    my $entity = $parser->parse_data($args->{-msg});
-  
+    if ( !$args->{ -msg } ) {
+        croak "You must supply a message!";
+    }
 
-    my $reply = MIME::Entity->build(
-		Type 	=> "multipart/mixed", 
-		Subject => $Moderation_Msg_Subject, 
-		To      => $ls->param('list_owner_email'), 							
-	);	
-	$reply->attach(
-		Type => 'text/plain', 
-		Data  => $Moderation_Msg, 
-	); 	
-	$reply->attach(
-		Type        => 'message/rfc822', 
-		Disposition  => "inline",
-		Data         => $entity->as_string,
-	); 
-	
-	my $confirmation_link = $Plugin_Config->{Plugin_URL} . '?flavor=mod&list=' . $self->{list} . '&process=confirm&msg_id=' . $args->{-msg_id};
-   	my $deny_link         = $Plugin_Config->{Plugin_URL} . '?flavor=mod&list=' . $self->{list} . '&process=deny&msg_id='    . $args->{-msg_id};
-		
-		 
-			
-    require DADA::App::Messages; 						
-	DADA::App::Messages::send_generic_email(
-		{
-			-list    => $self->{list}, 
-			-headers => {
-				DADA::App::Messages::_mime_headers_from_string($reply->stringify_header),
-			},
-			-body =>  $reply->stringify_body, 
-			-tmpl_params => { 
-				-list_settings_vars        => $li, 
-				-list_settings_vars_param => 
-					{
-						-dot_it => 1, 	
-					},
-				#-subscriber_vars =>
-				#	{
-				#		#'subscriber.email' =>  $args->{-from}, 
-				#	},
-			  	-vars => 
-					{ 
-						moderation_confirmation_link => $confirmation_link, 
-						moderation_deny_link         => $deny_link, 
-						message_subject              => $args->{-subject},
-						msg_id                       => $args->{-msg_id},
-						'subscriber.email'           =>  $args->{-from}, 
+    if ( !$args->{ -msg_id } ) {
+        croak "You must supply a message id!";
+    }
+    $args->{ -msg_id } =~ s/\@/_at_/g;
+    $args->{ -msg_id } =~ s/\>|\<//g;
+    $args->{ -msg_id } = DADA::App::Guts::strip( $args->{ -msg_id } );
 
-					}
-				},
+    if ( !$args->{ -from } ) {
+        croak "You must supply a from!";
+    }
+
+    if ( !$args->{ -parser } ) {
+        croak "You must supply a parser!";
+    }
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+    my $li = $ls->get;
+
+    my $parser = $args->{ -parser };
+    my $entity = $parser->parse_data( $args->{ -msg } );
+
+    my $confirmation_link =
+      $Plugin_Config->{Plugin_URL}
+      . '?flavor=mod&list='
+      . $self->{list}
+      . '&process=confirm&msg_id='
+      . $args->{ -msg_id };
+    my $deny_link =
+      $Plugin_Config->{Plugin_URL}
+      . '?flavor=mod&list='
+      . $self->{list}
+      . '&process=deny&msg_id='
+      . $args->{ -msg_id };
+
+    #  create an array of recepients
+    my @moderators;
+    if ( $li->{moderate_discussion_lists_with} eq 'authorized_sender_email' ) {
+        my $lh =
+          DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
+        my $authorized_senders = [];
+        $authorized_senders =
+          $lh->subscription_list( -Type => 'authorized_senders' );
+        foreach my $moderator (@$authorized_senders) {
+
+			if($moderator->{email} eq $args->{ -from }){ 
+				# Well, we'll just pass that one right by... 
+				# I don't think we want an authorized sender to 
+				# be able to moderate their own message!
 			}
-		);
-}
-
-
-
-
-sub send_reject_msg { 
-    
-    my $self = shift; 
-    my ($args) = @_;
-    
-    if(!$args->{-msg_id}){ 
-        croak "You must supply a message id!"; 
-    }
-    $args->{-msg_id} =~ s/\@/_at_/g;
-    $args->{-msg_id} =~ s/\>|\<//g;
-    $args->{-msg_id} = DADA::App::Guts::strip($args->{-msg_id});
-       
-    if(!$args->{-parser}){ 
-        croak "You must supply a parser!"; 
-    }
-
-	# DEV there are two instances of my $parser, and my $entity of them - which one is the correct one? 
-
-    my $parser = $args->{-parser}; 
-
-    my $entity; 
-	eval { $entity = $parser->parse_data(
-	                                     $self->get_msg(
-	                                                    {
-	                                                     -msg_id => $args->{-msg_id} 
-	                                                    }
-	                                                   )
-	                                   ); 
-	                                    
-	     };
-	if(!$entity){
-		croak "no entity found! die'ing!";   
-	}
-
-
-    my $subject     = $entity->head->get('Subject', 0); 
-	   $subject =~ s/\n//g; 
-	my $from        = $entity->head->get('From', 0);
-	   $from =~ s/\n//g;
-	   
-    require DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}}); 
-    my $li = $ls->get; 
-    
-    my $reply = MIME::Entity->build(
-		Type 	 => "text/plain", 
-		To       => $from,
-		Subject  => $Rejection_Message_Subject, 	
-		Data     => $Rejection_Message, 
-	);
-
-	  require DADA::App::Messages; 						
-	DADA::App::Messages::send_generic_email(
-		{
-			-list    => $self->{list}, 
-			-headers => {
-				DADA::App::Messages::_mime_headers_from_string($reply->stringify_header), 
-			},
-		-body =>  $reply->stringify_body, 
-		-tmpl_params => { 
-			-list_settings_vars        => $li, 
-			-list_settings_vars_param => 
-				{
-					-dot_it => 1, 	
-				},
-			-subscriber_vars =>
-				{
-					'subscriber.email' =>  $args->{-from}, 
-
-				},
-		  	-vars => 
-				{ 
-			
-					message_subject              => $args->{-subject},
-					message_from                 => $args->{-from},
-					msg_id                       => $args->{-msg_id},
-					Plugin_Name                 => $Plugin_Config->{Plugin_Name}, 
-				
-				}
-			},
+            else { 
+				push ( @moderators, $moderator->{email} );
+        	}
 		}
-	);
- }
+        print
+"\t\Message being sent to Authorized Senders and List Owner for moderation... \n\n"
+          if $verbose;
+    }
+    else {
+        print "\t\Message being sent to List Owner for moderation... \n"
+          if $verbose;
+    }
+    push ( @moderators, $ls->param('list_owner_email') );    # always addressed
 
+    # loop through recepients
+    foreach my $to_address (@moderators) {                   # recepient loop
+        $reply = MIME::Entity->build(
+            Type    => "multipart/mixed",
+            Subject => $Moderation_Msg_Subject,
+            To      => $to_address,
+        );
+        print "\t * Sent moderation request to $to_address\n"
+          if $verbose;
 
+        # attach parts
+        $reply->attach(
+            Type => 'text/plain',
+            Data => $Moderation_Msg,
+        );
+        $reply->attach(
+            Type        => 'message/rfc822',
+            Disposition => "inline",
+            Data        => $entity->as_string,
+        );
 
+        # send the message
+        require DADA::App::Messages;
+        DADA::App::Messages::send_generic_email(
+            {
+                -list    => $self->{list},
+                -headers => {
+                    DADA::App::Messages::_mime_headers_from_string(
+                        $reply->stringify_header
+                    ),
+                },
+                -body        => $reply->stringify_body,
+                -tmpl_params => {
+                    -list_settings_vars       => $li,
+                    -list_settings_vars_param => { -dot_it => 1, },
 
+                    #-subscriber_vars =>
+                    #	{
+                    #		#'subscriber.email' =>  $args->{-from},
+                    #	},
+                    -vars => {
+                        moderation_confirmation_link => $confirmation_link,
+                        moderation_deny_link         => $deny_link,
+                        message_subject              => $args->{ -subject },
+                        msg_id                       => $args->{ -msg_id },
+                        'subscriber.email'           => $args->{ -from },
+                    }
+                },
+            }
+        );
+    }
+}
 
+sub send_moderation_msg {
 
-sub is_moderated_msg { 
+    my $self = shift;
+    my ($args) = @_;
 
-    my $self = shift; 
-    my $msg_id = shift; 
-    
-        print '<pre>' ;
-        print "looking for:\n"; 
-        print $self->mod_msg_filename($msg_id) . "\n"; 
-        print '</pre>'; 
-        
-    if(-e $self->mod_msg_filename($msg_id)){ 
-        return 1; 
-    } else {
-        return 0; 
+    if ( !$args->{ -msg_id } ) {
+        croak "You must supply a message id!";
+    }
+    $args->{ -msg_id } =~ s/\@/_at_/g;
+    $args->{ -msg_id } =~ s/\>|\<//g;
+    $args->{ -msg_id } = DADA::App::Guts::strip( $args->{ -msg_id } );
+
+    if ( !$args->{ -parser } ) {
+        croak "You must supply a parser!";
+    }
+
+# DEV there are two instances of my $parser, and my $entity of them - which one is the correct one?
+
+    my $parser = $args->{ -parser };
+
+    my $entity;
+    eval {
+        $entity =
+          $parser->parse_data(
+            $self->get_msg( { -msg_id => $args->{ -msg_id } } ) );
+    };
+    if ( !$entity ) {
+        croak "no entity found! die'ing!";
+    }
+
+    my $subject = $entity->head->get( 'Subject', 0 );
+    $subject =~ s/\n//g;
+    my $from = $entity->head->get( 'From', 0 );
+    $from =~ s/\n//g;
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+    my $li = $ls->get;
+
+    my $reply = MIME::Entity->build(
+        Type    => "text/plain",
+        To      => $from,
+        Subject => $AwaitModeration_Message_Subject,
+        Data    => $AwaitModeration_Message,
+    );
+
+    require DADA::App::Messages;
+    DADA::App::Messages::send_generic_email(
+        {
+            -list    => $self->{list},
+            -headers => {
+                DADA::App::Messages::_mime_headers_from_string(
+                    $reply->stringify_header
+                ),
+            },
+
+            -body        => $reply->stringify_body,
+            -tmpl_params => {
+                -list_settings_vars       => $li,
+                -list_settings_vars_param => { -dot_it => 1, },
+                -subscriber_vars => { 'subscriber.email' => $args->{ -from }, },
+                -vars            => {
+
+                    message_subject => $args->{ -subject },
+                    message_from    => $args->{ -from },
+                    msg_id          => $args->{ -msg_id },
+                    Plugin_Name     => $Plugin_Config->{Plugin_Name},
+
+                }
+            },
+        }
+    );
+}
+
+sub send_accept_msg {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    if ( !$args->{ -msg_id } ) {
+        croak "You must supply a message id!";
+    }
+    $args->{ -msg_id } =~ s/\@/_at_/g;
+    $args->{ -msg_id } =~ s/\>|\<//g;
+    $args->{ -msg_id } = DADA::App::Guts::strip( $args->{ -msg_id } );
+
+    if ( !$args->{ -parser } ) {
+        croak "You must supply a parser!";
+    }
+
+# DEV there are two instances of my $parser, and my $entity of them - which one is the correct one?
+
+    my $parser = $args->{ -parser };
+
+    my $entity;
+    eval {
+        $entity =
+          $parser->parse_data(
+            $self->get_msg( { -msg_id => $args->{ -msg_id } } ) );
+    };
+    if ( !$entity ) {
+        croak "no entity found! die'ing!";
+
+    }
+
+    my $subject = $entity->head->get( 'Subject', 0 );
+    $subject =~ s/\n//g;
+    my $from = $entity->head->get( 'From', 0 );
+    $from =~ s/\n//g;
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+    my $li = $ls->get;
+
+    my $reply = MIME::Entity->build(
+        Type    => "text/plain",
+        To      => $from,
+        Subject => $Accept_Message_Subject,
+        Data    => $Accept_Message,
+    );
+
+    require DADA::App::Messages;
+    DADA::App::Messages::send_generic_email(
+        {
+            -list    => $self->{list},
+            -headers => {
+                DADA::App::Messages::_mime_headers_from_string(
+                    $reply->stringify_header
+                ),
+            },
+            -body        => $reply->stringify_body,
+            -tmpl_params => {
+                -list_settings_vars       => $li,
+                -list_settings_vars_param => { -dot_it => 1, },
+                -subscriber_vars => { 'subscriber.email' => $args->{ -from }, },
+                -vars            => {
+                    message_subject => $subject,
+                    message_from    => $from,
+                    msg_id          => $args->{ -msg_id },
+                    Plugin_Name     => $Plugin_Config->{Plugin_Name},
+                }
+            },
+        }
+    );
+}
+
+sub send_reject_msg {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    if ( !$args->{ -msg_id } ) {
+        croak "You must supply a message id!";
+    }
+    $args->{ -msg_id } =~ s/\@/_at_/g;
+    $args->{ -msg_id } =~ s/\>|\<//g;
+    $args->{ -msg_id } = DADA::App::Guts::strip( $args->{ -msg_id } );
+
+    if ( !$args->{ -parser } ) {
+        croak "You must supply a parser!";
+    }
+
+# DEV there are two instances of my $parser, and my $entity of them - which one is the correct one?
+
+    my $parser = $args->{ -parser };
+
+    my $entity;
+    eval {
+        $entity =
+          $parser->parse_data(
+            $self->get_msg( { -msg_id => $args->{ -msg_id } } ) );
+
+    };
+    if ( !$entity ) {
+        croak "no entity found! die'ing!";
+    }
+
+    my $subject = $entity->head->get( 'Subject', 0 );
+    $subject =~ s/\n//g;
+    my $from = $entity->head->get( 'From', 0 );
+    $from =~ s/\n//g;
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+    my $li = $ls->get;
+
+    my $reply = MIME::Entity->build(
+        Type    => "text/plain",
+        To      => $from,
+        Subject => $Rejection_Message_Subject,
+        Data    => $Rejection_Message,
+    );
+
+    require DADA::App::Messages;
+    DADA::App::Messages::send_generic_email(
+        {
+            -list    => $self->{list},
+            -headers => {
+                DADA::App::Messages::_mime_headers_from_string(
+                    $reply->stringify_header
+                ),
+            },
+            -body        => $reply->stringify_body,
+            -tmpl_params => {
+                -list_settings_vars       => $li,
+                -list_settings_vars_param => { -dot_it => 1, },
+                -subscriber_vars          => {
+                    'subscriber.email' => $args->{ -from },
+
+                },
+                -vars => {
+
+                    message_subject => $args->{ -subject },
+                    message_from    => $args->{ -from },
+                    msg_id          => $args->{ -msg_id },
+                    Plugin_Name     => $Plugin_Config->{Plugin_Name},
+
+                }
+            },
+        }
+    );
+}
+
+sub is_moderated_msg {
+
+    my $self   = shift;
+    my $msg_id = shift;
+
+    print '<pre>';
+    print "looking for:\n";
+    print $self->mod_msg_filename($msg_id) . "\n";
+    print '</pre>';
+
+    if ( -e $self->mod_msg_filename($msg_id) ) {
+        return 1;
+    }
+    else {
+        return 0;
     }
 
 }
 
+sub get_msg {
 
-
-
-sub get_msg { 
-
-    my $self   = shift; 
+    my $self = shift;
     my ($args) = @_;
-    
-    if(! $args->{-msg_id}){ 
-        croak "You must supply a message id!"; 
-    }    
-    
-    my $file = $self->mod_msg_filename($args->{-msg_id}); 
 
-    if(! -e $file){ 
-    
-        croak "Message: $file doesn't exist?!"; 
-  
-    } 
-    else { 
-    
+    if ( !$args->{ -msg_id } ) {
+        croak "You must supply a message id!";
+    }
+
+    my $file = $self->mod_msg_filename( $args->{ -msg_id } );
+
+    if ( !-e $file ) {
+
+        croak "Message: $file doesn't exist?!";
+
+    }
+    else {
+
         open my $MSG_FILE, '<', $file
-            or die "Cannot read saved raw message at: '" . $file
-            . "' because: "
-            . $!;
+          or die "Cannot read saved raw message at: '" . $file
+          . "' because: "
+          . $!;
 
-
-            my     $msg = do { local $/; <$MSG_FILE> };
-            
+        my $msg = do { local $/; <$MSG_FILE> };
 
         close $MSG_FILE
-            or die "Didn't close: '" . $file . "'properly because: " . $!;
+          or die "Didn't close: '" . $file . "'properly because: " . $!;
 
-        return $msg; 
-        
+        return $msg;
+
     }
-    
-    
-    
 
 }
 
+sub remove_msg {
 
-
-sub remove_msg { 
-
-    my $self   = shift; 
+    my $self = shift;
     my ($args) = @_;
-    
-    if(! $args->{-msg_id}){ 
-        croak "You must supply a message id!"; 
-    }    
-    
-    my $file = $self->mod_msg_filename($args->{-msg_id}); 
 
-
-    if(-e $file){ 
-    
-        my $count = unlink($file); 
-        if($count != 1){ 
-            carp "Weird file delete count is: $count - should be, '1'";     
-        }
-    }else{ 
-        carp "no file at: $file to delete!"; 
+    if ( !$args->{ -msg_id } ) {
+        croak "You must supply a message id!";
     }
-    
-    return 1; 
-    
+
+    my $file = $self->mod_msg_filename( $args->{ -msg_id } );
+
+    if ( -e $file ) {
+
+        my $count = unlink($file);
+        if ( $count != 1 ) {
+            carp "Weird file delete count is: $count - should be, '1'";
+        }
+    }
+    else {
+        carp "no file at: $file to delete!";
+    }
+
+    return 1;
+
 }
 
+sub mod_msg_filename {
 
+    my $self       = shift;
+    my $message_id = shift;
 
-
-sub mod_msg_filename { 
-
-    my $self = shift; 
-    my $message_id = shift; 
-    
     $message_id =~ s/\@/_at_/g;
     $message_id =~ s/\>|\<//g;
     $message_id = DADA::App::Guts::strip($message_id);
 
-    return $self->mod_dir . '/' . $self->{list} . '-' . $message_id; 
-    
-}
-
-
-
-sub mod_dir { 
-
-    my $self = shift; 
-    
-    return $DADA::Config::TMP . '/moderated_msgs'; 
+    return $self->mod_dir . '/' . $self->{list} . '-' . $message_id;
 
 }
 
+sub mod_dir {
 
+    my $self = shift;
 
+    return $DADA::Config::TMP . '/moderated_msgs';
 
-
+}
 
 =pod
 
@@ -4413,9 +5013,17 @@ Sets a hard limit on how large a single message can actually be, before you won'
 
 The text of the email message that gets sent out to the list owner, when they receive an email message that requires moderation. 
 
+=head2 $AwaitModeration_Msg
+
+The text of the email message that gets sent out to the message sender, who has a email message sent to the list that requires moderation. 
+
+=head2 $Moderation_Msg
+
+The text of the email message that gets sent out to the message sender who has a email message sent to the list that was accepted during moderation. 
+
 =head2 $Rejection_Message
 
-The text of the email message that gets sent out to the subscriber who has a email message sent to the list that was rejected during moderation. 
+The text of the email message that gets sent out to the message sender who has a email message sent to the list that was rejected during moderation. 
 
 =head1 DEBUGGING 
 
@@ -4470,3 +5078,4 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 =cut
+

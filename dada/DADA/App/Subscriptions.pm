@@ -142,15 +142,15 @@ sub subscribe {
 
 
     
-    require DADA::MailingList::Subscribers; 
-           $DADA::MailingList::Subscribers::dbi_obj = $dbi_handle; 
-        
+    require DADA::MailingList::Subscribers;         
     my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
     
     my $fields = {}; 
     foreach(@{$lh->subscriber_fields}){ 
-        $fields->{$_} = xss_filter($q->param($_)); 
-    }
+		if(defined($q->param($_))){ 
+        	$fields->{$_} = xss_filter($q->param($_)); 
+		}
+	}
     
     
     $email = lc_email($email);
@@ -168,20 +168,41 @@ sub subscribe {
                              ); 
 	
 	# This is kind of strange... 
+	my $skip_sub_confirm_if_logged_in = 0; 
+	
+	
 	if($status == 1){ 
 		
-		if($li->{no_confirm_email} == "0"){    
 
+		my $skip_sub_confirm_if_logged_in = 0; 
+		if($li->{skip_sub_confirm_if_logged_in}){
+			require DADA::Profile::Session; 
+			my $sess = DADA::Profile::Session->new; 
+			if($sess->is_logged_in){	
+				my $sess_email = $sess->get;
+				if ($sess_email eq $email){ 
+					# something... 
+					$skip_sub_confirm_if_logged_in = 1;
+				}
+			}
+		}	
+		if(
+			$li->{no_confirm_email}    == 0 || 
+			$skip_sub_confirm_if_logged_in == 1
+		){    
+	
+			
 	        $lh->add_subscriber(
 	            {
 	                -email         => $email, 
 	                -type          => 'sub_confirm_list', 
 	                -fields        => $fields,
-	            }
+	            	-confirmed     => 0, 
+				}
 	        );
 
 	        # This is... slightly weird.
-	        $args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email));  
+	        $args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email, -List => $list));  
 
 	        $self->confirm(
 	            {
@@ -192,7 +213,9 @@ sub subscribe {
 
 	        return; 
 	    }
-	}							
+	}	
+	
+									
 							
      my $mail_your_subscribed_msg = 0; 
      
@@ -283,9 +306,10 @@ sub subscribe {
                         
         $lh->add_subscriber(
              { 
-                 -email         => $email, 
-                 -type          => 'sub_confirm_list', 
-                 -fields        => $fields,
+                 -email     => $email, 
+                 -type      => 'sub_confirm_list', 
+                 -fields    => $fields,
+	             -confirmed => 0, 
              }
         ); 
         
@@ -304,14 +328,23 @@ sub subscribe {
 
         }else{ 
             
-			require DADA::App::Messages; 
-			DADA::App::Messages::send_you_are_already_subscribed_message(		
-          		{
-                	-list         => $list, 
-	                -email        => $email, 
-	      			-test         => $self->test, 
-        		}
-			);
+			if($errors->{subscribed} == 1 && 
+			   $li->{no_confirm_email} == 0
+			){
+				# 3.0.x code: 
+				$args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email));  
+				# 3.1 code: 
+				#$args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email, -List => $list));  
+				$self->confirm(
+		            {
+		                -html_output => $args->{-html_output}, 
+		                -cgi_obj     => $args->{-cgi_obj},
+		            },
+		        );
+
+		        return;
+			}
+
             
         }
         
@@ -340,16 +373,19 @@ sub subscribe {
                                -List  => $li->{list}
                           );
                                
-               
-               my $s = $li->{html_confirmation_message}; 
-               require DADA::Template::Widgets; 
-               $r .=   DADA::Template::Widgets::screen({ 
-                                                       -data                     => \$s,
-                                                       -list_settings_vars_param => {-list => $li->{list},},
-                                                       -subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'sub_confirm_list'},
-                                                       -dada_pseudo_tag_filter   => 1,             
-               } 
-               ); 
+				my $s; 
+				$s = $li->{html_confirmation_message}; 
+
+				require DADA::Template::Widgets; 
+				$r .=   DADA::Template::Widgets::screen(
+				{ 
+					-data                     => \$s,
+					-list_settings_vars_param => {-list => $li->{list},},
+					-subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'sub_confirm_list'},
+					-dada_pseudo_tag_filter   => 1,             
+				} 
+
+				); 
                 
                 $r .= DADA::Template::HTML::list_template(
                                -Part      => "footer", 
@@ -624,10 +660,14 @@ sub confirm {
     }    
                                                 
     
-    my ($invalid_pin) = check_email_pin(-Email => $email, -Pin => $pin);
-    warn '$invalid_pin set to: ' . $invalid_pin
+    my $is_pin_valid = check_email_pin(
+		-Email => $email, 
+		-List => $list, 
+		-Pin => $pin
+	);
+    warn '$is_pin_valid set to: ' . $is_pin_valid
         if $t; 
-    if ($invalid_pin >= 1) {
+    if ($is_pin_valid == 0) {
         $status = 0; 
         $errors->{invalid_pin} = 1;
         warn '>>>> $errors->{invalid_pin} set to: ' . $errors->{invalid_pin}
@@ -733,8 +773,10 @@ sub confirm {
             warn '>>>> >>>> $mail_your_subscribed_msg is set to: ' . $mail_your_subscribed_msg
                 if $t; 
 
-            # We can do an remove from confirm list, and a add to the subscribe list, but why don't we just *move* the darn subscriber? 
-            # (Basically by updating the table and changing the, "list_type" column. Easy enough for me.             
+            # We can do an remove from confirm list, and a add to the subscribe 
+			# list, but why don't we just *move* the darn subscriber? 
+            # (Basically by updating the table and changing the, "list_type" column. 
+			# Easy enough for me.             
             
             warn '>>>> >>>> Moving subscriber from "sub_confirm_list" to "list" '
                 if $t; 
@@ -745,9 +787,31 @@ sub confirm {
                     -from             => 'sub_confirm_list',
                     -to               => 'list', 
 					-mode             => 'writeover', 
+					-confirmed        => 1, 
                 }
             );
-
+			
+			my $new_pass    = ''; 
+			my $new_profile = 0; 
+			if(
+			   $DADA::Config::PROFILE_ENABLED == 1 && 
+			   $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/
+			){ 
+				# Make a profile, if needed, 
+				require DADA::Profile; 
+				my $prof = DADA::Profile->new({-email => $email}); 
+				if(!$prof->exists){ 
+					$new_profile = 1; 
+					$new_pass    = $prof->rand_str(8);
+					$prof->insert(
+						{
+							-password  => $new_pass,
+							-activated => 1, 
+						}
+					); 
+				}
+				# / Make a profile, if needed, 
+			}
             warn '>>>> >>>> $li->{send_sub_success_email} is set to: ' . $li->{send_sub_success_email}
                 if $t; 
                 
@@ -762,6 +826,12 @@ sub confirm {
                         -email        => $email, 
                         -ls_obj       => $ls,
 						-test         => $self->test, 
+						-vars         => {
+											new_profile        => $new_profile, 
+											'profile.email'    =>  $email, 
+											'profile.password' =>  $new_pass,
+											
+									 	 }
 					}
             	); 
             
@@ -940,11 +1010,26 @@ sub unsubscribe {
     # This *still* does error check the unsub request
     # just in a different place. 
   
-  
-    if($li->{unsub_confirm_email} != 1){  
+  	my $skip_unsub_confirm_if_logged_in = 0; 
+	if($li->{skip_unsub_confirm_if_logged_in}){
+		require DADA::Profile::Session; 
+		my $sess = DADA::Profile::Session->new; 
+		if($sess->is_logged_in){	
+			my $sess_email = $sess->get;
+			if ($sess_email eq $email){ 
+				# something... 
+				$skip_unsub_confirm_if_logged_in = 1;
+			}
+		}
+	}
+	
+    if(
+		$li->{unsub_confirm_email}       == 0 || 
+		$skip_unsub_confirm_if_logged_in == 1
+	){  
             
         # This is... slightly weird.
-        $args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email));  
+        $args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email, -List => $list));  
     
         $lh->add_subscriber(
             {
@@ -1217,7 +1302,7 @@ sub unsub_confirm {
         }
     }
     
-    if(check_email_pin(-Email => $email, -Pin => $pin) == 1){ 
+    if(check_email_pin(-Email => $email, -List  => $list, -Pin   => $pin) == 0){ 
          $status = 0; 
          $errors->{invalid_pin} = 1; 
          

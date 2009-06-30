@@ -51,26 +51,37 @@
 <label for="email" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" >
 Email&nbsp;Address: 
 </label>
-<input type="text" name="email" id="email" value="<!-- tmpl_var email escape=HTML -->" /> <span class="error">* Required</span>
+<!-- tmpl_if profile_logged_in --> 
+	<span style="padding:5px;border:1px solid black"><em><!-- tmpl_var email escape=HTML --></em></span>
+	<input type="hidden" name="email" id="email" value="<!-- tmpl_var email escape=HTML -->" />
+<!-- tmpl_else --> 
+	<input type="text" name="email" id="email" value="<!-- tmpl_var email escape=HTML -->" /> <span class="error">* Required</span>
+<!-- /tmpl_if --> 
+
 </p>
 
-<!-- tmpl_if subscriber_fields --> 
+<!-- tmpl_if show_fields --> 
 
-    <hr style="border-top: 1px solid black;" /> 
+	<!-- tmpl_if subscriber_fields --> 
+	
+	    <hr style="border-top: 1px solid black;" /> 
 
-    <!-- tmpl_loop subscriber_fields --> 
+	    <!-- tmpl_loop subscriber_fields --> 
     
-        <p>
-        <label for="<!-- tmpl_var name escape=HTML -->" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
-        <!-- tmpl_var pretty_name escape=HTML -->: 
-        </label>
-        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var given_value escape=HTML -->"  />
-        </p>
+	        <p>
+	        <label for="<!-- tmpl_var name escape=HTML -->" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+	        <!-- tmpl_var pretty_name escape=HTML -->: 
+	        </label>
+	        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var given_value escape=HTML -->"  />
+	        </p>
     
     
-    <!-- /tmpl_loop --> 
+	    <!-- /tmpl_loop --> 
+
+	<!-- /tmpl_if --> 
 
 <!-- /tmpl_if --> 
+
 
 <hr style="border-top: 1px solid black;" /> 
 

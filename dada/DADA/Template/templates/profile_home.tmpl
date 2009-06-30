@@ -1,0 +1,265 @@
+<!-- begin profile_home.tmpl --> 
+
+
+
+<p style="text-align:right"> 
+	[ <a href="<!-- tmpl_var PROGRAM_URL -->?f=profile_logout">Logout</a>]
+</p>
+
+<!-- tmpl_if errors --> 
+	<p class="error"> 
+		There was an error with your last request:
+	</p> 
+<!-- /tmpl_if --> 
+
+
+<div class="positive_greeting">
+	<h1 style="text-align:center">
+		Hello, <!-- tmpl_var profile.email -->!
+	</h1>
+</div> 
+
+<!-- tmpl_if gravators_enabled --> 
+	<!-- tmpl_if gravatar_img_url --> 
+		<p>
+			<img src="<!-- tmpl_var gravatar_img_url -->" style="float:left" />
+		</p> 
+	<!-- /tmpl_if -->
+<!-- /tmpl_if -->
+<div class="floatclear"></div>
+
+
+<!-- tmpl_if welcome --> 
+	<p class="positive">
+	 Welcome to your profile home. From here, you may subscribe/unsubscribe 
+	 to the available mailing lists, as well as update your subscription 
+	information.
+	</p> 
+<!-- /tmpl_if --> 
+<!-- tmpl_if edit --> 
+	<p class="positive">
+		Your changes have been saved!
+	</p> 
+<!-- /tmpl_if --> 
+<!-- tmpl_if errors_change_password --> 
+	<p class="error">
+		There was an error with changing your password - make sure that you re-typed your password correctly. 
+	</p>
+<!-- /tmpl_if --> 
+
+
+
+
+
+<!-- tmpl_if subscriber_fields --> 
+
+   
+<fieldset> 
+	
+<legend>
+	Subscriber Fields
+</legend> 
+	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
+		<input type="hidden" name="f"        value="profile" /> 
+		<input type="hidden" name="process"  value="edit_subscriber_fields" /> 
+
+		
+    <!-- tmpl_loop subscriber_fields --> 
+    
+        <p>
+        <label for="<!-- tmpl_var name escape=HTML -->" style="width: 10em;float: left;text-align: right;margin-right: 0.5em;display: block">
+        <!-- tmpl_var label escape=HTML -->: 
+        </label>
+        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
+        </p>
+
+    <!-- /tmpl_loop -->
+	<div class="buttonfloat">	
+    <input type="submit" value="Update Information" /> 
+	</div>
+	<div class="floatclear"></div>
+	</form>
+
+<!-- /tmpl_if --> 
+
+</fieldset> 
+
+
+	
+<h1>
+Your Mailing List Subscriptions
+</h1> 
+
+	<!-- tmpl_if has_subscriptions --> 
+
+	<!-- tmpl_else --> 
+		<p class="error">
+			You are not currently subscribed to any mailing list.
+		</p>
+	<!-- /tmpl_if --> 
+
+
+
+
+<!-- tmpl_loop subscriptions --> 
+
+	<!-- tmpl_if subscribed --> 
+
+	<h2>
+		<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->">
+			<!-- tmpl_var list_settings.list_name --> 
+		</a>
+	</h2> 
+	
+	<blockquote>
+		<p>
+			<!-- tmpl_var list_settings.info -->
+		</p>
+	</blockquote> 
+
+
+	<ul> 
+	    <!-- tmpl_if list_settings.group_list --> 
+	        <li>
+	         <a href="mailto:<!-- tmpl_var list_settings.discussion_pop_email -->">
+				Send a message to 
+					<!-- tmpl_var list_settings.discussion_pop_email -->
+				</a>
+			 - this list is a group discussion list 
+	            <!-- tmpl_if list_settings.enable_moderation --> 
+	                (moderated)
+	            <!-- tmpl_else -->
+	                (unmoderated)
+	            <!-- /tmpl_if --> 
+	        </li>
+	    <!-- tmpl_else --> 
+
+	        <li>
+	         This list is an announce-only list.
+	        </li>
+
+	     <!-- /tmpl_if --> 
+	</ul>
+	
+	
+<ul>
+		<li>
+				<p><a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list -->">
+			View Archives
+		</a>
+		</p>
+	</li>
+	<li>
+		<p>
+		<a href="<!-- tmpl_var PROGRAM_URL -->?f=u&list=<!-- tmpl_var list_settings.list -->&email=<!-- tmpl_var profile.email -->">
+			Unsubscribe from this list
+		</a>
+	</p>
+</li>	
+</ul>
+
+	<!-- /tmpl_if --> 
+<!-- /tmpl_loop -->
+
+
+<!-- tmpl_if comment --> 
+
+	<!-- tmpl_if has_subscriptions --> 
+
+	<h1>Unsubscribe from ALL lists</h1> 
+
+	<form><input type="submit" value="Zoom!" /> </form> 
+
+
+	<!-- /tmpl_if -->  
+
+<!-- /tmpl_if --> 
+
+<hr /> 
+
+<!-- 
+	
+<fieldset> 
+	
+<legend>
+	Update Your Email Address
+</legend> 
+
+<p class="positive">
+	Subscriptions using your current email address (<!-- tmpl_var profile.email -->) will be replaced with 
+ 	this new email address: 
+</p>
+
+<!-- tmpl_if errors_update_email_invalid --> 
+
+	<p class="error"> 
+		The email address you submitted is not valid.
+	</p> 
+	
+<!-- /tmpl_if --> 
+
+<form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
+	<input type="hidden" name="f"        value="profile" /> 
+	<input type="hidden" name="process"  value="update_email" />
+	
+	  <p>
+        <label for="password" style="width: 10em;float: left;text-align: right;margin-right: 0.5em;display: block">
+        Your New Email Address: 
+        </label>
+        <input type="text" name="email" id="email" value=""  />
+        </p>
+
+	<div class="buttonfloat">	
+    <input type="submit" value="Confirm and Update New Email Address" /> 
+	</div>
+	<div class="floatclear"></div>
+
+
+</form>
+
+</fieldset>
+
+--> 
+
+
+
+
+<fieldset> 
+	
+<legend>
+Change Your Profile Password
+</legend> 
+
+
+<form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
+	<input type="hidden" name="f"        value="profile" /> 
+	<input type="hidden" name="process"  value="change_password" />
+	
+	  <p>
+        <label for="password" style="width: 10em;float: left;text-align: right;margin-right: 0.5em;display: block">
+        New Password: 
+        </label>
+        <input type="password" name="password" id="password" value=""  />
+        </p>
+
+	  <p>
+        <label for="again_password" style="width: 10em;float: left;text-align: right;margin-right: 0.5em;display: block">
+        New Password Again: 
+        </label>
+        <input type="password" name="again_password" id="again_password" value=""  />
+       </p>
+
+	<div class="buttonfloat">	
+    <input type="submit" value="Change Password" /> 
+	</div>
+	<div class="floatclear"></div>
+
+
+</form>
+
+</fieldset> 
+
+
+
+<!-- end profile_home.tmpl --> 
+

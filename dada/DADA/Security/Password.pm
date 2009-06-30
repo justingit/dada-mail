@@ -53,7 +53,7 @@ any variables that don't seem to be here are in the Config.pm file, no really, c
 
 	my $pwcheck = ($encrupted_pass, $unencrypted_pass);
 
-This subroutine checks to see if a encrypted password matches an unencrypoted password. 
+This subroutine checks to see if a encrypted password matches an unencrypted password. 
 Passwords are first encrypted using your systems's crypt() function, the same one probably 
 used for Apache Server Protected Directories and Hosting Directories themselves. The idea is
 the only way to compare a password given to the saved, encrypted password, is to encrypted the 
@@ -64,23 +64,24 @@ This function returns 1 if the passwords  match.
 =cut
 
 
-sub check_password { 
+sub check_password {
 #############################################################################
-# dada utility <+>  $password_check  <+>  checks password                   #
+   # dada utility <+>  $password_check  <+>  checks password                   #
 #############################################################################
 
-my $check = 0; 
-my ($epw, $pw)=@_;
+    my $check = 0;
+    my ( $epw, $pw ) = @_;
 
-$DADA::Config::SALT =substr($epw,$DADA::Config::FIRST_SUB, $DADA::Config::SEC_SUB);
-if($epw eq crypt($pw,$DADA::Config::SALT )){ 
-$check = 1; 
+    $DADA::Config::SALT =
+      substr( $epw, $DADA::Config::FIRST_SUB, $DADA::Config::SEC_SUB );
+    if ( $epw eq crypt( $pw, $DADA::Config::SALT ) ) {
+        $check = 1;
+    }
+
+    return $check;
+
 }
 
-
-return $check; 
-
-}
 
 =pod
 
@@ -198,7 +199,7 @@ return $val;
  
 =head1 COPYRIGHT
 
-Copyright (c) 1999-2008 Justin Simoni 
+Copyright (c) 1999-2009 Justin Simoni 
 http://justinsimoni.com 
 All rights reserved. 
 

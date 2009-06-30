@@ -8,83 +8,6 @@ use DADA::Config qw(!:DEFAULT);
 use Carp qw(croak carp); 
 
 
-sub add_to_email_list { 
-
-	my $self = shift; 
-	
-	my %args = (-Email_Ref => undef, 
-				-Type      => "list",
-				-Mode      => 'append',
-				@_);
-	
-	my $address     = $args{-Email_Ref} || undef;
-	my $email_count = 0;
-	my $ending      = $args{-Type}; 
-	my $write_list  = $self->{list}    || undef;  	
-			
-	if($write_list and $address){
-		
-		
-		
-		if($self->{ls}->param('hard_remove') == 1){ 
-		
-			foreach(@$address){
-				chomp($_);
-				$_ = strip($_); 
-			
-				my $query = "INSERT INTO "
-				            .  $self->{sql_params}->{subscriber_table} . 
-				            "(email,list,list_type,list_status) VALUES (?,?,?,?)";
-				
-				
-				my $sth = $self->{dbh}->prepare($query);    
-				
-				
-				   $sth->execute(
-				   				 $_, 
-				   				 $write_list, 
-				   				 $args{-Type}, 
-				   				 1
-				   				 ) or die "cannot do statement! $DBI::errstr\n";   
-				   $sth->finish;
-					$email_count++;
-					$self->{'log'}->mj_log($write_list,"Subscribed to $write_list.$ending", $_) 
-						if (($DADA::Config::LOG{subscriptions}) && ($args{-Mode} ne 'writeover')); 
-			}
-		
-		
-		}else{ 
-		
-			foreach(@$address){
-				chomp($_);
-				$_ = strip($_);
-				
-				if($self->check_for_double_email(-Email => $_, -Type => $args{-Type}, -Status => 0)){ 
-					my $sth = $self->{dbh}->prepare("UPDATE " .  $self->{sql_params}->{subscriber_table} .  " SET list_status   = 1 WHERE email = ? AND list = ? AND list_type = ?");    
-			   		$sth->execute($_, $write_list, $args{-Type}) or die "cannot do statement! $DBI::errstr\n";   
-			   		$sth->finish;
-				}else{ 
-			
-					 my $sth = $self->{dbh}->prepare("INSERT INTO " .  $self->{sql_params}->{subscriber_table} . "(email,list,list_type,list_status)  VALUES (?,?,?,?)");    
-					 
-					   $sth->execute($_, $write_list, $args{-Type}, 1) or die "cannot do statement! $DBI::errstr\n";   
-					   $sth->finish;
-						$email_count++;
-						$self->{'log'}->mj_log($write_list,"Subscribed to $write_list.$ending", $_) 
-							if (($DADA::Config::LOG{subscriptions}) && ($args{-Mode} ne 'writeover')); 	
-				}
-			}
-		}
-
-		return $email_count; 
-	}else{ 
-		warn('Dada Mail Error: No list, or list ref was given in add_email_list()');
-		return undef;
-	}
-}
-
-
-
 
 
 sub make_table { 
@@ -109,7 +32,7 @@ sub make_table {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2008 Justin Simoni All rights reserved. 
+Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

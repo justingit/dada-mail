@@ -55,7 +55,7 @@ my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid)
 
 
 ok(eq_array($subscribed,       []                                           ) == 1, "Subscribed"); 
-ok(eq_array($not_subscribed,   ['user@example.com']                         ) == 1, "Not Subscribed"); 
+ok(eq_array($not_subscribed,   ['user@example.com']                         ) == 1, "Not Subscribed (user\@example.com)"); 
 ok(eq_array($black_listed,     []                                           ) == 1, "Black Listed"); 
 ok(eq_array($not_white_listed, []                                           ) == 1, "Not White Listed"); 
 ok(eq_array([sort(@$invalid)], [sort('user', 'example.com', '@example.com')]) == 1, "Invalid"); 
@@ -66,6 +66,7 @@ undef($black_listed);
 undef($not_white_listed);
 undef($invalid);
 
+diag '$lh->num_subscribers ' . $lh->num_subscribers;
 
 my $count = $lh->add_to_email_list(-Email_Ref => [qw(
                                             user@example.com
@@ -75,6 +76,7 @@ my $count = $lh->add_to_email_list(-Email_Ref => [qw(
                     
 ok($count == 1, "added one address");                           
 undef($count); 
+
 
 my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid) 
     = $lh->filter_subscribers(
@@ -86,7 +88,7 @@ my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid)
 
 
 ok(eq_array($subscribed,        ['user@example.com']                         ) == 1, "Subscribed"); 
-ok(eq_array($not_subscribed,    []                                           ) == 1, "Not Subscribed"); 
+ok(eq_array($not_subscribed,    []                                           ) == 1, "Not Subscribed ()"); 
 ok(eq_array($black_listed,      []                                           ) == 1, "Black Listed"); 
 ok(eq_array($not_white_listed,  []                                           ) == 1, "Not White Listed"); 
 ok(eq_array([sort(@$invalid)],  [sort('user', 'example.com', '@example.com')]) == 1, "Invalid"); 
@@ -98,9 +100,14 @@ undef($black_listed);
 undef($not_white_listed);
 undef($invalid);
 
+diag '$lh->num_subscribers ' . $lh->num_subscribers;
+
+
 my $r_count = $lh->remove_from_list(-Email_List => ['user@example.com']); 
 ok($r_count == 1, "removed one address (user\@example.com)");                           
 undef($r_count); 
+
+
 
 
 
@@ -112,9 +119,12 @@ my $li = $ls->get();
 ok($li->{black_list} == 1, "black list enabled."); 
 
 
+# 'user@', '@example.com', '@' , 'u'
 
-foreach my $blacklist_this('user', 'example.com', 'user@', '@example.com', 'user@example.com', 'u', '@'){ 
+foreach my $blacklist_this('user@', '@example.com', 'user@example.com'){ 
 
+	diag '$blacklist_this - ' . $blacklist_this; 
+	
     my $count = $lh->add_to_email_list(-Email_Ref => [
                                                 $blacklist_this
                                                      ], 
@@ -133,8 +143,8 @@ foreach my $blacklist_this('user', 'example.com', 'user@', '@example.com', 'user
 		);
     
     ok(eq_array($subscribed,      []                                           ) == 1, "Subscribed"); 
-    ok(eq_array($not_subscribed,  []                                           ) == 1, "Not Subscribed"); 
-    ok(eq_array($black_listed,    ['user@example.com']                         ) == 1, "Black Listed"); 
+    ok(eq_array($not_subscribed,  []                                           ) == 1, "Not Subscribed ()"); 
+    ok(eq_array($black_listed,    ['user@example.com']                         ) == 1, "Black Listed (user\@example.com)"); 
     ok(eq_array($not_white_listed,[]                                           ) == 1, "Not White Listed"); 
     ok(eq_array([sort(@$invalid)],[sort('user', 'example.com', '@example.com')]) == 1, "Invalid"); 
     
@@ -150,6 +160,8 @@ foreach my $blacklist_this('user', 'example.com', 'user@', '@example.com', 'user
     undef($r_count); 
 
 }
+
+
    $ls->save({black_list => 0}); 
    $li = $ls->get(); 
 ok($li->{black_list} == 0, "black list disabled."); 
@@ -195,7 +207,7 @@ ok($lh->can_have_subscriber_fields == 1 || $lh->can_have_subscriber_fields == 0,
         ok($@, "calling move_subscriber with incorrect -to paramater causes an error!: $@");     
 
         eval { $lh->move_subscriber({-to => 'blahblah', -from => 'yayaya'}); }; 
-        ok($@, "calling move_subscriber wwith incorrect -to and -from paramater causes an error!: $@");     
+        ok($@, "calling move_subscriber with incorrect -to and -from paramater causes an error!: $@");     
         
         eval { $lh->move_subscriber({-to => 'blahblah', -from => 'yayaya', -email => 'whackawhacka'}); }; 
         ok($@, "calling move_subscriber with incorrect list_type in, '-to' causes an error!: $@");   
@@ -205,24 +217,22 @@ ok($lh->can_have_subscriber_fields == 1 || $lh->can_have_subscriber_fields == 0,
 
 
         eval { $lh->move_subscriber({-to => 'list', -from => 'black_list', -email => 'whackawhacka'}); }; 
-        ok($@, "calling move_subscriber with invalid address causes an error!: $@");   
+        ok($@, "calling move_subscriber with invalid address causes an error(!)!: $@");   
         
         
-
-        eval { $lh->move_subscriber({-to => 'list', -from => 'black_list', -email => 'mytest@example.com'}); }; 
-        ok($@, "calling move_subscriber with invalid address causes an error!: $@");  
-        
+		# Erm - but that's not an invalide Address? 
+        eval { $lh->move_subscriber({-to => 'list', -from => 'black_list', -email => 'neverwasinthelist@example.com'}); }; 
+        ok($@, "calling move_subscriber with invalid address causes an error(2)!: $@");  
         
         ok($lh->add_subscriber({
             -email => 'mytest@example.com',
             -type  => 'list', 
-        })); 
-    
-    
+        }), 'added mytest@example.com list'); 
+       
         ok($lh->add_subscriber({
             -email => 'mytest@example.com',
             -type  => 'black_list', 
-        }));
+        }), 'added mytest@example.com black_list');
         
 
         
@@ -247,7 +257,7 @@ ok($lh->can_have_subscriber_fields == 1 || $lh->can_have_subscriber_fields == 0,
     ok($@, "calling copy_subscriber with incorrect -to paramater causes an error!: $@");     
 
     eval { $lh->copy_subscriber({-to => 'blahblah', -from => 'yayaya'}); }; 
-    ok($@, "calling copy_subscriber wwith incorrect -to and -from paramater causes an error!: $@");     
+    ok($@, "calling copy_subscriber with incorrect -to and -from paramater causes an error!: $@");     
     
     eval { $lh->copy_subscriber({-to => 'blahblah', -from => 'yayaya', -email => 'whackawhacka'}); }; 
     ok($@, "calling move_subscriber with incorrect list_type in, '-to' causes an error!: $@");   
@@ -257,24 +267,24 @@ ok($lh->can_have_subscriber_fields == 1 || $lh->can_have_subscriber_fields == 0,
 
 
     eval { $lh->copy_subscriber({-to => 'list', -from => 'black_list', -email => 'whackawhacka'}); }; 
-    ok($@, "calling move_subscriber with invalid address causes an error!: $@");   
+    ok($@, "calling copy_subscriber with invalid address causes an error!: $@");   
     
     
 
     eval { $lh->copy_subscriber({-to => 'list', -from => 'black_list', -email => 'mytest@example.com'}); }; 
-    ok($@, "calling move_subscriber with invalid address causes an error!: $@");  
+    ok($@, "calling copy_subscriber with invalid address causes an error!: $@");  
     
     
     ok($lh->add_subscriber({
         -email => 'mytest@example.com',
         -type  => 'list', 
-    })); 
+    }), 'added mytest@example.com list'); 
 
 
     ok($lh->add_subscriber({
         -email => 'mytest@example.com',
         -type  => 'black_list', 
-    }));
+    }), 'added mytest@example.com black_list');
     
 
     
@@ -283,18 +293,18 @@ ok($lh->can_have_subscriber_fields == 1 || $lh->can_have_subscriber_fields == 0,
     ok($@, "calling copy_subscriber with address already subscribed in, '-to' causes error!: $@");          
 
 
-    ok($lh->remove_subscriber({-email => 'mytest@example.com', -type => 'list'})); 
-    ok($lh->remove_subscriber({-email => 'mytest@example.com', -type => 'black_list'}));	
+    ok($lh->remove_subscriber({-email => 'mytest@example.com', -type => 'list'}), 'removed mytest@example.com list'); 
+    ok($lh->remove_subscriber({-email => 'mytest@example.com', -type => 'black_list'}), 'removed mytest@example.com black_list');	
 
 
     ok($lh->add_subscriber({
         -email => 'mytest@example.com',
         -type  => 'list', 
-    }));
+    }), 'added mytest@example.com');
 
 	ok($lh->copy_subscriber({-to => 'black_list', -from => 'list', -email => 'mytest@example.com'}), "Calling copy_subscriber with correct paramaters works!"); 
-	ok($lh->remove_from_list(-Email_List => ['mytest@example.com'], -Type => 'list')); 
-    ok($lh->remove_from_list(-Email_List => ['mytest@example.com'], -Type => 'black_list'));	
+	ok($lh->remove_from_list(-Email_List => ['mytest@example.com'], -Type => 'list'), 'removed mytest@example.com list'); 
+    ok($lh->remove_from_list(-Email_List => ['mytest@example.com'], -Type => 'black_list'), 'removed mytest@example.com black_list');	
    
 	###
     
@@ -309,8 +319,17 @@ SKIP: {
     my $s = $lh->add_subscriber_field({-field => 'myfield'}); 
     ok($s == 1, "adding a new field is successful"); 
 
+
+#sleep(30); 
+
     ok(eq_array($lh->subscriber_fields, ['myfield']), 'New field is being reported.'); 
     undef($s); 
+#diag "sleeeeeping"; 
+#sleep(400); 
+
+#diag "sleep"; 
+#sleep(400); 
+	
     my $s = $lh->remove_subscriber_field({-field => 'myfield'}); 
     ok($s == 1, "removing a new field is successful"); 
 
@@ -456,10 +475,9 @@ SKIP: {
             ok($s == 1, "adding a new field, " . $_ . "with fallback of, " .  $ff->{$_} . "is successful"); 
             undef $s; 
             
-            my $fallbacks = $lh->get_fallback_field_values; 
+            my $attr = $lh->get_all_field_attributes; 
             
-            ok($fallbacks->{$_} eq $ff->{$_}, $ff->{$_} . ' equals: ' . $fallbacks->{$_} . "for: " . $_); 
-            
+            ok($attr->{$_}->{fallback_value} eq $ff->{$_}, $ff->{$_} . ' equals: ' . $attr->{$_}->{fallback_value} . "for: " . $_); 
             
             # This won't kill us, but it will return an, "undef" 
             my $s = $lh->add_subscriber_field({-field => $_, -fallback_value => $ff->{$_}}); 
@@ -471,8 +489,8 @@ SKIP: {
        foreach(keys %$ff){ 
        
             ok($lh->remove_subscriber_field({-field => $_}),    'Field, ' . $_ . ' removed successfully'); 
-            my $fallbacks = $lh->get_fallback_field_values; 
-            ok(!exists($fallbacks->{$_}), "old fallback value for $_ has been removed."); 
+            my $attr = $lh->get_all_field_attributes; 
+            ok(!exists($attr->{$_}), "old fallback value for $_ has been removed."); 
      
      }
        
@@ -511,7 +529,7 @@ SKIP: {
                         first_name => 'One First Name', 
                         last_name  => 'One Last Name', 
                     }
-    }));
+    }), 'added, one@example.com');
 	ok(
 		$lh->copy_subscriber(
 			{
@@ -519,28 +537,33 @@ SKIP: {
 				-from  => 'list', 
 				-to    => 'black_list', 
 			}
-		)
+		), 'copied one@example.com from list to black_list'
 	);
 		 
 	
-	ok($lh->check_for_double_email(-Email => 'one@example.com',-Type  => 'list')  == 1); 
-	ok($lh->check_for_double_email(-Email => 'one@example.com',-Type  => 'black_list')  == 1); 	
+	ok($lh->check_for_double_email(-Email => 'one@example.com',-Type  => 'list')  == 1, 'check_for_double_email for one@example.com on list returns, 1'); 
+	ok($lh->check_for_double_email(-Email => 'one@example.com',-Type  => 'black_list')  == 1, 'check_for_double_email for one@example.com on black_list returns, 1'); 	
 
 	my $one_info = $lh->get_subscriber({-email => 'one@example.com', -type => 'list'}); 
-    ok($one_info->{first_name} eq 'One First Name'); 
-    ok($one_info->{last_name}  eq 'One Last Name'); 
+	
+	use Data::Dumper; 
+	diag Data::Dumper::Dumper($one_info); 
+	
+    ok($one_info->{first_name} eq 'One First Name', 'first_name equals "One First Name"'); 
+    ok($one_info->{last_name}  eq 'One Last Name', 'last-name equals "One Last Name"'); 
 	undef $one_info; 
+
 
 	my $one_info = $lh->get_subscriber({-email => 'one@example.com', -type => 'black_list'}); 
     ok($one_info->{first_name} eq 'One First Name'); 
     ok($one_info->{last_name}  eq 'One Last Name'); 
 	undef $one_info;
 	
-	ok($lh->remove_from_list(-Email_List => ['one@example.com'], -Type => 'list'      )); 
-  	ok($lh->remove_from_list(-Email_List => ['one@example.com'], -Type => 'black_list'));   	
+	ok($lh->remove_from_list(-Email_List => ['one@example.com'], -Type => 'list'      ), 'removed one@example.com from list'); 
+  	ok($lh->remove_from_list(-Email_List => ['one@example.com'], -Type => 'black_list'), 'removed one@example.com from black_list');   	
 	
-	ok($lh->remove_subscriber_field({-field => 'first_name'})); 
-  	ok($lh->remove_subscriber_field({-field => 'last_name'})); 
+	ok($lh->remove_subscriber_field({-field => 'first_name'}), 'removed field first_name'); 
+  	ok($lh->remove_subscriber_field({-field => 'last_name'}), 'removed field last_name'); 
   
 
     # Stress Testin'
@@ -555,6 +578,7 @@ SKIP: {
         ok($lh->remove_subscriber_field({-field    => 'foo' . $count}),    'New field # ' . $count . ' removed successfully'); 
         $count--;
     }
+
 
 	
 
@@ -602,7 +626,7 @@ ok(-e $DADA::Config::TMP);
                         first_name => 'Raymond', 
                         last_name  => 'Pettibon', 
                     }
-    })); 
+    }), 'Add Raymond Pettibon'); 
 
     my $sub_info = $lh->get_subscriber({-email => 'raymond.pettibon@example.com'}); 
     ok($sub_info->{first_name} eq 'Raymond'); 
@@ -619,7 +643,7 @@ ok(-e $DADA::Config::TMP);
                         first_name => 'Marcel', 
                         last_name  => 'Duchamp', 
                     }
-    }));
+    }), 'Added Marcel Duchamp');
 
     my $sub_info = $lh->get_subscriber({-email => 'marcel.duchamp@example.com'}); 
     ok($sub_info->{first_name} eq 'Marcel'); 
@@ -633,26 +657,30 @@ ok(-e $DADA::Config::TMP);
                         first_name => 'Man', 
                         last_name  => 'Ray', 
                     }
-    })); 
+    }), 'Add Man Ray'); 
  	ok(-e $DADA::Config::TMP); 
 
+
+
+
+
+
     my $sub_info = $lh->get_subscriber({-email => 'man.ray@example.com'}); 
-    ok($sub_info->{first_name} eq 'Man'); 
-    ok($sub_info->{last_name}  eq 'Ray'); 
+    ok($sub_info->{first_name} eq 'Man', 'first_name Man'); 
+    ok($sub_info->{last_name}  eq 'Ray', 'last_name Ray'); 
     undef($sub_info); 
-
-
 
     ok($lh->add_subscriber({
         -email  => 'no.one@example.com',
         -type   => 'list', 
-    })); 
+    }), 'added no.one@example.com'); 
  
     my $sub_info = $lh->get_subscriber({-email => 'no.one@example.com'}); 
-    ok($sub_info->{first_name} eq ''); 
-    ok($sub_info->{last_name}  eq ''); 
+    ok($sub_info->{first_name} eq '', 'nothing for first_name'); 
+    ok($sub_info->{last_name}  eq '', 'nothing for first_name'); 
     undef($sub_info); 
     
+
 
     my $body = q{ 
     
@@ -663,7 +691,7 @@ ok(-e $DADA::Config::TMP);
     
     };
     
-	ok(-e $DADA::Config::TMP); 
+	ok(-e $DADA::Config::TMP, 'file exists.'); 
 
 
  
@@ -683,7 +711,11 @@ ok(-e $DADA::Config::TMP);
     my $mailout = DADA::Mail::MailOut->new({ -list => $list });
     my $rv; 
     eval { $rv = $mailout->create({-fields => $test_msg_fields, -mh_obj => $mh, -list_type => 'list' }) }; 
-    ok(!$@, "Passing  a correct DADA::Mail::Send object does not create an error! - $@"); 
+    
+	if($@){ 
+		diag 'Error returned: ' . $@; 
+	}
+	ok(!$@, "Passing  a correct DADA::Mail::Send object does not create an error! - $@"); 
     ok($rv == 1, " create() returns 1!"); 
 
     my $tmp_sub_list = $mailout->dir . '/' . 'tmp_subscriber_list.txt';
@@ -698,14 +730,16 @@ ok(-e $DADA::Config::TMP);
         
     my $contents = do { local $/; <$TMP_SUB_LIST> }; 
 
+diag $contents; 
+
     
     close $TMP_SUB_LIST or die $!;
 
 
-    like($contents, qr/Mike::Kelley/); 
-    like($contents, qr/Raymond::Pettibon/); 
-    like($contents, qr/Marcel::Duchamp/); 
-    like($contents, qr/Man::Ray/); 
+    like($contents, qr/Mike\,Kelley/); 
+    like($contents, qr/Raymond\,Pettibon/); 
+    like($contents, qr/Marcel\,Duchamp/); 
+    like($contents, qr/Man\,Ray/); 
    # ok($contents =~ m/John\:\:Doe/); 
 
     #my $msg = do { local $/; <$MSG_FILE> };
@@ -831,6 +865,12 @@ ok(-e $DADA::Config::TMP);
     my $l2 = 'JohnJohnJohnJohnJohnJohn'; 
     my $l3 = 'DoeDoeDoeDoeDoeDoeDoe';       
     like($contents, qr/$l/, 'FOUND: email: no.one@example.com, First Name: John, Last Name: Doe'); 
+	#sleep(400); 
+	#diag "Sleeing!"; 
+	
+
+
+
     like($contents, qr/$l2/, 'FOUND: JohnJohnJohnJohnJohnJohn' ); 
     like($contents, qr/$l3/, 'FOUND: DoeDoeDoeDoeDoeDoeDoe'); 
     undef $l;     
@@ -839,7 +879,7 @@ ok(-e $DADA::Config::TMP);
     
     
     
-    
+
     #undef $lh; 
     #my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
  
@@ -914,7 +954,10 @@ ok(-e $DADA::Config::TMP);
     my $l = quotemeta('email: mike.kelley@example.com, First Name: Mike, Last Name: Kelley'); 
     my $l2 = quotemeta('MikeMikeMikeMikeMikeMike'); 
     my $l3 = quotemeta('KelleyKelleyKelleyKelleyKelleyKelleyKelley');
-    ok($contents !~ m/$l/); 
+	
+	diag '$contents: ' . $contents; 
+	
+	ok($contents !~ m/$l/); 
     ok($contents !~ m/$l2/); 
     ok($contents !~ m/$l3/); 
     undef $l;     
@@ -972,13 +1015,18 @@ ok(-e $DADA::Config::TMP);
             -Type => 'list',
             -partial_sending => {'first_name' => {'equal_to' =>'Raymond'}},
         );
-        
+
+     
         ok($total_sending_out_num == 2, "This file is to send to 2 people ($total_sending_out_num)", ); 
+
+#diag "sleep! kill me!"; 
+#sleep(600); 
+
         ok(unlink($path_to_list) == 1, 'Unlinking ' . $path_to_list . ' worked.'); 
         undef($path_to_list); 
         undef($total_sending_out_num); 
         
-        
+  
     sleep(1); 
     
      my ( $path_to_list, $total_sending_out_num)
@@ -1003,6 +1051,9 @@ ok(-e $DADA::Config::TMP);
             -Type => 'list',
             -partial_sending => {'last_name' => {'like' =>'a'}},
         );
+
+		diag "file, '$path_to_list': \n" . slurp($path_to_list); 
+
         
         ok($total_sending_out_num == 3, "This file is to send to 3 people ($total_sending_out_num)", ); 
         ok(unlink($path_to_list) == 1, 'Unlinking ' . $path_to_list . ' worked.'); 
@@ -1110,7 +1161,11 @@ ok(-e $DADA::Config::TMP);
     ok($lh->remove_from_list(-Email_List => ['man.ray@example.com'], -Type => 'list'), "removed: " . 'man.ray@example.com'); 
     ok($lh->remove_from_list(-Email_List => ['no.one@example.com'], -Type => 'list'), "removed: " . 'no.one@example.com'); 
 
+ 
+
 } # Skip?!
+
+
 
 
 ### search_list  
@@ -1118,7 +1173,7 @@ ok(-e $DADA::Config::TMP);
 undef $lh; 
 
 $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
-ok($lh->isa('DADA::MailingList::Subscribers'));
+ok($lh->isa('DADA::MailingList::Subscribers'), 'isa checks out.');
 
 my $n_subs = $lh->num_subscribers; 
 if($n_subs > 0){ 
@@ -1140,6 +1195,9 @@ for($i=0;$i<10;$i++){
         }), 'added: example' . $i . '@example.com' );
     
 }
+my $now_n_subs = $lh->num_subscribers; 
+ok($now_n_subs == 10, "10 subscribers right now ($now_n_subs)"); 
+
 
 undef $i;
 
@@ -1150,7 +1208,13 @@ my $results = $lh->search_list(
     }
 ); 
 
-ok($results->[9], "Have 10 results");
+use Data::Dumper; 
+diag "DUMP: " .  Data::Dumper::Dumper($results); 
+
+my @results = @$results; 
+
+
+ok($results->[9], "Have 10 results ($#results)");
 ok(!$results->[10], "Do NOT have 11 results."); 
 
 
@@ -1171,7 +1235,7 @@ SKIP: {
         diag "still here."; 
         
         foreach(qw(1 2)){ 
-            ok($lh->add_subscriber_field({-field => 'field' . $_})); 
+            ok($lh->add_subscriber_field({-field => 'field' . $_}), 'added field, ' . $_); 
         }
         
         my $subscribers = []; 
@@ -1213,6 +1277,8 @@ SKIP: {
     ok($results->[2],  "Found 3 results"); 
     ok(!$results->[3], "Did not find 4 results"); 
 
+#diag "sleeping! 30"; 
+#sleep(30);
 
     undef $results;   
     $results = $lh->search_list(
@@ -1244,8 +1310,8 @@ SKIP: {
    # require Data::Dumper; 
    # print Data::Dumper::Dumper($results); 
    my $r = $results->[0];
-    ok($r->{fields}->[0]->{value} eq 'Wes'); 
-    ok($r->{fields}->[1]->{value} eq 'Anderson'); 
+    ok($r->{fields}->[0]->{value} eq 'Wes', 'equals wes'); 
+    ok($r->{fields}->[1]->{value} eq 'Anderson', 'equals anderson'); 
     undef $r; 
     
   
@@ -1254,10 +1320,15 @@ SKIP: {
         } 
         
     foreach(qw(1 2)){ 
-        ok($lh->remove_subscriber_field({-field => 'field' . $_})); 
+        ok($lh->remove_subscriber_field({-field => 'field' . $_}), 'Removed: field' . $_); 
     }
-        
+
+
+
 } # SKIP
+
+
+
 
 ### /search_list
 
@@ -1273,8 +1344,10 @@ SKIP: {
 							);
 	ok($status == 0, "Status is 0 ($status)"); 
 
+=cut
 
-# Remove All 
+#
+## Remove All 
 
 foreach my $type( keys %{ $lh->allowed_list_types } ) { 
 	
@@ -1298,9 +1371,37 @@ foreach my $type( keys %{ $lh->allowed_list_types } ) {
 
 }
 
+=cut
+
+
+
+
 
 
 
  
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
+
+
+sub slurp { 
+	
+		
+		my ($file) = @_;
+
+        local($/) = wantarray ? $/ : undef;
+        local(*F);
+        my $r;
+        my (@r);
+
+        open(F, "<$file") || die "open $file: $!";
+        @r = <F>;
+        close(F) || die "close $file: $!";
+
+        return $r[0] unless wantarray;
+        return @r;
+
+}
+
+
+

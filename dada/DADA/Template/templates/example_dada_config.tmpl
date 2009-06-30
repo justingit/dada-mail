@@ -31,7 +31,7 @@ $ARCHIVE_DB_TYPE          = 'SQL';
 $SETTINGS_DB_TYPE         = 'SQL'; 
 $SESSION_DB_TYPE          = 'SQL'; 
 $BOUNCE_SCORECARD_DB_TYPE = 'SQL';
-
+$CLICKTHROUGH_DB_TYPE     = 'SQL'; 
 
 %SQL_PARAMS = ( 
 
@@ -52,11 +52,16 @@ $BOUNCE_SCORECARD_DB_TYPE = 'SQL';
 	user             => '',          
 	pass             => '',
 
-	subscriber_table    => 'dada_subscribers',
-	archives_table      => 'dada_archives', 
-	settings_table      => 'dada_settings', 
-	session_table       => 'dada_sessions', 
-	bounce_scores_table => 'dada_bounce_scores', 
+	subscriber_table                => 'dada_subscribers',
+	profile_table                   => 'dada_profile', 
+	profile_fields_table 	        => 'dada_profile_fields', 
+	profile_fields_attributes_table => 'dada_profile_fields_attributes',
+	archives_table                  => 'dada_archives', 
+	settings_table                  => 'dada_settings', 
+	session_table                   => 'dada_sessions', 
+	bounce_scores_table             => 'dada_bounce_scores',
+	clickthrough_urls_table         => 'dada_clickthrough_urls',
+
 
 );
 
@@ -66,6 +71,27 @@ $LIST_IN_ORDER = 1;
 =cut
 # end cut for SQL Backend
 
+
+
+# Dada Mail Profile Options
+
+$PROFILE_ENABLED                         = 1; 
+$PROFILE_EMAIL                           = ''; 
+$PROFILE_ENABLE_CAPTCHA                  = 1;
+$PROFILE_ENABLE_MAGIC_SUBSCRIPTION_FORMS = 1;
+
+$PROFILE_COOKIE_PARAMS = {
+	-name   => 'dada_profile',  
+    -path    => '/',
+    -expires => '+7d',	
+};
+
+$PROFILE_GRAVATAR_OPTIONS = {
+	enable_gravators     => 1, 
+	default_gravatar_url => undef, 
+};
+
+#/ Dada Mail Profile Options
 
 
 # start cut for list settings defaults

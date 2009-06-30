@@ -41,6 +41,8 @@ Partial List Sending Options are now supported by Beatitude.
 
 Beatitude now bears a resemblence to the rest of Dada Mail's list sending screens, instead of looking completely different. 
 
+=back
+
 =head2 =head1 2.11 Alpha 10 Changes
 
 =head3 Default Mail Settings
@@ -143,7 +145,7 @@ Anything that has to do with a list setting, now has, B<list_setting.> appended 
 
 =back
 
-Anything that has to do with a subscriber now has B<subscriber.] appended to it. For example: 
+Anything that has to do with a subscriber now has B<subscriber.> appended to it. For example: 
 
 =over
 
@@ -217,6 +219,7 @@ The Authorized Senders is a sublist in Dada Mail. It contains a list of email ad
 
 This is most extremely useful for announce-only lists, where you'd like to give posting access to someone other than the list owner.
 
+=back
 
 =head3 White List Support
 

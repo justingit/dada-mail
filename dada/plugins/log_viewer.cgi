@@ -456,7 +456,7 @@ sub search_logs {
 					$diff_lines = convert_to_ascii($diff_lines);
 					# DEV: This will probably work, so long as the lines do not have new line endings, 
 					
-                    $diff_lines = $searcher->html_highlight_line({-query => $q->param('query'), -line => $diff_lines }); 
+                    $diff_lines = $searcher->html_highlight_line({-query => $query, -line => $diff_lines }); 
 
 						
                   	$return .= $q->li({-style => 'list-style-type:none"'}, $diff_lines);

@@ -1,11 +1,21 @@
 package DADA::Logging::Clickthrough; 
-use strict; 
+
 
 use lib qw(../../ ../../perllib);
 
-use base qw(DADA::Logging::Clickthrough::Db);
+BEGIN {
+    $type = $DADA::Config::CLICKTHROUGH_DB_TYPE;
+    if ( $type =~ m/sql/i ) {
+        $type = 'baseSQL';
+    }
+    else {
+        $type = 'Db';
+    }
+}
 
+use base "DADA::Logging::Clickthrough::$type";
 
+use strict; 
 use DADA::Config qw(!:DEFAULT); 
 use DADA::App::Guts;
 
@@ -293,6 +303,238 @@ sub clickthrough_log_location {
 	   return $ctl; 
 }
 
+##############################################################################
+
+sub parse_email {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    # Actually, I think they want dada-style args. Damn them!
+    #	if(!exists($args->{-entity})){
+    #		croak "you MUST pass an -entity!";
+    #	}
+    if ( !exists( $args->{ -mid } ) ) {
+        croak "you MUST pass an -mid!";
+    }
+
+    # Massaging:
+    $args->{ -mid } =~ s/\<|\>//g;
+    $args->{ -mid } =~ s/\.(.*)//;    #greedy
+
+    # This here, is pretty weird:
+
+    require DADA::App::FormatMessages;
+    my $fm = DADA::App::FormatMessages->new( -yeah_no_list => 1 );
+
+    my $entity = $fm->entity_from_dada_style_args($args);
+
+    $entity = $self->parse_entity(
+        {
+            -entity => $entity,
+            -mid    => $args->{ -mid },
+        }
+    );
+
+    my $msg = $entity->as_string;
+
+    my ( $h, $b ) = split ( "\n\n", $msg, 2 );
+
+    my %final = ( $self->return_headers($h), Body => $b, );
+
+    return %final;
+
+}
+
+sub return_headers {
+
+    my $self = shift;
+
+    #get the blob
+    my $header_blob = shift || "";
+
+    #init a new %hash
+    my %new_header;
+
+    # split.. logically
+    my @logical_lines = split /\n(?!\s)/, $header_blob;
+
+    # make the hash
+    foreach my $line (@logical_lines) {
+        my ( $label, $value ) = split ( /:\s*/, $line, 2 );
+        $new_header{$label} = $value;
+    }
+    return %new_header;
+
+}
+
+sub parse_entity {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    if ( !exists( $args->{ -entity } ) ) {
+        croak 'did not pass an entity in, "-entity"!';
+    }
+    if ( !exists( $args->{ -mid } ) ) {
+        croak 'did not pass a mid in, "-mid"!';
+    }
+
+    my @parts = $args->{ -entity }->parts;
+
+    if (@parts) {
+
+        #print "we gotta parts?!\n";
+
+        my $i;
+        foreach $i ( 0 .. $#parts ) {
+            $parts[$i] =
+              $self->parse_entity( { %{$args}, -entity => $parts[$i] } );
+        }
+
+    }
+
+    $args->{ -entity }->sync_headers(
+        'Length'      => 'COMPUTE',
+        'Nonstandard' => 'ERASE'
+    );
+
+    my $is_att = 0;
+
+    if ( defined( $args->{ -entity }->head->mime_attr('content-disposition') ) )
+    {
+        if ( $args->{ -entity }->head->mime_attr('content-disposition') =~
+            m/attachment/ )
+        {
+            $is_att = 1;
+
+            #print "is attachment?\n";
+        }
+    }
+
+    if (
+        (
+               ( $args->{ -entity }->head->mime_type eq 'text/plain' )
+            || ( $args->{ -entity }->head->mime_type eq 'text/html' )
+        )
+        && ( $is_att != 1 )
+      )
+    {
+
+        my $body    = $args->{ -entity }->bodyhandle;
+        my $content = $body->as_string;
+
+        if ($content) {
+
+            #print "Bang!\n";
+            # Bang! We do the stuff here!
+            $content = $self->parse_string( $args->{ -mid }, $content );
+        }
+        else {
+
+            #print "no content to parse?!";
+        }
+
+        my $io = $body->open('w');
+        $io->print($content);
+        $io->close;
+    }
+    else {
+
+        #print "missed the block?!\n";
+    }
+
+    $args->{ -entity }->sync_headers(
+        'Length'      => 'COMPUTE',
+        'Nonstandard' => 'ERASE'
+    );
+
+    return $args->{ -entity };
+
+}
+
+sub parse_string {
+
+    my $self = shift;
+    my $mid  = shift;
+
+    die 'no mid! ' if !defined $mid;
+
+    my $str = shift;
+
+    #carp "here's the string before: " . $str;
+    #
+    $str =~ s/\[redirect\=(.*?)\]/&redirect_encode($self, $mid, $1)/eg;
+
+    #	carp "here's the string: $str";
+    return $str;
+}
+
+sub _list_name_check {
+
+    my ( $self, $n ) = @_;
+    $n = $self->_trim($n);
+    return 0 if !$n;
+    return 0 if $self->_list_exists($n) == 0;
+    $self->{name} = $n;
+    return 1;
+}
+
+sub _list_exists {
+    my ( $self, $n ) = @_;
+    return DADA::App::Guts::check_if_list_exists( -List => $n );
+}
+
+sub _trim { 
+	my ($self, $s) = @_;
+	return DADA::App::Guts::strip($s);
+}
+
+sub random_key {
+
+    my $self = shift;
+    require DADA::Security::Password;
+    my $checksout = 0;
+    my $key       = undef;
+
+    while ( $checksout == 0 ) {
+        $key = DADA::Security::Password::generate_rand_string( 1234567890, 12 );
+        if ( $self->key_exists({ -key => $key }) ) {
+            # ...
+        }
+        else {
+            $checksout = 1;
+            last;
+        }
+    }
+
+    return $key;
+
+}
+
+sub redirect_encode {
+
+    my $self = shift;
+    my $mid  = shift;
+    die 'no mid! '
+      if !defined $mid;
+    my $url = shift;
+
+    my $key = $self->reuse_key( $mid, $url );
+
+    if ( !defined($key) ) {
+        $key = $self->add( $mid, $url );
+    }
+
+#	carp 'here it is: ' . $DADA::Config::PROGRAM_URL . '/r/' . $self->{name} . '/' . $key . '/';
+    return $DADA::Config::PROGRAM_URL . '/r/'
+      . $self->{name} . '/'
+      . $key . '/';
+
+}
+
+
+
 1;
 
 
@@ -300,7 +542,7 @@ sub clickthrough_log_location {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999-2008 Justin Simoni
+Copyright (c) 1999-2009 Justin Simoni
  
 http://justinsimoni.com 
 

@@ -3,8 +3,7 @@ package DADA::Template::HTML;
 use lib qw(../../ ../../DADA/perllib); 
 
 use DADA::Config qw(!:DEFAULT);  
-use DADA::App::Guts;
-use DADA::Template::Widgets; 
+use DADA::App::Guts; 
 
 use Carp qw(croak carp); 
 
@@ -53,7 +52,7 @@ admin_header_params
 use strict; 
 use vars qw(@EXPORT); 
 
-my $HTML_Footer =  '<p style="font-size:10px;font-family:Verdana,Arial;text-align:center">Powered by <a href="http://dadamailproject.com" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Dada Mail ' . $DADA::Config::VER . '</a><br />Copyright &copy; 1999-2008, <a href="http://dadamailproject.com/justin" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Simoni Creative</a>.</p>';
+my $HTML_Footer =  '<p style="font-size:10px;font-family:Verdana,Arial;text-align:center">Powered by <a href="http://dadamailproject.com" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Dada Mail ' . $DADA::Config::VER . '</a><br />Copyright &copy; 1999-2009, <a href="http://dadamailproject.com/justin" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Simoni Creative</a>.</p>';
 
 
 
@@ -138,6 +137,8 @@ sub admin_template_footer {
 
 sub admin_template { 
  
+	require DADA::Template::Widgets; 
+	require DADA::Template::Widgets::Admin_Menu;
 	require CGI; 
 	my $q = CGI->new;
 	   $q->charset($DADA::Config::HTML_CHARSET);
@@ -171,7 +172,6 @@ sub admin_template {
 	}
 		
 	### Admin Menu Creation...
-	require DADA::Template::Widgets::Admin_Menu;
     my $admin_menu; 
 	my $li; 
 	if(!$args{-li}){ 
@@ -286,8 +286,11 @@ sub admin_header_params {
 
 sub default_template { 
  
+	
+	
 	# DEV: should the templates found in the other ways be run through the templating system? I kinda think they should...  
-	if(!$DADA::Config::USER_TEMPLATE){ 			   
+	if(!$DADA::Config::USER_TEMPLATE){ 		
+		require DADA::Template::Widgets; 	   
 		return DADA::Template::Widgets::_raw_screen({-screen => 'default_list_template.tmpl'}); 
 	}else{ 
 		if(DADA::App::Guts::isa_url($DADA::Config::USER_TEMPLATE)){ 
@@ -369,7 +372,7 @@ sub fetch_admin_template {
 		if($file !~ m/^\//){ 
 			$file = $DADA::Config::TEMPLATES  .'/'. $file;
 		}
-		
+		require DADA::Template::Widgets; 
 		$admin_template = DADA::Template::Widgets::_slurp($file); 
 	}
 	
@@ -388,6 +391,7 @@ sub fetch_user_template {
 		return undef;
 	}
 	else { 
+		require DADA::Template::Widgets; 
 		return DADA::Template::Widgets::_slurp($template);
 	}
 
@@ -412,6 +416,7 @@ sub open_template {
 		return undef;
 	}
 	else { 
+		require DADA::Template::Widgets; 
 		return DADA::Template::Widgets::_slurp($template);
 	}
 	
@@ -422,7 +427,7 @@ sub open_template {
 
 sub list_template { 
 
-	use DADA::Template::Widgets; 
+	require DADA::Template::Widgets; 
     require CGI; 
     my $q = CGI->new; 
        $q->charset($DADA::Config::HTML_CHARSET); 
@@ -486,19 +491,38 @@ sub list_template {
 		$list_template = default_template(); 		
 	}
 
+	require DADA::Profile::Session; 
+	require DADA::Profile; 
+	my $prof_sess = DADA::Profile::Session->new; 
+	my $prof_email         = ''; 
+	my $is_logged_in       = 0; 
+	my $subscribed_to_list = 0;
+	if($prof_sess->is_logged_in){ 
+		$is_logged_in = 1; 
+	    $prof_email = $prof_sess->get; 
+		my $prof = DADA::Profile->new({-email => $prof_email}); 
+		$subscribed_to_list = $prof->subscribed_to_list({-list => $list});
+	}
+	
+	
 	my $final_list_template = DADA::Template::Widgets::screen(
 							{
 								-data => \$list_template,
 								-dada_pseudo_tag_filter   => 1, 	
 								-vars => {
-											default_css => DADA::Template::Widgets::screen({-screen => 'default_css.css', -vars => 	$args{-vars} }),
-											title       => $args{-Title}, 
-											# The message tag isn't being used anymore but.... 
-											message     => $args{-Title},
-											content     => '[_dada_content]',
-											mojo        => '[_dada_content]',
-											dada        => '[_dada_content]',
+											default_css         => DADA::Template::Widgets::screen({-screen => 'default_css.css', -vars => 	$args{-vars} }),
+											title               => $args{-Title}, 
+											'profile.email'     => $prof_email, 
+											subscribed_to_list  => $subscribed_to_list,
 											
+											# The message tag isn't being used anymore but.... 
+											message             => $args{-Title},
+											content             => '[_dada_content]',
+											mojo                => '[_dada_content]',
+											dada                => '[_dada_content]',
+											profile_widget      => DADA::Template::Widgets::profile_widget(), 
+											show_profile_widget => 1, 
+
 											%{$args{-vars}},
 									 	 },
 								(
@@ -565,7 +589,7 @@ sub open_template_from_url {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999-2008 Justin Simoni 
+Copyright (c) 1999-2009 Justin Simoni 
 http://justinsimoni.com 
 All rights reserved. 
 

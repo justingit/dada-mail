@@ -138,12 +138,16 @@ require DADA::Mail::Send;
 require DADA::Mail::MailOut;
 my @mailouts; 
 
- 
+my $timeout = 0; 
 @mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list}); 
 while($mailouts[0] ){ 
 	diag "sleeping until mailout is done..."  . $mailouts[0]->{sendout_dir}; 
 	sleep(5); 
 	@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list});
+	$timeout = $timeout + 5; 
+	if($timeout >= 30){ 
+	die "something's wrong with the testing - dying."	
+	}
 }
 undef @mailouts; 
 
@@ -188,9 +192,13 @@ $ls->param('mime_encode_words_in_headers',   1                     );
 
 #Clean up
 @mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list}); 
+$timeout = 0;
 while($mailouts[0] ){ 
 	diag "sleeping until mailout is done..."  . $mailouts[0]->{sendout_dir}; 
 	sleep(5); 
+	if($timeout >= 30){ 
+		die "something's wrong with the testing - dying."	
+	}
 	@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list});
 }
 undef @mailouts;
@@ -253,9 +261,13 @@ $ls->param('group_list', 1);
 
 
 @mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list}); 
+$timeout = 0; 
 while($mailouts[0] ){ 
 	diag "sleeping until mailout is done..."  . $mailouts[0]->{sendout_dir}; 
 	sleep(5); 
+	if($timeout >= 30){ 
+		die "something's wrong with the testing - dying."	
+	}
 	@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list});
 }
 undef @mailouts;

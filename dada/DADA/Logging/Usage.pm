@@ -24,7 +24,7 @@ isn't good for general use.
 =cut 
 
 
-use lib '../';
+use lib qw(../../ ../../../ ../../perllib);
 use DADA::Config qw(!:DEFAULT); 
 use DADA::App::Guts; 
 use Fcntl qw(LOCK_SH);
@@ -96,7 +96,7 @@ sub open_log {
 		
 		
 		chmod($DADA::Config::FILE_CHMOD , $usage_log); 
-		if(open(LOG, ">>usage_log")){ 
+		if(open(LOG, ">>", $usage_log)){ 
 			flock(LOG, LOCK_SH);
 		}else{ 
 			 warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER - i can't open my own log at '$DADA::Config::PROGRAM_USAGE_LOG', here's some details: $!";
@@ -141,7 +141,7 @@ sub DESTROY{
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999-2008 Justin Simoni 
+Copyright (c) 1999-2009 Justin Simoni 
 http://justinsimoni.com 
 All rights reserved. 
 

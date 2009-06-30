@@ -146,7 +146,7 @@ A super fancy feature in Dada Mail is its Sending Monitor. The Sending Monitor w
 
 =head2 Mailing List Settings
 
-Each Mailing List set up in Dada Mail has its own settings. These settings cover everything from email sending preferenences, to archive preferences, to subsription list confirmation and pretty much everything else. These settings can be modified via the web-based list control panel. 
+Each Mailing List set up in Dada Mail has its own settings. These settings cover everything from email sending preferenences, to archive preferences, to subscription list confirmation and pretty much everything else. These settings can be modified via the web-based list control panel. 
 
 =head2 Mailing List Archives
 

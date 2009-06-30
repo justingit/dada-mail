@@ -720,7 +720,7 @@ sub send_url_email {
                     my $msg_id = DADA::App::Guts::message_id(); 
                     
                     if($q->param('back_date') == 1){ 
-                        $msg_id = backdated_msg_id({-cgi_obj => $q}); 
+                        $msg_id = $self->backdated_msg_id({-cgi_obj => $q}); 
                     }
                     
                     # time  + random number + sender, woot!

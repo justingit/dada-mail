@@ -1,0 +1,25 @@
+<!-- begin profile_widget.tmpl --> 
+
+<!-- tmpl_if profiles_enabled --> 
+	<p style="text-align:right"> 
+		<!-- tmpl_if is_logged_in --> 
+		<!-- tmpl_if gravators_enabled --> 
+			<!-- tmpl_if gravatar_img_url --> 
+					<img src="<!-- tmpl_var gravatar_img_url -->" width="30" height="30" style="border:1px solid black; float:right" />
+			<!-- /tmpl_if -->
+		<!-- /tmpl_if -->
+
+		
+			Hello, <!-- tmpl_var profile.email -->
+
+			[<a href="<!-- tmpl_var PROGRAM_URL -->?f=profile">Profile Home</a> | <a href="<!-- tmpl_var PROGRAM_URL -->?f=profile_logout">Logout</a>]
+		<!-- tmpl_else --> 
+			[<a href="<!-- tmpl_var PROGRAM_URL -->?f=profile_login">Register/Log In</a>]
+		<!-- /tmpl_if --> 
+		
+
+		
+	</p> 
+<!-- /tmpl_if --> 
+<!-- end profile_widget.tmpl --> 
+

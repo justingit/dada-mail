@@ -219,6 +219,40 @@ L<http://dadamailproject.com/support/documentation/COOKBOOK-integration.pod.html
 
 This will be a more advanced topic. 
 
+
+=head1 Unsubscriptions 
+
+=head2 Is there any way to make the unsubscription link in mailing list messages, "one click"
+
+Sure. 
+
+By default, the unsubscription tag, 
+
+ [list_unsubscribe_link]
+
+in the mailing list message template generates a URL that looks like this: 
+
+ http://example.com/cgi-bin/dada/mail.cgi/f/u/
+
+When your users follow this link, they will still have to enter their own email address. 
+
+You can change the unsubscription link from what's above, to: 
+
+ [list_unsubscribe_link]/[subscriber.email_name]/[subscriber.email_domain]/
+
+Which will generate a URL that looks like this: 
+
+ http://example.com/cgi-bin/dada/mail.cgi/f/u/user/example.com
+
+When clicked, Dada Mail will send the unsubscription confirmation email, without the user having to manually enter their email address. 
+
+The mailing list message templates can be edited in the list control panel under, I<Manage Copy - Email Templates>
+
+Finally, you can disable Dada Mail's Close-Loop Opt-Out system in the list control panel, in: I<Manager List - Mailing List Options>, by unchecking the option entitled, 
+
+I<Send Unsubscription Confirmation Emails (Closed-Loop Opt-Out)>
+
+
 =head1 Hosting
 
 =head2 Do you host Dada Mail or do I host Dada Mail? 

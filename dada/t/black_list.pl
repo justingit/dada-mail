@@ -34,11 +34,12 @@ SKIP: {
     
     
     
-    my $count = $lh->add_to_email_list(-Email_Ref => [qw(
-                                                test
-                                                     )], 
-                                       -Type     => 'black_list',
-                              );
+    my $count = $lh->add_subscriber(
+		{
+			-email => 'test',
+			-type  => 'black_list',
+        }
+	);
      
     ok($count == 1); 
     undef $count; 
@@ -94,11 +95,12 @@ SKIP: {
 
 ### check_for_double_email stuff
 
-    my $count = $lh->add_to_email_list(-Email_Ref => [qw(
-                                                test
-                                                     )], 
-                                       -Type     => 'black_list',
-                              );
+    my $count = $lh->add_subscriber(
+		{ 
+			-email => 'test',
+			-type  => 'black_list',
+		}
+    );
      
     ok($count == 1); 
     undef $count; 
@@ -144,7 +146,9 @@ eval {
 
 	
 ok(!$@, "But passing the, -mode => 'writeover' paramater seems to let this happen just fine.");  
-
+if($@){ 
+	diag $@; 
+}
 
 
 

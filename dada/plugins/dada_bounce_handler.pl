@@ -2002,6 +2002,15 @@ sub cl_main {
 		&version(); 
 	}
 	
+	 if(!$Plugin_Config->{Server} ||
+	       !$Plugin_Config->{Username} || 
+	       !$Plugin_Config->{Password}
+	    ){ 
+	        print "The Server Username and/password haven't been filled out, stopping." 
+	            if $verbose;        
+	            return;
+	    }
+	
 	print "Making POP3 Connection...\n" 
 	    if $verbose; 
 	
@@ -3703,11 +3712,17 @@ sub remove_bounces {
 				
 		$lh->remove_from_list(-Email_List => [@remove_list]);	# As a Fuck son, you sucked.		
 	
-		$lh->add_to_email_list(-Email_Ref => [@remove_list], 
-								-Type     => 'black_list',
-							  )
-			if( ($li->{black_list}               == 1)    && 
-			    ($li->{add_unsubs_to_black_list} == 1) );
+		if( ($li->{black_list}               == 1)    && 
+		    ($li->{add_unsubs_to_black_list} == 1) ){
+			foreach my $re(@remove_list){ 
+				$lh->add_subscriber(
+					{
+						-email => $re, 
+						-type  => 'black_list', 
+					}
+				);
+			}
+		}
 			
 		# Bang Bang Baby, The Bigger The Better.
 		# Bang Bang Baby, The Bigger The Better.
@@ -3768,13 +3783,13 @@ sub remove_bounces {
                             	Subject => $Email_Unsubscribed_Because_Of_Bouncing_Subject, 
                         	},
 							-body      => $Email_Unsubscribed_Because_Of_Bouncing_Message, 
-							-tmpl_vars => { 
+							-tmpl_params => { 
 								-list_settings_vars_param => { 
-										list => $list,
-								}
+										-list => $list,
+								},
 								-subscriber_vars => {
 									'subscriber.email' => $d_email, 
-								}
+								},
 								-vars => {
 											Plugin_Name => $Plugin_Config->{Program_Name},
 										},
@@ -4184,7 +4199,7 @@ sub erase_score_card {
     my @delete_list; 
     
     if($list) { 
-            @delete_list = qw($list); 
+            @delete_list = ($list); 
     }
     else { 
         
@@ -5671,7 +5686,7 @@ collection. It's a gnarly group of modules.
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999-2008 Justin Simoni 
+Copyright (c) 1999-2009 Justin Simoni 
 http://justinsimoni.com 
 All rights reserved. 
 

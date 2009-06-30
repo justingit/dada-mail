@@ -39,21 +39,25 @@ sub send_generic_email {
 		$args->{-test} = 0;
 	}
 		
-	my $ls; 
-	if (! exists($args->{-ls_obj})){
-		require DADA::MailingList::Settings; 
-		$ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
-	}
-	else { 
-		$ls = $args->{-ls_obj};
-	}
-	my $li = $ls->get;
+	my $ls   = undef; 
+	my $li   = {}; 
+
 	
-	my $expr = 0; 
+	if(exists($args->{-list})){ 		
+		if (! exists($args->{-ls_obj})){
+			require DADA::MailingList::Settings; 
+			$ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
+		}
+		else { 
+			$ls = $args->{-ls_obj};
+		}
+		$li = $ls->get;
+	}
+	
+	my $expr = 0; 	
 	if($li->{enable_email_template_expr} == 1){ 
 		$expr = 1;
 	}
-	
 	
 	if(!exists($args->{-headers})){ 
 		$args->{-headers} = {}; 
@@ -63,17 +67,35 @@ sub send_generic_email {
 	}
 	
 	if(!exists($args->{-tmpl_params})){ 
-		$args->{-tmpl_params} = {-list_settings_vars_param => {-list => $args->{-list}}}, # Dev: Probably could just pass $ls? 
-	}
+		if(exists($args->{-list})){ 
+			$args->{-tmpl_params} = 
+				{
+					-list_settings_vars_param => 
+						{
+							-list => $args->{-list}
+						}
+					}, # Dev: Probably could just pass $ls? 
+		}
+		else { 
+			$args->{-tmpl_params} = {};
+		}
+	}	
+	
 	my $data = { 
 					%{$args->{-headers}},
 					Body => $args->{-body},
 			   }; 
 			
 	require DADA::App::FormatMessages; 
-	my $fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
-   	   $fm->use_header_info(1);
-	   $fm->use_email_templates(0);	
+	my $fm = undef; 
+	if(exists($args->{-list})){ 
+		$fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
+   	}  
+	else { 
+		$fm = DADA::App::FormatMessages->new(-yeah_no_list => 1); 		
+	}
+	$fm->use_header_info(1);
+	$fm->use_email_templates(0);	
 			
 	my ($email_str) = $fm->format_message(
                             -msg => $fm->string_from_dada_style_args(
@@ -97,8 +119,14 @@ sub send_generic_email {
 	require DADA::Mail::Send;  
 	my $mh = DADA::Mail::Send->new(
 				{
-					-list   => $args->{-list}, 
-					-ls_obj => $ls, 
+					(
+						exists($args->{-list})
+					) ? ( 
+						-list   => $args->{-list}, 
+						-ls_obj => $ls,
+					) : 
+					(
+					), 
 				}
 			); 
 				
@@ -117,8 +145,8 @@ sub send_generic_email {
 
 sub send_confirmation_message { 
 
-	my ($args) = @_; 
 
+	my ($args) = @_; 
 	####
 		my $ls;
 		if(exists($args->{-ls_obj})){ 
@@ -145,7 +173,7 @@ sub send_confirmation_message {
 				-list_settings_vars_param => {-list => $args->{-list}},
 	            -subscriber_vars_param    => {-list => $args->{-list}, -email => $args->{-email}, -type => 'sub_confirm_list'},
 	            -vars                     => {
-	                                            'subscriber.pin' => make_pin(-Email => $args->{-email}),
+	                                            'subscriber.pin' => make_pin(-Email => $args->{-email}, -List => $args->{-list}),
 	                                         },
 		
 			},
@@ -178,7 +206,7 @@ sub send_subscribed_message {
 		$ls = $args->{-ls_obj};
 	}
 	my $li    = $ls->get; 
-	
+
 	send_generic_email (
 		{
 			-list         => $args->{-list}, 
@@ -190,6 +218,8 @@ sub send_subscribed_message {
 			-tmpl_params  => {		
 				-list_settings_vars_param => {-list => $li->{list},},
 				-subscriber_vars_param    => {-list => $li->{list}, -email => $args->{-email}, -type => 'list'},
+				#-profile_vars_param       => {-email => $args->{-email}},
+				-vars => $args->{-vars}, 
 			},
 			-test         => $args->{-test}, 
 		}
@@ -232,7 +262,7 @@ sub send_unsub_confirmation_message {
 			-list_settings_vars_param => {-list => $args->{-list}},
             -subscriber_vars_param    => {-list => $args->{-list}, -email => $args->{-email}, -type => 'list'},
             -vars                     => {
-                                            'subscriber.pin'  => make_pin(-Email => $args->{-email}), #DEV: do I need this?
+                                            'subscriber.pin'  => make_pin(-Email => $args->{-email}, -List => $args->{-list}), #DEV: do I need this?
                                          },
 										
 			},
@@ -664,7 +694,7 @@ sub _mime_headers_from_string {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2008 Justin Simoni All rights reserved. 
+Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

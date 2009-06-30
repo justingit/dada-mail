@@ -40,15 +40,15 @@ sub Create {
     {
         croak 'The list, ' . $args->{ -list } . ' already exists! ';
     }
-
+	
 	# One last check.... 
 	if(($args->{-test} == 1)) {	
 		my ($errors, $flags) = DADA::App::Guts::check_list_setup(
 			-fields => 
 			{
-				list            => $args->{-list}, 
-				retype_password => $args->{-settings} => 'password', 
 				%{$args->{-settings}},
+				list            => $args->{-list}, 
+				retype_password => $args->{-settings}->{'password'},
 			}
 		); 
 		if($errors >= 1){
@@ -56,6 +56,8 @@ sub Create {
 			foreach(%$flags){ 
 				$e .= $_ . ', ' if $flags->{$_} == 1; 
 			}
+		#	use Data::Dumper;
+		#	croak Dumper(%$flags); 
 			croak "Problems creating list: " . $e; 
 		} 
 	}
@@ -89,6 +91,12 @@ sub Create {
                 delete( $to_clone{$_} );
             }
         }
+		foreach(keys %to_clone){
+			 if(! exists($DADA::Config::LIST_SETUP_DEFAULTS{$_})){ 
+				warn "Skipping setting: $_ in clone."; 
+                delete( $to_clone{$_} );
+			}
+		}
         %{ $args->{ -settings } } = ( %to_clone, %{ $args->{ -settings } } );
     }
 
@@ -98,15 +106,15 @@ sub Create {
    #
     DADA::App::Guts::available_lists( -clear_cache => 1 );
 
-    # This is a total hack, but I totally short-sighted this:
-    foreach ( DADA::App::Guts::available_lists() ) {
-        next if $_ eq $args->{ -list };
-        my $l_ls = DADA::MailingList::Settings->new( { -list => $_ } );
-        my $l_li = $l_ls->get;
-        $ls->save(
-            { fallback_field_values => $l_li->{fallback_field_values} } );
-        last;
-    }
+#    # This is a total hack, but I totally short-sighted this:
+#    foreach ( DADA::App::Guts::available_lists() ) {
+#        next if $_ eq $args->{ -list };
+#        my $l_ls = DADA::MailingList::Settings->new( { -list => $_ } );
+#        my $l_li = $l_ls->get;
+#        $ls->save(
+#            { fallback_field_values => $l_li->{fallback_field_values} } );
+#        last;
+#    }
 
     # / end total hack. I'll have to think of something better...
 
@@ -261,15 +269,36 @@ This module basically either creates, or removes a list.
 				# a bunch of settings!
 				}
 	}
-);
+ );
+
+or even, 
+
+ my $ls = DADA::MailingList::Create(
+	{ 
+		-list => 'mylist', 
+		-settings => {
+				# a bunch of settings!
+				}
+		-clone => 'my_first_list',
+	}
+ );
+
 
 Creates all the necessary files for a Dada Mailing List. 
 
-The <-list> paramater should hold  the 
+The B<-list> paramater should hold  the 
 list shortname of your mailing list - which itself should be no more than 16
 characters and should only include letters/numbers.
 
-It returns a B<DADA::MailingList::Settings> object.
+The, B<-settings> paramater should hold a hashref with the key/values that make 
+up your list settings. Only keys that are mentioned in the Config.pm's C<%LIST_SETUP_DEFAULTS>
+can be passed - trying to pass keys that aren't mentioned will cause an error. 
+
+The optional, B<-clone> variable will copy list settings from an already existing list, 
+to be used in this new list. Settings mentioned in the Config.pm variable, 
+C<@LIST_SETUP_DONT_CLONE> will not be copied over. 
+
+This method returns a B<DADA::MailingList::Settings> object.
 
 =head2 Remove
 
@@ -285,7 +314,7 @@ Justin Simoni - http://dadamailproject.com/contact
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 1999-2008 Justin Simoni All rights reserved. 
+Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

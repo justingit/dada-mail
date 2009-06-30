@@ -74,26 +74,30 @@ sub new {
 	my ($args) = @_; 
 	
 	# Validate
-	if(!exists($args->{-list})){ 
-		croak "You MUST pass the -list paramater!"; 
-	}
+	#if(!exists($args->{-list})){ 
+	#	croak "You MUST pass the -list paramater!"; 
+	#}
 	
-	if(!exists($args->{-ls_obj})){ 
-		require DADA::MailingList::Settings; 
-		my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
-		$self->{ls} = $ls; 
-		
-		# This really stinks - I need it for the domain sending tunings... grr!
-		$self->{list_info} = $ls->get; 
-	}
-	else {
-		
-		$self->{ls} = $args->{-ls_obj};
-		
-	}
+	$self->{list} = undef; 
 	
-	$self->{list} = $args->{-list};
-	$self->_init; 
+	if(exists($args->{-list})){ 
+		if(!exists($args->{-ls_obj})){ 
+			require DADA::MailingList::Settings; 
+			my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
+			$self->{ls} = $ls; 
+		
+			# This really stinks - I need it for the domain sending tunings... grr!
+			$self->{list_info} = $ls->get; 
+		}
+		else {
+		
+			$self->{ls} = $args->{-ls_obj};
+		
+		}
+	
+		$self->{list} = $args->{-list};
+	}
+	$self->_init($args); 
 	
 	return $self; 
 }
@@ -124,48 +128,56 @@ sub AUTOLOAD {
 
 sub _init { 
 	
-	my $self = shift; 
-	
+	my $self   = shift; 
+	my ($args) = @_; 
 	$self->{mj_log} = $log;
 	
-	# warn '$self->{ls} ' . $self->{ls}; 
-	# warn q{$self->{ls}->isa('DADA::MailingList::Settings') } . $self->{ls}->isa('DADA::MailingList::Settings'); 
-	
-	if($self->{list_info}->{use_domain_sending_tunings} == 1) { 
-    #if($self->{ls}->param('use_domain_sending_tunings') == 1) { 
+	if(exists($args->{-list})){ 
+			
+		if($self->{list_info}->{use_domain_sending_tunings} == 1) { 
+	    #if($self->{ls}->param('use_domain_sending_tunings') == 1) { 
     
-        if($self->{ls}->param('domain_sending_tunings')) { 
+	        if($self->{ls}->param('domain_sending_tunings')) { 
         
-            my $tunings = eval($self->{ls}->param('domain_sending_tunings')); 
-            my $lookup_tunings = {}; 
+	            my $tunings = eval($self->{ls}->param('domain_sending_tunings')); 
+	            my $lookup_tunings = {}; 
             
-            # let's make this into an easier-to-look-up-format: 
+	            # let's make this into an easier-to-look-up-format: 
             
-            foreach my $tune(@$tunings){ 
-                if($tune->{domain}){ # only real thingy needed...
-                    $lookup_tunings->{$tune->{domain}} = {};
-                    foreach my $in_tune(keys %$tune){ 
-                       # next if $in_tune eq 'domain'; 
-                        $lookup_tunings->{$tune->{domain}}->{$in_tune} = $tune->{$in_tune}; 
-                    }
-                }
-            }
+	            foreach my $tune(@$tunings){ 
+	                if($tune->{domain}){ # only real thingy needed...
+	                    $lookup_tunings->{$tune->{domain}} = {};
+	                    foreach my $in_tune(keys %$tune){ 
+	                       # next if $in_tune eq 'domain'; 
+	                        $lookup_tunings->{$tune->{domain}}->{$in_tune} = $tune->{$in_tune}; 
+	                    }
+	                }
+	            }
             
-            $self->{domain_specific_tunings} = $lookup_tunings; 
-        }
-    }
+	            $self->{domain_specific_tunings} = $lookup_tunings; 
+	        }
+	    }
     
-    ###
+	
         require DADA::MailingList::Subscribers; 
         my $lh = DADA::MailingList::Subscribers->new({-list => $self->{list}});
         my $merge_fields = $lh->subscriber_fields;
+				
         $self->{merge_fields} = $merge_fields;
+		
+		# if($DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/) { 
+			
+			require DADA::ProfileFieldsManager; 
+			my $pfm = DADA::ProfileFieldsManager->new; 
+        	$self->{field_attr} = $pfm->get_all_field_attributes(); 
+       		undef $lh; 
+		#}
+		#else { 
+		#    $self->{field_attr} = {};
+    	#
+		#}
 
-        $self->{fallback_field_values} = $lh->get_fallback_field_values(); 
-        
-        undef $lh; 
-    ###
-
+	}
  }
 
 
@@ -322,25 +334,27 @@ sub send {
 	# This is kinda wasteful. 
 	
 	# I almost wish this was done once on object initialization... 
-	foreach(keys %{$self->{ls}->params}){ 
-		if(exists($DADA::Config::LIST_SETUP_DEFAULTS{$_})){ 
+	if(defined($self->{list})){ 
+		foreach(keys %{$self->{ls}->params}){ 
+			if(exists($DADA::Config::LIST_SETUP_DEFAULTS{$_})){ 
         
-	    	$local_li->{$_} = $self->{ls}->param($_); 
+		    	$local_li->{$_} = $self->{ls}->param($_); 
+			}
 		}
-	}
 	
-	# This copies over domain-specific tunings for sending...
-	my ($email_address, $email_domain) = split('@', $fields{To});
-	# damn that's weird.
+		# This copies over domain-specific tunings for sending...
+		my ($email_address, $email_domain) = split('@', $fields{To});
+		# damn that's weird.
 	
-	if($self->{ls}->param('use_domain_sending_tunings') == 1) { 
+		if($self->{ls}->param('use_domain_sending_tunings') == 1) { 
 		
-        if($self->{domain_specific_tunings}->{$email_domain}->{domain} eq $email_domain){  
-            foreach(keys %{$self->{domain_specific_tunings}->{$email_domain}}){
-                $local_li->{$_} = $self->{domain_specific_tunings}->{$email_domain}->{$_};
-            }
-        }
+	        if($self->{domain_specific_tunings}->{$email_domain}->{domain} eq $email_domain){  
+	            foreach(keys %{$self->{domain_specific_tunings}->{$email_domain}}){
+	                $local_li->{$_} = $self->{domain_specific_tunings}->{$email_domain}->{$_};
+	            }
+	        }
         
+		}
 	}
     
     
@@ -1105,7 +1119,7 @@ sub mass_send {
 					if($DBI::VERSION >= 1.49){ 
 					    my %drivers = DBI->installed_drivers;
 					    foreach my $drh (values %drivers) {
-					        map { $_->{InactiveDestroy} = 1 } @{$_->{ChildHandles}};
+					        map { $drh->{InactiveDestroy} = 1 } @{$drh->{ChildHandles}};
 					    }
 					}
 				#}
@@ -1280,8 +1294,10 @@ sub mass_send {
 
 			my $batch_start_time = time; 
 			
+			require   Text::CSV; 
+							
 			# while we have people on the list.. 
-			while(defined($mail_info = <MAILLIST>)){ 	
+			SUBSCRIBERLOOP: while(defined($mail_info = <MAILLIST>)){ 	
 				chomp($mail_info);	
 				
 				##############################################################
@@ -1317,9 +1333,21 @@ sub mass_send {
 				}
 				#
 				##############################################################
+				
+				my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
-				# get the email, and its pin...
-				my @ml_info      = split('::', $mail_info); 
+				require DADA::App::Guts;
+
+				my @ml_info = undef; 
+				if ($csv->parse($mail_info)) {
+			     	@ml_info = $csv->fields;
+			    } else {
+			        carp $DADA::Config::PROGRAM_NAME . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag ();
+			    	next SUBSCRIBERLOOP;
+				}
+
+
+
 				my $mailing      = $ml_info[0];
 														
 				# keep count of how many people we have
@@ -1350,8 +1378,6 @@ sub mass_send {
                                 $mailing_count . 
                                 '( $mo_counter_at > ($mailing_count - 1 )'
                             if $t; 
-                            
-                           # warn "skipping $mailing_count..."; 
                             next; 
                         } else { 
                         	warn '[' . $self->{list} . '] Mailout:' . 
@@ -1400,13 +1426,10 @@ sub mass_send {
 
 				require DADA::App::FormatMessages; 
 			    my $fm = DADA::App::FormatMessages->new(
-							# -yeah_no_list => 1, 
 							-List        => $self->{list},  
 							-ls_obj      => $self->{ls},
 						); 
-			    
-			
-			
+						
                 my %nfields = $self->_mail_merge(
 				    {
 				        -fields => \%fields,
@@ -1424,10 +1447,6 @@ sub mass_send {
                     -List_File_Size   => -s"$path_to_list",
                     -Sending_To       => $fields{To}, 
                 };
-
-				# What the... 
-				#	print 'From(2)! ' . $nfields{From} . "\n"; 
-
                 
                 warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' sending mail'
                     if $t; 
@@ -1455,11 +1474,7 @@ sub mass_send {
 
                 warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' $new_count set to, ' . $new_count
                 	if $t; 
-               
-               # warn '$new count: '      . $new_count; 
-               # warn '$n_people: '       . $n_people; 
-               # warn '$mailing_count: ' . $mailing_count; 
-               
+        
                if($mailing_count != $new_count){ 
                     carp("Warning: \$mailing_count ($mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
 					$mailout->log("\$mailing_count ($mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
@@ -1470,7 +1485,6 @@ sub mass_send {
 				# I hate to wrap this in yet another If... state ment, but... 
 				if($self->mass_test == 1){ 
 					# Well, for a test, we do nothing, so we can skip the batch settings stuff, since we only send 1 message. 
-					
 				}
 				else {
 				
@@ -1502,27 +1516,16 @@ sub mass_send {
 								if $t;
 			                my $batch_status = $mailout->status; 
 		                
-					       # if($DADA::Config::LOG{mass_mailing_batches}){ 
-				           # 
-					       #    warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' logging mass mailing batches is enabled.'
-					       #         if $t; 
-				            
-                        
-	                            my $batch_log_message = "Subject:$fields{Subject}, Start Time: $log_mail_start_time"; 
-	                               foreach(keys %$batch_status){ 
-	                                    next if $_ eq 'email_fields';
-										next if $_ =~ m/formatted/; 
-	                                    $batch_log_message .= ' ' . $_ . ': ' . $batch_status->{$_}; 
-	                               }
-                            
-	                            #$self->{mj_log}->mj_log(
-	                             #   $self->{list}, 
-	                              #  'Mailout:' . $mailout_id  . ' Batch Successfully Completed', $batch_log_message 
-	                             #); 
-	                            #$self->{mj_log}->close_log;
-                            	$mailout->log('Batch Successfully Completed: ' .  $batch_log_message);
+	                       my $batch_log_message = "Subject:$fields{Subject}, Start Time: $log_mail_start_time"; 
+							foreach(keys %$batch_status){ 
+								next if $_ eq 'email_fields';
+								next if $_ =~ m/formatted/; 
+								$batch_log_message .= ' ' . $_ . ': ' . $batch_status->{$_}; 
+							}
+                         
+                          	$mailout->log('Batch Successfully Completed: ' .  $batch_log_message);
 
-	                        # }
+	                        
                         
 							if($batch_status->{queued_mailout} == 1){  
 								carp '[' . $self->{list} . '] Mailout:' . $mailout_id . ' Mailing has been queued - exit()ing'; 
@@ -1586,7 +1589,6 @@ sub mass_send {
 								if($sleep_for_this_amount > 0){ 
 									sleep $sleep_for_this_amount; 
 								}
-	                            #sleep $self->{ls}->param('bulk_sleep_amount');
 								#
 								#
 								#
@@ -1794,7 +1796,12 @@ sub mass_send {
 sub _content_transfer_encode { 
 
     my $self = shift; 
-    my %args = (-fields => {}, @_); 
+	my %args = (-fields => {}, @_); 
+    
+	if(!defined($self->{list})){ 
+ 		return %{$args{-fields}}; 
+	}
+
     
     my $fields = $args{-fields}; 
     
@@ -1810,6 +1817,7 @@ sub _content_transfer_encode {
     my $parser = new MIME::Parser; 
        $parser = DADA::App::Guts::optimize_mime_parser($parser); 
 
+	
     my $encoding = $self->{ls}->param('plaintext_encoding'); 
     if($fields->{'Content-type'} =~ m{html}){ 
         $encoding = $self->{ls}->param('html_encoding'); 
@@ -1927,9 +1935,11 @@ sub _make_general_headers {
 	# Huh.
 	# PHRASE, ADDRESS, [ COMMENT ]
 	require Email::Address;		
- 	my $ln =  $self->{ls}->param('list_name');
-       $ln = DADA::App::Guts::escape_for_sending($ln);	   
 
+	my $ln = undef; 
+	if(defined($self->{list})){ 
+    	$ln = DADA::App::Guts::escape_for_sending($self->{ls}->param('list_name'));	   
+	}
 	my $From_obj = undef; 
 
 	# if it doesn't, we're in trouble...
@@ -1944,60 +1954,71 @@ sub _make_general_headers {
 		}
 	}
 	else { 
-		$From_obj = Email::Address->new($ln, $self->{ls}->param('list_owner_email'));	
+		if(defined($self->{list})){ 
+			$From_obj = Email::Address->new($ln, $self->{ls}->param('list_owner_email'));	
+		}
+		else { 
+			#...
+		}
 	}
 	
-	$gh{From}       = $From_obj->format;
-	$gh{'Reply-To'} = $From_obj->format;
-
+	if($From_obj){ 
+		$gh{From}       = $From_obj->format;
+		$gh{'Reply-To'} = $From_obj->format;
+	}
 	# time  + random number + sender, woot!
 	require DADA::Security::Password; 	
 	my $ran_number = DADA::Security::Password::generate_rand_string('1234567890');
 
-	$gh{'Message-ID'} = '<' .  
-						DADA::App::Guts::message_id() . 
-						'.'. 
-						$ran_number . 
-						'@' . 
-						$From_obj->host . 
-						'>';					
-
-
-	# Deprecated.
-	if($self->{ls}->param('print_errors_to_header') == 1){ 	
-		my $Errors_To_obj = Email::Address->new(undef, $self->{ls}->param('admin_email'));
-		$gh{'Errors-To'}   = $Errors_To_obj->format;
-	} 
-	
-	
-
-	
-	if($self->{ls}->param('use_habeas_headers') == 1){ 
-	     require DADA::Security::Password; 
-		 $gh{'X-Habeas-SWE-1'} = DADA::Security::Password::rot13('jvagre vagb fcevat');
-		 $gh{'X-Habeas-SWE-2'} = DADA::Security::Password::rot13('oevtugyl nagvpvcngrq');
-		 $gh{'X-Habeas-SWE-3'} = DADA::Security::Password::rot13('yvxr Unornf FJR (gz)');
-		 $gh{'X-Habeas-SWE-4'} = DADA::Security::Password::rot13('Pbclevtug 2002 Unornf (gz)');
-		 $gh{'X-Habeas-SWE-5'} = DADA::Security::Password::rot13('Fraqre Jneenagrq Rznvy (FJR) (gz). Gur fraqre bs guvf');
-		 $gh{'X-Habeas-SWE-6'} = DADA::Security::Password::rot13('rznvy va rkpunatr sbe n yvprafr sbe guvf Unornf');
-		 $gh{'X-Habeas-SWE-7'} = DADA::Security::Password::rot13('jneenag znex jneenagf gung guvf vf n Unornf Pbzcyvnag');
-		 $gh{'X-Habeas-SWE-8'} = DADA::Security::Password::rot13('Zrffntr (UPZ) naq abg fcnz. Cyrnfr ercbeg hfr bs guvf');
-		 $gh{'X-Habeas-SWE-9'} = DADA::Security::Password::rot13('znex va fcnz gb <uggc://jjj.unornf.pbz/ercbeg/>.');
-	}	
-	
-	# again, this stuff should always be defined by default... 
-	if(defined($self->{ls}->param('precedence'))) { 
-	    $gh{'Precedence'}  = $self->{ls}->param('precedence');
+	if(defined($self->{list})){ 
+		$gh{'Message-ID'} = '<' .  
+							DADA::App::Guts::message_id() . 
+							'.'. 
+							$ran_number . 
+							'@' . 
+							$From_obj->host . 
+							'>';					
 	}
-	if(defined($self->{ls}->param('priority'))) { 
-	    if($self->{ls}->param('priority') ne 'none'){ 
-	        $gh{'X-Priority'}  = $self->{ls}->param('priority');
-	    }
-    }
-	# I'm not setting it here, since it gets re-written somewhere - but where? 
-	# Instead, it's being written in the send() method. Weird? Yes.  
+	else { 
+		# ...
+	}
+
+	if(defined($self->{list})){
+		
+		# Deprecated.
+		if($self->{ls}->param('print_errors_to_header') == 1){ 	
+			my $Errors_To_obj = Email::Address->new(undef, $self->{ls}->param('admin_email'));
+			$gh{'Errors-To'}   = $Errors_To_obj->format;
+		} 
+
+		if($self->{ls}->param('use_habeas_headers') == 1){ 
+		     require DADA::Security::Password; 
+			 $gh{'X-Habeas-SWE-1'} = DADA::Security::Password::rot13('jvagre vagb fcevat');
+			 $gh{'X-Habeas-SWE-2'} = DADA::Security::Password::rot13('oevtugyl nagvpvcngrq');
+			 $gh{'X-Habeas-SWE-3'} = DADA::Security::Password::rot13('yvxr Unornf FJR (gz)');
+			 $gh{'X-Habeas-SWE-4'} = DADA::Security::Password::rot13('Pbclevtug 2002 Unornf (gz)');
+			 $gh{'X-Habeas-SWE-5'} = DADA::Security::Password::rot13('Fraqre Jneenagrq Rznvy (FJR) (gz). Gur fraqre bs guvf');
+			 $gh{'X-Habeas-SWE-6'} = DADA::Security::Password::rot13('rznvy va rkpunatr sbe n yvprafr sbe guvf Unornf');
+			 $gh{'X-Habeas-SWE-7'} = DADA::Security::Password::rot13('jneenag znex jneenagf gung guvf vf n Unornf Pbzcyvnag');
+			 $gh{'X-Habeas-SWE-8'} = DADA::Security::Password::rot13('Zrffntr (UPZ) naq abg fcnz. Cyrnfr ercbeg hfr bs guvf');
+			 $gh{'X-Habeas-SWE-9'} = DADA::Security::Password::rot13('znex va fcnz gb <uggc://jjj.unornf.pbz/ercbeg/>.');
+		}	
 	
-	# $gh{Date} = $self->_Date(); 
+		# again, this stuff should always be defined by default... 
+		if(defined($self->{ls}->param('precedence'))) { 
+		    $gh{'Precedence'}  = $self->{ls}->param('precedence');
+		}
+		if(defined($self->{ls}->param('priority'))) { 
+		    if($self->{ls}->param('priority') ne 'none'){ 
+		        $gh{'X-Priority'}  = $self->{ls}->param('priority');
+		    }
+	    }
+		# I'm not setting it here, since it gets re-written somewhere - but where? 
+		# Instead, it's being written in the send() method. Weird? Yes.  
+	
+		# $gh{Date} = $self->_Date(); 
+	}
+	
 	return %gh;
 }
 
@@ -2085,7 +2106,7 @@ sub _make_list_headers {
 				} 
 				else { 
 					
-				$domain = Net::Domain::hostfqdn() || 
+					$domain = Net::Domain::hostfqdn() || 
 					carp "no domain found for: Net::Domain::hostfqdn()";
 				}
 				
@@ -2364,7 +2385,9 @@ sub _mail_merge {
             $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $data->[$i];       
         }
         else { 
-            $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $self->{fallback_field_values}->{$merge_fields->[$i]};            
+            #$subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $self->{fallback_field_values}->{$merge_fields->[$i]};  
+		  	 $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $self->{field_attr}->{$merge_fields->[$i]}->{fallback_value};  
+          
         }
     }
 
@@ -2398,6 +2421,9 @@ sub _mail_merge {
                                         -parser_params => {-input_mechanism => 'parse_open'}, 
                                     }
                              );
+							
+	carp 'at _mail_merge $filename ' . $filename; 
+	
        
     #warn '$orig_entity->as_string' . $orig_entity->as_string; 
     my $entity = $fm->email_template(
@@ -2878,7 +2904,7 @@ is controlled by C<DADA::Mail::MailOut>. C<DADA::Mail::Send> is quite dumb in wh
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999-2008 Justin Simoni 
+Copyright (c) 1999-2009 Justin Simoni 
 me - justinsimoni.com
 http://justinsimoni.com 
 All rights reserved. 

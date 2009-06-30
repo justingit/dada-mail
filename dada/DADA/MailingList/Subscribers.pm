@@ -1,6 +1,6 @@
 package DADA::MailingList::Subscribers;
 
-use lib qw(./ ../ ../../ ../../DADA ../../perllib);
+use lib qw(./ ../ ../../ ../../DADA ../../perllib ../../../ ../../../perllib);
 
 
 use Carp qw(carp croak);
@@ -20,175 +20,200 @@ BEGIN {
 		}
 	}
 }
-use base "DADA::MailingList::Subscribers::$type";
-
-
 use strict; 
+
+use base "DADA::MailingList::Subscribers::$type";
+use DADA::MailingList::Subscriber; 
+use DADA::MailingList::Subscriber::Validate;
+use DADA::Profile::Fields; 
+
 
 use DADA::Logging::Usage;
 my $log = new DADA::Logging::Usage;
 
 
+sub new {
 
-sub edit_subscriber { 
+	my $class  = shift;
+	my ($args) = @_; 
+
+	my $self = {};			
+	bless $self, $class;
+	$self->_init($args); 
+	return $self;
+
+}
+
+
+
+
+
+sub _init  { 
+
+    my $self = shift; 
+
+	my ($args) = @_; 
+
+	if(!exists($args->{-ls_obj})){ 
+		require DADA::MailingList::Settings;		 
+		$self->{ls} = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
+	}
+	else { 
+		$self->{ls} = $args->{-ls_obj};
+	}
 	
-	my $self = shift; 
+    $self->{'log'}      = new DADA::Logging::Usage;
+    $self->{list}       = $args->{-list};
+
+    $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
+    	
+	if($DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/){ 
+	
+		require DADA::App::DBIHandle; 
+		my $dbi_obj = DADA::App::DBIHandle->new; 
+		$self->{dbh} = $dbi_obj->dbh_obj; 
+	}
+	
+	$self->{fields}   = DADA::Profile::Fields->new; 		
+	$self->{validate} = DADA::MailingList::Subscriber::Validate->new({-list => $self->{list}, -lh_obj => $self}); 		
+}
+
+
+
+sub add_subscriber {
+
+    my $self = shift;
+	my ($args) = @_;
+	$args->{-list} = $self->{list};
+    my $dmls = DADA::MailingList::Subscriber->add( $args );
+ 	return 1; 
+}
+
+sub get_subscriber {
+    my $self = shift;
     my ($args) = @_;
+	$args->{-list} = $self->{list};
+    my $dmls =
+      DADA::MailingList::Subscriber->new($args);
+    return $dmls->get($args);
 
-    if(! exists $args->{-type}){ 
-        $args->{-type} = 'list';
-    }
-	if(! exists $args->{-email}){ 
-        croak("You MUST supply an email address in the -email paramater!"); 
-    }
-	if(length(DADA::App::Guts::strip($args->{-email})) <= 0){ 
-        croak("You MUST supply an email address in the -email paramater!"); 		
-	}
+}
+
+sub move_subscriber {
+    my $self = shift;
+    my ($args) = @_;
+	$args->{-list} = $self->{list};
+	$args->{-type} = $args->{-from};
+    my $dmls =
+      DADA::MailingList::Subscriber->new( $args );
+
+    return $dmls->move($args);
 	
-    if(! exists $args->{-fields}){ 
-        $args->{-fields} = {};
-    }
-
-    if(! exists $args->{-mode}){ 
-        $args->{-mode} = 'update';
-    }
-
-	if($args->{-mode} !~ /update|writeover/){ 
-		croak "The -mode paramater must be set to, 'update', 'writeover' or left undefined!"; 
-	}
-
-	my $f_values = {}; 
-	
-	if($args->{-mode} eq 'update'){ 
-		
-		$f_values	= $self->get_subscriber(
-			{
-				-email => $args->{-email},
-				-type  => $args->{-type}, 
-			}
-		);
-
-	}
-
-	$self->remove_subscriber(
-		{
-			-email => $args->{-email},
-			-type  => $args->{-type},
-		}
-	);
-
-	foreach(keys %{$args->{-fields}}){ 
-		$f_values->{$_} = $args->{-fields}->{$_};
-	}
-	
-	$self->add_subscriber(
-	     { 
-		  -email         => $args->{-email}, 
-	      -type          => $args->{-type},
-	      -fields        => $f_values,
-	    });
-	
-	return 1; 
+}
+sub edit_subscriber { 
+	my $self = shift;
+    my ($args) = @_;
+	$args->{-list} = $self->{list};
+    my $dmls =
+      DADA::MailingList::Subscriber->new( $args );
+   return $dmls->edit($args);
+   
 }
 
 
 
 
 sub copy_subscriber { 
-	
-    my $self   = shift; 
-
+	my $self = shift;
     my ($args) = @_;
-
-    if(! exists $args->{-to}){ 
-        croak "You must pass a value in the -to paramater!"; 
-    }
-    if(! exists $args->{-from}){ 
-        croak "You must pass a value in the -from paramater!"; 
-    }    
-    if(! exists $args->{-email}){ 
-        croak "You must pass a value in the -email paramater!"; 
-    }
-
-    if($self->allowed_list_types->{$args->{-to}} != 1){ 
-        croak "list_type passed in, -to is not valid"; 
-    }
-
-    if($self->allowed_list_types->{$args->{-from}} != 1){ 
-        croak "list_type passed in, -from is not valid"; 
-    }
-
-     if(DADA::App::Guts::check_for_valid_email($args->{-email}) == 1){ 
-        croak "email passed in, -email is not valid"; 
-    }
-
-
-    my $moved_from_checks_out = 0; 
-    if(! exists($args->{-moved_from_check})){ 
-        $args->{-moved_from_check} = 1; 
-    }
-
-    if($self->check_for_double_email(-Email => $args->{-email}, -Type => $args->{-from}) == 0){ 
-
-        if($args->{-moved_from_check} == 1){ 
-            croak "email passed in, -email is not subscribed to list passed in, '-from'";     
-        }
-        else { 
-            $moved_from_checks_out = 0; 
-        }
-    }
-    else { 
-        $moved_from_checks_out = 1; 
-    }
-
-
-    if($self->check_for_double_email(-Email => $args->{-email}, -Type => $args->{-to}) == 1){ 
-        croak "email passed in, -email ( $args->{-email}) is already subscribed to list passed in, '-to' ($args->{-to})"; 
-    }
-
-	my $sub = $self->get_subscriber({-email => $args->{-email}, -type => $args->{-from}}); 
-    $self->add_subscriber(
-        { 
-            -email  => $args->{-email}, 
-            -type   => $args->{-to}, 
-			-fields => $sub,
-        }
-    ); 
-
-    if ($DADA::Config::LOG{subscriptions}) { 
-        $log->mj_log(
-            $self->{list}, 
-            'Copy from:  ' . $self->{list} . '.' . $args->{-from} . ' to: ' . $self->{list} . '.' . $args->{-to}, 
-            $args->{-email}, 
-        );
-    }
-
-
-	return 1;	
+	$args->{-list} = $self->{list};
+	$args->{-type} = $args->{-from};
+	
+    my $dmls =
+      DADA::MailingList::Subscriber->new( $args );
+    return $dmls->copy($args);
 }
 
 
 
 
 sub remove_subscriber { 
-	
-	my $self   = shift;
-	my ($args) = @_; 
-	
-	if(! exists $args->{-type}){ 
-        $args->{-type} = 'list';
-    }
-    if(! exists $args->{-email}){ 
-        croak("You MUST supply an email address in the -email paramater!"); 
-    }
-	if(length(DADA::App::Guts::strip($args->{-email})) <= 0){ 
-        croak("You MUST supply an email address in the -email paramater!"); 		
-	}
-	
-	# Kind of a wrapper ATM:
-	return $self->remove_from_list(-Email_List => [$args->{-email}], -Type => $args->{-type});
-	
+	my $self = shift;
+    my ($args) = @_;
+
+    my $dmls =
+      DADA::MailingList::Subscriber->new( { %{$args}, -list => $self->{list} } );
+	$dmls->remove;
+	return 1; 
 }
+
+sub columns { 
+	my $self = shift; 
+	return $self->{fields}->{manager}->columns; 
+}
+sub subscriber_fields { 
+	my $self = shift; 
+	return $self->{fields}->{manager}->fields(@_);
+}
+sub add_subscriber_field { 
+	my $self = shift; 
+	return $self->{fields}->{manager}->add_field(@_);
+}
+sub edit_subscriber_field { 
+	my $self = shift; 
+	return $self->{fields}->{manager}->edit_subscriber_field(@_);
+}
+sub remove_subscriber_field { 
+	my $self = shift; 
+	return $self->{fields}->{manager}->remove_field(@_);
+}
+sub subscriber_field_exists { 
+	my $self = shift; 
+	return $self->{fields}->{manager}->field_exists(@_);
+}
+sub validate_subscriber_field_name { 
+	my $self = shift; 
+	return $self->{fields}->{manager}->validate_field_name(@_);
+}
+sub get_all_field_attributes { 
+	my $self = shift; 
+	return $self->{fields}->{manager}->get_all_field_attributes(@_);
+}
+
+
+
+
+sub add_to_email_list {
+
+    my $self = shift;
+
+    carp
+"This method (add_to_email_list) is deprecated. Please use, add_subscriber() instead.";
+
+    my %args = (
+        -Email_Ref => [],
+        -Type      => "list",
+        @_
+    );
+    my $addresses = $args{ -Email_Ref };
+
+    my $count = 0;
+    require DADA::MailingList::Subscriber;
+    foreach my $sub (@$addresses) {
+        chomp($sub);    #?
+        DADA::MailingList::Subscriber->add(
+            {
+                -list  => $self->{list},
+                -email => $sub,
+                -type  => $args{ -Type },
+            }
+        );
+        $count++;
+    }
+    return $count;
+}
+
+
 
 
 
@@ -212,411 +237,195 @@ sub allowed_list_types {
        
 }
 
-
-
-
-
-
 sub subscription_check { 
-
-	my $self = shift; 
-	my ($args) = @_; 
-
-	
-	if(! exists($args->{-email})){ 
-		$args->{-email} = ''; 
-	}
-	my $email = $args->{-email};
-
-	if(! exists($args->{-type})){ 
-		$args->{-type} = 'list'; 
-	} 
-	
-	my %skip; 
-	$skip{$_} = 1 foreach @{$args->{-skip}}; 
-		
-	my %errors = ();
-	my $status = 1; 
-		
-	require DADA::App::Guts; 
-	require DADA::MailingList::Settings;
-	
-	if(!$skip{no_list}){
-		if(DADA::App::Guts::check_if_list_exists(-List => $self->{list}) == 0){
-			$errors{no_list} = 1;
-			return (0, \%errors);
-		}
-	}
-				
-	my $ls = DADA::MailingList::Settings->new({-list => $self->{list}}); 
-	my $list_info = $ls->get;
-	
-	if($args->{-type} ne 'black_list'){ 
-		if(!$skip{invalid_email}){
-			$errors{invalid_email} = 1 if DADA::App::Guts::check_for_valid_email($email)      == 1;
-		}
-	}
-	
-	if(!$skip{subscribed}){
-			$errors{subscribed} = 1 if $self->check_for_double_email(-Email => $email, -Type => $args->{-type}) == 1; 
-	}
-	
-	if($args->{-type} ne 'black_list' || $args->{-type} ne 'authorized_senders'){ 
-		if(!$skip{closed_list}){
-			$errors{closed_list}   = 1 if $list_info->{closed_list}                             == 1; 
-		}
-	}
-	
-	if($args->{-type} ne 'black_list'){ 
-		if(!$skip{mx_lookup_failed}){		
-			if($list_info->{mx_check} == 1){ 
-				require Email::Valid;
-				eval {
-					unless(Email::Valid->address(-address => $email,
-												 -mxcheck => 1)) {
-						$errors{mx_lookup_failed}   = 1;
-					};
-				carp "mx check error: $@" if $@;
-				}; 
-			}
-		}
-	}
-
-	
-	if($args->{-type} ne 'black_list'){ 
-		if(!$skip{black_listed}){
-			if($list_info->{black_list} eq "1"){
-				$errors{black_listed} = 1 if $self->check_for_double_email(-Email => $email, 
-																		  -Type  => 'black_list')  == 1; 
-			}
-		}
-	}
-
-
-	if($args->{-type} ne 'white_list'){ 
-		if(!$skip{not_white_listed}){
-		
-			if($list_info->{enable_white_list} == 1){
-
-				$errors{not_white_listed} = 1 if $self->check_for_double_email(-Email => $email, 
-																		       -Type  => 'white_list')  != 1; 
-			}
-		}
-	}
-
-
-	if($args->{-type} ne 'black_list' || $args->{-type} ne 'authorized_senders'){ 
-		if(!$skip{over_subscription_quota}){ 
-			if($list_info->{use_subscription_quota} == 1){ 
-				if(($self->num_subscribers + 1) >= $list_info->{subscription_quota}){ 
-					$errors{over_subscription_quota} = 1; 
-				}
-			}
-		}
-	}
-	
-	
-	if(!$skip{already_sent_sub_confirmation}){ 
-		if($list_info->{limit_sub_confirm } == 1){ 
-			$errors{already_sent_sub_confirmation} = 1 if $self->check_for_double_email(-Email => $email, 
-																                        -Type  => 'sub_confirm_list')  == 1;
-		}
-	}
-	
-	
-	
-	if(!$skip{settings_possibly_corrupted}){ 
-		if(!$ls->perhapsCorrupted){ 
-			$errors{settings_possibly_corrupted} = 1; 
-		}
-	}
-	
-	
-	
-	foreach(keys %errors){ 
-		$status = 0 if $errors{$_} == 1;
-		last;
-	}
-	
-	return ($status, \%errors); 
-	
-
+	my $self = shift;
+    my ($args) = @_;
+    return $self->{validate}->subscription_check($args);
 }
-
-
-
-
 
 sub unsubscription_check {
-		 
-	my $self = shift; 
-	my ($args) = @_; 
-
-	
-	if(! exists($args->{-email})){ 
-		$args->{-email} = ''; 
-	}
-	my $email = $args->{-email};
-
-	if(! exists($args->{-type})){ 
-		$args->{-type} = 'list'; 
-	}  
-	
-	my %errors = ();
-	my $status = 1; 
-	
-	if(!exists($args->{-skip})){ 
-		$args->{-skip} = [];
-	}
-	my %skip; 
-	$skip{$_} = 1 foreach @{$args->{-skip}}; 
-	
-	require DADA::App::Guts;
-	require DADA::MailingList::Settings;
-	
-	if(!$skip{no_list}){
-		$errors{no_list} = 1 if DADA::App::Guts::check_if_list_exists(-List => $self->{list})     == 0;
-		return (0, \%errors) if $errors{no_list} == 1;
-	}
-				
-	my $ls = DADA::MailingList::Settings->new({-list => $self->{list}}); 
-		
-	if(!$skip{invalid_email}){
-		$errors{invalid_email} = 1 if DADA::App::Guts::check_for_valid_email($email)      == 1;
-	}
-	
-	if(!$skip{not_subscribed}){
-		$errors{not_subscribed}    = 1 if $self->check_for_double_email(-Email => $email)     != 1; 
-	}
-	
-	if(!$skip{already_sent_unsub_confirmation}){ 
-		my $li = $ls->get; 
-		if($li->{limit_unsub_confirm } == 1){ 
-			$errors{already_sent_unsub_confirmation} = 1 if $self->check_for_double_email(-Email => $email, 
-																                          -Type  => 'unsub_confirm_list')  == 1;
-		}
-	}
-	
-	
-	if(!$skip{settings_possibly_corrupted}){ 
-		if(!$ls->perhapsCorrupted){ 
-			$errors{settings_possibly_corrupted} = 1; 
-		}
-	}
-
-		
-	foreach(keys %errors){ 
-		$status = 0 if $errors{$_} == 1;
-		last;
-	}
-	
-	
-
-	return ($status, \%errors); 
-	
+	my $self = shift;
+    my ($args) = @_;
+    return $self->{validate}->unsubscription_check($args);
 
 }
-
-
-
-
-
-
 sub subscription_check_xml { 
+	my $self = shift;
+    my ($args) = @_;
+    return $self->{validate}->unsubscription_check($args);
 
-	my $self = shift; 
-	my ($args) = @_; 
-	my ($status, $errors) = $self->subscription_check($args); 
-	
-	my $errors_array_ref = []; 
-	push(@$errors_array_ref, {error => $_}) 
-		foreach keys %$errors; 
-	
-	require    DADA::Template::Widgets;
-	my $xml =  DADA::Template::Widgets::screen({-screen => 'subscription_check_xml.tmpl', 
-		                                  -vars   => {
-		                                               email  => $args->{-email}, 
-		                                               errors => $errors_array_ref,
-		                                               status => $status, 
-		                                               
-		                                              },
-	
-	            });
-	
-	$xml =~ s/\n|\r|\s|\t//g;
-	
-	
-	return ($xml, $status, $errors); 
 }
 
 
 
 
 sub unsubscription_check_xml { 
-
-	my $self = shift; 
-	my ($args) = @_; 
-	my ($status, $errors) = $self->unsubscription_check($args); 
-	
-	my $errors_array_ref = []; 
-	push(@$errors_array_ref, {error => $_}) 
-		foreach keys %$errors; 
-
-	require    DADA::Template::Widgets;
-	my $xml =  DADA::Template::Widgets::screen({-screen => 'unsubscription_check_xml.tmpl', 
-		                                  	   -vars   => {
-		                                               email  => $args->{-email}, 
-		                                               errors => $errors_array_ref,
-		                                               status => $status, 
-		                                               
-		                                              },
-		                                     }); 
-	$xml =~ s/\n|\r|\s|\t//g;
-	
-	return ($xml, $status, $errors); 
+	my $self = shift;
+    my ($args) = @_;
+    return $self->{validate}->unsubscription_check_xml($args);
 }
 
+sub filter_subscribers {
 
+    my $self = shift;
+    my ($args) = @_;
 
+    my $new_addresses = $args->{ -emails };
 
-sub filter_subscribers { 
+    if ( !exists( $args->{ -type } ) ) {
+        $args->{ -type } = 'list';
+    }
+    my $type = $args->{ -type };
 
-	my $self   = shift; 
-	my ($args) = @_; 
-	
-	my $new_addresses = $args->{-emails}; 
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+    my $li = $ls->get;
 
-	if(! exists($args->{-type})){ 
-		$args->{-type} = 'list'; 
-	}
-	my $type = $args->{-type}; 
-		
-	require  DADA::MailingList::Settings; 
-	my $ls = DADA::MailingList::Settings->new({-list => $self->{list}}); 
-	my $li = $ls->get; 
+    require DADA::App::Guts;
 
-	require DADA::App::Guts;
+    my @good_emails = ();
+    my @bad_emails  = ();
 
-	my @good_emails   = (); 
-	my @bad_emails    = (); 
-
-	my $invalid_email;
+    my $invalid_email;
 
     my $num_subscribers = $self->num_subscribers;
-    
-	foreach my $check_this_address(@$new_addresses) { 
 
+    foreach my $check_this_address (@$new_addresses) {
 
         my $errors = {};
-        my $status = 1; 
-        
-        if($type eq 'black_list'){ 
-            # Yeah... nothing... 
+        my $status = 1;
+
+        if ( $type eq 'black_list' ) {
+
+            # Yeah... nothing...
         }
-        elsif($type eq 'white_list'){ 
-            # Yeah... nothing...             
+        elsif ( $type eq 'white_list' ) {
+
+            # Yeah... nothing...
         }
-        else { 
-            if(DADA::App::Guts::check_for_valid_email($check_this_address) == 1){ 
+        else {
+            if ( DADA::App::Guts::check_for_valid_email($check_this_address) ==
+                1 )
+            {
                 $errors->{invalid_email} = 1;
             }
-            else { 
+            else {
                 $errors->{invalid_email} = 0;
             }
         }
-        
-        if($type ne 'black_list' || $type ne 'authorized_senders' || $type ne 'white_list'){ 
-                if($li->{use_subscription_quota} == 1){ 
-                    if(($num_subscribers + 1) >= $li->{subscription_quota}){ 
-                        $errors->{over_subscription_quota} = 1; 
-                    }
+
+        if (   $type ne 'black_list'
+            || $type ne 'authorized_senders'
+            || $type ne 'white_list' )
+        {
+            if ( $li->{use_subscription_quota} == 1 ) {
+                if ( ( $num_subscribers + 1 ) >= $li->{subscription_quota} ) {
+                    $errors->{over_subscription_quota} = 1;
                 }
             }
-        
-        if( $errors->{invalid_email} == 1 || $errors->{over_subscription_quota} == 1){ 
-            $status = 0; 
         }
-        
-		if ($status != 1){
-			  push(@bad_emails, $check_this_address);
-		}else{    
-			$check_this_address = DADA::App::Guts::lc_email($check_this_address); 
-			push(@good_emails, $check_this_address);
+
+        if (   $errors->{invalid_email} == 1
+            || $errors->{over_subscription_quota} == 1 )
+        {
+            $status = 0;
+        }
+
+        if ( $status != 1 ) {
+            push ( @bad_emails, $check_this_address );
+        }
+        else {
+            $check_this_address =
+              DADA::App::Guts::lc_email($check_this_address);
+            push ( @good_emails, $check_this_address );
+        }
+    }
+
+    my %seen               = ();
+    my @unique_good_emails = grep { !$seen{$_}++ } @good_emails;
+
+    %seen = ();
+    my @unique_bad_emails = grep { !$seen{$_}++ } @bad_emails;
+
+	# Why the sort?
+    @unique_good_emails = sort(@unique_good_emails);
+    @unique_bad_emails  = sort(@unique_bad_emails);
+
+# figure out what unique emails we have from the new list when compared to the old list
+    my ( $unique_ref, $not_unique_ref ) = $self->unique_and_duplicate(
+        -New_List => \@unique_good_emails,
+        -Type     => $type,
+    );
+
+    #initialize
+    my @black_list;
+    my $found_black_list_ref;
+    my $clean_list_ref;
+    my $black_listed_ref = [];
+    my $black_list_ref   = [];
+
+	my $white_listed     = [];
+	my $not_white_listed = [];
+    if ( $li->{black_list} == 1 && $type eq 'list' ) {
+
+		my $found_black_list_ref = [];
+		foreach my $b_email(@$unique_ref) { 
+			my $is_black_listed = $self->inexact_match(
+										{
+											-email   => $b_email, 
+											-against => 'black_list',
+										}
+										);
+			if($is_black_listed == 1){ 
+				push(@$found_black_list_ref, $b_email); 
+			}
 		}
-	}
-  
- # warn  time .  "done!"; 
-  
-	my %seen = (); 
-	my @unique_good_emails = grep { ! $seen{$_}++} @good_emails; 
-	
-	%seen = (); 
-	my @unique_bad_emails = grep { ! $seen{$_}++} @bad_emails; 
-	
-	@unique_good_emails = sort(@unique_good_emails); 
-	@unique_bad_emails  = sort(@unique_bad_emails); 
-	
 		
-	# figure out what unique emails we have from the new list when compared to the old list
-	my ($unique_ref, $not_unique_ref) = $self->unique_and_duplicate(-New_List  => \@unique_good_emails, 
-																	-Type      => $type, 
-													   				);
-		
-	#initialize 
-	my @black_list; 
-	my $found_black_list_ref; 
-	my $clean_list_ref; 
-	my $black_listed_ref = []; 
-	my $black_list_ref   = [];
-	
-	my $white_list_ref;     # file handle?
-	
-	my $found_white_list_ref = [];
-	
-	if($li->{black_list} == 1 && $type eq 'list'){ 
-	
-		#open the black list  
-		# TODO: "open_email_list" needs to be gone, as it pulls the entire list in memory - 
-		# BAD BAD BAD - this is also the ONLY place it's used!!!
-		
-		$black_list_ref = $self->open_email_list(-Type => "black_list", -As_Ref=>1);
-		
-		# now, from that new list of clean emails, see which ones are black listed 
-		($found_black_list_ref) = $self->get_black_list_match($black_list_ref, $unique_ref);
-		
-		#now, tell me which ones still are ok. 
-		($clean_list_ref, $black_listed_ref) = $self->find_unique_elements($unique_ref, $found_black_list_ref); 
-									  
-	}else{ 
+        ( $clean_list_ref, $black_listed_ref ) =
+          $self->find_unique_elements( $unique_ref, $found_black_list_ref );
 
-		$clean_list_ref = $unique_ref; 
+    }
+    else {
 
-	}
-	
-	
-	# The entire white list stuff is pure messed. 
-	
-	if($li->{enable_white_list} == 1 && $type eq 'list'){
-	
-	    
-	   $white_list_ref = $self->open_email_list(-Type => "white_list", -As_Ref=>1);
-	
-		# now, from that new list of clean emails, see which ones are black listed 
-		($found_white_list_ref) = $self->get_black_list_match($white_list_ref, $clean_list_ref);
-	    
-       # now, tell me which ones still are ok. 
-	   ($found_white_list_ref, $clean_list_ref) = $self->find_unique_elements($clean_list_ref, $found_white_list_ref); 
-	   
-	}else{ 
-	    # nothing, really. 
-	    $found_white_list_ref = []; 
-	    
-	}
-	   
-	      # $subscribed,     $not_subscribed, $black_listed,    $not_white_listed, $invalid
-	return ($not_unique_ref, $clean_list_ref, $black_listed_ref, $found_white_list_ref, \@unique_bad_emails); 
+        $clean_list_ref = $unique_ref;
 
-   
+    }
+
+    # The entire white list stuff is pure messed.
+
+    if ( $li->{enable_white_list} == 1 && $type eq 'list' ) {
+
+
+		foreach my $w_email(@$clean_list_ref) { 
+			my $is_white_listed = $self->inexact_match(
+										{
+											-email   => $w_email, 
+											-against => 'white_list',
+										}
+										);
+			if($is_white_listed == 1){ 
+				push(@$white_listed, $w_email); 	
+			}
+			
+		}
+		
+		
+       (
+		 $not_white_listed,
+		 $clean_list_ref,
+		) = 
+         $self->find_unique_elements($clean_list_ref, $white_listed); # It probably doesn't matter what order I give these things in is
+
+    }
+    else {
+
+        # nothing, really.
+        $not_white_listed = [];
+
+    }
+
+		     # $subscribed,         $not_subscribed,   $black_listed,    $not_white_listed,     $invalid
+    return ( $not_unique_ref,       $clean_list_ref,   $black_listed_ref, $not_white_listed, \@unique_bad_emails);
 
 }
 
@@ -780,102 +589,6 @@ sub filter_subscribers_w_meta {
 
 
 
-
-sub get_fallback_field_values { 
-
-    my $self = shift; 
-    my $v    = {}; 
-    
-    return $v if  $self->can_have_subscriber_fields == 0; 
-    require  DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}});
-    my $li = $ls->get; 
-    
-    
-    my @fallback_fields = split("\n", $li->{fallback_field_values}); 
-    foreach(@fallback_fields){ 
-        my ($n, $val) = split(':', $_); 
-        $v->{$n} = $val; 
-    }
-    
-    return $v; 
-}
-
-
-
-
-sub _save_fallback_value { 
-
-    my $self = shift; 
-    my ($args) = @_; 
-    
-    if(! exists $args->{-field}){ 
-        croak "You MUST pass a value in the -field paramater!"; 
-    }
-
-    if(! exists $args->{-fallback_value}){ 
-        croak "You must pass a value in the -fallback_value paramater!"; 
-    }
-    
- 	require  DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}});
-
-    my $fallback_field_values = $self->get_fallback_field_values;
-    
-    my $fallback_field_clump = ''; 
-	
-	foreach(keys %$fallback_field_values){ 
-		$fallback_field_clump .= $_ . ':' . $fallback_field_values->{$_} . "\n";
-	}
-
-    $args->{-fallback_value} =~ s/\r|\n/ /g;
-    $args->{-fallback_value} =~ s/\://g;
-    
-    $fallback_field_clump .= $args->{-field} . ':' . $args->{-fallback_value} . "\n";
-    
-    $ls->save({fallback_field_values => $fallback_field_clump});
-    
-    return 1; 
-}
-
-
-
-sub _remove_fallback_value { 
-
-    my $self = shift; 
-    my ($args) = @_; 
-    
-    if(! exists $args->{-field}){ 
-        croak "You MUST pass a value in the -field paramater!"; 
-    }
-
-    require DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}}); 
-    my $li = $ls->get; 
-    
-    
-    my $fallback_field_values = $self->get_fallback_field_values;
-    
-
-    my $new_fallback_field_values = '';
-    foreach(keys %$fallback_field_values){ 
-        next if $_ eq $args->{-field}; 
-        $new_fallback_field_values .= $_ . ':' . $fallback_field_values->{$_} . "\n";
-    }
-    $ls->save({fallback_field_values => $new_fallback_field_values}); 
-    
-    return 1; 
-}
-
-
-
-
-
-
-
-
-
-
 sub write_plaintext_list { 
 	
 	require DADA::App::Guts; 
@@ -899,11 +612,6 @@ sub write_plaintext_list {
 	return $tmp_file;
 
 }
-
-
-
-
-
 
 
 
@@ -991,6 +699,11 @@ sub csv_to_cds {
 	return $cds; 
 	
 }
+
+
+
+
+
 
 
 
@@ -1719,7 +1432,7 @@ In other words, if someone is both black listed and white listed, during validat
  	$black_listed, 
  	$not_white_listed, 
  	$invalid
- 	) = $lh->filter_subscribers(
+     ) = $lh->filter_subscribers_w_meta(
  		{
  			-emails => [], 
  			-type   => 'list',
@@ -2025,9 +1738,9 @@ The field name is one of the following:
 
 =back
 
-=head2 get_fallback_field_values
+=head2 get_all_field_attributes
 
- my $field_values = $lh->get_fallback_field_values;
+ my $field_values = $lh->get_all_field_attributes;
 
 Returns the name of every subscriber field and its fallback value in the form of a hashref. 
 
@@ -2035,9 +1748,9 @@ The fallback values are actually saved in the List Settings.
 
 Take no arguments.
 
-=head2 _save_fallback_value
+=head2 _save_field_attributes
 
- $lh->_save_fallback_value(
+ $lh->_save_field_attributes(
 		{
 			-field          => $field, 
 			-fallback_value => $fallback_field_value, 
@@ -2049,10 +1762,10 @@ B<Currently marked as a private method>.
 Used to save a new fallback field value for the field set in, C<-field>. I<usually> shouldn't be used alone, but there is 
 actually no way to edit a fallback field value, without using this method. 
 
-If used on an existing field, make sure to remove the fallback field value first, using, C<_remove_fallback_value>, ala: 
+If used on an existing field, make sure to remove the fallback field value first, using, C<_remove_field_attributes>, ala: 
 
- $lh->_remove_fallback_value({-field => 'myfield'});
- $lh->_save_fallback_value({-field => 'myfield'}, -fallback_value => 'new_value');
+ $lh->remove_field_attributes({-field => 'myfield'});
+ $lh->save_field_attributes({-field => 'myfield'}, -fallback_value => 'new_value');
  
 Is called internally, when creating a new field via, C<add_subscriber_field>, so make sure not to call it twice. 
 
@@ -2064,9 +1777,9 @@ Is called internally, when creating a new field via, C<add_subscriber_field>, so
 
 =back
 
-=head2 _remove_fallback_value
+=head2 remove_field_attributes
 
- $lh->_remove_fallback_value(
+ $lh->remove_field_attributes(
 		{
 			-field => 'myfield', 
 		}
@@ -2091,7 +1804,7 @@ Justin Simoni http://dadamailproject.com
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 1999-2008 Justin Simoni All rights reserved. 
+Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
