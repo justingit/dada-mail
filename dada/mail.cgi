@@ -7488,7 +7488,7 @@ sub search_archive {
         return; 
     } 
 	require DADA::Profile; 
-	my $prof = DADA::Profile->new({-from_session => 1); 
+	my $prof = DADA::Profile->new({-from_session => 1}); 
 	my $allowed_to_view_archives = $prof->allowed_to_view_archives(
 			{
 				-list         => $list, 

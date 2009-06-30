@@ -64,7 +64,8 @@
 		archives_table                  => 'dada_archives', 
 		settings_table                  => 'dada_settings', 
 		session_table                   => 'dada_sessions', 
-		bounce_scores_table             => 'dada_bounce_scores',
+		bounce_scores_table             => 'dada_bounce_scores', 
+		clickthrough_urls_table         => 'dada_clickthrough_urls',
 
 	);
 
@@ -73,6 +74,7 @@ New lines:
 		profile_table                   => 'dada_profile', 
 		profile_fields_table 	        => 'dada_profile_fields', 
 		profile_fields_attributes_table => 'dada_profile_fields_attributes',
+		clickthrough_urls_table         => 'dada_clickthrough_urls',
 
 =head1 New SQL Tables to Create
 
@@ -83,12 +85,41 @@ Make the following tables:
 =item * dada_profile
 
 =item * dada_profile_fields
- 
+
 =item * dada_profile_fields_attributes
+
+=item * dada_clickthrough_urls
 
 =back
 
+The Schemas for each database/table is located in the dada/extras/SQL directory of the distribution. 
+
 =head1 New Variables in the List Template 
+
+=over
+
+=item * show_profile_widget
+
+=item * profile_widget
+
+=item * subscribed_to_list
+
+=back
 
 =head1 $PROFILE Variables
 
+=over
+
+=item * $PROFILE_ENABLED
+
+=item * $PROFILE_EMAIL
+
+=item * $PROFILE_ENABLE_CAPTCHA
+
+=item * $PROFILE_ENABLE_MAGIC_SUBSCRIPTION_FORMS
+
+=item * $PROFILE_COOKIE_PARAMS
+
+=item * $PROFILE_GRAVATAR_OPTIONS
+
+=back
