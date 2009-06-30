@@ -6,6 +6,7 @@ use Carp qw(carp croak);
 use DADA::Config;
 use CGI::Session;
 CGI::Session->name('dada_profile');
+use Carp qw(carp croak); 
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_Profile_Session};
 
@@ -101,16 +102,15 @@ sub _init {
 
 }
 
-sub login_cookie {
+sub _login_cookie {
 
     my $self = shift;
     my ($args) = shift;
 
-    die 'no CGI Object (-cgi_obj)' if !$args->{ -cgi_obj };
+	require CGI; 
+    my $q = new CGI; 
 
     my $cookie;
-
-    my $q = $args->{ -cgi_obj };
 
     require CGI::Session;
 
@@ -135,14 +135,19 @@ sub login_cookie {
 
 sub login {
 
+
     my $self = shift;
     my ($args) = @_;
+
+	require CGI; 
+	my $q = new CGI; 
+
     my ( $status, $errors ) = $self->validate_profile_login($args);
     if ( $status == 0 ) {
-        die "login failed.";
+        croak "login failed.";
     }
     else {
-        my $cookie = $self->login_cookie($args);
+        my $cookie = $self->_login_cookie($args);
         return $cookie;
     }
 }
@@ -151,7 +156,9 @@ sub logout {
 
     my $self = shift;
     my ($args) = @_;
-    my $q = $args->{ -cgi_obj };
+
+	require CGI; 
+	my $q = new CGI; 
 
     if ( $self->is_logged_in($args) ) {
         my $s = new CGI::Session( $self->{dsn}, $q, $self->{dsn_args} );
@@ -160,7 +167,7 @@ sub logout {
         return 1;
     }
     else {
-        warn 'profile was never logged in!';
+        carp 'profile was never logged in!';
         return 0;
     }
 
@@ -213,7 +220,7 @@ sub is_logged_in {
 
     }
     my $s = CGI::Session->load( $self->{dsn}, $q, $self->{dsn_args} )
-      or die CGI::Session->errstr();
+      or croak CGI::Session->errstr();
 
     if ( $s->is_expired ) {
         return 0;
@@ -239,13 +246,8 @@ sub get {
     my $self = shift;
     my ($args) = @_;
     my $q;
-    if ( exists( $args->{ -cgi_obj } ) ) {
-        $q = $args->{ -cgi_obj };
-    }
-    else {
-        require CGI;
-        $q = new CGI;
-    }
+    require CGI;
+    $q = new CGI;
     require CGI::Session;
 
     my $session = new CGI::Session( $self->{dsn}, $q, $self->{dsn_args} );
@@ -253,6 +255,135 @@ sub get {
 
 }
 
-sub reset_password { }
+sub reset_password {} # ??? 
 
 1;
+
+
+=pod
+
+=head1 NAME 
+
+DADA::Profile
+
+=head1 SYNOPSIS
+
+
+=head1 DESCRIPTION
+
+=head1 Public Methods
+
+=head2 new
+
+	my $prof_sess = DADA::Profile::Session->new
+
+C<new> returns a DADA::Profile::Session object. 
+
+C<new> does not take any paramaters and returns a C<DADA::Profile::Session> object. 
+
+=head2 login
+
+	my $cookie = $prof_sess->login(
+		{ 
+			-email    => $q->param('email'),
+			-password => $q->param('password'), 
+		},
+	);
+
+C<login> saves the session information for the profile, as well as returns a cookie, so that the state can be fetched later. 
+
+It requires two arguments: 
+
+C<-email> should hold the email address associated with the profile that you'd like to login. 
+
+C<-password> should hold the correct password associated with the user. 
+
+This method will croak if the login information (user/password) is incorrect. Use C<validate_profile_login()> before trying to login. 
+
+=head2 logout
+
+ $prof_sess->logout;
+
+C<logout> removes the session state information. It'll return C<1> on success and C<0> on failure. Usually, a failure will happen 
+if the profile is not actually logged in. 
+
+=head2 validate_profile_login
+
+	my ($status, $errors) = $prof_sess->validate_profile_login(
+		{ 
+			-email    => $q->param('email'),
+			-password => $q->param('password'), 
+		
+		},
+	);
+
+C<validate_profile_login> is used to make sure the login information you give is valid. 
+
+It requires two paramaters: 
+
+C<-email> should be the email address associated with the profile. 
+
+C<-password> should be the profile associated with the profile. 
+
+It'll return a two-element array. The first is the status and will be set to either, 
+C<1> or C<0>, with C<1> meaning that no problems were encountered. If the status is set 
+to, C<0>, then problems were encountered. Any problems will be described in the second element of the 
+array. This should be a hashref of key/value pairs. The keys will describe the error and the value would 
+be set to, C<1> if the error was found. 
+
+Here's the following keys that may be returned: 
+
+=over
+
+=item * unknown_user
+
+The email address passed in, C<-email> doesn't have a profile. 
+
+=item * incorrect_pass
+
+The password passed in, C<-password> isn't correct for the email address passed in, C<-email> 
+
+=back
+
+=head2 is_logged_in
+
+ my $logged_in = $prof_sess->is_logged_in; 
+
+C<is_logged_in> returns C<1> if a profile is logged in, or C<0> if it is not. 
+
+C<is_logged_in> does not need any arguments. 
+
+=head2 get 
+
+ my $email = $prof_sess->get; 
+
+C<get> returns the email address associated with the profile that is logged in. 
+
+Most likely, if the profile is not logged in, C<undef> will be returned. 
+
+=head1 AUTHOR
+
+Justin Simoni http://dadamailproject.com
+
+=head1 LICENCE AND COPYRIGHT
+
+Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, 
+Boston, MA  02111-1307, USA.
+
+=cut 
+
+

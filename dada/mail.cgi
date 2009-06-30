@@ -9462,8 +9462,6 @@ sub profile_login {
 				{ 
 					-email    => $q->param('email'),
 					-password => $q->param('password'), 
-					-cgi_obj  => $q, 
-
 				},
 			); 
 			
@@ -9694,8 +9692,7 @@ sub profile {
 				$q->delete('process'); 
 				
 				require DADA::Profile::Session; 
-				my $prof_sess = DADA::Profile::Session->new; 
-			     $prof_sess->logout({-cgi_obj => $q});
+				my $prof_sess = DADA::Profile::Session->new->logout;
 				profile_login();
 			}
 			else { 

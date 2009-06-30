@@ -82,7 +82,7 @@ sub _init {
 
 =head1 NAME 
 
-DADA::Profile::Fields
+DADA::ProfileFieldsManager
 
 =head1 SYNOPSIS
 
@@ -90,21 +90,19 @@ DADA::Profile::Fields
 =head1 DESCRIPTION
 
 
-
-
 =head1 Public Methods
 
 =head2 new
 
- my $pf = DADA::Profile::Fields->new
+ my $pfm = DADA::ProfileFieldsManager->new
 
 C<new> requires no paramaters.
 
-A C<DADA::Profile::Fields> object will be returned. 
+A C<DADA::ProfileFieldsManager> object will be returned. 
 
 =head2 fields 
 
- my $fields = $pf->fields; 
+ my $fields = $pfm->fields; 
 
 C<fields> returns an array ref of the names of the columns that represent the profile fields currently created. 
 
@@ -112,11 +110,9 @@ C<fields> returns the fields in the order they are usually stored in the SQL tab
 
 C<fields> requires no paramaters. 
 
-
-
 =head2 add_field
 
- $pf->add_field(
+ $pfm->add_field(
 	{
 		-field          => 'myfield', 
 		-fallback_value => 'a default', 
@@ -140,7 +136,7 @@ This method will return C<undef> if there's a problem with the paramaters passed
 
 =head2 save_field_attributes
 
- $pf->save_field_attributes(
+ $pfm->save_field_attributes(
 	{  
 		-field 			=> 'myfield', 
 		-fallback_value => 'a default', 
@@ -153,7 +149,7 @@ but will error if you attempt to save a field attribute to a field that does not
 
 =head2 edit_field
 
-   	$pf->edit_field(
+   	$pfm->edit_field(
 		{
 			-old_name => 'myfield' ,
 			-new_name => 'mynewname',
@@ -170,7 +166,7 @@ This method will also croak if either the C<-old_name> does not exist, or the C<
 
 =head2 remove_field 
 
- $pf->remove_field(
+ $pfm->remove_field(
 	{ 
 		-field => 'myfield', 
 	}
@@ -182,7 +178,7 @@ C<-field> must exist, or the method will croak.
 
 =head2 change_field_order
 
- $pf->change_field_order(
+ $pfm->change_field_order(
 	{
 		-field     => 'myfield', 
 		-direction => 'down', # or, 'up' 

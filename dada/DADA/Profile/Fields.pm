@@ -99,9 +99,6 @@ DADA::Profile::Fields
 
 =head1 DESCRIPTION
 
-
-
-
 =head1 Public Methods
 
 =head2 new

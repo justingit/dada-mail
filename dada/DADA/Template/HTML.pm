@@ -497,9 +497,9 @@ sub list_template {
 	my $prof_email         = ''; 
 	my $is_logged_in       = 0; 
 	my $subscribed_to_list = 0;
-	if($prof_sess->is_logged_in({-cgi_obj => $q})){ 
+	if($prof_sess->is_logged_in){ 
 		$is_logged_in = 1; 
-	    $prof_email = $prof_sess->get({-cgi_obj => $q}); 
+	    $prof_email = $prof_sess->get; 
 		my $prof = DADA::Profile->new({-email => $prof_email}); 
 		$subscribed_to_list = $prof->subscribed_to_list({-list => $list});
 	}
