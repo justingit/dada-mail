@@ -89,7 +89,7 @@ sub get {
 	my $sf = DADA::Profile::Fields->new($args); 
 	
 	
-	my $r =  $sf->get; 
+	my $r =  $sf->get($args); 
 	
 	# use Data::Dumper; 
 	# warn 'Returning from DADA:MailingList::Subscriber::baseSQL->get(): ' . Data::Dumper::Dumper($r); 

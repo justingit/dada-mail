@@ -9589,7 +9589,7 @@ sub profile_activate {
 			}
 		); 
 		if($status == 1){ 
-			$prof->activate({-email => $email}); 
+			$prof->activate; 
 			my $profile = $prof->get(); 
 			#$q->param('password', $profile->{password}); 
 			$q->param('welcome',  1); 
@@ -9907,7 +9907,7 @@ sub profile_reset_password {
 			if($prof->exists()){
 		
 				$prof->send_profile_reset_password_email();
-				$prof->activate({-activate => 0});
+				$prof->activate;
 				
 				print list_template(-Part => "header",
 			                   -Title => "Profile Reset Password Confirm", 

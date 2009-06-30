@@ -173,7 +173,10 @@ sub send_confirmation_message {
 				-list_settings_vars_param => {-list => $args->{-list}},
 	            -subscriber_vars_param    => {-list => $args->{-list}, -email => $args->{-email}, -type => 'sub_confirm_list'},
 	            -vars                     => {
-	                                            'subscriber.pin' => make_pin(-Email => $args->{-email}, -List => $args->{-list}),
+	                                            'subscriber.pin' => make_pin(
+																	-Email => $args->{-email}, 
+																	-List  => $args->{-list}
+																	),
 	                                         },
 		
 			},

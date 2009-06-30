@@ -32,7 +32,7 @@ sub new {
     if ( 
 		 $args->{ -from_session } == 1 && 
 		 !defined( $args->{ -email } ) ) {
-        return undef;
+       # return undef;
     }
     if (   $DADA::Config::PROFILE_ENABLED != 1
         || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
@@ -431,7 +431,7 @@ sub activate {
     if ( !exists( $args->{ -activate } ) ) {
         $args->{ -activate } = 1;
     }
-    if($args->{ -activate } != 1 || $args->{ -activate } != 0){ 
+    if($args->{ -activate } != 1 && $args->{ -activate } != 0){ 
 		croak "activate can only be set to 1 or 0!"; 
 	}
 

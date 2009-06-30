@@ -161,9 +161,13 @@ sub get {
             $dotted->{ 'subscriber.' . $_ } = $n_hashref->{$_};
         }
 
+		require Data::Dumper; 
+		carp Data::Dumper::Dumper($dotted); 
         return $dotted;
     }
     else {
+			require Data::Dumper; 
+			carp Data::Dumper::Dumper($n_hashref);
         return $n_hashref;
 
     }
