@@ -377,6 +377,8 @@ When a registration email or reset password email goes out, it'll go out on beha
 
  $PROFILE_EMAIL = 'me@mydomain.com'; 
 
+If Profiles are enabled and this variable is left blank, the list owner email address of one of the mailing lists will be used. 
+
 =head3 $PROFILE_ENABLE_CAPTCHA
 
 Registration for Dada Mail Profiles can be verified using a CAPTCHA. We recommend this feature, if it's available. Set this variable to, C<1> to enable CAPTCHA in the registration form. 
@@ -1375,7 +1377,7 @@ BEGIN {
 # You CANNOT have this variable in an outside config file - 
 # it MUST be set here. 
 
-$PROGRAM_ERROR_LOG = '/Library/WebServer/Documents/.dada_files/.logs/errors.txt'; 
+$PROGRAM_ERROR_LOG = undef; 
 
 # Keep this next bit as-is; it's just opening the error file for writing. 
 if($PROGRAM_ERROR_LOG){open (STDERR, ">>$PROGRAM_ERROR_LOG") 
@@ -4438,7 +4440,7 @@ and to say that you've got the freshest tools on the Web.
 
 
 $VERSION = 3.1.0; 
-$VER     = '3.1.0 - alpha 06/29/09';
+$VER     = '3.1.0 - alpha 07/06/09';
 
 #
 #
