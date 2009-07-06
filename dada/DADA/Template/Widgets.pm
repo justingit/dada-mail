@@ -134,7 +134,6 @@ SIGN_IN_FLAVOR_NAME    => $DADA::Config::SIGN_IN_FLAVOR_NAME,
 DISABLE_OUTSIDE_LOGINS => $DADA::Config::DISABLE_OUTSIDE_LOGINS, 
 
 ADMIN_FLAVOR_NAME      => $DADA::Config::ADMIN_FLAVOR_NAME, 
-SHOW_HELP_LINKS        => $DADA::Config::SHOW_HELP_LINKS,
 HELP_LINKS_URL         => $DADA::Config::HELP_LINKS_URL, 
 MAILPROG               => $DADA::Config::MAILPROG,
 FILES                  => $DADA::Config::FILES, 
@@ -149,7 +148,6 @@ DEFAULT_ADMIN_SCREEN          => $DADA::Config::DEFAULT_ADMIN_SCREEN,
 
 ENV_SCRIPT_URI                => $ENV{SCRIPT_URI}, 
 ENV_SERVER_ADMIN              => $ENV{SERVER_ADMIN},
-SHOW_HELP_LINKS               => $DADA::Config::SHOW_HELP_LINKS, 
 HELP_LINKS_URL                => $DADA::Config::HELP_LINKS_URL, 
 
 PROFILE_ENABLED               => $DADA::Config::PROFILE_ENABLED, 
@@ -184,6 +182,13 @@ endif                         => '[endif]',
 ), 
 
                     
+(
+	
+	($DADA::Config::SHOW_HELP_LINKS eq "1") ?
+		(SHOW_HELP_LINKS  => 1,) : 
+		(SHOW_HELP_LINKS  =>  0,),
+),
+
 
 ); 
 
