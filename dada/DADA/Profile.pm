@@ -654,7 +654,7 @@ sub send_profile_activation_email {
             -email   => $self->{email},
             -headers => {
                 Subject => $DADA::Config::PROFILE_ACTIVATION_MESSAGE_SUBJECT,
-                From    => $DADA::Config::PROFILE_EMAIL,
+                From    => $self->_config_profile_email,
                 To      => $self->{email},
             },
             -body        => $DADA::Config::PROFILE_ACTIVATION_MESSAGE,
@@ -683,7 +683,7 @@ sub send_profile_reset_password_email {
             -headers => {
                 Subject =>
                   $DADA::Config::PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT,
-                From => $DADA::Config::PROFILE_EMAIL,
+                From => $self->_config_profile_email,
                 To   => $self->{email},
             },
             -body        => $DADA::Config::PROFILE_RESET_PASSWORD_MESSAGE,
@@ -756,6 +756,27 @@ sub _rand_str {
     require DADA::Security::Password;
     return DADA::Security::Password::generate_rand_string( undef, $size );
 }
+
+
+sub _config_profile_email {
+    my $self = shift;
+    if ( length($DADA::Config::PROFILE_EMAIL) > 0
+        && DADA::App::Guts::check_for_valid_email($DADA::Config::PROFILE_EMAIL)
+        == 0 )
+    {
+        return $DADA::Config::PROFILE_EMAIL;
+    }
+    else {
+
+        # magically.
+        require DADA::App::Guts;
+        my @l = DADA::App::Guts::available_lists();
+        require DADA::MailingList::Settings;
+        my $ls = DADA::MailingList::Settings->new( { -list => $l[0] } );
+        return $ls->param('list_owner_email');
+    }
+}
+
 
 1;
 
