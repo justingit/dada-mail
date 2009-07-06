@@ -43,7 +43,8 @@ body#DadaAdmin {
 	margin:0 auto;                    /* page centering for all but IE */
 	padding:20px;
 	border:1px solid #000;
-	background-color:#c00;
+	/*background-color:#c00;*/
+	  background-color:#69C;
 	background-image: url('<!-- tmpl_var S_PROGRAM_URL -->/img/dada_mail_logo.png/');
 	background-repeat: no-repeat;
 	
@@ -313,7 +314,7 @@ p.link_to_screen {
 }
 
 .positive_greeting { 
-	padding:5px; 
+	padding:2px; 
 	border: 1px solid #363;
 	background-color: #CFC;
 }

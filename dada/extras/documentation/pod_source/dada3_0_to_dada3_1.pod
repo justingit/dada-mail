@@ -76,6 +76,7 @@ New lines:
 		profile_fields_attributes_table => 'dada_profile_fields_attributes',
 		clickthrough_urls_table         => 'dada_clickthrough_urls',
 
+
 =head1 New SQL Tables to Create
 
 Make the following tables: 
@@ -92,9 +93,20 @@ Make the following tables:
 
 =back
 
+=head2 New Schemas
+
 The Schemas for each database/table is located in the dada/extras/SQL directory of the distribution. 
 
-=head1 New Variables in the List Template 
+For the exception of the, C<dada_subscribers> table, all previous table schemas are essentially the same. 
+
+Subscriber Fields information that once used to live in the C<dada_subscribers> table, now lives in the C<dada_profile_fields> table. There's currently no automated way of moving the information from the C<dada_subscribers> table to the C<dada_profile_fields table>. 
+
+=head2 $CLICKTHROUGH_DB_TYPE
+
+The new C<dada_clickthrough_urls> table holds the URL redirects for the clickthrough tracker. 
+
+
+=head1 New Template Variables in the List Template (default_list_template.tmpl)
 
 =over
 

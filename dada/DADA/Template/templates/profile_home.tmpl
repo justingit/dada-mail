@@ -14,20 +14,27 @@
 
 
 <div class="positive_greeting">
-	<h1 style="text-align:center">
+	<h1>
+		
+		<!-- tmpl_if gravators_enabled --> 
+			<!-- tmpl_if gravatar_img_url --> 
+			
+					<a href="http://gravatar.com/" target="_blank">
+						<img src="<!-- tmpl_var gravatar_img_url -->" style="float:left; padding:5px;padding-top:0px;border:0px" />
+					</a>
+		
+			<!-- /tmpl_if -->
+		<!-- /tmpl_if -->
+				
 		Hello, <!-- tmpl_var profile.email -->!
-	</h1>
-</div> 
+		
+	</h1> 
 
-<!-- tmpl_if gravators_enabled --> 
-	<!-- tmpl_if gravatar_img_url --> 
-		<p>
-			<img src="<!-- tmpl_var gravatar_img_url -->" style="float:left" />
-		</p> 
-	<!-- /tmpl_if -->
-<!-- /tmpl_if -->
+
+
 <div class="floatclear"></div>
 
+</div> 
 
 <!-- tmpl_if welcome --> 
 	<p class="positive">
