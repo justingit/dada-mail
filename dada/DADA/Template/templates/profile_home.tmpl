@@ -118,31 +118,36 @@ Your Mailing List Subscriptions
 		</a>
 	</h2> 
 	
-	<blockquote>
+	<div style="max-height: 200px; overflow: auto;background:#ccc; padding:5px">
 		<p>
 			<!-- tmpl_var list_settings.info -->
 		</p>
-	</blockquote> 
+	</div> 
 
 
 	<ul> 
 	    <!-- tmpl_if list_settings.group_list --> 
-	        <li>
-	         <a href="mailto:<!-- tmpl_var list_settings.discussion_pop_email -->">
-				Send a message to 
-					<!-- tmpl_var list_settings.discussion_pop_email -->
-				</a>
-			 - this list is a group discussion list 
+			<li>
+				<p>Discussion List</p> 
+				<ul> 
+					<li> 
+						 <a href="mailto:<!-- tmpl_var list_settings.discussion_pop_email -->">
+							Start a New Thread - 
+								<!-- tmpl_var list_settings.discussion_pop_email -->
+							</a>
+					</li> 
 	            <!-- tmpl_if list_settings.enable_moderation --> 
-	                (moderated)
+	               <li>Moderated List</li> 
 	            <!-- tmpl_else -->
-	                (unmoderated)
+	                   <li>Unmoderated List</li> 
 	            <!-- /tmpl_if --> 
+			</ul> 
+			
 	        </li>
 	    <!-- tmpl_else --> 
 
 	        <li>
-	         This list is an announce-only list.
+	         Announce-only list.
 	        </li>
 
 	     <!-- /tmpl_if --> 
