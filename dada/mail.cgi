@@ -9515,7 +9515,7 @@ sub profile_register {
 	if($prof->exists() && 
 	   !$prof->is_activated()
 	){ 
-		$prof->drop(); 
+		$prof->remove(); 
 	}
 	my($status, $errors) = $prof->is_valid_registration(
 		{
