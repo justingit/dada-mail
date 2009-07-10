@@ -9,11 +9,34 @@ Key:
 [x] Done. 
 [*] Naw...
 
+[ ] I need to perhaps make an option to that you cannot edit profile info, if you're not Dada Root. Or make it clear that editing the information will deal with all lists. and/or have a way to know that a subscriber is on more than one list (and perhaps which lists?) (or a way to see a "public" profile? (turn on/off) 
+
+[ ] UTF-8 stuff - revisit? What else needs to be done? Tests? Caching? Information in? How do we handle it? 
+
+[ ] Upgrade Script - what needs to be done for that to be a reality? (List of stuff) 
+	[ ] SQL: Creation of new tables
+	[ ] SQL: changing of schema, for dada_subscribers table
+	[ ] Is... that it? 
+
+[ ] A "delete" profile function? What happens to the subscriptions? A master, "Unsubscribe me AND delete this profile" Thingy? 
+	
+	
+[ ] Prototype stuff? Should that be folded in? It does solve a few bugs... 
+
+
 [ ] It would be nice if the partial fields could support some sort of dynamic content, like today's date, etc. 
 
 [ ] Auto Clickthrough tracking of links in the clickthrough tracker. (oh, boy) 
-
-[ ] I need to merge all of the code that creates the query for the subscriber fields into ONE method, because it's getting 
+	[ ] What does this entail? Is there an (optional) CPAN module that could find all links, and change them? Probably just: HTML::LinkExtor 
+	http://search.cpan.org/~gaas/HTML-Parser-3.61/lib/HTML/LinkExtor.pm
+	
+	http://docstore.mik.ua/orelly/perl/cookbook/ch20_04.htm
+	
+	(Could be an optional feature, make enough tests that make me happy, and just take a chance...?) 
+	
+		
+	
+[x] I need to merge all of the code that creates the query for the subscriber fields into ONE method, because it's getting 
  	complicated, it's being used in more than one place, AND people want to change it. A tall order, but probably, well worth it! 
 
 [-] The, "Your subscriptions" thingy in the Profile thingy has to let you know, if you aren't actually subscribed to any lists. Right now, if you're not, it just looks broken. 
@@ -43,7 +66,7 @@ Key:
 	[ ] CAPTCHA for, "hey, you've already *asked* for this damn subscription! screen - the check at the moment is too simple. 
 	[ ] Remember to move over any changes from 3.0.x to 3.1in POD docs... 
 	[x] Magic Subscription Forms - a way to turn *off*?! 
-	[ ] I need to HTML-ify the list description in the profile screen.
+	[x] I need to HTML-ify the list description in the profile screen.
 	
 
 [x] I need a purge button for subscribers. 

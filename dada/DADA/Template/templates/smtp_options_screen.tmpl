@@ -267,10 +267,14 @@ SMTP Options
     </table> 
     
     
-   <div class="buttonfloat">
+<!-- 
+	   <div class="buttonfloat">
     <input type="button" value="Test POP-Before-SMTP Settings" class="cautionary" onClick="testPOPBeforeSMTP();" />
    </div>
-  </td>
+ 
+--> 
+
+ </td>
  </tr>
  
  
@@ -345,31 +349,75 @@ Checking this option may dramatically increase sending speed, since the actual c
 
 </fieldset>
 
- 
- <script type=text/javascript>
-
-    pjx.prototype.pjxInitialized = function(el){
-    el = 'smtp_test_results'; 
-      document.getElementById(el).innerHTML = '<h2>One Second Please...</h2>';
-      document.getElementById(el).style.backgroundColor = '#ccc';
-    }
-
-pjx.prototype.pjxCompleted = function(el){
-    el = 'smtp_test_results'; 
-    document.getElementById(el).style.backgroundColor = '#fff';
-
-}
-
-</script>
 
 
+
+<!-- 
 <p>
  <input type="button" name="foo" id="foo" value="Save and Test SMTP Settings..." class="processing" onClick="ajax_save_smtp_options(['flavor', 'process', 'use_pop_before_smtp', 'set_smtp_sender', 'smtp_server', 'pop3_server', 'pop3_username', 'pop3_password', 'use_smtp_ssl', 'use_sasl_smtp_auth', 'sasl_auth_mechanism', 'sasl_smtp_username', 'sasl_smtp_password', 'smtp_port', 'no_redirect__1'], []); smtp_test_results(['flavor'], ['smtp_test_results'])" /> 
 </p>
+--> 
 
 
 <input type="hidden" name="process" id="process" value="1" /> 
 
+<!--
+						sasl_auth_mechanism:   $F('sasl_auth_mechanism'), 
+		sasl_smtp_username:    $F('sasl_smtp_username'), 
+	sasl_smtp_password:    $F('sasl_smtp_password'), 
+	smtp_port:             $F('smtp_port'),
+	
+-->
+
+<script type="text/javascript">
+    //<![CDATA[
+
+	 function foosmtp(){ 
+		new Ajax.Updater(
+			'smtp_test_results', '<!-- tmpl_var S_PROGRAM_URL -->', 
+			{ 
+			    method: 'get', 
+				parameters: {
+					f: 'smtp_test_results',
+					process:               $F('process'),
+					use_pop_before_smtp:   $F('use_pop_before_smtp'), 
+					set_smtp_sender:       $F('set_smtp_sender'), 
+					smtp_server:           $F('smtp_server'), 
+					pop3_server:           $F('pop3_server'), 
+					pop3_username:         $F('pop3_username'), 
+					pop3_password:         $F('pop3_password'), 
+					use_smtp_ssl:          $F('use_smtp_ssl'),			
+					use_sasl_smtp_auth:    $F('use_sasl_smtp_auth'), 
+					sasl_auth_mechanism:   $F('sasl_auth_mechanism'), 
+					sasl_smtp_username:    $F('sasl_smtp_username'), 
+					sasl_smtp_password:    $F('sasl_smtp_password'), 
+					smtp_port:             $F('smtp_port'),
+					},
+					
+			onCreate: 	 function() {
+				
+				$('smtp_test_results_loading').show();
+
+			},
+			onComplete: 	 function() {
+				
+				$('smtp_test_results_loading').hide();
+
+			}
+			
+
+			});
+	}
+    //]]>
+</script>
+
+<p>
+	<input type="button"  value="Save and Test SMTP Settings..." class="processing" onClick="foosmtp();" /> 
+</p> 
+ 
+<div id="smtp_test_results_loading" style="display:none">
+	<em>Loading...</em>
+</div>
 <div id="smtp_test_results"></div> 
     
     

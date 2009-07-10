@@ -1706,6 +1706,8 @@ else {
 		
    }else{ 
    
+# warn '$args->{-screen} ' . $args->{-screen}; 
+
    	if($args->{-screen}){ 
 
    		require HTML::Template;
@@ -1772,7 +1774,6 @@ else {
 	if($args->{-list}){ 
 		$template->param('list', $args->{-list}); 
 	}
-				   
 	return $template->output();
 }
 

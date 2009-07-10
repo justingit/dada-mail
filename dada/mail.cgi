@@ -222,6 +222,8 @@ if($ENV{QUERY_STRING} =~ m/^\?/){
 
 }
 
+#print $q->header(); 
+#print $q->query_string(); 
 
 
 
@@ -398,6 +400,16 @@ if($ENV{PATH_INFO}){
         $q->param('img_name',    $img_name)
             if $img_name; 
             
+
+}elsif($info =~ /^javascripts/){ 
+
+        my ($pi_flavor, $js_lib, $extran) = split('/', $info); 
+
+        $q->param('flavor', 'javascripts'); 
+
+        $q->param('js_lib',    $js_lib)
+            if $js_lib; 
+
    }elsif($info =~ /^captcha_img/){ 
             
         my ($pi_flavor, $pi_img_string, $extran) = split('/', $info); 
@@ -598,6 +610,7 @@ sub run {
 	'subscriber_fields'       =>    \&subscriber_fields, 
 
 	'smtp_options'            =>    \&smtp_options,
+	'smtp_test_results'       =>    \&smtp_test_results, 
 	'checkpop'                =>    \&checkpop,
 	'author'                  =>    \&author,
 	'list'                    =>    \&list_page,
@@ -610,6 +623,7 @@ sub run {
 	'file_attachment'         =>    \&file_attachment, 
 	'm_o_c'                   =>    \&m_o_c, 
 	'img'                     =>    \&img, 
+	'javascripts'             =>    \&javascripts, 
 	'captcha_img'             =>    \&captcha_img, 
 	'ver'                     =>    \&ver, 
 	'css'                     =>    \&css, 
@@ -2573,12 +2587,9 @@ sub smtp_options {
     
         
   
-    require CGI::Ajax;
-    my $pjx = new CGI::Ajax( 
-                             'smtp_test_results'       => \&smtp_test_results,
-                             'ajax_save_smtp_options'  => \&ajax_save_smtp_options, 
+   # 'smtp_test_results'       => \&smtp_test_results,
+   #'ajax_save_smtp_options'  => \&ajax_save_smtp_options, 
                              
-                             );
         
     my $decrypted_sasl_pass = q{};
     if($li->{sasl_smtp_password}){
@@ -2613,13 +2624,15 @@ sub smtp_options {
     my $mechanism_popup; 
     if($can_use_net_smtp){ 
     
-        $mechanism_popup = $q->popup_menu(-name     => 'sasl_auth_mechanism', 
+        $mechanism_popup = $q->popup_menu(-name     => 'sasl_auth_mechanism',
+ 										  -id       => 'sasl_auth_mechanism', 
                                           -default  => $li->{sasl_auth_mechanism}, 
                                           '-values' => [qw(PLAIN LOGIN DIGEST-MD5 CRAM-MD5)],
                                          );
     }
     
     my $pop3_auth_mode_popup =  $q->popup_menu(-name     => 'pop3_auth_mode', 
+										 -id => 'pop3_auth_mode', 
                                           -default  => $li->{pop3_auth_mode}, 
                                           '-values' => [qw(BEST PASS APOP CRAM-MD5)],
                                            -labels   => {BEST => 'Automatic'},
@@ -2632,7 +2645,7 @@ sub smtp_options {
         
         my $scr;     
         $scr .= admin_template_header( 
-              -HTML_Header => 0, 
+              #-HTML_Header => 0, 
               -Title       => "SMTP Sending Options", 
               -List        => $li->{list}, 
               -Root_Login  => $root_login);
@@ -2690,8 +2703,8 @@ sub smtp_options {
                
         
         # This is really strange - if it's the ajax test, this'll return the test, not the screen up there. REALLY WEIRD. 
-        $scr = $pjx->build_html( $q, $scr, {admin_header_params()});
-
+        #$scr = $pjx->build_html( $q, $scr, {admin_header_params()});
+		#print $q->header()
         e_print($scr); 
         
 
@@ -2745,7 +2758,7 @@ sub smtp_options {
               
         if($q->param('no_redirect') == 1){ 
         
-             print "Status: 204 No Response";
+        #     print "Status: 204 No Response";
          } else { 
             print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=smtp_options&done=1'); 
         }
@@ -2756,7 +2769,12 @@ sub smtp_test_results {
 
     my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q, 
                                                         -Function => 'smtp_options');
-                                                        
+
+														
+    my $list = $admin_list; 
+    $q->param('no_redirect', 1); 
+    smtp_options(); 
+
     require DADA::Mail::Send; 
     require DADA::MailingList::Settings; 
     
@@ -2806,8 +2824,9 @@ EOF
 
 $scr .= '</div>'; 
 
+print $q->header(); 
 
-return $scr; 
+print $scr; 
 
 }
 
@@ -9140,6 +9159,50 @@ EOF
 
 }
 
+
+
+sub javascripts {
+
+#print $q->header(); 
+
+    my $js_lib = xss_filter( $q->param('js_lib') );
+
+    my @allowed_js = qw(
+	
+	  prototype.js
+      builder.js
+      controls.js
+      dragdrop.js
+      effects.js
+      slider.js
+      sound.js
+      unittest.js
+      scriptaculous.js
+
+    );
+
+    my %lt = ();
+    foreach (@allowed_js) { $lt{$_} = 1; }
+
+    require DADA::Template::Widgets;
+#warn '$js_lib ' . $js_lib; 
+
+    if ( $lt{$js_lib} == 1 ) {
+        if ( $c->cached('javascripts/' . $js_lib) ) { 
+			$c->show('javascripts/' . $js_lib); return; 
+		}
+        my $r = $q->header('text/javascript');
+        $r .= DADA::Template::Widgets::screen( { -screen => 'javascripts/' . $js_lib } );
+        print $r;
+        $c->cache( 'javascripts/' . $js_lib, \$r );
+
+    }
+    else {
+
+        # nothing for now...
+    }
+
+}
 
 
 
