@@ -19,6 +19,9 @@
 
 
 
+
+
+
 <form name="default_form" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
 
 
@@ -36,8 +39,10 @@
 <div id="previewBatchSendingSpeed"> 
 </div> 
 
-    
 
+
+
+    
 <table> 
  <tr>
   <td>
@@ -59,17 +64,6 @@
   </td>
  </tr>
  
- <script language="Javascript"> 
-            
-        function previewBatchSendingSpeed(){ 
-            external(['f__previewBatchSendingSpeed', 'enable_bulk_batching', 'mass_send_amount', 'bulk_sleep_amount',  'NO_CACHE'], ['previewBatchSendingSpeed']); 
-            return false;
-        }
-    
-
-previewBatchSendingSpeed(); 
-
-</script> 
 
  <tr>
   <td>
@@ -223,6 +217,40 @@ previewBatchSendingSpeed();
 <div class="floatclear"></div>
 
 </form> 
+
+
+<script type="text/javascript">
+    //<![CDATA[
+
+	 function previewBatchSendingSpeed(){ 
+		new Ajax.Updater(
+			'previewBatchSendingSpeed', '<!-- tmpl_var S_PROGRAM_URL -->', 
+			{ 
+			    method: 'post', 
+				parameters: {
+					f:                    'previewBatchSendingSpeed', 
+					enable_bulk_batching: $F('enable_bulk_batching'),
+					mass_send_amount:     $F('mass_send_amount'), 
+					bulk_sleep_amount:    $F('bulk_sleep_amount'), 
+
+				},
+
+			onCreate: 	 function() {
+			},
+			onComplete: 	 function() {
+
+				$('previewBatchSendingSpeed').show(); 
+			
+			}
+
+
+			});
+	}
+	previewBatchSendingSpeed(); 
+    //]]>
+
+</script>
+
 
 <!-- tmpl_include help_link_widget.tmpl --> 
 

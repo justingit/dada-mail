@@ -228,13 +228,9 @@ if($ENV{QUERY_STRING} =~ m/^\?/){
 
 
 sub hook {
-  
 	my ($filename, $buffer, $bytes_read, $data) = @_;
 
 	$bytes_read ||= 0; 
-
-
-
 	eval {require URI::Escape}; 
 	if(!$@){
 		$filename =  URI::Escape::uri_escape($filename, "\200-\377");
@@ -243,7 +239,7 @@ sub hook {
 	}
 	$filename =~ s/\s/%20/g;
 
-	open(COUNTER, ">" . $DADA::Config::TMP . '/' . $filename . '-meta.txt'); 
+	open(COUNTER, ">", $DADA::Config::TMP . '/' . $filename . '-meta.txt') ; 
 
 	my $per = 0; 
 	if($ENV{CONTENT_LENGTH} >  0){ # This *should* stop us from dividing by 0, right?
@@ -1045,26 +1041,29 @@ sub previewMessageReceivers {
     foreach my $field(@{$lh->subscriber_fields({-dotted => 1})}){ 
         push(@$fields, {name => $field});
     }
-        
+ 	my $undotted_fields = [];  
+   # Extra, special one... 
+   push(@$undotted_fields, {name => 'email'}); 
+   foreach my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){ 
+        push(@$undotted_fields, {name => $undotted_field});
+    }        
     my $partial_sending = {}; 
-    foreach my $field(@$fields){ 
-	#	if( length($q->param('field_value_' . $field->{name})) > 0) { 		
-	        if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){ 
-				my $undotted_name = $field->{name}; 
-				   $undotted_name =~ s/^subscriber\.//; 
-	            $partial_sending->{$undotted_name} = {equal_to => $q->param('field_value_' . $field->{name})}; 
-	        }
-	        elsif($q->param('field_comparison_type_' . $field->{name}) eq 'like'){ 
-				my $undotted_name = $field->{name}; 
-				   $undotted_name =~ s/^subscriber\.//;
-	            $partial_sending->{$undotted_name} = {like => $q->param('field_value_' . $field->{name})}; 
-	        }  
-	#	}
+    foreach my $field(@$undotted_fields){ 
+		if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){ 
+		    $partial_sending->{$field->{name}} = {equal_to => $q->param('field_value_' . $field->{name})}; 
+		}
+		elsif($q->param('field_comparison_type_' . $field->{name}) eq 'like'){ 
+			$partial_sending->{$field->{name}} = {like => $q->param('field_value_' . $field->{name})}; 
+		}  
     }
-    
-    
+
     if(keys %$partial_sending) { 
-      $lh->fancy_print_out_list({-partial_listing => $partial_sending, -type => 'list'}); 
+      $lh->fancy_print_out_list(
+		{
+			-partial_listing => $partial_sending, 
+			-type            => 'list',
+		}
+	); 
     } else { 
         print $q->p($q->em('Currently, all ' . $q->strong( $lh->num_subscribers ) . ' subscribers of your list will receive this message.')); 
     }
@@ -2054,9 +2053,7 @@ sub sending_options {
     
     if(!$process){ 
     
-    
-        require CGI::Ajax;
-        my $pjx  = new CGI::Ajax('external' => $DADA::Config::S_PROGRAM_URL);
+
         
         my @message_amount = (1..180); 
         
@@ -2112,8 +2109,7 @@ sub sending_options {
         $scrn .= admin_template_header(      
               -Title       => "Sending Options", 
               -List        => $list, 
-              -Root_Login  => $root_login,
-              -HTML_Header => 0,
+              -Root_Login  => $root_login
               );
       
         require DADA::Template::Widgets;
@@ -2142,10 +2138,8 @@ sub sending_options {
                                                       },
                                              });
     
-        $scrn .= admin_template_footer(-List => $list, -Form => 0);
-        print $pjx->build_html( $q, $scrn, {admin_header_params()});
-
-
+        $scrn .= admin_template_footer(-List => $list);
+		print $scrn; 
     }else{ 
         
         my $mass_send_amount           = $q->param("mass_send_amount"); 
@@ -2206,33 +2200,51 @@ sub previewBatchSendingSpeed {
     my $mass_send_amount     = xss_filter($q->param('mass_send_amount'));    
     my $bulk_sleep_amount    = xss_filter($q->param('bulk_sleep_amount'));    
     
-   # print '$enable_bulk_batching ' . $enable_bulk_batching . ' mass_send_amount' . $mass_send_amount . ' bulk_sleep_amount' . $bulk_sleep_amount ; 
-    
-   # return; 
-    
+	my $per_hour         = 0; 
+	my $num_subs         = 0; 
+	my $time_to_send     = 0; 
+	my $somethings_wrong = 0; 
+	
     if($enable_bulk_batching == 1){ 
     
         if($bulk_sleep_amount > 0 && $mass_send_amount > 0){ 
-            my $per_sec = $mass_send_amount / $bulk_sleep_amount; 
-            my $per_hour = int($per_sec * 60 *60 + .5); # DEV .5 is some sort of roudning thing (with int). That's wrong. 
-			
-			my $num_subs    = $lh->num_subscribers; 
+	
+            my $per_sec  = $mass_send_amount / $bulk_sleep_amount; 
+        	$per_hour = int($per_sec * 60 *60 + .5); # DEV .5 is some sort of rounding thing (with int). That's wrong. 
+
+			$num_subs    = $lh->num_subscribers; 
 			my $total_hours = 0; 
 			if($num_subs > 0 && $per_hour > 0){ 	
 				$total_hours = $lh->num_subscribers / $per_hour; 
 			}
 			
-            print '<p class="positive">Messages will be sent at a rate of up to <strong>'  . commify($per_hour) . ' Messages/Hour </strong>. Mailing to <strong> ' . $num_subs . ' subscribers</strong> will take at least <strong>' . _formatted_runtime($total_hours * 60 * 60) . '</strong> .</p>'; 
+			$per_hour      = commify($per_hour); 
+			
+			$time_to_send = _formatted_runtime($total_hours * 60 * 60); 
+			
         }
         else{ 
-            print "what kind of information are you giving me?!"; 
+            $somethings_wrong = 1; 
         }
-    
-    }
-    else { 
-       print '<p class="error">Batch Settings will not be used.</p>';
     }
     
+	require DADA::Template::Widgets; 
+	print DADA::Template::Widgets::screen(
+		{
+			-screen => 'previewBatchSendingSpeed_widget.tmpl', 
+			-vars   => { 
+				enable_bulk_batching => $enable_bulk_batching, 
+				per_hour             => $per_hour, 
+				num_subscribers      => $num_subs,
+				time_to_send         => $time_to_send, 
+				somethings_wrong     => $somethings_wrong, 
+			}
+		}
+		
+	); 
+
+
+
 }
 
 
@@ -2584,12 +2596,7 @@ sub smtp_options {
     my $li = $ls->get; 
 
     require DADA::Security::Password;
-    
-        
-  
-   # 'smtp_test_results'       => \&smtp_test_results,
-   #'ajax_save_smtp_options'  => \&ajax_save_smtp_options, 
-                             
+ 
         
     my $decrypted_sasl_pass = q{};
     if($li->{sasl_smtp_password}){
@@ -2701,10 +2708,7 @@ sub smtp_options {
 
         $scr .=  admin_template_footer(-List => $list);
                
-        
-        # This is really strange - if it's the ajax test, this'll return the test, not the screen up there. REALLY WEIRD. 
-        #$scr = $pjx->build_html( $q, $scr, {admin_header_params()});
-		#print $q->header()
+  
         e_print($scr); 
         
 
@@ -2765,79 +2769,60 @@ sub smtp_options {
     }
 }
 
-sub smtp_test_results { 
+sub smtp_test_results {
 
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q, 
-                                                        -Function => 'smtp_options');
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'smtp_options'
+    );
 
-														
-    my $list = $admin_list; 
-    $q->param('no_redirect', 1); 
-    smtp_options(); 
+    my $list = $admin_list;
+    $q->param( 'no_redirect', 1 );
 
-    require DADA::Mail::Send; 
-    require DADA::MailingList::Settings; 
-    
-    my $ls = DADA::MailingList::Settings->new({-list => $admin_list}); 
-    my $li = $ls->get; 
-    
+	# Saves the params passed
+    smtp_options();
+
+    require DADA::Mail::Send;
+    require DADA::MailingList::Settings;
+
+    my $ls = DADA::MailingList::Settings->new( { -list => $admin_list } );
+    my $li = $ls->get;
+
     my $mh = DADA::Mail::Send->new(
-				{
-					-list   => $list, 
-					-ls_obj => $ls, 
-				}
-			 ); 
-    
-    my ($results, $lines, $report) = $mh->smtp_test; 
-       $results =~ s/\</&lt;/g; 
-       $results =~ s/\>/&gt;/g; 
+        {
+            -list   => $list,
+            -ls_obj => $ls,
+        }
+    );
 
+    my ( $results, $lines, $report ) = $mh->smtp_test;
+    $results =~ s/\</&lt;/g;
+    $results =~ s/\>/&gt;/g;
 
-my $scr;  
-   
-  
-  
- $scr .= '<div style="width:96%; height:300px; margin: 5px; padding: 5px; border:1px solid black; overflow:auto;">'; 
- $scr .= '<h2>Results:</h2>'; 
- 
- foreach my $f(@$report){ 
+    my $ht_report = [];
 
-    my $s_f = $f->{line}; 
-       
-    $s_f =~ s{Net\:\:SMTP(.*?)\)}{}; 
-    
-    $scr .= '<p><strong>' . $s_f . '</strong> - ' . $f->{message} . '</p>'; 
-    
-}
- 
- 
- $scr .= <<EOF
-<h2>Raw Log:</h2> 
-<pre>
-$results
-</pre>
-EOF
-; 
+    foreach my $f (@$report) {
 
+        my $s_f = $f->{line};
+        $s_f =~ s{Net\:\:SMTP(.*?)\)}{};
+        push ( @$ht_report,
+            { SMTP_command => $s_f, message => $f->{message} } );
+    }
 
+    print $q->header();
 
-
-$scr .= '</div>'; 
-
-print $q->header(); 
-
-print $scr; 
+    require DADA::Template::Widgets;
+    print DADA::Template::Widgets::screen(
+        {
+            -screen => 'smtp_test_results_widget.tmpl',
+            -vars   => {
+                report  => $ht_report,
+                raw_log => $results,
+            }
+        }
+    );
 
 }
-
-sub ajax_save_smtp_options { 
-
-die "I am being called!"; 
-
-}
-
-
-
 
 sub checkpop { 
 
@@ -3213,9 +3198,7 @@ sub edit_subscriber {
         
     }
 
-     require CGI::Ajax;
-     my $pjx  = new CGI::Ajax('external' => $DADA::Config::LOG_VIEWER_PLUGIN_URL);
-           
+            
            
            
     my $scrn = '';        
@@ -3223,8 +3206,6 @@ sub edit_subscriber {
 				-Title       => "Edit Subscriber", 
                 -List        => $list,
                 -Root_Login  => $root_login,
-                -Form        => 0,
-                -HTML_Header => 0,
 			);
 
     
@@ -3252,10 +3233,9 @@ sub edit_subscriber {
                                                   },
                                          });
                                          
-    $scrn .= admin_template_footer(-List => $list, -Form => 0); 
+    $scrn .= admin_template_footer(-List => $list); 
     
-    print $pjx->build_html( $q, $scrn, {admin_header_params()});
-
+	print $scrn; 
 
 }
 
@@ -3274,15 +3254,13 @@ sub add {
         push ( @$fields, { name => $field } );
     }
 
-    require CGI::Ajax;
-    my $pjx = new CGI::Ajax( 'external' => $DADA::Config::S_PROGRAM_URL );
 
     if ( $q->param('process') ) {
 
         if ( $q->param('method') eq 'via_add_one' ) {
 
-# We're going to fake the, "via_textarea", buy just make a CSV file, and plunking it
-# in the, "new_emails" CGI param. (Hehehe);
+			# We're going to fake the, "via_textarea", buy just make a CSV file, and plunking it
+			# in the, "new_emails" CGI param. (Hehehe);
 
             my @columns = ();
             push ( @columns, xss_filter( $q->param('email') ) );
@@ -3291,7 +3269,6 @@ sub add {
             }
             require Text::CSV;
 
-            #my $csv = Text::CSV->new({binary => 1});
             my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
             my $status =
@@ -3411,7 +3388,6 @@ sub add {
         my $scrn = (
             admin_template_header(
                 -Title       => "Add",
-                -HTML_Header => 0,
                 -List        => $list,
                 -Root_Login  => $root_login,
                 -Form        => 0
@@ -3470,16 +3446,14 @@ sub add {
             }
         );
 
-        $scrn .= ( admin_template_footer( -List => $list ) );
-        print $pjx->build_html( $q, $scrn, { admin_header_params() } );
-
+        $scrn .=  admin_template_footer( -List => $list ) ;
+        print $scrn; 
     }
 
 }
 
 sub check_status {
 
-    #  warn "check status!";
     my $filename = $q->param('new_email_file');
     $filename =~ s{^(.*)\/}{};
 
@@ -3498,7 +3472,7 @@ sub check_status {
           . $filename
           . '-meta.txt';
         print $q->header();
-    }
+	}
     else {
 
         chmod( $DADA::Config::FILE_CHMOD,
@@ -3515,20 +3489,21 @@ sub check_status {
         my $small = 250 - ( $per * 2.5 );
         my $big   = $per * 2.5;
 
-        my $r .= $q->header();
-        $r .= '<div style="width:305px">';
-        $r .= '<h3>File Upload Status: ' . $per . '% Complete </h3>';
-        $r .= '<p class="positive">'
-          . $bytes_read . ' of '
-          . $content_length
-          . ' bytes</p>';
-        $r .= '<div style="width:' . $big
-          . 'px;height:20px;background-color:#6f0;float:left;border:1px solid black;border-right:0px;"></div>';
-        $r .= '<div style="width:' . $small
-          . 'px;height:20px;background-color:#f33;float:left;border:1px solid black;border-left:0px;"></div>';
-        $r .= '</div>';
-
-        print $r;
+        print $q->header();
+		require DADA::Template::Widgets; 
+		print DADA::Template::Widgets::screen(
+			{ 
+				-screen => 'file_upload_status_bar_widget.tmpl', 
+				-vars   => { 
+					percent        => $per, 
+					bytes_read     => $bytes_read, 
+					content_length => $content_length, 
+					big            => $big, 
+					small          => $small, 
+				}
+			}
+		);
+		
     }
 }
 
@@ -3548,16 +3523,22 @@ sub dump_meta_file {
     my $full_path_to_filename =
       make_safer( $DADA::Config::TMP . '/' . $filename . '-meta.txt' );
 
-    my $chmod_check =
-      chmod( $DADA::Config::FILE_CHMOD, $full_path_to_filename );
-    if ( $chmod_check != 1 ) {
-        warn "could not chmod '$full_path_to_filename' correctly.";
-    }
+	if(! -e $full_path_to_filename){ 
+		
+	}
+	else { 
+		
+  	  my $chmod_check =
+	      chmod( $DADA::Config::FILE_CHMOD, $full_path_to_filename );
+	    if ( $chmod_check != 1 ) {
+	        warn "could not chmod '$full_path_to_filename' correctly.";
+	    }
 
-    my $unlink_check = unlink($full_path_to_filename);
-    if ( $unlink_check != 1 ) {
-        warn "deleting meta file didn't work for: " . $full_path_to_filename;
-    }
+	    my $unlink_check = unlink($full_path_to_filename);
+	    if ( $unlink_check != 1 ) {
+	        warn "deleting meta file didn't work for: " . $full_path_to_filename;
+	    }
+	}
 }
 
 sub generate_rand_string {
@@ -8511,12 +8492,10 @@ sub setup_info {
 		}
 		
 		require CGI::Ajax;
-        my $pjx  = new CGI::Ajax('external' => $DADA::Config::S_PROGRAM_URL);
 		my $scrn = ''; 
 		
         $scrn .= list_template(
 					   -Part        => "header", 
-					   -HTML_Header => 0,
                        -Title       => "Setup Information",
 					   -vars => { 
 							PROGRAM_URL   => $DADA::Config::PROGRAM_URL, 
@@ -8547,8 +8526,7 @@ sub setup_info {
 
         $scrn .= list_template(-Part => "footer");
 		
-		print $pjx->build_html( $q, $scrn, {admin_header_params()});
-		
+		print $scrn;
             
     }else{ 
 

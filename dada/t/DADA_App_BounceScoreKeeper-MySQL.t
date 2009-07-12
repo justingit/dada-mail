@@ -19,7 +19,7 @@ else {
 SKIP: {
         eval { require DBD::mysql };
 
-        skip "DBD::Pg not installed", 2 if $@;
+        skip "DBD::mysql not installed", 2 if $@;
 
 
     

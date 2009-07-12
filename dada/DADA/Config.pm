@@ -4665,10 +4665,6 @@ sub _config_import {
 	# Keep this as, 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'
 	# What we're doing is, seeing if you've actually changed the variable from
 	# it's default, and if not, we take a best guess.	
-	if($PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
-		require CGI; 
-		$PROGRAM_URL = CGI::url(); 
-	}
 	
 	my $CONFIG_FILE_DIR; 
 	
@@ -4716,6 +4712,13 @@ sub _config_import {
 			}
 		}
 	}
+	
+	if($PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
+		require CGI; 
+		$PROGRAM_URL = CGI::url(); 
+	}
+	
+	
 }
 
 =pod

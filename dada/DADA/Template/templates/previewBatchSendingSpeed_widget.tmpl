@@ -1,0 +1,18 @@
+<!-- begin previewBatchSendingSpeed_widget.tmpl --> 
+
+<!-- tmpl_if enable_bulk_batching --> 
+<!-- tmpl_if somethings_wrong --> 
+<p class="error">
+	what kind of information are you giving me?!
+</p><!-- tmpl_else -->
+<p class="positive">
+	Messages will be sent at a rate of up to <strong><!-- tmpl_var per_hour --> Messages/Hour</strong> . Mailing to <strong><!-- tmpl_var num_subscribers --> subscribers</strong> will take at least <strong><!-- tmpl_var time_to_send --></strong>.
+</p><!-- /tmpl_if -->
+
+<!-- tmpl_else -->
+<p class="error">
+	Batch Settings will not be used.
+</p><!-- /tmpl_if -->
+
+
+<!-- end previewBatchSendingSpeed_widget.tmpl --> 

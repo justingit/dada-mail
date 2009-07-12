@@ -307,14 +307,13 @@ sub SQL_subscriber_profile_join_statement {
 
 sub fancy_print_out_list {
 
-    # DEV: This subroutine is very very messy. Very messy.
+    my $count = 0; 
 
     my $self = shift;
     my ($args) = @_;
 
     if ( !exists( $args->{ -type } ) ) {
-        croak
-'you must supply the type of list we are looking at in, the "-type" paramater';
+        croak 'you must supply the type of list we are looking at in, the "-type" paramater';
     }
 
     if ( !exists( $args->{ -FH } ) ) {
@@ -326,71 +325,34 @@ sub fancy_print_out_list {
         $args->{ -partial_listing } = {};
     }
 
-    my $fields = $self->subscriber_fields;
-
-    print $fh
-' <div style="max-height: 250px; overflow: auto; border:1px solid black;background:#fff">';
-
-    print $fh
-      '<table width="100%"><tr><td><p><strong>Email Address</strong></p></td>';
-    foreach (@$fields) {
-        print $fh '<td><p><strong>' . $_ . '</strong></p></td>';
-
-    }
-
-    print $fh '</tr>';
-
-    my $count         = 0;
-
-	my $query = $self->SQL_subscriber_profile_join_statement(
-		{ 
-			-type            => $args->{ -type }, 
-			-partial_listing => $args->{ -partial_listing },
-		}
+	my $subscribers = $self->subscription_list(
+		-Type 		  	 => $args->{-type}, 
+		-partial_listing => $args->{ -partial_listing }, 
+		-start           => 1, 
+		-length           => $self->num_subscribers(-Type => $args->{-type}), 
 	);
- 
-    my $sth = $self->{dbh}->prepare($query);
 
-    if (   $DADA::Config::GLOBAL_BLACK_LIST
-        && $args->{ -type } eq 'black_list' )
-    {
-        $sth->execute( $args->{ -type } )
-          or croak "cannot do statment (for print out list)! $DBI::errstr\n";
-    }
-    else {
-
-        $sth->execute($self->{list}, $args->{ -type })
-          or croak "cannot do statment (for print out list)! $DBI::errstr\n";
+    my $field_names = []; 
+    foreach(@{$self->subscriber_fields}){ 
+        push(@$field_names, {name => $_}); 
     }
 
-    my $row;
-    while ( $row = $sth->fetchrow_hashref ) {
+	require DADA::Template::Widgets; 
+	print $fh DADA::Template::Widgets::screen(
+		{ 
+			-screen => 'fancy_print_out_list_widget.tmpl', 
+			-vars   => { 
+				
+				field_names	=> $field_names,
+				subscribers => $subscribers, 
+				checkboxes  => 0, 
+				email_links => 0, 
+				count       => scalar @{$subscribers}, 
+			}
+		}	
+	); 
 
-        my $style = '';
-        if ( $count % 2 == 0 ) {
-            $style = ' style="background-color:#ccf;"';
-        }
-        print $fh '<tr' . $style . '>';
-
-        print $fh '<td><p>' . $row->{email} . '</p></td>';
-
-        foreach (@$fields) {
-
-            print $fh '<td><p>' . $row->{$_} . '</p></td>';
-
-        }
-        print $fh '</tr>';
-
-        $count++;
-    }
-    $sth->finish;
-
-    print $fh '</table>';
-    print $fh '</div>';
-    print $fh '<p style="text-align:right">Total Subscribers: <strong>' . $count
-      . '</strong></p>';
-
-    return $count;
+    return scalar @{$subscribers};
 
 }
 
@@ -526,13 +488,18 @@ sub subscription_list {
     my $list  = [];
 	my $fields        = $self->subscriber_fields;
 
+
+    if ( !exists( $args{ -partial_listing } ) ) {
+        $args{ -partial_listing } = {};
+    }
+
+
 	my $query = $self->SQL_subscriber_profile_join_statement(
 		{ 
 			-type            => $args{ -Type }, 
+			-partial_listing => $args{ -partial_listing }, 
 		}
 	);
-
-
 
     my $sth = $self->{dbh}->prepare($query); 
 	
@@ -542,7 +509,6 @@ sub subscription_list {
 	
     my $hashref;
     my %mf_lt        = ();
-
     foreach (@$fields) {
         $mf_lt{$_} = 1;
     }

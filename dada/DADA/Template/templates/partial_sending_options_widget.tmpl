@@ -17,7 +17,7 @@
     </p> 
     
     <table> 
-    <!-- tmpl_loop fields --> 
+    <!-- tmpl_loop undotted_fields --> 
         <tr> 
          <td> 
           <p>
@@ -55,23 +55,48 @@
     
     <div class="floatclear">
     </div>
-    
+	<div id="previewMessageReceivers_loading" style="display:none">
+		<em>Loading...</em>
+	</div>
+	    
        <div id="previewMessageReceivers"> 
-        <p>
-       </p>
       </div> 
      </div> 
     </fieldset>
 
-    <script language="Javascript"> 
-    
-        function get_partial_list(){ 
-            external(['f__previewMessageReceivers', <!-- tmpl_loop fields -->'field_comparison_type_<!-- tmpl_var name -->', 'field_value_<!-- tmpl_var name -->',<!-- /tmpl_loop --> 'NO_CACHE'], ['previewMessageReceivers']); 
-            return false;
-        
-        }
-    
-    </script> 
+
+	<script type="text/javascript">
+	    //<![CDATA[
+
+		 function get_partial_list(){ 
+			new Ajax.Updater(
+				'previewMessageReceivers', '<!-- tmpl_var S_PROGRAM_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						 <!-- tmpl_loop undotted_fields -->
+						field_comparison_type_<!-- tmpl_var name -->: $F('field_comparison_type_<!-- tmpl_var name -->'), 
+						field_value_<!-- tmpl_var name -->: $F('field_value_<!-- tmpl_var name -->'), 
+						<!-- /tmpl_loop -->
+						f:                         'previewMessageReceivers',
+						},
+
+				onCreate: 	 function() {
+					$('previewMessageReceivers_loading').show(); 
+					$('previewMessageReceivers').hide();
+				},
+				onComplete: 	 function() {
+					$('previewMessageReceivers_loading').hide(); 
+					$('previewMessageReceivers').show(); 
+				}
+
+
+				});
+		}
+	    //]]>
+	</script>
+	
+	
     
     
 <!-- tmpl_else --> 

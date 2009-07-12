@@ -162,7 +162,10 @@
 
 
 
-    <script language="Javascript"> 
+
+<script type="text/javascript">
+    //<![CDATA[
+
         var check = 0; 
         function enable_check() { 
 
@@ -172,17 +175,49 @@
 
         function do_check_status(){ 
             if(check == 1){
-                external(['f__check_status', 'rand_string', 'new_email_file', 'f__add'], ['statusbar']);
+                update_status_bar();
             }
         }
 
 
-        setInterval("do_check_status();",'1000')
-    </script> 
+		 function update_status_bar(){ 
+			new Ajax.Updater(
+				'statusbar', '<!-- tmpl_var S_PROGRAM_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						rand_string:               $F('rand_string'),
+						new_email_file:            $F('new_email_file'), 
+						f:                         'check_status',
+
+						},
+
+				onCreate: 	 function() {
+				
+				},
+				onComplete: 	 function() {
+
+					$('statusbar').show(); 
+				
+				}
+
+
+				});
+		}
+        setInterval("do_check_status();",'1000');
+
+    //]]>
+</script>
 
 
 
 
+
+
+
+		
+
+	
  <div class="buttonfloat">
   <input type="reset"  class="cautionary" value="Clear Changes" />
   <input type="submit" class="processing" value="Verify Subscribers..." />

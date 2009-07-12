@@ -1,7 +1,6 @@
 package CGI;
 require 5.004;
-use Carp 'croak';
-
+use Carp qw(carp croak);
 # See the bottom of this file for the POD documentation.  Search for the
 # string '=head'.
 

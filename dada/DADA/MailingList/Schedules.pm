@@ -246,14 +246,13 @@ sub save_from_params {
 	$fields = $lh->subscriber_fields; 
 	push(@$fields, 'email'); 
 	foreach my $field(@$fields){ 
-		if(defined($q->param('field_comparison_type_subscriber.' . $field))){ 
 			
-		
-			push(@$saved_pso, {
+		if(defined($q->param('field_comparison_type_' . $field))){ 
+				push(@$saved_pso, {
 				
 								field_name 			  => $field,
-								field_comparison_type => $q->param('field_comparison_type_subscriber.' . $field), 
-								field_value           => $q->param('field_value_subscriber.' . $field),  
+								field_comparison_type => $q->param('field_comparison_type_' . $field), 
+								field_value           => $q->param('field_value_' . $field),  
 							}
 			); 
 			

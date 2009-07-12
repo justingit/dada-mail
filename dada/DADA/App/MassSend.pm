@@ -115,21 +115,22 @@ sub send_email {
         push(@$fields, {name => $field});
     }
 
+   my $undotted_fields = [];  
+   # Extra, special one... 
+   push(@$undotted_fields, {name => 'email'}); 
+   foreach my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){ 
+        push(@$undotted_fields, {name => $undotted_field});
+    }
+
+
     
     
     
 	if(! $process){
   
-		my ($num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued)  = $self->mass_mailout_info($list);
-		
-		    require CGI::Ajax;
-            my $pjx  = new CGI::Ajax('external' => $DADA::Config::S_PROGRAM_URL);
-            
-                                                     
-            
+		my ($num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued)  = $self->mass_mailout_info($list);    
             my $scrn = ''; 
             $scrn .= admin_template_header(
-						-HTML_Header => 0,
 						-Title      => "Send a List Message", 
 						-List       => $list, 
 						-Root_Login => $root_login,
@@ -151,6 +152,7 @@ sub send_email {
 								precendence_popup_menu     => DADA::Template::Widgets::precendence_popup_menu($li),
 								type                       => 'list', 
 								fields                     => $fields,
+								undotted_fields            => $undotted_fields,
 								can_have_subscriber_fields => $lh->can_have_subscriber_fields, 
 								# I don't really have this right now...
 								#  apply_list_template_to_html_msgs => $li->{apply_list_template_to_html_msgs} ? $li->{apply_list_template_to_html_msgs} : 0,
@@ -172,7 +174,7 @@ sub send_email {
             $scrn .= admin_template_footer(-List => $list, -Form => 0);
             
 			if($args->{-html_output} == 1){ 
-	            print $pjx->build_html( $q, $scrn, {admin_header_params()});
+				print $scrn; 
   			}
 
         }else{
@@ -348,20 +350,15 @@ sub send_email {
         #$mh->list_type('testers') 
         #    if($process =~ m/test/i);
 
-        my $partial_sending = {}; 
-        
-        foreach my $field(@$fields){ 
-            if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){ 
-				my $undotted_name = $field->{name}; 
-				   $undotted_name =~ s/^subscriber\.//;
-                $partial_sending->{$undotted_name} = {equal_to => $q->param('field_value_' . $field->{name})}; 
-            }
-            elsif($q->param('field_comparison_type_' . $field->{name}) eq 'like'){ 
-				my $undotted_name = $field->{name}; 
-				   $undotted_name =~ s/^subscriber\.//;
-                $partial_sending->{$undotted_name} = {like => $q->param('field_value_' . $field->{name})}; 
-            }   
-        }
+	    my $partial_sending = {}; 
+	    foreach my $field(@$undotted_fields){ 
+			if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){ 
+			    $partial_sending->{$field->{name}} = {equal_to => $q->param('field_value_' . $field->{name})}; 
+			}
+			elsif($q->param('field_comparison_type_' . $field->{name}) eq 'like'){ 
+				$partial_sending->{$field->{name}} = {like => $q->param('field_value_' . $field->{name})}; 
+			}  
+	    }
         if(keys %$partial_sending){ 
             $mh->partial_sending($partial_sending); 
         }
@@ -485,23 +482,25 @@ sub send_url_email {
    foreach my $field(@{$lh->subscriber_fields({-dotted => 1})}){ 
         push(@$fields, {name => $field});
     }
+ 	my $undotted_fields = [];  
+   # Extra, special one... 
+   push(@$undotted_fields, {name => 'email'}); 
+   foreach my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){ 
+        push(@$undotted_fields, {name => $undotted_field});
+    }        
+
     
     
     if(!$process){ 
         
 		my ($num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued)  = $self->mass_mailout_info($list);
 
-        require CGI::Ajax;
-        my $pjx  = new CGI::Ajax('external' => $DADA::Config::S_PROGRAM_URL);
 
-        my $scrn = ''; 
-         
+        my $scrn = '';          
         $scrn .= admin_template_header(     
-              -HTML_Header => 0,
               -Title       => "Send a Webpage", 
               -List        => $list,
               -Root_Login  => $root_login,
-              -Form        => 0, 
         );
 
         require DADA::Template::Widgets;
@@ -520,6 +519,7 @@ sub send_url_email {
 							lwp_simple_error                 => $lwp_simple_error, 
 							can_display_attachments          => $la->can_display_attachments, 
 							fields                           => $fields,
+							undotted_fields                  => $undotted_fields,
 							can_have_subscriber_fields       => $lh->can_have_subscriber_fields,
 							SERVER_ADMIN                     => $ENV{SERVER_ADMIN}, 
 							priority_popup_menu              => DADA::Template::Widgets::priority_popup_menu($li),
@@ -540,8 +540,8 @@ sub send_url_email {
    						}
 					); 
 
-        $scrn .= admin_template_footer(-List => $list, -Form => 0, );
-        print $pjx->build_html( $q, $scrn, {admin_header_params()});
+        $scrn .= admin_template_footer(-List => $list );
+        print $scrn; 
 
     }else{ 
         
@@ -691,21 +691,17 @@ sub send_url_email {
                     $test_recipient = $mh->mass_test_recipient; 
                 }
 
-                my $partial_sending = {}; 
-                
-                foreach my $field(@$fields){ 
-                    if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){ 
-                        my $undotted_name = $field->{name}; 
-						   $undotted_name =~ s/^subscriber\.//;
-						$partial_sending->{$undotted_name} = {equal_to => $q->param('field_value_' . $field->{name})}; 
-                    }
-                    elsif($q->param('field_comparison_type_' . $field->{name}) eq 'like'){ 
-                        my $undotted_name = $field->{name}; 
-						   $undotted_name =~ s/^subscriber\.//;
-						$partial_sending->{$undotted_name} = {like => $q->param('field_value_' . $field->{name})}; 
-                    }   
-                }
-                if(keys %$partial_sending){ 
+			    my $partial_sending = {}; 
+			    foreach my $field(@$undotted_fields){ 
+					if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){ 
+					    $partial_sending->{$field->{name}} = {equal_to => $q->param('field_value_' . $field->{name})}; 
+					}
+					elsif($q->param('field_comparison_type_' . $field->{name}) eq 'like'){ 
+						$partial_sending->{$field->{name}} = {like => $q->param('field_value_' . $field->{name})}; 
+					}  
+			    }
+				
+				if(keys %$partial_sending){ 
                     $mh->partial_sending($partial_sending); 
                 }
                 

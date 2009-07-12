@@ -459,13 +459,11 @@ sub edit  {
 		$schedule_form =  schedule_form(undef,$message);
 	}
 	
-	require CGI::Ajax;
-	my $pjx  = new CGI::Ajax('external' => $DADA::Config::S_PROGRAM_URL);
+
 	
 	my $scrn = ''; 
 	
 	$scrn .= (admin_template_header(
-  					    -HTML_Header => 0,
 						-Title      => "Scheduled Mailings - Edit",
 						-List       => $li->{list},
 						-Form       => 0,
@@ -480,7 +478,7 @@ sub edit  {
 						    -List    => $li->{list},
 						); 
 						
-	print $pjx->build_html( $q, $scrn, {admin_header_params()});
+	print $scrn; 
 						    
 }
 
@@ -898,13 +896,22 @@ foreach my $field(@{$lh->subscriber_fields({-dotted => 1})}){
      push(@$fields, {name => $field});
  }
 
+my $undotted_fields = [];  
+ # Extra, special one... 
+ push(@$undotted_fields, {name => 'email'}); 
+ foreach my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){ 
+      push(@$undotted_fields, {name => $undotted_field});
+  }        
+
+
+
 my $partial_saved = $form_vals{partial_sending_params};
 my $edited_fields = []; 
 
-foreach my $p_field(@$fields){ 
+foreach my $p_field(@$undotted_fields){ 
 	foreach my $partial_saved_entry(@$partial_saved){ 
 		# Did you catch that?
-		if('subscriber.' . $partial_saved_entry->{field_name} eq $p_field->{name}){ 
+		if($partial_saved_entry->{field_name} eq $p_field->{name}){ 	
 			$p_field->{field_comparison_type} = $partial_saved_entry->{field_comparison_type};
 			$p_field->{field_value}           = $partial_saved_entry->{field_value};
 			 
@@ -920,20 +927,14 @@ foreach my $p_field(@$fields){
 require DADA::Template::Widgets; 
 $f .= DADA::Template::Widgets::screen({
 	-screen => 'partial_sending_options_widget.tmpl',
-	
-	
--vars => { 	                                                                  
-    fields                           => $edited_fields,
-    can_have_subscriber_fields       => $lh->can_have_subscriber_fields, 
+	-vars => { 	                                                                  
+	    fields                      => $edited_fields,
+		undotted_fields 			=> $undotted_fields, 
+	    can_have_subscriber_fields  => $lh->can_have_subscriber_fields, 
     
-}, 
-
-}); 
-
-
-
-
-
+	}, 
+	}
+); 
 
 $f .= $q->hidden('key', $key);	
 $f .= $q->hidden('process', 'true');
@@ -1345,6 +1346,8 @@ my $url_options .= qq{
 	 </table>
 		
 };
+
+require DADA::MailingList::Archives; 
 
 my $la = DADA::MailingList::Archives->new({-list => $list});   
 

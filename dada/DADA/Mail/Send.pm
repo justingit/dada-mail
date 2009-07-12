@@ -439,6 +439,13 @@ sub send {
                 
 	                    require  Net::SMTP::SSL;
 	                    $mailer = Net::SMTP::SSL->new(%mailer_params);
+					 	if(!defined($mailer)){ 
+							carp "Problems with connecting to the SMTP Server: $!";
+							my $extra = ''; 
+							$extra .= $_ . ' => ' . $mailer_params{$_} . "\n"
+								foreach(keys %mailer_params); 
+							carp $extra; 
+					 	}
                                   
               
 	                 # authing can fail, although the message may still go through 
@@ -458,6 +465,13 @@ sub send {
 	              }else { 
 	                 require Net::SMTP_auth; 
 	                 $mailer = new Net::SMTP_auth(%mailer_params);
+					 if(!defined($mailer)){ 
+							carp "Problems with connecting to the SMTP Server: $!";
+							my $extra = ''; 
+							$extra .= $_ . ' => ' . $mailer_params{$_} . "\n"
+								foreach(keys %mailer_params); 
+							carp $extra;
+					 }
                     
 	                 # authing can fail, although the message may still go through 
 	                 # to the SMTP server, since sometimes SASL AUTH isn't required, but is 
@@ -716,14 +730,15 @@ sub smtp_test {
     require DADA::Security::Password; 
     
     my $filename = time . '_' . DADA::Security::Password::generate_rand_string(); 
-    
+    chmod($DADA::Config::DIR_CHMOD , $filename);
+	
     open(SMTPTEST, ">$DADA::Config::TMP/$filename") or die "That didn't work."; 
     
     *STDERR = *SMTPTEST; 
     
-    my $orig_debug_smtp = $DADA::Config::CPAN_DEBUG_SETTINGS{NET_SMTP}; 
+    my $orig_debug_smtp                          = $DADA::Config::CPAN_DEBUG_SETTINGS{NET_SMTP}; 
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_SMTP} = 1; 
-    my $orig_debug_pop3 = $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3}; 
+    my $orig_debug_pop3                          = $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3}; 
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} = 1; 
     
     
@@ -766,6 +781,8 @@ sub smtp_test {
 		}
 		
     }
+
+	unlink($DADA::Config::TMP . '/' . $filename); 
  
     return ($msg, \@r_l, $report);  
 

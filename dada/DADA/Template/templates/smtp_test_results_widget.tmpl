@@ -1,0 +1,23 @@
+<!-- begin smtp_test_results_widget.tmpl --> 
+
+<div style="width:96%; height:300px; margin: 5px; padding: 5px; border:1px solid black; overflow:auto;">
+
+	<!-- tmpl_var name="GOOD_JOB_MESSAGE" -->
+
+	<h2>
+		Results:
+	</h2><!-- tmpl_loop report -->
+	<p>
+		<strong><!-- tmpl_var SMTP_command --></strong> <!-- tmpl_var message -->
+	</p><!-- /tmpl_loop -->
+	<h2>
+		Raw Log:
+	</h2>
+	<pre>
+<!-- tmpl_var raw_log --> 
+</pre>
+</div>
+
+
+<!-- end smtp_test_results_widget.tmpl --> 
+
