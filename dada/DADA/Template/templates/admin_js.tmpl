@@ -120,39 +120,12 @@ function testPOPBeforeSMTP() {
 
  
 function toggleDisplay(target) {
-
-/* function toggleDisplay(target, theLabel) { */
-
-
 	if (document.getElementById){
 		var togglin = document.getElementById( target );
 		if(togglin.style.display == ""){
 			togglin.style.display = "none";
- /*
-            var labelstuff = document.getElementById( theLabel );
-            var newText = "->"; 	
-            if (labelstuff.innerText) {
-                labelstuff.innerText = newText;
-            } else if (labelstuff.firstChild && labelstuff.firstChild.nodeValue) {
-                labelstuff.firstChild.nodeValue = newText;
-            }
- */       
-        
 		}else{
-		
-			
-        
 			togglin.style.display = "";
-/*			
-			var labelstuff = document.getElementById( theLabel );
-            var newText = "-V "; 	
-            if (labelstuff.innerText) {
-                labelstuff.innerText = newText;
-            } else if (labelstuff.firstChild && labelstuff.firstChild.nodeValue) {
-                labelstuff.firstChild.nodeValue = newText;
-            }
-*/
-
 		}
 	}
 }
