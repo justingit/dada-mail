@@ -9,7 +9,8 @@ Key:
 [x] Done. 
 [*] Naw...
 
-[ ] I need to perhaps make an option to that you cannot edit profile info, if you're not Dada Root. Or make it clear that editing the information will deal with all lists. and/or have a way to know that a subscriber is on more than one list (and perhaps which lists?) (or a way to see a "public" profile? (turn on/off) 
+[ ] I need to perhaps make an option to that you cannot edit profile info, if you're not Dada Root.
+ Or make it clear that editing the information will deal with all lists. and/or have a way to know that a subscriber is on more than one list (and perhaps which lists?) (or a way to see a "public" profile? (turn on/off) 
 
 [ ] UTF-8 stuff - revisit? What else needs to be done? Tests? Caching? Information in? How do we handle it? 
 
@@ -21,7 +22,7 @@ Key:
 [ ] A "delete" profile function? What happens to the subscriptions? A master, "Unsubscribe me AND delete this profile" Thingy? 
 	
 	
-[ ] Prototype stuff? Should that be folded in? It does solve a few bugs... 
+[-] Prototype stuff? Should that be folded in? It does solve a few bugs... 
 
 
 [ ] It would be nice if the partial fields could support some sort of dynamic content, like today's date, etc. 
