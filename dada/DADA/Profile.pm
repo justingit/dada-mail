@@ -564,7 +564,7 @@ sub is_valid_registration {
         $errors->{invalid_email} = 1;
         $status = 0;
     }
-    if ( $self->exists( { -email => $args->{ -email } } ) ) {
+    if ( $self->exists ) {
         $errors->{profile_exists} = 1;
         $status = 0;
     }
@@ -601,6 +601,34 @@ sub is_valid_registration {
 
     return ( $status, $errors );
 
+}
+
+sub is_valid_update_profile_email { 
+	
+	my $self = shift; 
+	my ($args) = @_;
+	
+	my $status = 1; 
+	my $errors = {		
+	    profile_exists => 0,
+        invalid_email  => 0,
+  	}; 
+
+    if ( check_for_valid_email( $args->{ -updated_email } ) == 0 ) {
+        # ...
+    }
+    else {
+        $errors->{invalid_email} = 1;
+        $status = 0;
+    }
+	my $new_prof = DADA::Profile->new({-email => $args->{ -updated_email }}); 
+    if ( $new_prof->exists ) {
+        $errors->{profile_exists} = 1;
+        $status = 0;
+    }
+	
+	return ($status, $errors);
+		
 }
 
 sub update {
