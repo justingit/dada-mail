@@ -9480,6 +9480,7 @@ sub profile_login {
 						can_use_captcha              => $can_use_captcha, 
 						CAPTCHA_string               => $CAPTCHA_string, 
 						welcome                      => $q->param('welcome')					   || '', 
+						removal                      => $q->param('removal')                       || '', 
 					
 					}
 				}
@@ -9745,6 +9746,30 @@ sub profile {
 		}
 		elsif($q->param('process') eq 'update_email'){ 
 			
+			# So, send the confirmation email for update to the NEW email address? 
+			# What if the OLD email address is activated? Guess we'll have to go with the 
+			# NEW email address. The only problem is if someone gains access to the account
+			# changes the address as their own, etc. 
+			# But, they'd still need access to the account... 
+			
+			# So, 
+			# * Send confirmation out 
+			# * Display report if there are any problems. 
+			#
+			# Old AND New address subscribed to a list: 
+			#
+			# At the moment, if a subscriber is already subscribed, we 
+			# can give the option (only option) to remove the old address
+			# And keep the current address :
+			#
+			# New Address isn't allowed to subscribe
+			# 
+			# Keep old address, profile for old address will be gone
+			# Option to unsubscribe old address
+			# Option to tell list owner to unsubscribe old address? (Perhaps) 
+			# 
+			
+			
 			# If we haven't confirmed.... 
 			
 				# Check to make sure the email address is valid. 
@@ -9752,10 +9777,50 @@ sub profile {
 				# Valid? OK! send the confirmaiton email
 			
 				# Not Valid? Geez we better tell someone. 
+			my $updated_email = cased(xss_filter($q->param('updated_email')));
+			 	
+				# Oh. What if there is already a profile for this address? 
+			
+			my ($status, $errors) = $prof->is_valid_update_profile_email(
+				{
+					-updated_email => $updated_email, 
+				}
+			); 	
+			if($status == 0){ 
+				
+				my $p_errors = []; 
+				foreach(keys %$errors){ 
+					if($errors->{$_} == 1){ 
+						#push(@$p_errors, $_);
+						$q->param('error_' . $_, 1);  
+					}
+				}
+			#	$q->param('errors',              $p_errors);
+			    $q->param('errors', 1); 
 				$q->param('process', 0);
-				$q->param('errors_update_email_invalid', 1);  
-				$q->param('errors', 1); 
+				$q->param('errors_update_email', 1);  
+				$q->param('updated_email', $updated_email); 
 				profile();
+			}
+			else { 
+				
+				$prof->confirm_update_profile_email(
+					{
+						-updated_email => $updated_email, 
+					}
+				); 
+				
+				# We need to make a new auth code for the change-o-email request
+				# We need to save the new email address, as well as the auth code
+				# We need to send that auth email out, and then deal with it, 
+				# When the person clicks on it. 
+				# That auth email will need to have the original email embedded
+				# in the confirm URL. 
+				
+				
+				print $q->header(); 
+				print "well, OK then."; 
+			}
 			# Oh! We've confirmed? 
 			
 				# We've got to make sure that we can switch the email address in each 
@@ -9765,6 +9830,22 @@ sub profile {
 				# Sigh... 
 				
 			# That's it. 
+		}
+		elsif ($q->param('process') eq 'delete_profile'){ 
+			
+			$prof_sess->logout; 
+			$prof->remove; 
+			
+			undef $prof; 
+			undef $prof_sess;
+			
+			$q->param('f', 'profile_login'); 
+			$q->param('removal', 1); 
+			
+			profile_login(); 
+						
+			return; 
+			 
 		}
 		else { 
 		
@@ -9813,21 +9894,23 @@ sub profile {
 							show_profile_widget => 0, 
 					  	}
 		    );
-
 		    require DADA::Template::Widgets; 
 		    print DADA::Template::Widgets::screen(
 				{
 					-screen => 'profile_home.tmpl',
 					-vars   => { 
-						errors            => $q->param('errors') || 0, 
-						'profile.email'   => $email,
-						subscriber_fields => $fields, 
-						subscriptions     => $filled, 
-						has_subscriptions => $has_subscriptions, 
-						welcome           => $q->param('welcome')                     || '',
-						edit              => $q->param('edit')                        || '',
-						errors_change_password => $q->param('errors_change_password') || '', 
-						errors_update_email_invalid => $q->param('errors_update_email_invalid') || '', 
+						errors                      => $q->param('errors') || 0, 
+						'profile.email'             => $email,
+						subscriber_fields           => $fields, 
+						subscriptions               => $filled, 
+						has_subscriptions           => $has_subscriptions, 
+						welcome                     => $q->param('welcome')                     || '',
+						edit                        => $q->param('edit')                        || '',
+						errors_change_password      => $q->param('errors_change_password') || '', 
+						errors_update_email         => $q->param('errors_update_email') || '', 
+						error_invalid_email         => $q->param('error_invalid_email') || '', 
+						error_profile_exists        => $q->param('error_profile_exists') || '', 
+						updated_email      		    => $q->param('updated_email') || '', 
 						
 						gravators_enabled => $DADA::Config::PROFILE_GRAVATAR_OPTIONS->{enable_gravators},
 						gravatar_img_url             => gravatar_img_url({-email => $email, -default_gravatar_url => $DADA::Config::PROFILE_GRAVATAR_OPTIONS->{default_gravatar_url}}),						
