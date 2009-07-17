@@ -218,14 +218,8 @@ if($ENV{QUERY_STRING} =~ m/^\?/){
 } else{ 
 
     $q = CGI->new(\&hook);
-    
 
 }
-
-#print $q->header(); 
-#print $q->query_string(); 
-
-
 
 sub hook {
 	my ($filename, $buffer, $bytes_read, $data) = @_;
@@ -638,6 +632,7 @@ sub run {
 	'profile_activate'        =>    \&profile_activate, 
 	'profile_register'        =>    \&profile_register, 
 	'profile_reset_password'  =>    \&profile_reset_password, 
+	'profile_update_email'    =>    \&profile_update_email, 
 	'profile_login'           =>    \&profile_login,
 	'profile_logout'          =>    \&profile_logout, 
 	'profile_help'            =>    \&profile_help, 
@@ -9617,14 +9612,17 @@ sub profile_activate {
 	){		default(); 
 		return
 	}
-	
+		
 	my $email     = xss_filter($q->param('email')); 
 	my $auth_code = xss_filter($q->param('auth_code'));
 		
 	require DADA::Profile; 
+	
+		
 	my $prof = DADA::Profile->new({-email => $email});
 	
 	if($email && $auth_code){ 
+
 		my ($status, $errors) = $prof->is_valid_activation(
 			{
 				-auth_code => xss_filter($q->param('auth_code')) || '', 
@@ -9637,7 +9635,31 @@ sub profile_activate {
 			$q->param('welcome',  1); 
 			#$q->param('process',  1); 	
 			profile_login(); 
-			return; 
+=cut
+
+			require DADA::Profile::Session; 
+			my $prof_sess = DADA::Profile::Session->new; 
+			my $cookie = $prof_sess->login(
+				{
+					-email    => $profile->{email},
+					-no_pass  => 1, 
+				}
+			); 
+			
+			print $q->header(
+				-cookie  => [$cookie], 
+                -nph     => $DADA::Config::NPH,
+                -Refresh =>'0; URL=' . $DADA::Config::PROGRAM_URL . '?f=profile'
+			); 
+            print $q->start_html(
+				-title=>'Logging On...',
+                -BGCOLOR=>'#FFFFFF'
+            ); 
+            print $q->p($q->a({-href => $DADA::Config::PROGRAM_URL . '?f=profile'}, 'Logging On...')); 
+            print $q->end_html();
+			return;
+=cut
+
 		}
 		else {
 			my $p_errors = [];
@@ -9652,6 +9674,9 @@ sub profile_activate {
 			return; 
 		}
 	}
+	else { 
+			die 'no email or auth code!'; 
+	}	
 }
 
 sub profile_help { 
@@ -9738,6 +9763,7 @@ sub profile {
 				profile_login();
 			}
 			else { 
+				$q->param('errors', 1);
 				$q->param('errors_change_password', 1);
 				$q->delete('process'); 
 				profile();
@@ -9810,16 +9836,24 @@ sub profile {
 					}
 				); 
 				
-				# We need to make a new auth code for the change-o-email request
-				# We need to save the new email address, as well as the auth code
-				# We need to send that auth email out, and then deal with it, 
-				# When the person clicks on it. 
-				# That auth email will need to have the original email embedded
-				# in the confirm URL. 
-				
-				
-				print $q->header(); 
-				print "well, OK then."; 
+				my $info = $prof->get({-dotted => 1}); 
+				print list_template(
+					-Part  => "header",
+			        -Title => "Authorization Email Sent", 
+			    );
+
+			    require DADA::Template::Widgets; 
+			    print DADA::Template::Widgets::screen(
+					{
+						-screen => 'profile_update_email_auth_send.tmpl',
+						-vars   => { 
+							%$info, 
+						}
+					}
+				); 
+			    print list_template(
+					-Part => "footer",
+			    );	
 			}
 			# Oh! We've confirmed? 
 			
@@ -9994,6 +10028,7 @@ sub profile_reset_password {
 				}
 				else { 
 					
+			
 					# Reset the Password
 					$prof->update(
 						{
@@ -10064,6 +10099,117 @@ sub profile_reset_password {
 		print $q->redirect({
 			-uri => $DADA::Config::PROGRAM_URL . '?f=profile_login', 
 		}); 
+	}
+}
+
+
+sub profile_update_email { 
+
+	my $auth_code = xss_filter($q->param('auth_code')); 
+	my $email     = xss_filter($q->param('email')); 
+	my $confirmed = xss_filter($q->param('confirmed')); 
+			
+	require DADA::Profile; 
+	my $prof = DADA::Profile->new({-email => $email}); 
+	my $info = $prof->get; 
+
+	my ($status, $errors) = $prof->is_valid_update_profile_activation({
+		-update_email_auth_code => $auth_code, 
+	}); 
+	
+	if($status == 1){ 
+		
+		my $profile_info = $prof->get({-dotted => 1}); 
+		my $subs = $prof->profile_update_email_report;
+		#require Data::Dumper; 
+		#die Data::Dumper::Dumper($subs); 
+		if($confirmed == 1){ 
+		
+			# This should probably go in the update_email method... 
+			require DADA::MailingList::Subscribers; 
+			foreach my $in_list(@$subs) { 
+				my $ls = DADA::MailingList::Subscribers->new(
+					{ 
+						-list => $in_list->{'list_settings.list'},
+					}
+				);
+				$ls->remove_subscriber({-email => $profile_info->{'profile.email'}}       ); 
+				$ls->add_subscriber(   {-email => $profile_info->{'profile.update_email'}}); 
+			}
+			$prof->update_email;
+			#/ This should probably go in the update_email method... 
+			
+			
+			# Now, just log us in: 
+			require DADA::Profile::Session; 
+			my $prof_sess = DADA::Profile::Session->new; 
+			if($prof_sess->is_logged_in){ 
+				$prof_sess->logout; 
+			}
+			undef $prof_sess; 
+			
+			my $prof_sess = DADA::Profile::Session->new; 
+			my $cookie = $prof_sess->login(
+				{
+					-email    => $profile_info->{'profile.update_email'},
+					-no_pass  => 1, 
+				}
+			); 
+			
+			print $q->header(
+				-cookie  => [$cookie], 
+                -nph     => $DADA::Config::NPH,
+                -Refresh =>'0; URL=' . $DADA::Config::PROGRAM_URL . '?f=profile'
+			); 
+            print $q->start_html(
+				-title=>'Logging On...',
+                -BGCOLOR=>'#FFFFFF'
+            ); 
+            print $q->p($q->a({-href => $DADA::Config::PROGRAM_URL . '?f=profile'}, 'Logging On...')); 
+            print $q->end_html();
+			return;
+			
+		}
+		else { 
+
+			# I should probably also just, log this person in... 
+
+			require DADA::Template::Widgets; 
+		    my $scrn = list_template(
+				-Part  => "header", 
+				-Title => "Update Profile Email Results:"
+			);
+			   $scrn .= DADA::Template::Widgets::screen(
+					{
+						-screen => 'profile_update_email_confirm.tmpl', 
+						-vars   => {
+							auth_code     => $auth_code, 
+							subscriptions => $subs, 
+							%$profile_info, 
+						},
+					}
+				);
+		       $scrn .= list_template(-Part => "footer");
+			   print $scrn; 
+		}
+	}
+	else { 
+		
+		
+		require DADA::Template::Widgets; 
+	    my $scrn = list_template(
+			-Part  => "header", 
+			-Title => "Update Profile Email Results:"
+		);
+		   $scrn .= DADA::Template::Widgets::screen(
+				{
+					-screen => 'profile_update_email_error.tmpl', 
+					-vars   => {
+					},
+				}
+			);
+	       $scrn .= list_template(-Part => "footer");
+		   print $scrn; 
 	}
 }
 

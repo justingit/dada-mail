@@ -343,11 +343,11 @@ sub fancy_print_out_list {
 			-screen => 'fancy_print_out_list_widget.tmpl', 
 			-vars   => { 
 				
-				field_names	=> $field_names,
-				subscribers => $subscribers, 
-				checkboxes  => 0, 
-				email_links => 0, 
-				count       => scalar @{$subscribers}, 
+				field_names	   => $field_names,
+				subscribers    => $subscribers, 
+				no_checkboxes  => 1, 
+				noe_mail_links => 1, 
+				count          => scalar @{$subscribers}, 
 			}
 		}	
 	); 

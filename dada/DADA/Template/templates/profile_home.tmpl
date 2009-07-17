@@ -33,11 +33,80 @@ function confirm_profile_removal(form_name) {
 	[ <a href="<!-- tmpl_var PROGRAM_URL -->?f=profile_logout">Logout</a>]
 </p>
 
+
+<!-- tmpl_if welcome --> 
+	<p class="positive">
+	 Welcome to your profile home. From here, you may subscribe/unsubscribe 
+	 to the available mailing lists, as well as update your subscription 
+	information.
+	</p> 
+<!-- /tmpl_if --> 
+<!-- tmpl_if edit --> 
+	<p class="positive">
+		Your changes have been saved!
+	</p> 
+<!-- /tmpl_if --> 
+
+
+
+
+
+
 <!-- tmpl_if errors --> 
 	<p class="error"> 
 		There was an error with your last request:
 	</p> 
 <!-- /tmpl_if --> 
+
+
+
+<!-- tmpl_if errors_change_password --> 
+	<p class="error">Changing Your Password:</p>
+	<ul> 
+		<li>
+		<p class="error">
+			Make sure that you re-typed your password correctly. 
+		</p>
+	</li> 
+	</ul> 
+
+<!-- /tmpl_if -->
+
+
+
+<!-- tmpl_if errors_update_email --> 
+	
+	<p class="error">
+		Update Your Profile Email: 
+	</p>
+	<ul> 
+	<!-- tmpl_if error_invalid_email --> 
+		<li>
+			<p class="error"> 
+			The email address you submitted is not valid.
+		</p>
+		</li> 
+		 
+	<!-- /tmpl_if --> 
+	
+	<!-- tmpl_if error_profile_exists --> 
+		<li>
+			
+		 <p class="error"> 
+		 	A Profile already exists for the email address, <!-- tmpl_var updated_email -->.
+		 </p>
+		</li> 
+		
+	<!-- /tmpl_if --> 
+	</ul> 
+
+<!-- tmpl_else --> 
+
+<!-- /tmpl_if --> 
+
+
+
+
 
 
 <div class="positive_greeting">
@@ -62,27 +131,6 @@ function confirm_profile_removal(form_name) {
 <div class="floatclear"></div>
 
 </div> 
-
-<!-- tmpl_if welcome --> 
-	<p class="positive">
-	 Welcome to your profile home. From here, you may subscribe/unsubscribe 
-	 to the available mailing lists, as well as update your subscription 
-	information.
-	</p> 
-<!-- /tmpl_if --> 
-<!-- tmpl_if edit --> 
-	<p class="positive">
-		Your changes have been saved!
-	</p> 
-<!-- /tmpl_if --> 
-<!-- tmpl_if errors_change_password --> 
-	<p class="error">
-		There was an error with changing your password - make sure that you re-typed your password correctly. 
-	</p>
-<!-- /tmpl_if --> 
-
-
-
 
 
 <!-- tmpl_if subscriber_fields --> 
@@ -145,7 +193,7 @@ Your Mailing List Subscriptions
 		</a>
 	</h2> 
 	
-	<div style="max-height: 200px; overflow: auto;background:#ccc; padding:5px">
+	<div style="max-height: 200px; overflow: auto;background:#fff; padding:5px;border:1px solid black">
 		<p>
 			<!-- tmpl_var list_settings.info -->
 		</p>
@@ -223,41 +271,40 @@ Your Mailing List Subscriptions
 	    <a href="#" onclick="toggleDisplay('update_profile_email');return false;">+/-</a>Update Your Profile Email Address
 	   </legend>
 
-
-	<div id="update_profile_email" style="display:none">
-
-
+	 
+	<div id="update_profile_email" <!-- tmpl_if errors_update_email --><!-- tmpl_else -->style="display:none"<!-- /tmpl_if --> >
 
 <p class="positive">
 	The Profile Email Address and Subscriptions using your current email address (<!-- tmpl_var profile.email -->) 
 	will be replaced with this new email address, where it's allowed: 
 </p>
 
-<!-- tmpl_if errors_update_email --> 
 
-	<!-- tmpl_if error_invalid_email --> 
-		<p class="error"> 
-			The email address you submitted is not valid.
-		</p> 
-	<!-- /tmpl_if --> 
-	
-	<!-- tmpl_if error_profile_exists --> 
-
-		<p class="error"> 
-			A Profile already exists for the email address, <!-- tmpl_var updated_email -->.
-		</p> 
-
-	<!-- /tmpl_if --> 
-
-	
-<!-- tmpl_else --> 
-
-<!-- /tmpl_if --> 
 
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
 	<input type="hidden" name="f"        value="profile" /> 
 	<input type="hidden" name="process"  value="update_email" />
 	
+
+		<!-- tmpl_if errors_update_email --> 
+			<!-- tmpl_if error_invalid_email --> 
+				<p class="error"> 
+					* The email address you submitted is not valid.
+				</p> 
+			<!-- /tmpl_if --> 
+
+			<!-- tmpl_if error_profile_exists --> 
+
+				<p class="error"> 
+					* A Profile already exists for the email address, <!-- tmpl_var updated_email -->.
+				</p> 
+
+			<!-- /tmpl_if --> 
+
+
+		<!-- tmpl_else --> 
+
+		<!-- /tmpl_if -->
 	  <p>
         <label for="updated_email" style="width: 10em;float: left;text-align: right;margin-right: 0.5em;display: block">
         Your New Profile Email Address: 
@@ -288,11 +335,18 @@ Your Mailing List Subscriptions
    </legend>
      
 		
-<div id="change_profile_password" style="display:none">
+<div id="change_profile_password" <!-- tmpl_if errors_change_password --><!-- tmpl_else -->style="display:none"<!-- /tmpl_if -->>
 
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
 	<input type="hidden" name="f"        value="profile" /> 
 	<input type="hidden" name="process"  value="change_password" />
+	
+	<!-- tmpl_if errors_change_password --> 
+			<p class="error">
+				Make sure that you re-typed your password correctly. 
+			</p>
+	<!-- /tmpl_if -->
+	
 	
 	  <p>
         <label for="password" style="width: 10em;float: left;text-align: right;margin-right: 0.5em;display: block">

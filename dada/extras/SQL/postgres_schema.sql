@@ -18,6 +18,8 @@ CREATE TABLE dada_profile (
 	email                        varchar(320) not null UNIQUE,
 	password                     text,
 	auth_code                    varchar(64),
+	update_email_auth_code       varchar(64),
+	update_email                 varchar(320),
 	activated                    char(1)
 );
 

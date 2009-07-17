@@ -32,13 +32,13 @@ $TEST_SQL_PARAMS = {
 	}, 
 
 	PostgreSQL => { 
-		test_enabled     => 0, 
-		database         => 'dada',
+		test_enabled     => 1, 
+		database         => 'test',
 	    dbserver         => 'localhost', # may just be, "localhost"   	   
 	    port             => '5432',      # mysql: 3306, Postgres: 5432   	   
 	    dbtype           => 'Pg',     # 'mysql' for 'MySQL', 'Pg' for 'PostgreSQL', and 'SQLite' for SQLite  
-	    user             => 'postgres',          
-	    pass             => '',
+	    user             => 'test',          
+	    pass             => 'test',
     
 	    subscriber_table 		=> 'test_dada_subscribers',
 		profile_table           => 'test_dada_profile', 

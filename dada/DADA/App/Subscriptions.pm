@@ -805,7 +805,7 @@ sub confirm {
 					$new_pass    = $prof->rand_str(8);
 					$prof->insert(
 						{
-							-password  => $new_pass,
+							-unecrypted_password  => $new_pass,
 							-activated => 1, 
 						}
 					); 

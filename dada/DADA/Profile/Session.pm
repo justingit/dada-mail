@@ -184,23 +184,28 @@ sub validate_profile_login {
 
     require DADA::Profile;
     my $prof = DADA::Profile->new( { -email => $args->{ -email } } );
-    if ( $prof->exists() ) {
-
+    if ( $prof->exists == 1 ) {
         # ...
     }
     else {
         $status = 0;
         $errors->{unknown_user} = 1;
     }
+	
+	if($args->{-no_pass} == 1){ 
+		# ... 
+	}
+	else { 
+ 	   if ( $prof->is_valid_password($args) ) {
 
-    if ( $prof->is_valid_password($args) ) {
-
-        # ...
-    }
-    else {
-        $status = 0;
-        $errors->{incorrect_pass} = 1;
-    }
+	        # ...
+	    }
+	    else {
+	        $status = 0;
+	        $errors->{incorrect_pass} = 1;
+	
+	    }
+	}
 
     return ( $status, $errors );
 
@@ -233,7 +238,19 @@ sub is_logged_in {
     }
 
     if ( $s->param('_logged_in') == 1 ) {
-        return 1;
+	
+		# Something's wrong with this, but I don't know yet, yet: 
+		# 
+		#require DADA::Profile;
+	    #my $prof = DADA::Profile->new( { -email => $self->get }  );
+		#
+	    #if ( $prof->exists == 1 ) {
+	    #   return 1;
+	    #}
+	    #else {
+	    #     return 0;
+	    #}
+		return 1; 
     }
     else {
         return 0;

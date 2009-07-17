@@ -4,11 +4,11 @@
  
  <table cellpadding="2" cellspacing="0" border="0" width="100%" style="background-color:#fff">
   <tr>
-	 <!-- tmpl_if checkboxes --> 
+	 <!-- tmpl_unless no_checkboxes --> 
    		<td width="25">
     		<p>&nbsp;</p>
    		</td>
-	<!-- /tmpl_if --> 
+	<!-- /tmpl_unless --> 
 
    <td>
     <p>
@@ -38,22 +38,22 @@
 	   
 	   <tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!--/tmpl_if-->>
         
-		   <!-- tmpl_if checkboxes --> 
+		   <!-- tmpl_unless no_checkboxes --> 
 	    <td width="25">
 	  
 			<input type="checkbox" name="address" value="<!-- tmpl_var email -->" />
 
 		</td>
-			    <!-- /tmpl_if --> 
+			    <!-- /tmpl_unless --> 
 	    <td>
 	     <p>
-	     <!-- tmpl_if email_links --> 
+	     <!-- tmpl_unless no_email_links --> 
 	 	<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_subscriber&amp;email=<!-- tmpl_var email -->&amp;type=<!-- tmpl_var list_type -->" >
 	       <!-- tmpl_var email -->
 	      </a>
 	    <!-- tmpl_else --> 
 		     <!-- tmpl_var email -->
-		<!-- /tmpl_if --> 
+		<!-- /tmpl_unless--> 
 	 	</p>
 	    </td>
 	    

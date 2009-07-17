@@ -187,50 +187,85 @@ sub insert {
 
     require DADA::Security::Password;
 
-    #    if ( !exists $self->{ email } ) {
-    #        croak("You MUST supply an email address in the -email paramater!");
-    #    }
-    #    if ( length( strip( $args->{ -email } ) ) <= 0 ) {
-    #        croak("You MUST supply an email address in the -email paramater!");
-    #    }
-
-    my $enc_password = undef;
-    if ( !exists( $args->{ -password } ) ) {
-        $args->{ -password } = '';
-    }
-    else {
-        $enc_password =
-          DADA::Security::Password::encrypt_passwd( $args->{ -password } );
-    }
+    my $enc_password = '';
+    if ( exists( $args->{ -password } ) ) {
+		require DADA::Security::Password; 
+		$enc_password = DADA::Security::Password::encrypt_passwd( $args->{ -password } );
+	}elsif(exists( $args->{ -encrypted_password })){ 
+		$enc_password = $args->{ -encrypted_password };
+	}
+	else { 
+		$enc_password = ''; 
+	}
 
     if ( !exists $args->{ -activated } ) {
         $args->{ -activated } = 0;
     }
 
-    # ?
-    #	if($self->exists({-email => $args->{-email}}) >= 1){
-    #		$self->remove({-email => $args->{-email}});
-    #	 }
+    if ( !exists $args->{ -update_email_auth_code } ) {
+        $args->{ -activated } = 0;
+    }
 
-    my $query =
-      'INSERT INTO '
-      . $DADA::Config::SQL_PARAMS{profile_table}
-      . '(email, password, auth_code, activated) VALUES (?, ?, ?, ?)';
 
-    warn 'QUERY: ' . $query
-      if $t;
+    if ( !exists $args->{ -update_email } ) {
+        $args->{ -activated } = 0;
+    }
 
-    my $sth = $self->{dbh}->prepare($query);
+	my $email; 
+	if(!exists($args->{-email})){ 
+		$email = $self->{email};
+	}
+	else { 
+		$email = $args->{-email}; 
+	}
 
-    $sth->execute(
-        $self->{email}, 
-		$enc_password,
-        $args->{ -auth_code },
-        $args->{ -activated },
-      )
-      or croak "cannot do statement (at insert)! $DBI::errstr\n";
-    $sth->finish;
+	
+	if($enc_password eq ''){ 
+		
+		my $query =
+	      'INSERT INTO '
+	      . $DADA::Config::SQL_PARAMS{profile_table}
+	      . '(email, auth_code, activated, update_email_auth_code, update_email) VALUES (?, ?, ?, ?, ?)';
 
+	    warn 'QUERY: ' . $query
+	      if $t;
+
+	    my $sth = $self->{dbh}->prepare($query);
+
+	    $sth->execute(
+			$email, 
+	        $args->{ -auth_code },
+	        $args->{ -activated },
+			$args->{ -update_email_auth_code },
+			$args->{ -update_email },
+
+	      )
+	      or croak "cannot do statement (at insert)! $DBI::errstr\n";
+	    $sth->finish;
+	}
+	else { 
+	 	   my $query =
+	      'INSERT INTO '
+	      . $DADA::Config::SQL_PARAMS{profile_table}
+	      . '(email, password, auth_code, activated, update_email_auth_code, update_email) VALUES (?, ?, ?, ?, ?, ?)';
+
+	    warn 'QUERY: ' . $query
+	      if $t;
+
+	    my $sth = $self->{dbh}->prepare($query);
+
+	    $sth->execute(
+			$email, 
+			$enc_password,
+	        $args->{ -auth_code },
+	        $args->{ -activated },
+			$args->{ -update_email_auth_code },
+			$args->{ -update_email },
+
+	      )
+	      or croak "cannot do statement (at insert)! $DBI::errstr\n";
+	    $sth->finish;
+	}
     return 1;
 
 }
@@ -392,6 +427,72 @@ sub subscribed_to {
 
 }
 
+sub profile_update_email_report {
+
+    my $self  = shift;
+    my $lists = $self->subscribed_to;
+    my $info  = $self->get;
+    require DADA::MailingList::Subscriber::Validate;
+    my $subs = [];
+    foreach my $list (@$lists) {
+        my $sv =
+          DADA::MailingList::Subscriber::Validate->new( { -list => $list } );
+        my ( $sub_status, $sub_errors ) = $sv->subscription_check(
+            {
+                -email => $info->{update_email},
+                -skip  => [
+                    'over_subscription_quota',
+                    'already_sent_sub_confirmation',
+                    'no_list',
+                ],
+            }
+        );
+        require DADA::MailingList::Settings;
+        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+        push (
+            @$subs,
+            {
+                %{ $ls->get( -dotted => 1 ) },
+                status => $sub_status,
+                %$sub_errors
+            }
+        );
+    }
+
+	return $subs; 
+	
+}
+
+sub update_email { 
+	my $self = shift; 
+	my $old_fields = $self->{fields}->get;
+	my $info = $self->get; 
+	# Probably some check here, just to be thorough...
+	
+	# This updates the profile 
+	$self->update(
+		{
+			-activated 			   => 1, 
+			-email		           => $info->{update_email}, 
+			-update_email           => '', 
+			-update_email_auth_code => '', 			
+		}	
+	); 
+	
+	# THis updates its fields
+	my $new_prof_fields = DADA::Profile::Fields->new({-email => $info->{update_email}}); 
+	$new_prof_fields->insert(
+		{
+			-fields    => $old_fields,
+			-confirmed => 1, 
+			-mode      => 'writeover', 
+		}
+	); 
+	$self->{email} = $info->{update_email};
+	return 1; 
+}
+
+
 sub is_activated {
     my $self = shift;
     my ($args) = @_;
@@ -408,10 +509,10 @@ sub is_activated {
 
     $sth->execute( $args->{ -email } )
       or croak "cannot do statement (is_activated)! $DBI::errstr\n";
-    my @row = $sth->fetchrow_array();
+ #   my @row = $sth->fetchrow_array();
 
     my $activated = 0;
-  FETCH: while ( my $hashref = $sth->fetchrow_hashref ) {
+  	FETCH: while ( my $hashref = $sth->fetchrow_hashref ) {
         $activated = $hashref->{activated};
         last FETCH;
     }
@@ -631,26 +732,88 @@ sub is_valid_update_profile_email {
 		
 }
 
+sub is_valid_update_profile_activation { 
+
+	my $self = shift; 
+	my ($args) = @_;
+	
+	my $status = 1; 
+	
+	my $errors = {		
+	    profile_exists    => 0,
+        invalid_email     => 0,
+		invalid_auth_code => 0, 
+  	}; 
+
+
+	if($self->exists){ 
+		# ... 
+	}
+	else { 
+        $errors->{profile_no_exists} = 1;
+        $status = 0;		
+	}
+	my $new_prof = DADA::Profile->new({-email => $args->{ -updated_email }}); 
+    
+    if ( $new_prof->exists ) {
+        $errors->{profile_exists} = 1;
+        $status = 0;
+    }
+
+	my $profile = $self->get;
+
+	if ( check_for_valid_email( $profile->{ update_email } ) == 0 ) {
+        # ...
+    }
+    else {
+        $errors->{invalid_email} = 1;
+        $status = 0;
+    }
+
+    if ( $profile->{update_email_auth_code} eq $args->{ -update_email_auth_code } ) {
+        # ...
+    }
+    else {
+        $errors->{invalid_auth_code} = 1;
+        $status = 0;
+    }
+	return ($status, $errors);
+}
+
 sub update {
 
     my $self = shift;
     my ($args) = @_;
-    my $orig = $self->get();
-
+    my $orig = $self->get;
+	my $new  = {}; 
+	
+	# This couldn't be any more terrible:
     foreach ( keys %$orig ) {
-        next if $_ eq 'email';
-        if ( exists( $args->{ '-' . $_ } ) ) {
-            $orig->{$_} = $args->{ '-' . $_ };
+        # I'll have to remember why email is skipped... 
+		#next if $_ eq 'email';
+		
+		if ( exists( $args->{ '-' . $_ } ) ) {
+	            $new->{'-'.$_} = $args->{ '-' . $_ };
         }
+		else { 
+			if($_ eq 'password'){ 
+				
+				$new->{'-encrypted_password'} = $orig->{$_};
+				delete($new->{'-password'}); # that may not be needed. 
+			}
+			else { 
+				$new->{'-'.$_} = $orig->{$_}; 
+			}
+		}
     }
-    $self->remove();
-    $orig->{ -email } = $self->{email};
 
-    # This is kind of strange:
-    my $new = {};
-    foreach ( keys %$orig ) {
-        $new->{ '-' . $_ } = $orig->{$_};
-    }
+    $self->remove();
+
+
+	require Data::Dumper; 
+	
+	carp Data::Dumper::Dumper($new); 
+	
     $self->insert($new);
 
 }
@@ -690,6 +853,7 @@ sub send_profile_activation_email {
                 -vars => {
                     authorization_code => $auth_code,
                     email              => $self->{email},
+					'profile.email'    => $self->{email}, 
                 },
             },
         }
@@ -726,6 +890,73 @@ sub send_profile_reset_password_email {
     );
     return 1;
 }
+
+
+sub confirm_update_profile_email { 
+	
+	my $self = shift; 
+	my ($args) = @_; 
+	
+	if(! exists($args->{-updated_email}) ){ 
+		croak "You MUST pass the email to update the profile in, '-updated_email' paramater!"; 
+	}
+	
+	my $auth_code = $self->_rand_str; 
+	
+	my $info = $self->get; 
+	
+	$self->update({ 
+		-activated 				=> 1, 
+		-update_email 			=> $args->{-updated_email}, 
+		-update_email_auth_code => $auth_code, 
+	}); 
+	
+	$self->send_update_profile_email_email({
+		-updated_email 			=> $args->{-updated_email}, 
+		-update_email_auth_code => $auth_code,		
+	}); 
+	
+	return 1; 
+	
+}
+
+sub send_update_profile_email_email { 
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	if(! exists( $args->{-updated_email} ) ){ 
+		croak "You MUST pass the email to update the profile in, '-updated_email' paramater!"; 
+	}
+	if(! exists($args->{-update_email_auth_code}) ){ 
+		croak "You MUST pass the auth_code to update the profile in, '-update_email_auth_code' paramater!"; 
+	}
+	
+	my $info = $self->get({-dotted => 1}); 
+	
+	require DADA::App::Messages;
+    DADA::App::Messages::send_generic_email(
+        {
+            -email   => $args->{-updated_email},
+            -headers => {
+                Subject =>
+                  $DADA::Config::PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT,
+                From => $self->_config_profile_email,
+                To   => $args->{-updated_email},
+            },
+            -body        => $DADA::Config::PROFILE_UPDATE_EMAIL_MESSAGE,
+            -tmpl_params => {
+                -vars => {
+                    'profile.update_email_auth_code' => $args->{-update_email_auth_code},
+					'profile.updated_email'          => $args->{-updated_email}, 
+                   	'profile.email'                  => $self->{email},
+                },
+            },
+        }
+    );
+    return 1;
+}
+
+
 
 sub is_valid_activation {
 
