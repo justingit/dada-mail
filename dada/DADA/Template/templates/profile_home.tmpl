@@ -35,7 +35,7 @@ function confirm_profile_removal(form_name) {
 
 
 <!-- tmpl_if welcome --> 
-	<p class="positive">
+	<p class="alert">
 	 Welcome to your profile home. From here, you may subscribe/unsubscribe 
 	 to the available mailing lists, as well as update your subscription 
 	information.
@@ -274,7 +274,7 @@ Your Mailing List Subscriptions
 	 
 	<div id="update_profile_email" <!-- tmpl_if errors_update_email --><!-- tmpl_else -->style="display:none"<!-- /tmpl_if --> >
 
-<p class="positive">
+<p class="alert">
 	The Profile Email Address and Subscriptions using your current email address (<!-- tmpl_var profile.email -->) 
 	will be replaced with this new email address, where it's allowed: 
 </p>

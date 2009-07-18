@@ -432,6 +432,7 @@ sub profile_update_email_report {
     my $self  = shift;
     my $lists = $self->subscribed_to;
     my $info  = $self->get;
+	my $d_info = $self->get({-dotted => 1}); 
     require DADA::MailingList::Subscriber::Validate;
     my $subs = [];
     foreach my $list (@$lists) {
@@ -454,7 +455,8 @@ sub profile_update_email_report {
             {
                 %{ $ls->get( -dotted => 1 ) },
                 status => $sub_status,
-                %$sub_errors
+                %$sub_errors,
+				%$d_info, 
             }
         );
     }

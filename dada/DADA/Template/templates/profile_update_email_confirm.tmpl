@@ -1,61 +1,94 @@
 <!-- begin profile_update_email_confirm.tmpl --> 
 
-<p>
-	[X] Update profile, changing, <!-- tmpl_var profile.email --> to: <!-- tmpl_var profile.update_email -->
+<h2>Update Your Profile and Your Mailing List Subscriptions, Changing,</h2>
+
+ 	<ul> 
+	 <li>
+	  <h2>
+		<!-- tmpl_var profile.email -->
+	 </h2>
+	</li> 
+	</ul> 
+	
+	<h2>To:</h2> 
+	
+	<ul> 
+		<li>
+			<h2>
+				 <!-- tmpl_var profile.update_email -->
+			</h2>
+		</li> 
+	</ul> 
+
+	
 	<!-- tmpl_if comment --> 
 	<br /> 
 	[ ] Clone my profile, using <!-- tmpl_var profile.update_email --> as the new Profile Email Address. 
 	<!-- /tmpl_if --> 
-</p> 
-
-<p>Here's a summary of your subscription updates:</p> 
+	
+	
+<p>Here's a summary of your mailing list subscription updates:</p> 
 
 <!-- tmpl_loop subscriptions --> 
 
-	<h1>List: <!-- tmpl_var list_settings.list_name --></h1> 
+	<h3>List: <!-- tmpl_var list_settings.list_name --></h3> 
 	
 	<!-- tmpl_if status --> 
-		<p>No problems with this list. Good to go!</p> 
-		<p>[X] Update</p> 
+		<ul> 
+			<li>
+				<p class="positive">Subscription Email Update Should  Be Successful!</p> 
+			</li> 
+		</ul> 
+		
 	<!-- tmpl_else --> 
 		<p class="error">
 			Looks like there's some problems:
 		</p> 
-		
+		<ul> 
+			
 		<!-- tmpl_if invalid_email --> 
-			<p class="error">
+			<li>
+				<p class="error">
 				The new email address is invalid.
 			</p>
+		</li> 
+		
 		<!-- /tmpl_if --> 
 		
 		<!-- tmpl_if subscribed --> 
-			<p class="error">
+		
+			<li>	<p class="error">
 				The new email address is already subscribed.
 			</p>
+			</li>
 		<!-- /tmpl_if --> 
 		
 		
 	    <!-- tmpl_if closed_list --> 
-			<p class="error">
+				<li><p class="error">
 				This list is closed and new subscribers can only be added by the list owner. 
 			</p>
+			</li>
 		<!-- /tmpl_if --> 
 	
 	    <!-- tmpl_if  mx_lookup_failed --> 
-			<p class="error">
+				<li><p class="error">
 				MX lookup failed. 
 			</p>
+			</li>
 		<!-- /tmpl_if --> 
 		
 		<!-- tmpl_if black_listed --> 
-			<p>Your new address is blacklsited from subscribing to this list. 
+				<li><p>Your new address is black listed from subscribing to this list. </p> 
+				</li>
 		<!-- /tmpl_if --> 
 	
-	     <!-- tmpl_if not_white_listed --> 
+	     <!-- tmpl_if not_white_listed -->
+		<li> 
 			<p class="error">
 				The new email address is not on the list's white list. .
 			</p>	
-	
+		</li>
 		<!-- /tmpl_if --> 
 			
 	   <!-- tmpl_if comment --> 
@@ -66,9 +99,11 @@
 	    * no_list
 		<!-- /tmpl_if --> 
 	
-		<p>[ X ] Unsubscribe <!-- tmpl_var profile.email -->  from, <!-- tmpl_var list_settings.list_name -->.<br /> 
-			[    ] Keep the old subscription, for now.  
-		
+		<p>	
+			<a href="<!-- tmpl_var PROGRAM_URL -->?f=u&list=<!-- tmpl_var list_settings.list -->&email=<!-- tmpl_var profile.email -->" target="_blank">
+				Begin unsubscription process for <!-- tmpl_var profile.update_email --> from, <!-- tmpl_var list_settings.list_name -->
+			</a>.
+		</p>
 		
 	<!-- /tmpl_if --> 
 

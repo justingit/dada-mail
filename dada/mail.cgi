@@ -10177,7 +10177,10 @@ sub profile_update_email {
 			require DADA::Template::Widgets; 
 		    my $scrn = list_template(
 				-Part  => "header", 
-				-Title => "Update Profile Email Results:"
+				-Title => "Update Profile Email Results:",
+				-vars       => { 
+						show_profile_widget => 0, 
+				}
 			);
 			   $scrn .= DADA::Template::Widgets::screen(
 					{
