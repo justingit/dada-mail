@@ -19,7 +19,8 @@ Key:
 	[ ] SQL: changing of schema, for dada_subscribers table
 	[ ] Is... that it? 
 
-[ ] A "delete" profile function? What happens to the subscriptions? A master, "Unsubscribe me AND delete this profile" Thingy? 
+[x] A "delete" profile function? What happens to the subscriptions? 
+	[ ]A master, "Unsubscribe me AND delete this profile" Thingy? 
 	
 	
 [-] Prototype stuff? Should that be folded in? It does solve a few bugs... 
