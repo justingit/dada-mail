@@ -185,13 +185,13 @@ Your Mailing List Subscriptions
 
 <!-- tmpl_loop subscriptions --> 
 
-	<!-- tmpl_if subscribed --> 
-
 	<h2>
 		<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->">
 			<!-- tmpl_var list_settings.list_name --> 
 		</a>
-	</h2> 
+	</h2>
+
+	<!-- tmpl_if subscribed --> 
 	
 	<div style="max-height: 200px; overflow: auto;background:#fff; padding:5px;border:1px solid black">
 		<p>
@@ -246,6 +246,17 @@ Your Mailing List Subscriptions
 </ul>
 
 	<!-- /tmpl_if --> 
+
+	<!-- tmpl_if list_owner --> 
+	<p class="alert"> 
+		You are the List Owner. 
+		<a href="<!-- tmpl_var S_PROGRAM_URL -->/sign_in/<!-- tmpl_var list_settings.list -->/"> 
+			Login...
+		</a>  
+	</p>
+	<!-- /tmpl_if --> 
+	
+	
 <!-- /tmpl_loop -->
 
 

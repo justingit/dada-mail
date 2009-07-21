@@ -370,7 +370,9 @@ sub subscribed_to {
     require DADA::MailingList::Settings;
 
     my $list_names = {};
-
+	
+	my $lss = {};
+	
     foreach (@available_lists) {
         my $lh = DADA::MailingList::Subscribers->new( { -list => $_ } );
 
@@ -386,8 +388,8 @@ sub subscribed_to {
 
         # This needs its own method...
 
-        my $ls = DADA::MailingList::Settings->new( { -list => $_ } );
-        $list_names->{$_} = $ls->param('list_name');
+        $lss->{$_} = DADA::MailingList::Settings->new( { -list => $_ } );
+        $list_names->{$_} = $lss->{$_}->param('list_name');
 
     }
 
@@ -398,13 +400,18 @@ sub subscribed_to {
             $lt->{$_} = 1;
         }
         foreach (@available_lists) {
+			my $is_list_owner = 0; 
+			if($lss->{$_}->param('list_owner_email') eq $self->{email}){ 
+				$is_list_owner = 1; 
+			}
             if ( exists( $lt->{$_} ) ) {
                 push (
                     @$html_tmpl,
                     {
                         'profile.email' => $self->{email},
                         list            => $_,
-                        subscribed      => 1
+                        subscribed      => 1,
+						list_owner      => $is_list_owner, 
                     }
                 );
             }
@@ -414,7 +421,8 @@ sub subscribed_to {
                     {
                         'profile.email' => $self->{email},
                         list            => $_,
-                        subscribed      => 0
+                        subscribed      => 0,
+						list_owner      => $is_list_owner, 
                     }
                 );
             }
