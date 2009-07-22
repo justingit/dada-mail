@@ -1,0 +1,305 @@
+Delivered-To: question_mark@example.com
+Received: by 10.86.79.15 with SMTP id c15cs371326fgb;
+        Fri, 10 Jul 2009 04:55:24 -0700 (PDT)
+Received: by 10.204.67.67 with SMTP id q3mr1869755bki.7.1247226924470;
+        Fri, 10 Jul 2009 04:55:24 -0700 (PDT)
+Return-Path: <staff@hotmail.com>
+Received: from ns60360.ovh.net (ns60360.ovh.net [91.121.188.179])
+        by mx.google.com with ESMTP id 2si1502858bwz.117.2009.07.10.04.55.24;
+        Fri, 10 Jul 2009 04:55:24 -0700 (PDT)
+Received-SPF: softfail (google.com: domain of transitioning staff@hotmail.com does not designate 91.121.188.179 as permitted sender) client-ip=91.121.188.179;
+Authentication-Results: mx.google.com; spf=softfail (google.com: domain of transitioning staff@hotmail.com does not designate 91.121.188.179 as permitted sender) smtp.mail=staff@hotmail.com
+Received: (qmail 23604 invoked by uid 110); 10 Jul 2009 14:08:44 +0200
+Delivered-To: 1-listowner@example.com
+Received: (qmail 23581 invoked from network); 10 Jul 2009 14:08:44 +0200
+Received: from bay0-omc2-s40.bay0.hotmail.com (65.54.246.176)
+  by jeux2filles.fr with SMTP; 10 Jul 2009 14:08:40 +0200
+Received: from BAY0-JMR-DB02 ([64.4.21.10]) by bay0-omc2-s40.bay0.hotmail.com with Microsoft SMTPSVC(6.0.3790.3959);
+	 Fri, 10 Jul 2009 04:55:18 -0700
+Date: Fri, 10 Jul 09 04:55:18 -0700
+From: staff@hotmail.com
+Subject: complaint about message from 91.121.146.35
+To: listowner@example.com
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="B373EA84-0057-4C75-87DD-B7E4C993BE3B"
+Return-Path: staff@hotmail.com
+Message-ID: <BAY0-OMC2-S408t8YgH0005f6f8@bay0-omc2-s40.bay0.hotmail.com>
+X-OriginalArrivalTime: 10 Jul 2009 11:55:18.0782 (UTC) FILETIME=[4BBA29E0:01CA0155]
+
+--B373EA84-0057-4C75-87DD-B7E4C993BE3B
+Content-Type: message/rfc822
+Content-Disposition: inline
+
+X-HmXmrOriginalRecipient: bouncing_address@example.com
+X-Reporter-IP: 94.229.56.38
+X-Message-Delivery: Vj0xLjE7dXM9MDtsPTA7YT0wO0Q9MTtTQ0w9MQ==
+X-Message-Status: n:0
+X-SID-PRA: List Name <list_owner@example.com>
+X-Message-Info: JGTYoYF78jFfjPiR7ZBK+1v85T3+DFI9biR1lnMz5UbfIwbdkOsZ2MU+wtGW1pFZ/voNr6bDflkZiGdew+/gpR78jT7Sr09T
+Received: from ns202474.ovh.net ([91.121.146.35]) by SNT0-MC3-F11.Snt0.hotmail.com with Microsoft SMTPSVC(6.0.3790.3959);
+	 Fri, 3 Jul 2009 13:34:02 -0700
+Received: (qmail 12324 invoked by uid 10001); 3 Jul 2009 18:33:35 +0200
+Date: Fri, 03 Jul 2009 18:33:35 +0200
+From: "List Name" <list_owner@example.com>
+To: "List Name Subscriber" <bouncing_address@example.com>
+Reply-To: "List Name" <list_owner@example.com>
+X-Priority: 3
+List: listshortname
+List-Archive: <http://example.com/cgi-bin/dada/mail.cgi/archive/listshortname/>
+List-ID: <listshortname.ns202474.ovh.net>
+List-Owner: <list_owner@example.com>
+List-Subscribe: <http://example.com/cgi-bin/dada/mail.cgi/s/listshortname/>
+List-Unsubscribe: <http://example.com/cgi-bin/dada/mail.cgi/u/listshortname/>
+List-URL: <http://example.com/cgi-bin/dada/mail.cgi/list/listshortname/>
+Message-ID: <20090703180001.12070854@mygames4girls.com>
+X-Mailer: Pro Dada 3.0.0 
+Content-type: multipart/alternative; boundary="----------=_1246636801-30698-0"; charset=utf-8
+MIME-Version: 1.0
+Subject: List Name 
+Return-Path: bounce_handler@example.com
+X-OriginalArrivalTime: 03 Jul 2009 20:34:02.0277 (UTC) FILETIME=[99E25D50:01C9FC1D]
+
+This is a multi-part message in MIME format...
+
+------------=_1246636801-30698-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.420 (Entity 5.420)
+Content-length: 1693
+
+__ 
+
+
+Newsletter
+If you can't see this email please click here
+ *New fun on Mygames4girls !*
+ *Keep having more and more fun with My Games 4 Girls.  There are always more new games especially reserved for girls, and more of your favourite music to listen to.  On Mygames4girls.com there are new things to do every single day!
+
+xxx Lilou, Lea and Lee*
+ *New fun every day ! Forward to all your friends ;)*
+ The new games
+   Send to your friends
+   listshortname in your blog
+   Forum between girls
+  *The latest subscribers to the forum for girls :*
+  charlottexx
+  nicky
+  bethany
+  angharad
+  amber thomas
+  rafelis
+  shian
+  ricia derricott
+  sammi
+  stephanie
+ Change your profil
+ In your profile you can : 
+  - Change your password 
+               - Add your Avatar !
+               - Complete your personnal information ...
+ A girl in touch with natureSandy loves to walk into the forest with the nature or to pick mushrooms. She knows she?s not really a people person, and loves being by(...)
+ Make up disneys snow whiteWith this great Disney makeup game, you can have fun changing the make-up of Snow White. In front of her beautiful mirror, you can help(...)
+ Club discoThis is a great girls game where you?ll really need to be thinking and planning ahead.  Open your disco by getting a loan (suing the(...)
+ All the new games
+  The new music
+ Pit Bull - Calle Ocho
+ Kat Deluna - Dance Bailalo
+ All the new musics
+ * Transfer this Newsletter to all your friend, by using the forward option !*
+
+
+-- 
+
+You may automatically unsubscribe from this list at any time by 
+visiting the following URL:
+ 
+<http://example.com/cgi-bin/dada/mail.cgi/u/listshortname/>
+
+
+list_owner@example.com
+------------=_1246636801-30698-0
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/html
+Content-length: 12900
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Newsletter</title>
+</head>
+
+<body style="background-color: rgb(166,0,124); color:rgb(153,0,153);">
+<!--open_img--><img src="http://example.com/cgi-bin/dada/mail.cgi/spacer_image/listshortname/20090703180001/spacer.png" /><!--/open_img-->
+<!--opening-->
+<p>.</p>
+<!--/opening-->
+
+
+<p style="color:rgb(0,0,0); text-align:center; font-size:10px" >If you can't see this email please click <a href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/018864468567/">here</a><p>
+<table align="center" style="width:600px; border:10px solid rgb(204,0,153); padding:5px; background-color:rgb(255,255,255); font-family:Arial, Helvetica, sans-serif;">
+  <tr>
+    
+    <td colspan="2" style=" width:380px;padding:0 10px 10px 10px; color:rgb(153,0,153); border:0; background-color:rgb(255,255,255)"><p align="center"><a href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/888554025911/" style="border:0px;"><img style="border:0px;" src="http://www.mygames4girls.com/images/logo-listshortname.jpg" alt="mygames4girls.com" width="300" height="80" /></a></p><h1 style=" text-align:center; font-size:25px; font-weight:bold; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif; margin:0; padding:0;"><b>New fun on Mygames4girls !</b></h1>
+    <p style=" text-align:center; font-size:12px; font-weight:bold; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif;"><b><p class="spip">Keep having more and more fun with My Games 4 Girls.  There are always more new games especially reserved for girls, and more of your favourite music to listen to.  On Mygames4girls.com there are new things to do every single day!</p>
+
+<p class="spip">xxx Lilou, Lea and Lee</p></b></p></td>
+  
+	<td style=" width:180px;padding:10px; color:rgb(153,0,153); border:0; background-color:rgb(255,255,255)"><p align="center"><a href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/888554025911/" style="border:0px;"><img style="border:0px;" src="http://www.mygames4girls.com/images/3girls.jpg" alt="mygames4girls.com" width="200" height="205" /></a></p></td>
+  </tr>
+  <!--- sponsoring --->
+  
+  <!--- end sponsoring --->
+  <tr>
+    <td colspan="3" style="height:30px; background-color:rgb(204,0,153);"><p style=" text-align:center; font-size:16px; font-weight:bold; color:rgb(255,255,0); font-family:Arial, Helvetica, sans-serif; margin:0; padding:0px 0 0 0;"><b>New fun every day ! <span style="color:rgb(255,255,255); font-size:12px; font-weight:bold; font-style:italic;">Forward to all your friends ;)</span></b></p></td>
+  </tr>
+  <tr>
+    <td colspan="2"><h1 style=" text-align:center; font-size:28px; font-weight:normal; color:rgb(180,180,180); font-family:Arial, Helvetica, sans-serif; margin:0; padding:0;">The new games</h1></td>
+    <td rowspan="11" valign="top" style="background-color:rgb(230,230,230); width:200px; padding:10px;">
+    
+  <table style="width:200px;" width="200" border="0" cellspacing="5" cellpadding="0">
+  <tr>
+    <td><div style="text-align:center; padding:5px; background-color:rgb(255,255,255);"><img src="http://www.mygames4girls.com/images/envoyer-amie.png" alt="&gt;" border="0" /> <a style="color:rgb(51,153,204); font-size:12px; font-weight:bold" href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/553583181541/"> Send to your friends</a></div></td>
+  </tr>
+  <tr>
+    <td><div style="text-align:center; padding:5px; background-color:rgb(255,255,255);"><img src="http://www.mygames4girls.com/images/ajouter.png" alt="&gt;" border="0" /> <a style="color:rgb(51,153,204); font-size:12px; font-weight:bold" href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/646656837436/"> listshortname in your blog</a></div></td>
+  </tr>
+  <tr>
+    <td><div style="text-align:center; padding:5px; background-color:rgb(255,255,255);"><img src="http://www.mygames4girls.com/images/commentaire.png" alt="&gt;" border="0" /> <a style="color:rgb(51,153,204); font-size:12px; font-weight:bold" href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/995426566670/"> Forum between girls</a></div></td>
+  </tr>
+  <tr>
+  <td><div style="text-align:left; padding:5px; background-color:rgb(255,255,255);"><p style=" text-align:center; font-size:12px; font-weight:bold; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif;"><b>The latest subscribers to the forum for girls :</b></p>
+   <ol style="text-align:left;">
+   
+  <li style=" text-align:left; font-size:12px; font-weight:bold; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif;">charlottexx</li>
+  
+  <li style=" text-align:left; font-size:12px; font-weight:bold; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif;">nicky</li>
+  
+  <li style=" text-align:left; font-size:12px; font-weight:bold; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif;">bethany</li>
+  
+  <li style=" text-align:left; font-size:12px; font-weight:bold; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif;">angharad</li>
+  
+  <li style=" text-align:left; font-size:12px; font-weight:bold; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif;">amber thomas</li>
+  
+  <li style=" text-align:left; font-size:12px; font-weight:bold; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif;">rafelis</li>
+  
+  <li style=" text-align:left; font-size:12px; font-weight:bold; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif;">shian</li>
+  
+  <li style=" text-align:left; font-size:12px; font-weight:bold; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif;">ricia derricott</li>
+  
+  <li style=" text-align:left; font-size:12px; font-weight:bold; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif;">sammi</li>
+  
+  <li style=" text-align:left; font-size:12px; font-weight:bold; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif;">stephanie</li>
+  
+  </ol>
+  </div>
+  </td>
+  </tr>
+  <tr>
+    <td><div style="text-align:center; padding:5px; background-color:rgb(255,255,255);"><a style="color:rgb(51,153,204); font-size:12px; font-weight:bold" href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/919425314359/">Change your profil</a></div>
+    
+    </td>
+  </tr>
+  <tr>
+    <td><div style="text-align:center; padding:5px; background-color:rgb(255,255,255);">
+    <p style=" text-align:left; font-size:12px; font-weight:normal; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif;">In your profile you can : <br />
+  - Change your password <br />
+                  - Add your Avatar !<br />
+                  - Complete your personnal information ...</p>
+    </div>
+    
+    </td>
+  </tr>
+</table>   
+</td>
+  </tr>
+
+  <tr>
+     <td width="150" style="width:150px; text-align:center;"><a href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/470060970197/"><img style="border:5px solid rgb(255,255,255);" src="http://www.mygames4girls.com/IMG/jpg_m-autumn.jpg" alt="A girl in touch with nature" width="140" height="80"  /></a></td>
+    <td style=" width:250px; padding:5px;"><div style="text-align:left; padding:5px; background-color:rgb(255,255,255);"><a style="color:rgb(51,153,204); font-size:16px; font-weight:bold" href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/470060970197/">A girl in touch with nature</a><div style=" text-align:left; font-size:12px; font-weight:normal; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif;">Sandy loves to walk into the forest with the nature or to pick mushrooms. She knows she?s not really a people person, and loves being by&nbsp;(...)</div></div>
+   </td>
+    
+  </tr>
+
+  <tr>
+     <td width="150" style="width:150px; text-align:center;"><a href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/672919586716/"><img style="border:5px solid rgb(255,255,255);" src="http://www.mygames4girls.com/IMG/jpg_m-blanch-neig.jpg" alt="Make up disneys snow white" width="140" height="80"  /></a></td>
+    <td style=" width:250px; padding:5px;"><div style="text-align:left; padding:5px; background-color:rgb(255,255,255);"><a style="color:rgb(51,153,204); font-size:16px; font-weight:bold" href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/672919586716/">Make up disneys snow white</a><div style=" text-align:left; font-size:12px; font-weight:normal; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif;">With this great Disney makeup game, you can have fun changing the make-up of Snow White. In front of her beautiful mirror, you can help&nbsp;(...)</div></div>
+   </td>
+    
+  </tr>
+
+  <tr>
+     <td width="150" style="width:150px; text-align:center;"><a href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/744738306851/"><img style="border:5px solid rgb(255,255,255);" src="http://www.mygames4girls.com/IMG/jpg_clubber.jpg" alt="Club disco" width="140" height="80"  /></a></td>
+    <td style=" width:250px; padding:5px;"><div style="text-align:left; padding:5px; background-color:rgb(255,255,255);"><a style="color:rgb(51,153,204); font-size:16px; font-weight:bold" href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/744738306851/">Club disco</a><div style=" text-align:left; font-size:12px; font-weight:normal; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif;">This is a great girls game where you?ll really need to be thinking and planning ahead.  Open your disco by getting a loan (suing the&nbsp;(...)</div></div>
+   </td>
+    
+  </tr>
+
+  
+  <tr>
+    <td colspan="2" style=" padding:10px;"><div style="text-align:center; padding:5px; background-color:rgb(255,255,255);"><a style="color:rgb(51,153,204); font-size:16px; font-weight:bold" href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/806523171901/">All the new games</a></div>
+   </td>
+    
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    
+  </tr>
+  <tr>
+  <td colspan="2"><h1 style=" text-align:center; font-size:26px; font-weight:normal; color:rgb(180,180,180); font-family:Arial, Helvetica, sans-serif; margin:0; padding:0;">The new music</h1></td>
+  </tr>
+  
+  <tr>
+    <td width="150" style="width:150px; text-align:center;"><a href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/223239728137/"><img style="border:5px solid rgb(255,255,255);" src="http://www.mygames4girls.com/IMG/jpg_pit-bull-calle-ocho.jpg" alt="Pit Bull - Calle Ocho" width="140" height="80"  /></a></td>
+    <td style=" width:250px; padding:10px;"><div style="text-align:left; padding:5px; background-color:rgb(255,255,255);"><a style="color:rgb(51,153,204); font-size:16px; font-weight:bold" href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/223239728137/">Pit Bull - Calle Ocho</a></div>
+   </td>
+  </tr>
+ 
+  <tr>
+    <td width="150" style="width:150px; text-align:center;"><a href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/513881207129/"><img style="border:5px solid rgb(255,255,255);" src="http://www.mygames4girls.com/IMG/jpg_kat-deluna-dance-bailalo.jpg" alt="Kat Deluna - Dance Bailalo" width="140" height="80"  /></a></td>
+    <td style=" width:250px; padding:10px;"><div style="text-align:left; padding:5px; background-color:rgb(255,255,255);"><a style="color:rgb(51,153,204); font-size:16px; font-weight:bold" href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/513881207129/">Kat Deluna - Dance Bailalo</a></div>
+   </td>
+  </tr>
+ 
+  <tr>
+    <td colspan="2" style=" padding:10px;"><div style="text-align:center; padding:5px; background-color:rgb(255,255,255);"><a style="color:rgb(51,153,204); font-size:16px; font-weight:bold" href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/623598712870/">All the new musics</a></div>
+   </td>
+    
+  </tr>
+ 
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    
+  </tr>
+  <tr>
+    <td colspan="3" style="background-color:rgb(153,204,51)"><div style=" text-align:center; font-size:12px; font-weight:bold; color:rgb(255,255,255); font-family:Arial, Helvetica, sans-serif; padding:5px;"><b> Transfer this Newsletter to all your friend, by using the forward option !</b></div></td>
+  </tr>
+  
+</table>
+
+
+
+<!--signature-->
+<p style="color:rgb(0,0,0); text-align:center; font-size:10px">You may automatically unsubscribe from this list at any time by 
+visiting the following URL:</p>
+
+<p style="color:rgb(0,0,0); text-align:center; font-size:10px">
+ <a href="http://example.com/cgi-bin/dada/mail.cgi/u/listshortname/">
+  http://example.com/cgi-bin/dada/mail.cgi/u/listshortname/
+ </a>
+</p>
+
+<p style="color:rgb(0,0,0); text-align:center; font-size:10px" > list_owner@example.com </p>
+
+<!--/signature-->
+</body>
+
+</html>
+------------=_1246636801-30698-0--
+
+--B373EA84-0057-4C75-87DD-B7E4C993BE3B--

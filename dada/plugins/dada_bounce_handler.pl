@@ -138,6 +138,27 @@ my $Score_Card = {};
 
 my $Rules = [
 
+#{	
+#	hotmail_notification => {
+#		Examine => {
+#			Message_Fields => {
+#			   'Remote-MTA'          => [qw(Windows_Live)], 
+#				Bounce_From_regex    =>  [qr/staff\@hotmail.com/],	
+#				Bounce_Subject_regex => [qr/complaint/],	
+#			},
+#				
+#			Data => { 
+#				Email => 'is_valid', 
+#				List  => 'is_valid',
+#			}
+#		},
+#		Action => { 
+#			unsubscribe_bounced_email	=> 'from_list',
+#		}
+#	}
+#},
+
+
 
 {	
 	qmail_delivery_delay_notification => {
@@ -2281,6 +2302,15 @@ sub parse_bounce {
 			%{$diagnostics} = (%{$diagnostics}, %{$el_diagnostics})
 				if $el_diagnostics; 
 		}	
+		
+		if((!$list) || (!$email) || !keys %{$diagnostics}){ 	
+				my ($wl_list, $wl_email, $wl_diagnostics) = parse_for_windows_live($entity); 
+				
+				$list  ||= $wl_list;
+				$email ||= $wl_email;
+				%{$diagnostics} = (%{$diagnostics}, %{$wl_diagnostics})
+					if $wl_diagnostics; 
+		}
 
 
 
@@ -2785,9 +2815,18 @@ sub generic_parse {
 
 	my $entity = shift; 
 	my ($email, $list); 
+	my %return = (); 
+	my $headers_diag = {}; 
+	   $headers_diag = get_orig_headers($entity); 
 	my $diag = {}; 
-
 	($email, $diag) = find_delivery_status($entity); 	
+
+	if(keys %$diag){ 	
+		%return = (%{$diag}, %{$headers_diag});
+	}
+	else { 
+		%return = %{$headers_diag};
+	}
 	
 	$list = find_list_in_list_headers($entity); 
 		
@@ -2796,7 +2835,28 @@ sub generic_parse {
 	$email = DADA::App::Guts::strip($email);
 	$email =~ s/^\<|\>$//g if $email;  
 	$list  = DADA::App::Guts::strip($list) if $list; 
-	return ($list, $email, $diag); 
+	return ($list, $email, \%return); 
+	
+}
+
+sub get_orig_headers { 
+	
+	my $entity = shift; 
+	my $diag = {}; 
+	
+	foreach('From', 'To', 'Subject'){ 
+
+		if ($entity->head->count($_)){ 
+	
+			my $header = $entity->head->get($_, 0);
+			chomp $header; 
+			$diag->{'Bounce_' . $_} = $header; 
+		}
+
+	}
+	
+	return $diag; 
+	
 	
 }
 
@@ -3505,13 +3565,37 @@ sub parse_for_earthlink {
 		my $i;
 		foreach $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
-			($list, $email, $diag) = parse_for_overquota_yahoo($part); 
+			($list, $email, $diag) = parse_for_earthlink($part); 
 			if(($email) && (keys %$diag)){ 
 				$diag->{'X-Mailer'} = find_mailer_bounce_headers($entity);
 				return ($list, $email, $diag); 
 			}
 		}
 	}
+}
+
+
+
+sub parse_for_windows_live { 
+
+	my $entity = shift; 
+#	
+	my $email; 
+	my $diag = {}; 
+	my $list;
+	my $state       = 0;
+	
+	
+	my @parts  = $entity->parts; 
+	my @parts0 = $parts[0]->parts; 
+
+	if ($parts0[0]->head->count('X-HmXmrOriginalRecipient')){ 
+		$email = $parts0[0]->head->get('X-HmXmrOriginalRecipient', 0);
+		$diag->{'Remote-MTA'} = 'Windows_Live'; 
+		return ($list, $email, $diag);
+	}
+
+
 }
 
 
