@@ -802,7 +802,7 @@ sub confirm {
 				my $prof = DADA::Profile->new({-email => $email}); 
 				if(!$prof->exists){ 
 					$new_profile = 1; 
-					$new_pass    = $prof->rand_str(8);
+					$new_pass    = $prof->_rand_str(8);
 					$prof->insert(
 						{
 							-unecrypted_password  => $new_pass,
