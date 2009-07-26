@@ -875,7 +875,7 @@ sub cgi_default {
     }
     else {
         $authorized_senders =
-          $lh->subscription_list( -Type => 'authorized_senders' );
+          $lh->subscription_list( -type => 'authorized_senders' );
     }
 
     print(
@@ -4218,7 +4218,11 @@ sub moderation_msg {
           DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
         my $authorized_senders = [];
         $authorized_senders =
-          $lh->subscription_list( -Type => 'authorized_senders' );
+          $lh->subscription_list(
+	 		{
+				-type => 'authorized_senders'
+			}
+		);
         foreach my $moderator (@$authorized_senders) {
 
 			if($moderator->{email} eq $args->{ -from }){ 
