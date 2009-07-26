@@ -116,6 +116,9 @@ subscription_form
 archive_send_form
 profile_widget
 _raw_screen
+
+global_list_sending_checkbox_widget
+
 );
 
 use strict; 
@@ -402,6 +405,47 @@ sub list_popup_login_form {
 		    ); 
 	}
 }
+
+
+
+sub global_list_sending_checkbox_widget { 
+	
+	my $list = shift || undef; 
+	
+	require DADA::MailingList::Settings;
+
+	my @available_lists = available_lists(); 
+	my @f_a_lists; 
+	
+	foreach(@available_lists){ 
+		next if $_ eq $list; 
+		push(@f_a_lists, $_); 
+	}
+	
+	my %list_names; 
+	
+	foreach(@f_a_lists){ 
+		my $ls = DADA::MailingList::Settings->new(
+				{
+					-list => $_,
+				}
+			); 
+		my $li = $ls->get; 
+		$list_names{$_} = $_ . ' (' . $li->{list_name} . ')';
+	}
+	
+	
+	return  $q->checkbox_group(
+		-name       => 'alternative_list',
+		-id         => 'alternative_list', 
+		 '-values'  => [@f_a_lists],
+	   	-linebreak  =>'true',
+	    -labels     => \%list_names,
+	    -columns    => 3, 
+	 );				 
+}
+
+
 
 
 
