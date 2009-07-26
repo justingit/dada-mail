@@ -128,18 +128,19 @@ sub search_list {
 
     my $sth = $self->{dbh}->prepare($query);
 
-	if (   $DADA::Config::GLOBAL_BLACK_LIST
-        && $args->{ -type } eq 'black_list' )
-    {
-        $sth->execute( $args->{ -type } )
-          or croak "cannot do statment (for search_list)! $DBI::errstr\n";
-    }
-    else {
-
-        $sth->execute($self->{list}, $args->{ -type })
-          or croak "cannot do statment (for search_list)! $DBI::errstr\n";
-    }
-
+	#if (   $DADA::Config::GLOBAL_BLACK_LIST
+    #    && $args->{ -type } eq 'black_list' )
+    #{
+    #    $sth->execute( $args->{ -type } )
+    #      or croak "cannot do statment (for search_list)! $DBI::errstr\n";
+    #}
+    #else {
+	#
+    #    $sth->execute($self->{list}, $args->{ -type })
+    #      or croak "cannot do statment (for search_list)! $DBI::errstr\n";
+    #}
+	$sth->execute()
+  		or croak "cannot do statment (for search_list)! $DBI::errstr\n";
 
     my $row   = {};
     my $count = 0;
@@ -181,12 +182,19 @@ sub SQL_subscriber_profile_join_statement {
 	my ($args) = @_; 
 	# Args 
 	# -partial_listing
-	# -type - perhaps? 
+	# -type 
+	# -search_type (any/all) 
+	# -list
+	# 
 	
 	# init vars
 	if(!$args->{ -type }){ 
 		$args->{ -type } = 'list'; 
 	}
+	# Sanity Check. 
+	if ( !exists( $self->allowed_list_types()->{ 	$args->{ -type } } ) ) {
+        croak '"' . $args->{ -type } . '" is not a valid list type! ';
+    }
 	
 	my $query_type           = 'AND'; 
 	if(!$args->{-search_type}){ 
@@ -199,6 +207,55 @@ sub SQL_subscriber_profile_join_statement {
 		$query_type = 'OR'; 
 	}
 	
+
+=cut
+	
+	if(!exists( $args->{-alternative_lists} ) ){ 
+		# An array ref w/one element
+		$args->{-list} = [$self->{list}];
+	#	$args->{-list} = [DADA::App::Guts::available_lists()]; 
+	#	$args->{-list} = ['blah'];
+	}
+	else { 
+		if($args->{-alternative_lists}->[0]) { 
+			$args->{-list}  = [$self->{list}, @{$args->{-alternative_lists}}];
+		}
+		else { 
+					$args->{-list} = [$self->{list}];
+		}
+	}
+	
+	# Sanity Check. 
+	foreach(@{ $args->{-list} }){ 
+		if(check_if_list_exists(-List => $_, -Dont_Die => 1) == 0){ 
+			croak $_ . ' does not exist.'; 
+		}
+	}
+=cut
+
+	
+=cut
+
+#	  # Maybe a good idea to pre-munge this... 
+	if ( keys %{ $args->{ -partial_listing } } ) {
+		foreach ( keys %{ $args->{ -partial_listing } } ) {
+			if(
+				($args->{ -partial_listing }->{$_}->{equal_to}) > 0 ||
+				($args->{ -partial_listing }->{$_}->{like} > 0)	
+			){ 
+				# ...
+			}
+			else { 
+				delete($args->{ -partial_listing }->{$_}); 
+			}
+
+		}
+
+	}
+
+  #/
+=cut
+		
     my $subscriber_table     = $self->{sql_params}->{subscriber_table};
     my $profile_fields_table = $self->{sql_params}->{profile_fields_table};
 	
@@ -214,8 +271,12 @@ sub SQL_subscriber_profile_join_statement {
 	my $query;
 	$query = 'SELECT ' . $subscriber_table . '.email, ' . $subscriber_table . '.list';
 	$query .= $merge_field_query;
+	
 	$query .= ' FROM ' . $subscriber_table . ' LEFT OUTER JOIN ' . $profile_fields_table . ' ON ';
 	$query .= ' ' . $subscriber_table . '.email' . ' = ' . $profile_fields_table . '.email';
+
+
+	
 	$query .= ' WHERE  ';
 	if (   $DADA::Config::GLOBAL_BLACK_LIST
 	       && $args->{ -type } eq 'black_list' )
@@ -223,31 +284,32 @@ sub SQL_subscriber_profile_join_statement {
 	       #... Nothin'
 	   }
 	   else {
-	    $query .= $subscriber_table . '.list = ?';
-	   }
+		
+			$query .= $subscriber_table . '.list = ' . $self->{dbh}->quote($self->{list});
+=cut
+
+			if(scalar @{$args->{-list}} > 1) {
+				my @quoted = (); 
+				foreach( @{ $args->{-list} } ){ 
+					push(@quoted, "$subscriber_table\.list = " . $self->{dbh}->quote($_)); 
+				}
+			
+				#foreach( @{ $args->{-list} } ){ 
+				#	#$query .= $subscriber_table . '.list = ' . $self->{dbh}->quote($args->{-list});
+				#}
+				$query .= ' ( ' . join(' OR ', @quoted) . ' ) '; 
+			}
+			else { 
+				$query .= $subscriber_table . '.list = ' . $self->{dbh}->quote($args->{-list}->[0]);
+			}
+
+=cut
+
+		}
 	
-      $query .= ' AND ' . $subscriber_table . '.list_type = ?';
+      $query .= ' AND ' . $subscriber_table . '.list_type = ' . $self->{dbh}->quote($args->{-type});
       $query .= ' AND ' . $subscriber_table . '.list_status = 1';
 
-
-#	  # Maybe a good idea to pre-munge this... 
-#		if ( keys %{ $args->{ -partial_listing } } ) {
-#			foreach ( keys %{ $args->{ -partial_listing } } ) {
-#				if(
-#					($args->{ -partial_listing }->{$_}->{equal_to}) > 0 ||
-#					($args->{ -partial_listing }->{$_}->{like} > 0)	
-#				){ 
-#					# ...
-#				}
-#				else { 
-#					delete($args->{ -partial_listing }->{$_}); 
-#				}
-#								
-#			}
-#			
-#		}
-#			
-#	  #/ 
 
       if ( keys %{ $args->{ -partial_listing } } ) {
 		 
@@ -290,14 +352,29 @@ sub SQL_subscriber_profile_join_statement {
 			$query .= $query_pl; 
 		}
 	}
+	
+	if( exists($args->{-exclude_from}) ){ 
+		if($args->{-exclude_from}->[0]){ 
+			my @excludes = (); 
+			foreach my $ex_list(@{$args->{-exclude_from}}) { 
+				push(@excludes, 'dada_subscribers.list = ' . $self->{dbh}->quote($ex_list));  
+			}
+			my $ex_from_query = ' AND dada_subscribers.email NOT IN (SELECT dada_subscribers.email FROM dada_subscribers WHERE ' . join(' OR ', @excludes) . ' ) ' ; 
+			$query .= $ex_from_query; 
+		}
+	}
 
 	if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
-		$query .= ' ORDER BY ' . $subscriber_table . '.email';
+		$query .= ' ORDER BY ' . $subscriber_table . '.email, ' . $subscriber_table . '.list';
     }
 
 	#print '<p><code>QUERY: ' . $query . '</code></p>';
 	warn 'QUERY: ' . $query
 			if $t; 
+
+
+
+	
 		
 	return $query; 
 }
@@ -325,12 +402,11 @@ sub fancy_print_out_list {
         $args->{ -partial_listing } = {};
     }
 
-	my $subscribers = $self->subscription_list(
-		-Type 		  	 => $args->{-type}, 
-		-partial_listing => $args->{ -partial_listing }, 
-		-start           => 1, 
-		-length           => $self->num_subscribers(-Type => $args->{-type}), 
-	);
+	my $subscribers = $self->subscription_list($args);
+	foreach(@$subscribers){ 
+		$_->{no_email_links} = 1; 
+		$_->{no_checkboxes}  = 1; 
+	}
 
     my $field_names = []; 
     foreach(@{$self->subscriber_fields}){ 
@@ -346,7 +422,7 @@ sub fancy_print_out_list {
 				field_names	   => $field_names,
 				subscribers    => $subscribers, 
 				no_checkboxes  => 1, 
-				noe_mail_links => 1, 
+				no_email_links => 1, 
 				count          => scalar @{$subscribers}, 
 			}
 		}	
@@ -378,21 +454,23 @@ sub print_out_list {
 	
     my $sth = $self->{dbh}->prepare($query);
 
-    if (   $DADA::Config::GLOBAL_BLACK_LIST
-        && $args{ -Type } eq 'black_list' )
-    {
+    #if (   $DADA::Config::GLOBAL_BLACK_LIST
+    #    && $args{ -Type } eq 'black_list' )
+    #{
+	#
+    #   $sth->execute( $args{ -Type } )
+    #      or croak "cannot do statment (for print out list)! $DBI::errstr\n";
+	#
+    #}
+    #else {
+	#
+    #    $sth->execute($self->{list}, $args{ -Type } )
+    #      or croak "cannot do statment (for print out list)! $DBI::errstr\n";
+	#
+    #}
 
-        $sth->execute( $args{ -Type } )
-          or croak "cannot do statment (for print out list)! $DBI::errstr\n";
-
-    }
-    else {
-
-        $sth->execute($self->{list}, $args{ -Type } )
-          or croak "cannot do statment (for print out list)! $DBI::errstr\n";
-
-    }
-
+	$sth->execute()                        
+  		or croak "cannot do statment (for print out list)! $DBI::errstr\n";
 
     my $fields = $self->subscriber_fields;
 
@@ -476,35 +554,41 @@ sub subscription_list {
 
     my $self = shift;
 
-    my %args = (
-        -start    => 1,
-        '-length' => 100,
-        -Type     => 'list',
-        @_
-    );
+ #   my %args = (
+ #       -start             => 1,
+ #       '-length'          => undef,
+ #       -Type              => 'list',
+ #       @_
+ #   );
 
+	my ($args) = @_; 
+	if(!exists($args->{-start})){ 
+		$args->{-start} = 1; 
+	}
+	
+	if(!exists($args->{-type})){ 
+		$args->{-type} = 'list'; 
+	}
+	
     my $email;
     my $count = 0;
     my $list  = [];
 	my $fields        = $self->subscriber_fields;
 
 
-    if ( !exists( $args{ -partial_listing } ) ) {
-        $args{ -partial_listing } = {};
+    if ( !exists( $args->{ -partial_listing } ) ) {
+        $args->{ -partial_listing } = {};
     }
 
 
-	my $query = $self->SQL_subscriber_profile_join_statement(
-		{ 
-			-type            => $args{ -Type }, 
-			-partial_listing => $args{ -partial_listing }, 
-		}
-	);
+	my $query = $self->SQL_subscriber_profile_join_statement($args);
 
-    my $sth = $self->{dbh}->prepare($query); 
+	#die $query; 
 	
-    $sth->execute($self->{list}, $args{ -Type })
-      or croak "cannot do statment (for subscription_list)! $DBI::errstr\n";
+    my $sth = $self->{dbh}->prepare($query); 
+ 	# $sth->execute($self->{list}, $args->{ -type })	
+    $sth->execute()
+      or croak 'Problems with: ' . $query;#"cannot do statment (for subscription_list)! $DBI::errstr\n";
 
 	
     my $hashref;
@@ -513,14 +597,21 @@ sub subscription_list {
         $mf_lt{$_} = 1;
     }
 
+#	my $counter = 0;
     while ( $hashref = $sth->fetchrow_hashref ) {
 		#require Data::Dumper; 
 		#die Data::Dumper::Dumper($hashref); 
 		
-        $count++;
-        next if $count < $args{ -start };
-        last if $count > ( $args{ -start } + $args{'-length'} );
+       $count++;
+	
+        next if $count < $args->{ -start };
 
+		if(  exists($args->{'-length}'}) ){ 
+			
+        	last if $count > ( $args->{ -start } + $args->{'-length'} );
+	
+		}
+	
         $hashref->{fields} = [];
 
         foreach (@$fields) {
@@ -537,9 +628,13 @@ sub subscription_list {
             }
 
         }
+		#$counter++;
         push ( @$list, $hashref );
 
     }
+
+#require Data::Dumper; 
+#die Data::Dumper::Dumper($list); 
     return $list;
 
 }
@@ -854,6 +949,7 @@ sub create_mass_sending_file {
         -Save_At         => undef,
         -Test_Recipient  => undef,
         -partial_sending => {},
+		-exclude_from    => [],
         @_
     );
 
@@ -953,6 +1049,7 @@ sub create_mass_sending_file {
 			{ 
 				-type            => $args{ -Type }, 
 				-partial_listing => $args{ -partial_sending },
+				-exclude_from    => $args{ -exclude_from }, 
 			}
 		);
 			
@@ -962,9 +1059,10 @@ sub create_mass_sending_file {
 		#die; 
 		
         my $sth = $self->{dbh}->prepare($query);
-        $sth->execute( $self->{list}, $args{ -Type } )
-          or croak
-          "cannot do statement (at create mass_sending_file)! $DBI::errstr\n";
+        #$sth->execute( $self->{list}, $args{ -Type } )
+        $sth->execute()
+  		or croak "didn't work: " . $query; 
+		#	or croak "cannot do statement (at create mass_sending_file)! $DBI::errstr\n";
 
         my $field_ref;
 
