@@ -163,6 +163,8 @@ sub send_email {
 								num_total_mailouts         => $num_total_mailouts, 
 								active_mailouts            => $active_mailouts,
 								
+								global_list_sending_checkbox_widget => DADA::Template::Widgets::global_list_sending_checkbox_widget($list), 
+								
 							}, 
 							-list_settings_vars       => $ls->params, 
 							-list_settings_vars_param => 
@@ -346,10 +348,12 @@ sub send_email {
             $mh->mass_test_recipient($q->param('test_recipient'));
             $test_recipient = $mh->mass_test_recipient; 
         }
-            
-        #$mh->list_type('testers') 
-        #    if($process =~ m/test/i);
+        
+       # This isn't, um, used anymore. 
+       # $mh->list_type('testers') 
+       #     if($process =~ m/test/i);
 
+		###### Blah blah blah, parital listing 
 	    my $partial_sending = {}; 
 	    foreach my $field(@$undotted_fields){ 
 			if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){ 
@@ -359,14 +363,27 @@ sub send_email {
 				$partial_sending->{$field->{name}} = {like => $q->param('field_value_' . $field->{name})}; 
 			}  
 	    }
-        if(keys %$partial_sending){ 
-            $mh->partial_sending($partial_sending); 
-        }
-        
+        #if(keys %$partial_sending){ 
+        #    $mh->partial_sending($partial_sending); 
+        #}
+  		######/ Blah blah blah, parital listing 
+      
         my $message_id; 
         if($q->param('archive_no_send') != 1){ 
+			
+			my @alternative_list = $q->param('alternative_list') || (); 
+			
             # send away
-            $message_id = $mh->mass_send(%mailing); 
+            $message_id = $mh->mass_send(
+				{
+					-msg 			  => {%mailing},
+					-partial_sending  => $partial_sending, 
+					-multi_list_send  => {
+											-lists    => [@alternative_list], 
+											-no_dupes => 1, 
+					 					 }
+				}
+			); 
         }else{ 
             
             # This is currently similar code as what's in the DADA::Mail::Send::_mail_general_headers method...
