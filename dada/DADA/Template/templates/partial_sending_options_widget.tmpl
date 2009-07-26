@@ -1,5 +1,8 @@
 <!-- begin partial_sending_options_widget.tmpl --> 
 
+
+
+
 <!-- tmpl_if can_have_subscriber_fields --> 
 
 
@@ -17,6 +20,9 @@
     </p> 
     
     <table> 
+	
+	
+	
     <!-- tmpl_loop undotted_fields --> 
         <tr> 
          <td> 
@@ -49,6 +55,7 @@
     
     </table> 
     
+	
     <div class="buttonfloat">
      <input type="button" value="Preview Who's Getting This Message..." class="cautionary" onClick="get_partial_list()" />  
     </div>
@@ -70,15 +77,18 @@
 
 		 function get_partial_list(){ 
 			new Ajax.Updater(
+	
 				'previewMessageReceivers', '<!-- tmpl_var S_PROGRAM_URL -->', 
 				{ 
 				    method: 'post', 
 					parameters: {
+						alternative_list:   $F('alternative_list'),
 						 <!-- tmpl_loop undotted_fields -->
 						field_comparison_type_<!-- tmpl_var name -->: $F('field_comparison_type_<!-- tmpl_var name -->'), 
 						field_value_<!-- tmpl_var name -->: $F('field_value_<!-- tmpl_var name -->'), 
 						<!-- /tmpl_loop -->
-						f:                         'previewMessageReceivers',
+						f:                  'previewMessageReceivers',
+					 
 						},
 
 				onCreate: 	 function() {
