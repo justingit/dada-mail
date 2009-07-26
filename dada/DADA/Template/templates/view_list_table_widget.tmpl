@@ -1,3 +1,6 @@
+
+
+
 <!-- begin view_list_table_widget.tmpl --> 
 
 <div style="max-height: 200px; overflow: auto; border:1px solid black">
@@ -10,6 +13,15 @@
    		</td>
 	<!-- /tmpl_unless --> 
 
+
+	<td>
+	    <p>
+	     <strong>
+	      List
+	     </strong>
+	    </p>
+	   </td>
+	
    <td>
     <p>
      <strong>
@@ -34,22 +46,35 @@
   </tr>
 
 
-<!-- tmpl_loop name="subscribers" -->
+<!-- tmpl_loop subscribers -->
 	   
 	   <tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!--/tmpl_if-->>
         
 		   <!-- tmpl_unless no_checkboxes --> 
+		
 	    <td width="25">
 	  
 			<input type="checkbox" name="address" value="<!-- tmpl_var email -->" />
 
 		</td>
 			    <!-- /tmpl_unless --> 
-	    <td>
+	    
+	
+				<td>
+				    <p>
+				     <strong>
+				      <!-- tmpl_var list --> 
+				     </strong>
+				    </p>
+				   </td>
+				
+				
+	<td>
 	     <p>
+		
 	     <!-- tmpl_unless no_email_links --> 
 	 	<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_subscriber&amp;email=<!-- tmpl_var email -->&amp;type=<!-- tmpl_var list_type -->" >
-	       <!-- tmpl_var email -->
+	       <!-- tmpl_var email -->  
 	      </a>
 	    <!-- tmpl_else --> 
 		     <!-- tmpl_var email -->
