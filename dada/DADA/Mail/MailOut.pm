@@ -223,7 +223,13 @@ sub create {
     $self->create_directory();
 
     # The Temporary Subscriber List
-    $self->create_subscriber_list( { -mh_obj => $args->{-mh_obj}, -partial_sending => $args->{-partial_sending} } );
+    $self->create_subscriber_list( 
+		{ 
+			-mh_obj          => $args->{-mh_obj}, 
+			-partial_sending => $args->{-partial_sending},
+			-exclude_from    => $args->{-exclude_from}, 
+		 } 
+	);
 
     #The Total Amount of Recipients Amount
     $self->create_total_sending_out_num();
@@ -455,7 +461,7 @@ sub create_subscriber_list {
 	        -Ban             => $args->{-mh_obj}->{do_not_send_to},
 	        -Sending_Lists   => $args->{-mh_obj}->also_send_to,	
 	        -partial_sending => $args->{-partial_sending}, 
-
+			-exclude_from    => $args->{-exclude_from}, 
         );
 	$self->unlock_file($lock); 
     if ( !-e $self->dir . '/' . $file_names->{tmp_subscriber_list} ) {
