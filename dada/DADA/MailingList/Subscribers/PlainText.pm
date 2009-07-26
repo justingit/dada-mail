@@ -211,23 +211,38 @@ sub print_out_list {
 
 sub subscription_list { 
 	my $self = shift; 
-	my %args = (-start    => 1, 
-	            '-length' => 100,
-	            -Type     => 'list',
-	            @_); 
+	my ($args) = @_; 
+	
+    my $self = shift;
+
+ #   my %args = (
+ #       -start             => 1,
+ #       '-length'          => undef,
+ #       -Type              => 'list',
+ #       @_
+ #   );
+
+	my ($args) = @_; 
+	if(!exists($args->{-start})){ 
+		$args->{-start} = 1; 
+	}
+
+	if(!exists($args->{-type})){ 
+		$args->{-type} = 'list'; 
+	}
              
 	my $count = 0; 
 	my $list = []; 
 	my $email; 
 	
-	$self->open_list_handle(-Type => $args{-Type}); 
+	$self->open_list_handle(-Type => $args->{-type}); 
 	while(defined($email = <LIST>)){ 
 			$count++; 
 
-			next if $count <  $args{-start}; 
-			last if $count > ($args{-start} + $args{'-length'});
+			next if $count <  $args->{-start}; 
+			last if $count > ($args->{-start} + $args->{'-length'});
 			chomp($email); 
-			push(@$list, {email => $email, list_type => $args{-Type}});  
+			push(@$list, {email => $email, list_type => $args->{-type}});  
 					
 		}
 		close (LIST);            
