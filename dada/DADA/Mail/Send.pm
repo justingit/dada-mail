@@ -51,8 +51,11 @@ my %allowed = (
 	test                          => 0, 
 	
 	partial_sending               => {}, 
+	multi_list_send               => {}, 
 	
-	net_smtp_obj                      => undef, 
+	exclude_from                  => [],
+	
+	net_smtp_obj                  => undef, 
 	
 ); 
 
@@ -830,22 +833,57 @@ sub mass_send {
 
 	my $self = shift; 
 	
-	$self->im_mass_sending(1); 
+	my ($args) = @_; 
+	
+	my %param_headers = (); 
+	
+	if(ref($args)){
 		
-	warn '[' . $self->{list} . '] starting mass_send at' . time
-	    if $t; 
+		if(! exists( $args->{-msg} ) ){ 
+			croak "You MUST pass the message in the -msg param"; 
+		} 
+		else { 
+			%param_headers = %{$args->{-msg}};
+		}
+		# And then, we can pass a few neat things: 
+		if(exists($args->{-partial_sending})){ 
+			$self->partial_sending($args->{-partial_sending}); 
+		}
+		if(exists($args->{-multi_list_send})){ 
+			$self->multi_list_send($args->{-multi_list_send}); 		
+		}
+		if(exists($args->{-exclude_from})){ 
+			$self->exclude_from($args->{-exclude_from}); 		
+		}		
+		if(exists($args->{-test})){ 
+			$self->test($args->{-test}); 
+		}
+		if(exists($args->{-mass_test})){ 
+			$self->mass_test($args->{-mass_test}); 
+		}
+		if(exists($args->{-mass_test_recipient})){ 
+			$self->mass_test_recipient($args->{-mass_test_recipient}); 
+		}		
+	}
+	else { 
+		%param_headers = @_; 
+	}
 	
 	# This will just be generally, well, chatty. 
 	no strict;
-	# DEV: This needs to be cleaned up; 
-	my %param_headers = @_; 
+	# DEV: This needs to be cleaned up;
 	foreach(keys %param_headers){
 		if(strip($param_headers{$_}) eq ''){ 
 			delete($param_headers{$_}); 
 		}
 	}
-	use strict; 
+	use strict;
 	
+	
+	$self->im_mass_sending(1); 
+		
+	warn '[' . $self->{list} . '] starting mass_send at' . time
+	    if $t;
 	    
 	my %fields = ( 
 				  %defaults,  
@@ -1097,6 +1135,41 @@ sub mass_send {
             # Probably not. (rats.); 
             warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' Fork successful. (From Parent)'
 				if $t; 
+				
+			# Here's the new stuff: 
+			
+			if(keys %{$self->multi_list_send}){ 
+				my $local_args = $args; 
+				# Cause that would not be good. 
+				
+				delete($local_args->{-multi_list_send});
+				delete($local_args->{-exclude_from});
+				
+				my $lists = $self->multi_list_send->{-lists};
+				
+				my @exclude_from = ($self->list);
+				
+				foreach my $local_list(@$lists){ 
+					sleep(1); # just so things can catch up... 
+					require DADA::Mail::Send; 
+					my $local_ms = DADA::Mail::Send->new(
+							{
+								-list => $local_list, 
+							}
+					); 
+					$local_ms->mass_send(
+							{
+								%$local_args, 
+								-exclude_from => [@exclude_from],
+							}
+						); 
+					push(@exclude_from, $local_list); 	
+				}
+				warn "Looks like we have more lists to send to!"; 
+			}
+			else { 
+				warn "Nope. No more lists to send to."; 
+			}
             return $fields{'Message-ID'};
                 
         } elsif (defined $pid) { # $pid is zero here if defined
