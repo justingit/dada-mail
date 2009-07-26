@@ -1021,6 +1021,8 @@ sub previewMessageReceivers {
     my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,  
                                                 -Function => 'send_email');
     
+	my @alternative_list = $q->param('alternative_list') || (); 
+
     require DADA::MailingList::Settings; 
             $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
     
@@ -1051,17 +1053,40 @@ sub previewMessageReceivers {
 			$partial_sending->{$field->{name}} = {like => $q->param('field_value_' . $field->{name})}; 
 		}  
     }
-
+	
+	
     if(keys %$partial_sending) { 
-      $lh->fancy_print_out_list(
+     print '<h1>' . $list . '</h1>'; 
+	
+ 		$lh->fancy_print_out_list(
 		{
-			-partial_listing => $partial_sending, 
-			-type            => 'list',
+			-partial_listing   => $partial_sending, 
+			-type              => 'list',		
 		}
-	); 
+		);
+		
+		my @exclude_from = ($list); 
+		if($alternative_list[0]){ 
+		
+			foreach my $alt_list(@alternative_list){ 
+				print '<h1>' . $alt_list . '</h1>'; 
+				my $alt_mls = DADA::MailingList::Subscribers->new({-list => $alt_list});
+				 $alt_mls->fancy_print_out_list(
+					{
+						-partial_listing   => $partial_sending, 
+						-type              => 'list',
+						-exclude_from      => [@exclude_from], 		
+					}
+				); 
+				push(@exclude_from, $alt_list); 
+			}
+		}
+
     } else { 
-        print $q->p($q->em('Currently, all ' . $q->strong( $lh->num_subscribers ) . ' subscribers of your list will receive this message.')); 
+        print $q->p($q->em('Currently, all ' . $q->strong( $lh->num_subscribers ) . ' subscribers of, ' . $list .' will receive this message.')); 
     }
+
+	
 }
 
 
@@ -1224,42 +1249,51 @@ sub sending_monitor {
     # No id? No problem, show them the index page. 
     
     if(!$q->param('id')){ 
-              
-        
         my $mailout_status = []; 
-        
-         my @mailouts  = DADA::Mail::MailOut::current_mailouts(
+		my @lists;
+		
+		if($root_login == 1){ 
+			@lists = available_lists();
+		}
+		else { 
+			@lists = ($list); 
+		}
+		
+		foreach my $l_list(@lists){  
+        	my @mailouts  = DADA::Mail::MailOut::current_mailouts(
 							{ 
-								-list     => $list, 
+								-list     => $l_list, 
 								-order_by => 'creation',
 							}
 						);  
-
-        foreach my $mo(@mailouts){ 
-            
-            my $mailout = DADA::Mail::MailOut->new({ -list => $list }); 
-               $mailout->associate($mo->{id}, $mo->{type}); 
-            my $status = $mailout->status(); 
-            
-
-            push(@$mailout_status, {
-            
-                                    %$status, 
-                                    S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL, 
-                                    Subject       => $status->{email_fields}->{Subject},
-                                    
-                                     status_bar_width             => int($status->{percent_done}) * 1,
-                                     negative_status_bar_width    => 100 - (int($status->{percent_done}) * 1), 
-                                     message_id                   => $mo->{id}, 
-                                     message_type                 => $mo->{type},
-
-									 mailing_started              => scalar(localtime($status->{first_access})), 
-                                     mailout_stale                => $status->{mailout_stale}, 
-                                    }
-                                    );
-            
-        }
-        
+			foreach my $mo(@mailouts){
+	
+				my $mailout = DADA::Mail::MailOut->new({ -list => $l_list }); 
+	               $mailout->associate(
+						$mo->{id}, 
+						$mo->{type}
+					); 
+	            my $status  = $mailout->status(); 
+	
+	            push(@$mailout_status, 
+					{
+						%$status, 
+						list                         => $l_list, 
+						S_PROGRAM_URL                => $DADA::Config::S_PROGRAM_URL, 
+						Subject                      => $status->{email_fields}->{Subject},
+						status_bar_width             => int($status->{percent_done}) * 1,
+						negative_status_bar_width    => 100 - (int($status->{percent_done}) * 1), 
+						message_id                   => $mo->{id}, 
+						message_type                 => $mo->{type},
+						mailing_started              => scalar(localtime($status->{first_access})), 
+						mailout_stale                => $status->{mailout_stale}, 
+	            	}
+	        	);
+			}
+		}
+		
+		
+ 
          print(admin_template_header(      
                   -Title      => "Monitor Your Mailing", 
                   -List       => $list, 
@@ -1279,7 +1313,7 @@ sub sending_monitor {
 				) = DADA::Mail::MailOut::monitor_mailout(
 						{
 							-verbose => 0, 
-							-list    => $list
+							($root_login == 1) ? () : (-list => $list)
 						}
 					); 
 
@@ -2899,7 +2933,13 @@ sub view_list {
        $screen_start          = 1 if (($start == 0) && ($num_subscribers != 0)); 
     my $previous_screen       = $start-$length; 
     my $next_screen           = $start+$length; 
-    my $subscribers           = $lh->subscription_list( -start => $start, '-length' => $length, -Type => $type); 
+    my $subscribers           = $lh->subscription_list(
+									{ 
+										-start    => $start, 
+										'-length' => $length, 
+										-type     => $type,
+									}
+								); 
     
 	#use Data::Dumper; 
 	#die Data::Dumper::Dumper($subscribers); 
@@ -6415,7 +6455,7 @@ sub search_list {
        $screen_start          = 1 if (($start == 0) && ($num_subscribers != 0)); 
     my $previous_screen       = $start-$length; 
     my $next_screen           = $start+$length; 
-    #my $subscribers          = $lh->subscription_list( -start => $start, '-length' => $length, -Type => $type); 
+    #my $subscribers          = $lh->subscription_list( { -start => $start, '-length' => $length, -type => $type }); 
     my $subscribers           =  $lh->search_list(
                                                   {
                                                       -query   => $keyword,
