@@ -1,0 +1,68 @@
+<!-- begin multiple_list_sending_widget.tmpl --> 
+
+
+
+
+
+    <fieldset>
+     <legend>
+       <a href="#" id="multiple_list_sending" onclick="toggleDisplay('multiple_list_sending_widget');return false;">
+      +/- 
+     </a>Multiple Mailing List Sending
+     </legend>    
+     
+     <div id="multiple_list_sending_widget" style="display:none;width:90%">
+
+			 <p class="positive">
+			  * Global List Sending has been enabled.
+			 </p>
+			 <p>
+			  <em>Also</em> send a copy of this message to subscribers of the following mailing lists:
+			  <!-- <br/>
+			  <em>
+			   (subscribers of more than one list will only receive one copy of the message)
+			  </em>
+			--> 
+			
+			 </p>
+
+			 <div class="simplebox" style="width:95%;max-height:150px;overflow:auto;"
+			  <p>
+			   <a href="#" onclick="SetListChecked(1);return false;">
+			    check all 
+			   </a>
+			   :: 
+			   <a href="#" onclick="SetListChecked(0);return false;">
+			    uncheck all
+			   </a>
+			  </p>
+			  <p>
+				
+			
+			
+		<!-- tmpl_if comment --> 
+			<input type="hidden" name="alternative_list" value="<!-- tmpl_var list -->" /> 
+		<!-- /tmpl_if --> 
+		
+		<!-- tmpl_var global_list_sending_checkbox_widget --> 
+
+
+	 </p>
+	  <p>
+	   <a href="#" onclick="SetListChecked(1);return false;">
+	    check all 
+	   </a>
+	   :: 
+	   <a href="#" onclick="SetListChecked(0);return false;">
+	    uncheck all
+	   </a>
+	  </p>
+	 </div>
+	
+	</div> 
+	
+    </fieldset>
+
+	
+	
+<!-- end multiple_list_sending_widget.tmpl --> 
