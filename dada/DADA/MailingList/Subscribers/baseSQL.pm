@@ -13,7 +13,9 @@ my $email_id = $DADA::Config::SQL_PARAMS{id_column} || 'email_id';
 
 $DADA::Config::SQL_PARAMS{id_column} ||= 'email_id';
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
+#my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
+
+my $t = 1; 
 
 use Fcntl qw(
   O_WRONLY
@@ -200,11 +202,12 @@ sub SQL_subscriber_profile_join_statement {
     my $profile_fields_table = $self->{sql_params}->{profile_fields_table};
 
     # This is to select which profile fields to return with our query
-    my @merge_fields = @{ $self->subscriber_fields };
+    my @merge_fields      = @{ $self->subscriber_fields };
     my $merge_field_query = '';
     foreach (@merge_fields) {
         $merge_field_query .= ', ' . $profile_fields_table . '.' . $_;
     }
+
     #/ This is to select which profile fields to return with our query
 
     # We need the email and list from $subscriber_table
@@ -244,7 +247,8 @@ sub SQL_subscriber_profile_join_statement {
       . $subscriber_table
       . '.list_type = '
       . $self->{dbh}->quote( $args->{ -type } );
-    $query .= ' AND ' . $subscriber_table . '.list_status = 1';
+    $query .=
+      ' AND ' . $subscriber_table . '.list_status = ' . $self->{dbh}->quote(1);
 
     # This is all to query the $dada_profile_fields_table
     # The main thing, is that we only want the SQL statement to hold
@@ -274,19 +278,25 @@ sub SQL_subscriber_profile_join_statement {
                     length( $args->{ -partial_listing }->{$_}->{equal_to} ) >
                     0 )
                 {
-                    push ( @add_q,
-                        $table . '.' . $_ . ' = \''
-                          . $args->{ -partial_listing }->{$_}->{equal_to}
-                          . '\'' );
+                    push (
+                        @add_q,
+                        $table . '.' . $_ . ' = '
+                          . $self->{dbh}->quote(
+                            $args->{ -partial_listing }->{$_}->{equal_to}
+                          )
+                    );
                 }
             }
             elsif ( exists( $args->{ -partial_listing }->{$_}->{like} ) ) {
                 if ( length( $args->{ -partial_listing }->{$_}->{like} ) > 0 ) {
-                    push ( @add_q,
-                        $table . '.' . $_
-                          . ' LIKE \'%'
-                          . $args->{ -partial_listing }->{$_}->{like}
-                          . '%\'' );
+                    push (
+                        @add_q,
+                        $table . '.' . $_ . ' LIKE '
+                          . $self->{dbh}->quote(
+                            '%'
+                              . $args->{ -partial_listing }->{$_}->{like} . '%'
+                          )
+                    );
                 }
             }
         }
@@ -306,11 +316,17 @@ sub SQL_subscriber_profile_join_statement {
             my @excludes = ();
             foreach my $ex_list ( @{ $args->{ -exclude_from } } ) {
                 push ( @excludes,
-                    $subscriber_table . '.list = '
+                    $subscriber_table
+                      . '.list = '
                       . $self->{dbh}->quote($ex_list) );
             }
-            my $ex_from_query =
-' AND ' . $subscriber_table . '.email NOT IN (SELECT ' . $subscriber_table . '.email FROM ' . $subscriber_table . ' WHERE '
+            my $ex_from_query = ' AND '
+              . $subscriber_table
+              . '.email NOT IN (SELECT '
+              . $subscriber_table
+              . '.email FROM '
+              . $subscriber_table
+              . ' WHERE '
               . join ( ' OR ', @excludes ) . ' ) ';
             $query .= $ex_from_query;
         }
@@ -327,9 +343,10 @@ sub SQL_subscriber_profile_join_statement {
 
     warn 'QUERY: ' . $query
       if $t;
-	
+
     return $query;
 }
+
 
 sub fancy_print_out_list {
 

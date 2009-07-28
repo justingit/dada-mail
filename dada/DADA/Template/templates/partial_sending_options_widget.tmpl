@@ -16,12 +16,10 @@
      <div id="partial_sending_options_widget" style="display:none;width:90%">
 
     <p>
-     Send this message to subscribers where the:
+     Send your Mailing List Message  to your Subscribers where their:
     </p> 
     
     <table> 
-	
-	
 	
     <!-- tmpl_loop undotted_fields --> 
         <tr> 
@@ -77,13 +75,25 @@
 
 		 function get_partial_list(){ 
 			
-			var alternative_list         = ''; 
+			var al         = new Array();; 
+			var alternative_list = ''; 
 			var multi_list_send_no_dupes = 0; 
 			
 			/* Is there a prototype.js way of doing this? */
 			if (document.getElementById('alternative_list') != null) {
-				alternative_list = $F('alternative_list')
+			
+				var c_value = "";
+				for (var i=0; i < document.send_email.alternative_list.length; i++)
+				   {
+				   if (document.send_email.alternative_list[i].checked)
+				      {
+				      	al[i] =  document.send_email.alternative_list[i].value;
+					 }
+				   }
+				alternative_list = al.join(','); 
 			}
+				
+
 			if (document.getElementById('multi_list_send_no_dupes') != null) {
 				multi_list_send_no_dupes = $F('multi_list_send_no_dupes'); 
 			}

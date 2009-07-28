@@ -1021,7 +1021,15 @@ sub previewMessageReceivers {
     my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,  
                                                 -Function => 'send_email');
     
-	my @alternative_list         = $q->param('alternative_list') || (); 
+	# This comes in a s a string, sep. by commas. Sigh. 
+	my $al = $q->param('alternative_list') || ''; 
+
+	
+	my @alternative_list         = split(',', $al); 
+	
+#	require Data::Dumper; 
+#	die Data::Dumper::Dumper(\@alternative_list); 
+#	
 	my $multi_list_send_no_dupes = $q->param('multi_list_send_no_dupes') || 0; 
 	
     require DADA::MailingList::Settings; 

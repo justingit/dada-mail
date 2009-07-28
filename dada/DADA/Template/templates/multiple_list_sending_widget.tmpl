@@ -1,6 +1,11 @@
 <!-- begin multiple_list_sending_widget.tmpl --> 
 
-
+	<!-- tmpl_if comment --> 
+		I'm being  bit lazy here, as I should see if they have an SQL backend 
+		(which, is what can_have_subscriber_fields does, just not explicitly)
+	<!-- /tmpl_if --> 
+	
+	<!-- tmpl_if can_have_subscriber_fields -->
 
 
 
@@ -12,6 +17,8 @@
      </legend>    
      
      <div id="multiple_list_sending_widget" style="display:none;width:90%">
+	
+		
 
 			 <p class="alert">
 			  * Multiple Mailing List Sending has been enabled
@@ -57,10 +64,18 @@
 	
 	 </div>
 	
+
+	
 	</div> 
 	
     </fieldset>
 
+	<!-- tmpl_else --> 
+	
+		<!-- multiple list sending is not supported (apparently) 
+	
+	<!-- /tmpl_if -->
+	
 	
 	
 <!-- end multiple_list_sending_widget.tmpl --> 
