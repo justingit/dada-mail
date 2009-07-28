@@ -76,28 +76,45 @@
 	    //<![CDATA[
 
 		 function get_partial_list(){ 
+			
+			var alternative_list         = ''; 
+			var multi_list_send_no_dupes = 0; 
+			
+			/* Is there a prototype.js way of doing this? */
+			if (document.getElementById('alternative_list') != null) {
+				alternative_list = $F('alternative_list')
+			}
+			if (document.getElementById('multi_list_send_no_dupes') != null) {
+				multi_list_send_no_dupes = $F('multi_list_send_no_dupes'); 
+			}
 			new Ajax.Updater(
-	
+		
 				'previewMessageReceivers', '<!-- tmpl_var S_PROGRAM_URL -->', 
 				{ 
 				    method: 'post', 
 					parameters: {
-						alternative_list:   $F('alternative_list'),
+						f:                        'previewMessageReceivers',
+						alternative_list:         alternative_list,
+						multi_list_send_no_dupes: multi_list_send_no_dupes,
+						
 						 <!-- tmpl_loop undotted_fields -->
-						field_comparison_type_<!-- tmpl_var name -->: $F('field_comparison_type_<!-- tmpl_var name -->'), 
-						field_value_<!-- tmpl_var name -->: $F('field_value_<!-- tmpl_var name -->'), 
+							field_comparison_type_<!-- tmpl_var name -->: $F('field_comparison_type_<!-- tmpl_var name -->'), 
+							field_value_<!-- tmpl_var name -->: $F('field_value_<!-- tmpl_var name -->'), 
 						<!-- /tmpl_loop -->
-						f:                  'previewMessageReceivers',
-					 
+						
 						},
 
 				onCreate: 	 function() {
 					$('previewMessageReceivers_loading').show(); 
-					$('previewMessageReceivers').hide();
+					$('previewMessageReceivers').hide(); 
+					
 				},
 				onComplete: 	 function() {
 					$('previewMessageReceivers_loading').hide(); 
-					$('previewMessageReceivers').show(); 
+					/*$('previewMessageReceivers').show(); */
+					/* Fancy stuff: */
+					Effect.BlindDown('previewMessageReceivers');
+
 				}
 
 

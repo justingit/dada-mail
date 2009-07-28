@@ -1021,8 +1021,9 @@ sub previewMessageReceivers {
     my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,  
                                                 -Function => 'send_email');
     
-	my @alternative_list = $q->param('alternative_list') || (); 
-
+	my @alternative_list         = $q->param('alternative_list') || (); 
+	my $multi_list_send_no_dupes = $q->param('multi_list_send_no_dupes') || 0; 
+	
     require DADA::MailingList::Settings; 
             $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
     
@@ -1065,7 +1066,11 @@ sub previewMessageReceivers {
 		}
 		);
 		
-		my @exclude_from = ($list); 
+		my @exclude_from = (); 
+		
+		if($multi_list_send_no_dupes == 1){ 
+			 @exclude_from = ($list); 
+		}
 		if($alternative_list[0]){ 
 		
 			foreach my $alt_list(@alternative_list){ 
@@ -1078,7 +1083,9 @@ sub previewMessageReceivers {
 						-exclude_from      => [@exclude_from], 		
 					}
 				); 
-				push(@exclude_from, $alt_list); 
+				if($multi_list_send_no_dupes == 1){ 
+					push(@exclude_from, $alt_list); 
+				}
 			}
 		}
 

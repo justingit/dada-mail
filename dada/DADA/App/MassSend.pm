@@ -339,20 +339,6 @@ sub send_email {
                        Body      =>  $final_body,
                        ); 
 
-		if($process =~ m/test/i){
-        	$mh->mass_test(1) 
-		}
-
-        my $test_recipient = ''; 
-        if($process =~ m/test/i){ 
-            $mh->mass_test_recipient($q->param('test_recipient'));
-            $test_recipient = $mh->mass_test_recipient; 
-        }
-        
-       # This isn't, um, used anymore. 
-       # $mh->list_type('testers') 
-       #     if($process =~ m/test/i);
-
 		###### Blah blah blah, parital listing 
 	    my $partial_sending = {}; 
 	    foreach my $field(@$undotted_fields){ 
@@ -363,15 +349,19 @@ sub send_email {
 				$partial_sending->{$field->{name}} = {like => $q->param('field_value_' . $field->{name})}; 
 			}  
 	    }
-        #if(keys %$partial_sending){ 
-        #    $mh->partial_sending($partial_sending); 
-        #}
+
   		######/ Blah blah blah, parital listing 
       
         my $message_id; 
+		my $test_recipient = ''; 
         if($q->param('archive_no_send') != 1){ 
 			
 			my @alternative_list = $q->param('alternative_list') || (); 
+			my $og_test_recipient = $q->param('test_recipient') || ''; 
+			$mh->mass_test_recipient($og_test_recipient); 
+            $test_recipient = $mh->mass_test_recipient;
+
+			my $multi_list_send_no_dupes = $q->param('multi_list_send_no_dupes') || 0; 
 			
             # send away
             $message_id = $mh->mass_send(
@@ -380,8 +370,10 @@ sub send_email {
 					-partial_sending  => $partial_sending, 
 					-multi_list_send  => {
 											-lists    => [@alternative_list], 
-											-no_dupes => 1, 
-					 					 }
+											-no_dupes => $multi_list_send_no_dupes, 
+					 					 },
+				($process =~ m/test/i) ? (-mass_test => 1, -test_recipient => $og_test_recipient,) : (-mass_test => 0,)
+								        	 
 				}
 			); 
         }else{ 
@@ -414,12 +406,7 @@ sub send_email {
 
         if($message_id){ 
             if(($archive_m == 1) && ($process !~ m/test/i)){
-                require DADA::MailingList::Archives;
-                #
-                # $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
-                # I'm thinking, bad idea - since we're going to lose the DB Handle we had 
-                # from mass sending. 
-                
+                require DADA::MailingList::Archives;                
                 my $archive = DADA::MailingList::Archives->new({-list => $list});
                    $archive->set_archive_info($message_id, $headers{Subject}, undef, undef, $mh->saved_message); 
                   
@@ -542,6 +529,7 @@ sub send_url_email {
 							priority_popup_menu              => DADA::Template::Widgets::priority_popup_menu($li),
 							precendence_popup_menu           => DADA::Template::Widgets::precendence_popup_menu($li),
 							
+							global_list_sending_checkbox_widget => DADA::Template::Widgets::global_list_sending_checkbox_widget($list), 
 							
 							MAILOUT_AT_ONCE_LIMIT      => $DADA::Config::MAILOUT_AT_ONCE_LIMIT, 
 							mailout_will_be_queued     => $mailout_will_be_queued, 
@@ -700,14 +688,6 @@ sub send_url_email {
                                Body      => $template,
                               );
                                
-                $mh->mass_test(1) 
-                    if($q->param('process') =~ m/test/i); 
-                
-                if($process =~ m/test/i){ 
-                    $mh->mass_test_recipient($q->param('test_recipient')); 
-                    $test_recipient = $mh->mass_test_recipient; 
-                }
-
 			    my $partial_sending = {}; 
 			    foreach my $field(@$undotted_fields){ 
 					if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){ 
@@ -718,14 +698,31 @@ sub send_url_email {
 					}  
 			    }
 				
-				if(keys %$partial_sending){ 
-                    $mh->partial_sending($partial_sending); 
-                }
-                
-                
                 if($q->param('archive_no_send') != 1){ 
                     # Woo Ha! Send away!
-                    $message_id = $mh->mass_send(%mailing); 
+
+					my @alternative_list         = $q->param('alternative_list') || (); 
+					my $og_test_recipient        = $q->param('test_recipient') || ''; 
+					my $multi_list_send_no_dupes = $q->param('multi_list_send_no_dupes') || 0; 
+					
+					$mh->mass_test_recipient($og_test_recipient); 
+		            $test_recipient = $mh->mass_test_recipient;
+
+		            # send away
+		            $message_id = $mh->mass_send(
+						{
+							-msg 			  => {%mailing},
+							-partial_sending  => $partial_sending, 
+							-multi_list_send  => {
+													-lists    => [@alternative_list], 
+													-no_dupes => $multi_list_send_no_dupes, 
+							 					 },
+						($process =~ m/test/i) ? (-mass_test => 1, -test_recipient => $og_test_recipient,) : (-mass_test => 0,)
+
+						}
+					);
+
+
                 }else{ 
             
                     # This is currently similar code as what's in the DADA::Mail::Send::_mail_general_headers method...

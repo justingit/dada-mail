@@ -1344,42 +1344,7 @@ SKIP: {
 							);
 	ok($status == 0, "Status is 0 ($status)"); 
 
-=cut
 
-#
-## Remove All 
-
-foreach my $type( keys %{ $lh->allowed_list_types } ) { 
-	
-	$i = 0;
-	for ( $i = 0 ; $i < 1987 ; $i++ ) {
-
-	        $lh->add_subscriber(
-	            {
-	                -email => 'example' . $i . '@example.com',
-	                -type  => 'list',
-	            }
-	        );
-	}
-	undef $i;
-	$lh->remove_all_subscribers(
-		{
-			-type => 'list',
-		}
-	);
-	ok($lh->num_subscribers == 0, "No subscribers left! in $type"); 
-
-}
-
-=cut
-
-
-
-
-
-
-
- 
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
 

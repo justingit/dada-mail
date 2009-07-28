@@ -13,20 +13,14 @@
      
      <div id="multiple_list_sending_widget" style="display:none;width:90%">
 
-			 <p class="positive">
-			  * Global List Sending has been enabled.
+			 <p class="alert">
+			  * Multiple Mailing List Sending has been enabled
 			 </p>
 			 <p>
 			  <em>Also</em> send a copy of this message to subscribers of the following mailing lists:
-			  <!-- <br/>
-			  <em>
-			   (subscribers of more than one list will only receive one copy of the message)
-			  </em>
-			--> 
-			
-			 </p>
+			</p>
 
-			 <div class="simplebox" style="width:95%;max-height:150px;overflow:auto;"
+			 <div class="simplebox" style="max-height:150px;overflow:auto;"
 			  <p>
 			   <a href="#" onclick="SetListChecked(1);return false;">
 			    check all 
@@ -36,18 +30,10 @@
 			    uncheck all
 			   </a>
 			  </p>
-			  <p>
-				
-			
-			
-		<!-- tmpl_if comment --> 
-			<input type="hidden" name="alternative_list" value="<!-- tmpl_var list -->" /> 
-		<!-- /tmpl_if --> 
+			  
 		
 		<!-- tmpl_var global_list_sending_checkbox_widget --> 
-
-
-	 </p>
+	
 	  <p>
 	   <a href="#" onclick="SetListChecked(1);return false;">
 	    check all 
@@ -57,6 +43,18 @@
 	    uncheck all
 	   </a>
 	  </p>
+	
+		<p>&nbsp;</p> 
+		<p>
+		 <input type="checkbox" name="multi_list_send_no_dupes" id="multi_list_send_no_dupes" value="1" checked="checked" />
+		
+		<label for="multi_list_send_no_dupes">
+		  Send Only One Message/Subscriber
+		 </label>
+		<br /> 
+		Subscribers who have email addresses subscribed to more than one mailing list will receive only one copy of this message.
+	  </p>
+	
 	 </div>
 	
 	</div> 
