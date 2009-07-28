@@ -64,19 +64,157 @@ $ls3->add_subscriber(
 	}
 );
 
-my $sl = $ls->subscription_list(
+my $sl = [];
+
+
+
+# Let's see what we have, that's unique to our first list: 
+$sl = $ls->subscription_list(
 	{
 		-exclude_from => [$list2, $list3],
 	}
 );
-
 ok(scalar @$sl == 1, "OK! We have ONE subscriber, unique to this one list"); 
+undef $sl; 
+
+
+
+# Let's see if we can't confuse it - should still only return one result
+$ls->add_subscriber(
+	{
+		-email => 'somewhereelse@fubar.com', 
+	}
+);
+$sl = $ls->subscription_list(
+	{
+		-exclude_from    => [$list2, $list3],
+		-partial_listing => {
+								email => 
+									{
+										like => 'example',
+									}
+							},
+	}
+);
+ok(scalar @$sl == 1, "OK! We have ONE subscriber, unique to this one list"); 
+undef $sl;
+
+
+# What if we add that subscriber to list #2? We shouldn't get any results:
+$ls2->add_subscriber(
+	{
+		-email => 'somewhereelse@fubar.com', 
+	}
+);
+$sl = $ls->subscription_list(
+	{
+		-exclude_from    => [$list2, $list3],
+		-partial_listing => {
+								email => 
+									{
+										like => 'fubar.com',
+									}
+							},
+	}
+);
+ok(scalar @$sl == 0, "OK! We have NO subscriber, unique to this one list"); 
+undef $sl;
+
+
+# But, what if we're not looking at list #2, just list #3? We should get one result: 
+$sl = $ls->subscription_list(
+	{
+		-exclude_from    => [$list3],
+		-partial_listing => {
+								email => 
+									{
+										like => 'fubar.com',
+									}
+							},
+	}
+);
+ok(scalar @$sl == 1, "OK! We have ONE subscriber, unique to this one list"); 
+undef $sl;
+
+# Time for some subscriber fields, I guess: 
+require DADA::Profile::Fields;
+my $pf = DADA::Profile::Fields->new; 
+$pf->{manager}->add_field(
+	{
+		-field => 'one', 
+	}
+);
+$pf->{manager}->add_field(
+	{
+		-field => 'two', 
+	}
+);
+$pf->{manager}->add_field(
+	{
+		-field => 'three', 
+	}
+);
+
+foreach my $sub(@{$ls->subscription_list}){ 
+	$ls->edit_subscriber(
+		{
+			-email  => $sub->{email}, 
+			-fields => { 
+				one   => "ONE", 
+				two   => "TWO", 
+				three => "THREE",
+			}
+		}
+	);
+}
+
+
+undef $sl; 
+
+
+$sl = $ls->subscription_list(
+	{
+		-partial_listing => {
+								one => 
+									{
+										like => 'ONE',
+									}
+							},
+	}
+);
+ok(scalar @$sl == 7, "OK! We have 7 subscribers, unique to this one list (" . scalar @$sl . ")"); 
+undef $sl; 
+
+
+
+
+
+$sl = $ls->subscription_list(
+	{
+		-exclude_from    => [$list2, $list3],
+		-partial_listing => {
+								one => 
+									{
+										like => 'ONE',
+									}
+							},
+	}
+);
+ok(scalar @$sl == 1, "OK! We have 1 subscribers, unique to this one list (" . scalar @$sl . ")"); 
+undef $sl; 
+
+
+#require Data::Dumper;
+#diag Data::Dumper::Dumper($sl); 
 
 
 
 
 
 dada_test_config::remove_test_list;
+dada_test_config::remove_test_list({-name => 'dadatest2'});
+dada_test_config::remove_test_list({-name => 'dadatest3'});
+
 dada_test_config::wipe_out;
 
 

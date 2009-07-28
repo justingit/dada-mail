@@ -73,6 +73,9 @@ sub _init {
         $self->{dbh} = $dbi_obj->dbh_obj;
     }
 
+	# Init?
+	$self->{cache}->{fields} = $self->fields; 
+
 }
 
 1;

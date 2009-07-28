@@ -146,10 +146,12 @@ sub edit {
 
     my $self = shift;
     my ($args) = @_;
-
+	
+	
     if ( !exists $args->{ -fields } ) {
         $args->{ -fields } = {};
     }
+
 
     if ( !exists $args->{ -mode } ) {
         $args->{ -mode } = 'update';
@@ -174,6 +176,7 @@ sub edit {
         $orig_values->{$_} = $args->{ -fields }->{$_};
     }
 
+	
     $self = DADA::MailingList::Subscriber->add(
         {
 			-list   => $self->{list},

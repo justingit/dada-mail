@@ -14,6 +14,8 @@ sub add {
     my $class = shift;
 
     my ($args) = @_;
+
+	
     my $lh =
       DADA::MailingList::Subscribers->new( { -list => $args->{ -list } } );
 
@@ -54,7 +56,6 @@ sub add {
 	
 	if ( exists $args->{ -fields } && keys %{$args->{ -fields }}) {		
 		my $fields = DADA::Profile::Fields->new;
-		 	
 		$fields->insert(
 			{
 				-email     => $args->{  -email },
@@ -83,10 +84,21 @@ sub add {
 
 sub get {
 
-    my $self = shift;
+    my $self   = shift;
     my ($args) = @_;
+	# I don't think I even pass anything to this method... 
+	
+	#require Data::Dumper; 
+	#croak Data::Dumper::Dumper($self->{email});
+	
     require DADA::Profile::Fields; 
-	my $sf = DADA::Profile::Fields->new($args); 
+	my $sf = DADA::Profile::Fields->new(
+			{
+				
+				-email => $self->{email}, 
+			#	%$args,
+			}
+	); 
 	
 	
 	my $r =  $sf->get($args); 

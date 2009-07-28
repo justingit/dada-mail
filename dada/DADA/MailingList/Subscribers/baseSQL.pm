@@ -201,11 +201,10 @@ sub SQL_subscriber_profile_join_statement {
 
     # This is to select which profile fields to return with our query
     my @merge_fields = @{ $self->subscriber_fields };
-    my $merge_field_query;
+    my $merge_field_query = '';
     foreach (@merge_fields) {
         $merge_field_query .= ', ' . $profile_fields_table . '.' . $_;
     }
-
     #/ This is to select which profile fields to return with our query
 
     # We need the email and list from $subscriber_table
@@ -369,7 +368,6 @@ sub fancy_print_out_list {
         {
             -screen => 'fancy_print_out_list_widget.tmpl',
             -vars   => {
-
                 field_names    => $field_names,
                 subscribers    => $subscribers,
                 no_checkboxes  => 1,
@@ -516,7 +514,6 @@ sub subscription_list {
         $mf_lt{$_} = 1;
     }
 
-    #	my $counter = 0;
     while ( $hashref = $sth->fetchrow_hashref ) {
 
         $count++;
@@ -528,6 +525,9 @@ sub subscription_list {
             last if $count > ( $args->{ -start } + $args->{'-length'} );
 
         }
+
+		# Probably, just add it here? 
+		$hashref->{type} = $args->{-type}; 
 
         $hashref->{fields} = [];
 

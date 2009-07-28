@@ -41,9 +41,10 @@ sub fields {
     my ($args) = @_;
 
     my $l = [];
-
-    if ( exists( $self->{cache}->{fields} ) ) {
-        $l = $self->{cache}->{fields};
+	# I don't know, but this isn't always working... 
+    #if ( exists( $self->{cache}->{fields} ) ) {
+    if(1 == 0){ 
+    	$l = $self->{cache}->{fields};
     }
     else {
 
@@ -121,7 +122,7 @@ sub add_field {
     my $self = shift;
 
     #DEV: Add testing of parameters!!!!!!
-
+	
     delete( $self->{cache}->{fields} );
 
     my ($args) = @_;
@@ -177,6 +178,7 @@ sub add_field {
             -fallback_value => $args->{ -fallback_value },
         }
     );
+
 
     delete( $self->{cache}->{fields} );
     return 1;

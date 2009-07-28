@@ -90,7 +90,7 @@ sub add_subscriber {
 }
 
 sub get_subscriber {
-    my $self = shift;
+    my $self   = shift;
     my ($args) = @_;
 	$args->{-list} = $self->{list};
     my $dmls =

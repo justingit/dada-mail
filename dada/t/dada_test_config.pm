@@ -230,7 +230,7 @@ my @statements = split(';', $sql,8);
 		$_ =~ s{CREATE TABLE dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};
 		$_ =~ s{CREATE TABLE dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
 		
-		print 'query: ' . $_; 
+		#print 'query: ' . $_; 
         my $sth = $dbh->prepare($_) or warn $DBI::errstr; 
 
        $sth->execute
@@ -324,7 +324,7 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
 						
 		if(length($_) > 10){ 
-	    	carp 'query: ' . $_; 
+	    #	carp 'query: ' . $_; 
 			my $sth = $dbh->prepare($_); 
 	       	$sth->execute; 
 	    }

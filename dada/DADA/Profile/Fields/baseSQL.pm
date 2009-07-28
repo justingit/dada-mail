@@ -58,10 +58,14 @@ sub insert {
 	}
 	
 	if ($fields_exists) {
+				
 		my $tmp_pf = DADA::Profile::Fields->new({-email => $args->{-email}}); 
         $tmp_pf->remove;
 		undef $tmp_pf; 
  	}
+
+
+	
 
     my $sql_str             = '';
     my $place_holder_string = '';
@@ -87,7 +91,7 @@ sub insert {
  		if $t;
 
     my $sth = $self->{dbh}->prepare($query);
-
+	
     $sth->execute( $args->{ -email }, @values )
       or croak "cannot do statement (at insert)! $DBI::errstr\n";
     $sth->finish;
@@ -106,7 +110,7 @@ sub get {
     my ($args) = @_;
 
 	if(!$self->{email}){ 
-		croak "Cannot use this variable without passing the '-email' param in, new (get)"; 
+		croak "Cannot use this method without passing the '-email' param in, new (get)"; 
 	}
 
     my $sub_fields = $self->{manager}->fields;
