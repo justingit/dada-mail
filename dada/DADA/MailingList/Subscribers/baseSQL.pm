@@ -579,7 +579,7 @@ sub filter_list_through_blacklist {
     my $query =
       'SELECT * FROM '
       . $self->{sql_params}->{subscriber_table}
-      . " WHERE list_type = 'black_list' AND list_status = 1";
+      . " WHERE list_type = 'black_list' AND list_status = " . $self->{dbh}->quote(1);
 
     if ( $DADA::Config::GLOBAL_BLACK_LIST == 1 ) {
 
@@ -779,7 +779,7 @@ sub num_subscribers {
     $query .= 'SELECT COUNT(*) ';
     $query .= ' FROM '
       . $self->{sql_params}->{subscriber_table}
-      . ' WHERE list_type = ? AND list_status = 1 ';
+      . ' WHERE list_type = ? AND list_status = ' . $self->{dbh}->quote(1);
 
     $query .= ' AND list = ?';
 
