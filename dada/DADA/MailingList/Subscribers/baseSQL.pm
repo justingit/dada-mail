@@ -39,7 +39,7 @@ sub inexact_match {
 
     $query .= ' FROM ' . $self->{sql_params}->{subscriber_table} . ' WHERE ';
     $query .= ' list_type = ? AND';
-    $query .= ' list_status = 1';
+    $query .= ' list_status = ' . $self->{dbh}->quote(1);
     if (   $args->{ -against } eq 'black_list'
         && $DADA::Config::GLOBAL_BLACK_LIST == 1 )
     {
@@ -227,28 +227,28 @@ sub SQL_subscriber_profile_join_statement {
       . $profile_fields_table
       . '.email';
 
-    # Global Black List (we're still using this?) spans across all lists.
+    # Global Black List spans across all lists (yes, we're still using this).
     $query .= ' WHERE  ';
     if (   $DADA::Config::GLOBAL_BLACK_LIST
         && $args->{ -type } eq 'black_list' )
     {
 
+		#$query .= ' 1 = 1 '; 
         #... Nothin'
     }
     else {
 
         $query .=
-          $subscriber_table . '.list = ' . $self->{dbh}->quote( $self->{list} );
+          $subscriber_table . '.list = ' . $self->{dbh}->quote( $self->{list} ) . ' AND '; 
 
     }
 
     # list_status is almost always 1
-    $query .= ' AND '
-      . $subscriber_table
+    $query .= $subscriber_table
       . '.list_type = '
       . $self->{dbh}->quote( $args->{ -type } );
     $query .=
-      ' AND ' . $subscriber_table . '.list_status = ' . $self->{dbh}->quote(1);
+      ' AND ' . $subscriber_table . '.list_status = ' . $self->{dbh}->quote('1') . ' ';
 
     # This is all to query the $dada_profile_fields_table
     # The main thing, is that we only want the SQL statement to hold
@@ -342,7 +342,8 @@ sub SQL_subscriber_profile_join_statement {
     }
 
     warn 'QUERY: ' . $query
-      if $t;
+     if $t;
+
 
     return $query;
 }
@@ -579,7 +580,7 @@ sub filter_list_through_blacklist {
     my $query =
       'SELECT * FROM '
       . $self->{sql_params}->{subscriber_table}
-      . " WHERE list_type = 'black_list' AND list_status = " . $self->{dbh}->quote(1);
+      . " WHERE list_type = 'black_list' AND list_status = " . $self->{dbh}->quote('1');
 
     if ( $DADA::Config::GLOBAL_BLACK_LIST == 1 ) {
 
@@ -616,7 +617,7 @@ sub filter_list_through_blacklist {
           'SELECT * from '
           . $self->{sql_params}->{subscriber_table}
           . " WHERE list_type   = 'list' 
-		               AND   list_status =   1 
+		               AND   list_status =  '1'
 		               AND   list        =   ? 
 		               AND   email      LIKE ?";
 
@@ -646,7 +647,7 @@ sub check_for_double_email {
         -Email      => undef,
         -Type       => 'list',
         -Status     => 1,
-        -Match_Type => 'sublist_centric',
+        -Match_Type => 'sublist_centric', # hello, I am bizarre. It's very nice to meet you!
         @_
     );
     my @list;
@@ -779,12 +780,20 @@ sub num_subscribers {
     $query .= 'SELECT COUNT(*) ';
     $query .= ' FROM '
       . $self->{sql_params}->{subscriber_table}
-      . ' WHERE list_type = ? AND list_status = ' . $self->{dbh}->quote(1);
+      . ' WHERE list_type = ? AND list_status = ' . $self->{dbh}->quote('1');
 
-    $query .= ' AND list = ?';
-
+	# I'm sort of guessing, that it's a good idea to do... this!
+	if (   $args{ -Type } eq 'black_list'
+        && $DADA::Config::GLOBAL_BLACK_LIST == 1 )
+    {
+        # ...
+    }
+    else {
+        $query .= ' AND list = ' . $self->{dbh}->quote($self->{list});
+    }
+    
     my $sth = $self->{dbh}->prepare($query);
-    $sth->execute( $args{ -Type }, $self->{list} )
+    $sth->execute( $args{ -Type } )
       or croak "cannot do statment (num_subscribers)! $DBI::errstr\n";
     @row = $sth->fetchrow_array();
     $sth->finish;
@@ -1060,7 +1069,7 @@ sub unique_and_duplicate {
               . $self->{sql_params}->{subscriber_table}
               . " WHERE list = ? 
 	                                      AND list_type = ?
-	                                      AND  list_status   = 1"
+	                                      AND  list_status   = '1'"
         );
         $sth->execute( $self->{list}, $args{ -Type } )
           or croak

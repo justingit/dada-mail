@@ -269,16 +269,16 @@ sub remove {
 
     if ( $self->type eq 'black_list' ) {
         if ( $DADA::Config::GLOBAL_BLACK_LIST != 1 ) {
-            $query .= ' AND list      = ?';
+            $query .= ' AND list =' . $self->{dbh}->quote($self->{list});
         }
     }
     elsif ( $self->type eq 'list' ) {
         if ( $DADA::Config::GLOBAL_UNSUBSCRIBE != 1 ) {
-            $query .= ' AND list      = ?';
+            $query .= ' AND list =' . $self->{dbh}->quote($self->{list});
         }
     }
     else {
-        $query .= ' AND list      = ?';
+        $query .= ' AND list =' . $self->{dbh}->quote($self->{list});
     }
 
 	warn 'Query: ' . $query
@@ -287,20 +287,12 @@ sub remove {
     my $sth = $self->{dbh}->prepare($query);
     my $rv;
 
-    if ( ( $DADA::Config::GLOBAL_BLACK_LIST && $self->type eq 'black_list' )
-        || $DADA::Config::GLOBAL_UNSUBSCRIBE && $self->type eq 'list' )
-    {
+   
 
-        $rv = $sth->execute( $self->email, $self->type )
-          or croak "cannot do statement (at: remove from list)! $DBI::errstr\n";
+   	$rv = $sth->execute( $self->email, $self->type )
+		or croak "cannot do statement (at: remove from list)! $DBI::errstr\n";
 
-    }
-    else {
-
-        $rv = $sth->execute( $self->email, $self->type, $self->{list} )
-          or croak "cannot do statement (at: remove from list)! $DBI::errstr\n";
-    }
-
+   
     $sth->finish;
 
     $self->{'log'}->mj_log( $self->{list},
