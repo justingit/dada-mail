@@ -9,8 +9,8 @@ use DADA::App::Guts;
 use Carp qw(carp croak); 
 
 
-use strict; 
 use vars qw($AUTOLOAD); 
+use strict; 
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions}; 
 
@@ -941,6 +941,9 @@ sub unsubscribe {
     my $self = shift; 
     my ($args) = @_; 
     
+	warn 'Starting Unsubscription.' 
+        if $t;
+
     require DADA::Template::HTML;
     
     croak if ! $args->{-cgi_obj}; 
@@ -1027,10 +1030,15 @@ sub unsubscribe {
 		$li->{unsub_confirm_email}       == 0 || 
 		$skip_unsub_confirm_if_logged_in == 1
 	){  
-            
+        warn 'skipping the unsubscription process and going straight to the confirmation process'
+            if $t;
+    
         # This is... slightly weird.
         $args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email, -List => $list));  
     
+		warn 'adding, ' . $email . ' to unsub_confirm_list'
+			if $t; 
+		# This will error out, if '$email' is not a valid email address. Strangely enough!
         $lh->add_subscriber(
             {
                 -email         => $email, 
@@ -1039,7 +1047,8 @@ sub unsubscribe {
         );
         
         
-        
+        warn 'going to unsub_confirm()'
+			if $t; 
         $self->unsub_confirm(
             {
                 -html_output => $args->{-html_output}, 
@@ -1218,6 +1227,9 @@ sub unsub_confirm {
 
     my $self = shift; 
     my ($args) = @_; 
+
+	warn 'Starting Unsubscription Confirmation.' 
+        if $t;
     
     require DADA::Template::HTML;
     
@@ -1318,7 +1330,9 @@ sub unsub_confirm {
             if $t; 
     }
     else {
-    
+    	
+		warn 'removing, ' . $email . ' from unsub_confirm_list'
+			if $t; 
         my $rm_status = $lh->remove_from_list(
                         -Email_List =>[$email], 
                         -Type       => 'unsub_confirm_list'
@@ -1403,35 +1417,46 @@ sub unsub_confirm {
 
         ){
 
-			
-			# Basically, what I gotta do is make sure that there aren't on the 
-			# Blacklist ALREADY, or Baaaaaaad things happen. 
-			
-            # We move, in an attempt to keep the subscription information
-            # Perhaps, they'll be moved back?
-            
-            warn 'Moving email (' . $email .') to blacklist.' 
-                if $t; 
-                
-            $lh->move_subscriber(
-            
-                {
-                    -email => $email,  
-                    -from  => 'list',
-                    -to    => 'black_list',
-					-mode  => 'writeover', 
-                }
-            );
-        
+			# I don't have to do this anymore, since moving/removing a subscriber
+			# Will not destroy the profile information... I don't think. 
+			## Basically, what I gotta do is make sure that there aren't on the 
+			## Blacklist ALREADY, or Baaaaaaad things happen. 
+			#
+            ## We move, in an attempt to keep the subscription information
+            ## Perhaps, they'll be moved back?
+            #
+            #warn 'Moving email (' . $email .') to blacklist.' 
+            #    if $t; 
+            #$lh->move_subscriber(
+            #
+            #    {
+            #        -email => $email,  
+            #        -from  => 'list',
+            #        -to    => 'black_list',
+			#		-mode  => 'writeover', 
+            #    }
+            #);
+        	if($lh->check_for_double_email(-Email => $email, -Type  => 'black_list')  == 0){ 
+				# Not on, already: 
+				$lh->add_subscriber(
+				    {
+				        -email => $email,  
+						-type => 'black_list', 
+				    }
+				);
+			}
+
         }
-        else { 
-                        
+        #else { 
+             
+     		warn 'removing, ' . $email . ' from, "list"'
+				if $t; 
             $lh->remove_from_list(
                 -Email_List =>[$email], 
                 -Type       => 'list'
             );
         
-        }
+        #}
         
         require DADA::App::Messages; 
         DADA::App::Messages::send_owner_happenings(

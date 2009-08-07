@@ -1,6 +1,6 @@
 package DADA::App::MassSend;
 
-use warnings; 
+#use warnings; 
 
 use lib qw(../../ ../../perllib);
 

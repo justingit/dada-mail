@@ -217,13 +217,17 @@ sub move {
       . $self->{sql_params}->{subscriber_table}
       . ' SET   list_type   = ? 
                       WHERE list_type   = ? 
-                      AND   email       = ? 
-                      AND   list        = ?';
+                      AND   email       = ?';
 
+	## Unsubs via a subscriber are done by first moving  them to the unsub_confirm_list
+	#if($args->{ -to } eq 'unsub_confirm_list' && $DADA::Config::GLOBAL_UNSUBSCRIBE == 1){ 
+		$query .=' AND list = ' . $self->{dbh}->quote($self->{list}); 
+	#}
+		
     my $sth = $self->{dbh}->prepare($query);
 
     my $rv =
-      $sth->execute( $args->{ -to }, $self->type, $self->email, $self->{list} )
+      $sth->execute( $args->{ -to }, $self->type, $self->email )
       or croak "cannot do statement (at move_subscriber)! $DBI::errstr\n";
 
     if ( $rv == 1 ) {
@@ -263,24 +267,41 @@ sub remove {
 
     my $self = shift;
 
+	#warn '$self->type ' . $self->type; 
+	#warn '$DADA::Config::GLOBAL_UNSUBSCRIBE ' . $DADA::Config::GLOBAL_UNSUBSCRIBE; 
+	
     my $query = "DELETE FROM " . $self->{sql_params}->{subscriber_table} . " 
 				 WHERE email   = ?
 				 AND list_type = ?";
 
     if ( $self->type eq 'black_list' ) {
+		#warn "here 1"; 
         if ( $DADA::Config::GLOBAL_BLACK_LIST != 1 ) {
+			#warn "here 2"; 
             $query .= ' AND list =' . $self->{dbh}->quote($self->{list});
         }
-    }
-    elsif ( $self->type eq 'list' ) {
+    }								 
+    elsif ( $self->type eq 'list') {
+		#warn "here 3"; 
         if ( $DADA::Config::GLOBAL_UNSUBSCRIBE != 1 ) {
+			#warn "here 5"; 
             $query .= ' AND list =' . $self->{dbh}->quote($self->{list});
         }
+		else { 
+			#warn "here 6"; 
+		}
     }
+	# this is for the global unsub stuff
+	elsif($self->type eq 'unsub_confirm_list' && $DADA::Config::GLOBAL_UNSUBSCRIBE == 1) { 
+		# ... nothin' 
+	}
     else {
+		#warn warn "here 4"; 
         $query .= ' AND list =' . $self->{dbh}->quote($self->{list});
     }
-
+	
+	#warn 'Query: ' . $query;
+	
 	warn 'Query: ' . $query
 		if $t; 
 		
@@ -292,7 +313,7 @@ sub remove {
    	$rv = $sth->execute( $self->email, $self->type )
 		or croak "cannot do statement (at: remove from list)! $DBI::errstr\n";
 
-   
+   #warn '$rv ' . $rv; 
     $sth->finish;
 
     $self->{'log'}->mj_log( $self->{list},
