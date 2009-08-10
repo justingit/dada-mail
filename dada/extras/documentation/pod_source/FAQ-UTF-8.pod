@@ -1,0 +1,116 @@
+=pod
+
+=head1 The Dada Mail and UTF-8 FAQ
+
+=head1 Introduction
+
+We're trying to make Dada Mail compatible with UTF-8 encoding. 
+
+We are probably pretty far along, but Dada Mail's support is not perfect. 
+
+We need your help, by alerting us of problems, so we can fix them. 
+
+=head1 Making Dada Mail use UTF-8
+
+=head2 HTML Screens
+
+HTML Screens refers to most everything that Dada Mail shows through your web browser, 
+that's written in HTML. 
+
+Make sure the config variable, C<$HTML_CHARSET> is set to: C<UTF-8>. This should be the default value. 
+
+=head2 Email Messages
+
+Email Messages refer to anything Dada Mail sends out, via email. 
+
+(These are per-list instructions) 
+
+In your list control panel, under, I<Manage List - Sending Options - Advanced> make sure the following settings are set: 
+
+=over 
+
+=item * Default Character Set of Mailings (charset)
+
+Set this to, C<UTF-8 UTF-8> 
+
+=item * Encode Message Headers 
+
+Make sure this option is, B<CHECKED> 
+
+=back
+
+These should be the default values. 
+
+=head2 SQL Backends
+
+We're not quite sure what to do with the SQL backends yet.
+
+=head3 Schema 
+
+ The current table schema in Dada Mail does not support UTF-8. We'd really appreciate some feedback on this issue. 
+
+=head3 Drivers
+
+The current support SQL backends, C<mysql> (MySQL), C<Pg> (PostgreSQL) and C<SQLite> all have different ways to somewhat, "enable" their UTF-8 support. 
+
+In Dada Mail's config, you may play around with this support, via the C<$DBI_PARAMS> variable. 
+
+=over
+
+=item * MySQL 
+
+add, 
+
+ mysql_enable_utf8 => 1, 
+
+to the hashref. It may already be there, just commented out. 
+
+=item * PostgreSQL
+
+add, 
+
+ pg_enable_utf8 => 1, 
+
+to the hashref. It may already be there, just commented out.
+
+=item * SQLite
+
+add, 
+
+ unicode => 1
+
+to the hashref. It may already be there, just commented out.
+
+=back
+
+=head1 Found a Problem? 
+
+Please let us know via the Support Boards: 
+
+L<http://dadamailproject.com/support/boards/>
+
+Or the developer mailing list: 
+
+L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
+
+Thanks! 
+
+=head1 See Also: 
+
+=over
+
+=item * The Absolute Minimum Every Software Developer Absolutely, Positively Must Know About Unicode and Character Sets (No Excuses!)
+
+http://www.joelonsoftware.com/articles/Unicode.html
+
+=item * perlunitut - Perl Unicode Tutorial
+
+http://perldoc.perl.org/perlunitut.html
+
+=item * perlunifaq - Perl Unicode FAQ
+
+http://perldoc.perl.org/perlunifaq.html
+
+=cut
+
+

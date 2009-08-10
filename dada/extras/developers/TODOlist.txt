@@ -13,9 +13,6 @@ Key:
 Maybe, rather a subquery? 
 
 
-mysql> SELECT dada_subscribers.email, dada_subscribers.list, dada_profile_fields.first_name, dada_profile_fields.last_name FROM dada_subscribers LEFT OUTER JOIN dada_profile_fields ON  dada_subscribers.email = dada_profile_fields.email WHERE   ( dada_subscribers.list = 'j' OR dada_subscribers.list = 'MG4G' )  AND dada_subscribers.list_type = 'list' AND dada_subscribers.list_status = 1 AND dada_subscribers.email LIKE '%bothlists%' AND (SELECT COUNT(dada_subscribers.email) from dada_subscribers where dada_subscribers.list != 'j')  = 0;
-
-And the subquery just counts all the list I'm already sending to? 
 
 
 [ ] I need to perhaps make an option to that you cannot edit profile info, if you're not Dada Root.

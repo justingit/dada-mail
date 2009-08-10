@@ -163,7 +163,7 @@ my $sent_msg =  slurp($mh->test_send_file);
 my $orig_entity = $parser->parse_data($msg);
 my $sent_entity = $parser->parse_data($sent_msg);
 
-ok($orig_entity->head->get('Subject', 0) eq $sent_entity->head->get('Subject', 0), "The Subject header of the original and sent messages is the same."); 
+ok($orig_entity->head->get('Subject', 0) eq $sent_entity->head->get('Subject', 0), "The Subject header of the original and sent messages is the same.(" . $orig_entity->head->get('Subject', 0) . ") and, (" . $sent_entity->head->get('Subject', 0) . ")" ); 
 ok($orig_entity->head->get('From', 0) eq $sent_entity->head->get('From', 0), "The From header of the original and sent messages is the same."); 
 
 undef $status; 

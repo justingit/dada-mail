@@ -1216,7 +1216,9 @@ $message_body =~ s/\&\#\d\d\d\d\;//g;
 }
 
 
-
+# This is pretty bizarre - perhaps better to put this in DADA::Template::Widgets, 
+# or something, and then have an option to encode the output? 
+# 
 sub e_print { 
 	print encode('UTF-8', $_[0]); 
 }
@@ -1324,7 +1326,9 @@ although 99.99% its not thought of as.
    
 
 sub lc_email { 
-
+	
+	# # utf8::upgrade before doing lc/lcfirst/uc
+	
 	#get the address 
 	my $email = shift || undef;
    if($DADA::Config::EMAIL_CASE eq 'lc_domain'){ 

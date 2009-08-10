@@ -360,6 +360,27 @@ $DBI_PARAMS ||= {
 	#   * By default AutoCommit mode is on, following the DBI specifications.
 	
 	dada_connection_method  => 'connect_cached', 
+	
+	
+	# UTF-8
+	# 		mysql_enable_utf8 => 1, 
+	# You will also need to ensure that your database / table / column is 
+	# configured to use UTF8. See Chapter 10 of the mysql manual for details.
+
+	# DBD::Pg specific attribute. If true, then the utf8 flag will be turned on 
+	# for returned character data (if the data is valid UTF-8). For details 
+	# about the utf8 flag, see the Encode module. This attribute is only 
+	# relevant under perl 5.8 and later.	
+	#
+	#	pg_enable_utf8 => 1, 
+
+	# SQLite
+	# If set to a true value, DBD::SQLite will turn the UTF-8 flag on for all 
+	# text strings coming out of the database (this feature is currently 
+	# disabled for perl < 5.8.5). For more details on the UTF-8 flag see 
+	# perlunicode. The default is for the UTF-8 flag to be turned off.
+	#
+	#	unicode => 1
 		
 };
 
@@ -3971,7 +3992,7 @@ encrypted.
 	verp_return_path             => 0, 
     use_domain_sending_tunings   => 0, 
     domain_sending_tunings       => undef, 
-	mime_encode_words_in_headers => 0, 
+	mime_encode_words_in_headers => 1, 
 	
 # view list prefs
 

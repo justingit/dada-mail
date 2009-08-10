@@ -1,0 +1,42 @@
+Time to fix the MySQL database character set then. First, I tried the easy way but that didn’t work for some odd reason. So I had to do it the hard way which involved changing the type of each column from CHAR(n), VARCHAR(n), TEXT, MEDIUMTEXT, TINYTEXT or LONGTEXT to its corresponding binary type (BINARY(n), VARBINARY(n), BLOB, MEDIUMBLOB, TINYBLOB or LONGBLOB) and then back along with changing the character to utf8. Here are the statements:
+
+
+ALTER TABLE t MODIFY column BINARY(n) | VARBINARY(n) | BLOB | MEDIUMBLOB | TINYBLOB | LONGBLOB [ [DEFAULT | NOT] NULL];
+ALTER TABLE t MODIFY column CHAR(n) | VARCHAR(n) | TEXT | MEDIUMTEXT | TINYTEXT | LONGTEXT CHARACTER SET utf8 [ [DEFAULT | NOT] NULL];
+
+
+DB_File, GDBM_File, SDBM_File, ODBM_File, dbm*
+
+Not encoding aware at all. You must decode and encode everything yourself.
+
+
+http://perldoc.perl.org/perlunitut.html
+All communication with the outside world (anything outside of your current Perl process) is done in binary.
+
+Encoding (as a verb) is the conversion from text to binary
+
+Or, if you're lazy, just:
+
+   1. use Encode;
+
+I/O flow (the actual 5 minute tutorial)
+
+The typical input/output flow of a program is:
+
+   1. 1. Receive and decode
+   2. 2. Process
+   3. 3. Encode and output
+
+If your input is binary, and is supposed to remain binary, you shouldn't decode it to a text string, of course. But in all other cases, you should decode it.
+
+You should also check your modules, and upgrade them if necessary.
+
+
+
+
+
+Perhaps a good idea would be to add encoding to the screen() subroutine, as well as variable set, so I can have headers/footers be apart of the screen() subroutine, instead of the weirdness that's going on now. THere's HTML::Template;:Set. 
+
+I have to make a new HTML::Template::Expr that also supports HTML::Template::Set (erm, HTML::Template::Set::Expr)? 
+
+This is harder than it seems. Hmm. 
