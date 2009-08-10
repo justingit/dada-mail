@@ -13,9 +13,7 @@ my $email_id = $DADA::Config::SQL_PARAMS{id_column} || 'email_id';
 
 $DADA::Config::SQL_PARAMS{id_column} ||= 'email_id';
 
-#my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
-
-my $t = 1; 
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
 
 use Fcntl qw(
   O_WRONLY
@@ -49,7 +47,8 @@ sub inexact_match {
     else {
         $query .= ' AND list = ?';
     }
-    $query .= ' AND (email = ? OR email LIKE ? OR email LIKE ?)';
+    #$query .= ' AND (email = ? OR email LIKE ? OR email LIKE ?)';
+	$query .= ' AND (email = ? OR email = ? OR email = ?)';
 
     warn 'Query: ' . $query
       if $t;
@@ -59,25 +58,45 @@ sub inexact_match {
     if (   $args->{ -against } eq 'black_list'
         && $DADA::Config::GLOBAL_BLACK_LIST == 1 )
     {
-        $sth->execute(
-            $args->{ -against },
-            $email,
-            $name . '@%',
-            '%@' . $domain,
-          )
-          or croak "cannot do statment (inexact_match)! $DBI::errstr\n";
+
+#        $sth->execute(
+#            $args->{ -against },
+#            $email,
+#            $name . '@%',
+#            '%@' . $domain,
+#          )
+#          or croak "cannot do statment (inexact_match)! $DBI::errstr\n";
+
+		$sth->execute(
+		    $args->{ -against },
+		    $email,
+		    $name . '@',
+		    '@' . $domain,
+		  )
+		  or croak "cannot do statment (inexact_match)! $DBI::errstr\n";
 
     }
     else {
-        $sth->execute(
-            $args->{ -against },
-            $self->{list},
-            $email,
-            $name . '@%',
-            '%@' . $domain,
+#        $sth->execute(
+#            $args->{ -against },
+#            $self->{list},
+#            $email,
+#            $name . '@%',
+#            '%@' . $domain,
+#
+#          )
+#          or croak "cannot do statment (inexact_match)! $DBI::errstr\n";
 
-          )
-          or croak "cannot do statment (inexact_match)! $DBI::errstr\n";
+	$sth->execute(
+	    $args->{ -against },
+	    $self->{list},
+	    $email,
+	    $name . '@',
+	    '@' . $domain,
+
+	  )
+	  or croak "cannot do statment (inexact_match)! $DBI::errstr\n";
+	
     }
 
     my @row = $sth->fetchrow_array();

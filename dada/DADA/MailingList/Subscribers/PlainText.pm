@@ -139,10 +139,14 @@ sub inexact_match {
     my $sub = undef;
     while ( defined( $sub = <LIST> ) ) {
         chomp($sub);
+        #if (   $email eq $sub
+        #    || $name  =~ m/$sub(.*?)/
+        #    || $domain =~ m/(.*?)$sub/ )
+        #{
         if (   $email eq $sub
-            || $name  =~ m/$sub(.*?)/
-            || $domain =~ m/(.*?)$sub/ )
-        {
+            || $name  eq $sub . '@'
+            || $domain eq '@' . $sub )
+        {		
             $found = 1;
             last;
         }

@@ -255,6 +255,18 @@ undef($r_count);
 
 
 
+# Make sure that a partial match doesn't give me a false match: 
+my $count = $lh->add_subscriber(
+	{
+		-email => 'somewherefaraway@foobar.com', 
+        -type  => 'white_list',
+     }
+);
+ok($lh->inexact_match({-against => 'white_list', -email => 'somewherefaraway@adifferentdomain.com'}) == 0, 'no inexact_match'); 
+
+
+
+
 
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
