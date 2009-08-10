@@ -1,5 +1,12 @@
 package DADA::App::GenericDBFile;
 
+
+# UTF-8 Note: 
+# http://juerd.nl/site.plp/perluniadvice
+# DB_File, GDBM_File, SDBM_File, ODBM_File, dbm*
+#
+# Not encoding aware at all. You must decode and encode everything yourself.
+
 use lib qw(
 	../../ 
 	../../DADA/perllib
