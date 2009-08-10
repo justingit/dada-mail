@@ -10,6 +10,7 @@ use CGI::Carp qw(croak carp);
 
 use DADA::Config qw(!:DEFAULT);  
 
+my %set_params = (); 
 
 # A weird fix.
 BEGIN {
@@ -698,7 +699,7 @@ sub admin {
                         -screen => 'admin_screen.tmpl',
                         -expr   => 1, 
                         -vars   => { 
-	    
+	
                             login_widget            => $login_widget, 
                             list_popup_menu         => $list_popup_menu,
                             list_max_reached        => $list_max_reached, 
@@ -1682,6 +1683,9 @@ else {
      my $template_vars = {}; 
         %$template_vars = (%{$args->{-list_settings_vars}}, %{$args->{-subscriber_vars}}, %{$args->{-profile_vars}}, %{$args->{-vars}}); 
 
+	
+			
+		
     if(exists($args->{-webify_and_santize_these})){ 
         $template_vars = webify_and_santize(
             {
@@ -1692,12 +1696,14 @@ else {
         )
     }
 
+
+
+		
 	if(exists($args->{-webify_these})){ 
 		foreach(@{$args->{-webify_these}}){ 
 	    	$template_vars->{$_} = webify_plain_text($template_vars->{$_});
 	    }
 	}
-
 
 
 	my $template; 
@@ -1706,13 +1712,15 @@ else {
 	
 		if($args->{-screen}){ 
 	
-			 require HTML::Template::MyExpr;
+			  require HTML::Template::MyExpr;
 			 $template = HTML::Template::MyExpr->new(%Global_Template_Options, 
 													 filename => $args->{-screen},
                                                          
                                                          ($args->{-dada_pseudo_tag_filter} == 1) ?
                                                          (
                                                          filter => [ 
+														 
+														#  { sub => \&set_name_value_filter, format => 'scalar' },
 
                                                               { sub => \&dada_backwards_compatibility,
                                                                format => 'scalar' },
@@ -1733,7 +1741,9 @@ else {
                                                          ($args->{-dada_pseudo_tag_filter} == 1) ?
                                                          (
                                                         filter => [ 
-													   
+													  
+													# 	  { sub => \&set_name_value_filter, format => 'scalar' },
+													
                                                               { sub => \&dada_backwards_compatibility,
                                                                format => 'scalar' },
                                                              { sub => \&dada_pseudo_tag_filter,
@@ -1750,8 +1760,6 @@ else {
 		
    }else{ 
    
-# warn '$args->{-screen} ' . $args->{-screen}; 
-
    	if($args->{-screen}){ 
 
    		require HTML::Template;
@@ -1761,6 +1769,7 @@ else {
                                                          ($args->{-dada_pseudo_tag_filter} == 1) ?
                                                          (
                                                         filter => [ 
+														 # { sub => \&set_name_value_filter, format => 'scalar' },
 
                                                               { sub => \&dada_backwards_compatibility,
                                                                format => 'scalar' },
@@ -1782,7 +1791,7 @@ else {
                                         ($args->{-dada_pseudo_tag_filter} == 1) ?
                                         (
                                                         filter => [ 
-
+															#  { sub => \&set_name_value_filter, format => 'scalar' },
                                                               { sub => \&dada_backwards_compatibility,
                                                                format => 'scalar' },
                                                              { sub => \&dada_pseudo_tag_filter,
@@ -1800,10 +1809,12 @@ else {
    
    
    
-#   foreach(keys %{$args->{-list_settings_vars}}){ 
-#    warn "list settings! " . $_ . ' => ' . $args->{-list_settings_vars}->{$_}; 
-#   }
-   
+	if(keys %set_params){ 
+		%$template_vars = (%set_params, %$template_vars); 
+		%set_params = (); 
+	}
+
+
    $template->param(   
 					%Global_Template_Variables,
 					
@@ -1822,7 +1833,22 @@ else {
 }
 
 
-
+sub set_name_value_filter { 
+	 my $text_ref=shift;
+	 my $match='<(?:\!--\s*)?tmpl_set\s*name=(.*?)\s*value=(.*?)\s*>';  
+	 my @taglist=$$text_ref =~ m/$match/gi;
+	   while (@taglist) {
+	     my ($t,$v)=(shift @taglist,shift @taglist);
+		
+		# This moronic - but I'm at my wit's end on the regex, above. 
+		$t =~ s/^\"|\"$//g; 
+		$v =~ s/^\"|\"$//g; 
+		
+		$set_params{$t}=$v;
+	
+		}
+	   $$text_ref =~ s/$match/<tmpl_if name=never><tmpl_var name=$1><\/tmpl_if><!-- here. -->/gi;	
+}
 sub dada_backwards_compatibility { 
 
     my $sref = shift; 
