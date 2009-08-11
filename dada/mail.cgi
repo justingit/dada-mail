@@ -3228,7 +3228,9 @@ sub edit_subscriber {
     } 
     
     if($process){ 
-	
+		if(!$root_login){ 
+			die "You must be logged in with the Dada Mail Root Password to be able to edit a Subscriber's Profile Fields.";
+		}
 		my $new_fields = {}; 
 		foreach my $nfield(@{$lh->subscriber_fields()}){
 			if(defined($q->param($nfield))){ 
@@ -3278,6 +3280,9 @@ sub edit_subscriber {
                                                         type_title            => $type_title,
                                                         
                                                         fields                => $fields, 
+
+                                                       root_login                       => $root_login, 
+
                                                         log_viewer_plugin_url => $DADA::Config::LOG_VIEWER_PLUGIN_URL, 
 
                                                   },
@@ -5970,7 +5975,7 @@ sub subscriber_fields {
 	
 	if($dpf->can_have_subscriber_fields == 0){ 
 		print admin_template_header(
-			-Title      => "Subscriber Fields", 
+			-Title      => "Subscriber Profile Fields", 
 			-List       => $list,
 			-Root_Login => $root_login,
 		);
@@ -5980,7 +5985,7 @@ sub subscriber_fields {
 				-screen => 'subscriber_fields.tmpl', 
 				-vars   => {
 					screen                     => 'subscriber_fields',
-					title                      => 'Subscriber Fields',       
+					title                      => 'Subscriber Profile Fields',       
 					can_have_subscriber_fields => $dpf->can_have_subscriber_fields, 
 
 				},
@@ -6136,7 +6141,7 @@ sub subscriber_fields {
      }
      
         print admin_template_header(
-				-Title      => "Subscriber Fields", 
+				-Title      => "Subscriber Profile Fields", 
                 -List       => $li->{list},
                 -Root_Login => $root_login,
               );
@@ -6145,7 +6150,7 @@ sub subscriber_fields {
                                                -vars   => {
 														
 													   screen                           => 'subscriber_fields',
-													   title                            => 'Subscriber Fields',       
+													   title                            => 'Subscriber Profile Fields',       
 													 
 													   edit_field                       => $edit_field, 
                                                        fields                           => $named_subscriber_fields,
@@ -6387,7 +6392,7 @@ sub resend_conf {
 		}
 
 		# Like, you clicked the submit button wrong, what?!
-		# Yeah, I guess - but this does not take into account subscriber fields! 
+		# Yeah, I guess - but this does not take into account Subscriber Profile Fields! 
 		# What to do - just filled them into the CGI obj? (but we just removed them, correct? 
 			
 		#die "Yes this worked!"; 
@@ -6426,7 +6431,7 @@ sub resend_conf {
 			$q->param('email', $email); 
 			$q->param('f', 'u'); 
 
-			# And then, the subscriber fields...
+			# And then, the Subscriber Profile Fields...
 			# ... 
 			# Well, we always pull the sub info from the, "list" sublist, no?x
 
@@ -9686,35 +9691,8 @@ sub profile_activate {
 		if($status == 1){ 
 			$prof->activate; 
 			my $profile = $prof->get(); 
-			#$q->param('password', $profile->{password}); 
 			$q->param('welcome',  1); 
-			#$q->param('process',  1); 	
 			profile_login(); 
-=cut
-
-			require DADA::Profile::Session; 
-			my $prof_sess = DADA::Profile::Session->new; 
-			my $cookie = $prof_sess->login(
-				{
-					-email    => $profile->{email},
-					-no_pass  => 1, 
-				}
-			); 
-			
-			print $q->header(
-				-cookie  => [$cookie], 
-                -nph     => $DADA::Config::NPH,
-                -Refresh =>'0; URL=' . $DADA::Config::PROGRAM_URL . '?f=profile'
-			); 
-            print $q->start_html(
-				-title=>'Logging On...',
-                -BGCOLOR=>'#FFFFFF'
-            ); 
-            print $q->p($q->a({-href => $DADA::Config::PROGRAM_URL . '?f=profile'}, 'Logging On...')); 
-            print $q->end_html();
-			return;
-=cut
-
 		}
 		else {
 			my $p_errors = [];
@@ -9763,6 +9741,7 @@ sub profile_help {
 
 
 sub profile { 
+	
 	if(
 		$DADA::Config::PROFILE_ENABLED    != 1      || 
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
@@ -9791,6 +9770,12 @@ sub profile {
 			my $edited = {}; 
 			foreach(@$subscriber_fields){ 
 				$edited->{$_} = xss_filter($q->param($_)); 
+				# This is better than nothing, but it's very lazy -
+				# Make sure that the length is less than 10k. 
+				if(length($edited->{$_}) > 10240){ 
+					# Sigh. 
+					die $DADA::CONFIG::PROGRAM_NAME . ' ' . $VER . ' Error! Attempting to save Profile Field with too large of a value!'; 
+				}
 			}
 			$dpf->insert(
 				{

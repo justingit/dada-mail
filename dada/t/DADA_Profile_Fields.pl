@@ -89,7 +89,7 @@ ok($pf->exists({-email => 'user@example.com'}) == 1, "exists.");
 # remove and clean up.
 ok($pf->remove == 1, "removed."); 
 
-# C<-fields> holds the profile fields passed as a hashref. It is an optional paramater. 
+# C<-fields> holds the Subscriber Profile Fields passed as a hashref. It is an optional paramater. 
 $pf->{manager}->add_field({-field => 'one'}); 
 undef $pf; 
 
@@ -182,7 +182,7 @@ $pf->insert(
 	}
 );
 
-# C<get> returns the profile fields for the email address passed in, C<-email> as a hashref. 
+# C<get> returns the Subscriber Profile Fields for the email address passed in, C<-email> as a hashref. 
 
 $prof = $pf->get; 
 ok($prof->{one} eq 'value', "field value passed and saved. ($prof->{one})");
@@ -227,7 +227,7 @@ undef $pf;
 # remove
 
 
-# C<remove> removes the profile fields assocaited with the email address passed in the 
+# C<remove> removes the Subscriber Profile Fields assocaited with the email address passed in the 
 # C<-email> paramater.
 $pf = DADA::Profile::Fields->new; 
 $pf->insert(
@@ -244,7 +244,7 @@ ok($pf->remove == 1, "removed the profile.");
 
 # ok($pf->remove eq undef, "passing no email returns undef."); 
 #ok($pf->exists({-email  => 'nosuchuser@example.com'}) == 0, "exists is returning 0"); 
-#ok($pf->remove({-email  => 'nosuchuser@example.com'}) eq undef, "passing an email with no profile fields returns undef"); 
+#ok($pf->remove({-email  => 'nosuchuser@example.com'}) eq undef, "passing an email with no Subscriber Profile Fields returns undef"); 
 
 ###############################################################################
 # add_field
@@ -268,7 +268,7 @@ ok(defined($@), "eval trapped an error");
 
 # C<-fallback_value> is an optional paramater, it's a more free form value, used when the profile does not have a value for this profile field. This is usually used in templating
 #
-# C<-label> is an optional paramater and is used in forms that capture profile fields information as a, "friendlier" version of the field name. 
+# C<-label> is an optional paramater and is used in forms that capture Subscriber Profile Fields information as a, "friendlier" version of the field name. 
 
 ok($pf->{manager}->_field_attributes_exist({-field => 'myfield'}) == 1, "Field Attr. exists.");
 my $f_des = $pf->{manager}->get_all_field_attributes;
@@ -376,7 +376,7 @@ SKIP: {
 
 SKIP: {
 	
-	#C<change_field_order> is used to change the ordering of the profile fields. Profile fields
+	#C<change_field_order> is used to change the ordering of the Subscriber Profile Fields. Subscriber Profile Fields
 	#are usually in the order as they are stored in the SQL table and this method actually changes that 
 	#order itself. 
 

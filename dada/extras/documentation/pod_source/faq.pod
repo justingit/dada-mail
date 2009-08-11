@@ -177,9 +177,9 @@ The third is to modify an already exisiting program to use Dada Mail's API eithe
 
 Once logged in, the list owner will want to visit the, B<Manage Subscribers - Add> screen. 
 
-New subscribers should be prepared in CSV format, with the email address being first and any other subscriber fields coming afterwards. The actual order will be listed on this screen. 
+New subscribers should be prepared in CSV format, with the email address being first and any other Subscriber Profile Fields coming afterwards. The actual order will be listed on this screen. 
 
-If you do not have any subscriber fields, the format needed to give Dada Mail is just, one email address and a newline. 
+If you do not have any Subscriber Profile Fields, the format needed to give Dada Mail is just, one email address and a newline. 
 
 Click the, B<Verify Subscribers...> button. When the screen refreshes, Dada Mail will give a break down of the addresses that can be subscribed and also the addresses that cannot be subscribed for reasons that include, they're already subscribed, the email address is invalid, or that the address is currently banned from subsribing, amongst other reasons. 
 

@@ -99,7 +99,7 @@ The Schemas for each database/table is located in the dada/extras/SQL directory 
 
 For the exception of the, C<dada_subscribers> table, all previous table schemas are essentially the same. 
 
-Subscriber Fields information that once used to live in the C<dada_subscribers> table, now lives in the C<dada_profile_fields> table. There's currently no automated way of moving the information from the C<dada_subscribers> table to the C<dada_profile_fields table>. 
+Subscriber Profile Fields information that once used to live in the C<dada_subscribers> table, now lives in the C<dada_profile_fields> table. There's currently no automated way of moving the information from the C<dada_subscribers> table to the C<dada_profile_fields table>. 
 
 =head2 $CLICKTHROUGH_DB_TYPE
 

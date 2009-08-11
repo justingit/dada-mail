@@ -160,7 +160,7 @@ Mass mailing will seem slower. If mass mailing does NOT work at all, or you cann
 
 =head2 Global List Sending
 
-The Global List Sending feature has been removed. Do look at the I<Partial> List Sending feature, that will allow you to send to I<part> of your list, given a query of yoru subscriber fields, which basically gives you sublist support. Which is probably a lot handier. 
+The Global List Sending feature has been removed. Do look at the I<Partial> List Sending feature, that will allow you to send to I<part> of your list, given a query of yoru Subscriber Profile Fields, which basically gives you sublist support. Which is probably a lot handier. 
 
 
 =head2 FCKeditor Support
@@ -223,17 +223,17 @@ This plugin hasn't been updated in quite a while and doesn't seem to be very pop
 
 =head3 Plugin: multi_admin_subscribers.cgi
 
-This plugin currently doesn't know about Subscriber Fields, so it's suggested that you NOT use this plugin, if you use subscriber fields. Those fields will most likely be lost when you make any new subscriptions/unsubscriptions using this plugin. 
+This plugin currently doesn't know about Subscriber Profile Fields, so it's suggested that you NOT use this plugin, if you use Subscriber Profile Fields. Those fields will most likely be lost when you make any new subscriptions/unsubscriptions using this plugin. 
 
 The above issue may need to be resolved, or, we may drop support for the plugin. What do you think we should do? (Let us know) 
 
 =head3 Plugin: mx_lookup.cgi 
 
-This plugin currently doesn't know about Subscriber Fields, so it's suggested that you NOT use this plugin, if you use subscriber fields. It may be dropped in a future release of Dada Mail. 
+This plugin currently doesn't know about Subscriber Profile Fields, so it's suggested that you NOT use this plugin, if you use Subscriber Profile Fields. It may be dropped in a future release of Dada Mail. 
 
 =head3 Extension: dada_backup.pl
 
-This extension currently doesn't know about Subscriber Fields, so it's suggested that you NOT use this extension, if you use subscriber fields. 
+This extension currently doesn't know about Subscriber Profile Fields, so it's suggested that you NOT use this extension, if you use Subscriber Profile Fields. 
 
 The codestyle of this extension is also atrocious. 
 
@@ -251,7 +251,7 @@ This extension is just weak. It is deprecated and will be removed in a future re
 
 =head3 Extension: update_subscription.cgi 
 
-This extension currently doesn't know about Subscriber Fields, so it's suggested that you NOT use this extension, if you use subscriber fields. 
+This extension currently doesn't know about Subscriber Profile Fields, so it's suggested that you NOT use this extension, if you use Subscriber Profile Fields. 
 
 This extension will be removed from future versions of Dada Mail, if favor of folding similar functionality into the core of Dada Mail, or into a plugin for Dada Mail. Editing of subscription information by the subscriber should be a larger view to take when replacing this plugin and currently isn't something that can be done in Dada Mail. 
 

@@ -228,7 +228,7 @@ undef($d);
 #  
 #  <!--/tmpl_loop-->
 # 
-# and this will loop over your subscriber fields. 
+# and this will loop over your Subscriber Profile Fields. 
 
 $d = q{ 
 
@@ -261,7 +261,7 @@ undef($r);
 undef($d);
 
 
-# If you'd like, you can also pass the subscriber fields information yourself - this may be useful if
+# If you'd like, you can also pass the Subscriber Profile Fields information yourself - this may be useful if
 # you're in some sort of recursive subroutine, or if you already have the information on hand. You may
 # do so by passing the, C<-subscriber_vars> paramater, I<instead> of the C<-subscriber_vars_param>
 # paramater, like so: 

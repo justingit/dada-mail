@@ -410,9 +410,9 @@ When you're on the command line run the program like this:
 
  /home/myaccount/cgi-bin/dada justin> perl dada_add_subscribers.pl --list mylist --file addresses_to_add.txt
 
-=head1 Subscribing an address with Subscriber Fields
+=head1 Subscribing an address with Subscriber Profile Fields
 
-Subscribing an address with Subscriber Fields is the same as subscribing an address without them. The only difference is that you pass the fields to the C<add_subscriber> method, like so: 
+Subscribing an address with Subscriber Profile Fields is the same as subscribing an address without them. The only difference is that you pass the fields to the C<add_subscriber> method, like so: 
 
  $lh->add_subscriber(
 		{

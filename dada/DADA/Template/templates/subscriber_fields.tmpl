@@ -11,7 +11,7 @@ Manage Subscribers
 <!-- tmpl_if edit_field --> 
 
 <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=subscriber_fields"> 
- Subscriber Fields 
+ Subscriber Profile Fields 
 </a>
  &#187; 
 Edit Field
@@ -20,26 +20,26 @@ Edit Field
  <strong><!-- tmpl_var field --></strong>
 
 <!-- tmpl_else --> 
- Subscriber Fields 
+ Subscriber Profile Fields 
 <!-- /tmpl_if -->
 </p>
 
 
 <!-- tmpl_if deletion --> 
 	<p class="positive">
-		The subscriber field, "<!-- tmpl_var working_field -->"  has been deleted.
+		The Profile Field, "<!-- tmpl_var working_field -->"  has been deleted.
 	</p>
 <!-- /tmpl_if --> 
 
 <!-- tmpl_if addition --> 
 	<p class="positive">
-		The subscriber field, "<!-- tmpl_var working_field -->"  has been added.
+		The Profile Field, "<!-- tmpl_var working_field -->"  has been added.
 	</p>
 <!-- /tmpl_if --> 
 
 <!-- tmpl_if edited --> 
 	<p class="positive">
-		The subscriber field, "<!-- tmpl_var working_field -->"  has been edited.
+		The Profile Field, "<!-- tmpl_var working_field -->"  has been edited.
 	</p>
 <!-- /tmpl_if --> 
 
@@ -54,7 +54,7 @@ Edit Field
 <!-- tmpl_if can_have_subscriber_fields --> 
     
     <p class="alert">
-     Subscriber Fields are global and changing them will affect all lists. You may only change the Subscriber Fields if you are logged in to an existing list using the <!-- tmpl_var PROGRAM_NAME --> Root Password.
+     Subscriber Profile Fields are global and changing them will affect all lists. You may only change the Subscriber Profile Fields if you are logged in to an existing list using the <!-- tmpl_var PROGRAM_NAME --> Root Password.
 </p>
     
     
@@ -152,7 +152,7 @@ Edit Field
   <!-- tmpl_unless edit_field -->   
 
 	<fieldset> 
-		<legend>Subscriber Fields</legend>
+		<legend>Subscriber Profile Fields</legend>
 		
     <!-- tmpl_if fields --> 
 
@@ -302,7 +302,7 @@ Edit Field
     <!-- tmpl_else --> 
     
     <p class="error"> 
-     Currently, there are no Subscriber Fields.
+     Currently, there are no Subscriber Profile Fields.
     </p>
     
     
@@ -443,7 +443,7 @@ Edit Field
     
     
         <p class="error"> 
-         Your current subscription backend does not support subscriber fields. 
+         Your current subscription backend does not support Subscriber Profile Fields. You will need to use the MySQL, PostgreSQL or SQLite backend.  
         </p> 
 
 <!-- /tmpl_if --> 

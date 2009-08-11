@@ -6,7 +6,7 @@ Below are a list of projects we'd like to work on for Dada Mail. Dada Mail devel
 
 =head2 Multiple Fields: Subscriber-Editable Fields
 
-Currently, Dada Mail supports adding/editing/deleting of arbitrary subscriber fields. 
+Currently, Dada Mail supports adding/editing/deleting of arbitrary Subscriber Profile Fields. 
 
 It also supports the list owner logging into the list control panel and editing the subscriber information, on a per-subscriber basis. 
 
@@ -30,7 +30,7 @@ There's currently no way to preview a mailing list message, before you send it.
 
 We'd like to add one that works really well and is incredibly easy to use. 
 
-We'd like this previewer to allow you work well with the subscriber fields and the advanced Dada Mail templating language, so you can see exactly and instantaneously what your advanced if/unless/loop blocks do to the customized message you're creating. 
+We'd like this previewer to allow you work well with the Subscriber Profile Fields and the advanced Dada Mail templating language, so you can see exactly and instantaneously what your advanced if/unless/loop blocks do to the customized message you're creating. 
 
 =head2 Dada Bridge: Rules
 
@@ -111,7 +111,7 @@ It may be possible to somehow bundle FCKeditor within Dada Mail, for a installat
 
 =head2 Smart Groups/Save Partial Sending Options
 
-Being able to save a set of your subscribers, based on a saved query of your subscriber fields would be incredibly helpful to help keep track of various activities of your mailing list. 
+Being able to save a set of your subscribers, based on a saved query of your Subscriber Profile Fields would be incredibly helpful to help keep track of various activities of your mailing list. 
 
 Smart Groups can be created/edited/delete and Smart Groups can be used to view a specific part of your mailing list. 
 

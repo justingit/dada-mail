@@ -15,8 +15,35 @@ Maybe, rather a subquery?
 
 
 
-[ ] I need to perhaps make an option to that you cannot edit profile info, if you're not Dada Root.
- Or make it clear that editing the information will deal with all lists. and/or have a way to know that a subscriber is on more than one list (and perhaps which lists?) (or a way to see a "public" profile? (turn on/off) 
+[x] I need to perhaps make an option to that you cannot edit profile info, if you're not Dada Root. (no option, just... YOU CAN'T.)
+[ ] Or make it clear that editing the information will deal with all lists. and/or have a way to know that a subscriber is on more than one list (and perhaps which lists?) (or a way to see a "public" profile? (turn on/off) 
+[ ] I need some basic form validation for the Subscriber Profile Fields. 
+[x] I need to change all instances of, "Subscriber Fields" to, "Subscriber Profile Fields" 
+[ ] I need to make that SQL table upgrade thingy
+	Something like: 
+	
+	(first get the prev. profile fields + email address) 
+	
+	INSERT INTO TestTable (FirstName, LastName)
+	SELECT email,  @profile_fields
+	FROM Person.Contact
+	WHERE EmailPromotion = 2
+	
+	foreach(@profile_fields){
+		DELETE COLUMN from that_first_table
+	}
+	
+yooop. 
+
+[ ] I need to write up all these changes
+	[ ] Sigh. 
+	
+[ ] perhaps make a note about global unsubs in the profile? 
+[ ] You need to change the profile fields when they're listed_like_this, to be Listed Like This! 
+[ ] Subscriber Profile Fields widget - is it in places where we don't want it? 
+[ ] Some more live testing... 
+
+
 
 [ ] UTF-8 stuff - revisit? What else needs to be done? Tests? Caching? Information in? How do we handle it? 
 
@@ -30,7 +57,7 @@ Maybe, rather a subquery?
 	
 	
 [-] Prototype stuff? Should that be folded in? It does solve a few bugs... 
-
+	[ ] Did I break the semi-auto stuff? 
 
 [ ] It would be nice if the partial fields could support some sort of dynamic content, like today's date, etc. 
 
@@ -44,7 +71,7 @@ Maybe, rather a subquery?
 	
 		
 	
-[x] I need to merge all of the code that creates the query for the subscriber fields into ONE method, because it's getting 
+[x] I need to merge all of the code that creates the query for the Subscriber Profile Fields into ONE method, because it's getting 
  	complicated, it's being used in more than one place, AND people want to change it. A tall order, but probably, well worth it! 
 
 [-] The, "Your subscriptions" thingy in the Profile thingy has to let you know, if you aren't actually subscribed to any lists. Right now, if you're not, it just looks broken. 
@@ -67,7 +94,7 @@ Maybe, rather a subquery?
 
 (3.1)
 	
-	[x] I need to make an option to says, "Hey that need subscriber fields info? Replace what my be there with, 
+	[x] I need to make an option to says, "Hey that need Subscriber Profile Fields info? Replace what my be there with, 
 		THIS, or, use what's there, if there's already something there, 
 		Probably per import, for now,
 	[x] Gravatar bells and whistles in the profile screen
@@ -119,7 +146,7 @@ http://rt.cpan.org/Public/Bug/Display.html?id=36005
 
 ========================================================================
 
-[x] "You may only change the Subscriber Fields if you are logged in to an existing list using the Dada Mail Root Password."
+[x] "You may only change the Subscriber Profile Fields if you are logged in to an existing list using the Dada Mail Root Password."
 
 
 [x] "Use underscores, instead of spaces - no funny characters, and use lower case characters instead of uppercase.

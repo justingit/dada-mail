@@ -310,7 +310,7 @@ ok($lh->can_have_subscriber_fields == 1 || $lh->can_have_subscriber_fields == 0,
     
 SKIP: {
 
-    skip "Multiple Subscriber Fields is not supported with this current backend." 
+    skip "Multiple Subscriber Profile Fields is not supported with this current backend." 
         if $lh->can_have_subscriber_fields == 0; 
 
 
@@ -515,7 +515,7 @@ SKIP: {
 
     ###
 
-    #### copy_subscriber w/subscriber fields 
+    #### copy_subscriber w/Subscriber Profile Fields 
 	# the idea is that the subscriber field information
     # should be copied over correctly as well. 
 
@@ -1229,7 +1229,7 @@ undef $i;
 
 SKIP: {
 
-    skip "Multiple Subscriber Fields is not supported with this current backend." 
+    skip "Multiple Subscriber Profile Fields is not supported with this current backend." 
         if $lh->can_have_subscriber_fields == 0; 
         
         diag "still here."; 

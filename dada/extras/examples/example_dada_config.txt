@@ -299,7 +299,7 @@ $ADMIN_MENU = [
 					},
 
                     {
-                    -Title      => 'Subscriber Fields',
+                    -Title      => 'Subscriber Profile Fields',
                     -Title_URL  => "$S_PROGRAM_URL?f=subscriber_fields",
                     -Function   => 'subscriber_fields',
                     -Activated  => 1,

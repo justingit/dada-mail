@@ -229,7 +229,7 @@ sub save_from_params {
 
 	} 
 	
-	# Subscriber Fields
+	# Subscriber Profile Fields
 	# First, let's figure out what they may be...
 	
 	require DADA::MailingList::Subscribers; 

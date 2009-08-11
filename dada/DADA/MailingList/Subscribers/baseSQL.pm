@@ -220,14 +220,14 @@ sub SQL_subscriber_profile_join_statement {
     my $subscriber_table     = $self->{sql_params}->{subscriber_table};
     my $profile_fields_table = $self->{sql_params}->{profile_fields_table};
 
-    # This is to select which profile fields to return with our query
+    # This is to select which Subscriber Profile Fields to return with our query
     my @merge_fields      = @{ $self->subscriber_fields };
     my $merge_field_query = '';
     foreach (@merge_fields) {
         $merge_field_query .= ', ' . $profile_fields_table . '.' . $_;
     }
 
-    #/ This is to select which profile fields to return with our query
+    #/ This is to select which Subscriber Profile Fields to return with our query
 
     # We need the email and list from $subscriber_table
     my $query;

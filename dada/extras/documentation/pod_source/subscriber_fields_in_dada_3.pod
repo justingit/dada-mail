@@ -1,6 +1,6 @@
 =pod
 
-=head1 Subscriber Fields in Dada Mail 3
+=head1 Subscriber Profile Fields in Dada Mail 3
 
 =head1 Introduction
 
@@ -8,17 +8,17 @@ Extra subscribers fields in Dada Mail has been basically the #1 requested featur
 
 Enjoy! 
 
-Like many of the features in Dada Mail, we've tried to create a good balance of dead-simple to use and highly configurable. The Subscriber Fields project is a very large feature with a lot of interesting ways we can take it. We're starting out simple and easy, but we'd like to know what certain features are important to you - so let us know via our email, the dadadev mailing list and the support boards (L<http://dadamailproject.com/support/boards>)
+Like many of the features in Dada Mail, we've tried to create a good balance of dead-simple to use and highly configurable. The Subscriber Profile Fields project is a very large feature with a lot of interesting ways we can take it. We're starting out simple and easy, but we'd like to know what certain features are important to you - so let us know via our email, the dadadev mailing list and the support boards (L<http://dadamailproject.com/support/boards>)
 
 =head1 Implementation
 
-The extra subscriber fields in Dada Mail are saved in the C<dada_subscribers> table. Right now, there's a limit of 100 extra columns and each column is given the data type of, C<text>. 
+The extra Subscriber Profile Fields in Dada Mail are saved in the C<dada_subscribers> table. Right now, there's a limit of 100 extra columns and each column is given the data type of, C<text>. 
 
 Pretty simple stuff.
 
 =head1 Requirements
 
-The subscriber fields feature in Dada Mail requires that you use one of the supporting SQL backends. Currently, Dada Mail supports B<MySQL>, B<Postgres> and B<SQLite>. 
+The Subscriber Profile Fields feature in Dada Mail requires that you use one of the supporting SQL backends. Currently, Dada Mail supports B<MySQL>, B<Postgres> and B<SQLite>. 
 
 =head1 Downgrading
 
@@ -28,24 +28,24 @@ Most likely, if you ever have to I<downgrade> Dada Mail, these extra fields shou
 
 =head2 Adding a New Subscriber Field
 
-Adding a new subscriber field is pretty easy. Log into the list control panel B<with the Dada Mail Root Password> (very important) to any list. On the left hand menu, under, B<Manage Subscribers>, click, B<Subscriber Fields>
+Adding a new subscriber field is pretty easy. Log into the list control panel B<with the Dada Mail Root Password> (very important) to any list. On the left hand menu, under, B<Manage Subscribers>, click, B<Subscriber Profile Fields>
 
-This screen will allow you to add/remove the subscriber fields. This screen will also let you set a fallback value. The fallback value is used in mailmerging and is used as the value fo the field tag when no value is present. 
+This screen will allow you to add/remove the Subscriber Profile Fields. This screen will also let you set a fallback value. The fallback value is used in mailmerging and is used as the value fo the field tag when no value is present. 
 
 The fallback value is saved in the dada_settings table in the B<fallback_field_values> setting. 
 
-Please note that removing any subscriber fields will B<permanently delete all the information that once was saved in this particular field>. 
+Please note that removing any Subscriber Profile Fields will B<permanently delete all the information that once was saved in this particular field>. 
 
 Hazzah. 
 
 
 And we mean it. 
 
-The other thing to note is that subscriber fields are B<global>, meaning, they'll be there for each list Dada Mail manages. 
+The other thing to note is that Subscriber Profile Fields are B<global>, meaning, they'll be there for each list Dada Mail manages. 
 
 You can also add a subscriber field in Dada Mail by just adding a new column to the dada_subscribers table yourself via SQL. I would be careful doing so, since you'll curcumvent any checks that are done via the list control panel, but you're open to and Dada Mail will see your new columns as new subscription fields.
 
-Dada Mail currently doesn't support changing the order of these subscriber fields, but if you feel mighty, you may do this yourself via SQL. If you had two subscriber fields, one called, "last_name" and one called, "first_name" and you'd like "first_name" come before, "last_name", you'd want to say do something like: 
+Dada Mail currently doesn't support changing the order of these Subscriber Profile Fields, but if you feel mighty, you may do this yourself via SQL. If you had two Subscriber Profile Fields, one called, "last_name" and one called, "first_name" and you'd like "first_name" come before, "last_name", you'd want to say do something like: 
 
  ALTER TABLE dada_subscribers MODIFY COLUMN last_name text AFTER first_name;
 
@@ -53,7 +53,7 @@ Dada Mail currently doesn't support changing the order of these subscriber field
 
 =head2 Mail Merging
 
-Mail Merging in Dada Mail in mailing list messages using your new subscriber fields is pretty easy: 
+Mail Merging in Dada Mail in mailing list messages using your new Subscriber Profile Fields is pretty easy: 
 
 Say you have a field named, B<first_name>. To use the value of the saved field in an email message, you'd write the field as a tag, like this: B<[subscriber.first_name]>. It would look like this in your actual message: 
 
@@ -74,9 +74,9 @@ Currently, this is done in the, "Send a List Message" and, "Send a Webpage" scre
 
 =head2 Subscriptions
 
-The subscription process is similar to previous versions of the program, except that the subscription form now supports capturing any subscriber fields present. 
+The subscription process is similar to previous versions of the program, except that the subscription form now supports capturing any Subscriber Profile Fields present. 
 
-Currently, all subscription fields will be shown, except (by default), subscriber fields that are prefixed with an underscore ("_"). For example, the field, 
+Currently, all subscription fields will be shown, except (by default), Subscriber Profile Fields that are prefixed with an underscore ("_"). For example, the field, 
 
  first_name
 

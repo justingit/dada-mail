@@ -100,9 +100,9 @@ The list owner has a few choices when adding a subscriber via the list control p
 
 An alternative to the list owner to subscribing an address outright, is the list owner sending a list invitation to a list of would-be subscribers who have just undergone the above checks. This makes sure that the subscriber has knowledge of the subscription and completes a Closed Loop subscription process. As of version 3.0 of Dada Mail, this is generally the suggested way to mass-subscribe an imported list that has not been verified in any other way and the program will seriously disuade you to do otherwise (and hopefully, not too annoyingly) 
 
-=head2 Subscriber Fields 
+=head2 Subscriber Profile Fields 
 
-Dada Mail supports arbitrary custom subscriber fields, so you may save and use information, other than the subscribers' email address. For example, you may create new form fields for the subscriber's first name, last name, city, zip code, favorite color, etc. 
+Dada Mail supports arbitrary custom Subscriber Profile Fields, so you may save and use information, other than the subscribers' email address. For example, you may create new form fields for the subscriber's first name, last name, city, zip code, favorite color, etc. 
 
 These subscriber field variables can then be used for mail merging in mailing list messages. The syntax for mail merging is quite simple and a whole lot of things can be done with it, including simple branch statements (if/unless/loop) to make custom email messages. 
 

@@ -207,7 +207,7 @@ DB Files for everything else: Archives, Settings and Session Handling.
 This makes setup simple, since there's no SQL setup needed. 
 
 YOU may want the additional features that an SQL Backend provides. 
-These additional features include being able to save subscriber fields, other than the email address. 
+These additional features include being able to save Profiles and Subscriber Profile Fields, other than the email address. 
 
 There's B<three steps> involved to setup Dada Mail to use its SQL backend. 
 
@@ -1956,7 +1956,7 @@ $ADMIN_MENU ||= [
 					},
 
                     {
-                    -Title      => 'Subscriber Fields',
+                    -Title      => 'Subscriber Profile Fields',
                     -Title_URL  => "$S_PROGRAM_URL?f=subscriber_fields",
                     -Function   => 'subscriber_fields',
                     -Activated  => 1,

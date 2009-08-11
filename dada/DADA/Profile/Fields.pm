@@ -121,7 +121,7 @@ C<insert> inserts a new record into the profile table. This method requires a fe
 
 C<-email> is required and should hold a valid email address in the form of: C<user@example.com>
 
-C<-fields> holds the profile fields passed as a hashref. It is an optional paramater. 
+C<-fields> holds the Subscriber Profile Fields passed as a hashref. It is an optional paramater. 
 
 C<-mode> sets the way the new profile will be created and can either be set to, C<writeover> or, C<preserve>
 
@@ -141,7 +141,7 @@ This method should return, C<1> on success.
 
  my $prof = $pf->get; 
 
-C<get> returns the profile fields for the email address passed in, C<-email> as a hashref. 
+C<get> returns the Subscriber Profile Fields for the email address passed in, C<-email> as a hashref. 
 
 C<-email> is a required paramater. Not passing it will cause this method to return, C<undef>. 
 
@@ -170,7 +170,7 @@ or, C<0> if there is no profile.
 	}
  ); 
 
-C<remove> removes the profile fields assocaited with the email address passed in the 
+C<remove> removes the Subscriber Profile Fields assocaited with the email address passed in the 
 C<-email> paramater. 
 
 C<remove> will return the number of rows removed - this should hopefully be only C<1>. Any larger number 

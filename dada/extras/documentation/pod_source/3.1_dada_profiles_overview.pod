@@ -2,7 +2,7 @@
 
 =head1 Dada Mail Profiles Overview
 
-Dada Mail Profiles allow subscribers to a Dada Mail list access to their own profile accounts within Dada Mail, where they can view their current subscriptions, update their subscription information (user-editable subscriber fields) and also have additional permissions to subscriber-only features of Dada Mail mailing lists - as an example; archives that are only available to subscribers of a mailing list. 
+Dada Mail Profiles allow subscribers to a Dada Mail list access to their own profile accounts within Dada Mail, where they can view their current subscriptions, update their subscription information (user-editable Subscriber Profile Fields) and also have additional permissions to subscriber-only features of Dada Mail mailing lists - as an example; archives that are only available to subscribers of a mailing list. 
 
 =head1 Logging into your Dada Mail Profile
 
@@ -43,11 +43,11 @@ Once logged in, your subscriber will find themselves in the Profile Home screen:
 
 =end html 
 
-From here, your subscribers can edit their own subscriber fields, view the lists they're subscribed to and also change their profile password. There's also links to each list's archives and a link to unsubscribe from the list. 
+From here, your subscribers can edit their own Subscriber Profile Fields, view the lists they're subscribed to and also change their profile password. There's also links to each list's archives and a link to unsubscribe from the list. 
 
 Once logged in, a Dada Mail user can navigate throughout and view their logged in status at the upper right hand side of the screen. 
 
-All the subscription forms in Dada Mail will be auto-filled out with the Dada Mail user's email address and the subscriber fields will be hidden (so as not to have the user have to re-type the same information twice) 
+All the subscription forms in Dada Mail will be auto-filled out with the Dada Mail user's email address and the Subscriber Profile Fields will be hidden (so as not to have the user have to re-type the same information twice) 
 
 
 
@@ -92,11 +92,11 @@ This is hopefully, just scratching the surface of what can be done with the new 
 
 =head1 Other Features to Look Out For
 
-=head2 Subscriber Fields
+=head2 Subscriber Profile Fields
 
-Subscriber Fields can now have, B<Labels>, so you don't have to use the name of your subscriber field as the label for things like the subscription form. 
+Subscriber Profile Fields can now have, B<Labels>, so you don't have to use the name of your subscriber field as the label for things like the subscription form. 
 
-Subscriber Fields can now also be easily re-ordered: 
+Subscriber Profile Fields can now also be easily re-ordered: 
 
 
 =begin html 
@@ -108,7 +108,7 @@ Subscriber Fields can now also be easily re-ordered:
 
 =end html
 
-=head1 Installing Dada Mail 3.1 with Profile Fields
+=head1 Installing Dada Mail 3.1 with Subscriber Profile Fields
 
 B<Note! This release is currently an alpha-quality release and is not recommended for production servers!> 
 

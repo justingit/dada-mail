@@ -177,15 +177,15 @@ L<http://downloads.sourceforge.net/mojomail/dada-2_11_alpha_8.zip?use_mirror=osd
 
 =head2 2.11 Alpha 8 Notes
 
-=head2 Subscriber Fields
+=head2 Subscriber Profile Fields
 
-This release sports a very large new feature: Multiple subscriber fields. For an overview of this feature, do see: 
+This release sports a very large new feature: Multiple Subscriber Profile Fields. For an overview of this feature, do see: 
 
 L<dadamailproject.com/support/documentation-dada-2_11-alpha_8/subscriber_fields_in_2_11.pod.html>
 
 =head2 2.11 Alpha 8 New Features
 
-=head3 Multiple Subscriber Fields
+=head3 Multiple Subscriber Profile Fields
 
 No, really - it's in there. Check it out. You'll need the SQL backend. For a large list of improvements, do see: 
 
@@ -195,9 +195,9 @@ Of note, this feature also has the below features that relate to it:
 
 =over
 
-=item * Mail Merging of subscriber fields
+=item * Mail Merging of Subscriber Profile Fields
 
-=item * Partial Sending based on subscriber fields
+=item * Partial Sending based on Subscriber Profile Fields
 
 =back
 

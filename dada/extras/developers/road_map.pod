@@ -110,11 +110,11 @@ There would also be enough information to see where in sending the message is, g
 
 =head2 Release of Dada Mail, version 3.0! 
 
-Dada Mail, version 3.0 will be basically Dada Mail with multiple subscriber fields support. This seems like only one small feature, but it affects every part of the subscription process, it affects how mass mailings are created, how you administrate the list itself, most everything, except, perhaps archiving. Big. Deal. Very big deal. 
+Dada Mail, version 3.0 will be basically Dada Mail with multiple Subscriber Profile Fields support. This seems like only one small feature, but it affects every part of the subscription process, it affects how mass mailings are created, how you administrate the list itself, most everything, except, perhaps archiving. Big. Deal. Very big deal. 
 
 Also, if you want to look at the 4+ history of the Dada Mail 2.x serious, you'll notice that the program is entirely different than it was when released as 2.0 - it's basically has been rewritten a few times, in chunks. So it goes. 
 
-For more information on multiple subscriber fields and Dada Mail, see: 
+For more information on multiple Subscriber Profile Fields and Dada Mail, see: 
 
 http://dadamailproject.com/features/multiple_fields.html
 
