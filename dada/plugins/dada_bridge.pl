@@ -875,7 +875,7 @@ sub cgi_default {
     }
     else {
         $authorized_senders =
-          $lh->subscription_list( -type => 'authorized_senders' );
+          $lh->subscription_list({ -type => 'authorized_senders' });
     }
 
     print(
