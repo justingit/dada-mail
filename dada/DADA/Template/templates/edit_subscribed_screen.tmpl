@@ -18,29 +18,51 @@
 	<p class="error">
 		You must be logged in with the <!-- tmpl_var PROGRAM_NAME --> Root Password to be able to edit a Subscriber's Profile Fields. 
 	</p>
-<!-- tmpl_unless --> 
+<!-- /tmpl_unless --> 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 
-<!-- tmpl_unless root_login --> 
+<!-- tmpl_if root_login --> 
 	 <input type="hidden" name="email"   value="<!-- tmpl_var email escape="HTML" -->" />
 	 <input type="hidden" name="f"       value="edit_subscriber" />
 	 <input type="hidden" name="process" value="1" />
 	 <input type="hidden" name="type"    value="<!-- tmpl_var type -->" />
+<!-- /tmpl_if --> 
+
+<!-- tmpl_unless root_login --> 
+
+	<!-- tmpl_loop fields --> 
+	    <p>
+	     <label for="<!-- tmpl_var name escape=HTML -->" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+	      <!-- tmpl_var label escape=HTML -->: 
+	     </label>
+	    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->" disabled="disabled" />
+	    </p>
+	<!--/tmpl_loop--> 
+
+<!-- tmpl_else --> 
+
+	<p class="alert">
+		Subscriber Profile Fields information will be changed for all lists.
+	</p>
+	<!-- tmpl_loop fields --> 
+	    <p>
+	     <label for="<!-- tmpl_var name escape=HTML -->" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+	      <!-- tmpl_var label escape=HTML -->:
+	     </label>
+	    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->" />
+	    </p>
+	<!--/tmpl_loop-->
+
 <!-- /tmpl_unless --> 
 
-<!-- tmpl_loop fields --> 
-    <p>
-     <label for="<!-- tmpl_var name escape=HTML -->" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
-      <!-- tmpl_var name escape=HTML -->: 
-     </label>
-    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->" <!-- tmpl_unless root_login -->disabled="disabled"<!-- /tmpl_unless --> />
-    </p>
-<!--/tmpl_loop--> 
+<!-- tmpl_if root_login --> 
+	 <div class="buttonfloat">
+	  <input type="submit" value="Edit Information" class="cautionary" />
+	 </div>
+<!-- /tmpl_if --> 
 
- <div class="buttonfloat">
-  <input type="submit" value="Edit Information" class="cautionary" />
- </div>
-</form>
+	</form>
+
 <div class="floatclear"></div>
 
 

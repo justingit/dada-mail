@@ -14,6 +14,7 @@ Maybe, rather a subquery?
 
 
 
+[ ] I think I gave the mailing monitor the ability to see multiple mailing lists' status, but the links don't all work, and that gets confusing... 
 
 [x] I need to perhaps make an option to that you cannot edit profile info, if you're not Dada Root. (no option, just... YOU CAN'T.)
 [ ] Or make it clear that editing the information will deal with all lists. and/or have a way to know that a subscriber is on more than one list (and perhaps which lists?) (or a way to see a "public" profile? (turn on/off) 

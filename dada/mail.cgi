@@ -3266,8 +3266,18 @@ sub edit_subscriber {
     my $subscriber_info = $lh->get_subscriber({-email => $email, -type => $type}); 
 
     # DEV: This is repeated quite a bit...
-    foreach my $field(@{$lh->subscriber_fields()}){ 
-        push(@$fields, {name => $field, value => $subscriber_info->{$field}});
+	require DADA::ProfileFieldsManager; 
+	my $pfm = DADA::ProfileFieldsManager->new;
+    
+	foreach my $field(@{$lh->subscriber_fields()}){ 
+	 	my $fields_attr = $pfm->get_all_field_attributes;
+        push(@$fields, 
+			{
+				name   => $field, 
+				value => $subscriber_info->{$field}, 
+				label => $fields_attr->{$field}->{label},
+			}
+		);
     }
 
     require DADA::Template::Widgets;
@@ -9774,7 +9784,7 @@ sub profile {
 				# Make sure that the length is less than 10k. 
 				if(length($edited->{$_}) > 10240){ 
 					# Sigh. 
-					die $DADA::CONFIG::PROGRAM_NAME . ' ' . $VER . ' Error! Attempting to save Profile Field with too large of a value!'; 
+					die $DADA::CONFIG::PROGRAM_NAME . ' ' . $DADA::Config::VER . ' Error! Attempting to save Profile Field with too large of a value!'; 
 				}
 			}
 			$dpf->insert(
