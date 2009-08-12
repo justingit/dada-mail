@@ -87,7 +87,7 @@
 				   {
 				   if (document.send_email.alternative_list[i].checked)
 				      {
-				      	al[i] =  document.send_email.alternative_list[i].value;
+				      	al.push(document.send_email.alternative_list[i].value);
 					 }
 				   }
 				alternative_list = al.join(','); 
@@ -97,6 +97,7 @@
 			if (document.getElementById('multi_list_send_no_dupes') != null) {
 				multi_list_send_no_dupes = $F('multi_list_send_no_dupes'); 
 			}
+			//alert('alternative_list ' + alternative_list); 
 			new Ajax.Updater(
 		
 				'previewMessageReceivers', '<!-- tmpl_var S_PROGRAM_URL -->', 
@@ -138,7 +139,7 @@
     
 <!-- tmpl_else --> 
 
-    <!-- Multiple Subscriber Profile Fields isn't support with this backend (Apparently) --> 
+    <!-- Multiple Subscriber Fields isn't support with this backend (Apparently) --> 
 
 <!-- /tmpl_if --> 
 

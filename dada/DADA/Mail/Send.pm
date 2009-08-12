@@ -49,6 +49,7 @@ my %allowed = (
 	# This is some ninja stuff...
 	test_send_file                => $DADA::Config::TMP . '/test_send_file.txt',  
 	test                          => 0, 
+	test_return_after_mo_create   => 0, 
 	
 	partial_sending               => {}, 
 	multi_list_send               => {}, 
@@ -836,6 +837,7 @@ sub mass_send {
 	my ($args) = @_; 
 	
 	my %param_headers = (); 
+	#require Data::Dumper; 
 	
 	if(ref($args)){
 		
@@ -850,10 +852,13 @@ sub mass_send {
 			$self->partial_sending($args->{-partial_sending}); 
 		}
 		if(exists($args->{-multi_list_send})){ 
+			#warn 'setting -multi_list_send'; 
+			#warn Data::Dumper::Dumper($args->{-multi_list_send}); 
 			$self->multi_list_send($args->{-multi_list_send}); 		
 		}
 		if(exists($args->{-exclude_from})){ 
 			$self->exclude_from($args->{-exclude_from}); 		
+			#warn 'exclude from set in exclude_from()' . Data::Dumper::Dumper($self->exclude_from); 
 		}		
 		if(exists($args->{-test})){ 
 			$self->test($args->{-test}); 
@@ -918,7 +923,7 @@ sub mass_send {
 
     require DADA::Mail::MailOut;     
     my $mailout = DADA::Mail::MailOut->new( { -list => $self->{list} } ); 
-    
+   
 	
     if($self->restart_with){ 
         
@@ -962,8 +967,12 @@ sub mass_send {
                         -list_type       => $self->list_type,
                         -mh_obj          => $self,  
                         -partial_sending => $self->partial_sending, 
+						-exclude_from    => $self->exclude_from, 
                    }); 
-    
+    	if($self->test_return_after_mo_create == 1){ 
+			warn "test_return_after_mo_create is set to 1, and we're getting out of the mass_send method"; 
+			return; 
+		}
     
     }													 				
 	
@@ -1138,7 +1147,11 @@ sub mass_send {
 				
 			# Here's the new stuff: 
 			
+			#require Data::Dumper; 
+			
 			if(keys %{$self->multi_list_send}){ 
+				#warn 'keys in: multi_list_send'; 
+				#warn Data::Dumper::Dumper($self->multi_list_send); 
 				my $local_args = $args; 
 				# Cause that would not be good. 
 				
@@ -1148,8 +1161,10 @@ sub mass_send {
 				my $lists = $self->multi_list_send->{-lists};
 				
 				my @exclude_from = ($self->list);
-				
+				#warn 'starting @exclude_from looking like this: ' . Data::Dumper::Dumper(\@exclude_from); 
 				foreach my $local_list(@$lists){ 
+					# warn 'looking at: $local_list ' . $local_list; 
+					
 					sleep(1); # just so things can catch up... 
 					require DADA::Mail::Send; 
 					my $local_ms = DADA::Mail::Send->new(
@@ -1164,11 +1179,12 @@ sub mass_send {
 							}
 						); 
 					push(@exclude_from, $local_list); 	
+					# warn 'mass_send initited. @exclude_from now looks like this: ' . Data::Dumper::Dumper(\@exclude_from);
 				}
-				warn "Looks like we have more lists to send to!"; 
+				# warn "Looks like we have more lists to send to!"; 
 			}
 			else { 
-				warn "Nope. No more lists to send to."; 
+				# warn "Nope. No more lists to send to."; 
 			}
             return $fields{'Message-ID'};
                 
@@ -2512,7 +2528,7 @@ sub _mail_merge {
                                     }
                              );
 							
-	carp 'at _mail_merge $filename ' . $filename; 
+	#carp 'at _mail_merge $filename ' . $filename; 
 	
        
     #warn '$orig_entity->as_string' . $orig_entity->as_string; 

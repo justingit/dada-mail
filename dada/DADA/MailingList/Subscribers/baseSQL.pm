@@ -363,7 +363,6 @@ sub SQL_subscriber_profile_join_statement {
     warn 'QUERY: ' . $query
      if $t;
 
-
     return $query;
 }
 

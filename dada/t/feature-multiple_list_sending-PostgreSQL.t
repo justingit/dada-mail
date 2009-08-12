@@ -1,33 +1,36 @@
 #!/usr/bin/perl -w
 use strict; 
+
 use lib qw(./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib ./t); 
+
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 use dada_test_config; 
 
 
-
 use Test::More; 
-unless(dada_test_config::SQLite_test_enabled()  ) {
-    plan skip_all => 'SQLite testing is not enabled...';
+unless(dada_test_config::PostgreSQL_test_enabled()  ) {
+    plan skip_all => 'PostgreSQL testing is not enabled...';
 }
 else {
    plan 'no_plan'; 
 }
 
+
+
 SKIP: {
+        eval { require DBD::Pg };
 
-        eval { require DBD::SQLite };
+        skip "DBD::Pg not installed", 2 if $@;
 
-        skip "DBD::SQLite not installed", 2 if $@;
-
-    
-    
-    my $file;     
-    dada_test_config::create_SQLite_db(); 
-        require DADA::Config; 
 
     
-    open(FILE, "t/multiple_list_sending.pl") or die $!; 
+    my $file;         
+    dada_test_config::create_PostgreSQL_db(); 
+    
+    require DADA::Config; 
+    
+    
+    open(FILE, "t/feature-multiple_list_sending.pl") or die $!; 
     
     {
         local $/ = undef; 
@@ -41,6 +44,7 @@ SKIP: {
         diag $@; 
     } 
     
-    dada_test_config::destroy_SQLite_db();
+    dada_test_config::destroy_PostgreSQL_db();
+
 
 }

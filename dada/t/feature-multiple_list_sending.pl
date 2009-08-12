@@ -204,10 +204,82 @@ ok(scalar @$sl == 1, "OK! We have 1 subscribers, unique to this one list (" . sc
 undef $sl; 
 
 
-#require Data::Dumper;
-#diag Data::Dumper::Dumper($sl); 
 
+# This is now a test to make sure that the DADA::Mail::MailOut module actually
+# creates the temp sending list correctly: 
+require DADA::Security::Password;
+require DADA::App::Guts; 
+require DADA::Mail::Send; 
+require DADA::Mail::MailOut; 
+my $mh = DADA::Mail::Send->new({-list => $list}); 
+   $mh->test(1);	
+my $mo = DADA::Mail::MailOut->new({-list => $list}); 
+my $test_msg_fields = {
+    From         => 'me@example.com',
+    To           => 'you@example.com',
+    Subject      => 'hey!',
+    Body         => 'This is my body!', 
+	'Message-ID' => '<' .  DADA::App::Guts::message_id() . '.'. DADA::Security::Password::generate_rand_string('1234567890') . '@' . 'example.com' . '>', 
+};
+# Let's first do this, with no exlusions:
+$mo->create(
+	{
+		-fields        => $test_msg_fields, 
+		-mh_obj        => $mh, 
+		-list_type     => 'list',
+		-exclude_from  => [],
+	 },
+);
+ok($mo->status->{total_sending_out_num} == 8, "sending along to 8 people"); 
+# DESTROY! 
+$mo->clean_up(); 
+undef $mo; 
 
+# Do it again!: Exclude list 2
+$mo = DADA::Mail::MailOut->new({-list => $list}); 
+$mo->create(
+	{
+		-fields        => $test_msg_fields, 
+		-mh_obj        => $mh, 
+		-list_type     => 'list',
+		-exclude_from  => [$list2],
+	 },
+);
+ok($mo->status->{total_sending_out_num} == 2, "sending along to 2 people"); 
+$mo->clean_up(); 
+undef $mo; 
+# Just to be thorough, let's exclude both lists: 
+$mo = DADA::Mail::MailOut->new({-list => $list}); 
+$mo->create(
+	{
+		-fields        => $test_msg_fields, 
+		-mh_obj        => $mh, 
+		-list_type     => 'list',
+		-exclude_from  => [$list2, $list3],
+	 },
+);
+ok($mo->status->{total_sending_out_num} == 2, "sending along to 2 people"); 
+$mo->clean_up(); 
+undef $mo;
+
+# This should do that same thing as the last test, but we're doing it, 
+# indirectly from DADA::Mail::Send. This just makes sure D::M::Send is using 
+# The correct API for D::M::MailOut: 
+
+$mh->test_return_after_mo_create(1); 
+$mh->mass_send(
+	{
+		-msg 			  => $test_msg_fields,
+		-exclude_from     => [$list2, $list3],
+	}
+); 
+
+my @mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list});
+$mo = DADA::Mail::MailOut->new({-list => $list}); 
+$mo->associate($mailouts[0]->{id}, 'list'); 
+ok($mo->status->{total_sending_out_num} == 2, "sending along to 2 people"); 
+$mo->clean_up(); 
+undef $mo;
 
 
 

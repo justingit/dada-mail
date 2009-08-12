@@ -26,7 +26,7 @@ SKIP: {
     
     require DADA::Config;
     
-    open(FILE, "t/multiple_list_sending.pl") or die $!; 
+    open(FILE, "t/feature-multiple_list_sending.pl") or die $!; 
     
     {
         local $/ = undef; 
