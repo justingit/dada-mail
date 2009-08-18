@@ -277,7 +277,13 @@ sub set_archive_info {
 		
 		if((!$raw_msg) && ($new_message)){ 
 		    # This is some seriously silly hackery: 
-		    $raw_msg =  'Content-type: ' .  ($new_format =~ /html/i) ? 'text/html' : 'text/plain'; 
+		    $raw_msg =  'Content-type: '; 
+			if($new_format =~ m/html/i){ 
+				$raw_msg .= 'text/html'; 
+			}
+			else { 
+				 $raw_msg .= 'text/plain'; 
+			}
 		    $raw_msg .= "\n"; 
 		    $raw_msg .= 'Subject: ' . $new_subject; 
 		    $raw_msg .= "\n"; 
