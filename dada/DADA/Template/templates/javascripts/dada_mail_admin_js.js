@@ -1,26 +1,11 @@
-<!-- begin admin_js.tmpl -->
-
-
-<!-- tmpl_if FCKEDITOR_URL --> 
-
-	<script type="text/javascript" src="<!-- tmpl_var FCKEDITOR_URL -->/fckeditor.js"></script>
-	
-<!-- /tmpl_if --> 
-
-
-<script type="text/javascript">
-<!-- 
+<!-- begin javascripts/dada_mail_admin.tmpl -->
 
 var refreshLocation = ''; 
-
-
-
 
 function preview() {
 
 	var new_window = window.open("", "preview", "top=100,left=100,resizable,scrollbars,width=400,height=200");
 }
-
 
 function SetChecked(val) {
 
@@ -34,7 +19,6 @@ function SetChecked(val) {
 	}
 }
 
-
 function SetListChecked(val) {
 
 	dml=document.send_email;
@@ -47,7 +31,6 @@ function SetListChecked(val) {
 	}
 }
 
-
 function set_to_default() {
 	
 	document.the_form.target="_self"; 
@@ -57,7 +40,6 @@ function set_to_default() {
 
 
 function list_message_status(thing) {
-
 	document.the_form.process.value = thing;
 }
 
@@ -66,8 +48,8 @@ function preview_template() {
 
 	document.the_form.target="_blank";
 	document.the_form.process.value="preview template";
-}
 
+}
 
 function change_template() {
 
@@ -75,13 +57,11 @@ function change_template() {
 	document.the_form.process.value="true";
 }
 
-
 function check_newest_version() {
 
 	var check = "http://dadamailproject.com/cgi-bin/support/version.cgi?version=<!-- tmpl_var VER ESCAPE=URL -->";
 	window.open(check, 'version', 'width=325,height=300,top=20,left=20');
 }
-
 
 function add_delete_list() {
 
@@ -90,20 +70,21 @@ function add_delete_list() {
 	var new_address =  document.the_form.email_list.options[Address].value;
 	var append_list =  address_list+"\\n"+new_address;
 	document.the_form.delete_list.value = append_list;
-}
 
+}
 
 function just_test_message() {
 
 	document.the_form.process.value="just_test_message";
+
 }
 
 
 function real_message() {
 
 	document.the_form.process.value="true";
-}
 
+}
 
 function testPOPBeforeSMTP() {
 
@@ -116,10 +97,12 @@ function testPOPBeforeSMTP() {
 	}
 	var popcheck = '<!-- tmpl_var name="S_PROGRAM_URL" -->?f=checkpop;user='+document.default_form.pop3_username.value+';pass='+document.default_form.pop3_password.value+';server='+document.default_form.pop3_server.value+';use_ssl='+use_ssl_value+';mode='+document.default_form.pop3_auth_mode.value;
 	window.open(popcheck, 'popcheck', 'width=325,height=300,top=20,left=20');
+
 }
 
  
 function toggleDisplay(target) {
+
 	if (document.getElementById){
 		var togglin = document.getElementById( target );
 		if(togglin.style.display == ""){
@@ -128,33 +111,7 @@ function toggleDisplay(target) {
 			togglin.style.display = "";
 		}
 	}
-}
 
-
-/* used for Beatitude plugin: */
-function toggle(on, off1, off2) {
-
-	if (document.getElementById){
-		ontarget   = document.getElementById( on );
-		off1target = document.getElementById( off1 );
-		off2target = document.getElementById( off2 );
-		
-		ontarget.style.display   = "";
-		off1target.style.display = "none";
-		off2target.style.display = "none";
-		
-		ontarget_m   = document.getElementById( on + '_menu');
-		off1target_m = document.getElementById( off1 + '_menu' );
-		off2target_m = document.getElementById( off2 + '_menu' );
-		
-		ontarget_m.style.backgroundColor   = "#fff";
-		off1target_m.style.backgroundColor = "#ccc"; //"#fc9";
-		off2target_m.style.backgroundColor = "#ccc"; //"#fc9";
-		
-		ontarget_m.style.borderBottom   = "1px solid #fff";
-		off1target_m.style.borderBottom = "1px solid #000"; //"#fc9";
-		off2target_m.style.borderBottom = "1px solid #000"; //"#fc9";
-	}
 }
 
 function sendMailingListMessage(form_name, testornot) {
@@ -183,21 +140,19 @@ function sendMailingListMessage(form_name, testornot) {
 	}
 	
 	form_name.new_win.checked ? form_name.target = "_blank" : form_name.target = "_self";
+
 }
-
-
-
 
 function warnAboutMassSubscription(form_name) { 
 	
 	var confirm_msg =  "Are you sure you want to subscribe the selected email address(es) to your list? ";
     confirm_msg += "\n\n";
 
-	    confirm_msg += "Subscription of unconfirmed email address(es) should always be avoided. ";
-	    confirm_msg += "\n\n";
-	
-	    confirm_msg += " If wanting to add unconfirmed email address(es), use the \"Invite Checked Subscribers\"";	
-	    confirm_msg += " option to allow the subscriber to confirm their own subscription.";	
+    confirm_msg += "Subscription of unconfirmed email address(es) should always be avoided. ";
+    confirm_msg += "\n\n";
+
+    confirm_msg += " If wanting to add unconfirmed email address(es), use the \"Invite Checked Subscribers\"";	
+    confirm_msg += " option to allow the subscriber to confirm their own subscription.";	
 	
 
 	if(!confirm(confirm_msg)){
@@ -208,9 +163,6 @@ function warnAboutMassSubscription(form_name) {
 	/* Do I still need this? */
 	form_name.target = "_self";
 }
-
-
-
 
 function killMonitoredSending(form_name) { 
     
@@ -224,7 +176,6 @@ function killMonitoredSending(form_name) {
     
 }
 
-
 function pauseMonitoredSending(form_name) { 
     
     var confirm_msg =  "Are you sure you want to PAUSE this mailing? ";
@@ -237,12 +188,9 @@ function pauseMonitoredSending(form_name) {
     
 }
 
-
-
 var refreshTimerId = 0;
 var refreshLoc     = ''; 
 var refreshTime    = ''; 
-
 function refreshpage(sec, url){ 
 
     var refreshAfter = sec/1 * 1000; 
@@ -252,60 +200,47 @@ function refreshpage(sec, url){
     	
     	refreshLocation = url; 
 		refreshLoc      = refreshLocation;  
-		//alert("url! " + url);
     	refreshTimerId = setInterval("doRefresh(refreshLocation);",refreshAfter);
 
-    
     }
 
 }
+
 function doRefresh(loc) { 
+
 	window.location.replace(loc); 
+
 }
+
 function updateRefresh(){ 
+
 	if(document.refresh_control.refresh_on.checked){ 
 		refreshpage(refreshTime, refreshLoc); 
 	}
 	else {
 		clearInterval(refreshTimerId); 
 	}
+
 }
-
-
 
 function removeSubscriberField(form_name) {
 		
-
-	
 	var confirm_msg =  "Are you sure you want to ";
 	    confirm_msg += " permanently remove this field?";
 	    confirm_msg += " All saved informaton in the field for all subscribers will be lost.";
-	
-	
-	
-	
+
     if(!confirm(confirm_msg)){
         alert('Subscriber field removal has been canceled.');
         return false;
     }
 
-	
     form_name.target = "_self";
     
 }
 
-
-
-
 function init(){
-
-	/* var list_name = "[list]";	// these really should be in the HTML::Template */
-	/*var title     = "[title]"; 	// template...*/
-	/*window.status = '<!-- tmpl_var name="PROGRAM_NAME" --> <!-- tmpl_var VER --> | '+list_name+' :: '+title; */
+	/* This even used anymore? */
 	return false;
 }
  
-//-->
-</script>
-
-<!-- end admin_js.tmpl -->
+<!-- end javascripts/dada_mail_admin.tmpl -->
