@@ -897,11 +897,14 @@ foreach my $field(@{$lh->subscriber_fields({-dotted => 1})}){
  }
 
 my $undotted_fields = [];  
- # Extra, special one... 
- push(@$undotted_fields, {name => 'email'}); 
+# Extra, special one... 
+push(@$undotted_fields, {name => 'email', label => 'Email Address'});
+require DADA::ProfileFieldsManager; 
+my $pfm = DADA::ProfileFieldsManager->new;
+my $fields_attr = $pfm->get_all_field_attributes;
  foreach my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){ 
-      push(@$undotted_fields, {name => $undotted_field});
-  }        
+      push(@$undotted_fields, {name => $undotted_field, label => $fields_attr->{$undotted_field}->{label}});
+ }   
 
 
 

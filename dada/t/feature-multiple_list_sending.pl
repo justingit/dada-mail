@@ -77,6 +77,10 @@ $sl = $ls->subscription_list(
 ok(scalar @$sl == 1, "OK! We have ONE subscriber, unique to this one list"); 
 undef $sl; 
 
+#diag "Sleeping!"; 
+#sleep(360); 
+
+
 
 
 # Let's see if we can't confuse it - should still only return one result

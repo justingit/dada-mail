@@ -121,13 +121,16 @@ Current Mass Mailings:
 		      <td> 
 		      <p>
 		       <strong> 
-		        <!-- tmpl_var list --> 
+		        <!-- tmpl_var list_name --> 
 		       </strong> 
 		      </p>
 		     </td>
 		
          <td>  
           <p>
+	
+	<!-- tmpl_if current_list --> 
+	
             <!-- tmpl_if Subject --> 
             
            <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor&id=<!-- tmpl_var id -->&type=<!-- tmpl_var type -->" title="Click to see details about this specific mass mailing  (<!-- tmpl_var Subject escape="HTML" -->)" ><!-- tmpl_var Subject --></a>
@@ -137,6 +140,21 @@ Current Mass Mailings:
             <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor&id=<!-- tmpl_var id -->&type=<!-- tmpl_var type -->"><!-- tmpl_var id --></a>
 
            <!--/tmpl_if --> 
+
+	<!-- tmpl_else --> 
+	
+	 <!-- tmpl_if Subject --> 
+
+		<!-- tmpl_var Subject -->
+		   
+    <!--tmpl_else --> 
+    
+		<!-- tmpl_var id -->
+
+    <!--/tmpl_if -->
+
+	<!-- /tmpl_if --> 
+
           </p>
         </td>
         
@@ -222,15 +240,17 @@ Current Mass Mailings:
      
      
      <td> 
-     
-    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" style="display:inline"> 
-    <input type="hidden" name="f" value="sending_monitor" /> 
-    <input type="hidden" name="id" value="<!-- tmpl_var message_id -->" /> 
-    <input type="hidden" name="type" value="<!-- tmpl_var message_type -->" /> 
-    <input type="hidden" name="process" value="kill" /> 
-    <input type="submit" value="[x]" onclick="return killMonitoredSending(this.form);" <!-- tmpl_unless is_paused --><!-- tmpl_if sending_done -->disabled="disabled" class="disabled"<!-- tmpl_else --> class="alertive" <!--/tmpl_if --><!-- tmpl_else --> class="alertive" <!--/tmpl_unless --> title="Click to permanently STOP this mass mailing"  />
-    </form> 
+     <!-- tmpl_if current_list --> 
 
+	    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" style="display:inline"> 
+	    <input type="hidden" name="f" value="sending_monitor" /> 
+	    <input type="hidden" name="id" value="<!-- tmpl_var message_id -->" /> 
+	    <input type="hidden" name="type" value="<!-- tmpl_var message_type -->" /> 
+	    <input type="hidden" name="process" value="kill" /> 
+	    <input type="submit" value="[x]" onclick="return killMonitoredSending(this.form);" <!-- tmpl_unless is_paused --><!-- tmpl_if sending_done -->disabled="disabled" class="disabled"<!-- tmpl_else --> class="alertive" <!--/tmpl_if --><!-- tmpl_else --> class="alertive" <!--/tmpl_unless --> title="Click to permanently STOP this mass mailing"  />
+	    </form> 
+		<!-- /tmpl_if --> 
+		
 </td> 
        </tr> 
        

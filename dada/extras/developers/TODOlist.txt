@@ -8,22 +8,28 @@ Key:
 [-] Working.
 [x] Done. 
 [*] Naw...
-
+[?] Someday
 
 Maybe, rather a subquery? 
 
 
 
-[ ] I think I gave the mailing monitor the ability to see multiple mailing lists' status, but the links don't all work, and that gets confusing... 
+[x] I think I gave the mailing monitor the ability to see multiple mailing lists' status, but the links don't all work, and that gets confusing... 
 
 [x] I need to perhaps make an option to that you cannot edit profile info, if you're not Dada Root. (no option, just... YOU CAN'T.)
-[ ] Or make it clear that editing the information will deal with all lists. and/or have a way to know that a subscriber is on more than one list (and perhaps which lists?) (or a way to see a "public" profile? (turn on/off) 
-[ ] I need some basic form validation for the Subscriber Profile Fields. 
+[x] Or make it clear that editing the information will deal with all lists. and/or have a way to know that a subscriber is on more than one list (and perhaps which lists?) (or a way to see a "public" profile? (turn on/off) 
+[-] I need some basic form validation for the Subscriber Profile Fields. 
+	Right now, all I have is length. The SQL stuff is properly quoted... 
+	What else?!
 [x] I need to change all instances of, "Subscriber Fields" to, "Subscriber Profile Fields" 
 [ ] I need to make that SQL table upgrade thingy
 	Something like: 
 	
+	DETECT if there may be a problem. Test test test. 
+	
+	
 	(first get the prev. profile fields + email address) 
+	# HEY! Is there a way to do this just in SQL (find columns, EXCEPT @list_of_columns) 
 	
 	INSERT INTO TestTable (FirstName, LastName)
 	SELECT email,  @profile_fields
@@ -40,13 +46,15 @@ yooop.
 	[ ] Sigh. 
 	
 [ ] perhaps make a note about global unsubs in the profile? 
-[ ] You need to change the profile fields when they're listed_like_this, to be Listed Like This! 
-[ ] Subscriber Profile Fields widget - is it in places where we don't want it? 
+[-] You need to change the profile fields when they're listed_like_this, to be Listed Like This! 
+[-] Subscriber Profile Fields widget - is it in places where we don't want it? 
 [ ] Some more live testing... 
 
 
 
 [ ] UTF-8 stuff - revisit? What else needs to be done? Tests? Caching? Information in? How do we handle it? 
+	# I'm almost at the point of saying, "Hey, it's good enough for now, 
+	# but I need some more feedback! 
 
 [ ] Upgrade Script - what needs to be done for that to be a reality? (List of stuff) 
 	[ ] SQL: Creation of new tables
@@ -57,10 +65,12 @@ yooop.
 	[ ]A master, "Unsubscribe me AND delete this profile" Thingy? 
 	
 	
-[-] Prototype stuff? Should that be folded in? It does solve a few bugs... 
-	[ ] Did I break the semi-auto stuff? 
+[x] Prototype stuff? Should that be folded in? It does solve a few bugs... 
+	[x] Did I break the semi-auto stuff? 
+		# Yes you did, but you fixed it
 
-[ ] It would be nice if the partial fields could support some sort of dynamic content, like today's date, etc. 
+[?] It would be nice if the partial fields could support some sort of dynamic content, like today's date, etc. 
+	
 
 [ ] Auto Clickthrough tracking of links in the clickthrough tracker. (oh, boy) 
 	[ ] What does this entail? Is there an (optional) CPAN module that could find all links, and change them? Probably just: HTML::LinkExtor 

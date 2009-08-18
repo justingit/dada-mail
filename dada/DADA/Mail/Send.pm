@@ -970,7 +970,8 @@ sub mass_send {
 						-exclude_from    => $self->exclude_from, 
                    }); 
     	if($self->test_return_after_mo_create == 1){ 
-			warn "test_return_after_mo_create is set to 1, and we're getting out of the mass_send method"; 
+			warn "test_return_after_mo_create is set to 1, and we're getting out of the mass_send method"
+				if $t; 
 			return; 
 		}
     

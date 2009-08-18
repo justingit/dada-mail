@@ -81,6 +81,7 @@ require Exporter;
   check_list_security
   user_error
   check_setup
+  SQL_check_setup
   cased
   root_password_verification
   xss_filter
@@ -1898,7 +1899,33 @@ sub check_setup {
 		} 	
 		return 1;
 	}
-} 
+}
+
+
+sub SQL_check_setup {
+	
+	eval { 
+		# A little indirect, but...  
+		# Tests if we have the necessary tables: 
+		#
+		require DADA::App::DBIHandle; 
+		my $dbi_obj = DADA::App::DBIHandle->new; 
+		my $dbh = $dbi_obj->dbh_obj;
+		foreach my $param(keys %DADA::Config::SQL_PARAMS){ 
+			if($param =~ m/table/){ 
+			 	$dbh->do('SELECT * from ' . $DADA::Config::SQL_PARAMS{$param} . ' WHERE 1 = 0')
+					or croak $!; 
+			}
+		}
+	};
+	if($@){ 
+		carp $@;
+		return 0; 
+	}
+	else { 
+		return 1; 
+	}
+}
 
 =pod
 

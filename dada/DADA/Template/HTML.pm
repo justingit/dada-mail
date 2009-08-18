@@ -232,7 +232,7 @@ sub admin_template {
 										-data => \$admin_template, 
 										-vars => 
 											{
-												javascript          => DADA::Template::Widgets::screen({-screen => 'admin_js.tmpl'}), 
+												javascript          => DADA::Template::Widgets::screen({-screen => 'javascripts/dada_mail_admin_js.js'}), 
 												login_switch_widget => $login_switch_widget, 
 												admin_menu          => $admin_menu, 
 												title               => $args{-Title},

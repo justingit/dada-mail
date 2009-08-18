@@ -13,6 +13,7 @@
    		</td>
 	<!-- /tmpl_unless --> 
 
+<!-- tmpl_if comment --> 
 
 	<td>
 	    <p>
@@ -21,6 +22,8 @@
 	     </strong>
 	    </p>
 	   </td>
+
+<!-- /tmpl_if --> 
 	
    <td>
     <p>
@@ -36,8 +39,12 @@
    <td>
     <p>
      <strong>
-      <!-- tmpl_var name --> 
-     </strong>
+	  <!-- tmpl_if label --> 
+			<!-- tmpl_var label --> 
+	  <!-- tmpl_else --> 
+      		<!-- tmpl_var name --> 
+      <!-- /tmpl_if --> 
+	</strong>
     </p>
    </td>
    
@@ -59,6 +66,7 @@
 		</td>
 			    <!-- /tmpl_unless --> 
 	    
+			<!-- tmpl_if comment --> 
 	
 				<td>
 				    <p>
@@ -67,7 +75,7 @@
 				     </strong>
 				    </p>
 				   </td>
-				
+			<!-- /tmpl_if --> 	
 				
 	<td>
 	     <p>

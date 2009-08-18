@@ -252,8 +252,8 @@ sub unsubscription_check {
 sub subscription_check_xml { 
 	my $self = shift;
     my ($args) = @_;
-    return $self->{validate}->unsubscription_check($args);
-
+    my ($xml, $status, $errors) =  $self->{validate}->subscription_check_xml($args);
+	return ($xml, $status, $errors);
 }
 
 

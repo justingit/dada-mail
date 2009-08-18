@@ -674,9 +674,6 @@ sub run {
 
 sub default { 
  
-
-
-
     if(DADA::App::Guts::check_setup() == 0){ 
         user_error(-Error => 'bad_setup');
         return;         
@@ -687,7 +684,10 @@ sub default {
     ){ 
 		eval {require AnyDBM_File;};
 		if($@){ 
-			user_error(-Error => 'no_dbm_package_installed', -Error_Message => $@); 
+			user_error(
+				-Error         => 'no_dbm_package_installed', 
+				-Error_Message => $@
+			); 
 			return; 
 		}
 		
@@ -722,7 +722,10 @@ sub default {
 			return;		
 		}
 		else { 
-			#...
+			if(DADA::App::Guts::SQL_check_setup() == 0){ 
+		        user_error(-Error => 'bad_SQL_setup');
+		        return;         
+		    }
 		}
 	}
 	
@@ -919,24 +922,28 @@ sub admin {
 
 sub sign_in { 
 
-    my $list_exists = check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle);
+    my $list_exists = check_if_list_exists(
+		-List       => $list, 
+		-dbi_handle => $dbi_handle,
+	);
     
     if($list_exists >= 1){ 
 
-        my $pretty = pretty($list); 
+        my $pretty = pretty($list); # Pretty?
         
-        print(list_template(-Part       => "header",
-                       -Title      => "Sign In to $pretty", 
-                       -List       => $list,
-                       
-                      ));
+        print list_template(
+			-Part       => "header",
+            -Title      => "Sign In to $pretty", 
+            -List       => $list,
+			-vars 	    => { show_profile_widget => 0,}
+        );
     }else{
     
-        print(list_template(-Part => "header",
-                       -Title => "Sign In",
-                       
-                     ));
-    
+        print list_template(
+			-Part  => "header",
+            -Title => "Sign In",
+        );
+
     }
         
     
@@ -958,36 +965,37 @@ sub sign_in {
         my $ls = DADA::MailingList::Settings->new({-list => $list}); 
         my $li = $ls->get; 
         
-        print DADA::Template::Widgets::screen({-screen => 'list_login_form.tmpl', 
-                                           
-                                               -vars   => { 
-                                              list           => $list, 
-                                              
-                                              list_name      => $li->{list_name}, 
-                                              flavor_sign_in => 1, 
-                                              auth_state     => $auth_state, 
-                                              
-                                              },
-                                             });
+        print DADA::Template::Widgets::screen(
+			{
+				-screen => 'list_login_form.tmpl', 
+                -vars   => { 
+					list           => $list, 
+					list_name      => $li->{list_name}, 
+					flavor_sign_in => 1, 
+					auth_state     => $auth_state, 
+				},
+			}
+		);
     }else{ 
         
         my $login_widget = $q->param('login_widget') || $DADA::Config::LOGIN_WIDGET; 
-        print DADA::Template::Widgets::admin(-login_widget => $login_widget, -no_show_create_new_list => 1, -cgi_obj => $q); 
+        print DADA::Template::Widgets::admin(
+			-login_widget            => $login_widget, 
+			-no_show_create_new_list => 1, 
+			-cgi_obj                 => $q,
+		); 
 
-    
     }
-    
-    
-    
     if($list_exists >= 1){ 
     
-        print(list_template(-Part => "footer",
-                       -List => $list, 
-                       , 
-                      ));  
+        print list_template(
+			-Part => "footer",
+            -List => $list, 
+        );  
     }else{
-    
-        print(list_template(-Part => "footer", ,));               
+        print list_template(
+			-Part => "footer"
+		);               
     }
 }
 
@@ -1049,7 +1057,7 @@ sub previewMessageReceivers {
     }
  	my $undotted_fields = [];  
    # Extra, special one... 
-   push(@$undotted_fields, {name => 'email'}); 
+   push(@$undotted_fields, {name => 'email', label => 'Email Address'});
    foreach my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){ 
         push(@$undotted_fields, {name => $undotted_field});
     }        
@@ -1289,11 +1297,14 @@ sub sending_monitor {
 						$mo->{type}
 					); 
 	            my $status  = $mailout->status(); 
-	
+				require DADA::MailingList::Settings; 
+				my $l_ls = DADA::MailingList::Settings->new({-list => $l_list}); 
 	            push(@$mailout_status, 
 					{
+						
 						%$status, 
 						list                         => $l_list, 
+						current_list                 => (($list eq $l_list) ? 1 : 0), 
 						S_PROGRAM_URL                => $DADA::Config::S_PROGRAM_URL, 
 						Subject                      => $status->{email_fields}->{Subject},
 						status_bar_width             => int($status->{percent_done}) * 1,
@@ -1302,6 +1313,7 @@ sub sending_monitor {
 						message_type                 => $mo->{type},
 						mailing_started              => scalar(localtime($status->{first_access})), 
 						mailout_stale                => $status->{mailout_stale}, 
+						%{$l_ls->params},
 	            	}
 	        	);
 			}
@@ -2996,10 +3008,13 @@ sub view_list {
         
     }else{ 
         
-        
+        require DADA::ProfileFieldsManager; 
+		my $pfm = DADA::ProfileFieldsManager->new;
+		my $fields_attr = $pfm->get_all_field_attributes;
+		
         my $field_names = []; 
         foreach(@{$lh->subscriber_fields}){ 
-            push(@$field_names, {name => $_}); 
+            push(@$field_names, {name => $_, label => $fields_attr->{$_}->{label}}); 
         }
         
             print(admin_template_header(-Title      => $type_title, 
@@ -3268,9 +3283,8 @@ sub edit_subscriber {
     # DEV: This is repeated quite a bit...
 	require DADA::ProfileFieldsManager; 
 	my $pfm = DADA::ProfileFieldsManager->new;
-    
+	my $fields_attr = $pfm->get_all_field_attributes;
 	foreach my $field(@{$lh->subscriber_fields()}){ 
-	 	my $fields_attr = $pfm->get_all_field_attributes;
         push(@$fields, 
 			{
 				name   => $field, 
@@ -9211,6 +9225,8 @@ sub javascripts {
     my $js_lib = xss_filter( $q->param('js_lib') );
 
     my @allowed_js = qw(
+	
+	  dada_mail_admin_js.js
 	
 	  prototype.js
       builder.js
