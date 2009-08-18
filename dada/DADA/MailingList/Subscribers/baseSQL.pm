@@ -334,19 +334,13 @@ sub SQL_subscriber_profile_join_statement {
         if ( $args->{ -exclude_from }->[0] ) {
             my @excludes = ();
             foreach my $ex_list ( @{ $args->{ -exclude_from } } ) {
-                push ( @excludes,
-                    $subscriber_table
-                      . '.list = '
+                push ( @excludes,                    
+                      ' b.list = '
                       . $self->{dbh}->quote($ex_list) );
-            }
-            my $ex_from_query = ' AND '
-              . $subscriber_table
-              . '.email NOT IN (SELECT '
-              . $subscriber_table
-              . '.email FROM '
-              . $subscriber_table
-              . ' WHERE '
-              . join ( ' OR ', @excludes ) . ' ) ';
+            }			
+			my $ex_from_query = ' AND NOT EXISTS (SELECT * FROM ' . $subscriber_table .' b
+			    WHERE ( ' . join ( ' OR ', @excludes ) . 
+			    ' ) AND ' . $subscriber_table . '.email = b.email) '; 
             $query .= $ex_from_query;
         }
     }
@@ -362,6 +356,8 @@ sub SQL_subscriber_profile_join_statement {
 
     warn 'QUERY: ' . $query
      if $t;
+
+
 
     return $query;
 }
