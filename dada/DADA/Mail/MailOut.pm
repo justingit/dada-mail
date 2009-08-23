@@ -459,7 +459,9 @@ sub create_subscriber_list {
         	-Bulk_Test       => $args->{-mh_obj}->{mass_test},
         	-Test_Recipient  => $args->{-mh_obj}->mass_test_recipient,
 	        -Ban             => $args->{-mh_obj}->{do_not_send_to},
-	        -Sending_Lists   => $args->{-mh_obj}->also_send_to,	
+	        -Sending_Lists   => $args->{-mh_obj}->also_send_to,
+			# I'm pretty scoobied why these are passed as params, and the above are just 
+			# culled from the $mh object. Like, what? 
 	        -partial_sending => $args->{-partial_sending}, 
 			-exclude_from    => $args->{-exclude_from}, 
         );
