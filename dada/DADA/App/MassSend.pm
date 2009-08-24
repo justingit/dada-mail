@@ -374,10 +374,10 @@ sub send_email {
 				{
 					-msg 			  => {%mailing},
 					-partial_sending  => $partial_sending, 
-					#-multi_list_send  => {
-					#						-lists    => [@alternative_list], 
-					#						-no_dupes => $multi_list_send_no_dupes, 
-					# 					 },
+					-multi_list_send  => {
+											-lists    => [@alternative_list], 
+											-no_dupes => $multi_list_send_no_dupes, 
+					 					 },
 					-also_send_to     => [@alternative_list],
 				($process =~ m/test/i) ? (-mass_test => 1, -test_recipient => $og_test_recipient,) : (-mass_test => 0,)
 								        	 
@@ -725,10 +725,10 @@ sub send_url_email {
 						{
 							-msg 			  => {%mailing},
 							-partial_sending  => $partial_sending, 
-							#-multi_list_send  => {
-							#						-lists    => [@alternative_list], 
-							#						-no_dupes => $multi_list_send_no_dupes, 
-							 #					 },
+							-multi_list_send  => {
+													-lists    => [@alternative_list], 
+													-no_dupes => $multi_list_send_no_dupes, 
+							 					 },
 							-also_send_to     => [@alternative_list],
 						($process =~ m/test/i) ? (-mass_test => 1, -test_recipient => $og_test_recipient,) : (-mass_test => 0,)
 

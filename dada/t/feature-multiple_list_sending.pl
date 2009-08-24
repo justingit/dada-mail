@@ -4,7 +4,8 @@ use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib )
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 use dada_test_config; 
 
-
+use DADA::Config; 
+$DADA::Config::MULTIPLE_LIST_SENDING_TYPE = 'individual'; 
 use strict;
 use Carp; 
 

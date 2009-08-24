@@ -450,22 +450,28 @@ sub create_subscriber_list {
 	my $file = $self->dir . '/' . $file_names->{tmp_subscriber_list}; 
 	my $lock = $self->lock_file($file); 
 	
-    my ( $path_to_list, $total_sending_out_num)
-        = $lh->create_mass_sending_file(
-	
-        	-ID              => $self->_internal_message_id,
+	my %cmf_args = (
+			-ID              => $self->_internal_message_id,
         	-Type            => $self->mailout_type,
         	-Save_At         => $self->dir . '/' . $file_names->{tmp_subscriber_list},
         	-Bulk_Test       => $args->{-mh_obj}->{mass_test},
         	-Test_Recipient  => $args->{-mh_obj}->mass_test_recipient,
 	        -Ban             => $args->{-mh_obj}->{do_not_send_to},
-			-include_from    => $args->{-mh_obj}->also_send_to,
 	        # -Sending_Lists   => $args->{-mh_obj}->also_send_to,
 			# I'm pretty scoobied why these are passed as params, and the above are just 
 			# culled from the $mh object. Like, what? 
-	        -partial_sending => $args->{-partial_sending}, 
-			-exclude_from    => $args->{-exclude_from}, 
-        );
+	        -partial_sending => $args->{-partial_sending},
+	); 
+	if($DADA::Config::MULTIPLE_LIST_SENDING == 1){ 
+		if ($DADA::Config::MULTIPLE_LIST_SENDING_TYPE eq 'merged') { 
+			$cmf_args{-include_from} = $args->{-mh_obj}->also_send_to;
+		}
+		else { 
+			$cmf_args{-exclude_from} = $args->{-exclude_from};  # Individual
+		}
+	}
+	
+    my ( $path_to_list, $total_sending_out_num) = $lh->create_mass_sending_file( %cmf_args );
 	$self->unlock_file($lock); 
     if ( !-e $self->dir . '/' . $file_names->{tmp_subscriber_list} ) {
         croak "Temporary Sending List was never created at: '"

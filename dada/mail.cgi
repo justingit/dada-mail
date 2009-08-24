@@ -1066,52 +1066,48 @@ sub previewMessageReceivers {
 		}  
     }
 	
-	
     if(keys %$partial_sending) { 
-
-=cut
-     print '<h1>' . $list . '</h1>'; 
-	
- 		$lh->fancy_print_out_list(
-		{
-			-partial_listing   => $partial_sending, 
-			-type              => 'list',		
-		}
-		);
-		
-		my @exclude_from = (); 
-		
-		if($multi_list_send_no_dupes == 1){ 
-			 @exclude_from = ($list); 
-		}
-		if($alternative_list[0]){ 
-		
-			foreach my $alt_list(@alternative_list){ 
-				print '<h1>' . $alt_list . '</h1>'; 
-				my $alt_mls = DADA::MailingList::Subscribers->new({-list => $alt_list});
-				 $alt_mls->fancy_print_out_list(
-					{
-						-partial_listing   => $partial_sending, 
-						-type              => 'list',
-						-exclude_from      => [@exclude_from], 		
-					}
-				); 
-				if($multi_list_send_no_dupes == 1){ 
-					push(@exclude_from, $alt_list); 
+		if($DADA::Config::MULTIPLE_LIST_SENDING_TYPE eq 'merged'){ 
+     		$lh->fancy_print_out_list(
+				{
+					-partial_listing   => $partial_sending, 
+					-type              => 'list',		
+					-include_from      => [@alternative_list],
 				}
-			}
+			);
 		}
-=cut
-
-	   
-		$lh->fancy_print_out_list(
+		else { 
+			print '<h1>' . $list . '</h1>'; 
+	
+	 		$lh->fancy_print_out_list(
 			{
 				-partial_listing   => $partial_sending, 
 				-type              => 'list',		
-				-include_from      => [@alternative_list],
 			}
-		);
-	    
+			);
+		
+			my @exclude_from = (); 
+		
+			if($multi_list_send_no_dupes == 1){ 
+				 @exclude_from = ($list); 
+			}
+			if($alternative_list[0]){ 
+				foreach my $alt_list(@alternative_list){ 
+					print '<h1>' . $alt_list . '</h1>'; 
+					my $alt_mls = DADA::MailingList::Subscribers->new({-list => $alt_list});
+					 $alt_mls->fancy_print_out_list(
+						{
+							-partial_listing   => $partial_sending, 
+							-type              => 'list',
+							-exclude_from      => [@exclude_from], 		
+						}
+					); 
+					if($multi_list_send_no_dupes == 1){ 
+						push(@exclude_from, $alt_list); 
+					}
+				}
+			}			
+	   }
     } else { 
         print $q->p($q->em('Currently, all ' . $q->strong( $lh->num_subscribers ) . ' subscribers of, ' . $list .' will receive this message.')); 
     }

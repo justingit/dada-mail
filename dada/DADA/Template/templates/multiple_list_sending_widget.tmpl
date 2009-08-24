@@ -7,73 +7,77 @@
 	
 	<!-- tmpl_if can_have_subscriber_fields -->
 
+	<!-- tmpl_if MULTIPLE_LIST_SENDING --> 
 
-
-    <fieldset>
+ 	   <fieldset>
      
-	 <legend>
-       <a href="#" id="multiple_list_sending" onclick="toggleDisplay('multiple_list_sending_widget');return false;">
-      +/- 
-     </a>Multiple Mailing List Sending
-     </legend>    
+		 <legend>
+	       <a href="#" id="multiple_list_sending" onclick="toggleDisplay('multiple_list_sending_widget');return false;">
+	      +/- 
+	     </a>Multiple Mailing List Sending
+	     </legend>    
      
-     <div id="multiple_list_sending_widget" style="display:none;width:90%">
+	     <div id="multiple_list_sending_widget" style="display:none;width:90%">
 	
 		
 
-			 <p class="alert">
-			  * Multiple Mailing List Sending has been enabled
-			 </p>
-			 <p>
-			  <em>Also</em> send a copy of this message to subscribers of the following mailing lists:
-			</p>
-			<p>
-			   <a href="#" onclick="SetListChecked(1);return false;">
-			    check all 
-			   </a>
-			   :: 
-			   <a href="#" onclick="SetListChecked(0);return false;">
-			    uncheck all
-			   </a>
-			  </p>
+				 <p class="alert">
+				  * Multiple Mailing List Sending has been enabled
+				 </p>
+				 <p>
+				  <em>Also</em> send a copy of this message to subscribers of the following mailing lists:
+				</p>
+				<p>
+				   <a href="#" onclick="SetListChecked(1);return false;">
+				    check all 
+				   </a>
+				   :: 
+				   <a href="#" onclick="SetListChecked(0);return false;">
+				    uncheck all
+				   </a>
+				  </p>
 
-			 <div class="simplebox" style="max-height:150px;overflow:auto;">
+				 <div class="simplebox" style="max-height:150px;overflow:auto;">
 			  
-				<!-- tmpl_var global_list_sending_checkbox_widget --> 
+					<!-- tmpl_var global_list_sending_checkbox_widget --> 
 	
-	 		</div>
+		 		</div>
 	
-	  <p>
-	   <a href="#" onclick="SetListChecked(1);return false;">
-	    check all 
-	   </a>
-	   :: 
-	   <a href="#" onclick="SetListChecked(0);return false;">
-	    uncheck all
-	   </a>
-	  </p>
+		  <p>
+		   <a href="#" onclick="SetListChecked(1);return false;">
+		    check all 
+		   </a>
+		   :: 
+		   <a href="#" onclick="SetListChecked(0);return false;">
+		    uncheck all
+		   </a>
+		  </p>
 	
-		<p>
-		 <input type="checkbox" name="multi_list_send_no_dupes" id="multi_list_send_no_dupes" value="1" checked="checked" />
+		<!-- tmpl_if comment --> 
 		
-		<label for="multi_list_send_no_dupes">
-		  Send Only One Message/Subscriber
-		 </label>
-		<br /> 
-		Subscribers who have email addresses subscribed to more than one mailing list will receive only one copy of this message.
-	  </p>
+			<p>
+			 <input type="checkbox" name="multi_list_send_no_dupes" id="multi_list_send_no_dupes" value="1" checked="checked" />
+		
+			<label for="multi_list_send_no_dupes">
+			  Send Only One Message/Subscriber
+			 </label>
+			<br /> 
+			Subscribers who have email addresses subscribed to more than one mailing list will receive only one copy of this message.
+		  </p>
+		<!-- /tmpl_if --> 
+		
+		<input type="hidden" name="multi_list_send_no_dupes" id="multi_list_send_no_dupes" value="1" />
+		
+		</div> 
 	
-
+	    </fieldset>
+	<!-- /tmpl_if --> 
+		
+		<!-- tmpl_else --> 
 	
-	</div> 
+			<!-- multiple list sending is not supported (apparently) 
 	
-    </fieldset>
-
-	<!-- tmpl_else --> 
-	
-		<!-- multiple list sending is not supported (apparently) 
-	
-	<!-- /tmpl_if -->
+		<!-- /tmpl_if -->
 	
 	
 	

@@ -27,7 +27,6 @@ use Fcntl qw(:DEFAULT :flock	O_WRONLY	O_TRUNC		O_CREAT	LOCK_EX	);
 
 my %allowed = (
 	
-
 	list                          => undef, 
 	list_info                     => {},
 	ls                            => undef, 
@@ -59,8 +58,6 @@ my %allowed = (
 	net_smtp_obj                  => undef, 
 	
 ); 
-
-
 
 my %defaults        = %DADA::Config::EMAIL_HEADERS;
 my @default_headers = @DADA::Config::EMAIL_HEADERS_ORDER; 
@@ -862,7 +859,6 @@ sub mass_send {
 		}
 		if(exists($args->{-exclude_from})){ 
 			$self->exclude_from($args->{-exclude_from}); 		
-			#warn 'exclude from set in exclude_from()' . Data::Dumper::Dumper($self->exclude_from); 
 		}		
 		if(exists($args->{-test})){ 
 			$self->test($args->{-test}); 
@@ -1152,44 +1148,49 @@ sub mass_send {
 				
 			# Here's the new stuff: 
 			
-			#require Data::Dumper; 
-			
-			if(keys %{$self->multi_list_send}){ 
-				#warn 'keys in: multi_list_send'; 
-				#warn Data::Dumper::Dumper($self->multi_list_send); 
-				my $local_args = $args; 
-				# Cause that would not be good. 
+			if(
+				$DADA::Config::MULTIPLE_LIST_SENDING      == 1 
+				&& 
+				$DADA::Config::MULTIPLE_LIST_SENDING_TYPE eq 'individual'
+			) { 
+								
+				if(keys %{$self->multi_list_send}){ 
+					#warn 'keys in: multi_list_send'; 
+					#warn Data::Dumper::Dumper($self->multi_list_send); 
+					my $local_args = $args; 
+					# Cause that would not be good. 
 				
-				delete($local_args->{-multi_list_send});
-				delete($local_args->{-exclude_from});
+					delete($local_args->{-multi_list_send});
+					delete($local_args->{-exclude_from});
 				
-				my $lists = $self->multi_list_send->{-lists};
+					my $lists = $self->multi_list_send->{-lists};
 				
-				my @exclude_from = ($self->list);
-				#warn 'starting @exclude_from looking like this: ' . Data::Dumper::Dumper(\@exclude_from); 
-				foreach my $local_list(@$lists){ 
-					# warn 'looking at: $local_list ' . $local_list; 
+					my @exclude_from = ($self->list);
+					#warn 'starting @exclude_from looking like this: ' . Data::Dumper::Dumper(\@exclude_from); 
+					foreach my $local_list(@$lists){ 
+						# warn 'looking at: $local_list ' . $local_list; 
 					
-					sleep(1); # just so things can catch up... 
-					require DADA::Mail::Send; 
-					my $local_ms = DADA::Mail::Send->new(
-							{
-								-list => $local_list, 
-							}
-					); 
-					$local_ms->mass_send(
-							{
-								%$local_args, 
-								-exclude_from => [@exclude_from],
-							}
+						sleep(1); # just so things can catch up... 
+						require DADA::Mail::Send; 
+						my $local_ms = DADA::Mail::Send->new(
+								{
+									-list => $local_list, 
+								}
 						); 
-					push(@exclude_from, $local_list); 	
-					# warn 'mass_send initited. @exclude_from now looks like this: ' . Data::Dumper::Dumper(\@exclude_from);
+						$local_ms->mass_send(
+								{
+									%$local_args, 
+									-exclude_from => [@exclude_from],
+								}
+							); 
+						push(@exclude_from, $local_list); 	
+						# warn 'mass_send initited. @exclude_from now looks like this: ' . Data::Dumper::Dumper(\@exclude_from);
+					}
+					# warn "Looks like we have more lists to send to!"; 
 				}
-				# warn "Looks like we have more lists to send to!"; 
-			}
-			else { 
-				# warn "Nope. No more lists to send to."; 
+				else { 
+					# warn "Nope. No more lists to send to."; 
+				}
 			}
             return $fields{'Message-ID'};
                 
