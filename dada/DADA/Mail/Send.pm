@@ -848,6 +848,10 @@ sub mass_send {
 			%param_headers = %{$args->{-msg}};
 		}
 		# And then, we can pass a few neat things: 
+		if(exists($args->{-also_send_to})){
+			$self->also_send_to($args->{-also_send_to}); 
+
+		}
 		if(exists($args->{-partial_sending})){ 
 			$self->partial_sending($args->{-partial_sending}); 
 		}
@@ -2482,9 +2486,7 @@ sub _mail_merge {
         $labeled_data{message_id}                     = shift @$data;
 
     my $merge_fields = $self->{merge_fields};
-    
-    #warn 'Working on: ' . q{ $subscriber_vars->{'subscriber.email'} } . $subscriber_vars->{'subscriber.email'};
-    
+        
     my $i = 0;
     for($i=0; $i<=$#$merge_fields; $i++){ 
     
@@ -2492,7 +2494,6 @@ sub _mail_merge {
             $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $data->[$i];       
         }
         else { 
-            #$subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $self->{fallback_field_values}->{$merge_fields->[$i]};  
 		  	 $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $self->{field_attr}->{$merge_fields->[$i]}->{fallback_value};  
           
         }
@@ -2543,7 +2544,7 @@ sub _mail_merge {
                             {
 								# You know, I need at least this:
 								message_id => $labeled_data{message_id},
-         #                       %labeled_data,
+                               %labeled_data,
                             },
                     }
                 );

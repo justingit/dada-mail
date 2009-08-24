@@ -1030,18 +1030,13 @@ sub previewMessageReceivers {
                                                 -Function => 'send_email');
     
 	# This comes in a s a string, sep. by commas. Sigh. 
-	my $al = $q->param('alternative_list') || ''; 
+	my $al = $q->param('alternative_lists') || ''; 
+	my @alternative_list         = split(',', $al); 
 
 	
-	my @alternative_list         = split(',', $al); 
-	
-#	require Data::Dumper; 
-#	die Data::Dumper::Dumper(\@alternative_list); 
-#	
 	my $multi_list_send_no_dupes = $q->param('multi_list_send_no_dupes') || 0; 
 	
     require DADA::MailingList::Settings; 
-            $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
     
     $list = $admin_list; 
   
@@ -1073,6 +1068,8 @@ sub previewMessageReceivers {
 	
 	
     if(keys %$partial_sending) { 
+
+=cut
      print '<h1>' . $list . '</h1>'; 
 	
  		$lh->fancy_print_out_list(
@@ -1104,7 +1101,17 @@ sub previewMessageReceivers {
 				}
 			}
 		}
+=cut
 
+	   
+		$lh->fancy_print_out_list(
+			{
+				-partial_listing   => $partial_sending, 
+				-type              => 'list',		
+				-include_from      => [@alternative_list],
+			}
+		);
+	    
     } else { 
         print $q->p($q->em('Currently, all ' . $q->strong( $lh->num_subscribers ) . ' subscribers of, ' . $list .' will receive this message.')); 
     }

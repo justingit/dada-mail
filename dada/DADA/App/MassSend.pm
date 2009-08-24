@@ -358,7 +358,8 @@ sub send_email {
 		my $test_recipient = ''; 
         if($q->param('archive_no_send') != 1){ 
 			
-			my @alternative_list = $q->param('alternative_list') || (); 
+			my @alternative_list = (); 
+			@alternative_list = $q->param('alternative_list');
 			my $og_test_recipient = $q->param('test_recipient') || ''; 
 			$mh->mass_test_recipient($og_test_recipient); 
             $test_recipient = $mh->mass_test_recipient;
@@ -366,14 +367,18 @@ sub send_email {
 			my $multi_list_send_no_dupes = $q->param('multi_list_send_no_dupes') || 0; 
 			
             # send away
-            $message_id = $mh->mass_send(
+			#require Data::Dumper; 			
+            #die Data::Dumper::Dumper(@alternative_list);
+ 
+			$message_id = $mh->mass_send(
 				{
 					-msg 			  => {%mailing},
 					-partial_sending  => $partial_sending, 
-					-multi_list_send  => {
-											-lists    => [@alternative_list], 
-											-no_dupes => $multi_list_send_no_dupes, 
-					 					 },
+					#-multi_list_send  => {
+					#						-lists    => [@alternative_list], 
+					#						-no_dupes => $multi_list_send_no_dupes, 
+					# 					 },
+					-also_send_to     => [@alternative_list],
 				($process =~ m/test/i) ? (-mass_test => 1, -test_recipient => $og_test_recipient,) : (-mass_test => 0,)
 								        	 
 				}
@@ -706,7 +711,9 @@ sub send_url_email {
                 if($q->param('archive_no_send') != 1){ 
                     # Woo Ha! Send away!
 
-					my @alternative_list         = $q->param('alternative_list') || (); 
+					my @alternative_list = (); 
+					@alternative_list = $q->param('alternative_list');
+
 					my $og_test_recipient        = $q->param('test_recipient') || ''; 
 					my $multi_list_send_no_dupes = $q->param('multi_list_send_no_dupes') || 0; 
 					
@@ -718,10 +725,11 @@ sub send_url_email {
 						{
 							-msg 			  => {%mailing},
 							-partial_sending  => $partial_sending, 
-							-multi_list_send  => {
-													-lists    => [@alternative_list], 
-													-no_dupes => $multi_list_send_no_dupes, 
-							 					 },
+							#-multi_list_send  => {
+							#						-lists    => [@alternative_list], 
+							#						-no_dupes => $multi_list_send_no_dupes, 
+							 #					 },
+							-also_send_to     => [@alternative_list],
 						($process =~ m/test/i) ? (-mass_test => 1, -test_recipient => $og_test_recipient,) : (-mass_test => 0,)
 
 						}

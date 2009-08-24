@@ -203,6 +203,18 @@ sub SQL_subscriber_profile_join_statement {
         croak '"' . $args->{ -type } . '" is not a valid list type! ';
     }
 
+
+	if(exists($args->{-include_from})){ 
+		if(exists($args->{-include_from}->[0])){ 
+			# ... 
+		}
+		else { 
+			delete($args->{-include_from}); 
+		}
+	}
+
+
+	
 # Right now, we can either have an any/all boolean type of thing. "OR" is used for
 # searches, I'm not sure if this would be helpful for the Partial List Sending stuff.
 
@@ -231,8 +243,14 @@ sub SQL_subscriber_profile_join_statement {
 
     # We need the email and list from $subscriber_table
     my $query;
-    $query =
-      'SELECT ' . $subscriber_table . '.email, ' . $subscriber_table . '.list';
+	if(exists($args->{-include_from})){ 
+	    $query = 'SELECT DISTINCT ';
+ 	}
+	else { 
+	    $query = 'SELECT ';	
+	}
+	
+	$query .= $subscriber_table . '.email, ' . $subscriber_table . '.list';
     $query .= $merge_field_query;
 
 # And we need to match this with the info in $profile_fields_table - this fast/slow?
@@ -252,14 +270,27 @@ sub SQL_subscriber_profile_join_statement {
         && $args->{ -type } eq 'black_list' )
     {
 
-		#$query .= ' 1 = 1 '; 
         #... Nothin'
     }
     else {
 
-        $query .=
-          $subscriber_table . '.list = ' . $self->{dbh}->quote( $self->{list} ) . ' AND '; 
-
+		if(exists($args->{-include_from})){ 
+			my @include_from = ($self->{list}, @{$args->{-include_from}}); 
+			@include_from = map($self->{dbh}->quote($_), @include_from);
+			@include_from = map($_ = $subscriber_table . '.list = ' . $_, @include_from); 
+			
+			my $include_from_query = join(
+				' OR ' , 
+				@include_from
+			);
+			$include_from_query = '( ' . $include_from_query . ' )'; 
+			$include_from_query .= ' AND '; 
+			$query .= $include_from_query;
+		}
+		else { 			
+	        $query .=
+	          $subscriber_table . '.list = ' . $self->{dbh}->quote( $self->{list} ) . ' AND '; 
+		}
     }
 
     # list_status is almost always 1
@@ -330,6 +361,10 @@ sub SQL_subscriber_profile_join_statement {
    # -exclude_from is to return results from subscribers who *aren't* subscribed
    # to another list.
 
+
+	# A correlated subquery is a subquery that contains a reference to a 
+	# table that also appears in the outer query.
+	
     if ( exists( $args->{ -exclude_from } ) ) {
         if ( $args->{ -exclude_from }->[0] ) {
             my @excludes = ();
@@ -349,16 +384,17 @@ sub SQL_subscriber_profile_join_statement {
 
     if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
         $query .= ' ORDER BY '
+          . $subscriber_table . '.list, '
           . $subscriber_table
-          . '.email, '
-          . $subscriber_table . '.list';
+          . '.email'
+		  ;
+
     }
 
     warn 'QUERY: ' . $query
      if $t;
 
-
-
+    
     return $query;
 }
 
@@ -900,6 +936,7 @@ sub create_mass_sending_file {
         -Test_Recipient  => undef,
         -partial_sending => {},
         -exclude_from    => [],
+		
         @_
     );
 
@@ -993,6 +1030,7 @@ sub create_mass_sending_file {
                 -type            => $args{ -Type },
                 -partial_listing => $args{ -partial_sending },
                 -exclude_from    => $args{ -exclude_from },
+				-include_from    => $args{ -include_from },
             }
         );
 
