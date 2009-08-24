@@ -59,14 +59,14 @@ a message from one list, to subscribers from another mailing list
 and it'll most likely look that way to people who receive the message. 
 
 For example, all list settings (and tags, for list settings) will be from the host list, 
-so if your host list using SMTP sending, you're entire mailing will use SMTP sending. 
+so if your host list is using SMTP sending, you're entire mailing will use SMTP sending. 
 
 The only tags that will reflect the list the subscriber may be subscribed on (if it isn't the host list) 
 is the, C<list_settings.list> and C<list_settings.list_name> tag. The unsubscription, list screen and other links will 
 probably reflect the list the subscriber is subscriber on, though. 
 
 This method is the faster of the two methods, but you don't have much say in which list 
-a subscriber will be sent from. Because of that, it's highly recommended, you never use this 
+a subscriber will be sent from. Because of that, it's highly recommended that you never use this 
 method, without also enabling Global Black Listing and Global Unsubscribe. 
 
 Generally, this method will make all your Dada Mail List act as if it's one giant mailing list. 
@@ -77,7 +77,7 @@ The C<individual> method mass mails all the mailing lists you'd like to send to,
 on a per-list basis. Instead of one mass mailing that has subscribers from 
 more than one list, each different list will be mass mailed separately, just with the same message. 
 
-Because of this, the messages will appear and actually be from each list you want to send to. 
+Because of this, the messages will appear and actually be from each mailing list you want to send to. 
 
 The downside to this mode is that it could be much, much slower to create the mass mailings - 
 to the point that this feature may not work as advertised, if you have large lists. Having individual mass mailings 
