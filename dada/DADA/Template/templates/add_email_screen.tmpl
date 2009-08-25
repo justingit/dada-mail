@@ -501,7 +501,10 @@ Invalid Email Addresses
 
 
  <div class="buttonfloat">
-  <p class="error">Disabled. You will need to be logged into this list with the <!-- tmpl_var PROGRAM_NAME --> Root Password.
+ <!-- tmpl_unless root_login -->
+ 	<p class="error">Disabled. You will need to be logged into this list with the <!-- tmpl_var PROGRAM_NAME --> Root Password.
+<!-- /tmpl_unless --> 
+
 	<input type="checkbox" id="fields_options_mode" name="fields_options_mode" value="preserve" <!-- tmpl_unless root_login -->disabled="disabled"<!-- /tmpl_unless --> />
 	<label for="fields_options_mode">
 		Preserve any current Subscriber Profile Fields information

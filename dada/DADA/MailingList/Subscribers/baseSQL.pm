@@ -243,11 +243,12 @@ sub SQL_subscriber_profile_join_statement {
 
     # We need the email and list from $subscriber_table
     my $query;
-	if(exists($args->{-include_from})){ 
-	    $query = 'SELECT DISTINCT ';
+
+	if(exists($args->{-include_from}) && $self->{sql_params}->{dbtype} eq 'Pg'){ 
+	    $query .= ' SELECT DISTINCT ON(' . $subscriber_table . '.email) ';
  	}
 	else { 
-	    $query = 'SELECT ';	
+		$query  = 'SELECT ';	
 	}
 	
 	$query .= $subscriber_table . '.email, ' . $subscriber_table . '.list';
@@ -382,15 +383,19 @@ sub SQL_subscriber_profile_join_statement {
 
     # /
 
+
+	if(exists($args->{-include_from}) && $self->{sql_params}->{dbtype} =~ m/^mysql$|^SQLite$/){ 
+	    $query .= ' GROUP BY ' . $subscriber_table . '.email '
+ 	}
+
+
     if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
         $query .= ' ORDER BY '
           . $subscriber_table . '.list, '
           . $subscriber_table
           . '.email'
 		  ;
-
     }
-
     warn 'QUERY: ' . $query
      if $t;
 

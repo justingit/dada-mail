@@ -5,14 +5,18 @@ BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 use dada_test_config; 
 
 use DADA::Config; 
-$DADA::Config::MULTIPLE_LIST_SENDING_TYPE = 'individual'; 
+
 use strict;
 use Carp; 
 
+##############################################################################
+#
+$DADA::Config::MULTIPLE_LIST_SENDING_TYPE = 'individual'; 
+#
 
 # These holds names of the lists 
 #
-my $list  =  dada_test_config::create_test_list({-remove_existing_list => 1, -remove_subscriber_fields => 1});
+my $list  = dada_test_config::create_test_list({-remove_existing_list => 1, -remove_subscriber_fields => 1});
 my $list2 = dada_test_config::create_test_list({-remove_existing_list => 1, -remove_subscriber_fields => 1, -name => 'dadatest2'});
 my $list3 = dada_test_config::create_test_list({-remove_existing_list => 1, -remove_subscriber_fields => 1, -name => 'dadatest3'});
 
@@ -77,9 +81,6 @@ $sl = $ls->subscription_list(
 );
 ok(scalar @$sl == 1, "OK! We have ONE subscriber, unique to this one list"); 
 undef $sl; 
-
-#diag "Sleeping!"; 
-#sleep(360); 
 
 
 
@@ -163,8 +164,8 @@ $pf->{manager}->add_field(
 foreach my $sub(@{$ls->subscription_list}){ 
 	$ls->edit_subscriber(
 		{
-			-email  => $sub->{email}, 
-			-fields => { 
+			-email    => $sub->{email}, 
+			-fields   => { 
 				one   => "ONE", 
 				two   => "TWO", 
 				three => "THREE",
@@ -287,6 +288,61 @@ $mo->clean_up();
 undef $mo;
 
 
+#diag "Sleeping!"; 
+#sleep(320);
+
+
+
+##############################################################################
+#
+$DADA::Config::MULTIPLE_LIST_SENDING_TYPE = 'merged'; 
+#
+
+$sl = $ls->subscription_list(
+	{
+		-include_from     => [$list2],
+	}
+);
+ok(scalar @$sl == 8, "We have 8 subscribers that are subscribed to all three lists. (" . scalar @$sl . ")"); 
+undef $sl;
+
+
+
+$sl = $ls->subscription_list(
+	{
+		-include_from     => [$list2, $list3],
+	}
+);
+ok(scalar @$sl == 9, "We have 9 subscribers that are subscribed to all three lists. (" . scalar @$sl . ")"); 
+undef $sl;
+
+
+# I guess this is valid, as it doesn't do anything wrong, but it's still sort of weird: 
+$sl = $ls->subscription_list(
+	{
+		-include_from     => [$list],
+	}
+);
+ok(scalar @$sl == 7, "We have 7 subscribers that are subscribed to the first two lists. (" . scalar @$sl . ")"); 
+undef $sl;
+
+
+
+$sl = $ls->subscription_list(
+	{
+		-include_from    => [$list2, $list3],
+		-partial_listing => {
+								one => 
+									{
+										like => 'ONE',
+									}
+							},
+	}
+);
+ok(scalar @$sl == 7, "OK! We have 7 subscribers (" . scalar @$sl . ")"); 
+undef $sl; 
+
+
 
 dada_test_config::remove_test_list;
 dada_test_config::remove_test_list({-name => 'dadatest2'});
@@ -313,6 +369,5 @@ sub slurp {
         return @r;
 
 }
-
 
 
