@@ -25,8 +25,8 @@ CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(320), list, l
 
 
 
-CREATE TABLE dada_profile (
-	profile_id			         int4 not null primary key auto_increment,
+CREATE TABLE dada_profile ( 
+	profile_id int4 not null primary key auto_increment,
 	email                        varchar(320) not null,
 	password                     text(16),
 	auth_code                    varchar(64),
@@ -37,13 +37,13 @@ CREATE TABLE dada_profile (
 );
 
 CREATE TABLE dada_profile_fields (
-	fields_id			         int4 not null primary key auto_increment,
+	fields_id int4 not null primary key auto_increment,
 	email                        varchar(320) not null,
 	CONSTRAINT UNIQUE (email)
 );
 
 CREATE TABLE dada_profile_fields_attributes (
-	attribute_id 				int4 not null primary key auto_increment,
+	attribute_id int4 not null primary key auto_increment,
 	field                       varchar(320),
 	label                       varchar(320),
 	fallback_value              varchar(320),
