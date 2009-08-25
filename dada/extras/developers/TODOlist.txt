@@ -10,8 +10,9 @@ Key:
 [*] Naw...
 [?] Someday
 
-Maybe, rather a subquery? 
 
+
+Maybe, rather a subquery? (correlated vs.uncorrelated) 
 
 
 [x] I think I gave the mailing monitor the ability to see multiple mailing lists' status, but the links don't all work, and that gets confusing... 
@@ -55,6 +56,7 @@ yooop.
 [ ] UTF-8 stuff - revisit? What else needs to be done? Tests? Caching? Information in? How do we handle it? 
 	# I'm almost at the point of saying, "Hey, it's good enough for now, 
 	# but I need some more feedback! 
+		[x] And, that's exactly what I've done 
 
 [ ] Upgrade Script - what needs to be done for that to be a reality? (List of stuff) 
 	[ ] SQL: Creation of new tables
@@ -67,7 +69,7 @@ yooop.
 	
 [x] Prototype stuff? Should that be folded in? It does solve a few bugs... 
 	[x] Did I break the semi-auto stuff? 
-		# Yes you did, but you fixed it
+		[x] Yes you did, but you fixed it
 
 [?] It would be nice if the partial fields could support some sort of dynamic content, like today's date, etc. 
 	
