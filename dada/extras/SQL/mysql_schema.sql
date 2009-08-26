@@ -1,4 +1,4 @@
-CREATE TABLE dada_settings (
+CREATE TABLE IF NOT EXISTS dada_settings (
 list                             varchar(16),
 setting                          varchar(64),
 value                            text
@@ -6,7 +6,7 @@ value                            text
 
 CREATE INDEX dada_settings_list_index ON dada_settings (list);
 
-CREATE TABLE dada_subscribers (
+CREATE TABLE IF NOT EXISTS dada_subscribers (
 email_id			            int4 not null primary key auto_increment,
 email                            text(320),
 list                             varchar(16),
@@ -25,24 +25,24 @@ CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(320), list, l
 
 
 
-CREATE TABLE dada_profile ( 
-	profile_id int4 not null primary key auto_increment,
-	email                        varchar(320) not null,
-	password                     text(16),
-	auth_code                    varchar(64),
-	update_email_auth_code       varchar(64),
-	update_email                 varchar(320),
-	activated                    char(1), 
-	CONSTRAINT UNIQUE (email)
+CREATE TABLE IF NOT EXISTS  dada_profile ( 
+profile_id int4 not null primary key auto_increment,
+email                        varchar(320) not null,
+password                     text(16),
+auth_code                    varchar(64),
+update_email_auth_code       varchar(64),
+update_email                 varchar(320),
+activated                    char(1), 
+CONSTRAINT UNIQUE (email)
 );
 
-CREATE TABLE dada_profile_fields (
-	fields_id int4 not null primary key auto_increment,
-	email                        varchar(320) not null,
-	CONSTRAINT UNIQUE (email)
+CREATE TABLE IF NOT EXISTS dada_profile_fields (
+fields_id int4 not null primary key auto_increment,
+email varchar(320) not null,
+CONSTRAINT UNIQUE (email)
 );
 
-CREATE TABLE dada_profile_fields_attributes (
+CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes (
 	attribute_id int4 not null primary key auto_increment,
 	field                       varchar(320),
 	label                       varchar(320),
@@ -56,7 +56,7 @@ CREATE TABLE dada_profile_fields_attributes (
 	CONSTRAINT UNIQUE (field)
 );
 
-CREATE TABLE dada_archives (
+CREATE TABLE IF NOT EXISTS dada_archives (
 list                          varchar(32),
 archive_id                    varchar(32),
 subject                       text,
@@ -67,21 +67,21 @@ raw_msg                       mediumtext
  
 CREATE INDEX dada_archives_list_archive_id_index ON dada_archives (list, archive_id);
  
-CREATE TABLE dada_bounce_scores (
+CREATE TABLE IF NOT EXISTS dada_bounce_scores (
 id                            int4 not null primary key auto_increment,
 email                         text, 
 list                          varchar(16),
 score                         int4
 ); 
  
-CREATE TABLE dada_clickthrough_urls (
+CREATE TABLE IF NOT EXISTS dada_clickthrough_urls (
 url_id  int4 not null primary key auto_increment, 
 redirect_id varchar(16), 
 msg_id text, 
 url text
 ); 
  
-CREATE TABLE dada_sessions (
+CREATE TABLE IF NOT EXISTS dada_sessions (
      id CHAR(32) NOT NULL PRIMARY KEY,
      a_session TEXT NOT NULL
 );
