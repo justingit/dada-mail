@@ -229,7 +229,18 @@ my @statements = split(';', $sql,8);
 		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
 		$_ =~ s{CREATE TABLE dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};
 		$_ =~ s{CREATE TABLE dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
+				
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE IF NOT EXISTS $settings_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_subscribers}{CREATE TABLE IF NOT EXISTS $subscribers_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_archives}{CREATE TABLE IF NOT EXISTS $archives_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_sessions}{CREATE TABLE IF NOT EXISTS $session_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_bounce_scores}{CREATE TABLE IF NOT EXISTS $bounce_scores_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile}{CREATE TABLE IF NOT EXISTS $profile_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields}{CREATE TABLE IF NOT EXISTS $profile_fields_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes}{CREATE TABLE IF NOT EXISTS $profile_fields_attributes_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_urls}{CREATE TABLE IF NOT EXISTS $clickthrough_urls_table};
 		
+				
 		#print 'query: ' . $_; 
         my $sth = $dbh->prepare($_) or warn $DBI::errstr; 
 
@@ -322,6 +333,16 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
 		$_ =~ s{CREATE TABLE dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};	
 		$_ =~ s{CREATE TABLE dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE IF NOT EXISTS  $settings_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_subscribers}{CREATE TABLE IF NOT EXISTS  $subscribers_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_archives}{CREATE TABLE IF NOT EXISTS  $archives_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_sessions}{CREATE TABLE IF NOT EXISTS  $session_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_bounce_scores}{CREATE TABLE IF NOT EXISTS  $bounce_scores_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile}{CREATE TABLE IF NOT EXISTS  $profile_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields}{CREATE TABLE IF NOT EXISTS  $profile_fields_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes}{CREATE TABLE IF NOT EXISTS  $profile_fields_attributes_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_urls}{CREATE TABLE IF NOT EXISTS  $clickthrough_urls_table};	
+
 						
 		if(length($_) > 10){ 
 	    #	carp 'query: ' . $_; 
