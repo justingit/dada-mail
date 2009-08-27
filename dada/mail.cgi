@@ -713,8 +713,7 @@ sub default {
 	){ 
 		
 		eval {$dbi_handle->dbh_obj;};
-		if($@){ 
-			
+		if($@){ 			
 			user_error(
 				-Error         => 'sql_connect_error', 
 				-Error_Message => $@
@@ -723,7 +722,7 @@ sub default {
 		}
 		else { 
 			if(DADA::App::Guts::SQL_check_setup() == 0){ 
-		        user_error(-Error => 'bad_SQL_setup');
+		       user_error(-Error => 'bad_SQL_setup');
 		        return;         
 		    }
 		}
