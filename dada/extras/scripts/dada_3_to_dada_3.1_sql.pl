@@ -24,10 +24,12 @@ use CGI qw(:standard);
 
 
 if(param('process')){ 
-	print list_template(-Part => "header", -vars       => { 
+	print list_template(
+		-Part => "header", 
+		-vars       => { 
 			show_profile_widget => 0, 
-				}); 
-	
+		}
+	); 
 	if(step1()) { 
 		if(step2()) { 
 			if(step3()) {  
@@ -69,7 +71,7 @@ EOF
 	}
 	
 	print list_template(-Part => "footer"); 
-	
+
 	
 }
 
@@ -83,13 +85,19 @@ sub step1 {
 		print p('Stopping Migration.'); 
 		return 0; 
 	}
+	if($DADA::Config::SUBSCRIBER_DB_TYPE ne 'SQL') { 
+		print p("Problem: The, " . b('$SUBSCRIBER_DB_TYPE') . " configuration variable is not set to, 'SQL', it's set to '$DADA::Config::SUBSCRIBER_DB_TYPE'."); 
+		print p("If you are not using the SQL Backend for Dada Mail, you do not need this utility."); 
+		return 0;		
+	}
 	foreach(qw(profile_table profile_fields_table profile_fields_attributes_table)){ 
 		if(THREEOHCOMPAT::table_exists($DADA::Config::SQL_PARAMS{$_})){ 
 			print p("Problem: The, " . b($DADA::Config::SQL_PARAMS{$_}) . " table already exists. Stopping. You'll have to remove this table, before we can continue."); 
+			print p("If there is important information saved in this table, you may not want to remove the table - make sure to follow the upgrade utility instructions correctly!");
 			return 0; 
 		}
 		else { 
-			print p("The, " . b($DADA::Config::SQL_PARAMS{$_}) . " table does not already exists. Good!"); 		
+			print p("The, " . b($DADA::Config::SQL_PARAMS{$_}) . " table does not already exist. Good!"); 		
 		}
 	}
 	
@@ -111,12 +119,22 @@ sub step2 {
 
 sub step3 { 
 	
+	my $fbv = THREEOHCOMPAT::threeoh_get_fallback_field_values(); 
+	
 	print h1('Step #3 Migrating Fields:');
 	require DADA::ProfileFieldsManager; 
 	my $dpfm = DADA::ProfileFieldsManager->new; 
 	foreach(@{THREEOHCOMPAT::threeoh_subscriber_fields()}){ 
-		$dpfm->add_field({-field => $_});
+		$dpfm->add_field(
+			{
+				-field          => $_,
+				-fallback_value => $dpfm->{$_},   
+			}
+		);
 	}
+	
+	
+	
 	print p(i('Done!')); 
 	print hr;
 	return 1;
@@ -143,6 +161,7 @@ sub step5 {
 package THREEOHCOMPAT;
 use CGI qw(:standard); 
 use Carp qw(croak confess carp);
+use DADA::App::Guts; 
 
 # ALl I need is the name of the fields I'm moving: 
 
@@ -232,12 +251,26 @@ sub create_tables {
 
 sub move_profile_info_over { 
 	my @fields = ('email', @{threeoh_subscriber_fields()});
-	my $query = '
-	INSERT INTO dada_profile_fields (' . join(', ', @fields) . ' )
-	SELECT '. join(', ', @fields) .
-	' FROM dada_subscribers GROUP BY dada_subscribers.email';
+	my $query = 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{profile_fields_table} . ' (' . join(', ', @fields) . ' ) ';
+	
+	if($DADA::Config::SQL_PARAMS{dbtype} eq 'Pg'){ 
+		$query .= ' SELECT DISTINCT ON (' . $DADA::Config::SQL_PARAMS{subscriber_table} . '.email) ';
+ 	}
+	else { 
+		$query .= ' SELECT ';
+	}
+	
+	$query .= join(', ', @fields) . ' FROM ' . $DADA::Config::SQL_PARAMS{subscriber_table}; 
+
+
+	if($DADA::Config::SQL_PARAMS{dbtype} =~ m/^mysql$|^SQLite$/){ 
+		$query .= ' GROUP BY ' . $DADA::Config::SQL_PARAMS{subscriber_table} . ' .email';
+	}
+	
+	print code($query); 
 	my $sth = $dbh->prepare($query);
-	$sth->execute() or croak $DBI::errstr; 
+	$sth->execute() 
+		or croak $DBI::errstr; 
 	$sth->dump_results; 
 }
 
@@ -382,4 +415,73 @@ sub threeoh_remove_subscriber_field {
 	
 }
 
+sub threeoh_get_fallback_field_values { 
 
+    my $v    = {}; 
+#    return $v if  $self->can_have_subscriber_fields == 0; 
+    require  DADA::MailingList::Settings; 
+ 
+	my @lists = available_lists(); 
+	
+   if(exists($lists[0])){ 
+	
+  	 my $ls = DADA::MailingList::Settings->new({-list => $lists[0]});
+	    my $li = $ls->get; 
+	    my @fallback_fields = split("\n", $li->{fallback_field_values}); 
+	    foreach(@fallback_fields){ 
+	        my ($n, $val) = split(':', $_); 
+	        $v->{$n} = $val; 
+	    }
+		return $v; 
+	}
+	else { 
+		return {}; 
+	}
+
+}
+
+
+
+
+=cut
+
+=pod
+
+=head1 Dada Mail 3.0 to 3.1 Migration Utility
+
+=head1 Description
+
+The SQL table schema between Dada Mail 3.0 and Dada Mail 3.1 has changed. 
+
+Most importantly, Profile Subscriber Fields that were once saved in the, 
+C<dada_subscribers> table now are saved in a few different tables (C<dada_profile>, 
+C<dada_profile_fields> ,C<dada_profile_fields_attributes>)
+
+This utility creates any missing tables, moves the old Profile Subscriber 
+Fields information to the new tables and removes the old information. 
+
+=head1 REQUIREMENTS
+
+This utility should only be used when B<upgrading> Dada Mail to version 3.1. 
+
+This utility should also, only be used if you're using the SQL Backend. 
+If you are not using the B<SQL> Backend, you would not need this utility. 
+
+=head1 INSTALLATION
+
+Upgrade your Dada Mail installation to B<3.1> I<before> attempting to use this utility. 
+
+This utility is located in the Dada Mail distribution, in: 
+
+ dada/extras/scripts/dada_3_to_dada_3.1_sql.pl
+
+You'll most likely want to B<move> it to the, C<dada> directory. 
+
+Change it's persmissions to, C<0755> and visit the script in your web browser. 
+
+No other configuration is needed. 
+
+From there, migration should be straightforward. Follow the directions in your browser window. 
+
+Once the migration is complete, please B<REMOVE> this utility from your hosting account. 
+=cut
