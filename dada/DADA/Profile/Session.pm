@@ -32,6 +32,7 @@ sub _init {
         require DADA::App::DBIHandle;
         my $dbi_obj = DADA::App::DBIHandle->new;
         $self->{dbh} = $dbi_obj->dbh_obj;
+		
     }
 
     # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session.pm

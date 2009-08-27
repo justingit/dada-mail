@@ -87,14 +87,25 @@ sub _init {
     if ( exists( $args->{ -from_session } ) ) {
         if ( $args->{ -from_session } == 1 ) {
             require DADA::Profile::Session;
-            my $sess = DADA::Profile::Session->new;
-            if ( $sess->is_logged_in ) {
-                $args->{ -email } = $sess->get;
-            }
-            else {
-                $args->{ -email } = undef;
+			my $sess = undef; 
+			
+            eval { 
+				$sess = DADA::Profile::Session->new;
+			}; 
+			if($@){ 
+				$args->{ -email } = undef;
                 return;
-            }
+			}
+			else { 
+					
+	            if ( $sess->is_logged_in ) {
+	                $args->{ -email } = $sess->get;
+	            }
+	            else {
+	                $args->{ -email } = undef;
+	                return;
+	            }
+			}
         }
     }
     else {

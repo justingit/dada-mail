@@ -491,20 +491,36 @@ sub list_template {
 		$list_template = default_template(); 		
 	}
 
-	require DADA::Profile::Session; 
-	require DADA::Profile; 
-	my $prof_sess = DADA::Profile::Session->new; 
+	
 	my $prof_email         = ''; 
 	my $is_logged_in       = 0; 
 	my $subscribed_to_list = 0;
-	if($prof_sess->is_logged_in){ 
-		$is_logged_in = 1; 
-	    $prof_email = $prof_sess->get; 
-		my $prof = DADA::Profile->new({-email => $prof_email}); 
-		$subscribed_to_list = $prof->subscribed_to_list({-list => $list});
+
+
+	eval { 
+			
+		require DADA::Profile::Session; 
+		require DADA::Profile; 
+		my $prof_sess = DADA::Profile::Session->new; 
+
+		if($prof_sess->is_logged_in){ 
+			$is_logged_in = 1; 
+		    $prof_email = $prof_sess->get; 
+			my $prof = DADA::Profile->new({-email => $prof_email}); 
+			$subscribed_to_list = $prof->subscribed_to_list({-list => $list});
+		}
+	};
+	if($@){ 
+		carp "CAUGHT Error with Sessioning: $@"; 
 	}
 	
-	
+	my $profile_widget = undef; 
+	if($args{-vars}->{show_profile_widget} == 1){ 
+		$profile_widget = DADA::Template::Widgets::profile_widget(), 
+	}
+	else { 
+		$profile_widget = ''; 
+	}
 	my $final_list_template = DADA::Template::Widgets::screen(
 							{
 								-data => \$list_template,
@@ -520,7 +536,7 @@ sub list_template {
 											content             => '[_dada_content]',
 											mojo                => '[_dada_content]',
 											dada                => '[_dada_content]',
-											profile_widget      => DADA::Template::Widgets::profile_widget(), 
+											profile_widget      => $profile_widget, 
 											show_profile_widget => 1, 
 
 											%{$args{-vars}},
