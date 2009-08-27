@@ -111,7 +111,7 @@ sub cgi_user_error {
 	my $subscription_form; 
     my $unsubscription_form;
     
-	if($args{-Error} !~ /unreadable_db_files|sql_connect_error|bad_setup/){
+	if($args{-Error} !~ /unreadable_db_files|sql_connect_error|bad_setup|bad_SQL_setup/){
 		
    	 if($args{-List}){ 
 			$subscription_form    = DADA::Template::Widgets::subscription_form({ -list => $args{-List}, -email => $args{-Email}, -give_props => 0 }); 
@@ -222,6 +222,12 @@ sub cgi_user_error {
 	 $r .= list_template(
 			-Part      => "footer",
 			-List      => $li->{list},
+				-vars       => { 
+						PROGRAM_URL           => $DADA::Config::PROGRAM_URL, 
+						S_PROGRAM_URL         => $DADA::Config::S_PROGRAM_URL,
+						show_profile_widget	  => 0,
+				
+				}
 		   );
 	   
 		
