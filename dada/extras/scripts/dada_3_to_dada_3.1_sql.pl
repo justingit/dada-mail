@@ -490,5 +490,11 @@ What this means is that, if you have a subscriber and there's a few fields, let'
 
 When you use this migration tool, only ONE version of this information will be moved over. It's up to the migration tool to decide what information gets pulled over. If you're worried about losing information you want to save, and only keeping information you want, it's suggested (kind of) to not use this migration tool, until you've manually changed the subscriber profile fields information to the information you'd like. How to do that? Good question, really. You'd probably have to change (manually) all the profile fields information for each subscriber, in each subscription to the version of the information you want. 
 
-In the real world, we're not sure how much of a problem this is going to be since, the subscriber has to be subscribed to more than one list to first, be impacted by the problem and then, the subscriber has to have different information per list to first lose information from the migration. If the information is like what we've used as an example (C<fist_name>, C<last_name>, C<favorite_color>,) the information is probably going to be shared, anyways, so no worries. If you have a subscription field that's unique to each subscriber, for each list, you're going to be out of luck. We don't have a good workaround for that.
+In the real world, we're not sure how much of a problem this is going to be since, the subscriber has to be subscribed to more than one list to first, be impacted by the problem and then, the subscriber has to have different information per list to first lose information from the migration. If the information is like what we've used as an example (C<fist_name>, C<last_name>, C<favorite_color>,) the information is probably going to be shared, anyways, so no worries. 
+
+Dada Mail 3.1 also has the ability to allow your subscribers to change their own Subscription Profile Information, so if they don't like what's saved, they can manually update their own information. 
+
+
+
+If you have a subscription field that's unique to each subscriber, for each list, you're going to be out of luck. We don't have a good workaround for that.
 =cut
