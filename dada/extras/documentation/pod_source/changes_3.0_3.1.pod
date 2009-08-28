@@ -2,11 +2,38 @@
 
 =head1 Dada Mail Changelog 3.0 - 3.1
 
+=head1 Installation
+
+If you are doing a clean installation of Dada Mail, the same installation instructions for 
+Dada Mail, version 3.0.x will work for Dada Mail 3.1: 
+
+L<http://dadamailproject.com/installation>
+
+=head1 Upgrading
+
+If you are using the default backend for Dada Mail (This means: you ARE NOT using the SQL backend) 
+upgrade instructions are the same they've always been: 
+
+L<http://dadamailproject.com/installation/upgrading.html>
+
+If you are upgrading and ALSO running Dada Mail, using the SQL backend, you will have to 
+migrate your SQL table schema and Dada Mail Subscriber Profile Fields information to 
+the new SQL table schema. Upgrade as before (don't worry you MAY get an error message) 
+and then run the 3.0 to 3.1 migration utility: 
+
+L<http://dadamailproject.com/support/documentation/dada_3_to_dada_3.1_sql.pl>
+
+You will also want to read through the 3.0 to 3.1 API/Configuration docs: 
+
+L<http://dadamailproject.com/support/documentation/dada3_0_to_dada3_1.pod.html>
+
+There may be a few things you MAY to add into your outside config file, to get Dada Mail working correctly. 
+
 =head1 Features
 
 =head2 Subscriber Profiles
 
-Please see the docs specifical about Dada Mail Subscriber Profiles:
+Please see the docs specifically about Dada Mail Subscriber Profiles:
 
 L<http://dadamailproject.com/support/documentation/feature-profiles.pod.html>
 
