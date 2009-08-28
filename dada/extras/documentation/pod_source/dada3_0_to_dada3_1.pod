@@ -1,3 +1,5 @@
+=pod
+
 =head1 Upgrading Dada Mail 3.0.x to Dada Mail 3.1
 
 =head1 Background
@@ -135,3 +137,5 @@ The new C<dada_clickthrough_urls> table holds the URL redirects for the clickthr
 =item * $PROFILE_GRAVATAR_OPTIONS
 
 =back
+
+=cut
