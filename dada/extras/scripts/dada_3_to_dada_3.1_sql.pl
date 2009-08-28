@@ -441,10 +441,6 @@ sub threeoh_get_fallback_field_values {
 }
 
 
-
-
-=cut
-
 =pod
 
 =head1 Dada Mail 3.0 to 3.1 Migration Utility
@@ -484,4 +480,5 @@ No other configuration is needed.
 From there, migration should be straightforward. Follow the directions in your browser window. 
 
 Once the migration is complete, please B<REMOVE> this utility from your hosting account. 
+
 =cut
