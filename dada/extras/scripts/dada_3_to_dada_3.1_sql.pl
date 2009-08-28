@@ -440,7 +440,6 @@ sub threeoh_get_fallback_field_values {
 
 }
 
-
 =pod
 
 =head1 Dada Mail 3.0 to 3.1 Migration Utility
@@ -450,11 +449,13 @@ sub threeoh_get_fallback_field_values {
 The SQL table schema between Dada Mail 3.0 and Dada Mail 3.1 has changed. 
 
 Most importantly, Profile Subscriber Fields that were once saved in the, 
-C<dada_subscribers> table now are saved in a few different tables (C<dada_profile>, 
-C<dada_profile_fields> ,C<dada_profile_fields_attributes>)
+C<dada_subscribers> table now are saved in a few different tables: C<dada_profile> and C<dada_profile_fields>. 
+
+Attributes of the fields themselves, mostly the, "fallback" value, was saved in the list settings (for some bizarre reason). This information is now saved in the,  ,C<dada_profile_fields_attributes> table. 
 
 This utility creates any missing tables, moves the old Profile Subscriber 
-Fields information to the new tables and removes the old information. 
+Fields information to the new tables and removes the old information. It does a very good job and hopefully, it's smooth sailing to use. 
+
 
 =head1 REQUIREMENTS
 
@@ -481,4 +482,13 @@ From there, migration should be straightforward. Follow the directions in your b
 
 Once the migration is complete, please B<REMOVE> this utility from your hosting account. 
 
+=head1 A BIG WARNING ABOUT THIS MIGRATION TOOL AND LOST INFORMATION
+
+A major major huge change between Dada Mail 3.0 and 3.1 is that Subscriber Profile Fields information that used to be different per subscriber, per <list> is now shared between lists. 
+
+What this means is that, if you have a subscriber and there's a few fields, let's say, C<fist_name>, C<last_name>, C<favorite_color>, these three fields will show up for ALL lists (as it had, before), BUT! The information for each list will also be the same. In Dada Mail 3.0, it COULD potentially, be different. 
+
+When you use this migration tool, only ONE version of this information will be moved over. It's up to the migration tool to decide what information gets pulled over. If you're worried about losing information you want to save, and only keeping information you want, it's suggested (kind of) to not use this migration tool, until you've manually changed the subscriber profile fields information to the information you'd like. How to do that? Good question, really. You'd probably have to change (manually) all the profile fields information for each subscriber, in each subscription to the version of the information you want. 
+
+In the real world, we're not sure how much of a problem this is going to be since, the subscriber has to be subscribed to more than one list to first, be impacted by the problem and then, the subscriber has to have different information per list to first lose information from the migration. If the information is like what we've used as an example (C<fist_name>, C<last_name>, C<favorite_color>,) the information is probably going to be shared, anyways, so no worries. If you have a subscription field that's unique to each subscriber, for each list, you're going to be out of luck. We don't have a good workaround for that.
 =cut
