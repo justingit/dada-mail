@@ -91,6 +91,7 @@ use lib qw(
 #
 # Why would you want this commented? Security. 
 
+use Carp qw(croak carp); 
 use CGI::Carp qw(fatalsToBrowser set_message);
     BEGIN {
        sub handle_errors {
@@ -7526,7 +7527,7 @@ sub archive_bare {
             return;
         }
 		require DADA::Profile; 
-		my $prof->DADA::Profile->new({-from_session => 1}); 
+		my $prof = DADA::Profile->new({-from_session => 1}); 
 		my $allowed_to_view_archives = $prof->allowed_to_view_archives(
 				{
 					-list         => $list, 
@@ -7924,7 +7925,7 @@ sub archive_rss {
         }else{ 
     
 			require DADA::Profile; 
-			my $prof->DADA::Profile->new({-from_session => 1}); 
+			my $prof = DADA::Profile->new({-from_session => 1}); 
 			my $allowed_to_view_archives = $prof->allowed_to_view_archives(
 					{						
 						-list         => $list, 
