@@ -1,0 +1,157 @@
+=pod
+
+=head1 Subscriber Profile Fields in Dada Mail 3
+
+=head1 Introduction
+
+Extra subscribers fields in Dada Mail has been basically the #1 requested feature in the program and now it's actually a part of Dada Mail and not vaporware. 
+
+Enjoy! 
+
+Like many of the features in Dada Mail, we've tried to create a good balance of dead-simple to use and highly configurable. The Subscriber Profile Fields project is a very large feature with a lot of interesting ways we can take it. We're starting out simple and easy, but we'd like to know what certain features are important to you - so let us know via our email, the dadadev mailing list and the support boards (L<http://dadamailproject.com/support/boards>)
+
+=head1 Implementation
+
+The extra Subscriber Profile Fields in Dada Mail are saved in the C<dada_subscribers> table. Right now, there's a limit of 100 extra columns and each column is given the data type of, C<text>. 
+
+Pretty simple stuff.
+
+=head1 Requirements
+
+The Subscriber Profile Fields feature in Dada Mail requires that you use one of the supporting SQL backends. Currently, Dada Mail supports B<MySQL>, B<Postgres> and B<SQLite>. 
+
+=head1 Downgrading
+
+Most likely, if you ever have to I<downgrade> Dada Mail, these extra fields shouldn't hurt too much to keep around. From my tests, Dada Mail will simply just ignore the extra fields. There's no way to use these extra fields in any way for any version of Dada Mail under 2.11 (The alpha series). 
+
+=head1 Using 
+
+=head2 Adding a New Subscriber Field
+
+Adding a new subscriber field is pretty easy. Log into the list control panel B<with the Dada Mail Root Password> (very important) to any list. On the left hand menu, under, B<Manage Subscribers>, click, B<Subscriber Profile Fields>
+
+This screen will allow you to add/remove the Subscriber Profile Fields. This screen will also let you set a fallback value. The fallback value is used in mailmerging and is used as the value fo the field tag when no value is present. 
+
+The fallback value is saved in the dada_settings table in the B<fallback_field_values> setting. 
+
+Please note that removing any Subscriber Profile Fields will B<permanently delete all the information that once was saved in this particular field>. 
+
+Hazzah. 
+
+
+And we mean it. 
+
+The other thing to note is that Subscriber Profile Fields are B<global>, meaning, they'll be there for each list Dada Mail manages. 
+
+You can also add a subscriber field in Dada Mail by just adding a new column to the dada_subscribers table yourself via SQL. I would be careful doing so, since you'll curcumvent any checks that are done via the list control panel, but you're open to and Dada Mail will see your new columns as new subscription fields.
+
+Dada Mail currently doesn't support changing the order of these Subscriber Profile Fields, but if you feel mighty, you may do this yourself via SQL. If you had two Subscriber Profile Fields, one called, "last_name" and one called, "first_name" and you'd like "first_name" come before, "last_name", you'd want to say do something like: 
+
+ ALTER TABLE dada_subscribers MODIFY COLUMN last_name text AFTER first_name;
+
+(This is for MySQL 5 - consult your own SQL server implementation... thingy) 
+
+=head2 Mail Merging
+
+Mail Merging in Dada Mail in mailing list messages using your new Subscriber Profile Fields is pretty easy: 
+
+Say you have a field named, B<first_name>. To use the value of the saved field in an email message, you'd write the field as a tag, like this: B<[subscriber.first_name]>. It would look like this in your actual message: 
+
+ Hello, [subscriber.first_name]
+ 
+      It's really nice to talk to you!
+      
+  -- Me.
+
+
+Mail Merging works for almost every single type of email message Dada Mail can send out. 
+
+=head2 Partial List Sending
+
+You can now make a query on your subscription list to send to only part of your mailing list. For example, if you have a field named, "city", you can tell Dada Mail, "only send to people whose, "city"  value is set to, 'Denver'. 
+
+Currently, this is done in the, "Send a List Message" and, "Send a Webpage" screens. Click the, B< Show/Hide Partial Sending Options>. You'll be presented with a form that allows you to make simple queries and give you a preview of who's going to the message. 
+
+=head2 Subscriptions
+
+The subscription process is similar to previous versions of the program, except that the subscription form now supports capturing any Subscriber Profile Fields present. 
+
+Currently, all subscription fields will be shown, except (by default), Subscriber Profile Fields that are prefixed with an underscore ("_"). For example, the field, 
+
+ first_name
+
+Will be shown! The field, 
+
+ _secret_field
+
+Will not. Consult the Config.pm file for how to set the special prefix.  
+
+Currently, all the subscription fields are optional, except the email address. 
+
+You may acquire the HTML code needed to embed the subscription form in a webpage in the usual location: B<Under Manage Appearance>, click on, B<Subscription Form HTML>. 
+
+There's also a new option to embed a javascript call that will create the HTML form for you. This is beneficial, since the subscription form on your webpage will automatically update, if you add/remove a form field. 
+
+There are a few difference internally with the subscription process. The largest is that all subscription requests by users will first have the subscriber information saved in the, "sub_confirm" sublist. This is where the information filled out in your subscription form is saved, before a subscription is confirmed. Once a subscription is confirmed, the information is moved to the main, "list" sublist. 
+
+A similar scenario takes place for unsubscriptons: The subscriber is first put on a, "unsub_confirm" sublist and is taken off this list, as well as the main, "list" sublist once the confirmation process is completed. 
+
+Because of this, you will no longer be able to use complete confirmaton URLS, (URLS that have the pin number and email address embeded in the URL) in any place other than in the subscription and unsubscription confirmation email messages.
+
+=head2 The Subscription Form Template
+
+Every single instance of the subscription form is handled by one template file, living in the dada/DADA/Template/templates directory called, B<subscription_form_widget.tmpl>. Changes to this file will affect every instance of the subscription form in the program. 
+
+This file also takes the place of the two files: 
+
+=over
+
+=item * list_popup_subscription_form.tmpl
+
+=item * list_subscribe_form.tmpl
+
+=back
+
+=head2 Importing Subscribers
+
+You may add subscribers into your list via the list control panel. Under, B<Manage List>, click, B<Add>. 
+
+Several changes have been made from previous versions of the program. 
+
+In versions past, you were able to basically put in email addresses you wanted added in a free form way. 
+
+Not so in 3.0. 
+
+In Dada Mail 3.0, the file type you need to import your subscribers in must be in CSV format. The order of the fields in that CSV format should be displayed at the top of the screen. 
+
+=head2 Editing Individual Subscriber Information
+
+You can edit an individual's subscriber information in the list control. Under, B<Manage Subscribers>, click on, B<view>. You'll be presented with a table of your subscribers, with all their subscription information. Clicking on the email address of the subscriber will bring you to a screen to edit the subscription information. Pretty simple. 
+
+Currently, subscribers can not edit their own individual information.
+
+=head1 See Also
+
+=head2 Technical Documentation
+
+The nerdy Perl API has changed drastically (and probably, for the better) in 3.0. Most likely, if you had a custom Perl program for Dada Mail 2.x that was using the API, it has now been broken. 
+
+=head3 Subscriber Backend
+
+For the Mailing List Subscriber API do consult: 
+
+L<http://dadamailproject.com/support/documentation/MailingList_Subscribers.pm.html>
+
+Which should be fairly complete. 
+
+=head3 Templating System
+
+The HTML Screen and Email Template parts of Dada Mail all use the same system. See: 
+
+L<http://dadamailproject.com/support/documentation/Template_Widgets.pm.html#screen>
+
+And also: 
+
+L<http://dadamailproject.com/support/documentation/App_FormatMessages.pm.html#email_template>
+
+=cut
