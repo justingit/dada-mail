@@ -107,6 +107,11 @@ The Clickthrough Tracker now has a new SQL backend option for the URL redirect l
 
 The log is still in PlainText. 
 
+=head2 Extensions - Update Subscriptions
+
+The update_subscriptions.cgi extension has been removed, as its features have been superceded by the Dada Profiles
+feature. And then some. 
+
 =head1 API
 
 There are many new modules in Dada Mail's backend, including: 
