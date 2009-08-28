@@ -130,7 +130,7 @@ sub init_vars {
 sub main { 
     
     
-    my $q = new CGI;
+    my $q = CGI->new;
  	my $mode = 'js'; 
     if($q->param('mode')){ 
 		$mode = $q->param('mode'); 

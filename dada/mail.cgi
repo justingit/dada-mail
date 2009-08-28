@@ -213,7 +213,7 @@ if($ENV{QUERY_STRING} =~ m/^\?/){
     # DEV: This really really needs to be check to make sure it works
     CGI::upload_hook(\&hook);
     
-    $q = new CGI($ENV{QUERY_STRING});
+    $q = CGI->new($ENV{QUERY_STRING});
 
 } else{ 
 
