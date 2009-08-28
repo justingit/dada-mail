@@ -78,8 +78,16 @@ New lines:
 		profile_fields_attributes_table => 'dada_profile_fields_attributes',
 		clickthrough_urls_table         => 'dada_clickthrough_urls',
 
+If you DO NOT put these lines in your .dada_config file, Dada Mail will attempt to massage your configuration to work, anyways. 
 
 =head1 New SQL Tables to Create
+
+If you do not want to create the new SQL Tables and change the schema of the old SQL tables, we suggest
+using our own 3.0 to 3.1 migration tool. More information: 
+
+L<http://dadamailproject.com/support/documentation/dada_3_to_dada_3.1_sql.pl>
+
+We suggest using the migration tools ourselves. 
 
 Make the following tables: 
 
@@ -101,12 +109,11 @@ The Schemas for each database/table is located in the dada/extras/SQL directory 
 
 For the exception of the, C<dada_subscribers> table, all previous table schemas are essentially the same. 
 
-Subscriber Profile Fields information that once used to live in the C<dada_subscribers> table, now lives in the C<dada_profile_fields> table. There's currently no automated way of moving the information from the C<dada_subscribers> table to the C<dada_profile_fields table>. 
+Subscriber Profile Fields information that once used to live in the C<dada_subscribers> table, now lives in the C<dada_profile_fields> table. The migration tool mentioned above will move that information from where it was, to where it has to go. 
 
 =head2 $CLICKTHROUGH_DB_TYPE
 
 The new C<dada_clickthrough_urls> table holds the URL redirects for the clickthrough tracker. 
-
 
 =head1 New Template Variables in the List Template (default_list_template.tmpl)
 
