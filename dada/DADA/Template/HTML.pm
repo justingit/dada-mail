@@ -515,12 +515,9 @@ sub list_template {
 	}
 	
 	my $profile_widget = undef; 
-	if($args{-vars}->{show_profile_widget} == 1){ 
-		$profile_widget = DADA::Template::Widgets::profile_widget(), 
-	}
-	else { 
-		$profile_widget = ''; 
-	}
+	eval { $profile_widget = DADA::Template::Widgets::profile_widget(); }; 
+	if($@){  $profile_widget = ''; };
+
 	my $final_list_template = DADA::Template::Widgets::screen(
 							{
 								-data => \$list_template,
