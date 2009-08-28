@@ -4766,6 +4766,25 @@ sub _config_import {
 		$PROGRAM_URL = CGI::url(); 
 	}
 	
+	# I really DO NOT think this is the place to massage Config variables if they 
+	# aren't set right, but it will save people headaches, in the long run: 
+	
+	my %default_table_names = (
+		subscriber_table                => 'dada_subscribers',
+		profile_table                   => 'dada_profile', 
+		profile_fields_table 	        => 'dada_profile_fields', 
+		profile_fields_attributes_table => 'dada_profile_fields_attributes',
+		archives_table                  => 'dada_archives', 
+		settings_table                  => 'dada_settings', 
+		session_table                   => 'dada_sessions', 
+		bounce_scores_table             => 'dada_bounce_scores', 
+		clickthrough_urls_table         => 'dada_clickthrough_urls',
+	); 
+	foreach(keys %default_table_names){ 
+		if(!exists($SQL_PARAMS{$_})){ 
+			$SQL_PARAMS{$_} = $default_table_names{$_};
+		}
+	}
 	
 }
 
