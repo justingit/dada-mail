@@ -23,7 +23,7 @@ Maybe, rather a subquery? (correlated vs.uncorrelated)
 	Right now, all I have is length. The SQL stuff is properly quoted... 
 	What else?!
 [x] I need to change all instances of, "Subscriber Fields" to, "Subscriber Profile Fields" 
-[ ] I need to make that SQL table upgrade thingy
+[x] I need to make that SQL table upgrade thingy
 	Something like: 
 	
 	DETECT if there may be a problem. Test test test. 
@@ -43,8 +43,8 @@ Maybe, rather a subquery? (correlated vs.uncorrelated)
 	
 yooop. 
 
-[ ] I need to write up all these changes
-	[ ] Sigh. 
+[x] I need to write up all these changes
+	[x] Sigh. 
 	
 [ ] perhaps make a note about global unsubs in the profile? 
 [-] You need to change the profile fields when they're listed_like_this, to be Listed Like This! 
@@ -53,15 +53,15 @@ yooop.
 
 
 
-[ ] UTF-8 stuff - revisit? What else needs to be done? Tests? Caching? Information in? How do we handle it? 
+[x] UTF-8 stuff - revisit? What else needs to be done? Tests? Caching? Information in? How do we handle it? 
 	# I'm almost at the point of saying, "Hey, it's good enough for now, 
 	# but I need some more feedback! 
 		[x] And, that's exactly what I've done 
 
-[ ] Upgrade Script - what needs to be done for that to be a reality? (List of stuff) 
-	[ ] SQL: Creation of new tables
-	[ ] SQL: changing of schema, for dada_subscribers table
-	[ ] Is... that it? 
+[x] Upgrade Script - what needs to be done for that to be a reality? (List of stuff) 
+	[x] SQL: Creation of new tables
+	[x] SQL: changing of schema, for dada_subscribers table
+	[x] Is... that it? 
 
 [x] A "delete" profile function? What happens to the subscriptions? 
 	[ ]A master, "Unsubscribe me AND delete this profile" Thingy? 
@@ -91,10 +91,10 @@ yooop.
 	[ ] It would also be nice, that if you were the List Owner of a List, you'd also be listed as that. Special things, like that. Sigh. 
 	
 
-[ ] Need a way to update an email address from the profile, and perhaps auto-merge, if the email address is already subscribed to an address. (it should probably be warned if this happens...) 
+[x] Need a way to update an email address from the profile, and perhaps auto-merge, if the email address is already subscribed to an address. (it should probably be warned if this happens...) 
 
-[ ] Once the above are done, I need some major testing stuff to be made and then, we gotta wrap this up - probably make the 3.0.x to 3.1 script and call it a beta! 
-	[ ] Some things to remember - the SQL needs new tables AND info has to be moved from one table to another.... sigh. 
+[x] Once the above are done, I need some major testing stuff to be made and then, we gotta wrap this up - probably make the 3.0.x to 3.1 script and call it a beta! 
+	[x] Some things to remember - the SQL needs new tables AND info has to be moved from one table to another.... sigh. 
 [ ] Man, wouldn't it be nice to have an installer...? Sigh. 
 
 [x] I need to make upgrade notes from Simple Scripts installs. 
