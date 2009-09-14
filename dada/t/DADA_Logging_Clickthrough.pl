@@ -25,15 +25,11 @@ my $lc = DADA::Logging::Clickthrough->new( { -list => $list } );
 ok( $lc->isa('DADA::Logging::Clickthrough') );
 
 my $test_mid = DADA::App::Guts::message_id();
-my $test_url = 'http://example.com/page.html';
+my $test_url = 'http://example.com/page.html?foo=bar&baz=bing';
 
 my $ran_key = $lc->random_key();
 ok( $ran_key > 0 );
 ok( length($ran_key) == 12 );
-
-##my $v = $lc->encode_value($test_mid, $test_url);
-## ie:
-#ok($v eq $test_mid . ',' . $test_url);
 
 my $key = $lc->add( $test_mid, $test_url );
 
