@@ -3776,7 +3776,8 @@ sub add_email {
                     type_isa_list     => ( $type eq 'list' ) ? 1 : 0,
                     type              => $type,
                     type_title        => $type_title,
-					'list_settings.enable_mass_subscribe'  => $li->{enable_mass_subscribe}, 
+					'list_settings.enable_mass_subscribe'  => $li->{enable_mass_subscribe},
+					root_login        => $root_login,  
 
                 },
             }
@@ -3792,7 +3793,10 @@ sub add_email {
         }
         else {
 	
-			if($li->{enable_mass_subscribe} != 1){ 
+			if(
+				$li->{enable_mass_subscribe} != 1 && 
+				$type eq 'list'
+			){ 
 				die "Mass Subscribing via the List Control Panel has been disabled."; 
 			}
 
