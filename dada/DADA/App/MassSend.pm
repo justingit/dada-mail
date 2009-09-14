@@ -237,20 +237,27 @@ sub send_email {
 			  	Type      => 'multipart/alternative', 
 			    Datestamp => 0, 
 			  ); 
-			 
 			  $msg->attr('content-type.charset' => $li->{charset_value});
-              
-              $msg->attach(
-				    	Type     => 'text/plain', 
-                        Data     => $text_message_body,
-                        Encoding => $li->{plaintext_encoding},
-              		); 
-              
-               $msg->attach(
-					   Type     => 'text/html', 
-                       Data     => $html_message_body,
-                       Encoding => $li->{html_encoding},
-                       );
+ 
+
+			  my $pt_part = MIME::Lite->new(
+					Type     => 'text/plain', 
+                  	Data     => $text_message_body,
+                  	Encoding => $li->{plaintext_encoding},
+			  );
+			  $pt_part->attr('content-type.charset' => $li->{charset_value});
+
+              $msg->attach($pt_part); 
+              my $html_part = MIME::Lite->new(
+					Type     => 'text/html', 
+					Data     => $html_message_body,
+					Encoding => $li->{html_encoding},
+			   ); 
+			   $html_part->attr(
+				'content-type.charset' => $li->{charset_value}
+			 	);
+			
+               $msg->attach($html_part);
                 
             }elsif($html_message_body){ 
                                 

@@ -117,6 +117,27 @@ sleep(1);
 $msg = slurp($mh->test_send_file);
 like($msg, qr/Content-type: multipart\/alternative\;/, "Multipart/alternative header set!"); 
 
+my $parser; 
+my $entity; 
+my @parts; 
+
+$parser = new MIME::Parser; 
+$parser = optimize_mime_parser($parser);
+$entity = $parser->parse_data($msg);
+@parts  = $entity->parts; 
+ok(
+	$ls->param('charset_value') eq $parts[0]->head->mime_attr('content-type.charset'), 
+	"Charset Match " . $parts[0]->head->mime_attr('content-type.charset')
+); 
+ok(
+	$ls->param('charset_value') eq $parts[1]->head->mime_attr('content-type.charset'), 
+	"Charset Match(2) " . $parts[0]->head->mime_attr('content-type.charset')
+);
+undef $parser; 
+undef $entity; 
+undef @parts;
+
+
 undef $msg; 
 ok(unlink($mh->test_send_file));
 undef $q; 
@@ -142,6 +163,24 @@ like($msg, qr/Content-type: text\/html/i, "text/html header set!");
 like($msg, qr/Content-type: text\/plain/i, "text/plain header set!"); 
 like($msg, qr/This is the html message body!\n/m, "Found plain text version of HTML message"); 
 like($msg, qr/\<h1\>This is the html message body!\<\/h1\>/m, "Found HTML  version of HTML message"); 
+
+$parser = new MIME::Parser; 
+$parser = optimize_mime_parser($parser);
+$entity = $parser->parse_data($msg);
+@parts  = $entity->parts; 
+ok(
+	$ls->param('charset_value') eq $parts[0]->head->mime_attr('content-type.charset'), 
+	"Charset Match " . $parts[0]->head->mime_attr('content-type.charset')
+); 
+ok(
+	$ls->param('charset_value') eq $parts[1]->head->mime_attr('content-type.charset'), 
+	"Charset Match(2) " . $parts[0]->head->mime_attr('content-type.charset')
+);
+undef $parser; 
+undef $entity; 
+undef @parts; 
+
+
 
 ok(unlink($mh->test_send_file));
 
