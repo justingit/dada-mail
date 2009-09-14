@@ -223,7 +223,7 @@ require DADA::Template::Widgets;
 			
 			$subnav->{-Activated} = 1 
 				if($permissions eq 'superuser');
-			if($subnav->{-Title} =~ m/Monitor Your Mailings/){ 
+			if($subnav->{-Title} =~ m/Monitor Your/){ 
 				$subnav->{-Title} = DADA::Template::Widgets::screen(
 										{ 
 											-data => \$subnav->{-Title},
