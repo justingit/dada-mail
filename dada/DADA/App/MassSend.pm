@@ -1082,7 +1082,7 @@ sub make_attachment {
     
     my $a_type = $self->find_attachment_type($attachment);
 
-    warn '$a_type ' . $a_type; 
+
     
     my $attach_name =  $attachment; 
        $attach_name =~ s!^.*(\\|\/)!!;
