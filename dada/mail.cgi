@@ -1,6 +1,7 @@
 #!/usr/bin/perl 
 package mail; 
 
+
 use strict;
 use 5.8.1; 
 use Encode qw(encode decode);

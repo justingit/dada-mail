@@ -120,7 +120,6 @@ like($msg, qr/Content-type: multipart\/alternative\;/, "Multipart/alternative he
 my $parser; 
 my $entity; 
 my @parts; 
-
 $parser = new MIME::Parser; 
 $parser = optimize_mime_parser($parser);
 $entity = $parser->parse_data($msg);
