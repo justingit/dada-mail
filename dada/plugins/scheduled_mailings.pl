@@ -758,7 +758,7 @@ sub schedule_form {
 	$f .= $q->p({-class => "positive"}, 'Server time is: ' . $mss->printable_date(time));
 	
 		
-	$f .= $q->start_form(); 
+	$f .= $q->start_form(-action => $Plugin_Config->{Plugin_URL});
 	$f .= (
 		   $q->p($q->b('Scheduled Message Name:'), 
 		   $q->textfield(
