@@ -12,7 +12,29 @@ Key:
 
 
 
-Maybe, rather a subquery? (correlated vs.uncorrelated) 
+[ ] CKeditor
+To replace, FCKeditor" 
+I just haven't done it, yet. Looks actually *simpler* than FCKeditor, but things like docs do need to be updated. 
+--
+Here's some issues: 
+No File Upload! It's currently a $59 add-on. Boo! 
+--
+Some tricky bits to remember: 
+There's a check for a, "blank" message - which is actually the default HTML skeleton that FCKeditor makes, this'll have to be tweaked. 
+There's also the code for editing an archived message. That'll also have to be tweaked. Probably. 
+--
+Other than that, it may behoove us to be able to run both FCKeditor and CKeditor at the same time, if needed...? 
+
+
+[ ] Fancification w/Scriptalicious
+	I'm less interested in fancy-ness, but more into all the fanciness being the same, for everything
+	There's not much I want to do, except the, "partial sending" stuff and the, "SMPT test" stuff
+	[x] Maybe do all the +/- boxes, but that could be a lot of recoding, if not done right! :) 
+		It's been done, but I haven't tested it with anything except my own stuff... 
+
+[ ] Admin menu. rearrange stuff. 
+	[ ] Make sure to double-check these changes with everyone. 
+
 
 
 [x] I think I gave the mailing monitor the ability to see multiple mailing lists' status, but the links don't all work, and that gets confusing... 
@@ -47,7 +69,7 @@ yooop.
 	[x] Sigh. 
 	
 [ ] perhaps make a note about global unsubs in the profile? 
-[-] You need to change the profile fields when they're listed_like_this, to be Listed Like This! 
+[x] You need to change the profile fields when they're listed_like_this, to be Listed Like This! 
 [-] Subscriber Profile Fields widget - is it in places where we don't want it? 
 [ ] Some more live testing... 
 
@@ -82,6 +104,8 @@ yooop.
 	
 	(Could be an optional feature, make enough tests that make me happy, and just take a chance...?) 
 	
+	[ ] It looks like the CPAN module is installable via the, "Perl Modules" feature in cPanel. That's good... 
+	http://dadamailproject.com/support/boards/viewtopic.php?f=14&t=1491&p=5401#p5401
 		
 	
 [x] I need to merge all of the code that creates the query for the Subscriber Profile Fields into ONE method, because it's getting 
@@ -124,7 +148,7 @@ yooop.
 
 is not listing anything... 
 
-[ ] It would be nice to have an option that says, "Hey, that email template? Why don't we see it initially in the, "Send a List Message" scrren - so, if I want to tweak it slightly - I can. 
+[ ] It would be nice to have an option that says, "Hey, that email template? Why don't we see it initially in the, "Send a Message" scrren - so, if I want to tweak it slightly - I can. 
 The problem is, what if someone totally obliterates the, unsub info, thinking that the email template was going to be applied? 
 Perhaps just a warning at the top, "The email template is  plopped down below and won't be applied again"
 	[ ] I'd also have to make a really really really good check, to make sure that, if there's nothing extra type, the email template isn't used. 
@@ -212,7 +236,7 @@ But, yeah, it would *really* be nice for testing purposes...
 [ ] It would be really nice to make my own include type for HTML::Template, powered simply by filters - the catch is that 
 I want to be able to pass variables, so the tag would look something like: 
 
- 	<!-- tmpl_dada_mail_include screen="admin_header" title="Send a List Message" -->
+ 	<!-- tmpl_dada_mail_include screen="admin_header" title="Send a Message" -->
 
 and the filter just looks for: 
 
@@ -274,7 +298,7 @@ http://osdir.com/ml/lang.perl.modules.html-template/2006-12/msg00004.html
 
 [-] Work on Getting rid of the, "Send a List Invitaton" and moving that sort of stuff into the, "Add" Workflow. 
  [ ] That means we need some way to have a preview of the message that's going to go out
-	[ ] Preview also has to work for the, "Send a LIst Message" screen
+	[ ] Preview also has to work for the, "Send a Message" screen
 	[ ] Preview has to fill in tags 'n stuff. 
 	[ ] Preview is a difficult feature. OK?
  [-] It would be nice to have breadcrumbs, so the person going through the, "add" process knows what to expect
@@ -463,7 +487,7 @@ header, as another way of figuring out what the origin of bounced messages were 
 
 [-] Hook up Spamassassin to dada_bridge.pl, reject messages that score, "n" on the tests - pref to flat out reject, or bounce back.
 
-May also be good to have in the, "Send a List Message" screen, so you know just how your message will be treated; 
+May also be good to have in the, "Send a Message" screen, so you know just how your message will be treated; 
 
 Work on moderation, either a message that needs moderation is sent to one moderator randomly, or to all of the moderators - copy of the message is sent along with the explaning email, and a copy is saved on the server until it's thumb'd up or down. Explaining message has special URL with random digits, so moderators do not have to log into Dada Mail, only click the, "yes", or, "no!" links. 
 
@@ -494,14 +518,14 @@ allow replies from the archives themselves, email required - and not posted unti
 [x] archived messages need to have inline/attached images shown
 	[x] as well as attachments available to download via a click. 
 	
-Send a List Message/Send a webpage, etc need the same options, "open in a new window, I'm sure, send to multiple lists, send after email x" 
+Send a Message/Send a webpage, etc need the same options, "open in a new window, I'm sure, send to multiple lists, send after email x" 
 	
 [] Set $SMTP_TRUSTING to zero by default
 	or do the whole hash way, 
 	or make it a list-centric pref. 
 	( I have to review this cause I forget what this means... :) ) 
 
-[] Add new upload widgets to the advanced send a list message form without refreshing the page and thus losing all yer message stuff (via ajax - http://books.slashdot.org/article.pl?sid=05/08/01/2019247&tid=156&tid=95&tid=6 )
+[] Add new upload widgets to the advanced Send a Message form without refreshing the page and thus losing all yer message stuff (via ajax - http://books.slashdot.org/article.pl?sid=05/08/01/2019247&tid=156&tid=95&tid=6 )
 
 [x] " Sent to the Subscription List." discuss pref on by default. 
 
@@ -540,7 +564,7 @@ Send a List Message/Send a webpage, etc need the same options, "open in a new wi
 	Something like, DADA::App::BuildMessages...
 		(I guess, although MIME::Lite is pretty close...)
 
-[*] Edit Template - UI really not very UI friendly? 
+[*] Your Mailing List Template - UI really not very UI friendly? 
 	Yeah, good Justin, just.... take it out!
 
 
