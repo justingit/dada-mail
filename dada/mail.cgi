@@ -2782,15 +2782,27 @@ sub smtp_options {
         
         my $pop3_server         = strip($q->param('pop3_server'))        || '';
         my $pop3_username       = strip($q->param('pop3_username'))      || '';
-        my $pop3_password       = strip($q->param('pop3_password'))      || '';
-        my $pop3_use_ssl        = strip($q->param('pop3_use_ssl'))       || ''; 
+        
+
+		my $pop3_password       = strip($q->param('pop3_password'))      || undef;
+        if(defined($pop3_password)){ 
+			$pop3_password = DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $pop3_password);
+		}
+
+		my $pop3_use_ssl        = strip($q->param('pop3_use_ssl'))       || ''; 
         my $pop3_auth_mode      = strip($q->param('pop3_auth_mode'))     || 'BEST', 
         my $use_smtp_ssl        = $q->param('use_smtp_ssl')              || 0; 
         
         my $sasl_auth_mechanism = $q->param('sasl_auth_mechanism')       || undef, 
         my $use_sasl_smtp_auth  = $q->param('use_sasl_smtp_auth')        || 0; 
         my $sasl_smtp_username  = strip($q->param('sasl_smtp_username')) || ''; 
-        my $sasl_smtp_password  = strip($q->param('sasl_smtp_password')) || '';
+        
+
+		my $sasl_smtp_password  = strip($q->param('sasl_smtp_password')) || undef;
+		if(defined($sasl_smtp_password)){ 
+			$sasl_smtp_password = DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $sasl_smtp_password)
+		}
+
         my $smtp_port           = strip($q->param('smtp_port'))          || undef; 
      	my $smtp_connection_per_batch = strip($q->param('smtp_connection_per_batch')) || 0;
         
@@ -2806,7 +2818,7 @@ sub smtp_options {
             pop3_server               => $pop3_server,    
             pop3_username             => $pop3_username, 
             
-            pop3_password             => DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $pop3_password),    
+            pop3_password             => $pop3_password,    
             
 			pop3_use_ssl              => $pop3_use_ssl, 
 			pop3_auth_mode            => $pop3_auth_mode, 
@@ -2814,7 +2826,7 @@ sub smtp_options {
             use_sasl_smtp_auth        => $use_sasl_smtp_auth, 
             sasl_auth_mechanism       => $sasl_auth_mechanism, 
             sasl_smtp_username        => $sasl_smtp_username, 
-            sasl_smtp_password        => DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $sasl_smtp_password),
+            sasl_smtp_password        => $sasl_smtp_password,
             set_smtp_sender           => $set_smtp_sender, 
         	smtp_connection_per_batch => $smtp_connection_per_batch, 
 			
