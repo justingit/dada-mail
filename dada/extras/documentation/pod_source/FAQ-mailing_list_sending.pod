@@ -278,7 +278,7 @@ Checking this option will not use the C<sleep> function, but will stop Dada Mail
 
 The B<Sending Monitor Screen> will tell you how far along your mailout has gone. 
 
-In the list control panel, when you send out a message, by pressing the big green, B<Submit Mailing List Message> button on the, B<Send a List Message> screen (and friends), the screen will refresh and you'll see another screen, stating your mailing is on its way! and give you I<another> big green button which is labeled, B<Monitor Your Mailing!>. 
+In the list control panel, when you send out a message, by pressing the big green, B<Submit Mailing List Message> button on the, B<Send a Message> screen (and friends), the screen will refresh and you'll see another screen, stating your mailing is on its way! and give you I<another> big green button which is labeled, B<Monitor Your Mailing!>. 
 
 Press that button. 
 
@@ -308,7 +308,7 @@ But, if you do navigate away by mistake, it's not the end of the world, just nav
 
 Quite easily:  
 
-Log into your list via the list control panel. Under Send a List Message, click on, B<Monitor Your Mailings>. This screen will give you a list of the mailouts currently active. Click on the subject of the mailout you'd like to monitor. And you're back. 
+Log into your list via the list control panel. Under Send a Message, click on, B<Monitor Your Mailings>. This screen will give you a list of the mailouts currently active. Click on the subject of the mailout you'd like to monitor. And you're back. 
 
 =head2 Is there an alternative to auto-picking up mailouts, rather than the Sending Monitor screen? 
 
