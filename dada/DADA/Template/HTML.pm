@@ -425,153 +425,169 @@ sub open_template {
 
 
 
-sub list_template { 
+sub list_template {
 
-	require DADA::Template::Widgets; 
-    require CGI; 
-    my $q = CGI->new; 
-       $q->charset($DADA::Config::HTML_CHARSET); 
+    require DADA::Template::Widgets;
+    require CGI;
+    my $q = CGI->new;
+    $q->charset($DADA::Config::HTML_CHARSET);
 
-	# DEV: Weird. I know. 
-	if($DADA::Config::PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
-		$DADA::Config::PROGRAM_URL = $ENV{SCRIPT_URI} || $q->url();
-	}
-	my %args = (
-			-List          => undef, 
-			-Part          => undef, 
-			-Title         => undef, 
-			-HTML_Header   => 1,
-			-header_params => {},  
-			-data          => undef, 
-			-vars          => {},
-			@_,
-		);
+    # DEV: Weird. I know.
+    if ( $DADA::Config::PROGRAM_URL eq
+        'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' )
+    {
+        $DADA::Config::PROGRAM_URL = $ENV{SCRIPT_URI} || $q->url();
+    }
+    my %args = (
+        -List          => undef,
+        -Part          => undef,
+        -Title         => undef,
+        -HTML_Header   => 1,
+        -header_params => {},
+        -data          => undef,
+        -vars          => {},
+        @_,
+    );
 
+    my $list = undef;
+    if ( $args{ -List } ) {
+        $list = $args{ -List };
+    }
 
+    my $ls = undef;
+    if ( defined($list) ) {
+        require DADA::MailingList::Settings;
+        $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    }
 
-	my $list = undef; 
-	if($args{-List}){ 
-		$list = $args{-List};
-	}
-	
-	my $ls = undef; 
-	if(defined($list)){ 
-		require  DADA::MailingList::Settings; 
-		$ls = DADA::MailingList::Settings->new({-list => $list}); 
-	}
+    my $list_template = undef;
 
-	my $list_template = undef; ; 
-	
-	if(defined($args{-data})){ 
-		$list_template = ${$args{-data}};
-	}
-	elsif($list){ 				
-		if($ls->param('get_template_data') eq "from_url"  && DADA::App::Guts::isa_url($ls->param('url_template')) == 1){ 
-			
-			$list_template = open_template_from_url(
-								-URL  => $ls->param('url_template'), 
-							); 
-			
-		}elsif($ls->param('get_template_data') eq 'from_default_template'){ 
-		
-			$list_template = default_template(); 
-			
-		}elsif(-e make_safer($DADA::Config::TEMPLATES . '/' . $list . '.template')){ 
-			
-			$list_template = DADA::Template::Widgets::_slurp(make_safer($DADA::Config::TEMPLATES  . '/' . $list . '.template')); 
-		
-		} # meaning, there's no list template
-		else {
-		
-			$list_template = default_template(); 	
-		
-		}
-	} # meaning, no list was passed: 
-	else{ 
-		$list_template = default_template(); 		
-	}
+    if ( defined( $args{ -data } ) ) {
+        $list_template = ${ $args{ -data } };
+    }
+    elsif ($list) {
+        if ( $ls->param('get_template_data') eq "from_url"
+            && DADA::App::Guts::isa_url( $ls->param('url_template') ) == 1 )
+        {
 
-	
-	my $prof_email         = ''; 
-	my $is_logged_in       = 0; 
-	my $subscribed_to_list = 0;
+            $list_template =
+              open_template_from_url( -URL => $ls->param('url_template'), );
 
+        }
+        elsif ( $ls->param('get_template_data') eq 'from_default_template' ) {
 
-	eval { 
-			
-		require DADA::Profile::Session; 
-		require DADA::Profile; 
-		my $prof_sess = DADA::Profile::Session->new; 
+            $list_template = default_template();
 
-		if($prof_sess->is_logged_in){ 
-			$is_logged_in = 1; 
-		    $prof_email = $prof_sess->get; 
-			my $prof = DADA::Profile->new({-email => $prof_email}); 
-			$subscribed_to_list = $prof->subscribed_to_list({-list => $list});
-		}
-	};
-	if($@){ 
-		carp "CAUGHT Error with Sessioning: $@"; 
-	}
-	
-	my $profile_widget = undef; 
-	eval { $profile_widget = DADA::Template::Widgets::profile_widget(); }; 
-	if($@){  $profile_widget = ''; };
+        }
+        elsif (
+            -e make_safer(
+                $DADA::Config::TEMPLATES . '/' . $list . '.template' ) )
+        {
 
-	my $final_list_template = DADA::Template::Widgets::screen(
-							{
-								-data => \$list_template,
-								-dada_pseudo_tag_filter   => 1, 	
-								-vars => {
-											default_css         => DADA::Template::Widgets::screen({-screen => 'default_css.css', -vars => 	$args{-vars} }),
-											title               => $args{-Title}, 
-											'profile.email'     => $prof_email, 
-											subscribed_to_list  => $subscribed_to_list,
-											
-											# The message tag isn't being used anymore but.... 
-											message             => $args{-Title},
-											content             => '[_dada_content]',
-											mojo                => '[_dada_content]',
-											dada                => '[_dada_content]',
-											profile_widget      => $profile_widget, 
-											show_profile_widget => 1, 
+            $list_template = DADA::Template::Widgets::_slurp(
+                make_safer(
+                    $DADA::Config::TEMPLATES . '/' . $list . '.template'
+                )
+            );
 
-											%{$args{-vars}},
-									 	 },
-								(
-									(defined($list)) ?
-									(
-										-list_settings_vars_param => {
-																	-list   => $list, 
-																	-dot_it => 1, 
-																},
-									)
-									:
-									(),
-								)  
-							}
-						);
-						
-	my ($header, $footer) = split(/\[_dada_content\]/, $final_list_template, 2);
-	
-	if($args{-Part} eq 'header'){ 
-		
-		if($args{-HTML_Header} == 1){ 
-			return $q->header(-type => 'text/html', %{$args{-header_params}}) . $header;
-		}else{
-			return $header; 
-		}
-	}
-	else {
-		
-		if($DADA::Config::GIVE_PROPS_IN_HTML == 1){ 
-		    return  "\n$HTML_Footer \n" . $footer . "\n";
-	    }
-		else { 
-			return $footer;
-		}
-	}
-	
+        }    # meaning, there's no list template
+        else {
+
+            $list_template = default_template();
+
+        }
+    }    # meaning, no list was passed:
+    else {
+        $list_template = default_template();
+    }
+
+    my $prof_email         = '';
+    my $is_logged_in       = 0;
+    my $subscribed_to_list = 0;
+
+    eval {
+
+        require DADA::Profile::Session;
+        require DADA::Profile;
+        my $prof_sess = DADA::Profile::Session->new;
+
+        if ( $prof_sess->is_logged_in ) {
+            $is_logged_in = 1;
+            $prof_email   = $prof_sess->get;
+            my $prof = DADA::Profile->new( { -email => $prof_email } );
+            $subscribed_to_list =
+              $prof->subscribed_to_list( { -list => $list } );
+        }
+    };
+    if ($@) {
+        carp "CAUGHT Error with Sessioning: $@";
+    }
+
+    my $profile_widget = undef;
+    eval { $profile_widget = DADA::Template::Widgets::profile_widget(); };
+    if ($@) {
+        $profile_widget = '';
+    }
+
+    my $final_list_template = DADA::Template::Widgets::screen(
+        {
+            -data                   => \$list_template,
+            -dada_pseudo_tag_filter => 1,
+            -vars                   => {
+                default_css => DADA::Template::Widgets::screen(
+                    { -screen => 'default_css.css', -vars => $args{ -vars } }
+                ),
+                title              => $args{ -Title },
+                'profile.email'    => $prof_email,
+                subscribed_to_list => $subscribed_to_list,
+
+                # The message tag isn't being used anymore but....
+                message             => $args{ -Title },
+                content             => '[_dada_content]',
+                mojo                => '[_dada_content]',
+                dada                => '[_dada_content]',
+                profile_widget      => $profile_widget,
+                show_profile_widget => 1,
+
+                %{ $args{ -vars } },
+            },
+            (
+                ( defined($list) )
+                ? (
+                    -list_settings_vars_param => {
+                        -list   => $list,
+                        -dot_it => 1,
+                    },
+                  )
+                : (),
+            )
+        }
+    );
+
+    my ( $header, $footer ) =
+      split ( /\[_dada_content\]/, $final_list_template, 2 );
+
+    if ( $args{ -Part } eq 'header' ) {
+
+        if ( $args{ -HTML_Header } == 1 ) {
+            return $q->header( -type => 'text/html',
+                %{ $args{ -header_params } } )
+              . $header;
+        }
+        else {
+            return $header;
+        }
+    }
+    else {
+
+        if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1 ) {
+            return "\n$HTML_Footer \n" . $footer . "\n";
+        }
+        else {
+            return $footer;
+        }
+    }
+
 }
 
 
