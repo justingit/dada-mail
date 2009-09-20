@@ -106,14 +106,20 @@ function toggleDisplay(target) {
 	if (document.getElementById){
 		var togglin = document.getElementById( target );
 		if(togglin.style.display == ""){
-			togglin.style.display = "none";
-		}else{
-			togglin.style.display = "";
-		}
-	}
-
+			// Scriptalicious
+			Effect.BlindUp(togglin.id);
+			
+			// target.dispaly = 'none'; 
+		}else{  
+			// Scriptalicious                          
+			Effect.BlindDown(togglin.id);
+			
+			// target.dispaly = ''; 
+		}  
+		
+	} 	
 }
-
+    
 function sendMailingListMessage(form_name, testornot) {
 		
 	var itsatest; 
