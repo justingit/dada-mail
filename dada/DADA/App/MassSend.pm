@@ -1050,7 +1050,10 @@ sub has_attachments {
 	my $q = $args->{-cgi_obj};
 		
     my @ive_got    = (); 
-    foreach(qw( 1 2 3 )) { 
+
+	my $num = $q->param('attachment'); 
+	
+    foreach(1 .. $num) { 
       #  warn "Working on: " . $_; 
         
         my $filename = $q->param('attachment_' . $_);
@@ -1119,7 +1122,11 @@ sub make_attachment {
             # $name is the CGI paramater name - we need to pass that
             # to keep the CGI object, "magic"
             
-            my $attachment_file = $self->file_upload({-cgi_obj => $q, -name => $name}); 
+            my $attachment_file = $self->file_upload(
+				{
+					-cgi_obj => $q, -name => $name
+				}
+			); 
                $mime_args{Path} =  $attachment_file;    
                $uploaded_file   =  $attachment_file;
                         
@@ -1135,8 +1142,49 @@ sub make_attachment {
     my $msg_att = MIME::Lite->new(%mime_args); 
        $msg_att->attr('Content-Location' =>  $attach_name);
 
+
+	# I'm not sure what's making the, '-meta.txt' files, but this should 
+	# help remove them /hack
+	dump_attachment_meta_file($uploaded_file); 
+	
     return($msg_att, $uploaded_file); 
         
+}
+
+
+# /hack
+sub dump_attachment_meta_file {
+    my $filename = shift;
+    $filename =~ s{^(.*)\/}{};
+
+    eval { require URI::Escape };
+    if ( !$@ ) {
+        $filename = URI::Escape::uri_escape( $filename, "\200-\377" );
+    }
+    else {
+        warn('no URI::Escape is installed!');
+    }
+    $filename =~ s/\s/%20/g;
+
+    my $full_path_to_filename =
+      make_safer( $DADA::Config::TMP . '/' . $filename . '-meta.txt' );
+
+	if(! -e $full_path_to_filename){ 
+		
+	}
+	else { 
+		
+  	  my $chmod_check =
+	      chmod( $DADA::Config::FILE_CHMOD, $full_path_to_filename );
+	    if ( $chmod_check != 1 ) {
+	        warn "could not chmod '$full_path_to_filename' correctly.";
+	    }
+
+	    my $unlink_check = unlink($full_path_to_filename);
+	    if ( $unlink_check != 1 ) {
+	        warn "deleting meta file didn't work for: " . $full_path_to_filename;
+	    }
+	}
 }
 
 
