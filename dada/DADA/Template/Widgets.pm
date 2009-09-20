@@ -1046,49 +1046,57 @@ sub archive_send_form {
 
 
 
-sub profile_widget { 
+sub profile_widget {
 
-	my $scr          = ''; 
-	my $email        = ''; 
-	my $is_logged_in = 0; 
-	my $profiles_enabled = $DADA::Config::PROFILE_ENABLED;
-	if(
-		$DADA::Config::PROFILE_ENABLED    != 1      || 
-		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
-	){
-		$profiles_enabled = 0; 
-	}
-	else { 		
-		require DADA::Profile; 
-		my $dp = DADA::Profile->new({-from_session => 1}); 
-		if($dp){ 
-			require DADA::Profile::Session;
-			require CGI; 
-			my $q = new CGI; 
-			my $prof_sess = DADA::Profile::Session->new; 
-			if($prof_sess->is_logged_in({-cgi_obj => $q})){ 
-				$is_logged_in = 1; 
-			    $email        = $prof_sess->get({-cgi_obj => $q}); 
-			}
-		}
-	}
-	
-	return screen(
-		{
-			-screen => 'profile_widget.tmpl', 
-	        -vars   => { 
-				profiles_enabled => $profiles_enabled,
- 				is_logged_in    => $is_logged_in, 
-				'profile.email' => $email,  
-				gravators_enabled => $DADA::Config::PROFILE_GRAVATAR_OPTIONS->{enable_gravators},
-				gravatar_img_url  => gravatar_img_url({-email => $email, -default_gravatar_url => $DADA::Config::PROFILE_GRAVATAR_OPTIONS->{default_gravatar_url}, -size => '30'}),						
-				
-				
-		    }
-		}
-	); 
-	
+    my $scr              = '';
+    my $email            = '';
+    my $is_logged_in     = 0;
+    my $profiles_enabled = $DADA::Config::PROFILE_ENABLED;
+    if (   $DADA::Config::PROFILE_ENABLED != 1
+        || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
+    {
+        $profiles_enabled = 0;
+    }
+    else {
+        require DADA::Profile;
+        my $dp = DADA::Profile->new( { -from_session => 1 } );
+        if ($dp) {
+            require DADA::Profile::Session;
+            require CGI;
+            my $q         = new CGI;
+            my $prof_sess = DADA::Profile::Session->new;
+            if ( $prof_sess->is_logged_in( { -cgi_obj => $q } ) ) {
+                $is_logged_in = 1;
+                $email = $prof_sess->get( { -cgi_obj => $q } );
+            }
+        }
+    }
+
+    return screen(
+        {
+            -screen => 'profile_widget.tmpl',
+            -vars   => {
+                profiles_enabled  => $profiles_enabled,
+                is_logged_in      => $is_logged_in,
+                'profile.email'   => $email,
+                gravators_enabled =>
+                  $DADA::Config::PROFILE_GRAVATAR_OPTIONS->{enable_gravators},
+                gravatar_img_url => gravatar_img_url(
+                    {
+                        -email                => $email,
+                        -default_gravatar_url =>
+                          $DADA::Config::PROFILE_GRAVATAR_OPTIONS
+                          ->{default_gravatar_url},
+                        -size => '30'
+                    }
+                ),
+
+            }
+        }
+    );
+
 }
+
 
 
 
