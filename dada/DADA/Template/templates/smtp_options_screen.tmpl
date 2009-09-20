@@ -388,10 +388,10 @@ Checking this option may dramatically increase sending speed, since the actual c
 			},
 			onComplete: 	 function() {
 				
-				$('smtp_test_results').show(); 
 				$('smtp_test_results_loading').hide();
-
-			}
+				Effect.BlindDown('smtp_test_results');
+				
+			}	
 			
 
 			});
@@ -404,7 +404,7 @@ Checking this option may dramatically increase sending speed, since the actual c
 </p> 
  
 <div id="smtp_test_results_loading" style="display:none">
-	<em>Loading...</em>
+	<p class="alert">Loading...</p>
 </div>
 <div id="smtp_test_results"></div> 
     
