@@ -210,7 +210,7 @@ my $EXT_URL = $PLUGIN_URL;
    
 $ADMIN_MENU = [
 
-	{-Title      => 'Send a List Message',
+	{-Title      => 'Send a Message',
 	 -Title_URL  => "$S_PROGRAM_URL?f=send_email",
 	 -Function   => 'send_email',
 	 -Activated  => 1,
@@ -352,7 +352,7 @@ $ADMIN_MENU = [
 	{-Title      => 'Manage Appearance',
 	 -Activated  => 1,
 	 -Submenu    => [
-					{-Title      => 'Edit Template',
+					{-Title      => 'Your Mailing List Template',
 					 -Title_URL  => "$S_PROGRAM_URL?f=edit_template",
 					 -Function   => 'edit_template',
 					 -Activated  => 1,
