@@ -2014,7 +2014,7 @@ $ADMIN_MENU ||= [
 	{-Title      => 'Manage Appearance',
 	 -Activated  => 1,
 	 -Submenu    => [
-					{-Title      => 'Edit Template',
+					{-Title      => 'Your Mailing List Template',
 					 -Title_URL  => "$S_PROGRAM_URL?f=edit_template",
 					 -Function   => 'edit_template',
 					 -Activated  => 1,
@@ -4056,7 +4056,7 @@ encrypted.
 	 # white list 
 	 enable_white_list            => 0,
 		
-# Edit Template Prefs
+# Your Mailing List Template Prefs
 
 	get_template_data                => 'from_default_template',
 	url_template                     => '',

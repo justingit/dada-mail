@@ -5275,8 +5275,10 @@ sub html_code {
 
 sub edit_template {
 
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,                                     
-                                                        -Function => 'edit_template');
+    my ($admin_list, $root_login) = check_list_security(
+		-cgi_obj  => $q,                                     
+        -Function => 'edit_template'
+	);
 
     $list = $admin_list; 
 
@@ -5331,7 +5333,7 @@ sub edit_template {
             }   
         }        
         
-        print(admin_template_header(-Title      => "Edit Template", 
+        print(admin_template_header(-Title      => "Your Mailing List Template", 
                                 -List       => $li->{list},
                                 -Root_Login => $root_login,
                                 -Form       => 0, 
@@ -5342,7 +5344,7 @@ sub edit_template {
                                               -vars   => {
 	
 															screen                                  => 'edit_template', 
-															title                                   => 'Edit Template', 
+															title                                   => 'Your Mailing List Template', 
                                                             done                                    => $done,
                                                             edit_this_template                      => $edit_this_template, 
                                                             get_template_data                       => $li->{get_template_data}, 
