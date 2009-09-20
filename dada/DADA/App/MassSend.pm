@@ -133,7 +133,7 @@ sub send_email {
 		my ($num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued)  = $self->mass_mailout_info($list);    
             my $scrn = ''; 
             $scrn .= admin_template_header(
-						-Title      => "Send a List Message", 
+						-Title      => "Send a Message", 
 						-List       => $list, 
 						-Root_Login => $root_login,
 						-Form       => 0, 
@@ -146,7 +146,7 @@ sub send_email {
 							-vars       =>  {
 								
 								screen                     => 'send_email', 
-								title                      => 'Send a List Message',
+								title                      => 'Send a Message',
 								
 								flavor                     => $flavor,
 
@@ -870,7 +870,7 @@ sub list_invite {
 					{
 						-screen => 'list_invite_screen.tmpl', 
 						-vars   => {
-							# This is sort of weird, as it default to the "Send a List Message" Subject
+							# This is sort of weird, as it default to the "Send a Message" Subject
 							Subject                        => $ls->param('invite_message_subject'), 
 							field_names                    => $field_names, 
 							verified_addresses             => $verified_addresses, 

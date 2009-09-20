@@ -1829,7 +1829,7 @@ some way to at least unsubscribe to every one of your lists.
 =head2 $DEFAULT_ADMIN_SCREEN
 
 By default, when you log into the administration area you are shown
-the "Send a List Message" screen. You can specify a different URL to 
+the "Send a Message" screen. You can specify a different URL to 
 go to by changing the $DEFAULT_ADMIN_SCREEN variable.
 
 =cut
@@ -1878,7 +1878,7 @@ my $EXT_URL = $PLUGIN_URL;
 
 $ADMIN_MENU ||= [
 
-	{-Title      => 'Send a List Message',
+	{-Title      => 'Send a Message',
 	 -Title_URL  => "$S_PROGRAM_URL?f=send_email",
 	 -Function   => 'send_email',
 	 -Activated  => 1,
