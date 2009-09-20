@@ -61,9 +61,8 @@
     <div class="floatclear">
     </div>
 	<div id="previewMessageReceivers_loading" style="display:none">
-		<em>Loading...</em>
-	</div>
-	    
+		<p class="alert">Loading...</p>
+	</div> 
        <div id="previewMessageReceivers"> 
       </div> 
      </div> 
@@ -122,8 +121,6 @@
 				},
 				onComplete: 	 function() {
 					$('previewMessageReceivers_loading').hide(); 
-					/*$('previewMessageReceivers').show(); */
-					/* Fancy stuff: */
 					Effect.BlindDown('previewMessageReceivers');
 
 				}
