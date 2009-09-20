@@ -1460,7 +1460,7 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=1530149&group_id=13002&
 
 =item * [ 1540194 ] 2.10.9 - no check for, "Use this URL as the template"
 
-In the, "Manage Appearance -> Edit Template" screen. This makes it hard to debug template problems that use an outside URL. 
+In the, "Manage Appearance -> Your Mailing List Template" screen. This makes it hard to debug template problems that use an outside URL. 
 
 http://sourceforge.net/tracker/index.php?func=detail&aid=1540194&group_id=13002&atid=113002
 
@@ -1568,7 +1568,7 @@ Never use this feature unless you understand the security implications, which ar
 
 http://dadamailproject.com/support/documentation/known_issues.pod.html#cgi__session_problems
 
-=item * 1529990  	  2.10.9 - "Send a List Message" still available, even when...
+=item * 1529990  	  2.10.9 - "Send a Message" still available, even when...
 
 You explicitly turn off the screen in the, "Customize
 Feature Set" screen. Somewhat related to this bug:
@@ -1788,7 +1788,7 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=1525708&group_id=13002&
 When you send messages via the the list control panel.
 
 This should really be rectified in the, Send a List
-Message, Send a List Message -> Advanced and the Send a
+Message, Send a Message -> Advanced and the Send a
 Webpage, at the very very least. 
 
 http://sourceforge.net/tracker/index.php?func=detail&aid=1525671&group_id=13002&atid=113002
@@ -2361,7 +2361,7 @@ HTMLArea has been replaced with FCKeditor. HTML WYSIWYG editing is now available
 
 =over
 
-=item * Send a List Message -> Advanced
+=item * Send a Message -> Advanced
 
 =item * Send a Webpage
 
@@ -2550,9 +2550,9 @@ The only changes have been bug fixes and code cleanup to beta 2.
 Changes from 2.10 Beta 1 and 2.10 Beta 2
 Main Changes:
 
-Send a List Message and Send a Webpage
+Send a Message and Send a Webpage
 
-Send a List Message and Send a Webpage screens now have a new widget to allow you to, Archive but DO NOT Send a message. This is a stop gap for the missing feature of adding/editing an archive. Messages can also be backdated, so this should provide a way to add in old messages.
+Send a Message and Send a Webpage screens now have a new widget to allow you to, Archive but DO NOT Send a message. This is a stop gap for the missing feature of adding/editing an archive. Messages can also be backdated, so this should provide a way to add in old messages.
 
 Send a Webpage
 
@@ -2666,7 +2666,7 @@ checklist() javascript function removed.
 
 =item  1213102 	2.9.1 - New list screen uses error css for help msgs
 
-=item  1213101 	2.9.1 - "Send a List Message" Subject textfield...
+=item  1213101 	2.9.1 - "Send a Message" Subject textfield...
 
 =item  1213326 	2.9.1 - SASL test does not escape HTML charactors
 
@@ -3049,7 +3049,7 @@ http://www.atomenabled.org/
 
 Why did I do this? Basically, I realized: What are the archives? Why, they're a collection of messages, with good, pertinent information, sorted by date. What's a weblog - why, it's very similar! Why not make the archives as similar to a weblog as possible? People are familiar with that interface - let's emulate it, add value to the content you already have! Huzzah! What a great idea! 
 
-So, we've got rss *and* atom feeds, we've got ping'ing capabilities, we've got search-engine friendly URL's - we've got some great resources added to your site, everytime you send a list message - it's almost as if the email message is the icing! I'm just really excited about all this...
+So, we've got rss *and* atom feeds, we've got ping'ing capabilities, we've got search-engine friendly URL's - we've got some great resources added to your site, everytime you Send a Message - it's almost as if the email message is the icing! I'm just really excited about all this...
 
 Here's a real example of the atom feed created by Dada Mail: 
 
@@ -3128,7 +3128,7 @@ This will most likely break many plugins/extensions that aren't currently bundle
 
 dada_send.pl is still removed. Yeah, dada_send.pl
 
-Removed the "HTML_and_text" - Plaintext version is created from HTML in the "Send a List Message" basic screen. This is done automatically for you. 
+Removed the "HTML_and_text" - Plaintext version is created from HTML in the "Send a Message" basic screen. This is done automatically for you. 
 
 :: Removed - For Now
 
@@ -3226,9 +3226,9 @@ DADA::App::FormatMessages is smart enough to pick out the content of the Mailing
 
 By default, List Templates use the Default List Template - meaning, what you see on the default screen of Dada Mail (http://example.com/cgi-bin/dada/mail.cgi)
 
-This option can be changed in Manage Appearance -> Edit Template in the List Control Panel. It can also be changed *back* to using the default, and can also be overrided to only use the default in Config.pm's %LIST_SETUP_OVERRIDES. It's a good thing. 
+This option can be changed in Manage Appearance -> Your Mailing List Template in the List Control Panel. It can also be changed *back* to using the default, and can also be overrided to only use the default in Config.pm's %LIST_SETUP_OVERRIDES. It's a good thing. 
 
-You'll also notice in the Edit Template screen you now have the option to, "Apply the list template to HTML email messages". This means, *all* HTML messages sent by Dada Mail for this list. Pretty slick.
+You'll also notice in the Your Mailing List Template screen you now have the option to, "Apply the list template to HTML email messages". This means, *all* HTML messages sent by Dada Mail for this list. Pretty slick.
 
 .: Templates: XHTML 1.0 Transitional
 
@@ -3372,7 +3372,7 @@ I was going to make a whole, complicated system to queue up messages, and send a
 
 Note! that this option doesn't at all make Beatitude obsolete - you can't edit this schedule, once you've made it, nor, can you view it, set the time - yadda yadda. It's sort of a specific schedule, for a specific task. 
 
-:: Send a List Message Screen Changes
+:: Send a Message Screen Changes
 
 There's a new option entitled, "Plain Text - HTML Version will be created"
 
@@ -3400,7 +3400,7 @@ HTMLArea, a browser-based HTML editor comes with Dada Mail now! Here's how to ge
 * Note this location.
 * Set the Config variable, $HTMLAREA_URL to the URL of where the htmlarea directory is. That's it.
 
-You'll see the HTMLArea inline editor by going to the ``Send a List Message'' screen in the list control panel and clicking, ``Advanced''.
+You'll see the HTMLArea inline editor by going to the ``Send a Message'' screen in the list control panel and clicking, ``Advanced''.
 
 Send a Webpage now applies the Mailing List Template
 
@@ -3544,8 +3544,8 @@ pop3 passwords are now encrypted in the list settings using the cipher key - you
 
 The following screens have been templated out of the main, mail.cgi script: 
 
-Send a List Message
-Send a List Message (advanced) 
+Send a Message
+Send a Message (advanced) 
 Send a Webpage
 View List
 Sending Options -> SMTP Options
@@ -3613,7 +3613,7 @@ and 'From' message headers
 
 in Sending Options -> advanced
 
-and attempt to send a list message via sendmail (not SMTP) your mailing will fail. Usually, *one* email will send out, and nothing else.
+and attempt to Send a Message via sendmail (not SMTP) your mailing will fail. Usually, *one* email will send out, and nothing else.
 
 This bug has been fixed.
 
@@ -3695,7 +3695,7 @@ This bug should be fixed.
 
 This bug should be fixed.
 
-=item * [ 963425 ] 2.8.13 - missing information on adv send a list message screen
+=item * [ 963425 ] 2.8.13 - missing information on adv Send a Message screen
 
 "Your list mailing will be sent to all your list subscribers, starting at" then doesn't have anything
 after it. 
@@ -3861,9 +3861,9 @@ can be turned on by going to I<Sending Options - Advanced>
 
 =item * Send a webpage advanced settings can be toggled
 
-=item * Send a list message screen allows you to open a new window on submit
+=item * Send a Message screen allows you to open a new window on submit
 
-=item * send a list message screen now has "are you sure?" checkbox
+=item * Send a Message screen now has "are you sure?" checkbox
 
 =item * list settings are archives are backed up automatically, 
 
@@ -4118,7 +4118,7 @@ B<fixed>.
 
 =item * [ 770544 ] message archiving
 
-When in the advanced Send a List Message screen, messages were still being archived, even if you've unchecked, "Archive Message". This has been B<fixed>. 
+When in the advanced Send a Message screen, messages were still being archived, even if you've unchecked, "Archive Message". This has been B<fixed>. 
 
 =item * [ 770541 ] problems with .info email addresses
 
@@ -4178,9 +4178,9 @@ The SMTP error log wasn't being written into unless whatever file was set in $SM
 It also wasn't very clear that you need at least version 5.6 for SMTP mailing to 
 work now. Warnings are now put in the error log and in the B<Sending Options> screen to politely tell you.  
 
-=item * Send A List Message->Advanced screen
+=item * Send a Message->Advanced screen
 
-Fixed a bad link in the I<Send A list Message -> Advanced...>, the link, labeled, "Basic...", wasn't going anywhere interesting. 
+Fixed a bad link in the I<Send a Message -> Advanced...>, the link, labeled, "Basic...", wasn't going anywhere interesting. 
 
 The B<Errors-To> textfield doesn't explicitly get printed out to tweak, unless you've asked that this header by printed in list messages. This itself is off by default, since this particular header is deprecated. 
 
@@ -4200,7 +4200,7 @@ I'm also ditching the B<Organization> header, since it's fairly useless.
 
 =item * Mailing List Sending
 
-Some people were reporting that the "Send a List Message" screen would hang after they submitted the form. This has been B<fixed> by reopening STDIN and STDOUT to a null device, as suggested: 
+Some people were reporting that the "Send a Message" screen would hang after they submitted the form. This has been B<fixed> by reopening STDIN and STDOUT to a null device, as suggested: 
 
 	http://www.perldoc.com/perl5.8.0/pod/func/fork.html
 
@@ -4494,7 +4494,7 @@ Postgres base themselves upon. That would stop a lot of the same code in each mo
 
 I'm beefing up the "Send this archive to a friend" feature. although not used
 that much, it ain't that good to be used. Once finished, a multipart/alternative email will be created using the archived message, a plain text version will be made if the original is HTML, and vice versa. I'm going to be playing with the HTML::FromText CPAN module, which should make a HTML version from a plain text 
-source fairly well. If it works out well, I'll do the same for archived plaintext messages, when they're viewed via a browser, and have this an option (plain text to HTML) in the basic, "Send a List Message" screen and who knows what else. I think Plaintext to HTML could be used in a million places. 
+source fairly well. If it works out well, I'll do the same for archived plaintext messages, when they're viewed via a browser, and have this an option (plain text to HTML) in the basic, "Send a Message" screen and who knows what else. I think Plaintext to HTML could be used in a million places. 
 
 =item * 2/15/03
 
@@ -4504,7 +4504,7 @@ A referer check is also done before sending, something that was lacking in the o
 
 B<new feature:> The send an archive message  can now be edited and customized via the control panel, under "Manage Copy->Email Messages". 
 
-Along the same line, There is now a "Resend an archived message" button when you browse the list's archives via the admin control panel. Pushing this button will take you to the Advanced "Send a List Message" screen with the appropriate fields already filled in. Because the entire message is NOT saved in the archive, things like attachements won't be automatically added. 
+Along the same line, There is now a "Resend an archived message" button when you browse the list's archives via the admin control panel. Pushing this button will take you to the Advanced "Send a Message" screen with the appropriate fields already filled in. Because the entire message is NOT saved in the archive, things like attachements won't be automatically added. 
 
 B<bug fix:> When using a SQL backend and SMTP sending, tmp subscription list files, created when you send a mass email, are never deleted. This should be fixed. 
 
@@ -5469,7 +5469,7 @@ for as many attachments as you think your little MTA can handle.
 
 And finally I addd the feature of creating a seperate version of your mailing in 
 Text and/or HTML. You can also say if you want this message to be archived or 
-not from the send a list message form. That's alot of stuff. 
+not from the Send a Message form. That's alot of stuff. 
 
 With that, i also snuck in support for X-Priority header in MOJO::Mail::Send.pm 
 and also added a select box to Sending Options -> Advanced for a Default 
@@ -5559,6 +5559,6 @@ in mojo_send.pl
 	228 $mh -> send(%mailing); 
 	229 #and we go!
 	230 warn("Mojo Mail $ver ERROR \- Attempt to 
-			send a list message to an unknown list 
+			Send a Message to an unknown list 
 			($email_list) by means of mojo_send.pl"); 
 	231 exit;

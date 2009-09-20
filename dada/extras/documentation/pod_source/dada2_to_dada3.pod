@@ -30,7 +30,7 @@ The SQL schemas themselves are now saved in the following files:
 
 You may also want to review the SQL configuration information in the Config.pm documentation. 
 
-=head2 Send a List Message screen
+=head2 Send a Message screen
 
 There's only one version of this screen, there's no longer a, "Basic" and, "Advanced" version. 
 
@@ -169,7 +169,7 @@ Make sure to use the latest version of FCKEditor. FCKeditor support should be av
 
 =over
 
-=item * Send a List Message
+=item * Send a Message
 
 =item * Send a Webpage
 

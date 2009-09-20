@@ -116,7 +116,7 @@ Dada Mail supports most everything under the sun when it comes to creating a mes
 
 =head3 Normally
 
-Usually, you're going to send a message using Dada Mail's, "Send a List Message" screen. 
+Usually, you're going to send a message using Dada Mail's, "Send a Message" screen. 
 
 This screens has the option to set a few different headers, including the Subject of your message and also allows you to create a PlainText and/or HTML verson of your Mailing List Message. Dada Mail has support for the FCKeditor (a WYSIWYG editor for your web browser) as a drop in place kind of thing. 
 

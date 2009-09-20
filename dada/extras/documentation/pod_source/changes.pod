@@ -386,9 +386,9 @@ The included group of CPAN modules known as, B<MIME-Tools> was downgraded in Dad
 
 The blog_index.cgi plugin has been refreshed and allows you to now embed the HTML it creates via a javascript library, or as straight HTML. A new menu item in the Admin Contol Panel has been added. 
 
-=head3 "Send a List Message" API
+=head3 "Send a Message" API
 
-The API used in the, "Send a List Message" screen has been introduced in an... introductory manner, in the, I<Integrating Dada Mail into other Programs> docs: 
+The API used in the, "Send a Message" screen has been introduced in an... introductory manner, in the, I<Integrating Dada Mail into other Programs> docs: 
 
 L<http://dadamailproject.com/support/documentation/COOKBOOK-integration.pod.html#accessing_the__send_a_list_message_api>
 
@@ -471,7 +471,7 @@ The left hand side admin menu now shows how many mailouts per list, and per Dada
 
 =head3 Dada Mail Queueing Notifications
 
-There are now messages on top of the, Send a List Message, Send a Webpage and Send a List Invitation screens to let you know if the limit of 
+There are now messages on top of the, Send a Message, Send a Webpage and Send a List Invitation screens to let you know if the limit of 
 individual mass mailings has been reached and if the message you're about to send will be queued. This is to help any confusion about why messages don't go out 
 right away. 
 

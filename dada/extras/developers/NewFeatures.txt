@@ -353,4 +353,4 @@ The other trick is that we need to have testing Subscriber Profile Fields availa
 
 The other nice thing *may* be to have the message, once you've previewed it, then sent to either a test address or the list owner, for a final, once-over that everything looks good. 
 
-I'll probably start this with just popping out a new window, with controls at the top and the preview below that, so you can continue to play with various params? The message itself won't be editable (you can still do that in the, "Send a List Message", screen, but the subscriber field variables will be editable. 
+I'll probably start this with just popping out a new window, with controls at the top and the preview below that, so you can continue to play with various params? The message itself won't be editable (you can still do that in the, "Send a Message", screen, but the subscriber field variables will be editable. 

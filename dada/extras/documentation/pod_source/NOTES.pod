@@ -241,7 +241,7 @@ There's a related option entitled, "Restart Mailings After Each Batch". Only use
 
 We B<seriously, incredibly> recommend enabling batching as well. 
 
-When you send a list message from the list control panel, do so as you normally would, but once the screen refreshes, click the button labeled, B<Monitor Your Mailing!> 
+When you Send a Message from the list control panel, do so as you normally would, but once the screen refreshes, click the button labeled, B<Monitor Your Mailing!> 
 
 You'll be taken to a screen with a table with the following information:
 
@@ -287,7 +287,7 @@ It is B<OK> to refresh this screen manually, as many times as you'd like. It sho
 
 If you navigate away from this screen, mailing will still go on - the screen itself B<does not control> a mailout, it simply reports the status of a mailout and will restart a mailout, if needed. If a mailout stops and you are not on this screen, there won't be anything to restart the mailout. 
 
-You can navigate back to this screen by logging back into your list, and going to, B<Send a List Message - Monitor Your Mailings> and selecting the appropriate mailing. As long as you're on the indvidual, B<Monitor Your Mailing> screen, the auto-pickup feature will be in action. 
+You can navigate back to this screen by logging back into your list, and going to, B<Send a Message - Monitor Your Mailings> and selecting the appropriate mailing. As long as you're on the indvidual, B<Monitor Your Mailing> screen, the auto-pickup feature will be in action. 
 
 B<NOTES:>
 
@@ -689,7 +689,7 @@ $STYLE{yellow_submit} -> input.alertive
 
 =head2 List Templates default to... Default List Template
 
-There is a new option in the "Manage Appearance - Edit Template" admin screen. The option allows you to " Use the default list template." This may be set as your default for lists that are already created. If you have a list that seems to have suddenly lost its customized template, make sure this option is changed to something like, "  Use This Information For The Template: ".  
+There is a new option in the "Manage Appearance - Your Mailing List Template" admin screen. The option allows you to " Use the default list template." This may be set as your default for lists that are already created. If you have a list that seems to have suddenly lost its customized template, make sure this option is changed to something like, "  Use This Information For The Template: ".  
 
 =head2 Redirect Links - Path Info'd
 
@@ -735,7 +735,7 @@ I'll try to get a better fix for this soon,
 
 =head2 Removed: Plaintext version is created from HTML
 
-Removed the "HTML_and_text" - Plaintext version is created from HTML in the "Send a List Message" basic screen. This is done automatically for you.
+Removed the "HTML_and_text" - Plaintext version is created from HTML in the "Send a Message" basic screen. This is done automatically for you.
 
 =head2 Removed: Resend Archived Message
 

@@ -322,7 +322,7 @@ Sometimes CGI scripts, like Dada Mail are run via the webservers user, instead o
 
 If B<none> of this is working, and you're in a pinch and it's 3:00 am and you need to get this mailing out B<now>, Dada Mail has an option to send a list messsage from a particular part of your list. 
 
-Log into your list control panel and when you get to the, "Send a List Message" screen, click, "advanced". 
+Log into your list control panel and when you get to the, "Send a Message" screen, click, "advanced". 
 
 At the bottom of the form, you should see the option to send your message from a particular part of your list. 
 
@@ -334,7 +334,7 @@ If the usage log wasn't set up, consult Dada Mail's error log.
 
 If you don't know where Dada Mail's error log is, consult the Config.pm variable, B<PROGRAM_ERROR_LOG> 
 
-If there is no error log, before the next time you send a list message out, set up the error and usage logs; as well as setup up batching to something realistic. 
+If there is no error log, before the next time you Send a Message out, set up the error and usage logs; as well as setup up batching to something realistic. 
 
 =head2 Mailing List Message sending is working great! yet some of my messages are ending up in Bulk Mail folders - why? 
 

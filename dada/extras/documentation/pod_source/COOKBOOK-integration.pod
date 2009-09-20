@@ -187,11 +187,11 @@ Creating a subscription form in Flash - this uses the main mail.cgi to receive a
 
 =head2 send_dada_mail.pl
 
-There is an extension called, B<send_dada_mail.pl> that allows you to send a list message through a command line interface - it's designed to be easy to use from another program, regardless of what that program is written in and is based slightly (ever so slightly) on how you also use the C<sendmail> utility. 
+There is an extension called, B<send_dada_mail.pl> that allows you to Send a Message through a command line interface - it's designed to be easy to use from another program, regardless of what that program is written in and is based slightly (ever so slightly) on how you also use the C<sendmail> utility. 
 
 L<http://dadamailproject.com/support/documentation/send_dada_mail.pl.html>
 
-=head2 Accessing the, "Send a List Message" API
+=head2 Accessing the, "Send a Message" API
 
 If the C<send_dada_mail.pl> script isn't up your alley, you can make a very small utility script that'll bridge between your app - whatever language it's written in and Dada Mail. Here's what such an app may look like: 
 
@@ -231,11 +231,11 @@ If the C<send_dada_mail.pl> script isn't up your alley, you can make a very smal
 		print "I don't know what you want me to do!"; 
 	}
 
-The above example is an incredibly bare-bones idea on how to send a list message using the DADA::App::MassSend API. Unfortunetly, the API isn't super flexible, but it can do a whole lot, if you need it to. 
+The above example is an incredibly bare-bones idea on how to Send a Message using the DADA::App::MassSend API. Unfortunetly, the API isn't super flexible, but it can do a whole lot, if you need it to. 
 
 Save the above script as something like, C<send_list_message.cgi> (or whatever you'd personally like). Put it into your cgi-bin/dada directory (to start) and change it's permission to, C<755>
 
-The next thing you'll want to do is create an HTML page with a form that, when submitted will have the correct information to send a list message. Here's a very small example: 
+The next thing you'll want to do is create an HTML page with a form that, when submitted will have the correct information to Send a Message. Here's a very small example: 
 
  	<form action="http://example.com/cgi-bin/dada/send_list_message.cgi" method="post">
  
@@ -293,7 +293,7 @@ The HTML version of your message (if any)
 
 Make sure to customize the form's, C<action> to correspond to where you're currently keeping this script and also the form field, "list" to be a valid listshortname of yours. 
 
-The form fields, B<Subject>, B<text_message_body> and B<html_message_body> are named the same as the form fields located on the, B<Send a List Message> screen. Most every form field that's located in that form can be added to our example, including file attachments, partial sending options, archiving options, etc. 
+The form fields, B<Subject>, B<text_message_body> and B<html_message_body> are named the same as the form fields located on the, B<Send a Message> screen. Most every form field that's located in that form can be added to our example, including file attachments, partial sending options, archiving options, etc. 
 
 Our little example above only shows how to create a form that basically cicrumvents Dada Mail's own security. If you do use this form, make sure you some semblance of security is put B<back> into your script. 
 

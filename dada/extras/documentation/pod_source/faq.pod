@@ -374,9 +374,9 @@ There are many many MANY ways to send an HTML-formatted email using Dada Mail.
 
 =over
 
-=item * The, "Send a List Message" Basic/Advanced screen
+=item * The, "Send a Message" Basic/Advanced screen
 
-In the list control panel, go to, B<Send a List Message>. In the basic screen, there is a pulldown menu labeled, B<Format:> Select, B<HTML> and write your message in HTML.
+In the list control panel, go to, B<Send a Message>. In the basic screen, there is a pulldown menu labeled, B<Format:> Select, B<HTML> and write your message in HTML.
 
 In the same screen, click the, B<Advanced> Link. You will see an entire textarea labeled, B<HTML Version:> in which to write your HTML message. 
 
@@ -439,7 +439,7 @@ L<http://dadamailproject.com/support/documentation/Config.pm.html#fckeditor_inte
 
 In a nutshell, this means downloading FCKeditor, and putting the, B<fckeditor> directory onto your website. 
 
-Once that's accomplished, you'll want to set Dada Mail's Config.pm variable, C<$FCKEDITOR_URL> to point to the location of the fckeditor directory. Once that's set and you can see the FCKeditor in the, "Send a List Message" screen, when the, "HTML Version" textarea is, you're ready to move on. 
+Once that's accomplished, you'll want to set Dada Mail's Config.pm variable, C<$FCKEDITOR_URL> to point to the location of the fckeditor directory. Once that's set and you can see the FCKeditor in the, "Send a Message" screen, when the, "HTML Version" textarea is, you're ready to move on. 
 
 =head3 Step 2: Configure the FCKeditor Filemanager Connector
 
@@ -500,7 +500,7 @@ Once that's all set, uploading images using the FCKeditor should work like a cha
 
 =head3 Step 3: Using the FCKeditor Image Upload Capability
 
-Once FCKeditor is all up and running, you can navigate to "Send a List Message -> Advanced" (among other places) and get the WYSIWYG editor.
+Once FCKeditor is all up and running, you can navigate to "Send a Message -> Advanced" (among other places) and get the WYSIWYG editor.
 
 Here's how the "Insert/Edit Image" thingy works:
 
@@ -522,7 +522,7 @@ That image will now show up in the file browser! Click on it and the file browse
 
 =back
 
-Now, to have this image be embedded into your newsletter and sent within the image as an attachment, do all these steps, not in the, "Send a List Message -> Advanced" screen, but in the, "Send a Webpage" screen:
+Now, to have this image be embedded into your newsletter and sent within the image as an attachment, do all these steps, not in the, "Send a Message -> Advanced" screen, but in the, "Send a Webpage" screen:
 
 =over
 
@@ -632,7 +632,7 @@ Or if you prefer, just have a look at the screen's URL - usually, the template w
 responded to it (the "flavor" parameter, sometimes shortened to "f", will tell you the name of the function), and usually, the template 
 name matches that function name.
 
-For example, the, "Send a List Message" screen, has a flavor parameter query string of, I<send_email>. The template that creates this screen is called, I<send_email_screen.tmpl> Easy enough. 
+For example, the, "Send a Message" screen, has a flavor parameter query string of, I<send_email>. The template that creates this screen is called, I<send_email_screen.tmpl> Easy enough. 
 
 =item * Dada Mail Templating System
 
@@ -694,7 +694,7 @@ These are the list templates that correspond to each of your lists.
 
 =item * Change the default list template, using the techniques above. 
 
-Either, don't edit the individual copy of the list template in the admin control panel under, B<Manage Appearance - Edit Template>, check the option, " Use the default list template."  in that same screen, or, to be even more authorative, add this to your %LIST_SETUP_OVERRIDES Config.pm hash: 
+Either, don't edit the individual copy of the list template in the admin control panel under, B<Manage Appearance - Your Mailing List Template>, check the option, " Use the default list template."  in that same screen, or, to be even more authorative, add this to your %LIST_SETUP_OVERRIDES Config.pm hash: 
 
  get_template_data                => 'from_default_template',
 
@@ -1148,7 +1148,7 @@ Screens cached include:
 
 Of particular, archived messages take quite a bit of resources to parse, edit and display. 
 
-The cache is, B<flushed>, or deleted every time each list changes any list setting via the list control panel, add/edit/removes an archived message in any list and when any change is made in the, "Edit Template" list control panel screen.
+The cache is, B<flushed>, or deleted every time each list changes any list setting via the list control panel, add/edit/removes an archived message in any list and when any change is made in the, "Your Mailing List Template" list control panel screen.
 
 You can also administrate the cache by visiting: 
 
@@ -1239,7 +1239,7 @@ Or, How to add a new message to Dada Mail's archive, without sending an actual m
 
 If you're just adding a new message, skip this step.
 
-=item 2 Log into Dada Mail's List control panel and go to, "Send a List Message". (Re)write the message. 
+=item 2 Log into Dada Mail's List control panel and go to, "Send a Message". (Re)write the message. 
 
 =item 3 Find the link at the bottom of the page titled, B< Show/Hide Archive Options ->. Click it. 
 

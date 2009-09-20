@@ -5,7 +5,7 @@
 =head1 Introduction
 
 Multiple Mailing List Sending in Dada Mail allows you to create one message in 
-Dada Mail's, "Send a List Message", or "Send a Webpage" screens to more than one 
+Dada Mail's, "Send a Message", or "Send a Webpage" screens to more than one 
 mailing list at one time. 
 
 Multiple Mialing List Sending has the idea of a  host list, which is just 
@@ -15,7 +15,7 @@ Partial list sending, using Dada Mail's Subscriber Profile Fields is supported.
 
 =head1 Using Multiple Mailing List Sending
 
-Multiple Mailing List Sending is currently available in the, "Send a List Message" and "Send a Webpage" screens. 
+Multiple Mailing List Sending is currently available in the, "Send a Message" and "Send a Webpage" screens. 
 If it's enabled and supported, you'll see  a field set labled, "+/- Multiple Mailing List Sending". 
 
 Once revealed, you should be able to see a group of  checkboxes, that will allow you to select 

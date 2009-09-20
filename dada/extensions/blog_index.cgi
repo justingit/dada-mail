@@ -309,7 +309,7 @@ This small extension script prints out the last, B<x> archived messages, in a bl
 
 In a pinch, you can then use Dada Mail in a more blog-like manner, by creating new entries to your Dada Mail-powered blog by creating new archive messages: 
 
-In Dada Mail's, "Send a List Message" screen, there's a fieldset labeled, B<Archive Options>. Expanding this fieldset will reveal options to, B<Archive, but DO NOT Send> the message you're creating and also an option to B<Backdate> the entry. This will allow you to add new entries to your list's archives, without having to send the messages out to your subscribers. 
+In Dada Mail's, "Send a Message" screen, there's a fieldset labeled, B<Archive Options>. Expanding this fieldset will reveal options to, B<Archive, but DO NOT Send> the message you're creating and also an option to B<Backdate> the entry. This will allow you to add new entries to your list's archives, without having to send the messages out to your subscribers. 
 
 One thing I find useful is to have my blog powered by Dada Mail: I can make new entries more frequently, but just archive and not sending - much more frequently than I feel comfortable sending to my entire list, but have all the entries available on my blog. That way, my mailing list gets the more important messages sent and if I want to get a bit chatty, I can, without deluging my list with messages they may not want to have fill up their inbox. 
 

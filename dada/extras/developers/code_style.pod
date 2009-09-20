@@ -285,7 +285,7 @@ Used to provide a helping hand for folks getting their feet wet in
 customizing Dada Mail. For example (in mail.cgi):
 
  # HOWTO: 
- # To make the default message subject on the "Send a List Message" screen
+ # To make the default message subject on the "Send a Message" screen
  # read: "yourlistname" (without the quotes), change the above variable to:
  # 
  # my $message_subject = $li->{list_name};
