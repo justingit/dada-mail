@@ -313,6 +313,13 @@ sub get {
         last FETCH;
     }
 
+	# This would probably be the, "real" way to do it...
+	#my (
+	#	$profile_info->{email_name}, $profile_info->{email_domain}
+	#) = split(
+	#	'@', $profile_info->{email}
+	#); 
+	
     if ( $args->{ -dotted } == 1 ) {
         my $dotted = {};
         foreach ( keys %$profile_info ) {
@@ -859,6 +866,10 @@ sub send_profile_activation_email {
     my $self = shift;
     my ($args) = @_;
 
+	# We're currently faking this: 
+	my ($n, $d) = split('@', $self->{email}); 
+	
+
     my $auth_code = $self->set_auth_code($args);
     require DADA::App::Messages;
     DADA::App::Messages::send_generic_email(
@@ -872,9 +883,11 @@ sub send_profile_activation_email {
             -body        => $DADA::Config::PROFILE_ACTIVATION_MESSAGE,
             -tmpl_params => {
                 -vars => {
-                    authorization_code => $auth_code,
-                    email              => $self->{email},
-					'profile.email'    => $self->{email}, 
+                    auth_code              => $auth_code,
+                    email                  => $self->{email},
+					'profile.email'        => $self->{email}, 
+					'profile.email_name'   => $n, 
+					'profile.email_domain' => $d, 					
                 },
             },
         }
@@ -888,6 +901,9 @@ sub send_profile_reset_password_email {
     my $self = shift;
     my ($args) = @_;
 
+	# We're currently faking this: 
+	my ($n, $d) = split('@', $self->{email});
+	
     my $auth_code = $self->set_auth_code($args);
     require DADA::App::Messages;
     DADA::App::Messages::send_generic_email(
@@ -902,9 +918,11 @@ sub send_profile_reset_password_email {
             -body        => $DADA::Config::PROFILE_RESET_PASSWORD_MESSAGE,
             -tmpl_params => {
                 -vars => {
-                    authorization_code => $auth_code,
-                   	'profile.email'    => $self->{email},
-					email              => $self->{email},
+                    auth_code              => $auth_code,
+                   	'profile.email'        => $self->{email},
+					'profile.email_name'   => $n, 
+					'profile.email_domain' => $d,
+					email                  => $self->{email},
                 },
             },
         }
@@ -952,6 +970,9 @@ sub send_update_profile_email_email {
 		croak "You MUST pass the auth_code to update the profile in, '-update_email_auth_code' paramater!"; 
 	}
 	
+	# We're currently faking this: 
+	my ($n, $d) = split('@', $self->{email});
+	
 	my $info = $self->get({-dotted => 1}); 
 	
 	require DADA::App::Messages;
@@ -970,6 +991,9 @@ sub send_update_profile_email_email {
                     'profile.update_email_auth_code' => $args->{-update_email_auth_code},
 					'profile.updated_email'          => $args->{-updated_email}, 
                    	'profile.email'                  => $self->{email},
+					'profile.email_name'             => $n, 
+					'profile.email_domain'           => $d,
+					
                 },
             },
         }

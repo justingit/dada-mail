@@ -30,7 +30,7 @@ function confirm_profile_removal(form_name) {
 </script> 
 
 <p style="text-align:right"> 
-	[ <a href="<!-- tmpl_var PROGRAM_URL -->?f=profile_logout">Logout</a>]
+	[ <a href="<!-- tmpl_var PROGRAM_URL -->/profile_logout/">Logout</a>]
 </p>
 
 
@@ -175,7 +175,7 @@ Your Mailing List Subscriptions
 	<!-- tmpl_if has_subscriptions --> 
 
 	<!-- tmpl_else --> 
-		<p class="error">
+		<p class="alert">
 			You are not currently subscribed to any mailing list.
 		</p>
 	<!-- /tmpl_if --> 

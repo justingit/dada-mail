@@ -29,85 +29,94 @@
 	
 <p>Here's a summary of your mailing list subscription updates:</p> 
 
-<!-- tmpl_loop subscriptions --> 
+<!-- tmpl_if subscriptions --> 
 
-	<h3>List: <!-- tmpl_var list_settings.list_name --></h3> 
+	<!-- tmpl_loop subscriptions --> 
+
+		<h3>List: <!-- tmpl_var list_settings.list_name --></h3> 
 	
-	<!-- tmpl_if status --> 
-		<ul> 
-			<li>
-				<p class="positive">Subscription Email Update Should  Be Successful!</p> 
-			</li> 
-		</ul> 
+		<!-- tmpl_if status --> 
+			<ul> 
+				<li>
+					<p class="positive">Subscription Email Update Should  Be Successful!</p> 
+				</li> 
+			</ul> 
 		
-	<!-- tmpl_else --> 
-		<p class="error">
-			Looks like there's some problems:
-		</p> 
-		<ul> 
-			
-		<!-- tmpl_if invalid_email --> 
-			<li>
-				<p class="error">
-				The new email address is invalid.
-			</p>
-		</li> 
-		
-		<!-- /tmpl_if --> 
-		
-		<!-- tmpl_if subscribed --> 
-		
-			<li>	<p class="error">
-				The new email address is already subscribed.
-			</p>
-			</li>
-		<!-- /tmpl_if --> 
-		
-		
-	    <!-- tmpl_if closed_list --> 
-				<li><p class="error">
-				This list is closed and new subscribers can only be added by the list owner. 
-			</p>
-			</li>
-		<!-- /tmpl_if --> 
-	
-	    <!-- tmpl_if  mx_lookup_failed --> 
-				<li><p class="error">
-				MX lookup failed. 
-			</p>
-			</li>
-		<!-- /tmpl_if --> 
-		
-		<!-- tmpl_if black_listed --> 
-				<li><p>Your new address is black listed from subscribing to this list. </p> 
-				</li>
-		<!-- /tmpl_if --> 
-	
-	     <!-- tmpl_if not_white_listed -->
-		<li> 
+		<!-- tmpl_else --> 
 			<p class="error">
-				The new email address is not on the list's white list. .
-			</p>	
-		</li>
-		<!-- /tmpl_if --> 
+				Looks like there's some problems:
+			</p> 
+			<ul> 
 			
-	   <!-- tmpl_if comment --> 
-		These errors can also be passed, but probably wouldn't be. 
-	 	* over_subscription_quota
-	    * already_sent_sub_confirmation
-	    * settings_possibly_corrupted
-	    * no_list
-		<!-- /tmpl_if --> 
-	
-		<p>	
-			<a href="<!-- tmpl_var PROGRAM_URL -->?f=u&list=<!-- tmpl_var list_settings.list -->&email=<!-- tmpl_var profile.email -->" target="_blank">
-				Begin unsubscription process for <!-- tmpl_var profile.update_email --> from, <!-- tmpl_var list_settings.list_name -->
-			</a>.
-		</p>
+			<!-- tmpl_if invalid_email --> 
+				<li>
+					<p class="error">
+					The new email address is invalid.
+				</p>
+			</li> 
 		
-	<!-- /tmpl_if --> 
+			<!-- /tmpl_if --> 
+		
+			<!-- tmpl_if subscribed --> 
+		
+				<li>	<p class="error">
+					The new email address is already subscribed.
+				</p>
+				</li>
+			<!-- /tmpl_if --> 
+		
+		
+		    <!-- tmpl_if closed_list --> 
+					<li><p class="error">
+					This list is closed and new subscribers can only be added by the list owner. 
+				</p>
+				</li>
+			<!-- /tmpl_if --> 
+	
+		    <!-- tmpl_if  mx_lookup_failed --> 
+					<li><p class="error">
+					MX lookup failed. 
+				</p>
+				</li>
+			<!-- /tmpl_if --> 
+		
+			<!-- tmpl_if black_listed --> 
+					<li><p>Your new address is black listed from subscribing to this list. </p> 
+					</li>
+			<!-- /tmpl_if --> 
+	
+		     <!-- tmpl_if not_white_listed -->
+			<li> 
+				<p class="error">
+					The new email address is not on the list's white list. .
+				</p>	
+			</li>
+			<!-- /tmpl_if --> 
+			
+		   <!-- tmpl_if comment --> 
+			These errors can also be passed, but probably wouldn't be. 
+		 	* over_subscription_quota
+		    * already_sent_sub_confirmation
+		    * settings_possibly_corrupted
+		    * no_list
+			<!-- /tmpl_if --> 
+	
+			<p>	
+				<a href="<!-- tmpl_var PROGRAM_URL -->?f=u&list=<!-- tmpl_var list_settings.list -->&email=<!-- tmpl_var profile.email -->" target="_blank">
+					Begin unsubscription process for <!-- tmpl_var profile.update_email --> from, <!-- tmpl_var list_settings.list_name -->
+				</a>.
+			</p>
+		
+		<!-- /tmpl_if --> 
 
-<!-- /tmpl_loop --> 
+	<!-- /tmpl_loop --> 
+<!-- tmpl_else --> 
+
+	<p class="alert">
+		You are not currently subscribed to any mailing list.
+	</p> 
+	
+<!-- /tmpl_if --> 
 
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
 	<input type="hidden" name="confirmed" value="1" /> 

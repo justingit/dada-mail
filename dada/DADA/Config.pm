@@ -2805,8 +2805,7 @@ If you're still having trouble, please contact the list owner at:
 <!-- tmpl_if PROFILE_ENABLED --><!-- tmpl_if new_profile --> 
 You can also log into your profile and update your information: 
 
-	<!-- tmpl_var PROGRAM_URL -->?f=profile_login
-		
+	Profile Login: <!-- tmpl_var PROGRAM_URL -->/profile_login/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/
 	Username: <!-- tmpl_var profile.email --> 
 	Password: <!-- tmpl_var profile.password --> 
 <!-- /tmpl_if --><!-- /tmpl_if --> 
@@ -3336,9 +3335,9 @@ EOF
 $PROFILE_ACTIVATION_MESSAGE_SUBJECT ||= 'Profile Authorization Code for, <!-- tmpl_var profile.email -->'; 
 $PROFILE_ACTIVATION_MESSAGE ||= <<EOF
 
-Hello, here's the authorization link to reset your Profile Password: 
+Hello, here's the authorization link to activate your <!-- tmpl_var PROGRAM_NAME --> Profile: 
 
-<!-- tmpl_var PROGRAM_URL -->?f=profile_activate&email=<!-- tmpl_var profile.email -->&auth_code=<!-- tmpl_var authorization_code --> 
+<!-- tmpl_var PROGRAM_URL -->/profile_activate/<!-- tmpl_var profile.email_name -->/<!-- tmpl_var profile.email_domain -->/<!-- tmpl_var auth_code -->/ 
 
 -- <!-- tmpl_var PROGRAM_NAME --> 
 
@@ -3349,7 +3348,7 @@ $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT ||= 'Profile Authorization Code for, <!-
 $PROFILE_RESET_PASSWORD_MESSAGE ||= <<EOF
 Hello, here's the authorization link to reset your Profile Password:
 
-<!-- tmpl_var PROGRAM_URL -->?f=profile_reset_password&email=<!-- tmpl_var profile.email -->&auth_code=<!-- tmpl_var authorization_code --> 
+<!-- tmpl_var PROGRAM_URL -->/profile_reset_password/<!-- tmpl_var profile.email_name -->/<!-- tmpl_var profile.email_domain -->/<!-- tmpl_var auth_code -->/
 
 -- <!-- tmpl_var PROGRAM_NAME -->
 
@@ -3370,7 +3369,7 @@ to:
 	
 Please click the link below to make this update: 	
 
-<!-- tmpl_var PROGRAM_URL -->?f=profile_update_email&email=<!-- tmpl_var profile.email -->&auth_code=<!-- tmpl_var profile.update_email_auth_code --> 
+<!-- tmpl_var PROGRAM_URL -->/profile_update_email/<!-- tmpl_var profile.email_name -->/<!-- tmpl_var profile.email_domain -->/<!-- tmpl_var profile.update_email_auth_code -->/
 
 -- <!-- tmpl_var PROGRAM_NAME -->
 

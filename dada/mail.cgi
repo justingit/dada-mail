@@ -463,8 +463,22 @@ if($ENV{PATH_INFO}){
     }elsif($info =~ /^what_is_dada_mail$/){     
     
         $q->param('flavor', 'what_is_dada_mail');
-    
-    }else{    
+   }
+ 	elsif($info =~ m/^profile/) { 
+		# profile_login
+		# profile_help
+		
+		# email is used just to pre-fill in the login form. 
+		
+	    my ($pi_flavor, $pi_user, $pi_domain, $pi_auth_code) = split('/', $info, 4);
+	 	$q->param('flavor', $pi_flavor) 
+            if $pi_flavor;
+		$q->param('email', $pi_user . '@' . $pi_domain)
+            if $pi_user && $pi_domain;
+		$q->param('auth_code', $pi_auth_code) 
+            if $pi_auth_code;
+    }
+	else{    
         if($info){ 
             warn "Path Info present - but not valid? - '" . $ENV{PATH_INFO} . '" - filtered: "' . $info . '"'                    unless $info =~ m/^\x61\x72\x74/; 
         }
@@ -9538,7 +9552,7 @@ sub profile_login {
 	if($prof_sess->is_logged_in({-cgi_obj => $q})){ 
 		print $q->redirect(
 			{
-				-uri => $DADA::Config::PROGRAM_URL . '?f=profile', 
+				-uri => $DADA::Config::PROGRAM_URL . '/profile/', 
 			}
 			);
 		return;
@@ -9554,14 +9568,17 @@ sub profile_login {
 			my $CAPTCHA_string  = ''; 
 			my $cap             = undef; 
 			if($DADA::Config::PROFILE_ENABLE_CAPTCHA == 1){ 
-				eval { require DADA::Security::AuthenCAPTCHA; };
+				eval { 
+					require DADA::Security::AuthenCAPTCHA; 
+					$cap = DADA::Security::AuthenCAPTCHA->new;
+				};
 				if(!$@){ 
 					$can_use_captcha = 1;        
 				}
 			}
 
 		   if($can_use_captcha == 1){
-				$cap = DADA::Security::AuthenCAPTCHA->new; 
+				 
             	$CAPTCHA_string = $cap->get_html($DADA::Config::RECAPTCHA_PARAMS->{public_key});
 			}
 			         
@@ -9613,14 +9630,14 @@ sub profile_login {
 			print $q->header(
 				-cookie  => [$cookie], 
                 -nph     => $DADA::Config::NPH,
-                -Refresh =>'0; URL=' . $DADA::Config::PROGRAM_URL . '?f=profile'
+                -Refresh =>'0; URL=' . $DADA::Config::PROGRAM_URL . '/profile/'
 			); 
                     
             print $q->start_html(
 				-title=>'Logging On...',
                 -BGCOLOR=>'#FFFFFF'
             ); 
-            print $q->p($q->a({-href => $DADA::Config::PROGRAM_URL . '?f=profile'}, 'Logging On...')); 
+            print $q->p($q->a({-href => $DADA::Config::PROGRAM_URL . '/profile/'}, 'Logging On...')); 
             print $q->end_html();
 			return;
 		}
@@ -10097,7 +10114,7 @@ sub profile_reset_password {
 			if($status == 1){ 
 				if(!$password){ 
 					print list_template(-Part => "header",
-				                   -Title => "Profile Control Home!", 
+				                   -Title => "Reset Your Profile Password", 
 				    );
 
 				    require DADA::Template::Widgets; 
@@ -10185,7 +10202,7 @@ sub profile_reset_password {
     }
 	else {                      
 		print $q->redirect({
-			-uri => $DADA::Config::PROGRAM_URL . '?f=profile_login', 
+			-uri => $DADA::Config::PROGRAM_URL . '/profile_login/', 
 		}); 
 	}
 }
@@ -10247,13 +10264,13 @@ sub profile_update_email {
 			print $q->header(
 				-cookie  => [$cookie], 
                 -nph     => $DADA::Config::NPH,
-                -Refresh =>'0; URL=' . $DADA::Config::PROGRAM_URL . '?f=profile'
+                -Refresh =>'0; URL=' . $DADA::Config::PROGRAM_URL . '/profile/'
 			); 
             print $q->start_html(
 				-title=>'Logging On...',
                 -BGCOLOR=>'#FFFFFF'
             ); 
-            print $q->p($q->a({-href => $DADA::Config::PROGRAM_URL . '?f=profile'}, 'Logging On...')); 
+            print $q->p($q->a({-href => $DADA::Config::PROGRAM_URL . '/profile/'}, 'Logging On...')); 
             print $q->end_html();
 			return;
 			
