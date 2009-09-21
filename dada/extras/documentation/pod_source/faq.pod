@@ -538,6 +538,12 @@ B<( Images in this Webpage Should:) "be embedded in the message itself. ">
 
 L<http://docs.fckeditor.net/FCKeditor_2.x/Developers_Guide/Configuration/Built_in_File_Browser>
 
+=head2 Does Dada Mail Support CKeditor 3.0? 
+
+No, at the moment, there is no built-in support for CKeditor (although feel free to hack in support, yourself!) 
+
+The reason is that there is no free file-upload utility for CKeditor. When one becomes 
+available, we will add support for CKeditor. 
 
 =head1 The List Confirmation Process
 
