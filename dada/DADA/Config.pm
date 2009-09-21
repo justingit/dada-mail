@@ -3346,7 +3346,7 @@ EOF
 
 $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT ||= 'Profile Authorization Code for, <!-- tmpl_var profile.email -->'; 
 $PROFILE_RESET_PASSWORD_MESSAGE ||= <<EOF
-Hello, here's the authorization link to reset your Profile Password:
+Hello, here's the authorization link to reset your <!-- tmpl_var PROGRAM_NAME --> Profile Password:
 
 <!-- tmpl_var PROGRAM_URL -->/profile_reset_password/<!-- tmpl_var profile.email_name -->/<!-- tmpl_var profile.email_domain -->/<!-- tmpl_var auth_code -->/
 
@@ -3359,7 +3359,7 @@ EOF
 $PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT ||= 'Profile Update Email Authorization Code for, <!-- tmpl_var profile.email -->'; 
 $PROFILE_UPDATE_EMAIL_MESSAGE ||= <<EOF
 
-Hello, here's the authorization link to update your Profile email address from: 
+Hello, here's the authorization link to update your <!-- tmpl_var PROGRAM_NAME --> Profile email address from: 
 
 	<!-- tmpl_var profile.email --> 
 	
@@ -3764,7 +3764,7 @@ $HTML_UNSUBSCRIBED_MESSAGE ||= <<EOF
 
 <ul>
  <li>
-  [subscriber.email]
+  <!-- tmpl_var subscriber.email -->
  </li>
 </ul> 
 
@@ -3774,7 +3774,9 @@ $HTML_UNSUBSCRIBED_MESSAGE ||= <<EOF
 
 <ul>
  <li>
-  [list_settings.list_name] 
+  <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var tmpl_var list_settings.list -->/">
+	<!-- tmpl_var list_settings.list_name -->
+ </a>
  </li>
 </ul> 
 
