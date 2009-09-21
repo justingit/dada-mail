@@ -26,13 +26,13 @@ There's also the code for editing an archived message. That'll also have to be t
 Other than that, it may behoove us to be able to run both FCKeditor and CKeditor at the same time, if needed...? 
 
 
-[ ] Fancification w/Scriptalicious
+[x] Fancification w/Scriptalicious
 	I'm less interested in fancy-ness, but more into all the fanciness being the same, for everything
 	There's not much I want to do, except the, "partial sending" stuff and the, "SMPT test" stuff
 	[x] Maybe do all the +/- boxes, but that could be a lot of recoding, if not done right! :) 
 		It's been done, but I haven't tested it with anything except my own stuff... 
 
-[ ] Admin menu. rearrange stuff. 
+[-] Admin menu. rearrange stuff. 
 	[ ] Make sure to double-check these changes with everyone. 
 
 
