@@ -32,7 +32,7 @@ $TEST_SQL_PARAMS = {
 	}, 
 
 	PostgreSQL => { 
-		test_enabled     => 1, 
+		test_enabled     => 0, 
 		database         => 'test',
 	    dbserver         => 'localhost', # may just be, "localhost"   	   
 	    port             => '5432',      # mysql: 3306, Postgres: 5432   	   
