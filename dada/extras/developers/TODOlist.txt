@@ -63,7 +63,6 @@ Other than that, it may behoove us to be able to run both FCKeditor and CKeditor
 		DELETE COLUMN from that_first_table
 	}
 	
-yooop. 
 
 [x] I need to write up all these changes
 	[x] Sigh. 
@@ -106,6 +105,11 @@ yooop.
 	
 	[ ] It looks like the CPAN module is installable via the, "Perl Modules" feature in cPanel. That's good... 
 	http://dadamailproject.com/support/boards/viewtopic.php?f=14&t=1491&p=5401#p5401
+
+	What about plaintext ver? Do we than just look for things that look like URLs and auto-redirect-ify them? 
+	
+	What about URLS in HTML messages, that are actually to be viewed? Do I care? Or, is there a way to *just* replace URL's in 
+	<a> tags> 
 		
 	
 [x] I need to merge all of the code that creates the query for the Subscriber Profile Fields into ONE method, because it's getting 
@@ -116,6 +120,7 @@ yooop.
 	
 
 [x] Need a way to update an email address from the profile, and perhaps auto-merge, if the email address is already subscribed to an address. (it should probably be warned if this happens...) 
+
 
 [x] Once the above are done, I need some major testing stuff to be made and then, we gotta wrap this up - probably make the 3.0.x to 3.1 script and call it a beta! 
 	[x] Some things to remember - the SQL needs new tables AND info has to be moved from one table to another.... sigh. 

@@ -284,16 +284,18 @@
  
 </table>
 
+
+
 </fieldset> 
 
 <fieldset> 
  <legend> 
-  Misc. Options
+   <a href="#" id="misc_options_label" onclick="toggleDisplay('misc_options', 'misc_options_label');return false;">+/-</a> Misc. Options
  </legend> 
  
+ <div id="misc_options" style="display:none;width:90%">
  
- 
- 
+
 
 <table cellpadding="5">
 
@@ -364,8 +366,78 @@
  </tr>
  </table>
 
- 
+ </div> 
+
  </fieldset> 
+
+
+
+<fieldset> 
+ <legend> 
+ 	Twitter
+</legend> 
+
+
+
+	<!-- tmpl_if can_use_twitter --> 
+		<p class="positive"> 
+			Twitter support is enabled. 
+		</p>
+	<!-- tmpl_else -->
+		<p class="error"> 
+			Twitter support requires the Perl CPAN modules: Net::Twitter::Lite and WWW::Shorten to be installed.
+		</p> 
+	<!-- /tmpl_if -->
+
+<table cellpadding="5">
+
+
+	<tr>
+	  <td>
+	   <p>
+	    <input type="checkbox" name="twitter_mass_mailings" id="twitter_mass_mailings" value="1" <!-- tmpl_if twitter_mass_mailings -->checked="checked"<!--/tmpl_if--> />
+	   </p>
+	  </td>
+	  <td>
+	   <p>
+	    <label for="twitter_mass_mailings">
+	     Tweet About Mass Mailings
+	    </label>
+	
+	
+	<table> 
+		<tr> 
+		<td>
+			<label for="twitter_username">Twitter Username</label> 
+		</td> 
+		<td>
+	        <input type="text" name="twitter_username" id="twitter_username"  value="<!-- tmpl_var name="twitter_username" escape="HTML" -->" class="full" />
+	       </td>
+	      </tr>
+		<tr> 
+		<td>
+			<label for="twitter_password">Twitter Password</label>
+		</td> 
+		<td>
+	        <input type="password" name="twitter_password" id="twitter_password" value="<!-- tmpl_var name="twitter_password" escape="HTML" -->" class="full" />
+	       </td>
+	      </tr>
+	
+		</table> 
+		
+	   </p>
+	  </td>
+	 </tr>
+
+	
+
+
+ </table>
+
+ 
+
+ </fieldset>
+
  
 <input type="hidden" name="process" value="1" />
 <input type="hidden" name="f"       value="adv_sending_options" />

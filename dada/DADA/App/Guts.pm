@@ -95,6 +95,7 @@ require Exporter;
   mailhide_encode
   gravatar_img_url
   csv_parse
+  can_use_twitter
 );
 
 
@@ -2376,6 +2377,70 @@ sub csv_subscriber_parse {
 
     return ($addresses, $address_fields); 
 
+}
+
+sub can_use_twitter { 
+	
+	eval {require Net::Twitter::Lite;};
+	if($@){ 
+		return 0; 
+	}
+	eval {require WWW::Shorten;};
+	if($@){ 
+		return 0; 
+	}	
+	eval {require WWW::Shorten::TinyURL;};
+	if($@){ 
+		return 0; 
+	}
+	return 1; 
+}
+
+sub tweet_about_mass_mailing { 
+
+	warn 'tweet tweet'; 
+	
+	my ($list, $subject, $url) = @_; 
+	
+	require DADA::MailingList::Settings; 
+	my $ls = DADA::MailingList::Settings->new({-list => $list});
+	if($ls->param('twitter_mass_mailings') == 1){ 
+		
+		if(can_use_twitter()){ 
+			eval { 
+				require Net::Twitter::Lite; 
+				require WWW::Shorten::TinyURL;
+				require DADA::Security::Password; 
+				
+				my $short_url = WWW::Shorten::TinyURL::makeashorterlink($url);
+		
+				my $nt = Net::Twitter::Lite->new(
+				     username => $ls->param('twitter_username'),
+				     password => DADA::Security::Password::cipher_decrypt(
+						$ls->param('cipher_key'), 
+						$ls->param('twitter_password')
+					),
+				 );
+				 $nt->update($short_url . ' ' . $subject); 		
+				
+			};
+			if($@){ 
+				warn 'it didnt work.'; 
+				warn $@; 
+				return 0; 
+			}
+			else { 
+				warn 'it seems to have worked.'; 
+				return 1; 
+			}	
+		}
+		else { 
+			return 0; 
+		}
+	}
+	else { 
+		return 0; 
+	}	
 }
 
 

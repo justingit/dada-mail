@@ -2284,6 +2284,16 @@ sub process {
             }
         );
 
+		tweet(
+            {
+                -list      => $list,
+                -ls        => $ls,
+                -msg       => $n_msg,
+                -msg_id    => $msg_id,
+                -saved_msg => $saved_message
+            }
+		);
+
     }
 
     if (   $ls->param('send_msg_copy_to')
@@ -2604,10 +2614,8 @@ sub deliver {
 
         my $msg_id = $mh->mass_send(
             %headers,
-
             # Trust me on these :)
             Body => $entity->stringify_body,
-
         );
 
         return ( $msg_id, $mh->saved_message );
@@ -2681,6 +2689,58 @@ sub archive {
         }
 
     }
+}
+
+sub tweet { 
+	
+	my ($args) = @_;
+
+    if ( !exists( $args->{ -list } ) ) {
+        croak "You must pass a -list paramater!";
+    }
+    if ( !exists( $args->{ -ls } ) ) {
+        croak "You must pass a -ls paramater!";
+    }
+    if ( !exists( $args->{ -msg } ) ) {
+        croak "You must pass a -msg paramater!";
+    }
+    if ( !exists( $args->{ -msg_id } ) ) {
+        croak "You must pass a -msg_id paramater!";
+    }
+    if ( !exists( $args->{ -saved_msg } ) ) {
+        croak "You must pass a -saved_msg paramater!";
+    }
+
+    my $list      = $args->{ -list };
+    my $ls        = $args->{ -ls };
+    my $msg       = $args->{ -msg };
+    my $msg_id    = $args->{ -msg_id };
+    my $saved_msg = $args->{ -saved_msg };
+
+	require DADA::MailingList::Archives;
+	if($ls->param('twitter_mass_mailings') == 1){ 
+		
+		my $la = DADA::MailingList::Archives->new( { -list => $list } );
+
+        my $entity;
+		my $Subject; 
+		
+        eval { $entity = $parser->parse_data($msg) };
+        if ($entity) {
+
+           $Subject = $entity->head->get( 'Subject', 0 );
+            if ( $ls->param('no_append_list_name_to_subject_in_archives') == 1 )
+            {
+                $Subject = $la->strip_subjects_appended_list_name($Subject);
+            }
+		}
+			
+		DADA::App::Guts::tweet_about_mass_mailing(
+			$list, 
+			$la->_parse_in_list_info(-data => $Subject), 
+			$DADA::Config::PROGRAM_URL . '/archive/' . $list . '/' . $la->newest_entry.'/'
+		) 
+	}
 }
 
 sub send_msg_not_from_subscriber {

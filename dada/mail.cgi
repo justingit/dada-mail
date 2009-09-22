@@ -2340,6 +2340,7 @@ sub adv_sending_options {
                                                          -Function   => 'sending_options');
     $list = $admin_list;
   
+    require DADA::Security::Password; 
     require DADA::MailingList::Settings;
            $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
 
@@ -2380,6 +2381,7 @@ sub adv_sending_options {
            $wrong_uid = 1 
             if $< != $>;
 
+	
     my $can_mime_encode = 1; 
     eval {require MIME::EncWords;};
     if($@){ 
@@ -2418,7 +2420,11 @@ sub adv_sending_options {
                                                             
 															mime_encode_words_in_headers  => $li->{mime_encode_words_in_headers}, 
 															can_mime_encode               => $can_mime_encode, 
-                                            }
+															can_use_twitter               => DADA::App::Guts::can_use_twitter(), 
+															twitter_mass_mailings         => $li->{twitter_mass_mailings}, 
+															twitter_username              => $li->{twitter_username}, 
+															twitter_password              => DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $li->{twitter_password}),       
+                                            		}
                                             
                                             });
                                            
@@ -2444,6 +2450,14 @@ sub adv_sending_options {
         my $use_domain_sending_tunings = $q->param('use_domain_sending_tunings') || 0; 
 		
 		my $mime_encode_words_in_headers = $q->param('mime_encode_words_in_headers') || 0; 
+		
+		my $twitter_mass_mailings = $q->param('twitter_mass_mailings') || 0; 
+		my $twitter_username      = $q->param('twitter_username') || ''; 
+		my $twitter_password      = $q->param('twitter_password') || ''; 
+		
+		
+		
+		
         $ls->save({
                    precedence               => $precedence,
                    priority                 => $priority,
@@ -2461,6 +2475,11 @@ sub adv_sending_options {
                    
                    use_domain_sending_tunings    => $use_domain_sending_tunings, 
 				   mime_encode_words_in_headers  => $mime_encode_words_in_headers, 
+				
+					twitter_mass_mailings  => $twitter_mass_mailings,
+					twitter_username       => $twitter_username, 
+					twitter_password       => DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $twitter_password),      
+		
                    });
 
         print $q->redirect(-uri=>$DADA::Config::S_PROGRAM_URL . '?flavor=adv_sending_options&done=1'); 

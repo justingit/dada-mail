@@ -1398,7 +1398,7 @@ BEGIN {
 # You CANNOT have this variable in an outside config file - 
 # it MUST be set here. 
 
-$PROGRAM_ERROR_LOG = undef;
+$PROGRAM_ERROR_LOG = '/Library/WebServer/Documents/.dada_files/.logs/errors.txt';
 
 # Keep this next bit as-is; it's just opening the error file for writing. 
 if($PROGRAM_ERROR_LOG){open (STDERR, ">>$PROGRAM_ERROR_LOG") 
@@ -3999,6 +3999,10 @@ encrypted.
     use_domain_sending_tunings   => 0, 
     domain_sending_tunings       => undef, 
 	mime_encode_words_in_headers => 1, 
+	
+	twitter_mass_mailings        => 0, 
+	twitter_username             => undef, 
+	twitter_password             => undef,
 	
 # view list prefs
 
