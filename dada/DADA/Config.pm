@@ -3774,7 +3774,7 @@ $HTML_UNSUBSCRIBED_MESSAGE ||= <<EOF
 
 <ul>
  <li>
-  <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var tmpl_var list_settings.list -->/">
+  <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/">
 	<!-- tmpl_var list_settings.list_name -->
  </a>
  </li>
