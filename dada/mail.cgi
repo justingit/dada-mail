@@ -1339,13 +1339,7 @@ sub sending_monitor {
 		
 		
  
-         print(admin_template_header(      
-                  -Title      => "Monitor Your Mailing", 
-                  -List       => $list, 
-                  -Root_Login => $root_login,
-                  -Form       => 0, 
-                  
-              ));
+
                   
             
             my (
@@ -1363,7 +1357,7 @@ sub sending_monitor {
 					); 
 
             require DADA::Template::Widgets;  
-            print DADA::Template::Widgets::screen(
+            my $scrn = DADA::Template::Widgets::screen(
 					{
 						-screen => 'sending_monitor_index_screen.tmpl', 
                          -vars   => { 
@@ -1376,8 +1370,18 @@ sub sending_monitor {
 						},
 					}
 				);
-    
-        print admin_template_footer(-List => $list, -Form => 0,);
+    	
+	   print(admin_template_header(      
+	                  -Title      => "Monitor Your Mailing", 
+	                  -List       => $list, 
+	                  -Root_Login => $root_login,
+	                  -Form       => 0, 
+
+	              ));
+		print $scrn; 
+        print admin_template_footer(
+			-List => $list,
+		);
  
     }else{ 
      
@@ -1495,16 +1499,10 @@ sub sending_monitor {
       	  }
 
 
-          print admin_template_header(      
-                  -Title      => "Monitor Your Mailing", 
-                  -List       => $list, 
-                  -Root_Login => $root_login,
-                  -Form       => 0, 
-                 );
-                  
+       
                   
            require DADA::Template::Widgets;  
-           print   DADA::Template::Widgets::screen(
+           my $scrn =  DADA::Template::Widgets::screen(
 						{
 							-screen => 'sending_monitor_screen.tmpl', 
                             -vars   => { 
@@ -1533,30 +1531,28 @@ sub sending_monitor {
 								refresh_after                => $refresh_after, 
 								killed_it                    => $q->param('killed_it') ? 1 : 0, 
 								sending_status               => $sending_status, 
-
 								is_paused                    => $status->{paused} > 0 ? 1 : 0,  
 								paused                       => $status->{paused}, 
-
 								queue                        => $status->{queue},
 								queued_mailout               => $status->{queued_mailout}, 
 								queue_place                  => ($status->{queue_place} + 1), # adding one since humans like counting from, "1" 
 								queue_total                  => ($status->{queue_total} + 1), # adding one since humans like counting from, "1"
-
 								status_mailout_stale         => $status->{mailout_stale},
-
 								MAILOUT_AT_ONCE_LIMIT        => $DADA::Config::MAILOUT_AT_ONCE_LIMIT, 
-
 								will_restart_in              => $will_restart_in, 
-
 								integrity_check              => $status->{integrity_check},
 
 							},
 						}
 					);
-
+			print admin_template_header(      
+				                  -Title      => "Monitor Your Mailing", 
+				                  -List       => $list, 
+				                  -Root_Login => $root_login,
+				                 );
+			print $scrn; 
             print admin_template_footer(
 					-List => $list, 
-					-Form => 0, 
 				);
     }
 }

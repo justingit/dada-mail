@@ -174,6 +174,7 @@ eval {
 				{
 					-verbose => 0, 
 					-list    => $li->{list},
+					-action  => 0, 
 				}
 			);
 	$nav_total_mailouts = $total_mailouts; 

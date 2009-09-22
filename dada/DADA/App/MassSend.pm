@@ -1354,6 +1354,7 @@ sub mass_mailout_info {
 					{
 						-verbose => 0, 
 						-list    => $list,
+						-action  => 0, 
 					}
 				);
 		$num_total_mailouts = $total_mailouts; 

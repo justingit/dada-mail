@@ -1786,7 +1786,7 @@ else {
    	if($args->{-screen}){ 
 
    		require HTML::Template;
-		$template = HTML::Template->new(%Global_Template_Options, 
+	 $template = HTML::Template->new(%Global_Template_Options, 
 										filename => $args->{-screen},
                                                          
                                                          ($args->{-dada_pseudo_tag_filter} == 1) ?
@@ -1807,7 +1807,8 @@ else {
 	}elsif($args->{-data}){ 
 
    		require HTML::Template;
-		$template = HTML::Template->new(%Global_Template_Options, 
+	#	eval { 
+			$template = HTML::Template->new(%Global_Template_Options, 
 										scalarref => $args->{-data},
 
                                                                      
@@ -1824,7 +1825,14 @@ else {
 
 
 							   );
-							   					   
+					#	};
+		#
+	#if($@){ 
+	#	print "This template didn't work:" . ${$args->{-data}};
+	#	die $@; 
+	#}
+		
+						   					   
    		}else{ 
 			carp "what are you trying to do?!"; 
 		}

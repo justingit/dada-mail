@@ -2255,6 +2255,11 @@ sub monitor_mailout {
 		$d_list = $args->{-list}; 
 	}
 
+	if(! exists($args->{-action})){ 
+		$args->{-action} = 1; 
+	}
+
+
     my $r = ''; 
 
     my @available_lists = DADA::App::Guts::available_lists(); 
@@ -2347,7 +2352,10 @@ sub monitor_mailout {
    
 	my $active_mailouts_num = $active_mailouts; 
 
-
+	if($args->{-action} == 0){ 
+		return ($r, $total_mailouts, $active_mailouts, $paused_mailouts, $queued_mailouts, $inactive_mailouts); 
+	}
+	
 	# DEV: This subroutine needs to be split. RIGHT HERE
     foreach my $list(@available_lists) { 
     
