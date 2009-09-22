@@ -34,7 +34,7 @@ Other than that, it may behoove us to be able to run both FCKeditor and CKeditor
 
 [-] Admin menu. rearrange stuff. 
 	[ ] Make sure to double-check these changes with everyone. 
-
+	[ ] my changes are in the .dada_config file. Move over to Config.pm and example .dada_config's
 
 
 [x] I think I gave the mailing monitor the ability to see multiple mailing lists' status, but the links don't all work, and that gets confusing... 
