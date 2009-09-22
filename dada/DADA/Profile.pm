@@ -213,13 +213,23 @@ sub insert {
         $args->{ -activated } = 0;
     }
 
+	# What? 
     if ( !exists $args->{ -update_email_auth_code } ) {
-        $args->{ -activated } = 0;
+        # What? 
+		# $args->{ -activated } = 0;
+		
+		# Maybe I meant, this? 
+		$args->{ -update_email_auth_code } = undef; 
     }
 
 
     if ( !exists $args->{ -update_email } ) {
-        $args->{ -activated } = 0;
+        # What? 
+		# $args->{ -activated } = 0;
+		
+		# Maybe I meant, this? 
+		$args->{ -update_email } = undef; 
+		
     }
 
 	my $email; 
@@ -838,9 +848,8 @@ sub update {
     $self->remove();
 
 
-	require Data::Dumper; 
-	
-	carp Data::Dumper::Dumper($new); 
+	#require Data::Dumper; 
+	#carp Data::Dumper::Dumper($new); 
 	
     $self->insert($new);
 

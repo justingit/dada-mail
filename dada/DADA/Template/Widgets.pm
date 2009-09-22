@@ -143,7 +143,7 @@ MAILPROG               => $DADA::Config::MAILPROG,
 FILES                  => $DADA::Config::FILES, 
 VER                    => $DADA::Config::VER, 
 FCKEDITOR_URL          => $DADA::Config::FCKEDITOR_URL, 
-
+CKEDITOR_URL           => $DADA::Config::CKEDITOR_URL, 
 GIVE_PROPS_IN_HTML            => $DADA::Config::GIVE_PROPS_IN_HTML, 
 GIVE_PROPS_IN_SUBSCRIBE_FORM  => $DADA::Config::GIVE_PROPS_IN_SUBSCRIBE_FORM, 
 GIVE_PROPS_IN_ADMIN           => $DADA::Config::GIVE_PROPS_IN_ADMIN, 

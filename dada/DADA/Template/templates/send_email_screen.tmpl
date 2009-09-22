@@ -38,32 +38,8 @@
      </legend>
       
 		
- <div id="html_message" style="display:none"> 
- 
-    <!-- tmpl_if FCKEDITOR_URL -->
-
-		<!-- tmpl_if list_settings.enable_fckeditor --> 
-    
-		    <script type="text/javascript">   
-		    <!--
-
-		        var oFCKeditor = new FCKeditor('html_message_body') ;
-        
-		        <!-- tmpl_include FCKeditor_default_js_options.tmpl --> 
-		        oFCKeditor.Create() ;
-		        //-->
-		        </script> 
-
-		<!-- tmpl_else --> 
-		
-		      <textarea name="html_message_body" cols="80" rows="30" id="html_message_body"></textarea>
-	
-		<!-- /tmpl_if --> 
-	
-    <!-- tmpl_else--> 
-      <textarea name="html_message_body" cols="80" rows="30" id="html_message_body"></textarea>
-    <!--/tmpl_if--> 
-
+<div id="html_message" style="display:none"> 
+ <!-- tmpl_include html_message_form_field_widget.tmpl --> 
 </div>
 
 </fieldset> 

@@ -121,25 +121,7 @@
 	 </label>
     </p>
     
-    <!-- tmpl_if FCKEDITOR_URL --> 
-    
-    <script type="text/javascript">   
-    <!--
-
-        var oFCKeditor = new FCKeditor('html_message_body') ;
-        
-        <!-- tmpl_include FCKeditor_default_js_options.tmpl --> 
-        
-		oFCKeditor.Value = "<!-- tmpl_var invite_message_html_js_escaped -->";
-
-		oFCKeditor.Create() ;
-        //-->
-        </script> 
-
-
-    <!-- tmpl_else--> 
-      <textarea name="html_message_body" cols="80" rows="30" id="html_message_body"><!-- tmpl_var list_settings.invite_message_html escape="HTML" --></textarea>
-    <!--/tmpl_if--> 
+	<!-- tmpl_include html_message_form_field_widget.tmpl --> 
 
 </div>
 

@@ -886,8 +886,10 @@ sub list_invite {
 							Subject                        => $ls->param('invite_message_subject'), 
 							field_names                    => $field_names, 
 							verified_addresses             => $verified_addresses, 
-							invite_message_html_js_escaped => js_enc($li->{invite_message_html}),
+							#invite_message_html_js_escaped => js_enc($li->{invite_message_html}),
 							
+							html_message_body_content            => $li->{invite_message_html}, 
+							html_message_body_content_js_escaped => js_enc($li->{invite_message_html}),
 							MAILOUT_AT_ONCE_LIMIT      => $DADA::Config::MAILOUT_AT_ONCE_LIMIT, 
 							mailout_will_be_queued     => $mailout_will_be_queued, 
 							num_list_mailouts          => $num_list_mailouts, 

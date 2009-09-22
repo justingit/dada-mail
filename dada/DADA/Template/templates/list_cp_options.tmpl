@@ -9,23 +9,32 @@
 
 <fieldset> 
 
-<legend>FCKeditor Options</legend> 
+<legend>FCKeditor/CKeditor Options</legend> 
 
 <!-- tmpl_if FCKEDITOR_URL --> 
-
  <p class="alert">FCKeditor is currently configured in <!-- tmpl_var PROGRAM_NAME --> at: 
 	<a href="<!-- tmpl_var FCKEDITOR_URL ESCAPE="HTML" -->" target="_blank">
 		<!-- tmpl_var FCKEDITOR_URL ESCAPE="HTML" -->
 	</a>
 </p>
-
 <!-- tmpl_else --> 
-
 	<p class="alert">
 		FCKeditor does not currently seem to be configured in <!-- tmpl_var PROGRAM_NAME -->
 	</p>
-
 <!-- /tmpl_if -->
+
+<!-- tmpl_if CKEDITOR_URL --> 
+ <p class="alert">CKeditor is currently configured in <!-- tmpl_var PROGRAM_NAME --> at: 
+	<a href="<!-- tmpl_var CKEDITOR_URL ESCAPE="HTML" -->" target="_blank">
+		<!-- tmpl_var CKEDITOR_URL ESCAPE="HTML" -->
+	</a>
+</p>
+<!-- tmpl_else --> 
+	<p class="alert">
+		CKeditor does not currently seem to be configured in <!-- tmpl_var PROGRAM_NAME -->
+	</p>
+<!-- /tmpl_if -->
+
 
 <table cellpadding="5" border="0"> 
 	<tr> 
@@ -37,7 +46,7 @@
 		<td>
 			<p>
 				<label for="enable_fckeditor">
-					Enable FCKeditor
+					Enable FCKeditor/CKeditor
 				</label>
 			</p>
 		</td>
