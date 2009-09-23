@@ -43,7 +43,9 @@ chmod(0777, $DADA::Config::TMP . '/mail.txt');
 my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
 
 
+
 ok($lh->{ls}->isa('DADA::MailingList::Settings'), "looks like there's a Settings obj in ->{ls}, good!"); 
+
 
 my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid) 
     = $lh->filter_subscribers(
@@ -1343,6 +1345,59 @@ SKIP: {
 								}
 							);
 	ok($status == 0, "Status is 0 ($status)"); 
+	
+
+
+
+##############################################################################
+# subscription_list
+my $sub_list = []; 
+my @num = (1 ... 1000);
+foreach(@num) { 
+      $lh->add_subscriber({
+           -email => 'mytest' . $_ . '@example.com',
+           -type  => 'list', 
+       });
+}
+
+ok($lh->num_subscribers == 1000, "subscribed 1000 addresses.");
+$sub_list = $lh->subscription_list(
+	{
+		-start    => 0, 
+		'-length' => 100, 
+		-type     => 'list',	
+	}
+); 
+ok(($#$sub_list + 1) == 100, "100 subscribers were returned! (" . ($#$sub_list + 1) .")"); 
+$sub_list = $lh->subscription_list(
+	{
+		-start    => 100, 
+		'-length' => 100, 
+		-type     => 'list',	
+	}
+);
+ok(($#$sub_list + 1) == 100, "100 subscribers were returned! (" . ($#$sub_list + 1) .")"); 
+
+# Just to be weird: 
+$sub_list = $lh->subscription_list(
+	{
+		-start    => 99, 
+		'-length' => 55, 
+		-type     => 'list',	
+	}
+);
+ok(($#$sub_list + 1) == 55, "55 subscribers were returned! (" . ($#$sub_list + 1) .")");
+
+
+$sub_list = $lh->subscription_list(
+	{
+		#-start    => 0, 
+		#'-length' => 1000, 
+		-type     => 'list',	
+	}
+);
+ok(($#$sub_list + 1) == 1000, "1000 subscribers were returned! (" . ($#$sub_list + 1) .")"); 
+
 
 
 dada_test_config::remove_test_list;

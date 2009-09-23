@@ -3005,6 +3005,7 @@ sub view_list {
        $screen_start          = 1 if (($start == 0) && ($num_subscribers != 0)); 
     my $previous_screen       = $start-$length; 
     my $next_screen           = $start+$length; 
+
     my $subscribers           = $lh->subscription_list(
 									{ 
 										-start    => $start, 
@@ -6550,7 +6551,6 @@ sub search_list {
        $screen_start          = 1 if (($start == 0) && ($num_subscribers != 0)); 
     my $previous_screen       = $start-$length; 
     my $next_screen           = $start+$length; 
-    #my $subscribers          = $lh->subscription_list( { -start => $start, '-length' => $length, -type => $type }); 
     my $subscribers           =  $lh->search_list(
                                                   {
                                                       -query   => $keyword,
@@ -6559,8 +6559,6 @@ sub search_list {
                                                      '-length' => $length,
                                                   }
                                               ); 
-###/
-
             
     if(defined($keyword)){ 
 

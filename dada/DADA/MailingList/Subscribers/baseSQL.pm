@@ -559,12 +559,13 @@ sub subscription_list {
 
     my ($args) = @_;
     if ( !exists( $args->{ -start } ) ) {
-        $args->{ -start } = 1;
+        $args->{ -start } = 0;
     }
-
     if ( !exists( $args->{ -type } ) ) {
         $args->{ -type } = 'list';
     }
+
+	
 
     my $email;
     my $count  = 0;
@@ -589,15 +590,16 @@ sub subscription_list {
 
     while ( $hashref = $sth->fetchrow_hashref ) {
 
-        $count++;
-
-        next if $count < $args->{ -start };
-
-        if ( exists( $args->{'-length}'} ) ) {
-
-            last if $count > ( $args->{ -start } + $args->{'-length'} );
-
+		if($count < $args->{ -start }) { 
+			$count++;
+			next; 
+		}
+        if ( exists( $args->{'-length'} ) ) {
+			$count++;
+            last if $count > ( $args->{ -start } + ($args->{'-length'}) );
         }
+		else { 
+		}
 
 		# Probably, just add it here? 
 		$hashref->{type} = $args->{-type}; 
