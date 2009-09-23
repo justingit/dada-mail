@@ -11,11 +11,12 @@ Key:
 [?] Someday
 
 
-[ ] List Invite not working? 
+[x] List Invite not working? 
 	If I try to do a list invite (and follow the confirmation link), it tells me that the pin is valid, but I didn't first ask for a confirmation. Weird! 
 	And then, when I go through the confirmation process, the password sent to the address doesn't work. 
 	When I look and see what's up in the DB all the fields are NULL except, "email". Strange?!
-
+	[x] I was using the wrong API in the code - this effects the master branch as well. Hopefully, when we merge, 
+	 the problem will magically, "go away" (fix in this branch) 
 
 [-] CKeditor
 To replace, FCKeditor" 
