@@ -563,7 +563,8 @@ sub run {
 	'delete_list'             =>    \&delete_list,        
 	'view_list'               =>    \&view_list,  
 	'remove_all_subscribers'  =>    \&remove_all_subscribers,          
-	'view_list_options'       =>    \&view_list_options,
+	#'view_list_options'       =>    \&view_list_options, # Gone. 
+	'view_list_options'       =>    \&list_cp_options, 
 	'edit_subscriber'         =>    \&edit_subscriber,
 	'add'                     =>    \&add,      
 	'check_status'            =>    \&check_status, 
@@ -3208,59 +3209,6 @@ sub filter_using_black_list {
 
     }
 }
-
-
-
-
-sub view_list_options { 
-
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
-                                                        -Function => 'view_list_options');
-    $list = $admin_list;
-
-    my @list_amount = (10,25,50,100,150,200,
-                       250,300,350, 400,450,
-                       500,550,600,650,700,
-                       750,800,850,900,950,1000
-                      );
-    
-    require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
-
-    
-    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-    my $li = $ls->get;
-    
-    if(!$process){ 
-    
-        
-        my $vlsn_menu = $q->popup_menu(-name     => 'view_list_subscriber_number',
-                                       -values   => [ @list_amount],
-                                       -default  => $li->{view_list_subscriber_number});
-                                                                               
-        print(admin_template_header(-Title      => "View List Options", 
-                                -List       => $list,
-                                -Root_Login => $root_login,
-                               ));
-        
-        require DADA::Template::Widgets;
-        print   DADA::Template::Widgets::screen({-screen => 'view_list_options_screen.tmpl', 
-                                                -vars  => { 
-                                                            done      => $done, 
-                                                            vlsn_menu => $vlsn_menu 
-                                                          },
-                                               }); 
-                                               
-        print(admin_template_footer(-List => $list)); 
-    
-    }else{ 
-    
-        $ls->save({view_list_subscriber_number => $q->param('view_list_subscriber_number')});
-        print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=view_list_options&done=1'); 
-        return;
-    }
-
-} 
 
 
 
@@ -5987,8 +5935,16 @@ sub list_cp_options {
 
    if(!$process){ 
 
-
-       
+    my @list_amount = (10,25,50,100,150,200,
+                       250,300,350, 400,450,
+                       500,550,600,650,700,
+                       750,800,850,900,950,1000, 2000, 3000, 4000, 5000, 10000, 15000, 20000, 25000, 50000, 100000
+                      );
+	my $vlsn_menu = $q->popup_menu(
+		-name     => 'view_list_subscriber_number',
+		-values   => [ @list_amount],
+		-default  => $li->{view_list_subscriber_number}
+	);     
 
    print admin_template_header(
 			-Title      => "Options", 
@@ -6000,9 +5956,10 @@ sub list_cp_options {
    print   DADA::Template::Widgets::screen({-screen => 'list_cp_options.tmpl', 
                                                -list   => $list,
                                                -vars   => {
-													screen => 'list_cp_options', 
-													title => 'Options',
-													done => xss_filter($q->param('done')), 
+													screen    => 'list_cp_options', 
+													title     => 'Options',
+													vlsn_menu => $vlsn_menu, 
+													done      => xss_filter($q->param('done')), 
 												},
 											-list_settings_vars       => $li, 
                                             -list_settings_vars_param => {-dot_it => 1},
@@ -6015,13 +5972,15 @@ sub list_cp_options {
    }else{ 
 
 
-       my $enable_fckeditor 	 = xss_filter($q->param('enable_fckeditor'))      || 0;
-       my $enable_mass_subscribe = xss_filter($q->param('enable_mass_subscribe')) || 0; 
+       my $enable_fckeditor 	       = xss_filter($q->param('enable_fckeditor'))      || 0;
+       my $enable_mass_subscribe       = xss_filter($q->param('enable_mass_subscribe')) || 0; 
+	   my $view_list_subscriber_number = xss_filter($q->param('view_list_subscriber_number')) || 0; 
 
        $ls->save(
 			{
-				enable_fckeditor	  => $enable_fckeditor, 
-				enable_mass_subscribe => $enable_mass_subscribe, 
+				enable_fckeditor	        => $enable_fckeditor, 
+				enable_mass_subscribe       => $enable_mass_subscribe, 
+				view_list_subscriber_number => $view_list_subscriber_number, 
  			}
 		);
 
