@@ -1158,7 +1158,7 @@ http://search.cpan.org/author/JHI/perl-5.8.0/lib/CGI.pm#HTTP_COOKIES
 
 %COOKIE_PARAMS = (
                   -path    => '/',
-                  -expires => '+1d', 
+                  -expires => '+7d', 
                  
                  ) unless keys %COOKIE_PARAMS; 
 
