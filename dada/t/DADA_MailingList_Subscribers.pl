@@ -1399,6 +1399,11 @@ $sub_list = $lh->subscription_list(
 ok(($#$sub_list + 1) == 1000, "1000 subscribers were returned! (" . ($#$sub_list + 1) .")"); 
 
 
+##############################################################################
+# remove_all_subscribers
+ok($lh->remove_all_subscribers == 1000, "Removed all the subscribers!"); 
+
+
 
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
