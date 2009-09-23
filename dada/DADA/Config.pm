@@ -1933,11 +1933,17 @@ my $EXT_URL = $PLUGIN_URL;
 
 $ADMIN_MENU ||= [
 
-	{-Title      => 'Send a Message',
-	 -Title_URL  => "$S_PROGRAM_URL?f=send_email",
-	 -Function   => 'send_email',
+	{-Title      => 'Mass Mailing',
 	 -Activated  => 1,
 	 -Submenu    => [
+
+					{ 
+					-Title      => 'Send a Message',
+					 -Title_URL  => "$S_PROGRAM_URL?f=send_email",
+					 -Function   => 'send_email',
+					 -Activated  => 1,
+					},
+
 					{-Title      => 'Send a Webpage',
 					 -Title_URL  => "$S_PROGRAM_URL?f=send_url_email",
 					 -Function   => 'send_url_email',
@@ -1953,7 +1959,7 @@ $ADMIN_MENU ||= [
 			]
 	},
 
-	{-Title      => 'Manage List',
+	{-Title      => 'Your Mailing List',
 	 -Activated  => 1,
 	 -Submenu    => [
 					{-Title      => 'Change List Information',
@@ -1980,7 +1986,7 @@ $ADMIN_MENU ||= [
 					 -Activated  => 1,
 					},
 
-					{-Title      => 'Delete This List',
+					{-Title      => 'Delete This Mailing List',
 					 -Title_URL  => "$S_PROGRAM_URL?f=delete_list",
 					 -Function   => 'delete_list',
 					 -Activated  => 0,
@@ -1988,7 +1994,7 @@ $ADMIN_MENU ||= [
 			]
 	},
 
-	{-Title      => 'Manage Subscribers',
+	{-Title      => 'Your Subscribers',
 	 -Activated  => 1,
 	 -Submenu    => [
 					{-Title      => 'View',
@@ -2015,18 +2021,12 @@ $ADMIN_MENU ||= [
 					 -Activated  => 0,
 					},
 
-                    {
-                    -Title      => 'Subscriber Profile Fields',
-                    -Title_URL  => "$S_PROGRAM_URL?f=subscriber_fields",
-                    -Function   => 'subscriber_fields',
-                    -Activated  => 1,
-                    },
 
 
 			]
 	},
 
-	{-Title     => 'Manage List Archive',
+	{-Title     => 'Message Archives',
 	 -Activated => 1,
 	 -Submenu   => [
 					{-Title      => 'View Archive',
@@ -2043,10 +2043,18 @@ $ADMIN_MENU ||= [
 			]
 	},
 
-	{-Title      => 'Manage Copy',
+
+	{-Title      => 'Appearance and Templates',
 	 -Activated  => 1,
 	 -Submenu    => [
-					{-Title      => 'Email Templates',
+					{-Title      => 'Your Mailing List Template',
+					 -Title_URL  => "$S_PROGRAM_URL?f=edit_template",
+					 -Function   => 'edit_template',
+					 -Activated  => 1,
+					},
+
+
+					{-Title      => 'Email Message Templates',
 					 -Title_URL  => "$S_PROGRAM_URL?f=edit_type",
 					 -Function   => 'edit_type',
 					 -Activated  => 1,
@@ -2058,32 +2066,41 @@ $ADMIN_MENU ||= [
 					 -Activated  => 1,
 					},
 
-					{-Title      => 'Create a Back Link',
-					 -Title_URL  => "$S_PROGRAM_URL?f=back_link",
-					 -Function   => 'back_link',
-					 -Activated  => 1,
-					},
-			]
-	},
-
-	{-Title      => 'Manage Appearance',
-	 -Activated  => 1,
-	 -Submenu    => [
-					{-Title      => 'Your Mailing List Template',
-					 -Title_URL  => "$S_PROGRAM_URL?f=edit_template",
-					 -Function   => 'edit_template',
-					 -Activated  => 1,
-					},
 
 					{-Title      => 'Subscription Form HTML',
 					 -Title_URL  => "$S_PROGRAM_URL?f=html_code",
 					 -Function   => 'html_code',
 					 -Activated  => 1,
 					},
+
+					{-Title      => 'Create a Back Link',
+					 -Title_URL  => "$S_PROGRAM_URL?f=back_link",
+					 -Function   => 'back_link',
+					 -Activated  => 1,
+					},
+
+
+
 			]
 	},
 
-	{-Title      => 'Manage List Control Panel',
+
+	{-Title     => 'Profiles',
+	 -Activated => 1,
+	 -Submenu   => [
+				     {
+				     -Title      => 'Profile Fields',
+				     -Title_URL  => "$S_PROGRAM_URL?f=subscriber_fields",
+				     -Function   => 'subscriber_fields',
+				     -Activated  => 1,
+				     },
+			]
+	},
+
+
+
+
+	{-Title      => 'Your List Control Panel',
 	 -Activated  => 0,
 	 -Submenu    => [
 				{-Title      => 'Customize Feature Set',
@@ -2205,13 +2222,6 @@ $ADMIN_MENU ||= [
 #					 -Activated  => 1,
 #					},
 
-#					{-Title      => 'Update Subscriptions',
-#					 -Title_URL  => $EXT_URL."/update_subscription.cgi",
-#					 -Function   => 'update_subscription',
-#					 -Activated  => 1,
-#					},
-
-
 #					{-Title      => 'Ajax\'d Subscription Form',
 #					 -Title_URL  => $EXT_URL."/ajax_include_subscribe.cgi?mode=html",
 #					 -Function   => 'ajax_include_subscribe',
@@ -2255,8 +2265,9 @@ $ADMIN_MENU ||= [
 	-Function   => 'log_into_another_list',
 	-Activated  => 1,
 	},
-	
+
 ];
+
 
 
 =pod
