@@ -2159,11 +2159,10 @@ sub subscription_form {
         $flavor_is_unsubscribe = 1;  
     }
     
-	
-	
-    
-    if($list){ 
-     
+    if(
+		$list && 
+		check_if_list_exists( -List=> $list, -Dont_Die  => 1) > 0
+	){ 
         my $ls = DADA::MailingList::Settings->new({-list => $list}); 
            $li = $ls->get(); 
            

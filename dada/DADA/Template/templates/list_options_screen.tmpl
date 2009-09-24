@@ -241,6 +241,39 @@
  </table>
 </fieldset>
 
+<fieldset>
+
+<legend>
+  Subscription Requests Approving/Denying (Experimental)
+</legend>
+<table cellspacing="5">
+
+  <tr>
+   <td>
+    <input type="checkbox" name="enable_subscription_approval_step" id="enable_subscription_approval_step" value="1" <!-- tmpl_if enable_subscription_approval_step -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="enable_subscription_approval_step">
+      Enable Subscription Requests Approving/Denying
+     </label>
+     <br />
+     If a subscription confirmation is successful, instead of automatically subscribing an email address, 
+	 hold the address to be approved or denied for subscription by the list owner. 
+    </p>
+
+	<p>
+		The list owner will then be able to finish the subscription process, depending on if they 
+		want the address to be subscribed to the mailing list.
+	</p>
+   </td>
+  </tr>
+</table> 
+
+</fieldset> 
+
+
+
 
 
 <fieldset>

@@ -1,0 +1,72 @@
+=pod
+
+=head1 Subscription Approval System for Dada Mail!
+
+=head1 Introduction
+
+Subscription Approval allows the list owner of a mailing list to make the final 
+decision of if a would-be subscriber is allowed to join a mailing list. 
+
+What's neat is that the entire rest of the subscription process, including the
+closed-loop opt-in can still be enabled and used - this just tacks on (yet) another step. 
+
+The other neat thing is, if you find some of those other steps uneeded and redundant, 
+this allows you to have another, alternative and direct confirmation process, without
+giving up too much security. 
+
+=head1 Status - Experimental! 
+
+This feature is quite new in Dada Mail and experimental. Have fun with it! 
+
+=head1 Enabling
+
+This feature can be enabled per list, in the list control panel under, 
+
+I<Your Mailing list - Mailing List Options>
+
+Looking for the fieldset labeled, 
+
+I<Subscription Requests Approving/Denying (Experimental)> 
+
+Check the option labeled, 
+
+I<Enable Subscription Requests Approving/Denying  >
+
+All set! 
+
+=head1 Using 
+
+When a would-be subscriber completes the subscription confirmation process, they'll be 
+told that their subscription is being held until the list owner approves it. 
+
+At the same time, an email message will be sent to the list owner, with instructions
+on how to approve, or deny a subscription. 
+
+The list owner may also log into their mailing list control panel and view 
+all the awaiting addresses to be approved by visiting: 
+
+I<Your Subscribers - View>
+
+Click the button on the top labeled, 
+
+I<Subscription Requests>
+
+This should present the list owner with the entire list of addresses that are awaiting approval. 
+
+There are two buttons to act upon this list of address. 
+
+Check the addresses you'd like to work with and either press the button labeled, 
+
+I<Approved Checked Subscription Requests>  
+
+to approve requests, or press the button labeled, 
+
+I<Deny Checked Subscription Requests>  
+
+to deny requests. 
+
+=head1 Feedback
+
+This is a new, experimental feature and we'd like feedback on how it's working for everyone. Let us know!
+
+=cut

@@ -698,8 +698,7 @@ sub confirm {
         $status = 0; 
         $errors->{not_on_sub_confirm_list} = 1; 
     }
-    
-    
+
     if($status == 0){ 
         warn '>>>> status is 0'
             if $t; 
@@ -767,169 +766,226 @@ sub confirm {
     
     
     else{ 
-    
-        if($mail_your_subscribed_msg == 0){ 
-            
-            warn '>>>> >>>> $mail_your_subscribed_msg is set to: ' . $mail_your_subscribed_msg
-                if $t; 
-
-            # We can do an remove from confirm list, and a add to the subscribe 
-			# list, but why don't we just *move* the darn subscriber? 
-            # (Basically by updating the table and changing the, "list_type" column. 
-			# Easy enough for me.             
-            
-            warn '>>>> >>>> Moving subscriber from "sub_confirm_list" to "list" '
-                if $t; 
-                
-            $lh->move_subscriber(
+    	if($li->{enable_subscription_approval_step} == 1){ 
+ 			# we go HERE, if subscriptions need to be approved. Got that?S
+			$lh->move_subscriber(
                 {
                     -email            => $email,
                     -from             => 'sub_confirm_list',
-                    -to               => 'list', 
-					-mode             => 'writeover', 
-					-confirmed        => 1, 
+                    -to               => 'sub_request_list', 
+	        		-mode             => 'writeover', 
+	        		-confirmed        => 1, 
                 }
-            );
-			
-			my $new_pass    = ''; 
-			my $new_profile = 0; 
-			if(
-			   $DADA::Config::PROFILE_ENABLED == 1 && 
-			   $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/
-			){ 
-				# Make a profile, if needed, 
-				require DADA::Profile; 
-				my $prof = DADA::Profile->new({-email => $email}); 
-				if(!$prof->exists){ 
-					$new_profile = 1; 
-					$new_pass    = $prof->_rand_str(8);
-					$prof->insert(
-						{
-							-password  => $new_pass,
-							-activated => 1, 
-						}
-					); 
-				}
-				# / Make a profile, if needed, 
-			}
-            warn '>>>> >>>> $li->{send_sub_success_email} is set to: ' . $li->{send_sub_success_email}
-                if $t; 
-                
-            if($li->{send_sub_success_email} == 1){                                             
-    
-                warn '>>>> >>>> >>>> sending subscribed message'
-                    if $t; 
-                require DADA::App::Messages; 
-                DADA::App::Messages::send_subscribed_message(
-					{
-						-list         => $list, 
-                        -email        => $email, 
-                        -ls_obj       => $ls,
-						-test         => $self->test, 
-						-vars         => {
-											new_profile        => $new_profile, 
-											'profile.email'    =>  $email, 
-											'profile.password' =>  $new_pass,
-											
-									 	 }
-					}
-            	); 
-            
-            }
-            
-            require DADA::App::Messages; 
-            DADA::App::Messages::send_owner_happenings(
-				{
-					-list  => $list, 
-					-email => $email, 
-					-role  => "subscribed",
-					-test  => $self->test,
-				}
-			); 
-    
-            warn '$li->{send_newest_archive} set to: ' . $li->{send_newest_archive}
-                if $t; 
-                
-            if($li->{send_newest_archive} == 1){ 
-                
-                warn 'Sending newest archive.'
-                    if $t; 
-                require DADA::App::Messages;
-                DADA::App::Messages::send_newest_archive(
-					{
-					-list         => $list, 
-                    -email        => $email, 
-                    -ls_obj       => $ls, 
-                    -test         => $self->test,
-                	}
-				);                                   
-            }
-        }else{ 
-        
-            warn '>>>> >>> >>> Sending: "Mailing List Confirmation - Already Subscribed" message' 
-                if $t; 
-            
-            require DADA::App::Messages;
-            DADA::App::Messages::send_you_are_already_subscribed_message(		
-          		{
-                	-list         => $list, 
-	                -email        => $email, 
-	      			-test         => $self->test, 
-        		}
 			);
-        }
+	        	my $r = ''; 
+	        	$r .=  DADA::Template::HTML::list_template(
+                            -Part  => "header",
+                            -Title => "Subscription Request Successful",
+                            -List  => $li->{list},
+                   );
+            my $s = $li->{html_subscription_request_message};
+            require DADA::Template::Widgets; 
+            $r .= DADA::Template::Widgets::screen(
+                         { 
+                            -data                     => \$s,
+                            -list_settings_vars_param => {-list => $li->{list},},
+                            -subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'sub_request_list'},
+                            -dada_pseudo_tag_filter   => 1, 
+                            -vars                     => { email => $email, subscriber_email => $email}, 
+                         } 
+            ); 
+            $r .= DADA::Template::HTML::list_template(
+                            -Part      => "footer", 
+                            -List      => $li->{list},
+                  );
+			
+			require DADA::App::Messages; 
+			DADA::App::Messages::send_generic_email(
+				{
+					-list    => $li->{list}, 
+					-headers => { 
+						To      => '"'. escape_for_sending($li->{list_name}) .'" <'. $li->{list_owner_email} .'>',
+					    Subject         => $li->{subscription_approval_request_message_subject}, 
+					}, 
+					-body => $li->{subscription_approval_request_message},
+					-tmpl_params => {
+						-list_settings_vars_param => {-list => $li->{list}},
+			            -subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'sub_request_list'},
+			            -vars                     => {},
+					},
+					-test => $self->test,
+				}
+			);
+			
+			print $r;
+			return;  
+		}
+		else { 
+		
+        	if($mail_your_subscribed_msg == 0){ 
+                           warn '>>>> >>>> $mail_your_subscribed_msg is set to: ' . $mail_your_subscribed_msg
+                    if $t; 
         
-        if($args->{-html_output} != 0){    
+                # We can do an remove from confirm list, and a add to the subscribe 
+		        # list, but why don't we just *move* the darn subscriber? 
+                # (Basically by updating the table and changing the, "list_type" column. 
+		        # Easy enough for me.             
+                
+                warn '>>>> >>>> Moving subscriber from "sub_confirm_list" to "list" '
+                    if $t; 
+                    
+                $lh->move_subscriber(
+                    {
+                        -email            => $email,
+                        -from             => 'sub_confirm_list',
+                        -to               => 'list', 
+		        		-mode             => 'writeover', 
+		        		-confirmed        => 1, 
+                    }
+                );
+		        
+		        my $new_pass    = ''; 
+		        my $new_profile = 0; 
+		        if(
+		           $DADA::Config::PROFILE_ENABLED == 1 && 
+		           $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/
+		        ){ 
+		        	# Make a profile, if needed, 
+		        	require DADA::Profile; 
+		        	my $prof = DADA::Profile->new({-email => $email}); 
+		        	if(!$prof->exists){ 
+		        		$new_profile = 1; 
+		        		$new_pass    = $prof->_rand_str(8);
+		        		$prof->insert(
+		        			{
+		        				-password  => $new_pass,
+		        				-activated => 1, 
+		        			}
+		        		); 
+		        	}
+		        	# / Make a profile, if needed, 
+		        }
+                warn '>>>> >>>> $li->{send_sub_success_email} is set to: ' . $li->{send_sub_success_email}
+                    if $t; 
+                    
+                if($li->{send_sub_success_email} == 1){                                             
         
-            if(
-				$li->{use_alt_url_sub_success} == 1 &&
-				isa_url($li->{alt_url_sub_success})
-			){
-
-                my $qs = ''; 
-                if($li->{alt_url_sub_success_w_qs} == 1){ 
-                    $qs = '?list=' . $list . '&rm=sub&status=1&email=' . DADA::App::Guts::uriescape($email); 
+                    warn '>>>> >>>> >>>> sending subscribed message'
+                        if $t; 
+                    require DADA::App::Messages; 
+                    DADA::App::Messages::send_subscribed_message(
+		        		{
+		        			-list         => $list, 
+                            -email        => $email, 
+                            -ls_obj       => $ls,
+		        			-test         => $self->test, 
+		        			-vars         => {
+		        								new_profile        => $new_profile, 
+		        								'profile.email'    =>  $email, 
+		        								'profile.password' =>  $new_pass,
+		        								
+		        						 	 }
+		        		}
+                	); 
+                
                 }
-                warn 'redirecting to: ' . $li->{alt_url_sub_success} . $qs
+                
+                require DADA::App::Messages; 
+                DADA::App::Messages::send_owner_happenings(
+		        	{
+		        		-list  => $list, 
+		        		-email => $email, 
+		        		-role  => "subscribed",
+		        		-test  => $self->test,
+		        	}
+		        ); 
+        
+                warn '$li->{send_newest_archive} set to: ' . $li->{send_newest_archive}
                     if $t; 
-                	
-					my $r = $q->redirect(-uri => $li->{alt_url_sub_success} . $qs); 
-                	$self->test ? return $r : print $fh $r and return;
-                
-            }else{        
-                
-                warn 'Printing out, Subscription Successful screen' 
+                    
+                if($li->{send_newest_archive} == 1){ 
+                    
+                    warn 'Sending newest archive.'
+                        if $t; 
+                    require DADA::App::Messages;
+                    DADA::App::Messages::send_newest_archive(
+		        		{
+		        		-list         => $list, 
+                        -email        => $email, 
+                        -ls_obj       => $ls, 
+                        -test         => $self->test,
+                    	}
+		        	);                                   
+                }
+        
+        
+        	}else{ 
+        
+                warn '>>>> >>> >>> Sending: "Mailing List Confirmation - Already Subscribed" message' 
                     if $t; 
                 
-				my $r = ''; 
-				$r .=  DADA::Template::HTML::list_template(
-                               -Part  => "header",
-                               -Title => "Subscription Successful",
-                               -List  => $li->{list},
-                      );
-                
-                
-               my $s = $li->{html_subscribed_message};
-               require DADA::Template::Widgets; 
-               $r .= DADA::Template::Widgets::screen(
-                            { 
-                               -data                     => \$s,
-                               -list_settings_vars_param => {-list => $li->{list},},
-                               -subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'list'},
-                               -dada_pseudo_tag_filter   => 1, 
-                               -vars                     => { email => $email, subscriber_email => $email}, 
-                            } 
-               ); 
-                
-               $r .= DADA::Template::HTML::list_template(
-                               -Part      => "footer", 
-                               -List      => $li->{list},
-                     );
-
-                $self->test ? return $r : print $fh $r and return; 
-
-            }
-        }            
+                require DADA::App::Messages;
+                DADA::App::Messages::send_you_are_already_subscribed_message(		
+                	{
+                    	-list         => $list, 
+	                    -email        => $email, 
+	            		-test         => $self->test, 
+                	}
+		        );
+        	}
+        
+        	if($args->{-html_output} != 0){    
+        
+                if(
+		        	$li->{use_alt_url_sub_success} == 1 &&
+		        	isa_url($li->{alt_url_sub_success})
+		        ){
+        
+                    my $qs = ''; 
+                    if($li->{alt_url_sub_success_w_qs} == 1){ 
+                        $qs = '?list=' . $list . '&rm=sub&status=1&email=' . DADA::App::Guts::uriescape($email); 
+                    }
+                    warn 'redirecting to: ' . $li->{alt_url_sub_success} . $qs
+                        if $t; 
+                    	
+		        		my $r = $q->redirect(-uri => $li->{alt_url_sub_success} . $qs); 
+                    	$self->test ? return $r : print $fh $r and return;
+                    
+                }else{        
+                    
+                    warn 'Printing out, Subscription Successful screen' 
+                        if $t; 
+                    
+		        	my $r = ''; 
+		        	$r .=  DADA::Template::HTML::list_template(
+                                   -Part  => "header",
+                                   -Title => "Subscription Successful",
+                                   -List  => $li->{list},
+                          );
+                    
+                    
+                   my $s = $li->{html_subscribed_message};
+                   require DADA::Template::Widgets; 
+                   $r .= DADA::Template::Widgets::screen(
+                                { 
+                                   -data                     => \$s,
+                                   -list_settings_vars_param => {-list => $li->{list},},
+                                   -subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'list'},
+                                   -dada_pseudo_tag_filter   => 1, 
+                                   -vars                     => { email => $email, subscriber_email => $email}, 
+                                } 
+                   ); 
+                    
+                   $r .= DADA::Template::HTML::list_template(
+                                   -Part      => "footer", 
+                                   -List      => $li->{list},
+                         );
+        
+                    $self->test ? return $r : print $fh $r and return; 
+        
+                }
+        	} 
+        }
     }
 }
 

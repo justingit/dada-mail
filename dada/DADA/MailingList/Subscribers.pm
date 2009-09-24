@@ -232,7 +232,7 @@ sub allowed_list_types {
         sub_confirm_list    => 1, 
         unsub_confirm_list  => 1, 
         invitelist          => 1, 
-        
+		sub_request_list    => 1,   
     } 
        
 }

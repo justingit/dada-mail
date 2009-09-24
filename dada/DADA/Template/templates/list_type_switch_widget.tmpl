@@ -5,7 +5,6 @@
 
 <div id="list_type_switcher">     
 
-
 <div>
   
 <!-- tmpl_if list_type_isa_list -->
@@ -19,6 +18,23 @@
 <!-- /tmpl_if -->
   
 </div>
+
+<div>
+  
+<!-- tmpl_if list_type_isa_sub_request_list -->
+	  <span>
+	   Subscription Requests (<!-- tmpl_var sub_request_list_subscribers_num -->)
+	  </span>
+<!-- tmpl_else -->
+	  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=sub_request_list&keyword=<!-- tmpl_var keyword escape="HTML" -->">
+	   Subscription Requests  (<!-- tmpl_var sub_request_list_subscribers_num -->)
+	  </a>
+<!-- /tmpl_if -->
+  
+</div>
+
+
+
   
  <div> 
  
