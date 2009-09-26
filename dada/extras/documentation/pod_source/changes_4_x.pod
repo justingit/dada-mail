@@ -1,0 +1,51 @@
+=pod
+
+
+=head1 Dada Mail Changelog for version 4.x.x
+
+=head1 4.0.0
+
+=head2 Download 4.0.0 
+
+... Forthcoming...
+
+=head2 Changes 4.0.0
+
+
+=head2 4.0.0 Features
+
+=over
+
+=item * Beatitude - Fetch message from URL has same options as, "Send a Webpage" 
+
+Mostly meaning, you can embed images within the email message itself. 
+
+=item * Mystery Girl
+
+You can now specify the Port Number of the POP3 mail server
+
+=item * Mass Mailings keep their own log
+
+This means, that anything about the mass mailing is logged for that specific mass mailing - 
+this should hopefully make debugging a little bit easier. 
+
+=item * View the Mass Mailing Log from the Mailing Monitor
+
+There's a new link entitled, "Open Mass Mailing Log in a New Window -> "
+
+This functionality is currently extremely rough, but is a pretty easy way to see what, in fact, is going on. 
+
+=item * Slightly Smarter Error Handling for failing sendmail mailings
+
+We've started catching sendmail errors and, if we find an error, we'll exit out of the 
+sending process, for the message to be automatically picked up and the last email 
+that had a problem, to be tried again. It's currently not perfect, but it's a very small 
+step forward.
+
+=item * Slightly better UTF-8 support. 
+
+This version of Dada Mail is currently shipped with all charsets and encodings to, "UTF-8", but Dada Mail itself is far from support this character set completely. 
+
+This is because it is hard. 
+
+=cut

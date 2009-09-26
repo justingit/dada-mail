@@ -108,7 +108,7 @@ Subscriber Profile Fields can now also be easily re-ordered:
 
 =end html
 
-=head1 Installing Dada Mail 3.1 with Subscriber Profile Fields
+=head1 Installing Dada Mail 4.0 with Subscriber Profile Fields
 
 B<Note! This release is currently an alpha-quality release and is not recommended for production servers!> 
 

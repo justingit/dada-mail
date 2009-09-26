@@ -314,7 +314,7 @@ The SQL password.
 	pass             => '',
 
 	subscriber_table                => 'dada_subscribers',
-	profile_table                   => 'dada_profile', 
+	profile_table                   => 'dada_profiles', 
 	profile_fields_table 	        => 'dada_profile_fields', 
 	profile_fields_attributes_table => 'dada_profile_fields_attributes',
 	archives_table                  => 'dada_archives', 
@@ -4668,8 +4668,8 @@ and to say that you've got the freshest tools on the Web.
 
 
 
-$VERSION = 3.1.0; 
-$VER     = '3.1.0 - alpha3  09/22/09';
+$VERSION = 4.0.0; 
+$VER     = '4.0.0 beta 1';
 
 #
 #
@@ -4952,7 +4952,7 @@ sub _config_import {
 	
 	my %default_table_names = (
 		subscriber_table                => 'dada_subscribers',
-		profile_table                   => 'dada_profile', 
+		profile_table                   => 'dada_profiles', 
 		profile_fields_table 	        => 'dada_profile_fields', 
 		profile_fields_attributes_table => 'dada_profile_fields_attributes',
 		archives_table                  => 'dada_archives', 

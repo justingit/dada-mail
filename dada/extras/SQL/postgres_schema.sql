@@ -13,7 +13,7 @@ list_status                      char(1)
 );
 
 
-CREATE TABLE dada_profile (
+CREATE TABLE dada_profiles (
 	profile_id			         serial,
 	email                        varchar(320) not null UNIQUE,
 	password                     text,

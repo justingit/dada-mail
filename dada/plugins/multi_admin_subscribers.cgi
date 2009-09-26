@@ -8,7 +8,7 @@ use lib qw(
 	../../../../perl 
 	../../../../perllib
 ); 
-use DADA::Config 3.0.0;
+use DADA::Config 4.0.0;
 
 use CGI::Carp qw(fatalsToBrowser); 
 use CGI; my $q = new CGI; $q->charset($DADA::Config::HTML_CHARSET);

@@ -162,7 +162,7 @@ use CGI::Carp qw(fatalsToBrowser set_message);
 $|++; 
 
 
-use DADA::Config 3.0.0; 
+use DADA::Config 4.0.0; 
 
 $ENV{PATH} = "/bin:/usr/bin"; 
 delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};

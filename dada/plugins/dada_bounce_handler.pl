@@ -38,7 +38,7 @@ use lib qw(
 ); 
 
 use CGI::Carp qw(fatalsToBrowser); 
-use DADA::Config 3.0.0;
+use DADA::Config 4.0.0;
 
 my $Plugin_Config = {}; 
 # Also see the Config.pm variable, "$PLUGIN_CONFIGS" to set these plugin variables 
@@ -4241,7 +4241,7 @@ going's on of the script:
          Subject: Simoni Creative - Dada Mail Mailing List Confirmation
          --
  ------------------------------------------------------------------------
- List: skazat_design_newsletter
+ List: dada_announce
  Email: de4est@centurytel.net    
  
  Last-Attempt-Date: Sun, 13 Apr 2003 20
@@ -5088,7 +5088,7 @@ These points are absolutely necessary. Please make sure you have them before you
 
 =over
 
-=item * Dada Mail 3
+=item * Dada Mail 4
 
 Basically, use the version of Mystery Girl that comes with the version of Dada 
 Mail you're running. 

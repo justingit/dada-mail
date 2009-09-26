@@ -12,7 +12,7 @@ list_type varchar(64),
 list_status char(1)
 );
 
-CREATE TABLE IF NOT EXISTS dada_profile (
+CREATE TABLE IF NOT EXISTS dada_profiles (
 profile_id INTEGER PRIMARY KEY AUTOINCREMENT,
 email varchar(320) not null UNIQUE,
 password text(16),

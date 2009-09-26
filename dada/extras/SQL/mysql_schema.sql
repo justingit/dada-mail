@@ -25,7 +25,7 @@ CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(320), list, l
 
 
 
-CREATE TABLE IF NOT EXISTS dada_profile ( 
+CREATE TABLE IF NOT EXISTS dada_profiles ( 
 profile_id int4 not null primary key auto_increment,
 email                        varchar(320) not null,
 password                     text(16),

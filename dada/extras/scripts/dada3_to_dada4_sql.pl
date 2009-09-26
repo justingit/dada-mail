@@ -442,14 +442,14 @@ sub threeoh_get_fallback_field_values {
 
 =pod
 
-=head1 Dada Mail 3.0 to 3.1 Migration Utility
+=head1 Dada Mail 3 to Dada Mail 4 Migration Utility
 
 =head1 Description
 
-The SQL table schema between Dada Mail 3.0 and Dada Mail 3.1 has changed. 
+The SQL table schema between Dada Mail 3.0 and Dada Mail 4.0 has changed. 
 
 Most importantly, Profile Subscriber Fields that were once saved in the, 
-C<dada_subscribers> table now are saved in a few different tables: C<dada_profile> and C<dada_profile_fields>. 
+C<dada_subscribers> table now are saved in a few different tables: C<dada_profiles> and C<dada_profile_fields>. 
 
 Attributes of the fields themselves, mostly the, "fallback" value, was saved in the list settings (for some bizarre reason). This information is now saved in the,  ,C<dada_profile_fields_attributes> table. 
 
@@ -470,7 +470,7 @@ Upgrade your Dada Mail installation to B<3.1> I<before> attempting to use this u
 
 This utility is located in the Dada Mail distribution, in: 
 
- dada/extras/scripts/dada_3_to_dada_3.1_sql.pl
+ dada/extras/scripts/dada3_to_dada4_sql.pl
 
 You'll most likely want to B<move> it to the, C<dada> directory. 
 
@@ -484,7 +484,7 @@ Once the migration is complete, please B<REMOVE> this utility from your hosting 
 
 =head1 A BIG WARNING ABOUT THIS MIGRATION TOOL AND LOST INFORMATION
 
-A major major huge change between Dada Mail 3.0 and 3.1 is that Subscriber Profile Fields information that used to be different per subscriber, per <list> is now shared between lists. 
+A major major huge change between Dada Mail 3.0 and 4.0 is that Subscriber Profile Fields information that used to be different per subscriber, per <list> is now shared between lists. 
 
 What this means is that, if you have a subscriber and there's a few fields, let's say, C<fist_name>, C<last_name>, C<favorite_color>, these three fields will show up for ALL lists (as it had, before), BUT! The information for each list will also be the same. In Dada Mail 3.0, it COULD potentially, be different. 
 
@@ -492,7 +492,7 @@ When you use this migration tool, only ONE version of this information will be m
 
 In the real world, we're not sure how much of a problem this is going to be since, the subscriber has to be subscribed to more than one list to first, be impacted by the problem and then, the subscriber has to have different information per list to first lose information from the migration. If the information is like what we've used as an example (C<fist_name>, C<last_name>, C<favorite_color>,) the information is probably going to be shared, anyways, so no worries. 
 
-Dada Mail 3.1 also has the ability to allow your subscribers to change their own Subscription Profile Information, so if they don't like what's saved, they can manually update their own information. 
+Dada Mail 4.0 also has the ability to allow your subscribers to change their own Subscription Profile Information, so if they don't like what's saved, they can manually update their own information. 
 
 
 

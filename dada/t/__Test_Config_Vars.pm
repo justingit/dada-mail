@@ -20,7 +20,7 @@ $TEST_SQL_PARAMS = {
 	    pass             => '',
     
 	    subscriber_table 				=> 'test_dada_subscribers',
-		profile_table                   => 'test_dada_profile', 
+		profile_table                   => 'test_dada_profiles', 
 		profile_fields_table 	        => 'test_dada_profile_fields', 
 		profile_fields_attributes_table => 'test_dada_profile_fields_attributes',
 	    archives_table   				=> 'test_dada_archives', 
@@ -41,7 +41,7 @@ $TEST_SQL_PARAMS = {
 	    pass             => 'test',
     
 	    subscriber_table 		=> 'test_dada_subscribers',
-		profile_table           => 'test_dada_profile', 
+		profile_table           => 'test_dada_profiles', 
 		profile_fields_table 	=> 'test_dada_profile_fields', 
 		profile_fields_attributes_table => 'test_dada_profile_fields_attributes',
 	    archives_table   		=> 'test_dada_archives', 
@@ -58,7 +58,7 @@ $TEST_SQL_PARAMS = {
 		database         		=> 'test_dada',
 
 	    subscriber_table 		 => 'test_dada_subscribers',
-		profile_table            => 'test_dada_profile', 
+		profile_table            => 'test_dada_profiles', 
 		profile_fields_table 	 => 'test_dada_profile_fields', 
 		profile_fields_attributes_table => 'test_dada_profile_fields_attributes',
 	    archives_table   		 => 'test_dada_archives', 

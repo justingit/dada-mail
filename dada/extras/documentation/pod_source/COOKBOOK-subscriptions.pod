@@ -255,7 +255,7 @@ run out of the box. If you want to have it run anywhere else, just change the, I
  
  use lib qw(./ ./DADA ./DADA/perllib); 
  
- use DADA::Config 3.0.0; 
+ use DADA::Config 4.0.0; 
  use DADA::MailingList::Subscribers; 
  use DADA::App::Guts; 
  

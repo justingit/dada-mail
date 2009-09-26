@@ -1,6 +1,6 @@
 =pod
 
-=head1 Subscriber Profile Fields in Dada Mail 3
+=head1 Subscriber Profile Fields
 
 =head1 Introduction
 

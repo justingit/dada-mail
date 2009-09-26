@@ -1,0 +1,285 @@
+=pod
+
+=head1 Dada Mail 3 to Dada Mail 4 Guide
+
+=head1 Installation
+
+If you are doing a clean installation of Dada Mail, the same installation instructions for 
+Dada Mail, version 3.0.x will work for Dada Mail 4.0
+
+L<http://dadamailproject.com/installation>
+
+=head1 Upgrading
+
+If you are using the default backend for Dada Mail (This means: you ARE NOT using the SQL backend) 
+upgrade instructions are the same they've always been: 
+
+L<http://dadamailproject.com/installation/upgrading.html>
+
+If you are upgrading and ALSO running Dada Mail, using the SQL backend, you will have to 
+migrate your SQL table schema and Dada Mail Subscriber Profile Fields information to 
+the new SQL table schema. Upgrade as before (don't worry you MAY get an error message) 
+and then run the 3.0 to 4.0 migration utility: 
+
+L<http://dadamailproject.com/support/documentation/dada3_to_dada4_sql.pl>
+
+You will also want to read through the 3.0 to 4.0 API/Configuration docs: 
+
+L<http://dadamailproject.com/support/documentation/dada_3_0_to_dada_3_0.pod.html>
+
+There may be a few things you MAY to add into your outside config file, to get Dada Mail working correctly. 
+
+=head1 Features
+
+=head2 Subscriber Profiles
+
+Please see the docs specifically about Dada Mail Subscriber Profiles:
+
+L<http://dadamailproject.com/support/documentation/feature-profiles.pod.html>
+
+=head2 Subscriber Profile Field Labels
+
+You can now have a, "Label" to your Subscriber Profile Field. A label is what's 
+visibly shown and is not now created from the field's name. 
+
+=head2 Clone Settings
+
+You can now clone the settings from one list, to another list, in the, "Create a New List" screen. 
+
+=head2 Remove All Subscribers
+
+You can now Remove all subscribers at once in the, I<Manage List - View Subscribers> screen. 
+
+=head2 prototype.js/Scriptalicious Support
+
+For the most part, AJAX stuff in Dada Mail has been replaced by the prototype.js 
+and Scriptalicious Javascript Libraries. 
+
+=head2 Black List Matching
+
+If it wasn't clear or official before, it should be now:
+
+The black list matching does not work with matching strings, but will only work to 
+match the user or domain of an email address or the entire email address. These are valid black list entries: 
+
+=over
+
+=item * matchthis@
+
+=item * @matchthis
+
+=item * matchthis 
+
+=item * matchthis@example.com
+
+=back
+
+=head2 UTF-8 Support and Correctly Encoding Email Message Headers
+
+See the separate docs on UTF-8 support: 
+
+L<http://dadamailproject.com/support/documentation/features-UTF-8.pod.html>
+
+=head2 Multiple List Sending
+
+Support has be re-introduced to allow Multiple List Sending. See the separate docs on this feature: 
+
+L<http://dadamailproject.com/support/documentation/feature-multiple_list_sending.pod.html>
+
+=head1 CPAN Perl Libraries 
+
+The CPAN Perl Libraries needed for Dada Mail are now being saved within the 
+Git Repository of Dada Mail. We don't know if this is the greatest idea, since we don't 
+really plan on making changes to this modules. But, we're doing it. If any problems 
+occur, please report!
+
+=head2 Mass Subscriptions
+
+There's now an option to disable mass subscriptions. 
+
+=head2 Plugins - Dada Bridge
+
+Simple moderation support is included, to Authorized to moderate messages. 
+
+=head2 Plugins - Clickthrough Tracker
+
+The Clickthrough Tracker now has a new SQL backend option for the URL redirect list. 
+
+The log is still in PlainText. 
+
+=head2 Extensions - Update Subscriptions
+
+The update_subscriptions.cgi extension has been removed, as its features have been superceded by the Dada Profiles
+feature. And then some. 
+
+=head1 API
+
+There are many new modules in Dada Mail's backend, including: 
+
+=over
+
+=item * DADA::Profile
+
+=item * DADA::Profile::Fields
+
+=item * DADA::Profile::Session
+
+=item * DADA::ProfileFieldsManager
+
+=item * DADA::MailingList::Subscriber
+
+=item * DADA::MailingList::Subscriber::Validate
+
+=back
+
+=head1 Configuration and API Incompatibilities
+
+A few. See the separeate docs on this subject: 
+
+L<http://dadamailproject.com/support/documentation/dada_3_0_to_dada_4_1.pod.html>
+
+
+=head1 Background
+
+=head1 .dada_config changes
+
+=head2 %SQL_PARAMS
+
+%SQL_PARAMS in .dada_config for 3.0.x: 
+
+	%SQL_PARAMS = ( 
+
+		# May just be, "localhost" 
+		dbserver         => 'localhost',
+		
+		database         => '',
+	
+		# MySQL:      3306
+		# PostgreSQL: 5432      
+		port             => '3306',
+	
+		# MySQL:      mysql 
+		# PostgreSQL: Pg
+		# SQLite:     SQLite
+		dbtype           => 'mysql',  
+	
+		user             => '',          
+		pass             => '',
+
+		subscriber_table    => 'dada_subscribers',
+		archives_table      => 'dada_archives', 
+		settings_table      => 'dada_settings', 
+		session_table       => 'dada_sessions', 
+		bounce_scores_table => 'dada_bounce_scores', 
+
+	);
+
+
+%SQL_PARAMS in .dada_config for 3.1: 
+
+	%SQL_PARAMS = ( 
+
+		# May just be, "localhost" 
+		dbserver         => 'localhost',
+		
+		database         => '',
+	
+		# MySQL:      3306
+		# PostgreSQL: 5432      
+		port             => '3306',
+	
+		# MySQL:      mysql 
+		# PostgreSQL: Pg
+		# SQLite:     SQLite
+		dbtype           => 'mysql',  
+	
+		user             => '',          
+		pass             => '',
+
+		subscriber_table                => 'dada_subscribers',
+		profile_table                   => 'dada_profiles', 
+		profile_fields_table 	        => 'dada_profile_fields', 
+		profile_fields_attributes_table => 'dada_profile_fields_attributes',
+		archives_table                  => 'dada_archives', 
+		settings_table                  => 'dada_settings', 
+		session_table                   => 'dada_sessions', 
+		bounce_scores_table             => 'dada_bounce_scores', 
+		clickthrough_urls_table         => 'dada_clickthrough_urls',
+
+	);
+
+New lines: 
+
+		profile_table                   => 'dada_profiles', 
+		profile_fields_table 	        => 'dada_profile_fields', 
+		profile_fields_attributes_table => 'dada_profile_fields_attributes',
+		clickthrough_urls_table         => 'dada_clickthrough_urls',
+
+If you DO NOT put these lines in your .dada_config file, Dada Mail will attempt to massage your configuration to work, anyways. 
+
+=head1 New SQL Tables to Create
+
+If you do not want to create the new SQL Tables and change the schema of the old SQL tables, we suggest
+using our own 3.0 to 3.1 migration tool. More information: 
+
+L<http://dadamailproject.com/support/documentation/dada_3_to_dada_3.1_sql.pl.html>
+
+We suggest using the migration tools ourselves. 
+
+Make the following tables: 
+
+=over
+
+=item * dada_profiles
+
+=item * dada_profile_fields
+
+=item * dada_profile_fields_attributes
+
+=item * dada_clickthrough_urls
+
+=back
+
+=head2 New Schemas
+
+The Schemas for each database/table is located in the dada/extras/SQL directory of the distribution. 
+
+For the exception of the, C<dada_subscribers> table, all previous table schemas are essentially the same. 
+
+Subscriber Profile Fields information that once used to live in the C<dada_subscribers> table, now lives in the C<dada_profile_fields> table. The migration tool mentioned above will move that information from where it was, to where it has to go. 
+
+=head2 $CLICKTHROUGH_DB_TYPE
+
+The new C<dada_clickthrough_urls> table holds the URL redirects for the clickthrough tracker. 
+
+=head1 New Template Variables in the List Template (default_list_template.tmpl)
+
+=over
+
+=item * show_profile_widget
+
+=item * profile_widget
+
+=item * subscribed_to_list
+
+=back
+
+=head1 $PROFILE Variables
+
+=over
+
+=item * $PROFILE_ENABLED
+
+=item * $PROFILE_EMAIL
+
+=item * $PROFILE_ENABLE_CAPTCHA
+
+=item * $PROFILE_ENABLE_MAGIC_SUBSCRIPTION_FORMS
+
+=item * $PROFILE_COOKIE_PARAMS
+
+=item * $PROFILE_GRAVATAR_OPTIONS
+
+=back
+
+=cut

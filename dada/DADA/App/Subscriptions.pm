@@ -333,7 +333,7 @@ sub subscribe {
 			){
 				# 3.0.x code: 
 				$args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email));  
-				# 3.1 code: 
+				# 4.0 code: 
 				#$args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email, -List => $list));  
 				$self->confirm(
 		            {

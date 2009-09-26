@@ -31,7 +31,7 @@ $Plugin_Config->{tail_command} =  'tail';
 
 
 # use some of those Modules
-use DADA::Config 3.0.0;
+use DADA::Config 4.0.0;
 use DADA::Template::HTML; 
 use DADA::App::Guts;
 use DADA::MailingList::Settings; 

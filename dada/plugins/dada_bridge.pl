@@ -29,7 +29,7 @@ delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 use lib qw(../ ../DADA/perllib ../../../../perl ../../../../perllib);
 
 use CGI::Carp qw(fatalsToBrowser);
-use DADA::Config 3.0.0;
+use DADA::Config 4.0.0;
 
 use CGI;
 CGI->nph(1) if $DADA::Config::NPH == 1;
@@ -240,7 +240,7 @@ EOF
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 
-my $App_Version = '3.1.0';
+my $App_Version = $DADA::Config::VERSION;
 
 $DADA::Config::LIST_SETUP_DEFAULTS{open_discussion_list} = 0;
 
@@ -880,7 +880,7 @@ sub cgi_default {
 
     print(
         admin_template_header(
-            -Title      => "Discussion List (3.1m) Options",
+            -Title      => "Discussion List Options",
             -List       => $list,
             -Form       => 0,
             -Root_Login => $root_login,
@@ -5128,7 +5128,7 @@ This could be the cause of mysterious occurences of messages never reaching the 
 
 =head1 COPYRIGHT
 
-Copyright (c) 2004 - 2008 Justin Simoni
+Copyright (c) 2004 - 2009 Justin Simoni
 
 All rights reserved.
 

@@ -262,9 +262,9 @@ use lib qw(
 
 =head1 CAVEATS
 
-=head2 Dada Mail 3.x support
+=head2 Dada Mail 3.x/4.x support
 
-I haven't tested this with Dada Mail 3.x yet. Does it work well? 
+I haven't tested this with Dada Mail 3.x yet (or 4.x). Does it work well? 
 
 =head2 SECURITY 
 
@@ -288,7 +288,7 @@ See: http://dadamailproject.com/contact
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 2007-2008 Justin Simoni All rights reserved. 
+Copyright (c) 2007-2009 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
