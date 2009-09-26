@@ -2996,7 +2996,10 @@ sub view_list {
 	);                                              
     $list  = $admin_list; 
 	if(defined($q->param('list'))){ 
-		if($list ne $q->param('list')){ 	
+		if($list ne $q->param('list')){ 
+			# I should look instead to see if we're logged in view ROOT and then just 
+			# *Switch* the login. Brilliant! --- maybe I don't want to switch lists automatically - without 
+			# someone perhaps knowing that THAT's what I did...
 			logout(
 				-redirect_url => $DADA::Config::S_PROGRAM_URL . '?' . $q->query_string(), 
 			);
@@ -3150,7 +3153,12 @@ sub view_list {
                                                      white_list_subscribers_num       => $lh->num_subscribers(-Type => 'white_list'), 
                                                      authorized_senders_num           => $lh->num_subscribers(-Type => 'authorized_senders'),
  													 sub_request_list_subscribers_num => $lh->num_subscribers(-Type => 'sub_request_list'),
-                                                  },
+                                                  	 flavor_is_view_list              => 1,
+													},
+													-list_settings_vars_param => { 
+														-list    => $list,
+														-dot_it => 1, 
+													},
                                                   }); 
                                                           
         print(admin_template_footer(-List => $list, -Form => 0));
