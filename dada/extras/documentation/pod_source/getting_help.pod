@@ -32,7 +32,7 @@ for any differences/incompatibilities, gotchas - that sort of stuff.
 
 =item The Error Faq
 
-http://dadamailproject.com/support/documentation/error_faq.pod.html
+http://dadamailproject.com/support/documentation/FAQ-errors.pod.html
 
 =item The Release Notes 
 

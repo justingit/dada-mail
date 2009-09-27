@@ -568,7 +568,7 @@ Running the Program Generates a 500 Server Error Message when I do, "x"
 
 See the error FAQ: 
 
-http://dadamailproject.com/support/documentation/error_faq.pod.html
+http://dadamailproject.com/support/documentation/FAQ-errors.pod.html
 
 
 

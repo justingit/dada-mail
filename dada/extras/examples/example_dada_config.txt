@@ -93,7 +93,7 @@ $PROFILE_GRAVATAR_OPTIONS = {
 };
 
 =cut
-#/ end cut for Dada Mail Profile Options
+# end cut for Dada Mail Profile Options
 
 
 

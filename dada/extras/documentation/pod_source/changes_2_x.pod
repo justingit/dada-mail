@@ -1946,7 +1946,7 @@ Probably more efficient, too.
 
 http://sourceforge.net/tracker/index.php?func=detail&aid=1533647&group_id=13002&atid=113002
 
-=item *  1528774  	  2.10.9 - pod mangled in error_faq.pod "The only other"...
+=item *  1528774  	  2.10.9 - pod mangled in FAQ-errors.pod "The only other"...
 
 There's a line by itself with a space, that makes the
 next line show as code; 
@@ -2033,7 +2033,7 @@ sometimes this method is problematic, so you have a second choice: Net::SMTP. Ne
 
 More information on how to use this and the differences between the two versions is located in the General FAQ:
 
-http://dadamailproject.com/support/documentation/faq.pod.html#what_s_the_differences_between_the_two_smtp_engines
+http://dadamailproject.com/support/documentation/FAQ-general.pod.html.html#what_s_the_differences_between_the_two_smtp_engines
 
 =item * Mystery Girl (bounce handler) enhancements: points-based system
 
@@ -2312,7 +2312,7 @@ https://sourceforge.net/tracker/index.php?func=detail&aid=1433133&group_id=13002
 
 Screen caching saves many of the HTML screens Dada Mail displays, so they don't have to be rendered twice! This could mean a serious speed up to the Dada Mail UI. More information: 
 
-http://dadamailproject.com/support/documentation/faq.pod.html#is_there_a_way_to_speed_up_screen_rendering__how_to_use_the_screen_cache_
+http://dadamailproject.com/support/documentation/FAQ-general.pod.html.html#is_there_a_way_to_speed_up_screen_rendering__how_to_use_the_screen_cache_
 
 =item * Redirect w/Query String!
 
@@ -4016,7 +4016,7 @@ The Program has been renamed, "Dada Mail". The following test has also been chan
 
 =back
 
-=for html <p>For More Information, please see <a href="mojo_to_dada.pod.html">Upgrading Dada Mail from Mojo Mail 2.8.9 and below
+=for html <p>For More Information, please see <a href="mojo2_to_dada2.pod.html">Upgrading Dada Mail from Mojo Mail 2.8.9 and below
 
 
 =head1 2.8.10 beta 2

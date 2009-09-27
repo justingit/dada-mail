@@ -1,6 +1,5 @@
 =pod
 
-
 =head1 Dada Mail Changelog for version 4.x.x
 
 =head1 4.0.0
@@ -16,13 +15,52 @@
 
 =over
 
-=item * Beatitude - Fetch message from URL has same options as, "Send a Webpage" 
+=item * Multiple List Sending
 
-Mostly meaning, you can embed images within the email message itself. 
+Support has be re-introduced to allow Multiple List Sending. See the separate docs on this feature: 
 
-=item * Mystery Girl
+L<http://dadamailproject.com/support/documentation/feature-multiple_list_sending.pod.html>
 
-You can now specify the Port Number of the POP3 mail server
+=item *  Subscriber Profiles
+
+Please see the docs specifically about Dada Mail Subscriber Profiles:
+
+L<http://dadamailproject.com/support/documentation/feature-profiles.pod.html>
+
+=item *  Subscriber Profile Field Labels
+
+You can now have a, "Label" to your Subscriber Profile Field. A label is what's 
+visibly shown and is not now created from the field's name.
+
+=item * Subscription Approval System (Experimental) 
+
+You can now have an, "open to all to subscribe" mailing list, that still requires approval from the list owner. 
+
+Please see the docs specifically about this new feature: 
+
+L<http://dadamailproject.com/support/documentation/features-subscription_approval.pod.html>
+
+=item * Slightly better UTF-8 support. 
+
+This version of Dada Mail is currently shipped with all charsets and encodings to, "UTF-8", but Dada Mail itself is far from support this character set completely. 
+
+This is because it is hard.
+
+Please see the docs specifically about this new feature: 
+
+L<http://dadamailproject.com/support/documentation/features-UTF-8.pod.html>
+
+=item * Twitter Support
+
+Yup. Dada Mail can Tweet. More information: 
+
+L<http://dadamailproject.com/support/documentation/features-twitter_support.pod
+
+=item CKeditor Support (Experimental) 
+
+We're experimenting with bringing CKeditor support to Dada Mail. Please see the embedded Config.pm docs about this: 
+
+L<http://dadamailproject.com/support/documentation/Config.pm.html#ckeditor_integration____ckeditor_url__experimental__
 
 =item * Mass Mailings keep their own log
 
@@ -42,10 +80,90 @@ sending process, for the message to be automatically picked up and the last emai
 that had a problem, to be tried again. It's currently not perfect, but it's a very small 
 step forward.
 
-=item * Slightly better UTF-8 support. 
+=item * Clone Settings
 
-This version of Dada Mail is currently shipped with all charsets and encodings to, "UTF-8", but Dada Mail itself is far from support this character set completely. 
+You can now clone the settings from one list, to another list, in the, "Create a New List" screen. 
 
-This is because it is hard. 
+=item * Remove All Subscribers
+
+You can now Remove all subscribers at once in the, I<Manage List - View Subscribers> screen. 
+
+=item * prototype.js/Scriptalicious Support
+
+For the most part, AJAX stuff in Dada Mail has been replaced by the prototype.js 
+and Scriptalicious Javascript Libraries. 
+
+=item * Black List Matching
+
+If it wasn't clear or official before, it should be now:
+
+The black list matching does not work with matching strings, but will only work to 
+match the user or domain of an email address or the entire email address. These are valid black list entries: 
+
+=over
+
+=item * matchthis@
+
+=item * @matchthis
+
+=item * matchthis 
+
+=item * matchthis@example.com
+
+=back
+
+
+=item * Plugins Beatitude - Fetch message from URL has same options as, "Send a Webpage" 
+
+Mostly meaning, you can embed images within the email message itself. 
+
+=item * Plugins Mystery Girl
+
+You can now specify the Port Number of the POP3 mail server
+
+=item * Plugins - Dada Bridge
+
+Simple moderation support is included, to Authorized to moderate messages. 
+
+=item * Plugins - Clickthrough Tracker
+
+The Clickthrough Tracker now has a new SQL backend option for the URL redirect list. 
+
+The log is still in PlainText. 
+
+=item * Extensions - Update Subscriptions - REMOVED
+
+The update_subscriptions.cgi extension has been removed, as its features have been superceded by the Dada Profiles
+feature. And then some. 
+
+=back
+
+=head1 CPAN Perl Libraries 
+
+The CPAN Perl Libraries needed for Dada Mail are now being saved within the 
+Git Repository of Dada Mail. We don't know if this is the greatest idea, since we don't 
+really plan on making changes to this modules. But, we're doing it. If any problems 
+occur, please report!
+
+
+=head1 API
+
+There are many new modules in Dada Mail's backend, including: 
+
+=over
+
+=item * DADA::Profile
+
+=item * DADA::Profile::Fields
+
+=item * DADA::Profile::Session
+
+=item * DADA::ProfileFieldsManager
+
+=item * DADA::MailingList::Subscriber
+
+=item * DADA::MailingList::Subscriber::Validate
+
+=back
 
 =cut

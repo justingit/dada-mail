@@ -1779,7 +1779,7 @@ want to use this option.
 
 More information: 
 
-http://dadamailproject.com/support/documentation/faq.pod.html#is_there_a_way_to_speed_up_screen_rendering__how_to_use_the_screen_cache_
+http://dadamailproject.com/support/documentation/FAQ-general.pod.html.html#is_there_a_way_to_speed_up_screen_rendering__how_to_use_the_screen_cache_
 
 =cut
 

@@ -14,11 +14,11 @@ http://dadamailproject.com/support/documentation/FAQ-mailing_list_sending.pod.ht
 
 =item * General FAQ
 
-http://dadamailproject.com/support/documentation/faq.pod.html
+http://dadamailproject.com/support/documentation/FAQ-general.pod.html.html
 
 =item * ERROR FAQ
 
-http://dadamailproject.com/support/documentation/faq.pod.html
+http://dadamailproject.com/support/documentation/FAQ-general.pod.html.html
 
 =back
 

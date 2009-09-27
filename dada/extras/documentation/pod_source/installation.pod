@@ -1,0 +1,31 @@
+=pod
+
+=head1 Dada Mail Installation
+
+Please see the below docs for information on how to install Dada Mail: 
+
+=head2 Installation Overview
+
+http://dadamailproject.com/installation
+
+=head2 Basic Installation
+
+http://dadamailproject.com/installation/installation_basic.html
+
+=head2 Advanced Installation
+
+http://dadamailproject.com/installation/installation_advanced.html
+
+=head2 Experimental, Semi-Auto Advanced Installation
+
+http://dadamailproject.com/installation/installation_adv_semi_auto.html
+
+=head2 Configuring Dada Mail's SQL Backend
+
+http://dadamailproject.com/installation/configuration-sql_backend.html
+
+=head2 How to Upgrade Dada Mail
+
+http://dadamailproject.com/installation/upgrading.html
+
+=cut
