@@ -181,7 +181,7 @@ $PROGRAM_URL ='http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi';
 
 # This variable is talked about in length later in this file. 
 # 
-$PROGRAM_CONFIG_FILE_DIR = '/Library/WebServer/Documents/.dada_files/.configs'; 
+$PROGRAM_CONFIG_FILE_DIR = 'auto'; 
 
 #
 #
@@ -1398,7 +1398,7 @@ BEGIN {
 # You CANNOT have this variable in an outside config file - 
 # it MUST be set here. 
 
-$PROGRAM_ERROR_LOG = '/Library/WebServer/Documents/.dada_files/.logs/errors.txt';
+$PROGRAM_ERROR_LOG = undef;
 
 # Keep this next bit as-is; it's just opening the error file for writing. 
 if($PROGRAM_ERROR_LOG){open (STDERR, ">>$PROGRAM_ERROR_LOG") 
