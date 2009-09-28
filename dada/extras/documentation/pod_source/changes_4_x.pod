@@ -54,13 +54,13 @@ L<http://dadamailproject.com/support/documentation/features-UTF-8.pod.html>
 
 Yup. Dada Mail can Tweet. More information: 
 
-L<http://dadamailproject.com/support/documentation/features-twitter_support.pod
+L<http://dadamailproject.com/support/documentation/features-twitter_support.pod>
 
-=item CKeditor Support (Experimental) 
+=item * CKeditor Support (Experimental) 
 
 We're experimenting with bringing CKeditor support to Dada Mail. Please see the embedded Config.pm docs about this: 
 
-L<http://dadamailproject.com/support/documentation/Config.pm.html#ckeditor_integration____ckeditor_url__experimental__
+L<http://dadamailproject.com/support/documentation/Config.pm.html#ckeditor_integration____ckeditor_url__experimental__>
 
 =item * Mass Mailings keep their own log
 
