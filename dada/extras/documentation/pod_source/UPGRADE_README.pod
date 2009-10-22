@@ -36,21 +36,16 @@ In an upgrade, these files do not go anywhere - they stay put. Since everything 
 
 Things change between versions. Before even beginning to upgrade, make sure that you understand the changes in the program and how they may affect your current installation. 
 
-The NOTES are located here: 
-
-http://dadamailproject.com/support/documentation/NOTES.pod.html
-
 The changelog is located here: 
 
-http://dadamailproject.com/support/documentation/changes.pod.html
+http://dadamailproject.com/support/documentation/changes_4_x.pod.html
 
-They are your best buddies. They will stop you from going, "I<When I upgraded, this broke/didn't work like it used to/is different and I don't like it>."
 
-If you are upgrading from Dada Mail 2.x to Dada Mail 3.x  also see: 
+If you are upgrading from Dada Mail 3.x to Dada Mail 4.x  also see: 
 
 =head3 Dada Mail 2.x to Dada Mail 3.x Guide
 
-L<http://dadamailproject.com/support/documentation/dada2_to_dada3.pod.html>
+L<http://dadamailproject.com/support/documentation/dada3_to_dada4.pod.html>
 
 =head2 Step #1 Back Up EVERYTHING
 
@@ -72,7 +67,7 @@ to something like:
 
 Pretty simple and straightforward, no? If I want to get really fancy, I rename it the version of Dada Mail it was, ala: 
 
- dada-2_10_9
+ dada-3_0_5
 
 This move is more important than you might think - it keeps a backup that is known to work handy, it also makes sure that we're not overwriting the old files, with new files. It works like insurance: the new version doesn't work for some reason?  Rename the new copy something like, "dada-new_but_busted" and move the old version back to just, "dada". 
 
@@ -90,13 +85,11 @@ One thing that will most likely be the same, is what the, B<$FILES> variable is 
 
 =head2 Some things of note:
 
-=over
-
-=item * SQL variables - make sure to set them!
+=head3 SQL variables - make sure to set them!
 
 If you are using any of the SQL backends, make sure the appropriate SQL variables in the Config.pm are configured the same as before. 
 
-=item * Advanced installation
+=head3 Advanced installation
 
 If you previously did an, "Advanced" installation, ala: 
 
@@ -105,7 +98,5 @@ http://dadamailproject.com/purchase/sample_chapter-dada_mail_setup.html
 You'll most likely only want to change the, B<$PROGRAM_CONFIG_FILE_DIR> variable, and perhaps the, $B<PROGRAM_ERROR_LOG> variable in the Config.pm file. 
 
 If you did this type of install before, this should all make sense. 
-
-=back
 
 And, that's it. 
