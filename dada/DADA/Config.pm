@@ -589,7 +589,10 @@ $PLUGIN_CONFIGS ||= {
         MessagesAtOnce                      => undef, 
         Max_Size_Of_Any_Message             => undef, 
         Allow_Open_Discussion_List          => undef, 
-        Check_List_Owner_Return_Path_Header => undef, 
+        Room_For_One_More_Check             => undef, 
+		Enable_POP3_File_Locking            => undef, 
+		Check_List_Owner_Return_Path_Header => undef, 
+		Check_Multiple_Return_Path_Headers  => undef, 
     
     },
 
