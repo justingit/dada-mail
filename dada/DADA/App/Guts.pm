@@ -1454,8 +1454,11 @@ sub webify_plain_text{
 	
 	%DADA::Config::HTMLFROMTEXT_OPTIONS = %orig_HTMLFROMTEXT_OPTIONS;
 	
+	# This is somewhat a problem, since if you give this *just* one line - without any 
+	# Line breaks, this will still and the pairs of <p> tags. Bad.
 	
-	return '<p>' . $s . '</p>'; 
+	#return '<p>' . $s . '</p>'; 
+	return $s; 
 }
 
 

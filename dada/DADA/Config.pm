@@ -2717,9 +2717,9 @@ metachars => 1,
 urls      => 1, 
 email     => 1,
 paras     => 1, 
-#bold      => 1, 
-#underline => 1,
-lines     => 1
+# bold      => 1, 
+# underline => 1,
+# lines     => 1
 ) unless keys %HTMLFROMTEXT_OPTIONS; 
 
 
