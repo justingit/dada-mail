@@ -1389,8 +1389,25 @@ sub webify_plain_text{
 	my $s = shift; 
 	require HTML::FromText;
 	
+
 	my %orig_HTMLFROMTEXT_OPTIONS = %DADA::Config::HTMLFROMTEXT_OPTIONS; 
-		
+
+
+	my %addition_opts = ();  
+	if($s =~ m/\r|\n/){ 
+		%addition_opts = (
+			para  => 1, 
+			lines => 0, 
+		); 
+	}
+	else { 
+		%addition_opts = (
+			para  => 0, 
+			lines => 1, 
+		);	
+	}
+	
+			
 	# 1.005 of HTML::FromText sucks at entities, so if we can, let's do a better job...
 	if($DADA::Config::HTMLFROMTEXT_OPTIONS{metachars} == 1){ 
 	
@@ -1430,7 +1447,13 @@ sub webify_plain_text{
 		
 	}
 	
-	$s = HTML::FromText::text2html($s, %DADA::Config::HTMLFROMTEXT_OPTIONS); 
+	$s = HTML::FromText::text2html(
+		$s, 
+		(
+			%DADA::Config::HTMLFROMTEXT_OPTIONS, 
+			%addition_opts
+		)
+	); 
 
 
     

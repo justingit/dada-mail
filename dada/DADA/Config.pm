@@ -2716,7 +2716,7 @@ http://search.cpan.org/author/GDR/HTML-FromText-1.005/FromText.pm#SUMMARY_OF_OPT
 metachars => 1, 
 urls      => 1, 
 email     => 1,
-paras     => 1, 
+# paras     => 1, 
 # bold      => 1, 
 # underline => 1,
 # lines     => 1
