@@ -1,4 +1,3 @@
-
 =pod
 
 =head1 The Dada Mail Error FAQ
@@ -159,6 +158,43 @@ On very rare occasions, the Perl Lib paths need to be explicitly set. It's a goo
 
 =back
 
+=head2 Problems Logging In
+
+Sometimes, people find that it's impossible to log into Dada Mail's list control panel. 
+
+Some things to double-check: 
+
+=over
+
+=item * Make SURE you're using the right password
+
+Sounds simple, but you never know
+
+=item * Browser? Cookies? 
+
+Make sure your browser, firewall and connection to Dada Mail is allowing cookies to be sent, received and stored. 
+
+Dada Mail relies on session information saved in browser cookies. 
+
+=back
+
+If those problems don't help matters, sometimes it helps to set Dada Mail to use a different session type. 
+
+The session type is set in the config variable, C<$SESSION_DB_TYPE>. It can be set to, C<SQL> (you'll need to setup the SQL backend for this to work), C<DB>, C<PlainText> - and, if all else fails, C<Classic>. 
+
+All these session types work the same way, but C<Classic> is the least secure - we don't recommend using it, but if it helps you 
+get out of a pinch, then it can help you get out of a pinch. 
+
+=head2 Duplicate Email Addresses in Your Mailing List 
+
+If there are duplicate email addresses in your mailing list, please open up a bug report. 
+
+	L<https://sourceforge.net/tracker/?group_id=13002&atid=113002> 
+	
+At least in the Dada Mail program, duplicates should never be present. 
+
+If you are edited the plain text list files (if you're using the default back end), or if you're using the SQL dada_subscribers SQL backend directly, then all bets are off, in terms of duplicates. You CAN, easily add duplicates to a mailing list
+by working with the backends directly. We suggest not doing this, but rather, using the provided Perl API. 
 
 =head2 Died at /usr/lib/perl5/5.8.8/base.pm line 85
 
@@ -924,6 +960,18 @@ This script goes through every single directory, looking for directories named, 
 You should feel very nervous about running a program that delete massive amounts of files/directories. Don't use this script unless you fully understand that fact, since the possibility - however small, is there that this script could delete a file you didn't want removed. 
 
 =head1 Send a Webpage Problems
+
+=head2 Can't locate object method "redirects" via package "HTTP::Headers"
+
+This problem usually deals with out of date versions of CPAN modules that are shipped with Dada Mail itself. 
+
+The easiest fix may for you to just do an upgrade of Dada Mail. 
+
+If you can not/do not want to upgrade, you can also try to download the newest version of Dada Mail and I<just> replace the directory: 
+
+ dada/DADA/perllib
+
+with the copy of that directory that came from the downloaded distribution. Make sure to make a backup of the original, C<perllib> directory, first! 
 
 =head2 Can't call method "verify_data" on an undefined value at...
 
