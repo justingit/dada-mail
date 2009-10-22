@@ -1802,8 +1802,12 @@ sub message_for_mail_send {
 sub clean_up {
 
     my $self = shift;
-
-    warn 'clean_up called '
+	my ($args) = @_; 
+    
+	if(!exists($args->{-force})){ 
+		$args->{-force} = 1; 
+	}
+	warn 'clean_up called '
         if $t; 
 
     croak "Make sure to call, 'associate' before calling cleanup!"
@@ -1846,8 +1850,26 @@ sub clean_up {
 
     }
     else {
-        carp "couldn't remove the sending directory! at " . $self->dir;
-        return 0;
+		if($args->{-force} == 1){ 
+			eval { 
+				require File::Path; 
+				File::Path::remove_tree( $self->dir) ;
+			};
+			if($@){ 
+				# I'm not fooling around... 
+				system('rm','-r', '-f', $self->dir);
+			}		
+			if(-e $self->dir){ 
+				carp "couldn't remove the sending directory! at " . $self->dir;
+				return 0;
+			}
+		}
+		else { 
+			carp "couldn't remove the sending directory! at " . $self->dir;
+			return 0;
+		}
+		
+		
     }
 
     warn 'clean_up seemed successful. ' 
@@ -1856,7 +1878,6 @@ sub clean_up {
     return 1;
 
 }
-
 
 
 
