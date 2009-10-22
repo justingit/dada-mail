@@ -773,7 +773,7 @@ sub smtp_test {
 			push (@$report, {line => $l, message => 'Looks like Plain SASL Authentication is Supported!'}); 
 		}elsif($l =~ m/535 Incorrect authentication data|535 authorization failed/i){ 
 			push (@$report, {line => $l, message => 'Looks like there\'s something wrong with your username/password - double check that you entered them right.'}); 
-		}elsif($l =~ m/Authentication succeeded|OK Authenticated/i){ 
+		}elsif($l =~ m/Authentication succeeded|OK Authenticated|Authentication successful/i){ 
 			push (@$report, {line => $l, message => 'Looks like we logged in OK!'});
 		}elsif($l =~ m/235 ok\, go ahead/i){ 
 			push (@$report, {line => $l, message =>'Looks like we logged in OK!'});  
@@ -2531,10 +2531,6 @@ sub _mail_merge {
                                     }
                              );
 							
-	#carp 'at _mail_merge $filename ' . $filename; 
-	
-       
-    #warn '$orig_entity->as_string' . $orig_entity->as_string; 
     my $entity = $fm->email_template(
                     {
                         -entity                   => $orig_entity,                         
