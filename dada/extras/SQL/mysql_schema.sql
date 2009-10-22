@@ -1,3 +1,6 @@
+-- This should work well for MySQL ver. 5 - MySQL ver. 4 MAY need some slight modifications. 
+-- Some of the modifications include either not using the indexes
+
 CREATE TABLE IF NOT EXISTS dada_settings (
 list                             varchar(16),
 setting                          varchar(64),
@@ -57,7 +60,7 @@ CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes (
 );
 
 CREATE TABLE IF NOT EXISTS dada_archives (
-list                          varchar(32),
+list                          varchar(16),
 archive_id                    varchar(32),
 subject                       text,
 message                       mediumtext,

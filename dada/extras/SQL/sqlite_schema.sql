@@ -28,7 +28,7 @@ email varchar(320) not null UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS dada_archives (
-list varchar(32),
+list varchar(16),
 archive_id varchar(32),
 subject text,
 message mediumtext,

@@ -48,7 +48,7 @@ fallback_value              varchar(320)
 	
 
 CREATE TABLE dada_archives (
-list                          varchar(32),
+list                          varchar(16),
 archive_id                    varchar(32),
 subject                       text,
 message                       text,
