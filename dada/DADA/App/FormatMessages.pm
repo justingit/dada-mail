@@ -1295,6 +1295,10 @@ sub _apply_list_template {
 					-Title        =>  $self->Subject,
 					-List         => $self->{ls}->param('list'),
 					-HTML_Header  => 0,
+					-vars => { 
+						# kludge
+						message_id => '[message_id]', 
+					}
 			     )) . 
 									   
 	 $body_html                     	          .       						   
