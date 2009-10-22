@@ -1114,7 +1114,7 @@ DADA::Profile
 			-email => 'user@example.com', 
 		}
 	); 
-	
+
 C<new> returns a DADA::Profile object. 
 
 C<new> requires you to either pass the C<-email> paramater, with a valid email 
@@ -1211,7 +1211,7 @@ If our profile was subscribed to the list, I<mylist> this:
 			-html_tmpl_params => 1, 
 		}
 	);
-	
+
 would return, 
 
  [
@@ -1372,7 +1372,7 @@ The captcha test didn't pass.
 =back
 
 If $status returns C<0>, in no way should a new profile be registered. 
- 
+
 =head2 update
 
  $p->update(

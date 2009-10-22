@@ -282,10 +282,9 @@ sub reset_password {} # ???
 
 =head1 NAME 
 
-DADA::Profile
+DADA::Profile::Session
 
 =head1 SYNOPSIS
-
 
 =head1 DESCRIPTION
 

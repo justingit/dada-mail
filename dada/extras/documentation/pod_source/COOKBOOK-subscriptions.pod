@@ -21,7 +21,7 @@ If your script isn't in the, I<cgi-bin/dada> directory, make sure to add the lib
 Easy enough. To create a DADA::MailingList::Subscribers object, you'll need only one thing, 
 the I<listshortname> of the list. For all these examples, we'll use, I<mylist>. 
 
-Create a new DADA::MailingLIst::Subscribers object: 
+Create a new DADA::MailingList::Subscribers object: 
 
  #!/usr/bin/perl 
  
@@ -251,7 +251,6 @@ run out of the box. If you want to have it run anywhere else, just change the, I
  
  #!/usr/bin/perl -w
  use strict; 
- use 5.006;
  
  use lib qw(./ ./DADA ./DADA/perllib); 
  
