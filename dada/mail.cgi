@@ -9933,7 +9933,11 @@ sub profile {
 		
 		my $prof              = DADA::Profile->new({-email => $email});
 		my $dpf               = DADA::Profile::Fields->new({-email => $email}); 
-		my $subscriber_fields =  $dpf->{manager}->fields; 
+		my $subscriber_fields =  $dpf->{manager}->fields(
+			{
+				-show_hidden_fields => 0,
+			}
+		); 
 		my $field_attr         = $dpf->{manager}->get_all_field_attributes;
 		my $email_fields      = $dpf->get; 	
 			

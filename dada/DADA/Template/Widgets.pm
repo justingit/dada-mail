@@ -2074,7 +2074,11 @@ sub subscription_form {
     
     require DADA::ProfileFieldsManager; 
     my $pfm               = DADA::ProfileFieldsManager->new; 
-	my $subscriber_fields = $pfm->fields;
+	my $subscriber_fields = $pfm->fields(
+		{
+			-show_hidden_fields => 0,
+		}
+	);
 	my $field_attrs       = $pfm->get_all_field_attributes;
 	
 	my $named_subscriber_fields = [];
