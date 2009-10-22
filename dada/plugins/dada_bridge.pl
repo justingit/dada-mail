@@ -72,7 +72,7 @@ $Plugin_Config->{MessagesAtOnce} = 1;
 # In, "octets" (bytes) - this is about 2.5 megs...
 #
 # Soft_Max_Size_Of_Any_Message is the limit to reach before we email the
-# original sending, telling me that the message is too large
+# original sending, telling them that the message is too large
 
 $Plugin_Config->{Soft_Max_Size_Of_Any_Message} = 1048576;    # 1   meg
 
@@ -83,21 +83,6 @@ $Plugin_Config->{Soft_Max_Size_Of_Any_Message} = 1048576;    # 1   meg
 $Plugin_Config->{Max_Size_Of_Any_Message} = 2621440;         # 2.5 meg
 
 $Plugin_Config->{Plugin_Name} = 'Dada Bridge';
-
-# This is a super super secret, undocumented feature. Why the secrecy? 'cause
-# we snuck this new feature in a bug-fix only release and this feature hasn't
-# Properly tested. So - big flashing warning.
-#
-# What is this feature? If you set the below variable, "$Plugin_Config->{Allow_Open_Discussion_List}"
-# to, "1", you will be able to have an discussion list that anyone can email a message
-# to. Why would you want this? I don't know, since the original poster won't be able
-# to receive or reply to the postings, but hey, you may have an interesting use, so
-# here it is.
-# Last caveat: This feature may disappear later in the program's releases (or at
-# least, change drastically)
-# If that doesn't scare you and you need the feature, set this variable to, "1".
-# You'll have a new option under the Discussion List options to have a
-# discussion list, open for anyone to post.
 
 $Plugin_Config->{Allow_Open_Discussion_List} = 0;
 
@@ -116,8 +101,6 @@ $Plugin_Config->{Room_For_One_More_Check} = 1;
 # will disable this plugin's own lock file scheme. Should be fairly safe to use.
 
 $Plugin_Config->{Enable_POP3_File_Locking} = 1;
-
-$Plugin_Config->{Save_Incoming_Messages} = 0;
 
 $Plugin_Config->{Check_List_Owner_Return_Path_Header} = 1;
 
@@ -5069,9 +5052,44 @@ Allows you to set a passcode if you want to allow manually running the plugin. S
 
 You can specificy how many messages you want to have the program actually handle per execution of the script by changing the, B<$Plugin_Config->{MessagesAtOnce}> variable in the source of the script itself. By default, it's set conservatively to, B<1>.
 
+
 =head2 $Plugin_Config->{Max_Size_Of_Any_Message}
 
 Sets a hard limit on how large a single message can actually be, before you won't allow the message to be processed. If a message is too large, it'll be simple deleted. A warning will be written in the error log, but the original sender will not be notified. 
+
+=head1 "Hidden" Misc Options
+
+The following options aren't very documented and somewhat obscure, but can help out debugging problems with using Dada Bridge
+
+=head2 Allow_Open_Discussion_List
+
+If set to, C<1> a new option will be available in Dada Bridge's list control panel to allow you to have a discussion list that anyone can send messages to. 
+
+=head2 $Plugin_Config->{Soft_Max_Size_Of_Any_Message}
+
+Like its brethren, C<Max_Size_Of_Any_Message> C<Soft_Max_Size_Of_Any_Message> sets the maximum size of a message that's accepted, but
+If the message falls between, C<Soft_Max_Size_Of_Any_Message> and, C<Max_Size_Of_Any_Message> a, "Your email message is too big!" email message will
+be sent to the original poster. 
+
+Set the size in octects. 
+
+=head2 $Plugin_Config->{Room_For_One_More_Check} 
+
+C<Room_For_One_More_Check> looks to see how many mass mailings are currently happening. If its at or above the limit set in C<$MAILOUT_AT_ONCE_LIMIT>, Dada Bridge will not attempt to look for and (possibly) create another mass mailing to join the queue. 
+
+=head2 $Plugin_Config->{Enable_POP3_File_Locking} 
+
+C<Enable_POP3_File_Locking>. Sometimes, the pop3 locking stuff in Dada Mail simply goes haywire and you get deadlocks. Setting this configuration to, C<0> stops that. 
+
+=head2 $Plugin_Config->{Check_List_Owner_Return_Path_Header}
+
+When testing the validity of a received message, Dada Mail will look to see if the, C<Return-Path> header matches what's set in the, C<From> header. If they do not match, this test fails and the message will be rejected. Setting, C<Check_List_Owner_Return_Path_Header> will disable this test. 
+
+=head2 $Plugin_Config->{Check_Multiple_Return_Path_Headers}
+
+C<Check_Multiple_Return_Path_Headers> is another validity test for received messages. This time, the message is looked to see if it has more than one C<Return-Path> header. If it does, it is rejected. If you set, C<$Plugin_Config->{Check_Multiple_Return_Path_Headers}> to, C<0>, this test will be disabled. 
+
+=head1 Dada Bridge-Specific Email Messages
 
 =head2 $Moderation_Msg
 
