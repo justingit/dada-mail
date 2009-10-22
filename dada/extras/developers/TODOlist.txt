@@ -10,6 +10,23 @@ Key:
 [*] Naw...
 [?] Someday
 
+[ ] Phoned in: 
+Not sure if this is the right place, but I have a few comments on the new Beta release which I've been trying out.
+
+1. Installation on my own machine running MacOS X (Leopard) with MySQL 5.1 was fairly straightforward, but when I installed it on my ISP's server which runs a back-level version of Mysql (4.I) I had to reduce the string lengths from 320 to 255 to get it to accept the SQL. Also had to change the CREATE INDEX statements to ALTER DATABASE... ADD INDEX... statements as I got a "Not authorized" error on the CREATE statements, but I expect that's just my ISP. Not sure if reducing the string lengths will have any significant effect, haven't noticed any so far.
+
+2. The migration tool worked fine, but had to use it without instructions as the link to the documentation page gives me a "Forbidden" error. It's pretty much self-explantatory though so wasn't a problem.
+
+3. Subscriber Profiles seem to be working just fine, and looking very good, but...
+
+4. Profile Fields which begin with an underscore are showing on public pages, where they should be hidden.
+
+5. In the HTML Message template, the [list_settings.physical_address] is getting wrapped with <p>...</p> tags which are spoiling my footing layout. This doesn't happen with 3.0.x.
+
+Overall, though, 4.0 Beta is looking very good, haven't noticed any other problems, so I guess it must be close to being ready for release. Looking forward to it. Great work, Justin.
+-------------
+
+
 
 [ ] List Owner Confirmed subscriptions 
 	What do I have to do for this? 
