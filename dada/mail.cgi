@@ -349,7 +349,7 @@ if($ENV{PATH_INFO}){
         $q->param('f',    $DADA::Config::SIGN_IN_FLAVOR_NAME); 
         $q->param('list', $pi_list); 
         
-    }elsif($info =~ m/$DADA::Config::ADMIN_FLAVOR_NAME$/){  
+    }elsif($info =~ m/^$DADA::Config::ADMIN_FLAVOR_NAME$/){  
     
         $q->param('f', $DADA::Config::ADMIN_FLAVOR_NAME); 
     
