@@ -7160,11 +7160,14 @@ sub archive {
 
     require DADA::Profile;
 	my $prof = DADA::Profile->new({-from_session => 1}); 
-    my $allowed_to_view_archives = $prof->allowed_to_view_archives(
-        {
-            -list         => $list,
-        }
-    );
+    my $allowed_to_view_archives = 1; 
+	if($prof){ 
+ 		$allowed_to_view_archives = $prof->allowed_to_view_archives(
+	        {
+	            -list         => $list,
+	        }
+	    );
+	}
     if ( $allowed_to_view_archives == 0 ) {
         user_error( -List => $list, -Error => "not_allowed_to_view_archives" );
         return;
@@ -7335,11 +7338,14 @@ sub archive {
 				-from_session => 1
 			}
 		); 
-        my $allowed_to_view_archives = $prof->allowed_to_view_archives(
-            {
-                -list         => $list,
-            }
-        );
+	    my $allowed_to_view_archives = 1; 
+		if($prof){ 
+	 		$allowed_to_view_archives = $prof->allowed_to_view_archives(
+		        {
+		            -list         => $list,
+		        }
+		    );
+		}
 
         my $scrn = (
             list_template(
@@ -7667,11 +7673,15 @@ sub archive_bare {
         }
 		require DADA::Profile; 
 		my $prof = DADA::Profile->new({-from_session => 1}); 
-		my $allowed_to_view_archives = $prof->allowed_to_view_archives(
-				{
-					-list         => $list, 
-				}
-			);
+	    my $allowed_to_view_archives = 1; 
+		if($prof){ 
+	 		$allowed_to_view_archives = $prof->allowed_to_view_archives(
+		        {
+		            -list         => $list,
+		        }
+		    );
+		}
+
 		if($allowed_to_view_archives == 0){ 
 			user_error(-List => $list, -Error => "not_allowed_to_view_archives");
 			return;
@@ -7710,11 +7720,15 @@ sub search_archive {
     } 
 	require DADA::Profile; 
 	my $prof = DADA::Profile->new({-from_session => 1}); 
-	my $allowed_to_view_archives = $prof->allowed_to_view_archives(
-			{
-				-list         => $list, 
-			}
-		);
+    my $allowed_to_view_archives = 1; 
+	if($prof){ 
+ 		$allowed_to_view_archives = $prof->allowed_to_view_archives(
+	        {
+	            -list         => $list,
+	        }
+	    );
+	}
+
 	if($allowed_to_view_archives == 0){ 
 		user_error(-List => $list, -Error => "not_allowed_to_view_archives");
 		return;
@@ -7872,12 +7886,15 @@ sub send_archive {
     
 	require DADA::Profile; 
 	my $prof = DADA::Profile->new({-from_session => 1}); 
-	my $allowed_to_view_archives = $prof->allowed_to_view_archives(
-			{
-				-list         => $list, 
+    my $allowed_to_view_archives = 1; 
+	if($prof){ 
+ 		$allowed_to_view_archives = $prof->allowed_to_view_archives(
+	        {
+	            -list         => $list,
+	        }
+	    );
+	}
 
-			}
-		);
 	if($allowed_to_view_archives == 0){ 
 		user_error(-List => $list, -Error => "not_allowed_to_view_archives");
 		return;
@@ -8065,11 +8082,15 @@ sub archive_rss {
     
 			require DADA::Profile; 
 			my $prof = DADA::Profile->new({-from_session => 1}); 
-			my $allowed_to_view_archives = $prof->allowed_to_view_archives(
-					{						
-						-list         => $list, 
-					}
-				);
+		    my $allowed_to_view_archives = 1; 
+			if($prof){ 
+		 		$allowed_to_view_archives = $prof->allowed_to_view_archives(
+			        {
+			            -list         => $list,
+			        }
+			    );
+			}
+
 			if($allowed_to_view_archives == 0){ 
 				return ''; 
 			}
