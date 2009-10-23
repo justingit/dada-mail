@@ -5399,10 +5399,8 @@ sub edit_template {
     my $li = $ls->get; 
     
 	require DADA::Template::Widgets; 
-	my $raw_template = DADA::Template::Widgets::_raw_screen({-screen => 'default_list_template.tmpl'}); 
-	
+	my $raw_template     = DADA::Template::HTML::default_template(); 
     my $default_template = default_template(); 
-    
     
     if(!$process) { 
             
@@ -5479,8 +5477,8 @@ sub edit_template {
         
         if($process eq "preview template")  {
             
-                my $template_info;
-                my $test_header;
+           my $template_info;
+           my $test_header;
            my $test_footer;
         
             if($q->param('get_template_data') eq 'from_default_template'){ 
