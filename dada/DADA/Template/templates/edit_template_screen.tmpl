@@ -106,6 +106,8 @@
 <hr />
 
 <table class="tagchart">
+	
+	
  <tr align="center">
   <td>
    <strong>
@@ -118,6 +120,17 @@
    </strong>
   </td>
  </tr>
+
+ <tr>
+  <td>
+   <code>&lt;!-- tmpl_var title  --&gt;</code>
+  </td>
+  <td>
+   A brief header describing what the message on the screen is about.
+  </td>
+ </tr>
+
+
  <tr>
   <td>
    <code>&lt;!-- tmpl_var content  --&gt;</code>
@@ -127,18 +140,11 @@
 The content of the screen. 
 
 This tag is 
-   <strong>needed</strong>. Think of this tag as the content of 
+   <strong>required</strong>. Think of this tag as the content of 
    your webpage.
   </td>
  </tr>
- <tr>
-  <td>
-   <code>&lt;!-- tmpl_var title  --&gt;</code>
-  </td>
-  <td>
-   A brief header describing what the message on the screen is about.
-  </td>
- </tr>
+
  <tr>
   <td>
    <code>&lt;!-- tmpl_var PROGRAM_NAME --&gt;</code>
@@ -164,6 +170,7 @@ This tag is
    (<a href="<!-- tmpl_var PROGRAM_URL -->" target="_blank"><!-- tmpl_var PROGRAM_URL --></a>).
   </td>
  </tr>
+
  <tr>
   <td>
    <code>&lt;!-- tmpl_var default_css --&gt;</code>  
@@ -173,6 +180,45 @@ This tag is
    (<a href="<!-- tmpl_var PROGRAM_URL -->/css" target="_blank">view</a>)
   </td>
  </tr>
+
+
+
+ <tr>
+  <td>
+   <code>&lt;!-- tmpl_var show_profile_widget --&gt;</code>  
+</td>
+  <td>
+  Will have a value of, 1 if profiles are enabled, 0 if not. 
+  </td>
+ </tr>
+
+
+ <tr>
+  <td>
+   <code>&lt;!-- tmpl_var profile_widget --&gt;</code>  
+</td>
+  <td>
+  The profile widget
+  </td>
+ </tr>
+
+ <tr>
+  <td>
+   <code>&lt;!-- tmpl_var subscribed_to_list --&gt;</code>  
+</td>
+  <td>
+  Will have a value of, 1 if the visitor to <!-- tmpl_var PROGRAM_NAME --> is subscribed to your list. 
+  </td>
+ </tr>
+
+
+
+
+
+
+
+
+
 </table>
 
 <!-- tmpl_include help_link_widget.tmpl --> 

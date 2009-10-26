@@ -17,9 +17,15 @@ this list using your <em>List Password</em>. Access to these screens will always
 available when you log into this list using the <em><!-- tmpl_var PROGRAM_NAME --> Root Password</em>.
 </p>
 
+<fieldset> 
+<legend>Your Feature Set
+</legend>
 <!-- tmpl_var feature_set_menu -->
+</fieldset> 
 
-<h2>Options</h2>
+<fieldset> 
+	
+<legend>Options</legend>
 <p> 
  <input type="radio" name="disabled_screen_view" value="hide" id="hide" <!-- tmpl_if disabled_screen_view_hide -->checked="checked"<!--/tmpl_if--> />
   <label for="hide">
@@ -31,6 +37,9 @@ available when you log into this list using the <em><!-- tmpl_var PROGRAM_NAME -
   Grey Out Disabled Screens
  </label>
 </p>
+
+</fieldset> 
+
 
  
 

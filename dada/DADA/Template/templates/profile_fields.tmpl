@@ -1,26 +1,21 @@
 <!-- begin profile_fields.tmpl --> 
 
-
-
-
 <p>
-Manage Subscribers
+Profiles
  &#187;
-
-
 <!-- tmpl_if edit_field --> 
 
-<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=profile_fields"> 
- Subscriber Profile Fields 
-</a>
- &#187; 
-Edit Field
-&#187;
+	<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=profile_fields"> 
+	Profile Fields
+	</a>
+	 &#187; 
+	Edit 
+	&#187;
 
  <strong><!-- tmpl_var field --></strong>
 
 <!-- tmpl_else --> 
- Subscriber Profile Fields 
+	Profile Fields
 <!-- /tmpl_if -->
 </p>
 
@@ -227,25 +222,24 @@ Edit Field
 	            </form> 
 	
 	
-		<!-- tmpl_if can_move_columns --> 
-		
-				<form style="margin: 0pt; display: inline;">			
-					<input type="hidden" name="f" value="profile_fields" /> 
-	             	<input type="hidden" name="process" value="edit_field_order" /> 
-	             	<input type="hidden" name="field"  value="<!-- tmpl_var field -->" />
-					<input type="hidden" name="direction" value="up" /> 
-					<input type="submit" value="^" class="cautionary" style="margin: 0pt;" title="move this field up" />
+				<!-- tmpl_if can_move_columns --> 
+					<form style="margin: 0pt; display: inline;">			
+						<input type="hidden" name="f" value="profile_fields" /> 
+		             	<input type="hidden" name="process" value="edit_field_order" /> 
+		             	<input type="hidden" name="field"  value="<!-- tmpl_var field -->" />
+						<input type="hidden" name="direction" value="up" /> 
+						<input type="submit" value="^" class="cautionary" style="margin: 0pt;" title="move this field up" <!-- tmpl_if __first__ -->disabled="disabled"<!-- /tmpl_if --> />
 				
-				</form>
-				<form style="margin: 0pt; display: inline;">
+					</form>
+					<form style="margin: 0pt; display: inline;">
 					
-					<input type="hidden" name="f" value="profgile_fields" /> 
-	             	<input type="hidden" name="process" value="edit_field_order" /> 
-	             	<input type="hidden" name="field"  value="<!-- tmpl_var field -->" />
-					<input type="hidden" name="direction" value="down" />
+						<input type="hidden" name="f" value="profile_fields" /> 
+		             	<input type="hidden" name="process" value="edit_field_order" /> 
+		             	<input type="hidden" name="field"  value="<!-- tmpl_var field -->" />
+						<input type="hidden" name="direction" value="down" />
 					
-					<input type="submit" value="v" class="cautionary" style="margin: 0pt;" title="move this field down" />
-				</form>
+						<input type="submit" value="v" class="cautionary" style="margin: 0pt;" title="move this field down"  <!-- tmpl_if __last__ -->disabled="disabled"<!-- /tmpl_if --> />
+					</form>
 				<!-- /tmpl_if --> 
 				
 	             </td> 

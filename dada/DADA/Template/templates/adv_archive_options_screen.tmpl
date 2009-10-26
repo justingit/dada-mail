@@ -461,6 +461,12 @@ Email Address Protection
 Gravatars
 </legend>
 
+<!-- tmpl_unless can_use_gravatar_url --> 
+	<p class="error">
+	  Disabled. You will need to install the <a href="http://search.cpan.org/~mschwern/Gravatar-URL/" target="_blank" >Gravatar::URL CPAN module</a>
+	</p>
+<!-- /tmpl_unless -->
+
 <table>
  <tr>
   <td>
@@ -501,11 +507,7 @@ Gravatars
 
 </p>
 
-<!-- tmpl_unless can_use_gravatar_url --> 
-	<p class="error">
-	  Disabled. You will need to install the <a href="http://search.cpan.org/~mschwern/Gravatar-URL/" target="_blank" >Gravatar::URL CPAN module</a>
-	</p>
-<!-- /tmpl_unless --> 
+
 
   </td>
  </tr>
@@ -518,12 +520,6 @@ Gravatars
 
 
 
-<p class="link_to_screen">
- <a href="<!-- tmpl_var S_PROGRAM_URL-->?flavor=archive_options">
-  Basic...
- </a>
-</p>
-<hr />
 
 <input type="hidden" name="process" value="1" />
 <input type="hidden" name="f"       value="adv_archive_options" />

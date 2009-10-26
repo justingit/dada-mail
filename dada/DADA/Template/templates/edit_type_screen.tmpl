@@ -9,10 +9,72 @@
 <!-- tmpl_var PROGRAM_NAME -->
 	sends. 
 <!-- tmpl_var PROGRAM_NAME -->
-	uses &quot;pseudo tags&quot; to represent data that may change regularly. Use the pseudo tags to represent information like subscription/unsubscription links, or your list name. The entire list of available tags is shown at the end of this page. 
+	uses template tags to represent data that may change regularly. Use the template tags to represent information like subscription/unsubscription links, or your list name. The entire list of available tags is shown at the end of this page. 
 </p>
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form">
+
+
+
+	<fieldset>
+		<legend>
+			Mailing List Message
+		</legend>
+		<p class="alert">
+			Make sure to place the, <strong>[message_body]</strong> tag in the body of this email message!
+		</p>
+
+		<fieldset>
+			<legend>
+				Headers
+			</legend>
+	    <p>
+	     <label for="mailing_list_message_from_phrase">From:</label> <input type="text" name="mailing_list_message_from_phrase" id="mailing_list_message_from_phrase" value="<!-- tmpl_var mailing_list_message_from_phrase escape=HTML -->" /> &lt;<!-- tmpl_var list_owner_email -->&gt;
+	    </p>
+
+	    <p>
+	     <label for="mailing_list_message_to_phrase">To:</label> <input type="text" name="mailing_list_message_to_phrase" id="mailing_list_message_to_phrase" value="<!-- tmpl_var mailing_list_message_to_phrase escape=HTML -->" /> &lt;[subscriber.email]&gt;
+	    </p>
+
+	    <p>
+	     <label for="mailing_list_message_subject">Subject:</label> <input type="text" name="mailing_list_message_subject" id="mailing_list_message_subject" value="<!-- tmpl_var mailing_list_message_subject escape=HTML -->" class="full" />
+	    </p>
+
+	</fieldset> 
+
+
+		<fieldset>
+			<legend>
+				PlainText Message: 
+			</legend>
+
+
+		<p>
+			This is the mailing list message (text version). The bottom of the email should, at minimum, provide how to unsubscribe from the mailing list. 
+		</p>
+		<p>
+	<textarea name="mailing_list_message" id="mailing_list_message" rows="10" cols="50" ><!-- tmpl_var mailing_list_message escape=HTML -->
+	</textarea> 
+		</p>
+
+			</fieldset> 
+
+			<fieldset>
+				<legend>
+					HTML Message:
+				</legend>
+		</p>
+
+			This is the mailing list message (HTML version). The bottom of the email should, at minimum, provide how to unsubscribe from the mailing list. 
+		</p>
+		<p>
+	<textarea name="mailing_list_message_html" id="mailing_list_message_html" rows="10" cols="50" ><!-- tmpl_var mailing_list_message_html escape=HTML -->
+	</textarea> 
+		</p>
+	</fieldset> 
+
+	</fieldset>
+
 
 
 <fieldset>
@@ -21,6 +83,9 @@
 	</legend>
 	<p>
 		This email message is sent when someone requests to be subscribed to your list. 
+	</p>
+	<p class="alert">
+		Make sure to place the, <strong>[list_confirm_subscribe_link]</strong> tag in the body of this email message!
 	</p>
 	
 	<!-- tmpl_if list_settings.no_confirm_email --> 
@@ -76,7 +141,9 @@
 		<p class="error">Closed-Loop Opt-Out is Disabled.</p>
 	<!-- /tmpl_if --> 
 	
-
+	<p class="alert">
+		Make sure to place the, <strong>[list_confirm_unsubscribe_link]</strong> tag in the body of this email message!
+	</p>
 	
 		<p>
 	 <label for="unsub_confirmation_message_subject">Subject:</label> <input type="text" name="unsub_confirmation_message_subject" id="unsub_confirmation_message_subject" value="<!-- tmpl_var unsub_confirmation_message_subject escape=HTML -->" class="full" />
@@ -117,51 +184,6 @@
 </textarea> 
 	</p>
 </fieldset>
-<fieldset>
-	<legend>
-		Mailing List Message
-	</legend>
-
-
-
-    <p>
-     <label for="mailing_list_message_from_phrase">From:</label> <input type="text" name="mailing_list_message_from_phrase" id="mailing_list_message_from_phrase" value="<!-- tmpl_var mailing_list_message_from_phrase escape=HTML -->" /> &lt;<!-- tmpl_var list_owner_email -->&gt;
-    </p>
-    
-    <p>
-     <label for="mailing_list_message_to_phrase">To:</label> <input type="text" name="mailing_list_message_to_phrase" id="mailing_list_message_to_phrase" value="<!-- tmpl_var mailing_list_message_to_phrase escape=HTML -->" /> &lt;[subscriber.email]&gt;
-    </p>
-
-    <p>
-     <label for="mailing_list_message_subject">Subject:</label> <input type="text" name="mailing_list_message_subject" id="mailing_list_message_subject" value="<!-- tmpl_var mailing_list_message_subject escape=HTML -->" class="full" />
-    </p>
-    
-	
-	
-
-	<p>
-		<label for="mailing_list_message">
-			PlainText Message: 
-		</label>
-		<br />
-		This is the mailing list message (text version). The bottom of the email should, at minimum, provide how to unsubscribe from the mailing list. 
-	</p>
-	<p>
-<textarea name="mailing_list_message" id="mailing_list_message" rows="10" cols="50" ><!-- tmpl_var mailing_list_message escape=HTML -->
-</textarea> 
-	</p>
-	<p>
-		<label for="mailing_list_message_html">
-			HTML Message:
-		</label>
-		<br />
-		This is the mailing list message (HTML version). The bottom of the email should, at minimum, provide how to unsubscribe from the mailing list. 
-	</p>
-	<p>
-<textarea name="mailing_list_message_html" id="mailing_list_message_html" rows="10" cols="50" ><!-- tmpl_var mailing_list_message_html escape=HTML -->
-</textarea> 
-	</p>
-</fieldset>
 
 
 <fieldset>
@@ -170,8 +192,10 @@
 	List Invitation Message	
 	</legend>
 
-
-
+	<fieldset>
+		<legend>
+			Headers: 
+		</legend>
     <p>
      <label for="invite_message_from_phrase">From:</label> <input type="text" name="invite_message_from_phrase" id="invite_message_from_phrase" value="<!-- tmpl_var invite_message_from_phrase escape=HTML -->" /> &lt;<!-- tmpl_var list_owner_email -->&gt;
     </p>
@@ -186,26 +210,29 @@
     
 	
 	
+	</fieldset>
 
-	<p> 
-		<label for="invite_message_text">
+	<fieldset>
+		<legend>
 			PlainText Message: 
-		</label>
-		 
-	</p>
+		</legend>
 	<p>
 <textarea name="invite_message_text" id="invite_message_text" rows="10" cols="50" ><!-- tmpl_var invite_message_text escape=HTML -->
 </textarea> 
 	</p>
-	<p>
-		<label for="invite_message_html">
-			HTML Message:
-		</label>
-			</p>
+</fieldset> 
+
+
+	<fieldset>
+		<legend>
+			HTML Message: 
+		</legend>
 	<p>
 <textarea name="invite_message_html" id="invite_message_html" rows="10" cols="50" ><!-- tmpl_var invite_message_html escape=HTML -->
 </textarea> 
 	</p>
+</fieldset> 
+
 </fieldset>
 
 
@@ -284,14 +311,22 @@
 
 
 
+	<fieldset>
+		<legend>
+			PlainText Message: 
+		</legend>
+		
 	<p>
-		<label for="send_archive_message">
-			Send Archived Message to a Friend (Text Version): 
-		</label>
-		<br />
 <textarea name="send_archive_message" id="send_archive_message" rows="10" cols="50" ><!-- tmpl_var send_archive_message escape=HTML -->
 </textarea> 
 	</p>
+</fieldset> 
+
+<fieldset>
+	<legend>
+		HTML Message: 
+	</legend>
+	
 	<p>
 		<label for="send_archive_message_html">
 			Send Archived Message to a Friend (HTML Version): 
@@ -300,6 +335,8 @@
 <textarea name="send_archive_message_html" id="send_archive_message_html" rows="10" cols="50" ><!-- tmpl_var send_archive_message_html escape=HTML -->
 </textarea> 
 	</p>
+</fieldset> 
+
 </fieldset>
 
 <fieldset>
