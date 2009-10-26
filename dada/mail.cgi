@@ -45,14 +45,12 @@ BEGIN {
 #
 
 use lib qw(		
-            ./ 
-            ./DADA 
-            ./DADA/perllib
-			../../../perl
-			../../../perllib
-			/Library/WebServer/CGI-Executables/test_dada
-
-			); 
+	./ 
+	./DADA 
+	./DADA/perllib
+	../../../perl
+	../../../perllib
+); 
 
 # This list may need to be added to. Find the absolute to path to this 
 # very file. This:
@@ -6259,15 +6257,21 @@ sub profile_fields {
          }
 	 }
     
+
+	 my $can_move_columns = ($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql') ? 1 : 0;
+	
      my $named_subscriber_fields = [];
+
+
      foreach(@$subscriber_fields){ 
         push(
 			@$named_subscriber_fields, 
 				{
-					field          => $_, 
-					fallback_value => $fields_attr->{$_}->{fallback_value}, 
-					label          => $fields_attr->{$_}->{label},  
-					root_login     => $root_login,
+					field            => $_, 
+					fallback_value   => $fields_attr->{$_}->{fallback_value}, 
+					label            => $fields_attr->{$_}->{label},  
+					root_login       => $root_login,
+					can_move_columns => $can_move_columns, 
 				}
 			);
      }
@@ -6313,7 +6317,7 @@ sub profile_fields {
 														addition                         => xss_filter($q->param('addition')),
 														edited                           => xss_filter($q->param('edited')), 
 														
-														can_move_columns                 => ($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql') ? 1 : 0, 
+														can_move_columns                 => $can_move_columns, 
 														
 													},
                                              });        
