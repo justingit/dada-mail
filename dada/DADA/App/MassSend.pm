@@ -629,10 +629,13 @@ sub send_url_email {
             
             
             if($q->param('auto_create_plaintext') == 1){ 
-                
                 if($q->param('content_from') eq 'url'){ 
+					my $url = $q->param('url') || undef; 
+					if(length($url) <= 0 || $url eq 'http://'){ 
+						croak "You did not fill in a URL!"; 
+					}
                     require LWP::Simple; 
-                    my $good_try = LWP::Simple::get($q->param('url'));
+                    my $good_try = LWP::Simple::get($url);
                     $t           = convert_to_ascii($good_try);
                 }else{ 
                     $t           = convert_to_ascii($q->param('html_message_body'));

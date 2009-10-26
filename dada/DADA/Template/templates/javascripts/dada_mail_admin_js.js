@@ -122,6 +122,20 @@ function toggleDisplay(target) {
     
 function sendMailingListMessage(form_name, testornot) {
 		
+	/* This is for the Send a Webpage - did they fill in a URL? */
+	if(form_name.f.value == 'send_url_email'){ 
+		for (var i=0; i < form_name.content_from.length; i++) {
+			if (form_name.content_from[i].checked == true) {
+				if(form_name.content_from[i].value == 'url'){ 
+					if((form_name.url.value == 'http://') || (form_name.url.length <= 0)){ 
+						alert('You have not filled in a URL! Mass Mailing Stopped.'); 
+						return false;
+					}
+				}
+			}
+		}
+	}	
+	
 	var itsatest; 
 	testornot ? itsatest = "*test*" : itsatest = "";
 	
