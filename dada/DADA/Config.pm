@@ -2030,7 +2030,7 @@ $ADMIN_MENU ||= [
 	{-Title      => 'Mail Sending',
 	 -Activated  => 1,
 	 -Submenu    => [
-
+				
 					{-Title      => 'Sending Preferences',
 					 -Title_URL  => "$S_PROGRAM_URL?f=sending_preferences",
 					 -Function   => 'sending_options',
@@ -2039,12 +2039,12 @@ $ADMIN_MENU ||= [
 
 					{-Title      => 'Advanced Sending Preferences',
 					 -Title_URL  => "$S_PROGRAM_URL?f=adv_sending_preferences",
-					 -Function   => 'sending_options',
+					 -Function   => 'adv_sending_preferences',
 					 -Activated  => 1,
 					},
 					{-Title      => 'Mass Mailing Preferences',
 					 -Title_URL  => "$S_PROGRAM_URL?f=mass_mailing_preferences",
-					 -Function   => 'sending_options',
+					 -Function   => 'mass_mailing_preferences',
 					 -Activated  => 1,
 					},
 			]
