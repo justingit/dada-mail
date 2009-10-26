@@ -456,6 +456,10 @@ fieldset {
     
 }
 
+fieldset fieldset { 
+	background:#e6e6e6;
+}
+
 
 legend {
 	
