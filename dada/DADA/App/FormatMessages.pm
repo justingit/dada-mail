@@ -370,7 +370,7 @@ Given an MIME::Entity (may be multipart) will attempt to:
 
 =item * Apply the Email Template
 
-=item * interpolate the message to change Dada Mail's pseudo tags to their real value
+=item * interpolate the message to change Dada Mail's template tags to their real value
 
 =back
 
@@ -975,7 +975,7 @@ sub _list_name_subject {
                                     -type => (PlainText/HTML), 
                                    );
 								        
-Given a string, changes Dada Mail's pseudo tags into what they represent. 
+Given a string, changes Dada Mail's template tag into what they represent. 
 
 B<-type> can be either PlainText or HTML
 
