@@ -242,6 +242,8 @@ That turns on the feature. Have that checked.
 
 This setting takes some explaination and we're going to get a little technical. 
 
+=back
+
 =head2 What is the Sending Monitor Screen and why is it so important for the Auto Pickup feature? 
 
 The B<Sending Monitor Screen> will tell you how far along your mailout has gone. 
