@@ -2117,8 +2117,8 @@ $ADMIN_MENU ||= [
 	 -Submenu   => [
 				     {
 				     -Title      => 'Profile Fields',
-				     -Title_URL  => "$S_PROGRAM_URL?f=subscriber_fields",
-				     -Function   => 'subscriber_fields',
+				     -Title_URL  => "$S_PROGRAM_URL?f=profile_fields",
+				     -Function   => 'profile_fields',
 				     -Activated  => 1,
 				     },
 			]
