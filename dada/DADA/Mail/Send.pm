@@ -393,7 +393,7 @@ sub send {
 	   defined($local_li->{smtp_server}) >  0  &&
 	   $local_li->{send_via_smtp}        == 1       
 	){ 
-	
+		
          $self->_pop_before_smtp;
         
      
@@ -724,7 +724,7 @@ sub send {
 
 
 
-sub smtp_test { 
+sub sending_preferences_test { 
 
     my $self = shift; 
 
@@ -742,16 +742,44 @@ sub smtp_test {
     my $orig_debug_pop3                          = $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3}; 
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} = 1; 
     
-    
-        $self->send(
-                
-            To      => $self->{ls}->param('list_owner_email'), 
-            From    => $self->{ls}->param('list_owner_email'), 
-            Subject => "SMTP Test Email", 
-            Body    => "This message is sent out to test SMTP mailing...",  
+my $subject = 'Sending Preference Test Email for, <!-- tmpl_var list_settings.list_name -->'; 
+my $msg = <<EOF
+Hello, <!-- tmpl_var list_settings.list_owner_email -->, 
 
-        ); 
-    
+This message was sent out by <!-- tmpl_var PROGRAM_NAME --> to test out mail sending for the mailing list, 
+
+		<!-- tmpl_var list_settings.list_name --> 
+		
+If you've received this message, it looks like mail sending is working. 
+
+<!-- tmpl_if send_via_smtp --> 
+	* Mail is being sent via SMTP
+<!-- tmpl_else --> 
+	* Mail is being sent via sendmail
+<!--/tmpl_if --> 
+
+-- <!-- tmpl_var PROGRAM_NAME --> 
+EOF
+;
+
+	require DADA::App::Messages; 
+	DADA::App::Messages::send_generic_email(
+		{
+			-list    => $self->{list}, 
+			-headers => { 
+				To              => $self->{ls}->param('list_owner_email'),
+				From            => $self->{ls}->param('list_owner_email'), 
+			    Subject         => $subject,
+			}, 
+			-body => $msg,
+			-tmpl_params => {
+				-list_settings_vars_param => {
+					-list   => 	$self->{list}, 
+					-dot_it => 1,
+				},
+			},		 
+		}
+	);
     
     close(SMTPTEST); 
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_SMTP} = $orig_debug_smtp; 
@@ -2075,6 +2103,7 @@ sub _make_general_headers {
 	}
 	
 	if($From_obj){ 
+		# TODO BUG These need to be Encoded - right now - the ain't 
 		$gh{From}       = $From_obj->format;
 		$gh{'Reply-To'} = $From_obj->format;
 	}
