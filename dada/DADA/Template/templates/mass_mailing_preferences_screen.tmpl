@@ -1,0 +1,318 @@
+<!-- begin mass_mailing_preferences_screen.tmpl -->
+
+
+
+<!-- tmpl_if done -->
+	<!-- tmpl_var GOOD_JOB_MESSAGE -->
+<!--/tmpl_if-->
+
+
+
+
+
+<form name="default_form" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
+
+
+
+
+<fieldset>
+
+<legend>
+ Batch Sending Options
+</legend>
+
+
+
+
+<div id="previewBatchSendingSpeed"> 
+</div> 
+
+
+
+
+    
+<table> 
+ <tr>
+  <td>
+   <input type="checkbox" name="enable_bulk_batching" id="enable_bulk_batching" value="1" <!-- tmpl_if list_settings.enable_bulk_batching -->checked="checked"<!--/tmpl_if--> onChange="previewBatchSendingSpeed()" />
+  </td>
+  <td>
+   <p>
+    <label for="enable_bulk_batching">
+     Enable Batch Sending
+    </label>
+   </p>
+   <blockquote> 
+    <p>
+     Send: <!-- tmpl_var mass_send_amount_menu --> message(s) per batch
+     <br /> 
+     and then wait and sleep: <!-- tmpl_var bulk_sleep_amount_menu --> seconds, before the next batch.
+    </p>
+   </blockquote>
+  </td>
+ </tr>
+ 
+
+ <tr>
+  <td>
+   <input type="checkbox" name="adjust_batch_sleep_time" id="adjust_batch_sleep_time" value="1" <!-- tmpl_if list_settings.adjust_batch_sleep_time -->checked="checked"<!--/tmpl_if--> />
+  </td>
+  <td>
+   <p>
+    <label for="adjust_batch_sleep_time">
+     Adjust Sleep Time 
+    </label>
+    <br />
+
+    The time <!-- tmpl_var PROGRAM_NAME --> <code>sleep()</code>s between batches will be adjusted, 
+    depending on how long the batch took to complete.
+   </p>
+  </td>
+ </tr>
+
+
+	 <tr>
+	  <td>
+	   <p>
+	    <input type="checkbox" name="smtp_connection_per_batch" id="smtp_connection_per_batch" value="1" <!-- tmpl_if smtp_connection_per_batch -->checked="checked"<!-- /tmpl_if --> />
+	   </p>
+	  </td>
+	  <td>
+	   <p>
+	    <label for="smtp_connection_per_batch"> 
+	     Use One SMTP Connection per Batch <em>(Experimental)</em> 
+	    </label>
+	    <br />
+	<!-- tmpl_if send_via_smtp --> 
+		<p class="alert">
+			SMTP Sending is enabled.
+		</p>
+	<!-- tmpl_else --> 
+		<p class="alert">
+			SMTP Sending is disabled.
+		</p>	
+	<!-- /tmpl_if --> 
+
+	<p>
+	Instead of connecting to the SMTP server for each message sent, one connection will be made for each batch. 
+	</p>
+
+	<p>
+	Checking this option may help mass sending times. 
+	</p>
+	<!-- 
+	<p>Your SMTP Server may not allow for more than one message to be sent per connection, so if sending appears not to be working, 
+		do not use this option.
+	</p>
+	-->
+
+	  </td>
+	 </tr>
+	
+	
+
+
+	 <tr>
+	  <td>
+	   <input type="checkbox" name="get_finished_notification" id="get_finished_notification" value="1" <!-- tmpl_if list_settings.get_finished_notification -->checked="checked"<!--/tmpl_if--> />
+	  </td>
+	  <td>
+	   <p>
+	    <label for="get_finished_notification">
+	     Receive Finishing Message
+	    </label>
+	    <br />
+	    Receive notice via email when <!-- tmpl_var PROGRAM_NAME --> has sent all the messages of a mailout.
+	   </p>
+	  </td>
+	 </tr>
+	
+	
+	
+</table>
+
+
+</fieldset>
+
+<fieldset>
+<legend>
+ Auto Pickup Options
+</legend> 
+
+<table>
+ <tr>
+  <td>
+   <input type="checkbox" name="auto_pickup_dropped_mailings" id="auto_pickup_dropped_mailings" value="1" <!-- tmpl_if list_settings.auto_pickup_dropped_mailings -->checked="checked"<!--/tmpl_if--> />
+  </td>
+  <td>
+   <p>
+    <label for="auto_pickup_dropped_mailings">
+     Auto-Pickup Dropped List Message Mailings
+    </label>
+    <br />
+    Since sending to your entire list is a long process, it can sometimes gets interrupted by the server and  won't finish to completion.
+    Activating this feature safeguards against this problem by reloading a mailing from the point that it was dropped automatically. 
+    
+    
+    <table>
+     <tr>
+      <td>
+       <input type="checkbox" name="restart_mailings_after_each_batch" id="restart_mailings_after_each_batch" value="1" <!-- tmpl_if list_settings.restart_mailings_after_each_batch -->checked="checked"<!--/tmpl_if--> />
+      </td>
+      <td>
+       <p>
+        <label for="restart_mailings_after_each_batch">
+         Reload Mailings After Each Batch
+        </label>
+        <br />
+       
+        Instead of having <!-- tmpl_var PROGRAM_NAME --> automatically <code>sleep()</code> between mailings, enabling this option will 
+        reload the mailing between batches manually. 
+	</p>
+	
+	<p>This option should <em>only</em> be used if the, <code>sleep()</code> Perl function is, for whatever reason, not working properly. 
+	   Enabling this option will also <strong>require</strong> you to use the web-based mailing monitor for successfully mailings.
+
+        
+    
+       </p>
+      </td>
+     </tr>
+    
+    </table>
+
+
+    
+   </p>
+  </td> 
+ </tr>
+
+</table>
+
+</fieldset>
+
+
+<fieldset> 
+ <legend> 
+ 	Twitter (Experimental)
+</legend> 
+
+
+
+	<!-- tmpl_if can_use_twitter --> 
+		<p class="positive"> 
+			Twitter support is enabled. 
+		</p>
+	<!-- tmpl_else -->
+		<p class="error"> 
+			Twitter support requires the Perl CPAN modules: Net::Twitter::Lite and WWW::Shorten to be installed.
+		</p> 
+	<!-- /tmpl_if -->
+
+<table cellpadding="5">
+
+
+	<tr>
+	  <td>
+	   <p>
+	    <input type="checkbox" name="twitter_mass_mailings" id="twitter_mass_mailings" value="1" <!-- tmpl_if list_settings.twitter_mass_mailings -->checked="checked"<!--/tmpl_if--> />
+	   </p>
+	  </td>
+	  <td>
+	   <p>
+	    <label for="twitter_mass_mailings">
+	     Tweet About Mass Mailings
+	    </label>
+	
+	
+	<table> 
+		<tr> 
+		<td>
+			<label for="twitter_username">Twitter Username</label> 
+		</td> 
+		<td>
+	        <input type="text" name="twitter_username" id="twitter_username"  value="<!-- tmpl_var name="list_settings.twitter_username" escape="HTML" -->" class="full" />
+	       </td>
+	      </tr>
+		<tr> 
+		<td>
+			<label for="twitter_password">Twitter Password</label>
+		</td> 
+		<td>
+	        <input type="password" name="twitter_password" id="twitter_password" value="<!-- tmpl_var name="twitter_password" escape="HTML" -->" class="full" />
+	       </td>
+	      </tr>
+	
+		</table> 
+		
+	   </p>
+	  </td>
+	 </tr>
+
+	
+
+
+ </table>
+
+ 
+
+ </fieldset>
+
+<!-- tmpl_if comment --> 
+
+<p class="link_to_screen">
+ <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=adv_sending_preferences">
+  Advanced ...
+ </a>
+</p>
+
+<!-- /tmpl_if --> 
+
+<input type="hidden" name="process" value="1" />
+<input type="hidden" name="f"       value="mass_mailing_preferences" />
+<div class="buttonfloat">
+ <input type="reset"  class="cautionary" value="Clear Changes" />
+ <input type="submit" class="processing" value="Save Sending Options" />
+</div>
+<div class="floatclear"></div>
+
+</form> 
+
+
+<script type="text/javascript">
+    //<![CDATA[
+
+	 function previewBatchSendingSpeed(){ 
+		new Ajax.Updater(
+			'previewBatchSendingSpeed', '<!-- tmpl_var S_PROGRAM_URL -->', 
+			{ 
+			    method: 'post', 
+				parameters: {
+					f:                    'previewBatchSendingSpeed', 
+					enable_bulk_batching: $F('enable_bulk_batching'),
+					mass_send_amount:     $F('mass_send_amount'), 
+					bulk_sleep_amount:    $F('bulk_sleep_amount'), 
+
+				},
+
+			onCreate: 	 function() {
+			},
+			onComplete: 	 function() {
+
+				$('previewBatchSendingSpeed').show(); 
+			
+			}
+
+
+			});
+	}
+	previewBatchSendingSpeed(); 
+    //]]>
+
+</script>
+
+
+<!-- tmpl_include help_link_widget.tmpl --> 
+
+
+<!-- end mass_mailing_preferences_screen.tmpl -->
