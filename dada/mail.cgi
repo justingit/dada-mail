@@ -604,9 +604,10 @@ sub run {
 	'edit_type'               =>    \&edit_type,             
 	'edit_html_type'          =>    \&edit_html_type,  
 	'list_options'            =>    \&list_options, 
-	'sending_options'         =>    \&sending_options,
+	'sending_preferences'     =>    \&sending_preferences, 
+	'mass_mailing_preferences' =>    \&mass_mailing_preferences,
 	'previewBatchSendingSpeed' =>   \&previewBatchSendingSpeed, 
-	'adv_sending_options'     =>    \&adv_sending_options, 
+	'adv_sending_preferences'     =>    \&adv_sending_preferences, 
 	'sending_tuning_options'  =>    \&sending_tuning_options, 
 	#'sign_in'                 =>    \&sign_in,              
 	'filter_using_black_list' =>    \&filter_using_black_list,
@@ -617,10 +618,8 @@ sub run {
 	'send_url_email'          =>    \&send_url_email,
 	'feature_set'             =>    \&feature_set,
 	'list_cp_options'          =>    \&list_cp_options, 
-	'subscriber_fields'       =>    \&subscriber_fields, 
-
-	'smtp_options'            =>    \&smtp_options,
-	'smtp_test_results'       =>    \&smtp_test_results, 
+	'profile_fields'           =>    \&profile_fields, 
+	'sending_preferences_test' =>    \&sending_preferences_test, 
 	'checkpop'                =>    \&checkpop,
 	'author'                  =>    \&author,
 	'list'                    =>    \&list_page,
@@ -2112,12 +2111,208 @@ sub list_options {
 
 
 
+sub sending_preferences { 
+	my ($admin_list, $root_login) = check_list_security(
+										-cgi_obj  => $q,
+                                        -Function => 'sending_preferences'
+									);
 
-sub sending_options { 
+    $list = $admin_list;
+
+    require DADA::MailingList::Settings;
+           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
+
+    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+    my $li = $ls->get; 
+
+    if(!$process){ 
+	
+	
+
+	    require DADA::MailingList::Settings;
+	           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
+
+	    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+	    my $li = $ls->get; 
+
+	    require DADA::Security::Password;
+
+
+	    my $decrypted_sasl_pass = q{};
+	    if($li->{sasl_smtp_password}){
+	         $decrypted_sasl_pass = DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $li->{sasl_smtp_password});      
+	   }
+
+	    my $decrypted_pop3_pass = q{};
+	    if($li->{pop3_password}){ 
+	        $decrypted_pop3_pass = DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $li->{pop3_password}); 
+	    }
+
+		# DEV: This is really strange, since if Net::SMTP isn't available, SMTP sending is completely broken. 
+	    my $can_use_net_smtp = 0;
+	     eval { require Net::SMTP_auth };
+	    if(!$@){ 
+	        $can_use_net_smtp = 1;
+	    }
+
+
+	    my $can_use_smtp_ssl = 0;
+	     eval { require Net::SMTP::SSL };
+	    if(!$@){ 
+	        $can_use_smtp_ssl = 1;
+	    }
+
+	    my $can_use_ssl = 0;
+	     eval { require IO::Socket::SSL };
+	    if(!$@){ 
+	        $can_use_ssl = 1;
+	    }
+
+	    my $mechanism_popup; 
+	    if($can_use_net_smtp){ 
+
+	        $mechanism_popup = $q->popup_menu(-name     => 'sasl_auth_mechanism',
+	 										  -id       => 'sasl_auth_mechanism', 
+	                                          -default  => $li->{sasl_auth_mechanism}, 
+	                                          '-values' => [qw(PLAIN LOGIN DIGEST-MD5 CRAM-MD5)],
+	                                         );
+	    }
+
+	    my $pop3_auth_mode_popup =  $q->popup_menu(-name     => 'pop3_auth_mode', 
+											 -id => 'pop3_auth_mode', 
+	                                          -default  => $li->{pop3_auth_mode}, 
+	                                          '-values' => [qw(BEST PASS APOP CRAM-MD5)],
+	                                           -labels   => {BEST => 'Automatic'},
+
+	                                         );
+
+
+
+	    my $wrong_uid = 0; 
+           $wrong_uid = 1 
+            if $< != $>;
+
+
+        my $no_smtp_server_set = 0; 
+		# Nice logic, Justin.
+         if(
+			!$li->{smtp_server}  && 
+			$li->{send_via_smtp} && 
+			$li->{send_via_smtp} == 1
+		 ) { 
+			$no_smtp_server_set = 1;
+         }
+
+        my $scrn = ''; 
+
+        $scrn .= admin_template_header(      
+              -Title       => "Sending Preferences ", 
+              -List        => $list, 
+              -Root_Login  => $root_login
+              );
+
+        require DADA::Template::Widgets;
+        $scrn .= DADA::Template::Widgets::screen({-screen => 'sending_preferences_screen.tmpl', 
+                                                -vars   => {
+															screen                 => 'sending_preferences',
+															title                  => 'Sending Preferences', 															
+                                                            done                   => $done, 
+                                                            no_smtp_server_set     => $no_smtp_server_set, 
+                                                            
+                                                            mechanism_popup     => $mechanism_popup, 
+                                                            
+                                                            can_use_smtp_ssl    =>  $can_use_smtp_ssl, 
+
+                                                            decrypted_pop3_pass => $decrypted_pop3_pass, 
+															wrong_uid           => $wrong_uid, 
+                                                            
+                                                            pop3_auth_mode_popup => $pop3_auth_mode_popup, 
+                                                            can_use_ssl          => $can_use_ssl, 
+															f_flag_settings               => $DADA::Config::MAIL_SETTINGS . ' -f' . $li->{admin_email},
+                                                            
+                                                            use_sasl_smtp_auth  => $q->param('use_sasl_smtp_auth') ? $q->param('use_sasl_smtp_auth') : $li->{use_sasl_smtp_auth},
+                                                            decrypted_pop3_pass => $q->param('pop3_password')      ? $q->param('pop3_password')      : $decrypted_pop3_pass,
+                                                            sasl_auth_mechanism => $q->param('sasl_auth_mechanism') ? $q->param('sasl_auth_mechanism') : $li->{sasl_auth_mechanism},
+                                                            sasl_smtp_username  => $q->param('sasl_smtp_username') ? $q->param('sasl_smtp_username') : $li->{sasl_smtp_username}, 
+                                                            sasl_smtp_password  => $q->param('sasl_smtp_password') ? $q->param('sasl_smtp_password') : $decrypted_sasl_pass, 
+
+
+
+                                                      },
+													-list_settings_vars_param => { 
+														-list    => $list,
+														-dot_it => 1, 
+													},
+                                             });
+
+        $scrn .= admin_template_footer(-List => $list);
+		print $scrn; 
+    }else{ 
+
+		
+        my $send_via_smtp              = $q->param("send_via_smtp")         || 0;
+		
+		my $add_sendmail_f_flag          = $q->param('add_sendmail_f_flag') || 0;
+        
+		
+		my $use_pop_before_smtp = $q->param('use_pop_before_smtp')       || 0;
+        my $set_smtp_sender     = $q->param('set_smtp_sender')           || 0;
+        my $smtp_server         = strip($q->param('smtp_server'));
+        my $pop3_server         = strip($q->param('pop3_server'))        || '';
+        my $pop3_username       = strip($q->param('pop3_username'))      || '';
+		my $pop3_password       = strip($q->param('pop3_password'))      || undef;
+        if(defined($pop3_password)){ 
+			$pop3_password = DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $pop3_password);
+		}
+		my $pop3_use_ssl        = strip($q->param('pop3_use_ssl'))       || 0; 
+        my $pop3_auth_mode      = strip($q->param('pop3_auth_mode'))     || 'BEST', 
+        my $use_smtp_ssl        = $q->param('use_smtp_ssl')              || 0; 
+        my $sasl_auth_mechanism = $q->param('sasl_auth_mechanism')       || undef, 
+        my $use_sasl_smtp_auth  = $q->param('use_sasl_smtp_auth')        || 0; 
+        my $sasl_smtp_username  = strip($q->param('sasl_smtp_username')) || ''; 
+		my $sasl_smtp_password  = strip($q->param('sasl_smtp_password')) || undef;
+		if(defined($sasl_smtp_password)){ 
+			$sasl_smtp_password = DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $sasl_smtp_password)
+		}
+        my $smtp_port           = strip($q->param('smtp_port'))          || undef; 
+     #	my $smtp_connection_per_batch = strip($q->param('smtp_connection_per_batch')) || 0;
+
+        $ls->save(
+			{
+			
+				send_via_smtp             => $send_via_smtp,	
+				add_sendmail_f_flag       => $add_sendmail_f_flag, 
+	            smtp_port                 => $smtp_port,
+	            use_pop_before_smtp       => $use_pop_before_smtp,
+	            use_smtp_ssl              => $use_smtp_ssl, 
+	            smtp_server               => $smtp_server,
+	            pop3_server               => $pop3_server,    
+	            pop3_username             => $pop3_username, 
+	            pop3_password             => $pop3_password,    
+				pop3_use_ssl              => $pop3_use_ssl, 
+				pop3_auth_mode            => $pop3_auth_mode, 
+	            use_sasl_smtp_auth        => $use_sasl_smtp_auth, 
+	            sasl_auth_mechanism       => $sasl_auth_mechanism, 
+	            sasl_smtp_username        => $sasl_smtp_username, 
+	            sasl_smtp_password        => $sasl_smtp_password,
+	            set_smtp_sender           => $set_smtp_sender, 
+	        #	smtp_connection_per_batch => $smtp_connection_per_batch, 
+			}
+		);
+		if($q->param('no_redirect') == 1){ 
+			# ...
+        }
+		else { 
+			print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=sending_preferences&done=1'); 
+    	}
+	}
+}
+
+sub mass_mailing_preferences { 
 
     my ($admin_list, $root_login) = check_list_security(
 										-cgi_obj  => $q,
-                                        -Function => 'sending_options'
+                                        -Function => 'mass_mailing_preferences'
 									);
 
     $list = $admin_list;
@@ -2129,8 +2324,6 @@ sub sending_options {
     my $li = $ls->get; 
     
     if(!$process){ 
-    
-
         
         my @message_amount = (1..180); 
         
@@ -2176,84 +2369,68 @@ sub sending_options {
                                                       -value    => [@message_wait],  
                                                       -onChange => 'previewBatchSendingSpeed()',
                                                      );                                                
-                                             
-        my $no_smtp_server_set = 0; 
-           $no_smtp_server_set = 1 
-            if(!$li->{smtp_server}) && $li->{send_via_smtp} && ($li->{send_via_smtp} == 1);
-         
+       
         my $scrn = ''; 
         
         $scrn .= admin_template_header(      
-              -Title       => "Sending Options", 
+              -Title       => "Mass Mailing Preferences", 
               -List        => $list, 
               -Root_Login  => $root_login
               );
-      
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen({-screen => 'sending_options_screen.tmpl', 
-                                                -vars   => {
-															
-															screen                            => 'sending_options',
-															title                             => 'Sending Options', 
-															
-                                                            done                              => $done, 
-                                                            send_via_smtp                     => $li->{send_via_smtp}, 
-                                                            enable_bulk_batching              => $li->{enable_bulk_batching}, 
-															adjust_batch_sleep_time            => $li->{adjust_batch_sleep_time}, 
-                                                            get_finished_notification         => $li->{get_finished_notification}, 
-                                                            no_smtp_server_set                => $no_smtp_server_set, 
-                                                            perl_version                      =>  $], 
-                                                            mass_send_amount_menu             => $mass_send_amount_menu, 
-                                                            bulk_sleep_amount_menu            => $bulk_sleep_amount_menu, 
-                                                            
-                                                            
-                                                            auto_pickup_dropped_mailings      => $li->{auto_pickup_dropped_mailings}, 
-                                                            restart_mailings_after_each_batch => $li->{restart_mailings_after_each_batch}, 
-                                                            
-                                                            
-
-                                                      },
-                                             });
-    
+        $scrn .= DADA::Template::Widgets::screen(
+			{
+				-screen => 'mass_mailing_preferences_screen.tmpl', 
+				-vars   => {
+					screen                 => 'mass_mailing_preferences',
+					title                  => 'Mass Mailing Preferences', 															
+					done                   => $done, 
+					mass_send_amount_menu  => $mass_send_amount_menu, 
+					bulk_sleep_amount_menu => $bulk_sleep_amount_menu, 
+					can_use_twitter        => DADA::App::Guts::can_use_twitter(), 
+					twitter_password       => DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $li->{twitter_password}),       
+				},
+				-list_settings_vars_param => { 
+					-list    => $list,
+					-dot_it => 1, 
+				},
+			}
+		);
+   
         $scrn .= admin_template_footer(-List => $list);
-		print $scrn; 
+		print $scrn;
+		 
     }else{ 
         
-        my $mass_send_amount           = $q->param("mass_send_amount"); 
-        my $bulk_sleep_amount          = $q->param("bulk_sleep_amount"); 
-        my $precedence                 = $q->param('precedence');
-        my $charset                    = $q->param('charset');
-        my $content_type               = $q->param('content_type');
-        my $enable_bulk_batching       = $q->param("enable_bulk_batching")       || 0;  
-        my $adjust_batch_sleep_time     = $q->param('adjust_batch_sleep_time')     || 0;
-		my $get_finished_notification  = $q->param("get_finished_notification")  || 0;  
-        my $send_via_smtp              = $q->param("send_via_smtp")              || 0;
-   
+        my $mass_send_amount                  = $q->param("mass_send_amount"); 
+        my $bulk_sleep_amount                 = $q->param("bulk_sleep_amount"); 
+        my $enable_bulk_batching              = $q->param("enable_bulk_batching")       || 0;  
+        my $adjust_batch_sleep_time           = $q->param('adjust_batch_sleep_time')     || 0;
+		my $get_finished_notification         = $q->param("get_finished_notification")  || 0;     
         my $auto_pickup_dropped_mailings      = $q->param('auto_pickup_dropped_mailings')      || 0; 
         my $restart_mailings_after_each_batch = $q->param('restart_mailings_after_each_batch') || 0; 
         
- 
-
-
-        $ls->save({ 
-                    mass_send_amount           =>   $mass_send_amount,  
-                    bulk_sleep_amount          =>   $bulk_sleep_amount, 
-                    
-                    enable_bulk_batching       =>   $enable_bulk_batching, 
-					adjust_batch_sleep_time     =>   $adjust_batch_sleep_time,  
-                    bulk_sleep_amount          =>   $bulk_sleep_amount,
-                    get_finished_notification  =>   $get_finished_notification,
-                    send_via_smtp              =>   $send_via_smtp,
-                    
+		my $twitter_mass_mailings             = $q->param('twitter_mass_mailings') || 0; 
+		my $twitter_username                  = $q->param('twitter_username') || ''; 
+		my $twitter_password                  = $q->param('twitter_password') || '';
+		
+        $ls->save(
+			{ 
+                    mass_send_amount                  =>   $mass_send_amount,  
+                    bulk_sleep_amount                 =>   $bulk_sleep_amount, 
+                    enable_bulk_batching              =>   $enable_bulk_batching, 
+					adjust_batch_sleep_time           =>   $adjust_batch_sleep_time,  
+                    bulk_sleep_amount                 =>   $bulk_sleep_amount,
+                    get_finished_notification         =>   $get_finished_notification, 
                     auto_pickup_dropped_mailings      => $auto_pickup_dropped_mailings, 
                     restart_mailings_after_each_batch => $restart_mailings_after_each_batch, 
-                    
-                    
-                    
-                    
-                  }); 
+					twitter_mass_mailings             => $twitter_mass_mailings,
+					twitter_username                  => $twitter_username, 
+					twitter_password                  => DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $twitter_password),      
+                  }
+			); 
                 
-        print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=sending_options&done=1'); 
+        print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=mass_mailing_preferences&done=1'); 
     }
 }
 
@@ -2264,7 +2441,7 @@ sub previewBatchSendingSpeed {
 
 
   my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
-                                                      -Function => 'sending_options');
+                                                      -Function => 'mass_mailing_preferences');
 
     $list = $admin_list;
 
@@ -2340,7 +2517,7 @@ sub commify {
 
 
 
-sub adv_sending_options { 
+sub adv_sending_preferences { 
 
 
     my ($admin_list, $root_login) =  check_list_security(-cgi_obj    => $q,
@@ -2384,10 +2561,6 @@ sub adv_sending_options {
                                                      );
                                      
 
-        my $wrong_uid = 0; 
-           $wrong_uid = 1 
-            if $< != $>;
-
 	
     my $can_mime_encode = 1; 
     eval {require MIME::EncWords;};
@@ -2399,12 +2572,12 @@ sub adv_sending_options {
                             -Root_Login => $root_login));
     
     require DADA::Template::Widgets;
-    print   DADA::Template::Widgets::screen({-screen => 'adv_sending_options_screen.tmpl', 
+    print   DADA::Template::Widgets::screen({-screen => 'adv_sending_preferences_screen.tmpl', 
                                                 -list   => $list,
                                                 -vars   => { 
 	
-															screen                        => 'adv_sending_options', 
-															title                         => 'Advanced Sending Options', 
+															screen                        => 'adv_sending_preferences', 
+															title                         => 'Advanced Sending Preferences', 
 															
                                                             done                          => $done, 
                                                             precedence_popup_menu         => $precedence_popup_menu, 
@@ -2416,9 +2589,6 @@ sub adv_sending_options {
                                                             
                                                             strip_message_headers         => $li->{strip_message_headers}, 
                                                             print_list_headers            => $li->{print_list_headers}, 
-                                                            add_sendmail_f_flag           => $li->{add_sendmail_f_flag}, 
-                                                            f_flag_settings               => $DADA::Config::MAIL_SETTINGS . ' -f' . $li->{admin_email},
-                                                            wrong_uid                     => $wrong_uid, 
                                                             print_errors_to_header        => $li->{print_errors_to_header}, 
                                                             print_return_path_header      => $li->{print_return_path_header}, 
                                                             use_habeas_headers            => $li->{use_habeas_headers}, 
@@ -2427,11 +2597,7 @@ sub adv_sending_options {
                                                             
 															mime_encode_words_in_headers  => $li->{mime_encode_words_in_headers}, 
 															can_mime_encode               => $can_mime_encode, 
-															can_use_twitter               => DADA::App::Guts::can_use_twitter(), 
-															twitter_mass_mailings         => $li->{twitter_mass_mailings}, 
-															twitter_username              => $li->{twitter_username}, 
-															twitter_password              => DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $li->{twitter_password}),       
-                                            		}
+	                                            		}
                                             
                                             });
                                            
@@ -2447,7 +2613,6 @@ sub adv_sending_options {
         my $html_encoding             = $q->param('html_encoding');
         #my $content_type              = $q->param('content_type');
         my $strip_message_headers     = $q->param('strip_message_headers')    || 0;
-        my $add_sendmail_f_flag          = $q->param('add_sendmail_f_flag')      || 0;
         my $print_return_path_header  = $q->param('print_return_path_header') || 0;
         my $print_errors_to_header    = $q->param('print_errors_to_header')   || 0;
         my $print_list_headers          = $q->param('print_list_headers')       || 0;
@@ -2458,9 +2623,7 @@ sub adv_sending_options {
 		
 		my $mime_encode_words_in_headers = $q->param('mime_encode_words_in_headers') || 0; 
 		
-		my $twitter_mass_mailings = $q->param('twitter_mass_mailings') || 0; 
-		my $twitter_username      = $q->param('twitter_username') || ''; 
-		my $twitter_password      = $q->param('twitter_password') || ''; 
+
 		
 		
 		
@@ -2471,7 +2634,6 @@ sub adv_sending_options {
                    charset                  => $charset, 
                    #content_type             => $content_type,
                    strip_message_headers    => $strip_message_headers,
-                   add_sendmail_f_flag      => $add_sendmail_f_flag,
                    print_list_headers       => $print_list_headers,
                    print_return_path_header => $print_return_path_header,
                    print_errors_to_header   => $print_errors_to_header, 
@@ -2483,13 +2645,10 @@ sub adv_sending_options {
                    use_domain_sending_tunings    => $use_domain_sending_tunings, 
 				   mime_encode_words_in_headers  => $mime_encode_words_in_headers, 
 				
-					twitter_mass_mailings  => $twitter_mass_mailings,
-					twitter_username       => $twitter_username, 
-					twitter_password       => DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $twitter_password),      
 		
                    });
 
-        print $q->redirect(-uri=>$DADA::Config::S_PROGRAM_URL . '?flavor=adv_sending_options&done=1'); 
+        print $q->redirect(-uri=>$DADA::Config::S_PROGRAM_URL . '?flavor=adv_sending_preferences&done=1'); 
     }
 }
 
@@ -2670,225 +2829,18 @@ sub sending_tuning_options {
 
 }
 
-
-
-
-sub smtp_options { 
-    
-    my ($admin_list, $root_login) = check_list_security(
-										-cgi_obj  => $q, 
-                                        -Function => 'smtp_options'
-									);
-                                                        
-    
-    
-    
-    $list = $admin_list;
-
-    require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
-
-    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-    my $li = $ls->get; 
-
-    require DADA::Security::Password;
- 
-        
-    my $decrypted_sasl_pass = q{};
-    if($li->{sasl_smtp_password}){
-         $decrypted_sasl_pass = DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $li->{sasl_smtp_password});      
-   }
-   
-    my $decrypted_pop3_pass = q{};
-    if($li->{pop3_password}){ 
-        $decrypted_pop3_pass = DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $li->{pop3_password}); 
-    }
-    
-	# DEV: This is really strange, since if Net::SMTP isn't available, SMTP sending is completely broken. 
-    my $can_use_net_smtp = 0;
-     eval { require Net::SMTP_auth };
-    if(!$@){ 
-        $can_use_net_smtp = 1;
-    }
-
-
-    my $can_use_smtp_ssl = 0;
-     eval { require Net::SMTP::SSL };
-    if(!$@){ 
-        $can_use_smtp_ssl = 1;
-    }
-    
-    my $can_use_ssl = 0;
-     eval { require IO::Socket::SSL };
-    if(!$@){ 
-        $can_use_ssl = 1;
-    }
-    
-    my $mechanism_popup; 
-    if($can_use_net_smtp){ 
-    
-        $mechanism_popup = $q->popup_menu(-name     => 'sasl_auth_mechanism',
- 										  -id       => 'sasl_auth_mechanism', 
-                                          -default  => $li->{sasl_auth_mechanism}, 
-                                          '-values' => [qw(PLAIN LOGIN DIGEST-MD5 CRAM-MD5)],
-                                         );
-    }
-    
-    my $pop3_auth_mode_popup =  $q->popup_menu(-name     => 'pop3_auth_mode', 
-										 -id => 'pop3_auth_mode', 
-                                          -default  => $li->{pop3_auth_mode}, 
-                                          '-values' => [qw(BEST PASS APOP CRAM-MD5)],
-                                           -labels   => {BEST => 'Automatic'},
-
-                                         );
-    
-    if(!$process){
-    
-
-        
-        my $scr;     
-        $scr .= admin_template_header( 
-              #-HTML_Header => 0, 
-              -Title       => "SMTP Sending Options", 
-              -List        => $li->{list}, 
-              -Root_Login  => $root_login);
-              
-        require  DADA::Template::Widgets;
-        $scr .=  DADA::Template::Widgets::screen({-list   => $list, 
-                                                -screen => 'smtp_options_screen.tmpl', 
-
-                                                          -vars  => 
-                                                          {     
-																screen              => 'smtp_options', 
-																title               => 'SMTP Options', 
-																
-																done                => $done, 
-                                                                smtp_server         => $li->{smtp_server}, 
-                                                                smtp_port           => $li->{smtp_port},
-                                                                
-                                                                use_smtp_ssl        =>  $li->{use_smtp_ssl},
-                                                                
-                                                                mechanism_popup     => $mechanism_popup, 
-                                                                
-                                                                can_use_smtp_ssl    =>  $can_use_smtp_ssl, 
-                                                                use_pop_before_smtp => $li->{use_pop_before_smtp},
-                                                                pop3_server         => $li->{pop3_server}, 
-                                                                pop3_username       => $li->{pop3_username}, 
-                                                                decrypted_pop3_pass => $decrypted_pop3_pass, 
-																
-																pop3_use_ssl        => $li->{pop3_use_ssl}, 
-                                                                
-                                                                pop3_auth_mode_popup => $pop3_auth_mode_popup, 
-                                                                can_use_ssl          => $can_use_ssl, 
-                                                                
-                                                                set_smtp_sender     => $li->{set_smtp_sender},
-																smtp_connection_per_batch => $li->{smtp_connection_per_batch}, 
-                                                                
-                                                                admin_email         => $li->{admin_email}, 
-                                                                
-                                                                use_sasl_smtp_auth  => $q->param('use_sasl_smtp_auth') ? $q->param('use_sasl_smtp_auth') : $li->{use_sasl_smtp_auth},
-                                                                
-                                                                 
-                                                                decrypted_pop3_pass => $q->param('pop3_password')      ? $q->param('pop3_password')      : $decrypted_pop3_pass,
-                                                                
-                                                                sasl_auth_mechanism => $q->param('sasl_auth_mechanism') ? $q->param('sasl_auth_mechanism') : $li->{sasl_auth_mechanism},
-                                                                sasl_smtp_username  => $q->param('sasl_smtp_username') ? $q->param('sasl_smtp_username') : $li->{sasl_smtp_username}, 
-                                                                
-                                                                sasl_smtp_password  => $q->param('sasl_smtp_password') ? $q->param('sasl_smtp_password') : $decrypted_sasl_pass, 
-
-                                                                
-                                                          },
-                                                          });
-                                                          
-                                                                # is that last line right?!
-
-        $scr .=  admin_template_footer(-List => $list);
-               
-  
-        e_print($scr); 
-        
-
-        
-    }else{ 
-    
-        my $use_pop_before_smtp = $q->param('use_pop_before_smtp')       || 0;
-        my $set_smtp_sender     = $q->param('set_smtp_sender')           || 0;
-        
-        my $smtp_server         = strip($q->param('smtp_server'));
-        
-        my $pop3_server         = strip($q->param('pop3_server'))        || '';
-        my $pop3_username       = strip($q->param('pop3_username'))      || '';
-        
-
-		my $pop3_password       = strip($q->param('pop3_password'))      || undef;
-        if(defined($pop3_password)){ 
-			$pop3_password = DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $pop3_password);
-		}
-
-		my $pop3_use_ssl        = strip($q->param('pop3_use_ssl'))       || ''; 
-        my $pop3_auth_mode      = strip($q->param('pop3_auth_mode'))     || 'BEST', 
-        my $use_smtp_ssl        = $q->param('use_smtp_ssl')              || 0; 
-        
-        my $sasl_auth_mechanism = $q->param('sasl_auth_mechanism')       || undef, 
-        my $use_sasl_smtp_auth  = $q->param('use_sasl_smtp_auth')        || 0; 
-        my $sasl_smtp_username  = strip($q->param('sasl_smtp_username')) || ''; 
-        
-
-		my $sasl_smtp_password  = strip($q->param('sasl_smtp_password')) || undef;
-		if(defined($sasl_smtp_password)){ 
-			$sasl_smtp_password = DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $sasl_smtp_password)
-		}
-
-        my $smtp_port           = strip($q->param('smtp_port'))          || undef; 
-     	my $smtp_connection_per_batch = strip($q->param('smtp_connection_per_batch')) || 0;
-        
-        $ls->save({
-        
-             smtp_port                 => $smtp_port,
-            #smtp_connect_tries       => $smtp_connect_tries, 
-            use_pop_before_smtp       => $use_pop_before_smtp,
-            
-            use_smtp_ssl              => $use_smtp_ssl, 
-            smtp_server               => $smtp_server,
-            
-            pop3_server               => $pop3_server,    
-            pop3_username             => $pop3_username, 
-            
-            pop3_password             => $pop3_password,    
-            
-			pop3_use_ssl              => $pop3_use_ssl, 
-			pop3_auth_mode            => $pop3_auth_mode, 
-			
-            use_sasl_smtp_auth        => $use_sasl_smtp_auth, 
-            sasl_auth_mechanism       => $sasl_auth_mechanism, 
-            sasl_smtp_username        => $sasl_smtp_username, 
-            sasl_smtp_password        => $sasl_smtp_password,
-            set_smtp_sender           => $set_smtp_sender, 
-        	smtp_connection_per_batch => $smtp_connection_per_batch, 
-			
-}); 
-              
-        if($q->param('no_redirect') == 1){ 
-        
-        #     print "Status: 204 No Response";
-         } else { 
-            print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=smtp_options&done=1'); 
-        }
-    }
-}
-
-sub smtp_test_results {
+sub sending_preferences_test {
 
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'smtp_options'
+        -Function => 'sending_preferences'
     );
 
     my $list = $admin_list;
     $q->param( 'no_redirect', 1 );
 
 	# Saves the params passed
-    smtp_options();
+    sending_preferences();
 
     require DADA::Mail::Send;
     require DADA::MailingList::Settings;
@@ -2903,7 +2855,14 @@ sub smtp_test_results {
         }
     );
 
-    my ( $results, $lines, $report ) = $mh->smtp_test;
+    my ( $results, $lines, $report );
+	eval { 
+    	( $results, $lines, $report ) = $mh->sending_preferences_test;
+	}; 
+	if($@){ 
+		$results = $@; 
+	}
+
     $results =~ s/\</&lt;/g;
     $results =~ s/\>/&gt;/g;
 
@@ -2922,11 +2881,15 @@ sub smtp_test_results {
     require DADA::Template::Widgets;
     print DADA::Template::Widgets::screen(
         {
-            -screen => 'smtp_test_results_widget.tmpl',
+            -screen => 'sending_preferences_test_widget.tmpl',
             -vars   => {
                 report  => $ht_report,
                 raw_log => $results,
-            }
+            },
+			-list_settings_vars_param => {
+				-list   => 	$list, 
+				-dot_it => 1,
+			},
         }
     );
 
@@ -5469,6 +5432,10 @@ sub edit_template {
                                                             template_url_check                      => $template_url_check, 
                                                             
                                                           },
+														-list_settings_vars_param => { 
+															-list    => $list,
+															-dot_it  => 1,
+														},
                                             });
 
         print(admin_template_footer(-List => $list, -Form => 0));
@@ -5507,9 +5474,7 @@ sub edit_template {
 						-screen => 'preview_template.tmpl',
 						-list_settings_vars_param => { 
 							-list    => $list,
-							-dot_it => 1, 
-					
-							
+							-dot_it  => 1,
 						},
 					}
 			); 
@@ -6127,10 +6092,10 @@ sub list_cp_options {
 
 
 
-sub subscriber_fields {
+sub profile_fields {
 
     my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,  
-                                                        -Function => 'subscriber_fields');
+                                                        -Function => 'profile_fields');
     
      $list  = $admin_list; 
      
@@ -6142,17 +6107,17 @@ sub subscriber_fields {
 	
 	if($dpf->can_have_subscriber_fields == 0){ 
 		print admin_template_header(
-			-Title      => "Subscriber Profile Fields", 
+			-Title      => "Profile Fields", 
 			-List       => $list,
 			-Root_Login => $root_login,
 		);
 	     require DADA::Template::Widgets;
 	     print DADA::Template::Widgets::screen(
 			{
-				-screen => 'subscriber_fields.tmpl', 
+				-screen => 'profile_fields.tmpl', 
 				-vars   => {
-					screen                     => 'subscriber_fields',
-					title                      => 'Subscriber Profile Fields',       
+					screen                     => 'profile_fields',
+					title                      => 'Profile Fields',       
 					can_have_subscriber_fields => $dpf->can_have_subscriber_fields, 
 
 				},
@@ -6215,7 +6180,7 @@ sub subscriber_fields {
 				-direction => $dir, 
 			}
 		);
-		print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=subscriber_fields'}); 
+		print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=profile_fields'}); 
         return; 
         
 	 }
@@ -6224,7 +6189,7 @@ sub subscriber_fields {
 		###
         $pfm->remove_field({-field => $field}); 
         
-        print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=subscriber_fields&deletion=1&working_field=' . $field}); 
+        print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=profile_fields&deletion=1&working_field=' . $field}); 
         return; 
      }
      elsif($process eq 'add_field'){ 
@@ -6246,7 +6211,7 @@ sub subscriber_fields {
 				}
 			); 
 			
-            print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=subscriber_fields&addition=1&working_field=' . $field}); 
+            print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=profile_fields&addition=1&working_field=' . $field}); 
             return;      
          }
          else { 
@@ -6283,7 +6248,7 @@ sub subscriber_fields {
 				}
 			);
 
-			print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=subscriber_fields&edited=1&working_field=' . $field}); 
+			print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=profile_fields&edited=1&working_field=' . $field}); 
              return;
 		}
          else { 
@@ -6308,16 +6273,16 @@ sub subscriber_fields {
      }
      
         print admin_template_header(
-				-Title      => "Subscriber Profile Fields", 
+				-Title      => "Profile Fields", 
                 -List       => $li->{list},
                 -Root_Login => $root_login,
               );
         require DADA::Template::Widgets;
-        print DADA::Template::Widgets::screen({-screen => 'subscriber_fields.tmpl', 
+        print DADA::Template::Widgets::screen({-screen => 'profile_fields.tmpl', 
                                                -vars   => {
 														
-													   screen                           => 'subscriber_fields',
-													   title                            => 'Subscriber Profile Fields',       
+													   screen                           => 'profile_fields',
+													   title                            => 'Profile Fields',       
 													 
 													   edit_field                       => $edit_field, 
                                                        fields                           => $named_subscriber_fields,
