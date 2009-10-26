@@ -264,5 +264,9 @@ In rare occassions, the mail server will actually strip out the HTML version of 
 
 =back
 
+=head2 No Mail is Sending at All. 
+
+If you have root access to your own server and NO mail is being sent with any email utility, try rebooting your server. If that doesn't work, sincerely look for professional help, to solve the problem. 
+
 =cut
 

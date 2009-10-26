@@ -142,7 +142,7 @@ This is sort of a, "long time comin'" anyways, since the list owner email was al
 
 =back
 
-=head2 Template pseudo tags
+=head2 Template tags
 
 =over
 

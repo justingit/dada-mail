@@ -1,48 +1,47 @@
 =head1 Frequently Asked Questions
 
-=head1 General 
+=head1 Errors
 
-=head2 What do I need to run Dada Mail? 
+See the Error FAQ: 
 
-http://dadamailproject.com/support/requirements.html
+L<http://dadamailproject.com/support/documentation/FAQ-errors.pod.html>
 
-=head2 But I have a Windows Server, The system requirements B<clearly> state that it's not supported - is this true? 
+=head1 Support
 
-Short answer: B<yes>
+See the support page on the Dada Mail website: 
 
-Long answer: 
+L<http://dadamailproject.com/support>
 
-http://dadamailproject.com/support/documentation/README-windows.pod.html
+=head1 Using Dada Mail
 
-B<...yes>
+=head2 How Do I Install Dada Mail? 
 
-I do get this asked a lot, so I'm sorry I have to repeat myself - it's a project for someone else, I'm personally not interested in making it happen. So please understand - at the moment - no, Dada Mail does not work on a Windows Server. 
+=head3 Manually
 
-The largest hurtle is going to be emulation of the C<fork()> Perl subroutine. 
+There is no installer for Dada Mail that we provide, but there are installation instructions. 
 
-=head2 Does Dada Mail need any special Perl CPAN modules installed? 
+See: 
 
-Yes it does, but Dada Mail I<should> come with all the CPAN modules that are needed within the distribution itself. 
+L<http://dadamailproject.com/support/documentation/installation.pod.html>
 
-Currently, this is done by copying a local perllib into the, I<dada/DADA/perllib> directory of the Dada Mail distribution. 
+=head3 Simple Scripts
 
-If you'd like to have the CPAN modules required installed in your site-wide perl library, a Dada Mail-specific CPAN Bundle is located in the: I<dada/DADA/extras/developers/DadaMail.pm> file. 
+Simple Scripts, I<does> in fact have an installer for Dada Mail, which we think is great: 
 
-=head2 Is Dada Mail a Server? A Daemon? 
+L<https://www.simplescripts.com/page/id:8-pCU3Jz0E>
 
-No and no. Dada Mail does not listen to any particular port, nor does it always run in the background awaiting a request. Dada Mail runs (mostly) as a simple CGI script. 
+=head3 cPanel
 
-Dada Mail does have some modes where it can be run from a command line/cron job, but even then, it runs and exits; there is no daemon activity in Dada Mail. Dada Mail should always be run as a regular user and B<never> as root. 
+If you have a cPanel-based hosting account (Bluehost, Hostmonster and many others), see if Simple Scripts is
+built right into your cPanel - it'll allow you to install Dada Mail with just a few clicks. We think that's pretty cool, as well. 
 
-=head2 Is Dada Mail an Autoresponder? 
+=head3 Paid Installation
 
-No. Dada Mail is not an autoresponder.
+We do install Dada Mail on behalf of our clients: 
 
-The closet thing in Dada Mail is going to be B<Beatitude>, which allows you to set mass mailings on a preset schedule, but it does not keep track, on a subscriber-by-subscriber basis, which messages an individual subscriber has received. 
+L<http://dadamailproject.com/installation/request.html>
 
-
-
-=head1 Everyday Tasks
+We do a great job!
 
 =head2 How Do I Create a New List? 
 
@@ -73,29 +72,15 @@ When the screen is refreshed, the popup menu will be replaced by a text box. You
 If you do not remember the B<list short name> of the list you want to log into, you can also simply log into any list with your Dada Mail Root Password and once logged in, switch which list you want to work on, by selecting the list you want to work inthe popup menu on the upper left hand side of the List Control Panel. All lists available will be listed in this popup menu. 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=head2  How do I delete a list? 
+=head2  How Do I Delete a List? 
 
 Log into a list using the Dada Mail Root Password. You'll see the option under the, B<Manage List> heading. 
 
-=head2 Can I rename the mail.cgi file?
+=head2 Can I Rename the mail.cgi File?
 
-Yes. You can rename the, B<mail.cgi> file to any other valid filename, like newsletter.cgi or craaaaazyname.cgi. You'll most likely have to keep the file ending either, B<.cgi> or B<.pl>
+Yes. You can rename the, B<mail.cgi> file to any other valid filename, like I<newsletter.cgi> or I<craaaaazyname.cgi>. You'll most likely have to keep the file ending either, B<.cgi> or B<.pl>
 
-The only place that this variable is hardcoded is in the, B<PROGRAM_URL> variable - so make sure to change this variable as well to reflect the file name changes.
+The only place that this variable is hardcoded is in the, C<$PROGRAM_URL> variable - so make sure to change this variable as well to reflect the file name changes.
 
 =head2 How do I fetch/reset the Dada Mail Root Password
 
@@ -126,40 +111,6 @@ and follow the instructions.
 =head2 Is there any way to stop a mass mailing once it is started? 
 
 Yes. In the list control panel, click on, "Monitor Your Mailings", click on the mailing you want to stop and when on that specific message screen, click the, B<STOP Mailing> button.
-
-2.10.10 and below:
-
-Yes, but not from the web ui. There are two techniques, kill the process outright and removing the temporary copy of the subscriber list. 
-
-=over
-
-=item * Killing the sending process
-
-If you have shell access, issue the B<kill> command with the process id (pid) of the sending process. This id should be writtern down in Dada Mail's usage log - if you haven't set this log explicitly, it should be saved as, I<dada_usage.txt> in whatever directory you set the B<$LOGS> variable to - if you haven't set that variable explicitly, that variable will be set to whatever B<$FILES> is set to (*whew*!)
-
-You'll see an entry in the log that looks sort of like this: 
-
- [Fri Feb  3 03:45:03 2006]	listshortname		Message pid: 76354	Subject:This is my subject!
-
-The message pid for this message is, B<76354>. You'll then want to type in the B<kill> command: 
-
- kill 76354
-
- The exact format of issuing the command my be different for your server, but that's the jist of it. 
-
-=item * Deleting the temporary subscriber list
-
-When mass mailings occur, a temporary file is created, holding all your list subscribers. This keeps the main list free for subscriptions/unsubscriptions while the mailing is going out. Handy. If you remove this file while a mailing is going out, you'll essentially stop the mass mailing. 
-
-This file is saved in whichever directory you set the, B<$TMP> variable to. If you haven't set the variable, it'll be saved in the directory you set the, B<$FILES> variable to. It looks sort of like this: 
-
- mylist.list.20051120131106.78619561_at_example.com
-
-The format is, your list shortname, the type of list you're sending (usually, 'list'), a whole string of numbers that correspond to the B<Message-id> header of the message you're sending out. 
-
-Remove this file, and you're mailing will stop - you may receive a, "List Completed" message, this is normal. 
-
-=back
 
 =head1 Subscriptions
 
@@ -538,12 +489,63 @@ B<( Images in this Webpage Should:) "be embedded in the message itself. ">
 
 L<http://docs.fckeditor.net/FCKeditor_2.x/Developers_Guide/Configuration/Built_in_File_Browser>
 
-=head2 Does Dada Mail Support CKeditor 3.0? 
+=head2 How do install, "CPAN Perl Modules"
 
-No, at the moment, there is no built-in support for CKeditor (although feel free to hack in support, yourself!) 
+There are many advanced features in Dada Mail, that rely on I<CPAN Perl Modules>
 
-The reason is that there is no free file-upload utility for CKeditor. When one becomes 
-available, we will add support for CKeditor. 
+CPAN is the I<Comprehensive Perl Archive Network> - it's a fast collection of reusable Perl code.
+
+Installing these modules may be tricky. We'll go over a few ways you can install these modules: 
+
+=head3 The cpan Shell
+ 
+The, C<cpan> shell is how one usually installs CPAN modules. You'll need root access to your hosting account, 
+usually, but you can install CPAN modules in your home directory. This topic is well over the 
+forté of this particular FAQ, but do see: 
+
+L<http://sial.org/howto/perl/life-with-cpan/non-root/> 
+
+Actually, this entire site is very helpful: 
+
+L<http://sial.org/howto/perl/life-with-cpan>
+
+So, say you need a Perl CPAN module that Dada Mail wants to use, like C<Gravatar::URL>. Once you have your CPAN shell all set up, you'd just ask C<cpan> to install it, like so: 
+
+ cpan install Gravatar::URL
+
+If you do have your own, private CPAN library, you'll have to tweak Dada Mail to let it know where it is. Say you have your local CPAN library at, 
+
+ /home/youraccount/perllib
+
+In Dada Mail's C<mail.cgi> file, you'd have to find the, C<use lib> lines: 
+
+ use lib qw(		
+	./ 
+	./DADA 
+	./DADA/perllib
+	../../../perl
+	../../../perllib
+ );
+
+And just add your new CPAN library: 
+
+ use lib qw(		
+	./ 
+	./DADA 
+	./DADA/perllib
+	../../../perl
+	../../../perllib
+    /home/youraccount/perllib
+ );
+
+=head3 Cpanel's Perl Module Installer
+
+If all this talk of shells and commands and CPANs has you confused, you're in luck, if you have a hosting account that's powered by Cpanel. 
+
+Your Cpanel may have a Perl Module Installer - in your cPanel, look for, I<Perl Module Installer>. Once in this screen, just enter the module you'd like to install, like, C<Gravatar::URL>. and it'll handle on the hard stuff for you, similar to how its down above. 
+
+You still have to tweak your C<use lib> line in the C<mail.cgi> directory - so be aware of that. 
+
 
 =head1 The List Confirmation Process
 
@@ -569,8 +571,6 @@ Running the Program Generates a 500 Server Error Message when I do, "x"
 See the error FAQ: 
 
 http://dadamailproject.com/support/documentation/FAQ-errors.pod.html
-
-
 
 =head1 Dada Mail and HTML Templates
 
@@ -1202,52 +1202,19 @@ L<http://dadamailproject.com/support/documentation/FAQ-email_sending.pod.html>
 
 =head1 Archiving
 
-=head2 How do you edit an archived message? (2.10.7 and above) 
-
-Archive editing is built into (again) the main program, you'll see, "edit" buttons wherever you'd see the archived message itself, while in the list control panel.
-
-=head2 How do you edit an archived message? (2.10.6 and below)
-
-See the archive editor plugin:
-
-http://dadamailproject.com/support/documentation/archive_editor.cgi.html
-
-It works with Dada Mail 2.10.2 and above. Fairly easy to install. 
-
-=head2 How do you edit an archive message with anything that's below 2.10.2?
-
-You can't. 
-
-=head2 I remember that you used to be able to edit an archived message - what happened?
-
-It was broken beyond repair and I threw it away. 
-
-MIME-messages - the kind that Dada Mail understands how to create and send are non-trivial to edit. I have yet to create a Web-based MIME-editor written in Perl. I'm not sure if anyone has created this:
-
-I<A web-based MIME editor, written in Perl which can take a valid, but incredibly varied format.>
-
-Not to beat a dead horse, but it's just non-trivial and I haven't gotten the time to create it. Besides, when is the last time you were able to edit the messages you sent from your mail reader?
-
-=head2 OK, I get it, there is no way to edit archived messages (in versions below 2.10.2) - is there a workaround?
+=head2 Is there a way to add a message to the archive, without sending the message?
 
 Yes! There are a few ways. 
 
-=over
-
-
-=item * The, "Best" Way
-
-Or, How to add a new message to Dada Mail's archive, without sending an actual message:
+=head3 Archive but DO NOT send, method
 
 =over
 
 =item 1 Find the message you would like to edit. Copy its contents.
 
-If you're just adding a new message, skip this step.
-
 =item 2 Log into Dada Mail's List control panel and go to, "Send a Message". (Re)write the message. 
 
-=item 3 Find the link at the bottom of the page titled, B< Show/Hide Archive Options ->. Click it. 
+=item 3 Find the link at the bottom of the page titled, B< +/-  Archiving >. Click it. 
 
 =item 4 Check: B<Archive this message>
 
@@ -1263,11 +1230,12 @@ To whatever you so desire.
 
 This option is also available in the, "Send a Webpage" screen. 
 
-=item * The, "Edit the SQL Table directly", way
+=head3 Edit the SQL Table directly
 
 If you're using the SQL backend for archives, just edit the message in the SQL table. You'll most likely want to change the, "subject" and, "raw_msg" columns. Not for the faint of heart.
 
-=item * The, "Edit the archive backups and reload" way
+
+=head3 Edit the archive backups and reload
 
 This is definetely not for the faint of heart. HACK ahead:
 
@@ -1289,13 +1257,6 @@ and go through the process of restoring your lists. Heed the warning of making r
 
 Told you it was a hack. 
 
-=item * The, "Use an older version of Dada Mail to edit archives", way
-
-Install an older version of Dada Mail (2.8.15 or earlier), that's configured to use the same, $FILES directory as your new Dada Mail version, but install it in a separate directory. Use the, "Add/Edit" archive features in that version. Your mileage will vary wildly. This will not work well if you're using the SQL backend.
-
-Amen.
-
-=back
 
 =head1 Glossary Terms
 
@@ -1322,6 +1283,50 @@ When accessing your account via FTP, you may not be able to navigate up to the, 
 See also: 
 
 http://www.computerhope.com/jargon/a/absopath.htm
+
+
+=head1 System Requirements 
+
+=head2 What do I need to run Dada Mail? 
+
+http://dadamailproject.com/support/requirements.html
+
+=head2 But I have a Windows Server, The system requirements B<clearly> state that it's not supported - is this true? 
+
+Short answer: B<yes>
+
+Long answer: 
+
+http://dadamailproject.com/support/documentation/README-windows.pod.html
+
+B<...yes>
+
+I do get this asked a lot, so I'm sorry I have to repeat myself - it's a project for someone else, I'm personally not interested in making it happen. So please understand - at the moment - no, Dada Mail does not work on a Windows Server. 
+
+The largest hurtle is going to be emulation of the C<fork()> Perl subroutine. 
+
+=head2 Does Dada Mail need any special Perl CPAN modules installed? 
+
+Yes it does, but Dada Mail I<should> come with all the CPAN modules that are needed within the distribution itself. 
+
+Currently, this is done by copying a local perllib into the, I<dada/DADA/perllib> directory of the Dada Mail distribution. 
+
+If you'd like to have the CPAN modules required installed in your site-wide perl library, a Dada Mail-specific CPAN Bundle is located in the: I<dada/DADA/extras/developers/DadaMail.pm> file. 
+
+=head1 What is Dada Mail?
+
+=head2 Is Dada Mail a Server? A Daemon? 
+
+No and no. Dada Mail does not listen to any particular port, nor does it always run in the background awaiting a request. Dada Mail runs (mostly) as a simple CGI script. 
+
+Dada Mail does have some modes where it can be run from a command line/cron job, but even then, it runs and exits; there is no daemon activity in Dada Mail. Dada Mail should always be run as a regular user and B<never> as root. 
+
+=head2 Is Dada Mail an Autoresponder? 
+
+No. Dada Mail is not an autoresponder.
+
+The closet thing in Dada Mail is going to be B<Beatitude>, which allows you to set mass mailings on a preset schedule, but it does not keep track, on a subscriber-by-subscriber basis, which messages an individual subscriber has received. 
+
 
 =head1 About The Author
 
@@ -1420,65 +1425,21 @@ See the Dada Mail File Format FAQ:
 
 http://dadamailproject.com/support/documentation/FAQ-file_formats.pod.html
 
-=head2  Does Dada Mail support the saving of more than the email address? 
-
-At the moment, no. We're working on it. 
-
 =head2  Who develops Dada Mail?
 
-Justin Simoni is the lead designer of Dada Mail. Many other people have helped out along the way, but most everything is the work of his grubby little hands. 
-
-Justin prides himself on being one of those people who gets into everything. He holds a Bachelors of Fine Art in Painting and doesn't have any "official" Computer Science training. A Hacker and Painter ala Paul Graham's book. 
-
-See his portfolio: 
-
-http://justinsimoni.com
-
-Purchase some art. This kid's going places. 
-
-=head2 How is Dada Mail developed? 
-
-Dada Mail is developed using the Sourceforge suite of tools. 
-
-http://sourceforge.net
-
-I use BBEdit as my text editor - http://www.barebones.com/products/bbedit
-
-Transmit as my FTP program - http://panic.com/transmit/
-
-I use jCVS as my CVS client - http://jcvs.org
-
-And not much else; 
+Justin J is the lead designer of Dada Mail. 
 
 =head2 Can I help? 
 
 Yes. 
 
-In so many ways, depending on your knowledge of the technology involved - and there's a lot, including Network programming, UI design, HTML, CSS, Perl, CGI - lots and gobs more on top of that. 
+Please get in touch: 
 
-If you're at all interested, join the Dada Developers mailing list: 
+L<http://dadamailproject.com/contact>
 
-http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/
+=head2 Is there a public repository for Dada Mail?  
 
-To get an idea on what's going on.
+Yes.
 
-As far as I'm concerned, I'm an absolute gear head when it comes to layout, design and usability. Not B<always> shows up in Dada Mail's design, but I try. Got that BFA and all...
-
-I'm passable when it comes to Perl. Really. 
-
-I'm an absolute clutz when it comes to SQL database design. 
-
-If you don't know anything about the underlying technology, but are having problems using the program, describe your problem to the developers, either on the boards or on the mailing lists
-
-If you know a little about the underlying technology, point us to the problem with error log snippets, etc. 
-
-If you'd like to start hacking away at the program, start by submitting patches to be applied to B<the latest version checked out from the CVS server>. 
-
-If you rock the patches, I'll be happy to give you checkin rights - honestly, you'd be my saviour.  If you're really good at that, we can talk about babysitter the bunny that lives with me. He's cute. 
-
-=head2 Is there a CVS server I can check in/out of? 
-
-No. We've moved to Git. That information can be accessed here: 
-
-L<http://dadamailproject.com/download/git.html>
+L<http://github.com/justingit/dada-mail>
 

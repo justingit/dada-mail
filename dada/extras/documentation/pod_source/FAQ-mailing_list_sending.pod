@@ -7,7 +7,7 @@ This FAQ specifically tries to answer questions about sending a whole lotta mail
 What's, "a whole lotta mail to a whole latta people?"  Depends on your server setup - if you're on a shared hosting setup, a lot of people could be 500. If you have a dedicated server, it could be over 25,000. Regardless, we're going to be talking about sending out messages to your entire list, instead of just simply how Dada Mail sends a single email message. 
 
 
-This FAQ goes through quite a bit of detail on how to use the batch settings and auto pickup features in Dada Mail. 
+This FAQ goes through quite a bit of detail on how to use the B<batch settings> and B<auto pickup> features in Dada Mail. 
 
 We'll also go over how different, separate mailouts interact with each other and what gets sent when. 
 
@@ -57,9 +57,9 @@ One last step:
 
 =over
 
-=item * Click the, "Monitor Your Mailing!" button 
+=item * Keep the Mailing Monitor Screen Open! 
 
-After you've submitted a mailing list message and keep that screen open until your message has completed. 
+After you've submitted a mailing list message, keep that screen open until your message has completed!
 
 =back
 
@@ -69,7 +69,7 @@ If you do all these steps, you will be on your way to trouble-free mailing list 
 
 =head2 What's "Batch Sending" 
 
-Batch Sending is used primarily to slow down a mailing and space out message sending over a longer period of time. It has basically two parts to it: 
+Batch Sending is used primarily to I<slow down> a mass mailing and space out message sending over a longer period of time. It has basically two parts to it: 
 
 =over
 
@@ -124,12 +124,6 @@ Handy.
 
 =for html <div class="pod_history">
 
-B<Historical Note - Version 2.10.10 and below:> 
-
-In older versions of Dada Mail, batches were numbered, so the logs would say, "Batch #1 Completed", etc. This is no longer the case, since mailings may stop mid-batch. As explained, this is OK behavior now. Mailings may also re-start mid-batch. This makes numbering batching slightly useless.
-
-=for html </div> 
-
 =head2 Why would I want to throttle down the speed of a mailing by using batching? 
 
 Good question! If you think about it, why wouldn't you want to send as many messages as fast as possible?
@@ -146,7 +140,7 @@ I almost B<guarantee you> that if you're on a shared hosting account - which is 
 
 For el-cheapo hosting accounts - ones that cost between $10 - $60 a month, you're probably limited to B<500 messages/hour>. Don't take this as truth though, check with your B<own> hosting company and get the exact amount that they say is, "OK". Set your batch settings a little lower than what the limit is - since you may receive sub/unsub requests, etc. 
 
-So, if your hosting account limits you to 500/messages an hour, try setting your batches to something like: B<1 message, every 8 seconds>. In fact, that may be the factory default setting. Hey! Aren't we nice. 
+So, if your hosting account limits you to 500/messages an hour, try setting your batches to something like: B<1 message, every 8 seconds>. In fact, that may be the factory default setting. 
 
 A few tell-tale signs your going over you're sending limit: 
 
@@ -198,7 +192,7 @@ Currently, without hacking about, you can send 1 to 180 messages and then wait 1
 
 Consider that one message, every 180 seconds (the slowest setting you can have) is 30 messages B<an hour>. That's slooooow. 
 
-Sending 180 messages, every second (the fastest setting you can have) is a rate of 10800 messages a B<minute> - 648,000 messages an hour. If your mail server can even support that, hats off - unless it's specifically tuned to send copius amounts of mail, there's no way you'll be able to get up to that speed. 
+Sending 180 messages, every second (the fastest setting you can have) is a rate of 10,800 messages a B<minute> - 648,000 messages an hour. If your mail server can even support that, hats off - unless it's specifically tuned to send copius amounts of mail, there's no way you'll be able to get up to that speed. 
 
 Honestly.
 
@@ -216,7 +210,7 @@ You can configure the feature in the list control panel. Log into your list and 
 
 =head2 Why do you need to use the Auto Pickup feature?
 
-Sounds like this feature is something bolted on, to fix a larger, underlying bug in Dada Mail. Hre's the skinny: 
+Sounds like this feature is something bolted on, to fix a larger, underlying bug in Dada Mail. Here's the skinny: 
 
 Unlike traditional Mailing List Managers (Mailman, Majordomo, EZelm), B<Dada Mail does not run as a daemon> - (and this is simplifying things) which is a program that is B<always running>, just waiting to do something. 
 
@@ -227,18 +221,6 @@ So, that's the kind of environment we're working under. Quite restrictive.
 This poses some problems, for this simple fact: Sending out a message to a lot of people takes a lot of time. If you've read the above, you've realized that you want to B<send your mailing list sendouts in batches>. No question. 
 
 If your subscriber list is long enough to go over the limitation of how long a process can run for - which is pretty easy, your mailing is going to fail, mid way through somewhere, and this is bad.... if! you do not have a way to reload a list that has stopped at a specific part of your list, automatically. Which is what the auto-pickup feature does. So - no fretting. 
-
-
-
-=for html <div class="pod_history"> 
-
-B<Historical Note - Version 2.10.10 and below:> 
-
-To give you some historical background, there was a time (gather 'round kids) when Dada Mail did not have the auto pickup feature, so the best you could do is try to figure out where your message dropped and manually restart it from a specific point in your list. Frustrating. Clunky. Dumb. (dumb programmer).
-
-=for html </div> 
-
-Times have changed and now we have the auto-pickup feature. 
 
 Should you use it? Yes. Please, yes. It's going to help you make a successful mailing list and it'll allow you to send a mailout slower, which, as we went over in the batch sending FAQ's is actually a good thing. 
 
@@ -259,20 +241,6 @@ That turns on the feature. Have that checked.
 =item * Restart Mailings After Each Batch 
 
 This setting takes some explaination and we're going to get a little technical. 
-
-=for html <div class="pod_history"> 
-
-B<Historical Note:> 
-
-Usually and historically, Dada Mail would pause between batches by using the C<sleep> Perl function. C<sleep> basically makes the program not do anything, for a specified amount of time. Neat, huh? Problems though: 
-
-=for html </div> 
-
-It's possible that if you have incredibly strict web hosting server, it'll kill any process that attempts to C<sleep>, for any amount of time. This would make your mailout last exactly one batch, which is of no use to use. 
-
-Checking this option will not use the C<sleep> function, but will stop Dada Mail sending out a mailing completely. A mailout will reload and resume when the amount specified in the batch settings has been reached - B<but> you'll need to be on the B<Sending Monitor Screen> for everything to work correctly.
-
-=back
 
 =head2 What is the Sending Monitor Screen and why is it so important for the Auto Pickup feature? 
 
@@ -346,7 +314,7 @@ in Dada Mail itself, see the L<auto_pickup.pl> extension noted above, or the C<s
 
 Multiple Mailouts can go on at one time. 
 
-By default (conservatively) Dada Mail only allows you to have B<one> mailout at one time. You can change this in the Config.pm file, under the variable, B<$MAILOUT_AT_ONCE_LIMIT>. Past versions (before ver. 3.0, basically) had no specific limit on the amount of mailouts they supported. 
+By default (conservatively) Dada Mail only allows you to have B<one> mailout at one time. You can change this in the Config.pm file, under the variable, B<$MAILOUT_AT_ONCE_LIMIT>.
 
 This is to allow you to have a good idea on how to easily keep below any server restrictions on how much email you can send in a specified  period of time. 
 
