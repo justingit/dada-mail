@@ -2567,7 +2567,7 @@ sub adv_sending_preferences {
     if($@){ 
 		$can_mime_encode = 0; 
 	}
-    print(admin_template_header(-Title      => "Advanced Sending Options", 
+    print(admin_template_header(-Title      => "Advanced Sending Preferences", 
                             -List       => $list, 
                             -Root_Login => $root_login));
     

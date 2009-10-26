@@ -83,7 +83,7 @@ During a Mass Mailing, Dada Mail will send a specific amount of messages out, wa
 
 Batch sending does B<not> work by sending a specific amount of messages during a specific amount of time. Close to that, but not that. 
 
-Batch setting is configured in the list's control panel: Log into your list and go to: B<Manage List - Sending Options>. You should see the settings to change. Pretty simple. 
+Batch setting is configured in the list's control panel: Log into your list and go to: B<Mail Sending - Mass Mailing Preferences>. You should see the settings to change. Pretty simple. 
 
 If you'd like to set a default for all B<new> lists, you may in the B<Config.pm> variable, B<%LIST_SETUP_DEFAULTS>. The key/values are:
 
@@ -212,7 +212,7 @@ The, B<Auto-Pickup Dropped List Message Mailings> is going to be your best frien
 
 Basically, this feature, once enabled will make sure the process of sending out a mailing will succeed to completion. 
 
-You can configure the feature in the list control panel. Log into your list and under B<Manage List - Sending Options>, you should see the settings to change. 
+You can configure the feature in the list control panel. Log into your list and under B<Mail Sending - Mass Mailing Preferences>, you should see the settings to change. 
 
 =head2 Why do you need to use the Auto Pickup feature?
 
@@ -246,7 +246,7 @@ Should you use it? Yes. Please, yes. It's going to help you make a successful ma
 
 How do you use the Auto Pickup Options? 
 
-You can configure the feature in the list control panel. Log into your list and under B<Manage List - Sending Options>, you should see the settings to change. 
+You can configure the feature in the list control panel. Log into your list and under B<Mail Sending - Mass Mailing Preferences>, you should see the settings to change. 
 
 You have two settings to which to play with: 
 

@@ -94,7 +94,9 @@ The username and password that you want to give the SMTP server is either:
 
 =back
 
-Usually, I check the option in B<Manage List: Sending Options: SMTP Settings>, I<Set the Sender of SMTP Mailings to the List Administration Address>. If I have to use Authentication with the SMTP server, I will then use the B<List Admin's username/password information>
+Usually, I check the option in B<Mail Sending: Sending Preferences>, I<Set the Sender of SMTP Mailings to the List Administration Address> (under, Advanced SMTP Options
+
+). If I have to use Authentication with the SMTP server, it will then use the B<List Admin's username/password information>
 
 =head2 How do you know you're supposed to use SASL authentication? 
 
@@ -112,7 +114,7 @@ Again, you'll probably want to use the B<list owner's email address>'s username/
 
 =head2 Testing Your SMTP Sending
 
-In the B<Manage List:  Sending Options: SMTP Options> list admin screen, you should see  a button labeled, B<Save and Test SMTP Settings...>. Clicking this button will both Save your SMTP settings and test the settings to see if they work. 
+In the B<Manage List:  Mail Sending: Sending Preferences list control panel, you should see  a button labeled, B<Save, Then Test Your Sending Preferences...>. Clicking this button will both Save your SMTP settings and test the settings to see if they work. 
 
 Testing basically involves connecting to the SMTP server and attempting to send a message out. 
 
@@ -202,13 +204,13 @@ Saying all that, Dada Mail's B<list administrator> should be what's being set in
 
 By default, this is probably not the case - you'll have to do some minor tweaks to your list. If you don't, the best bet is that the B<Return-Path> header is set to a email address that is quite foreign to you. 
 
-Depending on how your sending options are setup, you need to do different tweaks. Here they are: 
+Depending on how your Sending Preferences are setup, you need to do different tweaks. Here they are: 
 
 =over
 
 =item * Setting up the Return-Path when sending via SMTP
 
-In B<Sending Options - SMTP Options> check, 
+In B<Mail Settings - Sending Preferences  check, 
 
 I<Set the Sender of SMTP mailings to the list administration email address >
 
@@ -218,7 +220,7 @@ You're all done.
 
 I<Usually> this works: 
 
-In B<Sending Options - Advanced> check, 
+In B<Mail Settings - Sending Preferences> check, 
 
 I<Add the Sendmail '-f' flag when sending messages> 
 

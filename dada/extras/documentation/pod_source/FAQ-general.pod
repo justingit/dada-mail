@@ -827,7 +827,7 @@ HTML screens are control by the Config.pm variable, C<$HTML_CHARSET>. You can ch
 
  $HTML_CHARSET ||= 'utf-8'; 
 
-Email messages are controlled per list. In the list control, go to: B<Manage List - Sending Options - Advanced> and select the charset you'd like to use under, B<Default Character Set of Mailings>
+Email messages are controlled per list. In the list control, go to: B<Mail Settings - Advanced Sending Preferences> and select the charset you'd like to use under, B<Default Character Set of Mailings>
 
 If you do not see the charset you want to set Dada Mail to use, you can add the charset in the Config.pm array, C<@CHARSETS>
 

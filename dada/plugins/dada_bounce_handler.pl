@@ -5240,7 +5240,7 @@ After that, you'll need to configure outgoing email messages to set the B<Dada L
 
 =head3 If you're using th sendmail command: 
 
-In the list control panel, go to B<Sending Options - Advanced> and 
+In the list control panel, go to B<Mail Sending - Sending Preferences> and 
 check: B<Add the Sendmail '-f' flag when sending messages ...>
 
 This I<should> set the sending to the admin email, and in turn, set the
@@ -5248,7 +5248,7 @@ B<Return-Path> header. Dada Mail 3.0 is shipped to have this option set by defau
 
 =head3 If you're using SMTP sending: 
 
-In the list control panel, go to: B<Sending Options -> SMTP settings>
+In the list control panel, go to: B<Sending Preferences - Sending Preferences>
 and check the box labeled: B<Set the Sender of SMTP mailings to the 
 list administration email address>  Dada Mail 3.0 is shipped to have this option set by default. 
 
@@ -5711,7 +5711,7 @@ Notice there are no quotes around 0777.
 
 =item * The program is working great; but bounces aren't being handled at all
 
-Make sure that you have checked, B<Print list-specific headers in all list emails> in Sending Options -> Advanced. Mystery Girl uses the I<List> 
+Make sure that you have checked, B<Print list-specific headers in all list emails> in Mail Sending - Advanced Sending Preferences>. Mystery Girl uses the I<List> 
 header to figure out what list the bounce is coming from.
 
 =item * I found a bug in this program, what do I do? 
