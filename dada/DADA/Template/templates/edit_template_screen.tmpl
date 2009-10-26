@@ -5,54 +5,41 @@
 <!--/tmpl_if-->
 
 <p>
- <!-- tmpl_var PROGRAM_NAME --> uses &quot;tags&quot; to 
- represent data that may change regularly. These tags are replaced 
- with the information they represent when shown to your visitors. 
- A list of relevant tags is shown at the end of this page.
+	The Mailing List Template is used to personalize the look of your Mailing List, when you visit it in a web browser. 
+</p> 
+<p>
+	For example, your design will be reflected in your 
+	<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/"  target="_blank">
+		List Screen
+	</a>
+	and your
+	<a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list -->/" target="_blank">
+		Archive Screens</a>.
 </p>
 
+	
 
 <form name="the_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 
 <fieldset> 
-	
+	<legend>Your Mailing List Template</legend> 
 
 
- <table cellpadding="5">
-  <tr>
-   <td>
-    <p>
-     <input type="checkbox" id="apply_list_template_to_html_msgs" name="apply_list_template_to_html_msgs" value="1" <!-- tmpl_if apply_list_template_to_html_msgs -->checked="checked"<!--/tmpl_if--> />
-    </p>
-   </td>
-   <td>
-    <p>
-     <label for="apply_list_template_to_html_msgs">
-      Apply the list template to HTML email messages
-     </label>
-     <br />
-     Normally, the list template is used to format HTML screens 
-     viewed from your Web browser, but it can also be used to 
-     format your HTML email messages.
-    </p>
-   </td>
-  </tr>
- </table>
 
  <p>
   <input type="radio" name="get_template_data" id="from_default_template" value="from_default_template" <!-- tmpl_if get_template_data_from_default_template -->checked="checked"<!--/tmpl_if--> />
   <label for="from_default_template">
-   Use the default list template
+   Use the Default Mailing List Template
   </label>
  </p>
 
  <p>
   <input type="radio" name="get_template_data" id="from_template_file" value="from_template_file" <!-- tmpl_if get_template_data_from_template_file -->checked="checked"<!--/tmpl_if--> />
   <label for="from_template_file">
-   Use this information for the  template:
+   Use this Custom Template for your Mailing List: 
   </label>
   <br />
-  <textarea name="template_info" cols="70" rows="20" style="font-size:11px"><!-- tmpl_var edit_this_template --></textarea>
+  <textarea name="template_info" cols="70" rows="20"><!-- tmpl_var edit_this_template --></textarea>
  </p>
  
  <!-- tmpl_if can_use_lwp_simple -->
@@ -60,7 +47,7 @@
 	 <p>
 	  <input type="radio" name="get_template_data" id="from_url" value="from_url" <!-- tmpl_if get_template_data_from_url -->checked="checked"<!--/tmpl_if--> />
 	  <label for="from_url">
-	   Use this URL as the template:
+	   Use the Custom Template at this URL for your Mailing List:
 	  </label>
 	  <!-- tmpl_unless template_url_check --> 
           </p> 
@@ -73,6 +60,30 @@
 	 </p>
 	 
 <!--/tmpl_if -->
+
+
+</fieldset> 
+
+<fieldset> 
+	<legend>Options</legend> 
+
+<table cellpadding="5">
+ <tr>
+  <td>
+   <p>
+    <input type="checkbox" id="apply_list_template_to_html_msgs" name="apply_list_template_to_html_msgs" value="1" <!-- tmpl_if apply_list_template_to_html_msgs -->checked="checked"<!--/tmpl_if--> />
+   </p>
+  </td>
+  <td>
+   <p>
+    <label for="apply_list_template_to_html_msgs">
+     	Wrap your HTML Mailing List Messages in your Mailing List Template
+    </label>
+  </td>
+ </tr>
+</table>
+
+
  
 </fieldset> 
 
