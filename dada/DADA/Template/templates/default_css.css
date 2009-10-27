@@ -520,26 +520,47 @@ textarea {
 input.plain,
 input.processing,
 input.cautionary,
-input.alertive {
+input.alertive,
+input.help {
 	font-weight:bold;
 	color:#000;
 	border-color:#ccc #999 #666 #999;		
 }
 
 input.plain {
-	background-color:#ccf;
+	background-color:#9cf;
+	/*color:#000;*/
+	border-color:#ccc #999 #666 #999;		
+	color:#333;
+	
 }
 
 input.processing {
-	background-color:#9c9;
+	/*background-color:#9c9;*/
+	background-color:#9f9; 
+	color:#333;
+	
 }
 
 input.cautionary {
-	background-color:#ffc;
+	/* background-color:#ffc; */
+	background-color:#ff9;
+	color:#333;
+	
 }
 
 input.alertive {
-	background-color:#f66;
+	/* background-color:#f66; */
+	background-color:#f33;
+	color:#fcc;
+	
+}
+
+input.help {
+	/*background-color:#9c9;*/
+	background-color:#fcf; 
+	color:#333;	
+	
 }
 
 input.disabled {
