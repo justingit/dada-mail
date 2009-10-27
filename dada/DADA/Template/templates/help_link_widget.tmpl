@@ -3,14 +3,13 @@
 <!-- tmpl_if SHOW_HELP_LINKS --> 
 
 
-	<p style="text-align:right;">
-	 <strong>	
-	 <a href="<!-- tmpl_var HELP_LINKS_URL -->/<!-- tmpl_var screen -->.html" target="_blank" style="border:1px solid #ccc;padding:5px;background:#ccf" title="Open the Dada Mail Manual in a New Window">
-	  [?]
-	   <!-- tmpl_var title escape="HTML" -->
-	 </a>
-	 </strong>
-	</p>
+	<div class="buttonfloat">
+		<form action="<!-- tmpl_var HELP_LINKS_URL -->/<!-- tmpl_var screen -->.html" target="_blank"> 
+			<input class="help" type="submit" value="[?] <!-- tmpl_var title escape="HTML" -->" /> 
+		</form>
+	</div>
+	<div class="floatclear"></div>
+	
 
 <!-- /tmpl_if --> 
 
