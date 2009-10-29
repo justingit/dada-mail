@@ -1873,7 +1873,7 @@ sub delete_list {
     if(!$process){ 
     
         print admin_template_header(      
-              	-Title      => "Confirm Delete List", 
+              	-Title      => "Delete This Mailing List", 
               	-List       => $list,
               	-Root_Login => $root_login,
 				);
@@ -1885,8 +1885,12 @@ sub delete_list {
                         -list   => $list,
 						-vars   => { 
 							screen => 'delete_list', 
-							title  => 'Delete This List', 
-						}
+							title  => 'Delete This Mailing List', 
+						},
+						-list_settings_vars_param => { 
+							-list    => $list,
+							-dot_it => 1, 
+						},
                     }
 				); 
 
@@ -7177,12 +7181,20 @@ sub archive {
     my $archive_subscribe_form = "";
 
     if ( $li->{hide_list} ne "1" ) {
-        $li->{info} =~ s/\n\n/<p>/gi;
-        $li->{info} =~ s/\n/<br \/>/gi;
+	
+		# DEV: This takes the cake for worst hack I have found... today. 
+        my $info = '<!-- tmpl_var list_settings.info -->'; 
+		   $info = DADA::Template::Widgets::screen(
+				{
+					-data => \$info, 
+					-list_settings_vars_param => {-list => $list,  -dot_it => 1 },
+					-webify_and_santize_these => [qw(list_settings.info)], 
+				}
+			);
 
         unless ( $li->{archive_subscribe_form} eq "0" ) {
-            $archive_subscribe_form .= "<p>" . $li->{info} . "</p>\n";
-
+            
+			$archive_subscribe_form .= $info; 
             $archive_subscribe_form .=
               DADA::Template::Widgets::subscription_form(
                 {
@@ -7756,12 +7768,21 @@ sub search_archive {
     }
 
     my $archive_subscribe_form = ''; 
-    if($li->{hide_list} ne "1"){   
-       $li->{info} =~ s/\n\n/<p>/gi; 
-       $li->{info} =~ s/\n/<br \/>/gi; 
+    if($li->{hide_list} ne "1"){  
+	 
+		# DEV: This takes the cake for worst hack I have found... today. 
+        my $info = '<!-- tmpl_var list_settings.info -->'; 
+		   $info = DADA::Template::Widgets::screen(
+				{
+					-data => \$info, 
+					-list_settings_vars_param => {-list => $list,  -dot_it => 1 },
+					-webify_and_santize_these => [qw(list_settings.info)], 
+				}
+			);
+			
     
         unless ($li->{archive_subscribe_form} eq "0"){ 
-            $archive_subscribe_form .= '<p>' . $li->{info} . '</p>' . "\n"; 
+            $archive_subscribe_form .= $info . "\n"; 
             require DADA::Template::Widgets;
  $archive_subscribe_form .= DADA::Template::Widgets::subscription_form({
                 -list       => $li->{list}, 
