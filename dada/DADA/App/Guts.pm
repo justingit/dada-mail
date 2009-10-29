@@ -1392,33 +1392,31 @@ sub webify_plain_text{
 		$multi_line = 1; 
 	}
 
-=cut
-
-	require HTML::FromText;
-	
-
-	my %orig_HTMLFROMTEXT_OPTIONS = %DADA::Config::HTMLFROMTEXT_OPTIONS; 
-
-
-	my %addition_opts = ();  
-	if($s =~ m/\r|\n/){ 
-		%addition_opts = (
-			para  => 1, 
-			lines => 0, 
-		); 
-	}
-	else { 
-		%addition_opts = (
-			para  => 0, 
-			lines => 1, 
-		);	
-	}
-	
-			
-	# 1.005 of HTML::FromText sucks at entities, so if we can, let's do a better job...
-	if($DADA::Config::HTMLFROMTEXT_OPTIONS{metachars} == 1){ 
-	
-=cut
+#
+#	require HTML::FromText;
+#	
+#
+#	my %orig_HTMLFROMTEXT_OPTIONS = %DADA::Config::HTMLFROMTEXT_OPTIONS; 
+#
+#
+#	my %addition_opts = ();  
+#	if($s =~ m/\r|\n/){ 
+#		%addition_opts = (
+#			para  => 1, 
+#			lines => 0, 
+#		); 
+#	}
+#	else { 
+#		%addition_opts = (
+#			para  => 0, 
+#			lines => 1, 
+#		);	
+#	}
+#	
+#			
+#	# 1.005 of HTML::FromText sucks at entities, so if we can, let's do a better job...
+#	if($DADA::Config::HTMLFROMTEXT_OPTIONS{metachars} == 1){ 
+#	
 
 		eval {require HTML::Entities}; 
 		if(!$@){ 
@@ -1454,64 +1452,65 @@ sub webify_plain_text{
         $s =~      s/>/&gt;/g;
         $s =~      s/\"/&quot;/g;
 
-=cut     
+  
       
 		  
 		
-	}
-	
-	#require Data::Dumper; 
-	#die Data::Dumper::Dumper({%DADA::Config::HTMLFROMTEXT_OPTIONS, %addition_opts});
-	 
-	
-	$s = HTML::FromText::text2html(
-		$s, 
-		(
-			%DADA::Config::HTMLFROMTEXT_OPTIONS, 
-			%addition_opts
-		)
-	); 
-	
-	die $s;
+#	}
+#	
+#	#require Data::Dumper; 
+#	#die Data::Dumper::Dumper({%DADA::Config::HTMLFROMTEXT_OPTIONS, %addition_opts});
+#	 
+#	
+#	$s = HTML::FromText::text2html(
+#		$s, 
+#		(
+#			%DADA::Config::HTMLFROMTEXT_OPTIONS, 
+#			%addition_opts
+#		)
+#	); 
+#	
+#	die $s;
+#
+#
+#    
+#	# Personal HACK
+#	# I HATE and I mean, HATE the <tt> tag around url's, I mean, wtf?
+#	
+#	my $b = quotemeta('<tt><a href=');
+#	my $e = quotemeta('</a></tt>'); 
+#	
+#	
+#	$s =~ s/$b(.*?)$e/<a href=$1<\/a>/gi;	
+#
+#
+#    #$s =~ s/(\[snip\]|\[code\])<br>/<pre>/gi;  
+#    #$s =~ s/(\[\/snip\]|\[\/code\])<br>/<\/pre>/gi; 
+#
+#    $s =~ s/\<br\>/\<br \/\>/gi;
+#
+#	# HACK - like - wtf, we can't use a <p> tag in HTML::FromText?!
+#	
+#	
+#	%DADA::Config::HTMLFROMTEXT_OPTIONS = %orig_HTMLFROMTEXT_OPTIONS;
+#	
+#	# This is somewhat a problem, since if you give this *just* one line - without any 
+#	# Line breaks, this will still and the pairs of <p> tags. Bad.
+#	
+#	#return '<p>' . $s . '</p>'; 
 
-
-    
-	# Personal HACK
-	# I HATE and I mean, HATE the <tt> tag around url's, I mean, wtf?
-	
-	my $b = quotemeta('<tt><a href=');
-	my $e = quotemeta('</a></tt>'); 
-	
-	
-	$s =~ s/$b(.*?)$e/<a href=$1<\/a>/gi;	
-
-
-    #$s =~ s/(\[snip\]|\[code\])<br>/<pre>/gi;  
-    #$s =~ s/(\[\/snip\]|\[\/code\])<br>/<\/pre>/gi; 
-
-    $s =~ s/\<br\>/\<br \/\>/gi;
-
-	# HACK - like - wtf, we can't use a <p> tag in HTML::FromText?!
-	
-	
-	%DADA::Config::HTMLFROMTEXT_OPTIONS = %orig_HTMLFROMTEXT_OPTIONS;
-	
-	# This is somewhat a problem, since if you give this *just* one line - without any 
-	# Line breaks, this will still and the pairs of <p> tags. Bad.
-	
-	#return '<p>' . $s . '</p>'; 
-=cut
 	
 	
 	require HTML::TextToHTML;
 	my $conv = HTML::TextToHTML->new; 
-	   $conv->args( escape_HTML_chars=>0); 
+	   $conv->args(
+	   		escape_HTML_chars => 0
+		); 
 	   $s = $conv->process_chunk($s); 
 	if($multi_line == 0){ 
 		$s =~ s/\<p\>|\<\/p\>//g; 
 	}
 	
-#	die $s; 
 	return $s; 
 }
 
