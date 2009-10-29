@@ -44,7 +44,7 @@ body#DadaAdmin {
 	padding:20px;
 	border:1px solid #000;
 	/*background-color:#c00;*/
-	  background-color:#69C;
+	background-color:#00adef;
 	background-image: url('<!-- tmpl_var S_PROGRAM_URL -->/img/dada_mail_logo.png/');
 	background-repeat: no-repeat;
 	
@@ -125,7 +125,7 @@ body#DadaAdmin #Header {
 
 #AdminContentWrapper {
 	margin:0 0 50px 200px;
-	padding:10px 50px;
+	padding:10px;
 }
 
 #AdminContent {

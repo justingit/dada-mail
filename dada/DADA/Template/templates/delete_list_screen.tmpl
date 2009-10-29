@@ -3,9 +3,11 @@
 <!-- tmpl_include help_link_widget.tmpl --> 
 
 
+<fieldset> 
+	
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
 	
-<p>
+<p class="error">
  Are you <em>sure</em> you want to totally delete this list?
 </p>
 <p>
@@ -24,11 +26,15 @@
 </p>
 
 <div class="buttonfloat">
- <input type="submit" class="alertive" value="Delete List" />
+ <input type="submit" class="alertive" value="Delete Your Mailing List (<!-- tmpl_var name="list_settings.list_name" ESCAPE="HTML" -->)" />
 </div>
 <div class="floatclear"></div>
 
 </form> 
+
+
+</fieldset>
+	
 
 
 

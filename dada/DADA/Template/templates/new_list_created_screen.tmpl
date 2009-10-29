@@ -1,7 +1,7 @@
 <!-- begin new_list_created_screen.tmpl -->
 
 <h1>
- The following information was recorded:
+ The Following Information Was Saved: 
 </h1>
 <table align="center">
  <tr>
@@ -110,19 +110,27 @@
 <p>
  For future reference, here are some relevant URLs for this list. 
  You may want to bookmark these links now (a new window will open for each link):
- <br />
+</p>
+
+<ul> 
+	<li>
  <strong>
   <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var SIGN_IN_FLAVOR_NAME -->&amp;list=<!-- tmpl_var escaped_list -->" target="_blank">
    Sign in to your control panel
   </a>
+</li> 
  </strong>
- <br />
+ <li>
  <strong>
   <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var escaped_list -->/" target="_blank">
    View your message archives
   </a>
  </strong>
-</p>
+</li> 
+
+</ul> 
+
+
 <hr />
 
 <p>
@@ -155,7 +163,7 @@
    
    
    
-   <input type="submit" class="plain" value="login" />
+   <input type="submit" class="plain" value="Log Into Your New Mailing List" />
    
    </form>
   </td>

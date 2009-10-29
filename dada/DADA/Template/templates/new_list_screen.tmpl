@@ -15,9 +15,9 @@
 	
 
 	<h2>
-	 Please fill in all the fields to create your new list.
+	 Please Fill in All the Fields Below, to Create Your New Mailing List: 
 	</h2>
-
+	
 	<!-- tmpl_unless name="help" -->
 	
 		<p style="text-align:right">
@@ -41,7 +41,7 @@
 <fieldset> 
 	
 	<p>
-	 All information except the list's Short Name may be changed at a later time.
+	 All information <em><strong>except</strong></em> the list's Short Name may be changed later. 
 	</p>
 	 <h2>
 	  List Name
@@ -71,7 +71,7 @@
 	 
 		 <p class="positive">
 		  The name of your list is what both people and 
-		  <!-- tmpl_var name="PROGRAM_NAME" --> will use to tell your lists apart.
+		  <!-- tmpl_var name="PROGRAM_NAME" --> will use to tell your Mailing Lists from each other.
 		 </p>
 	 
 	<!-- /tmpl_if -->
@@ -84,7 +84,7 @@
 	 </p>
 
 	 <h2>
-	  List short name
+	  List Short Name
 	 </h2>
  
 	<!-- tmpl_if name="flags_list_exists" -->
@@ -258,8 +258,8 @@
 	<!-- /tmpl_if -->
  
 	 <p>
-	  What email address corresponds to the list owner?
-	  (When emails are sent, they are sent using this address.)
+	  What email address corresponds to the List Owner?
+	  (When emails are sent, they are sent on behalf of this email address.)
 	  <br />
 	  <input type="text" name="list_owner_email" value="<!-- tmpl_var name="list_owner_email" escape="HTML"-->" class="full" maxlength="100" />
 	 </p>
@@ -282,7 +282,7 @@
 	 
 		 <p class="positive">
 		  A description of your list will tell would-be subscribers 
-		  what your list is about. This information will be shown on the 
+		  what your Mailing List is all about. This information will be shown on the 
 		  <!-- tmpl_var name="PROGRAM_NAME" --> main screen, as well as in 
 	          confirmation emails sent to people wishing to subscribe.
 		 </p>
@@ -315,7 +315,7 @@
 	 
 		 <p class="positive">
 		  A privacy policy allows a subscriber to know exactly how the 
-		  information they submit (their email address) will be used.
+		  information they submit (their email address, etc.) will be used.
 		 </p>
 	 
 	<!-- /tmpl_if -->
@@ -345,7 +345,7 @@
 	<!-- tmpl_if name="help" -->
 	 
 		 <p class="positive">
-		  A physical address ties your mailing list to a known business 
+		  A physical address ties your Mailing List to a known business 
 		  or organization, even if that organization is yourself. It 
 		  also helps you conform to recent laws relating to mailing lists.
 		 </p>
