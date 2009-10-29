@@ -197,8 +197,6 @@
  	Twitter (Experimental)
 </legend> 
 
-
-
 	<!-- tmpl_if can_use_twitter --> 
 		<p class="positive"> 
 			Twitter support is enabled. 
@@ -208,7 +206,24 @@
 			Twitter support requires the Perl CPAN modules: Net::Twitter::Lite and WWW::Shorten to be installed.
 		</p> 
 	<!-- /tmpl_if -->
+	<!-- tmpl_if list_settings.archive_messages --> 
+		<!-- tmpl_if list_settings.show_archives --> 
+			<p class="positive"> 
+				Archiving and Sharing your Archive is enabled. 
+			</p> 
+		<!-- tmpl_else --> 
+			<p class="error"> 
+				Archiving and Sharing your Archive is not enabled. 
+			</p>
+		<!-- /tmpl_if --> 
+	<!-- tmpl_else --> 
+		<p class="error"> 
+			Archiving and Sharing your Archive is not enabled. 
+		</p>
+	<!-- /tmpl_if --> 
+	
 
+	
 <table cellpadding="5">
 
 

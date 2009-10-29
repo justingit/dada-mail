@@ -19,39 +19,12 @@
  
 
 <table cellpadding="5">
+ 
  <tr>
   <td>
    <p>
     <strong>
-     Default Precedence of Mailings
-    </strong>
-   </p>
-  </td>
-  <td>
-   <p>
-    <!-- tmpl_var precedence_popup_menu -->
-   </p>
-  </td>
- </tr>
- <tr>
-  <td>
-   <p>
-    <strong>
-     Default Priority of Mailings
-    </strong>
-   </p>
-  </td>
-  <td>
-   <p>
-    <!-- tmpl_var priority_popup_menu -->
-   </p>
-  </td>
- </tr>
- <tr>
-  <td>
-   <p>
-    <strong>
-     Default Character Set of Mailings
+     Default Character Set
     </strong>
    </p>
   </td>
@@ -95,32 +68,6 @@
 
 <table cellpadding="5">
  
- <tr>
-  <td>
-   <p>
-    <input type="checkbox" name="print_list_headers" id="print_list_headers" value="1" <!-- tmpl_if print_list_headers -->checked="checked"<!--/tmpl_if--> />
-   </p>
-  </td>
-  <td>
-   <p>
-    <label for="print_list_headers">
-     Print list-specific headers in all list emails
-    </label>
-    <br />
-    List-specific headers store information such as how to 
-    subscribe and unsubscribe from a list in the header of the 
-    email. 
-    <strong>
-     It is highly advised to take advantage of these headers.
-    </strong>
-   </p>
-  </td>
- </tr>
-
-
-
-
-
 
 
 
@@ -146,7 +93,37 @@
 		<!-- /tmpl_unless --> 
 	  </td>
 	 </tr>
-	
+
+
+
+ <tr>
+  <td>
+   <p>
+    <input type="checkbox" name="print_list_headers" id="print_list_headers" value="1" <!-- tmpl_if print_list_headers -->checked="checked"<!--/tmpl_if--> />
+   </p>
+  </td>
+  <td>
+   <p>
+    <label for="print_list_headers">
+     Print List-Specific Headers
+    </label>
+    <br />
+    List-specific headers store information such as how to 
+    subscribe and unsubscribe from a list in the header of the 
+    email. 
+    <strong>
+     It is highly advised to take advantage of these headers.
+    </strong>
+   </p>
+  </td>
+ </tr>
+
+
+
+
+
+
+
 	
 	
 
@@ -258,6 +235,34 @@
 
 <table cellpadding="5">
 
+	<tr>
+	  <td>
+	   <p>
+	    <strong>
+	     Default Precedence
+	    </strong>
+	   </p>
+	  </td>
+	  <td>
+	   <p>
+	    <!-- tmpl_var precedence_popup_menu -->
+	   </p>
+	  </td>
+	 </tr>
+	 <tr>
+	  <td>
+	   <p>
+	    <strong>
+	     Default Priority
+	    </strong>
+	   </p>
+	  </td>
+	  <td>
+	   <p>
+	    <!-- tmpl_var priority_popup_menu -->
+	   </p>
+	  </td>
+	 </tr>
 
 	<tr>
 	  <td>
