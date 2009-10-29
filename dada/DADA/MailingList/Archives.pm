@@ -803,6 +803,12 @@ sub _email_protect {
 		
 		if($self->{ls}->param('archive_protect_email') eq 'recaptcha_mailhide'){ 
             my $protected_e = mailhide_encode($_); 
+
+			# This isn't going to cover everything, but a lot of things: 
+			my $entire_mail_link = quotemeta('<a href="mailto:'.$_.'">'.$_.'</a>'); 
+ 			$body                =~ s/$entire_mail_link/$protected_e/g; 
+			
+			
             $body =~ s/$look_e/$protected_e/g;
 		}
 		elsif($self->{ls}->param('archive_protect_email') eq 'spam_me_not'){ 				
@@ -1584,6 +1590,18 @@ sub message_blurb {
 	my $msg = $self->massaged_msg_for_display(-key        => $args{-key}, 
 											  -plain_text => 1,
 											 );
+											
+	# We'll want to, actually, escape out the entities - I don't know
+	# why this isn't done in, massaged_msg_for_display  
+	# I should... add that... 
+
+	
+	$msg =~ s/\n|\r/ /g; 
+	$msg = DADA::App::Guts::webify_plain_text($msg); 
+	
+	
+	
+	
 	my $l    = length($msg); 
 	my $size = $args{-size}; 
 	my $take = $l < $size ? $l : $size; 

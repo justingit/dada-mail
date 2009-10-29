@@ -862,7 +862,7 @@ sub html_archive_list {
 	                -Write_H_And_M => $li->{archive_show_hour_and_minute},
 	                -Write_Second  => $li->{archive_show_second});
     
-    
+   # die $archive->message_blurb(-key => $entries->[$i]); 
 	                my $entry = { 				
 	                        id               => $entries->[$i], 
     
@@ -1716,13 +1716,27 @@ else {
 			
 		
     if(exists($args->{-webify_and_santize_these})){ 
-        $template_vars = webify_and_santize(
-            {
-                -to_sanitize => $args->{-webify_and_santize_these},
-                -vars        => $template_vars,
- 
-            }
-        )
+		if(exists($args->{-list_settings_vars_param}->{-list})) { 
+			$template_vars = webify_and_santize(
+	            {
+	                -to_sanitize => $args->{-webify_and_santize_these},
+	                -vars        => $template_vars,
+					-list        => $args->{-list_settings_vars_param}->{-list},
+
+	            }
+	        );
+		}
+		else { 
+			$template_vars = webify_and_santize(
+	            {
+	                -to_sanitize => $args->{-webify_and_santize_these},
+	                -vars        => $template_vars,
+
+	            }
+	        );			
+		}
+		
+
     }
 
 
@@ -1980,11 +1994,19 @@ sub webify_and_santize {
         die "need to pass, -to_sanitize"; 
     }
     
+	if(! exists($args->{-list})){ 
+		$args->{-list} = undef; 
+	}
     foreach(@{$args->{-to_sanitize}}){ 
     
         
         $args->{-vars}->{$_} = webify_plain_text($args->{-vars}->{$_});
-        $args->{-vars}->{$_} = _email_protect($args->{-vars}->{$_});  
+        $args->{-vars}->{$_} = _email_protect(
+			{
+				-string => $args->{-vars}->{$_},
+				-list   => $args->{-list}, #?
+			}
+		);  
         
     }
     
@@ -1997,8 +2019,17 @@ sub webify_and_santize {
 
 sub _email_protect { 
     
-    my $str = shift; 
+	my ($args) = @_; 
+    my $str  = $args->{-string};
+ 	my $list = undef; 
+	my $ls   = undef; 
+    if(exists($args->{-list}) && $args->{-list} ne undef){ 
+		$list = $args->{-list};
+		require DADA::MailingList::Settings; 
+		$ls = DADA::MailingList::Settings->new({-list => $list});
+	}
     
+
     # strange module - API based on File::Find I guess.
 	require Email::Find;
  	my $found_addresses = []; 
@@ -2010,33 +2041,34 @@ sub _email_protect {
 								});
 	$finder->find(\$str); 
 	
-	foreach my $fa (@$found_addresses){ 		
-    
-    
-#
-#
-#		if($self->{list_info}->{archive_protect_email} eq 'recaptcha_mailhide'){ 
-#            my $pe = mailhide_encode($fa);
-#            my $le = quotemeta($fa); 
-#            $body =~ s/$le/$pe/g;
-#            
-#		}
-#		elsif($self->{list_info}->{archive_protect_email} eq 'spam_me_not'){ 		
-
-    
-            my $pe = spam_me_not_encode($fa);
+	foreach my $fa (@$found_addresses){ 	
+		if($list){ 
+			
+			if($ls->param('archive_protect_email') eq 'recaptcha_mailhide'){ 
+			
+	            my $pe = mailhide_encode($fa);
+				
+				# This isn't going to cover everything, but a lot of things: 
+				my $entire_mail_link = quotemeta('<a href="mailto:'.$fa.'">'.$fa.'</a>'); 
+	 			$str                 =~ s/$entire_mail_link/$pe/g; 
+	
+				my $le = quotemeta($fa);
+	            $str   =~ s/$le/$pe/g;
             
+			}
+			elsif($ls->param('archive_protect_email') eq 'spam_me_not'){ 		
+	            my $pe = spam_me_not_encode($fa);
+	            my $le = quotemeta($fa); 
+	            $str =~ s/$le/$pe/g;   
+	        }
 
-
-
-            my $le = quotemeta($fa); 
-            $str =~ s/$le/$pe/g;
-            
-            
-        }
-
-
-#	}
+		}
+		else { 
+			 my $pe = spam_me_not_encode($fa);
+	         my $le = quotemeta($fa); 
+	         $str =~ s/$le/$pe/g;
+		}
+	}
 
     return $str; 
  }
