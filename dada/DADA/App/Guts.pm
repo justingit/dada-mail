@@ -1387,6 +1387,13 @@ sub webify_plain_text{
 
     
 	my $s = shift; 
+	my $multi_line = 0; 
+	if($s =~ m/\r|\n/){ 
+		$multi_line = 1; 
+	}
+
+=cut
+
 	require HTML::FromText;
 	
 
@@ -1411,6 +1418,8 @@ sub webify_plain_text{
 	# 1.005 of HTML::FromText sucks at entities, so if we can, let's do a better job...
 	if($DADA::Config::HTMLFROMTEXT_OPTIONS{metachars} == 1){ 
 	
+=cut
+
 		eval {require HTML::Entities}; 
 		if(!$@){ 
 		
@@ -1434,18 +1443,26 @@ sub webify_plain_text{
 		    }
 
 
+
 		}
+
+
         
         # SWEAR TO YOU - this is what it usually does: 
         $s =~      s/& /&amp; /g;
         $s =~      s/</&lt;/g;
         $s =~      s/>/&gt;/g;
         $s =~      s/\"/&quot;/g;
-      
+
+=cut     
       
 		  
 		
 	}
+	
+	#require Data::Dumper; 
+	#die Data::Dumper::Dumper({%DADA::Config::HTMLFROMTEXT_OPTIONS, %addition_opts});
+	 
 	
 	$s = HTML::FromText::text2html(
 		$s, 
@@ -1454,6 +1471,8 @@ sub webify_plain_text{
 			%addition_opts
 		)
 	); 
+	
+	die $s;
 
 
     
@@ -1481,6 +1500,18 @@ sub webify_plain_text{
 	# Line breaks, this will still and the pairs of <p> tags. Bad.
 	
 	#return '<p>' . $s . '</p>'; 
+=cut
+	
+	
+	require HTML::TextToHTML;
+	my $conv = HTML::TextToHTML->new; 
+	   $conv->args( escape_HTML_chars=>0); 
+	   $s = $conv->process_chunk($s); 
+	if($multi_line == 0){ 
+		$s =~ s/\<p\>|\<\/p\>//g; 
+	}
+	
+#	die $s; 
 	return $s; 
 }
 
