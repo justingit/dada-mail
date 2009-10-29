@@ -532,7 +532,7 @@ sub default_screen {
               webify_plain_text(
                 $all_list_info_dotted->{'list_settings.info'} );
             $all_list_info_dotted->{'list_settings.info'} =
-              _email_protect( $all_list_info_dotted->{'list_settings.info'} );
+              _email_protect({-string => $all_list_info_dotted->{'list_settings.info'}} );
 
             my $ne      = $ah->newest_entry;
             my $subject = $ah->get_archive_subject($ne);
