@@ -2067,6 +2067,12 @@ $ADMIN_MENU ||= [
 					 -Function   => 'archive_options',
 					 -Activated  => 1,
 					},
+					
+					{-Title      => 'Advanced Archive Options',
+					 -Title_URL  => "$S_PROGRAM_URL?f=adv_archive_options",
+					 -Function   => 'adv_archive_options',
+					 -Activated  => 1,
+					},
 			]
 	},
 
