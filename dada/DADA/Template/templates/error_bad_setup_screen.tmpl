@@ -1,22 +1,41 @@
 <!-- begin error_bad_setup_screen.tmpl --> 
 
-
 <h1>
- Welcome to <!-- tmpl_var PROGRAM_NAME -->
+ Welcome to <!-- tmpl_var PROGRAM_NAME -->.
 </h1> 
 
 <p>
- <!-- tmpl_var PROGRAM_NAME --> is running correctly, but is not configured properly - if you haven't 
-configured the program, please do so now. 
-</p>
+ <!-- tmpl_var PROGRAM_NAME --> is running on your account, but it's not configured properly.</p>
+	<ul> 
+		<li>
+			<p>If you haven't configured <!-- tmpl_var PROGRAM_NAME -->, please do so, now</p> 
+		</li>
+		<li>
 <p>
- <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=setup_info">
-  Click here
- </a> 
- for more information.
-</p>
+	If you have already configured <!-- tmpl_var PROGRAM_NAME -->, your hosting environment may have changed 
+	and <!-- tmpl_var PROGRAM_NAME --> may need to be reconfigured.
+</p> 
+</li>
+</ul> 
 
-<!-- tmpl_var bad_setup_information --> 
 
+
+<div style="text-align:center">
+	<form>
+		<input type="hidden" name="f" value="setup_info" /> 
+		<input type="submit" value="Click Here For More Information..." class="cautionary" /> 
+	</form>
+</div>
+
+<!-- tmpl_if unknown_dirs --> 
+	
+	<h2>Missing Directories</h2> 
+	<p>These directories are configured in Dada Mail, but aren't found:</p> 
+	<ul> 
+	<!-- tmpl_loop unknown_dirs --> 
+		<li><p><!-- tmpl_var dir --></p></li>
+	<!-- /tmpl_loop --> 
+	</ul>
+<!-- /tmpl_if --> 
 
 <!-- end error_bad_setup_screen.tmpl --> 

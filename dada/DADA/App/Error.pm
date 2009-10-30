@@ -121,26 +121,29 @@ sub cgi_user_error {
 	    	$unsubscription_form = DADA::Template::Widgets::subscription_form({-email => $args{-Email}, -flavor_is => 'u', -give_props => 0}); # -show_hidden => 1?!?!?!
 	    }
 	}
-	
-	my $bad_setup_information = ''; 
 
-	
+	my $unknown_dirs = []; 
 	if($args{-Error} eq 'bad_setup'){ 
 		my @tests = ($DADA::Config::FILES, $DADA::Config::TEMPLATES , $DADA::Config::TMP );
-		if($DADA::Config::OS){ 
-			push(@tests, $DADA::Config::OS);
-		}
+		
+		# Your guess is as good as mine for what this was all about... 
+		#if($DADA::Config::OS){ 
+		#	push(@tests, $DADA::Config::OS);
+		#}
 		my %sift; 
 		foreach(@tests){$sift{$_}++}
 		@tests = keys %sift; 
 		
 		foreach my $test_dir(@tests){ 
 			
-			unless(-d $test_dir){ 
-				$bad_setup_information .= "<p>'$test_dir' is <strong>NOT</strong> a directory.</p>\n"; 
+			if(! -d $test_dir){ 
+				push(@$unknown_dirs, {dir => $test_dir}); 
 			}
-			unless(-e $test_dir){ 
-				$bad_setup_information .= "<p>'$test_dir' <strong>DOES NOT</strong> exist.</p>\n"; 			
+			elsif(!-e $test_dir){ 
+				push(@$unknown_dirs, {dir => $test_dir}); 
+			}
+			else { 
+				# ... 
 			}
 		}
 	}
@@ -182,7 +185,7 @@ sub cgi_user_error {
 							list_login_form       => $list_login_form, 
 							email                 => $args{-Email},
 							auth_code             => $auth_code,
-							bad_setup_information => $bad_setup_information, 
+							unknown_dirs          => $unknown_dirs, 
 				
 							PROGRAM_URL           => $DADA::Config::PROGRAM_URL, 
 							S_PROGRAM_URL         => $DADA::Config::S_PROGRAM_URL, 
