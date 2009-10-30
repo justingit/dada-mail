@@ -1385,129 +1385,39 @@ sub make_safer {
 
 sub webify_plain_text{ 
 
-    
 	my $s = shift; 
 	my $multi_line = 0; 
 	if($s =~ m/\r|\n/){ 
 		$multi_line = 1; 
 	}
+	eval {require HTML::Entities}; 
+	if(!$@){ 
+		$s = HTML::Entities::encode_entities($s, "\200-\377");
+	}else{ 
+        # require HTML::EntitiesPurePerl 
+        # is our own module, based on  HTML::Entities.           
+    	eval {require HTML::EntitiesPurePerl}; 
+    	if(!$@){ 
+ 
+        	$s = HTML::EntitiesPurePerl::encode_entities($s, "\200-\377");
+    	}
+	}
 
-#
-#	require HTML::FromText;
-#	
-#
-#	my %orig_HTMLFROMTEXT_OPTIONS = %DADA::Config::HTMLFROMTEXT_OPTIONS; 
-#
-#
-#	my %addition_opts = ();  
-#	if($s =~ m/\r|\n/){ 
-#		%addition_opts = (
-#			para  => 1, 
-#			lines => 0, 
-#		); 
-#	}
-#	else { 
-#		%addition_opts = (
-#			para  => 0, 
-#			lines => 1, 
-#		);	
-#	}
-#	
-#			
-#	# 1.005 of HTML::FromText sucks at entities, so if we can, let's do a better job...
-#	if($DADA::Config::HTMLFROMTEXT_OPTIONS{metachars} == 1){ 
-#	
+	# SWEAR TO YOU - this is what it usually does: 
+	$s =~      s/& /&amp; /g;
+	$s =~      s/</&lt;/g;
+	$s =~      s/>/&gt;/g;
+	$s =~      s/\"/&quot;/g;
 
-		eval {require HTML::Entities}; 
-		if(!$@){ 
-		
-			%DADA::Config::HTMLFROMTEXT_OPTIONS = (
-				                      %DADA::Config::HTMLFROMTEXT_OPTIONS,
-				                      metachars => 0, 
-									); 
-		
-			$s = HTML::Entities::encode_entities($s, "\200-\377");
-			
-		}else{ 
-		    
-	        # require HTML::EntitiesPurePerl 
-            # is our own module, based on  HTML::Entities. 
-            
-            eval {require HTML::EntitiesPurePerl}; 
-		    if(!$@){ 
-		    
-		        $s = HTML::EntitiesPurePerl::encode_entities($s, "\200-\377");
-		    
-		    }
-
-
-
-		}
-
-
-        
-        # SWEAR TO YOU - this is what it usually does: 
-        $s =~      s/& /&amp; /g;
-        $s =~      s/</&lt;/g;
-        $s =~      s/>/&gt;/g;
-        $s =~      s/\"/&quot;/g;
-
-  
-      
-		  
-		
-#	}
-#	
-#	#require Data::Dumper; 
-#	#die Data::Dumper::Dumper({%DADA::Config::HTMLFROMTEXT_OPTIONS, %addition_opts});
-#	 
-#	
-#	$s = HTML::FromText::text2html(
-#		$s, 
-#		(
-#			%DADA::Config::HTMLFROMTEXT_OPTIONS, 
-#			%addition_opts
-#		)
-#	); 
-#	
-#	die $s;
-#
-#
-#    
-#	# Personal HACK
-#	# I HATE and I mean, HATE the <tt> tag around url's, I mean, wtf?
-#	
-#	my $b = quotemeta('<tt><a href=');
-#	my $e = quotemeta('</a></tt>'); 
-#	
-#	
-#	$s =~ s/$b(.*?)$e/<a href=$1<\/a>/gi;	
-#
-#
-#    #$s =~ s/(\[snip\]|\[code\])<br>/<pre>/gi;  
-#    #$s =~ s/(\[\/snip\]|\[\/code\])<br>/<\/pre>/gi; 
-#
-#    $s =~ s/\<br\>/\<br \/\>/gi;
-#
-#	# HACK - like - wtf, we can't use a <p> tag in HTML::FromText?!
-#	
-#	
-#	%DADA::Config::HTMLFROMTEXT_OPTIONS = %orig_HTMLFROMTEXT_OPTIONS;
-#	
-#	# This is somewhat a problem, since if you give this *just* one line - without any 
-#	# Line breaks, this will still and the pairs of <p> tags. Bad.
-#	
-#	#return '<p>' . $s . '</p>'; 
-
-	
-	
 	require HTML::TextToHTML;
 	my $conv = HTML::TextToHTML->new; 
 	   $conv->args(
 	   		escape_HTML_chars => 0
 		); 
 	   $s = $conv->process_chunk($s); 
+
 	if($multi_line == 0){ 
+		# Sigh.
 		$s =~ s/\<p\>|\<\/p\>//g; 
 	}
 	
