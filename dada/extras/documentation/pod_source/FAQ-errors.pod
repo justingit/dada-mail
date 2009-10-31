@@ -2,6 +2,8 @@
 
 =head1 The Dada Mail Error FAQ
 
+=head1 Introduction
+
 This FAQ is split up into two parts: 
 
 The first part will assist you in getting Dada Mail to be more verbose in its
@@ -20,6 +22,10 @@ and The Config.pm tour at:
 http://dadamailproject.com/support/documentation/Config.pm.html
 
 B<Many> things are explained in those pages. 
+
+The, B<Known Issues> docs also list problems that we know about: 
+
+http://dadamailproject.com/support/documentation/known_issues.pod.html
 
 =head1 Part One: Error Messages
 

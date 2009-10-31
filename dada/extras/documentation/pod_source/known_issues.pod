@@ -16,8 +16,7 @@ CGI::Session is bundled with Dada Mail - you don't have to install it separately
  "param" on an undefined value at /DADA/App/Session.pm
  line 261.
 
-I haven't yet figured out what causes this, but there's  two solutions: 
-
+Two solutions:
 
 Remove the files in the, I<dada/DADA/perllib/CGI/Session*> files and directories
 
@@ -102,14 +101,6 @@ As of at least 2.8.12 (most likely lower) Dada Mail has some issues with file lo
 
 I<This issue should be a non-issue in ver. 2.9>
 
-
-=head2 Archive viewing bugs
-
-When viewing the archive web page of a
-plain text message sent with a URL in it that is surrounded
-by "<" and ">" characters, the URL is improperly encoded
-into HTML.
-
 =head2 Send a Webpage
 
 =head3 Assets w/URLS w/Query Strings break
@@ -119,6 +110,52 @@ If you're trying to send a webpage with an image, javascript library or styleshe
  <script src="http://example.com/script.js?ver=1234" ></script> 
 
 The, "Send a Webpage" function of Dada Mail most likely won't understand what to do with this and most likely will ignore and remove the script, image or stylesheet. 
+
+=head1 Templates
+
+=head2 The Bracket Problem
+
+Dada Mail's original templating system uses tags that looked a lot like this, 
+
+ [tag]
+
+A string, with no white space, surrounded by brackets. Dada Mail still supports these types of tags, but you can run into problems, particularly with email messages, where a part of your message may I<look> like a tag in Dada Mail and will be templated out - essentially to nothing. This has the problem of removing content from your message. 
+
+There's currently no workaround for this problem, but if you do come across it, there's a few things you can do: 
+
+=over
+
+=item * Don't use square brackets this way
+
+This advice is horrible advice, since you're having to deal with a deficiency of the program. We apologize. 
+
+=item * Use, <!-- tmpl_var LEFT_BRACKET ---> and, <!-- tmpl_var RIGHT_BRACKET --> 
+
+There's two template tags you can use in your email messages: 
+
+ <!-- tmpl_var LEFT_BRACKET --> 
+
+and, 
+
+ <!-- tmpl_var RIGHT_BRACKET --> 
+
+If you need to have a string in your message that looks like this: 
+
+ [looks_like_a_tag]
+
+you can write it out, like this: 
+
+ <!-- tmpl_var LEFT_BRACKET -->looks_like_a_tag<!-- tmpl_var RIGHT_BRACKET --> 
+
+And Dada Mail will replace those template tags, with left and right brackets, doing what you want to do. 
+
+
+=back
+
+
+
+
+
 
 =cut
 
