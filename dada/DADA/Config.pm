@@ -2880,7 +2880,7 @@ Please save this email message for future reference.
 
 Date of this subscription: [date]
 
-You may automatically unsubscribe from this list at any time by 
+You may unsubscribe from this list at any time by 
 visiting the following URL:
 
 <[list_unsubscribe_link]>
@@ -3020,7 +3020,7 @@ You may wish to save this email message for future reference.
 
 Date of this removal: [date]
 
-You may automatically re-subscribe to this list at any time by 
+You may re-subscribe to this list at any time by 
 visiting the following URL:
 
 <[list_subscribe_link]>
@@ -3220,7 +3220,7 @@ using the following email:
  
 	[subscriber.email]
 
-You may automatically unsubscribe from this list at any time by 
+You may unsubscribe from this list at any time by 
 visiting the following URL:
  
 <[list_unsubscribe_link]>
@@ -3275,7 +3275,7 @@ list subscription: </p>
 
 <p><strong>[subscriber.email]</strong></p>
 
-<p>You may automatically unsubscribe from this list at any time by 
+<p>You may unsubscribe from this list at any time by 
 visiting the following URL:</p>
 
 <p>
