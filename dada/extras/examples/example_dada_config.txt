@@ -140,7 +140,6 @@ $PLUGIN_CONFIGS = {
         Plugin_URL                			=> undef, 
         Rules                     			=> undef,
         Bounce_Handler_Name       			=> undef, 
-	
     
     }, 
     
