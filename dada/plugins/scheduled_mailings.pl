@@ -2137,11 +2137,11 @@ If not already there, upload your copy of I<scheduled_mailings.pl> into that B<p
 
 This plugin will give you a new menu item in your list control panel. Tell Dada Mail to make this menu item by tweaking the Config.pm file. Find these lines in the Config.pm file: 
 
-#					{-Title      => 'Scheduled Mailings',
-#					 -Title_URL  => $PLUGIN_URL."/scheduled_mailings.pl",
-#					 -Function   => 'scheduled_mailings',
-#					 -Activated  => 1,
-#					},
+ #					{-Title      => 'Scheduled Mailings',
+ #					 -Title_URL  => $PLUGIN_URL."/scheduled_mailings.pl",
+ #					 -Function   => 'scheduled_mailings',
+ #					 -Activated  => 1,
+ #					},
 
 Uncomment it (take off the "#"'s) 
 
