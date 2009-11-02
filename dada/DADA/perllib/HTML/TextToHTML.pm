@@ -1,3 +1,9 @@
+# !!! This module has been changed from the CPAN version of ver2.51 - 
+#
+# The, "use YAML::Syck;" line has been commented out, so as not to be needed to be loaded. 
+#
+# !!!
+
 package HTML::TextToHTML;
 use 5.8.1;
 use strict;
@@ -635,7 +641,7 @@ our $DictDebug = 0;
 =cut
 
 #------------------------------------------------------------------------
-use YAML::Syck;
+# use YAML::Syck;
 
 our $PROG = 'HTML::TextToHTML';
 

@@ -72,6 +72,8 @@ HTML::Template::Expr
 
 HTTP::Date
 
+HTML::TextToHTML
+
 IO::Stringy
 
 Bundle::libnet
@@ -154,10 +156,6 @@ URI::Escape
 
 =head1 Other Required Modules to Install
 
-=head2 HTML::FromText version 1.005
-
-For some reason, this module has been removed from CPAN, so it must be added manually. We'll most likely replace this module with a different module soon. 
-
 =head1 Other Optional Modules To Install
 
 =head2 Required Modules, not fetched via CPAN
@@ -178,6 +176,14 @@ The weird thing is that this old version (0.61) isn't available on CPAN anymore.
 
 The modules below do not need to be installed for Dada Mail to work, but can
 enhance the functionality of Dada Mail. 
+
+=head3 HTML::FormatText::WithLinks
+
+C<HTML::FormatText::WithLinks> is used to convert HTML to Plain Text. 
+
+If you do not have this module installed, Dada Mail can use its own HTML to Plain Text formatter, but it's not very good. 
+
+We suggest HTML::FormatText::WithLinks, it just has to be installed manually. 
 
 =head3 Net::Domain
 
@@ -210,7 +216,7 @@ Used for scheduled mailings.
 
 Used for pinging the RSS/Atom archive feeds. A part of SOAP::Lite I believe. 
 
-=head3LWP::Simple
+=head3 LWP::Simple
 
 Used to send web pages. 
 

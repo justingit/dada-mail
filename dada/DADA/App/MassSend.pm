@@ -636,9 +636,18 @@ sub send_url_email {
 					}
                     require LWP::Simple; 
                     my $good_try = LWP::Simple::get($url);
-                    $t           = convert_to_ascii($good_try);
+                    $t           = html_to_plaintext(
+										{
+											-string => $good_try,
+											-formatter_params => {
+												base        => $url,
+												before_link => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET -->',
+												footnote    => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET --> %l',
+											}
+										}
+									);
                 }else{ 
-                    $t           = convert_to_ascii($q->param('html_message_body'));
+                    $t           = html_to_plaintext({-string => $q->param('html_message_body')});
                 }
             }
             
@@ -663,7 +672,6 @@ sub send_url_email {
             my $rm       = '';
             my @MIME_HTML_errors = (); 
 
-			#carp '$MIMELiteObj->as_string ' . $MIMELiteObj->as_string;
             eval { $rm = $MIMELiteObj->as_string; }; 
             if($@){ 
                 warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER - Send a Webpage isn't functioning correctly? - $@";  

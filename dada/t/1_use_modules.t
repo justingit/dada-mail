@@ -237,7 +237,7 @@ SKIP: {
     
 
 
-BEGIN{ use_ok('HTML::FromText'); }
+BEGIN{ use_ok('HTML::TextToHTML'); }
 BEGIN{ use_ok('HTML::Template'); }
 BEGIN{ use_ok('HTML::Template::Expr'); }
 

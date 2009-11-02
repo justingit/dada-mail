@@ -614,7 +614,7 @@ sub _make_multipart {
 	
 	my $plaintext_entity = MIME::Entity->build(
 		Type    => 'text/plain', 
-		Data    => $self->_create_plaintext_from_html($html_content),
+		Data    => html_to_plaintext({ -string => $html_content}),
 	  ); 
 	 $plaintext_entity->head->mime_attr(
 		"content-type.charset" => $orig_charset,
@@ -624,27 +624,6 @@ sub _make_multipart {
 
 	return $entity; 
 }
-
-
-
-=pod
-
-=head2 _create_plaintext_from_html
-
- my $PlainText_var = $self->_create_plaintext_from_html($HTML_Ver); 
-
- Given a B<string>, simple converts the HTML to PlainText
-
-=cut
-
-sub _create_plaintext_from_html { 
-
-	my $self   = shift; 
-	my $body   = shift; 
-	#yay, we'll see...
-	return convert_to_ascii($body); 
-}
-
 
 
 
@@ -1071,15 +1050,6 @@ sub _macro_tags {
 				); 
 	
 	my $type; 
-	
-	#if($self->use_header_info){ 
-	#	require Mail::Address; 
-	#	if(my $to_temp = (Mail::Address->parse($self->orig_entity()->head->get('To', 0)))[0]){ 
-	#  		$args{-email} = $to_temp->address();
-	#	}
-	#
-	#}
-	
 
 	if($args{-type} eq 'subscribe'){ 
 	
@@ -1116,6 +1086,7 @@ sub _macro_tags {
 	}
 	
 	if($args{-email}){ 
+
 	my $tmp_email = $args{-email};
 	
 	    $tmp_email =~ s/\@/\//g;	# snarky. Replace, "@" with, "/"
@@ -1798,6 +1769,8 @@ sub pre_process_msg_strings {
 		else { 		
 
 			$html_ver =~ s/(^\n<br \/>|^<br \/>|^<br \/>\n)//;
+			# convert_to_ascii is used here to simply strip out HTML tags, to
+			# see if anything is left, 
 			$html_ver = convert_to_ascii($html_ver); # what? what did I miss?
 			$html_ver = strip($html_ver); 
 			$html_ver =~ s/^\n+|\n+$//o;

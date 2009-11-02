@@ -67,13 +67,14 @@ require Exporter;
   js_enc
   setup_list
   date_this
+  html_to_plaintext
   convert_to_ascii
   e_print
   decode_he
   uriescape
   lc_email
   make_safer
-  interpolate_string
+  convert_to_html_entities
   webify_plain_text
   check_list_setup
   make_all_list_files
@@ -966,6 +967,91 @@ sub date_this {
 	}
 }
 
+
+sub html_to_plaintext { 
+
+	my ($args) = @_; 
+	if(!exists($args->{-string})){ 
+		croak "You need to pass the string you want to convert in the, '-string' param!"; 
+	}
+	if(!exists($args->{-formatter_params})){
+		$args->{-formatter_params} = {
+			before_link => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET -->',
+			footnote    => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET --> %l',
+		}; 
+	}
+	# I'm not sure what sort of other arguments I want, but... 
+
+	my $formatted = undef; 
+	
+	eval { require HTML::FormatText::WithLinks; };
+	if(!$@){ 
+	    my $f = HTML::FormatText::WithLinks->new( %{$args->{-formatter_params}} );
+		if($formatted = $f->parse($args->{-string})){ 
+			return $formatted; 
+		}
+		else { 
+			carp $DADA::Config::PROGRAM_NAME . ' ' . $DADA::Config::VER . 
+				' warning: Something went wrong with the HTML to PlainText conversion: ' . 
+				$f->error; 
+			return _chomp_off_body(convert_to_ascii($args->{-string})); 
+		}
+	}
+	else { 
+		return _chomp_off_body(convert_to_ascii($args->{-string})); 	
+	}		
+}
+
+
+sub _chomp_off_body { 
+	
+	my $str   = shift;
+	my $n_str = $str;
+	
+	if($n_str =~ m/\<body.*?\>|<\/body\>/i){ 
+
+		$n_str =~ m/\<body.*?\>([\s\S]*?)\<\/body\>/i;  
+		$n_str = $1; 
+		
+		if($n_str =~ m/\<body.*?\>|<\/body\>/i){ 
+			$n_str = _chomp_off_body_thats_being_difficult($n_str); 		
+		}		
+	}
+		
+	if(!$n_str){
+		
+		return $str; 
+	}else{ 
+		return $n_str;
+	}
+}
+
+sub _chomp_off_body_thats_being_difficult { 
+
+	my $str   = shift; 
+	my $n_str = '';
+	
+	# body tags will now be on their own line, regardless.
+	$str =~ s/(\<body.*?\>|<\/body\>)/\n$1\n/gi; 
+	
+
+	my @lines = split("\n", $str); 
+		foreach (@lines){ 
+			if(/\<body(.*?)\>/i .. /\<\/body\>/i)	{
+				next if /\<body(.*?)\>/i || /\<\/body\>/i;
+				$n_str .= $_ . "\n";
+			}
+		}
+	if(!$n_str){ 
+		return $str; 
+	}else{ 
+		return $n_str;
+	}
+}
+
+
+
+
 =pod
 
 =head2 convert_to_ascii
@@ -1379,8 +1465,29 @@ sub make_safer {
 	}
 
 }
-
-
+sub convert_to_html_entities { 
+	
+	my $s = shift; 
+	
+	eval {require HTML::Entities}; 
+	if(!$@){ 
+		$s = HTML::Entities::encode_entities($s, "\200-\377");
+	}else{ 
+        # require HTML::EntitiesPurePerl 
+        # is our own module, based on  HTML::Entities.           
+    	eval {require HTML::EntitiesPurePerl}; 
+    	if(!$@){ 
+        	$s = HTML::EntitiesPurePerl::encode_entities($s, "\200-\377");
+    	}
+	}
+	$s =~      s/& /&amp; /g;
+	$s =~      s/</&lt;/g;
+	$s =~      s/>/&gt;/g;
+	$s =~      s/\"/&quot;/g;
+		
+	return $s; 
+	
+}
 
 
 sub webify_plain_text{ 
@@ -1390,25 +1497,9 @@ sub webify_plain_text{
 	if($s =~ m/\r|\n/){ 
 		$multi_line = 1; 
 	}
-	eval {require HTML::Entities}; 
-	if(!$@){ 
-		$s = HTML::Entities::encode_entities($s, "\200-\377");
-	}else{ 
-        # require HTML::EntitiesPurePerl 
-        # is our own module, based on  HTML::Entities.           
-    	eval {require HTML::EntitiesPurePerl}; 
-    	if(!$@){ 
- 
-        	$s = HTML::EntitiesPurePerl::encode_entities($s, "\200-\377");
-    	}
-	}
 
-	# SWEAR TO YOU - this is what it usually does: 
-	$s =~      s/& /&amp; /g;
-	$s =~      s/</&lt;/g;
-	$s =~      s/>/&gt;/g;
-	$s =~      s/\"/&quot;/g;
-
+	$s = convert_to_html_entities($s); 
+	
 	require HTML::TextToHTML;
 	my $conv = HTML::TextToHTML->new; 
 	   $conv->args(
@@ -1423,6 +1514,7 @@ sub webify_plain_text{
 	
 	return $s; 
 }
+
 
 
 =pod

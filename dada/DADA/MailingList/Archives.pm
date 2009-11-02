@@ -1499,7 +1499,7 @@ sub make_search_summary {
 													   -plain_text => 1,
 													 );
 		}else{ 
-			$message = convert_to_ascii($message); 
+			$message = html_to_plaintext({-string => $message}); 
 		}
 
 		my @message_lines = split("\n", $message);
@@ -1597,7 +1597,7 @@ sub message_blurb {
 
 	
 	$msg =~ s/\n|\r/ /g; 
-	$msg = DADA::App::Guts::webify_plain_text($msg); 
+	$msg = DADA::App::Guts::convert_to_html_entities($msg); 
 	
 	
 	
@@ -1837,9 +1837,10 @@ sub massaged_msg_for_display {
    			unless $args{-plain_text} == 1;
    }
    
+
    if($args{-plain_text} == 1){ 
 		$body = $self->_chomp_out_head_styles($body); 
-   		$body = convert_to_ascii($body);
+   		$body = html_to_plaintext({-string => $body});
    }	
    
    $body = $self->massage($body); 

@@ -11,6 +11,57 @@ Key:
 [?] Someday
 
 
+a) An eror still comes up:
+
+"Wide character in print at /data/cgi-bin/ddm4/mail.cgi line 1554."
+
+OK, this is an error that's only in the error log?
+
+This type of error has to do with the unicode stuff in Dada Mail - something's getting tripped-up from it. Not... sure... what :)
+
+b1) In my webpage there's a style section in the html head like ...
+
+a { font-weight:bold; ... }
+a:hover { background:white; ... }
+hr { margin:3px 0 3px 0; ... }
+
+these is seen as text in the texte version
+
+I see. My general suggestion is to:
+
+* Link to a stylesheet
+* Wrap the stylesheet in HTML Comments, like this:
+
+	<style>
+	<!--
+	a { font-weight:bold; ... }
+	a:hover { background:white; ... }
+	hr { margin:3px 0 3px 0; ... }	
+	/* more stuff... */
+	//-->
+       </style>
+* or even, use the Dada Mail templates, like this:
+
+	
+
+to have Dada Mail ignore parts of your message.
+
+Suggest #1 isn't a very good idea to do with email messages, Suggestion #2 is a little old-school and suggestion #3 isn't very convenient.
+
+I'll make a note to change the automatic plain text creation to just simply use only what's in the body tag of the HTML message. That'll save a lot of grief.
+
+b2) Any german umlaut (in the webpage these kind of characters are
+coded as HTML entities is lost in the text version.
+
+Very strange, but I can recreate the problems here, as well. I'll look into this too.
+
+
+
+Thanks for the additional reports! Keep them coming!
+
+
+
+
 [ ] 1. Installation on my own machine running MacOS X (Leopard) with MySQL 5.1 was fairly straightforward, but when I installed it on my ISP's server which runs a back-level version of Mysql (4.I) I had to reduce the string lengths from 320 to 255 to get it to accept the SQL. Also had to change the CREATE INDEX statements to ALTER DATABASE... ADD INDEX... statements as I got a "Not authorized" error on the CREATE statements, but I expect that's just my ISP. Not sure if reducing the string lengths will have any significant effect, haven't noticed any so far.
 	[x] Erm, I left a note - I'm not sure if I want to hassle around with this... 
 	
