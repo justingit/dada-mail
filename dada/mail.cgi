@@ -3047,7 +3047,7 @@ sub view_list {
             push(@$field_names, {name => $_, label => $fields_attr->{$_}->{label}}); 
         }
         
-            print(admin_template_header(-Title      => $type_title, 
+            print(admin_template_header(-Title      => 'View  ' . $type_title, 
                                 -List       => $list,
                                 -Root_Login => $root_login,
                                 -Form       => 0
