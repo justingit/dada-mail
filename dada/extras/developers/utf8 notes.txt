@@ -1,3 +1,18 @@
+Required Reading: 
+
+perlunitut
+http://perldoc.perl.org/perlunitut.html
+
+perlunifaq
+http://perldoc.perl.org/perlunifaq.html	
+	
+Joel on Software
+The Absolute Minimum Every Software Developer Absolutely, Positively Must Know About Unicode and Character Sets (No Excuses!)	
+http://www.joelonsoftware.com/articles/Unicode.html
+
+
+
+
 Time to fix the MySQL database character set then. First, I tried the easy way but that didn’t work for some odd reason. So I had to do it the hard way which involved changing the type of each column from CHAR(n), VARCHAR(n), TEXT, MEDIUMTEXT, TINYTEXT or LONGTEXT to its corresponding binary type (BINARY(n), VARBINARY(n), BLOB, MEDIUMBLOB, TINYBLOB or LONGBLOB) and then back along with changing the character to utf8. Here are the statements:
 
 
@@ -40,3 +55,53 @@ Perhaps a good idea would be to add encoding to the screen() subroutine, as well
 I have to make a new HTML::Template::Expr that also supports HTML::Template::Set (erm, HTML::Template::Set::Expr)? 
 
 This is harder than it seems. Hmm. 
+
+
+=======================================================================
+Fri, 07 Jul 2006 14:46:17 -0700
+
+http://www.mail-archive.com/perl-unicode@perl.org/msg02728.html
+
+Some more notes: 
+
+1. Assuming you have a Unicode-saavy text editor and are using Perl 5.8.1 or later, put "use utf8;" at the top of all your Perl files. When you do that, you can put literal Unicode characters in your code, so you can type in the "xxxx" literally.
+
+2. If you are running in CGI mode of faux CGI mode like Apache::Registry, do a "binmode( STDOUT, ':utf8' )" when your program starts up, and also include a -charset => 'UTF-8' argument in your CGI header() call, so that your output is declared in and actually in UTF-8, so you can see output correctly.
+
+3. Third, since CGI.pm seems to not be Unicode aware and passes data through as bytes, try doing this on what you get from param():
+
+    if (!Encode::is_utf8( $param_val )) {
+        $param_val = Encode::decode_utf8( $param_val );
+    }
+
+
+=======================================================================
+In CGI.pm' docs: 
+http://perldoc.perl.org/CGI.html
+
+-utf8
+
+This makes CGI.pm treat all parameters as UTF-8 strings. Use this with care, as it will interfere with the processing of binary uploads. It is better to manually select which fields are expected to return utf-8 strings and convert them using code like this:
+
+   1. use Encode;
+   2. my $arg = decode utf8=>param('foo');
+
+This is the only part of the docs that even mentions, UTF-8
+It seems like a lot of work to decode each and every string from each and every param - why not just do this once, for all the params, EXCEPT one's named for file uploads we *know* are file uploads? 
+
+erm, 
+
+
+=======================================================================
+A various buffet of problems, with a various buffet of solutions (I don't really trust a lot of the advice, but it
+gives me the idea that I'm not alone in my head-scratching
+Getting mad with CGI::Application and utf8
+http://www.perlmonks.org/?node_id=670272
+=======================================================================
+
+
+
+
+
+
+
