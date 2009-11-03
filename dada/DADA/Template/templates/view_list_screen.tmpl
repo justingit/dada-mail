@@ -71,16 +71,12 @@
 	<h1>
 	 Your Black List
 	</h1>
-	<p>
-	 A Black List is a set of rules that say who cannot subscribe to 
-	 your list. You can disallow a single email address by adding that email 
-	 address (you@yours.com) to the Black List.
-	</p>
-	<p>
-	 You can also use the Black List to match a part of an email address. 
-	 For example, adding 'example.com' to the Black List will disallow 
-	 anyone that has 'example.com' in their email address.
-	</p>
+	<p class="alert">
+	 Your Black List is a set of rules that say who is not allowed to subscribe to 
+	 your Subscribers Mailing List . You may add both complete email addresses  (you@example.com) or 
+	 part of an email address (example.com) to you Black List.</p>
+	
+	<p class="alert">Parts of addresses will match whole addresses - "example.com" will match, "you@example.com" and, "someone.else@example.com"</p>
 		
 	<!-- tmpl_if can_use_global_black_list --> 
 		
@@ -218,7 +214,7 @@
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="blacklist_filter_form">
 		 <input type="hidden" name="f" value="filter_using_black_list" />
 		 <div class="buttonfloat">
-		  <input type="submit" class="cautionary" value="Filter Subscription List Through Blacklist..." />
+		  <input type="submit" class="cautionary" value="Filter Your Subscribers Through The Black List..." />
 		 </div>
 		</form>
 	<!--/tmpl_if-->
@@ -256,58 +252,58 @@
 		    <td>
 		     <p>
 		      <label for="black_list">
-		       Activate Black List rules
+		       Activate Black List
 		      </label>
 		     </p>
+			<table> 
+				 <tr>
+				    <td>
+				     <p>
+				      <input type="checkbox" name="add_unsubs_to_black_list" id="add_unsubs_to_black_list" value="1" <!-- tmpl_if add_unsubs_to_black_list -->checked="checked"<!--/tmpl_if--> />
+				     </p>
+				    </td>
+				    <td>
+				     <p>
+				      <label for="add_unsubs_to_black_list">
+				       Move Unsubscribed Subscribers Automatically to the Black List 
+				      </label>
+				     </p>
+				    </td>
+				   </tr>
+				   <tr>
+				    <td>
+				     <p>
+				      <input type="checkbox" name="allow_blacklisted_to_subscribe" id="allow_blacklisted_to_subscribe" value="1" <!-- tmpl_if allow_blacklisted_to_subscribe -->checked="checked"<!--/tmpl_if--> />
+				     </p>
+				    </td>
+				    <td>
+				     <p>
+				      <label for="allow_blacklisted_to_subscribe">
+				       Continue to Allow Subscriptions From Subscribers of Black Listed Addresses
+				      </label>
+				     </p>
+				    </td>
+				   </tr>
+				   <tr>
+				    <td>
+				     <p>
+				      <input type="checkbox" name="allow_admin_to_subscribe_blacklisted" id="allow_admin_to_subscribe_blacklisted" value="1" <!-- tmpl_if allow_admin_to_subscribe_blacklisted -->checked="checked"<!--/tmpl_if--> />
+				     </p>
+				    </td>
+				    <td>
+				     <p>
+				      <label for="allow_admin_to_subscribe_blacklisted">
+				       Continue to Allow Subscriptions in the List Control Panel of Black Listed Addresses 
+				      </label>
+					  <br />
+					  Black Listed Addresses will just need to be manually, checked/selected to be Subscribed.  
+				     </p>
+				   </td>
+				  </tr>
+				</table> 
 		    </td>
 		   </tr>
-		   <tr>
-		    <td>
-		     <p>
-		      <input type="checkbox" name="add_unsubs_to_black_list" id="add_unsubs_to_black_list" value="1" <!-- tmpl_if add_unsubs_to_black_list -->checked="checked"<!--/tmpl_if--> />
-		     </p>
-		    </td>
-		    <td>
-		     <p>
-		      <label for="add_unsubs_to_black_list">
-		       Move email addresses that have just been unsubscribed to the Black List
-		      </label>
-		     </p>
-		    </td>
-		   </tr>
-		   <tr>
-		    <td>
-		     <p>
-		      <input type="checkbox" name="allow_blacklisted_to_subscribe" id="allow_blacklisted_to_subscribe" value="1" <!-- tmpl_if allow_blacklisted_to_subscribe -->checked="checked"<!--/tmpl_if--> />
-		     </p>
-		    </td>
-		    <td>
-		     <p>
-		      <label for="allow_blacklisted_to_subscribe">
-		       Allow past subscribers to subscribe again, even though they are black listed
-		      </label>
-		      <br />
-		      By selecting both this option <strong>and</strong> the one directly above it, 
-		      you effectively collect a &quot;blacklist-in-waiting&quot; of all unsubscribers 
-		      for possible <em>future</em> use. Otherwise, selecting this option alone is the 
-		      same as disabling your Black List outright.
-		     </p>
-		    </td>
-		   </tr>
-		   <tr>
-		    <td>
-		     <p>
-		      <input type="checkbox" name="allow_admin_to_subscribe_blacklisted" id="allow_admin_to_subscribe_blacklisted" value="1" <!-- tmpl_if allow_admin_to_subscribe_blacklisted -->checked="checked"<!--/tmpl_if--> />
-		     </p>
-		    </td>
-		    <td>
-		     <p>
-		      <label for="allow_admin_to_subscribe_blacklisted">
-		       Allow administration to subscribe black listed email addresses
-		      </label>
-		     </p>
-		   </td>
-		  </tr>
+		  
 		 </table>
 
 		 <div class="buttonfloat">
@@ -347,7 +343,7 @@
 		    <td>
 		     <p>
 		      <label for="enable_white_list">
-		       Activate the White List
+		       Activate White List
 		      </label>
 		     </p>
 		    </td>
