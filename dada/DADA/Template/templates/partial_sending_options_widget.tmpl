@@ -111,7 +111,6 @@
 				{ 
 				    method: 'post', 
 					parameters: {
-						f:                        'previewMessageReceivers',
 						alternative_lists:         alternative_lists,
 						multi_list_send_no_dupes: multi_list_send_no_dupes,
 						
@@ -119,6 +118,7 @@
 							field_comparison_type_<!-- tmpl_var name -->: $F('field_comparison_type_<!-- tmpl_var name -->'), 
 							field_value_<!-- tmpl_var name -->: $F('field_value_<!-- tmpl_var name -->'), 
 						<!-- /tmpl_loop -->
+						f:                        'previewMessageReceivers'
 						
 						},
 

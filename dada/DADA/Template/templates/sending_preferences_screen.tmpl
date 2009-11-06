@@ -443,30 +443,15 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 			
 /*			 How we find if we're sending via sendmail or SMTP: */
 			var send_via_smtp = 0; 
-		//	alert('document.default_form.send_via_smtp.length ' + document.default_form.send_via_smtp.length); 
 			if(document.default_form.send_via_smtp.length){ 
 				for (var i=0; i < document.default_form.send_via_smtp.length; i++){
-		//			alert('document.default_form.send_via_smtp[i].checked ' + document.default_form.send_via_smtp[i].checked); 
 					if (document.default_form.send_via_smtp[i].checked){
-		//				alert('document.default_form.send_via_smtp[i].value ' + document.default_form.send_via_smtp[i].value); 
 						if(document.default_form.send_via_smtp[i].value == 1){ 
-		//					alert('yes.'); 
 							send_via_smtp = 1; 
 						}
 					}
 				}
 			}
-		  //  alert('send_via_smtp ' + send_via_smtp); 
-
-		
-
-		
-		
-/*		smtp_connection_per_batch: $F('smtp_connection_per_batch'),
-		
-		
-		
-*/
 
 			new Ajax.Updater(
 				'sending_preferences_test', '<!-- tmpl_var S_PROGRAM_URL -->', 
@@ -488,7 +473,7 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 						pop3_use_ssl:              $F('pop3_use_ssl'), 
 						set_smtp_sender:           $F('set_smtp_sender'),
 						process:                   $F('process'),
-						f:                         'sending_preferences_test',
+						f:                         'sending_preferences_test'
 
 						},
 
