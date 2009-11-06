@@ -84,15 +84,15 @@
 		<!-- tmpl_include html_message_form_field_widget.tmpl --> 
 		 
 		 </p>
-		 <p>
-		  <strong>
+		 <fieldset>
+		  <legend>
 		   <a href="#" onclick="toggleDisplay('adv');return false;">
-			+/- Advanced Options...
-		   </a>
-		  </strong>
-		 </p>
-		 <!-- "display:none" below is controlled by toggleDisplay('adv') -->
-		 <table class="simplebox" id="adv" style="display:none">
+			+/- 
+		   </a>Advanced Options
+		  </legend>
+
+		<div id="adv" style="display:none"> 
+		<table>
 		  <tr>
 		   <td>
 			<p>
@@ -100,8 +100,7 @@
 			  Images in this Webpage Should:
 			 </strong>
 			</p>
-		   </td>
-		   <td>
+		  
 			<p>
 			 <input type="radio" name="url_options" id="extern" value="extern" checked="checked" />
 			  <label for="extern">
@@ -138,9 +137,20 @@
 			</p>
 		   </td>
 		  </tr>
+		  <tr> 
+			<td>
+			<p>	<input type="checkbox" name="remove_javascript" id="remove_javascript" checked="checked" value="1" />
+			 
+			  <label for="remove_javascript">
+				Remove Javascript
+			   </label> <em>(Highly Recommended)</em>
+			 </p>
+			</td>
+	
+		  </tr> 
 		  <tr>
-		   <td colspan="2">
-			<table align="center" class="simplebox">
+		   <td>
+			<table class="simplebox">
 			 <tr>
 			  <td>
 			   <p>
@@ -205,7 +215,8 @@
 		   </td>
 		  </tr>
 		 </table>
-
+		</div> 
+	</fieldset>
 
 
 </fieldset> 

@@ -277,40 +277,53 @@ sub include_css(\%$$) {
 #------------------------------------------------------------------------------
 # include_javascript
 #------------------------------------------------------------------------------
-sub include_javascript(\%$$) {
-  my ($self,$gabarit,$root)=@_;
-  sub pattern_js {
-    my ($self,$url,$milieu,$fin,$root)=@_;
-    my $ur = URI::URL->new($url, $root)->abs;
-    print "Include Javascript file $ur\n" if $self->{_DEBUG};
-    my $res2 = $self->{_AGENT}->request(new HTTP::Request('GET' => $ur));
 
-	if($res2->is_success()){ 
-		  my $content = $res2->content;
-		    print "Ok file downloaded\n" if $self->{_DEBUG};
-		    return "\n"."<!-- $ur -->\n".
-		      '<script '.$milieu.$fin.">\n".
-			'<!--'."\n".$content.
-			  "\n-->\n</script>\n";
-			
+sub pattern_js {
+   my ($self,$url,$milieu,$fin,$root)=@_;
+
+   my $ur = URI::URL->new($url, $root)->abs;
+
+	if($self->{_remove_jscript} == 1) { 
+		# Why should I even try to get the files, if I'm just going to remove them?
+		print "Removed Javascript file $ur\n" if $self->{_DEBUG};
+		return '<!-- Removed Javascript: '. $ur . ' -->';
 	}
 	else { 
-		
-		my $err = "Looking for javascript to include:, '" . $ur . "' was not successful - removing from message and ignoring"; 
-		$self->set_err($err);
-		carp $err; 
-		
-		return '<script>'; 
-		
+  	 	print "Include Javascript file $ur\n" 
+			if $self->{_DEBUG};
+		my $res2 = $self->{_AGENT}->request(new HTTP::Request('GET' => $ur));
+		if($res2->is_success()){ 
+			  my $content = $res2->content;
+			    print "Ok file downloaded\n" 
+					if $self->{_DEBUG};
+			    return "\n"."<!-- $ur -->\n".
+			      '<script '.$milieu.$fin.">\n".
+				'<!--'."\n".$content.
+				  "\n-->\n</script>\n";	
+		}
+		else { 
+			my $err = "Looking for javascript to include:, '" . $ur . "' was not successful - removing from message and ignoring"; 
+			$self->set_err($err);
+			carp $err; 
+			return "<!-- Couldn't Include Javasript: $ur -->\n";		    
+		}
 	}
-	
-  }
-  $gabarit=~s/<script([^>]*)src\s*=\s*"?([^\" ]*js)"?([^>]*)>
-    /$self->pattern_js($2,$1,$3,$root)/iegmx;
-  print "Done Javascript\n" if $self->{_DEBUG};
-  return $gabarit;
-}
+ }
 
+sub include_javascript(\%$$) {
+	my ($self,$gabarit,$root)=@_;
+	# Ouch. My brain. Ouch. 
+	$gabarit=~s/<script([^>]*)src\s*=\s*"?([^\" ]*js)"?([^>]*)>[^<]*<\/script>/$self->pattern_js($2,$1,$3,$root)/iegmx;
+	if ($self->{_remove_jscript} == 1) {
+		# Old!
+		# $gabarit=~s/<script([^>]*)>[^<]*<\/script>//iegmx;
+		# New!
+		$gabarit =~ s/<script([^>]*)>[\s\S]*?<\/script>//iegmx;
+	}
+	print "Done Javascript\n" 
+		if $self->{_DEBUG};
+	return $gabarit;
+}
 
 
 

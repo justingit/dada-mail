@@ -543,7 +543,11 @@ sub include_javascript(\%$$) {
   $gabarit=~s/<script([^>]*)src\s*=\s*"?([^\" ]*js)"?([^>]*)>[^<]*<\/script>
     /$self->pattern_js($2,$1,$3,$root)/iegmx;
   if ($self->{_remove_jscript}) {
-    $gabarit=~s/<script([^>]*)>[^<]*<\/script>//iegmx;
+	#die "Yes."; 
+    # Old!
+	# $gabarit=~s/<script([^>]*)>[^<]*<\/script>//iegmx;
+	# New!
+	$gabarit =~ s/<script([^>]*)>[\s\S]*?<\/script>//iegmx;
   }
   print "Done Javascript\n" if $self->{_DEBUG};
   return $gabarit;

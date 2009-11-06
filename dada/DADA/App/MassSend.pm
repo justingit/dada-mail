@@ -592,27 +592,25 @@ sub send_url_email {
 			#/Headers
 			
 			
-            my $url_options   =  $q->param('url_options') || undef; 
+            my $url_options       = $q->param('url_options')       || undef; 
+			my $remove_javascript = $q->param('remove_javascript') || 0; 
             
             my $login_details; 
-        
             if(defined($q->param('url_username')) && defined($q->param('url_password'))){ 
                 $login_details =  $q->param('url_username') . ':' . $q->param('url_password')
             }
-            
-            
+                        
             my $proxy = defined($q->param('proxy')) ? $q->param('proxy') : undef;
-            
 
-	 
             my $mailHTML = new DADA::App::MyMIMELiteHTML(
-	
-												'IncludeType' => $url_options, 
-                                                'TextCharset' => $li->{charset_value},
-                                                'HTMLCharset' => $li->{charset_value}, 
+												remove_jscript => $remove_javascript,  
+												
+												'IncludeType'  => $url_options, 
+                                                'TextCharset'  => $li->{charset_value},
+                                                'HTMLCharset'  => $li->{charset_value}, 
                                                 
-                                                HTMLEncoding  => $li->{html_encoding},
-                                                TextEncoding  => $li->{plaintext_encoding},
+                                                HTMLEncoding   => $li->{html_encoding},
+                                                TextEncoding   => $li->{plaintext_encoding},
                                      
                                                  (($proxy) ? (Proxy => $proxy,) :  ()),
                                                  (($login_details) ? (LoginDetails => $login_details,) :  ()),
