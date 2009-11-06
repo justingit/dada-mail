@@ -202,6 +202,11 @@ At least in the Dada Mail program, duplicates should never be present.
 If you are edited the plain text list files (if you're using the default back end), or if you're using the SQL dada_subscribers SQL backend directly, then all bets are off, in terms of duplicates. You CAN, easily add duplicates to a mailing list
 by working with the backends directly. We suggest not doing this, but rather, using the provided Perl API. 
 
+=head2 cannot do statement (at add_subscriber)! Duplicate entry '0' for key 1
+
+I've seen this error, when the Dada Mail SQL database isn't imported correctly. My advice is to export your list from within Dada Mail's List Control Panel (Your Subscribers -> View, Open List in New Window)
+Drop the dada_subscribers table, recreate the table and subscribe the subscribers back into your database via Dada Mail's list control panel (Your Subscribers -> Add)
+
 =head2 Died at /usr/lib/perl5/5.8.8/base.pm line 85
 
 Upon visiting Dada Mail in your web browser, you get this fairly unhelpful message: 
@@ -649,7 +654,7 @@ DB_File, GDBM_File, NDBM_File, ODBM_File and SDBM_File are all different DB File
 
 See the error faq about restoring your lists. 
 
-=head2 I get an error like this: couldn't tie /home/path/to/your/dada_files/mj-listshortname for reading: File exists at [...]
+=head2 couldn't tie /home/path/to/your/dada_files/mj-listshortname for reading: File exists at [...]
 
 See the error faq about restoring your lists.
 
@@ -669,10 +674,7 @@ By default, Dada Mail saves its B<list settings> and B<archives> (there's also a
 
 =back
 
-
-B<Resolution>
-
-In versions, B<2.9> and older, it's very easy to restore your lists to proper order. Visit the following URL: 
+Visit the following URL: 
 
 http://example.com/cgi-bin/dada/mail.cgi?f=restore_lists
 
@@ -683,44 +685,6 @@ If you're using a version of Dada Mail under 2.10.6 and you're still receive an 
 Restoring list settings/archives is accomplished because Dada Mail keeps a plain text, platform agnostic version of your list settings/archives. This feature was put in Dada Mail, version 2.8.12. If you have a version of Dada Mail below this, this backup will not have been created. Upgrading Dada Mail will not create backups of a corrupted list to then restore from. List Setting/Archive restoration only worked with well after 2.9. If you have a installation of Dada Mail that needs to have lists restored that dates prior to 2.9, it's advised to upgrade to the latest version (make a backup, of course) of Dada Mail before attempting to restore your lists. 
 
 Read below for ways to restore a list if you're running a version below 2.9. 
-
-=head2 How do I restore my lists if I have a version prior to 2.9?
-
-
-Dada Mail can use a few different types of DB File formats to save its list settings, schedules and archives. These are saved wherever you set the B<$FILES> variable to, and begin with B<mj->. A quick way to see which kind of DB File you're using is to issue the "file" command via the command line: 
-
- bash-2.05$ file mj-listshortname
- mj-listshortname: Berkeley DB (Hash, version 5, native byte-order)
-
-In this case, the list settings file, B<mj-listshortname> is using the Berkeley DB file format. If this is the case for you, you may need to upgrade the db file itself. 
-
-Upgrading Berkeley DB Files is easy (make backups first!), just use the db_upgrade utility: 
-
- bash-2.05$ db_upgrade mj-listshortname
-
-Now, when you run the file() command again, you should see a change: 
-
- bash-2.05$ file mj-listshortname
- mj-listshortname: Berkeley DB (Hash, version 7, native byte-order)
-
-More Information -> http://www.sleepycat.com/docs/utility/db_upgrade.html
-
-If you're list settings aren't in the Berkeley DB file format, you may have to explicitly tell Dada Mail what file format is being used. For example: 
-
- bash-2.05a$ file mj-listshortname
- mj-listshortname: GNU dbm 1.x or ndbm database, little endian
-
-In this case, the list settings file are using the NDBM database file format. 
-
-Telling Dada Mail explicitly what file format is being used is done by tweaking the B<@AnyDBM_File> array in the Config.pm file. In this example, to tell Dada Mail to use the NDBM file format, I would change this line:
-
- BEGIN { @AnyDBM_File::ISA = qw(DB_File GDBM_File NDBM_File ODBM_File SDBM_File) }
-
-to: 
-
- BEGIN { @AnyDBM_File::ISA = qw(NDBM_File) }
-
-To clarify what is going on, Dada Mail supports a variety of DB File formats. It tries to use the best format available. If your server upgrades its software, this best format may change and you may have to tell Dada Mail to continue to use the format it was using in the beginning. 
 
 =head2 password is blank! - Error. 
 
