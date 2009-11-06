@@ -752,7 +752,7 @@ This message was sent out by <!-- tmpl_var PROGRAM_NAME --> to test out mail sen
 		
 If you've received this message, it looks like mail sending is working. 
 
-<!-- tmpl_if send_via_smtp --> 
+<!-- tmpl_if list_settings.send_via_smtp --> 
 	* Mail is being sent via SMTP
 <!-- tmpl_else --> 
 	* Mail is being sent via sendmail
