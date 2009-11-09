@@ -299,11 +299,13 @@ sub subscribe {
         # move the info to the actual subscription list, 
         # And then remove the information from the confirm list, when we're all done. 
         
-        my $rm_status = $lh->remove_from_list(
-                            -Email_List =>[$email], 
-                            -Type       => 'sub_confirm_list',
-                        );
-                        
+        my $rm_status = $lh->remove_subscriber(
+			{
+            	-email => $email, 
+                -type  => 'sub_confirm_list',
+            }
+		);
+		                
         $lh->add_subscriber(
              { 
                  -email     => $email, 
