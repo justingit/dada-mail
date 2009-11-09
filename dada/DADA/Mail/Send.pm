@@ -786,11 +786,11 @@ EOF
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} = $orig_debug_pop3;     
     open(RESULTS, "<$DADA::Config::TMP/$filename")
         or die "that didn't work $!"; 
-    my $msg = do { local $/; <RESULTS> };
+    my $smtp_msg = do { local $/; <RESULTS> };
 
     close(RESULTS); 
 
-    my @r_l = split("\n", $msg); 
+    my @r_l = split("\n", $smtp_msg); 
    
    my $report =  []; 
    
@@ -813,7 +813,7 @@ EOF
 
 	unlink($DADA::Config::TMP . '/' . $filename); 
  
-    return ($msg, \@r_l, $report);  
+    return ($smtp_msg, \@r_l, $report);  
 
 
 }
