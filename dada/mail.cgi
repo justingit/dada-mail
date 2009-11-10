@@ -618,7 +618,6 @@ sub run {
 	'list_cp_options'          =>    \&list_cp_options, 
 	'profile_fields'           =>    \&profile_fields, 
 	'sending_preferences_test' =>    \&sending_preferences_test, 
-	'checkpop'                =>    \&checkpop,
 	'author'                  =>    \&author,
 	'list'                    =>    \&list_page,
 	'setup_info'              =>    \&setup_info, 
@@ -2904,59 +2903,6 @@ sub sending_preferences_test {
         }
     );
 
-}
-
-sub checkpop { 
-
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q, 
-                                                        -Function => 'smtp_options');
-    
-    $list = $admin_list;
-    
-    require DADA::Security::Password;
-    
-    my $user    = $q->param('user'); 
-    my $pass    = $q->param('pass'); 
-    my $server  = $q->param('server'); 
-	my $use_ssl = $q->param('use_ssl') || 0; 
-	my $mode    = $q->param('mode')    || 'BEST'; 
-    
-    
-    require  DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-    my $li = $ls->get; 
-    
-    require DADA::Mail::Send; 
-    my $mh         = DADA::Mail::Send->new(
-						{
-							-list   => $list, 
-							-ls_obj => $ls, 
-						}
-					 );
-    my $pop_status;
-    
-    if(!$user || !$pass || !$server){ 
-        $pop_status = undef; 
-    }else{
-        $pop_status = $mh->_pop_before_smtp(
-						-pop3_server    => $server, 
-                        -pop3_username  => $user, 
-                        -pop3_password  => $pass,
-						-pop3_auth_mode => $mode, 
-						-pop3_use_ssl   => $use_ssl, 
-					);
-    }
-
-    print $q->header();
-	# DEV: These need to be templated out!
-    if(defined($pop_status)){ 
-        print $q->h2("Success!"); 
-        print $q->p($q->b("POP-before-SMTP authentication was successful")); 
-        print $q->p($q->b("Make sure to 'Save Changes' to have your edits take affect.")); 
-    }else{ 
-        print $q->h2("Warning!"); 
-        print $q->p($q->b('POP-before-SMTP authentication was ',$q->i('unsuccessful'),));    
-    }
 }
 
 
@@ -8138,9 +8084,7 @@ sub archive_rss {
 
 
 sub archive_atom { 
-
     archive_rss(-type => 'atom'); 
-
 }
 
 
@@ -8161,63 +8105,43 @@ sub email_password {
        ( defined($li->{pass_auth_id})) && 
        ( $q->param('pass_auth_id')  eq $li->{pass_auth_id})){ 
     
-        my $new_passwd  = DADA::Security::Password::generate_password(); 
-        my $new_encrypt = DADA::Security::Password::encrypt_passwd($new_passwd); 
+        my $new_password  = DADA::Security::Password::generate_password(); 
+        my $new_encrypt   = DADA::Security::Password::encrypt_passwd($new_password); 
 
-        $ls->save({
-                   password     => $new_encrypt,
-                   pass_auth_id => ''
-                }); 
-        
-        
-        require DADA::Mail::Send;  
-        my $mh = DADA::Mail::Send->new(
-			     	{
-						-list   => $list, 
-						-ls_obj => $ls, 
-					}
-			     ); 
-
-# DEV This needs to be templated out: 
-my $Body = qq{
-
-Hello, 
-Someone asked for the $DADA::Config::PROGRAM_NAME List Password password for:
-
-$li->{list_name}
- 
-to be emailed to this address. Since you are the list owner, 
-the password is: 
-
-$new_passwd
-
-Notice, you probably didn't use this password to begin with, 
-$DADA::Config::PROGRAM_NAME stores passwords that are encrypted and no 
-password it stores can be "unencrypted" 
-So, a new, random password is generated. You may reset the password
-to anything you want in the list control panel. 
-
-Please be sure to delete this email for security reasons. 
-
--$DADA::Config::PROGRAM_NAME
-
-};
-
-    
-    $mh->send(From    => '"' . escape_for_sending($li->{list_name}) . '" <' . $li->{list_owner_email} . '>', 
-              To      => '"List Owner for: '. escape_for_sending($li->{list_name}) .'" <'. $li->{list_owner_email} .'>', 
-              Subject => "List Password", 
-              Body    => $Body,
-             );
-
-        require DADA::Logging::Usage; 
-        my $log = new DADA::Logging::Usage; 
-           $log->mj_log($list, 'List Password Reset', "remote_host:$ENV{REMOTE_HOST}, ip_address:$ENV{REMOTE_ADDR}") 
-                if $DADA::Config::LOG{list_lives};
-
-    
-    print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=' . $DADA::Config::SIGN_IN_FLAVOR_NAME . '&list=' . $list); 
-
+        $ls->save(
+			{
+             	password     => $new_encrypt,
+                pass_auth_id => ''
+            }
+		); 
+		
+		require DADA::App::Messages; 		
+		DADA::App::Messages::send_generic_email(
+			{
+				-list    => $list, 
+				-headers => { 
+					From    => '"' .                escape_for_sending($li->{list_name}) . '" <' . $li->{list_owner_email} . '>', 
+				    To      => '"List Owner for: '. escape_for_sending($li->{list_name}) . '" <' . $li->{list_owner_email} . '>', 
+				    Subject => $DADA::Config::LIST_RESET_PASSWORD_MESSAGE_SUBJECT, 
+				},
+				-body        => $DADA::Config::LIST_RESET_PASSWORD_MESSAGE,
+				-tmpl_params => {
+					-list_settings_vars_param => {
+						-list   => $list,
+						-dot_it => 1, 
+					},
+		            -vars => {
+		            	new_password => $new_password, 
+		            },
+				},
+			}
+		);
+       
+		require DADA::Logging::Usage; 
+		my $log = new DADA::Logging::Usage; 
+		   $log->mj_log($list, 'List Password Reset', "remote_host:$ENV{REMOTE_HOST}, ip_address:$ENV{REMOTE_ADDR}") 
+				if $DADA::Config::LOG{list_lives};
+		print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=' . $DADA::Config::SIGN_IN_FLAVOR_NAME . '&list=' . $list); 
 
 }else{ 
 

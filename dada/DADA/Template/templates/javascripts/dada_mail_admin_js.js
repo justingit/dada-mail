@@ -86,21 +86,6 @@ function real_message() {
 
 }
 
-function testPOPBeforeSMTP() {
-
-	var use_ssl_value = 0; 
-	if(document.default_form.pop3_use_ssl.checked){ 
-		use_ssl_value = 1; 
-	}
-	else{ 
-		use_ssl_value = 0; 
-	}
-	var popcheck = '<!-- tmpl_var name="S_PROGRAM_URL" -->?f=checkpop;user='+document.default_form.pop3_username.value+';pass='+document.default_form.pop3_password.value+';server='+document.default_form.pop3_server.value+';use_ssl='+use_ssl_value+';mode='+document.default_form.pop3_auth_mode.value;
-	window.open(popcheck, 'popcheck', 'width=325,height=300,top=20,left=20');
-
-}
-
- 
 function toggleDisplay(target) {
 
 	if (document.getElementById){
