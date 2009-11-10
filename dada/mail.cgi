@@ -813,11 +813,13 @@ sub default {
     
     }else{ 
         
-        print(list_template(-Part => "header",
-                       -Title => "Welcome to $DADA::Config::PROGRAM_NAME", 
-                       
-                      )); 
-                      
+        print list_template(
+			-Part  => "header",
+            -Title => "Welcome to $DADA::Config::PROGRAM_NAME", 
+        	-vars  => { 
+				show_profile_widget => 0, 
+			}
+		);               
 
         my $auth_state; 
         
@@ -1912,7 +1914,14 @@ sub delete_list {
        
         my $logout_cookie = logout(-redirect => 0); 
       
-        print(list_template(-Part  => 'header', -Title => "Deletion Successful", -header_params => {-COOKIE => $logout_cookie}));
+        print list_template(
+			-Part          => 'header', 
+			-Title         => "Deletion Successful", 
+			-header_params => {-COOKIE => $logout_cookie},
+			-vars 		   => { 
+				show_profile_widget => 0, 
+			}
+		);
 
         require DADA::Template::Widgets;
         print   DADA::Template::Widgets::screen({-screen => 'delete_list_success_screen.tmpl',
