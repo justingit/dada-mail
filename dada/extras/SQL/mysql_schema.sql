@@ -1,5 +1,5 @@
 -- This should work well for MySQL ver. 5 - MySQL ver. 4 MAY need some slight modifications. 
--- Some of the modifications include either not using the indexes
+-- Some of the modifications include not using the indexes, or rewriting them for MySQL 4.x, specifically
 
 CREATE TABLE IF NOT EXISTS dada_settings (
 list                             varchar(16),
