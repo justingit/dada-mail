@@ -28,7 +28,7 @@ Most likely, if you ever have to I<downgrade> Dada Mail, these extra fields shou
 
 =head2 Adding a New Subscriber Field
 
-Adding a new subscriber field is pretty easy. Log into the list control panel B<with the Dada Mail Root Password> (very important) to any list. On the left hand menu, under, B<Manage Subscribers>, click, B<Subscriber Profile Fields>
+Adding a new subscriber field is pretty easy. Log into the list control panel B<with the Dada Mail Root Password> (very important) to any list. On the left hand menu, under, B<Profiles>, click, B<Profile Fields>
 
 This screen will allow you to add/remove the Subscriber Profile Fields. This screen will also let you set a fallback value. The fallback value is used in mailmerging and is used as the value fo the field tag when no value is present. 
 
@@ -126,7 +126,7 @@ In Dada Mail 3.0, the file type you need to import your subscribers in must be i
 
 =head2 Editing Individual Subscriber Information
 
-You can edit an individual's subscriber information in the list control. Under, B<Manage Subscribers>, click on, B<view>. You'll be presented with a table of your subscribers, with all their subscription information. Clicking on the email address of the subscriber will bring you to a screen to edit the subscription information. Pretty simple. 
+You can edit an individual's subscriber information in the list control. Under, B<Your Subscribers>, click on, B<View>. You'll be presented with a table of your subscribers, with all their subscription information. Clicking on the email address of the subscriber will bring you to a screen to edit the subscription information. Pretty simple. 
 
 Currently, subscribers can not edit their own individual information.
 
