@@ -8153,74 +8153,73 @@ sub email_password {
 				}
 			); 
     
-    my $rand_str = DADA::Security::Password::generate_rand_string();
+    my $random_string = DADA::Security::Password::generate_rand_string();
     
-    $ls->save({pass_auth_id => $rand_str});
-    
-# DEV: Um, this has to be templated out one of these years. 
-my $Body = qq{ 
+    $ls->save(
+		{
+			pass_auth_id => $random_string,
+		}
+	);
 
-Hello, 
-Someone asked for the $DADA::Config::PROGRAM_NAME List Password password for:
+	require DADA::App::Messages; 		
+	DADA::App::Messages::send_generic_email(
+		{
+			-list    => $list, 
+			-headers => { 
+				From     => '"'                  . escape_for_sending($li->{list_name}) . '" <' . $li->{list_owner_email} . '>', 
+			    To       =>  '"List Owner for: ' . escape_for_sending($li->{list_name}) . '" <' . $li->{list_owner_email} . '>', 
+ 				Subject  => $DADA::Config::LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT,
+			},
+			-body        => $DADA::Config::LIST_CONFIRM_PASSWORD_MESSAGE,
+			-tmpl_params => {
+				-list_settings_vars_param => {
+					-list   => $list,
+					-dot_it => 1, 
+				},
+	            -vars => {
+	            	random_string => $random_string, 
+					REMOTE_HOST   => $ENV{REMOTE_HOST}, 
+					REMOTE_ADDR   => $ENV{REMOTE_ADDR},
+	            },
+			},
+		}
+	);
 
-$li->{list_name}
- 
-to be emailed to this address. 
-
-Before this can be done, it has to be confirmed that the list
-owner (meaning you) actually wants a new password to be set for this list 
-and mailed to you. To confirm this, visit this URL: 
-
-$DADA::Config::S_PROGRAM_URL?f=email_password&l=$list&pass_auth_id=$rand_str
-
-By visiting this URL, you will reset the list password. This new 
-password will then be emailed to you. You will then be redirected 
-to the admin login screen. 
-
-If you do not know why you were sent this email, ignore it and 
-your password will not be changed. 
-
-This request for the password change was done from:
-
-    Remote Host:    $ENV{REMOTE_HOST}
-    IP Address:    $ENV{REMOTE_ADDR}  
-
--$DADA::Config::PROGRAM_NAME
-
-}; 
-
-    $mh->send(From     => '"' . escape_for_sending($li->{list_name}) . '" <' . $li->{list_owner_email} . '>', 
-              To       =>  '"List Owner for: '. escape_for_sending($li->{list_name}) .'" <'. $li->{list_owner_email} .'>', 
-              
-              Subject  => "Confirm List Password Change", 
-              Body     => $Body
-             ); 
-
-        require DADA::Logging::Usage; 
-        my $log = new DADA::Logging::Usage; 
-           $log->mj_log($list, 'Sent Password Change Confirmation', "remote_host:$ENV{REMOTE_HOST}, ip_address:$ENV{REMOTE_ADDR}") 
-                if $DADA::Config::LOG{list_lives};
+	require DADA::Logging::Usage; 
+	my $log = new DADA::Logging::Usage; 
+	   $log->mj_log($list, 'Sent Password Change Confirmation', "remote_host:$ENV{REMOTE_HOST}, ip_address:$ENV{REMOTE_ADDR}") 
+	        if $DADA::Config::LOG{list_lives};
 
     
     sleep(10); 
     
-    print(list_template(-Part => "header",
-                   -Title => "Confirm Password Change", 
-                   -List  => $list)); 
-    
-    print '<p>A confirmation email has been sent to the list owner of ' . $li->{list_name} .
-           ' to confirm the password change.</p>
-           <ul> 
-            <li>
-             <p>
-              Logged Remote Host: ' . $ENV{REMOTE_HOST} . '</p></li>' .
-           '<li><p>Logged Remote IP: ' . $ENV{REMOTE_ADDR} . '</p></li>
-           </ul> 
-           ';
-    
-    print(list_template(-Part => "footer",
-                   -List  => $list)); 
-
+    print list_template(
+		-Part  => "header",
+        -Title => "Password Confirmation Sent", 
+        -List  => $list,
+		-vars  => {
+			show_profile_widget => 0,
+		}
+	); 
+	
+    require DADA::Template::Widgets; 
+	print   DADA::Template::Widgets::screen(
+		{
+			-screen => 'list_password_confirmation_screen.tmpl', 
+			-vars   => { 
+				REMOTE_HOST => $ENV{REMOTE_HOST}, 
+				REMOTE_ADDR => $ENV{REMOTE_ADDR}, 
+			}, 
+			-list_settings_vars_param => { 
+				-list    => $list,
+				-dot_it  => 1, 
+			},
+		},
+	); 
+    print list_template(
+		-Part => "footer",
+        -List => $list,
+	); 
     }
 }
 
