@@ -27,18 +27,16 @@ Remove
  
 <!-- tmpl_if have_subscribed_addresses -->
 	 
+	<fieldset> 
+	 <legend>
+	  Verified Addresses
+	 </legend>
+	
 	 <p>
-	  These addresses have passed verification. Click the 
-	  checkbox next to an address to remove it:
+	  These addresses have passed verification.
 	 <p>
 	 
-<!--/tmpl_if--> 
- 
- <div class="buttonfloat">
-  <input type="button" class="cautionary" value="Re-Enter Email List" onclick="history.back()" />
-  <input type="submit" class="processing" value="Unsubscribe Checked Emails" />
- </div>
- <div class="floatclear"></div>
+
  
 <!-- tmpl_loop name="addresses_to_remove" --> 
 	 
@@ -47,27 +45,30 @@ Remove
 	 
 <!--/tmpl_loop-->
  
- <p>
-  <a href="#" onclick="SetChecked(1);return false;">
-   check all
-  </a>
-  ::
-  <a href="#" onclick="SetChecked(0);return false;">
-   uncheck all
-  </a>
- </p>
+
+</fieldset> 
+
+
+
  <div class="buttonfloat">
   <input type="button" class="cautionary" value="Re-Enter Email List" onclick="history.back()" />
-  <input type="submit" class="processing" value="Unsubscribe Checked Emails" />
+  <input type="submit" class="processing" value="Unsubscribe Checked <!-- tmpl_var type_title -->" />
  </div>
 </form> 
 <div class="floatclear"></div>
 
+
+<!--/tmpl_if--> 
+
 <!-- tmpl_if not_subscribed_addresses --> 
 	
+	<fieldset> 
+	 <legend>
+		Not Subscribed Addresses
+	</legend>
+	
 	<p>
-	 These addresses are not part of list at present. Either they 
-	 were previously deleted, or were never in the list.
+	 These addresses are not part of your <!-- tmpl_var type_title --> currently.
 	</p>
 	
 	<ul>
@@ -83,18 +84,22 @@ Remove
 	<!--/tmpl_loop-->
 	 
 	</ul>
+	
+	</fieldset>
 
 <!--/tmpl_if-->
 
 <!-- tmpl_if have_invalid_addresses -->
 	
+	
+	<fieldset> 
+	 <legend>
+	Invalid Email Addresses
+	 </legend>
+
+
 	<p>
 	 These addresses did not go through validation successfully. 
-	 To correct them, push your 
-	 <a href="#" onclick="history.back();return false;">
-	  back button 
-	 </a> 
-	 and enter them again.
 	</p>
 	
 	<ul>
@@ -110,6 +115,9 @@ Remove
 	<!--/tmpl_loop-->
 	 
 	</ul>
+	
+	</fieldset>
+	
 	
 <!--/tmpl_if--> 
 

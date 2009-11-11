@@ -3437,20 +3437,11 @@ sub add {
                   . $q->param('rand_string') . '-'
                   . 'new_emails.txt' );
 
-            #	die $ENV{'QUERY_STRING'};
-            #	die q{ $q->param('new_emails') } . $q->param('new_emails');
-
             open( OUTFILE, '>' . $outfile )
               or die ( "can't write to " . $outfile . ": $!" );
-
             print OUTFILE $q->param('new_emails');
-
-        #require HTML::Entities;
-        #print OUTFILE HTML::Entities::decode_entities($q->param('new_emails'));
             close(OUTFILE);
             chmod( 0666, $outfile );
-
-            #	die ;
 
           # DEV: why is it, "new_emails.txt"? Is that supposed to be a variable?
             print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
@@ -3759,9 +3750,6 @@ sub add_email {
         ( $new_emails, $new_info ) =
           DADA::App::Guts::csv_subscriber_parse( $admin_list, $new_emails_fn );
 
-        #require Data::Dumper;
-        #die Data::Dumper::Dumper($new_info);
-
         my (
             $subscribed,       $not_subscribed, $black_listed,
             $not_white_listed, $invalid
@@ -3898,40 +3886,33 @@ sub delete_email{
              ));
         
         require DADA::Template::Widgets; 
-        print DADA::Template::Widgets::screen({-screen => 'delete_email_screen.tmpl',
-        
-                                              -vars => { 
-                                              
-														 screen => 'delete_email',
-														 title  => 'Remove', 
-														
-                                                         can_use_global_black_list   => $lh->can_use_global_black_list, 
-                                                         can_use_global_unsubscribe  => $lh->can_use_global_unsubscribe, 
-                                                    
-                                                        list_type_isa_list                  => ($type eq 'list')       ? 1 : 0, 
-                                                        list_type_isa_black_list            => ($type eq 'black_list') ? 1 : 0, 
-                                                        list_type_isa_authorized_senders    => ($type eq 'authorized_senders') ? 1 : 0, 
-                                                        list_type_isa_testers               => ($type eq 'testers')    ? 1 : 0, 
-                                                        list_type_isa_white_list            => ($type eq 'white_list') ? 1 : 0, 
+        print DADA::Template::Widgets::screen(
+			{
+				-screen => 'delete_email_screen.tmpl',			
+				-vars => { 
 
-                                                        type                        => $type, 
-                                                        type_title                  => $type_title,
-                                                        flavor                      => 'delete_email', 
-                                                        enable_white_list           => $li->{enable_white_list}, 
-                                                 
-                                                        enable_authorized_sending   => $li->{enable_authorized_sending},
-                                                        
-                                                        list_subscribers_num            => $lh->num_subscribers(-Type => 'list'), 
-                                                        black_list_subscribers_num      => $lh->num_subscribers(-Type => 'black_list'), 
-                                                        white_list_subscribers_num      => $lh->num_subscribers(-Type => 'white_list'), 
-                                                        authorized_senders_num          => $lh->num_subscribers(-Type => 'authorized_senders'), 
-                                                        
-                                              
-                                              
-                                              }
-                                              
-                                              }); 
-                 
+					screen => 'delete_email',
+					title  => 'Remove', 
+					can_use_global_black_list           => $lh->can_use_global_black_list, 
+					can_use_global_unsubscribe          => $lh->can_use_global_unsubscribe, 
+					list_type_isa_list                  => ($type eq 'list')       ? 1 : 0, 
+					list_type_isa_black_list            => ($type eq 'black_list') ? 1 : 0, 
+					list_type_isa_authorized_senders    => ($type eq 'authorized_senders') ? 1 : 0, 
+					list_type_isa_testers               => ($type eq 'testers')    ? 1 : 0, 
+					list_type_isa_white_list            => ($type eq 'white_list') ? 1 : 0, 
+					type                                => $type, 
+					type_title                          => $type_title,
+					flavor                              => 'delete_email', 
+					enable_white_list                   => $li->{enable_white_list}, 
+					enable_authorized_sending           => $li->{enable_authorized_sending},
+					list_subscribers_num                => $lh->num_subscribers(-Type => 'list'), 
+					black_list_subscribers_num          => $lh->num_subscribers(-Type => 'black_list'), 
+					white_list_subscribers_num          => $lh->num_subscribers(-Type => 'white_list'), 
+					authorized_senders_num              => $lh->num_subscribers(-Type => 'authorized_senders'), 
+				}
+			}
+		); 
+
         print(admin_template_footer(-List => $list, -Form => 0));
     
     
@@ -3941,34 +3922,42 @@ sub delete_email{
         my $delete_email_file = $q->param('delete_email_file');    
         if($delete_email_file){    
             my $new_file = file_upload('delete_email_file');    
-            
-            open(UPLOADED, "$new_file") or die $!;
-            
+            open(UPLOADED, "$new_file") 
+				or die $!;  
             $delete_list = do{ local $/; <UPLOADED> }; 
-           
-            
             close(UPLOADED);
         }else{ 
             $delete_list = $q->param('delete_list'); 
-            
-            #die $delete_list;
-
-
         }
+
+		my $outfile_filename = generate_rand_string() . '-' . 'remove_emails.txt';
+		my $outfile = make_safer($DADA::Config::TMP . '/' . $outfile_filename);
+		
+        open(my $fh, '>' . $outfile )
+          or die ( "can't write to " . $outfile . ": $!" );
+        print $fh $delete_list;
+        close($fh);
+        chmod( 0666, $outfile );
     
     
-        my @delete_addresses = split(/\n/, $delete_list);
+        #my @delete_addresses = split(/\n/, $delete_list);
+        #
+        ## xss filter... 
+        #foreach(@delete_addresses){ 
+        #    $_ = xss_filter(strip($_)); 
+        #}
         
-        # xss filter... 
-        foreach(@delete_addresses){ 
-            $_ = xss_filter(strip($_)); 
-        }
-        
+		my $new_emails = [];
+		my $new_info   = [];
+        ( $new_emails, $new_info ) =
+          DADA::App::Guts::csv_subscriber_parse( $admin_list, $outfile_filename );
+
         # subscribed should give a darn if your blacklisted, or white listed, white list and blacklist only looks at unsubs. Right. Right?
         my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid) 
 			= $lh->filter_subscribers(
 				{
-					-emails => [@delete_addresses], 
+					#-emails => [@delete_addresses], 
+					-emails => $new_emails, 
 					-type   => $type,
 				}
 			);
