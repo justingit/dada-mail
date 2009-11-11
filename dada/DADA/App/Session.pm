@@ -392,111 +392,103 @@ sub can_use_data_dumper {
 	
 }
 
-sub check_session_list_security { 
+sub check_session_list_security {
 
-	my $self = shift; 
-			
-	my %args = (-Function        => undef, 
-				-cgi_obj         => undef, 
-				-manual_override => 0,
-				-dbi_handle      => undef, 
-				
-				@_); 				
-		
-	die 'no CGI Object (-cgi_obj)' if ! $args{-cgi_obj};
-	my $q = $args{-cgi_obj};
+    my $self = shift;
 
-    my $session = undef; 
-	if($self->{can_use_cgi_session} == 1 && $self->{can_use_data_dumper} == 1){ 
-		
-		 
-		 require CGI::Session; 
-   		         
-   		 CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);   
-   		 
-   		 
+    my %args = (
+        -Function        => undef,
+        -cgi_obj         => undef,
+        -manual_override => 0,
+        -dbi_handle      => undef,
 
+        @_
+    );
 
-	     $session = CGI::Session->load($self->{dsn}, $q, $self->{dsn_args});
-	     	     
-		 $args{-Admin_List}     = $session->param('Admin_List');  	 
-		 $args{-Admin_Password} = $session->param('Admin_Password');
-	 
-	 }else{ 
-	 	
-	 	my %logincookie = $q->cookie($DADA::Config::LOGIN_COOKIE_NAME);
-		$args{-Admin_List}      = $logincookie{admin_list}; 
-		$args{-Admin_Password}  = $logincookie{admin_password}; 
-	 
-	 }
-	 
-	 $args{-IP_Address}     = $ENV{REMOTE_ADDR}; 
+    die 'no CGI Object (-cgi_obj)' if !$args{-cgi_obj};
+    my $q = $args{-cgi_obj};
 
+    my $session = undef;
+    if (   $self->{can_use_cgi_session} == 1
+        && $self->{can_use_data_dumper} == 1 )
+    {
 
-	my ($problems, $flags, $root_logged_in) = $self->check_admin_cgi_security(-Admin_List     => $args{-Admin_List},
-                                 									          -Admin_Password => $args{-Admin_Password},
-                                 									          -Function       => $args{-Function},
-                                 									          -IP_Address     => $ENV{REMOTE_ADDR},
-                                 									          -dbi_handle     => $args{-dbi_handle}, 
-                                 									          );
+        require CGI::Session;
 
-    if($problems){ 
-    	
-    	if($args{-manual_override} == 1){ 
-    		return (
-				$args{-Admin_List}, 
-				$root_logged_in, 
-				0
-			);
-    	}
-		else { 
-    	
-		# DEV: This is like, the most annoying thing in the whole wide world: 
-    	# If it's CGI::Session, let's ditch the session cookie...
-		# I forget why this was commented out - didn't work?!
-		# I'll add evals around it for now... 
-		
-    	if(
-			$self->{can_use_cgi_session} == 1 && 
-			$self->{can_use_data_dumper} == 1
-		){ 
-			eval { 
-            	$session->delete(); 
-            	$session->flush();
-    		};
-			if($@){ 
-				warn "Problems deleting and flushing session cookie: $@"; 
-			}
-			else { 
-				# ... 
-			}
-		#
-    		$self->enforce_admin_cgi_security(
-						-Admin_List     => $args{-Admin_List},
-	    	 			-Admin_Password => $args{-Admin_Password},
-	    	 			-Flags          => $flags,
-			);
-		}
-		
+        CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
+
+        $session = CGI::Session->load( $self->{dsn}, $q, $self->{dsn_args} );
+
+        $args{-Admin_List}     = $session->param('Admin_List');
+        $args{-Admin_Password} = $session->param('Admin_Password');
+
     }
-	}
-	else{ 
+    else {
 
-       if(
-		$self->{can_use_cgi_session} == 1 && 
-		$self->{can_use_data_dumper} == 1
-		){ 
-            $session->flush();
-            undef $session;  
-            
+        my %logincookie = $q->cookie($DADA::Config::LOGIN_COOKIE_NAME);
+        $args{-Admin_List}     = $logincookie{admin_list};
+        $args{-Admin_Password} = $logincookie{admin_password};
+
+    }
+
+    $args{-IP_Address} = $ENV{REMOTE_ADDR};
+
+    my ( $problems, $flags, $root_logged_in ) = $self->check_admin_cgi_security(
+        -Admin_List     => $args{-Admin_List},
+        -Admin_Password => $args{-Admin_Password},
+        -Function       => $args{-Function},
+        -IP_Address     => $ENV{REMOTE_ADDR},
+        -dbi_handle     => $args{-dbi_handle},
+    );
+
+    if ($problems) {
+
+        if ( $args{-manual_override} == 1 ) {
+            return ( $args{-Admin_List}, $root_logged_in, 0 );
         }
-        
-   		return (
-				$args{-Admin_List}, 
-				$root_logged_in, 
-				1
-				);
-   	}
+        else {
+
+           # DEV: This is like, the most annoying thing in the whole wide world:
+           # If it's CGI::Session, let's ditch the session cookie...
+           # I forget why this was commented out - didn't work?!
+           # I'll add evals around it for now...
+
+            if (   $self->{can_use_cgi_session} == 1
+                && $self->{can_use_data_dumper} == 1 )
+            {
+                eval {
+                    $session->delete();
+                    $session->flush();
+                };
+                if ($@) {
+                    warn "Problems deleting and flushing session cookie: $@";
+                }
+                else {
+
+                    # ...
+                }
+
+                $self->enforce_admin_cgi_security(
+                    -Admin_List     => $args{-Admin_List},
+                    -Admin_Password => $args{-Admin_Password},
+                    -Flags          => $flags,
+                );
+            }
+
+        }
+    }
+    else {
+
+        if (   $self->{can_use_cgi_session} == 1
+            && $self->{can_use_data_dumper} == 1 )
+        {
+            $session->flush();
+            undef $session;
+
+        }
+
+        return ( $args{-Admin_List}, $root_logged_in, 1 );
+    }
 
 }
 
