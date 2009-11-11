@@ -4108,331 +4108,273 @@ sub subscription_options {
 
 
 
-sub view_archive { 
+sub view_archive {
 
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
-                                                        -Function => 'view_archive');
-                                                        
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'view_archive'
+    );
+
     $list = $admin_list;
-    
+
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
+    $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
+    my $ls = DADA::MailingList::Settings->new( { -list => $admin_list } );
+    my $li = $ls->get;
 
-    my $ls = DADA::MailingList::Settings->new({-list => $admin_list}); 
-    my $li = $ls->get; 
-    
-    
-    # let's get some info on this archive, shall we? 
-    require DADA::MailingList::Archives; 
-           $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
-           
-    my $archive = DADA::MailingList::Archives->new({-list => $list}); 
-    my $entries = $archive->get_archive_entries(); 
-    
-    #if we don't have nothin, print the index, 
-    unless(defined($id)){ 
-    
-        my $start = int($q->param('start')) || 0;
+    # let's get some info on this archive, shall we?
+    require DADA::MailingList::Archives;
+    $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
 
+    my $archive = DADA::MailingList::Archives->new( { -list => $list } );
+    my $entries = $archive->get_archive_entries();
 
-        if($c->cached($list . '.admin.view_archive.index.' . $start)){ $c->show($list . '.admin.view_archive.index.' . $start); return;}
+    #if we don't have nothin, print the index,
+    unless ( defined($id) ) {
 
-            
-        
-        my $ht_entries = []; 
-        
-        #reverse if need be
-        #@$entries = reverse(@$entries) if($li->{sort_archives_in_reverse} eq "1"); 
-        
-            
-        my $th_entries = []; 
-        
-        my ($begin, $stop) = $archive->create_index($start);
+        my $start = int( $q->param('start') ) || 0;
+
+        if ( $c->cached( $list . '.admin.view_archive.index.' . $start ) ) {
+            $c->show( $list . '.admin.view_archive.index.' . $start );
+            return;
+        }
+
+        my $ht_entries = [];
+
+     #reverse if need be
+     #@$entries = reverse(@$entries) if($li->{sort_archives_in_reverse} eq "1");
+
+        my $th_entries = [];
+
+        my ( $begin, $stop ) = $archive->create_index($start);
         my $i;
         my $stopped_at = $begin;
 
-        my @archive_nums; 
-        my @archive_links; 
-        
-        for($i = $begin; $i <=$stop; $i++){ 
-        
-        next if !defined($entries->[$i]);
+        my @archive_nums;
+        my @archive_links;
 
+        for ( $i = $begin ; $i <= $stop ; $i++ ) {
 
-        my $entry = $entries->[$i];
-        #foreach $entry (@$entries){ 
-            my ($subject, $message, $format, $raw_msg) = $archive->get_archive_info($entry); 
-  
+            next if !defined( $entries->[$i] );
+
+            my $entry = $entries->[$i];
+
+            #foreach $entry (@$entries){
+            my ( $subject, $message, $format, $raw_msg ) =
+              $archive->get_archive_info($entry);
+
             my $pretty_subject = pretty($subject);
 
+            my $header_from = undef;
+            if ($raw_msg) {
+                $header_from =
+                  $archive->get_header( -header => 'From', -key => $entry );
 
-                my $header_from    = undef; 
-                if($raw_msg){ 
-                    $header_from    = $archive->get_header(-header => 'From', -key => $entry); 
-                    # The SPAM ME NOT Encoding's a little fucked for this, anyways, 
-					# We should only encode the actual address, anyways. Hmm...
-					# $header_from    = spam_me_not_encode($header_from);
-                }else{ 
-                    $header_from    = '-';
+                # The SPAM ME NOT Encoding's a little fucked for this, anyways,
+                # We should only encode the actual address, anyways. Hmm...
+                # $header_from    = spam_me_not_encode($header_from);
+            }
+            else {
+                $header_from = '-';
+            }
+
+            my $date = date_this(
+                -Packed_Date => $entry,
+                -All         => 1
+            );
+
+            my $message_blurb = $archive->message_blurb( -key => $entry );
+            $message_blurb =~ s/\n|\r/ /g;
+
+            push(
+                @$ht_entries,
+
+                {
+                    id            => $entry,
+                    date          => $date,
+                    S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL,
+                    subject       => $pretty_subject,
+                    from          => $header_from,
+                    message_blurb => $message_blurb,
                 }
-             
+            );
 
-             my $date = date_this(
-                -Packed_Date  => $entry,
-                -Write_Month => $li->{archive_show_month},
-                -Write_Day => $li->{archive_show_day},
-                -Write_Year => $li->{archive_show_year},
-                -Write_H_And_M => $li->{archive_show_hour_and_minute},
-                -Write_Second => $li->{archive_show_second},
-                );
-                                           
-             my $message_blurb = $archive->message_blurb(-key => $entry); 
-                $message_blurb =~ s/\n|\r/ /g; 
-                
-             push(@$ht_entries, 
-             
-             { 
-               id            => $entry, 
-               date          => $date, 
-               S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL, 
-               subject       => $pretty_subject, 
-               from          => $header_from,
-               message_blurb => $message_blurb, 
-             });
-             
-             $stopped_at++;
-             
-        }               
-        
-    my $index_nav = $archive->create_index_nav($stopped_at, 1);
+            $stopped_at++;
 
-    my $scrn; 
-    
-    $scrn .= (admin_template_header(      
-              -Title      => "View Archive", 
-              -List       => $li->{list},
-              -Root_Login => $root_login,
-              -Form       => 0, 
-            ));
-    
-    
-        require DADA::Template::Widgets;
-        $scrn .=  DADA::Template::Widgets::screen(
-					{
-						-screen => 'view_archive_index_screen.tmpl',
-                        -list       => $list, 
-                        -vars       =>  {
-	
-							screen     => 'view_archive',
-							title      => 'View Archive',
-                       		index_list => $ht_entries, 
-	                        list_name  => $li->{list_name}, 
-	                        index_nav  => $index_nav, 
-	
-						}, 
-                     }
-				);                
-
-    
-    
-         
-        $scrn .= (admin_template_footer(-List => $list, , -Form => 0));
-        e_print($scrn); 
-        
-        $c->cache($list . '.admin.view_archive.index.' . $start, \$scrn);
-
-        return; 
-
-    }else{ 
-
-
-    #check to see if $id is a real id key 
-    my $entry_exists = $archive->check_if_entry_exists($id); 
-    
-    if($entry_exists <= 0){
-        user_error(-List => $list, -Error => "no_archive_entry"); 
-        return; 
-     }
-
-    # if we got something, print that entry. 
-    print(admin_template_header(      
-          -Title      => "Manage Archives", 
-          -List       => $li->{list},
-          -Root_Login => $root_login));
-
-
-    
-    if($c->cached('view_archive.' . $list . '.' . $id)){ $c->show('view_archive.' . $list . '.' . $id); return;}
-
-    
-    my $scrn = ''; 
-    
-    #get the archive info 
-
-    my ($subject, $message, $format) = $archive->get_archive_info($id); 
-
-
-
-    my $pretty_subject = pretty($subject);  
-    
-    $scrn .= "<h2>$pretty_subject</h2>";
-    my $cal_date = date_this(-Packed_Date => $archive->_massaged_key($id), -All => 1); 
-
-    $scrn .=  "<p><em>Sent $cal_date</em></p> "; 
-
-    if($archive->can_display_message_source){ 
-    
-        $scrn .=  qq{<p style="text-align:right">
-                <a href="$DADA::Config::PROGRAM_URL?f=display_message_source&amp;id=$id" target="_blank"> 
-                 Display Original Message Source
-                </a>
-               </p>}; 
-    
-    }
-
-    
-        $scrn .=  qq{<p style="text-align:right">
-                <a href="$DADA::Config::PROGRAM_URL/archive/$list/$id/" target="_blank"> 
-                 Display publically viewable version of this message
-                </a>
-               </p>}; 
-        
-    
-
-    $scrn .=  qq{<iframe src="$DADA::Config::S_PROGRAM_URL?f=archive_bare;l=$list;id=$id;admin=1" id="archived_message_body_container">};
-    $scrn .=  $archive->massaged_msg_for_display(-key => $id, -body_only => 1); 
-    $scrn .=  '</iframe>'; 
-
-
-
-$scrn .=  <<EOF 
-
-    <hr /> 
-
-
-<p class="error">Note: some archiving formatting options only take affect when viewing messages publically.</p>
-
-
-
-EOF
-; 
-
-
-$scrn .=  qq{ 
-
-<div class="buttonfloat">
-
-}; 
-
-    $scrn .=  qq{ 
-     <input type="button" class="cautionary"  value="Edit Message..." onClick="window.location='$DADA::Config::PROGRAM_URL?f=edit_archived_msg&id=$id'" />    
-    }; 
-
-$scrn .=  qq{ 
- <input type="button" class="alertive" " name="process" value="Delete Message" onClick="window.location='$DADA::Config::PROGRAM_URL?flavor=delete_archive&address=$id'" />
-
-}; 
-
-$scrn .=  qq{ 
-
-</div>
-<br />
-<div class="floatclear"></div>
-}; 
-
-
-
-
-
-
-
-my $nav_table = $archive -> make_nav_table(-Id => $id, -List => $li->{list}, -Function => "admin"); 
-$scrn .=  "<center>$nav_table</center>";
-
-
-
-
-    $scrn .= (admin_template_footer(-List => $list));
-    
-    e_print($scrn); 
-    $c->cache('view_archive.' . $list . '.' . $id, \$scrn); 
-    
-    
-    return; 
-    
-    
-    
-    }
-}
-
-
-
-
-sub display_message_source { 
-
-
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
-                                                        -Function => 'display_message_source');
-                                                        
-    $list = $admin_list; 
-    
-    require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
-
-    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-    my $li = $ls->get; 
-    
-    require DADA::MailingList::Archives;
-           $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
-           
-    my $la = DADA::MailingList::Archives->new({-list => $list}); 
-    
-    
-    if($la->check_if_entry_exists($q->param('id'))){
-    
-        if($la->can_display_message_source){ 
-        
-            print $q->header('text/plain'); 
-            $la->print_message_source(\*STDOUT, $q->param('id')); 
-
-        }else{
-
-            user_error(-List => $list, -Error => "no_support_for_displaying_message_source");
-            return; 
         }
-    
-    
-    } else { 
-    
-        user_error(-List => $list, -Error => "no_archive_entry");
-        return; 
-    }    
 
+        my $index_nav = $archive->create_index_nav( $stopped_at, 1 );
+
+        my $scrn;
+
+        $scrn .= (
+            admin_template_header(
+                -Title      => "View Archive",
+                -List       => $li->{list},
+                -Root_Login => $root_login,
+                -Form       => 0,
+            )
+        );
+
+        require DADA::Template::Widgets;
+        $scrn .= DADA::Template::Widgets::screen(
+            {
+                -screen => 'view_archive_index_screen.tmpl',
+                -list   => $list,
+                -vars   => {
+
+                    screen     => 'view_archive',
+                    title      => 'View Archive',
+                    index_list => $ht_entries,
+                    list_name  => $li->{list_name},
+                    index_nav  => $index_nav,
+
+                },
+            }
+        );
+
+        $scrn .= ( admin_template_footer( -List => $list,, -Form => 0 ) );
+        e_print($scrn);
+
+        $c->cache( $list . '.admin.view_archive.index.' . $start, \$scrn );
+
+        return;
+
+    }
+    else {
+
+        #check to see if $id is a real id key
+        my $entry_exists = $archive->check_if_entry_exists($id);
+
+        if ( $entry_exists <= 0 ) {
+            user_error( -List => $list, -Error => "no_archive_entry" );
+            return;
+        }
+
+        my $scrn = '';
+
+        $scrn .= admin_template_header(
+            -Title      => "Manage Archives",
+            -List       => $li->{list},
+            -Root_Login => $root_login
+        );
+
+        my ( $subject, $message, $format ) = $archive->get_archive_info($id);
+
+        my $cal_date = date_this(
+            -Packed_Date => $archive->_massaged_key($id),
+            -All         => 1
+        );
+
+        my $nav_table = $archive->make_nav_table(
+            -Id       => $id,
+            -List     => $li->{list},
+            -Function => "admin"
+        );
+
+        require DADA::Template::Widgets;
+        $scrn .= DADA::Template::Widgets::screen(
+            {
+                -screen => 'view_archive_screen.tmpl',
+                -vars   => {
+                    id      => $id,
+                    subject => $subject,
+                    date    => $cal_date,
+                    can_display_message_source =>
+                      $archive->can_display_message_source,
+                    nav_table => $nav_table,
+                },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+            }
+        );
+
+        $scrn .= admin_template_footer( -List => $list );
+        print $scrn;
+
+        return;
+
+    }
 }
 
 
-sub delete_archive { 
 
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
-                                                       -Function => 'delete_archive');
-                                                       
+
+
+sub display_message_source {
+
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'display_message_source'
+    );
+
     $list = $admin_list;
-    my @address = $q->param("address"); 
 
-    require  DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-    my $li = $ls->get; 
-    
+    require DADA::MailingList::Settings;
+    $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
+
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get;
+
     require DADA::MailingList::Archives;
-           $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
-    
-    my $archive = DADA::MailingList::Archives->new({-list => $list}); 
-       $archive->delete_archive(@address);
-    
-    print $q->redirect(-uri=>"$DADA::Config::S_PROGRAM_URL?flavor=view_archive"); 
+    $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
+
+    my $la = DADA::MailingList::Archives->new( { -list => $list } );
+
+    if ( $la->check_if_entry_exists( $q->param('id') ) ) {
+
+        if ( $la->can_display_message_source ) {
+
+            print $q->header('text/plain');
+            $la->print_message_source( \*STDOUT, $q->param('id') );
+
+        }
+        else {
+
+            user_error(
+                -List  => $list,
+                -Error => "no_support_for_displaying_message_source"
+            );
+            return;
+        }
+
+    }
+    else {
+
+        user_error( -List => $list, -Error => "no_archive_entry" );
+        return;
+    }
 
 }
+
+sub delete_archive {
+
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'delete_archive'
+    );
+
+    $list = $admin_list;
+    my @address = $q->param("address");
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get;
+
+    require DADA::MailingList::Archives;
+    $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
+
+    my $archive = DADA::MailingList::Archives->new( { -list => $list } );
+    $archive->delete_archive(@address);
+
+    print $q->redirect(
+        -uri => "$DADA::Config::S_PROGRAM_URL?flavor=view_archive" );
+
+}
+
 
 
 
@@ -4756,504 +4698,591 @@ sub adv_archive_options {
 
 
 sub edit_archived_msg {
-    
-    require DADA::Template::HTML; 
+
+    require DADA::Template::HTML;
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
+    $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     require DADA::MailingList::Archives;
-           $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
+    $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
 
-    require DADA::Mail::Send; 
-    
+    require DADA::Mail::Send;
+
     require MIME::Parser;
-    
-    my $parser = new MIME::Parser; 
-       $parser = optimize_mime_parser($parser); 
-        
-    my $skel = []; 
 
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q, 
-                                                        -Function => 'edit_archived_msg');
-    my $list = $admin_list; 
-    
-    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-             
-    my $li = $ls->get; 
-    
+    my $parser = new MIME::Parser;
+    $parser = optimize_mime_parser($parser);
+
+    my $skel = [];
+
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'edit_archived_msg'
+    );
+    my $list = $admin_list;
+
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
+    my $li = $ls->get;
+
     my $mh = DADA::Mail::Send->new(
-				{
-					-list   => $list, 
-					-ls_obj => $ls, 
-				}
-			 );
-    my $ah = DADA::MailingList::Archives->new({-list => $list}); 
-    
+        {
+            -list   => $list,
+            -ls_obj => $ls,
+        }
+    );
+    my $ah = DADA::MailingList::Archives->new( { -list => $list } );
+
     edit_archived_msg_main();
+
     #---------------------------------------------------------------------#
-    
-    sub edit_archived_msg_main { 
-        
-        if($q->param('process') eq 'prefs'){ 
-            &prefs; 
-        }else{ 
-        
-            if($q->param('process')){    
-                &edit_archive; 
-            }else{ 
-                &view;    
+
+    sub edit_archived_msg_main {
+
+        if ( $q->param('process') eq 'prefs' ) {
+            &prefs;
+        }
+        else {
+
+            if ( $q->param('process') ) {
+                &edit_archive;
+            }
+            else {
+                &view;
             }
         }
     }
-    
-    
-    sub view { 
-    
-    
-        my $D_Content_Types = [
-        'text/plain', 
-        'text/html'
-        ];
-        
+
+    sub view {
+
+        my $D_Content_Types = [ 'text/plain', 'text/html' ];
+
         my %Headers_To_Edit;
-    
-       my $parser = new MIME::Parser; 
-       $parser = optimize_mime_parser($parser); 
-       
+
+        my $parser = new MIME::Parser;
+        $parser = optimize_mime_parser($parser);
+
         my $id = $q->param('id');
-        
-        if(!$id){ 
-            print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=view_archive'); 
-            exit; 
+
+        if ( !$id ) {
+            print $q->redirect(
+                -uri => $DADA::Config::S_PROGRAM_URL . '?flavor=view_archive' );
+            exit;
         }
-            
-        if($ah->check_if_entry_exists($id) <= 0){
-            print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=view_archive'); 
-            exit; 
+
+        if ( $ah->check_if_entry_exists($id) <= 0 ) {
+            print $q->redirect(
+                -uri => $DADA::Config::S_PROGRAM_URL . '?flavor=view_archive' );
+            exit;
         }
-                
-                
-        my ($subject, $message, $format, $raw_msg) = $ah->get_archive_info($id); 
-        
+
+        my ( $subject, $message, $format, $raw_msg ) =
+          $ah->get_archive_info($id);
+
         # do I need this?
-        $raw_msg ||= $ah->_bs_raw_msg($subject, $message, $format); 
-        $raw_msg =~ s/Content\-Type/Content-type/; 
-        
-        
-        
-        print(admin_template_header(-Title      => "Edit Archived Message",
-                                -List       => $li->{list},
-                                -Form       => 0,
-                                -Root_Login => $root_login));
-        
-        if($q->param('done')){
-            print $DADA::Config::GOOD_JOB_MESSAGE;
-        }
-        
-        if($ah->can_display_message_source){ 
-        
-            print qq{<p style="text-align:right">
-                    <a href="$DADA::Config::S_PROGRAM_URL?f=display_message_source&amp;id=$id" target="_blank"> 
-                     Display Original Message Source
-                    </a>
-                   </p>}; 
-        
-        }
-        
-        
-        
-        print qq{<form action="$DADA::Config::S_PROGRAM_URL" enctype="multipart/form-data" method="post">
-                 <input type="hidden" name="f" value="edit_archived_msg" /> 
-                 
-        }; 
-        
-        my $entity; 
-        
-        eval { $entity = $parser->parse_data($raw_msg) };
-        
+        $raw_msg ||= $ah->_bs_raw_msg( $subject, $message, $format );
+        $raw_msg =~ s/Content\-Type/Content-type/;
+
+        my $entity;
+        eval { $entity = $parser->parse_data($raw_msg); };
+
+        my $form_blob = '';
         make_skeleton($entity);
-            
-            
-        foreach(split(',', $li->{editable_headers})){ 
-            $Headers_To_Edit{$_} = 1; 
+
+        foreach ( split( ',', $li->{editable_headers} ) ) {
+            $Headers_To_Edit{$_} = 1;
         }
-        
-        foreach my $tb(@$skel){
-        
-            my @c = split('-', $tb->{address}); 
-            my $bqc = $#c -1; 
-            
-            for(0..$bqc){ print '<div style="padding-left: 30px; border-left:1px solid #ccc">'; }
-        
-    
-            if($tb->{address} eq '0'){ 
-                print '<table width="100%">'; 
-    
-                # head of the message!  
-                my %headers = $mh->return_headers($tb->{entity}->head->original_text); 
-                foreach my $h(@DADA::Config::EMAIL_HEADERS_ORDER){ 
-                    if($headers{$h}){ 
-                        if($Headers_To_Edit{$h} == 1){ 
-                            print '<tr><td>'; 
-                            print $q->p($q->label({'-for' => $h}, $h . ': '));
-                            print '</td><td width="99%">'; 
-                            
-                            if($DADA::Config::ARCHIVE_DB_TYPE eq 'Db' && $h eq 'Content-type'){ 
-                                push(@{$D_Content_Types}, $headers{$h});   
-                                print $q->p($q->popup_menu('-values' => $D_Content_Types, -id => $h, -name => $h, -default => $headers{$h})); 
-                            }else{ 
-								my $value = $headers{$h}; 
-								if($ls->param('mime_encode_words_in_headers') == 1){ 
-									if($h =~ m/To|From|Cc|Reply\-To|Subject/){ 
-										$value = $ah->_decode_header($value); 
-									}
-								}
-                                print $q->p($q->textfield(-value => $value, -id => $h, -name => $h, -class => 'full')); 
+
+        foreach my $tb (@$skel) {
+
+            my @c = split( '-', $tb->{address} );
+            my $bqc = $#c - 1;
+
+            for ( 0 .. $bqc ) {
+                $form_blob .=
+'<div style="padding-left: 30px; border-left:1px solid #ccc">';
+            }
+
+            if ( $tb->{address} eq '0' ) {
+                $form_blob .= '<table width="100%">';
+
+                # head of the message!
+                my %headers =
+                  $mh->return_headers( $tb->{entity}->head->original_text );
+                foreach my $h (@DADA::Config::EMAIL_HEADERS_ORDER) {
+                    if ( $headers{$h} ) {
+                        if ( $Headers_To_Edit{$h} == 1 ) {
+
+                            $form_blob .= qq{
+								<tr>
+								 <td>
+								  <p>
+								   <label for="$h">
+									$h: </label>
+								  </p>
+								</td>
+								<td width="99%">
+							};
+
+                            if (   $DADA::Config::ARCHIVE_DB_TYPE eq 'Db'
+                                && $h eq 'Content-type' )
+                            {
+                                push( @{$D_Content_Types}, $headers{$h} );
+                                $form_blob .= $q->p(
+                                    $q->popup_menu(
+                                        '-values' => $D_Content_Types,
+                                        -id       => $h,
+                                        -name     => $h,
+                                        -default  => $headers{$h}
+                                    )
+                                );
                             }
-                            
-                            print '</td></tr>'; 
+                            else {
+                                my $value = $headers{$h};
+                                if ( $ls->param('mime_encode_words_in_headers')
+                                    == 1 )
+                                {
+                                    if ( $h =~ m/To|From|Cc|Reply\-To|Subject/ )
+                                    {
+                                        $value = $ah->_decode_header($value);
+                                    }
+                                }
+                                $form_blob .= $q->p(
+                                    $q->textfield(
+                                        -value => $value,
+                                        -id    => $h,
+                                        -name  => $h,
+                                        -class => 'full'
+                                    )
+                                );
+                            }
+
+                            $form_blob .= '</td></tr>';
                         }
-        
-        
+
                     }
-        
+
                 }
-                print '</table>'; 
+                $form_blob .= '</table>';
             }
-            my ($type, $subtype) = split('/', $tb->{entity}->head->mime_type);
-            
-    
-            print $q->p($q->strong('Content Type: '), $tb->{entity}->head->mime_type); 
-    
-            if($tb->{body}){ 
-    
-                if ($type =~ /^(text|message)$/ && $tb->{entity}->head->get('content-disposition') !~ m/attach/i) {     # text: display it...
-                    
-                    #$q->checkbox(-name => 'delete_' . $tb->{address}, -value => 1, -label => '' ), 'Delete?', $q->br(),
-                
-                if ($subtype =~ /html/ && $DADA::Config::FCKEDITOR_URL){ 
-                    
+            my ( $type, $subtype ) =
+              split( '/', $tb->{entity}->head->mime_type );
+
+            $form_blob .= $q->p( $q->strong('Content Type: '),
+                $tb->{entity}->head->mime_type );
+
+            if ( $tb->{body} ) {
+
+                if (   $type =~ /^(text|message)$/
+                    && $tb->{entity}->head->get('content-disposition') !~
+                    m/attach/i )
+                {    # text: display it...
+
+#$q->checkbox(-name => 'delete_' . $tb->{address}, -value => 1, -label => '' ), 'Delete?', $q->br(),
+
+                    if ( $subtype =~ /html/ && $DADA::Config::FCKEDITOR_URL ) {
+
                         require DADA::Template::Widgets;
-                        print DADA::Template::Widgets::screen({-screen => 'edit_archived_msg_textarea.widget', 
-                                                              -vars   => {
-                                                                            name  => $tb->{address},
-                                                                            value => js_enc($tb->{entity}->bodyhandle->as_string()),
-                                                              }
-                                                             });                
-                    }else{ 
-                    
-                        print $q->p($q->textarea(-value => $tb->{entity}->bodyhandle->as_string, -rows => 15, -name => $tb->{address}));
-                    
+                        $form_blob .= DADA::Template::Widgets::screen(
+                            {
+                                -screen => 'edit_archived_msg_textarea.widget',
+                                -vars   => {
+                                    name  => $tb->{address},
+                                    value => js_enc(
+                                        $tb->{entity}->bodyhandle->as_string()
+                                    ),
+                                }
+                            }
+                        );
                     }
-            
-                }else{ 
-                
-                    
-                    print '<div style="border: 1px solid #000;padding: 5px">';
-                                    
-                    my $name = $tb->{entity}->head->mime_attr("content-type.name") || 
-                               $tb->{entity}->head->mime_attr("content-disposition.filename"); 
-    
+                    else {
+
+                        $form_blob .= $q->p(
+                            $q->textarea(
+                                -value => $tb->{entity}->bodyhandle->as_string,
+                                -rows  => 15,
+                                -name  => $tb->{address}
+                            )
+                        );
+
+                    }
+
+                }
+                else {
+
+                    $form_blob .=
+                      '<div style="border: 1px solid #000;padding: 5px">';
+
+                    my $name =
+                         $tb->{entity}->head->mime_attr("content-type.name")
+                      || $tb->{entity}
+                      ->head->mime_attr("content-disposition.filename");
+
                     my $attachment_url;
-                    
-                    if($name){ 
-                        $attachment_url = $DADA::Config::S_PROGRAM_URL . '?f=file_attachment&l=' . $list . '&id=' . $id . '&filename=' . $name . '&mode=inline';
-                    }else{ 
-    
-                        $name ='Untitled.'; 
-                        
-                        my $m_cid = $tb->{entity}->head->get('content-id'); 
-                           $m_cid =~ s/^\<|\>$//g;
-               
-                        $attachment_url = $DADA::Config::S_PROGRAM_URL . '?f=show_img&l=' . $list . '&id=' . $id . '&cid=' . $m_cid;
-    
+
+                    if ($name) {
+                        $attachment_url =
+                            $DADA::Config::S_PROGRAM_URL
+                          . '?f=file_attachment&l='
+                          . $list . '&id='
+                          . $id
+                          . '&filename='
+                          . $name
+                          . '&mode=inline';
                     }
-                    
-                    print $q->p($q->strong('Attachment: ' ), $q->a({-href => $attachment_url, -target => '_blank'}, $name)); 
-                    
-                    print '<table style="padding:5px">'; 
-                    
-                    print '<tr><td>'; 
-                    
-                    if($type =~ /^image/ && $subtype =~ m/gif|jpg|jpeg|png/){ 
-                        print $q->p($q->a({-href => $attachment_url, -target => '_blank'}, $q->img({-src => $attachment_url, -width => '100'}))); 
-                    }else{ 
-                        #print $q->p($q->a({-href => $attachment_url, -target => '_blank'}, $q->strong('Attachment: ' ), $q->a({-href => $attachment_url, -target => '_blank'}, $name)));
+                    else {
+
+                        $name = 'Untitled.';
+
+                        my $m_cid = $tb->{entity}->head->get('content-id');
+                        $m_cid =~ s/^\<|\>$//g;
+
+                        $attachment_url =
+                            $DADA::Config::S_PROGRAM_URL
+                          . '?f=show_img&l='
+                          . $list . '&id='
+                          . $id . '&cid='
+                          . $m_cid;
+
                     }
-                    print '</td><td>'; 
-                    
-                    print $q->p($q->checkbox(-name => 'delete_' . $tb->{address}, -id => 'delete_' . $tb->{address}, -value => 1, -label => '' ), $q->label({'-for' => 'delete_' . $tb->{address}}, 'Remove From Message')); 
-                    print $q->p($q->strong('Update:'), $q->filefield(-name => 'upload_' . $tb->{address})); 
-                    
-                    print '</td></tr></table>';
-                    
-                    print '</div>';
-                    
-                    
+
+                    $form_blob .= $q->p(
+                        $q->strong('Attachment: '),
+                        $q->a(
+                            { -href => $attachment_url, -target => '_blank' },
+                            $name
+                        )
+                    );
+
+                    $form_blob .= '<table style="padding:5px">';
+
+                    $form_blob .= '<tr><td>';
+
+                    if ( $type =~ /^image/ && $subtype =~ m/gif|jpg|jpeg|png/ )
+                    {
+                        $form_blob .= $q->p(
+                            $q->a(
+                                {
+                                    -href   => $attachment_url,
+                                    -target => '_blank'
+                                },
+                                $q->img(
+                                    {
+                                        -src   => $attachment_url,
+                                        -width => '100'
+                                    }
+                                )
+                            )
+                        );
+                    }
+                    else {
+
+#$form_blob .=  $q->p($q->a({-href => $attachment_url, -target => '_blank'}, $q->strong('Attachment: ' ), $q->a({-href => $attachment_url, -target => '_blank'}, $name)));
+                    }
+                    $form_blob .= '</td><td>';
+
+                    $form_blob .= $q->p(
+                        $q->checkbox(
+                            -name  => 'delete_' . $tb->{address},
+                            -id    => 'delete_' . $tb->{address},
+                            -value => 1,
+                            -label => ''
+                        ),
+                        $q->label(
+                            { '-for' => 'delete_' . $tb->{address} },
+                            'Remove From Message'
+                        )
+                    );
+                    $form_blob .=
+                      $q->p( $q->strong('Update:'),
+                        $q->filefield( -name => 'upload_' . $tb->{address} ) );
+
+                    $form_blob .= '</td></tr></table>';
+
+                    $form_blob .= '</div>';
+
                 }
             }
-            
-            for(0..$bqc){ print '</div>'; }
+
+            for ( 0 .. $bqc ) {
+                $form_blob .= '</div>';
+            }
         }
-        
-        #footer
-        
-        print $q->hidden('process' , 1); 
-        print $q->hidden('id', $id); 
-    
-        print qq{
-        
-        <hr /> 
-        
-        <p><a href="$DADA::Config::S_PROGRAM_URL?flavor=view_archive&id=$id">&lt;-- View Saved Message</a></p>
-        
-        <div class="buttonfloat">
-         <input type="reset" class="cautionary"  value="Clear Changes" />
-         <input type="submit" class="processing" value="Save Changes" />
-        </div>
-        <br />
-        <div class="floatclear"></div>
-        
-        }; 
-    
-        print '</form>'; 
-        
-        print qq{<p style="text-align:right"><a href="$DADA::Config::S_PROGRAM_URL?flavor=edit_archived_msg&process=prefs&id=$id">Archive Editor Preferences...</a></p>};
-        print admin_template_footer(-List => $list, -Form => 0); 
-    
-    }
-    
-    
-    
-    
-    sub prefs { 
-    
-        if($q->param('process_prefs')){ 
-        
-            my $the_id = $q->param('id'); 
-    
-            my $editable_headers = join(',', $q->param('editable_header')); 
-            $ls->save({editable_headers => $editable_headers}); 
-            
-            print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=edit_archived_msg&process=prefs&done=1&id=' . $the_id); 
-            exit; 
-            
-            
-        }else{ 
-        
-        my %editable_headers; 
-           $editable_headers{$_} = 1 foreach(split(',', $li->{editable_headers}));
-           
-        my $edit_headers_menu = [];  
-        foreach(@DADA::Config::EMAIL_HEADERS_ORDER){ 
-            
-            push(@$edit_headers_menu, {name => $_, editable => $editable_headers{$_}});
-        }
-        
-        
-        
-    
-        print(admin_template_header(-Title      => "Edit Archived Message Preferences",
-                                -List       => $li->{list},
-                                -Form       => 0,
-                                -Root_Login => $root_login));
-        
-    my $the_id = $q->param('id'); 
-    my $done   = $q->param('done'); 
-    
-    
+
+        my $scrn = '';
+
+        $scrn .= admin_template_header(
+            -Title      => "Edit Archived Message",
+            -List       => $li->{list},
+            -Root_Login => $root_login
+        );
+
         require DADA::Template::Widgets;
-        print DADA::Template::Widgets::screen({-screen   => 'edit_archived_msg_prefs_screen.tmpl', 
-                                              -vars     => {
-                                                            edit_headers_menu => $edit_headers_menu,
-                                                            done              => $done, 
-                                                            id                => $the_id, 
-                                                      },
-                                             });
-    
-        print admin_template_footer(-List => $list, -Form => 0); 
-    
-        }
-    
-        
+        $scrn .= DADA::Template::Widgets::screen(
+            {
+                -screen => 'edit_archived_msg.tmpl',
+                -vars   => {
+                    big_blob_of_form_widgets_to_edit_an_archived_message =>
+                      $form_blob,
+                    can_display_message_source =>
+                      $ah->can_display_message_source,
+                    id   => $id,
+                    done => $q->param('done'),
+
+                },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+
+                },
+            }
+        );
+        $scrn .= admin_template_footer( -List => $list );
+        print $scrn;
+
     }
-    
-    sub edit_archive { 
-    
-        
-        my $id = $q->param('id'); 
-        
-        my $parser = new MIME::Parser; 
-        $parser = optimize_mime_parser($parser); 
-       
-        my ($subject, $message, $format, $raw_msg) = $ah->get_archive_info($id); 
-        
-        $raw_msg ||= $ah->_bs_raw_msg($subject, $message, $format); 
-        $raw_msg =~ s/Content\-Type/Content-type/; 
-    
-        my $entity; 
-        
+
+    sub prefs {
+
+        if ( $q->param('process_prefs') ) {
+
+            my $the_id = $q->param('id');
+
+            my $editable_headers = join( ',', $q->param('editable_header') );
+            $ls->save( { editable_headers => $editable_headers } );
+
+            print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+                  . '?f=edit_archived_msg&process=prefs&done=1&id='
+                  . $the_id );
+            exit;
+
+        }
+        else {
+
+            my %editable_headers;
+            $editable_headers{$_} = 1
+              foreach ( split( ',', $li->{editable_headers} ) );
+
+            my $edit_headers_menu = [];
+            foreach (@DADA::Config::EMAIL_HEADERS_ORDER) {
+
+                push( @$edit_headers_menu,
+                    { name => $_, editable => $editable_headers{$_} } );
+            }
+
+            print(
+                admin_template_header(
+                    -Title      => "Edit Archived Message Preferences",
+                    -List       => $li->{list},
+                    -Form       => 0,
+                    -Root_Login => $root_login
+                )
+            );
+
+            my $the_id = $q->param('id');
+            my $done   = $q->param('done');
+
+            require DADA::Template::Widgets;
+            print DADA::Template::Widgets::screen(
+                {
+                    -screen => 'edit_archived_msg_prefs_screen.tmpl',
+                    -vars   => {
+                        edit_headers_menu => $edit_headers_menu,
+                        done              => $done,
+                        id                => $the_id,
+                    },
+                }
+            );
+
+            print admin_template_footer( -List => $list, -Form => 0 );
+
+        }
+
+    }
+
+    sub edit_archive {
+
+        my $id = $q->param('id');
+
+        my $parser = new MIME::Parser;
+        $parser = optimize_mime_parser($parser);
+
+        my ( $subject, $message, $format, $raw_msg ) =
+          $ah->get_archive_info($id);
+
+        $raw_msg ||= $ah->_bs_raw_msg( $subject, $message, $format );
+        $raw_msg =~ s/Content\-Type/Content-type/;
+
+        my $entity;
+
         eval { $entity = $parser->parse_data($raw_msg) };
-    
-        my $throwaway = undef; 
-        
-        ($entity, $throwaway) = edit($entity);
-        
-        
+
+        my $throwaway = undef;
+
+        ( $entity, $throwaway ) = edit($entity);
+
         # not sure if this, "if" is needed.
-        if($DADA::Config::ARCHIVE_DB_TYPE eq 'Db'){ 
-            $ah->set_archive_info($id, $entity->head->get('Subject', 0), undef, $entity->head->get('Content-type', 0), $entity->as_string); 
-        }else{ 
-        
-            $ah->set_archive_info($id, $entity->head->get('Subject', 0), undef, undef, $entity->as_string); 
+        if ( $DADA::Config::ARCHIVE_DB_TYPE eq 'Db' ) {
+            $ah->set_archive_info(
+                $id, $entity->head->get( 'Subject', 0 ),
+                undef, $entity->head->get( 'Content-type', 0 ),
+                $entity->as_string
+            );
         }
-        
-        
-        print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=edit_archived_msg;id=' . $id . '&done=1'); 
-        
-    
+        else {
+
+            $ah->set_archive_info( $id, $entity->head->get( 'Subject', 0 ),
+                undef, undef, $entity->as_string );
+        }
+
+        print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+              . '?f=edit_archived_msg;id='
+              . $id
+              . '&done=1' );
+
     }
-    
+
     sub make_skeleton {
-        my ($entity, $name) = @_;
+        my ( $entity, $name ) = @_;
         defined($name) or $name = "0";
-        
+
         my $IO;
+
         # Output the body:
         my @parts = $entity->parts;
-        if (@parts) {             
-        
-            push(@$skel, {address => $name, entity => $entity}); 
-    
-            # multipart... 
+        if (@parts) {
+
+            push( @$skel, { address => $name, entity => $entity } );
+
+            # multipart...
             my $i;
-            foreach $i (0 .. $#parts) {       # dump each part...
-                make_skeleton($parts[$i], ("$name\-".($i)));
+            foreach $i ( 0 .. $#parts ) {    # dump each part...
+                make_skeleton( $parts[$i], ( "$name\-" . ($i) ) );
             }
-            
-    
-        }else {                            # single part...    
-            push(@$skel, {address => $name, entity => $entity, body => 1}); 
-    
+
+        }
+        else {                               # single part...
+            push( @$skel, { address => $name, entity => $entity, body => 1 } );
+
         }
     }
-    
-    
-    
-    
-    sub edit { 
-    
-        my ($entity, $name) = @_;
+
+    sub edit {
+
+        my ( $entity, $name ) = @_;
         defined($name) or $name = "0";
         my $IO;
-        
+
         my %Headers_To_Edit;
-    
-        if($name eq '0'){ 
-        
-            foreach(split(',', $li->{editable_headers})){ 
-                $Headers_To_Edit{$_} = 1; 
+
+        if ( $name eq '0' ) {
+
+            foreach ( split( ',', $li->{editable_headers} ) ) {
+                $Headers_To_Edit{$_} = 1;
             }
-        
-			require DADA::App::FormatMessages; 
-			my $fm = DADA::App::FormatMessages->new(-List => $list); 
-			
-            foreach my $h(@DADA::Config::EMAIL_HEADERS_ORDER){ 
-                if($Headers_To_Edit{$h} == 1){
-					my $value = $q->param($h); 
-	                # Dum, what to do here? 
-					if($h =~ m/To|From|Cc|Reply\-To|Subject/){ 
-						$value = $fm->_encode_header($h, $value)
-							if $fm->im_encoding_headers; 
-					}
-                    $entity->head->replace($h, $value); 
+
+            require DADA::App::FormatMessages;
+            my $fm = DADA::App::FormatMessages->new( -List => $list );
+
+            foreach my $h (@DADA::Config::EMAIL_HEADERS_ORDER) {
+                if ( $Headers_To_Edit{$h} == 1 ) {
+                    my $value = $q->param($h);
+
+                    # Dum, what to do here?
+                    if ( $h =~ m/To|From|Cc|Reply\-To|Subject/ ) {
+                        $value = $fm->_encode_header( $h, $value )
+                          if $fm->im_encoding_headers;
+                    }
+                    $entity->head->replace( $h, $value );
                 }
             }
         }
-        
-        
-        
+
         my @parts = $entity->parts;
-        if (@parts) {             
-        
-            # multipart... 
+        if (@parts) {
+
+            # multipart...
             my $i;
-            foreach $i (0 .. $#parts) {       
-                
-                my $name_is; 
-                
+            foreach $i ( 0 .. $#parts ) {
+
+                my $name_is;
+
                 # I don't understand this part...
-                ($parts[$i], $name_is) = edit($parts[$i], ("$name\-".($i)));
-                
-                if($q->param('delete_' . $name_is) == 1){ 
-                     splice(@parts, $i, 0);
+                ( $parts[$i], $name_is ) =
+                  edit( $parts[$i], ( "$name\-" . ($i) ) );
+
+                if ( $q->param( 'delete_' . $name_is ) == 1 ) {
+                    splice( @parts, $i, 0 );
 
                     #delete($parts[$i]);
                 }
             }
-            #love it. #love it love it. 
-            $entity->parts(\@parts);                           
-            $entity->sync_headers('Length'      =>  'COMPUTE',
-                                  'Nonstandard' =>  'ERASE');
-            
-        }else {                             
-            
-            return (undef, $name) if($q->param('delete_' . $name) == 1);
-        
-            my $content = $q->param($name); 
-               $content =~ s/\r\n/\n/g;
 
-            if($content){            
-                   my $body    = $entity->bodyhandle;
-                   my $io = $body->open('w');
-                      $io->print( $content );
-                      $io->close;
-            
-            }
-                
-            my $cid = $entity->head->get('content-id') || undef; 
-            
-            if($q->param('upload_' . $name)){ 
-                $entity = get_from_upload($name,  $cid); 
-            }
-            
-            $entity->sync_headers('Length'      =>  'COMPUTE',
-                                  'Nonstandard' =>  'ERASE');
-    
-            return ($entity, $name); 
-            
+            #love it. #love it love it.
+            $entity->parts( \@parts );
+            $entity->sync_headers(
+                'Length'      => 'COMPUTE',
+                'Nonstandard' => 'ERASE'
+            );
+
         }
-        
-        return ($entity, $name); 
-    
-     }
-     
-     
-     
-     
-     sub get_from_upload {  
-    
+        else {
+
+            return ( undef, $name ) if ( $q->param( 'delete_' . $name ) == 1 );
+
+            my $content = $q->param($name);
+            $content =~ s/\r\n/\n/g;
+
+            if ($content) {
+                my $body = $entity->bodyhandle;
+                my $io   = $body->open('w');
+                $io->print($content);
+                $io->close;
+
+            }
+
+            my $cid = $entity->head->get('content-id') || undef;
+
+            if ( $q->param( 'upload_' . $name ) ) {
+                $entity = get_from_upload( $name, $cid );
+            }
+
+            $entity->sync_headers(
+                'Length'      => 'COMPUTE',
+                'Nonstandard' => 'ERASE'
+            );
+
+            return ( $entity, $name );
+
+        }
+
+        return ( $entity, $name );
+
+    }
+
+    sub get_from_upload {
+
         my $name = shift;
-        my $cid  = shift; 
-        
-        my $filename = file_upload('upload_' . $name); 
-        my $data; 
-        
-        my $nice_filename = $q->param('upload_' . $name);
-    
-        require MIME::Entity; 
+        my $cid  = shift;
+
+        my $filename = file_upload( 'upload_' . $name );
+        my $data;
+
+        my $nice_filename = $q->param( 'upload_' . $name );
+
+        require MIME::Entity;
         my $ent = MIME::Entity->build(
-                                      Path        => $filename,
-                                      Filename    => $nice_filename, 
-                                      Encoding    => "base64",
-                                      Disposition => "attachment",
-                                      Type        => find_attachment_type($filename), 
-                                      Id          => $cid, 
-                                     );
-        return $ent; 
-        
-     }
- 
+            Path        => $filename,
+            Filename    => $nice_filename,
+            Encoding    => "base64",
+            Disposition => "attachment",
+            Type        => find_attachment_type($filename),
+            Id          => $cid,
+        );
+        return $ent;
+
+    }
+
 }
 
 

@@ -1,0 +1,24 @@
+<!--- begin show_archive_msg_buttons_widget.tmpl --> 
+
+<!-- tmpl_if can_display_message_source --> 
+<div class="buttonfloat">
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" target="_blank"> 
+		<input type="hidden" name="f" value="display_message_source" /> 
+		<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
+		<input type="submit"  value="Show Original Message Source" class="plain"  />    
+	 </form> 
+</div>
+<!-- /tmpl_if --> 
+
+
+<div class="buttonfloat">
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" target="_blank"> 
+		<input type="hidden" name="f" value="archive" /> 
+		<input type="hidden" name="list" value="<!-- tmpl_var list_settings.list -->" /> 
+		<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
+		<input type="submit"  value="Show Public View"  class="plain" />    
+	 </form> 
+</div>
+<div class="floatclear"></div>
+
+<!--- end show_archive_msg_buttons_widget.tmpl --> 

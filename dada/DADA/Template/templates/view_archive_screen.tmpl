@@ -1,0 +1,54 @@
+<!-- begin view_archive_screen.tmpl --> 
+
+<p>
+ <em>
+  Sent: <!-- tmpl_var date -->
+ </em>
+</p>
+
+<p class="alert">
+	Note: some archiving formatting options only take affect when viewing messages publicly.
+</p>
+
+<h2>
+ Subject: <!-- tmpl_var subject -->
+</h2>
+
+<iframe src="<!-- tmpl_var S_PROGRAM_URL -->?f=archive_bare;l=<!-- tmpl_var list_settings.list-->;id=<!-- tmpl_var id -->;admin=1" id="archived_message_body_container">
+<!-- tmpl_var massaged_msg_for_display --> 
+</iframe>
+
+ 
+
+
+
+
+
+<div class="buttonfloat">
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get"> 
+		<input type="hidden" name="f" value="delete_archive" /> 
+		<input type="hidden" name="address" value="<!-- tmpl_var id -->" />
+		<input type="submit" class="alertive" value="Delete Message" />    
+	 </form>
+</div>
+
+<div class="buttonfloat">
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get"> 
+		<input type="hidden" name="f" value="edit_archived_msg" /> 
+		<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
+		<input type="submit" class="cautionary" value="Edit Message..." />    
+	 </form> 
+</div>
+
+<!-- tmpl_include show_archive_msg_buttons_widget.tmpl --> 
+
+
+
+
+<div align="center">
+	<!-- tmpl_var nav_table --> 
+</div> 
+
+
+
+<!-- end view_archive_screen.tmpl --> 

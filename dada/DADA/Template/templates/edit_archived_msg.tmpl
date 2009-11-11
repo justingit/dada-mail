@@ -1,0 +1,46 @@
+<!-- begin edit_archived_msg.tmpl --> 
+
+<!-- tmpl_if done --> 
+	<!-- tmpl_var GOOD_JOB_MESSAGE --> 
+<!-- /tmpl_if --> 
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" enctype="multipart/form-data" method="post">
+<input type="hidden" name="f" value="edit_archived_msg" />
+
+
+<!-- tmpl_var big_blob_of_form_widgets_to_edit_an_archived_message --> 
+
+
+
+
+   <input type="hidden" name="process" value="1"                    /> 
+   <input type="hidden" name="id"      value="<!-- tmpl_var id -->" /> 
+ 
+    
+    <div class="buttonfloat">
+     <input type="reset" class="cautionary"  value="Clear Changes" />
+     <input type="submit" class="processing" value="Save Changes" />
+    </div>
+ </form> 
+ 
+   
+	<!-- tmpl_include show_archive_msg_buttons_widget.tmpl --> 
+
+
+    <div class="floatclear"></div>
+    
+   <p style="text-align:right">
+	<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=edit_archived_msg;process=prefs;id=<!-- tmpl_var id -->">
+		Archive Editor Preferences...
+	</a>
+  </p>
+
+  <p>
+	 <a href="<!-- tmpl_var S_PROGRAM_URL-->?flavor=view_archive;id=<!-- tmpl_var id -->">
+		&lt;-- View Saved Message
+	 </a>
+	</p>
+	
+	
+
+<!-- end edit_archived_msg.tmpl --> 
