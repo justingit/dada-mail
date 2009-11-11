@@ -242,10 +242,4 @@ function removeSubscriberField(form_name) {
     form_name.target = "_self";
     
 }
-
-function init(){
-	/* This even used anymore? */
-	return false;
-}
- 
 <!-- end javascripts/dada_mail_admin.tmpl -->
