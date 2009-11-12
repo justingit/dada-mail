@@ -16,8 +16,6 @@ BEGIN {
 }
 
 
-
-
 #-----------# 
 # Dada Mail #
 #-----------#
@@ -51,6 +49,22 @@ use lib qw(
 	../../../perl
 	../../../perllib
 ); 
+
+# This helps with cPanel-based hosting setups, where Perl Modules can be added
+# from within cPanel, but you need to explicitly set the perl library
+# directories. Uncomment to activate: 
+
+#BEGIN {
+#    my $homedir = ( getpwuid($>) )[7];
+#    my @user_include;
+#    foreach my $path (@INC) {
+#        if ( -d $homedir . '/perl' . $path ) {
+#            push @user_include, $homedir . '/perl' . $path;
+#        }
+#    }
+#    unshift @INC, @user_include;
+#}
+
 
 # This list may need to be added to. Find the absolute to path to this 
 # very file. This:
