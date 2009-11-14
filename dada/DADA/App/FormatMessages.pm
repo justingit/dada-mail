@@ -980,19 +980,22 @@ sub _parse_in_list_info {
      
 ### this is messy. 
 
-	$data =~ s/\[plain_list_subscribe_link\]/$s_link/g;	
-	$data =~ s/\[plain_list_unsubscribe_link\]/$us_link/g;
-
+	if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
+		$data =~ s/\[plain_list_subscribe_link\]/$s_link/g;	
+		$data =~ s/\[plain_list_unsubscribe_link\]/$us_link/g;
+	}
+	
 	$data =~ s/\<\!\-\- tmpl_var plain_list_subscribe_link \-\-\>/$s_link/g;	
 	$data =~ s/\<\!\-\- tmpl_var plain_list_unsubscribe_link \-\-\>/$us_link/g;
 
 
+	if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
+		$data =~ s/\[list_subscribe_link\]/$s_link/g;	
+		$data =~ s/\[list_unsubscribe_link\]/$us_link/g;
+	}
 	
-	$data =~ s/\[list_subscribe_link\]/$s_link/g;	
-	$data =~ s/\[list_unsubscribe_link\]/$us_link/g;
-
 	$data =~ s/\<\!\-\- tmpl_var list_subscribe_link \-\-\>/$s_link/g;	
-	$data =~ s/\<\!\-\- list_unsubscribe_link \-\-\>/$us_link/g;
+	$data =~ s/\<\!\-\- tmpl_var list_unsubscribe_link \-\-\>/$us_link/g;
 	
 	
 	
@@ -1002,8 +1005,10 @@ sub _parse_in_list_info {
     my $cs_link  = $self->_macro_tags(-type => 'confirm_subscribe'); 
     my $cus_link = $self->_macro_tags(-type => 'confirm_unsubscribe'); 
 
-	$data =~ s/\[list_confirm_subscribe_link\]/$cs_link/g;	
-	$data =~ s/\[list_confirm_unsubscribe_link\]/$cus_link/g;
+	if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
+		$data =~ s/\[list_confirm_subscribe_link\]/$cs_link/g;	
+		$data =~ s/\[list_confirm_unsubscribe_link\]/$cus_link/g;
+	}
 
 	$data =~ s/\<\!\-\- tmpl_var list_confirm_subscribe_link \-\-\>/$cs_link/g;	
 	$data =~ s/\<\!\-\- tmpl_var list_confirm_unsubscribe_link \-\-\>/$cus_link/g;
@@ -1013,7 +1018,9 @@ sub _parse_in_list_info {
 # This is kinda out of place...
     if($self->originating_message_url){ 
         my $omu = $self->originating_message_url; 
-        $data =~ s/\[originating_message_url\]/$omu/g;
+        if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
+			$data =~ s/\[originating_message_url\]/$omu/g;
+		}
         $data =~ s/\<\!\-\- tmpl_var originating_message_url \-\-\>/$omu/g;
     }
     
@@ -1191,8 +1198,9 @@ sub _apply_template {
 				
 				# FAKING HTML::Template tags - note! 
 				$new_data =~ s/\<\!\-\- tmpl_var message_body \-\-\>/$new_bodycontent/;
-				$new_data =~ s/\[message_body\]/$new_bodycontent/;
-				
+				if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
+					$new_data =~ s/\[message_body\]/$new_bodycontent/;
+				}
 				my $safe_bodycontent = quotemeta($bodycontent);
 				
 				$data     =~ s/$safe_bodycontent/$new_data/;			
@@ -1200,12 +1208,16 @@ sub _apply_template {
 				
 			}else{ 			
 					$new_data =~ s/\<\!\-\- tmpl_var message_body \-\-\>/$data/;
-					$new_data =~ s/\[message_body\]/$data/g;
+					if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
+						$new_data =~ s/\[message_body\]/$data/g;
+					}
 			}
 			
 		}else{ 
 				$new_data =~ s/\<\!\-\- tmpl_var message_body \-\-\>/$data/;
-				$new_data =~ s/\[message_body\]/$data/g;	
+				if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
+					$new_data =~ s/\[message_body\]/$data/g;	
+				}
 		}
 	}else{ 
 	

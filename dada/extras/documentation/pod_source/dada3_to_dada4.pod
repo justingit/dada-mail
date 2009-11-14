@@ -21,6 +21,28 @@ The usual upgrade instructions will work just fine.
 
 The B<default> backend basically means you ARE NOT using the SQL backend. 
 
+=head2 Templating and Template Tags
+
+Dada Mail 4.0 has been ported over to ONLY use the new-style template tags -
+you're not going to see any old-style template tags. 
+
+Old-style template tags look like this: 
+
+ [tag]
+
+It's basically a string, surrounded by left and right brackets. 
+
+New-style tags look like this: 
+
+ <!-- tmpl_var tag --> 
+
+Although old-style tags are not used in Dada Mail, they're still, 100% supported
+(but are now deprecated). This change shouldn't cause any upgrade problems. 
+
+If you'd like to completely turn off support for old-style tags, Look into the
+Config variable, C<$TEMPLATE_SETTINGS> and change the, C<oldstyle_backwards_compatibility> 
+paramater to, C<0>.
+
 =head2 SQL Backend
 
 If you want to upgrade your Dada Mail 3.x installation to 4.x AND you are using the SQL backend (which we do suggest) 

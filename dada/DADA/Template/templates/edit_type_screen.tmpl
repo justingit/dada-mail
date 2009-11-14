@@ -14,6 +14,13 @@
 	uses template tags to represent data that may change regularly. Use the template tags to represent information like subscription/unsubscription links, or your list name. The entire list of available tags is shown at the end of this page. 
 </p>
 
+<!-- tmpl_if template_oldstyle_backwards_compatibility --> 
+	<p class="alert">Old Style template tag support is enabled.</p>
+<!-- tmpl_else --> 
+	<p class="alert">Old Style template tag support has been disbled.</p>
+<!-- /tmpl_if -->
+
+
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form">
 
 
@@ -501,7 +508,7 @@
 		</td>
 		<td>
 			The URL of the program (<a href="<!-- tmpl_var PROGRAM_URL -->" target="_blank">
-&lt;!-- tmpl_var PROGRAM_URL --&gt;
+<!-- tmpl_var PROGRAM_URL -->
 			</a>
 			). 
 		</td>

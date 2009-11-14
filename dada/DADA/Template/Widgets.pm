@@ -215,6 +215,15 @@ endif                         => '[endif]',
 ); 
 
 
+if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
+	$Global_Template_Variables{template_oldstyle_backwards_compatibility} == 1; 
+}
+else { 
+	$Global_Template_Variables{template_oldstyle_backwards_compatibility} == 0; 
+}
+
+
+
 my %Global_Template_Options = (
 		# DEV: Dude, it's no wonder any templates are ever found.  		
 		path              => [
@@ -230,6 +239,9 @@ my %Global_Template_Options = (
 		die_on_bad_params => 0,	
 		loop_context_vars => 1, 									
 );
+
+
+
 
 											
 =pod
@@ -1903,11 +1915,15 @@ sub set_name_value_filter {
 sub dada_backwards_compatibility { 
 
     my $sref = shift; 
+
+	if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} != 1) { 
+		return;
+	}
     
-	if(!defined($$sref)){ return; }
-	
-#	<http://maillists.bigbcreations.com/cgi-bin/dada/mail.cgi/n/FreedomFit/justin/skazat.com/7557432/>
-	
+	if(!defined($$sref)){ 
+		return; 
+	}
+		
 	$$sref =~ s{\[plain_list_confirm_subscribe_link\]}{[PROGRAM_URL]/n/[list_settings.list]/[subscriber.email_name]/[subscriber.email_domain]/[subscriber.pin]/}g;
 	$$sref =~ s{\[plain_list_confirm_unsubscribe_link\]}{[PROGRAM_URL]/u/[list_settings.list]/[subscriber.email_name]/[subscriber.email_domain]/[subscriber.pin]/}g;
 	
@@ -1949,6 +1965,10 @@ sub dada_pseudo_tag_filter {
 
     my $text_ref = shift;
     
+	if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} != 1) { 
+		return;
+	}
+
 	if(!defined($$text_ref)){ return; }
 
 	$$text_ref =~ s{\[tmpl_else\]}{<!-- tmpl_else -->}g;

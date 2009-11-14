@@ -52,9 +52,9 @@ The URL to Dada Mail, ie: L<http://example.com/cgi-bin/dada/mail.cgi>
 
 Your list has a whole slew of attributes that make up its behavior. Most of the these attributes can be used  as tags in your email messages. 
 
-You'll know you're working with a list-specific attribute, as the tag will start out with: C<E<lt>!-- tmpl_var E<gt>list_settings.>. Notice the dot, C<.> at the end. 
+You'll know you're working with a list-specific attribute, as the tag will start out with: C<E<lt>!-- tmpl_var list_settings.>. Notice the dot, C<.> at the end. 
 
-The tag will then be proceeded with the attribute you want to use. 
+The tag will then be proceeded with the attribute you want to use and end with, C<--E<gt>>
 
 For example, if you want to have a tag to show the List's Name, you'd write: 
 
@@ -110,7 +110,7 @@ attribute. Tags that deal with subscriber information start with: C<[subscriber.
 
 For example, to use a subscriber's email address, you would use: 
 
- [subscriber.email]
+ <!-- tmpl_var subscriber.email -->
 
 A few subscriber-specific tags are usually always available to you. In these examples we'll use the email address, 
 C<user@example.com> as the subscriber email address. The subscriber-specific tags are: 
@@ -199,7 +199,7 @@ This will print out every attribute that's associated with the current email add
 Similarily, you can do this with the List Attributes: 
 
  <!-- tmpl_loop list_settings -->
- 	[name]: [value]
+ 	<!-- tmpl_var name -->: <!-- tmpl_var value --> 
  <!-- /tmpl_loop -->
 
 =head1 Advanced Templating Syntax
@@ -247,5 +247,20 @@ set to something other than apples, this would be printed:
  Hello John,
  
  You don't like apples?!
+
+=head2 Old-Style Template Tags
+
+Prior to Dada Mail 4, template tags and templates themselves used the old-style format. 
+
+Old-style template tags look like this: 
+
+ [tag]
+
+They were simply just a string, surrounded by square brackets. 
+
+We'd like to move away from that, so that syntax is now, deprecated. These types of
+tags still work, 100%. If you're upgrading, you shouldn't find any problems, B<yet>, 
+but please do not use the old-style tags in any feature templating you do. 
+
 
 =cut
