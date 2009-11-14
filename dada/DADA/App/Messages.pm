@@ -163,7 +163,7 @@ sub send_confirmation_message {
 		{
 			-list    => $args->{-list}, 
 			-headers => { 
-				To              => '"[list_settings.list_name] Subscriber" <' . $args->{-email} . '>',
+				To              => '"<!-- tmpl_var list_settings.list_name --> Subscriber" <' . $args->{-email} . '>',
 			    Subject         => $li->{confirmation_message_subject},
 			}, 
 			
@@ -387,7 +387,7 @@ sub send_unsubscribed_message {
 			-ls_obj      => $ls,
 			-email       => $args->{-email}, 
 			-headers => { 	
-				To           => '"[list_settings.list_name]" <' . $args->{-email} . '>',
+				To           => '"<!-- tmpl_var list_settings.list_name -->" <' . $args->{-email} . '>',
 				Subject      => $li->{unsubscribed_message_subject}, 
 			},
 			-body    => $li->{unsubscribed_message},

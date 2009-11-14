@@ -179,7 +179,7 @@ Sure.
 
 By default, the unsubscription tag, 
 
- [list_unsubscribe_link]
+ <!-- tmpl_var list_unsubscribe_link -->
 
 in the mailing list message template generates a URL that looks like this: 
 
@@ -189,7 +189,7 @@ When your users follow this link, they will still have to enter their own email 
 
 You can change the unsubscription link from what's above, to: 
 
- [list_unsubscribe_link]/[subscriber.email_name]/[subscriber.email_domain]/
+ <!-- tmpl_var list_unsubscribe_link -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/
 
 Which will generate a URL that looks like this: 
 
@@ -992,9 +992,9 @@ To change the mailing list message template, login into your list control panel 
 
 You'll see many text fields with all the email message templates that are easy to change. You are looking for two: B< Mailing List Message (Text Version) > and B< Mailing List Message (HTML Version) >
 
-Edit to your liking - one special tag that you're going to want to make sure you still include is the: B<[message_body]> tag. This tag will be replaced by your actually message body - meaning, what you wrote, when your mailing list message is sent. 
+Edit to your liking - one special tag that you're going to want to make sure you still include is the: B<E<lt>!-- tmpl_var message_body --E<gt>> tag. This tag will be replaced by your actually message body - meaning, what you wrote, when your mailing list message is sent. 
 
-If your mailing list messages are coming to you as blank, make sure you did not remove the, B<[message_body]> tag!
+If your mailing list messages are coming to you as blank, make sure you did not remove the, B<E<lt>!-- tmpl_var message_body --E<gt>> tag!
 
 These two messages can be changed globaly in the Config.pm file, under the variables: B<$MAILlING_LIST_MESSAGE> and B<$MAILlING_LIST_MESSAGE_HTML> 
 

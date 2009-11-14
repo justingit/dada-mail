@@ -17,14 +17,14 @@ Templating in email messages works, because email messages have things called, B
 
 A tag looks like this: 
 
- [tag]
+ <!-- tmpl_var tag -->
 
-A tag will start with a left bracket, will have a some text and then a right bracket. Before an email message is sent out, the email
+A tag will start with, C<E<lt>!-- tmpl_var >, will have a some text and then, C< --E<gt>>. Before an email message is sent out, the email
 message is first B<parsed> and these placeholder tags are replaced with what they represent. 
 
 Not all tags will represent everything - for example, you can't just have a tag that says: 
 
- [Current_President_Of_The_United_States]
+ <!-- tmpl_var Current_President_Of_The_United_States -->
 
 and expect Dada Mail to figure out what you want. 
 
@@ -38,11 +38,11 @@ These tags can be used in most every email message. This list isn't exhaustive, 
 
 =over
 
-=item * [PROGRAM_NAME]
+=item * <!-- tmpl_var PROGRAM_NAME -->
 
 The name of this program - usually it's set to, B<Dada Mail>
 
-=item * [PROGRAM_URL]
+=item * <!-- tmpl_var PROGRAM_URL -->
 
 The URL to Dada Mail, ie: L<http://example.com/cgi-bin/dada/mail.cgi>
 
@@ -52,43 +52,43 @@ The URL to Dada Mail, ie: L<http://example.com/cgi-bin/dada/mail.cgi>
 
 Your list has a whole slew of attributes that make up its behavior. Most of the these attributes can be used  as tags in your email messages. 
 
-You'll know you're working with a list-specific attribute, as the tag will start out with: C<[list_settings.>. Notice the dot, B<.> at the end. 
+You'll know you're working with a list-specific attribute, as the tag will start out with: C<E<lt>!-- tmpl_var E<gt>list_settings.>. Notice the dot, C<.> at the end. 
 
 The tag will then be proceeded with the attribute you want to use. 
 
 For example, if you want to have a tag to show the List's Name, you'd write: 
 
- [list_settings.list_name]
+ <!-- tmpl_var list_settings.list_name -->
 
 To have a tag to show the list ower's email address, you'd write: 
 
- [list_settings.list_owner_email]
+ <!-- tmpl_var list_settings.list_owner_email -->
 
 Here's a non-exhaustive list of available list-specific tags: 
 
 =over
 
-=item * [list_settings.list]
+=item * <!-- tmpl_var list_settings.list -->
 
 Your list's shortname
 
-=item * [list_settings.list_name]
+=item * <!-- tmpl_var list_settings.list_name -->
 
 Your list's name
 
-=item * [list_settings.list_owner_email]
+=item * <!-- tmpl_var list_settings.list_owner_email -->
 
 The List Owner's email address
 
-=item * [list_settings.info]
+=item * <!-- tmpl_var list_settings.info -->
 
 The description of your list
 
-=item * [list_settings.privacy_policy]
+=item * <!-- tmpl_var list_settings.privacy_policy -->
 
 Your list's Privacy Policy
 
-=item * [list_settings.physical_address]
+=item * <!-- tmpl_var list_settings.physical_address -->
 
 Your list's physical address
 
@@ -117,15 +117,15 @@ C<user@example.com> as the subscriber email address. The subscriber-specific tag
 
 =over
 
-=item *  [subscriber.email]
+=item *  <!-- tmpl_var subscriber.email -->
 
 user@example.com
 
-=item * [subscriber.email_name]
+=item * <!-- tmpl_var subscriber.email_name -->
 
 user
 
-=item * [subscriber.email_domain]
+=item * <!-- tmpl_var subscriber.email_domain -->
 
 example.com
 
@@ -138,19 +138,19 @@ In these email messages you also have the option to use the, C<[subscriber.pin]>
 
 You can also access the subscriber's saved field values. For example, if you have a field named, B<first_name>, you can use the following tag: 
 
- [subscriber.first_name]
+ <!-- tmpl_var subscriber.first_name -->
 
 =head1 Using Tags in Email Messages
 
 Once you understand how these tags are made, it's simple to use them in your message. For example, we can great our subscriber as such: 
 
- Hello, [subscriber.email]
+ Hello,  <!-- tmpl_var subscriber.email -->
  
- You are subscribed to my list, [list_settings.list_name]. 
+ You are subscribed to my list, <!-- tmpl_var list_settings.list_name -->. 
 
  Hazzah!
 
- -- [list_settings.list_owner_email]
+ -- <!-- tmpl_var list_settings.list_owner_email -->
 
 This will print out something like: 
 
@@ -166,13 +166,13 @@ And that's all there is to it.
 
 If you have a subcriber field named, B<first_name>, we can change the example above to: 
 
- Hello, [subscriber.first_name]
+ Hello,  <!-- tmpl_var subscriber.first_name -->
  
- You are subscribed to my list, [list_settings.list_name]. 
+ You are subscribed to my list, <!-- tmpl_var list_settings.list_name -->. 
  
  Hazzah!
  
- -- [list_settings.list_owner_email]
+ -- <!-- tmpl_var list_settings.list_owner_email -->
  
 This could print out something like: 
  
@@ -188,19 +188,19 @@ This could print out something like:
 
 Alongside tags that represent something, there's also tags that allow you to loop through all the information available.
 
-Currently, you can loop through all the B<subscriber> and B<list> specific information, using the, C<[loop]> tag, like so: 
+Currently, you can loop through all the B<subscriber> and B<list> specific information, using the, C<E<gt>!-- tmpl_loop --E<lt>> tag, like so: 
 
- [loop subscriber]
- 	[name]: [value]
- [/loop]
+ <!-- tmpl_loop subscriber -->
+ 	<!-- tmpl_var name -->: <!-- tmpl_var value -->
+ <!-- /tmpl_loop -->
 
 This will print out every attribute that's associated with the current email address. 
 
 Similarily, you can do this with the List Attributes: 
 
- [loop list_settings]
+ <!-- tmpl_loop list_settings -->
  	[name]: [value]
- [/loop]
+ <!-- /tmpl_loop -->
 
 =head1 Advanced Templating Syntax
 
@@ -210,17 +210,6 @@ can probably be done with Dada Mail.
 Here's more information: 
 
 L<http://search.cpan.org/~samtregar/HTML-Template/Template.pm>
-
-You'll notice that the examples above use this sort of syntax for the template tags: 
-
- [ima_tag]
-
-instead of the HTML::Template way of doing things: 
-
- <!-- tmpl_var ima_tag --> 
-
-Both will work with Dada Mail's email templating system and neither is really preferable. Dada Mail's syntax is simply 
-filter to HTML::Template's syntax by HTML::Template itself. 
 
 =head2 HTML::Template::Expr Support
 
@@ -238,13 +227,13 @@ You'll want to enable this option and HTML::Template::Expr syntax should be enab
 
 With this option enabled, you can make statements, such as this: 
 
- Hello [subscriber.first_name], 
+ Hello <!-- tmpl_var subscriber.first_name -->, 
  
- [if expr="subscriber.favorite_fruit eq 'apples'"]
+ <!-- tmpl_if expr="subscriber.favorite_fruit eq 'apples'" -->
  I see you like apples!
- [else]
+ <!-- tmpl_else -->
  You don't like apples?!
- [/if]
+ <!-- /tmpl_if -->
 
 This will print: 
 
@@ -259,16 +248,4 @@ set to something other than apples, this would be printed:
  
  You don't like apples?!
 
-You may find that it's easier to use the default HTML::Template::Expr style of tags, when dealing with the advanced syntax. The following
-should be equivilent to the above: 
-
-Hello <!-- tmpl_var subscriber.first_name -->, 
-
- <!-- tmpl_if expr="subscriber.favorite_fruit eq 'apples'" -->
- I see you like apples!
- <!-- tmpl_else -->
- You don't like apples?!
- <!-- /tmpl_if -->
-
 =cut
-

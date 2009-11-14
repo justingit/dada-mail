@@ -770,7 +770,7 @@ In this context:
 
  To confirm this subscription, please follow the below URL:
  
- <[list_unsubscribe_link]>
+ <!-- tmpl_var list_unsubscribe_link -->
  
  (Click the URL above or, copy and paste the URL into your browser)
 
@@ -778,17 +778,17 @@ And:
 
  To confirm this unsubscription, please follow the below URL:
  
- <[list_unsubscribe_link]> 
+ <!-- tmpl_var list_unsubscribe_link -->
  
  (Click the URL above or, copy and paste the URL into your browser)
 
 You will B<NEED> to change these links to: 
 
- [list_confirm_subscribe_link]
+ <!-- tmpl_var list_confirm_subscribe_link -->
 
 And: 
 
- [list_confirm_unsubscribe_link]
+ <!-- tmpl_var list_confirm_unsubscribe_link -->
 
 Respectively, or your subscription process will not work. 
 

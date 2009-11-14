@@ -10,6 +10,13 @@ Key:
 [*] Naw...
 [?] Someday
 
+[ ] Moving to new-style tags
+	[ ] all the list subscription confirmation tags - eek!
+	[ ] message body - eek eek!
+
+
+
+[ ] Clickthrough Tracker - track UNIQUE opens. How?
 
 [ ] 1. Installation on my own machine running MacOS X (Leopard) with MySQL 5.1 was fairly straightforward, but when I installed it on my ISP's server which runs a back-level version of Mysql (4.I) I had to reduce the string lengths from 320 to 255 to get it to accept the SQL. Also had to change the CREATE INDEX statements to ALTER DATABASE... ADD INDEX... statements as I got a "Not authorized" error on the CREATE statements, but I expect that's just my ISP. Not sure if reducing the string lengths will have any significant effect, haven't noticed any so far.
 	[x] Erm, I left a note - I'm not sure if I want to hassle around with this... 
@@ -18,7 +25,7 @@ Key:
 
 [x] 4. Profile Fields which begin with an underscore are showing on public pages, where they should be hidden.
 
-[ ] 5. In the HTML Message template, the [list_settings.physical_address] is getting wrapped with <p>...</p> tags which are spoiling my footing layout. This doesn't happen with 3.0.x.
+[ ] 5. In the HTML Message template, the <!-- tmpl_var list_settings.physical_address --> is getting wrapped with <p>...</p> tags which are spoiling my footing layout. This doesn't happen with 3.0.x.
 	[ ] I've removed the line actually wraps lines in paragraphs and removed the option in HTML::FromText that says, "hey treat things as lines" - although the, "hey treat these as paragraph oriented" was also enabled... I may have to revert this problem. 
 		[ ] Hey, that seemed to have worked! 
 		

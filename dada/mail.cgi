@@ -2545,7 +2545,7 @@ sub adv_sending_preferences {
 
 
     my ($admin_list, $root_login) =  check_list_security(-cgi_obj    => $q,
-                                                         -Function   => 'sending_options');
+                                                         -Function   => 'adv_sending_preferences');
     $list = $admin_list;
   
     require DADA::Security::Password; 
@@ -7941,8 +7941,8 @@ sub send_archive {
         
         # DEV: This should really be moved to DADA::App::Messages...
         my $msg = MIME::Lite->new(
-                    From    => '"[list_settings.list_name]" <' . $from_email . '>', 
-                    To      => '"[list_settings.list_name]" <' . $to_email   . '>', 
+                    From    => '"<!-- tmpl_var list_settings.list_name -->" <' . $from_email . '>', 
+                    To      => '"<!-- tmpl_var list_settings.list_name -->" <' . $to_email   . '>', 
                     Subject => $li->{send_archive_message_subject}, 
                     Type    => 'multipart/mixed',
                   ); 

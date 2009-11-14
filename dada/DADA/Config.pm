@@ -2033,7 +2033,7 @@ $ADMIN_MENU ||= [
 				
 					{-Title      => 'Sending Preferences',
 					 -Title_URL  => "$S_PROGRAM_URL?f=sending_preferences",
-					 -Function   => 'sending_options',
+					 -Function   => 'sending_preferences',
 					 -Activated  => 1,
 					},
 
@@ -2866,11 +2866,11 @@ $SUBSCRIBED_MESSAGE ||= <<EOF
 
 The subscription of the email address: 
 
-	[subscriber.email]
+	<!-- tmpl_var subscriber.email -->
 	
 to the mailing list: 
 
-	[list_settings.list_name]
+	<!-- tmpl_var list_settings.list_name -->
 
 is complete. Thanks for subscribing! 
 
@@ -2878,12 +2878,12 @@ Please save this email message for future reference.
 
 -----------------------------------------------------------------------
 
-Date of this subscription: [date]
+Date of this subscription: <!-- tmpl_var date -->
 
 You may unsubscribe from this list at any time by 
 visiting the following URL:
 
-<[list_unsubscribe_link]>
+<!-- tmpl_var list_unsubscribe_link -->
 
 If the above URL is inoperable, make sure that you have copied the 
 entire address. Some mail readers will wrap a long URL and thus break
@@ -2891,11 +2891,11 @@ this automatic unsubscribe mechanism.
 
 You may also change your subscription by visiting this list's main screen: 
 
-<[PROGRAM_URL]/list/[list_settings.list]>
+<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->
 
 If you're still having trouble, please contact the list owner at: 
 
-	<mailto:[list_settings.list_owner_email]>
+	mailto:<!-- tmpl_var list_settings.list_owner_email -->
 
 <!-- tmpl_if PROFILE_ENABLED --><!-- tmpl_if new_profile --> 
 You can also log into your profile and update your information: 
@@ -2906,9 +2906,9 @@ You can also log into your profile and update your information:
 <!-- /tmpl_if --><!-- /tmpl_if --> 
 The following physical address is associated with this mailing list: 
 
-[list_settings.physical_address]
+<!-- tmpl_var list_settings.physical_address -->
 
-- <mailto:[list_settings.list_owner_email]>
+- mailto:<!-- tmpl_var list_settings.list_owner_email -->
 
 EOF
 ; 
@@ -2928,31 +2928,31 @@ Hello,
 
 The following email address:
 
-	[subscriber.email]
+	<!-- tmpl_var subscriber.email -->
 
 Would like to subscribe to: 
 
-	[list_settings.list_name]
+	<!-- tmpl_var list_settings.list_name -->
 	
 If you haven't yet, log into your list:
 
-[S_PROGRAM_URL]?f=sign_in&list=[list_settings.list]
+<!-- tmpl_var S_PROGRAM_URL -->?f=sign_in&list=<!-- tmpl_var list_settings.list -->
 
 -----------------------------------------------------------------------------
 
 To approve this subscription, follow this link: 
 	
-	[S_PROGRAM_URL]?f=subscription_requests&process=approve&address=[subscriber.email]&list=[list_settings.list]
+	<!-- tmpl_var S_PROGRAM_URL -->?f=subscription_requests&process=approve&address=<!-- tmpl_var subscriber.email -->&list=<!-- tmpl_var list_settings.list -->
 
 To deny this subscription, follow this link: 
 
-	[S_PROGRAM_URL]?f=subscription_requests&process=deny&address=[subscriber.email]&list=[list_settings.list]
+	<!-- tmpl_var S_PROGRAM_URL -->?f=subscription_requests&process=deny&address=<!-- tmpl_var subscriber.email -->&list=<!-- tmpl_var list_settings.list -->
 
 To view all addresses awaiting approval for subscription, please visit: 
 
-	[S_PROGRAM_URL]?f=view_list&type=sub_request_list&list=[list_settings.list]
+	<!-- tmpl_var S_PROGRAM_URL -->?f=view_list&type=sub_request_list&list=<!-- tmpl_var list_settings.list -->
 
--- [PROGRAM_NAME]		
+-- <!-- tmpl_var PROGRAM_NAME -->		
 
 EOF
 ;
@@ -2967,14 +2967,14 @@ This email message is sent to the list owner, when a new subscription has been m
 =cut
 
 
-$SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE = '[list_settings.list_name] List Owner';
-$SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT   = '[status] [subscriber.email]';  
+$SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE = '<!-- tmpl_var list_settings.list_name --> List Owner';
+$SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT   = '[status] <!-- tmpl_var subscriber.email -->';  
 $SUBSCRIPTION_NOTICE_MESSAGE           = <<EOF
-[subscriber.email] has [status] on list: [list_settings.list_name]
+<!-- tmpl_var subscriber.email --> has <!-- tmpl_var status --> on list: <!-- tmpl_var list_settings.list_name -->
 
-Server Time: [date]
-IP Logged:   [REMOTE_ADDR]
-[note]
+Server Time: <!-- tmpl_var date -->
+IP Logged:   <!-- tmpl_var REMOTE_ADDR -->
+<!-- tmpl_var note -->
 
 <!-- tmpl_if subscriber -->Extra Subscriber information: 
 -----------------------------
@@ -2983,9 +2983,9 @@ IP Logged:   [REMOTE_ADDR]
 
 <!-- /tmpl_loop -->-----------------------------<!--/tmpl_if-->
 
-There is now a total of: [num_subscribers] subscribers.
+There is now a total of: <!-- tmpl_var num_subscribers --> subscribers.
 
--[PROGRAM_NAME]
+-<!-- tmpl_var PROGRAM_NAME -->
 
 EOF
 ; 
@@ -3006,11 +3006,11 @@ $UNSUBSCRIBED_MESSAGE  ||= <<EOF
 
 The removal of the email address:
 
-	[subscriber.email]
+	<!-- tmpl_var subscriber.email -->
 	
 from the mailing list: 
 
-	[list_settings.list_name] 
+	<!-- tmpl_var list_settings.list_name --> 
 
 is complete.
 
@@ -3018,12 +3018,12 @@ You may wish to save this email message for future reference.
 
 -----------------------------------------------------------------------
 
-Date of this removal: [date]
+Date of this removal: <!-- tmpl_var date --> 
 
 You may re-subscribe to this list at any time by 
 visiting the following URL:
 
-<[list_subscribe_link]>
+<!-- tmpl_var list_subscribe_link -->
 
 If the above URL is inoperable, make sure that you have copied the 
 entire address. Some mail readers will wrap a long URL and thus break
@@ -3031,17 +3031,17 @@ this automatic unsubscribe mechanism.
 
 You may also change your subscription by visiting this list's main screen: 
 
-<[PROGRAM_URL]/list/[list_settings.list]>
+<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->
 
 If you're still having trouble, please contact the list owner at: 
 
-	<mailto:[list_settings.list_owner_email]>
+	mailto:<!-- tmpl_var list_settings.list_owner_email -->
 
 The following physical address is associated with this mailing list: 
 
-[list_settings.physical_address]
+<!-- tmpl_var list_settings.physical_address -->
 
-- <mailto:[list_settings.list_owner_email]>
+- mailto:<!-- tmpl_var list_settings.list_owner_email -->
 
 EOF
 ; 
@@ -3063,11 +3063,11 @@ $CONFIRMATION_MESSAGE ||= <<EOF
 This message has been sent to you as the final step to confirm your
 email list subscription for the following list: 
 
-[list_settings.list_name]
+<!-- tmpl_var list_settings.list_name -->
 
 To confirm this subscription, please follow the URL below:
 
-<[list_confirm_subscribe_link]>
+<!-- tmpl_var list_confirm_subscribe_link -->
 
 (Click the URL above, or copy and paste the URL into your browser. 
 Doing so will subscribe you to this list.)
@@ -3076,7 +3076,7 @@ Doing so will subscribe you to this list.)
 
 The following is the description given for this list: 
 
-[list_settings.info]
+<!-- tmpl_var list_settings.info -->
 
 -----------------------------------------------------------------------
 
@@ -3087,7 +3087,7 @@ to this mailing list.
 
 Furthermore, the following privacy policy is associated with this list: 
 
-[list_settings.privacy_policy]
+<!-- tmpl_var list_settings.privacy_policy -->
 
 Please read and understand this privacy policy. Other mechanisms may 
 have been enacted to subscribe email addresses to this list, such as
@@ -3100,13 +3100,13 @@ will be needed.
 
 To contact the owner of this email list, please use the address below: 
 
-<mailto:[list_settings.list_owner_email]>
+<mailto:<!-- tmpl_var list_settings.list_owner_email -->>
 
 The following physical address is associated with this mailing list: 
 
-[list_settings.physical_address]
+<!-- tmpl_var list_settings.physical_address -->
 
-- [list_settings.list_owner_email]
+- <!-- tmpl_var list_settings.list_owner_email -->
 
 EOF
 ; 
@@ -3129,11 +3129,11 @@ $UNSUB_CONFIRMATION_MESSAGE ||= <<EOF
 This message has been sent to you as the final step to confirm your
 email *removal* for the following list: 
 
-[list_settings.list_name]
+<!-- tmpl_var list_settings.list_name -->
 
 To confirm this unsubscription, please follow the URL below:
 
-<[list_confirm_unsubscribe_link]>
+<!-- tmpl_var list_confirm_unsubscribe_link -->
 
 (Click the URL above, or copy and paste the URL into your browser. 
 Doing so will remove you to this list.)
@@ -3142,7 +3142,7 @@ Doing so will remove you to this list.)
 
 The following is the description given for this list: 
 
-[list_settings.info]
+<!-- tmpl_var list_settings.info -->
 
 -----------------------------------------------------------------------
 
@@ -3151,7 +3151,7 @@ of the owner of this email address.
 
 Furthermore, the following privacy policy is associated with this list: 
 
-[list_settings.privacy_policy]
+<!-- tmpl_var list_settings.privacy_policy -->
 
 Please read and understand this privacy policy. 
 
@@ -3161,14 +3161,14 @@ will not go through and no other action on your part will be needed.
 
 To contact the owner of this email list, please use the address below: 
 
-<mailto:[list_settings.list_owner_email]>
+<mailto:<!-- tmpl_var list_settings.list_owner_email -->>
 
 The following physical address is associated with this mailing list: 
 
-[list_settings.physical_address]
+<!-- tmpl_var list_settings.physical_address -->
 
 
-- <mailto:[list_settings.list_owner_email]>
+- <mailto:<!-- tmpl_var list_settings.list_owner_email -->>
 
 EOF
 ; 
@@ -3206,7 +3206,7 @@ $MAILlING_LIST_MESSAGE ||= <<EOF
 (Mailing list information, including unsubscription instructions, is located at the end of this message.)
 __ 
 
-[message_body]
+<!-- tmpl_var message_body -->
 
 -- 
 The following information is a reminder of your current mailing
@@ -3214,16 +3214,16 @@ list subscription:
 
 You are subscribed to the following list:
   
-	[list_settings.list_name]
+	<!-- tmpl_var list_settings.list_name -->
 	
 using the following email:
  
-	[subscriber.email]
+	<!-- tmpl_var subscriber.email -->
 
 You may unsubscribe from this list at any time by 
 visiting the following URL:
  
-<[list_unsubscribe_link]>
+<!-- tmpl_var list_unsubscribe_link -->
 
 If the above URL is inoperable, make sure that you have copied the 
 entire address. Some mail readers will wrap a long URL and thus break
@@ -3231,15 +3231,15 @@ this automatic unsubscribe mechanism.
 
 You may also change your subscription by visiting this list's main screen: 
  
-<[PROGRAM_URL]/list/[list_settings.list]>
+<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->
 
 If you're still having trouble, please contact the list owner at: 
  
-	<mailto:[list_owner_email]>
+	<mailto:<!-- tmpl_var list_settings.list_owner_email -->>
 
 The following physical address is associated with this mailing list: 
  
-[list_settings.physical_address]
+<!-- tmpl_var list_settings.physical_address -->
 
 EOF
 ; 
@@ -3261,7 +3261,7 @@ $MAILlING_LIST_MESSAGE_HTML ||= <<EOF
 is located at the end of this message.)</em><br/></p>
 <!--/opening-->
 
-[message_body]
+<!-- tmpl_var message_body -->
 
 <!--signature-->
 <p>The following information is a reminder of your current mailing
@@ -3269,18 +3269,18 @@ list subscription: </p>
 
 <p>You are subscribed to the following list: </p>
 
-<p><strong>[list_settings.list_name]</strong></p>
+<p><strong><!-- tmpl_var list_settings.list_name --></strong></p>
 	
 <p>using the following email:</p>
 
-<p><strong>[subscriber.email]</strong></p>
+<p><strong><!-- tmpl_var subscriber.email --></strong></p>
 
 <p>You may unsubscribe from this list at any time by 
 visiting the following URL:</p>
 
 <p>
- <a href="[list_unsubscribe_link]">
-  [list_unsubscribe_link]
+ <a href="<!-- tmpl_var list_unsubscribe_link -->">
+  <!-- tmpl_var list_unsubscribe_link -->
  </a>
 </p>
 
@@ -3292,22 +3292,22 @@ this automatic unsubscribe mechanism.</p>
 screen:</p>
 
 <p>
- <a href="[PROGRAM_URL]/list/[list_settings.list]">
-  [PROGRAM_URL]/list/[list_settings.list]
+ <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->">
+  <!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->
  </a>
 </p>
 
 <p>If you're still having trouble, please contact the list owner at:</p> 
 
 	<p>
-	 <a href="mailto:[list_settings.list_owner_email]">
-	 [list_settings.list_owner_email]
+	 <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->">
+	 <!-- tmpl_var list_settings.list_owner_email -->
 	 </a>
 	</p>
 
 <p>The following physical address is associated with this mailing list:</p> 
 
- [list_settings.physical_address]
+ <!-- tmpl_var list_settings.physical_address -->
 
 <!--/signature-->
 EOF
@@ -3329,26 +3329,26 @@ can be customized for each list in the list's Control Panel.
 
 $NOT_ALLOWED_TO_POST_MESSAGE ||= <<EOF  
 
-[PROGRAM_NAME] Error - 
+<!-- tmpl_var PROGRAM_NAME --> Error - 
 
 Sorry, it doesn't seem that you are allowed to post on: 
 
-	[list_settings.list_name]
+	<!-- tmpl_var list_settings.list_name -->
 	
 with the email address: 
 
-    [subscriber.email]
+    <!-- tmpl_var subscriber.email -->
 
 This may be because you have to first subscribe to the list to post to the 
 list itself. 
 
 Please see: 
 
-	<[PROGRAM_URL]/list/[list_settings.list]>
+	<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->
 
 for more information, or email the list owner at: 
 
-	<mailto:[list_settings.list_owner_email]>
+	<mailto:<!-- tmpl_var list_settings.list_owner_email -->>
 
 EOF
 ; 
@@ -3362,11 +3362,11 @@ who does not have access to do so.
 
 =cut
 
-$NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT =  "[PROGRAM_NAME] Error - Not Allowed to Post On [list_settings.list_name] (original message attached)", 	
+$NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT =  "<!-- tmpl_var PROGRAM_NAME --> Error - Not Allowed to Post On <!-- tmpl_var list_settings.list_name --> (original message attached)", 	
 $NOT_ALLOWED_TO_POST_NOTICE_MESSAGE         ||= <<EOF
-The attached message was not sent from one of the subscribers of [list_settings.list_name]
+The attached message was not sent from one of the subscribers of <!-- tmpl_var list_settings.list_name -->
 
--- [PROGRAM_NAME]
+-- <!-- tmpl_var PROGRAM_NAME -->
 
 EOF
 ; 
@@ -3390,11 +3390,11 @@ Hello,
 
 This message has been sent to you because a request to subscribe: 
 
-[subscriber.email]
+<!-- tmpl_var subscriber.email -->
 
 to the list: 
 
-[list_settings.list_name]
+<!-- tmpl_var list_settings.list_name -->
 
 was just made. This email address is actually already subscribed, 
 so you do not have to subscribe again. This message has been sent 
@@ -3403,7 +3403,7 @@ available to you.
 
 If you would like to change your subscription, please visit this address: 
 
-[PROGRAM_URL]/list/[list_settings.list]/
+<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/
 
 If the above URL is inoperable, make sure that you have copied the 
 entire address. Some mail readers will wrap a long URL and thus break
@@ -3411,10 +3411,10 @@ this automatic unsubscribe mechanism.
 
 To contact the owner of this email list, please use the address below: 
 
-<mailto:[list_settings.list_owner_email]>
+<mailto:<!-- tmpl_var list_settings.list_owner_email -->>
 
 
-- [list_settings.list_owner_email]
+- <!-- tmpl_var list_settings.list_owner_email -->
 
 EOF
 ; 
@@ -3428,20 +3428,20 @@ This email message is sent to the list owner, when a mass mailing has finished.
 =cut
 
 
-$MAILING_FINISHED_MESSAGE_SUBJECT ||= '[list_settings.list_name]  Mailing Complete - [message_subject]'; 
+$MAILING_FINISHED_MESSAGE_SUBJECT ||= '<!-- tmpl_var list_settings.list_name -->  Mailing Complete - [message_subject]'; 
 $MAILING_FINISHED_MESSAGE ||= <<EOF
 Your List Mailing has been successful!
 -----------------------------------------------------------------------
-Your mailing has reached: [addresses_sent_to] e-mail address(es)
+Your mailing has reached: <!-- tmpl_var addresses_sent_to --> e-mail address(es)
 
-Mailing Started:    [mailing_start_time]                              
-Mailing Ended:      [mailing_finish_time]                         
-Total Mailing Time: [total_mailing_time]
-Last Email Sent to: [last_email_send_to]                                 
+Mailing Started:    <!-- tmpl_var mailing_start_time -->                              
+Mailing Ended:      <!-- tmpl_var mailing_finish_time -->                        
+Total Mailing Time: <!-- tmpl_var total_mailing_time -->
+Last Email Sent to: <!-- tmpl_var last_email_send_to -->                               
 
 A copy of your Mailing List Message has been attached.
 	   	
--[PROGRAM_NAME]
+-<!-- tmpl_var PROGRAM_NAME -->
 
 EOF
 ;
@@ -3458,19 +3458,19 @@ $TEXT_INVITE_MESSAGE ||= <<EOF
 
 Hello, 
 
-The List Owner ([list_settings.list_owner_email]) would like to invite you to 
+The List Owner (<!-- tmpl_var list_settings.list_owner_email -->) would like to invite you to 
 subscribe to the following mailing list, 
 
-	[list_settings.list_name]
+	<!-- tmpl_var list_settings.list_name -->
 	
 Here's a brief overview of what this list is all about: 
 
-[list_settings.info] 
+<!-- tmpl_var list_settings.info --> 
 
 If this mailing list is of interest to you, you may automatically subscribe your email 
-address ([subscriber.email]) to this list, by clicking the below URL: 
+address (<!-- tmpl_var subscriber.email -->) to this list, by clicking the below URL: 
 
-[list_confirm_subscribe_link] 
+<!-- tmpl_var list_confirm_subscribe_link --> 
 
 If the above URL is inoperable, make sure that you have copied the 
 entire address. Some mail readers will wrap a long URL and thus break
@@ -3478,15 +3478,15 @@ this automatic subscribe mechanism.
 
 The following physical address is associated with this mailing list: 
  
-[list_settings.physical_address]
+<!-- tmpl_var list_settings.physical_address -->
 
 Furthermore, the following privacy policy is associated with this list: 
 
-[list_settings.privacy_policy]
+<!-- tmpl_var list_settings.privacy_policy -->
 
 Thanks! 
 
-- [list_settings.list_owner_email]
+- <!-- tmpl_var list_settings.list_owner_email -->
 
 EOF
 ;
@@ -3602,15 +3602,15 @@ $HTML_INVITE_MESSAGE ||= <<EOF
 
 <p>
  The List Owner (
-  <a href="mailto:[list_settings.list_owner_email]">
-   [list_settings.list_owner_email]
+  <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->">
+   <!-- tmpl_var list_settings.list_owner_email -->
   </a>
  ) would like to invite you to subscribe to the following mailing list, 
 </p> 
 
 <p>
  <strong>
-  [list_settings.list_name]
+  <!-- tmpl_var list_settings.list_name -->
  </strong>
 </p> 
 	
@@ -3620,18 +3620,18 @@ $HTML_INVITE_MESSAGE ||= <<EOF
 
 <p>
  <blockquote>
-  [list_settings.info]
+  <!-- tmpl_var list_settings.info -->
  </blockquote>
 </p>  
 
 <p>
  If this mailing list is of interest to you, you may automatically subscribe your email 
-address ([subscriber.email]) to this list, by clicking the below URL:
+address (<!-- tmpl_var subscriber.email -->) to this list, by clicking the below URL:
  </p>  
 
 <p>
- <a href="[list_confirm_subscribe_link]"> 
-  [list_confirm_subscribe_link]
+ <a href="<!-- tmpl_var list_confirm_subscribe_link -->"> 
+  <!-- tmpl_var list_confirm_subscribe_link -->
  </a>
 </p>  
 
@@ -3647,7 +3647,7 @@ this automatic subscribe mechanism.
  
 <p>
  <blockquote>
-  [list_settings.physical_address]
+  <!-- tmpl_var list_settings.physical_address -->
  </blockquote>
 </p> 
 
@@ -3657,7 +3657,7 @@ this automatic subscribe mechanism.
 
 <p>
  <blockquote>
-  [list_settings.privacy_policy]
+  <!-- tmpl_var list_settings.privacy_policy -->
  </blockquote>
 </p> 
 
@@ -3666,8 +3666,8 @@ this automatic subscribe mechanism.
 </p>  
 
 <p>- 
- <a href="[list_settings.list_owner_email]">
-  [list_settings.list_owner_email]
+ <a href="<!-- tmpl_var list_settings.list_owner_email -->">
+  <!-- tmpl_var list_settings.list_owner_email -->
  </a>
 </p> 
 
@@ -3690,23 +3690,23 @@ $SEND_ARCHIVED_MESSAGE ||= <<EOF
 
 Hello, 
 
-On behalf of: [from_email], the following archived message from: 
+On behalf of: <!-- tmpl_var from_email -->, the following archived message from: 
 
-[list_settings.list_name] 
+<!-- tmpl_var list_settings.list_name --> 
 
 has been sent to you. They wrote: 
 
-[note]
+<!-- tmpl_var note -->
 
 The archived message is below. 
 
-You can subscribe to [list_settings.list_name] by following this link:
+You can subscribe to <!-- tmpl_var list_settings.list_name --> by following this link:
 
-[list_subscribe_link]
+<!-- tmpl_var list_subscribe_link -->
 
 If you cannot view the archived message, please visit: 
 
-[archive_message_url]
+<!-- tmpl_var archive_message_url -->
 
 EOF
 ;
@@ -3725,32 +3725,32 @@ $HTML_SEND_ARCHIVED_MESSAGE ||= <<EOF
 
 <p>Hello,</p> 
 
-<p>On behalf of: [from_email], the following archived message 
+<p>On behalf of: <!-- tmpl_var from_email -->, the following archived message 
 from:</p>
 
-<p>[list_settings.list_name]</p>
+<p><!-- tmpl_var list_settings.list_name --></p>
 
 <p>has been sent to you. They wrote:</p> 
 
 <p>
  <em> 
-  [note]
+  <!-- tmpl_var note -->
  </em> 
 </p>
 
 <p>The archived message is below.</p> 
 
-<p>You can subscribe to [list_settings.list_name] by following this link:</p>
+<p>You can subscribe to <!-- tmpl_var list_settings.list_name --> by following this link:</p>
 
 <p>
- <a href="[list_subscribe_link]">
-  [list_subscribe_link]
+ <a href="<!-- tmpl_var list_subscribe_link -->">
+  <!-- tmpl_var list_subscribe_link -->
  </a>.
 </p>
 
 <p>If you cannot view the archived message, please visit:</p>
 
-<p><a href="[archive_message_url]">[archive_message_url]</a></p>
+<p><a href="<!-- tmpl_var archive_message_url -->"><!-- tmpl_var archive_message_url --></a></p>
 
 EOF
 ;
@@ -3788,7 +3788,7 @@ $HTML_CONFIRMATION_MESSAGE ||= <<EOF
 <blockquote>
  <p>
   <strong>
-  [subscriber.email] 
+  <!-- tmpl_var subscriber.email -->
   </strong>
  </p>
 </blockquote>
@@ -3798,7 +3798,7 @@ $HTML_CONFIRMATION_MESSAGE ||= <<EOF
 <blockquote>
  <p>
   <strong>
-  [list_settings.list_name]
+  <!-- list_settings.list_name -->
   </strong>
  </p>
 </blockquote>
@@ -3816,8 +3816,8 @@ address: </p>
  <blockquote>
  <p>
   <strong>
-   <a href=mailto:[list_settings.list_owner_email]>
-    [list_settings.list_owner_email]
+   <a href="mailto:<!-- list_settings.list_owner_email -->">
+    <!-- tmpl_var list_settings.list_owner_email -->
    </a>
   </strong>
  </p>
@@ -3837,8 +3837,8 @@ address: </p>
 
 <p>
  <strong> 
-  <a href="[PROGRAM_URL]/subscriber_help/[list_settings.list]/">
-   How to add [list_settings.list_owner_email] to your address book/white list
+  <a href="<!-- tmpl_var PROGRAM_URL -->/subscriber_help/<!-- tmpl_var list_settings.list -->/">
+   How to add <!-- tmpl_var list_settings.list_owner_email --> to your address book/white list
   </a>
  </strong> 
 </p>
@@ -3848,8 +3848,8 @@ the next twenty-four hours or you have any other questions regarding
 this mailing list, please contact the list owner at: </p>
 
 <p style="text-align:center">
- <a href=mailto:[list_settings.list_owner_email]>
-  [list_settings.list_owner_email]
+ <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->">
+  <!-- tmpl_var list_settings.list_owner_email -->
  </a>
 </p>
 
@@ -3876,7 +3876,7 @@ $HTML_UNSUB_CONFIRMATION_MESSAGE ||= <<EOF
 <blockquote>
  <p>
   <strong>
-  [subscriber.email] 
+  <!-- tmpl_var subscriber.email -->
   </strong>
  </p>
 </blockquote>
@@ -3886,7 +3886,7 @@ $HTML_UNSUB_CONFIRMATION_MESSAGE ||= <<EOF
 <blockquote>
  <p>
   <strong>
-  [list_settings.list_name]
+  <!-- list_settings.list_name -->
   </strong>
  </p>
 </blockquote>
@@ -3903,8 +3903,8 @@ next twenty-four hours or you have any other questions regarding this
 mailing list, please contact the list owner at: </p>
 
 <p style="text-align:center">
- <a href=mailto:[list_settings.list_owner_email]>
-  [list_settings.list_owner_email]
+ <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->">
+  <!-- tmpl_var list_settings.list_owner_email -->
  </a>
 </p>
 
@@ -3931,7 +3931,7 @@ $HTML_SUBSCRIBED_MESSAGE ||= <<EOF
 <blockquote>
  <p>
   <strong>
-   [list_settings.list_name]
+   <!-- tmpl_var list_settings.list_name -->
   </strong>
  </p>
 </blockquote>
@@ -3941,7 +3941,7 @@ $HTML_SUBSCRIBED_MESSAGE ||= <<EOF
 <blockquote>  
  <p>
   <strong>
-  [subscriber.email]
+  <!-- tmpl_var subscriber.email -->
   </strong>
  </p>
 </blockquote> 
@@ -3967,7 +3967,7 @@ $HTML_SUBSCRIPTION_REQUEST_MESSAGE ||= <<EOF
 <blockquote>
  <p>
   <strong>
-   [list_settings.list_name]
+   <!-- tmpl_var list_settings.list_name -->
   </strong>
  </p>
 </blockquote>
@@ -3977,7 +3977,7 @@ $HTML_SUBSCRIPTION_REQUEST_MESSAGE ||= <<EOF
 <blockquote>  
  <p>
   <strong>
-  [subscriber.email]
+  <!-- tmpl_var subscriber.email -->
   </strong>
  </p>
 </blockquote> 
@@ -4002,7 +4002,7 @@ Shown when an unsubscription is successful.
 
 $HTML_UNSUBSCRIBED_MESSAGE ||= <<EOF  
 
-<h1>You have been unsubscribed from the list: [list_settings.list_name]</h1>
+<h1>You have been unsubscribed from the list: <!-- tmpl_var list_settings.list_name --></h1>
 
 <p>The email address:</p>
 
@@ -4334,40 +4334,40 @@ encrypted.
 
 # Email Templates
 
-    confirmation_message_subject               => '[list_settings.list_name] Mailing List Subscription Confirmation',
+    confirmation_message_subject               => '<!-- tmpl_var list_settings.list_name --> Mailing List Subscription Confirmation',
 	confirmation_message                       =>   $CONFIRMATION_MESSAGE,
 	
-	subscription_request_approved_message_subject => 'Welcome to [list_settings.list_name]',
+	subscription_request_approved_message_subject => 'Welcome to <!-- tmpl_var list_settings.list_name -->',
 	subscription_request_approved_message         => $SUBSCRIPTION_REQUEST_APPROVED_MESSAGE, 
 	
-	subscription_request_denied_message_subject   => '[list_settings.list_name] Mailing List Subscription Request - Denied.',
+	subscription_request_denied_message_subject   => '<!-- tmpl_var list_settings.list_name --> Mailing List Subscription Request - Denied.',
 	subscription_request_denied_message           => $SUBSCRIPTION_REQUEST_DENIED_MESSAGE,
-	subscription_approval_request_message_subject => '[subscriber.email] would like to subscribe to: [list_settings.list_name]',
+	subscription_approval_request_message_subject => '<!-- tmpl_var subscriber.email --> would like to subscribe to: <!-- tmpl_var list_settings.list_name -->',
 	subscription_approval_request_message         => $SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE, 
 	
-    subscribed_message_subject                 =>   'Welcome to [list_settings.list_name]', 
+    subscribed_message_subject                 =>   'Welcome to <!-- tmpl_var list_settings.list_name -->', 
 	subscribed_message                         =>   $SUBSCRIBED_MESSAGE, 
 	 
-    unsub_confirmation_message_subject         => '[list_settings.list_name] Mailing List Unsubscription Confirmation',
+    unsub_confirmation_message_subject         => '<!-- tmpl_var list_settings.list_name --> Mailing List Unsubscription Confirmation',
 	unsub_confirmation_message                 =>   $UNSUB_CONFIRMATION_MESSAGE,
 	
-	unsubscribed_message_subject               =>   'Unsubscribed from [list_settings.list_name]',
+	unsubscribed_message_subject               =>   'Unsubscribed from <!-- tmpl_var list_settings.list_name -->',
 	unsubscribed_message                       =>   $UNSUBSCRIBED_MESSAGE, 
 
-    mailing_list_message_from_phrase           =>   '[list_settings.list_name]', 
-    mailing_list_message_to_phrase             =>   '[list_settings.list_name] Subscriber', 
-    mailing_list_message_subject               =>   '[list_settings.list_name] Message', 
+    mailing_list_message_from_phrase           =>   '<!-- tmpl_var list_settings.list_name -->', 
+    mailing_list_message_to_phrase             =>   '<!-- tmpl_var list_settings.list_name --> Subscriber', 
+    mailing_list_message_subject               =>   '<!-- tmpl_var list_settings.list_name --> Message', 
 	mailing_list_message                       =>   $MAILlING_LIST_MESSAGE,
 	mailing_list_message_html                  =>   $MAILlING_LIST_MESSAGE_HTML,
 
 												   
-    not_allowed_to_post_message_subject        => '[PROGRAM_NAME] Error - [subscriber.email] Not Allowed to Post On [list_settings.list_name] (original message attached)', 
+    not_allowed_to_post_message_subject        => '<!-- tmpl_var PROGRAM_NAME --> Error - <!-- tmpl_var subscriber.email --> Not Allowed to Post On <!-- tmpl_var list_settings.list_name --> (original message attached)', 
 	not_allowed_to_post_message                =>   $NOT_ALLOWED_TO_POST_MESSAGE, 
     
 
-	send_archive_message_subject               => '[archived_message_subject] (Archive)', 
+	send_archive_message_subject               => '<!-- archived_message_subject --> (Archive)', 
 
-    you_are_already_subscribed_message_subject => '[list_settings.list_name] - You Are Already Subscribed', 
+    you_are_already_subscribed_message_subject => '<!-- tmpl_var list_settings.list_name --> - You Are Already Subscribed', 
     you_are_already_subscribed_message         => $YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE, 
 
 	enable_email_template_expr                 => 0, 
@@ -4387,11 +4387,11 @@ encrypted.
 
 # Send a List Invitation
 
-	invite_message_from_phrase      =>   '[list_settings.list_name]', 
-	invite_message_to_phrase        =>   '[list_settings.list_name]',
+	invite_message_from_phrase      =>   '<!-- tmpl_var list_settings.list_name -->', 
+	invite_message_to_phrase        =>   '<!-- tmpl_var list_settings.list_name -->',
 	invite_message_text             =>   $TEXT_INVITE_MESSAGE,
 	invite_message_html             =>   $HTML_INVITE_MESSAGE,	
-	invite_message_subject          =>   '[list_settings.list_name] Invitation', 
+	invite_message_subject          =>   '<!-- tmpl_var list_settings.list_name --> Invitation', 
 	
 
 # Feature Set

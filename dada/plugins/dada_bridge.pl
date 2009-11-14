@@ -112,12 +112,12 @@ $Plugin_Config->{Check_Multiple_Return_Path_Headers} = 0;
 # Approval! Yeah!
 
 my $Moderation_Msg_Subject =
-'Message on: [list_settings.list_name] needs to be moderated. (original message attached)';
+'Message on: <!-- tmpl_var list_settings.list_name --> needs to be moderated. (original message attached)';
 my $Moderation_Msg = <<EOF
 
 The attached message needs to be moderated:
 
-    List:    [list_settings.list_name]
+    List:    <!-- tmpl_var list_settings.list_name -->
     From:    [subscriber.email]
     Subject: [message_subject]
 
@@ -135,12 +135,12 @@ EOF
   ;
 
 my $AwaitModeration_Message_Subject =
-'Message to: [list_settings.list_name] w/ Subject: [message_subject] is awaiting approval.';
+'Message to: <!-- tmpl_var list_settings.list_name --> w/ Subject: [message_subject] is awaiting approval.';
 my $AwaitModeration_Message = <<EOF
 
 Hello, 
 
-Your recent message to [list_settings.list_name] with the subject of: 
+Your recent message to <!-- tmpl_var list_settings.list_name --> with the subject of: 
 
     [message_subject]
     
@@ -152,12 +152,12 @@ EOF
   ;
 
 my $Accept_Message_Subject =
-'Message to: [list_settings.list_name] w/ Subject: [message_subject] is accepted.';
+'Message to: <!-- tmpl_var list_settings.list_name --> w/ Subject: [message_subject] is accepted.';
 my $Accept_Message = <<EOF
 
 Hello, 
 
-Your recent message to [list_settings.list_name] with the subject of: 
+Your recent message to <!-- tmpl_var list_settings.list_name --> with the subject of: 
 
     [message_subject]
     
@@ -169,47 +169,47 @@ EOF
   ;
 
 my $Rejection_Message_Subject =
-  'Message to: [list_settings.list_name] Subject: [message_subject] rejected.';
+  'Message to: <!-- tmpl_var list_settings.list_name --> Subject: <!-- tmpl_var message_subject --> rejected.';
 my $Rejection_Message = <<EOF
 
 Hello, 
 
-Your recent message to [list_settings.list_name] with the subject of: 
+Your recent message to <!-- tmpl_var list_settings.list_name --> with the subject of: 
 
-    [message_subject]
+    <!-- tmpl_var message_subject -->
     
 was rejected by the list owner. You may email the list owner at: 
 
-    [list_settings.list_owner_email]
+    <!-- tmpl_var list_settings.list_owner_email -->
     
 for more details. 
 
--- [Plugin_Name]
+-- <!-- tmpl_var Plugin_Name -->
 
 EOF
   ;
 
 my $Message_Too_Big_Subject =
-  'Message to: [list_settings.list_name]  Subject: [original_subject] rejected';
+  'Message to: <!-- tmpl_var list_settings.list_name -->  Subject: <!-- tmpl_var original_subject --> rejected';
 my $Message_Too_Big_Message = <<EOF
 
-Hello, [subscriber.email], 
+Hello, <!-- tmpl_var subscriber.email -->, 
 
 We've received a message from you with the Subject,
 
-	[original_subject]
+	<!-- tmpl_var original_subject -->
 		
 but couldn't deliver it to the mailing list because the size of the message, 
 
-	[size_of_original_message] kilobytes
+	<!-- tmpl_var size_of_original_message --> kilobytes
 
 is larger than the maximum allowed: 
 
-	[Soft_Max_Size_Of_Any_Message] kilobytes
+	<!-- tmpl_var Soft_Max_Size_Of_Any_Message --> kilobytes
 
 Please try to resend the message again, but within the maximum size allowed, 
 
--- [list_settings.list_owner_email]
+-- <!-- tmpl_var list_settings.list_owner_email -->
 
 EOF
   ;

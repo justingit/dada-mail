@@ -23,7 +23,7 @@
 			Mailing List Message
 		</legend>
 		<p class="alert">
-			Make sure to place the, <strong>[message_body]</strong> tag in the body of this email message!
+			Make sure to place the, <strong>&lt;!-- tmpl_var message_body --&gt;</strong> tag in the body of this email message!
 		</p>
 
 		<fieldset>
@@ -35,7 +35,7 @@
 	    </p>
 
 	    <p>
-	     <label for="mailing_list_message_to_phrase">To:</label> <input type="text" name="mailing_list_message_to_phrase" id="mailing_list_message_to_phrase" value="<!-- tmpl_var mailing_list_message_to_phrase escape=HTML -->" /> &lt;[subscriber.email]&gt;
+	     <label for="mailing_list_message_to_phrase">To:</label> <input type="text" name="mailing_list_message_to_phrase" id="mailing_list_message_to_phrase" value="<!-- tmpl_var mailing_list_message_to_phrase escape=HTML -->" /> &lt;<!-- tmpl_var subscriber.email -->&gt;
 	    </p>
 
 	    <p>
@@ -87,7 +87,7 @@
 		This email message is sent when someone requests to be subscribed to your list. 
 	</p>
 	<p class="alert">
-		Make sure to place the, <strong>[list_confirm_subscribe_link]</strong> tag in the body of this email message!
+		Make sure to place the, <strong><!-- tmpl_var list_confirm_subscribe_link --></strong> tag in the body of this email message!
 	</p>
 	
 	<!-- tmpl_if list_settings.no_confirm_email --> 
@@ -144,7 +144,7 @@
 	<!-- /tmpl_if --> 
 	
 	<p class="alert">
-		Make sure to place the, <strong>[list_confirm_unsubscribe_link]</strong> tag in the body of this email message!
+		Make sure to place the, <strong><!-- tmpl_var list_confirm_unsubscribe_link --></strong> tag in the body of this email message!
 	</p>
 	
 		<p>
@@ -203,7 +203,7 @@
     </p>
     
     <p>
-     <label for="[subscriber.email]">To:</label> <input type="text" name="invite_message_to_phrase" id="invite_message_to_phrase" value="<!-- tmpl_var invite_message_to_phrase escape=HTML -->" /> &lt;[subscriber.email]&gt;
+     <label for="<!-- tmpl_var subscriber.email -->">To:</label> <input type="text" name="invite_message_to_phrase" id="invite_message_to_phrase" value="<!-- tmpl_var invite_message_to_phrase escape=HTML -->" /> &lt;<!-- tmpl_var subscriber.email -->&gt;
     </p>
 
     <p>
@@ -412,7 +412,7 @@
 	</tr>
 	<tr>
 		<td>
-			<pre>[message_body]</pre>
+			<code>&lt;!-- tmpl_var message_body --&gt;</code>
 		</td>
 		<td>
 			<strong>
@@ -421,7 +421,7 @@
 	</tr>
 	<tr>
 		<td>
-			<pre>[list_settings.list_name]</pre> 
+			<code>&lt;!-- tmpl_var list_settings.list_name --&gt;</code> 
 		</td>
 		<td>
 			The name of your list. 
@@ -429,7 +429,7 @@
 	</tr>
 	<tr>
 		<td>
-			<pre>[list_settings.info]</pre> 
+			<code>&lt;!-- tmpl_var list_settings.info --&gt;</code> 
 		</td>
 		<td>
 			The description of your list. 
@@ -437,7 +437,7 @@
 	</tr>
 	<tr>
 		<td>
-			<pre>[list_subscribe_link]</pre> 
+			<code>&lt;!-- tmpl_var list_subscribe_link --&gt;</code> 
 		</td>
 		<td>
 			The subscription link. 
@@ -446,7 +446,7 @@
 	
 	<tr>
 		<td>
-			<pre>[list_unsubscribe_link]</pre> 
+			<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code> 
 		</td>
 		<td>
 			The unsubscription link. 
@@ -455,7 +455,7 @@
 	
 	<tr>
 		<td>
-			<pre>[list_confirm_subscribe_link]</pre> 
+			<code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code> 
 		</td>
 		<td>
 			The subscription confirmation link. 
@@ -464,7 +464,7 @@
 	<t
 	<tr>
 		<td>
-			<pre>[list_confirm_unsubscribe_link]</pre> 
+			<code>&lt;!-- tmpl_var list_confirm_unsubscribe_link --&gt;</code> 
 		</td>
 		<td>
 			The unsubscription confirmation link. 
@@ -473,7 +473,7 @@
 	
 	<tr>
 		<td>
-			<pre>[list_settings.privacy_policy]</pre> 
+			<code>&lt;!-- tmpl_var list_settings.privacy_policy --&gt;</code> 
 		</td>
 		<td>
 			The privacy policy of your list. 
@@ -481,7 +481,7 @@
 	</tr>
 	<tr>
 		<td>
-			<pre>[list_settings.list_owner_email]</pre> 
+			<code>&lt;!-- tmpl_var list_settings.list_owner_email --&gt;</code> 
 		</td>
 		<td>
 			The list owner's email address. 
@@ -489,7 +489,7 @@
 	</tr>
 	<tr>
 		<td>
-			<pre>[list_settings.list_admin_email]</pre>
+			<code>&lt;!-- tmpl_var list_settings.list_admin_email --&gt;</code>
 		</td>
 		<td>
 			The list administrator's email address. 
@@ -497,11 +497,11 @@
 	</tr>
 	<tr>
 		<td>
-			<pre>[PROGRAM_URL]</pre>
+			<code>&lt;!-- tmpl_var PROGRAM_URL --&gt;</code>
 		</td>
 		<td>
-			The URL of the program (<a href="&lt;!-- tmpl_var PROGRAM_URL --&gt;" target="_blank">
-<!-- tmpl_var PROGRAM_URL -->
+			The URL of the program (<a href="<!-- tmpl_var PROGRAM_URL -->" target="_blank">
+&lt;!-- tmpl_var PROGRAM_URL --&gt;
 			</a>
 			). 
 		</td>

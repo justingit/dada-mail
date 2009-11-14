@@ -8,9 +8,12 @@
 
 <p>
  You can customize many of the HTML screens 
- <!-- tmpl_var PROGRAM_NAME --> produces. <!-- tmpl_var PROGRAM_NAME --> uses 
+ <!-- tmpl_var PROGRAM_NAME --> produces specifically for your Mailing List.
+</p>
+
+<p> <!-- tmpl_var PROGRAM_NAME --> uses 
  template tags to represent data that may change regularly. 
- A list of relevant tags is shown at the end of this page.
+ A list of relevant tags is shown at the end of this screen.
 </p>
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form">
@@ -76,9 +79,21 @@
  <input type="submit" class="processing" value="Save All Changes" />
 </div>
 <div class="floatclear"></div>
-<hr />
+
+
 
 </form>
+
+<fieldset>
+	<legend>
+   <a href="#" onclick="toggleDisplay('template_tags');return false;">
+    +/- 
+   </a> Available Template Tags
+   </legend>    
+   
+   <div id="template_tags" style="display:none;width:90%">
+
+
 <table class="tagchart">
  <tr align="center">
   <td>
@@ -94,7 +109,7 @@
  </tr>
  <tr>
   <td>
-   [subscriber.email]
+   <code>&lt;!-- tmpl_var  subscriber.email --&gt;</code>
   </td>
   <td>
    The email address of the subscriber.
@@ -102,7 +117,7 @@
  </tr>
  <tr>
   <td>
-   [list_settings.list_name]
+   <code>&lt;!-- tmpl_var  list_settings.list_name --&gt;</code>
   </td>
   <td>
    The name of your list.
@@ -110,7 +125,7 @@
  </tr>
  <tr>
   <td>
-   [list_settings.info]
+   <code>&lt;!-- tmpl_var  list_settings.info --&gt;</code>
   </td>
   <td>
    The description of your list.
@@ -118,7 +133,7 @@
  </tr>
  <tr>
   <td>
-   [list_settings.privacy_policy]
+   <code>&lt;!-- tmpl_var  list_settings.privacy_policy --&gt;</code>
   </td>
   <td>
    The privacy policy of your list.
@@ -126,7 +141,7 @@
  </tr>
  <tr>
   <td>
-   [list_settings.list_owner_email]
+   <code>&lt;!-- tmpl_var  list_settings.list_owner_email --&gt;</code>
   </td>
   <td>
    The list owner's email address.
@@ -134,7 +149,7 @@
  </tr>
  <tr>
   <td>
-   [list_settings.list_admin_email]
+   <code>&lt;!-- tmpl_var  list_settings.list_admin_email --&gt;</code>
   </td>
   <td>
    The list administrator's email address.
@@ -142,7 +157,7 @@
  </tr>
  <tr>
   <td>
-   [PROGRAM_URL]
+   <code>&lt;!-- tmpl_var  PROGRAM_URL --&gt;</code>
   </td>
   <td>
    The URL of the program 
@@ -150,6 +165,11 @@
   </td>
  </tr>
 </table>
+
+</div> 
+
+</fieldset> 
+
 
  
 

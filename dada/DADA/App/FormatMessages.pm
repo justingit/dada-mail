@@ -520,7 +520,7 @@ sub _add_opener_image {
 	# body tags will now be on their own line, regardless.
 	$content =~ s/(\<body.*?\>|<\/body\>)/\n$1\n/gi; 
 	
-	my $img_opener_code = '<!--open_img--><img src="' . $DADA::Config::PROGRAM_URL . '/spacer_image/[list_settings.list]/[message_id]/spacer.png" /><!--/open_img-->';
+	my $img_opener_code = '<!--open_img--><img src="' . $DADA::Config::PROGRAM_URL . '/spacer_image/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/spacer.png" /><!--/open_img-->';
 
 	$content =~ s/(\<body.*?\>)/$1\n$img_opener_code/i;
 	
@@ -983,10 +983,20 @@ sub _parse_in_list_info {
 	$data =~ s/\[plain_list_subscribe_link\]/$s_link/g;	
 	$data =~ s/\[plain_list_unsubscribe_link\]/$us_link/g;
 
+	$data =~ s/\<\!\-\- tmpl_var plain_list_subscribe_link \-\-\>/$s_link/g;	
+	$data =~ s/\<\!\-\- tmpl_var plain_list_unsubscribe_link \-\-\>/$us_link/g;
+
+
 	
 	$data =~ s/\[list_subscribe_link\]/$s_link/g;	
 	$data =~ s/\[list_unsubscribe_link\]/$us_link/g;
 
+	$data =~ s/\<\!\-\- tmpl_var list_subscribe_link \-\-\>/$s_link/g;	
+	$data =~ s/\<\!\-\- list_unsubscribe_link \-\-\>/$us_link/g;
+	
+	
+	
+	
 	# confirmations.
 	
     my $cs_link  = $self->_macro_tags(-type => 'confirm_subscribe'); 
@@ -994,12 +1004,17 @@ sub _parse_in_list_info {
 
 	$data =~ s/\[list_confirm_subscribe_link\]/$cs_link/g;	
 	$data =~ s/\[list_confirm_unsubscribe_link\]/$cus_link/g;
+
+	$data =~ s/\<\!\-\- tmpl_var list_confirm_subscribe_link \-\-\>/$cs_link/g;	
+	$data =~ s/\<\!\-\- tmpl_var list_confirm_unsubscribe_link \-\-\>/$cus_link/g;
+
 	
 	
 # This is kinda out of place...
     if($self->originating_message_url){ 
         my $omu = $self->originating_message_url; 
         $data =~ s/\[originating_message_url\]/$omu/g;
+        $data =~ s/\<\!\-\- tmpl_var originating_message_url \-\-\>/$omu/g;
     }
     
 	return $data; 
@@ -1062,14 +1077,14 @@ sub _macro_tags {
 	}elsif($args{-type} eq 'confirm_subscribe'){ 
 	
 		$type = 'n';
-		$args{-email} ||= '[subscriber.email_name]@[subscriber.email_domain]';
+		$args{-email} ||= '<!-- tmpl_var subscriber.email_name -->@<!-- tmpl_var subscriber.email_domain -->';
 		$args{-pin}   ||= '[subscriber.pin]';
 	
 	}elsif($args{-type} eq 'confirm_unsubscribe'){ 
 		
 		$type = 'u'; 
-		$args{-email} ||= '[subscriber.email_name]@[subscriber.email_domain]';
-		$args{-pin}   ||= '[subscriber.pin]';
+		$args{-email} ||= '<!-- tmpl_var subscriber.email_name -->@<!-- tmpl_var subscriber.email_domain -->';
+		$args{-pin}   ||= '<!-- tmpl_var subscriber.pin -->';
 	
 	}
 	
@@ -1097,7 +1112,7 @@ sub _macro_tags {
 	
 	my @qs; 
 	push(@qs,  $type)         if $type;   
-	push(@qs,  '[list]')  if $args{-list};	
+	push(@qs,  '<!-- tmpl_var list_settings.list -->')  if $args{-list};	
 	push(@qs,  $args{-email}) if $args{-email};
 	push(@qs,  $args{-pin})   if $args{-pin};
 	
@@ -1155,9 +1170,9 @@ sub _apply_template {
 	if($template_out){ 
 	
 		if($args{-type} eq 'PlainText'){ 
-			$new_data = strip($self->{ls}->param('mailing_list_message')) || '[message_body]';
+			$new_data = strip($self->{ls}->param('mailing_list_message')) || '<!-- tmpl_var message_body -->';
 		}else{ 
-			$new_data = strip($self->{ls}->param('mailing_list_message_html')) || '[message_body]';
+			$new_data = strip($self->{ls}->param('mailing_list_message_html')) || '<!-- tmpl_var message_body -->';
 		}
 		
 		if($args{-type} eq 'HTML'){  
@@ -1173,7 +1188,9 @@ sub _apply_template {
 			if($bodycontent){ 
 							
 				$new_bodycontent = $bodycontent;
-			
+				
+				# FAKING HTML::Template tags - note! 
+				$new_data =~ s/\<\!\-\- tmpl_var message_body \-\-\>/$new_bodycontent/;
 				$new_data =~ s/\[message_body\]/$new_bodycontent/;
 				
 				my $safe_bodycontent = quotemeta($bodycontent);
@@ -1182,10 +1199,12 @@ sub _apply_template {
 				$new_data = $data; 
 				
 			}else{ 			
+					$new_data =~ s/\<\!\-\- tmpl_var message_body \-\-\>/$data/;
 					$new_data =~ s/\[message_body\]/$data/g;
 			}
 			
 		}else{ 
+				$new_data =~ s/\<\!\-\- tmpl_var message_body \-\-\>/$data/;
 				$new_data =~ s/\[message_body\]/$data/g;	
 		}
 	}else{ 

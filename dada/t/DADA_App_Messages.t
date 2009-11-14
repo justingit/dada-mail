@@ -316,6 +316,7 @@ $pin = DADA::App::Guts::make_pin(-Email => $email, -List => $list);
 
 $confirm_url = quotemeta($DADA::Config::PROGRAM_URL . '/u/'. $list . '/' . $email_name . '/' . $email_domain . '/'.$pin.'/'); 
 
+diag $msg; 
 like($msg, qr/$confirm_url/,            'Confirmation link found and correct.'); 
 like($msg, qr/$li->{list_name}/,        "List Name Found"); 
 like($msg, qr/$li->{privacy_policy}/,   "Privacy Policy Found"); 

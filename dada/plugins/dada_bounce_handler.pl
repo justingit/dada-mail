@@ -1,4 +1,4 @@
-#!/usr/bin/perl -T
+#!/usr/bin/perl
 
 package dada_bounce_handler;
 
@@ -1048,63 +1048,63 @@ relaying_denied => {
 
 my $Over_Quota_Subject = "Bounce Handler - warning user over quota";
 my $Over_Quota_Message = qq{
-Hello, This is $Plugin_Config->{Program_Name}, the bounce handler for $DADA::Config::PROGRAM_NAME 
+Hello, This is <!-- tmpl_var Program_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME --> 
 
 I received a message and it needs your attention. It seems
-that the user, [subscriber_email] is over their email quota. 
+that the user, <!-- tmpl_var subscriber.email --> is over their email quota. 
 
-This is probably a * temporary * problem, but if the problem persists,
+This is probably a *temporary* problem, but if the problem persists,
 you may want to unbsubscribe this address. 
 
 I've attached what I was sent, if you're curious (or bored, what have you).  
 
 You can remove this address from your list by clicking this link: 
 
-[list_unsubscribe_link]
+<!-- tmpl_var list_unsubscribe_link -->
 
 Below is the nerdy diagnostic report: 
 -----------------------------------------------------------------------
-[report]
+<!-- tmpl_var report -->
 
-[status_report]
+<!-- tmpl_var status_report -->
 -----------------------------------------------------------------------
 
-- $Plugin_Config->{Program_Name}
+- <!-- tmpl_var Program_Name -->
 
 }; 
 
 
 my $User_Unknown_Subject = "Bounce Handler - warning user doesn't exist";
 my $User_Unknown_Message = qq{
-Hello, This is $Plugin_Config->{Program_Name}, the bounce handler for $DADA::Config::PROGRAM_NAME 
+Hello, This is <!-- tmpl_var Program_Name -->, the bounce handler for <!-- tmpl_var ROGRAM_NAME -->
 
 I received a message and it needs your attention. It seems
-that the user, [subscriber_email] doesn't exist, was deleted 
+that the user, <!-- tmpl_var subscriber.email --> doesn't exist, was deleted 
 from the system, kicked the big can, etc. 
 
-This is probably a * permanent * problem and I suggest you unsubscribe the
+This is probably a *permanent* problem and I suggest you unsubscribe the
 email address, but I'll let you have the last judgement. 
 
 I've attached what I was sent, if you're curious (or bored, what have you).  
 
 You can remove this address from your list by clicking this link: 
 
-[list_unsubscribe_link]
+<!-- tmpl_var list_unsubscribe_link -->
 
 Below is the nerdy diagnostic report: 
 -----------------------------------------------------------------------
-[report]
+<!-- tmpl_var report -->
 
-[status_report]
+<!-- tmpl_var status_report -->
 -----------------------------------------------------------------------
 
-- $Plugin_Config->{Program_Name}
+- <!-- tmpl_var Program_Name -->
 
 }; 
 
 my $Email_Not_Found_Subject = "Bounce Handler - warning";
 my $Email_Not_Found_Message = qq{
-Hello, This is $Plugin_Config->{Program_Name}, the bounce handler for $DADA::Config::PROGRAM_NAME 
+Hello, This is <!-- tmpl_var Program_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
 
 I received a message and it needs your attention. The message was
 bounced, but I cannot find the email associated with the bounce. 
@@ -1117,19 +1117,19 @@ I've attached what I was sent, if you're curious (or bored, what have you).
 
 Below is the nerdy diagnostic report: 
 -----------------------------------------------------------------------
-[report]
+<!-- tmpl_var report -->
 
-[status_report]
+<!-- tmpl_var status_report -->
 -----------------------------------------------------------------------
 
-- $Plugin_Config->{Program_Name}
+- <!-- tmpl_var Program_Name -->
 
 }; 
 
 
 my $Email_Unknown_Bounce_Type_Subject = "Bounce Handler - warning";
 my $Email_Unknown_Bounce_Type_Message = qq{
-Hello, This is $Plugin_Config->{Program_Name}, the bounce handler for $DADA::Config::PROGRAM_NAME 
+Hello, This is <!-- tmpl_var Program_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
 
 I received a message and it needs your attention. The message was
 bounced, but I dont know for what reason.
@@ -1142,34 +1142,34 @@ I've attached what I was sent, if you're curious (or bored, what have you).
 
 You can remove this address from your list by clicking this link: 
 
-[list_unsubscribe_link]
+<!-- tmpl_var list_unsubscribe_link -->
 
 Below is the nerdy diagnostic report: 
 -----------------------------------------------------------------------
-[report]
+<!-- tmpl_var report -->
 
-[status_report]
+<!-- tmpl_var status_report -->
 
 -----------------------------------------------------------------------
 
-- $Plugin_Config->{Program_Name}
+- <!-- tmpl_var Program_Name -->
 
 }; 
 
 
 
 
-my $Email_Unsubscribed_Because_Of_Bouncing_Subject = "Unsubscribed from: [list_settings.list_name] because of excessive bouncing";
+my $Email_Unsubscribed_Because_Of_Bouncing_Subject = "Unsubscribed from: <!-- tmpl_var list_settings.list_name --> because of excessive bouncing";
 my $Email_Unsubscribed_Because_Of_Bouncing_Message = qq{
-Hello, This is [Plugin_Name], the bounce handler for [PROGRAM_NAME]
+Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
 
 This is a notice that your email address:
 
-    [subscriber.email] 
+    <!-- tmpl_var subscriber.email -->
     
 has been unsubscribed from:
 
-    [list_settings.list_name]
+    <!-- tmpl_var list_settings.list_name -->
     
 Because your email address has been bouncing messages sent to it, 
 originating from this list.
@@ -1177,15 +1177,15 @@ originating from this list.
 If this is in error, please re-subscribe to this list, by following 
 this link: 
 
-    [PROGRAM_URL]/s/[list_settings.list]
+    <!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->
 
 If you have any questions, please email the list owner of this list at: 
 
-    [list_settings.list_owner_email]
+    <!-- tmpl_var list_settings.list_owner_email -->
     
 for more information. 
 
-- [PROGRAM_NAME]
+- <!-- tmpl_var PROGRAM_NAME -->
 
 }; 
 
@@ -2594,12 +2594,6 @@ sub mail_list_owner {
 	}elsif(($sub_errors->{not_subscribed} == 1) &&   (($action ne 'user_unknown_message') || ($action ne 'over_quota_message')|| ($action ne 'email_not_found_message')) ){ 
 		$report .= "parsed message contains an email ($email) that's not even subscribed. No reason to tell list owner\n";
 	}else{ 
-	
-		my $report        = generate_nerd_report($list, $email, $diagnostics); 
-		my $status_report = rfc1893_status($diagnostics->{Status});
-																	
-		$Body =~ s/\[report\]/$report/i; 
-		$Body =~ s/\[status_report\]/$status_report/i; 
 		
 		my $mh = DADA::Mail::Send->new(
 					{
@@ -2629,11 +2623,33 @@ sub mail_list_owner {
 						Disposition  => "attachment",
 						Data         => $message); 
 
+			my $report        = generate_nerd_report($list, $email, $diagnostics); 
+			my $status_report = rfc1893_status($diagnostics->{Status});
+
+		
 			require DADA::App::FormatMessages; 
 	
 			my $fm = DADA::App::FormatMessages->new(-List => $list); 
 	  		   $fm->use_header_info(1);
 	           $fm->use_email_templates(0); 
+
+		    $msg = $fm->email_template(
+		                    {
+		                        -entity                   => $msg,        
+		                 		 -subscriber_vars         => { 
+									'subscriber.email'    => $email, 
+								},
+		                        -list_settings_vars       => $ls->params, 
+		                        -list_settings_vars_param => {-dot_it => 1},
+		                        -vars                   => 
+		                            {
+										report         => $report, 
+										status_report  => $status_report, 
+										Program_Name   => $Plugin_Config->{Program_Name},
+										Plugin_Name    => $Plugin_Config->{Program_Name},
+		                            },
+		                    }
+		                );
 	            
 	        my ($header_str, $body_str) = $fm->format_headers_and_body(-msg => $msg->as_string);
 
