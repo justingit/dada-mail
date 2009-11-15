@@ -26,7 +26,29 @@ delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 # that are set here are *optional*
 #---------------------------------------------------------------------#
 
-use lib qw(../ ../DADA/perllib ../../../../perl ../../../../perllib);
+use lib qw(
+	../
+	../DADA/perllib 
+);
+
+# This helps with cPanel-based hosting setups, where Perl Modules can be added
+# from within cPanel, but you need to explicitly set the perl library
+# directories. Uncomment to activate: 
+
+#BEGIN {
+#    my $homedir = ( getpwuid($>) )[7];
+#    my @user_include;
+#    foreach my $path (@INC) {
+#        if ( -d $homedir . '/perl' . $path ) {
+#            push @user_include, $homedir . '/perl' . $path;
+#        }
+#    }
+#    unshift @INC, @user_include;
+#}
+
+
+
+
 
 use CGI::Carp qw(fatalsToBrowser);
 use DADA::Config 4.0.0;
