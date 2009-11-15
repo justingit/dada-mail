@@ -2,21 +2,26 @@
 
 <!-- tmpl_if can_have_subscriber_fields --> 
 
-
     
      <fieldset>
       <legend>  
-      <a href="#" onclick="toggleDisplay('subscriber_field_tags');return false;">
+      <a href="#" onclick="toggleDisplay('subscriber_profile_field_tags');return false;">
       +/-
-     </a> Subscriber Field Tags
+     </a> Subscriber Profile Field Tags
 
       </legend>
-    <div id="subscriber_field_tags" style="display:none">  
-      <ul> 
+    <div id="subscriber_profile_field_tags" style="display:none">  
+     
+		<p>You can use the following tags for personalization of your message:</p>
+
+ 		<ul> 
        <!-- tmpl_loop fields -->
         <li>
-         [<!-- tmpl_var name -->]
-        </li>
+	 		<p>
+         		<code>&lt;!-- tmpl_var <!-- tmpl_var name --> --&gt;</code>
+        	</p>
+
+		</li>
        <!--/tmpl_loop --> 
       </ul>
     </div> 
