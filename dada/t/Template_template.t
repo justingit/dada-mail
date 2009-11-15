@@ -9,7 +9,7 @@ eval "use Test::HTML::Lint qw(no_plan)";
 plan skip_all => "Test::HTML::Lint required for testing Templates." if $@;
 
 use HTML::Template::Expr; 
-
+use DADA::Config; 
 
 
 
@@ -53,10 +53,8 @@ while(defined($file = readdir TMPL)) {
 
 foreach my $test_file(@files){ 
 
-
 	html_ok( strip_comments(open_file($dir . '/' . $test_file)), $test_file);
-    
-   
+       
 	eval { 
     my $template = HTML::Template::Expr->new(path => $dir,
     		                                 die_on_bad_params => 0,	
@@ -75,8 +73,85 @@ ok(! $@, "$test_file through HTML::Template::Exp");
 		
 }
 
+my $template_strings = {
+    SUBSCRIBED_MESSAGE => $DADA::Config::SUBSCRIBED_MESSAGE,
+    SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE =>
+      $DADA::Config::SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE,
+    SUBSCRIPTION_NOTICE_MESSAGE => $DADA::Config::SUBSCRIPTION_NOTICE_MESSAGE,
+    SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE =>
+      $DADA::Config::SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE,
+    SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT =>
+      $DADA::Config::SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT,
+    SUBSCRIPTION_NOTICE_MESSAGE => $DADA::Config::SUBSCRIPTION_NOTICE_MESSAGE,
+    UNSUBSCRIBED_MESSAGE        => $DADA::Config::UNSUBSCRIBED_MESSAGE,
+    CONFIRMATION_MESSAGE        => $DADA::Config::CONFIRMATION_MESSAGE,
+    UNSUB_CONFIRMATION_MESSAGE  => $DADA::Config::UNSUB_CONFIRMATION_MESSAGE,
+    SUBSCRIPTION_REQUEST_APPROVED_MESSAGE =>
+      $DADA::Config::SUBSCRIPTION_REQUEST_APPROVED_MESSAGE,
+    SUBSCRIPTION_REQUEST_DENIED_MESSAGE =>
+      $DADA::Config::SUBSCRIPTION_REQUEST_DENIED_MESSAGE,
+    MAILlING_LIST_MESSAGE       => $DADA::Config::MAILlING_LIST_MESSAGE,
+    MAILlING_LIST_MESSAGE_HTML  => $DADA::Config::MAILlING_LIST_MESSAGE_HTML,
+    NOT_ALLOWED_TO_POST_MESSAGE => $DADA::Config::NOT_ALLOWED_TO_POST_MESSAGE,
+    NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT =>
+      $DADA::Config::NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT,
+    NOT_ALLOWED_TO_POST_NOTICE_MESSAGE =>
+      $DADA::Config::NOT_ALLOWED_TO_POST_NOTICE_MESSAGE,
+    YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE =>
+      $DADA::Config::YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE,
+    MAILING_FINISHED_MESSAGE_SUBJECT =>
+      $DADA::Config::MAILING_FINISHED_MESSAGE_SUBJECT,
+    MAILING_FINISHED_MESSAGE => $DADA::Config::MAILING_FINISHED_MESSAGE,
+    TEXT_INVITE_MESSAGE      => $DADA::Config::TEXT_INVITE_MESSAGE,
+    PROFILE_ACTIVATION_MESSAGE_SUBJECT =>
+      $DADA::Config::PROFILE_ACTIVATION_MESSAGE_SUBJECT,
+    PROFILE_ACTIVATION_MESSAGE => $DADA::Config::PROFILE_ACTIVATION_MESSAGE,
+    PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT =>
+      $DADA::Config::PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT,
+    PROFILE_RESET_PASSWORD_MESSAGE =>
+      $DADA::Config::PROFILE_RESET_PASSWORD_MESSAGE,
+    PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT =>
+      $DADA::Config::PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT,
+    PROFILE_UPDATE_EMAIL_MESSAGE => $DADA::Config::PROFILE_UPDATE_EMAIL_MESSAGE,
+    LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT =>
+      $DADA::Config::LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT,
+    LIST_CONFIRM_PASSWORD_MESSAGE =>
+      $DADA::Config::LIST_CONFIRM_PASSWORD_MESSAGE,
+    LIST_RESET_PASSWORD_MESSAGE_SUBJECT =>
+      $DADA::Config::LIST_RESET_PASSWORD_MESSAGE_SUBJECT,
+    LIST_RESET_PASSWORD_MESSAGE => $DADA::Config::LIST_RESET_PASSWORD_MESSAGE,
+    HTML_INVITE_MESSAGE         => $DADA::Config::HTML_INVITE_MESSAGE,
+    SEND_ARCHIVED_MESSAGE       => $DADA::Config::SEND_ARCHIVED_MESSAGE,
+    HTML_SEND_ARCHIVED_MESSAGE  => $DADA::Config::HTML_SEND_ARCHIVED_MESSAGE,
+    HTML_CONFIRMATION_MESSAGE   => $DADA::Config::HTML_CONFIRMATION_MESSAGE,
+    HTML_UNSUB_CONFIRMATION_MESSAGE =>
+      $DADA::Config::HTML_UNSUB_CONFIRMATION_MESSAGE,
+    HTML_SUBSCRIBED_MESSAGE => $DADA::Config::HTML_SUBSCRIBED_MESSAGE,
+    HTML_SUBSCRIPTION_REQUEST_MESSAGE =>
+      $DADA::Config::HTML_SUBSCRIPTION_REQUEST_MESSAGE,
+    HTML_UNSUBSCRIBED_MESSAGE => $DADA::Config::HTML_UNSUBSCRIBED_MESSAGE,
+};
 
+foreach(keys %$template_strings){ 
+		eval { 
+		my $str = $template_strings->{$_};
+	
+	    my $template = HTML::Template::Expr->new(
+	    		                                 die_on_bad_params => 0,	
+			                                     loop_context_vars => 1,
+			                                     scalarref          => \$str, 
+			                                    );		                              
+	    $template->output();  
 
+	};
+	ok(! $@, "$_ through HTML::Template::Exp"); 
+	    if($@){ 
+	        diag($@); 
+	    }
+
+		undef $template; 
+	
+}
 
 sub open_file { 
 
