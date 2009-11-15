@@ -15,7 +15,7 @@ Key:
 	[ ] message body - eek eek!
 
 
-
+[ ] How about a, "Download" subscribers button?, instead of, "Open it in a new window!" Wouldn't that be easier?
 [ ] Clickthrough Tracker - track UNIQUE opens. How?
 
 [ ] 1. Installation on my own machine running MacOS X (Leopard) with MySQL 5.1 was fairly straightforward, but when I installed it on my ISP's server which runs a back-level version of Mysql (4.I) I had to reduce the string lengths from 320 to 255 to get it to accept the SQL. Also had to change the CREATE INDEX statements to ALTER DATABASE... ADD INDEX... statements as I got a "Not authorized" error on the CREATE statements, but I expect that's just my ISP. Not sure if reducing the string lengths will have any significant effect, haven't noticed any so far.
