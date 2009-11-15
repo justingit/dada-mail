@@ -4,19 +4,34 @@ Dada Mail
 
 :: INTRODUCTION
 
-Dada Mail is an intuitive, web-based e-mail list management system, which runs 
-on any hosting account that can execute custom CGI scripts. Dada Mail is also 
-a conceptual art project.
+Dada Mail is a completely contemporary, mature and intuitive web-based
+e-mail list management system, which runs on most any Unix-like hosting
+account that can run custom CGI scripts.
 
-Dada Mail handles Closed-Loop Opt-In/Opt-Out subscriptions, sending complex 
-announce-only and/or discussion mailing list messages, archiving/viewing
-/searching/resending/syndicating (rss, atom) sent messages and doing all 
-this and more with style.
+Dada Mail handles Closed-Loop Opt-in/Opt-out subscriptions, sending
+complex announce-only and/or discussion mailing list messages with an
+advanced, fault-tolerant mass mailing monitor, supports the
+archiving/viewing/searching/resending/syndicating (rss, atom feeds,
+Twitter) of sent messages and doing all this and a whole lot more with
+style.
 
-Dada Mail produces XHTML valid web content and sticks to best practices when 
-creating email messages. Write Once: Distribute Everywhere. Dada Mail is free 
-software that you're able to use, modify and enhance under the terms of the 
-GNU General Public License. Dada Mail is written in Perl.
+Dada Mail can handle custom subscriber fields and you can use the
+information it captures for partial list sending based on a query and
+Dada Mail's email templating system allows you to create targeted and
+completely custom email messages for each and every one one of your
+subscribers.
+
+Dada Mail is bundled with additional plugins and extensions to extend
+Dada Mail's capabilities. Some of the plugins/extensions support
+advanced bounce handling, clickthrough tracking, mass mail scheduling,
+blog interfaces of archived messages, AJAX subscription form trickery
+and lots of other surprises.
+
+Dada Mail produces XHTML valid web content and sticks to best practices
+when creating email messages. Write Once: Distribute Everywhere. Dada
+Mail is free software that you're able to use, modify, share and enhance
+under the terms of the GNU General Public License. Dada Mail is written
+in Perl because we love Perl.
 
 By Justin Simoni
 
