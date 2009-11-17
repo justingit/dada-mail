@@ -10,10 +10,9 @@ Key:
 [*] Naw...
 [?] Someday
 
-[ ] Moving to new-style tags
-	[ ] all the list subscription confirmation tags - eek!
-	[ ] message body - eek eek!
-
+[x] Moving to new-style tags
+	[x] all the list subscription confirmation tags - eek!
+	[x] message body - eek eek!
 
 [ ] How about a, "Download" subscribers button?, instead of, "Open it in a new window!" Wouldn't that be easier?
 [ ] Clickthrough Tracker - track UNIQUE opens. How?
@@ -29,7 +28,6 @@ Key:
 	[ ] I've removed the line actually wraps lines in paragraphs and removed the option in HTML::FromText that says, "hey treat things as lines" - although the, "hey treat these as paragraph oriented" was also enabled... I may have to revert this problem. 
 		[ ] Hey, that seemed to have worked! 
 		
-Overall, though, 4.0 Beta is looking very good, haven't noticed any other problems, so I guess it must be close to being ready for release. Looking forward to it. Great work, Justin.
 -------------
 
 
