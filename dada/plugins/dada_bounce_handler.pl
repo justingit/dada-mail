@@ -1570,7 +1570,7 @@ sub cgi_scorecard {
             # javascript_presubmit => 'last_minute_javascript()',
             
             
-            debug => 1,
+            # debug => 1,
         );
     
     }
@@ -3782,304 +3782,278 @@ sub save_scores {
 
 
 
-sub remove_bounces { 
-	
-	my $report = shift; 
-	
-	print "Removing addresses from all lists:\n" . '-' x 72 . "\n"
-	 	if $verbose; 
-	
-	foreach my $list(keys %$report){ 
-		
-		print "\nList: $list\n"
-			if $verbose; 
-		
-		my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
-		my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-		my $li = $ls->get; 
-		
-		my @remove_list = keys %{$report->{$list}}; 
-		
-		if($verbose){ 
-			foreach(@remove_list){ 
-				print "Removing: $_\n"; 
-			}
-		}
-		
-			
-		# removing them all at once 
-		# optimization so it won't thrash a plain text list
-				
-		$lh->remove_from_list(-Email_List => [@remove_list]);	# As a Fuck son, you sucked.		
-	
-		if( ($li->{black_list}               == 1)    && 
-		    ($li->{add_unsubs_to_black_list} == 1) ){
-			foreach my $re(@remove_list){ 
-				$lh->add_subscriber(
-					{
-						-email => $re, 
-						-type  => 'black_list', 
-					}
-				);
-			}
-		}
-			
-		# Bang Bang Baby, The Bigger The Better.
-		# Bang Bang Baby, The Bigger The Better.
-		# Bang Bang Baby, The Bigger The Better.
-		# Bang Bang Baby, The Bigger The Better.
-		# You aint a baby no more baby 
-		# You aint no bigger than before baby 
-		# I'll rub that cheap black off your lips baby 
-		# so take a swallow as i spit baby 
+sub remove_bounces {
 
+    my $report = shift;
 
-		if($li->{get_unsub_notice} == 1){ 
-			require DADA::App::Messages;
-			
-			my $r; 
-			
-			if($li->{enable_bounce_logging}){ 
-			require DADA::Logging::Clickthrough; 
-					$r = DADA::Logging::Clickthrough->new({-list => $list }); 
-					
-			}
-			
-			print "\n"
-			 if $verbose; 
-			
-			my $aa = 0; 
-			
-			foreach my $d_email(@remove_list){ 
-				
-				
-				# warn '$d_email ' . $d_email . ' at ' . $aa ;
-				
-				# You shouldn't need the check for a double email, since WE JUST REMOVED THE BLOODY ADDRESS FROM THE LIST. 
-				
-				#if($lh->check_for_double_email(-Email => $d_email, -Type => 'list') == 1) {  
-					DADA::App::Messages::send_owner_happenings(
-						{
-							-list   => $list, 
-							-email  => $d_email, 
-							-role   => 'unsubscribed', 
-							-lh_obj => $lh, 
-							-ls_obj => $ls, 
-							-note   => 'Reason: Address is bouncing messages.',  
-						}
-					);
-					
-					# No?
-					#DADA::App::Messages::send_unsubscribed_message(-List      => $list,
-					#						                       -Email     => $d_email,
-					#				                               -List_Info => $li); 
-					
-					DADA::App::Messages::send_generic_email(
-						{
-					    	-list    => $list, 
-                            -email   => $d_email, 
-                            -ls_obj  => $ls, 
-							-headers => { 
-                            	Subject => $Email_Unsubscribed_Because_Of_Bouncing_Subject, 
-                        	},
-							-body      => $Email_Unsubscribed_Because_Of_Bouncing_Message, 
-							-tmpl_params => { 
-								-list_settings_vars_param => { 
-										-list => $list,
-								},
-								-subscriber_vars => {
-									'subscriber.email' => $d_email, 
-								},
-								-vars => {
-											Plugin_Name => $Plugin_Config->{Program_Name},
-										},
-							}, 
-						}
-					);
-					if($li->{enable_bounce_logging}){
-						$r->bounce_log($Bounce_History->{$list}->{$d_email}->[0]->{'Simplified-Message-Id'},  $d_email); 
-					}
-	
-				#} else { 
-			    #		print $d_email . " not subscribed on $list - suppressing actions... \n"
-				#		if $verbose;
-				#}
-			}
-		}
-	}
+    print "Removing addresses from all lists:\n" . '-' x 72 . "\n"
+      if $verbose;
+
+    foreach my $list ( keys %$report ) {
+
+        print "\nList: $list\n"
+          if $verbose;
+
+        my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+        my $li = $ls->get;
+
+        my @remove_list = keys %{ $report->{$list} };
+
+        foreach (@remove_list) {
+            $lh->remove_subscriber( { -email => $_, } );
+            print "Removing: $_\n"
+              if $verbose;
+        }
+
+        if (   ( $li->{black_list} == 1 )
+            && ( $li->{add_unsubs_to_black_list} == 1 ) )
+        {
+            foreach my $re (@remove_list) {
+                $lh->add_subscriber(
+                    {
+                        -email => $re,
+                        -type  => 'black_list',
+                    }
+                );
+            }
+        }
+
+        # Bang Bang Baby, The Bigger The Better.
+        # Bang Bang Baby, The Bigger The Better.
+        # Bang Bang Baby, The Bigger The Better.
+        # Bang Bang Baby, The Bigger The Better.
+        # You aint a baby no more baby
+        # You aint no bigger than before baby
+        # I'll rub that cheap black off your lips baby
+        # so take a swallow as i spit baby
+
+        if ( $li->{get_unsub_notice} == 1 ) {
+            require DADA::App::Messages;
+
+            my $r;
+
+            if ( $li->{enable_bounce_logging} ) {
+                require DADA::Logging::Clickthrough;
+                $r = DADA::Logging::Clickthrough->new( { -list => $list } );
+
+            }
+
+            print "\n"
+              if $verbose;
+
+            my $aa = 0;
+
+            foreach my $d_email (@remove_list) {
+
+                DADA::App::Messages::send_owner_happenings(
+                    {
+                        -list   => $list,
+                        -email  => $d_email,
+                        -role   => 'unsubscribed',
+                        -lh_obj => $lh,
+                        -ls_obj => $ls,
+                        -note   => 'Reason: Address is bouncing messages.',
+                    }
+                );
+
+                DADA::App::Messages::send_generic_email(
+                    {
+                        -list    => $list,
+                        -email   => $d_email,
+                        -ls_obj  => $ls,
+                        -headers => {
+                            Subject =>
+                              $Email_Unsubscribed_Because_Of_Bouncing_Subject,
+                        },
+                        -body =>
+                          $Email_Unsubscribed_Because_Of_Bouncing_Message,
+                        -tmpl_params => {
+                            -list_settings_vars_param => { -list => $list, },
+                            -subscriber_vars =>
+                              { 'subscriber.email' => $d_email, },
+                            -vars => {
+                                Plugin_Name => $Plugin_Config->{Program_Name},
+                            },
+                        },
+                    }
+                );
+                if ( $li->{enable_bounce_logging} ) {
+                    $r->bounce_log(
+                        $Bounce_History->{$list}->{$d_email}->[0]
+                          ->{'Simplified-Message-Id'},
+                        $d_email
+                    );
+                }
+            }
+        }
+    }
 }
 
 
 
 
-sub test_script { 
-	
-	$verbose = 1; 
-	
-	my @files_to_test; 
-	
-	if($test eq 'pop3'){ 
-		test_pop3(); 
-	}elsif(-d $test){ 
-		@files_to_test = dir_list($test); 
-	}elsif(-f $test){ 
-		push(@files_to_test, $test); 
-	}
-	
-	my $i = 1; 
-	foreach my $testfile(@files_to_test){ 
-		print "test #$i: $testfile\n" . '-' x 60 . "\n"; 
-		parse_bounce(-message => openfile($testfile)); 
-		++$i; 
-	} 
-	exit; 
+sub test_script {
+
+    $verbose = 1;
+
+    my @files_to_test;
+
+    if ( $test eq 'pop3' ) {
+        test_pop3();
+    }
+    elsif ( -d $test ) {
+        @files_to_test = dir_list($test);
+    }
+    elsif ( -f $test ) {
+        push( @files_to_test, $test );
+    }
+
+    my $i = 1;
+    foreach my $testfile (@files_to_test) {
+        print "test #$i: $testfile\n" . '-' x 60 . "\n";
+        parse_bounce( -message => openfile($testfile) );
+        ++$i;
+    }
+    exit;
 
 }
 
 
 
 
-sub test_pop3 { 
+sub test_pop3 {
 
-	require DADA::App::POP3Tools; 
-	
-	my $lock_file_fh; 
-	if($Plugin_Config->{Enable_POP3_File_Locking} == 1){ 
-		
-		$lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
-								{
-									name => 'dada_bounce_handler.lock',
-								}
-							);
-	}
+    require DADA::App::POP3Tools;
 
-	my $pop = DADA::App::POP3Tools::mail_pop3client_login(
-	    {
-	    
-	        server    => $Plugin_Config->{Server}, 
-	        username  => $Plugin_Config->{Username}, 
-	        password  => $Plugin_Config->{Password},
-			port      => $Plugin_Config->{Port}, 
-	        USESSL    => $Plugin_Config->{USESSL},
-	        AUTH_MODE => $Plugin_Config->{AUTH_MODE},
-	        verbose   => $verbose,
-	    
-	    }
-	); 
-	
+    my $lock_file_fh;
+    if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
 
-	if($Plugin_Config->{Enable_POP3_File_Locking} == 1){ 
-		DADA::App::POP3Tools::_unlock_pop3_check(
-			{
-				name => 'dada_bounce_handler.lock',
-				fh   => $lock_file_fh, 
-			},
-		);
-	}
-	
-	if(defined($pop)){ 
-	    $pop->Close();
-	}
+        $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
+            { name => 'dada_bounce_handler.lock', } );
+    }
+
+    my $pop = DADA::App::POP3Tools::mail_pop3client_login(
+        {
+
+            server    => $Plugin_Config->{Server},
+            username  => $Plugin_Config->{Username},
+            password  => $Plugin_Config->{Password},
+            port      => $Plugin_Config->{Port},
+            USESSL    => $Plugin_Config->{USESSL},
+            AUTH_MODE => $Plugin_Config->{AUTH_MODE},
+            verbose   => $verbose,
+
+        }
+    );
+
+    if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
+        DADA::App::POP3Tools::_unlock_pop3_check(
+            {
+                name => 'dada_bounce_handler.lock',
+                fh   => $lock_file_fh,
+            },
+        );
+    }
+
+    if ( defined($pop) ) {
+        $pop->Close();
+    }
 }
 
 
 
 
-sub version { 
+sub version {
 
-	#heh, subversion, wild. 
-	print "$Plugin_Config->{Program_Name} Version: $App_Version\n"; 
-	print "$DADA::Config::PROGRAM_NAME Version: $DADA::Config::VER\n"; 
-	print "Perl Version: $]\n\n"; 
-	
-	my @ap = ('No sane man will dance. - Cicero ',
-	          'Be happy. It is a way of being wise.  - Colette',
-	          'There is more to life than increasing its speed. - Mahatma Gandhi',
-	          'Life is short. Live it up. - Nikita Khrushchev'); 
-	          
-	print "Random Aphorism: " . $ap[int rand($#ap+1)] . "\n\n";	           
-	
-	exit; 
-	
-} 
+    print "$Plugin_Config->{Program_Name} Version: $App_Version\n";
+    print "$DADA::Config::PROGRAM_NAME Version: $DADA::Config::VER\n";
+    print "Perl Version: $]\n\n";
 
+    my @ap = (
+        'No sane man will dance. - Cicero ',
+        'Be happy. It is a way of being wise.  - Colette',
+        'There is more to life than increasing its speed. - Mahatma Gandhi',
+        'Life is short. Live it up. - Nikita Khrushchev'
+    );
 
-sub dir_list { 
-	my $dir = shift; 
-	my $file; 
-	my @files; 
-	$dir = DADA::App::Guts::make_safer($file); 
-	opendir(DIR, $dir) or die "$!"; 
-	while(defined($file = readdir DIR) ) { 
-		next if        $file =~ /^\.\.?$/;
-		$file =~ s(^.*/)();
-		 if(-f $dir . '/' . $file ){  
-			push(@files, $dir . '/' . $file);
+    print "Random Aphorism: " . $ap[ int rand( $#ap + 1 ) ] . "\n\n";
 
-		} 
-	
-	}
-	closedir(DIR); 
-	return @files; 
-} 
+    exit;
 
-
-
-
-sub openfile { 
-	my $file = shift; 
-	my $data = shift; 
-	
-	$file = DADA::App::Guts::make_safer($file);
-	
-	open(FILE, "<$file") or die "$!"; 
-	
-    $data = do{ local $/; <FILE> }; 
-
-	close(FILE); 
-	return $data; 
-} 
-
-
-
-sub open_log { 
-	my $log = shift; 
-	   $log = DADA::App::Guts::make_safer($log); 
-	if($log){ 
-		open(BOUNCELOG, ">>$log") 
-			or warn "Can't open bounce log at '$log' because: $!"; 
-		chmod($DADA::Config::FILE_CHMOD, $log); 
-		$Have_Log = 1; 
-		return 1; 
-	}
 }
 
 
 
 
-sub log_action { 
+sub dir_list {
+    my $dir = shift;
+    my $file;
+    my @files;
+    $dir = DADA::App::Guts::make_safer($file);
+    opendir( DIR, $dir ) or die "$!";
+    while ( defined( $file = readdir DIR ) ) {
+        next if $file =~ /^\.\.?$/;
+        $file =~ s(^.*/)();
+        if ( -f $dir . '/' . $file ) {
+            push( @files, $dir . '/' . $file );
 
-	my ($list, $email, $diagnostics, $action) = @_; 
-	my $time = scalar(localtime());
+        }
 
-	if($Have_Log){ 
-		my $d; 
-		foreach(keys %$diagnostics){ 
-			$d .= $_ .': ' . $diagnostics->{$_} . ', ';
-		}
-		print BOUNCELOG "[$time]\t$list\t$action\t$email\t$d\n";
-	} 
-	
+    }
+    closedir(DIR);
+    return @files;
 }
 
 
 
+sub openfile {
+    my $file = shift;
+    my $data = shift;
 
-sub close_log{ 
-	if($Have_Log){ 
-		close(BOUNCELOG); 
-	}
+    $file = DADA::App::Guts::make_safer($file);
+
+    open( FILE, "<$file" ) or die "$!";
+
+    $data = do { local $/; <FILE> };
+
+    close(FILE);
+    return $data;
 }
+
+sub open_log {
+    my $log = shift;
+    $log = DADA::App::Guts::make_safer($log);
+    if ($log) {
+        open( BOUNCELOG, ">>$log" )
+          or warn "Can't open bounce log at '$log' because: $!";
+        chmod( $DADA::Config::FILE_CHMOD, $log );
+        $Have_Log = 1;
+        return 1;
+    }
+}
+
+sub log_action {
+
+    my ( $list, $email, $diagnostics, $action ) = @_;
+    my $time = scalar( localtime() );
+
+    if ($Have_Log) {
+        my $d;
+        foreach ( keys %$diagnostics ) {
+            $d .= $_ . ': ' . $diagnostics->{$_} . ', ';
+        }
+        print BOUNCELOG "[$time]\t$list\t$action\t$email\t$d\n";
+    }
+
+}
+
+sub close_log {
+    if ($Have_Log) {
+        close(BOUNCELOG);
+    }
+}
+
 
 
 
@@ -4291,53 +4265,47 @@ You'll see similar output that you would if you were testing a file.
 
 
 
-
-sub erase_score_card { 
+sub erase_score_card {
 
     print "Removing the Bounce Score Card...\n\n";
-    
-    my @delete_list; 
-    
-    if($list) { 
-            @delete_list = ($list); 
+
+    my @delete_list;
+
+    if ($list) {
+        @delete_list = ($list);
     }
-    else { 
-        
-        @delete_list = DADA::App::Guts::available_lists(); 
-        
-    }    
-       
-       
-    foreach(@delete_list){ 
-       
-        require   DADA::App::BounceScoreKeeper; 
-        my $bsk = DADA::App::BounceScoreKeeper->new(-List => $_); 
-            
-        $bsk->erase; 
-        
+    else {
+
+        @delete_list = DADA::App::Guts::available_lists();
+
+    }
+
+    foreach (@delete_list) {
+
+        require DADA::App::BounceScoreKeeper;
+        my $bsk = DADA::App::BounceScoreKeeper->new( -List => $_ );
+
+        $bsk->erase;
+
         print "Kapow! All scores for $_ have been erased.\n";
-   
+
     }
 
     exit;
 }
 
+sub trim {
+    my $string = shift || undef;
+    if ($string) {
+        $string =~ s/^\s+//o;
+        $string =~ s/\s+$//o;
 
-
-
-sub trim { 
-my $string = shift || undef; 
-	if($string){ 
-		$string =~ s/^\s+//o;
-		$string =~ s/\s+$//o;
-
-		return $string;
-	}else{ 
-		return undef; 
-	}
+        return $string;
+    }
+    else {
+        return undef;
+    }
 }
-
-
 
 
 sub rfc1893_status { 
