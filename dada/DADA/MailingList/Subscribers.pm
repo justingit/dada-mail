@@ -4,25 +4,33 @@ use lib qw(./ ../ ../../ ../../DADA ../../perllib ../../../ ../../../perllib);
 
 
 use Carp qw(carp croak);
-my $type; 
+my $type;
+my $backend;  
 use DADA::Config qw(!:DEFAULT); 	
 BEGIN { 
 	$type = $DADA::Config::SUBSCRIBER_DB_TYPE;
-	if($type =~ m/sql/i){ 
+	if($type eq 'SQL'){ 
 	 	if ($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql'){ 
-			$type = 'MySQL';
+			$backend = 'MySQL';
 		}
 		elsif ($DADA::Config::SQL_PARAMS{dbtype} eq 'Pg'){ 		
-				$type = 'PostgreSQL';
+				$backend = 'PostgreSQL';
 		}
 		elsif ($DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite'){ 
-			$type = 'SQLite';
+			$backend = 'SQLite';
 		}
 	}
+	elsif($type eq 'PlainText'){ 
+		$backend = 'PlainText'; 
+	}
+	else { 
+		die "Unknown \$SUBSCRIBER_DB_TYPE: '$type' Supported types: 'PlainText', 'SQL'"; 
+	}
 }
+
 use strict; 
 
-use base "DADA::MailingList::Subscribers::$type";
+use base "DADA::MailingList::Subscribers::$backend";
 use DADA::MailingList::Subscriber; 
 use DADA::MailingList::Subscriber::Validate;
 use DADA::Profile::Fields; 

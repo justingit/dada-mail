@@ -5,22 +5,29 @@ use lib qw(./ ../ ../../ ../../DADA ../perllib);
 use Carp qw(croak carp); 
 
 my $type; 
+my $backend; 
 use DADA::Config qw(!:DEFAULT); 	
 BEGIN { 
 	$type = $DADA::Config::SETTINGS_DB_TYPE;
-	if($type =~ m/sql/i){ 
+	if($type eq 'SQL'){ 
 	 	if ($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql'){ 
-			$type = 'MySQL';
+			$backend = 'MySQL';
 		}
 		elsif ($DADA::Config::SQL_PARAMS{dbtype} eq 'Pg'){ 		
-				$type = 'PostgreSQL';
+				$backend = 'PostgreSQL';
 		}
 		elsif ($DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite'){ 
-			$type = 'SQLite';
+			$backend = 'SQLite';
 		}
 	}
+	elsif($type eq 'Db'){ 
+		$backend = 'Db'; 
+	}
+	else { 
+		die "Unknown \$SETTINGS_DB_TYPE: '$type' Supported types: 'Db', 'SQL'"; 
+	}
 }
-use base "DADA::MailingList::Settings::$type";
+use base "DADA::MailingList::Settings::$backend";
 
 
 sub _init  { 

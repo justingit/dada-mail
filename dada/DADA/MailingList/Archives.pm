@@ -5,7 +5,7 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
 use Carp qw(carp croak); 
 
-my $type;
+
 
 # A weird fix.
 BEGIN {
@@ -15,22 +15,31 @@ BEGIN {
    }
 }
 
+my $type;
+my $backend; 
 
 BEGIN { 
 	$type = $DADA::Config::ARCHIVE_DB_TYPE;
-	if($type =~ m/sql/i){ 
+	if($type eq 'SQL'){ 
 	 	if ($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql'){ 
-			$type = 'MySQL';
+			$backend = 'MySQL';
 		}
 		elsif ($DADA::Config::SQL_PARAMS{dbtype} eq 'Pg'){ 		
-				$type = 'PostgreSQL';
+			$backend = 'PostgreSQL';
 		}
 		elsif ($DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite'){ 
-			$type = 'SQLite';
+		 	$backend= 'SQLite';
 		}
 	}
+	elsif($type eq 'Db'){ 
+		$backend = 'Db'; 
+	}
+	else { 
+		die "Unknown \$ARCHIVE_DB_TYPE: '$type' Supported types: 'PlainText', 'SQL'"; 
+	}
+	
 }
-use base "DADA::MailingList::Archives::$type";
+use base "DADA::MailingList::Archives::$backend";
 
 
 
