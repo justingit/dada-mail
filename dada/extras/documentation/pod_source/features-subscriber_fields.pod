@@ -55,9 +55,9 @@ Dada Mail currently doesn't support changing the order of these Subscriber Profi
 
 Mail Merging in Dada Mail in mailing list messages using your new Subscriber Profile Fields is pretty easy: 
 
-Say you have a field named, B<first_name>. To use the value of the saved field in an email message, you'd write the field as a tag, like this: B<[subscriber.first_name]>. It would look like this in your actual message: 
+Say you have a field named, B<first_name>. To use the value of the saved field in an email message, you'd write the field as a tag, like this: B<E<lt>!-- tmpl_var subscriber.first_name --E<gt>>. It would look like this in your actual message: 
 
- Hello, [subscriber.first_name]
+ Hello, <!-- tmpl_var subscriber.first_name -->
  
       It's really nice to talk to you!
       
