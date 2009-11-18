@@ -3305,6 +3305,10 @@ sub default_cgi_template {
   <h1>
    This Plugin is Currently Disabled for This List!
   </h1> 
+
+<p>
+ Uncheck the option labeled, <em>Disable sending using this method</em> below to enable this plugin for this Mailing List.
+</p>
  </div> 
   
 <!--/tmpl_if--> 
