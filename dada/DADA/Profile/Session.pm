@@ -123,8 +123,7 @@ sub _login_cookie {
     $session->expire( $DADA::Config::COOKIE_PARAMS{ -expires } );
     $session->expire( '_logged_in', $DADA::Config::COOKIE_PARAMS{ -expires } );
 
-    $cookie = $q->cookie( %{$DADA::Config::PROFILE_COOKIE_PARAMS},
-        -value => $session->id, );
+    $cookie = $q->cookie( %{$DADA::Config::PROFILE_OPTIONS->{cookie_params}},-value => $session->id, );
 
     # My proposal to address the situation is quit relying on flush() happen
     # automatically, and recommend that people use an explicit flush()

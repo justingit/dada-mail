@@ -3142,7 +3142,7 @@ sub subscription_requests {
 			my $new_pass    = ''; 
 	        my $new_profile = 0;
 			if(
-	           $DADA::Config::PROFILE_ENABLED == 1 && 
+	           $DADA::Config::PROFILE_OPTIONS->{enabled} == 1 && 
 	           $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/
 	        ){ 
 	        	# Make a profile, if needed, 
@@ -9603,14 +9603,14 @@ sub adv_dada_mail_setup {
 sub profile_login { 
 	
 	if(
-		$DADA::Config::PROFILE_ENABLED    != 1      || 
+		$DADA::Config::PROFILE_OPTIONS->{enabled}    != 1      || 
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
 	){
 		default(); 
 		return
 	}
 	
-	if($DADA::Config::PROFILE_ENABLED != 1){ 
+	if($DADA::Config::PROFILE_OPTIONS->{enabled} != 1){ 
 		default(); 
 		return
 	}
@@ -9647,7 +9647,7 @@ sub profile_login {
 			my $can_use_captcha = 0; 
 			my $CAPTCHA_string  = ''; 
 			my $cap             = undef; 
-			if($DADA::Config::PROFILE_ENABLE_CAPTCHA == 1){ 
+			if($DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1){ 
 				eval { 
 					require DADA::Security::AuthenCAPTCHA; 
 					$cap = DADA::Security::AuthenCAPTCHA->new;
@@ -9740,7 +9740,7 @@ sub profile_login {
 sub profile_register { 
 
 	if(
-		$DADA::Config::PROFILE_ENABLED    != 1      || 
+		$DADA::Config::PROFILE_OPTIONS->{enabled}    != 1      || 
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
 	){		default(); 
 		return
@@ -9812,7 +9812,7 @@ sub profile_register {
 sub profile_activate { 
 	
 	if(
-		$DADA::Config::PROFILE_ENABLED    != 1      || 
+		$DADA::Config::PROFILE_OPTIONS->{enabled}    != 1      || 
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
 	){		default(); 
 		return
@@ -9860,7 +9860,7 @@ sub profile_activate {
 sub profile_help { 
 
 	if(
-		$DADA::Config::PROFILE_ENABLED    != 1      || 
+		$DADA::Config::PROFILE_OPTIONS->{enabled}    != 1      || 
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
 	){		default(); 
 		return;
@@ -9888,7 +9888,7 @@ sub profile_help {
 sub profile { 
 	
 	if(
-		$DADA::Config::PROFILE_ENABLED    != 1      || 
+		$DADA::Config::PROFILE_OPTIONS->{enabled}    != 1      || 
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
 	){		default(); 
 		return;
@@ -10135,8 +10135,13 @@ sub profile {
 						error_profile_exists        => $q->param('error_profile_exists') || '', 
 						updated_email      		    => $q->param('updated_email') || '', 
 						
-						gravators_enabled => $DADA::Config::PROFILE_GRAVATAR_OPTIONS->{enable_gravators},
-						gravatar_img_url             => gravatar_img_url({-email => $email, -default_gravatar_url => $DADA::Config::PROFILE_GRAVATAR_OPTIONS->{default_gravatar_url}}),						
+						gravators_enabled            => $DADA::Config::PROFILE_OPTIONS->{gravatar_options}->{enable_gravators},
+						gravatar_img_url             => gravatar_img_url(
+															{
+																-email                => $email, 
+																-default_gravatar_url => $DADA::Config::PROFILE_OPTIONS->{gravatar_options}->{default_gravatar_url},
+															}
+														),						
 					}
 				}
 			); 
@@ -10157,7 +10162,7 @@ sub profile {
 sub profile_logout { 
 
 	if(
-		$DADA::Config::PROFILE_ENABLED    != 1      || 
+		$DADA::Config::PROFILE_OPTIONS->{enabled}    != 1      || 
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
 	){		default(); 
 		return
@@ -10174,7 +10179,7 @@ sub profile_logout {
 sub profile_reset_password { 
 
 	if(
-		$DADA::Config::PROFILE_ENABLED    != 1      || 
+		$DADA::Config::PROFILE_OPTIONS->{enabled}    != 1      || 
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
 	){		
 		default(); 

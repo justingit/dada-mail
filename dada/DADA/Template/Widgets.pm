@@ -157,7 +157,7 @@ ENV_SCRIPT_URI                => $ENV{SCRIPT_URI},
 ENV_SERVER_ADMIN              => $ENV{SERVER_ADMIN},
 HELP_LINKS_URL                => $DADA::Config::HELP_LINKS_URL, 
 
-PROFILE_ENABLED               => $DADA::Config::PROFILE_ENABLED, 
+PROFILE_ENABLED               => $DADA::Config::PROFILE_OPTIONS->{enabled}, 
 
 MULTIPLE_LIST_SENDING         => $DADA::Config::MULTIPLE_LIST_SENDING, 
 
@@ -1069,8 +1069,8 @@ sub profile_widget {
     my $scr              = '';
     my $email            = '';
     my $is_logged_in     = 0;
-    my $profiles_enabled = $DADA::Config::PROFILE_ENABLED;
-    if (   $DADA::Config::PROFILE_ENABLED != 1
+    my $profiles_enabled = $DADA::Config::PROFILE_OPTIONS->{enabled};
+    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
         || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
     {
         $profiles_enabled = 0;
@@ -1097,15 +1097,12 @@ sub profile_widget {
                 profiles_enabled  => $profiles_enabled,
                 is_logged_in      => $is_logged_in,
                 'profile.email'   => $email,
-                gravators_enabled =>
-                  $DADA::Config::PROFILE_GRAVATAR_OPTIONS->{enable_gravators},
+                gravators_enabled => $DADA::Config::PROFILE_OPTIONS->{gravatar_options}->{enable_gravators},
                 gravatar_img_url => gravatar_img_url(
                     {
                         -email                => $email,
-                        -default_gravatar_url =>
-                          $DADA::Config::PROFILE_GRAVATAR_OPTIONS
-                          ->{default_gravatar_url},
-                        -size => '30'
+                        -default_gravatar_url => $DADA::Config::PROFILE_OPTIONS->{gravatar_options}->{default_gravatar_url},
+                        -size => '30',
                     }
                 ),
 
@@ -1659,7 +1656,7 @@ sub screen {
     
 ###
 
-if($DADA::Config::PROFILE_ENABLED == 1 && $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/){ 
+if($DADA::Config::PROFILE_OPTIONS->{enabled} == 1 && $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/){ 
 	if(
 	     exists($args->{-profile_vars})       || 
 	     exists($args->{-profile_vars_param})
@@ -2184,7 +2181,7 @@ sub subscription_form {
         undef($i);
 
 		$args->{-profile_logged_in} = 0; 
-		if($DADA::Config::PROFILE_ENABLE_MAGIC_SUBSCRIPTION_FORMS == 1) { 
+		if($DADA::Config::PROFILE_OPTIONS->{enable_magic_subscription_forms} == 1) { 
 			require DADA::Profile::Session; 
 			my $sess = DADA::Profile::Session->new; 
 			if($sess->is_logged_in){ 

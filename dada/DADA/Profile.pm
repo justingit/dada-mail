@@ -34,7 +34,7 @@ sub new {
 		 !defined( $args->{ -email } ) ) {
        # return undef;
     }
-    if (   $DADA::Config::PROFILE_ENABLED != 1
+    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
         || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
     {
         return undef;
@@ -603,7 +603,7 @@ sub allowed_to_view_archives {
         croak "You must pass a list in the, '-list' param!";
     }
  
-    if (   $DADA::Config::PROFILE_ENABLED != 1
+    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
         || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
     {
         return 1;
@@ -714,7 +714,7 @@ sub is_valid_registration {
 
     my $can_use_captcha = 0;
     my $cap             = undef;
-    if ( $DADA::Config::PROFILE_ENABLE_CAPTCHA == 1 ) {
+    if ( $DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1 ) {
         eval { require DADA::Security::AuthenCAPTCHA; };
         if ( !$@ ) {
             $can_use_captcha = 1;
@@ -1073,11 +1073,11 @@ sub _rand_str {
 
 sub _config_profile_email {
     my $self = shift;
-    if ( length($DADA::Config::PROFILE_EMAIL) > 0
-        && DADA::App::Guts::check_for_valid_email($DADA::Config::PROFILE_EMAIL)
+    if ( length($DADA::Config::PROFILE_OPTIONS->{profile_email}) > 0
+        && DADA::App::Guts::check_for_valid_email($DADA::Config::PROFILE_OPTIONS->{profile_email})
         == 0 )
     {
-        return $DADA::Config::PROFILE_EMAIL;
+        return $DADA::Config::PROFILE_OPTIONS->{profile_email};
     }
     else {
 
@@ -1278,7 +1278,7 @@ The, C<-list> paramater is required and needs to be filled out to a specific Dad
 
 Several things will change the return value of this method: 
 
-If Profiles are not enabled (via the, C<$PROFILE_ENABLED> Config.pm variable), this method will always return, C<1>. 
+If Profiles are not enabled (via the, C<$PROFILE_OPTIONS-E<gt>{enabled}> Config.pm variable), this method will always return, C<1>. 
 
 If Profiles are enabled, but the email address you're trying to look up profile information, doesn't actually have a profile, I<and> profiles are  enabled, this method will always return C<0> 
 
@@ -1328,7 +1328,7 @@ Should hold a valid password. Currently, this just means that I<something> has t
 
 =back
 
-If CAPTCHA is enabled for Profiles, (via the Config.pm C<$PROFILE_ENABLE_CAPTCHA> variable) the following two paramaters also have to be passed: 
+If CAPTCHA is enabled for Profiles, (via the Config.pm C<$PROFILE_OPTIONS-E<gt>{gravatar_options}-E<gt>{enable_gravators}> paramater) the following two paramaters also have to be passed: 
 
 =over
 

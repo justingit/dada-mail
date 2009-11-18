@@ -76,20 +76,25 @@ $LIST_IN_ORDER = 1;
 =cut
 # start cut for Dada Mail Profile Options
 
-$PROFILE_ENABLED                         = 1; 
-$PROFILE_EMAIL                           = ''; 
-$PROFILE_ENABLE_CAPTCHA                  = 1;
-$PROFILE_ENABLE_MAGIC_SUBSCRIPTION_FORMS = 1;
-
-$PROFILE_COOKIE_PARAMS = {
-	-name   => 'dada_profile',  
-    -path    => '/',
-    -expires => '+7d',	
-};
-
-$PROFILE_GRAVATAR_OPTIONS = {
-	enable_gravators     => 1, 
-	default_gravatar_url => undef, 
+$PROFILE_OPTIONS = { 
+		
+	enabled                         => 1, 
+	profile_email                   => '', 
+	enable_captcha                  => 1, 
+	enable_magic_subscription_forms => 1, 
+	
+	cookie_params =>
+	{ 
+		-name    => 'dada_profile',  
+	    -path    => '/',
+	    -expires => '+7d',		
+	},
+	
+	gravatar_options => 
+	{
+		enable_gravators     => 1, 
+		default_gravatar_url => undef,
+	},
 };
 
 =cut

@@ -849,7 +849,7 @@ sub confirm {
 		        my $new_pass    = ''; 
 		        my $new_profile = 0; 
 		        if(
-		           $DADA::Config::PROFILE_ENABLED == 1 && 
+		           $DADA::Config::PROFILE_OPTIONS->{enabled} == 1 && 
 		           $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/
 		        ){ 
 		        	# Make a profile, if needed, 
