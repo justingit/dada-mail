@@ -5383,8 +5383,11 @@ sub edit_template {
         eval { require LWP::Simple; };
         $can_use_lwp_simple = 1    
             if !$@; 
-            
-        
+         
+   		my $template_saved = 0; 
+        if(-e $DADA::Config::TEMPLATES . '/' . $list . '.template'){ 
+			$template_saved = 1;
+		}
         my $template_url_check = 1;
         
         if($get_template_data_from_url == 1){ 
@@ -5408,32 +5411,38 @@ sub edit_template {
                                 ));
 
         require DADA::Template::Widgets;
-        print DADA::Template::Widgets::screen({-screen => 'edit_template_screen.tmpl', 
-                                              -vars   => {
-	
-															screen                                  => 'edit_template', 
-															title                                   => 'Your Mailing List Template', 
-                                                            done                                    => $done,
-                                                            edit_this_template                      => $edit_this_template, 
-                                                            get_template_data                       => $li->{get_template_data}, 
-                                                            get_template_data_from_url              => $get_template_data_from_url, 
-                                                            get_template_data_from_template_file    => $get_template_data_from_template_file, 
-                                                            get_template_data_from_default_template => $get_template_data_from_default_template, 
-                                                            can_use_lwp_simple                      => $can_use_lwp_simple, 
-                                                            url_template                            => $li->{url_template}, 
-                                                            default_template                        => $default_template, 
-                                                            apply_list_template_to_html_msgs        => $li->{apply_list_template_to_html_msgs}, 
-                                                            
-                                                            template_url_check                      => $template_url_check, 
-                                                            
-                                                          },
-														-list_settings_vars_param => { 
-															-list    => $list,
-															-dot_it  => 1,
-														},
-                                            });
+        print DADA::Template::Widgets::screen(
+			{
+				-screen => 'edit_template_screen.tmpl', 
+				-vars   => {
+					screen                                  => 'edit_template', 
+					title                                   => 'Your Mailing List Template', 
+					done                                    => $done,
+					edit_this_template                      => $edit_this_template, 
+					get_template_data                       => $li->{get_template_data}, 
+					get_template_data_from_url              => $get_template_data_from_url, 
+					get_template_data_from_template_file    => $get_template_data_from_template_file, 
+					get_template_data_from_default_template => $get_template_data_from_default_template, 
+					can_use_lwp_simple                      => $can_use_lwp_simple, 
+					url_template                            => $li->{url_template}, 
+					default_template                        => $default_template, 
+					apply_list_template_to_html_msgs        => $li->{apply_list_template_to_html_msgs}, 
+					template_url_check                      => $template_url_check, 
+					template_saved                          => $template_saved, 
 
-        print(admin_template_footer(-List => $list, -Form => 0));
+				},
+				-list_settings_vars_param => 
+				{ 
+					-list                     => $list,
+					-dot_it                   => 1,
+				},
+			}
+		);
+
+        print admin_template_footer(
+			-List => $list, 
+			-Form => 0
+		);
  
     }else{ 
         

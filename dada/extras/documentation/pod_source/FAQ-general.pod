@@ -1284,26 +1284,11 @@ See also:
 
 http://www.computerhope.com/jargon/a/absopath.htm
 
-
 =head1 System Requirements 
 
 =head2 What do I need to run Dada Mail? 
 
-http://dadamailproject.com/support/requirements.html
-
-=head2 But I have a Windows Server, The system requirements B<clearly> state that it's not supported - is this true? 
-
-Short answer: B<yes>
-
-Long answer: 
-
-http://dadamailproject.com/support/documentation/README-windows.pod.html
-
-B<...yes>
-
-I do get this asked a lot, so I'm sorry I have to repeat myself - it's a project for someone else, I'm personally not interested in making it happen. So please understand - at the moment - no, Dada Mail does not work on a Windows Server. 
-
-The largest hurtle is going to be emulation of the C<fork()> Perl subroutine. 
+http://dadamailproject.com/support/documentation/requirements.pod.html
 
 =head2 Does Dada Mail need any special Perl CPAN modules installed? 
 

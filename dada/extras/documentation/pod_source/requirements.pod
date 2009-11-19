@@ -28,11 +28,11 @@ One major stumbling block is Perl for Windows lack of support for the C<fork()> 
 
 You'll also want to use the SQL backend if you ever attempt to run Dada Mail on a Windows-based server
 
-=head1 Perl 
-
-Dada Mail is written in Perl, so you'll want to have Perl, at least version 5.6 for version 3.0.0 and 3.0.1 and Perl version 5.8 for anything above 3.0.1. 
+=head1 Perl 5.8.1
 
 Since Dada Mail is a CGI app, you'll need support for Perl CGI scripts within your web server environment. 
+
+Dada Mail is not a PHP script, so the version of PHP that you have available will not make much of a difference. 
 
 =head1 Mail Transport Agent
 
@@ -40,6 +40,16 @@ Dada Mail can pass messages to send to a sendmail-like command that applications
 
 =head1 Configuration
 
-There is no auto-installer for Dada Mail that *we* ship. One requirement of Dada Mail, then maybe that you can open up a file in a text editor and make I<extremely simple> changes to it, with regards to file and directory paths on your server. 
+There is no auto-installer for Dada Mail that I<we> ship. 
+
+One requirement of Dada Mail is that you can open up a file in a text editor and make I<extremely simple> changes to it, with regards to file and directory paths on your server. 
+
+=head1 Guide to Hosting Companies
+
+This: 
+
+http://dadamailproject.com/support/hosting.html
+
+is a very incomplete list of hosting companies that seem to work well with Dada Mail. 
 
 =cut

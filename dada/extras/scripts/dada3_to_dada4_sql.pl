@@ -459,14 +459,14 @@ Fields information to the new tables and removes the old information. It does a 
 
 =head1 REQUIREMENTS
 
-This utility should only be used when B<upgrading> Dada Mail to version 3.1. 
+This utility should only be used when B<upgrading> Dada Mail to version 4. 
 
 This utility should also, only be used if you're using the SQL Backend. 
 If you are not using the B<SQL> Backend, you would not need this utility. 
 
 =head1 INSTALLATION
 
-Upgrade your Dada Mail installation to B<3.1> I<before> attempting to use this utility. 
+Upgrade your Dada Mail installation to B<4> I<before> attempting to use this utility. 
 
 This utility is located in the Dada Mail distribution, in: 
 
@@ -476,6 +476,12 @@ You'll most likely want to B<move> it to the, C<dada> directory.
 
 Change it's persmissions to, C<0755> and visit the script in your web browser. 
 
+This script relies on the SQL schemas that are saved in the, 
+
+ dada/extras/SQL
+
+directory to be present. Make sure this directory has been uploaded to your installation!
+
 No other configuration is needed. 
 
 From there, migration should be straightforward. Follow the directions in your browser window. 
@@ -484,7 +490,7 @@ Once the migration is complete, please B<REMOVE> this utility from your hosting 
 
 =head1 A BIG WARNING ABOUT THIS MIGRATION TOOL AND LOST INFORMATION
 
-A major major huge change between Dada Mail 3.0 and 4.0 is that Subscriber Profile Fields information that used to be different per subscriber, per <list> is now shared between lists. 
+A major major huge change between Dada Mail 3.0 and 4.0 is that Subscriber Profile Fields information that used to be different per subscriber, per I<list> is now shared between lists. 
 
 What this means is that, if you have a subscriber and there's a few fields, let's say, C<fist_name>, C<last_name>, C<favorite_color>, these three fields will show up for ALL lists (as it had, before), BUT! The information for each list will also be the same. In Dada Mail 3.0, it COULD potentially, be different. 
 

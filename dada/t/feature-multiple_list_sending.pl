@@ -5,6 +5,7 @@ BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 use dada_test_config; 
 
 use DADA::Config; 
+$DADA::Config::MULTIPLE_LIST_SENDING = 1; 
 
 use strict;
 use Carp; 

@@ -7,6 +7,13 @@
 This Flash hook was made when Flash 5 was the new kid on the block. It's 
 ways of doing things are probably outdated. 
 
+There I<is> an updated flash file for Action Script 2.0 saved at: 
+
+ dada/extras/Flash/email_subscription_form_AS2.fla
+
+I haven't thouroughly tested it, as I do not use Flash much myself, but it's 
+worth investigating. 
+
 =head1 INTRODUCTION
 
 Dada Mail now has hooks for Flash that will return an SWF-friendly, XML document
@@ -161,9 +168,7 @@ end of the already-too-large-to-type-yet-again query string and paste that into 
 
 =head2 FAQS
 
-=over
-
-=item * Is there a sample unsubscription form in Flash? 
+=head3 Is there a sample unsubscription form in Flash? 
 
 No, but just change the query string from: 
 
@@ -175,17 +180,8 @@ to:
 
 in your actionscript.
 
-=item * So, you're a Tweening Nerd Too?! 
-
-Yes. I like to dance on Tuesdays as well. 
-
-=back
-
-
 =head1 AUTHOR
 
 Justin Simoni 
-
-http://justinsimoni.com
 
 =cut

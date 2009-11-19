@@ -7,8 +7,6 @@
 
 This guide is meant to be read by everyone who would like to use the template features in Dada Mail's email messages. 
 
-For extremely nerdy and technical stuff, do see... other nerdy and technical documentation. 
-
 =head1 The Basics
 
 =head2 Tags
@@ -52,9 +50,15 @@ The URL to Dada Mail, ie: L<http://example.com/cgi-bin/dada/mail.cgi>
 
 Your list has a whole slew of attributes that make up its behavior. Most of the these attributes can be used  as tags in your email messages. 
 
-You'll know you're working with a list-specific attribute, as the tag will start out with: C<E<lt>!-- tmpl_var list_settings.>. Notice the dot, C<.> at the end. 
+You'll know you're working with a list-specific attribute, as the tag will start out with: 
 
-The tag will then be proceeded with the attribute you want to use and end with, C<--E<gt>>
+	<!-- tmpl_var list_settings
+
+Notice the dot, C<.> at the end. 
+
+The tag will then be proceeded with the attribute you want to use and end with
+
+ -->
 
 For example, if you want to have a tag to show the List's Name, you'd write: 
 
@@ -106,7 +110,7 @@ For example, if we're sending a B<confirmation email message>, our subscriber wi
 even though they haven't yet subscribed. 
 
 Similar to the List-Specific Tags, Subscriber-Specific tags also have a way to let you know you're working with a subscriber-specific
-attribute. Tags that deal with subscriber information start with: C<[subscriber.> and are proceeded with the attribute we want to use. 
+attribute. Tags that deal with subscriber information start with: C<E<lt>!-- tmpl_var subscriber.> and are proceeded with the attribute we want to use. 
 
 For example, to use a subscriber's email address, you would use: 
 
@@ -133,7 +137,7 @@ example.com
 
 A very special case happens with email messages that are sent for B<email subscription confirmations>, B<email unsubscriotion confirmations> and B<List Invitations>
 
-In these email messages you also have the option to use the, C<[subscriber.pin]> tag. This tag holds the B<pin number> used to subscribe and unsubscribe an email subscriber. 
+In these email messages you also have the option to use the, C<E<lt>!-- tmpl_var subscriber.pin --E<gt>> tag. This tag holds the B<pin number> used to subscribe and unsubscribe an email subscriber. 
 
 
 You can also access the subscriber's saved field values. For example, if you have a field named, B<first_name>, you can use the following tag: 
@@ -204,7 +208,7 @@ Similarily, you can do this with the List Attributes:
 
 =head1 Advanced Templating Syntax
 
-Under the hood, Dada Mail's email templating system is powered by HTML::Template. Everything that can be done with it, 
+Under the hood, Dada Mail's email templating system is powered by B<HTML::Template>. Everything that can be done with it, 
 can probably be done with Dada Mail. 
 
 Here's more information: 

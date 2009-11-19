@@ -8,7 +8,7 @@
 # 	http://dadamailproject.com/installation/
 #---------------------------------------------------------------------#
 #
-# Advanced installation w/outside configuration file:
+# Advanced installation w/outside configuration file (harder, but suggested):
 #
 # 	http://dadamailproject.com/purchase/sample_chapter-dada_mail_setup.html
 #---------------------------------------------------------------------##
@@ -427,6 +427,10 @@ This variable holds a few options to change the behavior of the session manageme
 Gravatars can also be enabled for Dada Mail Profiles. More information: 
 
 L<http://gravatar.com/> 
+
+=head4 More Information: 
+
+L<http://dadamailproject.com/support/documentation/features-profiles.pod.html>
 
 
 =cut 
@@ -1767,19 +1771,37 @@ $CKEDITOR_URL ||= undef;
 
 
 
+=pod
+
+=head2 Multiple Mailing List Sending
+
+=head3 MULTIPLE_LIST_SENDING
+
+Set this variable to, C<1> to enable Multiple Mailing List Sending. 
+
+Set this variable to, C<0> to disable Multiple Mailing List Sending. 
+
+=head3 $MULTIPLE_LIST_SENDING_TYPE
+
+Set to, C<merged> or, C<individual> 
+
+=head4 More Information
+
+See: 
+
+L<http://dadamailproject.com/support/documentation/features-multiple_list_sending.pod.html>
+
+=cut
 
 
+$MULTIPLE_LIST_SENDING      ||= 0; 
 
-$MULTIPLE_LIST_SENDING      = 1; 
-$MULTIPLE_LIST_SENDING_TYPE = 'merged' ; # individual 
+$MULTIPLE_LIST_SENDING_TYPE ||= 'merged' ; # individual 
 
-							  #  
 
 =pod
 
 =head2 $LOG_VIEWER_PLUGIN_URL 
-
-Add information! 
 
 =cut 
 
@@ -4787,7 +4809,7 @@ and to say that you've got the freshest tools on the Web.
 
 
 $VERSION = 4.0.0; 
-$VER     = '4.0.0 beta 5 11/16/09';
+$VER     = '4.0.0 rc1';
 
 #
 #
