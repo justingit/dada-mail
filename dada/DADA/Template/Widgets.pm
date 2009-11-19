@@ -216,10 +216,11 @@ endif                         => '[endif]',
 
 
 if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
-	$Global_Template_Variables{template_oldstyle_backwards_compatibility} == 1; 
+	$Global_Template_Variables{template_oldstyle_backwards_compatibility} = 1; 
 }
 else { 
-	$Global_Template_Variables{template_oldstyle_backwards_compatibility} == 0; 
+
+	$Global_Template_Variables{template_oldstyle_backwards_compatibility} = 0; 
 }
 
 

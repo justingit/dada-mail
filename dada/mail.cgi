@@ -685,10 +685,6 @@ sub run {
 	$DADA::Config::SIGN_IN_FLAVOR_NAME      =>    \&sign_in, 
 	); 
 
-
-
-	&_chk_env_sys_blk(); 
-
 	# the BIG switcheroo. Mark doesn't like this :) 
 	if($flavor){ 
 	    if(exists($Mode{$flavor})) { 
@@ -702,211 +698,227 @@ sub run {
 }                                                               
 
 
-sub default { 
- 
-    if(DADA::App::Guts::check_setup() == 0){ 
-        user_error(-Error => 'bad_setup');
-        return;         
+sub default {
+
+    if ( DADA::App::Guts::check_setup() == 0 ) {
+        user_error( -Error => 'bad_setup' );
+        return;
     }
 
-   if($DADA::Config::ARCHIVE_DB_TYPE  eq 'Db' ||
-      $DADA::Config::SETTINGS_DB_TYPE eq 'Db'
-    ){ 
-		eval {require AnyDBM_File;};
-		if($@){ 
-			user_error(
-				-Error         => 'no_dbm_package_installed', 
-				-Error_Message => $@
-			); 
-			return; 
-		}
-		
-		my @l_check  = available_lists(); 
-		if($l_check[0]){ 
+    if (   $DADA::Config::ARCHIVE_DB_TYPE eq 'Db'
+        || $DADA::Config::SETTINGS_DB_TYPE eq 'Db' )
+    {
+        eval { require AnyDBM_File; };
+        if ($@) {
+            user_error(
+                -Error         => 'no_dbm_package_installed',
+                -Error_Message => $@
+            );
+            return;
+        }
 
-			my $ls = DADA::MailingList::Settings->new({-list => $l_check[0]});
-			eval{$ls->_open_db;};
-			if($@){ 
-				user_error(
-					-Error         => 'unreadable_db_files', 
-					-Error_Message => $@,
-				); 
-				return;				
-			}
-		}
+        my @l_check = available_lists();
+        if ( $l_check[0] ) {
 
-	}
+            my $ls =
+              DADA::MailingList::Settings->new( { -list => $l_check[0] } );
+            eval { $ls->_open_db; };
+            if ($@) {
+                user_error(
+                    -Error         => 'unreadable_db_files',
+                    -Error_Message => $@,
+                );
+                return;
+            }
+        }
 
-	elsif($DADA::Config::SUBSCRIBER_DB_TYPE  =~ /SQL/ || 
-	      $DADA::Config::ARCHIVE_DB_TYPE     =~ /SQL/ ||
-	      $DADA::Config::SETTINGS_DB_TYPE    =~ /SQL/ 
-	){ 
-		
-		eval {$dbi_handle->dbh_obj;};
-		if($@){ 			
-			user_error(
-				-Error         => 'sql_connect_error', 
-				-Error_Message => $@
-			); 
-			return;		
-		}
-		else { 
-			if(DADA::App::Guts::SQL_check_setup() == 0){ 
-		       user_error(-Error => 'bad_SQL_setup');
-		        return;         
-		    }
-		}
-	}
-	
-	 
-    require DADA::MailingList::Settings; 
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
+    }
 
+    elsif ($DADA::Config::SUBSCRIBER_DB_TYPE =~ /SQL/
+        || $DADA::Config::ARCHIVE_DB_TYPE  =~ /SQL/
+        || $DADA::Config::SETTINGS_DB_TYPE =~ /SQL/ )
+    {
 
+        eval { $dbi_handle->dbh_obj; };
+        if ($@) {
+            user_error(
+                -Error         => 'sql_connect_error',
+                -Error_Message => $@
+            );
+            return;
+        }
+        else {
+            if ( DADA::App::Guts::SQL_check_setup() == 0 ) {
+                user_error( -Error => 'bad_SQL_setup' );
+                return;
+            }
+        }
+    }
 
+    require DADA::MailingList::Settings;
+    $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my @available_lists;
-	if($DADA::Config::SUBSCRIBER_DB_TYPE  =~ /SQL/ || 
-	      $DADA::Config::ARCHIVE_DB_TYPE     =~ /SQL/ ||
-	      $DADA::Config::SETTINGS_DB_TYPE    =~ /SQL/ 
-	){
-		
-		eval{@available_lists = available_lists(-In_Order => 1, -dbi_handle => $dbi_handle);};
-		if($@){ 
-		
-			user_error(
-				-Error         => 'sql_connect_error', 
-				-Error_Message => $@
-			); 
-			
-			return;	
-		}
-	}
-	else { 
-		@available_lists = available_lists(-In_Order => 1, -dbi_handle => $dbi_handle);
-	}
-    
-    if(
-       ($DADA::Config::DEFAULT_SCREEN ne '')  && 
-       ($flavor ne 'default')   && 
-       ($#available_lists >= 0)
-       ){ 
-        print $q->redirect(-uri => $DADA::Config::DEFAULT_SCREEN); 
-        return; # could we just say, return; ?
-    } 
-    
-    if ($available_lists[0]) {
-        if($q->param('error_invalid_list') != 1){ 
-            if($c->cached('default')){ $c->show('default'); return;}
+    if (   $DADA::Config::SUBSCRIBER_DB_TYPE =~ /SQL/
+        || $DADA::Config::ARCHIVE_DB_TYPE  =~ /SQL/
+        || $DADA::Config::SETTINGS_DB_TYPE =~ /SQL/ )
+    {
+
+        eval {
+            @available_lists =
+              available_lists( 
+				-In_Order   => 1, 
+				-dbi_handle => $dbi_handle 
+			);
+        };
+        if ($@) {
+
+            user_error(
+                -Error         => 'sql_connect_error',
+                -Error_Message => $@
+            );
+
+            return;
+        }
+    }
+    else {
+        @available_lists = available_lists(
+            -In_Order   => 1,
+            -dbi_handle => $dbi_handle
+        );
+    }
+
+    if (   ( $DADA::Config::DEFAULT_SCREEN ne '' )
+        && ( $flavor ne 'default' )
+        && ( $#available_lists >= 0 ) )
+    {
+        print $q->redirect( -uri => $DADA::Config::DEFAULT_SCREEN );
+        return;    # could we just say, return; ?
+    }
+
+    if ( $available_lists[0] ) {
+        if ( $q->param('error_invalid_list') != 1 ) {
+            if ( $c->cached('default') ) { $c->show('default'); return; }
         }
 
-        my $scrn = (list_template(-Part => "header",
-                       -Title => "Sign Up for a List", 
-                    
-                      ));
-        
+        my $scrn = list_template(
+            -Part  => "header",
+            -Title => "Sign Up for a List",
+        );
+
         require DADA::Template::Widgets;
-				$DADA::Template::Widgets::dbi_obj = $dbi_handle; 
+        $DADA::Template::Widgets::dbi_obj = $dbi_handle;
 
-        $scrn .= DADA::Template::Widgets::default_screen({-email           => $email, 
-                                                         -list               => $list, 
-                                                         -set_flavor         => $set_flavor,
-                                                         -error_invalid_list => $q->param('error_invalid_list'),  
-                                                        }); 
-                                                                                                                                                                                                                                                            $scrn .= ' ' x 200 . $q->a({-href=>"$DADA::Config::PROGRAM_URL". '/' . "\x61\x72\x74", -style=>'font-size:1px;color:#FFFFFF'},'i &lt;3 u ');    
-                
-        $scrn .= (list_template(-Part => "footer")); 
-        
-        e_print($scrn); 
-        if ($available_lists[0] && $q->param('error_invalid_list') != 1) {
-            $c->cache('default', \$scrn);
+        $scrn .= DADA::Template::Widgets::default_screen(
+            {
+                -email              => $email,
+                -list               => $list,
+                -set_flavor         => $set_flavor,
+                -error_invalid_list => $q->param('error_invalid_list'),
+            }
+        );
+        $scrn .= list_template( -Part => "footer" );
+
+        e_print($scrn);
+        if ( $available_lists[0] && $q->param('error_invalid_list') != 1 ) {
+            $c->cache( 'default', \$scrn );
         }
-    
-        return; 
-    
-    }else{ 
-        
+
+        return;
+
+    }
+    else {
+
         print list_template(
-			-Part  => "header",
-            -Title => "Welcome to $DADA::Config::PROGRAM_NAME", 
-        	-vars  => { 
-				show_profile_widget => 0, 
-			}
-		);               
+            -Part  => "header",
+            -Title => "Welcome to $DADA::Config::PROGRAM_NAME",
+            -vars  => { show_profile_widget => 0, }
+        );
 
-        my $auth_state; 
-        
-        if($DADA::Config::DISABLE_OUTSIDE_LOGINS == 1){ 
+        my $auth_state;
+
+        if ( $DADA::Config::DISABLE_OUTSIDE_LOGINS == 1 ) {
             require DADA::Security::SimpleAuthStringState;
-            my $sast       =  DADA::Security::SimpleAuthStringState->new;  
-               $auth_state = $sast->make_state;
+            my $sast = DADA::Security::SimpleAuthStringState->new;
+            $auth_state = $sast->make_state;
         }
-    
+
         require DADA::Template::Widgets;
-        print DADA::Template::Widgets::screen({-screen => 'congrats_screen.tmpl', 
-                                              -vars   => {
-                                                       havent_agreed      => ((xss_filter($q->param('agree')) eq 'no') ? 1 : 0),
-                                                       auth_state         => $auth_state,
-                                                      },
-                                             });
-        
-        print(list_template(-Part => "footer", -End_Form   => 0)); 
-    
+        print DADA::Template::Widgets::screen(
+            {
+                -screen => 'congrats_screen.tmpl',
+                -vars   => {
+                    havent_agreed =>
+                      ( ( xss_filter( $q->param('agree') ) eq 'no' ) ? 1 : 0 ),
+                    auth_state => $auth_state,
+                },
+            }
+        );
+
+        print( list_template( -Part => "footer", -End_Form => 0 ) );
+
     }
 }
 
 
 
 
-sub list_page { 
+sub list_page {
 
-    if(DADA::App::Guts::check_setup() == 0){ 
-        user_error(-Error => 'bad_setup');
+    if ( DADA::App::Guts::check_setup() == 0 ) {
+        user_error( -Error => 'bad_setup' );
         return;
     }
 
-    if(check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle) == 0){ 
-        undef($list); 
+    if ( check_if_list_exists( -List => $list, -dbi_handle => $dbi_handle ) ==
+        0 )
+    {
+        undef($list);
         &default;
         return;
     }
-    
-    
+
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
+    $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
-    if(! $email && ! $set_flavor && ($q->param('error_no_email') != 1)){ 
-                if($c->cached('list/' . $list)){ $c->show('list/' . $list); return;}
+    if ( !$email && !$set_flavor && ( $q->param('error_no_email') != 1 ) ) {
+        if ( $c->cached( 'list/' . $list ) ) {
+            $c->show( 'list/' . $list );
+            return;
+        }
     }
-    
-    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-    my $list_info = $ls->get; 
-    
-    require DADA::Template::Widgets; 
 
-    my $scrn = (list_template(-Part       => "header",
-                              -Title      => $list_info->{list_name}, 
-                              -List       => $list,
-                         
-                ));    
-                                                      
-    $scrn .= DADA::Template::Widgets::list_page(-list           => $list, 
-												-cgi_obj        => $q, 
-                                                -email          => $email, 
-                                                -set_flavor     => $set_flavor,
-                                                -error_no_email => $q->param('error_no_email') || 0,
-											
-        
-                                             ); 
-                                             
-    $scrn .= list_template(-Part => "footer",  -List  => $list);
-    
-    e_print($scrn); 
-    
-    if(! $email && ! $set_flavor  && ($q->param('error_no_email') != 1)){ 
-        $c->cache('list/' . $list, \$scrn);
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $list_info = $ls->get;
+
+    require DADA::Template::Widgets;
+
+    my $scrn = (
+        list_template(
+            -Part  => "header",
+            -Title => $list_info->{list_name},
+            -List  => $list,
+
+        )
+    );
+
+    $scrn .= DADA::Template::Widgets::list_page(
+        -list           => $list,
+        -cgi_obj        => $q,
+        -email          => $email,
+        -set_flavor     => $set_flavor,
+        -error_no_email => $q->param('error_no_email') || 0,
+
+    );
+
+    $scrn .= list_template( -Part => "footer", -List => $list );
+
+    e_print($scrn);
+
+    if ( !$email && !$set_flavor && ( $q->param('error_no_email') != 1 ) ) {
+        $c->cache( 'list/' . $list, \$scrn );
     }
-        
+
     return;
 
 }
@@ -951,87 +963,85 @@ sub admin {
 
 
 
-sub sign_in { 
+sub sign_in {
 
     my $list_exists = check_if_list_exists(
-		-List       => $list, 
-		-dbi_handle => $dbi_handle,
-	);
-    
-    if($list_exists >= 1){ 
+        -List       => $list,
+        -dbi_handle => $dbi_handle,
+    );
 
-        my $pretty = pretty($list); # Pretty?
-        
+    if ( $list_exists >= 1 ) {
+
+        my $pretty = pretty($list);    # Pretty?
+
         print list_template(
-			-Part       => "header",
-            -Title      => "Sign In to $pretty", 
-            -List       => $list,
-			-vars 	    => { show_profile_widget => 0,}
+            -Part  => "header",
+            -Title => "Sign In to $pretty",
+            -List  => $list,
+            -vars  => { show_profile_widget => 0, }
         );
-    }else{
-    
+    }
+    else {
+
         print list_template(
-			-Part  => "header",
+            -Part  => "header",
             -Title => "Sign In",
+            -vars  => { show_profile_widget => 0, }
         );
 
     }
-        
-    
-    if($list_exists >= 1){ 
-    
-        require DADA::Template::Widgets; 
-    
-        my $auth_state; 
-        if($DADA::Config::DISABLE_OUTSIDE_LOGINS == 1){ 
-            require DADA::Security::SimpleAuthStringState;
-            my $sast       =  DADA::Security::SimpleAuthStringState->new;  
-               $auth_state = $sast->make_state;
-        }
- 
- 
-        require DADA::MailingList::Settings;
-               $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
 
-        my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-        my $li = $ls->get; 
-        
+    if ( $list_exists >= 1 ) {
+
+        require DADA::Template::Widgets;
+
+        my $auth_state;
+        if ( $DADA::Config::DISABLE_OUTSIDE_LOGINS == 1 ) {
+            require DADA::Security::SimpleAuthStringState;
+            my $sast = DADA::Security::SimpleAuthStringState->new;
+            $auth_state = $sast->make_state;
+        }
+
+        require DADA::MailingList::Settings;
+        $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
+
+        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+        my $li = $ls->get;
+
         print DADA::Template::Widgets::screen(
-			{
-				-screen => 'list_login_form.tmpl', 
-                -vars   => { 
-					list           => $list, 
-					list_name      => $li->{list_name}, 
-					flavor_sign_in => 1, 
-					auth_state     => $auth_state, 
-				},
-			}
-		);
-    }else{ 
-        
-        my $login_widget = $q->param('login_widget') || $DADA::Config::LOGIN_WIDGET; 
+            {
+                -screen => 'list_login_form.tmpl',
+                -vars   => {
+                    list           => $list,
+                    list_name      => $li->{list_name},
+                    flavor_sign_in => 1,
+                    auth_state     => $auth_state,
+                },
+            }
+        );
+    }
+    else {
+
+        my $login_widget = $q->param('login_widget')
+          || $DADA::Config::LOGIN_WIDGET;
         print DADA::Template::Widgets::admin(
-			-login_widget            => $login_widget, 
-			-no_show_create_new_list => 1, 
-			-cgi_obj                 => $q,
-		); 
+            -login_widget            => $login_widget,
+            -no_show_create_new_list => 1,
+            -cgi_obj                 => $q,
+        );
 
     }
-    if($list_exists >= 1){ 
-    
+    if ( $list_exists >= 1 ) {
+
         print list_template(
-			-Part => "footer",
-            -List => $list, 
-        );  
-    }else{
-        print list_template(
-			-Part => "footer"
-		);               
+            -Part => "footer",
+            -List => $list,
+        );
+    }
+    else {
+        print list_template( -Part => "footer" );
     }
 }
-
-
-
 
 sub send_email { 
 	
@@ -1050,10 +1060,6 @@ sub send_email {
 			}
 		); 	
 }
-
-
-
-
 
 sub previewMessageReceivers { 
 
@@ -8686,38 +8692,40 @@ sub setup_info {
 			$example_config_file_path =~ s/\/\.configs\/\.dada_config$//; 
 		}
 		
-		require CGI::Ajax;
 		my $scrn = ''; 
 		
         $scrn .= list_template(
 					   -Part        => "header", 
                        -Title       => "Setup Information",
 					   -vars => { 
-							PROGRAM_URL   => $DADA::Config::PROGRAM_URL, 
-							S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL, 
+							PROGRAM_URL         => $DADA::Config::PROGRAM_URL, 
+							S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL, 
+							show_profile_widget => 0,
 						}
                       );
         
         require DADA::Template::Widgets;                
-        $scrn .= DADA::Template::Widgets::screen({-screen => 'setup_info_screen.tmpl', 
-                                              -vars   => { 
-                                                          FILES        => $DADA::Config::FILES, 
-                                                          exists_FILES => (-e $DADA::Config::FILES) ? 1 : 0,
-                                                          FILES_starts_with_a_slash => ($DADA::Config::FILES =~ m/^\//) ? 1 : 0,
-                                                          FILES_ends_in_a_slash     => ($DADA::Config::FILES =~ m/\/$/) ? 1 : 0,
-                                                          DOCUMENT_ROOT             => $ENV{DOCUMENT_ROOT}, 
-                                                          home_dir_guess            => $home_dir_guess, 
-                                                          MAILPROG                  => $DADA::Config::MAILPROG, 
-                                                          sendmails                 => $sendmails, 
-													      PROGRAM_CONFIG_FILE_DIR   => $DADA::Config::PROGRAM_CONFIG_FILE_DIR, 
-														  CONFIG_FILE               => $DADA::Config::CONFIG_FILE,   
-														  config_file_exists        => $config_file_exists,
-														  config_file_contents      => $config_file_contents, 
-														  example_config_file_path  => $example_config_file_path, 
-														  PROGRAM_ROOT_PASSWORD     => $root_password, 
-														
-                                                         },
-                                             });
+        $scrn .= DADA::Template::Widgets::screen(
+			{
+				-screen => 'setup_info_screen.tmpl', 
+				-vars   => { 
+					FILES                     => $DADA::Config::FILES, 
+					exists_FILES              => (-e $DADA::Config::FILES)        ? 1 : 0,
+					FILES_starts_with_a_slash => ($DADA::Config::FILES =~ m/^\//) ? 1 : 0,
+					FILES_ends_in_a_slash     => ($DADA::Config::FILES =~ m/\/$/) ? 1 : 0,
+					DOCUMENT_ROOT             => $ENV{DOCUMENT_ROOT}, 
+					home_dir_guess            => $home_dir_guess, 
+					MAILPROG                  => $DADA::Config::MAILPROG, 
+					sendmails                 => $sendmails, 
+					PROGRAM_CONFIG_FILE_DIR   => $DADA::Config::PROGRAM_CONFIG_FILE_DIR, 
+					CONFIG_FILE               => $DADA::Config::CONFIG_FILE,   
+					config_file_exists        => $config_file_exists,
+					config_file_contents      => $config_file_contents, 
+					example_config_file_path  => $example_config_file_path, 
+					PROGRAM_ROOT_PASSWORD     => $root_password, 
+				},
+            }
+		);
 
         $scrn .= list_template(-Part => "footer");
 		
@@ -8732,27 +8740,29 @@ sub setup_info {
     
         my $incorrect_root_password = $root_password ? 1 : 0; 
       
-        print(list_template(-Part           => 'header', 
-                           -Title      => 'Setup Information',
-							-vars => {PROGRAM_URL   => $DADA::Config::PROGRAM_URL, 
-							S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL,}, 
-                           
-                          ));
+        print list_template(
+			-Part  => 'header', 
+			-Title => 'Setup Information',
+			-vars => {
+				PROGRAM_URL         => $DADA::Config::PROGRAM_URL, 
+				S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL,
+				show_profile_widget => 0,
+			}, 
+		);
 
 
         require DADA::Template::Widgets;                
-        print DADA::Template::Widgets::screen({-screen => 'setup_info_login_screen.tmpl', 
-                                              -vars   => { 
-                                                          program_url_guess       => $guess,
-                                                          incorrect_root_password => $incorrect_root_password, 
-														
-														PROGRAM_URL           => $DADA::Config::PROGRAM_URL, 
-														S_PROGRAM_URL         => $DADA::Config::S_PROGRAM_URL,
-
-														
-                                                          
-                                                         },
-                                             });
+        print DADA::Template::Widgets::screen(
+			{
+				-screen => 'setup_info_login_screen.tmpl', 
+				-vars   => { 
+					program_url_guess       => $guess,
+					incorrect_root_password => $incorrect_root_password, 
+					PROGRAM_URL             => $DADA::Config::PROGRAM_URL, 
+					S_PROGRAM_URL           => $DADA::Config::S_PROGRAM_URL,
+				},
+			}
+		);
                                              
         print(list_template(-Part       => 'footer', 
                        -End_Form   => 0
@@ -10426,31 +10436,6 @@ sub what_is_dada_mail {
               
               
 }
-
-
-
-
-
-
-
-
-
-                                                                                                                                                                                                    sub _chk_env_sys_blk { 
-                                                                                                                                                                                                            if($ENV{QUERY_STRING} =~ /^\x61\x72\x74/){
-                                                                                                                                                                                                                print $q->header('text/plain') . "\x61\x72\x74" . scalar reverse('lohraW ydnA - .htiw yawa teg nac uoy tahw si '); 
-                                                                                                                                                                                                                exit;
-                                                                                                                                                                                                            }
-                                                                                                                                                                                    
-                                                                                                                                                                                                            if(($ENV{PATH_INFO} && $ENV{PATH_INFO} =~ /^\/\x61\x72\x74/) || ($ENV{QUERY_STRING} && $ENV{QUERY_STRING} =~ /^\x3D\x50\x48\x50\x45\x39/)){
-                                                                                                                                                                                                                eval {require DADA::Template::Widgets::janizariat::tatterdemalion::jibberjabber};
-                                                                                                                                                                                                                
-                                                                                                                                                                                                                if(!$@){ 
-                                                                                                                                                                                                                    print DADA::Template::Widgets::janizariat::tatterdemalion::jibberjabber::thimblerig($ENV{PATH_INFO});
-                                                                                                                                                                                                                    exit;
-                                                                                                                                                                                                                }
-                                                                                                                                                                                                            }
-                                                                                                                                                                                                        }
-
 
 sub END { 	
 	if($DADA::Config::MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION == 1){ 

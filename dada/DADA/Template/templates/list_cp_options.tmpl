@@ -13,30 +13,38 @@
 
 <legend>FCKeditor/CKeditor Options</legend> 
 
+<ul>
+	
 <!-- tmpl_if FCKEDITOR_URL --> 
+<li>
  <p class="alert">FCKeditor is currently configured in <!-- tmpl_var PROGRAM_NAME --> at: 
-	<a href="<!-- tmpl_var FCKEDITOR_URL ESCAPE="HTML" -->" target="_blank">
+	
+		<a href="<!-- tmpl_var FCKEDITOR_URL ESCAPE="HTML" -->" target="_blank">
 		<!-- tmpl_var FCKEDITOR_URL ESCAPE="HTML" -->
 	</a>
-</p>
-<!-- tmpl_else --> 
+</p></li>
+<!-- tmpl_else -->  
+   <li>
 	<p class="alert">
-		FCKeditor does not currently seem to be configured in <!-- tmpl_var PROGRAM_NAME -->
-	</p>
+			FCKeditor does not currently seem to be configured in <!-- tmpl_var PROGRAM_NAME -->
+	</p></li>
 <!-- /tmpl_if -->
 
+
+
 <!-- tmpl_if CKEDITOR_URL --> 
- <p class="alert">CKeditor is currently configured in <!-- tmpl_var PROGRAM_NAME --> at: 
+<li> <p class="alert">CKeditor is currently configured in <!-- tmpl_var PROGRAM_NAME --> at: 
 	<a href="<!-- tmpl_var CKEDITOR_URL ESCAPE="HTML" -->" target="_blank">
 		<!-- tmpl_var CKEDITOR_URL ESCAPE="HTML" -->
 	</a>
-</p>
+</p></li>
 <!-- tmpl_else --> 
+	<li>
 	<p class="alert">
 		CKeditor does not currently seem to be configured in <!-- tmpl_var PROGRAM_NAME -->
-	</p>
+	</p></li>
 <!-- /tmpl_if -->
-
+</ul> 
 
 <table cellpadding="5" border="0"> 
 	<tr> 
