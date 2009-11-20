@@ -503,17 +503,45 @@ if($ENV{PATH_INFO}){
 
 #---------------------------------------------------------------------#
 
+# I don't like this at all: 
+my $flavor = undef;      
+if($q->param('flavor')){ 
+	$flavor = $q->param('flavor'); 		
+}
+elsif($q->param('f')){ 
+	$flavor = $q->param('f'); 
+	$q->param('flavor', $q->param('f'));
+}
+my $email = undef;      
 
-my $flavor           = $q->param('flavor'); 
-   $flavor           = $q->param('f') unless($flavor); 
+if($q->param('email')){ 
+	$email = $q->param('email'); 		
+}
+elsif($q->param('e')){ 
+	$email = $q->param('e'); 
+	$q->param('email', $q->param('e'));
+}
+
+my $list = undef; 
+if($q->param('list')){
+	$list = $q->param('list'); 		
+}
+elsif($q->param('l')){ 
+	$list = $q->param('l'); 
+	$q->param('list',  $q->param('l'));
+}
+
+my $pin = undef; 
+if($q->param('pin')){ 
+	$pin = $q->param('pin'); 		
+}
+elsif($q->param('p')){ 
+	$pin = $q->param('p'); 
+	$q->param('pin', $q->param('p'));
+}
+
 my $process          = $q->param('process');
-my $email            = $q->param('email') || "";
-   $email            = $q->param('e')     || "" unless($email);                                 
-my $list             = $q->param('list');
-   $list             = $q->param('l') unless($list);
 my $list_name        = $q->param('list_name');                            
-my $pin              = $q->param('pin');                                                
-   $pin              = $q->param('p') unless($pin);                                                  
 my $admin_email      = $q->param('admin_email'); 
 my $list_owner_email = $q->param('list_owner_email'); 
 my $info             = $q->param('info');
@@ -565,7 +593,6 @@ sub run {
 	'unsubscribe_flash_xml'   =>    \&unsubscribe_flash_xml,
 	'new'                     =>    \&confirm,             
 	'unsubscribe'             =>    \&unsubscribe,         
-	#'admin'                   =>    \&admin,               
 	'login'                   =>    \&login,             
 	'logout'                  =>    \&logout,   
 	'log_into_another_list'   =>    \&log_into_another_list, 
@@ -578,7 +605,6 @@ sub run {
 	'view_list'               =>    \&view_list,  
 	'subscription_requests'   =>    \&subscription_requests, 
 	'remove_all_subscribers'  =>    \&remove_all_subscribers,          
-	#'view_list_options'       =>    \&view_list_options, # Gone. 
 	'view_list_options'       =>    \&list_cp_options, 
 	'edit_subscriber'         =>    \&edit_subscriber,
 	'add'                     =>    \&add,      
@@ -589,10 +615,8 @@ sub run {
 	'subscription_options'    =>    \&subscription_options,
 	'send_email'              =>    \&send_email,         
 	'previewMessageReceivers' =>    \&previewMessageReceivers, 
-
 	'sending_monitor'         =>    \&sending_monitor, 
 	'print_mass_mailing_log'  =>    \&print_mass_mailing_log, 
-
 	'preview_form'            =>    \&preview_form,     
 	'checker'                 =>    \&checker,             
 	'edit_template'           =>    \&edit_template,         
@@ -619,9 +643,8 @@ sub run {
 	'sending_preferences'     =>    \&sending_preferences, 
 	'mass_mailing_preferences' =>    \&mass_mailing_preferences,
 	'previewBatchSendingSpeed' =>   \&previewBatchSendingSpeed, 
-	'adv_sending_preferences'     =>    \&adv_sending_preferences, 
+	'adv_sending_preferences' =>    \&adv_sending_preferences, 
 	'sending_tuning_options'  =>    \&sending_tuning_options, 
-	#'sign_in'                 =>    \&sign_in,              
 	'filter_using_black_list' =>    \&filter_using_black_list,
 	'search_archive'          =>    \&search_archive,        
 	'send_archive'            =>    \&send_archive,         
@@ -629,8 +652,8 @@ sub run {
 	'pass_gen'                =>    \&pass_gen,              
 	'send_url_email'          =>    \&send_url_email,
 	'feature_set'             =>    \&feature_set,
-	'list_cp_options'          =>    \&list_cp_options, 
-	'profile_fields'           =>    \&profile_fields, 
+	'list_cp_options'         =>    \&list_cp_options, 
+	'profile_fields'          =>    \&profile_fields, 
 	'sending_preferences_test' =>    \&sending_preferences_test, 
 	'author'                  =>    \&author,
 	'list'                    =>    \&list_page,
@@ -652,8 +675,8 @@ sub run {
 
 
 
-	'subscription_form_html' =>     \&subscription_form_html, 
-	'subscription_form_js'   =>     \&subscription_form_js, 
+	'subscription_form_html'  =>     \&subscription_form_html, 
+	'subscription_form_js'    =>     \&subscription_form_js, 
 
 
 	'what_is_dada_mail'       =>    \&what_is_dada_mail, 
