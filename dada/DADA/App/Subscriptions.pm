@@ -1234,7 +1234,7 @@ sub unsubscribe {
             
                 # With... Query String?
                 my $qs = ''; 
-                if($li->{use_alt_url_unsub_confirm_success_w_qs} == 1){ 
+                if($li->{alt_url_unsub_confirm_success_w_qs} == 1){ 
                     $qs = '?list=' . $list . '&rm=unsub_confirm&status=1&email=' . DADA::App::Guts::uriescape($email); 
                 }
                 my $r = $q->redirect(-uri => $li->{alt_url_unsub_confirm_success} . $qs);
@@ -1248,8 +1248,6 @@ sub unsubscribe {
                            -Title => "Please Confirm Your Unsubscription",
                            -List  => $li->{list},
                       );
-                # $li->{html_unsub_confirmation_message} =~ s/\[subscriber_email\]/$email/g; 
-                # print $fh $li->{html_unsub_confirmation_message}; 
                 
                my $s = $li->{html_unsub_confirmation_message};
                require DADA::Template::Widgets; 
