@@ -2,17 +2,14 @@
 
 =head1 NAME A Sample Subscription Form Using Flash
 
-=head1 CAVEAT! 
+=head2 Flash 5 Version
 
-This Flash hook was made when Flash 5 was the new kid on the block. It's 
-ways of doing things are probably outdated. 
+The Flash SWF described in this doc was made when Flash 5 was the new kid on the block. It's 
+ways of doing things are probably outdated.
 
-There I<is> an updated flash file for Action Script 2.0 saved at: 
+There is now an AS2 script and AS3 code examples (below) 
 
- dada/extras/Flash/email_subscription_form_AS2.fla
 
-I haven't thouroughly tested it, as I do not use Flash much myself, but it's 
-worth investigating. 
 
 =head1 INTRODUCTION
 
@@ -158,17 +155,111 @@ Generally, you'll need to put a file in your public html directory called, I<cro
 
 Where, I<example.com> is the domain of the site you have Dada Mail installed. 
 
+=head1 Up-To-Date Action Script Code
 
-=head2 DEBUGGING
+=head2 Action Script 2 Version
+
+There I<is> an updated flash file for Action Script 2.0 saved at: 
+
+ dada/extras/Flash/email_subscription_form_AS2.fla
+
+I haven't thouroughly tested it, as I do not use Flash much myself, but it's 
+worth investigating.
+
+=head2 Action Script 3 Version
+
+This code was submitted by the good people at L<http://runrobots.com>:
+
+	// note that this code will only work when the swf is on the server in the same directory as the Dada mail.cgi file.
+
+	// mainContent is a movieClip that contains all the text and buttons
+	// mainContent.signUpAddress is an input text field
+	// mainContent.submitMessage is a dynamic text field
+	// mainContent.submitButton is a button for processing the form
+	// mainContent.alternateSignUpLink is a button that appears if there is a problem. It will take the user to the html sign up page.
+
+	// when page loads:
+	mainContent.signUpAddress.maxChars=75;
+	mainContent.submitMessage.text="";
+	mainContent.alternateSignUpLink.mouseEnabled=false;
+	mainContent.alternateSignUpLink.alpha=0;
+	stage.focus=mainContent.signUpAddress;
+	mainContent.submitButton.mouseEnabled=true;
+	mainContent.submitButton.addEventListener(MouseEvent.CLICK, submitClick, false, 0, true);
+	mainContent.alternateSignUpLink.addEventListener(MouseEvent.CLICK, alternateSignUpClick, false, 0, true);
+
+	// when mainContent.submitButton is pressed:
+	function submitClick(e:MouseEvent):void {
+		var subLoader:URLLoader = new URLLoader();
+		subLoader.addEventListener(Event.COMPLETE, loadXML);
+		subLoader.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
+		subLoader.load(new URLRequest("mail.cgi?flavor=subscribe_flash_xml&list=listShortName&email="+mainContent.signUpAddress.text));
+		mainContent.signUpAddress.type=TextFieldType.DYNAMIC;
+		mainContent.signUpAddress.selectable=false;
+		mainContent.submitButton.mouseEnabled=false;
+		mainContent.submitMessage.text="Processing. Please wait.";
+	}
+
+	// if there is a processing error:
+	function onIOError(e:Event):void {
+		mainContent.submitMessage.text="There was a connection error.\nPlease visit the following link to sign up:";
+		mainContent.alternateSignUpLink.mouseEnabled=true;
+		mainContent.alternateSignUpLink.alpha=1;
+	}
+
+	// once the connection is made, creating and interpreting the XML returned data
+	function loadXML(e:Event):void {
+		var subData:XML = new XML();
+		subData=new XML(e.target.data);
+		if (subData.status=="1") {
+			mainContent.submitMessage.text="Thank you for signing up.\nYou should receive a confirmation email shortly.";
+		} else {
+			var errorMessage:String=subData.errors.error;
+			switch (errorMessage) {
+				case ("invalid_email") :
+					mainContent.submitMessage.text="This email address is invalid, please re-enter your address.";
+					mainContent.signUpAddress.type=TextFieldType.INPUT;
+					mainContent.signUpAddress.selectable=true;
+					mainContent.submitButton.mouseEnabled=true;
+					break;
+				case ("subscribed") :
+					mainContent.submitMessage.text="The database shows that this email address has already been subscribed.";
+					break;
+				case ("already_sent_sub_confirmation") :
+					mainContent.submitMessage.text="A confirmation email has already been sent to this address.\nYou must visit the following link to sign up using this address:";
+					mainContent.alternateSignUpLink.mouseEnabled=true;
+					mainContent.alternateSignUpLink.alpha=1;
+					break;
+				default :
+					// default is when none of the above are true (in case of any other errors)
+					mainContent.submitMessage.text="Oops, something went wrong.\nPlease visit the following link to sign up:";
+					mainContent.alternateSignUpLink.mouseEnabled=true;
+					mainContent.alternateSignUpLink.alpha=1;
+					break;
+			}
+		}
+	}
+
+	// okay, this script submission isn't working, let's try the html page
+	function alternateSignUpClick(e:MouseEvent):void {
+		navigateToURL(new URLRequest("http://www.yourwebsite.com/mail.cgi/list/listShortName/"),"_blank");	
+	}
+
+I haven't personally tested this code out myself, but should give you a good starting point for your own 
+AS3 Flash scripts.
+
+
+
+=head1 DEBUGGING
 
 Sometimes using XML from an outside source within Flash can be difficult to debug, so 
 I made it easy for you to just check out the XML doc in your browser add B<&test=1> to the 
 end of the already-too-large-to-type-yet-again query string and paste that into a web browser. 
 
 
-=head2 FAQS
+=head1 FAQS
 
-=head3 Is there a sample unsubscription form in Flash? 
+=head2 Is there a sample unsubscription form in Flash? 
 
 No, but just change the query string from: 
 
