@@ -10,6 +10,11 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+[ ] It would be great if the Send the Newest Archived Message to All New Subscribers in the Archive Options section would have a checkmark for sending the latest message to users that are added by the admin.
+
+
+
 [x] Moving to new-style tags
 	[x] all the list subscription confirmation tags - eek!
 	[x] message body - eek eek!
