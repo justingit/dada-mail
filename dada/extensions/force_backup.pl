@@ -1,41 +1,55 @@
-#!/usr/bin/perl -w
-use strict;  
+#!/u#!/usr/bin/perl -w
+use strict;
+
 use lib qw(
-	../ 
-	../DADA/perllib 
-	../../../../perl 
-	../../../../perllib
-);
-
-use CGI::Carp "fatalsToBrowser";
-
-
-use DADA::Config 3.0.0 qw(!:DEFAULT);
-
+	./
+	./DADA/perllib
+); 
 use DADA::MailingList::Settings;
-use DADA::MailingList::Archives;  
-use DADA::App::Guts;  
-
+use DADA::MailingList::Archives;
+use DADA::App::Guts;
 use CGI;
+use CGI::Carp "fatalsToBrowser";
 my @lists = DADA::App::Guts::available_lists();
-foreach(@lists)
-{  
-    my $ls = DADA::MailingList::Settings->new({-list => $_});  
-    my $la = DADA::MailingList::Archives->new({-list => $ls->get}); 
- 	# DEV: Should we put Schedules here, as well?
-    $ls->backupToDir;  
+
+my $q = CGI->new;
+print $q->header();
+foreach (@lists) {
+    print $q->h1("list: $_");
+    my $ls = DADA::MailingList::Settings->new( { -list => $_ } );
+    my $la = DADA::MailingList::Archives->new( { -list => $_ } );
+
+    $ls->backupToDir;
+	print $q->h2('Mailing List Settings Backed Up.'); 
     $la->backupToDir;
+	print $q->h2('Mailing List Archives Backed Up.'); 
 }
 
-my $q = new CGI;  
-$q->charset($DADA::Config::HTML_CHARSET);
-
-print $q->header();
-print $q->h1('All lists are now backed up.'); 
-
-
+my $q = new CGI;
+print $q->h1('All lists are now backed up.');
 
 =pod
+
+=head1 NAME force_backup.cgi
+
+=head1 DESCRIPTION
+
+C<force_backup.cgi> is very small utility script that will create a backup of 
+Mailing List Settings and Mailing List Archives for Dada Mail Mailing Lists 
+that use the default, C<Db> backened. 
+
+=head1 INSTALLATION
+
+Place this script in the same directory as the, C<mail.cgi> file. Change its
+permissions to, C<755> and visit the script in your web browser. 
+
+This will run the script and create the backups. 
+
+=head1 SHORTCOMINGS
+
+This script will only make backups for the default C<Db> backend for Mailing 
+List Settings and Mailing List Archives. It probably won't do anything if you
+are running the SQL backend. 
 
 =head1 COPYRIGHT 
 
