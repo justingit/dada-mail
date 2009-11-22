@@ -94,7 +94,7 @@ sub cgi_user_error {
 	
 	# What a weird idea...
 	my ($sec, $min, $hour, $day, $month, $year) = (localtime)[0,1,2,3,4,5];
-	my $auth_code = DADA::App::Guts::make_pin(-Email => $month . '.' . $day . '.' . $args{-Email});
+	my $auth_code = DADA::App::Guts::make_pin(-Email => $month . '.' . $day . '.' . $args{-Email}, -List => $args{-List}, );
 
 	if($args{-Error} !~ /unreadable_db_files|sql_connect_error|bad_setup/){
 		if($DADA::Config::LOGIN_WIDGET eq 'popup_menu'){ 

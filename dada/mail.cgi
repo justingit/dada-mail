@@ -6537,6 +6537,7 @@ sub resend_conf {
 	if(DADA::App::Guts::check_email_pin(
 							-Email => $month . '.' . $day . '.' . $email, 
 							-Pin   => xss_filter($q->param('auth_code')), 
+							-List  => $list, 
 							) 
 							== 1
 	){ 
@@ -6561,6 +6562,9 @@ sub resend_conf {
 		# What to do - just filled them into the CGI obj? (but we just removed them, correct? 
 			
 		#die "Yes this worked!"; 
+	#	$q->param('f', $q->param('rm')); # at the very least, set the radio
+		 								 # button to the right thingy 
+		
 		list_page(); 
 		return; 
 	}
