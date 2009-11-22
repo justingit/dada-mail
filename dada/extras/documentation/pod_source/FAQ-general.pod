@@ -626,13 +626,13 @@ To find the correct template to modify: visit the screen you'd like to modify, v
 browser options), find the section in the source code that you'd like to change, and then continue reading down until 
 you see a comment,
 
-<!-- end template_name.tmpl -->
+ <!-- end template_name.tmpl -->
 
 ...or read I<up> (that is, backwards) until you bump into a:
 
-<!-- start template_name.tmpl -->
+ <!-- start template_name.tmpl -->
 
-comment. Either way, "template_name.tmpl" is the template that created that section of source code.
+comment. Either way, C<template_name.tmpl> is the template that created that section of source code.
 
 Or if you prefer, just have a look at the screen's URL - usually, the template will be named similarily to the function name that
 responded to it (the "flavor" parameter, sometimes shortened to "f", will tell you the name of the function), and usually, the template 
@@ -642,17 +642,9 @@ For example, the, "Send a Message" screen, has a flavor parameter query string o
 
 =item * Dada Mail Templating System
 
-The Dada Mail Templating system - used primarily for Email Messages and the List/User Template - is tragically simple. Tags are replaced with what they are supposed to represent. A tag looks like this: 
+This now has its own FAQ: 
 
- [i_am_a_tag]
-
-There are no conditional statements in this system. Sometimes, you'll see a tag that looks like this: 
-
- <!--[i_am_another_tag]--> 
-
-When interpolated, the entire tag, including the comment around it, will be replaced. 
-
-This templating system is the one that is disclosed to a user of the Dada Mail program.
+http://dadamailproject.com/support/documentation/features-email_template_syntax.pod.html
 
 Some of the places this system is used are as follows: 
 
