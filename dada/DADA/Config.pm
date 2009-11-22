@@ -4480,7 +4480,7 @@ encrypted.
 	open_discussion_list         => 0, 
 	
 	
-	allow_group_interpolation    => 0,
+	discussion_template_defang   => 1,
 	only_allow_group_plain_text  => 0,
 	add_reply_to                 => 1,
 	mail_group_message_to_poster => 1,

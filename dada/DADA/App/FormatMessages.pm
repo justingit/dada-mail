@@ -417,22 +417,35 @@ sub _format_text {
 			
 			if($content){ # do I need this?
 			
-				my $switch = 1; 
-				   $switch = 0 
-						if	$self->treat_as_discussion_msg                       &&
-							$self->{ls}->param('group_list')                == 1 && 
-							$self->{ls}->param('allow_group_interpolation') != 1;
-				
-				if($switch){ 	
-					   $content = $self->_parse_in_list_info(-data => $content, 
-															 -type => $entity->head->mime_type, 
-														    );
+				if(
+					$self->treat_as_discussion_msg                        &&
+					$self->{ls}->param('group_list')                 == 1 &&  
+					$self->{ls}->param('discussion_template_defang') == 1
+				) { 
+					
+					eval { 
+						$content = $self->template_defang(
+							{
+								-data => $content, 
+							}
+						);
+					};
+					if($@){ 
+						carp "Problem defanging template: $@"; 
+					}
 				
 				}
-
-				$content = $self->_apply_template(-data => $content, 
-												  -type => $entity->head->mime_type, 
-												);
+				
+				
+			   $content = $self->_parse_in_list_info(
+					-data => $content, 
+					-type => $entity->head->mime_type, 
+				);
+	
+				$content = $self->_apply_template(
+					-data => $content, 
+					-type => $entity->head->mime_type, 
+				);
 												
 
 			    if($DADA::Config::GIVE_PROPS_IN_EMAIL == 1){ 
@@ -1027,6 +1040,40 @@ sub _parse_in_list_info {
 	return $data; 
 	
 }
+
+sub template_defang {
+
+    my $self   = shift;
+    my ($args) = @_;
+    my $str    = $args->{-data};
+
+    my $b1   = quotemeta('<!--');
+    my $e1 = quotemeta('-->');
+
+    my $b2   = quotemeta('<');
+    my $e2 = quotemeta('>');
+
+    my $b3 = quotemeta('[');
+    my $e3 = quotemeta(']');
+
+	# The other option is to parse ALL "<", ">" and, "[", "]" and deal with all that, later, 
+	
+	$str =~ s{$b1(\s*tmpl_(.*?)\s*)($e1|$e2)}{\<!-- tmpl_var LT_CHAR -->!-- tmpl_$2 \-\-\<!-- tmpl_var GT_CHAR -->}gi;
+	$str =~ s{$b2(\s*tmpl_(.*?)\s*)($e1|$e2)}{\<!-- tmpl_var LT_CHAR -->tmpl_$2<!-- tmpl_var GT_CHAR -->}gi;
+
+	$str =~ s{$b1(\s*/tmpl_(.*?)\s*)($e1|$e2)}{\<!-- tmpl_var LT_CHAR -->!-- /tmpl_$2\-\-\<!-- tmpl_var GT_CHAR -->}gi;
+	$str =~ s{$b2(\s*/tmpl_(.*?)\s*)($e1|$e2)}{\<!-- tmpl_var LT_CHAR -->/tmpl_$2<!-- tmpl_var GT_CHAR -->}gi;
+
+
+    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
+        1 )
+    {
+		$str =~ s{$b3(.*?)$e3}{\<tmpl_var LEFT_BRACKET\>$1\<tmpl_var RIGHT_BRACKET\>}gi;
+    }
+    return $str;
+
+}
+
 
 
 

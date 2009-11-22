@@ -740,6 +740,10 @@ sub validate_list_email {
     $email = DADA::App::Guts::strip($email);
     my $valid = 1;
 
+	if($email eq ''){ 
+		return 1; 
+	}
+
     my @lists = DADA::App::Guts::available_lists;
     foreach my $this_list (@lists) {
 
@@ -842,6 +846,8 @@ sub cgi_default {
         $p->{discussion_pop_password} =
           DADA::Security::Password::cipher_encrypt( $li->{cipher_key},
             $p->{discussion_pop_password} );
+			
+		$p->{discussion_template_defang} = $q->param('discussion_template_defang') || 0; 
 
         if ( $list_email_validation == 1 ) {
 
@@ -924,76 +930,13 @@ sub cgi_default {
             -data => \$tmpl,
             -vars => {
 
-                authorized_senders            => $authorized_senders,
-                show_authorized_senders_table => $show_authorized_senders_table,
-
-                list_email_validation => $list_email_validation,
-
-          #GOOD_JOB_MESSAGE                  => $DADA::Config::GOOD_JOB_MESSAGE,
-                list                       => $list,
-                list_name                  => $li->{list_name},
-                disable_discussion_sending => $li->{disable_discussion_sending},
-                group_list                 => $li->{group_list},
-                append_list_name_to_subject =>
-                  $li->{append_list_name_to_subject},
-                add_reply_to            => $li->{add_reply_to},
-                discussion_pop_email    => $li->{discussion_pop_email},
-                discussion_pop_server   => $li->{discussion_pop_server},
-                discussion_pop_username => $li->{discussion_pop_username},
-                discussion_pop_password =>
-                  DADA::Security::Password::cipher_decrypt(
-                    $li->{cipher_key}, $li->{discussion_pop_password}
-                  ),
-
-                discussion_pop_auth_mode => $li->{discussion_pop_auth_mode},
-                discussion_pop_auth_mode_popup =>
-                  $discussion_pop_auth_mode_popup,
-                discussion_pop_use_ssl => $li->{discussion_pop_use_ssl},
-                can_use_ssl            => $can_use_ssl,
-
-                append_discussion_lists_with =>
-                  $li->{append_discussion_lists_with},
-
-                no_append_list_name_to_subject_in_archives =>
-                  $li->{no_append_list_name_to_subject_in_archives},
-
-                list_owner_email               => $li->{list_owner_email},
-                admin_email                    => $li->{admin_email},
-                enable_moderation              => $li->{enable_moderation},
-                moderate_discussion_lists_with =>
-                  $li->{moderate_discussion_lists_with},
-                send_moderation_msg          => $li->{send_moderation_msg},
-                send_moderation_accepted_msg =>
-                  $li->{send_moderation_accepted_msg},
-                send_moderation_rejection_msg =>
-                  $li->{send_moderation_rejection_msg},
-
-                enable_authorized_sending => $li->{enable_authorized_sending},
-                authorized_sending_no_moderation =>
-                  $li->{authorized_sending_no_moderation},
-                subscriber_sending_no_moderation =>
-                  $li->{subscriber_sending_no_moderation},
-
-                send_msgs_to_list            => $li->{send_msgs_to_list},
-                send_msg_copy_to             => $li->{send_msg_copy_to},
-                send_msg_copy_address        => $li->{send_msg_copy_address},
-                send_not_allowed_to_post_msg =>
-                  $li->{send_not_allowed_to_post_msg},
-                send_invalid_msgs_to_owner => $li->{send_invalid_msgs_to_owner},
-                mail_discussion_message_to_poster =>
-                  $li->{mail_discussion_message_to_poster},
-                PROGRAM_URL      => $DADA::Config::PROGRAM_URL,
-                archive_messages => $li->{archive_messages},
-
-                strip_file_attachments    => $li->{strip_file_attachments},
-                file_attachments_to_strip => $li->{file_attachments_to_strip},
-
-                can_use_spam_assassin => &can_use_spam_assassin(),
-                spam_level_popup_menu => $spam_level_popup_menu,
-
-                ignore_spam_messages => $li->{ignore_spam_messages},
-                ignore_spam_messages_with_status_of =>
-                  $li->{ignore_spam_messages_with_status_of},
+                authorized_senders             => $authorized_senders,
+                show_authorized_senders_table  => $show_authorized_senders_table,
+                list_email_validation          => $list_email_validation,
+              	discussion_pop_password        => DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $li->{discussion_pop_password}),
+                discussion_pop_auth_mode_popup => $discussion_pop_auth_mode_popup,
+                can_use_spam_assassin          => &can_use_spam_assassin(),
+                spam_level_popup_menu          => $spam_level_popup_menu,
 
                 find_spam_assassin_score_by_calling_spamassassin_directly => (
                     $li->{find_spam_assassin_score_by} eq
@@ -1003,30 +946,26 @@ sub cgi_default {
                     $li->{find_spam_assassin_score_by} eq
                       'looking_for_embedded_headers'
                   ) ? 1 : 0,
-
-                set_to_header_to_list_address =>
-                  $li->{set_to_header_to_list_address},
-
-                open_discussion_list =>
-                  ( $Plugin_Config->{Allow_Open_Discussion_List} == 1 )
-                ? $li->{open_discussion_list}
-                : 0,
-                rewrite_anounce_from_header =>
-                  $li->{rewrite_anounce_from_header},
-
+                
                 Plugin_URL                 => $Plugin_Config->{Plugin_URL},
                 Plugin_Name                => $Plugin_Config->{Plugin_Name},
+
                 Allow_Open_Discussion_List =>
                   $Plugin_Config->{Allow_Open_Discussion_List},
+
                 Allow_Manual_Run    => $Plugin_Config->{Allow_Manual_Run},
                 Plugin_URL          => $Plugin_Config->{Plugin_URL},
                 Manual_Run_Passcode => $Plugin_Config->{Manual_Run_Passcode},
 
-                S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL,
                 curl_location => $curl_location,
                 saved         => $q->param('saved'),
 
-            }
+            },
+			-list_settings_vars_param => { 
+				-list                => $list,
+				-dot_it              => 1,
+				i_know_what_im_doing => 1,  
+			},
         }
 
     );
@@ -3292,7 +3231,7 @@ sub default_cgi_template {
 	<!-- tmpl_var GOOD_JOB_MESSAGE  -->
 <!-- /tmpl_if -->
 
-<!--tmpl_unless list_email_validation -->
+<!-- tmpl_unless list_email_validation -->
 <p class="error">Information Not Saved! Please fix the below problems:</p>
 
 <!--/tmpl_unless--> 
@@ -3300,7 +3239,7 @@ sub default_cgi_template {
 
 
 
-<!--tmpl_if disable_discussion_sending -->
+<!-- tmpl_if list_settings.disable_discussion_sending -->
  <div style="background:#fcc;margin:5px;padding:5px;text-align:center">
   <h1>
    This Plugin is Currently Disabled for This List!
@@ -3339,8 +3278,8 @@ sub default_cgi_template {
     List Email 
    </strong>
    should be different than both your list owner email address 
-   (<em><!-- tmpl_var name="list_owner_email" escape="HTML" --></em>)
-   and your list admin email address (<em><!-- tmpl_var name="admin_email" escape="HTML" --></em>). 
+   (<em><!-- tmpl_var list_settings.list_owner_email escape="HTML" --></em>)
+   and your list admin email address (<em><!-- tmpl_var list_settings.admin_email escape="HTML" --></em>). 
    If 
    <strong>
     &quot;Make this list a discussion list&quot;
@@ -3358,7 +3297,7 @@ sub default_cgi_template {
     </label>
    </td>
    <td>
-    <input name="discussion_pop_email" id="discussion_pop_email" type="text" value="<!-- tmpl_var name=discussion_pop_email -->" class="full" />
+    <input name="discussion_pop_email" id="discussion_pop_email" type="text" value="<!-- tmpl_var list_settings.discussion_pop_email -->" class="full" />
     <!-- tmpl_unless list_email_validation --> 
 	<p class="error">!!! This email address is already being used for another List Owner Address, List Admin Email Address or List Email Address.</p>
    <!-- /tmpl_unless --> 
@@ -3372,7 +3311,7 @@ sub default_cgi_template {
     </label>
    </td>
    <td>
-    <input name="discussion_pop_server" id="discussion_pop_server" type="text" value="<!-- tmpl_var name=discussion_pop_server -->" class="full" />
+    <input name="discussion_pop_server" id="discussion_pop_server" type="text" value="<!-- tmpl_var list_settings.discussion_pop_server -->" class="full" />
    </td>
   </tr>
   <tr>
@@ -3382,7 +3321,7 @@ sub default_cgi_template {
     </label>
    </td>
    <td>
-    <input name="discussion_pop_username" id="discussion_pop_username" type="text" value="<!-- tmpl_var name=discussion_pop_username -->" class="full" />
+    <input name="discussion_pop_username" id="discussion_pop_username" type="text" value="<!-- tmpl_var list_settings.discussion_pop_username -->" class="full" />
    </td>
   </tr>
   <tr>
@@ -3419,7 +3358,7 @@ sub default_cgi_template {
      <tr>
       <td>
        <p>
-        <input type="checkbox" name="discussion_pop_use_ssl" id="discussion_pop_use_ssl" value="1" <!-- tmpl_if discussion_pop_use_ssl -->checked="checked"<!-- /tmpl_if --> <!-- tmpl_unless can_use_ssl -->disabled="disabled"<!--/tmpl_unless-->/>
+        <input type="checkbox" name="discussion_pop_use_ssl" id="discussion_pop_use_ssl" value="1" <!-- tmpl_if list_settings.discussion_pop_use_ssl -->checked="checked"<!-- /tmpl_if --> <!-- tmpl_unless can_use_ssl -->disabled="disabled"<!--/tmpl_unless-->/>
        </p>
       </td>
       <td>
@@ -3452,7 +3391,7 @@ General
  <table width="100%" cellspacing="0" cellpadding="5">
   <tr>
    <td>
-    <input name="disable_discussion_sending" id="disable_discussion_sending" type="checkbox" value="1" <!--tmpl_if disable_discussion_sending -->checked="checked"<!--/tmpl_if--> />
+    <input name="disable_discussion_sending" id="disable_discussion_sending" type="checkbox" value="1" <!--tmpl_if list_settings.disable_discussion_sending -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td>
    
@@ -3462,7 +3401,7 @@ General
       Disable sending using this method
      </label>
           <br /> 
-      ALL e-mails received at (<strong><!-- tmpl_var name="discussion_pop_email" escape="HTML" --></strong>) will be deleted.     
+      ALL e-mails received at (<strong><!-- tmpl_var list_settings.discussion_pop_email escape="HTML" --></strong>) will be deleted.     
     </p>
    
    
@@ -3473,7 +3412,7 @@ General
 
   <tr> 
    <td> 
-    <input name="enable_authorized_sending" id="enable_authorized_sending" type="checkbox" value="1" <!--tmpl_if enable_authorized_sending -->checked="checked"<!--/tmpl_if--> /> 
+    <input name="enable_authorized_sending" id="enable_authorized_sending" type="checkbox" value="1" <!--tmpl_if list_settings.enable_authorized_sending -->checked="checked"<!--/tmpl_if--> /> 
    </td>
    <td>
     <p>
@@ -3485,15 +3424,15 @@ General
        Authorized Senders may post to announce-only lists and discussions lists without being on the subscription list themselves. Once enabled, you may 
      add Authorized Senders using the 
      
-     <!-- tmpl_if enable_authorized_sending --> 
+     <!-- tmpl_if list_settings.enable_authorized_sending --> 
       <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list&type=authorized_senders">
      <!--/tmpl_if-->
      View/Add list Administration Screens.
-     <!-- tmpl_if enable_authorized_sending --> 
+     <!-- tmpl_if list_settings.enable_authorized_sending --> 
       </a>
      <!--/tmpl_if-->
     </p>
-	<!-- tmpl_if enable_authorized_sending --> 
+	<!-- tmpl_if list_settings.enable_authorized_sending --> 
 	
 	
 	
@@ -3540,7 +3479,7 @@ General
  <table width="100%" cellspacing="0" cellpadding="5">
   <tr> 
    <td> 
-    <input name="rewrite_anounce_from_header" id="rewrite_anounce_from_header" type="checkbox" value="1" <!--tmpl_if rewrite_anounce_from_header -->checked="checked"<!--/tmpl_if--> /> 
+    <input name="rewrite_anounce_from_header" id="rewrite_anounce_from_header" type="checkbox" value="1" <!--tmpl_if list_settings.rewrite_anounce_from_header -->checked="checked"<!--/tmpl_if--> /> 
    </td>
    <td>
     <p>
@@ -3552,7 +3491,7 @@ General
      Outgoing announce-only messages will go out with the address, 
 
       <strong> 
-       <!-- tmpl_var list_owner_email -->
+       <!-- tmpl_var list_settings.list_owner_email -->
       </strong> 
       set in the From: header. 
      </p>
@@ -3576,7 +3515,7 @@ General
  <table width="100%" cellspacing="0" cellpadding="5">
   <tr> 
    <td align="right">
-    <input name="group_list" id="group_list" type="checkbox" value="1" <!--tmpl_if group_list -->checked="checked"<!--/tmpl_if--> /> 
+    <input name="group_list" id="group_list" type="checkbox" value="1" <!--tmpl_if list_settings.group_list -->checked="checked"<!--/tmpl_if--> /> 
    </td>
    <td>
     <p>
@@ -3585,7 +3524,7 @@ General
      </label>
      <br />
      Everyone subscribed to your list may post messages for everyone else 
-     on your list by sending  messages to (<strong><!-- tmpl_var name="discussion_pop_email" escape="HTML" --></strong>).
+     on your list by sending  messages to (<strong><!-- tmpl_var list_settings.discussion_pop_email escape="HTML" --></strong>).
     </p>
   
   
@@ -3596,7 +3535,7 @@ General
    <!-- tmpl_if group_list -->  
         <tr> 
        <td align="right">
-        <input name="open_discussion_list" id="open_discussion_list" type="checkbox" value="1" <!--tmpl_if open_discussion_list -->checked="checked"<!--/tmpl_if--> />
+        <input name="open_discussion_list" id="open_discussion_list" type="checkbox" value="1" <!--tmpl_if list_settings.open_discussion_list -->checked="checked"<!--/tmpl_if--> />
        </td>
        <td>
         <label for="open_discussion_list">
@@ -3610,7 +3549,7 @@ General
    	 
 	<tr> 
    <td align="right">
-    <input name="append_list_name_to_subject" id="append_list_name_to_subject" type="checkbox" value="1" <!--tmpl_if append_list_name_to_subject -->checked="checked"<!--/tmpl_if--> />
+    <input name="append_list_name_to_subject" id="append_list_name_to_subject" type="checkbox" value="1" <!--tmpl_if list_settings.append_list_name_to_subject -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td>  
     <p>
@@ -3619,8 +3558,8 @@ General
      </label>
      <br />
      <select name="append_discussion_lists_with">
-      <option value="list_shortname" <!--tmpl_if expr="(append_discussion_lists_with eq 'list_shortname')" -->selected="selected" <!--/tmpl_if--> >list shortname (<!-- tmpl_var name="list" escape="HTML" -->)</option>
-      <option value="list_name"      <!--tmpl_if expr="(append_discussion_lists_with eq 'list_name')" -->selected="selected" <!--/tmpl_if--> >List Name (<!-- tmpl_var name="list_name" escape="HTML" -->)</option>
+      <option value="list_shortname" <!--tmpl_if expr="(list_settings.append_discussion_lists_with eq 'list_shortname')" -->selected="selected" <!--/tmpl_if--> >list shortname (<!-- tmpl_var list_settings.list escape="HTML" -->)</option>
+      <option value="list_name"      <!--tmpl_if expr="(list_settings.append_discussion_lists_with eq 'list_name')" -->selected="selected" <!--/tmpl_if--> >List Name (<!-- tmpl_var list_settings.list_name escape="HTML" -->)</option>
      </select> 
      <br />
      The List Name/Short Name will be surrounded by square brackets. 
@@ -3628,7 +3567,7 @@ General
      <table>
       <tr> 
        <td>
-           <input name="no_append_list_name_to_subject_in_archives" id="no_append_list_name_to_subject_in_archives" type="checkbox" value="1" <!--tmpl_if no_append_list_name_to_subject_in_archives -->checked="checked"<!--/tmpl_if--> />
+           <input name="no_append_list_name_to_subject_in_archives" id="no_append_list_name_to_subject_in_archives" type="checkbox" value="1" <!--tmpl_if list_settings.no_append_list_name_to_subject_in_archives -->checked="checked"<!--/tmpl_if--> />
        </td> 
        <td> 
         <label for="no_append_list_name_to_subject_in_archives">
@@ -3642,7 +3581,7 @@ General
   </tr>
   <tr> 
    <td align="right">
-    <input name="add_reply_to" id="add_reply_to" type="checkbox" value="1" <!--tmpl_if add_reply_to -->checked="checked"<!--/tmpl_if--> />
+    <input name="add_reply_to" id="add_reply_to" type="checkbox" value="1" <!--tmpl_if list_settings.add_reply_to -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td>
     <label for="add_reply_to">
@@ -3650,12 +3589,12 @@ General
     </label>
     <br />
      A 'Reply-To' header will be added to group list mailings that will direct 
-     replies to list messages back to the list address (<strong><!-- tmpl_var name="discussion_pop_email" escape="HTML" --></strong>).
+     replies to list messages back to the list address (<strong><!-- tmpl_var list_settings.discussion_pop_email escape="HTML" --></strong>).
    </td>
   </tr>
    <tr> 
    <td align="right">
-    <input name="mail_discussion_message_to_poster" id="mail_discussion_message_to_poster" type="checkbox" value="1" <!--tmpl_if mail_discussion_message_to_poster -->checked="checked"<!--/tmpl_if--> />
+    <input name="mail_discussion_message_to_poster" id="mail_discussion_message_to_poster" type="checkbox" value="1" <!--tmpl_if list_settings.mail_discussion_message_to_poster -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td>
     <label for="mail_discussion_message_to_poster">
@@ -3669,7 +3608,7 @@ General
   
      <tr> 
    <td align="right">
-    <input name="set_to_header_to_list_address" id="set_to_header_to_list_address" type="checkbox" value="1" <!--tmpl_if set_to_header_to_list_address -->checked="checked"<!--/tmpl_if--> />
+    <input name="set_to_header_to_list_address" id="set_to_header_to_list_address" type="checkbox" value="1" <!--tmpl_if list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td>
     <label for="set_to_header_to_list_address">
@@ -3678,6 +3617,21 @@ General
     <br />
    </td>
   </tr>
+
+     <tr> 
+   <td align="right">
+    <input name="discussion_template_defang" id="discussion_template_defang" type="checkbox" value="1" <!--tmpl_if list_settings.discussion_template_defang -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td>
+    <label for="discussion_template_defang">
+	DON'T parse templates in discussion messages
+    </label>
+    <br />
+	Parsing Template Tags could create formatting problems. 
+   </td>
+  </tr>
+
+
  </table> 
       </td>
   </tr>
@@ -3689,7 +3643,7 @@ General
   <table width="100%" cellspacing="0" cellpadding="5">    
   <tr> 
    <td> 
-    <input name="enable_moderation" id="enable_moderation" type="checkbox" value="1" <!--tmpl_if enable_moderation -->checked="checked"<!--/tmpl_if--> /> 
+    <input name="enable_moderation" id="enable_moderation" type="checkbox" value="1" <!--tmpl_if list_settings.enable_moderation -->checked="checked"<!--/tmpl_if--> /> 
    </td>
    <td>
     <p>
@@ -3697,7 +3651,7 @@ General
       Use Moderation
      </label>
      
-     <!-- tmpl_if enable_moderation --> 
+     <!-- tmpl_if list_settings.enable_moderation --> 
        - <a href="<!-- tmpl_var Plugin_URL -->?flavor=awaiting_msgs">View/Manage Messages Awaiting Moderation</a>.
      <!--/tmpl_if-->
      
@@ -3705,17 +3659,17 @@ General
           Messages sent to your discussion list will first have to be approved by: 
       </p>
    	  <p>
- 		<input type="radio" name="moderate_discussion_lists_with" value="list_owner_email" <!--tmpl_if expr="(moderate_discussion_lists_with eq 'list_owner_email')" -->checked="checked" <!--/tmpl_if--> />
+ 		<input type="radio" name="moderate_discussion_lists_with" value="list_owner_email" <!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'list_owner_email')" -->checked="checked" <!--/tmpl_if--> />
 		<label for="">
 			List Owner
 		</label>
 		<br />
 
- 			<input type="radio" name="moderate_discussion_lists_with" value="authorized_sender_email" <!--tmpl_if expr="(moderate_discussion_lists_with eq 'authorized_sender_email')" -->checked="checked"<!--/tmpl_if--><!-- tmpl_unless enable_authorized_sending -->disabled="disabled"<!-- /tmpl_unless --> />
+ 			<input type="radio" name="moderate_discussion_lists_with" value="authorized_sender_email" <!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'authorized_sender_email')" -->checked="checked"<!--/tmpl_if--><!-- tmpl_unless list_settings.enable_authorized_sending -->disabled="disabled"<!-- /tmpl_unless --> />
 			<label for="">
 				List Owner or an Authorized Sender
 			</label>
-			<!-- tmpl_unless enable_authorized_sending --><span class="error">
+			<!-- tmpl_unless list_settings.enable_authorized_sending --><span class="error">
 	             Disabled. Enable, &quot;Allow Messages Received From Authorized Senders &quot;, to enabled this option.
 	            </span>
 			<!-- /tmpl_unless -->
@@ -3723,11 +3677,11 @@ General
 		</p>      
      <table  cellspacing="0" cellpadding="5">
 
-  <!-- tmpl_if enable_authorized_sending -->  
-     <!-- tmpl_if group_list -->          
+  <!-- tmpl_if list_settings.enable_authorized_sending -->  
+     <!-- tmpl_if list_settings.group_list -->          
       <tr>
        <td>
-        <input name="authorized_sending_no_moderation" id="authorized_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if authorized_sending_no_moderation -->checked="checked"<!--/tmpl_if--> />
+        <input name="authorized_sending_no_moderation" id="authorized_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if list_settings.authorized_sending_no_moderation -->checked="checked"<!--/tmpl_if--> />
        </td>
        <td>
         <p>
@@ -3741,11 +3695,11 @@ General
      <!--/tmpl_if-->
    <!--/tmpl_if-->     
      	   
- <!-- tmpl_if open_discussion_list -->       
-   <!-- tmpl_if group_list --> 
+ <!-- tmpl_if list_settings.open_discussion_list -->       
+   <!-- tmpl_if list_settings.group_list --> 
       <tr>
        <td>
-        <input name="subscriber_sending_no_moderation" id="subscriber_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if subscriber_sending_no_moderation -->checked="checked"<!--/tmpl_if--> />
+        <input name="subscriber_sending_no_moderation" id="subscriber_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if list_settings.subscriber_sending_no_moderation -->checked="checked"<!--/tmpl_if--> />
        </td>
        <td>
         <p>
@@ -3762,7 +3716,7 @@ General
      <table  cellspacing="0" cellpadding="5">
            <tr>
        <td>
-        <input name="send_moderation_msg" id="send_moderation_msg" type="checkbox" value="1" <!--tmpl_if send_moderation_msg -->checked="checked"<!--/tmpl_if--> />
+        <input name="send_moderation_msg" id="send_moderation_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_msg -->checked="checked"<!--/tmpl_if--> />
        </td>
        <td>
         <p>
@@ -3776,7 +3730,7 @@ General
        
        <tr>
        <td>
-        <input name="send_moderation_accepted_msg" id="send_moderation_accepted_msg" type="checkbox" value="1" <!--tmpl_if send_moderation_accepted_msg -->checked="checked"<!--/tmpl_if--> />
+        <input name="send_moderation_accepted_msg" id="send_moderation_accepted_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_accepted_msg -->checked="checked"<!--/tmpl_if--> />
        </td>
        <td>
         <p>
@@ -3790,7 +3744,7 @@ General
        
       <tr>
        <td>
-        <input name="send_moderation_rejection_msg" id="send_moderation_rejection_msg" type="checkbox" value="1" <!--tmpl_if send_moderation_rejection_msg -->checked="checked"<!--/tmpl_if--> />
+        <input name="send_moderation_rejection_msg" id="send_moderation_rejection_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_rejection_msg -->checked="checked"<!--/tmpl_if--> />
        </td>
        <td>
         <p>
@@ -3836,7 +3790,7 @@ General
     <table>
      <tr>
       <td> 
-       <input type="checkbox" name="send_msgs_to_list" id="send_msgs_to_list" value="1" <!-- tmpl_if send_msgs_to_list -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="send_msgs_to_list" id="send_msgs_to_list" value="1" <!-- tmpl_if list_settings.send_msgs_to_list -->checked="checked"<!--/tmpl_if--> />
       </td> 
       <td>
        <label for="send_msgs_to_list">
@@ -3846,14 +3800,14 @@ General
      </tr> 
      <tr> 
       <td>
-       <input type="checkbox" name="send_msg_copy_to" id="send_msg_copy_to" value="1" <!-- tmpl_if send_msg_copy_to -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="send_msg_copy_to" id="send_msg_copy_to" value="1" <!-- tmpl_if list_settings.send_msg_copy_to -->checked="checked"<!--/tmpl_if--> />
       </td>
       <td>
        <label for="send_msg_copy_to">
         have a copy of the original message forwarded <label for="send_msg_copy_address">to</label>:
        </label>
        <p>
-        <input type="text" name="send_msg_copy_address" id="send_msg_copy_address"value="<!-- tmpl_var send_msg_copy_address -->" />
+        <input type="text" name="send_msg_copy_address" id="send_msg_copy_address"value="<!-- tmpl_var list_settings.send_msg_copy_address -->" />
        </p>
       </td> 
      </tr> 
@@ -3863,7 +3817,7 @@ General
       </td>
       <td>
        <p>
-        <!-- tmpl_if archive_messages --> 
+        <!-- tmpl_if list_settings.archive_messages --> 
          <p class="positive"> 
          * Archiving is Enabled.
          </p>
@@ -3888,7 +3842,7 @@ General
     <table> 
      <tr>
       <td> 
-       <input type="checkbox" name="send_invalid_msgs_to_owner" id="send_invalid_msgs_to_owner" value="1" <!-- tmpl_if send_invalid_msgs_to_owner -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="send_invalid_msgs_to_owner" id="send_invalid_msgs_to_owner" value="1" <!-- tmpl_if list_settings.send_invalid_msgs_to_owner -->checked="checked"<!--/tmpl_if--> />
       </td> 
       <td>
        <label for="send_invalid_msgs_to_owner">
@@ -3910,7 +3864,7 @@ General
      
      <tr> 
       <td> 
-       <input type="checkbox" name="send_not_allowed_to_post_msg" id="send_not_allowed_to_post_msg" value="1" <!-- tmpl_if send_not_allowed_to_post_msg -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="send_not_allowed_to_post_msg" id="send_not_allowed_to_post_msg" value="1" <!-- tmpl_if list_settings.send_not_allowed_to_post_msg -->checked="checked"<!--/tmpl_if--> />
       </td> 
       <td> 
        <label for="send_not_allowed_to_post_msg">
@@ -3939,7 +3893,7 @@ Mailing List Security
 
    <tr>
       <td> 
-       <input type="checkbox" name="ignore_spam_messages" id="ignore_spam_messages" value="1" <!-- tmpl_if ignore_spam_messages -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="ignore_spam_messages" id="ignore_spam_messages" value="1" <!-- tmpl_if list_settings.ignore_spam_messages -->checked="checked"<!--/tmpl_if--> />
       </td> 
       <td>
        <label for="ignore_spam_messages">
@@ -3947,7 +3901,7 @@ Mailing List Security
        </label></p> 
       
        
-        <!-- tmpl_unless can_use_spam_assassin --> 
+        <!-- tmpl_unless list_settings.can_use_spam_assassin --> 
           <p class="error">* SpamAssassin may not be installed on your server.</p>
         <!--/tmpl_unless--> 
       
@@ -3993,7 +3947,7 @@ Mailing List Security
         </table> 
       
        <p> 
-        Messages must reach a SpamAssassin level of at least: <!-- tmpl_var spam_level_popup_menu --> to be considered SPAM.
+        Messages must reach a SpamAssassin level of at least: <!-- tmpl_var list_settings.spam_level_popup_menu --> to be considered SPAM.
        </p> 
 
       </td>
@@ -4004,7 +3958,7 @@ Mailing List Security
      <tr>
       <td> 
       
- <input type="checkbox" name="strip_file_attachments" id="strip_file_attachments" value="1" <!-- tmpl_if strip_file_attachments -->checked="checked"<!--/tmpl_if--> />
+ <input type="checkbox" name="strip_file_attachments" id="strip_file_attachments" value="1" <!-- tmpl_if list_settings.strip_file_attachments -->checked="checked"<!--/tmpl_if--> />
  
  </td>
  <td>
@@ -4012,7 +3966,7 @@ Mailing List Security
  <label for="strip_file_attachments">Strip attachments that have the following file ending or mime-type:</label> <em>(separated by spaces)</em>
 	 <br />
 	 
-         <input type="text" name="file_attachments_to_strip" id="file_attachments_to_strip"value="<!-- tmpl_var file_attachments_to_strip -->" class="full" />
+         <input type="text" name="file_attachments_to_strip" id="file_attachments_to_strip"value="<!-- tmpl_var list_settings.file_attachments_to_strip -->" class="full" />
 
   </p>
  </td>
