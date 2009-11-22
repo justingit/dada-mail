@@ -2455,8 +2455,6 @@ sub can_use_twitter {
 }
 
 sub tweet_about_mass_mailing { 
-
-	warn 'tweet tweet'; 
 	
 	my ($list, $subject, $url) = @_; 
 	
@@ -2483,12 +2481,12 @@ sub tweet_about_mass_mailing {
 				
 			};
 			if($@){ 
-				warn 'it didnt work.'; 
+				#warn 'it didnt work.'; 
 				warn $@; 
 				return 0; 
 			}
 			else { 
-				warn 'it seems to have worked.'; 
+				#warn 'it seems to have worked.'; 
 				return 1; 
 			}	
 		}
