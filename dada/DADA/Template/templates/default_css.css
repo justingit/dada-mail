@@ -442,6 +442,14 @@ label {
 	color:#000;
 }
 
+.label_by_5 { 
+	width: 4em;
+	float: left;
+	text-align: right;
+	margin-right: 0.5em;
+	display: block;
+}
+
 fieldset { 
 
     margin-left:    5px;
@@ -493,7 +501,14 @@ input {
 
 input.full {
 	width:95%;
+	margin-top:-5px;
+	
 }
+input.midi {
+	margin-top:-5px;
+	width:50%;
+}
+
 
 select {
 	margin:3px;

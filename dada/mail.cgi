@@ -1544,10 +1544,24 @@ sub sending_monitor {
       	  }
 
 
-       
-                  
+            
            require DADA::Template::Widgets;  
-           my $scrn =  DADA::Template::Widgets::screen(
+       
+	        my $header_subject_label = DADA::Template::Widgets::screen(
+	            {
+	                -data                     => \$status->{email_fields}->{Subject},
+	                -list_settings_vars_param => {
+	                    -list   => $list,
+	                    -dot_it => 1,
+	                },
+	                -subscriber_vars_param => {
+	                    -use_fallback_vars => 1,
+	                    -list              => $list,
+	                },
+	            }
+	        );
+
+    		my $scrn =  DADA::Template::Widgets::screen(
 						{
 							-screen => 'sending_monitor_screen.tmpl', 
                             -vars   => { 
@@ -1570,7 +1584,7 @@ sub sending_monitor {
 								time_since_last_sendout      => _formatted_runtime((time - int($status->{last_access}))), 
 								its_killed                   => $its_killed, 
 								header_subject               => $status->{email_fields}->{Subject}, 
-								header_subject_label         => (length($status->{email_fields}->{Subject}) > 50) ? (substr($status->{email_fields}->{Subject}, 0, 49) . '...') : ($status->{email_fields}->{Subject}),  
+								header_subject_label         => (length($header_subject_label) > 50) ? (substr($header_subject_label, 0, 49) . '...') : ($header_subject_label),  
 								auto_pickup_dropped_mailings => $li->{auto_pickup_dropped_mailings}, 
 								sending_done                 => ($status->{percent_done} < 100) ? 0 : 1, 
 								refresh_after                => $refresh_after, 

@@ -29,8 +29,8 @@
 		<legend>
 			Mailing List Message
 		</legend>
-		<p class="alert">
-			Make sure to place the, <strong>&lt;!-- tmpl_var message_body --&gt;</strong> tag in the body of this email message!
+		<p>
+			Make sure to place the, <code>&lt;!-- tmpl_var message_body --&gt;</code> tag in the body of this email message!
 		</p>
 
 		<fieldset>
@@ -38,15 +38,15 @@
 				Headers
 			</legend>
 	    <p>
-	     <label for="mailing_list_message_from_phrase">From:</label> <input type="text" name="mailing_list_message_from_phrase" id="mailing_list_message_from_phrase" value="<!-- tmpl_var mailing_list_message_from_phrase escape=HTML -->" /> &lt;<!-- tmpl_var list_owner_email -->&gt;
+	     <label for="mailing_list_message_from_phrase" class="label_by_5" >From:</label> <input type="text" name="mailing_list_message_from_phrase" id="mailing_list_message_from_phrase" value="<!-- tmpl_var mailing_list_message_from_phrase escape=HTML -->" class="midi" /> &lt;<!-- tmpl_var list_owner_email -->&gt;
 	    </p>
 
 	    <p>
-	     <label for="mailing_list_message_to_phrase">To:</label> <input type="text" name="mailing_list_message_to_phrase" id="mailing_list_message_to_phrase" value="<!-- tmpl_var mailing_list_message_to_phrase escape=HTML -->" /> &lt;<!-- tmpl_var subscriber.email -->&gt;
+	     <label for="mailing_list_message_to_phrase" class="label_by_5" >To:</label> <input type="text" name="mailing_list_message_to_phrase" id="mailing_list_message_to_phrase" value="<!-- tmpl_var mailing_list_message_to_phrase escape=HTML -->" class="midi" /> &lt;<code>&lt;!-- tmpl_var subscriber.email --&gt;</code>&gt;
 	    </p>
 
 	    <p>
-	     <label for="mailing_list_message_subject">Subject:</label> <input type="text" name="mailing_list_message_subject" id="mailing_list_message_subject" value="<!-- tmpl_var mailing_list_message_subject escape=HTML -->" class="full" />
+	     <label for="mailing_list_message_subject" class="label_by_5" >Subject:</label> <input type="text" name="mailing_list_message_subject" id="mailing_list_message_subject" value="<!-- tmpl_var mailing_list_message_subject escape=HTML -->" class="midi" />
 	    </p>
 
 	</fieldset> 
@@ -93,8 +93,8 @@
 	<p>
 		This email message is sent when someone requests to be subscribed to your list. 
 	</p>
-	<p class="alert">
-		Make sure to place the, <strong>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</strong> tag in the body of this email message!
+	<p>
+		Make sure to place the, <code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code> tag in the body of this email message!
 	</p>
 	
 	<!-- tmpl_if list_settings.no_confirm_email --> 
@@ -105,7 +105,7 @@
 	
 	
 	<p>
-	 <label for="confirmation_message_subject">Subject:</label> <input type="text" name="confirmation_message_subject" id="confirmation_message_subject" value="<!-- tmpl_var confirmation_message_subject escape=HTML -->" class="full" />
+	 <label for="confirmation_message_subject" class="label_by_5">Subject:</label><input type="text" name="confirmation_message_subject" id="confirmation_message_subject" value="<!-- tmpl_var confirmation_message_subject escape=HTML -->" class="midi" />
 	</p>
 	
 	<p><label for="confirmation_message">PlainText Message:</label>
@@ -127,7 +127,7 @@
 	<!-- /tmpl_if --> 
 	
 	<p>
-	 <label for="subscribed_message_subject">Subject:</label> <input type="text" name="subscribed_message_subject" id="subscribed_message_subject" value="<!-- tmpl_var subscribed_message_subject escape=HTML -->" class="full" />
+	 <label for="subscribed_message_subject" class="label_by_5">Subject:</label> <input type="text" name="subscribed_message_subject" id="subscribed_message_subject" value="<!-- tmpl_var subscribed_message_subject escape=HTML -->" class="midi" />
 	</p>
 	
 	<p><label for="subscribed_message">PlainText Message:</label>
@@ -150,12 +150,12 @@
 		<p class="error">Closed-Loop Opt-Out is Disabled.</p>
 	<!-- /tmpl_if --> 
 	
-	<p class="alert">
+	<p>
 		Make sure to place the, <strong>&lt;!-- tmpl_var list_confirm_unsubscribe_link --&gt;</strong> tag in the body of this email message!
 	</p>
 	
 		<p>
-	 <label for="unsub_confirmation_message_subject">Subject:</label> <input type="text" name="unsub_confirmation_message_subject" id="unsub_confirmation_message_subject" value="<!-- tmpl_var unsub_confirmation_message_subject escape=HTML -->" class="full" />
+	 <label for="unsub_confirmation_message_subject" class="label_by_5">Subject:</label> <input type="text" name="unsub_confirmation_message_subject" id="unsub_confirmation_message_subject" value="<!-- tmpl_var unsub_confirmation_message_subject escape=HTML -->" class="midi" />
 	</p>
 	
 	<p><label for="unsub_confirmation_message">PlainText Message:</label>
@@ -183,7 +183,7 @@
 
 
 		<p>
-	 <label for="unsubscribed_message_subject">Subject:</label> <input type="text" name="unsubscribed_message_subject" id="unsubscribed_message_subject" value="<!-- tmpl_var unsubscribed_message_subject escape=HTML -->" class="full" />
+	 <label for="unsubscribed_message_subject" class="label_by_5">Subject:</label> <input type="text" name="unsubscribed_message_subject" id="unsubscribed_message_subject" value="<!-- tmpl_var unsubscribed_message_subject escape=HTML -->" class="midi" />
 	</p>
 	
 	<p><label for="unsubscribed_message">PlainText Message:</label>
@@ -206,15 +206,15 @@
 			Headers: 
 		</legend>
     <p>
-     <label for="invite_message_from_phrase">From:</label> <input type="text" name="invite_message_from_phrase" id="invite_message_from_phrase" value="<!-- tmpl_var invite_message_from_phrase escape=HTML -->" /> &lt;<!-- tmpl_var list_owner_email -->&gt;
+     <label for="invite_message_from_phrase" class="label_by_5">From:</label> <input type="text" name="invite_message_from_phrase" id="invite_message_from_phrase" value="<!-- tmpl_var invite_message_from_phrase escape=HTML -->" class="midi" /> &lt;<!-- tmpl_var list_owner_email -->&gt;
     </p>
     
     <p>
-     <label for="<!-- tmpl_var subscriber.email -->">To:</label> <input type="text" name="invite_message_to_phrase" id="invite_message_to_phrase" value="<!-- tmpl_var invite_message_to_phrase escape=HTML -->" /> &lt;<!-- tmpl_var subscriber.email -->&gt;
+     <label for="<!-- tmpl_var subscriber.email -->" class="label_by_5">To:</label> <input type="text" name="invite_message_to_phrase" id="invite_message_to_phrase" value="<!-- tmpl_var invite_message_to_phrase escape=HTML -->" class="midi" /> &lt;<code>&lt;!-- tmpl_var subscriber.email --&gt;</code>&gt;
     </p>
 
     <p>
-     <label for="invite_message_subject">Subject:</label> <input type="text" name="invite_message_subject" id="invite_message_subject" value="<!-- tmpl_var invite_message_subject escape=HTML -->" class="full" />
+     <label for="invite_message_subject" class="label_by_5">Subject:</label> <input type="text" name="invite_message_subject" id="invite_message_subject" value="<!-- tmpl_var invite_message_subject escape=HTML -->" class="midi" />
     </p>
     
 	
@@ -258,7 +258,7 @@
 	</legend>
 
     <p>
-    <label for="not_allowed_to_post_message_subject">Subject:</label> <input type="text" name="not_allowed_to_post_message_subject" id="not_allowed_to_post_message_subject" value="<!-- tmpl_var not_allowed_to_post_message_subject escape=HTML -->" class="full" />
+    <label for="not_allowed_to_post_message_subject" class="label_by_5">Subject:</label> <input type="text" name="not_allowed_to_post_message_subject" id="not_allowed_to_post_message_subject" value="<!-- tmpl_var not_allowed_to_post_message_subject escape=HTML -->" class="midi" />
     </p>
     
     <p><label for="not_allowed_to_post_message">PlainText Message:</label>
@@ -289,7 +289,7 @@
 	</p>
 
     <p>
-    <label for="you_are_already_subscribed_message_subject">Subject:</label> <input type="text" name="you_are_already_subscribed_message_subject" id="you_are_already_subscribed_message_subject" value="<!-- tmpl_var you_are_already_subscribed_message_subject escape=HTML -->" class="full" />
+    <label for="you_are_already_subscribed_message_subject" class="label_by_5">Subject:</label> <input type="text" name="you_are_already_subscribed_message_subject" id="you_are_already_subscribed_message_subject" value="<!-- tmpl_var you_are_already_subscribed_message_subject escape=HTML -->" class="midi" />
     </p>
     
     <p><label for="you_are_already_subscribed_message">PlainText Message:</label>
@@ -315,7 +315,7 @@
 	<!-- /tmpl_if --> 
 
     <p>
-        <label for="send_archive_message_subject">Subject:</label> <input type="text" name="send_archive_message_subject" id="send_archive_message_subject" value="<!-- tmpl_var send_archive_message_subject escape=HTML -->" class="full" />
+        <label for="send_archive_message_subject" class="label_by_5">Subject:</label> <input type="text" name="send_archive_message_subject" id="send_archive_message_subject" value="<!-- tmpl_var send_archive_message_subject escape=HTML -->" class="midi" />
     </p>
 
 
@@ -496,7 +496,7 @@
 	</tr>
 	<tr>
 		<td>
-			<code>&lt;!-- tmpl_var list_settings.list_admin_email --&gt;</code>
+			<code>&lt;!-- tmpl_var list_settings.admin_email --&gt;</code>
 		</td>
 		<td>
 			The list administrator's email address. 

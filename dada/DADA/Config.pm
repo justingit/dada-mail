@@ -3491,7 +3491,7 @@ This email message is sent to the list owner, when a mass mailing has finished.
 =cut
 
 
-$MAILING_FINISHED_MESSAGE_SUBJECT ||= '<!-- tmpl_var list_settings.list_name -->  Mailing Complete - [message_subject]'; 
+$MAILING_FINISHED_MESSAGE_SUBJECT ||= '<!-- tmpl_var list_settings.list_name -->  Mailing Complete - <!-- tmpl_var message_subject -->'; 
 $MAILING_FINISHED_MESSAGE ||= <<EOF
 Your List Mailing has been successful!
 -----------------------------------------------------------------------

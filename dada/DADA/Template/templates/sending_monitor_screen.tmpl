@@ -319,12 +319,13 @@
 
 <hr /> 
 
-
-<p style="font-weight:bold;">
- <a href="#" onclick="toggleDisplay('verbose_sending_information');return false;">
- Show/Hide Verbose Sending Information...
- </a>
-</p>
+<fieldset> 
+	
+<legend>
+	 <a href="#" onclick="toggleDisplay('verbose_sending_information');return false;">
+ +/-
+ </a> Verbose Sending Information
+</legend>
 
 <div id="verbose_sending_information" style="display:none">
  <table class="tagchart"> 
@@ -345,15 +346,19 @@
  </table> 
 
 </div> 
+</fieldset> 
 
 
 
-<p style="font-weight:bold;">
- <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=print_mass_mailing_log&id=<!-- tmpl_var message_id -->&type=<!-- tmpl_var message_type -->" target="_blank">
- Open Mass Mailing Log in a New Window -> 
- </a>
-</p>
-
+<div class="buttonfloat">
+ <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" target="_blank">
+  <input type="hidden" name="f"    value="print_mass_mailing_log"                              /> 
+  <input type="hidden" name="id"   value="<!-- tmpl_var message_id escape="HTML" -->"          /> 
+  <input type="hidden" name="type" value="<!-- tmpl_var message_type -->"                      /> 
+  <input type="submit"             value="Open Mass Mailing Log in a New Window" class="plain" /> 
+ </form> 
+</div>
+<div class="floatclear"></div>
 
 
 

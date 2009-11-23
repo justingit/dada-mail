@@ -49,7 +49,7 @@ Mail Merging works for almost every single type of email message Dada Mail can s
 
 You can now make a query on your subscription list to send to only part of your mailing list. For example, if you have a field named, "city", you can tell Dada Mail, "only send to people whose, "city"  value is set to, 'Denver'. 
 
-Currently, this is done in the, "Send a Message" and, "Send a Webpage" screens. Click the, B< Show/Hide Partial Sending Options>. You'll be presented with a form that allows you to make simple queries and give you a preview of who's going to the message. 
+Currently, this is done in the, "Send a Message" and, "Send a Webpage" screens. Click the, B< +/- Partial Sending Options>. You'll be presented with a form that allows you to make simple queries and give you a preview of who's going to the message. 
 
 =head2 Subscriptions
 

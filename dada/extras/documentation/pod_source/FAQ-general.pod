@@ -479,7 +479,7 @@ Now, to have this image be embedded into your newsletter and sent within the ima
 
 =item * Check the, "Use the following HTML as content: " option.
 
-=item * Click, "Show/Hide Advanced Options" and select,
+=item * Click, "+/- Advanced Options" and select,
 
 B<( Images in this Webpage Should:) "be embedded in the message itself. ">
 
