@@ -524,7 +524,7 @@ my $string = q{
 [physical_address]
 [privacy_policy]
 [list_owner_email]
-[list_admin_email]
+[admin_email]
 };
 
 DADA::Template::Widgets::dada_backwards_compatibility(\$string);
@@ -540,7 +540,7 @@ like($string, qr/\[list_settings.list_name\]/);
 like($string, qr/\[list_settings.physical_address\]/);
 like($string, qr/\[list_settings.privacy_policy\]/);
 like($string, qr/\[list_settings.list_owner_email\]/);
-like($string, qr/\[list_settings.list_admin_email\]/);
+like($string, qr/\[list_settings.admin_email\]/);
 
 unlike($string, qr/\[subscriber_email\]/);
 unlike($string, qr/\[list_info\]/);
@@ -555,7 +555,7 @@ unlike($string, qr/\[info\]/);
 unlike($string, qr/\[physical_address\]/);
 unlike($string, qr/\[privacy_policy\]/);
 unlike($string, qr/\[list_owner_email\]/);
-unlike($string, qr/\[list_admin_email\]/);
+unlike($string, qr/\[admin_email\]/);
 
 undef $string; 
 	

@@ -126,7 +126,7 @@ Use:
 
  [list_settings.list_owner_email]
 
-=item * [list_admin_email]
+=item * [admin_email]
 
 Use: 
 

@@ -1949,7 +1949,7 @@ sub dada_backwards_compatibility {
         physical_address
         privacy_policy                 
         list_owner_email                      
-        list_admin_email                      
+        admin_email
     )){ 
         $$sref =~ s{\[$_\]}{[list_settings.$_]}g; 
     }
