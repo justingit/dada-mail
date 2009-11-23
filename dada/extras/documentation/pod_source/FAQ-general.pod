@@ -189,7 +189,7 @@ When your users follow this link, they will still have to enter their own email 
 
 You can change the unsubscription link from what's above, to: 
 
- <!-- tmpl_var list_unsubscribe_link -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/
+ <!-- tmpl_var list_unsubscribe_link --><!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/
 
 Which will generate a URL that looks like this: 
 
