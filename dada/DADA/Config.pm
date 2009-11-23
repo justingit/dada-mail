@@ -673,13 +673,9 @@ $SHOW_ADMIN_LINK ||= 1;
 
 =head2 $ADMIN_FLAVOR_NAME
 
-Complementary to the B<$SHOW_ADMIN_LINK> variable, B<$ADMIN_FLAVOR_NAME> allows you to set the URL needed to access the screen that has the form to log into all the lists administrated by Dada Mail and to the form to create a new list. 
+Complementary to the C<$SHOW_ADMIN_LINK> variable, C<$ADMIN_FLAVOR_NAME> allows you to set the URL needed to access the screen that has the form to log into all the lists administrated by Dada Mail and to the form to create a new list. 
 
-By default, this variable is set to, B<admin>, which means to access this screen, you'd go to a URL that looks like this: 
-
-http://example.com/cgi-bin/dada/mail.cgi?f=admin
-
-or: 
+By default, this variable is set to, C<admin>, which means to access this screen, you'd go to a URL that looks like this: 
 
 http://example.com/cgi-bin/dada/mail.cgi?f=admin
 
@@ -687,15 +683,11 @@ or:
 
 http://example.com/cgi-bin/dada/mail.cgi/admin
 
-If you set B<$ADMIN_FLAVOR_NAME> to something like, B<kookoo>: 
+If you set C<$ADMIN_FLAVOR_NAME> to something like, B<kookoo>: 
 
  $ADMIN_FLAVOR_NAME ||= 'kookoo'; 
 
 You'd then access this screen via the following URLS; 
-
-http://example.com/cgi-bin/dada/mail.cgi?f=kookoo
-
-or: 
 
 http://example.com/cgi-bin/dada/mail.cgi?f=kookoo
 
@@ -780,9 +772,9 @@ $ADMIN_FLAVOR_NAME ||= 'admin';
 
 =head2 $SIGN_IN_FLAVOR_NAME
 
-Similar to B<$ADMIN_FLAVOR_NAME>, B<$SIGN_IN_FLAVOR_NAME> holds the URL that allows you to log into a particular list (usually), although it is sometimes used to re-login into any of your lists - very similar to the administration screen, but does not give you the form to create a new list. 
+Similar to C<$ADMIN_FLAVOR_NAME>, C<$SIGN_IN_FLAVOR_NAME> holds the URL that allows you to log into a particular list (usually), although it is sometimes used to re-login into any of your lists - very similar to the administration screen, but does not give you the form to create a new list. 
 
-The same naming rules apply for this variable as they do for B<$ADMIN_FLAVOR_NAME>. It's also suggested that you append, "sign_in" to the value you set this, like so: 
+The same naming rules apply for this variable as they do for C<$ADMIN_FLAVOR_NAME>. It's also suggested that you append, "sign_in" to the value you set this, like so: 
 
 =over
 
