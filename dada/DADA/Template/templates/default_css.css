@@ -379,6 +379,8 @@ h3 {
 /* ----- PARAGRAPHS ----- */
 
 p {
+	margin-top:    0.75em;
+    margin-bottom: 0.75em;
 }
 
 p.small {
@@ -440,6 +442,7 @@ label {
 	/*font-size: .95em; */
 	font-weight:bold;
 	color:#000;
+	
 }
 
 .label_by_5 { 
@@ -452,9 +455,14 @@ label {
 
 fieldset { 
 
+
+    padding-top:    4px;
+    padding-bottom: 9px;
+    padding-left:   7px;
+    padding-right:  7px;
+
     margin-left:    5px;
     margin-right:  5px;
-    
     margin-top:    10px;
     margin-bottom: 10px;
     border: 1px solid black;
@@ -469,6 +477,7 @@ fieldset fieldset {
 
 
 legend {
+	
 	
 	font-family: 'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 	font-weight:bold;
@@ -500,13 +509,14 @@ input {
 */
 
 input.full {
-	width:95%;
 	margin-top:-5px;
+	width:95%;
 	
 }
 input.midi {
-	margin-top:-5px;
 	width:50%;
+	margin-top:-5px;
+	
 }
 
 
