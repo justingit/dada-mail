@@ -6565,9 +6565,19 @@ sub resend_conf {
 		if($e_day != $day || $e_month != $month){ 
 			# a stale blocking thingy.
 			if($q->param('rm') eq 's'){
-				my $rm_status = $lh->remove_from_list(-Email_List =>[$email], -Type => 'sub_confirm_list');    
+				my $rm_status = $lh->remove_subscriber(
+					{
+						-email => $email, 
+						-type  => 'sub_confirm_list'
+					}
+				);    
 			}elsif($q->param('rm') eq 'u'){
-				my $rm_status = $lh->remove_from_list(-Email_List =>[$email], -Type => 'unsub_confirm_list');    
+				my $rm_status = $lh->remove_subscriber(
+					{
+						-email => $email, 
+						-type  => 'unsub_confirm_list'
+					}
+				);    
 			}
 		}
 
@@ -6595,10 +6605,12 @@ sub resend_conf {
 			                }
 			        );
 			
-	        my $rm_status = $lh->remove_from_list(
-								-Email_List =>[$email], 
-								-Type       => 'sub_confirm_list'
-							);
+	        my $rm_status = $lh->remove_subscriber(
+				{ 
+					-email => $email, 
+					-type  => 'sub_confirm_list'
+				}
+			);
 
 			$q->param('list', $list);
 			$q->param('email', $email); 
@@ -6608,7 +6620,12 @@ sub resend_conf {
     
 	    }elsif($q->param('rm') eq 'u'){
 			# I like the idea better that we call the function directly... 
-	        my $rm_status = $lh->remove_from_list(-Email_List =>[$email], -Type => 'unsub_confirm_list');
+	        my $rm_status = $lh->remove_subscriber(
+				{ 
+					-email => $email, 
+					-type  => 'unsub_confirm_list'
+				}
+			);
 
 			$q->param('list', $list);
 			$q->param('email', $email); 
@@ -8559,9 +8576,10 @@ sub checker {
     my $ls = DADA::MailingList::Settings->new({-list => $list}); 
     my $li = $ls->get; 
     
-    my $email_count = $lh->remove_from_list(-Email_List => \@address,
-                                            -Type       => $type, 
-                                           );
+    my $email_count = $lh->remove_from_list(
+		-Email_List => \@address,
+        -Type       => $type, 
+    );
     
     my $should_add_to_black_list = 0; 
         
@@ -10382,13 +10400,21 @@ sub profile_update_email {
 			# This should probably go in the update_email method... 
 			require DADA::MailingList::Subscribers; 
 			foreach my $in_list(@$subs) { 
-				my $ls = DADA::MailingList::Subscribers->new(
+				my $lh = DADA::MailingList::Subscribers->new(
 					{ 
 						-list => $in_list->{'list_settings.list'},
 					}
 				);
-				$ls->remove_subscriber({-email => $profile_info->{'profile.email'}}       ); 
-				$ls->add_subscriber(   {-email => $profile_info->{'profile.update_email'}}); 
+				$lh->remove_subscriber(
+					{
+						-email => $profile_info->{'profile.email'}
+					}       
+				); 
+				$lh->add_subscriber(
+					{
+						-email => $profile_info->{'profile.update_email'}
+					}
+				); 
 			}
 			$prof->update_email;
 			#/ This should probably go in the update_email method... 

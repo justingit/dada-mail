@@ -1213,10 +1213,12 @@ sub unsubscribe {
         #        -to    => 'unsub_confirm', 
         #  ); 
        
-       my $rm_status = $lh->remove_from_list(
-                            -Email_List =>[$email], 
-                            -Type       => 'unsub_confirm_list'
-                        );
+       my $rm_status = $lh->remove_subscriber(
+			{
+				-email =>$email, 
+				-type  => 'unsub_confirm_list'
+			}
+		);
         $lh->add_subscriber(
             {
                 -email => $email,
@@ -1389,10 +1391,12 @@ sub unsub_confirm {
     	
 		warn 'removing, ' . $email . ' from unsub_confirm_list'
 			if $t; 
-        my $rm_status = $lh->remove_from_list(
-                        -Email_List =>[$email], 
-                        -Type       => 'unsub_confirm_list'
-                    );    
+        my $rm_status = $lh->remove_subscriber(
+			{ 
+	            -email => $email, 
+	            -type  => 'unsub_confirm_list'
+             }
+		);    
                     
     }
 
@@ -1507,10 +1511,12 @@ sub unsub_confirm {
              
      		warn 'removing, ' . $email . ' from, "list"'
 				if $t; 
-            $lh->remove_from_list(
-                -Email_List =>[$email], 
-                -Type       => 'list'
-            );
+            $lh->remove_subscriber(
+				{ 
+	                -email => $email, 
+	                -type  => 'list'
+            	}
+			);
         
         #}
         
