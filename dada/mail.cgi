@@ -340,7 +340,7 @@ if($ENV{PATH_INFO}){
        }
        
        
-    if($info =~ m/css$/){  
+    if($info =~ m/^css$/){  
     
         $q->param('f', 'css'); 
         
