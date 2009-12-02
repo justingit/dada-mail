@@ -9875,7 +9875,7 @@ sub profile_register {
 				-screen => 'profile_register.tmpl',
 				-vars   => { 
 					
-					'profile.email' => xss_filter($q->param('email')) || '',
+					'profile.email' => $email,
 				}
 			}
 		); 
