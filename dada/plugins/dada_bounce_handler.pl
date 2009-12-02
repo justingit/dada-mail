@@ -1,10 +1,8 @@
 #!/usr/bin/perl
 
 package dada_bounce_handler;
-
-
 use strict; 
-
+$|++; 
 #---------------------------------------------------------------------#
 # dada_bounce_handler.pl (Mystery Girl) 
 #
@@ -3603,12 +3601,14 @@ sub parse_for_windows_live {
 	
 	if(defined($entity)){ 
 		my @parts  = $entity->parts; 
-		my @parts0 = $parts[0]->parts; 
+		if($parts[0]) { 
+			my @parts0 = $parts[0]->parts; 
 
-		if ($parts0[0]->head->count('X-HmXmrOriginalRecipient')){ 
-			$email = $parts0[0]->head->get('X-HmXmrOriginalRecipient', 0);
-			$diag->{'Remote-MTA'} = 'Windows_Live'; 
-			return ($list, $email, $diag);
+			if ($parts0[0]->head->count('X-HmXmrOriginalRecipient')){ 
+				$email = $parts0[0]->head->get('X-HmXmrOriginalRecipient', 0);
+				$diag->{'Remote-MTA'} = 'Windows_Live'; 
+				return ($list, $email, $diag);
+			}
 		}
 	}
 
