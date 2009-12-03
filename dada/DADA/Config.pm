@@ -3589,8 +3589,8 @@ Please click the link below to make this update:
 
 EOF
 ;
-$LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT = '<!-- tmpl_var list_settings.list_name --> Mailing List Confirmation Password Reset'; 
-$LIST_CONFIRM_PASSWORD_MESSAGE = <<EOF
+$LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT ||= '<!-- tmpl_var list_settings.list_name --> Mailing List Confirmation Password Reset'; 
+$LIST_CONFIRM_PASSWORD_MESSAGE ||= <<EOF
 Hello, 
 
 Someone has asked for the <!-- tmpl_var PROGRAM_NAME --> Mailing List Password for:
@@ -3618,8 +3618,8 @@ This request for the password change was done from:
 EOF
 ;
 
-$LIST_RESET_PASSWORD_MESSAGE_SUBJECT = '<!-- tmpl_var list_settings.list_name --> Mailing List Password Reset';
-$LIST_RESET_PASSWORD_MESSAGE = <<EOF
+$LIST_RESET_PASSWORD_MESSAGE_SUBJECT ||= '<!-- tmpl_var list_settings.list_name --> Mailing List Password Reset';
+$LIST_RESET_PASSWORD_MESSAGE ||= <<EOF
 
 The Mailing List Password for, 
 
