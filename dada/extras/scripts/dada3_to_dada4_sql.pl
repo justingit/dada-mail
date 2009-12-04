@@ -9,7 +9,7 @@ use lib qw(
 		./DADA/perllib 
 		../../ 
 		../../DADA/perllib
-	); 
+); 
 
 use DADA::Config; 
 use DADA::App::DBIHandle; 
@@ -195,16 +195,26 @@ sub schema_file {
 	my $schema_file = undef; 
 	
 	if($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql') { 	
-		$schema_file = DADA::App::Guts::make_safer('./extras/SQL/mysql_schema.sql'); 
+		$schema_file = DADA::App::Guts::make_safer('extras/SQL/mysql_schema.sql'); 
 	}
 	elsif($DADA::Config::SQL_PARAMS{dbtype} eq 'Pg') { 
-		$schema_file = DADA::App::Guts::make_safer('./extras/SQL/postgres_schema.sql'); 		
+		$schema_file = DADA::App::Guts::make_safer('extras/SQL/postgres_schema.sql'); 		
 	}
 	elsif($DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite') { 
-		$schema_file = DADA::App::Guts::make_safer('./extras/SQL/sqlite_schema.sql'); 		
+		$schema_file = DADA::App::Guts::make_safer('extras/SQL/sqlite_schema.sql'); 		
 	}
 	else { 
 		croak "Unknown database type: " . $DADA::Config::SQL_PARAMS{dbtype}; 
+	}
+	
+	if(-e './' . $schema_file){ 
+		return './' . $schema_file;
+	}
+	elsif(-e '../../' . $schema_file){ 
+		return '../../' . $schema_file;
+	}
+	else { 
+		return './' . $schema_file;		
 	}
 
 	return $schema_file; 
