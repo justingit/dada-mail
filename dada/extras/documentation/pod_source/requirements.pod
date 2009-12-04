@@ -38,6 +38,21 @@ Dada Mail is not a PHP script, so the version of PHP that you have available wil
 
 Dada Mail can pass messages to send to a sendmail-like command that applications like sendmail, qmail, postfix, exim, etc come with, or it can pass messages using the SMTP protocol. You will need one of these. Dada Mail is not an SMTP server itself. 
 
+=head1 Backend Options
+
+=head2 Default Backend
+
+The default backend uses a simple PlainText file for the subscription list and Db files for everything else. 
+Dada Mail supports using C<Berkeley DB> (using the DB_File CPAN Perl module) or C<GDBM_File>. 
+
+=head2 SQL Backend
+
+Dada Mail is tested with MySQL B<5>, PostgreSQL B<8> and SQLite B<3>. 
+
+MySQL B<4> will probably work, but make sure to read the embedded docs in the C<mysql_schema.sql> file. 
+
+
+
 =head1 Configuration
 
 There is no auto-installer for Dada Mail that I<we> ship. 

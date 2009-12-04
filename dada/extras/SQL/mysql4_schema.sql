@@ -1,64 +1,42 @@
--- The below schema should work well for MySQL ver. 5
--- 
--- If you are using MySQL 4: 
--- 
--- use the mysql4_schema.sql instead. 
--- 
--- Dada Mail currently doesn't auto-detect what version of MySQL you're using, 
--- SO, if you are upgrading Dada Mail from 3x to 4x, you'll need to rename: 
--- mysql_schema.sql
--- to, 
--- mysql5_schema.sql
--- and rename, 
--- mysql4_schema.sql
--- to, 
--- mysql_schema.sql
--- 
--- and re-run the migration utility. 
-
 CREATE TABLE IF NOT EXISTS dada_settings (
 list                             varchar(16),
 setting                          varchar(64),
 value                            text
 );
 
-CREATE INDEX dada_settings_list_index ON dada_settings (list);
 
 CREATE TABLE IF NOT EXISTS dada_subscribers (
 email_id			            int4 not null primary key auto_increment,
-email                            text(320),
+email                            varchar(255),
 list                             varchar(16),
 list_type                        varchar(64),
 list_status                      char(1)
 );
 
 
-CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(320), list, list_type, list_status);
-
-
 
 CREATE TABLE IF NOT EXISTS dada_profiles ( 
 profile_id int4 not null primary key auto_increment,
-email                        varchar(320) not null,
+email                        varchar(255) not null,
 password                     text(16),
 auth_code                    varchar(64),
 update_email_auth_code       varchar(64),
-update_email                 varchar(320),
+update_email                 varchar(255),
 activated                    char(1), 
 CONSTRAINT UNIQUE (email)
 );
 
 CREATE TABLE IF NOT EXISTS dada_profile_fields (
 fields_id int4 not null primary key auto_increment,
-email varchar(320) not null,
+email varchar(255) not null,
 CONSTRAINT UNIQUE (email)
 );
 
 CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes (
 	attribute_id int4 not null primary key auto_increment,
-	field                       varchar(320),
-	label                       varchar(320),
-	fallback_value              varchar(320),
+	field                       varchar(255),
+	label                       varchar(255),
+	fallback_value              varchar(255),
 -- I haven't made the following, but it seems like a pretty good idea... 
 -- sql_col_type              text(16),
 -- default                   mediumtext,
@@ -69,7 +47,7 @@ CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes (
 );
 
 CREATE TABLE IF NOT EXISTS dada_archives (
-list                          varchar(16),
+list                          varchar(32),
 archive_id                    varchar(32),
 subject                       text,
 message                       mediumtext,
@@ -77,7 +55,6 @@ format                        text,
 raw_msg                       mediumtext
 );
  
-CREATE INDEX dada_archives_list_archive_id_index ON dada_archives (list, archive_id);
  
 CREATE TABLE IF NOT EXISTS dada_bounce_scores (
 id                            int4 not null primary key auto_increment,
