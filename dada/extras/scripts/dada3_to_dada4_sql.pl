@@ -50,7 +50,7 @@ else {
 				}); 
 	
                
-	print h1($DADA::Config::PROGRAM_NAME . ' 3.0 to 3.1 Migration Assistant '); 
+	print h1($DADA::Config::PROGRAM_NAME . ' 3.x to 4.x Migration Assistant '); 
 	if(step1()){ 
 		print <<EOF
 		
