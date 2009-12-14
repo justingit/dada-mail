@@ -1,0 +1,70 @@
+=pod
+
+=head1 Basic Installation to Advanced Installation
+
+=head1 Introduction
+
+For many reasons, you may want to upgrade, while also switching a Basic Installation to an Advanced Installation. 
+
+A B<Basic Installation> means simply changing the first four variables in the C<Config.pm> file itself. One of these variables is the C<$FILES> variable, 
+which is set to a directory where B<all> the files/directories Dada Mail creates that represent a Mailing List in Dada Mail are stored. 
+
+Instructions on installing Dada Mail using a Basic Installation can be found here: 
+
+http://dadamailproject.com/installation/installation_basic.html
+
+An B<Advanced Installation> is an installation where only one variable in the C<Config.pm> file is changed, called, C<$PROGRAM_CONFIG_FILE_DIR> and putting all other configuration changes in an outside configuration file called, C<.dada_config>. 
+
+The Advanced Installation also uses a different directory structure for the files Dada Mail creates. 
+
+Instructions on installing Dada Mail using an Advanced installation can be found here: 
+
+http://dadamailproject.com/installation/installation_advanced.html
+
+The instructions below will try to guide you from changing between and Basic and Advanced Installation. 
+
+What we suggest is that you do this during an upgrade, by first installing the new version of Dada Mail using an advanced installation and then moving over the files from the old installation into the directory structure of the advanced installation.
+
+=head2 Find the $FILES directory
+
+Before performing an advanced installation for your new Dada Mail, find the directory used for the, C<$FILES> variable in your old installation. 
+
+This directory should hold most all the files/directories that represent your Mailing Lists. 
+
+=head2 Install Dada Mail using the Advanced Installation Method
+
+Instructions on how to do so can be found here: 
+
+http://dadamailproject.com/installation/installation_advanced.html
+
+Once you've done the install/upgrade, you probably won't see any of your old lists yet. This is OK. 
+
+=head2 Move Old Files over to the New Directory Structure
+
+The advanced installation method should leave you with a directory struture within your  C<.dada_files> directory that looks like this: 
+
+	.archives
+	.backups
+	.configs
+	.lists
+	.logs
+	.templates
+	.tmp
+
+All that's needed now to do is to move your old files in the old directory (saved in the old C<$FILES> location into this new directory structure: 
+
+Any B<directories> named after the B<list short name> are probably backups. Move those into, C<.backups>
+
+Any B<files> that start with, C<mj-> and end in, C<archives> are archives.  Move those files into, C<.archives>
+
+Any B<other files> that start with C<mj-> are your list settings.  Move those files into, C<.lists>
+
+Any files that end in, C<.list>, or C<black_list>, or something similar, basically: a dot (C<.>, (something else) and then, C<list> are your subscribers. Move those files into, C<.lists>
+
+Any B<file> with the ending of, C<.txt> or, C<.log> are probably logs,  Move those files into, C<.logs>
+
+Any B<file> that ends in, C<.template> goes in, C<.templates>
+
+Most anything else is probably a temporary file, you may put them into, C<.tmp> and when you're sure they're not useful, you may remove them.
+
+=cut

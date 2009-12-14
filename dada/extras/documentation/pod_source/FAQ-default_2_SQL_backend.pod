@@ -1,0 +1,71 @@
+=pod
+
+=head1 Converting a Dada Mail Install From a Default Backend to an SQL Backend
+
+=head1 Introduction
+
+By default, Dada Mail does not use an SQL backend, but rather uses a simpler method of using a PlainText file for your mailing list subscribers (the format is one email per line) and using what's called, B<dbm> files for everything else: list settings, archives, schedules, etc. Most likely, you're using the B<Berekeley DB File> format. 
+
+Although easier to set up, the Default backend for Dada Mail does not have as many features as the B<SQL> backend alternative. These include Subscriber Profile Fields, Partial Mailing List Sending, Multiple Mailing List Sending and some other neat things. 
+
+Moving from the Default Backend to the SQL Backend is doable and fairly straightforward. You'll want to be using the Advanced Installation Setup, you need to create the SQL Database and tables needed for Dada Mail and then, run the import scripts to move your current information over. 
+
+=head1 The Advanced Installation Method
+
+We highly suggest that you use the SQL Backend with the Advanced Installation Method. If you're not currently using the Advanced Installation Method, switch your Basic Installation to an Advanced Installation: 
+
+http://dadamailproject.com/support/documentation/FAQ-basic_2_advanced_installation.pod.html
+
+=head1 Setup the SQL Database
+
+Instructionso n Setting up Dada Mail's SQL Database Backend can be found here: 
+
+http://dadamailproject.com/installation/configuration-sql_backend.html
+
+=head1 Run the Export Scripts
+
+There are B<three> separate export scripts that can be run, to move your Mailing List information from the Default backend, to the SQL backend. 
+
+The can be found in the, 
+
+C<dada/extras/scripts>
+
+directory of your Dada Mail distribution. 
+
+We suggest that you move them into the, 
+
+C<dada> 
+
+directory before you run them. 
+
+They require B<no> configuration themselves and installation is as simple as moving them into the C<dada> directory and changing their permissions to, C<755> but should be run in this order: 
+
+=over
+
+=item * dada_settings_dbtosql.pl
+
+Docs: 
+
+http://dadamailproject.com/support/documentation/dada_settings_dbtosql.pl.html
+
+
+=item * dada_archive_dbtosql.pl
+
+Docs: 
+
+http://dadamailproject.com/support/documentation/dada_archive_dbtosql.pl.html
+
+
+=item * dada_subscribers_plaintext2sql.pl
+
+Docs: 
+
+http://dadamailproject.com/support/documentation/dada_subscribers_plaintext2sql.pl.html
+
+=back
+
+You may run them by simply visiting the scripts in your web browser, or running them from a shell. 
+
+B<Do Not> run these scripts twice, or data will be doubled-up. 
+
+=cut
