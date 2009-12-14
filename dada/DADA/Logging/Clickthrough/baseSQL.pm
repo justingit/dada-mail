@@ -4,7 +4,6 @@ use lib qw(../../../ ../../../DADA/perllib);
 
 use strict;
 
-use AnyDBM_File;
 use Fcntl qw(
   O_WRONLY
   O_TRUNC
