@@ -14,7 +14,7 @@ Moving from the Default Backend to the SQL Backend is doable and fairly straight
 
 We highly suggest that you use the SQL Backend with the Advanced Installation Method. If you're not currently using the Advanced Installation Method, switch your Basic Installation to an Advanced Installation: 
 
-http://dadamailproject.com/support/documentation/FAQ-Basic_2_Advanced_Installation.pod.html
+http://dadamailproject.com/support/documentation/FAQ-basic_2_advanced_installation.pod.html
 
 =head1 Setup the SQL Database
 
