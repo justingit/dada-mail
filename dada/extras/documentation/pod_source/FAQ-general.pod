@@ -226,6 +226,14 @@ http://dadamailproject.com/installation/request.html
 
 =head1 Upgrading
 
+=head2 How do you upgrade Dada Mail? 
+
+See: 
+
+http://dadamailproject.com/installation/upgrading.html
+
+http://dadamailproject.com/support/documentation/UPGRADE_README.pod.html
+
 =head2 I have an older version of Dada Mail, or something called Mojo Mail, should I upgrade? 
 
 I<Yes!> 
@@ -239,10 +247,6 @@ http://dadamailproject.com/support/documentation/NOTES.pod.html
 There's an upgrade FAQ available as well: 
 
 http://dadamailproject.com/support/documentation/UPGRADE_README.pod.html
-
-I also provide upgrade services - it's fairly inexpensive: 
-
-http://dadamailproject.com/installation/request.html
 
 =head1 Features
 
@@ -935,44 +939,10 @@ It is now my official recommendation that you use the SQL backend, if possible. 
 
 =head2 How do I move from the default backends to the SQL backends?
 
-There are various scripts that'll move over the default backend of the various types of files that Dada Mail uses to the SQL backend. 
+See: 
 
+http://dadamailproject.com/support/documentation/FAQ-Default_2_SQL_Backend.pod.html
 
-Advice: Convert the Settings backend first, before doing any of the other backends. 
-
-=over
-
-=item * Settings
-
-There's a script called, B<dada_settings_dbtosql.pl> which is located in: 
-
-/dada/extras/scripts/dada_settings_dbtosql.pl
-
-It's documentation is at: 
-
-http://dadamailproject.com/support/documentation/dada_settings_dbtosql.pl.html
-
-=item * Archives
-
-There's a script called, B<dada_archive_dbtosql.pl> which is located in: 
-
-/dada/extras/scripts/dada_archive_dbtosql.pl
-
-It's documentation is at: 
-
-http://dadamailproject.com/support/documentation/dada_archive_dbtosql.pl.html
-
-=item * Subscribers
-
-There's a script called, B<dada_subscribers_plaintext2sql.pl> which is located in: 
-
-/dada/extras/scripts/dada_subscribers_plaintext2sql.pl
-
-It's documentation is at: 
-
-http://dadamailproject.com/support/documentation/dada_subscribers_plaintext2sql.pl.html
-
-=back
 
 =head1 Mailing List Messages
 
