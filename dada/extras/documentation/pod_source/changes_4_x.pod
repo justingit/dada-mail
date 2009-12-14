@@ -2,14 +2,85 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.0.1
+
+=head2 Changes 4.0.1
+
+=head3 New Documentation
+
+The following topics were added to the documentation: 
+
+=over
+
+=item * Converting from Default to SQL Backend
+
+http://dadamailproject.com/support/documentation/FAQ-default_2_SQL_backend.pod.html
+
+=item * Converting from a Basic to Advanced Installation
+
+http://dadamailproject.com/support/documentation/FAQ-basic_2_advanced_installation.pod.html
+
+=back
+
+=head3 New MySQL 4 Specific Schema
+
+A MySQL Schema specifically for MySQL 4 is now shipped with Dada Mail at: 
+
+I<dada/extras/SQL/mysql4_schema.sql>
+
+=head3 DB Backup to SQL List Settings import script added
+
+Although not heavily documented (yet), a DB Backup to SQL script has been added to the distribution at: 
+
+I<dada/extras/scripts/dada_settings_backup_to_sql.pl> 
+
+=head3 Misc. Changes
+
+=over
+
+=item * New List Screen
+
+The, New List Screen has been giving minor formatting tweaks. 
+
+=item * Caching for DADA::ProfileFieldsManager
+
+Some work has been done to speed up DADA::ProfileFieldsManager by caching. 
+
+=back
+
+=head2 Bug Fixes 4.0.1
+
+=head3 Use Secure Sockets Layer (SSL) cannot be checked in the Sending 
+
+http://github.com/justingit/dada-mail/issues/closed#issue/1
+
+=head3 "List Password Reset" email message cannot be over-rided
+
+http://github.com/justingit/dada-mail/issues/closed#issue/2
+
+=head3 MySQL schema isn't compatible with MySQL 4
+
+http://github.com/justingit/dada-mail/issues/closed#issue/4
+
+=head3 Bounce Message reports that put email addresses in brackets <> can't be parsed? 
+
+http://github.com/justingit/dada-mail/issues/closed#issue/5
+
+=head3 Wrong version numbers in 3.x to 4.x migration assistant 
+
+http://github.com/justingit/dada-mail/issues/closed#issue/7
+
+=head3 parse_for_windows_live suboutine is broken
+
+http://github.com/justingit/dada-mail/issues/closed#issue/8
+
+=head3 SQL Backend Clickthrough Tracker still requires a DBM package
+
+http://github.com/justingit/dada-mail/issues/closed#issue/9
+
 =head1 4.0.0
 
-=head2 Download 4.0.0 
-
-... Forthcoming...
-
 =head2 Changes 4.0.0
-
 
 =head2 4.0.0 Features
 

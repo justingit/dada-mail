@@ -1,6 +1,446 @@
 =pod
 
- This should be filled in with the FINAL changelog for 3.x...?
+=head1 Dada Mail Changelog for version 3.x.x
+
+=head1 3.0.5
+
+=head2 Download
+
+See the Dada Mail download page: 
+
+L<http://dadamailproject.com/download>
+
+Huzzah! 
+
+=head2 Bug Fixes
+
+=over
+
+=item * BUGFIX: Plugin_URL needs to be used in both forms, not just one. - ID: 2848712
+
+http://sourceforge.net/tracker/?func=detail&aid=2848712&group_id=13002&atid=113002
+
+Hat tip:  http://sourceforge.net/users/billpowell/
+
+=item * BUGFIX:  2858688  	 3.0.4 - charset not set in multipart/* message *parts*
+
+https://sourceforge.net/tracker/?func=detail&aid=2858688&group_id=13002&atid=113002
+
+This fixes the problem for the, "Send a List Message" screen, both when create an HTML message (with no PlainText version) and when you create an HTML and PlainText Message.
+
+=item * BUGFIX: 3.0.4 - unable to mass-add black list addresses - ID: 2858250
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=2858250&group_id=13002&atid=113002
+
+=back 
+
+
+=head1 3.0.4
+
+=head2 Download 3.0.4
+
+=over
+
+=item * tar.gz
+
+http://downloads.sourceforge.net/mojomail/dada-3_0_4.tar.gz?use_mirror=voxel
+
+=item * zip
+
+http://downloads.sourceforge.net/mojomail/dada-3_0_4.zip?use_mirror=voxel
+
+=back
+
+
+=head2 Changes 3.0.4
+
+This release focuses almost soley on bug fixes and ease of upgrading from previous versions, most especially, version 3.0.23 (the last stable release) and earlier versions. 
+
+=head2 Default List Setting Changes 3.0.4
+
+We've changed one list setting in Dada Mail, 3.0.4, C<enable_mass_subscribe>. It's now set to, C<0>. 
+
+C<enable_mass_subscribe> changes the behaviour of Dada Mail and when set to, C<0> you won't be able to mass-subscribe subscribers, via the list control panel. 
+
+Do not fret. 
+
+You may enable the mass-subscription of subscribers in the list control panel,  by logging into the list control panel with the Dada Mail Root Password and going to: I<Manage List Control Panel - Options> and checking the option labeled, I<Enable, "Subscribe Checked Subscribers" button in the, Manage Subscribers -> Add -> Verify> screen. 
+
+You may also enable this feature by default globally in the C<Config.pm> file, in the C<%LIST_SETUP_DEFAULTS> variable (look for the key, C<enable_mass_subscribe> and change its value to, C<1> 
+
+There are really good reasons why you should not mass-subscribe people except for importing an already existing and I<verified> list. Other than that, it should never, ever be used and we'd like to hit that point home, as people, who shall remain nameless, can't possibly get a clue on why it could be a bad idea. It's 2009, by the way. 
+
+We've written a very well thought out response and encourage you to follow good measures when adding people to your mailing list: 
+
+http://dadamailproject.com/installation/using_dada_mail.html#subscriptions
+
+If you cannot follow this, than maybe Dada Mail is not for you. Once again, this option can be re-enabled easily and is only disabled to give you pause and perhaps allow you to think about just what you're going to get yourself into, if you go mass-subscribing addresses without first properly validating and verifying the addresses. With that, we honestly wash our hands of this issue. 
+
+This setting also makes it easy to globally and irrevocably disable the feature of mass-subscription of unverified addresses, by adding this list setting to the C<%LIST_SETUP_OVERRIDE> variable, like this: 
+
+%LIST_SETUP_OVERRIDES = (
+	enable_mass_subscribe => 0, 
+); 
+
+Of course, such a decision would have to be made by the person installing the program, or, providing the program for easy installation. 
+
+=head2 CPAN Modules 3.0.4
+
+=over
+
+=item * LWP upgraded to: 5.827
+
+LWP is a key module distribution for the, "Send a Webpage" functionality of Dada Mail.
+
+=item * CGI::Sessoion upgrade to: 4.41
+
+CGI::Session handles all session management in Dada Mail. 
+
+=item * List-Utils Scalar-Utils
+
+The CPAN perl modules, Scalar::Util and List::Util are included with Dada Mail, but aren't actively used, so that any 
+server-wide installed versions will be used, instead. This is because the XS versions of these modules are needed for POP/SMTP 
+SSL connections and having these usable by default, breaks SSL connections. The directories, 
+
+ dada/DADA/perllib/List
+
+and, 
+
+ dada/DADA/perllib/Scalar
+
+have been renamed, 
+
+ dada/DADA/perllib/List-remove_to_install
+
+and, 
+
+ dada/DADA/perllib/Scalar-remove_to_install
+
+renaming them back to their original name will make them, "active"
+
+=back
+
+=head2 Bug Fixes 3.0.4
+
+=over
+
+=item * 2817601  	 3.0.3 - grammar: your/you're in error_black_listed_screen.tm
+
+https://sourceforge.net/tracker/?group_id=13002&atid=113002
+
+=item *  2816670  	 3.0.3 - External .dada_config not setting variable 
+
+https://sourceforge.net/tracker/?func=detail&aid=2816670&group_id=13002&atid=113002
+
+(remember to still set the variable in the outside config file to, C<2>!
+
+=item * 2769423  	 3.0.3 - Msg size always reported
+
+http://sourceforge.net/tracker/?func=detail&aid=2769423&group_id=13002&atid=113002
+
+=item * 3.0.3 If a current subscriber attempts to subscribe again...
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2778910&group_id=13002&atid=113002
+
+=item * 2784714  	 3.0.3 - specific list_settings not webified in HTML emails
+
+https://sourceforge.net/tracker/?func=detail&aid=2784714&group_id=13002&atid=113002
+
+=item * 2768141  	 3.0.0 - mistake in sub erase_score_card
+
+https://sourceforge.net/tracker/?func=detail&aid=2768141&group_id=13002&atid=113002
+
+=item *   2791876  	 3.0.3 - spaces in attachment filenames make file unviewable
+
+https://sourceforge.net/tracker/?func=detail&aid=2791876&group_id=13002&atid=113002
+
+=item * 2791550 3.0.3 - Undefined subroutine _mime_headers_from_string
+
+https://sourceforge.net/tracker/?func=detail&aid=2791550&group_id=13002&atid=113002
+
+=item *  2791304  	 Discussion list spam vulnerability
+
+https://sourceforge.net/tracker/?func=detail&aid=2791304&group_id=13002&atid=113002
+
+=item *  2790606 3.0.3 - Can't use string ("xxxxxxxx") as a HASH ref
+
+http://sourceforge.net/tracker/?func=detail&aid=2790606&group_id=13002&atid=113002
+
+=back
+
+=head1 3.0.3
+
+=head2 Download 3.0.3
+
+=over
+
+=item * tar.gz
+
+http://downloads.sourceforge.net/mojomail/dada-3_0_3.tar.gz?use_mirror=voxel
+
+=item * zip
+
+http://downloads.sourceforge.net/mojomail/dada-3_0_3.zip?use_mirror=voxel
+
+=back
+
+=head2 Changes 3.0.3
+
+This release focuses almost soley on bug fixes and ease of upgrading from previous versions, most especially, version 3.0.2 (the last stable release), 3.0.1 and 3.0.0. 
+
+This is similar to the 3.0.2 release and the same notes apply. 
+
+
+=head2 Bug Fixes 3.0.3
+
+=over
+
+=item * 2670414  	 3.0.2 - Archive, but don't Send broken for Send a Webpage
+
+https://sourceforge.net/tracker2/?func=detail&aid=2670414&group_id=13002&atid=113002
+
+=item * 3.0.2 - "Subscription Cookbook" see also link broken
+
+https://sourceforge.net/tracker2/?func=detail&aid=2660673&group_id=13002&atid=113002
+
+=item * 2660652  	 3.0.2 -filter_subscribers_w_meta docs use wrong code example
+
+https://sourceforge.net/tracker2/?func=detail&aid=2660652&group_id=13002&atid=113002
+
+=item * 3.0.2 - Session info always uses default driver
+
+https://sourceforge.net/tracker2/?func=detail&aid=2592671&group_id=13002&atid=113002
+
+=item *  2563003 3.0.2 - large msgs choke Dada Bridge on processing
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=2563003&group_id=13002&atid=113002
+
+=item * 2520821 3.0.2 - Archive Back Date missing option for year 2009
+
+https://sourceforge.net/tracker2/?func=detail&aid=2520821&group_id=13002&atid=113002
+
+=item * 2489198  	 3.0.2 - Dadaized-FormMail - subscription API out of date
+
+https://sourceforge.net/tracker2/?func=detail&aid=2489198&group_id=13002&atid=113002
+
+=item * 2489192  	 3.0.2 - Dadaized-FormMail - Config.pm variable $MAILPROG...
+
+https://sourceforge.net/tracker2/?func=detail&aid=2489192&group_id=13002&atid=113002
+
+=item * 2481213  	 3.0.2 - Dada Mail broken without DBI module
+
+https://sourceforge.net/tracker2/?func=detail&aid=2481213&group_id=13002&atid=113002
+
+
+=back
+
+=head1 3.0.2
+
+=head2 Download 3.0.2
+
+=over
+
+=item * tar.gz
+
+http://downloads.sourceforge.net/mojomail/dada-3_0_2.tar.gz?use_mirror=voxel
+
+=item * zip
+
+http://downloads.sourceforge.net/mojomail/dada-3_0_2.zip?use_mirror=voxel
+
+=back
+
+=head2 Changes 3.0.2
+
+This release focuses almost soley on bug fixes and ease of upgrading from previous versions, most especially, version 3.0.1 (the last stable release) and 3.0.0. This is similar to the 3.0.1 release and the same notes apply. 
+
+
+=head2 Bug Fixes 3.0.2
+
+=over
+
+=item * 2472382  	 3.0.1 - login form broken if all lists are hidden
+
+https://sourceforge.net/tracker2/?func=detail&aid=2472382&group_id=13002&atid=113002
+
+=item * 2473631  	 3.0.1 - Wrong date in schedules
+
+https://sourceforge.net/tracker2/?func=detail&aid=2473631&group_id=13002&atid=113002
+
+=item *  3.0.1 - wrong URL in docs - email_sending.pod.html
+
+https://sourceforge.net/tracker2/?func=detail&aid=2471846&group_id=13002&atid=113002
+
+=item * 2460735  	 3.0.1 - simple [tmpl_if ...] usage breaks sending
+
+https://sourceforge.net/tracker2/?func=detail&aid=2460735&group_id=13002&atid=113002
+
+=item * 2446770  	 3.0.1 - $SHOW_EMAIL_LIST Config variable does NOTHING
+
+https://sourceforge.net/tracker2/?func=detail&aid=2446770&group_id=13002&atid=113002
+
+=item * 2432591  	 3.0.1 - $MAILING_FINISHED_MESSAGE* vars not .dada_configable
+
+https://sourceforge.net/tracker2/?func=detail&aid=2432591&group_id=13002&atid=113002
+
+=item * 2368754  	 3.0.1 - CGI::Ajax module out of date
+
+https://sourceforge.net/tracker2/?func=detail&aid=2368754&group_id=13002&atid=113002
+
+=item * 2375488  	 3.0.0 - Control Panel - "test" option fails to work? 
+
+https://sourceforge.net/tracker2/?func=detail&aid=2375488&group_id=13002&atid=113002
+
+=item * 3.0.1 - messages bounced by Bluehost's qmail-send not parsed
+
+https://sourceforge.net/tracker2/?func=detail&aid=2381461&group_id=13002&atid=113002
+
+=item * 2409945  	 3.0.1 - Can't use an undefined value as a symbol reference
+
+https://sourceforge.net/tracker2/?func=detail&aid=2409945&group_id=13002&atid=113002
+
+=item * 3.0.1 - Mass Mailings broken because of faulty Reply-To?
+
+https://sourceforge.net/tracker2/?func=detail&aid=2415194&group_id=13002&atid=113002
+
+=back
+
+
+
+
+=head1 3.0.1
+
+=head2 Download 3.0.1
+
+=over
+
+=item * tar.gz
+
+http://downloads.sourceforge.net/mojomail/dada-3_0_1.tar.gz?use_mirror=voxel
+
+=item * zip
+
+http://downloads.sourceforge.net/mojomail/dada-3_0_1.zip?use_mirror=voxel
+
+=back
+
+=head2 Changes 3.0.1
+
+This release focuses almost soley on bug fixes and ease of upgrading from previous versions, most especially, version 3.0.0 (the last stable release)
+
+Although we do not at all recommend this, you can install this version of Dada Mail over version 3.0.0 by uploaded all the files, except the dada/DADA/Config.pm file, using the previous version of that file, instead. 
+
+We've also made little to no changes in any of the files in the: 
+
+I<dada/DADA/Template/templates>
+
+directory, except for perhaps a spelling mistake fixed (these are noted in the list of bug fixes, below). This means that any modifications you may have done to any of these files, using version 3.0.0 should be 100% compatible with 3.0.1. 
+
+Finally, we also made minimal changes to the outsie config file examples we've included (this also goes for defaults set in the Config.pm file), so you should have no worries that the outside config file you've been using for version 3.0.0 will work for 3.0.1 - it should. 
+
+Because of the bug-fix focus of this release and the almost 100% transparency of the configuration and template parts of Dada Mail, we suggest this upgrade to any and all users who are currently using Dada Mail, 3.0.0. 
+
+=head2 Bug Fixes 3.0.1
+
+=over
+
+=item *  2347543  	 3.0.0 - blog_index.cgi screen cache does work with > 1 list
+
+https://sourceforge.net/tracker2/?func=detail&aid=2347543&group_id=13002&atid=113002
+
+=item * 2219316 3.0.0 - libwww-perl ver. 5.819 incompatible with Dada Mail?
+
+https://sourceforge.net/tracker2/?func=detail&aid=2219316&group_id=13002&atid=113002
+
+
+=item * 2308530 3.0.0 - sub Confirm CAPTCHA broken w/close-loop disabled
+
+https://sourceforge.net/tracker2/?func=detail&aid=2308530&group_id=13002&atid=113002
+
+
+=item *  2215463  	 3.0.0 - typo: s/us/use/ in edit_type_screen.tmpl
+
+https://sourceforge.net/tracker2/?func=detail&aid=2215463&group_id=13002&atid=113002
+
+=item * 2219972  	 3.0.0 - Mailout.pm - associate method broken
+
+https://sourceforge.net/tracker2/?func=detail&aid=2219972&group_id=13002&atid=113002
+
+=item * 2219912  	 3.0.0 - DBI attribute: InactiveDestroy used incorrectly
+
+https://sourceforge.net/tracker2/?func=detail&aid=2219912&group_id=13002&atid=113002
+
+=item * 2219959  	 3.0.0 - no check to see if mailout exists after sleeping
+
+https://sourceforge.net/tracker2/?func=detail&aid=2219959&group_id=13002&atid=113002
+
+=item * 2222381  	 3.0.0 - DADA::App::Guts::available_lists() needs caching
+
+https://sourceforge.net/tracker2/?func=detail&aid=2222381&group_id=13002&atid=113002
+
+=item *  2191258  	 3.0.0 - email addresses with newlines are seen as valid                
+
+https://sourceforge.net/tracker2/?func=detail&aid=2191258&group_id=13002&atid=113002
+
+=item * 3.0.0 - Stale Mailout can still clog up mail queue
+
+https://sourceforge.net/tracker2/?func=detail&aid=2203220&group_id=13002&atid=113002
+
+=item * 3.0.0 - qmail_error_5dot5dot1 contains two actions
+
+https://sourceforge.net/tracker2/?func=detail&aid=2185937&group_id=13002&atid=113002
+
+=item * 3.0.0 - multiple_subscribe.cgi docs wrong about "lists" para
+
+https://sourceforge.net/tracker2/?func=detail&aid=2183150&group_id=13002&atid=113002
+
+=item * 2167322 3.0.0 - DADA::App::POP3Tools _lock_pop3_check error
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2167322&group_id=13002&atid=113002
+
+=item * 2167227 3.0.0 - POP-before-SMTP test never uses Mode or SSL prefs
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2167227&group_id=13002&atid=113002
+
+=item * 2167224 	3.0.0 - SMTP Options POP-before-SMTP Auth Mode option broken
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2167224&group_id=13002&atid=113002
+
+=item * 2120035  	  3.0.0 - "Warning! Mailout seems broken!"
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2120035&group_id=13002&atid=113002
+
+=item * 2148744  	  3.0.0 - Adv. install Instructions unclear about passwords
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2148744&group_id=13002&atid=113002
+
+=item * 2120386  	  3.0.0 - Scheduled Mailing Time problem with 12 am
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2120386&group_id=13002&atid=113002
+
+=item * 2124123  	  3.0.0 - Log viewer doesn't escape ">" "<" in searches
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2124123&group_id=13002&atid=113002
+
+=item * 3.0.0 - Check_List_Owner_Return_Path_Header fails with undef
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2136642&group_id=13002&atid=113002
+
+=item * 3.0.0 - Send a Webpage msg w/Clickthrough Links Fails
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2145145&group_id=13002&atid=113002
+
+=item * 2147102  	  3.0.0 - "Open List in New Window" has unwanted linebreak?
+
+https://sourceforge.net/tracker/index.php?func=detail&aid=2147102&group_id=13002&atid=113002
+
+=item * 2120407  	  3.0.0 - DADA Mail Admin login problem
+
+http://sourceforge.net/tracker/index.php?func=detail&aid=2120407&group_id=13002&atid=113002
+
+=back
+
+
 
 
 =head1 3.0.0
@@ -207,9 +647,9 @@ The included group of CPAN modules known as, B<MIME-Tools> was downgraded in Dad
 
 The blog_index.cgi plugin has been refreshed and allows you to now embed the HTML it creates via a javascript library, or as straight HTML. A new menu item in the Admin Contol Panel has been added. 
 
-=head3 "Send a Message" API
+=head3 "Send a List Message" API
 
-The API used in the, "Send a Message" screen has been introduced in an... introductory manner, in the, I<Integrating Dada Mail into other Programs> docs: 
+The API used in the, "Send a List Message" screen has been introduced in an... introductory manner, in the, I<Integrating Dada Mail into other Programs> docs: 
 
 L<http://dadamailproject.com/support/documentation/COOKBOOK-integration.pod.html#accessing_the__send_a_list_message_api>
 
@@ -292,7 +732,7 @@ The left hand side admin menu now shows how many mailouts per list, and per Dada
 
 =head3 Dada Mail Queueing Notifications
 
-There are now messages on top of the, Send a Message, Send a Webpage and Send a List Invitation screens to let you know if the limit of 
+There are now messages on top of the, Send a List Message, Send a Webpage and Send a List Invitation screens to let you know if the limit of 
 individual mass mailings has been reached and if the message you're about to send will be queued. This is to help any confusion about why messages don't go out 
 right away. 
 

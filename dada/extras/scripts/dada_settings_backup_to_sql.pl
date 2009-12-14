@@ -266,13 +266,13 @@ __END__
 
 =pod
 
-=head1 Name dada_settings_dbtosql.pl
+=head1 Name dada_settings_backup_to_sql.pl
 
 =head1 Description
 
 Cute name, huh? 
 
-Basically, this small script takes the information of a Dada Mail list settings in the DB File and ports it to the MySQL format.
+Basically, this small script takes the information of a Dada Mail list settings I<backup directories> and ports it to the MySQL format.
 
 Fairly simple and straightforward. 
 
