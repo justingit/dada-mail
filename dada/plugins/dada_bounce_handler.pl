@@ -3603,11 +3603,12 @@ sub parse_for_windows_live {
 		my @parts  = $entity->parts; 
 		if($parts[0]) { 
 			my @parts0 = $parts[0]->parts; 
-
-			if ($parts0[0]->head->count('X-HmXmrOriginalRecipient')){ 
-				$email = $parts0[0]->head->get('X-HmXmrOriginalRecipient', 0);
-				$diag->{'Remote-MTA'} = 'Windows_Live'; 
-				return ($list, $email, $diag);
+			if($parts0[0]){
+				if ($parts0[0]->head->count('X-HmXmrOriginalRecipient')){ 
+					$email = $parts0[0]->head->get('X-HmXmrOriginalRecipient', 0);
+					$diag->{'Remote-MTA'} = 'Windows_Live'; 
+					return ($list, $email, $diag);
+				}
 			}
 		}
 	}
