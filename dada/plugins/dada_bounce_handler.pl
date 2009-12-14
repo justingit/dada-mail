@@ -2227,127 +2227,8 @@ sub parse_bounce {
 			if $verbose;
 			
 	}else{ 
-			
-	    
-		$email = find_verp($entity);
-		
 	
-		my ($gp_list, $gp_email, $gp_diagnostics) = generic_parse($entity); 	
-		
-		$list        = $gp_list if $gp_list; 
-		$email     ||=  $gp_email; 
-		$diagnostics = $gp_diagnostics
-			if $gp_diagnostics;
-		
-		if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
-			my ($qmail_list, $qmail_email, $qmail_diagnostics) = parse_for_qmail($entity); 
-			$list  ||= $qmail_list;
-			$email ||= $qmail_email;
-			%{$diagnostics} = (%{$diagnostics}, %{$qmail_diagnostics})
-				if $qmail_diagnostics; 
-		} 
-		
-		if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
-
-			my ($exim_list, $exim_email, $exim_diagnostics) = parse_for_exim($entity); 
-			$list  ||= $exim_list;
-			$email ||= $exim_email;
-			%{$diagnostics} = (%{$diagnostics}, %{$exim_diagnostics})
-				if $exim_diagnostics; 
-		}
-		
-
-		if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
-
-			my ($ms_list, $ms_email, $ms_diagnostics) = parse_for_f__king_exchange($entity); 
-			$list  ||= $ms_list;
-			$email ||= $ms_email;
-			%{$diagnostics} = (%{$diagnostics}, %{$ms_diagnostics})
-				if $ms_diagnostics; 
-		}
-		if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
-
-			my ($nv_list, $nv_email, $nv_diagnostics) = parse_for_novell($entity); 
-			$list  ||= $nv_list;
-			$email ||= $nv_email;
-			%{$diagnostics} = (%{$diagnostics}, %{$nv_diagnostics})
-				if $nv_diagnostics; 
-		}
-		
-		if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
-
-			my ($g_list, $g_email, $g_diagnostics) = parse_for_gordano($entity); 
-			$list  ||= $g_list;
-			$email ||= $g_email;
-			%{$diagnostics} = (%{$diagnostics}, %{$g_diagnostics})
-				if $g_diagnostics; 
-		}
-		
-		if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
-
-			my ($y_list, $y_email, $y_diagnostics) = parse_for_overquota_yahoo($entity); 
-			$list  ||= $y_list;
-			$email ||= $y_email;
-			%{$diagnostics} = (%{$diagnostics}, %{$y_diagnostics})
-				if $y_diagnostics;
-		}	
-
-		if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
-
-			my ($el_list, $el_email, $el_diagnostics) = parse_for_earthlink($entity); 
-			$list  ||= $el_list;
-			$email ||= $el_email;
-			%{$diagnostics} = (%{$diagnostics}, %{$el_diagnostics})
-				if $el_diagnostics; 
-		}	
-		
-		if((!$list) || (!$email) || !keys %{$diagnostics}){ 	
-				my ($wl_list, $wl_email, $wl_diagnostics) = parse_for_windows_live($entity); 
-				
-				$list  ||= $wl_list;
-				$email ||= $wl_email;
-				%{$diagnostics} = (%{$diagnostics}, %{$wl_diagnostics})
-					if $wl_diagnostics; 
-		}
-
-
-
-
-        # This is a special case - since this outside module adds pseudo diagonistic
-        # reports, we'll say, add them if they're NOT already there:
-        
-        my ($bp_list, $bp_email, $bp_diagnostics) = parse_using_m_ds_bp($entity); 
-        
-        # There's no test for these in the module itself, so we 
-        # won't even look for them. 
-        #$list  ||= $bp_list;
-        #$email ||= $bp_email;
-        
-        %{$diagnostics} = (%{$bp_diagnostics}, %{$diagnostics})
-            if $bp_diagnostics; 
-        
-		
-        chomp($email) if $email; 
-
-		
-		
-		#small hack, turns, %2 into, '-'
-		$list =~ s/\%2d/\-/g;
-		
-		$list = trim($list); 
-		
-		if(!$diagnostics->{'Message-Id'}){ 
-			$diagnostics->{'Message-Id'} = find_message_id_in_headers($entity);
-			if(!$diagnostics->{'Message-Id'}){ 
-				$diagnostics->{'Message-Id'} = find_message_id_in_body($entity);
-			}
-		}
-		
-		if($diagnostics->{'Message-Id'}){ 
-			$diagnostics->{'Simplified-Message-Id'} = $diagnostics->{'Message-Id'}; 
-			$diagnostics->{'Simplified-Message-Id'} =~ s/\<|\>//g;
-	        $diagnostics->{'Simplified-Message-Id'} =~ s/\.(.*)//; #greedy
-		}
+		($email, $list, $diagnostics) = run_all_parses($entity);
 
         # Means, either there is no $list set, or the $list that *is* set is the one we want set. 
         
@@ -2437,6 +2318,136 @@ sub parse_bounce {
         
 	}
 	#sleep(1);
+}
+
+sub run_all_parses { 
+
+
+	my ($entity) = shift; 
+	my $email        = ''; 
+	my $list        = ''; 
+	my $diagnostics = {}; 
+	
+	$email = find_verp($entity);
+
+	my ($gp_list, $gp_email, $gp_diagnostics) = generic_parse($entity); 	
+
+	$list        = $gp_list if $gp_list; 
+	$email     ||=  $gp_email; 
+	$diagnostics = $gp_diagnostics
+		if $gp_diagnostics;
+
+	if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
+		my ($qmail_list, $qmail_email, $qmail_diagnostics) = parse_for_qmail($entity); 
+		$list  ||= $qmail_list;
+		$email ||= $qmail_email;
+		%{$diagnostics} = (%{$diagnostics}, %{$qmail_diagnostics})
+			if $qmail_diagnostics; 
+	} 
+
+	if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
+
+		my ($exim_list, $exim_email, $exim_diagnostics) = parse_for_exim($entity); 
+		$list  ||= $exim_list;
+		$email ||= $exim_email;
+		%{$diagnostics} = (%{$diagnostics}, %{$exim_diagnostics})
+			if $exim_diagnostics; 
+	}
+
+
+	if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
+
+		my ($ms_list, $ms_email, $ms_diagnostics) = parse_for_f__king_exchange($entity); 
+		$list  ||= $ms_list;
+		$email ||= $ms_email;
+		%{$diagnostics} = (%{$diagnostics}, %{$ms_diagnostics})
+			if $ms_diagnostics; 
+	}
+	if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
+
+		my ($nv_list, $nv_email, $nv_diagnostics) = parse_for_novell($entity); 
+		$list  ||= $nv_list;
+		$email ||= $nv_email;
+		%{$diagnostics} = (%{$diagnostics}, %{$nv_diagnostics})
+			if $nv_diagnostics; 
+	}
+
+	if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
+
+		my ($g_list, $g_email, $g_diagnostics) = parse_for_gordano($entity); 
+		$list  ||= $g_list;
+		$email ||= $g_email;
+		%{$diagnostics} = (%{$diagnostics}, %{$g_diagnostics})
+			if $g_diagnostics; 
+	}
+
+	if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
+
+		my ($y_list, $y_email, $y_diagnostics) = parse_for_overquota_yahoo($entity); 
+		$list  ||= $y_list;
+		$email ||= $y_email;
+		%{$diagnostics} = (%{$diagnostics}, %{$y_diagnostics})
+			if $y_diagnostics;
+	}	
+
+	if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
+
+		my ($el_list, $el_email, $el_diagnostics) = parse_for_earthlink($entity); 
+		$list  ||= $el_list;
+		$email ||= $el_email;
+		%{$diagnostics} = (%{$diagnostics}, %{$el_diagnostics})
+			if $el_diagnostics; 
+	}	
+
+	if((!$list) || (!$email) || !keys %{$diagnostics}){ 	
+			my ($wl_list, $wl_email, $wl_diagnostics) = parse_for_windows_live($entity); 
+		
+			$list  ||= $wl_list;
+			$email ||= $wl_email;
+			%{$diagnostics} = (%{$diagnostics}, %{$wl_diagnostics})
+				if $wl_diagnostics; 
+	}
+
+
+
+
+	# This is a special case - since this outside module adds pseudo diagonistic
+	# reports, we'll say, add them if they're NOT already there:
+
+	my ($bp_list, $bp_email, $bp_diagnostics) = parse_using_m_ds_bp($entity); 
+
+	# There's no test for these in the module itself, so we 
+	# won't even look for them. 
+	#$list  ||= $bp_list;
+	#$email ||= $bp_email;
+
+	%{$diagnostics} = (%{$bp_diagnostics}, %{$diagnostics})
+	    if $bp_diagnostics; 
+
+
+	chomp($email) if $email; 
+
+
+
+	#small hack, turns, %2 into, '-'
+	$list =~ s/\%2d/\-/g;
+
+	$list = trim($list); 
+
+	if(!$diagnostics->{'Message-Id'}){ 
+		$diagnostics->{'Message-Id'} = find_message_id_in_headers($entity);
+		if(!$diagnostics->{'Message-Id'}){ 
+			$diagnostics->{'Message-Id'} = find_message_id_in_body($entity);
+		}
+	}
+
+	if($diagnostics->{'Message-Id'}){ 
+		$diagnostics->{'Simplified-Message-Id'} = $diagnostics->{'Message-Id'}; 
+		$diagnostics->{'Simplified-Message-Id'} =~ s/\<|\>//g;
+	    $diagnostics->{'Simplified-Message-Id'} =~ s/\.(.*)//; #greedy
+	}	
+	
+	return ($email, $list, $diagnostics); 
 }
 
 
@@ -3391,8 +3402,9 @@ sub parse_for_novell { #like, really...
 	my $diag = {}; 
 	my $list;
 	my $state       = 0;
-	my $pattern     = 'The message that you sent';
-
+	my $pattern     = qr/(A|The) message that you sent/;
+	my $end_pattern = quotemeta('--- The header of the original message is following. ---');
+	 
 	if(!@parts){ 
 		if($entity->head->mime_type eq 'text/plain'){ 
 			my $body = $entity->bodyhandle; 
@@ -3401,12 +3413,20 @@ sub parse_for_novell { #like, really...
 				if($IO = $body->open("r")){ # "r" for reading.  
 					while (defined($_ = $IO->getline)){ 
 						my $data = $_;
-						$state = 1 if $data =~ /$pattern/;
+						$state = 1 if $data =~ m/$pattern/;
+						$state = 0 if $data =~ m/$end_pattern/; 
 						if ($state == 1) {
+							
 							$data =~ s/\n/ /g;
+						
 							if($data =~ /\s+(\S+\@\S+)\s\((.*?)\)/){ 
 								$email                     =  $1;
+							
 								$diag->{'Diagnostic-Code'} =  $2;
+							}
+							elsif($data =~ m/\<+(\S+\@\S+)\>+/){ 
+								$email = $1; 
+									
 							}else{ 
 								#...
 							}
