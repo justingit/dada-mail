@@ -59,7 +59,7 @@ Any B<files> that start with, C<mj-> and end in, C<archives> are archives.  Move
 
 Any B<other files> that start with C<mj-> are your list settings.  Move those files into, C<.lists>
 
-Any files that end in, C<.list>, or C<black_list>, or something similar, basically: a dot (C<.>, (something else) and then, C<list> are your subscribers. Move those files into, C<.lists>
+Any files that end in, C<.list>, or C<black_list>, or something similar, basically: a dot (C<.>), (something else) and then, C<list> are your subscribers. Move those files into, C<.lists>
 
 Any B<file> with the ending of, C<.txt> or, C<.log> are probably logs,  Move those files into, C<.logs>
 
