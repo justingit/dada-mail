@@ -1,6 +1,6 @@
 package DADA::ProfileFieldsManager::baseSQL;
 use lib qw(
-	../../../ 
+	../../
 	../../perllib
 );
 use strict; 
@@ -12,28 +12,35 @@ my $t = $DADA::Config::DEBUG_TRACE->{DADA_Profile_Fields};
 
 sub _columns {
 
-	# DEV: TODO: CACHE!
-    my $self  = shift;
-    my $query =
-      "SELECT * FROM "
-      . $self->{sql_params}->{profile_fields_table}
-      . " WHERE (1 = 0)";
-    warn 'Query: ' . $query
-		if $t; 
-		
-    my $sth = $self->{dbh}->prepare($query);
-
-    $sth->execute()
-      or croak "cannot do statement (at: columns)! $DBI::errstr\n";
-    my $i;
+    my $self = shift;
     my @cols;
-    for ( $i = 1 ; $i <= $sth->{NUM_OF_FIELDS} ; $i++ ) {
-        push ( @cols, $sth->{NAME}->[ $i - 1 ] );
+
+    if ( exists( $self->{cache}->{columns} ) ) {
+        return $self->{cache}->{columns};
     }
-    $sth->finish;
+    else {
+        my $query =
+            "SELECT * FROM "
+          . $self->{sql_params}->{profile_fields_table}
+          . " WHERE (1 = 0)";
+        warn 'Query: ' . $query
+          if $t;
+
+        my $sth = $self->{dbh}->prepare($query);
+
+        $sth->execute()
+          or croak "cannot do statement (at: columns)! $DBI::errstr\n";
+        my $i;
+        for ( $i = 1 ; $i <= $sth->{NUM_OF_FIELDS} ; $i++ ) {
+            push( @cols, $sth->{NAME}->[ $i - 1 ] );
+        }
+        $sth->finish;
+        $self->{cache}->{columns} = \@cols;
+    }
     return \@cols;
 
 }
+
 
 sub fields {
 
@@ -42,12 +49,11 @@ sub fields {
 
     my $l = [];
 	# I don't know, but this isn't always working... 
-    #if ( exists( $self->{cache}->{fields} ) ) {
-    if(1 == 0){ 
+	
+    if ( exists( $self->{cache}->{fields} ) ) {
     	$l = $self->{cache}->{fields};
     }
     else {
-
        # I'm assuming, "columns" always returns the columns in the same order...
         $l = $self->_columns;
         $self->{cache}->{fields} = $l;
@@ -120,10 +126,8 @@ sub fields {
 sub add_field {
 
     my $self = shift;
-
-    #DEV: Add testing of parameters!!!!!!
 	
-    delete( $self->{cache}->{fields} );
+    $self->clear_cache;
 
     my ($args) = @_;
 
@@ -180,7 +184,8 @@ sub add_field {
     );
 
 
-    delete( $self->{cache}->{fields} );
+    $self->clear_cache;
+
     return 1;
 }
 
@@ -314,7 +319,8 @@ sub edit_field {
       or croak
       "cannot do statement (at: edit_field)! $DBI::errstr\n";
 
-    delete( $self->{cache}->{fields} );
+    $self->clear_cache;
+
     return 1;
 
 }
@@ -323,7 +329,7 @@ sub remove_field {
 
     my $self = shift;
 
-    delete( $self->{cache}->{fields} );
+    $self->clear_cache;
 
     my ($args) = @_;
     if ( !exists( $args->{ -field } ) ) {
@@ -351,7 +357,7 @@ sub remove_field {
       "cannot do statement! (at: remove_field) $DBI::errstr\n";
 
     $self->remove_field_attributes( { -field => $args->{ -field } } );
-    delete( $self->{cache}->{fields} );
+    $self->clear_cache;
 
     return 1;
 
@@ -605,7 +611,7 @@ sub change_field_order {
     my $self = shift;
     my ($args) = @_;
 
-	delete( $self->{cache}->{fields} );
+	$self->clear_cache;
 	
     # fields
     # direction
@@ -667,7 +673,7 @@ sub change_field_order {
     $sth->execute()
       or croak "cannot do statement (at: change_field_order)! $DBI::errstr\n";
 
-   	delete( $self->{cache}->{fields} );
+    $self->clear_cache;
 
     return 1;
 }

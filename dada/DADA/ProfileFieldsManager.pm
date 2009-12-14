@@ -74,8 +74,16 @@ sub _init {
     }
 
 	# Init?
-	$self->{cache}->{fields} = $self->fields; 
+	#$self->{cache}->{fields}  = $self->fields; 
+	#$self->{cache}->{columns} = $self->_columns; 
 
+}
+
+sub clear_cache { 
+
+	my $self = shift; 
+	delete($self->{cache}->{fields}); 
+	delete($self->{cache}->{columns}); 
 }
 
 1;

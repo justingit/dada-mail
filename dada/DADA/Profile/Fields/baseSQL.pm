@@ -69,7 +69,11 @@ sub insert {
 
     my $sql_str             = '';
     my $place_holder_string = '';
+
     my @order               = @{ $self->{manager}->fields };
+	#my $order = [];
+    #   $order =  $self->{fields_order}; 
+	#my @order  = @$order;
     my @values;
 
     if ( $order[0] ) {

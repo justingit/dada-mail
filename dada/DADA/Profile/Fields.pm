@@ -74,7 +74,9 @@ sub _init {
     }
 
 	require DADA::ProfileFieldsManager; 
-	$self->{manager} = DADA::ProfileFieldsManager->new;
+	$self->{manager}      = DADA::ProfileFieldsManager->new;
+	$self->{fields_order} = $self->{manager}->fields || []; 
+	
 	
 	if(!exists($args->{-email})){ 
 		#croak "You need to pass, -email in the email thingy.";
@@ -82,6 +84,7 @@ sub _init {
 	else { 
 		$self->{email} = $args->{-email};
 	}
+	
 
 }
 

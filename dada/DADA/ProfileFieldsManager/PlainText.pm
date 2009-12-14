@@ -46,6 +46,11 @@ sub get_all_field_attributes {
 sub fields {
     return [];
 }
+sub _columns {
+    return [];
+}
+
+
 
 sub can_have_subscriber_fields {
     my $self = shift;

@@ -10,6 +10,8 @@ sub remove_field {
 
     my $self = shift;
 
+	$self->clear_cache;
+    
     my ($args) = @_;
     if ( !exists( $args->{ -field } ) ) {
         croak "You must pass a field name in, -field!";
@@ -107,7 +109,9 @@ sub remove_field {
     ###
 
     $self->remove_field_attributes( { -field => $args->{ -field } } );
-
+	
+	$self->clear_cache;
+    
     return 1;
 
 }
