@@ -72,9 +72,9 @@ sub check_password {
     my $check = 0;
     my ( $epw, $pw ) = @_;
 
-    $DADA::Config::SALT =
+    my $tmp_salt =
       substr( $epw, $DADA::Config::FIRST_SUB, $DADA::Config::SEC_SUB );
-    if ( $epw eq crypt( $pw, $DADA::Config::SALT ) ) {
+    if ( $epw eq crypt( $pw, $tmp_salt ) ) {
         $check = 1;
     }
 
