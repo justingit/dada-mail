@@ -122,7 +122,6 @@ It sort of looks like this (broken up into a few lines:
 
 Handy. 
 
-=for html <div class="pod_history">
 
 =head2 Why would I want to throttle down the speed of a mailing by using batching? 
 
