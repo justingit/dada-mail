@@ -2250,6 +2250,7 @@ sub process {
         deliver_copy(
             {
                 -list => $list,
+                -ls   => $ls,
                 -msg  => $msg,
             }
         );
