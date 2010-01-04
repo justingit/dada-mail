@@ -1073,7 +1073,9 @@ sub profile_widget {
     my $is_logged_in     = 0;
     my $profiles_enabled = $DADA::Config::PROFILE_OPTIONS->{enabled};
     if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
-        || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
+        || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ 
+		|| $DADA::Config::SESSION_DB_TYPE !~ m/SQL/ 
+		)
     {
         $profiles_enabled = 0;
     }
@@ -2183,17 +2185,28 @@ sub subscription_form {
         undef($i);
 
 		$args->{-profile_logged_in} = 0; 
-		if($DADA::Config::PROFILE_OPTIONS->{enable_magic_subscription_forms} == 1) { 
-			require DADA::Profile::Session; 
-			my $sess = DADA::Profile::Session->new; 
-			if($sess->is_logged_in){ 
-				my $email                   = $sess->get; 
-				$args->{-email}             = $email;
-				$args->{-show_fields}       = 0; 
-				$args->{-profile_logged_in} = 1; 
-			}
-			else { 
-				# ...
+
+		if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
+	        || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ 
+			|| $DADA::Config::SESSION_DB_TYPE !~ m/SQL/ 
+			)
+	    {
+			# ... 
+		}
+		
+		else {
+			if($DADA::Config::PROFILE_OPTIONS->{enable_magic_subscription_forms} == 1) { 
+				require DADA::Profile::Session; 
+				my $sess = DADA::Profile::Session->new; 
+				if($sess->is_logged_in){ 
+					my $email                   = $sess->get; 
+					$args->{-email}             = $email;
+					$args->{-show_fields}       = 0; 
+					$args->{-profile_logged_in} = 1; 
+				}
+				else { 
+					# ...
+				}
 			}
 		}
 		
