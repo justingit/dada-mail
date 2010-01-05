@@ -2288,8 +2288,8 @@ sub sending_preferences {
                                                             
                                                             mechanism_popup     => $mechanism_popup, 
                                                             
-                                                            can_use_smtp_ssl    =>  $can_use_smtp_ssl, 
-
+                                                            can_use_smtp_ssl    => $can_use_smtp_ssl, 
+															'list_settings.pop3_username'  => $li->{pop3_username}, 
                                                             decrypted_pop3_pass => $decrypted_pop3_pass, 
 															wrong_uid           => $wrong_uid, 
                                                             
