@@ -236,7 +236,6 @@ like($orig_entity->head->get('From', 0), qr/\<listowner\@example.com\>/, "I can 
 
 unlink $mh->test_send_file;
 
-
 undef $status; 
 undef $errors; 
 undef $orig_entity; 
@@ -246,8 +245,20 @@ undef $orig_sub;
 undef $sent_sub;
 undef $orig_from; 
 undef $sent_from; 
+undef $test_msg; 
 
 
+$test_msg = slurp('t/corpus/email_messages/from_header_phrase_spoof.eml'); 
+($status, $errors) = dada_bridge::validate_msg($list, \$test_msg, $ls->get);
+
+use Data::Dumper; 
+diag Data::Dumper::Dumper($errors); 
+
+
+ok($status == 0, "spoof test is returning 0?"); 
+$errors = {}; 
+undef $status;
+undef $test_msg; 
 
 
 # Does that Subject header get appended? 
