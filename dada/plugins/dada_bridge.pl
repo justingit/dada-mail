@@ -129,6 +129,9 @@ $Plugin_Config->{Check_List_Owner_Return_Path_Header} = 1;
 # Gmail seems to have problems with this...
 $Plugin_Config->{Check_Multiple_Return_Path_Headers} = 0;
 
+# Stops From: header spoofing (a little bit, anyways) 
+$Plugin_Config->{Check_Multiple_From_Addresses} = 1; 
+
 # This is the message sent to the List Owner,
 # telling them a message is waiting for their
 # Approval! Yeah!
@@ -1586,6 +1589,7 @@ sub validate_msg {
     # This should *really* mention each and every test....
 
     my $errors = {
+		multiple_from_addresses                  => 0, 
         msg_from_list_address                    => 0,
         list_email_address_is_list_owner_address => 0,
         invalid_msg                              => 0,
@@ -1645,6 +1649,33 @@ sub validate_msg {
         return ( 0, $errors );
     }
 
+	# These checks make sure that multiple From: headers and addresses don't exist
+	if ( $Plugin_Config->{Check_Multiple_From_Addresses} == 1 ) {
+		 eval {
+			if ( $entity->head->count('From') > 1 ) {
+				print "\t\tMessage has more than one 'From' header? Unsupported email message - will reject!\n"
+					if $verbose;
+				$errors->{multiple_from_addresses} = 1;
+			}
+			else { 
+		    	my @count = Email::Address->parse($entity->head->get( 'From', 0)); 
+				if(scalar(@count) > 1){ 
+					print "\t\tMessage has more than one 'From' header? Unsupported email message - will reject!\n"
+						if $verbose;
+					$errors->{multiple_from_addresses} = 1;
+				}
+			}
+		};
+		if($@){ 
+			print "\t\tError with multiple from address check! Marking as a problem! - $@"
+				if $verbose; 
+			$errors->{multiple_from_addresses} = 1;
+			
+		}
+	}
+	# /These checks make sure that multiple From: headers and addresses don't exist
+	
+
     if ( $Plugin_Config->{Check_Multiple_Return_Path_Headers} == 1 ) {
 
         if ( $entity->head->count('Return-Path') > 1 ) {
@@ -1678,11 +1709,13 @@ sub validate_msg {
     my $from_address = '';
 
     if ( defined($rough_from) ) {
-        ;
         eval {
             $from_address = ( Email::Address->parse($rough_from) )[0]->address;
         };
     }
+	else { 
+		# ... 
+	}
 
     print '\t\tWarning! Something\'s wrong with the From address - ' . $@
       if $@ && $verbose;
