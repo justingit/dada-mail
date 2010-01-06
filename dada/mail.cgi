@@ -2342,7 +2342,6 @@ sub sending_preferences {
 			$sasl_smtp_password = DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $sasl_smtp_password)
 		}
         my $smtp_port           = strip($q->param('smtp_port'))          || undef; 
-     #	my $smtp_connection_per_batch = strip($q->param('smtp_connection_per_batch')) || 0;
 
         $ls->save(
 			{
@@ -2363,7 +2362,6 @@ sub sending_preferences {
 	            sasl_smtp_username        => $sasl_smtp_username, 
 	            sasl_smtp_password        => $sasl_smtp_password,
 	            set_smtp_sender           => $set_smtp_sender, 
-	        #	smtp_connection_per_batch => $smtp_connection_per_batch, 
 			}
 		);
 		if($q->param('no_redirect') == 1){ 
@@ -2480,7 +2478,9 @@ sub mass_mailing_preferences {
 		my $twitter_mass_mailings             = $q->param('twitter_mass_mailings') || 0; 
 		my $twitter_username                  = $q->param('twitter_username') || ''; 
 		my $twitter_password                  = $q->param('twitter_password') || '';
-		
+	    my $smtp_connection_per_batch         = strip($q->param('smtp_connection_per_batch')) || 0;
+     
+
         $ls->save(
 			{ 
                     mass_send_amount                  =>   $mass_send_amount,  
@@ -2494,7 +2494,9 @@ sub mass_mailing_preferences {
 					twitter_mass_mailings             => $twitter_mass_mailings,
 					twitter_username                  => $twitter_username, 
 					twitter_password                  => DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $twitter_password),      
-                  }
+                  	smtp_connection_per_batch         => $smtp_connection_per_batch, 
+			        
+				}
 			); 
                 
         print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=mass_mailing_preferences&done=1'); 

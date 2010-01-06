@@ -73,7 +73,7 @@
 	 <tr>
 	  <td>
 	   <p>
-	    <input type="checkbox" name="smtp_connection_per_batch" id="smtp_connection_per_batch" value="1" <!-- tmpl_if smtp_connection_per_batch -->checked="checked"<!-- /tmpl_if --> />
+	    <input type="checkbox" name="smtp_connection_per_batch" id="smtp_connection_per_batch" value="1" <!-- tmpl_if list_settings.smtp_connection_per_batch -->checked="checked"<!-- /tmpl_if --> />
 	   </p>
 	  </td>
 	  <td>
@@ -82,7 +82,7 @@
 	     Use One SMTP Connection per Batch <em>(Experimental)</em> 
 	    </label>
 	    <br />
-	<!-- tmpl_if send_via_smtp --> 
+	<!-- tmpl_if list_settings.send_via_smtp --> 
 		<p class="alert">
 			SMTP Sending is enabled.
 		</p>
