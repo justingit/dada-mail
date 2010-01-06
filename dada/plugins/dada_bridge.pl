@@ -3566,7 +3566,6 @@ General
         <tr> 
         
  <!-- tmpl_if Allow_Open_Discussion_List -->
-   <!-- tmpl_if group_list -->  
         <tr> 
        <td align="right">
         <input name="open_discussion_list" id="open_discussion_list" type="checkbox" value="1" <!--tmpl_if list_settings.open_discussion_list -->checked="checked"<!--/tmpl_if--> />
@@ -3575,10 +3574,9 @@ General
         <label for="open_discussion_list">
          Allow messages to also be posted to the list from non-subscribers.         
         </label>
-         <br /><em>(opens up list to possible abuse unless moderated)</em> 
+         <br /><span class="alert">(Opens up list to possible abuse, unless moderated)</span> 
        </td>
       </tr>
-   <!-- /tmpl_if --> 
  <!-- /tmpl_if -->  
    	 
 	<tr> 
