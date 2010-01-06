@@ -694,7 +694,7 @@ sub send {
                          );
             }
             print MAIL "\n"; 
-            print MAIL $fields{Body} . "\n";
+            print MAIL $fields{Body} . "\n"; # DEV: Why the last, "\n"?
             close(MAIL) 
                 or carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: 
                          didn't close pipe to '$live_mailing_settings' while 
@@ -703,12 +703,15 @@ sub send {
 				# "Broken pipe" that we can 	than say, "Well, THAT didn't work, 
 				# let's go back a step and exit..."
 				
-				if($! =~ m/broken pipe/i){ 
-					if($self->im_mass_sending == 1){ 
-						carp "Broken Pipe error! returning -1 - Mass Mailing should be exit()ed!"; 
-					}
-					return -1; 
-				}
+				# A broken pipe can be caused (I think) by a message that gets sent with a period on its own line 
+				# and then, when you attempt to send even more info, it'll bork and give you this error - it
+				# doesn't necessarily mean that the message didn't get send. Ugh. 
+				# if($! =~ m/broken pipe/i){ 
+				# 	if($self->im_mass_sending == 1){ 
+				# 		carp "Broken Pipe error! returning -1 - Mass Mailing should be exit()ed!"; 
+				# 	}
+				# 	return -1; 
+				#}
         }
         
         
@@ -1594,7 +1597,6 @@ sub mass_send {
 				my $send_return = $self->send(%nfields, from_mass_send => 1); # The from_mass_send is a hack. 
                 # How, about, if this returns, "-1", the mailing didn't work, and we should just retry again, somehow
 				if($send_return == -1){ 
-				
 					carp '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' Bailing out of Mailing for now - last message was unable to be sent! exit()ing!';
 					$mailout->log('Warning: Bailing out of Mailing for now - last message was unable to be sent! exit()ing!'); 
 					exit(0);
