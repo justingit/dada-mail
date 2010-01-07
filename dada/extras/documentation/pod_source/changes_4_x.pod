@@ -2,6 +2,77 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.0.2
+
+=head2 Changes 4.0.2
+
+=head3 Dada Bridge: "Allow Open Discussion List" option always viewable
+
+For whatever reason, the, "Allow Open Discussion List" option wasn't viewable, until
+you first enabled discussion lists. It will now *always* be viewable, as long as the 
+Plugin Config Param, C<Allow_Open_Discussion_List> is set to, C<1>
+
+=head3 Dada Bridge: New Plugin Config Param: Check_Multiple_From_Addresses
+
+A new Plugin Config Paramater called, C<Check_Multiple_From_Addresses> has been added
+and has a default value of, C<1>. When enabled, messages that have more than one 
+sender aren't supported by Dada Bridge and these messages will be ignored. 
+
+Set this paramater to, C<0> to revert to the previous behavior. 
+
+=head3 Mail Sending - "broken pipe" catch removed
+
+Dada Mail had a very simple test to make sure mail using the sendmail command was successful, 
+by looking at any error messages created from sending mail this way. If a, "broken pipe" 
+message was found while sending a mass mailing, a mass mailing would be stopped, 
+and would be picked up and sending would be attempted starting at the same address
+that gave the error. The complete logged error may look like this: 
+
+	[Mon Jan  4 16:40:08 2010] mail.cgi: Pro Dada 4.0.1 Warning: 
+	[Mon Jan  4 16:40:08 2010] mail.cgi:                          didn't close pipe to '|/usr/sbin/sendmail -t -fbounces@example.com' while 
+	[Mon Jan  4 16:40:08 2010] mail.cgi:                          attempting to send a message to: '"My Mailing List" <me@example.com> because:' Broken pipe at ..//DADA/MailingList/Schedules.pm line 808
+	[Mon Jan  4 16:40:08 2010] mail.cgi: Broken Pipe error! returning -1 - Mass Mailing should be exit()ed! at ..//DADA/MailingList/Schedules.pm line 808
+	[Mon Jan  4 16:40:08 2010] mail.cgi: [listshortname]  Mailout:<20100104164007.54315974@nicky510.com> Bailing out of Mailing for now - last message was unable to be sent! exit()ing! at ..//DADA/MailingList/Schedules.pm line 808
+
+This behavior is problematic, since the, "broken pipe" error can happen, even 
+if a message (or part of a message) is actually sent. Sometimes this happens if you 
+have a message that contains a dot by itself on one line, like this: 
+
+ .
+
+If this is problematic to you (messages being cut off because of a lone dot on one line) 
+and you're using the sendmail command to send messages, consider changing the C<$MAIL_SETTINGS> 
+and, C<$MASS_MAIL_SETTINGS> Config variables to include the, C<-i> flag, like this: 
+
+ $MAIL_SETTINGS      = "|$MAILPROG -t -i";
+ $MASS_MAIL_SETTINGS = "|$MAILPROG -t -i";
+
+=head2 Bug Fixes 4.0.2
+
+=head3 confirmation pins with '/' as the first character break the confirmation process
+
+http://github.com/justingit/dada-mail/issues/closed/#issue/6
+
+=head3 Dada Bridge: "Deliver a Copy" isn't working
+
+http://github.com/justingit/dada-mail/issues/closed#issue/10
+
+=head3 pop3_username paramater not passed to sending_preferences.tmpl
+
+http://github.com/justingit/dada-mail/issues/closed#issue/12
+
+=head3 Dada Bridge: From: header validation can be spoofed
+
+http://github.com/justingit/dada-mail/issues/closed#issue/11
+
+=head3 Use One SMTP Connection per Batch (Experimental) unsaveable? 
+
+http://github.com/justingit/dada-mail/issues/closed#issue/14
+
+=head3 
+
+
+
 =head1 4.0.1
 
 =head2 Changes 4.0.1
