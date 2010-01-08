@@ -428,7 +428,6 @@ sub check_session_list_security {
         my %logincookie = $q->cookie($DADA::Config::LOGIN_COOKIE_NAME);
         $args{-Admin_List}     = $logincookie{admin_list};
         $args{-Admin_Password} = $logincookie{admin_password};
-
     }
 
     $args{-IP_Address} = $ENV{REMOTE_ADDR};
@@ -443,11 +442,13 @@ sub check_session_list_security {
 
     if ($problems) {
 
+
         if ( $args{-manual_override} == 1 ) {
             return ( $args{-Admin_List}, $root_logged_in, 0 );
         }
         else {
 
+			
            # DEV: This is like, the most annoying thing in the whole wide world:
            # If it's CGI::Session, let's ditch the session cookie...
            # I forget why this was commented out - didn't work?!
@@ -468,12 +469,13 @@ sub check_session_list_security {
                     # ...
                 }
 
-                $self->enforce_admin_cgi_security(
-                    -Admin_List     => $args{-Admin_List},
-                    -Admin_Password => $args{-Admin_Password},
-                    -Flags          => $flags,
-                );
-            }
+			}	
+            $self->enforce_admin_cgi_security(
+                -Admin_List     => $args{-Admin_List},
+                -Admin_Password => $args{-Admin_Password},
+                -Flags          => $flags,
+            );
+            
 
         }
     }
@@ -652,6 +654,7 @@ sub enforce_admin_cgi_security {
     	 		@_);
 	my $flags = $args{-Flags};
 	require DADA::App::Error; 
+
 	my @error_precedence = qw(need_to_login bad_ip no_list no_list_password invalid_password no_admin_permissions);
 	foreach (@error_precedence){
 		if($flags->{$_} == 1){ 
