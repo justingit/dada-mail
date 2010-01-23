@@ -465,6 +465,37 @@ sub send_owner_happenings {
 		
 		my $num_subscribers = $lh->num_subscribers;   
 		
+		# This is a hack - if the subscriber has recently been removed, you 
+		# won't be able to get the subscriber fields - since there's no way to 
+		# get fields of a removed subscriber. 
+		# So! We'll go and grab the profile info, instead. 
+		my $prof_fields  = {};
+		my $unsub_fields = {};
+		if($status eq "unsubscribed"){
+			$unsub_fields->{ 'subscriber.email'} = $args->{-email};
+			(
+				$unsub_fields->{ 'subscriber.email_name'},
+				$unsub_fields->{ 'subscriber.email_domain'}
+			) = split(
+				'@', 
+				$args->{-email},
+				2
+			);
+			
+			require DADA::Profile; 
+			my $prof = DADA::Profile->new({-email => $args->{-email}});
+			if($prof){ 
+				if($prof->exists){ 
+					$prof_fields = $prof->{fields}->get;
+					foreach ( keys %$prof_fields ) {
+			            $unsub_fields->{ 'subscriber.' . $_ } = $prof_fields->{$_};
+			        } 					
+				}
+			}
+		}
+		#/This is a hack - if the subscriber has recently been removed, you 
+		
+		
 		send_generic_email(
 			{ 
 				-list => $args->{-list}, 
@@ -489,7 +520,8 @@ sub send_owner_happenings {
 					($status eq "subscribed") ? (
 		            	-subscriber_vars_param    => {-list => $args->{-list}, -email => $args->{-email}, -type => 'list'},
 				    ) : (
-						-subscriber_vars          => {'subscriber.email' => $args->{-email}},
+						#-subscriber_vars          => {'subscriber.email' => $args->{-email}},
+						-subscriber_vars          => $unsub_fields, 
 					)
 				},
 				-test => $args->{-test}, 
