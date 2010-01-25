@@ -110,9 +110,21 @@ sub _init {
         $self->{dbh} = $dbi_obj->dbh_obj;
     }
 
-    my $lh =
-      DADA::MailingList::Subscribers->new( { -list => $args->{ -list } } );
-    $self->{lh} = $lh;
+    my $lh = undef; 
+
+	if(exists($args->{-dpfm_obj})){ 
+    	$lh = DADA::MailingList::Subscribers->new( 
+			{ 
+				-list     => $args->{ -list },
+				-dpfm_obj => $args->{-dpfm_obj},
+			} 
+		);	
+	}
+	else { 
+    	$lh = DADA::MailingList::Subscribers->new( { -list => $args->{ -list } } );
+	}
+	
+	$self->{lh} = $lh;
 
 
 	##############################################################################

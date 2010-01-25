@@ -70,6 +70,13 @@ sub _init  {
 		$self->{ls} = $args->{-ls_obj};
 	}
 	
+	if(exists($args->{-dpfm_obj})){ 
+		$self->{-dpfm_obj} = $args->{-dpfm_obj};
+	}
+	else {
+		#$self->{-dpfm_obj} = $args->{-dpfm_obj} = undef; 
+	}
+	
     $self->{'log'}      = new DADA::Logging::Usage;
     $self->{list}       = $args->{-list};
 
@@ -82,7 +89,18 @@ sub _init  {
 		$self->{dbh} = $dbi_obj->dbh_obj; 
 	}
 	
-	$self->{fields}   = DADA::Profile::Fields->new; 		
+	if(exists($args->{-dpfm_obj})){ 
+		$self->{fields}   = DADA::Profile::Fields->new(
+			{
+				-dpfm_obj => $args->{-dpfm_obj},
+			}
+		); 		
+		
+	}
+	else { 
+		$self->{fields}   = DADA::Profile::Fields->new; 		
+	}
+
 	$self->{validate} = DADA::MailingList::Subscriber::Validate->new({-list => $self->{list}, -lh_obj => $self}); 		
 }
 
@@ -93,6 +111,9 @@ sub add_subscriber {
     my $self = shift;
 	my ($args) = @_;
 	$args->{-list} = $self->{list};
+	if(exists($self->{-dpfm_obj})){ 
+		$args->{-dpfm_obj} = $self->{-dpfm_obj}; 
+	}
     my $dmls = DADA::MailingList::Subscriber->add( $args );
  	return 1; 
 }
@@ -149,6 +170,10 @@ sub remove_subscriber {
 	my $self = shift;
     my ($args) = @_;
 
+	if(exists($self->{-dpfm_obj})){ 
+		$args->{-dpfm_obj} = $self->{-dpfm_obj}; 
+	}
+	
     my $dmls =
       DADA::MailingList::Subscriber->new( { %{$args}, -list => $self->{list} } );
 	$dmls->remove;
@@ -653,7 +678,7 @@ sub find_unique_elements {
 		return (\@unique, \@already_in); 
 	
 	}else{ 
-		carp 'I need two arrary refs!';
+		carp 'I need two array refs!';
 		return ([], []); 
 	}
 }

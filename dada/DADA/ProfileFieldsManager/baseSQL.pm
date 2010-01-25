@@ -55,6 +55,7 @@ sub fields {
     }
     else {
        # I'm assuming, "columns" always returns the columns in the same order...
+
         $l = $self->_columns;
         $self->{cache}->{fields} = $l;
     }

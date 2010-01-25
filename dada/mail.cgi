@@ -3795,8 +3795,16 @@ sub add_email {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
-
-    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+	
+	require DADA::ProfileFieldsManager; 
+	my $dfm_obj =  DADA::ProfileFieldsManager->new; 
+	
+    my $lh = DADA::MailingList::Subscribers->new( 
+		{ 
+			-list     => $list,
+			-dpfm_obj => $dfm_obj,
+		 } 
+	);
     my $subscriber_fields = $lh->subscriber_fields;
 
     if ( !$process ) {

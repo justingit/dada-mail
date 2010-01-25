@@ -73,9 +73,18 @@ sub _init {
         $self->{dbh} = $dbi_obj->dbh_obj;
     }
 
-	require DADA::ProfileFieldsManager; 
-	$self->{manager}      = DADA::ProfileFieldsManager->new;
-	$self->{fields_order} = $self->{manager}->fields || []; 
+	if(exists( $args->{-dpfm_obj} )){ 
+
+		$self->{manager}   = $args->{-dpfm_obj};
+		$self->{-dpfm_obj} = $args->{-dpfm_obj};
+	}
+	else { 
+		require DADA::ProfileFieldsManager; 
+		$self->{manager}      = DADA::ProfileFieldsManager->new;
+	}
+	
+	# fields() is cached when new() is called... 
+	#$self->{fields_order} = $self->{manager}->fields || []; 
 	
 	
 	if(!exists($args->{-email})){ 

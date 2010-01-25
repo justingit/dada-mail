@@ -59,8 +59,25 @@ sub insert {
 	
 	if ($fields_exists) {
 				
-		my $tmp_pf = DADA::Profile::Fields->new({-email => $args->{-email}}); 
-        $tmp_pf->remove;
+		my $tmp_pf = undef; 
+		if(exists($self->{-dpfm_obj})){ 
+			$tmp_pf = DADA::Profile::Fields->new(
+				{
+					-email    => $args->{-email},
+					-dpfm_obj => $self->{-dpfm_obj}, 
+				}
+			); 
+        }
+		else { 
+			$tmp_pf = DADA::Profile::Fields->new(
+				{
+					-email => $args->{-email}
+					
+				}
+			); 
+		}
+
+			$tmp_pf->remove;
 		undef $tmp_pf; 
  	}
 
@@ -71,9 +88,6 @@ sub insert {
     my $place_holder_string = '';
 
     my @order               = @{ $self->{manager}->fields };
-	#my $order = [];
-    #   $order =  $self->{fields_order}; 
-	#my @order  = @$order;
     my @values;
 
     if ( $order[0] ) {
@@ -217,7 +231,7 @@ sub remove {
 	#}
 	
 	if(!$self->{email}){ 
-		croak "Cannot use this variable without passing the '-email' param in, new (remove)"; 
+		croak "Cannot use this variable without passing the '-email' param in, new (remove) (1)"; 
 	}
 	
     my $query =

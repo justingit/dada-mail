@@ -14,10 +14,24 @@ sub add {
     my $class = shift;
 
     my ($args) = @_;
-
 	
-    my $lh =
-      DADA::MailingList::Subscribers->new( { -list => $args->{ -list } } );
+	my $lh = undef; 
+	
+	if(exists($args->{-dpfm_obj})){ 
+		$lh =
+	      DADA::MailingList::Subscribers->new( 
+			{ 
+				-list     => $args->{ -list },
+				-dpfm_obj => $args->{-dpfm_obj},
+			} 
+		);
+		
+	}
+	else { 
+		$lh =
+	      DADA::MailingList::Subscribers->new( { -list => $args->{ -list } } );
+	 	
+	}
 
     if ( !exists $args->{ -type } ) {
         $args->{ -type } = 'list';
@@ -54,8 +68,19 @@ sub add {
 	or croak "cannot do statement (at add_subscriber)! $DBI::errstr\n";
 	$sth->finish;
 	
-	if ( exists $args->{ -fields } && keys %{$args->{ -fields }}) {		
-		my $fields = DADA::Profile::Fields->new;
+	if ( exists $args->{ -fields } && keys %{$args->{ -fields }}) {
+		my $fields = undef; 
+		
+		if(exists($args->{-dpfm_obj})){ 
+			$fields = DADA::Profile::Fields->new(
+				{
+					-dpfm_obj => $args->{-dpfm_obj}, 
+				}
+			);
+		}
+		else {
+			$fields = DADA::Profile::Fields->new;
+		}		
 		$fields->insert(
 			{
 				-email     => $args->{  -email },
@@ -70,6 +95,13 @@ sub add {
             -list  => $args->{ -list },
             -email => $args->{ -email },
             -type  => $args->{ -type },
+			(
+				exists($args->{-dpfm_obj})
+			) ? (
+				-dpfm_obj => $args->{-dpfm_obj},
+			) : 
+			(
+			)
         }
     );
 
@@ -267,8 +299,7 @@ sub remove {
 
     my $self = shift;
 
-	#warn '$self->type ' . $self->type; 
-	#warn '$DADA::Config::GLOBAL_UNSUBSCRIBE ' . $DADA::Config::GLOBAL_UNSUBSCRIBE; 
+
 	
     my $query = "DELETE FROM " . $self->{sql_params}->{subscriber_table} . " 
 				 WHERE email   = ?
