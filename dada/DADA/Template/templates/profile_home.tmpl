@@ -150,7 +150,13 @@ function confirm_profile_removal(form_name) {
     
         <p>
         <label for="<!-- tmpl_var name escape=HTML -->" style="width: 10em;float: left;text-align: right;margin-right: 0.5em;display: block">
-        <!-- tmpl_var label escape=HTML -->: 
+        
+        <!-- tmpl_if label --> 
+			<!-- tmpl_var label escape=HTML -->: 
+        <!-- tmpl_else --> 
+			<!-- tmpl_var name escape=HTML -->: 
+		<!-- /tmpl_if -->
+		
         </label>
         <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
         </p>

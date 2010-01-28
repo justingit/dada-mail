@@ -70,8 +70,12 @@ Email&nbsp;Address:
     
 	        <p>
 	        <label for="<!-- tmpl_var name escape=HTML -->" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
-	        <!-- tmpl_var pretty_name escape=HTML -->: 
-	        </label>
+	        <!-- tmpl_if pretty_name --> 
+				<!-- tmpl_var pretty_name escape=HTML -->: 
+	        <!-- tmpl_else --> 
+				<!-- tmpl_var name escape=HTML -->: 
+			<!-- /tmpl_if --> 
+			</label>
 	        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var given_value escape=HTML -->"  />
 	        </p>
     
