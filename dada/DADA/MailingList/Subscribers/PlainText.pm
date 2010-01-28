@@ -106,7 +106,14 @@ sub search_list {
     while(defined($email = <LIST>)){ 
         if($email =~ m/$query/i){ 
 			
-			push(@$r, {email => $email, list_type => $args->{-type}, fields => []});
+			push(
+				@$r, 
+				{
+					email  => $email, 
+					type   => $args->{-type}, 
+					fields => []
+				}
+			);
     
 			$count++; 
 	        next if $count <  $args->{-start}; 
@@ -238,7 +245,13 @@ sub subscription_list {
 			else { 
 			}
 			chomp($email); 
-			push(@$list, {email => $email, list_type => $args->{-type}});  
+			push(
+				@$list, 
+				{
+					email => $email, 
+					type  => $args->{-type}
+				}
+			);  
 					
 		}
 		close (LIST);            

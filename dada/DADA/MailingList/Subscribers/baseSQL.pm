@@ -159,7 +159,7 @@ sub search_list {
 
         my $info = {};
         $info->{email}     = $row->{email};
-        $info->{list_type} = $args->{ -type };    # Whazza?!
+        $info->{type} = $args->{ -type };    # Whazza?!
 
         delete( $row->{email} );
         $info->{fields} = [];
