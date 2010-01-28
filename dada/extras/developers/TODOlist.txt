@@ -11,6 +11,11 @@ Key:
 [?] Someday
 
 
+Dada Mail 4.0.2 Edit Search Subscribers Problem.
+If go to view subscribers go through the list manually and find the subscriber I can click on Email address & edit subscribers Profile Fields. But If I Search Subscribers and click on Email address to edit subscribers Profile Fields. I get redirected back to subscription list http://www.website.com/dada/mail.cgi?f= ... ress&type=
+The one thing missing from the Search Subscriber list that I see is the field Under List is blank.
+
+
 [ ] It would be great if the Send the Newest Archived Message to All New Subscribers in the Archive Options section would have a checkmark for sending the latest message to users that are added by the admin.
 
 
