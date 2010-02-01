@@ -10,13 +10,118 @@ Key:
 [*] Naw...
 [?] Someday
 
+[ ] * Irregularity and instability after starting a mass mailing:
 
-Dada Mail 4.0.2 Edit Search Subscribers Problem.
-If go to view subscribers go through the list manually and find the subscriber I can click on Email address & edit subscribers Profile Fields. But If I Search Subscribers and click on Email address to edit subscribers Profile Fields. I get redirected back to subscription list http://www.website.com/dada/mail.cgi?f= ... ress&type=
-The one thing missing from the Search Subscriber list that I see is the field Under List is blank.
+I'll tag on this.  Most of the problems I've had happen when the blast starts sending.  
+It seems to take a while to assemble the email and start the process, meanwhile the Monitor page is 
+taking up precious resources.  Sometimes it will take a minute or two for the messages to start to flow.  
+For a while I was getting 500 server errors and only solved them by starting over with a whole new list and 
+migrating only the addresses to it (which may point to a separate problem, but the old list was several years 
+old and the database had a lot of what appeared to extraneous entries compared to a new list).
+    
+
+
+
+[ ] Probably getting the caching stuff back up and running... 
+
+[ ] On one installation we only send to people on a fixed mailing list but there are three or four different types of message some of which have virtually the same text at each mailing. 
+
+Can we have a means of having multiple templates where we only have to add in a short additional message or different attachment. Selection by meanas of a tickbox would been good.
+
+[ ] One central login for all lists. 
 
 
 [ ] It would be great if the Send the Newest Archived Message to All New Subscribers in the Archive Options section would have a checkmark for sending the latest message to users that are added by the admin.
+
+[ ] Code Optimization.  There are some things, such as the Sending Monitor screen, 
+that load very slowly and I'd like to see some speed gains.
+
+[ ] API.  As Frans said, it is very useful to be able to use Dada Mail from other programs.  
+Maybe it could even get to the point that the Administration pages use the same API, instead of 
+actually having code in them, so that we have built in API documentation.
+
+
+[ ] Profile Fields
+Make it possible to define other profile fields like a checkbox, radio buttons, text area and select list. Besides public and hidden fields (those starting with an underscore) add another category "read-only": these are showed publicly but cannot be changed by a subscriber, e.g. by adding attribute "disabled" to the corresponding <input> tag.
+
+[ ] API to login from other software
+Currently I am using the following code in main.cgi (sub login) to login from a CMS, enter a specific admin screen (f=send_url_email) and pass another parameter (url=http://dadamailproject.com/ used by my modified "send_url_email"):
+
+require DADA::App::Session; 
+my $dada_session = DADA::App::Session->new(); 
+
+# login by means of a url: http://www.domain.com/cgi-bin/dada/mail.cgi?flavor=login&admin_password=password&admin_list=listname&auth_state=1&admin_option1=f=send_url_email&admin_option2=url=http://dadamailproject.com/
+
+                $referer = "$DADA::Config::S_PROGRAM_URL?".$q->param('admin_option1') if($q->param('admin_option1'));
+                $referer .= '&'.$q->param('admin_option2') if($q->param('admin_option2'));
+                $referer .= '&'.$q->param('admin_option3') if($q->param('admin_option3'));
+        logout(-redirect => 0) if($q->param('admin_option1') && $dada_session->logged_into_diff_list(-cgi_obj => $q) == 1);
+   
+Would be nice if this kind of functionality can become part of the official dada code.
+
+[ ] Language files
+To make it easier to translate at least the public part of dada. If we can can agree about how to do this I am willing to do the coding like putting the english texts into language file(s) and replace them with variables. So when somebody wants to use a different language he "only" needs to translate these language files, besides the (public) templates of course. Currently we have to translate inside the Perl source code in main.cgi, error.pm etc. 
+
+[ ]  Timestamps
+
+Add time stamps when somebody (un)subscribes and when the subscription is confirmed, to make it possible to clean up the list automatically. E.g. to remove email addresses who are subscribed but not confirmed after xx days.
+
+
+[ ] 1. Installer
+
+It would be great to have it more like Wordpress or Piwik where it will
+notify you of updates and 'upgrade itself' quite happily (making database
+changes, downloading and installing new versions etc.). I know to start this
+process is probably a lot of work, but you might want to involve some of the
+rest of us with this to help with the burden as once it's done, it will work
+great.
+
+[ ] 2. Plugins
+
+Wordpress (notice the theme here :-)) plugins are a great concept. Anyone
+can write them, and they can be enabled/disabled and for example we could
+install our own Clicktracker we have written as a module rather than having
+to have it 'sit outside' of Dada. Which brings me to...
+
+[ ] 3. Clickthrough Tracker
+
+We've had to disable the Dada one as the open rate works fine (1 pixel
+transparent gif) however we need to track sales conversions so need to know
+'where' on an email someone clicked and that they were part of our marketing
+list that generated the sale. Sounds like you're having similar thoughts (we
+use MD5 hashes to anonymise any information etc.)
+
+[ ] 4. Tiny URL style links
+
+We're MD5 hashing our links, but it would be great to have the ability in
+Dada to do similar. We use this for double opt-ins and it works well.
+
+[ ] 5. Mail Chimp
+
+Not sure if you've used this, but a number of our smaller clients have moved
+over to this, rather than 'take on' Dada as they find it much easier and
+simpler to use. Yes you have to pay for it, which obviously is a
+disadvantage and it's not open source, so you can't change everything, but
+they all think the UI is pretty intuitive whereas many find Dada just 'too
+tough'.
+
+If we could borrow some of the best bits from this for Dada then that would
+be good :-)
+
+[ ] 6. Widgits
+
+Agree with your thoughts below and if you get a chance have a look at the
+way Piwik (http://piwik.org/) works with its UI. Pick up any window, drag it
+to a different place, it really is as easy as pie!
+
+[ ] 7. Analytics integration
+
+Getting Dada to talk to other programs is difficult - we tend to roll our
+own code and put it into the emails. If we could, for example, have a
+call-out API where Dada could talk to Google Analytics and update that with
+Goal/Funnel conversions or something like that, that would be pretty cool.
+
+Hope this helps!
 
 
 
