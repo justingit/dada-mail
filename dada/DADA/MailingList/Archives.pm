@@ -1596,10 +1596,11 @@ sub message_blurb {
 	return undef
 		if !$args{-key}; 
 		
-	my $msg = $self->massaged_msg_for_display(-key        => $args{-key}, 
-											  -plain_text => 1,
-											 );
-											
+	my $msg = $self->massaged_msg_for_display(
+		-key        => $args{-key}, 
+		-plain_text => 1,
+	);
+					
 	# We'll want to, actually, escape out the entities - I don't know
 	# why this isn't done in, massaged_msg_for_display  
 	# I should... add that... 
@@ -1754,115 +1755,148 @@ document.
 
 =cut
 
-sub massaged_msg_for_display { 
+sub massaged_msg_for_display {
 
-	my $self = shift; 
-	
-	my %args = (-key                       => undef, 
-				-body_only                 => 0, 
-				-plain_text                => 0, 
-				-entity_protect            => 1, 
-				
-				@_); 
-	
-	my $content_type = 'text/html'; 
-	
-	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($args{-key});
+    my $self = shift;
 
-	if(! $raw_msg){ 
-		$raw_msg = $self->_bs_raw_msg($subject, $message, $format); 
-	}
-		
-	
-	
-	my $entity = $self->_entity_from_raw_msg($raw_msg);
+    my %args = (
+        -key            => undef,
+        -body_only      => 0,
+        -plain_text     => 0,
+        -entity_protect => 1,
 
-	
-	if(!$entity){ 
-		carp "Couldn't create entity: " . $@; 
-	}
-	
-	my $body; 
+        @_
+    );
 
-	my $b_entity; 
-	if($entity->parts){ 
-		$b_entity = $self->_get_body_entity($entity); 
-	}else{
-		$b_entity = $entity; 
-	}
-	
-	# text?! I dunno - set wrong?
-	if ($b_entity->head->mime_type eq 'text/plain' || $b_entity->head->mime_type eq 'text'){ 
-	
-		# If you want the I<unencoded> body, and you are dealing with a
-		# singlepart message (like a "text/plain"), use C<bodyhandle()> instead:
+    my $content_type = 'text/html';
 
-		$body = $b_entity->bodyhandle->as_string;		
-		
-		$body = $self->_zap_sig_plaintext($body)
-			if $self->{ls}->param('stop_message_at_sig') == 1;
-		
-		$body = webify_plain_text($body)
-			unless $args{-plain_text} == 1;
+    my ( $subject, $message, $format, $raw_msg ) =
+      $self->get_archive_info( $args{-key} );
 
-    
-		if($self->{ls}->param('style_quoted_archive_text') == 1){ 
-			$body = $self->_highlight_quoted_text($body)
-				unless $args{-plain_text} == 1;
-		}
-		
-		    
-		$content_type = 'text/plain'; 
-	
-	}elsif ($b_entity->head->mime_type eq 'text/html'){ 
-	
-		$body = $b_entity->bodyhandle->as_string;
-		
-		
-		
-   		$body = $self->_rearrange_cid_img_tags(-key => $args{-key}, -body => $body);
-		
-		
-		$body = $self->_zap_sig_html($body)
-			if $self->{ls}->param('stop_message_at_sig') == 1;
-		
-	}else{ 
-	
-		warn "I don't know how to work with what I have! mime_type: " . $b_entity->head->mime_type . ', key: ' . $args{-key} . ', list: ' . $self->{list_info}->{list};
-	
-	}
-	
-	$body = $self->_scrub_js($body)
-		if $self->{ls}->param('disable_archive_js') == 1; 
+    if ( !$raw_msg ) {
+        $raw_msg = $self->_bs_raw_msg( $subject, $message, $format );
+    }
 
-	$body = $self->_email_protect($b_entity, $body)
-		if $args{-entity_protect}; 
-		
-	
-   if($args{-body_only} == 1){ 
-   		$body = $self->_chomp_off_body($body); 
-   }else{ 
-   		$body = $self->_add_a_body_if_needed($body)
-   			unless $args{-plain_text} == 1;
-   }
-   
+    my $entity = $self->_entity_from_raw_msg($raw_msg);
 
-   if($args{-plain_text} == 1){ 
-		$body = $self->_chomp_out_head_styles($body); 
-   		$body = html_to_plaintext({-string => $body});
-   }	
-   
-   $body = $self->massage($body); 
-   
-   $body = $self->_parse_in_list_info(-data => $body, 
-   (($args{-plain_text} == 1) ? (-type => 'text/plain') : (-type => 'text/html')),
-   
-   
-   ); 
-   
-   
-   
-   	return wantarray ? ($body, $content_type) : $body;
+    if ( !$entity ) {
+        carp "Couldn't create entity: " . $@;
+    }
+
+    my $body;
+
+    my $b_entity;
+    if ( $entity->parts ) {
+        $b_entity = $self->_get_body_entity($entity);
+    }
+    else {
+        $b_entity = $entity;
+    }
+
+    # text?! I dunno - set wrong?
+    if (   $b_entity->head->mime_type eq 'text/plain'
+        || $b_entity->head->mime_type eq 'text' )
+    {
+
+        # If you want the I<unencoded> body, and you are dealing with a
+        # singlepart message (like a "text/plain"), use C<bodyhandle()> instead:
+
+        $body = $b_entity->bodyhandle->as_string;
+
+        if ( $self->{ls}->param('stop_message_at_sig') == 1 ) {
+            $body = $self->_zap_sig_plaintext($body);
+        }
+
+        $body = $self->massage($body);
+        $body = $self->_parse_in_list_info(
+            -data => $body,
+            (
+                  ( $args{-plain_text} == 1 )
+                ? ( -type => 'text/plain' )
+                : ( -type => 'text/html' )
+            ),
+        );
+
+        if ( $args{-plain_text} == 1 ) {
+
+            # ...
+        }
+        else {
+            $body = webify_plain_text($body);
+        }
+
+        if ( $self->{ls}->param('style_quoted_archive_text') == 1 ) {
+            $body = $self->_highlight_quoted_text($body)
+              unless $args{-plain_text} == 1;
+        }
+        $content_type = 'text/plain';
+
+    }
+    elsif ( $b_entity->head->mime_type eq 'text/html' ) {
+
+        $body = $b_entity->bodyhandle->as_string;
+        $body = $self->_rearrange_cid_img_tags(
+            -key  => $args{-key},
+            -body => $body,
+        );		
+        if ( $self->{ls}->param('stop_message_at_sig') == 1 ) {
+            $body = $self->_zap_sig_html($body);
+        }
+
+        $body = $self->massage($body);
+        $body = $self->_parse_in_list_info(
+            -data => $body,
+            (
+                  ( $args{-plain_text} == 1 )
+                ? ( -type => 'text/plain' )
+                : ( -type => 'text/html' )
+            ),
+        );
+    }
+    else {
+        warn "I don't know how to work with what I have! mime_type: "
+          . $b_entity->head->mime_type
+          . ', key: '
+          . $args{-key}
+          . ', list: '
+          . $self->{list_info}->{list};
+    }	
+    $body = $self->_scrub_js($body)
+      if $self->{ls}->param('disable_archive_js') == 1;
+
+    $body = $self->_email_protect( $b_entity, $body )
+      if $args{-entity_protect};
+
+    if ( $args{-body_only} == 1 ) {
+        $body = $self->_chomp_off_body($body);
+    }
+    else {
+        if ( $args{-plain_text} == 1 ) {
+
+            # ...
+        }
+        else {
+            $body = $self->_add_a_body_if_needed($body);
+        }
+    }
+
+    if ( $args{-plain_text} == 1 ) {
+		# happens when you have a HTML body and need it back in plaintext
+		# From what I can figure out, this'll only happen in the 
+		# message blurbs?
+        $body = $self->_chomp_out_head_styles($body);
+        $body = html_to_plaintext( { -string => $body } );
+		# Total hack: 
+		# I don't want to double-process the $body - perhaps 
+		# that won't do anything weird, but perhaps... it would? 
+		my $opening = quotemeta('<!-- tmpl_var LEFT_BRACKET -->'); 
+		my $closing = quotemeta('<!-- tmpl_var RIGHT_BRACKET -->');
+		$body       =~ s/$opening/\[/g; 
+		$body       =~ s/$closing/\]/g; 
+		
+    }
+
+    return wantarray ? ( $body, $content_type ) : $body;
 }
 
 
