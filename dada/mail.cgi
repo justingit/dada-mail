@@ -1473,14 +1473,10 @@ sub sending_monitor {
 						}
 					); 
             
-            my $its_killed = 0;             
-            if($status->{should_be_restarted}){ 
-                $its_killed = 1; 
-            }
             
             if(
                
-               $its_killed                                                  == 1  && # It's dead in the water.
+               $status->{should_be_restarted}								== 1  && # It's dead in the water.
                $li->{auto_pickup_dropped_mailings}                          == 1 && # Auto Pickup is turned on...
               # $status->{total_sending_out_num} - $status->{total_sent_out} >  0 && # There's more subscribers to send out to
                $restart_count                                               <= 0 && # We haven't *just* restarted this thing
@@ -1582,7 +1578,7 @@ sub sending_monitor {
 								negative_status_bar_width    => 500 - (int($status->{percent_done}) * 5), 
 								need_to_send_out             => ( $status->{total_sending_out_num} - $status->{total_sent_out}), 
 								time_since_last_sendout      => _formatted_runtime((time - int($status->{last_access}))), 
-								its_killed                   => $its_killed, 
+								its_killed                   => $status->{should_be_restarted}, 
 								header_subject               => $status->{email_fields}->{Subject}, 
 								header_subject_label         => (length($header_subject_label) > 50) ? (substr($header_subject_label, 0, 49) . '...') : ($header_subject_label),  
 								auto_pickup_dropped_mailings => $li->{auto_pickup_dropped_mailings}, 
