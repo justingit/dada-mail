@@ -962,14 +962,17 @@ sub mass_send {
             if $t; 
     
         # Shazzam!
-        $mailout->associate($self->restart_with, $self->list_type);
+        $mailout->associate(
+			$self->restart_with, 
+			$self->list_type
+		);
         
         # Seems like we should still be able to do this if basically if the lock is unlocked...
         
       #  my $restart_status = $mailout->status; 
        # if($restart_status->{should_be_restarted} == 1){ 
         
-        if($mailout->should_be_restarted){ 
+        if($mailout->should_be_restarted == 1){ 
         
             warn '[' . $self->{list} . '] mailout is reporting the mailing should be restarted.'
                 if $t; 
@@ -983,6 +986,7 @@ sub mass_send {
         
         } else { 
             # For the life of me, I do not understand this line. 
+			$mailout->log('Attempt to reload a message which does not have a stalled process - check before attempting!');
             carp "Attempt to reload a message which does not have a stalled process - check before attempting!"; 
             return; 
         }
