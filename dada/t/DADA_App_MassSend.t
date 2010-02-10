@@ -39,6 +39,7 @@ ok($ms->isa('DADA::App::MassSend'), 'We have the right type of object!');
 
 use CGI; 
 my $q = new CGI; 
+   $q = decode_cgi_obj($q);
 
 # Globals
 my $msg; 

@@ -28,7 +28,9 @@ use Getopt::Long;
 my $verbose = 1; 
 
 use DADA::Config qw(!:DEFAULT);
+use Dada::App::Guts; 
 use DADA::Mail::MailOut; 
+
 
 
 if(!$ENV{GATEWAY_INTERFACE}){ 
@@ -38,7 +40,7 @@ if(!$ENV{GATEWAY_INTERFACE}){
 
     require CGI; 
     my $q = new CGI; $q->charset($DADA::Config::HTML_CHARSET);
-    
+       $q = decode_cgi_obj($q);
     print $q->header();
     if(defined($q->param('verbose')) == 1){ 
         $verbose = $q->param('verbose');

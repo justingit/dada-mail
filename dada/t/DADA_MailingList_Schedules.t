@@ -40,6 +40,8 @@ eval { $mss->save_from_params(); };
 ok(defined($@), "Error when attempting to save without passing the -cgi_obj: $@");
 
 my $q = new CGI; 
+   $q = decode_cgi_obj($q);
+
    $q->param('message_name',     'My Message Name'); 
    $q->param('active',            1); 
    $q->param('Subject',          'My Message Subject'); 

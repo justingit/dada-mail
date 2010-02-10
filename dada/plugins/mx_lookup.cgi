@@ -25,6 +25,7 @@ my $Ver = '1.0';
 use CGI; 
 my $q = new CGI; 
    $q->charset($DADA::Config::HTML_CHARSET);
+   $q = decode_cgi_obj($q);
 
 my ($admin_list, $root_login) = check_list_security(-cgi_obj   => $q, 
                                                     -Function  => 'mx_lookup');

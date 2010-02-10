@@ -117,7 +117,10 @@ $Plugin_Config->{Enable_POP3_File_Locking} = 1;
 
 
 
-use CGI; my $q = new CGI;$q->charset($DADA::Config::HTML_CHARSET);
+use CGI;
+my $q = new CGI;
+   $q->charset($DADA::Config::HTML_CHARSET);
+   $q = decode_cgi_obj($q);
 
 # Usually, this doesn't need to be changed. 
 # But, if you are having trouble saving settings 

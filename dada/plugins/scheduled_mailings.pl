@@ -42,7 +42,11 @@ use lib qw(
 );
 
 use DADA::Config 3.0.0 qw(!:DEFAULT);
-use CGI; my $q = new CGI;$q->charset($DADA::Config::HTML_CHARSET);
+use CGI; 
+my $q = new CGI;
+   $q->charset($DADA::Config::HTML_CHARSET);
+   $q = decode_cgi_obj($q);
+
 my $Plugin_Config = {}; 
 
 

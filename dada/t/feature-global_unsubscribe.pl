@@ -8,6 +8,8 @@ BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 use dada_test_config; 
 
 use DADA::Config; 
+use Dada::App::Guts; 
+
 ok($DADA::Config::GLOBAL_UNSUBSCRIBE == 0, "Defaults to, '0'");
 $DADA::Config::GLOBAL_UNSUBSCRIBE = 1;
 ok($DADA::Config::GLOBAL_UNSUBSCRIBE == 1, "And, now it's '1'");
@@ -83,6 +85,8 @@ ok($dap->test == 1, "Testing is on...");
 
 require CGI; 
 my $q = new CGI; 
+   $q = decode_cgi_obj($q);
+
 $q->param('email', 'user3@example.com'); 
 $q->param('list',   $list3); 
 $q->param('f',      'u'); 

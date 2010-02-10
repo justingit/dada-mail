@@ -25,7 +25,8 @@ use DADA::App::Guts;
 use CGI; 
 my $q = new CGI; 
    $q->charset($DADA::Config::HTML_CHARSET);
-
+   $q = decode_cgi_obj($q); 
+	
 	my $dbi_handle; 
 
 if(
@@ -484,6 +485,9 @@ sub global_list_sending_checkbox_widget {
 
 sub default_screen {
 
+#my ($args) = @_; 
+#my %args = %$args; #backwards compat? 
+
     my %args = (
         -show_hidden        => undef,
         -name               => undef,
@@ -492,6 +496,7 @@ sub default_screen {
         -error_invalid_list => 0,
         @_
     );
+
 
     require DADA::MailingList::Settings;
     require DADA::MailingList::Archives;
@@ -1085,7 +1090,9 @@ sub profile_widget {
         if ($dp) {
             require DADA::Profile::Session;
             require CGI;
-            my $q         = new CGI;
+            my $q = new CGI;
+		 	   $q = decode_cgi_obj($q); 
+		   
             my $prof_sess = DADA::Profile::Session->new;
             if ( $prof_sess->is_logged_in( { -cgi_obj => $q } ) ) {
                 $is_logged_in = 1;
@@ -2157,11 +2164,9 @@ sub subscription_form {
 	if(! exists ($args->{-ignore_cgi}) && $args->{-ignore_cgi} != 1){ 
    
         require CGI; 
-
- 
         my $q = new CGI; 
            $q->charset($DADA::Config::HTML_CHARSET);
-
+		   $q = decode_cgi_obj($q); 
         foreach(qw(email list )){ 
             if(! exists ( $args->{'-' . $_} ) && defined($q->param($_))){ 
                 $args->{'-' . $_} = xss_filter($q->param($_));

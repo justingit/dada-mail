@@ -1183,6 +1183,7 @@ sub view_file_attachment {
 	require CGI; 
 	my $q = CGI->new; 
 	   $q->charset($DADA::Config::HTML_CHARSET);
+	   $q = decode_cgi_obj($q);
 	
 	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($id, 1); 
 	
@@ -1365,6 +1366,7 @@ sub view_inline_attachment {
 	require CGI; 
 	my $q = CGI->new; 
 	   $q->charset($DADA::Config::HTML_CHARSET);
+	   $q = decode_cgi_obj($q);
 	
 	my $c_type;
 	

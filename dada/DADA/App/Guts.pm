@@ -97,6 +97,7 @@ require Exporter;
   gravatar_img_url
   csv_parse
   can_use_twitter
+  decode_cgi_obj
 );
 
 
@@ -1795,8 +1796,9 @@ sub user_error {
 													 -Email => $email,
 													-Error_Message => $args{-Error_Message}, 
 													 );
+	
 													 
-	print $fh $error_msg;
+	print $fh encode('UTF-8', $error_msg);
 	
  }
  
@@ -2497,6 +2499,31 @@ sub tweet_about_mass_mailing {
 	else { 
 		return 0; 
 	}	
+}
+
+
+sub decode_cgi_obj { 
+
+	my $query = shift; 
+	
+	my $form_input = {};  
+	foreach my $name ( $query ->param ) {
+	  my @val = $query ->param( $name );
+	  foreach ( @val ) {
+	    $_ = Encode::decode_utf8( $_ );
+	  }
+	  $name = Encode::decode_utf8( $name );
+	  if ( scalar @val == 1 ) {   
+	    #$form_input ->{$name} = $val[0];
+		$query->param($name, $val[0]); 
+		warn 'CGI param: ' . $name . ' ' . $val[0];
+	  } else {      
+		$query->param($name, \@val);                 
+	    #$form_input ->{$name} = \@val;  # save value as an array ref
+	  }
+	}
+	return $query; 
+	
 }
 
 

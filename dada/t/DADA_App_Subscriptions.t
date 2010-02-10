@@ -12,13 +12,14 @@ use dada_test_config;
 use Test::More qw(no_plan);  
 
 use DADA::Config;
+use Dada::App::Guts; 
 use DADA::App::Subscriptions; 
 use DADA::MailingList::Settings; 
 use DADA::MailingList::Subscribers; 
 
 use CGI;
 my $q = CGI->new; 
-
+   $q = decode_cgi_obj($q);
 
 
 my %orig = %DADA::Config::LIST_SETUP_DEFAULTS;

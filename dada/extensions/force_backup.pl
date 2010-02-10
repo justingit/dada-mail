@@ -13,6 +13,7 @@ use CGI::Carp "fatalsToBrowser";
 my @lists = DADA::App::Guts::available_lists();
 
 my $q = CGI->new;
+   $q = decode_cgi_obj($q);
 print $q->header();
 foreach (@lists) {
     print $q->h1("list: $_");
@@ -25,7 +26,6 @@ foreach (@lists) {
 	print $q->h2('Mailing List Archives Backed Up.'); 
 }
 
-my $q = new CGI;
 print $q->h1('All lists are now backed up.');
 
 =pod

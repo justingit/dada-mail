@@ -9,10 +9,20 @@ use lib qw(
 	../../../../perllib
 ); 
 use DADA::Config 4.0.0;
+# use some of those Modules
+use DADA::Template::HTML; 
+use DADA::App::Guts;
+use DADA::MailingList::Settings; 
+use DADA::MailingList::Subscribers; 
+
+
 
 use CGI::Carp qw(fatalsToBrowser); 
-use CGI; my $q = new CGI; $q->charset($DADA::Config::HTML_CHARSET);
+use CGI; 
 
+my $q = new CGI; 
+   $q->charset($DADA::Config::HTML_CHARSET);
+   $q = decode_cgi_obj($q);
 
 
 
@@ -20,14 +30,6 @@ use CGI; my $q = new CGI; $q->charset($DADA::Config::HTML_CHARSET);
 my $Url = $q->url; 
 
 
-
-
-# use some of those Modules
-
-use DADA::Template::HTML; 
-use DADA::App::Guts;
-use DADA::MailingList::Settings; 
-use DADA::MailingList::Subscribers; 
 
 
 my %Global_Template_Options = (

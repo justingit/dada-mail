@@ -56,8 +56,8 @@ use DADA::Config 4.0.0;
 use CGI;
 CGI->nph(1) if $DADA::Config::NPH == 1;
 my $q = new CGI;
-$q->charset($DADA::Config::HTML_CHARSET);
-
+   $q->charset($DADA::Config::HTML_CHARSET);
+   $q = decode_cgi_obj($q);
 use Fcntl qw(
   O_CREAT
   O_RDWR
