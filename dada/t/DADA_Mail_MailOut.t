@@ -332,10 +332,19 @@ ok(defined $invite_mailout,                        'new() returned something, go
 
 my $imo; 
 eval { 
-    $imo = $invite_mailout->create({-fields => $test_msg_fields, -mh_obj => $mh, -list_type => 'invitelist' });
+    $imo = $invite_mailout->create(
+		{
+			-fields    => $test_msg_fields, 
+			-mh_obj    => $mh, 
+			-list_type => 'invitelist' 
+		}
+	);
 };
-
-ok(!$@, "Passing  a correct DADA::Mail::Send object does not create an error!"); 
+if($@){ 
+	warn $@; 
+}
+ok(!$@, "Passing  a correct DADA::Mail::Send object does not create an error!");
+ 
 ok($imo == 1, " create() returns 1!"); 
 my $invite_mailout_status = $invite_mailout->status;
 ok($invite_mailout->status->{type} eq 'invitelist', "type of mailing is correct set to, 'invitelist'");

@@ -993,7 +993,7 @@ sub create_mass_sending_file {
     #open one file, write to the other.
     my $email;
 
-    open my $SENDINGFILE, '>', $sending_file
+    open my $SENDINGFILE, '>:encoding(UTF-8)', $sending_file
       or croak
 "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: Cannot create temporary email list file for sending out bulk message: $!";
     chmod( $SENDINGFILE, $DADA::Config::FILE_CHMOD );

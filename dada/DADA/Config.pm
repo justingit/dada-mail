@@ -366,7 +366,7 @@ $DBI_PARAMS ||= {
 	
 	# MySQL specific attribute:
 	#
-	# 		mysql_enable_utf8 => 1, 
+	 		mysql_enable_utf8 => 1, 
 	#
 	# You will also need to ensure that your database / table / column is 
 	# configured to use UTF8. See Chapter 10 of the mysql manual for details.
@@ -378,7 +378,7 @@ $DBI_PARAMS ||= {
 	# about the utf8 flag, see the Encode module. This attribute is only 
 	# relevant under perl 5.8 and later.	
 	#
-	#	pg_enable_utf8 => 1, 
+		pg_enable_utf8 => 1, 
 
 
 
@@ -388,7 +388,7 @@ $DBI_PARAMS ||= {
 	# disabled for perl < 5.8.5). For more details on the UTF-8 flag see 
 	# perlunicode. The default is for the UTF-8 flag to be turned off.
 	#
-	#	unicode => 1
+		unicode => 1
 		
 };
 
@@ -5053,7 +5053,7 @@ sub _config_import {
 	$CONFIG_FILE = $1;
 	
 	if(-e $CONFIG_FILE && -f $CONFIG_FILE && -s $CONFIG_FILE){ 
-		open(CONFIG, "< $CONFIG_FILE") 
+		open(CONFIG, '<:encoding(UTF-8)',  $CONFIG_FILE) 
 			or warn "could not open outside config file, '$CONFIG_FILE' because: $!"; 
 		my $conf;
 		   $conf = do{ local $/; <CONFIG> }; 

@@ -12,7 +12,7 @@ use dada_test_config;
 use Test::More qw(no_plan);  
 
 use DADA::Config;
-use Dada::App::Guts; 
+use DADA::App::Guts; 
 use DADA::App::Subscriptions; 
 use DADA::MailingList::Settings; 
 use DADA::MailingList::Subscribers; 

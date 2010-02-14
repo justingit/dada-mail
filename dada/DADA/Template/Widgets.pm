@@ -1,10 +1,9 @@
 package DADA::Template::Widgets;
 use lib qw(
 
-          /sw/lib/perl5/5.8.6/darwin-thread-multi-2level
-          /sw/lib/perl5
-          
           ../../ ./ ../ ./dada ../dada ./DADA ../DADA ./DADA/perllib ../DADA/perllib); 
+
+use Encode; 
 
 use CGI::Carp qw(croak carp); 
 
@@ -1770,6 +1769,17 @@ else {
 
 
 	my $template; 
+#	
+#        my $tmpl = HTML::Template->new (filename => 'test.tmpl',
+#                    filter => sub {
+#                        my $ref = shift;
+#                        ${$ref} = Encode::decode_utf8(${$ref});
+#                    });
+#
+#   This works, but is a bit ad-hoc: it was not immediately obvious
+#    to me that this filter is an opportunity to make Unicode work.
+
+
 	
 	if($args->{-expr}){ 
 	
@@ -1784,7 +1794,7 @@ else {
                                                          filter => [ 
 														 
 														#  { sub => \&set_name_value_filter, format => 'scalar' },
-
+                  											   { sub => \&decode_str,format => 'scalar' },
                                                               { sub => \&dada_backwards_compatibility,
                                                                format => 'scalar' },
                                                              { sub => \&dada_pseudo_tag_filter,
@@ -1804,9 +1814,10 @@ else {
                                                          ($args->{-dada_pseudo_tag_filter} == 1) ?
                                                          (
                                                         filter => [ 
-													  
-													# 	  { sub => \&set_name_value_filter, format => 'scalar' },
-													
+													  		
+															# the scalarref should already be 
+															# decoded, so doing it again isn't necessary? 
+															# { sub => \&decode,format => 'scalar' },
                                                               { sub => \&dada_backwards_compatibility,
                                                                format => 'scalar' },
                                                              { sub => \&dada_pseudo_tag_filter,
@@ -1833,7 +1844,7 @@ else {
                                                          (
                                                         filter => [ 
 														 # { sub => \&set_name_value_filter, format => 'scalar' },
-
+															 { sub => \&decode,format => 'scalar' },
                                                               { sub => \&dada_backwards_compatibility,
                                                                format => 'scalar' },
                                                              { sub => \&dada_pseudo_tag_filter,
@@ -1855,7 +1866,9 @@ else {
                                         ($args->{-dada_pseudo_tag_filter} == 1) ?
                                         (
                                                         filter => [ 
-															#  { sub => \&set_name_value_filter, format => 'scalar' },
+															# the scalarref should already be 
+															# decoded, so doing it again isn't necessary? 
+															# { sub => \&decode,format => 'scalar' },
                                                               { sub => \&dada_backwards_compatibility,
                                                                format => 'scalar' },
                                                              { sub => \&dada_pseudo_tag_filter,
@@ -1920,6 +1933,12 @@ sub set_name_value_filter {
 		}
 	   $$text_ref =~ s/$match/<tmpl_if name=never><tmpl_var name=$1><\/tmpl_if><!-- here. -->/gi;	
 }
+
+sub decode_str { 
+	my $ref = shift;
+       ${$ref} = Encode::decode_utf8(${$ref});
+}
+
 sub dada_backwards_compatibility { 
 
     my $sref = shift; 

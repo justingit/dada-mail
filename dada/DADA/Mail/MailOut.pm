@@ -529,7 +529,7 @@ sub create_log_file {
     my $file = $self->dir . '/' . $file_names->{'log'};
        $file = make_safer($file); 
     
-    sysopen( LOG, $file, O_WRONLY | O_TRUNC | O_CREAT, $DADA::Config::FILE_CHMOD  )
+    open(LOG, '>>:encoding(UTF-8)',  $file  )
         or croak
         "Couldn't create the log file at: '"
         . $file
@@ -914,7 +914,7 @@ sub create_raw_message {
 
 	my $lock = $self->lock_file($file);
 	
-    sysopen( MESSAGE, $file, O_WRONLY | O_TRUNC | O_CREAT, $DADA::Config::FILE_CHMOD  )
+    open( MESSAGE, '>>:encoding(UTF-8)', $file )
         or croak "couldn't open: '$file' because: $!";
 
     foreach (@DADA::Config::EMAIL_HEADERS_ORDER) {
@@ -1776,7 +1776,7 @@ sub message_for_mail_send {
     	return undef; 
 	}
 
-    open my $MSG_FILE, '<', $file
+    open my $MSG_FILE, '<:encoding(UTF-8)', $file
         or die "Cannot read saved raw message at: '" . $file
         . "' because: "
         . $!;
@@ -2159,7 +2159,7 @@ sub log {
 	my $file = $self->dir . '/' . $file_names->{log};
        $file = make_safer($file);
 
-	open(MO_LOG, '>>',$file) 
+	open(MO_LOG, '>>:encoding(UTF-8)', $file) 
 		or carp $!; 
 	flock(MO_LOG, LOCK_SH);
 	print MO_LOG "[$time]\t$log\n";
@@ -2177,7 +2177,7 @@ sub print_log {
 	my $file = $self->dir . '/' . $file_names->{log};
        $file = make_safer($file);
 
-	open(MO_LOG, '<', $file) 
+	open(MO_LOG, '<:encoding(UTF-8)', $file) 
 		or carp $!; 
 
 	while (<MO_LOG>) {

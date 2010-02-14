@@ -387,7 +387,7 @@ sub make_template {
 		$list_template = $1; 
 	
 	
-		sysopen(TEMPLATE, "$list_path/$list_template.template",  O_WRONLY|O_TRUNC|O_CREAT,  $DADA::Config::FILE_CHMOD ) or 
+		open(TEMPLATE, '>>:encoding(UTF-8)', $list_path .'/' . $list_template . '.' . 'template') or 
 			croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: can't write new template at '$list_path/$list_template.template': $!"; 
 	
 		flock(TEMPLATE, LOCK_EX) or 
@@ -1855,7 +1855,7 @@ sub make_all_list_files {
 	
 	if($DADA::Config::SUBSCRIBER_DB_TYPE eq 'PlainText'){ 
 		# make email list file
-		sysopen(LIST, "$DADA::Config::FILES/$list.list", O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD )
+		open(LIST, '>>:encoding(UTF-8)', "$DADA::Config::FILES/$list.list")
 			or croak "couldn't open $DADA::Config::FILES/$list.list for reading: $!\n";
 		flock(LIST, LOCK_SH);
 		close (LIST);
@@ -1864,7 +1864,7 @@ sub make_all_list_files {
 		chmod($DADA::Config::FILE_CHMOD , "$DADA::Config::FILES/$list.list"); 	
 	
 		# make e-mail blacklist file
-		sysopen(LIST, "$DADA::Config::FILES/$list.black_list", O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD )
+		open(LIST, '>>:encoding(UTF-8)', "$DADA::Config::FILES/$list.black_list")
 			or croak "couldn't open $DADA::Config::FILES/$list.black_list for reading: $!\n";
 		flock(LIST, LOCK_SH);
 		close (LIST);
@@ -2359,11 +2359,11 @@ sub csv_subscriber_parse {
 	# http://search.cpan.org/~rgarcia/perl-5.10.0/lib/PerlIO.pm
 	
 	# Reading
-	open my $NE, '<', $DADA::Config::TMP . '/' . $filename 
+	open my $NE, '<:encoding(UTF-8)', $DADA::Config::TMP . '/' . $filename 
 		or die "Can't open: " . $DADA::Config::TMP . '/' . $filename . ' because: '  . $!;
 
 	# Writing
-	open my $NE2, '>', make_safer($DADA::Config::TMP . '/' . $filename . '.translated') 
+	open my $NE2, '>:encoding(UTF-8)', make_safer($DADA::Config::TMP . '/' . $filename . '.translated') 
 		or die "Can't open: " . make_safer($DADA::Config::TMP . '/' . $filename . '.translated') . ' because: '  . $!;
 
 	my $line; 
@@ -2419,7 +2419,7 @@ sub csv_subscriber_parse {
     # And all this is to simply remove the file...    
     my $full_path_to_filename = $DADA::Config::TMP . '/' . $filename;
     
-    
+
     my $chmod_check = chmod($DADA::Config::FILE_CHMOD, make_safer($full_path_to_filename)); 
     if($chmod_check != 1){ 
         warn "could not chmod '$full_path_to_filename' correctly."; 
@@ -2505,9 +2505,15 @@ sub tweet_about_mass_mailing {
 sub decode_cgi_obj { 
 
 	my $query = shift; 
+#	return $query; 
 	
 	my $form_input = {};  
-	foreach my $name ( $query ->param ) {
+	foreach my $name ( $query->param ) {
+	  
+	  # Don't decode image uploads that are binary. 
+	  next 
+		if $name =~ m/picture|attachment(.*?)$/; 
+	
 	  my @val = $query ->param( $name );
 	  foreach ( @val ) {
 	    $_ = Encode::decode_utf8( $_ );
@@ -2516,9 +2522,9 @@ sub decode_cgi_obj {
 	  if ( scalar @val == 1 ) {   
 	    #$form_input ->{$name} = $val[0];
 		$query->param($name, $val[0]); 
-		warn 'CGI param: ' . $name . ' ' . $val[0];
+		#warn 'CGI param: ' . $name . ' ' . $val[0];
 	  } else {      
-		$query->param($name, \@val);                 
+		$query->param($name, @val);                 
 	    #$form_input ->{$name} = \@val;  # save value as an array ref
 	  }
 	}

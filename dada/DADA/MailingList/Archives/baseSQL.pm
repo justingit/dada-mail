@@ -126,7 +126,8 @@ sub print_message_source {
 	 	
 	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($id); 
 	
-	print $fh $raw_msg;
+	require Encode; 
+	print $fh Encode::encode('UTF-8', $raw_msg );
 
 }
 

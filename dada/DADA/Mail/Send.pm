@@ -661,7 +661,7 @@ sub send {
             #  if (defined fileno *MAIL);
             # ?!?!?!?!
             
-
+	
 			if($self->test){ 
             				
                 # print "NOT SENDING - sending message to test file: '" . $self->test_send_file . "'"; 
@@ -680,12 +680,12 @@ sub send {
 			# DEV: I guess the idea is, I want this header first?
             if (exists($fields{'Return-Path'})){
             	if ($fields{'Return-Path'} ne undef){
-					print MAIL 'Return-Path: ' . $fields{'Return-Path'} . "\n"	
+					print MAIL Encode::encode_utf8('Return-Path: ' . $fields{'Return-Path'} . "\n"); 	
 				} 
 			}
             
             foreach my $field (@default_headers){
-                    print MAIL "$field: $fields{$field}\n" 
+                    print MAIL Encode::encode_utf8("$field: $fields{$field}\n") 
                         if(
 	 						exists($fields{$field})                  && 
 							defined $fields{$field}                  && 
@@ -693,8 +693,8 @@ sub send {
                             $field                  ne 'Return-Path'
                          );
             }
-            print MAIL "\n"; 
-            print MAIL $fields{Body} . "\n"; # DEV: Why the last, "\n"?
+            print MAIL Encode::encode_utf8("\n"); 
+            print MAIL Encode::encode_utf8($fields{Body} . "\n"); # DEV: Why the last, "\n"?
             close(MAIL) 
                 or carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: 
                          didn't close pipe to '$live_mailing_settings' while 
@@ -1353,7 +1353,7 @@ sub mass_send {
 			my $somethings_wrong = 0;
 			
 			
-			sysopen(MAILLIST, $mailout->subscriber_list,  O_RDONLY|O_CREAT, $DADA::Config::FILE_CHMOD ) or 
+			open(MAILLIST, '<:encoding(UTF-8)', $mailout->subscriber_list) or 
 				croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: 
 				       can't open mailing list (at: '" . $mailout->subscriber_list .
 				      "') to send a Mailing List Message: $!"; 
@@ -1576,14 +1576,22 @@ sub mass_send {
 							-List        => $self->{list},  
 							-ls_obj      => $self->{ls},
 						); 
-						
-                my %nfields = $self->_mail_merge(
+               
+			#	require Data::Dumper; 
+		#		warn Data::Dumper::Dumper($fields{Body});
+				
+ 				my %nfields = $self->_mail_merge(
 				    {
 				        -fields => \%fields,
 				        -data   => \@ml_info, 
 						-fm_obj => $fm, 
 				    }
 				);
+				
+			#	require Data::Dumper; 
+			#	die Data::Dumper::Dumper($nfields{Body}); 
+				
+				
 
 				# Debug Information, Always nice
                 $nfields{Debug} = {
@@ -2550,14 +2558,11 @@ sub _mail_merge {
 				); 
 	}
 
-       
-#    warn "\n";   
-#    warn "Subscriber Vars! for: " . $subscriber_vars->{'subscriber.email'}; 
-#    foreach(keys %{$subscriber_vars}){ 
-#        warn $_ . ' => ' . $subscriber_vars->{$_};
-#    }
-#    warn "\n";    
-    
+	
+#	warn "original entity"; 
+#	require Data::Dumper; 
+#	die Data::Dumper::Dumper($args->{-fields}->{Body});
+	
     
     my ($orig_entity, $filename) = $fm->entity_from_dada_style_args(
                                     {
@@ -2565,7 +2570,9 @@ sub _mail_merge {
                                         -parser_params => {-input_mechanism => 'parse_open'}, 
                                     }
                              );
-							
+	
+
+	
     my $entity = $fm->email_template(
                     {
                         -entity                   => $orig_entity,                         

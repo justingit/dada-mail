@@ -2,6 +2,11 @@
 package mail; 
 
 
+use Carp qw( confess );
+$SIG{__DIE__} =  \&confess;
+$SIG{__WARN__} = \&carp;
+$Carp::Verbose = 1; 
+
 use strict;
 use 5.8.1; 
 use Encode qw(encode decode);
@@ -3496,7 +3501,7 @@ sub add {
                   . $q->param('rand_string') . '-'
                   . 'new_emails.txt' );
 
-            open( OUTFILE, '>' . $outfile )
+            open( OUTFILE, '>:encoding(UTF-8)' . $outfile )
               or die ( "can't write to " . $outfile . ": $!" );
             # DEV: TODO encoding?
 			print OUTFILE $q->param('new_emails');

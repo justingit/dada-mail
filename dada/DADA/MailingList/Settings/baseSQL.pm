@@ -197,6 +197,9 @@ sub _raw_db_hash {
 
 	$self->{RAW_DB_HASH} = $settings; 	
 	
+	#while ( my ($key, $value) = each %{	$self->{RAW_DB_HASH} } ) {
+	#	$self->{RAW_DB_HASH}->{$key} = Encode::decode_utf8($value);
+	#}
 }
 
 

@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS dada_settings (
 list                             varchar(16),
 setting                          varchar(64),
 value                            text
-);
+) CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE INDEX dada_settings_list_index ON dada_settings (list);
 
@@ -30,7 +30,7 @@ email                            text(320),
 list                             varchar(16),
 list_type                        varchar(64),
 list_status                      char(1)
-);
+) CHARACTER SET utf8 COLLATE utf8_bin;
 
 
 CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(320), list, list_type, list_status);
@@ -46,13 +46,13 @@ update_email_auth_code       varchar(64),
 update_email                 varchar(320),
 activated                    char(1), 
 CONSTRAINT UNIQUE (email)
-);
+) CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE IF NOT EXISTS dada_profile_fields (
 fields_id int4 not null primary key auto_increment,
 email varchar(320) not null,
 CONSTRAINT UNIQUE (email)
-);
+) CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes (
 	attribute_id int4 not null primary key auto_increment,
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes (
 -- required                  char(1),
 -- public                    char(1),
 	CONSTRAINT UNIQUE (field)
-);
+) CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE IF NOT EXISTS dada_archives (
 list                          varchar(16),
@@ -75,7 +75,7 @@ subject                       text,
 message                       mediumtext,
 format                        text,
 raw_msg                       mediumtext
-);
+) CHARACTER SET utf8 COLLATE utf8_bin;
  
 CREATE INDEX dada_archives_list_archive_id_index ON dada_archives (list, archive_id);
  

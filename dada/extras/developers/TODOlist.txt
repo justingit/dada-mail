@@ -10,6 +10,10 @@ Key:
 [*] Naw...
 [?] Someday
 
+[ ] mailing list headers - perhaps make the unsub header one-click? Hotmail likes to at least have this as an option - right now it just takes you to the unsub page... 
+
+
+
 [ ] * Irregularity and instability after starting a mass mailing:
 
 I'll tag on this.  Most of the problems I've had happen when the blast starts sending.  

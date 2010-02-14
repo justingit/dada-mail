@@ -414,8 +414,14 @@ sub _format_text {
 			my $body    = $entity->bodyhandle;
 			my $content = $body->as_string;
 			
+			# Shortcut!
+			#use Data::Dumper; 
+			#die Data::Dumper::Dumper( $entity->bodyhandle->as_string); 
+			#return $entity; 
+		
 			
 			if($content){ # do I need this?
+
 			
 				if(
 					$self->treat_as_discussion_msg                        &&
@@ -441,11 +447,11 @@ sub _format_text {
 					-data => $content, 
 					-type => $entity->head->mime_type, 
 				);
-	
 				$content = $self->_apply_template(
 					-data => $content, 
 					-type => $entity->head->mime_type, 
 				);
+						
 												
 
 			    if($DADA::Config::GIVE_PROPS_IN_EMAIL == 1){ 
@@ -461,14 +467,18 @@ sub _format_text {
 						$content = $self->_add_opener_image($content);
 					}
 				}
-						   
+				   
 		       my $io = $body->open('w');
-				  $io->print( $content );
+				  #think this helps... 
+				  #$io->print(Encode::encode_utf8( $content ) );
+					$io->print( $content );				    
+				
 				  $io->close;
 				$entity->sync_headers('Length'      =>  'COMPUTE',
 									  'Nonstandard' =>  'ERASE');
 		
 			}
+
 		}
 		return $entity; 
 	}
@@ -1465,8 +1475,7 @@ sub file_from_dada_style_args {
 
        $filename = make_safer($filename); 
     
-	
-    open my $MAIL, '>', $filename or croak $!; 
+   open my $MAIL, '>:encoding(UTF-8)', $filename or croak $!; 
     
     if(! exists($args->{-fields})){ 
         croak 'did not pass data in, "-fields"' ;
@@ -1544,8 +1553,20 @@ sub get_entity {
 		$args->{-parser_params}->{-input_mechanism} = 'parse_data';
 	}
     if($args->{-parser_params}->{-input_mechanism} eq 'parse_open'){ 
-        eval { $entity = $self->{parser}->parse_open($args->{-data}) };       
- 		if($@){ 
+	
+       # eval { $entity = $self->{parser}->parse_open($args->{-data}) };       
+			# parse INSTREAM
+		#   Instance method. Takes a MIME-stream and splits it into its component entities.
+		#   The INSTREAM can be given as an IO::File, a globref filehandle (like \*STDIN), 
+		#   or as any blessed object conforming to the IO:: interface (which minimally implements getline() and read()).
+		#   Returns the parsed MIME::Entity on success. Throws exception on failure. If the message contained too many parts (as set by max_parts), returns undef.
+	
+		eval{
+			open TMPLFILE, '<:encoding(UTF-8)', $args->{-data} or die $!; 
+			$entity = $self->{parser}->parse(\*TMPLFILE);
+			close(TMPLFILE) or die $!;
+		};
+		if($@){ 
 			carp $@; 
 		}
     }
@@ -1631,7 +1652,12 @@ sub email_template {
 	    
 		my $i; 
 		foreach $i (0 .. $#parts) {
-			$parts[$i]= $self->email_template({%{$args}, -entity => $parts[$i] });	# -entity should only pass the current part, but have the rest of the params passed...?
+			$parts[$i]= $self->email_template(
+				{
+					%{$args}, 
+					-entity => $parts[$i] 
+				}
+			);	# -entity should only pass the current part, but have the rest of the params passed...?
 		}
 		
 		 $args->{-entity}->sync_headers('Length'      =>  'COMPUTE',
@@ -1674,6 +1700,8 @@ sub email_template {
 				
 				
 				my $body    = $args->{-entity}->bodyhandle;
+				
+				# I kinda want to decode this... 
 				my $content = $body->as_string;
 
 				if($content){
@@ -1695,7 +1723,8 @@ sub email_template {
 	                ); 
 
 			       my $io = $body->open('w');
-					  $io->print( $content );
+					  #$io->print( Encode::encode_utf8($content) );	
+					$io->print( $content );				    
 					  $io->close;
 				}
 		    
@@ -1814,7 +1843,6 @@ sub DESTROY {
 
 
 sub pre_process_msg_strings { 
-	
 	my $text_ver = shift || undef; 
 	my $html_ver = shift || undef; 
 	

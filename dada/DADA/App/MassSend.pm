@@ -178,7 +178,7 @@ sub send_email {
             $scrn .= admin_template_footer(-List => $list, -Form => 0);
             
 			if($args->{-html_output} == 1){ 
-				print $scrn; 
+				e_print($scrn); 
   			}
 
         }else{
@@ -224,11 +224,11 @@ sub send_email {
 			my $attachment        = $q->param('attachment');
 			
 			my $text_message_body = $q->param('text_message_body') || undef; 
+				
 			my $html_message_body = $q->param('html_message_body') || undef; 
 			
 			($text_message_body, $html_message_body) = 
 				DADA::App::FormatMessages::pre_process_msg_strings($text_message_body, $html_message_body); 
-				
             my $msg; 
             
             if($html_message_body && $text_message_body){ 
@@ -316,8 +316,8 @@ sub send_email {
             
             
         my $msg_as_string = (defined($msg)) ? $msg->as_string : undef;
-                  #  croak '$msg_as_string ' . $msg_as_string;
 
+		
            $fm->Subject($headers{Subject});
            $fm->use_list_template($q->param('apply_template')); 
            if($li->{group_list} == 1){ 
@@ -325,7 +325,9 @@ sub send_email {
     		}
 
         my ($final_header, $final_body) = $fm->format_headers_and_body(-msg => $msg_as_string );
-                
+ 
+
+		
         require DADA::Mail::Send;
                $DADA::Mail::Send::dbi_obj = $dbi_handle;
 
@@ -422,7 +424,7 @@ sub send_email {
             if(($archive_m == 1) && ($process !~ m/test/i)){
                 require DADA::MailingList::Archives;                
                 my $archive = DADA::MailingList::Archives->new({-list => $list});
-                   $archive->set_archive_info($message_id, $headers{Subject}, undef, undef, $mh->saved_message); 
+	               $archive->set_archive_info($message_id, $headers{Subject}, undef, undef, $mh->saved_message); 
 
                	DADA::App::Guts::tweet_about_mass_mailing(
 					$list, 
@@ -569,7 +571,7 @@ sub send_url_email {
 					); 
 
         $scrn .= admin_template_footer(-List => $list );
-        print $scrn; 
+        e_print($scrn); 
 
     }else{ 
         
@@ -880,14 +882,15 @@ sub list_invite {
 			push(@$verified_addresses, $info); 
 			
 	    }
-	       
-        print(admin_template_header(-Title      => "Invitations", 
+	     
+	    my $scrn = ''; 
+        $scrn .= admin_template_header(-Title      => "Invitations", 
                                 -List       => $list, 
-                                -Root_Login => $root_login));
+                                -Root_Login => $root_login);
                                 
             
         require DADA::Template::Widgets;
-        print   DADA::Template::Widgets::screen(
+        $scrn .=   DADA::Template::Widgets::screen(
 					{
 						-screen => 'list_invite_screen.tmpl', 
 						-vars   => {
@@ -912,8 +915,9 @@ sub list_invite {
 							}, 
 					}
 				);
-        print(admin_template_footer(-List => $list));
-
+        $scrn .= admin_template_footer(-List => $list);
+		e_print($scrn); 
+		
     }elsif($process =~ m/submit/i){ 
  
        # add these to a special 'invitation' list. we'll clear this list later. 

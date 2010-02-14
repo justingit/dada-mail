@@ -1708,8 +1708,10 @@ sub _take_off_sigs {
 					$content = $self->_zap_sig_plaintext($content);
 				}
 				
+				require Encode; 
 				my $io = $body->open('w');
-				   $io->print( $content );
+				
+				   $io->print( Encode::encode_utf8( $content ) );
 				   $io->close;
 				$entity->sync_headers('Length'      =>  'COMPUTE',
 									  'Nonstandard' =>  'ERASE');

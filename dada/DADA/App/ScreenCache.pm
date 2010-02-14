@@ -145,7 +145,7 @@ sub pass {
 	my $filename = $self->cache_dir . '/' . $self->translate_name($screen);
 	
 	if($self->cached($screen)){ 
-		open(SCREEN, "<" . $self->_safe_path($filename)) 
+		open(SCREEN, '<:encoding(UTF-8)', $self->_safe_path($filename)) 
 			or croak ("cannot open '$filename' because: $!"); 
 		
 		my $return; 
@@ -155,7 +155,7 @@ sub pass {
 		close(SCREEN)
 			or croak ("cannot close $filename - $!"); 
 			
-	    return decode('UTF-8', $return); 
+	    return $return; 
 	    
 	} else{ 
 		croak "screen is not cached! " . $!; 
@@ -174,12 +174,11 @@ sub cache {
 	my $data   = shift; 
 	
 	my $unref = $$data; 
-	encode('UTF-8', $unref); 
 	return if $DADA::Config::SCREEN_CACHE  != 1;
 	my $file = $self->_safe_path($self->cache_dir . '/' . $self->translate_name($screen)); 
-	sysopen(SCREEN, $file, O_WRONLY|O_TRUNC|O_CREAT,  $DADA::Config::FILE_CHMOD ) 
+	open(SCREEN, '>>:encoding(UTF-8)', $file) 
 		or croak $!;
-		print SCREEN $unref
+	print SCREEN $unref
 			or croak $!; 
 	close(SCREEN)
 		or croak "couldn't close: '$file' because: $!";
