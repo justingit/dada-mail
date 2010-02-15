@@ -224,15 +224,18 @@ sub send_email {
 			my $attachment        = $q->param('attachment');
 			
 			my $text_message_body = $q->param('text_message_body') || undef; 
-				
 			my $html_message_body = $q->param('html_message_body') || undef; 
 			
+
 			($text_message_body, $html_message_body) = 
 				DADA::App::FormatMessages::pre_process_msg_strings($text_message_body, $html_message_body); 
             my $msg; 
             
             if($html_message_body && $text_message_body){ 
-                
+               
+			  $text_message_body = Encode::encode_utf8($text_message_body);
+			  $html_message_body = Encode::encode_utf8($html_message_body); 
+			
               $msg = MIME::Lite->new(
 			  	Type      => 'multipart/alternative', 
 			    Datestamp => 0, 
@@ -260,7 +263,9 @@ sub send_email {
                $msg->attach($html_part);
                 
             }elsif($html_message_body){ 
-                                
+                
+			  $html_message_body = Encode::encode_utf8($html_message_body);
+			              
                 $msg = MIME::Lite->new(
                                        Type      => 'text/html', 
                                        Data      => $html_message_body, 
@@ -269,7 +274,9 @@ sub send_email {
                                       ); 
                 $msg->attr('content-type.charset' => $li->{charset_value});
             }elsif($text_message_body){ 
-                            
+                
+				$text_message_body = Encode::encode_utf8($text_message_body);
+			 
                 $msg = MIME::Lite->new(
 					   		Type      => 'TEXT',
                             Data      => $text_message_body,
@@ -316,18 +323,17 @@ sub send_email {
             
             
         my $msg_as_string = (defined($msg)) ? $msg->as_string : undef;
-
-		
+		    $msg_as_string = Encode::decode_utf8($msg_as_string);
+			
+		   
            $fm->Subject($headers{Subject});
            $fm->use_list_template($q->param('apply_template')); 
            if($li->{group_list} == 1){ 
 				$fm->treat_as_discussion_msg(1);
     		}
-
-        my ($final_header, $final_body) = $fm->format_headers_and_body(-msg => $msg_as_string );
  
+        my ($final_header, $final_body) = $fm->format_headers_and_body(-msg => $msg_as_string );
 
-		
         require DADA::Mail::Send;
                $DADA::Mail::Send::dbi_obj = $dbi_handle;
 

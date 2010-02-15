@@ -422,7 +422,7 @@ sub parse_entity {
     {
 
         my $body    = $args->{ -entity }->bodyhandle;
-        my $content = $body->as_string;
+        my $content = $args->{ -entity }->bodyhandle->as_string;
 
         if ($content) {
 
@@ -437,7 +437,7 @@ sub parse_entity {
 
         my $io = $body->open('w');
         require Encode; 
-		$io->print(Encode::encode_utf8( $content ));
+		$io->print(Encode::encode('UTF-8',  $content ));
 		#$io->print($content);
         $io->close;
     }

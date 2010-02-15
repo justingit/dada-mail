@@ -1844,7 +1844,7 @@ else {
                                                          (
                                                         filter => [ 
 														 # { sub => \&set_name_value_filter, format => 'scalar' },
-															 { sub => \&decode,format => 'scalar' },
+															 { sub => \&decode_str, format => 'scalar' },
                                                               { sub => \&dada_backwards_compatibility,
                                                                format => 'scalar' },
                                                              { sub => \&dada_pseudo_tag_filter,
@@ -1936,7 +1936,7 @@ sub set_name_value_filter {
 
 sub decode_str { 
 	my $ref = shift;
-       ${$ref} = Encode::decode_utf8(${$ref});
+       ${$ref} = Encode::decode('UTF-8', ${$ref});
 }
 
 sub dada_backwards_compatibility { 

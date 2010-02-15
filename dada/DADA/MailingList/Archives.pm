@@ -1223,6 +1223,7 @@ sub view_file_attachment {
 	
 		}
 	
+		# encoded. Yes or no?
 		$r .=  $body->as_string; 
 	
 		return $r; 	
@@ -1412,6 +1413,7 @@ EOF
 		
 	}
 	
+	   #Encoded. Yes or no?
 	   $r .=  $body->as_string; 
 	  
 	   return $r; 	
@@ -1561,9 +1563,8 @@ sub _faked_oldstyle_message {
 	}else{ 
 		$entity = $self->_get_body_entity($entity); 
 		
-		my $body    = $entity->bodyhandle;
-		
-		return ($body->as_string, $entity->head->mime_type); 
+		# UnEncoded. YES. 
+		return ($entity->bodyhandle->as_string, $entity->head->mime_type); 
 	}
 }
 
@@ -1662,6 +1663,8 @@ sub massage_msg_for_resending {
 	
 	   
 	if($args{'-split'} == 1){ 
+		# Not sure about this one - probably want it unencoded, so that we can resend it? Meh?
+		
 		return ($entity->head->as_string, $entity->body_as_string) ;
 	}else{
 		my $str =  $entity->as_string;
@@ -1699,7 +1702,7 @@ sub _take_off_sigs {
 		  ($entity->head->mime_type eq 'text/plain') || 
 		  ($entity->head->mime_type eq 'text/html') ){ 
 			my $body    = $entity->bodyhandle;
-			my $content = $body->as_string;
+			my $content = $entity->bodyhandle->as_string;
 			
 			if($content){ 
 				if($entity->head->mime_type eq 'text/html'){ 
@@ -1710,7 +1713,6 @@ sub _take_off_sigs {
 				
 				require Encode; 
 				my $io = $body->open('w');
-				
 				   $io->print( Encode::encode_utf8( $content ) );
 				   $io->close;
 				$entity->sync_headers('Length'      =>  'COMPUTE',

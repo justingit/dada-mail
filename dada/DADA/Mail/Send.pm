@@ -676,16 +676,19 @@ sub send {
 					or $self->_send_die($fields{Debug});		
             
             }
+
+			# Well, probably, no? 
+			binmode MAIL, ":encoding(UTF-8)";
             
 			# DEV: I guess the idea is, I want this header first?
             if (exists($fields{'Return-Path'})){
             	if ($fields{'Return-Path'} ne undef){
-					print MAIL Encode::encode_utf8('Return-Path: ' . $fields{'Return-Path'} . "\n"); 	
+					print MAIL 'Return-Path: ' . $fields{'Return-Path'} . "\n"; 	
 				} 
 			}
             
             foreach my $field (@default_headers){
-                    print MAIL Encode::encode_utf8("$field: $fields{$field}\n") 
+                    print MAIL "$field: $fields{$field}\n"
                         if(
 	 						exists($fields{$field})                  && 
 							defined $fields{$field}                  && 
@@ -693,8 +696,8 @@ sub send {
                             $field                  ne 'Return-Path'
                          );
             }
-            print MAIL Encode::encode_utf8("\n"); 
-            print MAIL Encode::encode_utf8($fields{Body} . "\n"); # DEV: Why the last, "\n"?
+            print MAIL "\n"; 
+            print MAIL $fields{Body} . "\n"; # DEV: Why the last, "\n"?
             close(MAIL) 
                 or carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: 
                          didn't close pipe to '$live_mailing_settings' while 
@@ -934,13 +937,9 @@ sub mass_send {
 	
 
 	%fields = $self->clean_headers(%fields); 
-    
     # save a copy of the message for later pickup.
     $self->saved_message($self->_massaged_for_archive(\%fields));
     
-    
-	$defaults{Body} =~ s/\[program_url\]/$DADA::Config::PROGRAM_URL/g; 	 
-
 	require DADA::MailingList::Subscribers;
 	       $DADA::MailingList::Subscribers::dbi_obj = $dbi_obj; 
 	
@@ -995,9 +994,10 @@ sub mass_send {
     
         warn '[' . $self->{list} . '] Creating MailOut'
             if $t; 
-            
 
-        $mailout->create({
+		
+	
+		$mailout->create({
                         -fields          => {%fields},
                         -list_type       => $self->list_type,
                         -mh_obj          => $self,  
@@ -1311,15 +1311,13 @@ sub mass_send {
 		    
 			# child here
 			# parent process pid is available with getppid
+
+			# this is annoyingly complicated											
 					
 			my $mailing; 
 			my $n_letters = $letters; 
 			my $n_people  = 0; 
-			#my $sleep_num = 0; 
-			#my $send_body = $fields{Body}; 
-			#my $batch_num = 1; 
-						
-			# this is annoyingly complicated											
+
 			my $mail_info;
 			my $list_pin;		
 			my $mailing_count; 									
@@ -1570,16 +1568,16 @@ sub mass_send {
 				# The hell is this? 
 				#print 'From! ' . $fields{From} . "\n"; 
 				
-
+					
+				
+				
 				require DADA::App::FormatMessages; 
 			    my $fm = DADA::App::FormatMessages->new(
 							-List        => $self->{list},  
 							-ls_obj      => $self->{ls},
 						); 
                
-			#	require Data::Dumper; 
-		#		warn Data::Dumper::Dumper($fields{Body});
-				
+		
  				my %nfields = $self->_mail_merge(
 				    {
 				        -fields => \%fields,
@@ -1587,6 +1585,9 @@ sub mass_send {
 						-fm_obj => $fm, 
 				    }
 				);
+				
+			;
+				
 				
 			#	require Data::Dumper; 
 			#	die Data::Dumper::Dumper($nfields{Body}); 
@@ -2000,8 +2001,13 @@ sub _content_transfer_encode {
 		
 
 		
-        my $head = $entity->head->as_string; 
-        my $body = $entity->body_as_string; 
+        my $head = $entity->head->as_string;
+
+		# encoded. YES. 
+        my $body = $entity->body_as_string;
+			#warn 'before: decode ' . $body;  
+		    # $body = Encode::decode_utf8($body);
+			# warn 'after: decode ' . $body; 
            %new_fields = $self->return_headers($head);
                
         $new_fields{Body} = $body; 
@@ -2392,19 +2398,25 @@ sub _email_batched_finished_notification {
 	
 	my $total_time =  $self->_formatted_runtime(($args{-end_time} - $args{-start_time}));
 		  
-	  require MIME::Lite; 
+	  require MIME::Entity; 
 	  
-	  my $msg = MIME::Lite->new(
+		require Email::Address; 
+	
+	
+	  my $entity = MIME::Entity->build(
 					Type      => 'multipart/mixed', 
-					To        => '"'. escape_for_sending($self->{ls}->param('list_name')) .'"  <' . $self->{ls}->param('list_owner_email') . '>',
+					To        => Email::Address->new('<!-- tmpl_var list_settings.list_owner -->', $self->{ls}->param('list_owner_email'))->format,
 					Subject   => $DADA::Config::MAILING_FINISHED_MESSAGE_SUBJECT,
 					Datestamp => 0, 
+					 
 				); 
 	   
-	     $msg->attach(
-			Type        => 'TEXT', 
+	     $entity->attach(
+			Type        => 'text/plain', 
 	     	Data        => $DADA::Config::MAILING_FINISHED_MESSAGE,
-	     	Disposition => 'inline',
+			Encoding  => $self->{ls}->param('plaintext_encoding'), 
+			Disposition => 'inline',
+	     	
 	     );	     
 	     
 	   my $att; 
@@ -2415,16 +2427,20 @@ sub _email_batched_finished_notification {
 	   }
 	   $att .= "\n" . $fields->{Body}; 
 	   
-	     $msg->attach(Type        => 'message/rfc822', 
-					  Disposition => "inline",
-		 			  Data        => $att); 
+	     $entity->attach(
+						Type        => 'message/rfc822', 
+					    Disposition => "inline",
+		 			    Data        => Encode::decode('UTF-8', Encode::encode('UTF-8', $att)),
+		); 
 
+
+		
 			require DADA::App::FormatMessages; 
 		    my $fm = DADA::App::FormatMessages->new(-yeah_no_list => 1); 
-
-		    my $entity = $fm->email_template(
+			
+		    my $n_entity = $fm->email_template(
 		        {
-		            -entity                   => $fm->get_entity({-data => $msg->as_string}),  
+		            -entity                   => $entity,
 		            -list_settings_vars       => $self->{ls}->params,
 					-list_settings_vars_param => {-dot_it => 1},
 					-vars                     => {
@@ -2433,17 +2449,16 @@ sub _email_batched_finished_notification {
 						mailing_finish_time => $formatted_end_time,
 						total_mailing_time  => $total_time,
 						last_email_send_to  => $args{-last_email},
-						message_subject     => $fields->{Subject}
+						message_subject     => Encode::decode('UTF-8', Encode::encode('UTF-8', $fields->{Subject})), 
 					}
 		        }
 		    );
 
-		    $msg = $entity->as_string; 
-		    my ($header_str, $body_str) = split("\n\n", $msg, 2); 
-
+			# encoded. YES> 
+			
 			$self->send(
-			    $self->return_headers($header_str), 
-				Body => $body_str,
+			    $self->return_headers($n_entity->head->as_string),
+				Body => $n_entity->body_as_string,
 		    ); 
 
 }
@@ -2558,10 +2573,7 @@ sub _mail_merge {
 				); 
 	}
 
-	
-#	warn "original entity"; 
-#	require Data::Dumper; 
-#	die Data::Dumper::Dumper($args->{-fields}->{Body});
+
 	
     
     my ($orig_entity, $filename) = $fm->entity_from_dada_style_args(
@@ -2573,6 +2585,10 @@ sub _mail_merge {
 	
 
 	
+
+
+
+
     my $entity = $fm->email_template(
                     {
                         -entity                   => $orig_entity,                         
@@ -2589,9 +2605,6 @@ sub _mail_merge {
                 );
 
    my $msg = $entity->as_string; 
-       
-       
-#    warn "Message! " . $msg; 
     
     undef($entity); 
     # I do not like this part. 

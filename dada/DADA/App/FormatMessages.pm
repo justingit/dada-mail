@@ -298,21 +298,26 @@ sub format_headers_and_body {
 
 	die "no msg!"  if ! $args{-msg};
 	
-	my $entity     = $self->{parser}->parse_data($args{-msg});
+	my $msg        = $args{-msg}; 
+	
+	#my $entity     = $self->{parser}->parse_data(
+	#	Encode::encode_utf8($msg)
+	#);
+	my $entity     = $self->{parser}->parse_data(
+		$msg
+	);
+
 
 	$self->orig_entity($entity); 
+
+
 
 	if($entity->head->get('Subject', 0)){ 
 		$self->Subject($entity->head->get('Subject', 0));
 	}
-	#if($self->{ls}->param('mime_encode_words_in_headers') == 1){ 
-	#	$entity     = $self->_decode_headers($entity); 
-	#}
-
 	if($self->treat_as_discussion_msg == 1){ 
 		$entity = $self->_format_headers($entity)
 	}
-	
 	$entity     = $self->_fix_for_only_html_part($entity); 
 	$entity     = $self->_format_text($entity);		
 	
@@ -322,8 +327,18 @@ sub format_headers_and_body {
     	if $entity->head->get('X-Mailer', 0); 
 		# or how about, count?
 
+	my $header = $entity->head->as_string;
+	   #$header   = Encode::decode_utf8($header);
+		
 
-	return ($entity->head->as_string, $entity->body_as_string) ;
+	# ah, This is unencoded, but I need the encoded one: 
+	#my $body   = $entity->bodyhandle->as_string;
+	
+	my $body   = $entity->body_as_string;	
+	
+	#$body   = Encode::decode_utf8($body); 
+	
+	return ($header, $body) ;
 
 }
 
@@ -382,13 +397,12 @@ sub _format_text {
 	my $entity = shift; 
 	
 	
-	
 	my @parts  = $entity->parts; 
 	
 	if(@parts){
 		my $i; 
 		foreach $i (0 .. $#parts) {
-			$parts[$i]= $self->_format_text($parts[$i]);	
+			$parts[$i] = $self->_format_text($parts[$i]);	
 		}
 		$entity->sync_headers('Length'      =>  'COMPUTE',
 							  'Nonstandard' =>  'ERASE');
@@ -398,7 +412,7 @@ sub _format_text {
 		if (defined($entity->head->mime_attr('content-disposition'))) { 
 				$is_att = 1
 				 if  $entity->head->mime_attr('content-disposition') =~ m/attachment/; 
-			}
+		}
 			
 		if(
 		    (
@@ -410,19 +424,21 @@ sub _format_text {
 		  ) {
 			
 			
-			        
-			my $body    = $entity->bodyhandle;
-			my $content = $body->as_string;
+			# bodyhandle means we have unencoded data!        
+			# encoding here means quoted printable, 8bit, etc
+			# ALWAYS get the unencoded body this way: 
+		    # my $content = $entity->bodyhandle->as_string;
 			
-			# Shortcut!
-			#use Data::Dumper; 
-			#die Data::Dumper::Dumper( $entity->bodyhandle->as_string); 
-			#return $entity; 
-		
+			my $body    = $entity->bodyhandle;
+			my $content = $entity->bodyhandle->as_string;
+			   $content = Encode::decode('UTF-8', $content); 
+			#
+			# body_as_string gives you encoded version.
+			# Don't get it this way, unless you've got a great reason 
+			# my $content = $entity->body_as_string;
+			# Same thing - this means it could be in quoted/printable,etc. 
 			
 			if($content){ # do I need this?
-
-			
 				if(
 					$self->treat_as_discussion_msg                        &&
 					$self->{ls}->param('group_list')                 == 1 &&  
@@ -452,8 +468,6 @@ sub _format_text {
 					-type => $entity->head->mime_type, 
 				);
 						
-												
-
 			    if($DADA::Config::GIVE_PROPS_IN_EMAIL == 1){ 
                     $content = $self->_give_props(
                         -data => $content, 
@@ -469,14 +483,12 @@ sub _format_text {
 				}
 				   
 		       my $io = $body->open('w');
-				  #think this helps... 
-				  #$io->print(Encode::encode_utf8( $content ) );
-					$io->print( $content );				    
-				
+				  
+				  $content = Encode::encode('UTF-8', $content); 
+				  $io->print( $content );				    
 				  $io->close;
-				$entity->sync_headers('Length'      =>  'COMPUTE',
+				  $entity->sync_headers('Length'      =>  'COMPUTE',
 									  'Nonstandard' =>  'ERASE');
-		
 			}
 
 		}
@@ -630,14 +642,18 @@ sub _make_multipart {
 	
 	require MIME::Entity; 
 		
-	my $html_body    = $entity->bodyhandle;
-	my $html_content = $html_body->as_string;
-
+	my $html_content = $entity->bodyhandle->as_string;
+	   $html_content = Encode::decode('UTF-8', $html_content);
+	
 	$entity->make_multipart('alternative'); 
 	
 	my $plaintext_entity = MIME::Entity->build(
 		Type    => 'text/plain', 
-		Data    => html_to_plaintext({ -string => $html_content}),
+		Data    => html_to_plaintext(
+			{ 
+				-string => Encode::encode('UTF-8', $html_content), 
+			}
+		),
 	  ); 
 	 $plaintext_entity->head->mime_attr(
 		"content-type.charset" => $orig_charset,
@@ -1411,13 +1427,14 @@ sub entity_from_dada_style_args {
     else { 
     
     
+	    warn "string_from_dada_style_args";
         my $str = $self->string_from_dada_style_args(
                                         {
                                             -fields => $args->{-fields},
                                          }
                                       );
     
-    
+			$str = Encode::encode_utf8($str); 
             return $self->get_entity(
                             {
                                 -data => $str, 
@@ -1652,7 +1669,7 @@ sub email_template {
 	    
 		my $i; 
 		foreach $i (0 .. $#parts) {
-			$parts[$i]= $self->email_template(
+			$parts[$i] = $self->email_template(
 				{
 					%{$args}, 
 					-entity => $parts[$i] 
@@ -1698,14 +1715,13 @@ sub email_template {
 				)
 			){ 
 				
-				
-				my $body    = $args->{-entity}->bodyhandle;
-				
-				# I kinda want to decode this... 
-				my $content = $body->as_string;
 
+				my $body    = $args->{-entity}->bodyhandle;
+				my $content = $args->{-entity}->bodyhandle->as_string;
+				   $content = Encode::decode('UTF-8', $content); 
+				
 				if($content){
-			
+
 				    # And, that's it. 
 	                $content = DADA::Template::Widgets::screen(
 	                    {
@@ -1723,9 +1739,9 @@ sub email_template {
 	                ); 
 
 			       my $io = $body->open('w');
-					  #$io->print( Encode::encode_utf8($content) );	
+					$content = Encode::encode('UTF-8', $content); 
 					$io->print( $content );				    
-					  $io->close;
+					$io->close;
 				}
 		    
 				$args->{-entity}->sync_headers('Length'      =>  'COMPUTE',
@@ -1759,6 +1775,12 @@ sub email_template {
                 my @addresses = Email::Address->parse($args->{-entity}->head->get($header, 0));
                 if($addresses[0]){
 			        my $phrase = $addresses[0]->phrase; 
+			
+					   # I'm under the uh, influence, that I don't have to decode this, 
+					   # if this is here? I dunno? 
+					
+					   #$phrase = Encode::decode_utf8($phrase);
+						
 					   $phrase = $self->_decode_header($phrase)
 							if $self->im_encoding_headers; 
 											
@@ -1793,6 +1815,9 @@ sub email_template {
 					# warn ' $new_header ' . $new_header; 
 					 
                     $args->{-entity}->head->delete($header);
+					
+					$new_header = Encode::encode_utf8($new_header);
+					
                     $args->{-entity}->head->add($header, $new_header); 
                 
                 }
@@ -1804,8 +1829,11 @@ sub email_template {
             else { 
 	    
                 my $header_value = $args->{-entity}->head->get($header, 0);
-                    $header_value = $self->_decode_header($header_value)
-  						if $self->im_encoding_headers; 
+
+				if($self->im_encoding_headers){ 
+					$header_value = $self->_decode_header($header_value);
+					#$header_value = Encode::decode('UTF-8', $header_value); 
+  				}
 
                $args->{-entity}->head->delete($header);
            
@@ -1816,10 +1844,13 @@ sub email_template {
                         -data                   => \$header_value, 
                     }
                 ); 
-
-                $header_value = $self->_encode_header($header, $header_value)
-					if $self->im_encoding_headers; 
-                $args->{-entity}->head->add($header, $header_value); 
+				
+				if($self->im_encoding_headers){ 
+					# $header_value = Encode::encode('UTF-8', $header_value);
+                	$header_value = $self->_encode_header($header, $header_value)
+				}	 
+                	 
+					$args->{-entity}->head->add($header, $header_value); 
             }                
         }
 	}        
