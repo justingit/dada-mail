@@ -286,7 +286,8 @@ sub get_archive_info{
 		$format
 	) = split(
 			/\[::\]/, 
-			Encode::decode_utf8(
+			Encode::decode(
+				'UTF-8',
 				$self->{DB_HASH}->{$key}
 			)
 		); 

@@ -157,7 +157,7 @@ sub save {
 			# decode
 			while ( my ($key, $value) = each %TMP_RAW_HASH ) {
 				if(defined($value)){ 
-					$TMP_RAW_HASH{$key} = Encode::decode_utf8($value);
+					$TMP_RAW_HASH{$key} = Encode::decode('UTF-8', $value);
 				}
 			}
 		
@@ -244,7 +244,7 @@ sub _raw_db_hash {
 	# decode
 	while ( my ($key, $value) = each %{$self->{RAW_DB_HASH}} ) {
 		if(defined($value)){ 
-			$self->{RAW_DB_HASH}->{$key} = Encode::decode_utf8($value);
+			$self->{RAW_DB_HASH}->{$key} = Encode::decode('UTF-8', $value);
 		}
 	}
 	

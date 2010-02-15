@@ -132,7 +132,7 @@ sub _raw_db_hash {
 	# decode
 	while ( my ($key, $value) = each %{$self->{RAW_DB_HASH}} ) {
 		if(defined($value)){ 
-			$self->{RAW_DB_HASH}->{$key} = Encode::decode_utf8($value);
+			$self->{RAW_DB_HASH}->{$key} = Encode::decode('UTF-8', $value);
 		}
 	}
 	

@@ -2005,16 +2005,9 @@ sub _content_transfer_encode {
 
 		# encoded. YES. 
         my $body = $entity->body_as_string;
-			#warn 'before: decode ' . $body;  
-		    # $body = Encode::decode_utf8($body);
-			# warn 'after: decode ' . $body; 
-           %new_fields = $self->return_headers($head);
+	    %new_fields = $self->return_headers($head);
                
         $new_fields{Body} = $body; 
-        
-        
-        
-           
                                
 	};
         

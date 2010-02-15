@@ -2516,9 +2516,9 @@ sub decode_cgi_obj {
 	
 	  my @val = $query ->param( $name );
 	  foreach ( @val ) {
-	    $_ = Encode::decode_utf8( $_ );
+	    $_ = Encode::decode('UTF-8', $_ );
 	  }
-	  $name = Encode::decode_utf8( $name );
+	  $name = Encode::decode('UTF-8', $name );
 	  if ( scalar @val == 1 ) {   
 	    #$form_input ->{$name} = $val[0];
 		$query->param($name, $val[0]); 

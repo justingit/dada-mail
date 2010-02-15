@@ -323,7 +323,7 @@ sub send_email {
             
             
         my $msg_as_string = (defined($msg)) ? $msg->as_string : undef;
-		    $msg_as_string = Encode::decode_utf8($msg_as_string);
+		    $msg_as_string = Encode::decode('UTF-8', $msg_as_string);
 			
 		   
            $fm->Subject($headers{Subject});

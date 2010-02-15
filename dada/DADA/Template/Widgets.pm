@@ -1769,17 +1769,6 @@ else {
 
 
 	my $template; 
-#	
-#        my $tmpl = HTML::Template->new (filename => 'test.tmpl',
-#                    filter => sub {
-#                        my $ref = shift;
-#                        ${$ref} = Encode::decode_utf8(${$ref});
-#                    });
-#
-#   This works, but is a bit ad-hoc: it was not immediately obvious
-#    to me that this filter is an opportunity to make Unicode work.
-
-
 	
 	if($args->{-expr}){ 
 	

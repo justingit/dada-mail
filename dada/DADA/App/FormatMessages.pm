@@ -328,15 +328,12 @@ sub format_headers_and_body {
 		# or how about, count?
 
 	my $header = $entity->head->as_string;
-	   #$header   = Encode::decode_utf8($header);
 		
 
 	# ah, This is unencoded, but I need the encoded one: 
 	#my $body   = $entity->bodyhandle->as_string;
 	
 	my $body   = $entity->body_as_string;	
-	
-	#$body   = Encode::decode_utf8($body); 
 	
 	return ($header, $body) ;
 
@@ -1779,8 +1776,6 @@ sub email_template {
 					   # I'm under the uh, influence, that I don't have to decode this, 
 					   # if this is here? I dunno? 
 					
-					   #$phrase = Encode::decode_utf8($phrase);
-						
 					   $phrase = $self->_decode_header($phrase)
 							if $self->im_encoding_headers; 
 											
