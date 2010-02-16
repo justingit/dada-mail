@@ -19,6 +19,9 @@ use Carp qw(croak carp);
 
 use vars qw($AUTOLOAD); 
 
+my $t = 0; 
+
+
 =pod
 
 =head1 NAME
@@ -164,14 +167,11 @@ sub _init  {
  	$self->{ls}     = undef; 
 	$self->{list}   = undef;
  	if(exists($args->{-List}) && $args->{-yeah_no_list} == 0){ 
- 	    
-
 		if( exists( $args->{-ls_obj} ) ) { 
 			$self->{ls} = $args->{-ls_obj};
-		
 		}
 		else { 
-			 
+
 			require DADA::MailingList::Settings; 
 
 
@@ -195,10 +195,15 @@ sub _init  {
 		if($self->{ls}->param('mime_encode_words_in_headers') == 1){ 
 			$self->im_encoding_headers(1); 
 		}
-		else { 
-			$self->im_encoding_headers(0); 
-		}
     }
+#	else { 
+#		if($DADA::Config::LIST_SETUP_DEFAULTS{mime_encode_words_in_headers} == 1){
+#			$self->im_encoding_headers(1); 				
+#		}
+#		else { 
+#			$self->im_encoding_headers(0); 
+#		}
+#	}
     
 	$self->use_email_templates(1); 
 
@@ -1643,6 +1648,11 @@ The subroutine also passes the C<-dada_pseudo_tag_filter> (set to 1) automatical
 
 sub email_template { 
 	
+	warn "email_template."
+		if $t; 
+		
+
+	
 	# Tests and documentation
 	# OK, MORE documentation
 	#
@@ -1650,6 +1660,9 @@ sub email_template {
 	# OK - Headers don't work, if there's a multipart/alternative message (or, a message with an attachment, etc) 
 	
 	my $self   = shift; 
+	
+	warn '$self->im_encoding_headers ' . $self->im_encoding_headers
+		if $t;
 	
 	my ($args) = @_;
 	
@@ -1663,7 +1676,9 @@ sub email_template {
 	
 
 	if(@parts){
-	    
+	    warn "this part has " . $#parts . "parts."
+			if $t; 
+		
 		my $i; 
 		foreach $i (0 .. $#parts) {
 			$parts[$i] = $self->email_template(
@@ -1681,9 +1696,17 @@ sub email_template {
 	
 		my $is_att = 0; 
 		if (defined($args->{-entity}->head->mime_attr('content-disposition'))) { 
+			warn q{content-disposition has set to: } . $args->{-entity}->head->mime_attr('content-disposition')
+				if $t; 
 		    if ($args->{-entity}->head->mime_attr('content-disposition') =~ m/attachment/){
+				warn "we have an attachment?"
+					if $t; 
 	        	$is_att = 1; 
 		    }
+		}
+		else { 
+			warn "can't find a content-disposition"
+				if $t; 
 		}
 			
 		if(
@@ -1694,6 +1717,9 @@ sub email_template {
 		    && 
 		    ($is_att != 1)
 		  ) {
+			
+			warn 'text or html, non-attachment part'
+				if $t; 
 
 ###			
             # ?!
@@ -1704,46 +1730,46 @@ sub email_template {
             }
             $screen_vars{-dada_pseudo_tag_filter} = 1; 
 ###/
-	
-			if(
-			    (
-			    ($args->{-entity}->head->mime_type eq 'text/plain') ||
-				($args->{-entity}->head->mime_type eq 'text/html')
-				)
-			){ 
+		
+#			if(
+#			    (
+#			    ($args->{-entity}->head->mime_type eq 'text/plain') ||
+#				($args->{-entity}->head->mime_type eq 'text/html')
+#				)
+#			){ 
 				
 
-				my $body    = $args->{-entity}->bodyhandle;
-				my $content = $args->{-entity}->bodyhandle->as_string;
-				   $content = Encode::decode('UTF-8', $content); 
-				
-				if($content){
+			my $body    = $args->{-entity}->bodyhandle;
+			my $content = $args->{-entity}->bodyhandle->as_string;
+			   $content = Encode::decode('UTF-8', $content); 
+			
+			if($content){
 
-				    # And, that's it. 
-	                $content = DADA::Template::Widgets::screen(
-	                    {
-	                                %screen_vars,
-	                                -data                   => \$content, 
+			    # And, that's it. 
+                $content = DADA::Template::Widgets::screen(
+                    {
+                                %screen_vars,
+                                -data                   => \$content, 
+								(
+									($args->{-entity}->head->mime_type eq 'text/html') ? 
 									(
-										($args->{-entity}->head->mime_type eq 'text/html') ? 
-										(
-											-webify_these => [qw(list_settings.info list_settings.privacy_policy list_settings.physical_address)], 
-								        ) 
-										: ()
-									),
+										-webify_these => [qw(list_settings.info list_settings.privacy_policy list_settings.physical_address)], 
+							        ) 
+									: ()
+								),
 
-	                    }
-	                ); 
+                    }
+                ); 
 
-			       my $io = $body->open('w');
-					$content = Encode::encode('UTF-8', $content); 
-					$io->print( $content );				    
-					$io->close;
-				}
-		    
-				$args->{-entity}->sync_headers('Length'      =>  'COMPUTE',
-					  				           'Nonstandard' =>  'ERASE');
+		       my $io = $body->open('w');
+				$content = Encode::encode('UTF-8', $content); 
+				$io->print( $content );				    
+				$io->close;
 			}
+	    
+			$args->{-entity}->sync_headers('Length'      =>  'COMPUTE',
+				  				           'Nonstandard' =>  'ERASE');
+			#}
 		}
 		
 	#	return $args->{-entity}; 
@@ -1762,15 +1788,24 @@ sub email_template {
     }
     $screen_vars{-dada_pseudo_tag_filter} = 1; 
     
+	warn "looking at headers"
+		if $t;
+		
 	foreach my $header('Subject', 'From', 'To', 'Reply-To', 'Errors-To', 'Return-Path'){ 
 				
 	    if($args->{-entity}->head->get($header, 0)){ 
 						
             if($header =~ m/From|To|Reply\-To|Return\-Path|Errors\-To/){ 
+				warn 'header is: From|To|Reply\-To|Return\-Path|Errors\-To/'
+					if $t; 
+					
                 #Special Case - only format the phrase. 
                 require Email::Address; 
                 my @addresses = Email::Address->parse($args->{-entity}->head->get($header, 0));
                 if($addresses[0]){
+	
+					warn 'templating out header'
+						if $t; 
 			        my $phrase = $addresses[0]->phrase; 
 			
 					   # I'm under the uh, influence, that I don't have to decode this, 
@@ -1817,13 +1852,19 @@ sub email_template {
                 
                 }
                 else { 
-                    #warn "couldn't find the first address?"; 
+					
+                    warn "couldn't find the first address?"
+						if $t; 
                 }
             
             } 
             else { 
-	    
-                my $header_value = $args->{-entity}->head->get($header, 0);
+	    		warn "I think we have a subject line."
+					if $t; 
+			    my $header_value = $args->{-entity}->head->get($header, 0);
+
+				warn '$header_value: "' . $header_value . '"'
+					if $t; 
 
 				if($self->im_encoding_headers){ 
 					$header_value = $self->_decode_header($header_value);
@@ -1839,12 +1880,14 @@ sub email_template {
                         -data                   => \$header_value, 
                     }
                 ); 
-				
+				warn 'header value, after templating: "' . $header_value . '"'
+				 if $t; 
 				if($self->im_encoding_headers){ 
 					# $header_value = Encode::encode('UTF-8', $header_value);
                 	$header_value = $self->_encode_header($header, $header_value)
 				}	 
-                	 
+                	warn 'new header value, after templating: "' . $header_value . '"'
+						if $t; 
 					$args->{-entity}->head->add($header, $header_value); 
             }                
         }

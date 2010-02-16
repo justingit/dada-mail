@@ -4335,6 +4335,8 @@ sub view_archive {
 
         my ( $subject, $message, $format ) = $archive->get_archive_info($id);
 
+
+		
         my $cal_date = date_this(
             -Packed_Date => $archive->_massaged_key($id),
             -All         => 1

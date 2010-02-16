@@ -2352,107 +2352,124 @@ sub _pop_before_smtp {
 
 
 
-sub _email_batched_finished_notification { 
+sub _email_batched_finished_notification {
 
-	my $self = shift; 
-	
-	# DEV: 
-	# Dum... we need ta hashref this out... 
+    my $self = shift;
 
-	# Let's turn this stuff off: 
-	$self->im_mass_sending(0); 
-	
-	my %args = (
-				-fields          => {}, 
-			    -start_time      => undef, 
-			    -end_time        => undef, 
-			    -emails_sent     => undef,
-			    -last_email      => undef,
-		 	    @_
-				);
-		 	                   
-	my $fields               = $args{-fields}; 
-	my $formatted_start_time = ''; 
-	my $formatted_end_time   = ''; 
-	
-	if($args{-start_time}){ 
-		
-		my ($s_sec, $s_min, $s_hour, $s_day, $s_month, $s_year) = (localtime($args{-start_time}))[0,1,2,3,4,5];
-		   $formatted_start_time = sprintf("%02d/%02d/%02d %02d:%02d:%02d",  $s_month+1, $s_day, $s_year+1900, $s_hour, $s_min, $s_sec);		
+    # DEV:
+    # Dum... we need ta hashref this out...
 
-	}
+    # Let's turn this stuff off:
+    $self->im_mass_sending(0);
 
-	if($args{-end_time}){ 
+    my %args = (
+        -fields      => {},
+        -start_time  => undef,
+        -end_time    => undef,
+        -emails_sent => undef,
+        -last_email  => undef,
+        @_
+    );
 
-		my ($e_sec, $e_min, $e_hour, $e_day, $e_month, $e_year) = (localtime($args{-end_time}))[0,1,2,3,4,5];
-		   $formatted_end_time = sprintf("%02d/%02d/%02d %02d:%02d:%02d",  $e_month+1, $e_day, $e_year+1900, $e_hour, $e_min, $e_sec);		
+    my $fields               = $args{-fields};
+    my $formatted_start_time = '';
+    my $formatted_end_time   = '';
 
-	}
-	
-	my $total_time =  $self->_formatted_runtime(($args{-end_time} - $args{-start_time}));
-		  
-	  require MIME::Entity; 
-	  
-		require Email::Address; 
-	
-	
-	  my $entity = MIME::Entity->build(
-					Type      => 'multipart/mixed', 
-					To        => Email::Address->new('<!-- tmpl_var list_settings.list_owner -->', $self->{ls}->param('list_owner_email'))->format,
-					Subject   => $DADA::Config::MAILING_FINISHED_MESSAGE_SUBJECT,
-					Datestamp => 0, 
-					 
-				); 
-	   
-	     $entity->attach(
-			Type        => 'text/plain', 
-	     	Data        => $DADA::Config::MAILING_FINISHED_MESSAGE,
-			Encoding  => $self->{ls}->param('plaintext_encoding'), 
-			Disposition => 'inline',
-	     	
-	     );	     
-	     
-	   my $att; 
-	   foreach(keys %$fields){
-			next if $_ eq 'Body'; 
-			$att .= $_ . ': ' . $fields->{$_} . "\n"
-				if defined($fields->{$_}) && $fields->{$_} ne ""; 
-	   }
-	   $att .= "\n" . $fields->{Body}; 
-	   
-	     $entity->attach(
-						Type        => 'message/rfc822', 
-					    Disposition => "inline",
-		 			    Data        => Encode::decode('UTF-8', Encode::encode('UTF-8', $att)),
-		); 
+    if ( $args{-start_time} ) {
 
+        my ( $s_sec, $s_min, $s_hour, $s_day, $s_month, $s_year ) =
+          ( localtime( $args{-start_time} ) )[ 0, 1, 2, 3, 4, 5 ];
+        $formatted_start_time = sprintf(
+            "%02d/%02d/%02d %02d:%02d:%02d",
+            $s_month + 1,
+            $s_day, $s_year + 1900,
+            $s_hour, $s_min, $s_sec
+        );
 
-		
-			require DADA::App::FormatMessages; 
-		    my $fm = DADA::App::FormatMessages->new(-yeah_no_list => 1); 
-			
-		    my $n_entity = $fm->email_template(
-		        {
-		            -entity                   => $entity,
-		            -list_settings_vars       => $self->{ls}->params,
-					-list_settings_vars_param => {-dot_it => 1},
-					-vars                     => {
-						addresses_sent_to   => $args{-emails_sent}, 
-						mailing_start_time  => $formatted_start_time,
-						mailing_finish_time => $formatted_end_time,
-						total_mailing_time  => $total_time,
-						last_email_send_to  => $args{-last_email},
-						message_subject     => Encode::decode('UTF-8', Encode::encode('UTF-8', $fields->{Subject})), 
-					}
-		        }
-		    );
+    }
 
-			# encoded. YES> 
-			
-			$self->send(
-			    $self->return_headers($n_entity->head->as_string),
-				Body => $n_entity->body_as_string,
-		    ); 
+    if ( $args{-end_time} ) {
+
+        my ( $e_sec, $e_min, $e_hour, $e_day, $e_month, $e_year ) =
+          ( localtime( $args{-end_time} ) )[ 0, 1, 2, 3, 4, 5 ];
+        $formatted_end_time = sprintf(
+            "%02d/%02d/%02d %02d:%02d:%02d",
+            $e_month + 1,
+            $e_day, $e_year + 1900,
+            $e_hour, $e_min, $e_sec
+        );
+
+    }
+
+    my $total_time =
+      $self->_formatted_runtime( ( $args{-end_time} - $args{-start_time} ) );
+
+    require MIME::Entity;
+
+    require Email::Address;
+
+    my $entity = MIME::Entity->build(
+        Type => 'multipart/mixed',
+        To   => Email::Address->new(
+            '<!-- tmpl_var list_settings.list_owner -->',
+            $self->{ls}->param('list_owner_email')
+          )->format,
+        Subject   => $DADA::Config::MAILING_FINISHED_MESSAGE_SUBJECT,
+        Datestamp => 0,
+
+    );
+
+    $entity->attach(
+        Type        => 'text/plain',
+        Data        => $DADA::Config::MAILING_FINISHED_MESSAGE,
+        Encoding    => $self->{ls}->param('plaintext_encoding'),
+        Disposition => 'inline',
+
+    );
+
+    my $att;
+    foreach ( keys %$fields ) {
+        next if $_ eq 'Body';
+        $att .= $_ . ': ' . $fields->{$_} . "\n"
+          if defined( $fields->{$_} ) && $fields->{$_} ne "";
+    }
+    $att .= "\n" . $fields->{Body};
+
+    $entity->attach(
+        Type        => 'message/rfc822',
+        Disposition => "inline",
+        Data => Encode::decode( 'UTF-8', Encode::encode( 'UTF-8', $att ) ),
+    );
+
+    require DADA::App::FormatMessages;
+    #my $fm = DADA::App::FormatMessages->new( -yeah_no_list => 1 );
+	my $fm = DADA::App::FormatMessages->new(
+		-List        => $self->{list},  
+		-ls_obj      => $self->{ls},
+	);
+
+    my $n_entity = $fm->email_template(
+        {
+            -entity                   => $entity,
+            -list_settings_vars       => $self->{ls}->params,
+            -list_settings_vars_param => { -dot_it => 1 },
+            -vars                     => {
+                addresses_sent_to   => $args{-emails_sent},
+                mailing_start_time  => $formatted_start_time,
+                mailing_finish_time => $formatted_end_time,
+                total_mailing_time  => $total_time,
+                last_email_send_to  => $args{-last_email},
+                message_subject     => Encode::decode(
+                    'UTF-8', Encode::encode( 'UTF-8', $fields->{Subject} )
+                ),
+            }
+        }
+    );
+
+    # encoded. YES>
+
+    $self->send( $self->return_headers( $n_entity->head->as_string ),
+        Body => $n_entity->body_as_string, );
 
 }
 

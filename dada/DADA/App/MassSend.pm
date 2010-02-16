@@ -233,8 +233,8 @@ sub send_email {
             
             if($html_message_body && $text_message_body){ 
                
-			  $text_message_body = Encode::encode_utf8($text_message_body);
-			  $html_message_body = Encode::encode_utf8($html_message_body); 
+			  $text_message_body = Encode::encode('UTF-8', $text_message_body);
+			  $html_message_body = Encode::encode('UTF-8',$html_message_body); 
 			
               $msg = MIME::Lite->new(
 			  	Type      => 'multipart/alternative', 
@@ -264,7 +264,7 @@ sub send_email {
                 
             }elsif($html_message_body){ 
                 
-			  $html_message_body = Encode::encode_utf8($html_message_body);
+			  $html_message_body = Encode::encode('UTF-8',$html_message_body);
 			              
                 $msg = MIME::Lite->new(
                                        Type      => 'text/html', 
@@ -275,7 +275,7 @@ sub send_email {
                 $msg->attr('content-type.charset' => $li->{charset_value});
             }elsif($text_message_body){ 
                 
-				$text_message_body = Encode::encode_utf8($text_message_body);
+				$text_message_body = Encode::encode('UTF-8',$text_message_body);
 			 
                 $msg = MIME::Lite->new(
 					   		Type      => 'TEXT',
@@ -323,7 +323,7 @@ sub send_email {
             
             
         my $msg_as_string = (defined($msg)) ? $msg->as_string : undef;
-		    $msg_as_string = Encode::decode('UTF-8', $msg_as_string);
+		   $msg_as_string = Encode::decode('UTF-8', $msg_as_string);
 			
 		   
            $fm->Subject($headers{Subject});
@@ -660,9 +660,10 @@ sub send_url_email {
             my $MIMELiteObj; 
             
             if($q->param('content_from') eq 'url'){ 
-                $MIMELiteObj = $mailHTML->parse($q->param('url'), $t);
+                $MIMELiteObj = $mailHTML->parse($q->param('url'), 
+				Encode::encode('UTF-8', $t));
             }else{ 
-                $MIMELiteObj = $mailHTML->parse($q->param('html_message_body'), $t);
+                $MIMELiteObj = $mailHTML->parse(Encode::encode('UTF-8', $q->param('html_message_body')), Encode::encode('UTF-8', $t));
             }
             
             require  DADA::App::FormatMessages; 
@@ -990,13 +991,16 @@ sub list_invite {
         my $msg; 
       
     
-        if($text_message_body and $html_message_body){     
-        
+        if($text_message_body and $html_message_body){    
+	
+	 		$html_message_body = Encode::encode('UTF-8', $html_message_body);
+        	$text_message_body = Encode::encode('UTF-8', $text_message_body);
+ 
             $msg = MIME::Lite->new(
 					Type      =>  'multipart/alternative',
 					Datestamp => 0, 
 				  );  
-            $msg->attach(Type=> 'TEXT', Data => $text_message_body);
+            $msg->attach(Type => 'TEXT', Data => $text_message_body);
             $msg->attach(Type => 'text/html', Data => $html_message_body);  
         
         }elsif($html_message_body){
@@ -1009,7 +1013,8 @@ sub list_invite {
 					);
         
         }elsif($text_message_body){
-        
+        	$text_message_body = Encode::encode('UTF-8', $text_message_body);
+        	
             $msg = MIME::Lite->new(
 					Type      => 'TEXT', 
 					Data      => $text_message_body,
@@ -1021,7 +1026,7 @@ sub list_invite {
             warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning: both text and html versions of invitation message blank?!"; 
             $msg = MIME::Lite->new(
 						Type      => 'TEXT', 
-						Data      => $li->{invite_message_text},
+						Data      => Encode::encode('UTF-8', $li->{invite_message_text}),
 						Datestamp => 0, 
 				  );                                
 
@@ -1030,7 +1035,8 @@ sub list_invite {
         $msg->replace('X-Mailer' =>"");
         
         my $msg_as_string = (defined($msg)) ? $msg->as_string : undef;
-        
+           $msg_as_string = Encode::encode('UTF-8', $msg_as_string);
+    	
 		require DADA::App::FormatMessages; 
         my $fm = DADA::App::FormatMessages->new(-List => $list); 
            $fm->Subject($headers{Subject}); 
