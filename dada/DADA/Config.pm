@@ -2658,7 +2658,7 @@ IS REALLY IMPORTANT.
 'Italian (it)	iso-8859-1',
 'Italian (it)	windows-1252',
 'Japanese (ja)	 shift_jis',
-'Japanese (ja)	 iso-2022-jp',
+'Japanese (ja)	iso-2022-jp',
 'Japanese (ja)	 euc-jp',
 'Lapp()	iso-8859-10',
 'Latvian (lv)	iso-8859-13',
@@ -2684,7 +2684,7 @@ IS REALLY IMPORTANT.
 'Spanish (es)	windows-1252',
 'Swedish (sv)	iso-8859-1',
 'Swedish (sv)	windows-1252',
- 'Thai (th)	windows-874 ',
+ 'Thai (th)	windows-874',
  'Turkish (tr)	iso-8859-9',
 'Turkish (tr)	windows-1254',
 'Ukrainian (uk)	 iso-8859-5'

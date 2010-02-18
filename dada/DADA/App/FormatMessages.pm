@@ -433,7 +433,7 @@ sub _format_text {
 			
 			my $body    = $entity->bodyhandle;
 			my $content = $entity->bodyhandle->as_string;
-			   $content = Encode::decode('UTF-8', $content); 
+			   $content = Encode::decode($DADA::Config::HTML_CHARSET, $content); 
 			#
 			# body_as_string gives you encoded version.
 			# Don't get it this way, unless you've got a great reason 
@@ -486,7 +486,7 @@ sub _format_text {
 				   
 		       my $io = $body->open('w');
 				  
-				  $content = Encode::encode('UTF-8', $content); 
+				  $content = Encode::encode($DADA::Config::HTML_CHARSET, $content); 
 				  $io->print( $content );				    
 				  $io->close;
 				  $entity->sync_headers('Length'      =>  'COMPUTE',
@@ -645,7 +645,7 @@ sub _make_multipart {
 	require MIME::Entity; 
 		
 	my $html_content = $entity->bodyhandle->as_string;
-	   $html_content = Encode::decode('UTF-8', $html_content);
+	   $html_content = Encode::decode($DADA::Config::HTML_CHARSET, $html_content);
 	
 	$entity->make_multipart('alternative'); 
 	
@@ -653,7 +653,7 @@ sub _make_multipart {
 		Type    => 'text/plain', 
 		Data    => html_to_plaintext(
 			{ 
-				-string => Encode::encode('UTF-8', $html_content), 
+				-string => Encode::encode($DADA::Config::HTML_CHARSET, $html_content), 
 			}
 		),
 	  ); 
@@ -1494,7 +1494,7 @@ sub file_from_dada_style_args {
 
        $filename = make_safer($filename); 
     
-   open my $MAIL, '>:encoding(UTF-8)', $filename or croak $!; 
+   open my $MAIL, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $filename or croak $!; 
     
     if(! exists($args->{-fields})){ 
         croak 'did not pass data in, "-fields"' ;
@@ -1581,7 +1581,7 @@ sub get_entity {
 		#   Returns the parsed MIME::Entity on success. Throws exception on failure. If the message contained too many parts (as set by max_parts), returns undef.
 	
 		eval{
-			open TMPLFILE, '<:encoding(UTF-8)', $args->{-data} or die $!; 
+			open TMPLFILE, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $args->{-data} or die $!; 
 			$entity = $self->{parser}->parse(\*TMPLFILE);
 			close(TMPLFILE) or die $!;
 		};
@@ -1741,7 +1741,7 @@ sub email_template {
 
 			my $body    = $args->{-entity}->bodyhandle;
 			my $content = $args->{-entity}->bodyhandle->as_string;
-			   $content = Encode::decode('UTF-8', $content); 
+			   $content = Encode::decode($DADA::Config::HTML_CHARSET, $content); 
 			
 			if($content){
 
@@ -1762,7 +1762,7 @@ sub email_template {
                 ); 
 
 		       my $io = $body->open('w');
-				$content = Encode::encode('UTF-8', $content); 
+				$content = Encode::encode($DADA::Config::HTML_CHARSET, $content); 
 				$io->print( $content );				    
 				$io->close;
 			}
@@ -1868,7 +1868,6 @@ sub email_template {
 
 				if($self->im_encoding_headers){ 
 					$header_value = $self->_decode_header($header_value);
-					#$header_value = Encode::decode('UTF-8', $header_value); 
   				}
 
                $args->{-entity}->head->delete($header);
@@ -1883,7 +1882,6 @@ sub email_template {
 				warn 'header value, after templating: "' . $header_value . '"'
 				 if $t; 
 				if($self->im_encoding_headers){ 
-					# $header_value = Encode::encode('UTF-8', $header_value);
                 	$header_value = $self->_encode_header($header, $header_value)
 				}	 
                 	warn 'new header value, after templating: "' . $header_value . '"'

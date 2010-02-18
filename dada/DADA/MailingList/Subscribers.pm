@@ -638,7 +638,7 @@ sub write_plaintext_list {
 	my $tmp_file = DADA::App::Guts::make_safer($path . '/' . $ln . '.' . $type . '.' . $tmp_id); 
 	
 	# DEV: needs to be changed to an anonymous file handle. 
-	open(TMP_LIST, '>:encoding(UTF-8)', $tmp_file) or croak $!;		  
+	open(TMP_LIST, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $tmp_file) or croak $!;		  
 		$self->print_out_list(-Type => $args{-Type}, 
 							  -FH   => \*TMP_LIST);
 	close(TMP_LIST); 

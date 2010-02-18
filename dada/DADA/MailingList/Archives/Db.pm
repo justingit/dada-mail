@@ -285,11 +285,8 @@ sub get_archive_info{
 		$message, 
 		$format
 	) = split(
-			/\[::\]/, 
-			Encode::decode(
-				'UTF-8',
-				$self->{DB_HASH}->{$key}
-			)
+			/\[::\]/, Encode::decode($DADA::Config::HTML_CHARSET,$self->{DB_HASH}->{$key}
+	)
 		); 
 	$message = $self->massage($message);
 	$subject = $self->strip_subjects_appended_list_name($subject)

@@ -69,7 +69,7 @@ sub r_log {
 	if($self->{is_redirect_on} == 1){ 
 	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
 	    	if -e $self->clickthrough_log_location; 
-		open(LOG, '>>:encoding(UTF-8)', $self->clickthrough_log_location) 
+		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location) 
 			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 		flock(LOG, LOCK_SH);
 		print LOG scalar(localtime()) . "\t" . $mid . "\t" . $url . "\n"  or warn "Couldn't write to file: " . $self->clickthrough_log_location . 'because: ' .  $!; 
@@ -88,7 +88,7 @@ sub o_log {
 	if($self->{is_log_openings_on} == 1){ 
 	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
 	    	if -e $self->clickthrough_log_location; 
-		open(LOG, ">>:encoding(UTF-8)",  $self->clickthrough_log_location)
+		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')' ,  $self->clickthrough_log_location)
 			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 		flock(LOG, LOCK_SH);
 		print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'open' . "\n";
@@ -107,7 +107,7 @@ sub sc_log {
 	if($self->{enable_subscriber_count_logging} == 1){ 
 	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
 	    	if -e $self->clickthrough_log_location; 
-		open(LOG, ">>:encoding(UTF-8)",  $self->clickthrough_log_location)
+		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $self->clickthrough_log_location)
 			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 		flock(LOG, LOCK_SH);
 		print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'num_subscribers' . "\t" . $sc . "\n";
@@ -126,7 +126,7 @@ sub bounce_log {
 	if($self->{is_log_bounces_on} == 1){ 
 	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
 	    	if -e $self->clickthrough_log_location; 
-		open(LOG, ">>:encoding(UTF-8)",  $self->clickthrough_log_location)
+		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $self->clickthrough_log_location)
 			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 		flock(LOG, LOCK_SH);
 		print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'bounce' . "\t" . $email . "\n";
@@ -151,7 +151,7 @@ sub report_by_message_index {
 	# we're interested in. That shouldn't be too difficult. 
 	
 	if(-e $self->clickthrough_log_location){ 
-		open(LOG, '<:encoding(UTF-8)', $self->clickthrough_log_location)
+		open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
 			or die "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 		while(defined($l = <LOG>)){ 
 			chomp($l); 
@@ -210,7 +210,7 @@ sub report_by_message {
 	
 	my $report = {}; 
 	my $l;
-	open(LOG, '<:encoding(UTF-8)', $self->clickthrough_log_location)
+	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
 		or die "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 	while(defined($l = <LOG>)){ 
 		chomp($l); 
@@ -255,7 +255,7 @@ sub report_by_url {
 	my $report = []; 
 	my $l;
 	
-	open(LOG, '<:encoding(UTF-8)', $self->clickthrough_log_location)
+	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
 	 or die "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 	while(defined($l = <LOG>)){ 
 		chomp($l); 
@@ -281,7 +281,7 @@ sub print_raw_logs {
 		return; 
 	}
 	
-	open(LOG, '<:encoding(UTF-8)', $self->clickthrough_log_location)
+	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
 		or die "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 	while(defined($l = <LOG>)){ 
 		chomp($l); 
@@ -437,7 +437,7 @@ sub parse_entity {
 
         my $io = $body->open('w');
         require Encode; 
-		$io->print(Encode::encode('UTF-8',  $content ));
+		$io->print(Encode::encode($DADA::Config::HTML_CHARSET,  $content ));
 		#$io->print($content);
         $io->close;
     }

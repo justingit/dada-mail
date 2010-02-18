@@ -233,8 +233,8 @@ sub send_email {
             
             if($html_message_body && $text_message_body){ 
                
-			  $text_message_body = Encode::encode('UTF-8', $text_message_body);
-			  $html_message_body = Encode::encode('UTF-8',$html_message_body); 
+			  $text_message_body = Encode::encode($DADA::Config::HTML_CHARSET, $text_message_body);
+			  $html_message_body = Encode::encode($DADA::Config::HTML_CHARSET, $html_message_body); 
 			
               $msg = MIME::Lite->new(
 			  	Type      => 'multipart/alternative', 
@@ -264,7 +264,7 @@ sub send_email {
                 
             }elsif($html_message_body){ 
                 
-			  $html_message_body = Encode::encode('UTF-8',$html_message_body);
+			  $html_message_body = Encode::encode($DADA::Config::HTML_CHARSET, $html_message_body);
 			              
                 $msg = MIME::Lite->new(
                                        Type      => 'text/html', 
@@ -275,7 +275,7 @@ sub send_email {
                 $msg->attr('content-type.charset' => $li->{charset_value});
             }elsif($text_message_body){ 
                 
-				$text_message_body = Encode::encode('UTF-8',$text_message_body);
+				$text_message_body = Encode::encode($DADA::Config::HTML_CHARSET, $text_message_body);
 			 
                 $msg = MIME::Lite->new(
 					   		Type      => 'TEXT',
@@ -323,7 +323,7 @@ sub send_email {
             
             
         my $msg_as_string = (defined($msg)) ? $msg->as_string : undef;
-		   $msg_as_string = Encode::decode('UTF-8', $msg_as_string);
+		   $msg_as_string = Encode::decode($DADA::Config::HTML_CHARSET, $msg_as_string);
 			
 		   
            $fm->Subject($headers{Subject});
@@ -661,9 +661,9 @@ sub send_url_email {
             
             if($q->param('content_from') eq 'url'){ 
                 $MIMELiteObj = $mailHTML->parse($q->param('url'), 
-				Encode::encode('UTF-8', $t));
+				Encode::encode($DADA::Config::HTML_CHARSET, $t));
             }else{ 
-                $MIMELiteObj = $mailHTML->parse(Encode::encode('UTF-8', $q->param('html_message_body')), Encode::encode('UTF-8', $t));
+                $MIMELiteObj = $mailHTML->parse(Encode::encode($DADA::Config::HTML_CHARSET, $q->param('html_message_body')), Encode::encode($DADA::Config::HTML_CHARSET, $t));
             }
             
             require  DADA::App::FormatMessages; 
@@ -993,8 +993,8 @@ sub list_invite {
     
         if($text_message_body and $html_message_body){    
 	
-	 		$html_message_body = Encode::encode('UTF-8', $html_message_body);
-        	$text_message_body = Encode::encode('UTF-8', $text_message_body);
+	 		$html_message_body = Encode::encode($DADA::Config::HTML_CHARSET, $html_message_body);
+        	$text_message_body = Encode::encode($DADA::Config::HTML_CHARSET, $text_message_body);
  
             $msg = MIME::Lite->new(
 					Type      =>  'multipart/alternative',
@@ -1013,7 +1013,7 @@ sub list_invite {
 					);
         
         }elsif($text_message_body){
-        	$text_message_body = Encode::encode('UTF-8', $text_message_body);
+        	$text_message_body = Encode::encode($DADA::Config::HTML_CHARSET, $text_message_body);
         	
             $msg = MIME::Lite->new(
 					Type      => 'TEXT', 
@@ -1026,7 +1026,7 @@ sub list_invite {
             warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning: both text and html versions of invitation message blank?!"; 
             $msg = MIME::Lite->new(
 						Type      => 'TEXT', 
-						Data      => Encode::encode('UTF-8', $li->{invite_message_text}),
+						Data      => Encode::encode($DADA::Config::HTML_CHARSET, $li->{invite_message_text}),
 						Datestamp => 0, 
 				  );                                
 
@@ -1035,7 +1035,7 @@ sub list_invite {
         $msg->replace('X-Mailer' =>"");
         
         my $msg_as_string = (defined($msg)) ? $msg->as_string : undef;
-           $msg_as_string = Encode::encode('UTF-8', $msg_as_string);
+           $msg_as_string = Encode::encode($DADA::Config::HTML_CHARSET, $msg_as_string);
     	
 		require DADA::App::FormatMessages; 
         my $fm = DADA::App::FormatMessages->new(-List => $list); 

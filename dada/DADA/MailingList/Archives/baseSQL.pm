@@ -127,7 +127,7 @@ sub print_message_source {
 	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($id); 
 	
 	require Encode; 
-	print $fh Encode::encode('UTF-8', $raw_msg );
+	print $fh Encode::encode($DADA::Config::HTML_CHARSET, $raw_msg );
 
 }
 
@@ -229,10 +229,6 @@ sub get_archive_info{
 		}
 		
 		$a_entry->{subject} = $self->_decode_header($a_entry->{subject}); 
-		#	Encode::decode('UTF-8', $a_entry->{subject}), 
-		#	Encode::decode('UTF-8', $a_entry->{message}),
-		#	Encode::decode('UTF-8', $a_entry->{'format'}),
-		
 		return ($a_entry->{subject}, $a_entry->{message},$a_entry->{'format'}, $a_entry->{raw_msg}); 
 
 	}

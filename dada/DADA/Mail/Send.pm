@@ -678,7 +678,7 @@ sub send {
             }
 
 			# Well, probably, no? 
-			binmode MAIL, ":encoding(UTF-8)";
+			binmode MAIL, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
             
 			# DEV: I guess the idea is, I want this header first?
             if (exists($fields{'Return-Path'})){
@@ -1351,7 +1351,7 @@ sub mass_send {
 			my $somethings_wrong = 0;
 			
 			
-			open(MAILLIST, '<:encoding(UTF-8)', $mailout->subscriber_list) or 
+			open(MAILLIST, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $mailout->subscriber_list) or 
 				croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: 
 				       can't open mailing list (at: '" . $mailout->subscriber_list .
 				      "') to send a Mailing List Message: $!"; 
@@ -2438,7 +2438,7 @@ sub _email_batched_finished_notification {
     $entity->attach(
         Type        => 'message/rfc822',
         Disposition => "inline",
-        Data => Encode::decode( 'UTF-8', Encode::encode( 'UTF-8', $att ) ),
+        Data => Encode::decode($DADA::Config::HTML_CHARSET, Encode::encode($DADA::Config::HTML_CHARSET, $att ) ),
     );
 
     require DADA::App::FormatMessages;
@@ -2459,8 +2459,7 @@ sub _email_batched_finished_notification {
                 mailing_finish_time => $formatted_end_time,
                 total_mailing_time  => $total_time,
                 last_email_send_to  => $args{-last_email},
-                message_subject     => Encode::decode(
-                    'UTF-8', Encode::encode( 'UTF-8', $fields->{Subject} )
+                message_subject     => Encode::decode($DADA::Config::HTML_CHARSET, Encode::encode($DADA::Config::HTML_CHARSET, $fields->{Subject} )
                 ),
             }
         }

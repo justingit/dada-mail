@@ -86,6 +86,10 @@ sub send_generic_email {
 					Body => $args->{-body},
 			   }; 
 			
+	  	while ( my ($key, $value) = each %{$data} ) {
+	    	$data->{$key} = Encode::encode('UTF-8', $value); 
+	    }
+			
 	require DADA::App::FormatMessages; 
 	my $fm = undef; 
 	if(exists($args->{-list})){ 
@@ -104,10 +108,16 @@ sub send_generic_email {
                                         }
                                     ) 
                        );
-
+		
+	$email_str = Encode::decode('UTF-8', $email_str); 
+	
     my $entity = $fm->email_template(
         {
-            -entity => $fm->get_entity({-data => $email_str}),
+            -entity => $fm->get_entity(
+				{
+					-data => Encode::encode('UTF-8', $email_str),
+				}
+			),
   			-expr   => $expr, 
 			%{$args->{-tmpl_params}},
         }

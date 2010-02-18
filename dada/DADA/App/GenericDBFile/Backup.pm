@@ -64,7 +64,7 @@ sub backupToDir {
 	if(-d $new_dir){
 		foreach my $setting(keys %$li){	
 			next if ! $setting;
-			open(KEY, ">>:encoding(UTF-8)", $self->_safe_path($new_dir . '/' . $setting)) 
+			open(KEY, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->_safe_path($new_dir . '/' . $setting)) 
 				or carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER error! Can't write key/value file at: '" . $self->_safe_path($new_dir . '/' . $setting) . "' $!";  
 				
 			# Not quite sure why I'm doing this twice, except I used to do it in the sysopen call: 
@@ -365,7 +365,7 @@ sub restoreFromFile {
 				my $value_file = $self->backDirPath .  '/' . $restore_dir . '/' . $value;
 				
 				if(-e $value_file){ 
-					open(VALUE, "<:encoding(UTF-8)", $value_file) 
+					open(VALUE, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $value_file) 
 						or carp $!; 
 					$new_values{$value} = do{ local $/; <VALUE> };    
 					close(VALUE) or carp $!; 

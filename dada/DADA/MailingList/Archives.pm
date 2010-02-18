@@ -1808,7 +1808,7 @@ sub massaged_msg_for_display {
         # singlepart message (like a "text/plain"), use C<bodyhandle()> instead:
 
         $body = $b_entity->bodyhandle->as_string;
-		$body = Encode::decode('UTF-8', $body);
+		$body = Encode::decode($DADA::Config::HTML_CHARSET, $body);
 		 
         if ( $self->{ls}->param('stop_message_at_sig') == 1 ) {
             $body = $self->_zap_sig_plaintext($body);
@@ -2188,13 +2188,11 @@ sub _bs_raw_msg {
 		$format = 'text/plain'; 	
 	}
 	
-	#warn '$message ' . $message; 
-	#die q{Encode::encode('UTF-8', $message) } . Encode::encode('UTF-8', $message); 
-	
 	my $msg = MIME::Lite->new(
 	Subject   => $subject, 
 	Type      => $format, 
-	#Data      => Encode::encode('UTF-8', $message), 
+	# This should be this way, or the reverse?
+	#Data      => Encode::encode($DADA::Config::HTML_CHARSET, $message), 
 	Data      => $message, 
 	Datestamp => 0, 
 	);

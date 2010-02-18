@@ -80,7 +80,7 @@ sub open_list_handle {
 	sysopen(LIST, $path_to_file, O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD ) 
 	    or croak "couldn't open '$path_to_file' for reading: $!\n";
 		   flock(LIST, LOCK_SH);
-		binmode LIST, ":encoding(UTF-8)";
+		binmode LIST, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
 }
 
 
@@ -665,12 +665,12 @@ sub create_mass_sending_file {
 	
 	sysopen(LISTFILE, "$list_file",  O_RDONLY|O_CREAT, $DADA::Config::FILE_CHMOD ) or 
 		croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: Cannot open email list for copying, in preparation to send out bulk message: $! "; 
-	binmode LISTFILE, ":encoding(UTF-8)";
+	binmode LISTFILE, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
 	flock(LISTFILE, LOCK_SH); 
 		
 	open my $SENDINGFILE, '>', $sending_file or
 		croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: Cannot create temporary email list file for sending out bulk message: $!"; 
-	binmode $SENDINGFILE, ":encoding(UTF-8)";
+	binmode $SENDINGFILE, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
 	chmod($DADA::Config::FILE_CHMOD, $SENDINGFILE); 	
 	flock($SENDINGFILE, LOCK_EX);	
 

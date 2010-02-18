@@ -1,13 +1,6 @@
 package DADA::App::GenericDBFile;
 
 use Encode; 
-
-# UTF-8 Note: 
-# http://juerd.nl/site.plp/perluniadvice
-# DB_File, GDBM_File, SDBM_File, ODBM_File, dbm*
-#
-# Not encoding aware at all. You must decode and encode everything yourself.
-
 use lib qw(
 	../../ 
 	../../DADA/perllib
@@ -132,7 +125,7 @@ sub _raw_db_hash {
 	# decode
 	while ( my ($key, $value) = each %{$self->{RAW_DB_HASH}} ) {
 		if(defined($value)){ 
-			$self->{RAW_DB_HASH}->{$key} = Encode::decode('UTF-8', $value);
+			$self->{RAW_DB_HASH}->{$key} = Encode::decode($DADA::Config::HTML_CHARSET, $value);
 		}
 	}
 	

@@ -387,7 +387,7 @@ sub make_template {
 		$list_template = $1; 
 	
 	
-		open(TEMPLATE, '>>:encoding(UTF-8)', $list_path .'/' . $list_template . '.' . 'template') or 
+		open(TEMPLATE, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $list_path .'/' . $list_template . '.' . 'template') or 
 			croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: can't write new template at '$list_path/$list_template.template': $!"; 
 	
 		flock(TEMPLATE, LOCK_EX) or 
@@ -1309,7 +1309,7 @@ $message_body =~ s/\&\#\d\d\d\d\;//g;
 # or something, and then have an option to encode the output? 
 # 
 sub e_print { 
-	print encode('UTF-8', $_[0]); 
+	print encode($DADA::Config::HTML_CHARSET, $_[0]); 
 }
 
 
@@ -1798,7 +1798,7 @@ sub user_error {
 													 );
 	
 													 
-	print $fh encode('UTF-8', $error_msg);
+	print $fh encode($DADA::Config::HTML_CHARSET, $error_msg);
 	
  }
  
@@ -1855,7 +1855,7 @@ sub make_all_list_files {
 	
 	if($DADA::Config::SUBSCRIBER_DB_TYPE eq 'PlainText'){ 
 		# make email list file
-		open(LIST, '>>:encoding(UTF-8)', "$DADA::Config::FILES/$list.list")
+		open(LIST, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', "$DADA::Config::FILES/$list.list")
 			or croak "couldn't open $DADA::Config::FILES/$list.list for reading: $!\n";
 		flock(LIST, LOCK_SH);
 		close (LIST);
@@ -1864,7 +1864,7 @@ sub make_all_list_files {
 		chmod($DADA::Config::FILE_CHMOD , "$DADA::Config::FILES/$list.list"); 	
 	
 		# make e-mail blacklist file
-		open(LIST, '>>:encoding(UTF-8)', "$DADA::Config::FILES/$list.black_list")
+		open(LIST, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', "$DADA::Config::FILES/$list.black_list")
 			or croak "couldn't open $DADA::Config::FILES/$list.black_list for reading: $!\n";
 		flock(LIST, LOCK_SH);
 		close (LIST);
@@ -2359,11 +2359,11 @@ sub csv_subscriber_parse {
 	# http://search.cpan.org/~rgarcia/perl-5.10.0/lib/PerlIO.pm
 	
 	# Reading
-	open my $NE, '<:encoding(UTF-8)', $DADA::Config::TMP . '/' . $filename 
+	open my $NE, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $DADA::Config::TMP . '/' . $filename 
 		or die "Can't open: " . $DADA::Config::TMP . '/' . $filename . ' because: '  . $!;
 
 	# Writing
-	open my $NE2, '>:encoding(UTF-8)', make_safer($DADA::Config::TMP . '/' . $filename . '.translated') 
+	open my $NE2, '>:encoding('. $DADA::Config::HTML_CHARSET . ')', make_safer($DADA::Config::TMP . '/' . $filename . '.translated') 
 		or die "Can't open: " . make_safer($DADA::Config::TMP . '/' . $filename . '.translated') . ' because: '  . $!;
 
 	my $line; 
@@ -2516,9 +2516,9 @@ sub decode_cgi_obj {
 	
 	  my @val = $query ->param( $name );
 	  foreach ( @val ) {
-	    $_ = Encode::decode('UTF-8', $_ );
+	    $_ = Encode::decode($DADA::Config::HTML_CHARSET, $_ );
 	  }
-	  $name = Encode::decode('UTF-8', $name );
+	  $name = Encode::decode($DADA::Config::HTML_CHARSET, $name );
 	  if ( scalar @val == 1 ) {   
 	    #$form_input ->{$name} = $val[0];
 		$query->param($name, $val[0]); 

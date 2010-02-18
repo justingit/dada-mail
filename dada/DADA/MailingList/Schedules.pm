@@ -929,8 +929,8 @@ sub _build_email {
     	else { 
 			    $plaintext_alt = html_to_plaintext({-string => $HTML_ver });
 		}
-        $plaintext_alt = Encode::encode('UTF-8', $plaintext_alt); 
-		$HTML_ver      = Encode::encode('UTF-8', $HTML_ver); 
+        $plaintext_alt = Encode::encode($DADA::Config::HTML_CHARSET, $plaintext_alt); 
+		$HTML_ver      = Encode::encode($DADA::Config::HTML_CHARSET, $HTML_ver); 
 
 		my $MIMELiteObj; 
 		if($record->{'HTML_ver'}->{source} eq 'from_url'){
@@ -994,7 +994,7 @@ sub _build_email {
 	else { 
 		if($PlainText_ver){ 
 			
-			$PlainText_ver      = Encode::encode('UTF-8', $PlainText_ver); 
+			$PlainText_ver      = Encode::encode($DADA::Config::HTML_CHARSET, $PlainText_ver); 
 			
 			$entity = MIME::Entity->build(
 						Type      =>'text/plain',

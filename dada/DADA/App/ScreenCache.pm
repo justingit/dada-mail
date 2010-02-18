@@ -120,7 +120,7 @@ sub show {
 			or croak ("cannot open $filename - $!"); 
 		while(my $l = <SCREEN>){ 
 			if($filename !~ m/\.(jpg|png|gif)$/){
-				print decode('UTF-8', $l) 
+				print decode($DADA::Config::HTML_CHARSET, $l) 
 			}
 			else { 
 				print $l;
@@ -145,7 +145,7 @@ sub pass {
 	my $filename = $self->cache_dir . '/' . $self->translate_name($screen);
 	
 	if($self->cached($screen)){ 
-		open(SCREEN, '<:encoding(UTF-8)', $self->_safe_path($filename)) 
+		open(SCREEN, '<:encoding('. $DADA::Config::HTML_CHARSET . ')', $self->_safe_path($filename)) 
 			or croak ("cannot open '$filename' because: $!"); 
 		
 		my $return; 
@@ -176,7 +176,7 @@ sub cache {
 	my $unref = $$data; 
 	return if $DADA::Config::SCREEN_CACHE  != 1;
 	my $file = $self->_safe_path($self->cache_dir . '/' . $self->translate_name($screen)); 
-	open(SCREEN, '>>:encoding(UTF-8)', $file) 
+	open(SCREEN, '>>:encoding('  .$DADA::Config::HTML_CHARSET . ')', $file) 
 		or croak $!;
 	print SCREEN $unref
 			or croak $!; 
