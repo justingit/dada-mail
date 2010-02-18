@@ -7,8 +7,6 @@ use __Test_Config_Vars;
 use Carp qw(croak carp); 
 
 BEGIN { 
-	
-
 	use DADA::Config; 
 	$DADA::Config::FILES = './test_only_dada_files'; 
 
@@ -80,10 +78,15 @@ SQLite_test_enabled
 
 
 
+ 
+use vars qw(@EXPORT $UTF8_STR); 
 
-use strict; 
-use vars qw(@EXPORT); 
+@EXPORT_OK = qw($UTF8_STR);
 
+$UTF8_STR = "\x{a1}\x{2122}\x{a3}\x{a2}\x{221e}\x{a7}\x{b6}\x{2022}\x{aa}\x{ba}";
+
+
+use strict;
 
 sub create_test_list { 
 

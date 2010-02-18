@@ -170,6 +170,7 @@ SKIP: {
 
 
 BEGIN{ use_ok('DADA::MailingList::Subscribers'); }
+BEGIN{ use_ok('DADA::MailingList::Subscriber'); }
 
 
 BEGIN{ use_ok('DADA::MailingList'); }

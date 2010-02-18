@@ -702,6 +702,83 @@ ok(unlink($mh->test_send_file));
 
 
 
+DADA::App::Messages::send_not_allowed_to_post_message(
+	{
+        -list       => $list, 
+        -email      => $email, 
+        -ls_obj     => $ls, 
+		-attachment => $fake_message_back, 
+		-test       => 1, 
+	}
+);
+$msg = slurp($mh->test_send_file); 
+my $sub = quotemeta('Subject: Email: mytest@example.com List Name: Dada Test List'); 
+like($msg, qr/$sub/, "Subject: set correctly"); 
+like($msg, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
+like($msg, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
+like($msg, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
+
+# Hmm! Not sure what to do about this...
+#like($msg, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
+# like($msg, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
+like($msg, qr/Subscriber Pin\: /, "Did Not Find: Subscriber Pin");
+like($msg, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
+
+# Reset: 
+ok(
+	$ls->save(
+		{
+			confirmation_message         => undef, 
+			confirmation_message_subject => undef,	
+		},	
+	),
+);
+ok(unlink($mh->test_send_file));
+
+
+
+ 
+send_generic_email(
+	{ 
+		-list       => $list, 
+        -email      => $email, 
+        -ls_obj     => $ls, 
+		-test       => 1,
+
+		-headers => {
+		    Subject =>  $dada_test_config::UTF8_STR,
+		},
+		-body => $dada_test_config::UTF8_STR, 
+		
+		-tmpl_params => { 
+            -vars                     => {},
+		},
+	}
+);
+
+# Slurp don't know encoding! 
+$msg = slurp($mh->test_send_file); 
+$msg = Encode::decode('UTF-8', $msg); 
+
+use MIME::Parser; 
+my $parser = new MIME::Parser; 
+   $parser = optimize_mime_parser($parser);
+
+my $entity = $parser->parse_data($msg); 
+my $body = $entity->bodyhandle->as_string; 
+   $body = Encode::decode('UTF-8', $body); 
+
+like($body, qr/$dada_test_config::UTF8_STR/, 'UTF-8 string found'); 
+
+use DADA::App::FormatMessages; 
+my $fm = DADA::App::FormatMessages->new(-List => $list); 
+my $ue_subject = $entity->head->get('Subject', 0); 
+my $subject    = $fm->_decode_header($ue_subject); 
+ 
+#chomp($ue_subject); 
+#ok($ue_subject eq $fm->_encode_header($UTF8_str), 'MIME::Encoded Subject found (' . $ue_subject . ')'); 
+ok($dada_test_config::UTF8_STR eq $subject, 'UTF-8 string found in Subject.(' . Encode::encode('UTF-8', $subject) . ')');  
+
 
 
 
