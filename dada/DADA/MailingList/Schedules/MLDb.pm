@@ -110,8 +110,12 @@ sub save_record {
 			   
 			   
 	my $key = $args{-key}; 
-	
-	$key = $self->new_key if ! $key; 		   
+	   $key = $self->new_key if ! $key; 		   
+		
+#	while ( my ($key, $value) = each %{$args{-data}} ) {
+#		$args{-data}->{$key} = Encode::encode($DADA::Config::HTML_CHARSET, $value); 
+#	}
+
 		
 	if($args{-mode} eq 'append'){ 
 		if(exists $self->{DB_HASH}->{$key}){ 
@@ -126,11 +130,6 @@ sub save_record {
 	}else{ 
 		$self->{DB_HASH}->{$key} = $args{-data}; 
 	}
-
-    # dude, if this works, we are so golden...
-	
-	
-	#$self->{function} = 'schedules'; 
 	
 	if($args{-backup} == 1){ 
 	    $self->backupToDir;
@@ -181,13 +180,15 @@ sub get_record {
 
 	my $self = shift; 
 	my $key   = shift;
-	return $self->{DB_HASH}->{$key};
+	#return Encode::decode($DADA::Config::HTML_CHARSET, $self->{DB_HASH}->{$key});
+	return $self->{DB_HASH}->{$key}; 
 }
 
 
 # ONLY USE for backup stuff, nothing else! Seriously.
 sub get { 
 	my $self = shift;
+	# to encode, or not...
 	return $self->{DB_HASH}; 
 }
 
@@ -289,7 +290,6 @@ sub _open_db {
 	my $exception = 0;
 	
 	$self->_lock_db;
-	my %TMP_H;
 	chmod($DADA::Config::FILE_CHMOD , $self->_db_filename)
 		if -e $self->_db_filename; 
 

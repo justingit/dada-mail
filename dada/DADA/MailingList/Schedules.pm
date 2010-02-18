@@ -10,15 +10,8 @@ use DADA::MailingList::Settings;
 use base "DADA::MailingList::Schedules::MLDb";
 
 use Carp qw(croak carp);
+use Encode; 
 
-
-#require Exporter;
-#@ISA    = qw(Exporter);
-#@EXPORT = qw(
-#	
-#	schedule_schema
-#	
-#	);
 
 use strict;
 #use vars qw(@EXPORT);
@@ -263,6 +256,7 @@ sub save_from_params {
 #	die Data::Dumper::Dumper(%form_vals); 
 	
 	$form_vals{partial_sending_params} = $saved_pso; 
+	
 	my $s_key = $q->param('key'); 			
 	my $key = $self->save_record(
 				-key   => $s_key, 
@@ -943,7 +937,8 @@ sub _build_email {
 		# Error Handling... well, add later...
 		my $html_msg = ''; 
 		eval { 
-				$html_msg = $MIMELiteObj->as_string; 
+				$html_msg = $MIMELiteObj->as_string;
+				$html_msg = Encode::decode($DADA::Config::HTML_CHARSET, $html_msg);
 			}; 
 			
 		if($@){ 
@@ -953,9 +948,10 @@ sub _build_email {
 			require MIME::Parser; 
 			my $parser = new MIME::Parser; 
 			   $parser = optimize_mime_parser($parser);
-			$entity = $parser->parse_data($html_msg); 
+			$entity = $parser->parse_data(
+				$html_msg = Encode::encode($DADA::Config::HTML_CHARSET, $html_msg)
+			); 
 			 
-			#die $entity->stringify; 
 			if(! $record->{attachments}->[0]) { 
 				# well, nothin'
 			}
@@ -994,8 +990,7 @@ sub _build_email {
 	else { 
 		if($PlainText_ver){ 
 			
-			$PlainText_ver      = Encode::encode($DADA::Config::HTML_CHARSET, $PlainText_ver); 
-			
+			$PlainText_ver = Encode::encode($DADA::Config::HTML_CHARSET, $PlainText_ver); 
 			$entity = MIME::Entity->build(
 						Type      =>'text/plain',
 						Encoding  => $ls->param('plaintext_encoding'), 
@@ -1064,7 +1059,8 @@ sub _build_email {
 	   $fm->use_header_info(1);
 	    
     my $stringify = $entity->stringify; 
-	#my ($final_header, $final_body) = $fm->format_headers_and_body(-msg => $msg->as_string);
+	   $stringify = Encode::decode($DADA::Config::HTML_CHARSET, $stringify);
+	
 	my ($final_header, $final_body) = $fm->format_headers_and_body(-msg => $stringify);
 	
 	require DADA::Mail::Send; 
@@ -1183,8 +1179,7 @@ sub  _from_file {
 	my $fn   = shift; 	
 	croak "no filename!" if ! $fn; 
 	
-	open(FH, "<$fn") or return undef; 
-	
+	open(FH, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $fn) or return undef; 
 	my $data = undef; 
        $data = do{ local $/; <FH> };
 	 
