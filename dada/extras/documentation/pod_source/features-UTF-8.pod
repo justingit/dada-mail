@@ -4,56 +4,103 @@
 
 =head1 Introduction
 
-We're trying to make Dada Mail compatible with UTF-8 encoding. 
+Dada Mail can speak UTF-8 and almost expects that everything else around it does, too. 
 
-We are probably pretty far along, but Dada Mail's support is not perfect. 
+That means: 
 
-We need your help, by alerting us of problems, so we can fix them. 
+=over
 
-=head1 Making Dada Mail use UTF-8
+=item * It treats everything it handles as UTF-8
 
-=head2 HTML Screens
-
-HTML Screens refers to most everything that Dada Mail shows through your web browser, 
-that's written in HTML. 
-
-Make sure the config variable, C<$HTML_CHARSET> is set to: C<UTF-8>. This should be the default value. 
-
-=head2 Email Messages
-
-Email Messages refer to anything Dada Mail sends out, via email. 
-
-(These are per-list instructions) 
-
-In your list control panel, under, I<Manage List - Sending Options - Advanced> make sure the following settings are set: 
-
-=over 
-
-=item * Default Character Set of Mailings (charset)
-
-Set this to, C<UTF-8 UTF-8> 
-
-=item * Encode Message Headers 
-
-Make sure this option is, B<CHECKED> 
+=item * Everything it returns is in UTF-8
 
 =back
 
-These should be the default values. 
+
+=head1 How To Have a Pleasant Experience
+
+It's heavily advised to keep everything in Dada Mail speaking C<UTF-8> without
+any real exceptions. 
+
+=head2 Config Variable: $HTML_CHARSET
+
+By default, the config variable, C<$HTML_CHARSET> is set to, C<UTF-8> 
+
+Keep it that way, same case - same everything. 
+
+Dada Mail is only tested with the charset set this way. 
+
+=head2 Advanced Sending Preferences
+
+=head3 Default Character Set 
+
+Set this as, C<UTF-8	UTF-8> 
+
+=head3 Default Plain Text/HTML Message Encoding
+
+There's really only a few choices recommended for Dada Mail. 
+
+=over
+
+=item * 8bit 
+
+Should work. 
+
+=item * quoted-printable
+
+If you have any trouble with C<8bit>, try C<quoted-printable>. Because of the
+amount of time that Dada Mail creates, tweaks, formats and templates out email
+messages, the encoding can potentially get mucked up. 
+
+This potential mucking-up is mitigated when Dada Mail uses C<quoted-printable> encoding
+internally. This should be the default for email messages. 
+
+=back
+
+=head3 Encode Message Headers
+
+Have this option checked. 
 
 =head2 SQL Backends
 
-We're not quite sure what to do with the SQL backends yet.
+=head3 Database
+
+=head4 PostgreSQL
+
+Encoding for PostgreSQL databases is done when the database is created - make sure
+to create your database with a, C<UTF-8> encoding, like so: 
+
+ CREATE DATABASE dadamail WITH ENCODING 'UTF-8'
+
+=head4 MySQL 
+
+Nothing you'll have to do. 
+
+=head4 SQLite 
+
+Nothing you'll have to do. 
+
+=head4 DBM Files
+
+DBM Files have no encoding support, but Dada Mail knows this and compensates. 
 
 =head3 Schema 
 
- The current table schema in Dada Mail does not support UTF-8. We'd really appreciate some feedback on this issue. 
+=head4 MySQL 
+
+The MySQL schemas are set to create tables with an encoding of, C<UTF-8> 
+
+=head4 PostgreSQL
+
+Nothing has changed.
+
+=head4 SQLite
+
+Nothing has changed.
 
 =head3 Drivers
 
 The current support SQL backends, C<mysql> (MySQL), C<Pg> (PostgreSQL) and C<SQLite> all have different ways to somewhat, "enable" their UTF-8 support. 
-
-In Dada Mail's config, you may play around with this support, via the C<$DBI_PARAMS> variable. 
 
 =over
 
@@ -63,7 +110,7 @@ add,
 
  mysql_enable_utf8 => 1, 
 
-to the hashref. It may already be there, just commented out. 
+has been added to the $DBI_PARAMS hashref. 
 
 =item * PostgreSQL
 
@@ -71,7 +118,7 @@ add,
 
  pg_enable_utf8 => 1, 
 
-to the hashref. It may already be there, just commented out.
+has been added to the $DBI_PARAMS hashref. 
 
 =item * SQLite
 
@@ -79,11 +126,16 @@ add,
 
  unicode => 1
 
-to the hashref. It may already be there, just commented out.
+has been added to the $DBI_PARAMS hashref. 
 
 =back
 
+No explicit encoding/decoding is done in Dada Mail when saving/retrieving data. Hopefully, the drivers are UTF-8-aware enough. 
+
 =head1 Found a Problem? 
+
+
+
 
 Please let us know via the Support Boards: 
 
