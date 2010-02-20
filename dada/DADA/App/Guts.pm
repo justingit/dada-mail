@@ -2384,7 +2384,7 @@ sub csv_subscriber_parse {
      # If you want to handle non-ascii char.
      my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
      
-    open my $NE3, '<', $DADA::Config::TMP . '/' . $filename . '.translated'
+    open my $NE3, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $DADA::Config::TMP . '/' . $filename . '.translated'
         or die "Can't open: " . $DADA::Config::TMP . '/' . $filename . '.translated' . ' because: '  . $!;
          
     while(defined($line = <$NE3>)){ 
@@ -2503,7 +2503,7 @@ sub tweet_about_mass_mailing {
 
 
 sub decode_cgi_obj { 
-
+	#use Data::Dumper; 
 	my $query = shift; 
 #	return $query; 
 	
@@ -2512,17 +2512,19 @@ sub decode_cgi_obj {
 	  
 	  # Don't decode image uploads that are binary. 
 	  next 
-		if $name =~ m/picture|attachment(.*?)$/; 
+		if $name =~ m/file|picture|attachment(.*?)$/; 
 	
 	  my @val = $query ->param( $name );
 	  foreach ( @val ) {
 	    $_ = Encode::decode($DADA::Config::HTML_CHARSET, $_ );
+		#warn 'CGI param: ' . $_ . ' ' . Data::Dumper::Dumper($_);
+		
 	  }
 	  $name = Encode::decode($DADA::Config::HTML_CHARSET, $name );
 	  if ( scalar @val == 1 ) {   
 	    #$form_input ->{$name} = $val[0];
 		$query->param($name, $val[0]); 
-		#warn 'CGI param: ' . $name . ' ' . $val[0];
+		#warn 'CGI param: ' . $name . ' ' . Data::Dumper::Dumper($val[0]);
 	  } else {      
 		$query->param($name, @val);                 
 	    #$form_input ->{$name} = \@val;  # save value as an array ref

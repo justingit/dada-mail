@@ -226,7 +226,7 @@ sub send_email {
 			my $text_message_body = $q->param('text_message_body') || undef; 
 			my $html_message_body = $q->param('html_message_body') || undef; 
 			
-
+			
 			($text_message_body, $html_message_body) = 
 				DADA::App::FormatMessages::pre_process_msg_strings($text_message_body, $html_message_body); 
             my $msg; 
@@ -236,6 +236,7 @@ sub send_email {
 			  $text_message_body = Encode::encode($DADA::Config::HTML_CHARSET, $text_message_body);
 			  $html_message_body = Encode::encode($DADA::Config::HTML_CHARSET, $html_message_body); 
 			
+			  
               $msg = MIME::Lite->new(
 			  	Type      => 'multipart/alternative', 
 			    Datestamp => 0, 
@@ -276,7 +277,6 @@ sub send_email {
             }elsif($text_message_body){ 
                 
 				$text_message_body = Encode::encode($DADA::Config::HTML_CHARSET, $text_message_body);
-			 
                 $msg = MIME::Lite->new(
 					   		Type      => 'TEXT',
                             Data      => $text_message_body,
@@ -324,7 +324,6 @@ sub send_email {
             
         my $msg_as_string = (defined($msg)) ? $msg->as_string : undef;
 		   $msg_as_string = Encode::decode($DADA::Config::HTML_CHARSET, $msg_as_string);
-			
 		   
            $fm->Subject($headers{Subject});
            $fm->use_list_template($q->param('apply_template')); 
@@ -332,7 +331,9 @@ sub send_email {
 				$fm->treat_as_discussion_msg(1);
     		}
  
-        my ($final_header, $final_body) = $fm->format_headers_and_body(-msg => $msg_as_string );
+        my ($final_header, $final_body) = $fm->format_headers_and_body(
+			-msg => $msg_as_string
+		);
 
         require DADA::Mail::Send;
                $DADA::Mail::Send::dbi_obj = $dbi_handle;
@@ -380,10 +381,6 @@ sub send_email {
             $test_recipient = $mh->mass_test_recipient;
 
 			my $multi_list_send_no_dupes = $q->param('multi_list_send_no_dupes') || 0; 
-			
-            # send away
-			#require Data::Dumper; 			
-            #die Data::Dumper::Dumper(@alternative_list);
  
 			$message_id = $mh->mass_send(
 				{
@@ -663,7 +660,9 @@ sub send_url_email {
                 $MIMELiteObj = $mailHTML->parse($q->param('url'), 
 				Encode::encode($DADA::Config::HTML_CHARSET, $t));
             }else{ 
-                $MIMELiteObj = $mailHTML->parse(Encode::encode($DADA::Config::HTML_CHARSET, $q->param('html_message_body')), Encode::encode($DADA::Config::HTML_CHARSET, $t));
+                $MIMELiteObj = $mailHTML->parse(
+					Encode::encode($DADA::Config::HTML_CHARSET, $q->param('html_message_body')), 
+					Encode::encode($DADA::Config::HTML_CHARSET, $t));
             }
             
             require  DADA::App::FormatMessages; 
@@ -709,8 +708,10 @@ sub send_url_email {
             my $test_recipient = ''; 
 
             if(!$problems){ 
-            
-                my ($header_glob, $template) =  $fm->format_headers_and_body(-msg => $rm);
+            	$rm = Encode::decode($DADA::Config::HTML_CHARSET, $rm); 
+                my ($header_glob, $template) =  $fm->format_headers_and_body(
+					-msg => $rm
+				);
                 
                 require DADA::Mail::Send;
                        $DADA::Mail::Send::dbi_obj = $dbi_handle;

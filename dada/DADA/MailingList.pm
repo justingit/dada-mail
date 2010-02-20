@@ -56,8 +56,7 @@ sub Create {
 			foreach(%$flags){ 
 				$e .= $_ . ', ' if $flags->{$_} == 1; 
 			}
-		#	use Data::Dumper;
-		#	croak Dumper(%$flags); 
+
 			croak "Problems creating list: " . $e; 
 		} 
 	}

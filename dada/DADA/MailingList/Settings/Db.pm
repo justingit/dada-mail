@@ -193,8 +193,7 @@ sub save {
 		# now, we have to re-encode it: 
 		# See how we're taking the value of %merge info and copying it to the 
 		# corresponding key of, DB_HASH? 
-		#require Data::Dumper; 
-		#die Data::Dumper::Dumper(\%merge_info); 
+
 		while ( my ($key, $value) = each %merge_info ) {
 			$self->{DB_HASH}->{$key} = Encode::encode_utf8($value);
 		}

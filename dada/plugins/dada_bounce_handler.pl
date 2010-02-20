@@ -35,8 +35,15 @@ use lib qw(
 
 ); 
 
-use CGI::Carp qw(fatalsToBrowser); 
 use DADA::Config 4.0.0;
+use CGI::Carp qw(fatalsToBrowser); 
+use DADA::App::Guts; 
+use DADA::Mail::Send; 
+use DADA::MailingList::Subscribers; 
+use DADA::MailingList::Settings;
+use DADA::Template::HTML; 
+
+
 
 my $Plugin_Config = {}; 
 # Also see the Config.pm variable, "$PLUGIN_CONFIGS" to set these plugin variables 
@@ -1197,13 +1204,6 @@ for more information.
 my $App_Version = '1.6';
 
 
-use DADA::App::Guts; 
-use DADA::Mail::Send; 
-use DADA::MailingList::Subscribers; 
-use DADA::MailingList::Settings;
-
-
-use DADA::Template::HTML; 
 
 
 my %Global_Template_Options = (

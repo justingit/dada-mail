@@ -483,7 +483,6 @@ sub filter_subscribers_w_meta {
 
 	my $fields = $self->subscriber_fields(); 
 	
-	#require Data::Dumper; 
 	require Text::CSV; 
 	#my $csv = Text::CSV->new;
 	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
@@ -725,9 +724,6 @@ sub csv_to_cds {
         carp $DADA::Config::PROGRAM_NAME . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag ();;         
 
     }
-	
-	#require Data::Dumper; 
-	#die 'hello ' . Data::Dumper::Dumper($cds); 
 	
 	return $cds; 
 	

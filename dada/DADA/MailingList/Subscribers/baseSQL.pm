@@ -462,7 +462,10 @@ sub print_out_list {
         -FH => \*STDOUT,
         @_
     );
+
     my $fh = $args{ -FH };
+
+	binmode $fh, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
 
     my $count;
 

@@ -252,9 +252,6 @@ sub save_from_params {
 		}
 	}
 		
-#	require Data::Dumper; 
-#	die Data::Dumper::Dumper(%form_vals); 
-	
 	$form_vals{partial_sending_params} = $saved_pso; 
 	
 	my $s_key = $q->param('key'); 			

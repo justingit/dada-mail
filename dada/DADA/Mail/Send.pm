@@ -868,7 +868,6 @@ sub mass_send {
 	my ($args) = @_; 
 	
 	my %param_headers = (); 
-	#require Data::Dumper; 
 	
 	if(ref($args)){
 		
@@ -887,8 +886,6 @@ sub mass_send {
 			$self->partial_sending($args->{-partial_sending}); 
 		}
 		if(exists($args->{-multi_list_send})){ 
-			#warn 'setting -multi_list_send'; 
-			#warn Data::Dumper::Dumper($args->{-multi_list_send}); 
 			$self->multi_list_send($args->{-multi_list_send}); 		
 		}
 		if(exists($args->{-exclude_from})){ 
@@ -1190,8 +1187,7 @@ sub mass_send {
 			) { 
 								
 				if(keys %{$self->multi_list_send}){ 
-					#warn 'keys in: multi_list_send'; 
-					#warn Data::Dumper::Dumper($self->multi_list_send); 
+
 					my $local_args = $args; 
 					# Cause that would not be good. 
 				
@@ -1201,7 +1197,6 @@ sub mass_send {
 					my $lists = $self->multi_list_send->{-lists};
 				
 					my @exclude_from = ($self->list);
-					#warn 'starting @exclude_from looking like this: ' . Data::Dumper::Dumper(\@exclude_from); 
 					foreach my $local_list(@$lists){ 
 						# warn 'looking at: $local_list ' . $local_list; 
 					
@@ -1219,7 +1214,6 @@ sub mass_send {
 								}
 							); 
 						push(@exclude_from, $local_list); 	
-						# warn 'mass_send initited. @exclude_from now looks like this: ' . Data::Dumper::Dumper(\@exclude_from);
 					}
 					# warn "Looks like we have more lists to send to!"; 
 				}
@@ -1585,14 +1579,6 @@ sub mass_send {
 						-fm_obj => $fm, 
 				    }
 				);
-				
-			;
-				
-				
-			#	require Data::Dumper; 
-			#	die Data::Dumper::Dumper($nfields{Body}); 
-				
-				
 
 				# Debug Information, Always nice
                 $nfields{Debug} = {
@@ -1984,7 +1970,7 @@ sub _content_transfer_encode {
 	    $entity  = MIME::Entity->build(
                        Encoding => $encoding,
                        Type     => $fields->{'Content-type'}, 
-                       Data     => $orig_body,
+                       Data     => Encode::encode($DADA::Config::HTML_CHARSET, $orig_body),
         );
         
         
@@ -1992,7 +1978,7 @@ sub _content_transfer_encode {
         foreach(keys %$fields){ 
             next if $_ eq 'Content-type'; # Yeah, Content-Type, no Content-type. Weird. Weeeeeeeird.
             next if $_ eq 'Content-Transfer-Encoding'; 
-            $entity->head->add($_, $fields->{$_}); 
+            $entity->head->add($_, Encode::encode($DADA::Config::HTML_CHARSET, $fields->{$_})); 
         }
         
         
@@ -2002,9 +1988,12 @@ sub _content_transfer_encode {
 
 		
         my $head = $entity->head->as_string;
+	       $head   = Encode::decode($DADA::Config::HTML_CHARSET, $head);
 
 		# encoded. YES. 
         my $body = $entity->body_as_string;
+	       $body   = Encode::decode($DADA::Config::HTML_CHARSET, $body);
+
 	    %new_fields = $self->return_headers($head);
                
         $new_fields{Body} = $body; 
@@ -2091,7 +2080,17 @@ sub _make_general_headers {
 
 	my $ln = undef; 
 	if(defined($self->{list})){ 
-    	$ln = DADA::App::Guts::escape_for_sending($self->{ls}->param('list_name'));	   
+		require DADA::App::FormatMessages; 
+		my $fm = DADA::App::FormatMessages->new(
+			-List => $self->{list}
+		); 
+    	$ln = $fm->_encode_header(
+			'just_phrase',
+			DADA::App::Guts::escape_for_sending(
+				$self->{ls}->param('list_name')
+			)
+		);	   
+		undef $fm; 
 	}
 	my $From_obj = undef; 
 
@@ -2410,18 +2409,18 @@ sub _email_batched_finished_notification {
 
     my $entity = MIME::Entity->build(
         Type => 'multipart/mixed',
-        To   => Email::Address->new(
+        To   => Encode::encode($DADA::Config::HTML_CHARSET, Email::Address->new(
             '<!-- tmpl_var list_settings.list_owner -->',
             $self->{ls}->param('list_owner_email')
-          )->format,
-        Subject   => $DADA::Config::MAILING_FINISHED_MESSAGE_SUBJECT,
+          )->format),
+        Subject  => Encode::encode($DADA::Config::HTML_CHARSET, $DADA::Config::MAILING_FINISHED_MESSAGE_SUBJECT),
         Datestamp => 0,
 
     );
 
     $entity->attach(
         Type        => 'text/plain',
-        Data        => $DADA::Config::MAILING_FINISHED_MESSAGE,
+        Data        =>  Encode::encode($DADA::Config::HTML_CHARSET, $DADA::Config::MAILING_FINISHED_MESSAGE),
         Encoding    => $self->{ls}->param('plaintext_encoding'),
         Disposition => 'inline',
 
@@ -2465,10 +2464,15 @@ sub _email_batched_finished_notification {
         }
     );
 
-    # encoded. YES>
+	my $body = $n_entity->body_as_string; 
+	# No. I don't understand why it's ok for this to not be decoded. 
+	#   $body = Encode::decode($DADA::Config::HTML_CHARSET, $body);
+	
 
-    $self->send( $self->return_headers( $n_entity->head->as_string ),
-        Body => $n_entity->body_as_string, );
+    $self->send(
+	 	$self->return_headers( $n_entity->head->as_string ),
+        Body => $body, 
+	);
 
 }
 
@@ -2584,9 +2588,13 @@ sub _mail_merge {
 
 
 	
-    
-    my ($orig_entity, $filename) = $fm->entity_from_dada_style_args(
-                                    {
+  #  my $filename = ''; 
+  #  my ($orig_entity, $filename) = $fm->entity_from_dada_style_args(
+	
+   # my ($orig_entity) = $fm->entity_from_dada_style_args(
+ 	my ($orig_entity, $filename) = $fm->entity_from_dada_style_args(
+ 
+                                  {
                                         -fields        => $args->{-fields},
                                         -parser_params => {-input_mechanism => 'parse_open'}, 
                                     }
@@ -2614,7 +2622,8 @@ sub _mail_merge {
                 );
 
    my $msg = $entity->as_string; 
-    
+      $msg = Encode::decode( $DADA::Config::HTML_CHARSET, $msg); 
+	
     undef($entity); 
     # I do not like this part. 
     

@@ -2,10 +2,10 @@
 package mail; 
 
 
-use Carp qw( confess );
-$SIG{__DIE__} =  \&confess;
-$SIG{__WARN__} = \&carp;
-$Carp::Verbose = 1; 
+#use Carp qw( confess );
+#$SIG{__DIE__} =  \&confess;
+#$SIG{__WARN__} = \&carp;
+#$Carp::Verbose = 1; 
 
 use strict;
 use 5.8.1; 
@@ -3501,8 +3501,9 @@ sub add {
                   . $q->param('rand_string') . '-'
                   . 'new_emails.txt' );
 
-            open( OUTFILE, '>:encoding(UTF-8)' . $outfile )
-              or die ( "can't write to " . $outfile . ": $!" );
+
+            open( OUTFILE, '>:encoding(UTF-8)', $outfile )
+              or die "can't write to " . $outfile . ": $!";
             # DEV: TODO encoding?
 			print OUTFILE $q->param('new_emails');
             close(OUTFILE);
@@ -3746,8 +3747,6 @@ sub upload_that_file {
 
     my $fh = $q->upload('new_email_file');
 
-    # warn '$fh ' . $fh;
-
     my $filename = $q->param('new_email_file');
     $filename =~ s!^.*(\\|\/)!!;
 
@@ -3772,7 +3771,7 @@ sub upload_that_file {
 
     # warn ' $outfile ' . $outfile;
 
-    open( OUTFILE, '>' . $outfile )
+    open( OUTFILE, '>', $outfile )
       or die ( "can't write to " . $outfile . ": $!" );
 
     while ( my $bytesread = read( $fh, my $buffer, 1024 ) ) {
@@ -4860,7 +4859,8 @@ sub edit_archived_msg {
         # do I need this?
         $raw_msg ||= $ah->_bs_raw_msg( $subject, $message, $format );
         $raw_msg =~ s/Content\-Type/Content-type/;
-
+		$raw_msg = Encode::encode($DADA::Config::HTML_CHARSET, $raw_msg); 
+		
         my $entity;
         eval { $entity = $parser->parse_data($raw_msg); };
 
@@ -5190,6 +5190,7 @@ sub edit_archived_msg {
 
         $raw_msg ||= $ah->_bs_raw_msg( $subject, $message, $format );
         $raw_msg =~ s/Content\-Type/Content-type/;
+		$raw_msg = Encode::encode($DADA::Config::HTML_CHARSET, $raw_msg); 
 
         my $entity;
 
@@ -6802,31 +6803,32 @@ sub search_list {
 
 
 
-sub text_list { 
+sub text_list {
 
-    my ($admin_list, $root_login) = check_list_security(
-										-cgi_obj  => $q,  
-                                        -Function => 'text_list'
-									);
-                                                        
-    $list = $admin_list; 
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'text_list'
+    );
 
-    require  DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-    my $li = $ls->get; 
-    
-    my $lh = DADA::MailingList::Subscribers->new({-list => $list});
+    $list = $admin_list;
 
-    my $email; 
-    # DEV: encoding? 
-	print $q->header('text/plain');
-    print "Email Addresses for List: " .  $li->{list_name} . "\n"; 
-    print "=" x 72, "\n"; 
-    
-	my $email_count =  $lh->print_out_list(-List=>$list, -Type => $type); 
-    
-	print "=" x 72, "\n"; 
-    print "Total: $email_count \n\n"; 
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get;
+
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+
+    my $email;
+
+    # DEV: encoding?
+    print $q->header('text/plain');
+    e_print "Email Addresses for List: " . $li->{list_name} . "\n";
+    e_print "=" x 72 . "\n";
+
+    my $email_count = $lh->print_out_list( -List => $list, -Type => $type );
+
+    e_print "=" x 72 .  "\n";
+    e_print "Total: $email_count \n\n";
 
 }
 
@@ -6834,91 +6836,136 @@ sub text_list {
 
 
 
-sub send_list_to_admin { 
- 
 
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,  
-                                                        -Function => 'send_list_to_admin');
+sub send_list_to_admin {
 
-    $list = $admin_list; 
-
-    require  DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-    my $li = $ls->get; 
-    
- my $email; 
- 
- my ($sec, $min, $hour, $day, $month, $year) = (localtime)[0,1,2,3,4,5];
- $year = $year + 1900; 
- $month = $month + 1;  
-
-my $lh = DADA::MailingList::Subscribers->new({-list => $list});
-
-my $tmp_file = $lh->write_plaintext_list(-Type => $type); 
-  
-
-my $message = <<EOF
-
-Attached to this email is the subscriber list for $li->{list_name} 
-as of $month/$day/$year - $hour:$min:$sec. 
- 
-This was sent to the list owner ($li->{list_owner_email}) from the list control panel.
- 
-    -$DADA::Config::PROGRAM_NAME
-EOF
-; 
- 
-require MIME::Lite;
-MIME::Lite->quiet(1) 
-	if $DADA::Config::MIME_HUSH == 1;       ### I know what I'm doing 
-$MIME::Lite::PARANOID = $DADA::Config::MIME_PARANOID;
- 
-my $msg = MIME::Lite->new(Type => 'multipart/mixed'); 
-
-
-$msg -> attach(Type => 'TEXT',  
-               Data => $message); 
-
-
-my $listname  = $li->{list} . '_' . $type . '.list'; 
-
-
-$msg->attach(Type        => 'TEXT', 
-             Path        =>  $tmp_file,
-             Filename    =>  $listname, 
-             Disposition =>  'inline', 
-             Encoding    => $li->{plaintext_encoding}, 
-             ); 
-
-$msg->replace('X-Mailer' =>"");
-               
-my $msg_headers = $msg->header_as_string();
-my $msg_body    = $msg->body_as_string();              
-
-require DADA::Mail::Send; 
-my $mh = DADA::Mail::Send->new(
-			{
-				-list   => $list, 
-				-ls_obj => $ls,
-			}
-		
-		 ); 
-
-my %mail_headers = $mh->return_headers($msg_headers);
-my %mailing = ( 
-   %mail_headers, 
-    To        =>  '"'. escape_for_sending($li->{list_name}) .'" <'. $li->{list_owner_email} .'>', 
-    Subject        =>    "$li->{list_name} $type subscriber list $month/$day/$year",        
-    Body           =>     $msg_body,
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'send_list_to_admin'
     );
-    
-$mh->send(%mailing); 
 
-unlink($tmp_file);
-    
-print $q->redirect(-uri => "$DADA::Config::S_PROGRAM_URL?flavor=view_list&type=" . $type);    
+    $list = $admin_list;
 
-} 
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get;
+
+    my $email;
+
+    my ( $sec, $min, $hour, $day, $month, $year ) =
+      (localtime)[ 0, 1, 2, 3, 4, 5 ];
+    $year  = $year + 1900;
+    $month = $month + 1;
+
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+
+    my $tmp_file = $lh->write_plaintext_list( -Type => $type );
+
+    my $message = q{
+
+Attached to this email is the subscriber list for <!-- tmpl_var list_settings.list_name --> 
+as of <!-- tmpl_var month -->/<!-- tmpl_var day -->/<!-- tmpl_var year --> - <!-- tmpl_var hour -->:<!-- tmpl_var min -->:<!-- tmpl_var sec -->. 
+ 
+This was sent to the list owner (<!-- tmpl_var list_settings.list_owner_email -->) from the list control panel.
+ 
+    -<!-- tmpl_var PROGRAM_NAME --> 
+};
+
+    require DADA::Template::Widgets;
+    $message = DADA::Template::Widgets::screen(
+        {
+            -data => \$message,
+            -vars => {
+                day   => $day,
+                hour  => $hour,
+                min   => $min,
+                sec   => $sec,
+                month => $month,
+                year  => $year,
+            },
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1
+            },
+        }
+    );
+	
+	# I think this is right... 
+	# $message = Encode::decode( $DADA::Config::HTML_CHARSET, $message );
+	
+    require MIME::Lite;
+    MIME::Lite->quiet(1)
+      if $DADA::Config::MIME_HUSH == 1;    ### I know what I'm doing
+    $MIME::Lite::PARANOID = $DADA::Config::MIME_PARANOID;
+
+    my $msg = MIME::Lite->new( Type => 'multipart/mixed' );
+
+    $msg->attach(
+        Type => 'text/plain',
+         Data => Encode::encode( $DADA::Config::HTML_CHARSET, $message ),
+        Encoding    => $li->{plaintext_encoding},
+
+		#  Data => $message, 
+    );
+
+    my $listname = make_safer( $li->{list} . '_' . $type . '.list' );
+
+    $msg->attach(
+        Type        => 'TEXT',
+        Path        => $tmp_file,
+        Filename    => $listname,
+        Disposition => 'inline',
+        Encoding    => $li->{plaintext_encoding},
+    );
+
+    $msg->replace( 'X-Mailer' => "" );
+
+    #... not worrying about this, yet,
+    my $msg_headers = $msg->header_as_string();
+       $msg_headers = Encode::decode( $DADA::Config::HTML_CHARSET, $msg_headers );
+    my $msg_body = $msg->body_as_string();
+       $msg_body = Encode::decode( $DADA::Config::HTML_CHARSET, $msg_body );
+
+    require DADA::Mail::Send;
+    my $mh = DADA::Mail::Send->new(
+        {
+            -list   => $list,
+            -ls_obj => $ls,
+        }
+    );
+
+    my %mail_headers = $mh->return_headers($msg_headers);
+
+    # Death.
+	require DADA::App::FormatMessages; 
+    my $fm = DADA::App::FormatMessages->new( -List => $list );
+
+    my $subject = "$li->{list_name} $type subscriber list $month/$day/$year";
+    $subject = $fm->_encode_header( 'just_phrase', $subject );
+    my $to = '"'
+      . $fm->_encode_header( 'just_phrase',
+        escape_for_sending( $li->{list_name} ) )
+      . '" <'
+      . $li->{list_owner_email} . '>'; 
+
+	  undef $fm; 
+	#/Death
+      my %mailing = (
+        %mail_headers,
+        To      => $to,
+        Subject => $subject,
+        Body    => $msg_body,
+      );
+
+    $mh->send(%mailing);
+
+    unlink($tmp_file);
+
+    print $q->redirect(
+        -uri => "$DADA::Config::S_PROGRAM_URL?flavor=view_list&type=" . $type );
+
+}
+
 
 sub preview_form { 
 
@@ -8113,8 +8160,9 @@ sub send_archive {
            $fm->use_email_templates(0); 
            $fm->use_header_info(1); 
  
+		  my $msg_a_s = Encode::encode('UTF-8', $msg->as_string); 
 		   my ($email_str) = $fm->format_message(
-									-msg => $msg->as_string
+									-msg => $msg_a_s, 
 		                          );
 
 

@@ -305,12 +305,11 @@ sub format_headers_and_body {
 	
 	my $msg        = $args{-msg}; 
 	
-	#my $entity     = $self->{parser}->parse_data(
-	#	Encode::encode_utf8($msg)
-	#);
 	my $entity     = $self->{parser}->parse_data(
-		$msg
+		Encode::encode($DADA::Config::HTML_CHARSET, $msg)
 	);
+
+
 
 
 	$self->orig_entity($entity); 
@@ -332,14 +331,15 @@ sub format_headers_and_body {
     	if $entity->head->get('X-Mailer', 0); 
 		# or how about, count?
 
-	my $header = $entity->head->as_string;
-		
 
-	# ah, This is unencoded, but I need the encoded one: 
-	#my $body   = $entity->bodyhandle->as_string;
+
+	my $header = $entity->head->as_string;
+	   $header = Encode::decode($DADA::Config::HTML_CHARSET, $header);
+	
 	
 	my $body   = $entity->body_as_string;	
-	
+	   $body   = Encode::decode($DADA::Config::HTML_CHARSET, $body);
+
 	return ($header, $body) ;
 
 }
@@ -441,6 +441,7 @@ sub _format_text {
 			# Same thing - this means it could be in quoted/printable,etc. 
 			
 			if($content){ # do I need this?
+				#$content = Encode::code($DADA::Config::HTML_CHARSET, $content); 
 				if(
 					$self->treat_as_discussion_msg                        &&
 					$self->{ls}->param('group_list')                 == 1 &&  
@@ -818,8 +819,10 @@ sub _encode_header {
 	my $value      = shift; 
 	my $new_value  = undef; 
 	
+	require MIME::EncWords;
+	
 	if($label eq 'Subject' || $label eq 'just_phrase'){ 
-
+		
 		$new_value = 
 			MIME::EncWords::encode_mimewords(
 				$value, 
@@ -1418,6 +1421,7 @@ sub entity_from_dada_style_args {
                                          }
                                       ); 
 
+			# This is going to return a Entity from a decoded message...?
             return ($self->get_entity(
                             {
                                 -data          => $filename,
@@ -1428,21 +1432,21 @@ sub entity_from_dada_style_args {
     }
     else { 
     
-    
-	    warn "string_from_dada_style_args";
+  
         my $str = $self->string_from_dada_style_args(
                                         {
                                             -fields => $args->{-fields},
                                          }
                                       );
-    
-			$str = Encode::encode_utf8($str); 
-            return $self->get_entity(
+		
+			$str = Encode::encode($DADA::Config::HTML_CHARSET, $str); 
+            my $entity =  $self->get_entity(
                             {
                                 -data => $str, 
                             }
                     ); 
-                    
+				
+            return $entity;        
 
     }
 }
@@ -1467,9 +1471,8 @@ sub string_from_dada_style_args {
         $str .= $_ . ': ' . $args->{-fields}->{$_} . "\n"
         if ( ( defined $args->{-fields}->{$_} ) && ( $args->{-fields}->{$_} ne "" ) );
     }
-    
     $str .= "\n" . $args->{-fields}->{Body};
-    
+	
     return $str;
 
     
@@ -1494,8 +1497,9 @@ sub file_from_dada_style_args {
 
        $filename = make_safer($filename); 
     
-   open my $MAIL, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $filename or croak $!; 
-    
+  open my $MAIL, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $filename or croak $!; 
+ #   open my $MAIL, '>', $filename or croak $!; 
+  
     if(! exists($args->{-fields})){ 
         croak 'did not pass data in, "-fields"' ;
     }
@@ -1581,7 +1585,9 @@ sub get_entity {
 		#   Returns the parsed MIME::Entity on success. Throws exception on failure. If the message contained too many parts (as set by max_parts), returns undef.
 	
 		eval{
-			open TMPLFILE, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $args->{-data} or die $!; 
+			#open TMPLFILE, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $args->{-data} or die $!; 
+			open TMPLFILE, '<', $args->{-data} or die $!; 
+			
 			$entity = $self->{parser}->parse(\*TMPLFILE);
 			close(TMPLFILE) or die $!;
 		};
@@ -1590,7 +1596,7 @@ sub get_entity {
 		}
     }
     else { 
-        eval { $entity = $self->{parser}->parse_data($args->{-data}) };
+        eval { $entity = $self->{parser}->parse_data($args->{-data})};
  		if($@){ 
 			carp $@; 
 		}

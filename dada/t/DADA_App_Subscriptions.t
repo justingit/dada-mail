@@ -17,6 +17,12 @@ use DADA::App::Subscriptions;
 use DADA::MailingList::Settings; 
 use DADA::MailingList::Subscribers; 
 
+
+use MIME::Parser; 
+my $parser = new MIME::Parser; 
+   $parser = optimize_mime_parser($parser);
+
+
 use CGI;
 my $q = CGI->new; 
    $q = decode_cgi_obj($q);
@@ -167,9 +173,17 @@ $q->param('email', '');
 	like($dap->subscribe({-cgi_obj => $q,}), qr/$regex/, 'subscribe');
 
 	my $confirm_email = slurp($mh->test_send_file); 
+	my $entity = $parser->parse_data($confirm_email); 
+	
 
 	like($confirm_email, qr/To:(.*?)subscribe\@example.com/, "To: set correctly"); 
-	like($confirm_email, qr/Subject\: Dada Test List Mailing List Subscription Confirmation/, "Subject: set correctly"); 
+	#like($confirm_email, qr/Subject\: Dada Test List Mailing List Subscription Confirmation/, "Subject: set correctly"); 
+	ok(
+		decode_header($entity->head->get('Subject', 0))
+		eq
+		"$li->{list_name} Mailing List Subscription Confirmation", 
+		"Subject: Set Correctly"
+	);
 	
 	my $pin = DADA::App::Guts::make_pin(-Email => $email, -List => $list); 
 	
@@ -180,7 +194,10 @@ $q->param('email', '');
 	ok($lh->check_for_double_email(-Email => $email, -Type => 'sub_confirm_list')); 
 	
 	ok(unlink($mh->test_send_file)); 
-	
+	undef $confirm_email; 
+	undef $entity; 
+
+
 # Step #2: Confirm: 
 
 	$q->param('pin', $pin);
@@ -191,34 +208,79 @@ $q->param('email', '');
 	ok($lh->check_for_double_email(-Email => $email, -Type => 'list')); 
 	ok($lh->check_for_double_email(-Email => $email, -Type => 'sub_confirm_list') == 0); 
 	
-	my $subscribed_email = 	slurp($mh->test_send_file); 
-	
-	# There's going to be two emails in this file... 
-	#
-	like($subscribed_email, qr/To:(.*?)subscribe\@example\.com/, "To: set correctly"); 
-	like($subscribed_email, qr/Subject\: Welcome to Dada Test List/, "Subject: set correctly"); 
+	my $msg = 	slurp($mh->test_send_file); 
+	   $entity = $parser->parse_data($msg); 
 
-	like($subscribed_email, qr/To\: \"Dada Test List List Owner\" \<test\@example\.com\>/, "To: set correctly (2)"); 
-	like($subscribed_email, qr/Subject\: subscribed subscribe\@example\.com/, "Subject: set correctly (2)");
-	
+=cut
+I kind of screwed this up: 
+
+# There's going to be two emails in this file... 
+#
+like($subscribed_email, qr/To:(.*?)subscribe\@example\.com/, "To: set correctly"); 
+like($subscribed_email, qr/Subject\: Welcome to Dada Test List/, "Subject: set correctly"); 
+
+like($subscribed_email, qr/To\: \"Dada Test List List Owner\" \<test\@example\.com\>/, "To: set correctly (2)"); 
+like($subscribed_email, qr/Subject\: subscribed subscribe\@example\.com/, "Subject: set correctly (2)");
+
+=cut
+
+ok(
+	decode_header($entity->head->get('To', 0))
+	eq
+	"\"$li->{list_name} Subscriber\" \<subscribe\@example\.com\>", 
+	"To: Set Correctly"
+);
+ok(
+	decode_header($entity->head->get('Subject', 0))
+	eq
+	"Welcome to $li->{list_name}", 
+	"Subject: Set Correctly"
+);
+
+
+
+
 	$q->param('pin', '');
 	ok(unlink($mh->test_send_file)); 
-		
+	undef $msg; 
+	undef $entity; 
+	
+
+	
 # Step #3: Unsubscribe: 
 
 	$regex = '<h1>Please confirm your mailing list unsubscription</h1>';
 	like($dap->unsubscribe({-cgi_obj => $q,}), qr/$regex/);
 	ok($lh->check_for_double_email(-Email => $email, -Type => 'unsub_confirm_list')); 
 
-	my $confirm_email = slurp($mh->test_send_file); 
-
- 	$confirm_url = quotemeta($DADA::Config::PROGRAM_URL . '/u/dadatest/subscribe/example.com/'.$pin.'/'); 
-	like($confirm_email, qr/$confirm_url/, 'Unsub Confirmation link found and correct.');
+	$msg = slurp($mh->test_send_file); 
+	$entity = $parser->parse_data($msg); 
 	
-	like($confirm_email, qr/To:(.*?)subscribe\@example.com/, "To: set correctly"); 
-	like($confirm_email, qr/Subject\: Dada Test List Mailing List Unsubscription Confirmation/, "Subject: set correctly"); 
+ 	$confirm_url = quotemeta($DADA::Config::PROGRAM_URL . '/u/dadatest/subscribe/example.com/'.$pin.'/'); 
+	like($msg, qr/$confirm_url/, 'Unsub Confirmation link found and correct.');
+	
+#	like($msg, qr/To:(.*?)subscribe\@example.com/, "To: set correctly"); 
+#	like($msg, qr/Subject\: Dada Test List Mailing List Unsubscription Confirmation/, "Subject: set correctly"); 
+
+ok(
+	decode_header($entity->head->get('To', 0))
+	eq
+	"\"$li->{list_name} Subscriber\" \<subscribe\@example\.com\>", 
+	"To: Set Correctly"
+);
+ok(
+	decode_header($entity->head->get('Subject', 0))
+	eq
+	"$li->{list_name} Mailing List Unsubscription Confirmation", 
+	"Subject: Set Correctly"
+);
+
 	
 	unlink($mh->test_send_file);
+	undef $msg; 
+	undef $entity; 
+	
+
 	
 # Step #4: Confirm the Unsubscription:
 
@@ -230,17 +292,23 @@ $q->param('email', '');
 	ok($lh->check_for_double_email(-Email => $email, -Type => 'list') == 0);
 	
 	my $unsubscribed_email = slurp($mh->test_send_file); 
+
 	
 	# There's going to be two emails in this file... 
 	#
+=cut
+
 	like($unsubscribed_email, qr/To:(.*?)subscribe\@example\.com/, "To: set correctly"); 
 	like($unsubscribed_email, qr/Subject\: Unsubscribed from Dada Test List/, "Subject: set correctly"); 
 
 	like($unsubscribed_email, qr/To\: \"Dada Test List List Owner\" \<test\@example\.com\>/, "To: set correctly (2)"); 
 	like($unsubscribed_email, qr/Subject\: unsubscribed subscribe\@example\.com/, "Subject: set correctly (2)");
+=cut
 	
 	unlink($mh->test_send_file);	
 	
+
+
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
 
@@ -254,13 +322,21 @@ sub slurp {
         my $r;
         my (@r);
 
-        open(F, "<$file") || die "open $file: $!";
+        open(F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $file) || die "open $file: $!";
         @r = <F>;
         close(F) || die "close $file: $!";
 
         return $r[0] unless wantarray;
         return @r;
 
+}
+
+
+sub decode_header { 
+	my $header = shift; 
+	require MIME::EncWords; 
+	my $dec_header = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
+	return $dec_header; 
 }
 
 

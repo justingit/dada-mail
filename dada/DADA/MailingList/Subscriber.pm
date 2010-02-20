@@ -242,8 +242,6 @@ sub copy {
     if($self->{lh}->check_for_double_email(-Email => $self->email, -Type => $args->{-to}) == 1){ 
         croak "email passed in, -email ( $args->{-email}) is already subscribed to list passed in, '-to' ($args->{-to})"; 
     }
-
-	# use Data::Dumper; 
 		
     my $copy = DADA::MailingList::Subscriber->add(
         { 

@@ -120,7 +120,7 @@ sub subscribe {
         if($list_exists == 0){ 
             # Test sub-subscribe-redirect-error_invalid_list
 			my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1');  
-			$self->test ? return $r : print $fh $r and return; 
+			$self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return; 
         }
 		else { 
 			
@@ -129,7 +129,7 @@ sub subscribe {
 						# Test sub-subscribe-redirect-error_no_email
 						# This is just so we don't use the actual error screen.
 				  		my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?f=list&list=' . $list . '&error_no_email=1&set_flavor=s'); 
-						$self->test ? return $r : print $fh $r and return; 
+						$self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return; 
 					}
 		        }
 			
@@ -254,7 +254,7 @@ sub subscribe {
                 }
                 
                 my $r = $q->redirect(-uri => $li->{alt_url_sub_confirm_failed} . $qs); 
-				$self->test ? return $r : print $fh $r and return; 
+				$self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return; 
 
             }else{
 
@@ -364,7 +364,7 @@ sub subscribe {
                 }
                 my $r = $q->redirect(-uri => $li->{alt_url_sub_confirm_success} . $qs); 
 
-      			$self->test ? return $r : print $fh $r and return; 
+      			$self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return; 
 
             }else{ 
     			
@@ -396,7 +396,7 @@ sub subscribe {
                                -Site_URL  => $li->{website_url},
                                );
             	# Test: sub_confirm-sub_confirm_success
-				$self->test ? return $r : print $fh $r and return; 
+				$self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return; 
                  
             }
         }
@@ -474,7 +474,7 @@ sub confirm {
             warn '>>>> >>>> list doesn\'t exist. Redirecting to default screen.'
                 if $t; 
             my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1'); 
-			$self->test ? return $r : print $fh $r and return; 
+			$self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return; 
         }
 		else { 
 			# Again!
@@ -484,7 +484,7 @@ sub confirm {
 	            	warn '>>>> >>>> no email passed. Redirecting to list screen'
 		                if $t; 
 		            my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?f=list&list=' . $list . '&error_no_email=1&set_flavor=s'); 
-		            $self->test ? return $r : print $fh $r and return;
+		            $self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return;
 				}	
 			}
         }
@@ -600,7 +600,7 @@ sub confirm {
 	                -Site_URL  => $li->{website_url},
 	            );                                          
     
-				$self->test ? return $r : print $fh $r and return; 
+				$self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return; 
 
 	        }                                             
     
@@ -727,7 +727,7 @@ sub confirm {
                 warn '>>>> >>>> >>>> redirecting to: ' . $li->{alt_url_sub_failed} . $qs
                     if $t; 
                 my $r = $q->redirect(-uri => $li->{alt_url_sub_failed} . $qs); 
-                $self->test ? return $r : print $fh $r and return; 
+                $self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return; 
                 
             }else{            
                 
@@ -819,7 +819,7 @@ sub confirm {
 				}
 			);
 			
-			print $r;
+			e_print($r);
 			return;  
 		}
 		else { 
@@ -951,7 +951,7 @@ sub confirm {
                         if $t; 
                     	
 		        		my $r = $q->redirect(-uri => $li->{alt_url_sub_success} . $qs); 
-                    	$self->test ? return $r : print $fh $r and return;
+                    	$self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return;
                     
                 }else{        
                     
@@ -983,7 +983,7 @@ sub confirm {
                                    -List      => $li->{list},
                          );
         
-                    $self->test ? return $r : print $fh $r and return; 
+                    $self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return; 
         
                 }
         	} 
@@ -1038,7 +1038,7 @@ sub unsubscribe {
     
         if(check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle) == 0){     
            my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1&set_flavor=u'); 
-           $self->test ? return $r : print $fh $r and return;       
+           $self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return;       
         }
     
         # If the list is there, 
@@ -1049,7 +1049,7 @@ sub unsubscribe {
         if (!$email){                                    
 
             my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?f=list&list=' . $list . '&error_no_email=1&set_flavor=u'); 
-            $self->test ? return $r : print $fh $r and return;
+            $self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return;
         }
 
     }
@@ -1149,7 +1149,7 @@ sub unsubscribe {
                     $qs .= '&errors=' . $_ foreach keys %$errors; 
                 }
                 my $r = $q->redirect(-uri => $li->{alt_url_unsub_confirm_failed} . $qs);
-                $self->test ? return $r : print $fh $r and return; 
+                $self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return; 
                 
             }else{        
                 # If not, show the correct error screen. 
@@ -1240,7 +1240,7 @@ sub unsubscribe {
                     $qs = '?list=' . $list . '&rm=unsub_confirm&status=1&email=' . DADA::App::Guts::uriescape($email); 
                 }
                 my $r = $q->redirect(-uri => $li->{alt_url_unsub_confirm_success} . $qs);
-                $self->test ? return $r : print $fh $r and return; 
+                $self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return; 
                 
             }else{ 
             	my $r = ''; 
@@ -1271,7 +1271,7 @@ sub unsubscribe {
                             -Site_Name => $li->{website_name},
                             -Site_URL  => $li->{website_url}
                        );
-				$self->test ? return $r : print $fh $r and return;
+				$self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return;
 				
             }                 
         }
@@ -1322,7 +1322,7 @@ sub unsub_confirm {
                 if $t; 
                 
            my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1&set_flavor=u'); 
-		   $self->test ? return $r : print $fh $r and return;
+		   $self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return;
 		
         }
     }
@@ -1422,7 +1422,7 @@ sub unsub_confirm {
                     if $t; 
                     
                 my $r = $q->redirect(-uri => $li->{alt_url_unsub_failed} . $qs);
-                $self->test ? return $r : print $fh $r and return; 
+                $self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return; 
                     
             }else{ 
             
@@ -1554,7 +1554,7 @@ sub unsub_confirm {
                     $qs = '?list=' . $list . '&rm=unsub&status=1&email=' . DADA::App::Guts::uriescape($email);  
                 }
                 my $r = $q->redirect(-uri => $li->{alt_url_unsub_success} . $qs);
-                $self->test ? return $r : print $fh $r and return;
+                $self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return;
             
             }else{                
 				my $r = ''; 
@@ -1582,7 +1582,7 @@ sub unsub_confirm {
                             -Site_URL  => $li->{website_url},
                       ); 
 
-                $self->test ? return $r : print $fh $r and return; 
+                $self->test ? return $r : print $fh Encode::encode($DADA::Config::HTML_CHARSET, $r) and return; 
 
             }
         }

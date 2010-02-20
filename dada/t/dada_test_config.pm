@@ -19,7 +19,7 @@ $DADA::Config::TMP                      = $DADA::Config::FILES;
 
 #------------------	
 	if(! -e './test_only_dada_files'){ 
-		carp "no ./test_only_dada_files exists... (making one!)"; 
+		# carp "no ./test_only_dada_files exists... (making one!)"; 
 		mkdir './test_only_dada_files'; 
 		if(! -e './test_only_dada_files'){ 
 				croak "I couldn't make a tmp directory - heavens!"; 
@@ -37,25 +37,7 @@ use DADA::MailingList;
 require Exporter; 
 @ISA = qw(Exporter); 
 
-sub test_list_vars { 
 
-
-    my $foo = { 
-    
-            list             => 'dadatest', 
-            list_name        => 'Dada Test List', 
-            list_owner_email => 'test@example.com',  
-            password         => 'password', 
-            retype_password  => 'password', 
-            info             => 'list information', 
-            privacy_policy   => 'Privacy Policy',
-            physical_address => 'Physical Address', 
-    
-    };
-
-    return $foo; 
-
-}
 
 @EXPORT = qw(
 
@@ -87,6 +69,28 @@ $UTF8_STR = "\x{a1}\x{2122}\x{a3}\x{a2}\x{221e}\x{a7}\x{b6}\x{2022}\x{aa}\x{ba}"
 
 
 use strict;
+
+sub test_list_vars { 
+
+
+    my $foo = { 
+    
+            list             => 'dadatest', 
+            list_name        => 'Dada Test List' . $UTF8_STR, 
+            list_owner_email => 'test@example.com',  
+            password         => 'password', 
+            retype_password  => 'password', 
+            info             => 'list information' . $UTF8_STR, 
+            privacy_policy   => 'Privacy Policy' . $UTF8_STR,
+            physical_address => 'Physical Address' . $UTF8_STR, 
+    
+    };
+
+    return $foo; 
+
+}
+
+
 
 sub create_test_list { 
 

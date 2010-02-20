@@ -1059,7 +1059,7 @@ sub _entity_from_raw_msg {
 
 	my $entity; 
 	
-	eval { $entity = $self->{parser}->parse_data($raw_msg) };
+	eval { $entity = $self->{parser}->parse_data(Encode::encode($DADA::Config::HTML_CHARSET, $raw_msg )) };
 	if($@){ 
 		croak "Problems creating entity: $@"; 
 	}
@@ -1665,9 +1665,14 @@ sub massage_msg_for_resending {
 	if($args{'-split'} == 1){ 
 		# Not sure about this one - probably want it unencoded, so that we can resend it? Meh?
 		
-		return ($entity->head->as_string, $entity->body_as_string) ;
+		return (
+			 Encode::decode($DADA::Config::HTML_CHARSET, $entity->head->as_string),
+		   	 Encode::decode($DADA::Config::HTML_CHARSET, $entity->body_as_string), 
+
+		
+		) ;
 	}else{
-		my $str =  $entity->as_string;
+		my $str =  Encode::decode($DADA::Config::HTML_CHARSET, $entity->as_string);
 		$str = $self->massage($str); 
 		return $str; 
 	}
