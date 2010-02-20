@@ -4289,8 +4289,8 @@ encrypted.
 	
 	print_errors_to_header       => 0, 
 	print_return_path_header     => 0,
-	plaintext_encoding           => '8bit', 
-	html_encoding                => '8bit',
+	plaintext_encoding           => 'quoted-printable', 
+	html_encoding                => 'quoted-printable',
 	use_habeas_headers           => 0,
 	strip_message_headers        => 0, 
 	add_sendmail_f_flag          => 1, 
