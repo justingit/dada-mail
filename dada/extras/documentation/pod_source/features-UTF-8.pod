@@ -18,6 +18,12 @@ That means:
 
 =head1 How To Have a Pleasant Experience
 
+If you're installing Dada Mail for the first time, there's nothing you'll need to do, 
+but below are some great guidelines on how to keep your lists configured, so you
+continue to have a good experience. 
+
+If you're upgrading, make sure your configuration reflects the advice below. 
+
 It's heavily advised to keep everything in Dada Mail speaking C<UTF-8> without
 any real exceptions. 
 
