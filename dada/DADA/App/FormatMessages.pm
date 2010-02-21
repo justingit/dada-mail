@@ -874,22 +874,22 @@ sub _encode_header {
 sub _decode_header { 
 	my $self   = shift; 
 	my $header = shift; 
-	
 	if($header !~ m/\=\?/){ 
 		#warn "skipping header - doesn't look encoded?"; 
 		return $header; 
 	}	
 	require MIME::EncWords; 
-	my @dec = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
-#	my $dec = join('', map { $_->[0] } @dec);
-#	   $dec = safely_decode($dec); 
-	my $dec = join('', map { safely_decode($_->[0]) } @dec);	
-	
+	my @dec = MIME::EncWords::decode_mimewords($header, Charset => 'UTF-8'); 
+	use Data::Dumper; 
+	my $dec = join('', map { $_->[0] } @dec);
+	   $dec = safely_decode($dec); 
+	$dec = safely_decode($dec); 
 	return $dec; 
 }
 
 
 
+=cut
 
 sub _decode_headers { 
 	
@@ -951,6 +951,7 @@ sub _decode_headers {
 
 
 
+=cut
 
 =pod
 
