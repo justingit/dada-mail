@@ -1572,7 +1572,7 @@ sub mail_fields_from_raw_message {
     my $self = shift;
 
     my $raw_msg = $self->message_for_mail_send;
-
+	
     # This is way ruff.
 
     my ( $raw_header, $raw_body ) = split( /\n\n/, $raw_msg, 2 );
@@ -1584,12 +1584,14 @@ sub mail_fields_from_raw_message {
     # make the hash
     foreach my $line (@logical_lines) {
         my ( $label, $value ) = split( /:\s*/, $line, 2 );
-        $headers->{$label} = $value;
+		$headers->{$label} = $self->_decode_header($value); 
+		#if($label eq 'Subject'){ 
+		#	$headers->{$label} = $self->_decode_header('Love!'); 
+		#	use Data::Dumper; 
+		#	die 'a'.Dumper($headers->{$label});
+		#	
+		#}
     }
-	foreach (qw(To From Cc Subject)){ 
-		$headers->{$_} = $self->_decode_header($headers->{$_}); 
-	}
-
     return $headers;
 
 }
@@ -1601,38 +1603,10 @@ sub _decode_header {
 	
 	my $self   = shift; 	 
 	my $header = shift;
-	
-	# warn "in DADA::Mail::Mailot _decode_header - mime_encode_words_in_headers"; 
-	
-	#if($self->{ls}->param('mime_encode_words_in_headers') == 1){ 
-	# Weird optimization
-	if($self->{li}->{mime_encode_words_in_headers} == 1){ 	
-		eval{ 
-			require MIME::EncWords;
-		};
+	require DADA::App::FormatMessages; 
+	my $fm = DADA::App::FormatMessages->new(-List => $self->{list}); 
+	return $fm->_decode_header( $header); 
 
-		if($@){ 
-			carp "MIME::EncWords is returning with an error: $@"; 
-			return $header;
-		}
-		else  {
-
-			#if($header eq MIME::EncWords::decode_mimewords($header)){ 
-			#	# No? Well, nothing to do; 
-			#	#...
-			#}
-			#else { 
-				# Yes? Let's decode!
-				$header = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
-			#}
-		
-			return $header;
-		}
-		
-	}
-	else { 
-		return $header; 
-	}
 }
 
 
@@ -1775,14 +1749,13 @@ sub message_for_mail_send {
         warn "Raw Message that should be saved at: " . $file . "isn't there.";
     	return undef; 
 	}
-
+	
     open my $MSG_FILE, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file
         or die "Cannot read saved raw message at: '" . $file
         . "' because: "
         . $!;
 
     my $msg = do { local $/; <$MSG_FILE> };
-
     close $MSG_FILE
         or die "Didn't close: '" . $file . "'properly because: " . $!;
 

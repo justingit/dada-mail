@@ -20,13 +20,13 @@ my $list        = 'dadatest';
 my $list_params = {
 
     list             => $list,
-    list_name        => 'Justin!',
+    list_name        => 'Justin!' . $dada_test_config::UTF8_STR,
     list_owner_email => 'user@example.com',
     password         => 'abcd',
     retype_password  => 'abcd',
-    info             => 'info',
-    privacy_policy   => 'privacy_policy',
-    physical_address => 'physical_address',
+    info             => 'info' . $dada_test_config::UTF8_STR,
+    privacy_policy   => 'privacy_policy' . $dada_test_config::UTF8_STR,
+    physical_address => 'physical_address' . $dada_test_config::UTF8_STR,
 
 };
 
@@ -49,6 +49,10 @@ my $ls = DADA::MailingList::Create(
 #my $ls = DADA::MailingList::Settings->new({-list => $list});
 
 my $li = $ls->get();
+
+use Data::Dumper; 
+use Encode;
+diag 'LIST NAME! ' . Encode::encode('UTF-8',$li->{list_name}); 
 
 foreach ( keys %$list_params ) {
     ok( ( $li->{$_} eq $list_params->{$_} ), $_ );

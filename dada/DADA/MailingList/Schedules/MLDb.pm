@@ -180,7 +180,7 @@ sub get_record {
 
 	my $self = shift; 
 	my $key   = shift;
-	#return Encode::decode($DADA::Config::HTML_CHARSET, $self->{DB_HASH}->{$key});
+	# return safely_decode($self->{DB_HASH}->{$key}); # Maybe?
 	return $self->{DB_HASH}->{$key}; 
 }
 

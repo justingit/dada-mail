@@ -709,15 +709,17 @@ sub _format_headers {
 		if($self->{ls}->param('append_list_name_to_subject') == 1){ 
 
 			my $subject = $entity->head->get('Subject', 0);
+			   $subject = Encode::decode($DADA::Config::HTML_CHARSET, $subject); 
 			
 			#carp q{ $subject } . $subject; 
 			
 			my $new_subject = $self->_list_name_subject($subject);
 		
 			$entity->head->delete('Subject');
-			$entity->head->add(   'Subject', $new_subject);
+			$entity->head->add(   'Subject', 
+				Encode::encode($DADA::Config::HTML_CHARSET, $new_subject), 
+			);
 			
-			# carp q{ new subject } .  $entity->head->get('Subject', 0);
 		}
 		
 		
@@ -735,8 +737,12 @@ sub _format_headers {
 		} else {
 		
 			my $original_sender = $entity->head->get('From', 0);
+			   $original_sender = Encode::decode($DADA::Config::HTML_CHARSET, $original_sender); 
+			
 		   $entity->head->delete('Reply-To');
-		   $entity->head->add('Reply-To', $original_sender); 
+		   $entity->head->add('Reply-To', 
+			Encode::encode($DADA::Config::HTML_CHARSET, $original_sender)
+			); 
 		}
 		
 		$entity->head->delete('Return-Path'); 
@@ -762,8 +768,10 @@ sub _format_headers {
 	# If there ain't a TO: header, add one: 
 	# (usually, this happens (or doesn't happen) in program
 	
-	$entity->head->add('To', $self->{ls}->param('list_owner_email'))
-	 	if ! $entity->head->get('To', 0); 
+	$entity->head->add('To', 
+		Encode::encode($DADA::Config::HTML_CHARSET, $self->{ls}->param('list_owner_email'))
+	)
+	 if ! $entity->head->get('To', 0); 
 	
 	
 	# If there's already a To: header, put a phrase in it, to make it look
@@ -788,16 +796,17 @@ sub _format_headers {
         }else{ 
             
             my $to_addy = $addrs[0];
-            
+              
             if(!$to_addy){ 
             
                 warn "couldn't get a valid Email::Address object? SILENTLY (*wink wink*) ignorning"; 
             
             }elsif(!$to_addy->phrase){ 
-            
+            	
                 $to_addy->phrase($self->{ls}->param('list_name')); 
                 $entity->head->delete('To');
-                $entity->head->add('To', $to_addy->format); 
+                $entity->head->add('To', 
+				Encode::encode($DADA::Config::HTML_CHARSET, $to_addy->format )); 
             
             }
         }
@@ -805,7 +814,7 @@ sub _format_headers {
   
   
    if($self->{ls}->param('discussion_pop_email')){ 
-         $entity->head->add('X-BeenThere', $self->{ls}->param('discussion_pop_email')); 
+         $entity->head->add('X-BeenThere', Encode::encode($DADA::Config::HTML_CHARSET, $self->{ls}->param('discussion_pop_email'))); 
    } 
    
    
@@ -865,9 +874,17 @@ sub _encode_header {
 sub _decode_header { 
 	my $self   = shift; 
 	my $header = shift; 
+	
+	if($header !~ m/\=\?/){ 
+		#warn "skipping header - doesn't look encoded?"; 
+		return $header; 
+	}	
 	require MIME::EncWords; 
-	my $dec_header = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
-	return $dec_header; 
+	my @dec = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
+	my $dec = join('', map { $_->[0] } @dec);
+	   $dec = safely_decode($dec); 
+	
+	return $dec; 
 }
 
 
@@ -915,7 +932,9 @@ sub _decode_headers {
 				#	}
 				#	else { 
 						# Yes? Let's decode!
-						my $dec = MIME::EncWords::decode_mimewords($oc, Charset => '_UNICODE_'); 
+						my @dec = MIME::EncWords::decode_mimewords($oc, Charset => '_UNICODE_'); 
+						my $dec = join('', map { $_->[0] } @dec);
+						$dec = Encode::encode($DADA::Config::HTML_CHARSET, $dec);
 						$entity->head->add($header, $dec); 
 				#	}
 					
@@ -949,9 +968,11 @@ sub _list_name_subject {
 	
 	my $self         = shift;
 	my $orig_subject = shift; 
-	
+		#use Data::Dumper; 
+		#print Data::Dumper::Dumper($orig_subject); 
 	   $orig_subject = $self->_decode_header($orig_subject)
 			if $self->im_encoding_headers; 
+
 	
 	my $list       = $self->{ls}->param('list'); 
 	my $list_name  = $self->{ls}->param('list_name'); 
@@ -1658,7 +1679,6 @@ sub email_template {
 		if $t; 
 		
 
-	
 	# Tests and documentation
 	# OK, MORE documentation
 	#
@@ -1819,7 +1839,7 @@ sub email_template {
 					
 					   $phrase = $self->_decode_header($phrase)
 							if $self->im_encoding_headers; 
-											
+					   
 					   $phrase = DADA::Template::Widgets::screen(
                         {
                             %screen_vars,
@@ -1874,7 +1894,7 @@ sub email_template {
 
 				if($self->im_encoding_headers){ 
 					$header_value = $self->_decode_header($header_value);
-  				}
+				}
 
                $args->{-entity}->head->delete($header);
            
@@ -1885,12 +1905,12 @@ sub email_template {
                         -data                   => \$header_value, 
                     }
                 ); 
-				warn 'header value, after templating: "' . $header_value . '"'
+				warn 'header value, after templating:(1) "' . $header_value . '"'
 				 if $t; 
 				if($self->im_encoding_headers){ 
                 	$header_value = $self->_encode_header($header, $header_value)
 				}	 
-                	warn 'new header value, after templating: "' . $header_value . '"'
+                	warn 'new header value, after templating(2): "' . $header_value . '"'
 						if $t; 
 					$args->{-entity}->head->add($header, $header_value); 
             }                

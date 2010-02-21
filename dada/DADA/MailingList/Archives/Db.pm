@@ -285,9 +285,8 @@ sub get_archive_info{
 		$message, 
 		$format
 	) = split(
-			/\[::\]/, Encode::decode($DADA::Config::HTML_CHARSET,$self->{DB_HASH}->{$key}
-	)
-		); 
+			/\[::\]/, safely_decode($self->{DB_HASH}->{$key})
+	); 
 	$message = $self->massage($message);
 	$subject = $self->strip_subjects_appended_list_name($subject)
 		if $self->{ls}->param('no_append_list_name_to_subject_in_archives') == 1; 

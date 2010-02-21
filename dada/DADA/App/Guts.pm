@@ -98,6 +98,7 @@ require Exporter;
   csv_parse
   can_use_twitter
   decode_cgi_obj
+  safely_decode
 );
 
 
@@ -2535,15 +2536,26 @@ sub decode_cgi_obj {
 }
 
 
-# This is never called, anyways, 
-#sub DESTROY { 
-#	
-#	carp "TOTAL \$ic: $ic"; 
-#	carp "TOTAL \$nc: $nc";
-#		
-#	
-#}
 
+
+sub safely_decode { 
+	
+	my $str = shift; 
+	
+	if(utf8::is_utf8($str) == 1){ 
+		
+	}
+	else { 
+		eval { 
+			$str = Encode::decode($DADA::Config::HTML_CHARSET, $str); 
+		};
+		
+		if($@){ 
+			warn 'Problems: ' . $@; 
+		} 
+	}
+	return $str;
+}
 
 
 

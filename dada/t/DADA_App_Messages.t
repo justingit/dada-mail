@@ -87,7 +87,8 @@ ok(
 	"From: Set Correctly"
 	); 
 
-like($msg, qr/To:(.*?)$email_name\@$email_domain/, "To: set correctly"); 
+
+like($msg, qr/To:(.*?)$email_name\@$email_domain/, "To: set correctly 1"); 
 
  
 
@@ -196,11 +197,10 @@ ok(
 	"\"$li->{list_name}\" \<$lo_name\@$lo_domain\>", 
 	"From: Set Correctly"
 	); 
-
 like(
 	decode_header($entity->head->get('To', 0)), 
 	qr/$email_name\@$email_domain/, 
-	"To: Set Correctly"
+	"To: Set Correctly 2"
 );
 	
 ok(
@@ -300,13 +300,18 @@ ok(
 	decode_header($entity->head->get('To', 0))
 	eq
 	"\"$li->{list_name} List Owner\" \<$lo_name\@$lo_domain\>", 
-	"To: Set Correctly"
+	"To: Set Correctly 3"
 );
+my   $sub = $entity->head->get('Subject', 0); 
+chomp $sub; 
+
+diag "'" . decode_header($sub) ."'"; 
+diag "'" . "subscribed $email_name\@$email_domain" . "'"; 
 ok(
-	decode_header($entity->head->get('Subject', 0))
+	decode_header($sub)
 	eq
 	"subscribed $email_name\@$email_domain", 
-	"Subject: Set Correctly"
+	"Subject: Set Correctly2"
 );
 
 like($msg, qr/There is now a total of: 1 subscribers./, "Misc. Body stuff found (2)"); 
@@ -342,14 +347,25 @@ ok(
 	"\"$li->{list_name}\" \<$lo_name\@$lo_domain\>", 
 	"From: Set Correctly"
 );
+diag "set to this: " . decode_header($entity->head->get('To', 0)); 
+diag "lok fo this: " . "\"$li->{list_name} Subscriber\" \<$email_name\@$email_domain\>";
+
+#"Dada Test List¡™£¢∞§¶•ªº Subscriber" <mytest@example.com>
+
 ok(
 	decode_header($entity->head->get('To', 0))
 	eq
 	"\"$li->{list_name} Subscriber\" \<$email_name\@$email_domain\>", 
-	"To: Set Correctly"
+	"To: Set Correctly 4"
 );
+undef $sub;
+$sub = $entity->head->get('Subject', 0);
+chomp $sub;
+ 
+diag '"' . decode_header($sub) . '"'; 
+diag '"' . "$li->{list_name} - You Are Already Subscribed" . '"';
 ok(
-	decode_header($entity->head->get('Subject', 0))
+	decode_header($sub)
 	eq
 	"$li->{list_name} - You Are Already Subscribed", 
 	"Subject: Set Correctly"
@@ -381,6 +397,10 @@ DADA::App::Messages::send_you_are_already_subscribed_message(
 );
 $msg = slurp($mh->test_send_file); 
 $entity = $parser->parse_data($msg); 
+
+undef $sub;
+$sub =$entity->head->get('Subject', 0);
+chomp $sub; 
 
 ok(
 	decode_header($entity->head->get('Subject', 0))
@@ -447,8 +467,14 @@ ok(
 	decode_header($entity->head->get('To', 0))
 	eq
 	"\"$li->{list_name} Subscriber\" \<$email_name\@$email_domain\>", 
-	"To: Set Correctly1"
+	"To: Set Correctly 5"
 );
+
+undef $sub;
+$sub =$entity->head->get('Subject', 0);
+chomp $sub; 
+
+
 ok(
 	decode_header($entity->head->get('Subject', 0))
 	eq
@@ -558,7 +584,7 @@ ok(
 	decode_header($entity->head->get('To', 0))
 	eq
 	"\"$li->{list_name}\" \<$email_name\@$email_domain\>", 
-	"To: Set Correctly1"
+	"To: Set Correctly 6"
 );
 ok(
 	decode_header($entity->head->get('Subject', 0))
@@ -664,10 +690,17 @@ ok(
 	decode_header($entity->head->get('To', 0))
 	eq
 	"\"$li->{list_name} List Owner\" \<$lo_name\@$lo_domain\>", 
-	"To: Set Correctly1"
+	"To: Set Correctly 7"
 );
+
+undef $sub;
+$sub = $entity->head->get('Subject', 0);
+chomp $sub;
+ 
+diag '"' . decode_header($sub) . '"'; 
+diag '"' . "unsubscribed $email_name\@$email_domain" . '"';
 ok(
-	decode_header($entity->head->get('Subject', 0))
+	decode_header($sub)
 	eq
 	"unsubscribed $email_name\@$email_domain", 
 	"Subject: Set Correctly"
@@ -762,10 +795,19 @@ ok(
 	decode_header($entity->head->get('To', 0))
 	eq
 	"\"$li->{list_name} Subscriber\" \<$email_name\@$email_domain\>", 
-	"To: Set Correctly1"
+	"To: Set Correctly 8"
 );
+
+undef $sub;
+$sub = $entity->head->get('Subject', 0);
+chomp $sub;
+ 
+diag '"' . decode_header($sub) . '"'; 
+diag '"' . "$msg_info->{msg_subject}" . '"';
+
+
 ok(
-	decode_header($entity->head->get('Subject', 0))
+	decode_header($sub)
 	eq
 	"$msg_info->{msg_subject}", 
 	"Subject: Set Correctly"
@@ -896,7 +938,7 @@ ok(
 	decode_header($entity->head->get('To', 0))
 	eq
 	"\"$li->{list_name}\" \<$email_name\@$email_domain\>", 
-	"To: Set Correctly1"
+	"To: Set Correctly 9"
 );
 ok(
 	decode_header($entity->head->get('Subject', 0))
@@ -1083,14 +1125,16 @@ send_generic_email(
 	}
 );
 $msg = slurp($mh->test_send_file); 
+$entity = $parser->parse_data(Encode::encode($DADA::Config::HTML_CHARSET,$msg));
 
-$entity = $parser->parse_data($msg); 
 $body = $entity->bodyhandle->as_string; 
-#$body = Encode::decode('UTF-8', $body); 
+  $body = Encode::decode('UTF-8', $body);
+
 
 like($body, qr/$dada_test_config::UTF8_STR/, 'UTF-8 string found'); 
 
-$ue_subject = $entity->head->get('Subject', 0); 
+
+$ue_subject = $entity->head->get('Subject', 0);
 $subject    = $fm->_decode_header($ue_subject); 
 
 # No, really - that's some pretty crazy stuff, right there. 
@@ -1099,7 +1143,6 @@ ok(1 == 1, "we're still here?!");
 undef $body; 
 undef $ue_subject; 
 undef $subject;
-
 
 
 
@@ -1127,12 +1170,19 @@ sub slurp {
 
 }
 sub decode_header { 
+#	my $self   = shift; 
 	my $header = shift; 
+	
+	if($header !~ m/\=\?/){ 
+		#warn "skipping header - doesn't look encoded?"; 
+		return $header; 
+	}	
 	require MIME::EncWords; 
-	my $dec_header = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
-	return $dec_header; 
+	my @dec = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
+	my $dec = join('', map { $_->[0] } @dec);
+	   $dec = safely_decode($dec); 
+	return $dec; 
 }
-
 
 
 

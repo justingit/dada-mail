@@ -388,7 +388,8 @@ $DBI_PARAMS ||= {
 	# disabled for perl < 5.8.5). For more details on the UTF-8 flag see 
 	# perlunicode. The default is for the UTF-8 flag to be turned off.
 	#
-		unicode => 1
+		sqlite_unicode  => 1,
+	#	unicode => 1, 
 		
 };
 

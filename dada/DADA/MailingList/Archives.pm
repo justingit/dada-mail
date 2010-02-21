@@ -1668,8 +1668,6 @@ sub massage_msg_for_resending {
 		return (
 			 Encode::decode($DADA::Config::HTML_CHARSET, $entity->head->as_string),
 		   	 Encode::decode($DADA::Config::HTML_CHARSET, $entity->body_as_string), 
-
-		
 		) ;
 	}else{
 		my $str =  Encode::decode($DADA::Config::HTML_CHARSET, $entity->as_string);

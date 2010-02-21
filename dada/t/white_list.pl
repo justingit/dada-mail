@@ -94,7 +94,7 @@ my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid)
 	);
 
 
-diag(Data::Dumper::Dumper($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid)); 
+#diag(Data::Dumper::Dumper($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid)); 
 	
 	   
 ok(eq_array($subscribed,         []                  ) == 1, "Subscribed when testing user\@example.com"); 

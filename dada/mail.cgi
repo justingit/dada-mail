@@ -1539,9 +1539,7 @@ sub sending_monitor {
       	  }
 
 
-            
            require DADA::Template::Widgets;  
-       
 	        my $header_subject_label = DADA::Template::Widgets::screen(
 	            {
 	                -data                     => \$status->{email_fields}->{Subject},
@@ -1555,7 +1553,7 @@ sub sending_monitor {
 	                },
 	            }
 	        );
-			
+
 			my $scrn = ''; 
 			$scrn .= admin_template_header(      
 				                  -Title      => "Monitor Your Mailing", 
@@ -6889,9 +6887,6 @@ This was sent to the list owner (<!-- tmpl_var list_settings.list_owner_email --
             },
         }
     );
-	
-	# I think this is right... 
-	# $message = Encode::decode( $DADA::Config::HTML_CHARSET, $message );
 	
     require MIME::Lite;
     MIME::Lite->quiet(1)

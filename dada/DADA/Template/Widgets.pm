@@ -1889,20 +1889,24 @@ else {
 
 
    $template->param(   
-					%Global_Template_Variables,
-					
+					%Global_Template_Variables,					
 					# I like that, (not) 
 					date    => scalar(localtime()),
-					
 					%$template_vars,
-
-				   
 				   ); 
 				   
 	if($args->{-list}){ 
 		$template->param('list', $args->{-list}); 
 	}
+	
+#	# From what I understand, we want to treat HTML::Template stuff as if its already encoded. 
+#	if(exists($args->{-decode})){ 
+#		if($args->{-decode} == 1){ 
+#			return Encode::decode($DADA::Config::HTML_CHARSET, $template->output()); 
+#		}
+#	}
 	return $template->output();
+
 }
 
 

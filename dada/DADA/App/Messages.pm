@@ -88,9 +88,6 @@ sub send_generic_email {
 			   }; 
 		
 	  	while ( my ($key, $value) = each %{$data} ) {
-		#	if(Encode::is_utf8($value) == 1){ 
-	    #		$data->{$key} = Encode::decode('UTF-8', $value); 
-	    #	}
 			$data->{$key} = Encode::encode('UTF-8', $value); 
 		}
 		
@@ -114,7 +111,10 @@ sub send_generic_email {
                                     ) 
                        );
 		
+#	warn '$email_str ' . $email_str; 
+	
 	$email_str = Encode::decode('UTF-8', $email_str); 
+#	warn '$email_str ' . $email_str; 
 
 my $entity = $fm->email_template(
         {
