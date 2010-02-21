@@ -476,8 +476,14 @@ sub validate_field_name {
         $errors->{weird_characters} = 1;
     }
     else {
-        $errors->{weird_characters} = 0;
-    }
+     	# Match anything but ASCII alphanumerics
+		if($args->{ -field } =~ m/[^a-z A-Z 0-9]/){ 
+			$errors->{weird_characters} = 1;
+		}
+   		else { 
+			$errors->{weird_characters} = 0;
+		}
+	}
 
     if ( $args->{ -field } =~ m/\"|\'/ ) {
         $errors->{quotes} = 1;
