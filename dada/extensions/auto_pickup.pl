@@ -28,7 +28,7 @@ use Getopt::Long;
 my $verbose = 1; 
 
 use DADA::Config qw(!:DEFAULT);
-use Dada::App::Guts; 
+use DADA::App::Guts;
 use DADA::Mail::MailOut; 
 
 
