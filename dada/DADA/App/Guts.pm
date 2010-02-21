@@ -388,7 +388,7 @@ sub make_template {
 		$list_template = $1; 
 	
 	
-		open(TEMPLATE, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $list_path .'/' . $list_template . '.' . 'template') or 
+		open(TEMPLATE, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $list_path .'/' . $list_template . '.' . 'template') or 
 			croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: can't write new template at '$list_path/$list_template.template': $!"; 
 	
 		flock(TEMPLATE, LOCK_EX) or 
@@ -1701,8 +1701,7 @@ sub check_list_setup {
 		}else{ 
 			$new_list_errors{slashes_in_name} = 0;
 		}
-		
-		
+
 		if($fields->{list} =~ m/\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\+|\=|\>|\<|\-|\0-\037\177-\377/){ 
         	$list_errors++; 
        		$new_list_errors{weird_characters} = 1;
@@ -2540,10 +2539,11 @@ sub decode_cgi_obj {
 
 sub safely_decode { 
 	
-	my $str = shift; 
+	my $str   = shift; 
+	my $force = shift || 0; 
 	
-	if(utf8::is_utf8($str) == 1){ 
-		
+	if(utf8::is_utf8($str) == 1 && $force == 0){ 
+	#	warn 'utf8::is_utf8 is returning 1...'; 
 	}
 	else { 
 		eval { 
@@ -2551,7 +2551,7 @@ sub safely_decode {
 		};
 		
 		if($@){ 
-			warn 'Problems: ' . $@; 
+			warn 'Problems: with: (' . $str . '): '. $@; 
 		} 
 	}
 	return $str;
