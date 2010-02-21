@@ -1365,7 +1365,7 @@ sub sending_monitor {
 						list                         => $l_list, 
 						current_list                 => (($list eq $l_list) ? 1 : 0), 
 						S_PROGRAM_URL                => $DADA::Config::S_PROGRAM_URL, 
-						Subject                      => $status->{email_fields}->{Subject},
+						Subject                      => safely_decode($status->{email_fields}->{Subject}, 1),
 						status_bar_width             => int($status->{percent_done}) * 1,
 						negative_status_bar_width    => 100 - (int($status->{percent_done}) * 1), 
 						message_id                   => $mo->{id}, 
@@ -1549,10 +1549,10 @@ sub sending_monitor {
 	                    -use_fallback_vars => 1,
 	                    -list              => $list,
 	                },
-	            }
+	            -decode_before => 1, 
+				}
 	        );
-#	use Data::Dumper; 
-#	die Dumper($header_subject_label); 
+
 	
 
 			my $scrn = ''; 
@@ -1584,7 +1584,7 @@ sub sending_monitor {
 								need_to_send_out             => ( $status->{total_sending_out_num} - $status->{total_sent_out}), 
 								time_since_last_sendout      => _formatted_runtime((time - int($status->{last_access}))), 
 								its_killed                   => $status->{should_be_restarted}, 
-								header_subject               => $status->{email_fields}->{Subject}, 
+								header_subject               => safely_decode($status->{email_fields}->{Subject},1 ), 
 								header_subject_label         => (length($header_subject_label) > 50) ? (substr($header_subject_label, 0, 49) . '...') : ($header_subject_label),  
 								auto_pickup_dropped_mailings => $li->{auto_pickup_dropped_mailings}, 
 								sending_done                 => ($status->{percent_done} < 100) ? 0 : 1, 
