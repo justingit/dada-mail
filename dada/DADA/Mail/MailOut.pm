@@ -1568,26 +1568,24 @@ sub still_around {
 
 
 sub mail_fields_from_raw_message {
-
-    my $self = shift;
-
+	my $self = shift;
+    
     my $raw_msg = $self->message_for_mail_send;
-	
-    # This is way ruff.
 
-    my ( $raw_header, $raw_body ) = split( /\n\n/, $raw_msg, 2 );
-    my $headers = {};
+	require DADA::App::FormatMessages; 
+	my $fm = DADA::App::FormatMessages->new(-List => $self->{list}); 
 
-    # split.. logically
-    my @logical_lines = split /\n(?!\s)/, $raw_header;
+   my ( $raw_header, $raw_body ) = split( /\n\n/, $raw_msg, 2 );
+   my $headers = {};
+   my @logical_lines = split /\n(?!\s)/, $raw_header;
 
     # make the hash
     foreach my $line (@logical_lines) {
-        my ( $label, $value ) = split( /:\s*/, $line, 2 );
-		$headers->{$label} = $self->_decode_header($value); 
-    }
-    return $headers;
-
+       my ( $label, $value ) = split( /:\s*/, $line, 2 );
+	   $value = $fm->_decode_header( $value);
+		$headers->{$label} =  $value;
+	}
+	return $headers; 
 }
 
 
@@ -1597,6 +1595,7 @@ sub _decode_header {
 	
 	my $self   = shift; 	 
 	my $header = shift;
+
 	require DADA::App::FormatMessages; 
 	my $fm = DADA::App::FormatMessages->new(-List => $self->{list}); 
 	return $fm->_decode_header( $header); 
