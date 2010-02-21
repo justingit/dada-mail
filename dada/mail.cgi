@@ -1536,10 +1536,8 @@ sub sending_monitor {
 		  my $hourly_rate = 0; 
 		  if($status->{mailing_time} > 0){ 
 		  	$hourly_rate = commify(int(($status->{total_sent_out} / $status->{mailing_time}) * 60 * 60 + .5)); 		
-      	  }
-
-
-           require DADA::Template::Widgets;  
+      	  }		
+			require DADA::Template::Widgets;  
 	        my $header_subject_label = DADA::Template::Widgets::screen(
 	            {
 	                -data                     => \$status->{email_fields}->{Subject},
@@ -1553,6 +1551,9 @@ sub sending_monitor {
 	                },
 	            }
 	        );
+#	use Data::Dumper; 
+#	die Dumper($header_subject_label); 
+	
 
 			my $scrn = ''; 
 			$scrn .= admin_template_header(      

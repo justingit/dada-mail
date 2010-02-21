@@ -881,8 +881,9 @@ sub _decode_header {
 	}	
 	require MIME::EncWords; 
 	my @dec = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
-	my $dec = join('', map { $_->[0] } @dec);
-	   $dec = safely_decode($dec); 
+#	my $dec = join('', map { $_->[0] } @dec);
+#	   $dec = safely_decode($dec); 
+	my $dec = join('', map { safely_decode($_->[0]) } @dec);	
 	
 	return $dec; 
 }

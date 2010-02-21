@@ -1585,12 +1585,6 @@ sub mail_fields_from_raw_message {
     foreach my $line (@logical_lines) {
         my ( $label, $value ) = split( /:\s*/, $line, 2 );
 		$headers->{$label} = $self->_decode_header($value); 
-		#if($label eq 'Subject'){ 
-		#	$headers->{$label} = $self->_decode_header('Love!'); 
-		#	use Data::Dumper; 
-		#	die 'a'.Dumper($headers->{$label});
-		#	
-		#}
     }
     return $headers;
 
