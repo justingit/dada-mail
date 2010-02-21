@@ -179,7 +179,8 @@ MULTIPLE_LIST_SENDING         => $DADA::Config::MULTIPLE_LIST_SENDING,
 LEFT_BRACKET                  => '[',
 RIGHT_BRACKET                 => ']',
 LT_CHAR                       => '<', 
-GT_CHAR                       => '>',           
+GT_CHAR                       => '>',    
+TEST_UTF_VALUE                => "\x{a1}\x{2122}\x{a3}\x{a2}\x{221e}\x{a7}\x{b6}\x{2022}\x{aa}\x{ba}",        
 
 
 # Random hacks for MS Word, Outlook (sigh)
@@ -1846,6 +1847,14 @@ else {
 
 	}elsif($args->{-data}){ 
 
+		if($args->{-decode_before} == 1){ 
+			#decode_str($args->{-data}); 
+		#	$args->{-data} = safely_decode($$args->{-data}); 
+		${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
+	#	${$args->{-data}} = Encode::decode('UTF-8' ,${$args->{-data}}); 
+		
+		}
+		
    		require HTML::Template;
 	#	eval { 
 			$template = HTML::Template->new(%Global_Template_Options, 
@@ -1857,8 +1866,11 @@ else {
                                                         filter => [ 
 															# the scalarref should already be 
 															# decoded, so doing it again isn't necessary? 
-															# { sub => \&decode,format => 'scalar' },
-                                                              { sub => \&dada_backwards_compatibility,
+														#	($args->{-decode_before} == 1 ? 
+														#	 	({ sub => \&decode,format => 'scalar' },) : ()
+                                                         #    ), 
+
+																{ sub => \&dada_backwards_compatibility,
                                                                format => 'scalar' },
                                                              { sub => \&dada_pseudo_tag_filter,
                                                                format => 'scalar' },
@@ -1929,7 +1941,8 @@ sub set_name_value_filter {
 
 sub decode_str { 
 	my $ref = shift;
-       ${$ref} = Encode::decode('UTF-8', ${$ref});
+       #${$ref} = Encode::decode('UTF-8', ${$ref});
+		${$ref} = safely_decode(${$ref}); 
 }
 
 sub dada_backwards_compatibility { 
@@ -2358,7 +2371,7 @@ sub _slurp {
         my $r;
         my (@r);
 
-        open(F, "<$file") || die "open $file: $!";
+        open(F, '<:encoding(' . $DADA::Config::HTML_CHARSET .')', $file) || die "open $file: $!";
         @r = <F>;
         close(F) || die "close $file: $!";
 
