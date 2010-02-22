@@ -6,6 +6,9 @@
 #$SIG{__WARN__} = \&carp;
 #$Carp::Verbose = 1;
 
+# lazy. 
+binmode STDOUT, ':encoding(UTF-8)';
+
 package dada_bridge;
 
 # Some questions I have on the new moderation stuff:
@@ -1205,7 +1208,10 @@ sub start {
                                 # die "aaaaaaarrrrgggghhhhh!!!";
 
                                 my ( $status, $errors ) =
+
+								
                                   validate_msg( $list, \$full_msg, $li );
+
                                 if ($status) {
 
                                     process(
@@ -1267,7 +1273,7 @@ sub start {
             foreach my $msgnum_d ( sort { $a <=> $b } keys %$msgnums ) {
                 print "\tRemoving message from server...\n"
                   if $verbose;
-                $pop->Delete($msgnum_d);
+                 $pop->Delete($msgnum_d);
                 $delete_msg_count++;
 
                 last
@@ -1748,7 +1754,7 @@ sub validate_msg {
             ( $errors, $notice ) =
               test_Check_List_Owner_Return_Path_Header( $entity, $errors, $li );
             print $notice
-              if $notice && $verbose;
+              if $notice != 0 && $verbose;
         }
 
     }
@@ -2096,8 +2102,8 @@ sub test_Check_List_Owner_Return_Path_Header {
     my $rough_return_path = undef;
 
     if ( $entity->head->get( 'Return-Path', 0 ) ) {
-        $notice .= q{$entity->head->get( 'Return-Path', 0 ) }
-          . $entity->head->get( 'Return-Path', 0 );
+        # I haven't a clue what this is. 
+		# $notice .= q{$entity->head->get( 'Return-Path', 0 ) } . $entity->head->get( 'Return-Path', 0 );
         $rough_return_path = $entity->head->get( 'Return-Path', 0 );
     }
     else {
@@ -2343,7 +2349,7 @@ sub dm_format {
     }
 
     my ( $header_str, $body_str ) =
-      $fm->format_headers_and_body( -msg => $msg );
+      $fm->format_headers_and_body( -msg => $$msg );
 
     return $header_str . "\n\n" . $body_str;
 
@@ -2563,11 +2569,13 @@ sub deliver {
 
     my $entity;
 
-    eval { $entity = $parser->parse_data(
-		Encode::encode(
-			$DADA::Config::HTML_CHARSET,
-			$msg
-		));
+    eval { 
+		$entity = $parser->parse_data(
+				Encode::encode(
+					$DADA::Config::HTML_CHARSET,
+					$msg
+					)
+				);
 	};
 
     if ( !$entity ) {
@@ -2613,8 +2621,13 @@ sub deliver {
                   if $verbose;
             }
         }
-		my $body = safely_decode($entity->stringify_body); 
-        my $msg_id = $mh->mass_send(
+
+
+		my $body = $entity->stringify_body; 		
+		$body = safely_decode($body);
+		
+		
+		my $msg_id = $mh->mass_send(
             %headers,
             # Trust me on these :)
             Body => $body,
