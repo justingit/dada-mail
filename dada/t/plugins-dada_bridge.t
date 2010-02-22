@@ -1,5 +1,6 @@
 #!/usr/bin/perl -w
 use strict; 
+use Carp; 
 
 use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib 
 	
@@ -224,11 +225,33 @@ require MIME::EncWords;
 
 my $orig_sub = MIME::EncWords::decode_mimewords($orig_entity->head->get('Subject', 0), Charset => '_UNICODE_');
 my $sent_sub = MIME::EncWords::decode_mimewords($sent_entity->head->get('Subject', 0), Charset => '_UNICODE_');
-
+#
 my $orig_from =  MIME::EncWords::decode_mimewords($orig_entity->head->get('From', 0), Charset => '_UNICODE_');
 my $sent_from =  MIME::EncWords::decode_mimewords($sent_entity->head->get('From', 0), Charset => '_UNICODE_');
 
-ok($orig_sub eq $sent_sub, "The Subject header of the original and sent messages is the same. (2) '$orig_sub', '$sent_sub'"); 
+
+#my $orig_sub = $orig_entity->head->get('Subject', 0);
+#my $sent_sub = $sent_entity->head->get('Subject', 0);
+
+#my $orig_from =  $orig_entity->head->get('From', 0);
+#my $sent_from =  $sent_entity->head->get('From', 0);
+
+diag ' $orig_sub ' . $orig_sub; 
+diag ' $sent_sub ' . $sent_sub; 
+diag ' $orig_from ' . $orig_from; 
+diag ' $sent_from ' . $sent_from; 
+
+
+
+
+ok(
+	$orig_sub 
+	eq 
+	$sent_sub, 
+"The Subject header of the original and sent messages is the same. (2) '$orig_sub', '$sent_sub'
+");
+
+ 
 #ok($orig_entity->head->get('From', 0) eq $sent_entity->head->get('From', 0), "The From header of the original and sent messages is the same."); 
 like($orig_entity->head->get('From', 0), qr/\<listowner\@example.com\>/, "I can still find the From: address just fine.");
 
@@ -264,6 +287,7 @@ undef $test_msg;
 # Does that Subject header get appended? 
 $ls->param('group_list', 1); 
 
+diag $msg; 
 ($status, $errors) = dada_bridge::inject(
 	{ 
 		-list      => $list, 
@@ -322,7 +346,7 @@ sub slurp {
         my $r;
         my (@r);
 
-        open(F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $file) || die "open $file: $!";
+        open(F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $file) || croak "open $file: $!";
         @r = <F>;
         close(F) || die "close $file: $!";
 

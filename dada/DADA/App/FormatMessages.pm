@@ -334,11 +334,12 @@ sub format_headers_and_body {
 
 
 	my $header = $entity->head->as_string;
-	   $header = Encode::decode($DADA::Config::HTML_CHARSET, $header);
-	
+	   #$header = Encode::decode($DADA::Config::HTML_CHARSET, $header);
+	   $header = safely_decode($header); 
 	
 	my $body   = $entity->body_as_string;	
-	   $body   = Encode::decode($DADA::Config::HTML_CHARSET, $body);
+	   #$body   = Encode::decode($DADA::Config::HTML_CHARSET, $body);
+ 	   $body = safely_decode($body); 
 
 	return ($header, $body) ;
 
@@ -511,8 +512,6 @@ sub _give_props {
 
     if($DADA::Config::GIVE_PROPS_IN_EMAIL == 1){ 
     
-    
-    
         my $html_props = "\n" . '<p><a href="' . $DADA::Config::PROGRAM_URL . '/what_is_dada_mail/">Mailing List Powered by Dada Mail</a></p>' . "\n";
         my $text_props = "\n\nMailing List Powered by Dada Mail\n$DADA::Config::PROGRAM_URL/what_is_dada_mail/";
         
@@ -533,7 +532,6 @@ sub _give_props {
            else { 
             
                 $args{-data} = $args{-data} . $html_props
-            
             }
         } 
         else { 
@@ -817,8 +815,8 @@ sub _format_headers {
          $entity->head->add('X-BeenThere', Encode::encode($DADA::Config::HTML_CHARSET, $self->{ls}->param('discussion_pop_email'))); 
    } 
    
-   
  	return $entity;
+	
 }
 
 sub _encode_header { 
@@ -827,6 +825,9 @@ sub _encode_header {
 	my $label      = shift; 
 	my $value      = shift; 
 	my $new_value  = undef; 
+	
+	return $value 
+	 	unless $self->im_encoding_headers;
 	
 	require MIME::EncWords;
 	
@@ -838,12 +839,12 @@ sub _encode_header {
 				Encoding => 'Q',
 				Charset  => $self->{ls}->param('charset_value'),
 			); 
-	
 	}
 	else { 
 		require Email::Address;	
 		 my @addresses = Email::Address->parse($value); 
 		 foreach my $address(@addresses){
+			
 		 	my $phrase = $address->phrase;
 		
 		    $address->phrase(	
@@ -874,16 +875,10 @@ sub _encode_header {
 sub _decode_header { 
 	my $self   = shift; 
 	my $header = shift; 
-	if($header !~ m/\=\?/){ 
-		#warn "skipping header - doesn't look encoded?"; 
-		return $header; 
-	}	
+	return $header 
+	 	unless $self->im_encoding_headers;
 	require MIME::EncWords; 
-	my @dec = MIME::EncWords::decode_mimewords($header, Charset => 'UTF-8'); 
-	use Data::Dumper; 
-	my $dec = join('', map { $_->[0] } @dec);
-	   $dec = safely_decode($dec); 
-	$dec = safely_decode($dec); 
+	my $dec = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
 	return $dec; 
 }
 
@@ -970,10 +965,11 @@ sub _list_name_subject {
 	
 	my $self         = shift;
 	my $orig_subject = shift; 
-		#use Data::Dumper; 
-		#print Data::Dumper::Dumper($orig_subject); 
-	   $orig_subject = $self->_decode_header($orig_subject)
-			if $self->im_encoding_headers; 
+	   warn 'in _list_name_subject before decode: ' . $orig_subject 
+		if $t;
+		$orig_subject = $self->_decode_header($orig_subject); 
+	   warn 'in _list_name_subject after decode: ' . $orig_subject 
+		if $t;
 
 	
 	my $list       = $self->{ls}->param('list'); 
@@ -1002,10 +998,15 @@ sub _list_name_subject {
 			$orig_subject    = '[' . '<!-- tmpl_var list_settings.list -->' . ']' . "$re $orig_subject"; 
 		}
 	}
-
-	$orig_subject = $self->_encode_header('Subject', $orig_subject)
-		if $self->im_encoding_headers; 
+	
+	   warn 'in _list_name_subject before encode: ' . $orig_subject 
+		if $t;
 		
+	$orig_subject = $self->_encode_header('Subject', $orig_subject); 
+
+	   warn 'in _list_name_subject after encode: ' . $orig_subject 
+		if $t;
+				
 	return $orig_subject; 
 
 }
@@ -1689,9 +1690,6 @@ sub email_template {
 	
 	my $self   = shift; 
 	
-	warn '$self->im_encoding_headers ' . $self->im_encoding_headers
-		if $t;
-	
 	my ($args) = @_;
 	
 	require DADA::Template::Widgets; 
@@ -1757,15 +1755,6 @@ sub email_template {
                 $screen_vars{$_} = $args->{$_}; 
             }
             $screen_vars{-dada_pseudo_tag_filter} = 1; 
-###/
-		
-#			if(
-#			    (
-#			    ($args->{-entity}->head->mime_type eq 'text/plain') ||
-#				($args->{-entity}->head->mime_type eq 'text/html')
-#				)
-#			){ 
-				
 
 			my $body    = $args->{-entity}->bodyhandle;
 			my $content = $args->{-entity}->bodyhandle->as_string;
@@ -1797,16 +1786,12 @@ sub email_template {
 	    
 			$args->{-entity}->sync_headers('Length'      =>  'COMPUTE',
 				  				           'Nonstandard' =>  'ERASE');
-			#}
 		}
 		
-	#	return $args->{-entity}; 
 	}
 	
 	
-	
-	###/ 
-	# Headers...
+
 	
     # ?!
     my %screen_vars = (); 
@@ -1824,97 +1809,124 @@ sub email_template {
 	    if($args->{-entity}->head->get($header, 0)){ 
 						
             if($header =~ m/From|To|Reply\-To|Return\-Path|Errors\-To/){ 
+
+	
 				warn 'header is: From|To|Reply\-To|Return\-Path|Errors\-To/'
 					if $t; 
-					
-                #Special Case - only format the phrase. 
+				
+				# Get	
+				my $header_value = 	$args->{-entity}->head->get($header, 0); 
+				
+			#	# Entity Decode
+			#	$header_value = Encode::decode('UTF-8', $header_value);
+				
                 require Email::Address; 
-                my @addresses = Email::Address->parse($args->{-entity}->head->get($header, 0));
+
+				# Uh.... get each individual.. thingy. 
+                my @addresses = Email::Address->parse($header_value);
+
+				# But then, just work with the first? 
                 if($addresses[0]){
 	
 					warn 'templating out header'
 						if $t; 
-			        my $phrase = $addresses[0]->phrase; 
-			
-					   # I'm under the uh, influence, that I don't have to decode this, 
-					   # if this is here? I dunno? 
+					# Get (individual) 	
 					
-					   $phrase = $self->_decode_header($phrase)
-							if $self->im_encoding_headers; 
+					# This makes sense - all we want to template out 
+					# Is the phrase, so, 
+					
+					# We take the phrase out, 
+			        my $phrase = $addresses[0]->phrase; 	
+			
+					   # Decode it, 
+					   $phrase = $self->_decode_header($phrase); 
 					   
+					   # Template it Out
 					   $phrase = DADA::Template::Widgets::screen(
                         {
                             %screen_vars,
                             -data => \$phrase, 
-
                         }
                     );
-					# DEV: It's probably an oversight that this originaly 
-					# passed the phraise to _encode_header, when that sub wants
-					# The entire header and not the phrase, but escapes me 
-					# why it was like that to start out with. 
-					# Passing the entire header does make sure multiple 
-					# addresses in the field get encoded - but does this 
-					# subroutine do that? see: $addresses[0]?! Up there? It 
-					# only looks for the first address.... THAT should probably be patched up
-					# (not that dada mail does anything with >1 address, but still..... 
 					
-					# warn '$phrase before encoding: ' . $phrase; 
- 					$phrase = $self->_encode_header('just_phrase', $phrase)
-						if $self->im_encoding_headers; 
-					# warn '$phrase after encoding: ' . $phrase; 
-					
+					# Encode it
+ 					$phrase = $self->_encode_header('just_phrase', $phrase); 
+
                     # Munge! 
-                    $phrase =~ s{^\"|\"$}{}g; # need this still? 
-				    $addresses[0]->phrase($phrase); 
-                    
-                    
+                    #$phrase =~ s{^\"|\"$}{}g; # need this still? 
+				    
+					# Pop it back in, 
+					$addresses[0]->phrase($phrase); 
+					
+					# Save it
                     my $new_header = $addresses[0]->format; 
-					# warn ' $new_header ' . $new_header; 
-					 
-                    $args->{-entity}->head->delete($header);
 					
-					$new_header = Encode::encode_utf8($new_header);
+					## Encode
+					#$new_header = Encode::encode('UTF-8', $new_header);
+                    
+					# Remove the old
+					$args->{-entity}->head->delete($header);
 					
-                    $args->{-entity}->head->add($header, $new_header); 
-                
+					# Add the new
+					$args->{-entity}->head->add($header, $new_header); 
+					
                 }
                 else { 
 					
                     warn "couldn't find the first address?"
 						if $t; 
                 }
-            
+
+           
             } 
             else { 
 	    		warn "I think we have a subject line."
 					if $t; 
-			    my $header_value = $args->{-entity}->head->get($header, 0);
-
-				warn '$header_value: "' . $header_value . '"'
-					if $t; 
-
-				if($self->im_encoding_headers){ 
-					$header_value = $self->_decode_header($header_value);
-				}
-
-               $args->{-entity}->head->delete($header);
-           
-           
-                $header_value = DADA::Template::Widgets::screen(
+					
+					
+				# Get
+			    my $header_value = $args->{-entity}->head->get($header, 0);# 
+				warn 'get:' . Encode::encode('UTF-8', $header_value)	
+				 if $t; 
+				
+				# I'm a little weirded by this, but if, some reason
+				# UTF-8 (decoded) stuff gets through, this does help it. 
+				# Uneeded, if there is no UTF-8 stuff is in the header (which should be the 
+				# the case, anyways - 
+				#$header_value =Encode::encode('UTF-8', $header_value); 
+				#warn 'UTF-8 Encode:' . Encode::encode('UTF-8', $header_value); 
+				
+								
+				# Decode EncWords
+				   $header_value = $self->_decode_header($header_value);
+                	warn 'decode EncWords:' . Encode::encode('UTF-8', $header_value)
+						if $t; 
+				
+				# Template
+				$header_value = DADA::Template::Widgets::screen(
                     {
                        %screen_vars,
                         -data                   => \$header_value, 
                     }
                 ); 
-				warn 'header value, after templating:(1) "' . $header_value . '"'
-				 if $t; 
-				if($self->im_encoding_headers){ 
-                	$header_value = $self->_encode_header($header, $header_value)
-				}	 
-                	warn 'new header value, after templating(2): "' . $header_value . '"'
-						if $t; 
-					$args->{-entity}->head->add($header, $header_value); 
+				
+				warn 'Template:' . Encode::encode('UTF-8', $header_value)
+					if $t;
+				
+				# Encode
+				$header_value = $self->_encode_header($header, $header_value); 
+				warn 'encode EncWords:' . Encode::encode('UTF-8', $header_value)
+					if $t; 
+				
+				
+				# Remove the old
+				$args->{-entity}->head->delete($header);
+				
+				# Add
+				$args->{-entity}->head->add($header, $header_value);
+			 
+				warn 'now:'. Encode::encode('UTF-8', $header_value)
+					if $t;
             }                
         }
 	}        

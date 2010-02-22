@@ -1496,6 +1496,7 @@ sub webify_plain_text{
 
 	my $s = shift; 
 	my $multi_line = 0; 
+
 	if($s =~ m/\r|\n/){ 
 		$multi_line = 1; 
 	}
@@ -2543,7 +2544,7 @@ sub safely_decode {
 	my $force = shift || 0; 
 	
 	if(utf8::is_utf8($str) == 1 && $force == 0){ 
-	#	warn 'utf8::is_utf8 is returning 1...'; 
+		warn 'utf8::is_utf8 is returning 1 - not decoding.'; 
 	}
 	else { 
 		eval { 
@@ -2554,6 +2555,7 @@ sub safely_decode {
 			warn 'Problems: with: (' . $str . '): '. $@; 
 		} 
 	}
+	warn 'decoding was safely done.';
 	return $str;
 }
 

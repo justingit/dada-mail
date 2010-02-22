@@ -127,9 +127,6 @@ my $entity = $fm->email_template(
 			%{$args->{-tmpl_params}},
         }
     );
-
-    #my $msg = $entity->as_string; 
-    #my ($header_str, $body_str) = split("\n\n", $msg, 2);
 	
 	my $header_str = Encode::decode($DADA::Config::HTML_CHARSET, $entity->head->as_string); 
 	my $body_str   = Encode::decode($DADA::Config::HTML_CHARSET, $entity->body_as_string); 

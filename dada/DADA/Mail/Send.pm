@@ -923,17 +923,17 @@ sub mass_send {
 	    
 	my %fields = ( 
 				  %defaults,  
-				  
 				  $self->_make_general_headers, 
 				  $self->_make_list_headers, 
 				   %param_headers, 
 				); 
 	
-				
+		
 	#print q{ HERE: $fields{From} } .  $fields{From}; 
 	
 
 	%fields = $self->clean_headers(%fields); 
+	
     # save a copy of the message for later pickup.
     $self->saved_message($self->_massaged_for_archive(\%fields));
     
@@ -968,6 +968,8 @@ sub mass_send {
       #  my $restart_status = $mailout->status; 
        # if($restart_status->{should_be_restarted} == 1){ 
         
+
+ 
         if($mailout->should_be_restarted == 1){ 
         
             warn '[' . $self->{list} . '] mailout is reporting the mailing should be restarted.'
@@ -988,7 +990,9 @@ sub mass_send {
         }
     
     }else { 
-    
+		# it's broken, here. 
+		
+		
         warn '[' . $self->{list} . '] Creating MailOut'
             if $t; 
 
@@ -1001,6 +1005,9 @@ sub mass_send {
                         -partial_sending => $self->partial_sending, 
 						-exclude_from    => $self->exclude_from, 
                    }); 
+
+		
+		
     	if($self->test_return_after_mo_create == 1){ 
 			warn "test_return_after_mo_create is set to 1, and we're getting out of the mass_send method"
 				if $t; 
@@ -1008,6 +1015,7 @@ sub mass_send {
 		}
     
     }													 				
+	
 	
 	
     # This is so awkwardly placed...	
@@ -1078,7 +1086,7 @@ sub mass_send {
 			}
 		}
     }
-    
+	
     
     warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' $status->{paused}  is reporting ' . $status->{paused}
         if $t; 
@@ -1171,6 +1179,7 @@ sub mass_send {
             #
             #
             
+
             
             # I wonder if it'll work that I switch the database connection here. 
             # Would that impact everyone? 
@@ -1270,6 +1279,8 @@ sub mass_send {
 				my $dbih = DADA::App::DBIHandle->new; 
 				my $dbh = $dbih->dbh_obj; 
 
+
+
 				# Let's get rid of the ones that are known: 
 				# DADA::MailingList::Settings
 				$self->{ls}->{dbh}->{InactiveDestroy} = 1;
@@ -1366,6 +1377,9 @@ sub mass_send {
 			# Although there's the problem with Solaris, I doubt this lock 
 			# ever works. The semaphore above probably works a whole lot better. 
 			#
+
+
+
 			if($^O =~ /solaris/g){ 
 			    # DEV For whatever reason (anyone?) Solaris DOES NOT like this type of locking. More research has be done..
 			
@@ -1472,6 +1486,8 @@ sub mass_send {
 				}
 				#
 				##############################################################
+
+				
 				
 				my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
@@ -1571,7 +1587,7 @@ sub mass_send {
 							-ls_obj      => $self->{ls},
 						); 
                
-		
+				
  				my %nfields = $self->_mail_merge(
 				    {
 				        -fields => \%fields,
@@ -1579,6 +1595,7 @@ sub mass_send {
 						-fm_obj => $fm, 
 				    }
 				);
+				
 
 				# Debug Information, Always nice
                 $nfields{Debug} = {
@@ -2589,6 +2606,9 @@ sub _mail_merge {
   #  my ($orig_entity, $filename) = $fm->entity_from_dada_style_args(
 	
    # my ($orig_entity) = $fm->entity_from_dada_style_args(
+	warn '$args->{-fields}->{Subject} ' . $args->{-fields}->{Subject}; 
+	
+	
  	my ($orig_entity, $filename) = $fm->entity_from_dada_style_args(
  
                                   {
@@ -2599,8 +2619,6 @@ sub _mail_merge {
 	
 
 	
-
-
 
 
     my $entity = $fm->email_template(
@@ -2693,27 +2711,32 @@ sub _formatted_runtime {
 
 sub _massaged_for_archive { 
 
-	my $self   = shift; 
-	my $fields = shift; 
-	
+	my $self       = shift; 
+	my $fields     = shift; 
 	my $msg; 
+
 	
 	foreach(@DADA::Config::EMAIL_HEADERS_ORDER){ 
 		next if $_ eq 'Body'; 
 		next if $_ eq 'Message'; # Do I need this?!
+=cut
 		
 		# Currently, it only looks like the subject is giving us worries: 
 		# (But, it really should be everything) 
 		if($_ =~ m/Subject|From|To|Reply\-To|Errors\-To|Return\-Path/){ 
 			my $fm = DADA::App::FormatMessages->new(-List => $self->{list}); 
+			# What if it's already encoded? DORK?!
 			$fields->{$_} = $fm->_encode_header($_, $fields->{$_});  
+			
 		}
 		else { 
 			#
 		}
-		
+=cut		
 		$msg .= $_ . ': ' . $fields->{$_} . "\n"
 		if((defined $fields->{$_}) && ($fields->{$_} ne ""));
+
+
 	}
 	
 	$msg .= "\n" . $fields->{Body};

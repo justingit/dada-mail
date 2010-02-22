@@ -1,5 +1,11 @@
 #!/usr/bin/perl
 
+
+#use Carp qw( confess );
+#$SIG{__DIE__} =  \&confess;
+#$SIG{__WARN__} = \&carp;
+#$Carp::Verbose = 1;
+
 package dada_bridge;
 
 # Some questions I have on the new moderation stuff:
@@ -64,6 +70,7 @@ use Fcntl qw(
   LOCK_EX
   LOCK_NB
 );
+use Encode; 
 
 my $Plugin_Config = {};
 
@@ -528,7 +535,11 @@ EOF
         eval {
             $entity =
               $parser->parse_data(
-                $mod->get_msg( { -msg_id => $messagename } ) );
+				Encode::encode(
+					$DADA::Config::HTML_CHARSET,
+                	$mod->get_msg( { -msg_id => $messagename } ) 
+				)
+			);
         };
         if ( !$entity ) {
             croak "no entity found! die'ing!";
@@ -1634,7 +1645,10 @@ sub validate_msg {
     }
 
     my $entity;
-    eval { $entity = $parser->parse_data($$msg) };
+    eval { $entity = $parser->parse_data(
+		Encode::encode($DADA::Config::HTML_CHARSET, $$msg
+		)); 
+	};
 
     if ( !$entity ) {
         print "\t\tMessage invalid! - no entity found.\n" if $verbose;
@@ -2226,7 +2240,8 @@ sub process {
     my $list = $args->{ -list };
     my $ls   = $args->{ -ls };
     my $msg  = $args->{ -msg };
-
+	   # $msg  = Encode::decode($DADA::Config::HTML_CHARSET, $msg );
+	
     print "\n\t\tProcessing Message...\n"
       if $verbose;
 
@@ -2319,7 +2334,7 @@ sub dm_format {
     require DADA::App::FormatMessages;
 
     my $fm = DADA::App::FormatMessages->new( -List => $list );
-    $fm->treat_as_discussion_msg(1);
+       $fm->treat_as_discussion_msg(1);
 
     if (   $ls->param('group_list') == 0
         && $ls->param('rewrite_anounce_from_header') == 0 )
@@ -2481,7 +2496,8 @@ sub deliver_copy {
     }
     else {
 
-        my %headers = $mh->return_headers( $entity->stringify_header );
+		my $headers = $entity->stringify_header;
+        my %headers = $mh->return_headers( $headers );
         $headers{To} = $ls->param('send_msg_copy_address');
 
         if ($verbose) {
@@ -2547,7 +2563,12 @@ sub deliver {
 
     my $entity;
 
-    eval { $entity = $parser->parse_data($msg) };
+    eval { $entity = $parser->parse_data(
+		Encode::encode(
+			$DADA::Config::HTML_CHARSET,
+			$msg
+		));
+	};
 
     if ( !$entity ) {
         print "\t\tMessage sucks!\n"
@@ -2556,7 +2577,10 @@ sub deliver {
     }
     else {
 
-        my %headers = $mh->return_headers( $entity->stringify_header );
+		my $headers = $entity->stringify_header;
+	       $headers = safely_decode($headers); 
+        my %headers = $mh->return_headers( $headers);
+		
         $headers{To} = $ls->param('list_owner_email');
 
         if ($verbose) {
@@ -2589,11 +2613,11 @@ sub deliver {
                   if $verbose;
             }
         }
-
+		my $body = safely_decode($entity->stringify_body); 
         my $msg_id = $mh->mass_send(
             %headers,
             # Trust me on these :)
-            Body => $entity->stringify_body,
+            Body => $body,
         );
 
         return ( $msg_id, $mh->saved_message );
@@ -2641,7 +2665,13 @@ sub archive {
 
         my $entity;
 
-        eval { $entity = $parser->parse_data($msg) };
+        eval { 
+			$entity = $parser->parse_data(
+				Encode::encode(
+					$DADA::Config::HTML_CHARSET, $msg
+				)
+			); 
+		};
 
         if ($entity) {
 
@@ -2703,7 +2733,14 @@ sub tweet {
         my $entity;
 		my $Subject; 
 		
-        eval { $entity = $parser->parse_data($msg) };
+        eval { 
+			$entity = $parser->parse_data(
+				Encode::encode(
+					$DADA::Config::HTML_CHARSET, 
+					$msg
+				)
+			)
+		 };
         if ($entity) {
 
            $Subject = $entity->head->get( 'Subject', 0 );
@@ -2725,7 +2762,12 @@ sub send_msg_not_from_subscriber {
 
     my $list   = shift;
     my $msg    = shift;
-    my $entity = $parser->parse_data($msg);
+    my $entity = $parser->parse_data(
+		Encode::encode(
+			$DADA::Config::HTML_CHARSET, 
+			$msg
+		)
+	);
 
     my $rough_from = $entity->head->get( 'From', 0 );
     my $from_address;
@@ -2769,7 +2811,12 @@ sub send_invalid_msgs_to_owner {
     my $li     = shift;
     my $list   = shift;
     my $msg    = shift;
-    my $entity = $parser->parse_data($msg);
+    my $entity = $parser->parse_data(
+		Encode::encode(
+			$DADA::Config::HTML_CHARSET, 
+			$msg
+		)
+	);
 
 	require DADA::App::Messages;
 	
@@ -2839,7 +2886,13 @@ sub handle_errors {
     my $li       = shift;
 
     my $entity;
-    eval { $entity = $parser->parse_data($full_msg) };
+    eval { $entity = $parser->parse_data(
+		Encode::encode(
+			$DADA::Config::HTML_CHARSET, 
+			$full_msg
+			)
+		) 
+	};
     if ( !$entity ) {
         die "no entity found! die'ing!";
     }
@@ -3058,7 +3111,9 @@ sub find_return_path {
     my $rp;
 
     eval {
-        my $entity = $parser->parse_data($msg);
+        my $entity = $parser->parse_data(
+			Encode::encode($DADA::Config::HTML_CHARSET, $msg)
+		);
         $rp = $entity->head->get( 'Return-Path', 0 );
 
     };
@@ -3166,6 +3221,8 @@ sub inject {
     my ($args) = @_;
 
     my $msg       = $args->{ -msg };
+	   $msg 	  = safely_decode( $msg );
+	 
     my $send_test = 0;
     my $list      = $args->{ -list };
     my $test_mail = 0;
@@ -3198,7 +3255,7 @@ sub inject {
     if ( $ls->param('disable_discussion_sending') != 1 ) {
         my ( $status, $errors );
 
-        eval {
+        #eval {
 
             ( $status, $errors ) = validate_msg( $list, \$msg, $li );
             if ($status) {
@@ -3230,7 +3287,8 @@ sub inject {
 
             }
 
-        };
+  #      };
+=cut
 
         if ($@) {
 
@@ -3242,10 +3300,13 @@ sub inject {
             return ( 0, { irrecoverable_error => 1 } );
 
         }
+
         else {
+=cut
+
             return ( $status, $errors );
 
-        }
+#        }
 
     }
     else {
@@ -4251,7 +4312,8 @@ sub moderation_msg {
     my $li = $ls->get;
 
     my $parser = $args->{ -parser };
-    my $entity = $parser->parse_data( $args->{ -msg } );
+    my $entity = $parser->parse_data( 
+		Encode::encode($DADA::Config::HTML_CHARSET, $args->{ -msg } ));
 
     my $confirmation_link =
       $Plugin_Config->{Plugin_URL}
@@ -4376,7 +4438,9 @@ sub send_moderation_msg {
     eval {
         $entity =
           $parser->parse_data(
-            $self->get_msg( { -msg_id => $args->{ -msg_id } } ) );
+			Encode::encode(
+				$DADA::Config::HTML_CHARSET,
+            	$self->get_msg( { -msg_id => $args->{ -msg_id } } )) );
     };
     if ( !$entity ) {
         croak "no entity found! die'ing!";
@@ -4450,7 +4514,11 @@ sub send_accept_msg {
     eval {
         $entity =
           $parser->parse_data(
-            $self->get_msg( { -msg_id => $args->{ -msg_id } } ) );
+			Encode::encode(
+				$DADA::Config::HTML_CHARSET,
+            	$self->get_msg( 
+					{ 
+						-msg_id => $args->{ -msg_id } } )) );
     };
     if ( !$entity ) {
         croak "no entity found! die'ing!";
@@ -4522,7 +4590,8 @@ sub send_reject_msg {
     eval {
         $entity =
           $parser->parse_data(
-            $self->get_msg( { -msg_id => $args->{ -msg_id } } ) );
+			Encode::encode($DADA::Config::HTML_CHARSET,
+            $self->get_msg( { -msg_id => $args->{ -msg_id } } ) ));
 
     };
     if ( !$entity ) {
