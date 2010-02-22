@@ -607,7 +607,9 @@ sub open_template_from_url {
 			carp "LWP::Simple not installed! $!"; 
 			return undef;
 		}else{ 
-			return LWP::Simple::get($args{-URL});
+			my $tmp = LWP::Simple::get($args{-URL});
+			   $tmp = safely_decode($tmp); 
+			   return $tmp; 
 		} 	
 	}
 }	
