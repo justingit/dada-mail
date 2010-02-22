@@ -481,7 +481,7 @@ sub _format_text {
                 
 
       			if(defined($self->{list})){
-					if ($self->{ls}->param('enable_open_msg_logging') == 1 && $entity->head->mime_type                      eq 'text/html'){ 
+					if ($self->{ls}->param('enable_open_msg_logging') == 1 && $entity->head->mime_type  eq 'text/html'){ 
 						$content = $self->_add_opener_image($content);
 					}
 				}
@@ -1715,6 +1715,7 @@ sub email_template {
 			);	# -entity should only pass the current part, but have the rest of the params passed...?
 		}
 		
+		
 		 $args->{-entity}->sync_headers('Length'      =>  'COMPUTE',
 							            'Nonstandard' =>  'ERASE');
 	    
@@ -1783,7 +1784,31 @@ sub email_template {
 				$io->print( $content );				    
 				$io->close;
 			}
-	    
+			
+			
+			my $orig_charset = $args->{-entity}->head->mime_attr('content-type.charset');
+			if($orig_charset){ 
+				if($orig_charset ne $self->{ls}->param('charset_value')){ 					
+					warn 'changing charset from, "' . $orig_charset . '" to, "' . $self->{ls}->param('charset_value') . '"'
+						if $t; 
+					 $args->{-entity}->head->mime_attr(
+						"content-type.charset" => $self->{ls}->param('charset_value')
+					);
+				}
+			}
+			if(defined($self->{list})) { 
+				if($args->{-entity}->head->get('Content-Transfer-Encoding', 0)){ 	
+					my $new_content_type = ''; 
+					if($args->{-entity}->head->mime_type eq 'text/html'){ 
+						$new_content_type = $self->{ls}->param('html_encoding'); 
+					}
+					else{ 
+						$new_content_type = $self->{ls}->param('plaintext_encoding'); 
+					}
+					$args->{-entity}->head->delete('Content-Transfer-Encoding'); 
+					$args->{-entity}->head->add('Content-Transfer-Encoding', $new_content_type); 
+				}
+			}
 			$args->{-entity}->sync_headers('Length'      =>  'COMPUTE',
 				  				           'Nonstandard' =>  'ERASE');
 		}
@@ -1934,7 +1959,7 @@ sub email_template {
 	
 		
 	###/
-	
+	# I think this is where I want to change the charset... 
 	return $args->{-entity}; 
 }
 
