@@ -8,7 +8,7 @@ BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 use dada_test_config; 
 
 use DADA::Config; 
-use Dada::App::Guts; 
+use DADA::App::Guts; 
 
 ok($DADA::Config::GLOBAL_UNSUBSCRIBE == 0, "Defaults to, '0'");
 $DADA::Config::GLOBAL_UNSUBSCRIBE = 1;
