@@ -434,7 +434,21 @@ sub _format_text {
 			
 			my $body    = $entity->bodyhandle;
 			my $content = $entity->bodyhandle->as_string;
-			   $content = Encode::decode($DADA::Config::HTML_CHARSET, $content); 
+			
+			
+#use Data::Dumper; 
+#print '441' . Dumper($content);
+			
+			
+			   #$content = Encode::decode($DADA::Config::HTML_CHARSET, $content); 
+			$content = safely_decode($content);
+
+
+#use Data::Dumper; 
+#print '441' . Dumper($content); 
+
+
+
 			#
 			# body_as_string gives you encoded version.
 			# Don't get it this way, unless you've got a great reason 
@@ -442,7 +456,6 @@ sub _format_text {
 			# Same thing - this means it could be in quoted/printable,etc. 
 			
 			if($content){ # do I need this?
-				#$content = Encode::code($DADA::Config::HTML_CHARSET, $content); 
 				if(
 					$self->treat_as_discussion_msg                        &&
 					$self->{ls}->param('group_list')                 == 1 &&  
@@ -485,14 +498,24 @@ sub _format_text {
 						$content = $self->_add_opener_image($content);
 					}
 				}
-				   
+			
+			  # # uh.... would this work? 
+			   #$entity->head->delete('Content-Transfer-Encoding'); 
+			   #$entity->head->add('Content-Transfer-Encoding', '8bit');
+			   #$entity->head->mime_attr("content-type.charset" => 'UTF-8');
+		
 		       my $io = $body->open('w');
 				  
+				if(utf8::is_utf8($content) == 1){
 				  $content = Encode::encode($DADA::Config::HTML_CHARSET, $content); 
+				}
+				else { 
+			 		warn "I don't think we have a UTF-8 string. Not encoding!\n"; 
+				}
 				  $io->print( $content );				    
 				  $io->close;
 				  $entity->sync_headers('Length'      =>  'COMPUTE',
-									  'Nonstandard' =>  'ERASE');
+									    'Nonstandard' =>  'ERASE');
 			}
 
 		}

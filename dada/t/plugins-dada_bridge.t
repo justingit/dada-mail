@@ -274,8 +274,8 @@ undef $test_msg;
 $test_msg = slurp('t/corpus/email_messages/from_header_phrase_spoof.eml'); 
 ($status, $errors) = dada_bridge::validate_msg($list, \$test_msg, $ls->get);
 
-use Data::Dumper; 
-diag Data::Dumper::Dumper($errors); 
+#use Data::Dumper; 
+#diag Data::Dumper::Dumper($errors); 
 
 
 ok($status == 0, "spoof test is returning 0?"); 
@@ -287,7 +287,7 @@ undef $test_msg;
 # Does that Subject header get appended? 
 $ls->param('group_list', 1); 
 
-diag $msg; 
+
 ($status, $errors) = dada_bridge::inject(
 	{ 
 		-list      => $list, 
@@ -298,36 +298,60 @@ diag $msg;
 	}
 );
 
+#use Data::Dumper; 
+#diag Data::Dumper::Dumper($errors);
 
-
-
-
-@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list}); 
-$timeout = 0; 
-while($mailouts[0] ){ 
-	diag "sleeping until mailout is done..."  . $mailouts[0]->{sendout_dir}; 
-	sleep(5); 
-	if($timeout >= 30){ 
-		die "something's wrong with the testing - dying."	
-	}
-	@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list});
-}
-undef @mailouts;
-
-
-
+wait_for_msg_sending(); 
 
 $sent_msg =  slurp($mh->test_send_file); 
-
 $orig_entity = $parser->parse_data($msg);
 $sent_entity = $parser->parse_data($sent_msg);
-
 my $sent_sub = MIME::EncWords::decode_mimewords($sent_entity->head->get('Subject', 0), Charset => '_UNICODE_');
 my $qm_subject = quotemeta('[dadatest]'); 
-
 like($sent_sub, qr/^$qm_subject/, "list short name appeneded to Subject! ($sent_sub)"); 
 
+$ls->param('group_list', 0); 
+undef $test_msg; 
+undef $status; 
+undef $errors; 
+undef $sent_msg; 
+undef $orig_entity; 
+undef $sent_entity; 
+ok(unlink($mh->test_send_file)); 
 
+
+
+
+$msg = slurp('t/corpus/email_messages/simple_utf8_msg.eml'); 
+($status, $errors) = dada_bridge::validate_msg($list, \$msg, $ls->get);
+
+ok($status == 1, "status returning 1"); 
+
+($status, $errors) = dada_bridge::inject(
+	{ 
+		-list      => $list, 
+		-msg       => $msg, 
+		-verbose   => 1, 
+		-test_mail => 1, 
+		-ls        => $ls, 
+	}
+);
+
+wait_for_msg_sending(); 
+
+$sent_msg =  slurp($mh->test_send_file); 
+#$orig_entity = $parser->parse_data($msg);
+#$sent_entity = $parser->parse_data($sent_msg);
+#my $sent_sub = MIME::EncWords::decode_mimewords($sent_entity->head->get('Subject', 0), Charset => '_UNICODE_');
+#my $qm_subject = quotemeta('[dadatest]'); 
+#like($sent_sub, qr/^$qm_subject/, "list short name appeneded to Subject! ($sent_sub)"); 
+
+
+print Encode::encode('UTF-8',  $sent_msg); 
+#use Data::Dumper; 
+#print Data::Dumper::Dumper($sent_msg); 
+ok (1 ==1); 
+#die $mh->test_send_file;
 
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
@@ -353,6 +377,24 @@ sub slurp {
         return $r[0] unless wantarray;
         return @r;
 
+}
+
+
+sub  wait_for_msg_sending { 
+	
+	@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list}); 
+	$timeout = 0; 
+	while($mailouts[0] ){ 
+		diag "sleeping until mailout is done..."  . $mailouts[0]->{sendout_dir}; 
+		sleep(5); 
+		if($timeout >= 30){ 
+			die "something's wrong with the testing - dying."	
+		}
+		@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list});
+	}
+	undef @mailouts;
+
+	
 }
 
 

@@ -7,7 +7,7 @@
 #$Carp::Verbose = 1;
 
 # lazy. 
-binmode STDOUT, ':encoding(UTF-8)';
+#binmode STDOUT, ':encoding(UTF-8)';
 
 package dada_bridge;
 
@@ -1598,7 +1598,8 @@ sub valid_login_information {
 sub validate_msg {
 
     my $list = shift;
-    my $msg  = shift;    #ref
+    my $test_msg  = shift;    #ref
+	my $msg = ${$test_msg}; # copy of orig
     my $li   = shift;
 
     my $status = 1;
@@ -1636,13 +1637,13 @@ sub validate_msg {
 
     my $message_is_blank = 0;
 
-    if ( !defined($$msg) ) {
+    if ( !defined($msg) ) {
         $message_is_blank = 1;
     }
-    elsif ( $$msg eq '' ) {
+    elsif ( $msg eq '' ) {
         $message_is_blank = 1;
     }
-    elsif ( length($$msg) == 0 ) {
+    elsif ( length($msg) == 0 ) {
         $message_is_blank = 1;
     }
     if ($message_is_blank) {
@@ -1653,9 +1654,13 @@ sub validate_msg {
     }
 
     my $entity;
-    eval { $entity = $parser->parse_data(
-		Encode::encode($DADA::Config::HTML_CHARSET, $$msg
-		)); 
+
+	if(utf8::is_utf8($msg) == 1){ 
+			Encode::encode($DADA::Config::HTML_CHARSET, $msg); 
+	}
+		
+    eval { 
+		$entity = $parser->parse_data($msg); 
 	};
 
     if ( !$entity ) {
@@ -2247,6 +2252,7 @@ sub process {
 
     my $list = $args->{ -list };
     my $ls   = $args->{ -ls };
+	# $msg is a scalarref
     my $msg  = $args->{ -msg };
 	
     print "\n\t\tProcessing Message...\n"
@@ -2257,7 +2263,7 @@ sub process {
         my $n_msg = dm_format(
             {
                 -list => $list,
-                -msg  => $msg,
+                -msg  => $msg, #scalarref
                 -ls   => $ls,
             }
         );
@@ -2332,9 +2338,9 @@ sub dm_format {
 
     my $list = $args->{ -list };
     my $ls   = $args->{ -ls };
-    my $msg  = $args->{ -msg };
+    my $msg  = $args->{ -msg }; # scalarref
 
-    if ( $ls->param('strip_file_attachments') == 1 ) {
+	if ( $ls->param('strip_file_attachments') == 1 ) {
         $msg = strip_file_attachments( $msg, $ls );
     }
 
@@ -2350,10 +2356,14 @@ sub dm_format {
     }
 
     my ( $header_str, $body_str ) =
-      $fm->format_headers_and_body( -msg => $$msg );
-
-    return $header_str . "\n\n" . $body_str;
-
+      $fm->format_headers_and_body( 
+		-msg => ${$msg} 
+	);
+	
+	# not a scalarref (duh)
+    my $all_together =  $header_str . "\n\n" . $body_str;
+	return $all_together; 
+	
 }
 
 sub strip_file_attachments {
@@ -2493,8 +2503,16 @@ sub deliver_copy {
     $mh->test($test_mail);
 
     my $entity;
-
-    eval { $entity = $parser->parse_data($msg) };
+	
+	if(utf8::is_utf8($msg) == 1){ 
+			Encode::encode($DADA::Config::HTML_CHARSET, $msg); 
+	}
+	
+    eval { 
+		$entity = $parser->parse_data(
+			$msg
+		) 
+	};
 
     if ( !$entity ) {
         print "\t\tMessage sucks!\n"
@@ -2504,6 +2522,8 @@ sub deliver_copy {
     else {
 
 		my $headers = $entity->stringify_header;
+		   $headers = safely_decode($headers); 
+		
         my %headers = $mh->return_headers( $headers );
         $headers{To} = $ls->param('send_msg_copy_address');
 
@@ -2528,7 +2548,9 @@ sub deliver_copy {
             # This'll do the trick, all by itself.
             'X-BeenThere' => $ls->param('discussion_pop_email'),
 
-            Body => $entity->stringify_body,
+            Body => safely_decode(
+				$entity->stringify_body
+			),
 
         );
 
@@ -2570,13 +2592,11 @@ sub deliver {
 
     my $entity;
 
+	if(utf8::is_utf8($msg) == 1){ 
+			Encode::encode($DADA::Config::HTML_CHARSET, $msg); 
+	}
     eval { 
-		$entity = $parser->parse_data(
-				Encode::encode(
-					$DADA::Config::HTML_CHARSET,
-					$msg
-					)
-				);
+		$entity = $parser->parse_data($msg);
 	};
 
     if ( !$entity ) {
@@ -2679,11 +2699,12 @@ sub archive {
 
         my $entity;
 
+			if(utf8::is_utf8($msg) == 1){ 
+				$msg = $DADA::Config::HTML_CHARSET, $msg
+			}
         eval { 
 			$entity = $parser->parse_data(
-				Encode::encode(
-					$DADA::Config::HTML_CHARSET, $msg
-				)
+			$msg
 			); 
 		};
 
@@ -2747,12 +2768,14 @@ sub tweet {
         my $entity;
 		my $Subject; 
 		
+		if(utf8::is_utf8($msg) == 1){ 
+			$msg = $DADA::Config::HTML_CHARSET, $msg
+		}
+		
         eval { 
 			$entity = $parser->parse_data(
-				Encode::encode(
-					$DADA::Config::HTML_CHARSET, 
 					$msg
-				)
+				
 			)
 		 };
         if ($entity) {
@@ -2776,11 +2799,14 @@ sub send_msg_not_from_subscriber {
 
     my $list   = shift;
     my $msg    = shift;
+
+	if(utf8::is_utf8($msg) == 1){ 
+		$msg = Encode::encode($DADA::Config::HTML_CHARSET, $msg); 
+	}
+	
+	
     my $entity = $parser->parse_data(
-		Encode::encode(
-			$DADA::Config::HTML_CHARSET, 
 			$msg
-		)
 	);
 
     my $rough_from = $entity->head->get( 'From', 0 );
@@ -2825,12 +2851,15 @@ sub send_invalid_msgs_to_owner {
     my $li     = shift;
     my $list   = shift;
     my $msg    = shift;
+
+	if(utf8::is_utf8($msg) == 1){ 
+		$msg = Encode::encode($DADA::Config::HTML_CHARSET, $msg); 
+	}
+	
+	
     my $entity = $parser->parse_data(
-		Encode::encode(
-			$DADA::Config::HTML_CHARSET, 
-			$msg
-		)
-	);
+					$msg
+			);
 
 	require DADA::App::Messages;
 	
@@ -2900,12 +2929,14 @@ sub handle_errors {
     my $li       = shift;
 
     my $entity;
+
+	if(utf8::is_utf8($full_msg) == 1){ 
+		$full_msg = Encode::encode($DADA::Config::HTML_CHARSET, $full_msg); 
+	}
+	
     eval { $entity = $parser->parse_data(
-		Encode::encode(
-			$DADA::Config::HTML_CHARSET, 
-			$full_msg
-			)
-		) 
+		
+			$full_msg) ;
 	};
     if ( !$entity ) {
         die "no entity found! die'ing!";
@@ -3125,9 +3156,12 @@ sub find_return_path {
     my $rp;
 
     eval {
-        my $entity = $parser->parse_data(
-			Encode::encode($DADA::Config::HTML_CHARSET, $msg)
-		);
+
+		if(utf8::is_utf8($msg) == 1){ 
+			$msg = Encode::encode($DADA::Config::HTML_CHARSET, $msg); 
+		}
+		
+        my $entity = $parser->parse_data($msg);
         $rp = $entity->head->get( 'Return-Path', 0 );
 
     };
@@ -3277,7 +3311,7 @@ sub inject {
                     {
                         -list      => $list,
                         -ls        => $ls,
-                        -msg       => $msg,
+                        -msg       => \$msg,
                         -test_mail => $test_mail,
                     }
                 );

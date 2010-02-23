@@ -2555,7 +2555,7 @@ sub safely_decode {
 			warn 'Problems: with: (' . $str . '): '. $@; 
 		} 
 	}
-	warn 'decoding was safely done.';
+	#warn 'decoding was safely done.';
 	return $str;
 }
 
