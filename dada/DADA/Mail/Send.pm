@@ -2599,15 +2599,6 @@ sub _mail_merge {
 					-ls_obj      => $self->{ls},
 				); 
 	}
-
-
-	
-  #  my $filename = ''; 
-  #  my ($orig_entity, $filename) = $fm->entity_from_dada_style_args(
-	
-   # my ($orig_entity) = $fm->entity_from_dada_style_args(
-	warn '$args->{-fields}->{Subject} ' . $args->{-fields}->{Subject}; 
-	
 	
  	my ($orig_entity, $filename) = $fm->entity_from_dada_style_args(
  
