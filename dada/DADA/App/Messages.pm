@@ -88,7 +88,7 @@ sub send_generic_email {
 			   }; 
 		
 	  	while ( my ($key, $value) = each %{$data} ) {
-			$data->{$key} = Encode::encode('UTF-8', $value); 
+			$data->{$key} = safely_encode( $value); 
 		}
 		
 			
@@ -113,14 +113,14 @@ sub send_generic_email {
 		
 #	warn '$email_str ' . $email_str; 
 	
-	$email_str = Encode::decode('UTF-8', $email_str); 
+	$email_str = safely_decode($email_str); 
 #	warn '$email_str ' . $email_str; 
 
 my $entity = $fm->email_template(
         {
             -entity => $fm->get_entity(
 				{
-					-data => Encode::encode('UTF-8', $email_str),
+					-data => safely_encode($email_str),
 				}
 			),
   			-expr   => $expr, 
@@ -128,8 +128,8 @@ my $entity = $fm->email_template(
         }
     );
 	
-	my $header_str = Encode::decode($DADA::Config::HTML_CHARSET, $entity->head->as_string); 
-	my $body_str   = Encode::decode($DADA::Config::HTML_CHARSET, $entity->body_as_string); 
+	my $header_str = safely_decode($entity->head->as_string); 
+	my $body_str   = safely_decode($entity->body_as_string); 
 	
 	require DADA::Mail::Send;  
 	my $mh = DADA::Mail::Send->new(

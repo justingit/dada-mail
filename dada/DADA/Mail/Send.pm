@@ -697,6 +697,8 @@ sub send {
                          );
             }
             print MAIL "\n"; 
+
+
             print MAIL $fields{Body} . "\n"; # DEV: Why the last, "\n"?
             close(MAIL) 
                 or carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: 
@@ -1586,7 +1588,7 @@ sub mass_send {
 							-List        => $self->{list},  
 							-ls_obj      => $self->{ls},
 						); 
-               
+              
 				
  				my %nfields = $self->_mail_merge(
 				    {
@@ -1595,7 +1597,6 @@ sub mass_send {
 						-fm_obj => $fm, 
 				    }
 				);
-				
 
 				# Debug Information, Always nice
                 $nfields{Debug} = {
@@ -1987,7 +1988,7 @@ sub _content_transfer_encode {
 	    $entity  = MIME::Entity->build(
                        Encoding => $encoding,
                        Type     => $fields->{'Content-type'}, 
-                       Data     => Encode::encode($DADA::Config::HTML_CHARSET, $orig_body),
+                       Data     => safely_encode( $orig_body),
         );
         
         
@@ -1995,7 +1996,7 @@ sub _content_transfer_encode {
         foreach(keys %$fields){ 
             next if $_ eq 'Content-type'; # Yeah, Content-Type, no Content-type. Weird. Weeeeeeeird.
             next if $_ eq 'Content-Transfer-Encoding'; 
-            $entity->head->add($_, Encode::encode($DADA::Config::HTML_CHARSET, $fields->{$_})); 
+            $entity->head->add($_, safely_encode( $fields->{$_})); 
         }
         
         
@@ -2005,11 +2006,11 @@ sub _content_transfer_encode {
 
 		
         my $head = $entity->head->as_string;
-	       $head   = Encode::decode($DADA::Config::HTML_CHARSET, $head);
+	       $head   = safely_decode( $head);
 
 		# encoded. YES. 
         my $body = $entity->body_as_string;
-	       $body   = Encode::decode($DADA::Config::HTML_CHARSET, $body);
+	       $body   = safely_decode( $body);
 
 	    %new_fields = $self->return_headers($head);
                
@@ -2426,18 +2427,18 @@ sub _email_batched_finished_notification {
 
     my $entity = MIME::Entity->build(
         Type => 'multipart/mixed',
-        To   => Encode::encode($DADA::Config::HTML_CHARSET, Email::Address->new(
+        To   => safely_encode( Email::Address->new(
             '<!-- tmpl_var list_settings.list_owner -->',
             $self->{ls}->param('list_owner_email')
           )->format),
-        Subject  => Encode::encode($DADA::Config::HTML_CHARSET, $DADA::Config::MAILING_FINISHED_MESSAGE_SUBJECT),
+        Subject  => safely_encode( $DADA::Config::MAILING_FINISHED_MESSAGE_SUBJECT),
         Datestamp => 0,
 
     );
 
     $entity->attach(
         Type        => 'text/plain',
-        Data        =>  Encode::encode($DADA::Config::HTML_CHARSET, $DADA::Config::MAILING_FINISHED_MESSAGE),
+        Data        =>  safely_encode( $DADA::Config::MAILING_FINISHED_MESSAGE),
         Encoding    => $self->{ls}->param('plaintext_encoding'),
         Disposition => 'inline',
 
@@ -2454,7 +2455,7 @@ sub _email_batched_finished_notification {
     $entity->attach(
         Type        => 'message/rfc822',
         Disposition => "inline",
-        Data => safely_decode( Encode::encode( $DADA::Config::HTML_CHARSET, $att ) ),
+        Data => safely_decode( safely_encode( $att ) ),
     );
 
     require DADA::App::FormatMessages;
@@ -2475,7 +2476,7 @@ sub _email_batched_finished_notification {
                 mailing_finish_time => $formatted_end_time,
                 total_mailing_time  => $total_time,
                 last_email_send_to  => $args{-last_email},
-                message_subject     => safely_decode(Encode::encode($DADA::Config::HTML_CHARSET, $fields->{Subject} )),
+                message_subject     => safely_decode(safely_encode( $fields->{Subject} )),
             }
         }
     );
@@ -2600,6 +2601,7 @@ sub _mail_merge {
 				); 
 	}
 	
+	
  	my ($orig_entity, $filename) = $fm->entity_from_dada_style_args(
  
                                   {
@@ -2608,9 +2610,6 @@ sub _mail_merge {
                                     }
                              );
 	
-
-	
-
 
     my $entity = $fm->email_template(
                     {
@@ -2628,7 +2627,9 @@ sub _mail_merge {
                 );
 
    my $msg = $entity->as_string; 
-      $msg = Encode::decode( $DADA::Config::HTML_CHARSET, $msg); 
+      #$msg = Encode::decode( $DADA::Config::HTML_CHARSET, $msg); 
+	   $msg = safely_decode($msg); 
+	
 	
     undef($entity); 
     # I do not like this part. 

@@ -84,7 +84,7 @@ my %allowed = (
 	use_plaintext_email_template => 1, 
 	treat_as_discussion_msg      => 0, 
 	use_header_info              => 0, 
-	orig_entity                  => undef, 
+	#orig_entity                  => undef, 
 	
 	originating_message_url      => undef, 
 	
@@ -305,14 +305,15 @@ sub format_headers_and_body {
 	
 	my $msg        = $args{-msg}; 
 	
-	my $entity     = $self->{parser}->parse_data(
-		Encode::encode($DADA::Config::HTML_CHARSET, $msg)
-	);
+	
+	
+	$msg           = safely_encode($msg); 
+	my $entity     = $self->{parser}->parse_data($msg);
+
+	
 
 
-
-
-	$self->orig_entity($entity); 
+#	$self->orig_entity($entity); 
 
 
 
@@ -323,6 +324,9 @@ sub format_headers_and_body {
 		$entity = $self->_format_headers($entity)
 	}
 	$entity     = $self->_fix_for_only_html_part($entity); 
+
+
+
 	$entity     = $self->_format_text($entity);		
 	
 	# yeah, don't know why you have to do it 
@@ -435,19 +439,7 @@ sub _format_text {
 			my $body    = $entity->bodyhandle;
 			my $content = $entity->bodyhandle->as_string;
 			
-			
-#use Data::Dumper; 
-#print '441' . Dumper($content);
-			
-			
-			   #$content = Encode::decode($DADA::Config::HTML_CHARSET, $content); 
 			$content = safely_decode($content);
-
-
-#use Data::Dumper; 
-#print '441' . Dumper($content); 
-
-
 
 			#
 			# body_as_string gives you encoded version.
@@ -505,13 +497,9 @@ sub _format_text {
 			   #$entity->head->mime_attr("content-type.charset" => 'UTF-8');
 		
 		       my $io = $body->open('w');
-				  
-				if(utf8::is_utf8($content) == 1){
-				  $content = Encode::encode($DADA::Config::HTML_CHARSET, $content); 
-				}
-				else { 
-			 		warn "I don't think we have a UTF-8 string. Not encoding!\n"; 
-				}
+
+				  $content = safely_encode($content); 
+
 				  $io->print( $content );				    
 				  $io->close;
 				  $entity->sync_headers('Length'      =>  'COMPUTE',
@@ -667,7 +655,7 @@ sub _make_multipart {
 	require MIME::Entity; 
 		
 	my $html_content = $entity->bodyhandle->as_string;
-	   $html_content = Encode::decode($DADA::Config::HTML_CHARSET, $html_content);
+	   $html_content = safely_decode($html_content);
 	
 	$entity->make_multipart('alternative'); 
 	
@@ -675,7 +663,7 @@ sub _make_multipart {
 		Type    => 'text/plain', 
 		Data    => html_to_plaintext(
 			{ 
-				-string => Encode::encode($DADA::Config::HTML_CHARSET, $html_content), 
+				-string => safely_encode($html_content)
 			}
 		),
 	  ); 
@@ -730,16 +718,14 @@ sub _format_headers {
 		if($self->{ls}->param('append_list_name_to_subject') == 1){ 
 
 			my $subject = $entity->head->get('Subject', 0);
-			   $subject = Encode::decode($DADA::Config::HTML_CHARSET, $subject); 
+			   $subject = safely_encode( $subject); 
 			
 			#carp q{ $subject } . $subject; 
 			
 			my $new_subject = $self->_list_name_subject($subject);
 		
 			$entity->head->delete('Subject');
-			$entity->head->add(   'Subject', 
-				Encode::encode($DADA::Config::HTML_CHARSET, $new_subject), 
-			);
+			$entity->head->add(   'Subject', safely_encode($new_subject));
 			
 		}
 		
@@ -758,12 +744,10 @@ sub _format_headers {
 		} else {
 		
 			my $original_sender = $entity->head->get('From', 0);
-			   $original_sender = Encode::decode($DADA::Config::HTML_CHARSET, $original_sender); 
+			   $original_sender = safely_encode( $original_sender); 
 			
 		   $entity->head->delete('Reply-To');
-		   $entity->head->add('Reply-To', 
-			Encode::encode($DADA::Config::HTML_CHARSET, $original_sender)
-			); 
+		   $entity->head->add('Reply-To', safely_encode($original_sender)); 
 		}
 		
 		$entity->head->delete('Return-Path'); 
@@ -790,7 +774,7 @@ sub _format_headers {
 	# (usually, this happens (or doesn't happen) in program
 	
 	$entity->head->add('To', 
-		Encode::encode($DADA::Config::HTML_CHARSET, $self->{ls}->param('list_owner_email'))
+		safely_encode( $self->{ls}->param('list_owner_email'))
 	)
 	 if ! $entity->head->get('To', 0); 
 	
@@ -826,8 +810,7 @@ sub _format_headers {
             	
                 $to_addy->phrase($self->{ls}->param('list_name')); 
                 $entity->head->delete('To');
-                $entity->head->add('To', 
-				Encode::encode($DADA::Config::HTML_CHARSET, $to_addy->format )); 
+                $entity->head->add('To', safely_encode( $to_addy->format )); 
             
             }
         }
@@ -835,7 +818,7 @@ sub _format_headers {
   
   
    if($self->{ls}->param('discussion_pop_email')){ 
-         $entity->head->add('X-BeenThere', Encode::encode($DADA::Config::HTML_CHARSET, $self->{ls}->param('discussion_pop_email'))); 
+         $entity->head->add('X-BeenThere', safely_encode($self->{ls}->param('discussion_pop_email'))); 
    } 
    
  	return $entity;
@@ -1486,7 +1469,7 @@ sub entity_from_dada_style_args {
                                          }
                                       );
 		
-			$str = Encode::encode($DADA::Config::HTML_CHARSET, $str); 
+			$str = safely_encode($str); 
             my $entity =  $self->get_entity(
                             {
                                 -data => $str, 
@@ -1782,7 +1765,7 @@ sub email_template {
 
 			my $body    = $args->{-entity}->bodyhandle;
 			my $content = $args->{-entity}->bodyhandle->as_string;
-			   $content = Encode::decode($DADA::Config::HTML_CHARSET, $content); 
+			   $content = safely_decode( $content); 
 			
 			if($content){
 
@@ -1803,11 +1786,11 @@ sub email_template {
                 ); 
 
 		       my $io = $body->open('w');
-				$content = Encode::encode($DADA::Config::HTML_CHARSET, $content); 
+				$content = safely_encode($content); 
 				$io->print( $content );				    
 				$io->close;
 			}
-			
+
 			
 			my $orig_charset = $args->{-entity}->head->mime_attr('content-type.charset');
 			if($orig_charset){ 
@@ -1832,6 +1815,8 @@ sub email_template {
 					$args->{-entity}->head->add('Content-Transfer-Encoding', $new_content_type); 
 				}
 			}
+
+
 			$args->{-entity}->sync_headers('Length'      =>  'COMPUTE',
 				  				           'Nonstandard' =>  'ERASE');
 		}
@@ -1934,7 +1919,7 @@ sub email_template {
 					
 				# Get
 			    my $header_value = $args->{-entity}->head->get($header, 0);# 
-				warn 'get:' . Encode::encode('UTF-8', $header_value)	
+				warn 'get:' . safely_encode( $header_value)	
 				 if $t; 
 				
 				# I'm a little weirded by this, but if, some reason
@@ -1947,7 +1932,7 @@ sub email_template {
 								
 				# Decode EncWords
 				   $header_value = $self->_decode_header($header_value);
-                	warn 'decode EncWords:' . Encode::encode('UTF-8', $header_value)
+                	warn 'decode EncWords:' . safely_encode( $header_value)
 						if $t; 
 				
 				# Template
@@ -1958,12 +1943,12 @@ sub email_template {
                     }
                 ); 
 				
-				warn 'Template:' . Encode::encode('UTF-8', $header_value)
+				warn 'Template:' . safely_encode( $header_value)
 					if $t;
 				
 				# Encode
 				$header_value = $self->_encode_header($header, $header_value); 
-				warn 'encode EncWords:' . Encode::encode('UTF-8', $header_value)
+				warn 'encode EncWords:' . safely_encode( $header_value)
 					if $t; 
 				
 				
@@ -1973,7 +1958,7 @@ sub email_template {
 				# Add
 				$args->{-entity}->head->add($header, $header_value);
 			 
-				warn 'now:'. Encode::encode('UTF-8', $header_value)
+				warn 'now:'. safely_encode( $header_value)
 					if $t;
             }                
         }

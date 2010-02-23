@@ -99,6 +99,8 @@ require Exporter;
   can_use_twitter
   decode_cgi_obj
   safely_decode
+  safely_encode
+
 );
 
 
@@ -2558,6 +2560,19 @@ sub safely_decode {
 	#warn 'decoding was safely done.';
 	return $str;
 }
+
+sub safely_encode { 
+	if(utf8::is_utf8($_[0])){ 
+		return Encode::encode($DADA::Config::HTML_CHARSET, $_[0]); 
+	}
+	else { 
+		warn "Not encoding.";
+		use Data::Dumper; 
+		warn Data::Dumper::Dumper($_[0]);  
+		return $_[0];
+	}	
+}
+
 
 
 

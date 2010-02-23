@@ -14,6 +14,10 @@ use dada_test_config;
 use DADA::App::Guts; 
 use DADA::MailingList::Settings; 
 
+use DADA::Mail::Send; 
+use DADA::Mail::MailOut;
+
+
 #dada_test_config::wipe_out;
 
 use Test::More qw(no_plan);  
@@ -22,9 +26,9 @@ my $list = dada_test_config::create_test_list;
 
 my $ls = DADA::MailingList::Settings->new({-list => $list}); 
 my $li = $ls->get; 
-
-
 do "plugins/dada_bridge.pl"; 
+
+
 
 
 ok(dada_bridge->test_sub() eq q{Hello, World!}); 
@@ -135,22 +139,10 @@ $ls->param('get_finished_notification',   0                     );
 	}
 );
 
-require DADA::Mail::Send; 
-require DADA::Mail::MailOut;
-my @mailouts; 
 
-my $timeout = 0; 
-@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list}); 
-while($mailouts[0] ){ 
-	diag "sleeping until mailout is done..."  . $mailouts[0]->{sendout_dir}; 
-	sleep(5); 
-	@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list});
-	$timeout = $timeout + 5; 
-	if($timeout >= 30){ 
-	die "something's wrong with the testing - dying."	
-	}
-}
-undef @mailouts; 
+
+
+wait_for_msg_sending(); 
 
 
 
@@ -197,19 +189,7 @@ $ls->param('mime_encode_words_in_headers',   1                     );
 );
 
 
-
-#Clean up
-@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list}); 
-$timeout = 0;
-while($mailouts[0] ){ 
-	diag "sleeping until mailout is done..."  . $mailouts[0]->{sendout_dir}; 
-	sleep(5); 
-	if($timeout >= 30){ 
-		die "something's wrong with the testing - dying."	
-	}
-	@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list});
-}
-undef @mailouts;
+wait_for_msg_sending(); 
 
 
 
@@ -319,7 +299,7 @@ undef $orig_entity;
 undef $sent_entity; 
 ok(unlink($mh->test_send_file)); 
 
-
+diag "NOW WE START."; 
 
 
 $msg = slurp('t/corpus/email_messages/simple_utf8_msg.eml'); 
@@ -347,7 +327,10 @@ $sent_msg =  slurp($mh->test_send_file);
 #like($sent_sub, qr/^$qm_subject/, "list short name appeneded to Subject! ($sent_sub)"); 
 
 
-print Encode::encode('UTF-8',  $sent_msg); 
+print safely_encode($sent_msg); 
+
+
+
 #use Data::Dumper; 
 #print Data::Dumper::Dumper($sent_msg); 
 ok (1 ==1); 
@@ -382,8 +365,8 @@ sub slurp {
 
 sub  wait_for_msg_sending { 
 	
-	@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list}); 
-	$timeout = 0; 
+	my @mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list}); 
+	my $timeout = 0; 
 	while($mailouts[0] ){ 
 		diag "sleeping until mailout is done..."  . $mailouts[0]->{sendout_dir}; 
 		sleep(5); 

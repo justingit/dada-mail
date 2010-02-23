@@ -538,8 +538,7 @@ EOF
         eval {
             $entity =
               $parser->parse_data(
-				Encode::encode(
-					$DADA::Config::HTML_CHARSET,
+				safely_encode(
                 	$mod->get_msg( { -msg_id => $messagename } ) 
 				)
 			);
@@ -1654,11 +1653,8 @@ sub validate_msg {
     }
 
     my $entity;
+	$msg = safely_encode($msg); 
 
-	if(utf8::is_utf8($msg) == 1){ 
-			Encode::encode($DADA::Config::HTML_CHARSET, $msg); 
-	}
-		
     eval { 
 		$entity = $parser->parse_data($msg); 
 	};
@@ -1889,6 +1885,8 @@ sub validate_msg {
 
                     # this needs to be optimized...
                     my $spam_check_message = $entity->as_string;
+					   $spam_check_message = safely_decode($spam_check_message); 
+					
                     my @spam_check_message =
                       split ( "\n", $spam_check_message );
 
@@ -2383,8 +2381,9 @@ sub strip_file_attachments {
 
     ( $entity, $ls ) = process_stripping_file_attachments( $entity, $ls );
 
-    return $entity->as_string;
-
+    my $un =  $entity->as_string;
+       $un = safely_decode($un); 
+	return $un; 
 }
 
 sub process_stripping_file_attachments {
@@ -2503,10 +2502,7 @@ sub deliver_copy {
     $mh->test($test_mail);
 
     my $entity;
-	
-	if(utf8::is_utf8($msg) == 1){ 
-			Encode::encode($DADA::Config::HTML_CHARSET, $msg); 
-	}
+	  $msg = safely_encode($msg); 
 	
     eval { 
 		$entity = $parser->parse_data(
@@ -2592,9 +2588,7 @@ sub deliver {
 
     my $entity;
 
-	if(utf8::is_utf8($msg) == 1){ 
-			Encode::encode($DADA::Config::HTML_CHARSET, $msg); 
-	}
+	$msg = safely_encode($msg); 
     eval { 
 		$entity = $parser->parse_data($msg);
 	};
@@ -2800,11 +2794,7 @@ sub send_msg_not_from_subscriber {
     my $list   = shift;
     my $msg    = shift;
 
-	if(utf8::is_utf8($msg) == 1){ 
-		$msg = Encode::encode($DADA::Config::HTML_CHARSET, $msg); 
-	}
-	
-	
+	$msg = safely_encode($msg); 
     my $entity = $parser->parse_data(
 			$msg
 	);
@@ -2826,12 +2816,14 @@ sub send_msg_not_from_subscriber {
 			warn "Message is from List Email ($from_address)? Not sending, 'not_allowed_to_post_message' so to not send message back to list!" ;
 		}
 		else {  	
+			my $att = $entity->as_string; 
+			   $att = safely_decode($att); 
 	        require DADA::App::Messages;
 	        DADA::App::Messages::send_not_allowed_to_post_message(
 	            {
 	                -list       => $list,
 	                -email      => $from_address,
-	                -attachment => $entity->as_string,
+	                -attachment => safely_encode($att),
 
 	            },
 	        );
@@ -2852,11 +2844,7 @@ sub send_invalid_msgs_to_owner {
     my $list   = shift;
     my $msg    = shift;
 
-	if(utf8::is_utf8($msg) == 1){ 
-		$msg = Encode::encode($DADA::Config::HTML_CHARSET, $msg); 
-	}
-	
-	
+	$msg = safely_encode($msg); 
     my $entity = $parser->parse_data(
 					$msg
 			);
@@ -2890,7 +2878,7 @@ sub send_invalid_msgs_to_owner {
         $reply->attach(
             Type        => 'message/rfc822',
             Disposition => "inline",
-            Data        => $entity->as_string,
+            Data        => safely_decode(safely_encode($entity->as_string)),
         );
 
         my %msg_headers =
@@ -2930,9 +2918,8 @@ sub handle_errors {
 
     my $entity;
 
-	if(utf8::is_utf8($full_msg) == 1){ 
-		$full_msg = Encode::encode($DADA::Config::HTML_CHARSET, $full_msg); 
-	}
+	$full_msg = safely_encode($full_msg); 
+
 	
     eval { $entity = $parser->parse_data(
 		
@@ -3157,9 +3144,7 @@ sub find_return_path {
 
     eval {
 
-		if(utf8::is_utf8($msg) == 1){ 
-			$msg = Encode::encode($DADA::Config::HTML_CHARSET, $msg); 
-		}
+		$msg = safely_encode($msg); 
 		
         my $entity = $parser->parse_data($msg);
         $rp = $entity->head->get( 'Return-Path', 0 );
@@ -4360,8 +4345,7 @@ sub moderation_msg {
     my $li = $ls->get;
 
     my $parser = $args->{ -parser };
-    my $entity = $parser->parse_data( 
-		Encode::encode($DADA::Config::HTML_CHARSET, $args->{ -msg } ));
+    my $entity = $parser->parse_data(safely_encode( $args->{ -msg } ));
 
     my $confirmation_link =
       $Plugin_Config->{Plugin_URL}
@@ -4427,7 +4411,7 @@ sub moderation_msg {
         $reply->attach(
             Type        => 'message/rfc822',
             Disposition => "inline",
-            Data        => $entity->as_string,
+            Data        => safely_decode(safely_encode($entity->as_string)),
         );
 
         # send the message
@@ -4486,8 +4470,8 @@ sub send_moderation_msg {
     eval {
         $entity =
           $parser->parse_data(
-			Encode::encode(
-				$DADA::Config::HTML_CHARSET,
+		 safely_encode( 
+
             	$self->get_msg( { -msg_id => $args->{ -msg_id } } )) );
     };
     if ( !$entity ) {
@@ -4562,9 +4546,8 @@ sub send_accept_msg {
     eval {
         $entity =
           $parser->parse_data(
-			Encode::encode(
-				$DADA::Config::HTML_CHARSET,
-            	$self->get_msg( 
+			safely_encode(
+			        	$self->get_msg( 
 					{ 
 						-msg_id => $args->{ -msg_id } } )) );
     };
@@ -4638,7 +4621,7 @@ sub send_reject_msg {
     eval {
         $entity =
           $parser->parse_data(
-			Encode::encode($DADA::Config::HTML_CHARSET,
+			safely_encode(
             $self->get_msg( { -msg_id => $args->{ -msg_id } } ) ));
 
     };
