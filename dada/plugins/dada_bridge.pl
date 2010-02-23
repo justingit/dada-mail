@@ -1173,6 +1173,7 @@ sub start {
                     if ( $li->{disable_discussion_sending} != 1 ) {
 
                         my $full_msg = $pop->Retrieve($msgnum);
+						   # We're taking a guess on this one: 
 						   $full_msg = safely_decode($full_msg); 
 						
                         push (
@@ -2353,9 +2354,14 @@ sub dm_format {
         $fm->reset_from_header(0);
     }
 
+	warn '${$msg} ' . ${$msg}; 
+	warn 'end.'; 
+
+	
     my ( $header_str, $body_str ) =
       $fm->format_headers_and_body( 
-		-msg => ${$msg} 
+		-msg            => ${$msg}, 
+		-convert_charset => 1,  
 	);
 	
 	# not a scalarref (duh)
@@ -3123,7 +3129,7 @@ sub append_message_to_file {
 
     $file = DADA::App::Guts::make_safer($file);
 
-    open( APPENDLOG, ">>$file" ) or die $!;
+    open( APPENDLOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET.')', $file ) or die $!;
     chmod( $DADA::Config::FILE_CHMOD, $file );
     print APPENDLOG 'From ' . $rp . "\n";
 
@@ -3254,6 +3260,7 @@ sub inject {
     my ($args) = @_;
 
     my $msg       = $args->{ -msg };
+	   # We're taking a guess, on this one: 
 	   $msg 	  = safely_decode( $msg );
 	 
     my $send_test = 0;
@@ -4305,7 +4312,7 @@ sub save_msg {
 
     my $file = $self->mod_msg_filename( $args->{ -msg_id } );
 
-    open my $MSG_FILE, '>', $file
+    open my $MSG_FILE, '>:encoding(' . $DADA::Config::HTML_CHARSET.')' , $file
       or croak "Cannot write saved raw message at: '" . $file . " because: $!";
 
     print $MSG_FILE $args->{ -msg };

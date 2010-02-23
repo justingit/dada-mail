@@ -337,6 +337,7 @@ sub parse_email {
     );
 
     my $msg = $entity->as_string;
+	   $msg = safely_decode($msg); 
 
     my ( $h, $b ) = split ( "\n\n", $msg, 2 );
 
@@ -423,7 +424,8 @@ sub parse_entity {
 
         my $body    = $args->{ -entity }->bodyhandle;
         my $content = $args->{ -entity }->bodyhandle->as_string;
-
+		   $content = safely_decode($content); 
+		
         if ($content) {
 
             #print "Bang!\n";
@@ -437,8 +439,8 @@ sub parse_entity {
 
         my $io = $body->open('w');
         require Encode; 
-		$io->print(Encode::encode($DADA::Config::HTML_CHARSET,  $content ));
-		#$io->print($content);
+		$content = safely_encode($content);
+		$io->print( $content );
         $io->close;
     }
     else {

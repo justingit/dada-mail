@@ -936,8 +936,12 @@ sub mass_send {
 
 	%fields = $self->clean_headers(%fields); 
 	
+
+	
     # save a copy of the message for later pickup.
     $self->saved_message($self->_massaged_for_archive(\%fields));
+
+
     
 	require DADA::MailingList::Subscribers;
 	       $DADA::MailingList::Subscribers::dbi_obj = $dbi_obj; 
@@ -992,7 +996,7 @@ sub mass_send {
         }
     
     }else { 
-		# it's broken, here. 
+
 		
 		
         warn '[' . $self->{list} . '] Creating MailOut'
@@ -1018,7 +1022,9 @@ sub mass_send {
     
     }													 				
 	
-	
+
+
+		
 	
     # This is so awkwardly placed...	
 	if($self->list_type eq 'invitelist'){ 
@@ -1313,7 +1319,8 @@ sub mass_send {
 			##################################################################
 			
 			
-				
+
+		
 		    #warn "starting the sending process."; 
 		    
 			# child here
@@ -1440,8 +1447,8 @@ sub mass_send {
 				# And, that's it.
 			}
 			#
-			##################################################################
-				
+			##################################################################			
+			
 				
             warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' locking batch' 
                 if $t; 
@@ -1581,8 +1588,7 @@ sub mass_send {
 				#print 'From! ' . $fields{From} . "\n"; 
 				
 					
-				
-				
+
 				require DADA::App::FormatMessages; 
 			    my $fm = DADA::App::FormatMessages->new(
 							-List        => $self->{list},  

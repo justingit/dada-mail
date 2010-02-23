@@ -297,8 +297,10 @@ sub format_headers_and_body {
 
 	my $self = shift; 
 	
-	my %args = (-msg                 => undef, 
-		  	    @_
+	my %args = (
+		-msg                 => undef, 
+		-convert_charset     => 0,  
+		@_
 		  	   ); 
 
 	die "no msg!"  if ! $args{-msg};
@@ -306,10 +308,20 @@ sub format_headers_and_body {
 	my $msg        = $args{-msg}; 
 	
 	
-	
+	# Guessing, really. 
 	$msg           = safely_encode($msg); 
 	my $entity     = $self->{parser}->parse_data($msg);
-
+	
+	if($args{-convert_charset} == 1){ 
+		warn 'converting charset!'; 
+		eval { 
+			$entity = $self->change_charset({-entity => $entity}); 
+		};
+		if ($@) {
+			carp "changing charset didn't work!: $@";
+		}
+	}
+	
 	
 
 
@@ -338,12 +350,11 @@ sub format_headers_and_body {
 
 
 	my $header = $entity->head->as_string;
-	   #$header = Encode::decode($DADA::Config::HTML_CHARSET, $header);
 	   $header = safely_decode($header); 
-	
+	   #$header = Encode::decode($self->_mime_charset($entity), $header); 
 	my $body   = $entity->body_as_string;	
-	   #$body   = Encode::decode($DADA::Config::HTML_CHARSET, $body);
  	   $body = safely_decode($body); 
+	  # $body = Encode::decode($self->_mime_charset($entity), $body); 
 
 	return ($header, $body) ;
 
@@ -440,7 +451,9 @@ sub _format_text {
 			my $content = $entity->bodyhandle->as_string;
 			
 			$content = safely_decode($content);
-
+			#$content = Encode::decode($self->_mime_charset($entity), $content); 
+		   
+		
 			#
 			# body_as_string gives you encoded version.
 			# Don't get it this way, unless you've got a great reason 
@@ -656,6 +669,7 @@ sub _make_multipart {
 		
 	my $html_content = $entity->bodyhandle->as_string;
 	   $html_content = safely_decode($html_content);
+	#	$html_content = Encode::decode($self->_mime_charset($entity), $html_content); 
 	
 	$entity->make_multipart('alternative'); 
 	
@@ -886,6 +900,106 @@ sub _decode_header {
 	require MIME::EncWords; 
 	my $dec = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
 	return $dec; 
+}
+
+
+sub _mime_charset { 
+	my $self   = shift; 
+	my $entity = shift;
+	return $entity->head->mime_attr("content-type.charset") || $DADA::Config::HTML_CHARSET;
+}
+
+sub change_charset {
+	my $self = shift; 
+	
+    my ($args) = @_;
+    if ( !exists( $args->{-entity} ) ) {
+        croak 'did not pass an entity in, "-entity"!';
+    }
+
+    my @parts = $args->{-entity}->parts;
+
+    if (@parts) {
+        warn "this part has " . $#parts . "parts."
+          if $t;
+
+        my $i;
+        foreach $i ( 0 .. $#parts ) {
+            $parts[$i] =
+              $self->change_charset( { %{$args}, -entity => $parts[$i] } )
+              ; # -entity should only pass the current part, but have the rest of the params passed...?
+        }
+
+        $args->{-entity}->sync_headers(
+            'Length'      => 'COMPUTE',
+            'Nonstandard' => 'ERASE'
+        );
+
+    }
+    else {
+
+        my $is_att = 0;
+        if (
+            defined( $args->{-entity}->head->mime_attr('content-disposition') )
+          )
+        {
+            warn q{content-disposition has set to: }
+              . $args->{-entity}->head->mime_attr('content-disposition')
+              if $t;
+            if ( $args->{-entity}->head->mime_attr('content-disposition') =~
+                m/attachment/ )
+            {
+                warn "we have an attachment?"
+                  if $t;
+                $is_att = 1;
+            }
+        }
+        else {
+            warn "can't find a content-disposition"
+              if $t;
+        }
+
+        if (
+            (
+                   ( $args->{-entity}->head->mime_type eq 'text/plain' )
+                || ( $args->{-entity}->head->mime_type eq 'text/html' )
+            )
+            && ( $is_att != 1 )
+          )
+        {
+
+            warn 'text or html, non-attachment part'
+              if $t;
+
+            my $body    = $args->{-entity}->bodyhandle;
+            my $content = $args->{-entity}->bodyhandle->as_string;
+
+            # $content = safely_decode( $content);
+            $content =
+              Encode::decode($self->_mime_charset( $args->{-entity} ), $content );
+
+            if ($content) {
+
+                # Stuff...
+                $args->{-entity}
+                  ->head->mime_attr( "content-type.charset", 'UTF-8' );
+
+                my $io = $body->open('w');
+                $content = safely_encode($content);
+                $io->print($content);
+                $io->close;
+            }
+
+            $args->{-entity}->sync_headers(
+                'Length'      => 'COMPUTE',
+                'Nonstandard' => 'ERASE'
+            );
+        }
+
+    }
+
+
+	return $args->{-entity}; 
 }
 
 
@@ -1765,7 +1879,8 @@ sub email_template {
 
 			my $body    = $args->{-entity}->bodyhandle;
 			my $content = $args->{-entity}->bodyhandle->as_string;
-			   $content = safely_decode( $content); 
+			    $content = safely_decode( $content); 
+			   #$content = Encode::decode($self->_mime_charset($args->{-entity}), $content); 
 			
 			if($content){
 
@@ -1791,6 +1906,7 @@ sub email_template {
 				$io->close;
 			}
 
+=cut
 			
 			my $orig_charset = $args->{-entity}->head->mime_attr('content-type.charset');
 			if($orig_charset){ 
@@ -1816,6 +1932,7 @@ sub email_template {
 				}
 			}
 
+=cut
 
 			$args->{-entity}->sync_headers('Length'      =>  'COMPUTE',
 				  				           'Nonstandard' =>  'ERASE');

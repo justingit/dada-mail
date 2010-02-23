@@ -927,7 +927,7 @@ sub create_raw_message {
     print MESSAGE "\n" . $fields->{Body};
 
     close MESSAGE
-        or die "Coulnd't close: " . $file . "because: " . $!;
+        or die "Couldn't close: " . $file . "because: " . $!;
 
 	$self->unlock_file($lock);
 	

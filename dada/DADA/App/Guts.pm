@@ -2545,8 +2545,12 @@ sub safely_decode {
 	my $str   = shift; 
 	my $force = shift || 0; 
 	
+#	$str = Encode::decode($DADA::Config::HTML_CHARSET, $str); 
+#	return $str; 
+	
+	
 	if(utf8::is_utf8($str) == 1 && $force == 0){ 
-		warn 'utf8::is_utf8 is returning 1 - not decoding.'; 
+	#	warn 'utf8::is_utf8 is returning 1 - not decoding.'; 
 	}
 	else { 
 		eval { 
@@ -2562,13 +2566,15 @@ sub safely_decode {
 }
 
 sub safely_encode { 
+	#return Encode::encode($DADA::Config::HTML_CHARSET, $_[0]); 
+	
 	if(utf8::is_utf8($_[0])){ 
 		return Encode::encode($DADA::Config::HTML_CHARSET, $_[0]); 
 	}
 	else { 
-		warn "Not encoding.";
-		use Data::Dumper; 
-		warn Data::Dumper::Dumper($_[0]);  
+		#warn "Not encoding.";
+		#use Data::Dumper; 
+		#warn Data::Dumper::Dumper($_[0]);  
 		return $_[0];
 	}	
 }
