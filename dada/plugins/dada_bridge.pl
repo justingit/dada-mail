@@ -1174,6 +1174,8 @@ sub start {
                     if ( $li->{disable_discussion_sending} != 1 ) {
 
                         my $full_msg = $pop->Retrieve($msgnum);
+						   $full_msg = safely_decode($full_msg); 
+						
                         push (
                             @{ $checksums->{$list} },
                             create_checksum( \$full_msg )
@@ -2246,7 +2248,6 @@ sub process {
     my $list = $args->{ -list };
     my $ls   = $args->{ -ls };
     my $msg  = $args->{ -msg };
-	   # $msg  = Encode::decode($DADA::Config::HTML_CHARSET, $msg );
 	
     print "\n\t\tProcessing Message...\n"
       if $verbose;
@@ -2624,7 +2625,7 @@ sub deliver {
 
 
 		my $body = $entity->stringify_body; 		
-		$body = safely_decode($body);
+		   $body = safely_decode($body);
 		
 		
 		my $msg_id = $mh->mass_send(
