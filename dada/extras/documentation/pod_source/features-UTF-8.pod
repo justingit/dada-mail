@@ -31,7 +31,7 @@ any real exceptions.
 
 By default, the config variable, C<$HTML_CHARSET> is set to, C<UTF-8> 
 
-Keep it that way, same case - same everything. 
+Keep it that way, same case (B<UTF-8>) - same everything. 
 
 Dada Mail is only tested with the charset set this way. 
 
@@ -129,13 +129,25 @@ has been added to the $DBI_PARAMS hashref.
 
 add, 
 
- unicode => 1
+ sqlite_unicode => 1
 
 has been added to the $DBI_PARAMS hashref. 
 
 =back
 
 No explicit encoding/decoding is done in Dada Mail when saving/retrieving data. Hopefully, the drivers are UTF-8-aware enough. 
+
+=head2 Plugins/Extensions
+
+The Plugins and Extensions that come with Dada Mail have not been as thoroughly tested as the main program. There's still warts. 
+
+=head3 Dada Bridge
+
+Dada Bridge has a unique position needing to handle a lot of different stuff thown at it and 
+deal with it gracefully. Dada Mail I<does>, in fact, handle, any realistic character set/encoding you throw at it, 
+but Dada Mail will convert messages it receives to its internal format, before it resends it out to your list. 
+
+This means the encoding of your choice (8bit or quoted-printable) and the charset of your choice (as long as your charset is, UTF-8)
 
 =head1 Upgrading
 
