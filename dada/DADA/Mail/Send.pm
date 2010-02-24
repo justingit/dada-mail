@@ -2482,7 +2482,7 @@ sub _email_batched_finished_notification {
                 mailing_finish_time => $formatted_end_time,
                 total_mailing_time  => $total_time,
                 last_email_send_to  => $args{-last_email},
-                message_subject     => safely_decode(safely_encode( $fields->{Subject} )),
+                message_subject     => safely_encode( $fm->_decode_header($fields->{Subject} )),
             }
         }
     );
@@ -2491,7 +2491,11 @@ sub _email_batched_finished_notification {
 	   $body = safely_decode($body); 
 
     $self->send(
-	 	$self->return_headers( $n_entity->head->as_string ),
+	 	$self->return_headers( 
+			safely_decode(
+				$n_entity->head->as_string
+			), 
+		),
         Body => $body, 
 	);
 

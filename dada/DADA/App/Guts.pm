@@ -2572,9 +2572,6 @@ sub safely_encode {
 		return Encode::encode($DADA::Config::HTML_CHARSET, $_[0]); 
 	}
 	else { 
-		#warn "Not encoding.";
-		#use Data::Dumper; 
-		#warn Data::Dumper::Dumper($_[0]);  
 		return $_[0];
 	}	
 }
