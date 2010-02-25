@@ -8934,7 +8934,10 @@ sub setup_info {
         $scrn .= list_template(-Part       => 'footer', 
                        -End_Form   => 0
                   );
-    }
+    
+		e_print($scrn); 
+		
+		}
 
 }
 
