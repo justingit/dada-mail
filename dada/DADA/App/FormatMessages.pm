@@ -1156,12 +1156,15 @@ sub _macro_tags {
 	
 	if($args{-email}){ 
 
-	my $tmp_email = $args{-email};
+		my $tmp_email = $args{-email};
 	
-	    $tmp_email =~ s/\@/\//g;	# snarky. Replace, "@" with, "/"
-	    $tmp_email =~ s/\+/_p2Bp_/g;
+		    $tmp_email =~ s/\@/\//g;	# snarky. Replace, "@" with, "/"
+		    $tmp_email =~ s/\+/_p2Bp_/g;
 	    
-	    $args{-email} = $tmp_email; 
+		    $args{-email} = $tmp_email; 
+	}
+	else { 
+		 $args{-email} = '<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->'
 	}
 	
 	my @qs; 
@@ -1720,7 +1723,7 @@ sub email_template {
     }
     $screen_vars{-dada_pseudo_tag_filter} = 1; 
     
-	foreach my $header('Subject', 'From', 'To', 'Reply-To', 'Errors-To', 'Return-Path'){ 
+	foreach my $header('Subject', 'From', 'To', 'Reply-To', 'Errors-To', 'Return-Path', 'List-Unsubscribe'){ 
 				
 	    if($args->{-entity}->head->get($header, 0)){ 
 						

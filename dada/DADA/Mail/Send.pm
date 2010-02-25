@@ -2221,10 +2221,10 @@ sub _make_list_headers {
 	my %lh;
 	if($self->{list}){ 
 		
-		if($self->{ls}->param('print_list_headers') != 0){ 	
+		# if($self->{ls}->param('print_list_headers') != 0){ 	
 			$lh{List}               =   $self->{list};
 			$lh{'List-URL'}         =   '<' . $DADA::Config::PROGRAM_URL . '/list/'.$self->{list}  . '/>';
-			$lh{'List-Unsubscribe'} =   '<' . $DADA::Config::PROGRAM_URL . '/u/'   . $self->{list} . '/>'; 
+			$lh{'List-Unsubscribe'} =   '<' . $DADA::Config::PROGRAM_URL . '/u/'   . $self->{list} . '/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.domain -->>'; 
 			$lh{'List-Subscribe'}   =   '<' . $DADA::Config::PROGRAM_URL . '/s/'   . $self->{list} . '/>'; 
 			
 			$lh{'List-Owner'}       =   '<' . $self->{ls}->param('list_owner_email').'>';
@@ -2262,7 +2262,7 @@ sub _make_list_headers {
 			}else{ 
 				carp "Net::Domain should be installed!";
 			}
-		}
+		# }
 	}
 	
 	
