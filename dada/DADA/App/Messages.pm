@@ -54,6 +54,24 @@ sub send_generic_email {
 		$li = $ls->get;
 	}
 	
+
+	# We'll use this, later
+	require DADA::Mail::Send;  
+	my $mh = DADA::Mail::Send->new(
+				{
+					(
+						exists($args->{-list})
+					) ? ( 
+						-list   => $args->{-list}, 
+						-ls_obj => $ls,
+					) : 
+					(
+					), 
+				}
+			);
+
+	# /We'll use this, later			
+	
 	my $expr = 0; 	
 	if($li->{enable_email_template_expr} == 1){ 
 		$expr = 1;
@@ -82,6 +100,13 @@ sub send_generic_email {
 	}	
 	
 	my $data = { 
+					(
+						exists($args->{-list})
+					) ? ( 
+						$mh->tagged_list_headers,
+					) : 
+					(
+					),
 					%{$args->{-headers}},
 					Body => $args->{-body},
 			   }; 
@@ -115,20 +140,7 @@ sub send_generic_email {
 
     my $msg = $entity->as_string; 
     my ($header_str, $body_str) = split("\n\n", $msg, 2);
-	
-	require DADA::Mail::Send;  
-	my $mh = DADA::Mail::Send->new(
-				{
-					(
-						exists($args->{-list})
-					) ? ( 
-						-list   => $args->{-list}, 
-						-ls_obj => $ls,
-					) : 
-					(
-					), 
-				}
-			); 
+
 				
 	if($args->{-test} == 1){ 
 		$mh->test(1);	
