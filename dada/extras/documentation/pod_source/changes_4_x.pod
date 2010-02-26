@@ -2,6 +2,86 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.0.3
+
+=head2 Changes 4.0.3
+
+=head3 Changes to Default List Settings
+
+We've changed a few of the default list settings, hopefully so that everyone 
+has a more pleasant experience, right off the bat: 
+
+=head4 Activate Black List
+
+We've enabled the setting to active the Black List, by default. 
+
+We're also enabling the below settings: 
+
+=over
+
+=item * Move Unsubscribed Subscribers Automatically to the Black List
+
+=item * Continue to Allow Subscriptions From Subscribers of Black Listed Addresses
+
+=back
+
+You still have the option to change new lists to the previous behavior and already created lists 
+will have their previous behavior, if Black List Settings have already been edited.  
+
+=head3 Print List-Specific Headers option Removed
+
+The option, B<Print List-Specific Headers> has been removed from, I<Mail Sending -Advanced Sending Preferences> 
+has been removed, I<but> the functionality has B<not>. All 
+mailing list messages will have these headers. 
+
+=head3 Send Unsubscription Confirmation Emails (Closed-Loop Opt-Out) - disabled by default
+
+B<Send Unsubscription Confirmation Emails (Closed-Loop Opt-Out)> has been disabled by default (you can still enable it) 
+
+This option, when enabled, requires that when someone wants to unsubscribe, 
+they have to confirm this unsubscription by clicking on the unsubscription confirmation link
+in a URL sent their subscribed address. 
+
+When disabled (the new default), they simply have to fill out the subscribe/unsubscribe form. 
+
+=head2 Subscription and Unsubscription links now include an Email Address
+
+When available, both the Subscription and Unsubscription links will have the potential subscriber's
+(or unsubscriber's) email address in the link itself, so that the user does not have to do the two-step
+of first following the link and then typing in their email address. 
+ 
+These links are created per-subscriber (or potential sub/unsub), when you use the: 
+
+ <!-- tmpl_var list_subscribe_link -->
+
+or, 
+
+ <!-- tmpl_var list_unsubscribe_link --> 
+
+tags. Previously, these tags only provided a link to the subscription/unsubscription form, 
+without the email address embedded within the link itself. There is no way to revert this behaviour, 
+but you can still roll your own links, like this: 
+
+Subscription Link: 
+
+ <!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list --> 
+
+Unsubscription Link: 
+
+ <!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->
+
+=head2 Unsubscription Links Now Mandatory for Mass Mailing Messages
+
+Dada Mail will now do a quick check to make sure that there is a Dada Mail 
+Unsubscription link in your mass mailing messages, before sending them out. 
+
+If one is not found, one will be automatically appended to the end of your message. 
+
+It will not be very fancy. 
+
+We suggest that you make sure that you have a real, valid, Dada Mail unsubscription link
+in your Mailing List Messages. 
+
 =head1 4.0.2
 
 =head2 Changes 4.0.2
