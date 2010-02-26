@@ -4285,7 +4285,6 @@ encrypted.
 	# (Dummy)
 	charset_value                => 'UTF-8', 
 	priority                     => 3,
-	print_list_headers           => 1,
 	
 	print_errors_to_header       => 0, 
 	print_return_path_header     => 0,

@@ -2242,7 +2242,6 @@ sub _make_list_headers {
 	my %lh;
 	if($self->{list}){ 
 		
-		# if($self->{ls}->param('print_list_headers') != 0){ 	
 			$lh{List}               =   $self->{list};
 			$lh{'List-URL'}         =   '<' . $DADA::Config::PROGRAM_URL . '/list/'.$self->{list}  . '/>';
 			$lh{'List-Subscribe'}   =   '<' . $DADA::Config::PROGRAM_URL . '/u/'   . $self->{list} . '/>'; 
@@ -2283,7 +2282,6 @@ sub _make_list_headers {
 			}else{ 
 				carp "Net::Domain should be installed!";
 			}
-		# }
 	}
 	
 	

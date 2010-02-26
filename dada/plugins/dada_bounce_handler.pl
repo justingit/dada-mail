@@ -5715,11 +5715,6 @@ Notice there are no quotes around 0777.
 
 =back
 
-=item * The program is working great; but bounces aren't being handled at all
-
-Make sure that you have checked, B<Print list-specific headers in all list emails> in Mail Sending - Advanced Sending Preferences>. Mystery Girl uses the I<List> 
-header to figure out what list the bounce is coming from.
-
 =item * I found a bug in this program, what do I do? 
 
 Report it to the bug tracker: 

@@ -2653,7 +2653,6 @@ sub adv_sending_preferences {
                                                             #content_type_popup_menu       => $content_type_popup_menu, 
                                                             
                                                             strip_message_headers         => $li->{strip_message_headers}, 
-                                                            print_list_headers            => $li->{print_list_headers}, 
                                                             print_errors_to_header        => $li->{print_errors_to_header}, 
                                                             print_return_path_header      => $li->{print_return_path_header}, 
                                                             use_habeas_headers            => $li->{use_habeas_headers}, 
@@ -2680,7 +2679,6 @@ sub adv_sending_preferences {
         my $strip_message_headers     = $q->param('strip_message_headers')    || 0;
         my $print_return_path_header  = $q->param('print_return_path_header') || 0;
         my $print_errors_to_header    = $q->param('print_errors_to_header')   || 0;
-        my $print_list_headers          = $q->param('print_list_headers')       || 0;
         my $verp_return_path          = $q->param('verp_return_path')         || 0; 
         my $use_habeas_headers        = $q->param('use_habeas_headers')       || 0; 
 
@@ -2699,7 +2697,6 @@ sub adv_sending_preferences {
                    charset                  => $charset, 
                    #content_type             => $content_type,
                    strip_message_headers    => $strip_message_headers,
-                   print_list_headers       => $print_list_headers,
                    print_return_path_header => $print_return_path_header,
                    print_errors_to_header   => $print_errors_to_header, 
                    plaintext_encoding       => $plaintext_encoding, 
