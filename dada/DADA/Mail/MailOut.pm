@@ -666,21 +666,12 @@ sub countsubscriber {
         or croak "can't open '$file' because: $!";
 
 	if($^O =~ /solaris/g){ 
-	    # DEV For whatever reason (anyone?) Solaris DOES NOT like this type of locking. More research has be done..
 	     flock( FH, LOCK_SH ) 
 		        or croak "can't flock '$file' because: $!";
 	}
 	else { 
-		
-		if($^O =~ /solaris/g){ 
-		    flock( FH, LOCK_SH ) 
-		        or croak "can't flock '$file' because: $!";		
-		}
-		else { 
-		    flock( FH, LOCK_EX ) 
-		        or croak "can't flock '$file' because: $!";	
-		}			
-
+		flock( FH, LOCK_EX ) 
+			or croak "can't flock '$file' because: $!";	
 	}
 
 
@@ -712,14 +703,15 @@ sub countsubscriber {
     ) or croak "can't open '$file2' because: $!";
  
 
-	if($^O =~ /solaris/g){ 
-		flock( FH, LOCK_SH ) 
-			or croak "can't flock '$file2'  because: $!";
-   	}
-	else {
-		flock( FH, LOCK_EX )
-			or croak "can't flock '$file2'  because: $!";
-	}
+    if ( $^O =~ /solaris/g ) {
+        flock( FH, LOCK_SH )
+          or croak "can't flock '$file2'  because: $!";
+    }
+    else {
+        flock( FH, LOCK_EX )
+          or croak "can't flock '$file2'  because: $!";
+    }
+
 
     seek( FH, 0, 0 ) or croak "can't rewind counter: $!";
     truncate( FH, 0 ) or croak "can't truncate counter: $!";
@@ -796,13 +788,12 @@ sub pause {
 sub set_controlling_pid { 
 
  	my $self = shift;
-	my $pid = shift || die "You MUST pass the current pid!";
+	my $pid  = shift || die "You MUST pass the current pid!";
 	
 	my $file = make_safer($self->dir . '/' . $file_names->{pid});
 		
 	my $old_pid = undef; 
 	
-		
 	if(-e $self->dir . '/' . $file_names->{pid} ){ 
 		$old_pid = _poll($file);
 	}
