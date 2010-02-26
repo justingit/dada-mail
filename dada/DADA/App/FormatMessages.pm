@@ -435,18 +435,27 @@ sub _format_text {
 					}
 				
 				}
+
+				$content = $self->_apply_template(
+					-data => $content, 
+					-type => $entity->head->mime_type, 
+				);
 				
+				$content = $self->_unsubscriptionation(
+					-data => $content, 
+					-type => $entity->head->mime_type, 
+				);				
 				
 			   $content = $self->_parse_in_list_info(
 					-data => $content, 
 					-type => $entity->head->mime_type, 
 				);
 	
-				$content = $self->_apply_template(
-					-data => $content, 
-					-type => $entity->head->mime_type, 
-				);
-												
+
+				
+
+				
+											
 
 			    if($DADA::Config::GIVE_PROPS_IN_EMAIL == 1){ 
                     $content = $self->_give_props(
@@ -478,46 +487,48 @@ sub _format_text {
 
 
 
-
-sub _give_props { 
+sub _give_props {
 
     my $self = shift;
-    my %args = (-data => undef, -type => 'text/plain', @_); 
+    my %args = ( -data => undef, -type => 'text/plain', @_ );
 
-    if($DADA::Config::GIVE_PROPS_IN_EMAIL == 1){ 
-    
-    
-    
-        my $html_props = "\n" . '<p><a href="' . $DADA::Config::PROGRAM_URL . '/what_is_dada_mail/">Mailing List Powered by Dada Mail</a></p>' . "\n";
-        my $text_props = "\n\nMailing List Powered by Dada Mail\n$DADA::Config::PROGRAM_URL/what_is_dada_mail/";
-        
-        
+    if ( $DADA::Config::GIVE_PROPS_IN_EMAIL == 1 ) {
+
+        my $html_props = "\n"
+          . '<p><a href="'
+          . $DADA::Config::PROGRAM_URL
+          . '/what_is_dada_mail/">Mailing List Powered by Dada Mail</a></p>'
+          . "\n";
+        my $text_props =
+"\n\nMailing List Powered by Dada Mail\n$DADA::Config::PROGRAM_URL/what_is_dada_mail/";
+
         $args{-type} = 'HTML'      if $args{-type} eq 'text/html';
         $args{-type} = 'PlainText' if $args{-type} eq 'text/plain';
-           
-        if($args{-type} eq 'HTML'){ 
-           
-            if($args{-data} =~ m{<!--/signature-->}){ 
-                 $args{-data} =~ s{<!--/signature-->}{$html_props<!--/signature-->}i; 
-           }
-           elsif($args{-data} =~ m{</body>}){  
-           
-                $args{-data} =~ s{</body>}{$html_props</body>}i
-           
-           }
-           else { 
-            
-                $args{-data} = $args{-data} . $html_props
-            
+
+        if ( $args{-type} eq 'HTML' ) {
+
+            if ( $args{-data} =~ m{<!--/signature-->} ) {
+                $args{-data} =~
+                  s{<!--/signature-->}{$html_props<!--/signature-->}i;
             }
-        } 
-        else { 
-        
-            $args{-data} = $args{-data} .  $text_props;
+            elsif ( $args{-data} =~ m{</body>} ) {
+
+                $args{-data} =~ s{</body>}{$html_props</body>}i
+
+            }
+            else {
+
+                $args{-data} = $args{-data} . $html_props
+
+            }
+        }
+        else {
+
+            $args{-data} = $args{-data} . $text_props;
         }
 
     }
-    
+
     return $args{-data};
 
 }
@@ -790,7 +801,15 @@ sub _encode_header {
 	my $value      = shift; 
 	my $new_value  = undef; 
 	
-	if($label eq 'Subject' || $label eq 'just_phrase'){ 
+	if(
+	   $label eq 'Subject'           || 
+	   $label eq 'List'              ||
+	   $label eq 'List-URL'          || 
+	   $label eq 'List-Owner'        ||
+	   $label eq  'List-Subscribe'   ||
+	   $label eq  'List-Unsubscribe' ||
+	   $label eq 'just_phrase'
+	){ 
 
 		$new_value = 
 			MIME::EncWords::encode_mimewords(
@@ -1109,7 +1128,7 @@ sub _macro_tags {
 	my $self = shift; 
 	
 
-	my %args = (-url         => $DADA::Config::PROGRAM_URL, # Really.
+	my %args = (-url         => '<!-- tmpl_var PROGRAM_URL -->', # Really.
 				-email        => undef, 
 				-pin          => undef, 
 				-list         => $self->{list},
@@ -1308,6 +1327,57 @@ $new_data
 	return $new_data; 
 	
 }
+
+sub _unsubscriptionation { 
+	
+	my $self = shift; 
+	
+	my %args = (-data                => undef, 
+				-type                => undef, 
+				@_,
+				); 
+
+	die "no data! $!" if ! $args{-data}; 
+	die "no type! $!" if ! $args{-type}; 
+
+	my $unsub_url1 = quotemeta('<!-- tmpl_var list_unsubscribe_link -->'); 
+	my $unsub_url2 = quotemeta('[list_unsubscribe_link]'); 
+	my $unsub_url3 = quotemeta('<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->'); 
+	my $unsub_url4 = quotemeta('<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/'); 
+
+	if($args{-data} =~ m/$unsub_url1|$unsub_url2|$unsub_url3|$unsub_url4/) { 
+		# ... 
+	}
+	else { 
+		
+		warn 'couldnt find it in: ' . $args{-data};
+		
+		if($args{-type} eq 'text/html'){ 
+			$args{-data} .= '
+<p>
+Unsubscribe:
+</p>
+<p>
+<a href="<!-- tmpl_var list_unsubscribe_link -->">
+<!-- tmpl_var list_unsubscribe_link -->
+</a>
+</p>
+						  '; 
+		}
+		else { 
+			$args{-data} .= '
+			
+Unsubscribe: 
+<!-- tmpl_var list_unsubscribe_link -->
+			
+			'; 
+
+		}
+	}
+	
+	return $args{-data}; 
+}
+
 
 =pod
 
@@ -1723,7 +1793,7 @@ sub email_template {
     }
     $screen_vars{-dada_pseudo_tag_filter} = 1; 
     
-	foreach my $header('Subject', 'From', 'To', 'Reply-To', 'Errors-To', 'Return-Path', 'List-Unsubscribe'){ 
+	foreach my $header('Subject', 'From', 'To', 'Reply-To', 'Errors-To', 'Return-Path', 'List', 'List-URL', 'List-Owner', 'List-Subscribe', 'List-Unsubscribe'){ 
 				
 	    if($args->{-entity}->head->get($header, 0)){ 
 						
@@ -1777,12 +1847,14 @@ sub email_template {
             } 
             else { 
 	    
+				#if($header eq 'List-Unsubscribe'){ 
+					warn "header is: " . $header; 
+				#}
                 my $header_value = $args->{-entity}->head->get($header, 0);
                     $header_value = $self->_decode_header($header_value)
   						if $self->im_encoding_headers; 
 
                $args->{-entity}->head->delete($header);
-           
            
                 $header_value = DADA::Template::Widgets::screen(
                     {
@@ -1790,7 +1862,6 @@ sub email_template {
                         -data                   => \$header_value, 
                     }
                 ); 
-
                 $header_value = $self->_encode_header($header, $header_value)
 					if $self->im_encoding_headers; 
                 $args->{-entity}->head->add($header, $header_value); 
