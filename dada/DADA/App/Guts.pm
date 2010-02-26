@@ -305,11 +305,6 @@ sub check_email_pin {
     my $pin   = $args{ -Pin }   || undef;
     my $check = 0;
 
-	#die '$email "' . $email . '"'; 
-#	die '$list ' . $list; 
-#	die '$pin  '. $pin;
-	
-
 	require DADA::Security::Password; 
 	
     if (   defined($pin)
@@ -321,7 +316,6 @@ sub check_email_pin {
 			-crypt => 0,
 		 );
 		
-	#	die '$unencrypted_pin ' . $unencrypted_pin; 
         if ( DADA::Security::Password::check_password($pin, $unencrypted_pin) == 1) {
             return 1;
         }
