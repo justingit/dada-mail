@@ -923,13 +923,14 @@ sub mass_send {
 	    
 	my %fields = ( 
 				  %defaults,  
-				  
 				  $self->_make_general_headers, 
 				  $self->_make_list_headers, 
+				  $self->tagged_list_headers, 
 				   %param_headers, 
 				); 
 	
-				
+	use Data::Dumper; 
+	warn Dumper(\%fields); 		
 	#print q{ HERE: $fields{From} } .  $fields{From}; 
 	
 
@@ -938,8 +939,6 @@ sub mass_send {
     # save a copy of the message for later pickup.
     $self->saved_message($self->_massaged_for_archive(\%fields));
     
-    
-	$defaults{Body} =~ s/\[program_url\]/$DADA::Config::PROGRAM_URL/g; 	 
 
 	require DADA::MailingList::Subscribers;
 	       $DADA::MailingList::Subscribers::dbi_obj = $dbi_obj; 
@@ -1576,7 +1575,11 @@ sub mass_send {
 							-List        => $self->{list},  
 							-ls_obj      => $self->{ls},
 						); 
-						
+
+#use Data::Dumper; 
+#warn "BEFORE " . Dumper(\%fields);
+
+												
                 my %nfields = $self->_mail_merge(
 				    {
 				        -fields => \%fields,
@@ -1585,6 +1588,9 @@ sub mass_send {
 				    }
 				);
 
+#use Data::Dumper; 
+#warn "AFTER " . Dumper(\%nfields);
+				
 				# Debug Information, Always nice
                 $nfields{Debug} = {
                     -Messages_Sent    => $n_people, 
@@ -2213,6 +2219,21 @@ sub _Date {
 
 
 
+sub tagged_list_headers { 
+	
+	my $self = shift; 
+	my %lh = (); 
+	
+	$lh{'List'}             =   $self->{list};
+	$lh{'List-URL'}         =   '<<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/>';
+	$lh{'List-Subscribe'}   =   '<<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.emaiL_domain -->/>'; 
+	$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.emaiL_domain -->/>'; 
+	$lh{'List-Owner'}       =   '<<!-- tmpl_var list_settings.list_owner_email -->>';
+
+	return %lh;
+	
+}
+	
 
 
 sub _make_list_headers { 
@@ -2224,7 +2245,7 @@ sub _make_list_headers {
 		# if($self->{ls}->param('print_list_headers') != 0){ 	
 			$lh{List}               =   $self->{list};
 			$lh{'List-URL'}         =   '<' . $DADA::Config::PROGRAM_URL . '/list/'.$self->{list}  . '/>';
-			$lh{'List-Unsubscribe'} =   '<' . $DADA::Config::PROGRAM_URL . '/u/'   . $self->{list} . '/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.domain -->>'; 
+			$lh{'List-Subscribe'}   =   '<' . $DADA::Config::PROGRAM_URL . '/u/'   . $self->{list} . '/>'; 
 			$lh{'List-Subscribe'}   =   '<' . $DADA::Config::PROGRAM_URL . '/s/'   . $self->{list} . '/>'; 
 			
 			$lh{'List-Owner'}       =   '<' . $self->{ls}->param('list_owner_email').'>';
