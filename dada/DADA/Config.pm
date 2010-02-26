@@ -4349,9 +4349,9 @@ encrypted.
 	editable_headers             => 'Subject', 
  	
 	#blacklist 
-	black_list                           => 0,
+	black_list                           => 1,
 	add_unsubs_to_black_list             => 1,
-	allow_blacklisted_to_subscribe       => 0,
+	allow_blacklisted_to_subscribe       => 1,
 	allow_admin_to_subscribe_blacklisted => 0,
 
 
