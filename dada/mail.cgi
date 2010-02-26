@@ -6530,10 +6530,16 @@ sub resend_conf {
         return; 
     }
     
-    if($q->param('rm') ne 's' && $q->param('rm') ne 'u'){ 
-        &default;
-        return; 
+    if(
+		$q->param('rm') eq 's' ||
+		$q->param('rm') eq 'u'
+	){ 
+		# ... 
     }
+	else { 
+		&default;
+        return;
+	}
     
     if($q->request_method() !~ m/POST/i){ 
         &default;
@@ -6559,15 +6565,12 @@ sub resend_conf {
 							-Pin   => xss_filter($q->param('auth_code')), 
 							-List  => $list, 
 							) 
-							== 1
+							== 0
 	){ 
-
+	
 		my ($e_day, $e_month, $e_stuff) = split('.', $email); 
 
 		#  Ah, I see, it only is blocked for a... day? 
-		#  But why have this check here? Shouldn't we have this check before we say, 
-		#  "hey you can't confirm a subscription again?",  place? 
-		#  Probably. 
 		if($e_day != $day || $e_month != $month){ 
 			# a stale blocking thingy.
 			if($q->param('rm') eq 's'){
@@ -6577,7 +6580,9 @@ sub resend_conf {
 						-type  => 'sub_confirm_list'
 					}
 				);    
-			}elsif($q->param('rm') eq 'u'){
+			}
+			elsif($q->param('rm') eq 'u'){
+				
 				my $rm_status = $lh->remove_subscriber(
 					{
 						-email => $email, 
@@ -6587,20 +6592,12 @@ sub resend_conf {
 			}
 		}
 
-		# Like, you clicked the submit button wrong, what?!
-		# Yeah, I guess - but this does not take into account Subscriber Profile Fields! 
-		# What to do - just filled them into the CGI obj? (but we just removed them, correct? 
-			
-		#die "Yes this worked!"; 
-	#	$q->param('f', $q->param('rm')); # at the very least, set the radio
-		 								 # button to the right thingy 
 		
 		list_page(); 
 		return; 
 	}
 	else { 
     
-		#die "No, this didn't work!"; 
 
 	    if($q->param('rm') eq 's'){
 		
@@ -6636,10 +6633,6 @@ sub resend_conf {
 			$q->param('list', $list);
 			$q->param('email', $email); 
 			$q->param('f', 'u'); 
-
-			# And then, the Subscriber Profile Fields...
-			# ... 
-			# Well, we always pull the sub info from the, "list" sublist, no?x
 
 			&unsubscribe; 
 	        return; 
