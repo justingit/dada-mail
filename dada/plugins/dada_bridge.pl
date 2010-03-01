@@ -3979,7 +3979,7 @@ Mailing List Security
         </table> 
       
        <p> 
-        Messages must reach a SpamAssassin level of at least: <!-- tmpl_var list_settings.spam_level_popup_menu --> to be considered SPAM.
+        Messages must reach a SpamAssassin level of at least: <!-- tmpl_var spam_level_popup_menu --> to be considered SPAM.
        </p> 
 
       </td>
