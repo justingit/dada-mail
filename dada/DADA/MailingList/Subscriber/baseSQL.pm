@@ -9,10 +9,11 @@ use DADA::App::Guts;
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
 
 
+
+
 sub add {
 
     my $class = shift;
-
     my ($args) = @_;
 	
 	my $lh = undef; 
@@ -46,7 +47,35 @@ sub add {
 	if(!exists($args->{ -confirmed } )){ 
 		$args->{ -confirmed } = 1; 
 	}
-
+	
+	# DEV: BAD: This code is copy/pasted in PlainText.pm
+	if(!exists($args->{ -dupe_check }->{-enable} )) { 
+			$args->{ -dupe_check }->{-enable} = 0;
+	}
+	if(!exists($args->{ -dupe_check }->{-on_dupe} )) { 
+			$args->{ -dupe_check }->{-on_dupe} = 'ignore_add';
+	}
+	if($args->{ -dupe_check }->{-enable} == 1){ 
+		if($lh->check_for_double_email(
+	        -Email => $args->{ -email },
+	        -Type  => $args->{ -type }
+	    ) == 1){
+			if($args->{ -dupe_check }->{-on_dupe} eq 'error'){ 
+				croak 'attempt to to add: "' . $args->{ -email } . '" to list: "' . $args->{ -list } . '.' . $args->{ -type } . '" (email already subcribed)'; 
+			}
+			elsif($args->{ -dupe_check }->{-on_dupe} eq 'ignore_add'){ 
+				return 0; 
+			}
+			else { 
+				croak "unknown option, " . $args->{ -dupe_check }->{-on_dupe}; 
+			}
+		}
+		else { 
+			#... 
+		}
+	}
+	# else: 
+	
     my $query =
       'INSERT INTO '
       . $DADA::Config::SQL_PARAMS{subscriber_table}

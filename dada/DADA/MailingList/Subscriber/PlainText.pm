@@ -8,7 +8,7 @@ use DADA::App::Guts;
 
 sub add {
 
-    my $class = shift;
+    my $self = shift;
 
     my ($args) = @_;
     my $lh =
@@ -28,6 +28,36 @@ sub add {
         $args->{ -fields } = {};
     }
 
+
+	# DEV: BAD: This code is copy/pasted in PlainText.pm
+	if(!exists($args->{ -dupe_check }->{-enable} )) { 
+			$args->{ -dupe_check }->{-enable} = 0;
+	}
+	if(!exists($args->{ -dupe_check }->{-on_dupe} )) { 
+			$args->{ -dupe_check }->{-on_dupe} = 'ignore_add';
+	}
+	if($args->{ -dupe_check }->{-enable} == 1){ 
+		if($lh->check_for_double_email(
+	        -Email => $args->{ -email },
+	        -Type  => $args->{ -type }
+	    ) == 1){
+			if($args->{ -dupe_check }->{-on_dupe} eq 'error'){ 
+				croak 'attempt to to add: "' . $args->{ -email } . '" to list: "' . $args->{ -list } . '.' . $args->{ -type } . '" (email already subcribed)'; 
+			}
+			elsif($args->{ -dupe_check }->{-on_dupe} eq 'ignore_add'){ 
+				return 0; 
+			}
+			else { 
+				croak "unknown option, " . $args->{ -dupe_check }->{-on_dupe}; 
+			}
+		}
+		else { 
+			#... 
+		}
+	}
+	# else:
+		
+
     my $write_list = $args->{ -list };
     $write_list =~ s/ /_/i;
 
@@ -43,7 +73,6 @@ sub add {
     chomp( $args->{ -email } );
     $args->{ -email } = strip( $args->{ -email } );
     print $LIST $args->{ -email } . "\n";
-
     close($LIST);
 
     my $added = DADA::MailingList::Subscriber->new(

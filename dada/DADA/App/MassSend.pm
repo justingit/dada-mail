@@ -934,7 +934,11 @@ sub list_invite {
                     -email         => $info->{email}, 
                     -fields        => $info->{fields},
 					-type          => 'sub_confirm_list', 
-                }
+				    -dupe_check    => {
+										-enable  => 1, 
+										-on_dupe => 'ignore_add',  
+                					}, 
+				}
             );
 
  		}
