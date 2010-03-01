@@ -755,6 +755,12 @@ diag $contents;
 
    $ls->save({
        enable_bulk_batching => 0,
+
+		# My tests here don't take into consideration email encoding, so this 
+		# Kind of hacks unsupport in: 
+		
+		plaintext_encoding => '8bit', 
+		html_encoding      => '8bit', 
    
    });
 

@@ -2721,20 +2721,18 @@ sub _massaged_for_archive {
 	foreach(@DADA::Config::EMAIL_HEADERS_ORDER){ 
 		next if $_ eq 'Body'; 
 		next if $_ eq 'Message'; # Do I need this?!
-=cut
 		
-		# Currently, it only looks like the subject is giving us worries: 
-		# (But, it really should be everything) 
-		if($_ =~ m/Subject|From|To|Reply\-To|Errors\-To|Return\-Path/){ 
-			my $fm = DADA::App::FormatMessages->new(-List => $self->{list}); 
-			# What if it's already encoded? DORK?!
-			$fields->{$_} = $fm->_encode_header($_, $fields->{$_});  
-			
-		}
-		else { 
-			#
-		}
-=cut		
+#		# Currently, it only looks like the subject is giving us worries: 
+#		# (But, it really should be everything) 
+#		if($_ =~ m/Subject|From|To|Reply\-To|Errors\-To|Return\-Path/){ 
+#			my $fm = DADA::App::FormatMessages->new(-List => $self->{list}); 
+#			# What if it's already encoded? DORK?!
+#			$fields->{$_} = $fm->_encode_header($_, $fields->{$_});  
+#			
+#		}
+#		else { 
+#			#
+#		}
 		$msg .= $_ . ': ' . $fields->{$_} . "\n"
 		if((defined $fields->{$_}) && ($fields->{$_} ne ""));
 

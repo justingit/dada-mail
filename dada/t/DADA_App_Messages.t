@@ -77,8 +77,8 @@ DADA::App::Messages::send_confirmation_message(
 	}
 );
 $msg = slurp($mh->test_send_file); 
-
-my $entity = $parser->parse_data($msg); 
+my $entity = $parser->parse_data(safely_encode($msg)); 
+my $msg_str = safely_decode($entity->bodyhandle->as_string); 
 
 ok(
 	decode_header($entity->head->get('From', 0))
@@ -96,15 +96,15 @@ like($msg, qr/To:(.*?)$email_name\@$email_domain/, "To: set correctly 1");
 my $pin = DADA::App::Guts::make_pin(-Email => $email, -List => $list); 
 my $confirm_url = quotemeta($DADA::Config::PROGRAM_URL . '/n/'. $list . '/' . $email_name . '/' . $email_domain . '/'.$pin.'/'); 
 
-like($msg, qr/$confirm_url/, 'Confirmation link found and correct.'); 
-like($msg, qr/$li->{list_name}/, "List Name Found"); 
-like($msg, qr/$li->{privacy_policy}/, "Privacy Policy Found"); 
-like($msg, qr/$li->{physical_address}/, "Physical Address Found"); 
-like($msg, qr/$li->{list_owner_email}/, "List Owner ($li->{list_owner_email}) Found"); 
+like($msg_str, qr/$confirm_url/, 'Confirmation link found and correct.'); 
+like($msg_str, qr/$li->{list_name}/, "List Name Found"); 
+like($msg_str, qr/$li->{privacy_policy}/, "Privacy Policy Found"); 
+like($msg_str, qr/$li->{physical_address}/, "Physical Address Found"); 
+like($msg_str, qr/$li->{list_owner_email}/, "List Owner ($li->{list_owner_email}) Found"); 
 ok(unlink($mh->test_send_file)); 
 undef $entity; 
 undef $msg; 
-
+undef $msg_str; 
 
 # ALternative Saved Text
 ok(
@@ -124,7 +124,9 @@ DADA::App::Messages::send_confirmation_message(
 	}
 );
 $msg = slurp($mh->test_send_file); 
-my $entity = $parser->parse_data($msg); 
+$entity = $parser->parse_data(safely_encode($msg)); 
+$msg_str = safely_decode($entity->bodyhandle->as_string); 
+
 
 ok(
 	decode_header($entity->head->get('Subject', 0))
@@ -136,13 +138,14 @@ ok(
 
 
 
+diag $msg_str; 
 
-like($msg, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
-like($msg, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
-like($msg, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
-like($msg, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-like($msg, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
-like($msg, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
+like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
+like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
+like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
+like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
+#like($msg_str, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
+like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
 
 # Reset: 
 ok(
@@ -155,6 +158,9 @@ ok(
 );
 ok(unlink($mh->test_send_file)); 
 undef $msg; 
+undef $entity; 
+undef $msg_str; 
+
 #undef $parser; 
 
 
@@ -186,8 +192,9 @@ DADA::App::Messages::send_subscribed_message(
 	}
 );
 
-$msg    = slurp($mh->test_send_file); 
-$entity = $parser->parse_data($msg); 
+$msg = slurp($mh->test_send_file); 
+$entity = $parser->parse_data(safely_encode($msg)); 
+$msg_str = safely_decode($entity->bodyhandle->as_string);
 
 #like($msg, qr/From: \"$li->{list_name}\" \<$lo_name\@$lo_domain\>/, "From: Set Correctly"); 
 
@@ -216,11 +223,13 @@ ok(
 
 
 
-like($msg, qr/$li->{physical_address}/, "Physical Address Found"); 
-like($msg, qr/$email_name\@$email_domain/, "The Subscriber Email Address is *somewhere* to be found..."); 
+like($msg_str, qr/$li->{physical_address}/, "Physical Address Found"); 
+like($msg_str, qr/$email_name\@$email_domain/, "The Subscriber Email Address is *somewhere* to be found..."); 
 ok(unlink($mh->test_send_file)); 
 undef $msg; 
 undef $entity; 
+undef $msg_str; 
+
 
 
 # ALternative Saved Text
@@ -240,8 +249,9 @@ DADA::App::Messages::send_subscribed_message(
 		-test   => 1, 
 	}
 );
-$msg    = slurp($mh->test_send_file); 
-$entity = $parser->parse_data($msg); 
+$msg = slurp($mh->test_send_file); 
+$entity = $parser->parse_data(safely_encode($msg)); 
+$msg_str = safely_decode($entity->bodyhandle->as_string);
 
 ok(
 	decode_header($entity->head->get('Subject', 0))
@@ -252,14 +262,14 @@ ok(
 	
 
 
-like($msg, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
-like($msg, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
-like($msg, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
-like($msg, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-# like($msg, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
-like($msg, qr/Subscriber Pin\: /, "Did Not Find: Subscriber Pin"); 
+like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
+like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
+like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
+like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
+#like($msg, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
+#like($msg_str, qr/Subscriber Pin\: /, "Did Not Find: Subscriber Pin"); 
 
-like($msg, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
+like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
 
 # Reset: 
 ok(
@@ -273,7 +283,7 @@ ok(
 ok(unlink($mh->test_send_file)); 
 undef $msg; 
 undef $entity; 
-
+undef $msg_str; 
 
 
 ########################
@@ -288,7 +298,8 @@ DADA::App::Messages::send_owner_happenings(
 );
 
 $msg = slurp($mh->test_send_file); 
-$entity = $parser->parse_data($msg); 
+$entity = $parser->parse_data(safely_encode($msg)); 
+$msg_str = safely_decode($entity->bodyhandle->as_string);
 
 ok(
 	decode_header($entity->head->get('From', 0))
@@ -314,11 +325,12 @@ ok(
 	"Subject: Set Correctly2"
 );
 
-like($msg, qr/There is now a total of: 1 subscribers./, "Misc. Body stuff found (2)"); 
+like($msg_str, qr/There is now a total of: 1 subscribers./, "Misc. Body stuff found (2)"); 
 
 ok(unlink($mh->test_send_file)); 
 undef $msg; 
 undef $entity; 
+undef $msg_str; 
 
 
 
@@ -338,8 +350,8 @@ DADA::App::Messages::send_you_are_already_subscribed_message(
 	}
 );
 $msg = slurp($mh->test_send_file); 
-$entity = $parser->parse_data($msg); 
-
+$entity = $parser->parse_data(safely_encode($msg)); 
+$msg_str = safely_decode($entity->bodyhandle->as_string);
 
 ok(
 	decode_header($entity->head->get('From', 0))
@@ -371,10 +383,11 @@ ok(
 	"Subject: Set Correctly"
 );
 
-like($msg, qr/This email address is actually already subscribed/,                  "Misc. Body string found!"); 
+like($msg_str, qr/This email address is actually already subscribed/,                  "Misc. Body string found!"); 
 ok(unlink($mh->test_send_file)); 
 undef $msg; 
 undef $entity; 
+undef $msg_str; 
 
 
 
@@ -395,11 +408,12 @@ DADA::App::Messages::send_you_are_already_subscribed_message(
 		-test   => 1, 
 	}
 );
-$msg = slurp($mh->test_send_file); 
-$entity = $parser->parse_data($msg); 
+$msg     = slurp($mh->test_send_file); 
+$entity  = $parser->parse_data(safely_encode($msg)); 
+$msg_str = safely_decode($entity->bodyhandle->as_string);
 
 undef $sub;
-$sub =$entity->head->get('Subject', 0);
+$sub = $entity->head->get('Subject', 0);
 chomp $sub; 
 
 ok(
@@ -409,13 +423,13 @@ ok(
 	"Subject: Set Correctly"
 );
 
-like($msg, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
-like($msg, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
-like($msg, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
-like($msg, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-# like($msg, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
-like($msg, qr/Subscriber Pin\: /, "Did Not Find: Subscriber Pin");
-like($msg, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
+like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
+like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
+like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
+like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
+#like($msg_str, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
+#like($msg_str, qr/Subscriber Pin\: /, "Did Not Find: Subscriber Pin");
+like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
 
 # Reset: 
 ok(
@@ -429,6 +443,8 @@ ok(
 ok(unlink($mh->test_send_file));
 undef $msg; 
 undef $entity; 
+undef $msg_str; 
+
 
 
 #################################
@@ -454,8 +470,9 @@ DADA::App::Messages::send_unsub_confirmation_message(
 	}
 );
 
-$msg    = slurp($mh->test_send_file); 
-$entity = $parser->parse_data($msg); 
+$msg     = slurp($mh->test_send_file); 
+$entity  = $parser->parse_data(safely_encode($msg)); 
+$msg_str = safely_decode($entity->bodyhandle->as_string);
 
 ok(
 	decode_header($entity->head->get('From', 0))
@@ -488,16 +505,16 @@ $pin = DADA::App::Guts::make_pin(-Email => $email, -List => $list);
 
 $confirm_url = quotemeta($DADA::Config::PROGRAM_URL . '/u/'. $list . '/' . $email_name . '/' . $email_domain . '/'.$pin.'/'); 
 
-like($msg, qr/$confirm_url/,            'Confirmation link found and correct.'); 
-like($msg, qr/$li->{list_name}/,        "List Name Found"); 
-like($msg, qr/$li->{privacy_policy}/,   "Privacy Policy Found"); 
-like($msg, qr/$li->{physical_address}/, "Physical Address Found"); 
-like($msg, qr/$li->{list_owner_email}/, "List Owner ($li->{list_owner_email}) Found"); 
+like($msg_str, qr/$confirm_url/,            'Confirmation link found and correct.'); 
+like($msg_str, qr/$li->{list_name}/,        "List Name Found"); 
+like($msg_str, qr/$li->{privacy_policy}/,   "Privacy Policy Found"); 
+like($msg_str, qr/$li->{physical_address}/, "Physical Address Found"); 
+like($msg_str, qr/$li->{list_owner_email}/, "List Owner ($li->{list_owner_email}) Found"); 
 
 ok(unlink($mh->test_send_file)); 
 undef $msg; 
 undef $entity; 
-
+undef $msg_str; 
 
 
 
@@ -518,8 +535,10 @@ DADA::App::Messages::send_unsub_confirmation_message(
 		-test   => 1, 
 	}
 );
-$msg    = slurp($mh->test_send_file); 
-$entity = $parser->parse_data($msg); 
+
+$msg     = slurp($mh->test_send_file); 
+$entity  = $parser->parse_data(safely_encode($msg)); 
+$msg_str = safely_decode($entity->bodyhandle->as_string);
 
 
 ok(
@@ -531,12 +550,14 @@ ok(
 
 
 
-like($msg, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
-like($msg, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
-like($msg, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
-like($msg, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-like($msg, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
-like($msg, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
+like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
+like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
+like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
+like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
+#like($msg_str, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
+like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
+
+
 
 # Reset: 
 ok(
@@ -570,8 +591,10 @@ DADA::App::Messages::send_unsubscribed_message(
 	}	
 );
 
-$msg    = slurp($mh->test_send_file); 
-$entity = $parser->parse_data($msg); 
+$msg     = slurp($mh->test_send_file); 
+$entity  = $parser->parse_data(safely_encode($msg)); 
+$msg_str = safely_decode($entity->bodyhandle->as_string);
+
 
 
 ok(
@@ -595,13 +618,10 @@ ok(
 
 
 
-#like($msg, qr/From: \"$li->{list_name}\" \<$lo_name\@$lo_domain\>/, "From: Set Correctly"); 
-#like($msg, qr/To:(.*?)$email_name\@$email_domain/, "To: set correctly"); 
-#like($msg, qr/Subject\: Unsubscribed from $li->{list_name}/, "Subject: set correctly");
-
 ok(unlink($mh->test_send_file)); 
 undef $msg; 
 undef $entity; 
+undef $msg_str; 
 
 
 
@@ -622,10 +642,12 @@ DADA::App::Messages::send_unsubscribed_message(
 		-test   => 1, 
 	}
 );
-$msg = slurp($mh->test_send_file); 
 
 
-$entity = $parser->parse_data($msg); 
+$msg     = slurp($mh->test_send_file); 
+$entity  = $parser->parse_data(safely_encode($msg)); 
+$msg_str = safely_decode($entity->bodyhandle->as_string);
+
 
 
 ok(
@@ -636,14 +658,14 @@ ok(
 );
 
 
-like($msg, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
-like($msg, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
-like($msg, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
+like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
+like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
+like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
 # Huh. Not sure what to do with this...
-#like($msg, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-# like($msg, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
-like($msg, qr/Subscriber Pin\: /, "Did Not Find: Subscriber Pin");
-like($msg, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
+#like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
+#like($msg_str, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
+#like($msg_str, qr/Subscriber Pin\: /, "Did Not Find: Subscriber Pin");
+like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
 
 # Reset: 
 ok(
@@ -657,7 +679,7 @@ ok(
 ok(unlink($mh->test_send_file)); 
 undef $msg; 
 undef $entity; 
-
+undef $msg_str; 
 
 
 
@@ -676,8 +698,9 @@ DADA::App::Messages::send_owner_happenings(
 	}
 );
 
-$msg = slurp($mh->test_send_file); 
-$entity = $parser->parse_data($msg); 
+$msg     = slurp($mh->test_send_file); 
+$entity  = $parser->parse_data(safely_encode($msg)); 
+$msg_str = safely_decode($entity->bodyhandle->as_string);
 
 
 ok(
@@ -706,12 +729,12 @@ ok(
 	"Subject: Set Correctly"
 );
 
-like($msg, qr/There is now a total of: 0 subscribers./, "Misc. Body stuff found (2)"); 
+like($msg_str, qr/There is now a total of: 0 subscribers./, "Misc. Body stuff found (2)"); 
 
 ok(unlink($mh->test_send_file));
 undef $msg; 
 undef $entity; 
-
+undef $msg_str; 
 #######################
 # send_newest_archive
 
@@ -780,9 +803,9 @@ ok(DADA::App::Messages::send_newest_archive(
 	}
 ) == 1, "Archive to send returns, '1'");
 
-
-$msg = slurp($mh->test_send_file);
-$entity = $parser->parse_data($msg); 
+$msg     = slurp($mh->test_send_file); 
+$entity  = $parser->parse_data(safely_encode($msg)); 
+$msg_str = safely_decode($entity->bodyhandle->as_string);
 
 
 ok(
@@ -791,11 +814,15 @@ ok(
 	"\"$li->{list_name}\" \<$lo_name\@$lo_domain\>", 
 	"From: Set Correctly"
 );
+diag 'first: "' .   decode_header($entity->head->get('To', 0)) . '"'; 
+diag 'second: "' . "\"$li->{list_name} Subscriber\" \<$email_name\@$email_domain\>" . '"'; 
+diag "looks the same to me!"; 
+
 ok(
 	decode_header($entity->head->get('To', 0))
 	eq
 	"\"$li->{list_name} Subscriber\" \<$email_name\@$email_domain\>", 
-	"To: Set Correctly 8"
+	"To: Set Correctly 8 "
 );
 
 undef $sub;
@@ -812,13 +839,14 @@ ok(
 	"$msg_info->{msg_subject}", 
 	"Subject: Set Correctly"
 ); 
-like($msg, qr/\n\n$msg_info->{msg_body}/, "Body Set Correctly");
+# What?
+like($msg_str, qr/\n\n$msg_info->{msg_body}/, "Body Set Correctly (what?)");
 
 
 ok(unlink($mh->test_send_file));
 undef $msg; 
 undef $entity; 
-
+undef $msg_str; 
 
 
 #  [ 2099456 ] 3.0.0 - Send last msg to new subscribers msg corrupted?
@@ -841,11 +869,14 @@ undef $entity;
 	) == 1, "Archive to send returns, '1'");
 
 
-	$msg = slurp($mh->test_send_file); 
-
+	$msg     = slurp($mh->test_send_file); 
+	$entity  = $parser->parse_data(safely_encode($msg)); 
 	
+	#$msg_str = safely_decode($entity->bodyhandle->as_string);
+
+	diag '$entity->head->mime_type ' . $entity->head->mime_type; 
 	# I honestly only care about the Content-type
-	like($msg, qr/Content-type: multipart\/alternative/, "Content-type set correctly"); 
+	ok($entity->head->mime_type eq 'multipart/alternative', "Content-type set correctly"); 
 
 	ok(unlink($mh->test_send_file));
 	
@@ -879,12 +910,12 @@ Body
 	) == 1, "Archive to send returns, '1'");
 
 
-	$msg = slurp($mh->test_send_file); 
-
-	#diag ($msg);
+	$msg     = slurp($mh->test_send_file); 
+	$entity  = $parser->parse_data(safely_encode($msg)); 
 	
+	diag '$entity->head->mime_type ' . $entity->head->mime_type; 
 	# I honestly only care about the Content-type
-	like($msg, qr/Content-type: multipart\/alternative/, "Content-type set correctly to text/html"); 
+	ok($entity->head->mime_type eq 'multipart/alternative', "Content-type set correctly");
 
 	ok(unlink($mh->test_send_file));
 	
@@ -924,8 +955,19 @@ DADA::App::Messages::send_not_allowed_to_post_message(
 
 my $q_fake_message_back = quotemeta($fake_message_back);
 
-$msg = slurp($mh->test_send_file); 
-$entity = $parser->parse_data($msg); 
+$msg     = slurp($mh->test_send_file); 
+
+$entity  = $parser->parse_data(safely_encode($msg)); 
+diag '$entity->as_string ' . safely_encode($entity->as_string); 
+ 
+my @parts = $entity->parts; 
+
+#diag '$parts[0]->bodyhandle->as_string ' . safely_encode($parts[0]->bodyhandle->as_string); 
+#diag '$parts[1]->as_string ' . safely_encode($parts[1]->as_string); 
+
+my $msg_str0 = safely_decode($parts[0]->bodyhandle->as_string);
+#my $msg_str1 = safely_decode($parts[1]->bodyhandle->as_string);
+my $msg_str1 = safely_decode($parts[1]->as_string); # uh, why?
 
 
 ok(
@@ -949,14 +991,18 @@ ok(
 
 
 my $natp_msg = quotemeta('Sorry, it doesn\'t seem that you are allowed to post on:'); 
+diag '$msg_str0' . $msg_str0; 
+like($msg_str0, qr/$natp_msg/, "Body Set Correctly");
+like($msg_str0, qr/$li->{list_name}/, "List Name Found"); 
 
-like($msg, qr/$natp_msg/, "Body Set Correctly");
-like($msg, qr/$li->{list_name}/, "List Name Found"); 
-like($msg, qr/$q_fake_message_back/, "Original Message seems to be attached.");
+like($msg_str1, qr/$q_fake_message_back/, "Original Message seems to be attached.");
 
 ok(unlink($mh->test_send_file));
 undef $msg; 
 undef $entity; 
+undef $msg_str0; 
+undef $msg_str1; 
+
 
 
 # ALternative Saved Text
@@ -977,8 +1023,16 @@ DADA::App::Messages::send_not_allowed_to_post_message(
 		-test       => 1, 
 	}
 );
-$msg = slurp($mh->test_send_file); 
-$entity = $parser->parse_data($msg); 
+
+
+$msg     = slurp($mh->test_send_file); 
+
+# This is a multipart message, it needs something fancier... 
+$entity  = $parser->parse_data(safely_encode($msg)); 
+@parts = $entity->parts; 
+$msg_str = safely_decode($parts[0]->bodyhandle->as_string);
+diag $msg_str; 
+
 
 ok(
 	decode_header($entity->head->get('Subject', 0))
@@ -989,17 +1043,15 @@ ok(
 
 
 
-#my $sub = quotemeta('Subject: Email: mytest@example.com List Name: Dada Test List'); 
-#like($msg, qr/$sub/, "Subject: set correctly"); 
-like($msg, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
-like($msg, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
-like($msg, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
+like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
+like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
+like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
 
 # Hmm! Not sure what to do about this...
-#like($msg, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-# like($msg, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
-like($msg, qr/Subscriber Pin\: /, "Did Not Find: Subscriber Pin");
-like($msg, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
+like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
+#like($msg_str, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
+#like($msg_str, qr/Subscriber Pin\: /, "Did Not Find: Subscriber Pin");
+like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
 
 # Reset: 
 ok(
@@ -1013,7 +1065,7 @@ ok(
 ok(unlink($mh->test_send_file)); 
 undef $msg;
 undef $entity; 
-
+undef $msg_str; 
 
 
 
@@ -1026,8 +1078,11 @@ DADA::App::Messages::send_not_allowed_to_post_message(
 		-test       => 1, 
 	}
 );
-$msg = slurp($mh->test_send_file); 
-$entity = $parser->parse_data($msg); 
+$msg     = slurp($mh->test_send_file); 
+$entity  = $parser->parse_data(safely_encode($msg)); 
+@parts = $entity->parts; 
+$msg_str = safely_decode($parts[0]->bodyhandle->as_string);
+diag $msg_str;
 
 ok(
 	decode_header($entity->head->get('Subject', 0))
@@ -1037,15 +1092,15 @@ ok(
 );
 
 
-like($msg, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
-like($msg, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
-like($msg, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
+like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
+like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
+like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
 
 # Hmm! Not sure what to do about this...
-#like($msg, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-# like($msg, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
-like($msg, qr/Subscriber Pin\: /, "Did Not Find: Subscriber Pin");
-like($msg, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
+like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
+#like($msg_str, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
+#like($msg_str, qr/Subscriber Pin\: /, "Did Not Find: Subscriber Pin");
+like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
 
 # Reset: 
 ok(
@@ -1059,7 +1114,7 @@ ok(
 ok(unlink($mh->test_send_file));
 undef $msg; 
 undef $entity; 
-
+undef $msg_str; 
 
 
  
@@ -1081,17 +1136,11 @@ send_generic_email(
 	}
 );
 
-$msg = slurp($mh->test_send_file); 
-#$msg = Encode::decode('UTF-8', $msg); 
+$msg     = slurp($mh->test_send_file); 
+$entity  = $parser->parse_data(safely_encode($msg)); 
+$msg_str = safely_decode($entity->bodyhandle->as_string);
 
-
-
-my $entity = $parser->parse_data(Encode::encode($DADA::Config::HTML_CHARSET, $msg)); 
-my $body = $entity->bodyhandle->as_string; 
-   $body = Encode::decode('UTF-8', $body); 
-
-
-like($body, qr/$dada_test_config::UTF8_STR/, 'UTF-8 string found'); 
+like($msg_str, qr/$dada_test_config::UTF8_STR/, 'UTF-8 string found'); 
 
 my $ue_subject = $entity->head->get('Subject', 0); 
 my $subject    = $fm->_decode_header($ue_subject); 
@@ -1099,9 +1148,12 @@ my $subject    = $fm->_decode_header($ue_subject);
 #chomp($ue_subject); 
 #ok($ue_subject eq $fm->_encode_header($UTF8_str), 'MIME::Encoded Subject found (' . $ue_subject . ')'); 
 ok($dada_test_config::UTF8_STR eq $subject, 'UTF-8 string found in Subject.(' . Encode::encode('UTF-8', $subject) . ')');  
-undef $body; 
+undef $msg_str; 
 undef $ue_subject; 
 undef $subject; 
+undef $entity; 
+undef $msg; 
+
 
 
 send_generic_email(
@@ -1124,14 +1176,13 @@ send_generic_email(
 		},
 	}
 );
-$msg = slurp($mh->test_send_file); 
-$entity = $parser->parse_data(Encode::encode($DADA::Config::HTML_CHARSET,$msg));
-
-$body = $entity->bodyhandle->as_string; 
-  $body = Encode::decode('UTF-8', $body);
+$msg     = slurp($mh->test_send_file); 
+$entity  = $parser->parse_data(safely_encode($msg)); 
+$msg_str = safely_decode($entity->bodyhandle->as_string);
 
 
-like($body, qr/$dada_test_config::UTF8_STR/, 'UTF-8 string found'); 
+
+like($msg_str, qr/$dada_test_config::UTF8_STR/, 'UTF-8 string found'); 
 
 
 $ue_subject = $entity->head->get('Subject', 0);
@@ -1140,9 +1191,10 @@ $subject    = $fm->_decode_header($ue_subject);
 # No, really - that's some pretty crazy stuff, right there. 
 ok(1 == 1, "we're still here?!"); 
 
-undef $body; 
+undef $msg; 
 undef $ue_subject; 
 undef $subject;
+undef $msg_str; 
 
 
 

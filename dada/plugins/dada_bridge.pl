@@ -3289,7 +3289,7 @@ sub inject {
     if ( $ls->param('disable_discussion_sending') != 1 ) {
         my ( $status, $errors );
 
-        #eval {
+        eval {
 
             ( $status, $errors ) = validate_msg( $list, \$msg, $li );
             if ($status) {
@@ -3321,8 +3321,8 @@ sub inject {
 
             }
 
-  #      };
-=cut
+        };
+
 
         if ($@) {
 
@@ -3336,11 +3336,10 @@ sub inject {
         }
 
         else {
-=cut
 
             return ( $status, $errors );
 
-#        }
+       }
 
     }
     else {
