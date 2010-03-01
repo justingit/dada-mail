@@ -570,10 +570,26 @@ sub schedule_index {
 	   
 	   }; 
 	   
-	   
+	
+	my %sched_rows = (); 
+
 	foreach($mss->record_keys){ 
-		$r .= schedule_row($_); 
+		my $next_mailing = $mss->mailing_schedule($_)->[0];
+
+		if(!exists($sched_rows{$next_mailing})){ 
+			$sched_rows{$next_mailing} = schedule_row($_);
+		}
+		else { 
+			$sched_rows{$next_mailing . '.' . time} = schedule_row($_);
+			sleep(1); #dumb; 
+		}
 	}
+	#foreach(keys)
+	foreach(sort keys %sched_rows){ 
+		$r .= $sched_rows{$_}; 
+	}	 
+
+
 	   $r .= '</table>';
 	   
 	$r .= ($q->p({-align => 'right'}, '<div class="buttonfloat">', 
