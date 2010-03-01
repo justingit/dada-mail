@@ -2698,11 +2698,9 @@ sub archive {
         my $la = DADA::MailingList::Archives->new( { -list => $list } );
 
         my $entity;
-
-			if(utf8::is_utf8($msg) == 1){ 
-				$msg = $DADA::Config::HTML_CHARSET, $msg
-			}
+		
         eval { 
+			$msg = safely_encode($msg); 
 			$entity = $parser->parse_data(
 			$msg
 			); 
@@ -2768,14 +2766,10 @@ sub tweet {
         my $entity;
 		my $Subject; 
 		
-		if(utf8::is_utf8($msg) == 1){ 
-			$msg = $DADA::Config::HTML_CHARSET, $msg
-		}
-		
         eval { 
+			$msg = safely_encode($msg); 
 			$entity = $parser->parse_data(
 					$msg
-				
 			)
 		 };
         if ($entity) {
