@@ -27,22 +27,19 @@ use lib qw(
 	../DADA/perllib 
 	../../../../perl 
 	../../../../perllib
-
- /home/account/www/cgi-bin/dada
- /home/account/www/cgi-bin/dada/DADA
- /home/account/www/cgi-bin/dada/DADA/perllib
-
-/usr/local/lib/perl5/site_perl/5.8.0/mach
-/usr/local/lib/perl5/site_perl/5.8.0
-/usr/local/lib/perl5/site_perl
-/usr/local/lib/perl5/5.8.0/BSDPAN
-/usr/local/lib/perl5/5.8.0/mach
-/usr/local/lib/perl5/5.8.0
-
 );
 
-use DADA::Config 3.0.0 qw(!:DEFAULT);
-use CGI; my $q = new CGI;$q->charset($DADA::Config::HTML_CHARSET);
+
+use DADA::Config 4.0.0 qw(!:DEFAULT);
+use DADA::Template::HTML; 
+use DADA::App::Guts;
+use DADA::MailingList::Schedules;
+
+use CGI; 
+my $q = new CGI;
+   $q->charset($DADA::Config::HTML_CHARSET);
+   $q = decode_cgi_obj($q);
+
 my $Plugin_Config = {}; 
 
 
@@ -73,9 +70,7 @@ $Plugin_Config->{Program_Name} = 'Beatitude';
 
 my $App_Version          = '.6';
 
-use DADA::Template::HTML; 
-use DADA::App::Guts;
-use DADA::MailingList::Schedules; 
+
 
 
 my $mss; 
@@ -463,11 +458,11 @@ sub edit  {
 	
 	my $scrn = ''; 
 	
-	$scrn .= (admin_template_header(
+	$scrn .=  admin_template_header(
 						-Title      => "Scheduled Mailings - Edit",
 						-List       => $li->{list},
 						-Form       => 0,
-						-Root_Login => $yeah_root_login)
+						-Root_Login => $yeah_root_login
 						);
 
 	$scrn .= '<p><a href="' . $Plugin_Config->{Plugin_URL} . '">' . $Plugin_Config->{Program_Name} . '</a> &#187 Add/Edit</p>';
@@ -478,7 +473,7 @@ sub edit  {
 						    -List    => $li->{list},
 						); 
 						
-	print $scrn; 
+	e_print($scrn); 
 						    
 }
 

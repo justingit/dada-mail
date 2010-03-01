@@ -109,11 +109,7 @@ sub flush_old_scores {
     my $threshold = shift || 0;
 
     $self->_open_db; 
-    
-   # foreach(keys %{$self->{DB_HASH}}){
-    
-  #     print "looking at: $_ "  . $self->{DB_HASH}->{$_} . "\n";
-    
+      
 	while ( my ($key, $value) = each %{$self->{DB_HASH}} ) {
 	
         if($value >= $threshold){

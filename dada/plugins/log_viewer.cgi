@@ -11,7 +11,13 @@ use lib qw(../ ../DADA/perllib ../../../../perl ../../../../perllib);
 $ENV{PATH} = "/bin:/usr/bin"; 
 delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
 # we need this for cookies things;
-use CGI; CGI->nph(1) if $DADA::Config::NPH == 1; my $q = new CGI; $q->charset($DADA::Config::HTML_CHARSET);
+use CGI; 
+CGI->nph(1) 
+	if $DADA::Config::NPH == 1; 
+	
+	my $q = new CGI; 
+	   $q->charset($DADA::Config::HTML_CHARSET);
+       $q = decode_cgi_obj($q);
 
 
 my $Plugin_Config = {}; 

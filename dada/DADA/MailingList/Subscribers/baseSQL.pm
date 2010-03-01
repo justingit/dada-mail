@@ -462,7 +462,10 @@ sub print_out_list {
         -FH => \*STDOUT,
         @_
     );
+
     my $fh = $args{ -FH };
+
+	binmode $fh, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
 
     my $count;
 
@@ -993,7 +996,7 @@ sub create_mass_sending_file {
     #open one file, write to the other.
     my $email;
 
-    open my $SENDINGFILE, '>', $sending_file
+    open my $SENDINGFILE, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $sending_file
       or croak
 "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: Cannot create temporary email list file for sending out bulk message: $!";
     chmod( $SENDINGFILE, $DADA::Config::FILE_CHMOD );

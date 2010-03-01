@@ -1,5 +1,6 @@
 #!/usr/bin/perl -w
 use strict; 
+use Carp; 
 
 use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib 
 	
@@ -13,6 +14,10 @@ use dada_test_config;
 use DADA::App::Guts; 
 use DADA::MailingList::Settings; 
 
+use DADA::Mail::Send; 
+use DADA::Mail::MailOut;
+
+
 #dada_test_config::wipe_out;
 
 use Test::More qw(no_plan);  
@@ -21,9 +26,9 @@ my $list = dada_test_config::create_test_list;
 
 my $ls = DADA::MailingList::Settings->new({-list => $list}); 
 my $li = $ls->get; 
-
-
 do "plugins/dada_bridge.pl"; 
+
+
 
 
 ok(dada_bridge->test_sub() eq q{Hello, World!}); 
@@ -134,22 +139,10 @@ $ls->param('get_finished_notification',   0                     );
 	}
 );
 
-require DADA::Mail::Send; 
-require DADA::Mail::MailOut;
-my @mailouts; 
 
-my $timeout = 0; 
-@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list}); 
-while($mailouts[0] ){ 
-	diag "sleeping until mailout is done..."  . $mailouts[0]->{sendout_dir}; 
-	sleep(5); 
-	@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list});
-	$timeout = $timeout + 5; 
-	if($timeout >= 30){ 
-	die "something's wrong with the testing - dying."	
-	}
-}
-undef @mailouts; 
+
+
+wait_for_msg_sending(); 
 
 
 
@@ -196,19 +189,7 @@ $ls->param('mime_encode_words_in_headers',   1                     );
 );
 
 
-
-#Clean up
-@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list}); 
-$timeout = 0;
-while($mailouts[0] ){ 
-	diag "sleeping until mailout is done..."  . $mailouts[0]->{sendout_dir}; 
-	sleep(5); 
-	if($timeout >= 30){ 
-		die "something's wrong with the testing - dying."	
-	}
-	@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list});
-}
-undef @mailouts;
+wait_for_msg_sending(); 
 
 
 
@@ -224,11 +205,33 @@ require MIME::EncWords;
 
 my $orig_sub = MIME::EncWords::decode_mimewords($orig_entity->head->get('Subject', 0), Charset => '_UNICODE_');
 my $sent_sub = MIME::EncWords::decode_mimewords($sent_entity->head->get('Subject', 0), Charset => '_UNICODE_');
-
+#
 my $orig_from =  MIME::EncWords::decode_mimewords($orig_entity->head->get('From', 0), Charset => '_UNICODE_');
 my $sent_from =  MIME::EncWords::decode_mimewords($sent_entity->head->get('From', 0), Charset => '_UNICODE_');
 
-ok($orig_sub eq $sent_sub, "The Subject header of the original and sent messages is the same. (2) '$orig_sub', '$sent_sub'"); 
+
+#my $orig_sub = $orig_entity->head->get('Subject', 0);
+#my $sent_sub = $sent_entity->head->get('Subject', 0);
+
+#my $orig_from =  $orig_entity->head->get('From', 0);
+#my $sent_from =  $sent_entity->head->get('From', 0);
+
+diag ' $orig_sub ' . $orig_sub; 
+diag ' $sent_sub ' . $sent_sub; 
+diag ' $orig_from ' . $orig_from; 
+diag ' $sent_from ' . $sent_from; 
+
+
+
+
+ok(
+	$orig_sub 
+	eq 
+	$sent_sub, 
+"The Subject header of the original and sent messages is the same. (2) '$orig_sub', '$sent_sub'
+");
+
+ 
 #ok($orig_entity->head->get('From', 0) eq $sent_entity->head->get('From', 0), "The From header of the original and sent messages is the same."); 
 like($orig_entity->head->get('From', 0), qr/\<listowner\@example.com\>/, "I can still find the From: address just fine.");
 
@@ -251,8 +254,8 @@ undef $test_msg;
 $test_msg = slurp('t/corpus/email_messages/from_header_phrase_spoof.eml'); 
 ($status, $errors) = dada_bridge::validate_msg($list, \$test_msg, $ls->get);
 
-use Data::Dumper; 
-diag Data::Dumper::Dumper($errors); 
+#use Data::Dumper; 
+#diag Data::Dumper::Dumper($errors); 
 
 
 ok($status == 0, "spoof test is returning 0?"); 
@@ -264,6 +267,7 @@ undef $test_msg;
 # Does that Subject header get appended? 
 $ls->param('group_list', 1); 
 
+
 ($status, $errors) = dada_bridge::inject(
 	{ 
 		-list      => $list, 
@@ -274,36 +278,63 @@ $ls->param('group_list', 1);
 	}
 );
 
+#use Data::Dumper; 
+#diag Data::Dumper::Dumper($errors);
 
-
-
-
-@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list}); 
-$timeout = 0; 
-while($mailouts[0] ){ 
-	diag "sleeping until mailout is done..."  . $mailouts[0]->{sendout_dir}; 
-	sleep(5); 
-	if($timeout >= 30){ 
-		die "something's wrong with the testing - dying."	
-	}
-	@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list});
-}
-undef @mailouts;
-
-
-
+wait_for_msg_sending(); 
 
 $sent_msg =  slurp($mh->test_send_file); 
-
 $orig_entity = $parser->parse_data($msg);
 $sent_entity = $parser->parse_data($sent_msg);
-
 my $sent_sub = MIME::EncWords::decode_mimewords($sent_entity->head->get('Subject', 0), Charset => '_UNICODE_');
 my $qm_subject = quotemeta('[dadatest]'); 
-
 like($sent_sub, qr/^$qm_subject/, "list short name appeneded to Subject! ($sent_sub)"); 
 
+$ls->param('group_list', 0); 
+undef $test_msg; 
+undef $status; 
+undef $errors; 
+undef $sent_msg; 
+undef $orig_entity; 
+undef $sent_entity; 
+ok(unlink($mh->test_send_file)); 
 
+diag "NOW WE START."; 
+
+
+$msg = slurp('t/corpus/email_messages/simple_utf8_msg.eml'); 
+($status, $errors) = dada_bridge::validate_msg($list, \$msg, $ls->get);
+
+ok($status == 1, "status returning 1"); 
+
+($status, $errors) = dada_bridge::inject(
+	{ 
+		-list      => $list, 
+		-msg       => $msg, 
+		-verbose   => 1, 
+		-test_mail => 1, 
+		-ls        => $ls, 
+	}
+);
+
+wait_for_msg_sending(); 
+
+$sent_msg =  slurp($mh->test_send_file); 
+#$orig_entity = $parser->parse_data($msg);
+#$sent_entity = $parser->parse_data($sent_msg);
+#my $sent_sub = MIME::EncWords::decode_mimewords($sent_entity->head->get('Subject', 0), Charset => '_UNICODE_');
+#my $qm_subject = quotemeta('[dadatest]'); 
+#like($sent_sub, qr/^$qm_subject/, "list short name appeneded to Subject! ($sent_sub)"); 
+
+
+print safely_encode($sent_msg); 
+
+
+
+#use Data::Dumper; 
+#print Data::Dumper::Dumper($sent_msg); 
+ok (1 ==1); 
+#die $mh->test_send_file;
 
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
@@ -322,13 +353,31 @@ sub slurp {
         my $r;
         my (@r);
 
-        open(F, "<$file") || die "open $file: $!";
+        open(F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $file) || croak "open $file: $!";
         @r = <F>;
         close(F) || die "close $file: $!";
 
         return $r[0] unless wantarray;
         return @r;
 
+}
+
+
+sub  wait_for_msg_sending { 
+	
+	my @mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list}); 
+	my $timeout = 0; 
+	while($mailouts[0] ){ 
+		diag "sleeping until mailout is done..."  . $mailouts[0]->{sendout_dir}; 
+		sleep(5); 
+		if($timeout >= 30){ 
+			die "something's wrong with the testing - dying."	
+		}
+		@mailouts = DADA::Mail::MailOut::current_mailouts({-list => $list});
+	}
+	undef @mailouts;
+
+	
 }
 
 

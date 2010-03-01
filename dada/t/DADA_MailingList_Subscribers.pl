@@ -755,6 +755,12 @@ diag $contents;
 
    $ls->save({
        enable_bulk_batching => 0,
+
+		# My tests here don't take into consideration email encoding, so this 
+		# Kind of hacks unsupport in: 
+		
+		plaintext_encoding => '8bit', 
+		html_encoding      => '8bit', 
    
    });
 
@@ -1419,7 +1425,7 @@ sub slurp {
         my $r;
         my (@r);
 
-        open(F, "<$file") || die "open $file: $!";
+        open(F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $file) || die "open $file: $!";
         @r = <F>;
         close(F) || die "close $file: $!";
 

@@ -1059,7 +1059,7 @@ sub _entity_from_raw_msg {
 
 	my $entity; 
 	
-	eval { $entity = $self->{parser}->parse_data($raw_msg) };
+	eval { $entity = $self->{parser}->parse_data(Encode::encode($DADA::Config::HTML_CHARSET, $raw_msg )) };
 	if($@){ 
 		croak "Problems creating entity: $@"; 
 	}
@@ -1183,6 +1183,7 @@ sub view_file_attachment {
 	require CGI; 
 	my $q = CGI->new; 
 	   $q->charset($DADA::Config::HTML_CHARSET);
+	   $q = decode_cgi_obj($q);
 	
 	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($id, 1); 
 	
@@ -1222,6 +1223,7 @@ sub view_file_attachment {
 	
 		}
 	
+		# encoded. Yes or no?
 		$r .=  $body->as_string; 
 	
 		return $r; 	
@@ -1365,6 +1367,7 @@ sub view_inline_attachment {
 	require CGI; 
 	my $q = CGI->new; 
 	   $q->charset($DADA::Config::HTML_CHARSET);
+	   $q = decode_cgi_obj($q);
 	
 	my $c_type;
 	
@@ -1410,6 +1413,7 @@ EOF
 		
 	}
 	
+	   #Encoded. Yes or no?
 	   $r .=  $body->as_string; 
 	  
 	   return $r; 	
@@ -1559,9 +1563,8 @@ sub _faked_oldstyle_message {
 	}else{ 
 		$entity = $self->_get_body_entity($entity); 
 		
-		my $body    = $entity->bodyhandle;
-		
-		return ($body->as_string, $entity->head->mime_type); 
+		# UnEncoded. YES. 
+		return ($entity->bodyhandle->as_string, $entity->head->mime_type); 
 	}
 }
 
@@ -1660,9 +1663,14 @@ sub massage_msg_for_resending {
 	
 	   
 	if($args{'-split'} == 1){ 
-		return ($entity->head->as_string, $entity->body_as_string) ;
+		# Not sure about this one - probably want it unencoded, so that we can resend it? Meh?
+		
+		return (
+			 Encode::decode($DADA::Config::HTML_CHARSET, $entity->head->as_string),
+		   	 Encode::decode($DADA::Config::HTML_CHARSET, $entity->body_as_string), 
+		) ;
 	}else{
-		my $str =  $entity->as_string;
+		my $str =  Encode::decode($DADA::Config::HTML_CHARSET, $entity->as_string);
 		$str = $self->massage($str); 
 		return $str; 
 	}
@@ -1697,7 +1705,7 @@ sub _take_off_sigs {
 		  ($entity->head->mime_type eq 'text/plain') || 
 		  ($entity->head->mime_type eq 'text/html') ){ 
 			my $body    = $entity->bodyhandle;
-			my $content = $body->as_string;
+			my $content = $entity->bodyhandle->as_string;
 			
 			if($content){ 
 				if($entity->head->mime_type eq 'text/html'){ 
@@ -1706,8 +1714,9 @@ sub _take_off_sigs {
 					$content = $self->_zap_sig_plaintext($content);
 				}
 				
+				require Encode; 
 				my $io = $body->open('w');
-				   $io->print( $content );
+				   $io->print( Encode::encode_utf8( $content ) );
 				   $io->close;
 				$entity->sync_headers('Length'      =>  'COMPUTE',
 									  'Nonstandard' =>  'ERASE');
@@ -1802,7 +1811,8 @@ sub massaged_msg_for_display {
         # singlepart message (like a "text/plain"), use C<bodyhandle()> instead:
 
         $body = $b_entity->bodyhandle->as_string;
-
+		$body = Encode::decode($DADA::Config::HTML_CHARSET, $body);
+		 
         if ( $self->{ls}->param('stop_message_at_sig') == 1 ) {
             $body = $self->_zap_sig_plaintext($body);
         }
@@ -2184,6 +2194,8 @@ sub _bs_raw_msg {
 	my $msg = MIME::Lite->new(
 	Subject   => $subject, 
 	Type      => $format, 
+	# This should be this way, or the reverse?
+	#Data      => Encode::encode($DADA::Config::HTML_CHARSET, $message), 
 	Data      => $message, 
 	Datestamp => 0, 
 	);

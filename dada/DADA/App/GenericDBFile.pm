@@ -1,12 +1,6 @@
 package DADA::App::GenericDBFile;
 
-
-# UTF-8 Note: 
-# http://juerd.nl/site.plp/perluniadvice
-# DB_File, GDBM_File, SDBM_File, ODBM_File, dbm*
-#
-# Not encoding aware at all. You must decode and encode everything yourself.
-
+use Encode; 
 use lib qw(
 	../../ 
 	../../DADA/perllib
@@ -113,6 +107,7 @@ sub _open_db {
 			$self->{function} . '. Visit ' . $DADA::Config::S_PROGRAM_URL . '?f=restore_lists '; 
 		}
 	}
+	
 }
 
 
@@ -126,6 +121,15 @@ sub _raw_db_hash {
 	my %RAW_DB_HASH = %{$self->{DB_HASH}};
 	$self->{RAW_DB_HASH} = {%RAW_DB_HASH};
 	$self->_close_db;
+	
+	# decode
+	while ( my ($key, $value) = each %{$self->{RAW_DB_HASH}} ) {
+		if(defined($value)){ 
+			#$self->{RAW_DB_HASH}->{$key} = Encode::decode($DADA::Config::HTML_CHARSET, $value);
+			$self->{RAW_DB_HASH}->{$key} = safely_decode($value);
+		}
+	}
+	
 	$as_ref == 1 ? return \%RAW_DB_HASH : return %RAW_DB_HASH; 
 }
 
@@ -179,6 +183,7 @@ sub _db_filename {
 
 sub _close_db { 
 	my $self = shift; 
+
 	untie %{$self->{DB_HASH}} 
 		or carp "untie didn't work: $!";
 	$self->{DB_HASH} = {}; 

@@ -39,6 +39,7 @@ ok($ms->isa('DADA::App::MassSend'), 'We have the right type of object!');
 
 use CGI; 
 my $q = new CGI; 
+   $q = decode_cgi_obj($q);
 
 # Globals
 my $msg; 
@@ -198,7 +199,7 @@ sub slurp {
         my $r;
         my (@r);
 
-        open(F, "<$file") || die "open $file: $!";
+        open(F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $file) || die "open $file: $!";
         @r = <F>;
         close(F) || die "close $file: $!";
 

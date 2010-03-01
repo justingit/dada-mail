@@ -2,7 +2,7 @@ package DADA::MailingList::Settings::Db;
 
 use lib qw(../../.. ../../../DADA/perllib); 
 use DADA::Config qw(!:DEFAULT);  
-
+use Encode; 
 
 use base qw(DADA::App::GenericDBFile);
 
@@ -146,25 +146,41 @@ sub save {
  		$self->_existence_check($new_settings);
 
  		$self->_open_db; 
-			my %RAW_DB_HASH     = %{$self->{DB_HASH}};
-			my %merge_info      = (%RAW_DB_HASH, %$new_settings); 	
-			%{$self->{DB_HASH}} = %merge_info; 	
+		# I'm worried %TMP_RAW_HASH is tied - we're making a copy, of the HASH, 
+		# not just a reference.... right? 
+		# 
+		my %TMP_RAW_HASH     = %{$self->{DB_HASH}};
+		my %merge_info = (); 
+		if(keys %TMP_RAW_HASH) { 
+			
+			# Special case - DB_HASH has not been decoded, yet: 
+			# decode
+			while ( my ($key, $value) = each %TMP_RAW_HASH ) {
+				if(defined($value)){ 
+					$TMP_RAW_HASH{$key} = Encode::decode($DADA::Config::HTML_CHARSET, $value);
+				}
+			}
 		
+			%merge_info      = (%TMP_RAW_HASH, %$new_settings); 	
+		}
+		else { 
+			%merge_info = %$new_settings; 
+		}			
 		
-		if($self->{DB_HASH}->{list}){ 		
+		if($merge_info{list}){ 		
 			#special cases:
 			
-			if(! defined($self->{DB_HASH}->{admin_menu}) || $self->{DB_HASH}->{admin_menu} eq ""){ 
+			if(! defined($merge_info{admin_menu}) || $merge_info{admin_menu} eq ""){ 
 
 			    require DADA::Template::Widgets::Admin_Menu; 
-				$self->{DB_HASH}->{admin_menu} = DADA::Template::Widgets::Admin_Menu::create_save_set();
+				$merge_info{admin_menu} = DADA::Template::Widgets::Admin_Menu::create_save_set();
 			}
 			
 			
-			if(! defined($self->{DB_HASH}->{cipher_key}) || $self->{DB_HASH}->{cipher_key} eq ""){ 
+			if(! defined($merge_info{cipher_key}) || $merge_info{cipher_key} eq ""){ 
 			
 				require DADA::Security::Password; 
-				$self->{DB_HASH}->{cipher_key} = DADA::Security::Password::make_cipher_key();
+				$merge_info{cipher_key} = DADA::Security::Password::make_cipher_key();
 			}
 			
 			
@@ -173,6 +189,16 @@ sub save {
 			carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! listshortname isn't defined! list " . $self->{function} . " db possibly corrupted!"
 				unless $self->{new_list}; 
 		}
+		
+		# now, we have to re-encode it: 
+		# See how we're taking the value of %merge info and copying it to the 
+		# corresponding key of, DB_HASH? 
+
+		while ( my ($key, $value) = each %merge_info ) {
+			$self->{DB_HASH}->{$key} = Encode::encode_utf8($value);
+		}
+		
+		# And then, we close. That's it? 
 		
 		$self->_close_db; 
 		
@@ -213,6 +239,15 @@ sub _raw_db_hash {
 	$self->_open_db; 
 	my %RAW_DB_HASH = %{$self->{DB_HASH}};
 	$self->{RAW_DB_HASH} = {%RAW_DB_HASH};
+	
+	# decode
+	while ( my ($key, $value) = each %{$self->{RAW_DB_HASH}} ) {
+		if(defined($value)){ 
+			$self->{RAW_DB_HASH}->{$key} = Encode::decode($DADA::Config::HTML_CHARSET, $value);
+		}
+	}
+	
+	
 	$self->_close_db;
 	$self->_unlock_db; 	
 }

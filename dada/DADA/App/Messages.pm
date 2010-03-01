@@ -1,11 +1,12 @@
 package DADA::App::Messages; 
 
 use lib qw(../../ ../../perllib); 
+use Carp qw(croak carp cluck); 
 
 use DADA::Config qw(!:DEFAULT); 
 use DADA::App::Guts; 
 
-use Carp qw(croak carp cluck); 
+
 
 require Exporter; 
 @ISA = qw(Exporter); 
@@ -110,6 +111,11 @@ sub send_generic_email {
 					%{$args->{-headers}},
 					Body => $args->{-body},
 			   }; 
+		
+	  	while ( my ($key, $value) = each %{$data} ) {
+			$data->{$key} = safely_encode( $value); 
+		}
+		
 			
 	require DADA::App::FormatMessages; 
 	my $fm = undef; 
@@ -129,18 +135,31 @@ sub send_generic_email {
                                         }
                                     ) 
                        );
+		
+#	warn '$email_str ' . $email_str; 
+	
+	$email_str = safely_decode($email_str); 
+#	warn '$email_str ' . $email_str; 
 
-    my $entity = $fm->email_template(
+my $entity = $fm->email_template(
         {
-            -entity => $fm->get_entity({-data => $email_str}),
+            -entity => $fm->get_entity(
+				{
+					-data => safely_encode($email_str),
+				}
+			),
   			-expr   => $expr, 
 			%{$args->{-tmpl_params}},
         }
     );
-
     my $msg = $entity->as_string; 
     my ($header_str, $body_str) = split("\n\n", $msg, 2);
 
+
+	
+	my $header_str = safely_decode($entity->head->as_string); 
+	my $body_str   = safely_decode($entity->body_as_string); 
+	
 				
 	if($args->{-test} == 1){ 
 		$mh->test(1);	
@@ -226,7 +245,7 @@ sub send_subscribed_message {
 		{
 			-list         => $args->{-list}, 
 			-headers      => {
-					To      => '"'. escape_for_sending($li->{list_name}) .'" <'. $args->{-email} .'>',
+					To      => '"'. escape_for_sending($li->{list_name}) .' Subscriber" <'. $args->{-email} .'>',
 					Subject => $li->{subscribed_message_subject},
 			}, 
 			-body         => $li->{subscribed_message},
@@ -349,7 +368,7 @@ sub send_unsub_confirmation_message {
 		-ls_obj      => $ls,   
 		-headers     => 
 			{
-					 To      =>  '"'. escape_for_sending($li->{list_name}) .'"  <' . $args->{-email} . '>',
+					 To      =>  '"'. escape_for_sending($li->{list_name}) .' Subscriber"  <' . $args->{-email} . '>',
 					 Subject =>  $li->{unsub_confirmation_message_subject}, 
 			},
 				

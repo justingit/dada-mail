@@ -97,6 +97,10 @@ require Exporter;
   gravatar_img_url
   csv_parse
   can_use_twitter
+  decode_cgi_obj
+  safely_decode
+  safely_encode
+
 );
 
 
@@ -380,7 +384,7 @@ sub make_template {
 		$list_template = $1; 
 	
 	
-		sysopen(TEMPLATE, "$list_path/$list_template.template",  O_WRONLY|O_TRUNC|O_CREAT,  $DADA::Config::FILE_CHMOD ) or 
+		open(TEMPLATE, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $list_path .'/' . $list_template . '.' . 'template') or 
 			croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: can't write new template at '$list_path/$list_template.template': $!"; 
 	
 		flock(TEMPLATE, LOCK_EX) or 
@@ -1302,7 +1306,7 @@ $message_body =~ s/\&\#\d\d\d\d\;//g;
 # or something, and then have an option to encode the output? 
 # 
 sub e_print { 
-	print encode('UTF-8', $_[0]); 
+	print encode($DADA::Config::HTML_CHARSET, $_[0]); 
 }
 
 
@@ -1488,6 +1492,7 @@ sub webify_plain_text{
 
 	my $s = shift; 
 	my $multi_line = 0; 
+
 	if($s =~ m/\r|\n/){ 
 		$multi_line = 1; 
 	}
@@ -1693,8 +1698,7 @@ sub check_list_setup {
 		}else{ 
 			$new_list_errors{slashes_in_name} = 0;
 		}
-		
-		
+
 		if($fields->{list} =~ m/\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\+|\=|\>|\<|\-|\0-\037\177-\377/){ 
         	$list_errors++; 
        		$new_list_errors{weird_characters} = 1;
@@ -1789,8 +1793,9 @@ sub user_error {
 													 -Email => $email,
 													-Error_Message => $args{-Error_Message}, 
 													 );
+	
 													 
-	print $fh $error_msg;
+	print $fh encode($DADA::Config::HTML_CHARSET, $error_msg);
 	
  }
  
@@ -1847,7 +1852,7 @@ sub make_all_list_files {
 	
 	if($DADA::Config::SUBSCRIBER_DB_TYPE eq 'PlainText'){ 
 		# make email list file
-		sysopen(LIST, "$DADA::Config::FILES/$list.list", O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD )
+		open(LIST, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', "$DADA::Config::FILES/$list.list")
 			or croak "couldn't open $DADA::Config::FILES/$list.list for reading: $!\n";
 		flock(LIST, LOCK_SH);
 		close (LIST);
@@ -1856,7 +1861,7 @@ sub make_all_list_files {
 		chmod($DADA::Config::FILE_CHMOD , "$DADA::Config::FILES/$list.list"); 	
 	
 		# make e-mail blacklist file
-		sysopen(LIST, "$DADA::Config::FILES/$list.black_list", O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD )
+		open(LIST, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', "$DADA::Config::FILES/$list.black_list")
 			or croak "couldn't open $DADA::Config::FILES/$list.black_list for reading: $!\n";
 		flock(LIST, LOCK_SH);
 		close (LIST);
@@ -2351,11 +2356,11 @@ sub csv_subscriber_parse {
 	# http://search.cpan.org/~rgarcia/perl-5.10.0/lib/PerlIO.pm
 	
 	# Reading
-	open my $NE, '<', $DADA::Config::TMP . '/' . $filename 
+	open my $NE, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $DADA::Config::TMP . '/' . $filename 
 		or die "Can't open: " . $DADA::Config::TMP . '/' . $filename . ' because: '  . $!;
 
 	# Writing
-	open my $NE2, '>', make_safer($DADA::Config::TMP . '/' . $filename . '.translated') 
+	open my $NE2, '>:encoding('. $DADA::Config::HTML_CHARSET . ')', make_safer($DADA::Config::TMP . '/' . $filename . '.translated') 
 		or die "Can't open: " . make_safer($DADA::Config::TMP . '/' . $filename . '.translated') . ' because: '  . $!;
 
 	my $line; 
@@ -2376,7 +2381,7 @@ sub csv_subscriber_parse {
      # If you want to handle non-ascii char.
      my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
      
-    open my $NE3, '<', $DADA::Config::TMP . '/' . $filename . '.translated'
+    open my $NE3, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $DADA::Config::TMP . '/' . $filename . '.translated'
         or die "Can't open: " . $DADA::Config::TMP . '/' . $filename . '.translated' . ' because: '  . $!;
          
     while(defined($line = <$NE3>)){ 
@@ -2411,7 +2416,7 @@ sub csv_subscriber_parse {
     # And all this is to simply remove the file...    
     my $full_path_to_filename = $DADA::Config::TMP . '/' . $filename;
     
-    
+
     my $chmod_check = chmod($DADA::Config::FILE_CHMOD, make_safer($full_path_to_filename)); 
     if($chmod_check != 1){ 
         warn "could not chmod '$full_path_to_filename' correctly."; 
@@ -2494,14 +2499,76 @@ sub tweet_about_mass_mailing {
 }
 
 
-# This is never called, anyways, 
-#sub DESTROY { 
-#	
-#	carp "TOTAL \$ic: $ic"; 
-#	carp "TOTAL \$nc: $nc";
-#		
-#	
-#}
+sub decode_cgi_obj { 
+	#use Data::Dumper; 
+	my $query = shift; 
+#	return $query; 
+	
+	my $form_input = {};  
+	foreach my $name ( $query->param ) {
+	  
+	  # Don't decode image uploads that are binary. 
+	  next 
+		if $name =~ m/file|picture|attachment(.*?)$/; 
+	
+	  my @val = $query ->param( $name );
+	  foreach ( @val ) {
+	    $_ = Encode::decode($DADA::Config::HTML_CHARSET, $_ );
+		#warn 'CGI param: ' . $_ . ' ' . Data::Dumper::Dumper($_);
+		
+	  }
+	  $name = Encode::decode($DADA::Config::HTML_CHARSET, $name );
+	  if ( scalar @val == 1 ) {   
+	    #$form_input ->{$name} = $val[0];
+		$query->param($name, $val[0]); 
+		#warn 'CGI param: ' . $name . ' ' . Data::Dumper::Dumper($val[0]);
+	  } else {      
+		$query->param($name, @val);                 
+	    #$form_input ->{$name} = \@val;  # save value as an array ref
+	  }
+	}
+	return $query; 
+	
+}
+
+
+
+
+sub safely_decode { 
+	
+	my $str   = shift; 
+	my $force = shift || 0; 
+	
+#	$str = Encode::decode($DADA::Config::HTML_CHARSET, $str); 
+#	return $str; 
+	
+	
+	if(utf8::is_utf8($str) == 1 && $force == 0){ 
+	#	warn 'utf8::is_utf8 is returning 1 - not decoding.'; 
+	}
+	else { 
+		eval { 
+			$str = Encode::decode($DADA::Config::HTML_CHARSET, $str); 
+		};
+		
+		if($@){ 
+			warn 'Problems: with: (' . $str . '): '. $@; 
+		} 
+	}
+	#warn 'decoding was safely done.';
+	return $str;
+}
+
+sub safely_encode { 
+	#return Encode::encode($DADA::Config::HTML_CHARSET, $_[0]); 
+	
+	if(utf8::is_utf8($_[0])){ 
+		return Encode::encode($DADA::Config::HTML_CHARSET, $_[0]); 
+	}
+	else { 
+		return $_[0];
+	}	
+}
 
 
 

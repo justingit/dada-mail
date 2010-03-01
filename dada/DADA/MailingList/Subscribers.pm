@@ -483,7 +483,6 @@ sub filter_subscribers_w_meta {
 
 	my $fields = $self->subscriber_fields(); 
 	
-	#require Data::Dumper; 
 	require Text::CSV; 
 	#my $csv = Text::CSV->new;
 	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
@@ -638,7 +637,7 @@ sub write_plaintext_list {
 	my $tmp_file = DADA::App::Guts::make_safer($path . '/' . $ln . '.' . $type . '.' . $tmp_id); 
 	
 	# DEV: needs to be changed to an anonymous file handle. 
-	open(TMP_LIST, ">$tmp_file") or croak $!;		  
+	open(TMP_LIST, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $tmp_file) or croak $!;		  
 		$self->print_out_list(-Type => $args{-Type}, 
 							  -FH   => \*TMP_LIST);
 	close(TMP_LIST); 
@@ -725,9 +724,6 @@ sub csv_to_cds {
         carp $DADA::Config::PROGRAM_NAME . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag ();;         
 
     }
-	
-	#require Data::Dumper; 
-	#die 'hello ' . Data::Dumper::Dumper($cds); 
 	
 	return $cds; 
 	

@@ -19,6 +19,9 @@ use Carp qw(croak carp);
 
 use vars qw($AUTOLOAD); 
 
+my $t = 0; 
+
+
 =pod
 
 =head1 NAME
@@ -65,8 +68,6 @@ DADA::App::FormatMessages is used to get a email message ready for sending to yo
 mailing list. Most of its magic is behind the scenes, and isn't something you have
 to worry about, but we'll go through some detail. 
 
-
-
 =head1 METHODS
 
 =cut
@@ -81,7 +82,7 @@ my %allowed = (
 	use_plaintext_email_template => 1, 
 	treat_as_discussion_msg      => 0, 
 	use_header_info              => 0, 
-	orig_entity                  => undef, 
+	#orig_entity                  => undef, 
 	
 	originating_message_url      => undef, 
 	
@@ -95,7 +96,6 @@ my %allowed = (
 =pod
 
 =head2 new
-
 
  my $fm = DADA::App::FormatMessages->new(-List => $list); 
 
@@ -122,7 +122,6 @@ sub new {
     
         die "no list!" if ! $args{-List}; 	
 	}
-	
 	
    $self->_init(\%args); 
    return $self;
@@ -164,17 +163,12 @@ sub _init  {
  	$self->{ls}     = undef; 
 	$self->{list}   = undef;
  	if(exists($args->{-List}) && $args->{-yeah_no_list} == 0){ 
- 	    
-
 		if( exists( $args->{-ls_obj} ) ) { 
 			$self->{ls} = $args->{-ls_obj};
-		
 		}
 		else { 
-			 
+
 			require DADA::MailingList::Settings; 
-
-
 			my $ls = DADA::MailingList::Settings->new(
 					{
 						-list => $args->{-List}
@@ -195,17 +189,11 @@ sub _init  {
 		if($self->{ls}->param('mime_encode_words_in_headers') == 1){ 
 			$self->im_encoding_headers(1); 
 		}
-		else { 
-			$self->im_encoding_headers(0); 
-		}
     }
-    
+
 	$self->use_email_templates(1); 
 
 }
-
-
-
 
 sub use_email_templates { 
 	
@@ -225,16 +213,6 @@ sub use_email_templates {
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
 
 sub format_message { 
 
@@ -292,27 +270,39 @@ sub format_headers_and_body {
 
 	my $self = shift; 
 	
-	my %args = (-msg                 => undef, 
-		  	    @_
+	my %args = (
+		-msg                 => undef, 
+		-convert_charset     => 0,  
+		@_
 		  	   ); 
 
 	die "no msg!"  if ! $args{-msg};
 	
-	my $entity     = $self->{parser}->parse_data($args{-msg});
-
-	$self->orig_entity($entity); 
+	my $msg        = $args{-msg}; 
+	
+	
+	# Guessing, really. 
+	$msg           = safely_encode($msg); 
+	my $entity     = $self->{parser}->parse_data($msg);
+	
+	if($args{-convert_charset} == 1){ 
+		warn 'converting charset!'; 
+		eval { 
+			$entity = $self->change_charset({-entity => $entity}); 
+		};
+		if ($@) {
+			carp "changing charset didn't work!: $@";
+		}
+	}
+	
+#	$self->orig_entity($entity); 
 
 	if($entity->head->get('Subject', 0)){ 
 		$self->Subject($entity->head->get('Subject', 0));
 	}
-	#if($self->{ls}->param('mime_encode_words_in_headers') == 1){ 
-	#	$entity     = $self->_decode_headers($entity); 
-	#}
-
 	if($self->treat_as_discussion_msg == 1){ 
 		$entity = $self->_format_headers($entity)
 	}
-	
 	$entity     = $self->_fix_for_only_html_part($entity); 
 	$entity     = $self->_format_text($entity);		
 	
@@ -322,8 +312,13 @@ sub format_headers_and_body {
     	if $entity->head->get('X-Mailer', 0); 
 		# or how about, count?
 
+	my $header = $entity->head->as_string;
+	   $header = safely_decode($header); 
 
-	return ($entity->head->as_string, $entity->body_as_string) ;
+	my $body   = $entity->body_as_string;	
+ 	   $body = safely_decode($body); 
+
+	return ($header, $body) ;
 
 }
 
@@ -346,9 +341,7 @@ sub _fix_for_only_html_part {
 
 	my $self   = shift; 
 	my $entity = shift; 
-	
 	$entity = $self->_create_multipart_from_html($entity); 
-
 	return $entity; 
 
 }
@@ -382,13 +375,12 @@ sub _format_text {
 	my $entity = shift; 
 	
 	
-	
 	my @parts  = $entity->parts; 
 	
 	if(@parts){
 		my $i; 
 		foreach $i (0 .. $#parts) {
-			$parts[$i]= $self->_format_text($parts[$i]);	
+			$parts[$i] = $self->_format_text($parts[$i]);	
 		}
 		$entity->sync_headers('Length'      =>  'COMPUTE',
 							  'Nonstandard' =>  'ERASE');
@@ -398,7 +390,7 @@ sub _format_text {
 		if (defined($entity->head->mime_attr('content-disposition'))) { 
 				$is_att = 1
 				 if  $entity->head->mime_attr('content-disposition') =~ m/attachment/; 
-			}
+		}
 			
 		if(
 		    (
@@ -409,14 +401,19 @@ sub _format_text {
 		    ($is_att != 1)
 		  ) {
 			
-			
-			        
 			my $body    = $entity->bodyhandle;
-			my $content = $body->as_string;
+			my $content = $entity->bodyhandle->as_string;
 			
+			$content = safely_decode($content);
+		   
+		
+			#
+			# body_as_string gives you encoded version.
+			# Don't get it this way, unless you've got a great reason 
+			# my $content = $entity->body_as_string;
+			# Same thing - this means it could be in quoted/printable,etc. 
 			
 			if($content){ # do I need this?
-			
 				if(
 					$self->treat_as_discussion_msg                        &&
 					$self->{ls}->param('group_list')                 == 1 &&  
@@ -450,12 +447,6 @@ sub _format_text {
 					-data => $content, 
 					-type => $entity->head->mime_type, 
 				);
-	
-
-				
-
-				
-											
 
 			    if($DADA::Config::GIVE_PROPS_IN_EMAIL == 1){ 
                     $content = $self->_give_props(
@@ -466,18 +457,26 @@ sub _format_text {
                 
 
       			if(defined($self->{list})){
-					if ($self->{ls}->param('enable_open_msg_logging') == 1 && $entity->head->mime_type                      eq 'text/html'){ 
+					if ($self->{ls}->param('enable_open_msg_logging') == 1 && $entity->head->mime_type  eq 'text/html'){ 
 						$content = $self->_add_opener_image($content);
 					}
 				}
-						   
-		       my $io = $body->open('w');
-				  $io->print( $content );
-				  $io->close;
-				$entity->sync_headers('Length'      =>  'COMPUTE',
-									  'Nonstandard' =>  'ERASE');
+			
+			  # # uh.... would this work? 
+			   #$entity->head->delete('Content-Transfer-Encoding'); 
+			   #$entity->head->add('Content-Transfer-Encoding', '8bit');
+			   #$entity->head->mime_attr("content-type.charset" => 'UTF-8');
 		
+		       my $io = $body->open('w');
+
+				  $content = safely_encode($content); 
+
+				  $io->print( $content );				    
+				  $io->close;
+				  $entity->sync_headers('Length'      =>  'COMPUTE',
+									    'Nonstandard' =>  'ERASE');
 			}
+
 		}
 		return $entity; 
 	}
@@ -499,8 +498,8 @@ sub _give_props {
           . $DADA::Config::PROGRAM_URL
           . '/what_is_dada_mail/">Mailing List Powered by Dada Mail</a></p>'
           . "\n";
-        my $text_props =
-"\n\nMailing List Powered by Dada Mail\n$DADA::Config::PROGRAM_URL/what_is_dada_mail/";
+        my $text_props = "\n\nMailing List Powered by Dada Mail\n$DADA::Config::PROGRAM_URL/what_is_dada_mail/";
+
 
         $args{-type} = 'HTML'      if $args{-type} eq 'text/html';
         $args{-type} = 'PlainText' if $args{-type} eq 'text/plain';
@@ -519,7 +518,6 @@ sub _give_props {
             else {
 
                 $args{-data} = $args{-data} . $html_props
-
             }
         }
         else {
@@ -631,14 +629,18 @@ sub _make_multipart {
 	
 	require MIME::Entity; 
 		
-	my $html_body    = $entity->bodyhandle;
-	my $html_content = $html_body->as_string;
-
+	my $html_content = $entity->bodyhandle->as_string;
+	   $html_content = safely_decode($html_content);
+	
 	$entity->make_multipart('alternative'); 
 	
 	my $plaintext_entity = MIME::Entity->build(
 		Type    => 'text/plain', 
-		Data    => html_to_plaintext({ -string => $html_content}),
+		Data    => html_to_plaintext(
+			{ 
+				-string => safely_encode($html_content)
+			}
+		),
 	  ); 
 	 $plaintext_entity->head->mime_attr(
 		"content-type.charset" => $orig_charset,
@@ -691,15 +693,15 @@ sub _format_headers {
 		if($self->{ls}->param('append_list_name_to_subject') == 1){ 
 
 			my $subject = $entity->head->get('Subject', 0);
+			   $subject = safely_encode( $subject); 
 			
 			#carp q{ $subject } . $subject; 
 			
 			my $new_subject = $self->_list_name_subject($subject);
 		
 			$entity->head->delete('Subject');
-			$entity->head->add(   'Subject', $new_subject);
+			$entity->head->add(   'Subject', safely_encode($new_subject));
 			
-			# carp q{ new subject } .  $entity->head->get('Subject', 0);
 		}
 		
 		
@@ -717,8 +719,10 @@ sub _format_headers {
 		} else {
 		
 			my $original_sender = $entity->head->get('From', 0);
+			   $original_sender = safely_encode( $original_sender); 
+			
 		   $entity->head->delete('Reply-To');
-		   $entity->head->add('Reply-To', $original_sender); 
+		   $entity->head->add('Reply-To', safely_encode($original_sender)); 
 		}
 		
 		$entity->head->delete('Return-Path'); 
@@ -744,8 +748,10 @@ sub _format_headers {
 	# If there ain't a TO: header, add one: 
 	# (usually, this happens (or doesn't happen) in program
 	
-	$entity->head->add('To', $self->{ls}->param('list_owner_email'))
-	 	if ! $entity->head->get('To', 0); 
+	$entity->head->add('To', 
+		safely_encode( $self->{ls}->param('list_owner_email'))
+	)
+	 if ! $entity->head->get('To', 0); 
 	
 	
 	# If there's already a To: header, put a phrase in it, to make it look
@@ -770,16 +776,16 @@ sub _format_headers {
         }else{ 
             
             my $to_addy = $addrs[0];
-            
+              
             if(!$to_addy){ 
             
                 warn "couldn't get a valid Email::Address object? SILENTLY (*wink wink*) ignorning"; 
             
             }elsif(!$to_addy->phrase){ 
-            
+            	
                 $to_addy->phrase($self->{ls}->param('list_name')); 
                 $entity->head->delete('To');
-                $entity->head->add('To', $to_addy->format); 
+                $entity->head->add('To', safely_encode( $to_addy->format )); 
             
             }
         }
@@ -787,11 +793,11 @@ sub _format_headers {
   
   
    if($self->{ls}->param('discussion_pop_email')){ 
-         $entity->head->add('X-BeenThere', $self->{ls}->param('discussion_pop_email')); 
+         $entity->head->add('X-BeenThere', safely_encode($self->{ls}->param('discussion_pop_email'))); 
    } 
    
-   
  	return $entity;
+	
 }
 
 sub _encode_header { 
@@ -800,6 +806,9 @@ sub _encode_header {
 	my $label      = shift; 
 	my $value      = shift; 
 	my $new_value  = undef; 
+
+	return $value 
+	 	unless $self->im_encoding_headers;
 	
 	if(
 	   $label eq 'Subject'           || 
@@ -811,18 +820,20 @@ sub _encode_header {
 	   $label eq 'just_phrase'
 	){ 
 
-		$new_value = 
-			MIME::EncWords::encode_mimewords(
-				$value, 
-				Encoding => 'Q',
-				Charset  => $self->{ls}->param('charset_value'),
-			); 
 	
+		require MIME::EncWords;
+		$new_value = 
+		MIME::EncWords::encode_mimewords(
+			$value, 
+			Encoding => 'Q',
+			Charset  => $self->{ls}->param('charset_value'),
+		); 
 	}
 	else { 
 		require Email::Address;	
 		 my @addresses = Email::Address->parse($value); 
 		 foreach my $address(@addresses){
+			
 		 	my $phrase = $address->phrase;
 		
 		    $address->phrase(	
@@ -853,72 +864,111 @@ sub _encode_header {
 sub _decode_header { 
 	my $self   = shift; 
 	my $header = shift; 
+	return $header 
+	 	unless $self->im_encoding_headers;
 	require MIME::EncWords; 
-	my $dec_header = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
-	return $dec_header; 
+	my $dec = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
+	return $dec; 
 }
 
 
-
-
-sub _decode_headers { 
-	
-	my $self   = shift; 	 
+sub _mime_charset { 
+	my $self   = shift; 
 	my $entity = shift;
-	
-
-	eval{ 
-		require MIME::EncWords;
-	};
-
-	if($@){ 
-		carp "MIME::EncWords is returning with an error: $@"; 
-		return $entity;
-	}
-	else  {
-
-		# Cc?
-		foreach my $header('From', 'To', 'Subject', 'Cc', 'Reply-To'){ 
-			
-			if (! $entity->head->count($header)){ 
-				next; 
-			}
-			else { 
-				
-				my @occurances = $entity->head->get_all($header); 
-				
-				# Get rid of all the instances of this header 
-				# (The orig are saved in, @occurances)
-				
-				$entity->head->delete($header); 
-
-				foreach my $oc(@occurances){ 
-
-				#	 This basically is a small test to see if the header has already 
-					# Been encoded: 
-				#	if($oc eq MIME::EncWords::decode_mimewords($oc)){ 
-
-						# No? Well, nothing to do; 
-					#	$entity->head->add($header, $oc); 
-				#	}
-				#	else { 
-						# Yes? Let's decode!
-						my $dec = MIME::EncWords::decode_mimewords($oc, Charset => '_UNICODE_'); 
-						$entity->head->add($header, $dec); 
-				#	}
-					
-				}
-			}
-		}
-		return $entity;
-	}
-		
+	return $entity->head->mime_attr("content-type.charset") || $DADA::Config::HTML_CHARSET;
 }
 
+sub change_charset {
+	my $self = shift; 
+	
+    my ($args) = @_;
+    if ( !exists( $args->{-entity} ) ) {
+        croak 'did not pass an entity in, "-entity"!';
+    }
+
+    my @parts = $args->{-entity}->parts;
+
+    if (@parts) {
+        warn "this part has " . $#parts . "parts."
+          if $t;
+
+        my $i;
+        foreach $i ( 0 .. $#parts ) {
+            $parts[$i] =
+              $self->change_charset( { %{$args}, -entity => $parts[$i] } )
+              ; # -entity should only pass the current part, but have the rest of the params passed...?
+        }
+
+        $args->{-entity}->sync_headers(
+            'Length'      => 'COMPUTE',
+            'Nonstandard' => 'ERASE'
+        );
+
+    }
+    else {
+
+        my $is_att = 0;
+        if (
+            defined( $args->{-entity}->head->mime_attr('content-disposition') )
+          )
+        {
+            warn q{content-disposition has set to: }
+              . $args->{-entity}->head->mime_attr('content-disposition')
+              if $t;
+            if ( $args->{-entity}->head->mime_attr('content-disposition') =~
+                m/attachment/ )
+            {
+                warn "we have an attachment?"
+                  if $t;
+                $is_att = 1;
+            }
+        }
+        else {
+            warn "can't find a content-disposition"
+              if $t;
+        }
+
+        if (
+            (
+                   ( $args->{-entity}->head->mime_type eq 'text/plain' )
+                || ( $args->{-entity}->head->mime_type eq 'text/html' )
+            )
+            && ( $is_att != 1 )
+          )
+        {
+
+            warn 'text or html, non-attachment part'
+              if $t;
+
+            my $body    = $args->{-entity}->bodyhandle;
+            my $content = $args->{-entity}->bodyhandle->as_string;
+
+            $content =
+              Encode::decode($self->_mime_charset( $args->{-entity} ), $content );
+
+            if ($content) {
+
+                # Stuff...
+                $args->{-entity}
+                  ->head->mime_attr( "content-type.charset", 'UTF-8' );
+
+                my $io = $body->open('w');
+                $content = safely_encode($content);
+                $io->print($content);
+                $io->close;
+            }
+
+            $args->{-entity}->sync_headers(
+                'Length'      => 'COMPUTE',
+                'Nonstandard' => 'ERASE'
+            );
+        }
+
+    }
 
 
-
-
+	return $args->{-entity}; 
+}
 
 =pod
 
@@ -937,14 +987,15 @@ sub _list_name_subject {
 	
 	my $self         = shift;
 	my $orig_subject = shift; 
-	
-	   $orig_subject = $self->_decode_header($orig_subject)
-			if $self->im_encoding_headers; 
+	   warn 'in _list_name_subject before decode: ' . $orig_subject 
+		if $t;
+		$orig_subject = $self->_decode_header($orig_subject); 
+	   warn 'in _list_name_subject after decode: ' . $orig_subject 
+		if $t;
+
 	
 	my $list       = $self->{ls}->param('list'); 
 	my $list_name  = $self->{ls}->param('list_name'); 
-	
-	
 	
 	# This really needs to look for both list name and list short name... I'm thinking...
 	$orig_subject   =~ s/\[($list|$list_name)\]//; # This only looks for list shortname...
@@ -967,10 +1018,15 @@ sub _list_name_subject {
 			$orig_subject    = '[' . '<!-- tmpl_var list_settings.list -->' . ']' . "$re $orig_subject"; 
 		}
 	}
-
-	$orig_subject = $self->_encode_header('Subject', $orig_subject)
-		if $self->im_encoding_headers; 
+	
+	warn 'in _list_name_subject before encode: ' . $orig_subject 
+		if $t;
 		
+	$orig_subject = $self->_encode_header('Subject', $orig_subject); 
+
+	   warn 'in _list_name_subject after encode: ' . $orig_subject 
+		if $t;
+				
 	return $orig_subject; 
 
 }
@@ -1029,9 +1085,6 @@ sub _parse_in_list_info {
 	$data =~ s/\<\!\-\- tmpl_var list_subscribe_link \-\-\>/$s_link/g;	
 	$data =~ s/\<\!\-\- tmpl_var list_unsubscribe_link \-\-\>/$us_link/g;
 	
-	
-	
-	
 	# confirmations.
 	
     my $cs_link  = $self->_macro_tags(-type => 'confirm_subscribe'); 
@@ -1055,7 +1108,7 @@ sub _parse_in_list_info {
 		}
         $data =~ s/\<\!\-\- tmpl_var originating_message_url \-\-\>/$omu/g;
     }
-    
+
 	return $data; 
 	
 }
@@ -1463,6 +1516,7 @@ sub entity_from_dada_style_args {
                                          }
                                       ); 
 
+			# This is going to return a Entity from a decoded message...?
             return ($self->get_entity(
                             {
                                 -data          => $filename,
@@ -1473,20 +1527,21 @@ sub entity_from_dada_style_args {
     }
     else { 
     
-    
+  
         my $str = $self->string_from_dada_style_args(
                                         {
                                             -fields => $args->{-fields},
                                          }
                                       );
-    
-    
-            return $self->get_entity(
+		
+			$str = safely_encode($str); 
+            my $entity =  $self->get_entity(
                             {
                                 -data => $str, 
                             }
                     ); 
-                    
+				
+            return $entity;        
 
     }
 }
@@ -1511,9 +1566,8 @@ sub string_from_dada_style_args {
         $str .= $_ . ': ' . $args->{-fields}->{$_} . "\n"
         if ( ( defined $args->{-fields}->{$_} ) && ( $args->{-fields}->{$_} ne "" ) );
     }
-    
     $str .= "\n" . $args->{-fields}->{Body};
-    
+	
     return $str;
 
     
@@ -1538,9 +1592,9 @@ sub file_from_dada_style_args {
 
        $filename = make_safer($filename); 
     
-	
-    open my $MAIL, '>', $filename or croak $!; 
-    
+  open my $MAIL, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $filename or croak $!; 
+ #   open my $MAIL, '>', $filename or croak $!; 
+  
     if(! exists($args->{-fields})){ 
         croak 'did not pass data in, "-fields"' ;
     }
@@ -1617,13 +1671,27 @@ sub get_entity {
 		$args->{-parser_params}->{-input_mechanism} = 'parse_data';
 	}
     if($args->{-parser_params}->{-input_mechanism} eq 'parse_open'){ 
-        eval { $entity = $self->{parser}->parse_open($args->{-data}) };       
- 		if($@){ 
+	
+       # eval { $entity = $self->{parser}->parse_open($args->{-data}) };       
+			# parse INSTREAM
+		#   Instance method. Takes a MIME-stream and splits it into its component entities.
+		#   The INSTREAM can be given as an IO::File, a globref filehandle (like \*STDIN), 
+		#   or as any blessed object conforming to the IO:: interface (which minimally implements getline() and read()).
+		#   Returns the parsed MIME::Entity on success. Throws exception on failure. If the message contained too many parts (as set by max_parts), returns undef.
+	
+		eval{
+			#open TMPLFILE, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $args->{-data} or die $!; 
+			open TMPLFILE, '<', $args->{-data} or die $!; 
+			
+			$entity = $self->{parser}->parse(\*TMPLFILE);
+			close(TMPLFILE) or die $!;
+		};
+		if($@){ 
 			carp $@; 
 		}
     }
     else { 
-        eval { $entity = $self->{parser}->parse_data($args->{-data}) };
+        eval { $entity = $self->{parser}->parse_data($args->{-data})};
  		if($@){ 
 			carp $@; 
 		}
@@ -1679,111 +1747,133 @@ The subroutine also passes the C<-dada_pseudo_tag_filter> (set to 1) automatical
 
 
 
-sub email_template { 
-	
-	# Tests and documentation
-	# OK, MORE documentation
-	#
-	#
-	# OK - Headers don't work, if there's a multipart/alternative message (or, a message with an attachment, etc) 
-	
-	my $self   = shift; 
-	
-	my ($args) = @_;
-	
-	require DADA::Template::Widgets; 
-    
-    if(! exists($args->{-entity})){ 
-	    croak 'did not pass an entity in, "-entity"!'; 
-	}
- 
-	my @parts  = $args->{-entity}->parts; 
-	
+sub email_template {
 
-	if(@parts){
-	    
-		my $i; 
-		foreach $i (0 .. $#parts) {
-			$parts[$i]= $self->email_template({%{$args}, -entity => $parts[$i] });	# -entity should only pass the current part, but have the rest of the params passed...?
-		}
-		
-		 $args->{-entity}->sync_headers('Length'      =>  'COMPUTE',
-							            'Nonstandard' =>  'ERASE');
-	    
-	}else{ 	
-	
-		my $is_att = 0; 
-		if (defined($args->{-entity}->head->mime_attr('content-disposition'))) { 
-		    if ($args->{-entity}->head->mime_attr('content-disposition') =~ m/attachment/){
-	        	$is_att = 1; 
-		    }
-		}
-			
-		if(
-		    (
-		    ($args->{-entity}->head->mime_type eq 'text/plain') ||
-			($args->{-entity}->head->mime_type eq 'text/html')
-		  	) 
-		    && 
-		    ($is_att != 1)
-		  ) {
+    warn "email_template."
+      if $t;
 
-###			
-            # ?!
-            my %screen_vars = (); 
-            foreach(keys %{$args}){ 
-                next if $_ eq '-entity';
-                $screen_vars{$_} = $args->{$_}; 
+# Tests and documentation
+# OK, MORE documentation
+#
+#
+# OK - Headers don't work, if there's a multipart/alternative message (or, a message with an attachment, etc)
+
+    my $self = shift;
+
+    my ($args) = @_;
+
+    require DADA::Template::Widgets;
+
+    if ( !exists( $args->{-entity} ) ) {
+        croak 'did not pass an entity in, "-entity"!';
+    }
+
+    my @parts = $args->{-entity}->parts;
+
+    if (@parts) {
+        warn "this part has " . $#parts . "parts."
+          if $t;
+
+        my $i;
+        foreach $i ( 0 .. $#parts ) {
+            $parts[$i] =
+              $self->email_template( { %{$args}, -entity => $parts[$i] } )
+              ; # -entity should only pass the current part, but have the rest of the params passed...?
+        }
+
+        $args->{-entity}->sync_headers(
+            'Length'      => 'COMPUTE',
+            'Nonstandard' => 'ERASE'
+        );
+
+    }
+    else {
+
+        my $is_att = 0;
+        if (
+            defined( $args->{-entity}->head->mime_attr('content-disposition') )
+          )
+        {
+            warn q{content-disposition has set to: }
+              . $args->{-entity}->head->mime_attr('content-disposition')
+              if $t;
+            if ( $args->{-entity}->head->mime_attr('content-disposition') =~
+                m/attachment/ )
+            {
+                warn "we have an attachment?"
+                  if $t;
+                $is_att = 1;
             }
-            $screen_vars{-dada_pseudo_tag_filter} = 1; 
-###/
-	
-			if(
-			    (
-			    ($args->{-entity}->head->mime_type eq 'text/plain') ||
-				($args->{-entity}->head->mime_type eq 'text/html')
-				)
-			){ 
-				
-				
-				my $body    = $args->{-entity}->bodyhandle;
-				my $content = $body->as_string;
+        }
+        else {
+            warn "can't find a content-disposition"
+              if $t;
+        }
 
-				if($content){
-			
-				    # And, that's it. 
-	                $content = DADA::Template::Widgets::screen(
-	                    {
-	                                %screen_vars,
-	                                -data                   => \$content, 
-									(
-										($args->{-entity}->head->mime_type eq 'text/html') ? 
-										(
-											-webify_these => [qw(list_settings.info list_settings.privacy_policy list_settings.physical_address)], 
-								        ) 
-										: ()
-									),
+        if (
+            (
+                   ( $args->{-entity}->head->mime_type eq 'text/plain' )
+                || ( $args->{-entity}->head->mime_type eq 'text/html' )
+            )
+            && ( $is_att != 1 )
+          )
+        {
 
-	                    }
-	                ); 
+            warn 'text or html, non-attachment part'
+              if $t;
 
-			       my $io = $body->open('w');
-					  $io->print( $content );
-					  $io->close;
-				}
-		    
-				$args->{-entity}->sync_headers('Length'      =>  'COMPUTE',
-					  				           'Nonstandard' =>  'ERASE');
-			}
-		}
-		
-	#	return $args->{-entity}; 
-	}
+###
+            # ?!
+            my %screen_vars = ();
+            foreach ( keys %{$args} ) {
+                next if $_ eq '-entity';
+                $screen_vars{$_} = $args->{$_};
+            }
+            $screen_vars{-dada_pseudo_tag_filter} = 1;
+
+            my $body    = $args->{-entity}->bodyhandle;
+            my $content = $args->{-entity}->bodyhandle->as_string;
+            $content = safely_decode($content);
+
+            if ($content) {
+
+                # And, that's it.
+                $content = DADA::Template::Widgets::screen(
+                    {
+                        %screen_vars,
+                        -data => \$content,
+                        (
+                            (
+                                $args->{-entity}->head->mime_type eq 'text/html'
+                            )
+                            ? (
+                                -webify_these => [
+                                    qw(list_settings.info list_settings.privacy_policy list_settings.physical_address)
+                                ],
+                              )
+                            : ()
+                        ),
+
+                    }
+                );
+
+                my $io = $body->open('w');
+                $content = safely_encode($content);
+                $io->print($content);
+                $io->close;
+            }
+
+            $args->{-entity}->sync_headers(
+                'Length'      => 'COMPUTE',
+                'Nonstandard' => 'ERASE'
+            );
+        }
+
+    }
+
+
 	
-	
-	
-	###/ 
-	# Headers...
+
 	
     # ?!
     my %screen_vars = (); 
@@ -1794,85 +1884,132 @@ sub email_template {
     $screen_vars{-dada_pseudo_tag_filter} = 1; 
     
 	foreach my $header('Subject', 'From', 'To', 'Reply-To', 'Errors-To', 'Return-Path', 'List', 'List-URL', 'List-Owner', 'List-Subscribe', 'List-Unsubscribe'){ 
-				
+		warn "looking at headers"
+			if $t;
+						
 	    if($args->{-entity}->head->get($header, 0)){ 
 						
             if($header =~ m/From|To|Reply\-To|Return\-Path|Errors\-To/){ 
-                #Special Case - only format the phrase. 
+
+	
+				warn 'header is: From|To|Reply\-To|Return\-Path|Errors\-To/'
+					if $t; 
+				
+				# Get	
+				my $header_value = 	$args->{-entity}->head->get($header, 0); 
+				
+			#	# Entity Decode
+			#	$header_value = Encode::decode('UTF-8', $header_value);
+				
                 require Email::Address; 
-                my @addresses = Email::Address->parse($args->{-entity}->head->get($header, 0));
+
+				# Uh.... get each individual.. thingy. 
+                my @addresses = Email::Address->parse($header_value);
+
+				# But then, just work with the first? 
                 if($addresses[0]){
-			        my $phrase = $addresses[0]->phrase; 
-					   $phrase = $self->_decode_header($phrase)
-							if $self->im_encoding_headers; 
-											
+	
+					warn 'templating out header'
+						if $t; 
+					# Get (individual) 	
+					
+					# This makes sense - all we want to template out 
+					# Is the phrase, so, 
+					
+					# We take the phrase out, 
+			        my $phrase = $addresses[0]->phrase; 	
+			
+					   # Decode it, 
+					   $phrase = $self->_decode_header($phrase); 
+					   
+					   # Template it Out
 					   $phrase = DADA::Template::Widgets::screen(
                         {
                             %screen_vars,
                             -data => \$phrase, 
-
                         }
                     );
-					# DEV: It's probably an oversight that this originaly 
-					# passed the phraise to _encode_header, when that sub wants
-					# The entire header and not the phrase, but escapes me 
-					# why it was like that to start out with. 
-					# Passing the entire header does make sure multiple 
-					# addresses in the field get encoded - but does this 
-					# subroutine do that? see: $addresses[0]?! Up there? It 
-					# only looks for the first address.... THAT should probably be patched up
-					# (not that dada mail does anything with >1 address, but still..... 
 					
-					# warn '$phrase before encoding: ' . $phrase; 
- 					$phrase = $self->_encode_header('just_phrase', $phrase)
-						if $self->im_encoding_headers; 
-					# warn '$phrase after encoding: ' . $phrase; 
-					
+					# Encode it
+ 					$phrase = $self->_encode_header('just_phrase', $phrase); 
+
                     # Munge! 
-                    $phrase =~ s{^\"|\"$}{}g; # need this still? 
-				    $addresses[0]->phrase($phrase); 
-                    
-                    
+                    #$phrase =~ s{^\"|\"$}{}g; # need this still? 
+				    
+					# Pop it back in, 
+					$addresses[0]->phrase($phrase); 
+					
+					# Save it
                     my $new_header = $addresses[0]->format; 
-					# warn ' $new_header ' . $new_header; 
-					 
-                    $args->{-entity}->head->delete($header);
-                    $args->{-entity}->head->add($header, $new_header); 
-                
+					
+					## Encode
+					#$new_header = Encode::encode('UTF-8', $new_header);
+                    
+					# Remove the old
+					$args->{-entity}->head->delete($header);
+					
+					# Add the new
+					$args->{-entity}->head->add($header, $new_header); 
+					
                 }
                 else { 
-                    #warn "couldn't find the first address?"; 
-                }
-            
+					
+                    warn "couldn't find the first address?"
+						if $t; 
+                }           
             } 
             else { 
-	    
-				#if($header eq 'List-Unsubscribe'){ 
-					warn "header is: " . $header; 
-				#}
-                my $header_value = $args->{-entity}->head->get($header, 0);
-                    $header_value = $self->_decode_header($header_value)
-  						if $self->im_encoding_headers; 
-
-               $args->{-entity}->head->delete($header);
-           
-                $header_value = DADA::Template::Widgets::screen(
+	    		warn "I think we have a subject line."
+					if $t; 
+				# Get
+			    my $header_value = $args->{-entity}->head->get($header, 0);# 
+				warn 'get:' . safely_encode( $header_value)	
+				 if $t; 
+				
+				# I'm a little weirded by this, but if, some reason
+				# UTF-8 (decoded) stuff gets through, this does help it. 
+				# Uneeded, if there is no UTF-8 stuff is in the header (which should be the 
+				# the case, anyways - 
+				#$header_value =Encode::encode('UTF-8', $header_value); 
+				#warn 'UTF-8 Encode:' . Encode::encode('UTF-8', $header_value); 
+				
+								
+				# Decode EncWords
+				   $header_value = $self->_decode_header($header_value);
+                	warn 'decode EncWords:' . safely_encode( $header_value)
+						if $t; 
+				
+				# Template
+				$header_value = DADA::Template::Widgets::screen(
                     {
                        %screen_vars,
                         -data                   => \$header_value, 
                     }
                 ); 
-                $header_value = $self->_encode_header($header, $header_value)
-					if $self->im_encoding_headers; 
-                $args->{-entity}->head->add($header, $header_value); 
+
+				
+				warn 'Template:' . safely_encode( $header_value)
+					if $t;
+				
+				# Encode
+				$header_value = $self->_encode_header($header, $header_value); 
+				warn 'encode EncWords:' . safely_encode( $header_value)
+					if $t; 
+				
+				
+				# Remove the old
+				$args->{-entity}->head->delete($header);
+				
+				# Add
+				$args->{-entity}->head->add($header, $header_value);
+			 
+				warn 'now:'. safely_encode( $header_value)
+					if $t;
             }                
         }
-	}        
-	
-	
-		
+	}        	
 	###/
-	
+	# I think this is where I want to change the charset... 
 	return $args->{-entity}; 
 }
 
@@ -1888,7 +2025,6 @@ sub DESTROY {
 
 
 sub pre_process_msg_strings { 
-	
 	my $text_ver = shift || undef; 
 	my $html_ver = shift || undef; 
 	

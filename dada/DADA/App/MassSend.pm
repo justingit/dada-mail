@@ -178,7 +178,7 @@ sub send_email {
             $scrn .= admin_template_footer(-List => $list, -Form => 0);
             
 			if($args->{-html_output} == 1){ 
-				print $scrn; 
+				e_print($scrn); 
   			}
 
         }else{
@@ -226,13 +226,17 @@ sub send_email {
 			my $text_message_body = $q->param('text_message_body') || undef; 
 			my $html_message_body = $q->param('html_message_body') || undef; 
 			
+			
 			($text_message_body, $html_message_body) = 
 				DADA::App::FormatMessages::pre_process_msg_strings($text_message_body, $html_message_body); 
-				
             my $msg; 
             
             if($html_message_body && $text_message_body){ 
-                
+               
+			  $text_message_body = safely_encode( $text_message_body);
+			  $html_message_body = safely_encode( $html_message_body); 
+			
+			  
               $msg = MIME::Lite->new(
 			  	Type      => 'multipart/alternative', 
 			    Datestamp => 0, 
@@ -260,7 +264,9 @@ sub send_email {
                $msg->attach($html_part);
                 
             }elsif($html_message_body){ 
-                                
+                
+			  $html_message_body = safely_encode( $html_message_body);
+			              
                 $msg = MIME::Lite->new(
                                        Type      => 'text/html', 
                                        Data      => $html_message_body, 
@@ -269,7 +275,8 @@ sub send_email {
                                       ); 
                 $msg->attr('content-type.charset' => $li->{charset_value});
             }elsif($text_message_body){ 
-                            
+                
+				$text_message_body = safely_encode( $text_message_body);
                 $msg = MIME::Lite->new(
 					   		Type      => 'TEXT',
                             Data      => $text_message_body,
@@ -316,16 +323,18 @@ sub send_email {
             
             
         my $msg_as_string = (defined($msg)) ? $msg->as_string : undef;
-                  #  croak '$msg_as_string ' . $msg_as_string;
-
+		   $msg_as_string = safely_decode( $msg_as_string);
+		   
            $fm->Subject($headers{Subject});
            $fm->use_list_template($q->param('apply_template')); 
            if($li->{group_list} == 1){ 
 				$fm->treat_as_discussion_msg(1);
     		}
+ 
+        my ($final_header, $final_body) = $fm->format_headers_and_body(
+			-msg => $msg_as_string
+		);
 
-        my ($final_header, $final_body) = $fm->format_headers_and_body(-msg => $msg_as_string );
-                
         require DADA::Mail::Send;
                $DADA::Mail::Send::dbi_obj = $dbi_handle;
 
@@ -372,10 +381,6 @@ sub send_email {
             $test_recipient = $mh->mass_test_recipient;
 
 			my $multi_list_send_no_dupes = $q->param('multi_list_send_no_dupes') || 0; 
-			
-            # send away
-			#require Data::Dumper; 			
-            #die Data::Dumper::Dumper(@alternative_list);
  
 			$message_id = $mh->mass_send(
 				{
@@ -422,7 +427,7 @@ sub send_email {
             if(($archive_m == 1) && ($process !~ m/test/i)){
                 require DADA::MailingList::Archives;                
                 my $archive = DADA::MailingList::Archives->new({-list => $list});
-                   $archive->set_archive_info($message_id, $headers{Subject}, undef, undef, $mh->saved_message); 
+	               $archive->set_archive_info($message_id, $headers{Subject}, undef, undef, $mh->saved_message); 
 
                	DADA::App::Guts::tweet_about_mass_mailing(
 					$list, 
@@ -569,7 +574,7 @@ sub send_url_email {
 					); 
 
         $scrn .= admin_template_footer(-List => $list );
-        print $scrn; 
+        e_print($scrn); 
 
     }else{ 
         
@@ -652,9 +657,12 @@ sub send_url_email {
             my $MIMELiteObj; 
             
             if($q->param('content_from') eq 'url'){ 
-                $MIMELiteObj = $mailHTML->parse($q->param('url'), $t);
+                $MIMELiteObj = $mailHTML->parse($q->param('url'), 
+				safely_encode( $t));
             }else{ 
-                $MIMELiteObj = $mailHTML->parse($q->param('html_message_body'), $t);
+                $MIMELiteObj = $mailHTML->parse(
+					safely_encode( $q->param('html_message_body')), 
+					safely_encode( $t));
             }
             
             require  DADA::App::FormatMessages; 
@@ -700,8 +708,10 @@ sub send_url_email {
             my $test_recipient = ''; 
 
             if(!$problems){ 
-            
-                my ($header_glob, $template) =  $fm->format_headers_and_body(-msg => $rm);
+            	$rm = safely_decode( $rm); 
+                my ($header_glob, $template) =  $fm->format_headers_and_body(
+					-msg => $rm
+				);
                 
                 require DADA::Mail::Send;
                        $DADA::Mail::Send::dbi_obj = $dbi_handle;
@@ -880,14 +890,15 @@ sub list_invite {
 			push(@$verified_addresses, $info); 
 			
 	    }
-	       
-        print(admin_template_header(-Title      => "Invitations", 
+	     
+	    my $scrn = ''; 
+        $scrn .= admin_template_header(-Title      => "Invitations", 
                                 -List       => $list, 
-                                -Root_Login => $root_login));
+                                -Root_Login => $root_login);
                                 
             
         require DADA::Template::Widgets;
-        print   DADA::Template::Widgets::screen(
+        $scrn .=   DADA::Template::Widgets::screen(
 					{
 						-screen => 'list_invite_screen.tmpl', 
 						-vars   => {
@@ -912,8 +923,9 @@ sub list_invite {
 							}, 
 					}
 				);
-        print(admin_template_footer(-List => $list));
-
+        $scrn .= admin_template_footer(-List => $list);
+		e_print($scrn); 
+		
     }elsif($process =~ m/submit/i){ 
  
        # add these to a special 'invitation' list. we'll clear this list later. 
@@ -984,13 +996,16 @@ sub list_invite {
         my $msg; 
       
     
-        if($text_message_body and $html_message_body){     
-        
+        if($text_message_body and $html_message_body){    
+	
+	 		$html_message_body = safely_encode( $html_message_body);
+        	$text_message_body = safely_encode( $text_message_body);
+ 
             $msg = MIME::Lite->new(
 					Type      =>  'multipart/alternative',
 					Datestamp => 0, 
 				  );  
-            $msg->attach(Type=> 'TEXT', Data => $text_message_body);
+            $msg->attach(Type => 'TEXT',      Data => $text_message_body);
             $msg->attach(Type => 'text/html', Data => $html_message_body);  
         
         }elsif($html_message_body){
@@ -1003,7 +1018,8 @@ sub list_invite {
 					);
         
         }elsif($text_message_body){
-        
+        	$text_message_body = safely_encode( $text_message_body);
+        	
             $msg = MIME::Lite->new(
 					Type      => 'TEXT', 
 					Data      => $text_message_body,
@@ -1015,7 +1031,7 @@ sub list_invite {
             warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning: both text and html versions of invitation message blank?!"; 
             $msg = MIME::Lite->new(
 						Type      => 'TEXT', 
-						Data      => $li->{invite_message_text},
+						Data      => safely_encode( $li->{invite_message_text}),
 						Datestamp => 0, 
 				  );                                
 
@@ -1024,10 +1040,13 @@ sub list_invite {
         $msg->replace('X-Mailer' =>"");
         
         my $msg_as_string = (defined($msg)) ? $msg->as_string : undef;
-        
+           $msg_as_string = safely_encode( $msg_as_string);
+    	
 		require DADA::App::FormatMessages; 
         my $fm = DADA::App::FormatMessages->new(-List => $list); 
-           $fm->Subject($headers{Subject}); 
+           $fm->Subject(
+				$headers{Subject}
+			); 
            $fm->use_email_templates(0); 
            
         my ($header_glob, $message_string) =  $fm->format_headers_and_body(-msg => $msg_as_string );

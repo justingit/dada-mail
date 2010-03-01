@@ -1,10 +1,9 @@
 package DADA::Template::Widgets;
 use lib qw(
 
-          /sw/lib/perl5/5.8.6/darwin-thread-multi-2level
-          /sw/lib/perl5
-          
           ../../ ./ ../ ./dada ../dada ./DADA ../DADA ./DADA/perllib ../DADA/perllib); 
+
+use Encode; 
 
 use CGI::Carp qw(croak carp); 
 
@@ -25,7 +24,8 @@ use DADA::App::Guts;
 use CGI; 
 my $q = new CGI; 
    $q->charset($DADA::Config::HTML_CHARSET);
-
+   $q = decode_cgi_obj($q); 
+	
 	my $dbi_handle; 
 
 if(
@@ -179,7 +179,8 @@ MULTIPLE_LIST_SENDING         => $DADA::Config::MULTIPLE_LIST_SENDING,
 LEFT_BRACKET                  => '[',
 RIGHT_BRACKET                 => ']',
 LT_CHAR                       => '<', 
-GT_CHAR                       => '>',           
+GT_CHAR                       => '>',    
+TEST_UTF_VALUE                => "\x{a1}\x{2122}\x{a3}\x{a2}\x{221e}\x{a7}\x{b6}\x{2022}\x{aa}\x{ba}",        
 
 
 # Random hacks for MS Word, Outlook (sigh)
@@ -484,6 +485,9 @@ sub global_list_sending_checkbox_widget {
 
 sub default_screen {
 
+#my ($args) = @_; 
+#my %args = %$args; #backwards compat? 
+
     my %args = (
         -show_hidden        => undef,
         -name               => undef,
@@ -492,6 +496,7 @@ sub default_screen {
         -error_invalid_list => 0,
         @_
     );
+
 
     require DADA::MailingList::Settings;
     require DADA::MailingList::Archives;
@@ -1085,7 +1090,9 @@ sub profile_widget {
         if ($dp) {
             require DADA::Profile::Session;
             require CGI;
-            my $q         = new CGI;
+            my $q = new CGI;
+		 	   $q = decode_cgi_obj($q); 
+		   
             my $prof_sess = DADA::Profile::Session->new;
             if ( $prof_sess->is_logged_in( { -cgi_obj => $q } ) ) {
                 $is_logged_in = 1;
@@ -1777,7 +1784,7 @@ else {
                                                          filter => [ 
 														 
 														#  { sub => \&set_name_value_filter, format => 'scalar' },
-
+                  											   { sub => \&decode_str,format => 'scalar' },
                                                               { sub => \&dada_backwards_compatibility,
                                                                format => 'scalar' },
                                                              { sub => \&dada_pseudo_tag_filter,
@@ -1797,9 +1804,10 @@ else {
                                                          ($args->{-dada_pseudo_tag_filter} == 1) ?
                                                          (
                                                         filter => [ 
-													  
-													# 	  { sub => \&set_name_value_filter, format => 'scalar' },
-													
+													  		
+															# the scalarref should already be 
+															# decoded, so doing it again isn't necessary? 
+															# { sub => \&decode,format => 'scalar' },
                                                               { sub => \&dada_backwards_compatibility,
                                                                format => 'scalar' },
                                                              { sub => \&dada_pseudo_tag_filter,
@@ -1826,7 +1834,7 @@ else {
                                                          (
                                                         filter => [ 
 														 # { sub => \&set_name_value_filter, format => 'scalar' },
-
+															 { sub => \&decode_str, format => 'scalar' },
                                                               { sub => \&dada_backwards_compatibility,
                                                                format => 'scalar' },
                                                              { sub => \&dada_pseudo_tag_filter,
@@ -1839,6 +1847,14 @@ else {
 
 	}elsif($args->{-data}){ 
 
+		if($args->{-decode_before} == 1){ 
+			#decode_str($args->{-data}); 
+		#	$args->{-data} = safely_decode($$args->{-data}); 
+		${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
+	#	${$args->{-data}} = Encode::decode('UTF-8' ,${$args->{-data}}); 
+		
+		}
+		
    		require HTML::Template;
 	#	eval { 
 			$template = HTML::Template->new(%Global_Template_Options, 
@@ -1848,8 +1864,13 @@ else {
                                         ($args->{-dada_pseudo_tag_filter} == 1) ?
                                         (
                                                         filter => [ 
-															#  { sub => \&set_name_value_filter, format => 'scalar' },
-                                                              { sub => \&dada_backwards_compatibility,
+															# the scalarref should already be 
+															# decoded, so doing it again isn't necessary? 
+														#	($args->{-decode_before} == 1 ? 
+														#	 	({ sub => \&decode,format => 'scalar' },) : ()
+                                                         #    ), 
+
+																{ sub => \&dada_backwards_compatibility,
                                                                format => 'scalar' },
                                                              { sub => \&dada_pseudo_tag_filter,
                                                                format => 'scalar' },
@@ -1880,20 +1901,24 @@ else {
 
 
    $template->param(   
-					%Global_Template_Variables,
-					
+					%Global_Template_Variables,					
 					# I like that, (not) 
 					date    => scalar(localtime()),
-					
 					%$template_vars,
-
-				   
 				   ); 
 				   
 	if($args->{-list}){ 
 		$template->param('list', $args->{-list}); 
 	}
+	
+#	# From what I understand, we want to treat HTML::Template stuff as if its already encoded. 
+#	if(exists($args->{-decode})){ 
+#		if($args->{-decode} == 1){ 
+#			return Encode::decode($DADA::Config::HTML_CHARSET, $template->output()); 
+#		}
+#	}
 	return $template->output();
+
 }
 
 
@@ -1913,6 +1938,13 @@ sub set_name_value_filter {
 		}
 	   $$text_ref =~ s/$match/<tmpl_if name=never><tmpl_var name=$1><\/tmpl_if><!-- here. -->/gi;	
 }
+
+sub decode_str { 
+	my $ref = shift;
+       #${$ref} = Encode::decode('UTF-8', ${$ref});
+		${$ref} = safely_decode(${$ref}); 
+}
+
 sub dada_backwards_compatibility { 
 
     my $sref = shift; 
@@ -2157,11 +2189,9 @@ sub subscription_form {
 	if(! exists ($args->{-ignore_cgi}) && $args->{-ignore_cgi} != 1){ 
    
         require CGI; 
-
- 
         my $q = new CGI; 
            $q->charset($DADA::Config::HTML_CHARSET);
-
+		   $q = decode_cgi_obj($q); 
         foreach(qw(email list )){ 
             if(! exists ( $args->{'-' . $_} ) && defined($q->param($_))){ 
                 $args->{'-' . $_} = xss_filter($q->param($_));
@@ -2341,7 +2371,7 @@ sub _slurp {
         my $r;
         my (@r);
 
-        open(F, "<$file") || die "open $file: $!";
+        open(F, '<:encoding(' . $DADA::Config::HTML_CHARSET .')', $file) || die "open $file: $!";
         @r = <F>;
         close(F) || die "close $file: $!";
 

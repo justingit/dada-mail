@@ -64,8 +64,11 @@ sub backupToDir {
 	if(-d $new_dir){
 		foreach my $setting(keys %$li){	
 			next if ! $setting;
-			sysopen(KEY, $self->_safe_path($new_dir . '/' . $setting),  O_WRONLY|O_TRUNC|O_CREAT,  $DADA::Config::FILE_CHMOD ) 
+			open(KEY, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->_safe_path($new_dir . '/' . $setting)) 
 				or carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER error! Can't write key/value file at: '" . $self->_safe_path($new_dir . '/' . $setting) . "' $!";  
+				
+			# Not quite sure why I'm doing this twice, except I used to do it in the sysopen call: 
+			chmod($DADA::Config::FILE_CHMOD , $self->_safe_path($new_dir . '/' . $setting)); 
 			
 			if($self->{function} eq 'schedules'){ 
 			    require Data::Dumper; 			
@@ -362,10 +365,9 @@ sub restoreFromFile {
 				my $value_file = $self->backDirPath .  '/' . $restore_dir . '/' . $value;
 				
 				if(-e $value_file){ 
-					open(VALUE, $value_file) or carp $!; 
-					
-					$new_values{$value} = do{ local $/; <VALUE> }; 
-                                       
+					open(VALUE, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $value_file) 
+						or carp $!; 
+					$new_values{$value} = do{ local $/; <VALUE> };    
 					close(VALUE) or carp $!; 
 				}else{ 
 					carp $value_file . "doesn't exist?!";

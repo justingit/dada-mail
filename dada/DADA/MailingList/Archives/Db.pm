@@ -2,6 +2,8 @@ package DADA::MailingList::Archives::Db;
 
 use lib qw(./ ../ ../../ ../../../ ./../../DADA ../../perllib); 
 
+use Encode; 
+
 use base DADA::App::GenericDBFile;
 
 =pod
@@ -135,12 +137,19 @@ sub get {
 
 
 
+# No idea where this is used. Is it used?
 sub save { 
+	
 	my $self     = shift; 
 	my $new_vals = shift || {}; 
 	
 
 	$self->_close_db;
+	
+	# encode
+	while ( my ($key, $value) = each %$new_vals ) {
+		$new_vals->{$key} = Encode::encode_utf8($value);
+	}
 	
 	# hack. fix later. 
 	my %tmp; 
@@ -271,10 +280,14 @@ sub get_archive_info{
 	my $key = shift; 
 	   $key = $self->_massaged_key($key); 
 	   	   
-	my ($subject, $message, $format) = split(/\[::\]/, $self->{DB_HASH}->{$key}); 
+	my (
+		$subject, 
+		$message, 
+		$format
+	) = split(
+			/\[::\]/, safely_decode($self->{DB_HASH}->{$key})
+	); 
 	$message = $self->massage($message);
-	
-	
 	$subject = $self->strip_subjects_appended_list_name($subject)
 		if $self->{ls}->param('no_append_list_name_to_subject_in_archives') == 1; 
 
@@ -302,8 +315,6 @@ sub set_archive_info {
 	   $key = $self->_massaged_key($key); 
 	   
 	if($key){ 
-	
-	
 		my $new_subject = shift; 	
 		my $new_message = shift;
 		my $new_format  = shift;
@@ -322,11 +333,16 @@ sub set_archive_info {
 			}
 		}
 		
-			#print "Saving Archive....\n"; 
-		$self->{DB_HASH}->{$key} = join("\[::\]", 
-		$new_subject, 
-		$new_message,
-		$new_format,
+	
+		
+		
+		#print "Saving Archive....\n"; 
+		$self->{DB_HASH}->{$key} = Encode::encode_utf8(
+			join("\[::\]", 
+				$new_subject, 
+				$new_message,
+				$new_format,
+			)
 		); 
 			#print "Saved!\n"; 
 		

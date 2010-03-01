@@ -54,7 +54,8 @@ foreach my $chr_name(keys %entities){
     $archive->set_archive_info($message_id, 'Subject', $entities{$chr_name}, 'text/plain', undef); 
     
     my $atom = $archive->atom_index; 
-    
+    #diag $atom;
+
     ok($atom =~ m/$DECIMALS{$chr_name}/, "there is a, &" . $DECIMALS{$chr_name} .";");
     ok($atom !~ m/\&amp\;$chr_name\;/, "there is no, &" . $chr_name . ';');
 

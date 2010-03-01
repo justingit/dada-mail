@@ -149,9 +149,6 @@ sub get {
     my ($args) = @_;
 	# I don't think I even pass anything to this method... 
 	
-	#require Data::Dumper; 
-	#croak Data::Dumper::Dumper($self->{email});
-	
     require DADA::Profile::Fields; 
 	my $sf = DADA::Profile::Fields->new(
 			{
@@ -162,10 +159,7 @@ sub get {
 	); 
 	
 	
-	my $r =  $sf->get($args); 
-	
-	# use Data::Dumper; 
-	# warn 'Returning from DADA:MailingList::Subscriber::baseSQL->get(): ' . Data::Dumper::Dumper($r); 
+	my $r =  $sf->get($args);  
 	
 	return $r; 
 }

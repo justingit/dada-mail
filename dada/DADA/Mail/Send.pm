@@ -661,7 +661,7 @@ sub send {
             #  if (defined fileno *MAIL);
             # ?!?!?!?!
             
-
+	
 			if($self->test){ 
             				
                 # print "NOT SENDING - sending message to test file: '" . $self->test_send_file . "'"; 
@@ -676,16 +676,19 @@ sub send {
 					or $self->_send_die($fields{Debug});		
             
             }
+
+			# Well, probably, no? 
+			binmode MAIL, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
             
 			# DEV: I guess the idea is, I want this header first?
             if (exists($fields{'Return-Path'})){
             	if ($fields{'Return-Path'} ne undef){
-					print MAIL 'Return-Path: ' . $fields{'Return-Path'} . "\n"	
+					print MAIL 'Return-Path: ' . $fields{'Return-Path'} . "\n"; 	
 				} 
 			}
             
             foreach my $field (@default_headers){
-                    print MAIL "$field: $fields{$field}\n" 
+                    print MAIL "$field: $fields{$field}\n"
                         if(
 	 						exists($fields{$field})                  && 
 							defined $fields{$field}                  && 
@@ -694,6 +697,8 @@ sub send {
                          );
             }
             print MAIL "\n"; 
+
+
             print MAIL $fields{Body} . "\n"; # DEV: Why the last, "\n"?
             close(MAIL) 
                 or carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: 
@@ -865,7 +870,6 @@ sub mass_send {
 	my ($args) = @_; 
 	
 	my %param_headers = (); 
-	#require Data::Dumper; 
 	
 	if(ref($args)){
 		
@@ -884,8 +888,6 @@ sub mass_send {
 			$self->partial_sending($args->{-partial_sending}); 
 		}
 		if(exists($args->{-multi_list_send})){ 
-			#warn 'setting -multi_list_send'; 
-			#warn Data::Dumper::Dumper($args->{-multi_list_send}); 
 			$self->multi_list_send($args->{-multi_list_send}); 		
 		}
 		if(exists($args->{-exclude_from})){ 
@@ -929,17 +931,20 @@ sub mass_send {
 				   %param_headers, 
 				); 
 	
-	use Data::Dumper; 
-	warn Dumper(\%fields); 		
+
+
 	#print q{ HERE: $fields{From} } .  $fields{From}; 
 	
 
 	%fields = $self->clean_headers(%fields); 
-    
-    # save a copy of the message for later pickup.
-    $self->saved_message($self->_massaged_for_archive(\%fields));
-    
+	
 
+	
+    # save a copy of the message for later pickup.
+
+
+
+    
 	require DADA::MailingList::Subscribers;
 	       $DADA::MailingList::Subscribers::dbi_obj = $dbi_obj; 
 	
@@ -971,6 +976,8 @@ sub mass_send {
       #  my $restart_status = $mailout->status; 
        # if($restart_status->{should_be_restarted} == 1){ 
         
+
+ 
         if($mailout->should_be_restarted == 1){ 
         
             warn '[' . $self->{list} . '] mailout is reporting the mailing should be restarted.'
@@ -991,18 +998,24 @@ sub mass_send {
         }
     
     }else { 
-    
+
+		
+		
         warn '[' . $self->{list} . '] Creating MailOut'
             if $t; 
-            
 
-        $mailout->create({
+		
+	
+		$mailout->create({
                         -fields          => {%fields},
                         -list_type       => $self->list_type,
                         -mh_obj          => $self,  
                         -partial_sending => $self->partial_sending, 
 						-exclude_from    => $self->exclude_from, 
                    }); 
+
+		
+		
     	if($self->test_return_after_mo_create == 1){ 
 			warn "test_return_after_mo_create is set to 1, and we're getting out of the mass_send method"
 				if $t; 
@@ -1011,6 +1024,9 @@ sub mass_send {
     
     }													 				
 	
+
+
+		
 	
     # This is so awkwardly placed...	
 	if($self->list_type eq 'invitelist'){ 
@@ -1080,7 +1096,7 @@ sub mass_send {
 			}
 		}
     }
-    
+	
     
     warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' $status->{paused}  is reporting ' . $status->{paused}
         if $t; 
@@ -1173,6 +1189,7 @@ sub mass_send {
             #
             #
             
+
             
             # I wonder if it'll work that I switch the database connection here. 
             # Would that impact everyone? 
@@ -1189,8 +1206,7 @@ sub mass_send {
 			) { 
 								
 				if(keys %{$self->multi_list_send}){ 
-					#warn 'keys in: multi_list_send'; 
-					#warn Data::Dumper::Dumper($self->multi_list_send); 
+
 					my $local_args = $args; 
 					# Cause that would not be good. 
 				
@@ -1200,7 +1216,6 @@ sub mass_send {
 					my $lists = $self->multi_list_send->{-lists};
 				
 					my @exclude_from = ($self->list);
-					#warn 'starting @exclude_from looking like this: ' . Data::Dumper::Dumper(\@exclude_from); 
 					foreach my $local_list(@$lists){ 
 						# warn 'looking at: $local_list ' . $local_list; 
 					
@@ -1218,7 +1233,6 @@ sub mass_send {
 								}
 							); 
 						push(@exclude_from, $local_list); 	
-						# warn 'mass_send initited. @exclude_from now looks like this: ' . Data::Dumper::Dumper(\@exclude_from);
 					}
 					# warn "Looks like we have more lists to send to!"; 
 				}
@@ -1275,6 +1289,8 @@ sub mass_send {
 				my $dbih = DADA::App::DBIHandle->new; 
 				my $dbh = $dbih->dbh_obj; 
 
+
+
 				# Let's get rid of the ones that are known: 
 				# DADA::MailingList::Settings
 				$self->{ls}->{dbh}->{InactiveDestroy} = 1;
@@ -1305,20 +1321,19 @@ sub mass_send {
 			##################################################################
 			
 			
-				
+
+		
 		    #warn "starting the sending process."; 
 		    
 			# child here
 			# parent process pid is available with getppid
+
+			# this is annoyingly complicated											
 					
 			my $mailing; 
 			my $n_letters = $letters; 
 			my $n_people  = 0; 
-			#my $sleep_num = 0; 
-			#my $send_body = $fields{Body}; 
-			#my $batch_num = 1; 
-						
-			# this is annoyingly complicated											
+
 			my $mail_info;
 			my $list_pin;		
 			my $mailing_count; 									
@@ -1352,7 +1367,7 @@ sub mass_send {
 			my $somethings_wrong = 0;
 			
 			
-			sysopen(MAILLIST, $mailout->subscriber_list,  O_RDONLY|O_CREAT, $DADA::Config::FILE_CHMOD ) or 
+			open(MAILLIST, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $mailout->subscriber_list) or 
 				croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: 
 				       can't open mailing list (at: '" . $mailout->subscriber_list .
 				      "') to send a Mailing List Message: $!"; 
@@ -1373,6 +1388,9 @@ sub mass_send {
 			# Although there's the problem with Solaris, I doubt this lock 
 			# ever works. The semaphore above probably works a whole lot better. 
 			#
+
+
+
 			if($^O =~ /solaris/g){ 
 			    # DEV For whatever reason (anyone?) Solaris DOES NOT like this type of locking. More research has be done..
 			
@@ -1431,8 +1449,8 @@ sub mass_send {
 				# And, that's it.
 			}
 			#
-			##################################################################
-				
+			##################################################################			
+			
 				
             warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' locking batch' 
                 if $t; 
@@ -1479,6 +1497,8 @@ sub mass_send {
 				}
 				#
 				##############################################################
+
+				
 				
 				my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
@@ -1569,18 +1589,16 @@ sub mass_send {
 				# The hell is this? 
 				#print 'From! ' . $fields{From} . "\n"; 
 				
+					
 
 				require DADA::App::FormatMessages; 
 			    my $fm = DADA::App::FormatMessages->new(
 							-List        => $self->{list},  
 							-ls_obj      => $self->{ls},
 						); 
-
-#use Data::Dumper; 
-#warn "BEFORE " . Dumper(\%fields);
-
-												
-                my %nfields = $self->_mail_merge(
+              
+				
+ 				my %nfields = $self->_mail_merge(
 				    {
 				        -fields => \%fields,
 				        -data   => \@ml_info, 
@@ -1981,7 +1999,7 @@ sub _content_transfer_encode {
 	    $entity  = MIME::Entity->build(
                        Encoding => $encoding,
                        Type     => $fields->{'Content-type'}, 
-                       Data     => $orig_body,
+                       Data     => safely_encode( $orig_body),
         );
         
         
@@ -1989,7 +2007,7 @@ sub _content_transfer_encode {
         foreach(keys %$fields){ 
             next if $_ eq 'Content-type'; # Yeah, Content-Type, no Content-type. Weird. Weeeeeeeird.
             next if $_ eq 'Content-Transfer-Encoding'; 
-            $entity->head->add($_, $fields->{$_}); 
+            $entity->head->add($_, safely_encode( $fields->{$_})); 
         }
         
         
@@ -1998,15 +2016,16 @@ sub _content_transfer_encode {
 		
 
 		
-        my $head = $entity->head->as_string; 
-        my $body = $entity->body_as_string; 
-           %new_fields = $self->return_headers($head);
+        my $head = $entity->head->as_string;
+	       $head   = safely_decode( $head);
+
+		# encoded. YES. 
+        my $body = $entity->body_as_string;
+	       $body   = safely_decode( $body);
+
+	    %new_fields = $self->return_headers($head);
                
         $new_fields{Body} = $body; 
-        
-        
-        
-           
                                
 	};
         
@@ -2090,7 +2109,17 @@ sub _make_general_headers {
 
 	my $ln = undef; 
 	if(defined($self->{list})){ 
-    	$ln = DADA::App::Guts::escape_for_sending($self->{ls}->param('list_name'));	   
+		require DADA::App::FormatMessages; 
+		my $fm = DADA::App::FormatMessages->new(
+			-List => $self->{list}
+		); 
+    	$ln = $fm->_encode_header(
+			'just_phrase',
+			DADA::App::Guts::escape_for_sending(
+				$self->{ls}->param('list_name')
+			)
+		);	   
+		undef $fm; 
 	}
 	my $From_obj = undef; 
 
@@ -2364,98 +2393,129 @@ sub _pop_before_smtp {
 
 
 
-sub _email_batched_finished_notification { 
+sub _email_batched_finished_notification {
 
-	my $self = shift; 
-	
-	# DEV: 
-	# Dum... we need ta hashref this out... 
+    my $self = shift;
 
-	# Let's turn this stuff off: 
-	$self->im_mass_sending(0); 
-	
-	my %args = (
-				-fields          => {}, 
-			    -start_time      => undef, 
-			    -end_time        => undef, 
-			    -emails_sent     => undef,
-			    -last_email      => undef,
-		 	    @_
-				);
-		 	                   
-	my $fields               = $args{-fields}; 
-	my $formatted_start_time = ''; 
-	my $formatted_end_time   = ''; 
-	
-	if($args{-start_time}){ 
-		
-		my ($s_sec, $s_min, $s_hour, $s_day, $s_month, $s_year) = (localtime($args{-start_time}))[0,1,2,3,4,5];
-		   $formatted_start_time = sprintf("%02d/%02d/%02d %02d:%02d:%02d",  $s_month+1, $s_day, $s_year+1900, $s_hour, $s_min, $s_sec);		
+    # DEV:
+    # Dum... we need ta hashref this out...
 
-	}
+    # Let's turn this stuff off:
+    $self->im_mass_sending(0);
 
-	if($args{-end_time}){ 
+    my %args = (
+        -fields      => {},
+        -start_time  => undef,
+        -end_time    => undef,
+        -emails_sent => undef,
+        -last_email  => undef,
+        @_
+    );
 
-		my ($e_sec, $e_min, $e_hour, $e_day, $e_month, $e_year) = (localtime($args{-end_time}))[0,1,2,3,4,5];
-		   $formatted_end_time = sprintf("%02d/%02d/%02d %02d:%02d:%02d",  $e_month+1, $e_day, $e_year+1900, $e_hour, $e_min, $e_sec);		
+    my $fields               = $args{-fields};
+    my $formatted_start_time = '';
+    my $formatted_end_time   = '';
 
-	}
-	
-	my $total_time =  $self->_formatted_runtime(($args{-end_time} - $args{-start_time}));
-		  
-	  require MIME::Lite; 
-	  
-	  my $msg = MIME::Lite->new(
-					Type      => 'multipart/mixed', 
-					To        => '"'. escape_for_sending($self->{ls}->param('list_name')) .'"  <' . $self->{ls}->param('list_owner_email') . '>',
-					Subject   => $DADA::Config::MAILING_FINISHED_MESSAGE_SUBJECT,
-					Datestamp => 0, 
-				); 
-	   
-	     $msg->attach(
-			Type        => 'TEXT', 
-	     	Data        => $DADA::Config::MAILING_FINISHED_MESSAGE,
-	     	Disposition => 'inline',
-	     );	     
-	     
-	   my $att; 
-	   foreach(keys %$fields){
-			next if $_ eq 'Body'; 
-			$att .= $_ . ': ' . $fields->{$_} . "\n"
-				if defined($fields->{$_}) && $fields->{$_} ne ""; 
-	   }
-	   $att .= "\n" . $fields->{Body}; 
-	   
-	     $msg->attach(Type        => 'message/rfc822', 
-					  Disposition => "inline",
-		 			  Data        => $att); 
+    if ( $args{-start_time} ) {
 
-			require DADA::App::FormatMessages; 
-		    my $fm = DADA::App::FormatMessages->new(-yeah_no_list => 1); 
+        my ( $s_sec, $s_min, $s_hour, $s_day, $s_month, $s_year ) =
+          ( localtime( $args{-start_time} ) )[ 0, 1, 2, 3, 4, 5 ];
+        $formatted_start_time = sprintf(
+            "%02d/%02d/%02d %02d:%02d:%02d",
+            $s_month + 1,
+            $s_day, $s_year + 1900,
+            $s_hour, $s_min, $s_sec
+        );
 
-		    my $entity = $fm->email_template(
-		        {
-		            -entity                   => $fm->get_entity({-data => $msg->as_string}),  
-		            -list_settings_vars       => $self->{ls}->params,
-					-list_settings_vars_param => {-dot_it => 1},
-					-vars                     => {
-						addresses_sent_to   => $args{-emails_sent}, 
-						mailing_start_time  => $formatted_start_time,
-						mailing_finish_time => $formatted_end_time,
-						total_mailing_time  => $total_time,
-						last_email_send_to  => $args{-last_email},
-						message_subject     => $fields->{Subject}
-					}
-		        }
-		    );
+    }
 
-		    $msg = $entity->as_string; 
-		    my ($header_str, $body_str) = split("\n\n", $msg, 2); 
+    if ( $args{-end_time} ) {
 
-			$self->send(
-			    $self->return_headers($header_str), 
-				Body => $body_str,
-		    ); 
+        my ( $e_sec, $e_min, $e_hour, $e_day, $e_month, $e_year ) =
+          ( localtime( $args{-end_time} ) )[ 0, 1, 2, 3, 4, 5 ];
+        $formatted_end_time = sprintf(
+            "%02d/%02d/%02d %02d:%02d:%02d",
+            $e_month + 1,
+            $e_day, $e_year + 1900,
+            $e_hour, $e_min, $e_sec
+        );
+
+    }
+
+    my $total_time =
+      $self->_formatted_runtime( ( $args{-end_time} - $args{-start_time} ) );
+
+    require MIME::Entity;
+
+    require Email::Address;
+
+    my $entity = MIME::Entity->build(
+        Type => 'multipart/mixed',
+        To   => safely_encode( Email::Address->new(
+            '<!-- tmpl_var list_settings.list_owner -->',
+            $self->{ls}->param('list_owner_email')
+          )->format),
+        Subject  => safely_encode( $DADA::Config::MAILING_FINISHED_MESSAGE_SUBJECT),
+        Datestamp => 0,
+
+    );
+
+    $entity->attach(
+        Type        => 'text/plain',
+        Data        =>  safely_encode( $DADA::Config::MAILING_FINISHED_MESSAGE),
+        Encoding    => $self->{ls}->param('plaintext_encoding'),
+        Disposition => 'inline',
+
+    );
+
+    my $att;
+    foreach ( keys %$fields ) {
+        next if $_ eq 'Body';
+        $att .= $_ . ': ' . $fields->{$_} . "\n"
+          if defined( $fields->{$_} ) && $fields->{$_} ne "";
+    }
+    $att .= "\n" . $fields->{Body};
+
+    $entity->attach(
+        Type        => 'message/rfc822',
+        Disposition => "inline",
+        Data => safely_decode( safely_encode( $att ) ),
+    );
+
+    require DADA::App::FormatMessages;
+    #my $fm = DADA::App::FormatMessages->new( -yeah_no_list => 1 );
+	my $fm = DADA::App::FormatMessages->new(
+		-List        => $self->{list},  
+		-ls_obj      => $self->{ls},
+	);
+
+    my $n_entity = $fm->email_template(
+        {
+            -entity                   => $entity,
+            -list_settings_vars       => $self->{ls}->params,
+            -list_settings_vars_param => { -dot_it => 1 },
+            -vars                     => {
+                addresses_sent_to   => $args{-emails_sent},
+                mailing_start_time  => $formatted_start_time,
+                mailing_finish_time => $formatted_end_time,
+                total_mailing_time  => $total_time,
+                last_email_send_to  => $args{-last_email},
+                message_subject     => safely_encode( $fm->_decode_header($fields->{Subject} )),
+            }
+        }
+    );
+
+	my $body = $n_entity->body_as_string; 
+	   $body = safely_decode($body); 
+
+    $self->send(
+	 	$self->return_headers( 
+			safely_decode(
+				$n_entity->head->as_string
+			), 
+		),
+        Body => $body, 
+	);
 
 }
 
@@ -2568,23 +2628,17 @@ sub _mail_merge {
 					-ls_obj      => $self->{ls},
 				); 
 	}
-
-       
-#    warn "\n";   
-#    warn "Subscriber Vars! for: " . $subscriber_vars->{'subscriber.email'}; 
-#    foreach(keys %{$subscriber_vars}){ 
-#        warn $_ . ' => ' . $subscriber_vars->{$_};
-#    }
-#    warn "\n";    
-    
-    
-    my ($orig_entity, $filename) = $fm->entity_from_dada_style_args(
-                                    {
+	
+	
+ 	my ($orig_entity, $filename) = $fm->entity_from_dada_style_args(
+ 
+                                  {
                                         -fields        => $args->{-fields},
                                         -parser_params => {-input_mechanism => 'parse_open'}, 
                                     }
                              );
-							
+	
+
     my $entity = $fm->email_template(
                     {
                         -entity                   => $orig_entity,                         
@@ -2601,10 +2655,10 @@ sub _mail_merge {
                 );
 
    my $msg = $entity->as_string; 
-       
-       
-#    warn "Message! " . $msg; 
-    
+      #$msg = Encode::decode( $DADA::Config::HTML_CHARSET, $msg); 
+	   $msg = safely_decode($msg); 
+	
+	
     undef($entity); 
     # I do not like this part. 
     
@@ -2677,16 +2731,30 @@ sub _formatted_runtime {
 
 sub _massaged_for_archive { 
 
-	my $self   = shift; 
-	my $fields = shift; 
-	
+	my $self       = shift; 
+	my $fields     = shift; 
 	my $msg; 
+
 	
 	foreach(@DADA::Config::EMAIL_HEADERS_ORDER){ 
 		next if $_ eq 'Body'; 
 		next if $_ eq 'Message'; # Do I need this?!
+		
+#		# Currently, it only looks like the subject is giving us worries: 
+#		# (But, it really should be everything) 
+#		if($_ =~ m/Subject|From|To|Reply\-To|Errors\-To|Return\-Path/){ 
+#			my $fm = DADA::App::FormatMessages->new(-List => $self->{list}); 
+#			# What if it's already encoded? DORK?!
+#			$fields->{$_} = $fm->_encode_header($_, $fields->{$_});  
+#			
+#		}
+#		else { 
+#			#
+#		}
 		$msg .= $_ . ': ' . $fields->{$_} . "\n"
 		if((defined $fields->{$_}) && ($fields->{$_} ne ""));
+
+
 	}
 	
 	$msg .= "\n" . $fields->{Body};

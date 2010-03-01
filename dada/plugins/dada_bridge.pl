@@ -1,5 +1,14 @@
 #!/usr/bin/perl
 
+
+#use Carp qw( confess );
+#$SIG{__DIE__} =  \&confess;
+#$SIG{__WARN__} = \&carp;
+#$Carp::Verbose = 1;
+
+# lazy. 
+#binmode STDOUT, ':encoding(UTF-8)';
+
 package dada_bridge;
 
 # Some questions I have on the new moderation stuff:
@@ -56,14 +65,15 @@ use DADA::Config 4.0.0;
 use CGI;
 CGI->nph(1) if $DADA::Config::NPH == 1;
 my $q = new CGI;
-$q->charset($DADA::Config::HTML_CHARSET);
-
+   $q->charset($DADA::Config::HTML_CHARSET);
+   $q = decode_cgi_obj($q);
 use Fcntl qw(
   O_CREAT
   O_RDWR
   LOCK_EX
   LOCK_NB
 );
+use Encode; 
 
 my $Plugin_Config = {};
 
@@ -528,7 +538,10 @@ EOF
         eval {
             $entity =
               $parser->parse_data(
-                $mod->get_msg( { -msg_id => $messagename } ) );
+				safely_encode(
+                	$mod->get_msg( { -msg_id => $messagename } ) 
+				)
+			);
         };
         if ( !$entity ) {
             croak "no entity found! die'ing!";
@@ -1160,6 +1173,9 @@ sub start {
                     if ( $li->{disable_discussion_sending} != 1 ) {
 
                         my $full_msg = $pop->Retrieve($msgnum);
+						   # We're taking a guess on this one: 
+						   $full_msg = safely_decode($full_msg); 
+						
                         push (
                             @{ $checksums->{$list} },
                             create_checksum( \$full_msg )
@@ -1194,7 +1210,10 @@ sub start {
                                 # die "aaaaaaarrrrgggghhhhh!!!";
 
                                 my ( $status, $errors ) =
+
+								
                                   validate_msg( $list, \$full_msg, $li );
+
                                 if ($status) {
 
                                     process(
@@ -1256,7 +1275,7 @@ sub start {
             foreach my $msgnum_d ( sort { $a <=> $b } keys %$msgnums ) {
                 print "\tRemoving message from server...\n"
                   if $verbose;
-                $pop->Delete($msgnum_d);
+                 $pop->Delete($msgnum_d);
                 $delete_msg_count++;
 
                 last
@@ -1579,7 +1598,8 @@ sub valid_login_information {
 sub validate_msg {
 
     my $list = shift;
-    my $msg  = shift;    #ref
+    my $test_msg  = shift;    #ref
+	my $msg = ${$test_msg}; # copy of orig
     my $li   = shift;
 
     my $status = 1;
@@ -1617,13 +1637,13 @@ sub validate_msg {
 
     my $message_is_blank = 0;
 
-    if ( !defined($$msg) ) {
+    if ( !defined($msg) ) {
         $message_is_blank = 1;
     }
-    elsif ( $$msg eq '' ) {
+    elsif ( $msg eq '' ) {
         $message_is_blank = 1;
     }
-    elsif ( length($$msg) == 0 ) {
+    elsif ( length($msg) == 0 ) {
         $message_is_blank = 1;
     }
     if ($message_is_blank) {
@@ -1634,7 +1654,11 @@ sub validate_msg {
     }
 
     my $entity;
-    eval { $entity = $parser->parse_data($$msg) };
+	$msg = safely_encode($msg); 
+
+    eval { 
+		$entity = $parser->parse_data($msg); 
+	};
 
     if ( !$entity ) {
         print "\t\tMessage invalid! - no entity found.\n" if $verbose;
@@ -1734,7 +1758,7 @@ sub validate_msg {
             ( $errors, $notice ) =
               test_Check_List_Owner_Return_Path_Header( $entity, $errors, $li );
             print $notice
-              if $notice && $verbose;
+              if $notice != 0 && $verbose;
         }
 
     }
@@ -1862,6 +1886,8 @@ sub validate_msg {
 
                     # this needs to be optimized...
                     my $spam_check_message = $entity->as_string;
+					   $spam_check_message = safely_decode($spam_check_message); 
+					
                     my @spam_check_message =
                       split ( "\n", $spam_check_message );
 
@@ -2082,8 +2108,8 @@ sub test_Check_List_Owner_Return_Path_Header {
     my $rough_return_path = undef;
 
     if ( $entity->head->get( 'Return-Path', 0 ) ) {
-        $notice .= q{$entity->head->get( 'Return-Path', 0 ) }
-          . $entity->head->get( 'Return-Path', 0 );
+        # I haven't a clue what this is. 
+		# $notice .= q{$entity->head->get( 'Return-Path', 0 ) } . $entity->head->get( 'Return-Path', 0 );
         $rough_return_path = $entity->head->get( 'Return-Path', 0 );
     }
     else {
@@ -2225,8 +2251,9 @@ sub process {
 
     my $list = $args->{ -list };
     my $ls   = $args->{ -ls };
+	# $msg is a scalarref
     my $msg  = $args->{ -msg };
-
+	
     print "\n\t\tProcessing Message...\n"
       if $verbose;
 
@@ -2235,7 +2262,7 @@ sub process {
         my $n_msg = dm_format(
             {
                 -list => $list,
-                -msg  => $msg,
+                -msg  => $msg, #scalarref
                 -ls   => $ls,
             }
         );
@@ -2310,16 +2337,16 @@ sub dm_format {
 
     my $list = $args->{ -list };
     my $ls   = $args->{ -ls };
-    my $msg  = $args->{ -msg };
+    my $msg  = $args->{ -msg }; # scalarref
 
-    if ( $ls->param('strip_file_attachments') == 1 ) {
+	if ( $ls->param('strip_file_attachments') == 1 ) {
         $msg = strip_file_attachments( $msg, $ls );
     }
 
     require DADA::App::FormatMessages;
 
     my $fm = DADA::App::FormatMessages->new( -List => $list );
-    $fm->treat_as_discussion_msg(1);
+       $fm->treat_as_discussion_msg(1);
 
     if (   $ls->param('group_list') == 0
         && $ls->param('rewrite_anounce_from_header') == 0 )
@@ -2327,11 +2354,20 @@ sub dm_format {
         $fm->reset_from_header(0);
     }
 
+	warn '${$msg} ' . ${$msg}; 
+	warn 'end.'; 
+
+	
     my ( $header_str, $body_str ) =
-      $fm->format_headers_and_body( -msg => $msg );
-
-    return $header_str . "\n\n" . $body_str;
-
+      $fm->format_headers_and_body( 
+		-msg            => ${$msg}, 
+		-convert_charset => 1,  
+	);
+	
+	# not a scalarref (duh)
+    my $all_together =  $header_str . "\n\n" . $body_str;
+	return $all_together; 
+	
 }
 
 sub strip_file_attachments {
@@ -2351,8 +2387,9 @@ sub strip_file_attachments {
 
     ( $entity, $ls ) = process_stripping_file_attachments( $entity, $ls );
 
-    return $entity->as_string;
-
+    my $un =  $entity->as_string;
+       $un = safely_decode($un); 
+	return $un; 
 }
 
 sub process_stripping_file_attachments {
@@ -2471,8 +2508,13 @@ sub deliver_copy {
     $mh->test($test_mail);
 
     my $entity;
-
-    eval { $entity = $parser->parse_data($msg) };
+	  $msg = safely_encode($msg); 
+	
+    eval { 
+		$entity = $parser->parse_data(
+			$msg
+		) 
+	};
 
     if ( !$entity ) {
         print "\t\tMessage sucks!\n"
@@ -2481,7 +2523,10 @@ sub deliver_copy {
     }
     else {
 
-        my %headers = $mh->return_headers( $entity->stringify_header );
+		my $headers = $entity->stringify_header;
+		   $headers = safely_decode($headers); 
+		
+        my %headers = $mh->return_headers( $headers );
         $headers{To} = $ls->param('send_msg_copy_address');
 
         if ($verbose) {
@@ -2505,7 +2550,9 @@ sub deliver_copy {
             # This'll do the trick, all by itself.
             'X-BeenThere' => $ls->param('discussion_pop_email'),
 
-            Body => $entity->stringify_body,
+            Body => safely_decode(
+				$entity->stringify_body
+			),
 
         );
 
@@ -2547,7 +2594,10 @@ sub deliver {
 
     my $entity;
 
-    eval { $entity = $parser->parse_data($msg) };
+	$msg = safely_encode($msg); 
+    eval { 
+		$entity = $parser->parse_data($msg);
+	};
 
     if ( !$entity ) {
         print "\t\tMessage sucks!\n"
@@ -2556,7 +2606,10 @@ sub deliver {
     }
     else {
 
-        my %headers = $mh->return_headers( $entity->stringify_header );
+		my $headers = $entity->stringify_header;
+	       $headers = safely_decode($headers); 
+        my %headers = $mh->return_headers( $headers);
+		
         $headers{To} = $ls->param('list_owner_email');
 
         if ($verbose) {
@@ -2590,10 +2643,15 @@ sub deliver {
             }
         }
 
-        my $msg_id = $mh->mass_send(
+
+		my $body = $entity->stringify_body; 		
+		   $body = safely_decode($body);
+		
+		
+		my $msg_id = $mh->mass_send(
             %headers,
             # Trust me on these :)
-            Body => $entity->stringify_body,
+            Body => $body,
         );
 
         return ( $msg_id, $mh->saved_message );
@@ -2640,8 +2698,13 @@ sub archive {
         my $la = DADA::MailingList::Archives->new( { -list => $list } );
 
         my $entity;
-
-        eval { $entity = $parser->parse_data($msg) };
+		
+        eval { 
+			$msg = safely_encode($msg); 
+			$entity = $parser->parse_data(
+			$msg
+			); 
+		};
 
         if ($entity) {
 
@@ -2703,7 +2766,12 @@ sub tweet {
         my $entity;
 		my $Subject; 
 		
-        eval { $entity = $parser->parse_data($msg) };
+        eval { 
+			$msg = safely_encode($msg); 
+			$entity = $parser->parse_data(
+					$msg
+			)
+		 };
         if ($entity) {
 
            $Subject = $entity->head->get( 'Subject', 0 );
@@ -2725,7 +2793,11 @@ sub send_msg_not_from_subscriber {
 
     my $list   = shift;
     my $msg    = shift;
-    my $entity = $parser->parse_data($msg);
+
+	$msg = safely_encode($msg); 
+    my $entity = $parser->parse_data(
+			$msg
+	);
 
     my $rough_from = $entity->head->get( 'From', 0 );
     my $from_address;
@@ -2744,12 +2816,14 @@ sub send_msg_not_from_subscriber {
 			warn "Message is from List Email ($from_address)? Not sending, 'not_allowed_to_post_message' so to not send message back to list!" ;
 		}
 		else {  	
+			my $att = $entity->as_string; 
+			   $att = safely_decode($att); 
 	        require DADA::App::Messages;
 	        DADA::App::Messages::send_not_allowed_to_post_message(
 	            {
 	                -list       => $list,
 	                -email      => $from_address,
-	                -attachment => $entity->as_string,
+	                -attachment => safely_encode($att),
 
 	            },
 	        );
@@ -2769,7 +2843,11 @@ sub send_invalid_msgs_to_owner {
     my $li     = shift;
     my $list   = shift;
     my $msg    = shift;
-    my $entity = $parser->parse_data($msg);
+
+	$msg = safely_encode($msg); 
+    my $entity = $parser->parse_data(
+					$msg
+			);
 
 	require DADA::App::Messages;
 	
@@ -2800,7 +2878,7 @@ sub send_invalid_msgs_to_owner {
         $reply->attach(
             Type        => 'message/rfc822',
             Disposition => "inline",
-            Data        => $entity->as_string,
+            Data        => safely_decode(safely_encode($entity->as_string)),
         );
 
         my %msg_headers =
@@ -2839,7 +2917,14 @@ sub handle_errors {
     my $li       = shift;
 
     my $entity;
-    eval { $entity = $parser->parse_data($full_msg) };
+
+	$full_msg = safely_encode($full_msg); 
+
+	
+    eval { $entity = $parser->parse_data(
+		
+			$full_msg) ;
+	};
     if ( !$entity ) {
         die "no entity found! die'ing!";
     }
@@ -3038,7 +3123,7 @@ sub append_message_to_file {
 
     $file = DADA::App::Guts::make_safer($file);
 
-    open( APPENDLOG, ">>$file" ) or die $!;
+    open( APPENDLOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET.')', $file ) or die $!;
     chmod( $DADA::Config::FILE_CHMOD, $file );
     print APPENDLOG 'From ' . $rp . "\n";
 
@@ -3058,6 +3143,9 @@ sub find_return_path {
     my $rp;
 
     eval {
+
+		$msg = safely_encode($msg); 
+		
         my $entity = $parser->parse_data($msg);
         $rp = $entity->head->get( 'Return-Path', 0 );
 
@@ -3166,6 +3254,9 @@ sub inject {
     my ($args) = @_;
 
     my $msg       = $args->{ -msg };
+	   # We're taking a guess, on this one: 
+	   $msg 	  = safely_decode( $msg );
+	 
     my $send_test = 0;
     my $list      = $args->{ -list };
     my $test_mail = 0;
@@ -3206,7 +3297,7 @@ sub inject {
                     {
                         -list      => $list,
                         -ls        => $ls,
-                        -msg       => $msg,
+                        -msg       => \$msg,
                         -test_mail => $test_mail,
                     }
                 );
@@ -3232,6 +3323,7 @@ sub inject {
 
         };
 
+
         if ($@) {
 
             warn
@@ -3242,10 +3334,12 @@ sub inject {
             return ( 0, { irrecoverable_error => 1 } );
 
         }
+
         else {
+
             return ( $status, $errors );
 
-        }
+       }
 
     }
     else {
@@ -4211,7 +4305,7 @@ sub save_msg {
 
     my $file = $self->mod_msg_filename( $args->{ -msg_id } );
 
-    open my $MSG_FILE, '>', $file
+    open my $MSG_FILE, '>:encoding(' . $DADA::Config::HTML_CHARSET.')' , $file
       or croak "Cannot write saved raw message at: '" . $file . " because: $!";
 
     print $MSG_FILE $args->{ -msg };
@@ -4251,7 +4345,7 @@ sub moderation_msg {
     my $li = $ls->get;
 
     my $parser = $args->{ -parser };
-    my $entity = $parser->parse_data( $args->{ -msg } );
+    my $entity = $parser->parse_data(safely_encode( $args->{ -msg } ));
 
     my $confirmation_link =
       $Plugin_Config->{Plugin_URL}
@@ -4317,7 +4411,7 @@ sub moderation_msg {
         $reply->attach(
             Type        => 'message/rfc822',
             Disposition => "inline",
-            Data        => $entity->as_string,
+            Data        => safely_decode(safely_encode($entity->as_string)),
         );
 
         # send the message
@@ -4376,7 +4470,9 @@ sub send_moderation_msg {
     eval {
         $entity =
           $parser->parse_data(
-            $self->get_msg( { -msg_id => $args->{ -msg_id } } ) );
+		 safely_encode( 
+
+            	$self->get_msg( { -msg_id => $args->{ -msg_id } } )) );
     };
     if ( !$entity ) {
         croak "no entity found! die'ing!";
@@ -4450,7 +4546,10 @@ sub send_accept_msg {
     eval {
         $entity =
           $parser->parse_data(
-            $self->get_msg( { -msg_id => $args->{ -msg_id } } ) );
+			safely_encode(
+			        	$self->get_msg( 
+					{ 
+						-msg_id => $args->{ -msg_id } } )) );
     };
     if ( !$entity ) {
         croak "no entity found! die'ing!";
@@ -4522,7 +4621,8 @@ sub send_reject_msg {
     eval {
         $entity =
           $parser->parse_data(
-            $self->get_msg( { -msg_id => $args->{ -msg_id } } ) );
+			safely_encode(
+            $self->get_msg( { -msg_id => $args->{ -msg_id } } ) ));
 
     };
     if ( !$entity ) {

@@ -25,6 +25,7 @@ my $End_Marker   = '# End Root Password';
 use CGI; 
 my $q = new CGI; 
    $q->charset($DADA::Config::HTML_CHARSET);
+   $q = decode_cgi_obj($q);
 
 my $URL = $q->url; 
 

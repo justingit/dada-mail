@@ -24,16 +24,17 @@ my $li   = $ls->get;
 my $fm = DADA::App::FormatMessages->new(-yeah_no_list => 1); 
 
 $filename = 't/corpus/email_messages/simple_template.txt';
-open my $MSG, '<', $filename or die $!; 
-my $msg1 = do { local $/; <$MSG> }  or die $!; 
-close $MSG  or die $!; 
+#open my $MSG, '<', $filename or die $!; 
+#my $msg1 = do { local $/; <$MSG> }  or die $!; 
+#close $MSG  or die $!; 
 
+my $msg1 = slurp($filename);
 ### get_entity 
 
 
 $entity = $fm->get_entity(
     {
-        -data => $msg1,
+        -data => Encode::encode($DADA::Config::HTML_CHARSET, $msg1),
     }
 );
 ok($entity->isa('MIME::Entity'));
@@ -67,7 +68,7 @@ undef $entity;
 
 $entity = $fm->get_entity(
     {
-        -data => $msg1,
+        -data => Encode::encode($DADA::Config::HTML_CHARSET, $msg1),
     }
 );
 ok($entity->isa('MIME::Entity'));
@@ -87,6 +88,8 @@ $entity = $fm->email_template(
 ok($entity->isa('MIME::Entity'));
 
 $t_msg = $entity->as_string; 
+$t_msg = Encode::decode('UTF-8', $t_msg); 
+
 
 like($t_msg, qr/Subject: This is the subject/); 
 like($t_msg, qr/From: "From Phrase" <from\@example.com/);
@@ -100,7 +103,7 @@ undef $filename;
 
 ### / email_template
 
-
+ 
 
 # Multipart/Alternative Message...
 $filename = 't/corpus/email_messages/multipart_alternative_template.txt';
@@ -278,7 +281,8 @@ $entity = $fm->email_template(
 ok($entity->isa('MIME::Entity'));
 
 $t_msg = $entity->as_string; 
-
+$t_msg = Encode::decode('UTF-8', $t_msg); 
+diag $t_msg;
 like($t_msg, qr/Subject: This is the subject/); 
 like($t_msg, qr/From: "From Phrase" <from\@example.com/);
 like($t_msg, qr/To: "To Phrase" <to\@example.com>/); 
@@ -290,6 +294,7 @@ like($t_msg, qr/Var3: Va\=\nriable 3/);
 undef $t_msg; 
 undef $entity; 
 undef $filename;
+ 
 
 
 ###########
@@ -326,9 +331,9 @@ $fm = DADA::App::FormatMessages->new(-List => $list);
  
 $subject = 'Re: [' . $ls->param('list') . '] Subject';
 my $new_subject = quotemeta('[<!-- tmpl_var list_settings.list -->] Re: Subject'); 
- diag $fm->_list_name_subject($subject); 
 
-like($fm->_list_name_subject($subject), qr/$new_subject/, "Subject set correctly with reply"); 
+
+like($fm->_list_name_subject($subject), qr/$new_subject/, "Subject set correctly with reply 1"); 
 undef $fm; 
 undef $new_subject; 
 
@@ -339,8 +344,19 @@ $ls->param('append_discussion_lists_with', 'list_name');
 $fm = DADA::App::FormatMessages->new(-List => $list);
 
 $subject = 'Re: [' . $ls->param('list_name') . '] Subject';
+
 $new_subject = quotemeta('[<!-- tmpl_var list_settings.list_name -->] Re: Subject'); 
-like($fm->_list_name_subject($subject), qr/$new_subject/, "Subject set correctly with reply for, 'list_name'"); 
+
+
+
+## BIG TODO: 
+#
+#eval { 
+	
+	like($fm->_list_name_subject($subject), qr/$new_subject/, "Subject set correctly with reply for, 'list_name'"); 
+
+#};
+#diag $@ if $@; 
 
 undef $fm; 
 
@@ -361,7 +377,7 @@ $html
 $fm = DADA::App::FormatMessages->new(-yeah_no_list => 1); 
 $entity = $fm->get_entity(
     {
-        -data => $simple_email,
+        -data => Encode::encode($DADA::Config::HTML_CHARSET, $simple_email),
     }
 );
 ok($entity->isa('MIME::Entity'));
@@ -396,7 +412,7 @@ sub slurp {
         my $r;
         my (@r);
 
-        open(F, "<$file") || die "open $file: $!";
+        open(F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $file) || die "open $file: $!";
         @r = <F>;
         close(F) || die "close $file: $!";
 

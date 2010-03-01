@@ -131,6 +131,7 @@ sub main {
     
     
     my $q = CGI->new;
+       $q = decode_cgi_obj($q);
  	my $mode = 'js'; 
     if($q->param('mode')){ 
 		$mode = $q->param('mode'); 

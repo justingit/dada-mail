@@ -366,7 +366,7 @@ $DBI_PARAMS ||= {
 	
 	# MySQL specific attribute:
 	#
-	# 		mysql_enable_utf8 => 1, 
+	 		mysql_enable_utf8 => 1, 
 	#
 	# You will also need to ensure that your database / table / column is 
 	# configured to use UTF8. See Chapter 10 of the mysql manual for details.
@@ -378,7 +378,7 @@ $DBI_PARAMS ||= {
 	# about the utf8 flag, see the Encode module. This attribute is only 
 	# relevant under perl 5.8 and later.	
 	#
-	#	pg_enable_utf8 => 1, 
+		pg_enable_utf8 => 1, 
 
 
 
@@ -388,7 +388,8 @@ $DBI_PARAMS ||= {
 	# disabled for perl < 5.8.5). For more details on the UTF-8 flag see 
 	# perlunicode. The default is for the UTF-8 flag to be turned off.
 	#
-	#	unicode => 1
+		sqlite_unicode  => 1,
+	#	unicode => 1, 
 		
 };
 
@@ -2658,7 +2659,7 @@ IS REALLY IMPORTANT.
 'Italian (it)	iso-8859-1',
 'Italian (it)	windows-1252',
 'Japanese (ja)	 shift_jis',
-'Japanese (ja)	 iso-2022-jp',
+'Japanese (ja)	iso-2022-jp',
 'Japanese (ja)	 euc-jp',
 'Lapp()	iso-8859-10',
 'Latvian (lv)	iso-8859-13',
@@ -2684,7 +2685,7 @@ IS REALLY IMPORTANT.
 'Spanish (es)	windows-1252',
 'Swedish (sv)	iso-8859-1',
 'Swedish (sv)	windows-1252',
- 'Thai (th)	windows-874 ',
+ 'Thai (th)	windows-874',
  'Turkish (tr)	iso-8859-9',
 'Turkish (tr)	windows-1254',
 'Ukrainian (uk)	 iso-8859-5'
@@ -4288,8 +4289,8 @@ encrypted.
 	
 	print_errors_to_header       => 0, 
 	print_return_path_header     => 0,
-	plaintext_encoding           => '8bit', 
-	html_encoding                => '8bit',
+	plaintext_encoding           => 'quoted-printable', 
+	html_encoding                => 'quoted-printable',
 	use_habeas_headers           => 0,
 	strip_message_headers        => 0, 
 	add_sendmail_f_flag          => 1, 
@@ -4800,7 +4801,8 @@ and to say that you've got the freshest tools on the Web.
 
 
 $VERSION = 4.0.3; 
-$VER     = '4.0.3';
+$VER     = '4.0.3 unicode candy';
+
 
 #
 #
@@ -5052,7 +5054,7 @@ sub _config_import {
 	$CONFIG_FILE = $1;
 	
 	if(-e $CONFIG_FILE && -f $CONFIG_FILE && -s $CONFIG_FILE){ 
-		open(CONFIG, "< $CONFIG_FILE") 
+		open(CONFIG, '<:encoding(UTF-8)',  $CONFIG_FILE) 
 			or warn "could not open outside config file, '$CONFIG_FILE' because: $!"; 
 		my $conf;
 		   $conf = do{ local $/; <CONFIG> }; 

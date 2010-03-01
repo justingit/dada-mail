@@ -529,7 +529,7 @@ sub create_log_file {
     my $file = $self->dir . '/' . $file_names->{'log'};
        $file = make_safer($file); 
     
-    sysopen( LOG, $file, O_WRONLY | O_TRUNC | O_CREAT, $DADA::Config::FILE_CHMOD  )
+    open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $file  )
         or croak
         "Couldn't create the log file at: '"
         . $file
@@ -905,7 +905,7 @@ sub create_raw_message {
 
 	my $lock = $self->lock_file($file);
 	
-    sysopen( MESSAGE, $file, O_WRONLY | O_TRUNC | O_CREAT, $DADA::Config::FILE_CHMOD  )
+    open( MESSAGE, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
         or croak "couldn't open: '$file' because: $!";
 
     foreach (@DADA::Config::EMAIL_HEADERS_ORDER) {
@@ -918,7 +918,7 @@ sub create_raw_message {
     print MESSAGE "\n" . $fields->{Body};
 
     close MESSAGE
-        or die "Coulnd't close: " . $file . "because: " . $!;
+        or die "Couldn't close: " . $file . "because: " . $!;
 
 	$self->unlock_file($lock);
 	
@@ -1559,30 +1559,24 @@ sub still_around {
 
 
 sub mail_fields_from_raw_message {
-
-    my $self = shift;
-
+	my $self = shift;
+    
     my $raw_msg = $self->message_for_mail_send;
 
-    # This is way ruff.
+	require DADA::App::FormatMessages; 
+	my $fm = DADA::App::FormatMessages->new(-List => $self->{list}); 
 
-    my ( $raw_header, $raw_body ) = split( /\n\n/, $raw_msg, 2 );
-    my $headers = {};
-
-    # split.. logically
-    my @logical_lines = split /\n(?!\s)/, $raw_header;
+   my ( $raw_header, $raw_body ) = split( /\n\n/, $raw_msg, 2 );
+   my $headers = {};
+   my @logical_lines = split /\n(?!\s)/, $raw_header;
 
     # make the hash
     foreach my $line (@logical_lines) {
-        my ( $label, $value ) = split( /:\s*/, $line, 2 );
-        $headers->{$label} = $value;
-    }
-	foreach (qw(To From Cc Subject)){ 
-		$headers->{$_} = $self->_decode_header($headers->{$_}); 
+       my ( $label, $value ) = split( /:\s*/, $line, 2 );
+	   $value = $fm->_decode_header( $value);
+		$headers->{$label} =  $value;
 	}
-
-    return $headers;
-
+	return $headers; 
 }
 
 
@@ -1592,38 +1586,11 @@ sub _decode_header {
 	
 	my $self   = shift; 	 
 	my $header = shift;
-	
-	# warn "in DADA::Mail::Mailot _decode_header - mime_encode_words_in_headers"; 
-	
-	#if($self->{ls}->param('mime_encode_words_in_headers') == 1){ 
-	# Weird optimization
-	if($self->{li}->{mime_encode_words_in_headers} == 1){ 	
-		eval{ 
-			require MIME::EncWords;
-		};
 
-		if($@){ 
-			carp "MIME::EncWords is returning with an error: $@"; 
-			return $header;
-		}
-		else  {
+	require DADA::App::FormatMessages; 
+	my $fm = DADA::App::FormatMessages->new(-List => $self->{list}); 
+	return $fm->_decode_header( $header); 
 
-			#if($header eq MIME::EncWords::decode_mimewords($header)){ 
-			#	# No? Well, nothing to do; 
-			#	#...
-			#}
-			#else { 
-				# Yes? Let's decode!
-				$header = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
-			#}
-		
-			return $header;
-		}
-		
-	}
-	else { 
-		return $header; 
-	}
 }
 
 
@@ -1766,14 +1733,13 @@ sub message_for_mail_send {
         warn "Raw Message that should be saved at: " . $file . "isn't there.";
     	return undef; 
 	}
-
-    open my $MSG_FILE, '<', $file
+	
+    open my $MSG_FILE, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file
         or die "Cannot read saved raw message at: '" . $file
         . "' because: "
         . $!;
 
     my $msg = do { local $/; <$MSG_FILE> };
-
     close $MSG_FILE
         or die "Didn't close: '" . $file . "'properly because: " . $!;
 
@@ -2150,7 +2116,7 @@ sub log {
 	my $file = $self->dir . '/' . $file_names->{log};
        $file = make_safer($file);
 
-	open(MO_LOG, '>>',$file) 
+	open(MO_LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file) 
 		or carp $!; 
 	flock(MO_LOG, LOCK_SH);
 	print MO_LOG "[$time]\t$log\n";
@@ -2168,7 +2134,7 @@ sub print_log {
 	my $file = $self->dir . '/' . $file_names->{log};
        $file = make_safer($file);
 
-	open(MO_LOG, '<', $file) 
+	open(MO_LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file) 
 		or carp $!; 
 
 	while (<MO_LOG>) {

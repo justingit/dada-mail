@@ -40,6 +40,8 @@ eval { $mss->save_from_params(); };
 ok(defined($@), "Error when attempting to save without passing the -cgi_obj: $@");
 
 my $q = new CGI; 
+   $q = decode_cgi_obj($q);
+
    $q->param('message_name',     'My Message Name'); 
    $q->param('active',            1); 
    $q->param('Subject',          'My Message Subject'); 
@@ -72,7 +74,7 @@ sub slurp {
         my $r;
         my (@r);
 
-        open(F, "<$file") || die "open $file: $!";
+        open(F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $file) || die "open $file: $!";
         @r = <F>;
         close(F) || die "close $file: $!";
 

@@ -14,6 +14,7 @@ use DADA::MailingList::Settings;
 use CGI; 
 my $q = new CGI; 
    $q->charset($DADA::Config::HTML_CHARSET);
+   $q = decode_cgi_obj($q);
 
 # This will take care of all out security woes
 my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q, 

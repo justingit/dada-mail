@@ -168,6 +168,7 @@ use DADA::App::Messages;
 
 my $q = CGI->new(); 
    $q->charset($DADA::Config::HTML_CHARSET);
+   $q = decode_cgi_obj($q);
 
 
 my $email             = $q->param('email');

@@ -142,6 +142,7 @@ sub admin_template {
 	require CGI; 
 	my $q = CGI->new;
 	   $q->charset($DADA::Config::HTML_CHARSET);
+	   $q = decode_cgi_obj($q);
 
 	# DEV: Weird. I know. 
 	if($DADA::Config::PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
@@ -606,7 +607,9 @@ sub open_template_from_url {
 			carp "LWP::Simple not installed! $!"; 
 			return undef;
 		}else{ 
-			return LWP::Simple::get($args{-URL});
+			my $tmp = LWP::Simple::get($args{-URL});
+			   $tmp = safely_decode($tmp); 
+			   return $tmp; 
 		} 	
 	}
 }	
