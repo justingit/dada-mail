@@ -1501,12 +1501,15 @@ sub convert_to_html_entities {
 	
 	eval {require HTML::Entities}; 
 	if(!$@){ 
+	
 		$s = HTML::Entities::encode_entities($s); #, "\200-\377" 
+		
 	}else{ 
         # require HTML::EntitiesPurePerl 
         # is our own module, based on  HTML::Entities.           
     	eval {require HTML::EntitiesPurePerl}; 
     	if(!$@){ 
+			
         	$s = HTML::EntitiesPurePerl::encode_entities($s); #", \200-\377"
     	}
 	}

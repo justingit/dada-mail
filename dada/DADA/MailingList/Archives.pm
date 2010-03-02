@@ -1058,8 +1058,11 @@ sub _entity_from_raw_msg {
 	}
 
 	my $entity; 
-	
-	eval { $entity = $self->{parser}->parse_data(safely_encode( $raw_msg )) };
+	eval { $entity = $self->{parser}->parse_data(
+			safely_encode( 
+				$raw_msg 
+			)
+		) };
 	if($@){ 
 		croak "Problems creating entity: $@"; 
 	}
@@ -1612,9 +1615,6 @@ sub message_blurb {
 	$msg =~ s/\n|\r/ /g; 
 	$msg = DADA::App::Guts::convert_to_html_entities($msg); 
 	
-	
-	
-	
 	my $l    = length($msg); 
 	my $size = $args{-size}; 
 	my $take = $l < $size ? $l : $size; 
@@ -1656,6 +1656,8 @@ sub massage_msg_for_resending {
 	if(! $raw_msg){ 
 		$raw_msg = $self->_bs_raw_msg($subject, $message, $format); 
 	}					
+	
+	
 	
 	my $entity = $self->_entity_from_raw_msg($raw_msg); 
 	   $entity = $self->_take_off_sigs($entity); 
@@ -1781,13 +1783,22 @@ sub massaged_msg_for_display {
 
     my ( $subject, $message, $format, $raw_msg ) =
       $self->get_archive_info( $args{-key} );
+	
+	
+#	die $raw_msg ;
+
 
     if ( !$raw_msg ) {
         $raw_msg = $self->_bs_raw_msg( $subject, $message, $format );
     }
 
-    my $entity = $self->_entity_from_raw_msg($raw_msg);
 
+	
+	# encoding is done in this method... 
+    my $entity = $self->_entity_from_raw_msg(
+		$raw_msg
+	);
+	
     if ( !$entity ) {
         carp "Couldn't create entity: " . $@;
     }
@@ -1813,6 +1824,7 @@ sub massaged_msg_for_display {
         $body = $b_entity->bodyhandle->as_string;
 		$body = safely_decode($body);
 		 
+		
         if ( $self->{ls}->param('stop_message_at_sig') == 1 ) {
             $body = $self->_zap_sig_plaintext($body);
         }
@@ -1832,7 +1844,7 @@ sub massaged_msg_for_display {
             # ...
         }
         else {
-            $body = webify_plain_text($body);
+			$body = webify_plain_text($body);
         }
 
         if ( $self->{ls}->param('style_quoted_archive_text') == 1 ) {
@@ -1845,6 +1857,8 @@ sub massaged_msg_for_display {
     elsif ( $b_entity->head->mime_type eq 'text/html' ) {
 
         $body = $b_entity->bodyhandle->as_string;
+		$body = safely_decode($body); 
+		
         $body = $self->_rearrange_cid_img_tags(
             -key  => $args{-key},
             -body => $body,
@@ -2196,11 +2210,13 @@ sub _bs_raw_msg {
 	Type      => $format, 
 	# This should be this way, or the reverse?
 	#Data      => Encode::encode($DADA::Config::HTML_CHARSET, $message), 
-	Data      => $message, 
+#	Data      => $message, 
+	Data      => safely_encode($message), 
 	Datestamp => 0, 
 	);
-	
-	return $msg->as_string;
+	#
+	#return $msg->as_string;
+	return safely_decode($msg->as_string); 
 }
 
 
