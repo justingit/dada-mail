@@ -1086,10 +1086,11 @@ sub convert_to_ascii {
 # sending? Why? Is that *actually* true? 
 # I almost want to say it's the HTML::Entities that's messing up, but 
 # I can't get my head around it. 
-
+# UPDATE 03/01/10 - this needed anymore? 
+# Sending/Saving/Viewing works with UTF-8 stuff... 
 require         HTML::Entities::Numbered;
 $message_body = HTML::Entities::Numbered::name2decimal($message_body); 
-# And what do these do, again? 
+# And, uh, what do these do, again? 
 $message_body =~ s/\&\#\d\d\d\;//g;  
 $message_body =~ s/\&\#\d\d\d\d\;//g;
 
@@ -1312,7 +1313,7 @@ sub e_print {
 
 
 
-
+# This is also, not used very often (what *is* it for?) 
 sub decode_he { 
 
 # http://popcorn.cx/talks/beyond-ascii/
@@ -1333,7 +1334,7 @@ sub decode_he {
 	
 	my $str = shift; 
 	require HTML::Entities;
-	return HTML::Entities::encode_entities($str);
+	return HTML::Entities::encode_entities($str); # Uh, why is this Encoding, in a *decoding* subroutine? 
 }
 
 =pod
@@ -1353,7 +1354,7 @@ sub uriescape {
 
     eval {require URI::Escape}; 
 	if(!$@){
-		return URI::Escape::uri_escape($string, "\200-\377");		 
+		return URI::Escape::uri_escape($string, "\200-\377"); # And I've forgotten why we're using "\200-\377" as the escape...
 	}else{ 
 	
 		 if($string){ 
@@ -1369,7 +1370,38 @@ sub uriescape {
 			return  $out;
 		}
   	}
-  } 
+
+
+# Kind of interesting reading: 
+# http://search.cpan.org/~gaas/URI-1.52/URI/Escape.pm
+# uri_escape_utf8( $string ) uri_escape_utf8( $string, $unsafe )
+# 
+# Works like uri_escape(), but will encode chars as UTF-8 before escaping
+# them. This makes this function able do deal with characters with code
+# above 255 in $string. Note that chars in the 128 .. 255 range will be
+# escaped differently by this function compared to what uri_escape()
+# would. For chars in the 0 .. 127 range there is no difference.
+# 
+# The call:
+# 
+# $uri = uri_escape_utf8($string);
+# 
+# will be the same as:
+# 
+# use Encode qw(encode); $uri = uri_escape(encode("UTF-8", $string));
+# 
+# but will even work for perl-5.6 for chars in the 128 .. 255 range.
+# 
+# Note: Javascript has a function called escape() that produces the
+# sequence "%uXXXX" for chars in the 256 .. 65535 range. This function has
+# really nothing to do with URI escaping but some folks got confused since
+# it "does the right thing" in the 0 .. 255 range. Because of this you
+# sometimes see "URIs" with these kind of escapes. The JavaScript
+# encodeURIComponent() function is similar to uri_escape_utf8().
+#
+# Do I want/need this? Huh?
+
+} 
    
    
 sub uriencode { 
@@ -1469,15 +1501,18 @@ sub convert_to_html_entities {
 	
 	eval {require HTML::Entities}; 
 	if(!$@){ 
-		$s = HTML::Entities::encode_entities($s, "\200-\377");
+		$s = HTML::Entities::encode_entities($s); #, "\200-\377" 
 	}else{ 
         # require HTML::EntitiesPurePerl 
         # is our own module, based on  HTML::Entities.           
     	eval {require HTML::EntitiesPurePerl}; 
     	if(!$@){ 
-        	$s = HTML::EntitiesPurePerl::encode_entities($s, "\200-\377");
+        	$s = HTML::EntitiesPurePerl::encode_entities($s); #", \200-\377"
     	}
 	}
+	# These are done by the above (if there's no argument in, encode_entities - right?
+	# The docs say: 
+	# The default set of characters to encode are control chars, high-bit chars, and the <, &, >, ' and " characters.
 	$s =~      s/& /&amp; /g;
 	$s =~      s/</&lt;/g;
 	$s =~      s/>/&gt;/g;
