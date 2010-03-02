@@ -82,6 +82,40 @@ It will not be very fancy.
 We suggest that you make sure that you have a real, valid, Dada Mail unsubscription link
 in your Mailing List Messages. 
 
+=head2 Bug Fixes 4.0.3
+
+=head3 Beatitude:  Scheduled List Not in Any Useable Order?
+
+http://github.com/justingit/dada-mail/issues/issue/16
+
+=head3 Dada Bridge: Spam Assassin Level Picker isn't available
+
+http://github.com/justingit/dada-mail/issues/issue/21
+
+=head3 Sending Preferences don't correctly state if you can use Use Secure Sockets Layer (SSL) for POP-before-SMTP
+
+http://github.com/justingit/dada-mail/issues/issue/24
+
+=head3 Double Subscriptions when using List Invitation
+
+http://github.com/justingit/dada-mail/issues/issue/23
+
+=head3 Archived messages not templated out in publicly displayed archives
+
+http://github.com/justingit/dada-mail/issues/issue/20
+
+=head3  Link to edit subscriber information broken when using the search  
+
+http://github.com/justingit/dada-mail/issues/issue/19
+
+=head3 Unsubsciption Notice to List Owner doesn't have subscriber (profile) fields
+
+http://github.com/justingit/dada-mail/issues/issue/18
+
+=head3 Disabled Menu items return server error when using the, "Classic" session type
+
+http://github.com/justingit/dada-mail/issues/issue/15
+
 =head1 4.0.2
 
 =head2 Changes 4.0.2
