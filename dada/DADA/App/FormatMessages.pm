@@ -19,7 +19,7 @@ use Carp qw(croak carp);
 
 use vars qw($AUTOLOAD); 
 
-my $t = 0; 
+my $t = 1; 
 
 
 =pod
@@ -299,6 +299,11 @@ sub format_headers_and_body {
 
 	if($entity->head->get('Subject', 0)){ 
 		$self->Subject($entity->head->get('Subject', 0));
+	}
+	else { 
+		if($self->Subject){ 
+			$entity->head->add(   'Subject', safely_encode($self->Subject));#?
+		}
 	}
 	if($self->treat_as_discussion_msg == 1){ 
 		$entity = $self->_format_headers($entity)
@@ -693,12 +698,14 @@ sub _format_headers {
 		if($self->{ls}->param('append_list_name_to_subject') == 1){ 
 
 			my $subject = $entity->head->get('Subject', 0);
-			   $subject = safely_encode( $subject); 
-			
-			#carp q{ $subject } . $subject; 
+			   $subject = safely_decode( $subject); 
+
+			warn "orig subject: " . $subject; 
 			
 			my $new_subject = $self->_list_name_subject($subject);
 		
+			warn 'new subject: ' . $new_subject; 
+			
 			$entity->head->delete('Subject');
 			$entity->head->add(   'Subject', safely_encode($new_subject));
 			
@@ -1403,7 +1410,6 @@ sub _unsubscriptionation {
 	}
 	else { 
 		
-		warn 'couldnt find it in: ' . $args{-data};
 		
 		if($args{-type} eq 'text/html'){ 
 			$args{-data} .= '
