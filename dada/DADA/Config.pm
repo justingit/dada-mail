@@ -4801,7 +4801,7 @@ and to say that you've got the freshest tools on the Web.
 
 
 $VERSION = 4.0.3; 
-$VER     = '4.0.3 unicode candy';
+$VER     = '4.0.3 beta 1 - 03/01/10';
 
 
 #
