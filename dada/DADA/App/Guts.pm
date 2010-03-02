@@ -1502,7 +1502,7 @@ sub convert_to_html_entities {
 	eval {require HTML::Entities}; 
 	if(!$@){ 
 	
-		$s = HTML::Entities::encode_entities($s); #, "\200-\377" 
+		$s = HTML::Entities::encode_entities($s, "\200-\377" ); #, "\200-\377" 
 		
 	}else{ 
         # require HTML::EntitiesPurePerl 
@@ -1510,7 +1510,7 @@ sub convert_to_html_entities {
     	eval {require HTML::EntitiesPurePerl}; 
     	if(!$@){ 
 			
-        	$s = HTML::EntitiesPurePerl::encode_entities($s); #", \200-\377"
+        	$s = HTML::EntitiesPurePerl::encode_entities($s, "\200-\377" ); #", \200-\377"
     	}
 	}
 	# These are done by the above (if there's no argument in, encode_entities - right?
