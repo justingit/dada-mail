@@ -284,12 +284,7 @@ sub send {
     # We should *really* make one, since it's what we 
     # say we do. 
 
-	 %fields = $self->clean_headers(%fields); 
-
-  
-  #
-
-    #    croak "Content-type: '" . $fields{'Content-type'} . "'";
+	 %fields = $self->clean_headers(%fields);
 
     # I don't like this, but, eh.
     if(
@@ -941,6 +936,7 @@ sub mass_send {
 
 	
     # save a copy of the message for later pickup.
+    $self->saved_message($self->_massaged_for_archive(\%fields));
 
 
 
@@ -2255,8 +2251,8 @@ sub tagged_list_headers {
 	
 	$lh{'List'}             =   $self->{list};
 	$lh{'List-URL'}         =   '<<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/>';
-	$lh{'List-Subscribe'}   =   '<<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.emaiL_domain -->/>'; 
-	$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.emaiL_domain -->/>'; 
+	$lh{'List-Subscribe'}   =   '<<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
+	$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
 	$lh{'List-Owner'}       =   '<<!-- tmpl_var list_settings.list_owner_email -->>';
 
 	return %lh;
@@ -2655,7 +2651,6 @@ sub _mail_merge {
                 );
 
    my $msg = $entity->as_string; 
-      #$msg = Encode::decode( $DADA::Config::HTML_CHARSET, $msg); 
 	   $msg = safely_decode($msg); 
 	
 	

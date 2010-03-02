@@ -1089,9 +1089,9 @@ sub convert_to_ascii {
 
 require         HTML::Entities::Numbered;
 $message_body = HTML::Entities::Numbered::name2decimal($message_body); 
-$message_body =~ s/\&\#\d\d\d\;//g;
+# And what do these do, again? 
+$message_body =~ s/\&\#\d\d\d\;//g;  
 $message_body =~ s/\&\#\d\d\d\d\;//g;
-
 
 
 
@@ -1488,7 +1488,7 @@ sub convert_to_html_entities {
 }
 
 
-sub webify_plain_text{ 
+sub webify_plain_text { 
 
 	my $s = shift; 
 	my $multi_line = 0; 
@@ -2513,12 +2513,12 @@ sub decode_cgi_obj {
 	
 	  my @val = $query ->param( $name );
 	  foreach ( @val ) {
-	    $_ = Encode::decode($DADA::Config::HTML_CHARSET, $_ );
-		#warn 'CGI param: ' . $_ . ' ' . Data::Dumper::Dumper($_);
-		
+	    #$_ = Encode::decode($DADA::Config::HTML_CHARSET, $_ );
+		$_ = safely_decode($_); 
 	  }
-	  $name = Encode::decode($DADA::Config::HTML_CHARSET, $name );
-	  if ( scalar @val == 1 ) {   
+	  #$name = Encode::decode($DADA::Config::HTML_CHARSET, $name );
+	   $name = safely_decode($name); 
+      if ( scalar @val == 1 ) {   
 	    #$form_input ->{$name} = $val[0];
 		$query->param($name, $val[0]); 
 		#warn 'CGI param: ' . $name . ' ' . Data::Dumper::Dumper($val[0]);
@@ -2538,10 +2538,7 @@ sub safely_decode {
 	
 	my $str   = shift; 
 	my $force = shift || 0; 
-	
-#	$str = Encode::decode($DADA::Config::HTML_CHARSET, $str); 
-#	return $str; 
-	
+
 	
 	if(utf8::is_utf8($str) == 1 && $force == 0){ 
 	#	warn 'utf8::is_utf8 is returning 1 - not decoding.'; 
@@ -2560,8 +2557,7 @@ sub safely_decode {
 }
 
 sub safely_encode { 
-	#return Encode::encode($DADA::Config::HTML_CHARSET, $_[0]); 
-	
+
 	if(utf8::is_utf8($_[0])){ 
 		return Encode::encode($DADA::Config::HTML_CHARSET, $_[0]); 
 	}

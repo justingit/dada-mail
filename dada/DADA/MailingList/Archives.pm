@@ -1059,7 +1059,7 @@ sub _entity_from_raw_msg {
 
 	my $entity; 
 	
-	eval { $entity = $self->{parser}->parse_data(Encode::encode($DADA::Config::HTML_CHARSET, $raw_msg )) };
+	eval { $entity = $self->{parser}->parse_data(safely_encode( $raw_msg )) };
 	if($@){ 
 		croak "Problems creating entity: $@"; 
 	}
@@ -1666,11 +1666,11 @@ sub massage_msg_for_resending {
 		# Not sure about this one - probably want it unencoded, so that we can resend it? Meh?
 		
 		return (
-			 Encode::decode($DADA::Config::HTML_CHARSET, $entity->head->as_string),
-		   	 Encode::decode($DADA::Config::HTML_CHARSET, $entity->body_as_string), 
+			 safely_decode($entity->head->as_string),
+		   	 safely_decode($entity->body_as_string), 
 		) ;
 	}else{
-		my $str =  Encode::decode($DADA::Config::HTML_CHARSET, $entity->as_string);
+		my $str =  safely_decode($entity->as_string);
 		$str = $self->massage($str); 
 		return $str; 
 	}
@@ -1716,7 +1716,7 @@ sub _take_off_sigs {
 				
 				require Encode; 
 				my $io = $body->open('w');
-				   $io->print( Encode::encode_utf8( $content ) );
+				   $io->print( safely_encode( $content ) );
 				   $io->close;
 				$entity->sync_headers('Length'      =>  'COMPUTE',
 									  'Nonstandard' =>  'ERASE');
@@ -1811,7 +1811,7 @@ sub massaged_msg_for_display {
         # singlepart message (like a "text/plain"), use C<bodyhandle()> instead:
 
         $body = $b_entity->bodyhandle->as_string;
-		$body = Encode::decode($DADA::Config::HTML_CHARSET, $body);
+		$body = safely_decode($body);
 		 
         if ( $self->{ls}->param('stop_message_at_sig') == 1 ) {
             $body = $self->_zap_sig_plaintext($body);

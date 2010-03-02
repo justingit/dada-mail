@@ -185,7 +185,7 @@ sub send_email {
 			
 			require  DADA::App::FormatMessages; 
 			my $fm = DADA::App::FormatMessages->new(-List => $list);
-									
+			   $fm->mass_mailing(1); 
 			# DEV: Headers.  Ugh, remember this is in, "Send a Webpage" as well. 	
 			my %headers = ();
 			foreach my $h(qw(
@@ -667,7 +667,7 @@ sub send_url_email {
             
             require  DADA::App::FormatMessages; 
             my $fm = DADA::App::FormatMessages->new(-List => $list); 
-            
+               $fm->mass_mailing(1); 
                $fm->originating_message_url(strip($q->param('url'))); 
                $fm->Subject($headers{Subject}); 
                $fm->treat_as_discussion_msg(1)

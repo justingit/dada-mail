@@ -1,14 +1,4 @@
 #!/usr/bin/perl
-
-
-#use Carp qw( confess );
-#$SIG{__DIE__} =  \&confess;
-#$SIG{__WARN__} = \&carp;
-#$Carp::Verbose = 1;
-
-# lazy. 
-#binmode STDOUT, ':encoding(UTF-8)';
-
 package dada_bridge;
 
 # Some questions I have on the new moderation stuff:
@@ -2346,16 +2336,14 @@ sub dm_format {
     require DADA::App::FormatMessages;
 
     my $fm = DADA::App::FormatMessages->new( -List => $list );
-       $fm->treat_as_discussion_msg(1);
-
+	   $fm->mass_mailing(1); 
+   	   $fm->treat_as_discussion_msg(1);
+	
     if (   $ls->param('group_list') == 0
         && $ls->param('rewrite_anounce_from_header') == 0 )
     {
         $fm->reset_from_header(0);
     }
-
-	warn '${$msg} ' . ${$msg}; 
-	warn 'end.'; 
 
 	
     my ( $header_str, $body_str ) =
@@ -2654,6 +2642,8 @@ sub deliver {
             Body => $body,
         );
 
+		warn '$mh->saved_message ' . $mh->saved_message; 
+
         return ( $msg_id, $mh->saved_message );
 
     }
@@ -2783,7 +2773,7 @@ sub tweet {
 			
 		DADA::App::Guts::tweet_about_mass_mailing(
 			$list, 
-			$la->_parse_in_list_info(-data => $Subject), 
+			$la->_parse_in_list_info(-data => $Subject), #?
 			$DADA::Config::PROGRAM_URL . '/archive/' . $list . '/' . $la->newest_entry.'/'
 		) 
 	}
@@ -3087,7 +3077,7 @@ sub create_checksum {
 
     if ( $] >= 5.008 ) {
         require Encode;
-        my $cs = md5_hex( Encode::encode_utf8($$data) );
+        my $cs = md5_hex( safely_encode($$data) );
         return $cs;
     }
     else {

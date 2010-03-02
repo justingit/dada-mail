@@ -8146,7 +8146,7 @@ sub send_archive {
            $fm->use_email_templates(0); 
            $fm->use_header_info(1); 
  
-		  my $msg_a_s = Encode::encode('UTF-8', $msg->as_string); 
+		  my $msg_a_s = safely_encode($msg->as_string); 
 		   my ($email_str) = $fm->format_message(
 									-msg => $msg_a_s, 
 		                          );
@@ -8167,7 +8167,7 @@ sub send_archive {
 		        }
 		    );
 
-		    $msg = $entity->as_string; 
+		    $msg = safely_decode($entity->as_string); 
 		    my ($header_str, $body_str) = split("\n\n", $msg, 2); 
 
 			require DADA::Mail::Send;  

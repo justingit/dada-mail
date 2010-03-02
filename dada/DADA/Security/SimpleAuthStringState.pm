@@ -127,7 +127,7 @@ sub _create_auth_string {
         
         if($] >= 5.008){
             require Encode;
-            my $cs = Digest::MD5::md5_hex(Encode::encode_utf8($$str));
+            my $cs = Digest::MD5::md5_hex(safely_encode($$str));
             return $cs;
         }else{ 			
             my $cs = Digest::MD5::md5_hex($$str);

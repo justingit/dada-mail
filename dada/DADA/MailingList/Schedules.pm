@@ -920,8 +920,8 @@ sub _build_email {
     	else { 
 			    $plaintext_alt = html_to_plaintext({-string => $HTML_ver });
 		}
-        $plaintext_alt = Encode::encode($DADA::Config::HTML_CHARSET, $plaintext_alt); 
-		$HTML_ver      = Encode::encode($DADA::Config::HTML_CHARSET, $HTML_ver); 
+        $plaintext_alt = safely_encode($plaintext_alt); 
+		$HTML_ver      = safely_encode($HTML_ver); 
 
 		my $MIMELiteObj; 
 		if($record->{'HTML_ver'}->{source} eq 'from_url'){
@@ -935,7 +935,7 @@ sub _build_email {
 		my $html_msg = ''; 
 		eval { 
 				$html_msg = $MIMELiteObj->as_string;
-				$html_msg = Encode::decode($DADA::Config::HTML_CHARSET, $html_msg);
+				$html_msg = safely_decode($html_msg);
 			}; 
 			
 		if($@){ 
@@ -946,7 +946,7 @@ sub _build_email {
 			my $parser = new MIME::Parser; 
 			   $parser = optimize_mime_parser($parser);
 			$entity = $parser->parse_data(
-				$html_msg = Encode::encode($DADA::Config::HTML_CHARSET, $html_msg)
+				$html_msg = safely_encode($html_msg)
 			); 
 			 
 			if(! $record->{attachments}->[0]) { 
@@ -987,7 +987,7 @@ sub _build_email {
 	else { 
 		if($PlainText_ver){ 
 			
-			$PlainText_ver = Encode::encode($DADA::Config::HTML_CHARSET, $PlainText_ver); 
+			$PlainText_ver = safely_encode($PlainText_ver); 
 			$entity = MIME::Entity->build(
 						Type      =>'text/plain',
 						Encoding  => $ls->param('plaintext_encoding'), 
@@ -1024,7 +1024,7 @@ sub _build_email {
 	 
 	require DADA::App::FormatMessages; 
 	my $fm = DADA::App::FormatMessages->new(-List => $self->{name}); 
-
+	   $fm->mass_mailing(1); 
 	   # What?
 	   # I think this is only for our return value?
 	   $record->{headers}->{Subject} = $pt_headers->{Subject} if $pt_headers->{Subject};
@@ -1056,7 +1056,7 @@ sub _build_email {
 	   $fm->use_header_info(1);
 	    
     my $stringify = $entity->stringify; 
-	   $stringify = Encode::decode($DADA::Config::HTML_CHARSET, $stringify);
+	   $stringify = safely_decode($stringify);
 	
 	my ($final_header, $final_body) = $fm->format_headers_and_body(-msg => $stringify);
 	
@@ -1269,7 +1269,7 @@ sub _create_checksum {
 	
 	if($] >= 5.008){
 		require Encode;
-		my $cs = md5_hex(Encode::encode_utf8($$data));
+		my $cs = md5_hex(safely_encode($$data));
 		return $cs;
 	}else{ 			
 		my $cs = md5_hex($$data);

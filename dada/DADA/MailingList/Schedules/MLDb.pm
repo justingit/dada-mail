@@ -112,11 +112,6 @@ sub save_record {
 	my $key = $args{-key}; 
 	   $key = $self->new_key if ! $key; 		   
 		
-#	while ( my ($key, $value) = each %{$args{-data}} ) {
-#		$args{-data}->{$key} = Encode::encode($DADA::Config::HTML_CHARSET, $value); 
-#	}
-
-		
 	if($args{-mode} eq 'append'){ 
 		if(exists $self->{DB_HASH}->{$key}){ 
 		    

@@ -19,7 +19,7 @@ use Carp qw(croak carp);
 
 use vars qw($AUTOLOAD); 
 
-my $t = 1; 
+my $t = 0; 
 
 
 =pod
@@ -88,7 +88,7 @@ my %allowed = (
 	
 	reset_from_header            => 1, 
 	im_encoding_headers          => 0, 
-	
+	mass_mailing                 => 0, 	
 );
 
 
@@ -443,10 +443,12 @@ sub _format_text {
 					-type => $entity->head->mime_type, 
 				);
 				
-				$content = $self->_unsubscriptionation(
-					-data => $content, 
-					-type => $entity->head->mime_type, 
-				);				
+				if($self->mass_mailing == 1){ 
+					$content = $self->_unsubscriptionation(
+						-data => $content, 
+						-type => $entity->head->mime_type, 
+					);				
+				}
 				
 			   $content = $self->_parse_in_list_info(
 					-data => $content, 
@@ -1903,11 +1905,8 @@ sub email_template {
 				
 				# Get	
 				my $header_value = 	$args->{-entity}->head->get($header, 0); 
-				
-			#	# Entity Decode
-			#	$header_value = Encode::decode('UTF-8', $header_value);
-				
-                require Email::Address; 
+
+              require Email::Address; 
 
 				# Uh.... get each individual.. thingy. 
                 my @addresses = Email::Address->parse($header_value);
@@ -1948,9 +1947,6 @@ sub email_template {
 					# Save it
                     my $new_header = $addresses[0]->format; 
 					
-					## Encode
-					#$new_header = Encode::encode('UTF-8', $new_header);
-                    
 					# Remove the old
 					$args->{-entity}->head->delete($header);
 					
@@ -1976,9 +1972,7 @@ sub email_template {
 				# UTF-8 (decoded) stuff gets through, this does help it. 
 				# Uneeded, if there is no UTF-8 stuff is in the header (which should be the 
 				# the case, anyways - 
-				#$header_value =Encode::encode('UTF-8', $header_value); 
-				#warn 'UTF-8 Encode:' . Encode::encode('UTF-8', $header_value); 
-				
+
 								
 				# Decode EncWords
 				   $header_value = $self->_decode_header($header_value);

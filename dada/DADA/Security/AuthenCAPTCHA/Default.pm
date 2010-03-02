@@ -238,7 +238,7 @@ sub _create_CAPTCHA_auth_string {
     
 #    if($] >= 5.008){
  #       require Encode;
- #       my $cs = Digest::MD5::md5_hex(Encode::encode_utf8($$auth_string));
+ #       my $cs = Digest::MD5::md5_hex(safely_encode($$auth_string));
  #       return $cs;
  #   }else{ 			
         my $cs = Digest::MD5::md5_hex($auth_string);

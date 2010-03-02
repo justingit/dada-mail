@@ -127,7 +127,7 @@ sub print_message_source {
 	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($id); 
 	
 	require Encode; 
-	print $fh Encode::encode($DADA::Config::HTML_CHARSET, $raw_msg );
+	print $fh safely_encode( $raw_msg );
 
 }
 

@@ -125,7 +125,6 @@ sub _raw_db_hash {
 	# decode
 	while ( my ($key, $value) = each %{$self->{RAW_DB_HASH}} ) {
 		if(defined($value)){ 
-			#$self->{RAW_DB_HASH}->{$key} = Encode::decode($DADA::Config::HTML_CHARSET, $value);
 			$self->{RAW_DB_HASH}->{$key} = safely_decode($value);
 		}
 	}

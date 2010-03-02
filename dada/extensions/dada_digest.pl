@@ -318,6 +318,7 @@ sub send_digest {
 			    
 			require DADA::App::FormatMessages;
 			my $fm = DADA::App::FormatMessages->new(-List => $profile->{Digest_List_Name}); 
+			   $fm->mass_mailing(1);
 			my ($final_header, $final_body) = $fm->format_headers_and_body(-msg => $msg_as_string);
 
 			print '$profile->{List_Name} ' . $profile->{List_Name}; 

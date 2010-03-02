@@ -97,8 +97,10 @@ sub deliver {
     my $li = $ls->get; 
     
     my $fm = DADA::App::FormatMessages->new(-List => $list); 
-       # $fm->Subject($message_subject);
+       $fm->mass_mailing(1); 
+	    # $fm->Subject($message_subject);
        $fm->use_list_template(1); 
+		
        
     
     my ($final_header, $final_body) = $fm->format_headers_and_body(-msg => $msg );

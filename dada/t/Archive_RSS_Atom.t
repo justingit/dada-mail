@@ -51,11 +51,13 @@ my %entities = entities();
 
 foreach my $chr_name(keys %entities){ 
 
+	diag '$entities{$chr_name} '  . Encode::encode('UTF-8', $entities{$chr_name}); 
+	
     $archive->set_archive_info($message_id, 'Subject', $entities{$chr_name}, 'text/plain', undef); 
     
     my $atom = $archive->atom_index; 
-    #diag $atom;
 
+	
     ok($atom =~ m/$DECIMALS{$chr_name}/, "there is a, &" . $DECIMALS{$chr_name} .";");
     ok($atom !~ m/\&amp\;$chr_name\;/, "there is no, &" . $chr_name . ';');
 
@@ -91,6 +93,7 @@ foreach my $chr_name(keys %entities){
 }
 
 
+=cut
 
 
 foreach my $dec(keys %DECIMALS){ 
@@ -109,6 +112,8 @@ foreach my $dec(keys %DECIMALS){
     $message_id++;
 
 }
+
+=cut
 
 sub entities { 
 

@@ -148,7 +148,7 @@ sub save {
 	
 	# encode
 	while ( my ($key, $value) = each %$new_vals ) {
-		$new_vals->{$key} = Encode::encode_utf8($value);
+		$new_vals->{$key} = safely_encode($value);
 	}
 	
 	# hack. fix later. 
@@ -333,16 +333,16 @@ sub set_archive_info {
 			}
 		}
 		
-	
-		
+		$new_subject = safely_encode($new_subject); 
+		$new_message = safely_encode($new_message);
+		$new_format  = safely_encode($new_format);
 		
 		#print "Saving Archive....\n"; 
-		$self->{DB_HASH}->{$key} = Encode::encode_utf8(
+		$self->{DB_HASH}->{$key} = 
 			join("\[::\]", 
-				$new_subject, 
-				$new_message,
-				$new_format,
-			)
+			$new_subject, 
+			$new_message,
+			$new_format,			
 		); 
 			#print "Saved!\n"; 
 		

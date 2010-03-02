@@ -157,7 +157,7 @@ sub save {
 			# decode
 			while ( my ($key, $value) = each %TMP_RAW_HASH ) {
 				if(defined($value)){ 
-					$TMP_RAW_HASH{$key} = Encode::decode($DADA::Config::HTML_CHARSET, $value);
+					$TMP_RAW_HASH{$key} = safely_decode($value);
 				}
 			}
 		
@@ -195,7 +195,7 @@ sub save {
 		# corresponding key of, DB_HASH? 
 
 		while ( my ($key, $value) = each %merge_info ) {
-			$self->{DB_HASH}->{$key} = Encode::encode_utf8($value);
+			$self->{DB_HASH}->{$key} = safely_encode($value);
 		}
 		
 		# And then, we close. That's it? 
@@ -243,7 +243,7 @@ sub _raw_db_hash {
 	# decode
 	while ( my ($key, $value) = each %{$self->{RAW_DB_HASH}} ) {
 		if(defined($value)){ 
-			$self->{RAW_DB_HASH}->{$key} = Encode::decode($DADA::Config::HTML_CHARSET, $value);
+			$self->{RAW_DB_HASH}->{$key} = safely_decode( $value);
 		}
 	}
 	

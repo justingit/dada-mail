@@ -192,7 +192,7 @@ sub raw_scorecard {
 			or croak "cannot do statment '$query'! $DBI::errstr\n";	
 	
 	my $all_scores = {}; 
-	my @keys; 
+	my @keys = (); 
 	
 
 	while( my ($email, $score) = $sth->fetchrow_array){ 
