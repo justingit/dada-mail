@@ -1048,7 +1048,7 @@ sub date_widget {
 		$q->popup_menu(
 					-name      => 'mail_month', 
 				    -labels    => {%mail_month_values}, 
-				    '-values'  => [sort keys  %mail_month_values],
+				    '-values'  => [sort { $a <=> $b } keys %mail_month_values],
 				    -default   => $default_mail_month,
 				   ), ' ', 
         $q->popup_menu(
@@ -1059,7 +1059,7 @@ sub date_widget {
 				   ), ' ', 
         $q->popup_menu(
 					-name     => 'mail_year', 
-				   '-values'  => [sort keys %mail_year_values], 
+				   '-values'  => [sort { $a <=> $b } keys %mail_year_values], 
 				    -default  => $default_mail_year, 
 				    -labels   => {%mail_year_values}, 
 				   ), ' - ', 
