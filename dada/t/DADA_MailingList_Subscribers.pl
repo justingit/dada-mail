@@ -347,10 +347,13 @@ SKIP: {
         '/slashes/', 
         '', 
         '@WeirdCharacters+',
+		"$dada_test_config::UTF8_STR", 
         ); 
-        
+        my $errors  = 0;
+		my $details = {}; 
+
         foreach my $bfn(@bad_field_names) { 
-            my ($errors, $details) = $lh->validate_subscriber_field_name({-field => $bfn});
+            ($errors, $details) = $lh->validate_subscriber_field_name({-field => $bfn});
             ok($errors == 1, "Bad Field is reporting an error."); 
             undef($errors); 
             undef($details); 
@@ -360,7 +363,7 @@ SKIP: {
         ok(eq_array($lh->subscriber_fields, ['myfield']), 'New field is being reported.'); 
         
         
-        my ($errors, $details) = $lh->validate_subscriber_field_name({-field => 'myfield'});
+        ($errors, $details) = $lh->validate_subscriber_field_name({-field => 'myfield'});
         ok($errors == 1, "Error being reported by duplicate field"); 
         ok($details->{field_exists} == 1, "Error being report as, 'field_exists'"); 
         undef($errors); undef($details);
@@ -369,48 +372,55 @@ SKIP: {
         ok($s == 1, "removing a new field is successful"); 
         
         # spaces
-        my ($errors, $details) = $lh->validate_subscriber_field_name({-field => $bad_field_names[0]});
+        ($errors, $details) = $lh->validate_subscriber_field_name({-field => $bad_field_names[0]});
         ok($errors == 1, "Error being reported"); 
         ok($details->{spaces} == 1, "Error being report as, 'spaces'"); 
         undef($errors); undef($details);
     
     
         # quotes
-        my ($errors, $details) = $lh->validate_subscriber_field_name({-field => $bad_field_names[1]});
+        ($errors, $details) = $lh->validate_subscriber_field_name({-field => $bad_field_names[1]});
         ok($errors == 1, "Error being reported"); 
         ok($details->{quotes} == 1, "Error being report as, 'quotes'"); 
         undef($errors); undef($details);
     
     
         # field_name_too_long
-        my ($errors, $details) = $lh->validate_subscriber_field_name({-field => $bad_field_names[2]});
+        ($errors, $details) = $lh->validate_subscriber_field_name({-field => $bad_field_names[2]});
         ok($errors == 1, "Error being reported"); 
         ok($details->{field_name_too_long} == 1, "Error being report as, 'field_name_too_long'"); 
         undef($errors); undef($details);    
     
     
         # slashes_in_field_name
-        my ($errors, $details) = $lh->validate_subscriber_field_name({-field => $bad_field_names[3]});
+        ($errors, $details) = $lh->validate_subscriber_field_name({-field => $bad_field_names[3]});
         ok($errors == 1, "Error being reported"); 
         ok($details->{slashes_in_field_name} == 1, "Error being report as, 'slashes_in_field_name'"); 
         undef($errors); undef($details);      
     
     
         # field_blank
-        my ($errors, $details) = $lh->validate_subscriber_field_name({-field => $bad_field_names[4]});
+        ($errors, $details) = $lh->validate_subscriber_field_name({-field => $bad_field_names[4]});
         ok($errors == 1, "Error being reported"); 
         ok($details->{field_blank} == 1, "Error being report as, 'field_blank'"); 
         undef($errors); undef($details);   
     
     
         # weird_characters
-        my ($errors, $details) = $lh->validate_subscriber_field_name({-field => $bad_field_names[5]});
+        ($errors, $details) = $lh->validate_subscriber_field_name({-field => $bad_field_names[5]});
         ok($errors == 1, "Error being reported"); 
         ok($details->{weird_characters} == 1, "Error being report as, 'weird_characters'"); 
         undef($errors); undef($details);  
+
+		# UTF8/unicode
+        ($errors, $details) = $lh->validate_subscriber_field_name({-field => $bad_field_names[6]});
+        ok($errors == 1, "Error being reported"); 
+        ok($details->{weird_characters} == 1, "Error being report as, 'weird_characters'"); 
+        undef($errors); undef($details);  
+
         
         foreach(qw(email_id email list list_type list_status)){ 
-            my ($errors, $details) = $lh->validate_subscriber_field_name({-field => $_});
+            ($errors, $details) = $lh->validate_subscriber_field_name({-field => $_});
             ok($errors == 1, "Error being reported"); 
             ok($details->{field_is_special_field} == 1, "Error being report as, 'field_is_special_field'"); 
             undef($errors); undef($details);          
@@ -419,7 +429,7 @@ SKIP: {
         
     
     
-        eval { my ($errors, $details) = $lh->validate_subscriber_field_name(); }; 
+        eval { ($errors, $details) = $lh->validate_subscriber_field_name(); }; 
         ok($@, "calling validate_subscriber_field_name without any paramaters causes an error!: $@"); 
         undef($errors); undef($details);  
   

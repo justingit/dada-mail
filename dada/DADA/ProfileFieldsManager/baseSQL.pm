@@ -470,19 +470,18 @@ sub validate_field_name {
         $errors->{spaces} = 0;
     }
 
-    if ( $args->{ -field } =~
-        m/\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\+|\=|\>|\<|\-|\0-\037\177-\377/ )
+    if ( $args->{ -field } =~ m/\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\+|\=|\>|\<|\-|\0-\037\177-\377/ )
     {
         $errors->{weird_characters} = 1;
     }
     else {
      #	# Match anything but ASCII alphanumerics
-	#	if($args->{ -field } =~ m/[^a-z A-Z 0-9]/){ 
-	#		$errors->{weird_characters} = 1;
-	#	}
-   	#	else { 
+		if($args->{ -field } =~ m/[^a-zA-Z0-9_]/){ 
+			$errors->{weird_characters} = 1;
+		}
+   		else { 
 			$errors->{weird_characters} = 0;
-	#	}
+		}
 	}
 
     if ( $args->{ -field } =~ m/\"|\'/ ) {
