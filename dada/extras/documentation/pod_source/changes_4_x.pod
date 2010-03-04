@@ -108,6 +108,19 @@ in your Mailing List Messages.
 
 =head2 Bug Fixes 4.0.3
 
+=head3 Beatitude: Months are listed out of order  
+
+http://github.com/justingit/dada-mail/issues/issue/28
+
+=head3 profile field names can contain more than just ascii letters, numbers and underscores
+
+http://github.com/justingit/dada-mail/issues/issue/27
+
+=head3 list short names can contain more than just ascii letters, numbers and underscores
+
+http://github.com/justingit/dada-mail/issues/issue/26
+
+
 =head3 Beatitude:  Scheduled List Not in Any Useable Order?
 
 http://github.com/justingit/dada-mail/issues/issue/16
