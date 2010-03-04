@@ -215,6 +215,63 @@ ok(isa_url('ftp://example.com')  == 1, 'ftp://example.com seems to be a URL!');
 ok(isa_url('ical://example.com') == 1, 'ical://example.com seems to be a URL!');
 
 
+# safely_decode 
+my $str = $dada_test_config::UTF8_STR; 
+
+eval { 
+	
+	$str = safely_decode($str); 
+	$str = safely_decode($str); 
+	$str = safely_decode($str); 
+	$str = safely_decode($str); 
+	$str = safely_decode($str); 
+	$str = safely_decode($str); 
+}; 
+ok(!$@, "safely decoding a whole bunch - didn't die!") ;
+
+# reset, 
+$str = $dada_test_config::UTF8_STR;
+
+# safely_encode 
+eval { 
+	
+	$str = safely_encode($str); 
+	$str = safely_encode($str); 
+	$str = safely_encode($str); 
+	$str = safely_encode($str); 
+	$str = safely_encode($str); 
+	$str = safely_encode($str); 
+ 
+}; 
+ok(!$@, "safely encoding a whole bunch - didn't die!") ;
+
+
+# decode_cgi_obj 
+$str = $dada_test_config::UTF8_STR;
+
+require CGI; 
+my $q = new CGI; 
+$q->param('utf8str', Encode::encode('UTF-8', $str)); # kind of like if we got it from outside the prog, 
+$q = decode_cgi_obj($q); 
+
+ok($q->param('utf8str') eq $dada_test_config::UTF8_STR, "decoding the cgi object didn't destroy our data!"); 
+$q->delete('utf8str'); 
+
+
+$q->param('utf8array', Encode::encode('UTF-8', $str), Encode::encode('UTF-8', $str), Encode::encode('UTF-8', $str)); # kind of like if we got it from outside the prog, 
+$q = decode_cgi_obj($q); 
+
+my @utf8array = $q->param('utf8array'); 
+foreach(@utf8array){ 
+	ok($_ eq $dada_test_config::UTF8_STR, "decoding the cgi object didn't destroy our data!");
+}
+
+
+
+
+
+
+
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
 
