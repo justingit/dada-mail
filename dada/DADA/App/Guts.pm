@@ -1741,8 +1741,14 @@ sub check_list_setup {
         	$list_errors++; 
        		$new_list_errors{weird_characters} = 1;
       	}else{ 
-      		$new_list_errors{weird_characters} = 0;
-      	}
+			if($fields->{list} =~ m/[^a-zA-Z0-9_]/){ 
+				$list_errors++; 
+	       		$new_list_errors{weird_characters} = 1;
+			}
+			else { 
+      			$new_list_errors{weird_characters} = 0;
+  			}
+		}
      
     	if($fields->{list} =~ m/\"|\'/){ 
         	$list_errors++; 

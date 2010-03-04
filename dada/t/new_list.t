@@ -31,6 +31,10 @@ my $different_lists = {
     list_name_bad_characters => { 
         list_name             => '<whacka whacka>', 
     }, 
+
+    list_utf8_characters => { 
+        list             => $dada_test_config::UTF8_STR, 
+    },
     
     
 
@@ -47,9 +51,9 @@ my $different_lists = {
 
 
 };
-
-
-    my ($list_errors,$flags) = check_list_setup(-fields => $different_lists->{normal});
+my $list_errors = 0; 
+my $flags       = {};
+    ($list_errors,$flags) = check_list_setup(-fields => $different_lists->{normal});
     ok($list_errors == 0); 
     undef($list_errors); 
     undef($flags); 
@@ -57,7 +61,7 @@ my $different_lists = {
     
     
     
-    my ($list_errors,$flags) = check_list_setup(-fields => $different_lists->{missing_everything});
+    ($list_errors,$flags) = check_list_setup(-fields => $different_lists->{missing_everything});
     ok($list_errors               >= 1); 
     ok($flags->{list}             == 1); 
     ok($flags->{list_name}        == 1); 
@@ -73,7 +77,7 @@ my $different_lists = {
     
     
     
-    my ($list_errors,$flags) = check_list_setup(-fields => $different_lists->{list_name_bad_characters});
+    ($list_errors,$flags) = check_list_setup(-fields => $different_lists->{list_name_bad_characters});
     ok($list_errors >= 1); 
     ok($flags->{list_name_bad_characters} == 1); 
     undef($list_errors); 
@@ -81,19 +85,24 @@ my $different_lists = {
 
  
  
-    my ($list_errors,$flags) = check_list_setup(-fields => $different_lists->{password_ne_retype_password});
+    ($list_errors,$flags) = check_list_setup(-fields => $different_lists->{password_ne_retype_password});
     ok($list_errors >= 1); 
     ok($flags->{password_ne_retype_password} == 1); 
     undef($list_errors); 
     undef($flags);
 
 
-    my ($list_errors,$flags) = check_list_setup(-fields => $different_lists->{shortname_too_long});
+    ($list_errors,$flags) = check_list_setup(-fields => $different_lists->{shortname_too_long});
     ok($list_errors >= 1); 
     ok($flags->{shortname_too_long} == 1); 
     undef($list_errors); 
     undef($flags); 
 
+    ($list_errors,$flags) = check_list_setup(-fields => $different_lists->{list_utf8_characters});
+    ok($list_errors >= 1); 
+    ok($flags->{weird_characters} == 1); 
+    undef($list_errors); 
+    undef($flags);
 
 
     my $test_copy = $different_lists->{normal};
