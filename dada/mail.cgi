@@ -1,12 +1,6 @@
 #!/usr/bin/perl 
 package mail; 
 
-
-#use Carp qw( confess );
-#$SIG{__DIE__} =  \&confess;
-#$SIG{__WARN__} = \&carp;
-#$Carp::Verbose = 1; 
-
 use strict;
 use 5.8.1; 
 use Encode qw(encode decode);
@@ -7127,7 +7121,7 @@ sub new_list {
         chomp($list); 
         $list =~ s/^\s+//;
         $list =~ s/\s+$//; 
-        $list =~ s/ /_/g;
+        # $list =~ s/ /_/g; # What?
 
         my $list_exists = check_if_list_exists(-List => $list);
         my ($list_errors,$flags) = check_list_setup(
