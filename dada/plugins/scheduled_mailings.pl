@@ -286,7 +286,8 @@ sub cl_run_schedules {
 		   my $report = $mss->run_schedules(-test    => $args{-test});
 		   					  				
 	
-	print $report if $args{-verbose};
+	e_print($report)
+	 	if $args{-verbose};
 	
 	logit($report); 
 
@@ -379,10 +380,10 @@ sub cgi_manual_start {
             
             print $q->header();
 			
-        	print '<pre>'
+        	e_print('<pre>')
         	    if $verbose; 
             cl_main();
-            print '</pre>'
+            e_print('</pre>')
                 if $verbose; 
             
 
@@ -396,25 +397,26 @@ sub cgi_manual_start {
 
 
 
-sub default { 
-	
-	
-	print(admin_template_header(
-							-Title      => "Scheduled Mailings",
-		                    -List       => $list,
-		                    -Form       => 0,
-		                    -Root_Login => $yeah_root_login)
-		                    );
-		                
-		                
-	print schedule_index();  
-	
-	print admin_template_footer(-Form    => 0, 
-							-List    => $li->{list},
-						    ); 
-	
-	
+sub default {
+
+    my $scrn = '';
+    $scrn .= admin_template_header(
+        -Title      => "Scheduled Mailings",
+        -List       => $list,
+        -Form       => 0,
+        -Root_Login => $yeah_root_login,
+	);
+
+    $scrn .= schedule_index();
+
+    $scrn .= admin_template_footer(
+          -Form => 0,
+          -List => $li->{list},
+    );
+    e_print($scrn);
+
 }
+
 
 
 
@@ -498,29 +500,38 @@ sub test_handler {
 
 
 
-sub run_all_handler { 
+sub run_all_handler {
 
-	
-	print(admin_template_header(
-							-Title      => "Manually Running Schedules",
-		                    -List       => $li->{list},
-		                    -Form       => 0,
-		                    -Root_Login => $yeah_root_login)
-		                    );
-	
-	print '<p><a href="' . $Plugin_Config->{Plugin_URL} . '">' . $Plugin_Config->{Program_Name} . '</a> &#187 Manually Running Schedules</p>';
-			                    
-	print '<pre>';
-	$verbose = 1;
-	$run_list = $list;
-	
-	cl_main(); 
-	print '</pre>';
-	print '<p><a href="javascript:history.back()">Back...</a></p>';
+    my $scrn = '';
+    $scrn .= admin_template_header(
+        -Title      => "Manually Running Schedules",
+        -List       => $li->{list},
+        -Form       => 0,
+        -Root_Login => $yeah_root_login
+      ); 
 
-	print admin_template_footer(-Form    => 0, 
-							-List    => $li->{list},
-						    ); 
+      $scrn .=
+        '<p><a href="'
+      . $Plugin_Config->{Plugin_URL} . '">'
+      . $Plugin_Config->{Program_Name}
+      . '</a> &#187 Manually Running Schedules</p>';
+
+    $scrn .= '<pre>';
+    e_print($scrn)
+      if $verbose = 1;
+    $run_list = $list;
+
+    cl_main();
+    my $scrn = '';
+
+    $scrn .= '</pre>';
+    $scrn .= '<p><a href="javascript:history.back()">Back...</a></p>';
+
+    $scrn .= admin_template_footer(
+          -Form => 0,
+          -List => $li->{list},
+    );
+    print $scrn;
 }
 
 
