@@ -108,6 +108,14 @@ in your Mailing List Messages.
 
 =head2 Bug Fixes 4.0.3
 
+=head3 Send newest archived message may have outdated header information
+
+http://github.com/justingit/dada-mail/issues/issue/30
+
+=head3 pop3 username/password not saved when "Save, Then Test..." button pressed in Sending Preferences
+
+http://github.com/justingit/dada-mail/issues/issue/29
+
 =head3 Beatitude: Months are listed out of order  
 
 http://github.com/justingit/dada-mail/issues/issue/28
@@ -119,7 +127,6 @@ http://github.com/justingit/dada-mail/issues/issue/27
 =head3 list short names can contain more than just ascii letters, numbers and underscores
 
 http://github.com/justingit/dada-mail/issues/issue/26
-
 
 =head3 Beatitude:  Scheduled List Not in Any Useable Order?
 
