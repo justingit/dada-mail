@@ -5,7 +5,7 @@ use strict;
 use lib qw(./ ../ ../perllib ../../ ../../perllib); 
 
 use DADA::Config qw(!:DEFAULT);  
-
+use DADA::App::Guts;
 
 require Exporter; 
 
@@ -74,7 +74,7 @@ sub check_password {
 
     my $tmp_salt =
       substr( $epw, $DADA::Config::FIRST_SUB, $DADA::Config::SEC_SUB );
-    if ( $epw eq crypt( $pw, $tmp_salt ) ) {
+    if ( $epw eq crypt( safely_encode($pw), $tmp_salt ) ) {
         $check = 1;
     }
 
@@ -102,7 +102,7 @@ it'll be.
 
 sub encrypt_passwd {
 my $pw=shift;
-return crypt($pw, $DADA::Config::SALT );
+return crypt(safely_encode($pw), $DADA::Config::SALT );
 }
 
 =pod
