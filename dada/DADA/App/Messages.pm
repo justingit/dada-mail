@@ -677,24 +677,8 @@ sub send_newest_archive {
 		if($args->{-test} == 1){ 
 			$mh->test(1);	
 		}
-	
-	# Debug Code...	
-	#	my %hh = $mh->return_headers($head); 
-	#	foreach(keys %hh){ 
-	#		warn 'header: ' . $_ . ' ' . $hh{$_}; 
-	#	}
 		
-		
-		# And anyways, this isn't doing any templating.... yeesh...
-		#
-		#$mh->send(
-		#		 $mh->return_headers($head), 
-		#	  	 # Um, ok, what was this here for again? 
-		#		 #'Content-type' => 'text/plain', 
-		#		 #/Um, 
-		#	  	 To             => '"'. escape_for_sending($li->{list_name}) .' Subscriber" <'. $args->{-email} .'>',
-		#		 Body           => $body, 
-		#);
+
 		
 		
 		send_generic_email(
@@ -704,10 +688,7 @@ sub send_newest_archive {
 	        -ls_obj       => $ls, 
 
 			-headers => { 
-						 $mh->return_headers($head), 
-					  	 # Um, ok, what was this here for again? 
-						 #'Content-type' => 'text/plain', 
-						 #/Um, 
+						 $mh->return_headers($head),  
 					  	 To             => '"'. escape_for_sending($li->{list_name}) .' Subscriber" <'. $args->{-email} .'>',
 			},
 

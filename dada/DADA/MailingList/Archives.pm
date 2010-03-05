@@ -1662,8 +1662,22 @@ sub massage_msg_for_resending {
 	my $entity = $self->_entity_from_raw_msg($raw_msg); 
 	   $entity = $self->_take_off_sigs($entity); 
 	
-	
-	   
+	# These may be out of date, so let's get rid of them.
+	foreach my $header(
+		'From', 
+		'To', 
+		'Reply-To', 
+		'List', 
+		'List-URL', 
+		'List-Owner', 
+		'List-Subscribe', 
+		'List-Unsubscribe'
+		){ 
+	    if($entity->head->count($header)){ 
+			$entity->head->delete($header);
+		}
+	}
+		
 	if($args{'-split'} == 1){ 
 		# Not sure about this one - probably want it unencoded, so that we can resend it? Meh?
 		
