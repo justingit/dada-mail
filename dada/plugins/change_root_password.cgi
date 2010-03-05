@@ -41,16 +41,17 @@ my $li = $ls->get;
 	               
 if(!$q->param('process')){ 
 
+	my $scrn = ''; 
     # header     
-    print(admin_template_header(-Title      => "Change Your $DADA::Config::PROGRAM_NAME Root Password",
+    $scrn .= admin_template_header(-Title      => "Change Your $DADA::Config::PROGRAM_NAME Root Password",
                             -List       => $li->{list},
                             -Form       => 0,
-                            -Root_Login => $root_login));
+                            -Root_Login => $root_login);
 
 
 
     my $tmpl = default_screen(); 	                
-	print DADA::Template::Widgets::screen(
+	$scrn .= DADA::Template::Widgets::screen(
 						{
 							-data => \$tmpl, 
 							-vars => { 
@@ -65,8 +66,8 @@ if(!$q->param('process')){
     
     
     #footer
-    print admin_template_footer(-List => $list, -Form => 0); 
-
+    $scrn .= admin_template_footer(-List => $list, -Form => 0); 
+	e_print($scrn); 
 
 }else{ 
 
@@ -113,7 +114,7 @@ if(!$q->param('process')){
     
     # Well, if everything works out, we're cool. 
     my $file = $DADA::Config::CONFIG_FILE; 
-    open my $CONFIG, '<', $file
+    open my $CONFIG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file
     or die "Cannot read config file at: '" . $file
     . "' because: "
     . $!;
@@ -135,7 +136,7 @@ if(!$q->param('process')){
     
    # die $root_pass; 
     
-    open my $CONFIGW, '>', $file
+    open my $CONFIGW, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')' , $file
     or die "Cannot write config file at: '" . $file
     . "' because: "
     . $!;

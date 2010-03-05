@@ -75,28 +75,30 @@ if($f){
                               
 # header     
 sub default { 
-print(admin_template_header(-Title      => "Clickthrough Tracking",
+
+my $scrn = '';
+$scrn .= admin_template_header(-Title      => "Clickthrough Tracking",
 		                -List       => $li->{list},
 		                -Form       => 0,
-		                -Root_Login => $root_login));
+		                -Root_Login => $root_login);
 
 
-if($q->param('done') == 1){ 
-	print '<p class="positive">' . $DADA::Config::GOOD_JOB_MESSAGE . '</p>';
+if($q->param('done') == 1){ 	
+	$scrn .= '<p class="positive">' . $DADA::Config::GOOD_JOB_MESSAGE . '</p>';
 }
 
 
 if(-e $rd->clickthrough_log_location){ 
 
 
-	print $q->h2('Clickthrough Message Summaries:'); 
+	$scrn .=  $q->h2('Clickthrough Message Summaries:'); 
 	
 	my $m_report = $rd->report_by_message_index;
 	
-	print '<div style="max-height: 300px; overflow: auto; border:1px solid black">'; 
+	$scrn .=  '<div style="max-height: 300px; overflow: auto; border:1px solid black">'; 
 	
-	print $q->start_table({-cellpadding => "5", -cellspacing=> "0", border=> "0", width=> "100%"}); 
-	print $q->Tr(
+	$scrn .=  $q->start_table({-cellpadding => "5", -cellspacing=> "0", border=> "0", width=> "100%"}); 
+	$scrn .=  $q->Tr(
 	      $q->td([
 	              ($q->p($q->b('Subject'))),
 	              ($q->p($q->b('Sent'))),
@@ -144,7 +146,7 @@ $m_report->{$_}->{'bounce'} = '-' if ! $m_report->{$_}->{'bounce'};
 $m_report->{$_}->{'num_subscribers'} = '-' if ! $m_report->{$_}->{'num_subscribers'}; 
 
 
-		print $q->Tr({ -style => 'background: ' . $bg}, 
+		$scrn .=  $q->Tr({ -style => 'background: ' . $bg}, 
 			  $q->td([
 					  ($q->p($q->strong(
 					  
@@ -200,18 +202,18 @@ $m_report->{$_}->{'num_subscribers'} = '-' if ! $m_report->{$_}->{'num_subscribe
 					 ]));
 	}
 	
-	print $q->end_table;
-print '</div>';
+	$scrn .=  $q->end_table;
+$scrn .=  '</div>';
 
 
 
 
 		  
 }else{ 
-	print $q->p($q->strong('No logs to report.'));
+	$scrn .=  $q->p($q->strong('No logs to report.'));
 }	
 
-	print $q->hr; 
+	$scrn .=  $q->hr; 
 
 	require HTML::Template; 
 	
@@ -230,35 +232,37 @@ enable_bounce_logging => $li->{enable_bounce_logging},
 	   
 	   				   ); 
 	   
-	print $template->output();
+	$scrn .=  $template->output();
 
 
 
-	print $q->hr; 
+	$scrn .=  $q->hr; 
 	
-	print $q->p({-align => 'center'}, $q->start_form(-target => 'raw') . 
+	$scrn .=  $q->p({-align => 'center'}, $q->start_form(-target => 'raw') . 
 		  $q->hidden('f', 'raw') . 
 		  $q->submit(-name   => 'View Raw Clickthrough Logs', 
 					 -class  => 'processing') .
 		  $q->end_form());
 	
 	
-	print $q->p({-align => 'center'}, $q->start_form . 
+	$scrn .=  $q->p({-align => 'center'}, $q->start_form . 
 		  $q->hidden('f', 'purge') . 
 		  $q->submit(-name   => 'Purge Clickthrough Logs', 
 					 -class  => 'alertive') .
 		  $q->end_form());
 
-	print $q->hr;
+	$scrn .=  $q->hr;
 	
-	print $q->p('Clickthrough logging works for URLs in mailing list
+	$scrn .=  $q->p('Clickthrough logging works for URLs in mailing list
 	             messages when the URLs are
 				 placed in the [redirect] tag. For example:') . 
 				 $q->p($q->strong('[redirect=http://yahoo.com]'));	
 			  
-	print admin_template_footer(-Form    => 0,
+	$scrn .=  admin_template_footer(-Form    => 0,
 							-List    => $li->{list},); 
 	
+	e_print($scrn); 
+
 } 
 
 sub raw { 
@@ -301,22 +305,24 @@ sub edit_prefs {
 
 
 sub message_report { 
-print(admin_template_header(-Title      => "Clickthrough Tracking - Message Report",
+	
+my $scrn = ''; 
+$scrn .= admin_template_header(-Title      => "Clickthrough Tracking - Message Report",
 		                -List       => $li->{list},
 		                -Form       => 0,
-		                -Root_Login => $root_login));
+		                -Root_Login => $root_login);
 		                
 
-print $q->p($q->strong('Clickthrough Message Summary for: ') . $q->a({-href => $DADA::Config::S_PROGRAM_URL . '?flavor=view_archive&id=' . $q->param('mid')}, find_message_subject($q->param('mid')))); 
+$scrn .= $q->p($q->strong('Clickthrough Message Summary for: ') . $q->a({-href => $DADA::Config::S_PROGRAM_URL . '?flavor=view_archive&id=' . $q->param('mid')}, find_message_subject($q->param('mid')))); 
 
 my $m_report = $rd->report_by_message($q->param('mid')); 
 
-print $q->start_table({-cellpadding => 5}); 
+$scrn .= $q->start_table({-cellpadding => 5}); 
 foreach(sort keys %$m_report){ 
 	
 	next if($_ eq 'open' || $_ eq 'num_subscribers' || $_ eq 'bounce' || $_ eq undef);
 
-	print $q->Tr(
+	$scrn .= $q->Tr(
 	      $q->td([
 	      		  ($q->p(
 	               $q->b(
@@ -327,28 +333,28 @@ foreach(sort keys %$m_report){
 				 ]));
 }
 
-print $q->end_table;
+$scrn .= $q->end_table;
 
 if($m_report->{num_subscribers}){ 
-	print $q->p($q->strong("Number of Subscribers:") . $m_report->{num_subscribers}); 
+	$scrn .= $q->p($q->strong("Number of Subscribers:") . $m_report->{num_subscribers}); 
 }
 
 
 if($m_report->{'open'}){ 
-	print $q->p($q->strong("Number of Recorded Opens: ") . $m_report->{'open'}); 
+	$scrn .= $q->p($q->strong("Number of Recorded Opens: ") . $m_report->{'open'}); 
 }
 
 if($m_report->{bounce}){ 
-	print $q->p($q->strong("Number of Recorded Bounces: ") . ($#{$m_report->{bounce}} + 1)); 
+	$scrn .= $q->p($q->strong("Number of Recorded Bounces: ") . ($#{$m_report->{bounce}} + 1)); 
 
 
 my $count = 0; 
 my $bg; 
 
 
-print '<div style="max-height: 200px; overflow: auto; border:1px solid black">'; 
+$scrn .= '<div style="max-height: 200px; overflow: auto; border:1px solid black">'; 
 	
-	print $q->start_table({-cellpadding => "5", -cellspacing=> "0", border=> "0", width=> "100%"}); 
+	$scrn .= $q->start_table({-cellpadding => "5", -cellspacing=> "0", border=> "0", width=> "100%"}); 
 
 foreach(@{$m_report->{bounce}}){ 
 
@@ -362,44 +368,53 @@ $count++;
 
 
 
-	print $q->Tr({ -style => 'background: ' . $bg}, $q->td([$q->p($_)])); 
+	$scrn .= $q->Tr({ -style => 'background: ' . $bg}, $q->td([$q->p($_)])); 
 
 }
-print $q->end_table; 
+$scrn .= $q->end_table; 
 
 }
-print '</div>';
+$scrn .= '</div>';
 
 
-print admin_template_footer(-Form    => 0,
-                        -List    => $li->{list},); 
+$scrn .= admin_template_footer(-Form    => 0,
+                        -List    => $li->{list}); 
+e_print($scrn); 
+
 } 
 
 
 sub url_report { 
-print(admin_template_header(-Title      => "Clickthrough Tracking - URL Report",
+
+my $scrn = ''; 
+
+$scrn .= admin_template_header(-Title      => "Clickthrough Tracking - URL Report",
 		                -List       => $li->{list},
 		                -Form       => 0,
-		                -Root_Login => $root_login));
+		                -Root_Login => $root_login);
 		                
-print $q->p($q->b('Clickthrough Message Summary for: ' . find_message_subject($q->param('mid')) . ', for URL: ' . $q->param('url'))); 
+$scrn .= $q->p($q->b('Clickthrough Message Summary for: ' . find_message_subject($q->param('mid')) . ', for URL: ' . $q->param('url'))); 
 
 my $m_report = $rd->report_by_url($q->param('mid'), $q->param('url')); 
 
-print $q->p($q->b('Clickthrough Time:')) . $q->hr; 
+$scrn .= $q->p($q->b('Clickthrough Time:')) . $q->hr; 
 
-print $q->start_table({-cellpadding => 5}); 
+$scrn .= $q->start_table({-cellpadding => 5}); 
 foreach(sort { $a <=> $b } @$m_report){ 
-	print $q->Tr(
+	$scrn .= $q->Tr(
 	      $q->td(
 	      $q->p($q->b($_))
 	      ));
 }
 
-print $q->end_table;
+$scrn .= $q->end_table;
 
-print admin_template_footer(-Form    => 0,
+$scrn .= admin_template_footer(-Form    => 0,
                         -List    => $li->{list},); 
+
+e_print($scrn); 
+
+
 } 
 
 
