@@ -1835,11 +1835,11 @@ sub user_error {
 	my $error_msg = DADA::App::Error::cgi_user_error(-List  => $list,
 													 -Error => $error,
 													 -Email => $email,
-													-Error_Message => $args{-Error_Message}, 
+													 -Error_Message => $args{-Error_Message}, 
 													 );
 	
 													 
-	print $fh encode($DADA::Config::HTML_CHARSET, $error_msg);
+	print $fh Encode::encode($DADA::Config::HTML_CHARSET, $error_msg);
 	
  }
  

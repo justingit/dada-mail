@@ -672,7 +672,7 @@ sub enforce_admin_cgi_security {
 				my $error_msg = DADA::App::Error::cgi_user_error(-List  => $args{-Admin_List},
 															     -Error => $_);
 				#go, errors in the... whatever shouldn't make the script process anything more
-				print $error_msg;
+				e_print($error_msg);
 			
 			}
 			exit; 	
