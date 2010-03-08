@@ -8,7 +8,7 @@ Dada Mail requires extremely little to run, but do double-check your setup has t
 
 =head1 Environment
 
-For the most part, Dada Mail is a web application; you interact with it via a web browser and it lives on top of a web server. Dada Mail is a simple CGI app for the most part, it does not currently support mod_perl or even Fast CGI, so those are not prerequisites. 
+For the most part, Dada Mail is a web application; you interact with it via a web browser and it lives on top of a web server. Dada Mail is a simple CGI app for the most part, it does not currently support C<mod_perl> or even C<Fast CGI>, so those are not prerequisites. 
 
 Dada Mail is not a desktop application. 
 
@@ -18,7 +18,7 @@ When we talk about what operating system, version of Perl, etc that's needed for
 
 Linux, Free BSD and Mac OS X should all work well. 
 
-SunOS should also work well, but there are some issue with Sun's file locking system and Dada Mail. 
+SunOS should also work well, but there are some issue with Sun's file locking system and Dada Mail. There may be workarounds.
 
 Dada Mail isn't ever tested on a Windows Server or even Apache running on top of Windows. 
 

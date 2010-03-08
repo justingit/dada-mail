@@ -8,10 +8,13 @@
 
 =head3 Unicode/UTF-8 Work 
 
-We have worked very very hard to get Dada Mail working with UTF-8/Unicode. It was hard. 
-We think we did a pretty good job and you'll have an most amazing experience, 
-when comparing this version to any previous version of Dada Mail (ever), but 
-there may be tiny things still to work out. We need to know about them (don't be shy!) 
+We have worked very, very hard to get Dada Mail working with UTF-8/Unicode.
+
+We think we did a pretty good job and you'll have a most amazing experience
+ when comparing this version to any previous version of Dada Mail (ever), but 
+there may be tiny things still to work out. 
+
+We need to know about them, don't be shy! 
 
 =head4 SQL table schema changes!
 
@@ -19,7 +22,7 @@ People who upgrade to 4.0.3 (and any version afterwards, until things change!)
 should note that the MySQL and PostgreSQL Table Schemas have changed! 
 
 You may need to update your own tables, to support UTF-8 (if they aren't 
-already in that encoding) 
+already in that encoding).
 
 =head4 See Also:
 

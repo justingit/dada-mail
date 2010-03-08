@@ -19,7 +19,7 @@ That means:
 =head1 How To Have a Pleasant Experience
 
 If you're installing Dada Mail for the first time, there's nothing you'll need to do, 
-but below are some great guidelines on how to keep your lists configured, so you
+but below are some guidelines on how to keep your lists configured, so you
 continue to have a good experience. 
 
 If you're upgrading, make sure your configuration reflects the advice below. 
@@ -79,7 +79,10 @@ to create your database with a, C<UTF-8> encoding, like so:
 
 =head4 MySQL 
 
-Nothing you'll have to do. 
+Nothing you'll have to do, but do note that the schema that's shipped with 
+Dada Mail for MySQL does set the character set and collation for UTF-8 in the tables
+where this is needed.  If you're upgrading Dada Mail (from before 4.0.3), you may 
+have to change the charset/encoding of your tables.  
 
 =head4 SQLite 
 
