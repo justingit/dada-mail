@@ -583,7 +583,7 @@ EOF
 
 sub admin_cgi_manual_start {
 
-    print(
+    e_print(
         admin_template_header(
             -Title      => "Manually Running Mailing...",
             -List       => $list,
@@ -596,22 +596,23 @@ sub admin_cgi_manual_start {
     $verbose         = 1;
     $check_deletions = 1;
 
-    print '
+    e_print( '
      <p id="breadcrumbs">
         <a href="' . $Plugin_Config->{Plugin_URL} . '">
             ' . $Plugin_Config->{Plugin_Name} . '
-        </a> &#187; Manually Running Mailing</p>';
+        </a> &#187; Manually Running Mailing</p>');
 
-    print '<pre>';
+    e_print('<pre>');
     start();
-    print '</pre>';
-    print
-      '<p><a href="#" onclick="history.back();return false;">Back...</a></p>';
+    e_print( '</pre>');
+    e_print(
+      '<p><a href="#" onclick="history.back();return false;">Back...</a></p>'
+	);
 
-    print admin_template_footer(
+    e_print( admin_template_footer(
         -Form => 0,
         -List => $list,
-    );
+    ));
 
 }
 
@@ -1036,8 +1037,8 @@ sub start {
     my @lists;
 
     if ( !$run_list ) {
-        print
-"Running all lists - \nTo test an individual list, pass the list shortname in the '--list' parameter...\n\n"
+        e_print(
+"Running all lists - \nTo test an individual list, pass the list shortname in the '--list' parameter...\n\n")
           if $verbose;
         @lists = available_lists( -dbi_handle => $dbi_handle );
     }
@@ -1056,27 +1057,27 @@ sub start {
 
         #/KLUDGE!
         if ( ( $#mailouts + 1 ) >= $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
-            print "There are currently, "
+            e_print( "There are currently, "
               . ( $#mailouts + 1 )
               . " mass mailout(s) running or queued. Going to wait until that number falls below, "
               . $DADA::Config::MAILOUT_AT_ONCE_LIMIT
-              . " mass mailout(s) \n"
+              . " mass mailout(s) \n")
               if $verbose;
             return;
         }
         else {
-            print "Currently, "
+            e_print( "Currently, "
               . ( $#mailouts + 1 )
               . " mass mailout(s) running or queued. \n\n"
               . "That's below our limit ($DADA::Config::MAILOUT_AT_ONCE_LIMIT). \n"
-              . "Checking awaiting  messages:\n\n"
+              . "Checking awaiting  messages:\n\n")
               if $verbose;
         }
 
         #KLUDGE!
     }
     else {
-        print "Skipping, 'Room for one more?' check\n"
+        e_print( "Skipping, 'Room for one more?' check\n")
           if $verbose;
     }
 
@@ -1089,15 +1090,15 @@ sub start {
             last;
         }
 
-        print "\n" . '-' x 72 . "\nList: " . $list . "\n"
+        e_print( "\n" . '-' x 72 . "\nList: " . $list . "\n")
           if $verbose;
 
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
         my $li = $ls->get();
 
         if ( $li->{discussion_pop_email} eq $li->{list_owner_email} ) {
-            print
-"\t\t***Warning!*** Misconfiguration of plugin! The list owner email cannot be the same address as the list email address!\n\t\tSkipping $list...\n"
+            e_print(
+"\t\t***Warning!*** Misconfiguration of plugin! The list owner email cannot be the same address as the list email address!\n\t\tSkipping $list...\n")
               if $verbose;
             next;
         }
@@ -1141,16 +1142,16 @@ sub start {
             foreach my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
 
                 $local_msg_viewed++;
-                print "\tMessage Size: " . $msgnums->{$msgnum} . "\n"
+                e_print( "\tMessage Size: " . $msgnums->{$msgnum} . "\n")
                   if $verbose;
                 if ( $msgnums->{$msgnum} >
                     $Plugin_Config->{Max_Size_Of_Any_Message} )
                 {
 
-                    print "\t\tWarning! Message size ( "
+                    e_print( "\t\tWarning! Message size ( "
                       . $msgnums->{$msgnum}
                       . " ) is larger than the maximum size allowed ( "
-                      . $Plugin_Config->{Max_Size_Of_Any_Message} . " )\n"
+                      . $Plugin_Config->{Max_Size_Of_Any_Message} . " )\n")
                       if $verbose;
                     warn "dada_bridge.pl $App_Version: Warning! Message size ( "
                       . $msgnums->{$msgnum}
@@ -1175,11 +1176,11 @@ sub start {
                             $Plugin_Config->{Soft_Max_Size_Of_Any_Message} )
                         {
 
-                            print "\t\tWarning! Message size ( "
+                            e_print( "\t\tWarning! Message size ( "
                               . $msgnums->{$msgnum}
                               . " ) is larger than the soft maximum size allowed ( "
                               . $Plugin_Config->{Soft_Max_Size_Of_Any_Message}
-                              . " )\n"
+                              . " )\n")
                               if $verbose;
                             warn
 "dada_bridge.pl $App_Version: Warning! Message size ( "
@@ -1217,8 +1218,8 @@ sub start {
                                 }
                                 else {
 
-                                    print
-"\tMessage did not pass verification - handling issues...\n"
+                                    e_print(
+"\tMessage did not pass verification - handling issues...\n")
                                       if $verbose;
 
                                     handle_errors( $list, $errors, $full_msg,
@@ -1234,8 +1235,8 @@ sub start {
 
                                 warn
 "dada_bridge.pl - irrecoverable error processing message. Skipping message (sorry!): $@";
-                                print
-"dada_bridge.pl - irrecoverable error processing message. Skipping message (sorry!): $@"
+                                e_print(
+"dada_bridge.pl - irrecoverable error processing message. Skipping message (sorry!): $@")
                                   if $verbose;
 
                             }
@@ -1243,8 +1244,8 @@ sub start {
                         }
                     }
                     else {
-                        print
-"\tThis sending method has been disabled for $list, deleting message... \n"
+                        e_print(
+"\tThis sending method has been disabled for $list, deleting message... \n")
                           if $verbose;
                     }
                 }
@@ -1252,8 +1253,8 @@ sub start {
                 $messages_viewed++;
 
                 if ( $messages_viewed >= $Plugin_Config->{MessagesAtOnce} ) {
-                    print
-"\n\nThe limit has been reached of the amount of messages to be looked at for this execution\n\n"
+                    e_print(
+"\n\nThe limit has been reached of the amount of messages to be looked at for this execution\n\n")
                       if $verbose;
                     last;
                 }
@@ -1263,7 +1264,7 @@ sub start {
             my $delete_msg_count = 0;
 
             foreach my $msgnum_d ( sort { $a <=> $b } keys %$msgnums ) {
-                print "\tRemoving message from server...\n"
+                e_print( "\tRemoving message from server...\n")
                   if $verbose;
                  $pop->Delete($msgnum_d);
                 $delete_msg_count++;
@@ -1272,7 +1273,7 @@ sub start {
                   if $delete_msg_count >= $local_msg_viewed;
 
             }
-            print "\tDisconnecting from POP3 server\n"
+            e_print( "\tDisconnecting from POP3 server\n")
               if $verbose;
 
             $pop->Close();
@@ -1291,13 +1292,13 @@ sub start {
                     message_was_deleted_check( $list, $li );
                 }
                 else {
-                    print "\tNo messages received, skipping deletion check.\n"
+                    e_print( "\tNo messages received, skipping deletion check.\n")
                       if $verbose;
                 }
             }
         }
         else {
-            print "\tPOP3 connection failed!\n"
+            e_print( "\tPOP3 connection failed!\n")
               if $verbose;
         }
     }
@@ -1308,7 +1309,7 @@ sub message_was_deleted_check {
     # DEV: Nice for testing...
     #return;
 
-    print "\n\tWaiting 5 seconds before removal check...\n"
+    e_print( "\n\tWaiting 5 seconds before removal check...\n")
       if $verbose;
 
     sleep(5);
@@ -1345,7 +1346,7 @@ sub message_was_deleted_check {
 
             my $cs = create_checksum( \$msg );
 
-            print "\t\tcs:             $cs\n"
+            e_print( "\t\tcs:             $cs\n")
               if $verbose;
 
             my @cs;
@@ -1355,18 +1356,18 @@ sub message_was_deleted_check {
 
             foreach my $s_cs (@cs) {
 
-                print "\t\tsaved checksum: $s_cs\n"
+                e_print( "\t\tsaved checksum: $s_cs\n")
                   if $verbose;
 
                 if ( $cs eq $s_cs ) {
-                    print
-"\t\tMessage was NOT deleted from POP server! Will attempt to do that now...\n"
+                    e_print(
+"\t\tMessage was NOT deleted from POP server! Will attempt to do that now...\n")
                       if $verbose;
                     $pop->Delete($msgnum);
                 }
                 else {
-                    print
-"\t\tMessage checksum does not match saved checksum, keeping message for later delivery...\n"
+                    e_print(
+"\t\tMessage checksum does not match saved checksum, keeping message for later delivery...\n")
                       if $verbose;
                 }
             }
@@ -1375,7 +1376,7 @@ sub message_was_deleted_check {
 
     }
     else {
-        print "POP3 login failed.\n";
+        e_print( "POP3 login failed.\n");
     }
 
     if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
