@@ -450,7 +450,7 @@ sub cgi_manual_start {
 
 sub cgi_test_pop3 {
 
-    print(
+    e_print(
         admin_template_header(
             -Title      => "POP3 Login Test",
             -List       => $list,
@@ -466,10 +466,10 @@ sub cgi_test_pop3 {
     print '</pre>';
     print '<p><a href="' . $Plugin_Config->{Plugin_URL} . ' ">Back...</a></p>';
 
-    print admin_template_footer(
+    e_print(admin_template_footer(
         -Form => 0,
         -List => $list,
-    );
+    ));
 
 }
 
@@ -896,16 +896,16 @@ sub cgi_default {
           $lh->subscription_list({ -type => 'authorized_senders' });
     }
 
-    print(
-        admin_template_header(
+	my $scrn = '';
+    
+    $scrn .= admin_template_header(
             -Title      => "Discussion List Options",
             -List       => $list,
             -Form       => 0,
             -Root_Login => $root_login,
             -li         => $li,
 
-        )
-    );
+        );
 
     my $can_use_ssl = 0;
     eval { require IO::Socket::SSL };
@@ -931,7 +931,7 @@ sub cgi_default {
     my $tmpl = default_cgi_template();
 
     require DADA::Template::Widgets;
-    print DADA::Template::Widgets::screen(
+    $scrn .= DADA::Template::Widgets::screen(
         {
             -expr => 1,
             -data => \$tmpl,
@@ -977,11 +977,12 @@ sub cgi_default {
 
     );
 
-    print admin_template_footer(
+    $scrn .= admin_template_footer(
         -Form => 0,
         -List => $list,
         -li   => $li,
     );
+	e_print($scrn); 
 }
 
 sub cl_main {
@@ -1456,8 +1457,8 @@ sub test_pop3 {
     my @lists;
 
     if ( !$run_list ) {
-        print
-"Testing all lists - \nTo test an individual list, pass the list shortname in the '--list' parameter...\n\n";
+        e_print(
+"Testing all lists - \nTo test an individual list, pass the list shortname in the '--list' parameter...\n\n");
         @lists = available_lists( -dbi_handle => $dbi_handle );
     }
     else {
@@ -1466,12 +1467,12 @@ sub test_pop3 {
 
     foreach my $l (@lists) {
 
-        print "\n" . '-' x 72 . "\nTesting List: '" . $l . "'\n";
+        e_print( "\n" . '-' x 72 . "\nTesting List: '" . $l . "'\n");
 
         unless (
             check_if_list_exists( -List => $l, -dbi_handle => $dbi_handle ) )
         {
-            print "'$l' does not exist! - skipping\n";
+            e_print( "'$l' does not exist! - skipping\n");
             next;
         }
 
@@ -1481,7 +1482,7 @@ sub test_pop3 {
         }
 
         if ( $li->{disable_discussion_sending} == 1 ) {
-            print "'$l' has this feature disabled - skipping.\n";
+            e_print( "'$l' has this feature disabled - skipping.\n");
         }
         else {
 
@@ -1513,11 +1514,11 @@ sub test_pop3 {
                         }
                     );
                 }
-                print "\tLogging off of the POP Server.\n";
+                e_print( "\tLogging off of the POP Server.\n");
             }
         }
     }
-    print "\n\nPOP3 Login Test Complete.\n\n";
+    e_print( "\n\nPOP3 Login Test Complete.\n\n");
 }
 
 sub pop3_login {
@@ -1528,8 +1529,8 @@ sub pop3_login {
       DADA::Security::Password::cipher_decrypt( $li->{cipher_key}, $password );
 
     if ( !valid_login_information( { -list => $l, -list_info => $li } ) ) {
-        print
-"Some POP3 Login Information is missing - please double check! (aborting login attempt)\n"
+        e_print(
+"Some POP3 Login Information is missing - please double check! (aborting login attempt)\n")
           if $verbose;
         return undef;
     }
@@ -1555,7 +1556,7 @@ sub pop3_login {
             return $pop;
         }
         else {
-            print "Problems Logging in:\n$@"
+            e_print( "Problems Logging in:\n$@")
               if $verbose;
             warn $@;
             return undef;
@@ -3151,15 +3152,14 @@ sub find_return_path {
 }
 
 sub cgi_show_plugin_config {
-
-    print(
-        admin_template_header(
+	
+	my $scrn = ''; 
+    $scrn .= admin_template_header(
             -Title => $Plugin_Config->{Plugin_Name} . " Plugin Configuration",
             -List  => $list,
             -Form  => 0,
             -Root_Login => $root_login
-        )
-    );
+     );
 
     my $tmpl = cgi_show_plugin_config_template();
 
@@ -3173,7 +3173,7 @@ sub cgi_show_plugin_config {
         }
     }
     require DADA::Template::Widgets;
-    print DADA::Template::Widgets::screen(
+    $scrn .=  DADA::Template::Widgets::screen(
         {
             -data => \$tmpl,
             -vars => {
@@ -3184,11 +3184,11 @@ sub cgi_show_plugin_config {
         },
     );
 
-    print admin_template_footer(
+    $scrn .=  admin_template_footer(
         -Form => 0,
         -List => $list,
     );
-
+	e_print($scrn);
 }
 
 sub cgi_show_plugin_config_template {
