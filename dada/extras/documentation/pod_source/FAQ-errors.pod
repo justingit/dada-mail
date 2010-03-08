@@ -162,6 +162,18 @@ Some file names in Dada Mail are somewhat large, and could get cutoff in some op
 
 On very rare occasions, the Perl Lib paths need to be explicitly set. It's a good bet to try this out when you continue to receive a 500 error in your browser.
 
+=item * Perl Version? 
+
+The version Dada Mail needs to run will be listed in the Requirements: 
+
+http://dadamailproject.com/support/documentation/requirements.pod.html
+
+If you try to run Dada Mail with a version of Perl, below this, there's a good chance that the program will throw a Server 500 error in the web browser, but 
+still print something about having the wrong version of Perl, in the error log. It'll look something like this: 
+
+ Perl v5.8.1 required--this is only v5.6.0
+
+
 =back
 
 =head2 Problems Logging In
