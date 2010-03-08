@@ -122,7 +122,13 @@ $regex = '<h1>Please confirm your mailing list subscription</h1>';
 like($dap->subscribe({-cgi_obj => $q,}), qr/$regex/); 
 
 my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
-ok($lh->check_for_double_email(-Email => $email, -Type => 'sub_confirm_list')); 
+ok(
+	$lh->check_for_double_email(
+		-Email => $email, 
+		-Type => 'sub_confirm_list'
+	),
+	"check_for_double_email returned 1"
+	); 
 
 $q->param('list', ''); 
 $q->param('email', ''); 
