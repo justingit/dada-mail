@@ -1401,7 +1401,10 @@ So, don't do that.
 
 Also, you cannot set this variable in an outside configuration file (.dada_config), it has to be set in the Config.pm file. 
 
+Don't create the file beforehand - you won't need to. It'll be created automatically for you, as long as the path you set in this variable is to a place Dada Mail can actually write to. 
+
 Finally, just to clarify, the program can't automatically set a error log, since there may be problems with the program, before it's able to be fully interpreted, so we have to hard code it, that's why there's this variable. 
+
 
 =cut
 
