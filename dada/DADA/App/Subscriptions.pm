@@ -11,7 +11,6 @@ use Carp qw(carp croak);
 
 use vars qw($AUTOLOAD); 
 use strict; 
-
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions}; 
 
 
@@ -155,6 +154,9 @@ sub subscribe {
     
     $email = lc_email($email);
 
+	# I really wish this was done, after we look and see if the confirmation
+	# step is even needed, just so we don't have to do this, twice. It would
+	# clarify a bunch of things, I think.
     my ($status, $errors) = $lh->subscription_check(
 								{
                                 -email => $email,   
@@ -172,8 +174,7 @@ sub subscribe {
 	
 	
 	if($status == 1){ 
-		
-
+	
 		my $skip_sub_confirm_if_logged_in = 0; 
 		if($li->{skip_sub_confirm_if_logged_in}){
 			require DADA::Profile::Session; 
@@ -220,13 +221,19 @@ sub subscribe {
      my $mail_your_subscribed_msg = 0; 
      
      if($li->{email_your_subscribed_msg} == 1){ 
-        
         if($errors->{subscribed} == 1){ 
         
+			# This is a strange one, as this *could* potentially be set, 
+			# and if so, muck about with us. 
+			if(exists($errors->{already_sent_sub_confirmation})){ 
+				delete($errors->{already_sent_sub_confirmation}); 
+			}
+			#/
+
             my @num = keys %$errors; 
-        
+			
             if($#num == 0){ # meaning, "subscribed" is the only error...
-                
+               
                 # Don't Treat as an Error
                 $status = 1; 
                 
@@ -236,8 +243,7 @@ sub subscribe {
         }
     }    
     
-    if($status == 0){ 
-    
+    if($status == 0){     
         if($args->{-html_output} != 0){ 
         
 			# Test sub-subscribe-alt_url_sub_confirm_failed
@@ -294,7 +300,6 @@ sub subscribe {
         
     }else{ 
         
-
         # The idea is, we'll save the information for the subscriber in the confirm list, and then 
         # move the info to the actual subscription list, 
         # And then remove the information from the confirm list, when we're all done. 
@@ -315,7 +320,6 @@ sub subscribe {
              }
         ); 
         
-        
         if($mail_your_subscribed_msg == 0){ 
         
             require DADA::App::Messages;
@@ -329,27 +333,20 @@ sub subscribe {
 			); 
 
         }else{ 
-            
-			if($errors->{subscribed} == 1 && 
-			   $li->{no_confirm_email} == 0
-			){
-				# 3.0.x code: 
-				$args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email));  
-				# 4.0 code: 
-				#$args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email, -List => $list));  
-				$self->confirm(
-		            {
-		                -html_output => $args->{-html_output}, 
-		                -cgi_obj     => $args->{-cgi_obj},
-		            },
-		        );
+			warn '>>>> >>> >>> Sending: "Mailing List Confirmation - Already Subscribed" message' 
+			if $t; 
 
-		        return;
-			}
+			require DADA::App::Messages;
+			DADA::App::Messages::send_you_are_already_subscribed_message(		
+				{
+					-list         => $list, 
+					-email        => $email, 
+					-test         => $self->test, 
+				}
+			);
 
-            
         }
-        
+		
         
         if($args->{-html_output} != 0){         
             if(
@@ -629,7 +626,8 @@ sub confirm {
 	                                     ),
 	 								}
                               );
-                                                
+    
+	                                          
      warn 'subscription check gave back status of: ' . $status
         if $t; 
      if($t){ 
@@ -638,17 +636,23 @@ sub confirm {
                 if $t; 
         }
      }
-     
+ 
+	
      my $mail_your_subscribed_msg = 0; 
      warn '$li->{email_your_subscribed_msg} is set to: ' . $li->{email_your_subscribed_msg}
         if $t; 
-        
      if($li->{email_your_subscribed_msg} == 1){ 
-     
         warn '>>>> $errors->{subscribed} set to: ' . $errors->{subscribed}
             if $t; 
             
         if($errors->{subscribed} == 1){ 
+			## This is a strange one, as this *could* potentially be set, 
+			## and if so, muck about with us. 
+			if(exists($errors->{already_sent_sub_confirmation})){ 
+				delete($errors->{already_sent_sub_confirmation}); 
+			}
+			##/
+			
             my @num = keys %$errors; 
             if($#num == 0){ # meaning, "subscribed" is the only error...
                 # Don't Treat as an Error
