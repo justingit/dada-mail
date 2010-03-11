@@ -131,6 +131,8 @@ sub main {
     
     
     my $q = CGI->new;
+	$q->charset($DADA::Config::HTML_CHARSET);
+
        $q = decode_cgi_obj($q);
  	my $mode = 'js'; 
     if($q->param('mode')){ 
@@ -283,12 +285,12 @@ sub main {
 	
 		$scrn = "document.write('" .  js_enc($scrn) . "');";
 		$scrn = $q->header('text/javascript') . $scrn; 	
-		print $scrn; 
+		e_print($scrn); 
 		#$c->cache('blog_index.js', \$scrn);
 	}
 	elsif($mode eq 'html'){ 
 		$scrn = $q->header() . $scrn; 
-		print $scrn;
+		e_print($scrn);
 		#$c->cache('blog_index.html', \$scrn);
 	}
 
