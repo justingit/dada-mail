@@ -6805,13 +6805,13 @@ sub text_list {
 
     # DEV: encoding?
     print $q->header('text/plain');
-    e_print "Email Addresses for List: " . $li->{list_name} . "\n";
-    e_print "=" x 72 . "\n";
+    e_print("Email Addresses for List: " . $li->{list_name} . "\n");
+    print "=" x 72 . "\n";
 
     my $email_count = $lh->print_out_list( -List => $list, -Type => $type );
 
-    e_print "=" x 72 .  "\n";
-    e_print "Total: $email_count \n\n";
+    print "=" x 72 .  "\n";
+    e_print("Total: $email_count \n\n");
 
 }
 
@@ -6956,7 +6956,8 @@ my $code = $q->param("code");
 
 print $q->header(); 
        
-e_print <<EOF
+# Why isn't this templated out? 
+my $form = <<EOF
 
 <html> 
  <head> 
@@ -6976,6 +6977,8 @@ e_print <<EOF
 
 EOF
 ;
+
+e_print($form); 
 
 }
 
