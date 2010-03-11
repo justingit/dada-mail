@@ -26,43 +26,43 @@ CREATE INDEX dada_settings_list_index ON dada_settings (list);
 
 CREATE TABLE IF NOT EXISTS dada_subscribers (
 email_id			            int4 not null primary key auto_increment,
-email                            text(320),
+email                            varchar(80),
 list                             varchar(16),
 list_type                        varchar(64),
 list_status                      char(1)
 ) CHARACTER SET utf8 COLLATE utf8_bin;
 
 
-CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(320), list, list_type, list_status);
+CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(80), list, list_type, list_status);
 
 
 
 CREATE TABLE IF NOT EXISTS dada_profiles ( 
 profile_id int4 not null primary key auto_increment,
-email                        varchar(320) not null,
+email                        varchar(80) not null,
 password                     text(16),
 auth_code                    varchar(64),
 update_email_auth_code       varchar(64),
-update_email                 varchar(320),
+update_email                 varchar(80),
 activated                    char(1), 
 CONSTRAINT UNIQUE (email)
 ) CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE IF NOT EXISTS dada_profile_fields (
 fields_id int4 not null primary key auto_increment,
-email varchar(320) not null,
+email varchar(80) not null,
 CONSTRAINT UNIQUE (email)
 ) CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes (
 	attribute_id int4 not null primary key auto_increment,
-	field                       varchar(320),
-	label                       varchar(320),
-	fallback_value              varchar(320),
+	field                       varchar(80),
+	label                       varchar(80),
+	fallback_value              varchar(80),
 -- I haven't made the following, but it seems like a pretty good idea... 
 -- sql_col_type              text(16),
 -- default                   mediumtext,
--- html_form_widget          varchar(320),
+-- html_form_widget          varchar(80),
 -- required                  char(1),
 -- public                    char(1),
 	CONSTRAINT UNIQUE (field)
