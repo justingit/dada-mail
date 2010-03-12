@@ -4849,7 +4849,7 @@ sub edit_archived_msg {
         # do I need this?
         $raw_msg ||= $ah->_bs_raw_msg( $subject, $message, $format );
         $raw_msg =~ s/Content\-Type/Content-type/;
-		$raw_msg = Encode::encode($DADA::Config::HTML_CHARSET, $raw_msg); 
+		$raw_msg = safely_encode($raw_msg); 
 		
         my $entity;
         eval { $entity = $parser->parse_data($raw_msg); };
@@ -4957,7 +4957,7 @@ sub edit_archived_msg {
                                 -vars   => {
                                     name  => $tb->{address},
                                     value => js_enc(
-                                        $tb->{entity}->bodyhandle->as_string()
+                                        safely_decode($tb->{entity}->bodyhandle->as_string())
                                     ),
                                 }
                             }
@@ -4967,7 +4967,7 @@ sub edit_archived_msg {
 
                         $form_blob .= $q->p(
                             $q->textarea(
-                                -value => $tb->{entity}->bodyhandle->as_string,
+                                -value => safely_decode($tb->{entity}->bodyhandle->as_string),
                                 -rows  => 15,
                                 -name  => $tb->{address}
                             )
@@ -5180,7 +5180,7 @@ sub edit_archived_msg {
 
         $raw_msg ||= $ah->_bs_raw_msg( $subject, $message, $format );
         $raw_msg =~ s/Content\-Type/Content-type/;
-		$raw_msg = Encode::encode($DADA::Config::HTML_CHARSET, $raw_msg); 
+		$raw_msg = safely_encode($raw_msg); 
 
         my $entity;
 
@@ -5195,13 +5195,13 @@ sub edit_archived_msg {
             $ah->set_archive_info(
                 $id, $entity->head->get( 'Subject', 0 ),
                 undef, $entity->head->get( 'Content-type', 0 ),
-                $entity->as_string
+                safely_decode($entity->as_string)
             );
         }
         else {
 
             $ah->set_archive_info( $id, $entity->head->get( 'Subject', 0 ),
-                undef, undef, $entity->as_string );
+                undef, undef, safely_decode($entity->as_string) );
         }
 
         print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
@@ -6882,7 +6882,7 @@ This was sent to the list owner (<!-- tmpl_var list_settings.list_owner_email --
 
     $msg->attach(
         Type => 'text/plain',
-         Data => Encode::encode( $DADA::Config::HTML_CHARSET, $message ),
+         Data => safely_encode($message ),
         Encoding    => $li->{plaintext_encoding},
 
 		#  Data => $message, 
@@ -6902,9 +6902,9 @@ This was sent to the list owner (<!-- tmpl_var list_settings.list_owner_email --
 
     #... not worrying about this, yet,
     my $msg_headers = $msg->header_as_string();
-       $msg_headers = Encode::decode( $DADA::Config::HTML_CHARSET, $msg_headers );
+       $msg_headers = safely_decode($msg_headers );
     my $msg_body = $msg->body_as_string();
-       $msg_body = Encode::decode( $DADA::Config::HTML_CHARSET, $msg_body );
+       $msg_body = safely_decode($msg_body );
 
     require DADA::Mail::Send;
     my $mh = DADA::Mail::Send->new(
