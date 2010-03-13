@@ -286,7 +286,6 @@ sub format_headers_and_body {
 	my $entity     = $self->{parser}->parse_data($msg);
 	
 	if($args{-convert_charset} == 1){ 
-		warn 'converting charset!'; 
 		eval { 
 			$entity = $self->change_charset({-entity => $entity}); 
 		};

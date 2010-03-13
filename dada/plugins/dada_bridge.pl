@@ -2644,8 +2644,6 @@ sub deliver {
             Body => $body,
         );
 
-		warn '$mh->saved_message ' . $mh->saved_message; 
-
         return ( $msg_id, $mh->saved_message );
 
     }
