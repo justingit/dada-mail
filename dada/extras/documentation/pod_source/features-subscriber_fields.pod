@@ -28,8 +28,6 @@ Please note that removing any Subscriber Profile Fields will B<permanently delet
 
 The other thing to note is that Subscriber Profile Fields are B<GLOBAL>, meaning, they'll be there for each Mailing List that Dada Mail manages. 
 
-You can also add a subscriber field in Dada Mail by just adding a new column to the dada_subscribers table yourself via SQL. I would be careful doing so, since you'll curcumvent any checks that are done via the list control panel, but you're open to and Dada Mail will see your new columns as new subscription fields.
-
 =head2 Mail Merging
 
 Mail Merging in Dada Mail in mailing list messages using your new Subscriber Profile Fields is pretty easy: 
