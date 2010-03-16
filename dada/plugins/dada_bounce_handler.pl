@@ -2830,10 +2830,11 @@ sub find_verp {
 	my $entity = shift; 
 	my $mv = Mail::Verp->new;
 	   $mv->separator($DADA::Config::MAIL_VERP_SEPARATOR);
-	my ($sender, $recipient) = $mv->decode($entity->head->get('To', 0));
-	return $recipient || undef; 
-
-
+	if($entity->head->count('To') > 0){ 
+		my ($sender, $recipient) = $mv->decode($entity->head->get('To', 0));
+		return $recipient || undef; 
+	}	
+	return undef; 
 }
 
 
