@@ -2,6 +2,25 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.0.4
+
+=head2 Changes 4.0.4
+
+=head3 UTF-8 Issues
+
+=head4 MySQL, PostgreSQL, SQLite schema changes
+
+Some compatibility issues cropped up, regarding UTF-8/unicode character set/encoding 
+in re: to the SQL schemas. The schemas for all supported SQL backends have been 
+modified to better work, mostly by changing fields with type, C<text(320), to type, 
+C<varchar(80)>. Other notes have been added to the UTF-8 FAQ. 
+
+=head2 Bug Fixes 4.0.4
+
+=head3 "Save, Then Test Your Sending Preferences..." button broken in Sending Preferences
+
+http://github.com/justingit/dada-mail/issues/closed#issue/31
+
 =head1 4.0.3
 
 =head2 Changes 4.0.3
