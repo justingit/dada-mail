@@ -84,6 +84,10 @@ Dada Mail for MySQL does set the character set and collation for UTF-8 in the ta
 where this is needed.  If you're upgrading Dada Mail (from before 4.0.3), you may 
 have to change the charset/encoding of your tables.  
 
+You may also want to double-check the version of the Perl MySQL driver (C<DBD::mysql>) and 
+make sure it has the, C<mysql_enable_utf8> flag support. It's difficult to tell from it's own
+docs, but having at least version 4.004 would be prudent. 
+
 =head4 SQLite 
 
 Nothing you'll have to do. 
