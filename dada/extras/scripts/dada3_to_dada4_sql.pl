@@ -510,7 +510,14 @@ In the real world, we're not sure how much of a problem this is going to be sinc
 
 Dada Mail 4.0 also has the ability to allow your subscribers to change their own Subscription Profile Information, so if they don't like what's saved, they can manually update their own information. 
 
-
-
 If you have a subscription field that's unique to each subscriber, for each list, you're going to be out of luck. We don't have a good workaround for that.
+
+=head2 MySQL problems 
+
+=head3 Specified key was too long - Errors? 
+
+The character set on my of the tables has been changed to, UTF-8, so if you do get this error when converting from 3 -> 4, there may be some steps you have to do, before running the migration script (again): 
+
+http://dadamailproject.com/support/documentation-4_0_3/features-UTF-8.pod.html
+
 =cut

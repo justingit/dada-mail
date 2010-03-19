@@ -6,7 +6,7 @@ value text
 
 CREATE TABLE IF NOT EXISTS dada_subscribers (
 email_id INTEGER PRIMARY KEY AUTOINCREMENT,
-email text(320),
+email varchar(80),
 list varchar(16),
 list_type varchar(64),
 list_status char(1)
@@ -14,17 +14,17 @@ list_status char(1)
 
 CREATE TABLE IF NOT EXISTS dada_profiles (
 profile_id INTEGER PRIMARY KEY AUTOINCREMENT,
-email varchar(320) not null UNIQUE,
+email varchar(80) not null UNIQUE,
 password text(16),
 auth_code varchar(64),
 update_email_auth_code varchar(64),
-update_email varchar(320),
+update_email varchar(80),
 activated char(1)
 );
 
 CREATE TABLE IF NOT EXISTS dada_profile_fields (
 fields_id INTEGER PRIMARY KEY AUTOINCREMENT,
-email varchar(320) not null UNIQUE
+email varchar(80) not null UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS dada_archives (
@@ -50,9 +50,9 @@ a_session TEXT NOT NULL
 
 CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes (
 attribute_id INTEGER PRIMARY KEY AUTOINCREMENT,
-field varchar(320) not null UNIQUE,	
-label varchar(320),
-fallback_value varchar(320)
+field varchar(80) not null UNIQUE,	
+label varchar(80),
+fallback_value varchar(80)
 );
 
 CREATE TABLE IF NOT EXISTS dada_clickthrough_urls (

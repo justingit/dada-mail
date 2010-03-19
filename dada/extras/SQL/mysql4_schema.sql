@@ -7,7 +7,7 @@ value                            text
 
 CREATE TABLE IF NOT EXISTS dada_subscribers (
 email_id			            int4 not null primary key auto_increment,
-email                            varchar(255),
+email                            varchar(80),
 list                             varchar(16),
 list_type                        varchar(64),
 list_status                      char(1)
@@ -17,26 +17,26 @@ list_status                      char(1)
 
 CREATE TABLE IF NOT EXISTS dada_profiles ( 
 profile_id int4 not null primary key auto_increment,
-email                        varchar(255) not null,
+email                        varchar(80) not null,
 password                     text(16),
 auth_code                    varchar(64),
 update_email_auth_code       varchar(64),
-update_email                 varchar(255),
+update_email                 varchar(80),
 activated                    char(1), 
 CONSTRAINT UNIQUE (email)
 );
 
 CREATE TABLE IF NOT EXISTS dada_profile_fields (
 fields_id int4 not null primary key auto_increment,
-email varchar(255) not null,
+email varchar(80) not null,
 CONSTRAINT UNIQUE (email)
 );
 
 CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes (
 	attribute_id int4 not null primary key auto_increment,
-	field                       varchar(255),
-	label                       varchar(255),
-	fallback_value              varchar(255),
+	field                       varchar(80),
+	label                       varchar(80),
+	fallback_value              varchar(80),
 -- I haven't made the following, but it seems like a pretty good idea... 
 -- sql_col_type              text(16),
 -- default                   mediumtext,
@@ -58,7 +58,7 @@ raw_msg                       mediumtext
  
 CREATE TABLE IF NOT EXISTS dada_bounce_scores (
 id                            int4 not null primary key auto_increment,
-email                         text, 
+email                         varchar(80), 
 list                          varchar(16),
 score                         int4
 ); 

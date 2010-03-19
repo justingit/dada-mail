@@ -165,7 +165,70 @@ The easiest thing to do is to edit the mistakes and resave the information. For 
 correct encoding, sadly. Dada Mail will probably fail gracefully with old information, but it's possible that you'll see squiggly charaters, instead of what you want to see. There's nothing in Dada Mail 
 that will stop this from happening. If you experience it (from old information), we're not going to count it as a bug, but rather a known issue. 
 
-=head1 Problems?
+=head2 MySQL Notes 
+
+=head3 Changing the character set of tables
+
+The following tables should have a character set of, C<utf8> and a collation of C<utf8_bin>
+
+=over
+
+=item * dada_settings
+
+=item * dada_subscribers
+
+=item * dada_profiles
+
+=item * dada_profile_fields
+
+=item * dada_profile_fields_attributes
+
+=item * dada_archives
+
+=back
+
+A quick-and-dirty solution to changing the character sets (if they aren't already in UTF-8) is to just use the following queries: 
+
+ ALTER TABLE `dada_settings` CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin;
+ 
+ ALTER TABLE `dada_profiles` CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin;
+ 
+ ALTER TABLE `dada_subscribers` CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin;
+ 
+ ALTER TABLE `dada_profile_fields` CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin;
+ 
+ ALTER TABLE `dada_profile_fields_attributes` CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin;
+ 
+ ALTER TABLE `dada_archives` CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin;
+
+There are downsides to this approach - most notably - any UTF-8 encoded (erm, kinda-encoded) stuff is going to get double-decoded, 
+when Dada Mail accesses and uses the information. More information: 
+
+L<http://www.mysqlperformanceblog.com/2009/03/17/converting-character-sets/>
+
+=head3 "Specified key was too long; max key length is 1000 bytes", Problem (and Solution)
+
+What's recommended here is to alter some of the fields in some of the tables that make up the MySQL schema. 
+
+The majority of the time, when a field is named, C<email> it looks like this: 
+
+ email text(320),
+
+Changing this field type from, C<text(320)> to, C<varchar(80)> will be both beneficial 
+to this problem, as well as realistic. 
+
+The reason why the email fields were set to a size of, C<320> is that the RFC says 
+that email addresses can be this long. In reality, they never really are. Having a field 
+type this long (especially when using for keys and indexes) tends to muck up things, 
+when you have a utf-8 character set. 
+
+You'll see this field in the table schemas, as well as the table indexes. The 
+advice is to delete the old table indexes, alter your tables for anything that I<had> a field type of, C<text(320)> 
+and make it, C<varchar(80)> and if you want, recreate the table indexes, using what's in the C<dada/extras/mysql_schema.sql> 
+file. 
+
+
+=head1 Other Problems?
 
 Please let us know via the Support Boards: 
 
@@ -174,6 +237,8 @@ L<http://dadamailproject.com/support/boards/>
 Or the developer mailing list: 
 
 L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
+
+We would love to help you out. 
 
 Thanks! 
 

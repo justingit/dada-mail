@@ -6,7 +6,7 @@ value                            text
 
 CREATE TABLE "dada_subscribers" (
 email_id                         serial,
-email                            text,
+email                            varchar(80),
 list                             varchar(16),
 list_type                        varchar(64),
 list_status                      char(1)
@@ -15,11 +15,11 @@ list_status                      char(1)
 
 CREATE TABLE dada_profiles (
 	profile_id			         serial,
-	email                        varchar(320) not null UNIQUE,
+	email                        varchar(80) not null UNIQUE,
 	password                     text,
 	auth_code                    varchar(64),
 	update_email_auth_code       varchar(64),
-	update_email                 varchar(320),
+	update_email                 varchar(80),
 	activated                    char(1)
 );
 
@@ -32,9 +32,9 @@ CREATE TABLE dada_profile_fields (
 CREATE TABLE dada_profile_fields_attributes ( 
 
 attribute_id 				serial,
-field                       varchar(320) UNIQUE,
-label                       varchar(320),
-fallback_value              varchar(320)
+field                       varchar(80) UNIQUE,
+label                       varchar(80),
+fallback_value              varchar(80)
 -- I haven't made the following, but it seems like a pretty good idea... 
 -- sql_col_type              text(16),
 -- default                   mediumtext,
@@ -58,7 +58,7 @@ raw_msg                       text
 
 CREATE TABLE dada_bounce_scores (
 id                            serial, 
-email                         text, 
+email                         varchar(80),
 list                          varchar(16),
 score                         int4 
 ); 
