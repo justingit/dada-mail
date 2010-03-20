@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes (
 	attribute_id int4 not null primary key auto_increment,
 	field                       varchar(80),
 	label                       varchar(80),
-	fallback_value              varchar(80),
+	fallback_value              text,
 -- I haven't made the following, but it seems like a pretty good idea... 
 -- sql_col_type              text(16),
 -- default                   mediumtext,
