@@ -35,7 +35,9 @@ if(param('process')){
 			if(step3()) {  
 				if(step4() ) { 
 					if(step5()) { 
-						print h1('Migration Complete!');					
+						if(step6()) { 
+							print h1('Migration Complete!');					
+						}
 					}
 				}
 			}
@@ -57,13 +59,13 @@ else {
 		<hr /> 
 
 <p>This migration utility will move over your current $DADA::Config::PROGRAM_NAME Subscriber Fields to the
-new database design. Please MAKE SURE to make your own, manual backup of your $DADA::Config::PROGRAM_NAME 
-SQL database, as this migration will remove information. Please see the documentation on this utility for
+new database design. <strong>Please MAKE SURE to make your own, manual backup of your $DADA::Config::PROGRAM_NAME 
+SQL database, as this migration will remove and modify information</strong>. Please see the documentation on this utility for
 more information. </p> 
 
 <form>
 <input type="hidden" name="process" value="1" /> 
-<input type="submit" value="Begin Migration!" />
+<input type="submit" value="I've Backed Everything Up, Begin Migration!" />
 </form> 
 		
 EOF
@@ -102,26 +104,37 @@ sub step1 {
 	}
 	
 	return 1; 
-	print p(i('Done!')); 
+	print p(em('Done!')); 
 	print hr; 
 
 }
 
-sub step2 {
+sub step2 { 
 	
-	print h1('Step #2 Creating Tables:');
+	print h1('Step #2 Adjusting Current Schema:');
+	adjust_current_schema();
+	print p(em('Done!')); 
+	print hr;
+	return 1;
+
+}
+
+
+sub step3{
+	
+	print h1('Step #3 Creating Tables:');
 	THREEOHCOMPAT::create_tables();
-	print p(i('Done!')); 
+	print p(em('Done!')); 
 	print hr;
 	return 1; 
 }
 
 
-sub step3 { 
+sub step4 { 
 	
 	my $fbv = THREEOHCOMPAT::threeoh_get_fallback_field_values(); 
 	
-	print h1('Step #3 Migrating Fields:');
+	print h1('Step #4 Migrating Fields:');
 	require DADA::ProfileFieldsManager; 
 	my $dpfm = DADA::ProfileFieldsManager->new; 
 	foreach(@{THREEOHCOMPAT::threeoh_subscriber_fields()}){ 
@@ -135,27 +148,89 @@ sub step3 {
 	
 	
 	
-	print p(i('Done!')); 
+	print p(em('Done!')); 
 	print hr;
 	return 1;
 }
 
-sub step4 { 
-	print h1('Step #4 Moving Subscriber Profile Fields Information Over:');
-	THREEOHCOMPAT::move_profile_info_over();
-	print p(i('Done!')); 
-	print hr;
-	return 1; 
-}
-
 sub step5 { 
-
-	print h1('Step #5 Removing Old Subscriber Fields Information');
-	THREEOHCOMPAT::remove_old_profile_info();
-	print p(i('Done!')); 
+	print h1('Step #5 Moving Subscriber Profile Fields Information Over:');
+	THREEOHCOMPAT::move_profile_info_over();
+	print p(em('Done!')); 
 	print hr;
 	return 1; 
 }
+
+sub step6 { 
+
+	print h1('Step #6 Removing Old Subscriber Fields Information');
+	THREEOHCOMPAT::remove_old_profile_info();
+	print p(em('Done!')); 
+	print hr;
+	return 1; 
+}
+
+sub adjust_current_schema { 
+	
+	my @sql_statements = (); 
+	my $problems       = 0; 
+	
+	if($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql') { 	
+		# This table isn't in 3.x, so no need to update it: 
+		# 
+		# 'ALTER TABLE `dada_profile_fields` CHANGE `email` `email` VARCHAR( 80 )'
+		# 'ALTER TABLE `dada_profile_fields` CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin',
+		
+		# Needy Database is Needy. 
+		# 
+		@sql_statements = (
+			'ALTER TABLE `dada_subscribers`     DROP INDEX `dada_subscribers_all_index`', 
+		 	'ALTER TABLE `dada_archives`        DROP INDEX `dada_subscribers_all_index`', 
+		
+			'ALTER TABLE `dada_bounce_scores`  CHANGE `email` `email` VARCHAR( 80 )',
+			'ALTER TABLE `dada_profiles`       CHANGE `email` `email` VARCHAR( 80 )',
+			'ALTER TABLE `dada_subscribers`    CHANGE `email` `email` VARCHAR( 80 )',
+		
+			'ALTER TABLE `dada_archives`       CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin',
+		    'ALTER TABLE `dada_profiles`       CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin',
+			'ALTER TABLE `dada_settings`       CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin',
+		    'ALTER TABLE `dada_subscribers`    CONVERT TO CHARACTER SET utf8 COLLATE utf8_bin',
+		
+		);
+	}
+	elsif($DADA::Config::SQL_PARAMS{dbtype} eq 'Pg') { 
+		@sql_statements = (
+			'ALTER TABLE dada_bounce_scores  ALTER COLUMN email TYPE VARCHAR( 80 )',
+			'ALTER TABLE dada_profiles       ALTER COLUMN email TYPE VARCHAR( 80 )',
+			'ALTER TABLE dada_subscribers    ALTER COLUMN email TYPE VARCHAR( 80 )',
+			# No need to alter the tables here for charset - charset is set Database-wide
+		);		
+	}
+	elsif($DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite') { 
+			# Well, not going to worry about it! (You can't) 
+	}
+	
+
+	foreach my $query (@sql_statements) { 
+		eval { 
+			$dbh->do($query) 
+				or die $dbh->errstr; 	
+		};
+		if($@){ 
+			$problems++; 
+		}
+	}
+
+	if($problems >= 1){ 
+		return 0; 
+	}
+	else { 
+		return 1; 
+	}
+
+}
+
+
 
 
 package THREEOHCOMPAT;
@@ -255,11 +330,13 @@ sub create_tables {
 	}
 	 print '</div>'; 
 	 print '</pre>'; 
+	
 	return 1; 
 }
 
 
 sub move_profile_info_over { 
+	
 	my @fields = ('email', @{threeoh_subscriber_fields()});
 	my $query = 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{profile_fields_table} . ' (' . join(', ', @fields) . ' ) ';
 	
@@ -312,20 +389,11 @@ sub threeoh_columns {
 
 sub threeoh_subscriber_fields { 
 
-   #my $self = shift;
     my ($args) = @_; 
     
 	my $l = [] ;
 	
-	#if(exists( $self->{cache}->{subscriber_fields} ) ) { 
-	#	$l = $self->{cache}->{subscriber_fields};
-	#} 
-	#else { 
-    	# I'm assuming, "columns" always returns the columns in the same order... 
-	    #$l = $self->columns;
 	 $l = threeoh_columns();
-	 #   $self->{cache}->{subscriber_fields} = $l; 
-    #}
 
 
     if(! exists($args->{-show_hidden_fields})){ 
@@ -401,15 +469,7 @@ sub threeoh_remove_subscriber_field {
         croak "You MUST pass a field name in, -field!"; 
     }
     $args->{-field} = lc($args->{-field}); 
-    
-    #$self->validate_remove_subscriber_field_name(
-    #    {
-    #    -field      => $args->{-field}, 
-    #    -die_for_me => 1, 
-    #    }
-    #); 
-   
-        
+ 
     my $query =  'ALTER TABLE '  . $DADA::Config::SQL_PARAMS{subscriber_table} . 
                 ' DROP COLUMN ' . $args->{-field}; 
     
@@ -418,8 +478,6 @@ sub threeoh_remove_subscriber_field {
     my $rv = $sth->execute() 
         or croak "cannot do statement! (at: remove_subscriber_field) $DBI::errstr\n";   
  	
-	# I don't know if I *really* want this to be done, 
-	# $self->_remove_fallback_value({-field => $args->{-field}}); 
 	
 	return 1; 
 	
@@ -458,18 +516,29 @@ sub threeoh_get_fallback_field_values {
 
 The SQL table schema between Dada Mail 3.0 and Dada Mail 4.0 has changed. 
 
-Most importantly, Profile Subscriber Fields that were once saved in the, 
+=head2 Information Saved Differently 
+
+Profile Subscriber Fields that were once saved in the, 
 C<dada_subscribers> table now are saved in a few different tables: C<dada_profiles> and C<dada_profile_fields>. 
 
 Attributes of the fields themselves, mostly the, "fallback" value, was saved in the list settings (for some bizarre reason). This information is now saved in the,  ,C<dada_profile_fields_attributes> table. 
 
+=head2 Table Schema Datatypes
+
+Many table column data types have changed, to better work with UTF-8/unicode encoding
+
+=head2 Character Set/Encoding Changes
+
+Some tables now need to have a character set of, B<utf-8>
+
+
 This utility creates any missing tables, moves the old Profile Subscriber 
-Fields information to the new tables and removes the old information. It does a very good job and hopefully, it's smooth sailing to use. 
+Fields information to the new tables and removes the old information. 
 
 
 =head1 REQUIREMENTS
 
-This utility should only be used when B<upgrading> Dada Mail to version 4. 
+This utility should only be used when B<upgrading> Dada Mail to version 4, from version 3, or version 2 of Dada Mail. 
 
 This utility should also, only be used if you're using the SQL Backend. 
 If you are not using the B<SQL> Backend, you would not need this utility. 
@@ -498,7 +567,11 @@ From there, migration should be straightforward. Follow the directions in your b
 
 Once the migration is complete, please B<REMOVE> this utility from your hosting account. 
 
-=head1 A BIG WARNING ABOUT THIS MIGRATION TOOL AND LOST INFORMATION
+=head1 A BIG WARNING ABOUT THIS MIGRATION TOOL AND LOST/CORRUPTED INFORMATION
+
+We don't want you to lose information that's valuable to you. 
+
+Please read this entire section, to understand what's going to happen. 
 
 A major major huge change between Dada Mail 3.0 and 4.0 is that Subscriber Profile Fields information that used to be different per subscriber, per I<list> is now shared between lists. 
 
@@ -512,12 +585,18 @@ Dada Mail 4.0 also has the ability to allow your subscribers to change their own
 
 If you have a subscription field that's unique to each subscriber, for each list, you're going to be out of luck. We don't have a good workaround for that.
 
-=head2 MySQL problems 
+This utility will also CHANGE the CHARACTER SET of some of the tables in the schema, to, C<utf8>. If you were using Dada Mail and have non-Latin1 characters in your database, these characters will potentially be corrupted. If this is not something you want, please change convert and change the character set manually. The following tables need to be modified: 
 
-=head3 Specified key was too long - Errors? 
+=over
 
-The character set on my of the tables has been changed to, UTF-8, so if you do get this error when converting from 3 -> 4, there may be some steps you have to do, before running the migration script (again): 
+=item * dada_archives   
 
-http://dadamailproject.com/support/documentation-4_0_3/features-UTF-8.pod.html
+=item * dada_profiles   
+
+=item * dada_settings
+ 
+=item * dada_subscribers
+
+=back
 
 =cut
