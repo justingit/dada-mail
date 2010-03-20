@@ -25,7 +25,7 @@ CREATE TABLE dada_profiles (
 
 CREATE TABLE dada_profile_fields (
 	fields_id			         serial,
-	email                        varchar(320) not null UNIQUE
+	email                        varchar(80) not null UNIQUE
 );
 
 
@@ -34,7 +34,7 @@ CREATE TABLE dada_profile_fields_attributes (
 attribute_id 				serial,
 field                       varchar(80) UNIQUE,
 label                       varchar(80),
-fallback_value              varchar(80)
+fallback_value              text
 -- I haven't made the following, but it seems like a pretty good idea... 
 -- sql_col_type              text(16),
 -- default                   mediumtext,
