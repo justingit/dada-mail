@@ -167,6 +167,40 @@ that will stop this from happening. If you experience it (from old information),
 
 =head2 MySQL Notes 
 
+
+=head3 "Specified key was too long; max key length is 1000 bytes", Problem (and Solution)
+
+What's recommended here is to alter some of the fields in some of the tables that make up the MySQL schema. 
+
+The majority of the time, when a field is named, C<email> it looks like this: 
+
+ email text(320),
+
+Changing this field type from, C<text(320)> to, C<varchar(80)> will be both beneficial 
+to this problem, as well as realistic. 
+
+The reason why the email fields were set to a size of, C<320> is that the RFC says 
+that email addresses can be this long. In reality, they never really are. Having a field 
+type this long (especially when using for keys and indexes) tends to muck up things, 
+when you have a utf-8 character set. 
+
+You'll see this field in the table schemas, as well as the table indexes. The 
+advice is to delete the old table indexes, alter your tables for anything that I<had> a field type of, C<text(320)> 
+and make it, C<varchar(80)> and if you want, recreate the table indexes, using what's in the C<dada/extras/mysql_schema.sql> 
+file.
+
+Here's some SQL that should remove those indexes: 
+
+ ALTER TABLE `dada_subscribers` DROP INDEX `dada_subscribers_all_index`;
+ ALTER TABLE `dada_archives`    DROP INDEX `dada_subscribers_all_index`;
+
+Here's some SQL that should work on changing the field types: 
+
+ ALTER TABLE `dada_bounce_scores`  CHANGE `email` `email` VARCHAR( 80 );
+ ALTER TABLE `dada_profiles`       CHANGE `email` `email` VARCHAR( 80 );
+ ALTER TABLE `dada_profile_fields` CHANGE `email` `email` VARCHAR( 80 );
+ ALTER TABLE `dada_subscribers`    CHANGE `email` `email` VARCHAR( 80 );
+
 =head3 Changing the character set of tables
 
 The following tables should have a character set of, C<utf8> and a collation of C<utf8_bin>
@@ -205,27 +239,6 @@ There are downsides to this approach - most notably - any UTF-8 encoded (erm, ki
 when Dada Mail accesses and uses the information. More information: 
 
 L<http://www.mysqlperformanceblog.com/2009/03/17/converting-character-sets/>
-
-=head3 "Specified key was too long; max key length is 1000 bytes", Problem (and Solution)
-
-What's recommended here is to alter some of the fields in some of the tables that make up the MySQL schema. 
-
-The majority of the time, when a field is named, C<email> it looks like this: 
-
- email text(320),
-
-Changing this field type from, C<text(320)> to, C<varchar(80)> will be both beneficial 
-to this problem, as well as realistic. 
-
-The reason why the email fields were set to a size of, C<320> is that the RFC says 
-that email addresses can be this long. In reality, they never really are. Having a field 
-type this long (especially when using for keys and indexes) tends to muck up things, 
-when you have a utf-8 character set. 
-
-You'll see this field in the table schemas, as well as the table indexes. The 
-advice is to delete the old table indexes, alter your tables for anything that I<had> a field type of, C<text(320)> 
-and make it, C<varchar(80)> and if you want, recreate the table indexes, using what's in the C<dada/extras/mysql_schema.sql> 
-file. 
 
 
 =head1 Other Problems?
