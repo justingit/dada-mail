@@ -15,6 +15,22 @@ in re: to the SQL schemas. The schemas for all supported SQL backends have been
 modified to better work, mostly by changing fields with type, C<text(320), to type, 
 C<varchar(80)>. Other notes have been added to the UTF-8 FAQ. 
 
+=head4 dada3_to_dada4_sql.pl changes
+
+Along with looking into changing the default schema in Dada Mail, the v3 to v4
+migration script will now make the necessary schema and character set changes. 
+
+The character encoding changes and SQL schema changes could potentially be desctructive, 
+so we do, in fact, highly encourage you to make a backup of the entire database, 
+before running the migration tool. Most notably, the character encoding change 
+does not work perfectly. If your data contains a lot of non-Latin1 characters, we'd 
+highly suggest you do your own ASCII/Latin1 to UTF-8 migration, before upgrading 
+your Dada Mail. 
+
+If you are running a verion of Dada Mail 4.0.0 to 4.0.3, you'll still need to 
+make those schema changes manually if you're having trouble (exactly what to do, 
+including example SQL is located in the UTF-8 FAQ). 
+
 =head2 Bug Fixes 4.0.4
 
 =head3 "Save, Then Test Your Sending Preferences..." button broken in Sending Preferences
