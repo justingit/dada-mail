@@ -3857,7 +3857,7 @@ $HTML_CONFIRMATION_MESSAGE ||= <<EOF
 <blockquote>
  <p>
   <strong>
-  <!-- list_settings.list_name -->
+  <!-- tmpl_var list_settings.list_name -->
   </strong>
  </p>
 </blockquote>
@@ -3875,7 +3875,7 @@ address: </p>
  <blockquote>
  <p>
   <strong>
-   <a href="mailto:<!-- list_settings.list_owner_email -->">
+   <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->">
     <!-- tmpl_var list_settings.list_owner_email -->
    </a>
   </strong>
@@ -3945,7 +3945,7 @@ $HTML_UNSUB_CONFIRMATION_MESSAGE ||= <<EOF
 <blockquote>
  <p>
   <strong>
-  <!-- list_settings.list_name -->
+  <!-- tmpl_var list_settings.list_name -->
   </strong>
  </p>
 </blockquote>
