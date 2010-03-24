@@ -5,8 +5,6 @@ use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib);
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 use dada_test_config; 
 
-use Test::More qw(no_plan); 
-
 
 use DADA::Config; 
 use DADA::Template::Widgets; 
@@ -612,6 +610,42 @@ else {
 }
 ok(!$@, "Good! The simple doc example doesn't give back and error!"); 
 like($r, qr/Dear/); 
+
+
+SKIP: {
+
+    skip "Multiple Subscriber Profile Fields is not supported with this current backend." 
+        if $lh->can_have_subscriber_fields == 0; 
+
+		 require DADA::ProfileFieldsManager;
+		 my $pfm = DADA::ProfileFieldsManager->new;
+		 	$pfm->add_field(
+				{
+					-field          => 'field1', 
+					-fallback_value => 'fallback value for field 1',
+					-label          => 'Field 1!', 
+				}
+			);
+	$scalar = '<!-- tmpl_var subscriber.field1 -->';
+	my $str = DADA::Template::Widgets::screen(
+		{ 
+			-data => \$scalar, 
+			-subscriber_vars_param    => {
+				-list              => $list, 
+				-use_fallback_vars => 1
+			},
+		}
+	); 
+	ok($str eq 'fallback value for field 1', 'fallback field stuff is working!');
+		
+		
+		
+};
+
+
+
+
+
 
 
 
