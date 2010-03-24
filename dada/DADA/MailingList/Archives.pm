@@ -1797,17 +1797,11 @@ sub massaged_msg_for_display {
 
     my ( $subject, $message, $format, $raw_msg ) =
       $self->get_archive_info( $args{-key} );
-	
-	
-#	die $raw_msg ;
-
 
     if ( !$raw_msg ) {
         $raw_msg = $self->_bs_raw_msg( $subject, $message, $format );
     }
 
-
-	
 	# encoding is done in this method... 
     my $entity = $self->_entity_from_raw_msg(
 		$raw_msg
