@@ -1572,6 +1572,7 @@ sub screen {
 	
 				if(exists($args->{-subscriber_vars_param}->{-use_fallback_vars})){ 
 					if($args->{-subscriber_vars_param}->{-use_fallback_vars} == 1){ 
+						
 						require DADA::MailingList::Subscribers;
 					  	my $lh = DADA::MailingList::Subscribers->new(
 									{
@@ -1579,8 +1580,11 @@ sub screen {
 		                         	}
 								);
 		
-								my $fallback_vars = $lh->get_all_field_attributes; 
-					
+								my $field_attrs = $lh->get_all_field_attributes; 
+								my $fallback_vars = {}; 
+								foreach(keys %$field_attrs){ 
+									$fallback_vars->{'subscriber.' . $_} = $field_attrs->{$_}->{fallback_value};
+								}
 						# This is sort of an odd placement for this, but I'm not sure 
 						# Where I want this yet...  (perhaps $lh->get_fallback_values ?)
 							if(!exists($args->{-subscriber_vars}->{'subscriber.email'})){ 
@@ -1593,16 +1597,15 @@ sub screen {
 						### /
 
 						foreach(keys %$fallback_vars){ 
-							if(! exists($args->{-subscriber_vars}->{$_})){ 
-								
+							if(! exists($args->{-subscriber_vars}->{$_})){ 	
 								#warn "I'm putting in a fallback field $_ that equals: " . $fallback_vars->{$_}; 
-								
 								$args->{-subscriber_vars}->{$_} = $fallback_vars->{$_};
 							}	
 							else  { 
 								#warn "no need for the fallback var! We're good with: " . $args->{-subscriber_vars}->{$_}; 
 							}
 						}
+
 					}	
 					
 				}#if(exists($args->{-subscriber_vars_param}->{-use_fallback_vars}){
@@ -1610,6 +1613,14 @@ sub screen {
 
 			if(exists($args->{-subscriber_vars_param}->{-use_fallback_vars})){ 
 				if($args->{-subscriber_vars_param}->{-use_fallback_vars} == 1){ 
+					# DEV: This is a really really REALLY good place to put an optimization - 
+					# No caching is currently done, either by this module, or another. 
+					# That's no good! 
+					# At the very least, we could put caching in 
+					# DADA::ProfileFieldsManager and just keep that around... 
+					# Ugh. 
+					# 
+					
 					require DADA::MailingList::Subscribers;
 				  	my $lh = DADA::MailingList::Subscribers->new(
 								{
