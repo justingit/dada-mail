@@ -594,7 +594,7 @@ This utility will also CHANGE the CHARACTER SET of some of the tables in the sch
 =item * dada_profiles   
 
 =item * dada_settings
- 
+
 =item * dada_subscribers
 
 =back
