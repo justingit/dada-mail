@@ -12,7 +12,7 @@
 
 Some compatibility issues cropped up, regarding UTF-8/unicode character set/encoding 
 in re: to the SQL schemas. The schemas for all supported SQL backends have been 
-modified to better work, mostly by changing fields with type, C<text(320), to type, 
+modified to better work, mostly by changing fields with type, C<text(320)>, to type, 
 C<varchar(80)>. Other notes have been added to the UTF-8 FAQ. 
 
 =head4 dada3_to_dada4_sql.pl changes
