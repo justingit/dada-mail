@@ -1558,14 +1558,20 @@ sub screen {
 	                         	}
 							); 
               		
-
-	                $args->{-subscriber_vars} = $lh->get_subscriber(
-	                                                {
-	                                                    -email  => $args->{-subscriber_vars_param}->{-email}, 
-	                                                    -type   => $args->{-subscriber_vars_param}->{-type},
-	                                                    -dotted => 1, 
-	                                                }
-	                                            ); 
+					# What happens if we pass an email address that's not valid? 
+					eval { 
+		                $args->{-subscriber_vars} = $lh->get_subscriber(
+		                                                {
+		                                                    -email  => $args->{-subscriber_vars_param}->{-email}, 
+		                                                    -type   => $args->{-subscriber_vars_param}->{-type},
+		                                                    -dotted => 1, 
+		                                                }
+		                                            ); 
+					};
+					if($@){ 
+						$args->{-subscriber_vars} = {};
+						carp $@; 
+					}
                 }
 
             } #if(!exists($args->{-subscriber_vars})){ 
@@ -1587,6 +1593,7 @@ sub screen {
 								}
 						# This is sort of an odd placement for this, but I'm not sure 
 						# Where I want this yet...  (perhaps $lh->get_fallback_values ?)
+						
 							if(!exists($args->{-subscriber_vars}->{'subscriber.email'})){ 
 								$fallback_vars->{'subscriber.email'} = 'example@example.com'; 
 							}
@@ -1620,6 +1627,9 @@ sub screen {
 					# DADA::ProfileFieldsManager and just keep that around... 
 					# Ugh. 
 					# 
+					# Updated: At least in the mass mailing stuff, -use_fallback_vars param is not called, 
+					# The fallback field stuff is done with a cached copy of DADA::ProfileFieldsManager
+					# That's a good thing.
 					
 					require DADA::MailingList::Subscribers;
 				  	my $lh = DADA::MailingList::Subscribers->new(
