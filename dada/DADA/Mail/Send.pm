@@ -166,17 +166,11 @@ sub _init {
 				
         $self->{merge_fields} = $merge_fields;
 		
-		# if($DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/) { 
 			
 			require DADA::ProfileFieldsManager; 
 			my $pfm = DADA::ProfileFieldsManager->new; 
         	$self->{field_attr} = $pfm->get_all_field_attributes(); 
        		undef $lh; 
-		#}
-		#else { 
-		#    $self->{field_attr} = {};
-    	#
-		#}
 
 	}
  }
@@ -2600,7 +2594,13 @@ sub _mail_merge {
         
     my $i = 0;
     for($i=0; $i<=$#$merge_fields; $i++){ 
-    
+   
+		# DEV: Euh - this is basically doing what I want - 
+		# caching the fallback field stuff, 
+		# so that we only grab this info once, and reuse it. 
+		# this stops multiple calls to the DADA::ProfileFieldsManager->get_all_field_attributes method
+		# which is good. 
+		
         if(DADA::App::Guts::strip($args->{-data}->[$i])){
             $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $data->[$i];       
         }
