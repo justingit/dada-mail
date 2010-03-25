@@ -617,8 +617,8 @@ SKIP: {
     skip "Multiple Subscriber Profile Fields is not supported with this current backend." 
         if $lh->can_have_subscriber_fields == 0; 
 
-		 require DADA::ProfileFieldsManager;
-		 my $pfm = DADA::ProfileFieldsManager->new;
+	require DADA::ProfileFieldsManager;
+	my $pfm = DADA::ProfileFieldsManager->new;
 		 	$pfm->add_field(
 				{
 					-field          => 'field1', 
@@ -626,19 +626,112 @@ SKIP: {
 					-label          => 'Field 1!', 
 				}
 			);
+			
+	# This test makes sure fallback fields are used, 
+	# if nothing else is given (not even a subscriber) 
 	$scalar = '<!-- tmpl_var subscriber.field1 -->';
-	my $str = DADA::Template::Widgets::screen(
+    $r = DADA::Template::Widgets::screen(
 		{ 
 			-data => \$scalar, 
 			-subscriber_vars_param    => {
-				-list              => $list, 
-				-use_fallback_vars => 1
+				-list                 => $list, 
+				-use_fallback_vars     => 1
 			},
 		}
 	); 
-	ok($str eq 'fallback value for field 1', 'fallback field stuff is working!');
-		
-		
+	ok($r eq 'fallback value for field 1', 'fallback field stuff is working!');
+	undef $scalar; 
+	undef $r;
+	
+	# This test makes sure there fallback fields are used, 
+	# even if there is a subscriber (but no field value) 
+	
+	#
+	# I'm curious: 
+	# What happens if we give this a email address that isn't subscribed?
+	$scalar = '<!-- tmpl_var subscriber.field1 -->';
+    $r = DADA::Template::Widgets::screen(
+		{ 
+			-data => \$scalar, 
+			-subscriber_vars_param => {
+				-list              => $list, 
+				-use_fallback_vars => 1,
+	            -email             => 'made up', 
+	            -type              => 'list',
+			},
+		}
+	); 
+	ok($r eq 'fallback value for field 1', 'fallback field stuff is working!');
+	undef $scalar; 
+	undef $r;
+	
+	
+	
+	
+	# This test makes sure there fallback fields are used, 
+	# even if there is a subscriber (but no field value) 
+	my $email = 'fallbackfieldtest@example.com'; 
+	$lh->add_subscriber(
+       { 
+             -email         => $email,
+             -type          => 'list', 
+             -fields        =>  {}, # no values for this. 
+        }
+    );
+	$scalar = '<!-- tmpl_var subscriber.field1 -->';
+    $r = DADA::Template::Widgets::screen(
+		{ 
+			-data => \$scalar, 
+			-subscriber_vars_param => {
+				-list              => $list, 
+				-use_fallback_vars => 1,
+	            -email             => $email, 
+	            -type              => 'list',
+			},
+		}
+	); 
+	ok($r eq 'fallback value for field 1', 'fallback field stuff is working!');
+	undef $scalar; 
+	undef $r;
+	undef $email; 
+	
+	
+
+	
+	
+	# This test makes sure there fallback fields aren't used, 
+	# if there is a subscriber, with value in the field. 
+	$email = 'fallbackfieldtest2@example.com'; 
+	my $field1_value = 'fallbackfieldtest2 field value!'; 
+	$lh->add_subscriber(
+       { 
+             -email         => $email,
+             -type          => 'list', 
+             -fields        =>  {
+				field1      => $field1_value, 
+			}, 
+        }
+    );
+	$scalar = '<!-- tmpl_var subscriber.field1 -->';
+    $r = DADA::Template::Widgets::screen(
+		{ 
+			-data => \$scalar, 
+			-subscriber_vars_param => {
+			   -list              => $list, 
+	           -email             => $email, 
+	           -type              => 'list',
+ 			   -use_fallback_vars => 1,
+			},
+		}
+	); 
+	diag $r; 
+	ok($r eq $field1_value, 'fallback field was not used');
+	undef $scalar; 
+	undef $r;
+	undef $email; 
+	
+	
+	
 		
 };
 
