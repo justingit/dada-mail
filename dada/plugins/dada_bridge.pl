@@ -671,11 +671,12 @@ sub cgi_mod {
         print "<p>Message appears to be valid and exists</p>";
 
         if ( $q->param('process') eq 'confirm' ) {
+			my $g_msg = $mod->get_msg( { -msg_id => $msg_id } ); 
             process(
                 {
                     -list => $list,
                     -ls   => $ls,
-                    -msg  => $mod->get_msg( { -msg_id => $msg_id } ),
+                    -msg  => \$g_msg,
                 }
             );
 
@@ -4334,7 +4335,7 @@ sub moderation_msg {
     my $li = $ls->get;
 
     my $parser = $args->{ -parser };
-    my $entity = $parser->parse_data(safely_encode( $args->{ -msg } ));
+    my $entity = $parser->parse_data(DADA::App::Guts::safely_encode( $args->{ -msg } ));
 
     my $confirmation_link =
       $Plugin_Config->{Plugin_URL}
@@ -4400,7 +4401,7 @@ sub moderation_msg {
         $reply->attach(
             Type        => 'message/rfc822',
             Disposition => "inline",
-            Data        => safely_decode(safely_encode($entity->as_string)),
+            Data        => DADA::App::Guts::safely_decode(DADA::App::Guts::safely_encode($entity->as_string)),
         );
 
         # send the message
@@ -4459,7 +4460,7 @@ sub send_moderation_msg {
     eval {
         $entity =
           $parser->parse_data(
-		 safely_encode( 
+		 DADA::App::Guts::safely_encode( 
 
             	$self->get_msg( { -msg_id => $args->{ -msg_id } } )) );
     };
@@ -4535,7 +4536,7 @@ sub send_accept_msg {
     eval {
         $entity =
           $parser->parse_data(
-			safely_encode(
+			DADA::App::Guts::safely_encode(
 			        	$self->get_msg( 
 					{ 
 						-msg_id => $args->{ -msg_id } } )) );
@@ -4610,7 +4611,7 @@ sub send_reject_msg {
     eval {
         $entity =
           $parser->parse_data(
-			safely_encode(
+			DADA::App::Guts::safely_encode(
             $self->get_msg( { -msg_id => $args->{ -msg_id } } ) ));
 
     };
