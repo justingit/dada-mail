@@ -33,6 +33,18 @@ including example SQL is located in the UTF-8 FAQ).
 
 =head2 Bug Fixes 4.0.4
 
+=head3 Dada Bridge will always say that SpamAssassin isn't available
+
+http://github.com/justingit/dada-mail/issues/closed#issue/34
+
+=head3 Moderation broken on Dada Bridge
+
+http://github.com/justingit/dada-mail/issues/closed#issue/33
+
+=head3 Fallback Variables aren't used. 
+
+http://github.com/justingit/dada-mail/issues/closed#issue/32
+
 =head3 "Save, Then Test Your Sending Preferences..." button broken in Sending Preferences
 
 http://github.com/justingit/dada-mail/issues/closed#issue/31
