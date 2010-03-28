@@ -320,21 +320,23 @@ ok($status == 1, "status returning 1");
 wait_for_msg_sending(); 
 
 $sent_msg =  slurp($mh->test_send_file); 
-#$orig_entity = $parser->parse_data($msg);
-#$sent_entity = $parser->parse_data($sent_msg);
-#my $sent_sub = MIME::EncWords::decode_mimewords($sent_entity->head->get('Subject', 0), Charset => '_UNICODE_');
-#my $qm_subject = quotemeta('[dadatest]'); 
-#like($sent_sub, qr/^$qm_subject/, "list short name appeneded to Subject! ($sent_sub)"); 
-
-
-print safely_encode($sent_msg); 
-
-
-
-#use Data::Dumper; 
-#print Data::Dumper::Dumper($sent_msg); 
+# so this does nothing but make sure we're... still alive? 
+# Great .
 ok (1 ==1); 
-#die $mh->test_send_file;
+
+undef $msg; 
+undef $status; 
+undef $errors; 
+undef $sent_msg; 
+
+# Moderation! 
+# WOO!.
+
+
+
+
+
+
 
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
