@@ -4016,7 +4016,7 @@ Mailing List Security
        </label></p> 
       
        
-        <!-- tmpl_unless list_settings.can_use_spam_assassin --> 
+        <!-- tmpl_unless can_use_spam_assassin --> 
           <p class="error">* SpamAssassin may not be installed on your server.</p>
         <!--/tmpl_unless--> 
       
