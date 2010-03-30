@@ -2275,14 +2275,14 @@ sub sending_preferences {
         require DADA::Template::Widgets;
         $scrn .= DADA::Template::Widgets::screen({-screen => 'sending_preferences_screen.tmpl', 
                                                 -vars   => {
-															screen                 => 'sending_preferences',
-															title                  => 'Sending Preferences', 															
-                                                            done                   => $done, 
-                                                            no_smtp_server_set     => $no_smtp_server_set, 
+															screen                         => 'sending_preferences',
+															title                          => 'Sending Preferences', 															
+                                                            done                           => $done, 
+                                                            no_smtp_server_set             => $no_smtp_server_set, 
                                                             
-                                                            mechanism_popup     => $mechanism_popup, 
-                                                            can_use_ssl         => $can_use_ssl, 
-                                                            can_use_smtp_ssl    => $can_use_smtp_ssl, 
+                                                            mechanism_popup                => $mechanism_popup, 
+                                                            can_use_ssl                    => $can_use_ssl, 
+                                                            can_use_smtp_ssl               => $can_use_smtp_ssl, 
 															'list_settings.pop3_username'  => $li->{pop3_username}, 
                                                             decrypted_pop3_pass => $decrypted_pop3_pass, 
 															wrong_uid           => $wrong_uid, 
