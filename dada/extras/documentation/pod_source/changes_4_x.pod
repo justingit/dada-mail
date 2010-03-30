@@ -31,7 +31,43 @@ If you are running a verion of Dada Mail 4.0.0 to 4.0.3, you'll still need to
 make those schema changes manually if you're having trouble (exactly what to do, 
 including example SQL is located in the UTF-8 FAQ). 
 
+=head2 CPAN Modules 4.0.4
+
+=over
+
+=item * CGI::Sessoion upgrade to: 4.42
+
+CGI::Session handles all session management in Dada Mail. 
+
+=item * List-Utils Scalar-Utils
+
+The CPAN perl modules, Scalar::Util and List::Util are included with Dada Mail, but aren't actively used (and are probably outdated),
+ so that any server-wide installed versions will be used, instead. This is because the XS versions of these modules are needed for POP/SMTP 
+SSL connections and having these usable by default, breaks SSL connections. The directories, 
+
+ dada/DADA/perllib/List
+
+and, 
+
+ dada/DADA/perllib/Scalar
+
+have been renamed, 
+
+ dada/DADA/perllib/List-remove_to_install
+
+and, 
+
+ dada/DADA/perllib/Scalar-remove_to_install
+
+renaming them back to their original name will make them, "active"
+
+=back
+
 =head2 Bug Fixes 4.0.4
+
+=head3 "Use Secure Sockets Layer (SSL)" option sometimes not available, even though appropriate CPAN module installed
+
+http://github.com/justingit/dada-mail/issues/#issue/35
 
 =head3 Dada Bridge will always say that SpamAssassin isn't available
 
