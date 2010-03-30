@@ -966,6 +966,7 @@ sub cgi_default {
                 Manual_Run_Passcode => $Plugin_Config->{Manual_Run_Passcode},
 
                 curl_location => $curl_location,
+				can_use_ssl   => $can_use_ssl, 
                 saved         => $q->param('saved'),
 
             },
