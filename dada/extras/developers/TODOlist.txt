@@ -11,7 +11,10 @@ Key:
 [?] Someday
 
 [ ] Perhaps think of replacing Crypt::CipherSaber with something a little more modern... 
-
+	Had another problem with this - Crypte::CipherSaber wasn't working - thinking it may 
+	be the encoding stuff? Crypt::CBC could possibly be a better candidate - or at least
+	give the user a choice as to which one to use. 
+	
 
 
 [x] mailing list headers - perhaps make the unsub header one-click? Hotmail likes to at least have this as an option - right now it just takes you to the unsub page... 
