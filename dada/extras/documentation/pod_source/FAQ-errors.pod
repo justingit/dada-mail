@@ -565,6 +565,27 @@ The directory that you specified in the Config.pm as the place to put your lists
 
 Just to reiterate, this is a B<directory> not a B<file>. All sorts of files are going to be written inside this directory, so be ready., 
 
+=head2 is only avaliable with the XS version
+
+This problems comes to the surface when attempting to use the default CAPTCHA backend, as well as attempting to use the SMTP over SSL
+
+
+This is a problem with the copies of C<Scalar::Util> and, C<List::Util> CPAN modules that come with Dada Mail. 
+
+See if you have the following directories: 
+
+I<dada/DADA/perllib/Scalar>
+
+I<dada/DADA/perllib/List>
+
+If so, renamed them: 
+
+I<dada/DADA/perllib/Scalar-bak>
+
+I<dada/DADA/perllib/List-bak>
+
+and see if this problem clears up. 
+
 
 =head2 I get the 'Congratulations' startup screen, but ... 
 
