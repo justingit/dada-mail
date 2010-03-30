@@ -1,6 +1,6 @@
 package CGI::Session::Driver::db_file;
 
-# $Id: db_file.pm 394 2008-03-22 02:35:30Z markstos $
+# $Id$
 
 use strict;
 
@@ -13,7 +13,7 @@ use Fcntl qw( :DEFAULT :flock );
 use vars qw( @ISA $VERSION $FILE_NAME $UMask $NO_FOLLOW );
 
 @ISA         = ( "CGI::Session::Driver" );
-$VERSION     = '4.30';
+$VERSION     = '4.38';
 $FILE_NAME   = "cgisess.db";
 $UMask       = 0660;
 $NO_FOLLOW   = eval { O_NOFOLLOW } || 0;

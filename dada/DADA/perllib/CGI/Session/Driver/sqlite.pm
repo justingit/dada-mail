@@ -1,6 +1,6 @@
 package CGI::Session::Driver::sqlite;
 
-# $Id: sqlite.pm 394 2008-03-22 02:35:30Z markstos $
+# $Id$
 
 use strict;
 
@@ -9,7 +9,7 @@ use base 'CGI::Session::Driver::DBI';
 use DBI qw(SQL_BLOB);
 use Fcntl;
 
-$CGI::Session::Driver::sqlite::VERSION    = '4.30';
+$CGI::Session::Driver::sqlite::VERSION    = '4.41';
 
 sub init {
     my $self = shift;
@@ -50,7 +50,7 @@ sub store {
 sub DESTROY {
     my $self = shift;
 
-    unless ( $self->{Handle} -> ping ) {
+    unless ( defined( $self->{Handle} ) && $self->{Handle} -> ping ) {
         $self->set_error(__PACKAGE__ . '::DESTROY(). Database handle has gone away');
         return;
 	}

@@ -1,12 +1,12 @@
 package CGI::Session::ID::md5;
 
-# $Id: md5.pm 394 2008-03-22 02:35:30Z markstos $
+# $Id$
 
 use strict;
 use Digest::MD5;
 use CGI::Session::ErrorHandler;
 
-$CGI::Session::ID::md5::VERSION = '4.30';
+$CGI::Session::ID::md5::VERSION = '4.33';
 @CGI::Session::ID::md5::ISA     = qw( CGI::Session::ErrorHandler );
 
 *generate = \&generate_id;

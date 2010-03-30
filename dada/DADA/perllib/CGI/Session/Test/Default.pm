@@ -11,7 +11,7 @@ our $CURRENT;
 sub ok_later (&;$);
     
 
-$CGI::Session::Test::Default::VERSION = '4.30';
+$CGI::Session::Test::Default::VERSION = '4.42';
 
 =head1 CGI::Session::Test::Default
 
@@ -109,10 +109,10 @@ sub run {
         ok( $session->id, "session id is " . $session->id);
 
         $session->param('author', "Sherzod Ruzmetov");
-        $session->param(-name=>'emails', -value=>['sherzodr@cpan.org', 'sherzodr@handalak.com']);
+        $session->param(-name=>'emails', -value=>['sherzodr@cpan.org', 'sherzodr@cpan.org']);
         $session->param('blogs', {
-            './lost+found'              => 'http://author.handalak.com/',
-            'Yigitlik sarguzashtlari'   => 'http://author.handalak.com/uz/'
+            './lost+found'              => 'http://author.cpan.org/',
+            'Yigitlik sarguzashtlari'   => 'http://author.cpan.org/uz/'
         });
 
         ok( ($session->param) == 3, "session holds 3 params" . scalar $session->param );
@@ -121,11 +121,11 @@ sub run {
         ok( ref ($session->param('emails')) eq 'ARRAY', "'emails' holds list of values" );
         ok( @{ $session->param('emails') } == 2, "'emails' holds list of two values");
         ok( $session->param('emails')->[0] eq 'sherzodr@cpan.org', "first value of 'emails' is correct!");
-        ok( $session->param('emails')->[1] eq 'sherzodr@handalak.com', "second value of 'emails' is correct!");
+        ok( $session->param('emails')->[1] eq 'sherzodr@cpan.org', "second value of 'emails' is correct!");
 
         ok( ref( $session->param('blogs') ) eq 'HASH', "'blogs' holds a hash");
-        ok( $session->param('blogs')->{'./lost+found'} eq 'http://author.handalak.com/', "first blog is correct");
-        ok( $session->param('blogs')->{'Yigitlik sarguzashtlari'} eq 'http://author.handalak.com/uz/', "second blog is correct");
+        ok( $session->param('blogs')->{'./lost+found'} eq 'http://author.cpan.org/', "first blog is correct");
+        ok( $session->param('blogs')->{'Yigitlik sarguzashtlari'} eq 'http://author.cpan.org/uz/', "second blog is correct");
 
         $sid = $session->id;
         $session->flush();
@@ -157,11 +157,11 @@ sub run {
             ok( ref ($session->param('emails')) eq 'ARRAY', "'emails' should hold list of values" );
             ok( @{ $session->param('emails') } == 2, "'emails' should hold list of two values");
             ok( $session->param('emails')->[0] eq 'sherzodr@cpan.org', "first value is correct!");
-            ok( $session->param('emails')->[1] eq 'sherzodr@handalak.com', "second value is correct!");
+            ok( $session->param('emails')->[1] eq 'sherzodr@cpan.org', "second value is correct!");
 
             ok( ref( $session->param('blogs') ) eq 'HASH', "'blogs' holds a hash");
-            ok( $session->param('blogs')->{'./lost+found'} eq 'http://author.handalak.com/', "first blog is correct!");
-            ok( $session->param('blogs')->{'Yigitlik sarguzashtlari'} eq 'http://author.handalak.com/uz/', "second blog is correct!");
+            ok( $session->param('blogs')->{'./lost+found'} eq 'http://author.cpan.org/', "first blog is correct!");
+            ok( $session->param('blogs')->{'Yigitlik sarguzashtlari'} eq 'http://author.cpan.org/uz/', "second blog is correct!");
 
             # TODO: test many any other variations of expire() syntax
             $session->expire('+1s');
@@ -258,19 +258,19 @@ sub run {
 
         #
         # creating a simple object to be stored into session
-        my $simple_class = SimpleObjectClass->new();
-        ok($simple_class, "SimpleObjectClass created successfully");
+        my $simple_class = CGI::Session::Test::SimpleObjectClass->new();
+        ok($simple_class, "CGI::Session::Test::SimpleObjectClass created successfully");
 
         $simple_class->name("Sherzod Ruzmetov");
-        $simple_class->emails(0, 'sherzodr@handalak.com');
+        $simple_class->emails(0, 'sherzodr@cpan.org');
         $simple_class->emails(1, 'sherzodr@cpan.org');
-        $simple_class->blogs('lost+found', 'http://author.handalak.com/');
-        $simple_class->blogs('yigitlik', 'http://author.handalak.com/uz/');
+        $simple_class->blogs('lost+found', 'http://author.cpan.org/');
+        $simple_class->blogs('yigitlik', 'http://author.cpan.org/uz/');
         $session->param('simple_object', $simple_class);
 
         ok($session->param('simple_object')->name eq "Sherzod Ruzmetov");
         ok($session->param('simple_object')->emails(1) eq 'sherzodr@cpan.org');
-        ok($session->param('simple_object')->blogs('yigitlik') eq 'http://author.handalak.com/uz/');
+        ok($session->param('simple_object')->blogs('yigitlik') eq 'http://author.cpan.org/uz/');
         
         #
         # creating an overloaded object to be stored into session
@@ -282,14 +282,14 @@ sub run {
         
         ok($session->param("overloaded_object") eq "ABCDEFG");
         
-        my $simple_class2 = SimpleObjectClass->new();
-        ok($simple_class2, "SimpleObjectClass created successfully");
+        my $simple_class2 = CGI::Session::Test::SimpleObjectClass->new();
+        ok($simple_class2, "CGI::Session::Test::SimpleObjectClass created successfully");
 
         $simple_class2->name("Sherzod Ruzmetov");
-        $simple_class2->emails(0, 'sherzodr@handalak.com');
+        $simple_class2->emails(0, 'sherzodr@cpan.org');
         $simple_class2->emails(1, 'sherzodr@cpan.org');
-        $simple_class2->blogs('lost+found', 'http://author.handalak.com/');
-        $simple_class2->blogs('yigitlik', 'http://author.handalak.com/uz/');
+        $simple_class2->blogs('lost+found', 'http://author.cpan.org/');
+        $simple_class2->blogs('yigitlik', 'http://author.cpan.org/uz/');
         my $embedded = OverloadedObjectClass->new("Embedded");
         $session->param("embedded_simple_and_overloaded",[ undef, $simple_class2, $embedded, $embedded ]);
 
@@ -297,7 +297,7 @@ sub run {
 
         ok($session->param("embedded_simple_and_overloaded")->[1]->name eq "Sherzod Ruzmetov");
         ok($session->param("embedded_simple_and_overloaded")->[1]->emails(1) eq 'sherzodr@cpan.org');
-        ok($session->param("embedded_simple_and_overloaded")->[1]->blogs('yigitlik') eq 'http://author.handalak.com/uz/');
+        ok($session->param("embedded_simple_and_overloaded")->[1]->blogs('yigitlik') eq 'http://author.cpan.org/uz/');
   
         ok($session->param("embedded_simple_and_overloaded")->[2] eq "Embedded");
         
@@ -314,13 +314,13 @@ sub run {
 
 
         my $simple_object = $session->param("simple_object");
-        ok(ref $simple_object eq "SimpleObjectClass", "SimpleObjectClass loaded successfully");
+        ok(ref $simple_object eq "CGI::Session::Test::SimpleObjectClass", "CGI::Session::Test::SimpleObjectClass loaded successfully");
 
         my $dsn = CGI::Session->parse_dsn($self->{dsn});
         ok_later { $simple_object->name eq "Sherzod Ruzmetov" };
         ok_later { $simple_object->emails(1) eq 'sherzodr@cpan.org' };
-        ok_later { $simple_object->emails(0) eq 'sherzodr@handalak.com' };
-        ok_later { $simple_object->blogs('lost+found') eq 'http://author.handalak.com/' };
+        ok_later { $simple_object->emails(0) eq 'sherzodr@cpan.org' };
+        ok_later { $simple_object->blogs('lost+found') eq 'http://author.cpan.org/' };
         ok(ref $session->param("overloaded_object") );
         ok($session->param("overloaded_object") eq "ABCDEFG", "Object is still overloaded");
         ok(overload::Overloaded($session->param("overloaded_object")), "Object is really overloaded");
@@ -328,12 +328,12 @@ sub run {
         ok(!defined($session->param("embedded_simple_and_overloaded")->[0]),"First element of anonymous array undef");
         
         my $simple_object2 = $session->param("embedded_simple_and_overloaded")->[1];
-        ok(ref $simple_object2 eq "SimpleObjectClass", "SimpleObjectClass loaded successfully");
+        ok(ref $simple_object2 eq "CGI::Session::Test::SimpleObjectClass", "CGI::Session::Test::SimpleObjectClass loaded successfully");
 
         ok_later { $simple_object2->name eq "Sherzod Ruzmetov" };
         ok_later { $simple_object2->emails(1) eq 'sherzodr@cpan.org' };
-        ok_later { $simple_object2->emails(0) eq 'sherzodr@handalak.com' };
-        ok_later { $simple_object2->blogs('lost+found') eq 'http://author.handalak.com/' };
+        ok_later { $simple_object2->emails(0) eq 'sherzodr@cpan.org' };
+        ok_later { $simple_object2->blogs('lost+found') eq 'http://author.cpan.org/' };
 
         
         ok($session->param("embedded_simple_and_overloaded")->[2] eq "Embedded");
@@ -386,7 +386,7 @@ sub ok_later (&;$) {
 sub DESTROY { 1; }
 
 
-package SimpleObjectClass;
+package CGI::Session::Test::SimpleObjectClass;
 use strict;
 use Class::Struct;
 

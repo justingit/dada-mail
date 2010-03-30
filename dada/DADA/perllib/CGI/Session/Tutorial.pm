@@ -1,8 +1,8 @@
 package CGI::Session::Tutorial;
 
-# $Id: Tutorial.pm 394 2008-03-22 02:35:30Z markstos $
+# $Id$
 
-$CGI::Session::Tutorial::VERSION = '4.30';
+$CGI::Session::Tutorial::VERSION = '4.42';
 
 =pod
 
@@ -217,7 +217,7 @@ Now when you say:
 
 See L<load_param()|CGI::Session/load_param()> for details.
 
-Generated checkboxes will be pre-filled using previously saved information. To see example of a real session-powered application consider http://handalak.com/cgi-bin/subscriptions.cgi
+Generated checkboxes will be pre-filled using previously saved information.
 
 If you're making use of L<HTML::Template|HTML::Template> to separate the code from the skin, you can as well associate L<CGI::Session|CGI::Session> object with HTML::Template and access all the parameters from within HTML files. We love this trick!
 

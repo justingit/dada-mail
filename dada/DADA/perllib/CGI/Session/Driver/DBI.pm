@@ -1,6 +1,6 @@
 package CGI::Session::Driver::DBI;
 
-# $Id: DBI.pm 394 2008-03-22 02:35:30Z markstos $
+# $Id$
 
 use strict;
 
@@ -9,7 +9,7 @@ use Carp;
 use CGI::Session::Driver;
 
 @CGI::Session::Driver::DBI::ISA = ( "CGI::Session::Driver" );
-$CGI::Session::Driver::DBI::VERSION = '4.30';
+$CGI::Session::Driver::DBI::VERSION = '4.38';
 
 
 sub init {
@@ -47,9 +47,7 @@ sub table_name {
 
     no strict 'refs';
     if ( @_ ) {
-        my $new_name = shift;
-        $self->{TableName}           = $new_name;
-        ${ $class . "::TABLE_NAME" } = $new_name;
+        $self->{TableName} = shift;
     }
 
     unless (defined $self->{TableName}) {
@@ -123,7 +121,7 @@ sub remove {
     my ($sid) = @_;
     croak "remove(): usage error" unless $sid;
 
-   my $rc = $self->{Handle}->do( 'DELETE FROM '. $self->table_name .' WHERE id= ?',{},$sid );
+   my $rc = $self->{Handle}->do( 'DELETE FROM ' . $self->table_name . " WHERE $self->{IdColName}= ?", {}, $sid );
     unless ( $rc ) {
         croak "remove(): \$dbh->do failed!";
     }
@@ -135,7 +133,7 @@ sub remove {
 sub DESTROY {
     my $self = shift;
 
-    unless ( $self->{Handle} -> ping ) {
+    unless ( defined $self->{Handle} && $self->{Handle} -> ping ) {
         $self->set_error(__PACKAGE__ . '::DESTROY(). Database handle has gone away');
         return;
 	}

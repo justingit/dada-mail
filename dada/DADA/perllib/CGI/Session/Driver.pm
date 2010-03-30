@@ -1,6 +1,6 @@
 package CGI::Session::Driver;
 
-# $Id: Driver.pm 394 2008-03-22 02:35:30Z markstos $
+# $Id$
 
 use strict;
 #use diagnostics;
@@ -8,7 +8,7 @@ use strict;
 use Carp;
 use CGI::Session::ErrorHandler;
 
-$CGI::Session::Driver::VERSION = '4.30';
+$CGI::Session::Driver::VERSION = '4.38';
 @CGI::Session::Driver::ISA     = qw(CGI::Session::ErrorHandler);
 
 sub new {

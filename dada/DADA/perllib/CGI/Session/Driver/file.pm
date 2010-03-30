@@ -1,6 +1,6 @@
 package CGI::Session::Driver::file;
 
-# $Id: file.pm 394 2008-03-22 02:35:30Z markstos $
+# $Id$
 
 use strict;
 
@@ -19,7 +19,7 @@ BEGIN {
 }
 
 @CGI::Session::Driver::file::ISA        = ( "CGI::Session::Driver" );
-$CGI::Session::Driver::file::VERSION    = '4.30';
+$CGI::Session::Driver::file::VERSION    = '4.38';
 $FileName                               = "cgisess_%s";
 $NoFlock                                = 0;
 $UMask                                  = 0660;
@@ -44,6 +44,14 @@ sub init {
 
 sub _file {
     my ($self,$sid) = @_;
+    my $id = $sid;
+    $id =~ s|\\|/|g;
+
+	if ($id =~ m|/|)
+    {
+        return $self->set_error( "_file(): Session ids cannot contain \\ or / chars: $sid" );
+    }
+
     return File::Spec->catfile($self->{Directory}, sprintf( $FileName, $sid ));
 }
 
@@ -114,12 +122,9 @@ sub store {
 
 
 sub remove {
-    my $self = shift;
+    my $self  = shift;
     my ($sid) = @_;
-
-    my $directory = $self->{Directory};
-    my $file      = sprintf( $FileName, $sid );
-    my $path      = File::Spec->catfile($directory, $file);
+    my $path  = $self -> _file($sid);
     unlink($path) or return $self->set_error( "remove(): couldn't unlink '$path': $!" );
     return 1;
 }
