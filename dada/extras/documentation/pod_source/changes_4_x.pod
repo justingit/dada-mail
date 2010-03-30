@@ -34,6 +34,10 @@ including example SQL is located in the UTF-8 FAQ).
 
 =head2 Bug Fixes 4.0.4
 
+=head3 Dada Bridge always reports that IO::Socket::SSL isn't available
+
+http://github.com/justingit/dada-mail/issues/#issue/36
+
 =head3 "Use Secure Sockets Layer (SSL)" option sometimes not available, even though appropriate CPAN module installed
 
 http://github.com/justingit/dada-mail/issues/#issue/35
