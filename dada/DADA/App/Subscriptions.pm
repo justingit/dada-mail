@@ -1506,6 +1506,10 @@ sub unsub_confirm {
 				    {
 				        -email => $email,  
 						-type => 'black_list', 
+						-dupe_check    => {
+											-enable  => 1, 
+											-on_dupe => 'ignore_add',  
+	                					},
 				    }
 				);
 			}

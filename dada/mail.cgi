@@ -8666,11 +8666,8 @@ sub checker {
     );
     
     my $should_add_to_black_list = 0; 
-        
 
-               
     if($type eq 'list'){ 
-        
         if($li->{black_list}               == 1 && 
            $li->{add_unsubs_to_black_list} == 1
            ){ 
@@ -8679,7 +8676,11 @@ sub checker {
 				$lh->add_subscriber(
 					{
 						-email => $_, 
-						-type  => 'black_list', 
+						-type  => 'black_list',
+						-dupe_check    => {
+											-enable  => 1, 
+											-on_dupe => 'ignore_add',  
+	                					},
 					}
 				); 
 			}
