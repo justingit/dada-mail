@@ -529,7 +529,11 @@ sub remove_from_list {
 				  #missed the boat! 
 				  $count++;
 				  # js - log it
-					$self->{'log'}->mj_log($self->{list},"Unsubscribed from $list.$type", $check_this) if $DADA::Config::LOG{subscriptions}; 
+					$self->{'log'}->mj_log(
+						$self->{list},
+						"Unsubscribed from $list.$type", 
+						$check_this
+					) if $DADA::Config::LOG{subscriptions}; 
 			  }
 		}
 		

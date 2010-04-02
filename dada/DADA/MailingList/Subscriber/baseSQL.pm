@@ -135,9 +135,11 @@ sub add {
     );
 
     if ( $DADA::Config::LOG{subscriptions} == 1 ) {
-        $added->{'log'}->mj_log( $added->{list},
+        $added->{'log'}->mj_log( 
+			$added->{list},
             'Subscribed to ' . $added->{list} . '.' . $added->type,
-            $added->email );
+            $added->email 
+		);
     }
     return $added;
 
@@ -286,36 +288,47 @@ sub move {
       or croak "cannot do statement (at move_subscriber)! $DBI::errstr\n";
 
     if ( $rv == 1 ) {
-        return 1;
+		if ( $DADA::Config::LOG{subscriptions} ) {
+			#	        $self->{'log'}->mj_log(
+			#	            $self->{list},
+			#	            'Moved from:  '
+			#	              . $self->{list} . '.'
+			#	              . $self->type . ' to: '
+			#	              . $self->{list} . '.'
+			#	              . $args->{ -to },
+			#	            $self->email,
+			#	        );
 
+	
+			if ( $DADA::Config::LOG{subscriptions} == 1 ) {
+				$self->{'log'}->mj_log( 
+					$self->{list},
+			        "Unsubscribed from ". $self->{list} . "." . $self->type,
+			         $self->email 
+				);
+			    $self->{'log'}->mj_log( 
+					$self->{list},
+			        'Subscribed to ' . $self->{list} . '.' . $args->{ -to },
+			        $self->email 
+				);
+			}
+	    }
+
+	    # Since this is a reference, this should do what I want -
+	    $self = DADA::MailingList::Subscriber->new(
+	        {
+	            -email => $self->email,
+	            -type  => $args->{ -to },
+	            -list  => $self->{list},
+	        }
+	    );
+	
+        return 1;
         #carp "Hey, that worked!";
     }
     else {
         carp "Something's wrong. Returned $rv rows, expected 1";
     }
-
-    if ( $DADA::Config::LOG{subscriptions} ) {
-        $self->{'log'}->mj_log(
-            $self->{list},
-            'Moved from:  '
-              . $self->{list} . '.'
-              . $self->type . ' to: '
-              . $self->{list} . '.'
-              . $args->{ -to },
-            $self->email,
-        );
-    }
-
-    # Since this is a reference, this should do what I want -
-    $self = DADA::MailingList::Subscriber->new(
-        {
-            -email => $self->email,
-            -type  => $args->{ -to },
-            -list  => $self->{list},
-        }
-    );
-
-    return 1;
 }
 
 sub remove {
@@ -370,12 +383,13 @@ sub remove {
    #warn '$rv ' . $rv; 
     $sth->finish;
 
-    $self->{'log'}->mj_log( $self->{list},
-        "Unsubscribed from "
-          . $self->{list} . " - "
-          . $self->type . ', '
-          . $self->email )
-      if $DADA::Config::LOG{subscriptions};
+	if ($DADA::Config::LOG{subscriptions}) { 
+	    $self->{'log'}->mj_log( 
+			$self->{list},
+	        "Unsubscribed from " . $self->{list} . "." . $self->type,
+			$self->email
+		);
+	}
 
     undef $self;
 	return $rv;	

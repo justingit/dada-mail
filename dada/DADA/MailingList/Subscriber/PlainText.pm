@@ -84,9 +84,11 @@ sub add {
     );
 
     if ( $DADA::Config::LOG{subscriptions} == 1 ) {
-        $added->{'log'}->mj_log( $added->{list},
+        $added->{'log'}->mj_log( 
+			$added->{list},
             'Subscribed to ' . $added->{list} . '.' . $added->type,
-            $added->email );
+            $added->email 
+		);
     }
     return $added;
 
@@ -190,13 +192,13 @@ sub move {
 
 
     
-    if ($DADA::Config::LOG{subscriptions}) { 
-        $self->{'log'}->mj_log(
-            $self->{list}, 
-            'Moved from:  ' . $self->{list} . '.' . $self->type . ' to: ' . $new_self->{list} . '.' . $new_self->type, 
-            $new_self->email, 
-        );
-    }
+    #if ($DADA::Config::LOG{subscriptions}) { 
+    #    $self->{'log'}->mj_log(
+    #        $self->{list}, 
+    #        'Moved from:  ' . $self->{list} . '.' . $self->type . ' to: ' . $new_self->{list} . '.' . $new_self->type, 
+    #        $new_self->email, 
+    #    );
+    #}
 
 	$self = $new_self; 
 	return 1; 

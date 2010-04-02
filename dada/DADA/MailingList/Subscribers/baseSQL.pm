@@ -437,7 +437,7 @@ sub fancy_print_out_list {
     }
 
     require DADA::Template::Widgets;
-    print $fh DADA::Template::Widgets::screen(
+    my $scrn = DADA::Template::Widgets::screen(
         {
             -screen => 'fancy_print_out_list_widget.tmpl',
             -vars   => {
@@ -449,6 +449,7 @@ sub fancy_print_out_list {
             }
         }
     );
+	print $fh $scrn; 
 
     return scalar @{$subscribers};
 

@@ -16,6 +16,8 @@ $DADA::Config::BACKUPS                  = $DADA::Config::FILES;
 $DADA::Config::LOGS                     = $DADA::Config::FILES;
 $DADA::Config::TEMPLATES                = $DADA::Config::FILES;
 $DADA::Config::TMP                      = $DADA::Config::FILES;
+$DADA::Config::PROGRAM_USAGE_LOG        = $DADA::Config::FILES . '/dada.txt'; 
+
 
 #------------------	
 	if(! -e './test_only_dada_files'){ 

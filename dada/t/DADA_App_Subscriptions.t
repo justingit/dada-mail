@@ -17,6 +17,7 @@ use DADA::App::Subscriptions;
 use DADA::MailingList::Settings; 
 use DADA::MailingList::Subscribers; 
 
+my $log = ''; 
 
 use MIME::Parser; 
 my $parser = new MIME::Parser; 
@@ -132,6 +133,14 @@ ok(
 
 $q->param('list', ''); 
 $q->param('email', ''); 
+
+# Check the logs? 
+$log = slurp($DADA::Config::PROGRAM_USAGE_LOG); 
+# [Thu Apr  1 22:47:58 2010]	dadatest		Subscribed to dadatest.sub_confirm_list	this@example.com
+like($log, qr/\t$list\t(.*?)\tSubscribed to $list\.sub_confirm_list\t$email/, "usage log entry found");
+# Let's remove the log, for the next time! 
+unlink($DADA::Config::PROGRAM_USAGE_LOG); 
+undef $log; 
 # 
 
 
@@ -202,6 +211,18 @@ $q->param('email', '');
 	ok(unlink($mh->test_send_file)); 
 	undef $confirm_email; 
 	undef $entity; 
+	
+	# Check the logs? 
+	$log = slurp($DADA::Config::PROGRAM_USAGE_LOG); 
+	# [Thu Apr  1 22:47:59 2010]	dadatest		Subscribed to dadatest.sub_confirm_list	subscribe@example.com
+	like($log, qr/\t$list\t(.*?)\tSubscribed to $list\.sub_confirm_list\t$email/, "usage log entry found");
+	# [Thu Apr  1 22:47:59 2010]	dadatest		Subscription Confirmation Sent for dadatest.list	subscribe@example.com
+	like($log, qr/\t$list\t(.*?)\tSubscription Confirmation Sent for $list\.list\t$email/, "usage log entry found");
+	# Let's remove the log, for the next time! 
+	unlink($DADA::Config::PROGRAM_USAGE_LOG); 
+	undef $log; 
+	#
+	
 
 
 # Step #2: Confirm: 
@@ -243,6 +264,18 @@ ok(
 	"Subject: Set Correctly"
 );
 
+# Check the logs? 
+$log = slurp($DADA::Config::PROGRAM_USAGE_LOG); 
+
+# [Thu Apr  1 22:47:59 2010]	dadatest		Unsubscribed from dadatest.sub_confirm_list	subscribe@example.com
+# [Thu Apr  1 22:47:59 2010]	dadatest		Subscribed to dadatest.list	subscribe@example.com
+like($log, qr/\t$list\t(.*?)\tUnsubscribed from $list\.sub_confirm_list\t$email/, "usage log entry found");
+like($log, qr/\t$list\t(.*?)\tSubscribed to $list\.list\t$email/, "usage log entry found");
+# Let's remove the log, for the next time! 
+unlink($DADA::Config::PROGRAM_USAGE_LOG); 
+undef $log; 
+#
+
 
 
 
@@ -281,6 +314,19 @@ ok(
 	"Subject: Set Correctly"
 );
 
+# Check the logs? 
+$log = slurp($DADA::Config::PROGRAM_USAGE_LOG); 
+
+# [Thu Apr  1 22:48:00 2010]	dadatest		Unsubscription Confirmation Sent for dadatest.list	subscribe@example.com
+# [Thu Apr  1 22:48:00 2010]	dadatest		Subscribed to dadatest.unsub_confirm_list	subscribe@example.com
+like($log, qr/\t$list\t(.*?)\tUnsubscription Confirmation Sent for $list\.list\t$email/, "usage log entry found");
+like($log, qr/\t$list\t(.*?)\tSubscribed to $list\.unsub_confirm_list\t$email/, "usage log entry found");
+
+# Let's remove the log, for the next time! 
+unlink($DADA::Config::PROGRAM_USAGE_LOG); 
+undef $log; 
+#
+
 	
 	unlink($mh->test_send_file);
 	undef $msg; 
@@ -311,9 +357,26 @@ ok(
 	like($unsubscribed_email, qr/Subject\: unsubscribed subscribe\@example\.com/, "Subject: set correctly (2)");
 =cut
 	
+	
+# Check the logs? 
+$log = slurp($DADA::Config::PROGRAM_USAGE_LOG); 
+
+# [Thu Apr  1 22:48:00 2010]	dadatest		Unsubscribed from dadatest.unsub_confirm_list	subscribe@example.com
+# [Thu Apr  1 22:48:00 2010]	dadatest		Subscribed to dadatest.black_list	subscribe@example.com
+# [Thu Apr  1 22:48:00 2010]	dadatest		Unsubscribed from dadatest.list	subscribe@example.com
+like($log, qr/\t$list\t(.*?)\tUnsubscribed from $list\.unsub_confirm_list\t$email/, "usage log entry found");
+like($log, qr/\t$list\t(.*?)\tSubscribed to $list\.black_list\t$email/, "usage log entry found");
+like($log, qr/\t$list\t(.*?)\tUnsubscribed from $list\.list\t$email/, "usage log entry found");
+
+
+# Let's remove the log, for the next time! 
+unlink($DADA::Config::PROGRAM_USAGE_LOG); 
+undef $log; 
+#
+	
+	
 	unlink($mh->test_send_file);	
 	
-
 
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
