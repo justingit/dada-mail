@@ -4,7 +4,7 @@
 
 For the complete Bug Tracker, please see: 
 
-L<https://sourceforge.net/tracker/?group_id=13002&atid=113002>
+L<http://github.com/justingit/dada-mail/issues>
 
 If you'd like, please submit a new bug and comment on current bugs. 
 

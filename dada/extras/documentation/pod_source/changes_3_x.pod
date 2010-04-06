@@ -126,7 +126,7 @@ renaming them back to their original name will make them, "active"
 
 =item * 2817601  	 3.0.3 - grammar: your/you're in error_black_listed_screen.tm
 
-https://sourceforge.net/tracker/?group_id=13002&atid=113002
+http://github.com/justingit/dada-mail/issues
 
 =item *  2816670  	 3.0.3 - External .dada_config not setting variable 
 

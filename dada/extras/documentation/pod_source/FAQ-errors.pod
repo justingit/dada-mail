@@ -207,7 +207,7 @@ get out of a pinch, then it can help you get out of a pinch.
 
 If there are duplicate email addresses in your mailing list, please open up a bug report. 
 
-	L<https://sourceforge.net/tracker/?group_id=13002&atid=113002> 
+	L<http://github.com/justingit/dada-mail/issues> 
 	
 At least in the Dada Mail program, duplicates should never be present. 
 
