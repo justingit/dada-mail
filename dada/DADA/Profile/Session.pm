@@ -225,7 +225,7 @@ sub is_logged_in {
 
     }
     my $s = CGI::Session->load( $self->{dsn}, $q, $self->{dsn_args} )
-      or croak CGI::Session->errstr();
+      or croak 'failed to load session: ' . CGI::Session->errstr();
 
     if ( $s->is_expired ) {
         return 0;
