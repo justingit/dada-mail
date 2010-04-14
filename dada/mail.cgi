@@ -96,16 +96,17 @@ use lib qw(
 
 #---------------------------------------------------------------------#
 #
-# If you'd like error messages to be printed out in your browser, uncomment the 
-# line that looks like this: 
+# If you'd like error messages to be printed out in your browser, set the 
+# following to 1. To always include a stack trace, set it to 2.
 #
-#        #print "<pre>$msg</pre>"; 
+use constant ERRORS_TO_BROWSER => 0;
 #
 # Why would you want this commented? Security. 
 
 use Carp qw(croak carp); 
 use CGI::Carp qw(fatalsToBrowser set_message);
     BEGIN {
+       $Carp::Verbose = 1 if ERRORS_TO_BROWSER >= 2;
        sub handle_errors {
           my $msg = shift;
           print q{<h1>Program Error (Server Error 500)</h1>
@@ -118,10 +119,8 @@ use CGI::Carp qw(fatalsToBrowser set_message);
              </p>
              <hr />
                };
-        # Uncomment the BELOW line to receive error messages in your browser:
-         print "<pre>$msg</pre>"; 
+         print "<pre>$msg</pre>" if ERRORS_TO_BROWSER >= 1;
        }
-       
       set_message(\&handle_errors);
     }
     
