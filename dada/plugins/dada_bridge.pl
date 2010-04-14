@@ -2364,12 +2364,12 @@ sub dm_format {
 
 sub strip_file_attachments {
 
-    my $msg = shift;
+    my $msg = shift; #ref
     my $ls  = shift;
 
     my $entity;
 
-    eval { $entity = $parser->parse_data($msg) };
+    eval { $entity = $parser->parse_data(${$msg}) };
     if ( !$entity ) {
         die "no entity found! die'ing!";
     }
@@ -2381,7 +2381,7 @@ sub strip_file_attachments {
 
     my $un =  $entity->as_string;
        $un = safely_decode($un); 
-	return $un; 
+	return \$un; 
 }
 
 sub process_stripping_file_attachments {
