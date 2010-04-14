@@ -163,6 +163,7 @@ $PLUGIN_CONFIGS = {
         Allow_Manual_Run                    => undef, 
         Manual_Run_Passcode                 => undef, 
         MessagesAtOnce                      => undef, 
+		Soft_Max_Size_Of_Any_Message        => undef, 
         Max_Size_Of_Any_Message             => undef, 
         Allow_Open_Discussion_List          => undef, 
         Room_For_One_More_Check             => undef, 
