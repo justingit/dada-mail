@@ -2263,7 +2263,7 @@ sub _make_list_headers {
 		
 			$lh{List}               =   $self->{list};
 			$lh{'List-URL'}         =   '<' . $DADA::Config::PROGRAM_URL . '/list/'.$self->{list}  . '/>';
-			$lh{'List-Subscribe'}   =   '<' . $DADA::Config::PROGRAM_URL . '/u/'   . $self->{list} . '/>'; 
+			$lh{'List-Unsubscribe'}   =   '<' . $DADA::Config::PROGRAM_URL . '/u/'   . $self->{list} . '/>'; 
 			$lh{'List-Subscribe'}   =   '<' . $DADA::Config::PROGRAM_URL . '/s/'   . $self->{list} . '/>'; 
 			
 			$lh{'List-Owner'}       =   '<' . $self->{ls}->param('list_owner_email').'>';
