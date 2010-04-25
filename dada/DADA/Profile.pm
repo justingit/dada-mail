@@ -46,35 +46,6 @@ sub new {
 }
 
 
-sub exists {
-	
-    my $self = shift;
-    my ($args) = @_;
-
-    my $query =
-      'SELECT COUNT(*) FROM '
-      . $DADA::Config::SQL_PARAMS{profile_table}
-      . ' WHERE email = ?';
-
-    my $sth = $self->{dbh}->prepare($query);
-
-    warn 'QUERY: ' . $query
-		if $t; 
-
-    $sth->execute( $self->{email} )
-      or croak "cannot do statement (at exists)! $DBI::errstr\n";
-    my @row = $sth->fetchrow_array();
-    $sth->finish;
-
-	# autoviv?
-    if($row[0]){ 
-		return 1; 
-	}
-	else { 
-		return 0; 
-	}
-
-}
 
 
 sub _init {
@@ -82,7 +53,18 @@ sub _init {
     my $self = shift;
 
     my ($args) = @_;
-    $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
+	if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1  || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
+    {
+	    # not enabled... 
+
+	}
+	else { 
+		$self->{sql_params} = {%DADA::Config::SQL_PARAMS};
+		my $dbi_obj = undef;
+	    require DADA::App::DBIHandle;
+	    $dbi_obj = DADA::App::DBIHandle->new;
+	    $self->{dbh} = $dbi_obj->dbh_obj;
+	}
 
     if ( exists( $args->{ -from_session } ) ) {
         if ( $args->{ -from_session } == 1 ) {
@@ -123,15 +105,49 @@ sub _init {
 		require DADA::Profile::Fields; 
 		$self->{fields} = DADA::Profile::Fields->new({-email => $self->{email}});
 	}
-	
-	
-    my $dbi_obj = undef;
+}
 
-    require DADA::App::DBIHandle;
-    $dbi_obj = DADA::App::DBIHandle->new;
-    $self->{dbh} = $dbi_obj->dbh_obj;
+
+
+
+sub exists {
+	
+    my $self = shift;
+    my ($args) = @_;
+
+	# This is saying, if we don't have a dbh handle, we don't have a proper 
+	# "handle" on a profile. 
+	
+	if(! exists($self->{dbh})){ 
+		return 0; 
+	}
+    my $query =
+      'SELECT COUNT(*) FROM '
+      . $DADA::Config::SQL_PARAMS{profile_table}
+      . ' WHERE email = ?';
+
+    my $sth = $self->{dbh}->prepare($query);
+
+    warn 'QUERY: ' . $query
+		if $t; 
+
+    $sth->execute( $self->{email} )
+      or croak "cannot do statement (at exists)! $DBI::errstr\n";
+    my @row = $sth->fetchrow_array();
+    $sth->finish;
+
+	# autoviv?
+    if($row[0]){ 
+		return 1; 
+	}
+	else { 
+		return 0; 
+	}
 
 }
+
+
+
 
 sub create { 
 	
@@ -599,6 +615,9 @@ sub allowed_to_view_archives {
 	my $self = shift; 
     my ($args) = @_;
 
+
+	
+	
     if ( !exists( $args->{ -list } ) ) {
         croak "You must pass a list in the, '-list' param!";
     }
@@ -613,7 +632,13 @@ sub allowed_to_view_archives {
 		my $ls = DADA::MailingList::Settings->new({-list => $args->{ -list }}); 
         if ( $ls->param('archives_available_only_to_subscribers') == 1 )
         {
+	
+
+			
             if ($self->exists) {
+
+
+
                 if (
                     $self->subscribed_to_list( { -list => $args->{ -list } } ) )
                 {
@@ -651,9 +676,8 @@ sub is_valid_password {
 
     warn 'QUERY: ' . $query
 		if $t; 
-
+		
     my $sth = $self->{dbh}->prepare($query);
-
     $sth->execute( $self->{email} )
       or croak "cannot do statement (at is_valid_password)! $DBI::errstr\n";
 
@@ -846,10 +870,6 @@ sub update {
     }
 
     $self->remove();
-
-
-	#require Data::Dumper; 
-	#carp Data::Dumper::Dumper($new); 
 	
     $self->insert($new);
 

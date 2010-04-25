@@ -27,14 +27,15 @@ sub _init {
     my $self = shift;
     my ($args) = @_;
     $self->{list} = $args->{ -list };
-
+	my $dbh     = undef; 
+	my $dbi_obj = undef; 
+		
     if ( $DADA::Config::SESSION_DB_TYPE =~ /SQL/ ) {
         require DADA::App::DBIHandle;
-        my $dbi_obj = DADA::App::DBIHandle->new;
-        $self->{dbh} = $dbi_obj->dbh_obj;
-		
+           $dbi_obj = DADA::App::DBIHandle->new;
+           $dbh     = $dbi_obj->dbh_obj; 
     }
-
+	
     # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session.pm
 
     if ( $DADA::Config::SESSION_DB_TYPE =~ m/SQL/i ) {
@@ -45,7 +46,7 @@ sub _init {
             $self->{dsn}      = 'driver:PostgreSQL';
             $self->{dsn_args} = {
 
-                Handle    => $self->{dbh},
+                Handle    => $dbh,
                 TableName => $DADA::Config::SQL_PARAMS{session_table},
 
             };
@@ -57,7 +58,7 @@ sub _init {
             $self->{dsn}      = 'driver:mysql';
             $self->{dsn_args} = {
 
-                Handle    => $self->{dbh},
+                Handle    => $dbh,
                 TableName => $DADA::Config::SQL_PARAMS{session_table},
 
             };
@@ -71,7 +72,7 @@ sub _init {
               ;    # . ':' . $DADA::Config::FILES . '/' . $database;;
             $self->{dsn_args} = {
 
-                Handle => $self->{dbh},
+                Handle => $dbh,
 
             };
 
@@ -100,7 +101,7 @@ sub _init {
     else {
         croak "Wrong Login Type!";
     }
-
+	
 }
 
 sub _login_cookie {
@@ -184,7 +185,9 @@ sub validate_profile_login {
 
     require DADA::Profile;
     my $prof = DADA::Profile->new( { -email => $args->{ -email } } );
-    if ( $prof->exists == 1 ) {
+    
+    
+	if ( $prof->exists == 1 ) {
         # ...
     }
     else {
