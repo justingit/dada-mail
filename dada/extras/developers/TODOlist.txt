@@ -10,6 +10,13 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+[ ]  How about a place in the "Change lIst INfo" that shows the bounce handler addrss and a little button to allow you 
+to make THAT your list admin?
+
+[ ] How about a message count in the bounce handler/dada bridge, without having to actually check the messages? 
+
+
 [ ] Perhaps think of replacing Crypt::CipherSaber with something a little more modern... 
 	Had another problem with this - Crypte::CipherSaber wasn't working - thinking it may 
 	be the encoding stuff? Crypt::CBC could possibly be a better candidate - or at least
