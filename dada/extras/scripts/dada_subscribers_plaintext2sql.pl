@@ -85,13 +85,20 @@ foreach my $list(DADA::App::Guts::available_lists()){
 				}
 				
 				if($status == 1){ 
-					$lh->add_subscriber(
-						{
-							-email => $email, 
-							-type  => $sublist
-						}
-					);
-					print "\t\t\t\tadded: $email\n";
+					eval { 
+						$lh->add_subscriber(
+							{
+								-email => $email, 
+								-type  => $sublist
+							}
+						);
+					};
+					if(!$@){ 
+						print "\t\t\t\tadded: $email\n";
+					}
+					else { 
+						print "\t\t\t\tProblems! Adding: $email - $@\n";	
+					}
 				}else{ 
 					print "\t\t\t PROBLEMS with $email: "; 
 					foreach my $err(keys %$errors){ print "$err, " if $errors->{$err} == 1; }
