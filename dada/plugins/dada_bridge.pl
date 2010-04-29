@@ -781,7 +781,7 @@ sub cgi_default {
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get();
     my $list_email_validation = 1;
-    $q->param( 'saved', 0 );
+    
 
     if ( $q->param('process') eq 'edit' ) {
 
