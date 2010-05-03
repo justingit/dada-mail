@@ -79,6 +79,30 @@ ok(
     "Cipher Key didn't change for any odd reason."
 );
 
+
+# This is to just make sure passwords are encrypted and decrypted correctly, 
+
+my @pass_settings = qw(
+sasl_smtp_password
+pop3_password
+discussion_pop_password
+twitter_password
+); 
+
+foreach(@pass_settings) { 
+	$ls->save({$_ => 'test'}); 
+}
+foreach(@pass_settings) { 
+	ok(
+		$ls->param($_) eq 'test',
+		$_ . ' (test) was saved and retrieved correctly!'
+	); 
+}
+
+
+
+
+
 # This test is sort of dumb, but whatever...
 ok(
     $orig_admin_menu eq $li->{admin_menu},
@@ -95,6 +119,7 @@ my @password_settings = qw(
   sasl_smtp_password
   pop3_password
   discussion_pop_password
+  twitter_password
 );
 
 my $lsd_pass = 'sneaky';

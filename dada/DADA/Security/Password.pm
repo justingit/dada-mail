@@ -149,14 +149,20 @@ sub cipher_encrypt {
 	my ($key, $str) = @_; 
 	require Crypt::CipherSaber; 
 	my $cs = Crypt::CipherSaber->new($key);
-	return $cs->encrypt($str);
+	
+	require Convert::UU;
+	#return $cs->encrypt($str);
+	return Convert::UU::uuencode($cs->encrypt($str));
 }
 
 sub cipher_decrypt { 
 	my ($key, $str) = @_; 
 	require Crypt::CipherSaber; 
 	my $cs = Crypt::CipherSaber->new($key);
-	return $cs->decrypt($str);
+	require Convert::UU;
+	#return $cs->decrypt($str);
+	return $cs->decrypt(Convert::UU::uudecode($str));
+
 }
 sub make_cipher_key { 
 	my $key; 

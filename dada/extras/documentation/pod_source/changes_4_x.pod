@@ -2,6 +2,34 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.0.5
+
+=head2 Changes 4.0.5
+
+=head3 POP3 and SMTP passwords saved in List Settings 
+
+I<This is not a security bug/issue/notice - rather, this is a bug that was introduced
+with the full UTF-8 support.> 
+
+The binary-in-nature encrypted passwords saved by Dada Mail in the List Settings 
+table/files in Dada Mail may have become unusable/corrupted with version 4.0.3
+and/or 4.0.4 of Dada Mail. 
+
+If you are having trouble/an impossible time using any of the POP3 or SMTP connection
+stuff in Dada Mail, including Dada Bridge, Mystery Girl (Bounce Handler) or POP-before-SMTP
+and/or SMTP SASL authentication - or even the Twitter stuff, you may be bitten by this bug. 
+4.0.5 should provide a fix for this problem, B<BUT> (big but), 4.0.5 will I<break any 
+currently stored passwords>. 
+
+The fix will be to simply re-save the correct password, I<after> you've upgraded to 
+4.0.5. 
+
+New users of Dada Mail will not be affected by this problem.  
+
+This problem does not impact your List Password, or the Dada Mail Root Password - 
+both of which are saved in a one-way encryption, that is separate from the way 
+POP3/SMTP passwords are saved in Dada Mail. 
+
 =head1 4.0.4
 
 =head2 Changes 4.0.4
