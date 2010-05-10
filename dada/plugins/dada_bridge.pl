@@ -606,7 +606,7 @@ sub admin_cgi_manual_start {
     start();
     e_print( '</pre>');
     e_print(
-      '<p><a href="#" onclick="history.back();return false;">Back...</a></p>'
+      '<p><a href="' . $Plugin_Config->{Plugin_URL} . '">Back...</a></p>'
 	);
 
     e_print( admin_template_footer(
