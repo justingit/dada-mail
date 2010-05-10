@@ -145,25 +145,36 @@ my @chars = split '', $chars;
  }
  
 
-sub cipher_encrypt { 
-	my ($key, $str) = @_; 
-	require Crypt::CipherSaber; 
-	my $cs = Crypt::CipherSaber->new($key);
+sub cipher_encrypt {
 	
-	require Convert::UU;
-	#return $cs->encrypt($str);
-	return Convert::UU::uuencode($cs->encrypt($str));
-}
+    my ( $key, $str ) = @_;
+    require Crypt::CipherSaber;
+    my $cs = Crypt::CipherSaber->new($key);
 
-sub cipher_decrypt { 
-	my ($key, $str) = @_; 
-	require Crypt::CipherSaber; 
-	my $cs = Crypt::CipherSaber->new($key);
-	require Convert::UU;
-	#return $cs->decrypt($str);
-	return $cs->decrypt(Convert::UU::uudecode($str));
+    # New Behavior:
+    require Convert::UU;
+    return Convert::UU::uuencode( $cs->encrypt($str) );
+
+    # Old Behavior:
+    #return $cs->encrypt($str);
 
 }
+
+sub cipher_decrypt {
+
+    my ( $key, $str ) = @_;
+    require Crypt::CipherSaber;
+    my $cs = Crypt::CipherSaber->new($key);
+
+    # New Behavior:
+    require Convert::UU;
+    return $cs->decrypt( Convert::UU::uudecode($str) );
+
+    # Old Behavior:
+    #return $cs->decrypt($str);
+
+}
+
 sub make_cipher_key { 
 	my $key; 
 	for(0..4){ 
