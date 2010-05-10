@@ -265,6 +265,9 @@ The easiest way to send mail with Dada Mail is to just use the local mail server
 instead of using Google's SMTP servers. Your local mail server will have a different, but hopefully higher limitation, than 
 the Google Apps limitation - hopefully 500 messages/hour and higher. 
 
+One possible problem with this method is that subscribers with email addresses belonging to your domain (and which have addresses administrated by Google Apps) 
+I<will not receive> messages sent by Dada Mail, since sending will be done to the local email account - which probably won't exist. 
+
 =head3 SPF record? 
 
 The only thing you want to make sure is set up correctly is the SPF record for sending email using your local mail server. How to do that is 
