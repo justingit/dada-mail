@@ -1474,9 +1474,15 @@ sub _find_inline_attachment_entity {
 sub massage { 
 
 	my $self = shift; 
+	
+	# Change the redirect tags
 	my $s    = shift; 
 	   $s    =~ s/\[redirect\=(.*?)\]/$1/eg; 
 	   
+	# desensitize any current subscribe/unsubscribe urls: 
+	$s =~ s{$DADA::Config::PROGRAM_URL/u/$self->{list}/(.*?)/(.*?)/}{$DADA::Config::PROGRAM_URL/u/$self->{list}/user/example.com/};
+	$s =~ s{$DADA::Config::PROGRAM_URL/s/$self->{list}/(.*?)/(.*?)/}{$DADA::Config::PROGRAM_URL/s/$self->{list}/user/example.com/};
+	
 	return $s; 
 	
 }
