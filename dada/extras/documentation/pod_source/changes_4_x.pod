@@ -30,6 +30,55 @@ This problem does not impact your List Password, or the Dada Mail Root Password 
 both of which are saved in a one-way encryption, that is separate from the way 
 POP3/SMTP passwords are saved in Dada Mail. 
 
+=head2 Bug Fixes 4.0.5
+
+=head3 Subscriptions are not logged in the usage log. 
+
+http://github.com/justingit/dada-mail/issues/closed#issue/37
+
+=head3 Subscribers can be subscribed more than once to the black list
+
+http://github.com/justingit/dada-mail/issues/closed#issue/38
+
+=head3 Dada Bridge sending broken if, "Strip attachments that have the following file ending or mime-type:" is enabled
+
+http://github.com/justingit/dada-mail/issues/closed#issue/41
+
+=head3 "Soft_Max_Size_Of_Any_Message" Dada Bridge plugin var not in "example_dada_config.txt" or the .dada_config semi-auto install template
+
+http://github.com/justingit/dada-mail/issues/closed#issue/42
+
+=head3 No List-Unsubscribe header in some email messages
+
+http://github.com/justingit/dada-mail/issues/closed#issue/43
+
+=head3 Can't call method "prepare" on an undefined value at /DADA/Profile.pm line 59"
+
+http://github.com/justingit/dada-mail/issues/closed#issue/44
+
+=head3 Dada Bridge doesn't give friendly message about info being saved when you save info
+
+http://github.com/justingit/dada-mail/issues/closed#issue/47
+
+=head3 POP3/SMTP passwords corrupted? 
+
+http://github.com/justingit/dada-mail/issues/closed#issue/45
+
+=head3 Archived messages for discussion lists may have member-specific unsubscribe links
+
+http://github.com/justingit/dada-mail/issues/closed#issue/46
+
+=head3 Send a Webpage gives unhelpful error if you enter a wrong URL of a missing page
+
+http://github.com/justingit/dada-mail/issues/closed#issue/17
+
+=head3 4.0.1 Open discussion lists broken
+
+http://github.com/justingit/dada-mail/issues/closed#issue/13
+
+This bug wasn't actually closed with this release, but from a previous release. It has
+though, been confirmed to be closed with this release. 
+
 =head1 4.0.4
 
 =head2 Changes 4.0.4
