@@ -606,28 +606,29 @@ sub send_url_email {
             }
                         
             my $proxy = defined($q->param('proxy')) ? $q->param('proxy') : undef;
-
-            my $mailHTML = new DADA::App::MyMIMELiteHTML(
-												remove_jscript => $remove_javascript,  
+			
+	        my $mailHTML = new DADA::App::MyMIMELiteHTML(
+													remove_jscript => $remove_javascript,  
 												
-												'IncludeType'  => $url_options, 
-                                                'TextCharset'  => $li->{charset_value},
-                                                'HTMLCharset'  => $li->{charset_value}, 
+													'IncludeType'  => $url_options, 
+	                                                'TextCharset'  => $li->{charset_value},
+	                                                'HTMLCharset'  => $li->{charset_value}, 
                                                 
-                                                HTMLEncoding   => $li->{html_encoding},
-                                                TextEncoding   => $li->{plaintext_encoding},
+	                                                HTMLEncoding   => $li->{html_encoding},
+	                                                TextEncoding   => $li->{plaintext_encoding},
                                      
-                                                 (($proxy) ? (Proxy => $proxy,) :  ()),
-                                                 (($login_details) ? (LoginDetails => $login_details,) :  ()),
+	                                                 (($proxy) ? (Proxy => $proxy,) :  ()),
+	                                                 (($login_details) ? (LoginDetails => $login_details,) :  ()),
 
-                                                (
-                                                ($DADA::Config::CPAN_DEBUG_SETTINGS{MIME_LITE_HTML} == 1) ? 
-                                                (Debug => 1, ) :
-                                                ()
-                                                ), 
+	                                                (
+	                                                ($DADA::Config::CPAN_DEBUG_SETTINGS{MIME_LITE_HTML} == 1) ? 
+	                                                (Debug => 1, ) :
+	                                                ()
+	                                                ), 
                                                                      
-                                                ); 
-                                                
+	                                                ); 
+
+                                
             my $t = $q->param('text_message_body') || 'This email message requires that your mail reader support HTML'; 
             
             
@@ -657,13 +658,40 @@ sub send_url_email {
             my $MIMELiteObj; 
             
             if($q->param('content_from') eq 'url'){ 
-                $MIMELiteObj = $mailHTML->parse($q->param('url'), 
-				safely_encode( $t));
+				
+				my $errors = undef; 
+				eval { 
+					$MIMELiteObj = $mailHTML->parse($q->param('url'), safely_encode( $t));
+				};
+				# DEV: It would be a lot nicer, if this was just printed in our control panel, instead of an error: 
+				if($@){ 
+					$errors .= "Problems with sending a webpage! Make sure you've correctly entered the URL to your webpage!\n"; 
+					$errors .= "* Returned Error: $@"; 
+					my $can_fetch = LWP::Simple::get($q->param('url'));
+					if($can_fetch){ 
+						$errors .= "* Can successfully fetch, " . $q->param('url') . "\n"; 
+					}
+					else { 
+							$errors .= "* Cannot fetch, " . $q->param('url') . " using LWP::Simple::get()\n"; 
+					} 
+					die $errors; 
+				}
             }else{ 
-                $MIMELiteObj = $mailHTML->parse(
-					safely_encode( $q->param('html_message_body')), 
-					safely_encode( $t));
-            }
+				eval { 
+	                $MIMELiteObj = $mailHTML->parse(
+						safely_encode( $q->param('html_message_body')), 
+						safely_encode( $t)
+					);
+            	};
+				if($@){ 
+					my $errors = "Problems sending HTML! \n
+* Are you trying to send a webpage via URL instead?
+* Have you entered anything in the, HTML Version?
+* Returned Error: $@
+";
+					die $errors; 
+				}
+			}
             
             require  DADA::App::FormatMessages; 
             my $fm = DADA::App::FormatMessages->new(-List => $list); 
