@@ -97,11 +97,21 @@ use lib qw(
 #---------------------------------------------------------------------#
 #
 # If you'd like error messages to be printed out in your browser, set the 
-# following to 1. To always include a stack trace, set it to 2.
+# following to 1, like this: 
+
+#	use constant ERRORS_TO_BROWSER => 1;
+	
+# To always include a stack trace, set it to 2, like this: 
 #
-use constant ERRORS_TO_BROWSER => 0;
+#	use constant ERRORS_TO_BROWSER => 2;
+#
+
+use constant ERRORS_TO_BROWSER => 1;
 #
 # Why would you want this commented? Security. 
+#
+# More information would probably be printed to the program's error log
+#
 
 use Carp qw(croak carp); 
 use CGI::Carp qw(fatalsToBrowser set_message);
@@ -124,22 +134,6 @@ use CGI::Carp qw(fatalsToBrowser set_message);
       set_message(\&handle_errors);
     }
     
-  
-# You can also do this: 
-# The line above, 'use CGI::Carp qw(fatalsToBrowser set_message);', 
-# when changed to:
-#
-#    use CGI::Carp "fatalsToBrowser"; 
-#
-# captures critical server errors created by Dada Mail and shows them 
-# in your Web browser. In other words, instead of seeing the, 
-#
-# "Internal Server Error" 
-# 
-# message in your browser, you'll see something more interesting. 
-# If this does not give you any clue on what's wrong, consider
-# setting the error log - See, "$PROGRAM_ERROR_LOG" in the Config.pm
-# documentation. 
 #---------------------------------------------------------------------#
 
 
