@@ -4803,8 +4803,8 @@ and to say that you've got the freshest tools on the Web.
 
 
 
-$VERSION = 4.0.4; 
-$VER     = '4.0.5 Beta 1 - 05/10/10';
+$VERSION = 4.0.5; 
+$VER     = '4.0.5 Stable';
 
 
 #
