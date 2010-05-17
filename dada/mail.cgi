@@ -6874,9 +6874,9 @@ This was sent to the list owner (<!-- tmpl_var list_settings.list_owner_email --
     my $msg = MIME::Lite->new( Type => 'multipart/mixed' );
 
     $msg->attach(
-        Type => 'text/plain',
-         Data => safely_encode($message ),
-        Encoding    => $li->{plaintext_encoding},
+        Type         => 'text/plain',
+        Data         => safely_encode($message ),
+        Encoding     => $li->{plaintext_encoding},
 
 		#  Data => $message, 
     );
@@ -6884,10 +6884,10 @@ This was sent to the list owner (<!-- tmpl_var list_settings.list_owner_email --
     my $listname = make_safer( $li->{list} . '_' . $type . '.list' );
 
     $msg->attach(
-        Type        => 'TEXT',
+        Type        => 'text/csv',
         Path        => $tmp_file,
-        Filename    => $listname,
-        Disposition => 'inline',
+        Filename    => $listname . '.csv',
+        Disposition => 'attachment',
         Encoding    => $li->{plaintext_encoding},
     );
 
