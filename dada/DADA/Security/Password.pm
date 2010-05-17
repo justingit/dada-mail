@@ -101,9 +101,10 @@ it'll be.
 =cut
 
 sub encrypt_passwd {
-my $pw=shift;
-return crypt(safely_encode($pw), $DADA::Config::SALT );
+    my $pw = shift;
+    return crypt( safely_encode($pw), $DADA::Config::SALT );
 }
+
 
 =pod
 
