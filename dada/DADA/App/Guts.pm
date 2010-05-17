@@ -271,7 +271,35 @@ sub make_pin {
 				
 		if($args{-crypt} == 1){ 
 			require DADA::Security::Password; 
-			my $enc =  DADA::Security::Password::encrypt_passwd($pin); 
+
+			
+			# DEV: 
+			# This gets slashed out of the an encrypted pin. 
+			# Kind of messy. Better to do it, another way. 
+
+			my $looks_good = 0; 
+			my $limit      = 100; 
+			my $enc        = undef;
+				
+			while($looks_good == 0){ 
+				$enc =  DADA::Security::Password::encrypt_passwd($pin); 
+				# Slash!
+				if($enc =~ m/\//){ 
+					# If the salt is the same, the new encrypted password
+					# will *also* be the same. Not good! 
+					# Change that up: 
+					my @C=('a'..'z', 'A'..'Z', '0'..'9','.');
+					$DADA::Config::SALT=$C[rand(@C)].$C[rand(@C)];
+					$limit --; 
+					if($limit <= 0){ 
+						die "I couldn't figure it out. Sorry, man."; 
+					}
+					# ... 
+				}
+				else { 
+					$looks_good = 1; 
+				}
+			}
 			return $enc; 
 		}
 		else { 
