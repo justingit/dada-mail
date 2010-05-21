@@ -972,8 +972,8 @@ sub login_switch_widget {
     require  DADA::App::ScreenCache; 
     my $c  = DADA::App::ScreenCache->new; 
     
-    if($c->cached('login_switch_widget')){ 
-        my $lsw = $c->pass('login_switch_widget');
+    if($c->cached('login_switch_widget.' . $args->{-list})){ 
+        my $lsw = $c->pass('login_switch_widget.' . $args->{-list});
            $lsw =~ s/\[LOCATION\]/$location/g; 
            return $lsw; 
       }
@@ -1019,7 +1019,7 @@ sub login_switch_widget {
 		$scrn = '';
 	}
 	
-	$c->cache('login_switch_widget', \$scrn);
+	$c->cache('login_switch_widget.' . $args->{-list}, \$scrn);
 	
 	$scrn =~ s/\[LOCATION\]/$location/g; 
 	
