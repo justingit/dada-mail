@@ -352,7 +352,7 @@ If you can help in fleshing this list out, it would be really helpful to me - co
 
 L<http://bluehost.com>
 
-According to L<http://helpdesk.bluehost.com/kb/index.php?x=&mod_id=2&root=27&id=135> 
+According to L<http://helpdesk.bluehost.com/index.php/kb/article/000469> 
 
 =for html <blockquote><em>
 
