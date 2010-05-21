@@ -648,7 +648,6 @@ sub run {
 	'ver'                     =>    \&ver, 
 	'css'                     =>    \&css, 
 	'resend_conf'             =>    \&resend_conf, 
-	'clear_screen_cache'      =>    \&clear_screen_cache, 
 
 
 
@@ -798,7 +797,7 @@ sub default {
 
     if ( $available_lists[0] ) {
         if ( $q->param('error_invalid_list') != 1 ) {
-            if ( $c->cached('default') ) { $c->show('default'); return; }
+            if (!$c->profile_on && $c->cached('default') ) { $c->show('default'); return; }
         }
 
 		my $scrn = ''; 
@@ -822,7 +821,7 @@ sub default {
        $scrn .= list_template( -Part => "footer" );
 
         e_print($scrn); 
-        if ( $available_lists[0] && $q->param('error_invalid_list') != 1 ) {
+        if (!$c->profile_on && $available_lists[0] && $q->param('error_invalid_list') != 1 ) {
             $c->cache( 'default', \$scrn );
         }
 
@@ -885,7 +884,7 @@ sub list_page {
     $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     if ( !$email && !$set_flavor && ( $q->param('error_no_email') != 1 ) ) {
-        if ( $c->cached( 'list/' . $list ) ) {
+        if (!$c->profile_on && $c->cached( 'list/' . $list ) ) {
             $c->show( 'list/' . $list );
             return;
         }
@@ -918,7 +917,7 @@ sub list_page {
 
     e_print($scrn);
 
-    if ( !$email && !$set_flavor && ( $q->param('error_no_email') != 1 ) ) {
+    if (!$c->profile_on && !$email && !$set_flavor && ( $q->param('error_no_email') != 1 ) ) {
         $c->cache( 'list/' . $list, \$scrn );
     }
 
@@ -937,10 +936,6 @@ sub admin {
         return;
     } 
     
-    #if(! $q->param('login_widget') && $DADA::Config::DISABLE_OUTSIDE_LOGINS != 1){ 
-    #    if($c->cached('admin')){ $c->show('admin'); return;}
-    #}
-    
     my $scrn = list_template(
 		-Part       => "header",
         -Title      => "Administration",
@@ -950,16 +945,13 @@ sub admin {
 	);
           
     my $login_widget = $q->param('login_widget') || $DADA::Config::LOGIN_WIDGET; 
-    
+
     require DADA::Template::Widgets; 
     $scrn .= DADA::Template::Widgets::admin(-login_widget => $login_widget, -cgi_obj => $q); 
     $scrn .= (list_template(-Part => "footer", -End_Form   => 0)); 
     e_print($scrn); 
-    
-    #if(! $q->param('login_widget') && $DADA::Config::DISABLE_OUTSIDE_LOGINS != 1){    
-    #    $c->cache('admin', \$scrn);
-    #}
-    
+
+
     return;
 }
 
@@ -4190,7 +4182,7 @@ sub view_archive {
 
         my $start = int( $q->param('start') ) || 0;
 
-        if ( $c->cached( $list . '.admin.view_archive.index.' . $start ) ) {
+        if (!$c->profile_on && $c->cached( $list . '.admin.view_archive.index.' . $start ) ) {
             $c->show( $list . '.admin.view_archive.index.' . $start );
             return;
         }
@@ -4292,8 +4284,9 @@ sub view_archive {
         $scrn .= ( admin_template_footer( -List => $list,, -Form => 0 ) );
         e_print($scrn);
 
-        $c->cache( $list . '.admin.view_archive.index.' . $start, \$scrn );
-
+		if(!$c->profile_on){ # that's it? 
+        	$c->cache( $list . '.admin.view_archive.index.' . $start, \$scrn );
+		}
         return;
 
     }
@@ -7355,7 +7348,7 @@ sub archive {
         if (   $li->{archive_send_form} != 1
             && $li->{captcha_archive_send_form} != 1 )
         {
-            if ( $c->cached( 'archive/' . $list . '/' . $start ) ) {
+            if (!$c->profile_on && $c->cached( 'archive/' . $list . '/' . $start ) ) {
                 $c->show( 'archive/' . $list . '/' . $start );
                 return;
             }
@@ -7500,7 +7493,8 @@ sub archive {
 
         e_print($scrn);
 
-        if (   $li->{archive_send_form} != 1
+        if (!$c->profile_on &&
+	  		$li->{archive_send_form} != 1
             && $li->{captcha_archive_send_form} != 1 )
         {
             $c->cache( 'archive/' . $list . '/' . $start, \$scrn );
@@ -7540,7 +7534,9 @@ sub archive {
             && $li->{captcha_archive_send_form} != 1 )
         {
 
-            if ( $c->cached( 'archive/' . $list . '/' . $id ) ) {
+            if (!$c->profile_on &&
+	 			$c->cached( 'archive/' . $list . '/' . $id ) 
+			) {
                 $c->show( 'archive/' . $list . '/' . $id );
                 return;
             }
@@ -7737,7 +7733,8 @@ sub archive {
 
         e_print($scrn);
 
-        if (   $li->{archive_send_form} != 1
+        if (!$c->profile_on &&
+	   		$li->{archive_send_form} != 1
             && $li->{captcha_archive_send_form} != 1 )
         {
             $c->cache( 'archive/' . $list . '/' . $id, \$scrn );
@@ -7849,7 +7846,10 @@ sub search_archive {
     $keyword = xss_filter($keyword); 
     
     if($keyword =~ m/^[A-Za-z]+$/){ # just words, basically.
-        if($c->cached($list.'.search_archive.' . $keyword)){ $c->show($list.'.search_archive.' . $keyword); return;}
+        if(!$c->profile_on && $c->cached($list.'.search_archive.' . $keyword)){ 
+			$c->show($list.'.search_archive.' . $keyword); 
+			return;
+		}
     }
 
 
@@ -7967,7 +7967,7 @@ sub search_archive {
     
     e_print($scrn); 
     
-    if($keyword =~ m/^[A-Za-z]+$/){ # just words, basically.
+    if(!$c->profile_on && $keyword =~ m/^[A-Za-z]+$/){ # just words, basically.
         $c->cache($list.'.search_archive.' . $keyword, \$scrn);
     }
     
@@ -9263,10 +9263,6 @@ sub restore_lists {
 
 }
 
-
-
-
-
 sub subscription_form { 
 
     require DADA::Template::Widgets; 
@@ -9276,9 +9272,6 @@ sub subscription_form {
     
 }
 
-
-
-
 sub subscription_form_html {
 
     print $q->header(); 
@@ -9287,110 +9280,11 @@ sub subscription_form_html {
 
 }
 
-
-
-
 sub subscription_form_js { 
     print $q->header(); 
     my $js_form = js_enc(subscription_form()); 
     e_print('document.write(\'' . $js_form . '\');'); 
 }
-
-
-
-
-
-sub clear_screen_cache {
-
-    if ( root_password_verification( $q->param('root_password') ) ) {
-        if ($process) {
-            if ( $process eq 'view' ) {
-                $c->show( $q->param('filename') );
-            }
-            elsif ( $process eq 'remove' ) {
-                $c->remove( $q->param('filename') );
-                run_clear_screen_cache_screen();
-            }
-            elsif ( $process eq 'flush' ) {
-                $c->flush;
-                run_clear_screen_cache_screen();
-
-            }
-
-        }
-        else {
-
-            run_clear_screen_cache_screen();
-
-        }
-
-    }
-    else {
-        my $scrn = '';
-
-        $scrn .= list_template( -Part => "header", -Title => "Screen Cache" );
-        $scrn .= $q->p(
-"Please enter the correct $DADA::Config::PROGRAM_NAME Root Password to manage the screen cache:",
-            $q->br(),
-            $q->hidden( 'flavor', 'clear_screen_cache' ),
-            $q->password_field( 'root_password', '' ),
-            $q->submit('Continue...')
-          ),
-          $q->p(
-            $q->strong('No'),
-'Changes will be made to your cache files by clicking, &quot;Continue&quot;.'
-          );
-        $scrn .= list_template( -Part => "footer" );
-        e_print($scrn);
-
-    }
-
-    sub run_clear_screen_cache_screen {
-
-        my $file_list = $c->cached_screens();
-        my $scrn      = '';
-        $scrn .= list_template( -Part => "header", -Title => "Screen Cache" );
-
-        my $app_file_list = [];
-
-        foreach my $entry (@$file_list) {
-            $entry->{root_password} = $q->param('root_password');
-
-            my $cutoff_name = $entry->{name};
-
-            my $l    = length($cutoff_name);
-            my $size = 50;
-            my $take = $l < $size ? $l : $size;
-            $cutoff_name = substr( $cutoff_name, 0, $take );
-            $entry->{cutoff_name} = $cutoff_name;
-            $entry->{dotdot} = $l < $size ? '' : '...';
-
-            push( @$app_file_list, $entry );
-
-        }
-        require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen(
-            {
-                -screen => 'clear_screen_cache.tmpl',
-                -email  => $email,
-                -vars   => {
-
-                    file_list     => $app_file_list,
-                    root_password => $q->param('root_password'),
-                    cache_active  => $DADA::Config::SCREEN_CACHE eq "1" ? 1 : 0,
-
-                },
-            }
-        );
-
-        $scrn .= list_template( -Part => "footer" );
-        e_print($scrn);
-
-    }
-
-}
-
-
 
 sub test_layout {
 
@@ -10450,9 +10344,21 @@ sub profile_logout {
 	
 	require DADA::Profile::Session;
 	my $prof_sess = DADA::Profile::Session->new;
-	   $prof_sess->logout; 
-	$q->param('logged_out', 1); 
-	profile_login(); 
+
+	$prof_sess->logout; 
+	print $q->header(
+		-cookie => [$prof_sess->logout_cookie],
+        -nph     => $DADA::Config::NPH,
+        -Refresh =>'0; URL=' . $DADA::Config::PROGRAM_URL . '?f=profile_login&logged_out=1', 
+	); 
+    print $q->start_html(
+		-title=>'Logging Out...',
+        -BGCOLOR=>'#FFFFFF'
+    ); 
+    print $q->p($q->a({-href => $DADA::Config::PROGRAM_URL . '?f=profile_login&logged_out=1'}, 'Logging Out...')); 
+    print $q->end_html();
+	return;
+	
 }
 
 
