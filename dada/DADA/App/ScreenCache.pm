@@ -14,11 +14,6 @@ use vars qw($AUTOLOAD);
 
 my %allowed = (); 
 
-
-# This is an attempt to disable this module on purpose... 
-$DADA::Config::SCREEN_CACHE = 0; 
-
-
 sub new {
 
 	my $that = shift; 
@@ -107,6 +102,29 @@ sub cached {
 }
 
 
+sub profile_on { 
+	my $self = shift; 
+	use CGI; 
+	my $q = new CGI; 
+	if($DADA::Config::PROFILE_OPTIONS->{enabled} == 1){ 
+		my $profile_cookie_name = $DADA::Config::PROFILE_OPTIONS->{cookie_params}->{-name};
+		if (grep {$_ eq $profile_cookie_name} $q->cookie()) {
+			if(length($q->cookie($profile_cookie_name)) > 0){  
+				return 1; 
+			}
+			else { 
+				return 0; 
+			}
+		}
+	}
+	else { 
+		return 0; 
+	}
+	
+	
+}
+
+
 
 
 sub show { 
@@ -116,15 +134,20 @@ sub show {
 	my $filename = $self->cache_dir . '/' . $self->translate_name($screen);
 	
 	if($self->cached($screen)){ 
-		open SCREEN, '<', $self->_safe_path($filename) 
-			or croak ("cannot open $filename - $!"); 
+
+		
+		if($filename =~ m/\.(jpg|png|gif)$/){
+			open SCREEN, '<', $self->_safe_path($filename) 
+				or croak ("cannot open $filename - $!");
+			binmode SCREEN; 
+		}
+		else { 
+			open SCREEN, '<:encoding('. $DADA::Config::HTML_CHARSET . ')', $self->_safe_path($filename) 
+				or croak ("cannot open $filename - $!");
+		}
+		
 		while(my $l = <SCREEN>){ 
-			if($filename !~ m/\.(jpg|png|gif)$/){
-				print decode($DADA::Config::HTML_CHARSET, $l) 
-			}
-			else { 
-				print $l;
-			}
+			print $l;
 		}
 
 		close(SCREEN)
@@ -145,8 +168,16 @@ sub pass {
 	my $filename = $self->cache_dir . '/' . $self->translate_name($screen);
 	
 	if($self->cached($screen)){ 
-		open(SCREEN, '<:encoding('. $DADA::Config::HTML_CHARSET . ')', $self->_safe_path($filename)) 
-			or croak ("cannot open '$filename' because: $!"); 
+
+		if($filename =~ m/\.(jpg|png|gif)$/){
+			open SCREEN, '<', $self->_safe_path($filename) 
+				or croak ("cannot open $filename - $!");
+			binmode SCREEN; 
+		}
+		else { 
+			open SCREEN, '<:encoding('. $DADA::Config::HTML_CHARSET . ')', $self->_safe_path($filename) 
+				or croak ("cannot open $filename - $!");
+		}
 		
 		my $return; 
 		while(my $l = <SCREEN>){ 
@@ -175,13 +206,22 @@ sub cache {
 	
 	my $unref = $$data; 
 	return if $DADA::Config::SCREEN_CACHE  != 1;
-	my $file = $self->_safe_path($self->cache_dir . '/' . $self->translate_name($screen)); 
-	open(SCREEN, '>>:encoding('  .$DADA::Config::HTML_CHARSET . ')', $file) 
-		or croak $!;
+	my $filename = $self->_safe_path($self->cache_dir . '/' . $self->translate_name($screen)); 
+	
+	if($filename =~ m/\.(jpg|png|gif)$/){
+		open(SCREEN, '>>', $filename) 
+			or croak $!;
+		binmode SCREEN; 
+	}
+	else { 
+		open(SCREEN, '>>:encoding('  .$DADA::Config::HTML_CHARSET . ')', $filename) 
+			or croak $!;
+	}
+	
 	print SCREEN $unref
 			or croak $!; 
 	close(SCREEN)
-		or croak "couldn't close: '$file' because: $!";
+		or croak "couldn't close: '$filename' because: $!";
 	chmod($DADA::Config::FILE_CHMOD , $self->_safe_path($self->cache_dir . '/' . $self->translate_name($screen)));
 	
 }
