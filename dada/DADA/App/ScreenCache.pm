@@ -80,7 +80,7 @@ sub cache_dir {
 	
 	return if $DADA::Config::SCREEN_CACHE  != 1;
 	
-	return $self->_safe_path($DADA::Config::TMP  . '/cache');
+	return $self->_safe_path($DADA::Config::TMP  . '/_screen_cache');
 	
 }
 
@@ -131,10 +131,13 @@ sub show {
 
 	my $self     = shift; 
 	my $screen   = shift; 
+	my ($args) = @_; 
+	if(!exists($args->{-check_for_header})){ 
+		$args->{-check_for_header} = 0; 
+	}
 	my $filename = $self->cache_dir . '/' . $self->translate_name($screen);
 	
 	if($self->cached($screen)){ 
-
 		
 		if($filename =~ m/\.(jpg|png|gif)$/){
 			open SCREEN, '<', $self->_safe_path($filename) 
@@ -145,7 +148,17 @@ sub show {
 			open SCREEN, '<:encoding('. $DADA::Config::HTML_CHARSET . ')', $self->_safe_path($filename) 
 				or croak ("cannot open $filename - $!");
 		}
+		my $first_line = <SCREEN>; 
 		
+		if($args->{-check_for_header} == 1) {
+			if($first_line !~ m/Content\-Type\:/){
+				require CGI; 
+				my $q = CGI->new; 
+				   $q->charset($DADA::Config::HTML_CHARSET);
+				print $q->header('text/plain'); 
+			}
+		}
+		print $first_line;
 		while(my $l = <SCREEN>){ 
 			print $l;
 		}
@@ -209,12 +222,12 @@ sub cache {
 	my $filename = $self->_safe_path($self->cache_dir . '/' . $self->translate_name($screen)); 
 	
 	if($filename =~ m/\.(jpg|png|gif)$/){
-		open(SCREEN, '>>', $filename) 
+		open(SCREEN, '>', $filename) 
 			or croak $!;
 		binmode SCREEN; 
 	}
 	else { 
-		open(SCREEN, '>>:encoding('  .$DADA::Config::HTML_CHARSET . ')', $filename) 
+		open(SCREEN, '>:encoding('  .$DADA::Config::HTML_CHARSET . ')', $filename) 
 			or croak $!;
 	}
 	
@@ -224,6 +237,7 @@ sub cache {
 		or croak "couldn't close: '$filename' because: $!";
 	chmod($DADA::Config::FILE_CHMOD , $self->_safe_path($self->cache_dir . '/' . $self->translate_name($screen)));
 	
+	return 1; 
 }
 
 
@@ -266,8 +280,20 @@ sub remove {
 	if($self->cached($f)){ 
 	   if(-e $self->_safe_path($self->cache_dir . '/' . $f)){ 
             my $n = unlink($self->_safe_path($self->cache_dir . '/' . $f)); 
-                warn $self->_safe_path($self->cache_dir . '/' . $f) . " didn't go quietly" if $n == 0; 
-	   }
+			if($n == 0) {
+                warn $self->_safe_path($self->cache_dir . '/' . $f) . " didn't go quietly"; 
+	   			return 0; 
+			}
+			else { 
+				return 1; 
+			}
+		}
+		else { 
+			return 0; 
+		}
+	}
+	else { 
+		return 0; 
 	}
 }
 
@@ -325,7 +351,7 @@ sub cached_screens {
 		push(@{$listing}, {name => $f, size =>  int($size/1024)}) ;
 	}
 	
-	closedir(CACHE); stat
+	closedir(CACHE);
 	return $listing; 
 }
 
