@@ -8463,7 +8463,7 @@ sub login {
             
             require DADA::App::ScreenCache; 
             my $c = DADA::App::ScreenCache->new; 
-            $c->remove('login_switch_widget');
+            $c->remove('login_switch_widget.' . $list);
        
             if($DADA::Config::LOG{logins}){
                 require DADA::Logging::Usage;
@@ -8533,7 +8533,7 @@ sub logout {
 
     require DADA::App::ScreenCache; 
     my $c = DADA::App::ScreenCache->new; 
-       $c->remove('login_switch_widget');
+       $c->remove('login_switch_widget.' .$admin_list);
     
     my $l_list   = $admin_list; 
 
@@ -8620,7 +8620,7 @@ sub change_login {
     
     require DADA::App::ScreenCache; 
     my $c = DADA::App::ScreenCache->new; 
-       $c->remove('login_switch_widget'); 
+       $c->remove('login_switch_widget.' . $change_to_list); 
     
     print $q->header(-cookie  => [$new_cookie], 
                       -nph     => $DADA::Config::NPH,
