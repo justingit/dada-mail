@@ -980,7 +980,11 @@ sub _integrity_check {
 sub status {
 
     my $self = shift; 
-    
+    my ($args) = @_; 
+	if(!exists($args->{-mail_fields})){ 
+		$args->{-mail_fields} = 1; 
+	}
+
 	my $lock = $self->lock_file($self->mailout_directory_name); 
 
     warn 'Checking status ' 
@@ -1029,7 +1033,12 @@ sub status {
 	$status->{mailing_time_formatted}
 		= _formatted_runtime($status->{mailing_time}); 
 
-    $status->{email_fields} = $self->mail_fields_from_raw_message();
+	if($args->{-mail_fields} == 1){ 
+    	$status->{email_fields} = $self->mail_fields_from_raw_message();
+	}
+	else { 
+		$status->{email_fields} = {}; 
+	}
 
     $status->{type} = $self->mailout_type;
 
@@ -1616,8 +1625,11 @@ sub _poll {
 		or die "can't open counter: $!";
     flock( FH, LOCK_SH ) 
 		or die "can't flock counter: $!";
-    my $num = <FH>;
-    
+		
+   #my $num = <FH>;
+   # readline alone is 10x faster?!
+	my  $num = readline(*FH);
+ 
     close FH 
 		or die "can't close counter: $!";
 	chmod($DADA::Config::FILE_CHMOD, $file); 
