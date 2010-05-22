@@ -21,11 +21,10 @@ my $Plugin_Config = {};
 
 $Plugin_Config->{Plugin_URL} = $q->url;
 
-$Plugin_Config->{Allow_Manual_Run} = 1;
+# Set to, 1, to enable
+$Plugin_Config->{Allow_Manual_Run} = 0;
 
-# Set a passcode that you'll have to also pass to invoke this script as
-# explained above in, "$Plugin_Config->{Allow_Manual_Run}"
-
+# Pick some sort of passcode, for a semblance of security 
 $Plugin_Config->{Manual_Run_Passcode} = '';
 
 
@@ -54,7 +53,7 @@ sub main {
 	
     if ($process) {
         if ( $process eq 'view' ) {
-            $c->show( $q->param('filename') );
+            $c->show( $q->param('filename'),{-check_for_header => 1} );
         }
         elsif ( $process eq 'remove' ) {
             $c->remove( $q->param('filename') );
@@ -114,15 +113,23 @@ sub view {
         push( @$app_file_list, $entry );
 
     }
+
+    my $curl_location = `which curl`;
+    $curl_location = strip( make_safer($curl_location) );
+
+
     require DADA::Template::Widgets;
 	my $view_template = view_template();
     $scrn .= DADA::Template::Widgets::screen(
         {
 			-data => \$view_template, 
             -vars   => {
-				Plugin_URL    => $Plugin_Config->{Plugin_URL}, 
-                file_list     => $app_file_list,
-                cache_active  => $DADA::Config::SCREEN_CACHE != 0 ? 1 : 0,
+				Plugin_URL          => $Plugin_Config->{Plugin_URL}, 
+				Allow_Manual_Run    => $Plugin_Config->{Allow_Manual_Run},  
+				Manual_Run_Passcode => $Plugin_Config->{Manual_Run_Passcode},
+                file_list           => $app_file_list,
+				curl_location       => $curl_location, 
+                cache_active        => $DADA::Config::SCREEN_CACHE != 0 ? 1 : 0,
             },
         }
     );
@@ -274,8 +281,104 @@ return q{
 		</p>
 
 	<!--/tmpl_if-->
+	
+	<fieldset> 
+	
+	<p>
+	 <label for="cronjob_url">Manual Run URL:</label><br /> 
+	<input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var Plugin_URL -->?run=1&passcode=<!-- tmpl_var Manual_Run_Passcode -->" />
+	</p>
+
+
+
+	<p> <label for="cronjob_command">curl command example (for a cronjob):</label><br /> 
+	<input type="text" class="full" id="cronjob_command" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --data run=1\;passcode=<!-- tmpl_var Manual_Run_Passcode -->\;verbose=0  --url <!-- tmpl_var Plugin_URL -->" />
+	<!-- tmpl_unless curl_location --> 
+		<span class="error">Can't find the location to curl!</span><br />
+	<!-- /tmpl_unless --> 
+
+	<!-- tmpl_unless Allow_Manual_Run --> 
+	    <span class="error">(Currently disabled)</a>
+	<!-- /tmpl_unless --> 
+
+	</p>
+
+
+
+	</fieldset> 
+	
 
 	<!-- end clear_screen_cache.tmpl --> 
 };
 
 }
+
+=pod
+
+=head1 NAME 
+
+screen_cache.cgi - View/Removed Dada Mail cached sceens
+
+=head1 Obtaining The Plugin
+
+screen_cache.cgi is located in the, I<dada/plugins> directory of the Dada Mail distribution, under the name: C<screen_cache.cgi>
+
+=head1 DESCRIPTION 
+
+See the feature overview on Dada Mail's Screen Cache: 
+
+L<http://dadamailproject.com/support/documentation/features-screen_cache.pod.html>
+
+This plugins allows you to view and remove any currently cached screens. 
+
+
+=head1 INSTALLATION
+
+screen_cache.cgi should be installed into your dada/plugins directory. Upload the script and change it's permissions to 755. 
+
+Add this entry to the $ADMIN_MENU array ref:
+
+					{-Title      => 'Screen Cache',
+					 -Title_URL  => $PLUGIN_URL."/screen_cache.cgi",
+					 -Function   => 'screen_cache',
+					 -Activated  => 0,
+					},
+
+It's possible that this has already been added to $ADMIN_MENU and all
+you would need to do is uncomment this entry.
+
+You can then visit the plugin in your web browser, via a URL, like this: 
+
+L<http://example.com/cgi-bin/dada/plugins/screen_cache.cgi>
+
+=head1 Using screen_cache.cgi as a cronjob
+
+This plugin can also be used as a simple cronjob, to periodically flush all the cached screens. 
+
+All that needs to be done is to visit the screen periodically using the URL labeled, B<Manual Run URL:> in the list control panel of this plugin. 
+
+A sample curl command, useful for a cronjob is listed in the textbox labeled, B<curl command example (for a cronjob):>
+
+Running this cronjob every hour, or day, or week, should be plenty. 
+
+You may also just use the, C<rm> command directly, but this has the possibility of removing the wrong directory!
+
+
+=head1 COPYRIGHT
+
+Copyright (c) 2010 Justin Simoni
+
+All rights reserved.
+
+
+=head1 LICENSE
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+=cut
+
+
