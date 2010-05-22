@@ -1046,7 +1046,7 @@ sub mass_send {
 		exit(0); 
 	}
 
-    my $status = $mailout->status; 
+    my $status = $mailout->status({-mail_fields => 0}); 
     
 	my $mailout_id = $status->{id}; 
 	
@@ -1674,7 +1674,7 @@ sub mass_send {
 							
 							warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' calling Mail::MailOut::status() '
 								if $t;
-			                my $batch_status = $mailout->status; 
+			                my $batch_status = $mailout->status({-mail_fields => 0}); 
 		                
 	                       my $batch_log_message = "Subject:$fields{Subject}, Start Time: $log_mail_start_time"; 
 							foreach(keys %$batch_status){ 
@@ -1852,7 +1852,7 @@ sub mass_send {
 			}
 			
 
-			my $ending_status = $mailout->status; # most likely safe to called status() as much as I'd like...
+			my $ending_status = $mailout->status({-mail_fields => 0}); # most likely safe to called status() as much as I'd like...
 			
 			
 			# Old, crufty, complicated stuff...
