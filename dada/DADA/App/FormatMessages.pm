@@ -1789,7 +1789,8 @@ sub email_template {
         }
 
         $args->{-entity}->sync_headers(
-            'Length'      => 'COMPUTE',
+            #'Length'      => 'COMPUTE', #optimization
+			'Length'      => 'ERASE',
             'Nonstandard' => 'ERASE'
         );
 
@@ -1871,7 +1872,8 @@ sub email_template {
             }
 
             $args->{-entity}->sync_headers(
-                'Length'      => 'COMPUTE',
+                #'Length'      => 'COMPUTE', #optimization
+				'Length'      => 'ERASE',
                 'Nonstandard' => 'ERASE'
             );
         }
@@ -1904,7 +1906,7 @@ sub email_template {
 				
 				# Get	
 				my $header_value = 	$args->{-entity}->head->get($header, 0); 
-
+					
               require Email::Address; 
 
 				# Uh.... get each individual.. thingy. 
@@ -1925,33 +1927,32 @@ sub email_template {
 			
 					   # Decode it, 
 					   $phrase = $self->_decode_header($phrase); 
-					   
-					   # Template it Out
-					   $phrase = DADA::Template::Widgets::screen(
-                        {
-                            %screen_vars,
-                            -data => \$phrase, 
-                        }
-                    );
+					  
 					
-					# Encode it
- 					$phrase = $self->_encode_header('just_phrase', $phrase); 
+					if($phrase =~ m/\[|\</){ # does it even look like we have a templated thingy? (optimization)
+						   # Template it Out
+						   $phrase = DADA::Template::Widgets::screen(
+	                        {
+	                            %screen_vars,
+	                            -data => \$phrase, 
+	                        }
+	                    );
+					
+						# Encode it
+	 					$phrase = $self->_encode_header('just_phrase', $phrase); 
 
-                    # Munge! 
-                    #$phrase =~ s{^\"|\"$}{}g; # need this still? 
-				    
-					# Pop it back in, 
-					$addresses[0]->phrase($phrase); 
+						# Pop it back in, 
+						$addresses[0]->phrase($phrase); 
 					
-					# Save it
-                    my $new_header = $addresses[0]->format; 
+						# Save it
+	                    my $new_header = $addresses[0]->format; 
 					
-					# Remove the old
-					$args->{-entity}->head->delete($header);
+						# Remove the old
+						$args->{-entity}->head->delete($header);
 					
-					# Add the new
-					$args->{-entity}->head->add($header, $new_header); 
-					
+						# Add the new
+						$args->{-entity}->head->add($header, $new_header); 
+					} #/ does it even look like we have a templated thingy? (optimization)
                 }
                 else { 
 					
@@ -1974,33 +1975,36 @@ sub email_template {
 
 								
 				# Decode EncWords
-				   $header_value = $self->_decode_header($header_value);
-                	warn 'decode EncWords:' . safely_encode( $header_value)
-						if $t; 
-				
-				# Template
-				$header_value = DADA::Template::Widgets::screen(
-                    {
-                       %screen_vars,
-                        -data                   => \$header_value, 
-                    }
-                ); 
-
-				
-				warn 'Template:' . safely_encode( $header_value)
-					if $t;
-				
-				# Encode
-				$header_value = $self->_encode_header($header, $header_value); 
-				warn 'encode EncWords:' . safely_encode( $header_value)
+				$header_value = $self->_decode_header($header_value);
+                warn 'decode EncWords:' . safely_encode( $header_value)
 					if $t; 
 				
+				if($header_value =~ m/\[|\</){ # has a template? (optimization)
+					
+					# Template
+					$header_value = DADA::Template::Widgets::screen(
+	                    {
+	                       %screen_vars,
+	                        -data                   => \$header_value, 
+	                    }
+	                ); 
+
 				
-				# Remove the old
-				$args->{-entity}->head->delete($header);
+					warn 'Template:' . safely_encode( $header_value)
+						if $t;
 				
-				# Add
-				$args->{-entity}->head->add($header, $header_value);
+					# Encode
+					$header_value = $self->_encode_header($header, $header_value); 
+					warn 'encode EncWords:' . safely_encode( $header_value)
+						if $t; 
+				
+				
+					# Remove the old
+					$args->{-entity}->head->delete($header);
+				
+					# Add
+					$args->{-entity}->head->add($header, $header_value);
+				}  # /has a template? (optimization)
 			 
 				warn 'now:'. safely_encode( $header_value)
 					if $t;
