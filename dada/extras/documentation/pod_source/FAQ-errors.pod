@@ -990,5 +990,18 @@ In the,
 
 directory of your installed Dada Mail, renamed the, C<HTTP> directory to something like, C<HTTP-bak> and this error should clear up.
 
+=head1 Template Problems
+
+=head2 Changes made to $USER_TEMPLATE or $ADMIN_TEMPLATE make no difference to layout
+
+If you're trying to change the layout/design of Dada Mail, but any changes you make do no seem to take hold, see if Screen Caching isn't enabled - 
+it should be enabled by default. Your changes will not be visible, until after you have flushed out the cache. 
+
+See the doc on the Screen Cache feature for more information: 
+
+L<http://dadamailproject.com/support/documentation/features-screen_cache.pod.html>
+
+
+
 =cut
 
