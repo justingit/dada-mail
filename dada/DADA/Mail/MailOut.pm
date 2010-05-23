@@ -1629,17 +1629,17 @@ sub _poll {
    #my $num = <FH>;
    # readline alone is 10x faster?!
 	my  $num = readline(*FH);
- 
+ 	
+	#chomp($num); 
+
     close FH 
 		or die "can't close counter: $!";
 	chmod($DADA::Config::FILE_CHMOD, $file); 
-		
+	
+	# chomp() is not necessary with these guys. 	
     $num =~ s/^\s+//o;
     $num =~ s/\s+$//o;
 
-   # if(!defined($num) || $num eq ''){ 
-   #     croak "Polling, '$file' gave back an undefined value! Stop."
-   # }
     return $num;
 }
 
