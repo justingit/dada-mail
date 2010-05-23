@@ -518,6 +518,12 @@ $ADMIN_MENU = [
 #					 -Activated  => 1,
 #					},
 
+#					{-Title      => 'Screen Cache',
+#					 -Title_URL  => $PLUGIN_URL."/screen_cache.cgi",
+#					 -Function   => 'screen_cache',
+#					 -Activated  => 0,
+#					},
+
 
 				],
 			},

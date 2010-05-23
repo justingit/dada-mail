@@ -171,8 +171,23 @@ sub logout {
         carp 'profile was never logged in!';
         return 0;
     }
-
 }
+
+sub logout_cookie { 
+
+	my $self = shift; 
+	
+	require CGI; 
+	my $q = new CGI;
+	
+	my $cookie = $q->cookie(
+				-name    =>  $DADA::Config::PROFILE_OPTIONS->{cookie_params}->{-name},
+				-value   =>  '',
+				-path    =>  '/',
+	);
+	return $cookie;
+}
+
 
 sub validate_profile_login {
     my $self = shift;
@@ -232,12 +247,10 @@ sub is_logged_in {
 
     if ( $s->is_expired ) {
         return 0;
-
     }
 
     if ( $s->is_empty ) {
         return 0;
-
     }
 
     if ( $s->param('_logged_in') == 1 ) {

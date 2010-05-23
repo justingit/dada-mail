@@ -1,0 +1,54 @@
+=pod
+
+=head1 Screen Cache
+
+Dada Mail's Screen Cache is a simple way to speed up certain parts of Dada Mail. 
+
+When enabled, Dada Mail will cache the output to many of the often-visted screens, 
+including the default screen, the list screen and archive screens, archive result screens, 
+ as well as javascript files, small parts (widgets) of other templates and even images used
+by Dada Mail. 
+
+Caching is especially useful for Dada Mail installations that have many lists, 
+a lot of archives on busy websites. Caching helps in limiting how much the backend
+database is hit - the less the database is queried, the less load there is on 
+your hosting account. Everybody wins! 
+
+=head1 with Profiles
+
+Users who are logged in via their Dada Mail Profile will still see custom screens
+on certain assets of Dada Mail, since these screens will be different for each user. 
+
+=head1 with a UTF-8 configuration
+
+Dada Mail Screen Caches should be 100% comptable with unicode/UTF-8. 
+
+=head1 Location of Cache Screens
+
+Cached Screens are located in a directory called, C<_screen_cache>, inside wherever
+your Dada Mail tmp directory (C<$TMP>) is set up. 
+
+Removing this directory is save to do. If enabled, the cache will be re-created. 
+
+=head1 Managing the Screen Cache
+
+Usually, there's nothing you'll need to do, to keep your cache working just fine. 
+When you make any changes to any Mailing List's settings or archives, the cache will
+be automatically flused of any files, to be re-created again. 
+
+If you are working on a new list-wide or installation-wide design for Dada Mail, 
+it could be helpful to temporarily disable Screen Caching, until your all set with your 
+design. 
+
+Disabling the Screen Cache is as easy as setting the Dada Mail config variable, C<$SCREEN_CACHE> to something 
+other than, C<1>. You can re-enable it at anytime by setting the C<$SCREEN_CACHE> variable to, C<1>. 
+
+
+=head2 Screen Cache Plugin
+
+There's also a plugin available to view and selectively remove cached screens: 
+
+L<http://dadamailproject.com/support/documentation/screen_cache.cgi.html>
+
+
+=cut

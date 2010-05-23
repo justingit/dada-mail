@@ -1,11 +1,12 @@
 #!/usr/bin/perl -w
+package boilerplate; 
 use strict; 
 
 # make sure the DADA lib is in the lib paths!
-use lib qw(../ ../DADA/perllib ../../../../perl ../../../../perllib); 
+use lib qw(../ ../DADA/perllib); 
 
 # use some of those Modules
-use DADA::Config 3.0.0 qw(!:DEFAULT);
+use DADA::Config 4.0.0;
 use DADA::Template::HTML; 
 use DADA::App::Guts;
 use DADA::MailingList::Settings; 
@@ -16,36 +17,47 @@ my $q = new CGI;
    $q->charset($DADA::Config::HTML_CHARSET);
    $q = decode_cgi_obj($q);
 
-# This will take care of all out security woes
-my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q, 
-                                                    -Function => 'boilerplate');
-my $list = $admin_list; 
+run()
+  unless caller();
 
-# get the list information
-my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-my $li = $ls->get; 
+
+sub run { 
+	
+	# This will take care of all out security woes
+	my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q, 
+	                                                    -Function => 'boilerplate');
+	my $list = $admin_list; 
+
+	# get the list information
+	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+	my $li = $ls->get; 
                              
-# header     
-print(admin_template_header(-Title      => "Admin Plugin Example",
-		                -List       => $li->{list},
-		                -Form       => 0,
-		                -Root_Login => $root_login));
+	# header     
+	print(admin_template_header(
+		-Title      => "Admin Plugin Example",
+	    -List       => $li->{list},
+	    -Root_Login => $root_login)
+	);
 	               
-if(!$q->param('process')){ 
+	if(!$q->param('process')){ 
 
-print $q->p('I echo whatever you type in:') . 
-      $q->start_form()                                        . 
-      $q->textfield('echo')                                   . 
-	  $q->hidden('process', 'true')                           .
-	  $q->submit('echo away!')                                .
-	  $q->end_form(); 
-}else{ 
+	print $q->p('I echo whatever you type in:') . 
+	      $q->start_form()                                        . 
+	      $q->textfield('echo')                                   . 
+		  $q->hidden('process', 'true')                           .
+		  $q->submit('echo away!')                                .
+		  $q->end_form(); 
+	}else{ 
 
-	print $q->h1($q->escapeHTML($q->param('echo'))); 
+		print $q->h1($q->escapeHTML($q->param('echo'))); 
+	}
+
+	#footer
+	print admin_template_footer(
+		-List => $list
+	); 
+
 }
-
-#footer
-print admin_template_footer(-List => $list, -Form => 0); 
 
 
 =pod

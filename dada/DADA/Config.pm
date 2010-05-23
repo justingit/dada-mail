@@ -1820,7 +1820,7 @@ http://dadamailproject.com/support/documentation/FAQ-general.pod.html.html#is_th
 
 
 
-$SCREEN_CACHE ||= 0; 
+$SCREEN_CACHE ||= 1; 
 
 
 =pod
@@ -2265,6 +2265,13 @@ $ADMIN_MENU ||= [
 #					 -Title_URL  => $PLUGIN_URL."/dada_bounce_handler.pl",
 #					 -Function   => 'dada_bounce_handler',
 #					 -Activated  => 1,
+#					},
+
+
+#					{-Title      => 'Screen Cache',
+#					 -Title_URL  => $PLUGIN_URL."/screen_cache.cgi",
+#					 -Function   => 'screen_cache',
+#					 -Activated  => 0,
 #					},
 
 

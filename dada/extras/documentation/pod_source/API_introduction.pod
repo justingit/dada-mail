@@ -61,7 +61,7 @@ A wrapper around, C<MIME::Lite::HTML> that fixes a lot of annoyances.
 
 A wrapper around C<Mail::POP3Client> and provides the majority of POP3 access and support in Dada Mail. 
 
-=head2 DADA::App:ScreenCache
+=head2 DADA::App::ScreenCache
 
 Gives caching support for HTML screens in Dada Mail
 

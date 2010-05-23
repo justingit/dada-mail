@@ -700,13 +700,9 @@ sub _format_headers {
 
 			my $subject = $entity->head->get('Subject', 0);
 			   $subject = safely_decode( $subject); 
-
-			warn "orig subject: " . $subject; 
-			
+	
 			my $new_subject = $self->_list_name_subject($subject);
-		
-			warn 'new subject: ' . $new_subject; 
-			
+					
 			$entity->head->delete('Subject');
 			$entity->head->add(   'Subject', safely_encode($new_subject));
 			
