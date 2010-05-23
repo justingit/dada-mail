@@ -49,6 +49,17 @@ my $different_lists = {
     
     },
 
+    reserved_word => { 
+        list             => '_screen_cache', 
+        list_name        => 'Justin!', 
+        list_owner_email => 'justin@skazat.com',  
+        password         => 'abcd', 
+        retype_password  => 'abcd', 
+        info             => 'info', 
+        privacy_policy   => 'privacy_policy',
+        physical_address => 'physical_address', 
+    },
+
 
 };
 my $list_errors = 0; 
@@ -57,7 +68,7 @@ my $flags       = {};
     ok($list_errors == 0); 
     undef($list_errors); 
     undef($flags); 
-    
+ 	   
     
     
     
@@ -83,6 +94,7 @@ my $flags       = {};
     undef($list_errors); 
     undef($flags); 
 
+
  
  
     ($list_errors,$flags) = check_list_setup(-fields => $different_lists->{password_ne_retype_password});
@@ -103,6 +115,13 @@ my $flags       = {};
     ok($flags->{weird_characters} == 1); 
     undef($list_errors); 
     undef($flags);
+
+	# reserved word is piggy backing weird_characters right now... 
+    ($list_errors,$flags) = check_list_setup(-fields => $different_lists->{reserved_word});
+    ok($list_errors >= 1); 
+    ok($flags->{weird_characters} == 1); 
+    undef($list_errors); 
+    undef($flags); 
 
 
     my $test_copy = $different_lists->{normal};
