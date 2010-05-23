@@ -1695,6 +1695,8 @@ sub check_list_setup {
 		$new_list_errors{list_name_bad_characters} = 0;
 	}
 	
+
+	
 	
 
 	
@@ -1748,9 +1750,7 @@ sub check_list_setup {
 		}else{ 
 			 $new_list_errors{password_ne_retype_password} = 0;
 		}
-		
-
-		
+				
 		if(length($fields->{list}) > 16){ 
 			$list_errors++;
 			$new_list_errors{shortname_too_long} = 1;
@@ -1765,13 +1765,24 @@ sub check_list_setup {
 			$new_list_errors{slashes_in_name} = 0;
 		}
 
+		# This is not where I want this, but this'll be where we'll be reserved stuff - 
+		# for now - there really should be a , "reserved_words" error.
+		my $reserved_words = { 
+			_screen_cache => 1, 
+		};
+		
 		if($fields->{list} =~ m/\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\+|\=|\>|\<|\-|\0-\037\177-\377/){ 
         	$list_errors++; 
        		$new_list_errors{weird_characters} = 1;
       	}else{ 
 			if($fields->{list} =~ m/[^a-zA-Z0-9_]/){ 
 				$list_errors++; 
-	       		$new_list_errors{weird_characters} = 1;
+				$new_list_errors{weird_characters} = 1;
+			}
+			# Again, we need this to be its own test. 
+			elsif(exists($reserved_words->{$fields->{list}})){ 
+				$list_errors++; 
+				$new_list_errors{weird_characters} = 1;				
 			}
 			else { 
       			$new_list_errors{weird_characters} = 0;
