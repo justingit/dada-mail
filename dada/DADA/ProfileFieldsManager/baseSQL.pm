@@ -187,6 +187,8 @@ sub add_field {
 
     $self->clear_cache;
 
+	$self->_clear_screen_cache; 
+
     return 1;
 }
 
@@ -321,7 +323,8 @@ sub edit_field {
       "cannot do statement (at: edit_field)! $DBI::errstr\n";
 
     $self->clear_cache;
-
+	$self->_clear_screen_cache; 
+	
     return 1;
 
 }
@@ -358,6 +361,7 @@ sub remove_field {
       "cannot do statement! (at: remove_field) $DBI::errstr\n";
 
     $self->remove_field_attributes( { -field => $args->{ -field } } );
+	$self->_clear_screen_cache; 
     $self->clear_cache;
 
     return 1;
@@ -679,6 +683,7 @@ sub change_field_order {
     $sth->execute()
       or croak "cannot do statement (at: change_field_order)! $DBI::errstr\n";
 
+	$self->_clear_screen_cache; 
     $self->clear_cache;
 
     return 1;
@@ -707,4 +712,11 @@ sub can_have_subscriber_fields {
     return 1;
 }
 
+sub _clear_screen_cache { 
+	
+	require DADA::App::ScreenCache; 
+	my $c = DADA::App::ScreenCache->new; 
+	   $c->flush;
+	
+}
 1;
