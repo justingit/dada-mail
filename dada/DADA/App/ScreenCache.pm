@@ -148,12 +148,12 @@ sub show {
                 require CGI;
                 my $q = CGI->new;
                 $q->charset($DADA::Config::HTML_CHARSET);
-                print $q->header('text/plain');
+                e_print($q->header('text/plain'));
             }
         }
-        print $first_line;
+        e_print($first_line);
         while ( my $l = <SCREEN> ) {
-            print $l;
+            e_print($l);
         }
 
         close(SCREEN)
