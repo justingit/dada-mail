@@ -151,11 +151,18 @@ sub show {
                 e_print($q->header('text/plain'));
             }
         }
-        e_print($first_line);
-        while ( my $l = <SCREEN> ) {
-            e_print($l);
-        }
-
+        if ( $filename =~ m/\.(jpg|png|gif)$/ ) {
+			print($first_line);
+	        while ( my $l = <SCREEN> ) {
+	            print($l);
+	        }	
+		}
+		else { 	
+			e_print($first_line);
+	        while ( my $l = <SCREEN> ) {
+	            e_print($l);
+	        }
+		}
         close(SCREEN)
           or croak("cannot close $filename - $!");
     }
