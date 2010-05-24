@@ -2,6 +2,54 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.1.0
+
+=head2 Changes 4.1.0
+
+=head3 Screen Cache Working Again, Enabled by Default
+
+The Screen Cache API allows Dada Mail to save fully-rendered Dada Mail screens 
+that are commonly viewed. 
+
+=head3 Enabled by Default
+
+The Screen Cache is enabled by default, via setting the C<$SCREEN_CACHE> config variable, to C<1> 
+
+=head3 Changes to the $ADMIN_MENU
+
+A new entry under the, "Plugins" heading has been added to the $ADMIN_MENU variable in the I<Config.pm>, 
+I<dada/DADA/Template/templates/example_dada_config.tmpl> and, I<dada/extras/examples/example_dada_config.txt>
+
+=head3 More information: 
+
+=over
+
+=item * Feature Overview: 
+
+L<http://dadamailproject.com/support/documentation/features-screen_cache.pod.html>
+
+=item * screen_cache.cgi Plugin: 
+
+L<http://dadamailproject.com/support/documentation/features-screen_cache.cgi.html>
+
+=back
+
+=head3 Optimizations in Mass Mailing Speeds
+
+Small Tweaks have been made to the Mass Mailing code in Dada Mail through code profiling
+ which should positively impact Mass Mailing Speeds, upwards of .10 to .25 seconds 
+faster, per message. 
+
+=head2 Bug Fixes 4.1.0
+
+=head3 Slashes in pin for subscribe/unsubsribe links invaidates pin
+
+http://github.com/justingit/dada-mail/issues/closed#issue/48
+
+=head3 "Send Subscribers to List Owner" function not very friendly to use 
+
+http://github.com/justingit/dada-mail/issues/closed#issue/49
+
 =head1 4.0.5
 
 =head2 Changes 4.0.5
