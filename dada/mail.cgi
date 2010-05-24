@@ -7344,15 +7344,15 @@ sub archive {
 
     if ( !$id ) {
 
-# This is strange, because if there is NO id, there wouldn't be a "send a friend this archive" sorta form!?
-        if (   $li->{archive_send_form} != 1
-            && $li->{captcha_archive_send_form} != 1 )
-        {
+		# This is strange, because if there is NO id, there wouldn't be a "send a friend this archive" sorta form!?
+        #if (   $li->{archive_send_form} != 1
+        #    && $li->{captcha_archive_send_form} != 1 )
+        #{
             if (!$c->profile_on && $c->cached( 'archive/' . $list . '/' . $start ) ) {
                 $c->show( 'archive/' . $list . '/' . $start );
                 return;
             }
-        }
+        #}
 
         my $th_entries = [];
 
@@ -7493,11 +7493,14 @@ sub archive {
 
         e_print($scrn);
 
-        if (!$c->profile_on &&
-	  		$li->{archive_send_form} != 1
-            && $li->{captcha_archive_send_form} != 1 )
+        if (!$c->profile_on 
+		#&&
+	  	#	$li->{archive_send_form} != 1
+        #    && $li->{captcha_archive_send_form} != 1 
+		)
         {
             $c->cache( 'archive/' . $list . '/' . $start, \$scrn );
+
         }
         return;
 
