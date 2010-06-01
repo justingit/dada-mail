@@ -797,7 +797,7 @@ sub default {
 
     if ( $available_lists[0] ) {
         if ( $q->param('error_invalid_list') != 1 ) {
-            if (!$c->profile_on && $c->cached('default') ) { $c->show('default'); return; }
+            if (!$c->profile_on && $c->cached('default.scrn') ) { $c->show('default.scrn'); return; }
         }
 
 		my $scrn = ''; 
@@ -822,7 +822,7 @@ sub default {
 
         e_print($scrn); 
         if (!$c->profile_on && $available_lists[0] && $q->param('error_invalid_list') != 1 ) {
-            $c->cache( 'default', \$scrn );
+            $c->cache( 'default.scrn', \$scrn );
         }
 
         return;
@@ -884,8 +884,8 @@ sub list_page {
     $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     if ( !$email && !$set_flavor && ( $q->param('error_no_email') != 1 ) ) {
-        if (!$c->profile_on && $c->cached( 'list/' . $list ) ) {
-            $c->show( 'list/' . $list );
+        if (!$c->profile_on && $c->cached( 'list/' . $list . '.scrn' ) ) {
+            $c->show( 'list/' . $list  . '.scrn');
             return;
         }
     }
@@ -918,7 +918,7 @@ sub list_page {
     e_print($scrn);
 
     if (!$c->profile_on && !$email && !$set_flavor && ( $q->param('error_no_email') != 1 ) ) {
-        $c->cache( 'list/' . $list, \$scrn );
+        $c->cache( 'list/' . $list . '.scrn', \$scrn );
     }
 
     return;
@@ -4182,8 +4182,8 @@ sub view_archive {
 
         my $start = int( $q->param('start') ) || 0;
 
-        if (!$c->profile_on && $c->cached( $list . '.admin.view_archive.index.' . $start ) ) {
-            $c->show( $list . '.admin.view_archive.index.' . $start );
+        if (!$c->profile_on && $c->cached( $list . '.admin.view_archive.index.' . $start  . '.scrn' ) ) {
+            $c->show( $list . '.admin.view_archive.index.' . $start . '.scrn');
             return;
         }
 
@@ -4285,7 +4285,7 @@ sub view_archive {
         e_print($scrn);
 
 		if(!$c->profile_on){ # that's it? 
-        	$c->cache( $list . '.admin.view_archive.index.' . $start, \$scrn );
+        	$c->cache( $list . '.admin.view_archive.index.' . $start  . '.scrn', \$scrn );
 		}
         return;
 
@@ -7348,8 +7348,8 @@ sub archive {
         #if (   $li->{archive_send_form} != 1
         #    && $li->{captcha_archive_send_form} != 1 )
         #{
-            if (!$c->profile_on && $c->cached( 'archive/' . $list . '/' . $start ) ) {
-                $c->show( 'archive/' . $list . '/' . $start );
+            if (!$c->profile_on && $c->cached( 'archive/' . $list . '/' . $start  . '.scrn') ) {
+                $c->show( 'archive/' . $list . '/' . $start  . '.scrn');
                 return;
             }
         #}
@@ -7499,7 +7499,7 @@ sub archive {
         #    && $li->{captcha_archive_send_form} != 1 
 		)
         {
-            $c->cache( 'archive/' . $list . '/' . $start, \$scrn );
+            $c->cache( 'archive/' . $list . '/' . $start . '.scrn', \$scrn );
 
         }
         return;
@@ -7538,9 +7538,9 @@ sub archive {
         {
 
             if (!$c->profile_on &&
-	 			$c->cached( 'archive/' . $list . '/' . $id ) 
+	 			$c->cached( 'archive/' . $list . '/' . $id . '.scrn' ) 
 			) {
-                $c->show( 'archive/' . $list . '/' . $id );
+                $c->show( 'archive/' . $list . '/' . $id . '.scrn' );
                 return;
             }
         }
@@ -7740,7 +7740,7 @@ sub archive {
 	   		$li->{archive_send_form} != 1
             && $li->{captcha_archive_send_form} != 1 )
         {
-            $c->cache( 'archive/' . $list . '/' . $id, \$scrn );
+            $c->cache( 'archive/' . $list . '/' . $id . '.scrn', \$scrn );
 
         }
 
@@ -7764,7 +7764,10 @@ sub archive_bare {
     }
     
     
-    if($c->cached('archive_bare.' . $list . '.' . $id . '.' . $q->param('admin'))){ $c->show('archive_bare.' . $list . '.' . $id . '.' . $q->param('admin')); return;}
+    if($c->cached('archive_bare.' . $list . '.' . $id . '.' . $q->param('admin') . '.scrn')){ 
+		$c->show('archive_bare.' . $list . '.' . $id . '.' . $q->param('admin') . '.scrn'); 
+		return;
+	}
 
     require DADA::MailingList::Archives;
            $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
@@ -7808,7 +7811,7 @@ sub archive_bare {
        $scrn .= $la->massaged_msg_for_display(-key => $id); 
     e_print($scrn); 
     
-    $c->cache('archive_bare.' . $list . '.' . $id . '.' . $q->param('admin'), \$scrn); 
+    $c->cache('archive_bare.' . $list . '.' . $id . '.' . $q->param('admin') . '.scrn', \$scrn); 
     
     return; 
 }
@@ -7849,8 +7852,8 @@ sub search_archive {
     $keyword = xss_filter($keyword); 
     
     if($keyword =~ m/^[A-Za-z]+$/){ # just words, basically.
-        if(!$c->profile_on && $c->cached($list.'.search_archive.' . $keyword)){ 
-			$c->show($list.'.search_archive.' . $keyword); 
+        if(!$c->profile_on && $c->cached($list.'.search_archive.' . $keyword . '.scrn')){ 
+			$c->show($list.'.search_archive.' . $keyword . '.scrn'); 
 			return;
 		}
     }
@@ -7971,7 +7974,7 @@ sub search_archive {
     e_print($scrn); 
     
     if(!$c->profile_on && $keyword =~ m/^[A-Za-z]+$/){ # just words, basically.
-        $c->cache($list.'.search_archive.' . $keyword, \$scrn);
+        $c->cache($list.'.search_archive.' . $keyword . '.scrn', \$scrn);
     }
     
     return; 
@@ -8226,7 +8229,7 @@ sub archive_rss {
                     
                 if($args{-type} eq 'rss'){ 
                     
-                    if($c->cached('archive_rss/' . $list)){ $c->show('archive_rss/' . $list); return;}
+                    if($c->cached('archive_rss/' . $list)){ $c->show('archive_rss/' . $list . '.scrn'); return;}
                     
                     require DADA::MailingList::Archives;
                     $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
@@ -8237,13 +8240,13 @@ sub archive_rss {
 
                     e_print($scrn); 
                     
-                    $c->cache('archive_rss/' . $list, \$scrn); 
+                    $c->cache('archive_rss/' . $list . '.scrn', \$scrn); 
                     return; 
                     
                     
                 }elsif($args{-type} eq 'atom'){ 
                 
-                    if($c->cached('archive_atom/' . $list)){ $c->show('archive_atom/' . $list); return;}
+                    if($c->cached('archive_atom/' . $list)){ $c->show('archive_atom/' . $list . '.scrn'); return;}
 
                     require DADA::MailingList::Archives;
                     $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
@@ -8251,7 +8254,7 @@ sub archive_rss {
                     my $scrn = $q->header('application/xml') . $archive->atom_index(); 
                     e_print($scrn); 
                     
-                    $c->cache('archive_atom/' . $list, \$scrn); 
+                    $c->cache('archive_atom/' . $list . '.scrn', \$scrn); 
                     return; 
                     
                 }else{ 
@@ -8466,7 +8469,7 @@ sub login {
             
             require DADA::App::ScreenCache; 
             my $c = DADA::App::ScreenCache->new; 
-            $c->remove('login_switch_widget.' . $list);
+            $c->remove('login_switch_widget.' . $list . '.scrn');
        
             if($DADA::Config::LOG{logins}){
                 require DADA::Logging::Usage;
@@ -8536,7 +8539,7 @@ sub logout {
 
     require DADA::App::ScreenCache; 
     my $c = DADA::App::ScreenCache->new; 
-       $c->remove('login_switch_widget.' .$admin_list);
+       $c->remove('login_switch_widget.' .$admin_list . '.scrn');
     
     my $l_list   = $admin_list; 
 
@@ -8623,7 +8626,7 @@ sub change_login {
     
     require DADA::App::ScreenCache; 
     my $c = DADA::App::ScreenCache->new; 
-       $c->remove('login_switch_widget.' . $change_to_list); 
+       $c->remove('login_switch_widget.' . $change_to_list . '.scrn'); 
     
     print $q->header(-cookie  => [$new_cookie], 
                       -nph     => $DADA::Config::NPH,
@@ -9530,13 +9533,13 @@ sub javascripts {
 #warn '$js_lib ' . $js_lib; 
 
     if ( $lt{$js_lib} == 1 ) {
-        if ( $c->cached('javascripts/' . $js_lib) ) { 
-			$c->show('javascripts/' . $js_lib); return; 
+        if ( $c->cached('javascripts/' . $js_lib . '.scrn') ) { 
+			$c->show('javascripts/' . $js_lib . '.scrn'); return; 
 		}
         my $r = $q->header('text/javascript');
         $r .= DADA::Template::Widgets::screen( { -screen => 'javascripts/' . $js_lib } );
         e_print($r);
-        $c->cache( 'javascripts/' . $js_lib, \$r );
+        $c->cache( 'javascripts/' . $js_lib . '.scrn', \$r );
 
     }
     else {
@@ -9588,7 +9591,8 @@ sub img {
     
     
     if($lt{$img_name} == 1){ 
-        if($c->cached($img_name)){ $c->show($img_name); return;}
+        if($c->cached($img_name)){ 
+			$c->show($img_name); return;}
         my $r =  $q->header('image/png'); 
            $r .= DADA::Template::Widgets::screen({-screen => $img_name});
          print $r; 

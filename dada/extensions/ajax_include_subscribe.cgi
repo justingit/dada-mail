@@ -466,8 +466,8 @@ sub default {
     my $c = DADA::App::ScreenCache->new; 
     
   #  if($Cache_Subscribe_Form){ 
-   #     if($c->cached('ajax_subscribe_form')){ 
-	#		$c->show('ajax_subscribe_form'); 
+   #     if($c->cached('ajax_subscribe_form' . '.scrn')){ 
+	#		$c->show('ajax_subscribe_form' . '.scrn'); 
 	#		return;
 	#	}
     #}

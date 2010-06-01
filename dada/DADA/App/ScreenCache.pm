@@ -132,7 +132,7 @@ sub show {
 
     if ( $self->cached($screen) ) {
 
-        if ( $filename =~ m/\.(jpg|png|gif)$/ ) {
+        if ($self->_is_binary($filename)) {
             open SCREEN, '<', DADA::App::Guts::make_safer($filename)
               or croak("cannot open $filename - $!");
             binmode SCREEN;
@@ -151,7 +151,7 @@ sub show {
                 e_print($q->header('text/plain'));
             }
         }
-        if ( $filename =~ m/\.(jpg|png|gif)$/ ) {
+        if ($self->_is_binary($filename)) {
 			print($first_line);
 	        while ( my $l = <SCREEN> ) {
 	            print($l);
@@ -172,6 +172,47 @@ sub show {
 
 }
 
+
+
+
+sub _is_binary { 
+	
+	# This is inherently flawed. 
+	my $self = shift; 
+	my $str  = shift; 
+	
+	# does it have a 3 letter ending? 
+	# What we're saying though is, 
+	# if it's got what looks like a file ending, that's not, .txt, .html, .csv
+	# or, ".scrn" (dada mail's own thing), it's binary. 
+	# Otherwise, treat it as text that should be encoded/decoded.
+	#
+	
+	if($str =~ m/\.[a-zA-Z]{3}$/){ 
+		# is it text or csv? 
+		if($str =~ m/\.(txt|csv)$/){ 
+			return 0; 
+		}
+		else { 
+			return 1; 
+		}
+	# four letters?
+	}
+	elsif($str =~ m/\.[a-zA-Z]{4}$/){ 
+		# is it, "HTML or scrn?"
+		if($str =~ m/\.(html|scrn)$/){ 
+			return 0; 
+		}
+		else { 
+			return 1; 
+		}
+	}
+	else { 
+		return 0; 
+	}
+}
+
+
 sub pass {
 
     my $self     = shift;
@@ -180,7 +221,7 @@ sub pass {
 
     if ( $self->cached($screen) ) {
 
-        if ( $filename =~ m/\.(jpg|png|gif)$/ ) {
+        if ($self->_is_binary($filename)) {
             open SCREEN, '<', DADA::App::Guts::make_safer($filename)
               or croak("cannot open $filename - $!");
             binmode SCREEN;
@@ -219,7 +260,7 @@ sub cache {
       DADA::App::Guts::make_safer(
         $self->cache_dir . '/' . $self->translate_name($screen) );
 
-    if ( $filename =~ m/\.(jpg|png|gif)$/ ) {
+    if ($self->_is_binary($filename)) {
         open( SCREEN, '>', $filename )
           or croak $!;
         binmode SCREEN;
