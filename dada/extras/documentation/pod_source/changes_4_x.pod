@@ -42,6 +42,10 @@ faster, per message.
 
 =head2 Bug Fixes 4.1.0
 
+=head3 Can't view archived attachments
+
+http://github.com/justingit/dada-mail/issues#issue/54
+
 =head3 Slashes in pin for subscribe/unsubsribe links invaidates pin
 
 http://github.com/justingit/dada-mail/issues/closed#issue/48

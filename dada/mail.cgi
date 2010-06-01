@@ -9402,19 +9402,18 @@ sub file_attachment {
         
                         if($args{-inline_image_mode} == 1){ 
                         
-                            if($c->cached('view_inline_attachment.' . $list . '.' . $id . '.' . $q->param('cid'))){ $c->show('view_inline_attachment.' . $list . '.' . $id . '.' . $q->param('cid')); return;}
+                            if($c->cached('view_inline_attachment.' . $list . '.' . $id . '.' . $q->param('cid') . '.cid')){ $c->show('view_inline_attachment.' . $list . '.' . $id . '.' . $q->param('cid') . '.cid'); return;}
                                 my $scrn =  $la->view_inline_attachment(-id => $q->param('id'), -cid => $q->param('cid')); 
-								e_print($scrn);
-                                $c->cache('view_inline_attachment.' . $list . '.' . $id . '.' . $q->param('cid'), \$scrn);
+								# Bettin' that it's binary (or at least, unencoded)
+								print($scrn);
+                                $c->cache('view_inline_attachment.' . $list . '.' . $id . '.' . $q->param('cid') . '.cid', \$scrn);
                                 return; 
                         }else{ 
-                        
-                            my $mode = $q->param('mode'); 
-                            
-                            if($c->cached('view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename') . '.' . $mode)){ $c->show('view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename') . '.' . $mode); return;}
-                            my $scrn = $la->view_file_attachment(-id => $q->param('id'), -filename => $q->param('filename'), -mode => $mode); 
-							e_print($scrn); 
-                            $c->cache('view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename') . '.' . $mode, \$scrn);
+                            if($c->cached('view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename'))){ $c->show('view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename')); return;}
+                            my $scrn = $la->view_file_attachment(-id => $q->param('id'), -filename => $q->param('filename')); 
+							# Binary. Well, actually, *probably* - how would you figure out the content-type of an attached file? 
+							print($scrn); 
+                            $c->cache('view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename'), \$scrn);
 
                             
                         }
