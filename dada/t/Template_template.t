@@ -53,7 +53,7 @@ while(defined($file = readdir TMPL)) {
 
 foreach my $test_file(@files){ 
 
-	html_ok( strip_comments(open_file($dir . '/' . $test_file)), $test_file);
+	html_ok( strip_comments(open_file($dir . '/' . $test_file)), $test_file . 'through Lint test');
        
 	eval { 
     my $template = HTML::Template::Expr->new(path => $dir,
