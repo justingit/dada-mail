@@ -494,6 +494,12 @@ sub profile_update_email_report {
             {
                 -email => $info->{update_email},
                 -skip  => [
+					'closed_list', # DEV: I guess this is more of a design idea - 
+								   # Should a subscriber, who is on a closed list, 
+								   # be allowed to update their email address? \
+								   # Since an address corresponds to a person, it make sense, 
+								   # Although, I guess this could be used for nefarious purposes. 
+								   # Ugh. Would like this to be some sort of option... 
                     'over_subscription_quota',
                     'already_sent_sub_confirmation',
                     'no_list',
