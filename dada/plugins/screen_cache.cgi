@@ -22,7 +22,7 @@ my $Plugin_Config = {};
 $Plugin_Config->{Plugin_URL} = $q->url;
 
 # Set to, 1, to enable
-$Plugin_Config->{Allow_Manual_Run} = 0;
+$Plugin_Config->{Allow_Manual_Run} = 1;
 
 # Pick some sort of passcode, for a semblance of security 
 $Plugin_Config->{Manual_Run_Passcode} = '';
