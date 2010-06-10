@@ -233,6 +233,16 @@ sub pass {
         }
 
         my $return;
+
+		# If the first line is a, "Content-Type" line, skip it. 
+        my $first_line = <SCREEN>;
+        if ( $first_line =~ m/Content\-Type\:/ ) {
+			# ... 
+        }
+		else { 
+			$return .= $first_line; 
+		}
+		 
         while ( my $l = <SCREEN> ) {
             $return .= $l;
         }
