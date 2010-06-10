@@ -4346,7 +4346,7 @@ encrypted.
 	display_attachments          => 1,
 	add_subscribe_form_to_feeds  => 1, 
 	
-	add_social_bookmarking_badges => 0, 
+	add_social_bookmarking_badges => 1, 
 	
 	# Can be set to, "none", "spam_me_not", or, "recaptcha_mailhide"
 	archive_protect_email         => 'spam_me_not', 
