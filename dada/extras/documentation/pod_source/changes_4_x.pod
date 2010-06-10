@@ -11,16 +11,16 @@
 The Screen Cache API allows Dada Mail to save fully-rendered Dada Mail screens 
 that are commonly viewed. 
 
-=head3 Enabled by Default
+=head4 Enabled by Default
 
 The Screen Cache is enabled by default, via setting the C<$SCREEN_CACHE> config variable, to C<1> 
 
-=head3 Changes to the $ADMIN_MENU
+=head4 Changes to the $ADMIN_MENU
 
 A new entry under the, "Plugins" heading has been added to the $ADMIN_MENU variable in the I<Config.pm>, 
 I<dada/DADA/Template/templates/example_dada_config.tmpl> and, I<dada/extras/examples/example_dada_config.txt>
 
-=head3 More information: 
+=head4 More information: 
 
 =over
 
@@ -40,7 +40,25 @@ Small Tweaks have been made to the Mass Mailing code in Dada Mail through code p
  which should positively impact Mass Mailing Speeds, upwards of .10 to .25 seconds 
 faster, per message. 
 
+=head3 Social Bookmarking/Link Sharing Buttons for archive screens Enabled by Default
+
+Older, unused social bookmarking sites have been removed (as well as Fark, because,well...)
+
+The Facebook link sharing button has also been added. 
+
 =head2 Bug Fixes 4.1.0
+
+=head3 Missing closing, "</ul>" HTML tag in profile_update_email_confirm.tmpl
+
+http://github.com/justingit/dada-mail/issues/closed#issue/57
+
+=head3 Profile email updates cannot happen on closed lists
+
+http://github.com/justingit/dada-mail/issues/closed#issue/56
+
+=head3 Unpaired divs in list_page_screen.tmpl
+
+http://github.com/justingit/dada-mail/issues/closed#issue/55
 
 =head3 Can't view archived attachments
 
