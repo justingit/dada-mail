@@ -8191,7 +8191,6 @@ sub archive_rss {
                 @_
                ); 
                
-
     my $list_exists = check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle);
     
     if ($list_exists == 0){
@@ -8229,7 +8228,10 @@ sub archive_rss {
                     
                 if($args{-type} eq 'rss'){ 
                     
-                    if($c->cached('archive_rss/' . $list)){ $c->show('archive_rss/' . $list . '.scrn'); return;}
+                    if($c->cached('archive_rss/' . $list)){ 
+						$c->show('archive_rss/' . $list . '.scrn'); 
+						return;
+					}
                     
                     require DADA::MailingList::Archives;
                     $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
@@ -8246,7 +8248,10 @@ sub archive_rss {
                     
                 }elsif($args{-type} eq 'atom'){ 
                 
-                    if($c->cached('archive_atom/' . $list)){ $c->show('archive_atom/' . $list . '.scrn'); return;}
+                    if($c->cached('archive_atom/' . $list)){ 
+						$c->show('archive_atom/' . $list . '.scrn'); 
+						return;
+					}
 
                     require DADA::MailingList::Archives;
                     $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
