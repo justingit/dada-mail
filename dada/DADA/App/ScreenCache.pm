@@ -89,8 +89,9 @@ sub cached {
     my $screen = shift;
 
     return if $DADA::Config::SCREEN_CACHE != 1;
-
-    if ( -f $self->cache_dir . '/' . $self->translate_name($screen) ) {
+	my $filename = make_safer($self->cache_dir . '/' . $self->translate_name($screen)); 
+	#    exists          readable. 
+    if ( -e $filename && -r _ ) { 
         return 1;
     }
     else {
@@ -264,35 +265,47 @@ sub cache {
     my $screen = shift;
     my $data   = shift;
 
-    my $unref = $$data;
-    return if $DADA::Config::SCREEN_CACHE != 1;
-    my $filename =
-      DADA::App::Guts::make_safer(
-        $self->cache_dir . '/' . $self->translate_name($screen) );
+	eval { 
+	    my $unref = $$data;
+	    return if $DADA::Config::SCREEN_CACHE != 1;
+	    my $filename =
+	      DADA::App::Guts::make_safer(
+	        $self->cache_dir . '/' . $self->translate_name($screen) );
 
-    if ($self->_is_binary($filename)) {
-        open( SCREEN, '>', $filename )
-          or croak $!;
-        binmode SCREEN;
-    }
-    else {
-        open( SCREEN, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')',
-            $filename )
-          or croak $!;
-    }
 
-    print SCREEN $unref
-      or croak $!;
-    close(SCREEN)
-      or croak "couldn't close: '$filename' because: $!";
-    chmod(
-        $DADA::Config::FILE_CHMOD,
-        DADA::App::Guts::make_safer(
-            $self->cache_dir . '/' . $self->translate_name($screen)
-        )
-    );
+		
+	    if ($self->_is_binary($filename)) {
+	        open( SCREEN, '>', $filename )
+	          or croak $!;
+	        binmode SCREEN;
+	    }
+	    else {
+	        open( SCREEN, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')',
+	            $filename )
+	          or croak 'Cannot open, ' . $filename . ' ' .$!;
+	    }
 
-    return 1;
+	    print SCREEN $unref
+	      or croak $!;
+	    close(SCREEN)
+	      or croak "couldn't close: '$filename' because: $!";
+	    chmod(
+	        $DADA::Config::FILE_CHMOD,
+	        DADA::App::Guts::make_safer(
+	            $self->cache_dir . '/' . $self->translate_name($screen)
+	        )
+	    );
+	};
+	
+	if($@){ 
+		carp "Problems with Screen Cache - Directory/File permissions error?: $@"; 
+		return 0; 
+	}
+	else { 
+		return 1;
+	}
+
+    
 }
 
 sub flush {
