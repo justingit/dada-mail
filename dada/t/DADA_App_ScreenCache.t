@@ -23,8 +23,8 @@ ok($c->cache_dir eq $DADA::Config::TMP  . '/_screen_cache', "dir is giving back 
 
 #cache something; 
 my $filename       = 'something.txt'; 
-my $something      = 'something'; 
-my $something_else = 'something_else'; 
+my $something      = 'something' . $dada_test_config::UTF8_STR; 		# test with a UTF-8 string!
+my $something_else = 'something_else' . $dada_test_config::UTF8_STR;    # test with a UTF-8 string! 
 
 ok($c->cache($filename, \$something) == 1, "caching worked!"); 
 ok($c->cached($filename)             == 1, "reporting that it is cached."); 
