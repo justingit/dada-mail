@@ -11,6 +11,37 @@ Key:
 [?] Someday
 
 
+[ ] Post Mark support - got the go-ahead from those guys... 
+
+
+[ ] Twitter thing needs a tester... and maybe switch to bitly for the URL shortening stuff.. 
+
+[ ] The sub/unsub log really needs updating - with an SQL version. Some fields that would be nice. An easy way to view this information. An easy way to export this information
+
+email, list, action, origin of action, date.... what else? 
+
+action: subscribe, unsubscribe, disable, enable, move...? there are all verbs
+origin of action - from the subscriber, or the list owner? 
+
+
+[ ] Bounce emails are getting out of control. It may be time to use that, "active" field that's in the subscription table, that's currently dormant, to, instead of removing email addresses, we simply, "disable" the address from being used. This'll stop subscription lists from going to hell, if there's a problem on the mail server of our side (and the problem is, it's bouncing our own messages) 
+
+The user can re-enable their subscription through the profile dealy-do. Brilliant! 
+
+I also like the idea of the list owner being able to enable/disable a subscription at-will. For example: vacation messages
+
+[ ] currently, when an individual sending fails, the mass mailing will be killed, to be restarted, later. 
+It could be potentially useful to capture that failing and log the failing, have a way for the list owner to see the failings
+and attach a report of the failings to the, "mailing complete" message. Maybe. 
+
+[ ] This is a good idea for the approval system: 
+http://dadamailproject.com/support/boards/viewtopic.php?f=25&t=2082&p=7931#p7931
+Since the "Subscription requests approving/denying (experimental)" is asking for feedback, 
+I would suggest that the "white list" email addresses can bypass the manual approval process, 
+and be seen as a "pre-approval" list, or that there be an option under this feature to
+ "pre-approve white listed email addresses without sending an approval email".
+
+
 [ ]  How about a place in the "Change lIst INfo" that shows the bounce handler addrss and a little button to allow you 
 to make THAT your list admin?
 
@@ -24,10 +55,6 @@ to make THAT your list admin?
 	
 
 
-[x] mailing list headers - perhaps make the unsub header one-click? Hotmail likes to at least have this as an option - right now it just takes you to the unsub page... 
-
-
-
 [ ] * Irregularity and instability after starting a mass mailing:
 
 I'll tag on this.  Most of the problems I've had happen when the blast starts sending.  
@@ -38,18 +65,18 @@ migrating only the addresses to it (which may point to a separate problem, but t
 old and the database had a lot of what appeared to extraneous entries compared to a new list).
     
 
-
-
-[ ] Probably getting the caching stuff back up and running... 
-
-[ ] On one installation we only send to people on a fixed mailing list but there are three or four different types of message some of which have virtually the same text at each mailing. 
+[ ] On one installation we only send to people on a fixed mailing list but t
+here are three or four different types of message some of which have virtually
+ the same text at each mailing. 
 
 Can we have a means of having multiple templates where we only have to add in a short additional message or different attachment. Selection by meanas of a tickbox would been good.
 
 [ ] One central login for all lists. 
 
 
-[ ] It would be great if the Send the Newest Archived Message to All New Subscribers in the Archive Options section would have a checkmark for sending the latest message to users that are added by the admin.
+[ ] It would be great if the Send the Newest Archived Message to All New Subscribers 
+in the Archive Options section would have a checkmark for sending the latest message 
+to users that are added by the admin.
 
 [ ] Code Optimization.  There are some things, such as the Sending Monitor screen, 
 that load very slowly and I'd like to see some speed gains.
