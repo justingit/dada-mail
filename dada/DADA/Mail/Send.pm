@@ -2893,7 +2893,7 @@ The second way is using the C<mass_send> method. This sends one message to a who
 
 =head2 Warning: Thar Be Dragons
 
-This module is probably one of the oldest in Dada Mail and has a lot of Dragons in the code. It has to be sad that I used to be much less adept at Perl coding. Now, I'm just slightly awful :) 
+This module is probably one of the oldest in Dada Mail and has a lot of Dragons in the code. It has to be said that I used to be much less adept at Perl coding. Now, I'm just slightly awful :) 
 
 Much work has been done to keep the code maintainable and clean, but there is still some nasty bits that are too complex, 
 bits that don't do anything anymore and other bits that are just freaky in weirdness. We've attempted to 
