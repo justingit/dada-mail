@@ -28,7 +28,7 @@ Dada Mail Screen Caches should be 100% comptable with unicode/UTF-8.
 Cached Screens are located in a directory called, C<_screen_cache>, inside wherever
 your Dada Mail tmp directory (C<$TMP>) is set up. 
 
-Removing this directory is save to do. If enabled, the cache will be re-created. 
+Removing this directory is safe to do. If enabled, the cache will be re-created. 
 
 =head1 Managing the Screen Cache
 
