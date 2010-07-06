@@ -10,8 +10,17 @@ Key:
 [*] Naw...
 [?] Someday
 
+[ ] TWO more valid email checks need to be done: 
+
+	[ ] Maybe it's time to put a check, for the list owner/list admin - NOT allowed to subscribe to a site. 
+
+	[ ] There's a small bug in the email verification thingy - if the email address is longer than the SQL field, it'll get concatenated, and you'll have an invalid address subscribed. 
+
+
+
 
 [ ] Post Mark support - got the go-ahead from those guys... 
+	[ ] PostMark does not support attachments! Or even multipart/alternative messages! BIG bummer!
 
 
 [ ] Twitter thing needs a tester... and maybe switch to bitly for the URL shortening stuff.. 
