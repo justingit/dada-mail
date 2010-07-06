@@ -1,0 +1,39 @@
+Dada Mail installer!
+
+First Screen 
+
+* New Install
+* Use an already-existing config! 
+	* This just changed $PROGRAM_CONFIG_FILE_DIR and away we go (perhaps a check to make sure the Perl code in the .dada_config file is valid?) 
+	
+Second Screen
+
+* Location of .dada_files? 
+
+Third Screen
+
+* Backend Options? 
+
+* MySQL (recommended) 
+* Pg
+* SQLite
+* DB Files
+
+( If DB Files, we're all done) 
+
+* Fourth Screen 
+
+	* SQL Info 
+		(table probably already has to be made) 
+		Server,User, Pass, 
+		* TESTER!
+
+* Fifth? Plugins/Extensions? 
+
+(A way to configure certain (easier) plugins/extensions
+
+* Sixth - All set, 
+	* Info
+	* Cleanup
+	
+	
