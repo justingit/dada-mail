@@ -56,10 +56,10 @@ __PACKAGE__->run()
 sub run {
     my %Mode = (
 
-        install_dada        => \&install_dada,
-        upgrade_dada        => \&upgrade_dada,
-        scrn_dada_files_dir => \&scrn_dada_files_dir,
-        check               => \&check,
+        install_dada             => \&install_dada,
+        scrn_upgrade_dada        => \&scrn_upgrade_dada,
+        scrn_configure_dada_mail => \&scrn_configure_dada_mail,
+        check                    => \&check,
 
     );
 
@@ -84,14 +84,14 @@ sub default {
 		<ul>
 		<li>
 		<p>
-		<a href="<!-- tmpl_var Self_URL -->?f=install_dada">
+		<a href="<!-- tmpl_var Self_URL -->?f=scrn_configure_dada_mail">
 			This is a NEW installation of <!-- tmpl_var PROGRAM_NAME -->!
 		</a>
 		</p>
 		</li> 
 		<li>
 		<p>
-			<a href="<!-- tmpl_var Self_URL -->?f=upgrade_dada">
+			<a href="<!-- tmpl_var Self_URL -->?f=scrn_upgrade_dada">
 				I'm upgrading from a previous installation!
 			</a>
 			
@@ -112,16 +112,12 @@ sub default {
 
 }
 
-sub install_dada {
-    scrn_dada_files_dir();
-}
-
-sub upgrade_dada {
+sub scrn_upgrade_dada {
     print $q->header();
     print "Upgrading $DADA::Config::PROGRAM_NAME!";
 }
 
-sub scrn_dada_files_dir {
+sub scrn_configure_dada_mail {
     my $tmpl = q{ 
 		
 	<h1>Install <!-- tmpl_var PROGRAM_NAME --></h1> 
@@ -250,10 +246,13 @@ sub scrn_dada_files_dir {
 	<legend><!-- tmpl_var PROGRAM_NAME --> Backend</legend> 
 	
 	<!-- tmpl_if error_sql_connection  --> 
+		<ul>
+		<li>
 		<p class="error"> 
-		 
-			!!! Error - Could not connect to your SQL Server!</em>
+			Could not connect to your SQL Server
 		</p>
+		</li>
+		</ul> 
 	<!-- /tmpl_if -->
 	
 	<p>What type of backend would you like to use?</p>
@@ -310,8 +309,7 @@ sub scrn_dada_files_dir {
                 error_cant_read_config_dot_pm => test_can_read_config_dot_pm(),
                 error_cant_write_config_dot_pm =>
                   test_can_write_config_dot_pm(),
-                dada_files_loc => $q->param('dada_files_loc')
-                  || 'auto',
+                dada_files_loc => $q->param('dada_files_loc') || 'auto',
                 error_root_pass_is_blank =>
                   $q->param('error_root_pass_is_blank') || 0,
                 error_pass_no_match => $q->param('error_pass_no_match') || 0,
@@ -446,7 +444,7 @@ sub check {
             }
         }
         $q->param( 'errors', $ht_errors );
-        scrn_dada_files_dir();
+        scrn_configure_dada_mail();
     }
     else {
         scrn_install_dada_mail();
@@ -456,71 +454,126 @@ sub check {
 
 sub scrn_install_dada_mail {
 
-	print $q->header();
-	print $q->p('Starting Installation!');
-	print $q->p("Attempting to make $DADA::Config::PROGRAM_NAME Files at, " . $q->param('dada_files_loc')); 
+    my ($log, $status, $errors ) = install_dada_mail(
+        {
+            -dada_files_loc => $q->param('dada_files_loc'),
+            -backend        => $q->param('backend'),
+            -sql_dbtype         => $q->param('backend'),
+            -sql_server         => $q->param('sql_server'),
+            -sql_port           => sql_port(),
+            -sql_database       => $q->param('sql_database'),
+            -sql_username       => $q->param('sql_username'),
+            -sql_password       => $q->param('sql_password'),
+        }
+    );
+
+   my $scrn = '';
+    $scrn .= list_template(
+        -Part  => "header",
+        -Title => "Installing/Configuring $DADA::Config::PROGRAM_NAME",
+        -vars  => { show_profile_widget => 0, }
+    );
+	$scrn .= '<pre>'. $log . '</pre>'; 
+    $scrn .= list_template(
+        -Part  => "footer",
+        -vars  => { show_profile_widget => 0, }
+    );
+
+	print $scrn; 
 	
-    if ( create_dada_files_dir_structure( $q->param('dada_files_loc') ) == 0 ) {
-        print $q->p($q->strong( "Problems Creating Directory Structure! STOPPING!"));
-		exit;
+
+}
+
+
+sub install_dada_mail { 
+	my ($args) = @_; 
+	my $log    = undef; 
+	my $errors = {};
+	my $status = 1; 
+
+    $log .= "Attempting to make $DADA::Config::PROGRAM_NAME Files at, "
+          . $args->{-dada_files_loc} . "\n";
+
+	# Making the .dada_files structure
+    if ( create_dada_files_dir_structure( $args->{-dada_files_loc} ) == 1 ) {
+        $log .= "Success!\n";
     }
     else {
-		print $q->p('Success!'); 
-		print $q->p("Attempting to create .dada_config file..."); 		
-        if(create_dada_config_file( $q->param('dada_files_loc') ) == 1){ 
-			print $q->p('Success!'); 
-		}
-		else { 
-			print $q->p($q->strong( "Problems Creating .dada_config file! STOPPING!"));
-			exit;
-	        
-		}
+	    $log .= "Problems Creating Directory Structure! STOPPING!\n";
+		$errors->{cant_create_dada_files} = 1; 
+		$status = 0; 
+		return ($log, $status, $errors);
     }
 
-    if ( $q->param('backend') eq 'default' ) {
+	# Making the .dada_config file
+	$log .= "Attempting to create .dada_config file...\n";
+	if ( create_dada_config_file($args) == 1 ) {
+	   $log .= "Success!\n";
+	}
+	else {
+	   $log .= "Problems Creating .dada_config file! STOPPING!\n";
+	   	$errors->{cant_create_dada_config} = 1; 
+		$status = 0; 
+		return ($log, $status, $errors);
+	}
+
+
+
+	# Creating the needed SQL tables
+    if ( $args->{-backend} eq 'default' ) {
         # ...
     }
     else {
-		print $q->p("Attempting to create SQL Tables..."); 		
-		
-        my $sql_ok = create_sql_tables( $q->param('backend') );
+        $log .= "Attempting to create SQL Tables...\n";
+        my $sql_ok = create_sql_tables($args);
         if ( $sql_ok == 1 ) {
-			print $q->p('Success!'); 
+            $log .= "Success!\n";
         }
         else {
-			print $q->p($q->strong( "Problems Creating SQL Tables! STOPPING!"));
-			exit;
+            $log .= "Problems Creating SQL Tables! STOPPING!\n";
+           	$errors->{cant_create_sql_tables} = 1; 
+			$status = 0; 
+			return ($log, $status, $errors);
         }
     }
 
+
+    # Editing the Config.pm file
     if ( test_can_read_config_dot_pm() == 1 ) {
-        print $q->p("WARNING: Cannot read, $Config_LOC!");
+        $log .= "WARNING: Cannot read, $Config_LOC!\n";
+		$errors->{cant_read_dada_dot_config} = 1; 
     }
 
-	print $q->p("Attempting to backup original $Config_LOC file..."); 		
+    $log .= "Attempting to backup original $Config_LOC file...\n";
     eval { backup_config_dot_pm(); };
     if ($@) {
-        print $q->p("WARNING: Could not backup, $Config_LOC!");
-    }
-	else { 
-		print $q->p('Success!'); 		
-	}
-	print $q->p("Attempting to edit $Config_LOC file..."); 		
-    if ( test_can_write_config_dot_pm() == 0 ) {
-        print $q->p("WARNING: Cannot write to, $Config_LOC!");
+        $log .= "WARNING: Could not backup, $Config_LOC!\n";
+		$errors->{cant_backup_dada_dot_config} = 1; 
     }
     else {
-        if(edit_config_dot_pm( $q->param('dada_files_loc') ) == 1){ 
-			print $q->p('Success!'); 		
-		}
-		else { 
-			print $q->p("WARNING: Cannot edit$Config_LOC!");
-	        
-		}
+        $log .= "Success!\n"; 
     }
 
-	print $q->p('Installation and Configuration Complete! Yeah!');
+    $log .= "Attempting to edit $Config_LOC file...\n";
+    if ( test_can_write_config_dot_pm() == 0 ) {
+        $log .= "WARNING: Cannot write to, $Config_LOC!\n";
+		$errors->{cant_edit_dada_dot_config} = 1; 
+    }
+    else {
+        if ( edit_config_dot_pm( $args->{-dada_files_loc} ) == 1 ) {
+            $log .= "Success!\n";
+        }
+        else {
+            $log .= "WARNING: Cannot edit $Config_LOC!\n";
+			$errors->{cant_edit_dada_dot_config} = 1; 
 
+        }
+    }
+
+
+	# That's it. 
+	$log .= "Installation and Configuration Complete! Yeah!\n";
+	return ($log, $status, $errors);
 }
 
 sub edit_config_dot_pm {
@@ -557,7 +610,7 @@ sub backup_config_dot_pm {
 
 sub create_dada_files_dir_structure {
     my $loc = shift;
-	$loc = auto_dada_files_dir() if $loc eq 'auto'; 
+    $loc = auto_dada_files_dir() if $loc eq 'auto';
     $loc = make_safer($loc);
 
     eval {
@@ -589,13 +642,21 @@ sub create_dada_files_dir_structure {
 }
 
 sub create_dada_config_file {
-    my $loc = shift;
-	   $loc = auto_dada_files_dir() if $loc eq 'auto'; 
+	my ($args) = @_; 
 	
+	if(!exists($args->{-dada_files_loc})){ 
+		$args->{-dada_files_loc} = 'auto'; 
+	}
+
+	if($args->{-dada_files_loc} eq 'auto') { 
+    	$args->{-dada_files_loc} = auto_dada_files_dir();		
+	}
+	
+
     eval {
-        if ( !-e $loc . '/.configs' )
+        if ( !-e $args->{-dada_files_loc} . '/.configs' )
         {
-            die "$loc does not exist! Stopping!";
+            die "$args->{-dada_files_loc} does not exist! Stopping!";
         }
 
         require DADA::Security::Password;
@@ -604,6 +665,7 @@ sub create_dada_config_file {
 
         my $prog_url = $DADA::Config::PROGRAM_URL;
         $prog_url =~ s{install\/installer\.cgi}{mail\.cgi};
+		
         my $outside_config_file = DADA::Template::Widgets::screen(
             {
                 -screen => 'example_dada_config.tmpl',
@@ -612,15 +674,15 @@ sub create_dada_config_file {
                     PROGRAM_URL            => $prog_url,
                     ROOT_PASSWORD          => $pass,
                     ROOT_PASS_IS_ENCRYPTED => 1,
-                    dada_files_dir         => $loc,
-                    ( $q->param('backend') ne 'default' )
+                    dada_files_dir         => $args->{-dada_files_loc},
+                    ( $args->{-backend}    ne 'default' )
                     ? (
-                        backend      => $q->param('backend'),
-                        sql_server   => $q->param('sql_server'),
-                        sql_database => $q->param('sql_database'),
-                        sql_port     => sql_port(),
-                        sql_username => $q->param('sql_username'),
-                        sql_password => $q->param('sql_password'),
+                        backend      => $args->{-backend},
+                        sql_server   => $args->{-sql_server},
+                        sql_database => $args->{-sql_database},
+                        sql_port     => $args->{-sql_port},
+                        sql_username => $args->{-sql_username},
+                        sql_password => $args->{-sql_password},
 
                       )
                     : ()
@@ -629,7 +691,7 @@ sub create_dada_config_file {
         );
 
         # SQL Stuff.
-        if ( $q->param('backend') eq 'default' ) {
+        if ( $args->{-backend} eq 'default' ) {
 
             # ...
         }
@@ -639,7 +701,7 @@ sub create_dada_config_file {
         }
 
         open my $dada_config_fh, '>',
-          make_safer( $loc . '/.configs/.dada_config' )
+          make_safer( $args->{-dada_files_loc} . '/.configs/.dada_config' )
           or die $!;
         print $dada_config_fh $outside_config_file or die $!;
         close $dada_config_fh or die $!;
@@ -654,12 +716,13 @@ sub create_dada_config_file {
 }
 
 sub create_sql_tables {
-    my $backend  = shift;
+	my ($args) = shift; 
+	
     my $sql_file = '';
-    if ( $backend eq 'mysql' ) {
+    if ( $args->{-backend} eq 'mysql' ) {
         $sql_file = 'mysql_schema.sql';
     }
-    elsif ( $backend eq 'Pg' ) {
+    elsif ( $args->{-backend} eq 'Pg' ) {
         $sql_file = 'postgres_schema.sql';
     }
 
@@ -667,13 +730,14 @@ sub create_sql_tables {
 
     require DBI;
 
-    my $dbtype   = $q->param('backend');
-    my $dbserver = $q->param('sql_server');
-    my $port     = sql_port();
-    my $database = $q->param('sql_database');
-    my $user     = $q->param('sql_username');
-    my $pass     = $q->param('sql_password');
+    my $dbtype   = $args->{-backend};
+    my $dbserver = $args->{-sql_server};
+    my $port     = $args->{-sql_port};
+    my $database = $args->{-sql_database};
+    my $user     = $args->{-sql_username};
+    my $pass     = $args->{-sql_password};
 
+	
     my $data_source = "dbi:$dbtype:dbname=$database;host=$dbserver;port=$port";
     my $dbh = DBI->connect( "$data_source", $user, $pass );
 
@@ -702,7 +766,7 @@ sub create_sql_tables {
 }
 
 sub sql_port {
-    my $port = 'auto';
+    my $port = shift || 'auto';
     if ( $port eq 'auto' ) {
         if ( $q->param('backend') =~ /mysql/i ) {
             $port = 3306;
@@ -786,9 +850,10 @@ sub check_setup {
 
 }
 
-sub auto_dada_files_dir { 
-	return guess_home_dir() . '/.dada_files'; 
+sub auto_dada_files_dir {
+    return guess_home_dir() . '/.dada_files';
 }
+
 sub guess_home_dir {
 
     my $home_dir_guess = undef;
