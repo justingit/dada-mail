@@ -2392,6 +2392,7 @@ sub _slurp {
         my $r;
         my (@r);
 
+		$file = make_safer($file); 
         open(F, '<:encoding(' . $DADA::Config::HTML_CHARSET .')', $file) || die "open $file: $!";
         @r = <F>;
         close(F) || die "close $file: $!";
