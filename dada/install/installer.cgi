@@ -35,16 +35,20 @@ $q = decode_cgi_obj($q);
 my $Self_URL   = $q->url;
 my $Config_LOC = '../DADA/Config.pm';
 
-my $sql_begin_cut = quotemeta(q{# start cut for SQL Backend
-=cut});
-my $sql_end_cut = quotemeta(q{=cut
+my $sql_begin_cut = quotemeta(
+    q{# start cut for SQL Backend
+=cut}
+);
+my $sql_end_cut = quotemeta(
+    q{=cut
 # end cut for SQL Backend
-});
-
+}
+);
 
 use DADA::Config 4.0.0;
 use DADA::App::Guts;
 use DADA::Template::Widgets;
+use DADA::Template::HTML;
 
 __PACKAGE__->run()
   unless caller();
@@ -76,12 +80,12 @@ sub run {
 sub default {
 
     my $tmpl = q{ 
-<h1>Welcome to the Dada Mail Installer!</h1> 
+<h1>Welcome to the <!-- tmpl_var PROGRAM_NAME --> Installer!</h1> 
 		<ul>
 		<li>
 		<p>
 		<a href="<!-- tmpl_var Self_URL -->?f=install_dada">
-			This is a NEW installation of Dada Mail!
+			This is a NEW installation of <!-- tmpl_var PROGRAM_NAME -->!
 		</a>
 		</p>
 		</li> 
@@ -96,8 +100,15 @@ sub default {
 		</ul>
 	
 };
-    print $q->header();
-    print DADA::Template::Widgets::screen( { -data => \$tmpl, } );
+    my $scrn = '';
+    $scrn .= list_template(
+        -Part  => "header",
+        -Title => "Install/Upgrade $DADA::Config::PROGRAM_NAME",
+        -vars  => { show_profile_widget => 0, }
+    );
+    $scrn .= DADA::Template::Widgets::screen( { -data => \$tmpl, } );
+    $scrn .= list_template( -Part => "footer", );
+    print $scrn;
 
 }
 
@@ -107,39 +118,46 @@ sub install_dada {
 
 sub upgrade_dada {
     print $q->header();
-    print "Upgrading Dada Mail!";
+    print "Upgrading $DADA::Config::PROGRAM_NAME!";
 }
 
 sub scrn_dada_files_dir {
     my $tmpl = q{ 
 		
-	<h1>Install Dada Mail</h1> 
+	<h1>Install <!-- tmpl_var PROGRAM_NAME --></h1> 
 		
 	<!-- tmpl_if errors --> 
-		<h1>
-			There's problems with your installation!
-		</h1> 
+		<h2>
+			Problems When Attempting to Install!
+		</h2>
+		<p class="error"> 
+		 Some problems were encountered, when attempting to install and configure <!-- tmpl_var PROGRAM_NAME -->. Details are marked below:
+		</p>  
 	<!-- /tmpl_if --> 
-	
 	
 	<!-- tmpl_if error_cant_read_config_dot_pm --> 
-	<p style="color:red"> 
-		<em>
-		!!! Error - Can't read your dada/DADA/Config.pm file!.
-		You may still do this installation, but there are going to be parts 
-		that you may have to do, manually. Continue if that's just dandy with you!
-		</em>
+	<h3>Warning!</h3>
+	
+	<p class="error"> 
+	    <!-- tmpl_var PROGRAM_NAME --> can't read your, <em>dada/DADA/Config.pm</em> file.
 	</p>
+	<p class="error"> 
+		You may still perform this installation, but you may have to edit parts of the <em>dada/DADA/Config.pm</em>
+		file yourself. (We'll let you know, where.)
+	</p>
+
 	<!-- /tmpl_if --> 
 	<!-- tmpl_if error_cant_write_config_dot_pm --> 
-	<p style="color:red"> 
-		<em>
-		!!! Error - Won't be able to write to your dada/DADA/Config.pm file!.
-		You may still do this installation, but there are going to be parts 
-		that you may have to do, manually. Continue if that's just dandy with you!
-		</em>
-	</p>
 	
+	<h3>Warning!</h3> 
+	<p class="error"> 
+		<!-- tmpl_var PROGRAM_NAME --> won't be able to write to edit your <em>dada/DADA/Config.pm</em> file itself.
+		</p> 
+		<p class="error"> 
+		You may still perform this installation, but you may have to edit parts of the <em>dada/DADA/Config.pm</em>
+		file yourself. (We'll let you know, where.)
+	</p>
+	<hr /> 
 	<!-- /tmpl_if --> 
 	
 	<!-- tmpl_if comment --> 
@@ -150,54 +168,90 @@ sub scrn_dada_files_dir {
 	
 	<form action="<!-- tmpl_var Self_URL -->" method="post"> 
 
-
-	<h2>
-		Dada Mail Root Password
-	</h2> 
+	<fieldset> 
+	
+	<legend>
+		<!-- tmpl_var PROGRAM_NAME --> Root Password
+	</legend> 
 	
 	
 	<!-- tmpl_if error_root_pass_is_blank  --> 
-		<p style="color:red"> 
-			!!! Error - Your Dada Mail Root Password is Blank.</em>
-		</p>
+		<ul>
+		<li>
+		<p class="error"> 
+		Your <!-- tmpl_var PROGRAM_NAME --> Root Password is Blank.</em>
+		</p></li></ul> 
+		
 	<!-- /tmpl_if -->
-	
-	
 	<!-- tmpl_if error_pass_no_match  --> 
-		<p style="color:red"> 
-			!!! Error - Your Dada Mail Root Passwords Do Not Match.</em>
-		</p>
+		<ul>
+		<li>
+		<p class="error"> 
+		Your <!-- tmpl_var PROGRAM_NAME --> Root Passwords Do Not Match.</em>
+		</p></li>
+		</ul> 
+		
 	<!-- /tmpl_if -->
 	
-	<p>What would you like the Dada Mail Root Password set to? </p> 
-	<p><input type="text" name="dada_root_pass" /></p> 
-	<p>Again:<br /> 
-	<input type="text" name="dada_root_pass_again" /></p> 
-	<hr /> 
+	<p>This is the main password to <!-- tmpl_var PROGRAM_NAME -->, used to create new mailing lists and to 
+	access <em>any</em> mailing list.</p> 
 	
-	<h2>
-		Dada Mail Directory
-	</h2>
+	<p><label for="dada_root_pass"><!-- tmpl_var PROGRAM_NAME --> Root Password:</label>
+	<br /> 
+	<input type="text" id="dada_root_pass" name="dada_root_pass" />
+	</p> 
+	<p><label for="dada_root_pass_again">Re-type Your <!-- tmpl_var PROGRAM_NAME --> Root Password:</label><br /> 
+	<input type="text" id="dada_root_pass_again" name="dada_root_pass_again" /></p> 
+	<hr /> 
+	</fieldset> 
+	
+	<fieldset> 
+	
+	
+	<legend>
+		<!-- tmpl_var PROGRAM_NAME --> Files Directory
+	</legend>
 	<!-- tmpl_if error_create_dada_files_dir  --> 
-		<p style="color:red"> 
-			!!! Error - could not create, <em><!-- tmpl_var dada_files_loc --></em>
+		<ul> 
+		<li>
+		<p class="error"> 
+		 Can not create, <em><!-- tmpl_var dada_files_loc --></em>
 		</p>
+		</li>
+		</ul>
+		
 	<!-- /tmpl_if --> 
 	<!-- tmpl_if error_dada_files_dir_exists  --> 
-		<p style="color:red"> 
-			!!! Error - the directory, <!-- tmpl_var dada_files_loc --> already exists!</em>
+		<ul> 
+		<li>
+		<p class="error"> 
+			The directory, <!-- tmpl_var dada_files_loc --> already exists - we won't try to overwrite it.
 		</p>
+		</li>
+		</ul> 
+		
 	<!-- /tmpl_if -->
-	<p>Where would you like the Dada Mail Files be installed? (absolute path)</p>
-	<p>Save my Dada Mail files at: 
-	<br /> 
-	<input type="text" name="dada_files_loc" value="<!-- tmpl_var home_dir_guess -->/.dada_files" /> 
-	</p> 
+	<p>Where would you like the <!-- tmpl_var PROGRAM_NAME --> Files be installed? (make this an <em><strong>absolute path</strong></em>)</p>
+	<p><strong>Hint!</strong> Set to, <em>auto</em> if you want <!-- tmpl_var PROGRAM_NAME --> to guess at the best location. For your server setup, this
+	will be:</p> 
+	<ul>
+	<li>
+	<p><em><!-- tmpl_var home_dir_guess -->/.dada_files</em></p>
+	</li>
+	</ul> 
 	
-	<h2>Backend!</h2> 
+	<p>Create the <!-- tmpl_var PROGRAM_NAME --> Files at this location:</p>
+	 <input type="text" name="dada_files_loc" value="auto" class="full" /> 
+	</p> 
+	</fieldset> 
+	
+	<fieldset> 
+	
+	<legend><!-- tmpl_var PROGRAM_NAME --> Backend</legend> 
 	
 	<!-- tmpl_if error_sql_connection  --> 
-		<p style="color:red"> 
+		<p class="error"> 
+		 
 			!!! Error - Could not connect to your SQL Server!</em>
 		</p>
 	<!-- /tmpl_if -->
@@ -213,39 +267,51 @@ sub scrn_dada_files_dir {
 		</select>
 	</p>
 	
-	<!-- tmpl_if can_use_DBI --> 
 	
-		<h3>SQL Information</h3> 
+	<!-- tmpl_if can_use_DBI --> 
+	<fieldset> 
+		<legend>SQL Information</legend> 
 		<p>Server: <input type="text" name="sql_server" /><br />
 		<p>Database: <input type="text" name="sql_database" /><br />
 		<p>Username: <input type="text" name="sql_username" /><br />
 		<p>Password: <input type="text" name="sql_password" /><br />
-	
+	</fieldset> 
 	<!-- tmpl_else --> 
-		<p style="color:red">
+		<p class="error"> 
 			Your current server setup does not support the SQL backend. 
 		</p>
 		
 	<!-- /tmpl_if --> 
+	</fieldset> 
 	
-	<hr />
 	<input type="hidden" name="f" value="check" /> 
 	
-	<input type="submit" value="OK, Go!" /> 
+	<p style="text-align:center">
+	 <input type="submit" value="Install <!-- tmpl_var PROGRAM_NAME -->!" class="processing" /> 
+	</p>
+	
 	
 	</form> 
+	
+	<p>&nbsp</p>
 	};
 
-    print $q->header();
-    my $scrn = DADA::Template::Widgets::screen(
+    my $scrn = '';
+    $scrn .= list_template(
+        -Part  => "header",
+        -Title => "Install $DADA::Config::PROGRAM_NAME",
+        -vars  => { show_profile_widget => 0, }
+    );
+    $scrn .= DADA::Template::Widgets::screen(
         {
             -data => \$tmpl,
             -vars => {
-			   can_use_DBI => can_use_DBI(), 
+                can_use_DBI                   => can_use_DBI(),
                 error_cant_read_config_dot_pm => test_can_read_config_dot_pm(),
                 error_cant_write_config_dot_pm =>
                   test_can_write_config_dot_pm(),
-                dada_files_loc => $q->param('dada_files_loc'),
+                dada_files_loc => $q->param('dada_files_loc')
+                  || 'auto',
                 error_root_pass_is_blank =>
                   $q->param('error_root_pass_is_blank') || 0,
                 error_pass_no_match => $q->param('error_pass_no_match') || 0,
@@ -259,6 +325,7 @@ sub scrn_dada_files_dir {
             },
         }
     );
+    $scrn .= list_template( -Part => "footer", );
 
     # Refil in all the stuff we just had;
     if ( $q->param('errors') ) {
@@ -389,43 +456,71 @@ sub check {
 
 sub scrn_install_dada_mail {
 
+	print $q->header();
+	print $q->p('Starting Installation!');
+	print $q->p("Attempting to make $DADA::Config::PROGRAM_NAME Files at, " . $q->param('dada_files_loc')); 
+	
     if ( create_dada_files_dir_structure( $q->param('dada_files_loc') ) == 0 ) {
-        die "problem creating dir structure!";
+        print $q->p($q->strong( "Problems Creating Directory Structure! STOPPING!"));
+		exit;
     }
     else {
-        create_dada_config_file( $q->param('dada_files_loc') );
-    }
-
-	if($q->param('backend') eq 'default') { 
-		# ... 
-	}
-	else { 
-		my $sql_ok = create_sql_tables($q->param('backend')); 
-		if($sql_ok == 1){ 
-				# ... 
+		print $q->p('Success!'); 
+		print $q->p("Attempting to create .dada_config file..."); 		
+        if(create_dada_config_file( $q->param('dada_files_loc') ) == 1){ 
+			print $q->p('Success!'); 
 		}
 		else { 
-			die "Cannot create SQL tables!"; 
+			print $q->p($q->strong( "Problems Creating .dada_config file! STOPPING!"));
+			exit;
+	        
 		}
-	}
-	
-    if ( test_can_read_config_dot_pm() == 1 ) {
-        die "cannot read, $Config_LOC!";
-    }
-    eval { backup_config_dot_pm(); };
-    if ($@) {
-        warn "could not backup, $Config_LOC because $@";
-    }
-    if ( test_can_write_config_dot_pm() == 0 ) {
-        warn
-          "cannot write to,  $Config_LOC - you will have to do this, manually!";
-    }
-    else {
-        edit_config_dot_pm( $q->param('dada_files_loc') );
     }
 
-    print $q->header();
-    print 'done!';
+    if ( $q->param('backend') eq 'default' ) {
+        # ...
+    }
+    else {
+		print $q->p("Attempting to create SQL Tables..."); 		
+		
+        my $sql_ok = create_sql_tables( $q->param('backend') );
+        if ( $sql_ok == 1 ) {
+			print $q->p('Success!'); 
+        }
+        else {
+			print $q->p($q->strong( "Problems Creating SQL Tables! STOPPING!"));
+			exit;
+        }
+    }
+
+    if ( test_can_read_config_dot_pm() == 1 ) {
+        print $q->p("WARNING: Cannot read, $Config_LOC!");
+    }
+
+	print $q->p("Attempting to backup original $Config_LOC file..."); 		
+    eval { backup_config_dot_pm(); };
+    if ($@) {
+        print $q->p("WARNING: Could not backup, $Config_LOC!");
+    }
+	else { 
+		print $q->p('Success!'); 		
+	}
+	print $q->p("Attempting to edit $Config_LOC file..."); 		
+    if ( test_can_write_config_dot_pm() == 0 ) {
+        print $q->p("WARNING: Cannot write to, $Config_LOC!");
+    }
+    else {
+        if(edit_config_dot_pm( $q->param('dada_files_loc') ) == 1){ 
+			print $q->p('Success!'); 		
+		}
+		else { 
+			print $q->p("WARNING: Cannot edit$Config_LOC!");
+	        
+		}
+    }
+
+	print $q->p('Installation and Configuration Complete! Yeah!');
+
 }
 
 sub edit_config_dot_pm {
@@ -462,6 +557,7 @@ sub backup_config_dot_pm {
 
 sub create_dada_files_dir_structure {
     my $loc = shift;
+	$loc = auto_dada_files_dir() if $loc eq 'auto'; 
     $loc = make_safer($loc);
 
     eval {
@@ -494,6 +590,8 @@ sub create_dada_files_dir_structure {
 
 sub create_dada_config_file {
     my $loc = shift;
+	   $loc = auto_dada_files_dir() if $loc eq 'auto'; 
+	
     eval {
         if ( !-e $loc . '/.configs' )
         {
@@ -515,31 +613,31 @@ sub create_dada_config_file {
                     ROOT_PASSWORD          => $pass,
                     ROOT_PASS_IS_ENCRYPTED => 1,
                     dada_files_dir         => $loc,
-					($q->param('backend') ne 'default') ? (
-						backend      => $q->param('backend'), 
-						sql_server   => $q->param('sql_server'), 
-						sql_database => $q->param('sql_database'), 
-						sql_port     => sql_port(),
-						sql_username => $q->param('sql_username'), 
-						sql_password => $q->param('sql_password'), 	
-						
-					) : ()
+                    ( $q->param('backend') ne 'default' )
+                    ? (
+                        backend      => $q->param('backend'),
+                        sql_server   => $q->param('sql_server'),
+                        sql_database => $q->param('sql_database'),
+                        sql_port     => sql_port(),
+                        sql_username => $q->param('sql_username'),
+                        sql_password => $q->param('sql_password'),
+
+                      )
+                    : ()
                 }
             }
         );
 
+        # SQL Stuff.
+        if ( $q->param('backend') eq 'default' ) {
 
-		# SQL Stuff. 
-		if ( $q->param('backend') eq 'default' ) {
-			# ... 
-		}
-		else { 
-			$outside_config_file =~ s/$sql_begin_cut//; 
-			$outside_config_file =~ s/$sql_end_cut//; 
-		}
-		
-		
-		
+            # ...
+        }
+        else {
+            $outside_config_file =~ s/$sql_begin_cut//;
+            $outside_config_file =~ s/$sql_end_cut//;
+        }
+
         open my $dada_config_fh, '>',
           make_safer( $loc . '/.configs/.dada_config' )
           or die $!;
@@ -555,53 +653,57 @@ sub create_dada_config_file {
 
 }
 
-sub create_sql_tables { 
-	my $backend = shift; 
-	my $sql_file = ''; 
-	if($backend eq 'mysql'){ 
-		$sql_file = 'mysql_schema.sql'; 
-	}
-	elsif($backend eq 'Pg'){ 
-		$sql_file = 'postgres_schema.sql'; 
-	}
-	#eval { 
+sub create_sql_tables {
+    my $backend  = shift;
+    my $sql_file = '';
+    if ( $backend eq 'mysql' ) {
+        $sql_file = 'mysql_schema.sql';
+    }
+    elsif ( $backend eq 'Pg' ) {
+        $sql_file = 'postgres_schema.sql';
+    }
 
-		require DBI; 
-		
-	    my $dbtype   = $q->param('backend');
-	    my $dbserver = $q->param('sql_server');
-	    my $port     = sql_port();
-	    my $database = $q->param('sql_database');
-	    my $user     = $q->param('sql_username');
-	    my $pass     = $q->param('sql_password');
-	
-		my $data_source = "dbi:$dbtype:dbname=$database;host=$dbserver;port=$port";
-	    my $dbh = DBI->connect( "$data_source", $user, $pass );
-		
-		my $schema = slurp(make_safer('../extras/SQL/' . $sql_file));
-		my @statements = split ( ';', $schema );
+    #eval {
 
-		foreach (@statements) {
-		    if ( length($_) > 10 ) {
-				# print "\nquery:\n" . $_;
-				my $sth = $dbh->prepare($_);
-				$sth->execute
-					or die "cannot do statement! $DBI::errstr\n";
-		    }
-		}
-#	};
-#	if($@){ 
-#		warn $!; 
-#		return 0; 
-#	}
-#	else { 
-		return 1;
-#	}
+    require DBI;
+
+    my $dbtype   = $q->param('backend');
+    my $dbserver = $q->param('sql_server');
+    my $port     = sql_port();
+    my $database = $q->param('sql_database');
+    my $user     = $q->param('sql_username');
+    my $pass     = $q->param('sql_password');
+
+    my $data_source = "dbi:$dbtype:dbname=$database;host=$dbserver;port=$port";
+    my $dbh = DBI->connect( "$data_source", $user, $pass );
+
+    my $schema = slurp( make_safer( '../extras/SQL/' . $sql_file ) );
+    my @statements = split( ';', $schema );
+
+    foreach (@statements) {
+        if ( length($_) > 10 ) {
+
+            # print "\nquery:\n" . $_;
+            my $sth = $dbh->prepare($_);
+            $sth->execute
+              or die "cannot do statement! $DBI::errstr\n";
+        }
+    }
+
+    #	};
+    #	if($@){
+    #		warn $!;
+    #		return 0;
+    #	}
+    #	else {
+    return 1;
+
+    #	}
 }
 
-sub sql_port { 
-	my $port = 'auto'; 
-	if ( $port eq 'auto' ) {
+sub sql_port {
+    my $port = 'auto';
+    if ( $port eq 'auto' ) {
         if ( $q->param('backend') =~ /mysql/i ) {
             $port = 3306;
         }
@@ -609,7 +711,7 @@ sub sql_port {
             $port = 5432;
         }
     }
-   
+
 }
 
 sub check_setup {
@@ -659,12 +761,9 @@ sub check_setup {
     else {
         if (
             test_sql_connection(
-                $q->param('backend'),      
-				$q->param('sql_server'),
-				'auto',
-                $q->param('sql_database'), 
-                $q->param('sql_username'), 
-				$q->param('sql_password'),
+                $q->param('backend'),      $q->param('sql_server'),
+                'auto',                    $q->param('sql_database'),
+                $q->param('sql_username'), $q->param('sql_password'),
             ) == 1
           )
         {
@@ -687,6 +786,9 @@ sub check_setup {
 
 }
 
+sub auto_dada_files_dir { 
+	return guess_home_dir() . '/.dada_files'; 
+}
 sub guess_home_dir {
 
     my $home_dir_guess = undef;
@@ -702,6 +804,7 @@ sub guess_home_dir {
     else {
         $home_dir_guess =~ s/\/$pub_html_dir$//g;
     }
+
     return $home_dir_guess;
 
 }
@@ -734,17 +837,15 @@ sub test_can_write_config_dot_pm {
     return $problem;
 }
 
-sub can_use_DBI { 
-	
-	eval { 
-		require DBI; 
-	};
-	if($@){ 
-		return 0; 
-	}
-	else { 
-		return 1; 
-	}
+sub can_use_DBI {
+
+    eval { require DBI; };
+    if ($@) {
+        return 0;
+    }
+    else {
+        return 1;
+    }
 }
 
 sub slurp {
