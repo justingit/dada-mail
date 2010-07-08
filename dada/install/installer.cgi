@@ -46,6 +46,9 @@ my $sql_end_cut = quotemeta(
 );
 
 use DADA::Config 4.0.0;
+$DADA::Config::PROGRAM_URL   = program_url_guess(); 
+$DADA::Config::S_PROGRAM_URL = program_url_guess(); 
+
 use DADA::App::Guts;
 use DADA::Template::Widgets;
 use DADA::Template::HTML;
@@ -118,7 +121,7 @@ sub scrn_upgrade_dada {
 }
 
 sub scrn_configure_dada_mail {
-    my $tmpl = q{ 
+    my $tmpl = <<EOF 
 		
 	<h1>Install <!-- tmpl_var PROGRAM_NAME --></h1> 
 		
@@ -163,6 +166,36 @@ sub scrn_configure_dada_mail {
 	<!-- /tmpl_if --> 
 	
 	<form action="<!-- tmpl_var Self_URL -->" method="post"> 
+
+
+
+	<fieldset> 
+	
+	<legend>
+
+ 	<!-- tmpl_var PROGRAM_NAME --> URL
+	</legend> 
+	
+	<!-- tmpl_if error_program_url_is_blank  --> 
+		<ul>
+		<li>
+		<p class="error"> 
+		Your <!-- tmpl_var PROGRAM_NAME --> URL is blank.</em>
+		</p></li>
+		</ul> 
+		
+	<!-- /tmpl_if -->
+	
+	
+	
+	<p><label for="program_url"><!-- tmpl_var PROGRAM_NAME --> Program URL:</label>
+	<br /> 
+	<input type="text" id="program_url" name="program_url" class="full" value="<!-- tmpl_var program_url_guess -->" />
+	</p> 
+	
+	</fieldset> 
+	
+
 
 	<fieldset> 
 	
@@ -255,19 +288,21 @@ sub scrn_configure_dada_mail {
 		</ul> 
 	<!-- /tmpl_if -->
 	
+	
+
 	<p>What type of backend would you like to use?</p>
 	<p>
-		<select name="backend"> 
-			<option value="default">Default Backend</option>
+		<select name="backend" id="backend" onChange="ToggleSQLOptions(); return false;"> 
+			<option value="default" selected="selected">Default Backend</option>
 			<!-- tmpl_if can_use_DBI --> 
 				<option value="mysql">MySQL (recommended)</option> 
 				<option value="Pg">PostgreSQL</option> 			
 			<!-- /tmpl_if --> 
 		</select>
 	</p>
-	
-	
+
 	<!-- tmpl_if can_use_DBI --> 
+	<div id="sql_info" style="display:none;"> 
 	<fieldset> 
 		<legend>SQL Information</legend> 
 		<p>Server: <input type="text" name="sql_server" /><br />
@@ -275,6 +310,10 @@ sub scrn_configure_dada_mail {
 		<p>Username: <input type="text" name="sql_username" /><br />
 		<p>Password: <input type="text" name="sql_password" /><br />
 	</fieldset> 
+	</div> 
+	
+
+	
 	<!-- tmpl_else --> 
 		<p class="error"> 
 			Your current server setup does not support the SQL backend. 
@@ -293,18 +332,22 @@ sub scrn_configure_dada_mail {
 	</form> 
 	
 	<p>&nbsp</p>
-	};
+EOF
+; 
 
     my $scrn = '';
     $scrn .= list_template(
         -Part  => "header",
         -Title => "Install $DADA::Config::PROGRAM_NAME",
-        -vars  => { show_profile_widget => 0, }
+        -vars  => { 
+			show_profile_widget => 0, 
+		}
     );
     $scrn .= DADA::Template::Widgets::screen(
         {
             -data => \$tmpl,
             -vars => {
+				program_url_guess => program_url_guess(), 
                 can_use_DBI                   => can_use_DBI(),
                 error_cant_read_config_dot_pm => test_can_read_config_dot_pm(),
                 error_cant_write_config_dot_pm =>
@@ -313,7 +356,8 @@ sub scrn_configure_dada_mail {
                 error_root_pass_is_blank =>
                   $q->param('error_root_pass_is_blank') || 0,
                 error_pass_no_match => $q->param('error_pass_no_match') || 0,
-                error_create_dada_files_dir =>
+                error_program_url_is_blank => $q->param('error_program_url_is_blank') || 0, 
+				error_create_dada_files_dir =>
                   $q->param('error_create_dada_files_dir') || 0,
                 error_dada_files_dir_exists =>
                   $q->param('error_dada_files_dir_exists') || 0,
@@ -325,6 +369,9 @@ sub scrn_configure_dada_mail {
     );
     $scrn .= list_template( -Part => "footer", );
 
+	# Let's get some fancy js stuff!
+	$scrn = hack_in_scriptalicious($scrn); 
+	
     # Refil in all the stuff we just had;
     if ( $q->param('errors') ) {
         require HTML::FillInForm::Lite;
@@ -456,8 +503,10 @@ sub scrn_install_dada_mail {
 
     my ($log, $status, $errors ) = install_dada_mail(
         {
-            -dada_files_loc => $q->param('dada_files_loc'),
-            -backend        => $q->param('backend'),
+			-program_url        => $q->param('program_url'), 
+			-dada_root_pass     => $q->param('dada_root_pass'), 
+            -dada_files_loc     => $q->param('dada_files_loc'),
+            -backend            => $q->param('backend'),
             -sql_dbtype         => $q->param('backend'),
             -sql_server         => $q->param('sql_server'),
             -sql_port           => sql_port(),
@@ -473,7 +522,7 @@ sub scrn_install_dada_mail {
         -Title => "Installing/Configuring $DADA::Config::PROGRAM_NAME",
         -vars  => { show_profile_widget => 0, }
     );
-	$scrn .= '<pre>'. $log . '</pre>'; 
+	$scrn .= webify_plain_text($log);
     $scrn .= list_template(
         -Part  => "footer",
         -vars  => { show_profile_widget => 0, }
@@ -491,27 +540,27 @@ sub install_dada_mail {
 	my $errors = {};
 	my $status = 1; 
 
-    $log .= "Attempting to make $DADA::Config::PROGRAM_NAME Files at, "
+    $log .= "* Attempting to make $DADA::Config::PROGRAM_NAME Files at, "
           . $args->{-dada_files_loc} . "\n";
 
 	# Making the .dada_files structure
     if ( create_dada_files_dir_structure( $args->{-dada_files_loc} ) == 1 ) {
-        $log .= "Success!\n";
+        $log .= "* Success!\n";
     }
     else {
-	    $log .= "Problems Creating Directory Structure! STOPPING!\n";
+	    $log .= "* Problems Creating Directory Structure! STOPPING!\n";
 		$errors->{cant_create_dada_files} = 1; 
 		$status = 0; 
 		return ($log, $status, $errors);
     }
 
 	# Making the .dada_config file
-	$log .= "Attempting to create .dada_config file...\n";
+	$log .= "* Attempting to create .dada_config file...\n";
 	if ( create_dada_config_file($args) == 1 ) {
-	   $log .= "Success!\n";
+	   $log .= "* Success!\n";
 	}
 	else {
-	   $log .= "Problems Creating .dada_config file! STOPPING!\n";
+	   $log .= "* Problems Creating .dada_config file! STOPPING!\n";
 	   	$errors->{cant_create_dada_config} = 1; 
 		$status = 0; 
 		return ($log, $status, $errors);
@@ -524,13 +573,13 @@ sub install_dada_mail {
         # ...
     }
     else {
-        $log .= "Attempting to create SQL Tables...\n";
+        $log .= "* Attempting to create SQL Tables...\n";
         my $sql_ok = create_sql_tables($args);
         if ( $sql_ok == 1 ) {
-            $log .= "Success!\n";
+            $log .= "* Success!\n";
         }
         else {
-            $log .= "Problems Creating SQL Tables! STOPPING!\n";
+            $log .= "* Problems Creating SQL Tables! STOPPING!\n";
            	$errors->{cant_create_sql_tables} = 1; 
 			$status = 0; 
 			return ($log, $status, $errors);
@@ -540,31 +589,31 @@ sub install_dada_mail {
 
     # Editing the Config.pm file
     if ( test_can_read_config_dot_pm() == 1 ) {
-        $log .= "WARNING: Cannot read, $Config_LOC!\n";
+        $log .= "* WARNING: Cannot read, $Config_LOC!\n";
 		$errors->{cant_read_dada_dot_config} = 1; 
     }
 
-    $log .= "Attempting to backup original $Config_LOC file...\n";
+    $log .= "* Attempting to backup original $Config_LOC file...\n";
     eval { backup_config_dot_pm(); };
     if ($@) {
-        $log .= "WARNING: Could not backup, $Config_LOC!\n";
+        $log .= "* WARNING: Could not backup, $Config_LOC!\n";
 		$errors->{cant_backup_dada_dot_config} = 1; 
     }
     else {
-        $log .= "Success!\n"; 
+        $log .= "* Success!\n"; 
     }
 
-    $log .= "Attempting to edit $Config_LOC file...\n";
+    $log .= "* Attempting to edit $Config_LOC file...\n";
     if ( test_can_write_config_dot_pm() == 0 ) {
-        $log .= "WARNING: Cannot write to, $Config_LOC!\n";
+        $log .= "* WARNING: Cannot write to, $Config_LOC!\n";
 		$errors->{cant_edit_dada_dot_config} = 1; 
     }
     else {
         if ( edit_config_dot_pm( $args->{-dada_files_loc} ) == 1 ) {
-            $log .= "Success!\n";
+            $log .= "* Success!\n";
         }
         else {
-            $log .= "WARNING: Cannot edit $Config_LOC!\n";
+            $log .= "* WARNING: Cannot edit $Config_LOC!\n";
 			$errors->{cant_edit_dada_dot_config} = 1; 
 
         }
@@ -572,7 +621,7 @@ sub install_dada_mail {
 
 
 	# That's it. 
-	$log .= "Installation and Configuration Complete! Yeah!\n";
+	$log .= "* Installation and Configuration Complete! Yeah!\n";
 	return ($log, $status, $errors);
 }
 
@@ -661,7 +710,7 @@ sub create_dada_config_file {
 
         require DADA::Security::Password;
         my $pass = DADA::Security::Password::encrypt_passwd(
-            $q->param('dada_root_pass') );
+            $args->{-dada_root_pass} );
 
         my $prog_url = $DADA::Config::PROGRAM_URL;
         $prog_url =~ s{install\/installer\.cgi}{mail\.cgi};
@@ -781,6 +830,17 @@ sub sql_port {
 sub check_setup {
     my $errors = {};
 
+	
+    if ( test_str_is_blank( $q->param('program_url') ) == 1 ) {
+        $errors->{program_url_is_blank} = 1;
+    }
+    else {
+        $errors->{program_url_is_blank} = 0;
+    }
+
+
+
+	
     if ( test_str_is_blank( $q->param('dada_root_pass') ) == 1 ) {
         $errors->{root_pass_is_blank} = 1;
 
@@ -872,6 +932,49 @@ sub guess_home_dir {
 
     return $home_dir_guess;
 
+}
+
+sub program_url_guess { 
+	my $program_url = $Self_URL; 
+	   $program_url =~ s/install\/installer\.cgi/mail.cgi/; 
+	return $program_url; 
+}
+
+sub hack_in_scriptalicious { 
+	my $scrn = shift; 
+	# Hackity Hack! 
+	my $js = <<EOF  
+	
+	  <script src="<!-- tmpl_var S_PROGRAM_URL -->/javascripts/dada_mail_admin_js.js" type="text/javascript"></script>
+	  <script src="<!-- tmpl_var S_PROGRAM_URL -->/javascripts/prototype.js" type="text/javascript"></script>
+	  <script src="<!-- tmpl_var S_PROGRAM_URL -->/javascripts/scriptaculous.js?load=effects" type="text/javascript"></script>
+		<script> 
+		
+			function ToggleSQLOptions() { 
+				var sql_picker = document.getElementById('backend')
+				var selected  = sql_picker.options[sql_picker.selectedIndex].value;
+				 	
+				if(selected == 'mysql'  || selected == 'Pg'){ 
+				
+					var togglin = document.getElementById( 'sql_info' );
+					if(togglin.style.display != ""){	
+							Effect.Appear('sql_info');
+					}
+				}
+				else { 
+					Effect.Fade('sql_info');
+				}
+			}	
+		window.onload=ToggleSQLOptions; 
+		</script> 
+
+EOF
+;
+		$js = DADA::Template::Widgets::screen({-data => \$js}); 
+		$scrn =~ s/\<head\>/\<head\>$js/; 
+	#/ Hackity Hack!
+	
+	return $scrn; 
 }
 
 sub test_can_read_config_dot_pm {
