@@ -441,7 +441,9 @@ sub test_pass_match {
 
 sub test_dada_files_dir_no_exists {
     my $dada_files_dir = shift;
-    if ( -e $dada_files_dir ) {
+	   $dada_files_dir = auto_dada_files_dir() if $dada_files_dir eq 'auto';  
+
+    if ( -e $dada_files_dir . '/' . $Dada_Files_Dir_Name) {
         return 0;
     }
     else {
@@ -453,6 +455,7 @@ sub test_dada_files_dir_no_exists {
 sub can_create_dada_files_dir {
 
     my $dada_files_dir = shift;
+	$dada_files_dir = auto_dada_files_dir() if $dada_files_dir eq 'auto';  
     $dada_files_dir =
       make_safer( $dada_files_dir . '/' . $Dada_Files_Dir_Name );
 
@@ -680,6 +683,9 @@ sub edit_config_dot_pm {
         my $config = slurp($Config_LOC);
         $config =~ s/$search/$replace_with/;
 
+		#unlink($Config_LOC); 
+		$Config_LOC = make_safer($Config_LOC); 
+		
         open my $config_fh, '>', $Config_LOC or die $!;
         print $config_fh $config or die $!;
         close $config_fh or die $!;
@@ -899,19 +905,19 @@ sub check_setup {
         $errors->{pass_no_match} = 0;
     }
 
- #    if ( test_dada_files_dir_no_exists( $q->param('dada_files_loc') ) == 1 ) {
- #       $errors->{dada_files_dir_exists} = 0;
- #    }
- #	else  {
- #        $errors->{dada_files_dir_exists} = 1;
- #	}
-
-    if ( -e $q->param('dada_files_loc') . '/' . $Dada_Files_Dir_Name ) {
-        $errors->{dada_files_dir_exists} = 1;
-    }
-    else {
+     if ( test_dada_files_dir_no_exists( $q->param('dada_files_loc') ) == 1 ) {
         $errors->{dada_files_dir_exists} = 0;
-    }
+     }
+ 	else  {
+        $errors->{dada_files_dir_exists} = 1;
+	}
+
+   # if ( -e $q->param('dada_files_loc') . '/' . $Dada_Files_Dir_Name ) {
+   #    $errors->{dada_files_dir_exists} = 1;
+   # }
+   # else {
+    #    $errors->{dada_files_dir_exists} = 0;
+   # }
 
     if ( can_create_dada_files_dir( $q->param('dada_files_loc') ) == 1 ) {
         $errors->{create_dada_files_dir} = 1;
