@@ -603,7 +603,7 @@ sub scrn_install_dada_mail {
 		And change it to:  
 	</p> 
 	
-	<p><code>\$PROGRAM_CONFIG_FILE_DIR = '<!-- tmpl_var install_dada_files_loc -->/$Dada_Files_Dir_Name';</code></p> 
+	<p><code>\$PROGRAM_CONFIG_FILE_DIR = '<!-- tmpl_var install_dada_files_loc -->/$Dada_Files_Dir_Name/.configs';</code></p> 
 	
 	<p>And, you're done!</p> 
 	
