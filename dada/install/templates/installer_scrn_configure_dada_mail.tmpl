@@ -1,0 +1,256 @@
+<h1>Install <!-- tmpl_var PROGRAM_NAME --></h1> 
+	
+<!-- tmpl_if errors --> 
+	<h2>
+		Problems When Attempting to Install!
+	</h2>
+	<p class="error"> 
+	 Some problems were encountered, when attempting to install and configure <!-- tmpl_var PROGRAM_NAME -->. Details are marked below:
+	</p>  
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if error_cant_read_config_dot_pm --> 
+<h3>Warning!</h3>
+
+<p class="error"> 
+    <!-- tmpl_var PROGRAM_NAME --> can't read your, <em>dada/DADA/Config.pm</em> file.
+</p>
+<p class="error"> 
+	You may still perform this installation, but you may have to edit parts of the <em>dada/DADA/Config.pm</em>
+	file yourself. (We'll let you know, where.)
+</p>
+
+<!-- /tmpl_if --> 
+<!-- tmpl_if error_cant_write_config_dot_pm --> 
+
+<h3>Warning!</h3> 
+<p class="error"> 
+	<!-- tmpl_var PROGRAM_NAME --> won't be able to write to edit your <em>dada/DADA/Config.pm</em> file itself.
+	</p> 
+	<p class="error"> 
+	You may still perform this installation, but you may have to edit parts of the <em>dada/DADA/Config.pm</em>
+	file yourself. (We'll let you know, where.)
+</p>
+<hr /> 
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if comment --> 
+	<!-- tmpl_loop errors --> 
+		<p>Error <!-- tmpl_var error --> 
+	<!-- /tmpl_loop --> 
+<!-- /tmpl_if --> 
+
+<form action="<!-- tmpl_var Self_URL -->" method="post" id="installform"> 
+
+
+
+<fieldset> 
+
+<legend>
+
+<!-- tmpl_var PROGRAM_NAME --> URL
+</legend> 
+
+<!-- tmpl_if error_program_url_is_blank  --> 
+	<ul>
+	<li>
+	<p class="error"> 
+	Your <!-- tmpl_var PROGRAM_NAME --> URL is blank.</em>
+	</p></li>
+	</ul> 
+	
+<!-- /tmpl_if -->
+
+
+
+<p><label for="program_url"><!-- tmpl_var PROGRAM_NAME --> Program URL:</label>
+<br /> 
+<input type="text" id="program_url" name="program_url" class="full" value="<!-- tmpl_var program_url_guess -->" />
+</p> 
+
+</fieldset> 
+
+
+
+<fieldset> 
+
+<legend>
+	<!-- tmpl_var PROGRAM_NAME --> Root Password
+</legend> 
+
+
+<!-- tmpl_if error_root_pass_is_blank  --> 
+	<ul>
+	<li>
+	<p class="error"> 
+	Your <!-- tmpl_var PROGRAM_NAME --> Root Password is Blank.</em>
+	</p></li></ul> 
+	
+<!-- /tmpl_if -->
+<!-- tmpl_if error_pass_no_match  --> 
+	<ul>
+	<li>
+	<p class="error"> 
+	Your <!-- tmpl_var PROGRAM_NAME --> Root Passwords Do Not Match.</em>
+	</p></li>
+	</ul> 
+	
+<!-- /tmpl_if -->
+
+<p>This is the main password to <!-- tmpl_var PROGRAM_NAME -->, used to create new mailing lists and to 
+access <em>any</em> mailing list.</p> 
+
+<p><label for="dada_root_pass"><!-- tmpl_var PROGRAM_NAME --> Root Password:</label>
+<br /> 
+<input type="text" id="dada_root_pass" name="dada_root_pass" />
+</p> 
+<p><label for="dada_root_pass_again">Re-type Your <!-- tmpl_var PROGRAM_NAME --> Root Password:</label><br /> 
+<input type="text" id="dada_root_pass_again" name="dada_root_pass_again" /></p> 
+<hr /> 
+</fieldset> 
+
+<fieldset> 
+
+
+<legend>
+	.dada_config Directory Location
+</legend>
+<!-- tmpl_if error_create_dada_files_dir  --> 
+	<ul> 
+	<li>
+	<p class="error"> 
+	 Will not be able to create, <em><!-- tmpl_var install_dada_files_dir_at -->/<!-- tmpl_var Dada_Files_Dir_Name --></em>
+	</p>
+	</li>
+	</ul>
+	
+<!-- /tmpl_if --> 
+<!-- tmpl_if error_dada_files_dir_exists  --> 
+	<ul> 
+	<li>
+	<p class="error"> 
+		The directory, <!-- tmpl_var dada_files_loc -->/<!-- tmpl_var Dada_Files_Dir_Name -->already exists - we won't try to overwrite it.
+	</p>
+	</li>
+	</ul> 
+	
+<!-- /tmpl_if -->
+
+
+
+<p>
+ <input type="radio" checked="checked" id="dada_files_dir_setup_auto"  name="dada_files_dir_setup" value="auto" onChange="Toggle_dada_files_dirOptions(); return false;">
+	<label for="dada_files_dir_setup_auto">AUTO 
+	Use <!-- tmpl_var PROGRAM_NAME -->'s best guess.  </label><br />Install the <em>.dada_files</em> directory under,<br />
+	<ul<li><em> <!-- tmpl_var home_dir_guess --></em></li></ul> 
+</p> 
+
+ <p>
+  <input type="radio"  id="dada_files_dir_setup_manual" name="dada_files_dir_setup" value="manual" onChange="Toggle_dada_files_dirOptions(); return false;">
+<label for="dada_files_dir_setup_manual"> 
+ MANUAL.
+</label>  Explicitly set the Absolute Path to where the <em>.dada_files</em> directory should be installed:</p>
+
+<div id="manual_dada_files_dir_setup">
+<fieldset> 
+<legend> 
+	Manual Configuration of, <em>.dada_files</em> directory
+</legend> 
+<p> 
+ <input type="text" name="dada_files_loc" value="<!-- tmpl_var home_dir_guess -->" style="width:80%" />/<em><!-- tmpl_var Dada_Files_Dir_Name --></em>
+</p> 
+
+</fieldset>
+
+</div> 
+
+
+<!-- tmpl_if comment --> 
+
+			<p>Where would you like the <!-- tmpl_var PROGRAM_NAME --> <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory be located? (make this an <em><strong>absolute path</strong></em>)</p>
+			<p><strong>Hint!</strong> Set to, <em>auto</em> if you want <!-- tmpl_var PROGRAM_NAME --> to guess at the best location. For your server setup, this
+			will be:</p> 
+			<ul>
+			<li>
+			<p><strong><!-- tmpl_var home_dir_guess --></strong><em>/<!-- tmpl_var Dada_Files_Dir_Name --></em></p>
+			</li>
+			</ul> 
+
+			<p>Create the <!-- tmpl_var PROGRAM_NAME --> <!-- tmpl_var Dada_Files_Dir_Name --> directory at this location:</p>
+			 <input type="text" name="dada_files_loc" value="auto" style="width:80%" />/<!-- tmpl_var Dada_Files_Dir_Name --> 
+			</p> 
+
+<!-- /tmpl_if --> 
+
+
+</fieldset> 
+
+<fieldset> 
+
+<legend><!-- tmpl_var PROGRAM_NAME --> Backend</legend> 
+
+<!-- tmpl_if error_sql_connection  --> 
+	<ul>
+	<li>
+	<p class="error"> 
+		Could not connect to your SQL Server
+	</p>
+	</li>
+	</ul> 
+<!-- /tmpl_if -->
+
+
+
+<p>What type of backend would you like to use?</p>
+<p>
+	<select name="backend" id="backend" onChange="ToggleSQLOptions(); return false;"> 
+		<option value="default" selected="selected">Default Backend</option>
+		<!-- tmpl_if can_use_DBI --> 
+			<option value="mysql">MySQL (recommended)</option> 
+			<option value="Pg">PostgreSQL</option> 			
+		<!-- /tmpl_if --> 
+	</select>
+</p>
+
+<!-- tmpl_if can_use_DBI --> 
+<div id="sql_info" style="display:none;"> 
+<fieldset> 
+	<legend>SQL Information</legend> 
+	<!-- tmpl_if error_sql_table_populated --> 
+		<ul> 
+		<li> 
+		<p class="error">
+			The SQL information below is corret, but there are tables that already 
+			exist in the database. 
+		</p>
+		</li>
+		</ul> 
+	<!-- /tmpl_if --> 
+	<p>Server: <input type="text" name="sql_server" /><br />
+	<p>Database: <input type="text" name="sql_database" /><br />
+	<p>Port: <input type="text" name="sql_port" value="auto" /><br />
+	<p>Username: <input type="text" name="sql_username" /><br />
+	<p>Password: <input type="text" name="sql_password" /><br />
+</fieldset> 
+</div> 
+
+
+
+<!-- tmpl_else --> 
+	<p class="error"> 
+		Your current server setup does not support the SQL backend. 
+	</p>
+	
+<!-- /tmpl_if --> 
+</fieldset> 
+
+<input type="hidden" name="f" value="check" /> 
+
+<p style="text-align:center">
+ <input type="submit" value="Install <!-- tmpl_var PROGRAM_NAME -->!" class="processing" /> 
+</p>
+
+
+</form> 
+
+<p>&nbsp</p>

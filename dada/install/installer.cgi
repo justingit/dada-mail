@@ -90,46 +90,24 @@ sub run {
             $Mode{$flavor}->();    #call the correct subroutine
         }
         else {
-            &default;
+            &scrn_default;
         }
     }
     else {
-        &default;
+        &scrn_default;
     }
 }
 
 
-sub default {
+sub scrn_default {
 	
-	# DEV: todo would be to properly get this templated out. 
-    my $tmpl = q{ 
-<h1>Welcome to the <!-- tmpl_var PROGRAM_NAME --> Installer!</h1> 
-		<ul>
-		<li>
-		<p>
-		<a href="<!-- tmpl_var Self_URL -->?f=scrn_configure_dada_mail">
-			This is a NEW installation of <!-- tmpl_var PROGRAM_NAME -->!
-		</a>
-		</p>
-		</li> 
-		<li>
-		<p>
-			<a href="<!-- tmpl_var Self_URL -->?f=scrn_upgrade_dada">
-				I'm upgrading from a previous installation!
-			</a>
-			
-		</p>
-		</li>
-		</ul>
-	
-};
     my $scrn = '';
     $scrn .= list_template(
         -Part  => "header",
         -Title => "Install/Upgrade $DADA::Config::PROGRAM_NAME",
         -vars  => { show_profile_widget => 0, }
     );
-    $scrn .= DADA::Template::Widgets::screen( { -data => \$tmpl, } );
+    $scrn .= DADA::Template::Widgets::screen( { -screen => 'installer_default.tmpl', } );
     $scrn .= list_template( -Part => "footer", );
     print $scrn;
 
@@ -144,268 +122,6 @@ sub scrn_upgrade_dada {
 
 sub scrn_configure_dada_mail {
 	
-	# DEV: todo would be to properly get this templated out. 
-    my $tmpl = <<EOF
-		
-	<h1>Install <!-- tmpl_var PROGRAM_NAME --></h1> 
-		
-	<!-- tmpl_if errors --> 
-		<h2>
-			Problems When Attempting to Install!
-		</h2>
-		<p class="error"> 
-		 Some problems were encountered, when attempting to install and configure <!-- tmpl_var PROGRAM_NAME -->. Details are marked below:
-		</p>  
-	<!-- /tmpl_if --> 
-	
-	<!-- tmpl_if error_cant_read_config_dot_pm --> 
-	<h3>Warning!</h3>
-	
-	<p class="error"> 
-	    <!-- tmpl_var PROGRAM_NAME --> can't read your, <em>dada/DADA/Config.pm</em> file.
-	</p>
-	<p class="error"> 
-		You may still perform this installation, but you may have to edit parts of the <em>dada/DADA/Config.pm</em>
-		file yourself. (We'll let you know, where.)
-	</p>
-
-	<!-- /tmpl_if --> 
-	<!-- tmpl_if error_cant_write_config_dot_pm --> 
-	
-	<h3>Warning!</h3> 
-	<p class="error"> 
-		<!-- tmpl_var PROGRAM_NAME --> won't be able to write to edit your <em>dada/DADA/Config.pm</em> file itself.
-		</p> 
-		<p class="error"> 
-		You may still perform this installation, but you may have to edit parts of the <em>dada/DADA/Config.pm</em>
-		file yourself. (We'll let you know, where.)
-	</p>
-	<hr /> 
-	<!-- /tmpl_if --> 
-	
-	<!-- tmpl_if comment --> 
-		<!-- tmpl_loop errors --> 
-			<p>Error <!-- tmpl_var error --> 
-		<!-- /tmpl_loop --> 
-	<!-- /tmpl_if --> 
-	
-	<form action="<!-- tmpl_var Self_URL -->" method="post" id="installform"> 
-
-
-
-	<fieldset> 
-	
-	<legend>
-
- 	<!-- tmpl_var PROGRAM_NAME --> URL
-	</legend> 
-	
-	<!-- tmpl_if error_program_url_is_blank  --> 
-		<ul>
-		<li>
-		<p class="error"> 
-		Your <!-- tmpl_var PROGRAM_NAME --> URL is blank.</em>
-		</p></li>
-		</ul> 
-		
-	<!-- /tmpl_if -->
-	
-	
-	
-	<p><label for="program_url"><!-- tmpl_var PROGRAM_NAME --> Program URL:</label>
-	<br /> 
-	<input type="text" id="program_url" name="program_url" class="full" value="<!-- tmpl_var program_url_guess -->" />
-	</p> 
-	
-	</fieldset> 
-	
-
-
-	<fieldset> 
-	
-	<legend>
-		<!-- tmpl_var PROGRAM_NAME --> Root Password
-	</legend> 
-	
-	
-	<!-- tmpl_if error_root_pass_is_blank  --> 
-		<ul>
-		<li>
-		<p class="error"> 
-		Your <!-- tmpl_var PROGRAM_NAME --> Root Password is Blank.</em>
-		</p></li></ul> 
-		
-	<!-- /tmpl_if -->
-	<!-- tmpl_if error_pass_no_match  --> 
-		<ul>
-		<li>
-		<p class="error"> 
-		Your <!-- tmpl_var PROGRAM_NAME --> Root Passwords Do Not Match.</em>
-		</p></li>
-		</ul> 
-		
-	<!-- /tmpl_if -->
-	
-	<p>This is the main password to <!-- tmpl_var PROGRAM_NAME -->, used to create new mailing lists and to 
-	access <em>any</em> mailing list.</p> 
-	
-	<p><label for="dada_root_pass"><!-- tmpl_var PROGRAM_NAME --> Root Password:</label>
-	<br /> 
-	<input type="text" id="dada_root_pass" name="dada_root_pass" />
-	</p> 
-	<p><label for="dada_root_pass_again">Re-type Your <!-- tmpl_var PROGRAM_NAME --> Root Password:</label><br /> 
-	<input type="text" id="dada_root_pass_again" name="dada_root_pass_again" /></p> 
-	<hr /> 
-	</fieldset> 
-	
-	<fieldset> 
-	
-	
-	<legend>
-		.dada_config Directory Location
-	</legend>
-	<!-- tmpl_if error_create_dada_files_dir  --> 
-		<ul> 
-		<li>
-		<p class="error"> 
-		 Will not be able to create, <em><!-- tmpl_var install_dada_files_dir_at -->/<!-- tmpl_var Dada_Files_Dir_Name --></em>
-		</p>
-		</li>
-		</ul>
-		
-	<!-- /tmpl_if --> 
-	<!-- tmpl_if error_dada_files_dir_exists  --> 
-		<ul> 
-		<li>
-		<p class="error"> 
-			The directory, <!-- tmpl_var dada_files_loc -->/<!-- tmpl_var Dada_Files_Dir_Name -->already exists - we won't try to overwrite it.
-		</p>
-		</li>
-		</ul> 
-		
-	<!-- /tmpl_if -->
-	
-	
-	
-	<p>
-	 <input type="radio" checked="checked" id="dada_files_dir_setup_auto"  name="dada_files_dir_setup" value="auto" onChange="Toggle_dada_files_dirOptions(); return false;">
-		<label for="dada_files_dir_setup_auto">AUTO 
-		Use <!-- tmpl_var PROGRAM_NAME -->'s best guess.  </label><br />Install the <em>.dada_files</em> directory under,<br />
-		<ul<li><em> <!-- tmpl_var home_dir_guess --></em></li></ul> 
-	</p> 
-	
-	 <p>
-	  <input type="radio"  id="dada_files_dir_setup_manual" name="dada_files_dir_setup" value="manual" onChange="Toggle_dada_files_dirOptions(); return false;">
-	<label for="dada_files_dir_setup_manual"> 
-	 MANUAL.
-	</label>  Explicitly set the Absolute Path to where the <em>.dada_files</em> directory should be installed:</p>
-	
-	<div id="manual_dada_files_dir_setup">
-	<fieldset> 
-	<legend> 
-		Manual Configuration of, <em>.dada_files</em> directory
-	</legend> 
-	<p> 
-	 <input type="text" name="dada_files_loc" value="<!-- tmpl_var home_dir_guess -->" style="width:80%" />/<em><!-- tmpl_var Dada_Files_Dir_Name --></em>
-	</p> 
-	
-	</fieldset>
-	
-	</div> 
-	
-	
-	<!-- tmpl_if comment --> 
-	
-				<p>Where would you like the <!-- tmpl_var PROGRAM_NAME --> <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory be located? (make this an <em><strong>absolute path</strong></em>)</p>
-				<p><strong>Hint!</strong> Set to, <em>auto</em> if you want <!-- tmpl_var PROGRAM_NAME --> to guess at the best location. For your server setup, this
-				will be:</p> 
-				<ul>
-				<li>
-				<p><strong><!-- tmpl_var home_dir_guess --></strong><em>/<!-- tmpl_var Dada_Files_Dir_Name --></em></p>
-				</li>
-				</ul> 
-	
-				<p>Create the <!-- tmpl_var PROGRAM_NAME --> <!-- tmpl_var Dada_Files_Dir_Name --> directory at this location:</p>
-				 <input type="text" name="dada_files_loc" value="auto" style="width:80%" />/<!-- tmpl_var Dada_Files_Dir_Name --> 
-				</p> 
-	
-	<!-- /tmpl_if --> 
-	
-	
-	</fieldset> 
-	
-	<fieldset> 
-	
-	<legend><!-- tmpl_var PROGRAM_NAME --> Backend</legend> 
-	
-	<!-- tmpl_if error_sql_connection  --> 
-		<ul>
-		<li>
-		<p class="error"> 
-			Could not connect to your SQL Server
-		</p>
-		</li>
-		</ul> 
-	<!-- /tmpl_if -->
-	
-	
-
-	<p>What type of backend would you like to use?</p>
-	<p>
-		<select name="backend" id="backend" onChange="ToggleSQLOptions(); return false;"> 
-			<option value="default" selected="selected">Default Backend</option>
-			<!-- tmpl_if can_use_DBI --> 
-				<option value="mysql">MySQL (recommended)</option> 
-				<option value="Pg">PostgreSQL</option> 			
-			<!-- /tmpl_if --> 
-		</select>
-	</p>
-
-	<!-- tmpl_if can_use_DBI --> 
-	<div id="sql_info" style="display:none;"> 
-	<fieldset> 
-		<legend>SQL Information</legend> 
-		<!-- tmpl_if error_sql_table_populated --> 
-			<ul> 
-			<li> 
-			<p class="error">
-				The SQL information below is corret, but there are tables that already 
-				exist in the database. 
-			</p>
-			</li>
-			</ul> 
-		<!-- /tmpl_if --> 
-		<p>Server: <input type="text" name="sql_server" /><br />
-		<p>Database: <input type="text" name="sql_database" /><br />
-		<p>Port: <input type="text" name="sql_port" value="auto" /><br />
-		<p>Username: <input type="text" name="sql_username" /><br />
-		<p>Password: <input type="text" name="sql_password" /><br />
-	</fieldset> 
-	</div> 
-	
-
-	
-	<!-- tmpl_else --> 
-		<p class="error"> 
-			Your current server setup does not support the SQL backend. 
-		</p>
-		
-	<!-- /tmpl_if --> 
-	</fieldset> 
-	
-	<input type="hidden" name="f" value="check" /> 
-	
-	<p style="text-align:center">
-	 <input type="submit" value="Install <!-- tmpl_var PROGRAM_NAME -->!" class="processing" /> 
-	</p>
-	
-	
-	</form> 
-	
-	<p>&nbsp</p>
-EOF
-      ;
-
     my $scrn = '';
     $scrn .= list_template(
         -Part  => "header",
@@ -418,7 +134,7 @@ EOF
     );
     $scrn .= DADA::Template::Widgets::screen(
         {
-            -data => \$tmpl,
+            -screen => 'installer_scrn_configure_dada_mail.tmpl',
             -vars => {
                 program_url_guess              => program_url_guess(),
                 can_use_DBI                    => test_can_use_DBI(),
@@ -498,51 +214,7 @@ sub check {
 
 sub scrn_install_dada_mail {
 	my $install_dada_files_loc = install_dada_files_dir_at_from_params(); 
-	
-	# DEV: todo would be to properly get this templated out. 
-	my $tmpl = <<EOF
 
-<fieldset> 
-<legend>
-	Installation Log:
-</legend>
-
-<!-- tmpl_var install_log --> 
-</fieldset> 
-
-<!-- tmpl_if error_cant_edit_config_dot_pm --> 
- <h1>ONE MORE STEP</h1> 
-
-	<p>
-		You'll have to manually edit the, <strong><em>dada/DADA/Config.pm</em></strong> file. 
-	</p> 
-	
-	<p>Find this line: </p> 
-	
-	<p><code>\$PROGRAM_CONFIG_FILE_DIR = 'auto';</code></p> 
-	
-	<p>
-		And change it to:  
-	</p> 
-	
-	<p><code>\$PROGRAM_CONFIG_FILE_DIR = '<!-- tmpl_var install_dada_files_loc -->/$Dada_Files_Dir_Name/.configs';</code></p> 
-	
-	<p>And, you're done!</p> 
-	
-<!-- /tmpl_if --> 
-
-<!-- tmpl_if status --> 
-
-<!-- tmpl_else --> 
-	<h1>BIG PROBLEMS</h1> 
-	
-	<p>Problems with the installation - look in the Installation Log for clues.</p> 
-	
-<!-- /tmpl_if --> 
-
-	
-EOF
-; 
 
 
     my ( $log, $status, $errors ) = install_dada_mail(
@@ -571,7 +243,7 @@ EOF
 
   $scrn .= DADA::Template::Widgets::screen(
         {
-            -data => \$tmpl,
+            -screen => 'installer_scrn_install_dada_mail.tmpl',
             -vars => { 
 			 install_log                  => webify_plain_text($log), 
 			 status                       => $status, 
@@ -1055,58 +727,9 @@ sub program_url_guess {
 
 sub hack_in_scriptalicious {
     my $scrn = shift;
-
-    # Hackity Hack!
-    my $js = <<EOF
-	
-	  <script src="<!-- tmpl_var my_S_PROGRAM_URL -->/javascripts/dada_mail_admin_js.js" type="text/javascript"></script>
-	  <script src="<!-- tmpl_var my_S_PROGRAM_URL -->/javascripts/prototype.js" type="text/javascript"></script>
-	  <script src="<!-- tmpl_var my_S_PROGRAM_URL -->/javascripts/scriptaculous.js?load=effects" type="text/javascript"></script>
-		<script> 
-		
-			function ToggleSQLOptions() { 
-				var sql_picker = document.getElementById('backend');
-				var selected  = sql_picker.options[sql_picker.selectedIndex].value;
-				 	
-				if(selected == 'mysql' || selected == 'Pg'){ 
-				
-					var togglin = document.getElementById( 'sql_info' );
-					if(togglin.style.display != ""){	
-							Effect.Appear('sql_info');
-					}
-				}
-				else { 
-					Effect.Fade('sql_info');
-				}
-			}	
-			function Toggle_dada_files_dirOptions() { 
-				var dada_files_dir_setup_choice = Form.getInputs('installform','radio','dada_files_dir_setup').find(function(radio) { return radio.checked; }).value;				
-				if(dada_files_dir_setup_choice == 'auto'){ 
-					Effect.Fade('manual_dada_files_dir_setup');
-				}
-				else { 
-					var togglin = document.getElementById( 'manual_dada_files_dir_setup' );
-					if(togglin.style.display != ""){	
-							Effect.Appear('manual_dada_files_dir_setup');
-					}
-				}
-
-			}
-			function setStuffUp() { 
-				ToggleSQLOptions(); 
-				Toggle_dada_files_dirOptions();
-			}
-			
-			
-			
-		window.onload=setStuffUp; 
-		</script> 
-
-EOF
-      ;
-    $js = DADA::Template::Widgets::screen(
+    my $js = DADA::Template::Widgets::screen(
         {
-            -data => \$js,
+            -screen => 'installer_extra_javascript.tmpl',
             -vars => { my_S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL }
         }
     );
