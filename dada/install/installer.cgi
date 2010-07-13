@@ -1,11 +1,15 @@
 #!/usr/bin/perl -T
 use strict;
+
+# -T flag stuff. 
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 
+# Gimme some errors in my browser for debugging
 use Carp qw(croak carp);
 $Carp::Verbose = 1;
 use CGI::Carp qw(fatalsToBrowser);
+
 
 $|++;
 
@@ -13,7 +17,6 @@ package installer;
 use strict;
 use 5.8.1;
 use Encode qw(encode decode);
-
 # A weird fix.
 BEGIN {
     if ( $] > 5.008 ) {
@@ -26,6 +29,7 @@ use lib qw(
   ..//DADA/perllib
 );
 
+# Init my CGI obj. 
 use CGI;
 CGI->nph(1)
   if $DADA::Config::NPH == 1;
@@ -33,10 +37,19 @@ my $q;
 $q = CGI->new;
 $q = decode_cgi_obj($q);
 
+
+# These are script-wide variables
+# $Self_URL may need ot be set manually - but I'm hoping not. 
+# If the script doesn't post properly, go ahead and configure it manually
 my $Self_URL            = $q->url;
+# You'll normally not want to change this, but I leave it to you to decide
 my $Dada_Files_Dir_Name = '.dada_files';
+# It irritates me to use a weird, relative path - I may want to try to make this 
+# an abs. path via File::Spec (or, whatever) 
 my $Config_LOC          = '../DADA/Config.pm';
 
+# These are strings we look for in the example_dada_config.tmpl file which 
+# we need to remove. 
 my $sql_begin_cut = quotemeta(
     q{# start cut for SQL Backend
 =cut}
@@ -48,6 +61,7 @@ my $sql_end_cut = quotemeta(
 );
 
 use DADA::Config 4.0.0;
+# An unconfigured Dada Mail won't have these exactly handy to use. 
 $DADA::Config::PROGRAM_URL   = program_url_guess();
 $DADA::Config::S_PROGRAM_URL = program_url_guess();
 
@@ -55,10 +69,13 @@ use DADA::App::Guts;
 use DADA::Template::Widgets;
 use DADA::Template::HTML;
 
+# So we may test the sub. in unit tests, etc. 
 __PACKAGE__->run()
   unless caller();
 
 sub run {
+	
+	# Old-school switcheroo
     my %Mode = (
 
         install_dada             => \&install_dada,
@@ -67,7 +84,6 @@ sub run {
         check                    => \&check,
 
     );
-
     my $flavor = $q->param('f');
     if ($flavor) {
         if ( exists( $Mode{$flavor} ) ) {
@@ -82,8 +98,10 @@ sub run {
     }
 }
 
-sub default {
 
+sub default {
+	
+	# DEV: todo would be to properly get this templated out. 
     my $tmpl = q{ 
 <h1>Welcome to the <!-- tmpl_var PROGRAM_NAME --> Installer!</h1> 
 		<ul>
@@ -118,11 +136,15 @@ sub default {
 }
 
 sub scrn_upgrade_dada {
+ 
+	# This.. doesn't do anything. 
     print $q->header();
     print "Upgrading $DADA::Config::PROGRAM_NAME!";
 }
 
 sub scrn_configure_dada_mail {
+	
+	# DEV: todo would be to properly get this templated out. 
     my $tmpl = <<EOF
 		
 	<h1>Install <!-- tmpl_var PROGRAM_NAME --></h1> 
@@ -398,27 +420,25 @@ EOF
         {
             -data => \$tmpl,
             -vars => {
-                program_url_guess             => program_url_guess(),
-                can_use_DBI                   => can_use_DBI(),
-                error_cant_read_config_dot_pm => test_can_read_config_dot_pm(),
+                program_url_guess              => program_url_guess(),
+                can_use_DBI                    => test_can_use_DBI(),
+                error_cant_read_config_dot_pm  => test_can_read_config_dot_pm(),
                 error_cant_write_config_dot_pm => test_can_write_config_dot_pm(),
-
-				dada_files_dir_setup => $q->param('dada_files_dir_setup'), 
-                dada_files_loc => $q->param('dada_files_loc'),
-			    install_dada_files_dir_at => install_dada_files_dir_at_from_params(),
-				
-                error_root_pass_is_blank => $q->param('error_root_pass_is_blank')|| 0,
-                error_pass_no_match => $q->param('error_pass_no_match') || 0,
-                error_program_url_is_blank =>$q->param('error_program_url_is_blank') || 0,
-                error_create_dada_files_dir => $q->param('error_create_dada_files_dir')  || 0,
-                error_dada_files_dir_exists =>  $q->param('error_dada_files_dir_exists') || 0,
-                error_sql_connection => $q->param('error_sql_connection') || 0,
-                error_sql_table_populated => $q->param('error_sql_table_populated') || 0,
-                home_dir_guess => guess_home_dir(),
-                errors         => $q->param('errors') || [],
-                PROGRAM_URL         => program_url_guess(),
-                S_PROGRAM_URL       => program_url_guess(),
-                Dada_Files_Dir_Name => $Dada_Files_Dir_Name,
+				dada_files_dir_setup           => $q->param('dada_files_dir_setup'), 
+                dada_files_loc                 => $q->param('dada_files_loc'),
+			    install_dada_files_dir_at      => install_dada_files_dir_at_from_params(),
+                error_root_pass_is_blank       => $q->param('error_root_pass_is_blank')|| 0,
+                error_pass_no_match            => $q->param('error_pass_no_match') || 0,
+                error_program_url_is_blank     =>$q->param('error_program_url_is_blank') || 0,
+                error_create_dada_files_dir    => $q->param('error_create_dada_files_dir')  || 0,
+                error_dada_files_dir_exists    =>  $q->param('error_dada_files_dir_exists') || 0,
+                error_sql_connection           => $q->param('error_sql_connection') || 0,
+                error_sql_table_populated      => $q->param('error_sql_table_populated') || 0,
+                home_dir_guess                 => guess_home_dir(),
+                errors                         => $q->param('errors') || [],
+                PROGRAM_URL                    => program_url_guess(),
+                S_PROGRAM_URL                  => program_url_guess(),
+                Dada_Files_Dir_Name            => $Dada_Files_Dir_Name,
 
             },
         }
@@ -428,115 +448,17 @@ EOF
     # Let's get some fancy js stuff!
     $scrn = hack_in_scriptalicious($scrn);
 
-    # Refil in all the stuff we just had;
+    # Refill in all the stuff we just had;
     if ( $q->param('errors') ) {
         require HTML::FillInForm::Lite;
         my $h = HTML::FillInForm::Lite->new();
         $scrn = $h->fill( \$scrn, $q );
     }
-
     print $scrn;
 
 }
 
-sub test_str_is_blank {
-    my $str = shift;
 
-    if ( !defined($str) ) {
-        return 1;
-    }
-    if ( $str eq "" ) {
-        return 1;
-    }
-
-    return 0;
-}
-
-sub test_pass_match {
-
-    my $pass        = shift;
-    my $retype_pass = shift;
-
-    if ( $pass eq $retype_pass ) {
-        return 0;
-    }
-    else {
-        return 1;
-    }
-}
-
-sub test_dada_files_dir_no_exists {
-    my $dada_files_dir = shift;
-    if ( -e $dada_files_dir . '/' . $Dada_Files_Dir_Name) {
-        return 0;
-    }
-    else {
-
-        return 1;
-    }
-}
-
-sub can_create_dada_files_dir {
-
-    my $dada_files_dir = shift;
-    $dada_files_dir =
-      make_safer( $dada_files_dir . '/' . $Dada_Files_Dir_Name );
-
-    #  if ( test_dada_files_dir_no_exists() == 0 ) {
-    #      return 0;
-    #
-    #      #return (0, 'directory already exists!');
-    # }
-
-    # `mkdir $dada_files_dir`;
-    if ( mkdir( $dada_files_dir, $DADA::Config::DIR_CHMOD ) ) {
-        if ( -e $dada_files_dir ) {
-            rmdir($dada_files_dir);
-            return 0;
-        }
-        else {
-            return 1;
-
-        }
-    }
-    else {
-        return 1;
-    }
-
-}
-
-sub test_sql_connection {
-    my $dbtype   = shift;
-    my $dbserver = shift;
-    my $port     = shift;
-    my $database = shift;
-    my $user     = shift;
-    my $pass     = shift;
-
-    if ( $port eq 'auto' ) {
-        if ( $dbtype =~ /mysql/i ) {
-            $port = 3306;
-        }
-        elsif ( $dbtype =~ /pg/i ) {
-            $port = 5432;
-        }
-    }
-    else {
-    }
-
-    eval {
-        my $dbh =
-          connectdb( $dbtype, $dbserver, $port, $database, $user, $pass, );
-    };
-    if ($@) {
-		warn $@; 
-        return 0;
-    }
-    else {
-        return 1;
-    }
-
-}
 
 sub connectdb {
     my $dbtype      = shift;
@@ -577,7 +499,7 @@ sub check {
 sub scrn_install_dada_mail {
 	my $install_dada_files_loc = install_dada_files_dir_at_from_params(); 
 	
-	
+	# DEV: todo would be to properly get this templated out. 
 	my $tmpl = <<EOF
 
 <fieldset> 
@@ -770,23 +692,32 @@ sub install_dada_mail {
     return ( $log, $status, $errors );
 }
 
+
 sub edit_config_dot_pm {
     my $loc          = shift;
     my $search       = quotemeta(q{$PROGRAM_CONFIG_FILE_DIR = 'auto';});
-
+	my $search2      = quotemeta(q{$PROGRAM_ERROR_LOG = undef;});
+	
 	if($loc eq 'auto') { 
 		warn "\$loc has been set to, 'auto' - nothing to edit!"; 
 		return 1; 
 	}
 	else { 
 		
-	    my $replace_with = q{$PROGRAM_CONFIG_FILE_DIR = '} . $loc . q{/.configs';};
-
+	    my $replace_with  = q{$PROGRAM_CONFIG_FILE_DIR = '} . $loc . '/' . $Dada_Files_Dir_Name . q{/.configs';};
+		my $replace_with2 = q{$PROGRAM_ERROR_LOG = '}       . $loc . '/' . $Dada_Files_Dir_Name . q{/.logs/errors.txt';};
 	    eval {
 			$Config_LOC = make_safer($Config_LOC); 
 		 
 	        my $config = slurp($Config_LOC);
-	            $config =~ s/$search/$replace_with/;
+	     
+	
+		   # I really only have that one thing to edit - 
+	       $config =~ s/$search/$replace_with/;
+			
+			# (what about the error log? ) 
+			$config =~ s/$search2/$replace_with2/; 
+			
 			chmod(0777, make_safer('../DADA'));
 			unlink($Config_LOC); 
 		
@@ -810,7 +741,7 @@ sub edit_config_dot_pm {
 sub backup_config_dot_pm {
 	chmod(0777, '../DADA');
     my $config = slurp($Config_LOC);
-	my $backup_loc = make_safer($Config_LOC . '-' . time); 
+	my $backup_loc = make_safer($Config_LOC . '-backup.' . time); 
     open my $backup, '>', $backup_loc or die $!;
     print $backup $config or die $!;
     close $backup or die $!;
@@ -855,19 +786,9 @@ sub create_dada_files_dir_structure {
 sub create_dada_config_file {
     my ($args) = @_;
 
-   # DO NOT LIKE THIS RIGHT NOW: 
-   # if ( !exists( $args->{-dada_files_loc} ) ) {
-   #     $args->{-dada_files_loc} = 'auto';
-   # }
-
-	# I don't think this is set to, "auto" - we'll have to see if what it's set matches, "auto", now. 
-    #if ( $args->{-dada_files_loc} eq 'auto' ) {
-    #    $args->{-dada_files_loc} = auto_dada_files_dir();
-    #}
-
     my $loc = $args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name;
 
-    # eval {
+     eval {
     if ( !-e $loc . '/.configs' ) {
         die "$loc does not exist! Stopping!";
     }
@@ -918,13 +839,14 @@ sub create_dada_config_file {
     print $dada_config_fh $outside_config_file or die $!;
     close $dada_config_fh or die $!;
 
-    # };
-    # if ($@) {
-    #    return 0;
-    #}
-    #else {
-    #    return 1;
-    #}
+     };
+     if ($@) {
+		warn $@; 
+        return 0;
+    }
+    else {
+        return 1;
+    }
 
 }
 
@@ -939,7 +861,7 @@ sub create_sql_tables {
         $sql_file = 'postgres_schema.sql';
     }
 
-    #eval {
+    eval {
 
     require DBI;
 
@@ -966,19 +888,18 @@ sub create_sql_tables {
         }
     }
 
-    #	};
-    #	if($@){
-    #		warn $!;
-    #		return 0;
-    #	}
-    #	else {
+    	};
+    	if($@){
+    		warn $!;
+    		return 0;
+    	}
+    	else {
     return 1;
 
-    #	}
+    	}
 }
 
 sub sql_port_from_params {
-    #my $port = shift || 'auto';
     my $port = $q->param('sql_port'); 
 	if ( $q->param('sql_port') eq 'auto' ) {
         if ( $q->param('backend') =~ /mysql/i ) {
@@ -1031,7 +952,7 @@ sub check_setup {
 		$errors->{dada_files_dir_exists} = 1;
 	}
 
-    if ( can_create_dada_files_dir($install_dada_files_dir_at) == 1 ) {
+    if ( test_can_create_dada_files_dir($install_dada_files_dir_at) == 1 ) {
         $errors->{create_dada_files_dir} = 1;
     }
     else {
@@ -1196,6 +1117,117 @@ EOF
     return $scrn;
 }
 
+
+
+sub test_can_create_dada_files_dir {
+
+    my $dada_files_dir = shift;
+    $dada_files_dir =
+      make_safer( $dada_files_dir . '/' . $Dada_Files_Dir_Name );
+
+    if ( mkdir( $dada_files_dir, $DADA::Config::DIR_CHMOD ) ) {
+        if ( -e $dada_files_dir ) {
+            rmdir($dada_files_dir);
+            return 0;
+        }
+        else {
+            return 1;
+
+        }
+    }
+    else {
+        return 1;
+    }
+
+}
+
+
+
+
+sub test_can_use_DBI {
+
+    eval { require DBI; };
+    if ($@) {
+		warn $@; 
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+
+sub test_str_is_blank {
+	
+    my $str = shift;
+    if ( !defined($str) ) {
+        return 1;
+    }
+    if ( $str eq "" ) {
+        return 1;
+    }
+    return 0;
+}
+
+sub test_pass_match {
+
+    my $pass        = shift;
+    my $retype_pass = shift;
+
+    if ( $pass eq $retype_pass ) {
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+
+sub test_dada_files_dir_no_exists {
+    my $dada_files_dir = shift;
+    if ( -e $dada_files_dir . '/' . $Dada_Files_Dir_Name) {
+        return 0;
+    }
+    else {
+
+        return 1;
+    }
+}
+
+
+sub test_sql_connection {
+	
+    my $dbtype   = shift;
+    my $dbserver = shift;
+    my $port     = shift;
+    my $database = shift;
+    my $user     = shift;
+    my $pass     = shift;
+
+    if ( $port eq 'auto' ) {
+        if ( $dbtype =~ /mysql/i ) {
+            $port = 3306;
+        }
+        elsif ( $dbtype =~ /pg/i ) {
+            $port = 5432;
+        }
+    }
+    else {
+    }
+
+    eval {
+        my $dbh =
+          connectdb( $dbtype, $dbserver, $port, $database, $user, $pass, );
+    };
+    if ($@) {
+		warn $@; 
+        return 0;
+    }
+    else {
+        return 1;
+    }
+
+}
+
+
 sub test_can_read_config_dot_pm {
     eval {
         my $config = slurp($Config_LOC);
@@ -1223,18 +1255,6 @@ sub test_can_write_config_dot_pm {
         return 1;
     }
     return $problem;
-}
-
-sub can_use_DBI {
-
-    eval { require DBI; };
-    if ($@) {
-		warn $@; 
-        return 0;
-    }
-    else {
-        return 1;
-    }
 }
 
 sub test_database_empty {
