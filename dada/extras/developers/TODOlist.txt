@@ -10,6 +10,16 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+[ ] perhaps the sub/unsub stuff cannot be truly one-click, but one-click to a screen, that has a button to actually subsribe/unsubsribe you
+
+	[ ] This could also be a GREAT place, esp. with unsubs to have a form, for "write a message to hte list owner about why you're ditchin't he list" 
+	 	or options to, "unsub me from all lists on this domain" 
+	    or, whatever. 
+	[ ] Sub would be nice to have a, "Subscribe" or a, "Subscriber and login into my profile" type of thing. 
+	
+
+
 [ ] TWO more valid email checks need to be done: 
 
 	[ ] Maybe it's time to put a check, for the list owner/list admin - NOT allowed to subscribe to a site. 
