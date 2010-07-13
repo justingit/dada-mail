@@ -167,7 +167,7 @@ sub scrn_configure_dada_mail {
 		<!-- /tmpl_loop --> 
 	<!-- /tmpl_if --> 
 	
-	<form action="<!-- tmpl_var Self_URL -->" method="post"> 
+	<form action="<!-- tmpl_var Self_URL -->" method="post" id="installform"> 
 
 
 
@@ -246,7 +246,7 @@ sub scrn_configure_dada_mail {
 		<ul> 
 		<li>
 		<p class="error"> 
-		 Can not create, <em><!-- tmpl_var dada_files_loc -->/<!-- tmpl_var Dada_Files_Dir_Name --></em>
+		 Will not be able to create, <em><!-- tmpl_var install_dada_files_dir_at -->/<!-- tmpl_var Dada_Files_Dir_Name --></em>
 		</p>
 		</li>
 		</ul>
@@ -262,18 +262,54 @@ sub scrn_configure_dada_mail {
 		</ul> 
 		
 	<!-- /tmpl_if -->
-	<p>Where would you like the <!-- tmpl_var PROGRAM_NAME --> <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory be located? (make this an <em><strong>absolute path</strong></em>)</p>
-	<p><strong>Hint!</strong> Set to, <em>auto</em> if you want <!-- tmpl_var PROGRAM_NAME --> to guess at the best location. For your server setup, this
-	will be:</p> 
-	<ul>
-	<li>
-	<p><strong><!-- tmpl_var home_dir_guess --></strong><em>/<!-- tmpl_var Dada_Files_Dir_Name --></em></p>
-	</li>
-	</ul> 
 	
-	<p>Create the <!-- tmpl_var PROGRAM_NAME --> <!-- tmpl_var Dada_Files_Dir_Name --> directory at this location:</p>
-	 <input type="text" name="dada_files_loc" value="auto" style="width:80%" />/<!-- tmpl_var Dada_Files_Dir_Name --> 
+	
+	
+	<p>
+	 <input type="radio" checked="checked" id="dada_files_dir_setup_auto"  name="dada_files_dir_setup" value="auto" onChange="Toggle_dada_files_dirOptions(); return false;">
+		<label for="dada_files_dir_setup_auto">AUTO 
+		Use <!-- tmpl_var PROGRAM_NAME -->'s best guess.  </label><br />Install the <em>.dada_files</em> directory under,<br />
+		<ul<li><em> <!-- tmpl_var home_dir_guess --></em></li></ul> 
 	</p> 
+	
+	 <p>
+	  <input type="radio"  id="dada_files_dir_setup_manual" name="dada_files_dir_setup" value="manual" onChange="Toggle_dada_files_dirOptions(); return false;">
+	<label for="dada_files_dir_setup_manual"> 
+	 MANUAL.
+	</label>  Explicitly set the Absolute Path to where the <em>.dada_files</em> directory should be installed:</p>
+	
+	<div id="manual_dada_files_dir_setup">
+	<fieldset> 
+	<legend> 
+		Manual Configuration of, <em>.dada_files</em> directory
+	</legend> 
+	<p> 
+	 <input type="text" name="dada_files_loc" value="<!-- tmpl_var home_dir_guess -->" style="width:80%" />/<em><!-- tmpl_var Dada_Files_Dir_Name --></em>
+	</p> 
+	
+	</fieldset>
+	
+	</div> 
+	
+	
+	<!-- tmpl_if comment --> 
+	
+				<p>Where would you like the <!-- tmpl_var PROGRAM_NAME --> <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory be located? (make this an <em><strong>absolute path</strong></em>)</p>
+				<p><strong>Hint!</strong> Set to, <em>auto</em> if you want <!-- tmpl_var PROGRAM_NAME --> to guess at the best location. For your server setup, this
+				will be:</p> 
+				<ul>
+				<li>
+				<p><strong><!-- tmpl_var home_dir_guess --></strong><em>/<!-- tmpl_var Dada_Files_Dir_Name --></em></p>
+				</li>
+				</ul> 
+	
+				<p>Create the <!-- tmpl_var PROGRAM_NAME --> <!-- tmpl_var Dada_Files_Dir_Name --> directory at this location:</p>
+				 <input type="text" name="dada_files_loc" value="auto" style="width:80%" />/<!-- tmpl_var Dada_Files_Dir_Name --> 
+				</p> 
+	
+	<!-- /tmpl_if --> 
+	
+	
 	</fieldset> 
 	
 	<fieldset> 
@@ -319,6 +355,7 @@ sub scrn_configure_dada_mail {
 		<!-- /tmpl_if --> 
 		<p>Server: <input type="text" name="sql_server" /><br />
 		<p>Database: <input type="text" name="sql_database" /><br />
+		<p>Port: <input type="text" name="sql_port" value="auto" /><br />
 		<p>Username: <input type="text" name="sql_username" /><br />
 		<p>Password: <input type="text" name="sql_password" /><br />
 	</fieldset> 
@@ -364,32 +401,21 @@ EOF
                 program_url_guess             => program_url_guess(),
                 can_use_DBI                   => can_use_DBI(),
                 error_cant_read_config_dot_pm => test_can_read_config_dot_pm(),
-                error_cant_write_config_dot_pm =>
-                  test_can_write_config_dot_pm(),
-                dada_files_loc => $q->param('dada_files_loc')
-                  || 'auto',
-                error_root_pass_is_blank =>
-                  $q->param('error_root_pass_is_blank')
-                  || 0,
-                error_pass_no_match => $q->param('error_pass_no_match')
-                  || 0,
-                error_program_url_is_blank =>
-                  $q->param('error_program_url_is_blank')
-                  || 0,
-                error_create_dada_files_dir =>
-                  $q->param('error_create_dada_files_dir')
-                  || 0,
-                error_dada_files_dir_exists =>
-                  $q->param('error_dada_files_dir_exists')
-                  || 0,
-                error_sql_connection => $q->param('error_sql_connection')
-                  || 0,
-                error_sql_table_populated =>
-                  $q->param('error_sql_table_populated')
-                  || 0,
+                error_cant_write_config_dot_pm => test_can_write_config_dot_pm(),
+
+				dada_files_dir_setup => $q->param('dada_files_dir_setup'), 
+                dada_files_loc => $q->param('dada_files_loc'),
+			    install_dada_files_dir_at => install_dada_files_dir_at_from_params(),
+				
+                error_root_pass_is_blank => $q->param('error_root_pass_is_blank')|| 0,
+                error_pass_no_match => $q->param('error_pass_no_match') || 0,
+                error_program_url_is_blank =>$q->param('error_program_url_is_blank') || 0,
+                error_create_dada_files_dir => $q->param('error_create_dada_files_dir')  || 0,
+                error_dada_files_dir_exists =>  $q->param('error_dada_files_dir_exists') || 0,
+                error_sql_connection => $q->param('error_sql_connection') || 0,
+                error_sql_table_populated => $q->param('error_sql_table_populated') || 0,
                 home_dir_guess => guess_home_dir(),
-                errors         => $q->param('errors')
-                  || [],
+                errors         => $q->param('errors') || [],
                 PROGRAM_URL         => program_url_guess(),
                 S_PROGRAM_URL       => program_url_guess(),
                 Dada_Files_Dir_Name => $Dada_Files_Dir_Name,
@@ -441,8 +467,6 @@ sub test_pass_match {
 
 sub test_dada_files_dir_no_exists {
     my $dada_files_dir = shift;
-	   $dada_files_dir = auto_dada_files_dir() if $dada_files_dir eq 'auto';  
-
     if ( -e $dada_files_dir . '/' . $Dada_Files_Dir_Name) {
         return 0;
     }
@@ -455,7 +479,6 @@ sub test_dada_files_dir_no_exists {
 sub can_create_dada_files_dir {
 
     my $dada_files_dir = shift;
-	$dada_files_dir = auto_dada_files_dir() if $dada_files_dir eq 'auto';  
     $dada_files_dir =
       make_safer( $dada_files_dir . '/' . $Dada_Files_Dir_Name );
 
@@ -506,6 +529,7 @@ sub test_sql_connection {
           connectdb( $dbtype, $dbserver, $port, $database, $user, $pass, );
     };
     if ($@) {
+		warn $@; 
         return 0;
     }
     else {
@@ -551,19 +575,21 @@ sub check {
 }
 
 sub scrn_install_dada_mail {
-
+	my $install_dada_files_loc = install_dada_files_dir_at_from_params(); 
+	
     my ( $log, $status, $errors ) = install_dada_mail(
         {
-            -program_url    => $q->param('program_url'),
-            -dada_root_pass => $q->param('dada_root_pass'),
-            -dada_files_loc => $q->param('dada_files_loc'),
-            -backend        => $q->param('backend'),
-            -sql_dbtype     => $q->param('backend'),
-            -sql_server     => $q->param('sql_server'),
-            -sql_port       => sql_port(),
-            -sql_database   => $q->param('sql_database'),
-            -sql_username   => $q->param('sql_username'),
-            -sql_password   => $q->param('sql_password'),
+            -program_url            => $q->param('program_url'),
+            -dada_root_pass         => $q->param('dada_root_pass'),
+            #-dada_files_loc        => $q->param('dada_files_loc'),
+			-install_dada_files_loc => $install_dada_files_loc, 
+            -backend                => $q->param('backend'),
+            -sql_dbtype             => $q->param('backend'),
+            -sql_server             => $q->param('sql_server'),
+            -sql_port               => sql_port_from_params(),
+            -sql_database           => $q->param('sql_database'),
+            -sql_username           => $q->param('sql_username'),
+            -sql_password           => $q->param('sql_password'),
         }
     );
 
@@ -591,11 +617,11 @@ sub install_dada_mail {
 
     $log .=
         "* Attempting to make $DADA::Config::PROGRAM_NAME Files at, "
-      . $args->{-dada_files_loc} . '/'
+      . $args->{-install_dada_files_loc} . '/'
       . $Dada_Files_Dir_Name . "\n";
 
     # Making the .dada_files structure
-    if ( create_dada_files_dir_structure( $args->{-dada_files_loc} ) == 1 ) {
+    if ( create_dada_files_dir_structure( $args->{-install_dada_files_loc} ) == 1 ) {
         $log .= "* Success!\n";
     }
     else {
@@ -619,7 +645,6 @@ sub install_dada_mail {
 
     # Creating the needed SQL tables
     if ( $args->{-backend} eq 'default' ) {
-
         # ...
     }
     else {
@@ -645,7 +670,7 @@ sub install_dada_mail {
     $log .= "* Attempting to backup original $Config_LOC file...\n";
     eval { backup_config_dot_pm(); };
     if ($@) {
-        $log .= "* WARNING: Could not backup, $Config_LOC!\n";
+        $log .= "* WARNING: Could not backup, $Config_LOC! (<code>$@</code>)\n";
         $errors->{cant_backup_dada_dot_config} = 1;
     }
     else {
@@ -658,14 +683,18 @@ sub install_dada_mail {
         $errors->{cant_edit_dada_dot_config} = 1;
     }
     else {
-        if ( edit_config_dot_pm( $args->{-dada_files_loc} ) == 1 ) {
-            $log .= "* Success!\n";
-        }
-        else {
-            $log .= "* WARNING: Cannot edit $Config_LOC!\n";
-            $errors->{cant_edit_dada_dot_config} = 1;
-
-        }
+		if($args->{-install_dada_files_loc} eq 'auto'){ 
+			$log .= "* No need to edit $Config_LOC file - you've set the .dada_files location to, 'auto!'\n";
+		}
+		else { 	
+	        if ( edit_config_dot_pm( $args->{-install_dada_files_loc} ) == 1 ) {
+	            $log .= "* Success!\n";
+	        }
+	        else {
+	            $log .= "* WARNING: Cannot edit $Config_LOC!\n";
+	            $errors->{cant_edit_dada_dot_config} = 1;
+	        }
+		}
     }
 
     # That's it.
@@ -676,35 +705,49 @@ sub install_dada_mail {
 sub edit_config_dot_pm {
     my $loc          = shift;
     my $search       = quotemeta(q{$PROGRAM_CONFIG_FILE_DIR = 'auto';});
-    my $replace_with = q{$PROGRAM_CONFIG_FILE_DIR = '} . $loc . q{/.configs';};
 
-    eval {
-
-        my $config = slurp($Config_LOC);
-        $config =~ s/$search/$replace_with/;
-
-		#unlink($Config_LOC); 
-		$Config_LOC = make_safer($Config_LOC); 
+	if($loc eq 'auto') { 
+		warn "\$loc has been set to, 'auto' - nothing to edit!"; 
+		return 1; 
+	}
+	else { 
 		
-        open my $config_fh, '>', $Config_LOC or die $!;
-        print $config_fh $config or die $!;
-        close $config_fh or die $!;
+	    my $replace_with = q{$PROGRAM_CONFIG_FILE_DIR = '} . $loc . q{/.configs';};
 
-    };
+	    eval {
+			$Config_LOC = make_safer($Config_LOC); 
+		 
+	        my $config = slurp($Config_LOC);
+	            $config =~ s/$search/$replace_with/;
+			chmod(0777, make_safer('../DADA'));
+			unlink($Config_LOC); 
+		
+	        open my $config_fh, '>', $Config_LOC or die $!;
+	        print $config_fh $config or die $!;
+	        close $config_fh or die $!;
+			chmod(0775, $Config_LOC);
 
-    if ($@) {
-        return 0;
-    }
-    else {
-        return 1;
-    }
+	    };
+
+	    if ($@) {
+			warn $@; 
+	        return 0;
+	    }
+	    else {
+	        return 1;
+	    }
+	}
 }
 
 sub backup_config_dot_pm {
+	chmod(0777, '../DADA');
     my $config = slurp($Config_LOC);
-    open my $backup, '>', $Config_LOC . '-' . time or die $!;
+	my $backup_loc = make_safer($Config_LOC . '-' . time); 
+    open my $backup, '>', $backup_loc or die $!;
     print $backup $config or die $!;
     close $backup or die $!;
+
+	chmod(0775, $backup_loc);
 
 }
 
@@ -744,15 +787,17 @@ sub create_dada_files_dir_structure {
 sub create_dada_config_file {
     my ($args) = @_;
 
-    if ( !exists( $args->{-dada_files_loc} ) ) {
-        $args->{-dada_files_loc} = 'auto';
-    }
+   # DO NOT LIKE THIS RIGHT NOW: 
+   # if ( !exists( $args->{-dada_files_loc} ) ) {
+   #     $args->{-dada_files_loc} = 'auto';
+   # }
 
-    if ( $args->{-dada_files_loc} eq 'auto' ) {
-        $args->{-dada_files_loc} = auto_dada_files_dir();
-    }
+	# I don't think this is set to, "auto" - we'll have to see if what it's set matches, "auto", now. 
+    #if ( $args->{-dada_files_loc} eq 'auto' ) {
+    #    $args->{-dada_files_loc} = auto_dada_files_dir();
+    #}
 
-    my $loc = $args->{-dada_files_loc} . '/' . $Dada_Files_Dir_Name;
+    my $loc = $args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name;
 
     # eval {
     if ( !-e $loc . '/.configs' ) {
@@ -864,17 +909,21 @@ sub create_sql_tables {
     #	}
 }
 
-sub sql_port {
-    my $port = shift || 'auto';
-    if ( $port eq 'auto' ) {
+sub sql_port_from_params {
+    #my $port = shift || 'auto';
+    my $port = $q->param('sql_port'); 
+	if ( $q->param('sql_port') eq 'auto' ) {
         if ( $q->param('backend') =~ /mysql/i ) {
             $port = 3306;
         }
         elsif ( $q->param('backend') =~ /pg/i ) {
             $port = 5432;
         }
+		else { 
+			# well, we don't change this... 
+		}
     }
-
+	return $port; 
 }
 
 sub check_setup {
@@ -905,21 +954,16 @@ sub check_setup {
         $errors->{pass_no_match} = 0;
     }
 
-     if ( test_dada_files_dir_no_exists( $q->param('dada_files_loc') ) == 1 ) {
-        $errors->{dada_files_dir_exists} = 0;
-     }
- 	else  {
-        $errors->{dada_files_dir_exists} = 1;
+
+	my $install_dada_files_dir_at = install_dada_files_dir_at_from_params(); 
+	if ( test_dada_files_dir_no_exists($install_dada_files_dir_at) == 1 ) {
+		$errors->{dada_files_dir_exists} = 0;
+	}
+	else  {
+		$errors->{dada_files_dir_exists} = 1;
 	}
 
-   # if ( -e $q->param('dada_files_loc') . '/' . $Dada_Files_Dir_Name ) {
-   #    $errors->{dada_files_dir_exists} = 1;
-   # }
-   # else {
-    #    $errors->{dada_files_dir_exists} = 0;
-   # }
-
-    if ( can_create_dada_files_dir( $q->param('dada_files_loc') ) == 1 ) {
+    if ( can_create_dada_files_dir($install_dada_files_dir_at) == 1 ) {
         $errors->{create_dada_files_dir} = 1;
     }
     else {
@@ -972,6 +1016,23 @@ sub check_setup {
     return ( $status, $errors );
 
 }
+
+sub install_dada_files_dir_at_from_params() { 
+	 
+	my $install_dada_files_dir_at = undef; 
+	if($q->param('dada_files_dir_setup') eq 'auto'){ 
+		$install_dada_files_dir_at = auto_dada_files_dir(); 
+	}
+	else { 
+		$install_dada_files_dir_at = $q->param('dada_files_loc'); 
+	}
+	return $install_dada_files_dir_at; 
+
+}
+
+
+
+
 
 sub auto_dada_files_dir {
     return guess_home_dir();
@@ -1029,7 +1090,27 @@ sub hack_in_scriptalicious {
 					Effect.Fade('sql_info');
 				}
 			}	
-		window.onload=ToggleSQLOptions; 
+			function Toggle_dada_files_dirOptions() { 
+				var dada_files_dir_setup_choice = Form.getInputs('installform','radio','dada_files_dir_setup').find(function(radio) { return radio.checked; }).value;				
+				if(dada_files_dir_setup_choice == 'auto'){ 
+					Effect.Fade('manual_dada_files_dir_setup');
+				}
+				else { 
+					var togglin = document.getElementById( 'manual_dada_files_dir_setup' );
+					if(togglin.style.display != ""){	
+							Effect.Appear('manual_dada_files_dir_setup');
+					}
+				}
+
+			}
+			function setStuffUp() { 
+				ToggleSQLOptions(); 
+				Toggle_dada_files_dirOptions();
+			}
+			
+			
+			
+		window.onload=setStuffUp; 
 		</script> 
 
 EOF
@@ -1058,6 +1139,7 @@ sub test_can_read_config_dot_pm {
         }
     };
     if ($@) {
+		warn $@; 
         return 1;
     }
 }
@@ -1079,6 +1161,7 @@ sub can_use_DBI {
 
     eval { require DBI; };
     if ($@) {
+		warn $@; 
         return 0;
     }
     else {
@@ -1089,7 +1172,10 @@ sub can_use_DBI {
 sub test_database_empty {
     my $dbh = undef;
     eval { $dbh = connectdb(@_); };
-    if ($@) { return 0; }
+    if ($@) { 
+		warn $@; 
+		return 0;
+	 }
 
     my @tables = $dbh->tables;
     if ( exists( $tables[0] ) ) {
