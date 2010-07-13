@@ -577,11 +577,58 @@ sub check {
 sub scrn_install_dada_mail {
 	my $install_dada_files_loc = install_dada_files_dir_at_from_params(); 
 	
+	
+	my $tmpl = <<EOF
+
+<fieldset> 
+<legend>
+	Installation Log:
+</legend>
+
+<!-- tmpl_var install_log --> 
+</fieldset> 
+
+<!-- tmpl_if error_cant_edit_config_dot_pm --> 
+ <h1>ONE MORE STEP</h1> 
+
+	<p>
+		You'll have to manually edit the, <strong><em>dada/DADA/Config.pm</em></strong> file. 
+	</p> 
+	
+	<p>Find this line: </p> 
+	
+	<p><code>\$PROGRAM_CONFIG_FILE_DIR = 'auto';</code></p> 
+	
+	<p>
+		And change it to:  
+	</p> 
+	
+	<p><code>\$PROGRAM_CONFIG_FILE_DIR = '<!-- tmpl_var install_dada_files_loc -->/$Dada_Files_Dir_Name';</code></p> 
+	
+	<p>And, you're done!</p> 
+	
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if status --> 
+
+<!-- tmpl_else --> 
+	<h1>BIG PROBLEMS</h1> 
+	
+	<p>Problems with the installation - look in the Installation Log for clues.</p> 
+	
+<!-- /tmpl_if --> 
+
+	
+EOF
+; 
+
+
     my ( $log, $status, $errors ) = install_dada_mail(
         {
             -program_url            => $q->param('program_url'),
             -dada_root_pass         => $q->param('dada_root_pass'),
             #-dada_files_loc        => $q->param('dada_files_loc'),
+			-dada_files_dir_setup   => $q->param('dada_files_dir_setup'), 
 			-install_dada_files_loc => $install_dada_files_loc, 
             -backend                => $q->param('backend'),
             -sql_dbtype             => $q->param('backend'),
@@ -599,7 +646,22 @@ sub scrn_install_dada_mail {
         -Title => "Installing/Configuring $DADA::Config::PROGRAM_NAME",
         -vars  => { show_profile_widget => 0, }
     );
-    $scrn .= webify_plain_text($log);
+
+  $scrn .= DADA::Template::Widgets::screen(
+        {
+            -data => \$tmpl,
+            -vars => { 
+			 install_log                  => webify_plain_text($log), 
+			 status                       => $status, 
+			install_dada_files_loc        => $install_dada_files_loc,
+			Dada_Files_Dir_Name           => $Dada_Files_Dir_Name, 
+			error_cant_edit_config_dot_pm => $errors->{cant_edit_config_dot_pm} || 0, 
+			
+	 		}
+        }
+    );
+
+
     $scrn .= list_template(
         -Part => "footer",
         -vars => { show_profile_widget => 0, }
@@ -662,9 +724,11 @@ sub install_dada_mail {
     }
 
     # Editing the Config.pm file
+
     if ( test_can_read_config_dot_pm() == 1 ) {
         $log .= "* WARNING: Cannot read, $Config_LOC!\n";
-        $errors->{cant_read_dada_dot_config} = 1;
+        $errors->{cant_read_config_dot_pm} = 1;
+		# $status = 0; ?
     }
 
     $log .= "* Attempting to backup original $Config_LOC file...\n";
@@ -680,10 +744,14 @@ sub install_dada_mail {
     $log .= "* Attempting to edit $Config_LOC file...\n";
     if ( test_can_write_config_dot_pm() == 0 ) {
         $log .= "* WARNING: Cannot write to, $Config_LOC!\n";
-        $errors->{cant_edit_dada_dot_config} = 1;
+        $errors->{cant_edit_config_dot_pm} = 1;
+		# $status = 0; ?
     }
     else {
-		if($args->{-install_dada_files_loc} eq 'auto'){ 
+		if(
+			$args->{-install_dada_files_loc} eq auto_dada_files_dir() && 
+			$args->{-dada_files_dir_setup}   eq 'auto'
+		){ 
 			$log .= "* No need to edit $Config_LOC file - you've set the .dada_files location to, 'auto!'\n";
 		}
 		else { 	
