@@ -704,6 +704,11 @@ sub default {
         return;
     }
 
+	if(DADA::App::Guts::install_dir_around() == 1){ 
+		user_error( -Error => 'install_dir_still_around' );
+	    return;
+	}
+
     if (   $DADA::Config::ARCHIVE_DB_TYPE eq 'Db'
         || $DADA::Config::SETTINGS_DB_TYPE eq 'Db' )
     {
@@ -935,6 +940,12 @@ sub admin {
         &default;        
         return;
     } 
+
+	if(DADA::App::Guts::install_dir_around() == 1){ 
+		user_error( -Error => 'install_dir_still_around' );
+	    return;
+	}
+	
     
     my $scrn = list_template(
 		-Part       => "header",
@@ -959,11 +970,17 @@ sub admin {
 
 
 sub sign_in {
+	
+	if(DADA::App::Guts::install_dir_around() == 1){ 
+		user_error( -Error => 'install_dir_still_around' );
+	    return;
+	}
 
     my $list_exists = check_if_list_exists(
         -List       => $list,
         -dbi_handle => $dbi_handle,
     );
+
 
 	my $scrn = ''; 
 	
