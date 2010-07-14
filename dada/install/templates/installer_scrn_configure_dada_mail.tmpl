@@ -9,6 +9,17 @@
 	</p>  
 <!-- /tmpl_if --> 
 
+<!-- tmpl_if lists_available --> 
+<h3>Warning!</h3> 
+<p>At least with the current setup you have, there are already mailing lists available via <!-- tmpl_var PROGRAM_NAME -->.</p> 
+
+<p>Reconfiguring <!-- tmpl_var PROGRAM_NAME --> could potentially lose these lists. </p> 
+
+<p>Please only continue with the installation/configuration, if you're sure you know what you're doing. </p> 
+	 
+
+<!-- /tmpl_if --> 
+
 <!-- tmpl_if error_cant_read_config_dot_pm --> 
 <h3>Warning!</h3>
 
@@ -119,7 +130,7 @@ access <em>any</em> mailing list.</p>
 	<ul> 
 	<li>
 	<p class="error"> 
-	 Will not be able to create, <em><!-- tmpl_var install_dada_files_dir_at -->/<!-- tmpl_var Dada_Files_Dir_Name --></em>
+	 Will not be able to create, <em><strong><!-- tmpl_var install_dada_files_dir_at --></strong>/<!-- tmpl_var Dada_Files_Dir_Name --></em>
 	</p>
 	</li>
 	</ul>
@@ -253,4 +264,4 @@ access <em>any</em> mailing list.</p>
 
 </form> 
 
-<p>&nbsp</p>
+<!-- tmpl_include install_debug_info.tmpl --> 

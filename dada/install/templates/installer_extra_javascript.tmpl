@@ -31,10 +31,34 @@
 			}
 
 		}
+		
+		
+
+		function toggleDisplay(target) {
+
+			if (document.getElementById){
+				var togglin = document.getElementById( target );
+				if(togglin.style.display == ""){
+					// Scriptalicious
+					Effect.BlindUp(togglin.id);
+
+					// target.dispaly = 'none'; 
+				}else{  
+					// Scriptalicious                          
+					Effect.BlindDown(togglin.id);
+
+					// target.dispaly = ''; 
+				}  
+
+			} 	
+		}
+		
 		function setStuffUp() { 
 			ToggleSQLOptions(); 
 			Toggle_dada_files_dirOptions();
 		}
+		
+		
 		
 		
 		

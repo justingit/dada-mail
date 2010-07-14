@@ -47,6 +47,7 @@ my $Dada_Files_Dir_Name = '.dada_files';
 # It irritates me to use a weird, relative path - I may want to try to make this 
 # an abs. path via File::Spec (or, whatever) 
 my $Config_LOC          = '../DADA/Config.pm';
+my $Big_Pile_Of_Errors  = undef; 
 
 # These are strings we look for in the example_dada_config.tmpl file which 
 # we need to remove. 
@@ -107,7 +108,14 @@ sub scrn_default {
         -Title => "Install/Upgrade $DADA::Config::PROGRAM_NAME",
         -vars  => { show_profile_widget => 0, }
     );
-    $scrn .= DADA::Template::Widgets::screen( { -screen => 'installer_default.tmpl', } );
+    $scrn .= DADA::Template::Widgets::screen(
+		{ 
+			-screen => 'installer_default.tmpl',
+			-vars => { 
+				
+				Big_Pile_Of_Errors     => $Big_Pile_Of_Errors,
+			} } );
+
     $scrn .= list_template( -Part => "footer", );
     print $scrn;
 
@@ -122,6 +130,13 @@ sub scrn_upgrade_dada {
 
 sub scrn_configure_dada_mail {
 	
+	
+	# Is there some stuff happenin already? 
+	my @lists = DADA::App::Guts::available_lists(-Dont_Die => 1); 
+	my $lists_available = 0; 
+	if(exists($lists[0])){
+		$lists_available = 1; 
+	}
     my $scrn = '';
     $scrn .= list_template(
         -Part  => "header",
@@ -155,6 +170,8 @@ sub scrn_configure_dada_mail {
                 PROGRAM_URL                    => program_url_guess(),
                 S_PROGRAM_URL                  => program_url_guess(),
                 Dada_Files_Dir_Name            => $Dada_Files_Dir_Name,
+				Big_Pile_Of_Errors             => $Big_Pile_Of_Errors,
+				lists_available                => $lists_available, 
 
             },
         }
@@ -238,7 +255,10 @@ sub scrn_install_dada_mail {
     $scrn .= list_template(
         -Part  => "header",
         -Title => "Installing/Configuring $DADA::Config::PROGRAM_NAME",
-        -vars  => { show_profile_widget => 0, }
+        -vars  => { show_profile_widget => 0,
+	        PROGRAM_URL         => program_url_guess(),
+            S_PROGRAM_URL       => program_url_guess(),
+ }
     );
 
   $scrn .= DADA::Template::Widgets::screen(
@@ -250,16 +270,22 @@ sub scrn_install_dada_mail {
 			install_dada_files_loc        => $install_dada_files_loc,
 			Dada_Files_Dir_Name           => $Dada_Files_Dir_Name, 
 			error_cant_edit_config_dot_pm => $errors->{cant_edit_config_dot_pm} || 0, 
+			Big_Pile_Of_Errors            => $Big_Pile_Of_Errors,
+			PROGRAM_URL         => program_url_guess(),
+            S_PROGRAM_URL       => program_url_guess(),
 			
 	 		}
         }
     );
 
 
+
     $scrn .= list_template(
         -Part => "footer",
         -vars => { show_profile_widget => 0, }
     );
+
+    $scrn = hack_in_scriptalicious($scrn);
 
     print $scrn;
 
@@ -328,7 +354,8 @@ sub install_dada_mail {
     $log .= "* Attempting to backup original $Config_LOC file...\n";
     eval { backup_config_dot_pm(); };
     if ($@) {
-        $log .= "* WARNING: Could not backup, $Config_LOC! (<code>$@</code>)\n";
+        $Big_Pile_Of_Errors .= $@; 
+		$log .= "* WARNING: Could not backup, $Config_LOC! (<code>$@</code>)\n";
         $errors->{cant_backup_dada_dot_config} = 1;
     }
     else {
@@ -402,6 +429,7 @@ sub edit_config_dot_pm {
 
 	    if ($@) {
 			warn $@; 
+			$Big_Pile_Of_Errors .= $@; 
 	        return 0;
 	    }
 	    else {
@@ -448,7 +476,8 @@ sub create_dada_files_dir_structure {
     };
     if ($@) {
         warn $@;
-        return 0;
+        $Big_Pile_Of_Errors .= $@; 
+		return 0;
     }
     else {
         return 1;
@@ -481,6 +510,7 @@ sub create_dada_config_file {
                 ROOT_PASSWORD          => $pass,
                 ROOT_PASS_IS_ENCRYPTED => 1,
                 dada_files_dir         => $loc,
+				Big_Pile_Of_Errors     => $Big_Pile_Of_Errors, 
                 ( $args->{-backend} ne 'default' )
                 ? (
                     backend      => $args->{-backend},
@@ -514,7 +544,8 @@ sub create_dada_config_file {
      };
      if ($@) {
 		warn $@; 
-        return 0;
+        $Big_Pile_Of_Errors .= $Big_Pile_Of_Errors; 
+		return 0;
     }
     else {
         return 1;
@@ -563,7 +594,8 @@ sub create_sql_tables {
     	};
     	if($@){
     		warn $!;
-    		return 0;
+    		$Big_Pile_Of_Errors .= $@; 
+			return 0;
     	}
     	else {
     return 1;
@@ -712,6 +744,7 @@ sub guess_home_dir {
         $home_dir_guess = $getpwuid_call;
     }
     else {
+		$Big_Pile_Of_Errors .= $@; 
         $home_dir_guess =~ s/\/$pub_html_dir$//g;
     }
 
@@ -772,6 +805,7 @@ sub test_can_use_DBI {
     eval { require DBI; };
     if ($@) {
 		warn $@; 
+		$Big_Pile_Of_Errors .= $@; 
         return 0;
     }
     else {
@@ -842,7 +876,8 @@ sub test_sql_connection {
     };
     if ($@) {
 		warn $@; 
-        return 0;
+        $Big_Pile_Of_Errors .= $@; 
+		return 0;
     }
     else {
         return 1;
@@ -863,7 +898,8 @@ sub test_can_read_config_dot_pm {
     };
     if ($@) {
 		warn $@; 
-        return 1;
+        $Big_Pile_Of_Errors .= $@; 
+		return 1;
     }
 }
 
@@ -871,11 +907,14 @@ sub test_can_write_config_dot_pm {
     my $problem = 0;
     eval {
         open my $backup, '>>', $Config_LOC or $problem == 1;
-        close $backup or die $!;
-    };
+        if($problem != 0){ 
+			#close $backup or die $!;
+    	}
+	};
     if ($@) {
         warn $@;
-        return 1;
+        $Big_Pile_Of_Errors .= $@; 
+		return 1;
     }
     return $problem;
 }
@@ -885,6 +924,7 @@ sub test_database_empty {
     eval { $dbh = connectdb(@_); };
     if ($@) { 
 		warn $@; 
+		$Big_Pile_Of_Errors .= $@; 
 		return 0;
 	 }
 

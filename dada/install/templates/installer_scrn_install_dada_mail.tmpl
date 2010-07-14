@@ -1,30 +1,39 @@
 
 <fieldset> 
 <legend>
-	Installation Log:
+	<a href="#" onclick="toggleDisplay('install_log');return false;">+/-</a> Installation Log:
 </legend>
-
-<!-- tmpl_var install_log --> 
+<div id="install_log" style="display:none"> 
+	<!-- tmpl_var install_log -->
+</div> 
+ 
 </fieldset> 
 
 <!-- tmpl_if error_cant_edit_config_dot_pm --> 
  <h1>ONE MORE STEP</h1> 
 
+	<form> 
 	<p>
-		You'll have to manually edit the, <strong><em>dada/DADA/Config.pm</em></strong> file. 
+		You'll have to manually edit your, <strong><em>dada/DADA/Config.pm</em></strong> file. 
 	</p> 
 	
 	<p>Find this line: </p> 
 	
-	<p><code>\$PROGRAM_CONFIG_FILE_DIR = 'auto';</code></p> 
+	<input type="text" class="full" value="$PROGRAM_CONFIG_FILE_DIR = 'auto';" />
 	
 	<p>
 		And change it to:  
 	</p> 
 	
-	<p><code>\$PROGRAM_CONFIG_FILE_DIR = '<!-- tmpl_var install_dada_files_loc -->/$Dada_Files_Dir_Name/.configs';</code></p> 
-	
-	<p>And, you're done!</p> 
+	<input type="text" class="full" value="$PROGRAM_CONFIG_FILE_DIR = '<!-- tmpl_var install_dada_files_loc -->/<!-- tmpl_var Dada_Files_Dir_Name -->.configs';" /> 
+
+ <h1>AND ANOTHER THING - VERY IMPORTANT!</h1> 
+
+<p>
+	Rename/Remove the, <em>dada/<strong>install</strong></em> directory!
+</p> 
+
+</form> 
 	
 <!-- /tmpl_if --> 
 
@@ -36,3 +45,6 @@
 	<p>Problems with the installation - look in the Installation Log for clues.</p> 
 	
 <!-- /tmpl_if -->
+
+
+<!-- tmpl_include install_debug_info.tmpl --> 
