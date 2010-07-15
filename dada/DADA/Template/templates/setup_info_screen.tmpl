@@ -1,61 +1,7 @@
 <!-- begin setup_info_screen.tmpl -->
 
 
-<h1>Advanced Installation with Outide Configuration File</h1> 
 
-
-<h2>$PROGRAM_CONFIG_FILE_DIR</h2> 
-
-<!-- tmpl_if PROGRAM_CONFIG_FILE_DIR --> 
-
-<p>
- Your 	<strong>
-	                     $PROGRAM_CONFIG_FILE_DIR
-	                    </strong> variable
-	 has been set to, </p>
-	
-	<p><code><!-- tmpl_var PROGRAM_CONFIG_FILE_DIR --></code></p>
-
-<p>Your outside configuration file is being looked for at:</p>
-
-<p>
- <code>
-	<!-- tmpl_var CONFIG_FILE -->
- </code>
-</p>
-
-<!-- tmpl_if config_file_exists --> 
-
-	<p>This file exists! The contents of which are below:</p>
-	
-	 <div style="width:95%;height:300px;overflow:auto;border:1px solid black;padding:5px;margin:5px">
-		
-	<pre><!-- tmpl_var config_file_contents --> </pre> 
-
-</div> 
-
-<!-- tmpl_else --> 
-
-
-<p>This file does not seem to exist.</p>
-
-<!-- /tmpl_if --> 
-
-
-<!-- tmpl_else --> 
-
-<p>You have not set the 
-	<strong>
-	                     $PROGRAM_CONFIG_FILE_DIR
-	                    </strong>
-	 variable. (You don't have to)</p>
-
-
-<!-- /tmpl_if --> 
-
-<!-- tmpl_unless config_file_exists --> 
-
-<hr /> 
 
 <h1>Basic Installation</h1> 
 
@@ -68,7 +14,6 @@
  <strong>
   $FILES 
  </strong>
-<!-- begin setup_info_screen.tmpl -->
 
 
 <h1>Advanced Installation with Outide Configuration File</h1> 
@@ -111,83 +56,6 @@
 
 
 <p>This file does not seem to exist.</p>
-
-<h2>Auto Setup <!-- tmpl_var PROGRAM_NAME -->?</h2> 
-
-<p>The following directory structure will be made</p>
-<pre> 
-.dada_files
-	.archives
-	.backups
-	.configs
-	.lists
-	.logs
-	.templates
-	.tmp
-</pre> 
-
-<form  action="<!-- tmpl_var S_PROGRAM_URL -->"> 
-
-<p>In the location:<br /> 
-
- <input type="text" name="dada_files_dir" id="dada_files_dir" class="full" value="<!-- tmpl_var example_config_file_path escape="HTML"-->" /><br /> 
-</p>
-
-<p>Set the <!-- tmpl_var PROGRAM_NAME --> Root Password to:<br /r>
-<input type="text" name="root_pass" id="root_pass" /> 
-</p>
-
-	
-<input type="hidden" name="f" id="f" value="adv_dada_mail_setup" /> 
-<input type="hidden" name="program_root_pass" id="program_root_pass" value="<!-- tmpl_var PROGRAM_ROOT_PASSWORD -->" /> 
-
-<div class="buttonfloat">
-	
-<input type="button" class="processing" value="Setup Dada Mail!"  onClick="setup_dada()" /> 
-</div> 
-<div class="floatclear"></div>
-
-</form> 
-<div id="loadingdiv" style="display:none">
-	<p class="positive">Loading...</p> 
-</div>
-<div id="resultdiv"></div>
-<script src="<!-- tmpl_var S_PROGRAM_URL -->/javascripts/prototype.js" type="text/javascript"></script>
-<script src="<!-- tmpl_var S_PROGRAM_URL -->/javascripts/scriptaculous.js" type="text/javascript"></script>
-<script type="text/javascript">
-    //<![CDATA[
-
-	 function setup_dada(){ 
-		new Ajax.Updater(
-			'resultdiv', '<!-- tmpl_var S_PROGRAM_URL -->', 
-			{ 
-			    method: 'post', 
-				parameters: {
-						process:                   1,
-						dada_files_dir:            $F('dada_files_dir'), 
-						root_pass:                 $F('root_pass'), 
-						program_root_pass:         $F('program_root_pass'),      
-						f:                         'adv_dada_mail_setup',
-					},
-					
-			onCreate: 	 function() {
-				$('resultdiv').hide(); 
-				$('loadingdiv').show();
-
-			},
-			onComplete: 	 function() {
-				
-				$('resultdiv').show(); 
-				$('loadingdiv').hide();
-
-			}
-			
-
-			});
-	}
-    //]]>
-</script>
-
 
 <!-- /tmpl_if --> 
 
@@ -337,124 +205,5 @@
  but should be included within them.
 </p>
 
-<!-- end setup_info_screen.tmpl -->
- variable has been set to:
-</p>
-<ul>
- <li>
-  <!-- tmpl_var FILES -->
- </li>
-</ul>
-
-<!-- tmpl_unless exists_FILES -->
-	
-	<p>
-	 <strong>
-	  Warning!
-	 </strong>
-	 This directory does not seem to exist.
-	</p>
-	
-	<!-- tmpl_unless FILES_starts_with_a_slash -->
-		
-		<p>
-		 Make sure that 
-		 <strong>
-		 $FILES 
-		 </strong>
-		 is an absolute path to a directory. 
-		 This usually means starting the path with a &quot;/&quot;.
-		</p>
-		
-	<!--/tmpl_unless-->
-	
-	<!-- tmpl_if FILES_ends_in_a_slash -->
-		
-		<p>
-		 Make sure that 
-		 <strong>
-		  $FILES 
-		 </strong>
-		 does not end with a &quot;/&quot;.
-		</p>
-		
-	<!--/tmpl_if-->
-	
-	<!-- tmpl_if DOCUMENT_ROOT -->
-		
-		<p>
-		 Your Public HTML directory is:
-		</p>
-		<ul>
-		 <li>
-		  <!-- tmpl_var DOCUMENT_ROOT -->
-		 </li>
-		</ul> 
-		<p>
-		 Usually, this directory is below your home directory. A good guess on 
-		 where your home directory would be located is:
-		</p>
-		<ul>
-		 <li>
-		  <!-- tmpl_var home_dir_guess -->
-		 </li>
-		</ul>
-		<p>
-		 It is suggested that you set the 
-		 <strong>
-		  $FILES 
-		 </strong>
-		 variable to be a directory that's in your home directory.
-		</p>
-		
-		<p>For example: </p> 
-		<p>
-		 <code>
-				$FILES = '<!-- tmpl_var home_dir_guess -->/dada_files';
-		 </code> 
-		</p>	
-				
-		
-	<!--/tmpl_if-->
-	
-<!--/tmpl_unless-->
-
-<!-- /tmpl_unless -->
-
-<hr /> 
-<h1>Other Configuration Settings</h1>
-<h2>
- $MAILPROG Variable
-</h2>
-<p>
- The 
- <strong>
-  $MAILPROG 
- </strong>
- variable has been set to:
-</p>
-<ul>
- <li>
-  <!-- tmpl_var MAILPROG -->
- </li>
-</ul>
-<p>
- Paths to Sendmail have been found in these locations:
-</p>
-<ul>
- 
-<!-- tmpl_loop sendmails -->
-	
-	 <li>
-	  <!-- tmpl_var location -->
-	 </li>
-	 
-<!--/tmpl_loop-->
- 
-</ul>
-<p>
- Not all these paths are locations to Sendmail, 
- but should be included within them.
-</p>
 
 <!-- end setup_info_screen.tmpl -->
