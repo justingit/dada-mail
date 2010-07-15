@@ -64,6 +64,7 @@ my $sql_end_cut = quotemeta(
 
 use DADA::Config 4.0.0;
 	$DADA::Config::USER_TEMPLATE = '';
+	
 # An unconfigured Dada Mail won't have these exactly handy to use. 
 $DADA::Config::PROGRAM_URL   = program_url_guess();
 $DADA::Config::S_PROGRAM_URL = program_url_guess();
