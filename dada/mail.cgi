@@ -655,9 +655,7 @@ sub run {
 	'subscription_form_js'    =>     \&subscription_form_js, 
 
 
-	'what_is_dada_mail'       =>    \&what_is_dada_mail, 
-	'adv_dada_mail_setup'     =>    \&adv_dada_mail_setup, 
-	
+	'what_is_dada_mail'       =>    \&what_is_dada_mail, 	
 	'profile_activate'        =>    \&profile_activate, 
 	'profile_register'        =>    \&profile_register, 
 	'profile_reset_password'  =>    \&profile_reset_password, 
@@ -9681,117 +9679,6 @@ sub author {
     e_print("Dada Mail is originally written by Justin Simoni");
 
 }
-
-
-
-sub adv_dada_mail_setup { 
-	print $q->header(); 
-	
-	use Fcntl qw(
-	O_WRONLY 
-	O_TRUNC 
-	O_CREAT 
-	O_RDWR
-	O_RDONLY
-	LOCK_EX
-	LOCK_SH 
-	LOCK_NB);
-	
-	my $program_root_pass = xss_filter($q->param('program_root_pass')); 
-
-	unless(root_password_verification($program_root_pass)){ 
-    	die "Program Root Password Incorrect. Access Denied."; 
-	}
-	
-	
-	
-	my $dada_files_dir = make_safer($q->param('dada_files_dir')); 
-	my $pass  = $q->param('root_pass') || undef;
-	my $root_pass_is_encrypted = $DADA::Config::ROOT_PASS_IS_ENCRYPTED; 
-	
-	if(defined($pass) && length($pass) > 0){  
-	
-		require DADA::Security::Password; 
-		$pass = DADA::Security::Password::encrypt_passwd($pass);
-		$root_pass_is_encrypted = 1; 	
-	
-	}
-	else { 
-		$pass = $DADA::Config::PROGRAM_ROOT_PASSWORD; 
-	}
-
-	require DADA::Template::Widgets; 
-	my $outside_config_file = DADA::Template::Widgets::screen(
-			{
-			-screen => 'example_dada_config.tmpl', 
-			-vars   => { 
-				
-					PROGRAM_URL             => $DADA::Config::PROGRAM_URL, 
-					ROOT_PASSWORD           => $pass, 
-					ROOT_PASS_IS_ENCRYPTED  => $root_pass_is_encrypted, 
-					dada_files_dir          => $dada_files_dir, 
-			}
-		}
-	); 
-	
-	print $q->pre("working...\n"); 
-	if(-e $dada_files_dir) {
-		e_print($q->pre("$dada_files_dir already exists! Stopping.\n")); 
-	}
-	else { 
-		`mkdir $dada_files_dir`;
-		if(-e $dada_files_dir) {
-			e_print($q->pre("$dada_files_dir made!\n"));  
-		
-			foreach(qw(
-				.archives
-				.backups
-				.configs
-				.lists
-				.logs
-				.templates
-				.tmp
-				)){ 
-		
-					my $dir = $dada_files_dir . '/' . $_;
-					$dir = make_safer($dir);
-					`mkdir $dir`; 
-		  
-					if(-e $dir){ 
-						e_print($q->pre("$dir Made!\n")); 
-					}
-					else { 
-						e_print($q->pre("Making $dir FAILED. Stopping...\n")); 
-						last; 
-					}
-			}
-		
-			e_print($q->pre("Making config file...\n")); 
-			my $config_file = make_safer($dada_files_dir . '/.configs/.dada_config'); 
-		
-			if(-e $dada_files_dir ){ 
-			sysopen(CONFIGFILE, $config_file,  O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD ) or 
-				die "$!"; 
-			print CONFIGFILE $outside_config_file; 
-			close CONFIGFILE or die $!;
-		
-			e_print($q->pre("Config file made!\n")); 
-		   }
-			else { 
-				e_print($q->pre("skipping config file creation...\n")); 
-		   }
-		}
-		else { 
-			e_print($q->pre("Making $dada_files_dir FAILED.")); 
-		}
-	}
-	e_print($q->pre("Done.")); 
-	e_print("<p class=\"error\">Make sure to set the variable, \$PROGRAM_CONFIG_FILE_DIR in the <strong>Config.pm</strong> to: <strong>$dada_files_dir/.configs</strong></p>"); 
-		
-}
-
-
-
 
 sub profile_login { 
 	
