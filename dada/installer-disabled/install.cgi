@@ -47,7 +47,9 @@ my $Dada_Files_Dir_Name = '.dada_files';
 # It irritates me to use a weird, relative path - I may want to try to make this 
 # an abs. path via File::Spec (or, whatever) 
 my $Config_LOC          = '../DADA/Config.pm';
+# Save the errors this creates in a variable
 my $Big_Pile_Of_Errors  = undef; 
+# Show these errors in the web browser? 
 my $Trace               = 0; 
 
 # These are strings we look for in the example_dada_config.tmpl file which 
@@ -508,7 +510,7 @@ sub create_dada_config_file {
       DADA::Security::Password::encrypt_passwd( $args->{-dada_root_pass} );
 
     my $prog_url = $DADA::Config::PROGRAM_URL;
-    $prog_url =~ s{install\/installer\.cgi}{mail\.cgi};
+    $prog_url =~ s{installer\/install\.cgi}{mail\.cgi};
 
     my $outside_config_file = DADA::Template::Widgets::screen(
         {
