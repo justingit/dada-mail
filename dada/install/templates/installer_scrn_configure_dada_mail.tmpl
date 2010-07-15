@@ -59,8 +59,10 @@
 
 <legend>
 
-<!-- tmpl_var PROGRAM_NAME --> URL
+<!-- tmpl_var PROGRAM_NAME --> URL [<a href="#" onclick="toggleDisplay('program_url_help');return false;">?</a>]
+
 </legend> 
+
 
 <!-- tmpl_if error_program_url_is_blank  --> 
 	<ul>
@@ -75,7 +77,15 @@
 
 
 <p><label for="program_url"><!-- tmpl_var PROGRAM_NAME --> Program URL:</label>
-<br /> 
+</p>
+<div id="program_url_help" style="display:none"> 
+	 <p class="positive">
+	 	The <!-- tmpl_var PROGRAM_NAME --> Program URL should be set to where you access the, <em>mail.cgi</em> script, currently. 
+	 </p> 
+</div> 
+
+
+<p>
 <input type="text" id="program_url" name="program_url" class="full" value="<!-- tmpl_var program_url_guess -->" />
 </p> 
 
@@ -86,7 +96,7 @@
 <fieldset> 
 
 <legend>
-	<!-- tmpl_var PROGRAM_NAME --> Root Password
+	<!-- tmpl_var PROGRAM_NAME --> Root Password [<a href="#" onclick="toggleDisplay('root_pass_help');return false;">?</a>]
 </legend> 
 
 
@@ -108,8 +118,11 @@
 	
 <!-- /tmpl_if -->
 
-<p>This is the main password to <!-- tmpl_var PROGRAM_NAME -->, used to create new mailing lists and to 
+<div id="root_pass_help" style="display:none"> 
+
+<p class="positive">This is the main password to <!-- tmpl_var PROGRAM_NAME -->, used to create new mailing lists and to 
 access <em>any</em> mailing list.</p> 
+</div> 
 
 <p><label for="dada_root_pass"><!-- tmpl_var PROGRAM_NAME --> Root Password:</label>
 <br /> 
@@ -124,7 +137,7 @@ access <em>any</em> mailing list.</p>
 
 
 <legend>
-	.dada_config Directory Location
+	.dada_config Directory Location [<a href="#" onclick="toggleDisplay('dada_files_help');return false;">?</a>]
 </legend>
 <!-- tmpl_if error_create_dada_files_dir  --> 
 	<ul> 
@@ -149,11 +162,23 @@ access <em>any</em> mailing list.</p>
 
 
 
+<div id="dada_files_help" style="display:none"> 
+ 
+<p class="positive">	
+	<!-- tmpl_var PROGRAM_NAME --> will need to write various files and will need a directory for which to do this in. You'll 
+	have to tell Dada Mail where you'd like this directory to live. The directory will be called, <em><!-- tmpl_var Dada_Files_Dir_Name --></em>. 
+	Usually, this directory will live under your home directory and <!-- tmpl_var PROGRAM_NAME --> can usually guess where that is, but if it guesses wrong
+	or it cannot create the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory in your home directory, you may set an alternative directory. 
+</p> 
+</div> 
+
+
+
+
 <p>
  <input type="radio" checked="checked" id="dada_files_dir_setup_auto"  name="dada_files_dir_setup" value="auto" onChange="Toggle_dada_files_dirOptions(); return false;">
 	<label for="dada_files_dir_setup_auto">AUTO 
-	Use <!-- tmpl_var PROGRAM_NAME -->'s best guess.  </label><br />Install the <em>.dada_files</em> directory under,<br />
-	<ul<li><em> <!-- tmpl_var home_dir_guess --></em></li></ul> 
+	Use <!-- tmpl_var PROGRAM_NAME -->'s best guess.  </label>(<em> <!-- tmpl_var home_dir_guess --></em>). 
 </p> 
 
  <p>
@@ -175,30 +200,11 @@ access <em>any</em> mailing list.</p>
 
 </div> 
 
-
-<!-- tmpl_if comment --> 
-
-			<p>Where would you like the <!-- tmpl_var PROGRAM_NAME --> <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory be located? (make this an <em><strong>absolute path</strong></em>)</p>
-			<p><strong>Hint!</strong> Set to, <em>auto</em> if you want <!-- tmpl_var PROGRAM_NAME --> to guess at the best location. For your server setup, this
-			will be:</p> 
-			<ul>
-			<li>
-			<p><strong><!-- tmpl_var home_dir_guess --></strong><em>/<!-- tmpl_var Dada_Files_Dir_Name --></em></p>
-			</li>
-			</ul> 
-
-			<p>Create the <!-- tmpl_var PROGRAM_NAME --> <!-- tmpl_var Dada_Files_Dir_Name --> directory at this location:</p>
-			 <input type="text" name="dada_files_loc" value="auto" style="width:80%" />/<!-- tmpl_var Dada_Files_Dir_Name --> 
-			</p> 
-
-<!-- /tmpl_if --> 
-
-
 </fieldset> 
 
 <fieldset> 
 
-<legend><!-- tmpl_var PROGRAM_NAME --> Backend</legend> 
+<legend><!-- tmpl_var PROGRAM_NAME --> Backend [<a href="#" onclick="toggleDisplay('backend_help');return false;">?</a>]</legend> 
 
 <!-- tmpl_if error_sql_connection  --> 
 	<ul>
@@ -212,7 +218,20 @@ access <em>any</em> mailing list.</p>
 
 
 
-<p>What type of backend would you like to use?</p>
+<div id="backend_help" style="display:none"> 
+ 
+<p class="positive">	
+	<!-- tmpl_var PROGRAM_NAME --> supports a few different types of backends to save its mailing list settings, lists, archive, etc into. 
+</p> 
+<p class="positive">	
+	The <strong>Default</strong> backend should be available for almost any server setup, but doesn't allow you to use some of the more 
+	advanced features of Dada Mail. </p> 
+	<p class="positive">	
+Both the <strong>MySQ</strong>L and <strong>PostgreSQL</strong> backends allow you to use these advanced features and just require you to fill in the database details.
+If using either the SQL backends, make sure to create a new database before configuring Dada Mail and plug the SQL information below. 
+</p> 
+	
+</div>
 <p>
 	<select name="backend" id="backend" onChange="ToggleSQLOptions(); return false;"> 
 		<option value="default" selected="selected">Default Backend</option>
@@ -237,7 +256,7 @@ access <em>any</em> mailing list.</p>
 		</li>
 		</ul> 
 	<!-- /tmpl_if --> 
-	<p>Server: <input type="text" name="sql_server" /><br />
+	<p>Server: <input type="text" name="sql_server" value="localhost" /><br />
 	<p>Database: <input type="text" name="sql_database" /><br />
 	<p>Port: <input type="text" name="sql_port" value="auto" /><br />
 	<p>Username: <input type="text" name="sql_username" /><br />
@@ -258,7 +277,7 @@ access <em>any</em> mailing list.</p>
 <input type="hidden" name="f" value="check" /> 
 
 <p style="text-align:center">
- <input type="submit" value="Install <!-- tmpl_var PROGRAM_NAME -->!" class="processing" /> 
+ <input type="submit" value="Configure  <!-- tmpl_var PROGRAM_NAME -->!" class="processing" /> 
 </p>
 
 

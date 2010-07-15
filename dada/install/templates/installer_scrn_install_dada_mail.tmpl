@@ -25,13 +25,23 @@
 		And change it to:  
 	</p> 
 	
-	<input type="text" class="full" value="$PROGRAM_CONFIG_FILE_DIR = '<!-- tmpl_var install_dada_files_loc -->/<!-- tmpl_var Dada_Files_Dir_Name -->.configs';" /> 
+	<input type="text" class="full" value="$PROGRAM_CONFIG_FILE_DIR = '<!-- tmpl_var install_dada_files_loc -->/<!-- tmpl_var Dada_Files_Dir_Name -->/.configs';" /> 
 
  <h1>AND ANOTHER THING - VERY IMPORTANT!</h1> 
 
 <p>
 	Rename/Remove the, <em>dada/<strong>install</strong></em> directory!
 </p> 
+
+<h1>Additional Configuration?</h1> 
+
+<p>If you ever want to perform any additional configuration, your outside config file is located at, </p> 
+
+<p><code>
+<!-- tmpl_var install_dada_files_loc -->/<!-- tmpl_var Dada_Files_Dir_Name -->/.configs/.dada_config
+</code></p> 
+
+
 
 </form> 
 	

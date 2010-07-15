@@ -48,6 +48,7 @@ my $Dada_Files_Dir_Name = '.dada_files';
 # an abs. path via File::Spec (or, whatever) 
 my $Config_LOC          = '../DADA/Config.pm';
 my $Big_Pile_Of_Errors  = undef; 
+my $Trace               = 0; 
 
 # These are strings we look for in the example_dada_config.tmpl file which 
 # we need to remove. 
@@ -106,7 +107,10 @@ sub scrn_default {
     $scrn .= list_template(
         -Part  => "header",
         -Title => "Install/Upgrade $DADA::Config::PROGRAM_NAME",
-        -vars  => { show_profile_widget => 0, }
+        -vars  => { show_profile_widget => 0,
+	        PROGRAM_URL         => program_url_guess(),
+            S_PROGRAM_URL       => program_url_guess(),
+ 		}
     );
     $scrn .= DADA::Template::Widgets::screen(
 		{ 
@@ -114,6 +118,7 @@ sub scrn_default {
 			-vars => { 
 				
 				Big_Pile_Of_Errors     => $Big_Pile_Of_Errors,
+				Trace                  => $Trace, 
 			} } );
 
     $scrn .= list_template( -Part => "footer", );
@@ -171,6 +176,7 @@ sub scrn_configure_dada_mail {
                 S_PROGRAM_URL                  => program_url_guess(),
                 Dada_Files_Dir_Name            => $Dada_Files_Dir_Name,
 				Big_Pile_Of_Errors             => $Big_Pile_Of_Errors,
+				Trace                          => $Trace, 
 				lists_available                => $lists_available, 
 
             },
@@ -271,8 +277,9 @@ sub scrn_install_dada_mail {
 			Dada_Files_Dir_Name           => $Dada_Files_Dir_Name, 
 			error_cant_edit_config_dot_pm => $errors->{cant_edit_config_dot_pm} || 0, 
 			Big_Pile_Of_Errors            => $Big_Pile_Of_Errors,
-			PROGRAM_URL         => program_url_guess(),
-            S_PROGRAM_URL       => program_url_guess(),
+			Trace                         => $Trace, 
+			PROGRAM_URL                   => program_url_guess(),
+            S_PROGRAM_URL                 => program_url_guess(),
 			
 	 		}
         }
@@ -511,6 +518,7 @@ sub create_dada_config_file {
                 ROOT_PASS_IS_ENCRYPTED => 1,
                 dada_files_dir         => $loc,
 				Big_Pile_Of_Errors     => $Big_Pile_Of_Errors, 
+				Trace                  => $Trace, 
                 ( $args->{-backend} ne 'default' )
                 ? (
                     backend      => $args->{-backend},
