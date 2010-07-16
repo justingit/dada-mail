@@ -8,19 +8,15 @@ Please see the below docs for information on how to install Dada Mail:
 
 http://dadamailproject.com/installation
 
-=head2 Basic Installation
+=head2 Install Dada Mail using the Dada Mail Installer: 
 
-http://dadamailproject.com/installation/installation_basic.html
+L<./features-dada_mail_installer.pod.html>
 
 =head2 Advanced Installation
 
 http://dadamailproject.com/installation/installation_advanced.html
 
-=head2 Experimental, Semi-Auto Advanced Installation
-
-http://dadamailproject.com/installation/installation_adv_semi_auto.html
-
-=head2 Configuring Dada Mail's SQL Backend
+=head3 Configuring Dada Mail's SQL Backend
 
 http://dadamailproject.com/installation/configuration-sql_backend.html
 
