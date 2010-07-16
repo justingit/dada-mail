@@ -2,7 +2,7 @@
 use strict;
 
 # You may have to update this, depending on the version of Dada Mail! 
-my $gz  = 'dada-4_1_0.tar.gz';
+my $gz  = 'dada-4_2_0-beta1.tar.gz';
 
 
 $ENV{PATH} = "/bin:/usr/bin";
