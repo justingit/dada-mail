@@ -22,16 +22,21 @@ if ( !-e $gz ) {
 print p("Uncompressing $gz...");
 
 print pre(`gunzip $gz`);
+
+my $tar = $gz;
+   $tar =~ s/\.gz$//;
+
 if ( !-e $tar ) {
     print p( 'Can\'t find ' . $tar . ' to uncompress!' );
+    print p( 'You may have to uncompress and prep Dada Mail manually.' );
+
     exit;
 }
 else {
     print p("Success!");
 }
 
-my $tar = $gz;
-   $tar =~ s/\.gz$//;
+
 
 print p("Unrolling $tar");
 `tar -xvf $tar`;
