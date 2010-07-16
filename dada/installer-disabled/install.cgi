@@ -50,7 +50,7 @@ my $Config_LOC          = '../DADA/Config.pm';
 # Save the errors this creates in a variable
 my $Big_Pile_Of_Errors  = undef; 
 # Show these errors in the web browser? 
-my $Trace               = 0; 
+my $Trace               = 1; 
 
 # These are strings we look for in the example_dada_config.tmpl file which 
 # we need to remove. 
@@ -88,6 +88,7 @@ sub run {
         scrn_upgrade_dada        => \&scrn_upgrade_dada,
         scrn_configure_dada_mail => \&scrn_configure_dada_mail,
         check                    => \&check,
+		move_installer_dir       => \&move_installer_dir, 
 
     );
     my $flavor = $q->param('f');
@@ -146,6 +147,25 @@ sub scrn_configure_dada_mail {
 	if(exists($lists[0])){
 		$lists_available = 1; 
 	}
+	# This is a test to see if the, "auto" placement will work for us - or 
+	# for example, there's somethign in the way. 
+	# First, let's see if there's any errors: 
+	if ( defined( $q->param('errors') )) {
+    	# No? Good - 
+	}
+	else { 
+		if(test_can_create_dada_files_dir(auto_dada_files_dir()) == 1 ){ 
+			# Failed the test. 
+			#$q->param('errors', [{dada_files_dir_exists => 1}]);
+			$q->param('error_dada_files_dir_exists', 1);
+			# HTML::FillInForm::Lite will pick up on this 
+			$q->param('dada_files_loc', auto_dada_files_dir()); 
+			$q->param('dada_files_dir_setup', 'manual');  
+		}	
+	}
+	
+	
+	
     my $scrn = '';
     $scrn .= list_template(
         -Part  => "header",
@@ -164,9 +184,11 @@ sub scrn_configure_dada_mail {
                 can_use_DBI                    => test_can_use_DBI(),
                 error_cant_read_config_dot_pm  => test_can_read_config_dot_pm(),
                 error_cant_write_config_dot_pm => test_can_write_config_dot_pm(),
-				dada_files_dir_setup           => $q->param('dada_files_dir_setup'), 
-                dada_files_loc                 => $q->param('dada_files_loc'),
-			    install_dada_files_dir_at      => install_dada_files_dir_at_from_params(),
+				home_dir_guess                 => guess_home_dir(),
+				install_dada_files_dir_at      => install_dada_files_dir_at_from_params(),
+			    
+				dada_files_dir_setup           => $q->param('dada_files_dir_setup') || '', 
+                dada_files_loc                 => $q->param('dada_files_loc') || '',
                 error_root_pass_is_blank       => $q->param('error_root_pass_is_blank')|| 0,
                 error_pass_no_match            => $q->param('error_pass_no_match') || 0,
                 error_program_url_is_blank     =>$q->param('error_program_url_is_blank') || 0,
@@ -174,7 +196,7 @@ sub scrn_configure_dada_mail {
                 error_dada_files_dir_exists    =>  $q->param('error_dada_files_dir_exists') || 0,
                 error_sql_connection           => $q->param('error_sql_connection') || 0,
                 error_sql_table_populated      => $q->param('error_sql_table_populated') || 0,
-                home_dir_guess                 => guess_home_dir(),
+                
                 errors                         => $q->param('errors') || [],
                 PROGRAM_URL                    => program_url_guess(),
                 S_PROGRAM_URL                  => program_url_guess(),
@@ -192,7 +214,7 @@ sub scrn_configure_dada_mail {
     $scrn = hack_in_scriptalicious($scrn);
 
     # Refill in all the stuff we just had;
-    if ( $q->param('errors') ) {
+    if ( defined($q->param('errors')) ) {
         require HTML::FillInForm::Lite;
         my $h = HTML::FillInForm::Lite->new();
         $scrn = $h->fill( \$scrn, $q );
@@ -284,6 +306,8 @@ sub scrn_install_dada_mail {
 			Trace                         => $Trace, 
 			PROGRAM_URL                   => program_url_guess(),
             S_PROGRAM_URL                 => program_url_guess(),
+			submitted_PROGRAM_URL         => $q->param('program_url'),
+
 			
 	 		}
         }
@@ -374,12 +398,12 @@ sub install_dada_mail {
     }
 
     $log .= "* Attempting to edit $Config_LOC file...\n";
-    if ( test_can_write_config_dot_pm() == 0 ) {
-        $log .= "* WARNING: Cannot write to, $Config_LOC!\n";
-        $errors->{cant_edit_config_dot_pm} = 1;
-		# $status = 0; ?
-    }
-    else {
+   # if ( test_can_write_config_dot_pm() == 0 ) {
+   #    $log .= "* WARNING: Cannot write to, $Config_LOC!\n";
+   #     $errors->{cant_edit_config_dot_pm} = 1;
+#	# $status = 0; ?
+ #   }
+  #  else {
 		if(
 			$args->{-install_dada_files_loc} eq auto_dada_files_dir() && 
 			$args->{-dada_files_dir_setup}   eq 'auto'
@@ -395,7 +419,7 @@ sub install_dada_mail {
 	            $errors->{cant_edit_dada_dot_config} = 1;
 	        }
 		}
-    }
+  #  }
 
     # That's it.
     $log .= "* Installation and Configuration Complete! Yeah!\n";
@@ -416,7 +440,7 @@ sub edit_config_dot_pm {
 		
 	    my $replace_with  = q{$PROGRAM_CONFIG_FILE_DIR = '} . $loc . '/' . $Dada_Files_Dir_Name . q{/.configs';};
 		my $replace_with2 = q{$PROGRAM_ERROR_LOG = '}       . $loc . '/' . $Dada_Files_Dir_Name . q{/.logs/errors.txt';};
-	    eval {
+	    #eval {
 			$Config_LOC = make_safer($Config_LOC); 
 		 
 	        my $config = slurp($Config_LOC);
@@ -436,16 +460,16 @@ sub edit_config_dot_pm {
 	        close $config_fh or die $!;
 			chmod(0775, $Config_LOC);
 
-	    };
+	    #};
 
-	    if ($@) {
-			warn $@; 
-			$Big_Pile_Of_Errors .= $@; 
-	        return 0;
-	    }
-	    else {
+	    #if ($@) {
+		#	warn $@; 
+		#	$Big_Pile_Of_Errors .= $@; 
+	     #   return 0;
+	    #}
+	    #else {
 	        return 1;
-	    }
+	    #}
 	}
 }
 
@@ -766,16 +790,17 @@ sub guess_home_dir {
 
 sub program_url_guess {
     my $program_url = $Self_URL;
-    $program_url =~ s/install\/installer\.cgi/mail.cgi/;
+    $program_url =~ s{installer\/install\.cgi}{mail.cgi};
     return $program_url;
 }
 
 sub hack_in_scriptalicious {
     my $scrn = shift;
+
     my $js = DADA::Template::Widgets::screen(
         {
             -screen => 'installer_extra_javascript.tmpl',
-            -vars => { my_S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL }
+            -vars => { my_S_PROGRAM_URL => program_url_guess(), Self_URL => $Self_URL }
         }
     );
     $scrn =~ s/\<head\>/\<head\>$js/;
@@ -916,19 +941,23 @@ sub test_can_read_config_dot_pm {
 }
 
 sub test_can_write_config_dot_pm {
-    my $problem = 0;
-    eval {
-        open my $backup, '>>', $Config_LOC or $problem == 1;
-        if($problem != 0){ 
-			#close $backup or die $!;
-    	}
-	};
-    if ($@) {
-        warn $@;
-        $Big_Pile_Of_Errors .= $@; 
-		return 1;
-    }
-    return $problem;
+
+	if( -w  $Config_LOC){ 
+			return 0; 
+	}
+	else { 
+		return 1; 
+	}
+#	
+#    eval {
+#        open my $backup, '>>', $Config_LOC or die $!;
+#	};
+#    if ($@) {
+#        warn $@;
+#        $Big_Pile_Of_Errors .= $@; 
+#		return 1;
+#    }
+#    return 0;
 }
 
 sub test_database_empty {
@@ -948,6 +977,38 @@ sub test_database_empty {
         return 1;
     }
 
+}
+
+sub move_installer_dir { 
+	print $q->header(); 
+	my $time = time;
+	require DADA::Security::Password; 
+	my $ran_str = DADA::Security::Password::generate_rand_string(); 
+	my $new_dir_name = make_safer("../installer-disabled.$ran_str.$time"); 
+	eval { 
+		`mv ../installer $new_dir_name`;
+		# This may not work. Not sure why not. 
+		`chmod 644 $new_dir_name/install.cgi`; 
+	};
+	 
+		print "
+		<fieldset> 
+		<legend>
+			Move Results
+		</legend> 
+	
+	"; 
+	if($@){ 
+		print "<p class=\"errors\">Problems! <code>$@</code></p><p>You'll have to manually move this directory."; 
+	}
+	else {
+		
+		print "
+		<ul><li><p>installer directory moved to <em>$new_dir_name</em>,</p></li><li> <p>Installer disabled!</p></li></ul>"; 
+		
+	}
+	print "</fieldset>"; 
+	
 }
 
 sub slurp {

@@ -1,9 +1,14 @@
  <script src="<!-- tmpl_var my_S_PROGRAM_URL -->/javascripts/dada_mail_admin_js.js" type="text/javascript"></script>
   <script src="<!-- tmpl_var my_S_PROGRAM_URL -->/javascripts/prototype.js" type="text/javascript"></script>
   <script src="<!-- tmpl_var my_S_PROGRAM_URL -->/javascripts/scriptaculous.js?load=effects" type="text/javascript"></script>
-	<script> 
+	<script type="text/javascript"> 
+	
+	
+	 //<![CDATA[
+	
 	
 		function ToggleSQLOptions() { 
+			
 			var sql_picker = document.getElementById('backend');
 			var selected  = sql_picker.options[sql_picker.selectedIndex].value;
 			 	
@@ -53,6 +58,38 @@
 			} 	
 		}
 		
+		
+		
+			   
+
+				 function move_installer_dir(){ 
+
+					new Ajax.Updater(
+						'move_results', '<!-- tmpl_var Self_URL -->', 
+						{ 
+						    method: 'post', 
+							parameters: {
+								f:                         'move_installer_dir'
+
+								},
+						onCreate: 	 function() {
+							$('move_results').hide(); 
+							/*$('sending_preferences_test_loading').show();*/
+
+						},
+						onComplete: 	 function() {
+
+						/*	$('sending_preferences_test_loading').hide();*/
+							Effect.BlindDown('move_results');
+
+						}	
+
+
+						});
+				}
+
+			
+		
 		function setStuffUp() { 
 			ToggleSQLOptions(); 
 			Toggle_dada_files_dirOptions();
@@ -63,4 +100,7 @@
 		
 		
 	window.onload=setStuffUp; 
+	
+	//]]>
+    
 	</script>
