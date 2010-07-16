@@ -50,7 +50,7 @@ my $Config_LOC          = '../DADA/Config.pm';
 # Save the errors this creates in a variable
 my $Big_Pile_Of_Errors  = undef; 
 # Show these errors in the web browser? 
-my $Trace               = 1; 
+my $Trace               = 0; 
 
 # These are strings we look for in the example_dada_config.tmpl file which 
 # we need to remove. 
@@ -398,12 +398,12 @@ sub install_dada_mail {
     }
 
     $log .= "* Attempting to edit $Config_LOC file...\n";
-   # if ( test_can_write_config_dot_pm() == 0 ) {
-   #    $log .= "* WARNING: Cannot write to, $Config_LOC!\n";
-   #     $errors->{cant_edit_config_dot_pm} = 1;
-#	# $status = 0; ?
- #   }
-  #  else {
+    if ( test_can_write_config_dot_pm() == 1) {
+       $log .= "* WARNING: Cannot write to, $Config_LOC!\n";
+        $errors->{cant_edit_config_dot_pm} = 1;
+	# $status = 0; ?
+    }
+   else {
 		if(
 			$args->{-install_dada_files_loc} eq auto_dada_files_dir() && 
 			$args->{-dada_files_dir_setup}   eq 'auto'
@@ -419,7 +419,7 @@ sub install_dada_mail {
 	            $errors->{cant_edit_dada_dot_config} = 1;
 	        }
 		}
-  #  }
+    }
 
     # That's it.
     $log .= "* Installation and Configuration Complete! Yeah!\n";
@@ -946,7 +946,7 @@ sub test_can_write_config_dot_pm {
 			return 0; 
 	}
 	else { 
-		return 1; 
+		return 1; # Returns 1 if can't. Flag is raised. 
 	}
 #	
 #    eval {
@@ -998,8 +998,15 @@ sub move_installer_dir {
 		</legend> 
 	
 	"; 
-	if($@){ 
-		print "<p class=\"errors\">Problems! <code>$@</code></p><p>You'll have to manually move this directory."; 
+	my $installer_moved = 0; 
+	if(-e '../installer'){ 
+		# ... 
+	}elsif(-e $new_dir_name){ 
+		$installer_moved = 1; 
+	}
+	
+	if($@ || $installer_moved == 0){ 
+		print "<p class=\"errors\">Problems! <code>$@</code></p><p>You'll have to manually move the, <em>dada/<strong>installer</strong></em>  directory."; 
 	}
 	else {
 		
