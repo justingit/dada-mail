@@ -41,7 +41,7 @@ And the Dada Mailers
 
 =head1 HOMEPAGE
 
-http://dadamailproject.com
+L<http://dadamailproject.com>
 
 =head1 INSTALLING 
 
@@ -49,21 +49,21 @@ This release of Dada Mail needs 4 variables changed in the Config.pm
 file that's located in the DADA directory. Installation instructions are 
 available at: 
 
-http://dadamailproject.com/installation/
+L<http://dadamailproject.com/installation/>
 
 Detailed configuration instructions are found inside the Config.pm:
 
-http://dadamailproject.com/support/documentation/Config.pm.html
+L<http://dadamailproject.com/support/documentation/Config.pm.html>
 
 Advanced Installation Instructions: 
 
-http://dadamailproject.com/purchase/sample_chapter-dada_mail_setup.html
+L<http://dadamailproject.com/purchase/sample_chapter-dada_mail_setup.html>
 
 =head1 UPGRADING
 
 See: 
 
-http://dadamailproject.com/support/documentation/UPGRADE_README.pod.html
+L<http://dadamailproject.com/support/documentation/UPGRADE_README.pod.html>
 
 In a nutshell, upgrading involves moving the, "dada" directory in the cgi-bin
 and putting the new version of the, "dada" directory. ALL files have to be
@@ -74,11 +74,11 @@ to the old copy.
 
 See: 
 
-http://dadamailproject.com/support/documentation
+L<http://dadamailproject.com/support/documentation>
 
 Version-specific documentation is located in this distribution, under: 
 
-dada/extras/documentation/html_version
+I<dada/extras/documentation/html_version>
 
 directory. Just open up 'index.html' in a web browser.
 
@@ -88,11 +88,11 @@ directory. Just open up 'index.html' in a web browser.
 
 =item * Boards: 
 
-http://dadamailproject.com/support/boards
+L<http://dadamailproject.com/support/boards>
 
 =item * Discussion Mailing List: 
 
-http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/	
+L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
 
 =back 
 
@@ -102,7 +102,7 @@ http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/
 
 Copyright (c) 1999-2010
 Justin Simoni 
-http://justinsimoni.com 
+L<http://justinsimoni.com>
 All rights reserved. 
 
 This program is free software; you can redistribute it and/or
