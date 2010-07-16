@@ -1,8 +1,9 @@
 #!/usr/bin/perl -T
 use strict;
 
-my $gz  = 'pro_dada-4_1_0.tar.gz';
-my $tar = 'pro_dada-4_1_0.tar';
+# You may have to update this, depending on the version of Dada Mail! 
+my $gz  = 'dada-4_1_0.tar.gz';
+
 
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
@@ -28,6 +29,10 @@ if ( !-e $tar ) {
 else {
     print p("Success!");
 }
+
+my $tar = $gz;
+   $tar =~ s/\.gz$//;
+
 print p("Unrolling $tar");
 `tar -xvf $tar`;
 
