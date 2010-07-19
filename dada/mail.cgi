@@ -9925,7 +9925,11 @@ sub profile_register {
 	}
 	
 	my $email       = xss_filter($q->param('email'));
+	   $email       = cased($email); 
+	
 	my $email_again = xss_filter($q->param('email_again')); 
+	   $email_again = cased($email_again); 
+	
 	my $password    = xss_filter($q->param('password')); 
 	
 	require DADA::Profile;
@@ -9937,6 +9941,7 @@ sub profile_register {
 	){ 
 		$prof->remove(); 
 	}
+	
 	my($status, $errors) = $prof->is_valid_registration(
 		{
 			-email 		               => $email, 
@@ -10383,7 +10388,7 @@ sub profile_reset_password {
 		return;
 	}
 
-	my $email     = xss_filter($q->param('email')); 
+	my $email     = cased(xss_filter($q->param('email'))); 
 	my $password  = xss_filter($q->param('password'))  || undef; 
 	my $auth_code = xss_filter($q->param('auth_code')) || undef; 
 	
@@ -10501,7 +10506,7 @@ sub profile_reset_password {
 sub profile_update_email { 
 
 	my $auth_code = xss_filter($q->param('auth_code')); 
-	my $email     = xss_filter($q->param('email')); 
+	my $email     = cased(xss_filter($q->param('email'))); 
 	my $confirmed = xss_filter($q->param('confirmed')); 
 			
 	require DADA::Profile; 
@@ -10530,12 +10535,12 @@ sub profile_update_email {
 				);
 				$lh->remove_subscriber(
 					{
-						-email => $profile_info->{'profile.email'}
+						-email => cased($profile_info->{'profile.email'})
 					}       
 				); 
 				$lh->add_subscriber(
 					{
-						-email => $profile_info->{'profile.update_email'}
+						-email => cased($profile_info->{'profile.update_email'})
 					}
 				); 
 			}

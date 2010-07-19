@@ -98,7 +98,7 @@ sub _init {
         croak "you must pass an email address in, '-email'";
     }
     else {
-        $self->{email} = $args->{ -email };
+        $self->{email} = cased($args->{ -email });
     }
 
 	if(exists($self->{email})){ 
@@ -131,7 +131,7 @@ sub exists {
     warn 'QUERY: ' . $query
 		if $t; 
 
-    $sth->execute( $self->{email} )
+    $sth->execute($self->{email} )
       or croak "cannot do statement (at exists)! $DBI::errstr\n";
     my @row = $sth->fetchrow_array();
     $sth->finish;

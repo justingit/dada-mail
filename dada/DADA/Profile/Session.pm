@@ -4,6 +4,7 @@ use lib qw (../../ ../../../DADA/perllib);
 use strict;
 use Carp qw(carp croak);
 use DADA::Config;
+use DADA::App::Guts; 
 use CGI::Session;
 CGI::Session->name('dada_profile');
 use Carp qw(carp croak); 
@@ -118,7 +119,7 @@ sub _login_cookie {
 
     my $session = new CGI::Session( $self->{dsn}, $q, $self->{dsn_args} );
 
-    $session->param( 'email',      $args->{ -email } );
+    $session->param( 'email',      cased($args->{ -email }) );
     $session->param( '_logged_in', 1 );
 
     $session->expire( $DADA::Config::COOKIE_PARAMS{ -expires } );
@@ -199,7 +200,7 @@ sub validate_profile_login {
     };
 
     require DADA::Profile;
-    my $prof = DADA::Profile->new( { -email => $args->{ -email } } );
+    my $prof = DADA::Profile->new( { -email => cased($args->{ -email }) } );
     
     
 	if ( $prof->exists == 1 ) {
