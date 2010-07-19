@@ -452,14 +452,17 @@ sub edit_config_dot_pm {
 			# (what about the error log? ) 
 			$config =~ s/$search2/$replace_with2/; 
 			
-			chmod(0777, make_safer('../DADA'));
-			unlink($Config_LOC); 
-		
+			#chmod(0777, make_safer('../DADA'));
+			installer_chmod(0777, make_safer('../DADA'))
+			#unlink($Config_LOC); 
+			installer_rm($Config_LOC); 
+			
 	        open my $config_fh, '>', $Config_LOC or die $!;
 	        print $config_fh $config or die $!;
 	        close $config_fh or die $!;
-			chmod(0775, $Config_LOC);
-
+			#chmod(0775, $Config_LOC);
+			installer_chmod(0775, $Config_LOC);
+			
 	    #};
 
 	    #if ($@) {
@@ -474,14 +477,17 @@ sub edit_config_dot_pm {
 }
 
 sub backup_config_dot_pm {
-	chmod(0777, '../DADA');
-    my $config = slurp($Config_LOC);
+	#chmod(0777, '../DADA');
+    installer_chmod(0777, '../DADA');
+	
+	my $config = slurp($Config_LOC);
 	my $backup_loc = make_safer($Config_LOC . '-backup.' . time); 
     open my $backup, '>', $backup_loc or die $!;
     print $backup $config or die $!;
     close $backup or die $!;
 
-	chmod(0775, $backup_loc);
+	#chmod(0775, $backup_loc);
+	installer_chmod(0775, $backup_loc);
 
 }
 
@@ -492,7 +498,7 @@ sub create_dada_files_dir_structure {
 
     eval {
 
-        mkdir( $loc, $DADA::Config::DIR_CHMOD );
+        installer_mkdir( $loc, $DADA::Config::DIR_CHMOD );
         foreach (
             qw(
             .archives
@@ -506,7 +512,7 @@ sub create_dada_files_dir_structure {
           )
         {
             my $sub_dir = make_safer( $loc . '/' . $_ );
-            mkdir( $sub_dir, $DADA::Config::DIR_CHMOD );
+            installer_mkdir( $sub_dir, $DADA::Config::DIR_CHMOD );
         }
     };
     if ($@) {
@@ -763,30 +769,6 @@ sub install_dada_files_dir_at_from_params() {
 
 
 
-sub auto_dada_files_dir {
-    return guess_home_dir();
-}
-
-sub guess_home_dir {
-
-    my $home_dir_guess = undef;
-
-    my $doc_root     = $ENV{DOCUMENT_ROOT};
-    my $pub_html_dir = $doc_root;
-    $pub_html_dir =~ s(^.*/)();
-    my $getpwuid_call;
-    eval { $getpwuid_call = ( getpwuid $> )[7] };
-    if ( !$@ ) {
-        $home_dir_guess = $getpwuid_call;
-    }
-    else {
-		$Big_Pile_Of_Errors .= $@; 
-        $home_dir_guess =~ s/\/$pub_html_dir$//g;
-    }
-
-    return $home_dir_guess;
-
-}
 
 sub program_url_guess {
     my $program_url = $Self_URL;
@@ -818,9 +800,9 @@ sub test_can_create_dada_files_dir {
     $dada_files_dir =
       make_safer( $dada_files_dir . '/' . $Dada_Files_Dir_Name );
 
-    if ( mkdir( $dada_files_dir, $DADA::Config::DIR_CHMOD ) ) {
+    if ( installer_mkdir( $dada_files_dir, $DADA::Config::DIR_CHMOD ) ) {
         if ( -e $dada_files_dir ) {
-            rmdir($dada_files_dir);
+            installer_rmdir($dada_files_dir);
             return 0;
         }
         else {
@@ -986,9 +968,12 @@ sub move_installer_dir {
 	my $ran_str = DADA::Security::Password::generate_rand_string(); 
 	my $new_dir_name = make_safer("../installer-disabled.$ran_str.$time"); 
 	eval { 
-		`mv ../installer $new_dir_name`;
+		#`mv ../installer $new_dir_name`;
+		installer_mv(make_safer('../installer'), $new_dir_name); 
+
 		# This may not work. Not sure why not. 
-		`chmod 644 $new_dir_name/install.cgi`; 
+		#`chmod 644 $new_dir_name/install.cgi`; 
+		installer_chmod(0644 make_safer('$new_dir_name/install.cgi')); 
 	};
 	 
 		print "
@@ -1036,4 +1021,97 @@ sub slurp {
     return @r;
 
 }
+
+# The bummer is that I may need to cp this to the uncompress_dada.cgi file - ugh!
+
+sub installer_cp { 
+	require File::Copy; 
+	my ($to, $from) = @_; 
+	my $r = File::Copy::copy($to,$from);# or die "Copy failed: $!";
+	return $r; 
+}
+
+sub installer_mv { 
+	require File::Copy; 
+	my ($to, $from) = @_; 
+	my $r = File::Copy::move($to,$from);# or die "Copy failed: $!";
+	return $r; 
+}
+
+sub installer_rm { 
+	my $file = shift; 
+	my $count = unlink($file); 
+	return $count; 
+}
+
+sub installer_chmod { 
+	my ($octet, $file) = @_; 
+	my $r = chmod($octet, $file)
+	return $r; 
+}
+sub installer_mkdir { 
+	my ($dir, $chmod) = @_; 
+	my $r = mkdir($dir, $chmod); 
+	return $r; 
+}
+sub installer_rmdir { 
+	my $dir = shift; 
+	my $r = rmdir($dir); 	
+	return $r; 
+}
+
+
+sub auto_dada_files_dir {
+    return guess_home_dir();
+}
+
+sub guess_home_dir {
+	
+	my $home_dir = undef; 
+	eval { 
+		require File::HomeDir; 
+	};
+	if($@){ 
+		$Big_Pile_Of_Errors .= $@; 
+		warn 'File::HomeDir not installed? ' . $@; 
+		$home_dir = guess_home_dir_via_getpwuid_call(); 
+	}
+	else { 
+		guess_home_dir_via_FileHomeDir(); 
+	}
+
+	return $home_dir;
+}
+
+sub guess_home_dir_via_FileHomeDir { 
+	# Needs IPC::Run3 and File::Which and File::Temp - 
+	# http://deps.cpantesters.org/?module=File%3A%3AHomeDir&perl=5.8.1&os=any+OS
+	
+	require File::HomeDir; 
+	$home_dir =  File::HomeDir->my_data; 
+	return $home_dir; 
+}
+
+sub guess_home_dir_via_getpwuid_call{ 
+ 
+	# I hate this. 
+    my $home_dir_guess = undef;
+    my $doc_root     = $ENV{DOCUMENT_ROOT};
+    my $pub_html_dir = $doc_root;
+    $pub_html_dir =~ s(^.*/)();
+    my $getpwuid_call;
+    eval { $getpwuid_call = ( getpwuid $> )[7] };
+    if ( !$@ ) {
+        $home_dir_guess = $getpwuid_call;
+    }
+    else {
+		$Big_Pile_Of_Errors .= $@; 
+        $home_dir_guess =~ s/\/$pub_html_dir$//g;
+    }
+    return $home_dir_guess;	
+}
+
+
+
+
 
