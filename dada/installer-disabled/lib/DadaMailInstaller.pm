@@ -78,7 +78,6 @@ sub run {
     my %Mode = (
 
         install_dada             => \&install_dada,
-        scrn_upgrade_dada        => \&scrn_upgrade_dada,
         scrn_configure_dada_mail => \&scrn_configure_dada_mail,
         check                    => \&check,
 		move_installer_dir       => \&move_installer_dir, 
@@ -90,39 +89,14 @@ sub run {
             $Mode{$flavor}->();    #call the correct subroutine
         }
         else {
-            &scrn_default;
+            &scrn_configure_dada_mail;
         }
     }
     else {
-        &scrn_default;
+        &scrn_configure_dada_mail;
     }
 }
 
-
-sub scrn_default {
-	
-    my $scrn = '';
-    $scrn .= list_template(
-        -Part  => "header",
-        -Title => "Install/Upgrade $DADA::Config::PROGRAM_NAME",
-        -vars  => { show_profile_widget => 0,
-	        PROGRAM_URL         => program_url_guess(),
-            S_PROGRAM_URL       => program_url_guess(),
- 		}
-    );
-    $scrn .= DADA::Template::Widgets::screen(
-		{ 
-			-screen => 'installer_default.tmpl',
-			-vars => { 
-				
-				Big_Pile_Of_Errors     => $Big_Pile_Of_Errors,
-				Trace                  => $Trace, 
-			} } );
-
-    $scrn .= list_template( -Part => "footer", );
-    e_print($scrn);
-
-}
 
 sub scrn_upgrade_dada {
  
