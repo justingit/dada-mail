@@ -68,17 +68,21 @@
 
 </form> 
 	
-<h1>All Set?</h1> 
+
+
+
+<!-- tmpl_if status --> 
+
+
+<h1>Ready?</h1> 
 
 
 <form action="<!-- tmpl_var submitted_PROGRAM_URL -->"> 
 	<div style="text-align:center"> 
 		<input type="submit" class="processing" value="Start Working With <!-- tmpl_var PROGRAM_NAME -->!" />
 	</div>	
-</form> 
+</form>
 
-
-<!-- tmpl_if status --> 
 
 <!-- tmpl_else --> 
 	<h1>BIG PROBLEMS</h1> 

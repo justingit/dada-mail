@@ -179,7 +179,8 @@ sub scrn_configure_dada_mail {
                 error_cant_write_config_dot_pm => test_can_write_config_dot_pm(),
 				home_dir_guess                 => guess_home_dir(),
 				install_dada_files_dir_at      => install_dada_files_dir_at_from_params(),
-			    
+			    test_complete_dada_files_dir_structure_exists 
+											   => test_complete_dada_files_dir_structure_exists(install_dada_files_dir_at_from_params()), 
 				dada_files_dir_setup           => $q->param('dada_files_dir_setup') || '', 
                 dada_files_loc                 => $q->param('dada_files_loc') || '',
                 error_root_pass_is_blank       => $q->param('error_root_pass_is_blank')|| 0,
@@ -189,7 +190,7 @@ sub scrn_configure_dada_mail {
                 error_dada_files_dir_exists    =>  $q->param('error_dada_files_dir_exists') || 0,
                 error_sql_connection           => $q->param('error_sql_connection') || 0,
                 error_sql_table_populated      => $q->param('error_sql_table_populated') || 0,
-                
+                skip_configure_SQL             => $q->param('skip_configure_SQL') || 0, 
                 errors                         => $q->param('errors') || [],
                 PROGRAM_URL                    => program_url_guess(),
                 S_PROGRAM_URL                  => program_url_guess(),
@@ -239,6 +240,7 @@ sub check {
 
     if ( $status == 0 ) {
         my $ht_errors = [];
+
         foreach ( keys %$errors ) {
             if ( $errors->{$_} == 1 ) {
                 push( @$ht_errors, { error => $_ } );
@@ -246,7 +248,7 @@ sub check {
             }
         }
         $q->param( 'errors', $ht_errors );
-        scrn_configure_dada_mail();
+		scrn_configure_dada_mail();
     }
     else {
         scrn_install_dada_mail();
@@ -261,18 +263,20 @@ sub scrn_install_dada_mail {
 
     my ( $log, $status, $errors ) = install_dada_mail(
         {
-            -program_url            => $q->param('program_url'),
-            -dada_root_pass         => $q->param('dada_root_pass'),
-            #-dada_files_loc        => $q->param('dada_files_loc'),
-			-dada_files_dir_setup   => $q->param('dada_files_dir_setup'), 
-			-install_dada_files_loc => $install_dada_files_loc, 
-            -backend                => $q->param('backend'),
-            -sql_dbtype             => $q->param('backend'),
-            -sql_server             => $q->param('sql_server'),
-            -sql_port               => sql_port_from_params(),
-            -sql_database           => $q->param('sql_database'),
-            -sql_username           => $q->param('sql_username'),
-            -sql_password           => $q->param('sql_password'),
+			-skip_configure_dada_files  => $q->param('skip_configure_dada_files') || 0,
+            -program_url                => $q->param('program_url'),
+            -dada_root_pass             => $q->param('dada_root_pass'),
+            #-dada_files_loc            => $q->param('dada_files_loc'),
+			-dada_files_dir_setup       => $q->param('dada_files_dir_setup'), 
+			-install_dada_files_loc     => $install_dada_files_loc, 
+            -backend                    => $q->param('backend'),
+			-skip_configure_SQL         => $q->param('skip_configure_SQL') || 0, 
+            -sql_dbtype                 => $q->param('backend'),
+            -sql_server                 => $q->param('sql_server'),
+            -sql_port                   => sql_port_from_params(),
+            -sql_database               => $q->param('sql_database'),
+            -sql_username               => $q->param('sql_username'),
+            -sql_password               => $q->param('sql_password'),
         }
     );
 
@@ -325,52 +329,63 @@ sub install_dada_mail {
     my $errors = {};
     my $status = 1;
 
-    $log .=
-        "* Attempting to make $DADA::Config::PROGRAM_NAME Files at, "
-      . $args->{-install_dada_files_loc} . '/'
-      . $Dada_Files_Dir_Name . "\n";
+	if($args->{-skip_configure_dada_files} == 1){ 
+		$log .= "* Skipping configuration of directory creation, config file and backend options\n"; 
+	}
+	else { 
+    	$log .=
+	        "* Attempting to make $DADA::Config::PROGRAM_NAME Files at, "
+	      . $args->{-install_dada_files_loc} . '/'
+	      . $Dada_Files_Dir_Name . "\n";
 
-    # Making the .dada_files structure
-    if ( create_dada_files_dir_structure( $args->{-install_dada_files_loc} ) == 1 ) {
-        $log .= "* Success!\n";
-    }
-    else {
-        $log .= "* Problems Creating Directory Structure! STOPPING!\n";
-        $errors->{cant_create_dada_files} = 1;
-        $status = 0;
-        return ( $log, $status, $errors );
-    }
+	    # Making the .dada_files structure
+	    if ( create_dada_files_dir_structure( $args->{-install_dada_files_loc} ) == 1 ) {
+	        $log .= "* Success!\n";
+	    }
+	    else {
+	        $log .= "* Problems Creating Directory Structure! STOPPING!\n";
+	        $errors->{cant_create_dada_files} = 1;
+	        $status = 0;
+	        return ( $log, $status, $errors );
+	    }
 
-    # Making the .dada_config file
-    $log .= "* Attempting to create .dada_config file...\n";
-    if ( create_dada_config_file($args) == 1 ) {
-        $log .= "* Success!\n";
-    }
-    else {
-        $log .= "* Problems Creating .dada_config file! STOPPING!\n";
-        $errors->{cant_create_dada_config} = 1;
-        $status = 0;
-        return ( $log, $status, $errors );
-    }
+	    # Making the .dada_config file
+	    $log .= "* Attempting to create .dada_config file...\n";
+	    if ( create_dada_config_file($args) == 1 ) {
+	        $log .= "* Success!\n";
+	    }
+	    else {
+	        $log .= "* Problems Creating .dada_config file! STOPPING!\n";
+	        $errors->{cant_create_dada_config} = 1;
+	        $status = 0;
+	        return ( $log, $status, $errors );
+	    }
 
-    # Creating the needed SQL tables
-    if ( $args->{-backend} eq 'default' ) {
-        # ...
-    }
-    else {
-        $log .= "* Attempting to create SQL Tables...\n";
-        my $sql_ok = create_sql_tables($args);
-        if ( $sql_ok == 1 ) {
-            $log .= "* Success!\n";
-        }
-        else {
-            $log .= "* Problems Creating SQL Tables! STOPPING!\n";
-            $errors->{cant_create_sql_tables} = 1;
-            $status = 0;
-            return ( $log, $status, $errors );
-        }
-    }
-
+	    # Creating the needed SQL tables
+	    if ( $args->{-backend} eq 'default' ) {
+	        # ...
+	    }
+	    else {
+	        if($args->{-skip_configure_SQL} == 1){ 
+				$log .= "* Skipping the creation of the SQL Tables...\n";
+			}
+			else { 
+			
+				$log .= "* Attempting to create SQL Tables...\n";
+		        my $sql_ok = create_sql_tables($args);
+		        if ( $sql_ok == 1 ) {
+		            $log .= "* Success!\n";
+		        }
+		        else {
+		            $log .= "* Problems Creating SQL Tables! STOPPING!\n";
+		            $errors->{cant_create_sql_tables} = 1;
+		            $status = 0;
+		            return ( $log, $status, $errors );
+		        }
+			}
+	    }
+	}
+	
     # Editing the Config.pm file
 
     if ( test_can_read_config_dot_pm() == 1 ) {
@@ -657,79 +672,94 @@ sub sql_port_from_params {
 sub check_setup {
     my $errors = {};
 
-    if ( test_str_is_blank( $q->param('program_url') ) == 1 ) {
-        $errors->{program_url_is_blank} = 1;
-    }
-    else {
-        $errors->{program_url_is_blank} = 0;
-    }
-
-    if ( test_str_is_blank( $q->param('dada_root_pass') ) == 1 ) {
-        $errors->{root_pass_is_blank} = 1;
-
-    }
-    else {
-        $errors->{root_pass_is_blank} = 0;
-    }
     if (
-        test_pass_match( $q->param('dada_root_pass'),
-            $q->param('dada_root_pass_again') ) == 1
+        $q->param('skip_configure_dada_files') == 1
+        && test_complete_dada_files_dir_structure_exists(
+            install_dada_files_dir_at_from_params()
+        ) == 1    # This still has to check out,
       )
     {
-        $errors->{pass_no_match} = 1;
+
+        # Skip a lot of the tests!
+        # die "Skipping!";
     }
     else {
-        $errors->{pass_no_match} = 0;
-    }
 
+        if ( test_str_is_blank( $q->param('program_url') ) == 1 ) {
+            $errors->{program_url_is_blank} = 1;
+        }
+        else {
+            $errors->{program_url_is_blank} = 0;
+        }
 
-	my $install_dada_files_dir_at = install_dada_files_dir_at_from_params(); 
-	if ( test_dada_files_dir_no_exists($install_dada_files_dir_at) == 1 ) {
-		$errors->{dada_files_dir_exists} = 0;
-	}
-	else  {
-		$errors->{dada_files_dir_exists} = 1;
-	}
-
-    if ( test_can_create_dada_files_dir($install_dada_files_dir_at) == 1 ) {
-        $errors->{create_dada_files_dir} = 1;
-    }
-    else {
-        $errors->{create_dada_files_dir} = 0;
-    }
-    if ( $q->param('backend') eq 'default' ) {
-        $errors->{sql_connection} = 0;
-    }
-    else {
-        if (
-            test_sql_connection(
-                $q->param('backend'),      $q->param('sql_server'),
-                'auto',                    $q->param('sql_database'),
-                $q->param('sql_username'), $q->param('sql_password'),
-            ) == 0
-          )
-        {
-            $errors->{sql_connection} = 1;
+        if ( test_str_is_blank( $q->param('dada_root_pass') ) == 1 ) {
+            $errors->{root_pass_is_blank} = 1;
 
         }
         else {
-            $errors->{sql_connection} = 0;
+            $errors->{root_pass_is_blank} = 0;
+        }
+        if (
+            test_pass_match(
+                $q->param('dada_root_pass'),
+                $q->param('dada_root_pass_again')
+            ) == 1
+          )
+        {
+            $errors->{pass_no_match} = 1;
+        }
+        else {
+            $errors->{pass_no_match} = 0;
+        }
 
+        if ( $q->param('backend') eq 'default' ) {
+            $errors->{sql_connection} = 0;
+        }
+        else {
             if (
-                test_database_empty(
+                test_sql_connection(
                     $q->param('backend'),      $q->param('sql_server'),
                     'auto',                    $q->param('sql_database'),
                     $q->param('sql_username'), $q->param('sql_password'),
-                ) == 1
+                ) == 0
               )
             {
-                $errors->{sql_table_populated} = 0;
+                $errors->{sql_connection} = 1;
 
             }
             else {
-                $errors->{sql_table_populated} = 1;
-            }
+                $errors->{sql_connection} = 0;
 
+                if (
+                    test_database_has_all_needed_tables(
+                        $q->param('backend'),      $q->param('sql_server'),
+                        'auto',                    $q->param('sql_database'),
+                        $q->param('sql_username'), $q->param('sql_password'),
+                    ) == 1
+                  )
+                {
+                    $errors->{sql_table_populated} = 0;
+
+                }
+                else {
+                    $errors->{sql_table_populated} = 1;
+                }
+
+            }
+        }
+        my $install_dada_files_dir_at = install_dada_files_dir_at_from_params();
+        if ( test_dada_files_dir_no_exists($install_dada_files_dir_at) == 1 ) {
+            $errors->{dada_files_dir_exists} = 0;
+        }
+        else {
+            $errors->{dada_files_dir_exists} = 1;
+        }
+
+        if ( test_can_create_dada_files_dir($install_dada_files_dir_at) == 1 ) {
+            $errors->{create_dada_files_dir} = 1;
+        }
+        else {
+            $errors->{create_dada_files_dir} = 0;
         }
 
     }
@@ -737,13 +767,30 @@ sub check_setup {
     my $status = 1;
     foreach ( keys %$errors ) {
         if ( $errors->{$_} == 1 ) {
-            $status = 0;
-            last;
+
+            # I guess there's exceptions to every rule:
+            if (   $_ eq 'sql_table_populated'
+                && $q->param('skip_configure_SQL') == 1 )
+            {
+
+                # Skip!
+            }
+
+#	elsif($_ eq 'dada_files_dir_exists' && $q->param('skip_configure_dada_files') == 1){
+#		# Skip!
+#	}
+            else {
+                $status = 0;
+                last;
+            }
         }
     }
+   # require Data::Dumper;
+    #die Data::Dumper::Dumper( $status, $errors );
     return ( $status, $errors );
 
 }
+
 
 sub install_dada_files_dir_at_from_params() { 
 	 
@@ -754,6 +801,9 @@ sub install_dada_files_dir_at_from_params() {
 	else { 
 		$install_dada_files_dir_at = $q->param('dada_files_loc'); 
 	}
+	
+	# Take off that last slash - goodness, will that annoy me: 
+	$install_dada_files_dir_at =~ s/\/$//; 
 	return $install_dada_files_dir_at; 
 
 }
@@ -861,6 +911,45 @@ sub test_dada_files_dir_no_exists {
     }
 }
 
+sub test_complete_dada_files_dir_structure_exists {
+
+    my $dada_files_dir = shift;
+    if ( -e $dada_files_dir . '/' . $Dada_Files_Dir_Name ) {
+        foreach (
+            qw(
+            .archives
+            .backups
+            .configs
+            .lists
+            .logs
+            .templates
+            .tmp
+            )
+          )
+        {
+
+            if ( !-e $dada_files_dir . '/' . $Dada_Files_Dir_Name . '/' . $_ ) {
+                return 0;
+            }
+
+        }
+    }
+    else {
+        return 0;
+    }
+
+    if (  -e $dada_files_dir . '/'
+        . $Dada_Files_Dir_Name
+        . '/.configs/.dada_config' )
+    {
+		# Seems to be all there! 
+        return 1;
+    }
+
+}
+
+
+
 
 sub test_sql_connection {
 	
@@ -925,8 +1014,50 @@ sub test_can_write_config_dot_pm {
 	}
 }
 
+sub test_database_has_all_needed_tables { 
+	my $dbh = shift; 
+	
+	my $default_table_names = {
+	    'dada_subscribers' => 1,
+	    'dada_profiles' => 1, 
+	    'dada_profile_fields' => 1, 
+	    'dada_profile_fields_attributes' => 1,
+	    'dada_archives' => 1, 
+	    'dada_settings' => 1, 
+	    'dada_sessions' => 1, 
+	    'dada_bounce_scores' => 1, 
+	    'dada_clickthrough_urls' => 1,
+	}; 
+
+    eval { $dbh = connectdb(@_); };
+    if ($@) { 
+		warn $@; 
+		$Big_Pile_Of_Errors .= $@; 
+		return 0;
+	 }
+
+    my @tables = $dbh->tables;
+	my $checks = 0; 
+
+	foreach(@tables){ 
+		if(exists($default_table_names->{$_})){ 
+			$checks++; 
+		}
+	}
+	
+	if($checks == 9){ 
+		return 0; 
+	}
+	else { 
+		return 1; 
+	}
+	
+	
+	
+}
 sub test_database_empty {
     my $dbh = undef;
+
     eval { $dbh = connectdb(@_); };
     if ($@) { 
 		warn $@; 
@@ -1059,7 +1190,10 @@ sub guess_home_dir {
 		$home_dir = guess_home_dir_via_getpwuid_call(); 
 	}
 	else { 
-		guess_home_dir_via_FileHomeDir(); 
+		$home_dir = guess_home_dir_via_FileHomeDir(); 
+		if(!defined($home_dir)){ 
+			$home_dir = guess_home_dir_via_getpwuid_call(); 
+		}
 	}
 
 	return $home_dir;
@@ -1072,6 +1206,8 @@ sub guess_home_dir_via_FileHomeDir {
 	require File::HomeDir; 
 	my $home_dir =  File::HomeDir->my_data; 
 	return $home_dir; 
+
+
 }
 
 sub guess_home_dir_via_getpwuid_call{ 

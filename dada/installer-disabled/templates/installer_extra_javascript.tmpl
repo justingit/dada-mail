@@ -5,8 +5,19 @@
 	
 	
 	 //<![CDATA[
-	
-	
+		function ToggleConfigurationOptions(){ 
+			var togglin = document.getElementById( 'configuration' );
+			
+			if($F('skip_configure_dada_files') == 1){ // that means, dissapear stuff!
+					if(togglin.style.display == ""){	
+						Effect.Fade('configuration');
+					}
+			}
+			else { 			
+				Effect.Appear('configuration');
+			}
+		}
+		
 		function ToggleSQLOptions() { 
 			
 			var sql_picker = document.getElementById('backend');
@@ -93,6 +104,7 @@
 		function setStuffUp() { 
 			ToggleSQLOptions(); 
 			Toggle_dada_files_dirOptions();
+			ToggleConfigurationOptions(); 
 		}
 		
 		
