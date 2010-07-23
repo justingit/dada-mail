@@ -989,20 +989,26 @@ sub test_can_write_config_dot_pm {
 }
 
 sub test_database_has_all_needed_tables { 
-	my $dbh = shift; 
+#	my $dbtype   = shift;
+#    my $dbserver = shift;
+#    my $port     = shift;
+#    my $database = shift;
+#    my $user     = shift;
+#    my $pass     = shift;
 	
 	my $default_table_names = {
-	    'dada_subscribers' => 1,
-	    'dada_profiles' => 1, 
-	    'dada_profile_fields' => 1, 
-	    'dada_profile_fields_attributes' => 1,
-	    'dada_archives' => 1, 
-	    'dada_settings' => 1, 
-	    'dada_sessions' => 1, 
-	    'dada_bounce_scores' => 1, 
-	    'dada_clickthrough_urls' => 1,
+	    dada_subscribers => 1,
+	    dada_profiles => 1, 
+	    dada_profile_fields => 1, 
+	    dada_profile_fields_attributes => 1,
+	    dada_archives => 1, 
+	    dada_settings => 1, 
+	    dada_sessions => 1, 
+	    dada_bounce_scores => 1, 
+	    dada_clickthrough_urls => 1,
 	}; 
-
+	my $dbh; 
+	
     eval { $dbh = connectdb(@_); };
     if ($@) { 
 		warn $@; 
@@ -1012,12 +1018,14 @@ sub test_database_has_all_needed_tables {
 
     my @tables = $dbh->tables;
 	my $checks = 0; 
-
-	foreach(@tables){ 
-		if(exists($default_table_names->{$_})){ 
-			$checks++; 
+	
+	foreach my $table(@tables){ 
+		$table =~ s/`//g; 
+		if(exists($default_table_names->{$table})){ 
+			$checks++;	
 		}
 	}
+	
 	
 	if($checks == 9){ 
 		return 0; 
