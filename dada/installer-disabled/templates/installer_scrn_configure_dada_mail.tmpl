@@ -65,7 +65,7 @@
 		<ul> 
 		<li>
 		<p class="error"> 
-		 Will not be able to create, <em><strong><!-- tmpl_var install_dada_files_dir_at --></strong>/<!-- tmpl_var Dada_Files_Dir_Name --></em>
+		 Will not be able to create, <em><!-- tmpl_var install_dada_files_dir_at -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em>
 		</p>
 		</li>
 		</ul>
@@ -75,7 +75,7 @@
 		<ul> 
 		<li>
 		<p class="error"> 
-			The directory, <em><strong><!-- tmpl_var dada_files_loc --></strong>/<!-- tmpl_var Dada_Files_Dir_Name --></em> already exists.
+			The directory, <em><!-- tmpl_var dada_files_loc -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em> already exists.
 		</p>
 		</li>
 		<!-- tmpl_if test_complete_dada_files_dir_structure_exists --> 
@@ -128,10 +128,10 @@
 	<div id="manual_dada_files_dir_setup">
 	<fieldset> 
 	<legend> 
-		Manual Configuration of, <em>.dada_files</em> directory
+		Manual Configuration of the, <em>.dada_files</em> directory
 	</legend> 
 	<p> 
-	 <input type="text" name="dada_files_loc" value="<!-- tmpl_var home_dir_guess -->" style="width:80%" />/<em><!-- tmpl_var Dada_Files_Dir_Name --></em>
+	 <input type="text" name="dada_files_loc" value="<!-- tmpl_var home_dir_guess -->" style="width:70%" />/<em><strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em>
 	</p> 
 
 	</fieldset>
