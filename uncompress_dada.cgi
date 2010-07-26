@@ -1,24 +1,28 @@
 #!/usr/bin/perl -T
 use strict;
 
-# You may have to update this, depending on the version of Dada Mail! 
-my $gz  = 'dada-4_2_0-beta1.tar.gz';
-
+# You may have to update this, depending on the version of Dada Mail!
+my $gz = 'dada-4_2_0-beta2.tar.gz';
 
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 use CGI::Carp qw(fatalsToBrowser);
 use CGI qw(:standard);
+
+if ( !-e $gz ) {
+    $gz = 'pro-' . $gz;
+}
+if ( !-e $gz ) {
+    print 'Can\'t find ' . $gz . ' to uncompress!';
+    exit;
+}
 print header();
 print h1('Dada Mail!');
 if ( -e 'dada' ) {
     print "STOP. 'dada' directory already exists!";
     exit;
 }
-if ( !-e $gz ) {
-    print 'Can\'t find ' . $gz . ' to uncompress!';
-    exit;
-}
+
 print p("Uncompressing $gz...");
 
 print pre(`gunzip $gz`);
@@ -28,15 +32,13 @@ my $tar = $gz;
 
 if ( !-e $tar ) {
     print p( 'Can\'t find ' . $tar . ' to uncompress!' );
-    print p( 'You may have to uncompress and prep Dada Mail manually.' );
+    print p('You may have to uncompress and prep Dada Mail manually.');
 
     exit;
 }
 else {
     print p("Success!");
 }
-
-
 
 print p("Unrolling $tar");
 `tar -xvf $tar`;
