@@ -2006,7 +2006,7 @@ sub check_list_security {
 
 
 sub install_dir_around { 	
-	if(-e 'install' && -d 'install'){ 
+	if(-e 'installer' && -d 'installer'){ 
 		return 1; 
 	}
 }
