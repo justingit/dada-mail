@@ -2,39 +2,55 @@
 
 =head1 Installing and Configuring Dada Mail using the Dada Mail Installer
 
-The Dada Mail Installer is new! And there's going to be issues that we hadn't thought about. 
+=head2 Before We Get Started
+
+The Dada Mail Installer is new! And there's going to be issues that we hadn't thought about. Please report any bugs/problems to us.
+
+=head3 Current Installation Docs
+
+There's around three different ways to install Dada Mail. That's a lot! Here's how Dada Mail's new installer fits in with this all. 
+
+=head4 Basic Installation
 
 When this installer becomes stable, we will not suggest using the basic install instructions anymore: 
 
 L<http://dadamailproject.com/installation/installation_basic.html>
 
-And if you do not want to use the installer, we do suggest still the advanced installation instructions: 
+=head4 Advanced Installation 
+
+And if you do not want to use the new installer, we will still suggest still the advanced installation instructions: 
 
 L<http://dadamailproject.com/installation/installation_advanced.html>
 
-The, Experimental, Semi-Auto Advanced Installation instructions: 
+=head4 The, Experimental, Semi-Auto Advanced Installation
 
 L<http://dadamailproject.com/installation/installation_adv_semi_auto.html>
 
-Will not work at all, anymore - they I<were> experimental and have been superceded by the new shiny installer. 
+This method will not work at all, anymore - it <was> experimental and have been superceded by the new, shinier installer. 
 
-The Dada Mail Installer I<only> works with Dada Mail version 4.2.0 Beta. No previous version of Dada Mail will work and expect sweeping changes to the installer and these instructions (even if there aren't any) until the stable release is out. 
+=head4 Out With the Old, In With the New
+
+The Dada Mail Installer I<only> works with Dada Mail version 4.2.0 Beta. No previous version of Dada Mail will work. Expect I<sweeping> changes to the installer and these instructions (even if there aren't any) until the stable release is out, based on your feedback. 
+
+Once the installer is out of beta, we'll be moving the below instructions to a more convenient place for everyone and tidy up the old installation instructions. 
+
+=head1 Using the Installer 
 
 =head1 Step #1: Download Dada Mail
 
-Here's the direct download to Dada Mail v4.2.0 Beta: 
+Here's the direct download to Dada Mail v4.2.0 Beta 2: 
 
-L<http://github.com/downloads/justingit/dada-mail/dada-4_2_0-beta1.tar.gz>
+L<http://github.com/downloads/justingit/dada-mail/dada-4_2_0-beta2.tar.gz>
 
-Save the distribution to your Desktop Computer and then upload the file to your hosting account's I<cgi-bin>. 
+Save the distribution to your Desktop Computer (you will not have to uncompress the distro) and then upload the, tar.gz file to your hosting account's I<cgi-bin>. 
 
 =head1 Step #2 Upload the, "uncompress_dada.cgi" script to your cgi-bin
 
-Download the, B<uncompress_dada.cgi> script from here: 
+Download the, C<uncompress_dada.cgi> script from here: 
 
 http://github.com/justingit/dada-mail/raw/installer/uncompress_dada.cgi
 
-(You may have to "Save Page As...") 
+I<(You may have to "Save Page As...")>
 
 and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> - right alongside the tar.gz file we just put up. 
 
@@ -48,25 +64,27 @@ and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting acco
 
 The, C<uncompress_dada.cgi> should attempt to uncompress the tar.gz distro, change the necessary permissions of various files and prep the actual installer for you to use. 
 
-At the end of everything, there should be presented to you a link to use the actual installer. Click the link at the end of the screen and go ahead and configure Dada Mail! 
+Once it's finished running, there should be presented to you a link to use the actual installer. Click the link at the end of the screen and go ahead and configure Dada Mail! 
 
 =head2 Step #3 - Only If Step #2 Doesn't Work Automatically 
 
-Or, if you'd rather do this part of the installation manually: 
+(Or, if you'd rather do this part of the installation manually:)
 
 =head3 Uncompress the Distribution
 
-The tar.gz distribution you just downloaded to your Desktop Computer  should uncompress tp one folder/directory called, B<dada>.
+The tar.gz distribution you just downloaded to your Desktop Computer  should uncompress to one folder/directory called, B<dada>.
 
-=head3 Upload the, dada directory into your cgi-bin
+=head3 Upload the, "dada" directory into your cgi-bin
 
-There are a lot of files and this will take a few minutes. If you're familiar with accessing your hosting account via ssh, feel free to simply upload the distribution to your hosting account and uncompress from there. 
+There are a lot of files and this will take a few minutes.
 
-=head3 Change the name of the dada/installer-disabled directory to, dada/installer
+I<(If you're familiar with accessing your hosting account via ssh, feel free to simply upload the distribution to your hosting account and uncompress from there.)>
+
+=head3 Change the name of the, "dada/installer-disabled" directory to, "dada/installer"
 
 By default, the installer is disabled, so not to pose as a security issue. Rename the, I<dada/B<installer-disabled>> directory to, I<dada/B<installer>>. 
 
-=head3 Change permissions of the dada/mail.cgi and dada/installer/install.cgi scrits to, "755"
+=head3 Change permissions of the, "dada/mail.cgi" and "dada/installer/install.cgi" scrits to, "755"
 
 B<BOTH> of these scripts need to have their permissions changed to, B<755>
 
@@ -74,5 +92,137 @@ B<BOTH> of these scripts need to have their permissions changed to, B<755>
 
 The, C<install.cgi> script should take over from there. 
 
+=head1 Configuring Dada Mail with the, "install.cgi" Script 
+
+The installer should be relatively straightforward on how it's used - just fill it out with the information it's asking for. Below, we'll explain exactly what it's looking for. 
+
+=head2 A Warning Up Top? 
+
+It's possible, before you even start using Dada Mail, that you'll receive a warning stating that Dada Mail won't be able to edit the, C<dada/DADA/Config.pm> file. This would be because there's a difference in file permissions/privileges between the user that the installer is running under,and the user that owns the C<dada/DADA/Config.pm> file. 
+
+This will mean, if you're comfortable with the idea, you'll need to edit I<one> line in the C<dada/DADA/Config.pm> file, to get Dada Mail running correctly. The majority of the time, this won't be the case and if you're selecting B<AUTO> for the first step, it will not be the case, even if there is the warning. 
+
+=head2 ".dada_files " Directory Location
+
+The first thing you'll need to fill out in the installer is the location to place the, C<.dada_files> directory. 
+
+This will be the hardest for a casual user of Dada Mail to know what to correctly fill out. 
+
+Luckily, the installer will do its best to pre-fill out the best location for you - and you can just use it's best guess and forgo having to know the exact details. 
+
+For most installations, we suggest having the installer create the, C<.dada_files> directory in your home directory. All you'll need to do is fill out where your home directory is located. This location should be something you can find out from your webhost, if you don't know it yourself. 
+
+=over
+
+=item * Select B<AUTO> 
+
+if you do not know where your home directory is, or if you like the location that the installer finds. 
+
+=item * Select B<MANUAL> 
+
+(and fill in the location you'd like) if the installer doesn't pick a good location or you'd rather the directory be somewhere else. 
+
+=back
+
+=head3 A Shortcut To Upgrading? 
+
+Although not really made to do so, you can use the installer to I<upgrade> Dada Mail. If Dada Mail finds an existing C<.dada_files> directory (you can also explicitly tell it where it is, using the, "Manual" option), you can just tell the installer to use this existing C<.dada_files> directory, instead of creating a new one. Everything else listed on the form will be B<ignored>.
+
+This may not work, if the program has changed so much between versions. Incompatibilities do come to the surface - so no promises this will work (you can always just run the installer, again), but I<most> incompatibilities will be listed in the Dada Mail changelog. 
+
+If you do run into incompatibilities, it's possible also to manual edit your configuration file - probably by removing the incompatible bits, to get Dada Mail running again. Again, the changelog is your friend. 
+
+To select this option, just check, I<I know that this, ".dada_files" already exists > - you will only see this option, if a C<.dada_files> directory is discovered. 
+
+=head2 Dada Mail URL
+
+The Dada Mail URL is simply the URL that you will access Dada Mail's, C<mail.cgi> file from. This form field should be filled out automatically, but if something doesn't look right, just look at the URL of the installer - for example, if the URL of the installer is: 
+
+L<http://example.com/cgi-bin/dada/installer/install.cgi>
+
+Your B<Dada Mail URL> will be: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi>
+
+=head2 Dada Mail Root Password
+
+The, B<Dada Mail Root Password> is the main administrative password to your Dada Mail installation - choose a good, strong password - all you'll need to do is enter it twice, just to make sure you know exactly what it's set to. 
+
+=head2 Dada Mail Backend
+
+Dada Mail will need to save  its mailing lists and other information in various files and/or an SQL database. The SQL database is optional, but we B<I<really, really, really>> suggest using it - upgrades are easier, your information will be saved more securely, any migrations you do will be easier, more and fancier features will be available for you - a ton of stuff. 
+
+=over
+
+=item * Select, Default 
+
+if you cannot, don't know how, or don't want the SQL backend option (we really suggest going the distance and using the SQL backend) 
+
+=item * Select, MySQL or PostgreSQL for the SQL backend
+
+Both MySQL and PostgreSQL will have the same features available and work under the hood, basically the same way. We like PostgreSQL better, but MySQL is going to be tested a bit more thouroughly and probably is more familiar to most people, so at the moment, it's the backend that we recommend. 
+
+When you select one of the SQL backends, you'll also be asked to fill in the SQL connection stuff, including the database server, the port number, the name of the database itself and the username and password. 
+
+The database has to be set up beforehand. It's not too hard to do if you have a cPanel or phpMyAdmin to help you along. Just note the Server, database, username and password, once you create the database (No tables have to be created, beforehand). The user will need full priviliges to your database. We don't suggest, for security reasons, giving this same user any permissions to any other database. 
+
+=over
+
+=item * Database Server
+
+The majority of the time, you'll set this to, C<localhost>, unless you have specific instructions to set it to something a little different. 
+
+=item * Database
+
+Fill this out to whatever your database is called. 
+
+=item * Port
+
+By default, this is set to, C<auto>. If you do not know what port your database uses, Dada Mail will take its best guess. By default, if you use MySQL, the port will be, C<3306>, for PostgreSQL, the port will be: C<5432>. Unless your database is set up different from the default configuration, these two numbers should work for the majority of people out there. 
+
+=item * Username
+
+Fill this with the username that's associated with your database
+
+=item * Password
+
+Fill this with the password associated with the username. 
+
+=back
+
+=head3 Another Shortcut to Upgrading
+
+If you have an already existing database from a previous Dada Mail installation, you may fill in the SQL server login information for this existing database and Dada Mail will use it, instead of creating a set of new tables for you. 
+
+=head2 Completing the Installation and Configuration. 
+
+Once you've filled out the form completely, just click the, C<Configure Dada Mail!> button. The screen will refresh and go about configuring Dada Mail for your hosting setup. 
+
+If everything works well (and we hope it does) you should be all set to run Dada Mail.
+
+=head2 Do You Need to Manually Edit The, "dada/DADA/Config.pm" File? 
+
+There's a possibility, especially if you were issued the warning before filling out the configuration form, that you'll have to edit a line in the, C<dada/DADA/Config.pm> file. If this is the case, the installer will show you which file to look for and what to change it to. 
+
+Be careful when editing this file, as any error will stop Dada Mail from working. When saving the file and putting it back up to your hosting account, make sure to upload the file in ASCII/Plain Text mode, NOT binary! 
+
+=head2 Moving the, "installer" directory
+
+Dada Mail will not start working, until you move the, C<dada/installer> directory out of the way. This is a security precaution, so someone else doesn't come along and attempt to reconfigure your Dada Mail! 
+
+The provided button should do the trick, but if it fails (it'll let you know), you'll have to remove it manually. If you had to do the above step manually, you'll most likely have to do this step manually, too. 
+
+=head2 Making Additional Edits
+
+The installer should give you the full path to the, C<.dada_config> file it creates. This is the file that is written that holds your configuration that the installer just created. There's a ton of additional configuration options you can set - the installer just gets you up and running correctly. 
+
+Making additional configurations is a lot more advanced than running the installer, so be careful when editing this file - make a backup, first. 
+
+=head2 Running Dada Mail for the First Time
+
+Once you've gotten the, C<dada/DADA/Config.pm> file edited (if needed) and moved the, C<installer directory out of the way, it's time to begin using Dada Mail. Click the, C<Start Working With Dada Mail!> button to begin!
+
+Good Luck! 
 
 =cut
+
