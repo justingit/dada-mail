@@ -10,7 +10,7 @@ use CGI::Carp qw(fatalsToBrowser);
 use CGI qw(:standard);
 
 if ( !-e $gz ) {
-    $gz = 'pro-' . $gz;
+    $gz = 'pro_' . $gz;
 }
 if ( !-e $gz ) {
     print 'Can\'t find ' . $gz . ' to uncompress!';
