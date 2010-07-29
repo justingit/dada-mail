@@ -1,22 +1,6 @@
 <!-- begin setup_info_screen.tmpl -->
 
-
-
-
-<h1>Basic Installation</h1> 
-
-<h2>
- $FILES Absolute Path
-</h2>
-
-<p>
- The 
- <strong>
-  $FILES 
- </strong>
-
-
-<h1>Advanced Installation with Outide Configuration File</h1> 
+<h1>Advanced Installation with Outside Configuration File</h1> 
 
 
 <h2>$PROGRAM_CONFIG_FILE_DIR</h2> 
@@ -75,95 +59,6 @@
 
 <hr /> 
 
-<h1>Basic Installation</h1> 
-
-<h2>
- $FILES Absolute Path
-</h2>
-
-<p>
- The 
- <strong>
-  $FILES 
- </strong>
- variable has been set to:
-</p>
-<ul>
- <li>
-  <!-- tmpl_var FILES -->
- </li>
-</ul>
-
-<!-- tmpl_unless exists_FILES -->
-	
-	<p>
-	 <strong>
-	  Warning!
-	 </strong>
-	 This directory does not seem to exist.
-	</p>
-	
-	<!-- tmpl_unless FILES_starts_with_a_slash -->
-		
-		<p>
-		 Make sure that 
-		 <strong>
-		 $FILES 
-		 </strong>
-		 is an absolute path to a directory. 
-		 This usually means starting the path with a &quot;/&quot;.
-		</p>
-		
-	<!--/tmpl_unless-->
-	
-	<!-- tmpl_if FILES_ends_in_a_slash -->
-		
-		<p>
-		 Make sure that 
-		 <strong>
-		  $FILES 
-		 </strong>
-		 does not end with a &quot;/&quot;.
-		</p>
-		
-	<!--/tmpl_if-->
-	
-	<!-- tmpl_if DOCUMENT_ROOT -->
-		
-		<p>
-		 Your Public HTML directory is:
-		</p>
-		<ul>
-		 <li>
-		  <!-- tmpl_var DOCUMENT_ROOT -->
-		 </li>
-		</ul> 
-		<p>
-		 Usually, this directory is below your home directory. A good guess on 
-		 where your home directory would be located is:
-		</p>
-		<ul>
-		 <li>
-		  <!-- tmpl_var home_dir_guess -->
-		 </li>
-		</ul>
-		<p>
-		 It is suggested that you set the 
-		 <strong>
-		  $FILES 
-		 </strong>
-		 variable to be a directory that's in your home directory.
-		</p>
-		
-		<p>For example: </p> 
-		<p>
-		 <code>
-				$FILES = '<!-- tmpl_var home_dir_guess -->/dada_files';
-		 </code> 
-		</p>	
-				
-		
-	<!--/tmpl_if-->
 	
 <!--/tmpl_unless-->
 
