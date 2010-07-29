@@ -33,8 +33,8 @@ if($PROGRAM_ERROR_LOG){open (STDERR, ">>$PROGRAM_ERROR_LOG") || warn "$PROGRAM_N
 =head1 DESCRIPTION 
 
 The Config.pm file holds all the global variables in Dada Mail. It should not itself be 
-heavily edited with custom changes. Use the outside config file (.dada_config) for
-that. 
+heavily edited with custom changes - such changes will be lost whenever you upgrade. 
+Use the outside config file (.dada_config) for that. 
 
 =head1 How To Use This File and This Documentation
 
@@ -92,7 +92,16 @@ or,
  	# ... 
  ) unless scalar @SOME_ARRAY; 
 
-Remove the, C<unless> clause. 
+Remove the entire, C<unless> clause: 
+ 
+ %SOME_HASH = (
+ 	# a long list of key/value pairs
+ ); 
+
+
+ @SOME_ARRAY = (
+ 	# ... 
+ ); 
 
 If you need to set a variable in the outside config file to '0', it 
 may not work. Instead, try setting it to '2'. This is a known, and embarrassing, 
@@ -101,7 +110,7 @@ issue.
 Currently, the C<$PROGRAM_ERROR_LOG> variable cannot be set in the outside config 
 file - you'll need to set it in here. 
 
-=head1 How to Set Up, Install and Configure Dada MAil 
+=head1 How to Set Up, Install and Configure Dada Mail 
 
 Complete installation instructions may be found here: 
 
@@ -238,7 +247,7 @@ $FILES ||= '/home/youraccount/dada_files';
 =head2 $MAILPROG
 
 This variable should hold  the Absolute Path of your sendmail-like program.
- 
+
 If you don't have sendmail, this script will still work great,
 but you may have to fiddle around with the "$MAIL_SETTINGS"
 variable under the "additional settings" after the first four 
@@ -5081,7 +5090,7 @@ My name is Justin Simoni
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
+Copyright (c) 1999-2010 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
