@@ -45,30 +45,9 @@ L<http://dadamailproject.com>
 
 =head1 INSTALLING 
 
-This release of Dada Mail needs 4 variables changed in the Config.pm 
-file that's located in the DADA directory. Installation instructions are 
-available at: 
+For now, please use: 
 
-L<http://dadamailproject.com/installation/>
-
-Detailed configuration instructions are found inside the Config.pm:
-
-L<http://dadamailproject.com/support/documentation/Config.pm.html>
-
-Advanced Installation Instructions: 
-
-L<http://dadamailproject.com/purchase/sample_chapter-dada_mail_setup.html>
-
-=head1 UPGRADING
-
-See: 
-
-L<http://dadamailproject.com/support/documentation/UPGRADE_README.pod.html>
-
-In a nutshell, upgrading involves moving the, "dada" directory in the cgi-bin
-and putting the new version of the, "dada" directory. ALL files have to be
-replaced - don't make exceptions. Finally, configure the new copy similar 
-to the old copy. 
+http://dadamailproject.com/support/documentation-4_2_0-beta2/features-dada_mail_installer.pod.html
 
 =head1 DOCUMENTATION
 
