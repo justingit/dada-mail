@@ -73,29 +73,111 @@ __PACKAGE__->run()
   unless caller();
 
 sub run {
-	
-	# Old-school switcheroo
-    my %Mode = (
+    if ( !$ENV{GATEWAY_INTERFACE} ) {
+        &cl_run();
+    }
+    else {
 
-        install_dada             => \&install_dada,
-        scrn_configure_dada_mail => \&scrn_configure_dada_mail,
-        check                    => \&check,
-		move_installer_dir       => \&move_installer_dir, 
+        # Old-school switcheroo
+        my %Mode = (
 
-    );
-    my $flavor = $q->param('f');
-    if ($flavor) {
-        if ( exists( $Mode{$flavor} ) ) {
-            $Mode{$flavor}->();    #call the correct subroutine
+            install_dada             => \&install_dada,
+            scrn_configure_dada_mail => \&scrn_configure_dada_mail,
+            check                    => \&check,
+            move_installer_dir       => \&move_installer_dir,
+
+        );
+        my $flavor = $q->param('f');
+        if ($flavor) {
+            if ( exists( $Mode{$flavor} ) ) {
+                $Mode{$flavor}->();    #call the correct subroutine
+            }
+            else {
+                &scrn_configure_dada_mail;
+            }
         }
         else {
             &scrn_configure_dada_mail;
         }
-    }
-    else {
-        &scrn_configure_dada_mail;
+
     }
 }
+sub cl_run { 
+
+	require Getopt::Long;
+    my %h = ();
+    Getopt::Long::GetOptions(
+        \%h,
+        'skip_configure_dada_files=i',
+        'program_url=s',
+        'dada_root_pass=s',
+        'dada_files_loc=s', 
+		'dada_files_dir_setup=s',
+        'backend=s',
+        'skip_configure_SQL=s',
+        'sql_dbtype=s',
+        'sql_server=s',
+        'sql_port=s',
+        'sql_database=s',
+        'sql_username=s',
+        'sql_password=s'
+    );
+
+
+	foreach(keys %h){ 
+		$q->param($_, $h{$_});
+	}
+
+	# Uh, so we don't have to re-type this on the cl: 
+	if(exists($h{'dada_root_pass'})){ 
+		$q->param('dada_root_pass_again',$h{dada_root_pass}); 
+	}
+	my ( $check_status, $check_errors ) = check_setup();
+    print "Checking Setup...\n"; 
+	if($check_status == 0){ 		
+		print "Problems were found:\n\n";
+	    foreach(keys %$check_errors){ 
+			if($check_errors->{$_} == 1){ 
+				print "Error: $_\n"; 
+			}
+		}
+		print "\n" . $Big_Pile_Of_Errors . "\n";
+		exit;
+			
+	}
+	else { 
+		print "Paramaters passed look great! Configuring...\n"; 
+
+	   my $install_dada_files_loc = install_dada_files_dir_at_from_params(); 
+	   my ( $install_log, $install_status, $install_errors ) = install_dada_mail(
+	        {
+				-skip_configure_dada_files  => $q->param('skip_configure_dada_files') || 0,
+	            -program_url                => $q->param('program_url'),
+	            -dada_root_pass             => $q->param('dada_root_pass'),
+				-dada_files_dir_setup       => $q->param('dada_files_dir_setup'), 
+				-install_dada_files_loc     => $install_dada_files_loc, 
+	            -backend                    => $q->param('backend'),
+				-skip_configure_SQL         => $q->param('skip_configure_SQL') || 0, 
+	            -sql_dbtype                 => $q->param('backend'),
+	            -sql_server                 => $q->param('sql_server'),
+	            -sql_port                   => sql_port_from_params(),
+	            -sql_database               => $q->param('sql_database'),
+	            -sql_username               => $q->param('sql_username'),
+	            -sql_password               => $q->param('sql_password'),
+	        }
+	    );
+
+		print $install_log . "\n"; 
+		if($install_status == 0){ 
+			print "Problems with configuration:\n\n"; 
+			foreach(keys %$install_errors){ 
+				print $_ . " => " . $install_errors->{$_} . "\n"; 
+			}
+		}
+	
+	}
+}
+
 
 
 sub scrn_upgrade_dada {
@@ -240,7 +322,6 @@ sub scrn_install_dada_mail {
 			-skip_configure_dada_files  => $q->param('skip_configure_dada_files') || 0,
             -program_url                => $q->param('program_url'),
             -dada_root_pass             => $q->param('dada_root_pass'),
-            #-dada_files_loc            => $q->param('dada_files_loc'),
 			-dada_files_dir_setup       => $q->param('dada_files_dir_setup'), 
 			-install_dada_files_loc     => $install_dada_files_loc, 
             -backend                    => $q->param('backend'),
@@ -336,7 +417,7 @@ sub install_dada_mail {
 	    }
 
 	    # Creating the needed SQL tables
-	    if ( $args->{-backend} eq 'default' ) {
+	    if ( $args->{-backend} eq 'default' || $args->{-backend} eq '' ) {
 	        # ...
 	    }
 	    else {
@@ -535,7 +616,7 @@ sub create_dada_config_file {
                 dada_files_dir         => $loc,
 				Big_Pile_Of_Errors     => $Big_Pile_Of_Errors, 
 				Trace                  => $Trace, 
-                ( $args->{-backend} ne 'default' )
+                ( $args->{-backend} ne 'default' || $args->{-backend} eq '' )
                 ? (
                     backend      => $args->{-backend},
                     sql_server   => $args->{-sql_server},
@@ -551,7 +632,7 @@ sub create_dada_config_file {
     );
 
     # SQL Stuff.
-    if ( $args->{-backend} eq 'default' ) {
+    if ( $args->{-backend} eq 'default' || $args->{-backend} eq '' ) {
 
         # ...
     }
@@ -645,7 +726,6 @@ sub sql_port_from_params {
 
 sub check_setup {
     my $errors = {};
-
     if (
         $q->param('skip_configure_dada_files') == 1
         && test_complete_dada_files_dir_structure_exists(
@@ -686,7 +766,7 @@ sub check_setup {
             $errors->{pass_no_match} = 0;
         }
 
-        if ( $q->param('backend') eq 'default' ) {
+        if ( $q->param('backend') eq 'default' || $q->param('backend') eq '' ) {
             $errors->{sql_connection} = 0;
         }
         else {
@@ -814,6 +894,10 @@ sub hack_in_scriptalicious {
 sub test_can_create_dada_files_dir {
 
     my $dada_files_dir = shift;
+	# blank?!
+	if($dada_files_dir eq ''){ 
+		return 1; 
+	}
     $dada_files_dir =
       make_safer( $dada_files_dir . '/' . $Dada_Files_Dir_Name );
 
