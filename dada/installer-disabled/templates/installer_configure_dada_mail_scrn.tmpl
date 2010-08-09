@@ -1,3 +1,5 @@
+<!-- begin installer_configure_dada_mail_scrn.tmpl --> 
+
 <h1>Install <!-- tmpl_var PROGRAM_NAME --></h1> 
 	
 <!-- tmpl_if errors --> 
@@ -268,29 +270,36 @@ If using either the SQL backends, make sure to create a new database before conf
 
 <!-- tmpl_if can_use_DBI --> 
 <div id="sql_info" style="display:none;"> 
-<fieldset> 
-	<legend>SQL Information</legend> 
-	<!-- tmpl_if error_sql_table_populated --> 
-		<ul> 
-		<li> 
-		<p class="error">
-			The SQL information below is correct, but there are tables in this database
-			that correspond to the tables that Dada Mail requires.
-		</p>
-		<p>
-			<input type="checkbox" name="skip_configure_SQL" id="skip_configure_SQL" value="1" /><label>I know these tables already exists. </label><br />
-			Use these existing tables, instead of making new ones.
-		</p> 
-		
+<fieldset>
+	<legend>SQL Information</legend> <!-- tmpl_if error_sql_table_populated -->
+	<ul>
+		<li>
+			<p class="error">
+				The SQL information below is correct, but there are tables in this database that correspond to the tables that Dada Mail requires.
+			</p>
+			<p>
+				<input type="checkbox" name="skip_configure_SQL" id="skip_configure_SQL" value="1"><label>I know these tables already exists.</label><br>
+				Use these existing tables, instead of making new ones.
+			</p>
 		</li>
-		</ul> 
-	<!-- /tmpl_if --> 
-	<p>Server: <input type="text" name="sql_server" value="localhost" /><br />
-	<p>Database: <input type="text" name="sql_database" /><br />
-	<p>Port: <input type="text" name="sql_port" value="auto" /><br />
-	<p>Username: <input type="text" name="sql_username" /><br />
-	<p>Password: <input type="text" name="sql_password" /><br />
-</fieldset> 
+	</ul><!-- /tmpl_if -->
+	<p>
+		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_server">Server:</label> <input type="text" name="sql_server" id="sql_server" value="localhost" />
+	</p>
+	<p>
+		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_database">Database:</label> <input type="text" name="sql_database" id="sql_database" />
+	</p>
+	<p>
+		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_port">Port:</label> <input type="text" name="sql_port" id="sql_port" value="auto" />
+	</p>
+	<p>
+		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_username">Username:</label> <input type="text" name="sql_username" id="sql_username"/>
+	</p>
+	<p>
+		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_password">Password:</label> <input type="text" name="sql_password" id="sql_password"/> 
+	</p>
+</fieldset>
+
 </div> 
 
 
@@ -318,4 +327,6 @@ If using either the SQL backends, make sure to create a new database before conf
 
 </form> 
 
-<!-- tmpl_include install_debug_info.tmpl --> 
+<!-- tmpl_include install_debug_info_widget.tmpl --> 
+
+<!-- end installer_configure_dada_mail_scrn.tmpl --> 
