@@ -63,7 +63,7 @@ print pre(`chmod 777 dada/DADA/Config.pm`);
 my $installer_loc     = 'dada/installer-disabled';
 my $new_installer_loc = 'dada/installer';
 
-print p("Enabling installer at $installer_loc by moving it to, \n");
+print p("Enabling installer at $installer_loc by moving it to, $new_installer_loc\n");
 
 print pre(`mv $installer_loc $new_installer_loc`);
 
