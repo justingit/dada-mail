@@ -18,8 +18,8 @@ BEGIN {
     }
 }
 use lib qw(
-  ../
-  ../DADA/perllib
+  ../../
+  ../../DADA/perllib
 );
 
 # Init my CGI obj. 
@@ -120,13 +120,19 @@ sub cl_run {
         'sql_port=s',
         'sql_database=s',
         'sql_username=s',
-        'sql_password=s'
+        'sql_password=s',
+		'help',
     );
 
 
 	foreach(keys %h){ 
 		$q->param($_, $h{$_});
 	}
+	if($h{help} == 1 || scalar(keys %h) == 0){ 
+		cl_help(); 
+		exit;
+	}
+	
 
 	# Uh, so we don't have to re-type this on the cl: 
 	if(exists($h{'dada_root_pass'})){ 
@@ -178,6 +184,19 @@ sub cl_run {
 	}
 }
 
+sub cl_help { 
+	
+	print DADA::Template::Widgets::screen(
+        {
+            -screen => 'cl_help_scrn.tmpl',
+            -vars => {
+
+            },
+        }
+    );
+	
+}
+
 
 
 sub scrn_upgrade_dada {
@@ -227,7 +246,7 @@ sub scrn_configure_dada_mail {
     );
     $scrn .= DADA::Template::Widgets::screen(
         {
-            -screen => 'installer_scrn_configure_dada_mail.tmpl',
+            -screen => 'installer_configure_dada_mail_scrn.tmpl',
             -vars => {
                 program_url_guess              => program_url_guess(),
                 can_use_DBI                    => test_can_use_DBI(),
@@ -347,7 +366,7 @@ sub scrn_install_dada_mail {
 
   $scrn .= DADA::Template::Widgets::screen(
         {
-            -screen => 'installer_scrn_install_dada_mail.tmpl',
+            -screen => 'installer_install_dada_mail_scrn.tmpl',
             -vars => { 
 			 install_log                  => webify_plain_text($log), 
 			 status                       => $status, 
@@ -878,7 +897,7 @@ sub hack_in_scriptalicious {
 
     my $js = DADA::Template::Widgets::screen(
         {
-            -screen => 'installer_extra_javascript.tmpl',
+            -screen => 'installer_extra_javascript_widget.tmpl',
             -vars => { my_S_PROGRAM_URL => program_url_guess(), Self_URL => $Self_URL }
         }
     );

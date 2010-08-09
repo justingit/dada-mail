@@ -1,0 +1,96 @@
+
+
+DADA MAIL INSTALL/CONFIGURATION SCRIPT! 
+
+
+This script has a separate web and command line interface - this help covers
+the command line interface. This interface is currently very volatile and we
+would really appreciate your help in making it better. The web-based installer
+is very easy to use, the command line installer is as easy as most command line 
+utilities are (not exactly optimized for a casual user). 
+
+REQUIRED PARAMETERS:
+
+--program_url
+
+	The URL of your Dada Mail, "mail.cgi" script
+
+--dada_root_pass
+
+	The Dada Mail Root Password you'd like to use 
+	
+--dada_files_loc
+
+	The directory that the installer should create the, ".dada_files" directory 
+	under
+
+--backend
+
+	The backend you'd like to use. Can be set to use any of the following: 
+	
+	default
+		Uses the file system, as well as plaintext files and DB Files
+		
+	mysql 
+		Uses a MySQL database
+	
+	Pg
+		Uses a PostgreSQL database
+		
+If you set, --backend to either, "mysql", or, "Pg" you will also have to pass
+the following paramaters: 
+
+	--sql_server
+		SQL server
+
+	--sql_port
+		SQL port - can be set to, "auto" to choose the default port for mysql and Pg
+
+	--sql_database
+		The name of your database
+	
+	--sql_username
+		Your mysql username
+
+	--sql_password
+		Your mysql password
+
+OPTIONAL PARAMETERS
+
+If performing an partial upgrade or doing some of your installation manually, 
+you can tell Dada Mail to skip some of the tests it would usually preform, before 
+configuring Dada Mail: 
+
+--dada_files_dir_setup 
+	If you pass this parameter with a value of, "auto", you do not need to 
+	pass the,  "--dada_files_loc" parameter PROVIDED THAT you're certain that 
+	the directory it automatically discovers to create the, ".dada_files" 
+	directory structure will be correct. 
+	
+--skip_configure_SQL
+	By default, the installer will make sure the database you pass in, 
+	"--sql_database" doesn't already have the tables required for a Dada Mail
+	install. If you've already set up these tables (for example, in a previous
+	version of Dada Mail) pass this parameter with a value of, "1" to simply 
+	use the sql_* parameters you're passing, without attempting to set up 
+	the database, itself. 
+
+--skip_configure_dada_files
+	If you pass this parameter with a value of, "1", NO other parameter is
+	really required, except, "--dada_files_loc" PROVIDED that the directory 
+	you pass in that parameter has an already-set up .dada_files directory, 
+	including a valid .dada_config file. When passing this parameter, this 
+	script will simply change the, "dada/DADA/Config.pm" file to point to 
+	the already-created ".dada_files" directory. 
+		
+OTHER PARAMETERS
+
+--help
+	Displays this help doc. Use: 
+	
+		./install.cgi | less 
+		
+	(or something similar) so that the script doesm't zoom to the end.
+		
+			
+		
