@@ -1104,7 +1104,11 @@ sub test_database_has_all_needed_tables {
 	my $checks = 0; 
 	
 	foreach my $table(@tables){ 
+		
+		# Not sure why this is so non-standard between different setups...
 		$table =~ s/`//g; 
+		$table =~ s/^(.*?)\.//; #This removes something like, "database_name.table"
+		
 		if(exists($default_table_names->{$table})){ 
 			$checks++;	
 		}
