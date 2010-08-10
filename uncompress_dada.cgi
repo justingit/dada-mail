@@ -2,11 +2,11 @@
 use strict;
 
 # For information on what this script is used for, please see: 
-# http://dadamailproject.com/support/documentation-4_2_0-beta2/features-dada_mail_installer.pod.html
+# http://dadamailproject.com/support/documentation-4_2_0-rc1/features-dada_mail_installer.pod.html
 
 
 # You may have to update this, depending on the version of Dada Mail!
-my $gz = 'dada-4_2_0-beta2.tar.gz';
+my $gz = 'dada-4_2_0-rc1.tar.gz';
 
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
