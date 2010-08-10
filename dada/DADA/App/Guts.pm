@@ -81,6 +81,7 @@ require Exporter;
   message_id
   check_list_security
   user_error
+  install_dir_around
   check_setup
   SQL_check_setup
   cased
@@ -2004,6 +2005,11 @@ sub check_list_security {
 }
 
 
+sub install_dir_around { 	
+	if(-e 'installer' && -d 'installer'){ 
+		return 1; 
+	}
+}
 
 
 =pod

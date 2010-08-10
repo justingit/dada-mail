@@ -4,14 +4,11 @@
 
 =head1 Introduction
 
-For many reasons, you may want to upgrade, while also switching a Basic Installation to an Advanced Installation. 
+For many reasons, you may want to upgrade, while also switching a Basic Installation to an Advanced Installation. A big reason being, since v4.2.0 of Dada Mail, 
+we don't recommend performing a basic installation. 
 
 A B<Basic Installation> means simply changing the first four variables in the C<Config.pm> file itself. One of these variables is the C<$FILES> variable, 
 which is set to a directory where B<all> the files/directories Dada Mail creates that represent a Mailing List in Dada Mail are stored. 
-
-Instructions on installing Dada Mail using a Basic Installation can be found here: 
-
-http://dadamailproject.com/installation/installation_basic.html
 
 An B<Advanced Installation> is an installation where only one variable in the C<Config.pm> file is changed, called, C<$PROGRAM_CONFIG_FILE_DIR> and putting all other configuration changes in an outside configuration file called, C<.dada_config>. 
 

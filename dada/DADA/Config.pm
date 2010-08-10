@@ -1,153 +1,256 @@
-#---------------------------------------------------------------------#
-# If you're looking for where to configure Dada Mail, 
-# you have landed in the correct location. 
-#---------------------------------------------------------------------#
-#
-# How to install Dada Mail (easiest configuration):
-#
-# 	http://dadamailproject.com/installation/
-#---------------------------------------------------------------------#
-#
-# Advanced installation w/outside configuration file (harder, but suggested):
-#
-# 	http://dadamailproject.com/purchase/sample_chapter-dada_mail_setup.html
-#---------------------------------------------------------------------##
-# Everything you ever wanted to know about configurating Dada Mail:
-#
-#	 http://dadamailproject.com/support/documentation/Config.pm.html
-#---------------------------------------------------------------------##
-# Our Fairly-Priced Installation Services: 
-#
-#  http://dadamailproject.com/installation/request.html
-#
-# When you are ready, 
-# scroll down for the 4 variables that you need to change. 
-#
-# Follow the instructions closely and this process should be pretty 
-# easy. A few things before we get started:
-#---------------------------------------------------------------------#
-# * This is a Perl program,  so it follows certain programming 
-# conventions. You can't just  put anything in this file and expect 
-# it to work.
-#---------------------------------------------------------------------#
-# * The '#' (pound character) is used for commenting. Any line starting 
-# with this character is used to write notes and comments. It 
-# won't be seen to Perl as code and it is safe to write whatever 
-# you want with, like this: 
-# 
-# 	# This is a comment. Yeee ha. 
-#---------------------------------------------------------------------#
-# * This file has documentation embedded in itself; if you're 
-# looking at this sentence in anything other than the Config.pm file
-# itself, the documentation has been extracted and saved somewhere else. 
-# The documentation is called POD and looks like this: 
-# 
-# 	=pod 
-# 	
-# 	I am pod and I am OK.
-# 	
-# 	=cut
-# 
-# Exciting stuff, we know.
-# 
-#---------------------------------------------------------------------#
-# Lastly, words that start with a '$' (dollar sign) are variables. 
-# They're Perl code that stand for something else. You'll need to 
-# change some variables (only 4) in this file to make Dada Mail
-# work correctly. This will be the only file you'll need to change
-# out of the whole bunch. To set up Dada Mail, follow the  
-# instructions exactly. This file is HEAVILY commented to help you 
-# along your way, be sure to read all the notes! :)  Scroll down 
-# about 20 lines until you see the next group of comments to start 
-# setting up Dada Mail. 
-#---------------------------------------------------------------------#
-
-
-# Almost there! Keep scrolling down... -V
-
 package DADA::Config; 
+
+# For information on how to install Dada Mail, please see: 
+# http://dadamailproject.com/support/documentation-4_2_0-rc1/features-dada_mail_installer.pod.html
+
 require Exporter;  
-our @ISA = qw(Exporter);  
-use vars qw($VER $VERSION $PROGRAM_ROOT_PASSWORD $MAILPROG $FILES $PROGRAM_URL $S_PROGRAM_URL $PLUGIN_CONFIGS $MAIL_SETTINGS $MASS_MAIL_SETTINGS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD  $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE $SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE $SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $SUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIBED_MESSAGE  $CONFIRMATION_MESSAGE  $HTML_CONFIRMATION_MESSAGE 
-$YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE $HTML_UNSUB_CONFIRMATION_MESSAGE $HTML_SUBSCRIBED_MESSAGE $HTML_UNSUBSCRIBED_MESSAGE $HTML_SUBSCRIPTION_REQUEST_MESSAGE $ARCHIVES  $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS  $BACKUPS %BACKUP_HISTORY $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION $FCKEDITOR_URL $CKEDITOR_URL $LOG_VIEWER_PLUGIN_URL $SCREEN_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $MULTIPLE_LIST_SENDING $MULTIPLE_LIST_SENDING_TYPE $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $SUBSCRIPTION_SUCCESSFUL_COPY $MAILlING_LIST_MESSAGE $MAILlING_LIST_MESSAGE_HTML $ADMIN_MENU $NOT_ALLOWED_TO_POST_MESSAGE $NOT_ALLOWED_TO_POST_NOTICE_MESSAGE $NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT  $MAILING_FINISHED_MESSAGE $MAILING_FINISHED_MESSAGE_SUBJECT $PIN_WORD $PIN_NUM $TEXT_CSV_PARAMS @DOMAINS %SERVICES $SHOW_DOMAIN_TABLE $SHOW_SERVICES_TABLE $GOOD_JOB_MESSAGE  $NO_ONE_SUBSCRIBED  $ALLOW_ROOT_LOGIN $UNSUB_CONFIRMATION_MESSAGE $SUBSCRIPTION_REQUEST_APPROVED_MESSAGE $SUBSCRIPTION_REQUEST_DENIED_MESSAGE
-@CHARSETS @PRECEDENCES @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE @SERVICES %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $TEXT_INVITE_MESSAGE $PROFILE_ACTIVATION_MESSAGE_SUBJECT $PROFILE_ACTIVATION_MESSAGE $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT $PROFILE_RESET_PASSWORD_MESSAGE $PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT $PROFILE_UPDATE_EMAIL_MESSAGE $LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT $LIST_CONFIRM_PASSWORD_MESSAGE $LIST_RESET_PASSWORD_MESSAGE_SUBJECT $LIST_RESET_PASSWORD_MESSAGE $HTML_INVITE_MESSAGE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE 
-%SQL_PARAMS $DBI_PARAMS $PROFILE_OPTIONS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER); 
-@EXPORT_OK = qw(
-$VER $VERSION $PROGRAM_ROOT_PASSWORD $MAILPROG $FILES $PROGRAM_URL $S_PROGRAM_URL $PLUGIN_CONFIGS $MAIL_SETTINGS $MASS_MAIL_SETTINGS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD  $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE $SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE $SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $SUBSCRIPTION_NOTICE_MESSAGE  $UNSUBSCRIBED_MESSAGE  $CONFIRMATION_MESSAGE  $HTML_CONFIRMATION_MESSAGE 
-$YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE $HTML_UNSUB_CONFIRMATION_MESSAGE $HTML_SUBSCRIBED_MESSAGE $HTML_UNSUBSCRIBED_MESSAGE $HTML_SUBSCRIPTION_REQUEST_MESSAGE $ARCHIVES  $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS  $BACKUPS %BACKUP_HISTORY $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION $FCKEDITOR_URL $CKEDITOR_URL $LOG_VIEWER_PLUGIN_URL $SCREEN_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $MULTIPLE_LIST_SENDING $MULTIPLE_LIST_SENDING_TYPE  $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $SUBSCRIPTION_SUCCESSFUL_COPY $MAILlING_LIST_MESSAGE $MAILlING_LIST_MESSAGE_HTML $ADMIN_MENU $NOT_ALLOWED_TO_POST_MESSAGE $NOT_ALLOWED_TO_POST_NOTICE_MESSAGE $NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT  $MAILING_FINISHED_MESSAGE $MAILING_FINISHED_MESSAGE_SUBJECT $PIN_WORD $PIN_NUM  $TEXT_CSV_PARAMS @DOMAINS %SERVICES $SHOW_DOMAIN_TABLE $SHOW_SERVICES_TABLE $GOOD_JOB_MESSAGE  $NO_ONE_SUBSCRIBED  $ALLOW_ROOT_LOGIN $UNSUB_CONFIRMATION_MESSAGE $SUBSCRIPTION_REQUEST_APPROVED_MESSAGE $SUBSCRIPTION_REQUEST_DENIED_MESSAGE
-@CHARSETS @PRECEDENCES @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE @SERVICES %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $TEXT_INVITE_MESSAGE $PROFILE_ACTIVATION_MESSAGE_SUBJECT $PROFILE_ACTIVATION_MESSAGE $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT $PROFILE_RESET_PASSWORD_MESSAGE $PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT $PROFILE_UPDATE_EMAIL_MESSAGE  $HTML_INVITE_MESSAGE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE 
-%SQL_PARAMS $DBI_PARAMS $PROFILE_OPTIONS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER
-); 
+our @ISA =   qw(Exporter);  
+use vars     qw($VER $VERSION $PROGRAM_ROOT_PASSWORD $MAILPROG $FILES $PROGRAM_URL $S_PROGRAM_URL $PLUGIN_CONFIGS $MAIL_SETTINGS $MASS_MAIL_SETTINGS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD  $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE $SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE $SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $SUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIBED_MESSAGE  $CONFIRMATION_MESSAGE  $HTML_CONFIRMATION_MESSAGE  $YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE $HTML_UNSUB_CONFIRMATION_MESSAGE $HTML_SUBSCRIBED_MESSAGE $HTML_UNSUBSCRIBED_MESSAGE $HTML_SUBSCRIPTION_REQUEST_MESSAGE $ARCHIVES  $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS  $BACKUPS %BACKUP_HISTORY $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION $FCKEDITOR_URL $CKEDITOR_URL $LOG_VIEWER_PLUGIN_URL $SCREEN_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $MULTIPLE_LIST_SENDING $MULTIPLE_LIST_SENDING_TYPE $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $SUBSCRIPTION_SUCCESSFUL_COPY $MAILlING_LIST_MESSAGE $MAILlING_LIST_MESSAGE_HTML $ADMIN_MENU $NOT_ALLOWED_TO_POST_MESSAGE $NOT_ALLOWED_TO_POST_NOTICE_MESSAGE $NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT  $MAILING_FINISHED_MESSAGE $MAILING_FINISHED_MESSAGE_SUBJECT $PIN_WORD $PIN_NUM $TEXT_CSV_PARAMS @DOMAINS %SERVICES $SHOW_DOMAIN_TABLE $SHOW_SERVICES_TABLE $GOOD_JOB_MESSAGE  $NO_ONE_SUBSCRIBED  $ALLOW_ROOT_LOGIN $UNSUB_CONFIRMATION_MESSAGE $SUBSCRIPTION_REQUEST_APPROVED_MESSAGE $SUBSCRIPTION_REQUEST_DENIED_MESSAGE @CHARSETS @PRECEDENCES @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE @SERVICES %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $TEXT_INVITE_MESSAGE $PROFILE_ACTIVATION_MESSAGE_SUBJECT $PROFILE_ACTIVATION_MESSAGE $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT $PROFILE_RESET_PASSWORD_MESSAGE $PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT $PROFILE_UPDATE_EMAIL_MESSAGE $LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT $LIST_CONFIRM_PASSWORD_MESSAGE $LIST_RESET_PASSWORD_MESSAGE_SUBJECT $LIST_RESET_PASSWORD_MESSAGE $HTML_INVITE_MESSAGE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE  %SQL_PARAMS $DBI_PARAMS $PROFILE_OPTIONS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER); 
+@EXPORT_OK = qw($VER $VERSION $PROGRAM_ROOT_PASSWORD $MAILPROG $FILES $PROGRAM_URL $S_PROGRAM_URL $PLUGIN_CONFIGS $MAIL_SETTINGS $MASS_MAIL_SETTINGS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD  $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE $SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE $SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $SUBSCRIPTION_NOTICE_MESSAGE  $UNSUBSCRIBED_MESSAGE  $CONFIRMATION_MESSAGE  $HTML_CONFIRMATION_MESSAGE  $YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE $HTML_UNSUB_CONFIRMATION_MESSAGE $HTML_SUBSCRIBED_MESSAGE $HTML_UNSUBSCRIBED_MESSAGE $HTML_SUBSCRIPTION_REQUEST_MESSAGE $ARCHIVES  $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS  $BACKUPS %BACKUP_HISTORY $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION $FCKEDITOR_URL $CKEDITOR_URL $LOG_VIEWER_PLUGIN_URL $SCREEN_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $MULTIPLE_LIST_SENDING $MULTIPLE_LIST_SENDING_TYPE  $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $SUBSCRIPTION_SUCCESSFUL_COPY $MAILlING_LIST_MESSAGE $MAILlING_LIST_MESSAGE_HTML $ADMIN_MENU $NOT_ALLOWED_TO_POST_MESSAGE $NOT_ALLOWED_TO_POST_NOTICE_MESSAGE $NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT  $MAILING_FINISHED_MESSAGE $MAILING_FINISHED_MESSAGE_SUBJECT $PIN_WORD $PIN_NUM  $TEXT_CSV_PARAMS @DOMAINS %SERVICES $SHOW_DOMAIN_TABLE $SHOW_SERVICES_TABLE $GOOD_JOB_MESSAGE  $NO_ONE_SUBSCRIBED  $ALLOW_ROOT_LOGIN $UNSUB_CONFIRMATION_MESSAGE $SUBSCRIPTION_REQUEST_APPROVED_MESSAGE $SUBSCRIPTION_REQUEST_DENIED_MESSAGE @CHARSETS @PRECEDENCES @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE @SERVICES %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $TEXT_INVITE_MESSAGE $PROFILE_ACTIVATION_MESSAGE_SUBJECT $PROFILE_ACTIVATION_MESSAGE $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT $PROFILE_RESET_PASSWORD_MESSAGE $PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT $PROFILE_UPDATE_EMAIL_MESSAGE  $HTML_INVITE_MESSAGE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE  %SQL_PARAMS $DBI_PARAMS $PROFILE_OPTIONS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER); 
 use strict; 
- 
- 
+
+
+$PROGRAM_CONFIG_FILE_DIR = 'auto';
+
+#--------------------------------#
+# Leave the below line, alone!
+ _config_import(); # Leave alone! 
+# Leave the above line, alone!
+#--------------------------------#
+
+BEGIN {
+
+$PROGRAM_ERROR_LOG = undef;
+
+
+# Keep this next bit as-is; it's just opening the error file for writing. 
+if($PROGRAM_ERROR_LOG){open (STDERR, ">>$PROGRAM_ERROR_LOG") || warn "$PROGRAM_NAME Error: Cannot redirect STDERR, it's possible that Dada Mail does not have write permissions to this file ($PROGRAM_ERROR_LOG) or it doesn't exist! If Dada Mail cannot make this file for you, create it yourself and give it enough permissions so it may write to it: $!";}
+	# chmod(0777, $PROGRAM_ERROR_LOG); 
+}
+
+
 =pod
 
 =head1 NAME Config.pm 
 
 =head1 DESCRIPTION 
 
-The Config.pm file holds all the variables needed to make 
-global changes in Dada Mail. 
+The Config.pm file holds all the global variables in Dada Mail. It should not itself be 
+heavily edited with custom changes - such changes will be lost whenever you upgrade. 
+Use the outside config file (.dada_config) for that. 
 
-=head1 Dada Mail Set Up Instructions
+=head1 How To Use This File and This Documentation
 
-You'll need to change 4 variables to get Dada Mail up and
-running. We've numbered them and provided help on the way, so let's 
-start! People who are upgrading from previous versions will be able 
-to use most of the same variable values as they've done before. 
+Other than the variables: 
 
-=head2 $PROGRAM_ROOT_PASSWORD
+=over
 
-(1) Make a Dada Mail Root Password. This is used to Create New Lists.
-Tip -> make this somewhat obscure, and do not use "dada" or 
-"root_password" or "god" or "money" or "mail". 
+=item * $PROGRAM_CONFIG_FILE_DIR
+
+=item * $PROGRAM_ERROR_LOG
+
+=back 
+
+You should not make any changes to the variables in the, C<dada/DADA/Config.pm> file. 
+
+Rather, use the variables and inline documentation as a guide for making custom 
+changes to your own outside config file (called, C<.dada_config>) 
+
+=head2 How to place new variables in your outside config file
+
+First, double-check that the variable doesn't already exist in the outside 
+configuration file. Duplicates will simply cause headaches when editing. 
+
+Place new variables in your outside config file by simply copying the 
+variable you want to set a custom variable for and pasting that variable in 
+your outside config file. 
+
+For historical reasons, the outside config file sets the config variables by 
+simply using Perl code, instead of a configuration-specific format. This may 
+change in the future - we don't like this  technique. One problem with this 
+technique is that setting configuration variables successfully means that you will need
+to use strict and valid Perl code. This will make things harder for a casual 
+user of the program perform, successfully - and unfortunately. 
+
+Some things to be careful of: 
+
+The variables set in the C<dada/DADA/Config.pm> file use the, C<||=> operator,
+like this: 
+
+ $SOME_VARIABLE ||= 'some value'; 
+
+Replace the, C<||=> operator with the, C<=> operator, when placing it in the outside config file: 
+
+ $SOME_VARIABLE = 'some custom value'; 
+
+You may also see hashes and arrays with, C<unless> clauses at the end: 
+
+ %SOME_HASH = (
+ 	# a long list of key/value pairs
+ ) unless keys %SOME_HASH; 
+
+or, 
+
+ @SOME_ARRAY = (
+ 	# ... 
+ ) unless scalar @SOME_ARRAY; 
+
+Remove the entire, C<unless> clause: 
+ 
+ %SOME_HASH = (
+ 	# a long list of key/value pairs
+ ); 
+
+
+ @SOME_ARRAY = (
+ 	# ... 
+ ); 
+
+If you need to set a variable in the outside config file to '0', it 
+may not work. Instead, try setting it to '2'. This is a known - and embarrassing, 
+issue. 
+
+Currently, the C<$PROGRAM_ERROR_LOG> variable cannot be set in the outside config 
+file - you'll need to set it in here. 
+
+=head1 How to Set Up, Install and Configure Dada Mail 
+
+Complete installation instructions may be found here: 
+
+L<http://dadamailproject.com/installation/>
+
+Dada Mail ships with an installer that will guide you through the setup and
+configuration of Dada Mail, write a starter outside config file and generally, 
+get you up and running. 
+
+=head1 Config Variables
+
+=head1 $PROGRAM_CONFIG_FILE_DIR
+
+$PROGRAM_CONFIG_FILE_DIR holds the absolute path to the, B<directory> the outside 
+config file, named, C<.dada_config>, can be found. 
+
+By default, you'll notice that the C<$PROGRAM_CONFIG_FILE_DIR>
+variable is set to, I<auto>. If this is the case, Dada Mail will attempt 
+to look for the C<.dada_config> file in the following location: 
+
+ /home/user/.dada_files/.configs
+
+An example of a complete, usable and extendable C<.dada_config> file can be found
+in the Dada Mail distribution at: 
+
+I<dada/extras/examplees/example_dada_config.txt>
+
+You may also want to read the README for this example, located at: 
+
+I<dada/extras/examplees/example_dada_config-README.txt>
 
 =cut
 
-# Change! The Root Password below: 
-#
-$PROGRAM_ROOT_PASSWORD = 'root_password';
-#
 
 =pod
 
-Tip -> Comment the above line like this:
+=head2 $PROGRAM_ERROR_LOG
 
-	#$PROGRAM_ROOT_PASSWORD = 'root_password';
+If you want to set a specific location for all errors from Dada Mail to be 
+logged, B<$PROGRAM_ERROR_LOG> is what you want to look at. 
 
-to totally disable new list creations. If you're not going to create 
-new lists for a while, we suggest you comment that line for security 
-reasons. 
+Set this variable to, B<An absolute path, to a location of a file you want
+the error log to be>. Sounds like a mouthful - let's break it down:
 
-We also beg, plead and warn you that you really really should
-encrypt this password, by following the instructions located near the
-$ROOT_PASS_IS_ENCRYPTED variable. 
+=over
+
+=item * "An absolute path" -  the path to a resource on the server, from the server's perspective. (begin geekery:)
+
+In a Unix environment, an absolute path starts with, "B</>", also known as the, "root" directory and moves
+down, like an upside-down tree. Example of some absolute paths: 
+
+=over
+
+=item * /home/myaccount
+
+an example of the absolute path to my home directory
+
+=item * /home/myaccount/dada_files
+
+an example of the absolute path to where I've set the, B<$FILES> variable to (just as example). 
+
+So, if you've set the B<$FILES> variable correctly, you already know what absolute paths are. You see? You're smarter than you thought. 
+
+=back
+
+=item * "to a location of a file you want the error log to be"
+
+So what's , "an error log"? It's just a plain text file - that's it, so set the B<$PROGRAM_ERROR_LOG> variable to an absolute path to a plaintext file. Easy enough. As to, "I<what> location"? Well, if you've set the B<$FILES> variable to an absolute path of a directory (per directions), use that as a starting point, and just specify an exact file in that directoy - easy! 
+
+=back
+
+So, if I set B<$FILES> to: 
+
+ $FILES = '/home/myaccount/dada_files'; 
+
+set, B<$PROGRAM_ERROR_LOG> to: 
+
+ $PROGRAM_ERROR_LOG = 'home/myaccount/dada_files/errors.txt'; 
+
+and you're done. 
+
+B<Note!> This B<WILL NOT> work: 
+ 
+ $PROGRAM_ERROR_LOG = $FILES . '/errors.txt'; 
+
+So, don't do that. 
+
+Also, you cannot set this variable in an outside configuration file (.dada_config), it has to be set in the Config.pm file. 
+
+Don't create the file beforehand - you won't need to. It'll be created automatically for you, as long as the path you set in this variable is to a place Dada Mail can actually write to. 
+
+Finally, just to clarify, the program can't automatically set a error log, since there may be problems with the program, before it's able to be fully interpreted, so we have to hard code it, that's why there's this variable. 
+
+=cut
+
+
+
+=head1 Basic Configuration Variables
+
+=head2 $PROGRAM_ROOT_PASSWORD
+
+The $PROGRAM_ROOT_PASSWORD  is used to create new mailing lists and also may
+be used to log into any existing mailing list. 
+
+=cut
+
+
+
+$PROGRAM_ROOT_PASSWORD ||= 'root_password';
+
+
+
+=pod
+
+THE $PROGRAM_ROOT_PASSWORD variable should be encrypted. Instructions to do so 
+can be found in the documentation for the, $ROOT_PASS_IS_ENCRYPTED variable. 
 
 
 =head2 $FILES
 
-(2) What is the Absolute Path the lists are going to be stored in? 
-It's a good idea to store this information somewhere OTHER than under 
-your public_html directory, to guarantee that no list information can 
-be seen via a Web browser. You may have to chmod 777 this directory, 
-or your cgi script won't be able to write new files to it. 777 is very 
-open to outside eyes, so if you can, always set this to the minimum 
-permission needed! 
+$FILES holds the directory you want your mailing list subscribers, schedules and a few
+obscure files to be saved in. 
 
 =cut
 
-# Change! The absolute path to where your list information is saved  below:
-#
-$FILES = '/home/youraccount/dada_files';
-#
+
+
+$FILES ||= '/home/youraccount/dada_files';
+
+
 
 =pod
 
 =head2 $MAILPROG
 
-(3) What is the Absolute Path of your mail program?
-To find out, type in "which sendmail" in a telnet session.
+This variable should hold  the Absolute Path of your sendmail-like program.
+
 If you don't have sendmail, this script will still work great,
 but you may have to fiddle around with the "$MAIL_SETTINGS"
 variable under the "additional settings" after the first four 
@@ -157,44 +260,28 @@ to be able to use it.
 
 =cut
 
-# Change! Where you mail program is (you may not need to!) below:
-# 
-$MAILPROG = '/usr/sbin/sendmail';  
-#
+
+
+$MAILPROG ||= '/usr/sbin/sendmail';  
+
+
 
 =pod
 
 =head2 $PROGRAM_URL
 
-(4) What is the URL of the mail.cgi script? 
+This variable holds the  URL of the mail.cgi script.
+
 This is the address of the mail.cgi script (not this file!), 
 so when you're all done setting up the script, you'll have to go 
 here to make your first list. 
 
 =cut
 
-# Change! The URL to your Dada Mail below:
-#
-$PROGRAM_URL ='http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi';
-#
 
 
-# This variable is talked about in length later in this file. 
-# 
-$PROGRAM_CONFIG_FILE_DIR = 'auto'; 
+$PROGRAM_URL ||='http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi';
 
-#
-#
-#
-#
-#
-#
-#
-#--------------------------------#
-# Leave the below line, alone!
- _config_import(); # Leave alone! 
-# Leave the above line, alone!
-#--------------------------------#
 
 
 =pod
@@ -389,7 +476,6 @@ $DBI_PARAMS ||= {
 	# perlunicode. The default is for the UTF-8 flag to be turned off.
 	#
 		sqlite_unicode  => 1,
-	#	unicode => 1, 
 		
 };
 
@@ -1343,90 +1429,6 @@ $DEBUG_TRACE ||= {
  
 };
 
-
-
-
-=pod
-
-=head2 $PROGRAM_ERROR_LOG
-
-If you want to set a specific location for all errors from Dada Mail to be 
-logged, B<$PROGRAM_ERROR_LOG> is what you want to look at. 
-
-Set this variable to, B<An absolute path, to a location of a file you want
-the error log to be>. Sounds like a mouthful - let's break it down:
-
-=over
-
-=item * "An absolute path" -  the path to a resource on the server, from the server's perspective. (begin geekery:)
-
-In a Unix environment, an absolute path starts with, "B</>", also known as the, "root" directory and moves
-down, like an upside-down tree. Example of some absolute paths: 
-
-=over
-
-=item * /home/myaccount
-
-an example of the absolute path to my home directory
-
-=item * /home/myaccount/dada_files
-
-an example of the absolute path to where I've set the, B<$FILES> variable to (just as example). 
-
-So, if you've set the B<$FILES> variable correctly, you already know what absolute paths are. You see? You're smarter than you thought. 
-
-=back
-
-=item * "to a location of a file you want the error log to be"
-
-So what's , "an error log"? It's just a plain text file - that's it, so set the B<$PROGRAM_ERROR_LOG> variable to an absolute path to a plaintext file. Easy enough. As to, "I<what> location"? Well, if you've set the B<$FILES> variable to an absolute path of a directory (per directions), use that as a starting point, and just specify an exact file in that directoy - easy! 
-
-=back
-
-So, if I set B<$FILES> to: 
-
- $FILES = '/home/myaccount/dada_files'; 
-
-set, B<$PROGRAM_ERROR_LOG> to: 
-
- $PROGRAM_ERROR_LOG = 'home/myaccount/dada_files/errors.txt'; 
-
-and you're done. 
-
-B<Note!> This B<WILL NOT> work: 
- 
- $PROGRAM_ERROR_LOG = $FILES . '/errors.txt'; 
-
-So, don't do that. 
-
-Also, you cannot set this variable in an outside configuration file (.dada_config), it has to be set in the Config.pm file. 
-
-Don't create the file beforehand - you won't need to. It'll be created automatically for you, as long as the path you set in this variable is to a place Dada Mail can actually write to. 
-
-Finally, just to clarify, the program can't automatically set a error log, since there may be problems with the program, before it's able to be fully interpreted, so we have to hard code it, that's why there's this variable. 
-
-
-=cut
-
-BEGIN {
-
-# Type in the absolute path of the file you want to make as your 
-# error log for Dada Mail.
-# You CANNOT have this variable in an outside config file - 
-# it MUST be set here. 
-
-$PROGRAM_ERROR_LOG = undef;
-
-# Keep this next bit as-is; it's just opening the error file for writing. 
-if($PROGRAM_ERROR_LOG){open (STDERR, ">>$PROGRAM_ERROR_LOG") 
-	|| warn "$PROGRAM_NAME Error: Cannot redirect STDERR, it's possible that Dada Mail does not have write permissions to this file ($PROGRAM_ERROR_LOG) or it doesn't exist! If Dada Mail cannot make this file for you, create it yourself and give it enough permissions so it may write to it: $!";
-	}
-	# chmod(0777, $PROGRAM_ERROR_LOG); 
-	# uncomment the above line, if the user that runs Dada Mail in your web 
-	# browser is different than what's used to run Dada Mail via something 
-	# like a cronjob. If you're not using a cronjob or running anything of 
-	# Dada Mail via the commandline, don't worry about uncommenting this line. 
-}
 
 =pod 
 
@@ -4811,7 +4813,7 @@ and to say that you've got the freshest tools on the Web.
 
 
 $VERSION = 4.1.0; 
-$VER     = '4.1.0 Stable 06/09/10';
+$VER     = '4.2.0 Release Candidate 1';
 
 
 #
@@ -4969,58 +4971,7 @@ $GIVE_PROPS_IN_SUBSCRIBE_FORM = 1;
 #
 
 
-=pod
 
-=head1 $PROGRAM_CONFIG_FILE_DIR
-
-This is how you can set all the variables located in the Config.pm 
-module outside of the module itself. Why would you want to do that? 
-It makes Dada Mail more upgradable: every time you upgrade Dada Mail 
-you don't have to tweak this file (or tweak it only slightly); you 
-just throw up the new distro and away you go! Now, Dada Mail finds 
-this external config file in a bunch of ways. 
-
-You can implicitly set the B<directory> it lives in by changing the 
-C<$PROGRAM_CONFIG_FILE_DIR> variable that lives inside the Config.pm 
-module. Wherever the external config file lives, it B<needs> to be 
-called I<.dada_config> 
-
-By default, you'll notice that the C<$PROGRAM_CONFIG_FILE_DIR>
-variable is set to, I<auto>. If this is the case, Dada Mail will attempt 
-to look for the C<.dada_config> file in the following location: 
-
- /home/user/.dada_files/.configs
-
-Where, C</home/user> is your home directory. This means that if you have set up 
-Dada Mail using the advanced installation instructions
-
-L<http://dadamailproject.com/purchase/sample_chapter-dada_mail_setup.html>
-
-and Dada Mail can find your home directory automatically, you won't have to
-change a thing in the Config.pm file. 
-
-An example of a .dada_config file would look like this: 
-
- $PROGRAM_ROOT_PASSWORD  = 'root_password';
- $FILES                  = '/home/home_dir/dada_lists_dir';
- $MAILPROG               = '/usr/lib/sendmail';  
- $PROGRAM_URL            = 'http://yoursite.com/cgi-bin/dada/mail.cgi';
-
-Pretty much any variable, array or hash can be saved in the 
-.dada_config file, as long as it's not set inside a BEGIN{} block, 
-which leaves out $PROGRAM_ERROR_LOG and @AnyDBM_File::ISA 
-Treat .dada_config as a file that gets eval() right into Config.pm 
-because, well, that's what happens. Because of this, great care should 
-be made in where you put I<.dada_config>
-
-The B<$PROGRAM_CONFIG_FILE_DIR> is located at the top of the Config.pm 
-file, right after the first 4 variables for easy getting-at and 
-fumbling.
-
-If you need to set a variable in the outside config file to '0', it 
-may not work. Instead, try setting it to '2'.
-
-=cut
 
 
 
@@ -5142,7 +5093,7 @@ My name is Justin Simoni
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
+Copyright (c) 1999-2010 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

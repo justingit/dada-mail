@@ -1,0 +1,104 @@
+<!-- begin installer_install_dada_mail_scrn.tmpl --> 
+
+<fieldset> 
+<legend>
+	<a href="#" onclick="toggleDisplay('install_log');return false;">+/-</a> Installation Log:
+</legend>
+<div id="install_log" style="display:none"> 
+	<!-- tmpl_var install_log -->
+</div> 
+ 
+</fieldset> 
+
+
+ <h1>Almost Done!</h1> 
+
+<!-- tmpl_if error_cant_edit_config_dot_pm --> 
+
+	<form> 
+	<p>
+		You'll have to manually edit your, <strong><em>dada/DADA/Config.pm</em></strong> file. For security reasons, 
+		this installer cannot edit it, itself. 
+	</p> 
+	
+	<p>Find this line in the source code of the <strong><em>dada/DADA/Config.pm</em></strong> file: </p> 
+	
+	<input type="text" class="full" value="$PROGRAM_CONFIG_FILE_DIR = 'auto';" />
+	
+	<p>
+		Change it to:  
+	</p> 
+	
+	<input type="text" class="full" value="$PROGRAM_CONFIG_FILE_DIR = '<!-- tmpl_var install_dada_files_loc -->/<!-- tmpl_var Dada_Files_Dir_Name -->/.configs';" /> 
+
+	
+	<p>
+		And save the copy of the <strong><em>dada/DADA/Config.pm</em></strong> file on your hosting account. 
+	</p> 
+
+
+<!-- /tmpl_if --> 
+
+ <h2>Important!</h2> 
+
+<p>
+	Rename/Remove the, <em>dada/<strong>installer</strong></em> directory! <!-- tmpl_var PROGRAM_NAME --> will not be enabled 
+	without this directory being removed or renamed. 
+</p> 
+
+<form> 
+<div style="text-align:center"> 
+<input type="button" value="Try Moving the, 'dada/installer' Directory and Disabling the, 'install.cgi' script" class="cautionary" onClick="move_installer_dir();" />	
+</div> 
+</form> 
+
+<div id="move_results" style="display:none"> 
+
+
+</div> 
+
+
+
+<h2>Additional Configuration?</h2> 
+
+<p>If you want to perform any additional configuration, your outside config file is located at, </p> 
+
+<p><code>
+<!-- tmpl_var install_dada_files_loc -->/<!-- tmpl_var Dada_Files_Dir_Name -->/.configs/.dada_config
+</code></p> 
+
+</form> 
+	
+
+
+
+<!-- tmpl_if status --> 
+
+
+<h1>Ready?</h1> 
+
+
+<form action="<!-- tmpl_var submitted_PROGRAM_URL -->"> 
+	<div style="text-align:center"> 
+		<input type="submit" class="processing" value="Start Working With <!-- tmpl_var PROGRAM_NAME -->!" />
+	</div>	
+</form>
+
+
+<!-- tmpl_else --> 
+	<h1>BIG PROBLEMS</h1> 
+	
+	<p>Problems with the installation - look in the Installation Log for clues.</p> 
+	<p>
+		Please report errors this install has encountered to the 
+		<a href="http://dadamailproject.com/support/boards/"> 
+			Dada Mail Support Boards
+		</a>
+	</p> 
+	
+<!-- /tmpl_if -->
+
+
+<!-- tmpl_include install_debug_info_widget.tmpl --> 
+
+<!-- end installer_install_dada_mail_scrn.tmpl --> 

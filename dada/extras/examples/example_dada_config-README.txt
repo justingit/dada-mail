@@ -1,15 +1,8 @@
 How to use the example_dada_config.txt
 
-The outside config file is part of the advanced installation of Dada Mail. 
-
-See: 
-
-http://dadamailproject.com/installation/installation_advanced.html
-
 The, "example_dada_config.txt" is an example of a .dada_config file, with many 
 of the commonly used items already inside, including setting up Dada Mail
-for an SQL backend, setting up Dada Mail for the bounce handler, various plugins
-and extensions, as well as tweaking the admin control panel left hand menu. 
+for an SQL backend, setting up Dada Mail for the bounce handler, various plugins and extensions, as well as tweaking the admin control panel left hand menu. 
 
 You'll want to either copy/paste the contents of the, "example_dada_config.txt"
 file into your own .dada_config file, OR, copy this file rename it, ".dada_config"
