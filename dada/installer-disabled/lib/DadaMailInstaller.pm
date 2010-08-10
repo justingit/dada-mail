@@ -18,8 +18,8 @@ BEGIN {
     }
 }
 use lib qw(
-  ../../
-  ../../DADA/perllib
+  ../
+  ../DADA/perllib
 );
 
 # Init my CGI obj. 
