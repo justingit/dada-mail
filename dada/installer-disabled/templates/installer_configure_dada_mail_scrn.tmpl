@@ -12,39 +12,53 @@
 <!-- /tmpl_if --> 
 
 <!-- tmpl_if lists_available --> 
-<h3>Warning!</h3> 
-<p>At least with the current setup you have, there are already mailing lists available via <!-- tmpl_var PROGRAM_NAME -->.</p> 
 
-<p>Reconfiguring <!-- tmpl_var PROGRAM_NAME --> could potentially lose these lists. </p> 
+	<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
 
-<p>Please only continue with the installation/configuration, if you're sure you know what you're doing. </p> 
+	<h3>Warning!</h3> 
+	<p>At least with the current configuration you have, there are already mailing lists available via <!-- tmpl_var PROGRAM_NAME -->.</p> 
+
+	<p>Reconfiguring <!-- tmpl_var PROGRAM_NAME --> could potentially lose these lists. </p> 
+
+	<p>Please only continue with this installation/configuration, if you're sure you know what you're doing. </p> 
 	 
+	</div> 
 
 <!-- /tmpl_if --> 
 
-<!-- tmpl_if error_cant_read_config_dot_pm --> 
-<h3>Warning!</h3>
 
-<p class="error"> 
-    <!-- tmpl_var PROGRAM_NAME --> can't read your, <em>dada/DADA/Config.pm</em> file.
-</p>
-<p class="error"> 
-	You may still perform this installation, but you may have to edit parts of the <em>dada/DADA/Config.pm</em>
-	file yourself. (We'll let you know, where.)
-</p>
+
+<!-- tmpl_if error_cant_read_config_dot_pm --> 
+
+	<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+
+
+	<h3>Warning!</h3>
+
+	<p> 
+	    <!-- tmpl_var PROGRAM_NAME --> can't read your, <em>dada/DADA/Config.pm</em> file.
+	</p>
+	<p> 
+		You may still perform this installation, but you may have to edit parts of the <em>dada/DADA/Config.pm</em>
+		file yourself. (We'll let you know, where.)
+	</p>
+	</div> 
 
 <!-- /tmpl_if --> 
 <!-- tmpl_if error_cant_write_config_dot_pm --> 
 
+<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+
+
 <h3>Warning!</h3> 
-<p class="error"> 
+<p> 
 	<!-- tmpl_var PROGRAM_NAME --> won't be able to write to edit your <em>dada/DADA/Config.pm</em> file itself.
 	</p> 
-	<p class="error"> 
+	<p> 
 	You may still perform this installation, but you may have to edit parts of the <em>dada/DADA/Config.pm</em>
 	file yourself. (We'll let you know, where.)
 </p>
-<hr /> 
+</div> 
 <!-- /tmpl_if --> 
 
 <!-- tmpl_if comment --> 
@@ -67,7 +81,7 @@
 		<ul> 
 		<li>
 		<p class="error"> 
-		 Will not be able to create, <em><!-- tmpl_var install_dada_files_dir_at -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em>
+		 Can not create, <em><!-- tmpl_var install_dada_files_dir_at -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em>
 		</p>
 		</li>
 		</ul>
@@ -79,18 +93,17 @@
 		<p class="error"> 
 			The directory, <em><!-- tmpl_var dada_files_loc -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em> already exists.
 		</p>
-		</li>
+
 		<!-- tmpl_if test_complete_dada_files_dir_structure_exists --> 
-			<li>
 				<p>
 				<input type="checkbox" name="skip_configure_dada_files"	id="skip_configure_dada_files" value="1" onClick="ToggleConfigurationOptions();" /> 
-				<label for="skip_configure_dada_files">I know that this,  &quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; already exists</label> <br /> 
+				<label for="skip_configure_dada_files">I know that the,  &quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; directory already exists. Please:</label> <br /> 
 				<ul> 
 					<li>
 						<p>Use the existing directory structure and configuration file, ignoring the configuration below. 
 						</p></li>
 						<li><p>I understand no checks are done to make sure that the current  setup is correct!)</p></li> 
-			</li>
+					</ul>
 		<!-- /tmpl_if --> 
 		
 		</ul> 
@@ -125,7 +138,7 @@
 	  <input type="radio"  id="dada_files_dir_setup_manual" name="dada_files_dir_setup" value="manual" onChange="Toggle_dada_files_dirOptions(); return false;">
 	<label for="dada_files_dir_setup_manual"> 
 	 MANUAL.
-	</label>  Explicitly set the Absolute Path to where the <em>.dada_files</em> directory should be installed:</p>
+	</label>  Explicitly set the Absolute Path to where the <em><strong>.dada_files</strong></em> directory should be installed:</p>
 
 	<div id="manual_dada_files_dir_setup">
 	<fieldset> 

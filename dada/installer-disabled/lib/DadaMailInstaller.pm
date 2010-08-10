@@ -280,9 +280,9 @@ sub scrn_configure_dada_mail {
                 dada_files_loc                 => $q->param('dada_files_loc') || '',
                 error_root_pass_is_blank       => $q->param('error_root_pass_is_blank')|| 0,
                 error_pass_no_match            => $q->param('error_pass_no_match') || 0,
-                error_program_url_is_blank     =>$q->param('error_program_url_is_blank') || 0,
+                error_program_url_is_blank     => $q->param('error_program_url_is_blank') || 0,
                 error_create_dada_files_dir    => $q->param('error_create_dada_files_dir')  || 0,
-                error_dada_files_dir_exists    =>  $q->param('error_dada_files_dir_exists') || 0,
+                error_dada_files_dir_exists    => $q->param('error_dada_files_dir_exists') || 0,
                 error_sql_connection           => $q->param('error_sql_connection') || 0,
                 error_sql_table_populated      => $q->param('error_sql_table_populated') || 0,
                 skip_configure_SQL             => $q->param('skip_configure_SQL') || 0, 
@@ -1186,6 +1186,11 @@ sub test_database_empty {
         return 1;
     }
 
+}
+
+sub test_current_dada_dot_config_file_validates { 
+	my $config_file = shift; 
+	
 }
 
 sub move_installer_dir_ajax { 
