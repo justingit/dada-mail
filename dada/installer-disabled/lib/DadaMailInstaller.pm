@@ -32,17 +32,27 @@ $q = decode_cgi_obj($q);
 
 
 # These are script-wide variables
-# $Self_URL may need ot be set manually - but I'm hoping not. 
+#
+# $Self_URL may need not be set manually - but I'm hoping not. 
 # If the script doesn't post properly, go ahead and configure it manually
+#
 my $Self_URL            = $q->url;
+
 # You'll normally not want to change this, but I leave it to you to decide
+#
 my $Dada_Files_Dir_Name = '.dada_files';
+
 # It irritates me to use a weird, relative path - I may want to try to make this 
 # an abs. path via File::Spec (or, whatever) 
+#
 my $Config_LOC          = '../DADA/Config.pm';
+
 # Save the errors this creates in a variable
+#
 my $Big_Pile_Of_Errors  = undef; 
+
 # Show these errors in the web browser? 
+#
 my $Trace               = 0; 
 
 # These are strings we look for in the example_dada_config.tmpl file which 
@@ -84,7 +94,7 @@ sub run {
             install_dada             => \&install_dada,
             scrn_configure_dada_mail => \&scrn_configure_dada_mail,
             check                    => \&check,
-            move_installer_dir       => \&move_installer_dir,
+            move_installer_dir_ajax  => \&move_installer_dir_ajax,
 
         );
         my $flavor = $q->param('f');
@@ -115,7 +125,6 @@ sub cl_run {
 		'dada_files_dir_setup=s',
         'backend=s',
         'skip_configure_SQL=s',
-        'sql_dbtype=s',
         'sql_server=s',
         'sql_port=s',
         'sql_database=s',
@@ -124,7 +133,7 @@ sub cl_run {
 		'help',
     );
 
-
+ 
 	foreach(keys %h){ 
 		$q->param($_, $h{$_});
 	}
@@ -132,7 +141,7 @@ sub cl_run {
 		cl_help(); 
 		exit;
 	}
-	
+		
 
 	# Uh, so we don't have to re-type this on the cl: 
 	if(exists($h{'dada_root_pass'})){ 
@@ -153,23 +162,23 @@ sub cl_run {
 	}
 	else { 
 		print "Paramaters passed look great! Configuring...\n"; 
-
 	   my $install_dada_files_loc = install_dada_files_dir_at_from_params(); 
 	   my ( $install_log, $install_status, $install_errors ) = install_dada_mail(
 	        {
-				-skip_configure_dada_files  => $q->param('skip_configure_dada_files') || 0,
-	            -program_url                => $q->param('program_url'),
-	            -dada_root_pass             => $q->param('dada_root_pass'),
-				-dada_files_dir_setup       => $q->param('dada_files_dir_setup'), 
-				-install_dada_files_loc     => $install_dada_files_loc, 
-	            -backend                    => $q->param('backend'),
+	            -program_url                => $q->param('program_url') || '',
+	            -dada_root_pass             => $q->param('dada_root_pass') || '',
+				-dada_files_dir_setup       => $q->param('dada_files_dir_setup') || 'manual', 
+	            -backend                    => $q->param('backend') || 'default',
+	            -sql_server                 => $q->param('sql_server') || '',
+	            -sql_database               => $q->param('sql_database') || '',
+	            -sql_username               => $q->param('sql_username') || '',
+	            -sql_password               => $q->param('sql_password') || '',
+	
+		        -sql_port                   => sql_port_from_params(),
+	    
+				-install_dada_files_loc     => $install_dada_files_loc, 			
 				-skip_configure_SQL         => $q->param('skip_configure_SQL') || 0, 
-	            -sql_dbtype                 => $q->param('backend'),
-	            -sql_server                 => $q->param('sql_server'),
-	            -sql_port                   => sql_port_from_params(),
-	            -sql_database               => $q->param('sql_database'),
-	            -sql_username               => $q->param('sql_username'),
-	            -sql_password               => $q->param('sql_password'),
+				-skip_configure_dada_files  => $q->param('skip_configure_dada_files') || 0,
 	        }
 	    );
 
@@ -178,6 +187,17 @@ sub cl_run {
 			print "Problems with configuration:\n\n"; 
 			foreach(keys %$install_errors){ 
 				print $_ . " => " . $install_errors->{$_} . "\n"; 
+			}
+		}
+		else { 
+			print "Moving and Disabling, \"installer\" directory\n"; 
+			my ($new_dir, $eval_errors) = move_installer_dir(); 
+			if($eval_errors){ 
+				print "Problems with moving installer directory: \n $eval_errors\n\n"; 
+			}
+			else{ 
+				print "Installer directory moved to, \"$new_dir\"\n";
+				print "Installation and Configuration Complete.\n\n\n";
 			}
 		}
 	
@@ -345,7 +365,6 @@ sub scrn_install_dada_mail {
 			-install_dada_files_loc     => $install_dada_files_loc, 
             -backend                    => $q->param('backend'),
 			-skip_configure_SQL         => $q->param('skip_configure_SQL') || 0, 
-            -sql_dbtype                 => $q->param('backend'),
             -sql_server                 => $q->param('sql_server'),
             -sql_port                   => sql_port_from_params(),
             -sql_database               => $q->param('sql_database'),
@@ -402,6 +421,7 @@ sub install_dada_mail {
     my $log    = undef;
     my $errors = {};
     my $status = 1;
+
 
 	if($args->{-skip_configure_dada_files} == 1){ 
 		$log .= "* Skipping configuration of directory creation, config file and backend options\n"; 
@@ -621,15 +641,19 @@ sub create_dada_config_file {
     my $pass =
       DADA::Security::Password::encrypt_passwd( $args->{-dada_root_pass} );
 
-    my $prog_url = $DADA::Config::PROGRAM_URL;
-    $prog_url =~ s{installer\/install\.cgi}{mail\.cgi};
+	if(!exists($args->{-program_url})){ 
+		
+	    my $prog_url = $DADA::Config::PROGRAM_URL;
+	    $prog_url =~ s{installer\/install\.cgi}{mail\.cgi};
+		$args->{-program_url} = $prog_url;
+	}
 
     my $outside_config_file = DADA::Template::Widgets::screen(
         {
             -screen => 'example_dada_config.tmpl',
             -vars   => {
 
-                PROGRAM_URL            => $prog_url,
+                PROGRAM_URL            => $args->{-program_url},
                 ROOT_PASSWORD          => $pass,
                 ROOT_PASS_IS_ENCRYPTED => 1,
                 dada_files_dir         => $loc,
@@ -1164,21 +1188,10 @@ sub test_database_empty {
 
 }
 
-sub move_installer_dir { 
-	e_print($q->header()); 
-	my $time = time;
-	require DADA::Security::Password; 
-	my $ran_str = DADA::Security::Password::generate_rand_string(); 
-	my $new_dir_name = make_safer("../installer-disabled.$ran_str.$time"); 
-	eval { 
-		#`mv ../installer $new_dir_name`;
-		installer_mv(make_safer('../installer'), $new_dir_name); 
+sub move_installer_dir_ajax { 
 
-		# This may not work. Not sure why not. 
-		#`chmod 644 $new_dir_name/install.cgi`; 
-		installer_chmod(0644, make_safer('$new_dir_name/install.cgi')); 
-	};
-	 
+	my ($new_dir_name, $eval_errors) = move_installer_dir(); 
+	e_print($q->header()); 	 
 		e_print("
 		<fieldset> 
 		<legend>
@@ -1193,8 +1206,8 @@ sub move_installer_dir {
 		$installer_moved = 1; 
 	}
 	
-	if($@ || $installer_moved == 0){ 
-		e_print("<p class=\"errors\">Problems! <code>$@</code></p><p>You'll have to manually move the, <em>dada/<strong>installer</strong></em>  directory."); 
+	if($eval_errors || $installer_moved == 0){ 
+		e_print("<p class=\"errors\">Problems! <code>$eval_errors</code></p><p>You'll have to manually move the, <em>dada/<strong>installer</strong></em>  directory."); 
 	}
 	else {
 		
@@ -1203,6 +1216,26 @@ sub move_installer_dir {
 	}
 	e_print("</fieldset>"); 
 	
+}
+
+sub move_installer_dir { 
+	
+	my $time = time;
+	require DADA::Security::Password; 
+	my $ran_str = DADA::Security::Password::generate_rand_string(); 
+	my $new_dir_name = make_safer("../installer-disabled.$ran_str.$time"); 
+	eval { 
+		#`mv ../installer $new_dir_name`;
+		installer_mv(make_safer('../installer'), $new_dir_name); 
+		installer_chmod(0644, make_safer('install.cgi')); 
+	};
+	my $errors = undef; 
+	if($@){ 
+		$errors = $@; 
+	}
+	
+	return ($new_dir_name, $@); 
+		
 }
 
 sub slurp {
