@@ -44,9 +44,7 @@ Once the installer is stable, we'll be moving the below instructions to a more c
 
 Here's the direct download to Dada Mail v4.2.0: 
 
-L<CHANGE ME!>
-
-(long, gruesome URL, we know!) 
+L<http://github.com/downloads/justingit/dada-mail/dada-4_2_0-rc1.tar.gz>
 
 Save the distribution to your Desktop Computer (you will B<not> have to uncompress the distro) and then upload the, tar.gz file to your hosting account's I<cgi-bin>. 
 
@@ -54,7 +52,10 @@ Save the distribution to your Desktop Computer (you will B<not> have to uncompre
 
 Download the, C<uncompress_dada.cgi> script from here: 
 
-http://github.com/justingit/dada-mail/raw/installer/uncompress_dada.cgi
+L<http://github.com/justingit/dada-mail/raw/ecd80c6e8261e12531cccbf3bb2b9783baafa09a/uncompress_dada.cgi>
+
+(long gruesome URL - we know) 
+
 
 I<(You may have to "Save Page As...")>
 
