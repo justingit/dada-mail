@@ -67,9 +67,9 @@ your outside config file.
 
 For historical reasons, the outside config file sets the config variables by 
 simply using Perl code, instead of a configuration-specific format. This may 
-change in the future - we don't like this  technique. One problem with this technique, 
-is that setting configuration variables successfully means that you will need
- to use strict and valid Perl code. This will make things harder for a casual 
+change in the future - we don't like this  technique. One problem with this 
+technique is that setting configuration variables successfully means that you will need
+to use strict and valid Perl code. This will make things harder for a casual 
 user of the program perform, successfully - and unfortunately. 
 
 Some things to be careful of: 
