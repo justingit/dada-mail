@@ -1,7 +1,7 @@
 package DADA::Config; 
 
 # For information on how to install Dada Mail, please see: 
-# http://dadamailproject.com/support/documentation-4_2_0-beta2/features-dada_mail_installer.pod.html
+# http://dadamailproject.com/support/documentation-4_2_0-rc1/features-dada_mail_installer.pod.html
 
 require Exporter;  
 our @ISA =   qw(Exporter);  
@@ -4813,7 +4813,7 @@ and to say that you've got the freshest tools on the Web.
 
 
 $VERSION = 4.1.0; 
-$VER     = '4.2.0 Beta 2';
+$VER     = '4.2.0 Release Candidate 1';
 
 
 #

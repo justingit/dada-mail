@@ -137,7 +137,11 @@ sub cl_run {
 	foreach(keys %h){ 
 		$q->param($_, $h{$_});
 	}
-	if($h{help} == 1 || scalar(keys %h) == 0){ 
+	if(scalar(keys %h) == 0){ 
+		cl_quickhelp(); 
+		exit;
+	}
+	elsif($h{help} == 1){ 
 		cl_help(); 
 		exit;
 	}
@@ -151,6 +155,8 @@ sub cl_run {
     print "Checking Setup...\n"; 
 	if($check_status == 0){ 		
 		print "Problems were found:\n\n";
+		print "Uh, TODO - make these a little more intelligent:\n"; 
+		
 	    foreach(keys %$check_errors){ 
 			if($check_errors->{$_} == 1){ 
 				print "Error: $_\n"; 
@@ -185,6 +191,7 @@ sub cl_run {
 		print $install_log . "\n"; 
 		if($install_status == 0){ 
 			print "Problems with configuration:\n\n"; 
+			
 			foreach(keys %$install_errors){ 
 				print $_ . " => " . $install_errors->{$_} . "\n"; 
 			}
@@ -204,6 +211,17 @@ sub cl_run {
 	}
 }
 
+sub cl_quickhelp { 	
+	print DADA::Template::Widgets::screen(
+        {
+            -screen => 'cl_quickhelp_scrn.tmpl',
+            -vars => {
+
+            },
+        }
+    );	
+}
+
 sub cl_help { 
 	
 	print DADA::Template::Widgets::screen(
@@ -213,9 +231,9 @@ sub cl_help {
 
             },
         }
-    );
-	
+    );	
 }
+
 
 
 
