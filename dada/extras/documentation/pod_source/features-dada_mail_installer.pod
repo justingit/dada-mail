@@ -169,6 +169,8 @@ if you cannot, don't know how, or don't want the SQL backend option (we really s
 
 Both MySQL and PostgreSQL will have the same features available and work under the hood, basically the same way. We like PostgreSQL better, but MySQL is going to be tested a bit more thouroughly and probably is more familiar to most people, so at the moment, it's the backend that we recommend. 
 
+=back
+
 When you select one of the SQL backends, you'll also be asked to fill in the SQL connection stuff, including the database server, the port number, the name of the database itself and the username and password. 
 
 The database has to be set up beforehand. It's not too hard to do if you have a cPanel or phpMyAdmin to help you along. Just note the Server, database, username and password, once you create the database (No tables have to be created, beforehand). The user will need full priviliges to your database. We don't suggest, for security reasons, giving this same user any permissions to any other database. 
@@ -193,7 +195,7 @@ Fill this with the username that's associated with your database
 
 =item * Password
 
-Fill this with the password associated with the username. 
+Fill this with the password associated with the username.
 
 =back
 
@@ -227,7 +229,7 @@ Making additional configurations is a lot more advanced than running the install
 
 =head2 Running Dada Mail for the First Time
 
-Once you've gotten the, C<dada/DADA/Config.pm> file edited (if needed) and moved the, C<installer directory out of the way, it's time to begin using Dada Mail. Click the, C<Start Working With Dada Mail!> button to begin!
+Once you've gotten the, C<dada/DADA/Config.pm> file edited (if needed) and moved the, C<installer> directory out of the way, it's time to begin using Dada Mail. Click the, C<Start Working With Dada Mail!> button to begin!
 
 Good Luck! 
 
