@@ -16,15 +16,23 @@ L<http://dadamailproject.com/support/documentation/Config.pm/html>
 
 =head3 The .dada_config File
 
-We do highly suggest that you do not edit the C<Config.pm> directly, unless you need to (for, whatever reason), but use The Advanced Installation Method when you do make a new installation of Dada Mail: 
+We do I<highly> suggest that you do not edit the C<Config.pm> directly, unless you need to (for, whatever reason), but install Dada Mail using the Dada Mail Installer: 
+
+L<http://dadamailproject.com/support/documentation-4_2_0-rc1/features-dada_mail_installer.pod.html>
+
+or the Manual Installation instructions: 
 
 L<http://dadamailproject.com/installation/installation_advanced.html>
+
+The, "Basic" installation instructions are no longer supported and we suggest moving your installation to a more contemporary installation setup: 
+
+L<http://dadamailproject.com/support/documentation/FAQ-basic_2_advanced_installation.pod.html>
 
 =head2 How do I know if Dada Mail is configured in the Config.pm file, or in the .dada_config file? 
 
 If Dada Mail is configured straight in the C<Config.pm> file, more likely than not, the following variables: C<$PROGRAM_ROOT_PASSWORD>, C<$FILES>, C<$MAILPROG> and C<$PROGRAM_URL> will be changed from their defaults, to be values that fit in with your hosting account. 
 
-If these variables are not customized for your specific installation, more likely than not, you're using the Advanced Installation Method and have your global configuration saved in the, C<.dada_config> file. 
+If these variables are not customized for your specific installation, more likely than not, you're using the Advanced/Manual/Contemporary Installation Method and have your global configuration saved in the, C<.dada_config> file. 
 
 =head2 How Do You Find the Global Configuration File? 
 
@@ -54,16 +62,7 @@ I</home/account/.dada_files/.configs/.dada_config>
 
 =head2 I'm editing the .dada_config file, but no changes are being seen
 
-When using our Advanced Installation: 
-
-L<http://dadamailproject.com/installation/installation_advanced.html>
-
-
-and Semi-Auto Advanced Installation: 
-
-L<http://dadamailproject.com/installation/installation_adv_semi_auto.html>
-
-Methods, several oft-used global configuration variables are placed in the C<.dada_config> file, but the are not active. To activate them, you must remove the C<=cut> strings that are placed right before and right after the chunk of variables they're inactivating. For example:
+Several oft-used global configuration variables are placed in the C<.dada_config> file, but the are not active. To activate them, you must remove the C<=cut> strings that are placed right before and right after the chunk of variables they're inactivating. For example:
 
  # start cut for plugin configs
  =cut

@@ -484,7 +484,7 @@ The following topics were added to the documentation:
 
 http://dadamailproject.com/support/documentation/FAQ-default_2_SQL_backend.pod.html
 
-=item * Converting from a Basic to Advanced Installation
+=item * Converting from a Basic to Contemporary Installation
 
 http://dadamailproject.com/support/documentation/FAQ-basic_2_advanced_installation.pod.html
 

@@ -8,17 +8,15 @@ By default, Dada Mail does not use an SQL backend, but rather uses a simpler met
 
 Although easier to set up, the Default backend for Dada Mail does not have as many features as the B<SQL> backend alternative. These include Subscriber Profile Fields, Partial Mailing List Sending, Multiple Mailing List Sending and some other neat things. 
 
-Moving from the Default Backend to the SQL Backend is doable and fairly straightforward. You'll want to be using the Advanced Installation Setup, you need to create the SQL Database and tables needed for Dada Mail and then, run the import scripts to move your current information over. 
+=head1 A Contempory Installation
 
-=head1 The Advanced Installation Method
-
-We highly suggest that you use the SQL Backend with the Advanced Installation Method. If you're not currently using the Advanced Installation Method, switch your Basic Installation to an Advanced Installation: 
+We highly suggest that you use the SQL Backend with a Contemporary Installation setup and NOT the Basic Installation setup. If you're not currently using a Contemporary Installation Method, switch:
 
 http://dadamailproject.com/support/documentation/FAQ-basic_2_advanced_installation.pod.html
 
-=head1 Setup the SQL Database
+=head1 Setup a SQL Database
 
-Instructionso n Setting up Dada Mail's SQL Database Backend can be found here: 
+Instructions on Setting up Dada Mail's SQL Database Backend can be found here: 
 
 http://dadamailproject.com/installation/configuration-sql_backend.html
 

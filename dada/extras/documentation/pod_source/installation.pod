@@ -12,13 +12,9 @@ http://dadamailproject.com/installation
 
 L<./features-dada_mail_installer.pod.html>
 
-=head2 Advanced Installation
+=head2 Manual Installation
 
 http://dadamailproject.com/installation/installation_advanced.html
-
-=head3 Configuring Dada Mail's SQL Backend
-
-http://dadamailproject.com/installation/configuration-sql_backend.html
 
 =head2 How to Upgrade Dada Mail
 

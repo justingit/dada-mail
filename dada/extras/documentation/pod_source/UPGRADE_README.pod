@@ -40,10 +40,9 @@ The changelog is located here:
 
 http://dadamailproject.com/support/documentation/changes_4_x.pod.html
 
-
 If you are upgrading from Dada Mail 3.x to Dada Mail 4.x  also see: 
 
-=head3 Dada Mail 2.x to Dada Mail 3.x Guide
+=head3 Dada Mail 3.x to Dada Mail 34x Guide
 
 L<http://dadamailproject.com/support/documentation/dada3_to_dada4.pod.html>
 
@@ -81,22 +80,8 @@ Download Dada Mail, upload the new, "dada" directory, tweak the Config.pm file, 
 
 One thing that you want to make sure of, is when you are configuring the new copy of Dada Mail, that you set the Config.pm variables similar to what the old copy of Dada Mail had. I say, "similar", since some of these variables do change between versions - but this is what the, "NOTES" and changelog are for. 
 
-One thing that will most likely be the same, is what the, B<$FILES> variable is set to. If this is set to the same thing between your old copy of Dada Mail and your new copy of Dada Mail, your already created lists will show up. If not, you'll get the, "Congratulations" screen and NO lists and you'll know you haven't done this step correctly. 
+=head2 Upgrading a, "Basic" Installation
 
-=head2 Some things of note:
+If you set up Dada Mail using the, "Basic" installation instructions, we recommend switching to the Contemporary installation setup. Here's how: 
 
-=head3 SQL variables - make sure to set them!
-
-If you are using any of the SQL backends, make sure the appropriate SQL variables in the Config.pm are configured the same as before. 
-
-=head3 Advanced installation
-
-If you previously did an, "Advanced" installation, ala: 
-
-http://dadamailproject.com/purchase/sample_chapter-dada_mail_setup.html
-
-You'll most likely only want to change the, B<$PROGRAM_CONFIG_FILE_DIR> variable, and perhaps the, $B<PROGRAM_ERROR_LOG> variable in the Config.pm file. 
-
-If you did this type of install before, this should all make sense. 
-
-And, that's it. 
+http://dadamailproject.com/support/documentation/FAQ-basic_2_advanced_installation.pod.html

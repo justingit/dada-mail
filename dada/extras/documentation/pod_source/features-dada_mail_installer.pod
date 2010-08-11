@@ -18,13 +18,15 @@ L<http://dadamailproject.com/installation/installation_basic.html>
 
 The basic instructions are harder and not as basic as using the installer. So don't use them. 
 
-=head4 Advanced Installation 
+=head4 Manual Installation 
 
-If you do not want to use the new installer, we will still suggest still the advanced installation instructions: 
+If you do not want to use the new installer, we will still suggest still the Manual Installation instructions: 
 
 L<http://dadamailproject.com/installation/installation_advanced.html>
 
-The installer basically automates a lot of what you need to do with the advanced installation. 
+The installer basically automates a lot of what you need to do with the Manual Installation. 
+
+B<NOTE:> This method used to be called the, B<Advanced Installation>. 
 
 =head4 The, Experimental, Semi-Auto Advanced Installation - Removed!
 
