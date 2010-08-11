@@ -2051,15 +2051,20 @@ sub check_setup {
 
 sub SQL_check_setup {
 	
+	my $table_count = 0; 
 	eval { 
 		# A little indirect, but...  
 		# Tests if we have the necessary tables: 
 		#
+		# This is strange - since this list could be WRONG - 
+		# Ugh. 
 		require DADA::App::DBIHandle; 
 		my $dbi_obj = DADA::App::DBIHandle->new; 
 		my $dbh = $dbi_obj->dbh_obj;
+		
 		foreach my $param(keys %DADA::Config::SQL_PARAMS){ 
 			if($param =~ m/table/){ 
+				$table_count++;
 			 	$dbh->do('SELECT * from ' . $DADA::Config::SQL_PARAMS{$param} . ' WHERE 1 = 0')
 					or croak $!; 
 			}
@@ -2070,7 +2075,14 @@ sub SQL_check_setup {
 		return 0; 
 	}
 	else { 
-		return 1; 
+		# Last test - we need at least 9 tables. This test sucks - I shouldn't
+		# need to know I need 9 tables. 
+		if($table_count < 9){ 
+			return 0; 
+		}
+		else { 
+			return 1; 
+		}
 	}
 }
 
