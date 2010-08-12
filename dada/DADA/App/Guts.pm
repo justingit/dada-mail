@@ -1359,11 +1359,19 @@ sub decode_he {
 #	    * - even if the user changes it in browser
 
 	
-	
-	
 	my $str = shift; 
-	require HTML::Entities;
-	return HTML::Entities::encode_entities($str); # Uh, why is this Encoding, in a *decoding* subroutine? 
+	eval {require HTML::Entities;}; 
+	if(!$@){ 
+		$str = HTML::Entities::encode_entities($str); 
+	
+	}else{       
+		eval {require HTML::EntitiesPurePerl;}; 
+		if(!$@){ 
+	    	$str = HTML::EntitiesPurePerl::encode_entities($str); 
+		}
+	}
+	return $str;	
+	
 }
 
 =pod
