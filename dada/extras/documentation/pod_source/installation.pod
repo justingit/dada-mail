@@ -18,6 +18,6 @@ http://dadamailproject.com/installation/installation_advanced.html
 
 =head2 How to Upgrade Dada Mail
 
-http://dadamailproject.com/installation/upgrading.html
+L<http://dadamailproject.com/support/documentation/FAQ-basic_2_contemporary_installation.pod.html>
 
 =cut

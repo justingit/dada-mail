@@ -486,7 +486,7 @@ http://dadamailproject.com/support/documentation/FAQ-default_2_SQL_backend.pod.h
 
 =item * Converting from a Basic to Contemporary Installation
 
-http://dadamailproject.com/support/documentation/FAQ-basic_2_advanced_installation.pod.html
+http://dadamailproject.com/support/documentation/FAQ-basic_2_contemporary_installation.pod.html
 
 =back
 
