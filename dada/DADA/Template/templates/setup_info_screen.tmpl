@@ -1,102 +1,89 @@
 <!-- begin setup_info_screen.tmpl -->
 
-<h1>Outside Configuration File</h1> 
+<h1>Installation and Configuration</h1> 
+
+<!-- tmpl_if c_install --> 
+
+<h2>You have a Contemporary Install of Dada MaiL</h2> 
+
+<p><!-- tmpl_var PROGRAM_NAME --> is set up to use an outside config file.</p>
+
+<h3>Configuration Variables</h3> 
+<ul> 
+<li><p><strong>$PROGRAM_CONFIG_FILE_DIR</strong><br /> <code><!-- tmpl_var PROGRAM_CONFIG_FILE_DIR --></code></p></li>
+<li><p><strong>$PROGRAM_ERROR_LOG</strong><br /> <code><!-- tmpl_var PROGRAM_ERROR_LOG --></code></p></li>
+
+</ul> 
 
 
-<h2>$PROGRAM_CONFIG_FILE_DIR</h2> 
+<h2>.dada_config file</h2> 
 
-<!-- tmpl_if PROGRAM_CONFIG_FILE_DIR --> 
+<p>The contents of your <code>.dada_config</code> file are below:</p> 
 
+<div style="width:95%;height:300px;overflow:auto;border:1px solid black;padding:5px;margin:5px">
 
+	<pre><!-- tmpl_var config_file_contents escape="HTML" --> </pre>
 
-
-<p>
- Your 	<strong>
-	                     $PROGRAM_CONFIG_FILE_DIR
-	                    </strong> variable
-	 has been set to, </p>
-	
-	<p><code><!-- tmpl_var PROGRAM_CONFIG_FILE_DIR --></code></p>
-
-<p>Your outside configuration file is being looked for at:</p>
-
-<p>
- <code>
-	<!-- tmpl_var CONFIG_FILE -->
- </code>
-</p>
-
-<!-- tmpl_if config_file_exists --> 
-
-	<p>This file exists! The contents of which are below:</p>
-	
-	 <div style="width:95%;height:300px;overflow:auto;border:1px solid black;padding:5px;margin:5px">
-		
-	<pre><!-- tmpl_var config_file_contents --> </pre> 
-
-</div> 
-
-<!-- tmpl_else --> 
+</div>
 
 
-<p>This file does not seem to exist.</p>
 
-<!-- /tmpl_if --> 
 
 
 <!-- tmpl_else --> 
 
-<p>You have not set the 
-	<strong>
-	                     $PROGRAM_CONFIG_FILE_DIR
-	                    </strong>
-	 variable. (You don't have to)</p>
+<h2>You have a Basic Installation of <!-- tmpl_var PROGRAM_NAME --></h2> 
 
+<p><!-- tmpl_var PROGRAM_NAME --> is set up by configuring the, <code>dada/DADA/Config.pm</code> file, itself. No outside
+	configuration file has been found.</p>
+
+
+<h3>Configuration Variables</h3> 
+
+<ul> 
+
+<li><p><strong>$PROGRAM_ROOT_PASSWORD</strong><br /> <code><!-- tmpl_var PROGRAM_ROOT_PASSWORD --></code></p></li>
+
+<li><p><strong>$MAILPROG</strong><br /> <code><!-- tmpl_var MAILPROG --></code></p></li>
+
+<li><p><strong>$PROGRAM_URL</strong><br /> <code><!-- tmpl_var PROGRAM_URL --></code></p></li>
+
+<li><p><strong>$FILES</strong><br /> <code><!-- tmpl_var FILES --></code></p>
+	
+	
+	<!-- tmpl_if files_var_exist --> 
+
+	<!-- tmpl_else --> 
+
+		<p class="error">Warning! the directory, "<!-- tmpl_var FILES -->" does not seem to exist!</p>
+
+	<!-- /tmpl_if -->
+	
+	
+	</li>
+
+
+<li><p><strong>$PROGRAM_CONFIG_FILE_DIR</strong><br /> <code><!-- tmpl_var PROGRAM_CONFIG_FILE_DIR --></code></p></li>
+
+<li><p><strong>$PROGRAM_ERROR_LOG</strong><br /> <code><!-- tmpl_var PROGRAM_ERROR_LOG --></code></p></li>
+
+</ul>
+ 
 
 <!-- /tmpl_if --> 
 
-<!-- tmpl_unless config_file_exists --> 
 
-<hr /> 
+<h2>dada/DADA/Config.pm file</h2> 
 
-	
-<!--/tmpl_unless-->
+<p>Your entire <code>dada/DADA/Config.pm</code> file is below:</p> 
 
-<hr /> 
-<h1>Other Configuration Settings</h1>
-<h2>
- $MAILPROG Variable
-</h2>
-<p>
- The 
- <strong>
-  $MAILPROG 
- </strong>
- variable has been set to:
-</p>
-<ul>
- <li>
-  <!-- tmpl_var MAILPROG -->
- </li>
-</ul>
-<p>
- Paths to Sendmail have been found in these locations:
-</p>
-<ul>
- 
-<!-- tmpl_loop sendmails -->
-	
-	 <li>
-	  <!-- tmpl_var location -->
-	 </li>
-	 
-<!--/tmpl_loop-->
- 
-</ul>
-<p>
- Not all these paths are locations to Sendmail, 
- but should be included within them.
-</p>
+
+<div style="width:95%;height:300px;overflow:auto;border:1px solid black;padding:5px;margin:5px">
+
+	<pre><!-- tmpl_var config_pm_file_contents escape="HTML"  --> </pre>
+
+</div>
+
 
 
 <!-- end setup_info_screen.tmpl -->

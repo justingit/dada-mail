@@ -7721,7 +7721,6 @@ sub archive {
                     show_iframe     => $show_iframe,
                     discussion_list => ( $li->{group_list} == 1 ) ? 1 : 0,
 
-                    #header_from                   => decode_he($header_from),
                     header_from         => $header_from,
                     in_reply_to_id      => $in_reply_to_id,
                     in_reply_to_subject => xss_filter($in_reply_to_subject),
@@ -8816,6 +8815,7 @@ sub pass_gen {
 sub setup_info { 
 
 
+	require DADA::Template::Widgets;  
 
     my $root_password = $q->param('root_password') || '';
 
@@ -8831,38 +8831,27 @@ sub setup_info {
 	}
 	    
     if(root_password_verification($root_password) == 1){ 
-        my $doc_root   = $ENV{DOCUMENT_ROOT};
-		my $pub_html_dir      = $doc_root; 
-		   $pub_html_dir      =~ s(^.*/)();
-		my $home_dir_guess; 
-		my $getpwuid_call; 
-		eval { $getpwuid_call = ( getpwuid $> )[7] };
-		if(!$@){ 
-			$home_dir_guess   = $getpwuid_call; 
-		}
-		else { 
-	    	$home_dir_guess   =~ s/\/$pub_html_dir$//g;
+	
+		# If we have a .dada_config file, this is a contemporary installation, we'll say. 
+		my $c_install = 0; 
+		if(
+			-e $DADA::Config::PROGRAM_CONFIG_FILE_DIR &&
+			-d $DADA::Config::PROGRAM_CONFIG_FILE_DIR
+		){ 
+			if(-e $DADA::Config::CONFIG_FILE){ 
+				$c_install = 1; 
+			}
 		}
 		
-		my $config_file_exists    = 0; 
 		my $config_file_contents = undef; 
 		if(-e $DADA::Config::CONFIG_FILE){ 
-			$config_file_exists = 1;
-			require DADA::Template::Widgets;  
 			$config_file_contents = DADA::Template::Widgets::_slurp($DADA::Config::CONFIG_FILE); 
 		}
-
-        my $sendmails = []; 
-        if ($DADA::Config::OS !~ /^Win|^MSWin/i){
-            push(@$sendmails, {location => $_})
-                foreach(split(" ", `whereis sendmail`));
-        }
-
-
-		my $example_config_file_path = undef; 
-		if(defined($DADA::Config::CONFIG_FILE)){ 
-			$example_config_file_path = $DADA::Config::CONFIG_FILE;
-			$example_config_file_path =~ s/\/\.configs\/\.dada_config$//; 
+		my $config_pm_file_contents = $config_file_contents = DADA::Template::Widgets::_slurp('DADA/Config.pm'); 
+		
+		my $files_var_exist = 0; 
+		if(-e $DADA::Config::FILES){ 
+			$files_var_exist = 1; 
 		}
 		
 		my $scrn = ''; 
@@ -8878,24 +8867,22 @@ sub setup_info {
                       );
         
         require DADA::Template::Widgets;                
-        $scrn .= DADA::Template::Widgets::screen(
+        
+$scrn .= DADA::Template::Widgets::screen(
 			{
 				-screen => 'setup_info_screen.tmpl', 
 				-vars   => { 
-					FILES                     => $DADA::Config::FILES, 
-					exists_FILES              => (-e $DADA::Config::FILES)        ? 1 : 0,
-					FILES_starts_with_a_slash => ($DADA::Config::FILES =~ m/^\//) ? 1 : 0,
-					FILES_ends_in_a_slash     => ($DADA::Config::FILES =~ m/\/$/) ? 1 : 0,
-					DOCUMENT_ROOT             => $ENV{DOCUMENT_ROOT}, 
-					home_dir_guess            => $home_dir_guess, 
-					MAILPROG                  => $DADA::Config::MAILPROG, 
-					sendmails                 => $sendmails, 
-					PROGRAM_CONFIG_FILE_DIR   => $DADA::Config::PROGRAM_CONFIG_FILE_DIR, 
-					CONFIG_FILE               => $DADA::Config::CONFIG_FILE,   
-					config_file_exists        => $config_file_exists,
-					config_file_contents      => $config_file_contents, 
-					example_config_file_path  => $example_config_file_path, 
-					PROGRAM_ROOT_PASSWORD     => $root_password, 
+					FILES                   => $DADA::Config::FILES,
+					PROGRAM_ROOT_PASSWORD   => $DADA::Config::PROGRAM_ROOT_PASSWORD, 
+					MAILPROG                => $DADA::Config::MAILPROG, 
+					PROGRAM_CONFIG_FILE_DIR => $DADA::Config::PROGRAM_CONFIG_FILE_DIR, 
+					PROGRAM_ERROR_LOG       => $DADA::Config::PROGRAM_ERROR_LOG, 
+					c_install               => $c_install, 
+					config_file_contents    => $config_file_contents,
+					config_pm_file_contents => $config_pm_file_contents, 
+					files_var_exist         => $files_var_exist, 
+					
+
 				},
             }
 		);
@@ -8903,7 +8890,7 @@ sub setup_info {
         $scrn .= list_template(-Part => "footer");
 		
 		e_print($scrn);
-            
+    
     }else{ 
 
         my $guess = $DADA::Config::PROGRAM_URL; 
