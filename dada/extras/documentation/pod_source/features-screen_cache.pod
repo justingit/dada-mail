@@ -34,7 +34,7 @@ Removing this directory is safe to do. If enabled, the cache will be re-created.
 
 Usually, there's nothing you'll need to do, to keep your cache working just fine. 
 When you make any changes to any Mailing List's settings or archives, the cache will
-be automatically flused of any files, to be re-created again. 
+be automatically flushed of any files, to be re-created again. 
 
 If you are working on a new list-wide or installation-wide design for Dada Mail, 
 it could be helpful to temporarily disable Screen Caching, until your all set with your 
