@@ -1,52 +1,18 @@
 =pod
 
-=head1 Installing and Configuring Dada Mail using the Dada Mail Installer
+=head1 Installing and Configuring Dada Mail
 
-=head2 Before We Get Started
+=head2 Manual Installation
 
-The Dada Mail Installer is new! And there's going to be issues that we hadn't thought about. Please report any bugs/problems to us.
+We suggest using the installer, but you can still install Dada Mail manually: 
 
-=head3 Current Installation Docs
-
-There's around three different ways to install Dada Mail. That's a lot! Here's how Dada Mail's new installer fits in with this all:
-
-=head4 Basic Installation - Don't Use!
-
-When this installer becomes stable, we will not suggest using the basic install instructions anymore: 
-
-L<http://dadamailproject.com/installation/installation_basic.html>
-
-The basic instructions are harder and not as basic as using the installer. So don't use them. 
-
-=head4 Manual Installation 
-
-If you do not want to use the new installer, we will still suggest still the Manual Installation instructions: 
-
-L<http://dadamailproject.com/installation/installation_advanced.html>
-
-The installer basically automates a lot of what you need to do with the Manual Installation. 
-
-B<NOTE:> This method used to be called the, B<Advanced Installation>. 
-
-=head4 The, Experimental, Semi-Auto Advanced Installation - Removed!
-
-L<http://dadamailproject.com/installation/installation_adv_semi_auto.html>
-
-This method will not work at all, anymore - it <was> experimental and have been superceded by the new, shinier installer. 
-
-=head4 Out With the Old, In With the New
-
-The Dada Mail Installer I<only> works with Dada Mail version 4.2.0. NO previous version of Dada Mail will work. Expect I<sweeping> changes to the installer and these instructions (even if there aren't any) until the stable release is out, based on your feedback. 
-
-Once the installer is stable, we'll be moving the below instructions to a more convenient place for everyone and tidy up the old installation instructions. Pardon our dust, until then, we know things can get confusing. 
-
-=head1 Using the Installer 
+L<http://dadamailproject.com/support/documentation/manually_install_dada_mail.pod.html>
 
 =head1 Step #1: Download Dada Mail
 
 Here's the direct download to Dada Mail v4.2.0: 
 
-L<http://github.com/downloads/justingit/dada-mail/dada-4_2_0-rc1.tar.gz>
+L<http://github.com/downloads/justingit/dada-mail/dada-4_2_0.tar.gz>
 
 Save the distribution to your Desktop Computer (you will B<not> have to uncompress the distro) and then upload the, tar.gz file to your hosting account's I<cgi-bin>. 
 
@@ -54,10 +20,9 @@ Save the distribution to your Desktop Computer (you will B<not> have to uncompre
 
 Download the, C<uncompress_dada.cgi> script from here: 
 
-L<http://github.com/justingit/dada-mail/raw/ecd80c6e8261e12531cccbf3bb2b9783baafa09a/uncompress_dada.cgi>
+L<Change Me!>
 
 (long gruesome URL - we know) 
-
 
 I<(You may have to "Save Page As...")>
 
@@ -73,7 +38,7 @@ and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting acco
 
 The, C<uncompress_dada.cgi> should attempt to uncompress the tar.gz distro, change the necessary permissions of various files and prep the actual installer for you to use. 
 
-Once it's finished running, there should be presented to you a link to use the actual installer. Click the link at the end of the screen and go ahead and configure Dada Mail! 
+Once it's finished running, you should be presented a link to use the actual installer. Click the link at the end of the screen and go ahead and configure Dada Mail! 
 
 =head2 Step #3 - Only If Step #2 Doesn't Work Automatically 
 
@@ -133,15 +98,13 @@ if you do not know where your home directory is, or if you like the location tha
 
 =back
 
-=head3 A Shortcut To Upgrading? 
+=head3 Upgrading? 
 
-Although not really made to do so, you can use the installer to I<upgrade> Dada Mail. If Dada Mail finds an existing C<.dada_files> directory (you can also explicitly tell it where it is, using the, "Manual" option), you can just tell the installer to use this existing C<.dada_files> directory, instead of creating a new one. Everything else listed on the form will be B<ignored>.
+If you are upgrading Dada Mail, you may type in the current location of your, C<.dada_files> directory. 
 
-This may not work, if the program has changed so much between versions. Incompatibilities do come to the surface - so no promises this will work (you can always just run the installer, again), but I<most> incompatibilities will be listed in the Dada Mail changelog.
+Make sure to double check the Dada Mail changelogs and fix any incompatibility between versions. Currently, this will be something you'll have to do manually.
 
-If you do run into incompatibilities, it's possible also to manual edit your configuration file - probably by removing the incompatible bits, to get Dada Mail running again. Again, the changelog is your friend. 
-
-To select this option, just check, I<I know that the, ".dada_files" directory already exists >. You will only see this option, if a C<.dada_files> directory is discovered. 
+If the installer finds your current C<.dada_files> directory, it'll give you a new option, labeled,  I<I know that the, ".dada_files" directory already exists >. Check this option - all other options will then be hidden. 
 
 =head2 Dada Mail URL
 
