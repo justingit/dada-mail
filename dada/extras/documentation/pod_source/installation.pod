@@ -10,7 +10,7 @@ http://dadamailproject.com/installation
 
 =head2 Install Dada Mail using the Dada Mail Installer: 
 
-L<./features-dada_mail_installer.pod.html>
+L<./install_dada_mail.pod.html>
 
 =head2 Manual Installation
 

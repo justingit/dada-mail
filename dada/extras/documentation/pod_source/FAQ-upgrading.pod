@@ -39,7 +39,7 @@ L<http://dadamailproject.com/support/documentation/FAQ-basic_2_contemporary_inst
 
 A Contemporary Installation uses an outside configuration file to set the configuration variables in. 
 
-You'll know if you have a Contemporary Installation, if those same four variables: 
+You'll know if you have a Contemporary Installation, if those same four variables in the, C<dada/DADA/Config.pm> file: 
 
 =over
 
@@ -84,7 +84,7 @@ This move is more important than you might think - it keeps a backup that is kno
 
 From then on, you can just follow the instructions for an installation of Dada Mail: 
 
-L<http://dadamailproject.com/support/documentation-4_2_0-rc1/features-dada_mail_installer.pod.html>
+L<http://dadamailproject.com/support/documentation-4_2_0-rc1/install_dada_mail.pod.html>
 
 =over
 
@@ -103,3 +103,7 @@ my C<.dada_files> directory is:
 L<http://dadamailproject.com/support/documentation/FAQ-basic_2_contemporary_installation.pod.html>
 
 =back
+
+=head2 Changelog 
+
+It's a very very good idea to look at the changelog and not B<any> incompatibilities> between versions. It's possible that incompatibilities could break your installation, when you upgrade. 

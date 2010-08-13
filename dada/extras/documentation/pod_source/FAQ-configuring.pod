@@ -18,7 +18,7 @@ L<http://dadamailproject.com/support/documentation/Config.pm/html>
 
 We do I<highly> suggest that you do not edit the C<Config.pm> directly, unless you need to (for, whatever reason), but install Dada Mail using the Dada Mail Installer: 
 
-L<http://dadamailproject.com/support/documentation-4_2_0-rc1/features-dada_mail_installer.pod.html>
+L<http://dadamailproject.com/support/documentation-4_2_0-rc1/install_dada_mail.pod.html>
 
 or the Manual Installation instructions: 
 
