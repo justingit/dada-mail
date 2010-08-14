@@ -47,7 +47,7 @@ L<http://dadamailproject.com>
 
 For now, please use: 
 
-L<http://dadamailproject.com/support/documentation-4_2_0-rc1/install_dada_mail.pod.html>
+L<http://dadamailproject.com/support/documentation-4_2_0/install_dada_mail.pod.html>
 
 =head1 DOCUMENTATION
 

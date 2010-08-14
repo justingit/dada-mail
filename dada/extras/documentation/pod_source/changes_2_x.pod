@@ -2403,7 +2403,7 @@ RSS feeds are now 2.0, up from .91; Atom feeds are now 1.0, up from .03.
 
 =item *1373263 	2.10.2 - Archive Editor Plugin wrongly saves headers
 
-=item *1373261 	2.10.2 - Incorrect information in FAQ-upgrading.pod
+=item *1373261 	2.10.2 - Incorrect information in upgrade_dada_mail.pod
 
 =item *1373260 	2.10.2 - make_table methods in Archives incorrect...
 

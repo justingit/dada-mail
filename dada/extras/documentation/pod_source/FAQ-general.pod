@@ -232,7 +232,7 @@ See:
 
 http://dadamailproject.com/installation/upgrading.html
 
-http://dadamailproject.com/support/documentation/FAQ-upgrading.pod.html
+http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html
 
 =head2 I have an older version of Dada Mail, or something called Mojo Mail, should I upgrade? 
 
@@ -246,7 +246,7 @@ http://dadamailproject.com/support/documentation/NOTES.pod.html
 
 There's an upgrade FAQ available as well: 
 
-http://dadamailproject.com/support/documentation/FAQ-upgrading.pod.html
+http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html
 
 =head1 Features
 

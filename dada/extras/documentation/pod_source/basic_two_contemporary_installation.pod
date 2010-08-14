@@ -4,7 +4,7 @@
 
 =head1 Terminology Changes
 
-Since v4.2.0 of Dada Mail, we no longer suggest, or support doing a B<Basic> Installation of Dada Mail. 
+Since v4.2.0 of Dada Mail, we no longer suggest - or support doing a B<Basic> Installation of Dada Mail. 
 
 The, B<Advanced> Installation of Dada Mail is now just known as a, B<Manual Installation> of Dada Mail. 
 
@@ -17,20 +17,17 @@ The method that the Dada Mail Installer sets things up will be the same as how o
 If you initially installed Dada Mail using our Basic Installation instructions, you'll need to change configuration to use the more contemporary 
 configuration. The Basic Installation instructions are not currently supported. 
 
-A B<Basic Installation> means simply changing the first four variables in the C<Config.pm> file itself. One of these variables is the C<$FILES> variable, 
-which is set to a directory where B<all> the files/directories Dada Mail creates that represent a Mailing List in Dada Mail are stored. 
+A B<Basic Installation> means simply changing the first four variables in the C<dada/DADA/Config.pm> file itself. One of these variables is the C<$FILES> variable, which is set to a directory where B<all> the files/directories Dada Mail creates that represent a Mailing List in Dada Mail are stored. 
 
 Contemporary installations of Dada Mail need only one variable in the C<Config.pm> file changed. This variable is called. C<$PROGRAM_CONFIG_FILE_DIR>. All other configuration changes are put in an outside configuration file called, C<.dada_config>. 
 
-Contemporary installation also uses a different directory structure for the file
-
 The instructions below will try to guide you from changing between and Basic and Contemporary Installation. 
 
-What we suggest is that you perform this change during an upgrade, by first installing the new version of Dada Mail using the Dada Mail Installer, or the Manual Installation instructions and then moving over the files from the old installation into the directory structure of the new installation.
+What we suggest is that you perform this change during an upgrade, by first installing the new version of Dada Mail using the Dada Mail Installer and then moving over the files from the old installation into the directory structure of the new installation.
 
 =head2 Find the $FILES directory
 
-Before performing a installation for your new Dada Mail, find the directory used for the, C<$FILES> variable in your I<old> installation. 
+Before performing a installation for your new Dada Mail, find the directory used for the, C<$FILES> variable in your I<old> installation. This variable is located in the, C<dada/DADA/Config.pm> file. 
 
 This directory should hold most all the files/directories that represent your Mailing Lists. 
 
@@ -38,7 +35,7 @@ This directory should hold most all the files/directories that represent your Ma
 
 You may either use the Dada Mail Installer (preferred): 
 	
-L<http://dadamailproject.com/support/documentation-4_2_0-rc1/install_dada_mail.pod.html>
+L<http://dadamailproject.com/support/documentation-4_2_0/install_dada_mail.pod.html>
 
 Or Manually install Dada Mail (more difficult) 
 
@@ -68,7 +65,7 @@ All that's needed now to do is to move your old files in the old directory (save
 
 =item * Any B<other files> that start with C<mj-> are your list settings.  Move those files into, C<.lists>
 
-=item * Any files that end in, C<.list>, or C<black_list>, or something similar, basically: a dot (C<.>), (something else) and then, C<list> are your subscribers. Move those files into, C<.lists>
+=item * Any files that end in, C<.list>, or C<.black_list>, or something similar, basically: a dot (C<.>), (something else) and then, C<list> are your subscribers. Move those files into, C<.lists>
 
 =item * Any B<file> with the ending of, C<.txt> or, C<.log> are probably logs,  Move those files into, C<.logs>
 
@@ -78,4 +75,5 @@ All that's needed now to do is to move your old files in the old directory (save
 
 =back
 
+Now, visit your Dada Mail in your web browser and see if your previous mailing lists seem to be back. If they're not, double check any other variables that may have been set in the previous version of Dada Mail's, C<dada/DADA/Config.pm> file. It's possible that your previous version was set up to use one of the SQL backends. 
 =cut

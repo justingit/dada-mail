@@ -4,7 +4,7 @@
 
 =head2 Manual Installation
 
-We suggest using the installer, but you can still install Dada Mail manually: 
+We suggest using the Dada Mail Installer, but you can still install Dada Mail manually: 
 
 L<http://dadamailproject.com/support/documentation/manually_install_dada_mail.pod.html>
 
@@ -14,7 +14,11 @@ Here's the direct download to Dada Mail v4.2.0:
 
 L<http://github.com/downloads/justingit/dada-mail/dada-4_2_0.tar.gz>
 
-Save the distribution to your Desktop Computer (you will B<not> have to uncompress the distro) and then upload the, tar.gz file to your hosting account's I<cgi-bin>. 
+(If you have Pro Dada, you can download v4.2.0 of Pro Dada here:)
+
+L<http://dadamailproject.com/pro_dada/index.cgi?rm=download_file&filename=pro_dada-4_2_0.tar.gz>
+
+Save the distribution to your Desktop Computer (you will B<not> have to uncompress the distribution) and then upload the, tar.gz file to your hosting account's I<cgi-bin>. 
 
 =head1 Step #2 Upload the, "uncompress_dada.cgi" script to your cgi-bin
 
@@ -40,13 +44,15 @@ The, C<uncompress_dada.cgi> should attempt to uncompress the tar.gz distro, chan
 
 Once it's finished running, you should be presented a link to use the actual installer. Click the link at the end of the screen and go ahead and configure Dada Mail! 
 
+I<(If you do not see this link, or the script wasn't able to do its job, you may have to go on to Step #3:)>
+
 =head2 Step #3 - Only If Step #2 Doesn't Work Automatically 
 
 (Or, if you'd rather do this part of the installation manually:)
 
 =head3 Uncompress the Distribution
 
-The tar.gz distribution you just downloaded to your Desktop Computer  should uncompress to one folder/directory called, B<dada>.
+The tar.gz distribution you just downloaded to your Desktop Computer should uncompress to one folder/directory called, B<dada>.
 
 =head3 Upload the, "dada" directory into your cgi-bin
 
@@ -90,7 +96,7 @@ For most installations, we suggest having the installer create the, C<.dada_file
 
 =item * Select B<AUTO> 
 
-if you do not know where your home directory is, or if you like the location that the installer finds. 
+If you do not know where your home directory is, or if you like the location that the installer finds. 
 
 =item * Select B<MANUAL> 
 
@@ -122,13 +128,13 @@ The, B<Dada Mail Root Password> is the main administrative password to your Dada
 
 =head2 Dada Mail Backend
 
-Dada Mail will need to save  its mailing lists and other information in various files and/or an SQL database. The SQL database is optional, but we B<I<really, really, really>> suggest using it - upgrades are easier, your information will be saved more securely, any migrations you do will be easier, more and fancier features will be available for you - a ton of stuff. 
+Dada Mail will need to save its mailing lists and other information in various files and/or an SQL database. The SQL database is optional, but we B<I<really, really, really>> suggest using it - upgrades are easier, your information will be saved more securely, any migrations you do will be easier, more and fancier features will be available for you - a ton of stuff. 
 
 =over
 
 =item * Select, Default 
 
-if you cannot, don't know how, or don't want the SQL backend option (we really suggest going the distance and using the SQL backend) 
+If you cannot, don't know how, or don't want the SQL backend option (we really suggest going the distance and using the SQL backend) 
 
 =item * Select, MySQL or PostgreSQL for the SQL backend
 
@@ -138,7 +144,7 @@ Both MySQL and PostgreSQL will have the same features available and work under t
 
 When you select one of the SQL backends, you'll also be asked to fill in the SQL connection stuff, including the database server, the port number, the name of the database itself and the username and password. 
 
-The database has to be set up beforehand. It's not too hard to do if you have a cPanel or phpMyAdmin to help you along. Just note the Server, database, username and password, once you create the database (No tables have to be created, beforehand). The user will need full priviliges to your database. We don't suggest, for security reasons, giving this same user any permissions to any other database. 
+The database has to be set up beforehand. It's not too hard to do if you have a cPanel w/phpMyAdmin to help you along. Just note the Server, Database, Username and Password, once you create the database (No tables have to be created, beforehand). The user will need full priviliges to your database. We don't suggest, for security reasons, giving this same user any permissions to any other database. 
 
 =over
 

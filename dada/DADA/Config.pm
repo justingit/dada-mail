@@ -1,7 +1,7 @@
 package DADA::Config; 
 
 # For information on how to install Dada Mail, please see: 
-# http://dadamailproject.com/support/documentation-4_2_0-rc1/install_dada_mail.pod.html
+# http://dadamailproject.com/support/documentation-4_2_0/install_dada_mail.pod.html
 
 require Exporter;  
 our @ISA =   qw(Exporter);  
@@ -37,7 +37,7 @@ if($PROGRAM_ERROR_LOG){open (STDERR, ">>$PROGRAM_ERROR_LOG") || warn "$PROGRAM_N
 
 The Config.pm file holds all the global variables in Dada Mail. It should not itself be 
 heavily edited with custom changes - such changes will be lost whenever you upgrade. 
-Use the outside config file (.dada_config) for that. 
+Use the outside config file (C<.dada_config>) for that. 
 
 =head1 How To Use This File and This Documentation
 

@@ -259,7 +259,7 @@ This extension will be removed from future versions of Dada Mail, if favor of fo
 
 =head2 The UPGRADE FAQ
 
-L<http://dadamailproject.com/support/documentation/FAQ-upgrading.pod.html>
+L<http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html>
 
 =head2 Technical Documentation
 
