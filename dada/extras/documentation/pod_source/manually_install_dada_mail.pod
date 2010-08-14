@@ -22,16 +22,7 @@ Change the permissions of the, C<mail.cgi> file to, C<755>:
 
  chmod 755 mail.cgi
 
-Visit the, C<mail.cgi> script in your web browser. You should see the following screen: 
-
-=begin html
-
-<p style="text-align:center">
-<img src="file:///Users/justin/Documents/DadaMail/4.0_Magicbook/pod_src/i/DadaMail-no_configure.jpg" /><br /> 
-<em>Dada Mail, complaining that it has not been configured.</em> 
-</p>
-
-=end html
+Visit the, C<mail.cgi> script in your web browser. You should see a "Welcome" screen, that also tells you that Dada Mail has not been configured. 
 
 Note the URL that you used to access the C<mail.cgi> script. We'll be using that later. 
 
