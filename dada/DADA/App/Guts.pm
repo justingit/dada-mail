@@ -284,8 +284,8 @@ sub make_pin {
 				
 			while($looks_good == 0){ 
 				$enc =  DADA::Security::Password::encrypt_passwd($pin); 
-				# Slash!
-				if($enc =~ m/\//){ 
+				# Slash! Period!
+				if($enc =~ m/\/|\./){ 
 					# If the salt is the same, the new encrypted password
 					# will *also* be the same. Not good! 
 					# Change that up: 
