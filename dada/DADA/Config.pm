@@ -4817,8 +4817,8 @@ and to say that you've got the freshest tools on the Web.
 
 
 
-$VERSION = 4.1.0; 
-$VER     = '4.2.0 Release Candidate 1';
+$VERSION = 4.2.0; 
+$VER     = '4.2.0 Release Candidate 2';
 
 
 #
