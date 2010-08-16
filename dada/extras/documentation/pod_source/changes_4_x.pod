@@ -2,6 +2,54 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head 4.2.0
+
+=head2 Changes 4.2.0
+
+=head3 Dada Mail Installer
+
+Dada Mail now comes with an installer - manually setting up and configuring
+Dada Mail is now longer needed. Heavens be praised. 
+
+Dada Installer directions may be found at: 
+
+L<http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html>
+
+Upgrade instructions may be found at: 
+
+L<http://dadamailproject.com/support/documentation/manually_install_dada_mail.pod.html>
+
+The installar script may also be run via the command line - instructions can be 
+found on how to use it, by invoking the script with the, C<--help> flag, 
+
+ shell>./installer.cgi --help
+
+=head4 Installation Terminology Changes
+
+The, "Advanced" Installation of Dada Mail is just known as a, "Manual" installation
+of Dada Mail. We only recommend masochists to manually install Dada Mail. 
+
+The Dada Mail Installer will install Dada Mail the same way as one would install 
+Dada Mail manually. Directions may be found here: 
+
+L<http://dadamailproject.com/support/documentation/manually_install_dada_mail.pod.html>
+
+The, "Basic" Installation method is not recommended or supported. If upgrading from a, "Basic" installation, 
+it's recommended to move to a more contemporary installation setup: 
+
+L<http://dadamailproject.com/support/documentation/basic_two_contemporary_installation.pod.html>
+
+=head2 Setup Info Screen 
+
+The, "Setup Info" Screen, that you can access using this URL: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi?f=setup_info>
+
+has been completely rewritten. In light of the Installer, it does not attempt to help 
+configure Dada Mail for you, but will tell you what type of installation it recognizes, 
+ will present to you the entire contents of your, C<dada/DADA/Config.pm> file, your C<.dada_config> 
+file  and will show you how all config variables are being interpreted. 
+
 =head1 4.1.0
 
 =head2 Changes 4.1.0
