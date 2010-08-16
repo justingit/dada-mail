@@ -574,6 +574,12 @@ $ADMIN_MENU = [
 	 -Activated  => 1,
 	},
 
+	{-Title      => '<!-- tmpl_var PROGRAM_NAME --> Setup Info',
+	 -Title_URL  => "$S_PROGRAM_URL?f=setup_info",
+	 -Function   => 'setup_info',
+	 -Activated  => 1,
+	},
+
 
 	{-Title      => 'Logout',
 	-Title_URL  => "$S_PROGRAM_URL?f=logout",
