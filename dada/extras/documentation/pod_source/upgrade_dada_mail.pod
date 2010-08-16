@@ -96,7 +96,7 @@ Moving the directory:
 =back
 
 
-=head2 Step #3 Install the new Dada Mail
+=head2 Step #2 Install the new Dada Mail
 
 Now, you can just follow the instructions for an installation of Dada Mail: 
 
@@ -108,11 +108,11 @@ L<http://dadamailproject.com/support/documentation-4_2_0/install_dada_mail.pod.h
 
 Your Dada Files Location is usually the directory above your C<PROGRAM_CONFIG_FILE_DIR> variable. For example, if my C<PROGRAM_CONFIG_FILE_DIR> is set to: 
 
- /home/myaccount/.dada_files/.configs
+I</home/myaccount/.dada_files/.configs>
 
 my C<.dada_files> directory is: 
 
-  /home/myaccount/.dada_files
+I</home/myaccount/.dada_files>
 
 =item * If your last installation was a Basic Installation, install Dada Mail as if it's a brand new installation and then move your old list/settings/archives/etc files over: 
 

@@ -35,7 +35,7 @@ if($PROGRAM_ERROR_LOG){open (STDERR, ">>$PROGRAM_ERROR_LOG") || warn "$PROGRAM_N
 
 =head1 DESCRIPTION 
 
-The Config.pm file holds all the global variables in Dada Mail. It should not itself be 
+The, I<dada/DADA/Config.pm> file holds all the global variables in Dada Mail. It should not itself be 
 heavily edited with custom changes - such changes will be lost whenever you upgrade. 
 Use the outside config file (C<.dada_config>) for that. 
 
@@ -100,8 +100,8 @@ Remove the entire, C<unless> clause:
  %SOME_HASH = (
  	# a long list of key/value pairs
  ); 
-
-
+ 
+ 
  @SOME_ARRAY = (
  	# ... 
  ); 

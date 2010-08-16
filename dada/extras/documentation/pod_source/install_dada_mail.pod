@@ -24,7 +24,7 @@ Save the distribution to your Desktop Computer (you will B<not> have to uncompre
 
 Download the, C<uncompress_dada.cgi> script from here: 
 
-L<Change Me!>
+L<http://github.com/justingit/dada-mail/raw/6e195eeca56528ae89d8a1a0d2fedde95dc6a111/uncompress_dada.cgi>
 
 (long gruesome URL - we know) 
 
