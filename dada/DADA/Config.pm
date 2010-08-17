@@ -1,7 +1,7 @@
 package DADA::Config; 
 
 # For information on how to install Dada Mail, please see: 
-# http://dadamailproject.com/support/documentation-4_2_0/install_dada_mail.pod.html
+# http://dadamailproject.com/support/documentation/install_dada_mail.pod.html
 
 require Exporter;  
 our @ISA =   qw(Exporter);  

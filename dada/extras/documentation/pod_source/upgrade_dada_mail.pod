@@ -100,7 +100,7 @@ Moving the directory:
 
 Now, you can just follow the instructions for an installation of Dada Mail: 
 
-L<http://dadamailproject.com/support/documentation-4_2_0/install_dada_mail.pod.html>
+L<http://dadamailproject.com/support/documentation/install_dada_mail.pod.html>
 
 =over
 

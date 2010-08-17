@@ -35,7 +35,7 @@ This directory should hold most all the files/directories that represent your Ma
 
 You may either use the Dada Mail Installer (preferred): 
 	
-L<http://dadamailproject.com/support/documentation-4_2_0/install_dada_mail.pod.html>
+L<http://dadamailproject.com/support/documentation/install_dada_mail.pod.html>
 
 Or Manually install Dada Mail (more difficult) 
 

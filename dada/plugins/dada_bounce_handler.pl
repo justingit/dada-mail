@@ -5779,7 +5779,7 @@ collection. It's a gnarly group of modules.
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999-2009 Justin Simoni 
+Copyright (c) documentation/install_dada_mail.pod.html Simoni 
 http://justinsimoni.com 
 All rights reserved. 
 
