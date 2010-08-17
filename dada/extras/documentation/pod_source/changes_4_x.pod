@@ -13,11 +13,11 @@ Dada Mail is now longer needed. Heavens be praised.
 
 Dada Installer directions may be found at: 
 
-L<http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html>
+L<http://dadamailproject.com/support/documentation/manually_install_dada_mail.pod.html>
 
 Upgrade instructions may be found at: 
 
-L<http://dadamailproject.com/support/documentation/manually_install_dada_mail.pod.html>
+L<http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html>
 
 The installar script may also be run via the command line - instructions can be 
 found on how to use it, by invoking the script with the, C<--help> flag, 
