@@ -1,3 +1,4 @@
+
 =pod
 
 =head1 Installing and Configuring Dada Mail
@@ -24,11 +25,7 @@ Save the distribution to your Desktop Computer (you will B<not> have to uncompre
 
 Download the, C<uncompress_dada.cgi> script from here: 
 
-L<http://github.com/justingit/dada-mail/raw/6e195eeca56528ae89d8a1a0d2fedde95dc6a111/uncompress_dada.cgi>
-
-(long gruesome URL - we know) 
-
-I<(You may have to "Save Page As...")>
+=for html <ul><li><strong><a href="http://github.com/justingit/dada-mail/raw/8a4755e2b6e15364def4f7f1eb7639a5a1cb58d7/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
 
 and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> - right alongside the tar.gz file you just put up. 
 
