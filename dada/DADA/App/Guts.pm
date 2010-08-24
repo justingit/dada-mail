@@ -2684,7 +2684,7 @@ sub safely_encode {
 
 =head1 COPYRIGHT
 
-Copyright (c) documentation/install_dada_mail.pod.html Simoni 
+Copyright (c) 1999 - 2010 Justin Simoni 
 
 http://justinsimoni.com 
 

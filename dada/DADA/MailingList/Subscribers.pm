@@ -1833,7 +1833,7 @@ Justin Simoni http://dadamailproject.com
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) documentation/install_dada_mail.pod.html Simoni All rights reserved. 
+Copyright (c) 1999 - 2010 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

@@ -3126,7 +3126,7 @@ is controlled by C<DADA::Mail::MailOut>. C<DADA::Mail::Send> is quite dumb in wh
 
 =head1 COPYRIGHT
 
-Copyright (c) documentation/install_dada_mail.pod.html Simoni 
+Copyright (c) 1999 - 2010 Justin Simoni 
 me - justinsimoni.com
 http://justinsimoni.com 
 All rights reserved. 

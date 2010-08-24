@@ -45,8 +45,6 @@ L<http://dadamailproject.com>
 
 =head1 INSTALLING 
 
-For now, please use: 
-
 L<http://dadamailproject.com/support/documentation/install_dada_mail.pod.html>
 
 =head1 DOCUMENTATION

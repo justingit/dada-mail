@@ -1,7 +1,9 @@
 package DADA::Config; 
 
+##############################################################################
 # For information on how to install Dada Mail, please see: 
-# http://dadamailproject.com/support/documentation/install_dada_mail.pod.html
+# http://dadamailproject.com/support/documentation/install_dada_mail.pod.html 
+##############################################################################
 
 require Exporter;  
 our @ISA =   qw(Exporter);  
@@ -19,6 +21,7 @@ $PROGRAM_CONFIG_FILE_DIR = 'auto';
 #--------------------------------#
 
 BEGIN {
+
 
 $PROGRAM_ERROR_LOG = undef;
 
@@ -4818,7 +4821,7 @@ and to say that you've got the freshest tools on the Web.
 
 
 $VERSION = 4.2.0; 
-$VER     = '4.2.0 Release Candidate 2';
+$VER     = '4.2.0 Stable 8/23/10';
 
 
 #
