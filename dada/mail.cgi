@@ -8832,15 +8832,21 @@ sub setup_info {
 
     if ( $checksout == 1 || root_password_verification($root_password) == 1 ) {
 
-# If we have a .dada_config file, this is a contemporary installation, we'll say.
+		# If we have a .dada_config file, this is a contemporary installation, we'll say.
         my $c_install = 0;
-        if (   -e $DADA::Config::PROGRAM_CONFIG_FILE_DIR
-            && -d $DADA::Config::PROGRAM_CONFIG_FILE_DIR )
+		# Not sure why I should do this check at all, if the "auto" dealy 
+		# could be set, anyways, 
+        if (   
+			(-e $DADA::Config::PROGRAM_CONFIG_FILE_DIR
+            && -d $DADA::Config::PROGRAM_CONFIG_FILE_DIR) || 
+			$DADA::Config::PROGRAM_CONFIG_FILE_DIR eq 'auto'
+ 		)
         {
             if ( -e $DADA::Config::CONFIG_FILE ) {
                 $c_install = 1;
             }
         }
+
 
         my $config_file_contents = undef;
         if ( -e $DADA::Config::CONFIG_FILE ) {
