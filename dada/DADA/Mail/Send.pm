@@ -2134,9 +2134,8 @@ sub _make_general_headers {
 	}
 	
 	if($From_obj){ 
-		# TODO BUG These need to be Encoded - right now - the ain't 
+		# TODO BUG These need to be Encoded - right now - the ain't - Well, what do I have to do to encode it? 
 		$gh{From}       = $From_obj->format;
-		$gh{'Reply-To'} = $From_obj->format;
 	}
 	# time  + random number + sender, woot!
 	require DADA::Security::Password; 	
