@@ -61,7 +61,7 @@ I<(If you're familiar with accessing your hosting account via ssh, feel free to 
 
 By default, the installer is disabled, so not to pose as a security issue. Rename the, I<dada/B<installer-disabled>> directory to, I<dada/B<installer>>. 
 
-=head3 Change permissions of the, "dada/mail.cgi" and "dada/installer/install.cgi" scrits to, "755"
+=head3 Change permissions of the, "dada/mail.cgi" and "dada/installer/install.cgi" scripts to, "755"
 
 B<BOTH> of these scripts need to have their permissions changed to, B<755>
 
