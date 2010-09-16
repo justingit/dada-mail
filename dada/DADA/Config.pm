@@ -4842,6 +4842,20 @@ and start chasing guys half her age.
 $PROGRAM_NAME ||= "Dada Mail";
 
 
+=pod
+
+=head2 %EMAIL_HEADERS
+
+C<%EMAIL_HEADERS> hold the default values of all email headers that Dada Mail 
+supports. Most of the default values have no default (they're set to, C<undef>)
+and in this case, won't be used, unless explicitly set in the program, somewhere. 
+
+You may try changing the default value, (for example, the C<Reply-To> header) 
+but these default value will always be overrided by anything explictly set in
+in the program. 
+
+=cut
+
 %EMAIL_HEADERS = (
 
  Date                       =>    undef, 
@@ -4900,6 +4914,19 @@ References                  =>    undef,
  Body                 	    =>   'blank', 
 
 ) unless keys %EMAIL_HEADERS; 
+
+
+
+=pod
+
+=head2 @EMAIL_HEADERS_ORDER
+
+C<@EMAIL_HEADERS_ORDER> sets the order at which email headers are written in, 
+when Dada Mail creates an email message. 
+
+=cut
+
+
 
 @EMAIL_HEADERS_ORDER = qw(
 Date
