@@ -11,6 +11,10 @@ Key:
 [?] Someday
 
 
+[ ] Move the perllib directory? 
+	It's kind of in a funky spot, currently. Would be better a little more out of the way
+	
+
 [ ] Twitter Stuff has to be updated to use oAuth - no way around it. 
 	http://stereonaut.net/twitters-oauth-perl/
 	http://hueniverse.com/2007/10/beginners-guide-to-oauth-part-i-overview/
