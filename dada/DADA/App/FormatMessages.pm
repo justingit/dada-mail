@@ -1208,7 +1208,7 @@ sub _macro_tags {
 	
 		$type = 'n';
 		$args{-email} ||= '<!-- tmpl_var subscriber.email_name -->@<!-- tmpl_var subscriber.email_domain -->';
-		$args{-pin}   ||= '[subscriber.pin]';
+		$args{-pin}   ||= '<!-- tmpl_var subscriber.pin -->';
 	
 	}elsif($args{-type} eq 'confirm_unsubscribe'){ 
 		
