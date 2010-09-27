@@ -262,66 +262,69 @@ sub subscription_list {
 
 
 sub check_for_double_email {
-	
-    my $self = shift; 
-    
-    my %args = ( 
-        -Email          => undef,
-        -Type           => 'list', 
-        -Match_Type     => 'sublist_centric',
-        
+
+    my $self = shift;
+
+    my %args = (
+        -Email      => undef,
+        -Type       => 'list',
+        -Match_Type => 'sublist_centric',
+
         @_
     );
-    
-    if($self->{list} and $args{-Email}){ 
-    
-        $self->open_list_handle(-Type => $args{-Type});	 
-        
-        my $check_this = undef; 
-        my $email      = $args{-Email}; 
-        my $in_list    = 0; 
 
-        while(defined($check_this = <LIST>)){ 
-        
+    if ( $self->{list} and $args{-Email} ) {
+
+        $self->open_list_handle( -Type => $args{-Type} );
+
+        my $check_this = undef;
+        my $email      = $args{-Email};
+        my $in_list    = 0;
+
+        while ( defined( $check_this = <LIST> ) ) {
+
             chomp($check_this);
-            if(
+            if (
                 (
-                    $args{-Type} eq "black_list" || 
-                    $args{-Type} eq "white_list"
-                ) 
-                && 
-                $args{-Match_Type} eq 'sublist_centric'
-              ){ 
-            
-                if (! $check_this || $check_this eq ''){ 
+                    $args{-Type} eq "black_list" || $args{-Type} eq "white_list"
+                )
+                && $args{-Match_Type} eq 'sublist_centric'
+              )
+            {
+
+                if ( !$check_this || $check_this eq '' ) {
                     carp "blank line in subscription list?!";
-                    next; 
+                    next;
                 }
-                if(cased($email) =~ m/$check_this/i){
-                    $in_list=1;
+                $check_this = quotemeta($check_this);
+                if ( cased($email) =~ m/$check_this/i ) {
+                    $in_list = 1;
                     last;
                 }
-            
-            }else{
-            
-                if(cased($check_this) eq cased($email)){
-                    $in_list=1;
+
+            }
+            else {
+
+                if ( cased($check_this) eq cased($email) ) {
+                    $in_list = 1;
                     last;
                 }
             }
         }
-        
-        close (LIST);
-        
-        return $in_list; 
-        
-    }else{ 	
+
+        close(LIST);
+
+        return $in_list;
+
+    }
+    else {
 
         return 0;
 
     }
-    
-    }
+
+}
+
 
 
 sub num_subscribers { 
@@ -913,7 +916,7 @@ sub DESTROY {}
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2010 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

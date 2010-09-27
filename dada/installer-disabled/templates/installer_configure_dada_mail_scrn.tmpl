@@ -1,0 +1,345 @@
+<!-- begin installer_configure_dada_mail_scrn.tmpl --> 
+
+<h1>Install <!-- tmpl_var PROGRAM_NAME --></h1> 
+	
+<!-- tmpl_if errors --> 
+	<h2>
+		Problems When Attempting to Install!
+	</h2>
+	<p class="error"> 
+	 Some problems were encountered, when attempting to install and configure <!-- tmpl_var PROGRAM_NAME -->. Details are marked below:
+	</p>  
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if lists_available --> 
+
+	<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+
+	<h3>Warning!</h3> 
+	<p>At least with the current configuration you have, there are already mailing lists available via <!-- tmpl_var PROGRAM_NAME -->.</p> 
+
+	<p>Reconfiguring <!-- tmpl_var PROGRAM_NAME --> could potentially lose these lists. </p> 
+
+	<p>Please only continue with this installation/configuration, if you're sure you know what you're doing. </p> 
+	 
+	</div> 
+
+<!-- /tmpl_if --> 
+
+
+
+<!-- tmpl_if error_cant_read_config_dot_pm --> 
+
+	<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+
+
+	<h3>Warning!</h3>
+
+	<p> 
+	    <!-- tmpl_var PROGRAM_NAME --> can't read your, <em>dada/DADA/Config.pm</em> file.
+	</p>
+	<p> 
+		You may still perform this installation, but you may have to edit parts of the <em>dada/DADA/Config.pm</em>
+		file yourself. (We'll let you know, where.)
+	</p>
+	</div> 
+
+<!-- /tmpl_if --> 
+<!-- tmpl_if error_cant_write_config_dot_pm --> 
+
+<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+
+
+<h3>Warning!</h3> 
+<p> 
+	<!-- tmpl_var PROGRAM_NAME --> won't be able to write to edit your <em>dada/DADA/Config.pm</em> file itself.
+	</p> 
+	<p> 
+	You may still perform this installation, but you may have to edit parts of the <em>dada/DADA/Config.pm</em>
+	file yourself. (We'll let you know, where.)
+</p>
+</div> 
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if comment --> 
+	<!-- tmpl_loop errors --> 
+		<p>Error <!-- tmpl_var error --> 
+	<!-- /tmpl_loop --> 
+<!-- /tmpl_if --> 
+
+<form action="<!-- tmpl_var Self_URL -->" method="post" id="installform"> 
+
+
+
+	<fieldset> 
+
+
+	<legend>
+		&quot;<!-- tmpl_var Dada_Files_Dir_Name -->	&quot; Directory Location [<a href="#" onclick="toggleDisplay('dada_files_help');return false;">?</a>]
+	</legend>
+	<!-- tmpl_if error_create_dada_files_dir  --> 
+		<ul> 
+		<li>
+		<p class="error"> 
+		 Can not create, <em><!-- tmpl_var install_dada_files_dir_at -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em>
+		</p>
+		</li>
+		</ul>
+
+	<!-- /tmpl_if --> 
+	<!-- tmpl_if error_dada_files_dir_exists  --> 
+		<ul> 
+		<li>
+		<p class="error"> 
+			The directory, <em><!-- tmpl_var dada_files_loc -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em> already exists.
+		</p>
+
+		<!-- tmpl_if test_complete_dada_files_dir_structure_exists --> 
+				<p>
+				<input type="checkbox" name="skip_configure_dada_files"	id="skip_configure_dada_files" value="1" onClick="ToggleConfigurationOptions();" /> 
+				<label for="skip_configure_dada_files">I know that the,  &quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; directory already exists. Please:</label> <br /> 
+				<ul> 
+					<li>
+						<p>Use the existing directory structure and configuration file, ignoring the configuration below. 
+						</p></li>
+						<li><p>I understand no checks are done to make sure that the current  setup is correct!)</p></li> 
+					</ul>
+		<!-- /tmpl_if --> 
+		
+		</ul> 
+
+		
+	<!-- /tmpl_if -->
+	
+
+
+	<div id="dada_files_help" style="display:none"> 
+
+	<p class="positive">	
+		<!-- tmpl_var PROGRAM_NAME --> will need to write various files and will need a directory for which to do this in. You'll 
+		have to tell Dada Mail where you'd like this directory to live. The directory will be called, <em><!-- tmpl_var Dada_Files_Dir_Name --></em>. 
+		</p>
+		<p class="positive">
+		Usually, this directory will live under your home directory and <!-- tmpl_var PROGRAM_NAME --> can usually guess where that is, but if it guesses wrong
+		or it cannot create the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory in your home directory, you may need to set an alternative directory. 
+	</p> 
+	</div> 
+
+
+
+
+	<p>
+	 <input type="radio" checked="checked" id="dada_files_dir_setup_auto"  name="dada_files_dir_setup" value="auto" onChange="Toggle_dada_files_dirOptions(); return false;">
+		<label for="dada_files_dir_setup_auto">AUTO 
+		Use <!-- tmpl_var PROGRAM_NAME -->'s best guess.  </label>(<em> <!-- tmpl_var home_dir_guess --></em>). 
+	</p> 
+
+	 <p>
+	  <input type="radio"  id="dada_files_dir_setup_manual" name="dada_files_dir_setup" value="manual" onChange="Toggle_dada_files_dirOptions(); return false;">
+	<label for="dada_files_dir_setup_manual"> 
+	 MANUAL.
+	</label>  Explicitly set the Absolute Path to where the <em><strong>.dada_files</strong></em> directory should be installed:</p>
+
+	<div id="manual_dada_files_dir_setup">
+	<fieldset> 
+	<legend> 
+		Manual Configuration of the, <em>.dada_files</em> directory
+	</legend> 
+	<p> 
+	 <input type="text" name="dada_files_loc" value="<!-- tmpl_var home_dir_guess -->" style="width:70%" />/<em><strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em>
+	</p> 
+
+	</fieldset>
+
+	</div> 
+
+	</fieldset>
+
+<div id="configuration"> 
+	
+
+<fieldset> 
+	<legend>Configuration</legend> 
+	
+<fieldset> 
+
+<legend>
+
+<!-- tmpl_var PROGRAM_NAME --> URL [<a href="#" onclick="toggleDisplay('program_url_help');return false;">?</a>]
+
+</legend> 
+
+
+<!-- tmpl_if error_program_url_is_blank  --> 
+	<ul>
+	<li>
+	<p class="error"> 
+	Your <!-- tmpl_var PROGRAM_NAME --> URL is blank.</em>
+	</p></li>
+	</ul> 
+	
+<!-- /tmpl_if -->
+
+
+
+<p><label for="program_url"><!-- tmpl_var PROGRAM_NAME --> Program URL:</label>
+</p>
+<div id="program_url_help" style="display:none"> 
+	 <p class="positive">
+	 	The <!-- tmpl_var PROGRAM_NAME --> Program URL should be set to where you access the, <em>mail.cgi</em> script, currently. 
+	 </p> 
+</div> 
+
+
+<p>
+<input type="text" id="program_url" name="program_url" class="full" value="<!-- tmpl_var program_url_guess -->" />
+</p> 
+
+</fieldset> 
+
+
+
+<fieldset> 
+
+<legend>
+	<!-- tmpl_var PROGRAM_NAME --> Root Password [<a href="#" onclick="toggleDisplay('root_pass_help');return false;">?</a>]
+</legend> 
+
+
+<!-- tmpl_if error_root_pass_is_blank  --> 
+	<ul>
+	<li>
+	<p class="error"> 
+	Your <!-- tmpl_var PROGRAM_NAME --> Root Password is Blank.</em>
+	</p></li></ul> 
+	
+<!-- /tmpl_if -->
+<!-- tmpl_if error_pass_no_match  --> 
+	<ul>
+	<li>
+	<p class="error"> 
+	Your <!-- tmpl_var PROGRAM_NAME --> Root Passwords Do Not Match.</em>
+	</p></li>
+	</ul> 
+	
+<!-- /tmpl_if -->
+
+<div id="root_pass_help" style="display:none"> 
+
+<p class="positive">This is the main password to <!-- tmpl_var PROGRAM_NAME -->, used to create new mailing lists and to 
+access <em>any</em> mailing list.</p> 
+</div> 
+
+<p><label for="dada_root_pass"><!-- tmpl_var PROGRAM_NAME --> Root Password:</label>
+<br /> 
+<input type="text" id="dada_root_pass" name="dada_root_pass" />
+</p> 
+<p><label for="dada_root_pass_again">Re-type Your <!-- tmpl_var PROGRAM_NAME --> Root Password:</label><br /> 
+<input type="text" id="dada_root_pass_again" name="dada_root_pass_again" /></p> 
+<hr /> 
+</fieldset> 
+
+
+
+<fieldset> 
+
+<legend><!-- tmpl_var PROGRAM_NAME --> Backend [<a href="#" onclick="toggleDisplay('backend_help');return false;">?</a>]</legend> 
+
+<!-- tmpl_if error_sql_connection  --> 
+	<ul>
+	<li>
+	<p class="error"> 
+		Could not connect to your SQL Server
+	</p>
+	</li>
+	</ul> 
+<!-- /tmpl_if -->
+
+
+
+<div id="backend_help" style="display:none"> 
+ 
+<p class="positive">	
+	<!-- tmpl_var PROGRAM_NAME --> supports a few different types of backends to save its mailing list settings, lists, archive, etc into. 
+</p> 
+<p class="positive">	
+	The <strong>Default</strong> backend should be available for almost any server setup, but doesn't allow you to use some of the more 
+	advanced features of <!-- tmpl_var PROGRAM_NAME -->. </p> 
+	<p class="positive">	
+Both the <strong>MySQ</strong>L and <strong>PostgreSQL</strong> backends allow you to use these advanced features and just require you to fill in the database details.
+If using either the SQL backends, make sure to create a new database before configuring <!-- tmpl_var PROGRAM_NAME --> and plug the SQL information below. <!-- tmpl_var PROGRAM_NAME --> will create the necessary tables. 
+</p> 
+	
+</div>
+<p>
+	<select name="backend" id="backend" onChange="ToggleSQLOptions(); return false;"> 
+		<option value="default" selected="selected">Default Backend</option>
+		<!-- tmpl_if can_use_DBI --> 
+			<option value="mysql">MySQL (recommended)</option> 
+			<option value="Pg">PostgreSQL</option> 			
+		<!-- /tmpl_if --> 
+	</select>
+</p>
+
+<!-- tmpl_if can_use_DBI --> 
+<div id="sql_info" style="display:none;"> 
+<fieldset>
+	<legend>SQL Information</legend> <!-- tmpl_if error_sql_table_populated -->
+	<ul>
+		<li>
+			<p class="error">
+				The SQL information below is correct, but there are tables in this database that correspond to the tables that Dada Mail requires.
+			</p>
+			<p>
+				<input type="checkbox" name="skip_configure_SQL" id="skip_configure_SQL" value="1"><label>I know these tables already exist.</label><br>
+				Use these existing tables, instead of making new ones.
+			</p>
+		</li>
+	</ul><!-- /tmpl_if -->
+	<p>
+		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_server">Server:</label> <input type="text" name="sql_server" id="sql_server" value="localhost" />
+	</p>
+	<p>
+		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_database">Database:</label> <input type="text" name="sql_database" id="sql_database" />
+	</p>
+	<p>
+		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_port">Port:</label> <input type="text" name="sql_port" id="sql_port" value="auto" />
+	</p>
+	<p>
+		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_username">Username:</label> <input type="text" name="sql_username" id="sql_username"/>
+	</p>
+	<p>
+		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_password">Password:</label> <input type="text" name="sql_password" id="sql_password"/> 
+	</p>
+</fieldset>
+
+</div> 
+
+
+
+<!-- tmpl_else --> 
+	<p class="error"> 
+		Your current server setup does not support the SQL backend. 
+	</p>
+	
+<!-- /tmpl_if --> 
+</fieldset> 
+
+</fieldset> 
+</div> 
+
+
+
+
+<input type="hidden" name="f" value="check" /> 
+
+<p style="text-align:center">
+ <input type="submit" value="Configure  <!-- tmpl_var PROGRAM_NAME -->!" class="processing" /> 
+</p>
+
+
+</form> 
+
+<!-- tmpl_include install_debug_info_widget.tmpl --> 
+
+<!-- end installer_configure_dada_mail_scrn.tmpl --> 

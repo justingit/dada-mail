@@ -247,7 +247,7 @@ sub erase {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2010 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

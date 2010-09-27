@@ -655,9 +655,7 @@ sub run {
 	'subscription_form_js'    =>     \&subscription_form_js, 
 
 
-	'what_is_dada_mail'       =>    \&what_is_dada_mail, 
-	'adv_dada_mail_setup'     =>    \&adv_dada_mail_setup, 
-	
+	'what_is_dada_mail'       =>    \&what_is_dada_mail, 	
 	'profile_activate'        =>    \&profile_activate, 
 	'profile_register'        =>    \&profile_register, 
 	'profile_reset_password'  =>    \&profile_reset_password, 
@@ -703,6 +701,11 @@ sub default {
         user_error( -Error => 'bad_setup' );
         return;
     }
+
+	if(DADA::App::Guts::install_dir_around() == 1){ 
+		user_error( -Error => 'install_dir_still_around' );
+	    return;
+	}
 
     if (   $DADA::Config::ARCHIVE_DB_TYPE eq 'Db'
         || $DADA::Config::SETTINGS_DB_TYPE eq 'Db' )
@@ -935,6 +938,12 @@ sub admin {
         &default;        
         return;
     } 
+
+	if(DADA::App::Guts::install_dir_around() == 1){ 
+		user_error( -Error => 'install_dir_still_around' );
+	    return;
+	}
+	
     
     my $scrn = list_template(
 		-Part       => "header",
@@ -959,11 +968,17 @@ sub admin {
 
 
 sub sign_in {
+	
+	if(DADA::App::Guts::install_dir_around() == 1){ 
+		user_error( -Error => 'install_dir_still_around' );
+	    return;
+	}
 
     my $list_exists = check_if_list_exists(
         -List       => $list,
         -dbi_handle => $dbi_handle,
     );
+
 
 	my $scrn = ''; 
 	
@@ -7706,7 +7721,6 @@ sub archive {
                     show_iframe     => $show_iframe,
                     discussion_list => ( $li->{group_list} == 1 ) ? 1 : 0,
 
-                    #header_from                   => decode_he($header_from),
                     header_from         => $header_from,
                     in_reply_to_id      => $in_reply_to_id,
                     in_reply_to_subject => xss_filter($in_reply_to_subject),
@@ -8798,138 +8812,190 @@ sub pass_gen {
 
 
 
-sub setup_info { 
+sub setup_info {
 
-
+    require DADA::Template::Widgets;
 
     my $root_password = $q->param('root_password') || '';
 
+    my $from_control_panel = 0;
+
+    my ( $admin_list, $root_login, $checksout ) = check_list_security(
+        -cgi_obj         => $q,
+        -Function        => 'setup_info',
+        -manual_override => 1
+    );
+    if ( $checksout == 1 && $root_password eq '' ) {
+        $from_control_panel = 1;
+    }
 
 
-	if(($DADA::Config::PROGRAM_URL eq "") || ($DADA::Config::PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi')){ 
-				$DADA::Config::PROGRAM_URL =  $ENV{SCRIPT_URI} || $q->url();
+    if ( $checksout == 1 || root_password_verification($root_password) == 1 ) {
 
-	}			
-
-	if(($DADA::Config::S_PROGRAM_URL eq "") || ($DADA::Config::S_PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi')){ 
-				$DADA::Config::S_PROGRAM_URL =  $ENV{SCRIPT_URI} || $q->url();
-	}
-	    
-    if(root_password_verification($root_password) == 1){ 
-        my $doc_root   = $ENV{DOCUMENT_ROOT};
-		my $pub_html_dir      = $doc_root; 
-		   $pub_html_dir      =~ s(^.*/)();
-		my $home_dir_guess; 
-		my $getpwuid_call; 
-		eval { $getpwuid_call = ( getpwuid $> )[7] };
-		if(!$@){ 
-			$home_dir_guess   = $getpwuid_call; 
-		}
-		else { 
-	    	$home_dir_guess   =~ s/\/$pub_html_dir$//g;
-		}
-		
-		my $config_file_exists    = 0; 
-		my $config_file_contents = undef; 
-		if(-e $DADA::Config::CONFIG_FILE){ 
-			$config_file_exists = 1;
-			require DADA::Template::Widgets;  
-			$config_file_contents = DADA::Template::Widgets::_slurp($DADA::Config::CONFIG_FILE); 
-		}
-
-        my $sendmails = []; 
-        if ($DADA::Config::OS !~ /^Win|^MSWin/i){
-            push(@$sendmails, {location => $_})
-                foreach(split(" ", `whereis sendmail`));
+		# If we have a .dada_config file, this is a contemporary installation, we'll say.
+        my $c_install = 0;
+		# Not sure why I should do this check at all, if the "auto" dealy 
+		# could be set, anyways, 
+        if (   
+			(-e $DADA::Config::PROGRAM_CONFIG_FILE_DIR
+            && -d $DADA::Config::PROGRAM_CONFIG_FILE_DIR) || 
+			$DADA::Config::PROGRAM_CONFIG_FILE_DIR eq 'auto'
+ 		)
+        {
+            if ( -e $DADA::Config::CONFIG_FILE ) {
+                $c_install = 1;
+            }
         }
 
 
-		my $example_config_file_path = undef; 
-		if(defined($DADA::Config::CONFIG_FILE)){ 
-			$example_config_file_path = $DADA::Config::CONFIG_FILE;
-			$example_config_file_path =~ s/\/\.configs\/\.dada_config$//; 
-		}
-		
-		my $scrn = ''; 
-		
-        $scrn .= list_template(
-					   -Part        => "header", 
-                       -Title       => "Setup Information",
-					   -vars => { 
-							PROGRAM_URL         => $DADA::Config::PROGRAM_URL, 
-							S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL, 
-							show_profile_widget => 0,
-						}
-                      );
-        
-        require DADA::Template::Widgets;                
-        $scrn .= DADA::Template::Widgets::screen(
-			{
-				-screen => 'setup_info_screen.tmpl', 
-				-vars   => { 
-					FILES                     => $DADA::Config::FILES, 
-					exists_FILES              => (-e $DADA::Config::FILES)        ? 1 : 0,
-					FILES_starts_with_a_slash => ($DADA::Config::FILES =~ m/^\//) ? 1 : 0,
-					FILES_ends_in_a_slash     => ($DADA::Config::FILES =~ m/\/$/) ? 1 : 0,
-					DOCUMENT_ROOT             => $ENV{DOCUMENT_ROOT}, 
-					home_dir_guess            => $home_dir_guess, 
-					MAILPROG                  => $DADA::Config::MAILPROG, 
-					sendmails                 => $sendmails, 
-					PROGRAM_CONFIG_FILE_DIR   => $DADA::Config::PROGRAM_CONFIG_FILE_DIR, 
-					CONFIG_FILE               => $DADA::Config::CONFIG_FILE,   
-					config_file_exists        => $config_file_exists,
-					config_file_contents      => $config_file_contents, 
-					example_config_file_path  => $example_config_file_path, 
-					PROGRAM_ROOT_PASSWORD     => $root_password, 
-				},
-            }
-		);
+        my $config_file_contents = undef;
+        if ( -e $DADA::Config::CONFIG_FILE ) {
+            $config_file_contents =
+              DADA::Template::Widgets::_slurp($DADA::Config::CONFIG_FILE);
+        }
+        my $config_pm_file_contents =
+          DADA::Template::Widgets::_slurp('DADA/Config.pm');
 
-        $scrn .= list_template(-Part => "footer");
-		
-		e_print($scrn);
-            
-    }else{ 
+        my $files_var_exist = 0;
+        if ( -e $DADA::Config::FILES ) {
+            $files_var_exist = 1;
+        }
 
-        my $guess = $DADA::Config::PROGRAM_URL; 
-           $guess = $q->script_name()
-                if $DADA::Config::PROGRAM_URL eq "" || 
-                   $DADA::Config::PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'; # default.
-    
-        my $incorrect_root_password = $root_password ? 1 : 0; 
-      
-		my $scrn = ''; 
-        $scrn .= list_template(
-			-Part  => 'header', 
-			-Title => 'Setup Information',
-			-vars => {
-				PROGRAM_URL         => $DADA::Config::PROGRAM_URL, 
-				S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL,
-				show_profile_widget => 0,
-			}, 
-		);
+        my $CONFIG_vals = ();
 
+        foreach (@DADA::Config::EXPORT_OK) {
+            my $orig_name = $_;
+            $_ =~ s/^(\$|\@|\%)//;
+            my $sigil = $1; 
+			
+			require Data::Dumper;
 
-        require DADA::Template::Widgets;                
-        $scrn .= DADA::Template::Widgets::screen(
-			{
-				-screen => 'setup_info_login_screen.tmpl', 
-				-vars   => { 
-					program_url_guess       => $guess,
-					incorrect_root_password => $incorrect_root_password, 
-					PROGRAM_URL             => $DADA::Config::PROGRAM_URL, 
-					S_PROGRAM_URL           => $DADA::Config::S_PROGRAM_URL,
-				},
+            my $var_val = undef; 
+ 			if($sigil eq '$'){ 
+				$var_val = Data::Dumper::Dumper( ${ $DADA::Config::{$_} } );
+            }elsif($sigil eq '@'){ 
+				$var_val = Data::Dumper::Dumper( \@{ $DADA::Config::{$_} } );
+            }elsif($sigil eq '%'){ 
+				$var_val = Data::Dumper::Dumper( \%{ $DADA::Config::{$_} } );
 			}
-		);
-                                             
-        $scrn .= list_template(-Part       => 'footer', 
-                       -End_Form   => 0
-                  );
-    
-		e_print($scrn); 
-		
-		}
+			else { 
+				$var_val = '???'; 
+			}
+			
+			#$var_val =~ s/^(.*?)\'//m;
+           $var_val =~ s/^\$VAR(.*?)\= //;
+           $var_val =~ s/^\'//;
+		   $var_val =~ s/(\';|\'$)$//; 
+           $var_val =~ s/\;$//;
+
+            push( @$CONFIG_vals, { name => $orig_name, value => $var_val } );
+        }
+
+        my $scrn = '';
+        if ( $from_control_panel == 1 ) {
+            $scrn .= admin_template_header(
+                -Title      => "Setup Information",
+                -List       => $admin_list,
+                -Root_Login => $root_login
+            );
+
+        }
+        else {
+            $scrn .= list_template(
+                -Part  => "header",
+                -Title => "Setup Information",
+                -vars  => {
+                    PROGRAM_URL         => $DADA::Config::PROGRAM_URL,
+                    S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL,
+                    show_profile_widget => 0,
+                }
+            );
+        }
+
+        require DADA::Template::Widgets;
+        $scrn .= DADA::Template::Widgets::screen(
+            {
+                -screen => 'setup_info_screen.tmpl',
+                -vars   => {
+                    FILES => $DADA::Config::FILES,
+                    PROGRAM_ROOT_PASSWORD =>
+                      $DADA::Config::PROGRAM_ROOT_PASSWORD,
+                    MAILPROG => $DADA::Config::MAILPROG,
+                    PROGRAM_CONFIG_FILE_DIR =>
+                      $DADA::Config::PROGRAM_CONFIG_FILE_DIR,
+                    PROGRAM_ERROR_LOG       => $DADA::Config::PROGRAM_ERROR_LOG,
+                    c_install               => $c_install,
+                    config_file_contents    => $config_file_contents,
+                    config_pm_file_contents => $config_pm_file_contents,
+                    files_var_exist         => $files_var_exist,
+                    CONFIG_vals             => $CONFIG_vals,
+
+                },
+            }
+        );
+        if ( $from_control_panel == 1 ) {
+            $scrn .= admin_template_footer( -List => $admin_list );
+        }
+        else {
+            $scrn .= list_template( -Part => "footer" );
+        }
+        e_print($scrn);
+
+    }
+    else {
+
+        if ( $from_control_panel == 1 ) {
+
+            # just doin' this again, w/o the manual override:
+            check_list_security(
+                -cgi_obj  => $q,
+                -Function => 'setup_info',
+            );
+        }
+        else {
+
+            my $guess = $DADA::Config::PROGRAM_URL;
+            $guess = $q->script_name()
+              if $DADA::Config::PROGRAM_URL eq ""
+                  || $DADA::Config::PROGRAM_URL eq
+                  'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'
+            ;    # default.
+
+            my $incorrect_root_password = $root_password ? 1 : 0;
+
+            my $scrn = '';
+            $scrn .= list_template(
+                -Part  => 'header',
+                -Title => 'Setup Information',
+                -vars  => {
+                    PROGRAM_URL         => $DADA::Config::PROGRAM_URL,
+                    S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL,
+                    show_profile_widget => 0,
+                },
+            );
+
+            require DADA::Template::Widgets;
+            $scrn .= DADA::Template::Widgets::screen(
+                {
+                    -screen => 'setup_info_login_screen.tmpl',
+                    -vars   => {
+                        program_url_guess       => $guess,
+                        incorrect_root_password => $incorrect_root_password,
+                        PROGRAM_URL             => $DADA::Config::PROGRAM_URL,
+                        S_PROGRAM_URL           => $DADA::Config::S_PROGRAM_URL,
+                    },
+                }
+            );
+
+            $scrn .= list_template(
+                -Part     => 'footer',
+                -End_Form => 0
+            );
+
+            e_print($scrn);
+        }
+
+    }
 
 }
 
@@ -9664,117 +9730,6 @@ sub author {
     e_print("Dada Mail is originally written by Justin Simoni");
 
 }
-
-
-
-sub adv_dada_mail_setup { 
-	print $q->header(); 
-	
-	use Fcntl qw(
-	O_WRONLY 
-	O_TRUNC 
-	O_CREAT 
-	O_RDWR
-	O_RDONLY
-	LOCK_EX
-	LOCK_SH 
-	LOCK_NB);
-	
-	my $program_root_pass = xss_filter($q->param('program_root_pass')); 
-
-	unless(root_password_verification($program_root_pass)){ 
-    	die "Program Root Password Incorrect. Access Denied."; 
-	}
-	
-	
-	
-	my $dada_files_dir = make_safer($q->param('dada_files_dir')); 
-	my $pass  = $q->param('root_pass') || undef;
-	my $root_pass_is_encrypted = $DADA::Config::ROOT_PASS_IS_ENCRYPTED; 
-	
-	if(defined($pass) && length($pass) > 0){  
-	
-		require DADA::Security::Password; 
-		$pass = DADA::Security::Password::encrypt_passwd($pass);
-		$root_pass_is_encrypted = 1; 	
-	
-	}
-	else { 
-		$pass = $DADA::Config::PROGRAM_ROOT_PASSWORD; 
-	}
-
-	require DADA::Template::Widgets; 
-	my $outside_config_file = DADA::Template::Widgets::screen(
-			{
-			-screen => 'example_dada_config.tmpl', 
-			-vars   => { 
-				
-					PROGRAM_URL             => $DADA::Config::PROGRAM_URL, 
-					ROOT_PASSWORD           => $pass, 
-					ROOT_PASS_IS_ENCRYPTED  => $root_pass_is_encrypted, 
-					dada_files_dir          => $dada_files_dir, 
-			}
-		}
-	); 
-	
-	print $q->pre("working...\n"); 
-	if(-e $dada_files_dir) {
-		e_print($q->pre("$dada_files_dir already exists! Stopping.\n")); 
-	}
-	else { 
-		`mkdir $dada_files_dir`;
-		if(-e $dada_files_dir) {
-			e_print($q->pre("$dada_files_dir made!\n"));  
-		
-			foreach(qw(
-				.archives
-				.backups
-				.configs
-				.lists
-				.logs
-				.templates
-				.tmp
-				)){ 
-		
-					my $dir = $dada_files_dir . '/' . $_;
-					$dir = make_safer($dir);
-					`mkdir $dir`; 
-		  
-					if(-e $dir){ 
-						e_print($q->pre("$dir Made!\n")); 
-					}
-					else { 
-						e_print($q->pre("Making $dir FAILED. Stopping...\n")); 
-						last; 
-					}
-			}
-		
-			e_print($q->pre("Making config file...\n")); 
-			my $config_file = make_safer($dada_files_dir . '/.configs/.dada_config'); 
-		
-			if(-e $dada_files_dir ){ 
-			sysopen(CONFIGFILE, $config_file,  O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD ) or 
-				die "$!"; 
-			print CONFIGFILE $outside_config_file; 
-			close CONFIGFILE or die $!;
-		
-			e_print($q->pre("Config file made!\n")); 
-		   }
-			else { 
-				e_print($q->pre("skipping config file creation...\n")); 
-		   }
-		}
-		else { 
-			e_print($q->pre("Making $dada_files_dir FAILED.")); 
-		}
-	}
-	e_print($q->pre("Done.")); 
-	e_print("<p class=\"error\">Make sure to set the variable, \$PROGRAM_CONFIG_FILE_DIR in the <strong>Config.pm</strong> to: <strong>$dada_files_dir/.configs</strong></p>"); 
-		
-}
-
-
-
 
 sub profile_login { 
 	
@@ -10657,7 +10612,7 @@ __END__
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2009
+Copyright (c) 1999-2010
 Justin Simoni 
 http://justinsimoni.com 
 All rights reserved. 
@@ -10675,7 +10630,5 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-
 
 =cut

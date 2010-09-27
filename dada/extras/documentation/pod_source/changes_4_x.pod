@@ -2,6 +2,82 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.2.0
+
+=head2 Changes 4.2.0
+
+=head3 Dada Mail Installer
+
+Dada Mail now comes with an installer - manually setting up and configuring
+Dada Mail is now longer needed. Heavens be praised. 
+
+Dada Installer directions may be found at: 
+
+L<http://dadamailproject.com/support/documentation/manually_install_dada_mail.pod.html>
+
+Upgrade instructions may be found at: 
+
+L<http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html>
+
+The installar script may also be run via the command line - instructions can be 
+found on how to use it, by invoking the script with the, C<--help> flag, 
+
+ shell>./installer.cgi --help
+
+=head4 Installation Terminology Changes
+
+The, "Advanced" Installation of Dada Mail is just known as a, "Manual" installation
+of Dada Mail.
+
+The Dada Mail Installer will install Dada Mail the same way as one would install 
+Dada Mail manually. Directions may be found here: 
+
+L<http://dadamailproject.com/support/documentation/manually_install_dada_mail.pod.html>
+
+The, "Basic" Installation method is not recommended or supported. If upgrading from a, "Basic" installation, 
+it's recommended to move to a more contemporary installation setup: 
+
+L<http://dadamailproject.com/support/documentation/basic_two_contemporary_installation.pod.html>
+
+=head2 Setup Info Screen 
+
+The, "Setup Info" Screen, that you can access using this URL: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi?f=setup_info>
+
+has been completely rewritten. In light of the Installer, it does not attempt to help 
+configure Dada Mail for you, but will tell you what type of installation it recognizes, 
+ will present to you the entire contents of your, C<dada/DADA/Config.pm> file as well as your C<.dada_config> 
+file and will show you how all config variables are being interpreted. 
+
+=head3 $ADMIN_MENU Changes 
+
+The $ADMIN_MENU variable has been changed to add the, "Dada Mail Setup Info" menu item. It looks like this: 
+
+	{-Title      => '<!-- tmpl_var PROGRAM_NAME --> Setup Info',
+	 -Title_URL  => "$S_PROGRAM_URL?f=setup_info",
+	 -Function   => 'setup_info',
+	 -Activated  => 1,
+	},
+
+=head3 MySQL 4-specific schema REMOVED
+
+The MySQL schema shipped for Dada Mail, specifically for v4 of MySQL has been removed. 
+The reason for the schema was more because of UTF-8 incompatibilities, rather 
+than problems with this version of MySQL v4. 
+
+
+=head2 Bug Fixes
+
+=head3 Profile Email Addresses aren't normalized for case sensitivity
+
+http://github.com/justingit/dada-mail/issues#issue/60
+
+=head3 PlainText Backend - subscribed addresses with a, ' (single quote) will disrupt subscriptions
+
+http://github.com/justingit/dada-mail/issues/issue/61
+
+
 =head1 4.1.0
 
 =head2 Changes 4.1.0
@@ -484,9 +560,9 @@ The following topics were added to the documentation:
 
 http://dadamailproject.com/support/documentation/FAQ-default_2_SQL_backend.pod.html
 
-=item * Converting from a Basic to Advanced Installation
+=item * Converting from a Basic to Contemporary Installation
 
-http://dadamailproject.com/support/documentation/FAQ-basic_2_advanced_installation.pod.html
+http://dadamailproject.com/support/documentation/basic_two_contemporary_installation.pod.html
 
 =back
 

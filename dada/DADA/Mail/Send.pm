@@ -2134,9 +2134,8 @@ sub _make_general_headers {
 	}
 	
 	if($From_obj){ 
-		# TODO BUG These need to be Encoded - right now - the ain't 
+		# TODO BUG These need to be Encoded - right now - the ain't - Well, what do I have to do to encode it? 
 		$gh{From}       = $From_obj->format;
-		$gh{'Reply-To'} = $From_obj->format;
 	}
 	# time  + random number + sender, woot!
 	require DADA::Security::Password; 	
@@ -3126,7 +3125,7 @@ is controlled by C<DADA::Mail::MailOut>. C<DADA::Mail::Send> is quite dumb in wh
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999-2009 Justin Simoni 
+Copyright (c) 1999 - 2010 Justin Simoni 
 me - justinsimoni.com
 http://justinsimoni.com 
 All rights reserved. 

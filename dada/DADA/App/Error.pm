@@ -112,7 +112,7 @@ sub cgi_user_error {
 	my $subscription_form; 
     my $unsubscription_form;
     
-	if($args{-Error} !~ /unreadable_db_files|sql_connect_error|bad_setup|bad_SQL_setup/){
+	if($args{-Error} !~ /unreadable_db_files|sql_connect_error|bad_setup|bad_SQL_setup|install_dir_still_around/){
 		
    	 if($args{-List}){ 
 			$subscription_form    = DADA::Template::Widgets::subscription_form({ -list => $args{-List}, -email => $args{-Email}, -give_props => 0 }); 
@@ -247,7 +247,7 @@ sub cgi_user_error {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2009 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2010 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

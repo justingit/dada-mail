@@ -10,6 +10,22 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+[ ] Twitter Stuff has to be updated to use oAuth - no way around it. 
+	http://stereonaut.net/twitters-oauth-perl/
+	http://hueniverse.com/2007/10/beginners-guide-to-oauth-part-i-overview/
+	http://github.com/semifor/Net-Twitter/wiki/Net::Twitter-and-the-death-of-Basic-Authentication
+	
+
+[ ] perhaps the sub/unsub stuff cannot be truly one-click, but one-click to a screen, that has a button to actually subsribe/unsubsribe you
+
+	[ ] This could also be a GREAT place, esp. with unsubs to have a form, for "write a message to hte list owner about why you're ditchin't he list" 
+	 	or options to, "unsub me from all lists on this domain" 
+	    or, whatever. 
+	[ ] Sub would be nice to have a, "Subscribe" or a, "Subscriber and login into my profile" type of thing. 
+	
+
+
 [ ] TWO more valid email checks need to be done: 
 
 	[ ] Maybe it's time to put a check, for the list owner/list admin - NOT allowed to subscribe to a site. 

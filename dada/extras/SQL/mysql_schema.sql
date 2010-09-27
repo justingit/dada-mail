@@ -1,21 +1,3 @@
--- The below schema should work well for MySQL ver. 5
--- 
--- If you are using MySQL 4: 
--- 
--- use the mysql4_schema.sql instead. 
--- 
--- Dada Mail currently doesn't auto-detect what version of MySQL you're using, 
--- SO, if you are upgrading Dada Mail from 3x to 4x, you'll need to rename: 
--- mysql_schema.sql
--- to, 
--- mysql5_schema.sql
--- and rename, 
--- mysql4_schema.sql
--- to, 
--- mysql_schema.sql
--- 
--- and re-run the migration utility. 
-
 CREATE TABLE IF NOT EXISTS dada_settings (
 list                             varchar(16),
 setting                          varchar(64),

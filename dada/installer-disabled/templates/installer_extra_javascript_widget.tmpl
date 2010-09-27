@@ -1,0 +1,122 @@
+<!-- begin installer_extra_javascript_widget.tmpl --> 
+
+ <script src="<!-- tmpl_var my_S_PROGRAM_URL -->/javascripts/dada_mail_admin_js.js" type="text/javascript"></script>
+  <script src="<!-- tmpl_var my_S_PROGRAM_URL -->/javascripts/prototype.js" type="text/javascript"></script>
+  <script src="<!-- tmpl_var my_S_PROGRAM_URL -->/javascripts/scriptaculous.js?load=effects" type="text/javascript"></script>
+	<script type="text/javascript"> 
+	
+	
+	 //<![CDATA[
+		function ToggleConfigurationOptions(){ 
+			var togglin = document.getElementById( 'configuration' );
+			
+			if($F('skip_configure_dada_files') == 1){ // that means, dissapear stuff!
+					if(togglin.style.display == ""){	
+						Effect.Fade('configuration');
+					}
+			}
+			else { 			
+				Effect.Appear('configuration');
+			}
+		}
+		
+		function ToggleSQLOptions() { 
+			
+			var sql_picker = document.getElementById('backend');
+			var selected  = sql_picker.options[sql_picker.selectedIndex].value;
+			 	
+			if(selected == 'mysql' || selected == 'Pg'){ 
+			
+				var togglin = document.getElementById( 'sql_info' );
+				if(togglin.style.display != ""){	
+						Effect.Appear('sql_info');
+				}
+			}
+			else { 
+				Effect.Fade('sql_info');
+			}
+		}	
+		function Toggle_dada_files_dirOptions() { 
+			var dada_files_dir_setup_choice = Form.getInputs('installform','radio','dada_files_dir_setup').find(function(radio) { return radio.checked; }).value;				
+			if(dada_files_dir_setup_choice == 'auto'){ 
+				Effect.Fade('manual_dada_files_dir_setup');
+			}
+			else { 
+				var togglin = document.getElementById( 'manual_dada_files_dir_setup' );
+				if(togglin.style.display != ""){	
+						Effect.Appear('manual_dada_files_dir_setup');
+				}
+			}
+
+		}
+		
+		
+
+		function toggleDisplay(target) {
+
+			if (document.getElementById){
+				var togglin = document.getElementById( target );
+				if(togglin.style.display == ""){
+					// Scriptalicious
+					Effect.BlindUp(togglin.id);
+
+					// target.dispaly = 'none'; 
+				}else{  
+					// Scriptalicious                          
+					Effect.BlindDown(togglin.id);
+
+					// target.dispaly = ''; 
+				}  
+
+			} 	
+		}
+		
+		
+		
+			   
+
+				 function move_installer_dir(){ 
+
+					new Ajax.Updater(
+						'move_results', '<!-- tmpl_var Self_URL -->', 
+						{ 
+						    method: 'post', 
+							parameters: {
+								f:                         'move_installer_dir_ajax'
+
+								},
+						onCreate: 	 function() {
+							$('move_results').hide(); 
+							/*$('sending_preferences_test_loading').show();*/
+
+						},
+						onComplete: 	 function() {
+
+						/*	$('sending_preferences_test_loading').hide();*/
+							Effect.BlindDown('move_results');
+
+						}	
+
+
+						});
+				}
+
+			
+		
+		function setStuffUp() { 
+			ToggleSQLOptions(); 
+			Toggle_dada_files_dirOptions();
+			ToggleConfigurationOptions(); 
+		}
+		
+		
+		
+		
+		
+	window.onload=setStuffUp; 
+	
+	//]]>
+    
+	</script>
+	
+<!-- end installer_extra_javascript_widget.tmpl -->

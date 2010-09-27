@@ -81,6 +81,7 @@ require Exporter;
   message_id
   check_list_security
   user_error
+  install_dir_around
   check_setup
   SQL_check_setup
   cased
@@ -283,8 +284,8 @@ sub make_pin {
 				
 			while($looks_good == 0){ 
 				$enc =  DADA::Security::Password::encrypt_passwd($pin); 
-				# Slash!
-				if($enc =~ m/\//){ 
+				# Slash! Period!
+				if($enc =~ m/\/|\./){ 
 					# If the salt is the same, the new encrypted password
 					# will *also* be the same. Not good! 
 					# Change that up: 
@@ -1358,11 +1359,19 @@ sub decode_he {
 #	    * - even if the user changes it in browser
 
 	
-	
-	
 	my $str = shift; 
-	require HTML::Entities;
-	return HTML::Entities::encode_entities($str); # Uh, why is this Encoding, in a *decoding* subroutine? 
+	eval {require HTML::Entities;}; 
+	if(!$@){ 
+		$str = HTML::Entities::encode_entities($str); 
+	
+	}else{       
+		eval {require HTML::EntitiesPurePerl;}; 
+		if(!$@){ 
+	    	$str = HTML::EntitiesPurePerl::encode_entities($str); 
+		}
+	}
+	return $str;	
+	
 }
 
 =pod
@@ -2004,6 +2013,11 @@ sub check_list_security {
 }
 
 
+sub install_dir_around { 	
+	if(-e 'installer' && -d 'installer'){ 
+		return 1; 
+	}
+}
 
 
 =pod
@@ -2045,15 +2059,20 @@ sub check_setup {
 
 sub SQL_check_setup {
 	
+	my $table_count = 0; 
 	eval { 
 		# A little indirect, but...  
 		# Tests if we have the necessary tables: 
 		#
+		# This is strange - since this list could be WRONG - 
+		# Ugh. 
 		require DADA::App::DBIHandle; 
 		my $dbi_obj = DADA::App::DBIHandle->new; 
 		my $dbh = $dbi_obj->dbh_obj;
+		
 		foreach my $param(keys %DADA::Config::SQL_PARAMS){ 
 			if($param =~ m/table/){ 
+				$table_count++;
 			 	$dbh->do('SELECT * from ' . $DADA::Config::SQL_PARAMS{$param} . ' WHERE 1 = 0')
 					or croak $!; 
 			}
@@ -2064,7 +2083,14 @@ sub SQL_check_setup {
 		return 0; 
 	}
 	else { 
-		return 1; 
+		# Last test - we need at least 9 tables. This test sucks - I shouldn't
+		# need to know I need 9 tables. 
+		if($table_count < 9){ 
+			return 0; 
+		}
+		else { 
+			return 1; 
+		}
 	}
 }
 
@@ -2658,7 +2684,7 @@ sub safely_encode {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999-2009 Justin Simoni 
+Copyright (c) 1999 - 2010 Justin Simoni 
 
 http://justinsimoni.com 
 

@@ -1,0 +1,125 @@
+=pod
+
+=head1 Upgrading Dada Mail
+
+=head1 Before We Get Started
+
+Before upgrading Dada Mail, find out how you installed and configured Dada Mail before. If you don't know or aren't sure, don't upgrade Dada Mail: you will run into major headaches. 
+
+=head2 "Basic", or, "Contemporary"? 
+
+We're going to only differentiate between two types of installations: "Basic" and, "Contemporary"
+
+=head3 Basic Installation 
+
+A, "Basic" installation changes the configuration variables right in the, C<dada/DADA/Config.pm> file - usually you want to be very much aware of the following variables: 
+
+=over
+
+=item * $PROGRAM_ROOT_PASSWORD
+
+=item * $FILES
+
+=item * $MAILPROG
+
+
+=item * $PROGRAM_URL
+
+=back
+
+You'll know if you have a, "Basic" installation of Dada Mail, if the,
+ C<$FILES> variable in the, C<dada/DADA/Config.pm> file is  filled out to a directory that I<actually> exists and that directory holds files/directories that have something to do with Dada Mail. 
+
+If you are running a "Basic" Installation of Dada Mail, we really suggest upgrading by taking note of where your C<$FILES> variable is located and importing the old information I<after> a clean installation.
+
+=head4 More Information
+
+L<http://dadamailproject.com/support/documentation/basic_two_contemporary_installation.pod.html>
+
+=head3 Contemporary Installation 
+
+A Contemporary Installation uses an outside configuration file to set the configuration variables in. 
+
+You'll know if you have a Contemporary Installation, if those same four variables in the, C<dada/DADA/Config.pm> file: 
+
+=over
+
+=item * $PROGRAM_ROOT_PASSWORD
+
+=item * $FILES
+
+=item * $MAILPROG
+
+=item * $PROGRAM_URL
+
+=back
+
+Are still in their default values and your Dada Mail seems to be 
+functioning fine. This probably means that your config variables are being read from an outside config file. 
+
+For upgrade purposes, note what the, C<$PROGRAM_CONFIG_FILE_DIR> in the, C<dada/DADA/Config.pm> is set to. It's OK if it's only set to, C<auto>. 
+
+=head1 Step #1 Move The Old Program Files Out of the Way
+
+Dada Mail, "The Program" is the collection of files and directories that are in the directory called, C<dada>. 
+
+This directory is most likely located in your cgi-bin. It's directory structure like this: 
+
+ cgi-bin (directory)
+    - dada (directory, _lower_ case)
+        - mail.cgi 
+        - DADA (directory, UPPER case)
+            - App (directory)
+            - Config.pm
+            - etc, etc, etc
+
+This is Dada Mail, "The Program"
+
+Simply rename this directory on the server from: 
+
+ dada
+
+to something like:
+
+ dada-old_ver
+
+Moving the directory: 
+
+=over 
+
+=item * Keeps a backup that is known to work 
+
+=item * Makes sure we don't overwrite the old version of the program with the new version
+
+=item * Makes sure we don't mix up the old version of Dada Mail with the new version of Dada Mail 
+
+=back
+
+
+=head2 Step #2 Install the new Dada Mail
+
+Now, you can just follow the instructions for an installation of Dada Mail: 
+
+L<http://dadamailproject.com/support/documentation/install_dada_mail.pod.html>
+
+=over
+
+=item * If your last installation was a Contemporary Installation, use the same value as before for your C<.dada_files> location. 
+
+Your Dada Files Location is usually the directory above your C<PROGRAM_CONFIG_FILE_DIR> variable. For example, if my C<PROGRAM_CONFIG_FILE_DIR> is set to: 
+
+I</home/myaccount/.dada_files/.configs>
+
+my C<.dada_files> directory is: 
+
+I</home/myaccount/.dada_files>
+
+=item * If your last installation was a Basic Installation, install Dada Mail as if it's a brand new installation and then move your old list/settings/archives/etc files over: 
+
+L<http://dadamailproject.com/support/documentation/basic_two_contemporary_installation.pod.html>
+
+=back
+
+=head2 Changelog 
+
+It's a B<I<very very>> good idea to look at the changelog and not B<any> incompatibilities> between versions. It's possible that incompatibilities could break your installation, when you upgrade. 

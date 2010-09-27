@@ -1,0 +1,192 @@
+=pod
+
+=head1 Manually Installing Dada Mail
+
+=head1 First, a Word
+
+Unless you like to or need to, it's much easier now to use the Dada Mail Installer - both these instructions and the Dada Mail installer will install and Configure Dada Mail in basically the same way. 
+
+In these directions, I'll be giving examples of shell commands you may issue to complete each step. They may need to be slightly modify to work with your particular environment. Noting too tricky, though. 
+
+Download Dada Mail at: 
+
+L<http://dadamailproject.com/download>
+
+Either uncompress the distribution on your desktop and upload the, C<dada> directory into your C<cgi-bin>, or, 
+
+upload the C<.tar.gz> distribution itself into your C<cgi-bin> and uncompress on your hosting account I<(you'll need an ssh connection)>. 
+
+ gunzip dada-4_x_x.tar.gz; tar -xvf dada-4_x_x.tar; cd dada
+
+Change the permissions of the, C<mail.cgi> file to, C<755>:
+
+ chmod 755 mail.cgi
+
+Visit the, C<mail.cgi> script in your web browser. You should see a "Welcome" screen, that also tells you that Dada Mail has not been configured. 
+
+Note the URL that you used to access the C<mail.cgi> script. We'll be using that later. 
+
+=head2 Step #2 Create the .dada_files directory and directory hierarchy
+
+In your home directory (preferably), create a directory called, C<.dada_files>. In this directory, create the following directories: 
+
+=over
+
+=item * .archives
+
+=item * .backups
+
+=item * .configs
+
+=item * .lists
+
+=item * .logs
+
+=item * .templates
+
+=item * .tmp
+
+=back
+
+You may use the following command: 
+
+ cd; mkdir .dada_files; cd .dada_files; mkdir .archives .backups \
+ .configs  .lists .logs .templates .tmp
+
+=head2 Step #3 Create the .dada_config file 
+
+A ready-to-use copy of the C<.dada_config> file is located in the, I<dada/extras/examples/example_dada_config.txt> file. Copy the file/contents from this file into the I<.dada_files/.configs> directory we just set up, in a file named, C<.dada_config>
+
+ cd; cp public_html/cgi-bin/dada/extras/examples/example_dada_config.txt .dada_files/.configs/.dada_config
+
+In the above command, I<public_html/cgi-bin/dada> is the path to the dada directory, inside the C<cgi-bin> - change to fit your environment. 
+
+=head2 Step #4 Edit the .dada_config file
+
+To start off, the C<.dada_config> file needs two variables changed and they are the first two variables on top of the file. They are: 
+
+=over
+
+=item * $DIR
+
+Set, C<$DIR> to the absolute path of the C<.dada_files> directory we just set up. If you don't know the absolute path, change into your .dada_files directory, and issue the, C<pwd> command: 
+
+ cd; cd .dada_files; pwd
+
+(prints, C</home/example/.dada_files>, for example) 
+
+Set the $DIR variable to this, like so: 
+
+ my $DIR         = '/home/example/.dada_files';
+
+=item * $PROGRAM_URL
+
+Set C<$PROGRAM_URL> to the URL we used to access the, C<mail.cgi> script in the web browser. 
+
+=back
+
+=head3 $PROGRAM_ROOT_PASSWORD - The Dada Mail Root Password
+
+You'll also want to set the main, Dada Mail Root Password for Dada Mail in the I<.dada_config file>. It's saved in the variable, C<$PROGRAM_ROOT_PASSWORD>. There's two ways to do this: 
+
+The first is to set the, C<$PROGRAM_ROOT_PASSWORD> variable to the Dada Mail Root Password you'd like to use: 
+
+ # Start Root Password
+ 
+ $PROGRAM_ROOT_PASSWORD    = 'sneaky';
+ $ROOT_PASS_IS_ENCRYPTED   = 0;
+ 
+ # End Root Password
+
+Easy enough. 
+
+The second method is to set an I<encrypted> version of our Dada Mail Root Password. This is what we I<seriously> recommend. 
+
+To do so, visit your Dada Mail (in your web browser, go to the URL you're setting in the C<$PROGRAM_URL> variable) with this query string: C<?f=pass_gen>. You're entire URL will look like this: 
+
+http://example.com/cgi-bin/dada/mail.cgi?f=pass_gen
+
+if, I<http://example.com/cgi-bin/dada/mail.cgi> is the URL to your Dada Mail. 
+
+Follow the instructions to encrypt your Dada Mail Root Password. You'll want to set the encrypted Dada Mail Root Password in the, C<$PROGRAM_ROOT_PASSWORD> variable as well as setting the, C<$ROOT_PASS_IS_ENCRYPTED> to, B<1>: 
+
+ # Start Root Password
+ 
+ $PROGRAM_ROOT_PASSWORD    = '8PnbnHfLVeBra';
+ $ROOT_PASS_IS_ENCRYPTED   = 1;
+ 
+ # End Root Password
+
+=head3 MySQL Backend
+
+This step is really optional, but we do encourage you to use the MySQL backend. It involves more editing of the C<.dada_config> file - easy stuff. 
+
+You'll need to I<remove> the following lines in your C<.dada_config> file: 
+
+ # start cut for SQL Backend
+ =cut
+
+and, 
+
+ =cut
+ # end cut for SQL Backend
+
+This will enable the SQL configuration
+
+Next, create a new SQL database, specifically for Dada Mail. In these instructions, we're just going to use MySQL, but there are other choices. 
+
+Note the server, database, username and password you've set up. 
+
+Then, create the necessary tables in that database. The schema needed will be in the, I<dada/extras/SQL> directory. The one specific for Dada Mail is called, 
+
+I<dada/extras/SQL/mysql_schema.sql>
+
+Now, just fill out the variables in the .dada_config file. Here's the lines you're interested in: 
+
+	# May just be, "localhost" 
+	dbserver         => 'localhost',
+	
+	database         => 'dadamail',
+
+	# MySQL:      3306
+	# PostgreSQL: 5432      
+	port             => '3306',
+
+	# MySQL:      mysql 
+	# PostgreSQL: Pg
+	# SQLite:     SQLite
+	dbtype           => 'mysql',  
+
+	user             => 'dadauser',          
+	pass             => 'dadapass',
+
+For my database, I set the name as, "dadamail" the user as, "dadauser" and the password as, "dadapass". You should be able to spot them, in the code above. 
+
+
+=head3 All Set! 
+
+We are done setting up and configuring the C<.dada_config> file - 
+
+but do feel free to add to this outside configuration file whenever you like - most any variable located in the C<Config.pm> file can be added to this file. Any variable you do add, overrides the value you set in the C<Config.pm> itself. Think of the Config.pm file as where the default configuration of Dada Mail lives and your outside configuration file (C<.dada_config>) is where you'll want to set your customizations to make Dada Mail work with your own setup. 
+
+=head2 Step #5 Setting up the Config.pm file
+
+The only thing the C<Config.pm> file needs to know, is the directory the C<.dada_config> file lives in. If you set the C<$DIR> variable inside the C<.dada_config> file to, 
+
+ /home/example/.dada_files
+
+the directory it lives in will be: 
+
+ /home/example/.dada_files/.configs
+
+Open up the C<Config.pm> file that's located in the I<dada/DADA> directory and set the variable named, C<$PROGRAM_CONFIG_FILE_DIR> to the directory the outside config file lives in, like so: 
+
+ $PROGRAM_CONFIG_FILE_DIR = '/home/example/.dada_files/.configs';
+
+Save your changes. 
+
+Visit the, C<mail.cgi> script in your web browser again. If everything worked correctly, you should see the "Congrats" screen. All set! 
+
+
+=cut
+
