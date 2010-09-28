@@ -2,6 +2,49 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+
+=head1 4.2.1
+
+=head2 Changes 4.2.1
+
+This is basically a bug-fix only release. But of note: 
+
+=over
+
+=item * Peppered through some of the directories are .htaccess files, to stop unwanted
+access to these directories. This is simply a safegaurd and shouldn't really
+be seen as a security issue. 
+
+=back
+
+=head2 Bug Fixes 4.2.1
+
+=head3 "Setup Info" screen incorrectly determines a installation as, "Basic" if the $PROGRAM_CONFIG_FILE_DIR is set to, "auto"
+
+http://github.com/justingit/dada-mail/issues/closed#issue/62
+
+=head3 Reply-To in %EMAIL_HEADERS will never be used
+
+http://github.com/justingit/dada-mail/issues/closed#issue/64
+
+=head2 KNOWN ISSUES 4.2.1
+
+=head3 Twitter Support
+
+Twitter Support is currently not working, as the type of authorization Dada
+Mail was utilising (Basic) has been dropped by Twitter in favor of a more substantial
+authentication scheme called oAuth. 
+
+http://github.com/justingit/dada-mail/issues#issue/66
+
+=head3 Habeas Watermark 
+
+The Habeas Watermark isn't really used anymore, Habeas The Company was bought by a
+different company, that has a vastly different scheme, other than attempting to 
+legally go after unauthorized use of their copyright material. The new system 
+requires different headers to be present, which Dada Mail does not currently 
+support. We'll see about supporting them, in the future. 
+
 =head1 4.2.0
 
 =head2 Changes 4.2.0
