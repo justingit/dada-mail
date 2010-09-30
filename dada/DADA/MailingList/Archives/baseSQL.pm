@@ -127,8 +127,12 @@ sub print_message_source {
 	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($id); 
 	
 	require Encode; 
-	print $fh safely_encode( $raw_msg );
-
+	if(length($raw_msg) > 0){ 
+		print $fh safely_encode( $raw_msg );
+	}
+	else { 
+		print $fh "No raw source available."; 
+	}
 }
 
 sub get_available_archives{ 
