@@ -8,7 +8,7 @@ use CGI::Carp qw(fatalsToBrowser);
 
 $|++;
 use strict;
-use 5.8.1;
+use 5.008_001;
 use Encode qw(encode decode);
 # A weird fix.
 BEGIN {

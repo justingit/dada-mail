@@ -6,7 +6,7 @@ use lib qw(../../ ../../DADA/perllib);
 
 use DADA::Config qw(!:DEFAULT);
  
-use 5.8.1; 
+use 5.008_001; 
 use Encode qw(encode decode);
 use MIME::Parser;
 use MIME::Entity; 

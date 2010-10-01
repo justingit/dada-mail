@@ -1,5 +1,5 @@
 package DADA::App::Guts;
-use 5.8.1; 
+use 5.008_001; 
 use Encode qw(encode decode);
 
 =pod
