@@ -8,7 +8,7 @@ Since v4.2.0 of Dada Mail, we no longer suggest - or support doing a B<Basic> In
 
 The, B<Advanced> Installation of Dada Mail is now just known as a, B<Manual Installation> of Dada Mail. 
 
-Dada Mail v4.2.0 ships with the Dada Mail Installer to help automate the installation and configuration of Dada Mail. 
+Dada Mail v4.2.0 and above ships with the Dada Mail Installer to help automate the installation and configuration of Dada Mail. 
 
 The method that the Dada Mail Installer sets things up will be the same as how our Manual Installation instructions work - it just automates it all.  
 

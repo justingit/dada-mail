@@ -18,7 +18,7 @@ When we talk about what operating system, version of Perl, etc that's needed for
 
 Linux, Free BSD and Mac OS X should all work well. 
 
-SunOS should also work well, but there are some issue with Sun's file locking system and Dada Mail. There may be workarounds.
+Solaris should also work well, but there are some issue with Sun's file locking system and Dada Mail. There may be workarounds.
 
 Dada Mail isn't ever tested on a Windows Server or even Apache running on top of Windows. 
 

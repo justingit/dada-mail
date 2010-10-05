@@ -4820,8 +4820,8 @@ and to say that you've got the freshest tools on the Web.
 
 
 
-$VERSION = 4.2.0; 
-$VER     = '4.2.0 Stable 8/23/10';
+$VERSION = 4.2.1; 
+$VER     = '4.2.1 Stable 10/04/10';
 
 
 #

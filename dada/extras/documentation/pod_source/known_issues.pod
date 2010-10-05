@@ -113,11 +113,11 @@ If you use the outside config file, and try to set a variable to, 0, it'll most 
 this is because in Perldom, 0 basically means, undefined, so the variable won't be used. 
 Easiest fix is to use, 2 instead. 
 
-=head2 SunOS, Dada Mail, and You.
+=head2 Solaris, Dada Mail, and You.
 
-As of at least 2.8.12 (most likely lower) Dada Mail has some issues with file locking and the SunOS. 
-
-I<This issue should be a non-issue in ver. 2.9>
+There seems to be continued file locking issues with Dada Mail and Solaris, including mass mailing. We do not have any
+current workarounds and we ask that you exercise caution when using Dada Mail on Solaris. Run the testing suite to make 
+sure Dada Mail is working correclty with your environment. 
 
 =head2 Send a Webpage
 
