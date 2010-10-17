@@ -194,7 +194,7 @@ So, if I set B<$FILES> to:
 
 set, B<$PROGRAM_ERROR_LOG> to: 
 
- $PROGRAM_ERROR_LOG = 'home/myaccount/dada_files/errors.txt'; 
+ $PROGRAM_ERROR_LOG = '/home/myaccount/dada_files/errors.txt'; 
 
 and you're done. 
 
