@@ -648,206 +648,195 @@ my $cache = {};
 #my $ic = 0; 
 #my $nc = 0;
 
-sub available_lists { 
-    
-	my %args = ( 
-				-As_Ref      => 0,
-				-In_Order    => 0,
-				-Dont_Die    => 0,
-				-dbi_handle  => undef, 
-				-clear_cache => 0,
-				@_,
-			   ); 
-			
-	my $in_order        = $args{-In_Order}; 
-	my $want_ref        = $args{-As_Ref};
-	my @dbs             = ();
-	my @available_lists = (); 
-	my $present_list    = undef; 
-	
-	require DADA::MailingList::Settings; 
-		   $DADA::MailingList::Settings::dbi_obj = $args{-dbi_handle}; 
-    
-    # BUGFIX:  2222381  	 3.0.0 - DADA::App::Guts::available_lists() needs caching
-    # https://sourceforge.net/tracker2/?func=detail&aid=2222381&group_id=13002&atid=113002
-    #
-	# Caching.
-	if($args{-clear_cache} == 1){ 
-		# This is completely over the top, but...
-		foreach(keys %$cache){ 
-			$cache->{$_} = undef; 
-			delete($cache->{$_});
-		}
-		$cache = undef; 
-		$cache = {}; 
-	}
-	if($in_order == 1){ 
-		if(exists($cache->{available_lists_in_order})){ 
-			#$ic++; carp "CACHE! $ic++"; 
-			$want_ref == "1" ? return $cache->{available_lists_in_order} : return @{$cache->{available_lists_in_order}};
-		}
-	}
+sub available_lists {
+
+    my %args = (
+        -As_Ref      => 0,
+        -In_Order    => 0,
+        -Dont_Die    => 0,
+        -dbi_handle  => undef,
+        -clear_cache => 0,
+        @_,
+    );
+
+    my $in_order        = $args{-In_Order};
+    my $want_ref        = $args{-As_Ref};
+    my @dbs             = ();
+    my @available_lists = ();
+    my $present_list    = undef;
+
+    require DADA::MailingList::Settings;
+    $DADA::MailingList::Settings::dbi_obj = $args{-dbi_handle};
+
+# BUGFIX:  2222381  	 3.0.0 - DADA::App::Guts::available_lists() needs caching
+# https://sourceforge.net/tracker2/?func=detail&aid=2222381&group_id=13002&atid=113002
+#
+# Caching.
+    if ( $args{-clear_cache} == 1 ) {
+
+        # This is completely over the top, but...
+        foreach ( keys %$cache ) {
+            $cache->{$_} = undef;
+            delete( $cache->{$_} );
+        }
+        $cache = undef;
+        $cache = {};
+    }
+    if ( $in_order == 1 ) {
+        if ( exists( $cache->{available_lists_in_order} ) ) {
+
+            #$ic++; carp "CACHE! $ic++";
+            $want_ref == "1"
+              ? return $cache->{available_lists_in_order}
+              : return @{ $cache->{available_lists_in_order} };
+        }
+    }
+    else {
+        if ( exists( $cache->{available_lists} ) ) {
+
+            #$ic++; carp "CACHE! $ic++";
+            $want_ref == "1"
+              ? return $cache->{available_lists}
+              : return @{ $cache->{available_lists} };
+        }
+    }
+
+    # /Caching.
+
+    # DEV: This is really bad form - do not emulate!
+
+    if ( $DADA::Config::SETTINGS_DB_TYPE =~ /SQL/i ) {
+
+        ######################################################################
+        my $dbi_handle;
+
+
+        require DADA::App::DBIHandle;
+        $dbi_handle = DADA::App::DBIHandle->new;
+        my $dbh = $dbi_handle->dbh_obj;
+        ######################################################################
+
+        my $query = 'SELECT DISTINCT list from '
+          . $DADA::Config::SQL_PARAMS{settings_table};
+
+        if ( $in_order == 1 ) {
+            $query .= ' ORDER BY list ASC';
+        }
+
+        my $sth = $dbh->prepare($query);
+        eval { $sth->execute() or croak; };
+
+# BUGFIX:
+# 2219954  	 3.0.0 - Guts.pm sub available_lists param, -Dont_Die broken
+# https://sourceforge.net/tracker2/?func=detail&aid=2219954&group_id=13002&atid=113002
+        if ($@) {
+            if ( $args{-Dont_Die} == 1 ) {
+                carp $DBI::errstr;
+                $want_ref == "1" ? return [] : return ();
+            }
+            else {
+                croak $DBI::errstr;
+            }
+        }
+        else {
+
+            while ( ( my $l ) = $sth->fetchrow_array ) {
+                push( @available_lists, $l );
+            }
+            $sth->finish;
+        }
+
+    }
+    else {
+
+  	
+        my $path = $DADA::Config::FILES;
+        $path = make_safer($path);
+        $path =~ /(.*)/;
+        $path = $1;
+
+        if ( opendir( LISTS, $DADA::Config::FILES ) ) {
+            while ( defined( $present_list = readdir LISTS ) ) {
+                next if $present_list =~ /^\.\.?$/;
+                $present_list =~ s(^.*/)();
+                next if $present_list !~ /^mj-.*$/;
+
+                $present_list =~ s/mj-//;
+                $present_list =~ s/(\.dir|\.pag|\.db)$//;
+                $present_list =~ s/(\.list|\.template)$//;
+
+                next if $present_list eq "";
+
+                if (   defined($present_list)
+                    && $present_list ne ""
+                    && $present_list !~ m/^\s+$/ )
+                {
+                    push( @dbs, $present_list );
+                }
+            }    #/while
+
+            foreach my $all_those (@dbs) {
+                if ( $all_those !~ m/\-archive.*|\-schedules.*/ ) {
+                    push( @available_lists, $all_those );
+                }
+            }
+
+            #give me just one occurence of each name
+            my %seen = ();
+            my @unique = grep { !$seen{$_}++ } @available_lists;
+
+            my @clean_unique;
+
+            foreach (@unique) {
+                if (   defined($_)
+                    && $_ ne ""
+                    && $_ !~ m/^\s+$/ )
+                {
+                    push( @clean_unique, $_ );
+                }
+
+            }
+			@available_lists = @clean_unique;
+        }
+        else {
+
+            # DON'T rely on this...
+            if ( $args{-Dont_Die} == 1 ) {
+                $want_ref == "1" ? return [] : return ();
+            }
+            else {
+                croak(
+"$DADA::Config::PROGRAM_NAME $DADA::Config::VER error, please MAKE SURE that '$path' is a directory (NOT a file) and that Dada Mail has enough permissions to write into this directory: $!"
+                );
+
+            }
+        }
+
+    }
+
+    if ( $in_order == 1 ) {
+
+         my $labels = {};
+         foreach my $l (@available_lists) {
+             my $ls =
+               DADA::MailingList::Settings->new( { -list => $l } );
+             my $li = $ls->get;
+             $labels->{$l} = $li->{list_name};
+         }
+         @available_lists =
+           sort { uc( $labels->{$a} ) cmp uc( $labels->{$b} ) }
+           keys %$labels;
+		 $cache->{available_lists_in_order} = \@available_lists;
+         $cache->{available_lists}          = \@available_lists;
+     }
 	else { 
-		if(exists($cache->{available_lists})){ 
-			#$ic++; carp "CACHE! $ic++"; 
-			$want_ref == "1" ? return $cache->{available_lists} : return @{$cache->{available_lists}};			
-		}
+		$cache->{available_lists} = \@available_lists;
 	}
-	# /Caching.
+     #$nc++; carp "not CACHED! $nc";
+     $want_ref == "1" ? return \@available_lists : return @available_lists;
 
-		# DEV: This is really bad form - do not emulate!
+}
 
-	if($DADA::Config::SETTINGS_DB_TYPE =~ /SQL/i){ 
-		
-		######################################################################
-		my $dbi_handle; 
-		# I've taken out this optimization, yet I don't know why... 
-		# 
-		#if(defined($args{-dbi_handle})){ 
-		#	$dbi_handle = $args{-dbi_handle};
-		#}
-		#else { 
-			require DADA::App::DBIHandle; 
-		    $dbi_handle = DADA::App::DBIHandle->new; 
-		#}
-		my $dbh = $dbi_handle->dbh_obj;
-		######################################################################
-		
-		my $query  = 'SELECT DISTINCT list from ' . $DADA::Config::SQL_PARAMS{settings_table}; 
-		
-		if($in_order == 1) {  
-		   $query .= ' ORDER BY list ASC';
-		}
-		
-		my $sth = $dbh->prepare($query); 
-		eval { 
-		   $sth->execute() 
-				or croak;  
-		};
-		
-		# BUGFIX: 
-		# 2219954  	 3.0.0 - Guts.pm sub available_lists param, -Dont_Die broken
-		# https://sourceforge.net/tracker2/?func=detail&aid=2219954&group_id=13002&atid=113002
-		
-		if($@){
-			if($args{-Dont_Die} == 1){ 
-				carp $DBI::errstr;
-				$want_ref == "1" ? return [] : return ();	
-			}
-			else { 
-				croak $DBI::errstr; 
-			}
-		}
-		else { 
-		
-			while((my $l) = $sth->fetchrow_array){ 
-					push(@available_lists, $l); 
-				}
-			$sth->finish;
-			if($in_order == 1){ 
-				$cache->{available_lists_in_order} = \@available_lists; 
-				$cache->{available_lists}          = \@available_lists; 
-			}
-			else { 
-				$cache->{available_lists}          = \@available_lists; 
-			}
-			#$nc++; carp "not CACHED! $nc";
-			$want_ref == "1" ? return \@available_lists : return @available_lists;
-		}
-		
-	}
-	else { 
-
-	#/end bad form :) 
-	
-		my $path = $DADA::Config::FILES; 
-	  	   $path = make_safer($path); 
-		   $path =~ /(.*)/; 
-		   $path = $1; 
-	
-		if(opendir(LISTS, $DADA::Config::FILES)){ 
-			while(defined($present_list = readdir LISTS) ) { 
-				next if $present_list =~ /^\.\.?$/;
-						$present_list =~ s(^.*/)();
-				next if $present_list !~ /^mj-.*$/; 
-	
-						$present_list =~ s/mj-//;
-						$present_list =~ s/(\.dir|\.pag|\.db)$//;
-						$present_list =~ s/(\.list|\.template)$//;
-	 
-				next if $present_list eq ""; 
-				
-				if(
-					defined($present_list)             && 
-					$present_list          ne ""       && 
-					$present_list          !~ m/^\s+$/
-				){
-					push(@dbs, $present_list) 
-				} 
-			} #/while
-		
-		
-		foreach my $all_those(@dbs) {      
-			 if($all_those !~ m/\-archive.*|\-schedules.*/) {
-				push( 
-						@available_lists, 
-						$all_those
-					);
-			 }
-		}		    
-	
-		#give me just one occurence of each name
-		my %seen = (); 
-		my @unique = grep {! $seen{$_} ++ }  @available_lists; 
-	
-		my @clean_unique; 
-	
-		foreach(@unique){ 
-			if(
-				defined($_)             && 
-				$_          ne ""       && 
-				$_          !~ m/^\s+$/
-			) {
-				push(@clean_unique, $_);
-			}
-				
-		}
-	
-		if($in_order == 1){ 
-	
-			my $labels = {}; 
-			foreach my $l( @clean_unique){		
-				my $ls        = DADA::MailingList::Settings->new({-list => $l}); 
-				my $li        = $ls->get; 		
-				$labels->{$l} = $li->{list_name};
-			}			
-			@clean_unique = sort { uc($labels->{$a}) cmp uc($labels->{$b}) } keys %$labels;						  
-		}
-	
-		if($in_order == 1){ 
-			$cache->{available_lists_in_order} = \@clean_unique; 
-			$cache->{available_lists}          = \@clean_unique; 
-		}
-		else { 
-			$cache->{available_lists}          = \@clean_unique; 
-		}
-		#$nc++; carp "not CACHED! $nc";
-		$want_ref == "1" ? return \@clean_unique : return @clean_unique;
-	
-		}else{ 
-			# DON'T rely on this...
-			if($args{-Dont_Die} == 1){ 
-				$want_ref == "1" ? return [] : return ();	
-				}else{ 
-					croak("$DADA::Config::PROGRAM_NAME $DADA::Config::VER error, please MAKE SURE that '$path' is a directory (NOT a file) and that Dada Mail has enough permissions to write into this directory: $!"); 
-
-				}
-			}
-	
-		}
-	
-
-} 
 
      
 
