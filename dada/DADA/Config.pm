@@ -3043,9 +3043,9 @@ This email message is sent to the list owner, when a new subscription has been m
 =cut
 
 
-$SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE = '<!-- tmpl_var list_settings.list_name --> List Owner';
-$SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT   = '[status] <!-- tmpl_var subscriber.email -->';  
-$SUBSCRIPTION_NOTICE_MESSAGE           = <<EOF
+$SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE ||= '<!-- tmpl_var list_settings.list_name --> List Owner';
+$SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT   ||= '[status] <!-- tmpl_var subscriber.email -->';  
+$SUBSCRIPTION_NOTICE_MESSAGE           ||= <<EOF
 <!-- tmpl_var subscriber.email --> has <!-- tmpl_var status --> on list: <!-- tmpl_var list_settings.list_name -->
 
 Server Time: <!-- tmpl_var date -->
@@ -3251,7 +3251,7 @@ EOF
 
 
 $SUBSCRIPTION_REQUEST_APPROVED_MESSAGE ||= $SUBSCRIBED_MESSAGE; 
-$SUBSCRIPTION_REQUEST_DENIED_MESSAGE ||= <<EOF
+$SUBSCRIPTION_REQUEST_DENIED_MESSAGE   ||= <<EOF
 Hello! 
 
 You've recently have asked to be subscribed to: 
@@ -3438,7 +3438,7 @@ who does not have access to do so.
 
 =cut
 
-$NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT =  "<!-- tmpl_var PROGRAM_NAME --> Error - Not Allowed to Post On <!-- tmpl_var list_settings.list_name --> (original message attached)", 	
+$NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT ||=  "<!-- tmpl_var PROGRAM_NAME --> Error - Not Allowed to Post On <!-- tmpl_var list_settings.list_name --> (original message attached)", 	
 $NOT_ALLOWED_TO_POST_NOTICE_MESSAGE         ||= <<EOF
 The attached message was not sent from one of the subscribers of <!-- tmpl_var list_settings.list_name -->
 
@@ -3505,7 +3505,7 @@ This email message is sent to the list owner, when a mass mailing has finished.
 
 
 $MAILING_FINISHED_MESSAGE_SUBJECT ||= '<!-- tmpl_var list_settings.list_name -->  Mailing Complete - <!-- tmpl_var message_subject -->'; 
-$MAILING_FINISHED_MESSAGE ||= <<EOF
+$MAILING_FINISHED_MESSAGE         ||= <<EOF
 Your List Mailing has been successful!
 -----------------------------------------------------------------------
 Your mailing has reached: <!-- tmpl_var addresses_sent_to --> e-mail address(es)
@@ -3568,7 +3568,7 @@ EOF
 ;
 
 $PROFILE_ACTIVATION_MESSAGE_SUBJECT ||= 'Profile Authorization Code for, <!-- tmpl_var profile.email -->'; 
-$PROFILE_ACTIVATION_MESSAGE ||= <<EOF
+$PROFILE_ACTIVATION_MESSAGE         ||= <<EOF
 
 Hello, here's the authorization link to activate your <!-- tmpl_var PROGRAM_NAME --> Profile: 
 
@@ -3580,7 +3580,7 @@ EOF
 ; 
 
 $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT ||= 'Profile Authorization Code for, <!-- tmpl_var profile.email -->'; 
-$PROFILE_RESET_PASSWORD_MESSAGE ||= <<EOF
+$PROFILE_RESET_PASSWORD_MESSAGE         ||= <<EOF
 Hello, here's the authorization link to reset your <!-- tmpl_var PROGRAM_NAME --> Profile Password:
 
 <!-- tmpl_var PROGRAM_URL -->/profile_reset_password/<!-- tmpl_var profile.email_name -->/<!-- tmpl_var profile.email_domain -->/<!-- tmpl_var auth_code -->/
@@ -3592,7 +3592,7 @@ EOF
 
 
 $PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT ||= 'Profile Update Email Authorization Code for, <!-- tmpl_var profile.email -->'; 
-$PROFILE_UPDATE_EMAIL_MESSAGE ||= <<EOF
+$PROFILE_UPDATE_EMAIL_MESSAGE         ||= <<EOF
 
 Hello, here's the authorization link to update your <!-- tmpl_var PROGRAM_NAME --> Profile email address from: 
 
@@ -3611,7 +3611,7 @@ Please click the link below to make this update:
 EOF
 ;
 $LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT ||= '<!-- tmpl_var list_settings.list_name --> Mailing List Confirmation Password Reset'; 
-$LIST_CONFIRM_PASSWORD_MESSAGE ||= <<EOF
+$LIST_CONFIRM_PASSWORD_MESSAGE         ||= <<EOF
 Hello, 
 
 Someone has asked for the <!-- tmpl_var PROGRAM_NAME --> Mailing List Password for:
@@ -3640,7 +3640,7 @@ EOF
 ;
 
 $LIST_RESET_PASSWORD_MESSAGE_SUBJECT ||= '<!-- tmpl_var list_settings.list_name --> Mailing List Password Reset';
-$LIST_RESET_PASSWORD_MESSAGE ||= <<EOF
+$LIST_RESET_PASSWORD_MESSAGE         ||= <<EOF
 
 The Mailing List Password for, 
 
