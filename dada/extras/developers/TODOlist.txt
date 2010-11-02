@@ -10,7 +10,10 @@ Key:
 [*] Naw...
 [?] Someday
 
-
+[ ] A neat SMTP test tool, 
+	http://jetmore.org/john/code/swaks/
+	
+	
 [ ] Move the perllib directory? 
 	It's kind of in a funky spot, currently. Would be better a little more out of the way
 	
