@@ -1110,7 +1110,7 @@ sub unsubscribe {
         
         
         warn 'going to unsub_confirm()'
-			if $t; 
+			if $t; 			
         $self->unsub_confirm(
             {
                 -html_output => $args->{-html_output}, 
@@ -1123,6 +1123,7 @@ sub unsubscribe {
     # If there's already a pin, 
     # (that we didn't just make) 
     # Confirm the unsubscription
+
     if($pin){
         $self->unsub_confirm({-html_output => $args->{-html_output}, -cgi_obj =>  $args->{-cgi_obj}}); #we'll change this one later...
         return;
@@ -1134,7 +1135,24 @@ sub unsubscribe {
 									-skip => ['no_list']
 								}
 							);
-        
+    
+    # send you're already unsub'd message? 
+	# First, only one error and is the error that you're not sub'd?
+	my $send_you_are_not_subscribed_email = 0; 
+	if(
+	   $status == 0 && 
+	   scalar(keys %$errors) == 1 && 
+	  $errors->{not_subscribed} == 1
+	){
+		# Changed the status to, "1" BUT, 
+		$status = 1; 
+		# Mark that we have to send a special email. 
+		$send_you_are_not_subscribed_email = 1; 
+	}
+	else { 
+		# ... 
+	}
+	
     # If there's any problems, handle them. 
     if($status == 0){ 
     
@@ -1195,40 +1213,45 @@ sub unsubscribe {
         }
     }else{    # Else, the unsubscribe request was OK, 
      
-        # Send the URL with the unsub confirmation URL:
-        require DADA::App::Messages;    
-        DADA::App::Messages::send_unsub_confirmation_message(
-			{
-            	-list         => $list, 
-	            -email        => $email, 
-	            -settings_obj => $ls, 
-            	-test         => $self->test,
-			}
-		);
-
-        
-                        
-        # It would be neat to have a copy function..., 
-        # So I could say: 
-        # 
-        # $lh->copy_subscriber(
-        #        -email => $email, 
-        #        -from  => 'list', 
-        #        -to    => 'unsub_confirm', 
-        #  ); 
+		# Are we just pretending thing went alright? 
+		if($send_you_are_not_subscribed_email == 1){ 
+	        # Send the URL with the unsub confirmation URL:
+	        require DADA::App::Messages;    
+	        DADA::App::Messages::send_not_subscribed_message(
+				{
+	            	-list         => $list, 
+		            -email        => $email, 
+		            -settings_obj => $ls, 
+	            	-test         => $self->test,
+				}
+			);
+		}
+		else { 
+			
+	        # Send the URL with the unsub confirmation URL:
+	        require DADA::App::Messages;    
+	        DADA::App::Messages::send_unsub_confirmation_message(
+				{
+	            	-list         => $list, 
+		            -email        => $email, 
+		            -settings_obj => $ls, 
+	            	-test         => $self->test,
+				}
+			);
        
-       my $rm_status = $lh->remove_subscriber(
-			{
-				-email =>$email, 
-				-type  => 'unsub_confirm_list'
-			}
-		);
-        $lh->add_subscriber(
-            {
-                -email => $email,
-                -type  => 'unsub_confirm_list',
-            }
-        );
+ 	      my $rm_status = $lh->remove_subscriber(
+				{
+					-email =>$email, 
+					-type  => 'unsub_confirm_list'
+				}
+			);
+	        $lh->add_subscriber(
+	            {
+	                -email => $email,
+	                -type  => 'unsub_confirm_list',
+	            }
+	        );
+		}
         
         if($args->{-html_output} != 0){ 
         
