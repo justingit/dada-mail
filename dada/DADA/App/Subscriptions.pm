@@ -255,7 +255,7 @@ sub subscribe {
                 my $qs = ''; 
                 if($li->{alt_url_sub_confirm_failed_w_qs} == 1){ 
                     $qs = '?list=' . $list . '&rm=sub_confirm&status=0&email=' . DADA::App::Guts::uriescape($email);
-                    $qs .= '&error=' . $_ foreach keys %$errors; 
+                    $qs .= '&errors=' . $_ foreach keys %$errors; 
                     $qs .= '&' . $_ . '=' . uriescape($fields->{$_}) foreach keys %$fields; 
                 }
                 
