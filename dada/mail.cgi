@@ -4850,8 +4850,8 @@ sub edit_archived_msg {
         # do I need this?
         $raw_msg ||= $ah->_bs_raw_msg( $subject, $message, $format );
         $raw_msg =~ s/Content\-Type/Content-type/;
-		$raw_msg = safely_encode($raw_msg); 
-		
+        $raw_msg = safely_encode($raw_msg);
+
         my $entity;
         eval { $entity = $parser->parse_data($raw_msg); };
 
@@ -4958,7 +4958,10 @@ sub edit_archived_msg {
                                 -vars   => {
                                     name  => $tb->{address},
                                     value => js_enc(
-                                        safely_decode($tb->{entity}->bodyhandle->as_string())
+                                        safely_decode(
+                                            $tb->{entity}
+                                              ->bodyhandle->as_string()
+                                        )
                                     ),
                                 }
                             }
@@ -4968,9 +4971,11 @@ sub edit_archived_msg {
 
                         $form_blob .= $q->p(
                             $q->textarea(
-                                -value => safely_decode($tb->{entity}->bodyhandle->as_string),
-                                -rows  => 15,
-                                -name  => $tb->{address}
+                                -value => safely_decode(
+                                    $tb->{entity}->bodyhandle->as_string
+                                ),
+                                -rows => 15,
+                                -name => $tb->{address}
                             )
                         );
 
@@ -5138,15 +5143,15 @@ sub edit_archived_msg {
                 push( @$edit_headers_menu,
                     { name => $_, editable => $editable_headers{$_} } );
             }
-			
-			my $scrn = ''; 
-            
+
+            my $scrn = '';
+
             $scrn .= admin_template_header(
-                    -Title      => "Edit Archived Message Preferences",
-                    -List       => $li->{list},
-                    -Form       => 0,
-                    -Root_Login => $root_login
-                );
+                -Title      => "Edit Archived Message Preferences",
+                -List       => $li->{list},
+                -Form       => 0,
+                -Root_Login => $root_login
+            );
 
             my $the_id = $q->param('id');
             my $done   = $q->param('done');
@@ -5164,7 +5169,7 @@ sub edit_archived_msg {
             );
 
             $scrn .= admin_template_footer( -List => $list, -Form => 0 );
-			e_print($scrn); 
+            e_print($scrn);
         }
 
     }
@@ -5181,7 +5186,7 @@ sub edit_archived_msg {
 
         $raw_msg ||= $ah->_bs_raw_msg( $subject, $message, $format );
         $raw_msg =~ s/Content\-Type/Content-type/;
-		$raw_msg = safely_encode($raw_msg); 
+        $raw_msg = safely_encode($raw_msg);
 
         my $entity;
 
@@ -5194,15 +5199,17 @@ sub edit_archived_msg {
         # not sure if this, "if" is needed.
         if ( $DADA::Config::ARCHIVE_DB_TYPE eq 'Db' ) {
             $ah->set_archive_info(
-                $id, $entity->head->get( 'Subject', 0 ),
-                undef, $entity->head->get( 'Content-type', 0 ),
-                safely_decode($entity->as_string)
+                $id,
+                $entity->head->get( 'Subject', 0 ),
+                undef,
+                $entity->head->get( 'Content-type', 0 ),
+                safely_decode( $entity->as_string )
             );
         }
         else {
 
             $ah->set_archive_info( $id, $entity->head->get( 'Subject', 0 ),
-                undef, undef, safely_decode($entity->as_string) );
+                undef, undef, safely_decode( $entity->as_string ) );
         }
 
         print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
@@ -5268,31 +5275,50 @@ sub edit_archived_msg {
             }
         }
 
-        my @parts = (); 
-		if(defined($entity)){ 
-			@parts = $entity->parts;
+        my @parts = ();
+        if ( defined($entity) ) {
+            @parts = $entity->parts;
         }
-		else { 
-			#... 
-		}
+        else {
 
-		if (@parts) {
+            #...
+        }
+
+        if (@parts) {
+
+            my %ditch = ();
 
             # multipart...
             my $i;
-            foreach $i ( $#parts) {
+            foreach $i ( 0 .. $#parts ) {
                 my $name_is;
-                # I don't understand this part...
                 ( $parts[$i], $name_is ) =
                   edit( $parts[$i], ( "$name\-" . ($i) ) );
+
                 if ( $q->param( 'delete_' . $name_is ) == 1 ) {
-					# This will change the order of the @parts... 
-					splice( @parts, $i, 1 ); # splice ARRAY,OFFSET,LENGTH - a LENGTH of, "0", won't splice off anything! 
-       			}
+                    $ditch{$i} = 1;
+
+                }
+                else {
+                    $ditch{$i} = 0;
+                }
             }
 
-            #love it. #love it love it.
-            $entity->parts( \@parts );
+            my @new_parts;
+            my $ii;
+            foreach $ii ( 0 .. $#parts ) {
+                if ( $ditch{$ii} == 1 ) {
+
+                    # don't push it.
+                }
+                else {
+
+                    push( @new_parts, $parts[$ii] );
+                }
+            }
+
+            $entity->parts( \@new_parts );
+
             $entity->sync_headers(
                 'Length'      => 'COMPUTE',
                 'Nonstandard' => 'ERASE'
@@ -5300,36 +5326,38 @@ sub edit_archived_msg {
 
         }
         else {
-			if ( $q->param( 'delete_' . $name ) == 1 ){ 
-				# Well, just leave it alone! 
-            	return ( $entity, $name );
-			}
-			else { 
+            if ( $q->param( 'delete_' . $name ) == 1 ) {
 
-				# Uh, this means it's some sort of text, apparrently. 
-           	 	my $content = $q->param($name);
-	               $content =~ s/\r\n/\n/g;
-	            if ($content) {
-					# DEV: encoding?
-	                my $body = $entity->bodyhandle;
-	                my $io   = $body->open('w');
-	                $io->print($content);
-	                $io->close;
-	            }
-				
-				my $cid; 
-                   $cid = $entity->head->get('content-id') || undef;
-	            if ( $q->param( 'upload_' . $name ) ) {
-	                $entity = get_from_upload( $name, $cid );
-	            }
+                # Well, just leave it alone!
+                return ( $entity, $name );
+            }
+            else {
 
-	            $entity->sync_headers(
-	                'Length'      => 'COMPUTE',
-	                'Nonstandard' => 'ERASE'
-	            );
+                # Uh, this means it's some sort of text, apparrently.
+                my $content = $q->param($name);
+                $content =~ s/\r\n/\n/g;
+                if ($content) {
 
-	            return ( $entity, $name );
-			}
+                    # DEV: encoding?
+                    my $body = $entity->bodyhandle;
+                    my $io   = $body->open('w');
+                    $io->print($content);
+                    $io->close;
+                }
+
+                my $cid;
+                $cid = $entity->head->get('content-id') || undef;
+                if ( $q->param( 'upload_' . $name ) ) {
+                    $entity = get_from_upload( $name, $cid, $entity->head->get('content-disposition') );
+                }
+
+                $entity->sync_headers(
+                    'Length'      => 'COMPUTE',
+                    'Nonstandard' => 'ERASE'
+                );
+
+                return ( $entity, $name );
+            }
         }
 
         return ( $entity, $name );
@@ -5338,8 +5366,9 @@ sub edit_archived_msg {
 
     sub get_from_upload {
 
-        my $name = shift;
-        my $cid  = shift;
+        my $name        = shift;
+        my $cid         = shift;
+		my $disposition = shift || 'attachment'; 
 
         my $filename = file_upload( 'upload_' . $name );
         my $data;
@@ -5351,7 +5380,7 @@ sub edit_archived_msg {
             Path        => $filename,
             Filename    => $nice_filename,
             Encoding    => "base64",
-            Disposition => "attachment",
+            Disposition => $disposition,
             Type        => find_attachment_type($filename),
             Id          => $cid,
         );
@@ -5360,6 +5389,7 @@ sub edit_archived_msg {
     }
 
 }
+
 
 
 
