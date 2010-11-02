@@ -5268,24 +5268,27 @@ sub edit_archived_msg {
             }
         }
 
-        my @parts = $entity->parts;
-        if (@parts) {
+        my @parts = (); 
+		if(defined($entity)){ 
+			@parts = $entity->parts;
+        }
+		else { 
+			#... 
+		}
+
+		if (@parts) {
 
             # multipart...
             my $i;
-            foreach $i ( 0 .. $#parts ) {
-
+            foreach $i ( $#parts) {
                 my $name_is;
-
                 # I don't understand this part...
                 ( $parts[$i], $name_is ) =
                   edit( $parts[$i], ( "$name\-" . ($i) ) );
-
                 if ( $q->param( 'delete_' . $name_is ) == 1 ) {
-                    splice( @parts, $i, 0 );
-
-                    #delete($parts[$i]);
-                }
+					# This will change the order of the @parts... 
+					splice( @parts, $i, 1 ); # splice ARRAY,OFFSET,LENGTH - a LENGTH of, "0", won't splice off anything! 
+       			}
             }
 
             #love it. #love it love it.
@@ -5297,34 +5300,36 @@ sub edit_archived_msg {
 
         }
         else {
+			if ( $q->param( 'delete_' . $name ) == 1 ){ 
+				# Well, just leave it alone! 
+            	return ( $entity, $name );
+			}
+			else { 
 
-            return ( undef, $name ) if ( $q->param( 'delete_' . $name ) == 1 );
+				# Uh, this means it's some sort of text, apparrently. 
+           	 	my $content = $q->param($name);
+	               $content =~ s/\r\n/\n/g;
+	            if ($content) {
+					# DEV: encoding?
+	                my $body = $entity->bodyhandle;
+	                my $io   = $body->open('w');
+	                $io->print($content);
+	                $io->close;
+	            }
+				
+				my $cid; 
+                   $cid = $entity->head->get('content-id') || undef;
+	            if ( $q->param( 'upload_' . $name ) ) {
+	                $entity = get_from_upload( $name, $cid );
+	            }
 
-            my $content = $q->param($name);
-            $content =~ s/\r\n/\n/g;
+	            $entity->sync_headers(
+	                'Length'      => 'COMPUTE',
+	                'Nonstandard' => 'ERASE'
+	            );
 
-            if ($content) {
-				# DEV: encoding?
-                my $body = $entity->bodyhandle;
-                my $io   = $body->open('w');
-                $io->print($content);
-                $io->close;
-
-            }
-
-            my $cid = $entity->head->get('content-id') || undef;
-
-            if ( $q->param( 'upload_' . $name ) ) {
-                $entity = get_from_upload( $name, $cid );
-            }
-
-            $entity->sync_headers(
-                'Length'      => 'COMPUTE',
-                'Nonstandard' => 'ERASE'
-            );
-
-            return ( $entity, $name );
-
+	            return ( $entity, $name );
+			}
         }
 
         return ( $entity, $name );
