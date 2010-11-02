@@ -504,7 +504,7 @@ sub _give_props {
           . $DADA::Config::PROGRAM_URL
           . '/what_is_dada_mail/">Mailing List Powered by Dada Mail</a></p>'
           . "\n";
-        my $text_props = "\n\nMailing List Powered by Dada Mail\n$DADA::Config::PROGRAM_URL/what_is_dada_mail/";
+        my $text_props = "\n\nMailing List Powered by Dada Mail\n$DADA::Config::PROGRAM_URL/what_is_dada_mail/\n";
 
 
         $args{-type} = 'HTML'      if $args{-type} eq 'text/html';
