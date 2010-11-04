@@ -14,7 +14,7 @@
 	uses template tags to represent data that may change regularly. Use the template tags to represent information like subscription/unsubscription links, or your list name. The entire list of available tags is shown at the end of this page. 
 </p>
 
-<!-- tmpl_if template_oldstyle_backwards_compatibility --> 
+<!-- tmpl_if list_settings.template_oldstyle_backwards_compatibility --> 
 	<p class="alert">Old Style template tag support is enabled.</p>
 <!-- tmpl_else --> 
 	<p class="alert">Old Style template tag support has been disabled.</p>
@@ -38,15 +38,15 @@
 				Headers
 			</legend>
 	    <p>
-	     <label for="mailing_list_message_from_phrase" class="label_by_5" >From:</label> <input type="text" name="mailing_list_message_from_phrase" id="mailing_list_message_from_phrase" value="<!-- tmpl_var mailing_list_message_from_phrase escape=HTML -->" class="midi" /> &lt;<!-- tmpl_var list_owner_email -->&gt;
+	     <label for="mailing_list_message_from_phrase" class="label_by_5" >From:</label> <input type="text" name="mailing_list_message_from_phrase" id="mailing_list_message_from_phrase" value="<!-- tmpl_var list_settings.mailing_list_message_from_phrase escape=HTML -->" class="midi" /> &lt;<!-- tmpl_var list_settings.list_owner_email -->&gt;
 	    </p>
 
 	    <p>
-	     <label for="mailing_list_message_to_phrase" class="label_by_5" >To:</label> <input type="text" name="mailing_list_message_to_phrase" id="mailing_list_message_to_phrase" value="<!-- tmpl_var mailing_list_message_to_phrase escape=HTML -->" class="midi" /> &lt;<code>&lt;!-- tmpl_var subscriber.email --&gt;</code>&gt;
+	     <label for="mailing_list_message_to_phrase" class="label_by_5" >To:</label> <input type="text" name="mailing_list_message_to_phrase" id="mailing_list_message_to_phrase" value="<!-- tmpl_var list_settings.mailing_list_message_to_phrase escape=HTML -->" class="midi" /> &lt;<code>&lt;!-- tmpl_var subscriber.email --&gt;</code>&gt;
 	    </p>
 
 	    <p>
-	     <label for="mailing_list_message_subject" class="label_by_5" >Subject:</label> <input type="text" name="mailing_list_message_subject" id="mailing_list_message_subject" value="<!-- tmpl_var mailing_list_message_subject escape=HTML -->" class="midi" />
+	     <label for="mailing_list_message_subject" class="label_by_5" >Subject:</label> <input type="text" name="mailing_list_message_subject" id="mailing_list_message_subject" value="<!-- tmpl_var list_settings.mailing_list_message_subject escape=HTML -->" class="midi" />
 	    </p>
 
 	</fieldset> 
@@ -62,7 +62,7 @@
 			This is the mailing list message (text version). The bottom of the email should, at minimum, provide how to unsubscribe from the mailing list. 
 		</p>
 		<p>
-	<textarea name="mailing_list_message" id="mailing_list_message" rows="10" cols="50" ><!-- tmpl_var mailing_list_message escape=HTML -->
+	<textarea name="mailing_list_message" id="mailing_list_message" rows="10" cols="50" ><!-- tmpl_var list_settings.mailing_list_message escape=HTML -->
 	</textarea> 
 		</p>
 
@@ -77,7 +77,7 @@
 			This is the mailing list message (HTML version). The bottom of the email should, at minimum, provide how to unsubscribe from the mailing list. 
 		</p>
 		<p>
-	<textarea name="mailing_list_message_html" id="mailing_list_message_html" rows="10" cols="50" ><!-- tmpl_var mailing_list_message_html escape=HTML -->
+	<textarea name="mailing_list_message_html" id="mailing_list_message_html" rows="10" cols="50" ><!-- tmpl_var list_settings.mailing_list_message_html escape=HTML -->
 	</textarea> 
 		</p>
 	</fieldset> 
@@ -105,11 +105,11 @@
 	
 	
 	<p>
-	 <label for="confirmation_message_subject" class="label_by_5">Subject:</label><input type="text" name="confirmation_message_subject" id="confirmation_message_subject" value="<!-- tmpl_var confirmation_message_subject escape=HTML -->" class="midi" />
+	 <label for="confirmation_message_subject" class="label_by_5">Subject:</label><input type="text" name="confirmation_message_subject" id="confirmation_message_subject" value="<!-- tmpl_var list_settings.confirmation_message_subject escape=HTML -->" class="midi" />
 	</p>
 	
 	<p><label for="confirmation_message">PlainText Message:</label>
-<textarea name="confirmation_message" id="confirmation_message" rows="10" cols="50" ><!-- tmpl_var confirmation_message escape=HTML --></textarea> 
+<textarea name="confirmation_message" id="confirmation_message" rows="10" cols="50" ><!-- tmpl_var list_settings.confirmation_message escape=HTML --></textarea> 
 	</p>
 </fieldset>
 <fieldset>
@@ -120,19 +120,19 @@
 		This email is sent after the person replies to the subscription confirmation email. 
 	</p>
 	
-	<!-- tmpl_if list_settings.send_sub_success_email --> 
+	<!-- tmpl_if list_settings.list_settings.send_sub_success_email --> 
 			<p class="positive">Send Subscription Successful Emails  is Enabled.</p>
 	<!-- tmpl_else --> 
 		<p class="error">Send Subscription Successful Emails  is Disabled.</p>
 	<!-- /tmpl_if --> 
 	
 	<p>
-	 <label for="subscribed_message_subject" class="label_by_5">Subject:</label> <input type="text" name="subscribed_message_subject" id="subscribed_message_subject" value="<!-- tmpl_var subscribed_message_subject escape=HTML -->" class="midi" />
+	 <label for="subscribed_message_subject" class="label_by_5">Subject:</label> <input type="text" name="subscribed_message_subject" id="subscribed_message_subject" value="<!-- tmpl_var list_settings.subscribed_message_subject escape=HTML -->" class="midi" />
 	</p>
 	
 	<p><label for="subscribed_message">PlainText Message:</label>
 	
-	<textarea name="subscribed_message" id="subscribed_message" rows="10" cols="50" ><!-- tmpl_var subscribed_message escape=HTML -->
+	<textarea name="subscribed_message" id="subscribed_message" rows="10" cols="50" ><!-- tmpl_var list_settings.subscribed_message escape=HTML -->
 </textarea> 
 	</p>
 </fieldset>
@@ -155,13 +155,13 @@
 	</p>
 	
 		<p>
-	 <label for="unsub_confirmation_message_subject" class="label_by_5">Subject:</label> <input type="text" name="unsub_confirmation_message_subject" id="unsub_confirmation_message_subject" value="<!-- tmpl_var unsub_confirmation_message_subject escape=HTML -->" class="midi" />
+	 <label for="unsub_confirmation_message_subject" class="label_by_5">Subject:</label> <input type="text" name="unsub_confirmation_message_subject" id="unsub_confirmation_message_subject" value="<!-- tmpl_var list_settings.unsub_confirmation_message_subject escape=HTML -->" class="midi" />
 	</p>
 	
 	<p><label for="unsub_confirmation_message">PlainText Message:</label>
 	
 	
-<textarea name="unsub_confirmation_message" id="unsub_confirmation_message" rows="10" cols="50" ><!-- tmpl_var unsub_confirmation_message escape=HTML -->
+<textarea name="unsub_confirmation_message" id="unsub_confirmation_message" rows="10" cols="50" ><!-- tmpl_var list_settings.unsub_confirmation_message escape=HTML -->
 </textarea> 
 	</p>
 </fieldset>
@@ -183,13 +183,13 @@
 
 
 		<p>
-	 <label for="unsubscribed_message_subject" class="label_by_5">Subject:</label> <input type="text" name="unsubscribed_message_subject" id="unsubscribed_message_subject" value="<!-- tmpl_var unsubscribed_message_subject escape=HTML -->" class="midi" />
+	 <label for="unsubscribed_message_subject" class="label_by_5">Subject:</label> <input type="text" name="unsubscribed_message_subject" id="unsubscribed_message_subject" value="<!-- tmpl_var list_settings.unsubscribed_message_subject escape=HTML -->" class="midi" />
 	</p>
 	
 	<p><label for="unsubscribed_message">PlainText Message:</label>
 	
 	
-<textarea name="unsubscribed_message" id="unsubscribed_message" rows="10" cols="50" ><!-- tmpl_var unsubscribed_message escape=HTML -->
+<textarea name="unsubscribed_message" id="unsubscribed_message" rows="10" cols="50" ><!-- tmpl_var list_settings.unsubscribed_message escape=HTML -->
 </textarea> 
 	</p>
 </fieldset>
@@ -206,15 +206,15 @@
 			Headers: 
 		</legend>
     <p>
-     <label for="invite_message_from_phrase" class="label_by_5">From:</label> <input type="text" name="invite_message_from_phrase" id="invite_message_from_phrase" value="<!-- tmpl_var invite_message_from_phrase escape=HTML -->" class="midi" /> &lt;<!-- tmpl_var list_owner_email -->&gt;
+     <label for="invite_message_from_phrase" class="label_by_5">From:</label> <input type="text" name="invite_message_from_phrase" id="invite_message_from_phrase" value="<!-- tmpl_var list_settings.invite_message_from_phrase escape=HTML -->" class="midi" /> &lt;<!-- tmpl_var list_settings.list_owner_email -->&gt;
     </p>
     
     <p>
-     <label for="<!-- tmpl_var subscriber.email -->" class="label_by_5">To:</label> <input type="text" name="invite_message_to_phrase" id="invite_message_to_phrase" value="<!-- tmpl_var invite_message_to_phrase escape=HTML -->" class="midi" /> &lt;<code>&lt;!-- tmpl_var subscriber.email --&gt;</code>&gt;
+     <label for="<!-- tmpl_var list_settings.subscriber.email -->" class="label_by_5">To:</label> <input type="text" name="invite_message_to_phrase" id="invite_message_to_phrase" value="<!-- tmpl_var list_settings.invite_message_to_phrase escape=HTML -->" class="midi" /> &lt;<code>&lt;!-- tmpl_var subscriber.email --&gt;</code>&gt;
     </p>
 
     <p>
-     <label for="invite_message_subject" class="label_by_5">Subject:</label> <input type="text" name="invite_message_subject" id="invite_message_subject" value="<!-- tmpl_var invite_message_subject escape=HTML -->" class="midi" />
+     <label for="invite_message_subject" class="label_by_5">Subject:</label> <input type="text" name="invite_message_subject" id="invite_message_subject" value="<!-- tmpl_var list_settings.invite_message_subject escape=HTML -->" class="midi" />
     </p>
     
 	
@@ -226,7 +226,7 @@
 			PlainText Message: 
 		</legend>
 	<p>
-<textarea name="invite_message_text" id="invite_message_text" rows="10" cols="50" ><!-- tmpl_var invite_message_text escape=HTML -->
+<textarea name="invite_message_text" id="invite_message_text" rows="10" cols="50" ><!-- tmpl_var list_settings.invite_message_text escape=HTML -->
 </textarea> 
 	</p>
 </fieldset> 
@@ -237,7 +237,7 @@
 			HTML Message: 
 		</legend>
 	<p>
-<textarea name="invite_message_html" id="invite_message_html" rows="10" cols="50" ><!-- tmpl_var invite_message_html escape=HTML -->
+<textarea name="invite_message_html" id="invite_message_html" rows="10" cols="50" ><!-- tmpl_var list_settings.invite_message_html escape=HTML -->
 </textarea> 
 	</p>
 </fieldset> 
@@ -258,7 +258,7 @@
 	</legend>
 
     <p>
-    <label for="not_allowed_to_post_message_subject" class="label_by_5">Subject:</label> <input type="text" name="not_allowed_to_post_message_subject" id="not_allowed_to_post_message_subject" value="<!-- tmpl_var not_allowed_to_post_message_subject escape=HTML -->" class="midi" />
+    <label for="not_allowed_to_post_message_subject" class="label_by_5">Subject:</label> <input type="text" name="not_allowed_to_post_message_subject" id="not_allowed_to_post_message_subject" value="<!-- tmpl_var list_settings.not_allowed_to_post_message_subject escape=HTML -->" class="midi" />
     </p>
     
     <p><label for="not_allowed_to_post_message">PlainText Message:</label>
@@ -267,7 +267,7 @@
 	This message is sent out if you use the Dada Bridge Plugin that allows you to send mailing list emails by sending an email to a special address. People who are not allowed to post to the list will receive this message. 
 </p>
 <p>
-<textarea name="not_allowed_to_post_message" id="not_allowed_to_post_message" rows="10" cols="50" ><!-- tmpl_var not_allowed_to_post_message escape=HTML -->
+<textarea name="not_allowed_to_post_message" id="not_allowed_to_post_message" rows="10" cols="50" ><!-- tmpl_var list_settings.not_allowed_to_post_message escape=HTML -->
 </textarea> 
 </p>
 </fieldset>
@@ -289,16 +289,50 @@
 	</p>
 
     <p>
-    <label for="you_are_already_subscribed_message_subject" class="label_by_5">Subject:</label> <input type="text" name="you_are_already_subscribed_message_subject" id="you_are_already_subscribed_message_subject" value="<!-- tmpl_var you_are_already_subscribed_message_subject escape=HTML -->" class="midi" />
+    <label for="you_are_already_subscribed_message_subject" class="label_by_5">Subject:</label> <input type="text" name="you_are_already_subscribed_message_subject" id="you_are_already_subscribed_message_subject" value="<!-- tmpl_var list_settings.you_are_already_subscribed_message_subject escape=HTML -->" class="midi" />
     </p>
     
     <p><label for="you_are_already_subscribed_message">PlainText Message:</label>
     
 	<p>
-<textarea name="you_are_already_subscribed_message" id="you_are_already_subscribed_message" rows="10" cols="50" ><!-- tmpl_var you_are_already_subscribed_message escape=HTML -->
+<textarea name="you_are_already_subscribed_message" id="you_are_already_subscribed_message" rows="10" cols="50" ><!-- tmpl_var list_settings.you_are_already_subscribed_message escape=HTML -->
 </textarea> 
 	</p>
 </fieldset>
+
+
+
+<fieldset>
+	<legend>
+		You Are Not Subscribed Message: 
+	</legend>
+	<p>
+		This message is sent out only if someone that's not currently subscribed to a list tries to remove themselves and you've set the preferences to send an email out, instead of giving this message in the web browser. 
+</p>
+<!-- tmpl_if list_settings.email_you_are_not_subscribed_msg  -->
+	<p class="positive">
+		Enabled. 
+	</p>
+<!--tmpl_else-->
+	<p class="error">
+		"You Are Not Subscribed" messages are currently shown in the browser and this email message is not sent.  
+	</p>
+<!--/tmpl_if-->
+	</p>
+
+    <p>
+    <label for="you_are_not_subscribed_message_subject" class="label_by_5">Subject:</label> <input type="text" name="you_are_not_subscribed_message_subject" id="you_are_not_subscribed_message_subject" value="<!-- tmpl_var list_settings.you_are_not_subscribed_message_subject escape=HTML -->" class="midi" />
+    </p>
+    
+    <p><label for="you_are_not_subscribed_message">PlainText Message:</label>
+    
+	<p>
+<textarea name="you_are_not_subscribed_message" id="you_are_not_subscribed_message" rows="10" cols="50" ><!-- tmpl_var list_settings.you_are_not_subscribed_message escape=HTML -->
+</textarea> 
+	</p>
+</fieldset>
+
+
 <fieldset>
 	<legend>
 		Send Archived Message to a Friend Message 
@@ -315,7 +349,7 @@
 	<!-- /tmpl_if --> 
 
     <p>
-        <label for="send_archive_message_subject" class="label_by_5">Subject:</label> <input type="text" name="send_archive_message_subject" id="send_archive_message_subject" value="<!-- tmpl_var send_archive_message_subject escape=HTML -->" class="midi" />
+        <label for="send_archive_message_subject" class="label_by_5">Subject:</label> <input type="text" name="send_archive_message_subject" id="send_archive_message_subject" value="<!-- tmpl_var list_settings.send_archive_message_subject escape=HTML -->" class="midi" />
     </p>
 
 
@@ -326,7 +360,7 @@
 		</legend>
 		
 	<p>
-<textarea name="send_archive_message" id="send_archive_message" rows="10" cols="50" ><!-- tmpl_var send_archive_message escape=HTML -->
+<textarea name="send_archive_message" id="send_archive_message" rows="10" cols="50" ><!-- tmpl_var list_settings.send_archive_message escape=HTML -->
 </textarea> 
 	</p>
 </fieldset> 
@@ -341,7 +375,7 @@
 			Send Archived Message to a Friend (HTML Version): 
 		</label>
 		<br />
-<textarea name="send_archive_message_html" id="send_archive_message_html" rows="10" cols="50" ><!-- tmpl_var send_archive_message_html escape=HTML -->
+<textarea name="send_archive_message_html" id="send_archive_message_html" rows="10" cols="50" ><!-- tmpl_var list_settings.send_archive_message_html escape=HTML -->
 </textarea> 
 	</p>
 </fieldset> 
@@ -360,7 +394,7 @@
 <table cellpadding="5">
 	<tr>
 	 <td>
-		<input type="checkbox" id="enable_email_template_expr" name="enable_email_template_expr" value="1" <!-- tmpl_if enable_email_template_expr -->checked="checked"<!--/tmpl_if --> /> 
+		<input type="checkbox" id="enable_email_template_expr" name="enable_email_template_expr" value="1" <!-- tmpl_if list_settings.enable_email_template_expr -->checked="checked"<!--/tmpl_if --> /> 
 	 </td>
 	 <td>
 		

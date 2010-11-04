@@ -4240,6 +4240,7 @@ encrypted.
 	hide_list                          => 0,
 	
 	email_your_subscribed_msg          => 1, 
+	email_you_are_not_subscribed_msg   => 1, 
 	
 	send_unsub_success_email           => 1,
 	send_sub_success_email             => 1,

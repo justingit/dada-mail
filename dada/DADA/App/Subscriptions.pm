@@ -1138,20 +1138,24 @@ sub unsubscribe {
     
     # send you're already unsub'd message? 
 	# First, only one error and is the error that you're not sub'd?
-	my $send_you_are_not_subscribed_email = 0; 
-	if(
-	   $status == 0 && 
-	   scalar(keys %$errors) == 1 && 
-	  $errors->{not_subscribed} == 1
-	){
-		# Changed the status to, "1" BUT, 
-		$status = 1; 
-		# Mark that we have to send a special email. 
-		$send_you_are_not_subscribed_email = 1; 
-	}
-	else { 
-		# ... 
-	}
+    my $send_you_are_not_subscribed_email = 0;
+    if (   $li->{email_you_are_not_subscribed_msg} == 1
+        && $status == 0
+        && scalar( keys %$errors ) == 1
+        && $errors->{not_subscribed} == 1 )
+    {
+
+        # Changed the status to, "1" BUT,
+        $status = 1;
+
+        # Mark that we have to send a special email.
+        $send_you_are_not_subscribed_email = 1;
+    }
+    else {
+
+        # ...
+    }
+
 	
     # If there's any problems, handle them. 
     if($status == 0){ 
@@ -1385,8 +1389,7 @@ sub unsub_confirm {
             warn '"' . $email . '" passed unsubscription_check()'; 
         }
     }
-    
-    
+
 
     if($args->{-html_output} != 0){ 
         if($errors->{no_list} == 1){ 
@@ -1407,7 +1410,7 @@ sub unsub_confirm {
             if $t; 
     }
     
-    # My last check - are they currently on the UNsubscription confirmation list?!
+    # My last check - are they currently on the Unsubscription confirmation list?!
     if($lh->check_for_double_email(-Email => $email,-Type  => 'unsub_confirm_list')  == 0){ 
         $status = 0; 
         $errors->{not_on_unsub_confirm_list} = 1; 
@@ -1503,26 +1506,6 @@ sub unsub_confirm {
             $li->{add_unsubs_to_black_list} == 1
 
         ){
-
-			# I don't have to do this anymore, since moving/removing a subscriber
-			# Will not destroy the profile information... I don't think. 
-			## Basically, what I gotta do is make sure that there aren't on the 
-			## Blacklist ALREADY, or Baaaaaaad things happen. 
-			#
-            ## We move, in an attempt to keep the subscription information
-            ## Perhaps, they'll be moved back?
-            #
-            #warn 'Moving email (' . $email .') to blacklist.' 
-            #    if $t; 
-            #$lh->move_subscriber(
-            #
-            #    {
-            #        -email => $email,  
-            #        -from  => 'list',
-            #        -to    => 'black_list',
-			#		-mode  => 'writeover', 
-            #    }
-            #);
         	if($lh->check_for_double_email(-Email => $email, -Type  => 'black_list')  == 0){ 
 				# Not on, already: 
 				$lh->add_subscriber(
@@ -1538,18 +1521,15 @@ sub unsub_confirm {
 			}
 
         }
-        #else { 
              
-     		warn 'removing, ' . $email . ' from, "list"'
-				if $t; 
-            $lh->remove_subscriber(
-				{ 
-	                -email => $email, 
-	                -type  => 'list'
-            	}
-			);
-        
-        #}
+    	warn 'removing, ' . $email . ' from, "list"'
+			if $t; 
+        $lh->remove_subscriber(
+		{ 
+               -email => $email, 
+               -type  => 'list'
+          	}
+		);
         
         require DADA::App::Messages; 
         DADA::App::Messages::send_owner_happenings(
