@@ -87,12 +87,12 @@ $q->param('list', '');
 			alt_url_sub_confirm_failed_w_qs => 1, 
 		}
 	);
-	$regex = quotemeta('Location: ' . 'http://example.com/confirm_failed.html?list=' . $list . '&rm=sub_confirm&status=0&email=&error=invalid_email'); 
+	$regex = quotemeta('Location: ' . 'http://example.com/confirm_failed.html?list=' . $list . '&rm=sub_confirm&status=0&email=&errors=invalid_email'); 
 	like($dap->subscribe({-cgi_obj => $q,}), qr/$regex/);
 
 	$q->param('email', 'bad'); 
 
-	$regex = quotemeta('Location: ' . 'http://example.com/confirm_failed.html?list=' . $list . '&rm=sub_confirm&status=0&email=bad&error=invalid_email'); 
+	$regex = quotemeta('Location: ' . 'http://example.com/confirm_failed.html?list=' . $list . '&rm=sub_confirm&status=0&email=bad&errors=invalid_email'); 
 	like($dap->subscribe({-cgi_obj => $q,}), qr/$regex/);
 
 	$q->param('email', ''); 
@@ -396,6 +396,54 @@ undef $log;
 	
 	unlink($mh->test_send_file);	
 	
+# So what happens, if we try to unsubscribe an address, that's not subscribed? 
+
+
+$q->param('email', 'notsubscribed@example.com'); 
+$q->param('list',  $list );
+$q->param('pin', '');
+$q->param('f',  'u' );
+
+# First, we're going to do the test, getting the, "you're not subscribed"
+# error in our browser: 
+$ls->param('email_you_are_not_subscribed_msg', 0); 
+$regex = 'begin error_not_subscribed_screen';
+like($dap->unsubscribe({-cgi_obj => $q,}), qr/$regex/, "Got the, error_not_subscribed_screen template in browser!"); 
+# Now, we're going to do the same, but let's turn the email-notification stuff on: 
+$q->param('email', 'notsubscribed2@example.com'); 
+$ls->param('email_you_are_not_subscribed_msg', 1);
+$regex = 'Please confirm your mailing list unsubscription';
+like($dap->unsubscribe({-cgi_obj => $q,}), qr/$regex/, "Please confirm your mailing list unsubscription in the browser!"); 
+$regex = 'You Are Not Subscribed'; # or, whatever. 
+like(slurp($mh->test_send_file), qr/$regex/, "Got the, You Are Not Subscribed message!"); 
+unlink($mh->test_send_file);
+
+# Now, turn Closed Loop Opt-Out off: 
+$ls->param('unsub_confirm_email', 0); 
+# Should give the same report, no? 
+$q->param('email', 'notsubscribed3@example.com'); 
+$q->param('list',  $list );
+$q->param('pin', '');
+$q->param('f',  'u' );
+
+# First, we're going to do the test, getting the, "you're not subscribed"
+# error in our browser: 
+$ls->param('email_you_are_not_subscribed_msg', 0); 
+$regex = 'begin error_not_subscribed_screen';
+my $foo = $dap->unsubscribe({-cgi_obj => $q,}); 
+like($foo, qr/$regex/, "Got the, error_not_subscribed_screen template in browser!"); 
+# Now, we're going to do the same, but let's turn the email-notification stuff on: 
+$q->param('email', 'notsubscribed4@example.com'); 
+$ls->param('email_you_are_not_subscribed_msg', 1);
+$regex = 'Please confirm your mailing list unsubscription';
+like($dap->unsubscribe({-cgi_obj => $q,}), qr/$regex/, "Please confirm your mailing list unsubscription in the browser!"); 
+$regex = 'You Are Not Subscribed'; # or, whatever. 
+like(slurp($mh->test_send_file), qr/$regex/, "Got the, You Are Not Subscribed message!"); 
+unlink($mh->test_send_file);
+
+
+	
+
 
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
@@ -426,7 +474,3 @@ sub decode_header {
 	my $dec_header = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
 	return $dec_header; 
 }
-
-
-
-
