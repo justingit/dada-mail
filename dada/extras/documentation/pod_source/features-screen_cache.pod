@@ -37,7 +37,7 @@ When you make any changes to any Mailing List's settings or archives, the cache 
 be automatically flushed of any files, to be re-created again. 
 
 If you are working on a new list-wide or installation-wide design for Dada Mail, 
-it could be helpful to temporarily disable Screen Caching, until your all set with your 
+it could be helpful to temporarily disable Screen Caching, until you're all set with your 
 design. 
 
 Disabling the Screen Cache is as easy as setting the Dada Mail config variable, C<$SCREEN_CACHE> to something 
