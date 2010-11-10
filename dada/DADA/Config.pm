@@ -1389,23 +1389,29 @@ logged, change the variable to a '0' if you don't.
 
 =cut
 
-# log subscriptions/unsubscriptions? 
-$LOG{subscriptions} ||= 1; 
+%LOG = (
 
-# log regular mailings? 
-$LOG{mailings} ||= 0; 
+    # log subscriptions/unsubscriptions?
+    subscriptions => 1,
 
-# log mass mailings? 
-$LOG{mass_mailings} ||= 1;
+    # log regular mailings?
+    mailings => 0,
 
-# log batchess of mass mailings? 
-$LOG{mass_mailing_batches} ||= 1;
+    # log mass mailings?
+    mass_mailings => 1,
 
-# log control panel login/logouts? 
-$LOG{logins} ||= 1; 
+    # log batchess of mass mailings?
+    mass_mailing_batche => 1,
 
-# log new lists created/old lists destroyed?
-$LOG{list_lives} ||= 1;
+    # log control panel login/logouts?
+    logins => 1,
+
+    # log new lists created/old lists destroyed?
+    list_lives => 1,
+
+) unless keys %LOG;
+
+
 
 =pod
 
