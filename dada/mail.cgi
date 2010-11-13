@@ -6291,6 +6291,7 @@ sub profile_fields {
 				-direction => $dir, 
 			}
 		);
+		$c->flush;
 		print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=profile_fields'}); 
         return; 
         
@@ -6299,7 +6300,7 @@ sub profile_fields {
      
 		###
         $pfm->remove_field({-field => $field}); 
-        
+        $c->flush;
         print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=profile_fields&deletion=1&working_field=' . $field}); 
         return; 
      }
@@ -6323,7 +6324,8 @@ sub profile_fields {
 			); 
 			
             print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=profile_fields&addition=1&working_field=' . $field}); 
-            return;      
+            $c->flush;
+			return;      
          }
          else { 
             # Else, I guess for now, we'll show the template and have the errors print out there...
@@ -6358,7 +6360,7 @@ sub profile_fields {
 					-label          => $field_label, 
 				}
 			);
-
+			$c->flush;
 			print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=profile_fields&edited=1&working_field=' . $field}); 
              return;
 		}
