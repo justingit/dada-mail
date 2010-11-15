@@ -16,7 +16,11 @@ sub absUrl($$) {
   # rt 19656 : unknown URI schemes cause rewrite to fail
 	if($str =~ m/\[redirect\=(.*?)\]/){ 
 		return $str; 
-	}else { 
+	}
+	elsif($str =~ m/\<\!\-\- tmpl_(.*?)\-\-\>|\[list_unsubscribe_link\]/){ 
+			return $str; 
+	}
+	else { 
 	
 	  my $rep = eval { URI::WithBase->new($str, $base)->abs; };
 	  return ($rep ? $rep : $str);
