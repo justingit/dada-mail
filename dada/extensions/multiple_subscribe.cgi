@@ -3,8 +3,6 @@
 use lib qw(
 	../ 
 	../DADA/perllib 
-	../../../../perl 
-	../../../../perllib
 );
 
 
