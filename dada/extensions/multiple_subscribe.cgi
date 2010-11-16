@@ -342,6 +342,11 @@ sub subscribe_emails {
 			my ($status, $errors) = $lh->subscription_check(
 										{
 											-email => $email,
+		                                    ($li->{email_your_subscribed_msg} == 1) ? 
+		                                    (
+		                                    -skip  => ['subscribed'], 
+		                                    ) : (),
+											
 										},
 									);
 			
@@ -420,6 +425,10 @@ sub subscribe_emails {
 			my ($status, $errors) = $lh->unsubscription_check(
 										{
 											-email => $email,
+											($li->{email_you_are_not_subscribed_msg} == 1) ? 
+		                                    (
+		                                    -skip  => ['not_subscribed'], 
+		                                    ) : (),
 										}
 									); 
 			#--- debug! --- #
