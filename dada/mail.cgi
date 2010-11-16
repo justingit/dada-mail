@@ -2655,7 +2655,6 @@ sub adv_sending_preferences {
                                                             strip_message_headers         => $li->{strip_message_headers}, 
                                                             print_errors_to_header        => $li->{print_errors_to_header}, 
                                                             print_return_path_header      => $li->{print_return_path_header}, 
-                                                            use_habeas_headers            => $li->{use_habeas_headers}, 
                                                             verp_return_path              => $li->{verp_return_path},
                                                             use_domain_sending_tunings    => ($li->{use_domain_sending_tunings} ? 1 : 0), 
                                                             
@@ -2681,8 +2680,6 @@ sub adv_sending_preferences {
         my $print_return_path_header  = $q->param('print_return_path_header') || 0;
         my $print_errors_to_header    = $q->param('print_errors_to_header')   || 0;
         my $verp_return_path          = $q->param('verp_return_path')         || 0; 
-        my $use_habeas_headers        = $q->param('use_habeas_headers')       || 0; 
-
         my $use_domain_sending_tunings = $q->param('use_domain_sending_tunings') || 0; 
 		
 		my $mime_encode_words_in_headers = $q->param('mime_encode_words_in_headers') || 0; 
@@ -2703,8 +2700,6 @@ sub adv_sending_preferences {
                    plaintext_encoding       => $plaintext_encoding, 
                    html_encoding            => $html_encoding,
                    verp_return_path         => $verp_return_path, 
-                   use_habeas_headers       => $use_habeas_headers, 
-                   
                    use_domain_sending_tunings    => $use_domain_sending_tunings, 
 				   mime_encode_words_in_headers  => $mime_encode_words_in_headers, 
 				

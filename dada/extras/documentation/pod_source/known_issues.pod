@@ -17,15 +17,6 @@ authentication scheme called oAuth.
 
 http://github.com/justingit/dada-mail/issues#issue/66
 
-=head2 Habeas Watermark 
-
-The Habeas Watermark isn't really used anymore, Habeas The Company was bought by a
-different company, that has a vastly different scheme, other than attempting to 
-legally go after unauthorized use of their copyright material. The new system 
-requires different headers to be present, which Dada Mail does not currently 
-support. We'll see about supporting them, in the future.
-
-
 =head2 CGI::Session Problems
 
 CGI::Session is bundled with Dada Mail - you don't have to install it separately. In rare occurances, it doesn't work correctly. You may receive an error like this: 

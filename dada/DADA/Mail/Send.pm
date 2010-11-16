@@ -2160,20 +2160,7 @@ sub _make_general_headers {
 		if($self->{ls}->param('print_errors_to_header') == 1){ 	
 			my $Errors_To_obj = Email::Address->new(undef, $self->{ls}->param('admin_email'));
 			$gh{'Errors-To'}   = $Errors_To_obj->format;
-		} 
-
-		if($self->{ls}->param('use_habeas_headers') == 1){ 
-		     require DADA::Security::Password; 
-			 $gh{'X-Habeas-SWE-1'} = DADA::Security::Password::rot13('jvagre vagb fcevat');
-			 $gh{'X-Habeas-SWE-2'} = DADA::Security::Password::rot13('oevtugyl nagvpvcngrq');
-			 $gh{'X-Habeas-SWE-3'} = DADA::Security::Password::rot13('yvxr Unornf FJR (gz)');
-			 $gh{'X-Habeas-SWE-4'} = DADA::Security::Password::rot13('Pbclevtug 2002 Unornf (gz)');
-			 $gh{'X-Habeas-SWE-5'} = DADA::Security::Password::rot13('Fraqre Jneenagrq Rznvy (FJR) (gz). Gur fraqre bs guvf');
-			 $gh{'X-Habeas-SWE-6'} = DADA::Security::Password::rot13('rznvy va rkpunatr sbe n yvprafr sbe guvf Unornf');
-			 $gh{'X-Habeas-SWE-7'} = DADA::Security::Password::rot13('jneenag znex jneenagf gung guvf vf n Unornf Pbzcyvnag');
-			 $gh{'X-Habeas-SWE-8'} = DADA::Security::Password::rot13('Zrffntr (UPZ) naq abg fcnz. Cyrnfr ercbeg hfr bs guvf');
-			 $gh{'X-Habeas-SWE-9'} = DADA::Security::Password::rot13('znex va fcnz gb <uggc://jjj.unornf.pbz/ercbeg/>.');
-		}	
+		} 	
 	
 		# again, this stuff should always be defined by default... 
 		if(defined($self->{ls}->param('precedence'))) { 
@@ -3048,8 +3035,6 @@ Return a hash containing the following Email Headers:
 =item * Errors-To
 
 =item * Message-ID
-
-=item * X-Habeas
 
 =item * Precedence
 

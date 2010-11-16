@@ -4311,7 +4311,6 @@ encrypted.
 	print_return_path_header     => 0,
 	plaintext_encoding           => 'quoted-printable', 
 	html_encoding                => 'quoted-printable',
-	use_habeas_headers           => 0,
 	strip_message_headers        => 0, 
 	add_sendmail_f_flag          => 1, 
 	verp_return_path             => 0, 
@@ -4883,16 +4882,6 @@ References                  =>    undef,
 'List-URL'                  =>    undef,  
 'X-BeenThere'               =>    undef, 
 
-'X-Habeas-SWE-1'            =>    undef, 
-'X-Habeas-SWE-2'            =>    undef, 
-'X-Habeas-SWE-3'            =>    undef, 
-'X-Habeas-SWE-4'            =>    undef, 
-'X-Habeas-SWE-5'            =>    undef, 
-'X-Habeas-SWE-6'            =>    undef, 
-'X-Habeas-SWE-7'            =>    undef, 
-'X-Habeas-SWE-8'            =>    undef, 
-'X-Habeas-SWE-9'            =>    undef, 
-
 'Message-ID'                =>    undef, 
  Precedence                 =>    undef,
 
@@ -4952,16 +4941,6 @@ List-Subscribe
 List-Unsubscribe
 List-URL
 X-BeenThere
-
-X-Habeas-SWE-1
-X-Habeas-SWE-2
-X-Habeas-SWE-3
-X-Habeas-SWE-4
-X-Habeas-SWE-5
-X-Habeas-SWE-6
-X-Habeas-SWE-7
-X-Habeas-SWE-8
-X-Habeas-SWE-9
 
 Message-ID
 Precedence
