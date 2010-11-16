@@ -4245,7 +4245,7 @@ encrypted.
 	show_hidden                        => 0,	
 	hide_list                          => 0,
 	
-	email_your_subscribed_msg          => 1, 
+	email_your_subscribed_msg          => 1,  # Notice the incorrect, "your" instead of, "you're" - doh!
 	email_you_are_not_subscribed_msg   => 1, 
 	
 	send_unsub_success_email           => 1,
