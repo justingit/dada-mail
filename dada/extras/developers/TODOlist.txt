@@ -22,7 +22,7 @@ Key:
 	http://stereonaut.net/twitters-oauth-perl/
 	http://hueniverse.com/2007/10/beginners-guide-to-oauth-part-i-overview/
 	http://github.com/semifor/Net-Twitter/wiki/Net::Twitter-and-the-death-of-Basic-Authentication
-	
+	I don't actually know if there's a way for Dada Mail to use Twitter, anymore. Sad face. 
 
 [ ] perhaps the sub/unsub stuff cannot be truly one-click, but one-click to a screen, that has a button to actually subsribe/unsubsribe you
 

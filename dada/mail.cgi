@@ -2446,8 +2446,6 @@ sub mass_mailing_preferences {
 					done                   => $done, 
 					mass_send_amount_menu  => $mass_send_amount_menu, 
 					bulk_sleep_amount_menu => $bulk_sleep_amount_menu, 
-					can_use_twitter        => DADA::App::Guts::can_use_twitter(), 
-					twitter_password       => DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $li->{twitter_password}),       
 				},
 				-list_settings_vars_param => { 
 					-list    => $list,
@@ -2468,11 +2466,7 @@ sub mass_mailing_preferences {
 		my $get_finished_notification         = $q->param("get_finished_notification")  || 0;     
         my $auto_pickup_dropped_mailings      = $q->param('auto_pickup_dropped_mailings')      || 0; 
         my $restart_mailings_after_each_batch = $q->param('restart_mailings_after_each_batch') || 0; 
-        
-		my $twitter_mass_mailings             = $q->param('twitter_mass_mailings') || 0; 
-		my $twitter_username                  = $q->param('twitter_username') || ''; 
-		my $twitter_password                  = $q->param('twitter_password') || '';
-	    my $smtp_connection_per_batch         = strip($q->param('smtp_connection_per_batch')) || 0;
+      	my $smtp_connection_per_batch         = strip($q->param('smtp_connection_per_batch')) || 0;
      
 
         $ls->save(
@@ -2485,9 +2479,6 @@ sub mass_mailing_preferences {
                     get_finished_notification         =>   $get_finished_notification, 
                     auto_pickup_dropped_mailings      => $auto_pickup_dropped_mailings, 
                     restart_mailings_after_each_batch => $restart_mailings_after_each_batch, 
-					twitter_mass_mailings             => $twitter_mass_mailings,
-					twitter_username                  => $twitter_username, 
-					twitter_password                  => DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $twitter_password),      
                   	smtp_connection_per_batch         => $smtp_connection_per_batch, 
 			        
 				}

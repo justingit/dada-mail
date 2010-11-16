@@ -13,9 +13,8 @@ account that can run custom CGI scripts.
 Dada Mail handles Closed-Loop Opt-in/Opt-out subscriptions, sending
 complex announce-only and/or discussion mailing list messages with an
 advanced, fault-tolerant mass mailing monitor, supports the
-archiving/viewing/searching/resending/syndicating (rss, atom feeds,
-Twitter) of sent messages and doing all this and a whole lot more with
-style.
+archiving/viewing/searching/resending/syndicating (rss, atom feeds) 
+of sent messages and doing all this and a whole lot more with style.
 
 Dada Mail can handle custom subscriber fields and you can use the
 information it captures for partial list sending based on a query and

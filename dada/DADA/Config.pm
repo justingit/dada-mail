@@ -4319,10 +4319,6 @@ encrypted.
     domain_sending_tunings       => undef, 
 	mime_encode_words_in_headers => 1, 
 	
-	twitter_mass_mailings        => 0, 
-	twitter_username             => undef, 
-	twitter_password             => undef,
-	
 # view list prefs
 
 	view_list_subscriber_number  => 100,
