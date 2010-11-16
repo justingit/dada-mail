@@ -3527,7 +3527,7 @@ from the list:
 
 <!-- tmpl_var list_settings.list_name -->
 
-was just made. This email address is actually not currently subscribed, 
+was just made. This email address is actually not currently subscribed.
 
 This message has been sent to protect your privacy and only allow this information to be 
 available to you. 
@@ -3536,16 +3536,9 @@ If you would like to change your subscription, please visit this address:
 
 <!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/
 
-If the above URL is inoperable, make sure that you have copied the 
-entire address. Some mail readers will wrap a long URL and thus break
-this automatic unsubscribe mechanism. 
-
 To contact the owner of this email list, please use the address below: 
 
 <mailto:<!-- tmpl_var list_settings.list_owner_email -->>
-
-
-- <!-- tmpl_var list_settings.list_owner_email -->
 
 EOF
 ;
