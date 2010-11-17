@@ -4557,6 +4557,8 @@ encrypted.
     ignore_spam_messages                => 0, 
     find_spam_assassin_score_by         => 'looking_for_embedded_headers',
     ignore_spam_messages_with_status_of => 6, 
+	rejected_spam_messages              => 'ignore_spam',
+
     enable_moderation                   => 0, 
     moderate_discussion_lists_with      => 'owner_email',	
     send_moderation_msg                 => 0, 

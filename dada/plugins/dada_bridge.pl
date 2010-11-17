@@ -237,7 +237,29 @@ Please try to resend the message again, but within the maximum size allowed,
 -- <!-- tmpl_var list_settings.list_owner_email -->
 
 EOF
-  ;
+;
+
+my $Message_Labeled_As_Spam_Subject =
+  'Message to: <!-- tmpl_var list_settings.list_name -->  Subject: <!-- tmpl_var original_subject --> Labeled as Spam';
+my $Message_Labeled_As_Spam_Message = <<EOF
+
+Hello, <!-- tmpl_var subscriber.email -->, 
+
+We've received a message from you with the Subject,
+
+	<!-- tmpl_var original_subject -->
+		
+but couldn't deliver it to the mailing list because it hit the spam filters and seems 
+suspicious. 
+
+If you did not send a message with this subject, please disregard this message. 
+
+-- <!-- tmpl_var list_settings.list_owner_email -->
+
+EOF
+;
+
+
 
 #
 # There is nothing else to configure in this program.
@@ -838,6 +860,12 @@ sub cgi_default {
         $p->{ignore_spam_messages} = $q->param('ignore_spam_messages') || 0;
         $p->{ignore_spam_messages_with_status_of} =
           $q->param('ignore_spam_messages_with_status_of') || 0;
+
+		$p->{rejected_spam_messages} =
+          $q->param('rejected_spam_messages') || 0;
+
+
+
         $p->{set_to_header_to_list_address} =
           $q->param('set_to_header_to_list_address') || 0;
         $p->{find_spam_assassin_score_by} =
@@ -1935,7 +1963,7 @@ sub validate_msg {
 
                         }
                         else {
-                            $errors->{message_seen_as_spam} = 0;
+                            $errors->{message_seen_as_spam} = 0; 
 
                             print
 "\t\t\t Message passed! Spam Test (Score of: $score, "
@@ -2763,6 +2791,61 @@ sub send_msg_not_from_subscriber {
 
 }
 
+sub send_spam_rejection_message {
+    my $list = shift;
+    my $msg  = shift;
+
+    $msg = safely_encode($msg);
+    my $entity = $parser->parse_data( $msg );
+
+    my $rough_from = $entity->head->get( 'From', 0 );
+    my $from_address;
+    if ( defined($rough_from) ) {
+        ;
+        eval {
+            $from_address = ( Email::Address->parse($rough_from) )[0]->address;
+        };
+    }
+
+    if ( $from_address && $from_address ne '' ) {
+
+        require DADA::MailingList::Settings;
+        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
+        #my $att = $entity->as_string;
+        #   $att = safely_decode($att);
+        require DADA::App::Messages;
+
+        DADA::App::Messages::send_generic_email(
+            {
+                -list    => $list,
+                -headers => {
+                    To      => $from_address,
+                    From    => $ls->param('list_owner_email'),
+                    Subject => $Message_Labeled_As_Spam_Subject,
+                },
+                -body        => $Message_Labeled_As_Spam_Message,
+                -tmpl_params => {
+
+                    -list_settings_vars       => $ls->params, 
+                    -list_settings_vars_param => { -dot_it => 1, },
+                    -subscriber_vars => { 'subscriber.email' => $from_address, },
+                     -vars          => {
+                        original_subject => $entity->head->get( 'Subject', 0 ),
+                      }
+                },
+            }
+        );
+
+    }
+    else {
+        warn
+"Problem with send_spam_rejection_message! There's no address to send to?: "
+          . $rough_from;
+    }
+}
+
+
 sub send_invalid_msgs_to_owner {
 
     my $li     = shift;
@@ -2917,9 +3000,20 @@ sub handle_errors {
 
     if ( $errors->{message_seen_as_spam} == 1 ) {
 
-        print "\n\n\t\t *** Message seen as SPAM - ignoring. ***\n\n"
-          if $verbose;
+		if ( $li->{rejected_spam_messages} eq 'send_spam_rejection_message' ) {
+				print "\t\send_spam_rejection_message on its way! \n\n"
+	              if $verbose;
+	            send_spam_rejection_message( $list, $full_msg );
 
+		}
+		elsif ( $li->{rejected_spam_messages} eq 'ignore_spam' ) {
+        	print "\n\n\t\t *** Message seen as SPAM - ignoring. ***\n\n"
+          		if $verbose;
+		}
+		else { 
+			print "\n\n\t\tlist_settings.rejected_spam_messages is setup impoperly - ignoring message!\n\n";
+		}
+		
     }
     elsif ( $errors->{multiple_return_path_headers} == 1 ) {
 
@@ -3947,7 +4041,7 @@ Mailing List Security
       </td> 
       <td>
        <label for="ignore_spam_messages">
-        Ignore messages labeled as, &quot;SPAM&quot; by SpamAssassin filters. 
+        Reject messages labeled as, &quot;SPAM&quot; by SpamAssassin filters. 
        </label></p> 
       
        
@@ -3999,6 +4093,21 @@ Mailing List Security
        <p> 
         Messages must reach a SpamAssassin level of at least: <!-- tmpl_var spam_level_popup_menu --> to be considered SPAM.
        </p> 
+	<table cellpadding="5"> 
+	<tr> 
+	<td><input type="radio" name="rejected_spam_messages" value="ignore_spam" <!-- tmpl_if expr="(list_settings.rejected_spam_messages eq 'ignore_spam')" -->checked="checked"<!-- /tmpl_if --> /></td>
+	<td><p><label>Ignore Spam Messages</label><br /> 
+	</p>
+	</td>
+	</tr> 
+	<tr> 
+	<td><input type="radio" name="rejected_spam_messages" value="send_spam_rejection_message" <!-- tmpl_if expr="(list_settings.rejected_spam_messages eq 'send_spam_rejection_message')" -->checked="checked"<!-- /tmpl_if -->/><label></td><td><p><label>Send a Rejection Message</label><br /> 
+	The original poster will receive a message stating that the original message was rejected.
+
+</p> 
+	</td>
+	</tr> 
+	</table> 
 
       </td>
      </tr> 
