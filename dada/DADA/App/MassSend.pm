@@ -428,12 +428,6 @@ sub send_email {
                 require DADA::MailingList::Archives;                
                 my $archive = DADA::MailingList::Archives->new({-list => $list});
 	               $archive->set_archive_info($message_id, $headers{Subject}, undef, undef, $mh->saved_message); 
-
-               	DADA::App::Guts::tweet_about_mass_mailing(
-					$list, 
-					$archive->_parse_in_list_info(-data => $headers{Subject}), 
-					$DADA::Config::PROGRAM_URL . '/archive/' . $list . '/' . $archive->newest_entry.'/'
-				) if $ls->param('twitter_mass_mailings') == 1;
 				
             }
         } else { 
@@ -833,12 +827,6 @@ sub send_url_email {
                     
                     my $archive = DADA::MailingList::Archives->new({-list => $list});
                     $archive->set_archive_info($message_id, $q->param('Subject'), undef, undef, $mh->saved_message); 
-                    
-					DADA::App::Guts::tweet_about_mass_mailing(
-						$list, 
-						$archive->_parse_in_list_info(-data => $headers{Subject}), 
-						$DADA::Config::PROGRAM_URL . '/archive/' . $list . '/' . $archive->newest_entry.'/'
-					) if $ls->param('twitter_mass_mailings') == 1;
 					
                 }
 

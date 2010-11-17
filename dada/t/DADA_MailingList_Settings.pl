@@ -86,7 +86,6 @@ my @pass_settings = qw(
 sasl_smtp_password
 pop3_password
 discussion_pop_password
-twitter_password
 ); 
 
 foreach(@pass_settings) { 
@@ -119,7 +118,6 @@ my @password_settings = qw(
   sasl_smtp_password
   pop3_password
   discussion_pop_password
-  twitter_password
 );
 
 my $lsd_pass = 'sneaky';

@@ -8,15 +8,6 @@ L<http://github.com/justingit/dada-mail/issues>
 
 If you'd like, please submit a new bug and comment on current bugs. 
 
-
-=head2 Twitter Support
-
-Twitter Support is currently not working, as the type of authorization Dada
-Mail was utilising (Basic) has been dropped by Twitter in favor of a more substantial
-authentication scheme called oAuth. 
-
-http://github.com/justingit/dada-mail/issues#issue/66
-
 =head2 CGI::Session Problems
 
 CGI::Session is bundled with Dada Mail - you don't have to install it separately. In rare occurances, it doesn't work correctly. You may receive an error like this: 

@@ -124,7 +124,7 @@ sub post_process_get {
 	   # If we don't need to load, DADA::Security::Password, let's not. 
 	   
 	   my $d_password_check = 0; 
-	   foreach ('sasl_smtp_password', 'pop3_password', 'discussion_pop_password', 'twitter_password'){ 
+	   foreach ('sasl_smtp_password', 'pop3_password', 'discussion_pop_password'){ 
 	        if(exists($DADA::Config::LIST_SETUP_DEFAULTS{$_}) || exists($DADA::Config::LIST_SETUP_OVERRIDES {$_})){ 
 	            $d_password_check = 1; 
 	            require DADA::Security::Password; 
@@ -132,7 +132,7 @@ sub post_process_get {
 	        }
 	   }
 	   
-	   foreach ('sasl_smtp_password', 'pop3_password', 'discussion_pop_password', 'twitter_password'){ 
+	   foreach ('sasl_smtp_password', 'pop3_password', 'discussion_pop_password'){ 
 	        
 	        if($DADA::Config::LIST_SETUP_OVERRIDES{$_}){ 
 	         
@@ -177,7 +177,7 @@ sub post_process_get {
 	        $ls->{subscription_quota} = $DADA::Config::SUBSCRIPTION_QUOTA; 
 	    }
       
-	    foreach ('sasl_smtp_password', 'pop3_password', 'discussion_pop_password','twitter_password'){ 
+	    foreach ('sasl_smtp_password', 'pop3_password', 'discussion_pop_password'){ 
 	        if($DADA::Config::LIST_SETUP_OVERRIDES {$_}){ 
 	            $DADA::Config::LIST_SETUP_OVERRIDES {$_} = $self->{orig}->{LIST_SETUP_OVERRIDES}->{$_};
 	        }
@@ -195,7 +195,6 @@ foreach(keys %DADA::Config::LIST_SETUP_OVERRIDES){
 	next if $_ eq 'sasl_smtp_password';
 	next if $_ eq 'pop3_password';
 	next if $_ eq 'discussion_pop_password';
-	next if $_ eq 'twitter_password'; 
 	$ls->{$_} = $DADA::Config::LIST_SETUP_OVERRIDES{$_};
 
 }
