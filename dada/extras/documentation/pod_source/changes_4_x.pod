@@ -2,6 +2,91 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.3.0
+
+=head2 Changes 4.3.0
+
+=head3 Twitter Support Removed
+
+Twitter turned off support for the, "Basic" authorization API they were using, 
+in conjunction with oAuth (the new standard). oAuth isn't very compatible with 
+Dada Mail, so we had to pull support for it. 
+
+=head3 Habeas Watermark Support Removed
+
+The Habeas Watermark isn't really used, anymore, anyways. 
+
+=head2 Features 4.3.0
+
+=head3 Dada Bridge: Ignore/Send a Rejection message for Spam Messages
+
+It's now possible to either ignore messages seen as spam, or send a rejection message. 
+
+=head3 Unsubscription Confirmations: email notice by default
+
+If someone attempts to unsubscribe an email address that isn't actually 
+subscribed, a notification will be sent, via email to the address, instead of having 
+a notice in the browser. This is to keep the privacy of the subscriber. 
+
+This behavior can be enabled/disabled in the list control panel, in, 
+
+I<Your Mailing List  - Mailing List Options> 
+
+Under the option, 
+
+B<If someone not currently subscribed to your mailing list attempts to unsubscribe, send a, "You are not Subscribed!" message via email, instead of showing this error in their web browser.>
+
+It is B<disabled> by default. 
+
+=head2 Bug Fixes 4.3.0
+
+=head3 available_lists with, "-In_Order" param doesn't. 
+
+https://github.com/justingit/dada-mail/issues/closed#issue/71
+
+=head3 $PROGRAM_ERROR_LOG example in Config.pm is missing first, "/" in path
+
+https://github.com/justingit/dada-mail/issues/closed#issue/72
+
+=head3 Some Config.pm variables not override-able in outside config file (.dada_config) 
+
+https://github.com/justingit/dada-mail/issues/closed#issue/74
+
+=head3 inconstent naming of url-parameter, error/errors
+
+https://github.com/justingit/dada-mail/issues/closed#issue/79
+
+=head3 '=' added to the end of some plaintext mailins in quoted-printable encoding
+
+https://github.com/justingit/dada-mail/issues/closed#issue/78
+
+=head3 Can't delete an attachment in an archived message? 
+
+https://github.com/justingit/dada-mail/issues/closed#issue/75
+
+=head3 Changes to Profile Subscriber Fields does not clear cache
+
+https://github.com/justingit/dada-mail/issues/closed#issue/80
+
+=head3 links with Dada Mail tags in them will break, when using, "Send a Webpage" 
+
+https://github.com/justingit/dada-mail/issues/closed#issue/81
+
+=head3 multiple_subscribe.cgi does not use email notification for "already subscribed" 
+
+https://github.com/justingit/dada-mail/issues/closed#issue/77
+
+=head3 Unsubscribe requrests should have similar "notify via email, rather than web UI" functionality
+
+https://github.com/justingit/dada-mail/issues/closed#issue/76
+
+=head3 How's Twitter Support?
+
+https://github.com/justingit/dada-mail/issues/issue/66/#comment_546769
+
+=head3 Habeas Watermark Not Really used Anymore?
+
+https://github.com/justingit/dada-mail/issues/issue/65/#comment_546770
 
 =head1 4.2.1
 
