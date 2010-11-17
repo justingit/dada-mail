@@ -4239,7 +4239,7 @@ encrypted.
 	hide_list                          => 0,
 	
 	email_your_subscribed_msg          => 1,  # Notice the incorrect, "your" instead of, "you're" - doh!
-	email_you_are_not_subscribed_msg   => 1, 
+	email_you_are_not_subscribed_msg   => 0, 
 	
 	send_unsub_success_email           => 1,
 	send_sub_success_email             => 1,
@@ -4870,8 +4870,8 @@ and to say that you've got the freshest tools on the Web.
 
 
 
-$VERSION = 4.2.1; 
-$VER     = '4.2.1 Stable 10/04/10';
+$VERSION = 4.3.0; 
+$VER     = '4.3.0 Beta 11/16/10';
 
 
 #
