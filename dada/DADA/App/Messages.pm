@@ -638,6 +638,46 @@ sub send_you_are_already_subscribed_message {
 }
 
 
+
+
+sub send_not_subscribed_message { 
+
+	my ($args) = @_; 
+
+	my $ls; 
+	if(!exists($args->{-ls_obj})){ 
+		require DADA::MailingList::Settings; 
+		$ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
+	}
+	else { 
+		$ls = $args->{-ls_obj};
+	}
+	my $li    = $ls->get;
+		
+	send_generic_email(
+		{
+    	-list         => $args->{-list}, 
+        -email        => $args->{-email}, 
+        -ls_obj       => $ls, 
+        
+		-headers => { 
+			To           => '"'. escape_for_sending($li->{list_name}) .' Subscriber" <'. $args->{-email} .'>',
+			Subject      => $li->{you_are_not_subscribed_message_subject}, 
+		},
+		
+		-body         => $li->{you_are_not_subscribed_message}, 
+		
+		-tmpl_params  => {		
+			-list_settings_vars_param => {-list => $li->{list},},
+			-subscriber_vars_param    => {-list => $li->{list}, -email => $args->{-email}, -type => 'list'},
+		},
+		-test         => $args->{-test}, 
+		}
+	);
+	
+}
+
+
 sub send_newest_archive { 
 
 	# Gonna leave this as it is for now...

@@ -278,23 +278,23 @@ sub subscribe {
                 
                 foreach(@list_of_errors){ 
                     if ($errors->{$_} == 1){ 
-                        user_error(
+                        return user_error(
                             -List  => $list, 
                             -Error => $_,            
                             -Email => $email,
                             -fh    => $args->{-fh},
+							-test  => $self->test, 
                         ); 
-                        return; 
                     }
                 }
 
                 # Fallback
-                user_error(
+               return user_error(
                     -List  => $list, 
                     -Email => $email,
                     -fh    => $args->{-fh},
+					-test  => $self->test, 
                 );    
-                return;
             }            
         }
         
@@ -687,13 +687,13 @@ sub confirm {
 	        if ($errors->{no_list}  == 1){ 
 	            warn '>>>> >>>> No list found.'
 	                if $t; 
-	            user_error(
+	            return user_error(
 	                -List  => $list, 
 	                -Error => "no_list",
 	                -Email => $email,
 	                -fh    => $args->{-fh},
-	            );
-	            return;            
+					-test  => $self->test, 
+	            );            
 	        }
 		}
     }
@@ -749,23 +749,23 @@ sub confirm {
                 
                 foreach(@list_of_errors){ 
                     if ($errors->{$_} == 1){ 
-                        user_error(
+                        return user_error(
                             -List  => $list, 
                             -Error => $_,            
                             -Email => $email,
                             -fh    => $args->{-fh},
-                        ); 
-                        return; 
+                        	-test  => $self->test, 
+						); 
+                         
                     }
                 }
                 # Fallback.
-                user_error(
+               return user_error(
                     -List  => $list, 
                     -Email => $email,
                     -fh    => $args->{-fh},
+					-test  => $self->test, 
                 );
-                return;
-                
             }            
         }        
     }
@@ -1022,6 +1022,10 @@ sub unsubscribe {
     if(! exists($args->{-fh})){ 
         $args->{-fh} = \*STDOUT;
     }
+	# do not like this. 
+	if(! exists($args->{-no_auto_config})){ 
+		$args->{-no_auto_config} = 0; 
+	}
     my $fh = $args->{-fh}; 
     
     
@@ -1089,8 +1093,12 @@ sub unsubscribe {
 	}
 	
     if(
+		(
 		$li->{unsub_confirm_email}       == 0 || 
 		$skip_unsub_confirm_if_logged_in == 1
+		)
+		&&
+		$args->{-no_auto_config}         == 0 
 	){  
         warn 'skipping the unsubscription process and going straight to the confirmation process'
             if $t;
@@ -1110,22 +1118,21 @@ sub unsubscribe {
         
         
         warn 'going to unsub_confirm()'
-			if $t; 
-        $self->unsub_confirm(
+			if $t; 			
+        return $self->unsub_confirm(
             {
                 -html_output => $args->{-html_output}, 
                 -cgi_obj     => $args->{-cgi_obj},
             }
         );
-        return;
      }       
  
     # If there's already a pin, 
     # (that we didn't just make) 
     # Confirm the unsubscription
-    if($pin){
-        $self->unsub_confirm({-html_output => $args->{-html_output}, -cgi_obj =>  $args->{-cgi_obj}}); #we'll change this one later...
-        return;
+
+    if($pin && $args->{-no_auto_config}  == 0 ){
+        return $self->unsub_confirm({-html_output => $args->{-html_output}, -cgi_obj =>  $args->{-cgi_obj}}); #we'll change this one later...
     }
 
     my ($status, $errors) = $lh->unsubscription_check(
@@ -1134,10 +1141,45 @@ sub unsubscribe {
 									-skip => ['no_list']
 								}
 							);
-        
+    if($t){ 
+        if($status == 0){ 
+            warn '"' . $email . '" failed unsubscription_check(). Details: '; 
+            foreach(keys %$errors){ 
+                warn 'Error: ' . $_ . ' => ' . $errors->{$_}; 
+            }
+        }
+        else { 
+            warn '"' . $email . '" passed unsubscription_check()'; 
+        }
+    }
+
+
+    # send you're already unsub'd message? 
+	# First, only one error and is the error that you're not sub'd?
+    my $send_you_are_not_subscribed_email = 0;
+    if (   $li->{email_you_are_not_subscribed_msg} == 1
+        && $status == 0
+        && scalar( keys %$errors ) == 1
+        && $errors->{not_subscribed} == 1 )
+    {
+		
+		
+        # Changed the status to, "1" BUT,
+        $status = 1;
+
+        # Mark that we have to send a special email.
+        $send_you_are_not_subscribed_email = 1;
+    }
+    else {
+		warn "else,what?" if $t; 
+        # ...
+    }
+
+	
     # If there's any problems, handle them. 
     if($status == 0){ 
-    
+    	
+		warn '$status: ' . $status if $t; 
         if($args->{-html_output} != 0){ 
         
             # URL redirect?
@@ -1171,64 +1213,67 @@ sub unsubscribe {
                         # Special Case. 
                         $_ = 'unsub_invalid_email' 
                             if $_ eq 'invalid_email';
-                        
-                        user_error(
+                        warn "showing error, $_"; 
+                        return user_error(
                             -List  => $list, 
                             -Error => $_,            
                             -Email => $email,
                             -fh    => $args->{-fh},
+							-test  => $self->test, 
                         ); 
-                        return; 
                     }
                 }
 
                 # Fallback
-                user_error(
+                return user_error(
                     -List  => $list, 
                     -Email => $email,
                     -fh    => $args->{-fh},
+					-test  => $self->test, 
                 );    
-                return;
-                
-                
             }
         }
     }else{    # Else, the unsubscribe request was OK, 
      
-        # Send the URL with the unsub confirmation URL:
-        require DADA::App::Messages;    
-        DADA::App::Messages::send_unsub_confirmation_message(
-			{
-            	-list         => $list, 
-	            -email        => $email, 
-	            -settings_obj => $ls, 
-            	-test         => $self->test,
-			}
-		);
-
-        
-                        
-        # It would be neat to have a copy function..., 
-        # So I could say: 
-        # 
-        # $lh->copy_subscriber(
-        #        -email => $email, 
-        #        -from  => 'list', 
-        #        -to    => 'unsub_confirm', 
-        #  ); 
+		# Are we just pretending thing went alright? 
+		if($send_you_are_not_subscribed_email == 1){ 
+	        # Send the URL with the unsub confirmation URL:
+	        require DADA::App::Messages;    
+	        DADA::App::Messages::send_not_subscribed_message(
+				{
+	            	-list         => $list, 
+		            -email        => $email, 
+		            -settings_obj => $ls, 
+	            	-test         => $self->test,
+				}
+			);
+		}
+		else { 
+			
+	        # Send the URL with the unsub confirmation URL:
+	        require DADA::App::Messages;    
+	        DADA::App::Messages::send_unsub_confirmation_message(
+				{
+	            	-list         => $list, 
+		            -email        => $email, 
+		            -settings_obj => $ls, 
+	            	-test         => $self->test,
+				}
+			);
        
-       my $rm_status = $lh->remove_subscriber(
-			{
-				-email =>$email, 
-				-type  => 'unsub_confirm_list'
-			}
-		);
-        $lh->add_subscriber(
-            {
-                -email => $email,
-                -type  => 'unsub_confirm_list',
-            }
-        );
+ 	      my $rm_status = $lh->remove_subscriber(
+				{
+					-email =>$email, 
+					-type  => 'unsub_confirm_list'
+				}
+			);
+	        $lh->add_subscriber(
+	            {
+	                -email => $email,
+	                -type  => 'unsub_confirm_list',
+	            }
+	        );
+		}
         
         if($args->{-html_output} != 0){ 
         
@@ -1286,6 +1331,7 @@ sub unsubscribe {
 
 
 sub unsub_confirm { 
+	
 
     my $self = shift; 
     my ($args) = @_; 
@@ -1362,16 +1408,16 @@ sub unsub_confirm {
             warn '"' . $email . '" passed unsubscription_check()'; 
         }
     }
-    
-    
+
 
     if($args->{-html_output} != 0){ 
         if($errors->{no_list} == 1){ 
-            user_error(
+            return user_error(
                 -List  => $list, 
                 -Error => "no_list", 
                 -Email => $email
-                
+                -test  => $self->test, 
+				# no -fh?
             );
         }
     }
@@ -1383,8 +1429,49 @@ sub unsub_confirm {
          warn '"' . $email . '" invalid pin found!'
             if $t; 
     }
+
+	# send you're already unsub'd message? 
+	# First, only one error and is the error that you're not sub'd?
+	my $send_you_are_not_subscribed_email = 0;
+	if (   $li->{email_you_are_not_subscribed_msg} == 1
+	    && $status == 0
+	    && scalar( keys %$errors ) == 1
+	    && $errors->{not_subscribed} == 1 )
+	{
+
+	    # Changed the status to, "1" BUT,
+	    $status = 1;
+
+	    # Mark that we have to send a special email.
+	    $send_you_are_not_subscribed_email = 1;
+		
+		# We probably have to do this, so as not to have this error on us
+		# (potentially?)
+		my $rm_status = $lh->remove_subscriber(
+			{
+				-email =>$email, 
+				-type  => 'unsub_confirm_list'
+			}
+		);
+ 
+        return $self->unsubscribe(
+            {
+                -html_output    => $args->{-html_output}, 
+                -cgi_obj        => $args->{-cgi_obj},
+				-no_auto_config => 1, 
+            }
+        );
+	}
+	else {
+
+	    # ...
+	}
+	
+
+
+
     
-    # My last check - are they currently on the UNsubscription confirmation list?!
+    # My last check - are they currently on the Unsubscription confirmation list?!
     if($lh->check_for_double_email(-Email => $email,-Type  => 'unsub_confirm_list')  == 0){ 
         $status = 0; 
         $errors->{not_on_unsub_confirm_list} = 1; 
@@ -1448,23 +1535,24 @@ sub unsub_confirm {
                         
                         warn 'Showing user_error: ' . $_
                             if $t; 
-                        user_error(
+
+                        return user_error(
                             -List  => $list, 
                             -Error => $_,            
                             -Email => $email,
                             -fh    => $args->{-fh},
+							-test  => $self->test, 
                         ); 
-                        return; 
                     }
                 }
                 # Fallback
                 warn "Fallback error!" if $t; 
-                user_error(
+                return user_error(
                     -List  => $list, 
                     -Email => $email,
                     -fh    => $args->{-fh},
+					-test  => $self->test, 
                 );    
-                return;
             }
             
         }
@@ -1480,26 +1568,6 @@ sub unsub_confirm {
             $li->{add_unsubs_to_black_list} == 1
 
         ){
-
-			# I don't have to do this anymore, since moving/removing a subscriber
-			# Will not destroy the profile information... I don't think. 
-			## Basically, what I gotta do is make sure that there aren't on the 
-			## Blacklist ALREADY, or Baaaaaaad things happen. 
-			#
-            ## We move, in an attempt to keep the subscription information
-            ## Perhaps, they'll be moved back?
-            #
-            #warn 'Moving email (' . $email .') to blacklist.' 
-            #    if $t; 
-            #$lh->move_subscriber(
-            #
-            #    {
-            #        -email => $email,  
-            #        -from  => 'list',
-            #        -to    => 'black_list',
-			#		-mode  => 'writeover', 
-            #    }
-            #);
         	if($lh->check_for_double_email(-Email => $email, -Type  => 'black_list')  == 0){ 
 				# Not on, already: 
 				$lh->add_subscriber(
@@ -1515,18 +1583,15 @@ sub unsub_confirm {
 			}
 
         }
-        #else { 
              
-     		warn 'removing, ' . $email . ' from, "list"'
-				if $t; 
-            $lh->remove_subscriber(
-				{ 
-	                -email => $email, 
-	                -type  => 'list'
-            	}
-			);
-        
-        #}
+    	warn 'removing, ' . $email . ' from, "list"'
+			if $t; 
+        $lh->remove_subscriber(
+		{ 
+               -email => $email, 
+               -type  => 'list'
+          	}
+		);
         
         require DADA::App::Messages; 
         DADA::App::Messages::send_owner_happenings(

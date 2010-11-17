@@ -20,7 +20,7 @@
   <tr>
    <td>
     <p>
-     <input type="checkbox" name="hide_list" id="hide_list" value="1" <!-- tmpl_if hide_list -->checked="checked"<!--/tmpl_if--> />
+     <input type="checkbox" name="hide_list" id="hide_list" value="1" <!-- tmpl_if list_settings.hide_list -->checked="checked"<!--/tmpl_if--> />
     </p>
    </td>
    <td>
@@ -33,7 +33,7 @@
      <a href="<!-- tmpl_var PROGRAM_URL -->" target="_blank">
       <!-- tmpl_var PROGRAM_NAME --> main screen</a>. 
      This list will still have a 
-     <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list -->/" target="_blank">
+     <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank">
       list page 
      </a>
      and people will still be able to subscribe/unsubscribe 
@@ -47,7 +47,7 @@
   </tr>
   <tr>
    <td>
-    <input type="checkbox" name="closed_list" id="closed_list" value="1" <!-- tmpl_if closed_list --> checked="checked" <!-- /tmpl_if --> />
+    <input type="checkbox" name="closed_list" id="closed_list" value="1" <!-- tmpl_if list_settings.closed_list --> checked="checked" <!-- /tmpl_if --> />
    </td>
    <td>
     <p>
@@ -62,10 +62,10 @@
    </td>
   </tr>
  </table>
- <table cellspacing="5" <!-- tmpl_unless can_use_mx_lookup -->class="disabled"<!--/tmpl_unless--> >
+ <table cellspacing="5" <!-- tmpl_unless list_settings.can_use_mx_lookup -->class="disabled"<!--/tmpl_unless--> >
   <tr>
    <td>
-    <input type="checkbox" name="mx_check" id="mx_check" value="1" <!-- tmpl_if mx_check -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless can_use_mx_lookup -->disabled="disabled"<!--/tmpl_unless--> />
+    <input type="checkbox" name="mx_check" id="mx_check" value="1" <!-- tmpl_if list_settings.mx_check -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless list_settings.can_use_mx_lookup -->disabled="disabled"<!--/tmpl_unless--> />
    </td>
    <td> 
     <p>
@@ -76,7 +76,7 @@
      When an email address is submitted to be validated, the 
      domain of the address will be checked for its existence.
     </p>
-<!-- tmpl_unless can_use_mx_lookup -->
+<!-- tmpl_unless list_settings.can_use_mx_lookup -->
 	    <p class="error">
 	     <em>
 	      Disabled. The Net::DNS module needs to be installed.
@@ -102,7 +102,7 @@
 	
   <tr>
    <td>
-    <input type="checkbox" name="no_confirm_email" id="no_confirm_email" value="1" <!-- tmpl_if no_confirm_email -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="no_confirm_email" id="no_confirm_email" value="1" <!-- tmpl_if list_settings.no_confirm_email -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td width="99%">
     <p>
@@ -124,7 +124,7 @@
 	
 <tr>
  <td>
-  <input type="checkbox" name="skip_sub_confirm_if_logged_in" id="skip_sub_confirm_if_logged_in" value="1" <!-- tmpl_if skip_sub_confirm_if_logged_in -->checked="checked"<!--/tmpl_if--> />
+  <input type="checkbox" name="skip_sub_confirm_if_logged_in" id="skip_sub_confirm_if_logged_in" value="1" <!-- tmpl_if list_settings.skip_sub_confirm_if_logged_in -->checked="checked"<!--/tmpl_if--> />
  </td>
  <td width="99%">
   <p>
@@ -142,7 +142,7 @@
 
 <tr>
    <td>
-    <input type="checkbox" name="limit_sub_confirm" id="limit_sub_confirm" value="1" <!-- tmpl_if limit_sub_confirm -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="limit_sub_confirm" id="limit_sub_confirm" value="1" <!-- tmpl_if list_settings.limit_sub_confirm -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td width="99%">
     <p>
@@ -161,7 +161,7 @@
   
   <tr>
    <td>
-    <input type="checkbox" name="email_your_subscribed_msg" id="email_your_subscribed_msg" value="1" <!-- tmpl_if email_your_subscribed_msg -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="email_your_subscribed_msg" id="email_your_subscribed_msg" value="1" <!-- tmpl_if list_settings.email_your_subscribed_msg -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td width="99%">
     <p>
@@ -183,7 +183,7 @@
   
   <tr>
    <td>
-         <input type="checkbox" name="use_alt_url_sub_confirm_success" id="use_alt_url_sub_confirm_success" value="1" <!-- tmpl_if use_alt_url_sub_confirm_success -->checked="checked"<!--/tmpl_if--> />
+         <input type="checkbox" name="use_alt_url_sub_confirm_success" id="use_alt_url_sub_confirm_success" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_confirm_success -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td>
   
@@ -197,12 +197,12 @@
         <table cellspacing="5" width="100%">
          <tr> 
           <td> 
-           <input type="text" name="alt_url_sub_confirm_success" value="<!-- tmpl_var name="alt_url_sub_confirm_success" escape="HTML" -->" class="full" />
+           <input type="text" name="alt_url_sub_confirm_success" value="<!-- tmpl_var list_settings.alt_url_sub_confirm_success escape="HTML" -->" class="full" />
           </td>
          </tr> 
          <tr> 
           <td>
-           <input type="checkbox" name="alt_url_sub_confirm_success_w_qs" id="alt_url_sub_confirm_success_w_qs" value="1" <!-- tmpl_if alt_url_sub_confirm_success_w_qs -->checked="checked"<!--/tmpl_if--> />
+           <input type="checkbox" name="alt_url_sub_confirm_success_w_qs" id="alt_url_sub_confirm_success_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_sub_confirm_success_w_qs -->checked="checked"<!--/tmpl_if--> />
            <label for="alt_url_sub_confirm_success_w_qs">Redirect with query string</label>
           </td> 
          </tr> 
@@ -212,7 +212,7 @@
      </tr>
      <tr>
       <td>
-       <input type="checkbox" name="use_alt_url_sub_confirm_failed" id="use_alt_url_sub_confirm_failed" value="1" <!-- tmpl_if use_alt_url_sub_confirm_failed -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="use_alt_url_sub_confirm_failed" id="use_alt_url_sub_confirm_failed" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_confirm_failed -->checked="checked"<!--/tmpl_if--> />
       </td>
       <td width="99%">
        <p>
@@ -224,12 +224,12 @@
        <table cellspacing="5" width="100%"> 
         <tr> 
          <td> 
-          <input type="text" name="alt_url_sub_confirm_failed" value="<!-- tmpl_var name="alt_url_sub_confirm_failed" escape="HTML" -->" class="full" />
+          <input type="text" name="alt_url_sub_confirm_failed" value="<!-- tmpl_var list_settings.alt_url_sub_confirm_failed escape="HTML" -->" class="full" />
          </td>
         </tr> 
         <tr> 
          <td> 
-          <input type="checkbox" name="alt_url_sub_confirm_failed_w_qs" id="alt_url_sub_confirm_failed_w_qs" value="1" <!-- tmpl_if alt_url_sub_confirm_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
+          <input type="checkbox" name="alt_url_sub_confirm_failed_w_qs" id="alt_url_sub_confirm_failed_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_sub_confirm_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
           <label for="alt_url_sub_confirm_failed_w_qs">Redirect with query string</label>
           </td> 
          </tr> 
@@ -248,7 +248,7 @@
 
   <tr>
    <td>
-    <input type="checkbox" name="enable_subscription_approval_step" id="enable_subscription_approval_step" value="1" <!-- tmpl_if enable_subscription_approval_step -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="enable_subscription_approval_step" id="enable_subscription_approval_step" value="1" <!-- tmpl_if list_settings.enable_subscription_approval_step -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td width="99%">
     <p>
@@ -286,7 +286,7 @@
 
   <tr>
    <td>
-    <input type="checkbox" name="get_sub_notice" id="get_sub_notice" value="1" <!-- tmpl_if get_sub_notice -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="get_sub_notice" id="get_sub_notice" value="1" <!-- tmpl_if list_settings.get_sub_notice -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td width="99%">
     <p>
@@ -300,7 +300,7 @@
   </tr>
   <tr>
    <td>
-    <input type="checkbox" name="send_sub_success_email" id="send_sub_success_email" value="1" <!-- tmpl_if send_sub_success_email -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="send_sub_success_email" id="send_sub_success_email" value="1" <!-- tmpl_if list_settings.send_sub_success_email -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td width="99%">
     <p>
@@ -315,11 +315,11 @@
   </tr>
  </table>
   
- <table cellspacing="5" <!-- tmpl_unless can_use_captcha -->class="disabled"<!--/tmpl_unless--> >
+ <table cellspacing="5" <!-- tmpl_unless list_settings.can_use_captcha -->class="disabled"<!--/tmpl_unless--> >
 
     <tr>
    <td>
-    <input type="checkbox" name="captcha_sub" id="captcha_sub" value="1" <!-- tmpl_if captcha_sub -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless can_use_captcha -->disabled="disabled"<!--/tmpl_unless-->/>
+    <input type="checkbox" name="captcha_sub" id="captcha_sub" value="1" <!-- tmpl_if list_settings.captcha_sub -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless list_settings.can_use_captcha -->disabled="disabled"<!--/tmpl_unless-->/>
    </td>
    <td width="99%">
     <p>
@@ -332,7 +332,7 @@
     </p>
     
     
-    <!-- tmpl_unless can_use_captcha -->
+    <!-- tmpl_unless list_settings.can_use_captcha -->
 	    
 	    <p class="error">
 	     <em>
@@ -350,7 +350,7 @@
   <table cellspacing="5">
   <tr>
    <td>
-    <input type="checkbox" name="use_alt_url_sub_success" id="use_alt_url_sub_success" value="1" <!-- tmpl_if use_alt_url_sub_success -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="use_alt_url_sub_success" id="use_alt_url_sub_success" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_success -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td width="99%">
     <p>
@@ -362,12 +362,12 @@
     <table cellspacing="5" width="100%">
      <tr> 
       <td>
-       <input type="text" name="alt_url_sub_success" value="<!-- tmpl_var name="alt_url_sub_success" escape="HTML" -->" class="full" />
+       <input type="text" name="alt_url_sub_success" value="<!-- tmpl_var list_settings.alt_url_sub_success escape="HTML" -->" class="full" />
       </td> 
      </tr> 
      <tr> 
       <td> 
-       <input type="checkbox" name="alt_url_sub_success_w_qs" id="alt_url_sub_success_w_qs" value="1" <!-- tmpl_if alt_url_sub_success_w_qs -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="alt_url_sub_success_w_qs" id="alt_url_sub_success_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_sub_success_w_qs -->checked="checked"<!--/tmpl_if--> />
        <label for="alt_url_sub_success_w_qs">Redirect with query string</label>
       </td> 
      </tr> 
@@ -377,7 +377,7 @@
   </tr>
   <tr>
    <td>
-    <input type="checkbox" name="use_alt_url_sub_failed" id="use_alt_url_sub_failed" value="1" <!-- tmpl_if use_alt_url_sub_failed -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="use_alt_url_sub_failed" id="use_alt_url_sub_failed" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_failed -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td width="99%">
     <p>
@@ -389,12 +389,12 @@
   <table cellspacing="5" width="100%">
 	 <tr> 
 	  <td> 
-       <input type="text" name="alt_url_sub_failed" value="<!-- tmpl_var name="alt_url_sub_failed" escape="HTML" -->" class="full" />
+       <input type="text" name="alt_url_sub_failed" value="<!-- tmpl_var list_settings.alt_url_sub_failed escape="HTML" -->" class="full" />
 	  </td>
 	 </tr> 
 	 <tr> 
 	  <td>
-	   <input type="checkbox" name="alt_url_sub_failed_w_qs" id="alt_url_sub_failed_w_qs" value="1" <!-- tmpl_if alt_url_sub_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
+	   <input type="checkbox" name="alt_url_sub_failed_w_qs" id="alt_url_sub_failed_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_sub_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
 	   <label for="alt_url_sub_failed_w_qs">Redirect with query string</label>
 	  </td> 
 	 </tr> 
@@ -417,7 +417,7 @@ Unsubscription Confirmations
  <table cellspacing="5">
   <tr>
    <td>
-    <input type="checkbox" name="unsub_confirm_email" id="unsub_confirm_email" value="1" <!-- tmpl_if unsub_confirm_email -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="unsub_confirm_email" id="unsub_confirm_email" value="1" <!-- tmpl_if list_settings.unsub_confirm_email -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td width="99%">
     <p>
@@ -432,7 +432,7 @@ Unsubscription Confirmations
 
 <tr>
  <td>
-  <input type="checkbox" name="skip_unsub_confirm_if_logged_in" id="skip_unsub_confirm_if_logged_in" value="1" <!-- tmpl_if skip_unsub_confirm_if_logged_in -->checked="checked"<!--/tmpl_if--> />
+  <input type="checkbox" name="skip_unsub_confirm_if_logged_in" id="skip_unsub_confirm_if_logged_in" value="1" <!-- tmpl_if list_settings.skip_unsub_confirm_if_logged_in -->checked="checked"<!--/tmpl_if--> />
  </td>
  <td width="99%">
   <p>
@@ -450,7 +450,7 @@ Unsubscription Confirmations
 
   <tr>
    <td>
-    <input type="checkbox" name="limit_unsub_confirm" id="limit_unsub_confirm" value="1" <!-- tmpl_if limit_unsub_confirm -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="limit_unsub_confirm" id="limit_unsub_confirm" value="1" <!-- tmpl_if list_settings.limit_unsub_confirm -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td width="99%">
     <p>
@@ -463,13 +463,28 @@ Unsubscription Confirmations
     </p>
    </td>
   </tr>
+
+
+  <tr>
+   <td>
+    <input type="checkbox" name="email_you_are_not_subscribed_msg" id="email_you_are_not_subscribed_msg" value="1" <!-- tmpl_if list_settings.email_you_are_not_subscribed_msg -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="email_you_are_not_subscribed_msg">
+If someone not currently subscribed to your mailing list attempts to unsubscribe, send a, "You are not Subscribed!" message via email,  instead of showing this error in their web browser. 
+     </label>
+  </p> 
+   </td>
+  </tr>
+
    
    
    
   <tr>
    <td>
 
-       <input type="checkbox" name="use_alt_url_unsub_confirm_success" id="use_alt_url_unsub_confirm_success" value="1" <!-- tmpl_if use_alt_url_unsub_confirm_success -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="use_alt_url_unsub_confirm_success" id="use_alt_url_unsub_confirm_success" value="1" <!-- tmpl_if list_settings.use_alt_url_unsub_confirm_success -->checked="checked"<!--/tmpl_if--> />
 
 
    </td>
@@ -486,12 +501,12 @@ Unsubscription Confirmations
         <table cellspacing="5" width="100%">
          <tr> 
           <td> 
-           <input type="text" name="alt_url_unsub_confirm_success" value="<!-- tmpl_var name="alt_url_unsub_confirm_success" escape="HTML" -->" class="full" />
+           <input type="text" name="alt_url_unsub_confirm_success" value="<!-- tmpl_var list_settings.alt_url_unsub_confirm_success escape="HTML" -->" class="full" />
           </td>
          </tr> 
          <tr> 
           <td>
-           <input type="checkbox" name="alt_url_unsub_confirm_success_w_qs" id="alt_url_unsub_confirm_success_w_qs" value="1" <!-- tmpl_if alt_url_unsub_confirm_success_w_qs -->checked="checked"<!--/tmpl_if--> />
+           <input type="checkbox" name="alt_url_unsub_confirm_success_w_qs" id="alt_url_unsub_confirm_success_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_unsub_confirm_success_w_qs -->checked="checked"<!--/tmpl_if--> />
            <label for="alt_url_unsub_confirm_success_w_qs">Redirect with query string</label>
           </td> 
          </tr> 
@@ -506,7 +521,7 @@ Unsubscription Confirmations
      </tr>
      <tr>
       <td>
-       <input type="checkbox" name="use_alt_url_unsub_confirm_failed" id="use_alt_url_unsub_confirm_failed" value="1" <!-- tmpl_if use_alt_url_unsub_confirm_failed -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="use_alt_url_unsub_confirm_failed" id="use_alt_url_unsub_confirm_failed" value="1" <!-- tmpl_if list_settings.use_alt_url_unsub_confirm_failed -->checked="checked"<!--/tmpl_if--> />
       </td>
       <td width="99%">
        <p>
@@ -519,12 +534,12 @@ Unsubscription Confirmations
         <table cellspacing="5" width="100%">
          <tr> 
           <td> 
-           <input type="text" name="alt_url_unsub_confirm_failed" value="<!-- tmpl_var name="alt_url_unsub_confirm_failed" escape="HTML" -->" class="full" />
+           <input type="text" name="alt_url_unsub_confirm_failed" value="<!-- tmpl_var list_settings.alt_url_unsub_confirm_failed escape="HTML" -->" class="full" />
           </td>
          </tr> 
          <tr> 
           <td>
-           <input type="checkbox" name="alt_url_unsub_confirm_failed_w_qs" id="alt_url_unsub_confirm_failed_w_qs" value="1" <!-- tmpl_if alt_url_unsub_confirm_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
+           <input type="checkbox" name="alt_url_unsub_confirm_failed_w_qs" id="alt_url_unsub_confirm_failed_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_unsub_confirm_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
            <label for="alt_url_unsub_confirm_failed_w_qs">Redirect with query string</label>
           </td> 
          </tr> 
@@ -551,7 +566,7 @@ Unsubscription Confirmations
  <table cellspacing="5">
   <tr>
    <td>
-    <input type="checkbox" name="get_unsub_notice" id="get_unsub_notice" value="1" <!-- tmpl_if get_unsub_notice -->checked="checked"<!--/tmpl_if --> />
+    <input type="checkbox" name="get_unsub_notice" id="get_unsub_notice" value="1" <!-- tmpl_if list_settings.get_unsub_notice -->checked="checked"<!--/tmpl_if --> />
    </td>
    <td width="99%">
     <p>
@@ -565,7 +580,7 @@ Unsubscription Confirmations
   </tr>
   <tr>
    <td>
-    <input type="checkbox" name="send_unsub_success_email" id="send_unsub_success_email" value="1" <!-- tmpl_if send_unsub_success_email -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="send_unsub_success_email" id="send_unsub_success_email" value="1" <!-- tmpl_if list_settings.send_unsub_success_email -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td width="99%">
     <p>
@@ -580,7 +595,7 @@ Unsubscription Confirmations
   </tr>
   <tr>
    <td>
-    <input type="checkbox" name="use_alt_url_unsub_success" id="use_alt_url_unsub_success" value="1" <!-- tmpl_if use_alt_url_unsub_success -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="use_alt_url_unsub_success" id="use_alt_url_unsub_success" value="1" <!-- tmpl_if list_settings.use_alt_url_unsub_success -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td width="99%">
     <p>
@@ -592,12 +607,12 @@ Unsubscription Confirmations
         <table cellspacing="5" width="100%">
          <tr> 
           <td> 
-           <input type="text" name="alt_url_unsub_success" value="<!-- tmpl_var name="alt_url_unsub_success" escape="HTML" -->" class="full" />
+           <input type="text" name="alt_url_unsub_success" value="<!-- tmpl_var list_settings.alt_url_unsub_success escape="HTML" -->" class="full" />
           </td>
          </tr> 
          <tr> 
           <td>
-           <input type="checkbox" name="alt_url_unsub_success_w_qs" id="alt_url_unsub_success_w_qs" value="1" <!-- tmpl_if alt_url_unsub_success_w_qs -->checked="checked"<!--/tmpl_if--> />
+           <input type="checkbox" name="alt_url_unsub_success_w_qs" id="alt_url_unsub_success_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_unsub_success_w_qs -->checked="checked"<!--/tmpl_if--> />
            <label for="alt_url_unsub_success_w_qs">Redirect with query string</label>
           </td> 
          </tr> 
@@ -606,7 +621,7 @@ Unsubscription Confirmations
   </tr>
   <tr>
    <td>
-    <input type="checkbox" name="use_alt_url_unsub_failed" id="use_alt_url_unsub_failed" value="1" <!-- tmpl_if use_alt_url_unsub_failed -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="use_alt_url_unsub_failed" id="use_alt_url_unsub_failed" value="1" <!-- tmpl_if list_settings.use_alt_url_unsub_failed -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td width="99%">
     <p>
@@ -618,12 +633,12 @@ Unsubscription Confirmations
     <table cellspacing="5" width="100%">
 	 <tr> 
 	  <td> 
-	   <input type="text" name="alt_url_unsub_failed" value="<!-- tmpl_var name="alt_url_unsub_failed" escape="HTML" -->" class="full" />
+	   <input type="text" name="alt_url_unsub_failed" value="<!-- tmpl_var list_settings.alt_url_unsub_failed escape="HTML" -->" class="full" />
 	  </td>
 	 </tr> 
 	 <tr> 
 	  <td>
-	   <input type="checkbox" name="alt_url_unsub_failed_w_qs" id="alt_url_unsub_failed_w_qs" value="1" <!-- tmpl_if alt_url_unsub_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
+	   <input type="checkbox" name="alt_url_unsub_failed_w_qs" id="alt_url_unsub_failed_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_unsub_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
 	   <label for="alt_url_unsub_failed_w_qs">Redirect with query string</label>
 	  </td> 
 	 </tr> 

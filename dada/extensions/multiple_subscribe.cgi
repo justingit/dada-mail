@@ -1,10 +1,8 @@
 #!/usr/bin/perl -w 
 
 use lib qw(
-  ../
-  ../DADA/perllib
-  ../../../../perl
-  ../../../../perllib
+	../ 
+	../DADA/perllib 
 );
 
 use CGI::Carp "fatalsToBrowser";
@@ -437,6 +435,148 @@ sub subscribe_emails {
                 require DADA::App::Subscriptions;
                 my $das = DADA::App::Subscriptions->new;
 
+<<<<<<< HEAD:dada/extensions/multiple_subscribe.cgi
+=======
+      my $subscribing   = 0; 
+      my $unsubscribing = 0; 
+      
+		if($flavor eq 'u' || $flavor eq 'unsubscribe'){ 
+			
+      	$unsubscribing   = 1;
+		}
+		else { 
+			$subscribing = 1;
+		}
+		
+	if($subscribing == 1) { 
+	
+		$debug_info .= "Attempting to Subscribe..."
+			if $Debug == 1; 
+
+		foreach my $this_list(@lists){ 
+			my $lh = DADA::MailingList::Subscribers->new({-list => $this_list}); 
+			my $ls = DADA::MailingList::Settings->new({-list => $this_list}); 
+			my $li = $ls->get; 
+			
+			my ($status, $errors) = $lh->subscription_check(
+										{
+											-email => $email,
+		                                    ($li->{email_your_subscribed_msg} == 1) ? 
+		                                    (
+		                                    -skip  => ['subscribed'], 
+		                                    ) : (),
+											
+										},
+									);
+			
+			my $error_report = [];
+			foreach(keys %$errors){ 
+			    push(@$error_report, {error => $_}) if $errors->{$_} == 1;  
+			}
+			
+			#--- debug! --- #
+			$debug_info .= $q->h1("List: '" . $this_list ."', Email: $email, Status: " . $q->b($status)) 
+				if $Debug == 1; 
+			
+			if($status == 1){ 
+			
+			    my $local_q = new CGI; 
+			       $local_q->delete_all();
+			       $local_q->param('list', $this_list); 
+			       $local_q->param('email', $email);
+			       $local_q->param('f', 's'); 
+			       
+			       # Hmm. This should take care of that. 
+			       foreach(@{$lh->subscriber_fields}){ 
+			            $local_q->param($_, $q->param($_)); 
+			       }
+			       
+			       require DADA::App::Subscriptions; 
+			       my $das = DADA::App::Subscriptions->new; 
+			       
+			       $das->subscribe(
+			             {
+			                -html_output => 0,
+			                -cgi_obj     => $local_q, 
+			             }
+			       ); 
+			}
+			
+			push(
+				@lists_worked_on, 
+				{
+						list        => $this_list, 
+						list_name   => $li->{list_name}, 
+						status      => $status, 
+						errors      => $error_report, 
+						PROGRAM_URL => $DADA::Config::PROGRAM_URL
+				}
+			); 			
+			
+			#}else{ 
+				#--- debug! --- #
+				if($Debug == 1){ 
+					$debug_info .= $q->h3("Details..."); 
+					$debug_info .= '<ul>';
+					foreach my $error(keys %$errors){ 
+						$debug_info .= $q->li($error); 
+					}
+					$debug_info .= '</ul>';
+				}else{ 
+					# nothing.	
+				}
+			#}	
+		}
+	}else{ 
+		
+		$debug_info .= "<p>Attempting to Unubscribe...</p>"
+			if $Debug == 1; 
+			
+		
+		foreach my $this_list(@lists){ 
+
+			my $lh = DADA::MailingList::Subscribers->new({-list => $this_list}); 
+			
+			my $ls = DADA::MailingList::Settings->new({-list => $this_list}); 
+			my $li = $ls->get; 
+			
+			
+			my ($status, $errors) = $lh->unsubscription_check(
+										{
+											-email => $email,
+											($li->{email_you_are_not_subscribed_msg} == 1) ? 
+		                                    (
+		                                    -skip  => ['not_subscribed'], 
+		                                    ) : (),
+										}
+									); 
+			#--- debug! --- #
+			
+			my $error_report = [];
+			foreach(keys %$errors){ 
+			    push(@$error_report, {error => $_}) if $errors->{$_} == 1;  
+			}
+			
+			
+			$debug_info .= $q->h1("List: '" . $this_list ."', Email: $email, Status: " . $q->b($status)) 
+				if $Debug == 1; 
+			
+			
+			push(@lists_worked_on, {list_name => $li->{list_name}, status => $status, errors => $error_report, PROGRAM_URL => $DADA::Config::PROGRAM_URL}); 
+			   
+		    if($status == 1){ 		
+		    
+		    
+                my $local_q = new CGI; 
+                   $local_q->delete_all();
+                   $local_q->param('list', $this_list); 
+                   $local_q->param('email', $email);
+                   $local_q->param('f', 'u'); 
+                
+                require DADA::App::Subscriptions; 
+                my $das = DADA::App::Subscriptions->new; 
+                
+>>>>>>> unsub_notification_via_email:dada/extensions/multiple_subscribe.cgi
                 $das->unsubscribe(
                     {
                         -html_output => 0,

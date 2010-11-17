@@ -2008,6 +2008,7 @@ sub list_options {
     my $limit_unsub_confirm                =   $q->param('limit_unsub_confirm')             || 0; 
     
     my $email_your_subscribed_msg          =   $q->param('email_your_subscribed_msg')       || 0;   
+    my $email_you_are_not_subscribed_msg   =   $q->param('email_you_are_not_subscribed_msg')       || 0;   
 
     my $use_alt_url_sub_confirm_success     = $q->param("use_alt_url_sub_confirm_success")   || 0; 
     my $alt_url_sub_confirm_success         = $q->param(    "alt_url_sub_confirm_success")   || '';
@@ -2086,21 +2087,25 @@ sub list_options {
                                );
                                
  	   require DADA::Template::Widgets;
-	   $scrn .=    DADA::Template::Widgets::screen({-screen => 'list_options_screen.tmpl', 
-	                                                -list   => $list,
-	                                                -vars   => { 
-		
-																screen            => 'list_options', 
-																title             => 'Mailing List Options', 
-																
-	                                                            done              => $done, 
-	                                                            CAPTCHA_TYPE      => $DADA::Config::CAPTCHA_TYPE, 
-															    can_use_mx_lookup => $can_use_mx_lookup, 
-	                                                            can_use_captcha  =>  $can_use_captcha, 
-	                                                            %{$li},
-	                                                }
-                                                
-	                                                }); 
+	    $scrn .= DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'list_options_screen.tmpl',
+	            -list   => $list,
+	            -vars   => {
+	                screen => 'list_options',
+	                title  => 'Mailing List Options',
+	                done              => $done,
+	                CAPTCHA_TYPE      => $DADA::Config::CAPTCHA_TYPE,
+	                can_use_mx_lookup => $can_use_mx_lookup,
+	                can_use_captcha   => $can_use_captcha,
+	            },
+	            -list_settings_vars_param => {
+	                -list   => $list,
+	                -dot_it => 1,
+	            },
+	        }
+	    );
+
         
         
         $scrn .= admin_template_footer(-List => $list);
@@ -2125,10 +2130,8 @@ sub list_options {
             mx_check                           => $mx_check,
             limit_sub_confirm                  => $limit_sub_confirm, 
             limit_unsub_confirm                => $limit_unsub_confirm,
-            
-            
             email_your_subscribed_msg               => $email_your_subscribed_msg, 
-            
+            email_you_are_not_subscribed_msg        => $email_you_are_not_subscribed_msg, 
             use_alt_url_sub_confirm_success         => $use_alt_url_sub_confirm_success,
                 alt_url_sub_confirm_success         =>     $alt_url_sub_confirm_success,
                 alt_url_sub_confirm_success_w_qs    =>     $alt_url_sub_confirm_success_w_qs, 
@@ -5678,13 +5681,10 @@ sub edit_type {
     foreach(qw(
         confirmation_message
         subscribed_message
-        
         unsub_confirmation_message
         unsubscribed_message
-        
         mailing_list_message
         mailing_list_message_html
-
         not_allowed_to_post_message
         send_archive_message
         send_archive_message_html
@@ -5701,75 +5701,29 @@ sub edit_type {
 		
 		my $scrn = ''; 
 		
-        $scrn .= admin_template_header(-Title      => "Email Templates", 
-                                -List       => $list,
-                                -Root_Login => $root_login);
-        
+        $scrn .= admin_template_header(
+            -Title      => "Email Templates",
+            -List       => $list,
+            -Root_Login => $root_login
+        );
+
         require DADA::Template::Widgets;
-        $scrn .=    DADA::Template::Widgets::screen({-screen => 'edit_type_screen.tmpl',
-                                            -list   => $list,
-                                            -vars   => { 
-                                                        
-														screen                        => 'edit_type', 
-														title                         => 'Email Templates', 
-													
-                                                        list_owner_email              => $li->{list_owner_email}, 
-                                                        
-                                                        done                          => $done, 
-                                                        
-                                                        confirmation_message_subject => $li->{confirmation_message_subject}, 
-                                                        
-                                                        
-                                                        confirmation_message         => $li->{confirmation_message}, 
-                                                        
-                                                        subscribed_message_subject  => $li->{subscribed_message_subject}, 
-                                                        subscribed_message          => $li->{subscribed_message}, 
+        $scrn .= DADA::Template::Widgets::screen(
+            {
+                -screen => 'edit_type_screen.tmpl',
+                -list   => $list,
+                -vars   => {
+                    screen => 'edit_type',
+                    title  => 'Email Templates',
+                    done   => $done,
+                },
+                -list_settings_vars       => $li,
+                -list_settings_vars_param => { -dot_it => 1, },
+            }
+        );
 
-                                                        unsub_confirmation_message_subject => $li->{unsub_confirmation_message_subject}, 
-                                                        unsub_confirmation_message         => $li->{unsub_confirmation_message}, 
-                                                        
-                                                        
-                                                        unsubscribed_message_subject   => $li->{unsubscribed_message_subject}, 
-                                                        unsubscribed_message           => $li->{unsubscribed_message}, 
-
-                                                        mailing_list_message_from_phrase => $li->{mailing_list_message_from_phrase},
-                                                        mailing_list_message_to_phrase   => $li->{mailing_list_message_to_phrase},                                                        
-                                                        mailing_list_message_subject     => $li->{mailing_list_message_subject},
-                                                        mailing_list_message             => $li->{mailing_list_message}, 
-                                                        mailing_list_message_html        => $li->{mailing_list_message_html}, 
-                                                        
-                                                        not_allowed_to_post_message_subject => $li->{not_allowed_to_post_message_subject}, 
-                                                        
-                                                        not_allowed_to_post_message => $li->{not_allowed_to_post_message}, 
-                                                        
-                                                        send_archive_message_subject => $li->{send_archive_message_subject}, 
-                                                        
-                                                        send_archive_message        => $li->{send_archive_message},
-                                                        send_archive_message_html   => $li->{send_archive_message_html}, 
-                                                        
-                                                        you_are_already_subscribed_message_subject => $li->{you_are_already_subscribed_message_subject}, 
-                                                        you_are_already_subscribed_message         => $li->{you_are_already_subscribed_message}, 
-                                                        
-                                                        email_your_subscribed_msg           => $li->{email_your_subscribed_msg}, 
-
-														invite_message_from_phrase          => $li->{invite_message_from_phrase},
-                                                        invite_message_to_phrase             => $li->{invite_message_to_phrase},
-														invite_message_subject              => $li->{invite_message_subject}, 
-														invite_message_text                 => $li->{invite_message_text}, 
-														invite_message_html                 => $li->{invite_message_html}, 
-														
-														enable_email_template_expr          => $li->{enable_email_template_expr}, 
-                                                        },
-
-													-list_settings_vars       => $li, 
-		                                            -list_settings_vars_param => 
-														{
-															-dot_it => 1,
-														},
-                                                }); 
- 
-        $scrn .= admin_template_footer(-List => $list);
-		e_print($scrn); 
+        $scrn .= admin_template_footer( -List => $list );
+        e_print($scrn);
 		
     }else{ 
     
