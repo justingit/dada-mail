@@ -5,14 +5,16 @@ use lib qw(
 	../DADA/perllib 
 );
 
-use CGI::Carp "fatalsToBrowser";
+
+use CGI::Carp "fatalsToBrowser"; 
+
 
 use strict;
 
 # For testing, set $Debug to 1
-my $Debug = 0;
+my $Debug = 0; 
 
-# These are HTML::Template templates. More information:
+# These are HTML::Template templates. More information: 
 #
 # http://search.cpan.org/~samtregar/HTML-Template/Template.pm
 
@@ -73,6 +75,9 @@ my $Default_Screen = q{
 
 };
 
+
+
+
 my $Subscription_Confirmation = q{ 
 
 <h1>
@@ -127,316 +132,190 @@ Results:
 
 };
 
+
+
+
+
+
+
+
+
+
+
+
 use DADA::Config 4.0.0;
-use DADA::App::Guts;
+use DADA::App::Guts; 
 
 #---------------------------------------------------------------------#
 
-use CGI qw(:standard html3);
+use CGI qw(:standard html3); 
 
-use DADA::MailingList::Subscribers;
-use DADA::MailingList::Settings;
+require DADA::App::Guts; 
+use DADA::MailingList::Subscribers; 
+use DADA::MailingList::Settings; 
 use DADA::Template::HTML;
-use DADA::Template::Widgets;
-use DADA::App::Messages;
+use DADA::Template::Widgets; 
+use DADA::App::Messages; 
+
 
 #---------------------------------------------------------------------#
 
-my $q = CGI->new();
-$q->charset($DADA::Config::HTML_CHARSET);
-$q = decode_cgi_obj($q);
 
-my $email = $q->param('email');
-$email = $q->param('e') unless ($email);
 
-my $flavor = $q->param('flavor');
-$flavor = $q->param('f') unless ($flavor);
 
-my @unfiltered_lists = $q->param('list');
 
-my $redirect_url = $q->param('redirect_url');
+my $q = CGI->new(); 
+   $q->charset($DADA::Config::HTML_CHARSET);
+   $q = decode_cgi_obj($q);
 
-my @available_lists = DADA::App::Guts::available_lists();
 
-my $labels = {};
-foreach my $alist (@available_lists) {
-    my $als = DADA::MailingList::Settings->new( { -list => $alist } );
-    my $ali = $als->get;
-    next if $ali->{hide_list} == 1;
-    $labels->{$alist} = $ali->{list_name};
+my $email             = $q->param('email');
+   $email             = $q->param('e') unless ($email); 
+
+my $flavor            = $q->param('flavor'); 
+   $flavor            = $q->param('f') unless($flavor); 
+   
+
+my @unfiltered_lists  = $q->param('list');
+
+my $redirect_url      = $q->param('redirect_url'); 
+ 
+my @available_lists = DADA::App::Guts::available_lists(); 
+
+    my $labels = {}; 
+    foreach my $alist( @available_lists ){
+        my $als = DADA::MailingList::Settings->new({-list => $alist}); 
+        my $ali = $als->get; 
+        next if $ali->{hide_list} == 1; 
+        $labels->{$alist} = $ali->{list_name};
+    }
+   @available_lists = sort { uc($labels->{$a}) cmp uc($labels->{$b}) } keys %$labels;
+
+
+
+
+
+my %list_names; 
+
+my $ht_lists = []; 
+
+my @lists; 
+foreach(@unfiltered_lists){ 
+	next if ! $_;
+	next if $_ eq '';
+	push(@lists, $_); 
 }
-@available_lists =
-  sort { uc( $labels->{$a} ) cmp uc( $labels->{$b} ) } keys %$labels;
 
-my %list_names;
+foreach(@available_lists){ 
+	my $ls = DADA::MailingList::Settings->new({-list => $_}); 
+	my $li = $ls->get; 
+	
+	
+    if($li->{hide_list} ne "1"){ # should we do this here, or in the template?          
 
-my $ht_lists = [];
 
-my @lists;
-foreach (@unfiltered_lists) {
-    next if !$_;
-    next if $_ eq '';
-    push( @lists, $_ );
-}
+    my $tmpl_list_information = {};
 
-foreach (@available_lists) {
-    my $ls = DADA::MailingList::Settings->new( { -list => $_ } );
-    my $li = $ls->get;
-
-    if ( $li->{hide_list} ne "1" )
-    {    # should we do this here, or in the template?
-
-        my $tmpl_list_information = {};
-
-        $list_names{$_} = $li->{list_name};
-
-        # $l_count++;
-
+    $list_names{$_} = $li->{list_name};	        
+        
+       # $l_count++; 
+        
+        
+            
         my $html_info = $li->{info};
-        $html_info = webify_plain_text($html_info);
-
+           $html_info = webify_plain_text($html_info);
+    
         # Just trying this out...
-
-        for (
-            $li->{list_owner_email},
-            $li->{admin_email}, $li->{discussion_pop_email},
-          )
-        {
-            if ($_) {
+    
+        for($li->{list_owner_email}, 
+            $li->{admin_email},
+            $li->{discussion_pop_email},
+        ){  
+            if($_){ 
                 my $look_e      = quotemeta($_);
-                my $protected_e = spam_me_not_encode($_);
-                $html_info =~ s/$look_e/$protected_e/g;
+                my $protected_e = spam_me_not_encode($_); 					
+                   $html_info   =~ s/$look_e/$protected_e/g;
             }
         }
+        #/ end that...		
 
-        #/ end that...
+            
+           $tmpl_list_information->{uri_escaped_list}     = uriescape($li->{list});
+           $tmpl_list_information->{list_name}            = $li->{list_name};
+           $tmpl_list_information->{info}                 = $li->{info};
+           $tmpl_list_information->{html_info}            = $html_info;
+        
+	
+	
+		push(@$ht_lists, {PROGRAM_URL => $DADA::Config::PROGRAM_URL, list => $_, list_name => $li->{list_name}, info => $li->{list_name}, %$tmpl_list_information}); 
 
-        $tmpl_list_information->{uri_escaped_list} = uriescape( $li->{list} );
-        $tmpl_list_information->{list_name}        = $li->{list_name};
-        $tmpl_list_information->{info}             = $li->{info};
-        $tmpl_list_information->{html_info}        = $html_info;
-
-        push(
-            @$ht_lists,
-            {
-                PROGRAM_URL => $DADA::Config::PROGRAM_URL,
-                list        => $_,
-                list_name   => $li->{list_name},
-                info        => $li->{list_name},
-                %$tmpl_list_information
-            }
-        );
-
-    }
-
+	
+	
+	}
+	
 }
 
-&main;
+
+
+&main; 
+
 
 #---------------------------------------------------------------------#
 
-sub main {
-    if ( $lists[0] ) {
-        subscribe_emails();
-    }
-    else {
-        subscription_form();
-    }
+
+sub main { 
+	if($lists[0]){
+		subscribe_emails(); 
+	}else{ 
+		subscription_form(); 
+	}
 }
 
-sub subscription_form {
+
+
+
+sub subscription_form { 
 
     # create the initial form
-    print(
-        list_template(
-            -Part  => "header",
-            -Title => "Subscribe/Unsubscribe to Multiple Lists",
-        )
-    );
-
-    require DADA::Template::Widgets;
-    print DADA::Template::Widgets::screen(
-        {
-            -data => \$Default_Screen,
-            -vars => {
-                lists             => $ht_lists,
-                email             => $email,
-                f                 => $flavor,
-                subscription_form => DADA::Template::Widgets::subscription_form(
-                    {
-                        -multiple_lists => 1,
-                        -script_url     => $q->self_url(),
-                        -give_props     => 0
-                    }
-                ),
-                error_invalid_email => $q->param('invalid_email'),
-
-            }
-        }
-    );
-
-    print( list_template( -Part => "footer", ) );
+    print(list_template(-Part       => "header",
+                   -Title      => "Subscribe/Unsubscribe to Multiple Lists", 
+                   ));  
+                   
+                   
+    
+    require DADA::Template::Widgets; 
+    print   DADA::Template::Widgets::screen({
+        -data => \$Default_Screen, 
+        -vars => { 
+            lists             => $ht_lists, 
+            email             => $email, 
+            f                 => $flavor,             
+            subscription_form => DADA::Template::Widgets::subscription_form({-multiple_lists => 1, -script_url => $q->self_url(), -give_props => 0}), 
+            error_invalid_email => $q->param('invalid_email'), 
+        
+       }
+    }); 
+                       
+    print(list_template(-Part     => "footer", 
+                   )); 
 
 }
 
 sub subscribe_emails {
 
-    my @lists_worked_on = ();
-    my $debug_info      = '';
 
-    #--- debug! --- #
+	my @lists_worked_on = (); 
+	my $debug_info      = ''; 
+	
+	#--- debug! --- #
 
-    if ( DADA::App::Guts::check_for_valid_email($email) == 1 ) {
-        print $q->redirect( -uri => $q->self_url . '?invalid_email=1' );
-        return;
+
+
+    if(DADA::App::Guts::check_for_valid_email($email) == 1){
+        print $q->redirect(-uri => $q->self_url . '?invalid_email=1'); 
+        return; 
     }
 
-    my $subscribing   = 0;
-    my $unsubscribing = 0;
-
-    if ( $flavor eq 'u' || $flavor eq 'unsubscribe' ) {
-
-        $unsubscribing = 1;
-    }
-    else {
-        $subscribing = 1;
-    }
-
-    if ( $subscribing == 1 ) {
-
-        $debug_info .= "Attempting to Subscribe..."
-          if $Debug == 1;
-
-        foreach my $this_list (@lists) {
-            my $lh =
-              DADA::MailingList::Subscribers->new( { -list => $this_list } );
-            my $ls =
-              DADA::MailingList::Settings->new( { -list => $this_list } );
-            my $li = $ls->get;
-
-            my ( $status, $errors ) =
-              $lh->subscription_check( { -email => $email, }, );
-
-            my $error_report = [];
-            foreach ( keys %$errors ) {
-                push( @$error_report, { error => $_ } ) if $errors->{$_} == 1;
-            }
-
-            #--- debug! --- #
-            $debug_info .=
-              $q->h1( "List: '"
-                  . $this_list
-                  . "', Email: $email, Status: "
-                  . $q->b($status) )
-              if $Debug == 1;
-
-            if ( $status == 1 ) {
-
-                my $local_q = new CGI;
-                $local_q->delete_all();
-                $local_q->param( 'list',  $this_list );
-                $local_q->param( 'email', $email );
-                $local_q->param( 'f',     's' );
-
-                # Hmm. This should take care of that.
-                foreach ( @{ $lh->subscriber_fields } ) {
-                    $local_q->param( $_, $q->param($_) );
-                }
-
-                require DADA::App::Subscriptions;
-                my $das = DADA::App::Subscriptions->new;
-
-                $das->subscribe(
-                    {
-                        -html_output => 0,
-                        -cgi_obj     => $local_q,
-                    }
-                );
-            }
-
-            push(
-                @lists_worked_on,
-                {
-                    list        => $this_list,
-                    list_name   => $li->{list_name},
-                    status      => $status,
-                    errors      => $error_report,
-                    PROGRAM_URL => $DADA::Config::PROGRAM_URL
-                }
-            );
-
-            #}else{
-            #--- debug! --- #
-            if ( $Debug == 1 ) {
-                $debug_info .= $q->h3("Details...");
-                $debug_info .= '<ul>';
-                foreach my $error ( keys %$errors ) {
-                    $debug_info .= $q->li($error);
-                }
-                $debug_info .= '</ul>';
-            }
-            else {
-
-                # nothing.
-            }
-
-            #}
-        }
-    }
-    else {
-
-        $debug_info .= "<p>Attempting to Unubscribe...</p>"
-          if $Debug == 1;
-
-        foreach my $this_list (@lists) {
-
-            my $lh =
-              DADA::MailingList::Subscribers->new( { -list => $this_list } );
-
-            my $ls =
-              DADA::MailingList::Settings->new( { -list => $this_list } );
-            my $li = $ls->get;
-
-            my ( $status, $errors ) =
-              $lh->unsubscription_check( { -email => $email, } );
-
-            #--- debug! --- #
-
-            my $error_report = [];
-            foreach ( keys %$errors ) {
-                push( @$error_report, { error => $_ } ) if $errors->{$_} == 1;
-            }
-
-            $debug_info .=
-              $q->h1( "List: '"
-                  . $this_list
-                  . "', Email: $email, Status: "
-                  . $q->b($status) )
-              if $Debug == 1;
-
-            push(
-                @lists_worked_on,
-                {
-                    list_name   => $li->{list_name},
-                    status      => $status,
-                    errors      => $error_report,
-                    PROGRAM_URL => $DADA::Config::PROGRAM_URL
-                }
-            );
-
-            if ( $status == 1 ) {
-
-                my $local_q = new CGI;
-                $local_q->delete_all();
-                $local_q->param( 'list',  $this_list );
-                $local_q->param( 'email', $email );
-                $local_q->param( 'f',     'u' );
-
-                require DADA::App::Subscriptions;
-                my $das = DADA::App::Subscriptions->new;
-
-<<<<<<< HEAD:dada/extensions/multiple_subscribe.cgi
-=======
       my $subscribing   = 0; 
       my $unsubscribing = 0; 
       
@@ -576,68 +455,65 @@ sub subscribe_emails {
                 require DADA::App::Subscriptions; 
                 my $das = DADA::App::Subscriptions->new; 
                 
->>>>>>> unsub_notification_via_email:dada/extensions/multiple_subscribe.cgi
                 $das->unsubscribe(
                     {
                         -html_output => 0,
-                        -cgi_obj     => $local_q,
+                        -cgi_obj     => $local_q, 
                     }
-                );
+                ); 
             }
-
-            #}else{
-
-            #--- debug! --- #
-            if ( $Debug == 1 ) {
-                $debug_info .= $q->h3("Details...");
-                $debug_info .= '<ul>';
-                foreach my $error ( keys %$errors ) {
-                    $debug_info .= $q->li($error);
-                }
-                $debug_info .= '</ul>';
-            }
-            else {
-
-                # nothing.
-            }
-
-            #}
-        }
-    }
-
-    if ($redirect_url) {
-        $debug_info .= $q->redirect( -uri => $redirect_url );
-
-        print $q->redirect( -url => $redirect_url );
-        return;
-
-    }
-    else {
-        print list_template(
-            -Part  => "header",
-            -Title => "Subscribe to Multiple Lists",
-        );
+            
+            #}else{ 
+		
+				#--- debug! --- #	
+				if($Debug == 1){ 
+					$debug_info .= $q->h3("Details..."); 
+					$debug_info .= '<ul>';
+					foreach my $error(keys %$errors){ 
+						$debug_info .= $q->li($error); 
+					}
+					$debug_info .= '</ul>';
+				}else{ 
+					# nothing.	
+				}
+			#}	
+		}
+	}
+		
+		
+		if($redirect_url){ 
+			$debug_info .= $q->redirect(-uri => $redirect_url); 
+			
+			print $q->redirect(-url => $redirect_url); 
+			return; 
+			
+		}else{ 
+			print list_template(
+					-Part  => "header",
+                    -Title  => "Subscribe to Multiple Lists", 
+             	  ); 
 
         print DADA::Template::Widgets::screen(
-            {
-                -data => \$Subscription_Confirmation,
-                -vars => {
-                    lists_worked_on => \@lists_worked_on,
-                    subscribing     => $subscribing,
-                    unsubscribing   => $unsubscribing,
-                    email           => $email,
-                    f               => $flavor,
-                    debug_info      => $debug_info,
-                    debug           => $Debug ? 1 : 0,
+					{
+                     	-data => \$Subscription_Confirmation, 
+						-vars => { 
+							lists_worked_on => \@lists_worked_on, 
+							subscribing     => $subscribing, 
+							unsubscribing   => $unsubscribing, 
+							email           => $email, 
+							f               => $flavor, 
+							debug_info      => $debug_info, 
+							debug           => $Debug ? 1 : 0,	
+							
+						},
+			}
+		); 
+		
+		print list_template(-Part     => "footer"); 
+			   
+		}
+	}			   
 
-                },
-            }
-        );
-
-        print list_template( -Part => "footer" );
-
-    }
-}
 
 __END__
 
