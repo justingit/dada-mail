@@ -191,11 +191,11 @@
 </form>
 
 <!-- tmpl_unless list_type_isa_sub_request_list -->
-	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get">
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 	 <input type=hidden name="f"       value="remove_all_subscribers" />
 	 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
 	 <div class="buttonfloat">
-	  <input type="submit" class="alertive" value="Unsubscribe ALL '<!-- tmpl_var type_title -->' Subscribers" />
+	  <input type="submit" class="alertive" value="Unsubscribe ALL '<!-- tmpl_var type_title -->' Subscribers" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   />
 	 </div>
 	</form>
 	<div class="floatclear"></div>

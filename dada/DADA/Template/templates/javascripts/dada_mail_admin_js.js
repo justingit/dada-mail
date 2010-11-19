@@ -148,6 +148,10 @@ function sendMailingListMessage(form_name, testornot) {
 
 }
 
+
+
+
+
 function warnAboutMassSubscription(form_name) { 
 	
 	var confirm_msg =  "Are you sure you want to subscribe the selected email address(es) to your list? ";
@@ -168,6 +172,36 @@ function warnAboutMassSubscription(form_name) {
 	/* Do I still need this? */
 	form_name.target = "_self";
 }
+
+
+function unsubscribeAllSubscribers(form_name, type) { 
+    
+    var confirm_msg =  "Are you sure you want to remove all, '"+ type +"' subscribers? ";	
+    if(!confirm(confirm_msg)){
+        alert("'" + type + "' subscribers not removed.");
+        return false;
+    }
+	else { 
+		return true; 
+	}
+    
+}
+
+function removeAllArchives(form_name) { 
+    
+    var confirm_msg =  "Are you sure you want to purge all your mailing list archives?";	
+    if(!confirm(confirm_msg)){
+        alert("Archives not purged.");
+        return false;
+    }
+	else { 
+		return true; 
+	}
+    
+}
+
+
+
 
 function killMonitoredSending(form_name) { 
     
