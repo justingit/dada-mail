@@ -7,7 +7,7 @@ use dada_test_config;
 
 
 
-diag('$DADA::Config::SUBSCRIBER_DB_TYPE ' . $DADA::Config::SUBSCRIBER_DB_TYPE); 
+#diag('$DADA::Config::SUBSCRIBER_DB_TYPE ' . $DADA::Config::SUBSCRIBER_DB_TYPE); 
 
 
 
@@ -68,7 +68,7 @@ undef($black_listed);
 undef($not_white_listed);
 undef($invalid);
 
-diag '$lh->num_subscribers ' . $lh->num_subscribers;
+#diag '$lh->num_subscribers ' . $lh->num_subscribers;
 
 my $count = $lh->add_to_email_list(-Email_Ref => [qw(
                                             user@example.com
@@ -102,7 +102,7 @@ undef($black_listed);
 undef($not_white_listed);
 undef($invalid);
 
-diag '$lh->num_subscribers ' . $lh->num_subscribers;
+#diag '$lh->num_subscribers ' . $lh->num_subscribers;
 
 
 my $r_count = $lh->remove_from_list(-Email_List => ['user@example.com']); 
@@ -125,7 +125,7 @@ ok($li->{black_list} == 1, "black list enabled.");
 
 foreach my $blacklist_this('user@', '@example.com', 'user@example.com'){ 
 
-	diag '$blacklist_this - ' . $blacklist_this; 
+	#diag '$blacklist_this - ' . $blacklist_this; 
 	
     my $count = $lh->add_to_email_list(-Email_Ref => [
                                                 $blacklist_this
@@ -559,7 +559,7 @@ SKIP: {
 	my $one_info = $lh->get_subscriber({-email => 'one@example.com', -type => 'list'}); 
 	
 	use Data::Dumper; 
-	diag Data::Dumper::Dumper($one_info); 
+	#diag Data::Dumper::Dumper($one_info); 
 	
     ok($one_info->{first_name} eq 'One First Name', 'first_name equals "One First Name"'); 
     ok($one_info->{last_name}  eq 'One Last Name', 'last-name equals "One Last Name"'); 
@@ -741,8 +741,7 @@ ok(-e $DADA::Config::TMP);
         . $!;
         
     my $contents = do { local $/; <$TMP_SUB_LIST> }; 
-
-diag $contents; 
+	#diag $contents; 
 
     
     close $TMP_SUB_LIST or die $!;
@@ -799,33 +798,33 @@ diag $contents;
 
 	ok(-e $DADA::Config::TMP, "TMP dir still around..."); 
 	
-	diag ' $mailout->status->{percent_done} ' . $mailout->status->{percent_done}; 
+	#diag ' $mailout->status->{percent_done} ' . $mailout->status->{percent_done}; 
 	
     while($mailout->status->{percent_done} < 100){
 
 		ok(-e $DADA::Config::TMP, "TMP dir still around (2)..."); 		
-        diag ("Sleeping..."); 
+        #diag ("Sleeping..."); 
         
         sleep(1); 
 		
-		diag q{ DADA::Mail::MailOut::mailout_exists($list, $msg_id, 'list') } . DADA::Mail::MailOut::mailout_exists($list, $msg_id, 'list'); 
+		#diag q{ DADA::Mail::MailOut::mailout_exists($list, $msg_id, 'list') } . DADA::Mail::MailOut::mailout_exists($list, $msg_id, 'list'); 
 		
         if(DADA::Mail::MailOut::mailout_exists($list, $msg_id, 'list') == 1){ 
-            diag("waiting for mailing to finish... " . $mailout->status->{percent_done}); 
+            #diag("waiting for mailing to finish... " . $mailout->status->{percent_done}); 
             $seconds--; 
             if($seconds == 0){
 				ok(-e $DADA::Config::TMP); 
 	
-                diag("Waiting timed out! Breaking out!"); 
+                #diag("Waiting timed out! Breaking out!"); 
                 $mailout->clean_up();
-				diag "here 8"; 
+				#diag "here 8"; 
                 undef $mailout; 
                 last; 
             }
         }
         else { 
             undef $mailout; 
-            diag "Sending is finished..."; 
+            #diag "Sending is finished..."; 
             last; 
         }
     
@@ -931,23 +930,23 @@ diag $contents;
 
   
      while($mailout->status->{percent_done} < 100){
-        diag ("Sleeping..."); 
+        #diag ("Sleeping..."); 
         
         sleep(1); 
         if(DADA::Mail::MailOut::mailout_exists($list, $msg_id, 'list') == 1){ 
         
-            diag("waiting for mailing to finish... " . $mailout->status->{percent_done}); 
+            #diag("waiting for mailing to finish... " . $mailout->status->{percent_done}); 
             
         }
         else { 
             undef $mailout; 
-            diag "Sending is finished..."; 
+            #diag "Sending is finished..."; 
             last; 
         }
         
         $seconds--; 
         if($seconds == 0){ 
-            diag("Waiting timed out! Breaking out!"); 
+            #diag("Waiting timed out! Breaking out!"); 
             $mailout->clean_up();
             undef $mailout; 
             last; 
@@ -973,7 +972,7 @@ diag $contents;
     my $l2 = quotemeta('MikeMikeMikeMikeMikeMike'); 
     my $l3 = quotemeta('KelleyKelleyKelleyKelleyKelleyKelleyKelley');
 	
-	diag '$contents: ' . $contents; 
+	#diag '$contents: ' . $contents; 
 	
 	ok($contents !~ m/$l/); 
     ok($contents !~ m/$l2/); 
@@ -1070,7 +1069,7 @@ diag $contents;
             -partial_sending => {'last_name' => {'like' =>'a'}},
         );
 
-		diag "file, '$path_to_list': \n" . slurp($path_to_list); 
+		#diag "file, '$path_to_list': \n" . slurp($path_to_list); 
 
         
         ok($total_sending_out_num == 3, "This file is to send to 3 people ($total_sending_out_num)", ); 
@@ -1227,7 +1226,7 @@ my $results = $lh->search_list(
 ); 
 
 use Data::Dumper; 
-diag "DUMP: " .  Data::Dumper::Dumper($results); 
+#diag "DUMP: " .  Data::Dumper::Dumper($results); 
 
 my @results = @$results; 
 
@@ -1250,7 +1249,7 @@ SKIP: {
     skip "Multiple Subscriber Profile Fields is not supported with this current backend." 
         if $lh->can_have_subscriber_fields == 0; 
         
-        diag "still here."; 
+        #diag "still here."; 
         
         foreach(qw(1 2)){ 
             ok($lh->add_subscriber_field({-field => 'field' . $_}), 'added field, ' . $_); 

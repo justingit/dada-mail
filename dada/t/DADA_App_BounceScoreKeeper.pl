@@ -69,7 +69,7 @@ $bsk->tally_up_scores(
 	
 	);
 
-diag($bsk->num_scorecard_rows); 
+#diag($bsk->num_scorecard_rows); 
 ok($bsk->num_scorecard_rows == 3); 
 
 # And now, I'm going to do it again!
@@ -83,7 +83,7 @@ $bsk->tally_up_scores(
 	
 	);
 
-diag($bsk->num_scorecard_rows); 
+#diag($bsk->num_scorecard_rows); 
 ok($bsk->num_scorecard_rows == 3, $bsk->num_scorecard_rows . ' == 3');
 
 my $rsc = $bsk->raw_scorecard(0, 100); 

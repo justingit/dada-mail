@@ -216,10 +216,10 @@ my $sent_from =  MIME::EncWords::decode_mimewords($sent_entity->head->get('From'
 #my $orig_from =  $orig_entity->head->get('From', 0);
 #my $sent_from =  $sent_entity->head->get('From', 0);
 
-diag ' $orig_sub ' . $orig_sub; 
-diag ' $sent_sub ' . $sent_sub; 
-diag ' $orig_from ' . $orig_from; 
-diag ' $sent_from ' . $sent_from; 
+#diag ' $orig_sub ' . $orig_sub; 
+#diag ' $sent_sub ' . $sent_sub; 
+#diag ' $orig_from ' . $orig_from; 
+#diag ' $sent_from ' . $sent_from; 
 
 
 

@@ -160,9 +160,9 @@ foreach my $white_listed_addresses(@white_listed_addresses){
 									-email => $white_listed_addresses,
     							}
 							);
-    foreach(keys %$errors){ 
-        diag($_ . ' => ' . $errors->{$_}); 
-    }
+    #foreach(keys %$errors){ 
+    #    diag($_ . ' => ' . $errors->{$_}); 
+    #}
     ok($status == 1, "Status is 1"); 
     ok($errors->{not_white_listed} == 0, "Address ($white_listed_addresses) was White Listed");
 }

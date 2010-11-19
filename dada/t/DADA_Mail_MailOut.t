@@ -207,7 +207,7 @@ $mailout->batch_lock;
 #this should fail...
 my $set_it = undef; 
 eval { $set_it = $mailout->associate($status->{id}, $status->{type})}; 
-diag('set it is: ' . $set_it); 
+#diag('set it is: ' . $set_it); 
 
 ok($set_it == undef, "shouldn't be able to associate the mailout with a new id..."); 
 
@@ -321,7 +321,7 @@ undef($dash_mailout2);
 
 # This is to make sure that the list type is set correctly, as per this bug: 
 # http://sourceforge.net/tracker/index.php?func=detail&aid=1612943&group_id=13002&atid=113002
-diag("sleeping for 3 seconds...");
+#diag("sleeping for 3 seconds...");
 sleep(3); 
 
 # gotta reset this...
@@ -439,7 +439,7 @@ my $queue_mailout_1_status = $queue_mailout_1->status();
 
 ok(keys %$queue_mailout_1_status, "status() returned a hashref!");
 
-diag('$queue_mailout_1_status->{queued_mailout} ' . $queue_mailout_1_status->{queued_mailout}); 
+#diag('$queue_mailout_1_status->{queued_mailout} ' . $queue_mailout_1_status->{queued_mailout}); 
 
 ok($queue_mailout_1_status->{queued_mailout} == 0, "Mailout is not queued."); 
 

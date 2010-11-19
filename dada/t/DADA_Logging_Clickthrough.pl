@@ -18,7 +18,7 @@ use DADA::App::Guts;
 use DADA::MailingList::Settings;
 
 my $list = dada_test_config::create_test_list;
-diag '$list ' . $list;
+#diag '$list ' . $list;
 
 my $lc = DADA::Logging::Clickthrough->new( { -list => $list } );
 
@@ -204,11 +204,11 @@ my ( $r_mid, $r_url ) = $lc->fetch($key);
 ok( $r_mid eq $test_mid );
 ok( $r_url eq $test_url );
 
-diag '$lc->clickthrough_log_location ' . $lc->clickthrough_log_location;
-diag q{$DADA::Config::LOGS . '/' . $list . '-clickthrough.log' }
-  . $DADA::Config::LOGS . '/'
-  . $list
-  . '-clickthrough.log';
+#diag '$lc->clickthrough_log_location ' . $lc->clickthrough_log_location;
+#diag q{$DADA::Config::LOGS . '/' . $list . '-clickthrough.log' }
+#  . $DADA::Config::LOGS . '/'
+#  . $list
+#  . '-clickthrough.log';
 
 ok( $lc->clickthrough_log_location eq $DADA::Config::LOGS . '/' . $list
       . '-clickthrough.log' );
