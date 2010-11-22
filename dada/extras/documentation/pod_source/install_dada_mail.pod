@@ -11,17 +11,14 @@ L<http://dadamailproject.com/support/documentation/manually_install_dada_mail.po
 
 =head1 Step #1: Download Dada Mail
 
-Here's the direct download to Dada Mail v4.3.0 Beta 1: 
+Here's the direct download to Dada Mail v4.3.0: 
 
-L<https://github.com/downloads/justingit/dada-mail/dada-4_3_0-beta1.tar.gz>
+L<https://github.com/downloads/justingit/dada-mail/dada-4_3_0.tar.gz>
 
-=cut
 
-(If you have Pro Dada, you can download v4.2.1 of Pro Dada here:)
+(If you have Pro Dada, you can download v4.3.0 of Pro Dada here:)
 
-L<http://dadamailproject.com/pro_dada/index.cgi?rm=download_file&filename=pro_dada-4_2_1.tar.gz>
-
-=pod
+L<http://dadamailproject.com/pro_dada/index.cgi?rm=download_file&filename=pro_dada-4_3_0.tar.gz>
 
 Save the distribution to your Desktop Computer (you will B<not> have to uncompress the distribution) and then upload the, tar.gz file to your hosting account's I<cgi-bin>. 
 
@@ -29,6 +26,7 @@ Save the distribution to your Desktop Computer (you will B<not> have to uncompre
 
 Download the, C<uncompress_dada.cgi> script from here: 
 
+CHANGE
 =for html <ul><li><strong><a href="https://github.com/justingit/dada-mail/raw/v4_3_0-beta1-2010_11_16/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
 
 and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> - right alongside the tar.gz file you just put up. 
@@ -204,6 +202,19 @@ Making additional configurations is a lot more advanced than running the install
 Once you've gotten the, C<dada/DADA/Config.pm> file edited (if needed) and moved the, C<installer> directory out of the way, it's time to begin using Dada Mail. Click the, C<Start Working With Dada Mail!> button to begin!
 
 Good Luck! 
+
+=head1 Screencasts
+
+The below screencasts go through the installation process: 
+
+B<How to Download, Install and Configure Dada Mail v4.2.0>
+
+=for html <p><object width="960" height="745"><param name="movie" value="http://www.youtube.com/v/md8NNRkjRR4?fs=1&amp;hl=en_US&amp;hd=1&amp;color1=0x2b405b&amp;color2=0x6b8ab6"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/md8NNRkjRR4?fs=1&amp;hl=en_US&amp;hd=1&amp;color1=0x2b405b&amp;color2=0x6b8ab6" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="960" height="745"></embed></object></p>
+
+B<Install and Configure Dada Mail 4.2.1 w/the MySQL Backend>
+
+=for html <p><object width="960" height="745"><param name="movie" value="http://www.youtube.com/v/A_YRRlmIxak?fs=1&amp;hl=en_US&amp;hd=1&amp;color1=0x2b405b&amp;color2=0x6b8ab6"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/A_YRRlmIxak?fs=1&amp;hl=en_US&amp;hd=1&amp;color1=0x2b405b&amp;color2=0x6b8ab6" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="960" height="745"></embed></object></p>
+
 
 =cut
 

@@ -112,6 +112,12 @@ As explained, prints out what's goin' on. Probably a good option to use, if you'
 
 =back
 
+=head1 Screencast
+
+This screencast goes over the basic usage of this extension, 
+
+=for html <p><object width="960" height="745"><param name="movie" value="http://www.youtube.com/v/VCxr0Ytsxos?fs=1&amp;hl=en_US&amp;hd=1&amp;color1=0x2b405b&amp;color2=0x6b8ab6"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/VCxr0Ytsxos?fs=1&amp;hl=en_US&amp;hd=1&amp;color1=0x2b405b&amp;color2=0x6b8ab6" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="960" height="745"></embed></object></p>
+
 =head1 DESCRIPTION
 
 Mailing to your entire list in Dada Mail can take a long time - hours even. Sometimes - and depending on your hosting account setup, this process can go on longer than the server allows a process to run. 
@@ -222,7 +228,7 @@ See: http://dadamailproject.com/contact
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 2006-2009 Justin Simoni All rights reserved. 
+Copyright (c) 2006-2010 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

@@ -382,7 +382,17 @@ B<NOTE:> Before being sent, all HTML messages will be changed to a multipart/alt
 
 =head2 How do I get the File Browser working in FCKeditor? 
 
-I want to upload images to then put in my message - any help on that? 
+=head3 Screen Casts! 
+
+I<I want to upload images to then put in my message - any help on that?>
+
+These screencasts: 
+
+http://www.youtube.com/watch?v=AgNTNygI4MM&hd=1
+
+http://www.youtube.com/watch?v=uRdDOO5n_Cc&hd=1
+
+Goes through the below process. 
 
 These current directions are for FCKeditor, version B<2.6>. The steps involved seem to always change in each revision of FCKeditor. 
 

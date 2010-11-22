@@ -1685,6 +1685,12 @@ Currently, Dada Mail can use an inline HTML WYSIWYG Editor called FCKEditor for
 authoring of the HTML version of the mailing list message. To do this, 
 you need to install FCKEditor. 
 
+These screencasts could also help you out: 
+
+http://www.youtube.com/watch?v=AgNTNygI4MM&hd=1
+
+http://www.youtube.com/watch?v=uRdDOO5n_Cc&hd=1
+
 How to install FCKeditor: 
 
 Download FCKeditor at: 
