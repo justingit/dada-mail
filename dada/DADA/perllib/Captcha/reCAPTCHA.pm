@@ -6,150 +6,157 @@ use Carp;
 use LWP::UserAgent;
 use HTML::Tiny;
 
-our $VERSION = '0.92';
+our $VERSION = '0.93';
 
-use constant API_SERVER        => 'http://api.recaptcha.net';
-use constant API_SECURE_SERVER => 'https://api-secure.recaptcha.net';
-use constant API_VERIFY_SERVER => 'http://api-verify.recaptcha.net';
+use constant API_SERVER => 'http://www.google.com/recaptcha/api';
+use constant API_SECURE_SERVER =>
+ 'https://www.google.com/recaptcha/api';
+use constant API_VERIFY_SERVER => 'http://www.google.com';
 use constant SERVER_ERROR      => 'recaptcha-not-reachable';
 
 sub new {
-    my $class = shift;
-    my $self = bless {}, $class;
-    $self->_initialize( @_ );
-    return $self;
+  my $class = shift;
+  my $self = bless {}, $class;
+  $self->_initialize( @_ );
+  return $self;
 }
 
 sub _initialize {
-    my $self = shift;
-    my $args = shift || {};
+  my $self = shift;
+  my $args = shift || {};
 
-    croak "new must be called with a reference to a hash of parameters"
-      unless 'HASH' eq ref $args;
+  croak "new must be called with a reference to a hash of parameters"
+   unless 'HASH' eq ref $args;
 }
 
-sub get_options_setter {
-    my $self    = shift;
-    my $options = shift || return '';
-    my $h       = HTML::Tiny->new();
+sub _html { shift->{_html} ||= HTML::Tiny->new }
 
-    return $h->script(
-        { type => 'text/javascript' },
-        "\n//<![CDATA[\n"
-          . "var RecaptchaOptions = "
-          . $h->json_encode( $options )
-          . ";\n//]]>\n"
-    ) . "\n";
+sub get_options_setter {
+  my $self = shift;
+  my $options = shift || return '';
+
+  croak "The argument to get_options_setter must be a hashref"
+   unless 'HASH' eq ref $options;
+
+  my $h = $self->_html;
+
+  return $h->script(
+    { type => 'text/javascript' },
+    "\n//<![CDATA[\n"
+     . "var RecaptchaOptions = "
+     . $h->json_encode( $options )
+     . ";\n//]]>\n"
+  ) . "\n";
 }
 
 sub get_html {
-    my $self = shift;
-    my ( $pubkey, $error, $use_ssl, $options ) = @_;
+  my $self = shift;
+  my ( $pubkey, $error, $use_ssl, $options ) = @_;
 
-    croak
-      "To use reCAPTCHA you must get an API key from http://recaptcha.net/api/getkey"
-      unless $pubkey;
+  croak
+   "To use reCAPTCHA you must get an API key from https://www.google.com/recaptcha/admin/create"
+   unless $pubkey;
 
-    my $h = HTML::Tiny->new();
-    my $server = $use_ssl ? API_SECURE_SERVER : API_SERVER;
+  my $h = $self->_html;
+  my $server = $use_ssl ? API_SECURE_SERVER : API_SERVER;
 
-    my $query = { k => $pubkey };
-    if ( $error ) {
-        # Handle the case where the result hash from check_answer
-        # is passed.
-        if ( 'HASH' eq ref $error ) {
-            return '' if $error->{is_valid};
-            $error = $error->{error};
-        }
-        $query->{error} = $error;
+  my $query = { k => $pubkey };
+  if ( $error ) {
+    # Handle the case where the result hash from check_answer
+    # is passed.
+    if ( 'HASH' eq ref $error ) {
+      return '' if $error->{is_valid};
+      $error = $error->{error};
     }
-    my $qs = $h->query_encode( $query );
+    $query->{error} = $error;
+  }
+  my $qs = $h->query_encode( $query );
 
-    return join(
-        '',
-        $self->get_options_setter( $options ),
-        $h->script(
-            {
-                type => 'text/javascript',
-                src  => "$server/challenge?$qs",
-            }
+  return join(
+    '',
+    $self->get_options_setter( $options ),
+    $h->script(
+      {
+        type => 'text/javascript',
+        src  => "$server/challenge?$qs",
+      }
+    ),
+    "\n",
+    $h->noscript(
+      [
+        $h->iframe(
+          {
+            src         => "$server/noscript?$qs",
+            height      => 300,
+            width       => 500,
+            frameborder => 0
+          }
         ),
-        "\n",
-        $h->noscript(
-            [
-                $h->iframe(
-                    {
-                        src         => "$server/noscript?$qs",
-                        height      => 300,
-                        width       => 500,
-                        frameborder => 0
-                    }
-                ),
-                $h->textarea(
-                    {
-                        name => 'recaptcha_challenge_field',
-                        rows => 3,
-                        cols => 40
-                    }
-                ),
-                $h->input(
-                    {
-                        type  => 'hidden',
-                        name  => 'recaptcha_response_field',
-                        value => 'manual_challenge'
-                    }
-                )
-            ]
+        $h->textarea(
+          {
+            name => 'recaptcha_challenge_field',
+            rows => 3,
+            cols => 40
+          }
         ),
-        "\n"
-    );
+        $h->input(
+          {
+            type  => 'hidden',
+            name  => 'recaptcha_response_field',
+            value => 'manual_challenge'
+          }
+        )
+      ]
+    ),
+    "\n"
+  );
 }
 
 sub _post_request {
-    my $self = shift;
-    my ( $url, $args ) = @_;
+  my $self = shift;
+  my ( $url, $args ) = @_;
 
-    my $ua = LWP::UserAgent->new();
-    return $ua->post( $url, $args );
+  my $ua = LWP::UserAgent->new();
+  return $ua->post( $url, $args );
 }
 
 sub check_answer {
-    my $self = shift;
-    my ( $privkey, $remoteip, $challenge, $response ) = @_;
+  my $self = shift;
+  my ( $privkey, $remoteip, $challenge, $response ) = @_;
 
-    croak
-      "To use reCAPTCHA you must get an API key from http://recaptcha.net/api/getkey"
-      unless $privkey;
+  croak
+   "To use reCAPTCHA you must get an API key from https://www.google.com/recaptcha/admin/create"
+   unless $privkey;
 
-    croak "For security reasons, you must pass the remote ip to reCAPTCHA"
-      unless $remoteip;
+  croak "For security reasons, you must pass the remote ip to reCAPTCHA"
+   unless $remoteip;
 
-    return { is_valid => 0, error => 'incorrect-captcha-sol' }
-      unless $challenge && $response;
+  return { is_valid => 0, error => 'incorrect-captcha-sol' }
+   unless $challenge && $response;
 
-    my $resp = $self->_post_request(
-        API_VERIFY_SERVER . '/verify',
-        {
-            privatekey => $privkey,
-            remoteip   => $remoteip,
-            challenge  => $challenge,
-            response   => $response
-        }
-    );
+  my $resp = $self->_post_request(
+    API_VERIFY_SERVER . '/recaptcha/api/verify',
+    {
+      privatekey => $privkey,
+      remoteip   => $remoteip,
+      challenge  => $challenge,
+      response   => $response
+    }
+  );
 
-    if ( $resp->is_success ) {
-        my ( $answer, $message ) = split( /\n/, $resp->content, 2 );
-        if ( $answer =~ /true/ ) {
-            return { is_valid => 1 };
-        }
-        else {
-            chomp $message;
-            return { is_valid => 0, error => $message };
-        }
+  if ( $resp->is_success ) {
+    my ( $answer, $message ) = split( /\n/, $resp->content, 2 );
+    if ( $answer =~ /true/ ) {
+      return { is_valid => 1 };
     }
     else {
-        return { is_valid => 0, error => SERVER_ERROR };
+      chomp $message;
+      return { is_valid => 0, error => $message };
     }
+  }
+  else {
+    return { is_valid => 0, error => SERVER_ERROR };
+  }
 }
 
 1;
@@ -161,7 +168,7 @@ Captcha::reCAPTCHA - A Perl implementation of the reCAPTCHA API
 
 =head1 VERSION
 
-This document describes Captcha::reCAPTCHA version 0.92
+This document describes Captcha::reCAPTCHA version 0.93
 
 =head1 SYNOPSIS
 
@@ -209,7 +216,7 @@ L<http://recaptcha.net/plugins/php/>
 
 To use reCAPTCHA you need to register your site here:
 
-L<https://admin.recaptcha.net/recaptcha/createsite/>
+L<https://www.google.com/recaptcha/admin/create>
 
 =head1 INTERFACE
 
@@ -332,7 +339,7 @@ variables.
 
 To use reCAPTCHA sign up for a key pair here:
 
-L<https://admin.recaptcha.net/recaptcha/createsite/>
+L<https://www.google.com/recaptcha/admin/create>
 
 =head1 DEPENDENCIES
 
