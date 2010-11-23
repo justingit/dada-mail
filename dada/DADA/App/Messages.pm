@@ -190,6 +190,11 @@ sub send_confirmation_message {
 		my $li = $ls->get; 
 	####
 	
+	my $confirmation_msg = $li->{confirmation_message}; 
+	require DADA::App::FormatMessages; 
+	my $fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
+	   $confirmation_msg = $fm->subscription_confirmationation({-data => $confirmation_msg}); 
+	
 	send_generic_email(
 		{
 			-list    => $args->{-list}, 
@@ -198,7 +203,7 @@ sub send_confirmation_message {
 			    Subject         => $li->{confirmation_message_subject},
 			}, 
 			
-			-body => $li->{confirmation_message},
+			-body => $confirmation_msg,
 				
 			-tmpl_params => {
 				-list_settings_vars_param => {-list => $args->{-list}},
@@ -362,6 +367,11 @@ sub send_unsub_confirmation_message {
 		my $li = $ls->get; 
 	####
 	
+	my $confirmation_msg = $li->{unsub_confirmation_message};
+	require DADA::App::FormatMessages; 
+	my $fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
+	   $confirmation_msg = $fm->unsubscription_confirmationation({-data => $confirmation_msg}); 
+	
 	send_generic_email(
 		{	
 		-list        => $args->{-list},
@@ -372,7 +382,7 @@ sub send_unsub_confirmation_message {
 					 Subject =>  $li->{unsub_confirmation_message_subject}, 
 			},
 				
-	    -body        => $li->{unsub_confirmation_message}, 
+	    -body        => $confirmation_msg, 
 		-tmpl_params => {
 			-list_settings_vars_param => {-list => $args->{-list}},
             -subscriber_vars_param    => {-list => $args->{-list}, -email => $args->{-email}, -type => 'list'},

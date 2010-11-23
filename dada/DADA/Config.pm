@@ -1192,8 +1192,8 @@ The reCAPTCHA CAPTCHA type does require the same sort of thing that the, B<Send 
 $RECAPTCHA_PARAMS ||= { 
 
     remote_address => $ENV{'REMOTE_ADDR'}, 
-    public_key     => '',
-    private_key    => '',
+    public_key     => undef,
+    private_key    => undef,
 
 };
 

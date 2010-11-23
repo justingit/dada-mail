@@ -1562,22 +1562,13 @@ sub mass_send {
 
 				# This is kind of weird, since list messages aren't the only thing sent en-mass - 
 				# invite messages are, too. 
-				
-				#warn '$fields{To} ' . $fields{To}; 
-				# I don't quite understand why the To: field would already be filled out...
-				#if(! exists($fields{To}) ) { 
-					if($self->list_type eq 'invitelist'){ 
-						$fields{To}   = Email::Address->new($self->{ls}->param('invite_message_to_phrase'), $mailing)->format;					
-					}
-					else { 
-	                	$fields{To}   = Email::Address->new($self->{ls}->param('mailing_list_message_to_phrase'), $mailing)->format;
-					}
-        		#} 
 
-                #warn "Mail Merging..."; 
-                
-				# The hell is this? 
-				#print 'From! ' . $fields{From} . "\n"; 
+				if($self->list_type eq 'invitelist'){ 
+					$fields{To}   = Email::Address->new($self->{ls}->param('invite_message_to_phrase'), $mailing)->format;					
+				}
+				else { 
+                	$fields{To}   = Email::Address->new($self->{ls}->param('mailing_list_message_to_phrase'), $mailing)->format;
+				}
 				
 					
 
@@ -1879,19 +1870,9 @@ sub mass_send {
                                                         
 			}
 			# End Old, Complicated, Crufty Stuff....
-			 
-				
-			#$self->{mj_log}->mj_log(
-            #    $self->{list}, 
-            #    'List Mailing Completed', 
-            #    "Mailout: $mailout_id  subject:$fields{Subject}, $log_mail_start_time, $log_mail_end_time, Mailing Amount:$mailing_amount"
-            #) if $DADA::Config::LOG{mass_mailings};
-
+	
 			$mailout->log('List Mailing Completed ' . "Mailout: $mailout_id  subject:$fields{Subject}, $log_mail_start_time, $log_mail_end_time, Mailing Amount:$mailing_amount");
-			
-			#$self->{mj_log}->close_log 
-			#    if $DADA::Config::LOG{mass_mailings};
-            
+
 			warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' closing MAILLIST'
 			    if $t; 
 			    

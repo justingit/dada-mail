@@ -1063,8 +1063,10 @@ sub list_invite {
            $fm->Subject(
 				$headers{Subject}
 			); 
+		   $fm->mass_mailing(1);
            $fm->use_email_templates(0); 
-           
+           $fm->list_invitation(1); 
+
         my ($header_glob, $message_string) =  $fm->format_headers_and_body(-msg => $msg_as_string );
     
         require DADA::Mail::Send;

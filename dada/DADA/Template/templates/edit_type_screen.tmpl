@@ -61,6 +61,17 @@
 		<p>
 			This is the mailing list message (text version). The bottom of the email should, at minimum, provide how to unsubscribe from the mailing list. 
 		</p>
+		<!-- tmpl_if unsub_link_found_in_pt_mlm --> 
+			<p class="positive">
+				Unsubscribe Link found in Template. Good!
+			</p>
+		<!-- tmpl_else --> 
+			<p class="error">
+				Yikes! Couldn't find an Unsubscribe Link in your template! If your mailing is sent out without one, somewhere, an unsubscribe link will be automatically appended to the bottom of your message. 
+			</p>
+		<!-- /tmpl_if --> 
+		
+		
 		<p>
 	<textarea name="mailing_list_message" id="mailing_list_message" rows="10" cols="50" ><!-- tmpl_var list_settings.mailing_list_message escape=HTML -->
 	</textarea> 
@@ -76,6 +87,18 @@
 
 			This is the mailing list message (HTML version). The bottom of the email should, at minimum, provide how to unsubscribe from the mailing list. 
 		</p>
+		
+		<!-- tmpl_if unsub_link_found_in_html_mlm --> 
+			<p class="positive">
+				Unsubscribe Link found in Template. Good!
+			</p>
+		<!-- tmpl_else --> 
+			<p class="error">
+				Yikes! Couldn't find an Unsubscribe Link in your template! If your mailing is sent out without one, somewhere, an unsubscribe link will be automatically appended to the bottom of your message. 
+			</p>
+		<!-- /tmpl_if -->
+		
+		
 		<p>
 	<textarea name="mailing_list_message_html" id="mailing_list_message_html" rows="10" cols="50" ><!-- tmpl_var list_settings.mailing_list_message_html escape=HTML -->
 	</textarea> 
@@ -102,6 +125,18 @@
 	<!-- tmpl_else --> 
 		<p class="error">Closed-Loop Opt-In is Disabled.</p>
 	<!-- /tmpl_if --> 
+	
+	<!-- tmpl_if sub_confirm_link_found_in_confirmation_message --> 
+		<p class="positive">
+			Subscription Confirmation Link found in Template. Good!
+		</p>
+	<!-- tmpl_else --> 
+		<p class="error">
+			Yikes! Couldn't find a Subscription Confirmation Link in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
+		</p>
+	<!-- /tmpl_if -->
+	
+	
 	
 	
 	<p>
@@ -157,6 +192,18 @@
 		<p>
 	 <label for="unsub_confirmation_message_subject" class="label_by_5">Subject:</label> <input type="text" name="unsub_confirmation_message_subject" id="unsub_confirmation_message_subject" value="<!-- tmpl_var list_settings.unsub_confirmation_message_subject escape=HTML -->" class="midi" />
 	</p>
+	
+	
+	<!-- tmpl_if unsub_confirm_link_found_in_unsub_confirmation_message --> 
+		<p class="positive">
+			Unsubscription Confirmation Link found in Template. Good!
+		</p>
+	<!-- tmpl_else --> 
+		<p class="error">
+			Yikes! Couldn't find an Unsubscription Confirmation Link in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
+		</p>
+	<!-- /tmpl_if -->
+	
 	
 	<p><label for="unsub_confirmation_message">PlainText Message:</label>
 	
@@ -225,6 +272,19 @@
 		<legend>
 			PlainText Message: 
 		</legend>
+	
+		<!-- tmpl_if sub_confirm_link_found_in_pt_invite_msg --> 
+			<p class="positive">
+				Subscription Confirmation Link found in Template. Good!
+			</p>
+		<!-- tmpl_else --> 
+			<p class="error">
+				Yikes! Couldn't find a Subscription Confirmation Link in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
+			</p>
+		<!-- /tmpl_if -->
+	
+	
+	
 	<p>
 <textarea name="invite_message_text" id="invite_message_text" rows="10" cols="50" ><!-- tmpl_var list_settings.invite_message_text escape=HTML -->
 </textarea> 
@@ -236,6 +296,19 @@
 		<legend>
 			HTML Message: 
 		</legend>
+
+		<!-- tmpl_if sub_confirm_link_found_in_html_invite_msg --> 
+			<p class="positive">
+				Subscription Confirmation Link found in Template. Good!
+			</p>
+		<!-- tmpl_else --> 
+			<p class="error">
+				Yikes! Couldn't find a Subscription Confirmation Link in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
+			</p>
+		<!-- /tmpl_if -->
+		
+		
+
 	<p>
 <textarea name="invite_message_html" id="invite_message_html" rows="10" cols="50" ><!-- tmpl_var list_settings.invite_message_html escape=HTML -->
 </textarea> 

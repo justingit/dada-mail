@@ -88,7 +88,8 @@ my %allowed = (
 	
 	reset_from_header            => 1, 
 	im_encoding_headers          => 0, 
-	mass_mailing                 => 0, 	
+	mass_mailing                 => 0, 
+	list_invitation              => 0, 	
 );
 
 
@@ -443,10 +444,21 @@ sub _format_text {
 				);
 				
 				if($self->mass_mailing == 1){ 
-					$content = $self->_unsubscriptionation(
-						-data => $content, 
-						-type => $entity->head->mime_type, 
-					);				
+					if($self->list_invitation == 1){ 
+						$content = $self->subscription_confirmationation(
+							{
+								-data => $content, 
+							}
+						);						
+					}
+					else { 						
+						$content = $self->_unsubscriptionation(
+							{
+								-data => $content, 
+								-type => $entity->head->mime_type, 
+							}
+						);				
+					}
 				}
 				
 			   $content = $self->_parse_in_list_info(
@@ -1385,31 +1397,157 @@ $new_data
 	
 }
 
-sub _unsubscriptionation { 
+sub can_find_sub_confirm_link { 
 	
-	my $self = shift; 
+	    my $self = shift;
+	    my ($args) = @_;
+	    if ( !exists( $args->{-str} ) ) {
+	        die "You MUST pass the, '-str' paramater!";
+	    }
+
+	    my @sub_confirm_urls = (
+	        '<!-- tmpl_var list_confirm_subscribe_link -->',
+			'<!-- tmpl_var PROGRAM_URL -->/n/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/<!-- tmpl_var subscriber.pin -->/'
+	  	);
+	    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
+	        1 )
+	    {
+	        push( @sub_confirm_urls, '[list_confirm_subscribe_link]' );
+		    push( @sub_confirm_urls, '[plain_list_confirm_subscribe_link]' );
+			
+	    }
 	
-	my %args = (-data                => undef, 
-				-type                => undef, 
-				@_,
-				); 
+	    foreach my $url (@sub_confirm_urls) {
+	        $url = quotemeta($url);
+	        if ( $args->{-str} =~ m/$url/ ) {
+	            return 1;
+	        }
+	    }
 
-	die "no data! $!" if ! $args{-data}; 
-	die "no type! $!" if ! $args{-type}; 
+	    return 0;
+}
+sub subscription_confirmationation { 
 
-	my $unsub_url1 = quotemeta('<!-- tmpl_var list_unsubscribe_link -->'); 
-	my $unsub_url2 = quotemeta('[list_unsubscribe_link]'); 
-	my $unsub_url3 = quotemeta('<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->'); 
-	my $unsub_url4 = quotemeta('<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/'); 
+	    my $self = shift;
+	    my ($args) = @_;
 
-	if($args{-data} =~ m/$unsub_url1|$unsub_url2|$unsub_url3|$unsub_url4/) { 
-		# ... 
-	}
-	else { 
-		
-		
-		if($args{-type} eq 'text/html'){ 
-			$args{-data} .= '
+	    die "no data! $!" if !exists( $args->{-data} );
+	    #die "no type! $!" if !exists( $args->{-type} );
+
+	    if ( $self->can_find_sub_confirm_link( { -str => $args->{-data} } ) ) {
+	        # ...
+	    }
+	    else {
+	    	$args->{-data} = 'To subscribe to, "<!-- tmpl_var list_settings.list_name -->", click the link below:
+<!-- tmpl_var list_confirm_subscribe_link -->
+
+' . $args->{-data};
+		}
+		return $args->{-data};	
+}
+
+sub can_find_unsub_confirm_link { 
+	
+	    my $self = shift;
+	    my ($args) = @_;
+	    if ( !exists( $args->{-str} ) ) {
+	        die "You MUST pass the, '-str' paramater!";
+	    }
+
+	    my @unsub_confirm_urls = (
+	        '<!-- tmpl_var list_confirm_unsubscribe_link -->',
+			'<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/<!-- tmpl_var subscriber.pin -->/'
+	  	);
+	    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
+	        1 )
+	    {
+	        push( @unsub_confirm_urls, '[list_confirm_unsubscribe_link]' );
+		    push( @unsub_confirm_urls, '[plain_list_confirm_unsubscribe_link]' );
+			
+	    }
+	
+	    foreach my $url (@unsub_confirm_urls) {
+	        $url = quotemeta($url);
+	        if ( $args->{-str} =~ m/$url/ ) {
+	            return 1;
+	        }
+	    }
+
+	    return 0;
+}
+
+sub unsubscription_confirmationation { 
+
+	    my $self = shift;
+	    my ($args) = @_;
+
+	    die "no data! $!" if !exists( $args->{-data} );
+	    #die "no type! $!" if !exists( $args->{-type} );
+
+	    if ( $self->can_find_sub_confirm_link( { -str => $args->{-data} } ) ) {
+	        # ...
+	    }
+	    else {
+	    	$args->{-data} = 'To be removed from, "<!-- tmpl_var list_settings.list_name -->", click the link below:
+<!-- tmpl_var list_confirm_unsubscribe_link -->
+
+' . $args->{-data};
+		}
+		return $args->{-data};	
+}
+
+
+
+
+
+
+sub can_find_unsub_link {
+
+    my $self = shift;
+    my ($args) = @_;
+    if ( !exists( $args->{-str} ) ) {
+        die "You MUST pass the, '-str' paramater!";
+    }
+
+    my @unsub_urls = (
+        $DADA::Config::PROGRAM_URL . '/u/' . $self->{-List},
+        '<!-- tmpl_var list_unsubscribe_link -->',
+        '<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->',
+'<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/',
+    );
+    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
+        1 )
+    {
+        push( @unsub_urls, '[list_unsubscribe_link]' );
+    }
+
+    foreach my $unsub_url (@unsub_urls) {
+        $unsub_url = quotemeta($unsub_url);
+        if ( $args->{-str} =~ m/$unsub_url/ ) {
+            return 1;
+        }
+    }
+
+    return 0;
+
+}
+
+sub _unsubscriptionation {
+
+    my $self = shift;
+
+    my ($args) = @_;
+
+    die "no data! $!" if !exists( $args->{-data} );
+    die "no type! $!" if !exists( $args->{-type} );
+
+    if ( $self->can_find_unsub_link( { -str => $args->{-data} } ) ) {
+        # ...
+    }
+    else {
+
+        if ( $args->{-type} eq 'text/html' ) {
+            $args->{-data} .= '
 <p>
 Unsubscribe:
 </p>
@@ -1418,20 +1556,20 @@ Unsubscribe:
 <!-- tmpl_var list_unsubscribe_link -->
 </a>
 </p>
-						  '; 
-		}
-		else { 
-			$args{-data} .= '
+
+';
+        }
+        else {
+            $args->{-data} .= '
 			
 Unsubscribe: 
 <!-- tmpl_var list_unsubscribe_link -->
-			
-			'; 
 
-		}
-	}
-	
-	return $args{-data}; 
+';
+        }
+    }
+
+    return $args->{-data};
 }
 
 

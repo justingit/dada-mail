@@ -5687,7 +5687,10 @@ sub edit_type {
          $li->{$_} = $m;
     }
     
-    
+	require DADA::App::FormatMessages; 
+	my $dfm = DADA::App::FormatMessages->new(-List => $list); 
+	
+	
     if(!$process){ 
 		
 		my $scrn = ''; 
@@ -5704,10 +5707,17 @@ sub edit_type {
                 -screen => 'edit_type_screen.tmpl',
                 -list   => $list,
                 -vars   => {
-                    screen => 'edit_type',
-                    title  => 'Email Templates',
-                    done   => $done,
-                },
+                    screen                                         => 'edit_type',
+                    title                                          => 'Email Templates',
+                    done                                           => $done,
+
+					unsub_link_found_in_pt_mlm                     => $dfm->can_find_unsub_link      ({-str => $li->{mailing_list_message}}),
+					unsub_link_found_in_html_mlm                   => $dfm->can_find_unsub_link      ({-str => $li->{mailing_list_message_html}}), 
+					sub_confirm_link_found_in_confirmation_message => $dfm->can_find_sub_confirm_link({-str => $li->{confirmation_message}}),
+					sub_confirm_link_found_in_pt_invite_msg        => $dfm->can_find_sub_confirm_link({-str => $li->{invite_message_text}}),
+					sub_confirm_link_found_in_html_invite_msg      => $dfm->can_find_sub_confirm_link({-str => $li->{invite_message_html}}),
+                	unsub_confirm_link_found_in_unsub_confirmation_message => $dfm->can_find_unsub_confirm_link({-str => $li->{unsub_confirmation_message}}),
+				},  	  
                 -list_settings_vars       => $li,
                 -list_settings_vars_param => { -dot_it => 1, },
             }
