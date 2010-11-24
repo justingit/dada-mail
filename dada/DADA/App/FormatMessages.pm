@@ -447,7 +447,7 @@ sub _format_text {
 					if($self->list_invitation == 1){ 
 						$content = $self->subscription_confirmationation(
 							{
-								-data => $content, 
+								-str => $content, 
 							}
 						);						
 					}
@@ -1431,19 +1431,19 @@ sub subscription_confirmationation {
 	    my $self = shift;
 	    my ($args) = @_;
 
-	    die "no data! $!" if !exists( $args->{-data} );
+	    die "no -str! $!" if !exists( $args->{-str} );
 	    #die "no type! $!" if !exists( $args->{-type} );
 
-	    if ( $self->can_find_sub_confirm_link( { -str => $args->{-data} } ) ) {
+	    if ( $self->can_find_sub_confirm_link( { -str => $args->{-str} } ) ) {
 	        # ...
 	    }
 	    else {
-	    	$args->{-data} = 'To subscribe to, "<!-- tmpl_var list_settings.list_name -->", click the link below:
+	    	$args->{-str} = 'To subscribe to, "<!-- tmpl_var list_settings.list_name -->", click the link below:
 <!-- tmpl_var list_confirm_subscribe_link -->
 
-' . $args->{-data};
+' . $args->{-str};
 		}
-		return $args->{-data};	
+		return $args->{-str};	
 }
 
 sub can_find_unsub_confirm_link { 
@@ -1481,19 +1481,19 @@ sub unsubscription_confirmationation {
 	    my $self = shift;
 	    my ($args) = @_;
 
-	    die "no data! $!" if !exists( $args->{-data} );
+	    die "no -str! $!" if !exists( $args->{-str} );
 	    #die "no type! $!" if !exists( $args->{-type} );
 
-	    if ( $self->can_find_sub_confirm_link( { -str => $args->{-data} } ) ) {
+	    if ( $self->can_find_sub_confirm_link( { -str => $args->{-str} } ) ) {
 	        # ...
 	    }
 	    else {
-	    	$args->{-data} = 'To be removed from, "<!-- tmpl_var list_settings.list_name -->", click the link below:
+	    	$args->{-str} = 'To be removed from, "<!-- tmpl_var list_settings.list_name -->", click the link below:
 <!-- tmpl_var list_confirm_unsubscribe_link -->
 
-' . $args->{-data};
+' . $args->{-str};
 		}
-		return $args->{-data};	
+		return $args->{-str};	
 }
 
 
