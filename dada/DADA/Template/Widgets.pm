@@ -639,7 +639,11 @@ sub list_page {
         -expr                     => 1, 
         -screen                   => 'list_page_screen.tmpl',
         -list_settings_vars       => $li,
-        -list_settings_vars_param => {-dot_it => 1},
+        -list_settings_vars_param => {
+			-dot_it => 1
+			-list   => $args{-list}, # this is redundant, but important for email protection.
+		 },
+
         -vars                     => 
         { 
             subscription_form         => subscription_form({-list => $args{-list}, -email => $args{-email}, -flavor_is => $args{-set_flavor}, -give_props => 0 }), 
