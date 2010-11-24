@@ -18,6 +18,73 @@ probably with a Config.pm-level variable to turn on/off even the ability to Subs
 		[ ] While I'm at it, get discussion list stuff less on-the-fringe, and more on top of stuff
 			for example, there's no mention of the List Email in the, "You are now subscribed!" Message, etc
 
+Things I want to remove support for (or disable, globally for the time being) 
+	Turning off closed-loop-opt-in subscribing (removing, I'll give people the choice) 
+		Turning off, also stops anyone from subscribing anyone - that's basically 
+		a security problem, right there. 
+	Mass-Subscribing via the List Control Panel. Invitations Only! 
+	Turning off the black list - or just maybe editing? Not sure yet.
+
+$DISABLED_FEATURES ||= { 
+	control_panel_subscribing  => 0, 
+	subscribing_without_opt_in => 0, 
+	editable_blacklist         => 0, 
+	(even) viewable_blacklist  => 0, 
+};
+
+List Invitation Verbiage Sucks, maybe something more like,
+
+ 
+Subject: You've been Invited to Subscibe to, "My List"
+
+The List Owner of, "My List" (myemail@example.com) has invited you to Subscribe! 
+Here's a brief description of the mailing list: 
+
+Blah blah blah 
+
+* To automatically subscribe, click here: 
+<http://example.com/cgi-bin/dada/mail/cgi/blah/blah/blah/>
+
+(You can always remove yourself from the mailing list, at any time) 
+
+* Visit the Mailing List Page: 
+<http://example.com/cgi-bin/dada/mail/cgi/blah/blah/blah/>
+
+* To never receive these requests for this mailing list again, click here: 
+<http://example.com/cgi-bin/dada/mail/cgi/blah/blah/blah/> <- that'll be some new 
+features - subscribe to black list stuff. Ugh! 
+
+* Privacy Policy: 
+Blah Blah Blah 
+
+* Physical Address: 
+Blah Blah Blah 
+
+The, " To never receive these requests for this mailing list again" stuff should also be 
+stated upon unsubscribing - maybe the subscriber should know they're listed as not-to-be-fucked with, again 
+Along those lines, it would be a good idea to say that, "Hey, if *you* want to subscribe again, get your jollies off!" 
+And make sure subscriptions remove the subscriber from the black list, cause that makes sense. Ugh, but only when subscriptions
+are made by themselves.  
+
+Discussion List stuff 
+
+List Email needs to be noted on the List Page (How can it not? Makes no sense) 
+The "You're Subscribed now!" email 
+And Mailing List Messages - as long as it's a disussion list. That's an if statement away
+
+Profile Stuff
+If profiles are enabled, this also needs to be on all outgoing mass emails
+Subscribe/Unsubscribe pages 
+And other stuff, I can't think of. 
+
+Feedback Form Upon Unsubscribing - 
+	This gets sent to the list owner
+	This could be the easiest way for people to vent about abuse of the list, 
+	to the list owner, and let the just-removed subscriber feel that they're doing something
+	How to stave off abuse of this feature? Email/Pin thing... maybe? CAPTCHA? 
+
+
+
 [ ] A neat SMTP test tool, 
 	http://jetmore.org/john/code/swaks/
 	
