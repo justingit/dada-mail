@@ -394,6 +394,59 @@ my $endif = quotemeta('[endif]');
 diag '$endif ' . $endif; 
 ok($t_msg =~ m/$endif/,'found the [endif] tag'); 
 
+# can_find_sub_confirm_link
+# Should be in list invitation message and subscription confirmation message:
+
+ok(
+    $fm->can_find_sub_confirm_link(
+        { -str => $DADA::Config::TEXT_INVITE_MESSAGE, }
+    ),
+    "found sub confirm link in text invite message!"
+);
+
+ok(
+    $fm->can_find_sub_confirm_link(
+        { -str => $DADA::Config::HTML_INVITE_MESSAGE, }
+    ),
+    "found sub confirm link in html invite message!"
+);
+ok(
+    $fm->can_find_sub_confirm_link(
+        { -str => $DADA::Config::CONFIRMATION_MESSAGE, }
+    ),
+    "found sub confirm link in sub confirm message!"
+);
+
+ok( $fm->can_find_sub_confirm_link( { -str => 'nothin', } ) == 0,
+    "did not find it in random string" );
+
+#diag $fm->subscription_confirmationation({-str => 'nothin'});
+ok(
+    $fm->can_find_sub_confirm_link(
+        {
+            -str => $fm->subscription_confirmationation( { -str => 'nothin' } ),
+        }
+    ),
+    "but did find it, once string was run through the ation thing"
+);
+# unsub confirm email 
+ok(
+    $fm->can_find_unsub_confirm_link(
+        { -str => $DADA::Config::UNSUB_CONFIRMATION_MESSAGE, }
+    ),
+    "found unsub confirm link in html mailing list message!"
+);
+ok(
+    $fm->can_find_unsub_confirm_link(
+        { -str => 'nothing', }
+    ) == 0, "but not in a random string"
+);
+ok(
+    $fm->can_find_unsub_confirm_link(
+        { -str => $fm->unsubscription_confirmationation
+		( { -str => 'nothin' } ), }
+    ), "except when checked and placed in, if it's missing"
+);
 
 
 
