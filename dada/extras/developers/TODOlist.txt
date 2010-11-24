@@ -52,7 +52,15 @@ Blah blah blah
 
 * To never receive these requests for this mailing list again, click here: 
 <http://example.com/cgi-bin/dada/mail/cgi/blah/blah/blah/> <- that'll be some new 
-features - subscribe to black list stuff. Ugh! 
+features - subscribe to black list stuff. Ugh!
+Maybe it'll work liek this: 
+	* The request will look for a sub_confirm entry, if not -ERROR
+	* The pin will be just like a sub/unsub confirm entry - if not there, ERROR - 
+	* The error will just be a form to ask to be removed from this list again, 
+	* New confirmation sent, done and done. 
+	* No way to override this, text, whatever. 
+	* Terse copy, right to the point. 
+	
 
 * Privacy Policy: 
 Blah Blah Blah 
