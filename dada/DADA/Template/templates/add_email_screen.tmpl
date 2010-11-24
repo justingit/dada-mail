@@ -4,11 +4,25 @@
 <p>
 Manage Subscribers (<!-- tmpl_var type_title -->) 
 &#187; 
- Add 
+<!-- tmpl_if list_type_isa_list -->
+	Invite
+	<!-- tmpl_if list_settings.enable_mass_subscribe -->
+		/ Add
+	<!-- /tmpl_if -->
+<!-- tmpl_else --> 
+	Add
+<!-- /tmpl_if -->
 &#187; 
  <strong>Verify</strong>
 &#187;
- Subscribe/Invite
+<!-- tmpl_if list_type_isa_list -->
+	Send Invitation
+	<!-- tmpl_if list_settings.enable_mass_subscribe -->
+		/ Subscribe
+	<!-- /tmpl_if -->
+<!-- tmpl_else --> 
+	Subscribe
+<!-- /tmpl_if -->
 </p>
 
 
@@ -515,26 +529,25 @@ Invalid Email Addresses
   <input type="button" class="cautionary" value="<< Re-Enter Email List" onclick="history.back();return false;" />
 
 <!-- tmpl_if type_isa_list --> 
-  <input type="submit" class="processing" name="process" value="Invite Checked Subscribers... >>" />
+  <input type="submit" class="processing" name="process" value="Send Invitation... >>" />
 <!-- /tmpl_if -->
 
 
 
 <!-- tmpl_if type_isa_list --> 
+
 	<!-- tmpl_if list_settings.enable_mass_subscribe --> 
 	
   		<input type="submit" class="processing" name="process"  value="Subscribe Checked Subscribers >>" onclick="return warnAboutMassSubscription(this.form);" />
 
 	<!-- tmpl_else --> 
-	
-	<input type="button" class="disabled" disabled="disabled"  name="process"  value="Subscribe Checked Subscribers (Disabled) >>" />
-	<div class="alert" style="text-align:right">(The, <strong>Subscribe Checked Subscribers</strong> button can be enabled in: <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=list_cp_options">Your List Control Panel -&gt; Options</a>)</div> 
-		
+		<!-- .... --> 
 	<!-- /tmpl_if --> 
 	
 		
 
 <!-- tmpl_else --> 
+
 	<input type="submit" class="processing" name="process"  value="Subscribe Checked Subscribers >>" />
 
 <!-- /tmpl_if -->

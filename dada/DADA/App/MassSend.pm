@@ -851,6 +851,7 @@ sub send_url_email {
 
 sub list_invite { 
 	
+
 	my $self   = shift; 
 	my ($args) = @_; 
 	my $q = $args->{-cgi_obj};
@@ -869,7 +870,7 @@ sub list_invite {
     
     my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
 
-    if($process =~ m/invite/i){ 
+    if($process =~ m/invit/i){ 
 
 		my ($num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued)  = $self->mass_mailout_info($list);
 
@@ -918,6 +919,7 @@ sub list_invite {
 					{
 						-screen => 'list_invite_screen.tmpl', 
 						-vars   => {
+							list_type_isa_list             => 1, # I think this only works with Subscribers at the moment, so no need to do a harder check... 
 							# This is sort of weird, as it default to the "Send a Message" Subject
 							Subject                        => $ls->param('invite_message_subject'), 
 							field_names                    => $field_names, 
@@ -1101,6 +1103,9 @@ sub list_invite {
 	print $q->redirect(-uri => $uri);
 	
     }
+	else { 
+		die "unknown process type? Whazah?!"; 
+	}
 }
 
 

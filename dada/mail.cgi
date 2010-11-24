@@ -1692,7 +1692,6 @@ sub list_invite {
 	   $ms->list_invite(
 			{
 				-cgi_obj     => $q, 
-				-dbi_handle  => $dbi_handle,
 			}
 		); 	
 }
@@ -3606,6 +3605,10 @@ sub add {
                       $lh->can_have_subscriber_fields,
 
                 },
+				-list_settings_vars_param => {
+					-list => $list,
+					-dot_it => 1,
+				},                    
             }
         );
 
@@ -3842,7 +3845,12 @@ sub add_email {
             {
                 -screen => 'add_email_screen.tmpl',
                 -vars   => {
-
+					list_type_isa_list                  => ($type eq 'list')       ? 1 : 0, 
+					list_type_isa_black_list            => ($type eq 'black_list') ? 1 : 0, 
+					list_type_isa_authorized_senders    => ($type eq 'authorized_senders') ? 1 : 0, 
+					list_type_isa_testers               => ($type eq 'testers')    ? 1 : 0, 
+					list_type_isa_white_list            => ($type eq 'white_list') ? 1 : 0, 
+					
                     going_over_quota   => $going_over_quota,
                     field_names        => $field_names,
                     subscribed         => $subscribed,
@@ -3862,6 +3870,10 @@ sub add_email {
 					root_login        => $root_login,  
 
                 },
+				-list_settings_vars_param => {
+					-list => $list,
+					-dot_it => 1,
+				},
             }
         );
         $scrn .= admin_template_footer( -List => $list );
@@ -3869,7 +3881,7 @@ sub add_email {
     }
     else {
 
-        if ( $process =~ /invite/i ) {
+        if ( $process =~ /invit/i ) {
             &list_invite;
             return;
         }

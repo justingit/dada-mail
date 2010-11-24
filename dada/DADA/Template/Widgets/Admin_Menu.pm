@@ -17,24 +17,25 @@ it can be saved
 
 =cut
 
-
-use lib '../';
-
-use DADA::Config qw(!:DEFAULT);  
-
-require Exporter; 
-@ISA = qw(Exporter); 
-@EXPORT = qw(
-make_nav_hashes
-check_function_permissions
-make_admin_menu
-make_feature_menu 
-create_save_set
+use lib qw(
+	../../../
+	../../../DADA/perllib
 );
 
-use strict; 
-use vars qw(@EXPORT);
+use DADA::Config qw(!:DEFAULT);
 
+require Exporter;
+@ISA    = qw(Exporter);
+@EXPORT = qw(
+  make_nav_hashes
+  check_function_permissions
+  make_admin_menu
+  make_feature_menu
+  create_save_set
+);
+
+use strict;
+use vars qw(@EXPORT);
 
 =pod
 
@@ -44,36 +45,34 @@ a pretty private sub, returns 2 references to hashes from saved information and 
 
 =cut
 
+sub make_nav_hashes {
 
-sub make_nav_hashes { 
+    my $list_info_ref = shift;
 
-my $list_info_ref = shift; 
+    my $admin_menu = $list_info_ref->{admin_menu} || create_save_set();
 
-  my $admin_menu  = $list_info_ref->{admin_menu} || create_save_set(); 
-   
-        # simple procedural interface
-   
+    # simple procedural interface
 
-	my %NAVS; 
-	my %SUBNAVS; 
-	if($admin_menu ){
-		my @nav_params = split(';', $admin_menu ); 	
-		foreach my $this_nav(@nav_params){ 
-			if($this_nav =~ /SUBNAV/){ 
-				$this_nav =~ s/SUBNAV\-//g;
-				my ($name, $value) = split('=', $this_nav); 
-				$SUBNAVS{$name} = $value; 
-			}else{ 
-				$this_nav =~ s/NAV\-//g;
-				my ($name, $value) = split('=', $this_nav);
-				$NAVS{$name} = $value; 
-			}
-		}
-		
-	return (\%NAVS, \%SUBNAVS); 	
-	}
+    my %NAVS;
+    my %SUBNAVS;
+    if ($admin_menu) {
+        my @nav_params = split( ';', $admin_menu );
+        foreach my $this_nav (@nav_params) {
+            if ( $this_nav =~ /SUBNAV/ ) {
+                $this_nav =~ s/SUBNAV\-//g;
+                my ( $name, $value ) = split( '=', $this_nav );
+                $SUBNAVS{$name} = $value;
+            }
+            else {
+                $this_nav =~ s/NAV\-//g;
+                my ( $name, $value ) = split( '=', $this_nav );
+                $NAVS{$name} = $value;
+            }
+        }
+
+        return ( \%NAVS, \%SUBNAVS );
+    }
 }
-
 
 =pod
 
@@ -87,47 +86,53 @@ my $list_info_ref = shift;
 
 =cut
 
+sub check_function_permissions {
 
-sub check_function_permissions { 
+    my %args = (
+        -List_Ref => undef,
+        -Function => undef,
+        @_
+    );
+    my $check = 1;
+    my ( $NAVS, $SUBNAVS ) = make_nav_hashes( $args{-List_Ref} );
 
-my %args = ( 
--List_Ref => undef, 
--Function => undef, 
-@_); 
-my $check = 1;
-my ($NAVS, $SUBNAVS) = make_nav_hashes($args{-List_Ref}); 
+    my @Global_Admin_Menu_Copy = @$DADA::Config::ADMIN_MENU;
 
+    foreach my $nav (@Global_Admin_Menu_Copy) {
+        my $nav_entry;
 
-    my @Global_Admin_Menu_Copy = @$DADA::Config::ADMIN_MENU; 
-    
-    foreach my $nav(@Global_Admin_Menu_Copy ){ 
-		my $nav_entry;
-		
-		if($nav->{-Title}){ 
-		
-			if(exists($NAVS->{$nav->{-Title}})){
-				$nav->{-Activated} = $NAVS->{$nav->{-Title}}
-			}
-		
-			if(defined($nav->{-Function}) && defined($args{-Function}) && ($nav->{-Activated} == 0) && ($nav->{-Function} eq $args{-Function})){ 
-				$check = 0; 
-			}
-				foreach my $subnav(@{$nav->{-Submenu}}){ 
-					my $subnav_entry; 
-					if($subnav->{-Title}){ 
-			    	if(exists($SUBNAVS->{$subnav->{-Title}})){$subnav->{-Activated} = $SUBNAVS->{$subnav->{-Title}}}
-				    if($subnav->{-Activated} == 0 && $subnav->{-Function} eq $args{-Function}){ 
-						$check = 0;									
-						}    
-					}	
-				}	
-			}
-		} 
-	
-return $check; 
+        if ( $nav->{-Title} ) {
+
+            if ( exists( $NAVS->{ $nav->{-Title} } ) ) {
+                $nav->{-Activated} = $NAVS->{ $nav->{-Title} };
+            }
+
+            if (   defined( $nav->{-Function} )
+                && defined( $args{-Function} )
+                && ( $nav->{-Activated} == 0 )
+                && ( $nav->{-Function} eq $args{-Function} ) )
+            {
+                $check = 0;
+            }
+            foreach my $subnav ( @{ $nav->{-Submenu} } ) {
+                my $subnav_entry;
+                if ( $subnav->{-Title} ) {
+                    if ( exists( $SUBNAVS->{ $subnav->{-Title} } ) ) {
+                        $subnav->{-Activated} = $SUBNAVS->{ $subnav->{-Title} };
+                    }
+                    if (   $subnav->{-Activated} == 0
+                        && $subnav->{-Function} eq $args{-Function} )
+                    {
+                        $check = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    return $check;
 
 }
-
 
 =pod
 
@@ -145,120 +150,147 @@ this returns an html menu.
 
 =cut
 
+sub make_admin_menu {
 
-sub make_admin_menu { 
+    my $permissions = shift;
+    my $li          = shift;
 
-	my $permissions   = shift; 
-	my $li            = shift; 
-	
+   #---------------------------------------------------------------------------#
 
-#---------------------------------------------------------------------------#
+    my $nav_list_mailouts  = '?';
+    my $nav_total_mailouts = '?';
 
-my $nav_list_mailouts = '?'; 
-my $nav_total_mailouts = '?'; 
+    eval {
+        require DADA::Mail::MailOut;
 
-eval { 
-	require DADA::Mail::MailOut; 
-	
-	my @mailouts  = DADA::Mail::MailOut::current_mailouts({-list => $li->{list}});  
-	$nav_list_mailouts = $#mailouts + 1; 
-	
-	my (
-		$monitor_mailout_report, 
-		$total_mailouts, 
-		$active_mailouts, 
-		$paused_mailouts, 
-		$queued_mailouts,
-		$inactive_mailouts
-		) = DADA::Mail::MailOut::monitor_mailout(
-				{
-					-verbose => 0, 
-					-list    => $li->{list},
-					-action  => 0, 
-				}
-			);
-	$nav_total_mailouts = $total_mailouts; 
-};
-if($@){ 
-	warn "Problems filling out the 'Sending Monitor' admin menu item with interesting bits of information about the mailouts: $@"; 
+        my @mailouts =
+          DADA::Mail::MailOut::current_mailouts( { -list => $li->{list} } );
+        $nav_list_mailouts = $#mailouts + 1;
+
+        my (
+            $monitor_mailout_report, $total_mailouts,
+            $active_mailouts,        $paused_mailouts,
+            $queued_mailouts,        $inactive_mailouts
+          )
+          = DADA::Mail::MailOut::monitor_mailout(
+            {
+                -verbose => 0,
+                -list    => $li->{list},
+                -action  => 0,
+            }
+          );
+        $nav_total_mailouts = $total_mailouts;
+    };
+    if ($@) {
+        warn
+"Problems filling out the 'Sending Monitor' admin menu item with interesting bits of information about the mailouts: $@";
+    }
+
+    require DADA::Template::Widgets;
+
+   #---------------------------------------------------------------------------#
+
+    my $ht_admin_menu = [];
+
+    my ( $NAVS, $SUBNAVS ) = make_nav_hashes($li);
+
+    my $ht_entry = [];
+
+    my @Global_Admin_Menu_Copy = @$DADA::Config::ADMIN_MENU;
+
+    foreach my $nav (@Global_Admin_Menu_Copy) {
+
+        next if !$nav->{-Title};
+
+        # I don't know...
+        if ( exists( $NAVS->{ $nav->{-Title} } ) ) {
+            $nav->{-Activated} = $NAVS->{ $nav->{-Title} };
+        }
+
+        $nav->{-Activated} = 1
+          if ( $permissions eq 'superuser' );
+
+        my $ht_subnav = [];
+
+        foreach my $subnav ( @{ $nav->{-Submenu} } ) {
+
+            next if !$subnav->{-Title};
+
+            #again, what?
+            if ( exists( $SUBNAVS->{ $subnav->{-Title} } ) ) {
+                $subnav->{-Activated} = $SUBNAVS->{ $subnav->{-Title} };
+            }
+
+            $subnav->{-Activated} = 1
+              if ( $permissions eq 'superuser' );
+            if ( $subnav->{-Title} =~ m/Monitor Your/ ) {
+                $subnav->{-Title} = DADA::Template::Widgets::screen(
+                    {
+                        -data => \$subnav->{-Title},
+                        -vars => {
+
+                            list_mailouts  => $nav_list_mailouts,
+                            total_mailouts => $nav_total_mailouts,
+
+                        },
+                    }
+                );
+            }
+            elsif ( $subnav->{-Title} =~ m/Invite/ ) {
+                $subnav->{-Title} = DADA::Template::Widgets::screen(
+                    {
+                        -data => \$subnav->{-Title},
+                        -vars => {
+                            'list_settings.enable_mass_subscribe' =>
+                              $li->{enable_mass_subscribe},
+                        },
+                    }
+                );
+            }
+
+            push(
+                @$ht_subnav,
+                {
+                    Activated => $subnav->{-Activated},
+                    Title_URL => $subnav->{-Title_URL},
+                    Title     => $subnav->{-Title},
+                    (
+                        (
+                            exists( $li->{disabled_screen_view} )
+                              && $li->{disabled_screen_view} eq 'hide'
+                        ) ? ( hide_nav => 1, ) : ( hide_nav => 0, )
+                    )
+                }
+            );
+
+        }
+
+        push(
+            @$ht_entry,
+            {
+                Activated => $nav->{-Activated},
+                Title_URL => $nav->{-Title_URL},
+                Title     => $nav->{-Title},
+                SUBNAV    => $ht_subnav,
+                (
+                    (
+                        exists( $li->{disabled_screen_view} )
+                          && $li->{disabled_screen_view} eq 'hide'
+                    ) ? ( hide_nav => 1, ) : ( hide_nav => 0, )
+                )
+            }
+        );
+
+    }
+
+    return DADA::Template::Widgets::screen(
+        {
+            -screen => 'admin_menu_widget.tmpl',
+            -vars   => { NAV => $ht_entry, }
+        }
+    );
+
 }
-
-
-
-require DADA::Template::Widgets;
-
-#---------------------------------------------------------------------------#
-
-
-
-	my $ht_admin_menu = []; 
-	
-	
-	my ($NAVS, $SUBNAVS) = make_nav_hashes($li); 
-	
-	my $ht_entry = []; 
-
-    my @Global_Admin_Menu_Copy = @$DADA::Config::ADMIN_MENU; 
-
-	foreach my $nav(@Global_Admin_Menu_Copy ){ 
-	
-		next if !$nav->{-Title}; 
-		# I don't know...
-		if(exists($NAVS->{$nav->{-Title}})){
-			$nav->{-Activated} = $NAVS->{$nav->{-Title}}
-		}
-	
-		$nav->{-Activated} = 1 
-			if($permissions eq 'superuser');
-		
-		my $ht_subnav = []; 
-		
-		foreach my $subnav(@{$nav->{-Submenu}}){ 
-		
-			next if ! $subnav->{-Title};
-		
-			#again, what?
-			if(exists($SUBNAVS->{$subnav->{-Title}})){
-				$subnav->{-Activated} = $SUBNAVS->{$subnav->{-Title}}
-			}
-			
-			$subnav->{-Activated} = 1 
-				if($permissions eq 'superuser');
-			if($subnav->{-Title} =~ m/Monitor Your/){ 
-				$subnav->{-Title} = DADA::Template::Widgets::screen(
-										{ 
-											-data => \$subnav->{-Title},
-											-vars => { 
-												
-													list_mailouts  => $nav_list_mailouts, 
-													total_mailouts => $nav_total_mailouts,
-												
-												  }, 
-										}
-									); 
-			}
-			
-			 
-			push(@$ht_subnav, {Activated => $subnav->{-Activated}, Title_URL => $subnav->{-Title_URL}, Title => $subnav->{-Title}, ((exists($li->{disabled_screen_view}) && $li->{disabled_screen_view} eq 'hide') ? (hide_nav => 1,) : (hide_nav => 0,)) }); 
-
-		}	
-	
-		push(@$ht_entry, {Activated => $nav->{-Activated}, Title_URL => $nav->{-Title_URL}, Title => $nav->{-Title}, SUBNAV => $ht_subnav, ((exists($li->{disabled_screen_view}) && $li->{disabled_screen_view} eq 'hide') ? (hide_nav => 1,) : (hide_nav => 0,)) }); 
-		
-	}
-	
-
-	return DADA::Template::Widgets::screen(
-		   		{
-					-screen => 'admin_menu_widget.tmpl', 
-					-vars   => {
-						NAV => $ht_entry,
-					}
-				}
-			); 
-
-}
-
 
 =pod
 
@@ -270,68 +302,75 @@ creates a form to allow you to turn on and off features of the admin menu
 
 =cut
 
+sub make_feature_menu {
 
-sub make_feature_menu { 
+    my $list_info_ref = shift;
 
-	my $list_info_ref = shift; 
-	
-	my $NAVS = {}; 
-	my $SUBNAVS = {}; 
-	
-	($NAVS, $SUBNAVS) = make_nav_hashes($list_info_ref); 
-	
-	my $menu; 
-	#walk through the complex data structures..
-	
-	my @Global_Admin_Menu_Copy = @$DADA::Config::ADMIN_MENU; 
+    my $NAVS    = {};
+    my $SUBNAVS = {};
 
-	foreach my $nav(@Global_Admin_Menu_Copy ){ 
-		my $nav_entry;
-		if($nav->{-Title}){ 
-			
-			#turn off.
-			
-			
-            # *really* Don't understand this line. 
-            # I don't understand this line. 
-			if(exists($NAVS->{$nav->{-Title}})){
-				$nav->{-Activated} = $NAVS->{$nav->{-Title}}
-			}
-			
-			
-			if($nav->{-Activated} == 1){ 
-					$nav_entry = "<p><input type=\"checkbox\" name='NAV-$nav->{-Title}' checked=\"checked\" value=\"1\" /><strong>$nav->{-Title}</strong>\n";			
-				$menu .= $nav_entry;
-			}else{
-				$nav_entry = "<p><input type=\"checkbox\" name='NAV-$nav->{-Title}' value=\"1\" /><strong>$nav->{-Title}</strong>\n";	
-				$menu .= $nav_entry;		
-		
-			}	
-				foreach my $subnav(@{$nav->{-Submenu}}){ 
-					my $subnav_entry; 
-					if($subnav->{-Title}){ 
-					
-					#turn off.
-			     	if(exists($SUBNAVS->{$subnav->{-Title}})){$subnav->{-Activated} = $SUBNAVS->{$subnav->{-Title}}}
-		
-						if($subnav->{-Activated} == 1){ 
-							$subnav_entry = "<br />&nbsp;<input type=\"checkbox\" name='SUBNAV-$subnav->{-Title}' checked=\"checked\" value=\"1\" />$subnav->{-Title}\n";
-						}else{
-							$subnav_entry = "<br />&nbsp;<input type=\"checkbox\" name='SUBNAV-$subnav->{-Title}' value=\"1\" />$subnav->{-Title}\n";
-						}    
-						    $menu .= $subnav_entry;	
-					}	
-				}	
-			$menu .= '</p><hr />';	
-			}else{
-				$nav_entry = "<p><input type=\"checkbox\" name='NAV-$nav->{-Title}' value=\"1\" /><strong>$nav->{-Title}</strong> five\n";	
-				$menu .= $nav_entry;
-			}
-		} 
-	
-	return $menu;
+    ( $NAVS, $SUBNAVS ) = make_nav_hashes($list_info_ref);
+
+    my $menu;
+
+    #walk through the complex data structures..
+
+    my @Global_Admin_Menu_Copy = @$DADA::Config::ADMIN_MENU;
+
+    foreach my $nav (@Global_Admin_Menu_Copy) {
+        my $nav_entry;
+        if ( $nav->{-Title} ) {
+
+            #turn off.
+
+            # *really* Don't understand this line.
+            # I don't understand this line.
+            if ( exists( $NAVS->{ $nav->{-Title} } ) ) {
+                $nav->{-Activated} = $NAVS->{ $nav->{-Title} };
+            }
+
+            if ( $nav->{-Activated} == 1 ) {
+                $nav_entry =
+"<p><input type=\"checkbox\" name='NAV-$nav->{-Title}' checked=\"checked\" value=\"1\" /><strong>$nav->{-Title}</strong>\n";
+                $menu .= $nav_entry;
+            }
+            else {
+                $nav_entry =
+"<p><input type=\"checkbox\" name='NAV-$nav->{-Title}' value=\"1\" /><strong>$nav->{-Title}</strong>\n";
+                $menu .= $nav_entry;
+
+            }
+            foreach my $subnav ( @{ $nav->{-Submenu} } ) {
+                my $subnav_entry;
+                if ( $subnav->{-Title} ) {
+
+                    #turn off.
+                    if ( exists( $SUBNAVS->{ $subnav->{-Title} } ) ) {
+                        $subnav->{-Activated} = $SUBNAVS->{ $subnav->{-Title} };
+                    }
+
+                    if ( $subnav->{-Activated} == 1 ) {
+                        $subnav_entry =
+"<br />&nbsp;<input type=\"checkbox\" name='SUBNAV-$subnav->{-Title}' checked=\"checked\" value=\"1\" />$subnav->{-Title}\n";
+                    }
+                    else {
+                        $subnav_entry =
+"<br />&nbsp;<input type=\"checkbox\" name='SUBNAV-$subnav->{-Title}' value=\"1\" />$subnav->{-Title}\n";
+                    }
+                    $menu .= $subnav_entry;
+                }
+            }
+            $menu .= '</p><hr />';
+        }
+        else {
+            $nav_entry =
+"<p><input type=\"checkbox\" name='NAV-$nav->{-Title}' value=\"1\" /><strong>$nav->{-Title}</strong> five\n";
+            $menu .= $nav_entry;
+        }
+    }
+
+    return $menu;
 }
-
 
 =pod
 
@@ -348,40 +387,41 @@ take mi word for it.
 
 
 =cut
-			
-sub create_save_set { 
-	 
-	my $param_hashref = shift || undef; 
-	my $save_set;
-	my $prev_info = 1; 
-	
-	if(!defined($param_hashref)){ 
-		$prev_info = 0; 
-	}
-	
-	my @Global_Admin_Menu_Copy = @$DADA::Config::ADMIN_MENU; 
 
-	foreach my $nav(@Global_Admin_Menu_Copy ){
-			my $default = 0;
-			if($prev_info == 0){ 
-			    $default = $nav->{-Activated};
-			}
-			my $save_nav = $param_hashref->{"NAV-$nav->{-Title}"} || $default; #$nav->{-Activated};
-			$save_set .= "NAV-$nav->{-Title}\=$save_nav;";			
-			foreach my $subnav(@{$nav->{-Submenu}}){ 
-				my $s_default = 0; 
-				if($prev_info == 0){ 
-				    $s_default = $subnav->{-Activated};
-				}
-				my $save_subnav = $param_hashref->{"SUBNAV-$subnav->{-Title}"} || $s_default; #|| $subnav->{-Activated};
-			       $save_set .= "SUBNAV-$subnav->{-Title}\=$save_subnav;";
-			}	 		   
-	}	
-	return $save_set; 
+sub create_save_set {
+
+    my $param_hashref = shift || undef;
+    my $save_set;
+    my $prev_info = 1;
+
+    if ( !defined($param_hashref) ) {
+        $prev_info = 0;
+    }
+
+    my @Global_Admin_Menu_Copy = @$DADA::Config::ADMIN_MENU;
+
+    foreach my $nav (@Global_Admin_Menu_Copy) {
+        my $default = 0;
+        if ( $prev_info == 0 ) {
+            $default = $nav->{-Activated};
+        }
+        my $save_nav = $param_hashref->{"NAV-$nav->{-Title}"}
+          || $default;    #$nav->{-Activated};
+        $save_set .= "NAV-$nav->{-Title}\=$save_nav;";
+        foreach my $subnav ( @{ $nav->{-Submenu} } ) {
+            my $s_default = 0;
+            if ( $prev_info == 0 ) {
+                $s_default = $subnav->{-Activated};
+            }
+            my $save_subnav = $param_hashref->{"SUBNAV-$subnav->{-Title}"}
+              || $s_default;    #|| $subnav->{-Activated};
+            $save_set .= "SUBNAV-$subnav->{-Title}\=$save_subnav;";
+        }
+    }
+    return $save_set;
 }
 
 1;
-
 
 =pod
 

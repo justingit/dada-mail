@@ -12,11 +12,25 @@
 
 <p>
  Manage Subscribers (Subscribers) 
- Add 
+<!-- tmpl_if list_type_isa_list -->
+	Invite
+	<!-- tmpl_if list_settings.enable_mass_subscribe -->
+		/ Add
+	<!-- /tmpl_if -->
+<!-- tmpl_else --> 
+	Add
+<!-- /tmpl_if -->
 &#187;
  Verify 
 &#187;
- Subscribe/<strong>Invite</strong>
+<!-- tmpl_if list_type_isa_list -->
+	<strong>Send Invitation</strong>
+	<!-- tmpl_if list_settings.enable_mass_subscribe -->
+		/ Subscribe
+	<!-- /tmpl_if -->
+<!-- tmpl_else --> 
+	Subscribe
+<!-- /tmpl_if -->
 </p>
 
 
