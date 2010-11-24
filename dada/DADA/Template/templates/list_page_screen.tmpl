@@ -19,35 +19,41 @@
 
 <h2>List Information:</h2>
 
- <!-- tmpl_var list_settings.info -->
-
 <ul> 
-
-
     <!-- tmpl_if list_settings.group_list --> 
         <li>
-         This list is a group discussion list
+         <p>
+			This list is a group discussion list
          
             <!-- tmpl_if list_settings.enable_moderation --> 
                 (moderated)
             <!-- tmpl_else -->
                 (unmoderated)
             <!-- /tmpl_if --> 
-            
+         </p>
         </li>
+
+		<li>
+			<!-- this is strange, as the bare link will be wrapped with a HTML link --> 
+			<p>Start a new thread, email: (<!-- tmpl_var list_settings.discussion_pop_email -->)</p>
+		</li>
+			
     <!-- tmpl_else --> 
         
         <li>
-         This list is an announce-only list.
-        </li>
+         <p>
+			This list is an announce-only list.
+         </p>
+		</li>
 
 
      <!-- /tmpl_if --> 
-
-
-    
-
 </ul>
+
+
+ <!-- tmpl_var list_settings.info -->
+
+
 
 
 </div> 
