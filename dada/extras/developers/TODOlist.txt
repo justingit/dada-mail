@@ -10,6 +10,8 @@ Key:
 [*] Naw...
 [?] Someday
 
+[x] Closed-Loop Opt-in list setting is called, "enable_closed_loop_opt_in" and if set to one, is enabled. Where did I pick that name? 
+May be time for a change - perhaps, "enable_closed_loop_opt_in"? 
 
 [ ] Going to change the, "Add" stuff in the list control panel to, "Invite", make control panel subscriptions even more buried, 
 probably with a Config.pm-level variable to turn on/off even the ability to Subscribe outright in the list control panel. 

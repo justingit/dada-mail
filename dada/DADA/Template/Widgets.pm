@@ -161,6 +161,7 @@ HELP_LINKS_URL                => $DADA::Config::HELP_LINKS_URL,
 PROFILE_ENABLED               => $DADA::Config::PROFILE_OPTIONS->{enabled}, 
 
 MULTIPLE_LIST_SENDING         => $DADA::Config::MULTIPLE_LIST_SENDING, 
+ENFORCE_CLOSED_LOOP_OPT_IN    => $DADA::Config::ENFORCE_CLOSED_LOOP_OPT_IN, 
 
 (
 	($DADA::Config::MULTIPLE_LIST_SENDING_TYPE eq 'merged') ? 

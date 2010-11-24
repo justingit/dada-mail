@@ -1995,7 +1995,7 @@ sub list_options {
     my $hide_list                          =   $q->param("hide_list")                       || 0;
     my $get_sub_notice                     =   $q->param("get_sub_notice")                  || 0;  
     my $get_unsub_notice                   =   $q->param("get_unsub_notice")                || 0;  
-    my $no_confirm_email                   =   $q->param("no_confirm_email")                || 0;  
+    my $enable_closed_loop_opt_in                   =   $q->param("enable_closed_loop_opt_in")                || 0;  
 	my $skip_sub_confirm_if_logged_in          =   $q->param('skip_sub_confirm_if_logged_in')       || 0; 
     my $unsub_confirm_email                =   $q->param("unsub_confirm_email")             || 0; 
 	my $skip_unsub_confirm_if_logged_in    =   $q->param('skip_unsub_confirm_if_logged_in') || 0; 
@@ -2120,7 +2120,7 @@ sub list_options {
             closed_list                        => $closed_list,
             get_sub_notice                     => $get_sub_notice, 
             get_unsub_notice                   => $get_unsub_notice, 
-            no_confirm_email                   => $no_confirm_email,
+            enable_closed_loop_opt_in                   => $enable_closed_loop_opt_in,
 			skip_sub_confirm_if_logged_in          => $skip_sub_confirm_if_logged_in, 
             unsub_confirm_email                => $unsub_confirm_email,
 			skip_unsub_confirm_if_logged_in    => $skip_unsub_confirm_if_logged_in, 

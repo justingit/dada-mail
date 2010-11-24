@@ -188,7 +188,7 @@ sub subscribe {
 			}
 		}	
 		if(
-			$li->{no_confirm_email}    == 0 || 
+			$li->{enable_closed_loop_opt_in}    == 0 || 
 			$skip_sub_confirm_if_logged_in == 1
 		){    
 	

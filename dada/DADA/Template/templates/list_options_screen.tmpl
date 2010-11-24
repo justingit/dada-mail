@@ -98,15 +98,29 @@
 </legend>
 
 
+<!-- tmpl_if list_settings.enable_closed_loop_opt_in --> 
+	<p class="positive">
+		Subscription Confirmation Emails (Closed-Loop Opt-In) is enabled. 
+	</p>
+<!-- tmpl_else --> 
+<p class="error">
+	Subscription Confirmation Emails (Closed-Loop Opt-In) is disabled! 
+</p>
+<!-- /tmpl_if --> 
+
  <table cellspacing="5" width="100%">
 	
+<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN -->
+
+<!-- tmpl_else --> 
+
   <tr>
    <td>
-    <input type="checkbox" name="no_confirm_email" id="no_confirm_email" value="1" <!-- tmpl_if list_settings.no_confirm_email -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="enable_closed_loop_opt_in" id="enable_closed_loop_opt_in" value="1" <!-- tmpl_if list_settings.enable_closed_loop_opt_in -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td width="99%">
     <p>
-     <label for="no_confirm_email">
+     <label for="enable_closed_loop_opt_in">
       Send Subscription Confirmation Emails (Closed-Loop Opt-In)
      </label>
      <br /> 
@@ -118,7 +132,9 @@
     </p>
    </td>
   </tr>
-  
+
+<!-- /tmpl_if --> 
+ 
   
 
 	
