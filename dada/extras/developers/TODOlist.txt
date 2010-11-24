@@ -10,6 +10,14 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+[ ] Going to change the, "Add" stuff in the list control panel to, "Invite", make control panel subscriptions even more buried, 
+probably with a Config.pm-level variable to turn on/off even the ability to Subscribe outright in the list control panel. 
+	[ ] probably a good idea to make the list invitation verbiage a lot nicer and more social-network-ey
+	[ ] Also, see if I can't make profiles a little nicer, and linked into as many things as possible
+		[ ] While I'm at it, get discussion list stuff less on-the-fringe, and more on top of stuff
+			for example, there's no mention of the List Email in the, "You are now subscribed!" Message, etc
+
 [ ] A neat SMTP test tool, 
 	http://jetmore.org/john/code/swaks/
 	
