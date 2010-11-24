@@ -653,7 +653,7 @@ sub list_page {
 			#allowed_to_view_archives  => $allowed_to_view_archives,  
         },
         
-        -webify_and_santize_these => [qw(list_settings.list_owner_email list_settings.info list_settings.privacy_policy )], 
+        -webify_and_santize_these => [qw(list_settings.discussion_pop_email list_settings.list_owner_email list_settings.info list_settings.privacy_policy )], 
         
         }
     ); 
