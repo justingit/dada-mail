@@ -193,7 +193,7 @@ sub send_confirmation_message {
 	my $confirmation_msg = $li->{confirmation_message}; 
 	require DADA::App::FormatMessages; 
 	my $fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
-	   $confirmation_msg = $fm->subscription_confirmationation({-data => $confirmation_msg}); 
+	   $confirmation_msg = $fm->subscription_confirmationation({-str => $confirmation_msg}); 
 	
 	send_generic_email(
 		{
@@ -370,7 +370,7 @@ sub send_unsub_confirmation_message {
 	my $confirmation_msg = $li->{unsub_confirmation_message};
 	require DADA::App::FormatMessages; 
 	my $fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
-	   $confirmation_msg = $fm->unsubscription_confirmationation({-data => $confirmation_msg}); 
+	   $confirmation_msg = $fm->unsubscription_confirmationation({-str => $confirmation_msg}); 
 	
 	send_generic_email(
 		{	
