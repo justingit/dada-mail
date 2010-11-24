@@ -452,9 +452,9 @@ sub _format_text {
 						);						
 					}
 					else { 						
-						$content = $self->_unsubscriptionation(
+						$content = $self->unsubscriptionation(
 							{
-								-data => $content, 
+								-str => $content, 
 								-type => $entity->head->mime_type, 
 							}
 						);				
@@ -1532,22 +1532,22 @@ sub can_find_unsub_link {
 
 }
 
-sub _unsubscriptionation {
+sub unsubscriptionation {
 
     my $self = shift;
 
     my ($args) = @_;
 
-    die "no data! $!" if !exists( $args->{-data} );
-    die "no type! $!" if !exists( $args->{-type} );
+    die "no -str! $!" if !exists( $args->{-str} );
+    die "no -type! $!" if !exists( $args->{-type} );
 
-    if ( $self->can_find_unsub_link( { -str => $args->{-data} } ) ) {
+    if ( $self->can_find_unsub_link( { -str => $args->{-str} } ) ) {
         # ...
     }
     else {
 
         if ( $args->{-type} eq 'text/html' ) {
-            $args->{-data} .= '
+            $args->{-str} .= '
 <p>
 Unsubscribe:
 </p>
@@ -1560,7 +1560,7 @@ Unsubscribe:
 ';
         }
         else {
-            $args->{-data} .= '
+            $args->{-str} .= '
 			
 Unsubscribe: 
 <!-- tmpl_var list_unsubscribe_link -->
@@ -1569,7 +1569,7 @@ Unsubscribe:
         }
     }
 
-    return $args->{-data};
+    return $args->{-str};
 }
 
 
