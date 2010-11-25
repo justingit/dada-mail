@@ -918,7 +918,7 @@ sub list_invite {
         $scrn .=   DADA::Template::Widgets::screen(
 					{
 						-screen => 'list_invite_screen.tmpl', 
-						-vars   => {
+						-vars   => {							
 							list_type_isa_list             => 1, # I think this only works with Subscribers at the moment, so no need to do a harder check... 
 							# This is sort of weird, as it default to the "Send a Message" Subject
 							Subject                        => $ls->param('invite_message_subject'), 

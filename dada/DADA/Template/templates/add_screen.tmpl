@@ -34,20 +34,20 @@
 
 <!-- tmpl_if list_type_isa_list -->
 	
-	<!-- tmpl_if use_subscription_quota -->
+	<!-- tmpl_if list_settings.use_subscription_quota -->
 		
 		<!-- tmpl_if subscription_quota_reached -->
 			
 			<p class="error">
 			 Warning! You are at or above the number of 
-			 subscribers allowed (<!-- tmpl_var subscription_quota -->)! 
+			 subscribers allowed (<!-- tmpl_var list_settings.subscription_quota -->)! 
 			 You cannot add anymore subscribers.
 			</p>
 			
 		<!--tmpl_else-->
 			
 			<p class="error">
-			 You have a limit of <!-- tmpl_var subscription_quota -->
+			 You have a limit of <!-- tmpl_var list_settings.subscription_quota -->
 			 subscriber(s) maximum allowed onto this list. You currently have 
 			 <!-- tmpl_var num_subscribers --> subscriber(s).
 			</p>
@@ -76,7 +76,7 @@
 		Add
 	<!-- /tmpl_if -->
 	
-	 Just One Subscriber
+	 Just One Address
 	</legend>
 <div id ="add_one" style="display:none"> 
 	
@@ -100,7 +100,7 @@
 	<!-- tmpl_loop fields --> 
 	    <p>
 	     <label for="<!-- tmpl_var name escape=HTML -->" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
-	      <!-- tmpl_var name escape=HTML -->: 
+	      <!-- tmpl_var label escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->): 
 	     </label>
 	    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
 	    </p>
@@ -109,7 +109,7 @@
 
 	 <div class="buttonfloat">
 	  <input type="reset"  class="cautionary" value="Clear Changes" />
-	  <input type="submit" class="processing" value="Verify Subscriber..." />
+	  <input type="submit" class="processing" value="Verify Address..." />
 	 </div>
 	 <div class="floatclear"></div>
 
@@ -132,7 +132,7 @@
 			Add
 		<!-- /tmpl_if -->
 		
-		 a Bunch of Subscribers</legend>
+		 a Bunch of Addresses</legend>
 
     <p>
       <label for="new_emails">
@@ -164,7 +164,7 @@
 
  <div class="buttonfloat">
   <input type="reset"  class="cautionary" value="Clear Changes" />
-  <input type="submit" class="processing" value="Verify Subscribers..." />
+  <input type="submit" class="processing" value="Verify Addresses..." />
  </div>
  <div class="floatclear"></div>
 </form>
@@ -260,7 +260,7 @@
 	
  <div class="buttonfloat">
   <input type="reset"  class="cautionary" value="Clear Changes" />
-  <input type="submit" class="processing" value="Verify Subscribers..." />
+  <input type="submit" class="processing" value="Verify Addresses..." />
  </div>
  <div class="floatclear"></div>
 </form>

@@ -3418,23 +3418,18 @@ sub add {
     $list = $admin_list;
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
-    my $fields = [];
-    foreach my $field ( @{ $lh->subscriber_fields() } ) {
-        push ( @$fields, { name => $field } );
-    }
-
 
     if ( $q->param('process') ) {
 
         if ( $q->param('method') eq 'via_add_one' ) {
 
-			# We're going to fake the, "via_textarea", buy just make a CSV file, and plunking it
-			# in the, "new_emails" CGI param. (Hehehe);
+# We're going to fake the, "via_textarea", buy just make a CSV file, and plunking it
+# in the, "new_emails" CGI param. (Hehehe);
 
             my @columns = ();
-            push ( @columns, xss_filter( $q->param('email') ) );
+            push( @columns, xss_filter( $q->param('email') ) );
             foreach ( @{ $lh->subscriber_fields() } ) {
-                push ( @columns, xss_filter( $q->param($_) ) );
+                push( @columns, xss_filter( $q->param($_) ) );
             }
             require Text::CSV;
 
@@ -3467,7 +3462,8 @@ sub add {
         }
 
         # DEV: This whole building of query string is much too messy.
-        my $qs = '&type='
+        my $qs =
+            '&type='
           . $q->param('type')
           . '&new_email_file='
           . $q->param('new_email_file');
@@ -3479,11 +3475,11 @@ sub add {
                   . $q->param('rand_string') . '-'
                   . 'new_emails.txt' );
 
-
             open( OUTFILE, '>:encoding(UTF-8)', $outfile )
               or die "can't write to " . $outfile . ": $!";
+
             # DEV: TODO encoding?
-			print OUTFILE $q->param('new_emails');
+            print OUTFILE $q->param('new_emails');
             close(OUTFILE);
             chmod( 0666, $outfile );
 
@@ -3543,16 +3539,30 @@ sub add {
         my $rand_string = generate_rand_string();
 
         my $fields = [];
+
+        # DEV: This is repeated quite a bit...
+        require DADA::ProfileFieldsManager;
+        my $pfm         = DADA::ProfileFieldsManager->new;
+        my $fields_attr = $pfm->get_all_field_attributes;
         foreach my $field ( @{ $lh->subscriber_fields() } ) {
-            push ( @$fields, { name => $field } );
+            push(
+                @$fields,
+                {
+                    name  => $field,
+                    label => $fields_attr->{$field}->{label},
+                }
+            );
         }
 
         my $scrn = (
             admin_template_header(
-                -Title       => "Add",
-                -List        => $list,
-                -Root_Login  => $root_login,
-                -Form        => 0
+
+                -Title => ( $li->{enable_mass_subscribe} == 1 )
+                ? "Your Subscribers - Invite/Add"
+                : "Your Subscribers - Invite",
+                -List       => $list,
+                -Root_Login => $root_login,
+                -Form       => 0
             )
         );
 
@@ -3561,12 +3571,8 @@ sub add {
             {
                 -screen => 'add_screen.tmpl',
                 -vars   => {
-
-                    screen => 'add',
-                    title  => 'Manage Subscribers -> Add',
-
-                    subscription_quota         => $li->{subscription_quota},
-                    use_subscription_quota     => $li->{use_subscription_quota},
+					screen                     => 'add', 
+					title                      => 'Invite/Add',
                     subscription_quota_reached => $subscription_quota_reached,
                     num_subscribers            => $num_subscribers,
 
@@ -3585,11 +3591,6 @@ sub add {
 
                     rand_string => $rand_string,
 
-                    enable_white_list => $li->{enable_white_list},
-
-                    enable_authorized_sending =>
-                      $li->{enable_authorized_sending},
-
                     list_subscribers_num =>
                       $lh->num_subscribers( -Type => 'list' ),
                     black_list_subscribers_num =>
@@ -3605,18 +3606,19 @@ sub add {
                       $lh->can_have_subscriber_fields,
 
                 },
-				-list_settings_vars_param => {
-					-list => $list,
-					-dot_it => 1,
-				},                    
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
             }
         );
 
-        $scrn .=  admin_template_footer( -List => $list ) ;
-        e_print($scrn); 
+        $scrn .= admin_template_footer( -List => $list );
+        e_print($scrn);
     }
 
 }
+
 
 sub check_status {
 
@@ -3781,12 +3783,12 @@ sub add_email {
     my $li = $ls->get;
 	
 	require DADA::ProfileFieldsManager; 
-	my $dfm_obj =  DADA::ProfileFieldsManager->new; 
+	my $pfm =  DADA::ProfileFieldsManager->new; 
 	
     my $lh = DADA::MailingList::Subscribers->new( 
 		{ 
 			-list     => $list,
-			-dpfm_obj => $dfm_obj,
+			-dpfm_obj => $pfm,
 		 } 
 	);
     my $subscriber_fields = $lh->subscriber_fields;
@@ -3836,7 +3838,8 @@ sub add_email {
 		
 		my $scrn = ''; 
         $scrn .= admin_template_header(
-            -Title      => "Verify Additions",
+	
+			-Title       => ($li->{enable_mass_subscribe} == 1) ? "Your Subscribers - Verify Invitations/Additions" : "Your Subscribers - Verify Invitations",
             -List       => $list,
             -Root_Login => $root_login,
         );
@@ -3850,7 +3853,6 @@ sub add_email {
 					list_type_isa_authorized_senders    => ($type eq 'authorized_senders') ? 1 : 0, 
 					list_type_isa_testers               => ($type eq 'testers')    ? 1 : 0, 
 					list_type_isa_white_list            => ($type eq 'white_list') ? 1 : 0, 
-					
                     going_over_quota   => $going_over_quota,
                     field_names        => $field_names,
                     subscribed         => $subscribed,
@@ -3858,15 +3860,8 @@ sub add_email {
                     black_listed       => $black_listed,
                     not_white_listed   => $not_white_listed,
                     invalid            => $invalid,
-                    subscription_quota => $li->{subscription_quota},
-                    black_list         => $li->{black_list},
-                    allow_admin_to_subscribe_blacklisted =>
-                      $li->{allow_admin_to_subscribe_blacklisted},
-                    enable_white_list => $li->{enable_white_list},
-                    type_isa_list     => ( $type eq 'list' ) ? 1 : 0,
                     type              => $type,
                     type_title        => $type_title,
-					'list_settings.enable_mass_subscribe'  => $li->{enable_mass_subscribe},
 					root_login        => $root_login,  
 
                 },

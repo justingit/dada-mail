@@ -273,7 +273,7 @@
 				    <td>
 				     <p>
 				      <label for="add_unsubs_to_black_list">
-				       Move Unsubscribed Subscribers Automatically to the Black List 
+				       Move Addresses to the Black List after they are Removed/Unsubscribed.
 				      </label>
 				     </p>
 				    </td>
@@ -287,27 +287,35 @@
 				    <td>
 				     <p>
 				      <label for="allow_blacklisted_to_subscribe">
-				       Continue to Allow Subscriptions From Subscribers of Black Listed Addresses
+				       Continue to Allow Black Listed Addresses to Subscribe Themselves
 				      </label>
 				     </p>
 				    </td>
 				   </tr>
-				   <tr>
-				    <td>
-				     <p>
-				      <input type="checkbox" name="allow_admin_to_subscribe_blacklisted" id="allow_admin_to_subscribe_blacklisted" value="1" <!-- tmpl_if allow_admin_to_subscribe_blacklisted -->checked="checked"<!--/tmpl_if--> />
-				     </p>
-				    </td>
-				    <td>
-				     <p>
-				      <label for="allow_admin_to_subscribe_blacklisted">
-				       Continue to Allow Subscriptions in the List Control Panel of Black Listed Addresses 
-				      </label>
-					  <br />
-					  Black Listed Addresses will just need to be manually, checked/selected to be Subscribed.  
-				     </p>
-				   </td>
-				  </tr>
+
+				<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN --> 
+					<!-- ... --> 
+				<!-- tmpl_else --> 
+				
+					   <tr>
+					    <td>
+					     <p>
+					      <input type="checkbox" name="allow_admin_to_subscribe_blacklisted" id="allow_admin_to_subscribe_blacklisted" value="1" <!-- tmpl_if allow_admin_to_subscribe_blacklisted -->checked="checked"<!--/tmpl_if--> />
+					     </p>
+					    </td>
+					    <td>
+					     <p>
+					      <label for="allow_admin_to_subscribe_blacklisted">
+					       Continue to Allow Black Listed Addresses to be Invited/Subscribed Via The List Control Panel. 
+					      </label>
+						  <br />
+						  Black Listed Addresses will just need to be manually, checked/selected to be Invited/Subscribed.  
+					     </p>
+					   </td>
+					  </tr>
+				
+				<!-- /tmpl_if --> 
+				
 				</table> 
 		    </td>
 		   </tr>

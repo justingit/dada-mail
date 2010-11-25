@@ -91,130 +91,154 @@ sub get {
 
 
 
-sub post_process_get { 
+sub post_process_get {
 
-	my $self    = shift; 
-	my $ls      = shift; 
-	my $args    = shift; 
-		
-	carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! List " . $self->{function} . " db empty!  List setting DB Possibly corrupted!"
-		unless keys %$ls; 
-		
-	carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! no listshortname saved in list " . $self->{function} . " db! List " . $self->{function} . " DB Possibly corrupted!" 
-		if ! $ls->{list};
-	
-	carp "listshortname in db, '" . $self->{name} . "' does not match saved list shortname: '" . $ls->{list} . "'"
-		if $self->{name} ne $ls->{list};
-		
+    my $self = shift;
+    my $li   = shift;
+    my $args = shift;
 
-	if($args->{-Format} ne 'unmunged'){ 
-	   $ls->{charset_value}  = $self->_munge_charset(        $ls);
-	   $ls                   = $self->_munge_for_deprecated($ls); 	
-	
-        
-       if(!exists($ls->{list_info})){ 
-            $ls->{list_info} =  $ls->{info};
-       }
+    carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! List "
+      . $self->{function}
+      . " db empty!  List setting DB Possibly corrupted!"
+      unless keys %$li;
 
+    carp
+"$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! no listshortname saved in list "
+      . $self->{function}
+      . " db! List "
+      . $self->{function}
+      . " DB Possibly corrupted!"
+      if !$li->{list};
 
+    carp "listshortname in db, '"
+      . $self->{name}
+      . "' does not match saved list shortname: '"
+      . $li->{list} . "'"
+      if $self->{name} ne $li->{list};
 
-	   # sasl_smtp_password
-	   # pop3_password
-	    
-	   # If we don't need to load, DADA::Security::Password, let's not. 
-	   
-	   my $d_password_check = 0; 
-	   foreach ('sasl_smtp_password', 'pop3_password', 'discussion_pop_password'){ 
-	        if(exists($DADA::Config::LIST_SETUP_DEFAULTS{$_}) || exists($DADA::Config::LIST_SETUP_OVERRIDES {$_})){ 
-	            $d_password_check = 1; 
-	            require DADA::Security::Password; 
-	            last; 
-	        }
-	   }
-	   
-	   foreach ('sasl_smtp_password', 'pop3_password', 'discussion_pop_password'){ 
-	        
-	        if($DADA::Config::LIST_SETUP_OVERRIDES{$_}){ 
-	         
-	             $self->{orig}->{LIST_SETUP_OVERRIDES}->{$_} = $DADA::Config::LIST_SETUP_OVERRIDES {$_}; 
-	             $DADA::Config::LIST_SETUP_OVERRIDES {$_} = DADA::Security::Password::cipher_encrypt($ls->{cipher_key},$DADA::Config::LIST_SETUP_OVERRIDES {$_}); 
-	             next;	            
-	        }
-	        
-	        if($DADA::Config::LIST_SETUP_DEFAULTS{$_}){ 
-	            if(!$ls->{$_}){ 
-	                $self->{orig}->{LIST_SETUP_DEFAULTS}->{$_} = $DADA::Config::LIST_SETUP_DEFAULTS {$_}; 
-	                $DADA::Config::LIST_SETUP_DEFAULTS{$_} = DADA::Security::Password::cipher_encrypt($ls->{cipher_key},$DADA::Config::LIST_SETUP_DEFAULTS {$_}); 
-	            }
-	        }
-	   }
-	
-		foreach(keys %$ls){ 
-		    if (exists($ls->{$_})){ 
-	    
-		        if(!defined($ls->{$_})){ 
-	                    
-	                delete($ls->{$_}); 
-	            }
-		    }
-		}
-	
-		foreach(keys %DADA::Config::LIST_SETUP_DEFAULTS){
-	
-			if(! exists($ls->{$_}) || length($ls->{$_}) == 0){ 
-				$ls->{$_} = $DADA::Config::LIST_SETUP_DEFAULTS{$_};
-			}
-		}
+    if ( $args->{-Format} ne 'unmunged' ) {
+        $li->{charset_value} = $self->_munge_charset($li);
+        $li = $self->_munge_for_deprecated($li);
 
-	    $DADA::Config::SUBSCRIPTION_QUOTA ||= undef; 
+        if ( !exists( $li->{list_info} ) ) {
+            $li->{list_info} = $li->{info};
+        }
 
-	    if(
-	        $DADA::Config::SUBSCRIPTION_QUOTA       && 
-	        $ls->{subscription_quota}               && 
-	       ($ls->{subscription_quota}                > $DADA::Config::SUBSCRIPTION_QUOTA)
-	      )
-	    { 
-	        $ls->{subscription_quota} = $DADA::Config::SUBSCRIPTION_QUOTA; 
-	    }
-      
-	    foreach ('sasl_smtp_password', 'pop3_password', 'discussion_pop_password'){ 
-	        if($DADA::Config::LIST_SETUP_OVERRIDES {$_}){ 
-	            $DADA::Config::LIST_SETUP_OVERRIDES {$_} = $self->{orig}->{LIST_SETUP_OVERRIDES}->{$_};
-	        }
-        
-	        if($DADA::Config::LIST_SETUP_DEFAULTS {$_}){ 
-	            $DADA::Config::LIST_SETUP_DEFAULTS {$_} = $self->{orig}->{LIST_SETUP_DEFAULTS}->{$_};
-	        }
-	    }
-	}
+        # sasl_smtp_password
+        # pop3_password
 
+        # If we don't need to load, DADA::Security::Password, let's not.
 
-# And then, there's this: 
-# DEV: Strange, that it's been left out? Did it get removed? 
-foreach(keys %DADA::Config::LIST_SETUP_OVERRIDES){
-	next if $_ eq 'sasl_smtp_password';
-	next if $_ eq 'pop3_password';
-	next if $_ eq 'discussion_pop_password';
-	$ls->{$_} = $DADA::Config::LIST_SETUP_OVERRIDES{$_};
+        my $d_password_check = 0;
+        foreach ( 'sasl_smtp_password', 'pop3_password',
+            'discussion_pop_password' )
+        {
+            if (   exists( $DADA::Config::LIST_SETUP_DEFAULTS{$_} )
+                || exists( $DADA::Config::LIST_SETUP_OVERRIDES{$_} ) )
+            {
+                $d_password_check = 1;
+                require DADA::Security::Password;
+                last;
+            }
+        }
+
+        foreach ( 'sasl_smtp_password', 'pop3_password',
+            'discussion_pop_password' )
+        {
+
+            if ( $DADA::Config::LIST_SETUP_OVERRIDES{$_} ) {
+
+                $self->{orig}->{LIST_SETUP_OVERRIDES}->{$_} =
+                  $DADA::Config::LIST_SETUP_OVERRIDES{$_};
+                $DADA::Config::LIST_SETUP_OVERRIDES{$_} =
+                  DADA::Security::Password::cipher_encrypt( $li->{cipher_key},
+                    $DADA::Config::LIST_SETUP_OVERRIDES{$_} );
+                next;
+            }
+
+            if ( $DADA::Config::LIST_SETUP_DEFAULTS{$_} ) {
+                if ( !$li->{$_} ) {
+                    $self->{orig}->{LIST_SETUP_DEFAULTS}->{$_} =
+                      $DADA::Config::LIST_SETUP_DEFAULTS{$_};
+                    $DADA::Config::LIST_SETUP_DEFAULTS{$_} =
+                      DADA::Security::Password::cipher_encrypt(
+                        $li->{cipher_key},
+                        $DADA::Config::LIST_SETUP_DEFAULTS{$_} );
+                }
+            }
+        }
+
+        foreach ( keys %$li ) {
+            if ( exists( $li->{$_} ) ) {
+
+                if ( !defined( $li->{$_} ) ) {
+
+                    delete( $li->{$_} );
+                }
+            }
+        }
+
+        foreach ( keys %DADA::Config::LIST_SETUP_DEFAULTS ) {
+
+            if ( !exists( $li->{$_} ) || length( $li->{$_} ) == 0 ) {
+                $li->{$_} = $DADA::Config::LIST_SETUP_DEFAULTS{$_};
+            }
+        }
+
+        $DADA::Config::SUBSCRIPTION_QUOTA ||= undef;
+
+        if (   $DADA::Config::SUBSCRIPTION_QUOTA
+            && $li->{subscription_quota}
+            && ( $li->{subscription_quota} > $DADA::Config::SUBSCRIPTION_QUOTA )
+          )
+        {
+            $li->{subscription_quota} = $DADA::Config::SUBSCRIPTION_QUOTA;
+        }
+
+        foreach ( 'sasl_smtp_password', 'pop3_password',
+            'discussion_pop_password' )
+        {
+            if ( $DADA::Config::LIST_SETUP_OVERRIDES{$_} ) {
+                $DADA::Config::LIST_SETUP_OVERRIDES{$_} =
+                  $self->{orig}->{LIST_SETUP_OVERRIDES}->{$_};
+            }
+
+            if ( $DADA::Config::LIST_SETUP_DEFAULTS{$_} ) {
+                $DADA::Config::LIST_SETUP_DEFAULTS{$_} =
+                  $self->{orig}->{LIST_SETUP_DEFAULTS}->{$_};
+            }
+        }
+    }
+
+    # And then, there's this:
+    # DEV: Strange, that it's been left out? Did it get removed?
+    foreach ( keys %DADA::Config::LIST_SETUP_OVERRIDES ) {
+        next if $_ eq 'sasl_smtp_password';
+        next if $_ eq 'pop3_password';
+        next if $_ eq 'discussion_pop_password';
+        $li->{$_} = $DADA::Config::LIST_SETUP_OVERRIDES{$_};
+    }
+
+    # This just causes all sorts of warnings. Uggh.
+    no warnings;
+    if ( !exists( $li->{admin_email} ) ) {
+        $li->{admin_email} = $li->{list_owner_email};
+    }
+    elsif ( $li->{admin_email} eq undef ) {
+        $li->{admin_email} = $li->{list_owner_email};
+    }
+    use warnings;
+
+    if ( $DADA::Config::ENFORCE_CLOSED_LOOP_OPT_IN == 1 ) {
+        $li->{enable_closed_loop_opt_in}            = 1;
+        $li->{enable_mass_subscribe}                = 0;
+		$li->{allow_admin_to_subscribe_blacklisted} = 0; 
+		$li->{skip_sub_confirm_if_logged_in}        = 0; 
+    }
+    return $li;
 
 }
 
-
-
-
-
-# This just causes all sorts of warnings. Uggh. 
-no warnings;	
-	if(!exists($ls->{admin_email})){ 
-		$ls->{admin_email} = $ls->{list_owner_email}; 
-	}elsif($ls->{admin_email} eq undef){ 
-		$ls->{admin_email} = $ls->{list_owner_email}; 		
-	}
-use warnings; 
-
-	return $ls; 
-
-}
 
 
 

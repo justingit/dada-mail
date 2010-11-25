@@ -30,7 +30,7 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
 	
 	<p class="error">
 	 Warning! You cannot subscribe all the addresses that you have submitted,
-	 since you will go over your subscription limit of <!-- tmpl_var subscription_quota -->
+	 since you will go over your subscription limit of <!-- tmpl_var list_settings.subscription_quota -->
 	 subscribers. Please resubmit a smaller number of addresses to subscribe.
 	</p>
 	
@@ -128,7 +128,7 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
 <!--/tmpl_if-->
  
 
-<!-- tmpl_if black_list -->
+<!-- tmpl_if list_settings.black_list -->
 	 
 	<!-- tmpl_if black_listed -->
 
@@ -144,7 +144,17 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
 		  <strong>
 		   black listed.
 		  </strong>
-		  They won't be added unless they are manually checked:
+		
+		<!-- tmpl_if list_settings.allow_admin_to_subscribe_blacklisted --> 
+		  	They will not be added/invited unless they are manually checked:
+		
+		<!-- tmpl_else --> 
+		
+		They will not be added/invited. 
+	  	
+		
+		<!-- /tmpl_if --> 
+		
 		 </p>
 	
 		  
@@ -181,7 +191,11 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
 
     <tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!--/tmpl_if-->>
      <td width="25">
-      <input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" />
+      <!-- tmpl_if list_settings.allow_admin_to_subscribe_blacklisted --> 
+		<input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" />
+		<!-- tmpl_else --> 
+		&nbsp;
+		<!-- /tmpl_if --> 
      </td>
      <td>
       <p>
@@ -225,7 +239,7 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
 
 
 
-<!-- tmpl_if enable_white_list --> 
+<!-- tmpl_if list_settings.enable_white_list --> 
 
 <!-- 
 	<p> White list is enabled.</p> 
@@ -247,7 +261,7 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
 		  <strong>
 		   white list.
 		  </strong>
-		  They won't be added unless they are manually checked:
+		  They will not be added/invited unless they are manually checked:
 		 </p>    
 
 
@@ -354,7 +368,7 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
 	</legend> 
 	 
 	<p>
-	 These addresses are already subscribed to your list. They won't be added again:
+	 These addresses are already subscribed to your list. They will not be added/invited again:
 	</p>
 	
 
@@ -440,7 +454,7 @@ Invalid Email Addresses
  
  
 	<p>
-	 These addresses did not go through validation successfully.
+	 These addresses did not go through validation successfully. They will not be added/invited. 
 	 </p>
 	
 	<div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
@@ -528,13 +542,13 @@ Invalid Email Addresses
 
   <input type="button" class="cautionary" value="<< Re-Enter Email List" onclick="history.back();return false;" />
 
-<!-- tmpl_if type_isa_list --> 
+<!-- tmpl_if list_type_isa_list --> 
   <input type="submit" class="processing" name="process" value="Send Invitation... >>" />
 <!-- /tmpl_if -->
 
 
 
-<!-- tmpl_if type_isa_list --> 
+<!-- tmpl_if list_type_isa_list --> 
 
 	<!-- tmpl_if list_settings.enable_mass_subscribe --> 
 	
