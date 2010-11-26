@@ -233,7 +233,7 @@ sub hook {
 	$bytes_read ||= 0; 
 	eval {require URI::Escape}; 
 	if(!$@){
-		$filename =  URI::Escape::uri_escape($filename, "\200-\377");
+		$filename =  URI::Escape::uri_escape_utf8($filename, "\200-\377");
 	}else{ 
 		warn('no URI::Escape is installed!'); 
 	}
