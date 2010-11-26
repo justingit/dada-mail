@@ -5703,7 +5703,7 @@ sub edit_type {
 		my $scrn = ''; 
 		
         $scrn .= admin_template_header(
-            -Title      => "Email Templates",
+            -Title      => "Email Message Templates",
             -List       => $list,
             -Root_Login => $root_login
         );
