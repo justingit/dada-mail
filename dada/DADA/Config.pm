@@ -576,7 +576,7 @@ The default setting is the online version that we provide - but it is a paid ser
 
 =cut
 
-$HELP_LINKS_URL ||= 'http://dadamailproject.com/pro_dada/4.0.0';
+$HELP_LINKS_URL ||= 'http://dadamailproject.com/pro_dada/4.3.0';
 
 
 =pod
@@ -4968,7 +4968,7 @@ and to say that you've got the freshest tools on the Web.
 
 
 $VERSION = 4.3.0; 
-$VER     = '4.3.0 Beta 1 - 11/16/10';
+$VER     = '4.3.0 Beta 2 - 11/26/10';
 
 
 #
