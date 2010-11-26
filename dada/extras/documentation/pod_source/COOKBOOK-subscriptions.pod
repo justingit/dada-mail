@@ -36,7 +36,6 @@ Once you have the DADA::MailingList::Subscribers object, you can simply use the,
 
  
  # add *one* email address to your list: 
- # add *one* email address to your list: 
  $lh->add_subscriber(
  		{
 			-email => 'user1@example.com', 
