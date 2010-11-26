@@ -3572,11 +3572,10 @@ sub add {
                 -screen => 'add_screen.tmpl',
                 -vars   => {
 					screen                     => 'add', 
-					title                      => 'Invite/Add',
+	                title                      => ( $li->{enable_mass_subscribe} == 1 ) ? "Your Subscribers - Invite/Add" : "Your Subscribers - Invite",
                     subscription_quota_reached => $subscription_quota_reached,
                     num_subscribers            => $num_subscribers,
-
-                    list_type_isa_list => ( $type eq 'list' ) ? 1 : 0,
+                    list_type_isa_list         => ( $type eq 'list' ) ? 1 : 0,
                     list_type_isa_black_list => ( $type eq 'black_list' ) ? 1
                     : 0,
                     list_type_isa_authorized_senders =>
