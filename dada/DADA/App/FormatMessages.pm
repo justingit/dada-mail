@@ -1547,7 +1547,7 @@ sub unsubscriptionation {
     else {
 
         if ( $args->{-type} eq 'text/html' ) {
-            $args->{-str} .= '
+            $args->{-str} = '
 <p>
 Unsubscribe:
 </p>
@@ -1557,15 +1557,15 @@ Unsubscribe:
 </a>
 </p>
 
-';
+' . $args->{-str};
         }
         else {
-            $args->{-str} .= '
+            $args->{-str} = '
 			
 Unsubscribe: 
 <!-- tmpl_var list_unsubscribe_link -->
 
-';
+' . $args->{-str};
         }
     }
 
