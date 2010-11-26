@@ -63,7 +63,6 @@ require Exporter;
   check_if_list_exists
   available_lists
   archive_message
-  uriencode
   js_enc
   setup_list
   date_this
@@ -1429,14 +1428,6 @@ sub uriescape {
 } 
    
    
-sub uriencode { 
-	my $string = shift; 
-	$string =~ s/%([a-fA-F0-9]{2})/chr(hex($1))/ge;
-	return $string;
-}
-
-
-
 sub js_enc {
 
 	my $str = shift || '';
