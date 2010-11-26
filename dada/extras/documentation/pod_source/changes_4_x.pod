@@ -6,6 +6,8 @@
 
 =head2 Changes 4.3.0
 
+=head3 CPAN module Captcha::reCAPTCHA upgraded from v.92 to v.94
+
 =head3 Twitter Support Removed
 
 Twitter turned off support for the, "Basic" authorization API they were using, 
@@ -22,7 +24,7 @@ The Habeas Watermark isn't really used, anymore, anyways.
 
 It's now possible to either ignore messages seen as spam, or send a rejection message. 
 
-=head3 Unsubscription Confirmations: email notice by default
+=head3 Unsubscription Confirmations: Email Notice
 
 If someone attempts to unsubscribe an email address that isn't actually 
 subscribed, a notification will be sent, via email to the address, instead of having 
@@ -36,9 +38,99 @@ Under the option,
 
 B<If someone not currently subscribed to your mailing list attempts to unsubscribe, send a, "You are not Subscribed!" message via email, instead of showing this error in their web browser.>
 
-It is B<disabled> by default. 
+It is B<disabled> by default.
 
+=head3 Closed-Loop Opt-In Subscription now Enforced by default
+
+By default, the following features in Dada Mail are B<enabled>: 
+
+=over 
+
+=item * Closed-Loop Opt-In Subscriptions
+
+=back 
+
+By default, the following features in Dada Mail are I<disabled>: 
+
+=over
+
+=item * Subscribing Address via the List Control Panel without confirmation
+
+(Invitations are still very much supported)
+
+=item * Subscribing/Inviting Black Listed Addresses
+
+(Black Listed subscribers may still subscribe themselves)
+
+=item * Skipping the confirmation step for subscriptions if a user is logged into their profile
+
+=back
+
+These are options are set as such to closely follow Closed-Loop Opt-In Subscribing (meaning, a subscriber has to confirm a subscription themselves), 
+which we think is the best way to run a email mailing list. 
+
+The options to change these defaults that used to be available have been B<REMOVED> from the List Control Panel.  
+You may still reveal these options by setting the Config variable, C<$ENFORCE_CLOSED_LOOP_OPT_IN> to, C<0>. We do not suggest this and we consider the above options B<DEPRECATED>. 
+
+=head3 Email Message Templates Scanned for Correct Tags, Fixed if Missing. 
+
+To make sure the subscription/removal systems in Dada Mail work correctly, Dada Mail will 
+scan the user-editable email message templates, before it sends them out, to make sure they have the right tags, 
+to perform the right actions. Here's a list of what tags are looked for, in which templates: 
+
+=over
+
+=item * List Subscription Confirmation Link
+
+=over
+
+=item * Subscription Confirmation Email
+
+=item * List Invitation Message (PlainText) 
+
+=item * List Invitation Message (HTML) 
+
+=back
+
+=item * List Unsubscribe Link 
+
+=over
+
+=item * Mailing List Message (PlainText) 
+
+=item * Mailing List Message (HTML) 
+
+=back
+
+=item * List Unsubscribe/Removal Confirmation Link 
+
+=over
+
+=item * Unsubscription Confirmation Email
+
+=back
+
+=back
+
+Dada Mail will also alert the user of the missing tags in the List Control Panel, I<Appearance and Templates - Email Message Templates>
+ 
 =head2 Bug Fixes 4.3.0
+
+=head3 $MAILlING_LIST_MESSAGE and, $MAILlING_LIST_MESSAGE_HTML variables speled incorrectly? 
+
+https://github.com/justingit/dada-mail/issues#issue/87
+
+=head3 List Page is NOT have email address protection 
+
+https://github.com/justingit/dada-mail/issues/closed#issue/84
+
+=head3 No, "Are you sure?!" popup alert when clicking the, "remove all subscribers" button
+
+https://github.com/justingit/dada-mail/issues/closed#issue/82
+
+=head3 No, "Are you sure?!" popup alert when clicking the, "purge all archives?" button 
+
+https://github.com/justingit/dada-mail/issues/closed#issue/83
 
 =head3 available_lists with, "-In_Order" param doesn't. 
 
