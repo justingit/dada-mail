@@ -1676,7 +1676,19 @@ And you have a mailing monitor running, without any extra scripts to installed. 
 
 $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION ||= 0; 
 
+=pod
 
+=head2 $ENFORCE_CLOSED_LOOP_OPT_IN
+
+Set to, C<1> by default, C<$ENFORCE_CLOSED_LOOP_OPT_IN> enables the Closed-Loop Opt-In System in Dada Mail and disables other features in Dada Mail that work around being 100% in conformance to Dada Mail's Closed-Loop Opt-In System. 
+
+It's B<highly> suggested to leave this C<$ENFORCE_CLOSED_LOOP_OPT_IN> set to, C<1>. 
+
+=head4 More Information: 
+
+L<http://dadamailproject.com/installation/using_dada_mail.html>
+
+=cut
 
 $ENFORCE_CLOSED_LOOP_OPT_IN ||= 1; 
 
