@@ -67,7 +67,7 @@
 			</p>
 		<!-- tmpl_else --> 
 			<p class="error">
-				Yikes! Couldn't find an Unsubscribe Link in your template! If your mailing is sent out without one, somewhere, an unsubscribe link will be automatically appended to the bottom of your message. 
+				Yikes! Couldn't find an Unsubscribe Link (<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, somewhere, an unsubscribe link will be automatically appended to the bottom of your message. 
 			</p>
 		<!-- /tmpl_if --> 
 		
@@ -94,7 +94,7 @@
 			</p>
 		<!-- tmpl_else --> 
 			<p class="error">
-				Yikes! Couldn't find an Unsubscribe Link in your template! If your mailing is sent out without one, somewhere, an unsubscribe link will be automatically appended to the bottom of your message. 
+				Yikes! Couldn't find an Unsubscribe Link (<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, somewhere, an unsubscribe link will be automatically appended to the bottom of your message. 
 			</p>
 		<!-- /tmpl_if -->
 		
@@ -132,7 +132,7 @@
 		</p>
 	<!-- tmpl_else --> 
 		<p class="error">
-			Yikes! Couldn't find a Subscription Confirmation Link in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
+			Yikes! Couldn't find a Subscription Confirmation Link (<code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
 		</p>
 	<!-- /tmpl_if -->
 	
@@ -200,7 +200,7 @@
 		</p>
 	<!-- tmpl_else --> 
 		<p class="error">
-			Yikes! Couldn't find an Unsubscription Confirmation Link in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
+			Yikes! Couldn't find an Unsubscription Confirmation Link (<code>&lt;!-- tmpl_var list_confirm_unsubscribe_link --&gt;</code>)in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
 		</p>
 	<!-- /tmpl_if -->
 	
@@ -279,7 +279,7 @@
 			</p>
 		<!-- tmpl_else --> 
 			<p class="error">
-				Yikes! Couldn't find a Subscription Confirmation Link in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
+				Yikes! Couldn't find a Subscription Confirmation Link (<code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
 			</p>
 		<!-- /tmpl_if -->
 	
@@ -303,7 +303,7 @@
 			</p>
 		<!-- tmpl_else --> 
 			<p class="error">
-				Yikes! Couldn't find a Subscription Confirmation Link in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
+				Yikes! Couldn't find a Subscription Confirmation Link (<code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
 			</p>
 		<!-- /tmpl_if -->
 		
@@ -572,7 +572,7 @@
 			<code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code> 
 		</td>
 		<td>
-			The subscription confirmation link. 
+			The subscription confirmation link. Only used (and also required!) in the, "Subscription Confirmation Email" template.
 		</td>
 	</tr>
 	<t
@@ -581,7 +581,7 @@
 			<code>&lt;!-- tmpl_var list_confirm_unsubscribe_link --&gt;</code> 
 		</td>
 		<td>
-			The unsubscription confirmation link. 
+			The unsubscription confirmation link. Only used (and also required!) in the, "UnSubscription Confirmation Email" template.
 		</td>
 	</tr>
 	
