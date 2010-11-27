@@ -53,7 +53,7 @@ sub Create {
 		); 
 		if($errors >= 1){
 			my $e = '';
-			foreach(%$flags){ 
+			for(%$flags){ 
 				$e .= $_ . ', ' if $flags->{$_} == 1; 
 			}
 
@@ -85,12 +85,12 @@ sub Create {
         my $clone_ls =
           DADA::MailingList::Settings->new( { -list => $args->{ -clone }, } );
         my %to_clone = %{ $clone_ls->params };
-        foreach (@DADA::Config::LIST_SETUP_DONT_CLONE) {
+        for (@DADA::Config::LIST_SETUP_DONT_CLONE) {
             if ( exists( $to_clone{$_} ) ) {
                 delete( $to_clone{$_} );
             }
         }
-		foreach(keys %to_clone){
+		for(keys %to_clone){
 			 if(! exists($DADA::Config::LIST_SETUP_DEFAULTS{$_})){ 
 				warn "Skipping setting: $_ in clone."; 
                 delete( $to_clone{$_} );
@@ -106,7 +106,7 @@ sub Create {
     DADA::App::Guts::available_lists( -clear_cache => 1 );
 
 #    # This is a total hack, but I totally short-sighted this:
-#    foreach ( DADA::App::Guts::available_lists() ) {
+#    for ( DADA::App::Guts::available_lists() ) {
 #        next if $_ eq $args->{ -list };
 #        my $l_ls = DADA::MailingList::Settings->new( { -list => $_ } );
 #        my $l_li = $l_ls->get;
@@ -163,7 +163,7 @@ sub Remove {
 							-list => $args->{-name},
 						}
 					);  
-    foreach (@mailouts){
+    for (@mailouts){
 		my $mailout = DADA::Mail::MailOut->new({ -list => $list }); 
            $mailout->associate($_->{id}, $_->{type});
 		   $mailout->clean_up; 
@@ -189,7 +189,7 @@ sub Remove {
 
 
     #mostly for the SQL backends
-	foreach(keys  %{$lh->allowed_list_types }){ 
+	for(keys  %{$lh->allowed_list_types }){ 
     	$lh->remove_this_listtype(-Type => $_);
 	}
 

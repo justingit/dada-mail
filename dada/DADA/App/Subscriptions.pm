@@ -145,7 +145,7 @@ sub subscribe {
     my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
     
     my $fields = {}; 
-    foreach(@{$lh->subscriber_fields}){ 
+    for(@{$lh->subscriber_fields}){ 
 		if(defined($q->param($_))){ 
         	$fields->{$_} = xss_filter($q->param($_)); 
 		}
@@ -255,8 +255,8 @@ sub subscribe {
                 my $qs = ''; 
                 if($li->{alt_url_sub_confirm_failed_w_qs} == 1){ 
                     $qs = '?list=' . $list . '&rm=sub_confirm&status=0&email=' . uriescape($email);
-                    $qs .= '&errors=' . $_ foreach keys %$errors; 
-                    $qs .= '&' . $_ . '=' . uriescape($fields->{$_}) foreach keys %$fields; 
+                    $qs .= '&errors=' . $_ for keys %$errors; 
+                    $qs .= '&' . $_ . '=' . uriescape($fields->{$_}) for keys %$fields; 
                 }
                 
                 my $r = $q->redirect(-uri => $li->{alt_url_sub_confirm_failed} . $qs); 
@@ -276,7 +276,7 @@ sub subscribe {
                     already_sent_sub_confirmation
                 );
                 
-                foreach(@list_of_errors){ 
+                for(@list_of_errors){ 
                     if ($errors->{$_} == 1){ 
                         return user_error(
                             -List  => $list, 
@@ -356,7 +356,7 @@ sub subscribe {
                 my $qs = ''; 
                 if($li->{alt_url_sub_confirm_success_w_qs} == 1){ 
                     $qs  = '?list=' . $list . '&rm=sub_confirm&status=1&email=' . uriescape($email); 
-                    $qs .= '&' . $_ . '=' . uriescape($fields->{$_}) foreach keys %$fields; 
+                    $qs .= '&' . $_ . '=' . uriescape($fields->{$_}) for keys %$fields; 
                     
                 }
                 my $r = $q->redirect(-uri => $li->{alt_url_sub_confirm_success} . $qs); 
@@ -631,7 +631,7 @@ sub confirm {
      warn 'subscription check gave back status of: ' . $status
         if $t; 
      if($t){ 
-        foreach(keys %$errors){ 
+        for(keys %$errors){ 
             warn '>>>> >>>> ERROR: ' . $_ . ' => ' . $errors->{$_}
                 if $t; 
         }
@@ -725,7 +725,7 @@ sub confirm {
                     
                 if($li->{alt_url_sub_failed_w_qs} == 1){ 
                     $qs = '?list=' . $list . '&rm=sub&status=0&email=' . uriescape($email);
-                    $qs .= '&errors=' . $_ foreach keys %$errors; 
+                    $qs .= '&errors=' . $_ for keys %$errors; 
                     
                 }
                 warn '>>>> >>>> >>>> redirecting to: ' . $li->{alt_url_sub_failed} . $qs
@@ -747,7 +747,7 @@ sub confirm {
                     not_on_sub_confirm_list                    
                 );
                 
-                foreach(@list_of_errors){ 
+                for(@list_of_errors){ 
                     if ($errors->{$_} == 1){ 
                         return user_error(
                             -List  => $list, 
@@ -1144,7 +1144,7 @@ sub unsubscribe {
     if($t){ 
         if($status == 0){ 
             warn '"' . $email . '" failed unsubscription_check(). Details: '; 
-            foreach(keys %$errors){ 
+            for(keys %$errors){ 
                 warn 'Error: ' . $_ . ' => ' . $errors->{$_}; 
             }
         }
@@ -1192,7 +1192,7 @@ sub unsubscribe {
                 # With a query string?
                 if($li->{alt_url_unsub_confirm_failed_w_qs} == 1){ 
                     $qs = '?list=' . $list . '&rm=unsub_confirm&status=0&email=' . uriescape($email);
-                    $qs .= '&errors=' . $_ foreach keys %$errors; 
+                    $qs .= '&errors=' . $_ for keys %$errors; 
                 }
                 my $r = $q->redirect(-uri => $li->{alt_url_unsub_confirm_failed} . $qs);
                 $self->test ? return $r : print $fh safely_encode(  $r) and return; 
@@ -1207,7 +1207,7 @@ sub unsubscribe {
                     settings_possibly_corrupted
                     already_sent_unsub_confirmation
                 ); 
-                foreach(@list_of_errors){ 
+                for(@list_of_errors){ 
                     if ($errors->{$_} == 1){ 
                     
                         # Special Case. 
@@ -1400,7 +1400,7 @@ sub unsub_confirm {
     if($t){ 
         if($status == 0){ 
             warn '"' . $email . '" failed unsubscription_check(). Details: '; 
-            foreach(keys %$errors){ 
+            for(keys %$errors){ 
                 warn 'Error: ' . $_ . ' => ' . $errors->{$_}; 
             }
         }
@@ -1507,7 +1507,7 @@ sub unsub_confirm {
                 my $qs = ''; 
                 if($li->{alt_url_unsub_failed_w_qs} == 1){ 
                     $qs = '?list=' . $list . '&rm=unsub&status=0&email=' . uriescape($email); 
-                    $qs .= '&errors=' . $_ foreach keys %$errors; 
+                    $qs .= '&errors=' . $_ for keys %$errors; 
                 }
                 warn 'Redirecting to: ' . $li->{alt_url_unsub_failed} . $qs 
                     if $t; 
@@ -1526,7 +1526,7 @@ sub unsub_confirm {
                     
                     
                 ); 
-                foreach(@list_of_errors){ 
+                for(@list_of_errors){ 
                     if ($errors->{$_} == 1){ 
                     
                         # Special Case. 

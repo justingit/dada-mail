@@ -111,7 +111,7 @@ sub send_email {
    my $fields = [];  
    # Extra, special one... 
    push(@$fields, {name => 'subscriber.email'}); 
-   foreach my $field(@{$lh->subscriber_fields({-dotted => 1})}){ 
+   for my $field(@{$lh->subscriber_fields({-dotted => 1})}){ 
         push(@$fields, {name => $field});
     }
 
@@ -121,7 +121,7 @@ sub send_email {
 	require DADA::ProfileFieldsManager; 
 	my $pfm = DADA::ProfileFieldsManager->new;
 	my $fields_attr = $pfm->get_all_field_attributes;
-   foreach my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){ 
+   for my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){ 
         push(@$undotted_fields, {name => $undotted_field, label => $fields_attr->{$undotted_field}->{label}});
     }
 
@@ -188,7 +188,7 @@ sub send_email {
 			   $fm->mass_mailing(1); 
 			# DEV: Headers.  Ugh, remember this is in, "Send a Webpage" as well. 	
 			my %headers = ();
-			foreach my $h(qw(
+			for my $h(qw(
 				Reply-To 
 				Errors-To 
 				Return-Path
@@ -297,7 +297,7 @@ sub send_email {
             if(@attachments){ 
                 my @compl_att = (); 
                 
-                foreach(@attachments){ 
+                for(@attachments){ 
                     #carp '$_ ' . $_; 
                     
                     my ($msg_att, $filename) = $self->make_attachment({-name => $_, -cgi_obj => $q}); 
@@ -314,7 +314,7 @@ sub send_email {
 						Datestamp => 0, 
 					);
                        $mpm_msg->attach($msg);
-                       foreach(@compl_att){ 
+                       for(@compl_att){ 
                           $mpm_msg->attach($_);
                        }
                     $msg = $mpm_msg;
@@ -359,7 +359,7 @@ sub send_email {
 
 		###### Blah blah blah, parital listing 
 	    my $partial_sending = {}; 
-	    foreach my $field(@$undotted_fields){ 
+	    for my $field(@$undotted_fields){ 
 			if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){ 
 			    $partial_sending->{$field->{name}} = {equal_to => $q->param('field_value_' . $field->{name})}; 
 			}
@@ -502,7 +502,7 @@ sub send_url_email {
    my $fields = [];  
    # Extra, special one... 
    push(@$fields, {name => 'subscriber.email'}); 
-   foreach my $field(@{$lh->subscriber_fields({-dotted => 1})}){ 
+   for my $field(@{$lh->subscriber_fields({-dotted => 1})}){ 
         push(@$fields, {name => $field});
     }
  	my $undotted_fields = [];  
@@ -511,7 +511,7 @@ sub send_url_email {
 	require DADA::ProfileFieldsManager; 
 	my $pfm = DADA::ProfileFieldsManager->new;
 	my $fields_attr = $pfm->get_all_field_attributes;
-   foreach my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){ 
+   for my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){ 
         push(@$undotted_fields, {name => $undotted_field, label => $fields_attr->{$undotted_field}->{label}});
     }        
 
@@ -576,7 +576,7 @@ sub send_url_email {
         
 			# DEV: Headers.  Ugh, remember this is in, "Send a Webpage" as well. 	
 			my %headers = ();
-			foreach my $h(qw(
+			for my $h(qw(
 				Reply-To 
 				Errors-To 
 				Return-Path
@@ -706,7 +706,7 @@ sub send_url_email {
                 $problems++;
 				$eval_error = $@; 
 				@MIME_HTML_errors = $mailHTML->errstr;
-				foreach(@MIME_HTML_errors){ 
+				for(@MIME_HTML_errors){ 
 					$eval_error .= $_; 
 				}	
             }
@@ -753,7 +753,7 @@ sub send_url_email {
                               );
                                
 			    my $partial_sending = {}; 
-			    foreach my $field(@$undotted_fields){ 
+			    for my $field(@$undotted_fields){ 
 					if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){ 
 					    $partial_sending->{$field->{name}} = {equal_to => $q->param('field_value_' . $field->{name})}; 
 					}
@@ -877,7 +877,7 @@ sub list_invite {
 
 		my $field_names = []; 
 		my $subscriber_fields = $lh->subscriber_fields;
-         foreach(@$subscriber_fields){ 
+         for(@$subscriber_fields){ 
              push(@$field_names, {name => $_}); 
         }
         
@@ -887,7 +887,7 @@ sub list_invite {
 	  
 	  # Addresses hold CSV info - each item in the array is one line of CSV...
 	
-	  foreach my $a(@addresses){ 
+	  for my $a(@addresses){ 
 			my $pre_info = $lh->csv_to_cds($a); 
 			my $info     = {};
 			# DEV: Here I got again:
@@ -896,7 +896,7 @@ sub list_invite {
 
 			my $new_fields = [];
 			my $i = 0; 
-			foreach(@$subscriber_fields){
+			for(@$subscriber_fields){
 				push(@$new_fields, {name => $_, value => $pre_info->{fields}->{$_} }); 
 				$i++;
 			}
@@ -950,7 +950,7 @@ sub list_invite {
         my @address         = $q->param("address"); 
         #my $new_email_count = 0; 
 
-        foreach my $a(@address){ 
+        for my $a(@address){ 
            	my $info   = $lh->csv_to_cds($a); 
             $lh->add_subscriber(
                 { 
@@ -976,7 +976,7 @@ sub list_invite {
         
 		# DEV: Headers.  Ugh, remember this is in, "Send a Webpage" as well. 	
 		my %headers = ();
-		foreach my $h(qw(
+		for my $h(qw(
 			Reply-To 
 			Errors-To 
 			Return-Path
@@ -1122,7 +1122,7 @@ sub has_attachments {
 
 	my $num = $q->param('attachment'); 
 	
-    foreach(1 .. $num) { 
+    for(1 .. $num) { 
       #  warn "Working on: " . $_; 
         
         my $filename = $q->param('attachment_' . $_);
@@ -1368,7 +1368,7 @@ sub clean_up_attachments {
 
 	my $self  = shift; 
     my $files = shift || [];
-    foreach(@$files){ 
+    for(@$files){ 
         $_ = make_safer($_); 
         warn "could not remove '$_'"
             unless

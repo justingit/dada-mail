@@ -908,7 +908,7 @@ sub create_raw_message {
     open( MESSAGE, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
         or croak "couldn't open: '$file' because: $!";
 
-    foreach (@DADA::Config::EMAIL_HEADERS_ORDER) {
+    for (@DADA::Config::EMAIL_HEADERS_ORDER) {
         next if $_ eq 'Body';
         next if $_ eq 'Message';    # Do I need this?!
         print MESSAGE $_ . ': ' . $fields->{$_} . "\n"
@@ -947,7 +947,7 @@ sub _integrity_check {
         
     }
     
-    foreach my $file_check(keys %$file_names){
+    for my $file_check(keys %$file_names){
     
         next if $file_check eq 'batchlock'; # batchlock can come and go, I guess...
         next if $file_check eq 'pause';    
@@ -1580,7 +1580,7 @@ sub mail_fields_from_raw_message {
    my @logical_lines = split /\n(?!\s)/, $raw_header;
 
     # make the hash
-    foreach my $line (@logical_lines) {
+    for my $line (@logical_lines) {
        my ( $label, $value ) = split( /:\s*/, $line, 2 );
 	   $value = $fm->_decode_header( $value);
 		$headers->{$label} =  $value;
@@ -1786,7 +1786,7 @@ sub clean_up {
     
     my @deep_six_list;
 
-    foreach my $fn ( keys %$file_names ) {
+    for my $fn ( keys %$file_names ) {
 
      # basically, iterate through the type of files that, *may* be in there...
         if ( -e make_safer($self->dir . '/' . $file_names->{$fn}) ) {
@@ -2035,7 +2035,7 @@ sub current_mailouts {
 	    my @paused   = (); 
 		my @stale    = (); 
     
-	    foreach my $test_m(@mailouts){
+	    for my $test_m(@mailouts){
     
 	        # croak 'sendout_dir ' . $test_m->{sendout_dir}; 
 	        # This is an optimization - we just look to see if the paused file exists - if so, we say it's paused, 
@@ -2103,7 +2103,7 @@ sub mailout_exists {
 
     my @mailouts = current_mailouts({-list => $list });
 
-    foreach my $mo (@mailouts) {
+    for my $mo (@mailouts) {
 
         if ( $mo->{id} eq $id && $mo->{type} eq $type && $mo->{list} eq $list) {
 
@@ -2172,7 +2172,7 @@ sub line_in_queue {
     my $counter = 0;          # start with 0; 
     my $total   = $#mailouts; # Starts with 0, too!
     
-    foreach my $mailout(@mailouts){ 
+    for my $mailout(@mailouts){ 
     
         my $check_id = $mailout->{id};
         
@@ -2271,7 +2271,7 @@ sub monitor_mailout {
 
 	my $mailout_obj_cache    = {}; 
     my $mailout_status_cache = {}; 
-    foreach my $mailing(@mailouts){ 
+    for my $mailing(@mailouts){ 
 
 		if(DADA::App::Guts::check_if_list_exists( -List => $mailing->{list} ) == 0){ 
 			carp "Attempting to monitor a mailout for a list (" . $mailing->{list} . ") that does not exist!"; 
@@ -2329,7 +2329,7 @@ sub monitor_mailout {
         
 			# Again, not sure how we'd end up here...
             my $weird_report = ''; 
-            foreach(keys %$mailing){ 
+            for(keys %$mailing){ 
                 $weird_report .= $_ . ' => ' . $mailing->{$_} . ",\t"; 
             }
             carp "Mailout malformed? $weird_report"; 
@@ -2347,7 +2347,7 @@ sub monitor_mailout {
 	}
 	
 	# DEV: This subroutine needs to be split. RIGHT HERE
-    foreach my $list(@available_lists) { 
+    for my $list(@available_lists) { 
     
         
 		if (
@@ -2369,7 +2369,7 @@ sub monitor_mailout {
             $r .=  "\t*No current mailouts for $list\n";
                
         }
-        foreach my $mailing(@mailouts){ 
+        for my $mailing(@mailouts){ 
         
            $r .=  "\n\tmailout: " . $mailing->{id} . "\n";
                 
@@ -2397,7 +2397,7 @@ sub monitor_mailout {
  
             $r .=  "\n\t\tStatus:\n\n";
     
-            foreach(sort keys %$status){ 
+            for(sort keys %$status){ 
                 if($_ eq 'email_fields'){ 
                     $r .=  "\t\t" . _pad_str('* Subject: ') . $status->{$_}->{Subject} . "\n";
                        
@@ -2907,7 +2907,7 @@ Although you may never call B<create>, calling B<status> may be much more common
 
 or even: 
 
-foreach(keys %{$mailout->status}){ 
+for(keys %{$mailout->status}){ 
     print $_; # or... something...
 }
 

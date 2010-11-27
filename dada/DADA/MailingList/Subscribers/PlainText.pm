@@ -427,7 +427,7 @@ sub remove_from_list {
 	
 		# create the lookup table 
 		my %lookup_table; 
-		foreach my $going(@$deep_six){
+		for my $going(@$deep_six){
 			chomp($going);
 			$going = strip($going);
 			$going = cased($going);
@@ -656,7 +656,7 @@ sub create_mass_sending_file {
 	my %banned_list; 
 	
 	if($args{-Ban}){ 
-		$banned_list{$_} = 1 foreach @{$args{-Ban}}; 
+		$banned_list{$_} = 1 for @{$args{-Ban}}; 
 	}
 	
 	my $list_file    = make_safer($DADA::Config::FILES . '/' . $list . '.' . $type); 
@@ -791,7 +791,7 @@ sub unique_and_duplicate {
 	
 	if($list and $address_ref){
 	
-		foreach(@$address_ref){$lookup_table{$_} = 0}
+		for(@$address_ref){$lookup_table{$_} = 0}
 		
 		# easy enough, now, we'll open up the list, and 
 		# keep them as 0 if they're all unique, and 
@@ -817,7 +817,7 @@ sub unique_and_duplicate {
 		
 		
 		
-		foreach(keys %lookup_table){
+		for(keys %lookup_table){
 			$value = $lookup_table{$_}; 
 			if($value == 1){ 
 				push(@double, $_)

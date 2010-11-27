@@ -348,7 +348,7 @@ sub get {
 	
     if ( $args->{ -dotted } == 1 ) {
         my $dotted = {};
-        foreach ( keys %$profile_info ) {
+        for ( keys %$profile_info ) {
             $dotted->{ 'profile.' . $_ } = $profile_info->{$_};
         }
         return $dotted;
@@ -391,7 +391,7 @@ sub subscribed_to_list {
     }
 
     my $subscriptions = $self->subscribed_to;
-    foreach (@$subscriptions) {
+    for (@$subscriptions) {
         if ( $_ eq $args->{ -list } ) {
             return 1;
         }
@@ -417,7 +417,7 @@ sub subscribed_to {
 	
 	my $lss = {};
 	
-    foreach (@available_lists) {
+    for (@available_lists) {
         my $lh = DADA::MailingList::Subscribers->new( { -list => $_ } );
 
         if (
@@ -440,10 +440,10 @@ sub subscribed_to {
     if ( $args->{ -html_tmpl_params } ) {
         my $lt        = {};
         my $html_tmpl = [];
-        foreach (@$subscriptions) {
+        for (@$subscriptions) {
             $lt->{$_} = 1;
         }
-        foreach (@available_lists) {
+        for (@available_lists) {
 			my $is_list_owner = 0; 
 			if($lss->{$_}->param('list_owner_email') eq $self->{email}){ 
 				$is_list_owner = 1; 
@@ -487,7 +487,7 @@ sub profile_update_email_report {
 	my $d_info = $self->get({-dotted => 1}); 
     require DADA::MailingList::Subscriber::Validate;
     my $subs = [];
-    foreach my $list (@$lists) {
+    for my $list (@$lists) {
         my $sv =
           DADA::MailingList::Subscriber::Validate->new( { -list => $list } );
         my ( $sub_status, $sub_errors ) = $sv->subscription_check(
@@ -856,7 +856,7 @@ sub update {
 	my $new  = {}; 
 	
 	# This couldn't be any more terrible:
-    foreach ( keys %$orig ) {
+    for ( keys %$orig ) {
         # I'll have to remember why email is skipped... 
 		#next if $_ eq 'email';
 		

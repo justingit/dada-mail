@@ -56,7 +56,7 @@ use lib qw(
 #BEGIN {
 #    my $homedir = ( getpwuid($>) )[7];
 #    my @user_include;
-#    foreach my $path (@INC) {
+#    for my $path (@INC) {
 #        if ( -d $homedir . '/perl' . $path ) {
 #            push @user_include, $homedir . '/perl' . $path;
 #        }
@@ -1091,17 +1091,17 @@ sub previewMessageReceivers {
     my $fields = [];
     # Extra, special one...
     push(@$fields, {name => 'subscriber.email'});
-    foreach my $field(@{$lh->subscriber_fields({-dotted => 1})}){
+    for my $field(@{$lh->subscriber_fields({-dotted => 1})}){
         push(@$fields, {name => $field});
     }
  	my $undotted_fields = [];
    # Extra, special one...
    push(@$undotted_fields, {name => 'email', label => 'Email Address'});
-   foreach my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){
+   for my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){
         push(@$undotted_fields, {name => $undotted_field});
     }
     my $partial_sending = {};
-    foreach my $field(@$undotted_fields){
+    for my $field(@$undotted_fields){
 		if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){
 		    $partial_sending->{$field->{name}} = {equal_to => $q->param('field_value_' . $field->{name})};
 		}
@@ -1136,7 +1136,7 @@ sub previewMessageReceivers {
 				 @exclude_from = ($list);
 			}
 			if($alternative_list[0]){
-				foreach my $alt_list(@alternative_list){
+				for my $alt_list(@alternative_list){
 					e_print('<h1>' . $alt_list . '</h1>');
 					my $alt_mls = DADA::MailingList::Subscribers->new({-list => $alt_list});
 					 $alt_mls->fancy_print_out_list(
@@ -1329,14 +1329,14 @@ sub sending_monitor {
 			@lists = ($list);
 		}
 
-		foreach my $l_list(@lists){
+		for my $l_list(@lists){
         	my @mailouts  = DADA::Mail::MailOut::current_mailouts(
 							{
 								-list     => $l_list,
 								-order_by => 'creation',
 							}
 						);
-			foreach my $mo(@mailouts){
+			for my $mo(@mailouts){
 
 				my $mailout = DADA::Mail::MailOut->new({ -list => $l_list });
 	               $mailout->associate(
@@ -1486,7 +1486,7 @@ sub sending_monitor {
 
 
             my $sending_status = [];
-            foreach(keys %$status){
+            for(keys %$status){
                 next if $_ eq 'email_fields';
                 push(@$sending_status, {key => $_, value => $status->{$_}});
 
@@ -2737,7 +2737,7 @@ sub sending_tuning_options {
             my $new_tuning = {};
             my $p_list = $q->Vars;
 
-            foreach(keys %$p_list){
+            for(keys %$p_list){
                 if($_ =~ m/^new_tuning_/){
                     my $name = $_;
                        $name =~ s/^new_tuning_//;
@@ -2776,11 +2776,11 @@ sub sending_tuning_options {
             my $saved_tunings = eval($li->{domain_sending_tunings});
             my $new_tunings = [];
 
-            foreach my $st(@$saved_tunings){
+            for my $st(@$saved_tunings){
 
                 if($st->{domain} eq $q->param('domain')) {
 
-                    foreach my $a_tuning(@allowed_tunings){
+                    for my $a_tuning(@allowed_tunings){
 
                         my $new_tune = $q->param($a_tuning) || 0;
                         #  if($q->param($a_tuning)){
@@ -2808,7 +2808,7 @@ sub sending_tuning_options {
             my $saved_tunings = eval($li->{domain_sending_tunings});
             my $new_tunings = [];
 
-            foreach(@$saved_tunings){
+            for(@$saved_tunings){
 
                 if($_->{domain} ne $q->param('domain')) {
                     push(@$new_tunings, $_);
@@ -2835,7 +2835,7 @@ sub sending_tuning_options {
 
        # This is done because variables inside loops are local, not global, and global vars don't work in loops.
        my $c = 0;
-       foreach(@$saved_tunings){
+       for(@$saved_tunings){
         $saved_tunings->[$c]->{S_PROGRAM_URL} = $DADA::Config::S_PROGRAM_URL;
         $c++;
        }
@@ -2914,7 +2914,7 @@ sub sending_preferences_test {
 
     my $ht_report = [];
 
-    foreach my $f (@$report) {
+    for my $f (@$report) {
 
         my $s_f = $f->{line};
         $s_f =~ s{Net\:\:SMTP(.*?)\)}{};
@@ -3034,7 +3034,7 @@ sub view_list {
 		my $fields_attr = $pfm->get_all_field_attributes;
 
         my $field_names = [];
-        foreach(@{$lh->subscriber_fields}){
+        for(@{$lh->subscriber_fields}){
             push(@$field_names, {name => $_, label => $fields_attr->{$_}->{label}});
         }
 
@@ -3152,7 +3152,7 @@ sub subscription_requests {
 
 
 	if($q->param('process') =~ m/approve/i){
-		foreach my $email(@address){
+		for my $email(@address){
 			$lh->move_subscriber(
                 {
                     -email            => $email,
@@ -3204,7 +3204,7 @@ sub subscription_requests {
         print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=view_list&type=' . $q->param('type') . '&approved_count=' . $count);
 	}
 	elsif($q->param('process') =~ m/deny/i){
-		foreach my $email(@address){
+		for my $email(@address){
 			$lh->remove_subscriber(
 	            {
 	                -email            => $email,
@@ -3331,7 +3331,7 @@ sub edit_subscriber {
 			die "You must be logged in with the Dada Mail Root Password to be able to edit a Subscriber's Profile Fields.";
 		}
 		my $new_fields = {};
-		foreach my $nfield(@{$lh->subscriber_fields()}){
+		for my $nfield(@{$lh->subscriber_fields()}){
 			if(defined($q->param($nfield))){
 	            $new_fields->{$nfield} = $q->param($nfield);
 	        }
@@ -3368,7 +3368,7 @@ sub edit_subscriber {
 	require DADA::ProfileFieldsManager;
 	my $pfm = DADA::ProfileFieldsManager->new;
 	my $fields_attr = $pfm->get_all_field_attributes;
-	foreach my $field(@{$lh->subscriber_fields()}){
+	for my $field(@{$lh->subscriber_fields()}){
         push(@$fields,
 			{
 				name   => $field,
@@ -3422,7 +3422,7 @@ sub add {
 
             my @columns = ();
             push( @columns, xss_filter( $q->param('email') ) );
-            foreach ( @{ $lh->subscriber_fields() } ) {
+            for ( @{ $lh->subscriber_fields() } ) {
                 push( @columns, xss_filter( $q->param($_) ) );
             }
             require Text::CSV;
@@ -3531,7 +3531,7 @@ sub add {
         require DADA::ProfileFieldsManager;
         my $pfm         = DADA::ProfileFieldsManager->new;
         my $fields_attr = $pfm->get_all_field_attributes;
-        foreach my $field ( @{ $lh->subscriber_fields() } ) {
+        for my $field ( @{ $lh->subscriber_fields() } ) {
             push(
                 @$fields,
                 {
@@ -3797,7 +3797,7 @@ sub add_email {
           if ( defined( @$not_subscribed[0] ) );
 
         my $field_names = [];
-        foreach (@$subscriber_fields) {
+        for (@$subscriber_fields) {
             push ( @$field_names, { name => $_ } );
         }
 
@@ -3858,7 +3858,7 @@ sub add_email {
             my $new_email_count = 0;
 
             # Each Addres is a CSV line...
-            foreach my $a (@address) {
+            for my $a (@address) {
                 my $info = $lh->csv_to_cds($a);
                 $lh->add_subscriber(
                     {
@@ -3965,7 +3965,7 @@ sub delete_email{
         #my @delete_addresses = split(/\n/, $delete_list);
         #
         ## xss filter...
-        #foreach(@delete_addresses){
+        #for(@delete_addresses){
         #    $_ = xss_filter(strip($_));
         #}
 
@@ -3995,11 +3995,11 @@ sub delete_email{
 
         my $addresses_to_remove = [];
         push(@$addresses_to_remove, {email => $_})
-            foreach @$subscribed;
+            for @$subscribed;
 
         my $not_subscribed_addresses = [];
         push(@$not_subscribed_addresses, {email => $_})
-            foreach @$not_subscribed;
+            for @$not_subscribed;
 
         my $have_invalid_addresses = 0;
            $have_invalid_addresses = 1
@@ -4007,7 +4007,7 @@ sub delete_email{
 
         my $invalid_addresses = [];
            push(@$invalid_addresses, {email => $_ })
-            foreach @$invalid;
+            for @$invalid;
 
 		my $scrn = '';
         $scrn .= admin_template_header(
@@ -4067,7 +4067,7 @@ sub subscription_options {
 
     if(defined($DADA::Config::SUBSCRIPTION_QUOTA)){
 
-        foreach(@d_quota_values){
+        for(@d_quota_values){
             if($_ < $DADA::Config::SUBSCRIPTION_QUOTA){
                 push(@quota_values, $_);
             }
@@ -4183,7 +4183,7 @@ sub view_archive {
 
             my $entry = $entries->[$i];
 
-            #foreach $entry (@$entries){
+            #for $entry (@$entries){
             my ( $subject, $message, $format, $raw_msg ) =
               $archive->get_archive_info($entry);
 
@@ -4542,7 +4542,7 @@ sub adv_archive_options {
 
 
         my $ping_sites = [];
-		foreach ( @DADA::Config::PING_URLS ) {
+		for ( @DADA::Config::PING_URLS ) {
 
         	push(
 				@$ping_sites,
@@ -4819,11 +4819,11 @@ sub edit_archived_msg {
         my $form_blob = '';
         make_skeleton($entity);
 
-        foreach ( split( ',', $li->{editable_headers} ) ) {
+        for ( split( ',', $li->{editable_headers} ) ) {
             $Headers_To_Edit{$_} = 1;
         }
 
-        foreach my $tb (@$skel) {
+        for my $tb (@$skel) {
 
             my @c = split( '-', $tb->{address} );
             my $bqc = $#c - 1;
@@ -4839,7 +4839,7 @@ sub edit_archived_msg {
                 # head of the message!
                 my %headers =
                   $mh->return_headers( $tb->{entity}->head->original_text );
-                foreach my $h (@DADA::Config::EMAIL_HEADERS_ORDER) {
+                for my $h (@DADA::Config::EMAIL_HEADERS_ORDER) {
                     if ( $headers{$h} ) {
                         if ( $Headers_To_Edit{$h} == 1 ) {
 
@@ -5096,10 +5096,10 @@ sub edit_archived_msg {
 
             my %editable_headers;
             $editable_headers{$_} = 1
-              foreach ( split( ',', $li->{editable_headers} ) );
+              for ( split( ',', $li->{editable_headers} ) );
 
             my $edit_headers_menu = [];
-            foreach (@DADA::Config::EMAIL_HEADERS_ORDER) {
+            for (@DADA::Config::EMAIL_HEADERS_ORDER) {
 
                 push( @$edit_headers_menu,
                     { name => $_, editable => $editable_headers{$_} } );
@@ -5194,7 +5194,7 @@ sub edit_archived_msg {
 
             # multipart...
             my $i;
-            foreach $i ( 0 .. $#parts ) {    # dump each part...
+            for $i ( 0 .. $#parts ) {    # dump each part...
                 make_skeleton( $parts[$i], ( "$name\-" . ($i) ) );
             }
 
@@ -5215,14 +5215,14 @@ sub edit_archived_msg {
 
         if ( $name eq '0' ) {
 
-            foreach ( split( ',', $li->{editable_headers} ) ) {
+            for ( split( ',', $li->{editable_headers} ) ) {
                 $Headers_To_Edit{$_} = 1;
             }
 
             require DADA::App::FormatMessages;
             my $fm = DADA::App::FormatMessages->new( -List => $list );
 
-            foreach my $h (@DADA::Config::EMAIL_HEADERS_ORDER) {
+            for my $h (@DADA::Config::EMAIL_HEADERS_ORDER) {
                 if ( $Headers_To_Edit{$h} == 1 ) {
                     my $value = $q->param($h);
 
@@ -5251,7 +5251,7 @@ sub edit_archived_msg {
 
             # multipart...
             my $i;
-            foreach $i ( 0 .. $#parts ) {
+            for $i ( 0 .. $#parts ) {
                 my $name_is;
                 ( $parts[$i], $name_is ) =
                   edit( $parts[$i], ( "$name\-" . ($i) ) );
@@ -5267,7 +5267,7 @@ sub edit_archived_msg {
 
             my @new_parts;
             my $ii;
-            foreach $ii ( 0 .. $#parts ) {
+            for $ii ( 0 .. $#parts ) {
                 if ( $ditch{$ii} == 1 ) {
 
                     # don't push it.
@@ -5641,7 +5641,7 @@ sub edit_type {
 
 
     # Backwards Compatibility!
-    foreach(qw(
+    for(qw(
         confirmation_message
         subscribed_message
         unsub_confirmation_message
@@ -5850,7 +5850,7 @@ sub edit_html_type {
 
 # Backwards Compatibility!
     require DADA::Template::Widgets;
-    foreach(qw(
+    for(qw(
          html_confirmation_message
          html_unsub_confirmation_message
          html_subscribed_message
@@ -5932,7 +5932,7 @@ sub manage_script {
 
     my $at_incs             = [];
 
-	foreach(@INC){
+	for(@INC){
 		if($_ !~ /^\./){
     		push(@$at_incs, {name => $_});
 		}
@@ -6026,7 +6026,7 @@ sub feature_set {
 
         my @params = $q->param;
         my %param_hash;
-        foreach(@params){
+        for(@params){
             next if $_ eq 'disabled_screen_view'; # special case.
             $param_hash{$_} = $q->param($_);
         }
@@ -6300,7 +6300,7 @@ sub profile_fields {
      my $named_subscriber_fields = [];
 
 
-     foreach(@$subscriber_fields){
+     for(@$subscriber_fields){
         push(
 			@$named_subscriber_fields,
 				{
@@ -6685,7 +6685,7 @@ sub search_list {
 
         # DEV: Why isn't this its own method? It seems to be in the code in a whole bunch of places...
         my $field_names = [];
-        foreach(@{$lh->subscriber_fields}){
+        for(@{$lh->subscriber_fields}){
             push(@$field_names, {name => $_});
         }
 
@@ -7852,7 +7852,7 @@ sub search_archive {
 
         my $summaries = $archive->make_search_summary($keyword, $search_results);
 
-        foreach(@$search_results){
+        for(@$search_results){
 
             my ($subject, $message, $format) = $archive->get_archive_info($_);
             my $date = date_this(-Packed_Date   => $_,
@@ -8649,7 +8649,7 @@ sub checker {
            $li->{add_unsubs_to_black_list} == 1
            ){
 
-  			foreach(@address){
+  			for(@address){
 				$lh->add_subscriber(
 					{
 						-email => $_,
@@ -8817,7 +8817,7 @@ sub setup_info {
 
         my $CONFIG_vals = ();
 
-        foreach (@DADA::Config::EXPORT_OK) {
+        for (@DADA::Config::EXPORT_OK) {
             my $orig_name = $_;
             $_ =~ s/^(\$|\@|\%)//;
             my $sigil = $1;
@@ -8968,7 +8968,7 @@ sub reset_cipher_keys {
         require DADA::MailingList::Settings;
         $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
-        foreach (@lists) {
+        for (@lists) {
             my $ls = DADA::MailingList::Settings->new( { -list => $_ } );
             $ls->save(
                 { cipher_key => DADA::Security::Password::make_cipher_key() } );
@@ -9032,7 +9032,7 @@ sub restore_lists {
             my $report = '';
 
             my %restored;
-            foreach my $r_list (@lists) {
+            for my $r_list (@lists) {
                 if (   $q->param( 'restore_' . $r_list . '_settings' )
                     && $q->param( 'restore_' . $r_list . '_settings' ) == 1 )
                 {
@@ -9044,7 +9044,7 @@ sub restore_lists {
                         $q->param( 'settings_' . $r_list . '_version' ) );
                 }
             }
-            foreach my $r_list (@lists) {
+            for my $r_list (@lists) {
                 if (   $q->param( 'restore_' . $r_list . '_archives' )
                     && $q->param( 'restore_' . $r_list . '_archives' ) == 1 )
                 {
@@ -9059,7 +9059,7 @@ sub restore_lists {
                 }
             }
 
-            foreach my $r_list (@lists) {
+            for my $r_list (@lists) {
                 if (   $q->param( 'restore_' . $r_list . '_schedules' )
                     && $q->param( 'restore_' . $r_list . '_schedules' ) == 1 )
                 {
@@ -9088,7 +9088,7 @@ sub restore_lists {
         else {
 
             my $backup_hist = {};
-            foreach (@lists) {
+            for (@lists) {
                 my $ls = DADA::MailingList::Settings->new( { -list => $_ } );
                 $ls->{ignore_open_db_error} = 1;
                 my $la = DADA::MailingList::Archives->new(
@@ -9119,8 +9119,8 @@ sub restore_lists {
 
             #    labels are for the popup menus, that's it    #
             my %labels;
-            foreach ( sort keys %$backup_hist ) {
-                foreach ( @{ $backup_hist->{$_}->{settings} } ) {
+            for ( sort keys %$backup_hist ) {
+                for ( @{ $backup_hist->{$_}->{settings} } ) {
                     my ( $time_stamp, $appended ) = ( '', '' );
                     if ( $_->{dir} =~ /\./ ) {
                         ( $time_stamp, $appended ) =
@@ -9136,7 +9136,7 @@ sub restore_lists {
                       . ' entries)';
 
                 }
-                foreach ( @{ $backup_hist->{$_}->{archives} } ) {
+                for ( @{ $backup_hist->{$_}->{archives} } ) {
 
                     my ( $time_stamp, $appended ) = ( '', '' );
                     if ( $_->{dir} =~ /\./ ) {
@@ -9153,7 +9153,7 @@ sub restore_lists {
                       . ' entries)';
 
                 }
-                foreach ( @{ $backup_hist->{$_}->{schedules} } ) {
+                for ( @{ $backup_hist->{$_}->{schedules} } ) {
 
                     my ( $time_stamp, $appended ) = ( '', '' );
                     if ( $_->{dir} =~ /\./ ) {
@@ -9174,7 +9174,7 @@ sub restore_lists {
 
             #
 
-            foreach my $f_list ( keys %$backup_hist ) {
+            for my $f_list ( keys %$backup_hist ) {
 
                 $restore_list_options .=
                   $q->start_table( { -cellpadding => 5 } );
@@ -9190,12 +9190,12 @@ sub restore_lists {
                     )
                 );
 
-                foreach ( 'settings', 'archives', 'schedules' ) {
+                for ( 'settings', 'archives', 'schedules' ) {
 
                     #		require Data::Dumper;
                     #		die Data::Dumper::Dumper(%labels);
                     my $vals = [];
-                    foreach ( @{ $backup_hist->{$f_list}->{$_} } ) {
+                    for ( @{ $backup_hist->{$f_list}->{$_} } ) {
                         push( @$vals, $_->{dir} );
                     }
 
@@ -9552,7 +9552,7 @@ sub javascripts {
     );
 
     my %lt = ();
-    foreach (@allowed_js) { $lt{$_} = 1; }
+    for (@allowed_js) { $lt{$_} = 1; }
 
     require DADA::Template::Widgets;
 #warn '$js_lib ' . $js_lib;
@@ -9610,7 +9610,7 @@ sub img {
     );
 
     my %lt = ();
-    foreach(@allowed_images){ $lt{$_} = 1; }
+    for(@allowed_images){ $lt{$_} = 1; }
 
     require DADA::Template::Widgets;
 
@@ -9703,7 +9703,7 @@ sub profile_login {
 	my $all_errors = [];
 	my $named_errs = {};
 	my $errors     = $q->param('errors');
-	foreach(@$errors){
+	for(@$errors){
 		$named_errs->{'error_' . $_} = 1 ;
 		push(@$all_errors, {error => $_});
 	}
@@ -9810,7 +9810,7 @@ sub profile_login {
 		}
 		else {
 			my $p_errors = [];
-			foreach(keys %$errors){
+			for(keys %$errors){
 				if($errors->{$_} == 1){
 					push(@$p_errors, $_);
 				}
@@ -9862,7 +9862,7 @@ sub profile_register {
 	);
 	if($status == 0){
 		my $p_errors = [];
-		foreach(keys %$errors){
+		for(keys %$errors){
 			if($errors->{$_} == 1){
 				push(@$p_errors, $_);
 			}
@@ -9934,7 +9934,7 @@ sub profile_activate {
 		}
 		else {
 			my $p_errors = [];
-			foreach(keys %$errors){
+			for(keys %$errors){
 				if($errors->{$_} == 1){
 					push(@$p_errors, $_);
 				}
@@ -10012,7 +10012,7 @@ sub profile {
 		if($q->param('process') eq 'edit_subscriber_fields'){
 
 			my $edited = {};
-			foreach(@$subscriber_fields){
+			for(@$subscriber_fields){
 				$edited->{$_} = xss_filter($q->param($_));
 				# This is better than nothing, but it's very lazy -
 				# Make sure that the length is less than 10k.
@@ -10099,7 +10099,7 @@ sub profile {
 			if($status == 0){
 
 				my $p_errors = [];
-				foreach(keys %$errors){
+				for(keys %$errors){
 					if($errors->{$_} == 1){
 						#push(@$p_errors, $_);
 						$q->param('error_' . $_, 1);
@@ -10170,7 +10170,7 @@ sub profile {
 		else {
 
 		   	my $fields = [];
-			foreach my $field(@$subscriber_fields){
+			for my $field(@$subscriber_fields){
 		        push(@$fields, {
 					name          => $field,
 					label		  => $field_attr->{$field}->{label},
@@ -10183,7 +10183,7 @@ sub profile {
 		   my $filled = [];
 		   my $has_subscriptions = 0;
 
-		   foreach my $i(@$subscriptions){
+		   for my $i(@$subscriptions){
 
 				if($i->{subscribed} == 1){
 					$has_subscriptions = 1;
@@ -10357,7 +10357,7 @@ sub profile_reset_password {
 			}
 			else {
 				my $p_errors = [];
-				foreach(keys %$errors){
+				for(keys %$errors){
 					if($errors->{$_} == 1){
 						push(@$p_errors, $_);
 					}
@@ -10436,7 +10436,7 @@ sub profile_update_email {
 
 			# This should probably go in the update_email method...
 			require DADA::MailingList::Subscribers;
-			foreach my $in_list(@$subs) {
+			for my $in_list(@$subs) {
 				my $lh = DADA::MailingList::Subscribers->new(
 					{
 						-list => $in_list->{'list_settings.list'},

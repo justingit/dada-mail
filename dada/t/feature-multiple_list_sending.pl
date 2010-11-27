@@ -40,8 +40,8 @@ my @subs = qw(
 ); 
 my @ls_s = ($ls, $ls2, $ls3); 
 
-foreach my $local_ls(@ls_s){ 
-	foreach my $sub(@subs){ 
+for my $local_ls(@ls_s){ 
+	for my $sub(@subs){ 
 		$local_ls->add_subscriber(
 			{
 				-email => $sub, 
@@ -162,7 +162,7 @@ $pf->{manager}->add_field(
 	}
 );
 
-foreach my $sub(@{$ls->subscription_list}){ 
+for my $sub(@{$ls->subscription_list}){ 
 	$ls->edit_subscriber(
 		{
 			-email    => $sub->{email}, 

@@ -49,7 +49,7 @@ my $message_id = DADA::App::Guts::message_id;
 
 my %entities = entities(); 
 
-foreach my $chr_name(keys %entities){ 
+for my $chr_name(keys %entities){ 
 
 	diag '$entities{$chr_name} '  . Encode::encode('UTF-8', $entities{$chr_name}); 
 	
@@ -96,7 +96,7 @@ foreach my $chr_name(keys %entities){
 =cut
 
 
-foreach my $dec(keys %DECIMALS){ 
+for my $dec(keys %DECIMALS){ 
 
     
     

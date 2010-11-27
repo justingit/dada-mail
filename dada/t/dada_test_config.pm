@@ -139,7 +139,7 @@ sub create_test_list {
         require DADA::MailingList::Subscribers; 
         my $lh = DADA::MailingList::Subscribers->new({-list => $local_test_list_vars->{list}}); 
         my $fields = $lh->subscriber_fields;
-        foreach(@$fields){ 
+        for(@$fields){ 
            # carp 'Removing Field: ' . $_; 
             $lh->remove_subscriber_field({-field => $_}); 
         }
@@ -194,7 +194,7 @@ sub create_SQLite_db {
 #carp q{$__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{dbtype}} . $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{dbtype}; 
 
      %DADA::Config::SQL_PARAMS = %{$__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}};
-foreach(keys  %DADA::Config::SQL_PARAMS){ 
+for(keys  %DADA::Config::SQL_PARAMS){ 
 	print $_ . ' => ' . $DADA::Config::SQL_PARAMS{$_} . "\n"; 
 }
 
@@ -217,7 +217,7 @@ my @statements = split(';', $sql,8);
 
     my $dbh = $dbi_handle->dbh_obj;
     
-    foreach(@statements){ 
+    for(@statements){ 
 			
     	my $settings_table                   = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{settings_table}; 
 		my $subscribers_table    	         = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{subscriber_table}; 
@@ -321,7 +321,7 @@ my @statements = split(';', $sql);
 
     my $dbh = $dbi_handle->dbh_obj;
     
-    foreach(@statements){ 
+    for(@statements){ 
 	
     	my $settings_table                   = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{settings_table}; 
 		my $subscribers_table    	         = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{subscriber_table}; 
@@ -438,7 +438,7 @@ my @statements = split(';', $sql);
     my $dbh = $dbi_handle->dbh_obj;
     
 	
-    foreach(@statements){ 
+    for(@statements){ 
    
 
 	   	my $settings_table                   = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{settings_table}; 

@@ -540,7 +540,7 @@ sub check_admin_cgi_security {
 	
 	if(@DADA::Config::ALLOWED_IP_ADDRESSES){ 
 		my $ip_check = 0; 
-		foreach(@DADA::Config::ALLOWED_IP_ADDRESSES){ 
+		for(@DADA::Config::ALLOWED_IP_ADDRESSES){ 
 			if($_ eq $args{-IP_Address}){ 
 				$ip_check = 1;
 				last;
@@ -656,7 +656,7 @@ sub enforce_admin_cgi_security {
 	require DADA::App::Error; 
 
 	my @error_precedence = qw(need_to_login bad_ip no_list no_list_password invalid_password no_admin_permissions);
-	foreach (@error_precedence){
+	for (@error_precedence){
 		if($flags->{$_} == 1){ 
 			
 			if($_ eq 'no_admin_permissions'){ 

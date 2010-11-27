@@ -92,7 +92,7 @@ sub save {
 
  		$self->_existence_check($new_settings); 	    
  	
- 		foreach my $setting(keys %$new_settings){ 
+ 		for my $setting(keys %$new_settings){ 
  		
  		    my $sth_d = $self->{dbh}->prepare($d_query); 
  			   $sth_d->execute($self->{name}, $setting)

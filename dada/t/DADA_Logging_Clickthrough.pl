@@ -261,8 +261,8 @@ sub string_from_dada_style_args {
         die 'did not pass data in, "-fields"';
     }
 
-    # foreach(keys %{$args->{-fields}}){ ?!?!
-    foreach (@DADA::Config::EMAIL_HEADERS_ORDER) {
+    # for(keys %{$args->{-fields}}){ ?!?!
+    for (@DADA::Config::EMAIL_HEADERS_ORDER) {
         next if $_ eq 'Body';
         next if $_ eq 'Message';    # Do I need this?!
         $str .= $_ . ': ' . $args->{ -fields }->{$_} . "\n"

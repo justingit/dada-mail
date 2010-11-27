@@ -99,7 +99,7 @@ sub parse
     }
     # Scan each part found by linkExtor
     my (%images_read,%url_remplace);
-    foreach my $url (@l) {
+    for my $url (@l) {
 	  my $urlAbs = absUrl($$url[2],$racinePage);
 	  chomp $urlAbs; # Sometime a strange cr/lf occur
 

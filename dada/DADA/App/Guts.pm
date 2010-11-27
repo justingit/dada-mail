@@ -163,7 +163,7 @@ sub check_for_valid_email {
     
     
 	my %exceptions; 
-	foreach(@DADA::Config::EMAIL_EXCEPTIONS){
+	for(@DADA::Config::EMAIL_EXCEPTIONS){
 	    $exceptions{$_}++
 	} 
 	$email_check = 0 if exists($exceptions{$email}); 	
@@ -579,7 +579,7 @@ sub check_if_list_exists {
 		);
 	
 	my $might_be;
-	foreach $might_be(@available_lists) {
+	for $might_be(@available_lists) {
 		if ($might_be eq $args{-List}) { 
 		  $list_exists = 1;
 		  last; 
@@ -677,7 +677,7 @@ sub available_lists {
     if ( $args{-clear_cache} == 1 ) {
 
         # This is completely over the top, but...
-        foreach ( keys %$cache ) {
+        for ( keys %$cache ) {
             $cache->{$_} = undef;
             delete( $cache->{$_} );
         }
@@ -777,7 +777,7 @@ sub available_lists {
                 }
             }    #/while
 
-            foreach my $all_those (@dbs) {
+            for my $all_those (@dbs) {
                 if ( $all_those !~ m/\-archive.*|\-schedules.*/ ) {
                     push( @available_lists, $all_those );
                 }
@@ -789,7 +789,7 @@ sub available_lists {
 
             my @clean_unique;
 
-            foreach (@unique) {
+            for (@unique) {
                 if (   defined($_)
                     && $_ ne ""
                     && $_ !~ m/^\s+$/ )
@@ -819,7 +819,7 @@ sub available_lists {
     if ( $in_order == 1 ) {
 
          my $labels = {};
-         foreach my $l (@available_lists) {
+         for my $l (@available_lists) {
              my $ls =
                DADA::MailingList::Settings->new( { -list => $l } );
              my $li = $ls->get;
@@ -1054,7 +1054,7 @@ sub _chomp_off_body_thats_being_difficult {
 	
 
 	my @lines = split("\n", $str); 
-		foreach (@lines){ 
+		for (@lines){ 
 			if(/\<body(.*?)\>/i .. /\<\/body\>/i)	{
 				next if /\<body(.*?)\>/i || /\<\/body\>/i;
 				$n_str .= $_ . "\n";
@@ -1392,7 +1392,7 @@ sub js_enc {
 
 	my $str = shift || '';
 	my @chars = split(//,$str);
-	foreach my $c (@chars) {
+	for my $c (@chars) {
 		$c = '\x' . sprintf("%x", ord($c));
 	}
 	my $e =  join('',@chars);
@@ -1987,7 +1987,7 @@ sub check_setup {
 		return 1; 
 	}else{ 	
 		my @tests = ($DADA::Config::FILES, $DADA::Config::TEMPLATES , $DADA::Config::TMP );
-		foreach my $test_dir(@tests){ 
+		for my $test_dir(@tests){ 
 
 			if(-d $test_dir && -e $test_dir){ 
 			
@@ -2014,7 +2014,7 @@ sub SQL_check_setup {
 		my $dbi_obj = DADA::App::DBIHandle->new; 
 		my $dbh = $dbi_obj->dbh_obj;
 		
-		foreach my $param(keys %DADA::Config::SQL_PARAMS){ 
+		for my $param(keys %DADA::Config::SQL_PARAMS){ 
 			if($param =~ m/table/){ 
 				$table_count++;
 			 	$dbh->do('SELECT * from ' . $DADA::Config::SQL_PARAMS{$param} . ' WHERE 1 = 0')
@@ -2169,7 +2169,7 @@ sub check_referer {
     }
 	
 	
-    foreach my $test_ref (@referers) {
+    for my $test_ref (@referers) {
       if ($refHost =~ m|\Q$test_ref\E$|i) {
         $check_referer = 1;
         last;
@@ -2454,7 +2454,7 @@ sub csv_subscriber_parse {
 
 		my $new_fields = [];
 		my $i = 0; 
-		foreach(@$subscriber_fields){
+		for(@$subscriber_fields){
 			push(@$new_fields, {name => $_, value => $pre_info->{fields}->{$_} }); 
 			$i++;
 		}
@@ -2497,14 +2497,14 @@ sub decode_cgi_obj {
 #	return $query; 
 	
 	my $form_input = {};  
-	foreach my $name ( $query->param ) {
+	for my $name ( $query->param ) {
 	  
 	  # Don't decode image uploads that are binary. 
 	  next 
 		if $name =~ m/file|picture|attachment(.*?)$/; 
 	
 	  my @val = $query ->param( $name );
-	  foreach ( @val ) {
+	  for ( @val ) {
 	    #$_ = Encode::decode($DADA::Config::HTML_CHARSET, $_ );
 		$_ = safely_decode($_); 
 	  }

@@ -157,7 +157,7 @@ ok(keys %$status, "status() returned a hashref!");
 
 
 
-foreach my $in_stat(qw(
+for my $in_stat(qw(
     id
     total_sending_out_num
     total_sent_out

@@ -79,7 +79,7 @@ sub get_neighbors {
 	my $i = 0; 
 	my %lookup_hash; 
 	
-	foreach(@$entries){ 
+	for(@$entries){ 
 		$lookup_hash{$_} = $i;
 		$i++;  
 	}
@@ -121,7 +121,7 @@ sub check_if_entry_exists {
 	my $entry_list = $self->get_archive_entries(); 
 	my $test       = 0; 
 	
-	foreach(@$entry_list){ 
+	for(@$entry_list){ 
 		if($_ eq $key){ 
 			$test++; 
 		}
@@ -838,7 +838,7 @@ sub _email_protect {
 								});
 	$finder->find(\$body); 
 	
-	foreach my $fa (@$found_addresses){ 
+	for my $fa (@$found_addresses){ 
 		#my $pe = spam_me_not_encode($fa);
 		
 		
@@ -905,7 +905,7 @@ sub _zap_sig_plaintext {
 	my $start       = 0; 
 	
 	STRIP: while ($start == 0){ 
-		 foreach my $line(@msg_lines){
+		 for my $line(@msg_lines){
 			
 		 # This gets mucked up in the archive editor... 
 		 $line =~ s/\r/\n/g; 
@@ -983,7 +983,7 @@ sub _zap_sig_html {
 	
 	my $switch = 1; 
 	
-    foreach my $line(@msg_lines){ 
+    for my $line(@msg_lines){ 
 		if($line =~ m/$opening_open/ || $line =~ m/$sig_open/){  
 			$switch = 0;
 			next; 
@@ -1020,7 +1020,7 @@ sub _highlight_quoted_text {
 	my @msg_lines   = split(/\n/, $message);
 	my $new_message = undef; 
 	
-	foreach my $line(@msg_lines){
+	for my $line(@msg_lines){
 		
 		my $br_at_end = 0; 
 		
@@ -1130,7 +1130,7 @@ sub find_attachment_list {
 	if(@parts){ 
 	
 		my $i; 
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 			my $part = $parts[$i];
 			$attachment_list = $self->find_attachment_list($part, $id, $attachment_list);  
 		}
@@ -1253,7 +1253,7 @@ sub _find_filename_attachment_entity {
 	
 	if(@parts){ 
 			my $i; 
-			foreach $i (0 .. $#parts) {
+			for $i (0 .. $#parts) {
 				my $part = $parts[$i];
 				my $s_entity = $self->_find_filename_attachment_entity(
 					-entity   => $part, 
@@ -1305,7 +1305,7 @@ sub _rearrange_cid_img_tags {
 	
 	if($self->can_display_attachments){ 
 		my @lines = split("\n", $body_copy); 
-		foreach my $line(@lines){ 
+		for my $line(@lines){ 
 			
 			
 			if($line =~ m/\"(cid\:(.*?))\"/){ 
@@ -1314,7 +1314,7 @@ sub _rearrange_cid_img_tags {
 		}
 		
 	
-		foreach my $this_cid(@cids){
+		for my $this_cid(@cids){
 		
 		
 			my $img_url = $DADA::Config::PROGRAM_URL . '?f=show_img&l=' . $self->{list} . '&id=' . $args{-key} . '&cid=' . $this_cid;  
@@ -1441,7 +1441,7 @@ sub _find_inline_attachment_entity {
 	
 	if(@parts){ 
 			my $i; 
-			foreach $i (0 .. $#parts) {
+			for $i (0 .. $#parts) {
 				my $part = $parts[$i];
 				my $s_entity = $self->_find_inline_attachment_entity(-entity => $part, -cid => $cid); 
 				return $s_entity 
@@ -1511,7 +1511,7 @@ sub make_search_summary {
 	my %search_summary;
 	
 	my $key;
-	foreach $key(@$matches){ 
+	for $key(@$matches){ 
 	
 		my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($key);
 		
@@ -1527,7 +1527,7 @@ sub make_search_summary {
 		my @message_lines = split("\n", $message);
 		my $line;
 		
-		foreach $line(@message_lines){ 
+		for $line(@message_lines){ 
 			if($line =~ m/$keyword/io){ 
 				$line =~ s{$keyword}{<em class="highlighted">$keyword</em>}gi;
 				$search_summary{$key} .= "... $line ... <br />";
@@ -1669,7 +1669,7 @@ sub massage_msg_for_resending {
 	   $entity = $self->_take_off_sigs($entity); 
 	
 	# These may be out of date, so let's get rid of them.
-	foreach my $header(
+	for my $header(
 		'From', 
 		'To', 
 		'Reply-To', 
@@ -1748,7 +1748,7 @@ sub _take_off_sigs {
 		return $entity; 
 	}else{ 
 		my $i = 0; 
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 			$parts[$i] = $self->_take_off_sigs($parts[$i]);
 			$entity->sync_headers('Length'      =>  'COMPUTE',
 						  	      'Nonstandard' =>  'ERASE');
@@ -1981,7 +1981,7 @@ sub _chomp_out_head_styles {
 	
 
 	my @lines = split("\n", $str); 
-		foreach (@lines){ 
+		for (@lines){ 
 			if(/\<style(.*?)\>/i .. /\<\/style\>/i)	{
 				#next if /\<style(.*?)\>/i || /\<\/style\>/i;
 				#$n_str .= $_ . "\n";
@@ -2052,7 +2052,7 @@ sub _chomp_off_body_thats_being_difficult {
 	
 
 	my @lines = split("\n", $str); 
-		foreach (@lines){ 
+		for (@lines){ 
 			if(/\<body(.*?)\>/i .. /\<\/body\>/i)	{
 				next if /\<body(.*?)\>/i || /\<\/body\>/i;
 				$n_str .= $_ . "\n";
@@ -2153,7 +2153,7 @@ sub _get_body_entity {
 			}
 			
 			my $i; 
-			foreach $i (0 .. $#parts) {
+			for $i (0 .. $#parts) {
 				my $s_entity = $self->_get_body_entity($parts[$i]); 
 				return $s_entity if $s_entity; 
 			}

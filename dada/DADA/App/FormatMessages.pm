@@ -384,7 +384,7 @@ sub _format_text {
 	
 	if(@parts){
 		my $i; 
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 			$parts[$i] = $self->_format_text($parts[$i]);	
 		}
 		$entity->sync_headers('Length'      =>  'COMPUTE',
@@ -606,7 +606,7 @@ sub _create_multipart_from_html {
       			warn 'multipart/mixed with no parts?! Something is screwy....'; 
       		}else{ 
       			my $i; 
-				foreach $i (0 .. $#parts) {
+				for $i (0 .. $#parts) {
 					if(
 					  ($parts[$i]->head->mime_type eq 'text/html') &&
 					  ($parts[$i]->head->mime_attr('content-disposition') !~ m/attachment/)) { 
@@ -848,7 +848,7 @@ sub _encode_header {
 	else { 
 		require Email::Address;	
 		 my @addresses = Email::Address->parse($value); 
-		 foreach my $address(@addresses){
+		 for my $address(@addresses){
 			
 		 	my $phrase = $address->phrase;
 		
@@ -861,7 +861,7 @@ sub _encode_header {
 			);
 		}
 		my @new_addresses = (); 
-		foreach(@addresses){ 
+		for(@addresses){ 
 		
 			push(@new_addresses, $_->format()); 
 		}
@@ -909,7 +909,7 @@ sub change_charset {
           if $t;
 
         my $i;
-        foreach $i ( 0 .. $#parts ) {
+        for $i ( 0 .. $#parts ) {
             $parts[$i] =
               $self->change_charset( { %{$args}, -entity => $parts[$i] } )
               ; # -entity should only pass the current part, but have the rest of the params passed...?
@@ -1233,7 +1233,7 @@ sub _macro_tags {
 	my $link = $args{-url} . '/';
 	
 	if($args{-escape_all} == 1){ 
-		foreach($args{-email}, $args{-pin}, $type, $args{-list}){ 
+		for($args{-email}, $args{-pin}, $type, $args{-list}){ 
 			$_ = uriescape($_);
 		}
 		
@@ -1416,7 +1416,7 @@ sub can_find_sub_confirm_link {
 			
 	    }
 	
-	    foreach my $url (@sub_confirm_urls) {
+	    for my $url (@sub_confirm_urls) {
 	        $url = quotemeta($url);
 	        if ( $args->{-str} =~ m/$url/ ) {
 	            return 1;
@@ -1465,7 +1465,7 @@ sub can_find_unsub_confirm_link {
 			
 	    }
 	
-	    foreach my $url (@unsub_confirm_urls) {
+	    for my $url (@unsub_confirm_urls) {
 	        $url = quotemeta($url);
 	        if ( $args->{-str} =~ m/$url/ ) {
 	            return 1;
@@ -1520,7 +1520,7 @@ sub can_find_unsub_link {
         push( @unsub_urls, '[list_unsubscribe_link]' );
     }
 
-    foreach my $unsub_url (@unsub_urls) {
+    for my $unsub_url (@unsub_urls) {
         $unsub_url = quotemeta($unsub_url);
         if ( $args->{-str} =~ m/$unsub_url/ ) {
             return 1;
@@ -1596,7 +1596,7 @@ sub _apply_list_template {
 	$html =~ s/(\<body.*?\>|<\/body\>)/\n$1\n/gi; 
 
 	my @lines = split("\n", $html); 
-		foreach (@lines){ 
+		for (@lines){ 
 			if(/\<body(.*?)\>/i .. /\<\/body\>/i)	{
 				next if /\<body(.*?)\>/i || /\<\/body\>/i;
 				$body_html .= $_ . "\n";
@@ -1698,8 +1698,8 @@ sub string_from_dada_style_args {
         croak 'did not pass data in, "-fields"' ;
     }
     
-    foreach(keys %{$args->{-fields}}){
-    #foreach (@DADA::Config::EMAIL_HEADERS_ORDER) {
+    for(keys %{$args->{-fields}}){
+    #for (@DADA::Config::EMAIL_HEADERS_ORDER) {
 	# You want the above because of tricky headers like Content-Type (or Content-type - you see?)
         next if $_ eq 'Body';
         next if $_ eq 'Message';    # Do I need this?!
@@ -1739,8 +1739,8 @@ sub file_from_dada_style_args {
         croak 'did not pass data in, "-fields"' ;
     }
     
-    foreach(keys %{$args->{-fields}}){
-#    foreach (@DADA::Config::EMAIL_HEADERS_ORDER) {
+    for(keys %{$args->{-fields}}){
+#    for (@DADA::Config::EMAIL_HEADERS_ORDER) {
         next if $_ eq 'Body';
         next if $_ eq 'Message';    # Do I need this?!
         print $MAIL $_ . ': ' . $args->{-fields}->{$_} . "\n"
@@ -1915,7 +1915,7 @@ sub email_template {
           if $t;
 
         my $i;
-        foreach $i ( 0 .. $#parts ) {
+        for $i ( 0 .. $#parts ) {
             $parts[$i] =
               $self->email_template( { %{$args}, -entity => $parts[$i] } )
               ; # -entity should only pass the current part, but have the rest of the params passed...?
@@ -1966,7 +1966,7 @@ sub email_template {
 ###
             # ?!
             my %screen_vars = ();
-            foreach ( keys %{$args} ) {
+            for ( keys %{$args} ) {
                 next if $_ eq '-entity';
                 $screen_vars{$_} = $args->{$_};
             }
@@ -2019,13 +2019,13 @@ sub email_template {
 	
     # ?!
     my %screen_vars = (); 
-    foreach(keys %{$args}){ 
+    for(keys %{$args}){ 
         next if $_ eq '-entity';
         $screen_vars{$_} = $args->{$_}; 
     }
     $screen_vars{-dada_pseudo_tag_filter} = 1; 
     
-	foreach my $header('Subject', 'From', 'To', 'Reply-To', 'Errors-To', 'Return-Path', 'List', 'List-URL', 'List-Owner', 'List-Subscribe', 'List-Unsubscribe'){ 
+	for my $header('Subject', 'From', 'To', 'Reply-To', 'Errors-To', 'Return-Path', 'List', 'List-URL', 'List-Owner', 'List-Subscribe', 'List-Unsubscribe'){ 
 		warn "looking at headers"
 			if $t;
 						
