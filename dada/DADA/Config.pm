@@ -3447,6 +3447,7 @@ this automatic unsubscribe mechanism.</p>
   <!-- tmpl_var list_settings.physical_address -->
  </blockquote> 
 </li>
+</ul> 
 
 <!--/signature-->
 
