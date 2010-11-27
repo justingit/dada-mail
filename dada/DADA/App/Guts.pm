@@ -3,8 +3,8 @@ use 5.008_001;
 use Encode qw(encode decode);
 
 # evaluate these once at compile time
-use constant HAS_URI_ESCAPE_XS = eval { require URI::Escape::XS; 1; }; # Much faster, but requires C compiler.
-use constant HAS_URI_ESCAPE    = eval { require URI::Escape; 1; };
+use constant HAS_URI_ESCAPE_XS => eval { require URI::Escape::XS; 1; }; # Much faster, but requires C compiler.
+use constant HAS_URI_ESCAPE    => eval { require URI::Escape; 1; };
 
 =pod
 
