@@ -135,6 +135,10 @@ Dada Mail will also alert the user of the missing tags in the List Control Panel
  
 =head2 Bug Fixes 4.3.0
 
+=head3 uncompress_dada.cgi script will return, "Server Error 500", if it can't find the .tar.gz file to uncompress
+
+https://github.com/justingit/dada-mail/issues/closed#issue/89
+
 =head3 $MAILlING_LIST_MESSAGE and, $MAILlING_LIST_MESSAGE_HTML variables speled incorrectly? 
 
 https://github.com/justingit/dada-mail/issues#issue/87
@@ -167,7 +171,7 @@ https://github.com/justingit/dada-mail/issues/closed#issue/74
 
 https://github.com/justingit/dada-mail/issues/closed#issue/79
 
-=head3 '=' added to the end of some plaintext mailins in quoted-printable encoding
+=head3 '=' added to the end of some plaintext mailings in quoted-printable encoding
 
 https://github.com/justingit/dada-mail/issues/closed#issue/78
 
@@ -187,7 +191,7 @@ https://github.com/justingit/dada-mail/issues/closed#issue/81
 
 https://github.com/justingit/dada-mail/issues/closed#issue/77
 
-=head3 Unsubscribe requrests should have similar "notify via email, rather than web UI" functionality
+=head3 Unsubscribe requests should have similar "notify via email, rather than web UI" functionality
 
 https://github.com/justingit/dada-mail/issues/closed#issue/76
 
