@@ -1,7 +1,7 @@
 package dada_test_config;
+use FindBin '$Bin';
 
-
-use lib qw (../ ./); 
+use lib "$Bin/../ $Bin/";
 
 use __Test_Config_Vars; 
 use Carp qw(croak carp); 
@@ -32,7 +32,7 @@ $DADA::Config::PROGRAM_USAGE_LOG        = $DADA::Config::FILES . '/dada.txt';
 }
 
 
-use lib qw(./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib); 
+use lib "$Bin/../DADA/perllib";
 
 use DADA::MailingList; 
 
