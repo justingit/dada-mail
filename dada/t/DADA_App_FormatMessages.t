@@ -397,7 +397,7 @@ ok($t_msg =~ m/$endif/,'found the [endif] tag');
 # can_find_unsub_link
 ok(
     $fm->can_find_unsub_link(
-        { -str => $DADA::Config::MAILlING_LIST_MESSAGE }
+        { -str => $DADA::Config::MAILING_LIST_MESSAGE }
     ),
     "found unsub link in text  mailing list message!"
 );
@@ -405,7 +405,7 @@ ok(
 # can_find_unsub_link
 ok(
     $fm->can_find_unsub_link(
-        { -str => $DADA::Config::MAILlING_LIST_MESSAGE_HTML }
+        { -str => $DADA::Config::MAILING_LIST_MESSAGE_HTML }
     ),
     "found unsub link in html mailing list message!"
 );

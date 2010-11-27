@@ -748,9 +748,9 @@ The default email messages that are easily editable are located in the Config.pm
 
 =item * $UNSUB_CONFIRMATION_MESSAGE
 
-=item * $MAILlING_LIST_MESSAGE
+=item * $MAILING_LIST_MESSAGE
 
-=item * $MAILlING_LIST_MESSAGE_HTML
+=item * $MAILING_LIST_MESSAGE_HTML
 
 =item * $NOT_ALLOWED_TO_POST_MESSAGE
 
@@ -968,7 +968,7 @@ Edit to your liking - one special tag that you're going to want to make sure you
 
 If your mailing list messages are coming to you as blank, make sure you did not remove the, B<E<lt>!-- tmpl_var message_body --E<gt>> tag!
 
-These two messages can be changed globaly in the Config.pm file, under the variables: B<$MAILlING_LIST_MESSAGE> and B<$MAILlING_LIST_MESSAGE_HTML> 
+These two messages can be changed globaly in the Config.pm file, under the variables: B<$MAILING_LIST_MESSAGE> and B<$MAILING_LIST_MESSAGE_HTML> 
 
 If a list already has edited any of the email message templates, your global changes will not take affect for that list. 
 
