@@ -1,12 +1,11 @@
 package dada_test_config;
-use FindBin '$Bin';
-
-use lib "$Bin/../ $Bin/";
 
 use __Test_Config_Vars; 
 use Carp qw(croak carp); 
 
 BEGIN { 
+    use FindBin '$Bin';
+    use lib "$Bin/../ $Bin/";
 	use DADA::Config; 
 	$DADA::Config::FILES = './test_only_dada_files'; 
 
@@ -33,6 +32,7 @@ $DADA::Config::PROGRAM_USAGE_LOG        = $DADA::Config::FILES . '/dada.txt';
 
 
 use lib "$Bin/../DADA/perllib";
+use Params::Validate ':all';
 
 use DADA::MailingList; 
 
@@ -96,24 +96,17 @@ sub test_list_vars {
 
 sub create_test_list { 
     my $local_test_list_vars = test_list_vars(); 
-    my $list_name = $local_test_list_vars->{list};
-
-    my ($args) = @_; 
-    
-    if(exists($args->{-name})){ 
-        $list_name = $args->{-name}; 
-    }
-    if(!exists($args->{-remove_existing_list})){ 
-        $args->{-remove_existing_list} = 0; 
-    }
-
-    if(!exists($args->{-remove_subscriber_fields})){ 
-        $args->{-remove_subscriber_fields} = 0; 
-    }
-    
     delete($local_test_list_vars->{retype_password});
 
-    if($args->{-remove_existing_list} == 1){ 
+    my %args = validate(@_,{
+        '-name'                     => { default => $local_test_list_vars->{list} },
+        '-remove_existing_list'     => { default => 0 },
+        '-remove_subscriber_fields' => { default => 0 },
+    });
+
+    my $list_name = $args{-name};
+
+    if($args{-remove_existing_list} == 1){ 
         require DADA::App::Guts; 
         if(DADA::App::Guts::check_if_list_exists(-List => $list_name) == 1){ 
             #carp 'list: ' . $local_test_list_vars->{list} . ' already exists. Removing...';
@@ -129,7 +122,7 @@ sub create_test_list {
 		}
 	); 
    
-    if($args->{-remove_subscriber_fields} == 1){ 
+    if($args{-remove_subscriber_fields} == 1){ 
         #carp 'Removing extraneous Subscriber Profile Fields....'; 
         require DADA::MailingList::Subscribers; 
         my $lh = DADA::MailingList::Subscribers->new({-list => $list_name}); 
