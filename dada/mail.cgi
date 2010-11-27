@@ -7659,8 +7659,8 @@ sub archive {
                     subject        => decode_he($subject),
 
                     js_enc_subject      => js_enc($subject),
-                    uri_encoded_subject => DADA::App::Guts::uriescape($subject),
-                    uri_encoded_url     => DADA::App::Guts::uriescape(
+                    uri_encoded_subject => uriescape($subject),
+                    uri_encoded_url     => uriescape(
                         $DADA::Config::PROGRAM_URL
                           . '/archive/'
                           . $list . '/'
