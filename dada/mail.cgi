@@ -231,13 +231,7 @@ sub hook {
 	my ($filename, $buffer, $bytes_read, $data) = @_;
 
 	$bytes_read ||= 0;
-	eval {require URI::Escape};
-	if(!$@){
-		$filename =  URI::Escape::uri_escape_utf8($filename, "\200-\377");
-	}else{
-		warn('no URI::Escape is installed!');
-	}
-	$filename =~ s/\s/%20/g;
+    $filename = uriescape($filename);
 
 	open(COUNTER, ">", $DADA::Config::TMP . '/' . $filename . '-meta.txt') ;
 
@@ -3499,14 +3493,7 @@ sub add {
             my $filename = $q->param('new_email_file');
             $filename =~ s!^.*(\\|\/)!!;
 
-            eval { require URI::Escape };
-            if ( !$@ ) {
-                $filename = URI::Escape::uri_escape( $filename, "\200-\377" );
-            }
-            else {
-                warn('no URI::Escape is installed!');
-            }
-            $filename =~ s/\s/%20/g;
+            $filename = uriescape($filename);
 
             print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
                   . '?f=add_email&fn='
@@ -3624,14 +3611,7 @@ sub check_status {
     my $filename = $q->param('new_email_file');
     $filename =~ s{^(.*)\/}{};
 
-    eval { require URI::Escape };
-    if ( !$@ ) {
-        $filename = URI::Escape::uri_escape( $filename, "\200-\377" );
-    }
-    else {
-        warn('no URI::Escape is installed!');
-    }
-    $filename =~ s/\s/%20/g;
+    $filename = uriescape($filename);
 
     if ( !-e $DADA::Config::TMP . '/' . $filename . '-meta.txt' ) {
         warn "no meta file at: "
@@ -3678,14 +3658,7 @@ sub dump_meta_file {
     my $filename = $q->param('new_email_file');
     $filename =~ s{^(.*)\/}{};
 
-    eval { require URI::Escape };
-    if ( !$@ ) {
-        $filename = URI::Escape::uri_escape( $filename, "\200-\377" );
-    }
-    else {
-        warn('no URI::Escape is installed!');
-    }
-    $filename =~ s/\s/%20/g;
+    $filename = uriescape($filename);
 
     my $full_path_to_filename =
       make_safer( $DADA::Config::TMP . '/' . $filename . '-meta.txt' );
@@ -3733,14 +3706,7 @@ sub upload_that_file {
     my $filename = $q->param('new_email_file');
     $filename =~ s!^.*(\\|\/)!!;
 
-    eval { require URI::Escape };
-    if ( !$@ ) {
-        $filename = URI::Escape::uri_escape( $filename, "\200-\377" );
-    }
-    else {
-        warn('no URI::Escape is installed!');
-    }
-    $filename =~ s/\s/%20/g;
+    $filename = uriescape($filename);
 
     # warn '$filename ' . $filename;
 
@@ -8748,13 +8714,8 @@ sub file_upload {
     if ($file ne "") {
         my $fileName = $file;
            $fileName =~ s!^.*(\\|\/)!!;
-         eval {require URI::Escape};
-         if(!$@){
-            $fileName =  URI::Escape::uri_escape($fileName, "\200-\377");
-         }else{
-            warn('no URI::Escape is installed!');
-         }
-        $fileName =~ s/\s/%20/g;
+
+        $fileName = uriescape($fileName);
 
         my $outfile = make_safer($DADA::Config::TMP . '/' . time . '_' . $fileName);
 

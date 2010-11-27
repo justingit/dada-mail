@@ -2,6 +2,10 @@ package DADA::App::Guts;
 use 5.008_001; 
 use Encode qw(encode decode);
 
+# evaluate these once at compile time
+use constant HAS_URI_ESCAPE_XS = eval { require URI::Escape::XS; 1; }; # Much faster, but requires C compiler.
+use constant HAS_URI_ESCAPE    = eval { require URI::Escape; 1; };
+
 =pod
 
 =head1 NAME
@@ -1372,59 +1376,15 @@ use to escape strings to be used as url strings.
 =cut
 
 sub uriescape {
-
      my $string = shift;
 
-
-    eval {require URI::Escape}; 
-	if(!$@){
-		return URI::Escape::uri_escape($string, "\200-\377"); # And I've forgotten why we're using "\200-\377" as the escape...
-	}else{ 
-	
-		 if($string){ 
-			 my ($out);
-			 foreach (split //,$string)
-			 {
-			   if ( $_ eq " ") {$out.="+";next};
-			   if(ord($_) < 0x41 || ord($_) > 0x7a)
-			   { $out.=sprintf("%%%02x",ord($_)) }
-			   else
-			   { $out.=$_ }
-			 }
-			return  $out;
-		}
-  	}
-
-
-# Kind of interesting reading: 
-# http://search.cpan.org/~gaas/URI-1.52/URI/Escape.pm
-# uri_escape_utf8( $string ) uri_escape_utf8( $string, $unsafe )
-# 
-# Works like uri_escape(), but will encode chars as UTF-8 before escaping
-# them. This makes this function able do deal with characters with code
-# above 255 in $string. Note that chars in the 128 .. 255 range will be
-# escaped differently by this function compared to what uri_escape()
-# would. For chars in the 0 .. 127 range there is no difference.
-# 
-# The call:
-# 
-# $uri = uri_escape_utf8($string);
-# 
-# will be the same as:
-# 
-# use Encode qw(encode); $uri = uri_escape(encode("UTF-8", $string));
-# 
-# but will even work for perl-5.6 for chars in the 128 .. 255 range.
-# 
-# Note: Javascript has a function called escape() that produces the
-# sequence "%uXXXX" for chars in the 256 .. 65535 range. This function has
-# really nothing to do with URI escaping but some folks got confused since
-# it "does the right thing" in the 0 .. 255 range. Because of this you
-# sometimes see "URIs" with these kind of escapes. The JavaScript
-# encodeURIComponent() function is similar to uri_escape_utf8().
-#
-# Do I want/need this? Huh?
-
+     if (HAS_URI_ESCAPE_XS) {
+         return URI::Escape::XS::uri_escape($string);
+     }elsif (HAS_URI_ESCAPE){
+         return URI::Escape::uri_escape_utf8($string);
+     }else {
+         die "URI::Escape was expected to be found but is missing. It should be bundled with the Dada mail distribution";
+     }
 } 
    
    

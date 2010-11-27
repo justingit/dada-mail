@@ -1226,14 +1226,7 @@ sub dump_attachment_meta_file {
     my $filename = shift;
     $filename =~ s{^(.*)\/}{};
 
-    eval { require URI::Escape };
-    if ( !$@ ) {
-        $filename = URI::Escape::uri_escape( $filename, "\200-\377" );
-    }
-    else {
-        warn('no URI::Escape is installed!');
-    }
-    $filename =~ s/\s/%20/g;
+    $filename = uriescape($filename);
 
     my $full_path_to_filename =
       make_safer( $DADA::Config::TMP . '/' . $filename . '-meta.txt' );
@@ -1328,13 +1321,9 @@ sub file_upload {
     if ($file ne "") {
         my $fileName = $file; 
            $fileName =~ s!^.*(\\|\/)!!;   
-         eval {require URI::Escape}; 
-         if(!$@){
-            $fileName =  URI::Escape::uri_escape($fileName, "\200-\377");
-         }else{ 
-            warn('no URI::Escape is installed!'); 
-         }
-        $fileName =~ s/\s/%20/g;
+
+
+        $fileName = uriescape($fileName);
           
         my $outfile = make_safer($DADA::Config::TMP . '/' . time . '_' . $fileName);
          

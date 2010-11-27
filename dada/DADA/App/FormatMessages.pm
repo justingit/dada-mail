@@ -1238,8 +1238,7 @@ sub _macro_tags {
 		}
 		
 	}elsif($args{-escape_list} == 1){ 
-		require URI::Escape;
-		$args{-list} = URI::Escape::uri_escape($args{-list}, "\200-\377"); # Why is this inline, instead of using the uri_escape sub in Guts?
+		$args{-list} = uriescape($args{-list}); 
 	}
 	
 	if($args{-email}){ 
