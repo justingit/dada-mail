@@ -12,23 +12,23 @@ $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 use CGI::Carp qw(fatalsToBrowser);
 use CGI qw(:standard);
+print header();
 
 if ( !-e $gz ) {
     $gz = 'pro_' . $gz;
 }
 if ( !-e $gz ) {
-    print 'Can\'t find ' . $gz . ' to uncompress!';
+    print p('Can\'t find ' . $gz . ' to uncompress!');
     exit;
 }
-print header();
+
 print h1('Dada Mail!');
 if ( -e 'dada' ) {
-    print "STOP. 'dada' directory already exists!";
+    print p("STOP. 'dada' directory already exists!");
     exit;
 }
 
 print p("Uncompressing $gz...");
-
 print pre(`gunzip $gz`);
 
 my $tar = $gz;
