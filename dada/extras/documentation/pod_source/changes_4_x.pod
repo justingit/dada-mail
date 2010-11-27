@@ -4,6 +4,8 @@
 
 =head1 4.3.0
 
+Installation instructions for 4.3.0 are the same as they were for 4.2.0. 
+
 =head2 Changes 4.3.0
 
 =head3 CPAN module Captcha::reCAPTCHA upgraded from v.92 to v.94
