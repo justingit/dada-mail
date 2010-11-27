@@ -5,6 +5,7 @@ BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 use dada_test_config; 
 use Test::More;
 
+# Think about using Test::HTML::Tidy, instead for at least some of these. 
 eval "use Test::HTML::Lint qw(no_plan)";
 plan skip_all => "Test::HTML::Lint required for testing Templates." if $@;
 
