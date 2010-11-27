@@ -2035,7 +2035,7 @@ $ADMIN_MENU ||= [
 					 -Activated  => 1,
 					},
 
-					{-Title      => 'Add',
+					{-Title      => 'Invite<!-- tmpl_if list_settings.enable_mass_subscribe -->/Add<!-- /tmpl_if -->',
 					 -Title_URL  => "$S_PROGRAM_URL?f=add",
 					 -Function   => 'add',
 					 -Activated  => 1,

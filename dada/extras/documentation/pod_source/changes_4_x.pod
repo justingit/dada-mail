@@ -112,6 +112,25 @@ to perform the right actions. Here's a list of what tags are looked for, in whic
 
 =back
 
+=head2 Config variable changes
+
+=head3 $ADMIN_MENU 
+
+The menu labled, "Add" under, "Manage Subscribers" has been change. The line used to read, 
+
+	{-Title      => 'Add',
+
+and now, reads: 
+
+	{-Title      => 'Invite<!-- tmpl_if list_settings.enable_mass_subscribe -->/Add<!-- /tmpl_if -->',
+
+Although you may want to change this line if you're upgrade from v4.x.x to v4.3.0, you won't be required to
+
+=head3 $MAILlING_LIST_MESSAGE
+
+The variable, C<$MAILlING_LIST_MESSAGE> has been renamed to, C<$MAILING_LIST_MESSAGE>.
+You will need to rename this varialbe in your C<.dada_config> file, if you are currently using it. 
+
 Dada Mail will also alert the user of the missing tags in the List Control Panel, I<Appearance and Templates - Email Message Templates>
  
 =head2 Bug Fixes 4.3.0
