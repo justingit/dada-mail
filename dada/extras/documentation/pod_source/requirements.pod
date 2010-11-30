@@ -47,17 +47,11 @@ Dada Mail supports using C<Berkeley DB> (using the DB_File CPAN Perl module) or 
 
 =head2 SQL Backend
 
-Dada Mail is tested with MySQL B<5>, PostgreSQL B<8> and SQLite B<3>. 
-
-MySQL B<4> will probably work, but make sure to read the embedded docs in the C<mysql_schema.sql> file. 
-
-
+Dada Mail is tested with MySQL B<5> (v4 will probably work), PostgreSQL B<8> and SQLite B<3>. 
 
 =head1 Configuration
 
-There is no auto-installer for Dada Mail that I<we> ship. 
-
-One requirement of Dada Mail is that you can open up a file in a text editor and make I<extremely simple> changes to it, with regards to file and directory paths on your server. 
+We do ship a web-based installer. It can also I<help> with upgrades. 
 
 =head1 Guide to Hosting Companies
 
