@@ -336,11 +336,11 @@
   </tr>
  </table>
   
- <table cellspacing="5" <!-- tmpl_unless list_settings.can_use_captcha -->class="disabled"<!--/tmpl_unless--> >
+ <table cellspacing="5" <!-- tmpl_unless can_use_captcha -->class="disabled"<!--/tmpl_unless--> >
 
     <tr>
    <td>
-    <input type="checkbox" name="captcha_sub" id="captcha_sub" value="1" <!-- tmpl_if list_settings.captcha_sub -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless list_settings.can_use_captcha -->disabled="disabled"<!--/tmpl_unless-->/>
+    <input type="checkbox" name="captcha_sub" id="captcha_sub" value="1" <!-- tmpl_if list_settings.captcha_sub -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless can_use_captcha -->disabled="disabled"<!--/tmpl_unless-->/>
    </td>
    <td width="99%">
     <p>
@@ -353,7 +353,7 @@
     </p>
     
     
-    <!-- tmpl_unless list_settings.can_use_captcha -->
+    <!-- tmpl_unless can_use_captcha -->
 	    
 	    <p class="error">
 	     <em>
