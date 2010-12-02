@@ -150,7 +150,7 @@ sub connectdb {
             croak "Incorrect dada_connection_method passed.";
         }
 
-        foreach ( keys %{$DADA::Config::DBI_PARAMS} ) {
+        for ( keys %{$DADA::Config::DBI_PARAMS} ) {
             next if $_ =~ m/dada/;
 
             #$self->{dbh}->{$_} = $DADA::Config::DBI_PARAMS->{$_};
@@ -184,7 +184,7 @@ sub connectdb {
             croak "Incorrect dada_connection_method passed.";
         }
 
-        foreach ( keys %{$DADA::Config::DBI_PARAMS} ) {
+        for ( keys %{$DADA::Config::DBI_PARAMS} ) {
             next if $_ =~ m/dada/;
 
             #$self->{dbh}->{$_} = $DADA::Config::DBI_PARAMS->{$_};

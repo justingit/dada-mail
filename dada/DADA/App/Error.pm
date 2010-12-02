@@ -132,10 +132,10 @@ sub cgi_user_error {
 		#	push(@tests, $DADA::Config::OS);
 		#}
 		my %sift; 
-		foreach(@tests){$sift{$_}++}
+		for(@tests){$sift{$_}++}
 		@tests = keys %sift; 
 		
-		foreach my $test_dir(@tests){ 
+		for my $test_dir(@tests){ 
 			
 			if(! -d $test_dir){ 
 				push(@$unknown_dirs, {dir => $test_dir}); 

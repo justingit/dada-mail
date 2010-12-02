@@ -146,7 +146,7 @@ sub save {
     
     $self->_open_db; 
     
-    foreach(keys %$vals){ 
+    for(keys %$vals){ 
         my $new_data = eval($vals->{$_}); 
         
         $self->save_record(-key => $_, -data =>  $new_data, -backup => 0);

@@ -184,7 +184,7 @@ sub edit {
 	
     $self->remove;
 
-    foreach ( keys %{ $args->{ -fields } } ) {
+    for ( keys %{ $args->{ -fields } } ) {
         $orig_values->{$_} = $args->{ -fields }->{$_};
     }
 

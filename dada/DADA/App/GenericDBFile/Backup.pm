@@ -62,7 +62,7 @@ sub backupToDir {
 		
 		
 	if(-d $new_dir){
-		foreach my $setting(keys %$li){	
+		for my $setting(keys %$li){	
 			next if ! $setting;
 			open(KEY, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->_safe_path($new_dir . '/' . $setting)) 
 				or carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER error! Can't write key/value file at: '" . $self->_safe_path($new_dir . '/' . $setting) . "' $!";  
@@ -149,7 +149,7 @@ sub removeOldBackupsToDir {
 	my $depth   = shift || $DADA::Config::BACKUP_HISTORY {$self->{function}};
 	my $backups = $self->backupDirs; 
 	my $i = -1; 
-	foreach(@$backups){
+	for(@$backups){
 		$i++;
 		next if $i < $depth; 	
 		$self->removeBackupDir($backups->[$i]->{dir});
@@ -189,7 +189,7 @@ sub backupDirs {
 			#desc
 			@$backup_dirs = sort {$b <=> $a} @$backup_dirs;
 			
-			foreach(@$backup_dirs){ 
+			for(@$backup_dirs){ 
 			    my $dir_count   = $self->dirCount($self->backDirPath . '/' . $_); 
                 push(@$backups, {dir => $_, count => $dir_count});
 			}
@@ -379,7 +379,7 @@ sub restoreFromFile {
 			
 			if($self->{function} eq 'settings'){ 
 			
-			    foreach(keys %new_values){ 
+			    for(keys %new_values){ 
 			    
 			        if(! exists($DADA::Config::LIST_SETUP_DEFAULTS{$_})){ 
 			            carp "skipping restoring setting: $_ (not used anymore?) on list: " . $self->{name}; 

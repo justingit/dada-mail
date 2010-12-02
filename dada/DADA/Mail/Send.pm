@@ -145,10 +145,10 @@ sub _init {
             
 	            # let's make this into an easier-to-look-up-format: 
             
-	            foreach my $tune(@$tunings){ 
+	            for my $tune(@$tunings){ 
 	                if($tune->{domain}){ # only real thingy needed...
 	                    $lookup_tunings->{$tune->{domain}} = {};
-	                    foreach my $in_tune(keys %$tune){ 
+	                    for my $in_tune(keys %$tune){ 
 	                       # next if $in_tune eq 'domain'; 
 	                        $lookup_tunings->{$tune->{domain}}->{$in_tune} = $tune->{$in_tune}; 
 	                    }
@@ -194,7 +194,7 @@ my %new_header;
 my @logical_lines = split /\n(?!\s)/, $header_blob;
  
     # make the hash
-    foreach my $line(@logical_lines) {
+    for my $line(@logical_lines) {
           my ($label, $value) = split(/:\s*/, $line, 2);
           $new_header{$label} = $value;
         }
@@ -228,7 +228,7 @@ sub clean_headers {
 		if defined $mail_headers{'Content-base'};
 	$mail_headers{'Cc'} = $mail_headers{'CC'} 
 		if defined $mail_headers{'CC'};
-	foreach(keys %mail_headers){ 
+	for(keys %mail_headers){ 
 		my $tmp_h = $mail_headers{$_};
 		   if($tmp_h){ 
 			   $tmp_h =~ s/\n$//;
@@ -256,7 +256,7 @@ sub send {
 	no strict;
 	# DEV: This needs to be cleaned up; 
 	my %param_headers = @_; 
-	foreach(keys %param_headers){
+	for(keys %param_headers){
 		if(strip($param_headers{$_}) eq ''){ 
 			delete($param_headers{$_}); 
 		}
@@ -325,7 +325,7 @@ sub send {
 	
 	# I almost wish this was done once on object initialization... 
 	if(defined($self->{list})){ 
-		foreach(keys %{$self->{ls}->params}){ 
+		for(keys %{$self->{ls}->params}){ 
 			if(exists($DADA::Config::LIST_SETUP_DEFAULTS{$_})){ 
         
 		    	$local_li->{$_} = $self->{ls}->param($_); 
@@ -339,7 +339,7 @@ sub send {
 		if($self->{ls}->param('use_domain_sending_tunings') == 1) { 
 		
 	        if($self->{domain_specific_tunings}->{$email_domain}->{domain} eq $email_domain){  
-	            foreach(keys %{$self->{domain_specific_tunings}->{$email_domain}}){
+	            for(keys %{$self->{domain_specific_tunings}->{$email_domain}}){
 	                $local_li->{$_} = $self->{domain_specific_tunings}->{$email_domain}->{$_};
 	            }
 	        }
@@ -433,7 +433,7 @@ sub send {
 							carp "Problems with connecting to the SMTP Server: $!";
 							my $extra = ''; 
 							$extra .= $_ . ' => ' . $mailer_params{$_} . "\n"
-								foreach(keys %mailer_params); 
+								for(keys %mailer_params); 
 							carp $extra; 
 					 	}
                                   
@@ -459,7 +459,7 @@ sub send {
 							carp "Problems with connecting to the SMTP Server: $!";
 							my $extra = ''; 
 							$extra .= $_ . ' => ' . $mailer_params{$_} . "\n"
-								foreach(keys %mailer_params); 
+								for(keys %mailer_params); 
 							carp $extra;
 					 }
                     
@@ -513,7 +513,7 @@ sub send {
                 #}                    
                 
                 my $smtp_msg = '';
-                foreach my $field (@default_headers){
+                for my $field (@default_headers){
                         $smtp_msg .= "$field: $fields{$field}\n" 
                             if( (defined $fields{$field}) && 
                                 ($fields{$field} ne "")
@@ -676,7 +676,7 @@ sub send {
 				} 
 			}
             
-            foreach my $field (@default_headers){
+            for my $field (@default_headers){
                     print MAIL "$field: $fields{$field}\n"
                         if(
 	 						exists($fields{$field})                  && 
@@ -791,7 +791,7 @@ EOF
    
    my $report =  []; 
    
-	foreach my $l(@r_l){ 
+	for my $l(@r_l){ 
 		if($l =~ m/502 unimplemented/i){ 
 			push (@$report, {line => $l, message => 'SASL Authentication may not be available on this SMTP server - try POP-before-SMTP Authentication.'}); 
 		}elsif($l =~ m/250\-AUTH PLAIN LOGIN|250 AUTH LOGIN PLAIN|250\-AUTH\=LOGIN PLAIN/i){ 
@@ -899,7 +899,7 @@ sub mass_send {
 	# This will just be generally, well, chatty. 
 	no strict;
 	# DEV: This needs to be cleaned up;
-	foreach(keys %param_headers){
+	for(keys %param_headers){
 		if(strip($param_headers{$_}) eq ''){ 
 			delete($param_headers{$_}); 
 		}
@@ -1206,7 +1206,7 @@ sub mass_send {
 					my $lists = $self->multi_list_send->{-lists};
 				
 					my @exclude_from = ($self->list);
-					foreach my $local_list(@$lists){ 
+					for my $local_list(@$lists){ 
 						# warn 'looking at: $local_list ' . $local_list; 
 					
 						sleep(1); # just so things can catch up... 
@@ -1268,7 +1268,7 @@ sub mass_send {
 				#sub MakeAllDBHsForkSafe {
 					if($DBI::VERSION >= 1.49){ 
 					    my %drivers = DBI->installed_drivers;
-					    foreach my $drh (values %drivers) {
+					    for my $drh (values %drivers) {
 					        map { $drh->{InactiveDestroy} = 1 } @{$drh->{ChildHandles}};
 					    }
 					}
@@ -1668,7 +1668,7 @@ sub mass_send {
 			                my $batch_status = $mailout->status({-mail_fields => 0}); 
 		                
 	                       my $batch_log_message = "Subject:$fields{Subject}, Start Time: $log_mail_start_time"; 
-							foreach(keys %$batch_status){ 
+							for(keys %$batch_status){ 
 								next if $_ eq 'email_fields';
 								next if $_ =~ m/formatted/; 
 								$batch_log_message .= ' ' . $_ . ': ' . $batch_status->{$_}; 
@@ -1975,7 +1975,7 @@ sub _content_transfer_encode {
         
         
         
-        foreach(keys %$fields){ 
+        for(keys %$fields){ 
             next if $_ eq 'Content-type'; # Yeah, Content-Type, no Content-type. Weird. Weeeeeeeird.
             next if $_ eq 'Content-Transfer-Encoding'; 
             $entity->head->add($_, safely_encode( $fields->{$_})); 
@@ -2050,7 +2050,7 @@ sub _remove_blank_headers {
 	my ($args) = @_; 
 	my $headers = $args->{-headers}; 
 	
-	foreach(keys %$headers){ 
+	for(keys %$headers){ 
 		if(!defined($headers->{$_})){ 
 			delete($headers->{$_}); 			
 		}
@@ -2426,7 +2426,7 @@ sub _email_batched_finished_notification {
     );
 
     my $att;
-    foreach ( keys %$fields ) {
+    for ( keys %$fields ) {
         next if $_ eq 'Body';
         $att .= $_ . ': ' . $fields->{$_} . "\n"
           if defined( $fields->{$_} ) && $fields->{$_} ne "";
@@ -2698,7 +2698,7 @@ sub _massaged_for_archive {
 	my $msg; 
 
 	
-	foreach(@DADA::Config::EMAIL_HEADERS_ORDER){ 
+	for(@DADA::Config::EMAIL_HEADERS_ORDER){ 
 		next if $_ eq 'Body'; 
 		next if $_ eq 'Message'; # Do I need this?!
 		

@@ -232,7 +232,7 @@ sub add_to_email_list {
 
     my $count = 0;
     require DADA::MailingList::Subscriber;
-    foreach my $sub (@$addresses) {
+    for my $sub (@$addresses) {
         chomp($sub);    #?
         DADA::MailingList::Subscriber->add(
             {
@@ -323,7 +323,7 @@ sub filter_subscribers {
 
     my $num_subscribers = $self->num_subscribers;
 
-    foreach my $check_this_address (@$new_addresses) {
+    for my $check_this_address (@$new_addresses) {
 
         my $errors = {};
         my $status = 1;
@@ -402,7 +402,7 @@ sub filter_subscribers {
     if ( $li->{black_list} == 1 && $type eq 'list' ) {
 
 		my $found_black_list_ref = [];
-		foreach my $b_email(@$unique_ref) { 
+		for my $b_email(@$unique_ref) { 
 			my $is_black_listed = $self->inexact_match(
 										{
 											-email   => $b_email, 
@@ -429,7 +429,7 @@ sub filter_subscribers {
     if ( $li->{enable_white_list} == 1 && $type eq 'list' ) {
 
 
-		foreach my $w_email(@$clean_list_ref) { 
+		for my $w_email(@$clean_list_ref) { 
 			my $is_white_listed = $self->inexact_match(
 										{
 											-email   => $w_email, 
@@ -488,7 +488,7 @@ sub filter_subscribers_w_meta {
 	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
     
 	# What's this for, again?
-	foreach my $sub(@$info){
+	for my $sub(@$info){
         push(@$emails, $sub->{email});        
         $lt->{$sub->{email}} = $sub; 
     }	
@@ -510,21 +510,21 @@ sub filter_subscribers_w_meta {
     my $invalid_info          = [];
     
 	# This is tmp copy of ALL the passed subscribers. 
-    foreach(@$subscribed){    
+    for(@$subscribed){    
         push(@$subscribed_info, $lt->{$_});
     }
     
-    foreach(@$not_subscribed){ 
+    for(@$not_subscribed){ 
 
 		###
 		my $flattened_info = []; 
 		push(@$flattened_info, $lt->{$_}->{email}); 
 		
 		my $tmp_info = {}; 
-		foreach my $d(@{$lt->{$_}->{fields}}){ 
+		for my $d(@{$lt->{$_}->{fields}}){ 
             $tmp_info->{$d->{name}} = $d->{value};
         }
-		foreach my $f(@$fields){ 
+		for my $f(@$fields){ 
 			push(@$flattened_info, $tmp_info->{$f}); 
 		}	
 		
@@ -539,17 +539,17 @@ sub filter_subscribers_w_meta {
 
    }
     
-    foreach(@$black_listed){
+    for(@$black_listed){
     
 		###
 		my $flattened_info = []; 
 		push(@$flattened_info, $lt->{$_}->{email}); 
 
 		my $tmp_info = {}; 
-		foreach my $d(@{$lt->{$_}->{fields}}){ 
+		for my $d(@{$lt->{$_}->{fields}}){ 
             $tmp_info->{$d->{name}} = $d->{value};
         }
-		foreach my $f(@$fields){ 
+		for my $f(@$fields){ 
 			push(@$flattened_info, $tmp_info->{$f}); 
 		}	
 
@@ -563,17 +563,17 @@ sub filter_subscribers_w_meta {
  	   ###/
     }
     
-    foreach(@$not_white_listed){ 
+    for(@$not_white_listed){ 
     
         	###
 			my $flattened_info = []; 
 			push(@$flattened_info, $lt->{$_}->{email}); 
 
 			my $tmp_info = {}; 
-			foreach my $d(@{$lt->{$_}->{fields}}){ 
+			for my $d(@{$lt->{$_}->{fields}}){ 
 	            $tmp_info->{$d->{name}} = $d->{value};
 	        }
-			foreach my $f(@$fields){ 
+			for my $f(@$fields){ 
 				push(@$flattened_info, $tmp_info->{$f}); 
 			}	
 
@@ -587,17 +587,17 @@ sub filter_subscribers_w_meta {
 	 	   ###/
     }    
     
-    foreach(@$invalid){ 
+    for(@$invalid){ 
         
 			###
 			my $flattened_info = []; 
 			push(@$flattened_info, $lt->{$_}->{email}); 
 
 			my $tmp_info = {}; 
-			foreach my $d(@{$lt->{$_}->{fields}}){ 
+			for my $d(@{$lt->{$_}->{fields}}){ 
 	            $tmp_info->{$d->{name}} = $d->{value};
 	        }
-			foreach my $f(@$fields){ 
+			for my $f(@$fields){ 
 				push(@$flattened_info, $tmp_info->{$f}); 
 			}	
 
@@ -663,9 +663,9 @@ sub find_unique_elements {
 		#we'll store what we already got in here
 		my @already_in = ();                 
 		# build lookup table
-		foreach my $item (@$B) { $seen{$item} = 1 }
+		for my $item (@$B) { $seen{$item} = 1 }
 		# find only elements in @$A and not in @$B
-		foreach my $item (@$A) {
+		for my $item (@$A) {
 			unless ($seen{$item}) {
 				# it's not in %seen, so add to @aonly
 				push(@unique, $item);
@@ -715,7 +715,7 @@ sub csv_to_cds {
 		$cds->{fields} = {};
 		
 		my $i = 0; 
-        foreach(@$subscriber_fields){ 
+        for(@$subscriber_fields){ 
 			$cds->{fields}->{$_} = $fields[$i];
 			$i++; 
 		}
@@ -1529,7 +1529,7 @@ Something went wrong in the SQL side of things.
  
  # or: 
  
- foreach(@{$lh->subscriber_fields}){
+ for(@{$lh->subscriber_fields}){
   # ...	
  }
 

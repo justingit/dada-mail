@@ -75,7 +75,7 @@ sub search {
         if !exists( $args->{-files});
         
     my @terms = split(' ', $args->{-query}); 
-    foreach(@terms){ 
+    for(@terms){ 
         $_ = quotemeta(DADA::App::Guts::xss_filter($_)); 
     }
     
@@ -84,11 +84,11 @@ sub search {
     my $results = {};
     
     # Just to start out...
-    foreach my $f(@$file_names){ 
+    for my $f(@$file_names){ 
         $results->{$f} = []; 
     }
     
-    foreach my $file(@$file_names){ 
+    for my $file(@$file_names){ 
     
         open my $LOG_FILE, '<', $file
         or die "Cannot read log at: '" . $file
@@ -98,7 +98,7 @@ sub search {
         while(my $l = <$LOG_FILE>){ 
         chomp($l); 
         
-            foreach my $term(@terms){ 
+            for my $term(@terms){ 
             
                 if($l =~ m/$term/i){ 
                     push(@{$results->{$file}}, $l); 
@@ -125,7 +125,7 @@ sub _validate_files {
     my $good_files = []; 
     
 
-    foreach my $filename(@$files){  
+    for my $filename(@$files){  
         if(-f $filename && -e $filename){ 
             push(@$good_files, $filename); 
         }else{ 
@@ -154,7 +154,7 @@ sub html_highlight_line {
         
     my @terms = split(' ', $args->{-query}); 
     
-    foreach my $term(@terms){  
+    for my $term(@terms){  
         $args->{-line} =~ s{$term}{<em class="highlighted">$term</em>}mg;
     }
     
@@ -273,10 +273,10 @@ Here's an example of how this object can be used:
  
  }); 
  
- foreach my $file_name(keys %$results){ 
+ for my $file_name(keys %$results){ 
      if($results->{$file_name}->[0]){ 
          print '<h1>' . $file_name . '</h1>'; 
-         foreach my $l(@{$results->{$file_name}}){ 
+         for my $l(@{$results->{$file_name}}){ 
              print '<p>' . $searcher->html_highlight_line({-query =>  $query, -line => $l }) . '</p>';               
           }
       }

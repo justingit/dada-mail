@@ -30,7 +30,7 @@ sub remove_field {
     my %omit_fields = ( email => 1, );
 
     my @no_homers = ();
-    foreach ( @{ $self->fields } ) {
+    for ( @{ $self->fields } ) {
         if ( $_ ne $args->{ -field } ) {
             push ( @no_homers, $_ );
         }
@@ -38,12 +38,12 @@ sub remove_field {
     my @keep_these_colums = @no_homers;
     my $keep_these_str    = 'email, ';
     my $make_these_str    = ',';
-    foreach (@keep_these_colums) {
+    for (@keep_these_colums) {
         $keep_these_str .= $_ . ', ';
     }
     $keep_these_str =~ s/\, $//;
 
-    foreach (@no_homers) {
+    for (@no_homers) {
         $make_these_str .= $_ . ' text, ';
     }
     $make_these_str =~ s/\, $|,$//;
@@ -84,7 +84,7 @@ sub remove_field {
 
     $self->make_table();
 
-    foreach (@no_homers) {
+    for (@no_homers) {
         $self->add_field( { -field => $_, } );
     }
 

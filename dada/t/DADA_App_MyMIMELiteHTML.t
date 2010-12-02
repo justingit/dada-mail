@@ -47,7 +47,7 @@ my $entity     = $parser->parse_data($msg);
 	
 my $str = $entity->bodyhandle->as_string;
 
-foreach my $tmpl_tag(@tmpl_tags){ 
+for my $tmpl_tag(@tmpl_tags){ 
 	my $match = quotemeta($tmpl_tag); 
 	like($str, qr/$match/, "found: $tmpl_tag ")
 }

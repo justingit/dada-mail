@@ -34,8 +34,8 @@ my @subscribers = (
 ); 
 
 
-foreach my $local_lh(@lh_s){
-	foreach my $sub(@subscribers){ 
+for my $local_lh(@lh_s){
+	for my $sub(@subscribers){ 
 		$local_lh->add_subscriber({-email => $sub});
 	}
 }
