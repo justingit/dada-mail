@@ -1483,7 +1483,7 @@ sub unsubscription_confirmationation {
 	    die "no -str! $!" if !exists( $args->{-str} );
 	    #die "no type! $!" if !exists( $args->{-type} );
 
-	    if ( $self->can_find_sub_confirm_link( { -str => $args->{-str} } ) ) {
+	    if ( $self->can_find_unsub_confirm_link( { -str => $args->{-str} } ) ) {
 	        # ...
 	    }
 	    else {
