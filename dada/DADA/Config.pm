@@ -3372,10 +3372,15 @@ is located at the end of this message.)</em><br/></p>
  Here's a reminder about your current mailing list subscription:
 </p>
 
+<ul> 
+
+<li>
 <p>
  You are subscribed to the following mailing list:
 </p>
+</li> 
 <ul> 
+
  <li>
   <p>
    <strong>
@@ -3398,8 +3403,7 @@ is located at the end of this message.)</em><br/></p>
   </p>
  </li>
 </ul> 
-
-<ul>
+</li> 
  <li>
   <p>Want to remove yourself from this mailing list at any time? Use this link:</p>
   <p>
