@@ -10,6 +10,14 @@ Key:
 [*] Naw...
 [?] Someday
 
+[ ] Some ideas from a user: 
+	* Make the List invite be more steamlined - so skip the screen that requires you to 
+	  see the message that you want to send out 
+	* make the, "Send HTML", or, "Send PlainText" by user specified with the option saved for the next time. 
+
+
+
+
 [x] Closed-Loop Opt-in list setting is called, "enable_closed_loop_opt_in" and if set to one, is enabled. Where did I pick that name? 
 May be time for a change - perhaps, "enable_closed_loop_opt_in"? 
 
