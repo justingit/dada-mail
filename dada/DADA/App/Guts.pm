@@ -1,6 +1,7 @@
 package DADA::App::Guts;
 use 5.008_001; 
 use Encode qw(encode decode);
+use Params::Validate ':all';
 
 # evaluate these once at compile time
 use constant HAS_URI_ESCAPE_XS => eval { require URI::Escape::XS; 1; }; # Much faster, but requires C compiler.
@@ -651,15 +652,13 @@ my $cache = {};
 #my $nc = 0;
 
 sub available_lists {
-
-    my %args = (
-        -As_Ref      => 0,
-        -In_Order    => 0,
-        -Dont_Die    => 0,
-        -dbi_handle  => undef,
-        -clear_cache => 0,
-        @_,
-    );
+    my %args = validate(@_, {
+        '-As_Ref'      => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
+        '-In_Order'    => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
+        '-Dont_Die'    => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
+        '-clear_cache' => { regex => qr/\A[01]\z/,   optional => 1, default => 0 }, 
+        '-dbi_handle'  => { type  => OBJECT | UNDEF, optional => 1, default => undef },
+    }); 
 
     my $in_order        = $args{-In_Order};
     my $want_ref        = $args{-As_Ref};
