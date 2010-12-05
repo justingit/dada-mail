@@ -185,7 +185,7 @@ sub get_available_archives{
 	}
 		 
 		 
-	 foreach my $all_those(@all_dbs) { 
+	 for my $all_those(@all_dbs) { 
 		 if($all_those =~ m/.*-archive/) { 
 		  	push( @available_archives, $all_those)
 		}
@@ -389,7 +389,7 @@ sub delete_archive {
 	carp "no key passed to remove entries!"
 		if !$deep_six[0];
 	
-	foreach(@deep_six){ 
+	for(@deep_six){ 
 		$_ = $self->_massaged_key($_);  
 		if($self->check_if_entry_exists($_)){ 
 			push(@good_list, $_);
@@ -398,7 +398,7 @@ sub delete_archive {
 		}
 	}
 	
-	foreach(@good_list){
+	for(@good_list){
 		# Deleting from a "tie"d hash or array may not necessarily return
         # anything.
 		#undef($self->{DB_HASH}->{$_}); 
@@ -445,7 +445,7 @@ sub search_entries {
 	my @results; 
 	
 	my $entries = $self->get_archive_entries(); 
-		foreach(@$entries){ 
+		for(@$entries){ 
 			my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($_);
 			
 			$message = $raw_msg if ! $message; 

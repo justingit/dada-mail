@@ -50,7 +50,7 @@ sub subscription_check {
     }
 
     my %skip;
-    $skip{$_} = 1 foreach @{ $args->{ -skip } };
+    $skip{$_} = 1 for @{ $args->{ -skip } };
 
     my %errors = ();
     my $status = 1;
@@ -169,7 +169,7 @@ sub subscription_check {
         }
     }
 
-    foreach ( keys %errors ) {
+    for ( keys %errors ) {
         $status = 0 if $errors{$_} == 1;
         last;
     }
@@ -199,7 +199,7 @@ sub unsubscription_check {
         $args->{ -skip } = [];
     }
     my %skip;
-    $skip{$_} = 1 foreach @{ $args->{ -skip } };
+    $skip{$_} = 1 for @{ $args->{ -skip } };
 
     require DADA::App::Guts;
     require DADA::MailingList::Settings;
@@ -240,7 +240,7 @@ sub unsubscription_check {
         }
     }
 
-    foreach ( keys %errors ) {
+    for ( keys %errors ) {
         $status = 0 if $errors{$_} == 1;
         last;
     }
@@ -256,7 +256,7 @@ sub subscription_check_xml {
     my ( $status, $errors ) = $self->subscription_check($args);
 
     my $errors_array_ref = [];
-    push ( @$errors_array_ref, { error => $_ } ) foreach keys %$errors;
+    push ( @$errors_array_ref, { error => $_ } ) for keys %$errors;
 
     require DADA::Template::Widgets;
     my $xml = DADA::Template::Widgets::screen(
@@ -284,7 +284,7 @@ sub unsubscription_check_xml {
     my ( $status, $errors ) = $self->unsubscription_check($args);
 
     my $errors_array_ref = [];
-    push ( @$errors_array_ref, { error => $_ } ) foreach keys %$errors;
+    push ( @$errors_array_ref, { error => $_ } ) for keys %$errors;
 
     require DADA::Template::Widgets;
     my $xml = DADA::Template::Widgets::screen(

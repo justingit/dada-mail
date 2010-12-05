@@ -161,7 +161,7 @@ $list = dada_test_config::create_test_list;
 	    Unix2.csv
 	    );
     
-	    foreach my $test_file(@test_files){ 
+	    for my $test_file(@test_files){ 
     
 	        `cp t/corpus/csv/$test_file $DADA::Config::TMP/$test_file`;
         
@@ -262,7 +262,7 @@ $q->param('utf8array', Encode::encode('UTF-8', $str), Encode::encode('UTF-8', $s
 $q = decode_cgi_obj($q); 
 
 my @utf8array = $q->param('utf8array'); 
-foreach(@utf8array){ 
+for(@utf8array){ 
 	ok($_ eq $dada_test_config::UTF8_STR, "decoding the cgi object didn't destroy our data!");
 }
 

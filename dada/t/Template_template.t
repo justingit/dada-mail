@@ -52,7 +52,7 @@ while(defined($file = readdir TMPL)) {
 
 
 
-foreach my $test_file(@files){ 
+for my $test_file(@files){ 
 
 	html_ok( strip_comments(open_file($dir . '/' . $test_file)), $test_file . 'through Lint test');
        
@@ -133,7 +133,7 @@ my $template_strings = {
     HTML_UNSUBSCRIBED_MESSAGE => $DADA::Config::HTML_UNSUBSCRIBED_MESSAGE,
 };
 
-foreach(keys %$template_strings){ 
+for(keys %$template_strings){ 
 		eval { 
 		my $str = $template_strings->{$_};
 	

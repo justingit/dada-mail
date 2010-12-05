@@ -1,12 +1,11 @@
 package dada_test_config;
 
-
-use lib qw (../ ./); 
-
 use __Test_Config_Vars; 
 use Carp qw(croak carp); 
 
 BEGIN { 
+    use FindBin '$Bin';
+    use lib "$Bin/../ $Bin/";
 	use DADA::Config; 
 	$DADA::Config::FILES = './test_only_dada_files'; 
 
@@ -32,7 +31,8 @@ $DADA::Config::PROGRAM_USAGE_LOG        = $DADA::Config::FILES . '/dada.txt';
 }
 
 
-use lib qw(./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib); 
+use lib "$Bin/../DADA/perllib";
+use Params::Validate ':all';
 
 use DADA::MailingList; 
 
@@ -95,61 +95,46 @@ sub test_list_vars {
 
 
 sub create_test_list { 
-
-    my ($args) = @_; 
-    
-    
     my $local_test_list_vars = test_list_vars(); 
-    
-    if(exists($args->{-name})){ 
-        $local_test_list_vars->{list} = $args->{-name}; 
-    }
-    if(!exists($args->{-remove_existing_list})){ 
-        $args->{-remove_existing_list} = 0; 
-    }
-
-    if(!exists($args->{-remove_subscriber_fields})){ 
-        $args->{-remove_subscriber_fields} = 0; 
-    }
-    
     delete($local_test_list_vars->{retype_password});
 
-    if($args->{-remove_existing_list} == 1){ 
-    
+    my %args = validate(@_,{
+        '-name'                     => { default => $local_test_list_vars->{list} },
+        '-remove_existing_list'     => { default => 0 },
+        '-remove_subscriber_fields' => { default => 0 },
+    });
+
+    my $list_name = $args{-name};
+
+    if($args{-remove_existing_list} == 1){ 
         require DADA::App::Guts; 
-        
-        if(DADA::App::Guts::check_if_list_exists(-List => $local_test_list_vars->{list}) == 1){ 
+        if(DADA::App::Guts::check_if_list_exists(-List => $list_name) == 1){ 
             #carp 'list: ' . $local_test_list_vars->{list} . ' already exists. Removing...';
-            remove_test_list({-name => $local_test_list_vars->{list}}); 
+            remove_test_list({-name => $list_name}); 
         }
-    
     }
     
     my $ls = DADA::MailingList::Create(
 		{
-			-list     => $local_test_list_vars->{list}, 
+			-list     => $list_name,
 			-settings => $local_test_list_vars,
 			-test     => 0, 
 		}
 	); 
    
-   
-    if($args->{-remove_subscriber_fields} == 1){ 
+    if($args{-remove_subscriber_fields} == 1){ 
         #carp 'Removing extraneous Subscriber Profile Fields....'; 
         require DADA::MailingList::Subscribers; 
-        my $lh = DADA::MailingList::Subscribers->new({-list => $local_test_list_vars->{list}}); 
+        my $lh = DADA::MailingList::Subscribers->new({-list => $list_name}); 
         my $fields = $lh->subscriber_fields;
-        foreach(@$fields){ 
+        for(@$fields){ 
            # carp 'Removing Field: ' . $_; 
             $lh->remove_subscriber_field({-field => $_}); 
         }
     }
    
     undef $ls; 
-    
-    return $local_test_list_vars->{list};
-    
-    
+    return $list_name;
 }
 
 
@@ -194,7 +179,7 @@ sub create_SQLite_db {
 #carp q{$__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{dbtype}} . $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{dbtype}; 
 
      %DADA::Config::SQL_PARAMS = %{$__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}};
-foreach(keys  %DADA::Config::SQL_PARAMS){ 
+for(keys  %DADA::Config::SQL_PARAMS){ 
 	print $_ . ' => ' . $DADA::Config::SQL_PARAMS{$_} . "\n"; 
 }
 
@@ -217,7 +202,7 @@ my @statements = split(';', $sql,8);
 
     my $dbh = $dbi_handle->dbh_obj;
     
-    foreach(@statements){ 
+    for(@statements){ 
 			
     	my $settings_table                   = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{settings_table}; 
 		my $subscribers_table    	         = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{subscriber_table}; 
@@ -321,7 +306,7 @@ my @statements = split(';', $sql);
 
     my $dbh = $dbi_handle->dbh_obj;
     
-    foreach(@statements){ 
+    for(@statements){ 
 	
     	my $settings_table                   = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{settings_table}; 
 		my $subscribers_table    	         = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{subscriber_table}; 
@@ -438,7 +423,7 @@ my @statements = split(';', $sql);
     my $dbh = $dbi_handle->dbh_obj;
     
 	
-    foreach(@statements){ 
+    for(@statements){ 
    
 
 	   	my $settings_table                   = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{settings_table}; 

@@ -78,7 +78,7 @@ sub fields {
     );
 
     my @r;
-    foreach (@$l) {
+    for (@$l) {
 
         if ( !exists( $omit_fields{$_} ) ) {
 
@@ -155,7 +155,7 @@ sub add_field {
         $err = "Something's wrong with the field name you're trying to pass ("
           . $args->{ -field }
           . "). Validate the field name before attempting to add the field with, 'validate_field_name' - ";
-        foreach ( keys %$details ) {
+        for ( keys %$details ) {
             if ( $details->{$_} == 1 ) {
                 $err .= $args->{ -field } . ' Field Error: ' . $_;
             }
@@ -418,7 +418,7 @@ sub field_exists {
 
     $args->{ -field } = lc( $args->{ -field } );
 
-    foreach ( @{ $self->fields } ) {
+    for ( @{ $self->fields } ) {
         if ( $_ eq $args->{ -field } ) {
             return 1;
         }
@@ -523,11 +523,11 @@ sub validate_field_name {
     }
 
     my $skip_list = {};
-    foreach ( @{ $args->{ -skip } } ) {
+    for ( @{ $args->{ -skip } } ) {
         $skip_list->{$_} = 1;
     }
 
-    foreach ( keys %$errors ) {
+    for ( keys %$errors ) {
 
         if ( exists( $skip_list->{$_} ) ) {
             delete( $errors->{$_} );
@@ -606,7 +606,7 @@ sub validate_remove_field_name {
 
     }
 
-    foreach ( keys %$errors ) {
+    for ( keys %$errors ) {
         if ( $errors->{$_} == 1 ) {
             $thar_be_errors = 1;
         }
@@ -641,7 +641,7 @@ sub change_field_order {
     my $after;
     my $dir = $args->{ -direction };
 	
-    foreach my $f (@$sf) {
+    for my $f (@$sf) {
 
         #	die $f . ' ' . $args->{-field};
         if ( $f eq $args->{ -field } ) {

@@ -128,7 +128,7 @@ sub search_list {
     my $partial_listing = {};
 
     my $fields = $self->subscriber_fields;
-    foreach (@$fields) {
+    for (@$fields) {
         $partial_listing->{$_} = { like => $args->{ -query } };
     }
 
@@ -164,8 +164,8 @@ sub search_list {
         delete( $row->{email} );
         $info->{fields} = [];
 
-        #    foreach(keys %$row){
-        foreach (@$fields) {
+        #    for(keys %$row){
+        for (@$fields) {
             push ( @{ $info->{fields} }, { name => $_, value => $row->{$_} } );
         }
 
@@ -235,7 +235,7 @@ sub SQL_subscriber_profile_join_statement {
     # This is to select which Subscriber Profile Fields to return with our query
     my @merge_fields      = @{ $self->subscriber_fields };
     my $merge_field_query = '';
-    foreach (@merge_fields) {
+    for (@merge_fields) {
         $merge_field_query .= ', ' . $profile_fields_table . '.' . $_;
     }
 
@@ -312,7 +312,7 @@ sub SQL_subscriber_profile_join_statement {
         # profile (I think?) to work, if we're looking for email addresses...
 
         my @add_q = ();
-        foreach ( keys %{ $args->{ -partial_listing } } ) {
+        for ( keys %{ $args->{ -partial_listing } } ) {
 
             # This is to make sure we're always using the email from the
             # subscriber table - this stops us from not seeing an email
@@ -369,7 +369,7 @@ sub SQL_subscriber_profile_join_statement {
     if ( exists( $args->{ -exclude_from } ) ) {
         if ( $args->{ -exclude_from }->[0] ) {
             my @excludes = ();
-            foreach my $ex_list ( @{ $args->{ -exclude_from } } ) {
+            for my $ex_list ( @{ $args->{ -exclude_from } } ) {
                 push ( @excludes,                    
                       ' b.list = '
                       . $self->{dbh}->quote($ex_list) );
@@ -426,13 +426,13 @@ sub fancy_print_out_list {
     }
 
     my $subscribers = $self->subscription_list($args);
-    foreach (@$subscribers) {
+    for (@$subscribers) {
         $_->{no_email_links} = 1;
         $_->{no_checkboxes}  = 1;
     }
 
     my $field_names = [];
-    foreach ( @{ $self->subscriber_fields } ) {
+    for ( @{ $self->subscriber_fields } ) {
         push ( @$field_names, { name => $_ } );
     }
 
@@ -487,7 +487,7 @@ sub print_out_list {
     my $hashref = {};
 
     my @header = ('email');
-    foreach (@$fields) {
+    for (@$fields) {
         push ( @header, $_ );
     }
 
@@ -508,7 +508,7 @@ sub print_out_list {
 
         my @info = ( $hashref->{email} );
 
-        foreach (@$fields) {
+        for (@$fields) {
 
 # DEV: Do we remove newlines here? Huh?
 # BUG: [ 2147102 ] 3.0.0 - "Open List in New Window" has unwanted linebreak?
@@ -533,7 +533,7 @@ sub print_out_list {
             require CGI;
 
             my @new_info = ();
-            foreach my $chunk (@info) {
+            for my $chunk (@info) {
                 push ( @new_info, CGI::escapeHTML($chunk) );
             }
             if ( $csv->combine(@new_info) ) {
@@ -588,7 +588,7 @@ sub subscription_list {
 
     my $hashref;
     my %mf_lt = ();
-    foreach (@$fields) {
+    for (@$fields) {
         $mf_lt{$_} = 1;
     }
 
@@ -610,7 +610,7 @@ sub subscription_list {
 
         $hashref->{fields} = [];
 
-        foreach (@$fields) {
+        for (@$fields) {
 
             if ( exists( $mf_lt{$_} ) ) {
                 push (
@@ -877,7 +877,7 @@ sub remove_from_list {
 
     my $count = 0;
     require DADA::MailingList::Subscriber;
-    foreach my $sub (@$addresses) {
+    for my $sub (@$addresses) {
         chomp($sub);    #?
         my $s = DADA::MailingList::Subscriber->new(
             {
@@ -956,7 +956,7 @@ sub create_mass_sending_file {
 
     my @f_a_lists = available_lists();
     my %list_names;
-    foreach (@f_a_lists) {
+    for (@f_a_lists) {
         my $als = DADA::MailingList::Settings->new( { -list => $_ } );
         my $ali = $als->get;
         $list_names{$_} = $ali->{list_name};
@@ -985,7 +985,7 @@ sub create_mass_sending_file {
 
     if ( $args{ -Ban } ) {
         my $banned_list = $args{ -Ban };
-        $banned_list{$_} = 1 foreach (@$banned_list);
+        $banned_list{$_} = 1 for (@$banned_list);
     }
 
     my $list_file =
@@ -1070,7 +1070,7 @@ sub create_mass_sending_file {
                     $n_msg_id,
                 );
 
-                foreach ( @{ $self->subscriber_fields } ) {
+                for ( @{ $self->subscriber_fields } ) {
                     if ( defined( $field_ref->{$_} ) ) {
                         chomp $field_ref->{$_};
                         $field_ref->{$_} =~ s/\n|\r/ /g;
@@ -1123,7 +1123,7 @@ sub unique_and_duplicate {
 
     if ($address_ref) {
 
-        foreach (@$address_ref) { $lookup_table{$_} = 0 }
+        for (@$address_ref) { $lookup_table{$_} = 0 }
 
         my $email;
 
@@ -1150,7 +1150,7 @@ sub unique_and_duplicate {
         my @double;
         my $value;
 
-        foreach ( keys %lookup_table ) {
+        for ( keys %lookup_table ) {
             $value = $lookup_table{$_};
             if ( $value == 1 ) {
                 push ( @double, $_ );

@@ -326,7 +326,7 @@ foreach(sort keys %$m_report){
 	      $q->td([
 	      		  ($q->p(
 	               $q->b(
-	               $q->a({-href=>$URL.'?f=url&mid='.$q->param('mid').'&url='. DADA::App::Guts::uriescape($_)}, $_
+	               $q->a({-href=>$URL.'?f=url&mid='.$q->param('mid').'&url='. uriescape($_)}, $_
 	               )))),
 	              ($m_report->{$_}->{count}),
 	

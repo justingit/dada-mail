@@ -24,7 +24,7 @@ use DADA::Config qw(!:DEFAULT);
 # [ 1673762 ] 2.10.12 - alt. Charsets not set correctly.
 # https://sourceforge.net/tracker/index.php?func=detail&aid=1673762&group_id=13002&atid=113002
 
-foreach my $charset(@DADA::Config::CHARSETS){
+for my $charset(@DADA::Config::CHARSETS){
     
     my ($label, $value) = split("\t", $charset, 2); 
     

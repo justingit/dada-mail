@@ -123,7 +123,7 @@ ok($li->{black_list} == 1, "black list enabled.");
 
 # 'user@', '@example.com', '@' , 'u'
 
-foreach my $blacklist_this('user@', '@example.com', 'user@example.com'){ 
+for my $blacklist_this('user@', '@example.com', 'user@example.com'){ 
 
 	#diag '$blacklist_this - ' . $blacklist_this; 
 	
@@ -171,7 +171,7 @@ ok($li->{black_list} == 0, "black list disabled.");
 
 # Oh geez. This should have a million tests. 
 my @good_addresses = ('user@example.com', 'another@here.com', 'blah@somewhere.co.uk');
-foreach my $good_address(@good_addresses){
+for my $good_address(@good_addresses){
     my ($status, $errors) = $lh->subscription_check(
 								{
 									-email => $good_address,
@@ -184,7 +184,7 @@ foreach my $good_address(@good_addresses){
 
 
 my @bad_addresses = qw(These are all bad addresses yup);
-foreach my $bad_address(@bad_addresses){
+for my $bad_address(@bad_addresses){
     my ($status, $errors) = $lh->subscription_check(
 								{
 									-email => $bad_address,
@@ -352,7 +352,7 @@ SKIP: {
         my $errors  = 0;
 		my $details = {}; 
 
-        foreach my $bfn(@bad_field_names) { 
+        for my $bfn(@bad_field_names) { 
             ($errors, $details) = $lh->validate_subscriber_field_name({-field => $bfn});
             ok($errors == 1, "Bad Field is reporting an error."); 
             undef($errors); 
@@ -419,7 +419,7 @@ SKIP: {
         undef($errors); undef($details);  
 
         
-        foreach(qw(email_id email list list_type list_status)){ 
+        for(qw(email_id email list list_type list_status)){ 
             ($errors, $details) = $lh->validate_subscriber_field_name({-field => $_});
             ok($errors == 1, "Error being reported"); 
             ok($details->{field_is_special_field} == 1, "Error being report as, 'field_is_special_field'"); 
@@ -480,7 +480,7 @@ SKIP: {
         twenty       => 'This is twenty!', 
         };
         
-       foreach(keys %$ff){ 
+       for(keys %$ff){ 
        
         
             my $s = $lh->add_subscriber_field({-field => $_, -fallback_value => $ff->{$_}}); 
@@ -498,7 +498,7 @@ SKIP: {
             
        }
        
-       foreach(keys %$ff){ 
+       for(keys %$ff){ 
        
             ok($lh->remove_subscriber_field({-field => $_}),    'Field, ' . $_ . ' removed successfully'); 
             my $attr = $lh->get_all_field_attributes; 
@@ -514,7 +514,7 @@ SKIP: {
     
     ### remove_subscriber_field
     
-        foreach(qw(email_id email list list_type list_status)){ 
+        for(qw(email_id email list list_type list_status)){ 
             eval { $lh->remove_subscriber_field({-field => $_}); }; 
             ok($@, "calling remove_subscriber_field with special field name causes error!: $@"); 
         }    
@@ -1235,7 +1235,7 @@ ok($results->[9], "Have 10 results ($#results)");
 ok(!$results->[10], "Do NOT have 11 results."); 
 
 
-foreach(@$results){ 
+for(@$results){ 
     like($_->{email}, qr/example/, "Found: " . $_->{email}); 
 }
 $i = 0; 
@@ -1251,7 +1251,7 @@ SKIP: {
         
         #diag "still here."; 
         
-        foreach(qw(1 2)){ 
+        for(qw(1 2)){ 
             ok($lh->add_subscriber_field({-field => 'field' . $_}), 'added field, ' . $_); 
         }
         
@@ -1270,7 +1270,7 @@ SKIP: {
         
         
         
-    foreach(@$subscribers){     
+    for(@$subscribers){     
             ok($lh->add_subscriber({
                     -email => $_->[0],
                     -fields => {
@@ -1332,11 +1332,11 @@ SKIP: {
     undef $r; 
     
   
-        foreach(@$subscribers){ 
+        for(@$subscribers){ 
                 ok($lh->remove_from_list(-Email_List => [$_->[0]], -Type => 'list'), "removed: " . $_->[0]); 
         } 
         
-    foreach(qw(1 2)){ 
+    for(qw(1 2)){ 
         ok($lh->remove_subscriber_field({-field => 'field' . $_}), 'Removed: field' . $_); 
     }
 
@@ -1368,7 +1368,7 @@ SKIP: {
 # subscription_list
 my $sub_list = []; 
 my @num = (1 ... 1000);
-foreach(@num) { 
+for(@num) { 
       $lh->add_subscriber({
            -email => 'mytest' . $_ . '@example.com',
            -type  => 'list', 

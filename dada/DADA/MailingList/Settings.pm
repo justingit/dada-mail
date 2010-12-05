@@ -130,7 +130,7 @@ sub post_process_get {
         # If we don't need to load, DADA::Security::Password, let's not.
 
         my $d_password_check = 0;
-        foreach ( 'sasl_smtp_password', 'pop3_password',
+        for ( 'sasl_smtp_password', 'pop3_password',
             'discussion_pop_password' )
         {
             if (   exists( $DADA::Config::LIST_SETUP_DEFAULTS{$_} )
@@ -142,7 +142,7 @@ sub post_process_get {
             }
         }
 
-        foreach ( 'sasl_smtp_password', 'pop3_password',
+        for ( 'sasl_smtp_password', 'pop3_password',
             'discussion_pop_password' )
         {
 
@@ -168,7 +168,7 @@ sub post_process_get {
             }
         }
 
-        foreach ( keys %$li ) {
+        for ( keys %$li ) {
             if ( exists( $li->{$_} ) ) {
 
                 if ( !defined( $li->{$_} ) ) {
@@ -178,7 +178,7 @@ sub post_process_get {
             }
         }
 
-        foreach ( keys %DADA::Config::LIST_SETUP_DEFAULTS ) {
+        for ( keys %DADA::Config::LIST_SETUP_DEFAULTS ) {
 
             if ( !exists( $li->{$_} ) || length( $li->{$_} ) == 0 ) {
                 $li->{$_} = $DADA::Config::LIST_SETUP_DEFAULTS{$_};
@@ -195,7 +195,7 @@ sub post_process_get {
             $li->{subscription_quota} = $DADA::Config::SUBSCRIPTION_QUOTA;
         }
 
-        foreach ( 'sasl_smtp_password', 'pop3_password',
+        for ( 'sasl_smtp_password', 'pop3_password',
             'discussion_pop_password' )
         {
             if ( $DADA::Config::LIST_SETUP_OVERRIDES{$_} ) {
@@ -212,7 +212,7 @@ sub post_process_get {
 
     # And then, there's this:
     # DEV: Strange, that it's been left out? Did it get removed?
-    foreach ( keys %DADA::Config::LIST_SETUP_OVERRIDES ) {
+    for ( keys %DADA::Config::LIST_SETUP_OVERRIDES ) {
         next if $_ eq 'sasl_smtp_password';
         next if $_ eq 'pop3_password';
         next if $_ eq 'discussion_pop_password';
@@ -313,7 +313,7 @@ sub _existence_check {
     my $self = shift; 
     my $li   = shift; 
     
-    foreach(keys %$li){ 
+    for(keys %$li){ 
         #next if $_ eq 'list';
         
         if(!exists($DADA::Config::LIST_SETUP_DEFAULTS{$_})){ 
