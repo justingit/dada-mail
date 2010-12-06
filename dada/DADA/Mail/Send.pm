@@ -486,7 +486,6 @@ sub send {
                my $to;
                if( $local_li->{set_to_header_to_list_address} == 1 && 
                    $local_li->{group_list}                    == 1 && 
-                   # Don't understand this: 
                    $fields{from_mass_send}                    == 1 &&
                    defined($local_li->{discussion_pop_email}
                    
@@ -498,10 +497,16 @@ sub send {
                     
                     # This is what we're going to say we are...
                     $fields{To} = $local_li->{discussion_pop_email}; 
+				
+					$fields{'Reply-To'} = undef; 
+					delete($fields{'Reply-To'}); 
                     
                } else { 
                     # um, nevermind. 
                     $to = $fields{To}; 
+
+						warn "no! We're making no changes";
+						
                }
                 
                 # why wouldn't it be defined?
@@ -640,6 +645,8 @@ sub send {
                $live_mailing_settings  =~ s/\-t//; # remove any, "-t" flags... 
                $live_mailing_settings .= ' ' . $plain_to_address;  
                $fields{To} =  $local_li->{discussion_pop_email};
+			   $fields{'Reply-To'} = undef; 
+			   delete($fields{'Reply-To'});
             }
             
             $live_mailing_settings = make_safer($live_mailing_settings);
@@ -659,8 +666,7 @@ sub send {
                 
             }
             else { 
-            	#warn '$live_mailing_settings ' . $live_mailing_settings; 
-
+            	
                 open(MAIL,$live_mailing_settings) 
 					or $self->_send_die($fields{Debug});		
             

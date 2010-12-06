@@ -3671,9 +3671,11 @@ General
      <br />
      Everyone subscribed to your list may post messages for everyone else 
      on your list by sending  messages to (<strong><!-- tmpl_var list_settings.discussion_pop_email escape="HTML" --></strong>).
-    </p>
+   </p>
   
-  
+
+
+
   	 <table width="100%" cellspacing="0" cellpadding="5">
         <tr> 
         
@@ -3749,18 +3751,25 @@ General
   </tr>
   
   
-  
-     <tr> 
-   <td align="right">
-    <input name="set_to_header_to_list_address" id="set_to_header_to_list_address" type="checkbox" value="1" <!--tmpl_if list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_if--> />
-   </td>
-   <td>
+
+
+<!-- 
+
+<td align="right">
+ <input name="set_to_header_to_list_address" id="set_to_header_to_list_address" type="checkbox" value="1" <!--tmpl_if list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_if--> />
+</td>
+
     <label for="set_to_header_to_list_address">
      Set the <strong>To:</strong> header of discussion list messages to the <strong>List Address</strong>, rather than the subscribers address.
     </label>
     <br />
    </td>
   </tr>
+--> 
+
+
+
+
 
      <tr> 
    <td align="right">
@@ -3774,9 +3783,34 @@ General
 	Parsing Template Tags could create formatting problems. 
    </td>
   </tr>
-
-
  </table> 
+
+
+	<p><label>Replies to messages should:</label><br/> 
+	<table>
+     <tr>
+      <td>
+	<p>
+	 <input type="radio" name="set_to_header_to_list_address" value="1" <!--tmpl_if list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_if--> /></p>
+	  </td><td>
+	<p><label>be addressed to the sender</label><br />
+	 <em>(you can still "Reply-All" to send the reply to the sender, as well as the mailing list)</em></p>
+	</td>
+	</tr> 
+	<tr> 
+
+	<td>
+	<p>
+	 <input type="radio" name="set_to_header_to_list_address" value="0" <!--tmpl_unless list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_unless--> />
+	</p></td> 
+	<td> 
+	<label>be addressed to the mailing list</label>
+</p> 
+</td> 
+</tr> 
+</table>
+
+
       </td>
   </tr>
  </table> 
