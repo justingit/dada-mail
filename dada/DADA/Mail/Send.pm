@@ -484,38 +484,46 @@ sub send {
 				}
 				
                my $to;
-               if( $local_li->{set_to_header_to_list_address} == 1 && 
-                   $local_li->{group_list}                    == 1 && 
+               if( $local_li->{group_list}                    == 1 && 
                    $fields{from_mass_send}                    == 1 &&
-                   defined($local_li->{discussion_pop_email}
-                   
-                   ) # safegaurd?
+                   defined($local_li->{discussion_pop_email}) # safegaurd?
                    
                  ){  
                     # This is who it's going to. 
                     $to = $fields{To}; 
-                    
+
+					require DADA::App::FormatMessages; 
+				    my $fm = DADA::App::FormatMessages->new(
+								-List        => $self->{list},  
+								-ls_obj      => $self->{ls},
+							);
+					require Email::Address;
+					
+					my $formatted_disc_email = $fm->_encode_header(
+							'To', 
+							Email::Address->new($self->{ls}->param('list_name'), $local_li->{discussion_pop_email})->format
+						);
+
                     # This is what we're going to say we are...
-                    $fields{To} = $local_li->{discussion_pop_email}; 
-				
-					$fields{'Reply-To'} = undef; 
-					delete($fields{'Reply-To'}); 
-                    
+                    $fields{To} = $formatted_disc_email;
+
+					if($local_li->{set_to_header_to_list_address} == 1){ 
+						# Nothin' needed. 
+					}
+					else { 
+						 # This goes against RFC
+						$fields{'Reply-To'} = $formatted_disc_email; 			
+					}
                } else { 
                     # um, nevermind. 
                     $to = $fields{To}; 
-
-						warn "no! We're making no changes";
 						
                }
                 
                 # why wouldn't it be defined?
                 if (defined($to)){; 
                     eval { $to = (Email::Address->parse($to))[0]->address; }
-                }
-                #if(!$to){  
-                #    $to = $fields{To};   
-                #}                    
+                }                
                 
                 my $smtp_msg = '';
                 for my $field (@default_headers){
@@ -603,7 +611,7 @@ sub send {
             # carp ' $fields{To} ' . $fields{To}; 
             
             my $plain_to_address = $fields{To}; #holds something like, me@you.com 
-            if (defined($plain_to_address)){; 
+            if (defined($plain_to_address)){ 
                     eval { $plain_to_address = (Email::Address->parse($plain_to_address))[0]->address; }
             } else { 
                 carp "couldn't strip, 'to' address! - $plain_to_address"; 
@@ -636,17 +644,36 @@ sub send {
             
             }
             
-           if( $local_li->{set_to_header_to_list_address} == 1 && 
-               $local_li->{group_list}                    == 1 && 
-                $fields{from_mass_send}                   == 1 &&
+           if( $local_li->{group_list}                    == 1 && 
+               $fields{from_mass_send}                   == 1 &&
                defined($local_li->{discussion_pop_email}) # safegaurd?
              ){
                
-               $live_mailing_settings  =~ s/\-t//; # remove any, "-t" flags... 
-               $live_mailing_settings .= ' ' . $plain_to_address;  
-               $fields{To} =  $local_li->{discussion_pop_email};
-			   $fields{'Reply-To'} = undef; 
-			   delete($fields{'Reply-To'});
+				$live_mailing_settings  =~ s/\-t//; # remove any, "-t" flags... 
+				$live_mailing_settings .= ' ' . $plain_to_address;  
+				
+				require DADA::App::FormatMessages; 
+			    my $fm = DADA::App::FormatMessages->new(
+							-List        => $self->{list},  
+							-ls_obj      => $self->{ls},
+						);
+				require Email::Address;
+				
+				my $formatted_disc_email = $fm->_encode_header(
+						'To', 
+						Email::Address->new($self->{ls}->param('list_name'), $local_li->{discussion_pop_email})->format
+					);
+					
+			   $fields{To} =  $formatted_disc_email;
+				
+			   if($local_li->{set_to_header_to_list_address} == 1) { 
+	           		# ... Nothin' more needed
+				}
+				else { 
+					# This is against RFC
+					$fields{'Reply-To'} = $formatted_disc_email; 
+				}
+
             }
             
             $live_mailing_settings = make_safer($live_mailing_settings);
@@ -2246,11 +2273,23 @@ sub _make_list_headers {
 			}
 			
 			# http://www.faqs.org/rfcs/rfc2369.html
+		    # The List-Post field describes the method for posting to the list. 
+			# This is typically the address of the list, but MAY be a moderator, 
+			# or potentially some other form of submission. For the special case 
+			# of a list that does not allow posting (e.g., an announcements list), 
+			# the List-Post field may contain the special value "NO".
+
+
+
 			if(
 			   $self->{ls}->param('group_list')           == 1 && 
 			   $self->{ls}->param('discussion_pop_email')
 			  ){ 
 				$lh{'List-Post'} = '<mailto:' . $self->{ls}->param('discussion_pop_email') . '>';
+			}
+			else { 
+				$lh{'List-Post'} = 'NO';
+				
 			}
 			
 			# Is there a reason I continue to use this? 	

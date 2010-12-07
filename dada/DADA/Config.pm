@@ -4644,7 +4644,6 @@ encrypted.
 	
 	discussion_template_defang   => 1,
 	only_allow_group_plain_text  => 0,
-	add_reply_to                 => 1,
 	mail_group_message_to_poster => 1,
 	append_list_name_to_subject  => 1,
 	

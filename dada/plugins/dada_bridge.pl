@@ -819,7 +819,6 @@ sub cgi_default {
           $q->param('append_list_name_to_subject') || 0;
         $p->{no_append_list_name_to_subject_in_archives} =
           $q->param('no_append_list_name_to_subject_in_archives') || 0;
-        $p->{add_reply_to}         = $q->param('add_reply_to')         || 0;
         $p->{discussion_pop_email} = $q->param('discussion_pop_email') || undef;
         $p->{discussion_pop_server} = $q->param('discussion_pop_server')
           || undef;
@@ -3723,19 +3722,6 @@ General
       </tr> 
      </table> 
     </p>
-   </td>
-  </tr>
-  <tr> 
-   <td align="right">
-    <input name="add_reply_to" id="add_reply_to" type="checkbox" value="1" <!--tmpl_if list_settings.add_reply_to -->checked="checked"<!--/tmpl_if--> />
-   </td>
-   <td>
-    <label for="add_reply_to">
-     Automatically have replies to messages directed to the group
-    </label>
-    <br />
-     A 'Reply-To' header will be added to group list mailings that will direct 
-     replies to list messages back to the list address (<strong><!-- tmpl_var list_settings.discussion_pop_email escape="HTML" --></strong>).
    </td>
   </tr>
    <tr> 
