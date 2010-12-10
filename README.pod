@@ -74,6 +74,25 @@ L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
 
 =head2 See Also: Documentation Links above.
 
+=head1 DEVELOPMENT
+
+Dada Mail is developed openly at: 
+
+	http://github.com/justingit/dada-mail
+	
+"master" - always stable
+
+"dev" - always unstable, new features/bugfixes should be branched off of, "dev" 
+
+We're following the model basically described, here: 
+
+http://nvie.com/posts/a-successful-git-branching-model/	
+	
+Mailing List: 
+
+	http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/
+
+
 =head1 LICENSE AND COPYRIGHT 
 
 Copyright (c) 1999-2010
