@@ -62,10 +62,10 @@
    </td>
   </tr>
  </table>
- <table cellspacing="5" <!-- tmpl_unless list_settings.can_use_mx_lookup -->class="disabled"<!--/tmpl_unless--> >
+ <table cellspacing="5" <!-- tmpl_unless can_use_mx_lookup -->class="disabled"<!--/tmpl_unless--> >
   <tr>
    <td>
-    <input type="checkbox" name="mx_check" id="mx_check" value="1" <!-- tmpl_if list_settings.mx_check -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless list_settings.can_use_mx_lookup -->disabled="disabled"<!--/tmpl_unless--> />
+    <input type="checkbox" name="mx_check" id="mx_check" value="1" <!-- tmpl_if list_settings.mx_check -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless can_use_mx_lookup -->disabled="disabled"<!--/tmpl_unless--> />
    </td>
    <td> 
     <p>
@@ -76,7 +76,7 @@
      When an email address is submitted to be validated, the 
      domain of the address will be checked for its existence.
     </p>
-<!-- tmpl_unless list_settings.can_use_mx_lookup -->
+<!-- tmpl_unless can_use_mx_lookup -->
 	    <p class="error">
 	     <em>
 	      Disabled. The Net::DNS module needs to be installed.
