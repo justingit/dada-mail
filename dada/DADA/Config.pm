@@ -4972,8 +4972,8 @@ and to say that you've got the freshest tools on the Web.
 
 
 
-$VERSION = 4.3.0; 
-$VER     = '4.3.0 Stable 11/26/10';
+$VERSION = 4.3.1; 
+$VER     = '4.3.1 Beta 12/14/10';
 
 
 #
