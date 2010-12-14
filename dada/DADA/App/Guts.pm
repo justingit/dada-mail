@@ -626,9 +626,6 @@ Using all these paramaters at once would look something like this:
 =cut
 
 my $cache = {};
-#my $ic = 0; 
-#my $nc = 0;
-
 sub available_lists {
     my %args = validate(@_, {
         '-As_Ref'      => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
