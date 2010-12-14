@@ -75,6 +75,8 @@ This should hold an email address you'd like to validate
 
 This should hold a Dada Mail list shortname you'd like to validate against
 
+=back
+
 =head1 Running
 
 The soap_client.cgi and soap_client.php scripts can be run simply by visiting them in a webserver. Doing so will print a simple report, like so: 
