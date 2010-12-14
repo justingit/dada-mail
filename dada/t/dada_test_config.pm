@@ -100,12 +100,15 @@ sub create_test_list {
 
     my %args = validate(@_,{
         '-name'                     => { default => $local_test_list_vars->{list} },
+        '-list_name'                     => { default => $local_test_list_vars->{list_name} },
         '-remove_existing_list'     => { default => 0 },
         '-remove_subscriber_fields' => { default => 0 },
     });
 
     my $list_name = $args{-name};
 
+	$local_test_list_vars->{list_name} = $args{-list_name};
+	
     if($args{-remove_existing_list} == 1){ 
         require DADA::App::Guts; 
         if(DADA::App::Guts::check_if_list_exists(-List => $list_name) == 1){ 
