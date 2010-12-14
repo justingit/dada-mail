@@ -619,6 +619,7 @@ sub create_dada_files_dir_structure {
     eval {
 
         installer_mkdir( $loc, $DADA::Config::DIR_CHMOD );
+		create_htaccess_deny_from_all_file($loc); 
         foreach (
             qw(
             .archives
@@ -1321,6 +1322,15 @@ sub installer_rmdir {
 
 sub auto_dada_files_dir {
     return guess_home_dir();
+}
+
+sub create_htaccess_deny_from_all_file { 
+	my $loc = shift; 
+	my $htaccess_file = make_safer($loc . '/.htaccess');
+	open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or die $!;
+	print   $htaccess "deny from all\n" or die $!;
+	close   $htaccess or die $!;
+	installer_chmod(0644, $htaccess_file); 
 }
 
 sub guess_home_dir {
