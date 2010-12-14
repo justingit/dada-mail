@@ -170,8 +170,6 @@ sub Remove {
 	}
 	
     require DADA::MailingList::Archives;
-
-    #$DADA::MailingList::Archives::dbi_obj = $dbi_handle;
     my $la = DADA::MailingList::Archives->new({-list => $list});
     require DADA::MailingList::Subscribers;
 

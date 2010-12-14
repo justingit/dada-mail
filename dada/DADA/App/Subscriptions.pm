@@ -82,10 +82,6 @@ sub subscribe {
         $args->{-html_output} = 1; 
     }
     
-    my $dbi_handle = undef; 
-    if(exists($args->{-dbi_handle})){ 
-        $dbi_handle = $args->{-dbi_handle};
-    }
     
     if(! exists($args->{-fh})){ 
         $args->{-fh} = \*STDOUT;
@@ -98,14 +94,13 @@ sub subscribe {
     my $email = xss_filter($q->param('email')); 
        $email = DADA::App::Guts::strip($email); 
 
-    my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle);
+    my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list);
 	my $ls          = undef; 
 	my $li          = undef; 
 	
 	
 	
 	require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 	
 	
 	
@@ -429,14 +424,7 @@ sub confirm {
         $args->{-fh} = \*STDOUT;
     }
     my $fh = $args->{-fh};
-    
-    my $dbi_handle = undef; 
-    if(exists($args->{-dbi_handle})){ 
-        $dbi_handle = $args->{-dbi_handle};
-        warn '>>>> dbi_handle passed.' 
-            if $t; 
-    }
-    
+
     my $q = $args->{-cgi_obj}; 
     my $list  = xss_filter($q->param('list')); 
     my $email = xss_filter($q->param('email'));     
@@ -451,10 +439,9 @@ sub confirm {
     warn '$pin: ' . $pin
         if $t; 
         
-    my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle);
+    my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list);
     
 	require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
 		my $ls = undef; 
 		my $li = undef; 
@@ -1013,12 +1000,7 @@ sub unsubscribe {
     if(! exists($args->{-html_output})){ 
         $args->{-html_output} = 1; 
     }
-    
-    my $dbi_handle = undef; 
-    if(exists($args->{-dbi_handle})){ 
-        $dbi_handle = $args->{-dbi_handle};
-    }
-    
+        
     if(! exists($args->{-fh})){ 
         $args->{-fh} = \*STDOUT;
     }
@@ -1044,7 +1026,7 @@ sub unsubscribe {
     
     if($args->{-html_output} != 0){ 
     
-        if(check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle) == 0){     
+        if(check_if_list_exists(-List => $list) == 0){     
            my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1&set_flavor=u'); 
            $self->test ? return $r : print $fh safely_encode(  $r) and return;       
         }
@@ -1062,15 +1044,13 @@ sub unsubscribe {
 
     }
    
-    require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
+    require DADA::MailingList::Settings; 
     
    
     my $ls = DADA::MailingList::Settings->new({-list => $list}); 
     my $li = $ls->get(); 
 
-    require DADA::MailingList::Subscribers; 
-           $DADA::MailingList::Subscribers::dbi_obj = $dbi_handle; 
+    require DADA::MailingList::Subscribers;  
     my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
             
     # Basically, if double opt out is turn off, 
@@ -1346,12 +1326,7 @@ sub unsub_confirm {
     if(! exists($args->{-html_output})){ 
         $args->{-html_output} = 1; 
     }
-    
-    my $dbi_handle = undef; 
-    if(exists($args->{-dbi_handle})){ 
-        $dbi_handle = $args->{-dbi_handle};
-    }
-    
+     
     if(! exists($args->{-fh})){ 
         $args->{-fh} = \*STDOUT;
     }
@@ -1366,7 +1341,7 @@ sub unsub_confirm {
     my $pin   = xss_filter($q->param('pin')); 
     
     if($args->{-html_output} != 0){ 
-        if(check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle) == 0){
+        if(check_if_list_exists(-List => $list) == 0){
             
             warn 'redirecting to: ' . $DADA::Config::PROGRAM_URL . '?error_invalid_list=1&set_flavor=u'
                 if $t; 
@@ -1377,13 +1352,11 @@ sub unsub_confirm {
         }
     }
     
-    require DADA::MailingList::Subscribers; 
-           $DADA::MailingList::Subscribers::dbi_obj = $dbi_handle; 
+    require DADA::MailingList::Subscribers;  
     
     my $lh = DADA::MailingList::Subscribers->new({-list => $list});
 
-    require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
+    require DADA::MailingList::Settings; 
 
     my $ls = DADA::MailingList::Settings->new({-list => $list}); 
     my $li = $ls->get(); 

@@ -147,8 +147,6 @@ sub _init {
 		    require DADA::App::DBIHandle; 
 			$self->{dbi_handle} = DADA::App::DBIHandle->new; 
 			require DADA::MailingList::Settings;
-		           $DADA::MailingList::Setting::dbi_obj = $self->{dbi_handle}; 
-
 		    $ls = DADA::MailingList::Settings->new({-list => $args->{-list}});
 		
 		}
@@ -443,8 +441,7 @@ sub create_subscriber_list {
 
 
 	# That's gonna be harder....
-    require DADA::MailingList::Subscribers;
-           $DADA::MailingList::Subscribers::dbi_obj = $self->{dbi_handle}; 
+    require DADA::MailingList::Subscribers; 
     my $lh = DADA::MailingList::Subscribers->new({-list =>  $self->list });
 
 	my $file = $self->dir . '/' . $file_names->{tmp_subscriber_list}; 

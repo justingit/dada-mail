@@ -26,18 +26,7 @@ my $q = new CGI;
    $q->charset($DADA::Config::HTML_CHARSET);
    $q = decode_cgi_obj($q); 
 	
-	my $dbi_handle; 
-
-if(
-	$DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/i || 
-    $DADA::Config::ARCHIVE_DB_TYPE    =~ m/SQL/i || 
-    $DADA::Config::SETTINGS_DB_TYPE   =~ m/SQL/i ||
-    $DADA::Config::SESSION_DB_TYPE    =~ m/SQL/i 
-){        
-	require DADA::App::DBIHandle; 
-    $dbi_handle = DADA::App::DBIHandle->new; 
-}
-
+	
 my $wierd_abs_path = __FILE__; 
    $wierd_abs_path =~ s{^/}{}g;
 
@@ -330,7 +319,6 @@ sub list_popup_menu {
 	my $labels = {}; 
 	
 	require DADA::MailingList::Settings; 
-		   $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 	
 	my @lists = available_lists(-Dont_Die => 1); 
 
@@ -628,7 +616,6 @@ sub list_page {
     }
 
 	require DADA::MailingList::Settings; 
-		   $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 	
 	my $ls = DADA::MailingList::Settings->new({-list => $args{-list}}); 
 	my $li= $ls->get; 
@@ -730,7 +717,6 @@ sub admin {
                                                     );
         if($checksout == 1){ 
             require DADA::MailingList::Settings; 
-            $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
             my $l_ls             = DADA::MailingList::Settings->new({-list => $admin_list}); 
             my $l_li             = $l_ls->get(); 
             $logged_in_list_name = $l_li->{list_name};
@@ -760,7 +746,6 @@ sub admin {
 sub _show_other_link { 
 
     require DADA::MailingList::Settings; 
-    $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
     
     
     # Basically, if there's at least one list that's hidden, we show the 
@@ -787,7 +772,6 @@ sub show_login_list_textbox {
 	#
 	
 	require DADA::MailingList::Settings; 
-    $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
     
     foreach my $list(available_lists(-Dont_Die => 1) ){
         my $ls = DADA::MailingList::Settings->new({-list => $list}); 
@@ -812,7 +796,6 @@ sub html_archive_list {
 	
 	require DADA::MailingList::Archives; 
 	require DADA::MailingList::Settings;
-		   $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
 	
 	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
@@ -970,7 +953,6 @@ sub login_switch_widget {
 	croak "no list!" if ! $args->{-list};
 	
 	require DADA::MailingList::Settings; 
-		   $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
 	my $location = $q->self_url || $DADA::Config::S_PROGRAM_URL . '?flavor=' . $args->{-f}; 
 
@@ -986,7 +968,7 @@ sub login_switch_widget {
     my $scrn; 
     
 
-	my @lists = available_lists(-dbi_handle => $dbi_handle); 
+	my @lists = available_lists(); 
 	my %label = (); 
 	
 	# DEV TODO - This needs its own METHOD!!!

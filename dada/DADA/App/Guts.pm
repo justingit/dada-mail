@@ -559,7 +559,6 @@ sub check_if_list_exists {
 	
 	my %args = (
 				-List       => undef, 
-	            -dbi_handle => undef, 
 	            -Dont_Die   => 0, 
 				@_
 				); 
@@ -575,7 +574,6 @@ sub check_if_list_exists {
 	}
 	
 	my @available_lists = available_lists(
-			-dbi_handle => $args{-dbi_handle}, 
 			-Dont_Die   => $args{-Dont_Die},
 		);
 	
@@ -612,26 +610,7 @@ returns the array in alphabetic order - but B<NOTE:> not in alphabetical order b
 =item * -Dont_Die
 
 As the name implies, the subroutine won't kill the program calling it, if there's a problem opening the directory you've set in the Config.pm B<$FILES> variable. 
-
-=item * -dbi_handle
-
-In Dada Mail, dbi handles are passed to different methods/subroutines in various was, so that they may be reused. 
-
-If you're using Dada Mail with the SQL backend for the list settings, you could do something like this: 
-
- use DADA::Config; 
- use DADA::App::Guts; 
  
- my $dbi_handle; 
- 
- if($SETTINGS_DB_TYPE =~ m/SQL/){        
-     require DADA::App::DBIHandle; 
-     $dbi_handle = DADA::App::DBIHandle->new; 
- }
- 
- my @available_lists = DADA::App::Guts::available_lists(-dbi_handle => $dbi_handle); 
-
-to reuse the database handle you've just made. 
 
 =back
 
@@ -641,7 +620,6 @@ Using all these paramaters at once would look something like this:
                                         -As_Ref => 1, 
                                         -In_Order => 1, 
                                         -Dont_Die => 1, 
-                                        -dbi_handle => $dbi_handle, 
                                        );
 
 
@@ -657,7 +635,6 @@ sub available_lists {
         '-In_Order'    => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
         '-Dont_Die'    => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
         '-clear_cache' => { regex => qr/\A[01]\z/,   optional => 1, default => 0 }, 
-        '-dbi_handle'  => { type  => OBJECT | UNDEF, optional => 1, default => undef },
     }); 
 
     my $in_order        = $args{-In_Order};
@@ -666,8 +643,6 @@ sub available_lists {
     my @available_lists = ();
     my $present_list    = undef;
 
-    require DADA::MailingList::Settings;
-    $DADA::MailingList::Settings::dbi_obj = $args{-dbi_handle};
 
 # BUGFIX:  2222381  	 3.0.0 - DADA::App::Guts::available_lists() needs caching
 # https://sourceforge.net/tracker2/?func=detail&aid=2222381&group_id=13002&atid=113002
@@ -710,8 +685,6 @@ sub available_lists {
 
         ######################################################################
         my $dbi_handle;
-
-
         require DADA::App::DBIHandle;
         $dbi_handle = DADA::App::DBIHandle->new;
         my $dbh = $dbi_handle->dbh_obj;
@@ -1943,7 +1916,6 @@ sub check_list_security {
 	my %args = (-Function        => undef, 
 				-cgi_obj         => undef, 
 				-manual_override => 0, 
-				-dbi_handle      => {}, 
 				@_);
 	croak 'no CGI Object (-cgi_obj)' if ! $args{-cgi_obj};
 	

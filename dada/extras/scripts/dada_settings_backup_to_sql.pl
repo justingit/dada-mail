@@ -193,7 +193,6 @@ sub local_available_lists {
 				-As_Ref     => 0,
 				-In_Order   => 0,
 				-Dont_Die   => 0,
-				-dbi_handle => undef, 
 				@_
 			   ); 
 	

@@ -76,7 +76,6 @@ sub send_email {
 	my $self   = shift; 
 	my ($args) = @_; 
 	my $q          = $args->{-cgi_obj};
-	my $dbi_handle = $args->{-dbi_handle};
 
 	my $process = xss_filter(strip($q->param('process'))); 
 	my $flavor  = xss_filter(strip($q->param('flavor'))); 
@@ -97,8 +96,7 @@ sub send_email {
 
 													
     
-    require DADA::MailingList::Settings; 
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
+    require DADA::MailingList::Settings;  
 
 
     
@@ -336,7 +334,6 @@ sub send_email {
 		);
 
         require DADA::Mail::Send;
-               $DADA::Mail::Send::dbi_obj = $dbi_handle;
 
         my $mh = DADA::Mail::Send->new(
 					{ 
@@ -459,21 +456,18 @@ sub send_url_email {
 	my $q          = $args->{-cgi_obj}; 
 	my $process    = xss_filter(strip($q->param('process'))); 
 	my $flavor     = xss_filter(strip($q->param('flavor')));
-	my $dbi_handle = $args->{-dbi_handle}; 
 	
     my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
                                                         -Function => 'send_url_email');
     
     my $list = $admin_list; 
     
-    require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
+    require DADA::MailingList::Settings; 
 
     my $ls = DADA::MailingList::Settings->new({-list => $list}); 
     my $li = $ls->get; 
     
     require DADA::MailingList::Archives;
-           $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
     
     my $la = DADA::MailingList::Archives->new(   {-list => $list});           
     my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
@@ -736,7 +730,6 @@ sub send_url_email {
 				);
                 
                 require DADA::Mail::Send;
-                       $DADA::Mail::Send::dbi_obj = $dbi_handle;
 
                    $mh      = DADA::Mail::Send->new(
 								{
@@ -823,7 +816,6 @@ sub send_url_email {
                 if($archive_m == 1 && ($q->param('process') !~ m/test/i)){ 
                 
                     require DADA::MailingList::Archives;
-                           $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
                     
                     my $archive = DADA::MailingList::Archives->new({-list => $list});
                     $archive->set_archive_info($message_id, $q->param('Subject'), undef, undef, $mh->saved_message); 
@@ -855,7 +847,6 @@ sub list_invite {
 	my $self   = shift; 
 	my ($args) = @_; 
 	my $q = $args->{-cgi_obj};
-	my $dbi_handle = $args->{-dbi_handle};
 
 	my $process = xss_filter(strip($q->param('process'))); 
 	my $flavor  = xss_filter(strip($q->param('flavor')));
@@ -1072,7 +1063,6 @@ sub list_invite {
         my ($header_glob, $message_string) =  $fm->format_headers_and_body(-msg => $msg_as_string );
     
         require DADA::Mail::Send;
-               $DADA::Mail::Send::dbi_obj = $dbi_handle;
 
         my $mh = DADA::Mail::Send->new(
 					{

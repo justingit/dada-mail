@@ -179,9 +179,6 @@ if($DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ ||
  ){
     require DADA::App::DBIHandle;
     $dbi_handle = DADA::App::DBIHandle->new;
-
-	## This should give us a handle, we can then share.
-	#$dbi_handle->dbh_obj;
 }
 
 
@@ -192,7 +189,6 @@ my $c = DADA::App::ScreenCache->new;
 use DADA::App::Guts;
 
 use DADA::MailingList::Subscribers;
-   $DADA::MailingList::Subscribers::dbi_obj = $dbi_handle;
 
 use CGI;
     CGI->nph(1)
@@ -752,7 +748,6 @@ sub default {
     }
 
     require DADA::MailingList::Settings;
-    $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my @available_lists;
     if (   $DADA::Config::SUBSCRIBER_DB_TYPE =~ /SQL/
@@ -780,7 +775,6 @@ sub default {
     else {
         @available_lists = available_lists(
             -In_Order   => 1,
-            -dbi_handle => $dbi_handle
         );
     }
 
@@ -804,8 +798,6 @@ sub default {
         );
 
         require DADA::Template::Widgets;
-        $DADA::Template::Widgets::dbi_obj = $dbi_handle;
-
 
         $scrn .= DADA::Template::Widgets::default_screen(
            # {
@@ -869,7 +861,7 @@ sub list_page {
         return;
     }
 
-    if ( check_if_list_exists( -List => $list, -dbi_handle => $dbi_handle ) ==
+    if ( check_if_list_exists( -List => $list ) ==
         0 )
     {
         undef($list);
@@ -878,7 +870,6 @@ sub list_page {
     }
 
     require DADA::MailingList::Settings;
-    $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     if ( !$email && !$set_flavor && ( $q->param('error_no_email') != 1 ) ) {
         if (!$c->profile_on && $c->cached( 'list/' . $list . '.scrn' ) ) {
@@ -927,7 +918,7 @@ sub list_page {
 
 sub admin {
 
-    my @available_lists  = available_lists(-dbi_handle => $dbi_handle);
+    my @available_lists  = available_lists();
     if(($#available_lists < 0)){
         &default;
         return;
@@ -970,7 +961,6 @@ sub sign_in {
 
     my $list_exists = check_if_list_exists(
         -List       => $list,
-        -dbi_handle => $dbi_handle,
     );
 
 
@@ -1008,7 +998,6 @@ sub sign_in {
         }
 
         require DADA::MailingList::Settings;
-        $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
         my $li = $ls->get;
@@ -1063,7 +1052,6 @@ sub send_email {
 				-cgi_obj     => $q,
 				-list        => $admin_list,
 				-root_login  => $root_login,
-				-dbi_handle  => $dbi_handle,
 			}
 		);
 }
@@ -1671,7 +1659,6 @@ sub send_url_email {
 	   $ms->send_url_email(
 			{
 				-cgi_obj     => $q,
-				-dbi_handle  => $dbi_handle,
 			}
 		);
 }
@@ -1701,7 +1688,6 @@ sub change_info {
     $list = $admin_list;
 
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
@@ -1820,7 +1806,6 @@ sub change_password {
 
     require DADA::Security::Password;
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
@@ -2048,7 +2033,6 @@ sub list_options {
 
 
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get();
@@ -2178,7 +2162,6 @@ sub sending_preferences {
     $list = $admin_list;
 
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
@@ -2188,7 +2171,6 @@ sub sending_preferences {
 
 
 	    require DADA::MailingList::Settings;
-	           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
 	    my $ls = DADA::MailingList::Settings->new({-list => $list});
 	    my $li = $ls->get;
@@ -2373,7 +2355,6 @@ sub mass_mailing_preferences {
     $list = $admin_list;
 
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
@@ -2575,7 +2556,6 @@ sub adv_sending_preferences {
 
     require DADA::Security::Password;
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my $ls = DADA::MailingList::Settings->new({-list => $list}) ;
     my $li = $ls->get;
@@ -2716,7 +2696,6 @@ sub sending_tuning_options {
     $list = $admin_list;
 
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
@@ -2966,7 +2945,6 @@ sub view_list {
 
 
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
@@ -3145,7 +3123,6 @@ sub subscription_requests {
 	my @address = $q->param('address') || ();
 	my $count   = 0;
 	require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my $ls = DADA::MailingList::Settings   ->new({-list => $list});
     my $lh = DADA::MailingList::Subscribers->new({-list => $list});
@@ -4141,14 +4118,12 @@ sub view_archive {
     $list = $admin_list;
 
     require DADA::MailingList::Settings;
-    $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $admin_list } );
     my $li = $ls->get;
 
     # let's get some info on this archive, shall we?
     require DADA::MailingList::Archives;
-    $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
 
     my $archive = DADA::MailingList::Archives->new( { -list => $list } );
     my $entries = $archive->get_archive_entries();
@@ -4340,13 +4315,11 @@ sub display_message_source {
     $list = $admin_list;
 
     require DADA::MailingList::Settings;
-    $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
 
     require DADA::MailingList::Archives;
-    $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
 
     my $la = DADA::MailingList::Archives->new( { -list => $list } );
 
@@ -4391,7 +4364,6 @@ sub delete_archive {
     my $li = $ls->get;
 
     require DADA::MailingList::Archives;
-    $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
 
     my $archive = DADA::MailingList::Archives->new( { -list => $list } );
     $archive->delete_archive(@address);
@@ -4437,8 +4409,7 @@ sub archive_options {
 
     $list = $admin_list;
 
-    require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
+    require DADA::MailingList::Settings;;
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
@@ -4520,14 +4491,12 @@ sub adv_archive_options {
 
 
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
 
     require DADA::MailingList::Archives;
-           $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
 
     my $la = DADA::MailingList::Archives->new({-list => $list});
 
@@ -4730,10 +4699,8 @@ sub edit_archived_msg {
 
     require DADA::Template::HTML;
     require DADA::MailingList::Settings;
-    $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     require DADA::MailingList::Archives;
-    $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
 
     require DADA::Mail::Send;
 
@@ -5554,7 +5521,6 @@ sub edit_template {
             my $apply_list_template_to_html_msgs = $q->param('apply_list_template_to_html_msgs') || 0;
 
             require DADA::MailingList::Settings;
-                   $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
 
             $ls->save({
@@ -5584,7 +5550,6 @@ sub back_link {
     $list = $admin_list;
 
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
@@ -5840,7 +5805,6 @@ sub edit_html_type {
     $list = $admin_list;
 
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
@@ -5939,7 +5903,6 @@ sub manage_script {
     }
 
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
@@ -6054,7 +6017,6 @@ sub list_cp_options {
    $list = $admin_list;
 
    require DADA::MailingList::Settings;
-          $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
    my $ls = DADA::MailingList::Settings->new({-list => $list}) ;
    my $li = $ls->get;
@@ -6376,7 +6338,6 @@ sub subscribe {
         {
             -cgi_obj     => $q,
             -html_output => $args{-html_output},
-            -dbi_handle  => $dbi_handle,
         }
     );
 
@@ -6393,7 +6354,7 @@ sub subscribe_flash_xml {
         print $q->header('application/x-www-form-urlencoded');
     }
 
-    if(check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle) == 0){
+    if(check_if_list_exists(-List => $list) == 0){
         #note! This should be handled in the subscription_check_xml() method,
         # but this object *also* checks to see if a list is real. Chick/Egg
         e_print('<subscription><email>' . $email . '</email><status>0</status><errors><error>no_list</error></errors></subscription>');
@@ -6423,7 +6384,7 @@ sub unsubscribe_flash_xml {
         print $q->header('application/x-www-form-urlencoded');
     }
 
-    if(check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle) == 0){
+    if(check_if_list_exists(-List => $list) == 0){
         e_print('<unsubscription><email>' . $email . '</email><status>0</status><errors><error>no_list</error></errors></unsubscription>');
     }else{
         my $lh = DADA::MailingList::Subscribers->new({-list => $list});
@@ -6452,7 +6413,6 @@ sub unsubscribe {
         {
             -cgi_obj     => $q,
             -html_output => $args{-html_output},
-            -dbi_handle  => $dbi_handle,
         }
     );
 
@@ -6471,7 +6431,6 @@ sub confirm {
         {
             -cgi_obj     => $q,
             -html_output => $args{-html_output},
-            -dbi_handle  => $dbi_handle,
         }
     );
 
@@ -6491,7 +6450,6 @@ sub unsub_confirm {
         {
             -cgi_obj     => $q,
             -html_output => $args{-html_output},
-            -dbi_handle  => $dbi_handle,
         }
     );
 
@@ -6506,7 +6464,6 @@ sub resend_conf {
 
     my $list_exists = check_if_list_exists(
 						-List       => $list,
-						-dbi_handle => $dbi_handle
 					);
 
     if($list_exists == 0){
@@ -6537,7 +6494,6 @@ sub resend_conf {
 
 
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
@@ -6979,7 +6935,7 @@ sub new_list {
 
         if ($pw_check == 1){
 
-            my @t_lists = available_lists(-dbi_handle => $dbi_handle);
+            my @t_lists = available_lists();
 
             $agree = 'yes' if $errors;
 
@@ -7213,7 +7169,6 @@ sub archive {
     # are we dealing with a real list?
     my $list_exists = check_if_list_exists(
         -List       => $list,
-        -dbi_handle => $dbi_handle
     );
 
     if ( $list_exists == 0 ) {
@@ -7254,7 +7209,6 @@ sub archive {
     }
 
     require DADA::MailingList::Archives;
-    $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
 
     my $archive = DADA::MailingList::Archives->new( { -list => $list } );
     my $entries = $archive->get_archive_entries();
@@ -7743,10 +7697,8 @@ sub archive_bare {
 	}
 
     require DADA::MailingList::Archives;
-           $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
 
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
@@ -7793,7 +7745,7 @@ sub archive_bare {
 
 
 sub search_archive {
-    if (check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle) <= 0) {
+    if (check_if_list_exists(-List => $list) <= 0) {
         user_error(-List => $list, -Error => "no_list");
         return;
     }
@@ -7833,7 +7785,6 @@ sub search_archive {
 
 
     require DADA::MailingList::Archives;
-           $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
 
     my $archive      = DADA::MailingList::Archives->new({-list => $list});
     my $entries      = $archive->get_archive_entries();
@@ -7969,7 +7920,7 @@ sub send_archive {
 
     my $errors       = 0;
 
-    my $list_exists = check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle);
+    my $list_exists = check_if_list_exists(-List => $list);
 
     if ($list_exists <= 0 ) {
         user_error(-List => $list, -Error => "no_list");
@@ -8040,7 +7991,6 @@ sub send_archive {
     }else{
 
         require DADA::MailingList::Archives;
-               $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
 
         my $archive = DADA::MailingList::Archives->new({-list => $list});
 
@@ -8164,14 +8114,13 @@ sub archive_rss {
                 @_
                );
 
-    my $list_exists = check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle);
+    my $list_exists = check_if_list_exists(-List => $list);
 
     if ($list_exists == 0){
 
     }else{
 
         require DADA::MailingList::Settings;
-               $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
         my $ls = DADA::MailingList::Settings->new({-list => $list});
         my $li = $ls->get;
@@ -8207,7 +8156,6 @@ sub archive_rss {
 					}
 
                     require DADA::MailingList::Archives;
-                    $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
 
                     my    $archive = DADA::MailingList::Archives->new({-list => $list});
 
@@ -8227,7 +8175,6 @@ sub archive_rss {
 					}
 
                     require DADA::MailingList::Archives;
-                    $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
                     my    $archive = DADA::MailingList::Archives->new({-list => $list});
                     my $scrn = $q->header('application/xml') . $archive->atom_index();
                     e_print($scrn);
@@ -8257,7 +8204,6 @@ sub email_password {
 
 
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
@@ -8426,7 +8372,7 @@ sub login {
     my $cookie;
 
 
-    if(check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle) >= 1){
+    if(check_if_list_exists(-List => $list) >= 1){
 
        require DADA::Security::Password;
 
@@ -8502,7 +8448,7 @@ sub logout {
      my $admin_list;
      my $root_login;
 
-     my $list_exists = check_if_list_exists(-List => $admin_list, -dbi_handle => $dbi_handle);
+     my $list_exists = check_if_list_exists(-List => $admin_list);
 
     # I don't quite even understand why there's this check...
 
@@ -8963,10 +8909,9 @@ sub reset_cipher_keys {
 
     if ( $root_pass_check == 1 ) {
         require DADA::Security::Password;
-        my @lists = available_lists( -dbi_handle => $dbi_handle );
+        my @lists = available_lists();
 
         require DADA::MailingList::Settings;
-        $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
         for (@lists) {
             my $ls = DADA::MailingList::Settings->new( { -list => $_ } );
@@ -9016,16 +8961,14 @@ sub restore_lists {
     if ( root_password_verification( $q->param('root_password') ) ) {
 
         require DADA::MailingList::Settings;
-        $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
         require DADA::MailingList::Archives;
-        $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
 
         require DADA::MailingList::Schedules;
 
         # No SQL veresion, so don't worry about handing over the dbi handle...
 
-        my @lists = available_lists( -dbi_handle => $dbi_handle );
+        my @lists = available_lists();
 
         if ( $process eq 'true' ) {
 
@@ -9349,14 +9292,13 @@ sub subscriber_help {
         return;
     }
 
-    if(check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle) == 0){
+    if(check_if_list_exists(-List => $list) == 0){
         undef($list);
         &default;
         return;
     }
 
     require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
@@ -9407,10 +9349,9 @@ sub file_attachment {
 
     my %args = (-inline_image_mode => 0, @_);
 
-    if(check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle) == 1){
+    if(check_if_list_exists(-List => $list) == 1){
 
         require DADA::MailingList::Settings;
-               $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
         my $ls = DADA::MailingList::Settings->new({-list => $list});
         my $li = $ls->get;
@@ -9420,7 +9361,6 @@ sub file_attachment {
             if($li->{display_attachments} == 1 || $checksout == 1){
 
                 require DADA::MailingList::Archives;
-                       $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
 
                 my $la = DADA::MailingList::Archives->new({-list => $list});
 

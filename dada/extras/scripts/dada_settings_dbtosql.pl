@@ -119,7 +119,6 @@ sub local_available_lists {
 				-As_Ref     => 0,
 				-In_Order   => 0,
 				-Dont_Die   => 0,
-				-dbi_handle => undef, 
 				@_
 			   ); 
 	
@@ -129,8 +128,7 @@ sub local_available_lists {
 	my @available_lists = (); 
 	my $present_list;
 	
-	require DADA::MailingList::Settings; 
-		   $DADA::MailingList::Settings::dbi_obj = $args{-dbi_handle}; 
+	require DADA::MailingList::Settings;  
 		   
 	my $path = $DADA::Config::FILES; 
 	 #untaint 

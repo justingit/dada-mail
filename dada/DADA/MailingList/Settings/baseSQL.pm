@@ -223,8 +223,7 @@ sub _list_exists {
 	}
 	return DADA::App::Guts::check_if_list_exists(
 				-List       => $n, 
-				-dbi_handle => $dbi_obj,
-			);
+	);
 }
 
 
