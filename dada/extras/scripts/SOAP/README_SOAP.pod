@@ -8,11 +8,11 @@ and should include,
 
 =over
 
-=item * a CGI SOAP server, written in Perl that ties into the Dada Mail API.
+=item * a CGI SOAP server, written in Perl that ties into the Dada Mail API. (soap_server.cgi)
 
-=item * a SOAP client written in Perl 
+=item * a SOAP client written in Perl (soap_client.cgi)
 
-=item * a SOAP client, written in php
+=item * a SOAP client, written in php (soap_client.php)
 
 =back 
 
@@ -50,7 +50,7 @@ http://search.cpan.org/~mkutter/SOAP-Lite-0.710.08/
 The php client requires the PEAR SOAP distro: 
 
 http://pear.php.net/package/SOAP
-		
+
 =head1 Installation
 
 Place both the soap_server.cgi and soap_client.cgi into the, "dada" directory of your working Dada Mail installation. Change the permissions of both to, "755". 

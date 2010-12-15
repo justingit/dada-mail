@@ -63,7 +63,7 @@ C<DADA::App::Subscriptions>'s C<subscribe> method will handle a subscription req
 
 See the Proof of Concept SOAP example: 
 
-L<http://dadamailproject.com/d/README_SOAP.pod/html>
+L<http://dadamailproject.com/d/README_SOAP.pod.html>
 
 for more inspiration
 

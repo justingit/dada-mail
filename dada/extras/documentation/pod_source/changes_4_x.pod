@@ -25,7 +25,7 @@ Some SOAP proof of concept files have been included in, I<dada/extras/scripts/SO
 
 They can be read at: 
 
-L<http://dadamailproject.com/d/README_SOAP.pod/html>
+L<http://dadamailproject.com/d/README_SOAP.pod.html>
 
 They include a server written in Perl and clients written in Perl and php. They are also documented in the Subscription Cookbook
 
