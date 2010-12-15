@@ -19,7 +19,7 @@ changes in them:
 
 =back
 
-=head3 SOAP examples for subscribing including 
+=head3 SOAP examples for subscribing included 
 
 Some SOAP proof of concept files have been included in, I<dada/extras/scripts/SOAP> 
 
@@ -31,6 +31,11 @@ They include a server written in Perl and clients written in Perl and php. They 
 
 They are, in fact, Proof of Concepts and are not complete applications. 
 
+=head3 Plugin: mx_lookup.cgi cleaned up
+
+The B<mx_lookup.cgi> plugin has been cleaned up and documentation added. It's currently 
+listed as, B<DEPRECATED>, but will not go away, until the functionality it has is brought into 
+the core of the program. It's still a good example of how to make a simple Dada Mail plugin. 
 
 =head3 Code Cleanup
 
