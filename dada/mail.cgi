@@ -759,7 +759,6 @@ sub default {
             @available_lists =
               available_lists(
 				-In_Order   => 1,
-				-dbi_handle => $dbi_handle
 			);
         };
         if ($@) {
