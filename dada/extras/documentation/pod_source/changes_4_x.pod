@@ -714,7 +714,7 @@ When disabled (the new default), they simply have to fill out the subscribe/unsu
 When available, both the Subscription and Unsubscription links will have the potential subscriber's
 (or unsubscriber's) email address in the link itself, so that the user does not have to do the two-step
 of first following the link and then typing in their email address. 
- 
+
 These links are created per-subscriber (or potential sub/unsub), when you use the: 
 
  <!-- tmpl_var list_subscribe_link -->
