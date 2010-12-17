@@ -17,6 +17,17 @@ Key:
 
 
 
+[ ] Simple Subscribe/Unsubscribe by email mechanism in dada_bridge.pl 
+	message just has,
+	subscribe
+or 
+	unsubscribe
+	
+If so, Dada Mail just goes through the usual DADA::App::Subscriptions::subscribe|unsubscribe methods - 
+except, anything that needs a HTML screen is handled by email - if it can be. (That feature has to be fleshed out - not too much more to go) 
+
+Also, this is an optional feature - can be disabled. This can also - randomly be a way to work with Dada Mail's subscription process for outside scripts. Uh, maybe good idea? 
+	
 
 [x] Closed-Loop Opt-in list setting is called, "enable_closed_loop_opt_in" and if set to one, is enabled. Where did I pick that name? 
 May be time for a change - perhaps, "enable_closed_loop_opt_in"? 
