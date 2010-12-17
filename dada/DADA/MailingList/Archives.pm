@@ -1478,10 +1478,11 @@ sub massage {
 	# Change the redirect tags
 	my $s    = shift; 
 	   $s    =~ s/\[redirect\=(.*?)\]/$1/eg; 
-	   
-	# desensitize any current subscribe/unsubscribe urls: 
-	$s =~ s{$DADA::Config::PROGRAM_URL/u/$self->{list}/(.*?)/(.*?)/}{$DADA::Config::PROGRAM_URL/u/$self->{list}/user/example.com/};
-	$s =~ s{$DADA::Config::PROGRAM_URL/s/$self->{list}/(.*?)/(.*?)/}{$DADA::Config::PROGRAM_URL/s/$self->{list}/user/example.com/};
+	
+	# DEV: desensitize any current subscribe/unsubscribe urls: 
+	# Still, this has the potential of breaking, if the URL is wrapped and split in multi-lines. Ugh! 
+	$s =~ s{$DADA::Config::PROGRAM_URL/u/$self->{list}/(.*?)/(.*?)/}{$DADA::Config::PROGRAM_URL/u/$self->{list}/user/example.com/}g;
+	$s =~ s{$DADA::Config::PROGRAM_URL/s/$self->{list}/(.*?)/(.*?)/}{$DADA::Config::PROGRAM_URL/s/$self->{list}/user/example.com/}g;
 	
 	return $s; 
 	
