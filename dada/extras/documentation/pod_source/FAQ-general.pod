@@ -114,31 +114,37 @@ Yes. In the list control panel, click on, "Monitor Your Mailings", click on the 
 
 =head1 Subscriptions
 
-=head2 How do you add subscribers to Dada Mail? 
+=head2 How are new subscriptions made? 
 
-There's basically three ways to add subscribers to Dada Mail. 
+=over
 
-The first way is by having the list owner log into the List Control Panel and adding subscribers en-mass, via the, B<Manage Subscribers - Add> screen. 
+=item * List Invitations
+
+The first way is by having the list owner log into the List Control Panel and inviting subscribers en-mass, via the, B<Manage Subscribers - Invite> screen. 
+
+=item * Self-Subscriptions
 
 The second way is to provide a subscription form available to visitors of your website. 
 
+=item * API
+
 The third is to modify an already exisiting program to use Dada Mail's API either directory or indirectly. 
 
-=head3 Adding Subscribers via the List Control Panel
+The first two ways are walked through in this screen cast: 
 
-Once logged in, the list owner will want to visit the, B<Manage Subscribers - Add> screen. 
+L<http://www.youtube.com/watch?v=kUENzRN2EPA&hd=1>
+
+=head3 List Invitations
+
+Once logged in, the list owner will want to visit the, B<Manage Subscribers - Invite> screen. 
 
 New subscribers should be prepared in CSV format, with the email address being first and any other Subscriber Profile Fields coming afterwards. The actual order will be listed on this screen. 
 
 If you do not have any Subscriber Profile Fields, the format needed to give Dada Mail is just, one email address and a newline. 
 
-Click the, B<Verify Subscribers...> button. When the screen refreshes, Dada Mail will give a break down of the addresses that can be subscribed and also the addresses that cannot be subscribed for reasons that include, they're already subscribed, the email address is invalid, or that the address is currently banned from subsribing, amongst other reasons. 
+Click the, B<Verify Addresses...> button. When the screen refreshes, Dada Mail will give a break down of the addresses that can be invited and also the addresses that cannot be invited for reasons that include: already being subscribed, being an invalid address, or that the address is currently banned from subsribing. 
 
-From this point, you can make the choice to either Subscribe the addresses listed, or Send a List Invitation. 
-
-We strongly urge you to not outright subscribe any addresses that you haven't first verified completely via a Closed-Loop subscription process. Thus, you should only use this feature if you're importing an already existing subscription list. 
-
-Rather, you should send a List Invitation. A List Invitation will send out a short email message to the would-be subscribe and allow the subscriber themselves to choose to subscribe to the list. 
+A List Invitation will send out a short email message to the would-be subscribe and allow the subscriber themselves to choose to subscribe to the list. 
 
 =head3 Allowing Visitors to Subscribe
 
