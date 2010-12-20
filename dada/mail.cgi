@@ -7517,6 +7517,9 @@ sub archive {
 
             # DEV: This logic should not be here...
 
+			# DEV: This is stupid, and I don't think it's a great idea.
+	        $header_from = $archive->_parse_in_list_info( -data => $header_from );
+	
             if ( $li->{archive_protect_email} eq 'recaptcha_mailhide' ) {
                 $header_from = mailhide_encode($header_from);
             }
