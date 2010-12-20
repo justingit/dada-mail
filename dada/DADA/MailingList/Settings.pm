@@ -229,12 +229,15 @@ sub post_process_get {
     }
     use warnings;
 
-    if ( $DADA::Config::ENFORCE_CLOSED_LOOP_OPT_IN == 1 ) {
-        $li->{enable_closed_loop_opt_in}            = 1;
+    if ( $DADA::Config::ENFORCE_CLOSED_LOOP_OPT_IN != 1 ) {
+		# ... 
+    }
+	else { 
+	    $li->{enable_closed_loop_opt_in}            = 1;
         $li->{enable_mass_subscribe}                = 0;
 		$li->{allow_admin_to_subscribe_blacklisted} = 0; 
-		$li->{skip_sub_confirm_if_logged_in}        = 0; 
-    }
+		$li->{skip_sub_confirm_if_logged_in}        = 0;	
+	}
     return $li;
 
 }
