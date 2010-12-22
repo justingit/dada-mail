@@ -1642,6 +1642,149 @@ sub DESTROY {
 
 }
 
-
-
 1;
+
+
+=pod
+
+=head1 NAME 
+
+DADA::App::Subscriptions
+
+=head1 SYNOPSIS
+
+ # Import
+ use DADA::App::Subscriptions; 
+  
+ # Create a new object - no arguments needed
+ my $das = DADA::App::Subscriptions->new; 
+ 
+ # Awkwardly use CGI.pm's param() method to stuff paramaters for 
+ # DADA::App::Subscriptions->subscribe() to use
+
+ use CGI; 
+ my $q = CGI->new; 
+ $q->param('list', 'yourlist');
+ $q->param('email', 'user@example.com');
+ 
+ # subscribe
+ my $das = DADA::App::Subscriptions->new;
+    $das->subscribe(
+    {
+          -cgi_obj     => $q,
+    }
+  );
+
+
+=head1 DESCRIPTION
+
+This module holds reusable code for a user to subscribe or unsubscribe from a Dada Mail mailing list. 
+This is the code that's hit, basically when someone fills out a subscription form on a page of a website, 
+but it can be used in scripts outside of Dada Mail to perform similar actions. Dada Mail does ship with a few
+examples of this, which we'll get into, soon enough. 
+
+=head1 Public Methods
+
+=head2 Initializing
+
+=head2 new
+
+ my $das = DADA::App::Subscriptions->new; 
+
+C<new> takes no arguments. 
+
+=head2 test
+
+ $das->test(1);
+
+Passing, C<test> a value of, C<1> will turn this module into testing mode. Usually (and also, awkwardly) this module will 
+perform the needed job of printing any HTML needed to complete the request you've given it. If testing mode is on, the HTML will 
+merely be returned to you. 
+
+Email messages will also be printed to a text file, instead of being sent out. 
+
+You probably only want to use, C<test> if you're actually I<testing>, via the unit tests that ship with Dada Mail. 
+
+=head2 subscribe
+
+ # Awkwardly use CGI.pm's param() method to stuff paramaters for 
+ # DADA::App::Subscriptions->subscribe() to use
+ 
+ use CGI; 
+ my $q = CGI->new; 
+ $q->param('list', 'yourlist');
+ $q->param('email', 'user@example.com');
+ 
+ # subscribe
+ my $das = DADA::App::Subscriptions->new;
+    $das->subscribe(
+    {
+          -cgi_obj     => $q,
+    }
+ );
+
+C<subscribe> requires one paramater, C<-cgi-obj>, which needs to be a CGI.pm object 
+(a CGI.pm param-compatible module won't work, but we may work on that) THAT IN ITSELF has two paramaters: 
+
+=over
+
+=item * list
+
+holding the list shortname you want to work with
+
+=item * email
+
+holding the email address you want to work with
+
+=back
+
+C<-html_output> is an optional paramater, if set to, C<0>, this method will not print out the HTML 
+user message telling the user if everything went well (or not). 
+
+On success, this method will return, C<undef>
+
+=head3 Notes on awkwardness of the API
+
+It's quite apparrent that the API of this method is not very well thought-out. The history of this method 
+started as a subroutine in the main, C<mail.cgi> script itself that overgrown its bounds considerably, but didn't 
+receive a re-design of its API. Also, returning, C<undef> on success is also not very helpful. 
+
+These types of issues will be addressed in later versions of Dada Mail, but not anytime before v4.4.0 of the application. 
+We will make a very obvious note in the changelog about it. We promise. Ok? Ok. 
+
+=head3 Examples
+
+This method is the best way to hook into Dada Mail's subscription API, but its awkward API can leave many head-scratching.
+Currently, the best way to understand how to use it, would be to see examples of its usage. 
+
+The B<Subscription Cookbook> contains a small, command line utility script that wraps this method into something a little easier to work with
+and also has several examples of using the method, including augmented form handling scripts and a proof-of-concept SOAP server/client(s):
+
+http://dadamailproject.com/support/documentation/COOKBOOK-subscriptions.pod.html
+
+=head1 AUTHOR
+
+Justin Simoni http://dadamailproject.com
+
+=head1 LICENCE AND COPYRIGHT
+
+Copyright (c) 1999 - 2010 Justin Simoni All rights reserved. 
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, 
+Boston, MA  02111-1307, USA.
+
+=cut 
+
+
