@@ -15,6 +15,8 @@ changes in them:
 
 =item * dada/DADA/Template/templates/list_options_screen.tmpl
 
+=item * dada/DADA/Template/templates/list_cp_options.tmpl
+
 =item * $MAILING_LIST_MESSAGE_HTML
 
 =back
@@ -54,6 +56,38 @@ Thanks, Mark! Some of the things he worked on include,
 =back
 
 =head2 Bug Fixes 4.3.1
+
+=head3 Link in General FAQ to installing Dada Mail is broken
+
+https://github.com/justingit/dada-mail/issues/closed#issue/107
+
+=head3 General FAQ does not mention installer
+
+https://github.com/justingit/dada-mail/issues/closed#issue/106
+
+=head3 $ENFORCE_CLOSED_LOOP_OPT_IN cannot be overriden in the outside config file (.dada_config)
+
+https://github.com/justingit/dada-mail/issues/closed#issue/105
+
+=head3 archive_screen.tmpl misplaced <!-- /tmpl_if --> tag for <!-- tmpl_if list_settings.enable_gravatars --> leads to formatting problems
+
+https://github.com/justingit/dada-mail/issues/closed#issue/104
+
+=head3 Docs mention how to make a, "one-click" unsub link, when ALL unsub links are one-click
+
+https://github.com/justingit/dada-mail/issues/closed#issue/103
+
+=head3 Docs still mention "Adding" email addresses via the list control panel
+
+https://github.com/justingit/dada-mail/issues/closed#issue/102
+
+=head3 Archived messages for discussion lists may have member-specific unsubscribe links (reopened)
+
+https://github.com/justingit/dada-mail/issues/closed#issue/101
+
+=head3 "Send a List Invitation" screen Help Button is broken
+
+https://github.com/justingit/dada-mail/issues/closed#issue/100
 
 =head3 No tests for DADA::App::Guts::available_lists - why not? 
 
