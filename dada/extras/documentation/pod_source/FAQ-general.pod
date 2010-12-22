@@ -133,6 +133,8 @@ The first two ways are walked through in this screen cast:
 
 L<http://www.youtube.com/watch?v=kUENzRN2EPA&hd=1>
 
+=back
+
 =head3 List Invitations
 
 Once logged in, the list owner will want to visit the, B<Manage Subscribers - Invite> screen. 
