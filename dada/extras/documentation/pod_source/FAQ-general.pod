@@ -16,21 +16,20 @@ L<http://dadamailproject.com/support>
 
 =head2 How Do I Install Dada Mail? 
 
-=head3 Manually
+Complete installation docs are located at: 
 
-There is no installer for Dada Mail that we provide, but there are installation instructions. 
+L<http://dadamailproject.com/d/install_dada_mail.pod.html>
 
-See: 
+We highly suggest using the installer that comes with Dada Mail, but you may install 
+Dada Mail manually, as well. 
 
-L<http://dadamailproject.com/support/documentation/installation.pod.html>
+=head3 Install Dada Mail via Simple Scripts
 
-=head3 Simple Scripts
-
-Simple Scripts, I<does> in fact have an installer for Dada Mail, which we think is great: 
+Simple Scripts, also has a installer for Dada Mail, which we think is great: 
 
 L<https://www.simplescripts.com/page/id:8-pCU3Jz0E>
 
-=head3 cPanel
+=head4 cPanel
 
 If you have a cPanel-based hosting account (Bluehost, Hostmonster and many others), see if Simple Scripts is
 built right into your cPanel - it'll allow you to install Dada Mail with just a few clicks. We think that's pretty cool, as well. 
@@ -176,6 +175,21 @@ L<http://dadamailproject.com/support/documentation/COOKBOOK-integration.pod.html
 
 This will be a more advanced topic. 
 
+=head2 Mass-Subscribing Email Addresses via the List Control Panel
+
+I<Is there a way to Mass-Subscribe email addresses in the list control panel?>
+
+The best way to mass-subscribe email addresses is to send a List Invitation. This makes sure you stick with a closed-loop opt in system, which itself makes sure only people who want to subscribe to your mailing list, are. To run a successful and sustainable mailing list, this is tantamount. 
+
+Several different scenarios are explained, using this system, here: 
+
+L<http://dadamailproject.com/installation/using_dada_mail.html>
+
+Past version of Dada Mail did allow you to subscribe email addresses en-mass in the list control panel, but this feature has been B<deprecated>, for the reasons that closed-list opt in is not I<just> a good idea, it's really the only policy you should follow. 
+
+Enabling the feature is still an option. You'll need to change the Config variable C<$ENFORCE_CLOSED_LOOP_OPT_IN> to something other than, C<1>. You will also have to log into your mailing list with the Dada Mail Root Password and go to, I<Your List Control Panel - Options> and check the option labeled, B<Enable, "Subscribe Checked Subscribers" button [...]>
+
+This deprecated feature will be B<removed completely> in future versions of Dada Mail. 
 
 =head1 Unsubscriptions 
 
@@ -219,9 +233,7 @@ http://dadamailproject.com/installation/request.html
 
 See: 
 
-http://dadamailproject.com/installation/upgrading.html
-
-http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html
+L<http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html> 
 
 =head2 I have an older version of Dada Mail, or something called Mojo Mail, should I upgrade? 
 
