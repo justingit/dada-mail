@@ -8,8 +8,7 @@
 
 =head3 Template Changes 4.3.1
 
-Bugs were found in a few of the templates Dada Mail uses - the following templates have
-changes in them: 
+Bugs were found in a few of the templates Dada Mail uses - the following templates have small changes in them: 
 
 =over
 
@@ -17,11 +16,13 @@ changes in them:
 
 =item * dada/DADA/Template/templates/list_cp_options.tmpl
 
+=item * dada/DADA/Template/templates/archive_screen.tmpl
+
 =item * $MAILING_LIST_MESSAGE_HTML
 
 =back
 
-=head3 SOAP examples for subscribing included 
+=head3 SOAP Examples for Subscribing Included 
 
 Some SOAP proof of concept files have been included in, I<dada/extras/scripts/SOAP> 
 
