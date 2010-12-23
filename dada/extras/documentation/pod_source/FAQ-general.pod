@@ -181,17 +181,33 @@ This will be a more advanced topic.
 
 I<Is there a way to Mass-Subscribe email addresses in the list control panel?>
 
-The best way to mass-subscribe email addresses is to send a List Invitation. This makes sure you stick with a closed-loop opt in system, which itself makes sure only people who want to subscribe to your mailing list, are. To run a successful and sustainable mailing list, this is tantamount. 
+The best way to mass-subscribe email addresses and the only way we suggest, is to B<Send a List Invitation>. This makes sure you stick with a closed-loop opt in system, which itself makes sure only people who want to subscribe to your mailing list, will be. To run a successful and sustainable mailing list, this a closed-loop opt in system is tantamount. 
 
-Several different scenarios are explained, using this system, here: 
+Several different scenarios are explained, using the closed-loop, opt in system: 
 
 L<http://dadamailproject.com/installation/using_dada_mail.html>
 
-Past version of Dada Mail did allow you to subscribe email addresses en-mass in the list control panel, but this feature has been B<deprecated>, for the reasons that closed-list opt in is not I<just> a good idea, it's really the only policy you should follow. 
+Past version of Dada Mail I<did> allow you to subscribe email addresses en-mass in the list control panel, but this feature has been B<deprecated>, for the reasons that closed-list opt in is not I<just> a good idea, it's really the only policy you should follow. Sending a mass mailing to unconfirmed addresses is considered Spam. 
 
-Enabling the feature is still an option. You'll need to change the Config variable C<$ENFORCE_CLOSED_LOOP_OPT_IN> to something other than, C<1>. You will also have to log into your mailing list with the Dada Mail Root Password and go to, I<Your List Control Panel - Options> and check the option labeled, B<Enable, "Subscribe Checked Subscribers" button [...]>
+We do understand that this causes a headache when moving from a previous mailing list system, to Dada Mail, since the addresses may already be verified with the previous system, using a closed-loop opt in system and sending a List Invitation to all these addresses essentially requires each individual subscriber to confirm twice. 
 
-This deprecated feature will be B<removed completely> in future versions of Dada Mail. 
+We'd really like your opinions on how to make this type of import of a previous mailing list available, without having Dada Mail also open for abuse by people who would rather just mass-subscribe unconfirmed email addresses, which we do not condone. 
+
+Enabling mass-subscribing via the list control panel is still an option. 
+
+Change the Config variable C<$ENFORCE_CLOSED_LOOP_OPT_IN> to something other than, C<1>. If you're using an outside config file (which you should be), add the following line: 
+
+ $ENFORCE_CLOSED_LOOP_OPT_IN = 2; 
+
+You can also change this variable directly in the Config.pm file. Look for, C<$ENFORCE_CLOSED_LOOP_OPT_IN>. 
+
+For each mailing list where you want mass subscribing in the list control panel available, log into your mailing list with the B<Dada Mail Root Password> and go to, 
+
+I<Your List Control Panel - Options> 
+
+Check the option labeled, B<Enable, "Subscribe Checked Subscribers" button [...]>
+
+This B<deprecated> feature will be B<removed completely> in future versions of Dada Mail. There's no ETA for this, but I would guess the next major release of Dada Mail (version 5). 
 
 =head1 Unsubscriptions 
 
