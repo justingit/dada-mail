@@ -712,6 +712,7 @@ sub default {
         my @l_check = available_lists();
         if ( $l_check[0] ) {
 
+			require DADA::MailingList::Settings;
             my $ls =
               DADA::MailingList::Settings->new( { -list => $l_check[0] } );
             eval { $ls->_open_db; };
