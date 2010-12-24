@@ -117,7 +117,7 @@ See the, C<%LIST_SETUP_DEFAULTS> and C<%LIST_SETUP_INCLUDE> Config.pm variables:
 
 L<http://dadamailproject.com/support/documentation/Config.pm.html#_list_setup_defaults>
 
-L<http://dadamailproject.com/support/documentation-dada-3_0-beta_3/Config.pm.html#_list_setup_include>
+L<http://dadamailproject.com/d/Config.pm.html#_list_setup_include>
 
 =head2 Is there a way to change the List short name? 
 
