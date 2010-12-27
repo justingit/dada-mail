@@ -86,11 +86,11 @@ Dada Mail is developed openly at:
 
 We're following the model basically described, here: 
 
-http://nvie.com/posts/a-successful-git-branching-model/	
+L<http://nvie.com/posts/a-successful-git-branching-model/>
 	
 Mailing List: 
 
-	http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/
+L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
 
 
 =head1 LICENSE AND COPYRIGHT 
