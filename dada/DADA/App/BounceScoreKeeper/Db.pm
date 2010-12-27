@@ -54,7 +54,7 @@ sub tally_up_scores {
     
     $self->_open_db; 
 		    
-    foreach(keys %$scores){ 
+    for(keys %$scores){ 
 		#warn '$_ ' . $_; 
 		#warn '$self->{DB_HASH}->{$_} ' . $self->{DB_HASH}->{$_}; 
 		#warn '$scores->{$_} ' . $scores->{$_}; 
@@ -87,7 +87,7 @@ sub removal_list {
 
     $self->_open_db; 
     
-    foreach(keys %{$self->{DB_HASH}}){
+    for(keys %{$self->{DB_HASH}}){
     
           if($self->{DB_HASH}->{$_} >= $threshold){
             #warn "Adding $_ to removal list.";
@@ -150,7 +150,7 @@ sub raw_scorecard {
 	# THis may have hidden bugs: 
 	#
 	#my $count = 0; 
-	#foreach(@keys){ 
+	#for(@keys){ 
 #		if($count < $offset){ 
 #			$count++; 
 #			next; 

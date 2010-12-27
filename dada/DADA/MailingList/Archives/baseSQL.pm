@@ -384,7 +384,7 @@ sub delete_archive {
 	carp "no key passed to remove entries!"
 		if !$deep_six[0];
 	
-	foreach(@deep_six){ 
+	for(@deep_six){ 
 		$_ = $self->_massaged_key($_);  
 		if($self->check_if_entry_exists($_)){ 
 			push(@good_list, $_);
@@ -393,7 +393,7 @@ sub delete_archive {
 		}
 	}
 	
-	foreach(@good_list){ 
+	for(@good_list){ 
 	
 		my $key = $_; 	
 		my $query =  'DELETE FROM ' . $self->{sql_params}->{archives_table} . ' WHERE archive_id = ? AND list = ?';

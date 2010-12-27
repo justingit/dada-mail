@@ -170,7 +170,7 @@ sub save_from_params {
 	}
 	
 	
-	foreach my $t('PlainText', 'HTML'){ 
+	for my $t('PlainText', 'HTML'){ 
 		$form_vals{$t.'_ver'}->{source}                    = $q->param($t.'_source'); 
 		$form_vals{$t.'_ver'}->{text}                      = $q->param($t.'_text'); 
 		$form_vals{$t.'_ver'}->{url}                       = $q->param($t.'_url');
@@ -238,7 +238,7 @@ sub save_from_params {
 	
 	$fields = $lh->subscriber_fields; 
 	push(@$fields, 'email'); 
-	foreach my $field(@$fields){ 
+	for my $field(@$fields){ 
 			
 		if(defined($q->param('field_comparison_type_' . $field))){ 
 				push(@$saved_pso, {
@@ -325,7 +325,7 @@ sub run_schedules {
 	
 
 		$r .=  "    No schedules to run.\n" if ( !@record_keys);
-	foreach my $rec_key(@record_keys){																#for all our schedules - 
+	for my $rec_key(@record_keys){																#for all our schedules - 
 		
 		my $mail_status = {};
 		my $checksums   = {};
@@ -359,7 +359,7 @@ sub run_schedules {
 			if($mailing_schedule->[0]){ 
 				$r .=  "        Next mailing should be on: " . $self->printable_date($mailing_schedule->[0]) . "\n";
 			}
-			CHECKSCHEDULE: foreach my $s_time(@$mailing_schedule){
+			CHECKSCHEDULE: for my $s_time(@$mailing_schedule){
 													# this should be last mailing, eh?!
 													# no, since not all schedules repeat.
 				if(($s_time <= $time) && ($s_time > $rec->{last_schedule_run})){								# Nothing in the future, mind.		
@@ -430,7 +430,7 @@ sub run_schedules {
 	
 		if(keys %$mail_status){
 			$r .=  "\n            ***    Scheduled Mailing Not Sent, Reason(s):    ***\n";
-			$r .=   '                - ' .  DADA::App::Guts::pretty($_) . "\n" foreach keys %$mail_status;
+			$r .=   '                - ' .  DADA::App::Guts::pretty($_) . "\n" for keys %$mail_status;
 			$r .=  "\n";
 			
 		}
@@ -737,7 +737,7 @@ sub send_scheduled_mailing {
 				my $partial_sending = {}; 
 
 
-				foreach my $field(@$partial_sending_params){ 
+				for my $field(@$partial_sending_params){ 
 
 					if($field->{field_comparison_type} eq 'equal_to'){ 
 						$partial_sending->{$field->{field_name}} = {equal_to => $field->{field_value}}; 
@@ -791,7 +791,7 @@ these queued messages.
 sub _send_held_messages { 
 
 	my $self = shift; 
-	foreach my $held(@{$self->{held_mailings}}){ 
+	for my $held(@{$self->{held_mailings}}){ 
 		my $obj     = $held->{-obj}; 
 		my $message = $held->{-message}; 
 		my $key     = $held->{-key}; 
@@ -956,7 +956,7 @@ sub _build_email {
 				
 				my $new_entity = MIME::Entity->build(Type => 'multipart/mixed'); 
 				$new_entity->add_part($entity);
-				foreach my $att(@{$record->{attachments}}){ 
+				for my $att(@{$record->{attachments}}){ 
 				   $new_entity->attach(
 						Type        => $self->_find_mime_type($att), 
 						Path        => $att->{attachment_filename}, 
@@ -967,13 +967,13 @@ sub _build_email {
 				
 			}
 			
-			foreach(keys %$pt_headers) { 
+			for(keys %$pt_headers) { 
 				if($entity->head->get($_, 0)){ 
 					$entity->head->delete($_);
 					$entity->head->add($_, $pt_headers->{$_});
 				}
 			}
-			foreach(keys %$html_headers) { 
+			for(keys %$html_headers) { 
 				if($entity->head->get($_, 0)){ 
 					$entity->head->delete($_);
 					$entity->head->add($_, $html_headers->{$_});
@@ -994,7 +994,7 @@ sub _build_email {
 						Data      => $PlainText_ver,
 				  	  );	
 			
-			foreach(keys %$pt_headers) { 
+			for(keys %$pt_headers) { 
 				if($entity->head->get($_, 0)){ 
 					$entity->head->delete($_);
 					$entity->head->add($_, $pt_headers->{$_});
@@ -1009,7 +1009,7 @@ sub _build_email {
 		}
 		
 		# Attachments...
-		foreach my $att(@{$record->{attachments}}){ 
+		for my $att(@{$record->{attachments}}){ 
 		   $entity->attach(
 				Type        => $self->_find_mime_type($att), 
 				Path        => $att->{attachment_filename}, 
@@ -1341,7 +1341,7 @@ sub _grab_headers {
 	my @logical_lines = split /\n(?!\s)/, $headers;
 	 
 		# make the hash
-		foreach my $line(@logical_lines) {
+		for my $line(@logical_lines) {
 			  my ($label, $value) = split(/:\s*/, $line, 2);
 			  $headers{$label} = $value;
 			  
@@ -1385,7 +1385,7 @@ sub _archive_message {
 		
 	my $raw_msg; 
 	
-	foreach(keys %{$args{-message}}){ 
+	for(keys %{$args{-message}}){ 
 		next if $_ eq 'Body';
 		$raw_msg .= $_ . ': ' . $args{-message}->{$_} . "\n";
 	}

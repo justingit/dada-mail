@@ -54,7 +54,7 @@ use Data::Dumper;
 use Encode;
 diag 'LIST NAME! ' . Encode::encode('UTF-8',$li->{list_name}); 
 
-foreach ( keys %$list_params ) {
+for ( keys %$list_params ) {
     ok( ( $li->{$_} eq $list_params->{$_} ), $_ );
 }
 
@@ -88,10 +88,10 @@ pop3_password
 discussion_pop_password
 ); 
 
-foreach(@pass_settings) { 
+for(@pass_settings) { 
 	$ls->save({$_ => 'test'}); 
 }
-foreach(@pass_settings) { 
+for(@pass_settings) { 
 	ok(
 		$ls->param($_) eq 'test',
 		$_ . ' (test) was saved and retrieved correctly!'
@@ -122,7 +122,7 @@ my @password_settings = qw(
 
 my $lsd_pass = 'sneaky';
 
-foreach my $setting (@password_settings) {
+for my $setting (@password_settings) {
 
     # for now, we'll just make sure that's clear out:
     $ls->save( { $setting => undef } );
@@ -150,7 +150,7 @@ foreach my $setting (@password_settings) {
 
 }
 
-foreach my $setting (@password_settings) {
+for my $setting (@password_settings) {
 
     $DADA::Config::LIST_SETUP_DEFAULTS{$setting} = $lsd_pass;
 

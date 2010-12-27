@@ -3372,10 +3372,15 @@ is located at the end of this message.)</em><br/></p>
  Here's a reminder about your current mailing list subscription:
 </p>
 
+<ul> 
+
+<li>
 <p>
  You are subscribed to the following mailing list:
 </p>
+</li> 
 <ul> 
+
  <li>
   <p>
    <strong>
@@ -3398,8 +3403,7 @@ is located at the end of this message.)</em><br/></p>
   </p>
  </li>
 </ul> 
-
-<ul>
+</li> 
  <li>
   <p>Want to remove yourself from this mailing list at any time? Use this link:</p>
   <p>
@@ -4968,8 +4972,8 @@ and to say that you've got the freshest tools on the Web.
 
 
 
-$VERSION = 4.3.0; 
-$VER     = '4.3.0 Stable 11/26/10';
+$VERSION = 4.3.1; 
+$VER     = '4.3.1 Stable 12/23/10';
 
 
 #

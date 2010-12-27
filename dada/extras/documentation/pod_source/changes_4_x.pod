@@ -2,6 +2,122 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.3.1
+
+=head2 Changes 4.3.1
+
+=head3 Template Changes 4.3.1
+
+Bugs were found in a few of the templates Dada Mail uses - the following templates have small changes in them: 
+
+=over
+
+=item * dada/DADA/Template/templates/list_options_screen.tmpl
+
+=item * dada/DADA/Template/templates/list_cp_options.tmpl
+
+=item * dada/DADA/Template/templates/archive_screen.tmpl
+
+=item * $MAILING_LIST_MESSAGE_HTML
+
+=back
+
+=head3 SOAP Examples for Subscribing Included 
+
+Some SOAP proof of concept files have been included in, I<dada/extras/scripts/SOAP> 
+
+They can be read at: 
+
+L<http://dadamailproject.com/d/README_SOAP.pod.html>
+
+They include a server written in Perl and clients written in Perl and php. They are also documented in the Subscription Cookbook
+
+They are, in fact, Proof of Concepts and are not complete applications. 
+
+=head3 Plugin: mx_lookup.cgi cleaned up
+
+The B<mx_lookup.cgi> plugin has been cleaned up and documentation added. It's currently 
+listed as, B<DEPRECATED>, but will not go away, until the functionality it has is brought into 
+the core of the program. It's still a good example of how to make a simple Dada Mail plugin. 
+
+=head3 Code Cleanup
+
+github user masktos (Mark Stosberg) was kind enough to refactor a ton 
+code into Dada Mail, having to do with Modern Perl/Perl Best Practices coding. 
+Thanks, Mark! Some of the things he worked on include, 
+
+=over
+
+=item * simplifying and optimizing URI encoding/decoding
+
+=item * changing foreach() to for()
+
+=item * Adding Params::Validate, FindBin to some Dada Mail API subroutine/methods
+
+=back
+
+=head2 Bug Fixes 4.3.1
+
+=head3 Link in General FAQ to installing Dada Mail is broken
+
+https://github.com/justingit/dada-mail/issues/closed#issue/107
+
+=head3 General FAQ does not mention installer
+
+https://github.com/justingit/dada-mail/issues/closed#issue/106
+
+=head3 $ENFORCE_CLOSED_LOOP_OPT_IN cannot be overriden in the outside config file (.dada_config)
+
+https://github.com/justingit/dada-mail/issues/closed#issue/105
+
+=head3 archive_screen.tmpl misplaced <!-- /tmpl_if --> tag for <!-- tmpl_if list_settings.enable_gravatars --> leads to formatting problems
+
+https://github.com/justingit/dada-mail/issues/closed#issue/104
+
+=head3 Docs mention how to make a, "one-click" unsub link, when ALL unsub links are one-click
+
+https://github.com/justingit/dada-mail/issues/closed#issue/103
+
+=head3 Docs still mention "Adding" email addresses via the list control panel
+
+https://github.com/justingit/dada-mail/issues/closed#issue/102
+
+=head3 Archived messages for discussion lists may have member-specific unsubscribe links (reopened)
+
+https://github.com/justingit/dada-mail/issues/closed#issue/101
+
+=head3 "Send a List Invitation" screen Help Button is broken
+
+https://github.com/justingit/dada-mail/issues/closed#issue/100
+
+=head3 No tests for DADA::App::Guts::available_lists - why not? 
+
+https://github.com/justingit/dada-mail/issues/closed#issue/73
+
+=head3 reCAPTCHA settings in, Your Mailing List -> Mailing List Options always greyed out? 
+
+https://github.com/justingit/dada-mail/issues/closed#issue/90
+
+=head3 Requirements doc out of date
+
+https://github.com/justingit/dada-mail/issues/closed#issue/91
+
+=head3 Missing unordered list tags in $MAILING_LIST_MESSAGE_HTML template
+
+https://github.com/justingit/dada-mail/issues/closed#issue/93
+
+=head3 Dada Mail 4.3.0, FormatMessages.pm and Email Templates
+
+https://github.com/justingit/dada-mail/issues/closed#issue/92
+
+=head3 "Look Up Hostnames When Validating Email Addresses (MX Lookup)" cannot be enabled
+
+https://github.com/justingit/dada-mail/issues/closed#issue/97
+
+=head3 No .htaccess in .dada_files directory by default, when installing w/the installer
+
+https://github.com/justingit/dada-mail/issues/closed#issue/99
+
 =head1 4.3.0
 
 Installation instructions for 4.3.0 are the same as they were for 4.2.0. 
@@ -633,7 +749,7 @@ When disabled (the new default), they simply have to fill out the subscribe/unsu
 When available, both the Subscription and Unsubscription links will have the potential subscriber's
 (or unsubscriber's) email address in the link itself, so that the user does not have to do the two-step
 of first following the link and then typing in their email address. 
- 
+
 These links are created per-subscriber (or potential sub/unsub), when you use the: 
 
  <!-- tmpl_var list_subscribe_link -->

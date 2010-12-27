@@ -288,22 +288,6 @@ use MIME::Parser;
 use MIME::Entity;
 use Getopt::Long;
 
-# This is for the reusable DBI handle...
-my $dbi_handle;
-if (   $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/
-    || $DADA::Config::ARCHIVE_DB_TYPE  =~ m/SQL/
-    || $DADA::Config::SETTINGS_DB_TYPE =~ m/SQL/
-    || $DADA::Config::SESSION_DB_TYPE  =~ m/SQL/ )
-{
-    require DADA::App::DBIHandle;
-    $dbi_handle = DADA::App::DBIHandle->new;
-}
-
-$DADA::MailingList::Subscribers::dbi_obj = $dbi_handle;
-$DADA::MailingList::Settings::dbi_obj    = $dbi_handle;
-
-#$DADA::Mail::Send::dbi_obj               = $dbi_handle;
-
 my %Global_Template_Options = (
 
     #debug              => 1,
@@ -1071,7 +1055,7 @@ sub start {
         e_print(
 "Running all lists - \nTo test an individual list, pass the list shortname in the '--list' parameter...\n\n")
           if $verbose;
-        @lists = available_lists( -dbi_handle => $dbi_handle );
+        @lists = available_lists();
     }
     else {
         $lists[0] = $run_list;
@@ -1489,7 +1473,7 @@ sub test_pop3 {
     if ( !$run_list ) {
         e_print(
 "Testing all lists - \nTo test an individual list, pass the list shortname in the '--list' parameter...\n\n");
-        @lists = available_lists( -dbi_handle => $dbi_handle );
+        @lists = available_lists();
     }
     else {
         push ( @lists, $run_list );
@@ -1500,7 +1484,7 @@ sub test_pop3 {
         e_print( "\n" . '-' x 72 . "\nTesting List: '" . $l . "'\n");
 
         unless (
-            check_if_list_exists( -List => $l, -dbi_handle => $dbi_handle ) )
+            check_if_list_exists( -List => $l, ) )
         {
             e_print( "'$l' does not exist! - skipping\n");
             next;
@@ -2701,8 +2685,6 @@ sub archive {
 
 # I'm having trouble with the db handle die'ing after we've forked a mailing.
 # I wonder if telling Mr. Archives here to create  new connection will help things...
-
-        # $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
 
         my $la = DADA::MailingList::Archives->new( { -list => $list } );
 

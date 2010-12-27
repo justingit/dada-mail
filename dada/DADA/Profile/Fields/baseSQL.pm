@@ -91,7 +91,7 @@ sub insert {
     my @values;
 
     if ( $order[0] ) {
-        foreach my $field (@order) {
+        for my $field (@order) {
             $sql_str .= ',' . $field;
             $place_holder_string .= ',?';
             push ( @values, $args->{ -fields }->{$field} );
@@ -171,7 +171,7 @@ sub get {
     $n_hashref->{email}        = $self->{email};
     
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
-        foreach ( @{$sub_fields} ) {
+        for ( @{$sub_fields} ) {
             $n_hashref->{$_} = $hashref->{$_};
         }
 		last FETCH;
@@ -179,7 +179,7 @@ sub get {
 
     if ( $args->{ -dotted } == 1 ) {
         my $dotted = {};
-        foreach ( keys %$n_hashref ) {
+        for ( keys %$n_hashref ) {
             $dotted->{ 'subscriber.' . $_ } = $n_hashref->{$_};
         }
 

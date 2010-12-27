@@ -57,7 +57,26 @@ This script also be called from within another script using something like Perl'
 
 C<DADA::App::Subscriptions>'s C<subscribe> method will handle a subscription request exactly the same way the main Dada Mail program would and follow all the list settings and options you've set. For example, if the email address passed is valid and not subscribed to the mailing list already, the email address will be sent a subscription confirmation email. 
 
+=head1 Other Examples
 
+=head2 Proof of Concept SOAP example
 
+See the Proof of Concept SOAP example: 
+
+L<http://dadamailproject.com/d/README_SOAP.pod.html>
+
+for more inspiration
+
+=head2 FormMail Integration
+
+See the sourcecode to FormMail to see how we integrated Dada Mail subscription capabilities in this simple form handler:
+
+http://dadamailproject.com/d/Dada-ized_FormMail_README.pod.html
+
+=head2 TFmail Integration 
+
+See the sourcecode to TFmail to see how we integrated Dada Mail subscription capabilities in this simple form handler:
+
+http://dadamailproject.com/d/Dada-ized_TFMail_README.pod.html
 
 =cut

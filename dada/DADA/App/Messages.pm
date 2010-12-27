@@ -443,7 +443,7 @@ sub send_unsubscribed_message {
 		if($prof){ 
 			if($prof->exists){ 
 				$prof_fields = $prof->{fields}->get;
-				foreach ( keys %$prof_fields ) {
+				for ( keys %$prof_fields ) {
 		            $unsub_fields->{ 'subscriber.' . $_ } = $prof_fields->{$_};
 		        } 					
 			}
@@ -559,7 +559,7 @@ sub send_owner_happenings {
 			if($prof){ 
 				if($prof->exists){ 
 					$prof_fields = $prof->{fields}->get;
-					foreach ( keys %$prof_fields ) {
+					for ( keys %$prof_fields ) {
 			            $unsub_fields->{ 'subscriber.' . $_ } = $prof_fields->{$_};
 			        } 					
 				}
@@ -886,7 +886,7 @@ sub _mime_headers_from_string {
 	my @logical_lines = split /\n(?!\s)/, $header_blob;
  
 	    # make the hash
-	    foreach my $line(@logical_lines) {
+	    for my $line(@logical_lines) {
 	          my ($label, $value) = split(/:\s*/, $line, 2);
 	          $new_header{$label} = $value;
 	        }

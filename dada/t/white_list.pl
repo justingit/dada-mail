@@ -125,7 +125,7 @@ undef($count);
 
                    
 my @not_white_listed_addresseses = ('user@example.com', 'another@here.com', 'blah@somewhere.co.uk');
-foreach my $not_white_listed_addresses(@not_white_listed_addresseses){
+for my $not_white_listed_addresses(@not_white_listed_addresseses){
     my ($status, $errors) = $lh->subscription_check(
 								{
 									-email => $not_white_listed_addresses,
@@ -154,13 +154,13 @@ undef($count);
 
 
 my @white_listed_addresses = ('user@example.com', 'another@example.com', 'blah@example.com');
-foreach my $white_listed_addresses(@white_listed_addresses){
+for my $white_listed_addresses(@white_listed_addresses){
     my ($status, $errors) = $lh->subscription_check(
 								{
 									-email => $white_listed_addresses,
     							}
 							);
-    #foreach(keys %$errors){ 
+    #for(keys %$errors){ 
     #    diag($_ . ' => ' . $errors->{$_}); 
     #}
     ok($status == 1, "Status is 1"); 
@@ -238,7 +238,7 @@ my ($status, $errors) = $lh->subscription_check(
 						);
   ok($status == 1, "Status is 1"); 
   if($status == 0){ 
-    foreach(keys %$errors){ 
+    for(keys %$errors){ 
         diag 'test@example.com Error: ' . $_;
     }
   }

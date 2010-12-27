@@ -17,12 +17,35 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts; 
 use DADA::MailingList::Settings; 
 
-
 my $list = dada_test_config::create_test_list;
-my $ls  = DADA::MailingList::Settings->new({-list => $list}); 
-   
 
-   
+my $ls  = DADA::MailingList::Settings->new({-list => $list}); 
+
+
+#available_lists
+# One list
+
+is_deeply(available_lists(), ($list));
+
+my $list2 = dada_test_config::create_test_list(-name => 'two', -list_name => 'A Very Nice List');
+my $list3 = dada_test_config::create_test_list(-name => 'three', -list_name => 'Zap! A Better List'); 
+
+# three lists
+is_deeply([sort(available_lists())], [sort($list, $list3, $list2)]); #sort is used, so that the sorting is the same - 
+																	 # no matter what that is. 
+# in order
+is_deeply([available_lists(-In_Order => 1)], [$list2, $list, $list3]);
+
+# three lists as ref
+is_deeply([sort(@{available_lists(-As_Ref => 1)})], [sort($list, $list3, $list2)]); #sort is used, so that the sorting is the same - 
+
+
+# in order as ref
+is_deeply(available_lists(-In_Order => 1, -As_Ref => 1), [$list2, $list, $list3] );
+
+dada_test_config::remove_test_list({-name => $list2});
+dada_test_config::remove_test_list({-name => $list3});
+
 ### check_for_valid_email
  
 ok(check_for_valid_email('test@example.com')             == 0); 
@@ -161,7 +184,7 @@ $list = dada_test_config::create_test_list;
 	    Unix2.csv
 	    );
     
-	    foreach my $test_file(@test_files){ 
+	    for my $test_file(@test_files){ 
     
 	        `cp t/corpus/csv/$test_file $DADA::Config::TMP/$test_file`;
         
@@ -262,12 +285,9 @@ $q->param('utf8array', Encode::encode('UTF-8', $str), Encode::encode('UTF-8', $s
 $q = decode_cgi_obj($q); 
 
 my @utf8array = $q->param('utf8array'); 
-foreach(@utf8array){ 
+for(@utf8array){ 
 	ok($_ eq $dada_test_config::UTF8_STR, "decoding the cgi object didn't destroy our data!");
 }
-
-
-
 
 
 

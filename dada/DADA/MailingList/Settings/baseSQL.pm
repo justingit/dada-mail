@@ -92,7 +92,7 @@ sub save {
 
  		$self->_existence_check($new_settings); 	    
  	
- 		foreach my $setting(keys %$new_settings){ 
+ 		for my $setting(keys %$new_settings){ 
  		
  		    my $sth_d = $self->{dbh}->prepare($d_query); 
  			   $sth_d->execute($self->{name}, $setting)
@@ -223,8 +223,7 @@ sub _list_exists {
 	}
 	return DADA::App::Guts::check_if_list_exists(
 				-List       => $n, 
-				-dbi_handle => $dbi_obj,
-			);
+	);
 }
 
 

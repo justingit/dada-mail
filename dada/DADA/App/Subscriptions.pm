@@ -82,10 +82,6 @@ sub subscribe {
         $args->{-html_output} = 1; 
     }
     
-    my $dbi_handle = undef; 
-    if(exists($args->{-dbi_handle})){ 
-        $dbi_handle = $args->{-dbi_handle};
-    }
     
     if(! exists($args->{-fh})){ 
         $args->{-fh} = \*STDOUT;
@@ -98,14 +94,13 @@ sub subscribe {
     my $email = xss_filter($q->param('email')); 
        $email = DADA::App::Guts::strip($email); 
 
-    my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle);
+    my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list);
 	my $ls          = undef; 
 	my $li          = undef; 
 	
 	
 	
 	require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 	
 	
 	
@@ -145,7 +140,7 @@ sub subscribe {
     my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
     
     my $fields = {}; 
-    foreach(@{$lh->subscriber_fields}){ 
+    for(@{$lh->subscriber_fields}){ 
 		if(defined($q->param($_))){ 
         	$fields->{$_} = xss_filter($q->param($_)); 
 		}
@@ -254,9 +249,9 @@ sub subscribe {
             
                 my $qs = ''; 
                 if($li->{alt_url_sub_confirm_failed_w_qs} == 1){ 
-                    $qs = '?list=' . $list . '&rm=sub_confirm&status=0&email=' . DADA::App::Guts::uriescape($email);
-                    $qs .= '&errors=' . $_ foreach keys %$errors; 
-                    $qs .= '&' . $_ . '=' . uriescape($fields->{$_}) foreach keys %$fields; 
+                    $qs = '?list=' . $list . '&rm=sub_confirm&status=0&email=' . uriescape($email);
+                    $qs .= '&errors=' . $_ for keys %$errors; 
+                    $qs .= '&' . $_ . '=' . uriescape($fields->{$_}) for keys %$fields; 
                 }
                 
                 my $r = $q->redirect(-uri => $li->{alt_url_sub_confirm_failed} . $qs); 
@@ -276,7 +271,7 @@ sub subscribe {
                     already_sent_sub_confirmation
                 );
                 
-                foreach(@list_of_errors){ 
+                for(@list_of_errors){ 
                     if ($errors->{$_} == 1){ 
                         return user_error(
                             -List  => $list, 
@@ -355,8 +350,8 @@ sub subscribe {
               ){ 
                 my $qs = ''; 
                 if($li->{alt_url_sub_confirm_success_w_qs} == 1){ 
-                    $qs  = '?list=' . $list . '&rm=sub_confirm&status=1&email=' . DADA::App::Guts::uriescape($email); 
-                    $qs .= '&' . $_ . '=' . uriescape($fields->{$_}) foreach keys %$fields; 
+                    $qs  = '?list=' . $list . '&rm=sub_confirm&status=1&email=' . uriescape($email); 
+                    $qs .= '&' . $_ . '=' . uriescape($fields->{$_}) for keys %$fields; 
                     
                 }
                 my $r = $q->redirect(-uri => $li->{alt_url_sub_confirm_success} . $qs); 
@@ -429,14 +424,7 @@ sub confirm {
         $args->{-fh} = \*STDOUT;
     }
     my $fh = $args->{-fh};
-    
-    my $dbi_handle = undef; 
-    if(exists($args->{-dbi_handle})){ 
-        $dbi_handle = $args->{-dbi_handle};
-        warn '>>>> dbi_handle passed.' 
-            if $t; 
-    }
-    
+
     my $q = $args->{-cgi_obj}; 
     my $list  = xss_filter($q->param('list')); 
     my $email = xss_filter($q->param('email'));     
@@ -451,10 +439,9 @@ sub confirm {
     warn '$pin: ' . $pin
         if $t; 
         
-    my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle);
+    my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list);
     
 	require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle;
 
 		my $ls = undef; 
 		my $li = undef; 
@@ -631,7 +618,7 @@ sub confirm {
      warn 'subscription check gave back status of: ' . $status
         if $t; 
      if($t){ 
-        foreach(keys %$errors){ 
+        for(keys %$errors){ 
             warn '>>>> >>>> ERROR: ' . $_ . ' => ' . $errors->{$_}
                 if $t; 
         }
@@ -724,8 +711,8 @@ sub confirm {
                     if $t; 
                     
                 if($li->{alt_url_sub_failed_w_qs} == 1){ 
-                    $qs = '?list=' . $list . '&rm=sub&status=0&email=' . DADA::App::Guts::uriescape($email);
-                    $qs .= '&errors=' . $_ foreach keys %$errors; 
+                    $qs = '?list=' . $list . '&rm=sub&status=0&email=' . uriescape($email);
+                    $qs .= '&errors=' . $_ for keys %$errors; 
                     
                 }
                 warn '>>>> >>>> >>>> redirecting to: ' . $li->{alt_url_sub_failed} . $qs
@@ -747,7 +734,7 @@ sub confirm {
                     not_on_sub_confirm_list                    
                 );
                 
-                foreach(@list_of_errors){ 
+                for(@list_of_errors){ 
                     if ($errors->{$_} == 1){ 
                         return user_error(
                             -List  => $list, 
@@ -949,7 +936,7 @@ sub confirm {
         
                     my $qs = ''; 
                     if($li->{alt_url_sub_success_w_qs} == 1){ 
-                        $qs = '?list=' . $list . '&rm=sub&status=1&email=' . DADA::App::Guts::uriescape($email); 
+                        $qs = '?list=' . $list . '&rm=sub&status=1&email=' . uriescape($email); 
                     }
                     warn 'redirecting to: ' . $li->{alt_url_sub_success} . $qs
                         if $t; 
@@ -1013,12 +1000,7 @@ sub unsubscribe {
     if(! exists($args->{-html_output})){ 
         $args->{-html_output} = 1; 
     }
-    
-    my $dbi_handle = undef; 
-    if(exists($args->{-dbi_handle})){ 
-        $dbi_handle = $args->{-dbi_handle};
-    }
-    
+        
     if(! exists($args->{-fh})){ 
         $args->{-fh} = \*STDOUT;
     }
@@ -1044,7 +1026,7 @@ sub unsubscribe {
     
     if($args->{-html_output} != 0){ 
     
-        if(check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle) == 0){     
+        if(check_if_list_exists(-List => $list) == 0){     
            my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1&set_flavor=u'); 
            $self->test ? return $r : print $fh safely_encode(  $r) and return;       
         }
@@ -1062,15 +1044,13 @@ sub unsubscribe {
 
     }
    
-    require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
+    require DADA::MailingList::Settings; 
     
    
     my $ls = DADA::MailingList::Settings->new({-list => $list}); 
     my $li = $ls->get(); 
 
-    require DADA::MailingList::Subscribers; 
-           $DADA::MailingList::Subscribers::dbi_obj = $dbi_handle; 
+    require DADA::MailingList::Subscribers;  
     my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
             
     # Basically, if double opt out is turn off, 
@@ -1144,7 +1124,7 @@ sub unsubscribe {
     if($t){ 
         if($status == 0){ 
             warn '"' . $email . '" failed unsubscription_check(). Details: '; 
-            foreach(keys %$errors){ 
+            for(keys %$errors){ 
                 warn 'Error: ' . $_ . ' => ' . $errors->{$_}; 
             }
         }
@@ -1191,8 +1171,8 @@ sub unsubscribe {
                 my $qs = ''; 
                 # With a query string?
                 if($li->{alt_url_unsub_confirm_failed_w_qs} == 1){ 
-                    $qs = '?list=' . $list . '&rm=unsub_confirm&status=0&email=' . DADA::App::Guts::uriescape($email); 
-                    $qs .= '&errors=' . $_ foreach keys %$errors; 
+                    $qs = '?list=' . $list . '&rm=unsub_confirm&status=0&email=' . uriescape($email);
+                    $qs .= '&errors=' . $_ for keys %$errors; 
                 }
                 my $r = $q->redirect(-uri => $li->{alt_url_unsub_confirm_failed} . $qs);
                 $self->test ? return $r : print $fh safely_encode(  $r) and return; 
@@ -1207,7 +1187,7 @@ sub unsubscribe {
                     settings_possibly_corrupted
                     already_sent_unsub_confirmation
                 ); 
-                foreach(@list_of_errors){ 
+                for(@list_of_errors){ 
                     if ($errors->{$_} == 1){ 
                     
                         # Special Case. 
@@ -1286,7 +1266,7 @@ sub unsubscribe {
                 # With... Query String?
                 my $qs = ''; 
                 if($li->{alt_url_unsub_confirm_success_w_qs} == 1){ 
-                    $qs = '?list=' . $list . '&rm=unsub_confirm&status=1&email=' . DADA::App::Guts::uriescape($email); 
+                    $qs = '?list=' . $list . '&rm=unsub_confirm&status=1&email=' . uriescape($email); 
                 }
                 my $r = $q->redirect(-uri => $li->{alt_url_unsub_confirm_success} . $qs);
                 $self->test ? return $r : print $fh safely_encode(  $r) and return; 
@@ -1346,12 +1326,7 @@ sub unsub_confirm {
     if(! exists($args->{-html_output})){ 
         $args->{-html_output} = 1; 
     }
-    
-    my $dbi_handle = undef; 
-    if(exists($args->{-dbi_handle})){ 
-        $dbi_handle = $args->{-dbi_handle};
-    }
-    
+     
     if(! exists($args->{-fh})){ 
         $args->{-fh} = \*STDOUT;
     }
@@ -1366,7 +1341,7 @@ sub unsub_confirm {
     my $pin   = xss_filter($q->param('pin')); 
     
     if($args->{-html_output} != 0){ 
-        if(check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle) == 0){
+        if(check_if_list_exists(-List => $list) == 0){
             
             warn 'redirecting to: ' . $DADA::Config::PROGRAM_URL . '?error_invalid_list=1&set_flavor=u'
                 if $t; 
@@ -1377,13 +1352,11 @@ sub unsub_confirm {
         }
     }
     
-    require DADA::MailingList::Subscribers; 
-           $DADA::MailingList::Subscribers::dbi_obj = $dbi_handle; 
+    require DADA::MailingList::Subscribers;  
     
     my $lh = DADA::MailingList::Subscribers->new({-list => $list});
 
-    require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
+    require DADA::MailingList::Settings; 
 
     my $ls = DADA::MailingList::Settings->new({-list => $list}); 
     my $li = $ls->get(); 
@@ -1400,7 +1373,7 @@ sub unsub_confirm {
     if($t){ 
         if($status == 0){ 
             warn '"' . $email . '" failed unsubscription_check(). Details: '; 
-            foreach(keys %$errors){ 
+            for(keys %$errors){ 
                 warn 'Error: ' . $_ . ' => ' . $errors->{$_}; 
             }
         }
@@ -1506,8 +1479,8 @@ sub unsub_confirm {
             
                 my $qs = ''; 
                 if($li->{alt_url_unsub_failed_w_qs} == 1){ 
-                    $qs = '?list=' . $list . '&rm=unsub&status=0&email=' . DADA::App::Guts::uriescape($email); 
-                    $qs .= '&errors=' . $_ foreach keys %$errors; 
+                    $qs = '?list=' . $list . '&rm=unsub&status=0&email=' . uriescape($email); 
+                    $qs .= '&errors=' . $_ for keys %$errors; 
                 }
                 warn 'Redirecting to: ' . $li->{alt_url_unsub_failed} . $qs 
                     if $t; 
@@ -1526,7 +1499,7 @@ sub unsub_confirm {
                     
                     
                 ); 
-                foreach(@list_of_errors){ 
+                for(@list_of_errors){ 
                     if ($errors->{$_} == 1){ 
                     
                         # Special Case. 
@@ -1624,7 +1597,7 @@ sub unsub_confirm {
               ){ 
                 my $qs = ''; 
                 if($li->{alt_url_unsub_success_w_qs} == 1){ 
-                    $qs = '?list=' . $list . '&rm=unsub&status=1&email=' . DADA::App::Guts::uriescape($email);  
+                    $qs = '?list=' . $list . '&rm=unsub&status=1&email=' . uriescape($email);  
                 }
                 my $r = $q->redirect(-uri => $li->{alt_url_unsub_success} . $qs);
                 $self->test ? return $r : print $fh safely_encode(  $r) and return;
@@ -1669,6 +1642,149 @@ sub DESTROY {
 
 }
 
-
-
 1;
+
+
+=pod
+
+=head1 NAME 
+
+DADA::App::Subscriptions
+
+=head1 SYNOPSIS
+
+ # Import
+ use DADA::App::Subscriptions; 
+  
+ # Create a new object - no arguments needed
+ my $das = DADA::App::Subscriptions->new; 
+ 
+ # Awkwardly use CGI.pm's param() method to stuff paramaters for 
+ # DADA::App::Subscriptions->subscribe() to use
+
+ use CGI; 
+ my $q = CGI->new; 
+ $q->param('list', 'yourlist');
+ $q->param('email', 'user@example.com');
+ 
+ # subscribe
+ my $das = DADA::App::Subscriptions->new;
+    $das->subscribe(
+    {
+          -cgi_obj     => $q,
+    }
+  );
+
+
+=head1 DESCRIPTION
+
+This module holds reusable code for a user to subscribe or unsubscribe from a Dada Mail mailing list. 
+This is the code that's hit, basically when someone fills out a subscription form on a page of a website, 
+but it can be used in scripts outside of Dada Mail to perform similar actions. Dada Mail does ship with a few
+examples of this, which we'll get into, soon enough. 
+
+=head1 Public Methods
+
+=head2 Initializing
+
+=head2 new
+
+ my $das = DADA::App::Subscriptions->new; 
+
+C<new> takes no arguments. 
+
+=head2 test
+
+ $das->test(1);
+
+Passing, C<test> a value of, C<1> will turn this module into testing mode. Usually (and also, awkwardly) this module will 
+perform the needed job of printing any HTML needed to complete the request you've given it. If testing mode is on, the HTML will 
+merely be returned to you. 
+
+Email messages will also be printed to a text file, instead of being sent out. 
+
+You probably only want to use, C<test> if you're actually I<testing>, via the unit tests that ship with Dada Mail. 
+
+=head2 subscribe
+
+ # Awkwardly use CGI.pm's param() method to stuff paramaters for 
+ # DADA::App::Subscriptions->subscribe() to use
+ 
+ use CGI; 
+ my $q = CGI->new; 
+ $q->param('list', 'yourlist');
+ $q->param('email', 'user@example.com');
+ 
+ # subscribe
+ my $das = DADA::App::Subscriptions->new;
+    $das->subscribe(
+    {
+          -cgi_obj     => $q,
+    }
+ );
+
+C<subscribe> requires one paramater, C<-cgi-obj>, which needs to be a CGI.pm object 
+(a CGI.pm param-compatible module won't work, but we may work on that) THAT IN ITSELF has two paramaters: 
+
+=over
+
+=item * list
+
+holding the list shortname you want to work with
+
+=item * email
+
+holding the email address you want to work with
+
+=back
+
+C<-html_output> is an optional paramater, if set to, C<0>, this method will not print out the HTML 
+user message telling the user if everything went well (or not). 
+
+On success, this method will return, C<undef>
+
+=head3 Notes on awkwardness of the API
+
+It's quite apparrent that the API of this method is not very well thought-out. The history of this method 
+started as a subroutine in the main, C<mail.cgi> script itself that overgrown its bounds considerably, but didn't 
+receive a re-design of its API. Also, returning, C<undef> on success is also not very helpful. 
+
+These types of issues will be addressed in later versions of Dada Mail, but not anytime before v4.4.0 of the application. 
+We will make a very obvious note in the changelog about it. We promise. Ok? Ok. 
+
+=head3 Examples
+
+This method is the best way to hook into Dada Mail's subscription API, but its awkward API can leave many head-scratching.
+Currently, the best way to understand how to use it, would be to see examples of its usage. 
+
+The B<Subscription Cookbook> contains a small, command line utility script that wraps this method into something a little easier to work with
+and also has several examples of using the method, including augmented form handling scripts and a proof-of-concept SOAP server/client(s):
+
+http://dadamailproject.com/support/documentation/COOKBOOK-subscriptions.pod.html
+
+=head1 AUTHOR
+
+Justin Simoni http://dadamailproject.com
+
+=head1 LICENCE AND COPYRIGHT
+
+Copyright (c) 1999 - 2010 Justin Simoni All rights reserved. 
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, 
+Boston, MA  02111-1307, USA.
+
+=cut 
+
+

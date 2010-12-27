@@ -91,7 +91,7 @@ my $entity;
    
 
 
-foreach my $header(qw(To From Subject)){ 
+for my $header(qw(To From Subject)){ 
     
     my $sv = $entity->head->get($header, 0);
     chomp $sv;
@@ -114,7 +114,7 @@ undef $entity;
 # https://sourceforge.net/tracker/index.php?func=detail&aid=1647628&group_id=13002&atid=113002
 
 
-foreach(@DADA::Config::PRECEDENCES){ 
+for(@DADA::Config::PRECEDENCES){ 
     
     $ls->save({precedence => $_}); 
     undef $li;
@@ -137,7 +137,7 @@ foreach(@DADA::Config::PRECEDENCES){
 
 
 
-foreach(keys %DADA::Config::PRIORITIES){ 
+for(keys %DADA::Config::PRIORITIES){ 
     
     next if $_ eq 'none';
     
@@ -164,9 +164,9 @@ foreach(keys %DADA::Config::PRIORITIES){
 
 
 my @content_types = qw(text/plain text/html);
-foreach my $content_type(@content_types){ 
+for my $content_type(@content_types){ 
 
-    foreach my $encoding(@DADA::Config::CONTENT_TRANSFER_ENCODINGS){ 
+    for my $encoding(@DADA::Config::CONTENT_TRANSFER_ENCODINGS){ 
         
         if($content_type =~ m/html/i){ 
         
@@ -212,7 +212,7 @@ foreach my $content_type(@content_types){
 
 
 
-foreach my $charset(@DADA::Config::CHARSETS){
+for my $charset(@DADA::Config::CHARSETS){
     
     my ($label, $value) = split("\t", $charset, 2); 
     
@@ -287,7 +287,7 @@ SKIP: {
 
     $ls->save({charset => "utf-8\tutf-8"}); 
 
-    foreach my $encoding(@DADA::Config::CONTENT_TRANSFER_ENCODINGS){ 
+    for my $encoding(@DADA::Config::CONTENT_TRANSFER_ENCODINGS){ 
 
         $ls->save({html_encoding => $encoding}); 
 

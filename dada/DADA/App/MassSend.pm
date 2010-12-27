@@ -76,7 +76,6 @@ sub send_email {
 	my $self   = shift; 
 	my ($args) = @_; 
 	my $q          = $args->{-cgi_obj};
-	my $dbi_handle = $args->{-dbi_handle};
 
 	my $process = xss_filter(strip($q->param('process'))); 
 	my $flavor  = xss_filter(strip($q->param('flavor'))); 
@@ -97,8 +96,7 @@ sub send_email {
 
 													
     
-    require DADA::MailingList::Settings; 
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
+    require DADA::MailingList::Settings;  
 
 
     
@@ -111,7 +109,7 @@ sub send_email {
    my $fields = [];  
    # Extra, special one... 
    push(@$fields, {name => 'subscriber.email'}); 
-   foreach my $field(@{$lh->subscriber_fields({-dotted => 1})}){ 
+   for my $field(@{$lh->subscriber_fields({-dotted => 1})}){ 
         push(@$fields, {name => $field});
     }
 
@@ -121,7 +119,7 @@ sub send_email {
 	require DADA::ProfileFieldsManager; 
 	my $pfm = DADA::ProfileFieldsManager->new;
 	my $fields_attr = $pfm->get_all_field_attributes;
-   foreach my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){ 
+   for my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){ 
         push(@$undotted_fields, {name => $undotted_field, label => $fields_attr->{$undotted_field}->{label}});
     }
 
@@ -188,7 +186,7 @@ sub send_email {
 			   $fm->mass_mailing(1); 
 			# DEV: Headers.  Ugh, remember this is in, "Send a Webpage" as well. 	
 			my %headers = ();
-			foreach my $h(qw(
+			for my $h(qw(
 				Reply-To 
 				Errors-To 
 				Return-Path
@@ -297,7 +295,7 @@ sub send_email {
             if(@attachments){ 
                 my @compl_att = (); 
                 
-                foreach(@attachments){ 
+                for(@attachments){ 
                     #carp '$_ ' . $_; 
                     
                     my ($msg_att, $filename) = $self->make_attachment({-name => $_, -cgi_obj => $q}); 
@@ -314,7 +312,7 @@ sub send_email {
 						Datestamp => 0, 
 					);
                        $mpm_msg->attach($msg);
-                       foreach(@compl_att){ 
+                       for(@compl_att){ 
                           $mpm_msg->attach($_);
                        }
                     $msg = $mpm_msg;
@@ -336,7 +334,6 @@ sub send_email {
 		);
 
         require DADA::Mail::Send;
-               $DADA::Mail::Send::dbi_obj = $dbi_handle;
 
         my $mh = DADA::Mail::Send->new(
 					{ 
@@ -359,7 +356,7 @@ sub send_email {
 
 		###### Blah blah blah, parital listing 
 	    my $partial_sending = {}; 
-	    foreach my $field(@$undotted_fields){ 
+	    for my $field(@$undotted_fields){ 
 			if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){ 
 			    $partial_sending->{$field->{name}} = {equal_to => $q->param('field_value_' . $field->{name})}; 
 			}
@@ -459,21 +456,18 @@ sub send_url_email {
 	my $q          = $args->{-cgi_obj}; 
 	my $process    = xss_filter(strip($q->param('process'))); 
 	my $flavor     = xss_filter(strip($q->param('flavor')));
-	my $dbi_handle = $args->{-dbi_handle}; 
 	
     my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
                                                         -Function => 'send_url_email');
     
     my $list = $admin_list; 
     
-    require DADA::MailingList::Settings;
-           $DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
+    require DADA::MailingList::Settings; 
 
     my $ls = DADA::MailingList::Settings->new({-list => $list}); 
     my $li = $ls->get; 
     
     require DADA::MailingList::Archives;
-           $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
     
     my $la = DADA::MailingList::Archives->new(   {-list => $list});           
     my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
@@ -502,7 +496,7 @@ sub send_url_email {
    my $fields = [];  
    # Extra, special one... 
    push(@$fields, {name => 'subscriber.email'}); 
-   foreach my $field(@{$lh->subscriber_fields({-dotted => 1})}){ 
+   for my $field(@{$lh->subscriber_fields({-dotted => 1})}){ 
         push(@$fields, {name => $field});
     }
  	my $undotted_fields = [];  
@@ -511,7 +505,7 @@ sub send_url_email {
 	require DADA::ProfileFieldsManager; 
 	my $pfm = DADA::ProfileFieldsManager->new;
 	my $fields_attr = $pfm->get_all_field_attributes;
-   foreach my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){ 
+   for my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){ 
         push(@$undotted_fields, {name => $undotted_field, label => $fields_attr->{$undotted_field}->{label}});
     }        
 
@@ -576,7 +570,7 @@ sub send_url_email {
         
 			# DEV: Headers.  Ugh, remember this is in, "Send a Webpage" as well. 	
 			my %headers = ();
-			foreach my $h(qw(
+			for my $h(qw(
 				Reply-To 
 				Errors-To 
 				Return-Path
@@ -706,7 +700,7 @@ sub send_url_email {
                 $problems++;
 				$eval_error = $@; 
 				@MIME_HTML_errors = $mailHTML->errstr;
-				foreach(@MIME_HTML_errors){ 
+				for(@MIME_HTML_errors){ 
 					$eval_error .= $_; 
 				}	
             }
@@ -736,7 +730,6 @@ sub send_url_email {
 				);
                 
                 require DADA::Mail::Send;
-                       $DADA::Mail::Send::dbi_obj = $dbi_handle;
 
                    $mh      = DADA::Mail::Send->new(
 								{
@@ -753,7 +746,7 @@ sub send_url_email {
                               );
                                
 			    my $partial_sending = {}; 
-			    foreach my $field(@$undotted_fields){ 
+			    for my $field(@$undotted_fields){ 
 					if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){ 
 					    $partial_sending->{$field->{name}} = {equal_to => $q->param('field_value_' . $field->{name})}; 
 					}
@@ -823,7 +816,6 @@ sub send_url_email {
                 if($archive_m == 1 && ($q->param('process') !~ m/test/i)){ 
                 
                     require DADA::MailingList::Archives;
-                           $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
                     
                     my $archive = DADA::MailingList::Archives->new({-list => $list});
                     $archive->set_archive_info($message_id, $q->param('Subject'), undef, undef, $mh->saved_message); 
@@ -855,7 +847,6 @@ sub list_invite {
 	my $self   = shift; 
 	my ($args) = @_; 
 	my $q = $args->{-cgi_obj};
-	my $dbi_handle = $args->{-dbi_handle};
 
 	my $process = xss_filter(strip($q->param('process'))); 
 	my $flavor  = xss_filter(strip($q->param('flavor')));
@@ -877,7 +868,7 @@ sub list_invite {
 
 		my $field_names = []; 
 		my $subscriber_fields = $lh->subscriber_fields;
-         foreach(@$subscriber_fields){ 
+         for(@$subscriber_fields){ 
              push(@$field_names, {name => $_}); 
         }
         
@@ -887,7 +878,7 @@ sub list_invite {
 	  
 	  # Addresses hold CSV info - each item in the array is one line of CSV...
 	
-	  foreach my $a(@addresses){ 
+	  for my $a(@addresses){ 
 			my $pre_info = $lh->csv_to_cds($a); 
 			my $info     = {};
 			# DEV: Here I got again:
@@ -896,7 +887,7 @@ sub list_invite {
 
 			my $new_fields = [];
 			my $i = 0; 
-			foreach(@$subscriber_fields){
+			for(@$subscriber_fields){
 				push(@$new_fields, {name => $_, value => $pre_info->{fields}->{$_} }); 
 				$i++;
 			}
@@ -918,7 +909,10 @@ sub list_invite {
         $scrn .=   DADA::Template::Widgets::screen(
 					{
 						-screen => 'list_invite_screen.tmpl', 
-						-vars   => {							
+						-vars   => {	
+							
+							screen                        => 'add',
+							title                         => 'Invitations',						
 							list_type_isa_list             => 1, # I think this only works with Subscribers at the moment, so no need to do a harder check... 
 							# This is sort of weird, as it default to the "Send a Message" Subject
 							Subject                        => $ls->param('invite_message_subject'), 
@@ -950,7 +944,7 @@ sub list_invite {
         my @address         = $q->param("address"); 
         #my $new_email_count = 0; 
 
-        foreach my $a(@address){ 
+        for my $a(@address){ 
            	my $info   = $lh->csv_to_cds($a); 
             $lh->add_subscriber(
                 { 
@@ -976,7 +970,7 @@ sub list_invite {
         
 		# DEV: Headers.  Ugh, remember this is in, "Send a Webpage" as well. 	
 		my %headers = ();
-		foreach my $h(qw(
+		for my $h(qw(
 			Reply-To 
 			Errors-To 
 			Return-Path
@@ -1072,7 +1066,6 @@ sub list_invite {
         my ($header_glob, $message_string) =  $fm->format_headers_and_body(-msg => $msg_as_string );
     
         require DADA::Mail::Send;
-               $DADA::Mail::Send::dbi_obj = $dbi_handle;
 
         my $mh = DADA::Mail::Send->new(
 					{
@@ -1122,7 +1115,7 @@ sub has_attachments {
 
 	my $num = $q->param('attachment'); 
 	
-    foreach(1 .. $num) { 
+    for(1 .. $num) { 
       #  warn "Working on: " . $_; 
         
         my $filename = $q->param('attachment_' . $_);
@@ -1226,14 +1219,7 @@ sub dump_attachment_meta_file {
     my $filename = shift;
     $filename =~ s{^(.*)\/}{};
 
-    eval { require URI::Escape };
-    if ( !$@ ) {
-        $filename = URI::Escape::uri_escape( $filename, "\200-\377" );
-    }
-    else {
-        warn('no URI::Escape is installed!');
-    }
-    $filename =~ s/\s/%20/g;
+    $filename = uriescape($filename);
 
     my $full_path_to_filename =
       make_safer( $DADA::Config::TMP . '/' . $filename . '-meta.txt' );
@@ -1328,13 +1314,9 @@ sub file_upload {
     if ($file ne "") {
         my $fileName = $file; 
            $fileName =~ s!^.*(\\|\/)!!;   
-         eval {require URI::Escape}; 
-         if(!$@){
-            $fileName =  URI::Escape::uri_escape($fileName, "\200-\377");
-         }else{ 
-            warn('no URI::Escape is installed!'); 
-         }
-        $fileName =~ s/\s/%20/g;
+
+
+        $fileName = uriescape($fileName);
           
         my $outfile = make_safer($DADA::Config::TMP . '/' . time . '_' . $fileName);
          
@@ -1379,7 +1361,7 @@ sub clean_up_attachments {
 
 	my $self  = shift; 
     my $files = shift || [];
-    foreach(@$files){ 
+    for(@$files){ 
         $_ = make_safer($_); 
         warn "could not remove '$_'"
             unless

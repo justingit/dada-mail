@@ -16,21 +16,20 @@ L<http://dadamailproject.com/support>
 
 =head2 How Do I Install Dada Mail? 
 
-=head3 Manually
+Complete installation docs are located at: 
 
-There is no installer for Dada Mail that we provide, but there are installation instructions. 
+L<http://dadamailproject.com/d/install_dada_mail.pod.html>
 
-See: 
+We highly suggest using the installer that comes with Dada Mail, but you may install 
+Dada Mail manually, as well. 
 
-L<http://dadamailproject.com/support/documentation/installation.pod.html>
+=head3 Install Dada Mail via Simple Scripts
 
-=head3 Simple Scripts
-
-Simple Scripts, I<does> in fact have an installer for Dada Mail, which we think is great: 
+Simple Scripts, also has a installer for Dada Mail, which we think is great: 
 
 L<https://www.simplescripts.com/page/id:8-pCU3Jz0E>
 
-=head3 cPanel
+=head4 cPanel
 
 If you have a cPanel-based hosting account (Bluehost, Hostmonster and many others), see if Simple Scripts is
 built right into your cPanel - it'll allow you to install Dada Mail with just a few clicks. We think that's pretty cool, as well. 
@@ -114,31 +113,39 @@ Yes. In the list control panel, click on, "Monitor Your Mailings", click on the 
 
 =head1 Subscriptions
 
-=head2 How do you add subscribers to Dada Mail? 
+=head2 How are new subscriptions made? 
 
-There's basically three ways to add subscribers to Dada Mail. 
+=over
 
-The first way is by having the list owner log into the List Control Panel and adding subscribers en-mass, via the, B<Manage Subscribers - Add> screen. 
+=item * List Invitations
+
+The first way is by having the list owner log into the List Control Panel and inviting subscribers en-mass, via the, B<Manage Subscribers - Invite> screen. 
+
+=item * Self-Subscriptions
 
 The second way is to provide a subscription form available to visitors of your website. 
 
+=item * API
+
 The third is to modify an already exisiting program to use Dada Mail's API either directory or indirectly. 
 
-=head3 Adding Subscribers via the List Control Panel
+The first two ways are walked through in this screen cast: 
 
-Once logged in, the list owner will want to visit the, B<Manage Subscribers - Add> screen. 
+L<http://www.youtube.com/watch?v=kUENzRN2EPA&hd=1>
+
+=back
+
+=head3 List Invitations
+
+Once logged in, the list owner will want to visit the, B<Manage Subscribers - Invite> screen. 
 
 New subscribers should be prepared in CSV format, with the email address being first and any other Subscriber Profile Fields coming afterwards. The actual order will be listed on this screen. 
 
 If you do not have any Subscriber Profile Fields, the format needed to give Dada Mail is just, one email address and a newline. 
 
-Click the, B<Verify Subscribers...> button. When the screen refreshes, Dada Mail will give a break down of the addresses that can be subscribed and also the addresses that cannot be subscribed for reasons that include, they're already subscribed, the email address is invalid, or that the address is currently banned from subsribing, amongst other reasons. 
+Click the, B<Verify Addresses...> button. When the screen refreshes, Dada Mail will give a break down of the addresses that can be invited and also the addresses that cannot be invited for reasons that include: already being subscribed, being an invalid address, or that the address is currently banned from subsribing. 
 
-From this point, you can make the choice to either Subscribe the addresses listed, or Send a List Invitation. 
-
-We strongly urge you to not outright subscribe any addresses that you haven't first verified completely via a Closed-Loop subscription process. Thus, you should only use this feature if you're importing an already existing subscription list. 
-
-Rather, you should send a List Invitation. A List Invitation will send out a short email message to the would-be subscribe and allow the subscriber themselves to choose to subscribe to the list. 
+A List Invitation will send out a short email message to the would-be subscribe and allow the subscriber themselves to choose to subscribe to the list. 
 
 =head3 Allowing Visitors to Subscribe
 
@@ -170,39 +177,53 @@ L<http://dadamailproject.com/support/documentation/COOKBOOK-integration.pod.html
 
 This will be a more advanced topic. 
 
+=head2 Mass-Subscribing Email Addresses via the List Control Panel
+
+I<Is there a way to Mass-Subscribe email addresses in the list control panel?>
+
+The best way to mass-subscribe email addresses and the only way we suggest, is to B<Send a List Invitation>. This makes sure you stick with a closed-loop opt in system, which itself makes sure only people who want to subscribe to your mailing list, will be. To run a successful and sustainable mailing list, this a closed-loop opt in system is tantamount. 
+
+Several different scenarios are explained, using the closed-loop, opt in system: 
+
+L<http://dadamailproject.com/installation/using_dada_mail.html>
+
+Past version of Dada Mail I<did> allow you to subscribe email addresses en-mass in the list control panel, but this feature has been B<deprecated>, for the reasons that closed-list opt in is not I<just> a good idea, it's really the only policy you should follow. Sending a mass mailing to unconfirmed addresses is considered Spam. 
+
+We do understand that this causes a headache when moving from a previous mailing list system, to Dada Mail, since the addresses may already be verified with the previous system, using a closed-loop opt in system and sending a List Invitation to all these addresses essentially requires each individual subscriber to confirm twice. 
+
+We'd really like your opinions on how to make this type of import of a previous mailing list available, without having Dada Mail also open for abuse by people who would rather just mass-subscribe unconfirmed email addresses, which we do not condone. 
+
+Enabling mass-subscribing via the list control panel is still an option. 
+
+Change the Config variable C<$ENFORCE_CLOSED_LOOP_OPT_IN> to something other than, C<1>. If you're using an outside config file (which you should be), add the following line: 
+
+ $ENFORCE_CLOSED_LOOP_OPT_IN = 2; 
+
+You can also change this variable directly in the Config.pm file. Look for, C<$ENFORCE_CLOSED_LOOP_OPT_IN>. 
+
+For each mailing list where you want mass subscribing in the list control panel available, log into your mailing list with the B<Dada Mail Root Password> and go to, 
+
+I<Your List Control Panel - Options> 
+
+Check the option labeled, B<Enable, "Subscribe Checked Subscribers" button [...]>
+
+This B<deprecated> feature will be B<removed completely> in future versions of Dada Mail. There's no ETA for this, but I would guess the next major release of Dada Mail (version 5). 
 
 =head1 Unsubscriptions 
 
-=head2 Is there any way to make the unsubscription link in mailing list messages, "one click"
+=head2 How do I turn off, "one-click" unsubscription links? 
 
-Sure. 
+I<I have a discussion list and the unsub links are being clicked on by other users, sending unsubscription confirmations out. Yikes!> 
 
-By default, the unsubscription tag, 
+Replace the unsubscription tag: 
 
- <!-- tmpl_var list_unsubscribe_link -->
+ <!-- tmpl_var list_unsubscribe_link --> 
 
-in the mailing list message template generates a URL that looks like this: 
+With the following: 
 
- http://example.com/cgi-bin/dada/mail.cgi/f/u/
+ <!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->
 
-When your users follow this link, they will still have to enter their own email address. 
-
-You can change the unsubscription link from what's above, to: 
-
- <!-- tmpl_var list_unsubscribe_link --><!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/
-
-Which will generate a URL that looks like this: 
-
- http://example.com/cgi-bin/dada/mail.cgi/f/u/user/example.com
-
-When clicked, Dada Mail will send the unsubscription confirmation email, without the user having to manually enter their email address. 
-
-The mailing list message templates can be edited in the list control panel under, I<Manage Copy - Email Templates>
-
-Finally, you can disable Dada Mail's Close-Loop Opt-Out system in the list control panel, in: I<Manager List - Mailing List Options>, by unchecking the option entitled, 
-
-I<Send Unsubscription Confirmation Emails (Closed-Loop Opt-Out)>
-
+This will provide a link to unsubscribe, but the user will have to manually enter their email address. 
 
 =head1 Hosting
 
@@ -230,9 +251,7 @@ http://dadamailproject.com/installation/request.html
 
 See: 
 
-http://dadamailproject.com/installation/upgrading.html
-
-http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html
+L<http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html> 
 
 =head2 I have an older version of Dada Mail, or something called Mojo Mail, should I upgrade? 
 

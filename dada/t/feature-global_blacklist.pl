@@ -46,8 +46,8 @@ my @subscribers = (
 ); 
 
 
-foreach my $local_lh(@lh_s){
-	foreach my $sub(@subscribers){ 
+for my $local_lh(@lh_s){
+	for my $sub(@subscribers){ 
 		$local_lh->add_subscriber({-email => $sub});
 	}
 }
@@ -70,7 +70,7 @@ ok($lh3->num_subscribers(-Type => 'black_list') == 1, "We have one black listed 
 
 
 # Now, let's verify attempting to subscribe the black_listed address: 
-foreach my $local_lh( @lh_s){ 
+for my $local_lh( @lh_s){ 
 	my ($status, $errors) = $lh->subscription_check({-email => $black_listed}); 
 	ok($errors->{black_listed} == 1, "Black Listed for List: " . $lh->{list}); 
 }

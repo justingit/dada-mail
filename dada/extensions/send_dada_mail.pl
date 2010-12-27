@@ -13,21 +13,6 @@ use DADA::MailingList::Settings;
 
 use DADA::Config qw(!:DEFAULT); 
 
-
-my $dbi_handle; 
-
-if($DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ || 
-   $DADA::Config::ARCHIVE_DB_TYPE    =~ m/SQL/ || 
-   $DADA::Config::SETTINGS_DB_TYPE   =~ m/SQL/ ||
-   $DADA::Config::SESSION_DB_TYPE    =~ m/SQL/
- ){        
-    require DADA::App::DBIHandle; 
-    $dbi_handle = DADA::App::DBIHandle->new; 
-}
-$DADA::MailingList::Settings::dbi_obj = $dbi_handle; 
-
-
-
 my $verbose; 
 my $archive; 
 my $list; 
@@ -69,7 +54,7 @@ sub validate_list {
 
     my $list = shift; 
     
-    my $list_exists = check_if_list_exists(-List => $list, -dbi_handle => $dbi_handle);
+    my $list_exists = check_if_list_exists(-List => $list);
 
 
     if($list_exists == 0){ 
@@ -106,7 +91,6 @@ sub deliver {
     my ($final_header, $final_body) = $fm->format_headers_and_body(-msg => $msg );
             
     require DADA::Mail::Send;
-           $DADA::Mail::Send::dbi_obj = $dbi_handle;
            
     my $mh      = DADA::Mail::Send->new(
 				  	{
@@ -128,7 +112,6 @@ sub deliver {
 # This parts archiving:    
     
      require DADA::MailingList::Archives;
-            $DADA::MailingList::Archives::dbi_obj = $dbi_handle;
             
             my $archive = DADA::MailingList::Archives->new({-list => $li});
               

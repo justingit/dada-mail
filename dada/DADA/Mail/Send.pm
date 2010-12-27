@@ -145,10 +145,10 @@ sub _init {
             
 	            # let's make this into an easier-to-look-up-format: 
             
-	            foreach my $tune(@$tunings){ 
+	            for my $tune(@$tunings){ 
 	                if($tune->{domain}){ # only real thingy needed...
 	                    $lookup_tunings->{$tune->{domain}} = {};
-	                    foreach my $in_tune(keys %$tune){ 
+	                    for my $in_tune(keys %$tune){ 
 	                       # next if $in_tune eq 'domain'; 
 	                        $lookup_tunings->{$tune->{domain}}->{$in_tune} = $tune->{$in_tune}; 
 	                    }
@@ -194,7 +194,7 @@ my %new_header;
 my @logical_lines = split /\n(?!\s)/, $header_blob;
  
     # make the hash
-    foreach my $line(@logical_lines) {
+    for my $line(@logical_lines) {
           my ($label, $value) = split(/:\s*/, $line, 2);
           $new_header{$label} = $value;
         }
@@ -228,7 +228,7 @@ sub clean_headers {
 		if defined $mail_headers{'Content-base'};
 	$mail_headers{'Cc'} = $mail_headers{'CC'} 
 		if defined $mail_headers{'CC'};
-	foreach(keys %mail_headers){ 
+	for(keys %mail_headers){ 
 		my $tmp_h = $mail_headers{$_};
 		   if($tmp_h){ 
 			   $tmp_h =~ s/\n$//;
@@ -256,7 +256,7 @@ sub send {
 	no strict;
 	# DEV: This needs to be cleaned up; 
 	my %param_headers = @_; 
-	foreach(keys %param_headers){
+	for(keys %param_headers){
 		if(strip($param_headers{$_}) eq ''){ 
 			delete($param_headers{$_}); 
 		}
@@ -325,7 +325,7 @@ sub send {
 	
 	# I almost wish this was done once on object initialization... 
 	if(defined($self->{list})){ 
-		foreach(keys %{$self->{ls}->params}){ 
+		for(keys %{$self->{ls}->params}){ 
 			if(exists($DADA::Config::LIST_SETUP_DEFAULTS{$_})){ 
         
 		    	$local_li->{$_} = $self->{ls}->param($_); 
@@ -339,7 +339,7 @@ sub send {
 		if($self->{ls}->param('use_domain_sending_tunings') == 1) { 
 		
 	        if($self->{domain_specific_tunings}->{$email_domain}->{domain} eq $email_domain){  
-	            foreach(keys %{$self->{domain_specific_tunings}->{$email_domain}}){
+	            for(keys %{$self->{domain_specific_tunings}->{$email_domain}}){
 	                $local_li->{$_} = $self->{domain_specific_tunings}->{$email_domain}->{$_};
 	            }
 	        }
@@ -433,7 +433,7 @@ sub send {
 							carp "Problems with connecting to the SMTP Server: $!";
 							my $extra = ''; 
 							$extra .= $_ . ' => ' . $mailer_params{$_} . "\n"
-								foreach(keys %mailer_params); 
+								for(keys %mailer_params); 
 							carp $extra; 
 					 	}
                                   
@@ -459,7 +459,7 @@ sub send {
 							carp "Problems with connecting to the SMTP Server: $!";
 							my $extra = ''; 
 							$extra .= $_ . ' => ' . $mailer_params{$_} . "\n"
-								foreach(keys %mailer_params); 
+								for(keys %mailer_params); 
 							carp $extra;
 					 }
                     
@@ -513,7 +513,7 @@ sub send {
                 #}                    
                 
                 my $smtp_msg = '';
-                foreach my $field (@default_headers){
+                for my $field (@default_headers){
                         $smtp_msg .= "$field: $fields{$field}\n" 
                             if( (defined $fields{$field}) && 
                                 ($fields{$field} ne "")
@@ -676,7 +676,7 @@ sub send {
 				} 
 			}
             
-            foreach my $field (@default_headers){
+            for my $field (@default_headers){
                     print MAIL "$field: $fields{$field}\n"
                         if(
 	 						exists($fields{$field})                  && 
@@ -791,7 +791,7 @@ EOF
    
    my $report =  []; 
    
-	foreach my $l(@r_l){ 
+	for my $l(@r_l){ 
 		if($l =~ m/502 unimplemented/i){ 
 			push (@$report, {line => $l, message => 'SASL Authentication may not be available on this SMTP server - try POP-before-SMTP Authentication.'}); 
 		}elsif($l =~ m/250\-AUTH PLAIN LOGIN|250 AUTH LOGIN PLAIN|250\-AUTH\=LOGIN PLAIN/i){ 
@@ -879,15 +879,22 @@ sub mass_send {
 		if(exists($args->{-multi_list_send})){ 
 			$self->multi_list_send($args->{-multi_list_send}); 		
 		}
+		
+		# This is also confusing - what's it for? - it is in the test
+		# Why isn't it in the, "-partial_sending" param? 
 		if(exists($args->{-exclude_from})){ 
 			$self->exclude_from($args->{-exclude_from}); 		
-		}		
+		}	
+		
+		# written to a test file, instead of mailed out? 
 		if(exists($args->{-test})){ 
 			$self->test($args->{-test}); 
 		}
+		# Send to only a test recipient, instead of the entire list? 
 		if(exists($args->{-mass_test})){ 
 			$self->mass_test($args->{-mass_test}); 
 		}
+		# And who is this rest recipient? 
 		if(exists($args->{-mass_test_recipient})){ 
 			$self->mass_test_recipient($args->{-mass_test_recipient}); 
 		}		
@@ -899,7 +906,7 @@ sub mass_send {
 	# This will just be generally, well, chatty. 
 	no strict;
 	# DEV: This needs to be cleaned up;
-	foreach(keys %param_headers){
+	for(keys %param_headers){
 		if(strip($param_headers{$_}) eq ''){ 
 			delete($param_headers{$_}); 
 		}
@@ -1206,7 +1213,7 @@ sub mass_send {
 					my $lists = $self->multi_list_send->{-lists};
 				
 					my @exclude_from = ($self->list);
-					foreach my $local_list(@$lists){ 
+					for my $local_list(@$lists){ 
 						# warn 'looking at: $local_list ' . $local_list; 
 					
 						sleep(1); # just so things can catch up... 
@@ -1268,7 +1275,7 @@ sub mass_send {
 				#sub MakeAllDBHsForkSafe {
 					if($DBI::VERSION >= 1.49){ 
 					    my %drivers = DBI->installed_drivers;
-					    foreach my $drh (values %drivers) {
+					    for my $drh (values %drivers) {
 					        map { $drh->{InactiveDestroy} = 1 } @{$drh->{ChildHandles}};
 					    }
 					}
@@ -1668,7 +1675,7 @@ sub mass_send {
 			                my $batch_status = $mailout->status({-mail_fields => 0}); 
 		                
 	                       my $batch_log_message = "Subject:$fields{Subject}, Start Time: $log_mail_start_time"; 
-							foreach(keys %$batch_status){ 
+							for(keys %$batch_status){ 
 								next if $_ eq 'email_fields';
 								next if $_ =~ m/formatted/; 
 								$batch_log_message .= ' ' . $_ . ': ' . $batch_status->{$_}; 
@@ -1975,7 +1982,7 @@ sub _content_transfer_encode {
         
         
         
-        foreach(keys %$fields){ 
+        for(keys %$fields){ 
             next if $_ eq 'Content-type'; # Yeah, Content-Type, no Content-type. Weird. Weeeeeeeird.
             next if $_ eq 'Content-Transfer-Encoding'; 
             $entity->head->add($_, safely_encode( $fields->{$_})); 
@@ -2050,7 +2057,7 @@ sub _remove_blank_headers {
 	my ($args) = @_; 
 	my $headers = $args->{-headers}; 
 	
-	foreach(keys %$headers){ 
+	for(keys %$headers){ 
 		if(!defined($headers->{$_})){ 
 			delete($headers->{$_}); 			
 		}
@@ -2426,7 +2433,7 @@ sub _email_batched_finished_notification {
     );
 
     my $att;
-    foreach ( keys %$fields ) {
+    for ( keys %$fields ) {
         next if $_ eq 'Body';
         $att .= $_ . ': ' . $fields->{$_} . "\n"
           if defined( $fields->{$_} ) && $fields->{$_} ne "";
@@ -2698,7 +2705,7 @@ sub _massaged_for_archive {
 	my $msg; 
 
 	
-	foreach(@DADA::Config::EMAIL_HEADERS_ORDER){ 
+	for(@DADA::Config::EMAIL_HEADERS_ORDER){ 
 		next if $_ eq 'Body'; 
 		next if $_ eq 'Message'; # Do I need this?!
 		
@@ -2843,9 +2850,13 @@ DADA::Mail::Send
  
  # Send a whole lot of things out: 
  $mh->mass_send( 
-	Subject => "this is the subject', 
-	Body    => "This is the body of the message', 
- ); 
+	{ 
+		-msg => {
+			Subject => "this is the subject', 
+			Body    => "This is the body of the message', 
+ 		},
+	}
+); 
 
 =head1 DESCRIPTION
 
@@ -2855,21 +2866,13 @@ There's two ways this is done -
 
 The first is using the C<send> method. This is used to send one message to one person. 
 
-The second way is using the C<mass_send> method. This sends one message to a whole lot of people
- - in this case, the entire mailing list. 
+The second way is using the C<mass_send> method. This sends a mass mailing to an entire list. 
+
 
 =head2 Warning: Thar Be Dragons
 
-This module is probably one of the oldest in Dada Mail and has a lot of Dragons in the code. It has to be said that I used to be much less adept at Perl coding. Now, I'm just slightly awful :) 
+There's many coding practices in this module that we would like to change for the better. It's not the easiest to read code. 
 
-Much work has been done to keep the code maintainable and clean, but there is still some nasty bits that are too complex, 
-bits that don't do anything anymore and other bits that are just freaky in weirdness. We've attempted to 
-keep those to a minimum, but be warned that hackability of this code in here is somewhat not for the faint of 
-heart.
-
-One of the most ridiculously complex parts is the entire C<mass_send> method. It's seen many revisions and quite a bit of its functionality has been taking over by the C<DADA::Mail::MailOut> module, but traces of what was once cobbled there still remains. 
-
-Both the C<send> and C<mass_send> methods are quite long - which isn't the best thing in the world. 
 
 =head1 Public Methods
 
@@ -2886,7 +2889,7 @@ Creates a new C<DADA::Mail::Send> object.
 
 C<new> requires one argument, C<-list>, which should hold a valid C<listshortname>. 
 
-C<new> has one option argument, C<-ls_obj>, which should hold a valid C<DADA::MailingList::Settings> object, like so: 
+C<new> has one optional argument, C<-ls_obj>, which should hold a valid C<DADA::MailingList::Settings> object, like so: 
 
  use DADA::MailingList::Settings; 
  use DADA::Mail::Send; 
@@ -2946,19 +2949,83 @@ way.
 
 =head2 mass_send
 
- # Send a whole lot of things out: 
+ # Send to a list - (old API - don't use, if you can help it)
  $mh->mass_send( 
  	Subject => "this is the subject', 
  	Body    => "This is the body of the message', 
  );
+ 
+ # Send to a list - new API
+	my $message_id = $mh->mass_send(
+		{
+			-msg 			  => {
+				Subject => "this is the subject', 
+			 	Body    => "This is the body of the message',
+			},
+			-partial_sending  => {...}, 
+			-multi_list_send  => {
+									-lists    => [@alternative_list], 
+									-no_dupes => 1, 
+			 					 },
+			-test      => 0,
+			-mass_test => 0, 
+			-test_recipient => 'someone@example.com'
+		}
+	);
 
-Mails the message passed to the entire mailing list. 
+Mails a message to an entire mailing list. 
 
-Takes arguments similar to C<send>, although you won't want to set the B<To> argument, as it'll be overwritten, 
-when filled out for each subscriber. 
+The Old API is similar to the API to C<send>, but will ignore the, C<To> header, 
+if you do pass it. B<Use the new API.> 
 
-C<mass_send> is without a doubt the most powerful method in Dada Mail, since this I<very easy> method invocation does a whole lot 
-of I<hard stuff>. Please think of that if you ever delve into the code and see a whole mess of stuff. 
+C<-msg> is B<required> and should hold a hashref containing the headers of the
+message you want to pass and a special key called, B<Body>, that should hold the 
+actual email message. 
+
+C<-partial_sending> is an optional argument and if passed, should hold a hashref 
+with the following format: 
+
+ { 
+ 	first_name => {
+ 		equal_to => "John",
+ 	},
+ 	last_name => { 
+ 		like => "Doe", 
+ 	},
+ }
+
+keys should be named after profile fields and the values themselves should be a hashref. 
+The hashref keys can either be, "equal_to" or, "like", depending on if you want to do an
+exact match, or a partial match on a string.
+
+C<-multi_list_send> is optional and should hold a hashref with additional arguments. They are: 
+
+=over
+
+=item * -lists
+
+should hold an array ref of additional lists you would like to send to
+
+=item * -no_dupes
+
+should be set to either C<1> or, C<0>. Setting to, C<1> will tell DADA::Mail::Send not to 
+send the same message twice, to a subscriber that may be on two lists. 
+
+=back
+
+C<-test> is optional and should hold a value of either C<1> or, C<0>. If set to C<1> 
+the mass mailing will NOT be sent out, via email, but rather written to a file. This file 
+can be specified using the, C<test_send_file> method. The <-test> paramater works 
+the same way as the C<test> method. 
+
+C<-mass_test> is optional and should hold a value of either C<1> or, C<0>. If set to 
+C<1> a mass mailing will be done, but only sent to the recipient set in, C<-test_recipient>, 
+or the list owner, if no valid recipient is set. Works the same as the, C<mass_test> paramater. 
+
+C<-test_recipient> is option and should hold a valid email address of where test mass 
+mailings should be sent. The, <-mass_test> argument should also be set to, C<1>. 
+Works the same as the C<test_recipient> method. 
+
 
 =head2 test
 
@@ -2998,6 +3065,7 @@ is set to, B<1>.
 Defaults to: C<$DADA::Config::TMP . '/test_send_file.txt'>
 
 =head1 Private Methods
+
 
 =head2 _make_general_headers
 
@@ -3087,7 +3155,7 @@ subroutine and hack it up into something Dada Mail can use.
 =head1 See Also
 
 A great bit of the scheduling, auto-pickup'ing and status'ing of the mass mailing, (basically, everything except looping through the list
-is controlled by C<DADA::Mail::MailOut>. C<DADA::Mail::Send> is quite dumb in what it does, C<DADA::Mail::MailOut> is quite smart. 
+is controlled by C<DADA::Mail::MailOut>. 
 
 =head1 COPYRIGHT
 

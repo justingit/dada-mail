@@ -1,6 +1,11 @@
 package DADA::App::Guts;
 use 5.008_001; 
 use Encode qw(encode decode);
+use Params::Validate ':all';
+
+# evaluate these once at compile time
+use constant HAS_URI_ESCAPE_XS => eval { require URI::Escape::XS; 1; }; # Much faster, but requires C compiler.
+use constant HAS_URI_ESCAPE    => eval { require URI::Escape; 1; };
 
 =pod
 
@@ -63,7 +68,6 @@ require Exporter;
   check_if_list_exists
   available_lists
   archive_message
-  uriencode
   js_enc
   setup_list
   date_this
@@ -160,7 +164,7 @@ sub check_for_valid_email {
     
     
 	my %exceptions; 
-	foreach(@DADA::Config::EMAIL_EXCEPTIONS){
+	for(@DADA::Config::EMAIL_EXCEPTIONS){
 	    $exceptions{$_}++
 	} 
 	$email_check = 0 if exists($exceptions{$email}); 	
@@ -555,7 +559,6 @@ sub check_if_list_exists {
 	
 	my %args = (
 				-List       => undef, 
-	            -dbi_handle => undef, 
 	            -Dont_Die   => 0, 
 				@_
 				); 
@@ -571,12 +574,11 @@ sub check_if_list_exists {
 	}
 	
 	my @available_lists = available_lists(
-			-dbi_handle => $args{-dbi_handle}, 
 			-Dont_Die   => $args{-Dont_Die},
 		);
 	
 	my $might_be;
-	foreach $might_be(@available_lists) {
+	for $might_be(@available_lists) {
 		if ($might_be eq $args{-List}) { 
 		  $list_exists = 1;
 		  last; 
@@ -608,26 +610,7 @@ returns the array in alphabetic order - but B<NOTE:> not in alphabetical order b
 =item * -Dont_Die
 
 As the name implies, the subroutine won't kill the program calling it, if there's a problem opening the directory you've set in the Config.pm B<$FILES> variable. 
-
-=item * -dbi_handle
-
-In Dada Mail, dbi handles are passed to different methods/subroutines in various was, so that they may be reused. 
-
-If you're using Dada Mail with the SQL backend for the list settings, you could do something like this: 
-
- use DADA::Config; 
- use DADA::App::Guts; 
  
- my $dbi_handle; 
- 
- if($SETTINGS_DB_TYPE =~ m/SQL/){        
-     require DADA::App::DBIHandle; 
-     $dbi_handle = DADA::App::DBIHandle->new; 
- }
- 
- my @available_lists = DADA::App::Guts::available_lists(-dbi_handle => $dbi_handle); 
-
-to reuse the database handle you've just made. 
 
 =back
 
@@ -637,26 +620,19 @@ Using all these paramaters at once would look something like this:
                                         -As_Ref => 1, 
                                         -In_Order => 1, 
                                         -Dont_Die => 1, 
-                                        -dbi_handle => $dbi_handle, 
                                        );
 
 
 =cut
 
 my $cache = {};
-#my $ic = 0; 
-#my $nc = 0;
-
 sub available_lists {
-
-    my %args = (
-        -As_Ref      => 0,
-        -In_Order    => 0,
-        -Dont_Die    => 0,
-        -dbi_handle  => undef,
-        -clear_cache => 0,
-        @_,
-    );
+    my %args = validate(@_, {
+        '-As_Ref'      => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
+        '-In_Order'    => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
+        '-Dont_Die'    => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
+        '-clear_cache' => { regex => qr/\A[01]\z/,   optional => 1, default => 0 }, 
+    }); 
 
     my $in_order        = $args{-In_Order};
     my $want_ref        = $args{-As_Ref};
@@ -664,8 +640,6 @@ sub available_lists {
     my @available_lists = ();
     my $present_list    = undef;
 
-    require DADA::MailingList::Settings;
-    $DADA::MailingList::Settings::dbi_obj = $args{-dbi_handle};
 
 # BUGFIX:  2222381  	 3.0.0 - DADA::App::Guts::available_lists() needs caching
 # https://sourceforge.net/tracker2/?func=detail&aid=2222381&group_id=13002&atid=113002
@@ -674,7 +648,7 @@ sub available_lists {
     if ( $args{-clear_cache} == 1 ) {
 
         # This is completely over the top, but...
-        foreach ( keys %$cache ) {
+        for ( keys %$cache ) {
             $cache->{$_} = undef;
             delete( $cache->{$_} );
         }
@@ -708,8 +682,6 @@ sub available_lists {
 
         ######################################################################
         my $dbi_handle;
-
-
         require DADA::App::DBIHandle;
         $dbi_handle = DADA::App::DBIHandle->new;
         my $dbh = $dbi_handle->dbh_obj;
@@ -774,7 +746,7 @@ sub available_lists {
                 }
             }    #/while
 
-            foreach my $all_those (@dbs) {
+            for my $all_those (@dbs) {
                 if ( $all_those !~ m/\-archive.*|\-schedules.*/ ) {
                     push( @available_lists, $all_those );
                 }
@@ -786,7 +758,7 @@ sub available_lists {
 
             my @clean_unique;
 
-            foreach (@unique) {
+            for (@unique) {
                 if (   defined($_)
                     && $_ ne ""
                     && $_ !~ m/^\s+$/ )
@@ -816,7 +788,7 @@ sub available_lists {
     if ( $in_order == 1 ) {
 
          my $labels = {};
-         foreach my $l (@available_lists) {
+         for my $l (@available_lists) {
              my $ls =
                DADA::MailingList::Settings->new( { -list => $l } );
              my $li = $ls->get;
@@ -1051,7 +1023,7 @@ sub _chomp_off_body_thats_being_difficult {
 	
 
 	my @lines = split("\n", $str); 
-		foreach (@lines){ 
+		for (@lines){ 
 			if(/\<body(.*?)\>/i .. /\<\/body\>/i)	{
 				next if /\<body(.*?)\>/i || /\<\/body\>/i;
 				$n_str .= $_ . "\n";
@@ -1373,75 +1345,23 @@ use to escape strings to be used as url strings.
 =cut
 
 sub uriescape {
-
      my $string = shift;
 
-
-    eval {require URI::Escape}; 
-	if(!$@){
-		return URI::Escape::uri_escape($string, "\200-\377"); # And I've forgotten why we're using "\200-\377" as the escape...
-	}else{ 
-	
-		 if($string){ 
-			 my ($out);
-			 foreach (split //,$string)
-			 {
-			   if ( $_ eq " ") {$out.="+";next};
-			   if(ord($_) < 0x41 || ord($_) > 0x7a)
-			   { $out.=sprintf("%%%02x",ord($_)) }
-			   else
-			   { $out.=$_ }
-			 }
-			return  $out;
-		}
-  	}
-
-
-# Kind of interesting reading: 
-# http://search.cpan.org/~gaas/URI-1.52/URI/Escape.pm
-# uri_escape_utf8( $string ) uri_escape_utf8( $string, $unsafe )
-# 
-# Works like uri_escape(), but will encode chars as UTF-8 before escaping
-# them. This makes this function able do deal with characters with code
-# above 255 in $string. Note that chars in the 128 .. 255 range will be
-# escaped differently by this function compared to what uri_escape()
-# would. For chars in the 0 .. 127 range there is no difference.
-# 
-# The call:
-# 
-# $uri = uri_escape_utf8($string);
-# 
-# will be the same as:
-# 
-# use Encode qw(encode); $uri = uri_escape(encode("UTF-8", $string));
-# 
-# but will even work for perl-5.6 for chars in the 128 .. 255 range.
-# 
-# Note: Javascript has a function called escape() that produces the
-# sequence "%uXXXX" for chars in the 256 .. 65535 range. This function has
-# really nothing to do with URI escaping but some folks got confused since
-# it "does the right thing" in the 0 .. 255 range. Because of this you
-# sometimes see "URIs" with these kind of escapes. The JavaScript
-# encodeURIComponent() function is similar to uri_escape_utf8().
-#
-# Do I want/need this? Huh?
-
+     if (HAS_URI_ESCAPE_XS) {
+         return URI::Escape::XS::uri_escape($string);
+     }elsif (HAS_URI_ESCAPE){
+         return URI::Escape::uri_escape_utf8($string);
+     }else {
+         die "URI::Escape was expected to be found but is missing. It should be bundled with the Dada mail distribution";
+     }
 } 
    
    
-sub uriencode { 
-	my $string = shift; 
-	$string =~ s/%([a-fA-F0-9]{2})/chr(hex($1))/ge;
-	return $string;
-}
-
-
-
 sub js_enc {
 
 	my $str = shift || '';
 	my @chars = split(//,$str);
-	foreach my $c (@chars) {
+	for my $c (@chars) {
 		$c = '\x' . sprintf("%x", ord($c));
 	}
 	my $e =  join('',@chars);
@@ -1993,7 +1913,6 @@ sub check_list_security {
 	my %args = (-Function        => undef, 
 				-cgi_obj         => undef, 
 				-manual_override => 0, 
-				-dbi_handle      => {}, 
 				@_);
 	croak 'no CGI Object (-cgi_obj)' if ! $args{-cgi_obj};
 	
@@ -2036,7 +1955,7 @@ sub check_setup {
 		return 1; 
 	}else{ 	
 		my @tests = ($DADA::Config::FILES, $DADA::Config::TEMPLATES , $DADA::Config::TMP );
-		foreach my $test_dir(@tests){ 
+		for my $test_dir(@tests){ 
 
 			if(-d $test_dir && -e $test_dir){ 
 			
@@ -2063,7 +1982,7 @@ sub SQL_check_setup {
 		my $dbi_obj = DADA::App::DBIHandle->new; 
 		my $dbh = $dbi_obj->dbh_obj;
 		
-		foreach my $param(keys %DADA::Config::SQL_PARAMS){ 
+		for my $param(keys %DADA::Config::SQL_PARAMS){ 
 			if($param =~ m/table/){ 
 				$table_count++;
 			 	$dbh->do('SELECT * from ' . $DADA::Config::SQL_PARAMS{$param} . ' WHERE 1 = 0')
@@ -2218,7 +2137,7 @@ sub check_referer {
     }
 	
 	
-    foreach my $test_ref (@referers) {
+    for my $test_ref (@referers) {
       if ($refHost =~ m|\Q$test_ref\E$|i) {
         $check_referer = 1;
         last;
@@ -2503,7 +2422,7 @@ sub csv_subscriber_parse {
 
 		my $new_fields = [];
 		my $i = 0; 
-		foreach(@$subscriber_fields){
+		for(@$subscriber_fields){
 			push(@$new_fields, {name => $_, value => $pre_info->{fields}->{$_} }); 
 			$i++;
 		}
@@ -2546,14 +2465,14 @@ sub decode_cgi_obj {
 #	return $query; 
 	
 	my $form_input = {};  
-	foreach my $name ( $query->param ) {
+	for my $name ( $query->param ) {
 	  
 	  # Don't decode image uploads that are binary. 
 	  next 
 		if $name =~ m/file|picture|attachment(.*?)$/; 
 	
 	  my @val = $query ->param( $name );
-	  foreach ( @val ) {
+	  for ( @val ) {
 	    #$_ = Encode::decode($DADA::Config::HTML_CHARSET, $_ );
 		$_ = safely_decode($_); 
 	  }

@@ -78,7 +78,7 @@ sub tally_up_scores {
     my $give_back_scores = {}; 
     
     
-    foreach my $email(keys %$scores){ 
+    for my $email(keys %$scores){ 
  
 		my $query = 'SELECT email, score FROM ' . $self->{sql_params}->{bounce_scores_table} .' WHERE email = ? AND list = ?'; 
 		
