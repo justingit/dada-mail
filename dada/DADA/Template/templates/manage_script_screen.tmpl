@@ -1,131 +1,106 @@
-<!-- begin manage_script_screen.tmpl -->
-
-<h2>
- Script Information
-</h2>
+<h1>
+	Script Information
+</h1>
 <p>
- This is <!-- tmpl_var name="PROGRAM_NAME" --> version 
- <strong>
-  <!-- tmpl_var name="VER" -->
- </strong>
- .
+	This is <!-- tmpl_var name="PROGRAM_NAME" --> version <strong><!-- tmpl_var name="VER" --></strong> .
 </p>
-
-<p> 
- <strong>
-  <a href="#" onclick="toggleDisplay('extended_info');return false;">
-	+/- More Information
-  </a>
- </strong>
+<p>
+	<strong><a href="#" onclick="toggleDisplay('extended_info');return false;">+/- More Information</a></strong>
 </p>
-
-<div id="extended_info" style="display:none"> 
-	
-
+<div id="extended_info" style="display:none">
 	<table cellspacing="0" cellpadding="5">
-
-	 <tr>
-	  <td>
-	   <p class="small">
-	    Perl Library Locations:
-	   </p>
-	  </td>
-	  <td>
-	   <p>
-	    <ul>
-	     
-	<!-- tmpl_loop at_incs -->
-		     
-		     <li>
-		      <p class="small" style="margin:0;">
-		       <!-- tmpl_var name -->
-		      </p>
-		     </li>
-		     
-	<!-- /tmpl_loop --> 
-	     
-	    </ul>
-	   </p>
-	  </td>
-	 </tr>
-	 <tr>
-	  <td>
-	   <p class="small">
-	    Server Software:
-	   </p>
-	  </td>
-	  <td>
-	   <p class="small">
-	    <!-- tmpl_var name="server_software" -->
-	   </p>
-	  </td>
-	 </tr>
-	 <tr>
-	  <td>
-	   <p class="small">
-	    Operating System:
-	   </p>
-	  </td>
-	  <td>
-	   <p class="small">
-	    <!-- tmpl_var name="operating_system" -->
-	   </p>
-	  </td>
-	 </tr>
-	 <tr>
-	  <td>
-	   <p class="small">
-	    Perl Version:
-	   </p>
-	  </td>
-	  <td>
-	   <p class="small">
-	    <!-- tmpl_var name="perl_version" -->
-	   </p>
-	  </td>
-	 </tr>
-	 <tr>
-	  <td>
-	   <p class="small">
-	    path(s) to <em>sendmail</em>
-	   </p>
-	  </td>
-	  <td>
-	   <p class="small">
-	    <!-- tmpl_var name="sendmail_locations" -->
-	   </p>
-	  </td>
-	 </tr>
-	
-	 <tr>
-	  <td>
-	   <p class="small">
-	    path to <em>curl</em>:
-	   </p>
-	  </td>
-	  <td>
-	   <p class="small">
-	    <!-- tmpl_var name="curl_location" -->
-	   </p>
-	  </td>
-	 </tr>
-	
-	 <tr>
-	  <td>
-	   <p class="small">
-	    path to <em>wget</em>:
-	   </p>
-	  </td>
-	  <td>
-	   <p class="small">
-	    <!-- tmpl_var name="wget_location" -->
-	   </p>
-	  </td>
-	 </tr>
-		
+		<tr>
+			<td>
+				<p class="small">
+					Perl Library Locations:
+				</p>
+			</td>
+			<td>
+				<ul>
+					<!-- tmpl_loop at_incs -->
+					<li>
+						<p class="small" style="margin:0;">
+							<!-- tmpl_var name -->
+						</p>
+					</li><!-- /tmpl_loop -->
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="small">
+					Server Software:
+				</p>
+			</td>
+			<td>
+				<p class="small">
+					<!-- tmpl_var name="server_software" -->
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="small">
+					Operating System:
+				</p>
+			</td>
+			<td>
+				<p class="small">
+					<!-- tmpl_var name="operating_system" -->
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="small">
+					Perl Version:
+				</p>
+			</td>
+			<td>
+				<p class="small">
+					<!-- tmpl_var name="perl_version" -->
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="small">
+					path(s) to <em>sendmail</em>
+				</p>
+			</td>
+			<td>
+				<p class="small">
+					<!-- tmpl_var name="sendmail_locations" -->
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="small">
+					path to <em>curl</em>:
+				</p>
+			</td>
+			<td>
+				<p class="small">
+					<!-- tmpl_var name="curl_location" -->
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="small">
+					path to <em>wget</em>:
+				</p>
+			</td>
+			<td>
+				<p class="small">
+					<!-- tmpl_var name="wget_location" -->
+				</p>
+			</td>
+		</tr>
 	</table>
-	
-</div> 
+</div>
+
 
 
 <p>
@@ -138,9 +113,43 @@
 </p>
 <hr />
 
-<h2>
+
+<!-- tmpl_if GIVE_PROPS_IN_ADMIN --> 
+
+<h1>
+ Purchase Pro Dada and the Dada Mail Manual
+</h1>
+<p>
+ If you find Dada Mail incredibly useful, please support
+ <a href="http://dadamailproject.com/purchase/pro.html" target="_blank">The Dada Mail Project.</a></p> 
+
+
+
+<p>I really appreciate all the support received! Thanks!</p> 
+
+
+	<form method="get" action="http://dadamailproject.com/purchase/pro.html" target="_blank">
+		<input type="hidden" name="ref" value="ms_scrn" /> 
+		<p style="text-align:center">
+		<input type="submit" value="Purchase Pro Dada!" class="processing" />  
+		</p>
+	</form> 
+
+
+<p>
+ Support from you goes towards the cost of development of the software (coding, hosting, free support)
+ as well as my personal endeavors, including paying my higher education student loans and continuing as a 
+ visual artist. 
+</p>
+
+<hr />
+
+<!-- /tmpl_if --> 
+
+
+<h1>
  Visit the Support Site
-</h2>
+</h1>
 <p>
  An entire support site has been set up just for Dada Mail. There, 
  you'll be able to browse through faqs, instructions, tips and tricks, 
@@ -155,9 +164,9 @@
 </p>
 <hr />
 
-<h2>
+<h1>
  Join the Dada Mail Project Announcements Mailing List
-</h2>
+</h1>
 
 <form action="http://dadamailproject.com/cgi-bin/dada/mail.cgi" method="get" target="_blank">
  <input type="hidden" name="f"      value="subscribe" />
@@ -168,59 +177,36 @@
 <hr />
 
 
-<!-- tmpl_if GIVE_PROPS_IN_ADMIN --> 
-
-<h2>
- Purchase Pro Dada and the Dada Mail Manual
-</h2>
-<p>
- If you find Dada Mail incredibly useful, you may want to give to 
- the Dada Mail project - money goes towards the cost of Web server 
- hosting for the support site, software used to make this product, 
- and basically to keep the lights on. Any leftover money goes 
- toward my college education.
-</p>
-<p style="text-align:right">
- <strong>
-  <a href="http://dadamailproject.com/purchase/pro.html" target="_blank">
-    Purchase Pro Dada and keep the Dada Mail Project Alive!
-  </a>
- </strong>
-</p>
-<hr />
-
-<!-- /tmpl_if --> 
-
-<h2>
+<h1>
  License Agreement
-</h2>
+</h1>
 <p>
  Dada Mail is Open Source Software and is released under the 
  <strong>
-  <a href=http://www.gnu.org/copyleft/gpl.html target="_blank">
-   GNU Public License</a></strong>.
+  <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html" target="_blank">
+   GNU Public License v2</a></strong>.
 </p>
 <hr />
 
 
 
-<h2>
+<h1>
 	Dada Mail and Spam
-</h2>
+</h1>
 
 <p>To avoid sending out unsolicited bulk messages using Dada Mail, make sure to never
 	add unverified, unconfirmed addresses to any Dada Mail mailing list.
    Always allow your  subscriber to confirm their own subscription to any Dada Mail mailing list. 
-	<a href="http://dadamailproject.com/installation/using_dada_mail.html" target="_blank">Justin follow the Closed-Loop Opt in System.</a>
+	<a href="http://dadamailproject.com/installation/using_dada_mail.html" target="_blank">Just follow the Closed-Loop Opt in System - </a>
 	and you'll be a super star.
 </p>
 
 <p>
 	<em>This below verbatim from the Spamhaus project's, "<a href="http://www.spamhaus.org/definition.html" target="_blank">The Definition of Spam</a>"</em>
 </p>
-<h3>
+<h2>
 	The Definition of Spam
-</h3>
+</h2>
 <p>
 	<strong>The word "Spam" as applied to Email means "Unsolicited Bulk Email".</strong>
 </p>
@@ -244,9 +230,9 @@
 		</p>
 	</li>
 </ul>
-<h3>
+<h2>
 	Technical Definition of Spam
-</h3>
+</h2>
 <p>
 	An electronic message is "spam"if (A) the recipient's personal identity and context are irrelevant because the message is equally applicable to many other potential recipients; AND (B) the recipient has not verifiably granted deliberate, explicit, and still-revocable permission for it to be sent.
 </p>
