@@ -263,7 +263,7 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 	<table>
 	 <tr>
 	  <td>
-	   <input type="checkbox" name="use_pop_before_smtp" id="use_pop_before_smtp" value="1" <!-- tmpl_if use_pop_before_smtp -->checked="checked"<!-- /tmpl_if --> />
+	   <input type="checkbox" name="use_pop_before_smtp" id="use_pop_before_smtp" value="1" <!-- tmpl_if list_settings.use_pop_before_smtp -->checked="checked"<!-- /tmpl_if --> />
 	  </td>
 	  <td>
 	   <p>
@@ -346,7 +346,7 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 	     <tr>
 	      <td>
 	       <p>
-	        <input type="checkbox" name="pop3_use_ssl" id="pop3_use_ssl" value="1" <!-- tmpl_if pop3_use_ssl -->checked="checked"<!-- /tmpl_if --> <!-- tmpl_unless can_use_ssl -->disabled="disabled"<!--/tmpl_unless-->/>
+	        <input type="checkbox" name="pop3_use_ssl" id="pop3_use_ssl" value="1" <!-- tmpl_if list_settings.pop3_use_ssl -->checked="checked"<!-- /tmpl_if --> <!-- tmpl_unless can_use_ssl -->disabled="disabled"<!--/tmpl_unless-->/>
 	       </p>
 	      </td>
 	      <td>

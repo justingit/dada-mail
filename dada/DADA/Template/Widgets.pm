@@ -1453,7 +1453,7 @@ sub screen {
                 #}
                 
                 
-                if( !exists($args->{-list_settings_vars_param}->{i_know_what_im_doing}) ){                     
+                if( !exists($args->{-list_settings_vars_param}->{-i_know_what_im_doing}) ){                     
                     # this is to get really naughty bits out: 
                     foreach(qw(
                         password

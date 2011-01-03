@@ -5156,7 +5156,7 @@ sub _config_import {
 	# What we're doing is, seeing if you've actually changed the variable from
 	# it's default, and if not, we take a best guess.	
 	
-	my $CONFIG_FILE_DIR; 
+	my $CONFIG_FILE_DIR = undef; 
 	
 	if(defined($OS) !~ m/^Win|^MSWin/i){ 
 		my $getpwuid_call; 

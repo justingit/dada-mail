@@ -48,7 +48,11 @@ require DADA::Template::Widgets;
 $scrn .= DADA::Template::Widgets::screen(
     {
         -data                     => \$tmpl,
-        -list_settings_vars_param => { -list => $list, -in_order => 1, i_know_what_im_doing => 1 },
+        -list_settings_vars_param => { 
+			-list                 => $list, 
+			-in_order             => 1, 
+			-i_know_what_im_doing => 1 
+		},
     }
 );
 

@@ -983,9 +983,9 @@ sub cgi_default {
 
             },
 			-list_settings_vars_param => { 
-				-list                => $list,
-				-dot_it              => 1,
-				i_know_what_im_doing => 1,  
+				-list                 => $list,
+				-dot_it               => 1,
+				-i_know_what_im_doing => 1,  
 			},
         }
 
