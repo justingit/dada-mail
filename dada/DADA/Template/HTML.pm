@@ -32,10 +32,12 @@ LOCK_NB
 ); 
 
 require Exporter; 
+our @ISA = qw(Exporter); 
 
-@ISA = qw(Exporter); 
+use vars qw($HTML_Footer);
+
 @EXPORT = qw(
-
+	
 admin_template
 admin_template_header
 admin_template_footer
@@ -49,11 +51,14 @@ make_feature_menu
 admin_header_params
 
 );
+
+
 use strict; 
 use vars qw(@EXPORT); 
+#@EXPORT_OK($HTML_Footer); 
 
-my $HTML_Footer =  '<p style="font-size:10px;font-family:Verdana,Arial;text-align:center">Powered by <a href="http://dadamailproject.com" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Dada Mail ' . $DADA::Config::VER . '</a><br />Copyright &copy; 1999-2010, <a href="http://dadamailproject.com/justin" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Simoni Creative</a>.</p>';
 
+$HTML_Footer =  '<p style="font-size:10px;font-family:Verdana,Arial;text-align:center">Powered by <a href="http://dadamailproject.com" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Dada Mail ' . $DADA::Config::VER . '</a><br />Copyright &copy; 1999-2010, <a href="http://dadamailproject.com/justin" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Simoni Creative</a>.</p>';
 
 
 =pod

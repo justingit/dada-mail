@@ -945,9 +945,9 @@ sub sign_in {
         -List       => $list,
     );
 
-
 	my $scrn = '';
 
+=cut
     if ( $list_exists >= 1 ) {
 
         my $pretty = pretty($list);    # Pretty?
@@ -967,6 +967,7 @@ sub sign_in {
         );
 
     }
+=cut
 
     if ( $list_exists >= 1 ) {
 
@@ -984,15 +985,18 @@ sub sign_in {
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
         my $li = $ls->get;
 
-        $scrn .=  DADA::Template::Widgets::screen(
+        $scrn .=  DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'list_login_form.tmpl',
+				-with => 'list', 
                 -vars   => {
-                    list           => $list,
-                    list_name      => $li->{list_name},
                     flavor_sign_in => 1,
                     auth_state     => $auth_state,
                 },
+				-list_settings_vars_param => {
+					-list    => $list,
+					-dot_it => 1,
+				},
             }
         );
     }
@@ -1007,6 +1011,7 @@ sub sign_in {
         );
 
     }
+=cut
     if ( $list_exists >= 1 ) {
 
         $scrn .=  list_template(
@@ -1017,6 +1022,7 @@ sub sign_in {
     else {
         $scrn .=  list_template( -Part => "footer" );
     }
+=cut
 
 	e_print($scrn);
 }

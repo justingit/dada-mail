@@ -1380,7 +1380,7 @@ The precendence for these various variables is:
 
 =item * -list_settings_vars
 
-=item * -subscriber_vars
+=item * -subscriber _vars
 
 =item * -vars
 
@@ -1413,11 +1413,14 @@ sub wrap_screen {
 	# I'd rather not have this passed to, screen(); 
 	delete $args->{-with}; 
 	
-	if($with = 'list'){ 
+	if($with eq 'list'){ 
 		
 		# I need params from the first template passed. 
 		$args->{-return_params} = 1; 
 		my ($tmpl, $params) = screen($args);
+		if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1) {
+            $tmpl = $tmpl . $DADA::Template::HTML::HTML_Footer; 
+        }
 		
 		# "content" is passed to the wrapper template
 		my $vars = { 
@@ -1425,17 +1428,41 @@ sub wrap_screen {
 		};
 		for(qw(dm_title show_profile_widget)){ 
 			if(exists($params->{$_})){ 
+				# variables within variables... 
 				$vars->{$_} = $params->{$_}; 
+				if($vars->{$_} =~ m/\<\!\-- tmpl_var/){
+					$vars->{$_} = screen({-data => \$vars->{$_}, -vars => $params}); 
+				}
 			}
 		}	 
 		
 		# list_template is the wrapper template - it calls, screen()
+		# This will aggravate you, as I'm aggravated by it - there's 3 ways to send the listshortname to screen()
+		# And list_template() here has one way, so we have to figure out where, "list" is, and use it. 
+		# Here we go: 
+		my $list_param = undef; 
+		if(exists($args->{-list})){ 
+			$list_param =  $args->{-list}; 
+		}
+		elsif(exists($args->{-list_settings_vars})){
+			if(exists($args->{-list_settings_vars}->{list})){ 
+				$list_param =  $args->{-list_settings_vars}->{list}; 
+			}
+			elsif(exists($args->{-list_settings_vars}->{'list_settings.list'})){ 
+				$list_param =  $args->{-list_settings_vars}->{'list_settings.list'}; 
+			}	
+		}
+		elsif(exists($args->{-list_settings_vars_param}->{-list})){
+			$list_param = $args->{-list_settings_vars_param}->{-list}; 
+		}
+		
 		require DADA::Template::HTML; 	
 		my $template = DADA::Template::HTML::list_template(
 			%{$args->{-wrapper_params}}, # This is currently, "blank"
 			-vars => $vars,				 # This currently only has, "dm_title" and, "content" - everything else should 
 										 # already be filled out. 
 			-Part => 'full', 
+			-List => $list_param, 
 			); 
 			
 		return $template; 
@@ -1931,11 +1958,11 @@ else {
 	
 	
    $template->param(%final_params); 
-	my %return_params = %_ht_tmpl_set_params; 
+	#my %return_params = %_ht_tmpl_set_params; 
 	%_ht_tmpl_set_params = (); 
 	if(exists($args->{-return_params})){ 
 		if($args->{-return_params} == 1){ 
-			return ($template->output(), {%return_params});	
+			return ($template->output(), {%final_params});	
 		}
 		else { 
 			return $template->output();

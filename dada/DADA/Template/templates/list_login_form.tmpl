@@ -1,5 +1,9 @@
 <!-- begin list_login_form.tmpl -->
 
+<!-- tmpl_set name="dm_title" value="Sign In to <!-- tmpl_var list_settings.list_name -->" -->
+<!-- tmpl_set name="show_profile_widget" value="0" -->
+
+
 <form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
  <input type="hidden" name="f"       value="login" />
  <input type="hidden" name="process" value="true" />
@@ -24,7 +28,7 @@
   </tr>
   <tr>
    <td valign="top" align="right">
-    <input type="hidden"   name="admin_list" value="<!-- tmpl_var name="list" -->" style="vertical-align:top;" /><!-- HACK: vertical-align is for IE -->
+    <input type="hidden"   name="admin_list" value="<!-- tmpl_var list_settings.list -->" style="vertical-align:top;" /><!-- HACK: vertical-align is for IE -->
     <input type="password" name="admin_password" id="admin_password" size="16" maxlength="24" />
     <input type="submit" class="plain" value="Login" />
    </td>
