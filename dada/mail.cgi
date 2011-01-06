@@ -792,13 +792,8 @@ sub default {
         }
 
 		my $scrn = '';
-		 $scrn = list_template(
-            -Part  => "header",
-            -Title => "Sign Up for a List",
-        );
 
         require DADA::Template::Widgets;
-
         $scrn .= DADA::Template::Widgets::default_screen(
            # {
                 -email              => $email,
@@ -807,8 +802,6 @@ sub default {
                 -error_invalid_list => $q->param('error_invalid_list'),
            # }
         );
-       $scrn .= list_template( -Part => "footer" );
-
         e_print($scrn);
         if (!$c->profile_on && $available_lists[0] && $q->param('error_invalid_list') != 1 ) {
             $c->cache( 'default.scrn', \$scrn );
@@ -883,16 +876,16 @@ sub list_page {
 
     require DADA::Template::Widgets;
 
-    my $scrn = (
-        list_template(
-            -Part  => "header",
-            -Title => $list_info->{list_name},
-            -List  => $list,
+    #my $scrn = (
+    #    list_template(
+    #        -Part  => "header",
+    #        -Title => $list_info->{list_name},
+    #        -List  => $list,
+	#
+    #    )
+    #);
 
-        )
-    );
-
-    $scrn .= DADA::Template::Widgets::list_page(
+    my $scrn .= DADA::Template::Widgets::list_page(
         -list           => $list,
         -cgi_obj        => $q,
         -email          => $email,
@@ -901,7 +894,7 @@ sub list_page {
 
     );
 
-    $scrn .= list_template( -Part => "footer", -List => $list );
+   # $scrn .= list_template( -Part => "footer", -List => $list );
 
     e_print($scrn);
 
@@ -928,21 +921,10 @@ sub admin {
 		user_error( -Error => 'install_dir_still_around' );
 	    return;
 	}
-
-
-    my $scrn = list_template(
-		-Part       => "header",
-        -Title      => "Administration",
-		-vars       => {
-				show_profile_widget => 0,
-					}
-	);
-
+	
     my $login_widget = $q->param('login_widget') || $DADA::Config::LOGIN_WIDGET;
-
     require DADA::Template::Widgets;
-    $scrn .= DADA::Template::Widgets::admin(-login_widget => $login_widget, -cgi_obj => $q);
-    $scrn .= (list_template(-Part => "footer", -End_Form   => 0));
+    my $scrn .= DADA::Template::Widgets::admin(-login_widget => $login_widget, -cgi_obj => $q);
     e_print($scrn);
 
 
@@ -9562,9 +9544,8 @@ sub img {
         if($c->cached($img_name)){
 			$c->show($img_name); return;}
         my $r =  $q->header('image/png');
-           $r .= DADA::Template::Widgets::screen({-screen => $img_name});
+           $r .= DADA::Template::Widgets::screen({-screen => $img_name, -img => 1}); # maybe, _raw_screen?
          print $r;
-
         $c->cache($img_name, \$r);
 
     } else {

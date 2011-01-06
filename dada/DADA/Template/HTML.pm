@@ -424,8 +424,6 @@ sub open_template {
 }
 
 
-
-
 sub list_template {
 
     require DADA::Template::Widgets;
@@ -445,7 +443,7 @@ sub list_template {
         -Title         => undef,
         -HTML_Header   => 1,
         -header_params => {},
-        -data          => undef,
+        -data          => undef, # used? 
         -vars          => {},
         @_,
     );
@@ -564,30 +562,43 @@ sub list_template {
             )
         }
     );
+	if($args{ -Part } eq 'full'){ 
 
-    my ( $header, $footer ) =
-      split ( /\[_dada_content\]/, $final_list_template, 2 );
-
-    if ( $args{ -Part } eq 'header' ) {
-
-        if ( $args{ -HTML_Header } == 1 ) {
+		$final_list_template =~ s/\[_dada_content\]/<!-- tmpl_var content -->/;
+		if ( $args{ -HTML_Header } == 1 ) {
             return $q->header( -type => 'text/html',
                 %{ $args{ -header_params } } )
-              . $header;
+              . $final_list_template;
         }
-        else {
-            return $header;
-        }
-    }
-    else {
+		else { 
+			return $final_list_template; 
+		}
+	}
+	else { 
+    	my ( $header, $footer ) =
+	      split ( /\[_dada_content\]/, $final_list_template, 2 );
 
-        if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1 ) {
-            return "\n$HTML_Footer \n" . $footer . "\n";
-        }
-        else {
-            return $footer;
-        }
-    }
+	    if ( $args{ -Part } eq 'header' ) {
+
+	        if ( $args{ -HTML_Header } == 1 ) {
+	            return $q->header( -type => 'text/html',
+	                %{ $args{ -header_params } } )
+	              . $header;
+	        }
+	        else {
+	            return $header;
+	        }
+	    }
+	    else {
+
+	        if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1 ) {
+	            return "\n$HTML_Footer \n" . $footer . "\n";
+	        }
+	        else {
+	            return $footer;
+	        }
+	    }
+	}
 
 }
 
