@@ -1531,15 +1531,14 @@ sub cgi_scorecard {
 	    loop_context_vars  => 1, 
 	    
 	);
-	   $template->param(
-	        Plugin_URL => $Plugin_Config->{Plugin_URL}
-	   ); 										
+   $template->param(
+        Plugin_URL => $Plugin_Config->{Plugin_URL}
+   ); 										
     
     my $get_data_sub = sub { 
         my ($offset, $rows) = @_;
         return $bsk->raw_scorecard($offset, $rows); 
     }; 
-    
     my $num_rows = $bsk->num_scorecard_rows;   
     
     my $pager = undef; 
@@ -1561,85 +1560,89 @@ sub cgi_scorecard {
             # cell_space_color => '#000000',    
             # cell_background_color => '#ffffff',
             # nav_background_color => '#dddddd',
-            # javascript_presubmit => 'last_minute_javascript()',
-            
-            
+            # javascript_presubmit => 'last_minute_javascript()'  
             # debug => 1,
         );
-    
     }
+
+	my $tmpl = cgi_scorecode_tmpl(); 
+	
+	require DADA::Template::Widgets; 
+	my $scrn = DADA::Template::Widgets::wrap_screen(
+		{ 
+			-data => \$tmpl, 
+			-with => 'admin', 
+			-wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+			-vars => { 
+				Plugin_URL => $Plugin_Config->{Plugin_URL}, 
+				Program_Name => $Plugin_Config->{Program_Name},
+				num_rows => $num_rows,
+				(($num_rows >= 1) ? (
+				scorecard => $pager->output,) : ()), 
+			}
+		}
+	); 
+	e_print($scrn); 
     
-    print(admin_template_header(
-                            -Title      => "Bounce Scorecard",
-                            -List       => $list,
-                            -Form       => 0,
-                            -Root_Login => $root_login
-                            ));
-    
-    print '
-     <p id="breadcrumbs">
-        <a href="'  .  $Plugin_Config->{Plugin_URL} . '">
-            ' . $Plugin_Config->{Program_Name} .'
-        </a> &#187; Scorecard</p>'; 
-        
-    
-    
-    if($num_rows >= 1) { 
-    
-        print $pager->output;
-    	
-	}
-	else { 
-	    print '<p class="error">Currently, there are no bounced addresses saved in the scorecard.</p>'; 
-	    
-	}
-	print admin_template_footer(-Form    => 0, 
-							-List    => $list,
-						    ); 
+}
+
+sub cgi_scorecode_tmpl {
+	
+return <<EOF
+
+<!-- tmpl_set name="title" value="Bounce Scorecard" -->
+
+<p id="breadcrumbs">
+    <a href="<!-- tmpl_var Plugin_URL -->">
+        <!-- tmpl_var Program_Name -->
+    </a> &#187; Scorecard
+</p>
+<!-- tmpl_if num_rows --> 
+	<!-- tmpl_var scorecard --> 
+<!-- tmpl_else --> 
+	<p class="error">
+	 Currently, there are no bounced addresses saved in the scorecard.
+</p>
+<!-- /tmpl_if --> 
+
+EOF
+; 
 }
 
 
+sub cgi_show_plugin_config {
 
-sub cgi_show_plugin_config { 
-
-
-     	print(admin_template_header(
-							-Title      => $Plugin_Config->{Program_Name} . " Plugin Configuration",
-		                    -List       => $list,
-		                    -Form       => 0,
-		                    -Root_Login => $root_login
-		                    ));
-	
-	my $tmpl = cgi_show_plugin_config_template(); 
-	my $template = HTML::Template->new(%Global_Template_Options,
-									   scalarref => \$tmpl, 
-											);
-    
-    my $configs = []; 
-    foreach(sort keys %$Plugin_Config){ 
-        if($_ eq 'Password'){ 
-            push(@$configs, {name => $_, value => '(Not Shown)'});
+    my $configs = [];
+    foreach ( sort keys %$Plugin_Config ) {
+        if ( $_ eq 'Password' ) {
+            push( @$configs, { name => $_, value => '(Not Shown)' } );
         }
-        else { 
-            push(@$configs, {name => $_, value => $Plugin_Config->{$_}}); 
+        else {
+            push( @$configs, { name => $_, value => $Plugin_Config->{$_} } );
         }
     }
-    $template->param( 
-    
-        Plugin_URL            => $Plugin_Config->{Plugin_URL}, 
-        Program_Name => $Plugin_Config->{Program_Name}, 
-        configs             => $configs, 
-     
+
+    require DADA::Template::Widgets;
+    my $tmpl = cgi_show_plugin_config_template();
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -data           => \$tmpl,
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+            -vars => {
+                Plugin_URL   => $Plugin_Config->{Plugin_URL},
+                Program_Name => $Plugin_Config->{Program_Name},
+                configs      => $configs,
+            },
+        }
     );
-	                
-	print $template->output();
-
-    print admin_template_footer(-Form    => 0, 
-                                -List    => $list,
-                                ); 
-
-
-
+	e_print($scrn); 
 }
 
 
@@ -1650,9 +1653,10 @@ sub cgi_show_plugin_config_template {
     return q{ 
     
     
-    
+    <!-- tmpl_set name="title" value="Plugin Configuration" --> 
+
   <p id="breadcrumbs">
-   <a href="<!-- tmpl_var Plugin_URL -->"> 
+   <a href="<!-- 1586 Plugin_URL -->"> 
    <!-- tmpl_var Program_Name --> 
    </a> 
    
@@ -1663,10 +1667,7 @@ sub cgi_show_plugin_config_template {
    
    
   </p> 
- 
- 
- 
- 
+
         <table> 
         
         <!-- tmpl_loop configs --> 
@@ -1689,164 +1690,161 @@ sub cgi_show_plugin_config_template {
         <!-- /tmpl_loop --> 
  
         </table> 
-        
-    };
-
+     
+};
 
 }
 
 
 
 
-sub cgi_bounce_score_search { 
-
+sub cgi_bounce_score_search {
 
     #TODO DEV: THIS NEEDS ITS OWN METHOD!!!
-    my %l_label; 
-    my @l_lists = available_lists(); 
-    
-    foreach my $l_list( @l_lists ){
-			my $l_ls = DADA::MailingList::Settings->new({-list => $l_list}); 
-			my $l_li = $l_ls->get; 
-			$l_label{$l_list} = $l_li->{list_name}; 
-			
-	}
-	
-	require HTML::Template;
-	
-    require   DADA::App::BounceScoreKeeper; 
-    my $bsk = DADA::App::BounceScoreKeeper->new(-List => $list); 
-   
-    require DADA::App::LogSearch; 
-    
-    my $query = xss_filter($q->param('query')); 
+    my %l_label;
+    my @l_lists = available_lists();
 
-    my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
-    my $ls = DADA::MailingList::Settings->new({-list => $list});
-    my $li = $ls->get; 
-    
-    my $valid_email        = 0; 
-    my $subscribed_address = 0; 
-    if(DADA::App::Guts::check_for_valid_email($query) == 0) {
-        $valid_email = 1; 
-        if( $lh->check_for_double_email(-Email => $query) == 1){ 
-            $subscribed_address = 1; 
+    foreach my $l_list (@l_lists) {
+        my $l_ls = DADA::MailingList::Settings->new( { -list => $l_list } );
+        my $l_li = $l_ls->get;
+        $l_label{$l_list} = $l_li->{list_name};
+
+    }
+
+    require HTML::Template;
+
+    require DADA::App::BounceScoreKeeper;
+    my $bsk = DADA::App::BounceScoreKeeper->new( -List => $list );
+
+    require DADA::App::LogSearch;
+
+    my $query = xss_filter( $q->param('query') );
+
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get;
+
+    my $valid_email        = 0;
+    my $subscribed_address = 0;
+    if ( DADA::App::Guts::check_for_valid_email($query) == 0 ) {
+        $valid_email = 1;
+        if ( $lh->check_for_double_email( -Email => $query ) == 1 ) {
+            $subscribed_address = 1;
         }
     }
-       
 
-    if(!defined($query)){ 
-        $q->redirect(-uri =>  $Plugin_Config->{Plugin_URL} . '?flavor=cgi_scorecard');
+    if ( !defined($query) ) {
+        $q->redirect(
+            -uri => $Plugin_Config->{Plugin_URL} . '?flavor=cgi_scorecard' );
         return;
     }
-  
-    
-    my $searcher = DADA::App::LogSearch->new; 
-    my $results  = $searcher->search({
-        -query => $query,
-        -files => [$Plugin_Config->{Log}], 
-    });
-    
-    my $search_results = []; 
-    my $results_found  = 0;
-    
 
-    if($results->{$Plugin_Config->{Log}}->[0]){ 
-    
-        $results_found = 1; 
-        
-        foreach my $l(@{$results->{$Plugin_Config->{Log}}}){ 
-        
-            my @entries = split("\t", $l, 5); # Limit of 5
-            
+    my $searcher = DADA::App::LogSearch->new;
+    my $results  = $searcher->search(
+        {
+            -query => $query,
+            -files => [ $Plugin_Config->{Log} ],
+        }
+    );
+
+    my $search_results = [];
+    my $results_found  = 0;
+
+    if ( $results->{ $Plugin_Config->{Log} }->[0] ) {
+
+        $results_found = 1;
+
+        foreach my $l ( @{ $results->{ $Plugin_Config->{Log} } } ) {
+
+            my @entries = split( "\t", $l, 5 );    # Limit of 5
+
             # Let us try to munge the data!
-            
+
             # Date!
             $entries[0] =~ s/^\[|\]$//g;
-            $entries[0] = $searcher->html_highlight_line({-query => $query, -line => $entries[0] }); 
-            
+            $entries[0] = $searcher->html_highlight_line(
+                { -query => $query, -line => $entries[0] } );
+
             # ListShortName!
-            $entries[1] = $searcher->html_highlight_line({-query => $query, -line => $entries[1] }); 
-            
-            # Action Taken! 
-            $entries[2] = $searcher->html_highlight_line({-query => $query, -line => $entries[2] }); 
-          
-            # Email Address! 
-            $entries[3] = $searcher->html_highlight_line({-query => $query, -line => $entries[3] }); 
-            
-            
-            my @diags        = split(",", $entries[4]); 
+            $entries[1] = $searcher->html_highlight_line(
+                { -query => $query, -line => $entries[1] } );
+
+            # Action Taken!
+            $entries[2] = $searcher->html_highlight_line(
+                { -query => $query, -line => $entries[2] } );
+
+            # Email Address!
+            $entries[3] = $searcher->html_highlight_line(
+                { -query => $query, -line => $entries[3] } );
+
+            my @diags = split( ",", $entries[4] );
             my $labeled_digs = [];
-            
-            foreach my $diag(@diags) { 
-                my ($label, $value) = split(":", $diag); 
-                
-                push(@$labeled_digs, 
+
+            foreach my $diag (@diags) {
+                my ( $label, $value ) = split( ":", $diag );
+
+                push(
+                    @$labeled_digs,
                     {
-                        diagnostic_label => $searcher->html_highlight_line({-query => $query, -line => $label }), 
-                        diagnostic_value => $searcher->html_highlight_line({-query => $query, -line => $value }), 
-                       
+                        diagnostic_label => $searcher->html_highlight_line(
+                            { -query => $query, -line => $label }
+                        ),
+                        diagnostic_value => $searcher->html_highlight_line(
+                            { -query => $query, -line => $value }
+                        ),
+
                     }
-                ); 
-            
+                );
+
             }
-            
-            push(@$search_results, 
-                { 
-                date        => $entries[0], 
-                list        => $entries[1],
-                list_name   => $l_label{ $entries[1] },
-                action      => $entries[2], 
-                email       => $entries[3], 
-                
-                diagnostics =>  $labeled_digs, 
-                
-                
+
+            push(
+                @$search_results,
+                {
+                    date      => $entries[0],
+                    list      => $entries[1],
+                    list_name => $l_label{ $entries[1] },
+                    action    => $entries[2],
+                    email     => $entries[3],
+
+                    diagnostics => $labeled_digs,
+
                 }
             );
 
         }
     }
-    else { 
-        
-        $results_found = 0; 
-    
+    else {
+
+        $results_found = 0;
+
     }
-   
-       
-       
-  	print(admin_template_header(
-							-Title      => "Bounce Log Search Results",
-		                    -List       => $list,
-		                    -Form       => 0,
-		                    -Root_Login => $root_login
-		                    ));
-	
-	my $tmpl = cgi_bounce_score_search_template(); 
-	my $template = HTML::Template->new(%Global_Template_Options,
-									   scalarref => \$tmpl, 
-											);
-    $template->param( 
-        query               => $query, 
-        list_name           => $li->{list_name}, 
-        subscribed_address  => $subscribed_address, 
-        valid_email         => $valid_email, 
-        search_results      => $search_results, 
-        results_found       => $results_found,     
-        
-        S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL, 
-        Plugin_URL            => $Plugin_Config->{Plugin_URL}, 
-        Program_Name => $Plugin_Config->{Program_Name},
+
+    my $tmpl = cgi_bounce_score_search_template();
+
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::screen(
+        -data           => \$tmpl,
+        -with           => 'admin',
+        -wrapper_params => {
+            -Root_Login => $root_login,
+            -List       => $list,
+        },
+        -vars => {
+            query              => $query,
+            list_name          => $li->{list_name},
+            subscribed_address => $subscribed_address,
+            valid_email        => $valid_email,
+            search_results     => $search_results,
+            results_found      => $results_found,
+
+            S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL,
+            Plugin_URL    => $Plugin_Config->{Plugin_URL},
+            Program_Name  => $Plugin_Config->{Program_Name},
+          }
+
     );
-	                
-	print $template->output();
-
-
-
-    print admin_template_footer(-Form    => 0, 
-                                -List    => $list,
-                                ); 
-    
+    e_print($scrn);
 }
 
 
@@ -1854,12 +1852,10 @@ sub cgi_bounce_score_search {
 
 sub cgi_bounce_score_search_template { 
 
-
-  
-
 my $template = q{
 
-
+	<!-- tmpl_set name="title" value="Bounce Log Search Results" --> 
+	
   <p id="breadcrumbs">
    <a href="<!-- tmpl_var Plugin_URL -->"> 
    <!-- tmpl_var Program_Name --> 

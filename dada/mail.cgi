@@ -8524,33 +8524,21 @@ sub setup_info {
             push( @$CONFIG_vals, { name => $orig_name, value => $var_val } );
         }
 
-        my $scrn = '';
-        if ( $from_control_panel == 1 ) {
-            $scrn .= admin_template_header(
-                -Title      => "Setup Information",
-                -List       => $admin_list,
-                -Root_Login => $root_login
-            );
-
-        }
-        else {
-			# we're going to hold up on this on, until I get wrapping done for 
-			# Admin stuff. 
-            $scrn .= list_template(
-                -Part  => "header",
-                -Title => "Setup Information",
-                -vars  => {
-                    PROGRAM_URL         => $DADA::Config::PROGRAM_URL,
-                    S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL,
-                    show_profile_widget => 0,
-                }
-            );
-        }
-
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'setup_info_screen.tmpl',
+				(
+					$from_control_panel == 1 ? (
+						-with           => 'admin',
+			            -wrapper_params => {
+			                -Root_Login => $root_login,
+			                -List       => $list,
+			            },
+					) : (
+						-with => 'list', 
+					)
+				),
                 -vars   => {
                     FILES => $DADA::Config::FILES,
                     PROGRAM_ROOT_PASSWORD =>
@@ -8568,12 +8556,6 @@ sub setup_info {
                 },
             }
         );
-        if ( $from_control_panel == 1 ) {
-            $scrn .= admin_template_footer( -List => $admin_list );
-        }
-        else {
-            $scrn .= list_template( -Part => "footer" );
-        }
         e_print($scrn);
 
     }
@@ -8597,22 +8579,11 @@ sub setup_info {
             ;    # default.
 
             my $incorrect_root_password = $root_password ? 1 : 0;
-
-            my $scrn = '';
-            $scrn .= list_template(
-                -Part  => 'header',
-                -Title => 'Setup Information',
-                -vars  => {
-                    PROGRAM_URL         => $DADA::Config::PROGRAM_URL,
-                    S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL,
-                    show_profile_widget => 0,
-                },
-            );
-
             require DADA::Template::Widgets;
-            $scrn .= DADA::Template::Widgets::screen(
+            my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen => 'setup_info_login_screen.tmpl',
+					-with   => 'list', 
                     -vars   => {
                         program_url_guess       => $guess,
                         incorrect_root_password => $incorrect_root_password,
@@ -8621,12 +8592,6 @@ sub setup_info {
                     },
                 }
             );
-
-            $scrn .= list_template(
-                -Part     => 'footer',
-                -End_Form => 0
-            );
-
             e_print($scrn);
         }
 
