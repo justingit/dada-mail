@@ -2076,10 +2076,7 @@ sub hack_in_tmpl_set_support {
 					#	<!-- set name="one" value="two" -->
     my @taglist = $$text_ref =~ m/$match/gi;
     while (@taglist) {
-        my ( $t, $v ) = ( shift @taglist, shift @taglist );
-		warn '$t ' . $t; 
-		warn '$v ' . $v; 
-		
+        my ( $t, $v ) = ( shift @taglist, shift @taglist );		
         $_ht_tmpl_set_params{$t} = $v;
     }
     $$text_ref =~ s/$match//gi;

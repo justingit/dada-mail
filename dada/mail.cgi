@@ -820,7 +820,7 @@ sub default {
         }
 
         require DADA::Template::Widgets;
-        my $scrn .= DADA::Template::Widgets::wrap_screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'congrats_screen.tmpl',
 				-with   => 'list', 
@@ -938,7 +938,7 @@ sub sign_in {
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
         my $li = $ls->get;
 
-        my $scrn .= DADA::Template::Widgets::wrap_screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'list_login_form.tmpl',
                 -with   => 'list',
@@ -1307,7 +1307,7 @@ sub sending_monitor {
 
             require DADA::Template::Widgets;
 
-		my $scrn .= DADA::Template::Widgets::wrap_screen(
+		my $scrn = DADA::Template::Widgets::wrap_screen(
 				{
 					-screen => 'sending_monitor_index_screen.tmpl',
 	                -with   => 'admin', 
@@ -1722,7 +1722,7 @@ sub change_password {
 
     if(!$process) {
         require DADA::Template::Widgets;
-        my $scrn .=   DADA::Template::Widgets::wrap_screen(
+        my $scrn =   DADA::Template::Widgets::wrap_screen(
 					{
 						-screen => 'change_password_screen.tmpl',
 						-with   => 'admin', 
@@ -1837,7 +1837,7 @@ sub delete_list {
 
         my $logout_cookie = logout(-redirect => 0);
         require DADA::Template::Widgets;
-        my $scrn .=   DADA::Template::Widgets::wrap_screen(
+        my $scrn =   DADA::Template::Widgets::wrap_screen(
 			{
 				-screen => 'delete_list_success_screen.tmpl',
                 -with   => 'list',  
@@ -1947,8 +1947,8 @@ sub list_options {
 
         $list = $admin_list;
 
- 	   require DADA::Template::Widgets;
-	   my $scrn .= DADA::Template::Widgets::wrap_screen(
+ 	   require    DADA::Template::Widgets;
+	   my $scrn = DADA::Template::Widgets::wrap_screen(
 	        {
 	            -screen => 'list_options_screen.tmpl',
 				-with   => 'admin', 
@@ -2128,8 +2128,8 @@ sub sending_preferences {
 			$no_smtp_server_set = 1;
          }
 
-        require DADA::Template::Widgets;
-        my $scrn .= DADA::Template::Widgets::wrap_screen(
+        require    DADA::Template::Widgets;
+        my $scrn = DADA::Template::Widgets::wrap_screen(
 			{
 				-screen         => 'sending_preferences_screen.tmpl',
 				-with           => 'admin', 
@@ -6727,7 +6727,7 @@ sub new_list {
 										-empty_list_check => 1,
 									);
 
-            my $scrn .= DADA::Template::Widgets::wrap_screen(
+            my $scrn = DADA::Template::Widgets::wrap_screen(
 				{
 					-screen => 'new_list_screen.tmpl',
 					-with   => 'list', 
@@ -7116,18 +7116,10 @@ sub archive {
 		    );
 		}
 
-        my $scrn = (
-            list_template(
-                -Part => "header",
-                ,
-                -Title => $li->{list_name} . " Archives",
-                -List  => $li->{list}
-            )
-        );
-
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'archive_index_screen.tmpl',
+				-with   => 'list', 
                 -vars   => {
                     list                     => $list,
                     list_name                => $li->{list_name},
@@ -7145,23 +7137,9 @@ sub archive {
 
             }
         );
-        $scrn .= (
-            list_template(
-                -Part      => "footer",
-                -End_Form  => 0,
-                -List      => $li->{list},
-                -Site_Name => $li->{website_name},
-                -Site_URL  => $li->{website_url}
-            )
-        );
-
         e_print($scrn);
 
-        if (!$c->profile_on
-		#&&
-	  	#	$li->{archive_send_form} != 1
-        #    && $li->{captcha_archive_send_form} != 1
-		)
+        if (!$c->profile_on)
         {
             $c->cache( 'archive/' . $list . '/' . $start . '.scrn', \$scrn );
 
@@ -7222,13 +7200,6 @@ sub archive {
         $subject = $archive->_parse_in_list_info( -data => $subject );
 
         # That. Sucked.
-
-        my $scrn = list_template(
-            -Part  => "header",
-            -Title => $subject,
-            -List  => $li->{list},
-
-        );
 
         my ( $massaged_message_for_display, $content_type ) =
           $archive->massaged_msg_for_display( -key => $id, -body_only => 1 );
@@ -7339,9 +7310,10 @@ sub archive {
             }
         }
 
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'archive_screen.tmpl',
+				-with   => 'list', 
                 -vars   => {
                     list      => $list,
                     list_name => $li->{list_name},
@@ -7389,17 +7361,6 @@ sub archive {
                 -list_settings_vars_param => { -dot_it => 1 },
             }
         );
-        $scrn .= (
-            list_template(
-                -Part      => "footer",
-                -End_Form  => 0,
-                -List      => $li->{list},
-                -Site_Name => $li->{website_name},
-                -Site_URL  => $li->{website_url},
-
-            )
-        );
-
         e_print($scrn);
 
         if (!$c->profile_on &&
@@ -7596,44 +7557,29 @@ sub search_archive {
 
     }
 
-    my $scrn;
-
-    $scrn = (list_template(-Part       => "header",
-                       -Title      => "Archive Search Results",
-                       -List       => $li->{list},
-                       ,
-                       ));
-
-
     require DADA::Template::Widgets;
-    $scrn .= DADA::Template::Widgets::screen({-screen => 'search_archive_screen.tmpl',
-                                          -vars => {
-                                                   list_name              => $li->{list_name},
-                                                    uriescape_list         => uriescape($list),
-                                                    list                   => $list,
-                                                    count                  => $count,
-                                                    ending                 => $ending,
-                                                    keyword                => $keyword,
-
-                                                    summaries              => $ht_summaries,
-
-                                                    search_results         => $ht_summaries->[0] ? 1 : 0,
-                                                    search_form            => $search_form,
-                                                    archive_subscribe_form => $archive_subscribe_form,
-                                                    },
-											-list_settings_vars_param => {
-													-list   => $list,
-													-dot_it => 1,
-											},
-                                        });
-
-    $scrn .= (list_template(-Part      => "footer",
-                   -List      => $li->{list},
-                   -Site_Name => $li->{website_name},
-                   -Site_URL  => $li->{website_url},
-                   -End_Form  => 0,
-                   ));
-
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+		{
+			-screen => 'search_archive_screen.tmpl',
+			-with   => 'list',
+			-vars => {
+				list_name              => $li->{list_name},
+				uriescape_list         => uriescape($list),
+				list                   => $list,
+				count                  => $count,
+				ending                 => $ending,
+				keyword                => $keyword,
+				summaries              => $ht_summaries,
+				search_results         => $ht_summaries->[0] ? 1 : 0,
+				search_form            => $search_form,
+				archive_subscribe_form => $archive_subscribe_form,
+			},
+			-list_settings_vars_param => {
+				-list   => $list,
+				-dot_it => 1,
+			},
+			}
+	);
     e_print($scrn);
 
     if(!$c->profile_on && $keyword =~ m/^[A-Za-z]+$/){ # just words, basically.
@@ -8042,7 +7988,7 @@ sub email_password {
     sleep(10);
 
     require DADA::Template::Widgets;
-	my $scrn .=   DADA::Template::Widgets::wrap_screen(
+	my $scrn =   DADA::Template::Widgets::wrap_screen(
 		{
 			-screen => 'list_password_confirmation_screen.tmpl',
 			-with   => 'list', 
@@ -8412,7 +8358,7 @@ sub pass_gen {
 
     if ( !$pw ) {
 
-        my $scrn .= DADA::Template::Widgets::wrap_screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'pass_gen_screen.tmpl',
                 -with   => 'list',
@@ -8426,7 +8372,7 @@ sub pass_gen {
     else {
 
         require DADA::Security::Password;
-        my $scrn .= DADA::Template::Widgets::wrap_screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'pass_gen_process_screen.tmpl',
                 -with   => 'list',
@@ -8639,7 +8585,6 @@ sub reset_cipher_keys {
 }
 
 
-
 sub restore_lists {
 
     if ( root_password_verification( $q->param('root_password') ) ) {
@@ -8698,17 +8643,13 @@ sub restore_lists {
                         $q->param( 'schedules_' . $r_list . '_version' ) );
                 }
             }
-
-            my $scrn = '';
-            $scrn .= list_template(
-                -Part  => "header",
-                -Title => "Restore List Information - Complete"
+            require DADA::Template::Widgets;
+            my $scrn = DADA::Template::Widgets::wrap_screen(
+                {
+                    -screen => 'restore_lists_complete.tmpl',
+                    -with   => 'list',
+                }
             );
-            $scrn .= $q->p("List Information Restored.");
-            $scrn .= $q->p(
-"<a href=$DADA::Config::PROGRAM_URL>Return to the $DADA::Config::PROGRAM_NAME main page.</a>"
-            );
-            $scrn .= list_template( -Part => "footer" );
             e_print($scrn);
 
         }
@@ -8735,12 +8676,6 @@ sub restore_lists {
                 $backup_hist->{$_}->{schedules} = $mss->backupDirs
                   if $mss->uses_backupDirs;
             }
-
-            my $scrn = '';
-            $scrn .= list_template(
-                -Part  => "header",
-                -Title => "Restore List Information"
-            );
 
             my $restore_list_options = '';
 
@@ -8832,10 +8767,10 @@ sub restore_lists {
                                 (
                                     $q->p(
                                         $q->checkbox(
-                                            -name => 'restore_'
+                                            -name => 'restore_' 
                                               . $f_list . '_'
                                               . $_,
-                                            -id => 'restore_'
+                                            -id => 'restore_' 
                                               . $f_list . '_'
                                               . $_,
                                             -value => 1,
@@ -8856,7 +8791,7 @@ sub restore_lists {
                                     (
                                         $q->p(
                                             $q->popup_menu(
-                                                -name => $_ . '_'
+                                                -name => $_ . '_' 
                                                   . $f_list
                                                   . '_version',
                                                 '-values' => $vals,
@@ -8874,7 +8809,7 @@ sub restore_lists {
                                             '-- No Backup Information Found --'
                                         ),
                                         $q->hidden(
-                                            -name => $_ . '_'
+                                            -name => $_ . '_' 
                                               . $f_list
                                               . '_version',
                                             -value => 'just_remove_blank'
@@ -8889,9 +8824,10 @@ sub restore_lists {
             }
 
             require DADA::Template::Widgets;
-            $scrn .= DADA::Template::Widgets::screen(
+            my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen => 'restore_lists_options_screen.tmpl',
+                    -with   => 'list',
                     -vars   => {
                         restore_list_options => $restore_list_options,
                         root_password =>
@@ -8899,8 +8835,6 @@ sub restore_lists {
                     }
                 }
             );
-
-            $scrn .= list_template( -Part => "footer" );
             e_print($scrn);
 
         }
@@ -8908,18 +8842,13 @@ sub restore_lists {
     }
     else {
         require DADA::Template::Widgets;
-        my $scrn = '';
-        $scrn .= list_template(
-            -Part  => "header",
-            -Title => "Restore List Information"
-        );
-        $scrn .= DADA::Template::Widgets::screen(
-            { -screen => 'restore_lists_screen.tmpl', } );
-        $scrn .= list_template( -Part => "footer" );
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            { -screen => 'restore_lists_screen.tmpl', -with => 'list', } );
         e_print($scrn);
     }
 
 }
+
 
 sub subscription_form {
 
@@ -9358,7 +9287,7 @@ sub profile_login {
 			}
 
    		    require DADA::Template::Widgets;
-		    $scrn .=  DADA::Template::Widgets::wrap_screen(
+		    $scrn =  DADA::Template::Widgets::wrap_screen(
 				{
 					-screen => 'profile_login.tmpl',
 					-with   => 'list', 
@@ -9487,7 +9416,7 @@ sub profile_register {
 		);
 		my $scrn = '';
 	    require DADA::Template::Widgets;
-	    $scrn .=  DADA::Template::Widgets::wrap_screen(
+	    $scrn =  DADA::Template::Widgets::wrap_screen(
 			{
 				-screen => 'profile_register.tmpl',
 				-with   => 'list', 
@@ -9559,9 +9488,8 @@ sub profile_help {
 		return;
 	}
 
-	my $scrn = '';
     require DADA::Template::Widgets;
-    $scrn .=  DADA::Template::Widgets::wrap_screen(
+    my $scrn =  DADA::Template::Widgets::wrap_screen(
 		{
 			-with   => 'list', 
 			-screen => 'profile_help.tmpl',
@@ -9716,7 +9644,7 @@ sub profile {
 				my $info = $prof->get({-dotted => 1});
 				my $scrn = '';
 			    require DADA::Template::Widgets;
-			    $scrn .=  DADA::Template::Widgets::wrap_screen(
+			    $scrn =  DADA::Template::Widgets::wrap_screen(
 					{
 						-with   => 'list', 
 						-screen => 'profile_update_email_auth_send.tmpl',
@@ -9890,9 +9818,8 @@ sub profile_reset_password {
 			);
 			if($status == 1){
 				if(!$password){
-					my $scrn = '';
 				    require DADA::Template::Widgets;
-				    $scrn .=  DADA::Template::Widgets::wrap_screen(
+				    my $scrn =  DADA::Template::Widgets::wrap_screen(
 						{
 							-screen => 'profile_reset_password.tmpl',
 							-with   => 'list', 
@@ -9943,10 +9870,8 @@ sub profile_reset_password {
 
 				$prof->send_profile_reset_password_email();
 				$prof->activate;
-
-				my $scrn = '';
 			    require DADA::Template::Widgets;
-			    $scrn .=  DADA::Template::Widgets::wrap_screen(
+			    my $scrn =  DADA::Template::Widgets::wrap_screen(
 					{
 						-screen => 'profile_reset_password_confirm.tmpl',
 						-with   => 'list', 
@@ -10055,7 +9980,7 @@ sub profile_update_email {
 			# I should probably also just, log this person in...
 
 			require DADA::Template::Widgets;
-			 my $scrn .= DADA::Template::Widgets::wrap_screen(
+			 my $scrn = DADA::Template::Widgets::wrap_screen(
 					{
 						-screen => 'profile_update_email_confirm.tmpl',
 						-with   => 'list', 
@@ -10071,8 +9996,8 @@ sub profile_update_email {
 	}
 	else {
 		
-		require DADA::Template::Widgets;
-		my $scrn .= DADA::Template::Widgets::wrap_screen(
+		require    DADA::Template::Widgets;
+		my $scrn = DADA::Template::Widgets::wrap_screen(
 				{
 					-screen => 'profile_update_email_error.tmpl',
 					-vars   => {
@@ -10086,10 +10011,8 @@ sub profile_update_email {
 
 sub what_is_dada_mail {
 
-
-	my $scrn = '';
     require DADA::Template::Widgets;
-    $scrn .=  DADA::Template::Widgets::wrap_screen(
+    my $scrn =  DADA::Template::Widgets::wrap_screen(
 		{
 			-screen => 'what_is_dada_mail.tmpl'
 			-with   => 'list', 
