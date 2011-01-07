@@ -48,16 +48,15 @@ sub run {
     if ( !$q->param('process') ) {
         my $tmpl = default_template();
 
-        my $scrn;
-        $scrn = admin_template_header(
-            -Title      => "MX Lookup Verification",
-            -List       => $list_info->{list},
-            -Form       => 0,
-            -Root_Login => $root_login
-        );
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn .= DADA::Template::Widgets::wrap_screen(
             {
                 -data => \$tmpl,
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+
                 -vars => { Plugin_URL => $Plugin_Config->{Plugin_URL}, },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -65,7 +64,6 @@ sub run {
                 },
             }
         );
-        $scrn .= admin_template_footer( -List => $list, -Form => 0 );
         e_print($scrn);
     }
     else {
@@ -96,16 +94,14 @@ sub run {
         #
         ###################################################################
         my $tmpl = process_template();
-        my $scrn;
-        $scrn = admin_template_header(
-            -Title      => "MX Lookup Verification",
-            -List       => $list_info->{list},
-            -Form       => 0,
-            -Root_Login => $root_login
-        );
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn .= DADA::Template::Widgets::wrap_screen(
             {
                 -data => \$tmpl,
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
                 -vars => {
                     passed_report => $passed_report,
                     failed_report => $failed_report,
@@ -117,7 +113,6 @@ sub run {
                 },
             }
         );
-        $scrn .= admin_template_footer( -List => $list, -Form => 0 );
         e_print($scrn);
 
     }
@@ -127,6 +122,8 @@ sub run {
 sub default_template {
 
     return <<EOF
+
+<!-- tmpl_set name="title" value="MX Lookup Verification" -->
 
 <!-- tmpl_unless list_settings.mx_check --> 
 	<p>Warning! mx lookup has not been enabled! <strong><a href="S_PROGRAM_URL -->?f=list_options">Enable...</a></strong> 
@@ -168,6 +165,7 @@ sub process_template {
 
     return <<EOF
 
+	<!-- tmpl_set name="title" value="MX Lookup Verification" -->
 
 <p>The following emails passed mx lookup verification:</p> 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 

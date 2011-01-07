@@ -1772,9 +1772,6 @@ deals with errors from a CGI interface
 
 sub user_error {
 
-    #$list = $admin_list unless $list;
-    # my $error = shift;
-
     my %args = (
         -List          => undef,
         -Error         => undef,

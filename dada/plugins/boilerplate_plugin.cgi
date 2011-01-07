@@ -32,29 +32,44 @@ sub run {
 	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
 	my $li = $ls->get; 
                              
-	# header     
-	print(admin_template_header(
-		-Title      => "Admin Plugin Example",
-	    -List       => $li->{list},
-	    -Root_Login => $root_login)
-	);
-	               
+	my $data = '';               
 	if(!$q->param('process')){ 
 
-	print $q->p('I echo whatever you type in:') . 
-	      $q->start_form()                                        . 
-	      $q->textfield('echo')                                   . 
-		  $q->hidden('process', 'true')                           .
-		  $q->submit('echo away!')                                .
-		  $q->end_form(); 
+	$data = <<EOF
+
+<!-- tmpl_set name="title" value="	Admin Plugin Example" -->
+<p>I echo whatever you type in:</p> 
+<form> 
+<input type="text" name="echo" /> 
+<input type="hidden" name="process" value="true" /> 
+<input type="submit" value="echo away!" /> 
+</form> 
+
+EOF
+;
+
 	}else{ 
 
-		print $q->h1($q->escapeHTML($q->param('echo'))); 
-	}
+		my $escape = $q->escapeHTML($q->param('echo'));
+		$data = <<EOF
+<!-- tmpl_set name="title" value="	Admin Plugin Example" -->
+<h1>Results:</h1>
+<p>$escape</p>  		
+EOF
+; 
 
-	#footer
-	print admin_template_footer(
-		-List => $list
+}
+
+	require DADA::Template::Widgets; 
+	my $scrn = DADA::Template::Widgets::wrap_screen(
+		{ 
+			-data           => \$data,
+			-with           => 'admin', 
+			-wrapper_params => { 
+				-Root_Login => $root_login,
+				-List       => $list,  
+			},
+		}
 	); 
 
 }

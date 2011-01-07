@@ -88,21 +88,11 @@ sub view {
     my $list = $admin_list;
 
     my $file_list = $c->cached_screens();
-    my $scrn      = '';
-
-    $scrn = admin_template_header(
-        -Title      => "Screen Cache",
-        -List       => $list,
-        -Root_Login => $root_login,
-        -Form       => 0,
-
-    );
 
     my $app_file_list = [];
 
     foreach my $entry (@$file_list) {
         my $cutoff_name = $entry->{name};
-
         my $l    = length($cutoff_name);
         my $size = 50;
         my $take = $l < $size ? $l : $size;
@@ -120,9 +110,14 @@ sub view {
 
     require DADA::Template::Widgets;
 	my $view_template = view_template();
-    $scrn .= DADA::Template::Widgets::screen(
+    my $scrn = DADA::Template::Widgets::wrap_screen(
         {
 			-data => \$view_template, 
+			-with           => 'admin', 
+			-wrapper_params => { 
+				-Root_Login => $root_login,
+				-List       => $list,  
+			},
             -vars   => {
 				Plugin_URL          => $Plugin_Config->{Plugin_URL}, 
 				Allow_Manual_Run    => $Plugin_Config->{Allow_Manual_Run},  
@@ -133,8 +128,6 @@ sub view {
             },
         }
     );
-
-    $scrn .= admin_template_footer( -List => $list, );
     e_print($scrn);
 
 }
@@ -176,6 +169,8 @@ sub view_template {
 return q{ 
 	<!-- begin clear_screen_cache.tmpl --> 
 
+	<!-- tmpl_set name="title" value="Screen Cache" -->
+	
 		<p>Screen Caching is currently <strong>
 	<!-- tmpl_if cache_active --> 
 

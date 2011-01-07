@@ -129,25 +129,18 @@ sub send_email {
 	if(! $process){
   
 		my ($num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued)  = $self->mass_mailout_info($list);    
-            my $scrn = ''; 
-            $scrn .= admin_template_header(
-						-Title      => "Send a Message", 
-						-List       => $list, 
-						-Root_Login => $root_login,
-						-Form       => 0, 
-					); 
-
-            require  DADA::Template::Widgets;
-			$scrn .= DADA::Template::Widgets::screen(
+            require    DADA::Template::Widgets;
+			my $scrn = DADA::Template::Widgets::wrap_screen(
 						{
-							-screen     => 'send_email_screen.tmpl', 
-							-vars       =>  {
-								
+							-screen         => 'send_email_screen.tmpl', 
+							-with           => 'admin', 
+							-wrapper_params => { 
+								-Root_Login => $root_login,
+								-List       => $list,  
+							},
+							-vars       =>  {								
 								screen                     => 'send_email', 
-								title                      => 'Send a Message',
-								
 								flavor                     => $flavor,
-
 								priority_popup_menu        => DADA::Template::Widgets::priority_popup_menu($li),
 								precendence_popup_menu     => DADA::Template::Widgets::precendence_popup_menu($li),
 								type                       => 'list', 
@@ -156,15 +149,12 @@ sub send_email {
 								can_have_subscriber_fields => $lh->can_have_subscriber_fields, 
 								# I don't really have this right now...
 								#  apply_list_template_to_html_msgs => $li->{apply_list_template_to_html_msgs} ? $li->{apply_list_template_to_html_msgs} : 0,
-								
 								MAILOUT_AT_ONCE_LIMIT      => $DADA::Config::MAILOUT_AT_ONCE_LIMIT, 
 								mailout_will_be_queued     => $mailout_will_be_queued, 
 								num_list_mailouts          => $num_list_mailouts, 
 								num_total_mailouts         => $num_total_mailouts, 
 								active_mailouts            => $active_mailouts,
-								
 								global_list_sending_checkbox_widget => DADA::Template::Widgets::global_list_sending_checkbox_widget($list), 
-								
 							}, 
 							-list_settings_vars       => $ls->params, 
 							-list_settings_vars_param => 
@@ -172,9 +162,7 @@ sub send_email {
 								-dot_it => 1, 
 							},
 						}
-			);                
-            $scrn .= admin_template_footer(-List => $list, -Form => 0);
-            
+			);                            
 			if($args->{-html_output} == 1){ 
 				e_print($scrn); 
   			}
@@ -515,24 +503,18 @@ sub send_url_email {
         
 		my ($num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued)  = $self->mass_mailout_info($list);
 
-
-        my $scrn = '';          
-        $scrn .= admin_template_header(     
-              -Title       => "Send a Webpage", 
-              -List        => $list,
-              -Root_Login  => $root_login,
-        );
-
         require DADA::Template::Widgets;
-
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
 				 	{
 						-screen => 'send_url_email_screen.tmpl',
+						-with           => 'admin', 
+						-wrapper_params => { 
+							-Root_Login => $root_login,
+							-List       => $list,  
+						},
 						-vars       =>  {
 							
-							screen                           => 'send_url_email', 
-							title                            => 'Send a Webpage', 
-							
+							screen                           => 'send_url_email', 							
 							can_use_mime_lite_html           => $can_use_mime_lite_html,
 							mime_lite_html_error             => $mime_lite_html_error, 
 							can_use_lwp_simple               => $can_use_lwp_simple, 
@@ -560,8 +542,6 @@ sub send_url_email {
 							},
    						}
 					); 
-
-        $scrn .= admin_template_footer(-List => $list );
         e_print($scrn); 
 
     }else{ 
@@ -899,27 +879,22 @@ sub list_invite {
 			
 	    }
 	     
-	    my $scrn = ''; 
-        $scrn .= admin_template_header(-Title      => "Invitations", 
-                                -List       => $list, 
-                                -Root_Login => $root_login);
-                                
-            
         require DADA::Template::Widgets;
-        $scrn .=   DADA::Template::Widgets::screen(
+        my $scrn =   DADA::Template::Widgets::wrap_screen(
 					{
 						-screen => 'list_invite_screen.tmpl', 
-						-vars   => {	
-							
+						-with           => 'admin', 
+						-wrapper_params => { 
+							-Root_Login => $root_login,
+							-List       => $list,  
+						},
+						-vars   => {						
 							screen                        => 'add',
-							title                         => 'Invitations',						
 							list_type_isa_list             => 1, # I think this only works with Subscribers at the moment, so no need to do a harder check... 
 							# This is sort of weird, as it default to the "Send a Message" Subject
 							Subject                        => $ls->param('invite_message_subject'), 
 							field_names                    => $field_names, 
 							verified_addresses             => $verified_addresses, 
-							#invite_message_html_js_escaped => js_enc($li->{invite_message_html}),
-							
 							html_message_body_content            => $li->{invite_message_html}, 
 							html_message_body_content_js_escaped => js_enc($li->{invite_message_html}),
 							MAILOUT_AT_ONCE_LIMIT      => $DADA::Config::MAILOUT_AT_ONCE_LIMIT, 
@@ -935,7 +910,6 @@ sub list_invite {
 							}, 
 					}
 				);
-        $scrn .= admin_template_footer(-List => $list);
 		e_print($scrn); 
 		
     }elsif($process =~ m/submit/i){ 

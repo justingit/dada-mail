@@ -1392,13 +1392,7 @@ B<-list_settings_vars> or B<-subscriber_vars>, you can in B<-vars>
 =cut
 
 sub wrap_screen { 
-
-	# So, how does, "wrap_screen" embed variables? 
-	# In other words, how do I show the list name in the title? That's important. 
-
-	# * I could look for template tags (yeah, I'm sure that'll be foolproof) 
-	# and run the variable through that...? (ugh) 
-	
+		
 	my ($args) = @_; 
 
 	if(!exists($args->{-with})){ 
@@ -1413,28 +1407,28 @@ sub wrap_screen {
 	# I'd rather not have this passed to, screen(); 
 	delete $args->{-with}; 
 	
+	# I need params from the first template passed. 
+	$args->{-return_params} = 1; 
+	my ($tmpl, $params) = screen($args);
+	if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1 && $with eq 'list') {
+        $tmpl = $tmpl . $DADA::Template::HTML::HTML_Footer; 
+    }
+	# "content" is passed to the wrapper template
+	my $vars = { 
+		content => $tmpl, 
+	};
+	for(qw(title show_profile_widget)){ 
+		if(exists($params->{$_})){ 
+			# variables within variables... 
+			$vars->{$_} = $params->{$_}; 
+			if($vars->{$_} =~ m/\<\!\-- tmpl_/){
+				$vars->{$_} = screen({-data => \$vars->{$_}, -vars => $params}); 
+			}
+		}
+	}	 
+		
 	if($with eq 'list'){ 
 		
-		# I need params from the first template passed. 
-		$args->{-return_params} = 1; 
-		my ($tmpl, $params) = screen($args);
-		if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1) {
-            $tmpl = $tmpl . $DADA::Template::HTML::HTML_Footer; 
-        }
-		
-		# "content" is passed to the wrapper template
-		my $vars = { 
-			content => $tmpl, 
-		};
-		for(qw(dm_title show_profile_widget)){ 
-			if(exists($params->{$_})){ 
-				# variables within variables... 
-				$vars->{$_} = $params->{$_}; 
-				if($vars->{$_} =~ m/\<\!\-- tmpl_var/){
-					$vars->{$_} = screen({-data => \$vars->{$_}, -vars => $params}); 
-				}
-			}
-		}	 
 		
 		# list_template is the wrapper template - it calls, screen()
 		# This will aggravate you, as I'm aggravated by it - there's 3 ways to send the listshortname to screen()
@@ -1458,17 +1452,25 @@ sub wrap_screen {
 		
 		require DADA::Template::HTML; 	
 		my $template = DADA::Template::HTML::list_template(
-			%{$args->{-wrapper_params}}, # This is currently, "blank"
-			-vars => $vars,				 # This currently only has, "dm_title" and, "content" - everything else should 
+			%{$args->{-wrapper_params}}, # This is currently, "blank" - where is put in here - header_params? 
+			-vars => $vars,				 # This currently only has, "title" and, "content" - everything else should 
 										 # already be filled out. 
 			-Part => 'full', 
 			-List => $list_param, 
-			); 
-			
+			); 			
 		return $template; 
 	}
+	elsif($with eq 'admin'){ 
+		require DADA::Template::HTML; 	
+		my $template = DADA::Template::HTML::admin_template(
+			%{$args->{-wrapper_params}}, 
+			-vars => $vars,				 						 
+			-Part => 'full', 
+			); 			
+		return $template;
+	}
 	else { 
-		die "only 'list' wrapping is currently supported."; 
+		die "only 'list' and 'admin' wrapping is currently supported."; 
 	}
 
 	

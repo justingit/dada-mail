@@ -270,21 +270,10 @@ sub scrn_configure_dada_mail {
 		}	
 	}
 	
-	
-	
-    my $scrn = '';
-    $scrn .= list_template(
-        -Part  => "header",
-        -Title => "Install $DADA::Config::PROGRAM_NAME",
-        -vars  => {
-            show_profile_widget => 0,
-            PROGRAM_URL         => program_url_guess(),
-            S_PROGRAM_URL       => program_url_guess(),
-        }
-    );
-    $scrn .= DADA::Template::Widgets::screen(
+    my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen => 'installer_configure_dada_mail_scrn.tmpl',
+			-with   => 'list', 
             -vars => {
                 program_url_guess              => program_url_guess(),
                 can_use_DBI                    => test_can_use_DBI(),
@@ -315,7 +304,6 @@ sub scrn_configure_dada_mail {
             },
         }
     );
-    $scrn .= list_template( -Part => "footer", );
 
     # Let's get some fancy js stuff!
     $scrn = hack_in_scriptalicious($scrn);
@@ -391,19 +379,10 @@ sub scrn_install_dada_mail {
         }
     );
 
-    my $scrn = '';
-    $scrn .= list_template(
-        -Part  => "header",
-        -Title => "Installing/Configuring $DADA::Config::PROGRAM_NAME",
-        -vars  => { show_profile_widget => 0,
-	        PROGRAM_URL         => program_url_guess(),
-            S_PROGRAM_URL       => program_url_guess(),
- }
-    );
-
-  $scrn .= DADA::Template::Widgets::screen(
+  my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen => 'installer_install_dada_mail_scrn.tmpl',
+			-with   => 'list', 
             -vars => { 
 			 install_log                  => webify_plain_text($log), 
 			 status                       => $status, 
@@ -420,16 +399,7 @@ sub scrn_install_dada_mail {
 	 		}
         }
     );
-
-
-
-    $scrn .= list_template(
-        -Part => "footer",
-        -vars => { show_profile_widget => 0, }
-    );
-
     $scrn = hack_in_scriptalicious($scrn);
-
     e_print($scrn);
 
 }

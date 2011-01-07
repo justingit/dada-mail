@@ -165,6 +165,7 @@ sub admin_template {
 				-li           => undef, 
 				-HTML_Header  => 1, 
 				-Part         => undef, 
+				-vars         => {},
 				@_,
 				); 
 
@@ -245,6 +246,7 @@ sub admin_template {
 												root_login_message  => $root_login_message, 
 												content             => '[_dada_content]',	
 												go_pro              => $go_pro, 
+												%{ $args{ -vars } }, # content, etc
 											}, 
 										-list_settings_vars_param => { 
 																	-list   => $list, 
@@ -256,8 +258,21 @@ sub admin_template {
 								
 
 	my ($admin_header, $admin_footer) = split(/\[_dada_content\]/, $final_admin_template, 2);
-				
-	if($args{-Part} eq 'header'){ 
+	
+	if($args{-Part} eq 'full'){
+		$final_admin_template =~ s/\[_dada_content\]/<!-- tmpl_var content -->/;
+		if ( $args{ -HTML_Header } == 1 ) {
+            return $q->header( 
+				admin_header_params(),
+				)
+              . $final_admin_template;
+        }
+		else { 
+			return $final_admin_template; 
+		}
+		 
+	}
+	elsif($args{-Part} eq 'header'){ 
 			
 		if($args{-HTML_Header} == 1){ 
 			$admin_header = $q->header(
@@ -434,7 +449,7 @@ sub list_template {
     require DADA::Template::Widgets;
     require CGI;
     my $q = CGI->new;
-    $q->charset($DADA::Config::HTML_CHARSET);
+       $q->charset($DADA::Config::HTML_CHARSET);
 
     # DEV: Weird. I know.
     if ( $DADA::Config::PROGRAM_URL eq
@@ -447,12 +462,11 @@ sub list_template {
         -Part          => undef,
         -Title         => undef,
         -HTML_Header   => 1,
-        -header_params => {},
-        -data          => undef, # used? 
+        -header_params => {},	 # this is used only when you delete a list. 
+        -data          => undef, # used in previewing a template.  
         -vars          => {},
         @_,
     );
-
     my $list = undef;
     if ( $args{ -List } ) {
         $list = $args{ -List };
@@ -466,7 +480,7 @@ sub list_template {
 
     my $list_template = undef;
 
-    if ( defined( $args{ -data } ) ) {
+    if ( defined( $args{ -data } ) ) {	
         $list_template = ${ $args{ -data } };
     }
     elsif ($list) {

@@ -1390,17 +1390,15 @@ sub cgi_default {
 		$plugin_configured = 0; 
 	}
 											 
-	print(admin_template_header(
-							-Title      => "Bounce Handling",
-		                    -List       => $list,
-		                    -Form       => 0,
-		                    -Root_Login => $root_login,
-		                    ));
-
 	require DADA::Template::Widgets; 
-	print DADA::Template::Widgets::screen(
+	my $scrn = DADA::Template::Widgets::wrap_screen(
 						{ 
 							-data => \$tmpl, 
+							-with           => 'admin', 
+							-wrapper_params => { 
+								-Root_Login => $root_login,
+								-List       => $list,  
+							},
 							-vars => { 
 									plugin_configured  => $plugin_configured, 
 				 					Username            => $Plugin_Config->{Username} ? $Plugin_Config->{Username} : "<span class=\"error\">Not Set!</span>",
@@ -1429,11 +1427,6 @@ sub cgi_default {
 								}
 						}
 					);
-	                
-	                    
-	print admin_template_footer(-Form    => 0, 
-							-List    => $list,
-						    ); 
 }
 
 
@@ -4788,6 +4781,8 @@ sub default_cgi_template {
 
 return q { 
 
+	<!-- tmpl_set name="title" value="Bounce Handling" -->
+	
      <p id="breadcrumbs">
         
            <!-- tmpl_var Program_Name --> 
