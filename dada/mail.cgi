@@ -1419,10 +1419,16 @@ sub sending_monitor {
 
 				# TODO: 
 				# This needs to be changed so some really strange javascript call...?
-                print $q->redirect(
-						-url => $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&id=' . $id . '&process=restart&type=' . $type . '&restart_count=1'
-						);
-                return;
+                #print $q->redirect(
+				#		-url => $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&id=' . $id . '&process=restart&type=' . $type . '&restart_count=1'
+				#		);
+				my $reload_url = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&id=' . $id . '&process=restart&type=' . $type . '&restart_count=1'; 
+				
+				print $q->header(); 
+                print "<script> 
+						window.location.replace('$reload_url'); 
+					 </script>";
+				return;
 
             } else {
                 $restart_count = 0;

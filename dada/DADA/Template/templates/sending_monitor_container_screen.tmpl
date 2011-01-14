@@ -16,6 +16,7 @@
 			{ 
 			    method: 'post', 
 				frequency: '<!-- tmpl_var refresh_after -->',
+				evalScripts: true, 
 				parameters: {
 					f:            'sending_monitor',
 					process:      'ajax',
@@ -35,18 +36,6 @@
 
 
 <!-- tmpl_include help_link_widget.tmpl -->
-
-<p>
-
-<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=send_email"> 
- Send a Message 
-</a> 
-
-  &#187;
-
-   <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor">
-    Monitor Your Mailings
-  </a>
 
 
 <div id="sending_monitor_ajax"> 
