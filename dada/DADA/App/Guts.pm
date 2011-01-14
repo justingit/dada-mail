@@ -974,8 +974,20 @@ sub html_to_plaintext {
 	eval { require HTML::FormatText::WithLinks; };
 	if(!$@){ 
 	    my $f = HTML::FormatText::WithLinks->new( %{$args->{-formatter_params}} );
-		if($formatted = $f->parse($args->{-string})){ 
-			return $formatted; 
+	
+		require DADA::Security::Password;
+		
+		my $ran_str = DADA::Security::Password::generate_rand_string();
+		
+		# hide comments, so they don't get destroyed: 
+		my $mask_begining_comment = quotemeta('[--' . $ran_str . 'DM_TMP');
+		my $mask_ending_comment   = quotemeta('DM_TMP' . $ran_str . '--]');
+		
+		my $tmp_str = $args->{-string};
+		   $tmp_str =~ s/\<\!\-\-/$mask_begining_comment/g; 
+		   $tmp_str =~ s/\-\-\>/$mask_ending_comment/g; 
+		if($formatted = $f->parse($tmp_str)){ 
+			return $tmp_str; 
 		}
 		else { 
 			carp $DADA::Config::PROGRAM_NAME . ' ' . $DADA::Config::VER . 
