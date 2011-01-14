@@ -1,21 +1,3 @@
-<!-- begin sending_monitor_screen.tmpl --> 
-
-<!-- tmpl_set name="title" value="Monitor Your Mailing" -->
-
-<!-- tmpl_include help_link_widget.tmpl -->
-
-
-<p>
-
-<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=send_email"> 
- Send a Message 
-</a> 
-
-  &#187;
-
-   <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor">
-    Monitor Your Mailings
-  </a>
 
 <!-- tmpl_if header_subject_label --> 
 
@@ -182,26 +164,31 @@
 		  </div> 
 
 		
-         <script type="text/javascript">
-              refreshpage(<!-- tmpl_var refresh_after -->, "<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor&id=<!-- tmpl_var message_id -->&type=<!-- tmpl_var message_type -->"); 			
-          </script>
-
 
  
 		  <ul> 
 	  
 		<!-- tmpl_unless sending_done --> 
-		    <li>
+	
+	
+			<!-- tmpl_if comment --> I haven't implemented this in ajax, yet. 
 			
-			  <form name="refresh_control"> 
-				 <p class="alert"> 
-				<input type="checkbox" name="refresh_on" checked="checked" onChange="updateRefresh();" /> 	
-		      When checked, this screen will refresh every <!-- tmpl_var refresh_after --> seconds.
+			    <li>
+			
+				  <form name="refresh_control"> 
+					 <p class="alert"> 
+					<input type="checkbox" name="refresh_on" checked="checked" onChange="updateRefresh();" /> 	
+			      When checked, this screen will refresh every <!-- tmpl_var refresh_after --> seconds.
 		 
 			
-		     </p>
-			</form>
-			</li>
+			     </p>
+				</form>
+				</li>
+
+			<!-- /tmpl_if --> 
+
+			 <p class="alert"> This screen will refresh every <!-- tmpl_var refresh_after --> seconds.</p>
+
 		<!-- /tmpl_unless --> 
 
 		<!-- tmpl_if auto_pickup_dropped_mailings --> 
@@ -361,14 +348,6 @@
  </form> 
 </div>
 <div class="floatclear"></div>
-
-
-
-
-
-
-
-
 
 <!--tmpl_else--> 
 

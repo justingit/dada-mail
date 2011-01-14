@@ -136,7 +136,7 @@ my $q = new CGI;
 $Plugin_Config->{Plugin_URL} = $q->url; 
 
 # Plugin Name!
-$Plugin_Config->{Program_Name} = 'Mystery Girl'; 
+$Plugin_Config->{Plugin_Name} = 'Mystery Girl'; 
 
 # End of Optional Settings. 
 #---------------------------------------------------------------------#
@@ -1056,7 +1056,7 @@ relaying_denied => {
 
 my $Over_Quota_Subject = "Bounce Handler - warning user over quota";
 my $Over_Quota_Message = qq{
-Hello, This is <!-- tmpl_var Program_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME --> 
+Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME --> 
 
 I received a message and it needs your attention. It seems
 that the user, <!-- tmpl_var subscriber.email --> is over their email quota. 
@@ -1077,14 +1077,14 @@ Below is the nerdy diagnostic report:
 <!-- tmpl_var status_report -->
 -----------------------------------------------------------------------
 
-- <!-- tmpl_var Program_Name -->
+- <!-- tmpl_var Plugin_Name -->
 
 }; 
 
 
 my $User_Unknown_Subject = "Bounce Handler - warning user doesn't exist";
 my $User_Unknown_Message = qq{
-Hello, This is <!-- tmpl_var Program_Name -->, the bounce handler for <!-- tmpl_var ROGRAM_NAME -->
+Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var ROGRAM_NAME -->
 
 I received a message and it needs your attention. It seems
 that the user, <!-- tmpl_var subscriber.email --> doesn't exist, was deleted 
@@ -1106,13 +1106,13 @@ Below is the nerdy diagnostic report:
 <!-- tmpl_var status_report -->
 -----------------------------------------------------------------------
 
-- <!-- tmpl_var Program_Name -->
+- <!-- tmpl_var Plugin_Name -->
 
 }; 
 
 my $Email_Not_Found_Subject = "Bounce Handler - warning";
 my $Email_Not_Found_Message = qq{
-Hello, This is <!-- tmpl_var Program_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
+Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
 
 I received a message and it needs your attention. The message was
 bounced, but I cannot find the email associated with the bounce. 
@@ -1130,14 +1130,14 @@ Below is the nerdy diagnostic report:
 <!-- tmpl_var status_report -->
 -----------------------------------------------------------------------
 
-- <!-- tmpl_var Program_Name -->
+- <!-- tmpl_var Plugin_Name -->
 
 }; 
 
 
 my $Email_Unknown_Bounce_Type_Subject = "Bounce Handler - warning";
 my $Email_Unknown_Bounce_Type_Message = qq{
-Hello, This is <!-- tmpl_var Program_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
+Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
 
 I received a message and it needs your attention. The message was
 bounced, but I dont know for what reason.
@@ -1160,7 +1160,7 @@ Below is the nerdy diagnostic report:
 
 -----------------------------------------------------------------------
 
-- <!-- tmpl_var Program_Name -->
+- <!-- tmpl_var Plugin_Name -->
 
 }; 
 
@@ -1344,6 +1344,7 @@ sub cgi_main {
         'cgi_scorecard'           => \&cgi_scorecard, 
         'cgi_bounce_score_search' => \&cgi_bounce_score_search, 
         'cgi_show_plugin_config'  => \&cgi_show_plugin_config,
+		'ajax_parse_bounces_results' => \&ajax_parse_bounces_results, 
         ); 
         
         if(exists($Mode{$flavor})) { 
@@ -1359,36 +1360,38 @@ sub cgi_main {
 
 sub cgi_default { 
 
-	my $ls   = DADA::MailingList::Settings->new({-list => $list}); 
-	my $li   = $ls->get(); 
-	
-	my $tmpl = default_cgi_template(); 	                
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get();
 
-	my @amount = (1,2,3,4,5,6,7,8,9,10,25,50,100,150,200,
-	              250,300,350, 400,450,
-	              500,550,600,650,700,
-	              750,800,850,900,950,1000
-	             );
-	
-	my $curl_location = `which curl`; 
-	   $curl_location = strip(make_safer($curl_location)); 
-	
-	my $parse_amount_widget = $q->popup_menu(-name      => 'parse_amount',
-											 -id        => 'parse_amount', 
-											 '-values'  => [@amount], 
-											 -default   => $Plugin_Config->{MessagesAtOnce}, 
-											 -label     => '', 
-											 ); 
+    my $tmpl = default_cgi_template();
 
-    my $plugin_configured = 1; 
-	if(
-		! defined($Plugin_Config->{Server})   ||
-	    ! defined($Plugin_Config->{Username}) ||
-		! defined($Plugin_Config->{Password})
-	
-	){ 
-		$plugin_configured = 0; 
-	}
+    my @amount = (
+        1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  25,  50,
+        100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650,
+        700, 750, 800, 850, 900, 950, 1000
+    );
+
+    my $curl_location = `which curl`;
+    $curl_location = strip( make_safer($curl_location) );
+
+    my $parse_amount_widget = $q->popup_menu(
+        -name     => 'parse_amount',
+        -id       => 'parse_amount',
+        '-values' => [@amount],
+        -default  => $Plugin_Config->{MessagesAtOnce},
+        -label    => '',
+    );
+
+    my $plugin_configured = 1;
+    if (
+           !defined( $Plugin_Config->{Server} )
+        || !defined( $Plugin_Config->{Username} )
+        || !defined( $Plugin_Config->{Password} )
+
+      )
+    {
+        $plugin_configured = 0;
+    }
 											 
 	require DADA::Template::Widgets; 
 	my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -1400,33 +1403,108 @@ sub cgi_default {
 								-List       => $list,  
 							},
 							-vars => { 
-									plugin_configured  => $plugin_configured, 
-				 					Username            => $Plugin_Config->{Username} ? $Plugin_Config->{Username} : "<span class=\"error\">Not Set!</span>",
-									Server              => $Plugin_Config->{Server}   ? $Plugin_Config->{Server}   : "<span class=\"error\">Not Set!</span>",
-									Plugin_URL          => $Plugin_Config->{Plugin_URL}, 
-									parse_amount_widget => $parse_amount_widget, 
-									send_via_smtp       => $li->{send_via_smtp}, 
-									add_sendmail_f_flag => $li->{add_sendmail_f_flag},
-									print_return_path_header => $li->{print_return_path_header}, 
-									set_smtp_sender          => $li->{set_smtp_sender}, 
-									admin_email              => $li->{admin_email},,
-									list_owner_email         => $li->{list_owner_email}, 
-									MAIL_SETTINGS            => $DADA::Config::MAIL_SETTINGS, 
-						
-						
+									MAIL_SETTINGS             => $DADA::Config::MAIL_SETTINGS, 						
+				 					Username                  => $Plugin_Config->{Username},
+									Server                    => $Plugin_Config->{Server},
+									Plugin_URL                => $Plugin_Config->{Plugin_URL}, 
 									Default_Soft_Bounce_Score => $Plugin_Config->{Default_Soft_Bounce_Score},
 									Default_Hard_Bounce_Score => $Plugin_Config->{Default_Hard_Bounce_Score},
-									Score_Threshold           =>  $Plugin_Config->{Score_Threshold},
-						
-									Program_Name       => $Plugin_Config->{Program_Name},
-					
-								    Allow_Manual_Run          =>  $Plugin_Config->{Allow_Manual_Run},
-								    Manual_Run_Passcode       =>  $Plugin_Config->{Manual_Run_Passcode},
-					
+									Score_Threshold           => $Plugin_Config->{Score_Threshold},
+									Plugin_Name              => $Plugin_Config->{Plugin_Name},
+								    Allow_Manual_Run          => $Plugin_Config->{Allow_Manual_Run},
+								    Manual_Run_Passcode       => $Plugin_Config->{Manual_Run_Passcode},
 									curl_location             => $curl_location, 
-								}
+									plugin_configured         => $plugin_configured, 
+									parse_amount_widget       => $parse_amount_widget, 
+								},
+								-list_settings_vars_param => {
+				                    -list   => $list,
+				                    -dot_it => 1,
+				                },
 						}
 					);
+	e_print($scrn);
+}
+
+
+sub ajax_parse_bounces_results {
+
+    if ( $q->param('bounce_test') ) {
+        $test = $q->param('bounce_test');
+    }
+
+    if ( defined( xss_filter( $q->param('parse_amount') ) ) ) {
+        $Plugin_Config->{MessagesAtOnce} =
+          xss_filter( $q->param('parse_amount') );
+    }
+
+    $verbose = 1;
+
+    print $q->header();
+    print '<pre>';     # Do not like.
+    cl_main();
+    print '</pre>';    # Do not like.
+
+}
+
+sub cgi_parse_bounce_template { 
+	
+	return q{ 
+		
+		<!-- tmpl_set name="title" value="Parsing Bounces..." --> 
+		
+			<script type="text/javascript">
+			    //<![CDATA[
+				Event.observe(window, 'load', function() {
+				  parse_bounces();				
+				});
+				
+				 function parse_bounces(){ 
+
+					new Ajax.Updater(
+						'parse_bounce_results', '<!-- tmpl_var Plugin_URL -->', 
+						{ 
+						    method: 'post', 
+							parameters: {
+								parse_amount: $F('parse_amount'),
+								bounce_test:  $F('bounce_test'),
+								flavor:       'ajax_parse_bounces_results'
+								
+							},
+						onCreate: 	 function() {
+							Form.Element.setValue('parse_bounces_button', 'Parsing...');
+							$('parse_bounce_results').hide();
+							$('parse_bounce_results_loading').show();
+						},
+						onComplete: 	 function() {
+
+							$('parse_bounce_results_loading').hide();
+							Effect.BlindDown('parse_bounce_results');
+							Form.Element.setValue('parse_bounces_button', 'Parse Bounces');
+						}	
+						});
+				}
+			    //]]>
+			</script>
+	
+	   <p id="breadcrumbs">
+	        <a href="<!-- tmpl_var Plugin_URL -->">
+			 <!-- tmpl_var Plugin_Name -->
+		</a> &#187; Parsing Bounces
+	   </p>
+	<form name="some_form" id="some_form"> 
+		<input type="hidden" id="parse_amount"  name="parse_amount"  value="<!-- tmpl_if parse_amount --><!-- tmpl_var parse_amount --><!-- tmpl_else --><!-- tmpl_var MessagesAtOnce --><!-- /tmpl_if -->" /> 
+		<input type="hidden" id="bounce_test"   name="bounce_test"   value="<!-- tmpl_if bounce_test --><!-- tmpl_var bounce_test --><!-- tmpl_else --><!-- /tmpl_if -->" />
+		<input type="button" value="Parse Bounces" id="parse_bounces_button" class="processing" onClick="parse_bounces();" /> 
+	</form>
+	
+		<div id="parse_bounce_results_loading" style="display:none;"> 
+			<p class="alert">Loading...</p>
+		</div> 
+		<div id="parse_bounce_results"> 			
+		</div> 
+			
+	};
 }
 
 
@@ -1434,39 +1512,28 @@ sub cgi_default {
 
 sub cgi_parse_bounce { 
 
-	print(admin_template_header(
-							-Title      => "Parsing Bounces...",
-		                    -List       => $list,
-		                    -Form       => 0,
-		                    -Root_Login => $root_login
-		                    ));
-		                    
-	$test = $q->param('test')
-		if $q->param('test'); 
+	my $tmpl = cgi_parse_bounce_template(); 
+	require DADA::Template::Widgets; 
+	my $scrn = DADA::Template::Widgets::wrap_screen(
+		{ 
+			-data => \$tmpl, 
+			-with => 'admin', 
+			-wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+			
+			-vars => {
+				parse_amount   => xss_filter($q->param('parse_amount')), 
+				bounce_test    => xss_filter($q->param('bounce_test')),
+				Plugin_Name   => $Plugin_Config->{Plugin_Name}, 
+				Plugin_URL     => $Plugin_Config->{Plugin_URL}, 
+				MessagesAtOnce => $Plugin_Config->{MessagesAtOnce}, 
+			}, 
+		}
+	); 
+	e_print($scrn); 
 	
-	if(defined(xss_filter($q->param('parse_amount')))){
-		$Plugin_Config->{MessagesAtOnce} = xss_filter($q->param('parse_amount'));
-	}
-		
-	$verbose  = 1;
-	
-	    print '
-     <p id="breadcrumbs">
-        <a href="'  .  $Plugin_Config->{Plugin_URL} . '">
-            ' . $Plugin_Config->{Program_Name} .'
-        </a> &#187; Parsing Bounces</p>'; 
-        
-	
-	
-	print '<pre>';
-	cl_main();
-	print '</pre>';
-
-	print '<p><a href="' . $Plugin_Config->{Plugin_URL} . '">Back...</a></p>';
-	
-	print admin_template_footer(-Form    => 0, 
-							-List    => $list,
-						    ); 
 }
 
 
@@ -1578,7 +1645,7 @@ sub cgi_scorecard {
             },
 			-vars => { 
 				Plugin_URL => $Plugin_Config->{Plugin_URL}, 
-				Program_Name => $Plugin_Config->{Program_Name},
+				Plugin_Name => $Plugin_Config->{Plugin_Name},
 				num_rows => $num_rows,
 				(($num_rows >= 1) ? (
 				scorecard => $pager->output,) : ()), 
@@ -1597,7 +1664,7 @@ return <<EOF
 
 <p id="breadcrumbs">
     <a href="<!-- tmpl_var Plugin_URL -->">
-        <!-- tmpl_var Program_Name -->
+        <!-- tmpl_var Plugin_Name -->
     </a> &#187; Scorecard
 </p>
 <!-- tmpl_if num_rows --> 
@@ -1637,7 +1704,7 @@ sub cgi_show_plugin_config {
             },
             -vars => {
                 Plugin_URL   => $Plugin_Config->{Plugin_URL},
-                Program_Name => $Plugin_Config->{Program_Name},
+                Plugin_Name => $Plugin_Config->{Plugin_Name},
                 configs      => $configs,
             },
         }
@@ -1656,8 +1723,8 @@ sub cgi_show_plugin_config_template {
     <!-- tmpl_set name="title" value="Plugin Configuration" --> 
 
   <p id="breadcrumbs">
-   <a href="<!-- 1586 Plugin_URL -->"> 
-   <!-- tmpl_var Program_Name --> 
+   <a href="<!-- tmpl_var Plugin_URL -->"> 
+   <!-- tmpl_var Plugin_Name --> 
    </a> 
    
    &#187;
@@ -1840,7 +1907,7 @@ sub cgi_bounce_score_search {
 
             S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL,
             Plugin_URL    => $Plugin_Config->{Plugin_URL},
-            Program_Name  => $Plugin_Config->{Program_Name},
+            Plugin_Name  => $Plugin_Config->{Plugin_Name},
           }
 
     );
@@ -1858,7 +1925,7 @@ my $template = q{
 	
   <p id="breadcrumbs">
    <a href="<!-- tmpl_var Plugin_URL -->"> 
-   <!-- tmpl_var Program_Name --> 
+   <!-- tmpl_var Plugin_Name --> 
    </a> 
    
    &#187;
@@ -2022,6 +2089,8 @@ sub cl_main {
 	            return;
 	    }
 	
+	print "Testing is enabled.\n\n"
+		if $test; 
 	print "Making POP3 Connection...\n" 
 	    if $verbose; 
 	
@@ -2450,7 +2519,7 @@ sub bounce_from_me(){
 	my $bh = $entity->head->get('X-BounceHandler', 0);
 	$bh =~ s/\n//g; 
 	$bh = trim($bh); 
-	$bh eq $Plugin_Config->{Program_Name} ? return 1 : return 0; 
+	$bh eq $Plugin_Config->{Plugin_Name} ? return 1 : return 0; 
 }
 
 
@@ -2571,7 +2640,7 @@ sub mail_list_owner {
 		$Subject = $Email_Unknown_Bounce_Type_Subject; 	
 		$Body    = $Email_Unknown_Bounce_Type_Message; 		
 	}else{ 
-		warn "There's been a misconfiguration somewhere, $Plugin_Config->{Program_Name} is about to die..., ";
+		warn "There's been a misconfiguration somewhere, $Plugin_Config->{Plugin_Name} is about to die..., ";
 		warn "AARRGGGGH!";
 	}
 	
@@ -2646,8 +2715,8 @@ sub mail_list_owner {
 		                            {
 										report         => $report, 
 										status_report  => $status_report, 
-										Program_Name   => $Plugin_Config->{Program_Name},
-										Plugin_Name    => $Plugin_Config->{Program_Name},
+										Plugin_Name   => $Plugin_Config->{Plugin_Name},
+										Plugin_Name    => $Plugin_Config->{Plugin_Name},
 		                            },
 		                    }
 		                );
@@ -2659,7 +2728,7 @@ sub mail_list_owner {
 		   $mh->send(
 				  # Trust me on these :) 
 				  $mh->return_headers($header_str),
-				  'X-BounceHandler' => $Plugin_Config->{Program_Name},
+				  'X-BounceHandler' => $Plugin_Config->{Plugin_Name},
 				  To                => $to, 
 				  Body => $body_str,
 				  
@@ -3892,7 +3961,7 @@ sub remove_bounces {
                             -subscriber_vars =>
                               { 'subscriber.email' => $d_email, },
                             -vars => {
-                                Plugin_Name => $Plugin_Config->{Program_Name},
+                                Plugin_Name => $Plugin_Config->{Plugin_Name},
                             },
                         },
                     }
@@ -3985,7 +4054,7 @@ sub test_pop3 {
 
 sub version {
 
-    print "$Plugin_Config->{Program_Name} Version: $App_Version\n";
+    print "$Plugin_Config->{Plugin_Name} Version: $App_Version\n";
     print "$DADA::Config::PROGRAM_NAME Version: $DADA::Config::VER\n";
     print "Perl Version: $]\n\n";
 
@@ -4781,14 +4850,14 @@ return q {
 	
      <p id="breadcrumbs">
         
-           <!-- tmpl_var Program_Name --> 
+           <!-- tmpl_var Plugin_Name --> 
     </p> 
  
 		<!-- tmpl_unless plugin_configured --> 
 		
 			<div style="background:#fcc;margin:5px;padding:5px;text-align:center;border:2px #ccc dotted">
 			  <h1>
-			   Warning! <!-- tmpl_var Program_Name --> Not Configured!
+			   Warning! <!-- tmpl_var Plugin_Name --> Not Configured!
 			  </h1> 
 	
 			<p class="error">
@@ -4822,11 +4891,11 @@ Bounce Email Scorecard
 
 
 <fieldset> 
- <legend>Manually Run <!-- tmpl_var Program_Name --></legend> 
+ <legend>Manually Run <!-- tmpl_var Plugin_Name --></legend> 
 
 <form action="<!-- tmpl_var Plugin_URL -->">
 
-<input type="checkbox" name="test" id="test" value="bounces" /><label for="test">Only Test</label>
+<input type="checkbox" name="bounce_test" id="bounce_test" value="bounces" /><label for="test"><label for="bounce_test">Test With Awaiting Messages</label>
 
 <p><label for="parse_amount">Review</label> <!-- tmpl_var parse_amount_widget --> Messages.</p>
 
@@ -4867,7 +4936,7 @@ Bounce Email Scorecard
 
 <fieldset>
  <legend> 
-  <!-- tmpl_var Program_Name --> Configuration</h1>
+  <!-- tmpl_var Plugin_Name --> Configuration</h1>
  </legend> 
  
  
@@ -4879,7 +4948,15 @@ Bounce Email Scorecard
    <p><strong>Your Bounce Handler POP3 Username:</strong>
    </td> 
    <td> 
-    <p><!-- tmpl_var Username --></p>
+    <p>
+
+<!-- tmpl_if Username --> 
+	<!-- tmpl_var Username -->
+<!-- tmpl_else --> 
+	<span class="error">Not Set!</span>
+<!-- /tmpl_if --> 
+
+</p>
    </td> 
    </tr> 
    <tr> 
@@ -4889,7 +4966,13 @@ Bounce Email Scorecard
     </td>
     <td>
      <p>
+
+	<!-- tmpl_if Server --> 
       <!-- tmpl_var Server --></p>
+	<!-- tmpl_else --> 
+		<span class="error">Not Set!</span>
+	<!-- /tmpl_if -->	
+
    </td> 
    </tr> 
    
@@ -4947,28 +5030,28 @@ Bounce Email Scorecard
 
 <legend>Mailing List Configuration</legend>
 
-<!-- tmpl_if send_via_smtp --> 
+<!-- tmpl_if list_settings.send_via_smtp --> 
 
 	<p>Mailing is being sent via: <strong>SMTP</strong>. 
 	
-	<!-- tmpl_if set_smtp_sender --> 
+	<!-- tmpl_if list_settings.set_smtp_sender --> 
 	
-		<p>The SMTP Sender is being set to: <strong><!-- tmpl_var admin_email --></strong>. This should
+		<p>The SMTP Sender is being set to: <strong><!-- tmpl_var list_settings.admin_email --></strong>. This should
 		be the same address as the above <strong>Bounce Handler POP3 Username</strong></p> 
 		
 	<!-- tmpl_else --> 
 
-		<p>The SMTP Sender has not be explicitly set.  Bounces may go to the list owner (<!-- tmpl_var list_owner_email -->) or to 
+		<p>The SMTP Sender has not be explicitly set.  Bounces may go to the list owner (<!-- tmpl_var list_settings.list_owner_email -->) or to 
 		a server default address.</p> 
 	
 	<!--/tmpl_if--> 
 	
 <!--tmpl_else--> 
 	
-	<p>Mailing is being sent via <strong>the sendmail command <!-- tmpl_if add_sendmail_f_flag -->'-f' flagged added<!--/tmpl_if--></strong>:</p>
+	<p>Mailing is being sent via <strong>the sendmail command <!-- tmpl_if list_settings.add_sendmail_f_flag -->'-f' flagged added<!--/tmpl_if--></strong>:</p>
 	
 	<blockquote>
-	<p><em><!-- tmpl_var MAIL_SETTINGS --><!-- tmpl_if add_sendmail_f_flag --> -f<!--tmpl_var admin_email --><!--/tmpl_if--></em></p>
+	<p><em><!-- tmpl_var MAIL_SETTINGS --><!-- tmpl_if list_settings.add_sendmail_f_flag --> -f<!--tmpl_var list_settings.admin_email --><!--/tmpl_if--></em></p>
 	</blockquote>
 
 <!--/tmpl_if--> 

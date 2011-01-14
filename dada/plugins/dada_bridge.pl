@@ -397,13 +397,16 @@ sub cgi_main {
         my $flavor = $q->param('flavor') || 'cgi_default';
 
         my %Mode = (
-            'cgi_default'            => \&cgi_default,
-            'cgi_show_plugin_config' => \&cgi_show_plugin_config,
-            'test_pop3'              => \&cgi_test_pop3,
-            'awaiting_msgs'          => \&cgi_awaiting_msgs,
-            'manual_start'           => \&admin_cgi_manual_start,
-           # 'mod'                    => \&cgi_mod,
+            'cgi_default'                 => \&cgi_default,
+            'cgi_show_plugin_config'      => \&cgi_show_plugin_config,
+            'test_pop3'                   => \&cgi_test_pop3,
+            'awaiting_msgs'               => \&cgi_awaiting_msgs,
+            'manual_start'                => \&admin_cgi_manual_start,
+            'admin_cgi_manual_start_ajax' => \&admin_cgi_manual_start_ajax,
+            'cgi_test_pop3_ajax'          => \&cgi_test_pop3_ajax,
+            # 'mod'                       => \&cgi_mod,
         );
+
 
         if ( exists( $Mode{$flavor} ) ) {
             $Mode{$flavor}->();    #call the correct subroutine
@@ -454,30 +457,88 @@ sub cgi_manual_start {
     }
 }
 
-sub cgi_test_pop3 {
 
-    e_print(
-        admin_template_header(
-            -Title      => "POP3 Login Test",
-            -List       => $list,
-            -Form       => 0,
-            -Root_Login => $root_login
-        )
-    );
+sub cgi_test_pop3_ajax { 
 
-    $run_list = $list;
+	$run_list = $list;
     $verbose  = 1;
-    print '<pre>';
-    test_pop3();
-    print '</pre>';
-    print '<p><a href="' . $Plugin_Config->{Plugin_URL} . ' ">Back...</a></p>';
+    print $q->header(); 
+	print '<pre>'; # DEV: do not like
+	test_pop3();
+ 	print '</pre>'; # DEV: do not like   
+	
+}
+sub cgi_test_pop3_tmpl { 
 
-    e_print(admin_template_footer(
-        -Form => 0,
-        -List => $list,
-    ));
+	return q{ 
+	<!-- tmpl_set name="title" value="POP3 Login Test" --> 
+	
+	
+	<script type="text/javascript">
+	    //<![CDATA[
+		Event.observe(window, 'load', function() {
+		  test_pop3();				
+		});
+		
+		 function test_pop3() { 
+			new Ajax.Updater(
+				'test_pop3_results', '<!-- tmpl_var Plugin_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						flavor:       'cgi_test_pop3_ajax'
+						
+					},
+				onCreate: 	 function() {
+					$('test_pop3_results').hide();
+					$('test_pop3_results_loading').show();
+				},
+				onComplete: 	 function() {
+					$('test_pop3_results_loading').hide();
+					Effect.BlindDown('test_pop3_results');
+				}	
+			}
+			);
+		}
+	    //]]>
+	</script>
+		
+   <p id="breadcrumbs">
+        <a href="<!-- tmpl_var Plugin_URL -->">
+		 <!-- tmpl_var Plugin_Name -->
+	</a> &#187; Test POP3 Login
+   </p>
+
+	<div id="test_pop3_results_loading" style="display:none;"> 
+		<p class="alert">Loading...</p>
+	</div> 
+	<div id="test_pop3_results"> 			
+	</div> 
+		
+	}
+	
+}
+sub cgi_test_pop3 {
+	
+	my $tmpl = cgi_test_pop3_tmpl(); 
+	require    DADA::Template::Widgets; 
+	my $scrn = DADA::Template::Widgets::wrap_screen(
+						{ 
+							-data => \$tmpl, 
+							-with           => 'admin', 
+							-wrapper_params => { 
+								-Root_Login => $root_login,
+								-List       => $list,  
+							},
+						-vars => $Plugin_Config,
+					}
+	); 
+	e_print($scrn); 
 
 }
+
+
+
 
 sub cgi_awaiting_msgs {
 
@@ -587,40 +648,102 @@ EOF
     );
 }
 
-sub admin_cgi_manual_start {
-
-    e_print(
-        admin_template_header(
-            -Title      => "Manually Running Mailing...",
-            -List       => $list,
-            -Form       => 0,
-            -Root_Login => $root_login
-        )
-    );
+sub admin_cgi_manual_start_ajax { 
 
     $run_list        = $list;
     $verbose         = 1;
     $check_deletions = 1;
-
-    e_print( '
-     <p id="breadcrumbs">
-        <a href="' . $Plugin_Config->{Plugin_URL} . '">
-            ' . $Plugin_Config->{Plugin_Name} . '
-        </a> &#187; Manually Running Mailing</p>');
-
-    e_print('<pre>');
-    start();
-    e_print( '</pre>');
-    e_print(
-      '<p><a href="' . $Plugin_Config->{Plugin_URL} . '">Back...</a></p>'
-	);
-
-    e_print( admin_template_footer(
-        -Form => 0,
-        -List => $list,
-    ));
-
+	
+	print $q->header(); 
+	print '<pre>';  # DEV no like. 
+	start();
+	print '</pre>'; # DEV no like. 
+	    
 }
+sub admin_cgi_manual_start {
+	
+	my $tmpl = admin_cgi_manual_start_tmpl(); 
+	
+	require    DADA::Template::Widgets; 
+	my $scrn = DADA::Template::Widgets::wrap_screen(
+		{ 
+			-data => \$tmpl, 
+			-with => 'admin', 
+			-wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+			
+			-vars => {
+				Plugin_Name    => $Plugin_Config->{Plugin_Name}, 
+				Plugin_URL     => $Plugin_Config->{Plugin_URL}, 
+			}, 
+		}
+	); 
+	e_print($scrn); 
+	
+}
+
+
+
+
+sub admin_cgi_manual_start_tmpl { 
+	
+	return q{ 
+		
+		<!-- tmpl_set name="title" value="Manually Running Mailing..." --> 
+
+	   <p id="breadcrumbs">
+	        <a href="<!-- tmpl_var Plugin_URL -->">
+			 <!-- tmpl_var Plugin_Name -->
+		</a> &#187; Manually Running Mailing
+	   </p>
+			
+			<script type="text/javascript">
+			    //<![CDATA[
+				Event.observe(window, 'load', function() {
+				  manual_start();				
+				});
+				
+				 function manual_start(){ 
+
+					new Ajax.Updater(
+						'manual_start_results', '<!-- tmpl_var Plugin_URL -->', 
+						{ 
+						    method: 'post', 
+							parameters: {
+								flavor:       'admin_cgi_manual_start_ajax'
+							},
+						onCreate: 	 function() {
+							Form.Element.setValue('manual_start_button', 'Checking...');
+							$('manual_start_results').hide();
+							$('manual_start_results_loading').show();
+						},
+						onComplete: 	 function() {
+
+							$('manual_start_results_loading').hide();
+							Effect.BlindDown('manual_start_results');
+							Form.Element.setValue('manual_start_button', 'Check For Messages');
+						}	
+						});
+				}
+			    //]]>
+			</script>
+	
+
+	<form name="some_form" id="some_form"> 
+		<input type="button" value="Check For Messages" id="manual_start_button" class="processing" onClick="manual_start();" /> 
+	</form>
+	
+		<div id="manual_start_results_loading" style="display:none;"> 
+			<p class="alert">Loading...</p>
+		</div> 
+		<div id="manual_start_results"> 			
+		</div> 
+			
+	};
+}
+
 
 sub cgi_mod {
 
@@ -909,17 +1032,6 @@ sub cgi_default {
           $lh->subscription_list({ -type => 'authorized_senders' });
     }
 
-	my $scrn = '';
-    
-    $scrn .= admin_template_header(
-            -Title      => "Discussion List Options",
-            -List       => $list,
-            -Form       => 0,
-            -Root_Login => $root_login,
-            -li         => $li,
-
-        );
-
     my $can_use_ssl = 0;
     eval { require IO::Socket::SSL };
     if ( !$@ ) {
@@ -939,15 +1051,20 @@ sub cgi_default {
     );
 
     my $curl_location = `which curl`;
-    $curl_location = strip( make_safer($curl_location) );
+       $curl_location = strip( make_safer($curl_location) );
 
     my $tmpl = default_cgi_template();
 
     require DADA::Template::Widgets;
-    $scrn .= DADA::Template::Widgets::screen(
+    my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -expr => 1,
-            -data => \$tmpl,
+            -data           => \$tmpl,
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
             -vars => {
 
                 authorized_senders             => $authorized_senders,
@@ -990,13 +1107,8 @@ sub cgi_default {
         }
 
     );
-
-    $scrn .= admin_template_footer(
-        -Form => 0,
-        -List => $list,
-        -li   => $li,
-    );
 	e_print($scrn); 
+
 }
 
 sub cl_main {
@@ -3161,30 +3273,28 @@ sub find_return_path {
 }
 
 sub cgi_show_plugin_config {
-	
-	my $scrn = ''; 
-    $scrn .= admin_template_header(
-            -Title => $Plugin_Config->{Plugin_Name} . " Plugin Configuration",
-            -List  => $list,
-            -Form  => 0,
-            -Root_Login => $root_login
-     );
-
-    my $tmpl = cgi_show_plugin_config_template();
-
+	 
     my $configs = [];
     foreach ( sort keys %$Plugin_Config ) {
         if ( $_ eq 'Password' ) {
-            push ( @$configs, { name => $_, value => '(Not Shown)' } );
+            push( @$configs, { name => $_, value => '(Not Shown)' } );
         }
         else {
-            push ( @$configs, { name => $_, value => $Plugin_Config->{$_} } );
+            push( @$configs, { name => $_, value => $Plugin_Config->{$_} } );
         }
     }
+
+    my $tmpl = cgi_show_plugin_config_tmpl();
+
     require DADA::Template::Widgets;
-    $scrn .=  DADA::Template::Widgets::screen(
+    my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-            -data => \$tmpl,
+            -data           => \$tmpl,
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
             -vars => {
                 Plugin_URL  => $Plugin_Config->{Plugin_URL},
                 Plugin_Name => $Plugin_Config->{Plugin_Name},
@@ -3192,36 +3302,26 @@ sub cgi_show_plugin_config {
             },
         },
     );
+    e_print($scrn);
 
-    $scrn .=  admin_template_footer(
-        -Form => 0,
-        -List => $list,
-    );
-	e_print($scrn);
 }
 
-sub cgi_show_plugin_config_template {
+sub cgi_show_plugin_config_tmpl {
 
     return q{ 
     
     
-    
+	<!-- tmpl_set name="title" value="<!-- tmpl_var Plugin_Name --> Plugin Configuration" -->
+	
   <p id="breadcrumbs">
    <a href="<!-- tmpl_var Plugin_URL -->"> 
    <!-- tmpl_var Plugin_Name --> 
    </a> 
-   
    &#187;
-   
         Plugin Configuration
    </a> 
-   
-   
   </p> 
- 
- 
- 
- 
+
         <table> 
         
         <!-- tmpl_loop configs --> 
@@ -3240,11 +3340,9 @@ sub cgi_show_plugin_config_template {
             </p>
             </td> 
             </tr> 
-            
         <!-- /tmpl_loop --> 
+        </table>
  
-        </table> 
-        
     };
 
 }
@@ -3354,6 +3452,9 @@ sub inject {
 sub default_cgi_template {
 
     return q{ 
+
+
+<!-- tmpl_set name="title" value="Discussion List Options" --> 
 
 <!-- tmpl_if saved -->
 	<!-- tmpl_var GOOD_JOB_MESSAGE  -->

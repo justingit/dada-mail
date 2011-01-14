@@ -31,6 +31,9 @@ my $Plugin_Config = {};
 $Plugin_Config->{Plugin_URL}   =  $q->url; 
 
 
+$Plugin_Config->{Plugin_Name}  = 'Log Viewer'; 
+
+
 # This refers to the, "tail" command: 
 $Plugin_Config->{tail_command} =  'tail';
 
@@ -51,17 +54,13 @@ my $admin_list = undef;
 my $root_login = undef; 
 my $list       = undef; 
 
-
 my %Logs = (
 	'Usage Log'      		 => $DADA::Config::PROGRAM_USAGE_LOG,
 	'Error Log'      		 => $DADA::Config::PROGRAM_ERROR_LOG,
 	'Clickthrough Log (raw)' => $DADA::Config::LOGS . '/' . $list . '-clickthrough.log', 
-	#'SMTP Log'       		 => $DADA::Config::SMTP_ERROR_LOG,
-	#'SMTP Conversation Log'  => $DADA::Config::SMTP_CONVERSATION_LOG,
 	'Bounce Handler Log'     => $DADA::Config::LOGS . '/' . 'bounces.txt', 
 ); 
 my $Default_Log = 'Usage Log';
-
 
 my $process     = $q->param('process'); 
 
@@ -70,42 +69,21 @@ my $process     = $q->param('process');
     my $log_name    = $q->param('log_name') || $Default_Log;
 
 run()
-  unless caller(); 
+  unless caller();
+
 
 sub run { 
-	
-	($admin_list, $root_login) = check_list_security(
-									-cgi_obj  => $q,  
-	                                -Function => 'log_viewer'
-								);
-	$list = $admin_list;
-	
-	
-	if($process && $process ne 'search'){ 
-
-	    main(); 
-
+	if(!$ENV{GATEWAY_INTERFACE}){ 
+	#	croak "There's no CLI for this plugin."; 
+	}else{ 
+		&cgi_main(); 
 	}
-	elsif($process && $process eq 'search'){ 
-
-	    search_logs(); 
-
-	} 
-	else { 
-
-	    main(); 
-
-	}
-
 }
-
-
 
 
 sub test_sub { 
 	return "Hello, World!"; 
 }
-
 
 
 
@@ -126,94 +104,258 @@ sub init_vars {
      }
 }
 
+sub cgi_main {
 
 
-sub main { 
+	my $admin_list;
+
+	( $admin_list, $root_login ) = check_list_security(
+	    -cgi_obj    => $q,
+	    -Function   => 'log_viewer',
+	);
+
+	$list = $admin_list;
+
+	my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+	my $li = $ls->get();
+
+	my $flavor = $q->param('flavor') || 'cgi_view';
+
+	my %Mode = (
+	   'cgi_view'               => \&cgi_view, 
+	   'ajax_view_logs_results' => \&ajax_view_logs_results, 
+	   'ajax_delete_log'        => \&ajax_delete_log, 
+	   'search_logs'            => \&search_logs, 
+	);
+
+	if ( exists( $Mode{$flavor} ) ) {
+	    $Mode{$flavor}->();    #call the correct subroutine
+	}
+	else {
+	    &cgi_view;
+	}
+
+}
 
 
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,  
-                                                        -Function => 'log_viewer');
-    my $list = $admin_list; 
-    
+
+sub cgi_view { 
+
     # get the list information
     my $ls = DADA::MailingList::Settings->new({-list => $list}); 
     my $li = $ls->get; 
     
-    my $scr; 
-    
-    
-    # header     
-    $scr .= (admin_template_header(-Title      => "Log Viewer",
-                            -List       => $li->{list},
-                            -Form       => 0,
-                            -HTML_Header => 0, 
-                            -Root_Login => $root_login));
-        
-         $Default_Log = $log_name; 
-       
-	               
+
+    my $logs_popup_menu = $q->popup_menu(
+        -name     => 'log_name',
+        -id       => 'log_name',
+        '-values' => [ keys %$logs ],
+        -default  => $log_name,
+        -onClick  => "view_logs();",
+    );
+	my $log_lines = []; 
+	for(100, 1,10,20,25,50,100,200,500,1000, 10000, 100000, 1000000){ 
+		push(@$log_lines, {line_count => $_});
+	}
+
+	$Default_Log = $log_name; 
+                      
     my @log_names = keys %$logs; 
     
-    if(!$log_names[0]){ 
-        $scr .=  $q->p($q->i("There are no " . $DADA::Config::PROGRAM_NAME . "logs set")); 
-    }else{ 
-    
-   $scr .= search_widget(); 
-    
-    
-        $scr .=  log_controls($logs);
-        $scr .=  '<div style="width:100%; overflow: auto; max-height: 500px">'; 
-        $scr .=  ajax_view_log($log_name, $lines); 
-        $scr .=  '</div>';
-        $scr .=  log_delete($log_name);
-        $scr .= '<hr />';
-         
-    }
-    
-    
-    #footer
-    $scr .=  admin_template_footer(-List => $list, -Form => 0); 
+	my $tmpl = main_tmpl(); 
+	
+	require DADA::Template::Widgets; 
+	my $scrn = DADA::Template::Widgets::wrap_screen(
+		{ 
+			-data           => \$tmpl, 
+			-with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+			-vars => { 
+				log_names       => ($log_names[0] ? 1 : 0),
+				logs_popup_menu => $logs_popup_menu, 
+				log_lines       => $log_lines, 
+				Plugin_URL      => $Plugin_Config->{Plugin_URL}, 
+			},
+		}
+		
+	); 
+	e_print($scrn); 
+	    
+}
 
-    my $pjx = new CGI::Ajax( 'view_log' => \&ajax_view_log, 'delete_log' => \&ajax_delete_log);
-    
-    
-    print $pjx->build_html( $q, $scr, {admin_header_params()});
-        
-    
+sub main_tmpl { 
+	
+	return q{ 
+		
+		<!-- tmpl_set name="title" value="Log Viewer" -->
+		
+		<script type="text/javascript">
+		    //<![CDATA[
+			Event.observe(window, 'load', function() {
+			  view_logs();				
+			});
+			
+			 function view_logs(){ 
+				new Ajax.Updater(
+					'view_logs_results', '<!-- tmpl_var Plugin_URL -->', 
+					{ 
+					    method: 'post', 
+						parameters: {
+							flavor:       'ajax_view_logs_results',
+							log_name:     $F('log_name'),
+							lines:        $F('lines')
+						},
+					onCreate: 	 function() {
+						Form.Element.setValue('refresh_button', 'Loading...');
+						/*$('view_logs_results').hide();*/
+						/*$('view_logs_results_loading').show();*/
+					},
+					onComplete: 	 function() {
+
+					/*	$('view_logs_results_loading').hide(); */
+						$('view_logs_results').show();
+					Form.Element.setValue('refresh_button', 'Refresh');
+					}	
+					});
+			}
+			function purge_log(){ 
+				
+				var confirm_msg =  "Are you sure you want to delete this log? ";
+				    confirm_msg += "There is no way to undo this deletion.";
+				if(confirm(confirm_msg)){
+						new Ajax.Request(
+						  '<!-- tmpl_var Plugin_URL -->', 
+						{
+						  method: 'post',
+						 	parameters: {
+								flavor: 'ajax_delete_log', 
+								log_name:     $F('log_name')
+						  },
+						  onSuccess: function() {
+							view_logs()
+						  }, 
+						onFailure: function() { 
+							alert('Warning! Something went wrong when attempting to remove the log file.'); 
+						}
+						}
+						);
+				}
+				else { 
+					alert('Log deletion canceled.'); 
+				}
+			}
+		    //]]>
+		</script>
+		
+		
+		<!-- tmpl_if log_names --> 
+		
+			<form method="post">
+			<table cellpadding="5"> 
+			 <tr> 
+			  <td valign="bottom"> 
+				<p>Show this log:<br /> 
+				 <!-- tmpl_var logs_popup_menu --> 
+				</p> 
+			</td> 
+		 	<td valign="bottom"> 
+			  <p>Show the last:<br /> 
+				<select name="lines" id="lines" onclick="view_logs();"> 
+					<!-- tmpl_loop log_lines --> 
+						<option value="<!-- tmpl_var line_count -->"><!-- tmpl_var line_count --></option> 
+					<!-- /tmpl_loop --> 
+				</select> lines
+			</p> 
+			</td> 
+		 	<td valign="bottom"> 
+			<br /><input type="button" value="Refresh" id="refresh_button" onClick="view_logs();" />
+			</td> 
+		 	<td valign="bottom"> 
+			<br /><input type="button" value="Delete Log"  onclick="purge_log();" /> 
+					</form> 
+			</td>
+	<td valign="bottom"> <br />
+			<form method="get"> 
+		     <input type="hidden" name="flavor" value="search_logs" /> 
+		     <input type="text" name="query" value="" /> 
+		     <input type="submit" value="Search All Logs" class="processing" /> 
+		    </form>
+	 		</td> 
+	
+		   </tr> 
+		</table> 
+
+			
+
+			
+
+			<div id="view_logs_results">
+			
+			</div> 
+			<div id="view_logs_results_loading" style="display:none"> 
+				<p class="alert">Loading...</p>
+			</div> 
+			
+
+		
+		<!-- tmpl_else -->
+			<p>
+			 <em>
+			  There are no <!-- tmpl_var PROGRAM_NAME --> logs set.
+			 </em>
+		   </p>
+		<!-- /tmpl_if --> 
+		
+		
+		
+	};
+	
 }
 
 
 
 
+sub ajax_view_logs_results {
 
-
-
-
-sub ajax_view_log {
-
-     my $scr; 
-        $scr .=  '<div style="width:100%; overflow: auto; height: 500px" id="resultdiv">'; 
-        $scr .=  show_log($log_name, $lines); 
-        $scr .=  '</div>';
+     my $scrn; 
+        $scrn .=  '<div style="width:100%; overflow: auto; height: 500px" id="resultdiv">'; 
+        $scrn .=  show_log($log_name, $lines); 
+        $scrn .=  '</div>';
         
-        return $scr; 
-        
-
+		print $q->header(); 
+        e_print($scrn); 
 }
+
+
+sub show_log { 
+	my ($log_name, $lines) = @_;
+	my $loglines = log_lines($Logs{$log_name}, $lines); 
+	my $html; 
+	   $html .= '<pre>';
+	foreach(@$loglines){ 
+		$_ =~ s/\t/    /g;
+		$html .= $_ . "\n";
+	}
+	$html .= '</pre>';
+	return $html;
+}
+
 
 
 
 sub ajax_delete_log { 
 
-    my $log_name = shift; 
     
-    my @log_names = keys %$logs; 
-    
+    my @log_names = keys %$logs;     
     if(exists($logs->{$log_name})){ 
         my $file = $Logs{$log_name};
         make_safer($file);
         unlink($file); 	
     }
+	print $q->header(); 
 }
 
 
@@ -296,80 +438,6 @@ sub log_lines {
 
 
 
-sub show_log { 
-	my ($log_name, $lines) = @_;
-	my $loglines = log_lines($Logs{$log_name}, $lines); 
-	my $html; 
-	   $html .= '<pre>';
-	foreach(@$loglines){ 
-		$_ =~ s/\t/    /g;
-		$html .= $_ . "\n";
-	}
-	$html .= '</pre>';
-	return $html;
-}
-
-
-
-
-sub log_controls { 
-	my $logs = shift;
-	my $html; 
-	my $foo = '<br /><input type="button" value="Refresh" onClick="view_log([\'log_name\', \'lines\'], [\'resultdiv\'] );" />'; 
-	
-	$html .= $q->start_form(-method => 'post');
-	$html .= $q->start_table({-cellpadding => 5}); 
-	$html .= $q->Tr(
-	         $q->td({-valign => 'bottom'}, [
-	         
-	         ($q->p('Show this log: ', $q->br, 
-	          $q->popup_menu(-name    => 'log_name', 
-	                         -id      => 'log_name', 
-	                        '-values' => [keys %$logs],
-	                        -default  =>  $log_name,
-	                        -onClick  => "view_log(['log_name', 'lines'], ['resultdiv'] );",	
-	                        )
-	         )), 
-	         
-	         ($q->p('Show the last:', $q->br,   
-			  $q->popup_menu(-name => 'lines',
-			                 -id   => 'lines', 
-							'-values' => [1,10,20,25,50,100,200,500,1000, 10000, 100000, 1000000], 
-							 -default => $lines, 
-							 -onClick  => "view_log(['log_name', 'lines'], ['resultdiv'] );",							 
-							 ), 
-	                ' lines')),
-	          ($q->p($foo))
-	         ])); 
-	         
-	 $html .= $q->end_form();
-	 $html .= $q->end_table();
-	                         
-	return $html;
-}
-
-
-
-
-sub log_delete { 
-	
-	my $log_name = shift; 
-	my $html; 
-	$html .= $q->p({-align=> 'center'},
-	$html .= $q->start_form(-method => 'post'), 
-	         $q->hidden('process',  'remove'), 
-	         $q->hidden('log_name', $log_name), 
-	        
-	         '<input type="button" value="Purge This Log"  onClick="delete_log([\'log_name\'],[]); view_log([\'log_name\', \'lines\'], [\'resultdiv\'] );" />', 
-	         
-	         $q->end_form());
-	return $html;
-	
-}
-
-
-
-
 sub search_logs { 
 	
 	my $s_logs = shift || [values(%$logs)]; 
@@ -419,15 +487,16 @@ sub search_logs {
         $return .= admin_template_header(
 								-Title       => "Log Viewer - Search",
                                 -List        => $li->{list},
-                                -Form        => 0,
                                 -Root_Login  => $root_login,
                                 -HTML_Header => 0,
                               );
     }    
         
     if($only_content != 1){     
-          $return .= search_widget(); 
-          $return .= $q->p($q->a({-href => $Plugin_Config->{Plugin_URL}}, "Back to Log Viewer")); 
+
+		  $return .= "<p id=\"breadcrumb\"><a href=\"" . $Plugin_Config->{Plugin_URL} . "\">" . $Plugin_Config->{Plugin_Name} . "</a> &#187; Search Results</p>	";
+
+
           $return .= $q->h1("Results for: " . $q->param('query')); 
     }
     
@@ -489,34 +558,13 @@ sub search_logs {
 		return $return; 
 	}
 	else { 
-		print $return; 
+		e_print($return); 
 	}
 
 
 }
 
-sub search_widget { 
 
-
-  my $scr =  q{ 
-    
-    <form method="get"> 
-    
-     <input type="hidden" name="process" value="search" /> 
-     
-     <input type="text" name="query" value="" /> 
-     
-     <input type="submit" value="Search All Logs" class="processing" /> 
-     
-    </form> 
-    
-    <hr /> 
-    
-    }; 
-    
-    return $scr; 
-
-}
 
 
 

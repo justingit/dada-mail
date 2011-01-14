@@ -1079,8 +1079,113 @@ sub previewMessageReceivers {
 
 }
 
+sub sending_monitor_index { 
+
+	my ($admin_list, $root_login) = check_list_security(
+										-cgi_obj  => $q,
+                                        -Function => 'sending_monitor'
+									);
+									
+    my $mailout_status = [];
+		my @lists;
+
+		if($root_login == 1){
+			@lists = available_lists();
+		}
+		else {
+			@lists = ($list);
+		}
+
+		for my $l_list(@lists){
+      	my @mailouts  = DADA::Mail::MailOut::current_mailouts(
+							{
+								-list     => $l_list,
+								-order_by => 'creation',
+							}
+						);
+			for my $mo(@mailouts){
+
+				my $mailout = DADA::Mail::MailOut->new({ -list => $l_list });
+	               $mailout->associate(
+						$mo->{id},
+						$mo->{type}
+					);
+	            my $status  = $mailout->status();
+				require DADA::MailingList::Settings;
+				my $l_ls = DADA::MailingList::Settings->new({-list => $l_list});
+	            push(@$mailout_status,
+					{
+						%$status,
+						list                         => $l_list,
+						current_list                 => (($list eq $l_list) ? 1 : 0),
+						S_PROGRAM_URL                => $DADA::Config::S_PROGRAM_URL,
+						Subject                      => safely_decode($status->{email_fields}->{Subject}, 1),
+						status_bar_width             => int($status->{percent_done}) * 1,
+						negative_status_bar_width    => 100 - (int($status->{percent_done}) * 1),
+						message_id                   => $mo->{id},
+						message_type                 => $mo->{type},
+						mailing_started              => scalar(localtime($status->{first_access})),
+						mailout_stale                => $status->{mailout_stale},
+						%{$l_ls->params},
+	            	}
+	        	);
+			}
+		}
 
 
+
+
+
+
+          my (
+				$monitor_mailout_report,
+				$total_mailouts,
+				$active_mailouts,
+				$paused_mailouts,
+				$queued_mailouts,
+				$inactive_mailouts
+				) = DADA::Mail::MailOut::monitor_mailout(
+						{
+							-verbose => 0,
+							($root_login == 1) ? () : (-list => $list)
+						}
+					);
+
+          require DADA::Template::Widgets;
+
+		my $scrn .= DADA::Template::Widgets::wrap_screen(
+				{
+					-screen => 'sending_monitor_index_screen.tmpl',
+	                -with   => 'admin', 
+					-wrapper_params => { 
+						-Root_Login => $root_login,
+						-List       => $list,  
+					},
+					-vars   => {
+						screen                       => 'sending_monitor',
+						killed_it                    => $q->param('killed_it') ? 1 : 0,
+						mailout_status               => $mailout_status,
+						monitor_mailout_report       => $monitor_mailout_report,
+					},
+					-list_settings_vars_param => {
+						-list    => $list,
+						-dot_it => 1,
+					},
+				}
+			);
+		e_print($scrn);
+			
+	
+}
+
+sub sending_monitor { 
+	
+	my ($admin_list, $root_login) = check_list_security(
+										-cgi_obj  => $q,
+                                        -Function => 'sending_monitor'
+									);
+									
+}
 
 sub sending_monitor {
 
@@ -1106,6 +1211,22 @@ sub sending_monitor {
     my $id = DADA::App::Guts::strip($q->param('id'));
        $id =~ s/\@/_at_/g;
 	   $id =~ s/\>|\<//g;
+
+	if(!$q->param('id')){
+		sending_monitor_index(); 
+		return; 
+    }
+
+    # 8 is the factory default setting to wait per batch.
+     # Let's not refresh an faster, or we'll never have time
+     # to read the actual screen.
+
+     my $refresh_after = 10;
+     if($refresh_after < $li->{bulk_sleep_amount}){
+			$refresh_after = $li->{bulk_sleep_amount};
+		}
+
+
 
 	# Type ala, list, invitation list, etc
 	my $type = $q->param('type');
@@ -1235,98 +1356,8 @@ sub sending_monitor {
 
        return;
     }
+	elsif ($q->param('process') eq 'ajax'){
 
-    # No id? No problem, show them the index page.
-
-    if(!$q->param('id')){
-        my $mailout_status = [];
-		my @lists;
-
-		if($root_login == 1){
-			@lists = available_lists();
-		}
-		else {
-			@lists = ($list);
-		}
-
-		for my $l_list(@lists){
-        	my @mailouts  = DADA::Mail::MailOut::current_mailouts(
-							{
-								-list     => $l_list,
-								-order_by => 'creation',
-							}
-						);
-			for my $mo(@mailouts){
-
-				my $mailout = DADA::Mail::MailOut->new({ -list => $l_list });
-	               $mailout->associate(
-						$mo->{id},
-						$mo->{type}
-					);
-	            my $status  = $mailout->status();
-				require DADA::MailingList::Settings;
-				my $l_ls = DADA::MailingList::Settings->new({-list => $l_list});
-	            push(@$mailout_status,
-					{
-
-						%$status,
-						list                         => $l_list,
-						current_list                 => (($list eq $l_list) ? 1 : 0),
-						S_PROGRAM_URL                => $DADA::Config::S_PROGRAM_URL,
-						Subject                      => safely_decode($status->{email_fields}->{Subject}, 1),
-						status_bar_width             => int($status->{percent_done}) * 1,
-						negative_status_bar_width    => 100 - (int($status->{percent_done}) * 1),
-						message_id                   => $mo->{id},
-						message_type                 => $mo->{type},
-						mailing_started              => scalar(localtime($status->{first_access})),
-						mailout_stale                => $status->{mailout_stale},
-						%{$l_ls->params},
-	            	}
-	        	);
-			}
-		}
-
-
-
-
-
-
-            my (
-				$monitor_mailout_report,
-				$total_mailouts,
-				$active_mailouts,
-				$paused_mailouts,
-				$queued_mailouts,
-				$inactive_mailouts
-				) = DADA::Mail::MailOut::monitor_mailout(
-						{
-							-verbose => 0,
-							($root_login == 1) ? () : (-list => $list)
-						}
-					);
-
-            require DADA::Template::Widgets;
-
-		my $scrn = DADA::Template::Widgets::wrap_screen(
-				{
-					-screen => 'sending_monitor_index_screen.tmpl',
-	                -with   => 'admin', 
-					-wrapper_params => { 
-						-Root_Login => $root_login,
-						-List       => $list,  
-					},
-					-vars   => {
-						screen                       => 'sending_monitor',
-						killed_it                    => $q->param('killed_it') ? 1 : 0,
-						mailout_status               => $mailout_status,
-						auto_pickup_dropped_mailings => $li->{auto_pickup_dropped_mailings},
-						monitor_mailout_report       => $monitor_mailout_report,
-					},
-				}
-			);
-		e_print($scrn);
-
-    }else{
 
         my $mailout;
         my $status = {};
@@ -1371,7 +1402,7 @@ sub sending_monitor {
 						}
 					);
 
-
+			
             if(
 
                $status->{should_be_restarted}								== 1  && # It's dead in the water.
@@ -1386,6 +1417,8 @@ sub sending_monitor {
 
                # Whew! Take that for making sure that the damn thing is supposed to be sent.
 
+				# TODO: 
+				# This needs to be changed so some really strange javascript call...?
                 print $q->redirect(
 						-url => $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&id=' . $id . '&process=restart&type=' . $type . '&restart_count=1'
 						);
@@ -1402,15 +1435,6 @@ sub sending_monitor {
                 push(@$sending_status, {key => $_, value => $status->{$_}});
 
             }
-
-           # 8 is the factory default setting to wait per batch.
-           # Let's not refresh an faster, or we'll never have time
-           # to read the actual screen.
-
-           my $refresh_after = 10;
-           if($refresh_after < $li->{bulk_sleep_amount}){
-				$refresh_after = $li->{bulk_sleep_amount};
-			}
 
           # If we're... say... 2x a batch setting and NOTHING has been sent,
           # let's say a mailing will be automatically started in... time since last - wait time.
@@ -1454,14 +1478,14 @@ sub sending_monitor {
 
 
 
-    		my $scrn = DADA::Template::Widgets::wrap_screen(
+    		my $scrn = DADA::Template::Widgets::screen(
 						{
 							-screen => 'sending_monitor_screen.tmpl',
-							-with           => 'admin', 
-							-wrapper_params => { 
-								-Root_Login => $root_login,
-								-List       => $list,  
-							},
+							#-with           => 'admin', 
+							#-wrapper_params => { 
+							#	-Root_Login => $root_login,
+							#	-List       => $list,  
+							#},
                             -vars   => {
 								screen                       => 'sending_monitor',
 								mailout_exists               => $mailout_exists,
@@ -1499,8 +1523,29 @@ sub sending_monitor {
 							},
 						}
 					);
+		print $q->header(); 
 		  e_print($scrn);
     }
+	else { 
+		require DADA::Template::Widgets; 
+		my $scrn = DADA::Template::Widgets::wrap_screen(
+			{ 
+				-screen => 'sending_monitor_container_screen.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+				-vars => { 
+					message_id                   => DADA::App::Guts::strip($id),
+					message_type                 => $q->param('type'),
+					refresh_after                => $refresh_after,
+				}
+			}
+		); 
+		e_print($scrn); 
+		
+	}
 }
 
 

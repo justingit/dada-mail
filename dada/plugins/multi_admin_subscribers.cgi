@@ -50,9 +50,12 @@ use HTML::Template;
 
 my $Default_Template = q{
 
+
+<!-- tmpl_set name="title" value="Multi List Sub/Unsub Check" -->
+	
 <h1>Search All Lists for a Particular Subscriber:</h1>
 
-<form action=<!-- tmpl_var PLUGIN_URL -->> 
+<form action=<!-- tmpl_var Plugin_URL -->> 
  <p>
   <input type="text" name="query" value="<!-- tmpl_var query -->" /> 
 
@@ -69,9 +72,11 @@ my $Default_Template = q{
 
 my $Search_Results = qq{
 
+<!-- tmpl_set name="title" value="Multi List Sub/Unsub Check" -->
+
 <h1>Search Results for: <!-- tmpl_var query --></h1>
 
-<form action="<!-- tmpl_var PLUGIN_URL -->" method="post"> 
+<form action="<!-- tmpl_var Plugin_URL -->" method="post"> 
 
 <table> 
 
@@ -180,7 +185,7 @@ my $Search_Results = qq{
 <hr /> 
 
 
-$Default_Template
+$Default_Template <!-- For real? -->
 
 };
 
@@ -224,26 +229,21 @@ if($f){
             
 sub default {
 	
-	print(admin_template_header(
-	    -Title  => "Multi List Sub/Unsub Check",
-        -List       => $list,
-        -Form       => 0,
-        -Root_Login => $root_login
-    ));
-
-
-	my $template = HTML::Template->new(%Global_Template_Options,
-									   scalarref => \$Default_Template, 
-											);
-        $template->param(  
-           PLUGIN_URL => $Url,  
-        );
-
-	print $template->output();
-
-	print admin_template_footer(-Form    => 0,
-							-List    => $list); 
-
+	require DADA::Template::Widgets; 
+	my $scrn = DADA::Template::Widgets::wrap_screen(
+		{ 
+			-data           => \$Default_Template,
+			-with           => 'admin', 
+			-wrapper_params => { 
+				-Root_Login => $root_login,
+				-List       => $list,  
+			},
+			-vars => { 
+				Plugin_URL => $Url,  
+			},
+		}
+	); 
+	e_print($scrn); 
 }
 
 
@@ -298,7 +298,6 @@ sub search {
         }
         
         push(@$results,  {
-        
             subscribed => $found,
             list_name  => $l_li->{list_name}, 
             list       => $l_list,
@@ -309,25 +308,24 @@ sub search {
         }); 
     }
 
-	print(admin_template_header(-Title      => "Multi List Sub/Unsub Check",
-		                -List       => $list,
-		                -Form       => 0,
-		                -Root_Login => $root_login));
+	require DADA::Template::Widgets; 
+	my $scrn = DADA::Template::Widgets::wrap_screen(
+		{ 
+			-data           => \$Default_Template,
+			-with           => 'admin', 
+			-wrapper_params => { 
+				-Root_Login => $root_login,
+				-List       => $list,  
+			},
+			-vars => { 
+		        query      => strip(xss_filter($q->param('query'))), 
+		        results    => $results,
+		        Plugin_URL => $Url, 
+			},
+		}
+	); 
+	e_print($scrn);
 
-    my $template = HTML::Template->new(%Global_Template_Options,
-									   scalarref => \$Search_Results, 
-											);
-	 $template->param(  
-        query      => strip(xss_filter($q->param('query'))), 
-        results    => $results,
-        PLUGIN_URL => $Url, 
-    );
-
-	print $template->output();
-	
-	print admin_template_footer(-Form    => 0,
-							-List    => $list); 
-							
 }
 
 
