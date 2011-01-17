@@ -987,7 +987,7 @@ sub html_to_plaintext {
 		   $tmp_str =~ s/\<\!\-\-/$mask_begining_comment/g; 
 		   $tmp_str =~ s/\-\-\>/$mask_ending_comment/g; 
 		if($formatted = $f->parse($tmp_str)){ 
-			return $tmp_str; 
+			return $formatted; 
 		}
 		else { 
 			carp $DADA::Config::PROGRAM_NAME . ' ' . $DADA::Config::VER . 
@@ -1307,7 +1307,7 @@ $message_body =~ s/\&\#\d\d\d\d\;//g;
 # This is pretty bizarre - perhaps better to put this in DADA::Template::Widgets, 
 # or something, and then have an option to encode the output? 
 # 
-sub e_print { 
+sub e_print { # be nice to prototype this. 
 	print encode($DADA::Config::HTML_CHARSET, $_[0]); 
 }
 
