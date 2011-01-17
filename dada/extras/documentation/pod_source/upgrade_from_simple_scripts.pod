@@ -14,7 +14,7 @@ they install Dada Mail. Since starting to offer the program, their installs
 are less and less different from the install directions we give, and thus, it's much 
 easier to upgrade. 
 
-The below directions will work to upgrade B<Dada Mail v4.3.1> 
+The below directions will work to upgrade B<Dada Mail v4.3.2> 
 as installed on, B<1/16/11> to B<Pro Dada> on a B<cPanel-based> hosting account. 
 
 To do this upgrade, you will need: 
