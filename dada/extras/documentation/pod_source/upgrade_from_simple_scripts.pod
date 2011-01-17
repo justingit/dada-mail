@@ -95,7 +95,7 @@ like you would do with your desktop computer:
 If you're having trouble doing that, you can try simply downloading the entire, B<.dada_files> 
 directory and uploading it again. 
 
-=head1 Update the C<.dada_config> file
+=head1 Update the .dada_config file
 
 We need to update two variables in the C<.dada_config> file. They are: 
 

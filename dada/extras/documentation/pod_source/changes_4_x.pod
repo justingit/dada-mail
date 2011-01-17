@@ -16,6 +16,13 @@ https://github.com/justingit/dada-mail/issues/closed#issue/86
 
 https://github.com/justingit/dada-mail/issues/closed#issue/108
 
+=head2 Changes 4.3.2
+
+There's some new documentation about upgrading from a Simple Scripts to a Regular 
+Installation of Dada Mail: 
+
+L<http://dadamailproject.com/d/upgrade_from_simple_scripts.pod.html> 
+
 =head1 4.3.1
 
 =head2 Changes 4.3.1
