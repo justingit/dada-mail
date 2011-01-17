@@ -2,6 +2,20 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.3.2
+
+This release is a bugfix-only release: 
+
+=head2 Bugfixes 4.3.2
+
+=head3 The HTML Message to Text Message thingy breaks HTML::Template tags. Ugh! 
+
+https://github.com/justingit/dada-mail/issues/closed#issue/86
+
+=head3 "Send Subscription Successful Emails is Disabled" notice shown, even if it isn't
+
+https://github.com/justingit/dada-mail/issues/closed#issue/108
+
 =head1 4.3.1
 
 =head2 Changes 4.3.1
