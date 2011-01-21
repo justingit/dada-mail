@@ -504,7 +504,7 @@ sub mailing_schedule {
             $timespan = 60 * 60            if $r->{repeat_label} eq 'hours';
             $timespan = 60 * 60 * 24       if $r->{repeat_label} eq 'days';
             $timespan = 60 * 60 * 24 * 30  if $r->{repeat_label} eq 'months';
-            $timespan = 60 * 60 * 24 * 265 if $r->{repeat_label} eq 'years';
+            $timespan = 60 * 60 * 24 * 365 if $r->{repeat_label} eq 'years';
 
             if ( $r->{repeat_times} ) {
                 $timespan = ( $timespan * $r->{repeat_times} );
