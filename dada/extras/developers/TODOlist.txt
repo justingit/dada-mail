@@ -10,6 +10,29 @@ Key:
 [*] Naw...
 [?] Someday
 
+Easier hooks/interface to Dada Mail subscribe 
+	* Perl API that doesn't have a crap...API
+	* SOAP? Interface? 
+	* YAML? Interface? 
+	* Javascript...? Interface? (Ajax? - I dunno...) 
+		Basically, this just needs to put two steps together: 
+			* first is the email validation part
+			* if it's validated, then we go to the second step - the subscribe stuff
+			* The subscribe stuff has to be changed to easily give back a return status 
+			  that we can then later use - even, "1" and, "0" would be helpful
+			* Are there any instances where a screen is shown in the web browser, that
+			  we would have to replace with some sort of different status message? 
+			  (other than errors, which will be handled in the first step, hopefully) 
+			   and the congrats stuff?
+			 Tests: 
+				Valid List? 
+				Email address present? 
+				(all the other email validation stuff...) 
+				
+
+
+
+
 [ ] Some ideas from a user: 
 	* Make the List invite be more steamlined - so skip the screen that requires you to 
 	  see the message that you want to send out 
