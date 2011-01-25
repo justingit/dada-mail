@@ -49,7 +49,6 @@ use DADA::App::LogSearch;
 
 init_vars(); 
 
-use CGI::Ajax;
 my $admin_list = undef; 
 my $root_login = undef; 
 my $list       = undef; 
