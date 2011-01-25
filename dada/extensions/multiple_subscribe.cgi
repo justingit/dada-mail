@@ -570,8 +570,8 @@ happening behind the curtains.
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2010
-Justin Simoni
+Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
+
 To contact info, please see: 
 
 L<http://dadamailproject.com/contact/>

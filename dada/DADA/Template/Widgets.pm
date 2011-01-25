@@ -1391,90 +1391,10 @@ B<-list_settings_vars> or B<-subscriber_vars>, you can in B<-vars>
 
 =cut
 
-sub wrap_screen { 
-		
-	my ($args) = @_; 
 
-	if(!exists($args->{-with})){ 
-		croak "you must pass the, '-with' paramater"; 
-	}
-	else { 
-		if($args->{-with} !~ m/^(list|admin)$/){ 
-			croak "'-with' paramater must be either, 'list' or, 'admin'";
-		}
-	}
-	my $with = $args->{-with}; 
-	# I'd rather not have this passed to, screen(); 
-	delete $args->{-with}; 
-	
-	# I need params from the first template passed. 
-	$args->{-return_params} = 1; 
-	my ($tmpl, $params) = screen($args);
-	if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1 && $with eq 'list') {
-        $tmpl = $tmpl . $DADA::Template::HTML::HTML_Footer; 
-    }
-	# "content" is passed to the wrapper template
-	my $vars = { 
-		content => $tmpl, 
-	};
-	for(qw(title show_profile_widget)){ 
-		if(exists($params->{$_})){ 
-			# variables within variables... 
-			$vars->{$_} = $params->{$_}; 
-			if($vars->{$_} =~ m/\<\!\-- tmpl_/){
-				$vars->{$_} = screen({-data => \$vars->{$_}, -vars => $params}); 
-			}
-		}
-	}	 
-		
-	if($with eq 'list'){ 
-		
-		
-		# list_template is the wrapper template - it calls, screen()
-		# This will aggravate you, as I'm aggravated by it - there's 3 ways to send the listshortname to screen()
-		# And list_template() here has one way, so we have to figure out where, "list" is, and use it. 
-		# Here we go: 
-		my $list_param = undef; 
-		if(exists($args->{-list})){ 
-			$list_param =  $args->{-list}; 
-		}
-		elsif(exists($args->{-list_settings_vars})){
-			if(exists($args->{-list_settings_vars}->{list})){ 
-				$list_param =  $args->{-list_settings_vars}->{list}; 
-			}
-			elsif(exists($args->{-list_settings_vars}->{'list_settings.list'})){ 
-				$list_param =  $args->{-list_settings_vars}->{'list_settings.list'}; 
-			}	
-		}
-		elsif(exists($args->{-list_settings_vars_param}->{-list})){
-			$list_param = $args->{-list_settings_vars_param}->{-list}; 
-		}
-		
-		require DADA::Template::HTML; 	
-		my $template = DADA::Template::HTML::list_template(
-			%{$args->{-wrapper_params}}, # This is currently, "blank" - where is put in here - header_params? 
-			-vars => $vars,				 # This currently only has, "title" and, "content" - everything else should 
-										 # already be filled out. 
-			-Part => 'full', 
-			-List => $list_param, 
-			); 			
-		return $template; 
-	}
-	elsif($with eq 'admin'){ 
-		require DADA::Template::HTML; 	
-		my $template = DADA::Template::HTML::admin_template(
-			%{$args->{-wrapper_params}}, 
-			-vars => $vars,				 						 
-			-Part => 'full', 
-			); 			
-		return $template;
-	}
-	else { 
-		die "only 'list' and 'admin' wrapping is currently supported."; 
-	}
 
-	
-}
+
+
 sub screen {  
 	
     my ($args) = @_; 
@@ -1976,6 +1896,158 @@ else {
 }
 
 
+=pod
+
+=head2 wrap_screen
+
+	my $scrn = wrap_screen(
+		{ 
+			-with => 'list', # or, 'admin', 
+			-screen => 'some_screen.tmpl', # or, "-data => \$some_data, 
+			# ... other options
+		}
+	); 
+
+C<wrap_screen> allows you to wrap either one of the two templates (currently) 
+that Dada Mail uses to wrap other template in: C<default_list_template.tmpl> and
+C<default_admin_template.tmpl>. 
+
+It takes the same options as, C<screen> and adds a few of its own: 
+
+C<-with> is required and should be set to either, C<list>, or C<admin>, depending on 
+whether you want to wrap the template in either the list or admin template. 
+
+C<-wrapper_params> can also be passed and the value of its paramaters (confusingly)
+will be different, depending on if you're using C<list> or, C<admin> for, C<-with>
+
+For, C<list>:
+
+=over
+
+=item * any paramater you would usually send to DADA::Template::HTML::list_template()
+
+Example: 
+
+	my $scrn = DADA::Template::Widgets::wrap_screen(
+		{
+			-screen => 'preview_template.tmpl',
+			-with   => 'list', 
+			-wrapper_params => { 
+				-data => \$template_info, # This is the actual template we'll be using! 
+			},
+		}
+	);
+
+=back
+
+For, C<admin> 
+
+=over
+
+=item * any paramater you would usually send to, DADA::Template::HTML::admin_template
+
+	my $scrn .= DADA::Template::Widgets::wrap_screen(
+		{
+			-screen => 'sending_monitor_index_screen.tmpl',
+            -with   => 'admin', 
+			-wrapper_params => { 
+				-Root_Login => 1,
+				-List       => 'my_list',  
+			},
+			# ... 
+		}
+	);
+
+=back
+
+=cut 
+
+
+sub wrap_screen { 
+		
+	my ($args) = @_; 
+
+	if(!exists($args->{-with})){ 
+		croak "you must pass the, '-with' paramater"; 
+	}
+	else { 
+		if($args->{-with} !~ m/^(list|admin)$/){ 
+			croak "'-with' paramater must be either, 'list' or, 'admin'";
+		}
+	}
+	my $with = $args->{-with}; 
+	# I'd rather not have this passed to, screen(); 
+	delete $args->{-with}; 
+	
+	# I need params from the first template passed. 
+	$args->{-return_params} = 1; 
+	my ($tmpl, $params) = screen($args);
+	if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1 && $with eq 'list') {
+        $tmpl = $tmpl . $DADA::Template::HTML::HTML_Footer; 
+    }
+	# "content" is passed to the wrapper template
+	my $vars = { 
+		content => $tmpl, 
+	};
+	for(qw(title show_profile_widget)){ 
+		if(exists($params->{$_})){ 
+			# variables within variables... 
+			$vars->{$_} = $params->{$_}; 
+			if($vars->{$_} =~ m/\<\!\-- tmpl_/){
+				$vars->{$_} = screen({-data => \$vars->{$_}, -vars => $params}); 
+			}
+		}
+	}	 
+		
+	if($with eq 'list'){ 
+	
+		# list_template is the wrapper template - it calls, screen()
+		# This will aggravate you, as I'm aggravated by it - there's 3 ways to send the listshortname to screen()
+		# And list_template() here has one way, so we have to figure out where, "list" is, and use it. 
+		# Here we go: 
+		my $list_param = undef; 
+		if(exists($args->{-list})){ 
+			$list_param =  $args->{-list}; 
+		}
+		elsif(exists($args->{-list_settings_vars})){
+			if(exists($args->{-list_settings_vars}->{list})){ 
+				$list_param =  $args->{-list_settings_vars}->{list}; 
+			}
+			elsif(exists($args->{-list_settings_vars}->{'list_settings.list'})){ 
+				$list_param =  $args->{-list_settings_vars}->{'list_settings.list'}; 
+			}	
+		}
+		elsif(exists($args->{-list_settings_vars_param}->{-list})){
+			$list_param = $args->{-list_settings_vars_param}->{-list}; 
+		}
+		
+		require DADA::Template::HTML; 	
+		my $template = DADA::Template::HTML::list_template(
+			%{$args->{-wrapper_params}}, # This is currently, "blank" - where is put in here - header_params? 
+			-vars => $vars,				 # This currently only has, "title" and, "content" - everything else should 
+										 # already be filled out. 
+			-Part => 'full', 
+			-List => $list_param, 
+			); 			
+		return $template; 
+	}
+	elsif($with eq 'admin'){ 
+		require DADA::Template::HTML; 	
+		my $template = DADA::Template::HTML::admin_template(
+			%{$args->{-wrapper_params}}, 
+			-vars => $vars,				 						 
+			-Part => 'full', 
+			); 			
+		return $template;
+	}
+	else { 
+		# I think it may be impossible to get here. 
+		die "only 'list' and 'admin' wrapping is currently supported."; 
+	}
+}
+
+
+
 
 sub decode_str { 
 	my $ref = shift;
@@ -2443,7 +2515,7 @@ sub _slurp {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2010 Justin Simoni 
+Copyright (c) 1999 - 2011 Justin Simoni 
 http://justinsimoni.com 
 All rights reserved. 
 

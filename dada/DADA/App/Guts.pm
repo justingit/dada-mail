@@ -2544,7 +2544,7 @@ sub safely_encode {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2010 Justin Simoni 
+Copyright (c) 1999 - 2011 Justin Simoni 
 
 http://justinsimoni.com 
 
