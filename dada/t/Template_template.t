@@ -61,6 +61,8 @@ for my $test_file(@files){
     		                                 die_on_bad_params => 0,	
 		                                     loop_context_vars => 1,
 		                                     filename          => $test_file, 
+											filter   => [{sub    => \&shh_tmpl_set,
+											format => 'scalar'}], 
 		                                    );		                              
     $template->output();  
 
@@ -141,6 +143,8 @@ for(keys %$template_strings){
 	    		                                 die_on_bad_params => 0,	
 			                                     loop_context_vars => 1,
 			                                     scalarref          => \$str, 
+												filter   => [{sub    => \&shh_tmpl_set,
+												format => 'scalar'}],
 			                                    );		                              
 	    $template->output();  
 
@@ -153,6 +157,8 @@ for(keys %$template_strings){
 		undef $template; 
 	
 }
+dada_test_config::wipe_out;
+
 
 sub open_file { 
 
@@ -203,3 +209,10 @@ return $html;
 
 }
 
+sub shh_tmpl_set { 
+	my $text_ref = shift;
+
+    my $match = qr/\<\!\-\- tmpl_set name\=\"(.*?)\" value\=\"(.*?)\" \-\-\>/;
+    $$text_ref =~ s/$match//gi;
+	
+}

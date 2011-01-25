@@ -1,5 +1,7 @@
 <!-- begin sending_monitor_index_screen.tmpl --> 
 
+<!-- tmpl_set name="title" value="Monitor Your Mailings" -->
+
 <!-- tmpl_include help_link_widget.tmpl -->
 
 <p>
@@ -278,7 +280,7 @@ Current Mass Mailings:
 
 </fieldset> 
 
-<!-- tmpl_if auto_pickup_dropped_mailings --> 
+<!-- tmpl_if list_settings.auto_pickup_dropped_mailings --> 
 
 <p class="alert">
   Auto Pickup of Dropped Mailings is enabled!

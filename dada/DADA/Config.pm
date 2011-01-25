@@ -4008,6 +4008,8 @@ Shown when a request to subscribe is successful.
 
 $HTML_CONFIRMATION_MESSAGE ||= <<EOF
 
+<!-- tmpl_set name="title" value="Please Confirm Your Subscription" --> 
+
 <h1>Please confirm your mailing list subscription</h1>  
 
 <p>An email message has been sent to the following address:</p>
@@ -4096,6 +4098,7 @@ Shown when a request to unsubscribe is successful.
 
 $HTML_UNSUB_CONFIRMATION_MESSAGE ||= <<EOF
 
+<!-- tmpl_set name="title" value="Please Confirm Your Unsubscription" -->
 <h1>Please confirm your mailing list unsubscription</h1>  
 
 <p>An email message has been sent to the following address:</p>
@@ -4151,6 +4154,8 @@ Shown when a subscription is successful.
 
 $HTML_SUBSCRIBED_MESSAGE ||= <<EOF 
 
+<!-- tmpl_set name="title" value="Subscription Successful" -->
+
 <h1>Subscription is successful!</h1>
 
 <p>You are now subscribed to the following mailing list:</p>
@@ -4185,7 +4190,10 @@ I<(List-centric, editable per list)>
 
 =cut
 
+
 $HTML_SUBSCRIPTION_REQUEST_MESSAGE ||= <<EOF 
+
+<!-- tmpl_set name="title" value="Subscription Request Successful" -->
 
 <h1>Your Request For Subscription is Complete</h1>
 
@@ -4228,6 +4236,8 @@ Shown when an unsubscription is successful.
 =cut
 
 $HTML_UNSUBSCRIBED_MESSAGE ||= <<EOF  
+
+<!-- tmpl_set name="title" value="Unsubscription Successful" --> 
 
 <h1>You have been unsubscribed from the list: <!-- tmpl_var list_settings.list_name --></h1>
 

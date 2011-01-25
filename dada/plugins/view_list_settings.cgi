@@ -33,37 +33,27 @@ my $list = $admin_list;
 my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 my $li = $ls->get;
 
-my $scrn = '';
-# header
-$scrn .= admin_template_header(
-    -Title      => "View List Settings",
-    -List       => $list,
-    -Root_Login => $root_login
-
-);
-
 my $tmpl = template();
 
 require DADA::Template::Widgets;
-$scrn .= DADA::Template::Widgets::screen(
+my $scrn = DADA::Template::Widgets::wrap_screen(
     {
         -data                     => \$tmpl,
-        -list_settings_vars_param => { 
-			-list                 => $list, 
-			-in_order             => 1, 
-			-i_know_what_im_doing => 1 
+		-with           => 'admin', 
+		-wrapper_params => { 
+			-Root_Login => $root_login,
+			-List       => $list,  
 		},
+        -list_settings_vars_param => { -list => $list, -in_order => 1, i_know_what_im_doing => 1 },
     }
 );
-
-#footer
-$scrn .= admin_template_footer( -List => $list );
 e_print($scrn); 
 
 sub template {
 
     return q{ 
     
+	<!-- tmpl_set name="title" value="View List Settings" -->
     <!-- tmpl_loop list_settings --> 
     
         <p> 

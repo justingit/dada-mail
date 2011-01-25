@@ -32,10 +32,12 @@ LOCK_NB
 ); 
 
 require Exporter; 
+our @ISA = qw(Exporter); 
 
-@ISA = qw(Exporter); 
+use vars qw($HTML_Footer);
+
 @EXPORT = qw(
-
+	
 admin_template
 admin_template_header
 admin_template_footer
@@ -49,11 +51,14 @@ make_feature_menu
 admin_header_params
 
 );
+
+
 use strict; 
 use vars qw(@EXPORT); 
+#@EXPORT_OK($HTML_Footer); 
 
-my $HTML_Footer =  '<p style="font-size:10px;font-family:Verdana,Arial;text-align:center">Powered by <a href="http://dadamailproject.com" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Dada Mail ' . $DADA::Config::VER . '</a><br />Copyright &copy; 1999-2010, <a href="http://dadamailproject.com/justin" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Simoni Creative</a>.</p>';
 
+$HTML_Footer =  '<p style="font-size:10px;font-family:Verdana,Arial;text-align:center">Powered by <a href="http://dadamailproject.com" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Dada Mail ' . $DADA::Config::VER . '</a><br />Copyright &copy; 1999-2010, <a href="http://dadamailproject.com/justin" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Simoni Creative</a>.</p>';
 
 
 =pod
@@ -160,6 +165,7 @@ sub admin_template {
 				-li           => undef, 
 				-HTML_Header  => 1, 
 				-Part         => undef, 
+				-vars         => {},
 				@_,
 				); 
 
@@ -240,6 +246,7 @@ sub admin_template {
 												root_login_message  => $root_login_message, 
 												content             => '[_dada_content]',	
 												go_pro              => $go_pro, 
+												%{ $args{ -vars } }, # content, etc
 											}, 
 										-list_settings_vars_param => { 
 																	-list   => $list, 
@@ -251,8 +258,21 @@ sub admin_template {
 								
 
 	my ($admin_header, $admin_footer) = split(/\[_dada_content\]/, $final_admin_template, 2);
-				
-	if($args{-Part} eq 'header'){ 
+	
+	if($args{-Part} eq 'full'){
+		$final_admin_template =~ s/\[_dada_content\]/<!-- tmpl_var content -->/;
+		if ( $args{ -HTML_Header } == 1 ) {
+            return $q->header( 
+				admin_header_params(),
+				)
+              . $final_admin_template;
+        }
+		else { 
+			return $final_admin_template; 
+		}
+		 
+	}
+	elsif($args{-Part} eq 'header'){ 
 			
 		if($args{-HTML_Header} == 1){ 
 			$admin_header = $q->header(
@@ -424,14 +444,12 @@ sub open_template {
 }
 
 
-
-
 sub list_template {
 
     require DADA::Template::Widgets;
     require CGI;
     my $q = CGI->new;
-    $q->charset($DADA::Config::HTML_CHARSET);
+       $q->charset($DADA::Config::HTML_CHARSET);
 
     # DEV: Weird. I know.
     if ( $DADA::Config::PROGRAM_URL eq
@@ -444,12 +462,11 @@ sub list_template {
         -Part          => undef,
         -Title         => undef,
         -HTML_Header   => 1,
-        -header_params => {},
-        -data          => undef,
+        -header_params => {},	 # this is used only when you delete a list. 
+        -data          => undef, # used in previewing a template.  
         -vars          => {},
         @_,
     );
-
     my $list = undef;
     if ( $args{ -List } ) {
         $list = $args{ -List };
@@ -463,7 +480,7 @@ sub list_template {
 
     my $list_template = undef;
 
-    if ( defined( $args{ -data } ) ) {
+    if ( defined( $args{ -data } ) ) {	
         $list_template = ${ $args{ -data } };
     }
     elsif ($list) {
@@ -564,30 +581,43 @@ sub list_template {
             )
         }
     );
+	if($args{ -Part } eq 'full'){ 
 
-    my ( $header, $footer ) =
-      split ( /\[_dada_content\]/, $final_list_template, 2 );
-
-    if ( $args{ -Part } eq 'header' ) {
-
-        if ( $args{ -HTML_Header } == 1 ) {
+		$final_list_template =~ s/\[_dada_content\]/<!-- tmpl_var content -->/;
+		if ( $args{ -HTML_Header } == 1 ) {
             return $q->header( -type => 'text/html',
                 %{ $args{ -header_params } } )
-              . $header;
+              . $final_list_template;
         }
-        else {
-            return $header;
-        }
-    }
-    else {
+		else { 
+			return $final_list_template; 
+		}
+	}
+	else { 
+    	my ( $header, $footer ) =
+	      split ( /\[_dada_content\]/, $final_list_template, 2 );
 
-        if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1 ) {
-            return "\n$HTML_Footer \n" . $footer . "\n";
-        }
-        else {
-            return $footer;
-        }
-    }
+	    if ( $args{ -Part } eq 'header' ) {
+
+	        if ( $args{ -HTML_Header } == 1 ) {
+	            return $q->header( -type => 'text/html',
+	                %{ $args{ -header_params } } )
+	              . $header;
+	        }
+	        else {
+	            return $header;
+	        }
+	    }
+	    else {
+
+	        if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1 ) {
+	            return "\n$HTML_Footer \n" . $footer . "\n";
+	        }
+	        else {
+	            return $footer;
+	        }
+	    }
+	}
 
 }
 
