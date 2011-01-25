@@ -309,6 +309,55 @@ sub param {
 }
 
 
+sub save_w_params {
+
+    my $self      = shift;
+    my ($args)    = @_;
+    my $associate = undef;
+    my $settings  = {};
+
+    if ( !exists( $args->{-associate} ) ) {
+        croak(
+'you\'ll need to pass a Perl object with a compatible, param() method in "-associate"'
+        );
+    }
+    if ( !exists( $args->{-settings} ) ) {
+        croak(
+'you\'ll need to pass what you want to save in the, "-settings" param as a hashref'
+        );
+    }
+
+    $associate = $args->{-associate};
+    $settings  = $args->{-settings};
+
+    my $saved_settings = {};
+
+    for my $setting (keys %$settings) {
+
+        # is it here?
+        if ( defined( $associate->param($setting) ) ) {
+            $saved_settings->{$setting} = $associate->param($setting);
+        }
+        else {
+
+            # fallback
+			# not checking for defined-ness here, since the value could be, "undef"
+            $saved_settings->{$setting} = $settings->{$setting};
+        }
+
+        # This is probably a good place to check that the variable is actually
+        # a valid value.
+    }
+
+#	use Data::Dumper; 
+#	croak Data::Dumper::Dumper($saved_settings); 
+    # Save, as always.
+    return $self->save($saved_settings);
+	
+}
+
+
+
 
 
 sub _existence_check { 
@@ -412,6 +461,13 @@ DADA::MailingList::Subscribers - API for the Dada Mailing List Settings
 		}
 	)
  
+ # save a setting, from a CGI paramater, with a fallback variable: 
+ $ls->save_w_params(
+	-associate => $q, # our CGI object
+	-settings  => { 
+		list_name => 'My List', 
+	}
+ ); 
  
  
   # get one setting
@@ -421,8 +477,7 @@ DADA::MailingList::Subscribers - API for the Dada Mailing List Settings
  
  #save one setting: 
  $ls->param('list_name', "My List"); 
- 
- 
+  
  
  # Another way to get all settings
  my $li = $ls->params; 
@@ -490,6 +545,26 @@ DO NOT pass, I<list> as one of the key/value pairs. The method will return an er
 This method is most convenient when you have many list settings you'd like saved at one time. See the, C<param> method if all you want to do is save one list setting paramater. 
 
 Returns B<1> on success. 
+
+
+=head2 save_w_params
+
+ $ls->save_w_params(
+	-associate => $q, # our CGI object
+	-settings  => { 
+		list_name => 'My List', 
+	}
+ ); 
+
+C<save_w_params> allows you to save list settings that are passed in a compatible Perl object (one that has a C<param> method, similar to CGI.pm's)
+
+C<save_w_params> also allows you to pass a fallback value of the list settings you want to save. 
+
+C<-associate> should hold a Perl Object with the compatable, C<param> method (like CGI.pm's C<param> method. B<required> 
+
+C<-settings> should hold a hashref of the fallback values for each list setting you want to save. 
+
+Returns, C<1> on success. 
 
 =head3 Diagnostics
 
