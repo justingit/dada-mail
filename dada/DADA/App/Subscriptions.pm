@@ -250,7 +250,7 @@ sub subscribe {
                 my $qs = ''; 
                 if($li->{alt_url_sub_confirm_failed_w_qs} == 1){ 
                     $qs = '?list=' . $list . '&rm=sub_confirm&status=0&email=' . uriescape($email);
-                    $qs .= '&errors=' . $_ for keys %$errors; 
+                    $qs .= '&errors[]=' . $_ for keys %$errors; 
                     $qs .= '&' . $_ . '=' . uriescape($fields->{$_}) for keys %$fields; 
                 }
                 
@@ -683,7 +683,7 @@ sub confirm {
                     
                 if($li->{alt_url_sub_failed_w_qs} == 1){ 
                     $qs = '?list=' . $list . '&rm=sub&status=0&email=' . uriescape($email);
-                    $qs .= '&errors=' . $_ for keys %$errors; 
+                    $qs .= '&errors[]=' . $_ for keys %$errors; 
                     
                 }
                 warn '>>>> >>>> >>>> redirecting to: ' . $li->{alt_url_sub_failed} . $qs
@@ -1122,7 +1122,7 @@ sub unsubscribe {
                 # With a query string?
                 if($li->{alt_url_unsub_confirm_failed_w_qs} == 1){ 
                     $qs = '?list=' . $list . '&rm=unsub_confirm&status=0&email=' . uriescape($email);
-                    $qs .= '&errors=' . $_ for keys %$errors; 
+                    $qs .= '&errors[]=' . $_ for keys %$errors; 
                 }
                 my $r = $q->redirect(-uri => $li->{alt_url_unsub_confirm_failed} . $qs);
                 $self->test ? return $r : print $fh safely_encode(  $r) and return; 
@@ -1414,7 +1414,7 @@ sub unsub_confirm {
                 my $qs = ''; 
                 if($li->{alt_url_unsub_failed_w_qs} == 1){ 
                     $qs = '?list=' . $list . '&rm=unsub&status=0&email=' . uriescape($email); 
-                    $qs .= '&errors=' . $_ for keys %$errors; 
+                    $qs .= '&errors[]=' . $_ for keys %$errors; 
                 }
                 warn 'Redirecting to: ' . $li->{alt_url_unsub_failed} . $qs 
                     if $t; 
