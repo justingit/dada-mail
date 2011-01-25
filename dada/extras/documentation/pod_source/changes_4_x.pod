@@ -2,6 +2,16 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.4.0
+
+=head2 Changes 4.4.0
+
+=head3 Dada Bridge: Reply and Reply-All Behavior 
+
+Dada Bridge has simplified some of its options to make it more inline with other
+discussion mailing list apps, when it comes to discussion lists. You now have two choices: 
+
+
 =head1 4.3.2
 
 This release is a bugfix-only release: 
