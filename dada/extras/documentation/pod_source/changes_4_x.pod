@@ -6,11 +6,66 @@
 
 =head2 Changes 4.4.0
 
+=head2 Code Cleanup
+
+Code cleanup has trimmed 500+ lines from the mail.cgi file. Many of the changes can be seen from 
+moving from the C<DADA::MailingList::Settings::save> method to the, C<DADA::MailingList::Settings::save_w_params> method 
+and from moving from the C<DADA::Templates::Widgets::screen> sub to the C<DADA::Templates::Widgets::wrap_screen> sub. 
+
 =head3 Dada Bridge: Reply and Reply-All Behavior 
 
 Dada Bridge has simplified some of its options to make it more inline with other
 discussion mailing list apps, when it comes to discussion lists. You now have two choices: 
 
+Have replies always be addressed to the mailing list (with an option to reply-all), or, 
+Have replies addressed to the discussion list
+
+=head3 Template System: initial "tmpl_set support",  template wrapping
+
+There's initial support for what's called the, B<tmpl_set> template tag, that basically 
+allows you to set a variable within your template, to be used somewhere else within your 
+template. 
+
+This is interesting when coupled with initial support with wrapping one template, with another. 
+
+In one way, Dada Mail already supports this - many template screens you see use either the default 
+list template, or the default admin template and add content to another template inside it. 
+
+Internally, this was done in a very kludgey way and has now been cleaned up. There could be a potential for a 
+33% speedup for screen creation (which is nice)  
+
+What has also been cleaned up is a problem with the title of many HTML screens in Dada Mail 
+being saved within the program files itself. You can now set the title of the HTML screen 
+from within the template that gets wrapped. You'll see a line like this near the top of 
+many of the templates: 
+
+ <!-- tmpl_set name="title" value="I am a title!" -->
+
+Since moving to this way of setting the title for HTML screens, many, many of the 
+templates have been changed. If you've made custom changes to the templates, you will want 
+to do a diff on your version, with the version that ships with Dada Mail. 
+
+=head2 AJAX: internal changes
+
+Many instances of using a package called, C<CGI::Ajax> (http://search.cpan.org/dist/CGI-Ajax/) 
+has been replaced to use B<prototype> (http://www.prototypejs.org/)
+
+The only place that CGI::Ajax is still being used is in the, ajax_include_subscribe.cgi 
+extension - and we'll most likely remove it from there, soon as well. 
+
+=head2 Mailing Monitor: AJAX
+
+The Mailing Monitor in the list control panel is now refreshed via AJAX, so that 
+only a portion of the screen you see needs to be updated, instead of a refresh of the entire 
+screen. This seems to make things appear much more snappy. 
+
+=head2 Subscription/Unsubscription Custom URL Redirect API Change
+
+If there's an error with a subscription/unsubscription request, Dada Mail would 
+add a list of the errors it came across by passing them in query string with a paramater named, C<errors>. 
+This name has been changed to, C<errors[]> to help out php folk. This is tied to this bug: 
+
+L<https://github.com/justingit/dada-mail/issues#issue/109>
 
 =head1 4.3.2
 
