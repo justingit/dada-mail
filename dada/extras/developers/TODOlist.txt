@@ -29,10 +29,10 @@ Easier hooks/interface to Dada Mail subscribe
 				Email address present? 
 				(all the other email validation stuff...) 
 				
-
-
-
-
+[ ] set_to_header_to_list_address setting needs to be re-named. 
+	* The functionality it was supposed to do, it doesn't 
+	* As it stands, if it's set to, "0", a reply-to header is added (or clobbers an already existing one) with the List Email address set. 
+	
 [ ] Some ideas from a user: 
 	* Make the List invite be more steamlined - so skip the screen that requires you to 
 	  see the message that you want to send out 

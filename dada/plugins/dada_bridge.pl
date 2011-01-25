@@ -803,7 +803,6 @@ sub cgi_default {
           $q->param('append_list_name_to_subject') || 0;
         $p->{no_append_list_name_to_subject_in_archives} =
           $q->param('no_append_list_name_to_subject_in_archives') || 0;
-        $p->{add_reply_to}         = $q->param('add_reply_to')         || 0;
         $p->{discussion_pop_email} = $q->param('discussion_pop_email') || undef;
         $p->{discussion_pop_server} = $q->param('discussion_pop_server')
           || undef;
@@ -3653,9 +3652,11 @@ General
      <br />
      Everyone subscribed to your list may post messages for everyone else 
      on your list by sending  messages to (<strong><!-- tmpl_var list_settings.discussion_pop_email escape="HTML" --></strong>).
-    </p>
+   </p>
   
-  
+
+
+
   	 <table width="100%" cellspacing="0" cellpadding="5">
         <tr> 
         
@@ -3705,19 +3706,6 @@ General
     </p>
    </td>
   </tr>
-  <tr> 
-   <td align="right">
-    <input name="add_reply_to" id="add_reply_to" type="checkbox" value="1" <!--tmpl_if list_settings.add_reply_to -->checked="checked"<!--/tmpl_if--> />
-   </td>
-   <td>
-    <label for="add_reply_to">
-     Automatically have replies to messages directed to the group
-    </label>
-    <br />
-     A 'Reply-To' header will be added to group list mailings that will direct 
-     replies to list messages back to the list address (<strong><!-- tmpl_var list_settings.discussion_pop_email escape="HTML" --></strong>).
-   </td>
-  </tr>
    <tr> 
    <td align="right">
     <input name="mail_discussion_message_to_poster" id="mail_discussion_message_to_poster" type="checkbox" value="1" <!--tmpl_if list_settings.mail_discussion_message_to_poster -->checked="checked"<!--/tmpl_if--> />
@@ -3731,18 +3719,25 @@ General
   </tr>
   
   
-  
-     <tr> 
-   <td align="right">
-    <input name="set_to_header_to_list_address" id="set_to_header_to_list_address" type="checkbox" value="1" <!--tmpl_if list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_if--> />
-   </td>
-   <td>
+
+
+<!-- 
+
+<td align="right">
+ <input name="set_to_header_to_list_address" id="set_to_header_to_list_address" type="checkbox" value="1" <!--tmpl_if list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_if--> />
+</td>
+
     <label for="set_to_header_to_list_address">
      Set the <strong>To:</strong> header of discussion list messages to the <strong>List Address</strong>, rather than the subscribers address.
     </label>
     <br />
    </td>
   </tr>
+--> 
+
+
+
+
 
      <tr> 
    <td align="right">
@@ -3756,9 +3751,34 @@ General
 	Parsing Template Tags could create formatting problems. 
    </td>
   </tr>
-
-
  </table> 
+
+
+	<p><label>Replies to messages should:</label><br/> 
+	<table>
+     <tr>
+      <td>
+	<p>
+	 <input type="radio" name="set_to_header_to_list_address" value="1" <!--tmpl_if list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_if--> /></p>
+	  </td><td>
+	<p><label>be addressed to the sender</label><br />
+	 <em>(you can still "Reply-All" to send the reply to the sender, as well as the mailing list)</em></p>
+	</td>
+	</tr> 
+	<tr> 
+
+	<td>
+	<p>
+	 <input type="radio" name="set_to_header_to_list_address" value="0" <!--tmpl_unless list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_unless--> />
+	</p></td> 
+	<td> 
+	<label>be addressed to the mailing list</label>
+</p> 
+</td> 
+</tr> 
+</table>
+
+
       </td>
   </tr>
  </table> 

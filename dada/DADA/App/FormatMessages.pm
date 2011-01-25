@@ -720,27 +720,6 @@ sub _format_headers {
 			
 		}
 		
-		
-		if($self->{ls}->param('add_reply_to') == 1){ 
-			
-			# DEV:  Does this have to be updated!?
-			my $reply_to = Email::Address->new(
-								$self->{ls}->param('list_name'), 
-								$self->{ls}->param('discussion_pop_email')
-							);
-			
-			$entity->head->delete('Reply-To');
-			$entity->head->add(   'Reply-To', $reply_to);
-
-		} else {
-		
-			my $original_sender = $entity->head->get('From', 0);
-			   $original_sender = safely_encode( $original_sender); 
-			
-		   $entity->head->delete('Reply-To');
-		   $entity->head->add('Reply-To', safely_encode($original_sender)); 
-		}
-		
 		$entity->head->delete('Return-Path'); 
 
 	}else{ 
