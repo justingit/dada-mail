@@ -10,6 +10,19 @@ Key:
 [*] Naw...
 [?] Someday
 
+# The neverending, "I want a private email list - DM doesn't allow that, I don't 
+want to invite people" never ending debate. 
+
+Lists will need to have two ways of opereation: 
+PRIVATE: allows mass subscriptions via the list control panel, and other non-closed-loop opt in stuff
+		 Allows you to hide your list 
+		 YOU ARE responsible for making sure you follow things. 
+Public: Cannot have mass subscriptions via the list control panel - MUST use closed-loop opt in stuff
+	    Cannot hide your list 
+		Still responsible to make sure you follow the rules, but Dada Mail will do its best to 
+		make this painless
+		Added bonus! Ability to use outside sending APIs! Amazon SES,  PostMark, etc. 
+
 Easier hooks/interface to Dada Mail subscribe 
 	* Perl API that doesn't have a crap...API
 	* SOAP? Interface? 
