@@ -1,26 +1,26 @@
 #!/usr/bin/perl 
 
+# There should be a test to make sure SOAP::Lite is installed. 
 use SOAP::Lite;
 
 use CGI qw(:standard); 
 
-my $proxy     = 'http://localhost/cgi-bin/soap_server.cgi'; 
+my $proxy     = 'http://localhost/cgi-bin/test_dada/soap_server.cgi'; 
 my $namespace = 'DadaMail';
 
 
-my $email     = 'user@example.com'; 
-my $list      = 'mylist';
+my $email     = 'me@justinsimoni.com'; 
+my $list      = 'j';
 
 
 print header(); 
-
 
 
 my $soap = SOAP::Lite 
 	-> uri('urn:' . $namespace)
   	-> proxy($proxy);
 
-  my $result = $soap->subscription_check($list, $email);
+  my $result = $soap->subscribe($list, $email);
 
 print "<pre>\n"; 
 print '	* Email: ' . $email . "\n"; 
