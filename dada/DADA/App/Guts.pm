@@ -555,6 +555,11 @@ checks to see if theres a filename called $list
 returns 1 for success, 0 for failure. 
 
 =cut
+
+sub list_exists { 
+	return check_if_list_exists(@_);
+}
+
 sub check_if_list_exists { 
 	
 	my %args = (
