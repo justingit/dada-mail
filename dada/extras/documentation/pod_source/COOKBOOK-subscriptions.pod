@@ -2,70 +2,104 @@
 
 =head1 Subscription Cookbook
 
-=head2 How to Subscribe an Email Address to a Mailing List
+=head1 How to Subscribe an Email Address to a Mailing List
 
 A challenge people face is trying to tie Dada Mail's subscription system with another system, like a checkout part of a shopping cart, boards/forum, blog or CMS software.
 
 Dada Mail has hooks into its subscribe system, that you can use by making a small perl script, that can be called from your main program. (If you app is written in Perl, an outside program may not be something you'll need to make) 
 
-Here's a very tiny script that starts the subscription process for one email address, to one list: 
+=head2 Command Line Utility - subscribe_email.pl
 
-	#!/usr/bin/perl 
-	package subscribe_email;
-	use lib qw(./ ./DADA/perllib);
-	
-	use DADA::Config;
-	use DADA::App::Subscriptions;
-	use DADA::App::Guts;
-	use CGI;
-	use Getopt::Long;
-	
-	my $verbose = 0;
-	my $email;
-	my $list;
-	
-	GetOptions(
-	    "email=s" => \$email,
-	    "list=s"  => \$list,
-	);
-	
-	__PACKAGE__->run()
-	  unless caller();
-	
-	sub run {
-	
-	    my $q = CGI->new;
-	    $q = decode_cgi_obj($q);
-	    $q->param( 'list',  $list );
-	    $q->param( 'email', $email );
-	    $q->param( 'f',     's' );
-		
-	    my $das = DADA::App::Subscriptions->new;
-	    $das->subscribe(
-	        {
-	            -cgi_obj     => $q,
-	            -html_output => 0,
-	        }
-	    );
-	}
+Find a copy of C<subscribe_email.pl> in the Dada Mail distro at: 
 
-Save this script as, C<subscribe_email.pl> and run it as a shell script, like this: 
+C<dada/extras/scripts/subscribe/subscribe_email.pl> 
 
- prompt>perl ./subscribe_email.pl --list mylist --email email@example.com 
+=head3 Arguments
 
-This script also be called from within another script using something like Perl's, C<exec> function. 
+Run C<subscribe_email.pl> as a shell script, like this: 
 
-C<DADA::App::Subscriptions>'s C<subscribe> method will handle a subscription request exactly the same way the main Dada Mail program would and follow all the list settings and options you've set. For example, if the email address passed is valid and not subscribed to the mailing list already, the email address will be sent a subscription confirmation email. 
+ prompt>perl ./subscribe_email.pl --list mylist --email user@example.com 
 
-=head1 Other Examples
+C<--list> should hold the listshortname of the list you want to subscribe to. 
 
-=head2 Proof of Concept SOAP example
+C<--email> should hold the email address you want to subscribe. 
 
-See the Proof of Concept SOAP example: 
+C<--verbose> is optional. If set to, C<1>, you will get a small report on the request. 
+
+C<subscribe_email.pl> can also be called from within another script using something like Perl's, C<exec> function. 
+
+=head2 Web Services 
+
+=head2 SOAP
+
+A proof of concept SOAP server and clients (one client written in Perl, one in php) are bundled with Dada Mail. More information: 
 
 L<http://dadamailproject.com/d/README_SOAP.pod.html>
 
 for more inspiration
+
+=head2 REST 
+
+A rest server and example client are bundled with the Dada Mail distro. You can find them at: 
+
+
+=over
+
+=item * REST server:
+
+I<dada/extras/scripts/subscribe/subscribe_rest_server.cgi> 
+
+=item * REST example client: 
+
+I<dada/extras/scripts/subscribe/subscribe_rest_client.cgi> 
+
+=back
+
+Both are written in perl (although you may write your client in whatever you may like) 
+
+The example client will need the following CPAN modules: 
+
+=over
+
+=item * JSON 
+
+=item * HTTP::Request
+
+=item * HTTP::Request::Common
+
+=item * LWP::UserAgent
+
+=back
+
+The REST server will need the folling CPAN modules: 
+
+=over
+
+=item * JSON
+
+=back
+
+The example client (C<subscribe_rest_client.cgi>) needs a few variables filled out: 
+
+=over
+
+=item * $host
+
+This will be the URL of the C<subscribe_rest_server.cgi>
+
+=item * $email
+
+Should hold the email address you want to subscribe. 
+
+=item * $list
+
+Should hold the listshortname of the list you want to subscribe to. 
+
+=back
+
+Use the C<subscribe_rest_client.cgi> script as inspiration for integration in your own perl/php program it, by itself, is not a complete script. 
+
+=head1 Other examples
 
 =head2 FormMail Integration
 
