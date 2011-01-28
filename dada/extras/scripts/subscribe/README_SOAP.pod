@@ -1,0 +1,87 @@
+=pod
+
+=head1 SOAP Web Services for Dada Mail Proof of Concept
+
+You should be able to find these files in the Dada Mail distro, under, I<dada/extras/scripts/subscribe> 
+
+and should include, 
+
+=over
+
+=item * a CGI SOAP server, written in Perl that ties into the Dada Mail API. (subscribe_soap_server.cgi)
+
+=item * a SOAP client written in Perl (subscribe_soap_client.cgi)
+
+=item * a SOAP client, written in php (subscribe_soap_client.php)
+
+=back 
+
+=head1 API Currently the SOAP API only provides B<one> methods: 
+
+=over 
+
+
+=item * subscribe
+
+C<subscribe> works much like if you submitted your own email address into a Dada Mail form, except it won't return HTML. 
+
+=back
+
+=head1 Introduction
+
+The SOAP interface allows programs written in languages other than Perl and/or located on a separate system to interact with Dada Mail. 
+
+=head1 Requirements 
+
+The Perl server and the Perl client requires the SOAP::Lite CPAN distro: 
+
+http://www.soaplite.com/
+
+http://search.cpan.org/~mkutter/SOAP-Lite-0.710.08/
+
+The php client requires the PEAR SOAP distro: 
+
+http://pear.php.net/package/SOAP
+
+=head1 Installation
+
+Place both the subscribe_soap_server.cgi and subscribe_soap_client.cgi into the, "dada" directory of your working Dada Mail installation. Change the permissions of both to, "755". 
+
+Place the subscribe_soap_client.php file somewhere on your website, however you php folks do it. 
+
+=head1 Configuration
+
+Both the, subscribe_soap_client.php and subscribe_soap_client.cgi scripts have *three* variables you may have to change: 
+
+=over 
+
+=item *  $proxy 
+
+This should hold the URL to the subscribe_soap_server.cgi script
+
+=item * $email
+
+This should hold an email address you'd like to validate
+
+=item *  $list
+
+This should hold a Dada Mail list shortname you'd like to validate against
+
+=back
+
+=head1 Running
+
+The subscribe_soap_client.cgi and subscribe_soap_client.php scripts can be run simply by visiting them in a webserver. Doing so will print a simple report, like so: 
+
+ 	* Email: user@example.com
+ 	* List: mylist
+ 
+ Subscription Check: 0
+ Errors: 
+ 	* Error: already_sent_sub_confirmation
+ 	* Error: subscribed
+ done.
+
+And, that's it. 
+
+Use the subscribe_soap_client.cgi and subscribe_soap_client.php scripts as inspiration for integration in your own perl/php programs - they, by themselves, are not complete scripts. 
