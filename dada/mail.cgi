@@ -4334,68 +4334,53 @@ sub adv_archive_options {
             $can_use_gravatar_url = 0;
         }
 
-        require DADA::Template::Widgets;
-        my $scrn =  DADA::Template::Widgets::wrap_screen({-screen => 'adv_archive_options_screen.tmpl',
-                                              -vars   => {
-															screen                       => 'adv_archive_options',
-															-with           => 'admin', 
-															-wrapper_params => { 
-																-Root_Login => $root_login,
-																-List       => $list,  
-															},
-                                                     		done                         => $done,
-                                                            stop_message_at_sig          => $li->{stop_message_at_sig},
-                                                            sort_archives_in_reverse     => $li->{sort_archives_in_reverse},
-                                                            archive_show_day             => $li->{archive_show_day},
-                                                            archive_show_month           => $li->{archive_show_month},
-                                                            archive_show_year            => $li->{archive_show_year},
-                                                            archive_show_hour_and_minute => $li->{archive_show_hour_and_minute},
-                                                            archive_show_second          => $li->{archive_show_second},
-                                                            archive_index_count_menu     => $archive_index_count_menu,
-                                                            publish_archives_rss         => $li->{publish_archives_rss},
-                                                            list                         => $list,
-                                                            ping_archives_rss            => $li->{ping_archives_rss},
-                                                            ping_sites                   => $ping_sites,
-                                                            can_use_xml_rpc              => $can_use_xml_rpc,
-                                                            html_archives_in_iframe      => $li->{html_archives_in_iframe},
-                                                            disable_archive_js           => $li->{disable_archive_js},
-                                                            can_use_html_scrubber        => $can_use_html_scrubber,
+		require DADA::Template::Widgets;
+		my $scrn =  DADA::Template::Widgets::wrap_screen(
+			{
+				-screen => 'adv_archive_options_screen.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+				-Root_Login => $root_login,
+				-List       => $list,  
+				},
+		        -vars   => {
+		            screen => 'adv_archive_options',
+		            title  => 'Advanced Archive Options',
 
-                                                            style_quoted_archive_text    => $li->{style_quoted_archive_text},
+		            done                       => $done,
+		            archive_index_count_menu   => $archive_index_count_menu,
+		            list                       => $list,
+		            ping_sites                 => $ping_sites,
+		            can_use_xml_rpc            => $can_use_xml_rpc,
+		            can_use_html_scrubber      => $can_use_html_scrubber,
+		            can_display_attachments    => $la->can_display_attachments,
+		            can_use_recaptcha_mailhide => $can_use_recaptcha_mailhide,
+		            can_use_gravatar_url       => $can_use_gravatar_url,
+		            gravatar_img_url           => $gravatar_img_url,
 
-                                                            display_attachments          => $li->{display_attachments},
-
-                                                            can_display_attachments      => $la->can_display_attachments,
-                                                            add_subscribe_form_to_feeds  => $li->{add_subscribe_form_to_feeds},
-
-                                                            add_social_bookmarking_badges => $li->{add_social_bookmarking_badges},
-															can_use_recaptcha_mailhide    => $can_use_recaptcha_mailhide,
-
-															can_use_gravatar_url          => $can_use_gravatar_url,
-															gravatar_img_url              => $gravatar_img_url,
-														    enable_gravatars              => $li->{enable_gravatars},
-                                                            default_gravatar_url          => $li->{default_gravatar_url},
-
-                                                            (($li->{archive_protect_email} eq 'none') ?
-                                                                (archive_protect_email_none => 1,)    :
-                                                                (archive_protect_email_none => 0,)
-                                                            ),
-                                                            (($li->{archive_protect_email} eq 'spam_me_not') ?
-                                                                (archive_protect_email_spam_me_not => 1,)    :
-                                                                (archive_protect_email_spam_me_not => 0,)
-                                                            ),
-                                                             (($li->{archive_protect_email} eq 'recaptcha_mailhide') ?
-                                                                (archive_protect_email_recaptcha_mailhide => 1,)    :
-                                                                (archive_protect_email_recaptcha_mailhide => 0,)
-                                                            ),
-
-
-
-
-
-
-                                                            },
-                                             });
+		            (
+		                  ( $li->{archive_protect_email} eq 'none' )
+		                ? ( archive_protect_email_none => 1, )
+		                : ( archive_protect_email_none => 0, )
+		            ),
+		            (
+		                  ( $li->{archive_protect_email} eq 'spam_me_not' )
+		                ? ( archive_protect_email_spam_me_not => 1, )
+		                : ( archive_protect_email_spam_me_not => 0, )
+		            ),
+		            (
+		                (
+		                    $li->{archive_protect_email} eq 'recaptcha_mailhide'
+		                ) ? ( archive_protect_email_recaptcha_mailhide => 1, )
+		                : ( archive_protect_email_recaptcha_mailhide => 0, )
+		            ),
+		        },
+		        -list_settings_vars_param => {
+		            -list   => $list,
+		            -dot_it => 1,
+		        },
+		    }
+		);
 		e_print($scrn);
     }
     else {
@@ -5098,10 +5083,26 @@ sub edit_template {
     my $default_template = default_template();
 
     if ( !$process ) {
-
+		my $content_tag_found_in_template         = 0; 
+		my $content_tag_found_in_url_template     = 0; 
+		my $content_tag_found_in_default_template = 0; 
+		
+		my $content_tag = quotemeta('<!-- tmpl_var content -->');
+		
+		if($raw_template =~ m/$content_tag/){ 
+			$content_tag_found_in_default_template = 1; 
+		}
+		
+		
+		
         my $edit_this_template = $default_template . "\n";
-        $edit_this_template = open_template( -List => $list ) . "\n"
-          if check_if_template_exists( -List => $list ) >= 1;
+        if(check_if_template_exists( -List => $list ) >= 1) { 
+			$edit_this_template = open_template( -List => $list ) . "\n"
+    	}
+		if($edit_this_template =~ m/$content_tag/){ 
+			$content_tag_found_in_template = 1; 
+		}
+		
 
         my $get_template_data_from_default_template = 0;
         $get_template_data_from_default_template = 1
@@ -5129,10 +5130,12 @@ sub edit_template {
         if ( $get_template_data_from_url == 1 ) {
 
             if ( $can_use_lwp_simple == 1 ) {
-
+				
                 if ( LWP::Simple::get( $li->{url_template} ) ) {
-
-                    # ...
+					my $tmp_tmpl = LWP::Simple::get( $li->{url_template}); 
+					if($tmp_tmpl =~ m/$content_tag/){ 
+						$content_tag_found_in_url_template = 1; 
+					}
                 }
                 else {
 
@@ -5153,17 +5156,19 @@ sub edit_template {
 				-vars   => {
 					screen                                  => 'edit_template',
 					done                                    => $done,
-					edit_this_template                      => $edit_this_template,
-					get_template_data                       => $li->{get_template_data},
+					edit_this_template                      => $edit_this_template,					
 					get_template_data_from_url              => $get_template_data_from_url,
 					get_template_data_from_template_file    => $get_template_data_from_template_file,
 					get_template_data_from_default_template => $get_template_data_from_default_template,
 					can_use_lwp_simple                      => $can_use_lwp_simple,
-					url_template                            => $li->{url_template},
 					default_template                        => $default_template,
-					apply_list_template_to_html_msgs        => $li->{apply_list_template_to_html_msgs},
 					template_url_check                      => $template_url_check,
 					template_saved                          => $template_saved,
+					content_tag_found_in_template           => $content_tag_found_in_template, 
+					content_tag_found_in_url_template       => $content_tag_found_in_url_template, 
+					content_tag_found_in_default_template   => $content_tag_found_in_default_template, 
+					# I don't think this is directly used: 
+					#get_template_data                       => $li->{get_template_data},
 
 				},
 				-list_settings_vars_param =>
@@ -5498,7 +5503,7 @@ sub edit_html_type {
     if ( !$process ) {
 
         require DADA::Template::Widgets;
-        my $scrn = DADA::Template::Widgets::wrap_screen(
+		my $scrn = DADA::Template::Widgets::wrap_screen(
 			{
 				-screen => 'edit_html_type_screen.tmpl',
 				-with           => 'admin', 
@@ -5507,16 +5512,18 @@ sub edit_html_type {
 					-List       => $list,  
 				},
 				-list   => $list,
-				-vars   => {
-					screen                          => 'edit_html_type',
-					title                           => 'HTML Screen Templates',
-					done                            => $done,
-					html_confirmation_message       => $li->{html_confirmation_message},
-					html_unsub_confirmation_message => $li->{html_unsub_confirmation_message},
-					html_subscribed_message         => $li->{html_subscribed_message},
-					html_unsubscribed_message       => $li->{html_unsubscribed_message},
+		        -list   => $list,
+		        -vars   => {
+		            screen                    => 'edit_html_type',
+		            title                     => 'HTML Screen Templates',
+		            done                      => $done,
 				},
-			}
+	            -list_settings_vars_param => {
+	                -list   => $list,
+	                -dot_it => 1,
+	            },
+
+		    }
 		);
 		e_print($scrn);
 
@@ -5539,7 +5546,7 @@ sub edit_html_type {
 
         $ls->save_w_params(
             {
-                -associte => $q,
+                -associate => $q,
                 -settings => {
                     html_confirmation_message       => '',
                     html_unsub_confirmation_message => '',
@@ -5585,6 +5592,11 @@ sub manage_script {
         my $scrn = DADA::Template::Widgets::wrap_screen(
 			{
 				-screen => 'manage_script_screen.tmpl',
+				-with   => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
 				-list   => $list,
 				-vars   => {
 					more_info          => $more_info,
