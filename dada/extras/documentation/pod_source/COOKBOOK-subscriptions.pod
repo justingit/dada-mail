@@ -26,6 +26,10 @@ C<--email> should hold the email address you want to subscribe.
 
 C<--verbose> is optional. If set to, C<1>, you will get a small report on the request. 
 
+You can also pass Profile Fields for the subscriber, just use the, C<-fields> paramater: 
+
+ prompt>perl ./subscribe_email.pl --list mylist --email user@example.com ---fields first_name=John --fields last_name=Doe
+
 C<subscribe_email.pl> can also be called from within another script using something like Perl's, C<exec> function. 
 
 =head2 Web Services 
@@ -94,6 +98,10 @@ Should hold the email address you want to subscribe.
 =item * $list
 
 Should hold the listshortname of the list you want to subscribe to. 
+
+=item * $fields 
+
+(hashref) Should hold any Profile Fields you want for the addressee. 
 
 =back
 

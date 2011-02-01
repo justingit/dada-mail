@@ -44,7 +44,7 @@ sub subscribe() {
 	if($@) { 
 		die '400'; 
 	}
-	my ($status, $errors) = dada_mail_subscribe($data->{list}, $data->{email});
+	my ($status, $errors) = dada_mail_subscribe($data->{list}, $data->{email}, $data->{fields});
 
     print $q->header( 
         -status   => 201, 
@@ -120,7 +120,8 @@ sub dada_mail_subscribe {
 
 	my $list    = shift; 
 	my $email   = shift; 
-
+	my $fields  = shift; 
+	
 	my $status = 0; 
 	my $errors = {}; 
 	
@@ -166,6 +167,14 @@ sub dada_mail_subscribe {
 		   $q->param('list',  $list ); 
 		   $q->param('email', $email); 
 
+		# Profile Fields
+		my $fields = {}; 
+	    for(@{$lh->subscriber_fields}){ 
+			if(exists($fields->{$_})){ 
+	        	$q->param($_, $fields->{$_}); 
+			}
+		}
+		
 	    require       DADA::App::Subscriptions; 
 	    my $das = DADA::App::Subscriptions->new; 
 

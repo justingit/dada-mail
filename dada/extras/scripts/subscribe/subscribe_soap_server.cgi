@@ -22,6 +22,7 @@ sub subscribe {
 	my ($class) = shift; 
 	my $list    = shift; 
 	my $email   = shift; 
+	my $fields  = shift; 
 
 	my $status = 0; 
 	my $errors = {}; 
@@ -67,6 +68,14 @@ sub subscribe {
 		   $q->param('f',     's'   );
 		   $q->param('list',  $list ); 
 		   $q->param('email', $email); 
+
+		# Profile Fields
+		my $fields = {}; 
+	    for(@{$lh->subscriber_fields}){ 
+			if(exists($fields->{$_})){ 
+	        	$q->param($_, $fields->{$_}); 
+			}
+		}
 
 	    require   DADA::App::Subscriptions; 
 	    my $das = DADA::App::Subscriptions->new; 

@@ -12,11 +12,14 @@ use Getopt::Long;
 my $verbose = 0;
 my $email;
 my $list;
+my $fields = {}; 
 
+# http://search.cpan.org/~jv/Getopt-Long-2.38/lib/Getopt/Long.pm#Options_with_hash_values
 GetOptions(
-    "email=s" => \$email,
-    "list=s"  => \$list,
-    "verbose" => \$verbose,
+    "email=s"   => \$email,
+    "list=s"    => \$list,
+    "fields=s%" => \$fields,
+    "verbose"   => \$verbose,
 );
 
 __PACKAGE__->run()
@@ -81,6 +84,15 @@ sub run {
 		   $q->param('list',  $list ); 
 		   $q->param('email', $email); 
 
+		# Profile Fields
+		my $fields = {}; 
+	    for(@{$lh->subscriber_fields}){ 
+			if(exists($fields->{$_})){ 
+	        	$q->param($_, $fields->{$_}); 
+			}
+		}
+
+
 	    require   DADA::App::Subscriptions; 
 	    my $das = DADA::App::Subscriptions->new; 
 
@@ -93,7 +105,7 @@ sub run {
 	}
 	if($verbose == 1){ 
 		require Data::Dumper; 
-		Data::Dumper::Dumper(
+		print Data::Dumper::Dumper(
 			{ 
 				status => $sc_status, 
 				errors => $sc_errors,

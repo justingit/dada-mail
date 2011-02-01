@@ -13,6 +13,15 @@ my $namespace = 'DadaMail';
 
 my $email     = 'user@example.com'; 
 my $list      = 'listshortname';
+my $fields = { 
+	# Profile Fields go here! Example: 
+	#
+	# first_name => 'John', 
+	# last_name  => 'Doe', 
+	#
+	# (etc)
+}
+#
 
 
 print header(); 
@@ -21,7 +30,7 @@ my $soap = SOAP::Lite
 	-> uri('urn:' . $namespace)
   	-> proxy($proxy);
 
-  my $result = $soap->subscribe($list, $email);
+  my $result = $soap->subscribe($list, $email, $fields);
 
 print "<pre>\n"; 
 print '	* Email: ' . $email . "\n"; 

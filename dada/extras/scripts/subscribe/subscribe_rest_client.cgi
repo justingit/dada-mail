@@ -6,6 +6,14 @@ use strict;
 my $host = 'http://localhost/cgi-bin/dada/extras/scripts/subscribe/subscribe_rest_server.cgi'; 
 my $email = 'listshortname'; 
 my $list  = 'user@example.com'; 
+my $fields = { 
+	# Profile Fields go here! Example: 
+	#
+	# first_name => 'John', 
+	# last_name  => 'Doe', 
+	#
+	# (etc)
+}
 #
 
 use CGI::Carp qw(fatalsToBrowser); 
@@ -26,6 +34,9 @@ subscribe(
 	{
 		-list  => $list, 
 		-email => $email, 
+		-fields => { 
+			$fields, 
+		}
 	}
 ); 
 

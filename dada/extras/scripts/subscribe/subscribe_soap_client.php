@@ -8,6 +8,7 @@ $namespace = 'DadaMail';
 
 $email     = 'user@example.com'; 
 $list      = 'listshortname';
+$fields     = array();
 
 
 $params  = array();
@@ -16,8 +17,7 @@ $options = array('namespace' => $namespace, 'trace' => 1);
 
 $client = new SOAP_Client($proxy);
 
-
-$params2 = array($list, $email); 
+$params2 = array($list, $email, $fields); 
 
 $result = array(); 
 $result = $client->call("subscribe", $params2, $options);
