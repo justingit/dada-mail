@@ -10,6 +10,13 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+filter_subscribers enhancements
+	it would be nice if, during the, "Add/Invite screen, you're allowed to see which subscribers you're trying to import
+	have already gotten a subscription request - and if so, not allow them to get another invite/whatever. 
+	Just another hook into, "Limit Subscriber Confirmation" stuff. I think. 
+	
+
 Easier hooks/interface to Dada Mail subscribe 
 	* Perl API that doesn't have a crap...API
 	* SOAP? Interface? 
