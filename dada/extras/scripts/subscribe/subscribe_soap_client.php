@@ -2,12 +2,13 @@
 
 include 'SOAP/Client.php';
 
-$proxy     = 'http://localhost/cgi-bin/soap_server.cgi'; 
+$proxy     = 'http://localhost/cgi-bin/dada/extras/scripts/subscribe_soap_server.cgi'; 
 $namespace = 'DadaMail';
 
 
 $email     = 'user@example.com'; 
-$list      = 'mylist'; 
+$list      = 'listshortname';
+$fields     = array();
 
 
 $params  = array();
@@ -16,11 +17,10 @@ $options = array('namespace' => $namespace, 'trace' => 1);
 
 $client = new SOAP_Client($proxy);
 
-
-$params2 = array($list, $email); 
+$params2 = array($list, $email, $fields); 
 
 $result = array(); 
-$result = $client->call("subscription_check", $params2, $options);
+$result = $client->call("subscribe", $params2, $options);
 
 echo "<pre>\n"; 
 
