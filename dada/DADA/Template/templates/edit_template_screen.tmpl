@@ -34,6 +34,17 @@
 
 
 
+
+	<!-- tmpl_if content_tag_found_in_default_template --> 
+		<p class="positive">
+			&quot;content&quot; tag found in default template. Good!
+		</p>
+	<!-- tmpl_else --> 
+		<p class="error">
+			Yikes! Couldn't find the content tag (<code>&lt;!-- tmpl_var content --&gt;</code>) in your default template! 
+		</p>
+	<!-- /tmpl_if -->
+
  <p>
   <input type="radio" name="get_template_data" id="from_default_template" value="from_default_template" <!-- tmpl_if get_template_data_from_default_template -->checked="checked"<!--/tmpl_if--> />
   <label for="from_default_template">
@@ -46,7 +57,18 @@
   <label for="from_template_file">
    Use this Custom Template for your Mailing List: 
   </label>
-  <br />
+  </p> 
+	<!-- tmpl_if content_tag_found_in_template --> 
+		<p class="positive">
+			&quot;content&quot; tag found in custom template. Good!
+		</p>
+	<!-- tmpl_else --> 
+		<p class="error">
+			Yikes! Couldn't find the content tag (<code>&lt;!-- tmpl_var content --&gt;</code>) in your custom template! 
+		</p>
+	<!-- /tmpl_if --> 
+
+ 
   <textarea name="template_info" cols="70" rows="20" wrap="off"><!-- tmpl_var edit_this_template --></textarea>
  </p>
 <!-- tmpl_if template_saved --> 
@@ -62,15 +84,33 @@
 	  <label for="from_url">
 	   Use the Custom Template at this URL for your Mailing List:
 	  </label>
-	  <!-- tmpl_unless template_url_check --> 
-          </p> 
-          <p class="error">* Problems fetching the below URL. Please check the URL and try again:</p><p>
-	  <!--/tmpl_unless-->
-	  
-	  <br />
-	  
-	  <input type="text" id="url_template" name="url_template" value="<!-- tmpl_var list_settings.url_template escape="HTML" -->" size="65" />
-	 </p>
+	
+	<!-- tmpl_if list_settings.url_template --> 
+		<!-- tmpl_if template_url_check --> 
+			<p class="positive">
+				URL can be accessed. Good!
+			</p>
+			<!-- tmpl_if content_tag_found_in_url_template --> 
+				<p class="positive">
+					&quot;content&quot; tag found in url template. Good!
+				</p>
+			<!-- tmpl_else --> 
+				<p class="error">
+					Yikes! Couldn't find the content tag (<code>&lt;!-- tmpl_var content --&gt;</code>) in your url template! 
+				</p>
+			<!-- /tmpl_if -->
+		<!-- tmpl_else --> 
+	          <p class="error">
+				Yikes! Problems fetching the below URL. Please check the URL and try again:
+			</p>
+		<!-- /tmpl_if --> 
+	<!-- /tmpl_if --> 
+	
+	
+	
+<p>
+ <input type="text" id="url_template" name="url_template" value="<!-- tmpl_var list_settings.url_template ESCAPE="HTML"-->" class="full" />
+</p>
 	 
 <!--/tmpl_if -->
 
@@ -134,6 +174,22 @@
   </td>
  </tr>
 
+
+ <tr>
+  <td>
+   <code>&lt;!-- tmpl_var content  --&gt;</code>
+  </td>
+  <td>
+
+The content of the screen. 
+
+This tag is 
+   <strong>required</strong>. Think of this tag as the content of 
+   your webpage.
+  </td>
+ </tr>
+
+
  <tr>
   <td>
    <code>&lt;!-- tmpl_var title  --&gt;</code>
@@ -143,20 +199,6 @@
   </td>
  </tr>
 
-
- <tr>
-  <td>
-   <code>&lt;!-- tmpl_var content  --&gt;</code>
-  </td>
-  <td>
-  
-The content of the screen. 
-
-This tag is 
-   <strong>required</strong>. Think of this tag as the content of 
-   your webpage.
-  </td>
- </tr>
 
  <tr>
   <td>
