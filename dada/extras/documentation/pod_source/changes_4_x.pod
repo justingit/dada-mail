@@ -6,7 +6,27 @@
 
 =head2 Changes 4.4.0
 
-=head2 Code Cleanup
+=head3 Closed-Loop Opt-In Subscription Not Enforced by Default, Anymore
+
+In v4.3.0, Closed-Loop Opt-In Subscription model was applied in Dada Mail to mailing list by default
+and by default you were not able to change these list settings to tailor it to your needs, without 
+first changing the config variable, C<$ENFORCE_CLOSED_LOOP_OPT_IN> to, C<0>. 
+
+It was also noted that in future versions of Dada Mail, features that did not conform 
+to Closed-Loop Opt In would be removed from Dada Mail.
+
+The, C<$ENFORCE_CLOSED_LOOP_OPT_IN> variable is now shipped with a value of, C<0> by 
+default, making Dada Mail's behavior the same as pre-4.3.0 versions of Dada Mail.
+
+We're also opening up the dialogue to all users of Dada Mail on how they see is the best way 
+to balance power and versatility of Dada Mail, with accountability and adherence of the rules 
+of a legitimate mailing list. We will put on hold the plan to deprecate these features, until 
+we got more feedback from the users of Dada Mail. Please join the discussion: 
+
+L<http://dadamailproject.com/support/boards/viewtopic.php?f=25&t=2457>
+
+
+=head3 Code Cleanup
 
 Code cleanup has trimmed 500+ lines from the mail.cgi file. Many of the changes can be seen from 
 moving from the C<DADA::MailingList::Settings::save> method to the, C<DADA::MailingList::Settings::save_w_params> method 
@@ -66,6 +86,45 @@ add a list of the errors it came across by passing them in query string with a p
 This name has been changed to, C<errors[]> to help out php folk. This is tied to this bug: 
 
 L<https://github.com/justingit/dada-mail/issues#issue/109>
+
+=head2 Web Services Examples
+
+Examples for initiating a subscription request have been updated and added to. Currently there are
+server/client examples in SOAP and REST. There's also a command line example. Profile Fields are now
+support for all clients and servers. 
+
+The example scripts can be found in the distro, at: 
+
+I<dada/extras/scripts/subscribe>
+
+Documentation can be found at: 
+
+I<dada/extras/documentation/pod_source/COOKBOOK-subscriptions.pod>
+I<dada/extras/documentation/html_version/COOKBOOK-subscriptions.pod.html>
+
+=head2 Test Mass Mailings, Mail Merging
+
+If the email address you're using has a profile, its fields ("First Name", "Last Name", etc) 
+will be used in test mass mailings, instead of not using any fields. This is also true if the list
+owner email has their own profile. 
+
+=head2 Bug Fixes 4.4.0
+
+=head3 Sending Test Messages does not pick up on any profile fields of the test recipients email address 
+
+https://github.com/justingit/dada-mail/issues/issue/111
+
+=head3 Beatitude: Yearly repeating schedules repeat in less than a year 
+
+https://github.com/justingit/dada-mail/issues/issue/110
+
+=head3 Multiple use of parameters in redirect to URL 
+
+https://github.com/justingit/dada-mail/issues/issue/109
+
+=head3 Discussion List Reply/Reply-All behaviour is broken 
+
+https://github.com/justingit/dada-mail/issues/issue/96
 
 =head1 4.3.2
 
