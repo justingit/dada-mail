@@ -1143,8 +1143,36 @@ ok(-e $DADA::Config::TMP);
         undef($r_count); 
         
 
-        
-        
+		# This is quite different - we're testing to see if the profile field
+		# For the list owner is picked up, if a test message is sent out: 
+		
+		require DADA::Profile; 
+		my $dp = DADA::Profile->create(
+			{ 
+				-email    => 'test@example.com', 
+				-activated => 1, 
+			}
+		); 
+		$dp->{fields}->insert(
+			{ 
+			-fields    => { 
+				first_name => 'Test First Name', 
+				last_name  => 'Test Last Name', 
+			}
+			}
+		); 
+		
+		 ( $path_to_list, $total_sending_out_num)
+	        = $lh->create_mass_sending_file(
+	            -ID        => DADA::App::Guts::message_id(), #argh. That's messy. 
+	            -Type      => 'list',
+				-Bulk_Test => 1, 
+	        );
+		 my $file_contents = slurp($path_to_list);
+        # This means, The profile fields were looked at, when making the mass
+		# sending file: 
+		my $regex = quotemeta('"Test First Name","Test Last Name"'); 
+		like($file_contents, qr/$regex/, "found first and last name in test mass sending file");
 ###
     
     
@@ -1169,16 +1197,12 @@ ok(-e $DADA::Config::TMP);
     
         
     ok($lh->remove_from_list(-Email_List => ['mike.kelley@example.com'], -Type => 'list'), "removed: " . 'mike.kelley@example.com'); 
-
-
-
-
     ok($lh->remove_from_list(-Email_List => ['raymond.pettibon@example.com'], -Type => 'list'), "removed: " . 'raymond.pettibon@example.com'); 
     ok($lh->remove_from_list(-Email_List => ['marcel.duchamp@example.com'], -Type => 'list'), "removed: " . 'marcel.duchamp@example.com'); 
     ok($lh->remove_from_list(-Email_List => ['man.ray@example.com'], -Type => 'list'), "removed: " . 'man.ray@example.com'); 
     ok($lh->remove_from_list(-Email_List => ['no.one@example.com'], -Type => 'list'), "removed: " . 'no.one@example.com'); 
 
- 
+
 
 } # Skip?!
 
