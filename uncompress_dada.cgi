@@ -2,7 +2,7 @@
 use strict;
 
 # For information on what this script is used for, please see: 
-# http://dadamailproject.com/support/documentation/install_dada_mail.pod.html
+# http://dadamailproject.com/d/install_dada_mail.pod.html
 
 
 # You may have to update this, depending on the version of Dada Mail!
