@@ -92,7 +92,7 @@ sub step1 {
 		print p("If you are not using the SQL Backend for Dada Mail, you do not need this utility."); 
 		return 0;		
 	}
-	foreach(qw(profile_table profile_fields_table profile_fields_attributes_table)){ 
+	for(qw(profile_table profile_fields_table profile_fields_attributes_table)){ 
 		if(THREEOHCOMPAT::table_exists($DADA::Config::SQL_PARAMS{$_})){ 
 			print p("Problem: The, " . b($DADA::Config::SQL_PARAMS{$_}) . " table already exists. Stopping. You'll have to remove this table, before we can continue."); 
 			print p("If there is important information saved in this table, you may not want to remove the table - make sure to follow the upgrade utility instructions correctly!");
@@ -137,7 +137,7 @@ sub step4 {
 	print h1('Step #4 Migrating Fields:');
 	require DADA::ProfileFieldsManager; 
 	my $dpfm = DADA::ProfileFieldsManager->new; 
-	foreach(@{THREEOHCOMPAT::threeoh_subscriber_fields()}){ 
+	for(@{THREEOHCOMPAT::threeoh_subscriber_fields()}){ 
 		$dpfm->add_field(
 			{
 				-field          => $_,
@@ -211,7 +211,7 @@ sub adjust_current_schema {
 	}
 	
 
-	foreach my $query (@sql_statements) { 
+	for my $query (@sql_statements) { 
 		eval { 
 			$dbh->do($query) 
 				or die $dbh->errstr; 	
@@ -312,7 +312,7 @@ sub create_tables {
 	
 	my @statements = split ( ';', $sql );
 
-	foreach (@statements) {
+	for (@statements) {
 	    if ( length($_) > 10 ) {
 	        print "\nquery:\n" . $_;
 	        eval {
@@ -364,7 +364,7 @@ sub move_profile_info_over {
 sub remove_old_profile_info { 
 
 	my $fields = threeoh_subscriber_fields(); 
-	foreach(@$fields){ 
+	for(@$fields){ 
 		threeoh_remove_subscriber_field({-field => $_}); 
 	}
 	return 1; 
@@ -415,7 +415,7 @@ sub threeoh_subscriber_fields {
 
     
     my @r;
-    foreach(@$l){ 
+    for(@$l){ 
     
         if(! exists($omit_fields{$_})){
     
@@ -496,7 +496,7 @@ sub threeoh_get_fallback_field_values {
   	 my $ls = DADA::MailingList::Settings->new({-list => $lists[0]});
 	    my $li = $ls->get; 
 	    my @fallback_fields = split("\n", $li->{fallback_field_values}); 
-	    foreach(@fallback_fields){ 
+	    for(@fallback_fields){ 
 	        my ($n, $val) = split(':', $_); 
 	        $v->{$n} = $val; 
 	    }

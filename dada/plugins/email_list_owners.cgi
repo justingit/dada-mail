@@ -90,7 +90,7 @@ if(!$q->param('process')){
 					-ls_obj => $ls, 
 				}
 			);
-	foreach my $owner(@list_owners){ 
+	for my $owner(@list_owners){ 
 		$mh->send(
 	 		To      => $owner, 
 			From    => $li->{list_owner_email},
@@ -108,7 +108,7 @@ sub find_list_owners {
 	my %lt;
 	my @lists = DADA::App::Guts::available_lists(); 
 	
-	foreach my $ll(@lists){  
+	for my $ll(@lists){  
 		
 		warn '$ll ' . $ll; 
 		

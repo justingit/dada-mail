@@ -8,7 +8,7 @@ $|++;
 #
 # Documentation:
 #  
-#  http://dadamailproject.com/support/documentation/dada_bounce_handler.pl.html
+#  http://dadamailproject.com/d/dada_bounce_handler.pl.html
 #
 #---------------------------------------------------------------------#
 
@@ -46,10 +46,10 @@ use DADA::Template::HTML;
 
 
 my $Plugin_Config = {}; 
-# Also see the Config.pm variable, "$PLUGIN_CONFIGS" to set these plugin variables 
-# in the Config.pm file itself, or, in the outside config file (.dada_config) 
 
-
+# All the below variables can also be set in your .dada_config file, which is 
+# recommended. See the docs for this plugin for more information. 
+#
 # Required!
 # What is the POP3 mail server of the bounce email address? 	
 $Plugin_Config->{Server}   = undef;
@@ -59,7 +59,7 @@ $Plugin_Config->{Server}   = undef;
 $Plugin_Config->{Username} = undef; 
 
 # Required!
-# Password?
+# And the password?
 $Plugin_Config->{Password} = undef;
 
 #---------------------------------------------------------------------#
@@ -133,6 +133,7 @@ my $q = new CGI;
 # But, if you are having trouble saving settings 
 # and are redirected to an 
 # outside page, you may need to set this manually. 
+
 $Plugin_Config->{Plugin_URL} = $q->url; 
 
 # Plugin Name!
@@ -1683,7 +1684,7 @@ EOF
 sub cgi_show_plugin_config {
 
     my $configs = [];
-    foreach ( sort keys %$Plugin_Config ) {
+    for ( sort keys %$Plugin_Config ) {
         if ( $_ eq 'Password' ) {
             push( @$configs, { name => $_, value => '(Not Shown)' } );
         }
@@ -1771,7 +1772,7 @@ sub cgi_bounce_score_search {
     my %l_label;
     my @l_lists = available_lists();
 
-    foreach my $l_list (@l_lists) {
+    for my $l_list (@l_lists) {
         my $l_ls = DADA::MailingList::Settings->new( { -list => $l_list } );
         my $l_li = $l_ls->get;
         $l_label{$l_list} = $l_li->{list_name};
@@ -1821,7 +1822,7 @@ sub cgi_bounce_score_search {
 
         $results_found = 1;
 
-        foreach my $l ( @{ $results->{ $Plugin_Config->{Log} } } ) {
+        for my $l ( @{ $results->{ $Plugin_Config->{Log} } } ) {
 
             my @entries = split( "\t", $l, 5 );    # Limit of 5
 
@@ -1847,7 +1848,7 @@ sub cgi_bounce_score_search {
             my @diags = split( ",", $entries[4] );
             my $labeled_digs = [];
 
-            foreach my $diag (@diags) {
+            for my $diag (@diags) {
                 my ( $label, $value ) = split( ":", $diag );
 
                 push(
@@ -2134,10 +2135,10 @@ sub cl_main {
     else { 
     
         MSGCHECK:
-        foreach my $msg_info(@List){ 
+        for my $msg_info(@List){ 
          
         my ($msgnum, $msgsize) = split('\s+', $msg_info);
-        #foreach my $msgnum (sort { $a <=> $b } keys %$msgnums) {
+        #for my $msgnum (sort { $a <=> $b } keys %$msgnums) {
                     
             my $delete = undef; 
             
@@ -2190,7 +2191,7 @@ sub cl_main {
         } 
         
         if(! $debug){ 
-        	foreach(@delete_list){ 
+        	for(@delete_list){ 
 	
 	            print "deleting message #: $_\n" 
 					if $verbose;
@@ -2248,7 +2249,7 @@ sub init {
 	# init a hashref of hashrefs
 	# for unsub optimization 
 	my @a_Lists = DADA::App::Guts::available_lists(); 
- 	foreach(@a_Lists){ 
+ 	for(@a_Lists){ 
  		$Remove_List->{$_} = {}; 
  	}
  	
@@ -2533,14 +2534,14 @@ sub carry_out_rule {
     my $report = ''; 
     
 	my $i = 0;
-	foreach my $rule(@$Rules){ 
+	for my $rule(@$Rules){ 
 		if((keys %$rule)[0] eq $title){ 
 			$actions = $Rules->[$i]->{$title}->{Action}; # wooo that was fun.
 		}
 		$i++;
 	}	
 	
-	foreach my $action(keys %$actions){ 
+	for my $action(keys %$actions){ 
 	
 		if($action eq 'add_to_score'){ 
 		  $report .= add_to_score($list, $email, $diagnostics, $actions->{$action}); 
@@ -2606,7 +2607,7 @@ sub unsubscribe_bounced_email {
 	
 	$report .= "\n";
 	
-	foreach(@delete_list){ 
+	for(@delete_list){ 
 		$Remove_List->{$_}->{$email} = 1;
 		$report .="$email to be deleted off of: '$_'\n";
 	} 
@@ -2773,7 +2774,7 @@ sub generate_nerd_report {
 	my ($list, $email, $diagnostics) = @_;
 	my $report; 
 	$report = "List: $list\nEmail: $email\n\n"; 
-	foreach(keys %$diagnostics){ 
+	for(keys %$diagnostics){ 
 		$report .= "$_: " . $diagnostics->{$_} . "\n"; 
 	}	
 	
@@ -2805,7 +2806,7 @@ sub find_rule_to_use {
 		my %ThingsToMatch; 
 		
 		
-		foreach my $m_field(keys %$message_fields){ 
+		for my $m_field(keys %$message_fields){ 
 			my $is_regex   = 0; 
 			my $real_field = $m_field; 
 			$ThingsToMatch{$m_field} = 0; 
@@ -2816,7 +2817,7 @@ sub find_rule_to_use {
 				$real_field =~ s/_regex$//;  
 			}
 			
-			MESSAGEFIELD: foreach my $pos_match(@{$message_fields->{$m_field}}){ 
+			MESSAGEFIELD: for my $pos_match(@{$message_fields->{$m_field}}){ 
 				if($is_regex == 1){ 
 					if($diagnostics->{$real_field} =~ m/$pos_match/){ 	
 						$ThingsToMatch{$m_field} = 1;
@@ -2837,7 +2838,7 @@ sub find_rule_to_use {
 		# If we miss one, the rule doesn't work, 
 		# All or nothin', just like life. 
 		
-		foreach(keys %ThingsToMatch){ 
+		for(keys %ThingsToMatch){ 
 			if($ThingsToMatch{$_} == 0){
 				next RULES; 
 			}
@@ -2931,7 +2932,7 @@ sub get_orig_headers {
 	my $entity = shift; 
 	my $diag = {}; 
 	
-	foreach('From', 'To', 'Subject'){ 
+	for('From', 'To', 'Subject'){ 
 
 		if ($entity->head->count($_)){ 
 	
@@ -2965,7 +2966,7 @@ sub find_delivery_status {
 		} 
 	}else{ 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			($email, $diag) = find_delivery_status($part); 
 			if(($email) && (keys %$diag)){ 
@@ -3016,7 +3017,7 @@ sub find_list_in_list_headers {
 		return $list;
 	}else{ 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			$list = find_list_in_list_headers($part);  
 			return $list if $list;
@@ -3039,7 +3040,7 @@ sub find_message_id_in_headers {
 		return $m_id;
 	}else{ 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			$m_id = find_message_id_in_headers($part);  
 			return $m_id if $m_id;
@@ -3127,7 +3128,7 @@ sub generic_delivery_status_parse {
 			}
 			$email = $remail; 
 			
-		foreach(keys %$diag){ 
+		for(keys %$diag){ 
 			$diag->{$_} = DADA::App::Guts::strip($diag->{$_}); 
 		}
 		
@@ -3148,7 +3149,7 @@ sub generic_body_parse_for_list {
 		return $list if $list; 
 	}else{ 
 		my $i; 
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			$list = generic_body_parse_for_list($part);
 			if($list){ 
@@ -3321,7 +3322,7 @@ sub parse_for_qmail {
 		}
 	}else{ 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			($list, $email, $diag) = parse_for_qmail($part); 
 			if(($email) && (keys %$diag)){ 
@@ -3442,7 +3443,7 @@ sub parse_for_f__king_exchange {
 		return ($list, $email, $diag);
 	}else{ 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			($list, $email, $diag) = parse_for_f__king_exchange($part); 
 			if(($email) && (keys %$diag)){ 
@@ -3501,7 +3502,7 @@ sub parse_for_novell { #like, really...
 	}else{ 
 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			($list, $email, $diag) = parse_for_novell($part); 
 			if(($email) && (keys %$diag)){ 
@@ -3557,7 +3558,7 @@ sub parse_for_gordano { # what... ever that is there...
 		return ($list, $email, $diag);
 	}else{ 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			($list, $email, $diag) = parse_for_gordano($part); 
 			if(($email) && (keys %$diag)){ 
@@ -3610,7 +3611,7 @@ sub parse_for_overquota_yahoo {
 	}else{ 
 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			($list, $email, $diag) = parse_for_overquota_yahoo($part); 
 			if(($email) && (keys %$diag)){ 
@@ -3659,7 +3660,7 @@ sub parse_for_earthlink {
 	}else{ 
 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			($list, $email, $diag) = parse_for_earthlink($part); 
 			if(($email) && (keys %$diag)){ 
@@ -3777,7 +3778,7 @@ sub parse_using_m_ds_bp {
 
 #sub carry_out_all_rules { 
 #	my $array_ref = shift; 
-#	foreach my $dead(@$Rules_To_Carry_Out){
+#	for my $dead(@$Rules_To_Carry_Out){
 #		 carry_out_rule(@$dead); #hope this works
 #	}
 #
@@ -3796,7 +3797,7 @@ sub save_scores {
         
         my @delete_list = DADA::App::Guts::available_lists(); 
 
-        foreach my $d_list(@delete_list){ 
+        for my $d_list(@delete_list){ 
         
 			print "\nWorking on list: $list\n"
 			 if $verbose; 
@@ -3808,7 +3809,7 @@ sub save_scores {
             
             my $lh = DADA::MailingList::Subscribers->new({-list => $d_list}); 
             
-            foreach my $bouncing_email(keys %$list_scores){ 
+            for my $bouncing_email(keys %$list_scores){ 
 	
 			#	print "Examining: $bouncing_email\n"
 			#		if $verbose; 
@@ -3831,7 +3832,7 @@ sub save_scores {
             if(keys %$give_back_scores){ 
                 print "\nScore Totals for $d_list:\n\n"
                     if $verbose; 
-                foreach(keys %$give_back_scores){ 
+                for(keys %$give_back_scores){ 
                 print "\tEmail: $_ total score: " . $give_back_scores->{$_} . "\n"
                     if $verbose; 
                 }
@@ -3842,7 +3843,7 @@ sub save_scores {
 			print "Addresses to be removed:\n" . '-' x 72 . "\n"
 				if $verbose; 
 				
-            foreach my $bad_email(@$removal_list){
+            for my $bad_email(@$removal_list){
                     $Remove_List->{$d_list}->{$bad_email} = 1;
                     print "\t$bad_email\n" 
                         if $verbose;
@@ -3873,7 +3874,7 @@ sub remove_bounces {
     print "Removing addresses from all lists:\n" . '-' x 72 . "\n"
       if $verbose;
 
-    foreach my $list ( keys %$report ) {
+    for my $list ( keys %$report ) {
 
         print "\nList: $list\n"
           if $verbose;
@@ -3884,7 +3885,7 @@ sub remove_bounces {
 
         my @remove_list = keys %{ $report->{$list} };
 
-        foreach (@remove_list) {
+        for (@remove_list) {
             $lh->remove_subscriber( { -email => $_, } );
             print "Removing: $_\n"
               if $verbose;
@@ -3893,7 +3894,7 @@ sub remove_bounces {
         if (   ( $li->{black_list} == 1 )
             && ( $li->{add_unsubs_to_black_list} == 1 ) )
         {
-            foreach my $re (@remove_list) {
+            for my $re (@remove_list) {
                 $lh->add_subscriber(
                     {
                         -email => $re,
@@ -3932,7 +3933,7 @@ sub remove_bounces {
 
             my $aa = 0;
 
-            foreach my $d_email (@remove_list) {
+            for my $d_email (@remove_list) {
 
                 DADA::App::Messages::send_owner_happenings(
                     {
@@ -3998,7 +3999,7 @@ sub test_script {
     }
 
     my $i = 1;
-    foreach my $testfile (@files_to_test) {
+    for my $testfile (@files_to_test) {
         print "test #$i: $testfile\n" . '-' x 60 . "\n";
         parse_bounce( -message => openfile($testfile) );
         ++$i;
@@ -4128,7 +4129,7 @@ sub log_action {
 
     if ($Have_Log) {
         my $d;
-        foreach ( keys %$diagnostics ) {
+        for ( keys %$diagnostics ) {
             $d .= $_ . ': ' . $diagnostics->{$_} . ', ';
         }
         print BOUNCELOG "[$time]\t$list\t$action\t$email\t$d\n";
@@ -4368,7 +4369,7 @@ sub erase_score_card {
 
     }
 
-    foreach (@delete_list) {
+    for (@delete_list) {
 
         require DADA::App::BounceScoreKeeper;
         my $bsk = DADA::App::BounceScoreKeeper->new( -List => $_ );
@@ -5154,13 +5155,11 @@ Mystery Girl hooks into your Dada Mail mailing lists indirectly. You'll first ne
 
 The login information for this account will be set in Mystery Girl.
 
-This same address will also be set in the B<Return-Path> of messages sent by Dada Mail. Thus, when a message is bounced, it gets sent to this address, which is monitored by Mystery Girl. Hazzah.
+This same address will also be set in the B<Return-Path> of messages sent by Dada Mail. Thus, when a message is bounced, it gets sent to this address, which is monitored by Mystery Girl.
 
 Once Mystery Girl connects to this  POP3 acccount, awaiting messages are first B<read>, then, the message is B<parsed>, in an attempt to understand why the message has bounced. 
 
-The parsed email will then be B<examined> and an B<action> will be taken. The examination and action are set in
-a collection of B<rules>.  These rules can be tweaked, added, removed
-and generally mucked about with. 
+The parsed email will then be B<examined> and an B<action> will be taken. The examination and action are set in a collection of B<rules>.  These rules can be customized.
 
 The usual action that is taken is to apply a, B<score> to the offending email address, everytime the address bounces back a message. Once the, B<Threshold> is reached, the email address is unsubscribed from the list. 
 
@@ -5193,7 +5192,7 @@ Some things to consider:
 
 =item * Do NOT use this address for anything but Mystery Girl's functions
 
-Meaning: don't periodically check it yourself via a mail reader. Doing so will not break Dada Mail, but it will stop Mystery Girl from working correctly. Why? Because sometimes checking a POP3 address will download the messages awaiting in the POP3 Inbox and remove them from this inbox. If you need to periodically check this inbox, make sure to have your mail reader set to B<not> automatically remove the mssages. 
+You don't periodically check this POP3 account yourself via a mail reader. Doing so will not break Dada Mail, but it will stop Mystery Girl from working correctly. Why? Because sometimes checking a POP3 address will download the messages awaiting in the POP3 Inbox and remove them from this inbox. If you need to periodically check this inbox, make sure to have your mail reader set to B<not> automatically remove the mssages. 
 
 =item * The email address MUST belong to the domain you have Dada Mail installed
 
@@ -5201,7 +5200,7 @@ Meaning, if your domain is, "yourdomain.com", the bounce email address should be
 
 =item * Mystery Girl MUST be able to check the POP3 account
 
-Sometimes, it can't - there may be a block for connections to port 110 from connections that come from your hosting account server.  
+Check to make sure that the POP3 server (usually, port 110) is not blocked from requests coming from your hosting account server.  
 
 =back
 
@@ -5209,15 +5208,15 @@ Sometimes, it can't - there may be a block for connections to port 110 from conn
 
 =head1 RECOMMENDED
 
-These points are not required, but recommended to have to use Mystery Girl:
+These points are not required, but recommended to use Mystery Girl:
 
 =over
 
 =item * Ability to set Cron Jobs. 
 
-Mystery Girl can be configured to run automatically by using a cron tab - In Other Words: a scheduled task. 
+Mystery Girl can be configured to run automatically by using a cronjob.
 
-If you do not know how to set up a cron job, attempting to set one up for Dada Mail will result in much aggravation. Please read up on the topic before attempting! 
+If you do not know how to set up a cronjob, attempting to set one up for Dada Mail will result in much aggravation. Please read up on the topic before attempting! 
 
 =item * Shell Access to Your Hosting Account
 
@@ -5239,13 +5238,25 @@ To get to the point:
 
 =item * Create the bounce handler email account
 
-=item * Set your list to use this address for its, "List Administrator Address" in the list control panel, under, Manage list - Change List Information.
+=item * Set your list to use this email address for its, "List Administrator Address" in the list control panel, under,
+
+B<Your Mailing List -  Change List Information> 
+
+=item * Configure the plugin 
+
+You can do this either directly in the plugin (not recommended): 
+
+=over
 
 =item * Open up the dada_bounce_handler.pl script in a text editor. 
 
-=item * Set the POP3 server, username and password. Save. 
+=item * Set the POP3 Server, Username and Password. Save. 
 
 =item * Upload the dada_bounce_handler.pl script into the cgi-bin/dada/plugins directory
+
+=back
+
+Or, in your C<.dada_config> file. We'll go through how later in this doc. 
 
 =item * chmod 755 the dada_bounce_handler.pl script
 
@@ -5257,22 +5268,18 @@ To get to the point:
 
 Below is the detailed version of the above: 
 
-
 =head1 CONFIGURATION
 
-There's a few things you need to configure in this script, they're all
-at the top. 
+There's a few things you need to configure in this plugin. You can either configure the plugin variables in the C<dada_bounce_handler.pl> file itself (not recommended), or in the C<.dada_config> file (recommended!) 
 
 =over
 
 =item * POP3 server information. 
 
-Your bounce email address login information is saved in the, B<dada_bounce_handler.pl> script itself - 
-
 Create a new POP3 email account. This email account will be the address that
 bounced messages will be directed towards. 
 
-Change the following variables: 
+If you're configuring this in the plugin itself, you'll need to find the following three variables: 
 
 =over
 
@@ -5287,9 +5294,75 @@ Change the following variables:
 to reflect the permissions for the email address you're going to use
 for the bounce handler. 
 
+For example: 
+
+	$Plugin_Config->{Server} = 'mail.yourdomain.com'; 
+
+	$Plugin_Config->{Username} = 'bounces+yourdomain.com'; 
+
+	$Plugin_Config->{Password} = 'password'; 
+
+If you're configuring this in you C<.dada_config> file, you'll want first  search and see if the following lines are present: 
+
+ # start cut for plugin configs
+ =cut
+
+ =cut
+ # end cut for plugin configs
+
+If they are present, remove them. 
+
+You can then configure the plugin variables on these lines: 
+
+	Mystery_Girl => { 
+
+	    Server                    			=> undef, 
+	    Username                  			=> undef, 
+	    Password                  			=> undef, 
+		# etc. 
+	},
+	
+For example: 
+
+	Server                    			=> 'mail.yourdomain.com', 
+	Username                  			=> 'bounces+yourdomain.com', 
+	Password                  			=> 'password', 
+
+
 =back
 
-As far as required changes, we are done. 
+You may also want to set a default value for the, Adminstration Email, so that all new lists already have the bounce handler enabled. 
+
+Find this chunk of lines in your C<.dada_config> file: 
+
+	# start cut for list settings defaults
+	=cut
+
+	%LIST_SETUP_INCLUDE = (
+		set_smtp_sender              => 1, # For SMTP   
+		add_sendmail_f_flag          => 1, # For Sendmail Command
+		admin_email                  => 'bounces@example.com',
+	);
+
+	=cut
+	# end cut for list settings defaults
+
+Remove the =cut lines, like before: 
+
+	# start cut for list settings defaults
+	=cut
+
+	=cut
+	# end cut for list settings defaults
+
+And then change the, C<admin_email> to your bounce handler email address: 
+
+
+	%LIST_SETUP_INCLUDE = (
+		set_smtp_sender              => 1, # For SMTP   
+		add_sendmail_f_flag          => 1, # For Sendmail Command
+		admin_email                  => 'bounces@yourdomain.com',
+	);
 
 =head1 INSTALLATION
 
@@ -5322,7 +5395,9 @@ The last thing you will have to configure is your Dada Mail B<list administratio
 
 You're going to have to tell Dada Mail explicitly that you want
 bounces to go to the bounce handler. The first step is to set the 
-B<Dada List Administrator> to your bounce email address. You'll set this per list in the each list's control panel, under B<Manage List - Change List Information>
+B<Dada List Administrator> to your bounce email address. You'll set this per list in the each list's control panel, under 
+
+B<Your Mailing List -  Change List Information>
 
 After that, you'll need to configure outgoing email messages to set the B<Dada List Administrator> address in the C<Return-Path> header. Sounds scary, but it's easy enough.  
 
@@ -5332,13 +5407,13 @@ In the list control panel, go to B<Mail Sending - Sending Preferences> and
 check: B<Add the Sendmail '-f' flag when sending messages ...>
 
 This I<should> set the sending to the admin email, and in turn, set the
-B<Return-Path> header. Dada Mail 3.0 is shipped to have this option set by default. 
+B<Return-Path> header. Dada Mail is shipped to have this option set by default. 
 
 =head3 If you're using SMTP sending: 
 
 In the list control panel, go to: B<Sending Preferences - Sending Preferences>
 and check the box labeled: B<Set the Sender of SMTP mailings to the 
-list administration email address>  Dada Mail 3.0 is shipped to have this option set by default. 
+list administration email address>  Dada Mail is shipped to have this option set by default. 
 
 =head2 Testing
 
@@ -5540,7 +5615,7 @@ path to the Dada Mail libraries.
 
 If you don't know where your site-wide Perl libraries are, try running this via the command line:
 
- perl -e 'print $_ ."\n" foreach @INC'; 
+ perl -e 'print $_ ."\n" for @INC'; 
 
 If you do not know how to run the above command, visit your Dada Mail in a web browser, log into your list and on the left hand menu and: click, B<About Dada Mail> 
 

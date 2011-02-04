@@ -51,7 +51,7 @@ connectdb();
 
 print "beginning...\n";
 
-foreach my $list(local_available_lists()){ 
+for my $list(local_available_lists()){ 
 
 	print "\tworking on list: '$list'...\n";
 	
@@ -63,7 +63,7 @@ foreach my $list(local_available_lists()){
 	tie %old_data, "AnyDBM_File", $filename,  O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD  or die $!;  
 
 
-	foreach my $key(keys %old_data){ 
+	for my $key(keys %old_data){ 
 		my $value = $old_data{$key}; 
 
 		save_setting($list, $key, $value); 
@@ -151,7 +151,7 @@ sub local_available_lists {
 				if(defined($present_list) && $present_list ne "" && $present_list !~ m/^\s+$/); 
 		}
 		
-		foreach my $all_those(@dbs) {      
+		for my $all_those(@dbs) {      
 			 push( @available_lists, $all_those)
 			 	if($all_those !~ m/\-archive.*|\-schedules.*/)
 		}		    
@@ -162,7 +162,7 @@ sub local_available_lists {
 		
 		my @clean_unique; 
 		
-		foreach(@unique){ 
+		for(@unique){ 
 			push(@clean_unique, $_) 
 				if(defined($_) && $_ ne "" && $_ !~ m/^\s+$/);
 		}
@@ -170,7 +170,7 @@ sub local_available_lists {
 		if($args{-In_Order} == 1){ 
 		
 			my $labels = {}; 
-			foreach my $l( @clean_unique){		
+			for my $l( @clean_unique){		
 				my $ls        = DADA::MailingList::Settings->new({-list => $l}); 
 				my $li        = $ls->get; 		
 				$labels->{$l} = $li->{list_name};

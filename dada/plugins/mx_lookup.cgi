@@ -77,7 +77,7 @@ sub run {
         #
         #
 
-        foreach my $email (@emails) {
+        for my $email (@emails) {
             my ( $status, $errors ) =
               $lh->subscription_check( { -email => $email, } );
             if ( $errors->{mx_lookup_failed} == 1 ) {

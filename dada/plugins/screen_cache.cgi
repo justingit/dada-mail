@@ -91,7 +91,7 @@ sub view {
 
     my $app_file_list = [];
 
-    foreach my $entry (@$file_list) {
+    for my $entry (@$file_list) {
         my $cutoff_name = $entry->{name};
         my $l    = length($cutoff_name);
         my $size = 50;

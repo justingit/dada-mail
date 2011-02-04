@@ -134,7 +134,7 @@ sub cl_run {
     );
 
  
-	foreach(keys %h){ 
+	for(keys %h){ 
 		$q->param($_, $h{$_});
 	}
 	if(scalar(keys %h) == 0){ 
@@ -157,7 +157,7 @@ sub cl_run {
 		print "Problems were found:\n\n";
 		print "Uh, TODO - make these a little more intelligent:\n"; 
 		
-	    foreach(keys %$check_errors){ 
+	    for(keys %$check_errors){ 
 			if($check_errors->{$_} == 1){ 
 				print "Error: $_\n"; 
 			}
@@ -192,7 +192,7 @@ sub cl_run {
 		if($install_status == 0){ 
 			print "Problems with configuration:\n\n"; 
 			
-			foreach(keys %$install_errors){ 
+			for(keys %$install_errors){ 
 				print $_ . " => " . $install_errors->{$_} . "\n"; 
 			}
 		}
@@ -342,7 +342,7 @@ sub check {
     if ( $status == 0 ) {
         my $ht_errors = [];
 
-        foreach ( keys %$errors ) {
+        for ( keys %$errors ) {
             if ( $errors->{$_} == 1 ) {
                 push( @$ht_errors, { error => $_ } );
                 $q->param( 'error_' . $_, 1 );
@@ -590,7 +590,7 @@ sub create_dada_files_dir_structure {
 
         installer_mkdir( $loc, $DADA::Config::DIR_CHMOD );
 		create_htaccess_deny_from_all_file($loc); 
-        foreach (
+        for (
             qw(
             .archives
             .backups
@@ -718,7 +718,7 @@ sub create_sql_tables {
     my $schema = slurp( make_safer( '../extras/SQL/' . $sql_file ) );
     my @statements = split( ';', $schema );
 
-    foreach (@statements) {
+    for (@statements) {
         if ( length($_) > 10 ) {
 
             # print "\nquery:\n" . $_;
@@ -851,7 +851,7 @@ sub check_setup {
     }
 
     my $status = 1;
-    foreach ( keys %$errors ) {
+    for ( keys %$errors ) {
         if ( $errors->{$_} == 1 ) {
 
             # I guess there's exceptions to every rule:
@@ -1005,7 +1005,7 @@ sub test_complete_dada_files_dir_structure_exists {
 
     my $dada_files_dir = shift;
     if ( -e $dada_files_dir . '/' . $Dada_Files_Dir_Name ) {
-        foreach (
+        for (
             qw(
             .archives
             .backups
@@ -1135,7 +1135,7 @@ sub test_database_has_all_needed_tables {
     my @tables = $dbh->tables;
 	my $checks = 0; 
 	
-	foreach my $table(@tables){ 
+	for my $table(@tables){ 
 		
 		# Not sure why this is so non-standard between different setups...
 		$table =~ s/`//g; 

@@ -37,7 +37,7 @@ use lib qw(
 #BEGIN {
 #    my $homedir = ( getpwuid($>) )[7];
 #    my @user_include;
-#    foreach my $path (@INC) {
+#    for my $path (@INC) {
 #        if ( -d $homedir . '/perl' . $path ) {
 #            push @user_include, $homedir . '/perl' . $path;
 #        }
@@ -588,7 +588,7 @@ EOF
     my $awaiting_msgs = $mod->awaiting_msgs();
     print "List of Messages Still Awaiting Moderation:\n\n"
       if $verbose;
-    foreach (@$awaiting_msgs) {
+    for (@$awaiting_msgs) {
         my $messagename = substr( $_, length($list) + 1 );
         my $parser = $parser;
         my $entity;
@@ -882,7 +882,7 @@ sub validate_list_email {
 	}
 
     my @lists = DADA::App::Guts::available_lists;
-    foreach my $this_list (@lists) {
+    for my $this_list (@lists) {
 
         my $this_ls =
           DADA::MailingList::Settings->new( { -list => $this_list } );
@@ -1008,7 +1008,7 @@ sub cgi_default {
             $p->{discussion_pop_password} = $q->param('discussion_pop_password')
               || undef;
 
-            foreach ( keys %$p ) {
+            for ( keys %$p ) {
                 $li->{$_} = $p->{$_};
             }
 
@@ -1210,7 +1210,7 @@ sub start {
     #/KLUDGE!
 
     my $messages_viewed = 0;
-  QUEUE: foreach my $list (@lists) {
+  QUEUE: for my $list (@lists) {
 
         if ( $messages_viewed >= $Plugin_Config->{MessagesAtOnce} ) {
             last;
@@ -1265,7 +1265,7 @@ sub start {
             my $local_msg_viewed = 0;
 
             # Hmm, we do, but then we sort them numerically here:
-            foreach my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
+            for my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
 
                 $local_msg_viewed++;
                 e_print( "\tMessage Size: " . $msgnums->{$msgnum} . "\n")
@@ -1389,7 +1389,7 @@ sub start {
 
             my $delete_msg_count = 0;
 
-            foreach my $msgnum_d ( sort { $a <=> $b } keys %$msgnums ) {
+            for my $msgnum_d ( sort { $a <=> $b } keys %$msgnums ) {
                 e_print( "\tRemoving message from server...\n")
                   if $verbose;
                  $pop->Delete($msgnum_d);
@@ -1467,7 +1467,7 @@ sub message_was_deleted_check {
             $msgnums->{$msg_num} = $msg_size;
         }
 
-        foreach my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
+        for my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
             my $msg = $pop->Retrieve($msgnum);
 
             my $cs = create_checksum( \$msg );
@@ -1480,7 +1480,7 @@ sub message_was_deleted_check {
                 @cs = @{ $checksums->{$list} };
             }
 
-            foreach my $s_cs (@cs) {
+            for my $s_cs (@cs) {
 
                 e_print( "\t\tsaved checksum: $s_cs\n")
                   if $verbose;
@@ -1590,7 +1590,7 @@ sub test_pop3 {
         push ( @lists, $run_list );
     }
 
-    foreach my $l (@lists) {
+    for my $l (@lists) {
 
         e_print( "\n" . '-' x 72 . "\nTesting List: '" . $l . "'\n");
 
@@ -1783,7 +1783,7 @@ sub validate_msg {
 
         #if($verbose){
         #	print "All Errors: \n" . '-' x 72 . "\n";
-        #	foreach(keys %$errors){
+        #	for(keys %$errors){
         #		"\t*" . $_ . ' => '  . $errors->{$_} . "\n";
         #	}
         #}
@@ -2101,7 +2101,7 @@ sub validate_msg {
 
                 my @x_spam_status_fields =
                   split ( ' ', $entity->head->get( 'X-Spam-Status', 0 ) );
-                foreach (@x_spam_status_fields) {
+                for (@x_spam_status_fields) {
                     if ( $_ =~ m/score\=/ ) {
                         $score = $_;
                         $score =~ s/score\=//;
@@ -2136,7 +2136,7 @@ sub validate_msg {
                     if ($verbose) {
                         my @x_spam_report = $entity->head->get('X-Spam-Report');
                         print "\n\t";
-                        print "$_\n" foreach @x_spam_report;
+                        print "$_\n" for @x_spam_report;
                     }
 
                 }
@@ -2175,7 +2175,7 @@ sub validate_msg {
           if $verbose;
     }
 
-    foreach ( keys %$errors ) {
+    for ( keys %$errors ) {
         if ( $errors->{$_} == 1 ) {
             $status = 0;
             last;
@@ -2184,7 +2184,7 @@ sub validate_msg {
 
     #if($verbose){
     #	print "All Errors: \n" . '-' x 72 . "\n";
-    #	foreach(keys %$errors){
+    #	for(keys %$errors){
     #		"\t*" . $_ . ' => '  . $errors->{$_} . "\n";
     #	}
     #}
@@ -2504,7 +2504,7 @@ sub process_stripping_file_attachments {
     my @att_bl = split ( ' ', $ls->param('file_attachments_to_strip') );
     my $lt     = {};
 
-    foreach (@att_bl) {
+    for (@att_bl) {
 
         $lt->{$_} = lc( $lt->{$_} );
         $lt->{$_} = 1;
@@ -2516,7 +2516,7 @@ sub process_stripping_file_attachments {
 
         # multipart...
         my $i;
-        foreach $i ( 0 .. $#parts ) {
+        for $i ( 0 .. $#parts ) {
             ( $parts[$i], $ls ) =
               process_stripping_file_attachments( $parts[$i], $ls );
 
@@ -2524,7 +2524,7 @@ sub process_stripping_file_attachments {
 
         my @new_parts;
 
-        foreach $i ( 0 .. $#parts ) {
+        for $i ( 0 .. $#parts ) {
             if ( !$parts[$i] ) {
 
             }
@@ -3031,7 +3031,7 @@ sub handle_errors {
     }
 
     my $reasons = '';
-    foreach ( keys %$errors ) {
+    for ( keys %$errors ) {
         $reasons .= $_ . ', '
           if $errors->{$_} == 1;
     }
@@ -3077,7 +3077,7 @@ sub handle_errors {
 
     print "\t\tError delivering message! Reasons:\n\n"
       if $verbose;
-    foreach ( keys %$errors ) {
+    for ( keys %$errors ) {
         print "\t\t\t" . $_ . "\n"
           if $errors->{$_} == 1 && $verbose;
     }
@@ -3185,7 +3185,7 @@ sub handle_errors {
         print "\t\tOther awaiting messages:\n\n"
           if $verbose;
 
-        foreach (@$awaiting_msgs) {
+        for (@$awaiting_msgs) {
             print "\t\t * " . $_ . "\n"
               if $verbose;
         }
@@ -3274,7 +3274,7 @@ sub find_return_path {
 sub cgi_show_plugin_config {
 	 
     my $configs = [];
-    foreach ( sort keys %$Plugin_Config ) {
+    for ( sort keys %$Plugin_Config ) {
         if ( $_ eq 'Password' ) {
             push( @$configs, { name => $_, value => '(Not Shown)' } );
         }
@@ -4405,7 +4405,7 @@ sub awaiting_msgs {
         closedir(MOD_MSGS)
           or carp "couldn't close: " . $self->mod_dir;
 
-        foreach my $key ( sort $allfiles{$a} <=> $allfiles{$b}, keys %allfiles )
+        for my $key ( sort $allfiles{$a} <=> $allfiles{$b}, keys %allfiles )
         {
 
             next if ( $key =~ /^\.\.?$/ );
@@ -4508,7 +4508,7 @@ sub moderation_msg {
 				-type => 'authorized_senders'
 			}
 		);
-        foreach my $moderator (@$authorized_senders) {
+        for my $moderator (@$authorized_senders) {
 
 			if($moderator->{email} eq $args->{ -from }){ 
 				# Well, we'll just pass that one right by... 
@@ -4530,7 +4530,7 @@ sub moderation_msg {
     push ( @moderators, $ls->param('list_owner_email') );    # always addressed
 
     # loop through recepients
-    foreach my $to_address (@moderators) {                   # recepient loop
+    for my $to_address (@moderators) {                   # recepient loop
         $reply = MIME::Entity->build(
             Type    => "multipart/mixed",
             Subject => $Moderation_Msg_Subject,
@@ -5258,7 +5258,7 @@ path to the Dada Mail libraries.
 
 If you don't know where your site-wide Perl libraries are, try running this via the command line:
 
- perl -e 'print $_ ."\n" foreach @INC'; 
+ perl -e 'print $_ ."\n" for @INC'; 
 
 If you do not know how to run the above command, visit your Dada Mail in a web browser, log into your list and on the left hand menu and: click, B<About Dada Mail> 
 

@@ -5231,7 +5231,7 @@ sub _config_import {
 		bounce_scores_table             => 'dada_bounce_scores', 
 		clickthrough_urls_table         => 'dada_clickthrough_urls',
 	); 
-	foreach(keys %default_table_names){ 
+	for(keys %default_table_names){ 
 		if(!exists($SQL_PARAMS{$_})){ 
 			$SQL_PARAMS{$_} = $default_table_names{$_};
 		}

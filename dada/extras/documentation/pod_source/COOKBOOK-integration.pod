@@ -127,7 +127,7 @@ Another idea is to write a simple WWW client that'll then post the CGI paramater
      my ($headers, $body) = split("\n\n", $doc, 2); 
      my @header_lines = split( /\n(?!\s)/, $headers);
      
-     foreach my $header(@header_lines){ 
+     for my $header(@header_lines){ 
      
          my ($label, $value) = split(/:\s*/, $header, 2);
          

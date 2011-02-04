@@ -52,7 +52,7 @@ unless ($result->fault) {
 
 	if(keys %$errors){ 
 		print "Errors: \n"; 
-	foreach(keys %$errors){ 
+	for(keys %$errors){ 
 			print "	* Error: $_\n";
 		}
 	}

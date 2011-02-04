@@ -256,7 +256,7 @@ sub search {
 
     my $results = []; 
     
-    foreach my $l_list(@lists){ 
+    for my $l_list(@lists){ 
             
         my $l_ls = DADA::MailingList::Settings->new({-list => $l_list}); 
         my $l_li = $l_ls->get; 
@@ -279,7 +279,7 @@ sub search {
 										-skip => ['already_sent_unsub_confirmation', 'not_subscribed', 'closed_list']
 									}
 								); 
-            foreach(keys %$errors){ 
+            for(keys %$errors){ 
                 push(@$report_errors, {error => $_})
             }    
         } 
@@ -292,7 +292,7 @@ sub search {
 											-skip => ['already_sent_sub_confirmation', 'subscribed', 'closed_list']
 										}
 									); 
-             foreach(keys %$errors){ 
+             for(keys %$errors){ 
                 push(@$report_errors, {error => $_})
             }
         }
@@ -336,7 +336,7 @@ sub process {
     my @u = $q->param('u'); 
     my @s = $q->param('s'); 
     
-    foreach(@u){ 
+    for(@u){ 
         
         my ($l_list, $l_email) = split(/\+/, $_, 2);
         
@@ -345,7 +345,7 @@ sub process {
     
     }
 
-    foreach(@s){ 
+    for(@s){ 
         
         my ($l_list, $l_email) = split(/\+/, $_, 2);
 

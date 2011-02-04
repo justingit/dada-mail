@@ -185,7 +185,7 @@ sub report_by_message_index {
 		require DADA::MailingList::Archives; 
 		my $mja = DADA::MailingList::Archives->new({-list => $self->{name}}); 
 		
-		foreach(sort keys %$report){ 
+		for(sort keys %$report){ 
 		
 		    if($mja->check_if_entry_exists($_)){ 
 		    
@@ -361,7 +361,7 @@ sub return_headers {
     my @logical_lines = split /\n(?!\s)/, $header_blob;
 
     # make the hash
-    foreach my $line (@logical_lines) {
+    for my $line (@logical_lines) {
         my ( $label, $value ) = split ( /:\s*/, $line, 2 );
         $new_header{$label} = $value;
     }
@@ -388,7 +388,7 @@ sub parse_entity {
         #print "we gotta parts?!\n";
 
         my $i;
-        foreach $i ( 0 .. $#parts ) {
+        for $i ( 0 .. $#parts ) {
             $parts[$i] =
               $self->parse_entity( { %{$args}, -entity => $parts[$i] } );
         }

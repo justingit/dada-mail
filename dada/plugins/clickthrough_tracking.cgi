@@ -121,9 +121,9 @@ sub default {
         my $count = 0;
         my $bg;
 
-        #foreach(@$archive_entries){
+        #for(@$archive_entries){
 
-        foreach ( sort { $a <=> $b } keys %$m_report ) {
+        for ( sort { $a <=> $b } keys %$m_report ) {
 
             if ( $count % 2 == 0 ) {
                 $bg = '#ccf';
@@ -370,7 +370,7 @@ sub message_report {
     my $m_report = $rd->report_by_message( $q->param('mid') );
 
     $tmpl .= $q->start_table( { -cellpadding => 5 } );
-    foreach ( sort keys %$m_report ) {
+    for ( sort keys %$m_report ) {
 
         next
           if ( $_ eq 'open'
@@ -437,7 +437,7 @@ sub message_report {
             }
         );
 
-        foreach ( @{ $m_report->{bounce} } ) {
+        for ( @{ $m_report->{bounce} } ) {
 
             if ( $count % 2 == 0 ) {
                 $bg = '#ccf';
@@ -492,7 +492,7 @@ sub url_report {
     $tmpl .= $q->p( $q->b('Clickthrough Time:') ) . $q->hr;
 
     $tmpl .= $q->start_table( { -cellpadding => 5 } );
-    foreach ( sort { $a <=> $b } @$m_report ) {
+    for ( sort { $a <=> $b } @$m_report ) {
         $tmpl .= $q->Tr( $q->td( $q->p( $q->b($_) ) ) );
     }
 

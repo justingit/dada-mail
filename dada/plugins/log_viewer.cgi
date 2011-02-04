@@ -334,7 +334,7 @@ sub show_log {
 	my $loglines = log_lines($Logs{$log_name}, $lines); 
 	my $html; 
 	   $html .= '<pre>';
-	foreach(@$loglines){ 
+	for(@$loglines){ 
 		$_ =~ s/\t/    /g;
 		$html .= $_ . "\n";
 	}
@@ -364,7 +364,7 @@ sub ajax_delete_log {
 
 sub find_logs { 
 	my %found_logs;	
-	foreach(keys %Logs){ 
+	for(keys %Logs){ 
 		if(file_check($Logs{$_}) == 1){ 
 			$found_logs{$_} = $Logs{$_};
 		}
@@ -380,7 +380,7 @@ sub log_name {
     my $file_name = shift; 
     
     
-    foreach(keys %Logs){ 
+    for(keys %Logs){ 
     
         if($file_name eq $Logs{$_}){ 
         
@@ -421,7 +421,7 @@ sub log_lines {
 	if(($log_name eq "Usage Log") || ($log_name eq "Bounce Handler Log")){ 
 	 
 		my @good_lines; 	
-		foreach(@lines){ 
+		for(@lines){ 
 			if (($_ =~ m/\[(.*?)\]\t$list(.*)/) || ($_ =~ m/\[(.*?)\]\t(.*?)\t$list(.*)/)){ 
 				push(@good_lines, $_); 		
 			}
@@ -507,18 +507,18 @@ sub search_logs {
            
     my @terms = split(' ', $q->param('query')); 
     
-    foreach my $file_name(keys %$results){ 
+    for my $file_name(keys %$results){ 
         
         if($results->{$file_name}->[0]){ 
         
             $return .= $q->h1(log_name($file_name));
             
-            foreach my $l(@{$results->{$file_name}}){ 
+            for my $l(@{$results->{$file_name}}){ 
             
                 my @entries = split("\t", $l); 
                 
                 $return .= '<ul>'; 
-                foreach my $diff_lines(@entries){ 
+                for my $diff_lines(@entries){ 
                   
 					# BUGFIX: [ 2124123 ] 3.0.0 - Log viewer does not escape ">" "<" etc. 
 					# http://sourceforge.net/tracker/index.php?func=detail&aid=2124123&group_id=13002&atid=113002
