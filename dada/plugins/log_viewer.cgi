@@ -125,6 +125,7 @@ sub cgi_main {
 	   'ajax_view_logs_results' => \&ajax_view_logs_results, 
 	   'ajax_delete_log'        => \&ajax_delete_log, 
 	   'search_logs'            => \&search_logs, 
+	   'download'               => \&download, 
 	);
 
 	if ( exists( $Mode{$flavor} ) ) {
@@ -209,12 +210,9 @@ sub main_tmpl {
 						},
 					onCreate: 	 function() {
 						Form.Element.setValue('refresh_button', 'Loading...');
-						/*$('view_logs_results').hide();*/
-						/*$('view_logs_results_loading').show();*/
 					},
 					onComplete: 	 function() {
 
-					/*	$('view_logs_results_loading').hide(); */
 						$('view_logs_results').show();
 					Form.Element.setValue('refresh_button', 'Refresh');
 					}	
@@ -272,6 +270,12 @@ sub main_tmpl {
 		 	<td valign="bottom"> 
 			<br /><input type="button" value="Refresh" id="refresh_button" onClick="view_logs();" />
 			</td> 
+			<td valign="bottom"> 
+			<input type="hidden" name="flavor" value="download" /> 
+			<br /><input type="submit"  value="Download Entire Log" id="download_button" />
+			</td>
+				
+				
 		 	<td valign="bottom"> 
 			<br /><input type="button" value="Delete Log"  onclick="purge_log();" /> 
 					</form> 
@@ -283,7 +287,6 @@ sub main_tmpl {
 		     <input type="submit" value="Search All Logs" class="processing" /> 
 		    </form>
 	 		</td> 
-	
 		   </tr> 
 		</table> 
 
@@ -563,13 +566,24 @@ sub search_logs {
 
 }
 
+sub download { 
 
-
-
-
-
-
-#---------------------------------------------------------------------#
+	use File::Basename; 
+	my $name = fileparse($Logs{$log_name});
+	my ($file_name, $file_ending) = split(/\./, $name, 2); 
+	
+	my $header  = 'Content-disposition: attachement; filename=' . $file_name . '-' . time . '.' . $file_ending . "\n"; 
+	   $header .= 'Content-type: text/plain' . "\n\n"; 
+	
+		print $header; 
+	
+		open my $LOG, '<:encoding('. $DADA::Config::HTML_CHARSET . ')', make_safer($Logs{$log_name}) or die $!; 
+		my $line; 
+		while(defined($line = <$LOG>)){ 
+			 e_print($line); 
+		}
+		close($LOG); 
+}	
 
 =pod
 
