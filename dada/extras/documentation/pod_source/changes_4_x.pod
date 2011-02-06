@@ -40,6 +40,19 @@ discussion mailing list apps, when it comes to discussion lists. You now have tw
 Have replies always be addressed to the mailing list (with an option to reply-all), or, 
 Have replies addressed to the discussion list
 
+=head3 View List: "Open List in New Window" button renamed to, "Download List"
+
+The list will also be given back as a CSV file, so most likely, you'll get a little dialog box asking if you
+want to either open it in some application, or just download it. 
+
+=head3 View List: Email Your List Button is Gone
+
+You may still download your mailing list in csv format. 
+
+=head3 Log View: Download the Raw Log
+
+You can now download the entire log file, through the log viewer. 
+
 =head3 Template System: initial "tmpl_set support",  template wrapping
 
 There's initial support for what's called the, B<tmpl_set> template tag, that basically 
