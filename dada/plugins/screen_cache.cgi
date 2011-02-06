@@ -30,7 +30,7 @@ $Plugin_Config->{Manual_Run_Passcode} = '';
 
 
 
-use DADA::App::ScreenCache;
+use     DADA::App::ScreenCache;
 my $c = DADA::App::ScreenCache->new;
 
 # use some of those Modules
@@ -80,14 +80,12 @@ sub main {
 
 sub view {
 
-    # This will take care of all out security woes
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'screen_cache'
     );
-    my $list = $admin_list;
-
-    my $file_list = $c->cached_screens();
+    my $list = $admin_list;	
+    my $file_list = $c->cached_screens;
 
     my $app_file_list = [];
 
