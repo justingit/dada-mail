@@ -1,41 +1,43 @@
 #!/usr/bin/perl -w
-package boilerplate; 
-use strict; 
+package boilerplate;
+use strict;
 
 # make sure the DADA lib is in the lib paths!
-use lib qw(../ ../DADA/perllib); 
+use lib qw(../ ../DADA/perllib);
 
 # use some of those Modules
 use DADA::Config 4.0.0;
-use DADA::Template::HTML; 
+use DADA::Template::HTML;
 use DADA::App::Guts;
-use DADA::MailingList::Settings; 
+use DADA::MailingList::Settings;
 
 # we need this for cookies things
-use CGI; 
-my $q = new CGI; 
-   $q->charset($DADA::Config::HTML_CHARSET);
-   $q = decode_cgi_obj($q);
+use CGI;
+my $q = new CGI;
+$q->charset($DADA::Config::HTML_CHARSET);
+$q = decode_cgi_obj($q);
+use CGI::Carp qw(fatalsToBrowser);
 
 run()
   unless caller();
 
+sub run {
 
-sub run { 
-	
-	# This will take care of all out security woes
-	my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q, 
-	                                                    -Function => 'boilerplate');
-	my $list = $admin_list; 
+    # This will take care of all out security woes
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'boilerplate'
+    );
+    my $list = $admin_list;
 
-	# get the list information
-	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-	my $li = $ls->get; 
-                             
-	my $data = '';               
-	if(!$q->param('process')){ 
+    # get the list information
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get;
 
-	$data = <<EOF
+    my $data = '';
+    if ( !$q->param('process') ) {
+
+        $data = <<EOF
 
 <!-- tmpl_set name="title" value="	Admin Plugin Example" -->
 <p>I echo whatever you type in:</p> 
@@ -46,34 +48,50 @@ sub run {
 </form> 
 
 EOF
-;
+          ;
 
-	}else{ 
+        require DADA::Template::Widgets;
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -data           => \$data,
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+            }
+        );
+        e_print($scrn);
 
-		my $escape = $q->escapeHTML($q->param('echo'));
-		$data = <<EOF
+    }
+    else {
+
+        my $escape = $q->escapeHTML( $q->param('echo') );
+        $data = <<EOF
 <!-- tmpl_set name="title" value="	Admin Plugin Example" -->
 <h1>Results:</h1>
-<p>$escape</p>  		
+<p><!-- tmpl_var result --></p>  
+		
 EOF
-; 
+          ;
+
+        require DADA::Template::Widgets;
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -data           => \$data,
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+                -vars => { result => $escape, }
+            }
+        );
+        e_print($scrn);
+
+    }
 
 }
-
-	require DADA::Template::Widgets; 
-	my $scrn = DADA::Template::Widgets::wrap_screen(
-		{ 
-			-data           => \$data,
-			-with           => 'admin', 
-			-wrapper_params => { 
-				-Root_Login => $root_login,
-				-List       => $list,  
-			},
-		}
-	); 
-
-}
-
 
 =pod
 
@@ -105,7 +123,6 @@ will do the trick, as long as you uploaded B<boilerplate_plugin.cgi> in the same
 
 =cut
 
-
 =pod
 
 =head1 COPYRIGHT 
@@ -128,5 +145,4 @@ Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA  02111-1307, USA.
 
 =cut 
-
 
