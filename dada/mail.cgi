@@ -6332,6 +6332,7 @@ sub text_list {
     );
 
     $list = $admin_list;
+	my $type = $q->param('type') || 'list';
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -6341,15 +6342,18 @@ sub text_list {
 
     my $email;
 
-    # DEV: encoding?
-    print $q->header('text/plain');
-    e_print("Email Addresses for List: " . $li->{list_name} . "\n");
-    print "=" x 72 . "\n";
+	my $header  = 'Content-disposition: attachement; filename=' . $list . '-' . $type . '.csv' .  "\n"; 
+	   $header .= 'Content-type: text/csv' . "\n\n"; 
+	
+	print $header; 
 
-    my $email_count = $lh->print_out_list( -List => $list, -Type => $type );
-
-    print "=" x 72 .  "\n";
-    e_print("Total: $email_count \n\n");
+   # e_print("Email Addresses for List: " . $li->{list_name} . "\n");
+   # print "=" x 72 . "\n";
+   #
+   # my $email_count = $lh->print_out_list( -List => $list, -Type => $type );
+   #
+   # print "=" x 72 .  "\n";
+   # e_print("Total: $email_count \n\n");
 
 }
 
@@ -8275,6 +8279,7 @@ sub setup_info {
     );
     if ( $checksout == 1 && $root_password eq '' ) {
         $from_control_panel = 1;
+		$list               = $admin_list; 
     }
 
 
