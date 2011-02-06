@@ -284,8 +284,8 @@ sub print_raw_logs {
 	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
 		or die "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 	while(defined($l = <LOG>)){ 
-		chomp($l); 
-		print $l . "\n";
+		chomp($l); # why a chomp, 
+		print $l . "\n"; # and thena newline, added? 
 	}
 
 }
