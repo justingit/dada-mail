@@ -53,6 +53,12 @@ You may still download your mailing list in csv format.
 
 You can now download the entire log file, through the log viewer. 
 
+=head3 Installer: Old Screen Cache Files Removed
+
+If you use the installer to upgrade Dada Mail (as it is noted you may do), old
+screen cache files will be removed, so that old information/templates won't be shown, with 
+the newer version of Dada Mail. 
+
 =head3 Template System: initial "tmpl_set support",  template wrapping
 
 There's initial support for what's called the, B<tmpl_set> template tag, that basically 

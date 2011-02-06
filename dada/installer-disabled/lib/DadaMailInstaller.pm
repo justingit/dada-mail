@@ -413,6 +413,18 @@ sub install_dada_mail {
 
 	if($args->{-skip_configure_dada_files} == 1){ 
 		$log .= "* Skipping configuration of directory creation, config file and backend options\n"; 
+		$log .= "* Removing old screen cache files...\n"; 
+		eval { 
+			require DADA::App::ScreenCache; 
+			my $c = DADA::App::ScreenCache->new; 
+			   $c->flush;
+		};
+		if($@){ 
+			$log .="* Problems with removing old screen cache files: $@\n"; 
+		}
+		else { 
+			$log .="* Success!\n"; 
+		}
 	}
 	else { 
     	$log .=
