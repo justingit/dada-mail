@@ -249,25 +249,13 @@ sub default {
 
     require HTML::Template;
 
-    my $tmpl = prefs_form();
-    my $template =
-      HTML::Template->new( %Global_Template_Options, scalarref => \$tmpl, );
-    $template->param(
-        clickthrough_tracking   => $li->{clickthrough_tracking},
-        enable_open_msg_logging => $li->{enable_open_msg_logging},
-        enable_subscriber_count_logging =>
-          $li->{enable_subscriber_count_logging},
-        enable_bounce_logging => $li->{enable_bounce_logging},
-
-    );
-
-    $tmpl .= $template->output();
+    $tmpl .= prefs_form();
 
     $tmpl .= $q->hr;
 
     $tmpl .= $q->p(
         { -align => 'center' },
-        $q->start_form( -target => 'raw' ) 
+        $q->start_form() 
           . $q->hidden( 'f', 'raw' )
           . $q->submit(
             -name  => 'View Raw Clickthrough Logs',
@@ -304,7 +292,14 @@ sub default {
 			-wrapper_params => {
                 -Root_Login => $root_login,
                 -List       => $li->{list},
-            },
+ 	           },
+			-vars => { 
+				clickthrough_tracking           => $li->{clickthrough_tracking},
+		        enable_open_msg_logging         => $li->{enable_open_msg_logging},
+		        enable_subscriber_count_logging => $li->{enable_subscriber_count_logging},
+		        enable_bounce_logging           => $li->{enable_bounce_logging},
+	
+			},
 		}
 	);
     e_print($scrn);
@@ -313,7 +308,10 @@ sub default {
 
 sub raw { 
 
-print $q->header('text/plain'); 
+
+	my $header  = 'Content-disposition: attachement; filename=' . $list . '-clickthrough.log' .  "\n"; 
+	   $header .= 'Content-type: text/plain' . "\n\n"; 
+	print $header; 
       $rd->print_raw_logs; 
 } 
 
@@ -327,27 +325,22 @@ sub purge {
 
 
 
-sub edit_prefs { 
-	my $clickthrough_tracking = $q->param('clickthrough_tracking') || 0; 
-	my $enable_open_msg_logging = $q->param('enable_open_msg_logging') || 0; 
-	my $enable_subscriber_count_logging = $q->param('enable_subscriber_count_logging') || 0; 
-	my $enable_bounce_logging = $q->param('enable_bounce_logging') || 0; 
-	
-	
-	
-	$ls->save({ 
-	           
-	           clickthrough_tracking           => $clickthrough_tracking, 
-	           enable_open_msg_logging         => $enable_open_msg_logging, 
-	           enable_subscriber_count_logging => $enable_subscriber_count_logging,
-                enable_bounce_logging          => $enable_bounce_logging, 
+sub edit_prefs {
 
-	           
-			 }); 
+    $ls->save_w_params(
+        {
+            -associate => $q,
+            -settings  => {
+                clickthrough_tracking           => 0,
+                enable_open_msg_logging         => 0,
+                enable_subscriber_count_logging => 0,
+                enable_bounce_logging           => 0,
+            }
+        }
+    );
 
-	print $q->redirect(-uri => $URL . '?done=1'); 
-} 
-
+    print $q->redirect( -uri => $URL . '?done=1' );
+}
 
 
 sub message_report {
