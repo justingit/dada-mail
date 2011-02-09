@@ -37,8 +37,11 @@ and from moving from the C<DADA::Templates::Widgets::screen> sub to the C<DADA::
 Dada Bridge has simplified some of its options to make it more inline with other
 discussion mailing list apps, when it comes to discussion lists. You now have two choices: 
 
-Have replies always be addressed to the mailing list (with an option to reply-all), or, 
-Have replies addressed to the discussion list
+
+* Have replies always be addressed to the mailing list (with an option to reply-all), or, 
+
+* Have replies addressed to the discussion list
+
 
 =head3 View List: "Open List in New Window" button renamed to, "Download List"
 
