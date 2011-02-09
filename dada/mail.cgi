@@ -5391,7 +5391,7 @@ sub edit_type {
 
             # a very odd place to put this, but, hey,  easy enough.
             if ( $q->param('revert') ) {
-                $_ = undef;
+                $q->param( $_, undef );
             }
         }
 
@@ -9597,7 +9597,7 @@ sub profile {
 
 			my $scrn = '';
 		    require DADA::Template::Widgets;
-		    $scrn .=  DADA::Template::Widgets::screen(
+		    $scrn .=  DADA::Template::Widgets::wrap_screen(
 				{
 					-screen => 'profile_home.tmpl',
 					-with   => 'list', 
