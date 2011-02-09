@@ -48,7 +48,7 @@ Easier hooks/interface to Dada Mail subscribe
 				Email address present? 
 				(all the other email validation stuff...) 
 				
-[ ] set_to_header_to_list_address setting needs to be re-named. 
+[x] set_to_header_to_list_address setting needs to be re-named. 
 	* The functionality it was supposed to do, it doesn't 
 	* As it stands, if it's set to, "0", a reply-to header is added (or clobbers an already existing one) with the List Email address set. 
 	
