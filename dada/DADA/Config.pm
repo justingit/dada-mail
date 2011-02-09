@@ -4099,6 +4099,7 @@ Shown when a request to unsubscribe is successful.
 $HTML_UNSUB_CONFIRMATION_MESSAGE ||= <<EOF
 
 <!-- tmpl_set name="title" value="Please Confirm Your Unsubscription" -->
+
 <h1>Please confirm your mailing list unsubscription</h1>  
 
 <p>An email message has been sent to the following address:</p>
