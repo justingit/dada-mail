@@ -91,8 +91,8 @@ sub subscribe {
     
     my $q     = $args->{-cgi_obj}; 
     my $list  = xss_filter($q->param('list')); 
-    my $email = xss_filter($q->param('email')); 
-       $email = DADA::App::Guts::strip($email); 
+
+    my $email = lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) ); 
 
     my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list);
 	my $ls          = undef; 
@@ -146,9 +146,6 @@ sub subscribe {
 		}
 	}
     
-    
-    $email = lc_email($email);
-
 	# I really wish this was done, after we look and see if the confirmation
 	# step is even needed, just so we don't have to do this, twice. It would
 	# clarify a bunch of things, I think.
@@ -412,8 +409,7 @@ sub confirm {
 
     my $q = $args->{-cgi_obj}; 
     my $list  = xss_filter($q->param('list')); 
-    my $email = xss_filter($q->param('email'));     
-       $email = DADA::App::Guts::strip($email); 
+    my $email = lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) ); 
         
     my $pin   = xss_filter($q->param('pin')); 
 
@@ -458,10 +454,7 @@ sub confirm {
 			}
         }
     }
-    
-    
-    $email = lc_email($email); 
-           
+              
     my $lh = DADA::MailingList::Subscribers->new({-list => $list});
 
     warn '$li->{captcha_sub} set to: ' . $li->{captcha_sub}
@@ -547,7 +540,7 @@ sub confirm {
 						flavor        => 'n', 
 
 						list         => xss_filter( $q->param('list')), 
-						email        => xss_filter($q->param('email')), 
+						email        => lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) ), 
 						pin          => xss_filter($q->param('pin')), 
 						captcha_auth => xss_filter($captcha_auth),        
 
@@ -964,8 +957,7 @@ sub unsubscribe {
     
     my $q     = $args->{-cgi_obj}; 
     my $list  = xss_filter($q->param('list')); 
-    my $email = xss_filter($q->param('email')); 
-       $email = DADA::App::Guts::strip($email); 
+    my $email = lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) ); 
        
     my $pin   = xss_filter($q->param('pin')); 
     
@@ -1143,7 +1135,7 @@ sub unsubscribe {
                         # Special Case. 
                         $_ = 'unsub_invalid_email' 
                             if $_ eq 'invalid_email';
-                        warn "showing error, $_"; 
+                       # warn "showing error, $_"; 
                         return user_error(
                             -List  => $list, 
                             -Error => $_,            
@@ -1269,9 +1261,7 @@ sub unsub_confirm {
    
     my $q     = $args->{-cgi_obj}; 
     my $list  = xss_filter($q->param('list')); 
-    my $email = xss_filter($q->param('email'));     
-       $email = DADA::App::Guts::strip($email); 
-        
+    my $email = lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) );
     my $pin   = xss_filter($q->param('pin')); 
     
     if($args->{-html_output} != 0){ 
