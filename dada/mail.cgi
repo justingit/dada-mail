@@ -3545,6 +3545,7 @@ sub add_email {
 					list_type_isa_authorized_senders    => ($type eq 'authorized_senders') ? 1 : 0,
 					list_type_isa_testers               => ($type eq 'testers')    ? 1 : 0,
 					list_type_isa_white_list            => ($type eq 'white_list') ? 1 : 0,
+					can_have_subscriber_fields          => $lh->can_have_subscriber_fields,
                     going_over_quota   => $going_over_quota,
                     field_names        => $field_names,
                     subscribed         => $subscribed,
