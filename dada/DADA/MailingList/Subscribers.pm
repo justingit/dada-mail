@@ -722,7 +722,7 @@ sub csv_to_cds {
        
     } else {
         carp $DADA::Config::PROGRAM_NAME . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag ();;         
-
+		$cds->{email} = $csv_line; 
     }
 	
 	return $cds; 

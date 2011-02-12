@@ -2411,40 +2411,43 @@ sub csv_subscriber_parse {
 	close $NE2 or die $!; 
 	undef ($NE2); 
 	# /Done line ending translation. 
-    
-     require Text::CSV;
-     # If you want to handle non-ascii char.
-     my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
-     
+
     open my $NE3, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $DADA::Config::TMP . '/' . $filename . '.translated'
         or die "Can't open: " . $DADA::Config::TMP . '/' . $filename . '.translated' . ' because: '  . $!;
          
     while(defined($line = <$NE3>)){ 
-	
-	   #	die '$line ' . $line; 
-		
+
 		my $pre_info = $lh->csv_to_cds($line);
+		
+		#require Data::Dumper; 
+		#warn '$pre_info' . Data::Dumper::Dumper($pre_info); 
 		
 		# All this is basically doing is re-designing the complex data structure for HTML::Template stuff, 
 		# as well as embedding the original csv stuff
 		# DEV: So... are we using it for HTML::Template? 
 		# Erm. Kinda - still gets passed to filter_subscription_list_meta thingy. 
 		
-        my $info = {}; 
-    	
-		$info->{email} = $pre_info->{email}; 
-
-		my $new_fields = [];
-		my $i = 0; 
-		for(@$subscriber_fields){
-			push(@$new_fields, {name => $_, value => $pre_info->{fields}->{$_} }); 
-			$i++;
+		if($pre_info->{email} eq ''){ 
+			# This probably means we have encountered a blank line. 
 		}
-		$info->{fields} = $new_fields; 
+		else { 
+		
+	        my $info = {}; 
+    	
+			$info->{email} = $pre_info->{email}; 
 
-		push(@$address_fields, $info);
-		push(@$addresses, $info->{email}); 
-    }
+			my $new_fields = [];
+			my $i = 0; 
+			for(@$subscriber_fields){
+				push(@$new_fields, {name => $_, value => $pre_info->{fields}->{$_} }); 
+				$i++;
+			}
+			$info->{fields} = $new_fields; 
+
+			push(@$address_fields, $info);
+			push(@$addresses, $info->{email}); 
+    	}
+	}
 
     close ($NE3);
 
