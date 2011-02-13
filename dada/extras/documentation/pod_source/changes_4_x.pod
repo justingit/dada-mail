@@ -32,6 +32,15 @@ Code cleanup has trimmed 500+ lines from the mail.cgi file. Many of the changes 
 moving from the C<DADA::MailingList::Settings::save> method to the, C<DADA::MailingList::Settings::save_w_params> method 
 and from moving from the C<DADA::Templates::Widgets::screen> sub to the C<DADA::Templates::Widgets::wrap_screen> sub. 
 
+=head2 Mass Mailing: Better Error Reporting
+
+One problem when sending mass mailings - especially one using Dada Mail's templating system, is
+that you may make an error when using the template tags. This was a difficult error to even know about, 
+since no reporting was made, if an error was found - Dada Mail would simply error out and your message 
+would seem to be, "stuck" in the mass mailing queue, forever. 
+
+Now, many syntax errors should now be caught when sending a mass mailing, a webpage, or a list invitation. 
+
 =head3 Dada Bridge: Reply and Reply-All Behavior 
 
 Dada Bridge has simplified some of its options to make it more inline with other
