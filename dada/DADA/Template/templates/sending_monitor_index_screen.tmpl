@@ -125,7 +125,7 @@ Current Mass Mailings:
 		      <td> 
 		      <p>
 		       <strong> 
-		        <!-- tmpl_var list_name --> 
+		        <!-- tmpl_var list_name escape="HTML" --> 
 		       </strong> 
 		      </p>
 		     </td>
@@ -137,11 +137,11 @@ Current Mass Mailings:
 	
             <!-- tmpl_if Subject --> 
             
-           <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor&id=<!-- tmpl_var id -->&type=<!-- tmpl_var type -->" title="Click to see details about this specific mass mailing  (<!-- tmpl_var Subject escape="HTML" -->)" ><!-- tmpl_var Subject --></a>
+           <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor&id=<!-- tmpl_var id -->&type=<!-- tmpl_var type -->" title="Click to see details about this specific mass mailing  (<!-- tmpl_var Subject escape="HTML" -->)" ><!-- tmpl_var Subject escape="HTML" --></a>
            
            <!--tmpl_else --> 
            
-            <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor&id=<!-- tmpl_var id -->&type=<!-- tmpl_var type -->"><!-- tmpl_var id --></a>
+            <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor&id=<!-- tmpl_var id -->&type=<!-- tmpl_var type -->"><!-- tmpl_var id escape="HTML" --></a>
 
            <!--/tmpl_if --> 
 
@@ -149,11 +149,11 @@ Current Mass Mailings:
 	
 	 <!-- tmpl_if Subject --> 
 
-		<!-- tmpl_var Subject -->
+		<!-- tmpl_var Subject escape="HTML" -->
 		   
     <!--tmpl_else --> 
     
-		<!-- tmpl_var id -->
+		<!-- tmpl_var id escape="HTML" -->
 
     <!--/tmpl_if -->
 
