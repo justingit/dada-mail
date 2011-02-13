@@ -393,8 +393,9 @@ sub _format_text {
 	
 		my $is_att = 0; 
 		if (defined($entity->head->mime_attr('content-disposition'))) { 
-				$is_att = 1
-				 if  $entity->head->mime_attr('content-disposition') =~ m/attachment/; 
+			if($entity->head->mime_attr('content-disposition') =~ m/attachment/) { 
+				$is_att = 1; 
+			}
 		}
 			
 		if(
@@ -479,12 +480,16 @@ sub _format_text {
 						$content = $self->_add_opener_image($content);
 					}
 				}
-			
-			  # # uh.... would this work? 
-			   #$entity->head->delete('Content-Transfer-Encoding'); 
-			   #$entity->head->add('Content-Transfer-Encoding', '8bit');
-			   #$entity->head->mime_attr("content-type.charset" => 'UTF-8');
-		
+				
+				# simple validation
+				require DADA::Template::Widgets; 
+				my ($valid, $errors) = DADA::Template::Widgets::validate_screen({-data => \$content}); 
+				if($valid == 0){ 
+					my $munge = quotemeta('/fake/path/for/non/file/template'); 
+					$errors =~ s/$munge/line/; 
+					croak "Problems with email message! Invalid template markup: '$errors' \n" . '-' x 72 . "\n" . $content ; 
+				}
+				# /simple validation
 		       my $io = $body->open('w');
 
 				  $content = safely_encode($content); 
@@ -1042,6 +1047,10 @@ Given a string, changes Dada Mail's template tag into what they represent.
 B<-type> can be either PlainText or HTML
 
 =cut
+
+# DEV: This is a bad name for this - it should be called something 
+# more on the lines of expanding macro stuff, since all the parsing in list info 
+# stuff isn't here. 
 
 sub _parse_in_list_info { 
 
