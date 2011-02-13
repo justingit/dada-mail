@@ -132,6 +132,28 @@ owner email has their own profile.
 
 =head2 Bug Fixes 4.4.0
 
+=head3 blank "Verify" screen when adding/removing addresses in the list control panel 
+
+https://github.com/justingit/dada-mail/issues/closed#issue/113
+
+There seems to be a few small problems with both the add/remove verification screens,
+if the information given is not formed correctly.
+
+Among things that can cause problems:
+* Invalid comma separated values format 
+* blank lines 
+* blank lines, except for spaces 
+* incorrect information - such as HTML.
+This HTML will then be viewed in the verification screens, without the HTML be escaped.
+
+
+This causes a lot of problems with submitting addresses, as there isn't any notification, 
+by Dada Mail that anything is wrong, except part of the screen having no information, what so ever.
+
+=head3 Email Address submitted with mixed cases can break the unsubscription mechanism 
+
+https://github.com/justingit/dada-mail/issues/closed#issue/112
+
 =head3 Sending Test Messages does not pick up on any profile fields of the test recipients email address 
 
 https://github.com/justingit/dada-mail/issues/issue/111
