@@ -2049,6 +2049,22 @@ sub wrap_screen {
 
 
 
+sub validate_screen { 
+	my ($args) = @_; 
+	eval { 
+		my $scrn = screen($args)
+	};
+	if($@){ 
+		return (0, $@);
+	}
+	else { 
+		return (1, undef); 
+	}
+}
+
+
+
+
 sub decode_str { 
 	my $ref = shift;
  		${$ref} = safely_decode(${$ref}); 
