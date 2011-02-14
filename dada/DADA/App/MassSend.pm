@@ -1022,6 +1022,7 @@ sub list_invite {
 		
 		if($text_message_body eq undef && $html_message_body eq undef){ 
 			report_mass_mail_errors("Message will be sent blank! Stopping!", $list, $root_login); 
+			return;
 		}
 		
 		($text_message_body, $html_message_body) = 
