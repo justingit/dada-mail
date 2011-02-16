@@ -5143,42 +5143,35 @@ END {
 
 =pod
 
-=head1 NAME
+=head1 Name
 
 Mystery Girl - A Bounce Handler For Dada Mail
 
-=head1 DESCRIPTION
+=head1 Description
 
 Mystery Girl intelligently handles bounces from Dada Mail list messages.
 
 Mystery Girl hooks into your Dada Mail mailing lists indirectly. You'll first need to create a new POP3 email address which will be used to send all bounces from the Dada Mail lists. This address is known as your B<Bounce Email Address> 
 
-The login information for this account will be set in Mystery Girl.
-
 This same address will also be set in the B<Return-Path> of messages sent by Dada Mail. Thus, when a message is bounced, it gets sent to this address, which is monitored by Mystery Girl.
 
 Once Mystery Girl connects to this  POP3 acccount, awaiting messages are first B<read>, then, the message is B<parsed>, in an attempt to understand why the message has bounced. 
 
-The parsed email will then be B<examined> and an B<action> will be taken. The examination and action are set in a collection of B<rules>.  These rules can be customized.
+The B<parsed> email will then be B<examined> and an B<action> will be taken. The examination and action are set in a collection of B<rules>.  These rules can be customized.
 
 The usual action that is taken is to apply a, B<score> to the offending email address, everytime the address bounces back a message. Once the, B<Threshold> is reached, the email address is unsubscribed from the list. 
 
 This usually means that it takes a few bounces from a particular email address to get it removed from a list. This gives a bit of wiggle room and makes sure an email address that is bouncing is bouncing for a fairly good reason, for example: it no longer exists. 
 
-=head1 OBTAINING A COPY OF THIS PROGRAM
+=head1 Obtaining a Copy of the Plugin
 
 Mystery Girl is located in the, I<dada/plugins> directory of the main Dada Mail distribution, under the name, B<dada_bounce_handler.pl>
 
-=head1 REQUIREMENTS
+=head1 Requirements
 
-These points are absolutely necessary. Please make sure you have them before you try to install this plugin: 
+Please make sure you have them before you try to install this plugin: 
 
 =over
-
-=item * Dada Mail 4
-
-Basically, use the version of Mystery Girl that comes with the version of Dada 
-Mail you're running. 
 
 =item * A POP3 Email Account
 
@@ -5206,7 +5199,7 @@ Check to make sure that the POP3 server (usually, port 110) is not blocked from 
 
 =back
 
-=head1 RECOMMENDED
+=head1 Recommended
 
 These points are not required, but recommended to use Mystery Girl:
 
@@ -5218,21 +5211,9 @@ Mystery Girl can be configured to run automatically by using a cronjob.
 
 If you do not know how to set up a cronjob, attempting to set one up for Dada Mail will result in much aggravation. Please read up on the topic before attempting! 
 
-=item * Shell Access to Your Hosting Account
-
-Shell Access is sometimes required to set up a cronjob, using the: 
-
- crontab -e 
-
-command. You may also be able to set up a cron tab using a web-based control panel tool, like Cpanel. 
-
-Shell access also facilitates testing of the program. 
-
 =back
 
 =head1 Lightning Configuration/Installation Instructions 
-
-To get to the point: 
 
 =over
 
@@ -5242,21 +5223,9 @@ To get to the point:
 
 B<Your Mailing List -  Change List Information> 
 
-=item * Configure the plugin 
+=item * Configure the plugin in your .dada_config file
 
-You can do this either directly in the plugin (not recommended): 
-
-=over
-
-=item * Open up the dada_bounce_handler.pl script in a text editor. 
-
-=item * Set the POP3 Server, Username and Password. Save. 
-
-=item * Upload the dada_bounce_handler.pl script into the cgi-bin/dada/plugins directory
-
-=back
-
-Or, in your C<.dada_config> file. We'll go through how later in this doc. 
+How to do this exactly is covered, below
 
 =item * chmod 755 the dada_bounce_handler.pl script
 
@@ -5268,41 +5237,18 @@ Or, in your C<.dada_config> file. We'll go through how later in this doc.
 
 Below is the detailed version of the above: 
 
-=head1 CONFIGURATION
+=head1 Configuration
 
-There's a few things you need to configure in this plugin. You can either configure the plugin variables in the C<dada_bounce_handler.pl> file itself (not recommended), or in the C<.dada_config> file (recommended!) 
+There's a few things you need to configure in this plugin. You can either configure the plugin variables in the C<dada_bounce_handler.pl> file itself (not recommended), or in the C<.dada_config> file (recommended!). We will only be going over configuring this plugin via your C<.dada_config> file. 
 
-=over
-
-=item * POP3 server information. 
+=head3 POP3 Server Information. 
 
 Create a new POP3 email account. This email account will be the address that
-bounced messages will be directed towards. 
+bounced messages will be directed towards. This will be your B<Bounce Email Address> 
 
-If you're configuring this in the plugin itself, you'll need to find the following three variables: 
+Open up your C<.dada_config> file for editing. 
 
-=over
-
-=item * $Plugin_Config->{Server}
-
-=item * $Plugin_Config->{Username}
-
-=item * $Plugin_Config->{Password}
-
-=back
-
-to reflect the permissions for the email address you're going to use
-for the bounce handler. 
-
-For example: 
-
-	$Plugin_Config->{Server} = 'mail.yourdomain.com'; 
-
-	$Plugin_Config->{Username} = 'bounces+yourdomain.com'; 
-
-	$Plugin_Config->{Password} = 'password'; 
-
-If you're configuring this in you C<.dada_config> file, you'll want first  search and see if the following lines are present: 
+Search and see if the following lines are present: 
 
  # start cut for plugin configs
  =cut
@@ -5329,7 +5275,7 @@ For example:
 	Password                  			=> 'password', 
 
 
-=back
+=head2 Set your Bounce Email Address as the default List Administration Email Address
 
 You may also want to set a default value for the, Adminstration Email, so that all new lists already have the bounce handler enabled. 
 
@@ -5364,20 +5310,22 @@ And then change the, C<admin_email> to your bounce handler email address:
 		admin_email                  => 'bounces@yourdomain.com',
 	);
 
-=head1 INSTALLATION
+=head2 List Control Panel Menu
 
-Mystery Girl acts like a Dada Mail plugin.  
+Now, edit your C<.dada_config> file, so that it shows the Bounce Handler in the left-hand menu, under the, B<Plugins> heading: 
 
-Usually, you'll set up Dada Mail in your cgi-bin: in your cgi-bin, there's a directory called, "dada". Inside the, "dada" directory, there are at least two things, one called, "DADA" (uppercase) and the mail.cgi script. 
+First, see if the following lines are present in your C<.dada_config> file: 
 
-In the, "dada" directory, create a new directory called, "plugins". Upload the dada_bounce_handler.pl script, already configured, into this directory. Change its permissions to, "755".  Visit the script in your web browser - the URL will look something like this: 
+ # start cut for list control panel menu
+ =cut
 
-	http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl
+ =cut
+ # end cut for list control panel menu
 
-To run the bounce handler on your bounced messages, click the, B<Parse Bounces...> button. 
+If they are, remove them. 
 
+Then, find these lines: 
 
-If you would like have a link on the left hand side of the list control panel, find the following line in the Config.pm: 
 
  #					{-Title      => 'Bounce Handler',
  #					 -Title_URL  => $PLUGIN_URL."/dada_bounce_handler.pl",
@@ -5385,11 +5333,16 @@ If you would like have a link on the left hand side of the list control panel, f
  #					 -Activated  => 1,
  #					},
 
-And uncomment it (Take off the, "#" on each line). 
+Uncomment the lines, by taking off the, "#"'s: 
 
-Mystery Girl is now installed. 
+ 					{-Title      => 'Bounce Handler',
+ 					 -Title_URL  => $PLUGIN_URL."/dada_bounce_handler.pl",
+ 					 -Function   => 'dada_bounce_handler',
+ 					 -Activated  => 1,
+ 					},
 
-The last thing you will have to configure is your Dada Mail B<list administration email> address. 
+Save your C<.dada_config> file.
+
 
 =head2 Telling Dada Mail to use the Bounce Handler. 
 
