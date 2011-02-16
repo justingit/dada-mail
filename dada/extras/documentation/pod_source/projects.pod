@@ -4,19 +4,74 @@
 
 Below are a list of projects we'd like to work on for Dada Mail. Dada Mail development is commissioned generally by users, like you. 
 
-=head2 Multiple Fields: Subscriber-Editable Fields
 
-Currently, Dada Mail supports adding/editing/deleting of arbitrary Subscriber Profile Fields. 
+These are broad ideas that we'd like to share about some new features we're like to bring into the fold of Dada Mail. 
 
-It also supports the list owner logging into the list control panel and editing the subscriber information, on a per-subscriber basis. 
+=head2 Revamp of Mass-Subscribing in the list control panel 
 
-Dada Mail currently does B<not> support the actual subscriber to edit it's own subscriber information and we'd like to add that feature into Dada Mail.
+We're looking for comments about this issue, here: 
 
-This would also mean we'd have to overhaul the session management part of Dada Mail to not only support admin sessions for the list owner, but to also support sessions for individual users. 
+L<http://dadamailproject.com/support/boards/viewtopic.php?f=25&t=2457>
 
-Once completed, individual subscribers will be able to edit their own subscription information, add/edit/remove themselves from mailing lists their subscribed from and view other meta information about their current subscriptions. 
+If you have ideas, please post them, we could really use your help! 
 
-We'd also like to have more advanced web-based features available for subscribers, once logged into Dada Mail, including the option to posting and replying to discussion list messages from within your web browser, having the archive accessible to subscribers only. 
+=head2 Mail Sending Web Services API Integration
+
+Currently, there's two ways to send mail with Dada Mail: 
+
+=over
+
+=item * Using the local, "sendmail" command
+
+which usually integrates with the local mail server
+
+=item * Using an outside SMTP server
+
+via the SMTP protocol
+
+=back
+
+There's been a lot of interesting Email Sending API services that are cropping up. A few I've been looking at: 
+
+=over
+
+=item * Postmark
+
+L<http://postmarkapp.com>
+
+=item * Amazon SES
+
+L<http://aws.amazon.com/ses/>
+
+=back
+
+The most alluring reason to integrate these services are: 
+
+=over
+
+=item * The removal of sending speed limitations on shared hosting accounts
+
+If you use an outside service (like the above), you don't use your hosting company's mail server, thus, you're not tied to their sending limitations. 
+
+=item * Increase in successful deliveries 
+
+These services claim to be  monitored much better than your hosting company's mail server. Because they have more information about you, they can stop people from abusing their services. Which, is great. 
+
+=back
+
+Some downsides: 
+
+=over
+
+=item * Cost
+
+These services do have a cost to them. Generally, they're pretty low. 
+
+=item * Configuration 
+
+There needs to be some configuration done in Dada Mail to make them work. It's going to be similar to setting up stuff for SMTP sending. 
+
+=back
 
 =head2 Multiple Fields: Meta Information
 
@@ -94,18 +149,7 @@ Dada Bridge is really missing digest support. Digests should be able to be autom
 
 =head2 Mass Mailing Enhancements
 
-=head3 Auto-Ajusting Batch Settings
-
-Currently, Dada Mail's batch settings work by sending the specified amount of messages, and then waiting the specified amount of time. It can then only be estimated how long a mailing could take. 
-
-This leads to a lot of confustion as people find that sending one message could take a few seconds, and their mailing time is much longer than expected. 
-
-It seems like a small feature, but it would be wonderful to be able to tell Dada, "Hey, if we're not sending up to the allowable limit, let's skip the next, "x" rest periods, until we're back on track. 
-
-It would also be nice to bring back batch notifications via email in some way/shape or form. 
-
-
-=head2 Bundle FCKeditor within Dada Mail
+=head2 Bundle FCKeditor/CKEditor within Dada Mail
 
 It may be possible to somehow bundle FCKeditor within Dada Mail, for a installation-free support. FCKeditor will, "just be available" 
 
@@ -114,16 +158,6 @@ It may be possible to somehow bundle FCKeditor within Dada Mail, for a installat
 Being able to save a set of your subscribers, based on a saved query of your Subscriber Profile Fields would be incredibly helpful to help keep track of various activities of your mailing list. 
 
 Smart Groups can be created/edited/delete and Smart Groups can be used to view a specific part of your mailing list. 
-
-=head2 SOAP Server/Client API
-
-Currently, it's not very easy to work with a Dada Mail mailing list from an outside application. A SOAP API will allow a platform and language neutral way to access part of the Dada Mail API. 
-
-Some major subsets of the Dada MAil API that could be useful in the SOAP API include administration duties, such as Sending a List Message, adding subscribers en-mass, import/exporting a subscription list and handling archived messages. 
-
-The SOAP API could also be useful to add features of Dada Mail into your own application that deal with individual users, such as validating a subscription and subscribing/unsubscribing a subscriber. 
-
-We're hoping to work on the server-side part of this, with a fully documented API and hopefully, a very simple client example. 
 
 =head2 Envelope Sending 
 
@@ -192,10 +226,14 @@ In the name of performance and stability, we'd love to port this to an SQL backe
 
 mod_perl runs a web application, like Dada Mail in a completely persistent environment, which can dramatically increase performance of the web application in a busy server environment. 
 
-=head2 Under the Hood: Making Dada Mail Completely Unicode Compatible
 
-Making a program completely unicode compatible is hard. But, we'd like to do that. 
+=head1 See Also
 
-100% Unicode support would help Dada Mail achieve fantastic language support. 
+There's a file in the distro at, 
+
+I<dada/extras/developers/TODOlist.txt>
+
+Which has a running list of ideas in a very very raw form. 
+
 
 =cut

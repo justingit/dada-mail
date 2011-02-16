@@ -48,7 +48,7 @@ connectdb();
 
 print "beginning...\n";
 
-foreach my $list(local_available_lists()){ 
+for my $list(local_available_lists()){ 
 
 	print "\tworking on list: '$list'...\n";
 
@@ -97,7 +97,7 @@ foreach my $list(local_available_lists()){
             
             closedir(ADIR);
             
-			foreach my $value(@files){ 
+			for my $value(@files){ 
 			    
 				next if $value =~ /^\.\.?$/;
 				$value         =~ s(^.*/)();
@@ -119,7 +119,7 @@ foreach my $list(local_available_lists()){
 			}
 
 			
-			    foreach(keys %new_values){ 
+			    for(keys %new_values){ 
 			    
 			        if(! exists($DADA::Config::LIST_SETUP_DEFAULTS{$_})){ 
 			            carp "skipping restoring setting: $_ (not used anymore?) on list: " . $list; 
@@ -225,7 +225,7 @@ sub local_available_lists {
 				if(defined($present_list) && $present_list ne "" && $present_list !~ m/^\s+$/); 
 		}
 		
-		foreach my $all_those(@dbs) {      
+		for my $all_those(@dbs) {      
 			 push( @available_lists, $all_those)
 			 	if($all_those !~ m/\-archive.*|\-schedules.*/)
 		}		    
@@ -236,7 +236,7 @@ sub local_available_lists {
 		
 		my @clean_unique; 
 		
-		foreach(@unique){ 
+		for(@unique){ 
 			push(@clean_unique, $_) 
 				if(defined($_) && $_ ne "" && $_ !~ m/^\s+$/);
 		}

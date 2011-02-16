@@ -47,7 +47,7 @@ connectdb();
 
 print "beginning...\n";
 
-foreach my $list(DADA::App::Guts::available_lists()){ 
+for my $list(DADA::App::Guts::available_lists()){ 
 
 	print "\tworking on list: '$list'...\n";
 	
@@ -60,7 +60,7 @@ foreach my $list(DADA::App::Guts::available_lists()){
 		 
 
 
-		foreach my $key(keys %old_data){ 
+		for my $key(keys %old_data){ 
 			my $entry = $old_data{$key}; 
 			my ($subject, $message, $format, $raw_msg) = split(/\[::\]/, $entry); 
 			set_archive_info($list, $key, $subject, $message, $format, $raw_msg); 			

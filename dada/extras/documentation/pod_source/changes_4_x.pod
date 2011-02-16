@@ -2,6 +2,183 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.4.0
+
+=head2 Changes 4.4.0
+
+=head3 Closed-Loop Opt-In Subscription Not Enforced by Default, Anymore
+
+In v4.3.0, Closed-Loop Opt-In Subscription model was applied in Dada Mail to mailing list by default
+and by default you were not able to change these list settings to tailor it to your needs, without 
+first changing the config variable, C<$ENFORCE_CLOSED_LOOP_OPT_IN> to, C<0>. 
+
+It was also noted that in future versions of Dada Mail, features that did not conform 
+to Closed-Loop Opt In would be removed from Dada Mail.
+
+The, C<$ENFORCE_CLOSED_LOOP_OPT_IN> variable is now shipped with a value of, C<0> by 
+default, making Dada Mail's behavior the same as pre-4.3.0 versions of Dada Mail.
+
+We're also opening up the dialogue to all users of Dada Mail on how they see is the best way 
+to balance power and versatility of Dada Mail, with accountability and adherence of the rules 
+of a legitimate mailing list. We will put on hold the plan to deprecate these features, until 
+we got more feedback from the users of Dada Mail. Please join the discussion: 
+
+L<http://dadamailproject.com/support/boards/viewtopic.php?f=25&t=2457>
+
+
+=head3 Code Cleanup
+
+Code cleanup has trimmed 500+ lines from the mail.cgi file. Many of the changes can be seen from 
+moving from the C<DADA::MailingList::Settings::save> method to the, C<DADA::MailingList::Settings::save_w_params> method 
+and from moving from the C<DADA::Templates::Widgets::screen> sub to the C<DADA::Templates::Widgets::wrap_screen> sub. 
+
+=head2 Mass Mailing: Better Error Reporting
+
+One problem when sending mass mailings - especially one using Dada Mail's templating system, is
+that you may make an error when using the template tags. This was a difficult error to even know about, 
+since no reporting was made, if an error was found - Dada Mail would simply error out and your message 
+would seem to be, "stuck" in the mass mailing queue, forever. 
+
+Now, many syntax errors should now be caught when sending a mass mailing, a webpage, or a list invitation. 
+
+=head3 Dada Bridge: Reply and Reply-All Behavior 
+
+Dada Bridge has simplified some of its options to make it more inline with other
+discussion mailing list apps, when it comes to discussion lists. You now have two choices: 
+
+
+* Have replies always be addressed to the mailing list (with an option to reply-all), or, 
+
+* Have replies addressed to the discussion list
+
+
+=head3 View List: "Open List in New Window" button renamed to, "Download List"
+
+The list will also be given back as a CSV file, so most likely, you'll get a little dialog box asking if you
+want to either open it in some application, or just download it. 
+
+=head3 View List: Email Your List Button is Gone
+
+You may still download your mailing list in csv format. 
+
+=head3 Log View: Download the Raw Log
+
+You can now download the entire log file, through the log viewer. 
+
+=head3 Installer: Old Screen Cache Files Removed
+
+If you use the installer to upgrade Dada Mail (as it is noted you may do), old
+screen cache files will be removed, so that old information/templates won't be shown, with 
+the newer version of Dada Mail. 
+
+=head3 Template System: initial "tmpl_set support",  template wrapping
+
+There's initial support for what's called the, B<tmpl_set> template tag, that basically 
+allows you to set a variable within your template, to be used somewhere else within your 
+template. 
+
+This is interesting when coupled with initial support with wrapping one template, with another. 
+
+In one way, Dada Mail already supports this - many template screens you see use either the default 
+list template, or the default admin template and add content to another template inside it. 
+
+Internally, this was done in a very kludgey way and has now been cleaned up. There could be a potential for a 
+33% speedup for screen creation (which is nice)  
+
+What has also been cleaned up is a problem with the title of many HTML screens in Dada Mail 
+being saved within the program files itself. You can now set the title of the HTML screen 
+from within the template that gets wrapped. You'll see a line like this near the top of 
+many of the templates: 
+
+ <!-- tmpl_set name="title" value="I am a title!" -->
+
+Since moving to this way of setting the title for HTML screens, many, many of the 
+templates have been changed. If you've made custom changes to the templates, you will want 
+to do a diff on your version, with the version that ships with Dada Mail. 
+
+=head2 AJAX: internal changes
+
+Many instances of using a package called, C<CGI::Ajax> (http://search.cpan.org/dist/CGI-Ajax/) 
+has been replaced to use B<prototype> (http://www.prototypejs.org/)
+
+The only place that CGI::Ajax is still being used is in the, ajax_include_subscribe.cgi 
+extension - and we'll most likely remove it from there, soon as well. 
+
+=head2 Mailing Monitor: AJAX
+
+The Mailing Monitor in the list control panel is now refreshed via AJAX, so that 
+only a portion of the screen you see needs to be updated, instead of a refresh of the entire 
+screen. This seems to make things appear much more snappy. 
+
+=head2 Subscription/Unsubscription Custom URL Redirect API Change
+
+If there's an error with a subscription/unsubscription request, Dada Mail would 
+add a list of the errors it came across by passing them in query string with a paramater named, C<errors>. 
+This name has been changed to, C<errors[]> to help out php folk. This is tied to this bug: 
+
+L<https://github.com/justingit/dada-mail/issues#issue/109>
+
+=head2 Web Services Examples
+
+Examples for initiating a subscription request have been updated and added to. Currently there are
+server/client examples in SOAP and REST. There's also a command line example. Profile Fields are now
+support for all clients and servers. 
+
+The example scripts can be found in the distro, at: 
+
+I<dada/extras/scripts/subscribe>
+
+Documentation can be found at: 
+
+I<dada/extras/documentation/pod_source/COOKBOOK-subscriptions.pod>
+I<dada/extras/documentation/html_version/COOKBOOK-subscriptions.pod.html>
+
+=head2 Test Mass Mailings, Mail Merging
+
+If the email address you're using has a profile, its fields ("First Name", "Last Name", etc) 
+will be used in test mass mailings, instead of not using any fields. This is also true if the list
+owner email has their own profile. 
+
+=head2 Bug Fixes 4.4.0
+
+=head3 blank "Verify" screen when adding/removing addresses in the list control panel 
+
+https://github.com/justingit/dada-mail/issues/closed#issue/113
+
+There seems to be a few small problems with both the add/remove verification screens,
+if the information given is not formed correctly.
+
+Among things that can cause problems:
+* Invalid comma separated values format 
+* blank lines 
+* blank lines, except for spaces 
+* incorrect information - such as HTML.
+This HTML will then be viewed in the verification screens, without the HTML be escaped.
+
+
+This causes a lot of problems with submitting addresses, as there isn't any notification, 
+by Dada Mail that anything is wrong, except part of the screen having no information, what so ever.
+
+=head3 Email Address submitted with mixed cases can break the unsubscription mechanism 
+
+https://github.com/justingit/dada-mail/issues/closed#issue/112
+
+=head3 Sending Test Messages does not pick up on any profile fields of the test recipients email address 
+
+https://github.com/justingit/dada-mail/issues/issue/111
+
+=head3 Beatitude: Yearly repeating schedules repeat in less than a year 
+
+https://github.com/justingit/dada-mail/issues/issue/110
+
+=head3 Multiple use of parameters in redirect to URL 
+
+https://github.com/justingit/dada-mail/issues/issue/109
+
+=head3 Discussion List Reply/Reply-All behaviour is broken 
+
+https://github.com/justingit/dada-mail/issues/issue/96
+
 =head1 4.3.2
 
 This release is a bugfix-only release: 

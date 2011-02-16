@@ -1007,9 +1007,7 @@ sub create_mass_sending_file {
     if ( $args{'-Bulk_Test'} == 1 && $args{ -Test_Recipient } ) {
         $first_email = $args{ -Test_Recipient };
     }
-
     my $to_pin = make_pin( -Email => $first_email, -List => $self->{list} );
-
     my ( $lo_e_name, $lo_e_domain ) = split ( '@', $first_email );
 
     my $total = 0;
@@ -1020,6 +1018,22 @@ sub create_mass_sending_file {
         $first_email, $lo_e_name, $lo_e_domain, $to_pin, $self->{list},
         $list_names{ $self->{list} }, $n_msg_id,
     );
+	# To add to @lo, I want to bring up the Dada Profile and see if there's anything
+	# in there... 
+	if($DADA::Config::PROFILE_OPTIONS->{enabled} == 1){
+		require DADA::Profile; 
+		my $dp = DADA::Profile->new({-email => $first_email}); 
+		if($dp->exists()){ 
+			require DADA::Profile::Fields; 
+			my $dpf                  = DADA::Profile::Fields->new({-email => $first_email});
+			my $fields               = $dpf->{manager}->fields;
+			my $profile_field_values = $dpf->get;
+			for(@$fields){ 
+				push(@lo, $profile_field_values->{$_});
+			}
+		}
+	}
+	
     if ( $csv->combine(@lo) ) {
         my $hstring = $csv->string;
         print $SENDINGFILE $hstring, "\n";
@@ -1234,7 +1248,7 @@ sub can_have_subscriber_fields {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2010 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

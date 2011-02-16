@@ -1,5 +1,7 @@
 <!-- begin adv_sending_preferences_screen.tmpl -->
 
+<!-- tmpl_set name="title" value="Advanced Sending Preferences" -->
+
 <!-- tmpl_include help_link_widget.tmpl -->
 
 
@@ -75,7 +77,7 @@
 	<tr>
 	  <td>
 	   <p>
-	    <input type="checkbox" name="mime_encode_words_in_headers" id="mime_encode_words_in_headers" value="1" <!-- tmpl_if mime_encode_words_in_headers -->checked="checked"<!--/tmpl_if--> />
+	    <input type="checkbox" name="mime_encode_words_in_headers" id="mime_encode_words_in_headers" value="1" <!-- tmpl_if list_settings.mime_encode_words_in_headers -->checked="checked"<!--/tmpl_if--> />
 	   </p>
 	  </td>
 	  <td>
@@ -98,7 +100,7 @@
  <tr>
   <td>
    <p>
-    <input type="checkbox" name="verp_return_path" id="verp_return_path" value="1" <!-- tmpl_if verp_return_path -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="verp_return_path" id="verp_return_path" value="1" <!-- tmpl_if list_settings.verp_return_path -->checked="checked"<!--/tmpl_if--> />
    </p>
   </td>
   <td>
@@ -127,7 +129,7 @@
 <tr>
   <td>
    <p>
-    <input type="checkbox" name="use_domain_sending_tunings" id="use_domain_sending_tunings" value="1" <!-- tmpl_if use_domain_sending_tunings -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="use_domain_sending_tunings" id="use_domain_sending_tunings" value="1" <!-- tmpl_if list_settings.use_domain_sending_tunings -->checked="checked"<!--/tmpl_if--> />
    </p>
   </td>
   <td>
@@ -197,7 +199,7 @@
 	<tr>
 	  <td>
 	   <p>
-	    <input type="checkbox" name="print_return_path_header" id="print_return_path_header" value="1" <!-- tmpl_if print_return_path_header -->checked="checked"<!--/tmpl_if--> />
+	    <input type="checkbox" name="print_return_path_header" id="print_return_path_header" value="1" <!-- tmpl_if list_settings.print_return_path_header -->checked="checked"<!--/tmpl_if--> />
 	   </p>
 	  </td>
 	  <td>
@@ -217,7 +219,7 @@
  <tr>
   <td>
    <p>
-    <input type="checkbox" name="strip_message_headers" id="strip_message_headers" value="1" <!-- tmpl_if strip_message_headers -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="strip_message_headers" id="strip_message_headers" value="1" <!-- tmpl_if list_settings.strip_message_headers -->checked="checked"<!--/tmpl_if--> />
    </p>
   </td>
   <td>
@@ -242,7 +244,7 @@
   <tr>
   <td>
    <p>
-    <input type="checkbox" name="print_errors_to_header" id="print_errors_to_header" value="1" <!-- tmpl_if print_errors_to_header -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="print_errors_to_header" id="print_errors_to_header" value="1" <!-- tmpl_if list_settings.print_errors_to_header -->checked="checked"<!--/tmpl_if--> />
    </p>
   </td>
   <td>

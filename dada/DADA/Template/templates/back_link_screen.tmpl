@@ -1,5 +1,7 @@
 <!-- begin back_link_screen.tmpl -->
 
+<!-- tmpl_set name="title" value="Create a Back Link" -->
+
 <!-- tmpl_include help_link_widget.tmpl -->
 
 <!-- tmpl_if done -->
@@ -24,7 +26,7 @@
   Site Name:
  </label>
  <br />
- <input type="text" name="website_name" id="website_name" value="<!-- tmpl_var website_name escape="HTML"-->" class="full" />
+ <input type="text" name="website_name" id="website_name" value="<!-- tmpl_var list_settings.website_name escape="HTML"-->" class="full" />
 </p>
 
 <p>
@@ -32,7 +34,7 @@
   Site URL: (http://)
  </label>
  <br />
- <input type="text" name="website_url" id="website_url" value="<!-- tmpl_var website_url escape="HTML" -->" class="full" />
+ <input type="text" name="website_url" id="website_url" value="<!-- tmpl_var list_settings.website_url escape="HTML" -->" class="full" />
 </p>
 
 <div class="buttonfloat">

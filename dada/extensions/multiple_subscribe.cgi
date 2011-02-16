@@ -20,6 +20,8 @@ my $Debug = 0;
 
 my $Default_Screen = q{ 
 
+<!-- tmpl_set name="title" value="Subscribe/Unsubscribe to Multiple Lists" --> 
+
 <!-- tmpl_if error_invalid_email --> 
 	<p class="error">
 	 The email you submitted is invalid.
@@ -79,6 +81,8 @@ my $Default_Screen = q{
 
 
 my $Subscription_Confirmation = q{ 
+
+<!-- tmpl_set name="title" value="Subscribe to Multiple Lists" --> 
 
 <h1>
 
@@ -150,7 +154,7 @@ use DADA::App::Guts;
 
 use CGI qw(:standard html3); 
 
-require DADA::App::Guts; 
+use DADA::App::Guts; 
 use DADA::MailingList::Subscribers; 
 use DADA::MailingList::Settings; 
 use DADA::Template::HTML;
@@ -273,33 +277,32 @@ sub main {
 
 
 
+sub subscription_form {
 
-sub subscription_form { 
+    my $scrn =  DADA::Template::Widgets::wrap_screen(
+        {
+            -data => \$Default_Screen,
+            -with => 'list',
+            -vars => {
+                lists             => $ht_lists,
+                email             => $email,
+                f                 => $flavor,
+                subscription_form => DADA::Template::Widgets::subscription_form(
+                    {
+                        -multiple_lists => 1,
+                        -script_url     => $q->self_url(),
+                        -give_props     => 0
+                    }
+                ),
+                error_invalid_email => $q->param('invalid_email'),
 
-    # create the initial form
-    print(list_template(-Part       => "header",
-                   -Title      => "Subscribe/Unsubscribe to Multiple Lists", 
-                   ));  
-                   
-                   
-    
-    require DADA::Template::Widgets; 
-    print   DADA::Template::Widgets::screen({
-        -data => \$Default_Screen, 
-        -vars => { 
-            lists             => $ht_lists, 
-            email             => $email, 
-            f                 => $flavor,             
-            subscription_form => DADA::Template::Widgets::subscription_form({-multiple_lists => 1, -script_url => $q->self_url(), -give_props => 0}), 
-            error_invalid_email => $q->param('invalid_email'), 
-        
-       }
-    }); 
-                       
-    print(list_template(-Part     => "footer", 
-                   )); 
+            }
+        }
+    );
+	e_print($scrn); 
 
 }
+
 
 sub subscribe_emails {
 
@@ -488,14 +491,11 @@ sub subscribe_emails {
 			return; 
 			
 		}else{ 
-			print list_template(
-					-Part  => "header",
-                    -Title  => "Subscribe to Multiple Lists", 
-             	  ); 
 
-        print DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
 					{
                      	-data => \$Subscription_Confirmation, 
+						-with => 'list', 
 						-vars => { 
 							lists_worked_on => \@lists_worked_on, 
 							subscribing     => $subscribing, 
@@ -508,8 +508,8 @@ sub subscribe_emails {
 						},
 			}
 		); 
+		e_print($scrn);
 		
-		print list_template(-Part     => "footer"); 
 			   
 		}
 	}			   
@@ -570,8 +570,8 @@ happening behind the curtains.
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2010
-Justin Simoni
+Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
+
 To contact info, please see: 
 
 L<http://dadamailproject.com/contact/>

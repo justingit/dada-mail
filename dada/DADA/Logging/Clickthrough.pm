@@ -185,7 +185,7 @@ sub report_by_message_index {
 		require DADA::MailingList::Archives; 
 		my $mja = DADA::MailingList::Archives->new({-list => $self->{name}}); 
 		
-		foreach(sort keys %$report){ 
+		for(sort keys %$report){ 
 		
 		    if($mja->check_if_entry_exists($_)){ 
 		    
@@ -284,8 +284,8 @@ sub print_raw_logs {
 	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
 		or die "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 	while(defined($l = <LOG>)){ 
-		chomp($l); 
-		print $l . "\n";
+		chomp($l); # why a chomp, 
+		print $l . "\n"; # and thena newline, added? 
 	}
 
 }
@@ -361,7 +361,7 @@ sub return_headers {
     my @logical_lines = split /\n(?!\s)/, $header_blob;
 
     # make the hash
-    foreach my $line (@logical_lines) {
+    for my $line (@logical_lines) {
         my ( $label, $value ) = split ( /:\s*/, $line, 2 );
         $new_header{$label} = $value;
     }
@@ -388,7 +388,7 @@ sub parse_entity {
         #print "we gotta parts?!\n";
 
         my $i;
-        foreach $i ( 0 .. $#parts ) {
+        for $i ( 0 .. $#parts ) {
             $parts[$i] =
               $self->parse_entity( { %{$args}, -entity => $parts[$i] } );
         }
@@ -546,25 +546,21 @@ sub redirect_encode {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2010 Justin Simoni
- 
-http://justinsimoni.com 
+Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
 
-All rights reserved. 
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
- This program is free software; you can redistribute it and/or
- modify it under the terms of the GNU General Public License
- as published by the Free Software Foundation; either version 2
- of the License, or (at your option) any later version.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 =cut
 

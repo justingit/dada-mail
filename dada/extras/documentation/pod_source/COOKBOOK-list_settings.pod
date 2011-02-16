@@ -15,7 +15,7 @@ Before we can use a list, we have to know what lists are available:
  
  my @lists = DADA::App::Guts::available_lists(); 
  
- foreach my $list(@lists){ 
+ for my $list(@lists){ 
     
     # prints the "listshortname" of every list available.
     print "$_\n";
@@ -74,7 +74,7 @@ Once you have your listshortname, it's pretty easy to get the list settings info
 B<$li> is a hashref, the keys hold the name of your list setting, the value, the setting's value. Some ways to use it: 
 
  # print every list setting saved: 
- foreach my $setting(keys %$li){ 
+ for my $setting(keys %$li){ 
     print $setting . ' => ' . $li->{$setting} . "\n";  
  }
  

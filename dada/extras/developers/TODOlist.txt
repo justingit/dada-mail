@@ -10,6 +10,48 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+filter_subscribers enhancements
+	it would be nice if, during the, "Add/Invite screen, you're allowed to see which subscribers you're trying to import
+	have already gotten a subscription request - and if so, not allow them to get another invite/whatever. 
+	Just another hook into, "Limit Subscriber Confirmation" stuff. I think. 
+	
+# The neverending, "I want a private email list - DM doesn't allow that, I don't 
+want to invite people" never ending debate. 
+
+Lists will need to have two ways of opereation: 
+PRIVATE: allows mass subscriptions via the list control panel, and other non-closed-loop opt in stuff
+		 Allows you to hide your list 
+		 YOU ARE responsible for making sure you follow things. 
+Public: Cannot have mass subscriptions via the list control panel - MUST use closed-loop opt in stuff
+	    Cannot hide your list 
+		Still responsible to make sure you follow the rules, but Dada Mail will do its best to 
+		make this painless
+		Added bonus! Ability to use outside sending APIs! Amazon SES,  PostMark, etc. 
+
+Easier hooks/interface to Dada Mail subscribe 
+	* Perl API that doesn't have a crap...API
+	* SOAP? Interface? 
+	* YAML? Interface? 
+	* Javascript...? Interface? (Ajax? - I dunno...) 
+		Basically, this just needs to put two steps together: 
+			* first is the email validation part
+			* if it's validated, then we go to the second step - the subscribe stuff
+			* The subscribe stuff has to be changed to easily give back a return status 
+			  that we can then later use - even, "1" and, "0" would be helpful
+			* Are there any instances where a screen is shown in the web browser, that
+			  we would have to replace with some sort of different status message? 
+			  (other than errors, which will be handled in the first step, hopefully) 
+			   and the congrats stuff?
+			 Tests: 
+				Valid List? 
+				Email address present? 
+				(all the other email validation stuff...) 
+				
+[x] set_to_header_to_list_address setting needs to be re-named. 
+	* The functionality it was supposed to do, it doesn't 
+	* As it stands, if it's set to, "0", a reply-to header is added (or clobbers an already existing one) with the List Email address set. 
+	
 [ ] Some ideas from a user: 
 	* Make the List invite be more steamlined - so skip the screen that requires you to 
 	  see the message that you want to send out 

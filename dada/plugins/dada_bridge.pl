@@ -16,7 +16,7 @@ delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 #  pod2text ./dada_bridge.pl | less
 #
 # Or try online:
-#  http://dadamailproject.com/support/documentation/dada_bridge.pl.html
+#  http://dadamailproject.com/d/dada_bridge.pl.html
 #
 #---------------------------------------------------------------------#
 # REQUIRED:
@@ -37,7 +37,7 @@ use lib qw(
 #BEGIN {
 #    my $homedir = ( getpwuid($>) )[7];
 #    my @user_include;
-#    foreach my $path (@INC) {
+#    for my $path (@INC) {
 #        if ( -d $homedir . '/perl' . $path ) {
 #            push @user_include, $homedir . '/perl' . $path;
 #        }
@@ -397,13 +397,16 @@ sub cgi_main {
         my $flavor = $q->param('flavor') || 'cgi_default';
 
         my %Mode = (
-            'cgi_default'            => \&cgi_default,
-            'cgi_show_plugin_config' => \&cgi_show_plugin_config,
-            'test_pop3'              => \&cgi_test_pop3,
-            'awaiting_msgs'          => \&cgi_awaiting_msgs,
-            'manual_start'           => \&admin_cgi_manual_start,
-           # 'mod'                    => \&cgi_mod,
+            'cgi_default'                 => \&cgi_default,
+            'cgi_show_plugin_config'      => \&cgi_show_plugin_config,
+            'test_pop3'                   => \&cgi_test_pop3,
+            'awaiting_msgs'               => \&cgi_awaiting_msgs,
+            'manual_start'                => \&admin_cgi_manual_start,
+            'admin_cgi_manual_start_ajax' => \&admin_cgi_manual_start_ajax,
+            'cgi_test_pop3_ajax'          => \&cgi_test_pop3_ajax,
+            # 'mod'                       => \&cgi_mod,
         );
+
 
         if ( exists( $Mode{$flavor} ) ) {
             $Mode{$flavor}->();    #call the correct subroutine
@@ -454,30 +457,88 @@ sub cgi_manual_start {
     }
 }
 
-sub cgi_test_pop3 {
 
-    e_print(
-        admin_template_header(
-            -Title      => "POP3 Login Test",
-            -List       => $list,
-            -Form       => 0,
-            -Root_Login => $root_login
-        )
-    );
+sub cgi_test_pop3_ajax { 
 
-    $run_list = $list;
+	$run_list = $list;
     $verbose  = 1;
-    print '<pre>';
-    test_pop3();
-    print '</pre>';
-    print '<p><a href="' . $Plugin_Config->{Plugin_URL} . ' ">Back...</a></p>';
+    print $q->header(); 
+	print '<pre>'; # DEV: do not like
+	test_pop3();
+ 	print '</pre>'; # DEV: do not like   
+	
+}
+sub cgi_test_pop3_tmpl { 
 
-    e_print(admin_template_footer(
-        -Form => 0,
-        -List => $list,
-    ));
+	return q{ 
+	<!-- tmpl_set name="title" value="POP3 Login Test" --> 
+	
+	
+	<script type="text/javascript">
+	    //<![CDATA[
+		Event.observe(window, 'load', function() {
+		  test_pop3();				
+		});
+		
+		 function test_pop3() { 
+			new Ajax.Updater(
+				'test_pop3_results', '<!-- tmpl_var Plugin_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						flavor:       'cgi_test_pop3_ajax'
+						
+					},
+				onCreate: 	 function() {
+					$('test_pop3_results').hide();
+					$('test_pop3_results_loading').show();
+				},
+				onComplete: 	 function() {
+					$('test_pop3_results_loading').hide();
+					Effect.BlindDown('test_pop3_results');
+				}	
+			}
+			);
+		}
+	    //]]>
+	</script>
+		
+   <p id="breadcrumbs">
+        <a href="<!-- tmpl_var Plugin_URL -->">
+		 <!-- tmpl_var Plugin_Name -->
+	</a> &#187; Test POP3 Login
+   </p>
+
+	<div id="test_pop3_results_loading" style="display:none;"> 
+		<p class="alert">Loading...</p>
+	</div> 
+	<div id="test_pop3_results"> 			
+	</div> 
+		
+	}
+	
+}
+sub cgi_test_pop3 {
+	
+	my $tmpl = cgi_test_pop3_tmpl(); 
+	require    DADA::Template::Widgets; 
+	my $scrn = DADA::Template::Widgets::wrap_screen(
+						{ 
+							-data => \$tmpl, 
+							-with           => 'admin', 
+							-wrapper_params => { 
+								-Root_Login => $root_login,
+								-List       => $list,  
+							},
+						-vars => $Plugin_Config,
+					}
+	); 
+	e_print($scrn); 
 
 }
+
+
+
 
 sub cgi_awaiting_msgs {
 
@@ -527,7 +588,7 @@ EOF
     my $awaiting_msgs = $mod->awaiting_msgs();
     print "List of Messages Still Awaiting Moderation:\n\n"
       if $verbose;
-    foreach (@$awaiting_msgs) {
+    for (@$awaiting_msgs) {
         my $messagename = substr( $_, length($list) + 1 );
         my $parser = $parser;
         my $entity;
@@ -587,40 +648,102 @@ EOF
     );
 }
 
-sub admin_cgi_manual_start {
-
-    e_print(
-        admin_template_header(
-            -Title      => "Manually Running Mailing...",
-            -List       => $list,
-            -Form       => 0,
-            -Root_Login => $root_login
-        )
-    );
+sub admin_cgi_manual_start_ajax { 
 
     $run_list        = $list;
     $verbose         = 1;
     $check_deletions = 1;
-
-    e_print( '
-     <p id="breadcrumbs">
-        <a href="' . $Plugin_Config->{Plugin_URL} . '">
-            ' . $Plugin_Config->{Plugin_Name} . '
-        </a> &#187; Manually Running Mailing</p>');
-
-    e_print('<pre>');
-    start();
-    e_print( '</pre>');
-    e_print(
-      '<p><a href="' . $Plugin_Config->{Plugin_URL} . '">Back...</a></p>'
-	);
-
-    e_print( admin_template_footer(
-        -Form => 0,
-        -List => $list,
-    ));
-
+	
+	print $q->header(); 
+	print '<pre>';  # DEV no like. 
+	start();
+	print '</pre>'; # DEV no like. 
+	    
 }
+sub admin_cgi_manual_start {
+	
+	my $tmpl = admin_cgi_manual_start_tmpl(); 
+	
+	require    DADA::Template::Widgets; 
+	my $scrn = DADA::Template::Widgets::wrap_screen(
+		{ 
+			-data => \$tmpl, 
+			-with => 'admin', 
+			-wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+			
+			-vars => {
+				Plugin_Name    => $Plugin_Config->{Plugin_Name}, 
+				Plugin_URL     => $Plugin_Config->{Plugin_URL}, 
+			}, 
+		}
+	); 
+	e_print($scrn); 
+	
+}
+
+
+
+
+sub admin_cgi_manual_start_tmpl { 
+	
+	return q{ 
+		
+		<!-- tmpl_set name="title" value="Manually Running Mailing..." --> 
+
+	   <p id="breadcrumbs">
+	        <a href="<!-- tmpl_var Plugin_URL -->">
+			 <!-- tmpl_var Plugin_Name -->
+		</a> &#187; Manually Running Mailing
+	   </p>
+			
+			<script type="text/javascript">
+			    //<![CDATA[
+				Event.observe(window, 'load', function() {
+				  manual_start();				
+				});
+				
+				 function manual_start(){ 
+
+					new Ajax.Updater(
+						'manual_start_results', '<!-- tmpl_var Plugin_URL -->', 
+						{ 
+						    method: 'post', 
+							parameters: {
+								flavor:       'admin_cgi_manual_start_ajax'
+							},
+						onCreate: 	 function() {
+							Form.Element.setValue('manual_start_button', 'Checking...');
+							$('manual_start_results').hide();
+							$('manual_start_results_loading').show();
+						},
+						onComplete: 	 function() {
+
+							$('manual_start_results_loading').hide();
+							Effect.BlindDown('manual_start_results');
+							Form.Element.setValue('manual_start_button', 'Check For Messages');
+						}	
+						});
+				}
+			    //]]>
+			</script>
+	
+
+	<form name="some_form" id="some_form"> 
+		<input type="button" value="Check For Messages" id="manual_start_button" class="processing" onClick="manual_start();" /> 
+	</form>
+	
+		<div id="manual_start_results_loading" style="display:none;"> 
+			<p class="alert">Loading...</p>
+		</div> 
+		<div id="manual_start_results"> 			
+		</div> 
+			
+	};
+}
+
 
 sub cgi_mod {
 
@@ -759,7 +882,7 @@ sub validate_list_email {
 	}
 
     my @lists = DADA::App::Guts::available_lists;
-    foreach my $this_list (@lists) {
+    for my $this_list (@lists) {
 
         my $this_ls =
           DADA::MailingList::Settings->new( { -list => $this_list } );
@@ -803,7 +926,6 @@ sub cgi_default {
           $q->param('append_list_name_to_subject') || 0;
         $p->{no_append_list_name_to_subject_in_archives} =
           $q->param('no_append_list_name_to_subject_in_archives') || 0;
-        $p->{add_reply_to}         = $q->param('add_reply_to')         || 0;
         $p->{discussion_pop_email} = $q->param('discussion_pop_email') || undef;
         $p->{discussion_pop_server} = $q->param('discussion_pop_server')
           || undef;
@@ -886,7 +1008,7 @@ sub cgi_default {
             $p->{discussion_pop_password} = $q->param('discussion_pop_password')
               || undef;
 
-            foreach ( keys %$p ) {
+            for ( keys %$p ) {
                 $li->{$_} = $p->{$_};
             }
 
@@ -909,17 +1031,6 @@ sub cgi_default {
           $lh->subscription_list({ -type => 'authorized_senders' });
     }
 
-	my $scrn = '';
-    
-    $scrn .= admin_template_header(
-            -Title      => "Discussion List Options",
-            -List       => $list,
-            -Form       => 0,
-            -Root_Login => $root_login,
-            -li         => $li,
-
-        );
-
     my $can_use_ssl = 0;
     eval { require IO::Socket::SSL };
     if ( !$@ ) {
@@ -939,15 +1050,20 @@ sub cgi_default {
     );
 
     my $curl_location = `which curl`;
-    $curl_location = strip( make_safer($curl_location) );
+       $curl_location = strip( make_safer($curl_location) );
 
     my $tmpl = default_cgi_template();
 
     require DADA::Template::Widgets;
-    $scrn .= DADA::Template::Widgets::screen(
+    my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -expr => 1,
-            -data => \$tmpl,
+            -data           => \$tmpl,
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
             -vars => {
 
                 authorized_senders             => $authorized_senders,
@@ -983,20 +1099,15 @@ sub cgi_default {
 
             },
 			-list_settings_vars_param => { 
-				-list                => $list,
-				-dot_it              => 1,
-				i_know_what_im_doing => 1,  
+				-list                 => $list,
+				-dot_it               => 1,
+				-i_know_what_im_doing => 1,  
 			},
         }
 
     );
-
-    $scrn .= admin_template_footer(
-        -Form => 0,
-        -List => $list,
-        -li   => $li,
-    );
 	e_print($scrn); 
+
 }
 
 sub cl_main {
@@ -1099,7 +1210,7 @@ sub start {
     #/KLUDGE!
 
     my $messages_viewed = 0;
-  QUEUE: foreach my $list (@lists) {
+  QUEUE: for my $list (@lists) {
 
         if ( $messages_viewed >= $Plugin_Config->{MessagesAtOnce} ) {
             last;
@@ -1154,7 +1265,7 @@ sub start {
             my $local_msg_viewed = 0;
 
             # Hmm, we do, but then we sort them numerically here:
-            foreach my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
+            for my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
 
                 $local_msg_viewed++;
                 e_print( "\tMessage Size: " . $msgnums->{$msgnum} . "\n")
@@ -1278,7 +1389,7 @@ sub start {
 
             my $delete_msg_count = 0;
 
-            foreach my $msgnum_d ( sort { $a <=> $b } keys %$msgnums ) {
+            for my $msgnum_d ( sort { $a <=> $b } keys %$msgnums ) {
                 e_print( "\tRemoving message from server...\n")
                   if $verbose;
                  $pop->Delete($msgnum_d);
@@ -1356,7 +1467,7 @@ sub message_was_deleted_check {
             $msgnums->{$msg_num} = $msg_size;
         }
 
-        foreach my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
+        for my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
             my $msg = $pop->Retrieve($msgnum);
 
             my $cs = create_checksum( \$msg );
@@ -1369,7 +1480,7 @@ sub message_was_deleted_check {
                 @cs = @{ $checksums->{$list} };
             }
 
-            foreach my $s_cs (@cs) {
+            for my $s_cs (@cs) {
 
                 e_print( "\t\tsaved checksum: $s_cs\n")
                   if $verbose;
@@ -1479,7 +1590,7 @@ sub test_pop3 {
         push ( @lists, $run_list );
     }
 
-    foreach my $l (@lists) {
+    for my $l (@lists) {
 
         e_print( "\n" . '-' x 72 . "\nTesting List: '" . $l . "'\n");
 
@@ -1672,7 +1783,7 @@ sub validate_msg {
 
         #if($verbose){
         #	print "All Errors: \n" . '-' x 72 . "\n";
-        #	foreach(keys %$errors){
+        #	for(keys %$errors){
         #		"\t*" . $_ . ' => '  . $errors->{$_} . "\n";
         #	}
         #}
@@ -1990,7 +2101,7 @@ sub validate_msg {
 
                 my @x_spam_status_fields =
                   split ( ' ', $entity->head->get( 'X-Spam-Status', 0 ) );
-                foreach (@x_spam_status_fields) {
+                for (@x_spam_status_fields) {
                     if ( $_ =~ m/score\=/ ) {
                         $score = $_;
                         $score =~ s/score\=//;
@@ -2025,7 +2136,7 @@ sub validate_msg {
                     if ($verbose) {
                         my @x_spam_report = $entity->head->get('X-Spam-Report');
                         print "\n\t";
-                        print "$_\n" foreach @x_spam_report;
+                        print "$_\n" for @x_spam_report;
                     }
 
                 }
@@ -2064,7 +2175,7 @@ sub validate_msg {
           if $verbose;
     }
 
-    foreach ( keys %$errors ) {
+    for ( keys %$errors ) {
         if ( $errors->{$_} == 1 ) {
             $status = 0;
             last;
@@ -2073,7 +2184,7 @@ sub validate_msg {
 
     #if($verbose){
     #	print "All Errors: \n" . '-' x 72 . "\n";
-    #	foreach(keys %$errors){
+    #	for(keys %$errors){
     #		"\t*" . $_ . ' => '  . $errors->{$_} . "\n";
     #	}
     #}
@@ -2393,7 +2504,7 @@ sub process_stripping_file_attachments {
     my @att_bl = split ( ' ', $ls->param('file_attachments_to_strip') );
     my $lt     = {};
 
-    foreach (@att_bl) {
+    for (@att_bl) {
 
         $lt->{$_} = lc( $lt->{$_} );
         $lt->{$_} = 1;
@@ -2405,7 +2516,7 @@ sub process_stripping_file_attachments {
 
         # multipart...
         my $i;
-        foreach $i ( 0 .. $#parts ) {
+        for $i ( 0 .. $#parts ) {
             ( $parts[$i], $ls ) =
               process_stripping_file_attachments( $parts[$i], $ls );
 
@@ -2413,7 +2524,7 @@ sub process_stripping_file_attachments {
 
         my @new_parts;
 
-        foreach $i ( 0 .. $#parts ) {
+        for $i ( 0 .. $#parts ) {
             if ( !$parts[$i] ) {
 
             }
@@ -2920,7 +3031,7 @@ sub handle_errors {
     }
 
     my $reasons = '';
-    foreach ( keys %$errors ) {
+    for ( keys %$errors ) {
         $reasons .= $_ . ', '
           if $errors->{$_} == 1;
     }
@@ -2966,7 +3077,7 @@ sub handle_errors {
 
     print "\t\tError delivering message! Reasons:\n\n"
       if $verbose;
-    foreach ( keys %$errors ) {
+    for ( keys %$errors ) {
         print "\t\t\t" . $_ . "\n"
           if $errors->{$_} == 1 && $verbose;
     }
@@ -3074,7 +3185,7 @@ sub handle_errors {
         print "\t\tOther awaiting messages:\n\n"
           if $verbose;
 
-        foreach (@$awaiting_msgs) {
+        for (@$awaiting_msgs) {
             print "\t\t * " . $_ . "\n"
               if $verbose;
         }
@@ -3161,30 +3272,28 @@ sub find_return_path {
 }
 
 sub cgi_show_plugin_config {
-	
-	my $scrn = ''; 
-    $scrn .= admin_template_header(
-            -Title => $Plugin_Config->{Plugin_Name} . " Plugin Configuration",
-            -List  => $list,
-            -Form  => 0,
-            -Root_Login => $root_login
-     );
-
-    my $tmpl = cgi_show_plugin_config_template();
-
+	 
     my $configs = [];
-    foreach ( sort keys %$Plugin_Config ) {
+    for ( sort keys %$Plugin_Config ) {
         if ( $_ eq 'Password' ) {
-            push ( @$configs, { name => $_, value => '(Not Shown)' } );
+            push( @$configs, { name => $_, value => '(Not Shown)' } );
         }
         else {
-            push ( @$configs, { name => $_, value => $Plugin_Config->{$_} } );
+            push( @$configs, { name => $_, value => $Plugin_Config->{$_} } );
         }
     }
+
+    my $tmpl = cgi_show_plugin_config_tmpl();
+
     require DADA::Template::Widgets;
-    $scrn .=  DADA::Template::Widgets::screen(
+    my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-            -data => \$tmpl,
+            -data           => \$tmpl,
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
             -vars => {
                 Plugin_URL  => $Plugin_Config->{Plugin_URL},
                 Plugin_Name => $Plugin_Config->{Plugin_Name},
@@ -3192,36 +3301,26 @@ sub cgi_show_plugin_config {
             },
         },
     );
+    e_print($scrn);
 
-    $scrn .=  admin_template_footer(
-        -Form => 0,
-        -List => $list,
-    );
-	e_print($scrn);
 }
 
-sub cgi_show_plugin_config_template {
+sub cgi_show_plugin_config_tmpl {
 
     return q{ 
     
     
-    
+	<!-- tmpl_set name="title" value="<!-- tmpl_var Plugin_Name --> Plugin Configuration" -->
+	
   <p id="breadcrumbs">
    <a href="<!-- tmpl_var Plugin_URL -->"> 
    <!-- tmpl_var Plugin_Name --> 
    </a> 
-   
    &#187;
-   
         Plugin Configuration
    </a> 
-   
-   
   </p> 
- 
- 
- 
- 
+
         <table> 
         
         <!-- tmpl_loop configs --> 
@@ -3240,11 +3339,9 @@ sub cgi_show_plugin_config_template {
             </p>
             </td> 
             </tr> 
-            
         <!-- /tmpl_loop --> 
+        </table>
  
-        </table> 
-        
     };
 
 }
@@ -3354,6 +3451,9 @@ sub inject {
 sub default_cgi_template {
 
     return q{ 
+
+
+<!-- tmpl_set name="title" value="Discussion List Options" --> 
 
 <!-- tmpl_if saved -->
 	<!-- tmpl_var GOOD_JOB_MESSAGE  -->
@@ -3653,9 +3753,11 @@ General
      <br />
      Everyone subscribed to your list may post messages for everyone else 
      on your list by sending  messages to (<strong><!-- tmpl_var list_settings.discussion_pop_email escape="HTML" --></strong>).
-    </p>
+   </p>
   
-  
+
+
+
   	 <table width="100%" cellspacing="0" cellpadding="5">
         <tr> 
         
@@ -3705,19 +3807,6 @@ General
     </p>
    </td>
   </tr>
-  <tr> 
-   <td align="right">
-    <input name="add_reply_to" id="add_reply_to" type="checkbox" value="1" <!--tmpl_if list_settings.add_reply_to -->checked="checked"<!--/tmpl_if--> />
-   </td>
-   <td>
-    <label for="add_reply_to">
-     Automatically have replies to messages directed to the group
-    </label>
-    <br />
-     A 'Reply-To' header will be added to group list mailings that will direct 
-     replies to list messages back to the list address (<strong><!-- tmpl_var list_settings.discussion_pop_email escape="HTML" --></strong>).
-   </td>
-  </tr>
    <tr> 
    <td align="right">
     <input name="mail_discussion_message_to_poster" id="mail_discussion_message_to_poster" type="checkbox" value="1" <!--tmpl_if list_settings.mail_discussion_message_to_poster -->checked="checked"<!--/tmpl_if--> />
@@ -3731,18 +3820,25 @@ General
   </tr>
   
   
-  
-     <tr> 
-   <td align="right">
-    <input name="set_to_header_to_list_address" id="set_to_header_to_list_address" type="checkbox" value="1" <!--tmpl_if list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_if--> />
-   </td>
-   <td>
+
+
+<!-- 
+
+<td align="right">
+ <input name="set_to_header_to_list_address" id="set_to_header_to_list_address" type="checkbox" value="1" <!--tmpl_if list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_if--> />
+</td>
+
     <label for="set_to_header_to_list_address">
      Set the <strong>To:</strong> header of discussion list messages to the <strong>List Address</strong>, rather than the subscribers address.
     </label>
     <br />
    </td>
   </tr>
+--> 
+
+
+
+
 
      <tr> 
    <td align="right">
@@ -3756,9 +3852,34 @@ General
 	Parsing Template Tags could create formatting problems. 
    </td>
   </tr>
-
-
  </table> 
+
+
+	<p><label>Replies to messages should:</label><br/> 
+	<table>
+     <tr>
+      <td>
+	<p>
+	 <input type="radio" name="set_to_header_to_list_address" value="1" <!--tmpl_if list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_if--> /></p>
+	  </td><td>
+	<p><label>be addressed to the sender</label><br />
+	 <em>(you can still "Reply-All" to send the reply to the sender, as well as the mailing list)</em></p>
+	</td>
+	</tr> 
+	<tr> 
+
+	<td>
+	<p>
+	 <input type="radio" name="set_to_header_to_list_address" value="0" <!--tmpl_unless list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_unless--> />
+	</p></td> 
+	<td> 
+	<label>be addressed to the mailing list</label>
+</p> 
+</td> 
+</tr> 
+</table>
+
+
       </td>
   </tr>
  </table> 
@@ -4284,7 +4405,7 @@ sub awaiting_msgs {
         closedir(MOD_MSGS)
           or carp "couldn't close: " . $self->mod_dir;
 
-        foreach my $key ( sort $allfiles{$a} <=> $allfiles{$b}, keys %allfiles )
+        for my $key ( sort $allfiles{$a} <=> $allfiles{$b}, keys %allfiles )
         {
 
             next if ( $key =~ /^\.\.?$/ );
@@ -4387,7 +4508,7 @@ sub moderation_msg {
 				-type => 'authorized_senders'
 			}
 		);
-        foreach my $moderator (@$authorized_senders) {
+        for my $moderator (@$authorized_senders) {
 
 			if($moderator->{email} eq $args->{ -from }){ 
 				# Well, we'll just pass that one right by... 
@@ -4409,7 +4530,7 @@ sub moderation_msg {
     push ( @moderators, $ls->param('list_owner_email') );    # always addressed
 
     # loop through recepients
-    foreach my $to_address (@moderators) {                   # recepient loop
+    for my $to_address (@moderators) {                   # recepient loop
         $reply = MIME::Entity->build(
             Type    => "multipart/mixed",
             Subject => $Moderation_Msg_Subject,
@@ -4792,77 +4913,61 @@ sub mod_dir {
 
 =pod
 
-=head1 NAME 
+=head1 Name 
 
-Dada Bridge Announce-only and Discussion List Bridge from your mail client to Dada Mail. 
+Dada Bridge 
 
-=head1 Obtaining The Plugin
-
-Dada Bridge is located in the, I<dada/plugins> directory of the Dada Mail distribution, under the name: I<dada_bridge.pl>
-
-=head1 DESCRIPTION 
+=head1 Description 
 
 Dada Bridge is a program created to allow the support of sending email from your mail reader to a Dada Mail list, both for announce-only tasks and discussion lists.
 
-=head1 Intended Audience
-
-Before I get asked the inevitable question, "why did you reinvent another wheel?", here's my response: 
-
-dada_bridge.pl, along with Dada Mail is not meant to be a replacement for similar systems, such as Mailman or Majordomo. dada_bridge.pl is a much simpler program with far fewer features then either of these two programs. 
-
-As with most of Dada Mail, the primary goals are usability and... well - style! 
-
-dada_bridge.pl I<does> solve a few problems with trying to use similar programs  - 
+Dada Bridge allows you to do two things, fairly easily: 
 
 =over
 
-=item * You do NOT need root access to the server to install the program, or setup the list address
+=item * Set up an announce-only list. Dada Bridge allows you to send an email message to the List Email address, which will then be sent to your entire mailing list. 
 
-=item * You do NOT need to use an alias to a script to use dada_bridge.pl
+=item * Set up a discussion list. Anyone subscribed to your mailing list will be able send an email to the List Email Address, which will then be sent to the entire mailing list. Anyone else may reply to messages sent to the same mailing list. 
 
 =back
 
-Having solved these two problems also makes dada_bridge.pl potentially more secure to use and opens its use to a wider audience. 
+There's some advantages to using Dada Bridge over more sophisticated programs: 
 
-=head1 How does dada_bridge.pl work?
+=over
 
-Many of dada_bridge.pl's concepts are slightly different than what you may be used to in traditional mailing lists: 
+=item * You do NOT need root access to the server to install the program, or setup the List Email address
+
+=item * You do NOT need to use an alias to a script to use Dada Bridge
+
+=back
+
+Having solved these two problems also makes Dada Bridge potentially more secure to use and opens its use to a wider audience. 
+
+=head1 How does Dada Bridge work?
+
+Many of Dada Bridge's concepts are slightly different than what you may be used to in traditional mailing lists: 
 
 
 =over
 
 =item * Subscription/Unsubscription requests are handled via Dada Mail itself
 
-In other words, it's all web-based. There are currently no subscription mechanisms that use email commands. 
+In other words, it's all web-based. There are currently no subscription mechanisms that use email commands (although, that would be cool). 
 
 
 =item *  A, "List Email" is just a POP3 email account. 
 
 In Dada Mail, a "List Email" is the address you send to when you want to post a message to the list. This differs from the "List Owner" email, which is the address that messages will be sent on behalf of (unless discussion lists are enabled). 
 
-Usually, in a mailing list manager, this address is created automatically by the program itself: not so in Dada Mail - you'll have to manually create the email  (POP3) account and plug in the email, pop3 server and username/password into Dada Mail.
+Usually in a mailing list manager, this address is created automatically by the program itself: not so in Dada Mail - you'll have to manually create the email  (POP3) account and plug in the email, pop3 server and username/password into Dada Mail.
 
 This sounds like a step I<backward>, but it allows anyone who can make POP3 accounts to have a discussion mailing list. You also have a whole lot of flexibility when it comes to what the List Email can be. 
 
-In normal use, dada_bridge.pl will check this account and route any messages it finds accordingly. When in normal use, do not check this account yourself. 
+In normal use, Dada Bridge will check this account and route any messages it finds accordingly. When in normal use, do not check this account yourself. 
 
 =back
 
-Saying all this, dada_bridge.pl's niche is probably with small to medium sized lists. This program has not been tested with lists larger than a few hundred, so your mileage may vary. 
-
-The other thing you may want to take into consideration is the lack of proper threading in Dada Mail's web-based archives. At the moment, archives are only sorted by date. 
-
-This may/may not be a deal breaker, but also take into consideration that the displaying of complex email messages is usually actually I<better> in Dada Mail than most other mail archive viewing programs. 
-
-One more thing to take into consideration is that there is currently no filter in place to reject messages based on size or type. There is a way currently to strip messages with attachments of a certain file ending or mime-type. 
-
-These two issues may be at least partly worked around using the preferences of your POP email account. Many services will at least allow you to set a per-mailbox limit, or even a per-message limit for size. 
-
-As for content, Dada Mail is currently completely MIME-aware and will accept anything it can parse, which means, multipart messages, attachments, inline embedded images - the works. 
-
-For a stopgap solution to the last issues, you may look into a mail filtering program like Procmail, which can be configured to death. 
-
-=head1 REQUIREMENTS
+=head1 Requirements
 
 =over
 
@@ -4876,61 +4981,68 @@ If you do not know how to set up a cron job, attempting to set one up for Dada B
 
 =back 
 
-=head1 RECOMMENDATIONS
+=head1 Recommendations
 
 =over
 
-=item * Shell Access to Your Hosting Account
+=item * Setup Dada Mail using the SQL Backend. 
 
-Shell Access is sometimes required to set up a cronjob, using the:
+Multipart messages, attachments and inline embedded images will work very well if you use the SQL Backend. 
 
- crontab -e
+=item * Disable Javascript in Archived Messages 
 
-command. You may also be able to set up a cron tab using a web-based control panel tool, like Cpanel.
+In Dada Mail's List control panel under, I<Message Archives - # Advanced Archive Options>, check the option, B<Disable Javascript in Archived Messages >. This will prevent exploitations embedded in messages sent to the mailing list when viewed in Dada Mail's own archives. Along with Javascript, this option will strip out: C<embed>, C<object>, C<frame>, C<iframe>, and C<meta> tags. 
 
-Shell access also facilitates testing of the program.
+This feature does require the use of a CPAN module called, B<HTML::Scrubber>, which you may have to install yourself: 
 
-=item * Use the *SQL backend for Archives
-
-if not for subscribers as well. 
-
-Multipart messages, attachments and inline embedded images will work very well if you use the *SQL backend for Archives. They may not work at all if you don't. 
-
-Since you don't have any control over the type of messages being sent using dada_bridge.pl, I would use the *SQL backend for Archives. 
-
-For the same reason, I also and cannot stress enough that you check,
-
-B<Disable Embedded JavaScript in Archived Messages>
-
-In Dada Mail's List control panel under, I<Manage Archives - Archive Options - Advanced>. This will prevent exploitations embedded in messages sent to the list when viewed in Dada Mail's own archives. Along with Javascript, this option will strip out: embed, object, frame, iframe, and meta tags. 
-
-This feature does require the use of a CPAN module called, B<HTML::Scrubber>, which you may have to install yourself. 
+L<http://search.cpan.org/dist/HTML-Scrubber/>
 
 If you do not have this available, I do urgently suggest you do not use archiving for B<discussion> lists. 
 
 =back
 
+=head1 Obtaining The Plugin
+
+Dada Bridge is located in the, I<dada/plugins> directory of the Dada Mail distribution, under the name: I<dada_bridge.pl>
 
 =head1 Lightning Configuration/Installation Instructions
 
-To get to the point:
-
 =over 
 
-=item * Upload the dada_bridge.pl script into the cgi-bin/dada/plugins directory (if it's not already there) 
 
 =item * chmod 755 the dada_bridge.pl script
 
-=item * run the plugin via a web browser.
+The, C<dada_bridge.pl> script should be in your I<dada/plugins> directory. 
+
+=item * Run dada_bridge.pl in your web browser.
+
+In other words, visit it in your web browser L<http://example.com/cgi-bin/dada/plugins/dada_bridge.pl> 
 
 =item * Set the cronjob
 
+The command for your cronjob will be listed on the plugin's list control panel. Set it to run for every five minutes. 
+
+
 =back
 
-Below is the detailed version of the above:
+=head1 Configuration/Installation Screencasts
+
+Configuring and Installing (and Using) Dada Bridge is covered in two screencasts: 
+
+=head2 Part 1
+
+L<http://www.youtube.com/watch?v=PWzSbpCbfGI&hd=1>
+
+=for html <iframe title="YouTube video player" width="640" height="510" src="http://www.youtube.com/embed/PWzSbpCbfGI" frameborder="0" allowfullscreen></iframe>
+
+=head2 Part 2
+
+L<http://www.youtube.com/watch?v=S5GwxZnw3oU&hd=1>
+
+=for html  <iframe title="YouTube video player" width="640" height="510" src="http://www.youtube.com/embed/S5GwxZnw3oU?hd=1" frameborder="0" allowfullscreen></iframe>
 
 
-=head1 INSTALLATION
+=head1 Installation
 
 Before we get into installation, here's how Dada Bridge is used: 
 
@@ -4940,21 +5052,29 @@ The second part of Dada Bridge is the part that actually looks for any new mail 
 
 There's a few ways that Dada Bridge can do the second part, and we'll go in detail on how to set up both ways. 
 
-=head2 Configuring dada_bridge.pl's Plugin Side
+=head2 Configuring Dada Bridge's Plugin Side
 
-=head2 #1 Upload into the plugins directory
+=head2 #1 Change the permissions of the, dada_bridge.pl script to, "755"
 
-We're assuming your cgi-bin looks like this: 
+Find the C<dada_bridge.pl> script in your I<dada/plugins> directory. Change its permissions to, C<755> 
 
- /home/account/cgi-bin/dada
+=head2 #2 Configure your outside config file (.dada_config)
 
-and inside the I<dada> directory is the I<mail.cgi> file and the I<DADA> (uppercase) directory. Make a B<new> directory in the I<dada> directory called, B<plugins> (if it's not already there). 
+You'll most likely want to edit your outside config file (C<.dada_config>)
+so that it shows Dada Bridge in the left-hand menu, under the, B<Plugins> heading. 
 
-If not already there, upload your copy of I<dada_bridge.pl> into that B<plugins> directory. chmod 755 dada_bridge.pl 
+First, see if the following lines are present in your C<.dada_config> file: 
 
-=head2 #2 Configure the Config.pm file
+ # start cut for list control panel menu
+ =cut
 
-This plugin will give you a new menu item in your list control panel. Tell Dada Mail to make this menu item by tweaking the Config.pm file. Find these lines in the Config.pm file: 
+ =cut
+ # end cut for list control panel menu
+
+If they are, remove them. 
+
+Then, find these lines: 
+
 
  #					{-Title      => 'Discussion Lists',
  #					 -Title_URL  => $PLUGIN_URL."/dada_bridge.pl",
@@ -4962,12 +5082,15 @@ This plugin will give you a new menu item in your list control panel. Tell Dada 
  #					 -Activated  => 1,
  #					},
 
-Uncomment it (take off the "#"'s) 
+Uncomment the lines, by taking off the, "#"'s: 
 
-Save the Config.pm file. 
+ 					{-Title      => 'Discussion Lists',
+ 					 -Title_URL  => $PLUGIN_URL."/dada_bridge.pl",
+ 					 -Function   => 'dada_bridge',
+ 					 -Activated  => 1,
+ 					},
 
-You're basically done configurating the Dada Bridge plugin. 
-
+Save your C<.dada_config> file. 
 
 You can now log into your List Control Panel and under the, B<plugins> heading you should now see a linked entitled, "Discussion lists". Clicking that will allow you to set up your list to receive mail from a mail reader. 
 
@@ -5137,7 +5260,7 @@ path to the Dada Mail libraries.
 
 If you don't know where your site-wide Perl libraries are, try running this via the command line:
 
- perl -e 'print $_ ."\n" foreach @INC'; 
+ perl -e 'print $_ ."\n" for @INC'; 
 
 If you do not know how to run the above command, visit your Dada Mail in a web browser, log into your list and on the left hand menu and: click, B<About Dada Mail> 
 
@@ -5161,38 +5284,67 @@ Uncheck:
 
 And you're off to the races. 
 
-=head1 Misc. Options
+=head1 Plugin Configuration Settings
 
-=head2 $Plugin_Config->{Plugin_URL}
+The below settings are available to you, if you wish to further configure the plugin. You'll find the settings within the plugin itself - look at the top of the, C<dada_bridge.pl> script. 
 
-Sometimes, the plugin has a hard time guessing what its own URL is. If this is happening, you can manually set the URL of the plugin in B<$Plugin_Config->{Plugin_URL}>
+BUT, we suggest that you set these plugin config settings in your outside config file (C<.dada_config>). 
 
-=head2 $Plugin_Config->{Allow_Manual_Run}
+First, search and see if the following lines are present in your C<.dada_config> file: 
+
+ # start cut for plugin configs
+ =cut
+
+ =cut
+ # end cut for plugin configs
+
+If they are present, remove them.
+
+You can then configure the plugin variables on these lines: 
+
+	Dada_Bridge => { 
+    
+	    Plugin_URL                          => undef, 
+		Plugin_Name                         => undef, 
+	    Allow_Manual_Run                    => undef, 
+	    Manual_Run_Passcode                 => undef, 
+	    MessagesAtOnce                      => undef, 
+		Soft_Max_Size_Of_Any_Message        => undef, 
+	    Max_Size_Of_Any_Message             => undef, 
+	    Allow_Open_Discussion_List          => undef, 
+	    Room_For_One_More_Check             => undef, 
+		Enable_POP3_File_Locking            => undef, 
+		Check_List_Owner_Return_Path_Header => undef, 
+		Check_Multiple_Return_Path_Headers  => undef, 
+
+	},
+
+=head2 Plugin_URL
+
+Sometimes, the plugin has a hard time guessing what its own URL is. If this is happening, you can manually set the URL of the plugin in Plugin_URL.
+
+=head2 Allow_Manual_Run
 
 Allows you to invoke the plugin to check and send awaiting messages via a URL. See, "The Easy Way" cronjob setting up docs, above. 
 
-=head2 $Plugin_Config->{Manual_Run_Passcode}
+=head2 Manual_Run_Passcode
 
 Allows you to set a passcode if you want to allow manually running the plugin. See, "Tehe Easy Way" cronjob setting up docs, above. 
 
-=head2 $Plugin_Config->{MessagesAtOnce}
+=head2 MessagesAtOnce
 
-You can specificy how many messages you want to have the program actually handle per execution of the script by changing the, B<$Plugin_Config->{MessagesAtOnce}> variable in the source of the script itself. By default, it's set conservatively to, B<1>.
+You can specify how many messages you want to have the program actually handle per execution of the script by changing the, B<MessagesAtOnce> variable in the source of the script itself. By default, it's set conservatively to, B<1>.
 
 
-=head2 $Plugin_Config->{Max_Size_Of_Any_Message}
+=head2 Max_Size_Of_Any_Message
 
 Sets a hard limit on how large a single message can actually be, before you won't allow the message to be processed. If a message is too large, it'll be simple deleted. A warning will be written in the error log, but the original sender will not be notified. 
-
-=head1 "Hidden" Misc Options
-
-The following options aren't very documented and somewhat obscure, but can help out debugging problems with using Dada Bridge
 
 =head2 Allow_Open_Discussion_List
 
 If set to, C<1> a new option will be available in Dada Bridge's list control panel to allow you to have a discussion list that anyone can send messages to. 
 
-=head2 $Plugin_Config->{Soft_Max_Size_Of_Any_Message}
+=head2 Soft_Max_Size_Of_Any_Message
 
 Like its brethren, C<Max_Size_Of_Any_Message> C<Soft_Max_Size_Of_Any_Message> sets the maximum size of a message that's accepted, but
 If the message falls between, C<Soft_Max_Size_Of_Any_Message> and, C<Max_Size_Of_Any_Message> a, "Your email message is too big!" email message will
@@ -5200,21 +5352,21 @@ be sent to the original poster.
 
 Set the size in octects. 
 
-=head2 $Plugin_Config->{Room_For_One_More_Check} 
+=head2 Room_For_One_More_Check
 
 C<Room_For_One_More_Check> looks to see how many mass mailings are currently happening. If its at or above the limit set in C<$MAILOUT_AT_ONCE_LIMIT>, Dada Bridge will not attempt to look for and (possibly) create another mass mailing to join the queue. 
 
-=head2 $Plugin_Config->{Enable_POP3_File_Locking} 
+=head2 Enable_POP3_File_Locking
 
 C<Enable_POP3_File_Locking>. Sometimes, the pop3 locking stuff in Dada Mail simply goes haywire and you get deadlocks. Setting this configuration to, C<0> stops that. 
 
-=head2 $Plugin_Config->{Check_List_Owner_Return_Path_Header}
+=head2 Check_List_Owner_Return_Path_Header
 
 When testing the validity of a received message, Dada Mail will look to see if the, C<Return-Path> header matches what's set in the, C<From> header. If they do not match, this test fails and the message will be rejected. Setting, C<Check_List_Owner_Return_Path_Header> will disable this test. 
 
-=head2 $Plugin_Config->{Check_Multiple_Return_Path_Headers}
+=head2 heck_Multiple_Return_Path_Headers
 
-C<Check_Multiple_Return_Path_Headers> is another validity test for received messages. This time, the message is looked to see if it has more than one C<Return-Path> header. If it does, it is rejected. If you set, C<$Plugin_Config->{Check_Multiple_Return_Path_Headers}> to, C<0>, this test will be disabled. 
+C<Check_Multiple_Return_Path_Headers> is another validity test for received messages. This time, the message is looked to see if it has more than one C<Return-Path> header. If it does, it is rejected. If you set, C<Check_Multiple_Return_Path_Headers> to, C<0>, this test will be disabled. 
 
 =head1 Dada Bridge-Specific Email Messages
 
@@ -5273,10 +5425,7 @@ This could be the cause of mysterious occurences of messages never reaching the 
 
 =head1 COPYRIGHT
 
-Copyright (c) 2004 - 2009 Justin Simoni
-
-All rights reserved.
-
+Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
 
 =head1 LICENSE
 

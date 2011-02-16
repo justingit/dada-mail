@@ -792,13 +792,8 @@ sub default {
         }
 
 		my $scrn = '';
-		 $scrn = list_template(
-            -Part  => "header",
-            -Title => "Sign Up for a List",
-        );
 
         require DADA::Template::Widgets;
-
         $scrn .= DADA::Template::Widgets::default_screen(
            # {
                 -email              => $email,
@@ -807,8 +802,6 @@ sub default {
                 -error_invalid_list => $q->param('error_invalid_list'),
            # }
         );
-       $scrn .= list_template( -Part => "footer" );
-
         e_print($scrn);
         if (!$c->profile_on && $available_lists[0] && $q->param('error_invalid_list') != 1 ) {
             $c->cache( 'default.scrn', \$scrn );
@@ -819,15 +812,7 @@ sub default {
     }
     else {
 
-		my $scrn = '';
-        $scrn .= list_template(
-            -Part  => "header",
-            -Title => "Welcome to $DADA::Config::PROGRAM_NAME",
-            -vars  => { show_profile_widget => 0, }
-        );
-
         my $auth_state;
-
         if ( $DADA::Config::DISABLE_OUTSIDE_LOGINS == 1 ) {
             require DADA::Security::SimpleAuthStringState;
             my $sast = DADA::Security::SimpleAuthStringState->new;
@@ -835,9 +820,10 @@ sub default {
         }
 
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'congrats_screen.tmpl',
+				-with   => 'list', 
                 -vars   => {
                     havent_agreed =>
                       ( ( xss_filter( $q->param('agree') ) eq 'no' ) ? 1 : 0 ),
@@ -845,8 +831,6 @@ sub default {
                 },
             }
         );
-
-        $scrn .=( list_template( -Part => "footer", -End_Form => 0 ) );
 		e_print($scrn);
     }
 }
@@ -883,16 +867,7 @@ sub list_page {
 
     require DADA::Template::Widgets;
 
-    my $scrn = (
-        list_template(
-            -Part  => "header",
-            -Title => $list_info->{list_name},
-            -List  => $list,
-
-        )
-    );
-
-    $scrn .= DADA::Template::Widgets::list_page(
+    my $scrn .= DADA::Template::Widgets::list_page(
         -list           => $list,
         -cgi_obj        => $q,
         -email          => $email,
@@ -900,9 +875,6 @@ sub list_page {
         -error_no_email => $q->param('error_no_email') || 0,
 
     );
-
-    $scrn .= list_template( -Part => "footer", -List => $list );
-
     e_print($scrn);
 
     if (!$c->profile_on && !$email && !$set_flavor && ( $q->param('error_no_email') != 1 ) ) {
@@ -928,21 +900,10 @@ sub admin {
 		user_error( -Error => 'install_dir_still_around' );
 	    return;
 	}
-
-
-    my $scrn = list_template(
-		-Part       => "header",
-        -Title      => "Administration",
-		-vars       => {
-				show_profile_widget => 0,
-					}
-	);
-
+	
     my $login_widget = $q->param('login_widget') || $DADA::Config::LOGIN_WIDGET;
-
     require DADA::Template::Widgets;
-    $scrn .= DADA::Template::Widgets::admin(-login_widget => $login_widget, -cgi_obj => $q);
-    $scrn .= (list_template(-Part => "footer", -End_Form   => 0));
+    my $scrn .= DADA::Template::Widgets::admin(-login_widget => $login_widget, -cgi_obj => $q);
     e_print($scrn);
 
 
@@ -954,37 +915,12 @@ sub admin {
 
 sub sign_in {
 
-	if(DADA::App::Guts::install_dir_around() == 1){
-		user_error( -Error => 'install_dir_still_around' );
-	    return;
-	}
-
-    my $list_exists = check_if_list_exists(
-        -List       => $list,
-    );
-
-
-	my $scrn = '';
-
-    if ( $list_exists >= 1 ) {
-
-        my $pretty = pretty($list);    # Pretty?
-        $scrn .=  list_template(
-            -Part  => "header",
-            -Title => "Sign In to $pretty",
-            -List  => $list,
-            -vars  => { show_profile_widget => 0, }
-        );
+    if ( DADA::App::Guts::install_dir_around() == 1 ) {
+        user_error( -Error => 'install_dir_still_around' );
+        return;
     }
-    else {
 
-        $scrn .=  list_template(
-            -Part  => "header",
-            -Title => "Sign In",
-            -vars  => { show_profile_widget => 0, }
-        );
-
-    }
+    my $list_exists = check_if_list_exists( -List => $list, );
 
     if ( $list_exists >= 1 ) {
 
@@ -1002,42 +938,38 @@ sub sign_in {
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
         my $li = $ls->get;
 
-        $scrn .=  DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'list_login_form.tmpl',
+                -with   => 'list',
                 -vars   => {
-                    list           => $list,
-                    list_name      => $li->{list_name},
                     flavor_sign_in => 1,
                     auth_state     => $auth_state,
                 },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
             }
         );
+        e_print($scrn);
+
     }
     else {
 
         my $login_widget = $q->param('login_widget')
           || $DADA::Config::LOGIN_WIDGET;
-        $scrn .=  DADA::Template::Widgets::admin(
+        my $scrn .= DADA::Template::Widgets::admin(
             -login_widget            => $login_widget,
             -no_show_create_new_list => 1,
             -cgi_obj                 => $q,
         );
+        e_print($scrn);
 
     }
-    if ( $list_exists >= 1 ) {
 
-        $scrn .=  list_template(
-            -Part => "footer",
-            -List => $list,
-        );
-    }
-    else {
-        $scrn .=  list_template( -Part => "footer" );
-    }
-
-	e_print($scrn);
 }
+
 
 sub send_email {
 
@@ -1147,6 +1079,102 @@ sub previewMessageReceivers {
 
 }
 
+sub sending_monitor_index { 
+
+	my ($admin_list, $root_login) = check_list_security(
+										-cgi_obj  => $q,
+                                        -Function => 'sending_monitor'
+									);
+									
+    my $mailout_status = [];
+	my @lists;
+
+	# If we're logged in as dada root, we see all the mass mailings going on. 
+	if($root_login == 1){
+		@lists = available_lists();
+	}
+	else {
+		# If not, only the current list. 
+		@lists = ($list);
+	}
+
+	for my $l_list(@lists){
+     	my @mailouts  = DADA::Mail::MailOut::current_mailouts(
+						{
+							-list     => $l_list,
+							-order_by => 'creation',
+						}
+					);
+		for my $mo(@mailouts){
+
+			my $mailout = DADA::Mail::MailOut->new({ -list => $l_list });
+               $mailout->associate(
+					$mo->{id},
+					$mo->{type}
+				);
+            my $status  = $mailout->status();
+			require DADA::MailingList::Settings;
+			my $l_ls = DADA::MailingList::Settings->new({-list => $l_list});
+            push(@$mailout_status,
+				{
+					%$status,
+					list                         => $l_list,
+					current_list                 => (($list eq $l_list) ? 1 : 0),
+					S_PROGRAM_URL                => $DADA::Config::S_PROGRAM_URL,
+					Subject                      => safely_decode($status->{email_fields}->{Subject}, 1),
+					status_bar_width             => int($status->{percent_done}) * 1,
+					negative_status_bar_width    => 100 - (int($status->{percent_done}) * 1),
+					message_id                   => $mo->{id},
+					message_type                 => $mo->{type},
+					mailing_started              => scalar(localtime($status->{first_access})),
+					mailout_stale                => $status->{mailout_stale},
+					%{$l_ls->params},
+            	}
+        	);
+		}
+	}
+
+	my (
+		$monitor_mailout_report,
+		$total_mailouts,
+		$active_mailouts,
+		$paused_mailouts,
+		$queued_mailouts,
+		$inactive_mailouts
+	) = DADA::Mail::MailOut::monitor_mailout(
+		{
+			-verbose => 0,
+			($root_login == 1) ? () : (-list => $list)
+		}
+	);
+
+	require DADA::Template::Widgets;
+
+	my $scrn .= DADA::Template::Widgets::wrap_screen(
+			{
+				-screen => 'sending_monitor_index_screen.tmpl',
+                -with   => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+				-vars   => {
+					screen                       => 'sending_monitor',
+					killed_it                    => $q->param('killed_it') ? 1 : 0,
+					mailout_status               => $mailout_status,
+					monitor_mailout_report       => $monitor_mailout_report,
+				},
+				-list_settings_vars_param => {
+					-list    => $list,
+					-dot_it => 1,
+				},
+			}
+		);
+	e_print($scrn);
+			
+	
+}
+
 
 
 
@@ -1175,20 +1203,33 @@ sub sending_monitor {
        $id =~ s/\@/_at_/g;
 	   $id =~ s/\>|\<//g;
 
+	if(!$q->param('id')){
+		sending_monitor_index(); 
+		return; 
+    }
+
+    # 10 is the factory default setting to wait per batch.
+    # Let's not refresh an faster, or we'll never have time
+    # to read the actual screen.
+
+     my $refresh_after = 10;
+     if($refresh_after < $li->{bulk_sleep_amount}){
+			$refresh_after = $li->{bulk_sleep_amount};
+		}
+
 	# Type ala, list, invitation list, etc
 	my $type = $q->param('type');
 	   $type = xss_filter(DADA::App::Guts::strip($type));
 
     my $restart_count = $q->param('restart_count') || 0;
 
-    require  DADA::Mail::Send;
+	require  DADA::Mail::Send;
     my $mh = DADA::Mail::Send->new(
 				{
 					-list   => $list,
 					-ls_obj => $ls,
 				}
 			 );
-
 
     my $auto_pickup = 0;
 
@@ -1205,15 +1246,14 @@ sub sending_monitor {
             print $q->redirect(
 						-url => $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&killed_it=1'
 					);
-
 			return;
 
         } else {
-
             die "mailout does NOT exists! What's going on?!";
-
         }
+
     }elsif ($q->param('process') eq 'pause'){
+	
         if(DADA::Mail::MailOut::mailout_exists($list, $id, $type) == 1){
 
             my $mailout = DADA::Mail::MailOut->new({ -list => $list });
@@ -1223,7 +1263,7 @@ sub sending_monitor {
             print $q->redirect(
 					-url => $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&id=' . $id . '&type=' . $type . '&paused_it=1'
 				);
-
+				
         }
         else {
 
@@ -1233,7 +1273,8 @@ sub sending_monitor {
 
     }
     elsif ($q->param('process') eq 'resume'){
-        if(DADA::Mail::MailOut::mailout_exists($list, $id, $type) == 1){
+ 
+       if(DADA::Mail::MailOut::mailout_exists($list, $id, $type) == 1){
 
             my $mailout = DADA::Mail::MailOut->new({ -list => $list });
                $mailout->associate($id, $type);
@@ -1255,7 +1296,6 @@ sub sending_monitor {
 
 
         print $q->header();
-
         print "<html>
                 <head>
 
@@ -1281,13 +1321,9 @@ sub sending_monitor {
 
         # If not...
         if($@){
-
             print "<h1>Problems Reloading!:</h1><pre>$@</pre>";
-
             # We're going to refresh, see if it gets better.
             $restart_time = 5;
-
-
         }
 
         # Provide a link in case browser redirect is working
@@ -1303,118 +1339,18 @@ sub sending_monitor {
 
        return;
     }
-
-    # No id? No problem, show them the index page.
-
-    if(!$q->param('id')){
-        my $mailout_status = [];
-		my @lists;
-
-		if($root_login == 1){
-			@lists = available_lists();
-		}
-		else {
-			@lists = ($list);
-		}
-
-		for my $l_list(@lists){
-        	my @mailouts  = DADA::Mail::MailOut::current_mailouts(
-							{
-								-list     => $l_list,
-								-order_by => 'creation',
-							}
-						);
-			for my $mo(@mailouts){
-
-				my $mailout = DADA::Mail::MailOut->new({ -list => $l_list });
-	               $mailout->associate(
-						$mo->{id},
-						$mo->{type}
-					);
-	            my $status  = $mailout->status();
-				require DADA::MailingList::Settings;
-				my $l_ls = DADA::MailingList::Settings->new({-list => $l_list});
-	            push(@$mailout_status,
-					{
-
-						%$status,
-						list                         => $l_list,
-						current_list                 => (($list eq $l_list) ? 1 : 0),
-						S_PROGRAM_URL                => $DADA::Config::S_PROGRAM_URL,
-						Subject                      => safely_decode($status->{email_fields}->{Subject}, 1),
-						status_bar_width             => int($status->{percent_done}) * 1,
-						negative_status_bar_width    => 100 - (int($status->{percent_done}) * 1),
-						message_id                   => $mo->{id},
-						message_type                 => $mo->{type},
-						mailing_started              => scalar(localtime($status->{first_access})),
-						mailout_stale                => $status->{mailout_stale},
-						%{$l_ls->params},
-	            	}
-	        	);
-			}
-		}
+	elsif ($q->param('process') eq 'ajax'){
 
 
-
-
-
-
-            my (
-				$monitor_mailout_report,
-				$total_mailouts,
-				$active_mailouts,
-				$paused_mailouts,
-				$queued_mailouts,
-				$inactive_mailouts
-				) = DADA::Mail::MailOut::monitor_mailout(
-						{
-							-verbose => 0,
-							($root_login == 1) ? () : (-list => $list)
-						}
-					);
-
-            require DADA::Template::Widgets;
-
-	   my $scrn = '';
-	   $scrn = admin_template_header(
-	                  -Title      => "Monitor Your Mailing",
-	                  -List       => $list,
-	                  -Root_Login => $root_login,
-	                  -Form       => 0,
-
-	              );
-		$scrn .= DADA::Template::Widgets::screen(
-				{
-					-screen => 'sending_monitor_index_screen.tmpl',
-	                       -vars   => {
-						screen                       => 'sending_monitor',
-						title                        => 'Monitor Your Mailings',
-						killed_it                    => $q->param('killed_it') ? 1 : 0,
-						mailout_status               => $mailout_status,
-						auto_pickup_dropped_mailings => $li->{auto_pickup_dropped_mailings},
-						monitor_mailout_report       => $monitor_mailout_report,
-					},
-				}
-			);
-
-
-       $scrn .= admin_template_footer(
-			-List => $list,
-		);
-		e_print($scrn);
-
-    }else{
-
-        my $mailout;
-        my $status = {};
+        my $mailout        = undef;
+        my $status         = {};
         my $mailout_exists = 0;
-
-
         my $mailout_exists = 0;
         my $my_test_mailout_exists = 0;
-
-        eval {$my_test_mailout_exists = DADA::Mail::MailOut::mailout_exists($list, $id, $type);};
-
+        eval {
+			$my_test_mailout_exists = DADA::Mail::MailOut::mailout_exists($list, $id, $type);
+		};
+		
         if(!$@){
             $mailout_exists = $my_test_mailout_exists;
         }
@@ -1423,178 +1359,172 @@ sub sending_monitor {
 
             $mailout_exists = 1;
             $mailout        = DADA::Mail::MailOut->new({ -list => $list });
-
             $mailout->associate($id, $type);
             $status         = $mailout->status();
 
         }else {
-
+	
             # Nothing - I believe this is handled in the template.
 
         }
 
-
-            my (
-				$monitor_mailout_report,
-				$total_mailouts,
-				$active_mailouts,
-				$paused_mailouts,
-				$queued_mailouts,
-				$inactive_mailouts
-				) = DADA::Mail::MailOut::monitor_mailout(
-						{
-							-verbose => 0,
-							-list    => $list
-						}
-					);
-
-
-            if(
-
-               $status->{should_be_restarted}								== 1  && # It's dead in the water.
-               $li->{auto_pickup_dropped_mailings}                          == 1 && # Auto Pickup is turned on...
-              # $status->{total_sending_out_num} - $status->{total_sent_out} >  0 && # There's more subscribers to send out to
-               $restart_count                                               <= 0 && # We haven't *just* restarted this thing
-               $status->{mailout_stale}                                     != 1 &&   # The mailout hasn't been sitting around too long without being restarted,
-
-               $active_mailouts                                             < $DADA::Config::MAILOUT_AT_ONCE_LIMIT # There's not already too many mailouts going out.
-
-               ){
-
-               # Whew! Take that for making sure that the damn thing is supposed to be sent.
-
-                print $q->redirect(
-						-url => $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&id=' . $id . '&process=restart&type=' . $type . '&restart_count=1'
-						);
-                return;
-
-            } else {
-                $restart_count = 0;
-            }
-
-
-            my $sending_status = [];
-            for(keys %$status){
-                next if $_ eq 'email_fields';
-                push(@$sending_status, {key => $_, value => $status->{$_}});
-
-            }
-
-           # 8 is the factory default setting to wait per batch.
-           # Let's not refresh an faster, or we'll never have time
-           # to read the actual screen.
-
-           my $refresh_after = 10;
-           if($refresh_after < $li->{bulk_sleep_amount}){
-				$refresh_after = $li->{bulk_sleep_amount};
+		my (
+			$monitor_mailout_report,
+			$total_mailouts,
+			$active_mailouts,
+			$paused_mailouts,
+			$queued_mailouts,
+			$inactive_mailouts
+		) = DADA::Mail::MailOut::monitor_mailout(
+			{
+				-verbose => 0,
+				-list    => $list
 			}
+		);
 
-          # If we're... say... 2x a batch setting and NOTHING has been sent,
-          # let's say a mailing will be automatically started in... time since last - wait time.
+			
+		if(
+		$status->{should_be_restarted}								   == 1 && # It's dead in the water.
+		$li->{auto_pickup_dropped_mailings}                            == 1 && # Auto Pickup is turned on...
+		# $status->{total_sending_out_num} - $status->{total_sent_out} >  0 && # There's more subscribers to send out to
+		$restart_count                                                 <= 0 && # We haven't *just* restarted this thing
+		$status->{mailout_stale}                                       != 1 && # The mailout hasn't been sitting around too long without being restarted,
+		$active_mailouts                                                < $DADA::Config::MAILOUT_AT_ONCE_LIMIT # There's not already too many mailouts going out.
+		){
 
-          my $will_restart_in = undef;
-          if(time - $status->{last_access} > ($li->{bulk_sleep_amount} * 1.5)){
+			# Whew! Take that for making sure that the damn thing is supposed to be sent.
+		
+			my $reload_url = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&id=' . $id . '&process=restart&type=' . $type . '&restart_count=1'; 
 
+			print $q->header(); 
+			print "<script> 
+			window.location.replace('$reload_url'); 
+			</script>";
+			return;
+		} else {
+			$restart_count = 0;
+		}
+
+
+		my $sending_status = [];
+		for(keys %$status){
+			next if $_ eq 'email_fields';
+			push(@$sending_status, {key => $_, value => $status->{$_}});
+        }
+
+		# If we're... say... 2x a batch setting and NOTHING has been sent,
+		# let's say a mailing will be automatically started in... time since last - wait time.
+
+		my $will_restart_in = undef;
+		if(time - $status->{last_access} > ($li->{bulk_sleep_amount} * 1.5)){
 			my $tardy_threshold = $li->{bulk_sleep_amount} * 3;
 			if($tardy_threshold < 60){
 				$tardy_threshold = 60;
 			}
+			
+			$will_restart_in = $tardy_threshold - (time - $status->{last_access});
+			if($will_restart_in >= 1){
+				$will_restart_in =   _formatted_runtime($will_restart_in);
+			}
+			else {
+				$will_restart_in = undef;
+			}
+		}
 
-            $will_restart_in = $tardy_threshold - (time - $status->{last_access});
-            if($will_restart_in >= 1){
-                 $will_restart_in =   _formatted_runtime($will_restart_in);
-            }
-            else {
-                $will_restart_in = undef;
-            }
-          }
+ 		my $hourly_rate = 0;
+		if($status->{mailing_time} > 0){
+			$hourly_rate = commify(int(($status->{total_sent_out} / $status->{mailing_time}) * 60 * 60 + .5));
+		}
+		require DADA::Template::Widgets;
+		my $header_subject_label = DADA::Template::Widgets::screen(
+			{
+				-data                     => \$status->{email_fields}->{Subject},
+				-list_settings_vars_param => {
+					-list   => $list,
+					-dot_it => 1,
+				},
+				-subscriber_vars_param => {
+				-use_fallback_vars => 1,
+				-list              => $list,
+			},
+			-decode_before => 1,
+			}
+		);
 
-		  my $hourly_rate = 0;
-		  if($status->{mailing_time} > 0){
-		  	$hourly_rate = commify(int(($status->{total_sent_out} / $status->{mailing_time}) * 60 * 60 + .5));
-      	  }
-			require DADA::Template::Widgets;
-	        my $header_subject_label = DADA::Template::Widgets::screen(
-	            {
-	                -data                     => \$status->{email_fields}->{Subject},
-	                -list_settings_vars_param => {
-	                    -list   => $list,
-	                    -dot_it => 1,
-	                },
-	                -subscriber_vars_param => {
-	                    -use_fallback_vars => 1,
-	                    -list              => $list,
-	                },
-	            -decode_before => 1,
+		my $scrn = DADA::Template::Widgets::screen(
+				{
+					-screen => 'sending_monitor_screen.tmpl',
+	                         -vars   => {
+						screen                       => 'sending_monitor',
+						mailout_exists               => $mailout_exists,
+						message_id                   => DADA::App::Guts::strip($id),
+						message_type                 => $q->param('type'),
+						total_sent_out               => $status->{total_sent_out},
+						total_sending_out_num        => $status->{total_sending_out_num},
+						mailing_time                 => $status->{mailing_time},
+						mailing_time_formatted       => $status->{mailing_time_formatted},
+						hourly_rate                  => $hourly_rate,
+						percent_done                 => $status->{percent_done},
+						status_bar_width             => int($status->{percent_done}) * 5,
+						negative_status_bar_width    => 500 - (int($status->{percent_done}) * 5),
+						need_to_send_out             => ( $status->{total_sending_out_num} - $status->{total_sent_out}),
+						time_since_last_sendout      => _formatted_runtime((time - int($status->{last_access}))),
+						its_killed                   => $status->{should_be_restarted},
+						header_subject               => safely_decode($status->{email_fields}->{Subject},1 ),
+						header_subject_label         => (length($header_subject_label) > 50) ? (substr($header_subject_label, 0, 49) . '...') : ($header_subject_label),
+						auto_pickup_dropped_mailings => $li->{auto_pickup_dropped_mailings},
+						sending_done                 => ($status->{percent_done} < 100) ? 0 : 1,
+						refresh_after                => $refresh_after,
+						killed_it                    => $q->param('killed_it') ? 1 : 0,
+						sending_status               => $sending_status,
+						is_paused                    => $status->{paused} > 0 ? 1 : 0,
+						paused                       => $status->{paused},
+						queue                        => $status->{queue},
+						queued_mailout               => $status->{queued_mailout},
+						queue_place                  => ($status->{queue_place} + 1), # adding one since humans like counting from, "1"
+						queue_total                  => ($status->{queue_total} + 1), # adding one since humans like counting from, "1"
+						status_mailout_stale         => $status->{mailout_stale},
+						MAILOUT_AT_ONCE_LIMIT        => $DADA::Config::MAILOUT_AT_ONCE_LIMIT,
+						will_restart_in              => $will_restart_in,
+						integrity_check              => $status->{integrity_check},
+
+					},
 				}
-	        );
-
-
-
-			my $scrn = '';
-			$scrn .= admin_template_header(
-				                  -Title      => "Monitor Your Mailing",
-				                  -List       => $list,
-				                  -Root_Login => $root_login,
-				                 );
-
-    		$scrn .= DADA::Template::Widgets::screen(
-						{
-							-screen => 'sending_monitor_screen.tmpl',
-                            -vars   => {
-								screen                       => 'sending_monitor',
-								title                        => 'Monitor Your Mailings',
-
-
-								mailout_exists               => $mailout_exists,
-								message_id                   => DADA::App::Guts::strip($id),
-								message_type                 => $q->param('type'),
-								total_sent_out               => $status->{total_sent_out},
-								total_sending_out_num        => $status->{total_sending_out_num},
-								mailing_time                 => $status->{mailing_time},
-								mailing_time_formatted       => $status->{mailing_time_formatted},
-								hourly_rate                  => $hourly_rate,
-								percent_done                 => $status->{percent_done},
-								status_bar_width             => int($status->{percent_done}) * 5,
-								negative_status_bar_width    => 500 - (int($status->{percent_done}) * 5),
-								need_to_send_out             => ( $status->{total_sending_out_num} - $status->{total_sent_out}),
-								time_since_last_sendout      => _formatted_runtime((time - int($status->{last_access}))),
-								its_killed                   => $status->{should_be_restarted},
-								header_subject               => safely_decode($status->{email_fields}->{Subject},1 ),
-								header_subject_label         => (length($header_subject_label) > 50) ? (substr($header_subject_label, 0, 49) . '...') : ($header_subject_label),
-								auto_pickup_dropped_mailings => $li->{auto_pickup_dropped_mailings},
-								sending_done                 => ($status->{percent_done} < 100) ? 0 : 1,
-								refresh_after                => $refresh_after,
-								killed_it                    => $q->param('killed_it') ? 1 : 0,
-								sending_status               => $sending_status,
-								is_paused                    => $status->{paused} > 0 ? 1 : 0,
-								paused                       => $status->{paused},
-								queue                        => $status->{queue},
-								queued_mailout               => $status->{queued_mailout},
-								queue_place                  => ($status->{queue_place} + 1), # adding one since humans like counting from, "1"
-								queue_total                  => ($status->{queue_total} + 1), # adding one since humans like counting from, "1"
-								status_mailout_stale         => $status->{mailout_stale},
-								MAILOUT_AT_ONCE_LIMIT        => $DADA::Config::MAILOUT_AT_ONCE_LIMIT,
-								will_restart_in              => $will_restart_in,
-								integrity_check              => $status->{integrity_check},
-
-							},
-						}
-					);
-           $scrn .= admin_template_footer(
-					-List => $list,
-				);
-		  e_print($scrn);
+			);
+		print $q->header();
+		e_print($scrn);
     }
+	else { 
+		require DADA::Template::Widgets; 
+		my $scrn = DADA::Template::Widgets::wrap_screen(
+			{ 
+				-screen => 'sending_monitor_container_screen.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+				-vars => { 
+					message_id                   => DADA::App::Guts::strip($id),
+					message_type                 => $q->param('type'),
+					refresh_after                => $refresh_after,
+				}
+			}
+		); 
+		e_print($scrn); 
+		
+	}
 }
+
 
 
 
 sub print_mass_mailing_log {
 
-	my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
-                                                        -Function => 'sending_monitor');
-
+	my ($admin_list, $root_login) = check_list_security(
+		-cgi_obj  => $q,
+        -Function => 'sending_monitor'
+	);
 
 	my $id   = $q->param('id');
 	my $type = $q->param('type');
@@ -1731,44 +1661,39 @@ sub change_info {
         my $flags_list_info                = $flags->{list_info}                  || 0;
         my $flags_privacy_policy           = $flags->{privacy_policy}             || 0;
         my $flags_physical_address         = $flags->{physical_address}           || 0;
-
-
-		my $scrn = '';
-        $scrn .= admin_template_header(-Title      => "Change List Information",
-                                -List       => $list,
-                                -Root_Login => $root_login);
-
-        require DADA::Template::Widgets;
-        $scrn .=  DADA::Template::Widgets::screen({-screen => 'change_info_screen.tmpl',
-                                              -vars   => {
-
-														screen                         => 'change_info',
-														title                          => 'Change List Information',
-
-                                                        done                           => $done,
-                                                        errors                         => $errors,
-                                                        errors_ending                  => $errors_ending,
-                                                        err_word                       => $err_word,
-                                                        list                           => $list,
-                                                        list_name                      => $list_name        ? $list_name        : $li->{list_name},
-                                                        list_owner_email               => $list_owner_email ? $list_owner_email : $li->{list_owner_email},
-                                                        admin_email                    => $admin_email      ? $admin_email      : $li->{admin_email},
-                                                        info                           => $info             ? $info             : $li->{info},
-                                                        privacy_policy                 => $privacy_policy   ? $privacy_policy   : $li->{privacy_policy},
-                                                        physical_address               => $physical_address ? $physical_address : $li->{physical_address},
-                                                        flags_list_name                => $flags_list_name,
-                                                        flags_invalid_list_owner_email => $flags_invalid_list_owner_email,
-                                                        flags_list_info                => $flags_list_info,
-                                                        flags_privacy_policy           => $flags_privacy_policy,
-                                                        flags_physical_address         => $flags_physical_address,
-                                                        flags_list_name_bad_characters => $flags_list_name_bad_characters,
-
-                                                     },
-                                             });
-
-
-
-        $scrn .= admin_template_footer(-List => $list);
+       
+		require DADA::Template::Widgets;
+		my  $scrn =  DADA::Template::Widgets::wrap_screen(
+			{
+				-screen => 'change_info_screen.tmpl',
+				-with   => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+					-vars   => {
+					screen                         => 'change_info',
+					title                          => 'Change List Information',
+					done                           => $done,
+					errors                         => $errors,
+					errors_ending                  => $errors_ending,
+					err_word                       => $err_word,
+					list                           => $list,
+					list_name                      => $list_name        ? $list_name        : $li->{list_name},
+					list_owner_email               => $list_owner_email ? $list_owner_email : $li->{list_owner_email},
+					admin_email                    => $admin_email      ? $admin_email      : $li->{admin_email},
+					info                           => $info             ? $info             : $li->{info},
+					privacy_policy                 => $privacy_policy   ? $privacy_policy   : $li->{privacy_policy},
+					physical_address               => $physical_address ? $physical_address : $li->{physical_address},
+					flags_list_name                => $flags_list_name,
+					flags_invalid_list_owner_email => $flags_invalid_list_owner_email,
+					flags_list_info                => $flags_list_info,
+					flags_privacy_policy           => $flags_privacy_policy,
+					flags_physical_address         => $flags_physical_address,
+					flags_list_name_bad_characters => $flags_list_name_bad_characters,
+				},
+			}
+		);
     	e_print($scrn);
     }else{
 
@@ -1811,31 +1736,22 @@ sub change_password {
     my $li = $ls->get;
 
     if(!$process) {
-		my $scrn = '';
-        $scrn .= admin_template_header(
-				-Title      => "Change List Password",
-                -List       => $list,
-                -Root_Login => $root_login,
-			  );
-
         require DADA::Template::Widgets;
-        $scrn .=   DADA::Template::Widgets::screen(
+        my $scrn =   DADA::Template::Widgets::wrap_screen(
 					{
 						-screen => 'change_password_screen.tmpl',
+						-with   => 'admin', 
+						-wrapper_params => { 
+							-Root_Login => $root_login,
+							-List       => $list,  
+						},
                         -list   => $list,
                         -vars   => {
-
 							screen     => 'change_password',
-							title      => ' Change List Password',
-
                     		root_login => $root_login,
                         	},
                  	}
 				);
-
-        $scrn .= admin_template_footer(
-				-List => $list
-			  );
 		e_print($scrn);
 
     }else{
@@ -1899,17 +1815,15 @@ sub delete_list {
 
     if(!$process){
 
-		my $scrn = '';
-        $scrn .= admin_template_header(
-              	-Title      => "Delete This Mailing List",
-              	-List       => $list,
-              	-Root_Login => $root_login,
-				);
-
         require DADA::Template::Widgets;
-        $scrn .=   DADA::Template::Widgets::screen(
+        my $scrn =   DADA::Template::Widgets::wrap_screen(
 					{
 						-screen => 'delete_list_screen.tmpl',
+						-with   => 'admin', 
+						-wrapper_params => { 
+							-Root_Login => $root_login,
+							-List       => $list,  
+						},
                         -list   => $list,
 						-vars   => {
 							screen => 'delete_list',
@@ -1921,8 +1835,6 @@ sub delete_list {
 						},
                     }
 				);
-
-        $scrn .= admin_template_footer(-List => $list);
     	e_print($scrn);
 
     }else{
@@ -1939,22 +1851,17 @@ sub delete_list {
         $c->flush;
 
         my $logout_cookie = logout(-redirect => 0);
-
-		my $scrn = '';
-        $scrn .= list_template(
-			-Part          => 'header',
-			-Title         => "Deletion Successful",
-			-header_params => {-COOKIE => $logout_cookie},
-			-vars 		   => {
-				show_profile_widget => 0,
+        require DADA::Template::Widgets;
+        my $scrn =   DADA::Template::Widgets::wrap_screen(
+			{
+				-screen => 'delete_list_success_screen.tmpl',
+                -with   => 'list',  
+				-list   => $list,
+				-wrapper_params => { 
+					-header_params => {-COOKIE => $logout_cookie},
+				}
 			}
 		);
-
-        require DADA::Template::Widgets;
-        $scrn .=   DADA::Template::Widgets::screen({-screen => 'delete_list_success_screen.tmpl',
-                                                -list   => $list,
-                                               });
-        $scrn .= list_template(-Part => 'footer');
     	e_print($scrn);
     }
 }
@@ -1964,109 +1871,41 @@ sub delete_list {
 
 sub list_options {
 
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
-                                                        -Function => 'list_options');
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'list_options'
+    );
 
     $list = $admin_list;
-
-    #receive a few variables..
-    my $closed_list                        =   $q->param("closed_list")                     || 0;
-    my $hide_list                          =   $q->param("hide_list")                       || 0;
-    my $get_sub_notice                     =   $q->param("get_sub_notice")                  || 0;
-    my $get_unsub_notice                   =   $q->param("get_unsub_notice")                || 0;
-    my $enable_closed_loop_opt_in                   =   $q->param("enable_closed_loop_opt_in")                || 0;
-	my $skip_sub_confirm_if_logged_in          =   $q->param('skip_sub_confirm_if_logged_in')       || 0;
-    my $unsub_confirm_email                =   $q->param("unsub_confirm_email")             || 0;
-	my $skip_unsub_confirm_if_logged_in    =   $q->param('skip_unsub_confirm_if_logged_in') || 0;
-    my $send_unsub_success_email           =   $q->param("send_unsub_success_email")        || 0;
-    my $send_sub_success_email             =   $q->param("send_sub_success_email")          || 0;
-    my $mx_check                           =   $q->param("mx_check")                        || 0;
-
-    my $limit_sub_confirm                  =   $q->param('limit_sub_confirm')               || 0;
-    my $limit_unsub_confirm                =   $q->param('limit_unsub_confirm')             || 0;
-
-    my $email_your_subscribed_msg          =   $q->param('email_your_subscribed_msg')       || 0;
-    my $email_you_are_not_subscribed_msg   =   $q->param('email_you_are_not_subscribed_msg')       || 0;
-
-    my $use_alt_url_sub_confirm_success     = $q->param("use_alt_url_sub_confirm_success")   || 0;
-    my $alt_url_sub_confirm_success         = $q->param(    "alt_url_sub_confirm_success")   || '';
-    my $alt_url_sub_confirm_success_w_qs   = $q->param('alt_url_sub_confirm_success_w_qs')  || 0;
-
-    my $use_alt_url_sub_confirm_failed         = $q->param("use_alt_url_sub_confirm_failed")    || 0;
-    my     $alt_url_sub_confirm_failed         = $q->param(    "alt_url_sub_confirm_failed")    || '';
-    my     $alt_url_sub_confirm_failed_w_qs    = $q->param('alt_url_sub_confirm_failed_w_qs')   || 0;
-
-
-	my $enable_subscription_approval_step     = $q->param('enable_subscription_approval_step') || 0;
-
-
-    my $captcha_sub                            = $q->param('captcha_sub')                   || 0;
-
-
-
-    my $use_alt_url_sub_success            = $q->param("use_alt_url_sub_success")           || 0;
-    my     $alt_url_sub_success            = $q->param(    "alt_url_sub_success")           || '';
-    my     $alt_url_sub_success_w_qs       = $q->param(    'alt_url_sub_success_w_qs')      || 0;
-
-    my $use_alt_url_sub_failed             = $q->param("use_alt_url_sub_failed")            || 0;
-        my $alt_url_sub_failed             = $q->param(    "alt_url_sub_failed")            || '';
-        my $alt_url_sub_failed_w_qs        = $q->param('alt_url_sub_failed_w_qs')           || 0;
-
-    my $use_alt_url_unsub_confirm_success      = $q->param("use_alt_url_unsub_confirm_success")  || 0;
-        my $alt_url_unsub_confirm_success      = $q->param(    "alt_url_unsub_confirm_success")  || '';
-        my $alt_url_unsub_confirm_success_w_qs = $q->param('alt_url_unsub_confirm_success_w_qs') || 0;
-
-    my $use_alt_url_unsub_confirm_failed       = $q->param("use_alt_url_unsub_confirm_failed")  || 0;
-        my $alt_url_unsub_confirm_failed       = $q->param(    "alt_url_unsub_confirm_failed")  || '';
-        my $alt_url_unsub_confirm_failed_w_qs  = $q->param('alt_url_unsub_confirm_failed_w_qs') || 0;
-
-    my $use_alt_url_unsub_success          = $q->param("use_alt_url_unsub_success")         || 0;
-        my $alt_url_unsub_success          = $q->param(    "alt_url_unsub_success")         || '';
-        my $alt_url_unsub_success_w_qs     = $q->param('alt_url_unsub_success_w_qs')        || 0;
-
-
-
-    my $use_alt_url_unsub_failed           = $q->param("use_alt_url_unsub_failed")          || 0;
-        my $alt_url_unsub_failed           = $q->param(    "alt_url_unsub_failed")          || '';
-        my $alt_url_unsub_failed_w_qs      = $q->param('alt_url_unsub_failed_w_qs')         || 0;
-
-
-
     require DADA::MailingList::Settings;
 
-    my $ls = DADA::MailingList::Settings->new({-list => $list});
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get();
 
     my $can_use_mx_lookup = 0;
 
     eval { require Net::DNS; };
-    if(!$@){
+    if ( !$@ ) {
         $can_use_mx_lookup = 1;
     }
 
-	my $can_use_captcha = 0;
-	eval { require DADA::Security::AuthenCAPTCHA; };
-	if(!$@){
-		$can_use_captcha = 1;
-	}
+    my $can_use_captcha = 0;
+    eval { require DADA::Security::AuthenCAPTCHA; };
+    if ( !$@ ) {
+        $can_use_captcha = 1;
+    }
 
-
-    if(!$process){
-
-        $list = $admin_list;
-
-
-        my $scrn = '';
-        $scrn .= admin_template_header(
-                                -Title      => "Mailing List Options",
-                                -List       => $list,
-                                -Root_Login => $root_login
-                               );
-
- 	   require DADA::Template::Widgets;
-	    $scrn .= DADA::Template::Widgets::screen(
+    if ( !$process ) {
+	
+ 	   require    DADA::Template::Widgets;
+	   my $scrn = DADA::Template::Widgets::wrap_screen(
 	        {
 	            -screen => 'list_options_screen.tmpl',
+				-with   => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
 	            -list   => $list,
 	            -vars   => {
 	                screen => 'list_options',
@@ -2082,72 +1921,62 @@ sub list_options {
 	            },
 	        }
 	    );
-
-
-
-        $scrn .= admin_template_footer(-List => $list);
 		e_print($scrn);
-
-    }else{
+    }
+    else {
 
         $list = $admin_list;
+        $ls->save_w_params(
+            {
+                -associate => $q,
+                -settings  => {
+                    hide_list                          => 0,
+                    closed_list                        => 0,
+                    get_sub_notice                     => 0,
+                    get_unsub_notice                   => 0,
+                    enable_closed_loop_opt_in          => 0,
+                    skip_sub_confirm_if_logged_in      => 0,
+                    unsub_confirm_email                => 0,
+                    skip_unsub_confirm_if_logged_in    => 0,
+                    send_unsub_success_email           => 0,
+                    send_sub_success_email             => 0,
+                    mx_check                           => 0,
+                    limit_sub_confirm                  => 0,
+                    limit_unsub_confirm                => 0,
+                    email_your_subscribed_msg          => 0,
+                    email_you_are_not_subscribed_msg   => 0,
+                    use_alt_url_sub_confirm_success    => 0,
+                    alt_url_sub_confirm_success        => '',
+                    alt_url_sub_confirm_success_w_qs   => 0,
+                    use_alt_url_sub_confirm_failed     => 0,
+                    alt_url_sub_confirm_failed         => '',
+                    alt_url_sub_confirm_failed_w_qs    => 0,
+                    use_alt_url_sub_success            => 0,
+                    alt_url_sub_success                => '',
+                    alt_url_sub_success_w_qs           => 0,
+                    use_alt_url_sub_failed             => 0,
+                    alt_url_sub_failed                 => '',
+                    alt_url_sub_failed_w_qs            => 0,
+                    use_alt_url_unsub_confirm_success  => 0,
+                    alt_url_unsub_confirm_success      => '',
+                    alt_url_unsub_confirm_success_w_qs => 0,
+                    use_alt_url_unsub_confirm_failed   => 0,
+                    alt_url_unsub_confirm_failed       => '',
+                    alt_url_unsub_confirm_failed_w_qs  => 0,
+                    use_alt_url_unsub_success          => 0,
+                    alt_url_unsub_success              => '',
+                    alt_url_unsub_success_w_qs         => 0,
+                    use_alt_url_unsub_failed           => 0,
+                    alt_url_unsub_failed               => '',
+                    alt_url_unsub_failed_w_qs          => 0,
+                    enable_subscription_approval_step  => 0,
+                    captcha_sub                        => 0,
+                }
+            }
+        );
 
-        $ls->save({
-
-            hide_list                          => $hide_list,
-            closed_list                        => $closed_list,
-            get_sub_notice                     => $get_sub_notice,
-            get_unsub_notice                   => $get_unsub_notice,
-            enable_closed_loop_opt_in                   => $enable_closed_loop_opt_in,
-			skip_sub_confirm_if_logged_in          => $skip_sub_confirm_if_logged_in,
-            unsub_confirm_email                => $unsub_confirm_email,
-			skip_unsub_confirm_if_logged_in    => $skip_unsub_confirm_if_logged_in,
-            send_unsub_success_email           => $send_unsub_success_email,
-            send_sub_success_email             => $send_sub_success_email,
-            mx_check                           => $mx_check,
-            limit_sub_confirm                  => $limit_sub_confirm,
-            limit_unsub_confirm                => $limit_unsub_confirm,
-            email_your_subscribed_msg               => $email_your_subscribed_msg,
-            email_you_are_not_subscribed_msg        => $email_you_are_not_subscribed_msg,
-            use_alt_url_sub_confirm_success         => $use_alt_url_sub_confirm_success,
-                alt_url_sub_confirm_success         =>     $alt_url_sub_confirm_success,
-                alt_url_sub_confirm_success_w_qs    =>     $alt_url_sub_confirm_success_w_qs,
-
-            use_alt_url_sub_confirm_failed          => $use_alt_url_sub_confirm_failed,
-                alt_url_sub_confirm_failed          =>     $alt_url_sub_confirm_failed,
-               alt_url_sub_confirm_failed_w_qs      =>     $alt_url_sub_confirm_failed_w_qs,
-
-            use_alt_url_sub_success                 => $use_alt_url_sub_success,
-                alt_url_sub_success                 =>     $alt_url_sub_success,
-                alt_url_sub_success_w_qs            =>     $alt_url_sub_success_w_qs,
-
-            use_alt_url_sub_failed                  => $use_alt_url_sub_failed,
-                alt_url_sub_failed                  =>     $alt_url_sub_failed,
-                alt_url_sub_failed_w_qs             =>     $alt_url_sub_failed_w_qs,
-
-            use_alt_url_unsub_confirm_success       =>  $use_alt_url_unsub_confirm_success,
-                alt_url_unsub_confirm_success       =>      $alt_url_unsub_confirm_success,
-                alt_url_unsub_confirm_success_w_qs  =>      $alt_url_unsub_confirm_success_w_qs,
-
-            use_alt_url_unsub_confirm_failed        => $use_alt_url_unsub_confirm_failed,
-                alt_url_unsub_confirm_failed        =>     $alt_url_unsub_confirm_failed,
-                alt_url_unsub_confirm_failed_w_qs   =>     $alt_url_unsub_confirm_failed_w_qs,
-
-            use_alt_url_unsub_success               => $use_alt_url_unsub_success,
-                alt_url_unsub_success               =>     $alt_url_unsub_success,
-                alt_url_unsub_success_w_qs          =>     $alt_url_unsub_success_w_qs,
-
-            use_alt_url_unsub_failed                => $use_alt_url_unsub_failed,
-                alt_url_unsub_failed                =>     $alt_url_unsub_failed,
-                alt_url_unsub_failed_w_qs           =>     $alt_url_unsub_failed_w_qs,
-
-                enable_subscription_approval_step  => $enable_subscription_approval_step,
-                captcha_sub                         => $captcha_sub,
-
-
-        });
-
-        print $q->redirect(-uri=>$DADA::Config::S_PROGRAM_URL . '?flavor=list_options&done=1');
+        print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+              . '?flavor=list_options&done=1' );
     }
 }
 
@@ -2155,9 +1984,9 @@ sub list_options {
 
 sub sending_preferences {
 	my ($admin_list, $root_login) = check_list_security(
-										-cgi_obj  => $q,
-                                        -Function => 'sending_preferences'
-									);
+	-cgi_obj  => $q,
+	-Function => 'sending_preferences'
+);
 
     $list = $admin_list;
 
@@ -2243,183 +2072,156 @@ sub sending_preferences {
 			$no_smtp_server_set = 1;
          }
 
-        my $scrn = '';
-        $scrn .= admin_template_header(
-              -Title       => "Sending Preferences ",
-              -List        => $list,
-              -Root_Login  => $root_login
-              );
+        require    DADA::Template::Widgets;
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+			{
+				-screen         => 'sending_preferences_screen.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+				-vars   => {
+					screen                         => 'sending_preferences',
+					done                           => $done,
+					no_smtp_server_set             => $no_smtp_server_set,
+					mechanism_popup                => $mechanism_popup,
+					can_use_ssl                    => $can_use_ssl,
+					can_use_smtp_ssl               => $can_use_smtp_ssl,
+					'list_settings.pop3_username'  => $li->{pop3_username},
+					decrypted_pop3_pass => $decrypted_pop3_pass,
+					wrong_uid           => $wrong_uid,
+					pop3_auth_mode_popup => $pop3_auth_mode_popup,
+					can_use_ssl          => $can_use_ssl,
+					f_flag_settings               => $DADA::Config::MAIL_SETTINGS . ' -f' . $li->{admin_email},
 
-        require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen({-screen => 'sending_preferences_screen.tmpl',
-                                                -vars   => {
-															screen                         => 'sending_preferences',
-															title                          => 'Sending Preferences',
-                                                            done                           => $done,
-                                                            no_smtp_server_set             => $no_smtp_server_set,
-
-                                                            mechanism_popup                => $mechanism_popup,
-                                                            can_use_ssl                    => $can_use_ssl,
-                                                            can_use_smtp_ssl               => $can_use_smtp_ssl,
-															'list_settings.pop3_username'  => $li->{pop3_username},
-                                                            decrypted_pop3_pass => $decrypted_pop3_pass,
-															wrong_uid           => $wrong_uid,
-
-                                                            pop3_auth_mode_popup => $pop3_auth_mode_popup,
-                                                            can_use_ssl          => $can_use_ssl,
-															f_flag_settings               => $DADA::Config::MAIL_SETTINGS . ' -f' . $li->{admin_email},
-
-                                                            use_sasl_smtp_auth  => $q->param('use_sasl_smtp_auth') ? $q->param('use_sasl_smtp_auth') : $li->{use_sasl_smtp_auth},
-                                                            decrypted_pop3_pass => $q->param('pop3_password')      ? $q->param('pop3_password')      : $decrypted_pop3_pass,
-                                                            sasl_auth_mechanism => $q->param('sasl_auth_mechanism') ? $q->param('sasl_auth_mechanism') : $li->{sasl_auth_mechanism},
-                                                            sasl_smtp_username  => $q->param('sasl_smtp_username') ? $q->param('sasl_smtp_username') : $li->{sasl_smtp_username},
-                                                            sasl_smtp_password  => $q->param('sasl_smtp_password') ? $q->param('sasl_smtp_password') : $decrypted_sasl_pass,
-
-
-
-                                                      },
-													-list_settings_vars_param => {
-														-list    => $list,
-														-dot_it => 1,
-													},
-                                             });
-
-        $scrn .= admin_template_footer(-List => $list);
+					use_sasl_smtp_auth  => $q->param('use_sasl_smtp_auth') ? $q->param('use_sasl_smtp_auth') : $li->{use_sasl_smtp_auth},
+					decrypted_pop3_pass => $q->param('pop3_password')      ? $q->param('pop3_password')      : $decrypted_pop3_pass,
+					sasl_auth_mechanism => $q->param('sasl_auth_mechanism') ? $q->param('sasl_auth_mechanism') : $li->{sasl_auth_mechanism},
+					sasl_smtp_username  => $q->param('sasl_smtp_username') ? $q->param('sasl_smtp_username') : $li->{sasl_smtp_username},
+					sasl_smtp_password  => $q->param('sasl_smtp_password') ? $q->param('sasl_smtp_password') : $decrypted_sasl_pass,
+				},
+				-list_settings_vars_param => {
+				-list    => $list,
+				-dot_it => 1,
+				},
+			}
+		);
 		e_print($scrn);
     }else{
 
-
-        my $send_via_smtp              = $q->param("send_via_smtp")         || 0;
-
-		my $add_sendmail_f_flag          = $q->param('add_sendmail_f_flag') || 0;
-
-
-		my $use_pop_before_smtp = $q->param('use_pop_before_smtp')       || 0;
-        my $set_smtp_sender     = $q->param('set_smtp_sender')           || 0;
-        my $smtp_server         = strip($q->param('smtp_server'));
-        my $pop3_server         = strip($q->param('pop3_server'))        || '';
-        my $pop3_username       = strip($q->param('pop3_username'))      || '';
-		my $pop3_password       = strip($q->param('pop3_password'))      || undef;
-        if(defined($pop3_password)){
-			$pop3_password = DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $pop3_password);
-		}
-		my $pop3_use_ssl        = strip($q->param('pop3_use_ssl'))       || 0;
-        my $pop3_auth_mode      = strip($q->param('pop3_auth_mode'))     || 'BEST',
-        my $use_smtp_ssl        = $q->param('use_smtp_ssl')              || 0;
-        my $sasl_auth_mechanism = $q->param('sasl_auth_mechanism')       || undef,
-        my $use_sasl_smtp_auth  = $q->param('use_sasl_smtp_auth')        || 0;
-        my $sasl_smtp_username  = strip($q->param('sasl_smtp_username')) || '';
-		my $sasl_smtp_password  = strip($q->param('sasl_smtp_password')) || undef;
-		if(defined($sasl_smtp_password)){
-			$sasl_smtp_password = DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $sasl_smtp_password)
-		}
-        my $smtp_port           = strip($q->param('smtp_port'))          || undef;
-
-        $ls->save(
-			{
-
-				send_via_smtp             => $send_via_smtp,
-				add_sendmail_f_flag       => $add_sendmail_f_flag,
-	            smtp_port                 => $smtp_port,
-	            use_pop_before_smtp       => $use_pop_before_smtp,
-	            use_smtp_ssl              => $use_smtp_ssl,
-	            smtp_server               => $smtp_server,
-	            pop3_server               => $pop3_server,
-	            pop3_username             => $pop3_username,
-	            pop3_password             => $pop3_password,
-				pop3_use_ssl              => $pop3_use_ssl,
-				pop3_auth_mode            => $pop3_auth_mode,
-	            use_sasl_smtp_auth        => $use_sasl_smtp_auth,
-	            sasl_auth_mechanism       => $sasl_auth_mechanism,
-	            sasl_smtp_username        => $sasl_smtp_username,
-	            sasl_smtp_password        => $sasl_smtp_password,
-	            set_smtp_sender           => $set_smtp_sender,
-			}
-		);
-		if($q->param('no_redirect') == 1){
-			# ...
+        my $pop3_password = strip( $q->param('pop3_password') ) || undef;
+        if ( defined($pop3_password) ) {
+            $q->param(
+                'pop3_password',
+                DADA::Security::Password::cipher_encrypt(
+                    $li->{cipher_key}, $pop3_password
+                )
+            );
         }
-		else {
-			print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=sending_preferences&done=1');
-    	}
+        my $sasl_smtp_password = strip( $q->param('sasl_smtp_password') )
+          || undef;
+        if ( defined($sasl_smtp_password) ) {
+            $q->param(
+                'sasl_smtp_password',
+                DADA::Security::Password::cipher_encrypt(
+                    $li->{cipher_key}, $sasl_smtp_password
+                )
+            );
+        }
+
+
+        $ls->save_w_params(
+            {
+                -associate => $q,
+                -settings  => {
+                    send_via_smtp       => 0,
+                    add_sendmail_f_flag => 0,
+                    use_pop_before_smtp => 0,
+                    set_smtp_sender     => 0,
+                    smtp_server         => undef,
+                    pop3_server         => '',
+                    pop3_username       => '',
+                    pop3_password       => undef,
+                    pop3_use_ssl        => '',
+                    pop3_auth_mode      => 'BEST',
+                    use_smtp_ssl        => 0,
+                    sasl_auth_mechanism => undef,
+                    use_sasl_smtp_auth  => 0,
+                    sasl_smtp_username  => '',
+                    sasl_smtp_password  => undef,
+                    smtp_port           => undef,
+                }
+            }
+        );
+        if ( $q->param('no_redirect') == 1 ) {
+
+            # ...
+        }
+        else {
+            print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+                  . '?flavor=sending_preferences&done=1' );
+        }
+
 	}
 }
 
 sub mass_mailing_preferences {
 
-    my ($admin_list, $root_login) = check_list_security(
-										-cgi_obj  => $q,
-                                        -Function => 'mass_mailing_preferences'
-									);
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'mass_mailing_preferences'
+    );
 
     $list = $admin_list;
 
     require DADA::MailingList::Settings;
 
-    my $ls = DADA::MailingList::Settings->new({-list => $list});
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
 
-    if(!$process){
+    if ( !$process ) {
 
-        my @message_amount = (1..180);
+        my @message_amount = ( 1 .. 180 );
 
-                           #  , 30, 40, 50, 60, 70,
-                            #  80, 90, 100, 150, 200,
-                            #  250, 300, 350, 400, 450,
-                            #  500, 1000, 1500, 2000,
-                            #  4000, 6000, 8000, 10000);
+        unshift( @message_amount, $li->{mass_send_amount} )
+          if exists( $li->{mass_send_amount} );
 
-        unshift(@message_amount, $li->{mass_send_amount})
-            if exists($li->{mass_send_amount});
+        my @message_wait = (
+            1 .. 60, 70,  80,  90,  100, 110, 110, 120,
+            130,     140, 150, 160, 170, 180
+        );
 
-        my @message_wait = (1..60,
-	                        70, 80, 90, 100,
-	                        110, 110, 120, 130,
-	                        140, 150, 160, 170, 180
-	                        );
-
-        unshift(@message_wait, $li->{bulk_sleep_amount})
-            if exists($li->{bulk_sleep_amount});
-
-
-       # my @message_label = (1, 60, 3600);
-
+        unshift( @message_wait, $li->{bulk_sleep_amount} )
+          if exists( $li->{bulk_sleep_amount} );
         my @message_label = (1);
+        my %label_label = ( 1 => 'second(s)', );
 
+        my $mass_send_amount_menu = $q->popup_menu(
+            -name     => "mass_send_amount",
+            -id       => "mass_send_amount",
+            -value    => [@message_amount],
+            -onChange => 'previewBatchSendingSpeed()',
+        );
 
-        my %label_label = (1     => 'second(s)',
-                           #60    => 'minute(s)',
-                           #3600  => 'hour(s)',
-                           #86400 => 'day(s)',
-                          );
+        my $bulk_sleep_amount_menu = $q->popup_menu(
+            -name     => "bulk_sleep_amount",
+            -id       => "bulk_sleep_amount",
+            -value    => [@message_wait],
+            -onChange => 'previewBatchSendingSpeed()',
+        );
 
-
-        my $mass_send_amount_menu   = $q->popup_menu(-name     => "mass_send_amount",
-                                                     -id       => "mass_send_amount",
-                                                     -value    => [@message_amount],
-                                                     -onChange => 'previewBatchSendingSpeed()',
-                                                    );
-
-        my $bulk_sleep_amount_menu  =  $q->popup_menu(-name     => "bulk_sleep_amount",
-                                                      -id       => "bulk_sleep_amount",
-                                                      -value    => [@message_wait],
-                                                      -onChange => 'previewBatchSendingSpeed()',
-                                                     );
-
-        my $scrn = '';
-
-        $scrn .= admin_template_header(
-              -Title       => "Mass Mailing Preferences",
-              -List        => $list,
-              -Root_Login  => $root_login
-              );
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
 			{
 				-screen => 'mass_mailing_preferences_screen.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
 				-vars   => {
 					screen                 => 'mass_mailing_preferences',
-					title                  => 'Mass Mailing Preferences',
 					done                   => $done,
 					mass_send_amount_menu  => $mass_send_amount_menu,
 					bulk_sleep_amount_menu => $bulk_sleep_amount_menu,
@@ -2430,38 +2232,30 @@ sub mass_mailing_preferences {
 				},
 			}
 		);
-
-        $scrn .= admin_template_footer(-List => $list);
 		e_print($scrn);
+    }
+    else {
 
-    }else{
+        $ls->save_w_params(
+            {
+                -associate => $q,
+                -settings  => {
+                    mass_send_amount                  => undef,
+                    bulk_sleep_amount                 => undef,
+                    enable_bulk_batching              => 0,
+                    adjust_batch_sleep_time           => 0,
+                    get_finished_notification         => 0,
+                    auto_pickup_dropped_mailings      => 0,
+                    restart_mailings_after_each_batch => 0,
+                    smtp_connection_per_batch         => 0,
 
-        my $mass_send_amount                  = $q->param("mass_send_amount");
-        my $bulk_sleep_amount                 = $q->param("bulk_sleep_amount");
-        my $enable_bulk_batching              = $q->param("enable_bulk_batching")       || 0;
-        my $adjust_batch_sleep_time           = $q->param('adjust_batch_sleep_time')     || 0;
-		my $get_finished_notification         = $q->param("get_finished_notification")  || 0;
-        my $auto_pickup_dropped_mailings      = $q->param('auto_pickup_dropped_mailings')      || 0;
-        my $restart_mailings_after_each_batch = $q->param('restart_mailings_after_each_batch') || 0;
-      	my $smtp_connection_per_batch         = strip($q->param('smtp_connection_per_batch')) || 0;
+                }
+            }
+        );
 
 
-        $ls->save(
-			{
-                    mass_send_amount                  =>   $mass_send_amount,
-                    bulk_sleep_amount                 =>   $bulk_sleep_amount,
-                    enable_bulk_batching              =>   $enable_bulk_batching,
-					adjust_batch_sleep_time           =>   $adjust_batch_sleep_time,
-                    bulk_sleep_amount                 =>   $bulk_sleep_amount,
-                    get_finished_notification         =>   $get_finished_notification,
-                    auto_pickup_dropped_mailings      => $auto_pickup_dropped_mailings,
-                    restart_mailings_after_each_batch => $restart_mailings_after_each_batch,
-                  	smtp_connection_per_batch         => $smtp_connection_per_batch,
-
-				}
-			);
-
-        print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=mass_mailing_preferences&done=1');
+        print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+              . '?flavor=mass_mailing_preferences&done=1' );
     }
 }
 
@@ -2549,18 +2343,19 @@ sub commify {
 
 sub adv_sending_preferences {
 
-
-    my ($admin_list, $root_login) =  check_list_security(-cgi_obj    => $q,
-                                                         -Function   => 'adv_sending_preferences');
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'adv_sending_preferences'
+    );
     $list = $admin_list;
 
     require DADA::Security::Password;
     require DADA::MailingList::Settings;
 
-    my $ls = DADA::MailingList::Settings->new({-list => $list}) ;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
-
-    if(!$process){
+    
+	if(!$process){
 
 
         unshift(@DADA::Config::CHARSETS, $li->{charset});
@@ -2591,89 +2386,72 @@ sub adv_sending_preferences {
 
 
 
-    my $can_mime_encode = 1;
-    eval {require MIME::EncWords;};
-    if($@){
-		$can_mime_encode = 0;
-	}
-	my $scrn = '';
-    $scrn .= admin_template_header(
-		-Title      => "Advanced Sending Preferences",
-        -List       => $list,
-        -Root_Login => $root_login
-	);
+ 	   my $can_mime_encode = 1;
+	    eval {require MIME::EncWords;};
+	    if($@){
+			$can_mime_encode = 0;
+		}
 
-    require DADA::Template::Widgets;
-    $scrn .= DADA::Template::Widgets::screen({-screen => 'adv_sending_preferences_screen.tmpl',
-                                                -list   => $list,
-                                                -vars   => {
+	    require DADA::Template::Widgets;
+	    my $scrn = DADA::Template::Widgets::wrap_screen(
+			{
+				-screen => 'adv_sending_preferences_screen.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+				-list   => $list,
+				-vars   => {
 
-															screen                        => 'adv_sending_preferences',
-															title                         => 'Advanced Sending Preferences',
+					screen                        => 'adv_sending_preferences',
+					title                         => 'Advanced Sending Preferences',
+					done                          => $done,
+					precedence_popup_menu         => $precedence_popup_menu,
+					priority_popup_menu           => $priority_popup_menu,
+					charset_popup_menu            => $charset_popup_menu,
+					plaintext_encoding_popup_menu => $plaintext_encoding_popup_menu,
+					html_encoding_popup_menu      => $html_encoding_popup_menu,
+					#content_type_popup_menu       => $content_type_popup_menu,
 
-                                                            done                          => $done,
-                                                            precedence_popup_menu         => $precedence_popup_menu,
-                                                            priority_popup_menu           => $priority_popup_menu,
-                                                            charset_popup_menu            => $charset_popup_menu,
-                                                            plaintext_encoding_popup_menu => $plaintext_encoding_popup_menu,
-                                                            html_encoding_popup_menu      => $html_encoding_popup_menu,
-                                                            #content_type_popup_menu       => $content_type_popup_menu,
+					strip_message_headers         => $li->{strip_message_headers},
+					print_errors_to_header        => $li->{print_errors_to_header},
+					print_return_path_header      => $li->{print_return_path_header},
+					verp_return_path              => $li->{verp_return_path},
+					use_domain_sending_tunings    => ($li->{use_domain_sending_tunings} ? 1 : 0),
 
-                                                            strip_message_headers         => $li->{strip_message_headers},
-                                                            print_errors_to_header        => $li->{print_errors_to_header},
-                                                            print_return_path_header      => $li->{print_return_path_header},
-                                                            verp_return_path              => $li->{verp_return_path},
-                                                            use_domain_sending_tunings    => ($li->{use_domain_sending_tunings} ? 1 : 0),
+					mime_encode_words_in_headers  => $li->{mime_encode_words_in_headers},
+					can_mime_encode               => $can_mime_encode,
 
-															mime_encode_words_in_headers  => $li->{mime_encode_words_in_headers},
-															can_mime_encode               => $can_mime_encode,
-	                                            		}
+				}
 
-                                            });
-
-        $scrn .= admin_template_footer(-List => $list);
+				}
+		);
 		e_print($scrn);
+    }
+    else {
 
-    }else{
+        $ls->save_w_params(
+            {
+                -associate => $q,
+                -settings  => {
+                    precedence                   => undef,
+                    priority                     => undef,
+                    charset                      => undef,
+                    plaintext_encoding           => undef,
+                    html_encoding                => undef,
+                    strip_message_headers        => 0,
+                    print_return_path_header     => 0,
+                    print_errors_to_header       => 0,
+                    verp_return_path             => 0,
+                    use_domain_sending_tunings   => 0,
+                    mime_encode_words_in_headers => 0,
+                }
+            }
+        );
 
-
-        my $precedence                = $q->param('precedence');
-        my $priority                  = $q->param('priority');
-        my $charset                   = $q->param('charset');
-        my $plaintext_encoding        = $q->param('plaintext_encoding');
-        my $html_encoding             = $q->param('html_encoding');
-        #my $content_type              = $q->param('content_type');
-        my $strip_message_headers     = $q->param('strip_message_headers')    || 0;
-        my $print_return_path_header  = $q->param('print_return_path_header') || 0;
-        my $print_errors_to_header    = $q->param('print_errors_to_header')   || 0;
-        my $verp_return_path          = $q->param('verp_return_path')         || 0;
-        my $use_domain_sending_tunings = $q->param('use_domain_sending_tunings') || 0;
-
-		my $mime_encode_words_in_headers = $q->param('mime_encode_words_in_headers') || 0;
-
-
-
-
-
-
-        $ls->save({
-                   precedence               => $precedence,
-                   priority                 => $priority,
-                   charset                  => $charset,
-                   #content_type             => $content_type,
-                   strip_message_headers    => $strip_message_headers,
-                   print_return_path_header => $print_return_path_header,
-                   print_errors_to_header   => $print_errors_to_header,
-                   plaintext_encoding       => $plaintext_encoding,
-                   html_encoding            => $html_encoding,
-                   verp_return_path         => $verp_return_path,
-                   use_domain_sending_tunings    => $use_domain_sending_tunings,
-				   mime_encode_words_in_headers  => $mime_encode_words_in_headers,
-
-
-                   });
-
-        print $q->redirect(-uri=>$DADA::Config::S_PROGRAM_URL . '?flavor=adv_sending_preferences&done=1');
+        print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+              . '?flavor=adv_sending_preferences&done=1' );
     }
 }
 
@@ -2819,16 +2597,14 @@ sub sending_tuning_options {
         $c++;
        }
 
-		my $scrn = '';
-        $scrn .= admin_template_header(
-              -Title      => "Domain-Specific Sending Tuning",
-              -List       => $list,
-              -Root_Login => $root_login,
-              -Form       => 0,
-              );
-
         require DADA::Template::Widgets;
-        $scrn .=  DADA::Template::Widgets::screen({-screen => 'sending_tuning_options.tmpl',
+        my $scrn =  DADA::Template::Widgets::wrap_screen({-screen => 'sending_tuning_options.tmpl',
+												-with           => 'admin', 
+												-wrapper_params => { 
+													-Root_Login => $root_login,
+													-List       => $list,  
+												},
+		
                                               -vars   => {
 
                                                             tunings => $saved_tunings,
@@ -2847,7 +2623,6 @@ sub sending_tuning_options {
                                                       },
                                              });
 
-        $scrn .= admin_template_footer(-List => $list, -Form => 0, );
 		e_print($scrn);
 
     }
@@ -2976,19 +2751,17 @@ sub view_list {
 
     if($process eq 'set_black_list_prefs'){
 
-        my $black_list                           = $q->param('black_list')                           || 0;
-        my $add_unsubs_to_black_list             = $q->param('add_unsubs_to_black_list')             || 0;
-        my $allow_blacklisted_to_subscribe       = $q->param('allow_blacklisted_to_subscribe')       || 0;
-        my $allow_admin_to_subscribe_blacklisted = $q->param('allow_admin_to_subscribe_blacklisted') || 0;
-
-
-        $ls->save({
-                    black_list                           => $black_list,
-                    add_unsubs_to_black_list             => $add_unsubs_to_black_list,
-                    allow_blacklisted_to_subscribe       => $allow_blacklisted_to_subscribe,
-                    allow_admin_to_subscribe_blacklisted => $allow_admin_to_subscribe_blacklisted
-
-                  });
+        $ls->save_w_params(
+			{
+				-associate => $q, 
+				-settings  => { 
+                    black_list                           => 0,
+                    add_unsubs_to_black_list             => 0,
+                    allow_blacklisted_to_subscribe       => 0,
+                    allow_admin_to_subscribe_blacklisted => 0,
+				}
+			}
+		);
 
         print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=view_list&type=black_list&black_list_changes_done=1');
         return;
@@ -2997,9 +2770,14 @@ sub view_list {
 
         my $enable_white_list = $q->param('enable_white_list') || 0;
 
-        $ls->save({
-                    enable_white_list => $enable_white_list,
-                 });
+        $ls->save_w_params(
+			{
+				-associate => $q, 
+				-settings  => { 
+                    enable_white_list => 0,
+                 }
+			}
+		);
 
         print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=view_list&type=white_list&white_list_changes_done=1');
         return;
@@ -3016,21 +2794,19 @@ sub view_list {
             push(@$field_names, {name => $_, label => $fields_attr->{$_}->{label}});
         }
 
-			my $scrn = '';
-            $scrn .=  admin_template_header(-Title      => 'View  ' . $type_title,
-                                -List       => $list,
-                                -Root_Login => $root_login,
-                                -Form       => 0
-             );
 
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen({-list  => $list,
+        my $scrn = DADA::Template::Widgets::wrap_screen({-list  => $list,
                                                 -screen => 'view_list_screen.tmpl',
+												-with           => 'admin', 
+												-wrapper_params => { 
+													-Root_Login => $root_login,
+													-List       => $list,  
+												},
                                                   -vars  =>
                                                   {
 
 													 screen                      => 'view_list',
-													 title                       => 'View',
 
                                                      field_names                 => $field_names,
 
@@ -3095,8 +2871,6 @@ sub view_list {
 														-dot_it => 1,
 													},
                                                   });
-
-        $scrn .= admin_template_footer(-List => $list, -Form => 0);
 		e_print($scrn);
 
     }
@@ -3244,14 +3018,6 @@ sub filter_using_black_list {
         my $li = $ls->get;
 
         my $filtered = $lh->filter_list_through_blacklist;
-        my $scrn = '';
-           $scrn .= admin_template_header(-Title      => "Filtering Subscription List...",
-                            -List       => $list,
-                            -Root_Login => $root_login,
-                            -Form       => 0
-                           );
-
-
 
         my $should_add_to_black_list = 0;
 
@@ -3262,16 +3028,21 @@ sub filter_using_black_list {
 
 
         require DADA::Template::Widgets;
-        $scrn .=  DADA::Template::Widgets::screen({-list  => $list,
-                                                -screen => 'filter_using_black_list.tmpl',
-                                                  -vars  => {
-                                                  filtered          => $filtered,
-                                                  add_to_black_list => $should_add_to_black_list,
-
-                                                  },
-                                                });
-
-        $scrn .= admin_template_footer(-List => $list, -Form => 0);
+        my $scrn =  DADA::Template::Widgets::wrap_screen(
+			{
+				-list   => $list,
+				-screen => 'filter_using_black_list.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+				-vars   => {
+					filtered          => $filtered,
+					add_to_black_list => $should_add_to_black_list,
+			},
+			}
+		);
 		e_print($scrn);
 
     }
@@ -3327,16 +3098,6 @@ sub edit_subscriber {
     }
 
 
-
-
-    my $scrn = '';
-    $scrn .= admin_template_header(
-				-Title       => "Edit Subscriber",
-                -List        => $list,
-                -Root_Login  => $root_login,
-			);
-
-
     my $fields = [];
 
     my $subscriber_info = $lh->get_subscriber({-email => $email, -type => $type});
@@ -3356,24 +3117,26 @@ sub edit_subscriber {
     }
 
     require DADA::Template::Widgets;
-    $scrn .= DADA::Template::Widgets::screen({-screen => 'edit_subscribed_screen.tmpl',
-                                          -vars   => {
-                                                        done                  => $done,
-                                                        email                 => $email,
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+		{
+			-screen => 'edit_subscribed_screen.tmpl',
+			-with           => 'admin', 
+			-wrapper_params => { 
+				-Root_Login => $root_login,
+				-List       => $list,  
+			},
+            -vars   => {
+                          done                  => $done,
+                          email                 => $email,
+                          type                  => $type,
+                          type_title            => $type_title,
+                          fields                => $fields,
+                          root_login            => $root_login,
+                          log_viewer_plugin_url => $DADA::Config::LOG_VIEWER_PLUGIN_URL,
 
-                                                        type                  => $type,
-                                                        type_title            => $type_title,
-
-                                                        fields                => $fields,
-
-                                                       root_login                       => $root_login,
-
-                                                        log_viewer_plugin_url => $DADA::Config::LOG_VIEWER_PLUGIN_URL,
-
-                                                  },
-                                         });
-
-    $scrn .= admin_template_footer(-List => $list);
+                    },
+           }
+	);
 
 	e_print($scrn);
 
@@ -3517,26 +3280,17 @@ sub add {
                 }
             );
         }
-
-        my $scrn = (
-            admin_template_header(
-
-                -Title => ( $li->{enable_mass_subscribe} == 1 )
-                ? "Your Subscribers - Invite/Add"
-                : "Your Subscribers - Invite",
-                -List       => $list,
-                -Root_Login => $root_login,
-                -Form       => 0
-            )
-        );
-
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'add_screen.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
                 -vars   => {
 					screen                     => 'add',
-	                title                      => ( $li->{enable_mass_subscribe} == 1 ) ? "Your Subscribers - Invite/Add" : "Your Subscribers - Invite",
                     subscription_quota_reached => $subscription_quota_reached,
                     num_subscribers            => $num_subscribers,
                     list_type_isa_list         => ( $type eq 'list' ) ? 1 : 0,
@@ -3575,8 +3329,6 @@ sub add {
                 },
             }
         );
-
-        $scrn .= admin_template_footer( -List => $list );
         e_print($scrn);
     }
 
@@ -3778,23 +3530,22 @@ sub add_email {
             push ( @$field_names, { name => $_ } );
         }
 
-		my $scrn = '';
-        $scrn .= admin_template_header(
-
-			-Title       => ($li->{enable_mass_subscribe} == 1) ? "Your Subscribers - Verify Invitations/Additions" : "Your Subscribers - Verify Invitations",
-            -List       => $list,
-            -Root_Login => $root_login,
-        );
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'add_email_screen.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
                 -vars   => {
 					list_type_isa_list                  => ($type eq 'list')       ? 1 : 0,
 					list_type_isa_black_list            => ($type eq 'black_list') ? 1 : 0,
 					list_type_isa_authorized_senders    => ($type eq 'authorized_senders') ? 1 : 0,
 					list_type_isa_testers               => ($type eq 'testers')    ? 1 : 0,
 					list_type_isa_white_list            => ($type eq 'white_list') ? 1 : 0,
+					can_have_subscriber_fields          => $lh->can_have_subscriber_fields,
                     going_over_quota   => $going_over_quota,
                     field_names        => $field_names,
                     subscribed         => $subscribed,
@@ -3813,7 +3564,6 @@ sub add_email {
 				},
             }
         );
-        $scrn .= admin_template_footer( -List => $list );
 		e_print($scrn);
     }
     else {
@@ -3875,20 +3625,16 @@ sub delete_email{
     my $lh = DADA::MailingList::Subscribers->new({-list => $list});
 
     if(!$process){
-    	my $scrn = '';
-        $scrn .= admin_template_header(
-              -Title      => "Manage Deletions",
-              -List       => $list,
-              -Root_Login => $root_login,
-              -Form       => 0
-          );
-
         require DADA::Template::Widgets;
-        $scrn .=  DADA::Template::Widgets::screen(
+        my $scrn =  DADA::Template::Widgets::wrap_screen(
 			{
 				-screen => 'delete_email_screen.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
 				-vars => {
-
 					screen => 'delete_email',
 					title  => 'Remove',
 					can_use_global_black_list           => $lh->can_use_global_black_list,
@@ -3910,8 +3656,6 @@ sub delete_email{
 				}
 			}
 		);
-
-        $scrn .= admin_template_footer(-List => $list, -Form => 0);
     	e_print($scrn);
 
     }else{
@@ -3986,18 +3730,16 @@ sub delete_email{
            push(@$invalid_addresses, {email => $_ })
             for @$invalid;
 
-		my $scrn = '';
-        $scrn .= admin_template_header(
-              -Title      => "Verify Deletions",
-              -List       => $list,
-              -Root_Login => $root_login,
-              -Form       => 0,
-
-        );
-
-
         require DADA::Template::Widgets;
-        $scrn .=  DADA::Template::Widgets::screen({-screen => 'delete_email_screen_filtered.tmpl',
+        my $scrn =  DADA::Template::Widgets::wrap_screen(
+			{
+											  -screen => 'delete_email_screen_filtered.tmpl',
+												-with           => 'admin', 
+												-wrapper_params => { 
+													-Root_Login => $root_login,
+													-List       => $list,  
+												},
+											
                                               -vars   => {
                                                             should_add_to_black_list  => $should_add_to_black_list,
                                                             have_subscribed_addresses => $have_subscribed_addresses,
@@ -4012,7 +3754,6 @@ sub delete_email{
                                                         },
                                              });
 
-        $scrn .= admin_template_footer(-List => $list);
         e_print($scrn);
     }
 }
@@ -4065,41 +3806,42 @@ sub subscription_options {
                                                     '-values' => [@quota_values],
                                                      -default => $li->{subscription_quota},
                                                     );
-        my $scrn = '';
-        $scrn .= admin_template_header(-Title      => "Subscriber Options",
-                                -List       => $list,
-                                -Root_Login => $root_login
-                                 );
 
         require DADA::Template::Widgets;
-        $scrn .=   DADA::Template::Widgets::screen(
+        my $scrn =   DADA::Template::Widgets::wrap_screen(
 					{
 						-screen => 'subscription_options_screen.tmpl',
+						-with           => 'admin', 
+						-wrapper_params => { 
+							-Root_Login => $root_login,
+							-List       => $list,  
+						},
+						
 						-vars   => {
-
 							screen                  => 'subscription_options',
 							title                   => 'Subscriber Options',
-
 							done                    => $done,
-							use_subscription_quota  => $li->{use_subscription_quota},
 							subscription_quota_menu => $subscription_quota_menu,
 							SUBSCRIPTION_QUOTA      => $DADA::Config::SUBSCRIPTION_QUOTA,
 						},
+						-list_settings_vars_param => {
+		                    -list   => $list,
+		                    -dot_it => 1,
+		                },
 					}
 				);
-
-        $scrn .= admin_template_footer(-List => $list);
         e_print($scrn);
     }else{
 
-        my $use_subscription_quota = $q->param('use_subscription_quota') || 0;
-        my $subscription_quota     = $q->param('subscription_quota');
-
-        $ls->save({
-                    use_subscription_quota => $use_subscription_quota,
-                     subscription_quota => $subscription_quota,
-                });
-
+        $ls->save_w_params(
+			{
+				-associate => $q, 
+				-settings  => { 
+                    use_subscription_quota => 0,
+                    subscription_quota     => undef,
+                }
+			}
+		);
         print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=subscription_options&done=1');
     }
 
@@ -4204,21 +3946,15 @@ sub view_archive {
 
         my $index_nav = $archive->create_index_nav( $stopped_at, 1 );
 
-        my $scrn;
-
-        $scrn .= (
-            admin_template_header(
-                -Title      => "View Archive",
-                -List       => $li->{list},
-                -Root_Login => $root_login,
-                -Form       => 0,
-            )
-        );
-
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'view_archive_index_screen.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
                 -list   => $list,
                 -vars   => {
 
@@ -4231,8 +3967,6 @@ sub view_archive {
                 },
             }
         );
-
-        $scrn .= ( admin_template_footer( -List => $list,, -Form => 0 ) );
         e_print($scrn);
 
 		if(!$c->profile_on){ # that's it?
@@ -4253,15 +3987,7 @@ sub view_archive {
 
         my $scrn = '';
 
-        $scrn .= admin_template_header(
-            -Title      => "Manage Archives",
-            -List       => $li->{list},
-            -Root_Login => $root_login
-        );
-
         my ( $subject, $message, $format ) = $archive->get_archive_info($id);
-
-
 
         my $cal_date = date_this(
             -Packed_Date => $archive->_massaged_key($id),
@@ -4275,9 +4001,15 @@ sub view_archive {
         );
 
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'view_archive_screen.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+
                 -vars   => {
                     id      => $id,
                     subject => $subject,
@@ -4292,8 +4024,6 @@ sub view_archive {
                 },
             }
         );
-
-        $scrn .= admin_template_footer( -List => $list );
         e_print($scrn);
 
         return;
@@ -4396,23 +4126,20 @@ sub purge_all_archives {
 
 }
 
-
-
-
-
-
 sub archive_options {
 
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
-                                                        -Function => 'archive_options');
-
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'archive_options'
+    );
 
     $list = $admin_list;
 
-    require DADA::MailingList::Settings;;
+    require DADA::MailingList::Settings;
 
-    my $ls = DADA::MailingList::Settings->new({-list => $list});
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
+
 
         if(!$process){
 
@@ -4421,17 +4148,17 @@ sub archive_options {
 			if(!$@){
 				$can_use_captcha = 1;
 			}
-
-
-        my $scrn = '';
-        $scrn .= admin_template_header(
-              -Title      => "Archive Options",
-              -List       => $list,
-              -Root_Login => $root_login
-        );
-
-        require DADA::Template::Widgets;
-        $scrn .=  DADA::Template::Widgets::screen({-screen => 'archive_options_screen.tmpl',
+		
+		require DADA::Template::Widgets;
+        my $scrn =  DADA::Template::Widgets::wrap_screen(
+			{
+											  -screen => 'archive_options_screen.tmpl',
+											-with           => 'admin', 
+											-wrapper_params => { 
+												-Root_Login => $root_login,
+												-List       => $list,  
+											},
+											
                                               -expr   => 1,
                                               -vars   => {
 													screen                    => 'archive_options',
@@ -4448,247 +4175,210 @@ sub archive_options {
 												},
 
                                              });
-
-        $scrn .= admin_template_footer(-List => $list);
 		e_print($scrn);
+    }
+    else {
 
-    }else{
+        $ls->save_w_meta(
+            {
+                -associate => $q,
+                -settings  => {
+                    show_archives                          => 0,
+                    archives_available_only_to_subscribers => 0,
+                    archive_messages                       => 0,
+                    archive_subscribe_form                 => 0,
+                    archive_search_form                    => 0,
+                    archive_send_form                      => 0,
+                    captcha_archive_send_form              => 0,
+                    send_newest_archive                    => 0,
+                }
+            }
+        );
 
-        my $show_archives             = xss_filter($q->param('show_archives'))             || 0;
-        my $archives_available_only_to_subscribers = xss_filter($q->param('archives_available_only_to_subscribers')) || 0;
-		my $archive_messages          = xss_filter($q->param('archive_messages'))          || 0;
-        my $archive_subscribe_form    = xss_filter($q->param('archive_subscribe_form'))    || 0;
-        my $archive_search_form       = xss_filter($q->param('archive_search_form'))       || 0;
-        my $archive_send_form         = xss_filter($q->param('archive_send_form'))         || 0;
-        my $captcha_archive_send_form = xss_filter($q->param('captcha_archive_send_form')) || 0;
-        my $send_newest_archive       = xss_filter($q->param('send_newest_archive'))       || 0;
-
-
-        $ls->save({
-            show_archives             => $show_archives,
-			archives_available_only_to_subscribers => $archives_available_only_to_subscribers,
-            archive_messages          => $archive_messages,
-            archive_subscribe_form    => $archive_subscribe_form,
-            archive_search_form       => $archive_search_form,
-            captcha_archive_send_form => $captcha_archive_send_form,
-            archive_send_form         => $archive_send_form,
-            send_newest_archive       => $send_newest_archive,
-         });
-
-        print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=archive_options&done=1');
+        print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+              . '?flavor=archive_options&done=1' );
     }
 }
 
 
-
-
 sub adv_archive_options {
 
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
-                                                        -Function => 'adv_archive_options');
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'adv_archive_options'
+    );
 
     $list = $admin_list;
 
-
-    require DADA::MailingList::Settings;
-
-
-    my $ls = DADA::MailingList::Settings->new({-list => $list});
+    require  DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
 
-    require DADA::MailingList::Archives;
+    require  DADA::MailingList::Archives;
+    my $la = DADA::MailingList::Archives->new( { -list => $list } );
 
-    my $la = DADA::MailingList::Archives->new({-list => $list});
+    if ( !$process ) {
 
-    if(!$process) {
+        my @index_this = (
+            $li->{archive_index_count},
+            1 .. 10, 15, 20, 25, 30, 40, 50, 75, 100
+        );
 
-        my @index_this = ($li->{archive_index_count},1..10,15,20,25,30,40,50,75,100);
-
-        my $archive_index_count_menu = $q->popup_menu(-name  => 'archive_index_count',
-                                                      -id    => 'archive_index_count',
-                                                      -value => [@index_this]
-                                                     );
-
+        my $archive_index_count_menu = $q->popup_menu(
+            -name  => 'archive_index_count',
+            -id    => 'archive_index_count',
+            -value => [@index_this]
+        );
 
         my $ping_sites = [];
-		for ( @DADA::Config::PING_URLS ) {
+        for (@DADA::Config::PING_URLS) {
 
-        	push(
-				@$ping_sites,
-					{
+            push(
+                @$ping_sites,
+                {
 
-						ping_url => $_
-					}
-				)
-    	}
+                    ping_url => $_
+                }
+            );
+        }
 
         my $can_use_xml_rpc = 1;
 
         eval { require XMLRPC::Lite };
-        if($@){
-	         $can_use_xml_rpc = 0;
+        if ($@) {
+            $can_use_xml_rpc = 0;
         }
 
-    	my $can_use_html_scrubber = 1;
+        my $can_use_html_scrubber = 1;
 
         eval { require HTML::Scrubber; };
-        if($@){
-         $can_use_html_scrubber = 0;
+        if ($@) {
+            $can_use_html_scrubber = 0;
         }
 
-    	my $can_use_recaptcha_mailhide = 0;
+        my $can_use_recaptcha_mailhide = 0;
 
         eval { require Captcha::reCAPTCHA::Mailhide; };
-        if(!$@){
+        if ( !$@ ) {
 
-			if(
-				!defined($DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key}) ||
-				!defined($DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key})
-			){
-				warn 'You need to configure Recaptcha Mailhide in the DADA::Config.pm file!';
-			}
+            if (
+                !defined(
+                    $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key}
+                )
+                || !defined(
+                    $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key}
+                )
+              )
+            {
+                warn
+'You need to configure Recaptcha Mailhide in the DADA::Config.pm file!';
+            }
 
-         $can_use_recaptcha_mailhide = 1;
+            $can_use_recaptcha_mailhide = 1;
         }
-
 
         my $can_use_gravatar_url = 0;
         my $gravatar_img_url     = '';
-        eval {require Gravatar::URL};
-        if(!$@){
-           $can_use_gravatar_url = 1;
-           require Email::Address;
-			if(isa_url($li->{default_gravatar_url})){
+        eval { require Gravatar::URL };
+        if ( !$@ ) {
+            $can_use_gravatar_url = 1;
+            require Email::Address;
+            if ( isa_url( $li->{default_gravatar_url} ) ) {
 
-           		$gravatar_img_url = Gravatar::URL::gravatar_url(email => $ls->param('list_owner_email'), default => $li->{default_gravatar_url});
-			}
-			else {
-				$gravatar_img_url = Gravatar::URL::gravatar_url(email => $ls->param('list_owner_email'));
-			}
-        }else{
-           $can_use_gravatar_url = 0;
+                $gravatar_img_url = Gravatar::URL::gravatar_url(
+                    email   => $ls->param('list_owner_email'),
+                    default => $li->{default_gravatar_url}
+                );
+            }
+            else {
+                $gravatar_img_url = Gravatar::URL::gravatar_url(
+                    email => $ls->param('list_owner_email') );
+            }
+        }
+        else {
+            $can_use_gravatar_url = 0;
         }
 
-		my $scrn = '';
-        $scrn .= admin_template_header(-Title      => "Advanced Archive Options",
-                                -List       => $list,
-                                -Root_Login => $root_login);
+		require DADA::Template::Widgets;
+		my $scrn =  DADA::Template::Widgets::wrap_screen(
+			{
+				-screen => 'adv_archive_options_screen.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+				-Root_Login => $root_login,
+				-List       => $list,  
+				},
+		        -vars   => {
+		            screen => 'adv_archive_options',
+		            title  => 'Advanced Archive Options',
 
-        require DADA::Template::Widgets;
-        $scrn .=  DADA::Template::Widgets::screen({-screen => 'adv_archive_options_screen.tmpl',
-                                              -vars   => {
-															screen                       => 'adv_archive_options',
-															title                        => 'Advanced Archive Options',
+		            done                       => $done,
+		            archive_index_count_menu   => $archive_index_count_menu,
+		            list                       => $list,
+		            ping_sites                 => $ping_sites,
+		            can_use_xml_rpc            => $can_use_xml_rpc,
+		            can_use_html_scrubber      => $can_use_html_scrubber,
+		            can_display_attachments    => $la->can_display_attachments,
+		            can_use_recaptcha_mailhide => $can_use_recaptcha_mailhide,
+		            can_use_gravatar_url       => $can_use_gravatar_url,
+		            gravatar_img_url           => $gravatar_img_url,
 
-                                                     		done                         => $done,
-                                                            stop_message_at_sig          => $li->{stop_message_at_sig},
-                                                            sort_archives_in_reverse     => $li->{sort_archives_in_reverse},
-                                                            archive_show_day             => $li->{archive_show_day},
-                                                            archive_show_month           => $li->{archive_show_month},
-                                                            archive_show_year            => $li->{archive_show_year},
-                                                            archive_show_hour_and_minute => $li->{archive_show_hour_and_minute},
-                                                            archive_show_second          => $li->{archive_show_second},
-                                                            archive_index_count_menu     => $archive_index_count_menu,
-                                                            publish_archives_rss         => $li->{publish_archives_rss},
-                                                            list                         => $list,
-                                                            ping_archives_rss            => $li->{ping_archives_rss},
-                                                            ping_sites                   => $ping_sites,
-                                                            can_use_xml_rpc              => $can_use_xml_rpc,
-                                                            html_archives_in_iframe      => $li->{html_archives_in_iframe},
-                                                            disable_archive_js           => $li->{disable_archive_js},
-                                                            can_use_html_scrubber        => $can_use_html_scrubber,
-
-                                                            style_quoted_archive_text    => $li->{style_quoted_archive_text},
-
-                                                            display_attachments          => $li->{display_attachments},
-
-                                                            can_display_attachments      => $la->can_display_attachments,
-                                                            add_subscribe_form_to_feeds  => $li->{add_subscribe_form_to_feeds},
-
-                                                            add_social_bookmarking_badges => $li->{add_social_bookmarking_badges},
-															can_use_recaptcha_mailhide    => $can_use_recaptcha_mailhide,
-
-															can_use_gravatar_url          => $can_use_gravatar_url,
-															gravatar_img_url              => $gravatar_img_url,
-														    enable_gravatars              => $li->{enable_gravatars},
-                                                            default_gravatar_url          => $li->{default_gravatar_url},
-
-                                                            (($li->{archive_protect_email} eq 'none') ?
-                                                                (archive_protect_email_none => 1,)    :
-                                                                (archive_protect_email_none => 0,)
-                                                            ),
-                                                            (($li->{archive_protect_email} eq 'spam_me_not') ?
-                                                                (archive_protect_email_spam_me_not => 1,)    :
-                                                                (archive_protect_email_spam_me_not => 0,)
-                                                            ),
-                                                             (($li->{archive_protect_email} eq 'recaptcha_mailhide') ?
-                                                                (archive_protect_email_recaptcha_mailhide => 1,)    :
-                                                                (archive_protect_email_recaptcha_mailhide => 0,)
-                                                            ),
-
-
-
-
-
-
-                                                            },
-                                             });
-
-        $scrn .= admin_template_footer(-List => $list);
+		            (
+		                  ( $li->{archive_protect_email} eq 'none' )
+		                ? ( archive_protect_email_none => 1, )
+		                : ( archive_protect_email_none => 0, )
+		            ),
+		            (
+		                  ( $li->{archive_protect_email} eq 'spam_me_not' )
+		                ? ( archive_protect_email_spam_me_not => 1, )
+		                : ( archive_protect_email_spam_me_not => 0, )
+		            ),
+		            (
+		                (
+		                    $li->{archive_protect_email} eq 'recaptcha_mailhide'
+		                ) ? ( archive_protect_email_recaptcha_mailhide => 1, )
+		                : ( archive_protect_email_recaptcha_mailhide => 0, )
+		            ),
+		        },
+		        -list_settings_vars_param => {
+		            -list   => $list,
+		            -dot_it => 1,
+		        },
+		    }
+		);
 		e_print($scrn);
+    }
+    else {
+	
+        $ls->save_w_params(
+            {
+                -associate => $q,
+                -settings  => {
+                    sort_archives_in_reverse      => 0,
+                    archive_show_year             => 0,
+                    archive_show_month            => 0,
+                    archive_show_day              => 0,
+                    archive_show_hour_and_minute  => 0,
+                    archive_show_second           => 0,
+                    archive_index_count           => 10,
+                    stop_message_at_sig           => 0,
+                    publish_archives_rss          => 0,
+                    ping_archives_rss             => 0,
+                    html_archives_in_iframe       => 0,
+                    disable_archive_js            => 0,
+                    style_quoted_archive_text     => 0,
+                    display_attachments           => 0,
+                    add_subscribe_form_to_feeds   => 0,
+                    add_social_bookmarking_badges => 0,
+                    archive_protect_email         => undef,
+                    enable_gravatars              => 0,
+                    default_gravatar_url          => '',
+                }
+            }
+        );
 
-    }else{
-
-        my $sort_archives_in_reverse      = $q->param('sort_archives_in_reverse')     || 0;
-        my $archive_show_year             = $q->param('archive_show_year')            || 0;
-        my $archive_show_month            = $q->param('archive_show_month')           || 0;
-        my $archive_show_day              = $q->param('archive_show_day')             || 0;
-        my $archive_show_hour_and_minute  = $q->param('archive_show_hour_and_minute') || 0;
-        my $archive_show_second           = $q->param('archive_show_second')          || 0;
-        my $archive_index_count           = $q->param('archive_index_count')          || 10;
-        my $stop_message_at_sig           = $q->param('stop_message_at_sig')          || 0;
-        my $publish_archives_rss          = $q->param('publish_archives_rss')         || 0;
-        my $ping_archives_rss             = $q->param('ping_archives_rss')            || 0;
-
-        my $html_archives_in_iframe       = $q->param('html_archives_in_iframe')      || 0;
-        my $disable_archive_js            = $q->param('disable_archive_js')           || 0;
-        my $style_quoted_archive_text     = $q->param('style_quoted_archive_text')    || 0;
-        my $display_attachments           = $q->param('display_attachments')          || 0;
-        my $add_subscribe_form_to_feeds   = $q->param('add_subscribe_form_to_feeds')  || 0;
-        my $add_social_bookmarking_badges = $q->param('add_social_bookmarking_badges') || 0;
-
-        my $archive_protect_email         = $q->param('archive_protect_email') || undef;
-
-		my $enable_gravatars              = $q->param('enable_gravatars') || 0;
- 		my $default_gravatar_url          = $q->param('default_gravatar_url') || '';
-
-
-        $ls->save({  stop_message_at_sig          => $stop_message_at_sig,
-                     sort_archives_in_reverse     => $sort_archives_in_reverse,
-                     archive_show_year            => $archive_show_year,
-                     archive_show_month           => $archive_show_month,
-                     archive_show_day             => $archive_show_day,
-                     archive_show_hour_and_minute => $archive_show_hour_and_minute,
-                     archive_show_second          => $archive_show_second,
-                     archive_index_count          => $archive_index_count,
-                     publish_archives_rss         => $publish_archives_rss,
-                     ping_archives_rss            => $ping_archives_rss,
-                     html_archives_in_iframe      => $html_archives_in_iframe,
-                     disable_archive_js           => $disable_archive_js,
-                     style_quoted_archive_text    => $style_quoted_archive_text,
-                     display_attachments          => $display_attachments,
-                     add_subscribe_form_to_feeds  => $add_subscribe_form_to_feeds,
-                     add_social_bookmarking_badges => $add_social_bookmarking_badges,
-
-                     archive_protect_email         => $archive_protect_email,
-
-					enable_gravatars               => $enable_gravatars,
-					default_gravatar_url           => $default_gravatar_url,
-
-                  });
-
-        print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=adv_archive_options&done=1');
-
+        print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+              . '?flavor=adv_archive_options&done=1' );
     }
 }
 
@@ -5011,18 +4701,16 @@ sub edit_archived_msg {
             }
         }
 
-        my $scrn = '';
-
-        $scrn .= admin_template_header(
-            -Title      => "Edit Archived Message",
-            -List       => $li->{list},
-            -Root_Login => $root_login
-        );
-
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'edit_archived_msg.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+
                 -vars   => {
                     big_blob_of_form_widgets_to_edit_an_archived_message =>
                       $form_blob,
@@ -5039,7 +4727,6 @@ sub edit_archived_msg {
                 },
             }
         );
-        $scrn .= admin_template_footer( -List => $list );
         e_print($scrn);
 
     }
@@ -5072,22 +4759,18 @@ sub edit_archived_msg {
                     { name => $_, editable => $editable_headers{$_} } );
             }
 
-            my $scrn = '';
-
-            $scrn .= admin_template_header(
-                -Title      => "Edit Archived Message Preferences",
-                -List       => $li->{list},
-                -Form       => 0,
-                -Root_Login => $root_login
-            );
-
             my $the_id = $q->param('id');
             my $done   = $q->param('done');
 
             require DADA::Template::Widgets;
-            $scrn .= DADA::Template::Widgets::screen(
+            my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen => 'edit_archived_msg_prefs_screen.tmpl',
+					-with           => 'admin', 
+					-wrapper_params => { 
+						-Root_Login => $root_login,
+						-List       => $list,  
+					},
                     -vars   => {
                         edit_headers_menu => $edit_headers_menu,
                         done              => $done,
@@ -5095,8 +4778,6 @@ sub edit_archived_msg {
                     },
                 }
             );
-
-            $scrn .= admin_template_footer( -List => $list, -Form => 0 );
             e_print($scrn);
         }
 
@@ -5326,127 +5007,133 @@ sub html_code {
 
     my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
                                                         -Function => 'html_code');
-
     $list = $admin_list;
 
-	my $scrn = '';
-    $scrn .= admin_template_header(-Title      => "Subscription Form HTML",
-                            -List       => $list,
-                            -Root_Login => $root_login,
-                            -Form       => 0,
-
-                           );
-
-
     require DADA::Template::Widgets;
-    $scrn .=  DADA::Template::Widgets::screen({-screen => 'html_code_screen.tmpl',
-                                          -vars                => {
-
-											screen             => 'html_code',
-											title              => 'Subscription Form HTML',
-
-                                            list               => $list,
-                                            subscription_form  => DADA::Template::Widgets::subscription_form({-list => $list, -ignore_cgi => 1}),
-
-                                          }
-                                        });
-
-    $scrn .= admin_template_footer(-List => $list, -Form => 0);
+    my $scrn =  DADA::Template::Widgets::wrap_screen(
+		{
+			-screen => 'html_code_screen.tmpl',
+			-with           => 'admin', 
+			-wrapper_params => { 
+				-Root_Login => $root_login,
+				-List       => $list,  
+			},
+			-vars              => {
+				screen             => 'html_code',
+				list               => $list,
+				subscription_form  => DADA::Template::Widgets::subscription_form({-list => $list, -ignore_cgi => 1}),
+			}
+		}
+	);
     e_print($scrn);
 
 }
 
 
 
-
 sub edit_template {
 
-    my ($admin_list, $root_login) = check_list_security(
-		-cgi_obj  => $q,
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
         -Function => 'edit_template'
-	);
-
+    );
     $list = $admin_list;
 
-    require  DADA::MailingList::Settings;
-    my $ls = DADA::MailingList::Settings->new({-list => $list});
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
 
-	require DADA::Template::Widgets;
-	my $raw_template     = DADA::Template::HTML::default_template();
+    require DADA::Template::Widgets;
+    my $raw_template     = DADA::Template::HTML::default_template();
     my $default_template = default_template();
 
-    if(!$process) {
-
+    if ( !$process ) {
+		my $content_tag_found_in_template         = 0; 
+		my $content_tag_found_in_url_template     = 0; 
+		my $content_tag_found_in_default_template = 0; 
+		
+		my $content_tag = quotemeta('<!-- tmpl_var content -->');
+		
+		if($raw_template =~ m/$content_tag/){ 
+			$content_tag_found_in_default_template = 1; 
+		}
+		
+		
+		
         my $edit_this_template = $default_template . "\n";
-           $edit_this_template = open_template(-List => $list) . "\n"
-            if check_if_template_exists( -List => $list ) >= 1;
+        if(check_if_template_exists( -List => $list ) >= 1) { 
+			$edit_this_template = open_template( -List => $list ) . "\n"
+    	}
+		if($edit_this_template =~ m/$content_tag/){ 
+			$content_tag_found_in_template = 1; 
+		}
+		
 
         my $get_template_data_from_default_template = 0;
-           $get_template_data_from_default_template = 1
-            if $li->{get_template_data} eq 'from_default_template';
-
+        $get_template_data_from_default_template = 1
+          if $li->{get_template_data} eq 'from_default_template';
 
         my $get_template_data_from_template_file = 0;
-           $get_template_data_from_template_file = 1
-            if $li->{get_template_data} eq 'from_template_file';
+        $get_template_data_from_template_file = 1
+          if $li->{get_template_data} eq 'from_template_file';
 
         my $get_template_data_from_url = 0;
-           $get_template_data_from_url = 1
-            if $li->{get_template_data} eq 'from_url';
+        $get_template_data_from_url = 1
+          if $li->{get_template_data} eq 'from_url';
 
         my $can_use_lwp_simple;
         eval { require LWP::Simple; };
         $can_use_lwp_simple = 1
-            if !$@;
+          if !$@;
 
-   		my $template_saved = 0;
-        if(-e $DADA::Config::TEMPLATES . '/' . $list . '.template'){
-			$template_saved = 1;
-		}
+        my $template_saved = 0;
+        if ( -e $DADA::Config::TEMPLATES . '/' . $list . '.template' ) {
+            $template_saved = 1;
+        }
         my $template_url_check = 1;
 
-        if($get_template_data_from_url == 1){
+        if ( $get_template_data_from_url == 1 ) {
 
-            if($can_use_lwp_simple == 1){
+            if ( $can_use_lwp_simple == 1 ) {
+				
+                if ( LWP::Simple::get( $li->{url_template} ) ) {
+					my $tmp_tmpl = LWP::Simple::get( $li->{url_template}); 
+					if($tmp_tmpl =~ m/$content_tag/){ 
+						$content_tag_found_in_url_template = 1; 
+					}
+                }
+                else {
 
-                if(LWP::Simple::get($li->{url_template})){
-                    # ...
-                } else {
-
-                $template_url_check = 0;
+                    $template_url_check = 0;
 
                 }
             }
         }
-
-		my $scrn = '';
-        $scrn .= admin_template_header(
-			-Title      => "Your Mailing List Template",
-			-List       => $li->{list},
-			-Root_Login => $root_login,
-			-Form       => 0,
-		);
-
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
 			{
 				-screen => 'edit_template_screen.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
 				-vars   => {
 					screen                                  => 'edit_template',
-					title                                   => 'Your Mailing List Template',
 					done                                    => $done,
-					edit_this_template                      => $edit_this_template,
-					get_template_data                       => $li->{get_template_data},
+					edit_this_template                      => $edit_this_template,					
 					get_template_data_from_url              => $get_template_data_from_url,
 					get_template_data_from_template_file    => $get_template_data_from_template_file,
 					get_template_data_from_default_template => $get_template_data_from_default_template,
 					can_use_lwp_simple                      => $can_use_lwp_simple,
-					url_template                            => $li->{url_template},
 					default_template                        => $default_template,
-					apply_list_template_to_html_msgs        => $li->{apply_list_template_to_html_msgs},
 					template_url_check                      => $template_url_check,
 					template_saved                          => $template_saved,
+					content_tag_found_in_template           => $content_tag_found_in_template, 
+					content_tag_found_in_url_template       => $content_tag_found_in_url_template, 
+					content_tag_found_in_default_template   => $content_tag_found_in_default_template, 
+					# I don't think this is directly used: 
+					#get_template_data                       => $li->{get_template_data},
 
 				},
 				-list_settings_vars_param =>
@@ -5456,84 +5143,70 @@ sub edit_template {
 				},
 			}
 		);
-
-        $scrn .= admin_template_footer(
-			-List => $list,
-			-Form => 0
-		);
 		e_print($scrn);
+		
+    }
+    else {
 
-    }else{
+        if ( $process eq "preview template" ) {
 
-        if($process eq "preview template")  {
+            my $template_info;
+            my $test_header;
+            my $test_footer;
 
-           my $template_info;
-           my $test_header;
-           my $test_footer;
-
-            if($q->param('get_template_data') eq 'from_default_template'){
-				$template_info = $raw_template;
+            if ( $q->param('get_template_data') eq 'from_default_template' ) {
+                $template_info = $raw_template;
             }
-			elsif($q->param('get_template_data') eq 'from_url'){
-                eval {require LWP::Simple;};
-                if(!$@){
-                    $template_info = LWP::Simple::get($q->param('url_template'));
+            elsif ( $q->param('get_template_data') eq 'from_url' ) {
+                eval { require LWP::Simple; };
+                if ( !$@ ) {
+                    $template_info =
+                      LWP::Simple::get( $q->param('url_template') );
                 }
-            }else{
-                $template_info = $q->param("template_info");
-                # This... gotta change...($test_header, $test_footer) = split(/\[dada\]/,$template_info);
             }
-
-			my $scrn = '';
-            $scrn .= list_template(-Part       => "header",
-                                -Title      => "Preview",
-                                -data       => \$template_info,
-								-List          => $list,
-                      );
-
-
+            else {
+                $template_info = $q->param("template_info");
+			}
+			
 			require DADA::Template::Widgets;
-			$scrn .= DADA::Template::Widgets::screen(
+			my $scrn = DADA::Template::Widgets::wrap_screen(
 					{
 						-screen => 'preview_template.tmpl',
+						-with   => 'list', 
+						-wrapper_params => { 
+							-data => \$template_info, 
+						},
+						-vars => { 
+							title => 'Preview', 
+						},
 						-list_settings_vars_param => {
 							-list    => $list,
 							-dot_it  => 1,
 						},
 					}
 			);
-
-            $scrn .= list_template(-Part       => "footer",
-                                -data       => \$template_info,
-								-List          => $list,
-
-                          );
 			e_print($scrn);
+        }
+        else {
 
-        }else{
+            my $template_info = $q->param("template_info");
 
+            $ls->save_w_params(
+                {
+                    -associate => $q,
+                    -settings  => {
+                        apply_list_template_to_html_msgs => 0,
+                        url_template                     => '',
+                        get_template_data                => '',
+                    }
+                }
+            );
 
-
-            my $template_info     = $q->param("template_info");
-
-            my $get_template_data = $q->param("get_template_data") || '';
-            my $url_template      = $q->param('url_template')      || '';
-            my $apply_list_template_to_html_msgs = $q->param('apply_list_template_to_html_msgs') || 0;
-
-            require DADA::MailingList::Settings;
-
-
-            $ls->save({
-                       apply_list_template_to_html_msgs => $apply_list_template_to_html_msgs,
-                       url_template                     => $url_template,
-                       get_template_data                => $get_template_data,
-                       });
-
-            make_template({-List => $list, -Template  => $template_info});
+            make_template( { -List => $list, -Template => $template_info } );
 
             $c->flush;
-
-            print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=edit_template&done=1');
+            print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+                  . '?flavor=edit_template&done=1' );
             return;
         }
     }
@@ -5556,33 +5229,39 @@ sub back_link {
 
     if(!$process){
 
-		my $scrn = '';
-        $scrn .= admin_template_header(-Title      => "Create a Back Link",
-                                -List       => $list,
-                                -Root_Login => $root_login);
-
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen({-screen => 'back_link_screen.tmpl',
-                                                -list   => $list,
-                                                -vars   => {
-																screen       => 'back_link',
-																title        => 'Create a Back Link',
-                                                                website_name => $li->{website_name},
-                                                                website_url  => $li->{website_url},
-                                                                done         => (($q->param('done')) ? ($q->param('done')) : (0)),
-                                                           },
-                                                });
-        $scrn .= admin_template_footer(-List => $list);
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+			{
+				-screen => 'back_link_screen.tmpl',
+				-list   => $list,
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+				-vars   => {
+					screen       => 'back_link',
+					done         => (($q->param('done')) ? ($q->param('done')) : (0)),
+				},
+				-list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+			}
+		);
 		e_print($scrn);
 
     }else{
 
-        my $website_name = $q->param("website_name") || '';
-        my $website_url  = $q->param("website_url")  || '';
-
-        $ls->save({website_name  =>   $website_name,
-                   website_url   =>   $website_url,
-                 });
+        $ls->save_w_params(
+			{
+				-associate => $q, 
+				-settings  => { 
+					website_name  =>   '',
+                   	website_url   =>   '',
+                 }
+			}
+		);
 
         print $q->redirect(-uri=>$DADA::Config::S_PROGRAM_URL . '?flavor=back_link&done=1');
     }
@@ -5593,20 +5272,21 @@ sub back_link {
 
 sub edit_type {
 
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
-                                                        -Function => 'edit_type');
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'edit_type'
+    );
     $list = $admin_list;
 
     require DADA::Template::Widgets;
 
-
-    require  DADA::MailingList::Settings;
-    my $ls = DADA::MailingList::Settings->new({-list => $list});
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
 
-
     # Backwards Compatibility!
-    for(qw(
+    for (
+        qw(
         confirmation_message
         subscribed_message
         unsub_confirmation_message
@@ -5618,265 +5298,231 @@ sub edit_type {
         send_archive_message_html
         you_are_already_subscribed_message
         email_your_subscribed_msg
-    )){
+        )
+      )
+    {
         my $m = $li->{$_};
-        DADA::Template::Widgets::dada_backwards_compatibility(\$m);
-         $li->{$_} = $m;
+        DADA::Template::Widgets::dada_backwards_compatibility( \$m );
+        $li->{$_} = $m;
     }
 
-	require DADA::App::FormatMessages;
-	my $dfm = DADA::App::FormatMessages->new(-List => $list);
+    require DADA::App::FormatMessages;
+    my $dfm = DADA::App::FormatMessages->new( -List => $list );
 
-
-    if(!$process){
-
-		my $scrn = '';
-
-        $scrn .= admin_template_header(
-            -Title      => "Email Message Templates",
-            -List       => $list,
-            -Root_Login => $root_login
-        );
+    if ( !$process ) {
 
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'edit_type_screen.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
                 -list   => $list,
                 -vars   => {
-                    screen                                         => 'edit_type',
-                    title                                          => 'Email Templates',
-                    done                                           => $done,
+                    screen => 'edit_type',
+                    title  => 'Email Templates',
+                    done   => $done,
 
-					unsub_link_found_in_pt_mlm                     => $dfm->can_find_unsub_link      ({-str => $li->{mailing_list_message}}),
-					unsub_link_found_in_html_mlm                   => $dfm->can_find_unsub_link      ({-str => $li->{mailing_list_message_html}}),
-					sub_confirm_link_found_in_confirmation_message => $dfm->can_find_sub_confirm_link({-str => $li->{confirmation_message}}),
-					sub_confirm_link_found_in_pt_invite_msg        => $dfm->can_find_sub_confirm_link({-str => $li->{invite_message_text}}),
-					sub_confirm_link_found_in_html_invite_msg      => $dfm->can_find_sub_confirm_link({-str => $li->{invite_message_html}}),
-                	unsub_confirm_link_found_in_unsub_confirmation_message => $dfm->can_find_unsub_confirm_link({-str => $li->{unsub_confirmation_message}}),
-				},
+                    unsub_link_found_in_pt_mlm => $dfm->can_find_unsub_link(
+                        { -str => $li->{mailing_list_message} }
+                    ),
+                    unsub_link_found_in_html_mlm => $dfm->can_find_unsub_link(
+                        { -str => $li->{mailing_list_message_html} }
+                    ),
+                    sub_confirm_link_found_in_confirmation_message =>
+                      $dfm->can_find_sub_confirm_link(
+                        { -str => $li->{confirmation_message} }
+                      ),
+                    sub_confirm_link_found_in_pt_invite_msg =>
+                      $dfm->can_find_sub_confirm_link(
+                        { -str => $li->{invite_message_text} }
+                      ),
+                    sub_confirm_link_found_in_html_invite_msg =>
+                      $dfm->can_find_sub_confirm_link(
+                        { -str => $li->{invite_message_html} }
+                      ),
+                    unsub_confirm_link_found_in_unsub_confirmation_message =>
+                      $dfm->can_find_unsub_confirm_link(
+                        { -str => $li->{unsub_confirmation_message} }
+                      ),
+                },
                 -list_settings_vars       => $li,
                 -list_settings_vars_param => { -dot_it => 1, },
             }
         );
-
-        $scrn .= admin_template_footer( -List => $list );
         e_print($scrn);
 
-    }else{
+    }
+    else {
 
-        my $confirmation_message_subject = $q->param('confirmation_message_subject') || undef;
-        my $confirmation_message         = $q->param('confirmation_message')           || undef;
-
-        my $subscribed_message_subject  = $q->param('subscribed_message_subject')  || undef;
-        my $subscribed_message          = $q->param('subscribed_message')          || undef;
-
-
-        my $unsub_confirmation_message_subject = $q->param('unsub_confirmation_message_subject') || undef;
-        my $unsub_confirmation_message  = $q->param('unsub_confirmation_message')                || undef;
-
-
-        my $unsubscribed_message_subject     = $q->param('unsubscribed_message_subject')     || undef;
-        my $unsubscribed_message             = $q->param('unsubscribed_message')             || undef;
-
-
-
-        my $mailing_list_message_from_phrase = $q->param('mailing_list_message_from_phrase') || undef;
-        my $mailing_list_message_to_phrase   = $q->param('mailing_list_message_to_phrase')   || undef;
-        my $mailing_list_message_subject     = $q->param('mailing_list_message_subject')     || undef;
-        my $mailing_list_message             = $q->param('mailing_list_message')             || undef;
-        my $mailing_list_message_html        = $q->param('mailing_list_message_html')        || undef;
-
-        my $not_allowed_to_post_message_subject = $q->param('not_allowed_to_post_message_subject') || undef;
-        my $not_allowed_to_post_message = $q->param('not_allowed_to_post_message')   || undef;
-
-
-        my $send_archive_message_subject = $q->param('send_archive_message_subject') || undef;
-        my $send_archive_message        = $q->param('send_archive_message')          || undef;
-        my $send_archive_message_html   = $q->param('send_archive_message_html')     || undef;
-
-
-        my $you_are_already_subscribed_message_subject = $q->param('you_are_already_subscribed_message_subject') || undef;
-        my $you_are_already_subscribed_message = $q->param('you_are_already_subscribed_message') || undef;
-
-        my $invite_message_from_phrase = $q->param('invite_message_from_phrase')     || undef;
-        my $invite_message_to_phrase   = $q->param('invite_message_to_phrase')       || undef;
-		my $invite_message_text        = $q->param('invite_message_text')            || undef;
-		my $invite_message_html        = $q->param('invite_message_html')    || undef;
-		my $invite_message_subject     = $q->param('invite_message_subject') || undef;
-
-		my $enable_email_template_expr = $q->param('enable_email_template_expr') || 0;
-		for(
-            $subscribed_message_subject,
-            $subscribed_message,
-
-            $unsubscribed_message_subject,
-            $unsubscribed_message,
-
-            $confirmation_message_subject,
-            $confirmation_message,
-
-            $unsub_confirmation_message_subject,
-            $unsub_confirmation_message,
-
-
-            $mailing_list_message_from_phrase,
-            $mailing_list_message_to_phrase,
-            $mailing_list_message_subject,
-            $mailing_list_message,
-            $mailing_list_message_html,
-
-            $not_allowed_to_post_message_subject,
-            $not_allowed_to_post_message,
-
-            $send_archive_message_subject,
-            $send_archive_message,
-            $send_archive_message_html,
-
-            $you_are_already_subscribed_message_subject,
-            $you_are_already_subscribed_message,
-
-            $invite_message_from_phrase,
-            $invite_message_to_phrase,
-			$invite_message_text,
-			$invite_message_html,
-			$invite_message_subject,
-
-          ){
-            s/\r\n/\n/g;
+        for (qw(
+            subscribed_message_subject
+            subscribed_message
+            unsubscribed_message_subject
+            unsubscribed_message
+            confirmation_message_subject
+            confirmation_message
+            unsub_confirmation_message_subject
+            unsub_confirmation_message
+            mailing_list_message_from_phrase
+            mailing_list_message_to_phrase
+            mailing_list_message_subject
+            mailing_list_message
+            mailing_list_message_html
+            not_allowed_to_post_message_subject
+            not_allowed_to_post_message
+            send_archive_message_subject
+            send_archive_message
+            send_archive_message_html
+            you_are_already_subscribed_message_subject
+            you_are_already_subscribed_message
+            invite_message_from_phrase
+            invite_message_to_phrase
+            invite_message_text
+            invite_message_html
+            invite_message_subject
+          ))
+        {
+            my $tmp_setting = $q->param($_);
+            $tmp_setting =~ s/\r\n/\n/g;
+            $q->param( $_, $tmp_setting );
 
             # a very odd place to put this, but, hey,  easy enough.
-            if($q->param('revert')){
-               $_ = undef;
+            if ( $q->param('revert') ) {
+                $q->param( $_, undef );
             }
-          }
+        }
 
-        $ls->save({
-                confirmation_message_subject =>   $confirmation_message_subject,
-                confirmation_message         =>   $confirmation_message,
+        $ls->save_w_params(
+            {
+                -associate => $q,
+                -settings  => {
+                    confirmation_message_subject               => undef,
+                    confirmation_message                       => undef,
+                    subscribed_message_subject                 => undef,
+                    subscribed_message                         => undef,
+                    unsubscribed_message_subject               => undef,
+                    unsubscribed_message                       => undef,
+                    unsub_confirmation_message_subject         => undef,
+                    unsub_confirmation_message                 => undef,
+                    mailing_list_message_from_phrase           => undef,
+                    mailing_list_message_to_phrase             => undef,
+                    mailing_list_message_subject               => undef,
+                    mailing_list_message                       => undef,
+                    mailing_list_message_html                  => undef,
+                    not_allowed_to_post_message_subject        => undef,
+                    not_allowed_to_post_message                => undef,
+                    send_archive_message_subject               => undef,
+                    send_archive_message                       => undef,
+                    send_archive_message_html                  => undef,
+                    you_are_already_subscribed_message_subject => undef,
+                    you_are_already_subscribed_message         => undef,
+                    invite_message_from_phrase                 => undef,
+                    invite_message_to_phrase                   => undef,
+                    invite_message_text                        => undef,
+                    invite_message_html                        => undef,
+                    invite_message_subject                     => undef,
+                    enable_email_template_expr                 => 0,
+                }
+            }
+        );
 
-                subscribed_message_subject   =>   $subscribed_message_subject,
-                subscribed_message           =>   $subscribed_message,
-
-                unsubscribed_message_subject =>   $unsubscribed_message_subject,
-                unsubscribed_message         =>   $unsubscribed_message,
-
-                unsub_confirmation_message_subject => $unsub_confirmation_message_subject,
-                unsub_confirmation_message         =>   $unsub_confirmation_message,
-
-                mailing_list_message_from_phrase => $mailing_list_message_from_phrase,
-                mailing_list_message_to_phrase   => $mailing_list_message_to_phrase,
-                mailing_list_message_subject     => $mailing_list_message_subject,
-                mailing_list_message             => $mailing_list_message,
-                mailing_list_message_html        => $mailing_list_message_html,
-
-                not_allowed_to_post_message_subject => $not_allowed_to_post_message_subject,
-                not_allowed_to_post_message         =>   $not_allowed_to_post_message,
-
-                send_archive_message_subject =>   $send_archive_message_subject,
-                send_archive_message         =>   $send_archive_message,
-                send_archive_message_html    =>   $send_archive_message_html,
-
-                you_are_already_subscribed_message_subject => $you_are_already_subscribed_message_subject,
-                you_are_already_subscribed_message => $you_are_already_subscribed_message,
-
-				invite_message_from_phrase       => $invite_message_from_phrase,
-                invite_message_to_phrase          => $invite_message_to_phrase,
-				invite_message_text              => $invite_message_text,
-				invite_message_html              => $invite_message_html,
-				invite_message_subject           => $invite_message_subject,
-
-				enable_email_template_expr       => $enable_email_template_expr,
-
-                  });
-
-        print $q->redirect(-uri=>$DADA::Config::S_PROGRAM_URL . '?flavor=edit_type&done=1');
+        print $q->redirect(
+            -uri => $DADA::Config::S_PROGRAM_URL . '?flavor=edit_type&done=1' );
 
     }
 }
 
-
-
-
 sub edit_html_type {
 
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
-                                                        -Function => 'edit_html_type');
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'edit_html_type'
+    );
     $list = $admin_list;
 
     require DADA::MailingList::Settings;
-
-
-    my $ls = DADA::MailingList::Settings->new({-list => $list});
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
 
-
-
-# Backwards Compatibility!
+    # Backwards Compatibility!
     require DADA::Template::Widgets;
-    for(qw(
-         html_confirmation_message
-         html_unsub_confirmation_message
-         html_subscribed_message
-         html_unsubscribed_message
+    for (
+        qw(
+        html_confirmation_message
+        html_unsub_confirmation_message
+        html_subscribed_message
+        html_unsubscribed_message
 
-    )){
+        )
+      )
+    {
         my $m = $li->{$_};
-        DADA::Template::Widgets::dada_backwards_compatibility(\$m);
+        DADA::Template::Widgets::dada_backwards_compatibility( \$m );
         $li->{$_} = $m;
     }
 
-
-
-    if(!$process){
-
-		my $scrn = '';
-        $scrn .= admin_template_header(-Title      => "HTML Screen Templates",
-                                -List       => $list,
-                                -Root_Login => $root_login);
+    if ( !$process ) {
 
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen({-screen => 'edit_html_type_screen.tmpl',
-                                                -list   => $list,
-                                                -vars   => {
-															screen                          => 'edit_html_type',
-															title                           => 'HTML Screen Templates',
-                                                            done                            => $done,
-                                                            html_confirmation_message       => $li->{html_confirmation_message},
-                                                            html_unsub_confirmation_message => $li->{html_unsub_confirmation_message},
-                                                            html_subscribed_message         => $li->{html_subscribed_message},
-                                                            html_unsubscribed_message       => $li->{html_unsubscribed_message},
-                                                        },
-                                                });
-        $scrn .= admin_template_footer(-List => $list);
+		my $scrn = DADA::Template::Widgets::wrap_screen(
+			{
+				-screen => 'edit_html_type_screen.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+				-list   => $list,
+		        -list   => $list,
+		        -vars   => {
+		            screen                    => 'edit_html_type',
+		            title                     => 'HTML Screen Templates',
+		            done                      => $done,
+				},
+	            -list_settings_vars_param => {
+	                -list   => $list,
+	                -dot_it => 1,
+	            },
+
+		    }
+		);
 		e_print($scrn);
 
     }
     else{
+	
+        for (
+            qw(
+            html_confirmation_message
+            html_unsub_confirmation_message
+            html_subscribed_message
+            html_unsubscribed_message
+            )
+          )
+        {
+            my $tmp_setting = $q->param($_);
+            $tmp_setting =~ s/\r\n/\n/g;
+            $q->param( $_, $tmp_setting );
+        }
 
-
-        my $html_confirmation_message       = $q->param('html_confirmation_message')       || '';
-        my $html_unsub_confirmation_message = $q->param('html_unsub_confirmation_message') || '';
-        my $html_subscribed_message         = $q->param('html_subscribed_message')         || '';
-        my $html_unsubscribed_message       = $q->param('html_unsubscribed_message')       || '';
-
-
-        for(
-            $html_confirmation_message,
-            $html_unsub_confirmation_message,
-            $html_subscribed_message,
-            $html_unsubscribed_message){
-                s/\r\n/\n/g;
+        $ls->save_w_params(
+            {
+                -associate => $q,
+                -settings => {
+                    html_confirmation_message       => '',
+                    html_unsub_confirmation_message => '',
+                    html_subscribed_message         => '',
+                    html_unsubscribed_message       => '',
+                }
             }
+        );
 
-        $ls->save({
-                    html_confirmation_message         =>   $html_confirmation_message,
-                    html_unsub_confirmation_message   =>   $html_unsub_confirmation_message,
-                    html_subscribed_message           =>   $html_subscribed_message,
-                    html_unsubscribed_message         =>   $html_unsubscribed_message
-                  });
-
-        print $q->redirect(-uri=>"$DADA::Config::S_PROGRAM_URL?flavor=edit_html_type&done=1");
+        print $q->redirect( -uri =>
+              "$DADA::Config::S_PROGRAM_URL?flavor=edit_html_type&done=1" );
     }
 }
 
@@ -5907,33 +5553,31 @@ sub manage_script {
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
 
-
-    my $scrn = '';
-    $scrn .= admin_template_header(-Title      => "About $DADA::Config::PROGRAM_NAME",
-                            -List       => $li->{list},
-                            -Root_Login => $root_login);
-
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen({-screen => 'manage_script_screen.tmpl',
-                                                -list   => $list,
-                                                -vars   =>
-                                                {
-                                                    more_info          => $more_info,
-                                                    smtp_server        => $li->{smtp_server},
-                                                    server_software    => $q->server_software(),
-                                                    operating_system   => $^O,
-                                                    perl_version       => $],
-                                                    sendmail_locations => $sendmail_locations,
-                                                    at_incs            => $at_incs,
-                                                    list_owner_email   => $li->{list_owner_email},
-													curl_location      => $curl_location,
-													wget_location      => $wget_location,
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+			{
+				-screen => 'manage_script_screen.tmpl',
+				-with   => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+				-list   => $list,
+				-vars   => {
+					more_info          => $more_info,
+					smtp_server        => $li->{smtp_server},
+					server_software    => $q->server_software(),
+					operating_system   => $^O,
+					perl_version       => $],
+					sendmail_locations => $sendmail_locations,
+					at_incs            => $at_incs,
+					list_owner_email   => $li->{list_owner_email},
+					curl_location      => $curl_location,
+					wget_location      => $wget_location,
+				},
+			}
+		);
 
-
-                                                },
-                                                });
-
-    $scrn .= admin_template_footer(-List => $list);
 	e_print($scrn);
 
 }
@@ -5956,33 +5600,26 @@ sub feature_set {
 
     if(!$process){
 
-    my $feature_set_menu = DADA::Template::Widgets::Admin_Menu::make_feature_menu($li);
-
-		my $scrn = '';
-        $scrn .= admin_template_header(-Title      => "Customize Feature Set",
-                                -List       => $li->{list},
-                                -Root_Login => $root_login,
-                                );
-
-
-
+    	my $feature_set_menu = DADA::Template::Widgets::Admin_Menu::make_feature_menu($li);
         require DADA::Template::Widgets;
-        $scrn .=  DADA::Template::Widgets::screen({-screen => 'feature_set_screen.tmpl',
+        my $scrn =  DADA::Template::Widgets::wrap_screen(
+			{
+				-screen => 'feature_set_screen.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+				
 
                                               -vars   => {
 													   screen           => 'feature_set',
-													   title            => 'Customize Feature Set',
-
                                                        done             => (defined($done)) ? 1 : 0,
                                                        feature_set_menu => $feature_set_menu,
                                                        disabled_screen_view_hide     => ($li->{disabled_screen_view} eq 'hide')     ? 1 : 0,
                                                        disabled_screen_view_grey_out => ($li->{disabled_screen_view} eq 'grey_out') ? 1 : 0,
-
-
-
                                                       },
                                              });
-        $scrn .= admin_template_footer(-List => $list, -End_Form   => 0);
 		e_print($scrn);
 
     }else{
@@ -6011,42 +5648,44 @@ sub feature_set {
 
 sub list_cp_options {
 
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'list_cp_options'
+    );
+    $list = $admin_list;
 
-   my ($admin_list, $root_login) =  check_list_security(-cgi_obj    => $q,
-                                                        -Function   => 'list_cp_options');
-   $list = $admin_list;
+    require DADA::MailingList::Settings;
 
-   require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get;
 
-   my $ls = DADA::MailingList::Settings->new({-list => $list}) ;
-   my $li = $ls->get;
+    if ( !$process ) {
 
-   if(!$process){
-
-    my @list_amount = (10,25,50,100,150,200,
-                       250,300,350, 400,450,
-                       500,550,600,650,700,
-                       750,800,850,900,950,1000, 2000, 3000, 4000, 5000, 10000, 15000, 20000, 25000, 50000, 100000
-                      );
-	my $vlsn_menu = $q->popup_menu(
-		-name     => 'view_list_subscriber_number',
-		-values   => [ @list_amount],
-		-default  => $li->{view_list_subscriber_number}
-	);
-
-	my $scrn = '';
-   $scrn .= admin_template_header(
-			-Title      => "Options",
-            -List       => $list,
-            -Root_Login => $root_login
-	);
+        my @list_amount = (
+            10,   25,   50,    100,   150,   200,   250,   300,
+            350,  400,  450,   500,   550,   600,   650,   700,
+            750,  800,  850,   900,   950,   1000,  2000,  3000,
+            4000, 5000, 10000, 15000, 20000, 25000, 50000, 100000
+        );
+        my $vlsn_menu = $q->popup_menu(
+            -name    => 'view_list_subscriber_number',
+            -values  => [@list_amount],
+            -default => $li->{view_list_subscriber_number}
+        );
 
    require DADA::Template::Widgets;
-   $scrn .=   DADA::Template::Widgets::screen({-screen => 'list_cp_options.tmpl',
+   my $scrn =   DADA::Template::Widgets::wrap_screen(
+		{
+			-screen => 'list_cp_options.tmpl',
+			-with           => 'admin', 
+			-wrapper_params => { 
+				-Root_Login => $root_login,
+				-List       => $list,  
+			},
+			
                                                -list   => $list,
                                                -vars   => {
 													screen    => 'list_cp_options',
-													title     => 'Options',
 													vlsn_menu => $vlsn_menu,
 													done      => xss_filter($q->param('done')),
 												},
@@ -6054,33 +5693,25 @@ sub list_cp_options {
                                             -list_settings_vars_param => {-dot_it => 1},
                                            });
 
-       $scrn .= admin_template_footer(
-				-List => $list
-			);
 		e_print($scrn);
+    }
+    else {
 
-   }else{
+        $ls->save_w_params(
+            {
+                -associate => $q,
+                -settings  => {
+                    enable_fckeditor            => 0,
+                    enable_mass_subscribe       => 0,
+                    view_list_subscriber_number => 0,
+                }
+            }
+        );
 
-
-       my $enable_fckeditor 	       = xss_filter($q->param('enable_fckeditor'))      || 0;
-       my $enable_mass_subscribe       = xss_filter($q->param('enable_mass_subscribe')) || 0;
-	   my $view_list_subscriber_number = xss_filter($q->param('view_list_subscriber_number')) || 0;
-
-       $ls->save(
-			{
-				enable_fckeditor	        => $enable_fckeditor,
-				enable_mass_subscribe       => $enable_mass_subscribe,
-				view_list_subscriber_number => $view_list_subscriber_number,
- 			}
-		);
-
-       print $q->redirect(-uri=>$DADA::Config::S_PROGRAM_URL . '?flavor=list_cp_options&done=1');
-   }
+        print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+              . '?flavor=list_cp_options&done=1' );
+    }
 }
-
-
-
-
 
 
 
@@ -6099,16 +5730,15 @@ sub profile_fields {
 	my $dpf = DADA::Profile::Fields->new;
 
 	if($dpf->can_have_subscriber_fields == 0){
-		my $scrn = '';
-		$scrn .= admin_template_header(
-			-Title      => "Profile Fields",
-			-List       => $list,
-			-Root_Login => $root_login,
-		);
 	     require DADA::Template::Widgets;
-	     $scrn .= DADA::Template::Widgets::screen(
+	     my $scrn = DADA::Template::Widgets::wrap_screen(
 			{
 				-screen => 'profile_fields.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
 				-vars   => {
 					screen                     => 'profile_fields',
 					title                      => 'Profile Fields',
@@ -6116,9 +5746,6 @@ sub profile_fields {
 
 				},
 			}
-		);
-		$scrn .= admin_template_footer(
-			-List => $list,
 		);
 		e_print($scrn);
 		return;
@@ -6274,14 +5901,16 @@ sub profile_fields {
 				}
 			);
      }
-     	my $scrn  = '';
-        $scrn .= admin_template_header(
-				-Title      => "Profile Fields",
-                -List       => $li->{list},
-                -Root_Login => $root_login,
-              );
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen({-screen => 'profile_fields.tmpl',
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+			{
+				-screen => 'profile_fields.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+				
                                                -vars   => {
 
 													   screen                           => 'profile_fields',
@@ -6320,7 +5949,6 @@ sub profile_fields {
 
 													},
                                              });
-        $scrn .= admin_template_footer(-List => $list, -End_Form   => 0);
 		e_print($scrn);
 
 }
@@ -6630,14 +6258,6 @@ sub search_list {
 
     if(defined($keyword)){
 
-		my $scrn = '';
-        $scrn .= admin_template_header(-Title      => "Search Email Subscribers: Search Results",
-                             -List       => $li->{list},
-                             -Root_Login => $root_login,
-                             -Form       => 0,
-                            );
-
-
 
         # DEV: Why isn't this its own method? It seems to be in the code in a whole bunch of places...
         my $field_names = [];
@@ -6645,11 +6265,15 @@ sub search_list {
             push(@$field_names, {name => $_});
         }
 
-
          require DADA::Template::Widgets;
-        $scrn .=  DADA::Template::Widgets::screen(
+        my $scrn =  DADA::Template::Widgets::wrap_screen(
                                                 {
                                                 -screen => 'search_list_screen.tmpl',
+												-with           => 'admin', 
+												-wrapper_params => { 
+													-Root_Login => $root_login,
+													-List       => $list,  
+												},
                                                 -vars => {
 
                                                      field_names                 => $field_names,
@@ -6690,7 +6314,6 @@ sub search_list {
 
 
 
-        $scrn .= admin_template_footer(-List => $list, -Form => 0);
 		e_print($scrn);
 
     }else{
@@ -6710,6 +6333,7 @@ sub text_list {
     );
 
     $list = $admin_list;
+	my $type = $q->param('type') || 'list';
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -6719,15 +6343,18 @@ sub text_list {
 
     my $email;
 
-    # DEV: encoding?
-    print $q->header('text/plain');
-    e_print("Email Addresses for List: " . $li->{list_name} . "\n");
-    print "=" x 72 . "\n";
+	my $header  = 'Content-disposition: attachement; filename=' . $list . '-' . $type . '.csv' .  "\n"; 
+	   $header .= 'Content-type: text/csv' . "\n\n"; 
+	
+	print $header; 
 
-    my $email_count = $lh->print_out_list( -List => $list, -Type => $type );
-
-    print "=" x 72 .  "\n";
-    e_print("Total: $email_count \n\n");
+   # e_print("Email Addresses for List: " . $li->{list_name} . "\n");
+   # print "=" x 72 . "\n";
+   #
+   # my $email_count = $lh->print_out_list( -List => $list, -Type => $type );
+   #
+   # print "=" x 72 .  "\n";
+   # e_print("Total: $email_count \n\n");
 
 }
 
@@ -6974,58 +6601,48 @@ sub new_list {
 										-empty_list_check => 1,
 									);
 
-            my $scrn = '';
-            $scrn .= list_template(
-					-Part       => "header",
-	                -Title      => "Create a New List",
-					-vars 	    => { show_profile_widget => 0,}
-	               );
+            my $scrn = DADA::Template::Widgets::wrap_screen(
+				{
+					-screen => 'new_list_screen.tmpl',
+					-with   => 'list', 
+					-vars   => {
+						errors                            => $errors,
+						ending                            => $ending,
+						err_word                          => $err_word,
+						help                              => $help,
+						root_password                     => $root_password,
+						flags_list_name                   => $flags->{list_name},
+						list_name                         => $list_name,
+						flags_list_exists                 => $flags->{list_exists},
+						flags_list                        => $flags->{list},
+						flags_shortname_too_long          => $flags->{shortname_too_long},
+						flags_slashes_in_name             => $flags->{slashes_in_name},
+						flags_weird_characters            => $flags->{weird_characters},
+						flags_quotes                      => $flags->{quotes},
+						list                              => $list,
+						flags_password                    => $flags->{password},
+						password                          => $password,
 
+						flags_password_is_root_password   => $flags->{password_is_root_password},
 
+						flags_retype_password             => $flags->{retype_password},
+						flags_password_ne_retype_password => $flags->{password_ne_retype_password},
+						retype_password                   => $retype_password,
+						flags_invalid_list_owner_email    => $flags->{invalid_list_owner_email},
+						list_owner_email                  => $list_owner_email,
+						flags_list_info                   => $flags->{list_info},
+						info                              => $info,
+						flags_privacy_policy              => $flags->{privacy_policy},
+						privacy_policy                    => $privacy_policy,
+						flags_physical_address            => $flags->{physical_address},
+						physical_address                  => $physical_address,
+						flags_list_name_bad_characters    => $flags->{list_name_bad_characters},
 
-            $scrn .= DADA::Template::Widgets::screen({-screen => 'new_list_screen.tmpl',
-                                                    -vars   =>
-                                                                {
-                                                                errors                            => $errors,
-                                                                ending                            => $ending,
-                                                                err_word                          => $err_word,
-                                                                help                              => $help,
-                                                                root_password                     => $root_password,
-                                                                flags_list_name                   => $flags->{list_name},
-                                                                list_name                         => $list_name,
-                                                                flags_list_exists                 => $flags->{list_exists},
-                                                                flags_list                        => $flags->{list},
-                                                                flags_shortname_too_long          => $flags->{shortname_too_long},
-                                                                flags_slashes_in_name             => $flags->{slashes_in_name},
-                                                                flags_weird_characters            => $flags->{weird_characters},
-                                                                flags_quotes                      => $flags->{quotes},
-                                                                list                              => $list,
-                                                                flags_password                    => $flags->{password},
-                                                                password                          => $password,
-
-                                                                flags_password_is_root_password   => $flags->{password_is_root_password},
-
-                                                                flags_retype_password             => $flags->{retype_password},
-                                                                flags_password_ne_retype_password => $flags->{password_ne_retype_password},
-                                                                retype_password                   => $retype_password,
-                                                                flags_invalid_list_owner_email    => $flags->{invalid_list_owner_email},
-                                                                list_owner_email                  => $list_owner_email,
-                                                                flags_list_info                   => $flags->{list_info},
-                                                                info                              => $info,
-                                                                flags_privacy_policy              => $flags->{privacy_policy},
-                                                                privacy_policy                    => $privacy_policy,
-                                                                flags_physical_address            => $flags->{physical_address},
-                                                                physical_address                  => $physical_address,
-                                                                flags_list_name_bad_characters    => $flags->{list_name_bad_characters},
-
-																lists_exist                       => $lists_exist,
-																list_popup_menu                   => $list_popup_menu,
-                                                                },
-                                                    });
-
-            $scrn .= list_template(
-				  	-Part => "footer"
-				   );
+						lists_exist                       => $lists_exist,
+						list_popup_menu                   => $list_popup_menu,
+					},
+				}
+			);
 			e_print($scrn);
 
         }else{
@@ -7131,30 +6748,23 @@ sub new_list {
                    $auth_state = $sast->make_state;
             }
 
-			my $scrn = '';
-            $scrn .= list_template(
-				-Part  => "header",
-                -Title => "Your New List Has Been Created",
-				-vars  => { show_profile_widget => 0,}
-            );
 
             require DADA::Template::Widgets;
-            $scrn .= DADA::Template::Widgets::screen({-screen => 'new_list_created_screen.tmpl',
-                                                  -vars   => {
-                                                              list_name        => $li->{list_name},
-                                                              list             => $li->{list},
-                                                              escaped_list     => $escaped_list,
-                                                              list_owner_email => $li->{list_owner_email},
-                                                              info             => $li->{info},
-                                                              privacy_policy   => $li->{privacy_policy},
-                                                              physical_address => $li->{physical_address},
-
-                                                              auth_state       => $auth_state,
-
-
-                                                          },
-                                                 });
-            $scrn .= list_template(-Part      => "footer", -End_Form   => 0);
+            my $scrn .= DADA::Template::Widgets::screen(
+				{
+					-screen => 'new_list_created_screen.tmpl',
+                    -vars   => {
+                                list_name        => $li->{list_name},
+                                list             => $li->{list},
+                                escaped_list     => $escaped_list,
+                                list_owner_email => $li->{list_owner_email},
+                                info             => $li->{info},
+                                privacy_policy   => $li->{privacy_policy},
+                                physical_address => $li->{physical_address},
+                                auth_state       => $auth_state,
+                            },
+                   }
+			);
 			e_print($scrn);
 
         }
@@ -7380,18 +6990,10 @@ sub archive {
 		    );
 		}
 
-        my $scrn = (
-            list_template(
-                -Part => "header",
-                ,
-                -Title => $li->{list_name} . " Archives",
-                -List  => $li->{list}
-            )
-        );
-
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'archive_index_screen.tmpl',
+				-with   => 'list', 
                 -vars   => {
                     list                     => $list,
                     list_name                => $li->{list_name},
@@ -7409,23 +7011,9 @@ sub archive {
 
             }
         );
-        $scrn .= (
-            list_template(
-                -Part      => "footer",
-                -End_Form  => 0,
-                -List      => $li->{list},
-                -Site_Name => $li->{website_name},
-                -Site_URL  => $li->{website_url}
-            )
-        );
-
         e_print($scrn);
 
-        if (!$c->profile_on
-		#&&
-	  	#	$li->{archive_send_form} != 1
-        #    && $li->{captcha_archive_send_form} != 1
-		)
+        if (!$c->profile_on)
         {
             $c->cache( 'archive/' . $list . '/' . $start . '.scrn', \$scrn );
 
@@ -7486,13 +7074,6 @@ sub archive {
         $subject = $archive->_parse_in_list_info( -data => $subject );
 
         # That. Sucked.
-
-        my $scrn = list_template(
-            -Part  => "header",
-            -Title => $subject,
-            -List  => $li->{list},
-
-        );
 
         my ( $massaged_message_for_display, $content_type ) =
           $archive->massaged_msg_for_display( -key => $id, -body_only => 1 );
@@ -7603,9 +7184,10 @@ sub archive {
             }
         }
 
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'archive_screen.tmpl',
+				-with   => 'list', 
                 -vars   => {
                     list      => $list,
                     list_name => $li->{list_name},
@@ -7653,17 +7235,6 @@ sub archive {
                 -list_settings_vars_param => { -dot_it => 1 },
             }
         );
-        $scrn .= (
-            list_template(
-                -Part      => "footer",
-                -End_Form  => 0,
-                -List      => $li->{list},
-                -Site_Name => $li->{website_name},
-                -Site_URL  => $li->{website_url},
-
-            )
-        );
-
         e_print($scrn);
 
         if (!$c->profile_on &&
@@ -7860,44 +7431,29 @@ sub search_archive {
 
     }
 
-    my $scrn;
-
-    $scrn = (list_template(-Part       => "header",
-                       -Title      => "Archive Search Results",
-                       -List       => $li->{list},
-                       ,
-                       ));
-
-
     require DADA::Template::Widgets;
-    $scrn .= DADA::Template::Widgets::screen({-screen => 'search_archive_screen.tmpl',
-                                          -vars => {
-                                                   list_name              => $li->{list_name},
-                                                    uriescape_list         => uriescape($list),
-                                                    list                   => $list,
-                                                    count                  => $count,
-                                                    ending                 => $ending,
-                                                    keyword                => $keyword,
-
-                                                    summaries              => $ht_summaries,
-
-                                                    search_results         => $ht_summaries->[0] ? 1 : 0,
-                                                    search_form            => $search_form,
-                                                    archive_subscribe_form => $archive_subscribe_form,
-                                                    },
-											-list_settings_vars_param => {
-													-list   => $list,
-													-dot_it => 1,
-											},
-                                        });
-
-    $scrn .= (list_template(-Part      => "footer",
-                   -List      => $li->{list},
-                   -Site_Name => $li->{website_name},
-                   -Site_URL  => $li->{website_url},
-                   -End_Form  => 0,
-                   ));
-
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+		{
+			-screen => 'search_archive_screen.tmpl',
+			-with   => 'list',
+			-vars => {
+				list_name              => $li->{list_name},
+				uriescape_list         => uriescape($list),
+				list                   => $list,
+				count                  => $count,
+				ending                 => $ending,
+				keyword                => $keyword,
+				summaries              => $ht_summaries,
+				search_results         => $ht_summaries->[0] ? 1 : 0,
+				search_form            => $search_form,
+				archive_subscribe_form => $archive_subscribe_form,
+			},
+			-list_settings_vars_param => {
+				-list   => $list,
+				-dot_it => 1,
+			},
+			}
+	);
     e_print($scrn);
 
     if(!$c->profile_on && $keyword =~ m/^[A-Za-z]+$/){ # just words, basically.
@@ -8305,20 +7861,11 @@ sub email_password {
 
     sleep(10);
 
-	my $scrn = '';
-    $scrn .= list_template(
-		-Part  => "header",
-        -Title => "Password Confirmation Sent",
-        -List  => $list,
-		-vars  => {
-			show_profile_widget => 0,
-		}
-	);
-
     require DADA::Template::Widgets;
-	$scrn .=   DADA::Template::Widgets::screen(
+	my $scrn =   DADA::Template::Widgets::wrap_screen(
 		{
 			-screen => 'list_password_confirmation_screen.tmpl',
+			-with   => 'list', 
 			-vars   => {
 				REMOTE_HOST => $ENV{REMOTE_HOST},
 				REMOTE_ADDR => $ENV{REMOTE_ADDR},
@@ -8328,10 +7875,6 @@ sub email_password {
 				-dot_it  => 1,
 			},
 		},
-	);
-    $scrn .= list_template(
-		-Part => "footer",
-        -List => $list,
 	);
 	e_print($scrn);
 
@@ -8687,29 +8230,36 @@ sub pass_gen {
     my $pw = $q->param('pw');
     require DADA::Template::Widgets;
 
-	my $scrn = '';
-       $scrn .= list_template(-Part => "header", -Title => "Password Encryption");
+    if ( !$pw ) {
 
-    if(!$pw){
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen => 'pass_gen_screen.tmpl',
+                -with   => 'list',
+                -expr   => 1,
+                -vars   => {},
+            }
+        );
+        e_print($scrn);
 
-        $scrn .=  DADA::Template::Widgets::screen({-screen => 'pass_gen_screen.tmpl',
-                                              -expr   => 1,
-                                              -vars   => {},
-                                             });
-
-    }else{
+    }
+    else {
 
         require DADA::Security::Password;
-        $scrn .=  DADA::Template::Widgets::screen({-screen => 'pass_gen_process_screen.tmpl',
-                                              -expr   => 1,
-                                              -vars   => {
-                                                            encrypted_password => DADA::Security::Password::encrypt_passwd($pw),
-                                                          },
-                                             });
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen => 'pass_gen_process_screen.tmpl',
+                -with   => 'list',
+                -expr   => 1,
+                -vars   => {
+                    encrypted_password =>
+                      DADA::Security::Password::encrypt_passwd($pw),
+                },
+            }
+        );
+        e_print($scrn);
     }
 
-    $scrn .= list_template(-Part => "footer", -End_Form   => 0);
-	e_print($scrn);
 }
 
 
@@ -8730,6 +8280,7 @@ sub setup_info {
     );
     if ( $checksout == 1 && $root_password eq '' ) {
         $from_control_panel = 1;
+		$list               = $admin_list; 
     }
 
 
@@ -8794,31 +8345,21 @@ sub setup_info {
             push( @$CONFIG_vals, { name => $orig_name, value => $var_val } );
         }
 
-        my $scrn = '';
-        if ( $from_control_panel == 1 ) {
-            $scrn .= admin_template_header(
-                -Title      => "Setup Information",
-                -List       => $admin_list,
-                -Root_Login => $root_login
-            );
-
-        }
-        else {
-            $scrn .= list_template(
-                -Part  => "header",
-                -Title => "Setup Information",
-                -vars  => {
-                    PROGRAM_URL         => $DADA::Config::PROGRAM_URL,
-                    S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL,
-                    show_profile_widget => 0,
-                }
-            );
-        }
-
         require DADA::Template::Widgets;
-        $scrn .= DADA::Template::Widgets::screen(
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'setup_info_screen.tmpl',
+				(
+					$from_control_panel == 1 ? (
+						-with           => 'admin',
+			            -wrapper_params => {
+			                -Root_Login => $root_login,
+			                -List       => $list,
+			            },
+					) : (
+						-with => 'list', 
+					)
+				),
                 -vars   => {
                     FILES => $DADA::Config::FILES,
                     PROGRAM_ROOT_PASSWORD =>
@@ -8836,12 +8377,6 @@ sub setup_info {
                 },
             }
         );
-        if ( $from_control_panel == 1 ) {
-            $scrn .= admin_template_footer( -List => $admin_list );
-        }
-        else {
-            $scrn .= list_template( -Part => "footer" );
-        }
         e_print($scrn);
 
     }
@@ -8865,22 +8400,11 @@ sub setup_info {
             ;    # default.
 
             my $incorrect_root_password = $root_password ? 1 : 0;
-
-            my $scrn = '';
-            $scrn .= list_template(
-                -Part  => 'header',
-                -Title => 'Setup Information',
-                -vars  => {
-                    PROGRAM_URL         => $DADA::Config::PROGRAM_URL,
-                    S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL,
-                    show_profile_widget => 0,
-                },
-            );
-
             require DADA::Template::Widgets;
-            $scrn .= DADA::Template::Widgets::screen(
+            my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen => 'setup_info_login_screen.tmpl',
+					-with   => 'list', 
                     -vars   => {
                         program_url_guess       => $guess,
                         incorrect_root_password => $incorrect_root_password,
@@ -8889,12 +8413,6 @@ sub setup_info {
                     },
                 }
             );
-
-            $scrn .= list_template(
-                -Part     => 'footer',
-                -End_Form => 0
-            );
-
             e_print($scrn);
         }
 
@@ -8922,41 +8440,24 @@ sub reset_cipher_keys {
                 { cipher_key => DADA::Security::Password::make_cipher_key() } );
         }
 
-        my $scrn = '';
-        $scrn .= list_template(
-            -Part  => "header",
-            -Title => "Reset Cipher Keys"
-        );
-        $scrn .= $q->p("Cipher keys have been reset.");
-        $scrn .= list_template( -Part => "footer" );
-        e_print($scrn);
+		require DADA::Template::Widgets; 
+		my $scrn = DADA::Template::Widgets::wrap_screen(
+			-screen => 'reset_cipher_keys_process.tmpl', 
+			-with   => 'list', 
+		);
+       e_print($scrn);
 
     }
     else {
-        my $scrn = '';
-        $scrn .=
-          list_template( -Part => "header", -Title => "Reset Cipher Keys" );
-
-        $scrn .= $q->p(
-"Please enter the correct $DADA::Config::PROGRAM_NAME Root Password to continue,
-                 every list cipher key will be reset:", $q->br(),
-            $q->hidden( 'flavor', 'reset_cipher_keys' ),
-            $q->password_field( 'root_password', '' ),
-            $q->submit('Continue')
-          ),
-          $q->p(
-            'Why would you want to do this? If you are upgrading Dada Mail
-           from any version under 2.7.1, your list needs a cipher key to encrypt
-           sensitive information.'
-          );
-
-        $scrn .= list_template( -Part => "footer" );
+		require DADA::Template::Widgets; 
+		my $scrn = DADA::Template::Widgets::wrap_screen(
+			-screen => 'reset_cipher_keys.tmpl', 
+			-with   => 'list', 
+		);
         e_print($scrn);
-
     }
 
 }
-
 
 
 sub restore_lists {
@@ -9017,17 +8518,13 @@ sub restore_lists {
                         $q->param( 'schedules_' . $r_list . '_version' ) );
                 }
             }
-
-            my $scrn = '';
-            $scrn .= list_template(
-                -Part  => "header",
-                -Title => "Restore List Information - Complete"
+            require DADA::Template::Widgets;
+            my $scrn = DADA::Template::Widgets::wrap_screen(
+                {
+                    -screen => 'restore_lists_complete.tmpl',
+                    -with   => 'list',
+                }
             );
-            $scrn .= $q->p("List Information Restored.");
-            $scrn .= $q->p(
-"<a href=$DADA::Config::PROGRAM_URL>Return to the $DADA::Config::PROGRAM_NAME main page.</a>"
-            );
-            $scrn .= list_template( -Part => "footer" );
             e_print($scrn);
 
         }
@@ -9054,12 +8551,6 @@ sub restore_lists {
                 $backup_hist->{$_}->{schedules} = $mss->backupDirs
                   if $mss->uses_backupDirs;
             }
-
-            my $scrn = '';
-            $scrn .= list_template(
-                -Part  => "header",
-                -Title => "Restore List Information"
-            );
 
             my $restore_list_options = '';
 
@@ -9151,10 +8642,10 @@ sub restore_lists {
                                 (
                                     $q->p(
                                         $q->checkbox(
-                                            -name => 'restore_'
+                                            -name => 'restore_' 
                                               . $f_list . '_'
                                               . $_,
-                                            -id => 'restore_'
+                                            -id => 'restore_' 
                                               . $f_list . '_'
                                               . $_,
                                             -value => 1,
@@ -9175,7 +8666,7 @@ sub restore_lists {
                                     (
                                         $q->p(
                                             $q->popup_menu(
-                                                -name => $_ . '_'
+                                                -name => $_ . '_' 
                                                   . $f_list
                                                   . '_version',
                                                 '-values' => $vals,
@@ -9193,7 +8684,7 @@ sub restore_lists {
                                             '-- No Backup Information Found --'
                                         ),
                                         $q->hidden(
-                                            -name => $_ . '_'
+                                            -name => $_ . '_' 
                                               . $f_list
                                               . '_version',
                                             -value => 'just_remove_blank'
@@ -9208,9 +8699,10 @@ sub restore_lists {
             }
 
             require DADA::Template::Widgets;
-            $scrn .= DADA::Template::Widgets::screen(
+            my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen => 'restore_lists_options_screen.tmpl',
+                    -with   => 'list',
                     -vars   => {
                         restore_list_options => $restore_list_options,
                         root_password =>
@@ -9218,8 +8710,6 @@ sub restore_lists {
                     }
                 }
             );
-
-            $scrn .= list_template( -Part => "footer" );
             e_print($scrn);
 
         }
@@ -9227,18 +8717,13 @@ sub restore_lists {
     }
     else {
         require DADA::Template::Widgets;
-        my $scrn = '';
-        $scrn .= list_template(
-            -Part  => "header",
-            -Title => "Restore List Information"
-        );
-        $scrn .= DADA::Template::Widgets::screen(
-            { -screen => 'restore_lists_screen.tmpl', } );
-        $scrn .= list_template( -Part => "footer" );
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            { -screen => 'restore_lists_screen.tmpl', -with => 'list', } );
         e_print($scrn);
     }
 
 }
+
 
 sub subscription_form {
 
@@ -9269,21 +8754,21 @@ sub test_layout {
         -cgi_obj  => $q,
         -Function => 'test_layout'
     );
-    my $scrn = '';
-
-    $scrn .= admin_template_header(
-        -Title      => "Layout Test",
-        -List       => $admin_list,
-        -Root_Login => $root_login
-    );
-
     require DADA::Template::Widgets;
-    $scrn .= DADA::Template::Widgets::screen(
-        { -screen => 'test_layout_screen.tmpl' } );
-    $scrn .= admin_template_footer( -List => $admin_list );
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -screen         => 'test_layout_screen.tmpl',
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+        }
+    );
     e_print($scrn);
 
 }
+
 
 
 
@@ -9306,26 +8791,18 @@ sub subscriber_help {
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
 
-	my $scrn = '';
-    $scrn .= list_template(-Part        => "header",
-                   -Title       => "Subscription Help",
-                   -List        => $list,
-              );
-
     require DADA::Template::Widgets;
-    $scrn .=  DADA::Template::Widgets::screen({-screen => 'subscriber_help_screen.tmpl',
-                                          -vars   => {
-                                                   list             => $list,
-                                                    list_name        => $li->{list_name},
-                                                   list_owner_email => spam_me_not_encode($li->{list_owner_email}),
-
-
-
-                                          }
-    });
-    $scrn .= list_template(-Part     => "footer",
-                   -List     => $list,
-                   );
+    my $scrn =  DADA::Template::Widgets::wrap_screen(
+		{
+			-screen => 'subscriber_help_screen.tmpl',
+			-with   => 'list',
+            -vars   => {
+                     list             => $list,
+                     list_name        => $li->{list_name},
+                     list_owner_email => spam_me_not_encode($li->{list_owner_email}),
+            }
+    		}
+		);
 	e_print($scrn);
 
 }
@@ -9562,9 +9039,8 @@ sub img {
         if($c->cached($img_name)){
 			$c->show($img_name); return;}
         my $r =  $q->header('image/png');
-           $r .= DADA::Template::Widgets::screen({-screen => $img_name});
+           $r .= DADA::Template::Widgets::screen({-screen => $img_name, -img => 1}); # maybe, _raw_screen?
          print $r;
-
         $c->cache($img_name, \$r);
 
     } else {
@@ -9667,12 +9143,6 @@ sub profile_login {
 	}
 	else {
 			my $scrn = '';
-			$scrn .=  list_template(
-				-Part  => "header",
-		        -Title => "Profile Login",
-				-vars  => { show_profile_widget => 0,}
-		    );
-
 			my $can_use_captcha = 0;
 			my $CAPTCHA_string  = '';
 			my $cap             = undef;
@@ -9692,9 +9162,10 @@ sub profile_login {
 			}
 
    		    require DADA::Template::Widgets;
-		    $scrn .=  DADA::Template::Widgets::screen(
+		    $scrn =  DADA::Template::Widgets::wrap_screen(
 				{
 					-screen => 'profile_login.tmpl',
+					-with   => 'list', 
 					-vars   => {
 						errors                       => $all_errors,
 						%$named_errs,
@@ -9714,9 +9185,6 @@ sub profile_login {
 					}
 				}
 			);
-		    $scrn .=  list_template(
-				-Part => "footer",
-		    );
 			e_print($scrn);
 		}
     }
@@ -9822,24 +9290,17 @@ sub profile_register {
 			}
 		);
 		my $scrn = '';
-		$scrn .=  list_template(
-			-Part  => "header",
-	        -Title => "Profile Register Confirm",
-	    );
-
 	    require DADA::Template::Widgets;
-	    $scrn .=  DADA::Template::Widgets::screen(
+	    $scrn =  DADA::Template::Widgets::wrap_screen(
 			{
 				-screen => 'profile_register.tmpl',
+				-with   => 'list', 
 				-vars   => {
 
 					'profile.email' => $email,
 				}
 			}
 		);
-	    $scrn .=  list_template(
-			-Part => "footer",
-	    );
 		e_print($scrn);
 
 	}
@@ -9902,23 +9363,15 @@ sub profile_help {
 		return;
 	}
 
-	my $scrn = '';
-	$scrn .=  list_template(
-		-Part  => "header",
-        -Title => "What are $DADA::Config::PROGRAM_NAME Profiles?",
-    );
-
     require DADA::Template::Widgets;
-    $scrn .=  DADA::Template::Widgets::screen(
+    my $scrn =  DADA::Template::Widgets::wrap_screen(
 		{
+			-with   => 'list', 
 			-screen => 'profile_help.tmpl',
 			-vars   => {
 			}
 		}
 	);
-    $scrn .=  list_template(
-		-Part => "footer",
-    );
 	e_print($scrn);
 }
 
@@ -10062,26 +9515,19 @@ sub profile {
 						-updated_email => $updated_email,
 					}
 				);
-
+				
 				my $info = $prof->get({-dotted => 1});
 				my $scrn = '';
-				$scrn .=  list_template(
-					-Part  => "header",
-			        -Title => "Authorization Email Sent",
-			    );
-
 			    require DADA::Template::Widgets;
-			    $scrn .=  DADA::Template::Widgets::screen(
+			    $scrn =  DADA::Template::Widgets::wrap_screen(
 					{
+						-with   => 'list', 
 						-screen => 'profile_update_email_auth_send.tmpl',
 						-vars   => {
 							%$info,
 						}
 					}
 				);
-			    $scrn .=  list_template(
-					-Part => "footer",
-			    );
 				e_print($scrn);
 			}
 			# Oh! We've confirmed?
@@ -10151,17 +9597,11 @@ sub profile {
 			#die Data::Dumper::Dumper($filled);
 
 			my $scrn = '';
-			$scrn .=  list_template(
-				-Part  => "header",
-		        -Title => "Profile",
-				-vars  => {
-							show_profile_widget => 0,
-					  	}
-		    );
 		    require DADA::Template::Widgets;
-		    $scrn .=  DADA::Template::Widgets::screen(
+		    $scrn .=  DADA::Template::Widgets::wrap_screen(
 				{
 					-screen => 'profile_home.tmpl',
+					-with   => 'list', 
 					-vars   => {
 						errors                      => $q->param('errors') || 0,
 						'profile.email'             => $email,
@@ -10186,9 +9626,6 @@ sub profile {
 					}
 				}
 			);
-		    $scrn .=  list_template(
-				-Part => "footer",
-		    );
 			e_print($scrn);
 		}
 	}
@@ -10256,29 +9693,20 @@ sub profile_reset_password {
 			);
 			if($status == 1){
 				if(!$password){
-					my $scrn = '';
-					$scrn .=  list_template(-Part => "header",
-				                   -Title => "Reset Your Profile Password",
-				    );
-
 				    require DADA::Template::Widgets;
-				    $scrn .=  DADA::Template::Widgets::screen(
+				    my $scrn =  DADA::Template::Widgets::wrap_screen(
 						{
 							-screen => 'profile_reset_password.tmpl',
+							-with   => 'list', 
 							-vars   => {
 								email     => $email,
 								auth_code => $auth_code,
 							}
 						}
 					);
-				    $scrn .=  list_template(
-						-Part => "footer",
-				    );
 					e_print($scrn);
 				}
 				else {
-
-
 					# Reset the Password
 					$prof->update(
 						{
@@ -10317,25 +9745,17 @@ sub profile_reset_password {
 
 				$prof->send_profile_reset_password_email();
 				$prof->activate;
-
-				my $scrn = '';
-				$scrn .=  list_template(-Part => "header",
-			                   -Title => "Profile Reset Password Confirm",
-			    );
-
 			    require DADA::Template::Widgets;
-			    $scrn .=  DADA::Template::Widgets::screen(
+			    my $scrn =  DADA::Template::Widgets::wrap_screen(
 					{
 						-screen => 'profile_reset_password_confirm.tmpl',
+						-with   => 'list', 
 						-vars   => {
 							email           => $email,
 							'profile.email' => $email,
 						}
 					}
 				);
-			    $scrn .=  list_template(
-					-Part => "footer",
-			    );
 				e_print($scrn);
 
 			}
@@ -10435,16 +9855,10 @@ sub profile_update_email {
 			# I should probably also just, log this person in...
 
 			require DADA::Template::Widgets;
-		    my $scrn = list_template(
-				-Part  => "header",
-				-Title => "Update Profile Email Results:",
-				-vars       => {
-						show_profile_widget => 0,
-				}
-			);
-			   $scrn .= DADA::Template::Widgets::screen(
+			 my $scrn = DADA::Template::Widgets::wrap_screen(
 					{
 						-screen => 'profile_update_email_confirm.tmpl',
+						-with   => 'list', 
 						-vars   => {
 							auth_code     => $auth_code,
 							subscriptions => $subs,
@@ -10452,26 +9866,19 @@ sub profile_update_email {
 						},
 					}
 				);
-		       $scrn .= list_template(-Part => "footer");
 			   e_print($scrn);
 		}
 	}
 	else {
-
-
-		require DADA::Template::Widgets;
-	    my $scrn = list_template(
-			-Part  => "header",
-			-Title => "Update Profile Email Results:"
-		);
-		   $scrn .= DADA::Template::Widgets::screen(
+		
+		require    DADA::Template::Widgets;
+		my $scrn = DADA::Template::Widgets::wrap_screen(
 				{
 					-screen => 'profile_update_email_error.tmpl',
 					-vars   => {
 					},
 				}
 			);
-	       $scrn .= list_template(-Part => "footer");
 		   e_print($scrn);
 	}
 }
@@ -10479,17 +9886,13 @@ sub profile_update_email {
 
 sub what_is_dada_mail {
 
-
-	my $scrn = '';
-    $scrn .=  list_template(-Part => "header",
-                   		-Title => "What is Dada Mail?",
-    );
-
-
     require DADA::Template::Widgets;
-    $scrn .=  DADA::Template::Widgets::screen({-screen => 'what_is_dada_mail.tmpl'});
-
-    $scrn .=  list_template(-Part => "footer");
+    my $scrn =  DADA::Template::Widgets::wrap_screen(
+		{
+			-screen => 'what_is_dada_mail.tmpl'
+			-with   => 'list', 
+		}
+	);
     e_print($scrn);
 
 }
@@ -10509,10 +9912,7 @@ __END__
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999-2010
-Justin Simoni
-http://justinsimoni.com
-All rights reserved.
+Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

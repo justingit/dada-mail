@@ -8,7 +8,7 @@ $|++;
 #
 # Documentation:
 #  
-#  http://dadamailproject.com/support/documentation/dada_bounce_handler.pl.html
+#  http://dadamailproject.com/d/dada_bounce_handler.pl.html
 #
 #---------------------------------------------------------------------#
 
@@ -46,10 +46,10 @@ use DADA::Template::HTML;
 
 
 my $Plugin_Config = {}; 
-# Also see the Config.pm variable, "$PLUGIN_CONFIGS" to set these plugin variables 
-# in the Config.pm file itself, or, in the outside config file (.dada_config) 
 
-
+# All the below variables can also be set in your .dada_config file, which is 
+# recommended. See the docs for this plugin for more information. 
+#
 # Required!
 # What is the POP3 mail server of the bounce email address? 	
 $Plugin_Config->{Server}   = undef;
@@ -59,7 +59,7 @@ $Plugin_Config->{Server}   = undef;
 $Plugin_Config->{Username} = undef; 
 
 # Required!
-# Password?
+# And the password?
 $Plugin_Config->{Password} = undef;
 
 #---------------------------------------------------------------------#
@@ -133,10 +133,11 @@ my $q = new CGI;
 # But, if you are having trouble saving settings 
 # and are redirected to an 
 # outside page, you may need to set this manually. 
+
 $Plugin_Config->{Plugin_URL} = $q->url; 
 
 # Plugin Name!
-$Plugin_Config->{Program_Name} = 'Mystery Girl'; 
+$Plugin_Config->{Plugin_Name} = 'Mystery Girl'; 
 
 # End of Optional Settings. 
 #---------------------------------------------------------------------#
@@ -1056,7 +1057,7 @@ relaying_denied => {
 
 my $Over_Quota_Subject = "Bounce Handler - warning user over quota";
 my $Over_Quota_Message = qq{
-Hello, This is <!-- tmpl_var Program_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME --> 
+Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME --> 
 
 I received a message and it needs your attention. It seems
 that the user, <!-- tmpl_var subscriber.email --> is over their email quota. 
@@ -1077,14 +1078,14 @@ Below is the nerdy diagnostic report:
 <!-- tmpl_var status_report -->
 -----------------------------------------------------------------------
 
-- <!-- tmpl_var Program_Name -->
+- <!-- tmpl_var Plugin_Name -->
 
 }; 
 
 
 my $User_Unknown_Subject = "Bounce Handler - warning user doesn't exist";
 my $User_Unknown_Message = qq{
-Hello, This is <!-- tmpl_var Program_Name -->, the bounce handler for <!-- tmpl_var ROGRAM_NAME -->
+Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var ROGRAM_NAME -->
 
 I received a message and it needs your attention. It seems
 that the user, <!-- tmpl_var subscriber.email --> doesn't exist, was deleted 
@@ -1106,13 +1107,13 @@ Below is the nerdy diagnostic report:
 <!-- tmpl_var status_report -->
 -----------------------------------------------------------------------
 
-- <!-- tmpl_var Program_Name -->
+- <!-- tmpl_var Plugin_Name -->
 
 }; 
 
 my $Email_Not_Found_Subject = "Bounce Handler - warning";
 my $Email_Not_Found_Message = qq{
-Hello, This is <!-- tmpl_var Program_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
+Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
 
 I received a message and it needs your attention. The message was
 bounced, but I cannot find the email associated with the bounce. 
@@ -1130,14 +1131,14 @@ Below is the nerdy diagnostic report:
 <!-- tmpl_var status_report -->
 -----------------------------------------------------------------------
 
-- <!-- tmpl_var Program_Name -->
+- <!-- tmpl_var Plugin_Name -->
 
 }; 
 
 
 my $Email_Unknown_Bounce_Type_Subject = "Bounce Handler - warning";
 my $Email_Unknown_Bounce_Type_Message = qq{
-Hello, This is <!-- tmpl_var Program_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
+Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
 
 I received a message and it needs your attention. The message was
 bounced, but I dont know for what reason.
@@ -1160,7 +1161,7 @@ Below is the nerdy diagnostic report:
 
 -----------------------------------------------------------------------
 
-- <!-- tmpl_var Program_Name -->
+- <!-- tmpl_var Plugin_Name -->
 
 }; 
 
@@ -1344,6 +1345,7 @@ sub cgi_main {
         'cgi_scorecard'           => \&cgi_scorecard, 
         'cgi_bounce_score_search' => \&cgi_bounce_score_search, 
         'cgi_show_plugin_config'  => \&cgi_show_plugin_config,
+		'ajax_parse_bounces_results' => \&ajax_parse_bounces_results, 
         ); 
         
         if(exists($Mode{$flavor})) { 
@@ -1359,81 +1361,151 @@ sub cgi_main {
 
 sub cgi_default { 
 
-	my $ls   = DADA::MailingList::Settings->new({-list => $list}); 
-	my $li   = $ls->get(); 
-	
-	my $tmpl = default_cgi_template(); 	                
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get();
 
-	my @amount = (1,2,3,4,5,6,7,8,9,10,25,50,100,150,200,
-	              250,300,350, 400,450,
-	              500,550,600,650,700,
-	              750,800,850,900,950,1000
-	             );
-	
-	my $curl_location = `which curl`; 
-	   $curl_location = strip(make_safer($curl_location)); 
-	
-	my $parse_amount_widget = $q->popup_menu(-name      => 'parse_amount',
-											 -id        => 'parse_amount', 
-											 '-values'  => [@amount], 
-											 -default   => $Plugin_Config->{MessagesAtOnce}, 
-											 -label     => '', 
-											 ); 
+    my $tmpl = default_cgi_template();
 
-    my $plugin_configured = 1; 
-	if(
-		! defined($Plugin_Config->{Server})   ||
-	    ! defined($Plugin_Config->{Username}) ||
-		! defined($Plugin_Config->{Password})
-	
-	){ 
-		$plugin_configured = 0; 
-	}
+    my @amount = (
+        1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  25,  50,
+        100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650,
+        700, 750, 800, 850, 900, 950, 1000
+    );
+
+    my $curl_location = `which curl`;
+    $curl_location = strip( make_safer($curl_location) );
+
+    my $parse_amount_widget = $q->popup_menu(
+        -name     => 'parse_amount',
+        -id       => 'parse_amount',
+        '-values' => [@amount],
+        -default  => $Plugin_Config->{MessagesAtOnce},
+        -label    => '',
+    );
+
+    my $plugin_configured = 1;
+    if (
+           !defined( $Plugin_Config->{Server} )
+        || !defined( $Plugin_Config->{Username} )
+        || !defined( $Plugin_Config->{Password} )
+
+      )
+    {
+        $plugin_configured = 0;
+    }
 											 
-	print(admin_template_header(
-							-Title      => "Bounce Handling",
-		                    -List       => $list,
-		                    -Form       => 0,
-		                    -Root_Login => $root_login,
-		                    ));
-
 	require DADA::Template::Widgets; 
-	print DADA::Template::Widgets::screen(
+	my $scrn = DADA::Template::Widgets::wrap_screen(
 						{ 
 							-data => \$tmpl, 
+							-with           => 'admin', 
+							-wrapper_params => { 
+								-Root_Login => $root_login,
+								-List       => $list,  
+							},
 							-vars => { 
-									plugin_configured  => $plugin_configured, 
-				 					Username            => $Plugin_Config->{Username} ? $Plugin_Config->{Username} : "<span class=\"error\">Not Set!</span>",
-									Server              => $Plugin_Config->{Server}   ? $Plugin_Config->{Server}   : "<span class=\"error\">Not Set!</span>",
-									Plugin_URL          => $Plugin_Config->{Plugin_URL}, 
-									parse_amount_widget => $parse_amount_widget, 
-									send_via_smtp       => $li->{send_via_smtp}, 
-									add_sendmail_f_flag => $li->{add_sendmail_f_flag},
-									print_return_path_header => $li->{print_return_path_header}, 
-									set_smtp_sender          => $li->{set_smtp_sender}, 
-									admin_email              => $li->{admin_email},,
-									list_owner_email         => $li->{list_owner_email}, 
-									MAIL_SETTINGS            => $DADA::Config::MAIL_SETTINGS, 
-						
-						
+									MAIL_SETTINGS             => $DADA::Config::MAIL_SETTINGS, 						
+				 					Username                  => $Plugin_Config->{Username},
+									Server                    => $Plugin_Config->{Server},
+									Plugin_URL                => $Plugin_Config->{Plugin_URL}, 
 									Default_Soft_Bounce_Score => $Plugin_Config->{Default_Soft_Bounce_Score},
 									Default_Hard_Bounce_Score => $Plugin_Config->{Default_Hard_Bounce_Score},
-									Score_Threshold           =>  $Plugin_Config->{Score_Threshold},
-						
-									Program_Name       => $Plugin_Config->{Program_Name},
-					
-								    Allow_Manual_Run          =>  $Plugin_Config->{Allow_Manual_Run},
-								    Manual_Run_Passcode       =>  $Plugin_Config->{Manual_Run_Passcode},
-					
+									Score_Threshold           => $Plugin_Config->{Score_Threshold},
+									Plugin_Name              => $Plugin_Config->{Plugin_Name},
+								    Allow_Manual_Run          => $Plugin_Config->{Allow_Manual_Run},
+								    Manual_Run_Passcode       => $Plugin_Config->{Manual_Run_Passcode},
 									curl_location             => $curl_location, 
-								}
+									plugin_configured         => $plugin_configured, 
+									parse_amount_widget       => $parse_amount_widget, 
+								},
+								-list_settings_vars_param => {
+				                    -list   => $list,
+				                    -dot_it => 1,
+				                },
 						}
 					);
-	                
-	                    
-	print admin_template_footer(-Form    => 0, 
-							-List    => $list,
-						    ); 
+	e_print($scrn);
+}
+
+
+sub ajax_parse_bounces_results {
+
+    if ( $q->param('bounce_test') ) {
+        $test = $q->param('bounce_test');
+    }
+
+    if ( defined( xss_filter( $q->param('parse_amount') ) ) ) {
+        $Plugin_Config->{MessagesAtOnce} =
+          xss_filter( $q->param('parse_amount') );
+    }
+
+    $verbose = 1;
+
+    print $q->header();
+    print '<pre>';     # Do not like.
+    cl_main();
+    print '</pre>';    # Do not like.
+
+}
+
+sub cgi_parse_bounce_template { 
+	
+	return q{ 
+		
+		<!-- tmpl_set name="title" value="Parsing Bounces..." --> 
+		
+			<script type="text/javascript">
+			    //<![CDATA[
+				Event.observe(window, 'load', function() {
+				  parse_bounces();				
+				});
+				
+				 function parse_bounces(){ 
+
+					new Ajax.Updater(
+						'parse_bounce_results', '<!-- tmpl_var Plugin_URL -->', 
+						{ 
+						    method: 'post', 
+							parameters: {
+								parse_amount: $F('parse_amount'),
+								bounce_test:  $F('bounce_test'),
+								flavor:       'ajax_parse_bounces_results'
+								
+							},
+						onCreate: 	 function() {
+							Form.Element.setValue('parse_bounces_button', 'Parsing...');
+							$('parse_bounce_results').hide();
+							$('parse_bounce_results_loading').show();
+						},
+						onComplete: 	 function() {
+
+							$('parse_bounce_results_loading').hide();
+							Effect.BlindDown('parse_bounce_results');
+							Form.Element.setValue('parse_bounces_button', 'Parse Bounces');
+						}	
+						});
+				}
+			    //]]>
+			</script>
+	
+	   <p id="breadcrumbs">
+	        <a href="<!-- tmpl_var Plugin_URL -->">
+			 <!-- tmpl_var Plugin_Name -->
+		</a> &#187; Parsing Bounces
+	   </p>
+	<form name="some_form" id="some_form"> 
+		<input type="hidden" id="parse_amount"  name="parse_amount"  value="<!-- tmpl_if parse_amount --><!-- tmpl_var parse_amount --><!-- tmpl_else --><!-- tmpl_var MessagesAtOnce --><!-- /tmpl_if -->" /> 
+		<input type="hidden" id="bounce_test"   name="bounce_test"   value="<!-- tmpl_if bounce_test --><!-- tmpl_var bounce_test --><!-- tmpl_else --><!-- /tmpl_if -->" />
+		<input type="button" value="Parse Bounces" id="parse_bounces_button" class="processing" onClick="parse_bounces();" /> 
+	</form>
+	
+		<div id="parse_bounce_results_loading" style="display:none;"> 
+			<p class="alert">Loading...</p>
+		</div> 
+		<div id="parse_bounce_results"> 			
+		</div> 
+			
+	};
 }
 
 
@@ -1441,39 +1513,28 @@ sub cgi_default {
 
 sub cgi_parse_bounce { 
 
-	print(admin_template_header(
-							-Title      => "Parsing Bounces...",
-		                    -List       => $list,
-		                    -Form       => 0,
-		                    -Root_Login => $root_login
-		                    ));
-		                    
-	$test = $q->param('test')
-		if $q->param('test'); 
+	my $tmpl = cgi_parse_bounce_template(); 
+	require DADA::Template::Widgets; 
+	my $scrn = DADA::Template::Widgets::wrap_screen(
+		{ 
+			-data => \$tmpl, 
+			-with => 'admin', 
+			-wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+			
+			-vars => {
+				parse_amount   => xss_filter($q->param('parse_amount')), 
+				bounce_test    => xss_filter($q->param('bounce_test')),
+				Plugin_Name   => $Plugin_Config->{Plugin_Name}, 
+				Plugin_URL     => $Plugin_Config->{Plugin_URL}, 
+				MessagesAtOnce => $Plugin_Config->{MessagesAtOnce}, 
+			}, 
+		}
+	); 
+	e_print($scrn); 
 	
-	if(defined(xss_filter($q->param('parse_amount')))){
-		$Plugin_Config->{MessagesAtOnce} = xss_filter($q->param('parse_amount'));
-	}
-		
-	$verbose  = 1;
-	
-	    print '
-     <p id="breadcrumbs">
-        <a href="'  .  $Plugin_Config->{Plugin_URL} . '">
-            ' . $Plugin_Config->{Program_Name} .'
-        </a> &#187; Parsing Bounces</p>'; 
-        
-	
-	
-	print '<pre>';
-	cl_main();
-	print '</pre>';
-
-	print '<p><a href="' . $Plugin_Config->{Plugin_URL} . '">Back...</a></p>';
-	
-	print admin_template_footer(-Form    => 0, 
-							-List    => $list,
-						    ); 
 }
 
 
@@ -1538,15 +1599,14 @@ sub cgi_scorecard {
 	    loop_context_vars  => 1, 
 	    
 	);
-	   $template->param(
-	        Plugin_URL => $Plugin_Config->{Plugin_URL}
-	   ); 										
+   $template->param(
+        Plugin_URL => $Plugin_Config->{Plugin_URL}
+   ); 										
     
     my $get_data_sub = sub { 
         my ($offset, $rows) = @_;
         return $bsk->raw_scorecard($offset, $rows); 
     }; 
-    
     my $num_rows = $bsk->num_scorecard_rows;   
     
     my $pager = undef; 
@@ -1568,85 +1628,89 @@ sub cgi_scorecard {
             # cell_space_color => '#000000',    
             # cell_background_color => '#ffffff',
             # nav_background_color => '#dddddd',
-            # javascript_presubmit => 'last_minute_javascript()',
-            
-            
+            # javascript_presubmit => 'last_minute_javascript()'  
             # debug => 1,
         );
-    
     }
+
+	my $tmpl = cgi_scorecode_tmpl(); 
+	
+	require DADA::Template::Widgets; 
+	my $scrn = DADA::Template::Widgets::wrap_screen(
+		{ 
+			-data => \$tmpl, 
+			-with => 'admin', 
+			-wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+			-vars => { 
+				Plugin_URL => $Plugin_Config->{Plugin_URL}, 
+				Plugin_Name => $Plugin_Config->{Plugin_Name},
+				num_rows => $num_rows,
+				(($num_rows >= 1) ? (
+				scorecard => $pager->output,) : ()), 
+			}
+		}
+	); 
+	e_print($scrn); 
     
-    print(admin_template_header(
-                            -Title      => "Bounce Scorecard",
-                            -List       => $list,
-                            -Form       => 0,
-                            -Root_Login => $root_login
-                            ));
-    
-    print '
-     <p id="breadcrumbs">
-        <a href="'  .  $Plugin_Config->{Plugin_URL} . '">
-            ' . $Plugin_Config->{Program_Name} .'
-        </a> &#187; Scorecard</p>'; 
-        
-    
-    
-    if($num_rows >= 1) { 
-    
-        print $pager->output;
-    	
-	}
-	else { 
-	    print '<p class="error">Currently, there are no bounced addresses saved in the scorecard.</p>'; 
-	    
-	}
-	print admin_template_footer(-Form    => 0, 
-							-List    => $list,
-						    ); 
+}
+
+sub cgi_scorecode_tmpl {
+	
+return <<EOF
+
+<!-- tmpl_set name="title" value="Bounce Scorecard" -->
+
+<p id="breadcrumbs">
+    <a href="<!-- tmpl_var Plugin_URL -->">
+        <!-- tmpl_var Plugin_Name -->
+    </a> &#187; Scorecard
+</p>
+<!-- tmpl_if num_rows --> 
+	<!-- tmpl_var scorecard --> 
+<!-- tmpl_else --> 
+	<p class="error">
+	 Currently, there are no bounced addresses saved in the scorecard.
+</p>
+<!-- /tmpl_if --> 
+
+EOF
+; 
 }
 
 
+sub cgi_show_plugin_config {
 
-sub cgi_show_plugin_config { 
-
-
-     	print(admin_template_header(
-							-Title      => $Plugin_Config->{Program_Name} . " Plugin Configuration",
-		                    -List       => $list,
-		                    -Form       => 0,
-		                    -Root_Login => $root_login
-		                    ));
-	
-	my $tmpl = cgi_show_plugin_config_template(); 
-	my $template = HTML::Template->new(%Global_Template_Options,
-									   scalarref => \$tmpl, 
-											);
-    
-    my $configs = []; 
-    foreach(sort keys %$Plugin_Config){ 
-        if($_ eq 'Password'){ 
-            push(@$configs, {name => $_, value => '(Not Shown)'});
+    my $configs = [];
+    for ( sort keys %$Plugin_Config ) {
+        if ( $_ eq 'Password' ) {
+            push( @$configs, { name => $_, value => '(Not Shown)' } );
         }
-        else { 
-            push(@$configs, {name => $_, value => $Plugin_Config->{$_}}); 
+        else {
+            push( @$configs, { name => $_, value => $Plugin_Config->{$_} } );
         }
     }
-    $template->param( 
-    
-        Plugin_URL            => $Plugin_Config->{Plugin_URL}, 
-        Program_Name => $Plugin_Config->{Program_Name}, 
-        configs             => $configs, 
-     
+
+    require DADA::Template::Widgets;
+    my $tmpl = cgi_show_plugin_config_template();
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -data           => \$tmpl,
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+            -vars => {
+                Plugin_URL   => $Plugin_Config->{Plugin_URL},
+                Plugin_Name => $Plugin_Config->{Plugin_Name},
+                configs      => $configs,
+            },
+        }
     );
-	                
-	print $template->output();
-
-    print admin_template_footer(-Form    => 0, 
-                                -List    => $list,
-                                ); 
-
-
-
+	e_print($scrn); 
 }
 
 
@@ -1657,10 +1721,11 @@ sub cgi_show_plugin_config_template {
     return q{ 
     
     
-    
+    <!-- tmpl_set name="title" value="Plugin Configuration" --> 
+
   <p id="breadcrumbs">
    <a href="<!-- tmpl_var Plugin_URL -->"> 
-   <!-- tmpl_var Program_Name --> 
+   <!-- tmpl_var Plugin_Name --> 
    </a> 
    
    &#187;
@@ -1670,10 +1735,7 @@ sub cgi_show_plugin_config_template {
    
    
   </p> 
- 
- 
- 
- 
+
         <table> 
         
         <!-- tmpl_loop configs --> 
@@ -1696,164 +1758,161 @@ sub cgi_show_plugin_config_template {
         <!-- /tmpl_loop --> 
  
         </table> 
-        
-    };
-
+     
+};
 
 }
 
 
 
 
-sub cgi_bounce_score_search { 
-
+sub cgi_bounce_score_search {
 
     #TODO DEV: THIS NEEDS ITS OWN METHOD!!!
-    my %l_label; 
-    my @l_lists = available_lists(); 
-    
-    foreach my $l_list( @l_lists ){
-			my $l_ls = DADA::MailingList::Settings->new({-list => $l_list}); 
-			my $l_li = $l_ls->get; 
-			$l_label{$l_list} = $l_li->{list_name}; 
-			
-	}
-	
-	require HTML::Template;
-	
-    require   DADA::App::BounceScoreKeeper; 
-    my $bsk = DADA::App::BounceScoreKeeper->new(-List => $list); 
-   
-    require DADA::App::LogSearch; 
-    
-    my $query = xss_filter($q->param('query')); 
+    my %l_label;
+    my @l_lists = available_lists();
 
-    my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
-    my $ls = DADA::MailingList::Settings->new({-list => $list});
-    my $li = $ls->get; 
-    
-    my $valid_email        = 0; 
-    my $subscribed_address = 0; 
-    if(DADA::App::Guts::check_for_valid_email($query) == 0) {
-        $valid_email = 1; 
-        if( $lh->check_for_double_email(-Email => $query) == 1){ 
-            $subscribed_address = 1; 
+    for my $l_list (@l_lists) {
+        my $l_ls = DADA::MailingList::Settings->new( { -list => $l_list } );
+        my $l_li = $l_ls->get;
+        $l_label{$l_list} = $l_li->{list_name};
+
+    }
+
+    require HTML::Template;
+
+    require DADA::App::BounceScoreKeeper;
+    my $bsk = DADA::App::BounceScoreKeeper->new( -List => $list );
+
+    require DADA::App::LogSearch;
+
+    my $query = xss_filter( $q->param('query') );
+
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get;
+
+    my $valid_email        = 0;
+    my $subscribed_address = 0;
+    if ( DADA::App::Guts::check_for_valid_email($query) == 0 ) {
+        $valid_email = 1;
+        if ( $lh->check_for_double_email( -Email => $query ) == 1 ) {
+            $subscribed_address = 1;
         }
     }
-       
 
-    if(!defined($query)){ 
-        $q->redirect(-uri =>  $Plugin_Config->{Plugin_URL} . '?flavor=cgi_scorecard');
+    if ( !defined($query) ) {
+        $q->redirect(
+            -uri => $Plugin_Config->{Plugin_URL} . '?flavor=cgi_scorecard' );
         return;
     }
-  
-    
-    my $searcher = DADA::App::LogSearch->new; 
-    my $results  = $searcher->search({
-        -query => $query,
-        -files => [$Plugin_Config->{Log}], 
-    });
-    
-    my $search_results = []; 
-    my $results_found  = 0;
-    
 
-    if($results->{$Plugin_Config->{Log}}->[0]){ 
-    
-        $results_found = 1; 
-        
-        foreach my $l(@{$results->{$Plugin_Config->{Log}}}){ 
-        
-            my @entries = split("\t", $l, 5); # Limit of 5
-            
+    my $searcher = DADA::App::LogSearch->new;
+    my $results  = $searcher->search(
+        {
+            -query => $query,
+            -files => [ $Plugin_Config->{Log} ],
+        }
+    );
+
+    my $search_results = [];
+    my $results_found  = 0;
+
+    if ( $results->{ $Plugin_Config->{Log} }->[0] ) {
+
+        $results_found = 1;
+
+        for my $l ( @{ $results->{ $Plugin_Config->{Log} } } ) {
+
+            my @entries = split( "\t", $l, 5 );    # Limit of 5
+
             # Let us try to munge the data!
-            
+
             # Date!
             $entries[0] =~ s/^\[|\]$//g;
-            $entries[0] = $searcher->html_highlight_line({-query => $query, -line => $entries[0] }); 
-            
+            $entries[0] = $searcher->html_highlight_line(
+                { -query => $query, -line => $entries[0] } );
+
             # ListShortName!
-            $entries[1] = $searcher->html_highlight_line({-query => $query, -line => $entries[1] }); 
-            
-            # Action Taken! 
-            $entries[2] = $searcher->html_highlight_line({-query => $query, -line => $entries[2] }); 
-          
-            # Email Address! 
-            $entries[3] = $searcher->html_highlight_line({-query => $query, -line => $entries[3] }); 
-            
-            
-            my @diags        = split(",", $entries[4]); 
+            $entries[1] = $searcher->html_highlight_line(
+                { -query => $query, -line => $entries[1] } );
+
+            # Action Taken!
+            $entries[2] = $searcher->html_highlight_line(
+                { -query => $query, -line => $entries[2] } );
+
+            # Email Address!
+            $entries[3] = $searcher->html_highlight_line(
+                { -query => $query, -line => $entries[3] } );
+
+            my @diags = split( ",", $entries[4] );
             my $labeled_digs = [];
-            
-            foreach my $diag(@diags) { 
-                my ($label, $value) = split(":", $diag); 
-                
-                push(@$labeled_digs, 
+
+            for my $diag (@diags) {
+                my ( $label, $value ) = split( ":", $diag );
+
+                push(
+                    @$labeled_digs,
                     {
-                        diagnostic_label => $searcher->html_highlight_line({-query => $query, -line => $label }), 
-                        diagnostic_value => $searcher->html_highlight_line({-query => $query, -line => $value }), 
-                       
+                        diagnostic_label => $searcher->html_highlight_line(
+                            { -query => $query, -line => $label }
+                        ),
+                        diagnostic_value => $searcher->html_highlight_line(
+                            { -query => $query, -line => $value }
+                        ),
+
                     }
-                ); 
-            
+                );
+
             }
-            
-            push(@$search_results, 
-                { 
-                date        => $entries[0], 
-                list        => $entries[1],
-                list_name   => $l_label{ $entries[1] },
-                action      => $entries[2], 
-                email       => $entries[3], 
-                
-                diagnostics =>  $labeled_digs, 
-                
-                
+
+            push(
+                @$search_results,
+                {
+                    date      => $entries[0],
+                    list      => $entries[1],
+                    list_name => $l_label{ $entries[1] },
+                    action    => $entries[2],
+                    email     => $entries[3],
+
+                    diagnostics => $labeled_digs,
+
                 }
             );
 
         }
     }
-    else { 
-        
-        $results_found = 0; 
-    
+    else {
+
+        $results_found = 0;
+
     }
-   
-       
-       
-  	print(admin_template_header(
-							-Title      => "Bounce Log Search Results",
-		                    -List       => $list,
-		                    -Form       => 0,
-		                    -Root_Login => $root_login
-		                    ));
-	
-	my $tmpl = cgi_bounce_score_search_template(); 
-	my $template = HTML::Template->new(%Global_Template_Options,
-									   scalarref => \$tmpl, 
-											);
-    $template->param( 
-        query               => $query, 
-        list_name           => $li->{list_name}, 
-        subscribed_address  => $subscribed_address, 
-        valid_email         => $valid_email, 
-        search_results      => $search_results, 
-        results_found       => $results_found,     
-        
-        S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL, 
-        Plugin_URL            => $Plugin_Config->{Plugin_URL}, 
-        Program_Name => $Plugin_Config->{Program_Name},
+
+    my $tmpl = cgi_bounce_score_search_template();
+
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::screen(
+        -data           => \$tmpl,
+        -with           => 'admin',
+        -wrapper_params => {
+            -Root_Login => $root_login,
+            -List       => $list,
+        },
+        -vars => {
+            query              => $query,
+            list_name          => $li->{list_name},
+            subscribed_address => $subscribed_address,
+            valid_email        => $valid_email,
+            search_results     => $search_results,
+            results_found      => $results_found,
+
+            S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL,
+            Plugin_URL    => $Plugin_Config->{Plugin_URL},
+            Plugin_Name  => $Plugin_Config->{Plugin_Name},
+          }
+
     );
-	                
-	print $template->output();
-
-
-
-    print admin_template_footer(-Form    => 0, 
-                                -List    => $list,
-                                ); 
-    
+    e_print($scrn);
 }
 
 
@@ -1861,15 +1920,13 @@ sub cgi_bounce_score_search {
 
 sub cgi_bounce_score_search_template { 
 
-
-  
-
 my $template = q{
 
-
+	<!-- tmpl_set name="title" value="Bounce Log Search Results" --> 
+	
   <p id="breadcrumbs">
    <a href="<!-- tmpl_var Plugin_URL -->"> 
-   <!-- tmpl_var Program_Name --> 
+   <!-- tmpl_var Plugin_Name --> 
    </a> 
    
    &#187;
@@ -2033,6 +2090,8 @@ sub cl_main {
 	            return;
 	    }
 	
+	print "Testing is enabled.\n\n"
+		if $test; 
 	print "Making POP3 Connection...\n" 
 	    if $verbose; 
 	
@@ -2076,10 +2135,10 @@ sub cl_main {
     else { 
     
         MSGCHECK:
-        foreach my $msg_info(@List){ 
+        for my $msg_info(@List){ 
          
         my ($msgnum, $msgsize) = split('\s+', $msg_info);
-        #foreach my $msgnum (sort { $a <=> $b } keys %$msgnums) {
+        #for my $msgnum (sort { $a <=> $b } keys %$msgnums) {
                     
             my $delete = undef; 
             
@@ -2132,7 +2191,7 @@ sub cl_main {
         } 
         
         if(! $debug){ 
-        	foreach(@delete_list){ 
+        	for(@delete_list){ 
 	
 	            print "deleting message #: $_\n" 
 					if $verbose;
@@ -2190,7 +2249,7 @@ sub init {
 	# init a hashref of hashrefs
 	# for unsub optimization 
 	my @a_Lists = DADA::App::Guts::available_lists(); 
- 	foreach(@a_Lists){ 
+ 	for(@a_Lists){ 
  		$Remove_List->{$_} = {}; 
  	}
  	
@@ -2461,7 +2520,7 @@ sub bounce_from_me(){
 	my $bh = $entity->head->get('X-BounceHandler', 0);
 	$bh =~ s/\n//g; 
 	$bh = trim($bh); 
-	$bh eq $Plugin_Config->{Program_Name} ? return 1 : return 0; 
+	$bh eq $Plugin_Config->{Plugin_Name} ? return 1 : return 0; 
 }
 
 
@@ -2475,14 +2534,14 @@ sub carry_out_rule {
     my $report = ''; 
     
 	my $i = 0;
-	foreach my $rule(@$Rules){ 
+	for my $rule(@$Rules){ 
 		if((keys %$rule)[0] eq $title){ 
 			$actions = $Rules->[$i]->{$title}->{Action}; # wooo that was fun.
 		}
 		$i++;
 	}	
 	
-	foreach my $action(keys %$actions){ 
+	for my $action(keys %$actions){ 
 	
 		if($action eq 'add_to_score'){ 
 		  $report .= add_to_score($list, $email, $diagnostics, $actions->{$action}); 
@@ -2548,7 +2607,7 @@ sub unsubscribe_bounced_email {
 	
 	$report .= "\n";
 	
-	foreach(@delete_list){ 
+	for(@delete_list){ 
 		$Remove_List->{$_}->{$email} = 1;
 		$report .="$email to be deleted off of: '$_'\n";
 	} 
@@ -2582,7 +2641,7 @@ sub mail_list_owner {
 		$Subject = $Email_Unknown_Bounce_Type_Subject; 	
 		$Body    = $Email_Unknown_Bounce_Type_Message; 		
 	}else{ 
-		warn "There's been a misconfiguration somewhere, $Plugin_Config->{Program_Name} is about to die..., ";
+		warn "There's been a misconfiguration somewhere, $Plugin_Config->{Plugin_Name} is about to die..., ";
 		warn "AARRGGGGH!";
 	}
 	
@@ -2657,8 +2716,8 @@ sub mail_list_owner {
 		                            {
 										report         => $report, 
 										status_report  => $status_report, 
-										Program_Name   => $Plugin_Config->{Program_Name},
-										Plugin_Name    => $Plugin_Config->{Program_Name},
+										Plugin_Name   => $Plugin_Config->{Plugin_Name},
+										Plugin_Name    => $Plugin_Config->{Plugin_Name},
 		                            },
 		                    }
 		                );
@@ -2670,7 +2729,7 @@ sub mail_list_owner {
 		   $mh->send(
 				  # Trust me on these :) 
 				  $mh->return_headers($header_str),
-				  'X-BounceHandler' => $Plugin_Config->{Program_Name},
+				  'X-BounceHandler' => $Plugin_Config->{Plugin_Name},
 				  To                => $to, 
 				  Body => $body_str,
 				  
@@ -2715,7 +2774,7 @@ sub generate_nerd_report {
 	my ($list, $email, $diagnostics) = @_;
 	my $report; 
 	$report = "List: $list\nEmail: $email\n\n"; 
-	foreach(keys %$diagnostics){ 
+	for(keys %$diagnostics){ 
 		$report .= "$_: " . $diagnostics->{$_} . "\n"; 
 	}	
 	
@@ -2747,7 +2806,7 @@ sub find_rule_to_use {
 		my %ThingsToMatch; 
 		
 		
-		foreach my $m_field(keys %$message_fields){ 
+		for my $m_field(keys %$message_fields){ 
 			my $is_regex   = 0; 
 			my $real_field = $m_field; 
 			$ThingsToMatch{$m_field} = 0; 
@@ -2758,7 +2817,7 @@ sub find_rule_to_use {
 				$real_field =~ s/_regex$//;  
 			}
 			
-			MESSAGEFIELD: foreach my $pos_match(@{$message_fields->{$m_field}}){ 
+			MESSAGEFIELD: for my $pos_match(@{$message_fields->{$m_field}}){ 
 				if($is_regex == 1){ 
 					if($diagnostics->{$real_field} =~ m/$pos_match/){ 	
 						$ThingsToMatch{$m_field} = 1;
@@ -2779,7 +2838,7 @@ sub find_rule_to_use {
 		# If we miss one, the rule doesn't work, 
 		# All or nothin', just like life. 
 		
-		foreach(keys %ThingsToMatch){ 
+		for(keys %ThingsToMatch){ 
 			if($ThingsToMatch{$_} == 0){
 				next RULES; 
 			}
@@ -2873,7 +2932,7 @@ sub get_orig_headers {
 	my $entity = shift; 
 	my $diag = {}; 
 	
-	foreach('From', 'To', 'Subject'){ 
+	for('From', 'To', 'Subject'){ 
 
 		if ($entity->head->count($_)){ 
 	
@@ -2907,7 +2966,7 @@ sub find_delivery_status {
 		} 
 	}else{ 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			($email, $diag) = find_delivery_status($part); 
 			if(($email) && (keys %$diag)){ 
@@ -2958,7 +3017,7 @@ sub find_list_in_list_headers {
 		return $list;
 	}else{ 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			$list = find_list_in_list_headers($part);  
 			return $list if $list;
@@ -2981,7 +3040,7 @@ sub find_message_id_in_headers {
 		return $m_id;
 	}else{ 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			$m_id = find_message_id_in_headers($part);  
 			return $m_id if $m_id;
@@ -3069,7 +3128,7 @@ sub generic_delivery_status_parse {
 			}
 			$email = $remail; 
 			
-		foreach(keys %$diag){ 
+		for(keys %$diag){ 
 			$diag->{$_} = DADA::App::Guts::strip($diag->{$_}); 
 		}
 		
@@ -3090,7 +3149,7 @@ sub generic_body_parse_for_list {
 		return $list if $list; 
 	}else{ 
 		my $i; 
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			$list = generic_body_parse_for_list($part);
 			if($list){ 
@@ -3263,7 +3322,7 @@ sub parse_for_qmail {
 		}
 	}else{ 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			($list, $email, $diag) = parse_for_qmail($part); 
 			if(($email) && (keys %$diag)){ 
@@ -3384,7 +3443,7 @@ sub parse_for_f__king_exchange {
 		return ($list, $email, $diag);
 	}else{ 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			($list, $email, $diag) = parse_for_f__king_exchange($part); 
 			if(($email) && (keys %$diag)){ 
@@ -3443,7 +3502,7 @@ sub parse_for_novell { #like, really...
 	}else{ 
 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			($list, $email, $diag) = parse_for_novell($part); 
 			if(($email) && (keys %$diag)){ 
@@ -3499,7 +3558,7 @@ sub parse_for_gordano { # what... ever that is there...
 		return ($list, $email, $diag);
 	}else{ 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			($list, $email, $diag) = parse_for_gordano($part); 
 			if(($email) && (keys %$diag)){ 
@@ -3552,7 +3611,7 @@ sub parse_for_overquota_yahoo {
 	}else{ 
 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			($list, $email, $diag) = parse_for_overquota_yahoo($part); 
 			if(($email) && (keys %$diag)){ 
@@ -3601,7 +3660,7 @@ sub parse_for_earthlink {
 	}else{ 
 
 		my $i;
-		foreach $i (0 .. $#parts) {
+		for $i (0 .. $#parts) {
 	    	my $part = $parts[$i];
 			($list, $email, $diag) = parse_for_earthlink($part); 
 			if(($email) && (keys %$diag)){ 
@@ -3719,7 +3778,7 @@ sub parse_using_m_ds_bp {
 
 #sub carry_out_all_rules { 
 #	my $array_ref = shift; 
-#	foreach my $dead(@$Rules_To_Carry_Out){
+#	for my $dead(@$Rules_To_Carry_Out){
 #		 carry_out_rule(@$dead); #hope this works
 #	}
 #
@@ -3738,7 +3797,7 @@ sub save_scores {
         
         my @delete_list = DADA::App::Guts::available_lists(); 
 
-        foreach my $d_list(@delete_list){ 
+        for my $d_list(@delete_list){ 
         
 			print "\nWorking on list: $list\n"
 			 if $verbose; 
@@ -3750,7 +3809,7 @@ sub save_scores {
             
             my $lh = DADA::MailingList::Subscribers->new({-list => $d_list}); 
             
-            foreach my $bouncing_email(keys %$list_scores){ 
+            for my $bouncing_email(keys %$list_scores){ 
 	
 			#	print "Examining: $bouncing_email\n"
 			#		if $verbose; 
@@ -3773,7 +3832,7 @@ sub save_scores {
             if(keys %$give_back_scores){ 
                 print "\nScore Totals for $d_list:\n\n"
                     if $verbose; 
-                foreach(keys %$give_back_scores){ 
+                for(keys %$give_back_scores){ 
                 print "\tEmail: $_ total score: " . $give_back_scores->{$_} . "\n"
                     if $verbose; 
                 }
@@ -3784,7 +3843,7 @@ sub save_scores {
 			print "Addresses to be removed:\n" . '-' x 72 . "\n"
 				if $verbose; 
 				
-            foreach my $bad_email(@$removal_list){
+            for my $bad_email(@$removal_list){
                     $Remove_List->{$d_list}->{$bad_email} = 1;
                     print "\t$bad_email\n" 
                         if $verbose;
@@ -3815,7 +3874,7 @@ sub remove_bounces {
     print "Removing addresses from all lists:\n" . '-' x 72 . "\n"
       if $verbose;
 
-    foreach my $list ( keys %$report ) {
+    for my $list ( keys %$report ) {
 
         print "\nList: $list\n"
           if $verbose;
@@ -3826,7 +3885,7 @@ sub remove_bounces {
 
         my @remove_list = keys %{ $report->{$list} };
 
-        foreach (@remove_list) {
+        for (@remove_list) {
             $lh->remove_subscriber( { -email => $_, } );
             print "Removing: $_\n"
               if $verbose;
@@ -3835,7 +3894,7 @@ sub remove_bounces {
         if (   ( $li->{black_list} == 1 )
             && ( $li->{add_unsubs_to_black_list} == 1 ) )
         {
-            foreach my $re (@remove_list) {
+            for my $re (@remove_list) {
                 $lh->add_subscriber(
                     {
                         -email => $re,
@@ -3874,7 +3933,7 @@ sub remove_bounces {
 
             my $aa = 0;
 
-            foreach my $d_email (@remove_list) {
+            for my $d_email (@remove_list) {
 
                 DADA::App::Messages::send_owner_happenings(
                     {
@@ -3903,7 +3962,7 @@ sub remove_bounces {
                             -subscriber_vars =>
                               { 'subscriber.email' => $d_email, },
                             -vars => {
-                                Plugin_Name => $Plugin_Config->{Program_Name},
+                                Plugin_Name => $Plugin_Config->{Plugin_Name},
                             },
                         },
                     }
@@ -3940,7 +3999,7 @@ sub test_script {
     }
 
     my $i = 1;
-    foreach my $testfile (@files_to_test) {
+    for my $testfile (@files_to_test) {
         print "test #$i: $testfile\n" . '-' x 60 . "\n";
         parse_bounce( -message => openfile($testfile) );
         ++$i;
@@ -3996,7 +4055,7 @@ sub test_pop3 {
 
 sub version {
 
-    print "$Plugin_Config->{Program_Name} Version: $App_Version\n";
+    print "$Plugin_Config->{Plugin_Name} Version: $App_Version\n";
     print "$DADA::Config::PROGRAM_NAME Version: $DADA::Config::VER\n";
     print "Perl Version: $]\n\n";
 
@@ -4070,7 +4129,7 @@ sub log_action {
 
     if ($Have_Log) {
         my $d;
-        foreach ( keys %$diagnostics ) {
+        for ( keys %$diagnostics ) {
             $d .= $_ . ': ' . $diagnostics->{$_} . ', ';
         }
         print BOUNCELOG "[$time]\t$list\t$action\t$email\t$d\n";
@@ -4310,7 +4369,7 @@ sub erase_score_card {
 
     }
 
-    foreach (@delete_list) {
+    for (@delete_list) {
 
         require DADA::App::BounceScoreKeeper;
         my $bsk = DADA::App::BounceScoreKeeper->new( -List => $_ );
@@ -4788,16 +4847,18 @@ sub default_cgi_template {
 
 return q { 
 
+	<!-- tmpl_set name="title" value="Bounce Handling" -->
+	
      <p id="breadcrumbs">
         
-           <!-- tmpl_var Program_Name --> 
+           <!-- tmpl_var Plugin_Name --> 
     </p> 
  
 		<!-- tmpl_unless plugin_configured --> 
 		
 			<div style="background:#fcc;margin:5px;padding:5px;text-align:center;border:2px #ccc dotted">
 			  <h1>
-			   Warning! <!-- tmpl_var Program_Name --> Not Configured!
+			   Warning! <!-- tmpl_var Plugin_Name --> Not Configured!
 			  </h1> 
 	
 			<p class="error">
@@ -4831,11 +4892,11 @@ Bounce Email Scorecard
 
 
 <fieldset> 
- <legend>Manually Run <!-- tmpl_var Program_Name --></legend> 
+ <legend>Manually Run <!-- tmpl_var Plugin_Name --></legend> 
 
 <form action="<!-- tmpl_var Plugin_URL -->">
 
-<input type="checkbox" name="test" id="test" value="bounces" /><label for="test">Only Test</label>
+<input type="checkbox" name="bounce_test" id="bounce_test" value="bounces" /><label for="test"><label for="bounce_test">Test With Awaiting Messages</label>
 
 <p><label for="parse_amount">Review</label> <!-- tmpl_var parse_amount_widget --> Messages.</p>
 
@@ -4876,7 +4937,7 @@ Bounce Email Scorecard
 
 <fieldset>
  <legend> 
-  <!-- tmpl_var Program_Name --> Configuration</h1>
+  <!-- tmpl_var Plugin_Name --> Configuration</h1>
  </legend> 
  
  
@@ -4888,7 +4949,15 @@ Bounce Email Scorecard
    <p><strong>Your Bounce Handler POP3 Username:</strong>
    </td> 
    <td> 
-    <p><!-- tmpl_var Username --></p>
+    <p>
+
+<!-- tmpl_if Username --> 
+	<!-- tmpl_var Username -->
+<!-- tmpl_else --> 
+	<span class="error">Not Set!</span>
+<!-- /tmpl_if --> 
+
+</p>
    </td> 
    </tr> 
    <tr> 
@@ -4898,7 +4967,13 @@ Bounce Email Scorecard
     </td>
     <td>
      <p>
+
+	<!-- tmpl_if Server --> 
       <!-- tmpl_var Server --></p>
+	<!-- tmpl_else --> 
+		<span class="error">Not Set!</span>
+	<!-- /tmpl_if -->	
+
    </td> 
    </tr> 
    
@@ -4956,28 +5031,28 @@ Bounce Email Scorecard
 
 <legend>Mailing List Configuration</legend>
 
-<!-- tmpl_if send_via_smtp --> 
+<!-- tmpl_if list_settings.send_via_smtp --> 
 
 	<p>Mailing is being sent via: <strong>SMTP</strong>. 
 	
-	<!-- tmpl_if set_smtp_sender --> 
+	<!-- tmpl_if list_settings.set_smtp_sender --> 
 	
-		<p>The SMTP Sender is being set to: <strong><!-- tmpl_var admin_email --></strong>. This should
+		<p>The SMTP Sender is being set to: <strong><!-- tmpl_var list_settings.admin_email --></strong>. This should
 		be the same address as the above <strong>Bounce Handler POP3 Username</strong></p> 
 		
 	<!-- tmpl_else --> 
 
-		<p>The SMTP Sender has not be explicitly set.  Bounces may go to the list owner (<!-- tmpl_var list_owner_email -->) or to 
+		<p>The SMTP Sender has not be explicitly set.  Bounces may go to the list owner (<!-- tmpl_var list_settings.list_owner_email -->) or to 
 		a server default address.</p> 
 	
 	<!--/tmpl_if--> 
 	
 <!--tmpl_else--> 
 	
-	<p>Mailing is being sent via <strong>the sendmail command <!-- tmpl_if add_sendmail_f_flag -->'-f' flagged added<!--/tmpl_if--></strong>:</p>
+	<p>Mailing is being sent via <strong>the sendmail command <!-- tmpl_if list_settings.add_sendmail_f_flag -->'-f' flagged added<!--/tmpl_if--></strong>:</p>
 	
 	<blockquote>
-	<p><em><!-- tmpl_var MAIL_SETTINGS --><!-- tmpl_if add_sendmail_f_flag --> -f<!--tmpl_var admin_email --><!--/tmpl_if--></em></p>
+	<p><em><!-- tmpl_var MAIL_SETTINGS --><!-- tmpl_if list_settings.add_sendmail_f_flag --> -f<!--tmpl_var list_settings.admin_email --><!--/tmpl_if--></em></p>
 	</blockquote>
 
 <!--/tmpl_if--> 
@@ -5068,44 +5143,35 @@ END {
 
 =pod
 
-=head1 NAME
+=head1 Name
 
 Mystery Girl - A Bounce Handler For Dada Mail
 
-=head1 DESCRIPTION
+=head1 Description
 
 Mystery Girl intelligently handles bounces from Dada Mail list messages.
 
 Mystery Girl hooks into your Dada Mail mailing lists indirectly. You'll first need to create a new POP3 email address which will be used to send all bounces from the Dada Mail lists. This address is known as your B<Bounce Email Address> 
 
-The login information for this account will be set in Mystery Girl.
-
-This same address will also be set in the B<Return-Path> of messages sent by Dada Mail. Thus, when a message is bounced, it gets sent to this address, which is monitored by Mystery Girl. Hazzah.
+This same address will also be set in the B<Return-Path> of messages sent by Dada Mail. Thus, when a message is bounced, it gets sent to this address, which is monitored by Mystery Girl.
 
 Once Mystery Girl connects to this  POP3 acccount, awaiting messages are first B<read>, then, the message is B<parsed>, in an attempt to understand why the message has bounced. 
 
-The parsed email will then be B<examined> and an B<action> will be taken. The examination and action are set in
-a collection of B<rules>.  These rules can be tweaked, added, removed
-and generally mucked about with. 
+The B<parsed> email will then be B<examined> and an B<action> will be taken. The examination and action are set in a collection of B<rules>.  These rules can be customized.
 
 The usual action that is taken is to apply a, B<score> to the offending email address, everytime the address bounces back a message. Once the, B<Threshold> is reached, the email address is unsubscribed from the list. 
 
 This usually means that it takes a few bounces from a particular email address to get it removed from a list. This gives a bit of wiggle room and makes sure an email address that is bouncing is bouncing for a fairly good reason, for example: it no longer exists. 
 
-=head1 OBTAINING A COPY OF THIS PROGRAM
+=head1 Obtaining a Copy of the Plugin
 
 Mystery Girl is located in the, I<dada/plugins> directory of the main Dada Mail distribution, under the name, B<dada_bounce_handler.pl>
 
-=head1 REQUIREMENTS
+=head1 Requirements
 
-These points are absolutely necessary. Please make sure you have them before you try to install this plugin: 
+Please make sure you have them before you try to install this plugin: 
 
 =over
-
-=item * Dada Mail 4
-
-Basically, use the version of Mystery Girl that comes with the version of Dada 
-Mail you're running. 
 
 =item * A POP3 Email Account
 
@@ -5119,7 +5185,7 @@ Some things to consider:
 
 =item * Do NOT use this address for anything but Mystery Girl's functions
 
-Meaning: don't periodically check it yourself via a mail reader. Doing so will not break Dada Mail, but it will stop Mystery Girl from working correctly. Why? Because sometimes checking a POP3 address will download the messages awaiting in the POP3 Inbox and remove them from this inbox. If you need to periodically check this inbox, make sure to have your mail reader set to B<not> automatically remove the mssages. 
+You don't periodically check this POP3 account yourself via a mail reader. Doing so will not break Dada Mail, but it will stop Mystery Girl from working correctly. Why? Because sometimes checking a POP3 address will download the messages awaiting in the POP3 Inbox and remove them from this inbox. If you need to periodically check this inbox, make sure to have your mail reader set to B<not> automatically remove the mssages. 
 
 =item * The email address MUST belong to the domain you have Dada Mail installed
 
@@ -5127,51 +5193,39 @@ Meaning, if your domain is, "yourdomain.com", the bounce email address should be
 
 =item * Mystery Girl MUST be able to check the POP3 account
 
-Sometimes, it can't - there may be a block for connections to port 110 from connections that come from your hosting account server.  
+Check to make sure that the POP3 server (usually, port 110) is not blocked from requests coming from your hosting account server.  
 
 =back
 
 =back
 
-=head1 RECOMMENDED
+=head1 Recommended
 
-These points are not required, but recommended to have to use Mystery Girl:
+These points are not required, but recommended to use Mystery Girl:
 
 =over
 
 =item * Ability to set Cron Jobs. 
 
-Mystery Girl can be configured to run automatically by using a cron tab - In Other Words: a scheduled task. 
+Mystery Girl can be configured to run automatically by using a cronjob.
 
-If you do not know how to set up a cron job, attempting to set one up for Dada Mail will result in much aggravation. Please read up on the topic before attempting! 
-
-=item * Shell Access to Your Hosting Account
-
-Shell Access is sometimes required to set up a cronjob, using the: 
-
- crontab -e 
-
-command. You may also be able to set up a cron tab using a web-based control panel tool, like Cpanel. 
-
-Shell access also facilitates testing of the program. 
+If you do not know how to set up a cronjob, attempting to set one up for Dada Mail will result in much aggravation. Please read up on the topic before attempting! 
 
 =back
 
 =head1 Lightning Configuration/Installation Instructions 
 
-To get to the point: 
-
 =over
 
 =item * Create the bounce handler email account
 
-=item * Set your list to use this address for its, "List Administrator Address" in the list control panel, under, Manage list - Change List Information.
+=item * Set your list to use this email address for its, "List Administrator Address" in the list control panel, under,
 
-=item * Open up the dada_bounce_handler.pl script in a text editor. 
+B<Your Mailing List -  Change List Information> 
 
-=item * Set the POP3 server, username and password. Save. 
+=item * Configure the plugin in your .dada_config file
 
-=item * Upload the dada_bounce_handler.pl script into the cgi-bin/dada/plugins directory
+How to do this exactly is covered, below
 
 =item * chmod 755 the dada_bounce_handler.pl script
 
@@ -5183,54 +5237,95 @@ To get to the point:
 
 Below is the detailed version of the above: 
 
+=head1 Configuration
 
-=head1 CONFIGURATION
+There's a few things you need to configure in this plugin. You can either configure the plugin variables in the C<dada_bounce_handler.pl> file itself (not recommended), or in the C<.dada_config> file (recommended!). We will only be going over configuring this plugin via your C<.dada_config> file. 
 
-There's a few things you need to configure in this script, they're all
-at the top. 
-
-=over
-
-=item * POP3 server information. 
-
-Your bounce email address login information is saved in the, B<dada_bounce_handler.pl> script itself - 
+=head3 POP3 Server Information. 
 
 Create a new POP3 email account. This email account will be the address that
-bounced messages will be directed towards. 
+bounced messages will be directed towards. This will be your B<Bounce Email Address> 
 
-Change the following variables: 
+Open up your C<.dada_config> file for editing. 
 
-=over
+Search and see if the following lines are present: 
 
-=item * $Plugin_Config->{Server}
+ # start cut for plugin configs
+ =cut
 
-=item * $Plugin_Config->{Username}
+ =cut
+ # end cut for plugin configs
 
-=item * $Plugin_Config->{Password}
+If they are present, remove them. 
 
-=back
+You can then configure the plugin variables on these lines: 
 
-to reflect the permissions for the email address you're going to use
-for the bounce handler. 
+	Mystery_Girl => { 
 
-=back
+	    Server                    			=> undef, 
+	    Username                  			=> undef, 
+	    Password                  			=> undef, 
+		# etc. 
+	},
+	
+For example: 
 
-As far as required changes, we are done. 
-
-=head1 INSTALLATION
-
-Mystery Girl acts like a Dada Mail plugin.  
-
-Usually, you'll set up Dada Mail in your cgi-bin: in your cgi-bin, there's a directory called, "dada". Inside the, "dada" directory, there are at least two things, one called, "DADA" (uppercase) and the mail.cgi script. 
-
-In the, "dada" directory, create a new directory called, "plugins". Upload the dada_bounce_handler.pl script, already configured, into this directory. Change its permissions to, "755".  Visit the script in your web browser - the URL will look something like this: 
-
-	http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl
-
-To run the bounce handler on your bounced messages, click the, B<Parse Bounces...> button. 
+	Server                    			=> 'mail.yourdomain.com', 
+	Username                  			=> 'bounces+yourdomain.com', 
+	Password                  			=> 'password', 
 
 
-If you would like have a link on the left hand side of the list control panel, find the following line in the Config.pm: 
+=head2 Set your Bounce Email Address as the default List Administration Email Address
+
+You may also want to set a default value for the, Adminstration Email, so that all new lists already have the bounce handler enabled. 
+
+Find this chunk of lines in your C<.dada_config> file: 
+
+	# start cut for list settings defaults
+	=cut
+
+	%LIST_SETUP_INCLUDE = (
+		set_smtp_sender              => 1, # For SMTP   
+		add_sendmail_f_flag          => 1, # For Sendmail Command
+		admin_email                  => 'bounces@example.com',
+	);
+
+	=cut
+	# end cut for list settings defaults
+
+Remove the =cut lines, like before: 
+
+	# start cut for list settings defaults
+	=cut
+
+	=cut
+	# end cut for list settings defaults
+
+And then change the, C<admin_email> to your bounce handler email address: 
+
+
+	%LIST_SETUP_INCLUDE = (
+		set_smtp_sender              => 1, # For SMTP   
+		add_sendmail_f_flag          => 1, # For Sendmail Command
+		admin_email                  => 'bounces@yourdomain.com',
+	);
+
+=head2 List Control Panel Menu
+
+Now, edit your C<.dada_config> file, so that it shows the Bounce Handler in the left-hand menu, under the, B<Plugins> heading: 
+
+First, see if the following lines are present in your C<.dada_config> file: 
+
+ # start cut for list control panel menu
+ =cut
+
+ =cut
+ # end cut for list control panel menu
+
+If they are, remove them. 
+
+Then, find these lines: 
+
 
  #					{-Title      => 'Bounce Handler',
  #					 -Title_URL  => $PLUGIN_URL."/dada_bounce_handler.pl",
@@ -5238,17 +5333,24 @@ If you would like have a link on the left hand side of the list control panel, f
  #					 -Activated  => 1,
  #					},
 
-And uncomment it (Take off the, "#" on each line). 
+Uncomment the lines, by taking off the, "#"'s: 
 
-Mystery Girl is now installed. 
+ 					{-Title      => 'Bounce Handler',
+ 					 -Title_URL  => $PLUGIN_URL."/dada_bounce_handler.pl",
+ 					 -Function   => 'dada_bounce_handler',
+ 					 -Activated  => 1,
+ 					},
 
-The last thing you will have to configure is your Dada Mail B<list administration email> address. 
+Save your C<.dada_config> file.
+
 
 =head2 Telling Dada Mail to use the Bounce Handler. 
 
 You're going to have to tell Dada Mail explicitly that you want
 bounces to go to the bounce handler. The first step is to set the 
-B<Dada List Administrator> to your bounce email address. You'll set this per list in the each list's control panel, under B<Manage List - Change List Information>
+B<Dada List Administrator> to your bounce email address. You'll set this per list in the each list's control panel, under 
+
+B<Your Mailing List -  Change List Information>
 
 After that, you'll need to configure outgoing email messages to set the B<Dada List Administrator> address in the C<Return-Path> header. Sounds scary, but it's easy enough.  
 
@@ -5258,13 +5360,13 @@ In the list control panel, go to B<Mail Sending - Sending Preferences> and
 check: B<Add the Sendmail '-f' flag when sending messages ...>
 
 This I<should> set the sending to the admin email, and in turn, set the
-B<Return-Path> header. Dada Mail 3.0 is shipped to have this option set by default. 
+B<Return-Path> header. Dada Mail is shipped to have this option set by default. 
 
 =head3 If you're using SMTP sending: 
 
 In the list control panel, go to: B<Sending Preferences - Sending Preferences>
 and check the box labeled: B<Set the Sender of SMTP mailings to the 
-list administration email address>  Dada Mail 3.0 is shipped to have this option set by default. 
+list administration email address>  Dada Mail is shipped to have this option set by default. 
 
 =head2 Testing
 
@@ -5466,7 +5568,7 @@ path to the Dada Mail libraries.
 
 If you don't know where your site-wide Perl libraries are, try running this via the command line:
 
- perl -e 'print $_ ."\n" foreach @INC'; 
+ perl -e 'print $_ ."\n" for @INC'; 
 
 If you do not know how to run the above command, visit your Dada Mail in a web browser, log into your list and on the left hand menu and: click, B<About Dada Mail> 
 
@@ -5779,7 +5881,7 @@ collection. It's a gnarly group of modules.
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2010 Justin Simoni 
+Copyright (c) 1999 - 2011 Justin Simoni 
 http://justinsimoni.com 
 All rights reserved. 
 

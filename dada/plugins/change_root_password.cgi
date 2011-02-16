@@ -41,19 +41,15 @@ my $li = $ls->get;
 	               
 if(!$q->param('process')){ 
 
-	my $scrn = ''; 
-    # header     
-    $scrn .= admin_template_header(-Title      => "Change Your $DADA::Config::PROGRAM_NAME Root Password",
-                            -List       => $li->{list},
-                            -Form       => 0,
-                            -Root_Login => $root_login);
-
-
-
     my $tmpl = default_screen(); 	                
-	$scrn .= DADA::Template::Widgets::screen(
+	my $scrn = DADA::Template::Widgets::wrap_screen(
 						{
 							-data => \$tmpl, 
+							-with           => 'admin', 
+							-wrapper_params => { 
+								-Root_Login => $root_login,
+								-List       => $list,  
+							},
 							-vars => { 
 								 ROOT_PASS_IS_ENCRYPTED => $DADA::Config::ROOT_PASS_IS_ENCRYPTED, 
 								
@@ -63,11 +59,7 @@ if(!$q->param('process')){
 							},
 						}
 					);
-    
-    
-    #footer
-    $scrn .= admin_template_footer(-List => $list, -Form => 0); 
-	e_print($scrn); 
+    e_print($scrn); 
 
 }else{ 
 
@@ -156,6 +148,8 @@ if(!$q->param('process')){
 sub default_screen { 
 
 return <<EOF
+
+<!-- tmpl_set name="title" value="Change Your <!-- tmpl_var PROGRAM_NAME --> Root Password" -->
 
 <form method="post"> 
 
@@ -350,7 +344,7 @@ See: http://dadamailproject.com/contact
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 2006-2010 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

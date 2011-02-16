@@ -281,7 +281,7 @@ sub cl_run_schedules {
 	 
 	$args{-run_list} ? ($lists_to_run[0] = $args{-run_list}) : (@lists_to_run = DADA::App::Guts::available_lists()); 
 	
-	foreach(@lists_to_run){ 
+	for(@lists_to_run){ 
 		my $mss = DADA::MailingList::Schedules->new({-list => $_}); 
 		   my $report = $mss->run_schedules(-test    => $args{-test});
 		   					  				
@@ -442,7 +442,7 @@ sub edit  {
 				$message = '<p class="positive">Your test message has been sent.</p>';
 			}else{ 
 				$message  = '<p class="error">!!! Message not sent, details:</p>';
-				$message .= '<p class="error">!!! '.  DADA::App::Guts::pretty($_)  .'</p>' foreach keys %$status;
+				$message .= '<p class="error">!!! '.  DADA::App::Guts::pretty($_)  .'</p>' for keys %$status;
 			}
 		}else{ 
 			$message = $DADA::Config::GOOD_JOB_MESSAGE;
@@ -579,7 +579,7 @@ sub schedule_index {
 	
 	my %sched_rows = (); 
 
-	foreach($mss->record_keys){ 
+	for($mss->record_keys){ 
 		my $next_mailing = $mss->mailing_schedule($_)->[0];
 
 		if(!exists($sched_rows{$next_mailing})){ 
@@ -590,8 +590,8 @@ sub schedule_index {
 			sleep(1); #dumb; 
 		}
 	}
-	#foreach(keys)
-	foreach(sort keys %sched_rows){ 
+	#for(keys)
+	for(sort keys %sched_rows){ 
 		$r .= $sched_rows{$_}; 
 	}	 
 
@@ -914,7 +914,7 @@ my $lh = DADA::MailingList::Subscribers->new({-list => $list });
 my $fields = [];  
 # Extra, special one... 
 push(@$fields, {name => 'subscriber.email'}); 
-foreach my $field(@{$lh->subscriber_fields({-dotted => 1})}){ 
+for my $field(@{$lh->subscriber_fields({-dotted => 1})}){ 
      push(@$fields, {name => $field});
  }
 
@@ -924,7 +924,7 @@ push(@$undotted_fields, {name => 'email', label => 'Email Address'});
 require DADA::ProfileFieldsManager; 
 my $pfm = DADA::ProfileFieldsManager->new;
 my $fields_attr = $pfm->get_all_field_attributes;
- foreach my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){ 
+ for my $undotted_field(@{$lh->subscriber_fields({-dotted => 0})}){ 
       push(@$undotted_fields, {name => $undotted_field, label => $fields_attr->{$undotted_field}->{label}});
  }   
 
@@ -933,8 +933,8 @@ my $fields_attr = $pfm->get_all_field_attributes;
 my $partial_saved = $form_vals{partial_sending_params};
 my $edited_fields = []; 
 
-foreach my $p_field(@$undotted_fields){ 
-	foreach my $partial_saved_entry(@$partial_saved){ 
+for my $p_field(@$undotted_fields){ 
+	for my $partial_saved_entry(@$partial_saved){ 
 		# Did you catch that?
 		if($partial_saved_entry->{field_name} eq $p_field->{name}){ 	
 			$p_field->{field_comparison_type} = $partial_saved_entry->{field_comparison_type};
@@ -1809,7 +1809,7 @@ $r .= q{
 
 };
 
-		foreach my $att(@$attachments){
+		for my $att(@$attachments){
 			$r .= single_attachment_widget($att, $num);
 			$num++; 
 		}
@@ -2333,7 +2333,7 @@ path to the Dada Mail libraries.
 
 If you don't know where your site-wide Perl libraries are, try running this via the command line:
 
- perl -e 'print $_ ."\n" foreach @INC'; 
+ perl -e 'print $_ ."\n" for @INC'; 
 
 If you do not know how to run the above command, visit your Dada Mail in a web browser, log into your list and on the left hand menu and: click, B<About Dada Mail> 
 

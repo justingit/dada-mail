@@ -1,4 +1,4 @@
-#!/usr/bin/perl -T
+#!/usr/bin/perl
 use strict; 
 $ENV{PATH} = "/bin:/usr/bin"; 
 delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
@@ -74,200 +74,244 @@ if($f){
 }
                               
 # header     
-sub default { 
+sub default {
 
-my $scrn = '';
-$scrn .= admin_template_header(-Title      => "Clickthrough Tracking",
-		                -List       => $li->{list},
-		                -Form       => 0,
-		                -Root_Login => $root_login);
+    my $tmpl = '<!-- tmpl_set name="title" value="Clickthrough Tracking" -->';
+    if ( $q->param('done') == 1 ) {
+        $tmpl .=
+          '<p class="positive">' . $DADA::Config::GOOD_JOB_MESSAGE . '</p>';
+    }
 
+    if ( -e $rd->clickthrough_log_location ) {
 
-if($q->param('done') == 1){ 	
-	$scrn .= '<p class="positive">' . $DADA::Config::GOOD_JOB_MESSAGE . '</p>';
-}
+        $tmpl .= $q->h2('Clickthrough Message Summaries:');
 
+        my $m_report = $rd->report_by_message_index;
 
-if(-e $rd->clickthrough_log_location){ 
+        $tmpl .=
+'<div style="max-height: 300px; overflow: auto; border:1px solid black">';
 
+        $tmpl .= $q->start_table(
+            {
+                -cellpadding => "5",
+                -cellspacing => "0",
+                border       => "0",
+                width        => "100%"
+            }
+        );
+        $tmpl .= $q->Tr(
+            $q->td(
+                [
+                    ( $q->p( $q->b('Subject') ) ),
+                    ( $q->p( $q->b('Sent') ) ),
 
-	$scrn .=  $q->h2('Clickthrough Message Summaries:'); 
-	
-	my $m_report = $rd->report_by_message_index;
-	
-	$scrn .=  '<div style="max-height: 300px; overflow: auto; border:1px solid black">'; 
-	
-	$scrn .=  $q->start_table({-cellpadding => "5", -cellspacing=> "0", border=> "0", width=> "100%"}); 
-	$scrn .=  $q->Tr(
-	      $q->td([
-	              ($q->p($q->b('Subject'))),
-	              ($q->p($q->b('Sent'))),
-	              
-	              
-	              ($q->p($q->b('Subscribers'))),
-	              ($q->p($q->b('Clickthroughs'))),
-	              
-	              ($q->p($q->b('Opens'))),
-	              
-	              ($q->p($q->b('Bounces'))),
+                    ( $q->p( $q->b('Subscribers') ) ),
+                    ( $q->p( $q->b('Clickthroughs') ) ),
 
+                    ( $q->p( $q->b('Opens') ) ),
 
-	              
-	              ]));
-	
-my $archive_entries = $mja->get_archive_entries(); 
+                    ( $q->p( $q->b('Bounces') ) ),
 
-my $count = 0; 
-my $bg; 
+                ]
+            )
+        );
 
-#foreach(@$archive_entries){ 
+        my $archive_entries = $mja->get_archive_entries();
 
-foreach(sort { $a <=> $b  } keys %$m_report){ 
+        my $count = 0;
+        my $bg;
 
+        #for(@$archive_entries){
 
-if($count%2 == 0){ 
-	$bg = '#ccf'; 
-}else{ 
-	$bg = '#fff'; 
-}
-$count++;
+        for ( sort { $a <=> $b } keys %$m_report ) {
 
-if(!$m_report->{$_}->{message_subject}){ 
-	if($mja->check_if_entry_exists($_)){ 
-		$m_report->{$_}->{message_subject} = $mja->get_archive_subject($_);
-	}
-}
+            if ( $count % 2 == 0 ) {
+                $bg = '#ccf';
+            }
+            else {
+                $bg = '#fff';
+            }
+            $count++;
 
-$m_report->{$_}->{count}    = '-' if ! $m_report->{$_}->{count}; 
+            if ( !$m_report->{$_}->{message_subject} ) {
+                if ( $mja->check_if_entry_exists($_) ) {
+                    $m_report->{$_}->{message_subject} =
+                      $mja->get_archive_subject($_);
+                }
+            }
 
-$m_report->{$_}->{'open'}   = '-' if ! $m_report->{$_}->{'open'}; 
+            $m_report->{$_}->{count} = '-' if !$m_report->{$_}->{count};
 
-$m_report->{$_}->{'bounce'} = '-' if ! $m_report->{$_}->{'bounce'}; 
-$m_report->{$_}->{'num_subscribers'} = '-' if ! $m_report->{$_}->{'num_subscribers'}; 
+            $m_report->{$_}->{'open'} = '-' if !$m_report->{$_}->{'open'};
 
+            $m_report->{$_}->{'bounce'} = '-' if !$m_report->{$_}->{'bounce'};
+            $m_report->{$_}->{'num_subscribers'} = '-'
+              if !$m_report->{$_}->{'num_subscribers'};
 
-		$scrn .=  $q->Tr({ -style => 'background: ' . $bg}, 
-			  $q->td([
-					  ($q->p($q->strong(
-					  
-					  (($m_report->{$_}->{message_subject}) ? 
-					  ($q->a({-href=> $DADA::Config::S_PROGRAM_URL.'?f=view_archive&id='.$_}, $m_report->{$_}->{message_subject}))
-					  : ($_)
-					  )
-					  
-					  
-					  ))),
-					  
-					  ($q->p(DADA::App::Guts::date_this(-Packed_Date => $_))),
-					  
-	
-					($q->p(
-					  
-					  $q->a({-href=>$URL.'?f=m&mid='.$_},
+            $tmpl .= $q->Tr(
+                { -style => 'background: ' . $bg },
+                $q->td(
+                    [
+                        (
+                            $q->p(
+                                $q->strong(
 
-					  
-					  $m_report->{$_}->{'num_subscribers'}
-					  
-					  ))),
+                                    (
+                                        ( $m_report->{$_}->{message_subject} )
+                                        ? (
+                                            $q->a(
+                                                {
+                                                    -href =>
+                                                      $DADA::Config::S_PROGRAM_URL
+                                                      . '?f=view_archive&id='
+                                                      . $_
+                                                },
+                                                $m_report->{$_}
+                                                  ->{message_subject}
+                                            )
+                                          )
+                                        : ($_)
+                                    )
 
+                                )
+                            )
+                        ),
 
+                        (
+                            $q->p(
+                                DADA::App::Guts::date_this(
+                                    -Packed_Date => $_
+                                )
+                            )
+                        ),
 
-					  ($q->p(
-					  
-					  $q->a({-href=>$URL.'?f=m&mid='.$_},
-					  
-					  $m_report->{$_}->{count}
-					 
-					 ))),
-					  
-					  
+                        (
+                            $q->p(
 
-					  ($q->p(
-					  
-					  $q->a({-href=>$URL.'?f=m&mid='.$_},
+                                $q->a(
+                                    { -href => $URL . '?f=m&mid=' . $_ },
 
-					  $m_report->{$_}->{'open'}
-					  
-					  ))),
-                     ($q->p(
-					  
-				 
-					  $q->a({-href=>$URL.'?f=m&mid='.$_},
+                                    $m_report->{$_}->{'num_subscribers'}
 
-					  $m_report->{$_}->{'bounce'}
-					  
-					  ))),
-					  
-					  
-					 ]));
-	}
-	
-	$scrn .=  $q->end_table;
-$scrn .=  '</div>';
+                                )
+                            )
+                        ),
 
+                        (
+                            $q->p(
 
+                                $q->a(
+                                    { -href => $URL . '?f=m&mid=' . $_ },
 
+                                    $m_report->{$_}->{count}
 
-		  
-}else{ 
-	$scrn .=  $q->p($q->strong('No logs to report.'));
-}	
+                                )
+                            )
+                        ),
 
-	$scrn .=  $q->hr; 
+                        (
+                            $q->p(
 
-	require HTML::Template; 
-	
+                                $q->a(
+                                    { -href => $URL . '?f=m&mid=' . $_ },
 
-	my $tmpl = prefs_form(); 	                
-	my $template = HTML::Template->new(%Global_Template_Options,
-											 scalarref => \$tmpl, 
-											);
-	   $template->param(
-	   					clickthrough_tracking           => $li->{clickthrough_tracking}, 
-	   					enable_open_msg_logging         => $li->{enable_open_msg_logging}, 
-	   					enable_subscriber_count_logging => $li->{enable_subscriber_count_logging}, 
-enable_bounce_logging => $li->{enable_bounce_logging}, 
-	   					
-	   					
-	   
-	   				   ); 
-	   
-	$scrn .=  $template->output();
+                                    $m_report->{$_}->{'open'}
 
+                                )
+                            )
+                        ),
+                        (
+                            $q->p(
 
+                                $q->a(
+                                    { -href => $URL . '?f=m&mid=' . $_ },
 
-	$scrn .=  $q->hr; 
-	
-	$scrn .=  $q->p({-align => 'center'}, $q->start_form(-target => 'raw') . 
-		  $q->hidden('f', 'raw') . 
-		  $q->submit(-name   => 'View Raw Clickthrough Logs', 
-					 -class  => 'processing') .
-		  $q->end_form());
-	
-	
-	$scrn .=  $q->p({-align => 'center'}, $q->start_form . 
-		  $q->hidden('f', 'purge') . 
-		  $q->submit(-name   => 'Purge Clickthrough Logs', 
-					 -class  => 'alertive') .
-		  $q->end_form());
+                                    $m_report->{$_}->{'bounce'}
 
-	$scrn .=  $q->hr;
-	
-	$scrn .=  $q->p('Clickthrough logging works for URLs in mailing list
+                                )
+                            )
+                        ),
+
+                    ]
+                )
+            );
+        }
+
+        $tmpl .= $q->end_table;
+        $tmpl .= '</div>';
+
+    }
+    else {
+        $tmpl .= $q->p( $q->strong('No logs to report.') );
+    }
+
+    $tmpl .= $q->hr;
+
+    require HTML::Template;
+
+    $tmpl .= prefs_form();
+
+    $tmpl .= $q->hr;
+
+    $tmpl .= $q->p(
+        { -align => 'center' },
+        $q->start_form() 
+          . $q->hidden( 'f', 'raw' )
+          . $q->submit(
+            -name  => 'View Raw Clickthrough Logs',
+            -class => 'processing'
+          )
+          . $q->end_form()
+    );
+
+    $tmpl .= $q->p(
+        { -align => 'center' },
+        $q->start_form 
+          . $q->hidden( 'f', 'purge' )
+          . $q->submit(
+            -name  => 'Purge Clickthrough Logs',
+            -class => 'alertive'
+          )
+          . $q->end_form()
+    );
+
+    $tmpl .= $q->hr;
+
+    $tmpl .= $q->p(
+        'Clickthrough logging works for URLs in mailing list
 	             messages when the URLs are
-				 placed in the [redirect] tag. For example:') . 
-				 $q->p($q->strong('[redirect=http://yahoo.com]'));	
-			  
-	$scrn .=  admin_template_footer(-Form    => 0,
-							-List    => $li->{list},); 
-	
-	e_print($scrn); 
+				 placed in the [redirect] tag. For example:'
+    ) . $q->p( $q->strong('<!-- tmpl_var LEFT_BRACKET -->redirect=http://yahoo.com<!-- tmpl_var RIGHT_BRACKET -->') );
 
-} 
+
+	require DADA::Template::Widgets; 
+	my $scrn = DADA::Template::Widgets::wrap_screen(
+		{ 
+			-data => \$tmpl, 
+			-with => 'admin', 
+			-wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $li->{list},
+ 	           },
+			-vars => { 
+				clickthrough_tracking           => $li->{clickthrough_tracking},
+		        enable_open_msg_logging         => $li->{enable_open_msg_logging},
+		        enable_subscriber_count_logging => $li->{enable_subscriber_count_logging},
+		        enable_bounce_logging           => $li->{enable_bounce_logging},
+	
+			},
+		}
+	);
+    e_print($scrn);
+
+}
 
 sub raw { 
 
-print $q->header('text/plain'); 
+
+	my $header  = 'Content-disposition: attachement; filename=' . $list . '-clickthrough.log' .  "\n"; 
+	   $header .= 'Content-type: text/plain' . "\n\n"; 
+	print $header; 
       $rd->print_raw_logs; 
 } 
 
@@ -281,141 +325,187 @@ sub purge {
 
 
 
-sub edit_prefs { 
-	my $clickthrough_tracking = $q->param('clickthrough_tracking') || 0; 
-	my $enable_open_msg_logging = $q->param('enable_open_msg_logging') || 0; 
-	my $enable_subscriber_count_logging = $q->param('enable_subscriber_count_logging') || 0; 
-	my $enable_bounce_logging = $q->param('enable_bounce_logging') || 0; 
-	
-	
-	
-	$ls->save({ 
-	           
-	           clickthrough_tracking           => $clickthrough_tracking, 
-	           enable_open_msg_logging         => $enable_open_msg_logging, 
-	           enable_subscriber_count_logging => $enable_subscriber_count_logging,
-                enable_bounce_logging          => $enable_bounce_logging, 
+sub edit_prefs {
 
-	           
-			 }); 
+    $ls->save_w_params(
+        {
+            -associate => $q,
+            -settings  => {
+                clickthrough_tracking           => 0,
+                enable_open_msg_logging         => 0,
+                enable_subscriber_count_logging => 0,
+                enable_bounce_logging           => 0,
+            }
+        }
+    );
 
-	print $q->redirect(-uri => $URL . '?done=1'); 
-} 
-
-
-
-sub message_report { 
-	
-my $scrn = ''; 
-$scrn .= admin_template_header(-Title      => "Clickthrough Tracking - Message Report",
-		                -List       => $li->{list},
-		                -Form       => 0,
-		                -Root_Login => $root_login);
-		                
-
-$scrn .= $q->p($q->strong('Clickthrough Message Summary for: ') . $q->a({-href => $DADA::Config::S_PROGRAM_URL . '?flavor=view_archive&id=' . $q->param('mid')}, find_message_subject($q->param('mid')))); 
-
-my $m_report = $rd->report_by_message($q->param('mid')); 
-
-$scrn .= $q->start_table({-cellpadding => 5}); 
-foreach(sort keys %$m_report){ 
-	
-	next if($_ eq 'open' || $_ eq 'num_subscribers' || $_ eq 'bounce' || $_ eq undef);
-
-	$scrn .= $q->Tr(
-	      $q->td([
-	      		  ($q->p(
-	               $q->b(
-	               $q->a({-href=>$URL.'?f=url&mid='.$q->param('mid').'&url='. uriescape($_)}, $_
-	               )))),
-	              ($m_report->{$_}->{count}),
-	
-				 ]));
-}
-
-$scrn .= $q->end_table;
-
-if($m_report->{num_subscribers}){ 
-	$scrn .= $q->p($q->strong("Number of Subscribers:") . $m_report->{num_subscribers}); 
+    print $q->redirect( -uri => $URL . '?done=1' );
 }
 
 
-if($m_report->{'open'}){ 
-	$scrn .= $q->p($q->strong("Number of Recorded Opens: ") . $m_report->{'open'}); 
+sub message_report {
+
+    my $tmpl =
+'<!-- tmpl_set name="title" value="Clickthrough Tracking - Message Report" -->';
+
+    $tmpl .= $q->p(
+        $q->strong('Clickthrough Message Summary for: ')
+          . $q->a(
+            {
+                    -href => $DADA::Config::S_PROGRAM_URL
+                  . '?flavor=view_archive&id='
+                  . $q->param('mid')
+            },
+            find_message_subject( $q->param('mid') )
+          )
+    );
+
+    my $m_report = $rd->report_by_message( $q->param('mid') );
+
+    $tmpl .= $q->start_table( { -cellpadding => 5 } );
+    for ( sort keys %$m_report ) {
+
+        next
+          if ( $_ eq 'open'
+            || $_ eq 'num_subscribers'
+            || $_ eq 'bounce'
+            || $_ eq undef );
+
+        $tmpl .= $q->Tr(
+            $q->td(
+                [
+                    (
+                        $q->p(
+                            $q->b(
+                                $q->a(
+                                    {
+                                            -href => $URL
+                                          . '?f=url&mid='
+                                          . $q->param('mid') . '&url='
+                                          . uriescape($_)
+                                    },
+                                    $_
+                                )
+                            )
+                        )
+                    ),
+                    ( $m_report->{$_}->{count} ),
+
+                ]
+            )
+        );
+    }
+
+    $tmpl .= $q->end_table;
+
+    if ( $m_report->{num_subscribers} ) {
+        $tmpl .=
+          $q->p($q->strong("Number of Subscribers:")
+              . $m_report->{num_subscribers} );
+    }
+
+    if ( $m_report->{'open'} ) {
+        $tmpl .=
+          $q->p(
+            $q->strong("Number of Recorded Opens: ") . $m_report->{'open'} );
+    }
+
+    if ( $m_report->{bounce} ) {
+        $tmpl .=
+          $q->p( $q->strong("Number of Recorded Bounces: ")
+              . ( $#{ $m_report->{bounce} } + 1 ) );
+
+        my $count = 0;
+        my $bg;
+
+        $tmpl .=
+'<div style="max-height: 200px; overflow: auto; border:1px solid black">';
+
+        $tmpl .= $q->start_table(
+            {
+                -cellpadding => "5",
+                -cellspacing => "0",
+                border       => "0",
+                width        => "100%"
+            }
+        );
+
+        for ( @{ $m_report->{bounce} } ) {
+
+            if ( $count % 2 == 0 ) {
+                $bg = '#ccf';
+            }
+            else {
+                $bg = '#fff';
+            }
+            $count++;
+
+            $tmpl .= $q->Tr( { -style => 'background: ' . $bg },
+                $q->td( [ $q->p($_) ] ) );
+
+        }
+        $tmpl .= $q->end_table;
+
+    }
+    $tmpl .= '</div>';
+
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -data           => \$tmpl,
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $li->{list},
+            },
+
+        }
+    );
+ 	e_print($scrn);
+
 }
 
-if($m_report->{bounce}){ 
-	$scrn .= $q->p($q->strong("Number of Recorded Bounces: ") . ($#{$m_report->{bounce}} + 1)); 
 
+sub url_report {
 
-my $count = 0; 
-my $bg; 
+    my $tmpl =
+'<!-- tmpl_set name="title" value="Clickthrough Tracking - URL Report" -->';
 
+    $tmpl .= $q->p(
+        $q->b(
+                'Clickthrough Message Summary for: '
+              . find_message_subject( $q->param('mid') )
+              . ', for URL: '
+              . $q->param('url')
+        )
+    );
 
-$scrn .= '<div style="max-height: 200px; overflow: auto; border:1px solid black">'; 
-	
-	$scrn .= $q->start_table({-cellpadding => "5", -cellspacing=> "0", border=> "0", width=> "100%"}); 
+    my $m_report = $rd->report_by_url( $q->param('mid'), $q->param('url') );
 
-foreach(@{$m_report->{bounce}}){ 
+    $tmpl .= $q->p( $q->b('Clickthrough Time:') ) . $q->hr;
 
-if($count%2 == 0){ 
-	$bg = '#ccf'; 
-}else{ 
-	$bg = '#fff'; 
+    $tmpl .= $q->start_table( { -cellpadding => 5 } );
+    for ( sort { $a <=> $b } @$m_report ) {
+        $tmpl .= $q->Tr( $q->td( $q->p( $q->b($_) ) ) );
+    }
+
+    $tmpl .= $q->end_table;
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -data           => \$tmpl,
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $li->{list},
+            },
+
+        }
+    );
+
+    e_print($scrn);
+
 }
-$count++;
-
-
-
-
-	$scrn .= $q->Tr({ -style => 'background: ' . $bg}, $q->td([$q->p($_)])); 
-
-}
-$scrn .= $q->end_table; 
-
-}
-$scrn .= '</div>';
-
-
-$scrn .= admin_template_footer(-Form    => 0,
-                        -List    => $li->{list}); 
-e_print($scrn); 
-
-} 
-
-
-sub url_report { 
-
-my $scrn = ''; 
-
-$scrn .= admin_template_header(-Title      => "Clickthrough Tracking - URL Report",
-		                -List       => $li->{list},
-		                -Form       => 0,
-		                -Root_Login => $root_login);
-		                
-$scrn .= $q->p($q->b('Clickthrough Message Summary for: ' . find_message_subject($q->param('mid')) . ', for URL: ' . $q->param('url'))); 
-
-my $m_report = $rd->report_by_url($q->param('mid'), $q->param('url')); 
-
-$scrn .= $q->p($q->b('Clickthrough Time:')) . $q->hr; 
-
-$scrn .= $q->start_table({-cellpadding => 5}); 
-foreach(sort { $a <=> $b } @$m_report){ 
-	$scrn .= $q->Tr(
-	      $q->td(
-	      $q->p($q->b($_))
-	      ));
-}
-
-$scrn .= $q->end_table;
-
-$scrn .= admin_template_footer(-Form    => 0,
-                        -List    => $li->{list},); 
-
-e_print($scrn); 
-
-
-} 
 
 
 sub find_message_subject { 

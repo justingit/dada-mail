@@ -393,8 +393,9 @@ sub _format_text {
 	
 		my $is_att = 0; 
 		if (defined($entity->head->mime_attr('content-disposition'))) { 
-				$is_att = 1
-				 if  $entity->head->mime_attr('content-disposition') =~ m/attachment/; 
+			if($entity->head->mime_attr('content-disposition') =~ m/attachment/) { 
+				$is_att = 1; 
+			}
 		}
 			
 		if(
@@ -479,12 +480,16 @@ sub _format_text {
 						$content = $self->_add_opener_image($content);
 					}
 				}
-			
-			  # # uh.... would this work? 
-			   #$entity->head->delete('Content-Transfer-Encoding'); 
-			   #$entity->head->add('Content-Transfer-Encoding', '8bit');
-			   #$entity->head->mime_attr("content-type.charset" => 'UTF-8');
-		
+				
+				# simple validation
+				require DADA::Template::Widgets; 
+				my ($valid, $errors) = DADA::Template::Widgets::validate_screen({-data => \$content}); 
+				if($valid == 0){ 
+					my $munge = quotemeta('/fake/path/for/non/file/template'); 
+					$errors =~ s/$munge/line/; 
+					croak "Problems with email message! Invalid template markup: '$errors' \n" . '-' x 72 . "\n" . $content ; 
+				}
+				# /simple validation
 		       my $io = $body->open('w');
 
 				  $content = safely_encode($content); 
@@ -718,27 +723,6 @@ sub _format_headers {
 			$entity->head->delete('Subject');
 			$entity->head->add(   'Subject', safely_encode($new_subject));
 			
-		}
-		
-		
-		if($self->{ls}->param('add_reply_to') == 1){ 
-			
-			# DEV:  Does this have to be updated!?
-			my $reply_to = Email::Address->new(
-								$self->{ls}->param('list_name'), 
-								$self->{ls}->param('discussion_pop_email')
-							);
-			
-			$entity->head->delete('Reply-To');
-			$entity->head->add(   'Reply-To', $reply_to);
-
-		} else {
-		
-			my $original_sender = $entity->head->get('From', 0);
-			   $original_sender = safely_encode( $original_sender); 
-			
-		   $entity->head->delete('Reply-To');
-		   $entity->head->add('Reply-To', safely_encode($original_sender)); 
 		}
 		
 		$entity->head->delete('Return-Path'); 
@@ -1063,6 +1047,10 @@ Given a string, changes Dada Mail's template tag into what they represent.
 B<-type> can be either PlainText or HTML
 
 =cut
+
+# DEV: This is a bad name for this - it should be called something 
+# more on the lines of expanding macro stuff, since all the parsing in list info 
+# stuff isn't here. 
 
 sub _parse_in_list_info { 
 
@@ -2226,7 +2214,7 @@ sub pre_process_msg_strings {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2010 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

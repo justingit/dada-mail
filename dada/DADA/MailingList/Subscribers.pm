@@ -722,7 +722,7 @@ sub csv_to_cds {
        
     } else {
         carp $DADA::Config::PROGRAM_NAME . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag ();;         
-
+		$cds->{email} = $csv_line; 
     }
 	
 	return $cds; 
@@ -1833,7 +1833,7 @@ Justin Simoni http://dadamailproject.com
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 1999 - 2010 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

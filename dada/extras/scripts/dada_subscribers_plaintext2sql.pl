@@ -42,14 +42,14 @@ use lib qw(./ ./DADA ./DADA/perllib);
 
 print "beginning...\n";
 
-foreach my $list(DADA::App::Guts::available_lists()){ 
+for my $list(DADA::App::Guts::available_lists()){ 
 	
 	my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
 	
 	print "\tworking on list: '$list'...\n";
 	
-	#foreach my $sublist('list', 'black_list', 'authorized_senders'){
-	foreach my $sublist('list', 'black_list', 'white_list', 'authorized_senders'){
+	#for my $sublist('list', 'black_list', 'authorized_senders'){
+	for my $sublist('list', 'black_list', 'white_list', 'authorized_senders'){
 
 		my $sublist_filename = $DADA::Config::FILES . '/' . $list . '.' . $sublist; 
 		
@@ -101,7 +101,7 @@ foreach my $list(DADA::App::Guts::available_lists()){
 					}
 				}else{ 
 					print "\t\t\t PROBLEMS with $email: "; 
-					foreach my $err(keys %$errors){ print "$err, " if $errors->{$err} == 1; }
+					for my $err(keys %$errors){ print "$err, " if $errors->{$err} == 1; }
 					print "\n"
 				}
 			
@@ -166,7 +166,7 @@ ps. backup everything.
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2010 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

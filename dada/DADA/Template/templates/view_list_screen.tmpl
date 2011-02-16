@@ -1,5 +1,7 @@
 <!-- begin view_list_screen.tmpl -->
 
+<!-- tmpl_set name="title" value="View" -->
+
 <!-- tmpl_include help_link_widget.tmpl --> 
 
 
@@ -389,19 +391,22 @@
 	<table cellpadding="5">
 	 <tr>
 	  <td>
-	   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" target="_blank">
+	   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 	    <input type="hidden" name="f"    value="text_list" />
 	    <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
-	    <input type="submit" class="plain" value="Open <!-- tmpl_var type_title --> in New Window" />
+	    <input type="submit" class="plain" value="Download <!-- tmpl_var type_title --> (.csv)" />
 	   </form>
 	  </td>
-	  <td>
-	   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get">
-	    <input type="hidden" name="f"    value="send_list_to_admin" />
-	    <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
-	    <input type="submit" class="plain" value="Send <!-- tmpl_var type_title --> to List Owner" />
-	   </form>
-	  </td>
+<!-- tmpl_if comment --> 
+<!-- I've disabled this, for the time being --> 
+		  <td>
+		   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get">
+		    <input type="hidden" name="f"    value="send_list_to_admin" />
+		    <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+		    <input type="submit" class="plain" value="Send <!-- tmpl_var type_title --> to List Owner" />
+		   </form>
+		  </td>
+<!-- /tmpl_if --> 
 	 </tr>
 	</table>
 

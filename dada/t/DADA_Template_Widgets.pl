@@ -736,6 +736,34 @@ SKIP: {
 };
 
 
+# wrap_screen
+my $regex = ''; 
+
+eval { 
+  $r = DADA::Template::Widgets::wrap_screen(
+		{ 
+		}
+	);	
+};
+ok($@, "calling 'wrap_screen' without a '-with' paramater causes an error' $@");
+$regex = quotemeta("you must pass the, '-with' paramater"); 
+like($@, qr/$regex/); 
+
+
+eval { 
+  $r = DADA::Template::Widgets::wrap_screen(
+		{ 
+			-with => 'invalid', 
+		}
+	);	
+};
+ok($@, "calling 'wrap_screen' with an incorrect, '-with paramater causes an error' $@");
+$regex = quotemeta("'-with' paramater must be either, 'list' or, 'admin'"); 
+like($@, qr/$regex/);
+
+
+
+
 
 
 

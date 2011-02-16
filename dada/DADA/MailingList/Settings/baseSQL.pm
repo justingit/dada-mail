@@ -92,6 +92,8 @@ sub save {
 
  		$self->_existence_check($new_settings); 	    
  	
+	#	use Data::Dumper; 
+	#	croak Data::Dumper::Dumper($new_settings); 
  		for my $setting(keys %$new_settings){ 
  		
  		    my $sth_d = $self->{dbh}->prepare($d_query); 
@@ -249,7 +251,7 @@ DADA::MailingList::Settings
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2010 Justin Simoni 
+Copyright (c) 1999 - 2011 Justin Simoni 
 http://justinsimoni.com 
 All rights reserved. 
 

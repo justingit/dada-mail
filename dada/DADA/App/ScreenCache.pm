@@ -56,17 +56,16 @@ sub _init {
 
     my $self = shift;
 
-    return if $DADA::Config::SCREEN_CACHE != 1;
+    return if $DADA::Config::SCREEN_CACHE == 0;
 
     if ( !-d $self->cache_dir ) {
-	
     	if(mkdir( $self->cache_dir, $DADA::Config::DIR_CHMOD )) { 
           if(-d $self->cache_dir){ 
 			chmod( $DADA::Config::DIR_CHMOD, $self->cache_dir );
           }
     	}
 		else { 
-			warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! Could not create, 'self->cache_dir'- $! - disabling screen cache.";
+			warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! Could not create, ' " . self->cache_dir . " - $! - disabling screen cache.";
 			$DADA::Config::SCREEN_CACHE = 0;
 		}
 	}
@@ -77,7 +76,7 @@ sub cache_dir {
 
     my $self = shift;
 
-    return if $DADA::Config::SCREEN_CACHE != 1;
+    return if $DADA::Config::SCREEN_CACHE == 0;
 
     return DADA::App::Guts::make_safer( $DADA::Config::TMP . '/_screen_cache' );
 
@@ -88,7 +87,7 @@ sub cached {
     my $self   = shift;
     my $screen = shift;
 
-    return if $DADA::Config::SCREEN_CACHE != 1;
+    return if $DADA::Config::SCREEN_CACHE == 0;
 	my $filename = make_safer($self->cache_dir . '/' . $self->translate_name($screen)); 
 	#    exists          readable. 
     if ( -e $filename && -r _ ) { 
@@ -267,7 +266,7 @@ sub cache {
 
 	eval { 
 	    my $unref = $$data;
-	    return if $DADA::Config::SCREEN_CACHE != 1;
+	    return if $DADA::Config::SCREEN_CACHE == 0;
 	    my $filename =
 	      DADA::App::Guts::make_safer(
 	        $self->cache_dir . '/' . $self->translate_name($screen) );
@@ -312,12 +311,12 @@ sub flush {
 
     my $self = shift;
 
-    return if $DADA::Config::SCREEN_CACHE != 1;
+    return if $DADA::Config::SCREEN_CACHE == 0;
 
     my $f;
     opendir( CACHE, $self->cache_dir )
       or croak
-"$DADA::Config::PROGRAM_NAME $DADA::Config::VER error, can't open '$self->cache_dir' to read because: $!";
+"$DADA::Config::PROGRAM_NAME $DADA::Config::VER error, can't open '" . $self->cache_dir . "' to read because: $!";
 
     while ( defined( $f = readdir CACHE ) ) {
 
@@ -380,9 +379,10 @@ sub cached_screens {
     my $f;
     my $listing = [];
 
-    opendir( CACHE, $self->cache_dir )
+	
+    opendir( CACHE, $self->cache_dir() )
       or croak
-"$DADA::Config::PROGRAM_NAME $DADA::Config::VER error, can't open $self->cache_dir to read because: $!";
+"$DADA::Config::PROGRAM_NAME $DADA::Config::VER error, can't open '" .  $self->cache_dir . "' to read because: $!";
 
     while ( defined( $f = readdir CACHE ) ) {
 
@@ -413,7 +413,7 @@ sub DESTROY {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2010 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

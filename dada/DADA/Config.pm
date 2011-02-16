@@ -1680,9 +1680,9 @@ $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION ||= 0;
 
 =head2 $ENFORCE_CLOSED_LOOP_OPT_IN
 
-Set to, C<1> by default, C<$ENFORCE_CLOSED_LOOP_OPT_IN> enables the Closed-Loop Opt-In System in Dada Mail and disables other features in Dada Mail that work around being 100% in conformance to Dada Mail's Closed-Loop Opt-In System. 
+C<$ENFORCE_CLOSED_LOOP_OPT_IN> enables the Closed-Loop Opt-In System in Dada Mail and disables other features in Dada Mail that work around being 100% in conformance to Dada Mail's Closed-Loop Opt-In System. 
 
-It's B<highly> suggested to leave this C<$ENFORCE_CLOSED_LOOP_OPT_IN> set to, C<1>. 
+It's B<highly> suggested to set this C<$ENFORCE_CLOSED_LOOP_OPT_IN> set to, C<1>. 
 
 =head4 More Information: 
 
@@ -1690,7 +1690,7 @@ L<http://dadamailproject.com/installation/using_dada_mail.html>
 
 =cut
 
-$ENFORCE_CLOSED_LOOP_OPT_IN ||= 1; 
+$ENFORCE_CLOSED_LOOP_OPT_IN ||= 0; 
 
 
 =pod 
@@ -4008,6 +4008,8 @@ Shown when a request to subscribe is successful.
 
 $HTML_CONFIRMATION_MESSAGE ||= <<EOF
 
+<!-- tmpl_set name="title" value="Please Confirm Your Subscription" --> 
+
 <h1>Please confirm your mailing list subscription</h1>  
 
 <p>An email message has been sent to the following address:</p>
@@ -4096,6 +4098,8 @@ Shown when a request to unsubscribe is successful.
 
 $HTML_UNSUB_CONFIRMATION_MESSAGE ||= <<EOF
 
+<!-- tmpl_set name="title" value="Please Confirm Your Unsubscription" -->
+
 <h1>Please confirm your mailing list unsubscription</h1>  
 
 <p>An email message has been sent to the following address:</p>
@@ -4151,6 +4155,8 @@ Shown when a subscription is successful.
 
 $HTML_SUBSCRIBED_MESSAGE ||= <<EOF 
 
+<!-- tmpl_set name="title" value="Subscription Successful" -->
+
 <h1>Subscription is successful!</h1>
 
 <p>You are now subscribed to the following mailing list:</p>
@@ -4185,7 +4191,10 @@ I<(List-centric, editable per list)>
 
 =cut
 
+
 $HTML_SUBSCRIPTION_REQUEST_MESSAGE ||= <<EOF 
+
+<!-- tmpl_set name="title" value="Subscription Request Successful" -->
 
 <h1>Your Request For Subscription is Complete</h1>
 
@@ -4228,6 +4237,8 @@ Shown when an unsubscription is successful.
 =cut
 
 $HTML_UNSUBSCRIBED_MESSAGE ||= <<EOF  
+
+<!-- tmpl_set name="title" value="Unsubscription Successful" --> 
 
 <h1>You have been unsubscribed from the list: <!-- tmpl_var list_settings.list_name --></h1>
 
@@ -4644,7 +4655,6 @@ encrypted.
 	
 	discussion_template_defang   => 1,
 	only_allow_group_plain_text  => 0,
-	add_reply_to                 => 1,
 	mail_group_message_to_poster => 1,
 	append_list_name_to_subject  => 1,
 	
@@ -4972,8 +4982,8 @@ and to say that you've got the freshest tools on the Web.
 
 
 
-$VERSION = 4.3.2; 
-$VER     = '4.3.2 Stable 01/16/10';
+$VERSION = 4.4.0; 
+$VER     = '4.4.0 Stable';
 
 
 #
@@ -5156,7 +5166,7 @@ sub _config_import {
 	# What we're doing is, seeing if you've actually changed the variable from
 	# it's default, and if not, we take a best guess.	
 	
-	my $CONFIG_FILE_DIR; 
+	my $CONFIG_FILE_DIR = undef; 
 	
 	if(defined($OS) !~ m/^Win|^MSWin/i){ 
 		my $getpwuid_call; 
@@ -5222,7 +5232,7 @@ sub _config_import {
 		bounce_scores_table             => 'dada_bounce_scores', 
 		clickthrough_urls_table         => 'dada_clickthrough_urls',
 	); 
-	foreach(keys %default_table_names){ 
+	for(keys %default_table_names){ 
 		if(!exists($SQL_PARAMS{$_})){ 
 			$SQL_PARAMS{$_} = $default_table_names{$_};
 		}
@@ -5260,7 +5270,7 @@ My name is Justin Simoni
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2010 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

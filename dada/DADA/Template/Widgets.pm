@@ -9,8 +9,6 @@ use CGI::Carp qw(croak carp);
 
 use DADA::Config qw(!:DEFAULT);  
 
-my %set_params = (); 
-
 # A weird fix.
 BEGIN {
    if($] > 5.008){
@@ -82,7 +80,7 @@ my $second_guess_template  = $wierd_abs_path;
 		push(@guesses, $getpwuid_call . '/public_html/cgi-bin/dada/DADA/Template/templates');
 		push(@guesses, $getpwuid_call . '/public_html/dada/DADA/Template/templates');
 	}
-	
+
 require Exporter; 
 
 use vars (@ISA, @EXPORT); 
@@ -234,7 +232,7 @@ my %Global_Template_Options = (
 		loop_context_vars => 1, 									
 );
 
-
+my %_ht_tmpl_set_params = (); 
 
 
 											
@@ -475,9 +473,6 @@ sub global_list_sending_checkbox_widget {
 
 sub default_screen {
 
-#my ($args) = @_; 
-#my %args = %$args; #backwards compat? 
-
     my %args = (
         -show_hidden        => undef,
         -name               => undef,
@@ -575,12 +570,12 @@ sub default_screen {
         -set_flavor => $args{set_flavor},
     );
 
-    return screen(
+	return wrap_screen(
         {
+			-with   => 'list', 
             -screen => 'default_screen.tmpl',
             -expr   => 1,
             -vars   => {
-
                 list_popup_menu    => $list_popup_menu,
                 email              => $args{ -email },
                 set_flavor         => $args{ -set_flavor },
@@ -589,7 +584,6 @@ sub default_screen {
                 error_invalid_list => $args{ -error_invalid_list },
                 fields             => $named_subscriber_fields,
                 subscription_form  => subscription_form( { -give_props => 0 } ),
-
             },
         }
     );
@@ -623,9 +617,14 @@ sub list_page {
 
 	# allowed_to_view_archives
     my $html_archive_list = html_archive_list($args{-list}); 
-    my $template = screen(
+	
+	# So, how does, "wrap_screen" embed variables? 
+	# In other words, how do I show the list name in the title? That's important. 
+	
+    my $template = wrap_screen(
         {
         -expr                     => 1, 
+		-with                     => 'list', 
         -screen                   => 'list_page_screen.tmpl',
         -list_settings_vars       => $li,
         -list_settings_vars_param => {
@@ -723,12 +722,12 @@ sub admin {
             $logged_in_list_name = $l_li->{list_name};
         }
 
-    return screen(
+    return wrap_screen(
                     {
                         -screen => 'admin_screen.tmpl',
+						-with   => 'list', 
                         -expr   => 1, 
                         -vars   => { 
-	
                             login_widget            => $login_widget, 
                             list_popup_menu         => $list_popup_menu,
                             list_max_reached        => $list_max_reached, 
@@ -1381,7 +1380,7 @@ The precendence for these various variables is:
 
 =item * -list_settings_vars
 
-=item * -subscriber_vars
+=item * -subscriber _vars
 
 =item * -vars
 
@@ -1393,8 +1392,11 @@ B<-list_settings_vars> or B<-subscriber_vars>, you can in B<-vars>
 =cut
 
 
-sub screen {  
 
+
+
+sub screen {  
+	
     my ($args) = @_; 
 
     if (! exists($args->{-screen}) && ! exists($args->{-data})){ 
@@ -1453,7 +1455,7 @@ sub screen {
                 #}
                 
                 
-                if( !exists($args->{-list_settings_vars_param}->{i_know_what_im_doing}) ){                     
+                if( !exists($args->{-list_settings_vars_param}->{-i_know_what_im_doing}) ){                     
                     # this is to get really naughty bits out: 
                     foreach(qw(
                         password
@@ -1780,53 +1782,59 @@ else {
 
 	my $template; 
 	
+	my $filters = []; 
+ 	if($args->{-screen}){
+		push(@$filters, 
+				{ 
+					sub    => \&decode_str,
+					format => 'scalar' 
+				}
+		); 
+	}
+	push(@$filters, 
+	    { 
+			sub => \&hack_in_tmpl_set_support,
+			format => 'scalar' 
+		},
+	);
+ 
+	if($args->{-dada_pseudo_tag_filter} == 1){ 
+		push(@$filters, 
+		{ 
+			sub    => \&dada_backwards_compatibility,
+			format => 'scalar' 
+		}
+		); 
+		push(@$filters, 
+		{ 
+			sub    => \&dada_pseudo_tag_filter,
+			format => 'scalar' 
+		}
+		);
+	}
+	# This is very strange - but the filters were break images (binary stuff) 
+	if(exists($args->{-img})){ 
+		if($args->{-img} == 1){ 
+			$filters = [];
+		}
+	}
+	
 	if($args->{-expr}){ 
 	
 		if($args->{-screen}){ 
-	
-			  require HTML::Template::MyExpr;
-			 $template = HTML::Template::MyExpr->new(%Global_Template_Options, 
-													 filename => $args->{-screen},
-                                                         
-                                                         ($args->{-dada_pseudo_tag_filter} == 1) ?
-                                                         (
-                                                         filter => [ 
-														 
-														#  { sub => \&set_name_value_filter, format => 'scalar' },
-                  											   { sub => \&decode_str,format => 'scalar' },
-                                                              { sub => \&dada_backwards_compatibility,
-                                                               format => 'scalar' },
-                                                             { sub => \&dada_pseudo_tag_filter,
-                                                               format => 'scalar' },
-                                                         ])
-                                                         :
-                                                         (),
-                                        
-													);
-		}elsif($args->{-data}){ 
-		
 			require HTML::Template::MyExpr;
-			$template = HTML::Template::MyExpr->new(%Global_Template_Options, 
-												  scalarref => $args->{-data},
-												  
-                                                         
-                                                         ($args->{-dada_pseudo_tag_filter} == 1) ?
-                                                         (
-                                                        filter => [ 
-													  		
-															# the scalarref should already be 
-															# decoded, so doing it again isn't necessary? 
-															# { sub => \&decode,format => 'scalar' },
-                                                              { sub => \&dada_backwards_compatibility,
-                                                               format => 'scalar' },
-                                                             { sub => \&dada_pseudo_tag_filter,
-                                                               format => 'scalar' },
-                                                         ])
-                                                         :
-                                                         (),
-
-                                                    
-													);
+			$template = HTML::Template::MyExpr->new(
+				%Global_Template_Options, 
+				filename => $args->{-screen},
+				filter   => $filters, 
+			);
+		}elsif($args->{-data}){ 
+			require HTML::Template::MyExpr;
+			$template = HTML::Template::MyExpr->new(
+				%Global_Template_Options, 
+				scalarref => $args->{-data},
+				filter    => $filters, 
+			);
 		}else{ 
 			carp "what are you trying to do?!"; 
 		}
@@ -1834,124 +1842,232 @@ else {
    }else{ 
    
    	if($args->{-screen}){ 
-
-   		require HTML::Template;
-	 $template = HTML::Template->new(%Global_Template_Options, 
-										filename => $args->{-screen},
-                                                         
-                                                         ($args->{-dada_pseudo_tag_filter} == 1) ?
-                                                         (
-                                                        filter => [ 
-														 # { sub => \&set_name_value_filter, format => 'scalar' },
-															 { sub => \&decode_str, format => 'scalar' },
-                                                              { sub => \&dada_backwards_compatibility,
-                                                               format => 'scalar' },
-                                                             { sub => \&dada_pseudo_tag_filter,
-                                                               format => 'scalar' },
-                                                         ])                                                         :
-                                                         (),
-
-
-							   );
+		require HTML::Template;
+		 $template = HTML::Template->new(
+		 	%Global_Template_Options, 
+			filename => $args->{-screen},
+			filter => $filters,                 
+		);
 
 	}elsif($args->{-data}){ 
 
 		if($args->{-decode_before} == 1){ 
-			#decode_str($args->{-data}); 
-		#	$args->{-data} = safely_decode($$args->{-data}); 
-		${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
-	#	${$args->{-data}} = Encode::decode('UTF-8' ,${$args->{-data}}); 
-		
+			${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
 		}
 		
    		require HTML::Template;
-	#	eval { 
-			$template = HTML::Template->new(%Global_Template_Options, 
-										scalarref => $args->{-data},
-
-                                                                     
-                                        ($args->{-dada_pseudo_tag_filter} == 1) ?
-                                        (
-                                                        filter => [ 
-															# the scalarref should already be 
-															# decoded, so doing it again isn't necessary? 
-														#	($args->{-decode_before} == 1 ? 
-														#	 	({ sub => \&decode,format => 'scalar' },) : ()
-                                                         #    ), 
-
-																{ sub => \&dada_backwards_compatibility,
-                                                               format => 'scalar' },
-                                                             { sub => \&dada_pseudo_tag_filter,
-                                                               format => 'scalar' },
-                                                         ])                                        :
-                                        (),
-
-
-							   );
-					#	};
-		#
-	#if($@){ 
-	#	print "This template didn't work:" . ${$args->{-data}};
-	#	die $@; 
-	#}
-		
-						   					   
+			$template = HTML::Template->new(
+				%Global_Template_Options, 
+				scalarref => $args->{-data},
+				filter => $filters,   
+			);		   					   
    		}else{ 
 			carp "what are you trying to do?!"; 
 		}
    }
-   
-   
-   
-	if(keys %set_params){ 
-		%$template_vars = (%set_params, %$template_vars); 
-		%set_params = (); 
-	}
 
-
-   $template->param(   
-					%Global_Template_Variables,					
-					# I like that, (not) 
-					date    => scalar(localtime()),
-					%$template_vars,
-				   ); 
-				   
-	if($args->{-list}){ 
-		$template->param('list', $args->{-list}); 
+	my %final_params = (
+		%Global_Template_Variables,					
+		# I like that, (not) 
+		date    => scalar(localtime()),
+		%$template_vars,
+		%_ht_tmpl_set_params,
+	);
+	if(exists($args->{-list})){ 
+		$final_params{list} =  $args->{-list};  
 	}
 	
-#	# From what I understand, we want to treat HTML::Template stuff as if its already encoded. 
-#	if(exists($args->{-decode})){ 
-#		if($args->{-decode} == 1){ 
-#			return Encode::decode($DADA::Config::HTML_CHARSET, $template->output()); 
-#		}
-#	}
-	return $template->output();
-
-}
-
-
-sub set_name_value_filter { 
-	 my $text_ref=shift;
-	 my $match='<(?:\!--\s*)?tmpl_set\s*name=(.*?)\s*value=(.*?)\s*>';  
-	 my @taglist=$$text_ref =~ m/$match/gi;
-	   while (@taglist) {
-	     my ($t,$v)=(shift @taglist,shift @taglist);
-		
-		# This moronic - but I'm at my wit's end on the regex, above. 
-		$t =~ s/^\"|\"$//g; 
-		$v =~ s/^\"|\"$//g; 
-		
-		$set_params{$t}=$v;
 	
+	
+   $template->param(%final_params); 
+	#my %return_params = %_ht_tmpl_set_params; 
+	%_ht_tmpl_set_params = (); 
+	if(exists($args->{-return_params})){ 
+		if($args->{-return_params} == 1){ 
+			return ($template->output(), {%final_params});	
 		}
-	   $$text_ref =~ s/$match/<tmpl_if name=never><tmpl_var name=$1><\/tmpl_if><!-- here. -->/gi;	
+		else { 
+			return $template->output();
+		}
+	}
+	else { 
+		return $template->output();
+	}
 }
+
+
+=pod
+
+=head2 wrap_screen
+
+	my $scrn = wrap_screen(
+		{ 
+			-with => 'list', # or, 'admin', 
+			-screen => 'some_screen.tmpl', # or, "-data => \$some_data, 
+			# ... other options
+		}
+	); 
+
+C<wrap_screen> allows you to wrap either one of the two templates (currently) 
+that Dada Mail uses to wrap other template in: C<default_list_template.tmpl> and
+C<default_admin_template.tmpl>. 
+
+It takes the same options as, C<screen> and adds a few of its own: 
+
+C<-with> is required and should be set to either, C<list>, or C<admin>, depending on 
+whether you want to wrap the template in either the list or admin template. 
+
+C<-wrapper_params> can also be passed and the value of its paramaters (confusingly)
+will be different, depending on if you're using C<list> or, C<admin> for, C<-with>
+
+For, C<list>:
+
+=over
+
+=item * any paramater you would usually send to DADA::Template::HTML::list_template()
+
+Example: 
+
+	my $scrn = DADA::Template::Widgets::wrap_screen(
+		{
+			-screen => 'preview_template.tmpl',
+			-with   => 'list', 
+			-wrapper_params => { 
+				-data => \$template_info, # This is the actual template we'll be using! 
+			},
+		}
+	);
+
+=back
+
+For, C<admin> 
+
+=over
+
+=item * any paramater you would usually send to, DADA::Template::HTML::admin_template
+
+	my $scrn .= DADA::Template::Widgets::wrap_screen(
+		{
+			-screen => 'sending_monitor_index_screen.tmpl',
+            -with   => 'admin', 
+			-wrapper_params => { 
+				-Root_Login => 1,
+				-List       => 'my_list',  
+			},
+			# ... 
+		}
+	);
+
+=back
+
+=cut 
+
+
+sub wrap_screen { 
+		
+	my ($args) = @_; 
+
+	if(!exists($args->{-with})){ 
+		croak "you must pass the, '-with' paramater"; 
+	}
+	else { 
+		if($args->{-with} !~ m/^(list|admin)$/){ 
+			croak "'-with' paramater must be either, 'list' or, 'admin'";
+		}
+	}
+	my $with = $args->{-with}; 
+	# I'd rather not have this passed to, screen(); 
+	delete $args->{-with}; 
+	
+	# I need params from the first template passed. 
+	$args->{-return_params} = 1; 
+	my ($tmpl, $params) = screen($args);
+	if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1 && $with eq 'list') {
+        $tmpl = $tmpl . $DADA::Template::HTML::HTML_Footer; 
+    }
+	# "content" is passed to the wrapper template
+	my $vars = { 
+		content => $tmpl, 
+	};
+	for(qw(title show_profile_widget)){ 
+		if(exists($params->{$_})){ 
+			# variables within variables... 
+			$vars->{$_} = $params->{$_}; 
+			if($vars->{$_} =~ m/\<\!\-- tmpl_/){
+				$vars->{$_} = screen({-data => \$vars->{$_}, -vars => $params}); 
+			}
+		}
+	}	 
+		
+	if($with eq 'list'){ 
+	
+		# list_template is the wrapper template - it calls, screen()
+		# This will aggravate you, as I'm aggravated by it - there's 3 ways to send the listshortname to screen()
+		# And list_template() here has one way, so we have to figure out where, "list" is, and use it. 
+		# Here we go: 
+		my $list_param = undef; 
+		if(exists($args->{-list})){ 
+			$list_param =  $args->{-list}; 
+		}
+		elsif(exists($args->{-list_settings_vars})){
+			if(exists($args->{-list_settings_vars}->{list})){ 
+				$list_param =  $args->{-list_settings_vars}->{list}; 
+			}
+			elsif(exists($args->{-list_settings_vars}->{'list_settings.list'})){ 
+				$list_param =  $args->{-list_settings_vars}->{'list_settings.list'}; 
+			}	
+		}
+		elsif(exists($args->{-list_settings_vars_param}->{-list})){
+			$list_param = $args->{-list_settings_vars_param}->{-list}; 
+		}
+		
+		require DADA::Template::HTML; 	
+		my $template = DADA::Template::HTML::list_template(
+			%{$args->{-wrapper_params}}, # This is currently, "blank" - where is put in here - header_params? 
+			-vars => $vars,				 # This currently only has, "title" and, "content" - everything else should 
+										 # already be filled out. 
+			-Part => 'full', 
+			-List => $list_param, 
+			); 			
+		return $template; 
+	}
+	elsif($with eq 'admin'){ 
+		require DADA::Template::HTML; 	
+		my $template = DADA::Template::HTML::admin_template(
+			%{$args->{-wrapper_params}}, 
+			-vars => $vars,				 						 
+			-Part => 'full', 
+			); 			
+		return $template;
+	}
+	else { 
+		# I think it may be impossible to get here. 
+		die "only 'list' and 'admin' wrapping is currently supported."; 
+	}
+}
+
+
+
+
+sub validate_screen { 
+	my ($args) = @_; 
+	eval { 
+		my $scrn = screen($args)
+	};
+	if($@){ 
+		return (0, $@);
+	}
+	else { 
+		return (1, undef); 
+	}
+}
+
+
+
 
 sub decode_str { 
 	my $ref = shift;
-       #${$ref} = Encode::decode('UTF-8', ${$ref});
-		${$ref} = safely_decode(${$ref}); 
+ 		${$ref} = safely_decode(${$ref}); 
 }
 
 sub dada_backwards_compatibility { 
@@ -2041,8 +2157,18 @@ sub dada_pseudo_tag_filter {
    
 }
 
+sub hack_in_tmpl_set_support {
+    my $text_ref = shift;
 
-
+    my $match = qr/\<\!\-\- tmpl_set name\=\"(.*?)\" value\=\"(.*?)\" \-\-\>/;
+					#	<!-- set name="one" value="two" -->
+    my @taglist = $$text_ref =~ m/$match/gi;
+    while (@taglist) {
+        my ( $t, $v ) = ( shift @taglist, shift @taglist );		
+        $_ht_tmpl_set_params{$t} = $v;
+    }
+    $$text_ref =~ s/$match//gi;
+}
 
 sub webify_and_santize { 
 
@@ -2405,7 +2531,7 @@ sub _slurp {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2010 Justin Simoni 
+Copyright (c) 1999 - 2011 Justin Simoni 
 http://justinsimoni.com 
 All rights reserved. 
 

@@ -306,3 +306,4 @@ BEGIN { use_ok('version'); } # version is now required for Text::Balanced.
 
 
 
+dada_test_config::wipe_out;

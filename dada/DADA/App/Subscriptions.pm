@@ -91,8 +91,8 @@ sub subscribe {
     
     my $q     = $args->{-cgi_obj}; 
     my $list  = xss_filter($q->param('list')); 
-    my $email = xss_filter($q->param('email')); 
-       $email = DADA::App::Guts::strip($email); 
+
+    my $email = lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) ); 
 
     my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list);
 	my $ls          = undef; 
@@ -146,9 +146,6 @@ sub subscribe {
 		}
 	}
     
-    
-    $email = lc_email($email);
-
 	# I really wish this was done, after we look and see if the confirmation
 	# step is even needed, just so we don't have to do this, twice. It would
 	# clarify a bunch of things, I think.
@@ -250,7 +247,7 @@ sub subscribe {
                 my $qs = ''; 
                 if($li->{alt_url_sub_confirm_failed_w_qs} == 1){ 
                     $qs = '?list=' . $list . '&rm=sub_confirm&status=0&email=' . uriescape($email);
-                    $qs .= '&errors=' . $_ for keys %$errors; 
+                    $qs .= '&errors[]=' . $_ for keys %$errors; 
                     $qs .= '&' . $_ . '=' . uriescape($fields->{$_}) for keys %$fields; 
                 }
                 
@@ -360,34 +357,19 @@ sub subscribe {
 
             }else{ 
     			
-				my $r = ''; 
-                $r .= DADA::Template::HTML::list_template(
-                               -Part  => "header",
-                               -Title => "Please Confirm Your Subscription",
-                               -List  => $li->{list}
-                          );
-                               
-				my $s; 
-				$s = $li->{html_confirmation_message}; 
-
+				my $s = $li->{html_confirmation_message}; 
 				require DADA::Template::Widgets; 
-				$r .=   DADA::Template::Widgets::screen(
+				my $r =   DADA::Template::Widgets::wrap_screen(
 				{ 
 					-data                     => \$s,
-					-list_settings_vars_param => {-list => $li->{list},},
+					-with                     => 'list', 
+					-list_settings_vars_param => {-list => $li->{list},}, # um, -dot_it? 
 					-subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'sub_confirm_list'},
 					-dada_pseudo_tag_filter   => 1,             
 				} 
 
 				); 
-                
-                $r .= DADA::Template::HTML::list_template(
-                               -Part      => "footer", 
-                               -List      => $li->{list},
-                               -Site_Name => $li->{website_name}, 
-                               -Site_URL  => $li->{website_url},
-                               );
-            	# Test: sub_confirm-sub_confirm_success
+                # Test: sub_confirm-sub_confirm_success
 				$self->test ? return $r : print $fh safely_encode(  $r) and return; 
                  
             }
@@ -427,8 +409,7 @@ sub confirm {
 
     my $q = $args->{-cgi_obj}; 
     my $list  = xss_filter($q->param('list')); 
-    my $email = xss_filter($q->param('email'));     
-       $email = DADA::App::Guts::strip($email); 
+    my $email = lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) ); 
         
     my $pin   = xss_filter($q->param('pin')); 
 
@@ -473,10 +454,7 @@ sub confirm {
 			}
         }
     }
-    
-    
-    $email = lc_email($email); 
-           
+              
     my $lh = DADA::MailingList::Subscribers->new({-list => $list});
 
     warn '$li->{captcha_sub} set to: ' . $li->{captcha_sub}
@@ -539,50 +517,36 @@ sub confirm {
 	            my $cap = DADA::Security::AuthenCAPTCHA->new; 
 	            my $CAPTCHA_string = $cap->get_html($DADA::Config::RECAPTCHA_PARAMS->{public_key}); 
       
-				my $r = ''; 
-      
-	             $r .= DADA::Template::HTML::list_template(
-	                -Part  => "header",
-	                -Title => "Subscription Almost Complete",
-	                -List => $li->{list},
-	            );
-	            require DADA::Template::Widgets;
-	           	$r .=  DADA::Template::Widgets::screen(
-	                                                {
-	                                                  -screen                   => 'confirm_captcha_step_screen.tmpl', 
-	                                                  -list_settings_vars_param => {-list => $li->{list}},
-	                                                  -subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'sub_confirm_list'},
-	                                                  -dada_pseudo_tag_filter   => 1, 
+				require DADA::Template::Widgets;
+				my $r =  DADA::Template::Widgets::wrap_screen(
+					{
+					-screen                   => 'confirm_captcha_step_screen.tmpl', 
+					-with                     => 'list',
+					-list_settings_vars_param => {-list => $li->{list}},
+					-subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'sub_confirm_list'},
+					-dada_pseudo_tag_filter   => 1, 
 
-	                                                  -vars   => {
-		
-	                                                        CAPTCHA_string   => $CAPTCHA_string,
-    
-															# BUGFIX: 
-															#  2308530  	 3.0.0 - sub Confirm CAPTCHA broken w/close-loop disabled
-															# https://sourceforge.net/tracker2/?func=detail&aid=2308530&group_id=13002&atid=113002
-															# I'm trying to figure out where this would not be, "n", but I'm faiing, so 
-															# for the moment, I'm just going to put that value in, myself: 
-	
-	                                                        #flavor       => xss_filter($q->param('flavor')), 
-	                                                        flavor        => 'n', 
-	
-															list         => xss_filter( $q->param('list')), 
-	                                                        email        => xss_filter($q->param('email')), 
-	                                                        pin          => xss_filter($q->param('pin')), 
-	                                                        captcha_auth => xss_filter($captcha_auth),        
-                                                        
-	                                                          },
-	                                                      },
-                                                      
+					-vars   => {
 
-	                                                    );
-	            $r .=  DADA::Template::HTML::list_template(
-	                -Part      => "footer", 
-	                -List      => $li->{list},
-	                -Site_Name => $li->{website_name},
-	                -Site_URL  => $li->{website_url},
-	            );                                          
+						CAPTCHA_string   => $CAPTCHA_string,
+
+						# BUGFIX: 
+						#  2308530  	 3.0.0 - sub Confirm CAPTCHA broken w/close-loop disabled
+						# https://sourceforge.net/tracker2/?func=detail&aid=2308530&group_id=13002&atid=113002
+						# I'm trying to figure out where this would not be, "n", but I'm faiing, so 
+						# for the moment, I'm just going to put that value in, myself: 
+
+						#flavor       => xss_filter($q->param('flavor')), 
+						flavor        => 'n', 
+
+						list         => xss_filter( $q->param('list')), 
+						email        => lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) ), 
+						pin          => xss_filter($q->param('pin')), 
+						captcha_auth => xss_filter($captcha_auth),        
+
+						},
+					},
+				);
     
 				$self->test ? return $r : print $fh safely_encode(  $r) and return; 
 
@@ -712,7 +676,7 @@ sub confirm {
                     
                 if($li->{alt_url_sub_failed_w_qs} == 1){ 
                     $qs = '?list=' . $list . '&rm=sub&status=0&email=' . uriescape($email);
-                    $qs .= '&errors=' . $_ for keys %$errors; 
+                    $qs .= '&errors[]=' . $_ for keys %$errors; 
                     
                 }
                 warn '>>>> >>>> >>>> redirecting to: ' . $li->{alt_url_sub_failed} . $qs
@@ -770,27 +734,18 @@ sub confirm {
 	        		-confirmed        => 1, 
                 }
 			);
-	        	my $r = ''; 
-	        	$r .=  DADA::Template::HTML::list_template(
-                            -Part  => "header",
-                            -Title => "Subscription Request Successful",
-                            -List  => $li->{list},
-                   );
             my $s = $li->{html_subscription_request_message};
             require DADA::Template::Widgets; 
-            $r .= DADA::Template::Widgets::screen(
+            my $r .= DADA::Template::Widgets::wrap_screen(
                          { 
                             -data                     => \$s,
+							-with                     => 'list', 
                             -list_settings_vars_param => {-list => $li->{list},},
                             -subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'sub_request_list'},
                             -dada_pseudo_tag_filter   => 1, 
                             -vars                     => { email => $email, subscriber_email => $email}, 
                          } 
             ); 
-            $r .= DADA::Template::HTML::list_template(
-                            -Part      => "footer", 
-                            -List      => $li->{list},
-                  );
 			
 			require DADA::App::Messages; 
 			DADA::App::Messages::send_generic_email(
@@ -949,31 +904,19 @@ sub confirm {
                     warn 'Printing out, Subscription Successful screen' 
                         if $t; 
                     
-		        	my $r = ''; 
-		        	$r .=  DADA::Template::HTML::list_template(
-                                   -Part  => "header",
-                                   -Title => "Subscription Successful",
-                                   -List  => $li->{list},
-                          );
-                    
-                    
                    my $s = $li->{html_subscribed_message};
                    require DADA::Template::Widgets; 
-                   $r .= DADA::Template::Widgets::screen(
+                   my $r .= DADA::Template::Widgets::wrap_screen(
                                 { 
                                    -data                     => \$s,
+								   -with                     => 'list', 
                                    -list_settings_vars_param => {-list => $li->{list},},
                                    -subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'list'},
                                    -dada_pseudo_tag_filter   => 1, 
                                    -vars                     => { email => $email, subscriber_email => $email}, 
                                 } 
                    ); 
-                    
-                   $r .= DADA::Template::HTML::list_template(
-                                   -Part      => "footer", 
-                                   -List      => $li->{list},
-                         );
-        
+                            
                     $self->test ? return $r : print $fh safely_encode(  $r) and return; 
         
                 }
@@ -1014,8 +957,7 @@ sub unsubscribe {
     
     my $q     = $args->{-cgi_obj}; 
     my $list  = xss_filter($q->param('list')); 
-    my $email = xss_filter($q->param('email')); 
-       $email = DADA::App::Guts::strip($email); 
+    my $email = lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) ); 
        
     my $pin   = xss_filter($q->param('pin')); 
     
@@ -1172,7 +1114,7 @@ sub unsubscribe {
                 # With a query string?
                 if($li->{alt_url_unsub_confirm_failed_w_qs} == 1){ 
                     $qs = '?list=' . $list . '&rm=unsub_confirm&status=0&email=' . uriescape($email);
-                    $qs .= '&errors=' . $_ for keys %$errors; 
+                    $qs .= '&errors[]=' . $_ for keys %$errors; 
                 }
                 my $r = $q->redirect(-uri => $li->{alt_url_unsub_confirm_failed} . $qs);
                 $self->test ? return $r : print $fh safely_encode(  $r) and return; 
@@ -1193,7 +1135,7 @@ sub unsubscribe {
                         # Special Case. 
                         $_ = 'unsub_invalid_email' 
                             if $_ eq 'invalid_email';
-                        warn "showing error, $_"; 
+                       # warn "showing error, $_"; 
                         return user_error(
                             -List  => $list, 
                             -Error => $_,            
@@ -1272,18 +1214,11 @@ sub unsubscribe {
                 $self->test ? return $r : print $fh safely_encode(  $r) and return; 
                 
             }else{ 
-            	my $r = ''; 
-
-                $r .= DADA::Template::HTML::list_template(
-                           -Part  => "header",
-                           -Title => "Please Confirm Your Unsubscription",
-                           -List  => $li->{list},
-                      );
-                
                my $s = $li->{html_unsub_confirmation_message};
                require DADA::Template::Widgets; 
-               $r .= DADA::Template::Widgets::screen({ 
+               my $r = DADA::Template::Widgets::wrap_screen({ 
                                                        -data                     => \$s,
+													   -with                     => 'list', 
                                                        -list_settings_vars_param => {-list => $li->{list},},
                                                        -subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'list'},
                                                        -dada_pseudo_tag_filter  => 1, 
@@ -1291,15 +1226,6 @@ sub unsubscribe {
             
                } 
                ); 
-
-
-
- 
-             	$r .= DADA::Template::HTML::list_template(-Part      => 'footer', 
-                            -List      => $li->{list},
-                            -Site_Name => $li->{website_name},
-                            -Site_URL  => $li->{website_url}
-                       );
 				$self->test ? return $r : print $fh safely_encode(  $r) and return;
 				
             }                 
@@ -1335,9 +1261,7 @@ sub unsub_confirm {
    
     my $q     = $args->{-cgi_obj}; 
     my $list  = xss_filter($q->param('list')); 
-    my $email = xss_filter($q->param('email'));     
-       $email = DADA::App::Guts::strip($email); 
-        
+    my $email = lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) );
     my $pin   = xss_filter($q->param('pin')); 
     
     if($args->{-html_output} != 0){ 
@@ -1480,7 +1404,7 @@ sub unsub_confirm {
                 my $qs = ''; 
                 if($li->{alt_url_unsub_failed_w_qs} == 1){ 
                     $qs = '?list=' . $list . '&rm=unsub&status=0&email=' . uriescape($email); 
-                    $qs .= '&errors=' . $_ for keys %$errors; 
+                    $qs .= '&errors[]=' . $_ for keys %$errors; 
                 }
                 warn 'Redirecting to: ' . $li->{alt_url_unsub_failed} . $qs 
                     if $t; 
@@ -1603,31 +1527,17 @@ sub unsub_confirm {
                 $self->test ? return $r : print $fh safely_encode(  $r) and return;
             
             }else{                
-				my $r = ''; 
-                $r .=  DADA::Template::HTML::list_template(
-                            -Part  => "header",
-                            -Title => "Unsubscription Successful",
-                            -List  => $list
-                      ); 
-                
                my $s = $li->{html_unsubscribed_message};
                require DADA::Template::Widgets; 
-               $r .=  DADA::Template::Widgets::screen({ 
-
-                                                       -data                     => \$s,
-                                                       -list_settings_vars_param => {-list => $li->{list}},
-                                                       -dada_pseudo_tag_filter   => 1, 
-													   -subscriber_vars          => {'subscriber.email' => $email},
-
-                    									}); 
-
-                $r .=  DADA::Template::HTML::list_template(
-                            -Part      => "footer",
-                            -List      => $list,
-                            -Site_Name => $li->{website_name},
-                            -Site_URL  => $li->{website_url},
-                      ); 
-
+               my $r =  DADA::Template::Widgets::wrap_screen(
+					{ 
+  						-data                     => \$s,
+						-with                     => 'list', 
+						-list_settings_vars_param => {-list => $li->{list}},
+						-dada_pseudo_tag_filter   => 1, 
+						-subscriber_vars          => {'subscriber.email' => $email},
+						}
+				); 
                 $self->test ? return $r : print $fh safely_encode(  $r) and return; 
 
             }
@@ -1768,7 +1678,7 @@ Justin Simoni http://dadamailproject.com
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 1999 - 2010 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

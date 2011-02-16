@@ -1531,6 +1531,7 @@ sub make_search_summary {
 		for $line(@message_lines){ 
 			if($line =~ m/$keyword/io){ 
 				$line =~ s{$keyword}{<em class="highlighted">$keyword</em>}gi;
+				$line = $self->massage($line); 
 				$search_summary{$key} .= "... $line ... <br />";
 			}
 		} 
@@ -2686,7 +2687,7 @@ sub _decode_header {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2010 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

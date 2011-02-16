@@ -1,0 +1,17 @@
+<!-- begin reset_cipher_keys.tmpl --> 
+
+<!-- tmpl_set name="title" value="Reset Cipher Keys" -->
+
+<p>
+ Please enter the correct <!-- tmpl_var PROGRAM_NAME --> Root Password to continue,  every mailing list cipher key will be reset:
+</p>
+
+<input type="hidden" name="flavor" value="reset_cipher_keys" /> 
+<input type="password" name="root_password" value="" /> 
+<input type="submit" value="Continue" /> 
+<p>
+	Why would you want to do this? If you are upgrading Dada Mail
+           from any version under 2.7.1, your list needs a cipher key to encrypt
+           sensitive information.'
+</p>
+<!-- end reset_cipher_keys.tmpl --> 

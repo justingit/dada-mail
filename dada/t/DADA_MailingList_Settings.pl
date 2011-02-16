@@ -240,6 +240,36 @@ ok( $ls->param('list_name') eq 'Brand New List Name' );
 $li = $ls->get;
 ok( $li->{list_name} eq 'Brand New List Name' );
 
+require CGI; 
+my $q = CGI->new; 
+$ls->save_w_params(
+	{
+	-associate => $q, 
+	-settings  => { 
+		list_name => 'fallback',
+	}
+}
+);
+ok($ls->param('list_name') eq 'fallback'); 
+
+$q->param('list_name', 'list name from param'); 
+$ls->save_w_params(
+	{
+	-associate => $q, 
+	-settings  => { 
+		list_name => 'fallback',
+	}
+}
+);
+ok($ls->param('list_name') eq 'list name from param'); 
+
+
+
+
+
+
+
+
 my $Remove = DADA::MailingList::Remove( { -name => $list } );
 ok( $Remove == 1, "Remove returned a status of, '1'" );
 

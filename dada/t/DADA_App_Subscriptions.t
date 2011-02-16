@@ -87,12 +87,12 @@ $q->param('list', '');
 			alt_url_sub_confirm_failed_w_qs => 1, 
 		}
 	);
-	$regex = quotemeta('Location: ' . 'http://example.com/confirm_failed.html?list=' . $list . '&rm=sub_confirm&status=0&email=&errors=invalid_email'); 
+	$regex = quotemeta('Location: ' . 'http://example.com/confirm_failed.html?list=' . $list . '&rm=sub_confirm&status=0&email=&errors[]=invalid_email'); 
 	like($dap->subscribe({-cgi_obj => $q,}), qr/$regex/);
 
 	$q->param('email', 'bad'); 
 
-	$regex = quotemeta('Location: ' . 'http://example.com/confirm_failed.html?list=' . $list . '&rm=sub_confirm&status=0&email=bad&errors=invalid_email'); 
+	$regex = quotemeta('Location: ' . 'http://example.com/confirm_failed.html?list=' . $list . '&rm=sub_confirm&status=0&email=bad&errors[]=invalid_email'); 
 	like($dap->subscribe({-cgi_obj => $q,}), qr/$regex/);
 
 	$q->param('email', ''); 

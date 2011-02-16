@@ -284,14 +284,14 @@ If you have many lists and changing each and every one doesn't seem to be a fun 
  print '<pre>'; 
  
  
- foreach my $list(available_lists()){ 
+ for my $list(available_lists()){ 
  
      print "working on $list...\n"; 
      
      my $ls = DADA::MailingList::Settings->new({-list => $list}); 
      my $li = $ls->get; 
      
-     foreach my $msg('confirmation_message', 'unsub_confirmation_message'){ 
+     for my $msg('confirmation_message', 'unsub_confirmation_message'){ 
          
          $li->{$msg} =~ s/\[list_unsubscribe_link\]/\[list_confirm_unsubscribe_link\]/g;
          $li->{$msg} =~ s/\[list_subscribe_link\]/\[list_confirm_subscribe_link\]/g;
@@ -929,7 +929,7 @@ First off, rename your, B<mail.cgi> script to something like, B<real_mail.cgi>. 
  find(\&find_vti_cnf, './');
  
  my $file; 
- foreach my $dir(keys %findings){ 
+ for my $dir(keys %findings){ 
      if(opendir(VTI, $dir)){ 
  	
  	    my @file_deep_six_list; 

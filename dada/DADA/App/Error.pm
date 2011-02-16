@@ -16,8 +16,7 @@ This module basically has error messages in HTML and spits 'em back at ya.
 =cut
 
 
-use lib './'; 
-use lib '../'; 
+use lib qw(../../ ../perllib); 
 
 use DADA::Config;  
 use DADA::App::Guts; 
@@ -75,9 +74,7 @@ sub cgi_user_error {
 	);
 
 	require DADA::Template::Widgets; 
-
-    my $r;
-
+	
 	my  $available_lists_ref; 
 	my $li              = {}; 
 	my $list_login_form = ""; 
@@ -148,38 +145,30 @@ sub cgi_user_error {
 			}
 		}
 	}
-	
-	if($args{-Wrapper_Template} eq 'admin'){
-		 
-		$r .= admin_template_header(
-				-List       => $li->{list}, 
-				-Title      => "There seems to be a problem", 
-	            );				
-	
-    }
-	else {
 
-		$r .= list_template(
-				-Part       => "header",
-				-Title      => "There seems to be a problem", 
-				-List       => $li->{list},
-				-vars       => { 
-						PROGRAM_URL           => $DADA::Config::PROGRAM_URL, 
-						S_PROGRAM_URL         => $DADA::Config::S_PROGRAM_URL,
-						show_profile_widget	  => 0,
-				
-				}
-			);
-							
-	}
 
-    my $screen = ''; 
 
+	my $screen = ''; 
+	my $r      = ''; 
 	
 	eval { 
-	$screen =  DADA::Template::Widgets::screen(
+	$screen =  DADA::Template::Widgets::wrap_screen(
 				{
 					-screen => 'error_' . $args{-Error} . '_screen.tmpl',  
+					($args{-Wrapper_Template} eq 'admin' ? 
+					(
+						-with           => 'admin', 
+						-wrapper_params => { 
+							#-Root_Login => $root_login,
+							-List       => $args{-List},  
+						},
+						
+					)
+					:
+					(
+						-with           => 'list', 
+					)
+					),
 					-vars => { 
 							subscription_form     => $subscription_form, 
 							unsubscription_form   => $unsubscription_form, 
@@ -187,7 +176,6 @@ sub cgi_user_error {
 							email                 => $args{-Email},
 							auth_code             => $auth_code,
 							unknown_dirs          => $unknown_dirs, 
-				
 							PROGRAM_URL           => $DADA::Config::PROGRAM_URL, 
 							S_PROGRAM_URL         => $DADA::Config::S_PROGRAM_URL, 
 							error_message         => $args{-Error_Message},    
@@ -195,7 +183,7 @@ sub cgi_user_error {
 			
 					},
 		
-					-list_settings_vars => $li, 
+					-list_settings_vars       => $li, 
 					-list_settings_vars_param => {-dot_it => 1}, 
 					-subscriber_vars          => {'subscriber.email' => $args{-Email}}, 			
 				}
@@ -212,29 +200,7 @@ sub cgi_user_error {
 			die "Problems showing error message? - $@";
 		} 
 	}else { 
-		$r .= $screen; 
-	}
-
-	if($args{-Wrapper_Template} eq 'admin'){ 
-		
-		$r .= admin_template_footer(
-			-List       => $li->{list}, 
-		);
-	}
-	else { 
-
-	 $r .= list_template(
-			-Part      => "footer",
-			-List      => $li->{list},
-				-vars       => { 
-						PROGRAM_URL           => $DADA::Config::PROGRAM_URL, 
-						S_PROGRAM_URL         => $DADA::Config::S_PROGRAM_URL,
-						show_profile_widget	  => 0,
-				
-				}
-		   );
-	   
-		
+		$r = $screen; 		
 	}
 	
 	return $r;
@@ -247,7 +213,7 @@ sub cgi_user_error {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2010 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
