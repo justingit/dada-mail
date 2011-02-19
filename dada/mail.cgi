@@ -867,7 +867,7 @@ sub list_page {
 
     require DADA::Template::Widgets;
 
-    my $scrn .= DADA::Template::Widgets::list_page(
+    my $scrn = DADA::Template::Widgets::list_page(
         -list           => $list,
         -cgi_obj        => $q,
         -email          => $email,
@@ -890,22 +890,24 @@ sub list_page {
 
 sub admin {
 
-    my @available_lists  = available_lists();
-    if(($#available_lists < 0)){
+    my @available_lists = available_lists();
+    if ( ( $#available_lists < 0 ) ) {
         &default;
         return;
     }
 
-	if(DADA::App::Guts::install_dir_around() == 1){
-		user_error( -Error => 'install_dir_still_around' );
-	    return;
-	}
-	
+    if ( DADA::App::Guts::install_dir_around() == 1 ) {
+        user_error( -Error => 'install_dir_still_around' );
+        return;
+    }
+
     my $login_widget = $q->param('login_widget') || $DADA::Config::LOGIN_WIDGET;
     require DADA::Template::Widgets;
-    my $scrn .= DADA::Template::Widgets::admin(-login_widget => $login_widget, -cgi_obj => $q);
+    my $scrn = DADA::Template::Widgets::admin(
+        -login_widget => $login_widget,
+        -cgi_obj      => $q
+    );
     e_print($scrn);
-
 
     return;
 }
@@ -920,12 +922,12 @@ sub sign_in {
         return;
     }
 
+    require DADA::Template::Widgets;
+
     my $list_exists = check_if_list_exists( -List => $list, );
 
     if ( $list_exists >= 1 ) {
-
-        require DADA::Template::Widgets;
-
+	
         my $auth_state;
         if ( $DADA::Config::DISABLE_OUTSIDE_LOGINS == 1 ) {
             require DADA::Security::SimpleAuthStringState;
@@ -959,7 +961,7 @@ sub sign_in {
 
         my $login_widget = $q->param('login_widget')
           || $DADA::Config::LOGIN_WIDGET;
-        my $scrn .= DADA::Template::Widgets::admin(
+        my $scrn = DADA::Template::Widgets::admin(
             -login_widget            => $login_widget,
             -no_show_create_new_list => 1,
             -cgi_obj                 => $q,
@@ -1150,7 +1152,7 @@ sub sending_monitor_index {
 
 	require DADA::Template::Widgets;
 
-	my $scrn .= DADA::Template::Widgets::wrap_screen(
+	my $scrn = DADA::Template::Widgets::wrap_screen(
 			{
 				-screen => 'sending_monitor_index_screen.tmpl',
                 -with   => 'admin', 
@@ -6750,7 +6752,7 @@ sub new_list {
 
 
             require DADA::Template::Widgets;
-            my $scrn .= DADA::Template::Widgets::screen(
+            my $scrn = DADA::Template::Widgets::screen(
 				{
 					-screen => 'new_list_created_screen.tmpl',
                     -vars   => {
