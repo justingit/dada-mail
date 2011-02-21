@@ -24,6 +24,15 @@ LOCK_EX
 LOCK_SH 
 LOCK_NB);
 
+##############################################################################
+#
+# Options to use: 
+#
+#use MLDBM;                          # this gets the default, SDBM
+#use MLDBM qw(DB_File FreezeThaw);  # use FreezeThaw for serializing
+#use MLDBM qw(DB_File Storable);    # use Storable for serializing
+##############################################################################
+
 use MLDBM qw(AnyDBM_File Storable);
 use DADA::Config qw(!:DEFAULT);  
 use DADA::App::Guts;  # For now, my dear. 
