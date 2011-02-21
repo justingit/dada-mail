@@ -2014,7 +2014,7 @@ sub validate_msg {
 
                     my $spamtest = Mail::SpamAssassin->new(
                         {
-                            debug            => 'all',
+                            # debug            => 'all',
                             local_tests_only => 1,
                             dont_copy_prefs  => 1,
                         }
@@ -2084,7 +2084,7 @@ sub validate_msg {
 #                            debug            => 'all',
                             local_tests_only => 1,
                             dont_copy_prefs  => 1,
-                            userstate_dir    => '/home/hhbc/private/',
+                            # userstate_dir    => '/home/hhbc/private/',
                         }
                     );
                     my $mail = $spamtest->parse($spam_check_message);
