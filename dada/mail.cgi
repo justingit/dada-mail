@@ -4824,7 +4824,7 @@ sub edit_archived_msg {
         }
 
         print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
-              . '?f=edit_archived_msg;id='
+              . '?f=edit_archived_msg&id='
               . $id
               . '&done=1' );
 
