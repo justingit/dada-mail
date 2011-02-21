@@ -11,6 +11,10 @@ Key:
 [?] Someday
 
 
+[] SpamAssassin plugin config for Dada Bridge? 
+	Just so it's easier to pass custom paramaters to SpamAssassin, in Dada Bridge (just whatever is needed in new()) 
+
+
 filter_subscribers enhancements
 	it would be nice if, during the, "Add/Invite screen, you're allowed to see which subscribers you're trying to import
 	have already gotten a subscription request - and if so, not allow them to get another invite/whatever. 
