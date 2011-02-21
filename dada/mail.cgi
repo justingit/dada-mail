@@ -4181,7 +4181,7 @@ sub archive_options {
     }
     else {
 
-        $ls->save_w_meta(
+        $ls->save_w_params(
             {
                 -associate => $q,
                 -settings  => {
