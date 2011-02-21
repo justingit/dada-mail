@@ -610,9 +610,10 @@ sub check_admin_cgi_security {
         
         if($root_logged_in == 0){ 
             if((!defined($list_info->{password})) || ($list_info->{password} eq "")){ 
-                die "List password for $list is blank! It is advised that you make sure your list settings file is not corrupted, or reset you list password.";
                 $problems++;
                 $flags{"no_list_password"} = 1;
+				# DEV: Why am I dying here? 
+                die "List password for $list is blank! It is advised that you make sure your list settings file is not corrupted, or reset you list password.";
             }
         }
         
