@@ -2074,10 +2074,66 @@ sub validate_msg {
                     undef $score;
                     undef $report;
 
+
+                }
+                elsif ( $Mail::SpamAssassin::VERSION >= 3 ) {
+
+                    my $spam_check_message = $entity->as_string;
+                    my $spamtest = Mail::SpamAssassin->new(
+                        {
+#                            debug            => 'all',
+                            local_tests_only => 1,
+                            dont_copy_prefs  => 1,
+                            userstate_dir    => '/home/hhbc/private/',
+                        }
+                    );
+                    my $mail = $spamtest->parse($spam_check_message);
+                    my $spam_status = $spamtest->check($mail);
+
+                    my $score  = $spam_status->get_score();
+                    my $report = $spam_status->get_report();
+
+                    if ( $score eq undef && $score != 0 ) {
+                        print
+"\t\t\tTrouble parsing scoring information - letting message pass...\n"
+                          if $verbose
+                    }
+                    else {
+
+                        if (( $score >=
+                            $li->{ignore_spam_messages_with_status_of}) || $spam_status->is_spam())
+                        {
+                            print
+"\t\t\tMessage has *failed* Spam Test (Score of: $score, "
+                              . $li->{ignore_spam_messages_with_status_of}
+                              . " needed.) - ignoring message.\n"
+                              if $verbose;
+
+                            $errors->{message_seen_as_spam} = 1;
+
+                            print "\n" . $report
+                              if $verbose;
+                        }
+                        else {
+                            $errors->{message_seen_as_spam} = 0;
+
+                            print
+"\t\t\tMessage passed! Spam Test (Score of: $score, "
+                              . $li->{ignore_spam_messages_with_status_of}
+                              . " needed.)\n"
+                              if $verbose;
+                        }
+                    }
+
+                    $spam_status->finish;
+                    $mail->finish;
+                    $spamtest->finish;
+                    undef $score;
+                    undef $report;
                 }
                 else {
                     print
-"\t\tSpamAssassin 2.60 and below is currently only supported, you have version $Mail::SpamAssassin::VERSION, skipping test\n"
+"\t\tSpamAssassin 2.x and 3.x are currently supported, you have version $Mail::SpamAssassin::VERSION, skipping test\n"
                       if $verbose;
                 }
 
