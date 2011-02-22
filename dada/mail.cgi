@@ -6291,16 +6291,18 @@ sub search_list {
                                                      screen_finish               => $screen_finish,
 
                                                      type                        => $type,
+													type_title                  => $type_title, 
                                                      flavor                      => 'search_list',
 
                                                      keyword                     => $keyword,
 
                                                      list_type_label             => $list_types{$type},
-
+													 flavor_is_view_list		 => 1, # which, it's not. 
                                                      list_subscribers_num            => $lh->num_subscribers(-Type => 'list'),
                                                      black_list_subscribers_num      => $lh->num_subscribers(-Type => 'black_list'),
                                                      white_list_subscribers_num      => $lh->num_subscribers(-Type => 'white_list'),
                                                      authorized_senders_num          => $lh->num_subscribers(-Type => 'authorized_senders'),
+ 													 sub_request_list_subscribers_num => $lh->num_subscribers(-Type => 'sub_request_list'),
 
 
                                                      #This sucks.
@@ -6308,10 +6310,15 @@ sub search_list {
                                                      list_type_isa_black_list            => ($type eq 'black_list') ? 1 : 0,
                                                      list_type_isa_authorized_senders    => ($type eq 'authorized_senders') ? 1 : 0,
                                                      list_type_isa_testers               => ($type eq 'testers')    ? 1 : 0,
-                                                     list_type_isa_white_list            => ($type eq 'white_list') ? 1 : 0,
+                                                     list_type_isa_white_list            => ($type eq 'white_list')       ? 1 : 0,
+                                                     list_type_isa_sub_request_list      => ($type eq 'sub_request_list') ? 1 : 0,
 
 
-                                                }
+                                                },
+												-list_settings_vars_param => {
+													-list    => $list,
+													-dot_it => 1,
+												},
                                                 });
 
 
