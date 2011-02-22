@@ -65,7 +65,7 @@ sub _init {
           }
     	}
 		else { 
-			warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! Could not create, ' " . self->cache_dir . " - $! - disabling screen cache.";
+			warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! Could not create, ' " . $self->cache_dir . " - $! - disabling screen cache.";
 			$DADA::Config::SCREEN_CACHE = 0;
 		}
 	}
