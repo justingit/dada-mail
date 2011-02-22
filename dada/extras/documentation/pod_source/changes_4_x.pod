@@ -2,6 +2,32 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.4.1
+
+=head2 Changes 4.4.1
+
+=head3 Dada Bridge SpamAssassin 3 Support Added
+
+Previously, only v2 of SpamAssassin was supported. 
+
+=head2 Bug Fixes 4.4.1
+
+=head3 Subscriber Search screen does not ever show the, "Subscription Requests" link/button
+
+https://github.com/justingit/dada-mail/issues/122
+
+=head3 Can't locate object method "cache_dir" via package "self" - error
+
+https://github.com/justingit/dada-mail/issues/121
+
+=head3 signing into a single list (via f=sign_in) produces an error. 
+
+https://github.com/justingit/dada-mail/issues/115
+
+=head3 Editing an Archive screen sometimes returns back a, "Method Not Allowed" error
+
+https://github.com/justingit/dada-mail/issues/119
+
 =head1 4.4.0
 
 =head2 Changes 4.4.0

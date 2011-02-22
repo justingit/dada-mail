@@ -11,14 +11,14 @@ L<http://dadamailproject.com/support/documentation/manually_install_dada_mail.po
 
 =head1 Step #1: Download Dada Mail
 
-Here's the direct download to Dada Mail v4.4.0: 
+Here's the direct download to Dada Mail v4.4.1: 
 
-L<https://github.com/downloads/justingit/dada-mail/dada-4_4_0.tar.gz>
+L<https://github.com/downloads/justingit/dada-mail/dada-4_4_1.tar.gz>
 
 
-(If you have Pro Dada, you can download v4.4.0 of Pro Dada here:)
+(If you have Pro Dada, you can download v4.4.1 of Pro Dada here:)
 
-L<http://dadamailproject.com/pro_dada/index.cgi?rm=download_file&filename=pro_dada-4_4_0.tar.gz>
+L<http://dadamailproject.com/pro_dada/index.cgi?rm=download_file&filename=pro_dada-4_4_1.tar.gz>
 
 Save the distribution to your Desktop Computer (you will B<not> have to uncompress the distribution) and then upload the, tar.gz file to your hosting account's I<cgi-bin>. 
 
@@ -26,7 +26,7 @@ Save the distribution to your Desktop Computer (you will B<not> have to uncompre
 
 Download the, C<uncompress_dada.cgi> script from here: 
 
-=for html <ul><li><strong><a href="https://github.com/justingit/dada-mail/raw/v4_4_0_stable-2011_02_15/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
+=for html <ul><li><strong><a href="https://github.com/justingit/dada-mail/raw/v4_4_1_stable-2011_02_21/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
 
 and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> - right alongside the tar.gz file you just put up. 
 

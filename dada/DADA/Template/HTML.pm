@@ -58,7 +58,7 @@ use vars qw(@EXPORT);
 #@EXPORT_OK($HTML_Footer); 
 
 
-$HTML_Footer =  '<p style="font-size:10px;font-family:Verdana,Arial;text-align:center">Powered by <a href="http://dadamailproject.com" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Dada Mail ' . $DADA::Config::VER . '</a><br />Copyright &copy; 1999-2010, <a href="http://dadamailproject.com/justin" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Simoni Creative</a>.</p>';
+$HTML_Footer =  '<p style="font-size:10px;font-family:Verdana,Arial;text-align:center">Powered by <a href="http://dadamailproject.com" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Dada Mail ' . $DADA::Config::VER . '</a><br />Copyright &copy; 1999-2011, <a href="http://dadamailproject.com/justin" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Simoni Creative</a>.</p>';
 
 
 =pod
