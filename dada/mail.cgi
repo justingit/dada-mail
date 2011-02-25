@@ -6357,13 +6357,8 @@ sub text_list {
 	
 	print $header; 
 
-   # e_print("Email Addresses for List: " . $li->{list_name} . "\n");
-   # print "=" x 72 . "\n";
-   #
-   # my $email_count = $lh->print_out_list( -List => $list, -Type => $type );
-   #
-   # print "=" x 72 .  "\n";
-   # e_print("Total: $email_count \n\n");
+   # $email_count is then not used...
+    my $email_count = $lh->print_out_list( -List => $list, -Type => $type );
 
 }
 
