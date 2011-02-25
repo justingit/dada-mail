@@ -1858,7 +1858,7 @@ sub delete_list {
 			{
 				-screen => 'delete_list_success_screen.tmpl',
                 -with   => 'list',  
-				-list   => $list,
+			#	-list   => $list, # The list doesn't really exist anymore now, does it? 
 				-wrapper_params => { 
 					-header_params => {-COOKIE => $logout_cookie},
 				}
