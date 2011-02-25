@@ -1368,6 +1368,61 @@ SKIP: {
 
 } # SKIP
 
+# dupe check
+my $dupe_email = 'imadupe@example.com'; 
+$lh->add_subscriber({-email => $dupe_email,}); 
+
+my $r = undef; 
+
+$r = $lh->add_subscriber(
+	{
+		-email => $dupe_email,
+		-dupe_check    => {
+			-enable  => 1,
+			-on_dupe => 'ignore_add',
+		},
+	}
+);
+ok($r == 0, "dupe check worked! return of 0"); 
+
+undef $r; 
+
+eval { 
+	$r = $lh->add_subscriber(
+		{
+			-email => $dupe_email,
+			-dupe_check    => {
+				-enable  => 1,
+				-on_dupe => 'error',
+			},
+		}
+	);
+};
+ok(defined($@), "dupe check worked! died!");
+like($@, qr/email already subcribed/, "and the error message seems comprehensible!"); 
+
+undef $r; 
+
+eval { 
+	$r = $lh->add_subscriber(
+		{
+			-email => $dupe_email,
+			-dupe_check    => {
+				-enable  => 1,
+				-on_dupe => 'asfdasdfasdfasd',
+				
+			},
+		}
+	);
+};
+ok(defined($@), "dupe check worked! died!");
+like($@, qr/unknown option/, "and the error message seems comprehensible!"); 
+
+$lh->remove_from_list(-Email_List => [$dupe_email]); 
+
+
+
+
 
 
 
@@ -1441,6 +1496,8 @@ ok(($#$sub_list + 1) == 1000, "1000 subscribers were returned! (" . ($#$sub_list
 ##############################################################################
 # remove_all_subscribers
 ok($lh->remove_all_subscribers == 1000, "Removed all the subscribers!"); 
+
+
 
 
 

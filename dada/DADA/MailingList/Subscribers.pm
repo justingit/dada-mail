@@ -114,8 +114,8 @@ sub add_subscriber {
 	if(exists($self->{-dpfm_obj})){ 
 		$args->{-dpfm_obj} = $self->{-dpfm_obj}; 
 	}
-    my $dmls = DADA::MailingList::Subscriber->add( $args );
- 	return 1; 
+    my     $dmls = DADA::MailingList::Subscriber->add( $args );
+ 	return $dmls; 
 }
 
 sub get_subscriber {
@@ -977,6 +977,36 @@ Passing field values is optional.
 
 Fields that are not actual fields that are being passed will be ignored. 
 
+C<-dupe_check> can also be optionally passed. It should contain a hashref with other 
+options. For example: 
+
+$lh->add_subscriber(
+	{
+		-email  => 'user@example.com', 
+		-type   => 'list',
+		-fields => {
+					first_name => "John", 
+					last_name  => "Doe", 
+				   },
+	}, 
+	-dupe_check    => {
+		-enable  => 1,
+		-on_dupe => 'ignore_add',
+	},
+	
+);
+
+C<-enable> can either be set to, C<1> or, C<0>. C<1> enables the check for dupes, right 
+before subscribing an address. C<0> ignores the dupe check, so don't set it to C<0> 
+
+C<-on_dupe> may be set to, C<ignore_add> to simply ignore subscribing the address. A warning will
+be logged in the error log. You may also set this to, C<error>, which will cause the program to die. 
+
+Setting this to anything else will cause the program to die. Forgetting to set it will have it default to, C<ignore_add>.
+
+If the Duplicate subscriber check fails, (and C<-on_dupe> is set to, C<ignore_add> this method
+will return, C<0> and not a DADA::MailingList::Subscriber object. 
+
 =head3 Diagnostics
 
 =over
@@ -993,6 +1023,8 @@ You forgot to pass an email in the, -email paramater, ie:
 Something went wrong in the SQL side of things.
 
 =back
+
+B<returns> a DADA::MailingList::Subscriber object on success, C<undef> or croaks on failure. 
 
 =head2 get_subscriber
 
