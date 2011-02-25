@@ -308,11 +308,13 @@ sub mailing_date {
 
 
 sub run_schedules { 
-	my $self = shift; 
+	my $self           = shift; 
+	
 	
 	my %args = (-test    => undef, 
 				-verbose => undef,
 					       @_); 
+	my $need_to_backup = 0; 
 	
 	my $r = ''; 
 				
@@ -413,7 +415,6 @@ sub run_schedules {
 		}
 		
 		
-		
 		if(! $args{-test}){ 
 		     $rec->{active}            = 0 if ! $mailing_schedule->[0];
 		 	 $rec->{last_schedule_run} = $time;		
@@ -423,8 +424,19 @@ sub run_schedules {
 			 		$rec->{HTML_ver}->{checksum}      = $checksums->{HTML_checksum};			 	
 			 }	
 			
-			$self->save_record(-key => $rec_key, -data => $rec, -mode => 'append');											# save the changes we've made to the record.			
-			$rec = $self->get_record($rec_key); 
+			# DEV: strangely, this will cause a backup to be made, each time you run the schedule. 
+			# DEV: Need to make this, so it only, at the very least, saves once for all the scheds, 
+			# Or things are going to get ridiculous. 
+			$self->save_record(
+				-key    => $rec_key, 
+				-data   => $rec, 
+				-mode   => 'append',
+				-backup => 0, 
+			); 	# save the changes we've made to the record.			
+			
+			$need_to_backup = 1; 
+			$rec            = $self->get_record($rec_key); 
+			
 			
 		} 
 	
@@ -453,6 +465,9 @@ sub run_schedules {
 	
 	$self->_send_held_messages; 
 	
+	if($need_to_backup == 1){ 
+		$self->backupToDir;
+	}
 	return $r; 
 	
 	
