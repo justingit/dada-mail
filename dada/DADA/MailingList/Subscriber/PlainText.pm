@@ -45,7 +45,7 @@ sub add {
 				croak 'attempt to to add: "' . $args->{ -email } . '" to list: "' . $args->{ -list } . '.' . $args->{ -type } . '" (email already subcribed)'; 
 			}
 			elsif($args->{ -dupe_check }->{-on_dupe} eq 'ignore_add'){ 
-				return 0; 
+				return undef; 
 			}
 			else { 
 				croak "unknown option, " . $args->{ -dupe_check }->{-on_dupe}; 

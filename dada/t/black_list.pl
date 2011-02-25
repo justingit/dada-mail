@@ -41,7 +41,7 @@ SKIP: {
         }
 	);
      
-    ok($count == 1); 
+    ok(defined($count)); 
     undef $count; 
     
     ####
@@ -102,7 +102,7 @@ SKIP: {
 		}
     );
      
-    ok($count == 1); 
+    ok(defined($count)); 
     undef $count; 
     
     ok($lh->check_for_double_email(-Email => 'test@example.com', -Type => 'black_list') == 1, "Address is subscribed to black list"); 

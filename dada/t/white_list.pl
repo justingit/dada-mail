@@ -50,7 +50,7 @@ my $count = $lh->add_subscriber(
      }
 );
  
-ok($count == 1, "added one address (test@) to the white list.");                           
+ok(defined($count), "added one address (test@) to the white list.");                           
 undef($count); 
 
 ok($lh->inexact_match({-against => 'white_list', -email => 'test@example.com'}) == 1, 'we have an inexact match between test@example.com and test@ - good!'); 
@@ -120,7 +120,7 @@ my $count = $lh->add_subscriber(
 		-type  => 'white_list',
 	}
 );
-ok($count == 1, "added one address to the white list.");                           
+ok(defined($count), "added one address to the white list.");                           
 undef($count); 
 
                    
@@ -149,7 +149,7 @@ my $count = $lh->add_subscriber(
      }
 ); 
  
-ok($count == 1, "added one address to the white list.");                           
+ok(defined($count), "added one address to the white list.");                           
 undef($count); 
 
 
@@ -199,7 +199,7 @@ my $count = $lh->add_subscriber(
   
   
 
-ok($count == 1, "added one address to the white list.");                           
+ok(defined($count), "added one address to the white list.");                           
 undef($count); 
 
 
@@ -210,7 +210,7 @@ my $count = $lh->add_subscriber(
 	}
 );
 
-ok($count == 1, "added one address to the black list.");                           
+ok(defined($count), "added one address to the black list.");                           
 undef($count); 
 
 

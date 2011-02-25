@@ -3583,27 +3583,41 @@ sub add_email {
 				die "Mass Subscribing via the List Control Panel has been disabled.";
 			}
 
-            my @address         = $q->param("address");
-            my $new_email_count = 0;
+            my @address             = $q->param("address");
+            my $new_email_count     = 0;
+			my $skipped_email_count = 0; 
 
             # Each Addres is a CSV line...
             for my $a (@address) {
+	
                 my $info = $lh->csv_to_cds($a);
-                $lh->add_subscriber(
+                my $dmls = $lh->add_subscriber(
                     {
                         -email 		    => $info->{email},
                         -fields 		=> $info->{fields},
                         -type   		=> $type,
-						-fields_options => {-mode => $q->param('fields_options_mode')},
+						-fields_options => {
+							-mode => $q->param('fields_options_mode')
+						},
+						-dupe_check    => {
+							-enable  => 1,
+							-on_dupe => 'ignore_add',
+	                	},
                     }
                 );
-
-                $new_email_count++;
-            }
+				if(defined($dmls)){ # undef means it wasn't added. 
+                	$new_email_count++;
+            	}
+				else { 
+					$skipped_email_count++; 
+				}
+			}
 
             print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
                   . '?flavor=view_list&email_count='
-                  . $new_email_count
+                  . $new_email_count 
+                  . '&skipped_email_count='
+                  . $skipped_email_count
                   . '&type='
                   . $type );
         }
