@@ -364,7 +364,12 @@ sub restoreFromFile {
 				
 				my $value_file = $self->backDirPath .  '/' . $restore_dir . '/' . $value;
 				
-				if(-e $value_file){ 
+				if(-z $value_file){ 
+					carp "File, '$value_file' is empty! Skipping.";  
+				}
+				
+				if(-e $value_file && ! -z $value_file){ # -z means 0 size
+					
 					open(VALUE, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $value_file) 
 						or carp $!; 
 					$new_values{$value} = do{ local $/; <VALUE> };    
@@ -388,6 +393,17 @@ sub restoreFromFile {
 			    }
 			
 			}
+			elsif($self->{function} eq 'schedules'){ 
+			    for(keys %new_values){ 
+			    
+			        if(! defined($new_values{$_}) || $new_values{$_} eq '' || length($new_values{$_}) <= 0){ 
+			            carp "skipping restoring schedule: $_ - blank!"; 
+			            delete($new_values{$_}); 
+			        }
+			    }
+							
+			}
+			
 			    
 			$self->save({%new_values});
 			
