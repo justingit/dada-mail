@@ -8550,79 +8550,87 @@ sub restore_lists {
         else {
 
             my $backup_hist = {};
-            for (@lists) {
-                my $ls = DADA::MailingList::Settings->new( { -list => $_ } );
+            for my $l (@lists) {
+                my $ls = DADA::MailingList::Settings->new( { -list => $l } );
                 $ls->{ignore_open_db_error} = 1;
                 my $la = DADA::MailingList::Archives->new(
-                    { -list => $_, -ignore_open_db_error => 1 } )
+                    { -list => $l, -ignore_open_db_error => 1 } )
                   ;    #yeah, it's diff from MailingList::Settings - I'm stupid.
 
                 my $mss = DADA::MailingList::Schedules->new(
-                    { -list => $_, -ignore_open_db_error => 1 } );
+                    { -list => $l, -ignore_open_db_error => 1 } );
 
-                $backup_hist->{$_}->{settings} = $ls->backupDirs
+                $backup_hist->{$l}->{settings} = $ls->backupDirs
                   if $ls->uses_backupDirs;
-                $backup_hist->{$_}->{archives} = $la->backupDirs
+                $backup_hist->{$l}->{archives} = $la->backupDirs
                   if $la->uses_backupDirs;
 
                 # DEV: Is this returning what I think it's supposed to?
                 # Tests have to be written about this...
-                $backup_hist->{$_}->{schedules} = $mss->backupDirs
+                $backup_hist->{$l}->{schedules} = $mss->backupDirs
                   if $mss->uses_backupDirs;
+			#	require Data::Dumper; 
+			#	warn '$l: ' . $l . '$n: ' . $mss->{name} . " backup dirs: " . Data::Dumper::Dumper($backup_hist->{$l}->{schedules}); 
+				
             }
 
             my $restore_list_options = '';
 
             #    labels are for the popup menus, that's it    #
-            my %labels;
-            for ( sort keys %$backup_hist ) {
-                for ( @{ $backup_hist->{$_}->{settings} } ) {
+            my $labels = {};
+			#use Data::Dumper; 
+			#print $q->header(); 
+			#print '<pre>'  . Data::Dumper::Dumper($backup_hist) . '</pre>'; 
+            for my $l ( sort keys %$backup_hist ) {
+ 
+               for my $bu( @{ $backup_hist->{$l}->{settings} } ) {
                     my ( $time_stamp, $appended ) = ( '', '' );
-                    if ( $_->{dir} =~ /\./ ) {
+                    if ( $bu->{dir} =~ /\./ ) {
                         ( $time_stamp, $appended ) =
-                          split( /\./, $_->{dir}, 2 );
+                          split( /\./, $bu->{dir}, 2 );
                     }
                     else {
-                        $time_stamp = $_->{dir};
+                        $time_stamp = $bu->{dir};
                     }
 
-                    $labels{ $_->{dir} } =
+                    $labels->{$l}->{settings}->{ $bu->{dir} } =
                         scalar( localtime($time_stamp) ) . ' ('
-                      . $_->{count}
+                      . $bu->{count}
                       . ' entries)';
 
                 }
-                for ( @{ $backup_hist->{$_}->{archives} } ) {
+
+                for my $bu ( @{ $backup_hist->{$l}->{archives} } ) {
 
                     my ( $time_stamp, $appended ) = ( '', '' );
-                    if ( $_->{dir} =~ /\./ ) {
+                    if ( $bu->{dir} =~ /\./ ) {
                         ( $time_stamp, $appended ) =
-                          split( /\./, $_->{dir}, 2 );
+                          split( /\./, $bu->{dir}, 2 );
                     }
                     else {
-                        $time_stamp = $_->{dir};
+                        $time_stamp = $bu->{dir};
                     }
 
-                    $labels{ $_->{dir} } =
+                    $labels->{$l}->{archives}->{ $bu->{dir} } =
                         scalar( localtime($time_stamp) ) . ' ('
-                      . $_->{count}
+                      . $bu->{count}
                       . ' entries)';
 
                 }
-                for ( @{ $backup_hist->{$_}->{schedules} } ) {
+                for my $bu ( @{ $backup_hist->{$l}->{schedules} } ) {
 
                     my ( $time_stamp, $appended ) = ( '', '' );
-                    if ( $_->{dir} =~ /\./ ) {
+                    if ( $bu->{dir} =~ /\./ ) {
                         ( $time_stamp, $appended ) =
-                          split( /\./, $_->{dir}, 2 );
+                          split( /\./, $bu->{dir}, 2 );
                     }
                     else {
-                        $time_stamp = $_->{dir};
+                        $time_stamp = $bu->{dir};
                     }
 
-                    $labels{ $_->{dir} } =
+                    $labels->{$l}->{schedules}->{ $bu->{dir} } =
                         scalar( localtime($time_stamp) ) . ' ('
-                      . $_->{count}
+                      . $bu->{count}
                       . ' entries)';
 
                 }
@@ -8646,13 +8654,13 @@ sub restore_lists {
                     )
                 );
 
-                for ( 'settings', 'archives', 'schedules' ) {
+                for my $t ( 'settings', 'archives', 'schedules' ) {
 
                     #		require Data::Dumper;
                     #		die Data::Dumper::Dumper(%labels);
                     my $vals = [];
-                    for ( @{ $backup_hist->{$f_list}->{$_} } ) {
-                        push( @$vals, $_->{dir} );
+                    for my $d( @{ $backup_hist->{$f_list}->{$t} } ) {
+                        push( @$vals, $d->{dir} );
                     }
 
                     $restore_list_options .= $q->Tr(
@@ -8663,33 +8671,33 @@ sub restore_lists {
                                         $q->checkbox(
                                             -name => 'restore_' 
                                               . $f_list . '_'
-                                              . $_,
+                                              . $t,
                                             -id => 'restore_' 
                                               . $f_list . '_'
-                                              . $_,
+                                              . $t,
                                             -value => 1,
                                             -label => ' ',
                                         ),
                                         '<label for="'
                                           . 'restore_'
                                           . $f_list . '_'
-                                          . $_ . '">'
-                                          . $_
+                                          . $t . '">'
+                                          . $t
                                           . '</label>'
                                     )
                                 ),
 
-                                ( scalar @{ $backup_hist->{$f_list}->{$_} } )
+                                ( scalar @{ $backup_hist->{$f_list}->{$t} } )
                                 ? (
 
                                     (
                                         $q->p(
                                             $q->popup_menu(
-                                                -name => $_ . '_' 
+                                                -name => $t . '_' 
                                                   . $f_list
                                                   . '_version',
                                                 '-values' => $vals,
-                                                -labels   => {%labels}
+                                                -labels   => $labels->{$f_list}->{$t}
                                             )
                                         )
                                     ),
@@ -8703,7 +8711,7 @@ sub restore_lists {
                                             '-- No Backup Information Found --'
                                         ),
                                         $q->hidden(
-                                            -name => $_ . '_' 
+                                            -name => $t . '_' 
                                               . $f_list
                                               . '_version',
                                             -value => 'just_remove_blank'
@@ -8713,6 +8721,8 @@ sub restore_lists {
                             ]
                         )
                     );
+					$vals = [];
+
                 }
                 $restore_list_options .= '</table>';
             }
