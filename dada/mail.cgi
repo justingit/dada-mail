@@ -6768,9 +6768,10 @@ sub new_list {
 
 
             require DADA::Template::Widgets;
-            my $scrn = DADA::Template::Widgets::screen(
+            my $scrn = DADA::Template::Widgets::wrap_screen(
 				{
 					-screen => 'new_list_created_screen.tmpl',
+					-with   => 'list', 
                     -vars   => {
                                 list_name        => $li->{list_name},
                                 list             => $li->{list},
