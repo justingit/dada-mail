@@ -9893,7 +9893,7 @@ sub what_is_dada_mail {
     require DADA::Template::Widgets;
     my $scrn =  DADA::Template::Widgets::wrap_screen(
 		{
-			-screen => 'what_is_dada_mail.tmpl'
+			-screen => 'what_is_dada_mail.tmpl',
 			-with   => 'list', 
 		}
 	);
