@@ -1383,7 +1383,8 @@ $r = $lh->add_subscriber(
 		},
 	}
 );
-ok($r == 0, "dupe check worked! return of 0"); 
+
+ok(!defined($r), "dupe check worked! return of undef"); 
 
 undef $r; 
 

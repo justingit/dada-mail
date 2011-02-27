@@ -114,8 +114,8 @@ sub add_subscriber {
 	if(exists($self->{-dpfm_obj})){ 
 		$args->{-dpfm_obj} = $self->{-dpfm_obj}; 
 	}
-    my     $dmls = DADA::MailingList::Subscriber->add( $args );
- 	return $dmls; 
+    return DADA::MailingList::Subscriber->add( $args );
+
 }
 
 sub get_subscriber {
