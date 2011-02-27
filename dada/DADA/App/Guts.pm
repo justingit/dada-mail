@@ -2104,7 +2104,7 @@ sub isa_url {
 	
 	my $str = shift;
 	# DEV: This regex needs to be smarterer.  
-	if($str =~ m/^(.*?)\:\/\//){
+	if($str =~ m/^(http|https|ftp|file|ical)\:\/\/(.*?)$/){
 		return 1; 
 	}
 	else { 

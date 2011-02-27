@@ -152,7 +152,7 @@ sub report_by_message_index {
 	
 	if(-e $self->clickthrough_log_location){ 
 		open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
-			or die "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
+			or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 		while(defined($l = <LOG>)){ 
 			chomp($l); 
 			my ($t, $mid, $url, $extra) = split("\t", $l); 
@@ -211,7 +211,7 @@ sub report_by_message {
 	my $report = {}; 
 	my $l;
 	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
-		or die "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
+		or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 	while(defined($l = <LOG>)){ 
 		chomp($l); 
 		
@@ -256,7 +256,7 @@ sub report_by_url {
 	my $l;
 	
 	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
-	 or die "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
+	 or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 	while(defined($l = <LOG>)){ 
 		chomp($l); 
 		my ($t, $mid, $url) = split("\t", $l); 
@@ -282,7 +282,7 @@ sub print_raw_logs {
 	}
 	
 	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
-		or die "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
+		or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 	while(defined($l = <LOG>)){ 
 		chomp($l); # why a chomp, 
 		print $l . "\n"; # and thena newline, added? 
@@ -457,12 +457,66 @@ sub parse_entity {
 
 }
 
+sub check_redirect_urls { 
+
+	# DEV: Bug in, isa_url - quotes around a URL, "http://yahoo.com" 
+	# Are treated as valid - this breaks this check. 
+	
+	my $self    = shift; 
+	my ($args)  = @_; 
+	if(!exists($args->{-raise_error})){ 
+		$args->{-raise_error} = 0; 
+	}
+	if(!exists($args->{-str})){ 
+		croak "you must pass a string in the, -str paramater!"; 
+	}
+	
+	my $valid   = [];
+	my $invalid = [];
+	
+	my $pat = qr/\[redirect\=(.*?)\]/;
+	while ($args->{-str} =~ m/($pat)/g) {
+		my $redirect_tag = $1; 
+		my $url = $redirect_tag; 
+		   $url =~ s/(^\[redirect\=|\]$)//g;
+
+	    if(isa_url($url)){ 
+			push(@$valid, $url); 
+	 	}
+		else { 
+			push(@$invalid, $url);
+		}
+	}
+	 
+	if($args->{-raise_error} == 1){ 
+		if($invalid->[0]){ 
+			my $error_msg = "The following redirect URLs do not seem like actual URLs. Redirecting will not work correctly!\n";
+			   $error_msg .= '-' x 72 . "\n\n";
+			foreach (@$invalid){ 
+				$error_msg .= '* ' . $_ . "\n";
+			}
+			$error_msg .= "\n" 
+			. '-' x 72
+			. "\n" 
+			. $args->{-str}; 
+			croak $error_msg; 
+		}
+		else { 
+			return ($valid, $invalid); 			
+		}
+	}
+	else { 
+		return ($valid, $invalid); 
+	}
+}
+
+
 sub parse_string {
 
     my $self = shift;
     my $mid  = shift;
 
-    die 'no mid! ' if !defined $mid;
+    croak 'no mid! ' if !defined $mid;
 
     my $str = shift;
 
@@ -520,20 +574,24 @@ sub redirect_encode {
 
     my $self = shift;
     my $mid  = shift;
-    die 'no mid! '
+    croak 'no mid! '
       if !defined $mid;
     my $url = shift;
 
-    my $key = $self->reuse_key( $mid, $url );
+	if(isa_url($url)){ 
 
-    if ( !defined($key) ) {
-        $key = $self->add( $mid, $url );
-    }
+	    my $key = $self->reuse_key( $mid, $url );
 
-#	carp 'here it is: ' . $DADA::Config::PROGRAM_URL . '/r/' . $self->{name} . '/' . $key . '/';
-    return $DADA::Config::PROGRAM_URL . '/r/'
-      . $self->{name} . '/'
-      . $key . '/';
+	    if ( !defined($key) ) {
+	        $key = $self->add( $mid, $url );
+	    }
+	    return $DADA::Config::PROGRAM_URL . '/r/'
+	      . $self->{name} . '/'
+	      . $key . '/';
+	}
+	else { 
+		carp "Given an invalid email to create a redirect from, '$url' - skipping!";
+	}
 
 }
 

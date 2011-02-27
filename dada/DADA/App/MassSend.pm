@@ -92,6 +92,7 @@ sub send_email {
         $args->{-html_output} = 1;
     }
 
+
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -227,6 +228,7 @@ sub send_email {
         my $text_message_body = $q->param('text_message_body') || undef;
         my $html_message_body = $q->param('html_message_body') || undef;
 
+		
         ( $text_message_body, $html_message_body ) =
           DADA::App::FormatMessages::pre_process_msg_strings(
             $text_message_body, $html_message_body );
@@ -237,6 +239,9 @@ sub send_email {
             $text_message_body = safely_encode($text_message_body);
             $html_message_body = safely_encode($html_message_body);
 
+			return undef if redirect_tag_check($text_message_body, $list, $root_login) eq undef;
+			return undef if redirect_tag_check($html_message_body, $list, $root_login) eq undef;
+			
             $msg = MIME::Lite->new(
                 Type      => 'multipart/alternative',
                 Datestamp => 0,
@@ -264,7 +269,9 @@ sub send_email {
         elsif ($html_message_body) {
 
             $html_message_body = safely_encode($html_message_body);
-
+			
+			return undef if redirect_tag_check($html_message_body, $list, $root_login) eq undef;
+			
             $msg = MIME::Lite->new(
                 Type      => 'text/html',
                 Data      => $html_message_body,
@@ -276,6 +283,7 @@ sub send_email {
         elsif ($text_message_body) {
 
             $text_message_body = safely_encode($text_message_body);
+			return undef if redirect_tag_check($text_message_body, $list, $root_login) eq undef;
             $msg               = MIME::Lite->new(
                 Type      => 'TEXT',
                 Data      => $text_message_body,
@@ -585,7 +593,10 @@ sub send_url_email {
     }else{ 
         
         if($can_use_mime_lite_html){ 
-        
+        	require DADA::App::FormatMessages; 
+
+			my $url = strip($q->param('url')); 
+			
 			# DEV: Headers.  Ugh, remember this is in, "Send a Webpage" as well. 	
 			my %headers = ();
 			for my $h(qw(
@@ -613,6 +624,7 @@ sub send_url_email {
                         
             my $proxy = defined($q->param('proxy')) ? $q->param('proxy') : undef;
 			
+
 	        my $mailHTML = new DADA::App::MyMIMELiteHTML(
 													remove_jscript => $remove_javascript,  
 												
@@ -640,7 +652,6 @@ sub send_url_email {
             
             if($q->param('auto_create_plaintext') == 1){ 
                 if($q->param('content_from') eq 'url'){ 
-					my $url = $q->param('url') || undef; 
 					if(length($url) <= 0){ 
 						croak "You did not fill in a URL!"; 
 					}
@@ -660,33 +671,47 @@ sub send_url_email {
                     $t           = html_to_plaintext({-string => $q->param('html_message_body')});
                 }
             }
-            
+			return undef if redirect_tag_check($t, $list, $root_login) eq undef;
+          
             my $MIMELiteObj; 
             
             if($q->param('content_from') eq 'url'){ 
 				
+				#/ Redirect tag check
+				if($ls->param('clickthrough_tracking') == 1){ # optimize this, just because fetching a URL could be slow. 
+					require   LWP::Simple; 
+		            my $rtc = LWP::Simple::get($url);
+					return undef if redirect_tag_check($rtc, $list, $root_login) eq undef;
+				}
+				# Redirect tag check
+				
 				my $errors = undef; 
 				eval { 
-					$MIMELiteObj = $mailHTML->parse($q->param('url'), safely_encode( $t));
+					$MIMELiteObj = $mailHTML->parse($url, safely_encode( $t));
 				};
 				# DEV: It would be a lot nicer, if this was just printed in our control panel, instead of an error: 
 				if($@){ 
 					$errors .= "Problems with sending a webpage! Make sure you've correctly entered the URL to your webpage!\n"; 
 					$errors .= "* Returned Error: $@"; 
-					my $can_fetch = LWP::Simple::get($q->param('url'));
+					my $can_fetch = LWP::Simple::get($url);
 					if($can_fetch){ 
-						$errors .= "* Can successfully fetch, " . $q->param('url') . "\n"; 
+						$errors .= "* Can successfully fetch, " . $url . "\n"; 
 					}
 					else { 
-							$errors .= "* Cannot fetch, " . $q->param('url') . " using LWP::Simple::get()\n"; 
+							$errors .= "* Cannot fetch, " . $url . " using LWP::Simple::get()\n"; 
 					} 
 					report_mass_mail_errors($errors, $list, $root_login);
 					return; 
 				}
             }else{ 
+				my $html_message = $q->param('html_message_body');
+				my $text_message = undef; 
+				($text_message, $html_message) = DADA::App::FormatMessages::pre_process_msg_strings($text_message, $html_message);
+				
+				return undef if redirect_tag_check($html_message, $list, $root_login) eq undef;
 				eval { 
 	                $MIMELiteObj = $mailHTML->parse(
-						safely_encode( $q->param('html_message_body')), 
+						safely_encode($html_message), 
 						safely_encode( $t)
 					);
             	};
@@ -701,10 +726,9 @@ sub send_url_email {
 				}
 			}
             
-            require  DADA::App::FormatMessages; 
             my $fm = DADA::App::FormatMessages->new(-List => $list); 
                $fm->mass_mailing(1); 
-               $fm->originating_message_url(strip($q->param('url'))); 
+               $fm->originating_message_url($url); 
                $fm->Subject($headers{Subject}); 
                $fm->treat_as_discussion_msg(1)
                     if $li->{group_list} == 1;
@@ -1035,8 +1059,13 @@ sub list_invite {
     
         if($text_message_body and $html_message_body){    
 	
+	    	$text_message_body = safely_encode( $text_message_body);
 	 		$html_message_body = safely_encode( $html_message_body);
-        	$text_message_body = safely_encode( $text_message_body);
+
+			return undef if redirect_tag_check($text_message_body, $list, $root_login) eq undef;
+			return undef if redirect_tag_check($html_message_body, $list, $root_login) eq undef;
+			
+			
  
             $msg = MIME::Lite->new(
 					Type      =>  'multipart/alternative',
@@ -1047,6 +1076,10 @@ sub list_invite {
         
         }elsif($html_message_body){
         
+			$html_message_body = safely_encode( $html_message_body);
+	 		
+			return undef if redirect_tag_check($html_message_body, $list, $root_login) eq undef;
+			
             # make only a text body                       
              $msg = MIME::Lite->new(
 						Type      => 'text/html', 
@@ -1056,7 +1089,11 @@ sub list_invite {
         
         }elsif($text_message_body){
         	$text_message_body = safely_encode( $text_message_body);
-        	
+
+			return undef if redirect_tag_check($text_message_body, $list, $root_login) eq undef;
+
+        	$msg->attach(Type => 'TEXT',      Data => $text_message_body);
+            
             $msg = MIME::Lite->new(
 					Type      => 'TEXT', 
 					Data      => $text_message_body,
@@ -1064,11 +1101,13 @@ sub list_invite {
 			);                                
         
         } else{ 
-        
+        	
             warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning: both text and html versions of invitation message blank?!"; 
-            $msg = MIME::Lite->new(
+            
+			return undef if redirect_tag_check($ls->param('invite_message_text'), $list, $root_login) eq undef;
+			$msg = MIME::Lite->new(
 						Type      => 'TEXT', 
-						Data      => safely_encode( $li->{invite_message_text}),
+						Data      => safely_encode( $ls->param('invite_message_text')),
 						Datestamp => 0, 
 				  );                                
 
@@ -1461,6 +1500,39 @@ sub mass_mailout_info {
 	
 }
 
+sub redirect_tag_check { 
+	
+	my ($str, $list, $root_login) = @_; 
+	require DADA::MailingList::Settings; 
+	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+	if($ls->param('clickthrough_tracking') == 1){ 
+		require DADA::Logging::Clickthrough; 
+		my $ct = DADA::Logging::Clickthrough->new(
+			{
+				-list => $list,
+				-li   => $ls->params, 
+			}
+		); 
+		eval { 
+			$ct->check_redirect_urls(
+				{ 
+					-str         => $str, 
+					-raise_error => 1, 
+				}
+			); 
+		};
+		if($@){ 
+			report_mass_mail_errors($@, $list, $root_login);
+			return undef;  
+		}
+		else { 
+			return 1; 
+		}
+	}
+	else { 
+		return 1; 
+	}
+}
 
 sub report_mass_mail_errors { 
 	my $errors     = shift; 
