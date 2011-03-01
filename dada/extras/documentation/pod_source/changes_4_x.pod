@@ -2,6 +2,64 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.4.2
+
+=head2 Changes 4.4.
+
+=head2 Bug Fixes 4.4.2
+
+=head3 Saving archive options -> Can't locate object method "save_w_meta"
+
+https://github.com/justingit/dada-mail/issues/120
+
+=head3 "Download List (CSV)" doesn't work
+
+https://github.com/justingit/dada-mail/issues/123
+
+=head3 "what_is_dada_mail" screen returns back Server Error
+
+https://github.com/justingit/dada-mail/issues/125
+
+=head3 DADA::MailingList::Subscribers::add_subscriber() "-dupe_check" option not documented, tested
+
+https://github.com/justingit/dada-mail/issues/127
+
+=head3 Duplicate email addresses can be subscribed in list control panel in last step -
+
+https://github.com/justingit/dada-mail/issues/124
+
+=head3 "Delete List" screen will show Server Error, once you delete a list
+
+https://github.com/justingit/dada-mail/issues/134
+
+=head3  Screen after you fill out the form to create a new list is completely blank
+
+https://github.com/justingit/dada-mail/issues/133
+
+=head3 Beatitude/List Backup/Restore: Attempting to restore a blank scheduled mailing will result in an error
+
+https://github.com/justingit/dada-mail/issues/130
+
+=head3 Beatitude: Schedules backed up at each schedule run
+
+https://github.com/justingit/dada-mail/issues/132
+
+=head3 Restore Lists: Popup menus can have the wrong information
+
+https://github.com/justingit/dada-mail/issues/131
+
+=head3 redirect tags not looked for validity in the URL
+
+https://github.com/justingit/dada-mail/issues/136
+
+=head3 "I know these tables already exist." label doesn't toggle checkbox in installer
+
+https://github.com/justingit/dada-mail/issues/137
+
+=head3 grammar error in Mailing List Options screen s/subscription/unsubscription/
+
+https://github.com/justingit/dada-mail/issues/139
+
 =head1 4.4.1
 
 =head2 Changes 4.4.1
