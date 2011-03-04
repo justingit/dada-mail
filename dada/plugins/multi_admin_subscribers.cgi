@@ -311,14 +311,14 @@ sub search {
 	require DADA::Template::Widgets; 
 	my $scrn = DADA::Template::Widgets::wrap_screen(
 		{ 
-			-data           => \$Default_Template,
+			-data           => \$Search_Results,
 			-with           => 'admin', 
 			-wrapper_params => { 
 				-Root_Login => $root_login,
 				-List       => $list,  
 			},
 			-vars => { 
-		        query      => strip(xss_filter($q->param('query'))), 
+		        query      => $query,
 		        results    => $results,
 		        Plugin_URL => $Url, 
 			},
