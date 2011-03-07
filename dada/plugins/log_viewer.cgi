@@ -52,18 +52,13 @@ init_vars();
 my $admin_list = undef; 
 my $root_login = undef; 
 my $list       = undef; 
+my %Logs       = (); 
 
-my %Logs = (
-	'Usage Log'      		 => $DADA::Config::PROGRAM_USAGE_LOG,
-	'Error Log'      		 => $DADA::Config::PROGRAM_ERROR_LOG,
-	'Clickthrough Log (raw)' => $DADA::Config::LOGS . '/' . $list . '-clickthrough.log', 
-	'Bounce Handler Log'     => $DADA::Config::LOGS . '/' . 'bounces.txt', 
-); 
 my $Default_Log = 'Usage Log';
 
 my $process     = $q->param('process'); 
 
-    my $logs        = find_logs(); 
+    my $logs        = {}; 
     my $lines       = $q->param('lines')    || 100; 
     my $log_name    = $q->param('log_name') || $Default_Log;
 
@@ -105,16 +100,16 @@ sub init_vars {
 
 sub cgi_main {
 
-
-	my $admin_list;
-
 	( $admin_list, $root_login ) = check_list_security(
 	    -cgi_obj    => $q,
 	    -Function   => 'log_viewer',
 	);
-
-	$list = $admin_list;
-
+	$list = $admin_list; 
+ 
+	
+	%Logs = get_logs($list); 
+	$logs = find_logs();
+	
 	my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 	my $li = $ls->get();
 
@@ -144,7 +139,7 @@ sub cgi_view {
     # get the list information
     my $ls = DADA::MailingList::Settings->new({-list => $list}); 
     my $li = $ls->get; 
-    
+     
 
     my $logs_popup_menu = $q->popup_menu(
         -name     => 'log_name',
@@ -400,6 +395,7 @@ sub log_name {
 
 sub file_check { 
 	my $filename = shift; 
+	
 	if(-f $filename && -e $filename){ 
 		return 1;
 	}else{ 
@@ -465,6 +461,7 @@ sub search_logs {
 	                                        -Function => 'log_viewer'
 										);
 	    $list = $admin_list; 
+	 
 	
 	    # get the list information
 	     $ls = DADA::MailingList::Settings->new(
@@ -567,7 +564,8 @@ sub search_logs {
 }
 
 sub download { 
-
+ 
+	
 	use File::Basename; 
 	my $name = fileparse($Logs{$log_name});
 	my ($file_name, $file_ending) = split(/\./, $name, 2); 
@@ -584,6 +582,18 @@ sub download {
 		}
 		close($LOG); 
 }	
+
+sub get_logs { 
+	
+	my $l_list = shift; 
+	my %logs = (
+		'Usage Log'      		 => $DADA::Config::PROGRAM_USAGE_LOG,
+		'Error Log'      		 => $DADA::Config::PROGRAM_ERROR_LOG,
+		'Clickthrough Log (raw)' => $DADA::Config::LOGS . '/' . $l_list . '-clickthrough.log', 
+		'Bounce Handler Log'     => $DADA::Config::LOGS . '/' . 'bounces.txt', 
+	);
+	return %logs; 
+}
 
 =pod
 
