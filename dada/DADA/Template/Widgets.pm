@@ -2402,6 +2402,7 @@ sub subscription_form {
 		$list && 
 		check_if_list_exists( -List=> $list, -Dont_Die  => 1) > 0
 	){ 
+		require DADA::MailingList::Settings; 
         my $ls = DADA::MailingList::Settings->new({-list => $list}); 
            $li = $ls->get(); 
            
