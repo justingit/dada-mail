@@ -11,6 +11,10 @@ Key:
 [?] Someday
 
 
+[] ajax_include_subscribe.cgi - a way to pass a specific list you'd like to work with (instead of plugin config, which 
+limits you to only one list) 
+
+
 [] SpamAssassin plugin config for Dada Bridge? 
 	Just so it's easier to pass custom paramaters to SpamAssassin, in Dada Bridge (just whatever is needed in new()) 
 
