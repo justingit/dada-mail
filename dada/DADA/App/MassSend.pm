@@ -1091,14 +1091,13 @@ sub list_invite {
         	$text_message_body = safely_encode( $text_message_body);
 
 			return undef if redirect_tag_check($text_message_body, $list, $root_login) eq undef;
-
-        	$msg->attach(Type => 'TEXT',      Data => $text_message_body);
-            
             $msg = MIME::Lite->new(
 					Type      => 'TEXT', 
 					Data      => $text_message_body,
 					Datestamp => 0, 
-			);                                
+			);      
+			$msg->attach(Type => 'TEXT',      Data => $text_message_body);
+        	                          
         
         } else{ 
         	
