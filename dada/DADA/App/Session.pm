@@ -30,6 +30,10 @@ sub _init  {
 	   $self->{can_use_cgi_session} = $self->can_use_cgi_session(); 
 	   $self->{can_use_data_dumper} = $self->can_use_data_dumper(); 
 	
+	
+		
+	
+	
 	if($DADA::Config::SESSION_DB_TYPE =~ m/SQL/){ 
             require DADA::App::DBIHandle; 
             $self->{dbh} = DADA::App::DBIHandle->new->dbh_obj; 
@@ -66,13 +70,9 @@ sub _init  {
 	      # http://search.cpan.org/~bmoyles/CGI-Session-SQLite/SQLite.pm
 	        $self->{dsn}      = 'driver:SQLite:'; # . ':' . $DADA::Config::FILES . '/' . $database;;
 	        $self->{dsn_args} = {
-
 	                            Handle    => $self->{dbh}, 
-
+		                        TableName  => $DADA::Config::SQL_PARAMS{session_table},
 	                          }; 
-
-
-		    $CGI::Session::SQLite::TABLE_NAME = 'dada_sessions';
 		}
 		
 	}
@@ -125,11 +125,10 @@ sub login_cookie {
 		
 		my $cipher_pass = DADA::Security::Password::cipher_encrypt($li->{cipher_key}, $args{-password}); 
 		
-			
    		if($self->{can_use_cgi_session} == 1 && $self->{can_use_data_dumper} ==1){ 
    		 	 
    		 		 
-   		 		 require CGI::Session; 
+   		 		 require CGI::Session;
    		         CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
    		         
    		         
@@ -193,7 +192,7 @@ sub change_login {
 	if($self->{can_use_cgi_session} == 1 && $self->{can_use_data_dumper} == 1){ 
 	
 		require CGI::Session; 
-   		         
+		     
 		 CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
    		  my $old_session  = new CGI::Session($self->{dsn}, $q, $self->{dsn_args});
    		  
