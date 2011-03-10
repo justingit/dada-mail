@@ -338,7 +338,12 @@ sub process {
         my ($l_list, $l_email) = split(/\+/, $_, 2);
         
         my $l_lh = DADA::MailingList::Subscribers->new({-list => $l_list}); 
-           $l_lh->remove_from_list(-Email_List => [$l_email]);
+		   $l_lh->remove_subscriber(
+				{ 
+					-email => $l_email, 
+					-type  => 'list',
+				}
+			);
     
     }
 

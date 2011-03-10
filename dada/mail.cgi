@@ -8148,13 +8148,18 @@ sub checker {
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
 
-    my $email_count = $lh->remove_from_list(
-		-Email_List => \@address,
-        -Type       => $type,
-    );
+	my $email_count = 0; 
+	for my $address(@address){ 
+		my $c = $lh->remove_subscriber(
+			{ 
+				-email => $address, 
+				-list  => $type, 
+			}
+		); 
+		$email_count = $email_count + $c; 
+	}
 
     my $should_add_to_black_list = 0;
-
     if($type eq 'list'){
         if($li->{black_list}               == 1 &&
            $li->{add_unsubs_to_black_list} == 1
