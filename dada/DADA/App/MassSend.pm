@@ -1071,34 +1071,50 @@ sub list_invite {
 					Type      =>  'multipart/alternative',
 					Datestamp => 0, 
 				  );  
-            $msg->attach(Type => 'TEXT',      Data => $text_message_body);
-            $msg->attach(Type => 'text/html', Data => $html_message_body);  
-        
+			$msg->attr( 'content-type.charset' => $li->{charset_value} );
+	        
+		 	my $pt_part = MIME::Lite->new(
+				Type     => 'TEXT',      
+				Data     => $text_message_body,    
+				Encoding => $li->{plaintext_encoding},
+            );
+            $pt_part->attr( 'content-type.charset' => $li->{charset_value} );
+ 			$msg->attach($pt_part);
+
+            my $html_part = MIME::Lite->new(
+                Type     => 'text/html',
+                Data     => $html_message_body,
+                Encoding => $li->{html_encoding},
+            );
+            $html_part->attr( 'content-type.charset' => $li->{charset_value} );
+            $msg->attach($html_part);
+
+
         }elsif($html_message_body){
         
 			$html_message_body = safely_encode( $html_message_body);
 	 		
 			return undef if redirect_tag_check($html_message_body, $list, $root_login) eq undef;
 			
-            # make only a text body                       
              $msg = MIME::Lite->new(
 						Type      => 'text/html', 
 						Data      => $html_message_body,
+						Encoding  => $li->{html_encoding},
 						Datestamp => 0, 
 					);
+			$msg->attr( 'content-type.charset' => $li->{charset_value} );
         
         }elsif($text_message_body){
         	$text_message_body = safely_encode( $text_message_body);
 
 			return undef if redirect_tag_check($text_message_body, $list, $root_login) eq undef;
             $msg = MIME::Lite->new(
-					Type      => 'TEXT', 
+					Type      => 'text/plain', 
 					Data      => $text_message_body,
 					Datestamp => 0, 
-			);      
-			$msg->attach(Type => 'TEXT',      Data => $text_message_body);
-        	                          
-        
+					Encoding  => $li->{plaintext_encoding},
+			); 
+			$msg->attr( 'content-type.charset' => $li->{charset_value} );             	                          
         } else{ 
         	
             warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning: both text and html versions of invitation message blank?!"; 
@@ -1108,7 +1124,9 @@ sub list_invite {
 						Type      => 'TEXT', 
 						Data      => safely_encode( $ls->param('invite_message_text')),
 						Datestamp => 0, 
-				  );                                
+						Encoding => $li->{plaintext_encoding},
+				  );           
+			$msg->attr( 'content-type.charset' => $li->{charset_value} );                     
 
         }
         
