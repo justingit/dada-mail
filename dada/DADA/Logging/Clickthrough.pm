@@ -459,7 +459,6 @@ sub parse_entity {
 
 sub check_redirect_urls { 
 
-	# DEV: Bug in, isa_url - quotes around a URL, "http://yahoo.com" 
 	# Are treated as valid - this breaks this check. 
 	
 	my $self    = shift; 
@@ -480,14 +479,15 @@ sub check_redirect_urls {
 		my $url = $redirect_tag; 
 		   $url =~ s/(^\[redirect\=|\]$)//g;
 
-	    if(isa_url($url)){ 
+		if($self->can_be_redirected($url)){ 
 			push(@$valid, $url); 
+	
 	 	}
 		else { 
 			push(@$invalid, $url);
 		}
 	}
-	 
+
 	if($args->{-raise_error} == 1){ 
 		if($invalid->[0]){ 
 			my $error_msg = "The following redirect URLs do not seem like actual URLs. Redirecting will not work correctly!\n";
@@ -509,6 +509,39 @@ sub check_redirect_urls {
 		return ($valid, $invalid); 
 	}
 }
+
+
+
+sub can_be_redirected { 
+	my $self = shift; 
+	my $url  = shift; 
+	if(isa_url($url)){ 
+		return 1; 
+	}
+	elsif($self->isa_mailto($url)){ 
+		return 1; 
+	}
+	else { 
+		return 0; 
+	}	
+}
+
+sub isa_mailto { 
+	my $self = shift; 
+	my $url  = shift; 
+	if($url =~ m/^mailto\:(.*?)$/){
+		my ($mailto, $address) = split(':', $url); 
+		if(check_for_valid_email($address) == 0){ 
+			return 1; 
+		} 
+		else { 
+			return 0; 
+		}
+	}
+	else { 
+		return 0; 
+	}
+}	
 
 
 sub parse_string {
@@ -578,7 +611,8 @@ sub redirect_encode {
       if !defined $mid;
     my $url = shift;
 
-	if(isa_url($url)){ 
+
+	if($self->can_be_redirected($url)){ 
 
 	    my $key = $self->reuse_key( $mid, $url );
 
@@ -591,6 +625,7 @@ sub redirect_encode {
 	}
 	else { 
 		carp "Given an invalid email to create a redirect from, '$url' - skipping!";
+		return $url; 
 	}
 
 }
