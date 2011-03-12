@@ -5171,18 +5171,18 @@ sub _config_import {
 	if(defined($OS) !~ m/^Win|^MSWin/i){ 
 		my $getpwuid_call; 
 		my $good_getpwuid;
-		eval { $getpwuid_call = ( getpwuid $> )[7] };
-		       $good_getpwuid = $getpwuid_call if !$@;
-	
+		eval { 
+			$getpwuid_call = ( getpwuid $> )[7];
+		};
+		if(!$@){ 
+			$good_getpwuid = $getpwuid_call;
+		}
 		if($PROGRAM_CONFIG_FILE_DIR eq 'auto'){ 
 			$CONFIG_FILE_DIR = $good_getpwuid . '/.dada_files/.configs';
 		}
 		else { 
-			# ... 
+			$CONFIG_FILE_DIR = $PROGRAM_CONFIG_FILE_DIR;
 		}
-	}
-	if($CONFIG_FILE_DIR ne 'auto'){ 
-		$CONFIG_FILE_DIR ||= $PROGRAM_CONFIG_FILE_DIR;
 	}
 	
 	$CONFIG_FILE = $CONFIG_FILE_DIR.'/.dada_config';
