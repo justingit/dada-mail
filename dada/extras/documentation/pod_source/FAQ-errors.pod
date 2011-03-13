@@ -619,29 +619,14 @@ If you're on a WinNT server, you're most likely not going to be using Sendmail t
 
 =head2  Use of uninitialized value
 
-Everything is working fine, but when I open up my error log (or even sprinkled on the mail script in my web browser) I see annoying things like this: 
+I<Everything is working fine, but when I open up my error log (or even sprinkled on the mail script in my web browser) I see annoying things like this:> 
 
 	Use of uninitialized value at /home/mysits/web/cgi-bin/dada/mail.cgi line 7064.
 
-They are honestly annoying, I don't know what they mean, and frankly, I don't care, what is happening?!
+Please report these to our issues tracker: 
 
-Not to worry, these aren't really errors, they're 'warnings' It's saying that something isn't being done correctly and that this might be a problem. A few things to do, all these things are located at the top of the mail.cgi file (NOT the Config.pm file) 
+L<http://github.com/justingit/dada-mail/issues>
 
-The first line of mail.cgi should look similar to this: 
-
-	#!/usr/bin/perl -w
-
-change that line, to this: 
-
-	#!/usr/bin/perl 
-
-The '-w' is a flag, that says, tell me about warnings, (Use of uninitialized blah blah blah), we don't want that. 
-
-Around line 40 in mail.cgi, you'll see this:
-
-	use CGI::Carp "fatalsToBrowser"; 
-
-Comment this line out or delete it. That tells Dada Mail to tell you these little things in your web browser. 
 
 =head2 Global symbol "%Config" requires explicit package name
 

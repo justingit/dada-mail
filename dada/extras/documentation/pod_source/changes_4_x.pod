@@ -2,6 +2,104 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.4.3
+
+=head2 Changes 4.4.3
+
+=head3 Clickthrough Tracking Redirect Tags Now Support mailto: URLS
+
+v4.4.2 introduced stricter checking of the redirect tags, to make sure they look 
+like URL's. This essentially broken any redirects that didn't start with, http://, https:// or ftp:// (there's a few others, as well) 
+
+One redirect that was being used by some users was a B<mailto:>, like this: 
+
+ mailto:user@example.com
+
+or, 
+
+ <a href="[redirect=mailto:user@example.com]">Email Us!</a>  
+
+Support for such redirects has be re-introduced. 
+
+=over
+
+=item * Wishlist: mailto:user@example.com supported in the redirect tags
+
+https://github.com/justingit/dada-mail/issues/145
+
+=back
+
+=head3 ajax_include_subscribe.cgi - set the mailing list you want the form to use, by query string paramater
+
+In the, C<ajax_include_subscribe.cgi> script, you had the choice of either creating a form that allows you to 
+show ALL lists available, or set a configuration variable within the script, to only show one list by default. 
+
+You may now set whichever list you would like the subscription form to use, via the, C<list> query string paramater: 
+
+ <script type="text/javascript" src="http://example.com/cgi-bin/dada/extensions/ajax_include_subscribe.cgi?list=mylist"></script> 
+ 
+to show a subscription form for just that list. This works better than setting it within the extension, as you have the 
+choice of making a specific subscription form, for any of your lists. 
+
+=head3 Documentation Move Dada Mail Between Servers/Accounts
+
+New documentation is now shipped to give guidance on how to move Dada Mail between hosting servers/accounts
+
+=over
+
+=item * No documentation on how to move a Dada Mail install from one server/account to another 
+
+https://github.com/justingit/dada-mail/issues#issue/149
+
+=back
+
+
+=head2 Bug Fixes
+
+=head3 multi_admin_subscribers.cgi - doesn't show search results
+
+https://github.com/justingit/dada-mail/issues/142
+
+=head3 multi_admin_subscribers.cgi - won't work with mixed cased email addresses
+
+https://github.com/justingit/dada-mail/issues/143
+
+=head3 Raw Clickthrough log not listed in log_viewer.cgi
+
+https://github.com/justingit/dada-mail/issues/146
+
+=head3 Embedded (regular - non-AJAX) Javascript subscription form does not work
+
+https://github.com/justingit/dada-mail/issues/148
+
+=head3 Send a List Invitation - PlainText Version (only) does not work
+
+https://github.com/justingit/dada-mail/issues/150
+
+=head3 "SQLite" backend and Sessions: wrong table, "sessions" being used?
+
+https://github.com/justingit/dada-mail/issues/141
+
+=head3 Use of, DADA::MailingList::Subscribers::remove_from_list deprecated method
+
+https://github.com/justingit/dada-mail/issues/140
+
+=head3 prototype JavaScript library is out of date - using: 1.6, current: 1.7
+
+https://github.com/justingit/dada-mail/issues/138
+
+=head3 Send a List Invitation - PlainText Version sent in multipart email - both plaintext
+
+https://github.com/justingit/dada-mail/issues/151
+
+=head3 Send a List Invitation - Email Messages created with the wrong encoding
+
+https://github.com/justingit/dada-mail/issues/152
+
+=head3 Config.pm: Use of uninitialized value in string ne at ..//DADA/Config.pm line 5184.
+
+https://github.com/justingit/dada-mail/issues/153
+
 =head1 4.4.2
 
 =head2 Changes 4.4.
