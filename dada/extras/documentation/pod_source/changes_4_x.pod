@@ -56,6 +56,10 @@ https://github.com/justingit/dada-mail/issues#issue/149
 
 =head2 Bug Fixes
 
+=head3 Dada Mail Logo not showing up in installer 
+
+https://github.com/justingit/dada-mail/issues/154
+
 =head3 multi_admin_subscribers.cgi - doesn't show search results
 
 https://github.com/justingit/dada-mail/issues/142
