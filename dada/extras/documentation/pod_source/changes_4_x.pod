@@ -45,16 +45,36 @@ choice of making a specific subscription form, for any of your lists.
 
 New documentation is now shipped to give guidance on how to move Dada Mail between hosting servers/accounts
 
+The docs are readable here: 
+
+L<http://dadamailproject.com/d/move_dada_mail.pod.html>
+
 =over
 
-=item * No documentation on how to move a Dada Mail install from one server/account to another 
+=item * New documentation on how to move a Dada Mail install from one server/account to another 
 
 https://github.com/justingit/dada-mail/issues#issue/149
 
 =back
 
+=head2 View List Screen Doesn't Show So Much Stuff if There's Nothing to Show
+
+If you don't have any Subscribers/Addresses to show, the View List Screen no longer shows
+all that Stuff it usually shows. 
+
+=head2 Black List Additions are Made a Little More Clearly Known
+
+In the List Control Panel, if you remove addresses from your mailing list, the number of addresses that are then black listed is now displayed, instead of just mysteriously being added. 
 
 =head2 Bug Fixes
+
+=head3 Clicking, "Send Invitations" with no addresses to invite leads to a broken screen
+
+https://github.com/justingit/dada-mail/issues/155
+
+=head3 A "closed" list still allows invitations to be sent - which cannot be answered. 
+
+https://github.com/justingit/dada-mail/issues/156
 
 =head3 Dada Mail Logo not showing up in installer 
 
