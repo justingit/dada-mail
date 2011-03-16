@@ -124,109 +124,108 @@
 
 <!-- tmpl_unless num_subscribers -->
 	
-	<p class="error">
+	<p class="alert">
 	 Currently, there are no <!-- tmpl_var type_title -->.
 	</p>
 	
-<!--/tmpl_unless-->
+<!-- tmpl_else -->
 
-<table width="100%">
- <tr>
-  <td>
-   <p>
-    <!-- tmpl_var type_title -->
-    <strong>
-     <!-- tmpl_var name="screen_start" -->
-    </strong>
-    to 
-    <strong>
-     <!-- tmpl_var name="screen_finish" -->
-    </strong>
-   </p>
-  </td>
-  <td align="right">
-   <p>
-    Total number of <!-- tmpl_var type_title -->:
-    <strong>
-     <!-- tmpl_var name="num_subscribers" -->
-    </strong>
-    <!-- tmpl_unless list_type_isa_sub_request_list -->
-		<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
-     			<!-- tmpl_if list_type_isa_list -->
-					Invite
-					<!-- tmpl_if list_settings.enable_mass_subscribe -->
-			/ Add
+	<table width="100%">
+	 <tr>
+	  <td>
+	   <p>
+	    <!-- tmpl_var type_title -->
+	    <strong>
+	     <!-- tmpl_var name="screen_start" -->
+	    </strong>
+	    to 
+	    <strong>
+	     <!-- tmpl_var name="screen_finish" -->
+	    </strong>
+	   </p>
+	  </td>
+	  <td align="right">
+	   <p>
+	    Total number of <!-- tmpl_var type_title -->:
+	    <strong>
+	     <!-- tmpl_var name="num_subscribers" -->
+	    </strong>
+	    <!-- tmpl_unless list_type_isa_sub_request_list -->
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
+	     			<!-- tmpl_if list_type_isa_list -->
+						Invite
+						<!-- tmpl_if list_settings.enable_mass_subscribe -->
+				/ Add
+						<!-- /tmpl_if -->
+					<!-- tmpl_else --> 
+						Add
 					<!-- /tmpl_if -->
-				<!-- tmpl_else --> 
-					Add
-				<!-- /tmpl_if -->
-    	</a>
-   	<!-- /tmpl_unless -->
-	...
-	</p>
-  </td>
- </tr>
-</table>
+	    	</a>
+	   	<!-- /tmpl_unless -->
+		...
+		</p>
+	  </td>
+	 </tr>
+	</table>
 
 
-<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+	<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 	
- <!-- tmpl_include view_list_table_widget.tmpl --> 
- <!-- tmpl_include view_list_prev_next_table.tmpl -->
- <p align="center">
-  <a href="#" onclick="SetChecked(1);return false;">
-   check all 
-  </a>
-  :: 
-  <a href="#" onclick="SetChecked(0);return false;">
-   uncheck all
-  </a>
- </p>
+	 <!-- tmpl_include view_list_table_widget.tmpl --> 
+	 <!-- tmpl_include view_list_prev_next_table.tmpl -->
+	 <p align="center">
+	  <a href="#" onclick="SetChecked(1);return false;">
+	   check all 
+	  </a>
+	  :: 
+	  <a href="#" onclick="SetChecked(0);return false;">
+	   uncheck all
+	  </a>
+	 </p>
 
-<!-- tmpl_unless list_type_isa_sub_request_list -->
+	<!-- tmpl_unless list_type_isa_sub_request_list -->
 
-	 <input type=hidden name="process" value="delete" />
-	 <input type=hidden name="f"       value="checker" />
-	 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
-	 <div class="buttonfloat">
-	  <input type="submit" class="alertive" value="Unsubscribe Checked '<!-- tmpl_var type_title -->' Subscribers" />
-	 </div>
+		 <input type=hidden name="process" value="delete" />
+		 <input type=hidden name="f"       value="checker" />
+		 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
+		 <div class="buttonfloat">
+		  <input type="submit" class="alertive" value="Unsubscribe Checked '<!-- tmpl_var type_title -->' Subscribers" />
+		 </div>
 
-	<div class="floatclear"></div> 
+		<div class="floatclear"></div> 
 
-<!-- tmpl_else --> 
-	<div class="buttonfloat">
-	 <input type=hidden name="f"       value="subscription_requests" />
+	<!-- tmpl_else --> 
+		<div class="buttonfloat">
+		 <input type=hidden name="f"       value="subscription_requests" />
 	
-	<!-- hopefully ,this is, "sub_request_list" --> 
-	 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
-	 <input type="submit" name="process" class="processing" value="Approve Checked Subscription Requests" />
-	 <input type="submit" name="process" class="alertive" value="Deny Checked Subscription Requests" />
-	</div>
-	<div class="floatclear"></div>
-<!-- /tmpl_unless --> 
+		<!-- hopefully ,this is, "sub_request_list" --> 
+		 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
+		 <input type="submit" name="process" class="processing" value="Approve Checked Subscription Requests" />
+		 <input type="submit" name="process" class="alertive" value="Deny Checked Subscription Requests" />
+		</div>
+		<div class="floatclear"></div>
+	<!-- /tmpl_unless --> 
 
-</form>
-
-<!-- tmpl_unless list_type_isa_sub_request_list -->
-	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-	 <input type=hidden name="f"       value="remove_all_subscribers" />
-	 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
-	 <div class="buttonfloat">
-	  <input type="submit" class="alertive" value="Unsubscribe ALL '<!-- tmpl_var type_title -->' Subscribers" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   />
-	 </div>
 	</form>
-	<div class="floatclear"></div>
-<!-- tmpl_else --> 
-	<!-- ... --> 
+
+	<!-- tmpl_unless list_type_isa_sub_request_list -->
+		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+		 <input type=hidden name="f"       value="remove_all_subscribers" />
+		 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
+		 <div class="buttonfloat">
+		  <input type="submit" class="alertive" value="Unsubscribe ALL '<!-- tmpl_var type_title -->' Subscribers" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   />
+		 </div>
+		</form>
+		<div class="floatclear"></div>
+	<!-- tmpl_else --> 
+		<!-- ... --> 
+	<!-- /tmpl_unless --> 
+
 <!-- /tmpl_unless --> 
+
 
 
 <!-- tmpl_if list_type_isa_black_list -->
-
-
-
-
 	<!-- tmpl_if can_filter_subscribers_through_blacklist --> 
 	
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="blacklist_filter_form">
@@ -390,34 +389,35 @@
 <!--/tmpl_if--> 
 
 
+<!-- tmpl_if num_subscribers -->
 
-<!-- tmpl_include list_search_form_widget.tmpl --> 
+	<!-- tmpl_include list_search_form_widget.tmpl --> 
 
+		<hr />
 
-	<hr />
-
-	<table cellpadding="5">
-	 <tr>
-	  <td>
-	   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-	    <input type="hidden" name="f"    value="text_list" />
-	    <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
-	    <input type="submit" class="plain" value="Download <!-- tmpl_var type_title --> (.csv)" />
-	   </form>
-	  </td>
-<!-- tmpl_if comment --> 
-<!-- I've disabled this, for the time being --> 
+		<table cellpadding="5">
+		 <tr>
 		  <td>
-		   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get">
-		    <input type="hidden" name="f"    value="send_list_to_admin" />
+		   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+		    <input type="hidden" name="f"    value="text_list" />
 		    <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
-		    <input type="submit" class="plain" value="Send <!-- tmpl_var type_title --> to List Owner" />
+		    <input type="submit" class="plain" value="Download <!-- tmpl_var type_title --> (.csv)" />
 		   </form>
 		  </td>
-<!-- /tmpl_if --> 
-	 </tr>
-	</table>
+	<!-- tmpl_if comment --> 
+	<!-- I've disabled this, for the time being --> 
+			  <td>
+			   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get">
+			    <input type="hidden" name="f"    value="send_list_to_admin" />
+			    <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+			    <input type="submit" class="plain" value="Send <!-- tmpl_var type_title --> to List Owner" />
+			   </form>
+			  </td>
+	<!-- /tmpl_if --> 
+		 </tr>
+		</table>
 
+<!-- /tmpl_if --> 
 
 
 
