@@ -2461,7 +2461,7 @@ sub _email_batched_finished_notification {
     my $entity = MIME::Entity->build(
         Type => 'multipart/mixed',
         To   => safely_encode( Email::Address->new(
-            '<!-- tmpl_var list_settings.list_owner -->',
+            'List Owner For ' . $self->{ls}->param('list_name'),
             $self->{ls}->param('list_owner_email')
           )->format),
         Subject  => safely_encode( $DADA::Config::MAILING_FINISHED_MESSAGE_SUBJECT),
