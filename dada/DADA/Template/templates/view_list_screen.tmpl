@@ -9,11 +9,19 @@
 
 <!-- tmpl_if delete_email_count -->
 	
-	<p class="error">
-	 <!-- tmpl_var name="delete_email_count" --> address(es) of your <!-- tmpl_var type_title --> have been unsubscribed.
+	<p class="alert">
+	 <!-- tmpl_var delete_email_count --> address(es) of your <!-- tmpl_var type_title --> have been unsubscribed.
 	</p>
 	
 <!-- /tmpl_if -->
+
+<!-- tmpl_if black_list_add --> 
+
+	<p class="alert">
+	 <!-- tmpl_var black_list_add --> address(es) have been added to the <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list&type=black_list">Black List</a>. 
+</p>
+
+<!-- /tmpl_if --> 
 
 <!-- tmpl_if email_count -->
 	

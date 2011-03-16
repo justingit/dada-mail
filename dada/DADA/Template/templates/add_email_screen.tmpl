@@ -27,14 +27,30 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
 
 
 <!-- tmpl_if going_over_quota -->
-	
 	<p class="error">
 	 Warning! You cannot subscribe all the addresses that you have submitted,
 	 since you will go over your subscription limit of <!-- tmpl_var list_settings.subscription_quota -->
 	 subscribers. Please resubmit a smaller number of addresses to subscribe.
 	</p>
-	
 <!--/tmpl_if-->
+
+
+<!-- tmpl_if list_type_isa_list -->
+	<!-- tmpl_if list_settings.closed_list -->
+		<!-- tmpl_unless list_settings.enable_mass_subscribe -->
+		 <div style="background:#fcc;margin:5px;padding:5px;text-align:center">
+		 <h1>Warning!</h1> 
+		 <p>
+		 	You currently have a <strong>closed list</strong> and subscribing members via the list 
+			control panel is <strong>disabled</strong>. Subscribers will not be able to 
+			confirm any list invitations that you send. 
+			 </p> 
+			</div> 
+		<!-- /tmpl_unless --> 
+	<!-- /tmpl_if -->
+<!-- /tmpl_if -->
+
+
 
 <form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
  <input type="hidden" name="f"       value="add_email" />
@@ -527,56 +543,33 @@ Invalid Email Addresses
 
 <!-- /tmpl_if --> 
 
+<!-- tmpl_if not_subscribed --> 
 
- <div class="buttonfloat">
-	
-<!-- tmpl_if can_have_subscriber_fields --> 
+	 <div class="buttonfloat">
+	  <input type="button" class="cautionary" value="<< Re-Enter Email List" onclick="history.back();return false;" />
 
-	 <!-- tmpl_unless root_login -->
-	 	<p class="error">Disabled. You will need to be logged into this list with the <!-- tmpl_var PROGRAM_NAME --> Root Password.</p>
-	<!-- /tmpl_unless --> 
+	<!-- tmpl_if list_type_isa_list --> 
+	  <input type="submit"  name="process" value="Send Invitation... >>" <!-- tmpl_if list_settings.closed_list -->disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing"<!-- /tmpl_if --> />
+	<!-- /tmpl_if -->
 
-		<p>
-		 <input type="checkbox" id="fields_options_mode" name="fields_options_mode" value="preserve" <!-- tmpl_unless root_login -->disabled="disabled"<!-- /tmpl_unless --> />
-		  <label for="fields_options_mode">
-		   Preserve any current Subscriber Profile Fields information
-		 </label>	
-		</p>
-
-<!-- /tmpl_if --> 
-
-
-  <input type="button" class="cautionary" value="<< Re-Enter Email List" onclick="history.back();return false;" />
-
-<!-- tmpl_if list_type_isa_list --> 
-  <input type="submit" class="processing" name="process" value="Send Invitation... >>" />
-<!-- /tmpl_if -->
-
-
-
-<!-- tmpl_if list_type_isa_list --> 
-
-	<!-- tmpl_if list_settings.enable_mass_subscribe --> 
-	
-  		<input type="submit" class="processing" name="process"  value="Subscribe Checked Subscribers >>" onclick="return warnAboutMassSubscription(this.form);" />
-
+	<!-- tmpl_if list_type_isa_list --> 
+		<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN --> 
+			<!-- ... --> 
+		<!-- tmpl_else --> 
+			<input type="submit" <!-- tmpl_unless list_settings.enable_mass_subscribe -->disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing"<!-- /tmpl_unless -->  name="process"  value="Subscribe Checked Subscribers >>" onclick="return warnAboutMassSubscription(this.form);" />	
+		<!-- /tmpl_if --> 
 	<!-- tmpl_else --> 
-		<!-- .... --> 
-	<!-- /tmpl_if --> 
-	
-		
+		<input type="submit" class="processing" name="process"  value="Subscribe Checked Subscribers >>" />
+	<!-- /tmpl_if -->
+	 </div>
+	 <div class="floatclear"></div>
 
 <!-- tmpl_else --> 
+	<p class="alert"> 
+		No addresses have passed verification. 
+	</p> 
+<!-- /tmpl_if --> 
 
-	<input type="submit" class="processing" name="process"  value="Subscribe Checked Subscribers >>" />
-
-<!-- /tmpl_if -->
-
-
-
- </div>
- <div class="floatclear"></div>
- 
 
  </form>
  

@@ -37,81 +37,84 @@
 <!-- /tmpl_if -->
 </p>
 
+<!-- tmpl_if verified_addresses --> 
 
-<fieldset> 
- <legend>
-	Your Invitees
- </legend>
+	<fieldset> 
+	 <legend>
+		Your Invitees
+	 </legend>
 
 
- <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
+	 <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
 
- <table cellpadding="2" cellspacing="0" border="0" width="100%">
-  <tr>
-   <td width="25">
-    <p>&nbsp;</p>
-   </td>
-   <td>
-   <p>
-    <strong>
-     Email
-   </strong>
-  </p>
- </td>
+	 <table cellpadding="2" cellspacing="0" border="0" width="100%">
+	  <tr>
+	   <td width="25">
+	    <p>&nbsp;</p>
+	   </td>
+	   <td>
+	   <p>
+	    <strong>
+	     Email
+	   </strong>
+	  </p>
+	 </td>
 
-<!-- tmpl_loop name="field_names" --> 
+	<!-- tmpl_loop name="field_names" --> 
     
-    <td>
-     <p>
-      <strong>
-       <!-- tmpl_var name --> 
-      </strong>
-     </p>
-    </td> 
-<!--/tmpl_loop --> 
+	    <td>
+	     <p>
+	      <strong>
+	       <!-- tmpl_var name --> 
+	      </strong>
+	     </p>
+	    </td> 
+	<!--/tmpl_loop --> 
 
-  </tr>
+	  </tr>
   
-  <!-- tmpl_loop verified_addresses -->
+	  <!-- tmpl_loop verified_addresses -->
 
-    <tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!--/tmpl_if-->>
-     <td width="25">
-      <input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" />
-     </td>
-     <td>
-      <p>
-<label for="<!-- tmpl_var email -->">
-       <!-- tmpl_var email -->
-</label>
-      </p>
-     </td>
+	    <tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!--/tmpl_if-->>
+	     <td width="25">
+	      <input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" />
+	     </td>
+	     <td>
+	      <p>
+	<label for="<!-- tmpl_var email -->">
+	       <!-- tmpl_var email -->
+	</label>
+	      </p>
+	     </td>
 
-     <!-- tmpl_loop fields --> 
+	     <!-- tmpl_loop fields --> 
         
-        <td>
-         <p>
-          <!-- tmpl_var value default="&nbsp;" -->
-         </p>
-        </td>
-    <!-- /tmpl_loop --> 
-  </tr>
+	        <td>
+	         <p>
+	          <!-- tmpl_var value default="&nbsp;" -->
+	         </p>
+	        </td>
+	    <!-- /tmpl_loop --> 
+	  </tr>
   
-  <!-- tmpl_if __last__ --> 
+	  <!-- tmpl_if __last__ --> 
   
-  </table>
-  <p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var __counter__ -->&nbsp;</p> 
+	  </table>
+	  <p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var __counter__ -->&nbsp;</p> 
   
-  <!-- /tmpl_if --> 
+	  <!-- /tmpl_if --> 
   
-<!-- /tmpl_loop -->
+	<!-- /tmpl_loop -->
 
 
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-</div>
+	<p>&nbsp;</p>
+	<p>&nbsp;</p>
+	</div>
 
 
-</fieldset> 
+	</fieldset> 
+
+<!-- /tmpl_if --> 
 
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
 
