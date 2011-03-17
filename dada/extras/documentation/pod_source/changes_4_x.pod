@@ -66,6 +66,10 @@ all that Stuff it usually shows.
 
 In the List Control Panel, if you remove addresses from your mailing list, the number of addresses that are then black listed is now displayed, instead of just mysteriously being added. 
 
+=head3 Bounce Handler: Erase the Scorecard in the list control panel 
+
+You can now erase the Bounce Scorecard on a list-per-list basis in the list control panel. 
+
 =head2 Bug Fixes
 
 =head3 Finished Mass Mailing Notification has unparsed template tag
