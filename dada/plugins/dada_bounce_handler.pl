@@ -1346,6 +1346,7 @@ sub cgi_main {
         'cgi_bounce_score_search' => \&cgi_bounce_score_search, 
         'cgi_show_plugin_config'  => \&cgi_show_plugin_config,
 		'ajax_parse_bounces_results' => \&ajax_parse_bounces_results, 
+		'cgi_erase_scorecard'        => \&cgi_erase_scorecard, 
         ); 
         
         if(exists($Mode{$flavor})) { 
@@ -1670,6 +1671,21 @@ return <<EOF
 </p>
 <!-- tmpl_if num_rows --> 
 	<!-- tmpl_var scorecard --> 
+	
+	
+<form action="<!-- tmpl_var Plugin_URL -->" method="post"> 
+<input type="hidden" name="flavor" value="cgi_erase_scorecard" /> 
+	<div class="buttonfloat">
+	 <input type="submit" class="alertive" onclick="if(!confirm('Are you sure you want to Erase the Bounce Scorecard? This cannot be undone.')){alert('Scorecard Not Erased.');return false;}" name="process" value="Erase Score Card" />
+	</div>
+	<br />
+	<div class="floatclear"></div>
+
+</form> 
+
+		
+	
+	
 <!-- tmpl_else --> 
 	<p class="error">
 	 Currently, there are no bounced addresses saved in the scorecard.
@@ -1678,6 +1694,20 @@ return <<EOF
 
 EOF
 ; 
+}
+
+
+
+sub cgi_erase_scorecard { 
+	
+    require DADA::App::BounceScoreKeeper;
+    my $bsk = DADA::App::BounceScoreKeeper->new( -List => $list );
+       $bsk->erase;
+
+	print $q->redirect(
+		-uri => $Plugin_Config->{Plugin_URL} . '?flavor=cgi_scorecard', 
+	);
+
 }
 
 

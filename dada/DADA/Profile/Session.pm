@@ -74,10 +74,10 @@ sub _init {
             $self->{dsn_args} = {
 
                 Handle => $dbh,
+				TableName => $DADA::Config::SQL_PARAMS{session_table},
 
             };
 
-            $CGI::Session::SQLite::TABLE_NAME = 'dada_sessions';
         }
     }
     elsif ( $DADA::Config::SESSION_DB_TYPE eq 'Db' ) {

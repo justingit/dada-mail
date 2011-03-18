@@ -58,9 +58,23 @@
 	<!--/tmpl_if-->
 	
 <!--/tmpl_if-->
+<!-- tmpl_if list_type_isa_list -->
+	<!-- tmpl_if list_settings.closed_list -->
+		<!-- tmpl_unless list_settings.enable_mass_subscribe --> unless list settings. enable mass subscribe
+		 <div style="background:#fcc;margin:5px;padding:5px;text-align:center">
+		 <h1>Warning!</h1> 
+		 <p>
+		 	You currently have a <strong>closed list</strong> and subscribing members via the list 
+			control panel is <strong>disabled</strong>. Subscribers will not be able to 
+			confirm any list invitations that you send. 
+			 </p> 
+			</div> 
+		<!-- /tmpl_unless --> 
+	<!-- /tmpl_if -->
+<!-- /tmpl_if --> 
+
 
 <p>
-	
 
 <fieldset> 
 	

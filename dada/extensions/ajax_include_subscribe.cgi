@@ -67,13 +67,6 @@ $Plugin_Config->{Default_List}  = undef;
 # If left blank, a popup selection form widget will be shown instead. 
 
 
-# Cache the creation of the default subscription form? 
-# Global caching has to be on as well. 
-#
-#my $Cache_Subscribe_Form = 0; 
-#
-
-
 # Subscription Descriptions
 # Change the messages created when somsone attempts to subscribe to a list. 
 # 
@@ -277,8 +270,11 @@ $q->param('f', $f);
 
 my $l     = xss_filter($q->param('list'))  || undef; 
 my $email = xss_filter($q->param('email')) || undef; 
+my $list  = xss_filter($q->param('list'))  || undef; 
 my $mode  = xss_filter($q->param('mode'))  || 'js'; 
 $q->delete('mode'); 
+$q->delete('list'); 
+
 
 main(); 
 
@@ -305,8 +301,13 @@ sub init_vars {
 
 
 sub main { 
-    if($Plugin_Config->{Default_List}){ 
-    
+	
+	if(defined($list)){ 
+        if(check_if_list_exists(-List => $list ) == 0){ 
+            die "'list' param is not configured correctly."; 
+         }		
+	}
+    elsif(defined($Plugin_Config->{Default_List})){ 
         if(check_if_list_exists(-List => $Plugin_Config->{Default_List} ) == 0){ 
             die "\$Plugin_Config->{Default_List} is not configured correctly."; 
          }
@@ -331,7 +332,9 @@ print $q->header();
 
 
     if($f){ 
+
         my $lh = DADA::MailingList::Subscribers->new({-list    => $l}); 
+
         my $ls = DADA::MailingList::Settings->new({-list => $l}); 
         my $li = $ls->get; 
                     
@@ -357,6 +360,7 @@ print $q->header();
             }
             # Or....
              if($status == 1){ 
+				$q->param('list', $l); 
                 require DADA::App::Subscriptions; 
                  my $das = DADA::App::Subscriptions->new; 
                     $das->subscribe(
@@ -415,7 +419,8 @@ print $q->header();
             }
             # Or....
              if($status == 1){ 
-                 require DADA::App::Subscriptions; 
+				$q->param('list', $l); 
+				require DADA::App::Subscriptions; 
                  my $das = DADA::App::Subscriptions->new; 
                     $das->unsubscribe(
                     {
@@ -464,13 +469,6 @@ sub default {
     
     use     DADA::App::ScreenCache; 
     my $c = DADA::App::ScreenCache->new; 
-    
-  #  if($Cache_Subscribe_Form){ 
-   #     if($c->cached('ajax_subscribe_form' . '.scrn')){ 
-	#		$c->show('ajax_subscribe_form' . '.scrn'); 
-	#		return;
-	#	}
-    #}
 
     $pjx->cgi( $q );    
     my   $ajax_code = $pjx; 
@@ -489,23 +487,40 @@ sub default {
     
     }); 
 
+	my $subscription_form = ''; 
+	if(defined($list)){ 
+		$subscription_form = DADA::Template::Widgets::subscription_form(
+			{
+				-ajax_subscribe_extension => 1, 
+				-list                     => $list,
+			}
+		); 
+        
+	}elsif(defined($Plugin_Config->{Default_List})){ 
+		$subscription_form = DADA::Template::Widgets::subscription_form(
+			{
+				-ajax_subscribe_extension => 1, 
+				-list                     => $Plugin_Config->{Default_List},
+			}
+		);		
+	}
+	else { 
+		$subscription_form =  DADA::Template::Widgets::subscription_form(
+			{
+				-ajax_subscribe_extension => 1
+			}
+		);
+		
+	}
+
      my $form = DADA::Template::Widgets::screen(
 		{
-        -data => \$Form_Code, 
-        -vars => { 
-	
-				($Plugin_Config->{Default_List} ) ? 
-				(
-		           subscription_form => DADA::Template::Widgets::subscription_form({-ajax_subscribe_extension => 1, -list => $Plugin_Config->{Default_List} }),
-		        )    
-				:
-				(
-					subscription_form => DADA::Template::Widgets::subscription_form({-ajax_subscribe_extension => 1}),
-				),
-					
-        }
-    
-    });
+        	-data => \$Form_Code, 
+	        -vars => { 
+					subscription_form => $subscription_form,	
+        		}
+			}
+     	);
 
 	if($mode eq 'js'){ 
 		
@@ -576,6 +591,20 @@ You could also try just copying the source that this script produces from the UR
 
 Probably not the best idea, but I'll throw that idea for ya. 
 
+=head1 Optional Query String Paramaters
+
+=head3 mode
+
+C<mode> can either be set to C<js> to return javascript code, or C<html> to output HTML. If not set, javascript code will be returned. 
+
+=head3 list
+
+C<list> can be passed in the query string, if you want to have the form for a specific list: 
+
+ L<http://example.com/cgi-bin/dada/ajax_subscribe.cgi?list=mylistshortname>
+
+Instead of a popup menu for all lists. It will override anything set in, C<$Plugin_Config->{Default_List}>
+
 =head1 CONFIGURATION
 
 There's no configuration that you are B<required> to do, but there's many things that you B<can> do. We'll try to cover everything: 
@@ -589,14 +618,6 @@ If you would like to have this form work for only one list, you may set the B<li
  $Plugin_Config->{Default_List}  = 'mylistshortname';
 
 If you've configured this variable incorrectly, you'll most likely receive an error in your web browser, so take care in setting it correctly. 
-
-=head2 $Cache_Subscribe_Form (currently, Disabled) 
-
-If set to, B<1>, this extension will attempt to cache the default subscription form it creates. This could lighten the load on busy websites. Do note that Global Page Caching has to be turned on for this to work. 
-
-See Also: 
-
-L<http://dadamailproject.com/support/documentation/Config.pm.html#_screen_cache__caching_html_screens>
 
 =head2 %Subscription_Descriptions
 

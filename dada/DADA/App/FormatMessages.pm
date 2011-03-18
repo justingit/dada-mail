@@ -648,7 +648,8 @@ sub _make_multipart {
 	my $entity = shift; 
 	
 	# I wanted to do this, before we make it multipart: 
-	my $orig_charset = $entity->head->mime_attr('content-type.charset'); 
+	my $orig_charset  = $entity->head->mime_attr('content-type.charset'); 
+	my $orig_encoding = $entity->head->mime_encoding;
 	
 	require MIME::Entity; 
 		
@@ -662,8 +663,9 @@ sub _make_multipart {
 		Data    => html_to_plaintext(
 			{ 
 				-string => safely_encode($html_content)
-			}
+			},
 		),
+		Encoding => $orig_encoding,
 	  ); 
 	 $plaintext_entity->head->mime_attr(
 		"content-type.charset" => $orig_charset,

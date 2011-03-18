@@ -55,7 +55,7 @@ my $Default_Template = q{
 	
 <h1>Search All Lists for a Particular Subscriber:</h1>
 
-<form action=<!-- tmpl_var Plugin_URL -->> 
+<form action="<!-- tmpl_var Plugin_URL -->" method="post"> 
  <p>
   <input type="text" name="query" value="<!-- tmpl_var query -->" /> 
 
@@ -205,8 +205,8 @@ my $li = $ls->get;
 
 
 my $f = $q->param('f') || undef; 
-my $query = $q->param('query'); 
-if(strip($query) eq ''){ 
+my $query = lc_email( strip ( xss_filter( $q->param( 'query' ) ) ) ); 
+if($query eq ''){ 
     $f = 'default'; 
 }   
 
@@ -248,9 +248,6 @@ sub default {
 
 
 sub search { 
-    
-    my $query = xss_filter($q->param('query')); 
-       $query = strip($query); 
     
     my @lists = available_lists(-In_Order => 1); 
 
@@ -311,14 +308,14 @@ sub search {
 	require DADA::Template::Widgets; 
 	my $scrn = DADA::Template::Widgets::wrap_screen(
 		{ 
-			-data           => \$Default_Template,
+			-data           => \$Search_Results,
 			-with           => 'admin', 
 			-wrapper_params => { 
 				-Root_Login => $root_login,
 				-List       => $list,  
 			},
 			-vars => { 
-		        query      => strip(xss_filter($q->param('query'))), 
+		        query      => $query,
 		        results    => $results,
 		        Plugin_URL => $Url, 
 			},
@@ -341,7 +338,12 @@ sub process {
         my ($l_list, $l_email) = split(/\+/, $_, 2);
         
         my $l_lh = DADA::MailingList::Subscribers->new({-list => $l_list}); 
-           $l_lh->remove_from_list(-Email_List => [$l_email]);
+		   $l_lh->remove_subscriber(
+				{ 
+					-email => $l_email, 
+					-type  => 'list',
+				}
+			);
     
     }
 
@@ -360,7 +362,7 @@ sub process {
     }
     
 
-    print $q->redirect(-uri => $Url . '?f=search&query=' . $q->param('query')); 
+    print $q->redirect(-uri => $Url . '?f=search&query=' . $query); 
 
 }
 

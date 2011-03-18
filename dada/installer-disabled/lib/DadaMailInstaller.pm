@@ -18,6 +18,8 @@ BEGIN {
     }
 }
 use lib qw(
+  ../../
+  ../../DADA/perllib
   ../
   ../DADA/perllib
 );
@@ -307,6 +309,8 @@ sub scrn_configure_dada_mail {
 
     # Let's get some fancy js stuff!
     $scrn = hack_in_scriptalicious($scrn);
+	# Uh, do are darnest to get the $PROGRAM_URL stuff working correctly, 
+	$scrn = hack_program_url($scrn); 
 
     # Refill in all the stuff we just had;
     if ( defined($q->param('errors')) ) {
@@ -400,6 +404,10 @@ sub scrn_install_dada_mail {
         }
     );
     $scrn = hack_in_scriptalicious($scrn);
+
+	# Uh, do are darnest to get the $PROGRAM_URL stuff working correctly, 
+	$scrn = hack_program_url($scrn); 
+
     e_print($scrn);
 
 }
@@ -931,6 +939,20 @@ sub hack_in_scriptalicious {
     #/ Hackity Hack!
 
     return $scrn;
+}
+
+
+
+
+sub hack_program_url {
+    my $scrn = shift;
+    my $bad_program_url =
+      quotemeta('http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi');
+    my $better_prog_url = program_url_guess();
+    $scrn =~ s/$bad_program_url/$better_prog_url/g;
+
+    return $scrn;
+
 }
 
 

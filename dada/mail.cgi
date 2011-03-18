@@ -2747,6 +2747,7 @@ sub view_list {
 								);
     my $email_count           = $q->param('email_count');
     my $delete_email_count    = $q->param('delete_email_count');
+	my $black_list_add        = $q->param('black_list_add') || 0; 
     my $approved_count        = $q->param('approved_count');
     my $denied_count          = $q->param('denied_count');
 
@@ -2821,6 +2822,7 @@ sub view_list {
                                                      screen_start                => $screen_start,
                                                      screen_finish               => $screen_finish,
                                                      delete_email_count          => $delete_email_count,
+													 black_list_add              => $black_list_add, 
                                                      email_count                 => $email_count,
  													 approved_count              => $approved_count,
 													 denied_count                => $denied_count,
@@ -8147,21 +8149,28 @@ sub checker {
     my $lh = DADA::MailingList::Subscribers->new({-list => $list});
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
+	
+	my $email_count = 0; 
+	for my $address(@address){ 
+		my $c = $lh->remove_subscriber(
+			{ 
+				-email => $address, 
+				-type  => $type, 
+			}
+		); 
+		$email_count = $email_count + $c; 
+	}
 
-    my $email_count = $lh->remove_from_list(
-		-Email_List => \@address,
-        -Type       => $type,
-    );
-
+	my $black_list_count = 0; 
+	
     my $should_add_to_black_list = 0;
-
     if($type eq 'list'){
         if($li->{black_list}               == 1 &&
            $li->{add_unsubs_to_black_list} == 1
            ){
 
   			for(@address){
-				$lh->add_subscriber(
+				my $a = $lh->add_subscriber(
 					{
 						-email => $_,
 						-type  => 'black_list',
@@ -8171,11 +8180,18 @@ sub checker {
 	                					},
 					}
 				);
+				if(defined($a)){ 
+					$black_list_count++;
+				}
 			}
         }
     }
-
-    print $q->redirect(-uri=>"$DADA::Config::S_PROGRAM_URL?flavor=view_list&delete_email_count=$email_count&type=" . $type);
+	my $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=view_list&delete_email_count=' . $email_count. '&type=' . $type; 
+	if($black_list_count > 0){ 
+		$uri .= '&black_list_add=' . $black_list_count; 
+	}
+	
+    print $q->redirect(-uri=> $uri);
 
 }
 
