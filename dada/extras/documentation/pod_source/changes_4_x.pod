@@ -72,6 +72,10 @@ You can now erase the Bounce Scorecard on a list-per-list basis in the list cont
 
 =head2 Bug Fixes
 
+=head3 Attachments Unviewable in Archives if the attachment has a space in the filename 
+
+https://github.com/justingit/dada-mail/issues/159
+
 =head3 Finished Mass Mailing Notification has unparsed template tag
 
 https://github.com/justingit/dada-mail/issues/157

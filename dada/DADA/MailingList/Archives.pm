@@ -1163,7 +1163,7 @@ sub find_attachment_list {
 sub view_file_attachment { 
 	
 	my $self = shift;
-	
+
 	my %args = (
 		-id       => undef, 
 		-filename => undef, 
@@ -1171,13 +1171,12 @@ sub view_file_attachment {
 		@_, 
 	); 
 	
+	
 	my $id       = $args{-id}; 
 	my $filename = $args{-filename}; 
 	
 	chomp($filename); 
-	# This leads to all sorts of problems, I think... 
-	$filename =~ s/ /+/g;
-
+	
 	die "archive $id does not exist!"
 		unless $self->check_if_entry_exists($id); 
 	
@@ -1196,13 +1195,21 @@ sub view_file_attachment {
 	
 	my $entity   = $self->_entity_from_raw_msg($raw_msg);
 	
-	# I don't like how this is called twice.... but, oh well...
+	# I don't like how this is called thrice.... but, oh well...
 	my $a_entity = undef;
+	
+	
 	$a_entity = $self->_find_filename_attachment_entity(
 		-filename => $filename, 
 		-entity   => $entity
-	); 
-	
+	); 	
+	if(! defined( $a_entity )){ 
+		$filename =~ s/ /+/g;		
+		$a_entity = $self->_find_filename_attachment_entity(
+			-filename => $filename, 
+			-entity   => $entity
+		);		
+	}
 	# We sort of undo what we just did! 
 	if(! defined( $a_entity )){ 
 		$filename =~ s/\+/\%20/g;
@@ -1221,7 +1228,7 @@ sub view_file_attachment {
 		$r .= $q->header($a_entity->head->mime_type); 
 	}else{ 
 	
-			$r .=  "Content-disposition: attachement; filename=$filename\n";
+			$r .=  "Content-disposition: attachement; filename=\"$filename\"\n";
 	   		$r .=  "Content-type: application/octet-stream\n\n";
 	
 		}
