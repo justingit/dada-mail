@@ -2857,12 +2857,7 @@ sub view_list {
                                                      allow_admin_to_subscribe_blacklisted => $li->{allow_admin_to_subscribe_blacklisted},
 
                                                      flavor                      => 'view_list',
-
-
-                                                     enable_white_list           => $li->{enable_white_list},
-
-                                                     enable_authorized_sending   => $li->{enable_authorized_sending},
-
+   
                                                      list_subscribers_num             => $lh->num_subscribers(-Type => 'list'),
                                                      black_list_subscribers_num       => $lh->num_subscribers(-Type => 'black_list'),
                                                      white_list_subscribers_num       => $lh->num_subscribers(-Type => 'white_list'),
@@ -3629,7 +3624,7 @@ sub add_email {
 
 
 
-sub delete_email{
+sub delete_email {
 
     my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
                                                         -Function => 'delete_email',
@@ -3665,13 +3660,15 @@ sub delete_email{
 					type                                => $type,
 					type_title                          => $type_title,
 					flavor                              => 'delete_email',
-					enable_white_list                   => $li->{enable_white_list},
-					enable_authorized_sending           => $li->{enable_authorized_sending},
 					list_subscribers_num                => $lh->num_subscribers(-Type => 'list'),
 					black_list_subscribers_num          => $lh->num_subscribers(-Type => 'black_list'),
 					white_list_subscribers_num          => $lh->num_subscribers(-Type => 'white_list'),
 					authorized_senders_num              => $lh->num_subscribers(-Type => 'authorized_senders'),
-				}
+				},
+				-list_settings_vars_param => {
+					-list    => $list,
+					-dot_it => 1,
+				},
 			}
 		);
     	e_print($scrn);

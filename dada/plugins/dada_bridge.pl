@@ -3710,11 +3710,15 @@ General
      
      <!-- tmpl_if list_settings.enable_authorized_sending --> 
       <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list&type=authorized_senders">
-     <!--/tmpl_if-->
-     View/Add list Administration Screens.
-     <!-- tmpl_if list_settings.enable_authorized_sending --> 
+       View</a>/<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&type=authorized_senders">Add
       </a>
+
+
+	<!-- tmpl_else --> 
+	View/Add 
      <!--/tmpl_if-->
+
+ list Administration Screens.
     </p>
 	<!-- tmpl_if list_settings.enable_authorized_sending --> 
 	
