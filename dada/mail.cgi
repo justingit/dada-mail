@@ -2405,7 +2405,6 @@ sub adv_sending_preferences {
 				},
 				-list   => $list,
 				-vars   => {
-
 					screen                        => 'adv_sending_preferences',
 					title                         => 'Advanced Sending Preferences',
 					done                          => $done,
@@ -2414,20 +2413,14 @@ sub adv_sending_preferences {
 					charset_popup_menu            => $charset_popup_menu,
 					plaintext_encoding_popup_menu => $plaintext_encoding_popup_menu,
 					html_encoding_popup_menu      => $html_encoding_popup_menu,
-					#content_type_popup_menu       => $content_type_popup_menu,
-
-					strip_message_headers         => $li->{strip_message_headers},
-					print_errors_to_header        => $li->{print_errors_to_header},
-					print_return_path_header      => $li->{print_return_path_header},
-					verp_return_path              => $li->{verp_return_path},
-					use_domain_sending_tunings    => ($li->{use_domain_sending_tunings} ? 1 : 0),
-
-					mime_encode_words_in_headers  => $li->{mime_encode_words_in_headers},
 					can_mime_encode               => $can_mime_encode,
+				},
+				-list_settings_vars_param => {
+					-list    => $list,
+					-dot_it => 1,
+				},
 
-				}
-
-				}
+			}
 		);
 		e_print($scrn);
     }
