@@ -1921,7 +1921,8 @@ sub cgi_bounce_score_search {
     my $tmpl = cgi_bounce_score_search_template();
 
     require DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::screen(
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+		{
         -data           => \$tmpl,
         -with           => 'admin',
         -wrapper_params => {
@@ -1940,6 +1941,7 @@ sub cgi_bounce_score_search {
             Plugin_URL    => $Plugin_Config->{Plugin_URL},
             Plugin_Name  => $Plugin_Config->{Plugin_Name},
           }
+	}
 
     );
     e_print($scrn);
