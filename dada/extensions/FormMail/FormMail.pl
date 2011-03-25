@@ -2146,7 +2146,7 @@ sub dada_mail_subscribe {
 				
 				my $fields = {}; 
 				foreach(@{$lh->subscriber_fields}){ 
-					$fields->{$_} = $self->{Form}{$_} ); 
+					$fields->{$_} = $self->{Form}{$_}; 
 			    }
 				$lh->add_subscriber(
 				                {
@@ -2160,7 +2160,7 @@ sub dada_mail_subscribe {
 			}
 		}
 		elsif(
-			$dada_mail_confirm_email =-  1   || 
+			$dada_mail_confirm_email ==  1   || 
 			$dada_mail_confirm_email eq "yes"
 		){ 
             my ($status, $errors) = $lh->subscription_check(
@@ -2179,7 +2179,7 @@ sub dada_mail_subscribe {
 			       $local_q->param('f', 's'); 
        
 			    foreach(@{$lh->subscriber_fields}){ 
-					$local_q->param($_, $self->{Form}{$_}; 
+					$local_q->param($_, $self->{Form}{$_}); 
 			    }
     
 			    require   DADA::App::Subscriptions; 
