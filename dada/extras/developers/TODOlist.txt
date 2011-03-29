@@ -11,6 +11,8 @@ Key:
 [?] Someday
 
 
+[ ] Bounce Handler- a way to pull up the original, offending message to view
+
 [] ajax_include_subscribe.cgi - a way to pass a specific list you'd like to work with (instead of plugin config, which 
 limits you to only one list) 
 
