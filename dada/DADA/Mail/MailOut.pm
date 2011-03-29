@@ -807,8 +807,10 @@ sub set_controlling_pid {
 	open my $pid_fh, '>', $file
 		or croak "can't open '$file' because: $!";
 		
-	flock( $pid_fh, LOCK_SH ) 
-	        or croak "can't flock '$file' because: $!";
+	if($^O !~ /solaris/g){ 	# as far as I can, shared locks are probably pretty useless, anyways... 
+		flock( $pid_fh, LOCK_SH ) 
+	        	or croak "can't flock '$file' because: $!";
+	}
 		
 	print $pid_fh $pid;
 	close $pid_fh                    
