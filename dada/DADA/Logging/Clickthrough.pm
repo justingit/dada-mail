@@ -122,14 +122,21 @@ sub sc_log {
 
 
 sub bounce_log { 
-	my ($self, $mid, $email) = @_;
+	my ($self, $type, $mid, $email) = @_;
 	if($self->{is_log_bounces_on} == 1){ 
 	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
 	    	if -e $self->clickthrough_log_location; 
 		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $self->clickthrough_log_location)
 			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 		flock(LOG, LOCK_SH);
-		print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'bounce' . "\t" . $email . "\n";
+		
+		if($type eq 'hard'){ 
+			print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'hard_bounce' . "\t" . $email . "\n";
+		}
+		else { 
+			print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'soft_bounce' . "\t" . $email . "\n";
+		}
+	
 		close (LOG);
 		return 1; 
 	}else{ 
@@ -139,66 +146,115 @@ sub bounce_log {
 
 
 
+sub new_report_by_message_index {
+    my $self          = shift;
+    my $sorted_report = [];
+    my $report        = {};
+    my $l;
 
-sub report_by_message_index { 
-	my $self   = shift; 
-	my $report = {}; 
-	my $l;
-	
-	# DEV: I would sor to of like to make some validation that the info
-	# we're using to count is actually correct - like if it's a message_id - it's all numerical, etc
-	# I'd also like to make some sort of pagination scheme, so that we only have a few message_id's 
-	# we're interested in. That shouldn't be too difficult. 
-	
-	if(-e $self->clickthrough_log_location){ 
-		open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
-			or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
-		while(defined($l = <LOG>)){ 
-			chomp($l); 
-			my ($t, $mid, $url, $extra) = split("\t", $l); 
-				
-				$t     = strip($t); 
-				$mid   = strip($mid); 
-				$url   = strip($url); 
-				$extra = strip($extra); 
-				
-			if($url ne 'open' && $url ne 'num_subscribers' && $url ne 'bounce' && $url ne undef){
-				
-				$report->{$mid}->{count}++;		
+# DEV: I would sor to of like to make some validation that the info
+# we're using to count is actually correct - like if it's a message_id - it's all numerical, etc
+# I'd also like to make some sort of pagination scheme, so that we only have a few message_id's
+# we're interested in. That shouldn't be too difficult.
+
+    if ( -e $self->clickthrough_log_location ) {
+        open( LOG,
+            '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',
+            $self->clickthrough_log_location
+          )
+          or croak "Couldn't open file: '"
+          . $self->clickthrough_log_location
+          . '\'because: '
+          . $!;
+        while ( defined( $l = <LOG> ) ) {
+            chomp($l);
+    		
+			my ( $t, $mid, $url, $extra ) = split( "\t", $l, 4 );
+
+            $t     = strip($t);
+            $mid   = strip($mid);
+            $url   = strip($url);
+            $extra = strip($extra);
 			
-			}elsif($url eq 'open'){ 	
+			next if ! $mid;  
+			next unless($self->verified_mid($mid)); 
 			
-				$report->{$mid}->{'open'}++;
-		
-			}elsif($url eq 'bounce'){ 	
+
 			
-				$report->{$mid}->{'bounce'}++;
-								
-			}elsif($url eq 'num_subscribers'){ 
-			
-				$report->{$mid}->{'num_subscribers'} = $extra;	
-			
+            if (   $url ne 'open'
+                && $url ne 'num_subscribers'
+                && $url ne 'bounce'
+                && $url ne 'hard_bounce'
+                && $url ne 'soft_bounce'
+                && $url ne undef )
+            {
+                $report->{$mid}->{count}++;
+            }
+            elsif ( $url eq 'open' ) {
+                $report->{$mid}->{open}++;
+            }
+            elsif ( $url eq 'soft_bounce' ) {
+                $report->{$mid}->{soft_bounce}++;
+            }
+            elsif ( $url eq 'hard_bounce' || $url eq 'bounce') {
+
+                $report->{$mid}->{hard_bounce}++;
+
+            }
+            elsif ( $url eq 'num_subscribers' ) {				
+                $report->{$mid}->{num_subscribers} = $extra;
+            }
+			else { 
+				# warn "What? url:'$url', extra:$extra";
 			}
-		}
-		close(LOG);		
-		
-		require DADA::MailingList::Archives; 
-		my $mja = DADA::MailingList::Archives->new({-list => $self->{name}}); 
-		
-		for(sort keys %$report){ 
-		
-		    if($mja->check_if_entry_exists($_)){ 
-		    
-			$report->{$_}->{message_subject} = $mja->get_archive_subject($_) || $_;
-			
-			} else { 
-			
-			  # $report->{$_}->{message_subject} = $_; 
-			   
-			}
-		}
-		return $report;
-	} 	
+
+            #$report->{$mid}->{date} =
+            #DADA::App::Guts::date_this(
+            #    -Packed_Date => $mid,
+            #);
+
+            #$unsorted_report->{$mid} = $i_report;
+
+        }
+        close(LOG);
+
+        require DADA::MailingList::Archives;
+        my $mja =
+          DADA::MailingList::Archives->new( { -list => $self->{name} } );
+
+        # Now, sorted:
+        for ( sort { $b <=> $a } keys %$report ) {
+            $report->{$_}->{mid} = $_;
+            $report->{$_}->{date} = DADA::App::Guts::date_this( -Packed_Date => $_, );
+            
+
+              if ( $mja->check_if_entry_exists($_) ) {
+                $report->{$_}->{message_subject} = $mja->get_archive_subject($_)
+                  || $_;
+            }
+            else {
+            }
+
+
+            push( @$sorted_report, $report->{$_} );
+        }
+
+		#use Data::Dumper; 
+		#die Data::Dumper::Dumper($sorted_report); 
+        return $sorted_report;
+    }
+}
+
+sub verified_mid { 
+	my $self = shift; 
+	my $mid  = shift; 
+	# This could be stronger, but... 
+	if ($mid =~ /^\d+$/ && length($mid) == 14) {
+		return 1; 
+	}
+	else { 
+		return 0; 
+	}
 }
 
 
@@ -215,7 +271,7 @@ sub report_by_message {
 	while(defined($l = <LOG>)){ 
 		chomp($l); 
 		
-		my ($t, $mid, $url, $extra) = split("\t", $l); 
+		my ($t, $mid, $url, $extra) = split("\t", $l, 4); 
 			
 		$t     = strip($t); 
 		$mid   = strip($mid); 
@@ -629,6 +685,75 @@ sub redirect_encode {
 	}
 
 }
+
+
+
+
+
+
+
+
+sub report_by_message_index { 
+	my $self   = shift; 
+	my $report = {}; 
+	my $l;
+	
+	# DEV: I would sor to of like to make some validation that the info
+	# we're using to count is actually correct - like if it's a message_id - it's all numerical, etc
+	# I'd also like to make some sort of pagination scheme, so that we only have a few message_id's 
+	# we're interested in. That shouldn't be too difficult. 
+	
+	if(-e $self->clickthrough_log_location){ 
+		open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
+			or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
+		while(defined($l = <LOG>)){ 
+			chomp($l); 
+			my ($t, $mid, $url, $extra) = split("\t", $l); 
+				
+				$t     = strip($t); 
+				$mid   = strip($mid); 
+				$url   = strip($url); 
+				$extra = strip($extra); 
+			
+			if($url ne 'open' && $url ne 'num_subscribers' && $url ne 'bounce' && $url ne undef){
+				
+				$report->{$mid}->{count}++;		
+			
+			}elsif($url eq 'open'){ 	
+			
+				$report->{$mid}->{'open'}++;
+		
+			}elsif($url eq 'bounce'){ 	
+				$report->{$mid}->{'bounce'}++;
+								
+			}elsif($url eq 'num_subscribers'){ 
+			
+				$report->{$mid}->{'num_subscribers'} = $extra;	
+			
+			}
+		}
+		close(LOG);
+		
+		require DADA::MailingList::Archives; 
+		my $mja = DADA::MailingList::Archives->new({-list => $self->{name}}); 
+		
+		for(sort keys %$report){ 
+		
+		    if($mja->check_if_entry_exists($_)){ 
+		    
+			$report->{$_}->{message_subject} = $mja->get_archive_subject($_) || $_;
+			
+			} else { 
+			
+			  # $report->{$_}->{message_subject} = $_; 
+			   
+			}
+		}
+
+		return $report;
+	} 	
+}
+
 
 
 
