@@ -37,18 +37,18 @@ $CLICKTHROUGH_DB_TYPE     = 'SQL';
 %SQL_PARAMS = ( 
 
 	# May just be, "localhost" 
-	dbserver         => '<!-- tmpl_var sql_server -->',
+	dbserver         => '<!-- tmpl_var sql_server default="localhost" -->',
 		
 	database         => '<!-- tmpl_var sql_database -->',
 	
 	# MySQL:      3306
 	# PostgreSQL: 5432      
-	port             => '<!-- tmpl_var sql_port -->',
+	port             => '<!-- tmpl_var sql_port default="3306" -->',
 	
 	# MySQL:      mysql 
 	# PostgreSQL: Pg
 	# SQLite:     SQLite
-	dbtype           => '<!-- tmpl_var backend -->',  
+	dbtype           => '<!-- tmpl_var backend default="mysql" -->',  
 	
 	user             => '<!-- tmpl_var sql_username -->',          
 	pass             => '<!-- tmpl_var sql_password -->',
