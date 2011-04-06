@@ -63,89 +63,6 @@ sub redirect_config_test {
 
 
 
-
-sub r_log { 
-	my ($self, $mid, $url) = @_;
-	if($self->{is_redirect_on} == 1){ 
-	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
-	    	if -e $self->clickthrough_log_location; 
-		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location) 
-			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
-		flock(LOG, LOCK_SH);
-		print LOG scalar(localtime()) . "\t" . $mid . "\t" . $url . "\n"  or warn "Couldn't write to file: " . $self->clickthrough_log_location . 'because: ' .  $!; 
-		close (LOG)  or warn "Couldn't close file: " . $self->clickthrough_log_location . 'because: ' .  $!;
-		return 1; 
-	}else{ 
-		return 0;
-	}
-}
-
-
-
-
-sub o_log { 
-	my ($self, $mid) = @_;
-	if($self->{is_log_openings_on} == 1){ 
-	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
-	    	if -e $self->clickthrough_log_location; 
-		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')' ,  $self->clickthrough_log_location)
-			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
-		flock(LOG, LOCK_SH);
-		print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'open' . "\n";
-		close (LOG);
-		return 1; 
-	}else{ 
-		return 0;
-	}
-}
-
-
-
-
-sub sc_log { 
-	my ($self, $mid, $sc) = @_;
-	if($self->{enable_subscriber_count_logging} == 1){ 
-	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
-	    	if -e $self->clickthrough_log_location; 
-		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $self->clickthrough_log_location)
-			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
-		flock(LOG, LOCK_SH);
-		print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'num_subscribers' . "\t" . $sc . "\n";
-		close (LOG);
-		return 1; 
-	}else{ 
-		return 0;
-	}
-}
-
-
-
-
-sub bounce_log { 
-	my ($self, $type, $mid, $email) = @_;
-	if($self->{is_log_bounces_on} == 1){ 
-	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
-	    	if -e $self->clickthrough_log_location; 
-		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $self->clickthrough_log_location)
-			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
-		flock(LOG, LOCK_SH);
-		
-		if($type eq 'hard'){ 
-			print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'hard_bounce' . "\t" . $email . "\n";
-		}
-		else { 
-			print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'soft_bounce' . "\t" . $email . "\n";
-		}
-	
-		close (LOG);
-		return 1; 
-	}else{ 
-		return 0;
-	}
-}
-
-
-
 sub new_report_by_message_index {
     my $self          = shift;
     my $sorted_report = [];
@@ -529,12 +446,12 @@ sub check_redirect_urls {
 	my $valid   = [];
 	my $invalid = [];
 	
-	my $pat = qr/\[redirect\=(.*?)\]/;
+	my $pat = $self->redirect_regex(); 
+	
 	while ($args->{-str} =~ m/($pat)/g) {
 		my $redirect_tag = $1; 
-		my $url = $redirect_tag; 
-		   $url =~ s/(^\[redirect\=|\]$)//g;
-
+		my $redirect_atts = $self->get_redirect_tag_atts($redirect_tag); 
+		my $url = $redirect_atts->{url}; 
 		if($self->can_be_redirected($url)){ 
 			push(@$valid, $url); 
 	
@@ -609,9 +526,9 @@ sub parse_string {
 
     my $str = shift;
 
-    #carp "here's the string before: " . $str;
-    #
-    $str =~ s/\[redirect\=(.*?)\]/&redirect_encode($self, $mid, $1)/eg;
+    my $pat = $self->redirect_regex(); 
+	
+    $str =~ s/$pat/&redirect_encode($self, $mid, $1)/eg;
 
     #	carp "here's the string: $str";
     return $str;
@@ -659,19 +576,74 @@ sub random_key {
 
 }
 
+
+
+sub redirect_regex { 
+	
+	my $self = shift; 
+	# <!-- redirect url="http://yahoo.com" --> 
+	# [redirect url="http://yahoo.com"]
+	# [redirect=yahoo.com]	
+	return qr/((\<\!\-\-(\s+)redirect|\[redirect\s+|\[redirect\=)(.*?)(\]|\-\-\>))/; 
+
+}
+
+sub get_redirect_tag_atts { 
+
+	my $self = shift; 
+	my $redirect_tag = shift; 
+	
+	my $atts = {}; 
+
+	# Old Style
+	# [redirect=http://yahoo.com]	
+	if($redirect_tag =~ m/\[redirect=(.*?)\]/){ 
+		$atts->{url} = $1;
+	}
+	
+	# [redirect url="http://yahoo.com"]
+	# <!-- redirect url="http://yahoo.com" --> 
+	
+	else {
+		
+		# This is very simple. 
+		$redirect_tag =~ s/((^\[redirect(\s*)|\<\!\-\-(\s*)redirect(\s*))|(\]$|\-\-\>$))//g;
+		my $pat = qr/(\w+)\s*=\s*"([^"]*)"/;
+
+		while ($redirect_tag=~/$pat/g ) { 
+			$atts->{$1} = $2; 
+		} 
+	}
+#	use Data::Dumper; 
+#	die Data::Dumper::Dumper($atts); 
+	return $atts; 
+	
+}
+
+
+
+
 sub redirect_encode {
 
     my $self = shift;
     my $mid  = shift;
     croak 'no mid! '
       if !defined $mid;
-    my $url = shift;
+    my $redirect_tag = shift;
+	#die $redirect_tag; 
 
+	# get the brackets out of the way
 
+	
+	my $atts = $self->get_redirect_tag_atts($redirect_tag); 
+
+	my $url = $atts->{url}; 
+	
+	
 	if($self->can_be_redirected($url)){ 
-
+				
 	    my $key = $self->reuse_key( $mid, $url );
-
+		
 	    if ( !defined($key) ) {
 	        $key = $self->add( $mid, $url );
 	    }
@@ -684,6 +656,12 @@ sub redirect_encode {
 		return $url; 
 	}
 
+}
+
+sub redirect_tagify { 
+	my $self = shift; 
+	my $url  = shift; 
+	return '<!-- redirect url="' . $url . '" -->'; 
 }
 
 

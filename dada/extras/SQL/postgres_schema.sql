@@ -76,3 +76,5 @@ CREATE TABLE dada_sessions (
     id CHAR(32) NOT NULL PRIMARY KEY,
     a_session BYTEA NOT NULL
 );
+
+-- subttime timestamp NOT NULL DEFAULT now()

@@ -139,4 +139,84 @@ sub key_exists {
 
 }
 
+
+
+sub r_log { 
+	
+	# stamp mid, url
+	
+	my ($self, $mid, $url) = @_;
+	if($self->{is_redirect_on} == 1){ 
+	my $query = 'INSERT INTO dada_clickthrough_url_log(msg_id,url) VALUES (?, ?)';
+
+	my $sth   = $self->{dbh}->prepare($query); 
+	   $sth->execute($mid, $url); 
+	   $sth->finish;
+
+		return 1; 
+	}else{ 
+		return 0;
+	}
+}
+
+
+
+sub o_log { 
+	my ($self, $mid) = @_;
+	if($self->{is_log_openings_on} == 1){ 
+		my $query = 'INSERT INTO dada_mass_mailing_event_log(msg_id, event) VALUES (?, ?)';
+		my $sth   = $self->{dbh}->prepare($query); 
+		   $sth->execute($mid, 'open'); 
+		   $sth->finish;
+		return 1; 
+	}else{ 
+		return 0;
+	}
+}
+
+
+
+
+sub sc_log { 
+	my ($self, $mid, $sc) = @_;
+	if($self->{enable_subscriber_count_logging} == 1){ 
+		my $query = 'INSERT INTO dada_mass_mailing_event_log(msg_id, event, details) VALUES (?, ?, ?)';
+		my $sth   = $self->{dbh}->prepare($query); 
+		   $sth->execute($mid, 'num_subscribers', $sc); 
+		   $sth->finish;
+
+		return 1; 
+	}else{ 
+		return 0;
+	}
+}
+
+
+
+
+sub bounce_log { 
+	my ($self, $type, $mid, $email) = @_;
+	if($self->{is_log_bounces_on} == 1){ 
+		
+		my $bounce_type = ''; 
+		if($type eq 'hard'){ 
+			$bounce_type = 'hard_bounce'; 
+		}
+		else { 
+			$bounce_type = 'soft_bounce'; 
+		}
+		my $query = 'INSERT INTO dada_mass_mailing_event_log(msg_id, event, details) VALUES (?, ?, ?)';
+		my $sth   = $self->{dbh}->prepare($query); 
+		   $sth->execute($mid, $bounce_type, $email); 
+		   $sth->finish;
+		
+		close (LOG);
+		return 1; 
+	}else{ 
+		return 0;
+	}
+}
+
+
+
 1;

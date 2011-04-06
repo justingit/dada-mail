@@ -187,6 +187,90 @@ sub _raw_db_hash {
     $self->_unlock_db;
 }
 
+
+
+sub r_log { 
+	my ($self, $mid, $url) = @_;
+	if($self->{is_redirect_on} == 1){ 
+	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
+	    	if -e $self->clickthrough_log_location; 
+		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location) 
+			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
+		flock(LOG, LOCK_SH);
+		print LOG scalar(localtime()) . "\t" . $mid . "\t" . $url . "\n"  or warn "Couldn't write to file: " . $self->clickthrough_log_location . 'because: ' .  $!; 
+		close (LOG)  or warn "Couldn't close file: " . $self->clickthrough_log_location . 'because: ' .  $!;
+		return 1; 
+	}else{ 
+		return 0;
+	}
+}
+
+
+
+
+sub o_log { 
+	my ($self, $mid) = @_;
+	if($self->{is_log_openings_on} == 1){ 
+	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
+	    	if -e $self->clickthrough_log_location; 
+		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')' ,  $self->clickthrough_log_location)
+			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
+		flock(LOG, LOCK_SH);
+		print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'open' . "\n";
+		close (LOG);
+		return 1; 
+	}else{ 
+		return 0;
+	}
+}
+
+
+
+
+sub sc_log { 
+	my ($self, $mid, $sc) = @_;
+	if($self->{enable_subscriber_count_logging} == 1){ 
+	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
+	    	if -e $self->clickthrough_log_location; 
+		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $self->clickthrough_log_location)
+			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
+		flock(LOG, LOCK_SH);
+		print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'num_subscribers' . "\t" . $sc . "\n";
+		close (LOG);
+		return 1; 
+	}else{ 
+		return 0;
+	}
+}
+
+
+
+
+sub bounce_log { 
+	my ($self, $type, $mid, $email) = @_;
+	if($self->{is_log_bounces_on} == 1){ 
+	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
+	    	if -e $self->clickthrough_log_location; 
+		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $self->clickthrough_log_location)
+			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
+		flock(LOG, LOCK_SH);
+		
+		if($type eq 'hard'){ 
+			print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'hard_bounce' . "\t" . $email . "\n";
+		}
+		else { 
+			print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'soft_bounce' . "\t" . $email . "\n";
+		}
+	
+		close (LOG);
+		return 1; 
+	}else{ 
+		return 0;
+	}
+}
+
+
+
 1;
 
 =pod
