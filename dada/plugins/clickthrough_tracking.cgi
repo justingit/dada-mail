@@ -328,7 +328,7 @@ sub default {
     my $report_by_message_index = [];
 
     if ($has_clickthrough_logs) {
-        $report_by_message_index = $rd->new_report_by_message_index;
+        $report_by_message_index = $rd->report_by_message_index;
     }
 
 	# Needs potentially less data points 
@@ -467,9 +467,20 @@ my $tmpl = q{
 		 <td> 
 		 <p> 
 		  <strong> 
-		    <a href=""> 
-				<!-- tmpl_var Plugin_URL -->?f=url&mid=<!-- tmpl_var mid -->&url=<!-- tmpl_var url escape="HTML" -->
+
+<!-- tmpl_if comment --> 
+		    <a href="<!-- tmpl_var Plugin_URL -->?f=url&mid=<!-- tmpl_var mid -->&url=<!-- tmpl_var url escape="HTML" -->"> 
+<!-- /tmpl_if --> 
+
+
+				<!-- tmpl_var url escape="HTML" -->
+
+				<!-- tmpl_if comment --> 
+
 			</a> 
+
+<!-- /tmpl_if --> 
+
 		   </strong> 
 		</p> 
 		</td> 
@@ -492,21 +503,77 @@ my $tmpl = q{
 		</p> 
 	<!-- /tmpl_if --> 
 
-	<!-- tmpl_if opens --> 
 		<p> 
 		 <strong>
-		  Number of Recorded Opens: <!-- tmpl_var opens --> 
+		  Number of Recorded Opens: <!-- tmpl_var opens default="0" --> 
 	     </strong> 
 	    </p>
-	<!-- /tmpl_if --> 
 	
-	<!-- tmpl_if num_bounces --> 
 		<p>
 		 <strong>
-		  Number of Recorded Bounces: <!-- tmpl_var num_bounces -->
+		  Number of Recorded Soft Bounces: <!-- tmpl_var soft_bounce -->
 		 </strong> 
 		</p> 
-	<!-- /tmpl_if --> 
+		<!-- tmpl_if soft_bounce_report --> 
+			<table cellpadding="5" cellspacing="0"> 
+			 <tr> 
+			  <td> 
+			   <strong>Date</strong>
+			  </td> 
+			  <td> 
+			   <strong>Email Address</strong>
+			  </td> 
+			 </tr> 
+			
+			<!-- tmpl_loop soft_bounce_report --> 
+			 <tr> 
+			  <td> 
+			   <!-- tmpl_var timestamp --> 
+			  </td> 
+			  <td> 
+			   <a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="HTML" -->">
+				<!-- tmpl_var email --> 
+			  </td> 
+			 </tr> 
+			
+			
+			<!-- /tmpl_loop --> 
+			</table> 
+		<!-- /tmpl_if --> 
+
+		<p>
+		 <strong>
+		  Number of Recorded Hard Bounces: <!-- tmpl_var hard_bounce -->
+		 </strong> 
+		</p> 
+		
+		<!-- tmpl_if hard_bounce_report --> 
+			<table cellpadding="5" cellspacing="0"> 
+			 <tr> 
+			  <td> 
+			   <strong>Date</strong>
+			  </td> 
+			  <td> 
+			   <strong>Email Address</strong>
+			  </td> 
+			 </tr> 
+			
+			<!-- tmpl_loop hard_bounce_report --> 
+			 <tr> 
+			  <td> 
+			   <!-- tmpl_var timestamp --> 
+			  </td> 
+			  <td> 
+			   <a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="HTML" -->">
+				<!-- tmpl_var email --> 
+			  </td> 
+			 </tr> 
+			
+			
+			<!-- /tmpl_loop --> 
+			</table> 
+		<!-- /tmpl_if -->
+	
 	
 };
 
@@ -514,24 +581,7 @@ my $tmpl = q{
 
 sub message_report {
 
-    my $m_report   = $rd->report_by_message( $q->param('mid') );
-    my $url_report = [];
-
-    for ( sort keys %$m_report ) {
-
-        next
-          if ( $_ eq 'open'
-            || $_ eq 'num_subscribers'
-            || $_ eq 'bounce'
-            || $_ eq undef );
-
-        push( @$url_report, { url => $_, count => $m_report->{$_}->{count} } );
-
-    }
-    my $num_bounces = 0;
-    if ( $m_report->{bounce} ) {
-        $num_bounces = $#{ $m_report->{bounce} } + 1;
-    }
+    my $m_report = $rd->report_by_message( $q->param('mid') );
 
     my $tmpl = message_report_tmpl();
     require DADA::Template::Widgets;
@@ -547,16 +597,21 @@ sub message_report {
             -vars => {
                 mid        => $q->param('mid')                         || '',
                 subject    => find_message_subject( $q->param('mid') ) || '',
-                url_report => $url_report                              || [],
+                url_report => $m_report->{url_report}                  || [],
                 num_subscribers => $m_report->{num_subscribers} || '',
-                opens           => $m_report->{'open'}          || '',
-                num_bounces     => $m_report->{'num_bounces'}   || '',
+                opens           => $m_report->{'open'} || 0, 
+                soft_bounce     => $m_report->{'soft_bounce'}   || 0,
+                hard_bounce     => $m_report->{'hard_bounce'}   || 0,
+				soft_bounce_report => $m_report->{'soft_bounce_report'}   || [],
+				hard_bounce_report => $m_report->{'hard_bounce_report'}   || [],
+				
             },
         },
     );
     e_print($scrn);
 
 }
+
 
 
 sub url_report_tmpl { 

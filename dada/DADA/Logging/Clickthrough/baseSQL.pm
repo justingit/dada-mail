@@ -219,4 +219,135 @@ sub bounce_log {
 
 
 
+sub unique_and_dupe { 
+	my $self = shift; 
+	my $array = shift; 
+	
+ 	my @unique = ();
+ 	my %seen = ();
+   
+    foreach my $elem ( @$array )
+    {
+    next if $seen{ $elem }++;
+    push @unique, $elem;
+    }
+	return [@unique];
+	
+}
+
+sub report_by_message_index {
+    my $self          = shift;
+    my $sorted_report = [];
+    my $report        = {};
+    my $l;
+
+	# postgres: $query .= ' SELECT DISTINCT ON(' . $subscriber_table . '.email) ';
+    
+	# This query could probably be made into one, if I could simple use a join, or something, 
+	my $msg_id_query1 = 'SELECT msg_id FROM dada_mass_mailing_event_log GROUP BY msg_id;';
+	my $msg_id_query2 = 'SELECT msg_id FROM dada_clickthrough_url_log GROUP BY msg_id;';
+	
+	my $msg_id1 = $self->{dbh}->selectcol_arrayref($msg_id_query1);
+	my $msg_id2 = $self->{dbh}->selectcol_arrayref($msg_id_query2);
+	push(@$msg_id1, @$msg_id2);
+	$msg_id1 = $self->unique_and_dupe($msg_id1); 
+	
+	for my $msg_id(@$msg_id1){
+		
+		$report->{$msg_id}->{msg_id} = $msg_id; 
+		
+		# Clickthroughs 
+		my $clickthrough_count_query = 'SELECT COUNT(msg_id) FROM dada_clickthrough_url_log WHERE msg_id = ?';
+		$report->{$msg_id}->{count} = $self->{dbh}->selectcol_arrayref($clickthrough_count_query, {}, $msg_id)->[0];
+		
+		my $misc_count_query = 'SELECT COUNT(msg_id) FROM dada_mass_mailing_event_log WHERE msg_id = ? AND event = ?';
+		$report->{$msg_id}->{open} = $self->{dbh}->selectcol_arrayref($misc_count_query, {}, $msg_id, 'open')->[0];
+		$report->{$msg_id}->{soft_bounce} = $self->{dbh}->selectcol_arrayref($misc_count_query, {}, $msg_id, 'soft_bounce')->[0];
+		$report->{$msg_id}->{hard_bounce} = $self->{dbh}->selectcol_arrayref($misc_count_query, {}, $msg_id, 'hard_bounce')->[0];
+
+		my $num_sub_query = 'SELECT details FROM dada_mass_mailing_event_log WHERE msg_id = ? AND event = ?';
+		$report->{$msg_id}->{num_subscribers} = $self->{dbh}->selectcol_arrayref($num_sub_query, {MaxRows => 1}, $msg_id, 'num_subscribers')->[0];
+			
+	}
+
+        require DADA::MailingList::Archives;
+        my $mja =
+          DADA::MailingList::Archives->new( { -list => $self->{name} } );
+
+        # Now, sorted:
+        for ( sort { $b <=> $a } keys %$report ) {
+            $report->{$_}->{mid} = $_; # this again.
+            $report->{$_}->{date} = DADA::App::Guts::date_this( -Packed_Date => $_, );
+            
+
+           if ( $mja->check_if_entry_exists($_) ) {
+                $report->{$_}->{message_subject} = $mja->get_archive_subject($_)
+                  || $_;
+            }
+            else {
+            }
+
+
+            push( @$sorted_report, $report->{$_} );
+        }
+		#require Data::Dumper; 
+		#die Data::Dumper::Dumper($sorted_report); 
+        return $sorted_report;
+}
+
+
+
+
+
+sub report_by_message {
+	 
+	my $self      = shift; 
+	my $msg_id    = shift; 
+	
+	my $report = {}; 
+	my $l;
+
+
+	
+	my $num_sub_query = 'SELECT details FROM dada_mass_mailing_event_log WHERE msg_id = ? AND event = ?';
+	$report->{num_subscribers} = $self->{dbh}->selectcol_arrayref($num_sub_query, {MaxRows => 1}, $msg_id, 'num_subscribers')->[0];
+	
+	my $misc_count_query = 'SELECT COUNT(msg_id) FROM dada_mass_mailing_event_log WHERE msg_id = ? AND event = ?';
+#	# This may be different. 
+	$report->{open}        = $self->{dbh}->selectcol_arrayref($misc_count_query, {}, $msg_id, 'open')       ->[0];
+	$report->{soft_bounce} = $self->{dbh}->selectcol_arrayref($misc_count_query, {}, $msg_id, 'soft_bounce')->[0];
+	$report->{hard_bounce} = $self->{dbh}->selectcol_arrayref($misc_count_query, {}, $msg_id, 'hard_bounce')->[0];
+
+	my $url_clickthroughs_query = 'SELECT url, COUNT(url) AS count FROM dada_clickthrough_url_log where msg_id = ? GROUP BY url'; 
+	my $sth = $self->{dbh}->prepare($url_clickthroughs_query);
+	   $sth->execute($msg_id); 
+	my $url_report = [];
+	my $row = undef; 
+	while ( $row = $sth->fetchrow_hashref ) {
+    	push(@$url_report, {url => $row->{url}, count => $row->{count}});
+	}
+	$sth->finish; 
+	undef $sth; 
+	$report->{url_report} = $url_report; 
+	
+	
+	for my $bounce_type(qw(soft_bounce hard_bounce)){
+		my $bounce_query = 'SELECT timestamp, details from dada_mass_mailing_event_log where msg_id = ? and event = ? order by timestamp'; 
+		my $sth = $self->{dbh}->prepare($bounce_query);
+		   $sth->execute($msg_id, $bounce_type); 
+		my $bounce_report = [];
+		while ( $row = $sth->fetchrow_hashref ) {
+	    	push(@$bounce_report, {timestamp => $row->{timestamp}, email => $row->{details}});
+		}
+		$report->{$bounce_type . '_report'} = $bounce_report; 
+		$sth->finish; 
+	}
+	#require Data::Dumper; 
+	#die Data::Dumper::Dumper($report); 
+	
+	return $report; 
+}
+
+
+
 1;

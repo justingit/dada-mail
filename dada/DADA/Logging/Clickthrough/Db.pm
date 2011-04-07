@@ -271,6 +271,183 @@ sub bounce_log {
 
 
 
+
+sub report_by_message_index {
+    my $self          = shift;
+    my $sorted_report = [];
+    my $report        = {};
+    my $l;
+
+# DEV: I would sor to of like to make some validation that the info
+# we're using to count is actually correct - like if it's a message_id - it's all numerical, etc
+# I'd also like to make some sort of pagination scheme, so that we only have a few message_id's
+# we're interested in. That shouldn't be too difficult.
+
+    if ( -e $self->clickthrough_log_location ) {
+        open( LOG,
+            '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',
+            $self->clickthrough_log_location
+          )
+          or croak "Couldn't open file: '"
+          . $self->clickthrough_log_location
+          . '\'because: '
+          . $!;
+        while ( defined( $l = <LOG> ) ) {
+            chomp($l);
+    		
+			my ( $t, $mid, $url, $extra ) = split( "\t", $l, 4 );
+
+            $t     = strip($t);
+            $mid   = strip($mid);
+            $url   = strip($url);
+            $extra = strip($extra);
+			
+			next if ! $mid;  
+			next unless($self->verified_mid($mid)); 
+			
+
+			
+            if (   $url ne 'open'
+                && $url ne 'num_subscribers'
+                && $url ne 'bounce'
+                && $url ne 'hard_bounce'
+                && $url ne 'soft_bounce'
+                && $url ne undef )
+            {
+                $report->{$mid}->{count}++;
+            }
+            elsif ( $url eq 'open' ) {
+                $report->{$mid}->{open}++;
+            }
+            elsif ( $url eq 'soft_bounce' ) {
+                $report->{$mid}->{soft_bounce}++;
+            }
+            elsif ( $url eq 'hard_bounce' || $url eq 'bounce') {
+
+                $report->{$mid}->{hard_bounce}++;
+
+            }
+            elsif ( $url eq 'num_subscribers' ) {				
+                $report->{$mid}->{num_subscribers} = $extra;
+            }
+			else { 
+				# warn "What? url:'$url', extra:$extra";
+			}
+
+            #$report->{$mid}->{date} =
+            #DADA::App::Guts::date_this(
+            #    -Packed_Date => $mid,
+            #);
+
+            #$unsorted_report->{$mid} = $i_report;
+
+        }
+        close(LOG);
+
+        require DADA::MailingList::Archives;
+        my $mja =
+          DADA::MailingList::Archives->new( { -list => $self->{name} } );
+
+        # Now, sorted:
+        for ( sort { $b <=> $a } keys %$report ) {
+            $report->{$_}->{mid} = $_;
+            $report->{$_}->{date} = DADA::App::Guts::date_this( -Packed_Date => $_, );
+            
+
+              if ( $mja->check_if_entry_exists($_) ) {
+                $report->{$_}->{message_subject} = $mja->get_archive_subject($_)
+                  || $_;
+            }
+            else {
+            }
+
+
+            push( @$sorted_report, $report->{$_} );
+        }
+
+        return $sorted_report;
+    }
+}
+
+
+sub report_by_message {
+	 
+	my $self      = shift; 
+	my $match_mid = shift; 
+	
+	my $report = {}; 
+	my $l;
+	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
+		or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
+	while(defined($l = <LOG>)){ 
+		chomp($l); 
+		
+		my ($t, $mid, $url, $extra) = split("\t", $l, 4); 
+			
+		$t     = strip($t); 
+		$mid   = strip($mid); 
+		$url   = strip($url); 
+		$extra = strip($extra); 
+					
+		if($match_mid eq $mid){ 
+		
+			if($url ne 'open' && 
+			   $url ne 'num_subscribers' && 
+			   $url ne 'bounce' && 
+			   $url ne 'soft_bounce' && 
+			   $url ne 'hard_bounce' && 
+			   $url ne undef){
+				$report->{$url}->{count}++; #?!
+			}elsif($url eq 'open'){ 	
+			
+				$report->{'open'}++;
+				
+			}elsif($url eq 'num_subscribers'){ 
+			
+				$report->{'num_subscribers'} = $extra;	
+				
+			}elsif($url eq 'soft_bounce'){ 	
+			
+				push(@{$report->{'soft_bounce_report'}}, {email => $extra, timestamp => $t});
+
+			}elsif($url eq 'hard_bounce'){ 	
+
+					push(@{$report->{'hard_bounce_report'}}, {email => $extra, timestamp => $t});
+
+			}	
+		}		
+	}
+	close(LOG); 
+	
+	my $url_report = [];
+
+    for ( sort keys %$report ) {
+
+        next
+          if ( $_ eq 'open'
+            || $_ eq 'num_subscribers'
+            || $_ eq 'bounce'
+			|| $_ eq 'soft_bounce'
+            || $_ eq 'hard_bounce'
+            || $_ eq undef );
+
+        push( @$url_report, { url => $_, count => $report->{$_}->{count} } );
+    }
+	$report->{url_report} = $url_report; 
+	
+    my $num_bounces = 0;
+    if ( $report->{bounce} ) {
+        $num_bounces = $#{ $report->{bounce} } + 1;
+    }
+	$report->{num_bounces} = $num_bounces; 
+
+	return $report; 
+}
+
+
+
+
+
 1;
 
 =pod
