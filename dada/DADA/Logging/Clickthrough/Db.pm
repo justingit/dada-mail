@@ -445,8 +445,51 @@ sub report_by_message {
 }
 
 
+sub export_logs { 
 
-
+	my $self = shift; 
+	my $type = shift; 
+	my $fh   = shift || \*STDOUT; 
+	
+	my $l; 
+	
+	unless(-e $self->clickthrough_log_location){ 
+		print '';
+		return; 
+	}
+	
+	require   Text::CSV; 
+	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
+		or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
+	while(defined($l = <LOG>)){ 
+		chomp($l);
+		my @fields = split(/\t/, $l);
+		my $url = $fields[2]; 
+		
+		my $log_line_type = 'activity'; 
+		
+		if (   $url ne 'open'
+            && $url ne 'num_subscribers'
+            && $url ne 'bounce'
+            && $url ne 'hard_bounce'
+            && $url ne 'soft_bounce'
+            && $url ne undef ){
+		
+				$log_line_type = 'clickthrough'; 
+		
+		}
+		
+		if($type eq 'clickthrough' && $log_line_type eq 'clickthrough'){ 
+			my $status = $csv->print ($fh, [@fields]);
+			print $fh "\n";
+		}
+		elsif($type eq 'activity' && $log_line_type eq 'activity' ) { 
+			my $status = $csv->print ($fh, [@fields]);
+			print $fh "\n";
+		}
+	}
+}
 
 1;
 

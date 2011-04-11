@@ -52,7 +52,7 @@ my %Mode = (
     'm'          => \&message_report,
     'url'        => \&url_report,
     'edit_prefs' => \&edit_prefs,
-    'raw'        => \&raw,
+    'download_logs'        => \&download_logs,
     'purge'      => \&purge,
 );
 
@@ -283,9 +283,18 @@ Preferences
 
  
 <form action="<!-- tmpl_var Plugin_URL -->" method="post">
- <input type="hidden" name="f" value="raw" /> 
- <input type="submit" value="View Raw Clickthrough Logs" class="processing" />
+ <input type="hidden" name="f" value="download_logs" /> 
+ <input type="hidden" name="log_type" value="clickthrough" /> 
+ <input type="submit" value="Download Clickthrough Logs (.csv)" class="processing" />
 </form> 
+
+<form action="<!-- tmpl_var Plugin_URL -->" method="post">
+ <input type="hidden" name="f" value="download_logs" /> 
+ <input type="hidden" name="log_type" value="activity" /> 
+
+ <input type="submit" value="Download Mass Mailing Event Logs (.csv)" class="processing" />
+</form>
+
 
 <form action="<!-- tmpl_var Plugin_URL -->" method="post">
  <input type="hidden" name="f" value="purge" /> 
@@ -412,15 +421,13 @@ color => [qw(green ffcc00 red)],
 
 }
 
-sub raw {
+sub download_logs {
 
-    my $header =
-        'Content-disposition: attachement; filename=' 
-      . $list
-      . '-clickthrough.log' . "\n";
-    $header .= 'Content-type: text/plain' . "\n\n";
+	my $header  = 'Content-disposition: attachement; filename=' . $list . '-' . 'clickthrough' . '.csv' .  "\n"; 
+	   $header .= 'Content-type: text/csv' . "\n\n";
     print $header;
-    $rd->print_raw_logs;
+ 
+    $rd->export_logs(xss_filter($q->param('log_type')), \*STDOUT);
 }
 
 sub purge {

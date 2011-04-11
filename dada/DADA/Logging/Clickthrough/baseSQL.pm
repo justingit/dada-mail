@@ -39,27 +39,96 @@ sub _sql_init {
     $self->{dbh} = $dbi_obj->dbh_obj;
 }
 
-sub add {
+
+sub custom_fields { 
+	my $self = shift; 
+	my $cols = $self->_columns; 
+	
+	my %omit_fields = (
+        url_id          => 1,
+        redirect_id   => 1,
+        msg_id      => 1,
+        url          => 1,
+    );
+
+    my $custom = []; 
+    for (@$cols) {
+        if ( !exists( $omit_fields{$_} ) ) {
+			push (@$custom, $_);
+		}
+	}
+	return $custom; 
+}
+
+
+sub _columns {
 
     my $self = shift;
-    my $mid  = shift;
+    my @cols;
+
+    if ( exists( $self->{cache}->{columns} ) ) {
+        return $self->{cache}->{columns};
+    }
+    else {
+        my $query =
+            "SELECT * FROM "
+          . $DADA::Config::SQL_PARAMS{clickthrough_urls_table}
+          . " WHERE (1 = 0)";
+        warn 'Query: ' . $query
+          if $t;
+
+        my $sth = $self->{dbh}->prepare($query);
+
+        $sth->execute()
+          or croak "cannot do statement (at: columns)! $DBI::errstr\n";
+        my $i;
+        for ( $i = 1 ; $i <= $sth->{NUM_OF_FIELDS} ; $i++ ) {
+            push( @cols, $sth->{NAME}->[ $i - 1 ] );
+        }
+        $sth->finish;
+        $self->{cache}->{columns} = \@cols;
+    }
+    return \@cols;
+}
+
+
+
+
+sub add {
+
+    my $self   = shift;
+    my $mid    = shift;
     die 'no mid! ' if !defined $mid;
-    my $url = shift;
+    my $url    = shift;
+	my $fields = shift; 
+	
     my $key = $self->random_key();
 
-    my $query =
-      'INSERT INTO '
-      . $DADA::Config::SQL_PARAMS{clickthrough_urls_table}
-      . '(redirect_id, msg_id, url) values(?,?,?)';
+ 	my $sql_str             = '';
+    my $place_holder_string = '';
+    my @order               = @{ $self->custom_fields };
+    my @values;
+    if ( $order[0] ) {
+        for my $field (@order) {
+            $sql_str .= ',' . $field;
+            $place_holder_string .= ',?';
+            push ( @values, $fields->{$field} );
+        }
+    }
+    $sql_str =~ s/,$//;
 
-    warn 'QUERY: ' . $query
-      if $t;
+	 my $query =
+	      'INSERT INTO '
+	      . $DADA::Config::SQL_PARAMS{clickthrough_urls_table}
+	      . '(redirect_id, msg_id, url' . $sql_str . ') values(?,?,?' . $place_holder_string .')';
+	
+    warn 'Query: ' . $query
+ 		if $t;
 
-    my $sth = $self->{dbh}->prepare($query);
-    $sth->execute( $key, $mid, $url )
-      or croak "cannot do statement! (at: add) $DBI::errstr\n";
-
-    return $key;
+	  my $sth = $self->{dbh}->prepare($query);
+	    $sth->execute( $key, $mid, $url, @values )
+	      or croak "cannot do statement! (at: add) $DBI::errstr\n";
+	    return $key;
 
 }
 
@@ -68,21 +137,42 @@ sub reuse_key {
     my $self = shift;
     my $mid  = shift;
     die 'no mid! ' if !defined $mid;
-    my $url = shift;
+    my $url    = shift;
+    my $fields = shift;
 
+    my $custom_fields = $self->custom_fields;
+    my %cust_fields   = ();
+    foreach (@$custom_fields) {
+        $cust_fields{$_} = 1;
+    }
+    my $place_holder_string = '';
+    my @values              = ();
+
+    foreach my $field ( keys %$fields ) {
+        if ( exists( $cust_fields{$field} ) ) {
+            push( @values, $fields->{$field} );
+            $place_holder_string .= ' AND ' . $field . ' = ?';
+        }
+    }
     my $query =
-      'SELECT * FROM '
+        'SELECT * FROM '
       . $DADA::Config::SQL_PARAMS{clickthrough_urls_table}
-      . ' WHERE msg_id = ? AND url = ? ';
+      . ' WHERE msg_id = ? AND url = ? '
+      . $place_holder_string;
 
-    warn 'QUERY: ' . $query
-      if $t;
+    warn 'QUERY: ' . $query;
+
+    #      if $t;
+
+    use Data::Dumper;
+    warn 'VALUES: ' . Data::Dumper::Dumper( [@values] );
 
     my $sth = $self->{dbh}->prepare($query);
-    $sth->execute( $mid, $url )
+    $sth->execute( $mid, $url, @values )
       or croak "cannot do statement! (at: reuse_key) $DBI::errstr\n";
     my $hashref;
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
+		warn "I GOT HERE! What?!"; 
         $sth->finish;
         return $hashref->{redirect_id};
     }
@@ -90,6 +180,7 @@ sub reuse_key {
     return undef;
 
 }
+
 
 sub fetch {
 
@@ -347,6 +438,35 @@ sub report_by_message {
 	
 	return $report; 
 }
+
+
+sub export_logs {
+
+    my $self = shift;
+    my $type = shift;
+    my $fh   = shift || \*STDOUT;
+
+    my $l;
+
+    require Text::CSV;
+    my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+
+    my $query = '';
+    if ( $type eq 'clickthrough' ) {
+        $query = 'SELECT * FROM dada_clickthrough_url_log';
+    }
+    elsif ( $type eq 'activity' ) {
+        $query = 'SELECT * FROM dada_mass_mailing_event_log';
+    }
+
+    my $sth = $self->{dbh}->prepare($query);
+    $sth->execute();
+    while ( my $fields = $sth->fetchrow_arrayref ) {
+        my $status = $csv->print( $fh, $fields );
+        print $fh "\n";
+    }
+}
+
 
 
 

@@ -99,24 +99,6 @@ sub report_by_url {
 }
 
 
-sub print_raw_logs { 
-
-	my $self = shift; 
-	my $l; 
-	
-	unless(-e $self->clickthrough_log_location){ 
-		print '';
-		return; 
-	}
-	
-	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
-		or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
-	while(defined($l = <LOG>)){ 
-		chomp($l); # why a chomp, 
-		print $l . "\n"; # and thena newline, added? 
-	}
-
-}
 
 
 
@@ -493,14 +475,14 @@ sub redirect_encode {
 	my $atts = $self->get_redirect_tag_atts($redirect_tag); 
 
 	my $url = $atts->{url}; 
-	
+	delete($atts->{url}); 
 	
 	if($self->can_be_redirected($url)){ 
 				
-	    my $key = $self->reuse_key( $mid, $url );
+	    my $key = $self->reuse_key( $mid, $url, $atts );
 		
 	    if ( !defined($key) ) {
-	        $key = $self->add( $mid, $url );
+	        $key = $self->add( $mid, $url, $atts);
 	    }
 	    return $DADA::Config::PROGRAM_URL . '/r/'
 	      . $self->{name} . '/'
