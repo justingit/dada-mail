@@ -199,6 +199,47 @@ sub default_tmpl {
 <hr /> 
 
 
+<table> 
+ <tr> 
+  <td> 
+
+<form action="<!-- tmpl_var Plugin_URL -->" method="post">
+ <input type="hidden" name="f" value="download_logs" /> 
+ <input type="hidden" name="log_type" value="clickthrough" /> 
+ <input type="submit" value="Download Clickthrough Logs (.csv)" class="processing" />
+</form> 
+
+</td> 
+<td> 
+
+<form action="<!-- tmpl_var Plugin_URL -->" method="post">
+ <input type="hidden" name="f" value="download_logs" /> 
+ <input type="hidden" name="log_type" value="activity" /> 
+
+ <input type="submit" value="Download Mass Mailing Event Logs (.csv)" class="processing" />
+</form>
+</td> 
+<td> 
+
+<form action="<!-- tmpl_var Plugin_URL -->" method="post">
+ <input type="hidden" name="f" value="purge" /> 
+ <input type="submit" value="Purge Clickthrough Logs" class="alertive" />
+</form> 
+
+</td> 
+</tr> 
+</table> 
+
+
+<fieldset>
+<legend>Subscriber History</legend> 
+<p>
+ <img src="<!-- tmpl_var num_subscribers_chart_url -->" width="640" height="240" style="border:1px solid black" /> 
+</p>
+</fieldset> 
+
+
+
 <fieldset> 
 <legend> 
 Preferences
@@ -281,46 +322,35 @@ Preferences
 </fieldset> 
 
 
- 
-<form action="<!-- tmpl_var Plugin_URL -->" method="post">
- <input type="hidden" name="f" value="download_logs" /> 
- <input type="hidden" name="log_type" value="clickthrough" /> 
- <input type="submit" value="Download Clickthrough Logs (.csv)" class="processing" />
-</form> 
 
-<form action="<!-- tmpl_var Plugin_URL -->" method="post">
- <input type="hidden" name="f" value="download_logs" /> 
- <input type="hidden" name="log_type" value="activity" /> 
+<fieldset> 
+<legend>Clickthrough Tracking Help</legend> 
 
- <input type="submit" value="Download Mass Mailing Event Logs (.csv)" class="processing" />
-</form>
-
-
-<form action="<!-- tmpl_var Plugin_URL -->" method="post">
- <input type="hidden" name="f" value="purge" /> 
- <input type="submit" value="Purge Clickthrough Logs" class="alertive" />
-</form> 
-
-<hr /> 
-
-
-<h1>Subscriber History</h1> 
-<p>
- <img src="<!-- tmpl_var num_subscribers_chart_url -->" width="640" height="240" style="border:1px solid black" /> 
-</p>
-
-<hr/> 
 <p>
  Clickthrough logging works for URLs in mailing list
- messages when the URLs are placed in the 
-<!-- tmpl_var LEFT_BRACKET -->redirect<!-- tmpl_var RIGHT_BRACKET --> tag. 
-For example:
+ messages when the URLs are placed in the  <code>&lt;!-- redirect ... --&gt;</code> comment. 
+</p>
+
+<p>For example:
 </p> 
+
+<p><code>
+&lt;!-- redirect url=&quot;http://example.com&quot; --&gt;
+</code></p>
+
+<p>Replace, <code>http://example.com</code> with the URL you want to track clickthroughs. 
+
+<!-- 
+
 <p> 
- <strong> 
-  <!-- tmpl_var LEFT_BRACKET -->redirect=http://yahoo.com<!-- tmpl_var RIGHT_BRACKET -->
- </strong> 
+ <code> 
+  <!-- tmpl_var LEFT_BRACKET -->redirect=http://example.com<!-- tmpl_var RIGHT_BRACKET -->
+ </code> 
 </p> 
+
+--> 
+
+</fieldset> 
 
 };
 

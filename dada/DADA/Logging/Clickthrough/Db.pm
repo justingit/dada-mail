@@ -155,7 +155,7 @@ sub fetch {
 
     my ( $r_mid, $r_url ) = $self->decode_value($saved_info);
 
-    return ( $r_mid, $r_url );
+    return ( $r_mid, $r_url, {} );
 }
 
 
