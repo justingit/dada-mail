@@ -75,28 +75,6 @@ sub verified_mid {
 
 
 
-sub report_by_url { 
-	my $self      = shift; 
-	my $match_mid = shift; 
-	my $match_url = shift;
-	
-	my $report = []; 
-	my $l;
-	
-	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
-	 or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
-	while(defined($l = <LOG>)){ 
-		chomp($l); 
-		my ($t, $mid, $url) = split("\t", $l); 
-		if($url ne 'open' && $url ne 'num_subscribers'){
-			if(($match_mid == $mid) && ($match_url eq $url)){ 
-				push(@$report, $t);
-			}
-		}
-	}
-	close(LOG); 
-	return $report; 
-}
 
 
 

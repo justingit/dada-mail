@@ -190,14 +190,17 @@ sub _raw_db_hash {
 
 
 sub r_log { 
-	my ($self, $mid, $url) = @_;
+	
+    my $self      = shift; 
+    my ($args)    = @_;
+
 	if($self->{is_redirect_on} == 1){ 
 	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
 	    	if -e $self->clickthrough_log_location; 
 		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location) 
 			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 		flock(LOG, LOCK_SH);
-		print LOG scalar(localtime()) . "\t" . $mid . "\t" . $url . "\n"  or warn "Couldn't write to file: " . $self->clickthrough_log_location . 'because: ' .  $!; 
+		print LOG scalar(localtime()) . "\t" . $args->{-mid} . "\t" . $args->{-url} . "\n"  or warn "Couldn't write to file: " . $self->clickthrough_log_location . 'because: ' .  $!; 
 		close (LOG)  or warn "Couldn't close file: " . $self->clickthrough_log_location . 'because: ' .  $!;
 		return 1; 
 	}else{ 
@@ -490,6 +493,33 @@ sub export_logs {
 		}
 	}
 }
+
+
+
+sub report_by_url { 
+	my $self      = shift; 
+	my $match_mid = shift; 
+	my $match_url = shift;
+	
+	my $report = []; 
+	my $l;
+	
+	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
+	 or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
+	while(defined($l = <LOG>)){ 
+		chomp($l); 
+		my ($t, $mid, $url) = split("\t", $l); 
+		if($url ne 'open' && $url ne 'num_subscribers'){
+			if(($match_mid == $mid) && ($match_url eq $url)){ 
+				push(@$report, $t);
+			}
+		}
+	}
+	close(LOG); 
+	return $report; 
+}
+
+
 
 1;
 

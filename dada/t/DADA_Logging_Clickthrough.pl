@@ -218,7 +218,7 @@ ok( $lc->clickthrough_log_location eq $DADA::Config::LOGS . '/' . $list
       . '-clickthrough.log' );
 
 # if it's not on, it returns, "0";
-ok( $lc->r_log( $test_mid, $test_url ) == 0 );
+ok( $lc->r_log({-mid => $test_mid, -url => $test_url }) == 0 );
 
 my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 $ls->save( { clickthrough_tracking => 1, } );
@@ -229,12 +229,12 @@ undef($lc);
 $lc = DADA::Logging::Clickthrough->new( { -list => $list } );
 
 # Now, it should do what I want it to do:
-ok( $lc->r_log( $test_mid, $test_url ) == 1 );
+ok( $lc->r_log({-mid =>  $test_mid, -url => $test_url }) == 1 );
 
-my $log = slurp( $lc->clickthrough_log_location );
-
-my $q_test_url = quotemeta($test_url);
-like( $log, qr/$test_mid\t$q_test_url/ );
+# This looks pretty much the default backend-specific...
+#my $log = slurp( $lc->clickthrough_log_location );
+#my $q_test_url = quotemeta($test_url);
+#like( $log, qr/$test_mid\t$q_test_url/ );
 
 
 

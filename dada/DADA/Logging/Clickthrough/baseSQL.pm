@@ -158,19 +158,13 @@ sub reuse_key {
       . ' WHERE msg_id = ? AND url = ? '
       . $place_holder_string;
 
-    warn 'QUERY: ' . $query;
-
-    #      if $t;
-
-    use Data::Dumper;
-    warn 'VALUES: ' . Data::Dumper::Dumper( [@values] );
-
+    warn 'QUERY: ' . $query
+ 		if $t;
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $mid, $url, @values )
       or croak "cannot do statement! (at: reuse_key) $DBI::errstr\n";
     my $hashref;
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
-        warn "I GOT HERE! What?!";
         $sth->finish;
         return $hashref->{redirect_id};
     }
@@ -241,10 +235,17 @@ sub key_exists {
 
 sub r_log {
 
-    # stamp mid, url
-
-    my ( $self, $mid, $url, $atts ) = @_;
-
+    my $self      = shift; 
+    my ($args)    = @_;
+	my $timestamp = undef; 
+	if(exists($args->{-timestamp})){ 
+		$timestamp = $args->{-timestamp};
+	}
+	my $atts = {};
+	if(exists($args->{-atts})){ 
+		$atts = $args->{-atts};
+	}
+	
     if ( $self->{is_redirect_on} == 1 ) {
         my $place_holder_string = '';
         my $sql_snippet         = '';
@@ -263,14 +264,24 @@ sub r_log {
                 $sql_snippet .= ' ,' . $_;
             }
         }
+		my $ts_snippet = ''; 
+		if(defined($timestamp)){ 
+			$ts_snippet = 'timestamp,'; 
+			$place_holder_string .= ' ,';
+		}
         my $query =
-            'INSERT INTO dada_clickthrough_url_log(msg_id,url'
+            'INSERT INTO dada_clickthrough_url_log(list,' . $ts_snippet .'msg_id, url'
           . $sql_snippet
-          . ') VALUES (?, ?'
+          . ') VALUES (?, ?, ?'
           . $place_holder_string . ')';
 
         my $sth = $self->{dbh}->prepare($query);
-        $sth->execute( $mid, $url, @values );
+        if(defined($timestamp)){ 
+			$sth->execute($self->{name}, $timestamp, $args->{-mid}, $args->{-url}, @values );
+		}
+		else { 
+			$sth->execute($self->{name}, $args->{-mid}, $args->{-url}, @values );			
+		}
         $sth->finish;
 
         return 1;
@@ -284,9 +295,9 @@ sub o_log {
     my ( $self, $mid ) = @_;
     if ( $self->{is_log_openings_on} == 1 ) {
         my $query =
-'INSERT INTO dada_mass_mailing_event_log(msg_id, event) VALUES (?, ?)';
+'INSERT INTO dada_mass_mailing_event_log(list, msg_id, event) VALUES (?, ?, ?)';
         my $sth = $self->{dbh}->prepare($query);
-        $sth->execute( $mid, 'open' );
+        $sth->execute($self->{name}, $mid, 'open' );
         $sth->finish;
         return 1;
     }
@@ -299,9 +310,9 @@ sub sc_log {
     my ( $self, $mid, $sc ) = @_;
     if ( $self->{enable_subscriber_count_logging} == 1 ) {
         my $query =
-'INSERT INTO dada_mass_mailing_event_log(msg_id, event, details) VALUES (?, ?, ?)';
+'INSERT INTO dada_mass_mailing_event_log(list, msg_id, event, details) VALUES (?, ?, ?, ?)';
         my $sth = $self->{dbh}->prepare($query);
-        $sth->execute( $mid, 'num_subscribers', $sc );
+        $sth->execute($self->{name}, $mid, 'num_subscribers', $sc );
         $sth->finish;
 
         return 1;
@@ -323,9 +334,9 @@ sub bounce_log {
             $bounce_type = 'soft_bounce';
         }
         my $query =
-'INSERT INTO dada_mass_mailing_event_log(msg_id, event, details) VALUES (?, ?, ?)';
+'INSERT INTO dada_mass_mailing_event_log(list, msg_id, event, details) VALUES (?, ?, ?, ?)';
         my $sth = $self->{dbh}->prepare($query);
-        $sth->execute( $mid, $bounce_type, $email );
+        $sth->execute($self->{name}, $mid, $bounce_type, $email );
         $sth->finish;
 
         close(LOG);
@@ -361,12 +372,12 @@ sub report_by_message_index {
 
 # This query could probably be made into one, if I could simple use a join, or something,
     my $msg_id_query1 =
-      'SELECT msg_id FROM dada_mass_mailing_event_log GROUP BY msg_id;';
+      'SELECT msg_id FROM dada_mass_mailing_event_log WHERE list = ? GROUP BY msg_id;';
     my $msg_id_query2 =
-      'SELECT msg_id FROM dada_clickthrough_url_log GROUP BY msg_id;';
+      'SELECT msg_id FROM dada_clickthrough_url_log WHERE list = ? GROUP BY msg_id;';
 
-    my $msg_id1 = $self->{dbh}->selectcol_arrayref($msg_id_query1);
-    my $msg_id2 = $self->{dbh}->selectcol_arrayref($msg_id_query2);
+    my $msg_id1 = $self->{dbh}->selectcol_arrayref($msg_id_query1, {}, ($self->{name})); #($statement, \%attr, @bind_values);
+    my $msg_id2 = $self->{dbh}->selectcol_arrayref($msg_id_query2, {}, ($self->{name}));
     push( @$msg_id1, @$msg_id2 );
     $msg_id1 = $self->unique_and_dupe($msg_id1);
 
@@ -376,30 +387,30 @@ sub report_by_message_index {
 
         # Clickthroughs
         my $clickthrough_count_query =
-'SELECT COUNT(msg_id) FROM dada_clickthrough_url_log WHERE msg_id = ?';
+'SELECT COUNT(msg_id) FROM dada_clickthrough_url_log WHERE list = ?  AND msg_id = ?';
         $report->{$msg_id}->{count} =
           $self->{dbh}
-          ->selectcol_arrayref( $clickthrough_count_query, {}, $msg_id )->[0];
+          ->selectcol_arrayref( $clickthrough_count_query, {}, $self->{name}, $msg_id )->[0];
 
         my $misc_count_query =
-'SELECT COUNT(msg_id) FROM dada_mass_mailing_event_log WHERE msg_id = ? AND event = ?';
+'SELECT COUNT(msg_id) FROM dada_mass_mailing_event_log WHERE list = ? AND msg_id = ? AND event = ?';
         $report->{$msg_id}->{open} =
           $self->{dbh}
-          ->selectcol_arrayref( $misc_count_query, {}, $msg_id, 'open' )->[0];
+          ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, 'open' )->[0];
         $report->{$msg_id}->{soft_bounce} =
           $self->{dbh}
-          ->selectcol_arrayref( $misc_count_query, {}, $msg_id, 'soft_bounce' )
+          ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, 'soft_bounce' )
           ->[0];
         $report->{$msg_id}->{hard_bounce} =
           $self->{dbh}
-          ->selectcol_arrayref( $misc_count_query, {}, $msg_id, 'hard_bounce' )
+          ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, 'hard_bounce' )
           ->[0];
 
         my $num_sub_query =
-'SELECT details FROM dada_mass_mailing_event_log WHERE msg_id = ? AND event = ?';
+'SELECT details FROM dada_mass_mailing_event_log WHERE list = ? msg_id = ? AND event = ?';
         $report->{$msg_id}->{num_subscribers} =
           $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 },
-            $msg_id, 'num_subscribers' )->[0];
+            $self->{name}, $msg_id, 'num_subscribers' )->[0];
 
     }
 
@@ -436,31 +447,31 @@ sub report_by_message {
     my $l;
 
     my $num_sub_query =
-'SELECT details FROM dada_mass_mailing_event_log WHERE msg_id = ? AND event = ?';
+'SELECT details FROM dada_mass_mailing_event_log WHERE list = ? AND msg_id = ? AND event = ?';
     $report->{num_subscribers} =
       $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 },
-        $msg_id, 'num_subscribers' )->[0];
+        $self->{name}, $msg_id, 'num_subscribers' )->[0];
 
     my $misc_count_query =
-'SELECT COUNT(msg_id) FROM dada_mass_mailing_event_log WHERE msg_id = ? AND event = ?';
+'SELECT COUNT(msg_id) FROM dada_mass_mailing_event_log WHERE list = ? AND msg_id = ? AND event = ?';
 
     #	# This may be different.
     $report->{open} =
-      $self->{dbh}->selectcol_arrayref( $misc_count_query, {}, $msg_id, 'open' )
+      $self->{dbh}->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, 'open' )
       ->[0];
     $report->{soft_bounce} =
       $self->{dbh}
-      ->selectcol_arrayref( $misc_count_query, {}, $msg_id, 'soft_bounce' )
+      ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, 'soft_bounce' )
       ->[0];
     $report->{hard_bounce} =
       $self->{dbh}
-      ->selectcol_arrayref( $misc_count_query, {}, $msg_id, 'hard_bounce' )
+      ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, 'hard_bounce' )
       ->[0];
 
     my $url_clickthroughs_query =
-'SELECT url, COUNT(url) AS count FROM dada_clickthrough_url_log where msg_id = ? GROUP BY url';
+'SELECT url, COUNT(url) AS count FROM dada_clickthrough_url_log where list = ? AND msg_id = ? GROUP BY url';
     my $sth = $self->{dbh}->prepare($url_clickthroughs_query);
-    $sth->execute($msg_id);
+    $sth->execute($self->{name}, $msg_id);
     my $url_report = [];
     my $row        = undef;
     while ( $row = $sth->fetchrow_hashref ) {
@@ -472,9 +483,9 @@ sub report_by_message {
 
     for my $bounce_type (qw(soft_bounce hard_bounce)) {
         my $bounce_query =
-'SELECT timestamp, details from dada_mass_mailing_event_log where msg_id = ? and event = ? order by timestamp';
+'SELECT timestamp, details from dada_mass_mailing_event_log where list = ? AND msg_id = ? AND event = ? ORDER BY timestamp';
         my $sth = $self->{dbh}->prepare($bounce_query);
-        $sth->execute( $msg_id, $bounce_type );
+        $sth->execute($self->{name},  $msg_id, $bounce_type );
         my $bounce_report = [];
         while ( $row = $sth->fetchrow_hashref ) {
             push( @$bounce_report,
@@ -503,13 +514,14 @@ sub export_logs {
 
     my $query = '';
     if ( $type eq 'clickthrough' ) {
-        $query = 'SELECT * FROM dada_clickthrough_url_log';
+        $query = 'SELECT * FROM dada_clickthrough_url_log WHERE list = ?';
     }
     elsif ( $type eq 'activity' ) {
-        $query = 'SELECT * FROM dada_mass_mailing_event_log';
+        $query = 'SELECT * FROM dada_mass_mailing_event_log WHERE list = ?';
     }
 
     my $sth = $self->{dbh}->prepare($query);
+	   $sth->bind_columns($self->{name});
     $sth->execute();
     while ( my $fields = $sth->fetchrow_arrayref ) {
         my $status = $csv->print( $fh, $fields );

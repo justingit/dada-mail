@@ -8946,7 +8946,13 @@ sub redirection {
 		my ($mid, $url, $atts) = $r->fetch($q->param('key'));
 
 		   if(defined($mid) && defined($url)){
-	       		$r->r_log($mid, $url, $atts);
+	       		$r->r_log(
+					{ 
+						-mid  => $mid, 
+						-url  => $url, 
+						-atts => $atts
+					}
+				);
 			}
 	    if($url){
 	        print $q->redirect(-uri => $url);
