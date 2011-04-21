@@ -9,7 +9,7 @@ use lib qw(../ ../DADA/perllib ../../../../perl ../../../../perllib);
 use CGI::Carp "fatalsToBrowser";
 
 # use some of those Modules
-use DADA::Config 3.0.0 qw(!:DEFAULT);
+use DADA::Config 4.0.0 qw(!:DEFAULT);
 use DADA::Template::HTML;
 use DADA::App::Guts;
 use DADA::MailingList::Settings;
@@ -48,12 +48,14 @@ my $mja = DADA::MailingList::Archives->new( { -list => $list } );
 my $f = $q->param('f') || undef;
 
 my %Mode = (
-    'default'    => \&default,
-    'm'          => \&message_report,
-    'url'        => \&url_report,
-    'edit_prefs' => \&edit_prefs,
-    'download_logs'        => \&download_logs,
-    'purge'      => \&purge,
+    'default'            => \&default,
+    'm'                  => \&message_report,
+    'url'                => \&url_report,
+    'edit_prefs'         => \&edit_prefs,
+    'download_logs'      => \&download_logs,
+    'purge'              => \&purge,
+	'clickthrough_table' => \&clickthrough_table, 
+	'subscriber_history_img' => \&subscriber_history_img, 
 );
 
 if ($f) {
@@ -78,126 +80,102 @@ sub default_tmpl {
 	<p class="positive"><!-- tmpl_var GOOD_JOB_MESSAGE --></p>
 <!-- /tmpl_if --> 
 	
-<!-- tmpl_if has_clickthrough_logs --> 
-	
-	<h2>
-	 Clickthrough Message Summaries:
-	</h2> 	
-	<div style="max-height: 300px; overflow: auto; border:1px solid black">
-	
-	  <table cellpadding="5" cellspacing="0" border="0" width="100%"> 
-	   <tr> 
-	    <td> 
-		 <p>
-		  <strong> 
-			Subject
-		  </strong> 
-		 </p>
-		</td> 
-	    <td> 
-		 <p>
-		  <strong> 
-			Sent
-		  </strong> 
-		 </p>
-		</td>
-	    <td> 
-		 <p>
-		  <strong> 
-			Subscribers
-		  </strong> 
-		 </p>
-		</td>
-	    <td> 
-		 <p>
-		  <strong> 
-			Clickthroughs
-		  </strong> 
-		 </p>
-		</td>
-	    <td> 
-		 <p>
-		  <strong> 
-			Opens
-		  </strong> 
-		 </p>
-		</td>
-	    <td> 
-		 <p>
-		  <strong> 
-			Bounces (soft/hard)
-		  </strong> 
-		 </p>
-		</td>
-		</tr> 
 
-		<!-- tmpl_loop report_by_message_index --> 
-		<tr <!-- tmpl_if __odd__>style="background:#fff"<!-- tmpl_else -->style="background:#ccf"<!-- /tmpl_if -->> 
-		 <td> 
-          <p>
-           <strong>
-			<!-- tmpl_if message_subject --> 
-				<a href="<!-- tmpl_var S_PROGRAM_URL -->?view_archive&id=<!-- tmpl_var mid -->">
-					<!-- tmpl_var message_subject escape="HTML" --> 
-				</a> 
-			<!-- tmpl_else --> 
-				#<!-- tmpl_var mid --> (unarchived message)
-			<!-- /tmpl_if --> 
- 		   </strong> 
-		  </p>
-		 </td> 
-		 <td> 
-		  <p>
-			<!-- tmpl_var date --> 
-	      </p> 
-	     </td> 
-	     <td> 
-	      <p>
-	       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
-		    <!-- tmpl_var num_subscribers  --> 
-		   </a> 
-	      </p>
-		 </td> 
-	     <td> 
-	      <p>
-	       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
-		    <!-- tmpl_var count   --> 
-		   </a> 
-	      </p>
-		 </td> 
-	     <td> 
-	      <p>
-	       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
-		    <!-- tmpl_var open   --> 
-		   </a> 
-	      </p>
-		 </td> 
-	     <td> 
-	      <p>
-	       <a href="<!-- tmpl_var Plugin_URL -->?f=m&mid=<!-- tmpl_var mid -->">
-		    <!-- tmpl_var soft_bounce  default="-" --> /<!-- tmpl_var hard_bounce default="-" --> 
-		   </a> 
-	      </p>
-		 </td> 
-	  </tr> 
+	<script type="text/javascript">
+	    //<![CDATA[
+		Event.observe(window, 'load', function() {
+		  show_table();	
+		  subscriber_history_img(); 			
+		});
+		
+		 function show_table(){ 
+			
+			new Ajax.Updater(
+				'show_table_results', '<!-- tmpl_var Plugin_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						f:       'clickthrough_table',
+						page:   $F('page')
+					},
+				onCreate: 	 function() {
+					$('show_table_results_loading').update('<p class="alert">Loading...</p>');
+				},
+				onComplete: 	 function() {
+
+					$('show_table_results_loading').update('<p class="alert">&nbsp;</p>');
+					Effect.BlindDown('show_table_results');
+				}	
+				});
+		}
+		
+		function next_page() { 
+			var new_page =  $F('page'); 
+			    new_page++; 
+			Form.Element.setValue('page', new_page) ; 
+			show_table();
+			subscriber_history_img();
+		}
+		function previous_page() { 
+			var new_page =  $F('page'); 
+			    new_page--; 
+			Form.Element.setValue('page', new_page) ; 
+			show_table();
+			subscriber_history_img();
+		}
+		
+		function subscriber_history_img(){ 
+			
+			new Ajax.Updater(
+				'subscriber_history_img', '<!-- tmpl_var Plugin_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						f:       'subscriber_history_img',
+						page:   $F('page')
+					},
+				onCreate: 	 function() {
+					$('subscriber_history_img_loading').update('<p class="alert">Loading...</p>');
+				},
+				onComplete: 	 function() {
+					$('subscriber_history_img_loading').update('<p class="alert">&nbsp;</p>');
+					Effect.BlindDown('subscriber_history_img');
+				}	
+				});
+		}
+	    //]]>
+	</script>
+	<form> 
+	 <input type="hidden" name="page" value="1" id="page" /> 
+	</form> 
+
+<fieldset> 
+	<legend>
+	 Clickthrough Message Summaries
+	</legend>
 	
-	<!-- /tmpl_loop --> 
+	<div id="show_table_results"> 			
+	</div>
+
+	<div id="show_table_results_loading">
+		<p class="alert">Loading...</p>
+	</div> 
+
 	
-     </table> 
+</fieldset> 
+
+
+<fieldset>
+<legend>Subscriber History</legend> 
+<div id="subscriber_history_img"> 
 </div> 
-	
-	
-<!-- tmpl_else --> 
-	<p>
-	 <strong> 
-	  No logs to report.
-	 </strong> 
-    </p>
-    
-<!-- /tmpl_if --> 
+<div id="subscriber_history_img_loading">
+</div> 
+</fieldset> 
 
-<hr /> 
 
+<fieldset> 
+<legend>Export Logs</legend> 
 
 <table> 
  <tr> 
@@ -229,14 +207,8 @@ sub default_tmpl {
 </td> 
 </tr> 
 </table> 
-
-
-<fieldset>
-<legend>Subscriber History</legend> 
-<p>
- <img src="<!-- tmpl_var num_subscribers_chart_url -->" width="640" height="240" style="border:1px solid black" /> 
-</p>
 </fieldset> 
+
 
 
 
@@ -359,72 +331,7 @@ Preferences
 }
 
 sub default {
-
-    my $has_clickthrough_logs = 0;
-    if ( -e $rd->clickthrough_log_location ) {
-        $has_clickthrough_logs = 1;
-    }
-    my $report_by_message_index = [];
-
-    if ($has_clickthrough_logs) {
-        $report_by_message_index = $rd->report_by_message_index;
-    }
-
-	# Needs potentially less data points 
-	# and labels for start/end of chart. 
-	my $num_subscribers = []; 
-	my $soft_bounces    = [];
-	my $hard_bounces    = [];
-	my $first_date      = undef;
-	my $last_date       = undef; 
-	
-	for(reverse @$report_by_message_index){ 
-		if($rd->verified_mid($_->{mid})){ 
-			if(exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/){ 
-				push(@$num_subscribers, $_->{num_subscribers});
-				if(defined($_->{soft_bounce})){ 
-					push(@$soft_bounces,    $_->{soft_bounce});	
-				}
-				else { 
-					push(@$soft_bounces,  0);
-				}
-				if(defined($_->{hard_bounce})){ 
-					push(@$hard_bounces,    $_->{hard_bounce});	
-				}
-				else { 
-					push(@$hard_bounces,  0);
-				}
-				
-				if(!defined($first_date	)){ 
-					$first_date = DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
-				}
-				$last_date = DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
-				
-			}
-		}
-	} 
-	require URI::GoogleChart; 
-
-	my $chart = URI::GoogleChart->new("lines", 640, 240,
-    data => [
- 		{ range => "a", v => $num_subscribers },
- 		{ range => "a", v => $soft_bounces },
- 		{ range => "a", v => $hard_bounces },
- 
-  	],
- range => {
-		a => { round => 1, show => "left" },
-	},	
-color => [qw(green ffcc00 red)],
-	label => ["Subscribers", "Soft Bounces", "Hard Bounces"],
-	chxt => 'x',
-	chxl => '0:|' . $first_date . '|' . $last_date, 
-		
-	);
-	use HTML::Entities;
-	my $enc_chart = encode_entities($chart);
-	
-	 
+	 	 
     my $tmpl = default_tmpl();
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -437,9 +344,10 @@ color => [qw(green ffcc00 red)],
             },
             -vars => {
                 done => $q->param('done') || 0,
-                has_clickthrough_logs     => $has_clickthrough_logs,
-                report_by_message_index   => $report_by_message_index,
-				num_subscribers_chart_url => $enc_chart, 
+              #  has_clickthrough_logs     => $has_clickthrough_logs,
+               # report_by_message_index   => $report_by_message_index,
+			#	num_subscribers_chart_url => $enc_chart, 
+				Plugin_URL                => $URL, 
             },
             -list_settings_vars_param => {
                 -list   => $list,
@@ -451,13 +359,319 @@ color => [qw(green ffcc00 red)],
 
 }
 
+
+
+sub subscriber_history_img_tmpl { 
+	return q{ 
+		<p>
+		 <img src="<!-- tmpl_var num_subscribers_chart_url -->" width="720" height="400" style="border:1px solid black" /> 
+		</p>
+	};
+}
+
+
+
+sub subscriber_history_img { 
+	
+	my $page = $q->param('page') || 1; 
+	my ($total, $msg_ids) = $rd->get_all_mids(
+		{ 
+			-page => $page, 
+		}
+	);
+	    my     $report_by_message_index = $rd->report_by_message_index({-all_mids => $msg_ids});
+	
+		# Needs potentially less data points 
+		# and labels for start/end of chart. 
+		my $num_subscribers = []; 
+		my $opens           = [];
+		my $clickthroughs   = [];
+		my $soft_bounces    = [];
+		my $hard_bounces    = [];
+		my $first_date      = undef;
+		my $last_date       = undef; 
+
+		for(reverse @$report_by_message_index){ 
+			if($rd->verified_mid($_->{mid})){ 
+				if(exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/){ 
+					push(@$num_subscribers, $_->{num_subscribers});
+					if(defined($_->{open})){ 
+						push(@$opens,    $_->{open});	
+					}
+					else { 
+						push(@$opens,  0);
+					}					
+					
+					if(defined($_->{count})){ 
+						push(@$clickthroughs,    $_->{count});	
+					}
+					else { 
+						push(@$clickthroughs,  0);
+					}					
+					
+					if(defined($_->{soft_bounce})){ 
+						push(@$soft_bounces,    $_->{soft_bounce});	
+					}
+					else { 
+						push(@$soft_bounces,  0);
+					}
+					if(defined($_->{hard_bounce})){ 
+						push(@$hard_bounces,    $_->{hard_bounce});	
+					}
+					else { 
+						push(@$hard_bounces,  0);
+					}
+					if(!defined($first_date	)){ 
+						$first_date = DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
+					}
+					$last_date = DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
+
+				}
+			}
+		} 
+		
+#		use Data::Dumper; 
+#		die Data::Dumper::Dumper([$num_subscribers, $soft_bounces, $hard_bounces]); 
+
+		require URI::GoogleChart; 
+		my $chart = URI::GoogleChart->new("lines", 720, 400,
+	    data => [
+	 		{ range => "a", v => $num_subscribers },
+	 		{ range => "a", v => $opens },
+	 		{ range => "a", v => $clickthroughs },
+	 		{ range => "a", v => $soft_bounces },
+	 		{ range => "a", v => $hard_bounces },
+
+	  	],
+	 range => {
+			a => { round => 0, show => "left" },
+		},	
+	color => [qw(green blue aqua ffcc00 red)],
+		label => ["Subscribers", "Opens", "Clickthroughs", "Soft Bounces", "Hard Bounces"],
+		chxt => 'x',
+		chxl => '0:|' . $first_date . '|' . $last_date, 
+
+		);
+		use HTML::Entities;
+		my $enc_chart = encode_entities($chart);
+	
+	
+	require DADA::Template::Widgets;
+  	my $tmpl = subscriber_history_img_tmpl();
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::screen(
+        {
+            -data           => \$tmpl,
+            -vars => {
+              #  report_by_message_index   => $rd->report_by_message_index,
+				num_subscribers_chart_url => $enc_chart,
+				Plugin_URL                => $URL, 
+            },
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+	print $q->header(); 
+    e_print($scrn);
+}
+
+sub clickthrough_table_tmpl { 
+	
+	return q{ 
+		<!-- 
+		<!-- tmpl_if has_clickthrough_logs --> 
+			<!-- tmpl_else --> 
+				<p>
+				 <strong> 
+				  No logs to report.
+				 </strong> 
+			    </p>
+		<!-- /tmpl_if -->
+		--> 
+
+<div> 
+			<div style="max-height: 300px; overflow: auto; border:1px solid black">
+
+			  <table cellpadding="5" cellspacing="0" border="0" width="100%"> 
+			   <tr> 
+			    <td> 
+				 <p>
+				  <strong> 
+					Subject
+				  </strong> 
+				 </p>
+				</td> 
+			    <td> 
+				 <p>
+				  <strong> 
+					Sent
+				  </strong> 
+				 </p>
+				</td>
+			    <td> 
+				 <p>
+				  <strong> 
+					Subscribers
+				  </strong> 
+				 </p>
+				</td>
+			    <td> 
+				 <p>
+				  <strong> 
+					Clickthroughs
+				  </strong> 
+				 </p>
+				</td>
+			    <td> 
+				 <p>
+				  <strong> 
+					Opens
+				  </strong> 
+				 </p>
+				</td>
+			    <td> 
+				 <p>
+				  <strong> 
+					Bounces (soft/hard)
+				  </strong> 
+				 </p>
+				</td>
+				</tr> 
+
+				<!-- tmpl_loop report_by_message_index --> 
+				<tr <!-- tmpl_if __odd__>style="background:#fff"<!-- tmpl_else -->style="background:#ccf"<!-- /tmpl_if -->> 
+				 <td> 
+		          <p>
+		           <strong>
+					<!-- tmpl_if message_subject --> 
+						<a href="<!-- tmpl_var S_PROGRAM_URL -->?view_archive&id=<!-- tmpl_var mid -->">
+							<!-- tmpl_var message_subject escape="HTML" --> 
+						</a> 
+					<!-- tmpl_else --> 
+						#<!-- tmpl_var mid --> (unarchived message)
+					<!-- /tmpl_if --> 
+		 		   </strong> 
+				  </p>
+				 </td> 
+				 <td> 
+				  <p>
+					<!-- tmpl_var date --> 
+			      </p> 
+			     </td> 
+			     <td> 
+			      <p>
+			       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+				    <!-- tmpl_var num_subscribers  --> 
+				   </a> 
+			      </p>
+				 </td> 
+			     <td> 
+			      <p>
+			       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+				    <!-- tmpl_var count   --> 
+				   </a> 
+			      </p>
+				 </td> 
+			     <td> 
+			      <p>
+			       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+				    <!-- tmpl_var open   --> 
+				   </a> 
+			      </p>
+				 </td> 
+			     <td> 
+			      <p>
+			       <a href="<!-- tmpl_var Plugin_URL -->?f=m&mid=<!-- tmpl_var mid -->">
+				    <!-- tmpl_var soft_bounce  default="-" --> /<!-- tmpl_var hard_bounce default="-" --> 
+				   </a> 
+			      </p>
+				 </td> 
+			  </tr> 
+
+			<!-- /tmpl_loop --> 
+
+		     </table> 
+		</div>		
+		
+		</div> 
+		
+		<table width="100%">
+		 <tr> 
+		  <td align="left"  width="50%"> 
+			<p><a href="#" onclick="previous_page();">&lt;- Previous</a></p>
+		  </td> 
+		  <td align="right" width="50%"> 
+			<p><a href="#" onclick="next_page();">Next -&gt;</a></p>
+		</td> 
+		</tr> 
+		</table>
+		
+		
+	};
+	
+	
+}
+sub clickthrough_table { 
+	
+	my $page = $q->param('page') || 1; 
+	require DADA::Template::Widgets;
+  	my $tmpl = clickthrough_table_tmpl();
+
+	my ($total, $msg_ids) = $rd->get_all_mids(
+		{ 
+			-page => $page, 
+		}
+	);
+
+
+  require Data::Pageset;
+  my $page_info = Data::Pageset->new({
+    'total_entries'       => $total, 
+    'entries_per_page'    => 25, # needs to be tweakable...  
+#    # Optional, will use defaults otherwise.
+    'current_page'        => $page,
+#    'pages_per_set'       => $pages_per_set,
+#    'mode'                => 'fixed', # default, or 'slide'
+  });
+
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::screen(
+        {
+            -data           => \$tmpl,
+            -vars => {
+                report_by_message_index   => $rd->report_by_message_index({-all_mids => $msg_ids}),
+				Plugin_URL                => $URL, 
+            },
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+	print $q->header(); 
+    e_print($scrn);
+
+}
+
+
+
+
+
+
 sub download_logs {
 
-	my $header  = 'Content-disposition: attachement; filename=' . $list . '-' . 'clickthrough' . '.csv' .  "\n"; 
+	my $type = xss_filter($q->param('log_type')); 
+	if($type ne 'clickthrough' && $type ne 'activity'){ 
+		$type = 'clickthrough'; 
+	}
+	
+	my $header  = 'Content-disposition: attachement; filename=' . $list . '-' . $type . '.csv' .  "\n"; 
 	   $header .= 'Content-type: text/csv' . "\n\n";
     print $header;
  
-    $rd->export_logs(xss_filter($q->param('log_type')), \*STDOUT);
+    $rd->export_logs($type, \*STDOUT);
 }
 
 sub purge {

@@ -267,7 +267,7 @@ sub r_log {
 		my $ts_snippet = ''; 
 		if(defined($timestamp)){ 
 			$ts_snippet = 'timestamp,'; 
-			$place_holder_string .= ' ,';
+			$place_holder_string .= ' ,?';
 		}
         my $query =
             'INSERT INTO dada_clickthrough_url_log(list,' . $ts_snippet .'msg_id, url'
@@ -292,13 +292,31 @@ sub r_log {
 }
 
 sub o_log {
-    my ( $self, $mid ) = @_;
+	my $self      = shift; 
+    my ($args)    = @_;
+	my $timestamp = undef; 
+	if(exists($args->{-timestamp})){ 
+		$timestamp = $args->{-timestamp};
+	}
+	my $ts_snippet = ''; 
+	my $place_holder_string = ''; 
+	
+	if(defined($timestamp)){ 
+		$ts_snippet = 'timestamp,'; 
+		$place_holder_string .= ' ,?';
+	}
+	
     if ( $self->{is_log_openings_on} == 1 ) {
         my $query =
-'INSERT INTO dada_mass_mailing_event_log(list, msg_id, event) VALUES (?, ?, ?)';
+'INSERT INTO dada_mass_mailing_event_log(list, ' . $ts_snippet . 'msg_id, event) VALUES (?, ?, ?' . $place_holder_string .')';
         my $sth = $self->{dbh}->prepare($query);
-        $sth->execute($self->{name}, $mid, 'open' );
-        $sth->finish;
+		if(defined($timestamp)){ 
+			$sth->execute($self->{name}, $timestamp, $args->{-mid}, 'open' );
+		}
+		else { 
+			$sth->execute($self->{name}, $args->{-mid}, 'open' );
+        }
+		$sth->finish;
         return 1;
     }
     else {
@@ -307,12 +325,32 @@ sub o_log {
 }
 
 sub sc_log {
-    my ( $self, $mid, $sc ) = @_;
+    #my ( $self, $mid, $sc ) = @_;
+
+	my $self      = shift; 
+    my ($args)    = @_;
+	my $timestamp = undef; 
+	if(exists($args->{-timestamp})){ 
+		$timestamp = $args->{-timestamp};
+	}
+	my $ts_snippet = ''; 
+	my $place_holder_string = ''; 
+	
+	if(defined($timestamp)){ 
+		$ts_snippet = 'timestamp,'; 
+		$place_holder_string .= ' ,?';
+	}
+	
     if ( $self->{enable_subscriber_count_logging} == 1 ) {
         my $query =
-'INSERT INTO dada_mass_mailing_event_log(list, msg_id, event, details) VALUES (?, ?, ?, ?)';
+'INSERT INTO dada_mass_mailing_event_log(list, ' . $ts_snippet . 'msg_id, event, details) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
         my $sth = $self->{dbh}->prepare($query);
-        $sth->execute($self->{name}, $mid, 'num_subscribers', $sc );
+		if(defined($timestamp)){ 
+	        $sth->execute($self->{name}, $timestamp, $args->{-mid}, 'num_subscribers', $args->{-num});
+		}
+		else { 
+	        $sth->execute($self->{name}, $args->{-mid}, 'num_subscribers', $args->{-num});			
+		}
         $sth->finish;
 
         return 1;
@@ -323,20 +361,42 @@ sub sc_log {
 }
 
 sub bounce_log {
-    my ( $self, $type, $mid, $email ) = @_;
+   # my ( $self, $type, $mid, $email ) = @_;
+
+	my $self      = shift; 
+	my ($args)    = @_;
+	my $timestamp = undef; 
+	if(exists($args->{-timestamp})){ 
+		$timestamp = $args->{-timestamp};
+	}
+	my $ts_snippet = ''; 
+	my $place_holder_string = ''; 
+	
+	if(defined($timestamp)){ 
+		$ts_snippet = 'timestamp,'; 
+		$place_holder_string .= ' ,?';
+	}
+	
+	
     if ( $self->{is_log_bounces_on} == 1 ) {
 
         my $bounce_type = '';
-        if ( $type eq 'hard' ) {
+        if ( $args->{-type} eq 'hard' ) {
             $bounce_type = 'hard_bounce';
         }
         else {
             $bounce_type = 'soft_bounce';
         }
-        my $query =
-'INSERT INTO dada_mass_mailing_event_log(list, msg_id, event, details) VALUES (?, ?, ?, ?)';
+        my $query = 'INSERT INTO dada_mass_mailing_event_log(list, ' . $ts_snippet . 'msg_id, event, details) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
         my $sth = $self->{dbh}->prepare($query);
-        $sth->execute($self->{name}, $mid, $bounce_type, $email );
+
+		if(defined($timestamp)){ 
+        	$sth->execute($self->{name}, $timestamp, $args->{-mid}, $bounce_type, $args->{-email} );
+		}
+		else { 
+			$sth->execute($self->{name}, $args->{-mid}, $bounce_type, $args->{-email} );
+	        
+		}
         $sth->finish;
 
         close(LOG);
@@ -362,25 +422,73 @@ sub unique_and_dupe {
 
 }
 
+
+sub get_all_mids { 
+
+	my $self = shift; 
+	my ($args) = @_;
+	if(!exists($args->{-page})){ 
+		$args->{-page} = 1; 
+	}
+	if(!exists($args->{-entries})){ 
+		$args->{-entries} = 25; 
+	}
+	
+	# postgres: $query .= ' SELECT DISTINCT ON(' . $subscriber_table . '.email) ';
+	# This query could probably be made into one, if I could simple use a join, or something,
+
+
+	my $msg_id_query1 =
+      'SELECT msg_id FROM dada_mass_mailing_event_log WHERE list = ? AND event = "num_subscribers" GROUP BY msg_id ORDER BY msg_id DESC;';
+ #   my $msg_id_query2 =
+ #     'SELECT msg_id FROM dada_clickthrough_url_log WHERE list = ? GROUP BY msg_id  ORDER BY msg_id DESC;';
+
+	#my $start_time = time; 
+
+    my $msg_id1 = $self->{dbh}->selectcol_arrayref($msg_id_query1, {}, ($self->{name})); #($statement, \%attr, @bind_values);
+ #   my $msg_id2 = $self->{dbh}->selectcol_arrayref($msg_id_query2, {}, ($self->{name}));
+ #   push( @$msg_id1, @$msg_id2 );
+ #   $msg_id1 = $self->unique_and_dupe($msg_id1);
+
+	my $total = scalar @$msg_id1; 
+	
+	if(scalar @$msg_id1 < $args->{-entries}){ 
+		$args->{-entries} = scalar @$msg_id1;
+	} 
+#	entries x page#
+#	entries x page + entires
+	
+#	@$msg_id1 =  @$msg_id1[(($args->{-page}-1) - ($args->{-entries} - 1)) .. (($args->{-page}-1) + ($args->{-entries} - 1))];
+
+	my $begin = ($args->{-entries} - 1) * ($args->{-page} - 1);
+	my $end   = $begin + ($args->{-entries} - 1);
+	
+	@$msg_id1 =  @$msg_id1[$begin..$end];
+	
+	#@$msg_id1 = @$msg_id1[0 .. 2]; #last 24..
+	return ($total, $msg_id1);
+}
 sub report_by_message_index {
     my $self          = shift;
+	my ($args)        = @_; 
+	
     my $sorted_report = [];
     my $report        = {};
     my $l;
+	
+	my $total   = undef; 
+	my $msg_id1 = []; 
+	
+	if(exists($args->{-all_mids})){ 
+		$msg_id1 = $args->{-all_mids};
+	}
+	else { 
+		# Not using total, right now... 
+		($total, $msg_id1) = $self->get_all_mids();
+	}
+	
 
-  # postgres: $query .= ' SELECT DISTINCT ON(' . $subscriber_table . '.email) ';
-
-# This query could probably be made into one, if I could simple use a join, or something,
-    my $msg_id_query1 =
-      'SELECT msg_id FROM dada_mass_mailing_event_log WHERE list = ? GROUP BY msg_id;';
-    my $msg_id_query2 =
-      'SELECT msg_id FROM dada_clickthrough_url_log WHERE list = ? GROUP BY msg_id;';
-
-    my $msg_id1 = $self->{dbh}->selectcol_arrayref($msg_id_query1, {}, ($self->{name})); #($statement, \%attr, @bind_values);
-    my $msg_id2 = $self->{dbh}->selectcol_arrayref($msg_id_query2, {}, ($self->{name}));
-    push( @$msg_id1, @$msg_id2 );
-    $msg_id1 = $self->unique_and_dupe($msg_id1);
-
+	
     for my $msg_id (@$msg_id1) {
 
         $report->{$msg_id}->{msg_id} = $msg_id;
@@ -407,10 +515,9 @@ sub report_by_message_index {
           ->[0];
 
         my $num_sub_query =
-'SELECT details FROM dada_mass_mailing_event_log WHERE list = ? msg_id = ? AND event = ?';
-        $report->{$msg_id}->{num_subscribers} =
-          $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 },
-            $self->{name}, $msg_id, 'num_subscribers' )->[0];
+'SELECT details FROM dada_mass_mailing_event_log WHERE list = ? AND msg_id = ? AND event = ?';
+
+        $report->{$msg_id}->{num_subscribers} = $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 }, $self->{name}, $msg_id, 'num_subscribers' )->[0];
 
     }
 
@@ -521,8 +628,7 @@ sub export_logs {
     }
 
     my $sth = $self->{dbh}->prepare($query);
-	   $sth->bind_columns($self->{name});
-    $sth->execute();
+    $sth->execute($self->{name});
     while ( my $fields = $sth->fetchrow_arrayref ) {
         my $status = $csv->print( $fh, $fields );
         print $fh "\n";
