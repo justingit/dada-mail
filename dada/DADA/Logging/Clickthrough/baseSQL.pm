@@ -610,9 +610,21 @@ sub report_by_message {
 
 sub export_logs {
 
-    my $self = shift;
-    my $type = shift;
-    my $fh   = shift || \*STDOUT;
+    my $self   = shift;
+	my ($args) = @_; 
+
+	if(!exists($args->{-fh})){ 
+		$args->{-fh} = \*STDOUT;
+	}
+	my $fh = $args->{-fh}; 
+	
+	if(!exists($args->{-type})){ 
+		$args->{-type} = 'clickthrough';
+	}
+	if(!exists($args->{-mid})){ 
+		$args->{-mid} = undef; #really. 
+	}
+
 
     my $l;
 
@@ -620,16 +632,26 @@ sub export_logs {
     my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
     my $query = '';
-    if ( $type eq 'clickthrough' ) {
+    if ( $args->{-type} eq 'clickthrough' ) {
         $query = 'SELECT * FROM dada_clickthrough_url_log WHERE list = ?';
     }
-    elsif ( $type eq 'activity' ) {
+    elsif ( $args->{-type} eq 'activity' ) {
         $query = 'SELECT * FROM dada_mass_mailing_event_log WHERE list = ?';
     }
+	if(defined($args->{-mid})){ 
+		$query .= ' AND msg_id = ?'; 
+	}
 
     my $sth = $self->{dbh}->prepare($query);
-    $sth->execute($self->{name});
-    while ( my $fields = $sth->fetchrow_arrayref ) {
+
+	if(defined($args->{-mid})){ 
+		$sth->execute($self->{name}, $args->{-mid});
+    }
+	else { 
+		$sth->execute($self->{name});
+	}
+
+ 	while ( my $fields = $sth->fetchrow_arrayref ) {
         my $status = $csv->print( $fh, $fields );
         print $fh "\n";
     }

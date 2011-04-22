@@ -53,9 +53,11 @@ my %Mode = (
     'url'                => \&url_report,
     'edit_prefs'         => \&edit_prefs,
     'download_logs'      => \&download_logs,
-    'purge'              => \&purge,
-	'clickthrough_table' => \&clickthrough_table, 
+    'purge'                  => \&purge,
+	'clickthrough_table'     => \&clickthrough_table, 
 	'subscriber_history_img' => \&subscriber_history_img, 
+	'download_clickthrough_logs'    => \&download_clickthrough_logs, 
+	'download_activity_logs'        => \&download_activity_logs, 
 );
 
 if ($f) {
@@ -284,6 +286,36 @@ Preferences
   
   
  </table> 
+
+
+<table> 
+ <tr> 
+  <td> 
+   <p>
+	&nbsp;
+   </p>
+  </td> 
+  <td> 
+   <p>
+     View: 
+
+<select name="tracker_record_view_count">
+<option value="5">5</option> 
+<option value="10">10</option> 
+<option value="15">15</option> 
+<option value="20">20</option> 
+<option value="25">25</option> 
+</select> 
+Records at once. 
+   </p>
+  </td>
+  </tr>
+</table> 
+
+
+
+
+
    <div class="buttonfloat">
    
  <input type="submit" class="processing" value="Save Clickthrough Preferences" /> 
@@ -671,8 +703,44 @@ sub download_logs {
 	   $header .= 'Content-type: text/csv' . "\n\n";
     print $header;
  
-    $rd->export_logs($type, \*STDOUT);
+    $rd->export_logs(
+		{
+			-type => $type, 
+			-fh   => \*STDOUT
+		}
+	);
 }
+
+sub download_clickthrough_logs { 
+	my $mid = xss_filter($q->param('mid')); 
+	my $header  = 'Content-disposition: attachement; filename=' . $list . '-clickthrough-' . $mid . '.csv' .  "\n"; 
+	   $header .= 'Content-type: text/csv' . "\n\n";
+    print $header;
+    $rd->export_logs(
+		{
+			-type => 'clickthrough', 
+			-mid  => $mid, 
+			-fh   => \*STDOUT
+		}
+	);
+
+}
+
+sub download_activity_logs { 
+	my $mid = xss_filter($q->param('mid')); 
+	my $header  = 'Content-disposition: attachement; filename=' . $list . '-activity-' . $mid . '.csv' .  "\n"; 
+	   $header .= 'Content-type: text/csv' . "\n\n";
+    print $header;
+    $rd->export_logs(
+		{
+			-type => 'activity', 
+			-mid  => $mid, 
+			-fh   => \*STDOUT
+		}
+	);
+
+}
+
 
 sub purge {
     unlink( $rd->clickthrough_log_location );
@@ -702,37 +770,48 @@ my $tmpl = q{
 	
 	<!-- tmpl_set name="title" value="Clickthrough Tracking - Message Report" -->
 	
-	<p>
-	 <strong>
-	  Clickthrough Message Summary for:
-	<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive&id=<!-- tmpl_var mid -->">
+	<h1>Tracking Info For: 
+	
+	<!-- <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive&id=<!-- tmpl_var mid -->"> --> 
 	<!-- tmpl_var subject --> 
-	</a> 
-	</strong> 
-	</p> 
+	<!-- </a> --> 
+	</h1> 
 	
-	<table cellpadding="5"> 
+	<fieldset> 
+	<legend> 
+		Clickthroughs
+	</legend> 
 	
+	<div style="max-height: 200px; overflow: auto; border: 1px solid black;">
+ 	<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0" width="100%">
+	
+		<tr style="background:#fff"> 
+		<td> 
+			<p><strong>URL</strong></p> 
+		</td> 
+		<td> 
+			<p><strong># Clickthroughs</strong></p>
+		</td> 
+		</tr> 
+		
 		<!-- tmpl_loop url_report --> 
-		<tr> 
+		<tr <!-- tmpl_if __odd__>style="background:#ccf"<!-- tmpl_else -->style="background:#fff"<!-- /tmpl_if -->> 
 		 <td> 
 		 <p> 
-		  <strong> 
+	
 
 <!-- tmpl_if comment --> 
 		    <a href="<!-- tmpl_var Plugin_URL -->?f=url&mid=<!-- tmpl_var mid -->&url=<!-- tmpl_var url escape="HTML" -->"> 
 <!-- /tmpl_if --> 
 
-
+				<a href="<!-- tmpl_var url -->" target="_blank"> 
 				<!-- tmpl_var url escape="HTML" -->
-
+				</a> 
 				<!-- tmpl_if comment --> 
+				</a> 
+				<!-- /tmpl_if --> 
 
-			</a> 
-
-<!-- /tmpl_if --> 
-
-		   </strong> 
+	
 		</p> 
 		</td> 
 		<td> 
@@ -745,6 +824,25 @@ my $tmpl = q{
     <!-- /tmpl_loop --> 
 
 	</table> 
+	</div> 
+
+	<div class="buttonfloat">
+	<form action="<!-- tmpl_var PluginURL -->" method="post"> 
+	<input type="hidden" name="f" value="download_clickthrough_logs" /> 
+	<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
+	 <input type="submit" class="processing" name="process" value="Download Raw Clickthrough Logs (.csv)" />
+	</form> 
+	</div>
+	<div class="floatclear"></div>
+
+
+</fieldset> 
+
+
+<fieldset> 
+<legend>Activity</legend> 
+
+
 
 	<!-- tmpl_if num_subscribers --> 
 		<p>
@@ -824,6 +922,18 @@ my $tmpl = q{
 			<!-- /tmpl_loop --> 
 			</table> 
 		<!-- /tmpl_if -->
+
+		<div class="buttonfloat">
+		<form action="<!-- tmpl_var PluginURL -->" method="post"> 
+		<input type="hidden" name="f" value="download_activity_logs" /> 
+		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
+		 <input type="submit" class="processing" name="process" value="Download Raw Activity Logs (.csv)" />
+		</form> 
+		</div>
+		<div class="floatclear"></div>
+		
+</fieldset> 
+
 	
 	
 };

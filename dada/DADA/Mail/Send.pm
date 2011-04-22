@@ -1205,12 +1205,12 @@ sub mass_send {
 			#
 			$mailout->log('Mass Mailing Starting.'); 
 							    
-            # $self->{mj_log}->close_log 
-            #    if $DADA::Config::LOG{mass_mailings};
-            
-            # Oh, this is totally going to muck up, with restarts. 
-            # 
-            #
+
+			# DEV: DO NOT COUNT FOR: 
+			# Restarts: 
+			# Tests
+			# Any mailing type, except, "list" 
+			# 
             $self->_log_sub_count(
                                    -msg_id          => $fields{'Message-ID'}, 
                                    -num_subscribers => $num_subscribers,
