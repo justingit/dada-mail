@@ -76,7 +76,7 @@ sub default_tmpl {
 
     my $tmpl = q{ 
 
-<!-- tmpl_set name="title" value="Clickthrough Tracking" -->
+<!-- tmpl_set name="title" value="Tracker" -->
 
 <!-- tmpl_if done --> 
 	<p class="positive"><!-- tmpl_var GOOD_JOB_MESSAGE --></p>
@@ -106,22 +106,13 @@ sub default_tmpl {
 				onComplete: 	 function() {
 
 					$('show_table_results_loading').update('<p class="alert">&nbsp;</p>');
-					Effect.BlindDown('show_table_results');
+					Effect.Highlight('show_table_results');
 				}	
 				});
 		}
 		
-		function next_page() { 
-			var new_page =  $F('page'); 
-			    new_page++; 
-			Form.Element.setValue('page', new_page) ; 
-			show_table();
-			subscriber_history_img();
-		}
-		function previous_page() { 
-			var new_page =  $F('page'); 
-			    new_page--; 
-			Form.Element.setValue('page', new_page) ; 
+		function turn_page(page_to_turn_to) { 
+			Form.Element.setValue('page', page_to_turn_to) ; 
 			show_table();
 			subscriber_history_img();
 		}
@@ -141,7 +132,7 @@ sub default_tmpl {
 				},
 				onComplete: 	 function() {
 					$('subscriber_history_img_loading').update('<p class="alert">&nbsp;</p>');
-					Effect.BlindDown('subscriber_history_img');
+					Effect.Highlight('subscriber_history_img');
 				}	
 				});
 		}
@@ -153,7 +144,7 @@ sub default_tmpl {
 
 <fieldset> 
 	<legend>
-	 Clickthrough Message Summaries
+	 Tracker Summaries
 	</legend>
 	
 	<div id="show_table_results"> 			
@@ -163,17 +154,16 @@ sub default_tmpl {
 		<p class="alert">Loading...</p>
 	</div> 
 
-	
+	<div id="subscriber_history_img"> 
+	</div> 
+	<div id="subscriber_history_img_loading">
+	</div> 
+
+
 </fieldset> 
 
 
-<fieldset>
-<legend>Subscriber History</legend> 
-<div id="subscriber_history_img"> 
-</div> 
-<div id="subscriber_history_img_loading">
-</div> 
-</fieldset> 
+
 
 
 <fieldset> 
@@ -285,10 +275,7 @@ Preferences
   </tr>
   
   
- </table> 
-
-
-<table> 
+ 
  <tr> 
   <td> 
    <p>
@@ -297,19 +284,32 @@ Preferences
   </td> 
   <td> 
    <p>
-     View: 
-
-<select name="tracker_record_view_count">
-<option value="5">5</option> 
-<option value="10">10</option> 
-<option value="15">15</option> 
-<option value="20">20</option> 
-<option value="25">25</option> 
-</select> 
-Records at once. 
+     View: <!-- tmpl_var tracker_record_view_count_widget --> Records at once. 
+<br /><em>(More entries = a slower interface)</em>
    </p>
   </td>
   </tr>
+
+
+   <tr> 
+  <td> 
+   <p>
+    <input type="checkbox" name="tracker_clean_up_reports" id="tracker_clean_up_reports"  value="1" <!-- tmpl_if list_settings.tracker_clean_up_reports -->checked="checked"<!--/tmpl_if --> 
+   </p>
+  </td> 
+  <td> 
+   <p>
+    <label for="tracker_clean_up_reports"> 
+    Clean Up Tracker Reports
+    </label> 
+   </p>
+  </td>
+  </tr>
+  
+  
+
+
+
 </table> 
 
 
@@ -328,7 +328,7 @@ Records at once.
 
 
 <fieldset> 
-<legend>Clickthrough Tracking Help</legend> 
+<legend>Tracker Help</legend> 
 
 <p>
  Clickthrough logging works for URLs in mailing list
@@ -363,6 +363,13 @@ Records at once.
 }
 
 sub default {
+	
+	my $tracker_record_view_count_widget
+		= $q->popup_menu(
+			-name    => 'tracker_record_view_count',
+			-values  => [qw(5 10 15 20 25 50)],
+			-default => $ls->param('tracker_record_view_count'), 
+		);			
 	 	 
     my $tmpl = default_tmpl();
     require DADA::Template::Widgets;
@@ -380,6 +387,7 @@ sub default {
                # report_by_message_index   => $report_by_message_index,
 			#	num_subscribers_chart_url => $enc_chart, 
 				Plugin_URL                => $URL, 
+				tracker_record_view_count_widget => $tracker_record_view_count_widget, 
             },
             -list_settings_vars_param => {
                 -list   => $list,
@@ -408,7 +416,9 @@ sub subscriber_history_img {
 	my $page = $q->param('page') || 1; 
 	my ($total, $msg_ids) = $rd->get_all_mids(
 		{ 
-			-page => $page, 
+			-page    => $page, 
+			-entries => $ls->param('tracker_record_view_count'),  
+			
 		}
 	);
 	    my     $report_by_message_index = $rd->report_by_message_index({-all_mids => $msg_ids});
@@ -424,46 +434,45 @@ sub subscriber_history_img {
 		my $last_date       = undef; 
 
 		for(reverse @$report_by_message_index){ 
-			if($rd->verified_mid($_->{mid})){ 
-				if(exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/){ 
-					push(@$num_subscribers, $_->{num_subscribers});
-					if(defined($_->{open})){ 
-						push(@$opens,    $_->{open});	
-					}
-					else { 
-						push(@$opens,  0);
-					}					
-					
-					if(defined($_->{count})){ 
-						push(@$clickthroughs,    $_->{count});	
-					}
-					else { 
-						push(@$clickthroughs,  0);
-					}					
-					
-					if(defined($_->{soft_bounce})){ 
-						push(@$soft_bounces,    $_->{soft_bounce});	
-					}
-					else { 
-						push(@$soft_bounces,  0);
-					}
-					if(defined($_->{hard_bounce})){ 
-						push(@$hard_bounces,    $_->{hard_bounce});	
-					}
-					else { 
-						push(@$hard_bounces,  0);
-					}
-					if(!defined($first_date	)){ 
-						$first_date = DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
-					}
-					$last_date = DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
-
+			if($rd->verified_mid($_->{mid})){
+				
+				if($ls->param('tracker_clean_up_reports') == 1){ 
+					next unless exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/
 				}
+			
+				push(@$num_subscribers, $_->{num_subscribers});
+				if(defined($_->{open})){ 
+					push(@$opens,    $_->{open});	
+				}
+				else { 
+					push(@$opens,  0);
+				}					
+				
+				if(defined($_->{count})){ 
+					push(@$clickthroughs,    $_->{count});	
+				}
+				else { 
+					push(@$clickthroughs,  0);
+				}					
+				
+				if(defined($_->{soft_bounce})){ 
+					push(@$soft_bounces,    $_->{soft_bounce});	
+				}
+				else { 
+					push(@$soft_bounces,  0);
+				}
+				if(defined($_->{hard_bounce})){ 
+					push(@$hard_bounces,    $_->{hard_bounce});	
+				}
+				else { 
+					push(@$hard_bounces,  0);
+				}
+				if(!defined($first_date	)){ 
+					$first_date = DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
+				}
+				$last_date = DADA::App::Guts::date_this( -Packed_Date => $_->{mid});				
 			}
 		} 
-		
-#		use Data::Dumper; 
-#		die Data::Dumper::Dumper([$num_subscribers, $soft_bounces, $hard_bounces]); 
 
 		require URI::GoogleChart; 
 		my $chart = URI::GoogleChart->new("lines", 720, 400,
@@ -523,7 +532,53 @@ sub clickthrough_table_tmpl {
 		<!-- /tmpl_if -->
 		--> 
 
-<div> 
+		<table width="100%">
+		 <tr> 
+		<td width="33%" align="left"> 
+	
+		
+		<strong><a href="javascript:turn_page(<!-- tmpl_var first_page -->);">First</a></strong>
+
+		</td> 
+		
+		<td width="33%" align="center"> 
+		<p>
+		
+		<!-- tmpl_if previous_page --> 
+			<strong><a href="javascript:turn_page(<!-- tmpl_var previous_page -->);">Previous</a></strong>
+		<!-- tmpl_else --> 
+		<!-- /tmpl_if -->
+		&nbsp;&nbsp;&nbsp;&nbsp;
+			<!-- tmpl_loop pages_in_set --> 
+				<!-- tmpl_if on_current_page --> 
+					<strong> 
+					 <!-- tmpl_var page --> 
+					</strong> 
+				<!-- tmpl_else --> 
+					<a href="javascript:turn_page(<!-- tmpl_var page -->);">
+					 <!-- tmpl_var page --> 
+					</a>
+				<!-- /tmpl_if --> 
+
+			<!-- /tmpl_loop --> 
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<!-- tmpl_if next_page -->
+			<strong><a href="javascript:turn_page(<!-- tmpl_var next_page -->);">Next</a></strong>
+			<!-- tmpl_else --> 
+			<!-- /tmpl_if --> 
+			</p>
+		</td> 
+		
+		<td width="33%" align="right"> 
+	
+		<strong><a href="javascript:turn_page(<!-- tmpl_var last_page -->);">Last</a></strong>
+
+		</td>
+		
+		</tr> 
+		</table>
+		
+		<div> 
 			<div style="max-height: 300px; overflow: auto; border:1px solid black">
 
 			  <table cellpadding="5" cellspacing="0" border="0" width="100%"> 
@@ -629,16 +684,7 @@ sub clickthrough_table_tmpl {
 		
 		</div> 
 		
-		<table width="100%">
-		 <tr> 
-		  <td align="left"  width="50%"> 
-			<p><a href="#" onclick="previous_page();">&lt;- Previous</a></p>
-		  </td> 
-		  <td align="right" width="50%"> 
-			<p><a href="#" onclick="next_page();">Next -&gt;</a></p>
-		</td> 
-		</tr> 
-		</table>
+
 		
 		
 	};
@@ -653,7 +699,8 @@ sub clickthrough_table {
 
 	my ($total, $msg_ids) = $rd->get_all_mids(
 		{ 
-			-page => $page, 
+			-page    => $page, 
+			-entries => $ls->param('tracker_record_view_count'),  
 		}
 	);
 
@@ -661,12 +708,24 @@ sub clickthrough_table {
   require Data::Pageset;
   my $page_info = Data::Pageset->new({
     'total_entries'       => $total, 
-    'entries_per_page'    => 25, # needs to be tweakable...  
+    'entries_per_page'    => $ls->param('tracker_record_view_count'), # needs to be tweakable...  
 #    # Optional, will use defaults otherwise.
     'current_page'        => $page,
 #    'pages_per_set'       => $pages_per_set,
-#    'mode'                => 'fixed', # default, or 'slide'
+	'mode'                => 'slide', # default fixed
+
   });
+
+  my $pages_in_set = [];
+  foreach my $page_num (@{$page_info->pages_in_set()}) {
+	if($page_num == $page_info->current_page()) {
+    	push(@$pages_in_set, {page => $page_num, on_current_page => 1});
+ 	}
+	else { 
+    	push(@$pages_in_set, {page => $page_num, on_current_page => undef});
+	}
+ }
+
 
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::screen(
@@ -675,6 +734,12 @@ sub clickthrough_table {
             -vars => {
                 report_by_message_index   => $rd->report_by_message_index({-all_mids => $msg_ids}),
 				Plugin_URL                => $URL, 
+				first_page                => $page_info->first_page(), 
+				last_page                 => $page_info->last_page(), 
+				next_page                 => $page_info->next_page(), 
+				previous_page             => $page_info->previous_page(), 
+				pages_in_set              => $pages_in_set,  
+				
             },
             -list_settings_vars_param => {
                 -list   => $list,
@@ -757,6 +822,8 @@ sub edit_prefs {
                 enable_open_msg_logging         => 0,
                 enable_subscriber_count_logging => 0,
                 enable_bounce_logging           => 0,
+				tracker_record_view_count       => 0,
+				tracker_clean_up_reports        => 0, 
             }
         }
     );
@@ -768,7 +835,7 @@ sub message_report_tmpl {
     
 my $tmpl = q{ 
 	
-	<!-- tmpl_set name="title" value="Clickthrough Tracking - Message Report" -->
+	<!-- tmpl_set name="title" value="Tracker - Message Report" -->
 	
 	<h1>Tracking Info For: 
 	
@@ -978,7 +1045,7 @@ sub message_report {
 sub url_report_tmpl { 
 	
 	my $tmpl = q{ 
-		<!-- tmpl_set name="title" value="Clickthrough Tracking - URL Report" -->
+		<!-- tmpl_set name="title" value="Tracker - URL Report" -->
 		
 		<p>
 		 <strong> 

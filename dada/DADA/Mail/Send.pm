@@ -2790,6 +2790,12 @@ sub _log_sub_count {
 	
 	return 
 	 	if $self->mass_test; 
+	
+	return 
+		if $self->restart_with; # Meaning, we're restarting the message 
+								# We probably shouldn't log #subs twice
+	return 
+		if $self->list_type ne 'list'; 
 	 	
 	return 
 		if $self->{ls}->param('enable_subscriber_count_logging') != 1; 

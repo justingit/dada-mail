@@ -272,21 +272,22 @@ sub bounce_log {
 	}
 }
 
+sub get_all_mids { 
 
-
-
-sub report_by_message_index {
-    my $self          = shift;
-    my $sorted_report = [];
-    my $report        = {};
-    my $l;
-
-# DEV: I would sor to of like to make some validation that the info
-# we're using to count is actually correct - like if it's a message_id - it's all numerical, etc
-# I'd also like to make some sort of pagination scheme, so that we only have a few message_id's
-# we're interested in. That shouldn't be too difficult.
-
-    if ( -e $self->clickthrough_log_location ) {
+	my $self = shift; 
+	my ($args) = @_;
+	
+	if(!exists($args->{-page})){ 
+		$args->{-page} = 1; 
+	}
+	if(!exists($args->{-entries})){ 
+		$args->{-entries} = 10; 
+	}
+	
+	my $mids     = {};
+	my @all_mids = ();
+	my $l        = undef;
+	if ( -e $self->clickthrough_log_location ) {
         open( LOG,
             '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',
             $self->clickthrough_log_location
@@ -307,7 +308,90 @@ sub report_by_message_index {
 			
 			next if ! $mid;  
 			next unless($self->verified_mid($mid)); 
+			if($self->{-li}->{tracker_clean_up_reports} == 1){ 
+				next if $url ne 'num_subscribers';
+			}
+			$mids->{$mid} = 1;  
+		}
+	}
+#	my @all_mids = sort { $a <=> $b } keys %$mids;
+    # @s = sort {$b cmp $a} @a;
+
+
+	my @all_mids = reverse sort keys %$mids;
+	
+	
+	my $begin = ($args->{-entries} - 1) * ($args->{-page} - 1);
+	my $end   = $begin + ($args->{-entries} - 1);
+	my $total = scalar @all_mids;
+	#@all_mids = reverse @all_mids; 
+	@all_mids = @all_mids[$begin..$end];
+	#require Data::Dumper; 
+	#die Data::Dumper::Dumper([@all_mids]); 
+	
+	
+#	require Data::Dumper; 
+#	die Data::Dumper::Dumper([@all_mids]);
+	
+	
+	return ($total, [@all_mids]);
+}
+
+
+sub report_by_message_index {
+
+	my $self          = shift;
+	my ($args)        = @_; 
+
+	my $sorted_report = [];
+	my $report        = {};
+	my $l;
+
+	my $total   = undef; 
+	my $msg_ids = []; 
+
+	if(exists($args->{-all_mids})){ 
+		$msg_ids = $args->{-all_mids};
+	}
+	else { 
+		# Not using total, right now... 
+		($total, $msg_ids) = $self->get_all_mids();
+	}
+
+	# These are the msg_ids we want reports for: 
+	my %return_msg_ids_for = (); 
+	foreach(@$msg_ids){ 
+		$return_msg_ids_for{$_} = 1; 
+	}
+	# / lookup table
+
+    if ( -e $self->clickthrough_log_location ) {
+        open( LOG,
+            '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',
+            $self->clickthrough_log_location
+          )
+          or croak "Couldn't open file: '"
+          . $self->clickthrough_log_location
+          . '\'because: '
+          . $!;
+        while ( defined( $l = <LOG> ) ) {
+            chomp($l);
+    		
+			my ( $t, $mid, $url, $extra ) = split( "\t", $l, 4 );
+
+            $t     = strip($t);
+            $mid   = strip($mid);
+            $url   = strip($url);
+            $extra = strip($extra);
 			
+			next 
+				if ! $mid;  
+			next 
+				unless($self->verified_mid($mid)); 
+			
+			# Looking for it? 
+			next 
+				unless exists $return_msg_ids_for{$mid};
 
 			
             if (   $url ne 'open'
@@ -451,11 +535,22 @@ sub report_by_message {
 sub export_logs { 
 
 	my $self = shift; 
-	my $type = shift; 
-	my $fh   = shift || \*STDOUT; 
+	my ($args) = @_; 
+	
+	if(!exists($args->{-fh})){ 
+		$args->{-fh} = \*STDOUT;
+	}
+	my $fh = $args->{-fh}; 
+	
+	if(!exists($args->{-type})){ 
+		$args->{-type} = 'clickthrough';
+	}
+	if(!exists($args->{-mid})){ 
+		$args->{-mid} = undef; #really. 
+	}
+	
 	
 	my $l; 
-	
 	unless(-e $self->clickthrough_log_location){ 
 		print '';
 		return; 
@@ -468,7 +563,13 @@ sub export_logs {
 	while(defined($l = <LOG>)){ 
 		chomp($l);
 		my @fields = split(/\t/, $l);
-		my $url = $fields[2]; 
+		my ( $t, $mid, $url, $extra ) = split( "\t", $l, 4 );
+
+		$t     = strip($t);
+		$mid   = strip($mid);
+		$url   = strip($url);
+		$extra = strip($extra);
+
 		
 		my $log_line_type = 'activity'; 
 		
@@ -483,11 +584,17 @@ sub export_logs {
 		
 		}
 		
-		if($type eq 'clickthrough' && $log_line_type eq 'clickthrough'){ 
+		if(defined($args->{-mid})){ 
+			unless($args->{-mid} == $mid){ 
+				next;
+			}
+		}
+		
+		if($args->{-type} eq 'clickthrough' && $log_line_type eq 'clickthrough'){ 
 			my $status = $csv->print ($fh, [@fields]);
 			print $fh "\n";
 		}
-		elsif($type eq 'activity' && $log_line_type eq 'activity' ) { 
+		elsif($args->{-type} eq 'activity' && $log_line_type eq 'activity' ) { 
 			my $status = $csv->print ($fh, [@fields]);
 			print $fh "\n";
 		}

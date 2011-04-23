@@ -427,48 +427,57 @@ sub get_all_mids {
 
 	my $self = shift; 
 	my ($args) = @_;
+	
 	if(!exists($args->{-page})){ 
 		$args->{-page} = 1; 
 	}
 	if(!exists($args->{-entries})){ 
-		$args->{-entries} = 25; 
+		$args->{-entries} = 10; 
 	}
 	
 	# postgres: $query .= ' SELECT DISTINCT ON(' . $subscriber_table . '.email) ';
 	# This query could probably be made into one, if I could simple use a join, or something,
 
 
-	my $msg_id_query1 =
-      'SELECT msg_id FROM dada_mass_mailing_event_log WHERE list = ? AND event = "num_subscribers" GROUP BY msg_id ORDER BY msg_id DESC;';
+	my $msg_id_query1 = ''; 
+	if($self->{-li}->{tracker_clean_up_reports} == 1){ 
+      $msg_id_query1 = 'SELECT msg_id FROM dada_mass_mailing_event_log WHERE list = ? AND event = "num_subscribers" GROUP BY msg_id ORDER BY msg_id DESC;';
+	}
+	else { 
+		$msg_id_query1 = 'SELECT msg_id FROM dada_mass_mailing_event_log WHERE list = ? GROUP BY msg_id ORDER BY msg_id DESC;';
+	}
  #   my $msg_id_query2 =
  #     'SELECT msg_id FROM dada_clickthrough_url_log WHERE list = ? GROUP BY msg_id  ORDER BY msg_id DESC;';
-
-	#my $start_time = time; 
 
     my $msg_id1 = $self->{dbh}->selectcol_arrayref($msg_id_query1, {}, ($self->{name})); #($statement, \%attr, @bind_values);
  #   my $msg_id2 = $self->{dbh}->selectcol_arrayref($msg_id_query2, {}, ($self->{name}));
  #   push( @$msg_id1, @$msg_id2 );
  #   $msg_id1 = $self->unique_and_dupe($msg_id1);
 
-	my $total = scalar @$msg_id1; 
-	
-	if(scalar @$msg_id1 < $args->{-entries}){ 
-		$args->{-entries} = scalar @$msg_id1;
-	} 
-#	entries x page#
-#	entries x page + entires
-	
-#	@$msg_id1 =  @$msg_id1[(($args->{-page}-1) - ($args->{-entries} - 1)) .. (($args->{-page}-1) + ($args->{-entries} - 1))];
 
+	my $total = scalar @$msg_id1; 	
+#	if($total < $args->{-entries}){ 
+#		$args->{-entries} = scalar @$msg_id1;
+#	} 
+
+	# DEV: There's also this idea: 
+	# SELECT * FROM table ORDER BY rec_date LIMIT ?, ?} #
+	#     q{SELECT * FROM table ORDER BY rec_date LIMIT ?, ?}
+	
+	
 	my $begin = ($args->{-entries} - 1) * ($args->{-page} - 1);
 	my $end   = $begin + ($args->{-entries} - 1);
-	
-	@$msg_id1 =  @$msg_id1[$begin..$end];
-	
-	#@$msg_id1 = @$msg_id1[0 .. 2]; #last 24..
+	@$msg_id1 = @$msg_id1[$begin..$end];
 	return ($total, $msg_id1);
+
+
 }
+
+
+
+
 sub report_by_message_index {
+
     my $self          = shift;
 	my ($args)        = @_; 
 	
