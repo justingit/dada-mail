@@ -1,43 +1,14 @@
 package Class::Accessor::Fast;
 use base 'Class::Accessor';
 use strict;
-$Class::Accessor::Fast::VERSION = '0.31';
-
-=head1 NAME
-
-Class::Accessor::Fast - Faster, but less expandable, accessors
-
-=head1 SYNOPSIS
-
-  package Foo;
-  use base qw(Class::Accessor::Fast);
-
-  # The rest is the same as Class::Accessor but without set() and get().
-
-=head1 DESCRIPTION
-
-This is a faster but less expandable version of Class::Accessor.
-Class::Accessor's generated accessors require two method calls to accompish
-their task (one for the accessor, another for get() or set()).
-Class::Accessor::Fast eliminates calling set()/get() and does the access itself,
-resulting in a somewhat faster accessor.
-
-The downside is that you can't easily alter the behavior of your
-accessors, nor can your subclasses.  Of course, should you need this
-later, you can always swap out Class::Accessor::Fast for
-Class::Accessor.
-
-Read the documentation for Class::Accessor for more info.
-
-=cut
+$Class::Accessor::Fast::VERSION = '0.34';
 
 sub make_accessor {
     my($class, $field) = @_;
 
     return sub {
-        return $_[0]->{$field} if @_ == 1;
-        return $_[0]->{$field} = $_[1] if @_ == 2;
-        return (shift)->{$field} = \@_;
+        return $_[0]->{$field} if scalar(@_) == 1;
+        return $_[0]->{$field}  = scalar(@_) == 2 ? $_[1] : [@_[1..$#_]];
     };
 }
 
@@ -69,6 +40,36 @@ sub make_wo_accessor {
 }
 
 
+1;
+
+__END__
+
+=head1 NAME
+
+Class::Accessor::Fast - Faster, but less expandable, accessors
+
+=head1 SYNOPSIS
+
+  package Foo;
+  use base qw(Class::Accessor::Fast);
+
+  # The rest is the same as Class::Accessor but without set() and get().
+
+=head1 DESCRIPTION
+
+This is a faster but less expandable version of Class::Accessor.
+Class::Accessor's generated accessors require two method calls to accompish
+their task (one for the accessor, another for get() or set()).
+Class::Accessor::Fast eliminates calling set()/get() and does the access itself,
+resulting in a somewhat faster accessor.
+
+The downside is that you can't easily alter the behavior of your
+accessors, nor can your subclasses.  Of course, should you need this
+later, you can always swap out Class::Accessor::Fast for
+Class::Accessor.
+
+Read the documentation for Class::Accessor for more info.
+
 =head1 EFFICIENCY
 
 L<Class::Accessor/EFFICIENCY> for an efficiency comparison.
@@ -90,5 +91,3 @@ Michael G Schwern <schwern@pobox.com>
 L<Class::Accessor>
 
 =cut
-
-1;
