@@ -538,7 +538,8 @@ sub report_by_message_index {
         $report->{$_}->{mid} = $_;    # this again.
         $report->{$_}->{date} =
           DADA::App::Guts::date_this( -Packed_Date => $_, );
-
+		$report->{$_}->{S_PROGRAM_URL} = $DADA::Config::S_PROGRAM_URL; 
+		$report->{$_}->{list} = $self->{name}; 
         if ( $mja->check_if_entry_exists($_) ) {
             $report->{$_}->{message_subject} = $mja->get_archive_subject($_)
               || $_;
@@ -640,6 +641,15 @@ sub export_logs {
     require Text::CSV;
     my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
+	if($args->{-type} eq 'clickthrough'){ 
+		my $title_status = $csv->print ($fh, [qw(timestamp message_id url)]);
+		print $fh "\n";
+	}
+	elsif($args->{-type} eq 'activity'){ 
+		my $title_status = $csv->print ($fh, [qw(timestamp message_id activity details)]);
+		print $fh "\n";
+	}
+	
     my $query = '';
     if ( $args->{-type} eq 'clickthrough' ) {
         $query = 'SELECT * FROM dada_clickthrough_url_log WHERE list = ?';
@@ -665,5 +675,19 @@ sub export_logs {
         print $fh "\n";
     }
 }
+
+
+
+
+sub purge_log { 
+	my $self = shift; 
+	my $query1 = 'TRUNCATE dada_clickthrough_url_log'; 
+	my $query2 = 'TRUNCATE dada_mass_mailing_event_log'; 
+	$self->{dbh}->do($query1); 
+	$self->{dbh}->do($query2); 
+}
+
+
+
 
 1;

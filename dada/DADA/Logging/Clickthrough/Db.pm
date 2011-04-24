@@ -439,7 +439,8 @@ sub report_by_message_index {
         for ( sort { $b <=> $a } keys %$report ) {
             $report->{$_}->{mid} = $_;
             $report->{$_}->{date} = DADA::App::Guts::date_this( -Packed_Date => $_, );
-            
+            $report->{$_}->{S_PROGRAM_URL} = $DADA::Config::S_PROGRAM_URL; 
+            $report->{$_}->{list} = $self->{name}; 
 
               if ( $mja->check_if_entry_exists($_) ) {
                 $report->{$_}->{message_subject} = $mja->get_archive_subject($_)
@@ -558,6 +559,16 @@ sub export_logs {
 	
 	require   Text::CSV; 
 	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+	
+	if($args->{-type} eq 'clickthrough'){ 
+		my $title_status = $csv->print ($fh, [qw(timestamp message_id url)]);
+		print $fh "\n";
+	}
+	elsif($args->{-type} eq 'activity'){ 
+		my $title_status = $csv->print ($fh, [qw(timestamp message_id activity details)]);
+		print $fh "\n";
+	}	
+	
 	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
 		or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 	while(defined($l = <LOG>)){ 
@@ -591,10 +602,12 @@ sub export_logs {
 		}
 		
 		if($args->{-type} eq 'clickthrough' && $log_line_type eq 'clickthrough'){ 
+			
 			my $status = $csv->print ($fh, [@fields]);
 			print $fh "\n";
 		}
 		elsif($args->{-type} eq 'activity' && $log_line_type eq 'activity' ) { 
+			
 			my $status = $csv->print ($fh, [@fields]);
 			print $fh "\n";
 		}
@@ -624,6 +637,13 @@ sub report_by_url {
 	}
 	close(LOG); 
 	return $report; 
+}
+
+
+
+sub purge_log { 
+	my $self = shift; 
+	unlink($self->clickthrough_log_location); 
 }
 
 
