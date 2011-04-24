@@ -56,26 +56,26 @@ sub init_vars {
     }
 }
 
-my $list       = undef; 
+my $list       = undef;
 my $ls         = undef;
-my $li         = {}; 
-my $rd         = undef; 
-my $mja        = undef; 
-my $root_login = 0; 
+my $rd         = undef;
+my $mja        = undef;
+my $root_login = 0;
+
+
+
 
 sub run {
 	
-	my ( $admin_list, $root_login ) = check_list_security(
+	my $admin_list; 
+	( $admin_list, $root_login ) = check_list_security(
 	    -cgi_obj  => $q,
 	    -Function => 'clickthrough_tracking'
 	);
-	my $list = $admin_list;
-	my $ls   = DADA::MailingList::Settings->new( { -list => $list } );
-	my $li   = $ls->get;
-	my $rd   = DADA::Logging::Clickthrough->new( { -list => $list } );
-	my $mja  = DADA::MailingList::Archives->new( { -list => $list } );
-	
-	
+	$list = $admin_list;
+	$ls   = DADA::MailingList::Settings->new( { -list => $list } );
+	$rd   = DADA::Logging::Clickthrough->new( { -list => $list } );
+	$mja  = DADA::MailingList::Archives->new( { -list => $list } );
 	
 	my $f = $q->param('f') || undef;
 	my %Mode = (
@@ -400,7 +400,7 @@ sub default {
             -with           => 'admin',
             -wrapper_params => {
                 -Root_Login => $root_login,
-                -List       => $li->{list},
+                -List       => $ls->param('list'),
             },
             -vars => {
                 done                             => $q->param('done') || 0,
@@ -1049,7 +1049,7 @@ sub message_report {
             -with           => 'admin',
             -wrapper_params => {
                 -Root_Login => $root_login,
-                -List       => $li->{list},
+                -List       => $ls->param('list'),
             },
             -vars => {
                 mid        => $q->param('mid')                         || '',
@@ -1122,7 +1122,7 @@ sub url_report {
             -with           => 'admin',
             -wrapper_params => {
                 -Root_Login => $root_login,
-                -List       => $li->{list},
+                -List       => $ls->param('list'),
             },
 			-vars => { 
 				mid        => $q->param('mid'), 
