@@ -89,6 +89,7 @@ sub run {
 		'subscriber_history_img'     => \&subscriber_history_img, 
 		'download_clickthrough_logs' => \&download_clickthrough_logs, 
 		'download_activity_logs'     => \&download_activity_logs, 
+		'domain_breakdown_img'       => \&domain_breakdown_img, 
 	);
 	if ($f) {
 	    if ( exists( $Mode{$f} ) ) {
@@ -121,7 +122,9 @@ sub default_tmpl {
 	    //<![CDATA[
 		Event.observe(window, 'load', function() {
 		  show_table();	
-		  subscriber_history_img(); 			
+		  subscriber_history_img(); 
+		  domain_breakdown_img(); 
+					
 		});
 		
 		 function show_table(){ 
@@ -167,6 +170,24 @@ sub default_tmpl {
 				onComplete: 	 function() {
 					$('subscriber_history_img_loading').update('<p class="alert">&nbsp;</p>');
 					Effect.Highlight('subscriber_history_img');
+				}	
+				});
+		}
+		function domain_breakdown_img(){ 
+
+			new Ajax.Updater(
+				'domain_breakdown_img', '<!-- tmpl_var Plugin_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						f:       'domain_breakdown_img',
+					},
+				onCreate: 	 function() {
+					$('domain_breakdown_img_loading').update('<p class="alert">Loading...</p>');
+				},
+				onComplete: 	 function() {
+					$('domain_breakdown_img_loading').update('<p class="alert">&nbsp;</p>');
+					Effect.Highlight('domain_breakdown_img');
 				}	
 				});
 		}
@@ -376,6 +397,18 @@ sub default_tmpl {
 <p>Replace, <code>http://example.com</code> with the URL you want to track clickthroughs. 
 </fieldset> 
 
+
+<fieldset>
+<legend> 
+ Current Subscribers by Email Address Domain
+</legend>  
+<div id="domain_breakdown_img"> 
+</div> 
+<div id="domain_breakdown_img_loading">
+</div>
+</fieldset> 
+
+
 };
 
 	return $tmpl;
@@ -388,7 +421,7 @@ sub default {
 	
 	my $tracker_record_view_count_widget = $q->popup_menu(
 			-name    => 'tracker_record_view_count',
-			-values  => [qw(5 10 15 20 25 50)],
+			-values  => [qw(5 10 15 20 25 50 100)],
 			-default => $ls->param('tracker_record_view_count'), 
 		);			
 	 	 
@@ -419,6 +452,72 @@ sub default {
 
 
 
+
+sub domain_breakdown_img_tmpl { 
+	
+return q{ 
+	<p> 
+	 <img src="<!-- tmpl_var domain_breakdown_chart_url -->" width="640" height="300" style="border:1px solid black" />
+	</p>
+};	
+	
+}	
+sub domain_breakdown_img { 
+
+	require DADA::MailingList::Subscribers; 
+	my $lh       = DADA::MailingList::Subscribers->new({-list => $list});
+	my $stats    = $lh->domain_stats(15); 
+	my $num_subs = $lh->num_subscribers();
+	
+	my @values = (); 
+	my @labels = (); 
+	foreach(keys %$stats){ 
+		push(@values, $stats->{$_}), 
+		push(@labels, $_ . ' ' . percent($stats->{$_}, $num_subs) .  '% (' . $stats->{$_} . ')' ); 	
+	}
+	
+	require URI::GoogleChart; 
+	my $chart = URI::GoogleChart->new("pie", 640, 300,
+	    data => [@values],
+	    rotate => -90,
+	    label => [@labels],
+	    encoding => "s",
+	    background => "white",
+		margin => [150, 150, 10, 10],
+		title => 'Total Subscribers: ' . $num_subs,
+	);
+	
+	use HTML::Entities;
+	my $enc_chart = encode_entities($chart);
+
+  	my $tmpl = domain_breakdown_img_tmpl();
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::screen(
+        {
+            -data           => \$tmpl,
+            -vars => {
+				domain_breakdown_chart_url => $enc_chart,
+            },
+#            -list_settings_vars_param => {
+#                -list   => $list,
+#                -dot_it => 1,
+#            },
+        }
+    );
+	print $q->header(); 
+    e_print($scrn);
+
+	
+}
+
+sub percent { 
+	my ($num, $total) = @_; 
+	
+	my $percent = ($total ? $num/$total : undef);
+	   $percent = $percent * 100;
+	   $percent = sprintf("%.2f", $percent);
+	return $percent; 
+}
 sub subscriber_history_img_tmpl { 
 	return q{ 
 		<!-- tmpl_if has_entries --> 
@@ -519,7 +618,6 @@ sub subscriber_history_img {
 	use HTML::Entities;
 	my $enc_chart = encode_entities($chart);
 
-	require DADA::Template::Widgets;
   	my $tmpl = subscriber_history_img_tmpl();
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::screen(
