@@ -455,7 +455,10 @@ sub get_all_mids {
  #   $msg_id1 = $self->unique_and_dupe($msg_id1);
 
 
-	my $total = scalar @$msg_id1; 	
+	my $total = scalar @$msg_id1; 
+	if($total == 0){ 
+		return ($total, []);
+	}	
 #	if($total < $args->{-entries}){ 
 #		$args->{-entries} = scalar @$msg_id1;
 #	} 
@@ -642,11 +645,11 @@ sub export_logs {
     my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
 	if($args->{-type} eq 'clickthrough'){ 
-		my $title_status = $csv->print ($fh, [qw(timestamp message_id url)]);
+		my $title_status = $csv->print ($fh, [qw(timestamp list message_id url)]);
 		print $fh "\n";
 	}
 	elsif($args->{-type} eq 'activity'){ 
-		my $title_status = $csv->print ($fh, [qw(timestamp message_id activity details)]);
+		my $title_status = $csv->print ($fh, [qw(timestamp list message_id activity details)]);
 		print $fh "\n";
 	}
 	

@@ -324,6 +324,11 @@ sub get_all_mids {
 	my $begin = ($args->{-entries} - 1) * ($args->{-page} - 1);
 	my $end   = $begin + ($args->{-entries} - 1);
 	my $total = scalar @all_mids;
+	
+	if($total == 0){ 
+		return ($total, []);
+	}
+	
 	#@all_mids = reverse @all_mids; 
 	@all_mids = @all_mids[$begin..$end];
 	#require Data::Dumper; 

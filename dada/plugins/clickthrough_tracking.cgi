@@ -227,18 +227,20 @@ sub default_tmpl {
 	<legend>
 	 Tracker Summaries
 	</legend>
-	
-	<div id="show_table_results">
-	</div>
 
 	<div id="show_table_results_loading">
 		<p class="alert">Loading...</p>
-	</div> 
-
+	</div>	
+	
+	<div id="show_table_results">
+	</div>
+	
+	
+	<div id="subscriber_history_img_loading">
+	</div>
 	<div id="subscriber_history_img"> 
 	</div> 
-	<div id="subscriber_history_img_loading">
-	</div> 
+
 </fieldset> 
 
 <fieldset> 
@@ -402,10 +404,11 @@ sub default_tmpl {
 <legend> 
  Current Subscribers by Email Address Domain
 </legend>  
-<div id="domain_breakdown_img"> 
-</div> 
 <div id="domain_breakdown_img_loading">
 </div>
+<div id="domain_breakdown_img"> 
+</div> 
+
 </fieldset> 
 
 
@@ -542,6 +545,7 @@ sub subscriber_history_img {
 			
 		}
 	);
+	
  	my $report_by_message_index = $rd->report_by_message_index({-all_mids => $msg_ids}) || [];
 	
 	# Needs potentially less data points 

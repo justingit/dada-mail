@@ -8975,7 +8975,11 @@ sub m_o_c {
     require DADA::Logging::Clickthrough;
     my $r = DADA::Logging::Clickthrough->new({-list => $q->param('list')});
 	   if(defined($q->param('mid'))){
-       		$r->o_log($q->param('mid'));
+       		$r->o_log(
+				{ 
+					-mid => $q->param('mid'),
+				}
+			);
 		}
     require MIME::Base64;
     print $q->header('image/png');

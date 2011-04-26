@@ -2816,7 +2816,12 @@ sub _log_sub_count {
 						-li   => $self->{ls}->params, 
 					}
 				); 
-		   $r->sc_log($msg_id, $num_subscribers); 
+		   $r->sc_log(
+			{ 
+				-mid => $msg_id, 
+				-num => $num_subscribers
+			}
+		); 
 
 	}
 }
