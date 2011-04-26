@@ -2813,7 +2813,7 @@ sub _log_sub_count {
 		my $r = DADA::Logging::Clickthrough->new(
 					{
 						-list => $self->{list},
-						-li   => $self->{ls}->params, 
+						-ls   => $self->{ls}, 
 					}
 				); 
 		   $r->sc_log(

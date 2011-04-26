@@ -246,7 +246,7 @@ sub r_log {
 		$atts = $args->{-atts};
 	}
 	
-    if ( $self->{is_redirect_on} == 1 ) {
+    if ( $self->{ls}->param('clickthrough_tracking') == 1 ) {
         my $place_holder_string = '';
         my $sql_snippet         = '';
 
@@ -270,7 +270,7 @@ sub r_log {
 			$place_holder_string .= ' ,?';
 		}
         my $query =
-            'INSERT INTO dada_clickthrough_url_log(list,' . $ts_snippet .'msg_id, url'
+            'INSERT INTO ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} .'(list,' . $ts_snippet .'msg_id, url'
           . $sql_snippet
           . ') VALUES (?, ?, ?'
           . $place_holder_string . ')';
@@ -306,9 +306,9 @@ sub o_log {
 		$place_holder_string .= ' ,?';
 	}
 	
-    if ( $self->{is_log_openings_on} == 1 ) {
+    if ( $self->{ls}->param('is_log_openings_on') == 1 ) {
         my $query =
-'INSERT INTO dada_mass_mailing_event_log(list, ' . $ts_snippet . 'msg_id, event) VALUES (?, ?, ?' . $place_holder_string .')';
+'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'msg_id, event) VALUES (?, ?, ?' . $place_holder_string .')';
         my $sth = $self->{dbh}->prepare($query);
 		if(defined($timestamp)){ 
 			$sth->execute($self->{name}, $timestamp, $args->{-mid}, 'open' );
@@ -341,10 +341,14 @@ sub sc_log {
 		$place_holder_string .= ' ,?';
 	}
 	
-    if ( $self->{enable_subscriber_count_logging} == 1 ) {
-        my $query =
-'INSERT INTO dada_mass_mailing_event_log(list, ' . $ts_snippet . 'msg_id, event, details) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
-        my $sth = $self->{dbh}->prepare($query);
+	
+    if ( $self->{ls}->param('enable_subscriber_count_logging') == 1 ) {
+		my $query =
+'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'msg_id, event, details) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
+        
+
+		print 'query "' . $query . '"'; 
+		my $sth = $self->{dbh}->prepare($query);
 		if(defined($timestamp)){ 
 	        $sth->execute($self->{name}, $timestamp, $args->{-mid}, 'num_subscribers', $args->{-num});
 		}
@@ -378,7 +382,7 @@ sub bounce_log {
 	}
 	
 	
-    if ( $self->{is_log_bounces_on} == 1 ) {
+    if ( $self->{ls}->param('is_log_bounces_on') == 1 ) {
 
         my $bounce_type = '';
         if ( $args->{-type} eq 'hard' ) {
@@ -387,7 +391,7 @@ sub bounce_log {
         else {
             $bounce_type = 'soft_bounce';
         }
-        my $query = 'INSERT INTO dada_mass_mailing_event_log(list, ' . $ts_snippet . 'msg_id, event, details) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
+        my $query = 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'msg_id, event, details) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
         my $sth = $self->{dbh}->prepare($query);
 
 		if(defined($timestamp)){ 
@@ -438,13 +442,16 @@ sub get_all_mids {
 	# postgres: $query .= ' SELECT DISTINCT ON(' . $subscriber_table . '.email) ';
 	# This query could probably be made into one, if I could simple use a join, or something,
 
-
+	# DEV: There's also this idea: 
+	# SELECT * FROM table ORDER BY rec_date LIMIT ?, ?} #
+	#     q{SELECT * FROM table ORDER BY rec_date LIMIT ?, ?}
+	
 	my $msg_id_query1 = ''; 
 	if($self->{-li}->{tracker_clean_up_reports} == 1){ 
-      $msg_id_query1 = 'SELECT msg_id FROM dada_mass_mailing_event_log WHERE list = ? AND event = "num_subscribers" GROUP BY msg_id ORDER BY msg_id DESC;';
+      $msg_id_query1 = 'SELECT msg_id FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND event = "num_subscribers" GROUP BY msg_id ORDER BY msg_id DESC;';
 	}
 	else { 
-		$msg_id_query1 = 'SELECT msg_id FROM dada_mass_mailing_event_log WHERE list = ? GROUP BY msg_id ORDER BY msg_id DESC;';
+		$msg_id_query1 = 'SELECT msg_id FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? GROUP BY msg_id ORDER BY msg_id DESC;';
 	}
  #   my $msg_id_query2 =
  #     'SELECT msg_id FROM dada_clickthrough_url_log WHERE list = ? GROUP BY msg_id  ORDER BY msg_id DESC;';
@@ -454,20 +461,11 @@ sub get_all_mids {
  #   push( @$msg_id1, @$msg_id2 );
  #   $msg_id1 = $self->unique_and_dupe($msg_id1);
 
-
 	my $total = scalar @$msg_id1; 
 	if($total == 0){ 
 		return ($total, []);
 	}	
-#	if($total < $args->{-entries}){ 
-#		$args->{-entries} = scalar @$msg_id1;
-#	} 
 
-	# DEV: There's also this idea: 
-	# SELECT * FROM table ORDER BY rec_date LIMIT ?, ?} #
-	#     q{SELECT * FROM table ORDER BY rec_date LIMIT ?, ?}
-	
-	
 	my $begin = ($args->{-entries} - 1) * ($args->{-page} - 1);
 	my $end   = $begin + ($args->{-entries} - 1);
 	@$msg_id1 = @$msg_id1[$begin..$end];
@@ -507,13 +505,13 @@ sub report_by_message_index {
 
         # Clickthroughs
         my $clickthrough_count_query =
-'SELECT COUNT(msg_id) FROM dada_clickthrough_url_log WHERE list = ?  AND msg_id = ?';
+'SELECT COUNT(msg_id) FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} .' WHERE list = ?  AND msg_id = ?';
         $report->{$msg_id}->{count} =
           $self->{dbh}
           ->selectcol_arrayref( $clickthrough_count_query, {}, $self->{name}, $msg_id )->[0];
 
         my $misc_count_query =
-'SELECT COUNT(msg_id) FROM dada_mass_mailing_event_log WHERE list = ? AND msg_id = ? AND event = ?';
+'SELECT COUNT(msg_id) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
         $report->{$msg_id}->{open} =
           $self->{dbh}
           ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, 'open' )->[0];
@@ -527,7 +525,7 @@ sub report_by_message_index {
           ->[0];
 
         my $num_sub_query =
-'SELECT details FROM dada_mass_mailing_event_log WHERE list = ? AND msg_id = ? AND event = ?';
+'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
 
         $report->{$msg_id}->{num_subscribers} = $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 }, $self->{name}, $msg_id, 'num_subscribers' )->[0];
 
@@ -553,8 +551,6 @@ sub report_by_message_index {
         push( @$sorted_report, $report->{$_} );
     }
 
-    #require Data::Dumper;
-    #die Data::Dumper::Dumper($sorted_report);
     return $sorted_report;
 }
 
@@ -567,13 +563,13 @@ sub report_by_message {
     my $l;
 
     my $num_sub_query =
-'SELECT details FROM dada_mass_mailing_event_log WHERE list = ? AND msg_id = ? AND event = ?';
+'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? AND event = ?';
     $report->{num_subscribers} =
       $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 },
         $self->{name}, $msg_id, 'num_subscribers' )->[0];
 
     my $misc_count_query =
-'SELECT COUNT(msg_id) FROM dada_mass_mailing_event_log WHERE list = ? AND msg_id = ? AND event = ?';
+'SELECT COUNT(msg_id) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? AND event = ?';
 
     #	# This may be different.
     $report->{open} =
@@ -589,7 +585,7 @@ sub report_by_message {
       ->[0];
 
     my $url_clickthroughs_query =
-'SELECT url, COUNT(url) AS count FROM dada_clickthrough_url_log where list = ? AND msg_id = ? GROUP BY url';
+'SELECT url, COUNT(url) AS count FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' where list = ? AND msg_id = ? GROUP BY url';
     my $sth = $self->{dbh}->prepare($url_clickthroughs_query);
     $sth->execute($self->{name}, $msg_id);
     my $url_report = [];
@@ -603,7 +599,7 @@ sub report_by_message {
 
     for my $bounce_type (qw(soft_bounce hard_bounce)) {
         my $bounce_query =
-'SELECT timestamp, details from dada_mass_mailing_event_log where list = ? AND msg_id = ? AND event = ? ORDER BY timestamp';
+'SELECT timestamp, details from ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? AND event = ? ORDER BY timestamp';
         my $sth = $self->{dbh}->prepare($bounce_query);
         $sth->execute($self->{name},  $msg_id, $bounce_type );
         my $bounce_report = [];
@@ -614,10 +610,6 @@ sub report_by_message {
         $report->{ $bounce_type . '_report' } = $bounce_report;
         $sth->finish;
     }
-
-    #require Data::Dumper;
-    #die Data::Dumper::Dumper($report);
-
     return $report;
 }
 
@@ -655,10 +647,10 @@ sub export_logs {
 	
     my $query = '';
     if ( $args->{-type} eq 'clickthrough' ) {
-        $query = 'SELECT * FROM dada_clickthrough_url_log WHERE list = ?';
+        $query = 'SELECT * FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?';
     }
     elsif ( $args->{-type} eq 'activity' ) {
-        $query = 'SELECT * FROM dada_mass_mailing_event_log WHERE list = ?';
+        $query = 'SELECT * FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ?';
     }
 	if(defined($args->{-mid})){ 
 		$query .= ' AND msg_id = ?'; 
@@ -684,10 +676,11 @@ sub export_logs {
 
 sub purge_log { 
 	my $self = shift; 
-	my $query1 = 'TRUNCATE dada_clickthrough_url_log'; 
-	my $query2 = 'TRUNCATE dada_mass_mailing_event_log'; 
+	my $query1 = 'TRUNCATE ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table}; 
+	my $query2 = 'TRUNCATE ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}; 
 	$self->{dbh}->do($query1); 
 	$self->{dbh}->do($query2); 
+	return 1; 
 }
 
 

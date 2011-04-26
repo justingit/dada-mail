@@ -7,18 +7,22 @@ use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib
 BEGIN { $ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1 }
 
 use dada_test_config;
-
-#dada_test_config::wipe_out;
-#use Test::More qw(no_plan);
-#use DADA::Config;
-
-
 use DADA::Logging::Clickthrough;
 use DADA::App::Guts;
 use DADA::MailingList::Settings;
 
 my $list = dada_test_config::create_test_list;
-#diag '$list ' . $list;
+
+# Make sure everything is on: 
+my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+$ls->save({ 
+'clickthrough_tracking' =>  1,
+'enable_open_msg_logging' =>  1,
+'enable_subscriber_count_logging' =>  1,
+'enable_bounce_logging' =>  1,
+}); 
+
+
 
 my $lc = DADA::Logging::Clickthrough->new( { -list => $list } );
 
@@ -33,13 +37,10 @@ ok( length($ran_key) == 12 );
 
 my $key = $lc->add( $test_mid, $test_url );
 
-#diag "Key: $key";
 ok( $key > 0 );
 ok( length($key) == 12 );
 
 my $reuse = $lc->reuse_key( $test_mid, $test_url );
-
-diag "Reuse: $reuse";
 
 ok( $reuse == $key );
 
@@ -47,13 +48,10 @@ my $reuse2 = $lc->reuse_key( 1234, 'http://someotherurl.com' );
 
 ok( $reuse2 eq undef, 'reuse_key is undef.' );
 
-diag "tagify! " . $lc->redirect_tagify($test_url); 
 my $coded = $lc->redirect_encode( $test_mid, $lc->redirect_tagify($test_url) );
 my $looks_like = $DADA::Config::PROGRAM_URL . '/r/' . $list . '/' . $key . '/';
+
 ok( $coded eq $looks_like, "coded '$coded' looks like: '$looks_like'");
-
-
-
 
 my $coded2 = $lc->redirect_encode( $test_mid, $lc->redirect_tagify('http://someotherurl2.com') );
 
@@ -62,16 +60,16 @@ ok( $coded ne $coded2 );
 my $existing  = {};
 my $test_url2 = 'http://test.example.com/';
 
+
 # Make sure we never make the URL twice...
 my $i = 0;
 for ( $i = 0 ; $i < 50 ; $i++ ) {
     my $l_test_url = $test_url2 . $i;
     my $test_r_url = $lc->redirect_encode( $test_mid, $lc->redirect_tagify($l_test_url) );
-
-    #diag q{$test_r_url} . $test_r_url;
     ok( !exists( $existing->{$test_r_url} ) );
     $existing->{$test_r_url} = 1;
 }
+
 
 my $s = '[redirect=' . $test_url . ']';
 
@@ -208,22 +206,16 @@ my ( $r_mid, $r_url ) = $lc->fetch($key);
 ok( $r_mid eq $test_mid );
 ok( $r_url eq $test_url );
 
-#diag '$lc->clickthrough_log_location ' . $lc->clickthrough_log_location;
-#diag q{$DADA::Config::LOGS . '/' . $list . '-clickthrough.log' }
-#  . $DADA::Config::LOGS . '/'
-#  . $list
-#  . '-clickthrough.log';
-
-ok( $lc->clickthrough_log_location eq $DADA::Config::LOGS . '/' . $list
-      . '-clickthrough.log' );
+#ok( $lc->clickthrough_log_location eq $DADA::Config::LOGS . '/' . $list
+#     . '-clickthrough.log' );
 
 # if it's not on, it returns, "0";
-ok( $lc->r_log({-mid => $test_mid, -url => $test_url }) == 0 );
-
-my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-$ls->save( { clickthrough_tracking => 1, } );
+#ok( $lc->r_log({-mid => $test_mid, -url => $test_url }) == 0 );
 
 # This is kinda strange - we have to reinit the object:
+
+
+#diag "still here."; 
 
 undef($lc);
 $lc = DADA::Logging::Clickthrough->new( { -list => $list } );
@@ -231,10 +223,44 @@ $lc = DADA::Logging::Clickthrough->new( { -list => $list } );
 # Now, it should do what I want it to do:
 ok( $lc->r_log({-mid =>  $test_mid, -url => $test_url }) == 1 );
 
-# This looks pretty much the default backend-specific...
-#my $log = slurp( $lc->clickthrough_log_location );
-#my $q_test_url = quotemeta($test_url);
-#like( $log, qr/$test_mid\t$q_test_url/ );
+
+#diag "still here.";
+
+# purge_log
+
+ok($lc->purge_log == 1, "purging the log returns, '1'"); 
+my ($total, $mids) = $lc->get_all_mids(); 
+ok($total == 0, "Reporting that we're not reporting anything!"); 
+ok(!exists($mids->[0]), "Reporting that we're not reporting anything! (2)");
+
+$test_mid = DADA::App::Guts::message_id();
+
+my $r = $lc->sc_log(
+	{ 
+		-mid => $test_mid, 
+		-num => 5, 
+	}
+); 
+ok($r == 1, "sc_log returns 1!"); 
+
+$test_mid = $test_mid + 10; 
+$r = $lc->sc_log(
+	{ 
+		-mid => $test_mid, 
+		-num => 6, 
+	}
+);
+ok($r == 1, "sc_log returns 1!"); 
+($total, $mids) = $lc->get_all_mids(); 
+
+#diag "look!"; 
+#
+#sleep(60); 
+
+diag 'total ' . $total; 
+ok($total == 2, "total is now 2"); 
+ok(exists($mids->[1]), "two logs are being reported back.");
+
 
 
 

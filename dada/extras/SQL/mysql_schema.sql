@@ -84,7 +84,6 @@ event text,
 details text
 ); 
 
-
 CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log (
 id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
 list varchar(16),
@@ -92,9 +91,6 @@ timestamp TIMESTAMP DEFAULT NOW(),
 msg_id text, 
 url text
 );
-
-
-
 
 CREATE TABLE IF NOT EXISTS dada_sessions (
      id CHAR(32) NOT NULL PRIMARY KEY,

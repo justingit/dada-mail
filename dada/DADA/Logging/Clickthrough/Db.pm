@@ -194,7 +194,7 @@ sub r_log {
     my $self      = shift; 
     my ($args)    = @_;
 
-	if($self->{is_redirect_on} == 1){ 
+	if($self->{ls}->param('clickthrough_tracking') == 1){ 
 	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
 	    	if -e $self->clickthrough_log_location; 
 		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location) 
@@ -212,14 +212,24 @@ sub r_log {
 
 
 sub o_log { 
-	my ($self, $mid) = @_;
-	if($self->{is_log_openings_on} == 1){ 
+
+	my $self      = shift; 
+    my ($args)    = @_;
+	my $timestamp = undef; 
+	if(exists($args->{-timestamp})){ 
+		$timestamp = $args->{-timestamp};
+	}
+	else { 
+		$timestamp = scalar(localtime()); 
+	}
+	
+	if($self->{ls}->param('is_log_openings_on') == 1){ 
 	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
 	    	if -e $self->clickthrough_log_location; 
 		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')' ,  $self->clickthrough_log_location)
 			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 		flock(LOG, LOCK_SH);
-		print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'open' . "\n";
+		print LOG $timestamp . "\t" . $args->{-mid} . "\t" . 'open' . "\n";
 		close (LOG);
 		return 1; 
 	}else{ 
@@ -231,14 +241,23 @@ sub o_log {
 
 
 sub sc_log { 
-	my ($self, $mid, $sc) = @_;
-	if($self->{enable_subscriber_count_logging} == 1){ 
+	my $self      = shift; 
+    my ($args)    = @_;
+	my $timestamp = undef; 
+	if(exists($args->{-timestamp})){ 
+		$timestamp = $args->{-timestamp};
+	}
+	else { 
+		$timestamp = scalar(localtime()); 
+	}
+	
+	if($self->{ls}->param('enable_subscriber_count_logging') == 1){ 
 	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
 	    	if -e $self->clickthrough_log_location; 
 		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $self->clickthrough_log_location)
 			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 		flock(LOG, LOCK_SH);
-		print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'num_subscribers' . "\t" . $sc . "\n";
+		print LOG $timestamp . "\t" . $args->{-mid} . "\t" . 'num_subscribers' . "\t" . $args->{-num} . "\n";
 		close (LOG);
 		return 1; 
 	}else{ 
@@ -250,19 +269,29 @@ sub sc_log {
 
 
 sub bounce_log { 
-	my ($self, $type, $mid, $email) = @_;
-	if($self->{is_log_bounces_on} == 1){ 
+
+	my $self      = shift; 
+	my ($args)    = @_;
+	my $timestamp = undef; 
+	if(exists($args->{-timestamp})){ 
+		$timestamp = $args->{-timestamp};
+	}
+	else { 
+		$timestamp = scalar(localtime()); 
+	}
+	
+	if($self->{ls}->param('is_log_bounces_on') == 1){ 
 	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
 	    	if -e $self->clickthrough_log_location; 
 		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $self->clickthrough_log_location)
 			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 		flock(LOG, LOCK_SH);
 		
-		if($type eq 'hard'){ 
-			print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'hard_bounce' . "\t" . $email . "\n";
+		if($args->{-type} eq 'hard'){ 
+			print LOG $timestamp . "\t" . $args->{-mid} . "\t" . 'hard_bounce' . "\t" . $args->{-email} . "\n";
 		}
 		else { 
-			print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'soft_bounce' . "\t" . $email . "\n";
+			print LOG $timestamp . "\t" . $args->{-mid} . "\t" . 'soft_bounce' . "\t" . $args->{-email} . "\n";
 		}
 	
 		close (LOG);
@@ -649,7 +678,28 @@ sub report_by_url {
 sub purge_log { 
 	my $self = shift; 
 	unlink($self->clickthrough_log_location); 
+	# probably better to, return unlink(...);
+	return 1; 
 }
+
+
+
+
+
+
+
+sub clickthrough_log_location { 
+
+	my $self = shift; 
+	my $ctl  =  $DADA::Config::LOGS  . '/' . $self->{name} . '-clickthrough.log';
+	   $ctl  = DADA::App::Guts::make_safer($ctl);
+	   $ctl =~ /(.*)/;
+	   $ctl = $1; 
+	   return $ctl; 
+}
+
+
+
 
 
 

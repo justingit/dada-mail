@@ -28,11 +28,13 @@ $TEST_SQL_PARAMS = {
 	    session_table    				=> 'test_dada_sessions',
 		bounce_scores_table 			=> 'test_dada_bounce_scores',
 		clickthrough_urls_table         => 'test_dada_clickthrough_urls', 
-	
+		clickthrough_url_log_table       => 'test_dada_clickthrough_url_log', 		
+		mass_mailing_event_log_table    => 'test_dada_mass_mailing_event_log', 
+		
 	}, 
 
 	PostgreSQL => { 
-		test_enabled     => 1, 
+		test_enabled     => 0, 
 		database         => 'test',
 	    dbserver         => 'localhost', # may just be, "localhost"   	   
 	    port             => '5432',      # mysql: 3306, Postgres: 5432   	   
@@ -49,7 +51,9 @@ $TEST_SQL_PARAMS = {
 	    session_table    		=> 'test_dada_sessions',
 		bounce_scores_table 	=> 'test_dada_bounce_scores',
 		clickthrough_urls_table         => 'test_dada_clickthrough_urls', 
-		
+		clickthrough_url_log_table       => 'test_dada_clickthrough_url_log', 		
+
+		mass_mailing_event_log_table    => 'test_dada_mass_mailing_event_log', 
 	}, 
 
 	SQLite => {
@@ -57,16 +61,18 @@ $TEST_SQL_PARAMS = {
 	    dbtype    		        => 'SQLite',     # 'mysql' for 'MySQL', 'Pg' for 'PostgreSQL', and 'SQLite' for SQLite  
 		database         		=> 'test_dada',
 
-	    subscriber_table 		 => 'test_dada_subscribers',
-		profile_table            => 'test_dada_profiles', 
-		profile_fields_table 	 => 'test_dada_profile_fields', 
+	    subscriber_table 		        => 'test_dada_subscribers',
+		profile_table                   => 'test_dada_profiles', 
+		profile_fields_table 	        => 'test_dada_profile_fields', 
 		profile_fields_attributes_table => 'test_dada_profile_fields_attributes',
-	    archives_table   		 => 'test_dada_archives', 
-	    settings_table   		 => 'test_dada_settings', 
-	    session_table    		 => 'test_dada_sessions',
-		bounce_scores_table 	 => 'test_dada_bounce_scores', 
-		clickthrough_urls_table  => 'test_dada_clickthrough_urls', 
-		
+	    archives_table   		        => 'test_dada_archives', 
+	    settings_table   		        => 'test_dada_settings', 
+	    session_table    		        => 'test_dada_sessions',
+		bounce_scores_table 	        => 'test_dada_bounce_scores', 
+		clickthrough_urls_table         => 'test_dada_clickthrough_urls', 
+		clickthrough_url_log_table      => 'test_dada_clickthrough_url_log', 		
+		mass_mailing_event_log_table    => 'test_dada_mass_mailing_event_log', 
+				
 	},
 	
 

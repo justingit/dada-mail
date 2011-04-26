@@ -58,7 +58,23 @@ fallback_value varchar(80)
 CREATE TABLE IF NOT EXISTS dada_clickthrough_urls (
 url_id INTEGER PRIMARY KEY AUTOINCREMENT,
 redirect_id varchar(16), 
-msg_id text, 
+msg_id text,
 url text
+);
+
+CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+list varchar(16),
+timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+msg_id text,
+event text,
+details text
 ); 
 
+CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+list varchar(16),
+timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+msg_id text,
+url text
+);

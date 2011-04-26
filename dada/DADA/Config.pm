@@ -412,7 +412,9 @@ The SQL password.
 	session_table                   => 'dada_sessions', 
 	bounce_scores_table             => 'dada_bounce_scores', 
 	clickthrough_urls_table         => 'dada_clickthrough_urls', 
-
+	clickthrough_url_log_table      => 'dada_clickthrough_url_log', 		
+	mass_mailing_event_log_table    => 'dada_mass_mailing_event_log',
+	
 ) unless keys %SQL_PARAMS; 
 
 
@@ -5234,6 +5236,8 @@ sub _config_import {
 		session_table                   => 'dada_sessions', 
 		bounce_scores_table             => 'dada_bounce_scores', 
 		clickthrough_urls_table         => 'dada_clickthrough_urls',
+		clickthrough_url_log_table      => 'dada_clickthrough_url_log', 		
+		mass_mailing_event_log_table    => 'dada_mass_mailing_event_log',
 	); 
 	for(keys %default_table_names){ 
 		if(!exists($SQL_PARAMS{$_})){ 

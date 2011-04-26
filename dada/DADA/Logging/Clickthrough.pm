@@ -35,19 +35,14 @@ sub _init {
 	}	
 	
     
-	if(! defined($self->{-li}) ){ 
+	if(! defined($args->{-ls}) ){ 
 	    
 	    require DADA::MailingList::Settings; 
-        my $ls = DADA::MailingList::Settings->new({-list => $self->{name}}); 
-	    $self->{-li} = $ls->get; 
+	    $self->{ls} = DADA::MailingList::Settings->new({-list => $self->{name}}); 
 	}
-	
-	$self->{is_redirect_on}                  = $self->redirect_config_test; 	# kinda hardcore, you know? 
-	$self->{is_log_openings_on}              = $self->{-li}->{enable_open_msg_logging}; 
-	$self->{is_log_bounces_on}               = $self->{-li}->{enable_bounce_logging};
-	$self->{enable_subscriber_count_logging} = $self->{-li}->{enable_subscriber_count_logging},
-	
-	
+	else { 
+		$self->{ls} = $args->{-ls}; 
+	}	
 	return $self;
 
 }
@@ -75,21 +70,6 @@ sub verified_mid {
 
 
 
-
-
-
-
-
-
-sub clickthrough_log_location { 
-
-	my $self = shift; 
-	my $ctl  =  $DADA::Config::LOGS  . '/' . $self->{name} . '-clickthrough.log';
-	   $ctl  = DADA::App::Guts::make_safer($ctl);
-	   $ctl =~ /(.*)/;
-	   $ctl = $1; 
-	   return $ctl; 
-}
 
 ##############################################################################
 
