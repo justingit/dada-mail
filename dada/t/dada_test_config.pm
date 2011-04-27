@@ -184,7 +184,7 @@ sub create_SQLite_db {
 
      %DADA::Config::SQL_PARAMS = %{$__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}};
 for(keys  %DADA::Config::SQL_PARAMS){ 
-	print $_ . ' => ' . $DADA::Config::SQL_PARAMS{$_} . "\n"; 
+	#print $_ . ' => ' . $DADA::Config::SQL_PARAMS{$_} . "\n"; 
 }
 
     require DADA::App::DBIHandle; 
@@ -242,7 +242,7 @@ my @statements = split(';', $sql, 11);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log}{CREATE TABLE IF NOT EXISTS $clickthrough_url_log_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log}{CREATE TABLE IF NOT EXISTS $mass_mailing_event_log_table};	
 		
-		print 'query: ' . $_; 
+		#print 'query: ' . $_; 
         my $sth = $dbh->prepare($_) or croak $DBI::errstr; 
 
        $sth->execute
@@ -338,7 +338,7 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log}{CREATE TABLE IF NOT EXISTS $clickthrough_url_log_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log}{CREATE TABLE IF NOT EXISTS $mass_mailing_event_log_table};	
 
-		print 'query: ' . $_; 
+		#print 'query: ' . $_; 
 			
 		if(length($_) > 10){ 
 
@@ -463,7 +463,7 @@ my @statements = split(';', $sql, 11);
 
 	    my $sth = $dbh->prepare($_); #  or croak $DBI::errstr; 
 	       $sth->execute or carp $DBI::errstr; 
-		print "query: $_"; 
+		#print "query: $_"; 
     
     }
     
@@ -520,7 +520,7 @@ sub wipe_out {
 		`rm -Rf ./test_only_dada_files`;
 	}	
 	if(-e './test_only_dada_files'){ 
-		print "wiping out didn't work!"; 
+		warn "wiping out didn't work!"; 
 	}
 }
 

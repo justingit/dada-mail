@@ -347,7 +347,7 @@ sub sc_log {
 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'msg_id, event, details) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
         
 
-		print 'query "' . $query . '"'; 
+		#print 'query "' . $query . '"'; 
 		my $sth = $self->{dbh}->prepare($query);
 		if(defined($timestamp)){ 
 	        $sth->execute($self->{name}, $timestamp, $args->{-mid}, 'num_subscribers', $args->{-num});
