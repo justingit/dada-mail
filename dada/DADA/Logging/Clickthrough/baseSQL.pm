@@ -447,7 +447,7 @@ sub get_all_mids {
 	#     q{SELECT * FROM table ORDER BY rec_date LIMIT ?, ?}
 	
 	my $msg_id_query1 = ''; 
-	if($self->{-li}->{tracker_clean_up_reports} == 1){ 
+	if($self->{ls}->param('tracker_clean_up_reports') == 1){ 
       $msg_id_query1 = 'SELECT msg_id FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND event = "num_subscribers" GROUP BY msg_id ORDER BY msg_id DESC;';
 	}
 	else { 
