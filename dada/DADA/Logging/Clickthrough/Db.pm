@@ -223,7 +223,7 @@ sub o_log {
 		$timestamp = scalar(localtime()); 
 	}
 	
-	if($self->{ls}->param('is_log_openings_on') == 1){ 
+	if($self->{ls}->param('enable_open_msg_logging') == 1){ 
 	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
 	    	if -e $self->clickthrough_log_location; 
 		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')' ,  $self->clickthrough_log_location)
@@ -280,7 +280,7 @@ sub bounce_log {
 		$timestamp = scalar(localtime()); 
 	}
 	
-	if($self->{ls}->param('is_log_bounces_on') == 1){ 
+	if($self->{ls}->param('enable_bounce_logging') == 1){ 
 	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
 	    	if -e $self->clickthrough_log_location; 
 		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $self->clickthrough_log_location)

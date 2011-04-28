@@ -306,7 +306,7 @@ sub o_log {
 		$place_holder_string .= ' ,?';
 	}
 	
-    if ( $self->{ls}->param('is_log_openings_on') == 1 ) {
+    if ( $self->{ls}->param('enable_open_msg_logging') == 1 ) {
         my $query =
 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'msg_id, event) VALUES (?, ?, ?' . $place_holder_string .')';
         my $sth = $self->{dbh}->prepare($query);
@@ -382,7 +382,7 @@ sub bounce_log {
 	}
 	
 	
-    if ( $self->{ls}->param('is_log_bounces_on') == 1 ) {
+    if ( $self->{ls}->param('enable_bounce_logging') == 1 ) {
 
         my $bounce_type = '';
         if ( $args->{-type} eq 'hard' ) {
@@ -635,29 +635,36 @@ sub export_logs {
 
     require Text::CSV;
     my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
-
-	if($args->{-type} eq 'clickthrough'){ 
-		my $title_status = $csv->print ($fh, [qw(timestamp list message_id url)]);
-		print $fh "\n";
-	}
-	elsif($args->{-type} eq 'activity'){ 
-		my $title_status = $csv->print ($fh, [qw(timestamp list message_id activity details)]);
-		print $fh "\n";
-	}
 	
     my $query = '';
     if ( $args->{-type} eq 'clickthrough' ) {
-        $query = 'SELECT * FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?';
+
+		my $custom_fields = $self->custom_fields; 
+		my $sql_snippet = ''; 
+		if(exists($custom_fields->[0])){ 
+			$sql_snippet = join(', ', @$custom_fields);
+			$sql_snippet = ', ' . $sql_snippet; 
+		}
+		
+		my $title_status = $csv->print ($fh, [qw(timestamp msg_id url), @$custom_fields]);
+		print $fh "\n";
+		
+        $query = 'SELECT timestamp, msg_id, url'. $sql_snippet .' FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?';
     }
     elsif ( $args->{-type} eq 'activity' ) {
-        $query = 'SELECT * FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ?';
+	
+		my $title_status = $csv->print ($fh, [qw(timestamp msg_id activity details)]);
+		print $fh "\n";
+		
+		# timestamp list message_id activity details
+        $query = 'SELECT timestamp, msg_id, event, details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ?';
     }
 	if(defined($args->{-mid})){ 
 		$query .= ' AND msg_id = ?'; 
 	}
-
+	
     my $sth = $self->{dbh}->prepare($query);
-
+	
 	if(defined($args->{-mid})){ 
 		$sth->execute($self->{name}, $args->{-mid});
     }

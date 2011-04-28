@@ -66,7 +66,12 @@ id                            int4 not null primary key auto_increment,
 email                         text, 
 list                          varchar(16),
 score                         int4
-); 
+);
+
+CREATE TABLE IF NOT EXISTS dada_sessions (
+     id CHAR(32) NOT NULL PRIMARY KEY,
+     a_session TEXT NOT NULL
+);
  
 CREATE TABLE IF NOT EXISTS dada_clickthrough_urls (
 url_id  int4 not null primary key auto_increment, 
@@ -90,9 +95,4 @@ list varchar(16),
 timestamp TIMESTAMP DEFAULT NOW(),
 msg_id text, 
 url text
-);
-
-CREATE TABLE IF NOT EXISTS dada_sessions (
-     id CHAR(32) NOT NULL PRIMARY KEY,
-     a_session TEXT NOT NULL
 );
