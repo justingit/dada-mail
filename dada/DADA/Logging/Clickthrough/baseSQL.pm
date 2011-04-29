@@ -270,17 +270,17 @@ sub r_log {
 			$place_holder_string .= ' ,?';
 		}
         my $query =
-            'INSERT INTO ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} .'(list,' . $ts_snippet .'msg_id, url'
+            'INSERT INTO ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} .'(list,' . $ts_snippet .'remote_addr, msg_id, url'
           . $sql_snippet
           . ') VALUES (?, ?, ?'
           . $place_holder_string . ')';
 
         my $sth = $self->{dbh}->prepare($query);
         if(defined($timestamp)){ 
-			$sth->execute($self->{name}, $timestamp, $args->{-mid}, $args->{-url}, @values );
+			$sth->execute($self->{name}, $timestamp, $ENV{'REMOTE_ADDR'}, $args->{-mid}, $args->{-url}, @values );
 		}
 		else { 
-			$sth->execute($self->{name}, $args->{-mid}, $args->{-url}, @values );			
+			$sth->execute($self->{name}, $ENV{'REMOTE_ADDR'}, $args->{-mid}, $args->{-url}, @values );			
 		}
         $sth->finish;
 
@@ -308,13 +308,13 @@ sub o_log {
 	
     if ( $self->{ls}->param('enable_open_msg_logging') == 1 ) {
         my $query =
-'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'msg_id, event) VALUES (?, ?, ?' . $place_holder_string .')';
+'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event) VALUES (?, ?, ?' . $place_holder_string .')';
         my $sth = $self->{dbh}->prepare($query);
 		if(defined($timestamp)){ 
-			$sth->execute($self->{name}, $timestamp, $args->{-mid}, 'open' );
+			$sth->execute($self->{name}, $timestamp, $ENV{'REMOTE_ADDR'}, $args->{-mid}, 'open' );
 		}
 		else { 
-			$sth->execute($self->{name}, $args->{-mid}, 'open' );
+			$sth->execute($self->{name}, $ENV{'REMOTE_ADDR'}, $args->{-mid}, 'open' );
         }
 		$sth->finish;
         return 1;
@@ -344,16 +344,16 @@ sub sc_log {
 	
     if ( $self->{ls}->param('enable_subscriber_count_logging') == 1 ) {
 		my $query =
-'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'msg_id, event, details) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
+'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event, details) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
         
 
 		#print 'query "' . $query . '"'; 
 		my $sth = $self->{dbh}->prepare($query);
 		if(defined($timestamp)){ 
-	        $sth->execute($self->{name}, $timestamp, $args->{-mid}, 'num_subscribers', $args->{-num});
+	        $sth->execute($self->{name}, $timestamp, $ENV{'REMOTE_ADDR'}, $args->{-mid}, 'num_subscribers', $args->{-num});
 		}
 		else { 
-	        $sth->execute($self->{name}, $args->{-mid}, 'num_subscribers', $args->{-num});			
+	        $sth->execute($self->{name}, $ENV{'REMOTE_ADDR'}, $args->{-mid}, 'num_subscribers', $args->{-num});			
 		}
         $sth->finish;
 
@@ -391,14 +391,14 @@ sub bounce_log {
         else {
             $bounce_type = 'soft_bounce';
         }
-        my $query = 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'msg_id, event, details) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
+        my $query = 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event, details) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
         my $sth = $self->{dbh}->prepare($query);
 
 		if(defined($timestamp)){ 
-        	$sth->execute($self->{name}, $timestamp, $args->{-mid}, $bounce_type, $args->{-email} );
+        	$sth->execute($self->{name}, $timestamp, $ENV{'REMOTE_ADDR'}, $args->{-mid}, $bounce_type, $args->{-email} );
 		}
 		else { 
-			$sth->execute($self->{name}, $args->{-mid}, $bounce_type, $args->{-email} );
+			$sth->execute($self->{name}, $ENV{'REMOTE_ADDR'}, $args->{-mid}, $bounce_type, $args->{-email} );
 	        
 		}
         $sth->finish;
@@ -646,18 +646,18 @@ sub export_logs {
 			$sql_snippet = ', ' . $sql_snippet; 
 		}
 		
-		my $title_status = $csv->print ($fh, [qw(timestamp msg_id url), @$custom_fields]);
+		my $title_status = $csv->print ($fh, [qw(timestamp remote_addr msg_id url), @$custom_fields]);
 		print $fh "\n";
 		
         $query = 'SELECT timestamp, msg_id, url'. $sql_snippet .' FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?';
     }
     elsif ( $args->{-type} eq 'activity' ) {
 	
-		my $title_status = $csv->print ($fh, [qw(timestamp msg_id activity details)]);
+		my $title_status = $csv->print ($fh, [qw(timestamp remote_addr msg_id activity details)]);
 		print $fh "\n";
 		
 		# timestamp list message_id activity details
-        $query = 'SELECT timestamp, msg_id, event, details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ?';
+        $query = 'SELECT timestamp, remote_addr, msg_id, event, details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ?';
     }
 	if(defined($args->{-mid})){ 
 		$query .= ' AND msg_id = ?'; 

@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log (
 id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
 list varchar(16),
 timestamp TIMESTAMP DEFAULT NOW(),
+remote_addr text, 
 msg_id text, 
 event text,
 details text
@@ -93,6 +94,7 @@ CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log (
 id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
 list varchar(16),
 timestamp TIMESTAMP DEFAULT NOW(),
+remote_addr text,
 msg_id text, 
 url text
 );
