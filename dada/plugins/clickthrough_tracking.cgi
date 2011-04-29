@@ -701,7 +701,7 @@ sub clickthrough_table_tmpl {
 			<div style="max-height: 300px; overflow: auto; border:1px solid black">
 
 			  <table cellpadding="5" cellspacing="0" border="0" width="100%"> 
-			   <tr> 
+			   <tr style="background:#fff"> 
 			    <td> 
 				 <p>
 				  <strong> 

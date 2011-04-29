@@ -349,14 +349,19 @@ sub get_all_mids {
 
 	my @all_mids = reverse sort keys %$mids;
 	
-	
-	my $begin = ($args->{-entries} - 1) * ($args->{-page} - 1);
-	my $end   = $begin + ($args->{-entries} - 1);
 	my $total = scalar @all_mids;
 	
 	if($total == 0){ 
 		return ($total, []);
 	}
+		
+	my $begin = ($args->{-entries} - 1) * ($args->{-page} - 1);
+	my $end   = $begin + ($args->{-entries} - 1);
+	if($end > $total - 1){ 
+		$end = $total -1; 
+	}
+	
+	
 	
 	#@all_mids = reverse @all_mids; 
 	@all_mids = @all_mids[$begin..$end];
