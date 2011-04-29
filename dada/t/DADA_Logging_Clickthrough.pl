@@ -22,6 +22,7 @@ $ls->save({
 'enable_bounce_logging' =>  1,
 }); 
 
+my $key; 
 
 
 my $lc = DADA::Logging::Clickthrough->new( { -list => $list } );
@@ -35,7 +36,7 @@ my $ran_key = $lc->random_key();
 ok( $ran_key > 0 );
 ok( length($ran_key) == 12 );
 
-my $key = $lc->add( $test_mid, $test_url );
+$key = $lc->add( $test_mid, $test_url );
 
 ok( $key > 0 );
 ok( length($key) == 12 );
@@ -44,7 +45,7 @@ my $reuse = $lc->reuse_key( $test_mid, $test_url );
 
 ok( $reuse == $key );
 
-my $reuse2 = $lc->reuse_key( 1234, 'http://someotherurl.com' );
+my $reuse2 = $lc->reuse_key( 12345678901234, 'http://someotherurl.com' );
 
 ok( $reuse2 eq undef, 'reuse_key is undef.' );
 
@@ -259,7 +260,66 @@ ok($r == 1, "sc_log returns 1!");
 
 diag 'total ' . $total; 
 ok($total == 2, "total is now 2"); 
-ok(exists($mids->[1]), "two logs are being reported back.");
+ok(scalar @$mids, "two logs are being reported back.");
+
+ok($lc->purge_log == 1, "purging the log returns, '1'"); 
+
+# First let's add a new clickthorugh url to track: 
+$key = $lc->add(
+	12345678901234, 
+	'http://example.com'
+); 
+# Now let's record that we clicked on it: 
+my ($mid, $url, $atts) = $lc->fetch($key);
+ok($mid == 12345678901234, "message id matches"); 
+ok($url eq 'http://example.com', "URL matches"); 
+ok($lc->r_log(
+	{ 
+		-mid => $mid, 
+		-url => $url, 
+	}
+) == 1, "recording the clickthrough was successful"); 
+
+
+
+# Now, let's see if we can't track that clickthrough: 
+my $r = $lc->sc_log(
+	{ 
+		-mid => 12345678901234, 
+		-num => 5, 
+	}
+); 
+ok($r == 1, "sc_log returns 1!");
+
+($total, $mids) = $lc->get_all_mids(); 
+ok($total == 1, "total equals 1 ($total)"); 
+
+
+
+ok(scalar @$mids == 1); 
+ok($mids->[0] == 12345678901234); 
+my $report = $lc->report_by_message_index; 
+ok($report->[0]->{count} == 1); # that's our click. 
+
+# Don't believe me? 
+for(1 .. 100){ 
+	$lc->r_log(
+	{ 
+		-mid => $mid, 
+		-url => $url, 
+	}); 
+}
+
+# See? 101 clicks. 
+my $report = $lc->report_by_message_index; 
+ok($report->[0]->{count} == 101); # that's our click. um, clicks. 
+
+
+
+
+
+
+
 
 
 

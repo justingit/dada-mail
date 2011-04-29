@@ -337,7 +337,7 @@ sub get_all_mids {
 			
 			next if ! $mid;  
 			next unless($self->verified_mid($mid)); 
-			if($self->{-li}->{tracker_clean_up_reports} == 1){ 
+			if($self->{ls}->param('tracker_clean_up_reports') == 1){
 				next if $url ne 'num_subscribers';
 			}
 			$mids->{$mid} = 1;  

@@ -61,20 +61,43 @@ id                            serial,
 email                         varchar(80),
 list                          varchar(16),
 score                         int4 
-); 
-
-CREATE TABLE dada_clickthrough_urls (
-url_id  serial,
-redirect_id varchar(16), 
-msg_id text, 
-url text
-); 
-
+);
 
 
 CREATE TABLE dada_sessions (
     id CHAR(32) NOT NULL PRIMARY KEY,
     a_session BYTEA NOT NULL
 );
+
+
+CREATE TABLE dada_clickthrough_urls (
+url_id  serial,
+redirect_id varchar(16), 
+msg_id text, 
+url text
+);
+
+CREATE TABLE dada_mass_mailing_event_log (
+id serial,
+list varchar(16),
+timestamp TIMESTAMP DEFAULT NOW(),
+remote_addr text, 
+msg_id text, 
+event text,
+details text
+); 
+
+CREATE TABLE dada_clickthrough_url_log (
+id serial,
+list varchar(16),
+timestamp TIMESTAMP DEFAULT NOW(),
+remote_addr text,
+msg_id text, 
+url text
+);
+
+
+
+
 
 -- subttime timestamp NOT NULL DEFAULT now()
