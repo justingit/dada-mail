@@ -1996,9 +1996,15 @@ sub SQL_check_setup {
 		my $dbi_obj = DADA::App::DBIHandle->new; 
 		my $dbh = $dbi_obj->dbh_obj;
 		
+		my %tables_to_look_for = %DADA::Config::SQL_PARAMS; 
+		if($DADA::Config::SQL_PARAMS{dbtype} eq 'Pg'){ # This just isn't supported by PostgreSQL, yet
+			delete($tables_to_look_for{clickthrough_url_log_table}); 
+			delete($tables_to_look_for{mass_mailing_event_log_table}); 	
+		}
 		for my $param(keys %DADA::Config::SQL_PARAMS){ 
 			if($param =~ m/table/){ 
 				$table_count++;
+				
 			 	$dbh->do('SELECT * from ' . $DADA::Config::SQL_PARAMS{$param} . ' WHERE 1 = 0')
 					or croak $!; 
 			}
@@ -2011,7 +2017,7 @@ sub SQL_check_setup {
 	else { 
 		# Last test - we need at least 9 tables. This test sucks - I shouldn't
 		# need to know I need 9 tables. 
-		if($table_count < 9){ 
+		if($table_count < 9){ # And now, I shouldn't need to know I need 11 tables. 
 			return 0; 
 		}
 		else { 
