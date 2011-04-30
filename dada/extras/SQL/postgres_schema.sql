@@ -96,8 +96,3 @@ msg_id text,
 url text
 );
 
-
-
-
-
--- subttime timestamp NOT NULL DEFAULT now()
