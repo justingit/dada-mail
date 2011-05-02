@@ -2617,16 +2617,20 @@ sub carry_out_rule {
 				}
 				if($hard_bounce == 1){ 
 					$r->bounce_log(
-						'hard', 
-						$diagnostics->{'Simplified-Message-Id'},
-						$email
+						{ 
+						-type  => 'hard', 
+						-mid   => $diagnostics->{'Simplified-Message-Id'},
+						-email => $email,
+						}
 					);					
 				}
 				else { 
 					$r->bounce_log(
-						'soft', 
-						$diagnostics->{'Simplified-Message-Id'},
-						$email
+						{ 
+						-type  => 'soft', 
+						-mid   => $diagnostics->{'Simplified-Message-Id'},
+						-email => $email
+						}
 					);					
 				}
 			}

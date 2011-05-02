@@ -14,17 +14,20 @@ sub absUrl($$) {
 	my $str = shift; 
 	my $base = shift; 
   # rt 19656 : unknown URI schemes cause rewrite to fail
-	if($str =~ m/\[redirect\=(.*?)\]/){ 
-		return $str; 
-	}
-	elsif($str =~ m/\<\!\-\- tmpl_(.*?)\-\-\>|\[list_unsubscribe_link\]/){ 
-			return $str; 
-	}
-	else { 
+#	if($str =~ m/\[redirect\=(.*?)\]/){ 
+#		return $str; 
+#	}
+#	elsif($str =~ m/\<\!\-\-(.*?)redirect/){ 
+#			return $str; 
+#	}
+#	elsif($str =~ m/\<\!\-\- tmpl_(.*?)\-\-\>|\[list_unsubscribe_link\]/){ #?
+#			return $str; 
+#	}
+#	else { 
 	
 	  my $rep = eval { URI::WithBase->new($str, $base)->abs; };
 	  return ($rep ? $rep : $str);
-	}
+#	}
 
 }
 
@@ -55,8 +58,10 @@ sub parse
         else {$gabarit = $res->content;}
         $racinePage=$url1 || $res->base;
 	}
-    else {$gabarit=$url_page;$racinePage=$url1;}
-
+    else {
+		$gabarit=$url_page;
+		$racinePage=$url1;
+	}
     # Get content of $url_txt with LWP if needed
     if ($url_txt)
 	{
@@ -105,9 +110,11 @@ sub parse
 
 	  # Replace relative href found to absolute one
 	  if ( ($$url[0] eq 'a') && ($$url[1] eq 'href') && ($$url[2]) &&
-		 (($$url[2]!~m!^http://!) && # un lien non absolu
-		  ($$url[2]!~m!^mailto:!) && # pas les mailto
-		  ($$url[2]!~m!^\#!))     && # ni les ancres
+		 (($$url[2]!~m!^http://!)   && # un lien non absolu
+		  ($$url[2]!~m!^mailto:!)   && # pas les mailto
+		  ($$url[2]!~m!^\#!)        && # ni les ancres
+		  ($$url[2]!~m!^\<!)        && # ni les tags du "Dada Mail" 
+		  ($$url[2]!~m!^\[!) )      && # Hmm. meme chose. 
 		 (!$url_remplace{$urlAbs}) ) # ni les urls deja remplacees
 	    {
 		$gabarit=~s/\s href \s* = \s* [\"']? \Q$$url[2]\E ([\"'>])

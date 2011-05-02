@@ -26,8 +26,36 @@ my $key;
 
 
 my $lc = DADA::Logging::Clickthrough->new( { -list => $list } );
-
 ok( $lc->isa('DADA::Logging::Clickthrough') );
+
+
+my @redirect_urls = (
+
+'[redirect=http://example.com]',
+'[redirect url="http://example.com"]',
+'<!-- redirect url="http://example.com" -->',
+'<?dada redirect url="http://example.com" ?>',
+'<?dada redirect url="http://www.youtube.com/watch?v=AWvBbqpD2Y8" ?>',
+
+
+'[redirect=mailto:user@example.com]',
+'[redirect url="mailto:user@example.com"]',
+'<!-- redirect url="mailto:user@example.com" -->',
+'<?dada redirect url="mailto:user@example.com" ?>',
+
+); 
+
+foreach(@redirect_urls){ 
+	my $pat = $lc->redirect_regex(); 
+	ok($_ =~ m/$pat/, "redirect URL looks like one! ($_)"); 
+	my $redirect_tag = $1; 
+	my $redirect_atts = $lc->get_redirect_tag_atts($redirect_tag); 
+	my $url = $redirect_atts->{url}; 
+	ok($lc->can_be_redirected($url), "And URL looks redirectable! ($url)");
+}
+
+
+
 
 my $test_mid = DADA::App::Guts::message_id();
 my $test_url = 'http://example.com/page.html?foo=bar&baz=bing';
@@ -38,12 +66,12 @@ ok( length($ran_key) == 12 );
 
 $key = $lc->add( $test_mid, $test_url );
 
-ok( $key > 0 );
-ok( length($key) == 12 );
+ok( $key > 0, "key > 0!" );
+ok( length($key) == 12, "length is 12!" );
 
 my $reuse = $lc->reuse_key( $test_mid, $test_url );
 
-ok( $reuse == $key );
+ok( $reuse == $key, "reusing the key!");
 
 my $reuse2 = $lc->reuse_key( 12345678901234, 'http://someotherurl.com' );
 
@@ -71,13 +99,17 @@ for ( $i = 0 ; $i < 50 ; $i++ ) {
     $existing->{$test_r_url} = 1;
 }
 
+diag '$test_url ' . $test_url; 
 
 my $s = '[redirect=' . $test_url . ']';
 
 my $ps = $lc->parse_string( $test_mid, $s );
 
+diag '$ps ' . $ps;
+diag '$coded ' . $coded; 
+
 # It's the same as before, you see?
-ok( $ps eq $coded );
+ok( $ps eq $coded, "same as before?" );
 
 ################################################
 # Zee Plain Text!
@@ -313,16 +345,118 @@ for(1 .. 100){
 # See? 101 clicks. 
 my $report = $lc->report_by_message_index; 
 ok($report->[0]->{count} == 101); # that's our click. um, clicks. 
+ok($lc->purge_log == 1, "purging the log returns, '1'"); 
+
+# bounce_log
+$lc->bounce_log(
+	{ 
+	-type  => 'hard', 
+	-mid   => 12345678901234,
+	-email => 'hardboing@example.com', 
+	}
+);
+# Now, let's see if we can't track that clickthrough: 
+my $r = $lc->sc_log(
+	{ 
+		-mid => 12345678901234, 
+		-num => 5, 
+	}
+); 
+ok($r == 1, "sc_log returns 1!");
+$report = $lc->report_by_message_index; 
+ok($report->[0]->{hard_bounce} == 1); 
+
+# bounce_log
+$lc->bounce_log(
+	{ 
+	-type  => 'soft', 
+	-mid   => 12345678901234,
+	-email => 'softboing@example.com', 
+	}
+);
+$report = $lc->report_by_message_index; 
+ok($report->[0]->{hard_bounce} == 1); 
+ok($report->[0]->{soft_bounce} == 1); 
+
+# o_log
+
+$lc->o_log(
+	{ 
+		-mid => 12345678901234,
+	}
+);
+$report = $lc->report_by_message_index; 
+ok($report->[0]->{open} == 1);
+
+# Don't believe me? 
+for(1 .. 100){ 
+	$lc->o_log(
+		{ 
+			-mid => $mid, 
+		}
+	); 
+}
 
 
 
 
+$report = $lc->report_by_message_index; 
+ok($report->[0]->{open} == 101);
+
+# Let's add some clickthroughs, 
+ok($lc->r_log(
+	{ 
+		-mid => 12345678901234, 
+		-url => 'http://one.example.com', 
+	}
+) == 1, "recording the clickthrough was successful");
+# Twice
+ok($lc->r_log(
+	{ 
+		-mid => 12345678901234, 
+		-url => 'http://two.example.com', 
+	}
+) == 1, "recording the clickthrough was successful");
+ok($lc->r_log(
+	{ 
+		-mid => 12345678901234, 
+		-url => 'http://two.example.com', 
+	}
+) == 1, "recording the clickthrough was successful");
+ok($lc->r_log(
+	{ 
+		-mid => 12345678901234, 
+		-url => 'http://three.example.com', 
+	}
+) == 1, "recording the clickthrough was successful");
+# Thrice? 
+ok($lc->r_log(
+	{ 
+		-mid => 12345678901234, 
+		-url => 'http://three.example.com', 
+	}
+) == 1, "recording the clickthrough was successful");
+ok($lc->r_log(
+	{ 
+		-mid => 12345678901234, 
+		-url => 'http://three.example.com', 
+	}
+) == 1, "recording the clickthrough was successful");
+# Let's keep going on this... 
+
+my $m_report = $lc->report_by_message( 12345678901234 );
+ok($m_report->{hard_bounce_report}->[0]->{email} eq 'hardboing@example.com');
+ok($m_report->{hard_bounce} == 1); 
+
+ok($m_report->{soft_bounce_report}->[0]->{email} eq 'softboing@example.com');
+ok($m_report->{soft_bounce} == 1); 
+ok($m_report->{open} == 101); 
+ok($m_report->{num_subscribers} == 5); 
+ok(scalar @{$m_report->{url_report}} == 3); 
 
 
-
-
-
-
+# use Data::Dumper; 
+# diag Dumper($m_report); 
 
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;

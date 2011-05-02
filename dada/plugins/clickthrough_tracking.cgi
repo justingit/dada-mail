@@ -272,6 +272,17 @@ sub default_tmpl {
 
 
 
+<fieldset>
+<legend> 
+ Current Subscribers by Email Address Domain
+</legend>  
+<div id="domain_breakdown_img_loading">
+</div>
+<div id="domain_breakdown_img"> 
+</div> 
+
+</fieldset> 
+
 
 <fieldset> 
 <legend>
@@ -280,7 +291,7 @@ sub default_tmpl {
 
 <form method="post"> 
 <input type="hidden" name="f" value="edit_prefs" /> 
-<table> 
+<table border="0"> 
  <tr> 
   <td> 
    <p>
@@ -293,6 +304,34 @@ sub default_tmpl {
      Enable Clickthrough Tracking
     </label> 
    </p>
+
+
+
+
+
+	<table <!-- tmpl_unless can_use_auto_redirect_tag -->class="disabled"<!--/tmpl_unless-->>	 <tr> 
+	  <td> 
+  	<input type="checkbox" id="tracker_auto_parse_links" name="tracker_auto_parse_links"  value="1" <!-- tmpl_if list_settings.tracker_auto_parse_links -->checked="checked"<!--/tmpl_if -->/>
+	  </td> 
+	  <td> 
+		
+		<p>
+		 <label for="tracker_auto_parse_links">Clickthrough Track All Message Links</label> 
+		 <br /> 
+		 All message links will be parsed into redirect links and tracked. 
+		</p> 
+		
+		<!-- tmpl_unless can_use_auto_redirect_tag -->
+			<p class="error"> 
+				Disabled. You must have the HTML::LinkExtor and URI::Find CPAN modules installed. 
+			</p>
+		<!-- /tmpl_unless --> 
+	  </td> 
+	</tr> 
+	
+	</table>
+
+
   </td>
   </tr> 
 
@@ -300,7 +339,7 @@ sub default_tmpl {
   <td> 
    <p>
     <input type="checkbox" name="enable_open_msg_logging" id="enable_open_msg_logging"  value="1" <!-- tmpl_if list_settings.enable_open_msg_logging -->checked="checked"<!--/tmpl_if --> 
-   </p>
+   </p>	
   </td> 
   <td> 
    <p>
@@ -377,7 +416,7 @@ sub default_tmpl {
 
 
 <div class="buttonfloat">   
- <input type="submit" class="processing" value="Save Clickthrough Preferences" /> 
+ <input type="submit" class="processing" value="Save Tracker Preferences" /> 
  </div>
 <div class="floatclear"></div>
 </form> 
@@ -400,17 +439,6 @@ sub default_tmpl {
 </fieldset> 
 
 
-<fieldset>
-<legend> 
- Current Subscribers by Email Address Domain
-</legend>  
-<div id="domain_breakdown_img_loading">
-</div>
-<div id="domain_breakdown_img"> 
-</div> 
-
-</fieldset> 
-
 
 };
 
@@ -427,7 +455,15 @@ sub default {
 			-values  => [qw(5 10 15 20 25 50 100)],
 			-default => $ls->param('tracker_record_view_count'), 
 		);			
-	 	 
+	eval { 
+		require URI::Find; 
+		require HTML::LinkExtor;
+	};
+	my $can_use_auto_redirect_tag  = 1; 
+	if($@){ 
+		$can_use_auto_redirect_tag = 0; 
+	}	
+		 	 
     my $tmpl = default_tmpl();
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -442,6 +478,7 @@ sub default {
                 done                             => $q->param('done') || 0,
 				Plugin_URL                       => $Plugin_Config->{Plugin_URL}, 
 				tracker_record_view_count_widget => $tracker_record_view_count_widget, 
+				can_use_auto_redirect_tag        => $can_use_auto_redirect_tag, 
             },
             -list_settings_vars_param => {
                 -list   => $list,
@@ -952,6 +989,7 @@ sub edit_prefs {
                 enable_bounce_logging           => 0,
 				tracker_record_view_count       => 0,
 				tracker_clean_up_reports        => 0, 
+				tracker_auto_parse_links        => 0, 
             }
         }
     );

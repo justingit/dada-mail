@@ -4708,6 +4708,7 @@ encrypted.
 	
 	tracker_record_view_count           => 10, 
 	tracker_clean_up_reports            => 1, 
+	tracker_auto_parse_links            => 0, 
 
     
 # dada_digest.pl 

@@ -693,18 +693,11 @@ sub export_logs {
 sub purge_log { 
 	my $self = shift; 
 	
-	if ($DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite'){ 
-		my $query1 = 'DELETE FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table}; 
-		my $query2 = 'DELETE FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}; 
-		$self->{dbh}->do($query1); 
-		$self->{dbh}->do($query2);		
-	}
-	else { 		
-		my $query1 = 'TRUNCATE ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table}; 
-		my $query2 = 'TRUNCATE ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}; 
-		$self->{dbh}->do($query1); 
-		$self->{dbh}->do($query2); 
-	}
+		my $query1 = 'DELETE FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?'; 
+		my $query2 = 'DELETE FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ?'; 
+		$self->{dbh}->do($query1, {}, ($self->{name})); 
+		$self->{dbh}->do($query2, {}, ($self->{name}));		
+
 
 	return 1; 
 }

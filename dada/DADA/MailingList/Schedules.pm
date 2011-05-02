@@ -861,6 +861,7 @@ sub _build_email {
 	my ($pt_flags,   $pt_checksum,   $pt_headers,   $PlainText_ver) = $self->_create_text_ver(-record => $record, -type => 'PlainText'); 
 	my ($html_flags, $html_checksum, $html_headers, $HTML_ver)      = $self->_create_text_ver(-record => $record, -type => 'HTML'); 
 	
+		
 	#use Data::Dumper; 
 	#die Data::Dumper::Dumper($HTML_ver); 
 	
@@ -953,8 +954,7 @@ sub _build_email {
 		eval { 
 				$html_msg = $MIMELiteObj->as_string;
 				$html_msg = safely_decode($html_msg);
-			}; 
-			
+			}; 		
 		if($@){ 
 			# error message...
 		}

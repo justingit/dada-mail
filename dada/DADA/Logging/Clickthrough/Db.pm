@@ -504,6 +504,10 @@ sub report_by_message {
 	
 	my $report = {}; 
 	my $l;
+	
+	my $url_report = {};
+	
+	
 	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
 		or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
 	while(defined($l = <LOG>)){ 
@@ -515,7 +519,8 @@ sub report_by_message {
 		$mid   = strip($mid); 
 		$url   = strip($url); 
 		$extra = strip($extra); 
-					
+		
+		
 		if($match_mid eq $mid){ 
 		
 			if($url ne 'open' && 
@@ -524,7 +529,11 @@ sub report_by_message {
 			   $url ne 'soft_bounce' && 
 			   $url ne 'hard_bounce' && 
 			   $url ne undef){
-				$report->{$url}->{count}++; #?!
+			   #$report->{$url}->{count}++; #?!
+				if(!exists($url_report->{$url})){ 
+					$url_report->{$url} = 0; 
+				}
+				$url_report->{$url}++; 
 			}elsif($url eq 'open'){ 	
 			
 				$report->{'open'}++;
@@ -534,11 +543,19 @@ sub report_by_message {
 				$report->{'num_subscribers'} = $extra;	
 				
 			}elsif($url eq 'soft_bounce'){ 	
-			
+
+				if(!exists($report->{soft_bounce})){ 
+					$report->{soft_bounce} = 0; 
+				}
+				$report->{soft_bounce}++;
 				push(@{$report->{'soft_bounce_report'}}, {email => $extra, timestamp => $t});
 
 			}elsif($url eq 'hard_bounce'){ 	
-
+					if(!exists($report->{hard_bounce})){ 
+						$report->{hard_bounce} = 0; 
+					}
+					$report->{hard_bounce}++; 
+					
 					push(@{$report->{'hard_bounce_report'}}, {email => $extra, timestamp => $t});
 
 			}	
@@ -546,28 +563,12 @@ sub report_by_message {
 	}
 	close(LOG); 
 	
-	my $url_report = [];
-
-    for ( sort keys %$report ) {
-
-        next
-          if ( $_ eq 'open'
-            || $_ eq 'num_subscribers'
-            || $_ eq 'bounce'
-			|| $_ eq 'soft_bounce'
-            || $_ eq 'hard_bounce'
-            || $_ eq undef );
-
-        push( @$url_report, { url => $_, count => $report->{$_}->{count} } );
-    }
-	$report->{url_report} = $url_report; 
 	
-    my $num_bounces = 0;
-    if ( $report->{bounce} ) {
-        $num_bounces = $#{ $report->{bounce} } + 1;
-    }
-	$report->{num_bounces} = $num_bounces; 
-
+	$report->{url_report} = [];
+	foreach(keys %$url_report){ 
+		push(@{$report->{url_report}}, {url => $_, count => $url_report->{$_}}); 
+	}
+	
 	return $report; 
 }
 

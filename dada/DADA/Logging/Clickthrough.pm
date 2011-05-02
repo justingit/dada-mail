@@ -43,6 +43,9 @@ sub _init {
 	else { 
 		$self->{ls} = $args->{-ls}; 
 	}	
+	
+	$self->{auto_redirect_tmp} = ''; 
+	
 	return $self;
 
 }
@@ -153,8 +156,6 @@ sub parse_entity {
 
     if (@parts) {
 
-        #print "we gotta parts?!\n";
-
         my $i;
         for $i ( 0 .. $#parts ) {
             $parts[$i] =
@@ -176,8 +177,6 @@ sub parse_entity {
             m/attachment/ )
         {
             $is_att = 1;
-
-            #print "is attachment?\n";
         }
     }
 
@@ -196,9 +195,17 @@ sub parse_entity {
 		
         if ($content) {
 
-            #print "Bang!\n";
-            # Bang! We do the stuff here!
-            $content = $self->parse_string( $args->{ -mid }, $content );
+           	my $type = 'PlainText'; 
+			
+			if( $args->{ -entity }->head->mime_type eq 'text/plain' ){ 
+				$type = 'PlainText'; 
+			}
+			elsif( $args->{ -entity }->head->mime_type eq 'text/html' ){ 
+				$type = 'HTML' 
+			}
+	      
+	
+            $content = $self->parse_string( $args->{ -mid }, $content, $type );
         }
         else {
 
@@ -316,18 +323,113 @@ sub parse_string {
 
     my $self = shift;
     my $mid  = shift;
-
     croak 'no mid! ' if !defined $mid;
+    my $str  = shift;
+	my $type = shift || 'PlainText'; 
 
-    my $str = shift;
+	if($self->{ls}->param('tracker_auto_parse_links')){ 
+		$str = $self->auto_redirect_tag($str, $type); 
+	}
+	else { 
+		# ... 
+	}
 
-    my $pat = $self->redirect_regex(); 
-	
+    my $pat = $self->redirect_regex();
     $str =~ s/$pat/&redirect_encode($self, $mid, $1)/eg;
 
     #	carp "here's the string: $str";
     return $str;
 }
+
+
+
+sub auto_redirect_tag { 
+	
+	my $self = shift; 
+	my $s    = shift; 
+	my $type = shift; 
+	
+	
+	eval { 
+		require URI::Find; 
+		require HTML::LinkExtor;
+	};
+	if($@){ 
+		warn "Cannot auto redirect links. Missing perl module? $@"; 
+		return $s; 
+	}
+	
+	my @a; 
+	if($type eq 'HTML'){ 
+
+		 sub html_cb {
+		     my($tag, %attr) = @_;
+		     return if $tag ne 'a';  # we only look closer at <a ...>
+			 my $link =  $attr{href}; 
+
+			# Skip links that are already tagged up!
+			if($link =~ m/(^(\<\!\-\-|\[|\<\?))|((\]|\-\-\>|\?\>)$)/){ 
+				return; 
+			}
+			else { 
+				# ... 
+			}
+
+			my $redirected_link = $self->redirect_tagify($link); 
+			my $qm_link         = quotemeta($link);
+			$self->{auto_redirect_tmp} =~ s/(href\=|href\=\")$qm_link/$1$redirected_link/;
+		}
+	
+	
+	    $self->{auto_redirect_tmp} = $s; 
+
+		
+		my $p = HTML::LinkExtor->new(\&html_cb);
+		$p->parse($s); 
+		$s = $self->{auto_redirect_tmp}; 
+		$self->{auto_redirect_tmp} = '';
+		return $s;
+		
+	
+	}
+	else { 
+		
+		
+		my @uris;
+		my $finder = URI::Find->new(sub {
+		    my($uri) = shift;
+		    push @uris, $uri;
+			return $uri; 
+		});
+		$finder->find(\$s);
+		foreach(@uris){ 
+			my $qm_link = quotemeta($_); 
+			if($s =~ m/\[redirect\=$qm_link\]|url\=\"$qm_link\"/){ 
+				next; 
+			}
+			else { 
+				# ...
+			}
+			# Another test - just to make sure it doesn't have some strange chars
+			if($s =~ m/(\<\!\-\-|\<\?|\[)/){ 
+				next; 
+			}
+			else { 
+				# ...
+			}
+			
+			my $redirected = $self->redirect_tagify($_);
+			my $qm_link    = quotemeta($_); 
+			$s =~ s/$qm_link/$redirected/;
+		}
+		return $s; 
+	}
+
+
+}
+
+
+
 
 sub _list_name_check {
 
@@ -379,8 +481,18 @@ sub redirect_regex {
 	# <!-- redirect url="http://yahoo.com" --> 
 	# [redirect url="http://yahoo.com"]
 	# [redirect=yahoo.com]	
-	return qr/((\<\!\-\-(\s+)redirect|\[redirect\s+|\[redirect\=)(.*?)(\]|\-\-\>))/; 
-
+#	return qr/(((\<\!\-\-|\<\?dada)(\s+)redirect|\[redirect\s+|\[redirect\=)(.*?)(\]|\-\-\>|\?\>))/; 
+	return qr/
+		(
+			\<\!\-\-(\s+)redirect(\s+)url\=(.*?)(\s+)\-\-\> 
+			|
+			\[redirect(\s+)url\=(.*?)\]
+			|
+			\[redirect\=(.*?)\]
+			|
+			\<\?dada(\s+)redirect(\s+)url\=(.*?)(\s+)\?\> 
+		)
+	/x; 
 }
 
 sub get_redirect_tag_atts { 
@@ -392,7 +504,7 @@ sub get_redirect_tag_atts {
 
 	# Old Style
 	# [redirect=http://yahoo.com]	
-	if($redirect_tag =~ m/\[redirect=(.*?)\]/){ 
+	if($redirect_tag =~ m/\[redirect\=(.*?)\]/){ 
 		$atts->{url} = $1;
 	}
 	
@@ -402,7 +514,26 @@ sub get_redirect_tag_atts {
 	else {
 		
 		# This is very simple. 
-		$redirect_tag =~ s/((^\[redirect(\s*)|\<\!\-\-(\s*)redirect(\s*))|(\]$|\-\-\>$))//g;
+		$redirect_tag =~ s/
+		(
+			(
+				^\[redirect(\s*)
+				|
+				\<\!\-\-(\s*)redirect(\s*)
+				|
+				^\<dada\?(\s*)redirect(\s*)
+			)
+			|
+			(
+				\]$
+				|
+				\-\-\>$
+				|
+				\?\>$
+			)
+		)
+		//xg;
+		
 		my $pat = qr/(\w+)\s*=\s*"([^"]*)"/;
 
 		while ($redirect_tag=~/$pat/g ) { 
@@ -456,7 +587,7 @@ sub redirect_encode {
 sub redirect_tagify { 
 	my $self = shift; 
 	my $url  = shift; 
-	return '<!-- redirect url="' . $url . '" -->'; 
+	return '<?dada redirect url="' . $url . '" ?>'; 
 }
 
 
