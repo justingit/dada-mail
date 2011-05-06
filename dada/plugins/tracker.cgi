@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-package clickthrough_tracking; 
+package tracker; 
 use strict;
 
 $|++;
@@ -72,7 +72,7 @@ sub run {
 	my $admin_list; 
 	( $admin_list, $root_login ) = check_list_security(
 	    -cgi_obj  => $q,
-	    -Function => 'clickthrough_tracking'
+	    -Function => 'tracker'
 	);
 	$list = $admin_list;
 	$ls   = DADA::MailingList::Settings->new( { -list => $list } );
