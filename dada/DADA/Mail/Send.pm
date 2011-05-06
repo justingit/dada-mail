@@ -1478,6 +1478,8 @@ sub mass_send {
 				);
 				# And, that's it.
 			}
+			else { 
+			}
 			#
 			##################################################################			
 			
@@ -2808,7 +2810,7 @@ sub _log_sub_count {
 			
 	# A new object every time this is called? No!, actually, only called once. Ok, ok. 
 	
-	if($self->{ls}->param('clickthrough_tracking') == 1){ 	
+	if($self->{ls}->param('enable_subscriber_count_logging') == 1){ 	
 		require DADA::Logging::Clickthrough; 
 		my $r = DADA::Logging::Clickthrough->new(
 					{

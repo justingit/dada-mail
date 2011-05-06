@@ -246,6 +246,15 @@ sub r_log {
 		$atts = $args->{-atts};
 	}
 	
+	my $remote_address = undef; 
+	if(!exists($args->{-remote_addr})){ 
+		$remote_address = $self->remote_addr;
+	}
+	else { 
+		$remote_address = $args->{-remote_addr}; 
+	}
+	
+	
     if ( $self->{ls}->param('clickthrough_tracking') == 1 ) {
         my $place_holder_string = '';
         my $sql_snippet         = '';
@@ -277,10 +286,10 @@ sub r_log {
 
         my $sth = $self->{dbh}->prepare($query);
         if(defined($timestamp)){ 
-			$sth->execute($self->{name}, $timestamp, $ENV{'REMOTE_ADDR'}, $args->{-mid}, $args->{-url}, @values );
+			$sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, $args->{-url}, @values );
 		}
 		else { 
-			$sth->execute($self->{name}, $self->remote_addr, $args->{-mid}, $args->{-url}, @values );			
+			$sth->execute($self->{name}, $remote_address, $args->{-mid}, $args->{-url}, @values );			
 		}
         $sth->finish;
 
@@ -305,16 +314,23 @@ sub o_log {
 		$ts_snippet = 'timestamp,'; 
 		$place_holder_string .= ' ,?';
 	}
+	my $remote_address = undef; 
+	if(!exists($args->{-remote_addr})){ 
+		$remote_address = $self->remote_addr;
+	}
+	else { 
+		$remote_address = $args->{-remote_addr}; 
+	}
 	
     if ( $self->{ls}->param('enable_open_msg_logging') == 1 ) {
         my $query =
 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event) VALUES (?, ?, ?, ?' . $place_holder_string .')';
         my $sth = $self->{dbh}->prepare($query);
 		if(defined($timestamp)){ 
-			$sth->execute($self->{name}, $timestamp, $self->remote_addr, $args->{-mid}, 'open' );
+			$sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'open' );
 		}
 		else { 
-			$sth->execute($self->{name}, $self->remote_addr, $args->{-mid}, 'open' );
+			$sth->execute($self->{name}, $remote_address, $args->{-mid}, 'open' );
         }
 		$sth->finish;
         return 1;
@@ -340,6 +356,14 @@ sub sc_log {
 		$ts_snippet = 'timestamp,'; 
 		$place_holder_string .= ' ,?';
 	}
+
+	my $remote_address = undef; 
+	if(!exists($args->{-remote_addr})){ 
+		$remote_address = $self->remote_addr;
+	}
+	else { 
+		$remote_address = $args->{-remote_addr}; 
+	}
 	
 	
     if ( $self->{ls}->param('enable_subscriber_count_logging') == 1 ) {
@@ -350,10 +374,10 @@ sub sc_log {
 		#print 'query "' . $query . '"'; 
 		my $sth = $self->{dbh}->prepare($query);
 		if(defined($timestamp)){ 
-	        $sth->execute($self->{name}, $timestamp, $self->remote_addr, $args->{-mid}, 'num_subscribers', $args->{-num});
+	        $sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'num_subscribers', $args->{-num});
 		}
 		else { 
-	        $sth->execute($self->{name}, $self->remote_addr, $args->{-mid}, 'num_subscribers', $args->{-num});			
+	        $sth->execute($self->{name}, $remote_address, $args->{-mid}, 'num_subscribers', $args->{-num});			
 		}
         $sth->finish;
 
@@ -381,6 +405,13 @@ sub bounce_log {
 		$place_holder_string .= ' ,?';
 	}
 	
+	my $remote_address = undef; 
+	if(!exists($args->{-remote_addr})){ 
+		$remote_address = $self->remote_addr;
+	}
+	else { 
+		$remote_address = $args->{-remote_addr}; 
+	}
 	
     if ( $self->{ls}->param('enable_bounce_logging') == 1 ) {
 
@@ -395,10 +426,10 @@ sub bounce_log {
         my $sth = $self->{dbh}->prepare($query);
 
 		if(defined($timestamp)){ 
-        	$sth->execute($self->{name}, $timestamp, $self->remote_addr, $args->{-mid}, $bounce_type, $args->{-email} );
+        	$sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, $bounce_type, $args->{-email} );
 		}
 		else { 
-			$sth->execute($self->{name}, $self->remote_addr, $args->{-mid}, $bounce_type, $args->{-email} );
+			$sth->execute($self->{name}, $remote_address, $args->{-mid}, $bounce_type, $args->{-email} );
 	        
 		}
         $sth->finish;
@@ -448,9 +479,11 @@ sub get_all_mids {
 	
 	my $msg_id_query1 = ''; 
 	if($self->{ls}->param('tracker_clean_up_reports') == 1){ 
-      $msg_id_query1 = 'SELECT msg_id FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND event = "num_subscribers" GROUP BY msg_id ORDER BY msg_id DESC;';
+						# SELECT msg_id FROM dada_mass_mailing_event_log WHERE list = 'dada_announce' AND event = 'num_subscribers'; 
+      $msg_id_query1 = 'SELECT msg_id FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND event = \'num_subscribers\' GROUP BY msg_id ORDER BY msg_id DESC;';
 	}
 	else { 
+						 
 		$msg_id_query1 = 'SELECT msg_id FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? GROUP BY msg_id ORDER BY msg_id DESC;';
 	}
  #   my $msg_id_query2 =
@@ -461,8 +494,12 @@ sub get_all_mids {
  #   push( @$msg_id1, @$msg_id2 );
  #   $msg_id1 = $self->unique_and_dupe($msg_id1);
 
-
-	my $total = scalar @$msg_id1; 
+#	use Data::Dumper;
+#	die Data::Dumper::Dumper($msg_id1); 
+	my $total = 0; 
+	#if(exists $msg_id1->[0]){ 
+		$total = scalar @$msg_id1; 
+	#}
 	if($total == 0){ 
 		return ($total, []);
 	}	
@@ -688,7 +725,9 @@ sub export_logs {
 }
 
 
-
+sub can_use_country_geoip_data { 
+	return 1; 
+}
 sub country_geoip_data { 
 	
 	my $self   = shift; 
@@ -713,14 +752,17 @@ sub country_geoip_data {
 		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?'; 
 	}
 	elsif($args->{-type} eq 'opens'){ 
-		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = "open" AND list = ?'; 	
-	}
+		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'open\' AND list = ?'; 	
+	}			# SELECT remote_addr FROM dada_mass_mailing_event_log WHERE event = 'open' AND list = 'dadadev'; 
+	
 		
 	if(defined($args->{-mid})){ 
-		$query .= ' AND msg_id = ?'; 
+		$query .= ' AND msg_id=?'; 
 	}
 	my $sth = $self->{dbh}->prepare($query);
 	
+	#	die $query; 
+		
 	if(defined($args->{-mid})){ 
 		$sth->execute($self->{name}, $args->{-mid});
 	}

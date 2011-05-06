@@ -455,8 +455,98 @@ ok($m_report->{num_subscribers} == 5);
 ok(scalar @{$m_report->{url_report}} == 3); 
 
 
-# use Data::Dumper; 
-# diag Dumper($m_report); 
+# auto_redirect_tag
+
+my $ar_str = q{ 
+	http://google.com
+	
+	[redirect=http://gmail.com]
+	
+	<?dada redirect url="http://yahoo.com" ?>
+	
+	http://google.com/test.html
+	
+	[redirect=http://gmail.com/test.html]
+	
+	<?dada redirect url="http://yahoo.com/test.html" ?>
+	
+	http://google.com/blah.cgi?f=test
+	
+	[redirect=http://gmail.com/blah.cgi?f=test]
+	
+	<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>
+}; 
+$ar_str = $lc->auto_redirect_tag($ar_str, 'PlainText');
+my $should_be = q{ 
+	<?dada redirect url="http://google.com/" ?>
+	
+	[redirect=http://gmail.com/]
+	
+	<?dada redirect url="http://yahoo.com/" ?>
+	
+	<?dada redirect url="http://google.com/test.html" ?>
+	
+	[redirect=http://gmail.com/test.html]
+	
+	<?dada redirect url="http://yahoo.com/test.html" ?>
+	
+	<?dada redirect url="http://google.com/blah.cgi?f=test" ?>
+	
+	[redirect=http://gmail.com/blah.cgi?f=test]
+	
+	<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>
+};
+
+ok($ar_str eq $should_be, "yeah, they match up!"); 
+undef $ar_str; 
+undef $should_be;
+
+my $ar_str = q{
+	<p><a href="http://google.com">Gooooogle</a></p>
+	
+	<p><a href="[redirect=http://gmail.com]">Gmail!</a></p>
+	
+	<p><a href="<?dada redirect url="http://yahoo.com" ?>">Yahoo!</a></p>
+	
+	<p><a href="http://google.com/test.html">Google Test</a></p>
+	
+	<p><a href="[redirect=http://gmail.com/test.html]">Gmail Testl</a></p>
+	
+	<p><a href="<?dada redirect url="http://yahoo.com/test.html" ?>">Yahoo Test</a></p>
+	
+	<p><a href="http://google.com/blah.cgi?f=test">Google QS Test</a></p> 
+	
+	<p><a href="[redirect=http://gmail.com/blah.cgi?f=test]">Gmail QS Test</a></p>
+	
+	<p><a href="<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>">Yahoo QS Test</a></p>
+}; 
+
+$should_be = q{
+	<p><a href="http://google.com">Gooooogle</a></p>
+	
+	<p><a href="[redirect=http://gmail.com]">Gmail!</a></p>
+	
+	<p><a href="<?dada redirect url="http://yahoo.com" ?>">Yahoo!</a></p>
+	
+	<p><a href="http://google.com/test.html">Google Test</a></p>
+	
+	<p><a href="[redirect=http://gmail.com/test.html]">Gmail Testl</a></p>
+	
+	<p><a href="<?dada redirect url="http://yahoo.com/test.html" ?>">Yahoo Test</a></p>
+	
+	<p><a href="http://google.com/blah.cgi?f=test">Google QS Test</a></p> 
+	
+	<p><a href="[redirect=http://gmail.com/blah.cgi?f=test]">Gmail QS Test</a></p>
+	
+	<p><a href="<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>">Yahoo QS Test</a></p>
+};
+
+ok($ar_str eq $should_be, "yeah, they match up! (HTML)"); 
+
+undef $ar_str; 
+undef $should_be;
+
+
 
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;

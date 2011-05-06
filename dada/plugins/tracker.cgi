@@ -1019,6 +1019,7 @@ my $tmpl = q{
 	<!-- tmpl_set name="title" value="Tracker - Message Report" -->
 	
 	
+<!-- tmpl_if can_use_country_geoip_data --> 
 	
 	<script type="text/javascript">
 	    //<![CDATA[
@@ -1070,6 +1071,7 @@ my $tmpl = q{
 
 	    //]]>
 	</script>
+<!-- /tmpl_if --> 
 	
 	  <p id="breadcrumbs">
         <a href="<!-- tmpl_var Plugin_URL -->">
@@ -1081,6 +1083,7 @@ my $tmpl = q{
 	<h1>Tracking Info For: 
 	 <!-- tmpl_var subject escape="HTML" --> 
 	</h1> 
+
 	
 	<fieldset> 
 	<legend> 
@@ -1134,6 +1137,9 @@ my $tmpl = q{
 	</div> 
 </fieldset> 
 
+<!-- tmpl_if can_use_country_geoip_data --> 
+
+
 <fieldset> 
 <legend> 
 	Clickthroughs by Country
@@ -1147,7 +1153,7 @@ my $tmpl = q{
 
 </fieldset> 
 
-
+<!-- /tmpl_if --> 
 
 <fieldset> 
 <legend>Activity</legend> 
@@ -1248,6 +1254,10 @@ my $tmpl = q{
 
 		
 </fieldset> 
+
+<!-- tmpl_if can_use_country_geoip_data --> 
+
+
 <fieldset> 
 <legend> 
 	Message Opens by Country
@@ -1257,9 +1267,9 @@ my $tmpl = q{
 </div> 
 <div id="country_geoip_chart_opens"> 
 </div>
-
-
 </fieldset>
+
+<!-- /tmpl_if --> 
 
 <fieldset> 
 <legend>Export Message Logs</legend> 
@@ -1283,9 +1293,6 @@ my $tmpl = q{
 <div class="floatclear"></div>
 </fieldset> 
 
-
-
-	
 };
 
 }
@@ -1315,6 +1322,9 @@ sub message_report {
                 hard_bounce     => $m_report->{'hard_bounce'}   || 0,
 				soft_bounce_report => $m_report->{'soft_bounce_report'}   || [],
 				hard_bounce_report => $m_report->{'hard_bounce_report'}   || [],
+				
+				can_use_country_geoip_data => $rd->can_use_country_geoip_data, 
+				
 				Plugin_URL         => $Plugin_Config->{Plugin_URL},
 				Plugin_Name        => $Plugin_Config->{Plugin_Name},			
             },
@@ -1366,9 +1376,9 @@ sub country_geoip_chart_tmpl{
 	};
 }
 sub country_geoip_chart {
-		my $mid = $q->param('mid')   || undef; 
+		my $mid  = $q->param('mid')   || undef; 
 		my $type = $q->param('type') || undef; 
-		
+
 		my ($c_geo_ip_report, $c_geo_ip_img) = country_geoip_data(
 				{ 
 					-mid  => $mid, 

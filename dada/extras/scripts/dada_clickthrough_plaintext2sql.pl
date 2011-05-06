@@ -63,27 +63,32 @@ foreach my $list(@lists){
                 # $report->{$mid}->{count}++;
 				$dlc->r_log(
 					{
-						-timestamp => convert_timestamp($t), 
-						-mid       => $mid, 
-						-url       => $url, 
+						-timestamp   => convert_timestamp($t), 
+						-mid         => $mid, 
+						-url         => $url, 
+						-remote_addr => undef, 
 					}
 				); 
             }
             elsif ( $url eq 'open' ) {
                 $dlc->o_log(
 					{
-						-timestamp => convert_timestamp($t), 
-						-mid       => $mid, 
+						-timestamp   => convert_timestamp($t), 
+						-mid         => $mid, 
+						-remote_addr => undef, 
+						
 					}
 				);
             }
             elsif ( $url eq 'soft_bounce' ) {
                 $dlc->bounce_log(
 					{
-						-timestamp => convert_timestamp($t), 
-						-mid       => $mid, 
-						-type      => 'soft', 
-						-email     => $extra, 
+						-timestamp   => convert_timestamp($t), 
+						-mid         => $mid, 
+						-type        => 'soft', 
+						-email       => $extra, 
+						-remote_addr => undef, 
+						
 					}
 				);
             }
@@ -92,9 +97,11 @@ foreach my $list(@lists){
                 $dlc->bounce_log(
 					{
 						-timestamp => convert_timestamp($t), 
-						-mid       => $mid, 
-						-type      => 'hard', 
-						-email     => $extra, 
+						-mid         => $mid, 
+						-type        => 'hard', 
+						-email       => $extra, 
+						-remote_addr => undef, 
+						
 					}
 				);
 
@@ -110,9 +117,9 @@ foreach my $list(@lists){
 				);
             }
 			else { 
-				print "Skipping: $l\n"; 
+				print "Skipping: $t\n"; 
 			}
-			print "Finished: $l\n"; 
+			print "Finished: $t\n"; 
         }
         close(LOG);
 

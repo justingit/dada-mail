@@ -2254,7 +2254,7 @@ $ADMIN_MENU ||= [
 
 #					{-Title      => 'Tracker',
 #					 -Title_URL  => $PLUGIN_URL."/tracker.cgi",
-#					 -Function   => 'clickthrough_tracking',
+#					 -Function   => 'tracker',
 #					 -Activated  => 1,
 #					},
 

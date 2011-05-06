@@ -50,14 +50,7 @@ sub _init {
 
 }
 
-sub redirect_config_test { 
-	my $self = shift; 	
-	
-	return 0 if (!$self->{name}) || ($self->{name} eq ""); 
-	return 0 unless DADA::App::Guts::check_if_list_exists(-List => $self->{name}) >= 1;
-	return 0 if $self->{-li}->{clickthrough_tracking} != 1;
-	return 1;
-}
+
 
 sub verified_mid { 
 	my $self = shift; 
@@ -327,13 +320,18 @@ sub parse_string {
     my $str  = shift;
 	my $type = shift || 'PlainText'; 
 
-	if($self->{ls}->param('tracker_auto_parse_links')){ 
+	warn "Auto Parsing Test!"; 
+	if($self->{ls}->param('tracker_auto_parse_links') == 1){ 
+		warn "it's on!"; 
 		$str = $self->auto_redirect_tag($str, $type); 
 	}
 	else { 
 		# ... 
+		warn "it's off."; 
 	}
 
+	warn "now, the string looks like this! \n $str"; 
+	
     my $pat = $self->redirect_regex();
     $str =~ s/$pat/&redirect_encode($self, $mid, $1)/eg;
 
@@ -359,7 +357,7 @@ sub auto_redirect_tag {
 		return $s; 
 	}
 	
-	my @a; 
+	my @a;
 	if($type eq 'HTML'){ 
 
 		 sub html_cb {
@@ -394,33 +392,31 @@ sub auto_redirect_tag {
 	}
 	else { 
 		
-		
+		my $tmp_s = $s; 
 		my @uris;
 		my $finder = URI::Find->new(sub {
 		    my($uri) = shift;
-		    push @uris, $uri;
+			push @uris, $uri;
 			return $uri; 
 		});
 		$finder->find(\$s);
-		foreach(@uris){ 
-			my $qm_link = quotemeta($_); 
-			if($s =~ m/\[redirect\=$qm_link\]|url\=\"$qm_link\"/){ 
-				next; 
-			}
-			else { 
-				# ...
-			}
-			# Another test - just to make sure it doesn't have some strange chars
-			if($s =~ m/(\<\!\-\-|\<\?|\[)/){ 
-				next; 
-			}
-			else { 
-				# ...
-			}
+		foreach my $specific_url(@uris){ 
 			
-			my $redirected = $self->redirect_tagify($_);
-			my $qm_link    = quotemeta($_); 
-			$s =~ s/$qm_link/$redirected/;
+			my $qm_link1 = quotemeta('[redirect='.$specific_url.']'); 
+			my $qm_link2 = quotemeta('url="'.$specific_url.'"'); 
+			
+			# URI::Find changes the URL sometimes and adds a, "/" at the end. What?
+			my $other_specific_url = $specific_url; 
+			   $other_specific_url =~ s/\/$//;
+			my $qm_link3 = quotemeta('[redirect='.$other_specific_url.']'); 
+			my $qm_link4 = quotemeta('url="'.$other_specific_url.'"');			if($tmp_s =~ m/$qm_link1|$qm_link2|$qm_link3|$qm_link4/g){ 
+				# ... 
+			}
+			else { 
+				my $redirected = $self->redirect_tagify($specific_url);
+				my $qm_link    = quotemeta($specific_url); 
+				$s =~ s/$qm_link/$redirected/;
+			}
 		}
 		return $s; 
 	}

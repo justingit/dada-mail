@@ -704,6 +704,11 @@ sub clickthrough_log_location {
 	   return $ctl; 
 }
 
+sub can_use_country_geoip_data { 
+	return 0; 
+}
+
+
 
 
 

@@ -2011,8 +2011,8 @@ sub SQL_check_setup {
 		return 0; 
 	}
 	else { 
-		# Last test - we need at least 9 tables. This test sucks - I shouldn't
-		# need to know I need 9 tables. 
+		# Last test - we need at least 11 tables. This test sucks - I shouldn't
+		# need to know I need 11 tables. 
 		if($table_count < 11){ # And now, I shouldn't need to know I need 11 tables. 
 			return 0; 
 		}
