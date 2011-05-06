@@ -31,6 +31,8 @@ $q = decode_cgi_obj($q);
 my $Plugin_Config             = {}; 
 $Plugin_Config->{Plugin_URL}  = $q->url; 
 $Plugin_Config->{Plugin_Name} = 'Tracker'; 
+$Plugin_Config->{Geo_IP_Db}   = '../DADA/data/GeoIP.dat'; 
+
 
 
 &init_vars; 
@@ -90,6 +92,7 @@ sub run {
 		'download_clickthrough_logs' => \&download_clickthrough_logs, 
 		'download_activity_logs'     => \&download_activity_logs, 
 		'domain_breakdown_img'       => \&domain_breakdown_img, 
+		'country_geoip_chart'        => \&country_geoip_chart, 
 	);
 	if ($f) {
 	    if ( exists( $Mode{$f} ) ) {
@@ -201,11 +204,11 @@ sub default_tmpl {
 					{
 					  method: 'post',
 					 	parameters: {
-							flavor: 'ajax_delete_log', 
+							f: 'ajax_delete_log', 
 					  },
 					  onSuccess: function() {
 						show_table();
-						subscriber_history_img();
+						subscriber_history_img();						
 					  }, 
 					onFailure: function() { 
 						alert('Warning! Something went wrong when attempting to remove the log file.'); 
@@ -428,17 +431,15 @@ sub default_tmpl {
 <legend>Tracker Help</legend> 
 <p>
  Clickthrough logging works for URLs in mailing list
- messages when the URLs are placed in the  <code>&lt;!-- redirect ... --&gt;</code> comment. 
+ messages when the URLs are placed in the  <code>&lt;?dada redirect url=&quot;...&quot; ?&gt;</code> comment. 
 </p>
 
 <p>For example:</p> 
 <p><code>
-&lt;!-- redirect url=&quot;http://example.com&quot; --&gt;
+&lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;
 </code></p>
 <p>Replace, <code>http://example.com</code> with the URL you want to track clickthroughs. 
 </fieldset> 
-
-
 
 };
 
@@ -479,6 +480,7 @@ sub default {
 				Plugin_URL                       => $Plugin_Config->{Plugin_URL}, 
 				tracker_record_view_count_widget => $tracker_record_view_count_widget, 
 				can_use_auto_redirect_tag        => $can_use_auto_redirect_tag, 
+
             },
             -list_settings_vars_param => {
                 -list   => $list,
@@ -787,15 +789,25 @@ sub clickthrough_table_tmpl {
 				<tr <!-- tmpl_if __odd__>style="background:#fff"<!-- tmpl_else -->style="background:#ccf"<!-- /tmpl_if -->> 
 				 <td> 
 		          <p>
-		           <strong>
-					<!-- tmpl_if message_subject --> 
+		          
+					<!-- tmpl_if message_subject -->
+					 	 <strong>
+						<a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+						<!-- tmpl_var message_subject escape="HTML" -->
+						</a> 
+						
 						<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_archive&list=<!-- tmpl_var list -->&id=<!-- tmpl_var mid -->">
-							<!-- tmpl_var message_subject escape="HTML" --> 
+						 </strong>
+							(View) 
 						</a> 
 					<!-- tmpl_else --> 
+						 <strong>
+						<a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
 						#<!-- tmpl_var mid --> (unarchived message)
+						</a>
+						 </strong>
 					<!-- /tmpl_if --> 
-		 		   </strong> 
+		 		   
 				  </p>
 				 </td> 
 				 <td> 
@@ -1006,6 +1018,59 @@ my $tmpl = q{
 	
 	<!-- tmpl_set name="title" value="Tracker - Message Report" -->
 	
+	
+	
+	<script type="text/javascript">
+	    //<![CDATA[
+		Event.observe(window, 'load', function() {
+		  country_geoip_chart_clickthroughs();	
+		  country_geoip_chart_opens();
+		});
+		
+		function country_geoip_chart_clickthroughs(){ 
+			new Ajax.Updater(
+				'country_geoip_chart_clickthroughs', '<!-- tmpl_var Plugin_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						f:       'country_geoip_chart',
+						mid:     '<!-- tmpl_var mid -->',
+						type:    'clickthroughs'
+					},
+				onCreate: 	 function() {
+					$('country_geoip_chart_clickthroughs_loading').update('<p class="alert">Loading...</p>');
+				},
+				onComplete: 	 function() {
+					$('country_geoip_chart_clickthroughs_loading').update('<p class="alert">&nbsp;</p>');
+					Effect.BlindDown('country_geoip_chart_clickthroughs');
+				}	
+				});
+		}
+		
+		function country_geoip_chart_opens(){ 
+			new Ajax.Updater(
+				'country_geoip_chart_opens', '<!-- tmpl_var Plugin_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						f:       'country_geoip_chart',
+						mid:     '<!-- tmpl_var mid -->',
+						type:    'opens'
+					},
+				onCreate: 	 function() {
+					$('country_geoip_chart_opens_loading').update('<p class="alert">Loading...</p>');
+				},
+				onComplete: 	 function() {
+					$('country_geoip_chart_opens_loading').update('<p class="alert">&nbsp;</p>');
+					Effect.BlindDown('country_geoip_chart_opens');
+				}	
+				});
+		}
+		
+
+	    //]]>
+	</script>
+	
 	  <p id="breadcrumbs">
         <a href="<!-- tmpl_var Plugin_URL -->">
 		 <!-- tmpl_var Plugin_Name -->
@@ -1019,7 +1084,7 @@ my $tmpl = q{
 	
 	<fieldset> 
 	<legend> 
-		Clickthroughs
+		Clickthroughs by URL
 	</legend> 
 	
 	<div style="max-height: 200px; overflow: auto; border: 1px solid black;">
@@ -1067,16 +1132,21 @@ my $tmpl = q{
 	
 	</table> 
 	</div> 
-
-	<div class="buttonfloat">
-	<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-	<input type="hidden" name="f" value="download_clickthrough_logs" /> 
-	<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
-	 <input type="submit" class="processing" name="process" value="Download Raw Clickthrough Logs (.csv)" />
-	</form> 
-	</div>
-	<div class="floatclear"></div>
 </fieldset> 
+
+<fieldset> 
+<legend> 
+	Clickthroughs by Country
+</legend>
+
+<div id="country_geoip_chart_clickthroughs_loading"> 
+</div> 
+<div id="country_geoip_chart_clickthroughs"> 
+</div>
+
+
+</fieldset> 
+
 
 
 <fieldset> 
@@ -1096,13 +1166,15 @@ my $tmpl = q{
 	     </strong> 
 	    </p>
 	
-		<p>
-		 <strong>
-		  Number of Recorded Soft Bounces: <!-- tmpl_var soft_bounce -->
-		 </strong> 
-		</p> 
+	
 		<!-- tmpl_if soft_bounce_report --> 
-			<table cellpadding="5" cellspacing="0"> 
+		<fieldset> 
+		<legend>Soft Bounces</legend> 
+		
+		<div> 
+			<div style="max-height: 300px; overflow: auto; border:1px solid black;width:500px">
+			
+			<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0"  width="500">
 			 <tr> 
 			  <td> 
 			   <strong>Date</strong>
@@ -1113,12 +1185,12 @@ my $tmpl = q{
 			 </tr> 
 			
 			<!-- tmpl_loop soft_bounce_report --> 
-			 <tr> 
+			<tr <!-- tmpl_if __odd__>style="background:#ccf"<!-- tmpl_else -->style="background:#fff"<!-- /tmpl_if -->> 
 			  <td> 
 			   <!-- tmpl_var timestamp --> 
 			  </td> 
 			  <td> 
-			   <a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="HTML" -->">
+			   <a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="URL" -->">
 				<!-- tmpl_var email --> 
 			  </td> 
 			 </tr> 
@@ -1126,16 +1198,21 @@ my $tmpl = q{
 			
 			<!-- /tmpl_loop --> 
 			</table> 
+				<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var soft_bounce -->&nbsp;</p> 
+			</div> 
+		
+			</div> 
+			
+			</fieldset> 
+			
 		<!-- /tmpl_if --> 
-
-		<p>
-		 <strong>
-		  Number of Recorded Hard Bounces: <!-- tmpl_var hard_bounce -->
-		 </strong> 
-		</p> 
 		
 		<!-- tmpl_if hard_bounce_report --> 
-			<table cellpadding="5" cellspacing="0"> 
+		<fieldset> 
+		<legend>Hard Bounces</legend>
+		<div> 
+			<div style="max-height: 300px; overflow: auto; border:1px solid black; width:500px">
+				<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0" width="500">
 			 <tr> 
 			  <td> 
 			   <strong>Date</strong>
@@ -1146,7 +1223,7 @@ my $tmpl = q{
 			 </tr> 
 			
 			<!-- tmpl_loop hard_bounce_report --> 
-			 <tr> 
+			<tr <!-- tmpl_if __odd__>style="background:#ccf"<!-- tmpl_else -->style="background:#fff"<!-- /tmpl_if -->> 
 			  <td> 
 			   <!-- tmpl_var timestamp --> 
 			  </td> 
@@ -1159,18 +1236,54 @@ my $tmpl = q{
 			
 			<!-- /tmpl_loop --> 
 			</table> 
+			<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var hard_bounce -->&nbsp;</p> 
+			
+			
+			</div> 
+			</div> 
+			</fieldset> 
+			
 		<!-- /tmpl_if -->
 
-		<div class="buttonfloat">
-		<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-		<input type="hidden" name="f" value="download_activity_logs" /> 
-		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
-		 <input type="submit" class="processing" name="process" value="Download Raw Activity Logs (.csv)" />
-		</form> 
-		</div>
-		<div class="floatclear"></div>
+
 		
 </fieldset> 
+<fieldset> 
+<legend> 
+	Message Opens by Country
+</legend>
+
+<div id="country_geoip_chart_opens_loading"> 
+</div> 
+<div id="country_geoip_chart_opens"> 
+</div>
+
+
+</fieldset>
+
+<fieldset> 
+<legend>Export Message Logs</legend> 
+
+<div class="buttonfloat">
+<form action="<!-- tmpl_var PluginURL -->" method="post"> 
+<input type="hidden" name="f" value="download_activity_logs" /> 
+<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
+ <input type="submit" class="processing" name="process" value="Download Raw Activity Logs (.csv)" />
+</form> 
+</div>
+
+
+<div class="buttonfloat">
+<form action="<!-- tmpl_var PluginURL -->" method="post"> 
+<input type="hidden" name="f" value="download_clickthrough_logs" /> 
+<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
+ <input type="submit" class="processing" name="process" value="Download Raw Clickthrough Logs (.csv)" />
+</form> 
+</div>
+<div class="floatclear"></div>
+</fieldset> 
+
+
 
 	
 };
@@ -1180,6 +1293,7 @@ my $tmpl = q{
 sub message_report {
 
     my $m_report = $rd->report_by_message( $q->param('mid') );
+
 
     my $tmpl = message_report_tmpl();
     require DADA::Template::Widgets;
@@ -1202,12 +1316,123 @@ sub message_report {
 				soft_bounce_report => $m_report->{'soft_bounce_report'}   || [],
 				hard_bounce_report => $m_report->{'hard_bounce_report'}   || [],
 				Plugin_URL         => $Plugin_Config->{Plugin_URL},
-				Plugin_Name        => $Plugin_Config->{Plugin_Name},	
+				Plugin_Name        => $Plugin_Config->{Plugin_Name},			
             },
         },
     );
     e_print($scrn);
 
+}
+
+sub country_geoip_chart_tmpl{ 
+	return q{ 
+		
+		<table cellpadding="5" cellspacing="0" border="0"> 
+		<tr> 
+		<td> 
+		<div> 
+			<div style="max-height: 300px; overflow: auto; border:1px solid black">
+		 	<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0">
+		<tr style="background:#fff"> 
+		<td> 
+		<p><strong>Country</strong></p> 
+		</td> 
+		<td>
+		<p><strong><!-- tmpl_var type --></strong></p> 
+		</td> 
+		</tr> 
+
+		<!-- tmpl_loop c_geo_ip_report --> 
+		<tr <!-- tmpl_if __odd__>style="background:#fff"<!-- tmpl_else -->style="background:#ccf"<!-- /tmpl_if -->> 
+		<td>
+		<!-- tmpl_var country --> 
+		</td> 
+		<td align="right"> 
+		<!-- tmpl_var count --> 
+		</td> 
+		</tr> 
+		<!-- /tmpl_loop --> 
+		</table> 
+		</div> 
+		</div> 
+
+		</td> 
+		<td> 
+		<p>
+		 <img src="<!-- tmpl_var c_geo_ip_img -->" style="border:1px solid black" />
+		</p> 
+		</td> 
+		</table>
+	};
+}
+sub country_geoip_chart {
+		my $mid = $q->param('mid')   || undef; 
+		my $type = $q->param('type') || undef; 
+		
+		my ($c_geo_ip_report, $c_geo_ip_img) = country_geoip_data(
+				{ 
+					-mid  => $mid, 
+					-type => $type, 
+				}
+			); 
+			
+		my $tmpl = country_geoip_chart_tmpl(); 
+
+
+	    require DADA::Template::Widgets;
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -data           => \$tmpl,
+				-vars => { 
+					c_geo_ip_report => $c_geo_ip_report, 
+					c_geo_ip_img    => $c_geo_ip_img,
+					type            => ucfirst($type),
+				}
+	        }
+	    );
+		print $q->header(); 
+	    e_print($scrn);
+	
+}
+
+sub country_geoip_data {
+	 
+	my ($args) = @_;
+	
+	$args->{-db} = $Plugin_Config->{Geo_IP_Db}; 
+	
+	my $report = $rd->country_geoip_data($args); 
+
+	my @country = (); 
+	my @number  = (); 
+	foreach(keys %$report){ 
+		next if $_ eq 'unknown'; 
+		push(@country, $_); 
+	 	push(@number , $report->{$_}); 
+	}
+	my $chld = join('', @country);
+	require URI::GoogleChart;
+	my $chart = URI::GoogleChart->new("world", 440, 220,
+	    color => ["white", "FFFFC7", "red"],
+	    background => "EAF7FE", # water blue
+	    chld => $chld,
+	    data => [@number],
+	);
+	use HTML::Entities;
+	my $enc_chart = encode_entities($chart);
+	
+	require Geography::Countries; 
+	my $ht_report = [];
+	for ( sort { $report->{$b} <=> $report->{$a} } keys %$report ) {
+		
+		my $country_name =  Geography::Countries::country($_);
+		if(!defined($country_name)){ 
+			$country_name = $_; 
+		}
+		push(@$ht_report, {country_code => $_, country => $country_name, count => $report->{$_}});
+	}
+	return ($ht_report, $enc_chart); 
+	
 }
 
 

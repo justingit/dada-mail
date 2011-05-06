@@ -689,14 +689,89 @@ sub export_logs {
 
 
 
+sub country_geoip_data { 
+	
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	if(!exists($args->{-count})){ 
+		$args->{-count} = 20; 
+	}
+	if(!exists($args->{-mid})){ 
+		$args->{-mid} = undef; 
+	}
+	if(!exists($args->{-type})){ 
+		$args->{type} = 'clickthroughs'; 
+	}
+	if(!exists($args->{-db})){ 
+		croak "You MUST pass the path to the geo ip database in, '-db'";
+	}
+#	select remote_addr from dada_clickthrough_url_log where msg_id = '20110502135133'; 
+	my $query; 
+	
+	if($args->{-type} eq 'clickthroughs'){ 
+		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?'; 
+	}
+	elsif($args->{-type} eq 'opens'){ 
+		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = "open" AND list = ?'; 	
+	}
+		
+	if(defined($args->{-mid})){ 
+		$query .= ' AND msg_id = ?'; 
+	}
+	my $sth = $self->{dbh}->prepare($query);
+	
+	if(defined($args->{-mid})){ 
+		$sth->execute($self->{name}, $args->{-mid});
+	}
+	else { 
+		$sth->execute($self->{name});
+	}
+	my $ips = []; 
+
+	while ( ( my $ip ) = $sth->fetchrow_array ) {
+		push(@$ips, $ip);
+	}	
+
+	my $loc = {}; 
+	
+	require Geo::IP::PurePerl;
+	my $gi = Geo::IP::PurePerl->new($args->{-db});
+
+	my $per_country = {}; 
+	foreach(@$ips){ 
+		my $country = $gi->country_code_by_addr($_);
+		if(defined($country)){ 
+			if(!exists($per_country->{$country})){ 
+				$per_country->{$country} = 0; 
+			}
+			$per_country->{$country}++;
+		}
+		else { 
+			if(!exists($per_country->{'unknown'})){ 
+				$per_country->{unknown} = 0;
+			}
+			$per_country->{'unknown'}++;
+		}
+	}
+	return $per_country; 
+	
+}
+
+
+
 
 sub purge_log { 
+	
+	
 	my $self = shift; 
 	
+		
 		my $query1 = 'DELETE FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?'; 
 		my $query2 = 'DELETE FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ?'; 
-		$self->{dbh}->do($query1, {}, ($self->{name})); 
-		$self->{dbh}->do($query2, {}, ($self->{name}));		
+		
+		$self->{dbh}->do($query1, {}, ($self->{name})) or die "cannot do statment $DBI::errstr\n"; 
+		$self->{dbh}->do($query2, {}, ($self->{name})) or die "cannot do statment $DBI::errstr\n";
 
 
 	return 1; 

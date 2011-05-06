@@ -1183,6 +1183,7 @@ sub unsubscribe {
 				}
 			);
        
+          # Why is this removed, before seeing if they're actually subscribed? 
  	      my $rm_status = $lh->remove_subscriber(
 				{
 					-email =>$email, 
@@ -1483,6 +1484,8 @@ sub unsub_confirm {
              
     	warn 'removing, ' . $email . ' from, "list"'
 			if $t; 
+			
+		# This is the only place where we're removing from, 'list' that I can find 
         $lh->remove_subscriber(
 		{ 
                -email => $email, 
