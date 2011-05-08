@@ -1526,222 +1526,284 @@ sub find_message_subject {
 
 =pod
 
-=head1 Clickthrough Tracking - clickthrough_tracking.cgi
+=head1 Tracker - tracker.cgi
 
-clickthrough_tracking.cgi gives you the ability to track:
+The Tracker plugin creates fancy reports of the activity and the link 
+clickthroughs from your mass mailing messages. You can think of a mass mailing 
+being a "campaign" if you'd like. 
 
-=over
-
-=item * How many times certain urls are clicked on in your list messages
-
-=item * How many times a message is opened
-
-=item * How many subscribers are present every time a message is sent
-
-=item * "Hard" email Bounces
-
-=back
-
-=head1 Obtaining The Program
-
-The Click Through Tracking plugin can be found in the Magicbook distribution in the, B<plugins> 
-directory. 
-
-=head1 Installing clickthrough_tracking.cgi
-
-clickthrough_tracking.cgi should be installed into your dada/plugins directory. Upload the script and change it's permissions to 755. 
-
-Add this entry to the $ADMIN_MENU array ref:
-
-	 {-Title          => 'Clickthrough Tracking', 
-	  -Title_URL      => $PLUGIN_URL."/clickthrough_tracking.cgi",
-	  -Function       => 'clickthrough_tracking',
-	  -Activated      => 1, 
-	  },
-
-It's possible that this has already been added to $ADMIN_MENU and all
-you would need to do is uncomment this entry.
-
-
-=head1 Using clickthrough_tracking.cgi
-
-=head2 Creating clickthrough tracking links
-
-Clickthrough tracking works by passing the URL you want to track to a script that keeps track of what URL gets clicked when, then redirecting the user to the real URL. 
-
-To use the clickthrough tracking capabilities, first visit clickthrough_tracking.cgi in your web browser and check, B<Enable Clickthrough Tracking > 
-
-When you write a list message use the special [redirect] tag, instead of just a URL: 
-
-B<Instead of:>
-
-	http://yahoo.com
-
-B<Write:>
-
-    [redirect=http://yahoo.com]
-
-If you're are writing an HTML message, 
-
-B<Instead of:>
-
-	<a href="http://yahoo.com">http://yahoo.com</a>
-
-B<Write:>
-
-	<a href="[redirect=http://yahoo.com]">http://yahoo.com</a>
-
-Make sure: 
+The activities that are logged and reported include: 
 
 =over
 
-=item * You do not put quotes around the URL in the [redirect] tag: 
+=item * # subscribers when a mass mailing was sent out
 
-B<NO!>
+=item * # of recorded clickthroughs 
 
- [redirect="http://yahoo.com"]
+=item * # of recorded opens/views
 
-B<Yes!>
-
- [redirect=http://yahoo.com]
-
-=item * You do not forget the I<http://> part of the URL:
-
-B<NO!>
-
- [redirect=yahoo.com]
-
-B<Yes!> 
-
-  [redirect=http://yahoo.com]
-
-If you want, you can use any protocal you want, be it http, ftp, ical, etc.
+=item * # bounces, both soft and hard
 
 =back
 
+=head2 Birds-Eye View
 
-=head2 Using Open Messages Logging
+These fancy reports include the above information in tabular data, as well 
+as in a line graph, for all mass mailings at once  to help you spot general trends. 
+This information can also be exported into .csv files, giving you more flexibility 
+for specific to your needs. 
 
-Be sure to check, B<Enable Open Messages Logging>
+The Tracker also displays a pie chart showing the breakdown of your 
+current subscribers based on their domain. 
 
-Please understand what this feature does - and does not do. 
+=head2 Individual Messages/Campaigns
 
-When this option is checked, Dada Mail will track each time an email message is opened by a mail reader as long as: 
+Along with the birds-eye view of seeing data of many messages at once, each mass mailing/campaign
+can also be explored.
 
 =over
 
-=item * The message is formatted in HTML
+=item * Clickthroughs are broken down per # of clicks per link
 
-PlainText messages cannot be tracked.
+=item * Clickthroughs are also broken down by country of origin, displayed in both a 
+table and map. 
 
-=item * The mail reader being used to view your list message has not disabled image viewing 
+=item * Opens are also broken down by country of origin and displayed both in 
+a table and map. 
 
-=back
+=item * Bounces, both soft and hard bounces are listed by date and email address of the bouncee. 
+Clicking on the email address will allow you to view the data about the bounced message itself
+in the bounce handler plugin. 
 
-Even if all these conditions are met, opens may not be logged correctly. Saying all this, you B<should not> use this feature as a hard statistical number, but rather as a sort of barometer of how many people I<may> be reading your message. 
+Just to make clear, no bounces will be recorded, unless you've separately set up and 
+installed the bounce handler plugin that comes with Dada Mail (called Mystery Girl/dada_bounce_handler.pl) 
 
-Viewing the message in Dada Mail's own archives will not be tracked. 
-
-The Open Message Logger only logs: 
-
-=over
-
-=item * The list the message was sent from 
-
-=item * The, "Message-ID" of the message itself
-
-=item * The time the message was opened. 
+If you suddenly get a ton of bounced messages for a mailing from addresses you know 
+look legitimate, there's a good chance that something seriously went wrong in the 
+delivery part of a mass mailing. The reports that the Tracker plugin links to 
+may help in resolving this problem. 
 
 =back
 
-The Open Message Logger DOES NOT log: 
+All this message-specific data can also be exported via .csv files that may be downloaded. 
 
-=over
+=head1 Installing tracker.cgi
 
-=item * The email address associated with the opening
+The tracker.cgi plugin comes with Dada Mail. You'll find it in the, I<dada/plugins> directory with the file name, I<tracker.cgi> 
 
-=item * The IP address associated with the opening
+Change its permission to, C<755>. 
 
-=item * Any other information that can be used to associate a open with a specific subscriber of your list
+=head2 List Control Panel Menu
 
-=back
+Now, edit your C<.dada_config> file, so that it shows the Tracker in the left-hand menu, under the, B<Plugins> heading: 
 
-We find the B<extremely important> that no personal information is tracked. It's not something we'd personally want tracked if we were to be a subscriber to a mailing list.
+First, see if the following lines are present in your C<.dada_config> file: 
 
-To clarify how the message opener works, Dada Mail inserts a small image into the source of your HTML message. It looks something like this: 
+ # start cut for list control panel menu
+ =cut
 
- <!--open_img-->
- <img src="example.com/cgi-bin/dada/mail.cgi/spacer_image/listshortname/1234/spacer.png" />
- <!--/open_img-->
+ =cut
+ # end cut for list control panel menu
 
-Where, B<listshortname> is your List Short Name and, B<1234> is the Message-ID.
+If they are, remove them. 
 
-In our testing using SpamAssassin, this does not raise any flags with its mail filters, but please run your own tests to make sure that your subscribers will still receive your messages.
+Then, find these lines: 
 
-=head2 Using Subscriber Count Logging
+ #					{-Title      => 'Tracker',
+ #					 -Title_URL  => $PLUGIN_URL."/tracker.cgi",
+ #					 -Function   => 'tracker',
+ #					 -Activated  => 1,
+ #					},
 
-Check, B<Enable Subscriber Count Logging> 
+Uncomment the lines, by taking off the, "#"'s: 
 
-That's it! Nothing more has to be done. 
+ 					{-Title      => 'Tracker',
+ 					 -Title_URL  => $PLUGIN_URL."/tracker.cgi",
+ 					 -Function   => 'tracker',
+ 					 -Activated  => 1,
+ 					},
 
-=head2 Using "Hard" email Bounces Logging
+Save your C<.dada_config> file.
 
-If you have the, Mystery Girl Bounce Handler installed, just check, 
+=head1 Using tracker.cgi
 
-B<Enable Bounce Logging> 
+For the most part, the Tracker plugin simply reports data that's collected about your mass mailings. 
 
-To clarify what this tells you - a brief tutorial on how messages are bounced: 
+=head2 Preferences
 
-There are roughly two different types of bounced messages: "soft" bounces - bounces that happen because a mailbox is full, or there's some sort of problem with mail delivery and, "hard" bounces - bounces because the subscriber's mail box just doesn't exist. 
+You may enabled/disable any of the items it does track independently in the plugin's Preferences. 
 
-In the context of this tracker, only bounce emails that cause the Mystery Girl bounce handler to remove the address from the subscription list are counted. 
+=head2 Clickthroughs
 
-This means, you may receive 100 bounces from your list, but only 10 that will be unsubscribed. Ten bounces will be shown to you when you view the logs. 
+Clickthroughs are tracked by creating a "Redirect" tag, that holds the URL you want to track. 
 
+Sounds difficult, so let's break it down. 
 
+If you have a PlainText message you want to send and you want to track who clicks on a specific link, say, 
 
+ http://example.com
 
-=head1 Viewing Clickthrough Information
+You would write this URL inside a redirect tag, like this: 
 
-After a mailing list message has been sent out, the reports may be viewed by visiting clickthrough_tracking.cgi in your browser. 
+ <?dada redirect url="http://example.com" ?>
 
-=head1 FAQ
+Replace, "http://example.com" with whatever URL you would like to track.
 
-=over
+This redirect tag will be replaced by Dada Mail with a URL that, when clicked, will record 
+the click and redirect your user to the URL you specified within the tag. 
 
-=item * Does the clickthrough log save which subscriber (email address) clicks on which link?
+In an HTML message, you would craft the redirect tag the same way, except that the redirect tag goes
+within the, "href" paramater of the, "a" tag. Again, this sounds difficult, but for example: 
 
-B<No.> Email addresses aren't saved in the clickthrough logs. The clickthrough tracking is not meant to track individual users, but to get a general idea on what, if any, links people follow from email messages. 
+If you have a link created like this: 
 
-Although the power of being able to track individual subscribers is great, it's also important to remember about people's privacy.
+	<a href="http://example.com">
+	 Go to my Example site!
+	</a> 
 
-=item * Why are some of my message subjects in the reports a string of numbers? 
+You would simply, like before replace, 
 
-If you have deleted the archive entry associated with the message, or don't have archiving turned on, The tracking reports will use the message id associated with the mailing list message you're looking at. 
+ http://example.com
 
-=item * Where are the clickthrough logs being written? 
+ with the redirect tag, 
 
-Clickthrough logs are named B<listshortname-clickthrough.log>, where I<listshortname> is the list's shortname. 
+ <?dada redirect url="http://example.com" ?>
 
-These files are written in whatever directory you set the $LOGS variable to. If you haven't set the $LOGS variable, they'll get written wherever the $FILES variable is set to. 
+and put this inside the href parameter, like this: 
 
-=item * What else can I do with the logs? 
+<a href="<?dada redirect url="http://example.com" ?>">
+ Go to my Example site!
+</a>
 
-You can also fetch the raw clickthrough logs and open them up in a spreadsheet application, such as Excel and create your own reports from them.
+If you have messages where you want to track many, many links and the above 
+sounds tedious and easy to mess up, or your
+authoring workflow doesn't play nice with these redirect tags, there is an option 
+in preferences labeled,
 
+B<Clickthrough Track All Message Links> 
 
-=back
+Which will do all this for you, automatically. Any links that you have manually 
+added a redirect tag to will be untouched, justin case. 
+
+=head3 Backwards Compatibility with the [redirect=] tag
+
+Past versions of Dada Mail (before v4.5.0) used a different syntax for redirect URLs. 
+It looked like this: 
+
+ [redirect=http://example.com]
+
+This tag format is still supported, but consider it deprecated. 
+
+=head3 Clickthrough Tags and WYSIWYG editors (FCKeditor/CKeditor) 
+
+In-browser WYSIWYG editors, like FCKeditor and CKeditor have a hard time working with Dada Mail's redirect tags, 
+and will corrupt the tags by turning many of the characters into their entities, like this: 
+
+	<a href="&lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;">
+	 Go to my Example site!
+	</a>
+
+If you use FCKeditor or CKeditor with Dada Mail, we suggest using the, B<Clickthrough 
+Track All Message Links> option in Dada Mail, or disable FCKeditor/CKeditor.  Copying and pasting
+HTML from a separate program which does not corrupt the tag (like Dreamweaver), 
+will still be affected, if you simply paste the HTML into FCKeditor/CKeditor,  even if you do it into the HTML Source. 
+
+For most other Desktop-based WYSIWYG editors, including Dreamweaver, 
+double-check that the editor does not corrupt the redirect tag. 
+
+=head3 Limitations of Redirect tags
+
+One thing that you cannot do with the redirect tags, is embedd other Dada Mail Template Tags within the redirect tag.
+
+This will not work: 
+
+ <?dada redirect url="http://example.com/index.html?email=<!-- tmpl_var subscriber.email -->" ?>
+
+=head2 Open Message Logging 
+
+Open Message Logging allows you to keep count of how many times a message is viewed
+by your subscribers. 
+
+=head3 Limitations of Open Message Logging
+
+Open Message Logging will only work with HTML messages, since the Open Message logger works simply 
+by embedding a small image within your message and counting how many times this images is 
+requested. 
+
+Open Message Logging will also only work if your subscribers allow images to be displayed within 
+an HTML message. 
+
+Because of this, one should never look at the logged open messages and the subscriber count 
+and make a I<precise> observation over the "impact" of your message (how many people are looking at it) 
+but simply gleam a general trend of your messages; are they reaching people, is the general 
+amount of logged opens increasing, decreasing or staying the same? That sort of thing. 
+
+=head2 Subscriber Count Logging 
+
+Subscriber Count Logging simply records how many subscribers are on your mailing list, 
+at the time a mass mailing goes out. 
+
+=head1 Compatibility with clickthrough_tracking.cgi
+
+The previous iteration of this plugin (tracker.cgi) was called, B<clickthrough_tracker.cgi>. Do not 
+use this old plugin with anything newer than v4.5.0 of Dada Mail. It will not work correctly. 
+
+=head2 Upgrade Notes
+
+Most likely, you will need to update your C<$ADMIN_MENU> and change over the Clickthrough 
+Tracker entry with the new Tracker entry. The piece of code to look for, within the C<$ADMIN_MENU>
+variable looks like this: 
+
+					{-Title      => 'Clickthrough Tracking',
+					 -Title_URL  => $PLUGIN_URL."/clickthrough_tracking.cgi",
+					 -Function   => 'clickthrough_tracking',
+					 -Activated  => 1,
+					},
+
+You will want to change it to: 
+
+					{-Title      => 'Tracker',
+					 -Title_URL  => $PLUGIN_URL."/tracker.cgi",
+					 -Function   => 'tracker',
+					 -Activated  => 1,
+					},
+
+So as not to break everyone's current installations when upgrading and cause less of 
+a hassle, a simple  compatibility script called, B<clickthrough_tracking.cgi> 
+is currently included with this  distribution so the old C<$ADMIN_MENU> entry 
+will continue to work. 
+
+The B<tracker.cgi> plugin comes with support for all the backends of Dada Mail: 
+PlainText, MySQL, PostgreSQL and SQLite. The B<clickthrough_tracking.cgi> plugin 
+only supported the PlainText backend for all the logs. 
+
+If you run Dada Mail with the Default backend of Dada Mail, are wanting to 
+upgrade, there's really nothing you have to do, as the PlainText log formats 
+of B<clickthrough_tracking.cgi> and B<tracker.cgi> are exactly the same. 
+One notable difference between the PlainText and SQL backends is that no IP
+ address data is saved in the PlainText backend. 
+
+If you run Dada Mail with one of the SQL backends, the required additional SQL tables 
+will be created automatically for you upon your first run of Dada Mail - no upgrade scripts 
+will be needed. If you want to create these tables manually, do so before upgrading. 
+The tables to create are called, C<dada_mass_mailing_event_log> and, C<dada_clickthrough_url_log>. 
+
+See the appropriate schema files in, I<dada/extras/SQL> for the exact SQL query to use. 
+
+=head4 Importing Old Clickthrough Logs 
+
+Data saved within the older, PlainText clickthrough logs would have to 
+be moved over, 
+
+There is a script called, I<dada_clickthrough_plaintext2sql.pl> located in the, 
+I<dada/extras/scripts> directory that will do this conversion. Move it into your, 
+I<dada> directory, change its permissions to, C<755> and run it I<once> in your 
+web browser. It may take a few minutes to run to completion. 
 
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2008 
-
-Justin Simoni
-
-http://justinsimoni.com
-
-All rights reserved. 
+Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -1755,7 +1817,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+Foundation, Inc., 59 Temple Place - Suite 330, 
+Boston, MA  02111-1307, USA.
 
-=cut
 
