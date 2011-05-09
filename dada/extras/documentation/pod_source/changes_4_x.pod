@@ -2,7 +2,7 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
-=head 4.5.0
+=head1 4.5.0
 
 =head2 Features 4.5.0
 
