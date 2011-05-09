@@ -636,8 +636,10 @@ sub report_by_message {
     $sth->execute($self->{name}, $msg_id);
     my $url_report = [];
     my $row        = undef;
+    $report->{clickthroughs} = 0; 
     while ( $row = $sth->fetchrow_hashref ) {
         push( @$url_report, { url => $row->{url}, count => $row->{count} } );
+		$report->{clickthroughs} = $report->{clickthroughs} + $row->{count};
     }
     $sth->finish;
     undef $sth;

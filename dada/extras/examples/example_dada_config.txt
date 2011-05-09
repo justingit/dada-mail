@@ -173,7 +173,13 @@ $PLUGIN_CONFIGS = {
     
     },
 
-	ajax_include_subscribe => { 
+	Tracker => { 
+		Plugin_URL                          => undef, 
+		Plugin_Name                         => undef,
+		Geo_IP_Db                           => undef, 
+	},
+
+	ajax_include_subscribe => {
 	
         Plugin_URL                          => undef, 
 		Default_List                        => undef, 

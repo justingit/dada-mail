@@ -632,6 +632,8 @@ Some of the plugins currently supported are:
 
 =item * blog_index.cgi
 
+=item * Tracker
+
 =back
 
 The order of precendence for the setting of these variables are: 
@@ -705,6 +707,12 @@ $PLUGIN_CONFIGS ||= {
 		Check_Multiple_Return_Path_Headers  => undef, 
     
     },
+
+	Tracker => { 
+		Plugin_URL                          => undef, 
+		Plugin_Name                         => undef,
+		Geo_IP_Db                           => undef, 
+	},
 
 	ajax_include_subscribe => { 
 	

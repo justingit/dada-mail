@@ -507,6 +507,7 @@ sub report_by_message {
 	
 	my $url_report = {};
 	
+	$report->{clickthroughs} = 0; 
 	
 	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
 		or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
@@ -521,6 +522,7 @@ sub report_by_message {
 		$extra = strip($extra); 
 		
 		
+		
 		if($match_mid eq $mid){ 
 		
 			if($url ne 'open' && 
@@ -528,12 +530,17 @@ sub report_by_message {
 			   $url ne 'bounce' && 
 			   $url ne 'soft_bounce' && 
 			   $url ne 'hard_bounce' && 
-			   $url ne undef){
-			   #$report->{$url}->{count}++; #?!
+			   $url ne undef
+			){
+				
+			   $report->{clickthroughs}++;
+			
 				if(!exists($url_report->{$url})){ 
 					$url_report->{$url} = 0; 
 				}
+			
 				$url_report->{$url}++; 
+			
 			}elsif($url eq 'open'){ 	
 			
 				$report->{'open'}++;

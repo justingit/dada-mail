@@ -29,8 +29,8 @@ $q = decode_cgi_obj($q);
 
 
 my $Plugin_Config             = {}; 
-$Plugin_Config->{Plugin_URL}  = $q->url; 
 $Plugin_Config->{Plugin_Name} = 'Tracker'; 
+$Plugin_Config->{Plugin_URL}  = $q->url; 
 $Plugin_Config->{Geo_IP_Db}   = '../DADA/data/GeoIP.dat'; 
 
 
@@ -1084,11 +1084,94 @@ my $tmpl = q{
 	 <!-- tmpl_var subject escape="HTML" --> 
 	</h1> 
 
+
+
+	<fieldset> 
+	<legend>The Basics</legend> 
+
+	<div style=" border: 1px solid black;">
+ 	<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0" width="100%">
+		<tr style="background:#fff">
+	<tr> 
+	<td>
+	<p>
+	 <strong> 
+	  Subscribers 
+     </strong> 
+    </p>
+	</td> 
+	<td> 
+	 </p> 
+	<!-- tmpl_if num_subscribers --> 
+		<!-- tmpl_var num_subscribers -->
+	<!-- tmpl_else --> 
+		???
+	<!-- /tmpl_if -->
+	</p> 
+	</td>
+	</tr> 
+
+
+
+	<tr style="background:#ccf">
+	<td> 
+	 <p>
+	  <strong>
+	    Clickthroughs
+	  </strong> 
+	 </p> 
+	 </td> 
+	 <td> 
+	 <p>
+	  <!-- tmpl_var clickthroughs -->
+	 </p>
+	</td> 
+	</tr>
+		
 	
+	<tr style="background:#fff">
+	<td> 
+	 <p>
+	  <strong>
+	   	 Opens
+	  </strong> 
+	 </p> 
+	 </td> 
+	 <td> 
+	 <p>
+	  <!-- tmpl_var opens --> 
+	 </p>
+	</td> 
+	</tr>
+	
+	<tr style="background:#ccf">
+	<td> 
+	 <p>
+	  <strong>
+	   Bounces (soft/hard)
+	  </strong> 
+	 </p> 
+	 </td> 
+	 <td> 
+	 <p>
+	  <!-- tmpl_var soft_bounce default="0" -->/<!-- tmpl_var hard_bounce -->
+	 </p>
+	</td> 
+	</tr>	
+	
+	</table> 
+	
+
+
+	</fieldset>
+		
 	<fieldset> 
 	<legend> 
 		Clickthroughs by URL
 	</legend> 
+	
+	<!-- tmpl_if url_report --> 
+	
 	
 	<div style="max-height: 200px; overflow: auto; border: 1px solid black;">
  	<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0" width="100%">
@@ -1102,7 +1185,7 @@ my $tmpl = q{
 		</td> 
 		</tr> 
 		
-		<!-- tmpl_if url_report --> 
+		
 		
 			<!-- tmpl_loop url_report --> 
 			<tr <!-- tmpl_if __odd__>style="background:#ccf"<!-- tmpl_else -->style="background:#fff"<!-- /tmpl_if -->> 
@@ -1131,10 +1214,17 @@ my $tmpl = q{
 			</tr> 
 		
 	    <!-- /tmpl_loop --> 
-	<!-- /tmpl_if --> 
+
 	
 	</table> 
 	</div> 
+	<!-- tmpl_else -> 
+	
+		<p class="alert">Nothing to report.</p> 
+		
+	<!-- /tmpl_if --> 
+	
+	
 </fieldset> 
 
 <!-- tmpl_if can_use_country_geoip_data --> 
@@ -1155,106 +1245,6 @@ my $tmpl = q{
 
 <!-- /tmpl_if --> 
 
-<fieldset> 
-<legend>Activity</legend> 
-
-	<!-- tmpl_if num_subscribers --> 
-		<p>
-		 <strong>
-		  Number of Subscribers:<!-- tmpl_var num_subscribers -->
-		 </strong> 
-		</p> 
-	<!-- /tmpl_if --> 
-
-		<p> 
-		 <strong>
-		  Number of Recorded Opens: <!-- tmpl_var opens default="0" --> 
-	     </strong> 
-	    </p>
-	
-	
-		<!-- tmpl_if soft_bounce_report --> 
-		<fieldset> 
-		<legend>Soft Bounces</legend> 
-		
-		<div> 
-			<div style="max-height: 300px; overflow: auto; border:1px solid black;width:500px">
-			
-			<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0"  width="500">
-			 <tr> 
-			  <td> 
-			   <strong>Date</strong>
-			  </td> 
-			  <td> 
-			   <strong>Email Address</strong>
-			  </td> 
-			 </tr> 
-			
-			<!-- tmpl_loop soft_bounce_report --> 
-			<tr <!-- tmpl_if __odd__>style="background:#ccf"<!-- tmpl_else -->style="background:#fff"<!-- /tmpl_if -->> 
-			  <td> 
-			   <!-- tmpl_var timestamp --> 
-			  </td> 
-			  <td> 
-			   <a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="URL" -->">
-				<!-- tmpl_var email --> 
-			  </td> 
-			 </tr> 
-			
-			
-			<!-- /tmpl_loop --> 
-			</table> 
-				<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var soft_bounce -->&nbsp;</p> 
-			</div> 
-		
-			</div> 
-			
-			</fieldset> 
-			
-		<!-- /tmpl_if --> 
-		
-		<!-- tmpl_if hard_bounce_report --> 
-		<fieldset> 
-		<legend>Hard Bounces</legend>
-		<div> 
-			<div style="max-height: 300px; overflow: auto; border:1px solid black; width:500px">
-				<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0" width="500">
-			 <tr> 
-			  <td> 
-			   <strong>Date</strong>
-			  </td> 
-			  <td> 
-			   <strong>Email Address</strong>
-			  </td> 
-			 </tr> 
-			
-			<!-- tmpl_loop hard_bounce_report --> 
-			<tr <!-- tmpl_if __odd__>style="background:#ccf"<!-- tmpl_else -->style="background:#fff"<!-- /tmpl_if -->> 
-			  <td> 
-			   <!-- tmpl_var timestamp --> 
-			  </td> 
-			  <td> 
-			   <a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="HTML" -->">
-				<!-- tmpl_var email --> 
-			  </td> 
-			 </tr> 
-			
-			
-			<!-- /tmpl_loop --> 
-			</table> 
-			<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var hard_bounce -->&nbsp;</p> 
-			
-			
-			</div> 
-			</div> 
-			</fieldset> 
-			
-		<!-- /tmpl_if -->
-
-
-		
-</fieldset> 
-
 <!-- tmpl_if can_use_country_geoip_data --> 
 
 
@@ -1270,6 +1260,95 @@ my $tmpl = q{
 </fieldset>
 
 <!-- /tmpl_if --> 
+
+
+<fieldset> 
+<legend>Bounces</legend> 
+<!-- tmpl_if soft_bounce_report --> 
+<fieldset> 
+<legend>Soft Bounces</legend> 
+
+<div> 
+	<div style="max-height: 300px; overflow: auto; border:1px solid black;width:500px">
+	
+	<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0"  width="500">
+	 <tr> 
+	  <td> 
+	   <strong>Date</strong>
+	  </td> 
+	  <td> 
+	   <strong>Email Address</strong>
+	  </td> 
+	 </tr> 
+	
+	<!-- tmpl_loop soft_bounce_report --> 
+	<tr <!-- tmpl_if __odd__>style="background:#ccf"<!-- tmpl_else -->style="background:#fff"<!-- /tmpl_if -->> 
+	  <td> 
+	   <!-- tmpl_var timestamp --> 
+	  </td> 
+	  <td> 
+	   <a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="URL" -->">
+		<!-- tmpl_var email --> 
+	  </td> 
+	 </tr> 
+	
+	
+	<!-- /tmpl_loop --> 
+	</table> 
+		<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var soft_bounce -->&nbsp;</p> 
+	</div> 
+
+	</div> 
+	
+	</fieldset> 
+<!-- tmpl_else --> 
+<p class="alert">No soft bounces to report.</p> 
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if hard_bounce_report --> 
+<fieldset> 
+<legend>Hard Bounces</legend>
+<div> 
+	<div style="max-height: 300px; overflow: auto; border:1px solid black; width:500px">
+		<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0" width="500">
+	 <tr> 
+	  <td> 
+	   <strong>Date</strong>
+	  </td> 
+	  <td> 
+	   <strong>Email Address</strong>
+	  </td> 
+	 </tr> 
+	
+	<!-- tmpl_loop hard_bounce_report --> 
+	<tr <!-- tmpl_if __odd__>style="background:#ccf"<!-- tmpl_else -->style="background:#fff"<!-- /tmpl_if -->> 
+	  <td> 
+	   <!-- tmpl_var timestamp --> 
+	  </td> 
+	  <td> 
+	   <a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="HTML" -->">
+		<!-- tmpl_var email --> 
+	  </td> 
+	 </tr> 
+	
+	
+	<!-- /tmpl_loop --> 
+	</table> 
+	<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var hard_bounce -->&nbsp;</p> 
+	
+	
+	</div> 
+	</div> 
+	</fieldset> 
+	<!-- tmpl_else --> 
+	<p class="alert">No hard bounces to report.</p>	
+<!-- /tmpl_if -->
+</legend> 
+</fieldset> 
+
+
+
+
 
 <fieldset> 
 <legend>Export Message Logs</legend> 
@@ -1301,6 +1380,8 @@ sub message_report {
 
     my $m_report = $rd->report_by_message( $q->param('mid') );
 
+	# use Data::Dumper ;
+	# die Dumper($m_report); 
 
     my $tmpl = message_report_tmpl();
     require DADA::Template::Widgets;
@@ -1316,10 +1397,11 @@ sub message_report {
                 mid        => $q->param('mid')                         || '',
                 subject    => find_message_subject( $q->param('mid') ) || '',
                 url_report => $m_report->{url_report}                  || [],
-                num_subscribers => $m_report->{num_subscribers} || '',
-                opens           => $m_report->{'open'} || 0, 
-                soft_bounce     => $m_report->{'soft_bounce'}   || 0,
-                hard_bounce     => $m_report->{'hard_bounce'}   || 0,
+                num_subscribers => commify($m_report->{num_subscribers}) || 0,
+                opens           => commify($m_report->{'open'}) || 0, 
+                clickthroughs   => commify($m_report->{'clickthroughs'}) || 0, 
+				soft_bounce     => commify($m_report->{'soft_bounce'})   || 0,
+                hard_bounce     => commify($m_report->{'hard_bounce'})   || 0,
 				soft_bounce_report => $m_report->{'soft_bounce_report'}   || [],
 				hard_bounce_report => $m_report->{'hard_bounce_report'}   || [],
 				
@@ -1336,43 +1418,46 @@ sub message_report {
 
 sub country_geoip_chart_tmpl{ 
 	return q{ 
-		
-		<table cellpadding="5" cellspacing="0" border="0"> 
-		<tr> 
-		<td> 
-		<div> 
-			<div style="max-height: 300px; overflow: auto; border:1px solid black">
-		 	<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0">
-		<tr style="background:#fff"> 
-		<td> 
-		<p><strong>Country</strong></p> 
-		</td> 
-		<td>
-		<p><strong><!-- tmpl_var type --></strong></p> 
-		</td> 
-		</tr> 
+		<!-- tmpl_if c_geo_ip_report --> 
+			<table cellpadding="5" cellspacing="0" border="0"> 
+			<tr> 
+			<td> 
+			<div> 
+				<div style="max-height: 225; overflow: auto; border:1px solid black">
+			 	<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0">
+			<tr style="background:#fff"> 
+			<td> 
+			<p><strong>Country</strong></p> 
+			</td> 
+			<td>
+			<p><strong><!-- tmpl_var type --></strong></p> 
+			</td> 
+			</tr> 
 
-		<!-- tmpl_loop c_geo_ip_report --> 
-		<tr <!-- tmpl_if __odd__>style="background:#fff"<!-- tmpl_else -->style="background:#ccf"<!-- /tmpl_if -->> 
-		<td>
-		<!-- tmpl_var country --> 
-		</td> 
-		<td align="right"> 
-		<!-- tmpl_var count --> 
-		</td> 
-		</tr> 
-		<!-- /tmpl_loop --> 
-		</table> 
-		</div> 
-		</div> 
+			<!-- tmpl_loop c_geo_ip_report --> 
+			<tr <!-- tmpl_if __odd__>style="background:#fff"<!-- tmpl_else -->style="background:#ccf"<!-- /tmpl_if -->> 
+			<td>
+			<!-- tmpl_var country --> 
+			</td> 
+			<td align="right"> 
+			<!-- tmpl_var count --> 
+			</td> 
+			</tr> 
+			<!-- /tmpl_loop --> 
+			</table> 
+			</div> 
+			</div> 
 
-		</td> 
-		<td> 
-		<p>
-		 <img src="<!-- tmpl_var c_geo_ip_img -->" style="border:1px solid black" />
-		</p> 
-		</td> 
-		</table>
+			</td> 
+			<td> 
+			<p>
+			 <img src="<!-- tmpl_var c_geo_ip_img -->" style="border:1px solid black" />
+			</p> 
+			</td> 
+			</table>
+		<!-- tmpl_else --> 
+			<p class="alert">Nothing to report.</p> 
+		<!-- /tmpl_if --> 
 	};
 }
 sub country_geoip_chart {
@@ -1423,7 +1508,7 @@ sub country_geoip_data {
 	my $chld = join('', @country);
 	require URI::GoogleChart;
 	my $chart = URI::GoogleChart->new("world", 440, 220,
-	    color => ["white", "FFFFC7", "red"],
+	    color => ["white", "white", "red"],
 	    background => "EAF7FE", # water blue
 	    chld => $chld,
 	    data => [@number],
@@ -1523,6 +1608,14 @@ sub find_message_subject {
         return '#' . $mid;
     }
 }
+
+sub commify {
+    local $_  = shift;
+    1 while s/^(-?\d+)(\d{3})/$1,$2/;
+    return $_;
+}
+
+
 
 =pod
 
@@ -1631,7 +1724,43 @@ For the most part, the Tracker plugin simply reports data that's collected about
 
 =head2 Preferences
 
-You may enabled/disable any of the items it does track independently in the plugin's Preferences. 
+You may enabled/disable any of the items it does track independently in the plugin's Preferences.
+
+=head3 Enable Clickthrough Tracking
+
+When enabled, allows you to use the Redirect Tags to track links that are clicked on, 
+in your mass mailing message. 
+
+=head4 Clickthrough Track All Message Links 
+
+When enabled, ALL links found in an email message will be tracked by converting them into 
+redirect tags and then clickthrough-tracked links. 
+
+=head3 Enable Open Messages Logging
+
+When enabled, allows you to track open/viewing of messages. Will only work with HTML 
+messages and only if your subscribers individualy allow images to be shown in email 
+messages they receive. 
+
+=head3 Enable Subscriber Count Logging
+
+WHen enabled, tracks how many subscribers are on your mailing list when each mass
+mailing goes out
+
+=head3 Enable Bounce Logging
+
+When enabled, any bounces, both soft or hard, are tallyed up. You will need to have the 
+bounce handler installed for this to work. 
+
+=head3 Clean Up Tracker Reports
+
+When enabled, tries to get rid of a lot of the, "line noise" that could be present in 
+your logs, because of weird logging behaviour. 
+
+This will also remove opens/clickthroughs and even 
+bounces from I<test> messages, so if you are sending a test message and you
+want to test out if the clickthrough URLs are working, etc, disable this preference, 
+send your test messages and enable it, after you're done. 
 
 =head2 Clickthroughs
 
@@ -1719,6 +1848,27 @@ This will not work:
 
  <?dada redirect url="http://example.com/index.html?email=<!-- tmpl_var subscriber.email -->" ?>
 
+=head3 Capturing Additional Paramaters with Redirect Tags
+
+It is possible to capture and log additional paramaters in the redirect tags, besides the 
+URL clicked on. For example, you craft a redirect tag, like this: 
+
+ <?dada redirect url="http://example.com" custom_param="some value" ?>
+
+Where, C<custom_param> is the additional paramater you'd like to capture and, C<some value> is the value you'd like
+to save. The value can be different for different links, in different messages, etc. 
+
+B<Treat this feature as experimental.> The Tracker plugin will not display additional paramater data, 
+but the data can be found in the downloadable .csv files created by the Tracker Plugin. 
+
+Before using your additional paramaters, make sure both the C<dada_clickthrough_urls> 
+and C<dada_clickthrough_url_log> tables both hold a column named the same as this paramater. 
+
+In our above example, the following SQL will do the job: 
+
+	ALTER TABLE dada_clickthrough_urls    ADD custom_param TEXT;
+	ALTER TABLE dada_clickthrough_url_log ADD custom_param TEXT;
+
 =head2 Open Message Logging 
 
 Open Message Logging allows you to keep count of how many times a message is viewed
@@ -1742,6 +1892,43 @@ amount of logged opens increasing, decreasing or staying the same? That sort of 
 
 Subscriber Count Logging simply records how many subscribers are on your mailing list, 
 at the time a mass mailing goes out. 
+
+=head1 Specific Plugin Config Variables
+
+These variables have defaults saved in this plugin itself, but encourage you to 
+reset the defaults to the values you may want, instead in your C<.dada_config> file, 
+in the, C<$PLUGIN_CONFIGS> variable, under the, C<Tracker> entry
+
+=head2 Plugin_Name
+
+The name of this plugin 
+
+=head2 Plugin_URL
+
+The URL of this plugin. This is usually found by default, but sometimes the default
+doesn't work correctly. If this happens to you, fill it out in this variable
+
+=head2 Geo_IP_Db
+
+This variable holds the file path to the location ofthe GeoIP database. The GeoIP 
+database is a IP Address -> Location lookup table, to quickly and easily figure out 
+the location based on the IP Address. 
+
+This database is updated monthly and new copies can be obtained at: 
+
+L<http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz> 
+
+The database is licensed under the LGPL, so it's OK to ship Dada Mail with a copy of 
+this database. 
+
+If you find it necessary, you may keep a copy of this database outside of Dada Mail and 
+update it regularly and tell this plugin where to find the database to use. 
+
+For more information, see:  
+
+http://search.cpan.org/~borisz/Geo-IP-PurePerl-1.25/lib/Geo/IP/PurePerl.pm
+
+I<This product includes GeoLite data created by MaxMind, available L<from http://www.maxmind.com/>>
 
 =head1 Compatibility with clickthrough_tracking.cgi
 
