@@ -2545,6 +2545,7 @@ sub run_all_parses {
 		$diagnostics->{'Simplified-Message-Id'} = $diagnostics->{'Message-Id'}; 
 		$diagnostics->{'Simplified-Message-Id'} =~ s/\<|\>//g;
 	    $diagnostics->{'Simplified-Message-Id'} =~ s/\.(.*)//; #greedy
+	    $diagnostics->{'Simplified-Message-Id'} =~ DADA::App::Guts::strip($diagnostics->{'Simplified-Message-Id'});
 	}	
 	
 	return ($email, $list, $diagnostics); 
