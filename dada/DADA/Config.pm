@@ -2998,14 +2998,7 @@ Please save this email message for future reference.
 * Date of this subscription: 
 <!-- tmpl_var date -->
 
-* Want to remove yourself from this mailing list at any time? Use this link: 
-<!-- tmpl_var list_unsubscribe_link -->
-
-If the above URL is inoperable, make sure that you have copied the 
-entire address. Some mail readers will wrap a long URL and thus break
-this automatic unsubscribe mechanism. 
-
-* Want more information about this mailing list? Visit:
+* Want to remove yourself from this mailing list at any time? Use the form at: 
 <!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->
 
 * Need Help? Contact: 
@@ -3140,14 +3133,6 @@ Date of this removal: <!-- tmpl_var date -->
 
 You may re-subscribe to this list at any time by 
 visiting the following URL:
-
-<!-- tmpl_var list_subscribe_link -->
-
-If the above URL is inoperable, make sure that you have copied the 
-entire address. Some mail readers will wrap a long URL and thus break
-this automatic unsubscribe mechanism. 
-
-You may also change your subscription by visiting this list's main screen: 
 
 <!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->
 
