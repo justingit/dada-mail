@@ -1188,7 +1188,7 @@ sub test_database_has_all_needed_tables {
 	}
 	
 	
-	if($checks == 11){ 
+	if($checks >= 9){ 
 		return 0; 
 	}
 	else { 
