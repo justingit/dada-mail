@@ -5223,7 +5223,7 @@ END {
 
 =head1 Name
 
-Mystery Girl - A Bounce Handler For Dada Mail
+Mystery Girl - Bounce Handler For Dada Mail
 
 =head1 Description
 
@@ -5312,6 +5312,16 @@ How to do this exactly is covered, below
 =item * Set the cronjob (optional)
 
 =back
+
+=head1 Screencasts
+
+=head2 Part 1 
+
+=for html <object width="640" height="510"><param name="movie" value="http://www.youtube.com/v/tvdIj1s19Vo?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/tvdIj1s19Vo?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1" type="application/x-shockwave-flash" width="640" height="510" allowscriptaccess="always" allowfullscreen="true"></embed></object>
+
+=head2 Part 2
+
+=for html <object width="640" height="510"><param name="movie" value="http://www.youtube.com/v/CnsM994xa7A?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/CnsM994xa7A?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1" type="application/x-shockwave-flash" width="640" height="510" allowscriptaccess="always" allowfullscreen="true"></embed></object>
 
 Below is the detailed version of the above: 
 
