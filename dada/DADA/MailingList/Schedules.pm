@@ -861,6 +861,9 @@ sub _build_email {
 	my ($pt_flags,   $pt_checksum,   $pt_headers,   $PlainText_ver) = $self->_create_text_ver(-record => $record, -type => 'PlainText'); 
 	my ($html_flags, $html_checksum, $html_headers, $HTML_ver)      = $self->_create_text_ver(-record => $record, -type => 'HTML'); 
 	
+		
+	#use Data::Dumper; 
+	#die Data::Dumper::Dumper($HTML_ver); 
 	
 	# So. Right here? 
 	require DADA::App::FormatMessages; 
@@ -951,8 +954,7 @@ sub _build_email {
 		eval { 
 				$html_msg = $MIMELiteObj->as_string;
 				$html_msg = safely_decode($html_msg);
-			}; 
-			
+			}; 		
 		if($@){ 
 			# error message...
 		}
@@ -1160,7 +1162,10 @@ sub _create_text_ver {
 		
 		$data = DADA::App::Guts::strip($data); 
 		if ($record->{$type . '_ver'}->{grab_headers_from_message} == 1) { 
-			($headers, $data) = $self->_grab_headers($data) 
+			
+			($headers, $data) = $self->_grab_headers($data);
+		#	use Data::Dumper; 
+		#die Data::Dumper::Dumper([$headers, $data]); 
 		}
 			
 		return ($create_flags, $checksum, $headers, $data); 

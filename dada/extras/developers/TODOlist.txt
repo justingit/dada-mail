@@ -11,6 +11,12 @@ Key:
 [?] Someday
 
 
+
+[ ] Ability to move "selected" list members from one list to another... so from Subscriber to Black or White List, Black List to Subscriber or White list, and White List to Subscriber or Black list
+
+[ ] Ability to NOT distribute messages to users (so for example if I'm using Mail Merge to create labels, I can clear those people I want to NOT print a label for).
+
+
 [ ] Bounce Handler- a way to pull up the original, offending message to view
 
 [] ajax_include_subscribe.cgi - a way to pass a specific list you'd like to work with (instead of plugin config, which 

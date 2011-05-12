@@ -37,18 +37,18 @@ $CLICKTHROUGH_DB_TYPE     = 'SQL';
 %SQL_PARAMS = ( 
 
 	# May just be, "localhost" 
-	dbserver         => '<!-- tmpl_var sql_server -->',
+	dbserver         => '<!-- tmpl_var sql_server default="localhost" -->',
 		
 	database         => '<!-- tmpl_var sql_database -->',
 	
 	# MySQL:      3306
 	# PostgreSQL: 5432      
-	port             => '<!-- tmpl_var sql_port -->',
+	port             => '<!-- tmpl_var sql_port default="3306" -->',
 	
 	# MySQL:      mysql 
 	# PostgreSQL: Pg
 	# SQLite:     SQLite
-	dbtype           => '<!-- tmpl_var backend -->',  
+	dbtype           => '<!-- tmpl_var backend default="mysql" -->',  
 	
 	user             => '<!-- tmpl_var sql_username -->',          
 	pass             => '<!-- tmpl_var sql_password -->',
@@ -174,7 +174,13 @@ $PLUGIN_CONFIGS = {
     
     },
 
-	ajax_include_subscribe => { 
+	Tracker => { 
+		Plugin_URL                          => undef, 
+		Plugin_Name                         => undef,
+		Geo_IP_Db                           => undef, 
+	},
+
+	ajax_include_subscribe => {
 	
         Plugin_URL                          => undef, 
 		Default_List                        => undef, 
@@ -470,8 +476,8 @@ $ADMIN_MENU = [
 #					},
 
 
-#					{-Title      => 'Clickthrough Tracking',
-#					 -Title_URL  => $PLUGIN_URL."/clickthrough_tracking.cgi",
+#					{-Title      => 'Tracker',
+#					 -Title_URL  => $PLUGIN_URL."/tracker",
 #					 -Function   => 'clickthrough_tracking',
 #					 -Activated  => 1,
 #					},

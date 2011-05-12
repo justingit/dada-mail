@@ -412,7 +412,9 @@ The SQL password.
 	session_table                   => 'dada_sessions', 
 	bounce_scores_table             => 'dada_bounce_scores', 
 	clickthrough_urls_table         => 'dada_clickthrough_urls', 
-
+	clickthrough_url_log_table      => 'dada_clickthrough_url_log', 		
+	mass_mailing_event_log_table    => 'dada_mass_mailing_event_log',
+	
 ) unless keys %SQL_PARAMS; 
 
 
@@ -630,6 +632,8 @@ Some of the plugins currently supported are:
 
 =item * blog_index.cgi
 
+=item * Tracker
+
 =back
 
 The order of precendence for the setting of these variables are: 
@@ -703,6 +707,12 @@ $PLUGIN_CONFIGS ||= {
 		Check_Multiple_Return_Path_Headers  => undef, 
     
     },
+
+	Tracker => { 
+		Plugin_URL                          => undef, 
+		Plugin_Name                         => undef,
+		Geo_IP_Db                           => undef, 
+	},
 
 	ajax_include_subscribe => { 
 	
@@ -2250,9 +2260,9 @@ $ADMIN_MENU ||= [
 #					},
 
 
-#					{-Title      => 'Clickthrough Tracking',
-#					 -Title_URL  => $PLUGIN_URL."/clickthrough_tracking.cgi",
-#					 -Function   => 'clickthrough_tracking',
+#					{-Title      => 'Tracker',
+#					 -Title_URL  => $PLUGIN_URL."/tracker.cgi",
+#					 -Function   => 'tracker',
 #					 -Activated  => 1,
 #					},
 
@@ -2988,14 +2998,7 @@ Please save this email message for future reference.
 * Date of this subscription: 
 <!-- tmpl_var date -->
 
-* Want to remove yourself from this mailing list at any time? Use this link: 
-<!-- tmpl_var list_unsubscribe_link -->
-
-If the above URL is inoperable, make sure that you have copied the 
-entire address. Some mail readers will wrap a long URL and thus break
-this automatic unsubscribe mechanism. 
-
-* Want more information about this mailing list? Visit:
+* Want to remove yourself from this mailing list at any time? Use the form at: 
 <!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->
 
 * Need Help? Contact: 
@@ -3130,14 +3133,6 @@ Date of this removal: <!-- tmpl_var date -->
 
 You may re-subscribe to this list at any time by 
 visiting the following URL:
-
-<!-- tmpl_var list_subscribe_link -->
-
-If the above URL is inoperable, make sure that you have copied the 
-entire address. Some mail readers will wrap a long URL and thus break
-this automatic unsubscribe mechanism. 
-
-You may also change your subscription by visiting this list's main screen: 
 
 <!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->
 
@@ -4699,10 +4694,14 @@ encrypted.
 
 # Clickthrough Tracking
 
-	clickthrough_tracking               => 0,
-	enable_open_msg_logging             => 0, 
-	enable_subscriber_count_logging     => 0, 
-	enable_bounce_logging               => 0,
+	clickthrough_tracking               => 1,
+	enable_open_msg_logging             => 1, 
+	enable_subscriber_count_logging     => 1, 
+	enable_bounce_logging               => 1,
+	
+	tracker_record_view_count           => 10, 
+	tracker_clean_up_reports            => 1, 
+	tracker_auto_parse_links            => 0, 
 
     
 # dada_digest.pl 
@@ -4982,8 +4981,8 @@ and to say that you've got the freshest tools on the Web.
 
 
 
-$VERSION = 4.4.3; 
-$VER     = '4.4.3 Stable - 3/17/11';
+$VERSION = 4.5.0; 
+$VER     = '4.5.0 Beta 1 - 5/9/11';
 
 
 #
@@ -5231,6 +5230,8 @@ sub _config_import {
 		session_table                   => 'dada_sessions', 
 		bounce_scores_table             => 'dada_bounce_scores', 
 		clickthrough_urls_table         => 'dada_clickthrough_urls',
+		clickthrough_url_log_table      => 'dada_clickthrough_url_log', 		
+		mass_mailing_event_log_table    => 'dada_mass_mailing_event_log',
 	); 
 	for(keys %default_table_names){ 
 		if(!exists($SQL_PARAMS{$_})){ 

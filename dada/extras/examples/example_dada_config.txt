@@ -173,7 +173,13 @@ $PLUGIN_CONFIGS = {
     
     },
 
-	ajax_include_subscribe => { 
+	Tracker => { 
+		Plugin_URL                          => undef, 
+		Plugin_Name                         => undef,
+		Geo_IP_Db                           => undef, 
+	},
+
+	ajax_include_subscribe => {
 	
         Plugin_URL                          => undef, 
 		Default_List                        => undef, 
@@ -470,9 +476,9 @@ $ADMIN_MENU = [
 #					},
 
 
-#					{-Title      => 'Clickthrough Tracking',
-#					 -Title_URL  => $PLUGIN_URL."/clickthrough_tracking.cgi",
-#					 -Function   => 'clickthrough_tracking',
+#					{-Title      => 'Tracker',
+#					 -Title_URL  => $PLUGIN_URL."/tracker.cgi",
+#					 -Function   => 'tracker',
 #					 -Activated  => 1,
 #					},
 

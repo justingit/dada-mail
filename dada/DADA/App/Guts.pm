@@ -1986,38 +1986,158 @@ sub check_setup {
 sub SQL_check_setup {
 	
 	my $table_count = 0; 
+	my $dbi_obj     = undef; 
+	my $dbh         = undef; ; 
 	eval { 
-		# A little indirect, but...  
-		# Tests if we have the necessary tables: 
-		#
-		# This is strange - since this list could be WRONG - 
-		# Ugh. 
 		require DADA::App::DBIHandle; 
-		my $dbi_obj = DADA::App::DBIHandle->new; 
-		my $dbh = $dbi_obj->dbh_obj;
-		
-		for my $param(keys %DADA::Config::SQL_PARAMS){ 
-			if($param =~ m/table/){ 
-				$table_count++;
-			 	$dbh->do('SELECT * from ' . $DADA::Config::SQL_PARAMS{$param} . ' WHERE 1 = 0')
-					or croak $!; 
-			}
-		}
+		$dbi_obj = DADA::App::DBIHandle->new; 
+		$dbh = $dbi_obj->dbh_obj;
 	};
 	if($@){ 
-		carp $@;
+		carp "error attempting to create dbi object: $@"; 
+		return 0; 
+	}
+	
+	my %tables_to_look_for = (); 
+	foreach(keys %DADA::Config::SQL_PARAMS){ 
+		if($_ =~ m/table/){ 
+			$tables_to_look_for{$DADA::Config::SQL_PARAMS{$_}} = 0;
+		}
+	}
+	
+
+	foreach my $table_name(keys %tables_to_look_for){ 
+	
+		eval{ 
+		    # * If an error is raised, the table does not exist.
+		    $dbh->do('SELECT * FROM ' . $table_name . ' WHERE 1 = 0')
+				or croak "cannot do statement! $DBI::errstr\n";
+		};
+		
+		if($@){ 
+			# ...  
+		}
+		else { 
+			$tables_to_look_for{$table_name} = 1; 
+		}
+	}
+	
+	foreach(keys %tables_to_look_for){ 
+		$table_count = $table_count + $tables_to_look_for{$_}; 
+	}
+	
+
+	if($table_count == 9){ 
+		if(
+			$tables_to_look_for{$DADA::Config::SQL_PARAMS{clickthrough_url_log_table}} == 0 
+			&& 
+			$tables_to_look_for{$DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}} == 0
+		){ 
+
+			my $r = create_missing_4_5_0_tables(); 
+			if( $r == 0){ 
+				return 0; 
+			}
+			else { 
+				$table_count = $table_count + 2; 
+			}
+		}
+	}
+	if($table_count < 11){ 
 		return 0; 
 	}
 	else { 
-		# Last test - we need at least 9 tables. This test sucks - I shouldn't
-		# need to know I need 9 tables. 
-		if($table_count < 9){ 
+		return 1; 
+	}
+
+}
+
+sub create_missing_4_5_0_tables { 
+
+
+	my %schema = (); 
+	
+$schema{mysql} = q{ 
+CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log (
+id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
+list varchar(16),
+timestamp TIMESTAMP DEFAULT NOW(),
+remote_addr text, 
+msg_id text, 
+event text,
+details text
+); 
+
+CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log (
+id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
+list varchar(16),
+timestamp TIMESTAMP DEFAULT NOW(),
+remote_addr text,
+msg_id text, 
+url text
+);	
+};
+$schema{Pg} = q{ 
+CREATE TABLE dada_mass_mailing_event_log (
+id serial,
+list varchar(16),
+timestamp TIMESTAMP DEFAULT NOW(),
+remote_addr text, 
+msg_id text, 
+event text,
+details text
+); 
+
+CREATE TABLE dada_clickthrough_url_log (
+id serial,
+list varchar(16),
+timestamp TIMESTAMP DEFAULT NOW(),
+remote_addr text,
+msg_id text, 
+url text
+);
+};
+$schema{SQLite} = q{ 
+CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+list varchar(16),
+timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+remote_addr text, 
+msg_id text,
+event text,
+details text
+); 
+
+CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+list varchar(16),
+timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+remote_addr text, 
+msg_id text,
+url text
+);	
+};
+
+	my @statements = split(';', $schema{$DADA::Config::SQL_PARAMS{dbtype}}, 2);
+
+	for(@statements){ 
+	
+		require DADA::App::DBIHandle; 
+		my $dbi_obj = DADA::App::DBIHandle->new; 
+		my $dbh = $dbi_obj->dbh_obj;
+		eval {  
+			my $sth = $dbh->prepare($_) or croak $DBI::errstr; 
+			$sth->execute
+				or croak "cannot do statment $DBI::errstr\n"; 
+		};
+		if($@){ 
+			carp $@;
 			return 0; 
 		}
-		else { 
-			return 1; 
-		}
-	}
+	} 
+
+return 1; 
+
 }
 
 =pod

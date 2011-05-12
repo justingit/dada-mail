@@ -129,6 +129,51 @@ sub search_list {
 
 }
 
+
+
+
+sub domain_stats { 
+	
+	my $self    = shift;
+	my $count   = shift || 10;  
+	my $domains = {};
+	
+	$self->open_list_handle(-Type => 'list'); 
+	my $email = undef; 
+	while(defined($email = <LIST>)){ 
+		chomp($email);
+		my ($name, $domain) = split('@', $email); 
+		if(!exists($domains->{$domain})){ 
+			$domains->{$domain} = 0;
+		}
+		$domains->{$domain} = $domains->{$domain} + 1; 
+	}
+	
+	# Sorted Index
+	my @index = sort { $domains->{$b} <=> $domains->{$a} } keys %$domains; 
+	
+	# Top n
+	my @top = splice(@index,0,($count-1));
+	
+	# Everyone else
+	my $other = 0; 
+	foreach(@index){ 
+		$other = $other + $domains->{$_};
+	}
+	my $final = {};
+	foreach(@top){ 
+		$final->{$_} = $domains->{$_};
+	}
+	$final->{other} = $other; 
+	
+	# Return!
+	return $final;
+
+}
+
+
+
+
 sub inexact_match {
 
     my $self = shift;

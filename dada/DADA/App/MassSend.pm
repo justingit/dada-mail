@@ -1527,7 +1527,7 @@ sub redirect_tag_check {
 		my $ct = DADA::Logging::Clickthrough->new(
 			{
 				-list => $list,
-				-li   => $ls->params, 
+				-ls   => $ls, 
 			}
 		); 
 		eval { 

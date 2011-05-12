@@ -1480,7 +1480,7 @@ sub from_text_widget {
 			$q->textarea(-name  => "$type\_text",
 						 -cols  => 70, 
 						 -rows  => 15, 
-						 -wrap  => 'NONE',
+						 -wrap  => 'OFF',
 						 -value => $form_vals{$type.'_ver'}->{text})
 			
 			

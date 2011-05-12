@@ -35,273 +35,37 @@ sub _init {
 	}	
 	
     
-	if(! defined($self->{-li}) ){ 
+	if(! defined($args->{-ls}) ){ 
 	    
 	    require DADA::MailingList::Settings; 
-        my $ls = DADA::MailingList::Settings->new({-list => $self->{name}}); 
-	    $self->{-li} = $ls->get; 
+	    $self->{ls} = DADA::MailingList::Settings->new({-list => $self->{name}}); 
 	}
+	else { 
+		$self->{ls} = $args->{-ls}; 
+	}	
 	
-	$self->{is_redirect_on}                  = $self->redirect_config_test; 	# kinda hardcore, you know? 
-	$self->{is_log_openings_on}              = $self->{-li}->{enable_open_msg_logging}; 
-	$self->{is_log_bounces_on}               = $self->{-li}->{enable_bounce_logging};
-	$self->{enable_subscriber_count_logging} = $self->{-li}->{enable_subscriber_count_logging},
-	
+	$self->{auto_redirect_tmp} = ''; 
 	
 	return $self;
 
 }
 
-sub redirect_config_test { 
-	my $self = shift; 	
-	
-	return 0 if (!$self->{name}) || ($self->{name} eq ""); 
-	return 0 unless DADA::App::Guts::check_if_list_exists(-List => $self->{name}) >= 1;
-	return 0 if $self->{-li}->{clickthrough_tracking} != 1;
-	return 1;
-}
 
 
-
-
-sub r_log { 
-	my ($self, $mid, $url) = @_;
-	if($self->{is_redirect_on} == 1){ 
-	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
-	    	if -e $self->clickthrough_log_location; 
-		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location) 
-			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
-		flock(LOG, LOCK_SH);
-		print LOG scalar(localtime()) . "\t" . $mid . "\t" . $url . "\n"  or warn "Couldn't write to file: " . $self->clickthrough_log_location . 'because: ' .  $!; 
-		close (LOG)  or warn "Couldn't close file: " . $self->clickthrough_log_location . 'because: ' .  $!;
-		return 1; 
-	}else{ 
-		return 0;
-	}
-}
-
-
-
-
-sub o_log { 
-	my ($self, $mid) = @_;
-	if($self->{is_log_openings_on} == 1){ 
-	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
-	    	if -e $self->clickthrough_log_location; 
-		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')' ,  $self->clickthrough_log_location)
-			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
-		flock(LOG, LOCK_SH);
-		print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'open' . "\n";
-		close (LOG);
-		return 1; 
-	}else{ 
-		return 0;
-	}
-}
-
-
-
-
-sub sc_log { 
-	my ($self, $mid, $sc) = @_;
-	if($self->{enable_subscriber_count_logging} == 1){ 
-	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
-	    	if -e $self->clickthrough_log_location; 
-		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $self->clickthrough_log_location)
-			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
-		flock(LOG, LOCK_SH);
-		print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'num_subscribers' . "\t" . $sc . "\n";
-		close (LOG);
-		return 1; 
-	}else{ 
-		return 0;
-	}
-}
-
-
-
-
-sub bounce_log { 
-	my ($self, $mid, $email) = @_;
-	if($self->{is_log_bounces_on} == 1){ 
-	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
-	    	if -e $self->clickthrough_log_location; 
-		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $self->clickthrough_log_location)
-			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
-		flock(LOG, LOCK_SH);
-		print LOG scalar(localtime()) . "\t" . $mid . "\t" . 'bounce' . "\t" . $email . "\n";
-		close (LOG);
-		return 1; 
-	}else{ 
-		return 0;
-	}
-}
-
-
-
-
-sub report_by_message_index { 
-	my $self   = shift; 
-	my $report = {}; 
-	my $l;
-	
-	# DEV: I would sor to of like to make some validation that the info
-	# we're using to count is actually correct - like if it's a message_id - it's all numerical, etc
-	# I'd also like to make some sort of pagination scheme, so that we only have a few message_id's 
-	# we're interested in. That shouldn't be too difficult. 
-	
-	if(-e $self->clickthrough_log_location){ 
-		open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
-			or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
-		while(defined($l = <LOG>)){ 
-			chomp($l); 
-			my ($t, $mid, $url, $extra) = split("\t", $l); 
-				
-				$t     = strip($t); 
-				$mid   = strip($mid); 
-				$url   = strip($url); 
-				$extra = strip($extra); 
-				
-			if($url ne 'open' && $url ne 'num_subscribers' && $url ne 'bounce' && $url ne undef){
-				
-				$report->{$mid}->{count}++;		
-			
-			}elsif($url eq 'open'){ 	
-			
-				$report->{$mid}->{'open'}++;
-		
-			}elsif($url eq 'bounce'){ 	
-			
-				$report->{$mid}->{'bounce'}++;
-								
-			}elsif($url eq 'num_subscribers'){ 
-			
-				$report->{$mid}->{'num_subscribers'} = $extra;	
-			
-			}
-		}
-		close(LOG);		
-		
-		require DADA::MailingList::Archives; 
-		my $mja = DADA::MailingList::Archives->new({-list => $self->{name}}); 
-		
-		for(sort keys %$report){ 
-		
-		    if($mja->check_if_entry_exists($_)){ 
-		    
-			$report->{$_}->{message_subject} = $mja->get_archive_subject($_) || $_;
-			
-			} else { 
-			
-			  # $report->{$_}->{message_subject} = $_; 
-			   
-			}
-		}
-		return $report;
-	} 	
-}
-
-
-
-sub report_by_message {
-	 
-	my $self      = shift; 
-	my $match_mid = shift; 
-	
-	my $report = {}; 
-	my $l;
-	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
-		or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
-	while(defined($l = <LOG>)){ 
-		chomp($l); 
-		
-		my ($t, $mid, $url, $extra) = split("\t", $l); 
-			
-		$t     = strip($t); 
-		$mid   = strip($mid); 
-		$url   = strip($url); 
-		$extra = strip($extra); 
-					
-		if($match_mid eq $mid){ 
-		
-			if($url ne 'open' && $url ne 'num_subscribers' && $url ne 'bounce' && $url ne undef){
-				$report->{$url}->{count}++;		
-			}elsif($url eq 'open'){ 	
-			
-				$report->{'open'}++;
-				
-			}elsif($url eq 'num_subscribers'){ 
-			
-				$report->{'num_subscribers'} = $extra;	
-				
-			}elsif($url eq 'bounce'){ 	
-			
-				push(@{$report->{'bounce'}}, $extra);
-			}	
-		}		
-	}
-	close(LOG); 
-	return $report; 
-}
-
-
-
-
-sub report_by_url { 
-	my $self      = shift; 
-	my $match_mid = shift; 
-	my $match_url = shift;
-	
-	my $report = []; 
-	my $l;
-	
-	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
-	 or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
-	while(defined($l = <LOG>)){ 
-		chomp($l); 
-		my ($t, $mid, $url) = split("\t", $l); 
-		if($url ne 'open' && $url ne 'num_subscribers'){
-			if(($match_mid == $mid) && ($match_url eq $url)){ 
-				push(@$report, $t);
-			}
-		}
-	}
-	close(LOG); 
-	return $report; 
-}
-
-
-sub print_raw_logs { 
-
+sub verified_mid { 
 	my $self = shift; 
-	my $l; 
-	
-	unless(-e $self->clickthrough_log_location){ 
-		print '';
-		return; 
+	my $mid  = shift; 
+	# This could be stronger, but... 
+	if ($mid =~ /^\d+$/ && length($mid) == 14) {
+		return 1; 
 	}
-	
-	open(LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $self->clickthrough_log_location)
-		or croak "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
-	while(defined($l = <LOG>)){ 
-		chomp($l); # why a chomp, 
-		print $l . "\n"; # and thena newline, added? 
+	else { 
+		return 0; 
 	}
-
 }
 
 
 
-
-sub clickthrough_log_location { 
-
-	my $self = shift; 
-	my $ctl  =  $DADA::Config::LOGS  . '/' . $self->{name} . '-clickthrough.log';
-	   $ctl  = DADA::App::Guts::make_safer($ctl);
-	   $ctl =~ /(.*)/;
-	   $ctl = $1; 
-	   return $ctl; 
-}
 
 ##############################################################################
 
@@ -385,8 +149,6 @@ sub parse_entity {
 
     if (@parts) {
 
-        #print "we gotta parts?!\n";
-
         my $i;
         for $i ( 0 .. $#parts ) {
             $parts[$i] =
@@ -408,8 +170,6 @@ sub parse_entity {
             m/attachment/ )
         {
             $is_att = 1;
-
-            #print "is attachment?\n";
         }
     }
 
@@ -428,9 +188,17 @@ sub parse_entity {
 		
         if ($content) {
 
-            #print "Bang!\n";
-            # Bang! We do the stuff here!
-            $content = $self->parse_string( $args->{ -mid }, $content );
+           	my $type = 'PlainText'; 
+			
+			if( $args->{ -entity }->head->mime_type eq 'text/plain' ){ 
+				$type = 'PlainText'; 
+			}
+			elsif( $args->{ -entity }->head->mime_type eq 'text/html' ){ 
+				$type = 'HTML' 
+			}
+	      
+	
+            $content = $self->parse_string( $args->{ -mid }, $content, $type );
         }
         else {
 
@@ -473,12 +241,12 @@ sub check_redirect_urls {
 	my $valid   = [];
 	my $invalid = [];
 	
-	my $pat = qr/\[redirect\=(.*?)\]/;
+	my $pat = $self->redirect_regex(); 
+	
 	while ($args->{-str} =~ m/($pat)/g) {
 		my $redirect_tag = $1; 
-		my $url = $redirect_tag; 
-		   $url =~ s/(^\[redirect\=|\]$)//g;
-
+		my $redirect_atts = $self->get_redirect_tag_atts($redirect_tag); 
+		my $url = $redirect_atts->{url}; 
 		if($self->can_be_redirected($url)){ 
 			push(@$valid, $url); 
 	
@@ -548,18 +316,116 @@ sub parse_string {
 
     my $self = shift;
     my $mid  = shift;
-
     croak 'no mid! ' if !defined $mid;
+    my $str  = shift;
+	my $type = shift || 'PlainText'; 
 
-    my $str = shift;
+	warn "Auto Parsing Test!"; 
+	if($self->{ls}->param('tracker_auto_parse_links') == 1){ 
+		warn "it's on!"; 
+		$str = $self->auto_redirect_tag($str, $type); 
+	}
+	else { 
+		# ... 
+		warn "it's off."; 
+	}
 
-    #carp "here's the string before: " . $str;
-    #
-    $str =~ s/\[redirect\=(.*?)\]/&redirect_encode($self, $mid, $1)/eg;
+	warn "now, the string looks like this! \n $str"; 
+	
+    my $pat = $self->redirect_regex();
+    $str =~ s/$pat/&redirect_encode($self, $mid, $1)/eg;
 
     #	carp "here's the string: $str";
     return $str;
 }
+
+
+
+sub auto_redirect_tag { 
+	
+	my $self = shift; 
+	my $s    = shift; 
+	my $type = shift; 
+	
+	
+	eval { 
+		require URI::Find; 
+		require HTML::LinkExtor;
+	};
+	if($@){ 
+		warn "Cannot auto redirect links. Missing perl module? $@"; 
+		return $s; 
+	}
+	
+	my @a;
+	if($type eq 'HTML'){ 
+
+		 sub html_cb {
+		     my($tag, %attr) = @_;
+		     return if $tag ne 'a';  # we only look closer at <a ...>
+			 my $link =  $attr{href}; 
+
+			# Skip links that are already tagged up!
+			if($link =~ m/(^(\<\!\-\-|\[|\<\?))|((\]|\-\-\>|\?\>)$)/){ 
+				return; 
+			}
+			else { 
+				# ... 
+			}
+
+			my $redirected_link = $self->redirect_tagify($link); 
+			my $qm_link         = quotemeta($link);
+			$self->{auto_redirect_tmp} =~ s/(href\=|href\=\")$qm_link/$1$redirected_link/;
+		}
+	
+	
+	    $self->{auto_redirect_tmp} = $s; 
+
+		
+		my $p = HTML::LinkExtor->new(\&html_cb);
+		$p->parse($s); 
+		$s = $self->{auto_redirect_tmp}; 
+		$self->{auto_redirect_tmp} = '';
+		return $s;
+		
+	
+	}
+	else { 
+		
+		my $tmp_s = $s; 
+		my @uris;
+		my $finder = URI::Find->new(sub {
+		    my($uri) = shift;
+			push @uris, $uri;
+			return $uri; 
+		});
+		$finder->find(\$s);
+		foreach my $specific_url(@uris){ 
+			
+			my $qm_link1 = quotemeta('[redirect='.$specific_url.']'); 
+			my $qm_link2 = quotemeta('url="'.$specific_url.'"'); 
+			
+			# URI::Find changes the URL sometimes and adds a, "/" at the end. What?
+			my $other_specific_url = $specific_url; 
+			   $other_specific_url =~ s/\/$//;
+			my $qm_link3 = quotemeta('[redirect='.$other_specific_url.']'); 
+			my $qm_link4 = quotemeta('url="'.$other_specific_url.'"');			if($tmp_s =~ m/$qm_link1|$qm_link2|$qm_link3|$qm_link4/g){ 
+				# ... 
+			}
+			else { 
+				my $redirected = $self->redirect_tagify($specific_url);
+				my $qm_link    = quotemeta($specific_url); 
+				$s =~ s/$qm_link/$redirected/;
+			}
+		}
+		return $s; 
+	}
+
+
+}
+
+
+
 
 sub _list_name_check {
 
@@ -603,21 +469,105 @@ sub random_key {
 
 }
 
+
+
+sub redirect_regex { 
+	
+	my $self = shift; 
+	# <!-- redirect url="http://yahoo.com" --> 
+	# [redirect url="http://yahoo.com"]
+	# [redirect=yahoo.com]	
+#	return qr/(((\<\!\-\-|\<\?dada)(\s+)redirect|\[redirect\s+|\[redirect\=)(.*?)(\]|\-\-\>|\?\>))/; 
+	return qr/
+		(
+			\<\!\-\-(\s+)redirect(\s+)url\=(.*?)(\s+)\-\-\> 
+			|
+			\[redirect(\s+)url\=(.*?)\]
+			|
+			\[redirect\=(.*?)\]
+			|
+			\<\?dada(\s+)redirect(\s+)url\=(.*?)(\s+)\?\> 
+		)
+	/x; 
+}
+
+sub get_redirect_tag_atts { 
+
+	my $self = shift; 
+	my $redirect_tag = shift; 
+	
+	my $atts = {}; 
+
+	# Old Style
+	# [redirect=http://yahoo.com]	
+	if($redirect_tag =~ m/\[redirect\=(.*?)\]/){ 
+		$atts->{url} = $1;
+	}
+	
+	# [redirect url="http://yahoo.com"]
+	# <!-- redirect url="http://yahoo.com" --> 
+	
+	else {
+		
+		# This is very simple. 
+		$redirect_tag =~ s/
+		(
+			(
+				^\[redirect(\s*)
+				|
+				\<\!\-\-(\s*)redirect(\s*)
+				|
+				^\<dada\?(\s*)redirect(\s*)
+			)
+			|
+			(
+				\]$
+				|
+				\-\-\>$
+				|
+				\?\>$
+			)
+		)
+		//xg;
+		
+		my $pat = qr/(\w+)\s*=\s*"([^"]*)"/;
+
+		while ($redirect_tag=~/$pat/g ) { 
+			$atts->{$1} = $2; 
+		} 
+	}
+#	use Data::Dumper; 
+#	die Data::Dumper::Dumper($atts); 
+	return $atts; 
+	
+}
+
+
+
+
 sub redirect_encode {
 
     my $self = shift;
     my $mid  = shift;
     croak 'no mid! '
       if !defined $mid;
-    my $url = shift;
+    my $redirect_tag = shift;
+	#die $redirect_tag; 
 
+	# get the brackets out of the way
 
+	
+	my $atts = $self->get_redirect_tag_atts($redirect_tag); 
+
+	my $url = $atts->{url}; 
+	delete($atts->{url}); 
+	
 	if($self->can_be_redirected($url)){ 
-
-	    my $key = $self->reuse_key( $mid, $url );
-
+				
+	    my $key = $self->reuse_key( $mid, $url, $atts );
+		
 	    if ( !defined($key) ) {
-	        $key = $self->add( $mid, $url );
+	        $key = $self->add( $mid, $url, $atts);
 	    }
 	    return $DADA::Config::PROGRAM_URL . '/r/'
 	      . $self->{name} . '/'
@@ -629,6 +579,18 @@ sub redirect_encode {
 	}
 
 }
+
+sub redirect_tagify { 
+	my $self = shift; 
+	my $url  = shift; 
+	return '<?dada redirect url="' . $url . '" ?>'; 
+}
+
+
+
+
+
+
 
 
 
