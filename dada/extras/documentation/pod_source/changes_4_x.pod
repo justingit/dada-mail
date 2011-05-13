@@ -40,7 +40,13 @@ L<http://dadamailproject.com/d/tracker.cgi.pod>
 
 =head3 clickthrough_tracker.cgi plugin removed
 
+Replaced with the Tracker plugin, which is tons better.
 
+=head3 Subscriber and # Mailing Lists Quotas changes
+
+Dada Mail ships with a limit of 3 (instead of 5) mailing lists and a limit of 
+10,000 subscribers (instead of 25,000) quotas by default. We encourage you to 
+use Pro Dada, if you need more than that: L<http://dadamailproject.com/purchase/pro.html>
 
 =head2 Bug Fixes 4.5.0 
 

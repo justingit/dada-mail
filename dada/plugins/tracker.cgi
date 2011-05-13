@@ -1965,6 +1965,13 @@ goes a long way.
 It's interesting to track one or a view links using the redirect tags to track clickthroughs, but another
 trend to follow would be how all links in an email message fare against each other. 
 
+=head3 Discussion Lists and Clickthrough Tracker
+
+Discussion Lists may not benefit as much from clickthrough tracking and tracking all lists in a message, since 
+the list owner gives up control over the content of a message. Rather, the members of a list create the content and 
+having clickthrough URLs in place of the actual URLs written can get in the way of discussions. There's also a chance that 
+nefarious URLs can be hidden within a clickthrough URL - not something you want. 
+
 =head1 Compatibility with clickthrough_tracking.cgi
 
 The previous iteration of this plugin (tracker.cgi) was called, B<clickthrough_tracker.cgi>. Do not 
