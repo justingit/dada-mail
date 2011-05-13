@@ -1682,6 +1682,16 @@ may help in resolving this problem.
 
 All this message-specific data can also be exported via .csv files that may be downloaded. 
 
+=head1 Screencasts
+
+=head2 Part 1 
+
+=for html <object width="640" height="510"><param name="movie" value="http://www.youtube.com/v/CKEclo_URW0?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/CKEclo_URW0?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1" type="application/x-shockwave-flash" width="640" height="510" allowscriptaccess="always" allowfullscreen="true"></embed></object>
+
+=head2 Part 2
+
+=for html <object width="640" height="510"><param name="movie" value="http://www.youtube.com/v/fGr-0qxcpZ4?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/fGr-0qxcpZ4?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1" type="application/x-shockwave-flash" width="640" height="510" allowscriptaccess="always" allowfullscreen="true"></embed></object>
+
 =head1 Installing tracker.cgi
 
 The tracker.cgi plugin comes with Dada Mail. You'll find it in the, I<dada/plugins> directory with the file name, I<tracker.cgi> 
