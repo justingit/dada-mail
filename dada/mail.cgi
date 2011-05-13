@@ -8943,10 +8943,16 @@ sub redirection {
 
 	if(defined($q->param('key'))){
 
-		my ($mid, $url) = $r->fetch($q->param('key'));
+		my ($mid, $url, $atts) = $r->fetch($q->param('key'));
 
 		   if(defined($mid) && defined($url)){
-	       		$r->r_log($mid, $url);
+	       		$r->r_log(
+					{ 
+						-mid  => $mid, 
+						-url  => $url, 
+						-atts => $atts
+					}
+				);
 			}
 	    if($url){
 	        print $q->redirect(-uri => $url);
@@ -8969,7 +8975,11 @@ sub m_o_c {
     require DADA::Logging::Clickthrough;
     my $r = DADA::Logging::Clickthrough->new({-list => $q->param('list')});
 	   if(defined($q->param('mid'))){
-       		$r->o_log($q->param('mid'));
+       		$r->o_log(
+				{ 
+					-mid => $q->param('mid'),
+				}
+			);
 		}
     require MIME::Base64;
     print $q->header('image/png');

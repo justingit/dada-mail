@@ -1205,12 +1205,12 @@ sub mass_send {
 			#
 			$mailout->log('Mass Mailing Starting.'); 
 							    
-            # $self->{mj_log}->close_log 
-            #    if $DADA::Config::LOG{mass_mailings};
-            
-            # Oh, this is totally going to muck up, with restarts. 
-            # 
-            #
+
+			# DEV: DO NOT COUNT FOR: 
+			# Restarts: 
+			# Tests
+			# Any mailing type, except, "list" 
+			# 
             $self->_log_sub_count(
                                    -msg_id          => $fields{'Message-ID'}, 
                                    -num_subscribers => $num_subscribers,
@@ -1477,6 +1477,8 @@ sub mass_send {
 				    }
 				);
 				# And, that's it.
+			}
+			else { 
 			}
 			#
 			##################################################################			
@@ -2790,6 +2792,12 @@ sub _log_sub_count {
 	
 	return 
 	 	if $self->mass_test; 
+	
+	return 
+		if $self->restart_with; # Meaning, we're restarting the message 
+								# We probably shouldn't log #subs twice
+	return 
+		if $self->list_type ne 'list'; 
 	 	
 	return 
 		if $self->{ls}->param('enable_subscriber_count_logging') != 1; 
@@ -2802,15 +2810,20 @@ sub _log_sub_count {
 			
 	# A new object every time this is called? No!, actually, only called once. Ok, ok. 
 	
-	if($self->{ls}->param('clickthrough_tracking') == 1){ 	
+	if($self->{ls}->param('enable_subscriber_count_logging') == 1){ 	
 		require DADA::Logging::Clickthrough; 
 		my $r = DADA::Logging::Clickthrough->new(
 					{
 						-list => $self->{list},
-						-li   => $self->{ls}->params, 
+						-ls   => $self->{ls}, 
 					}
 				); 
-		   $r->sc_log($msg_id, $num_subscribers); 
+		   $r->sc_log(
+			{ 
+				-mid => $msg_id, 
+				-num => $num_subscribers
+			}
+		); 
 
 	}
 }

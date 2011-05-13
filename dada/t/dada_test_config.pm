@@ -178,12 +178,13 @@ sub create_SQLite_db {
 	$DADA::Config::SUBSCRIBER_DB_TYPE       = 'SQL'; 
 	$DADA::Config::SESSIONS_DB_TYPE         = 'SQL'; 
 	$DADA::Config::BOUNCE_SCORECARD_DB_TYPE = 'SQL'; 
+	$DADA::Config::CLICKTHROUGH_DB_TYPE     = 'SQL';
 	
 #carp q{$__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{dbtype}} . $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{dbtype}; 
 
      %DADA::Config::SQL_PARAMS = %{$__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}};
 for(keys  %DADA::Config::SQL_PARAMS){ 
-	print $_ . ' => ' . $DADA::Config::SQL_PARAMS{$_} . "\n"; 
+	#print $_ . ' => ' . $DADA::Config::SQL_PARAMS{$_} . "\n"; 
 }
 
     require DADA::App::DBIHandle; 
@@ -201,7 +202,7 @@ for(keys  %DADA::Config::SQL_PARAMS){
 
 close(SQL) or croak $!; 
 
-my @statements = split(';', $sql,8); 
+my @statements = split(';', $sql, 11); 
 
     my $dbh = $dbi_handle->dbh_obj;
     
@@ -215,17 +216,19 @@ my @statements = split(';', $sql,8);
 		my $profile_table            		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_table};  
 		my $profile_fields_table             = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_fields_table};
 		my $profile_fields_attributes_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_fields_attributes_table};
-		my $clickthrough_urls_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{clickthrough_urls_table};
-		
-		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
-		$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
-		$_ =~ s{CREATE TABLE dada_archives}{CREATE TABLE $archives_table}; 
-		$_ =~ s{CREATE TABLE dada_sessions}{CREATE TABLE $session_table}; 
-		$_ =~ s{CREATE TABLE dada_bounce_scores}{CREATE TABLE $bounce_scores_table};
-		$_ =~ s{CREATE TABLE dada_profiles}{CREATE TABLE $profile_table};
-		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
-		$_ =~ s{CREATE TABLE dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};
-		$_ =~ s{CREATE TABLE dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
+		my $clickthrough_urls_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{clickthrough_urls_table};
+		my $clickthrough_url_log_table       = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{clickthrough_url_log_table};
+		my $mass_mailing_event_log_table     = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{mass_mailing_event_log_table};
+		 
+#		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
+#		$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
+#		$_ =~ s{CREATE TABLE dada_archives}{CREATE TABLE $archives_table}; 
+#		$_ =~ s{CREATE TABLE dada_sessions}{CREATE TABLE $session_table}; 
+#		$_ =~ s{CREATE TABLE dada_bounce_scores}{CREATE TABLE $bounce_scores_table};
+#		$_ =~ s{CREATE TABLE dada_profiles}{CREATE TABLE $profile_table};
+#		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
+#		$_ =~ s{CREATE TABLE dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};
+#		$_ =~ s{CREATE TABLE dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
 				
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE IF NOT EXISTS $settings_table}; 
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_subscribers}{CREATE TABLE IF NOT EXISTS $subscribers_table}; 
@@ -236,10 +239,11 @@ my @statements = split(';', $sql,8);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields}{CREATE TABLE IF NOT EXISTS $profile_fields_table};
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes}{CREATE TABLE IF NOT EXISTS $profile_fields_attributes_table};
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_urls}{CREATE TABLE IF NOT EXISTS $clickthrough_urls_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log}{CREATE TABLE IF NOT EXISTS $clickthrough_url_log_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log}{CREATE TABLE IF NOT EXISTS $mass_mailing_event_log_table};	
 		
-				
 		#print 'query: ' . $_; 
-        my $sth = $dbh->prepare($_) or warn $DBI::errstr; 
+        my $sth = $dbh->prepare($_) or croak $DBI::errstr; 
 
        $sth->execute
 			or croak "cannot do statment $DBI::errstr\n"; 
@@ -252,25 +256,16 @@ my @statements = split(';', $sql,8);
 
 sub destroy_SQLite_db { 
 
-=cut
-   
-    require DADA::App::DBIHandle;
-    my $dbi_handle = DADA::App::DBIHandle->new; 
-    
-    my $dbh = $dbi_handle->dbh_obj;
-        $dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{subscriber_table})
-            or croak "cannot do statement! $DBI::errstr\n";  
-        
-        $dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{archives_table})
-                    or croak "cannot do statement! $DBI::errstr\n";  
-        $dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{settings_table})
-                    or croak "cannot do statement! $DBI::errstr\n";  
-        $dbh->do('DROP TABLE ' . $DADA::Config::SQL_PARAMS{session_table})
-                    or croak "cannot do statement! $DBI::errstr\n";  
-   
-=cut
-
-
+	chmod(0666, './test_only_dada_files/test_dada');
+	unlink './test_only_dada_files/test_dada';
+#	if(-e './test_only_dada_files/test_dada'){ 
+#		die "YEAH, IT'S THERE!"; 
+#	}
+#	else { 
+#		die "NO IT AIN'T THERE"; 
+#	}
+#
+	
 }
 
 
@@ -320,6 +315,8 @@ my @statements = split(';', $sql);
 		my $profile_fields_table             = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_fields_table};
 		my $profile_fields_attributes_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_fields_attributes_table};
 		my $clickthrough_urls_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{clickthrough_urls_table};
+		my $clickthrough_url_log_table       = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{clickthrough_url_log_table};
+		my $mass_mailing_event_log_table     = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{mass_mailing_event_log_table};
 		
 		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
 		$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
@@ -329,20 +326,22 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE dada_profiles}{CREATE TABLE $profile_table};
 		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
 		$_ =~ s{CREATE TABLE dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};	
-		$_ =~ s{CREATE TABLE dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE IF NOT EXISTS  $settings_table}; 
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_subscribers}{CREATE TABLE IF NOT EXISTS  $subscribers_table}; 
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_archives}{CREATE TABLE IF NOT EXISTS  $archives_table}; 
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_sessions}{CREATE TABLE IF NOT EXISTS  $session_table}; 
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_bounce_scores}{CREATE TABLE IF NOT EXISTS  $bounce_scores_table};
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profiles}{CREATE TABLE IF NOT EXISTS  $profile_table};
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields}{CREATE TABLE IF NOT EXISTS  $profile_fields_table};
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes}{CREATE TABLE IF NOT EXISTS  $profile_fields_attributes_table};	
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_urls}{CREATE TABLE IF NOT EXISTS  $clickthrough_urls_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE IF NOT EXISTS $settings_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_subscribers}{CREATE TABLE IF NOT EXISTS $subscribers_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_archives}{CREATE TABLE IF NOT EXISTS $archives_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_sessions}{CREATE TABLE IF NOT EXISTS $session_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_bounce_scores}{CREATE TABLE IF NOT EXISTS $bounce_scores_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profiles}{CREATE TABLE IF NOT EXISTS $profile_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields}{CREATE TABLE IF NOT EXISTS $profile_fields_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes}{CREATE TABLE IF NOT EXISTS $profile_fields_attributes_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log}{CREATE TABLE IF NOT EXISTS $clickthrough_url_log_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log}{CREATE TABLE IF NOT EXISTS $mass_mailing_event_log_table};	
 
-						
+		#print 'query: ' . $_; 
+			
 		if(length($_) > 10){ 
-	    #	carp 'query: ' . $_; 
+
 			my $sth = $dbh->prepare($_); 
 	       	$sth->execute; 
 	    }
@@ -382,8 +381,16 @@ sub destroy_MySQL_db {
 		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_fields_attributes_table})
         	or carp "cannot do statement! $DBI::errstr\n";
 
-			$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{clickthrough_urls_table})
-	        	or carp "cannot do statement! $DBI::errstr\n";
+		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{clickthrough_urls_table})
+        	or carp "cannot do statement! $DBI::errstr\n";
+
+		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{clickthrough_url_log_table})
+        	or carp "cannot do statement! $DBI::errstr\n";
+
+		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{mass_mailing_event_log_table})
+        	or carp "cannot do statement! $DBI::errstr\n";
+		
+			
 }
 
 
@@ -421,7 +428,7 @@ sub create_PostgreSQL_db {
 
 close(SQL) or croak $!; 
 
-my @statements = split(';', $sql); 
+my @statements = split(';', $sql, 11); 
 
     my $dbh = $dbi_handle->dbh_obj;
     
@@ -438,7 +445,10 @@ my @statements = split(';', $sql);
 		my $profile_fields_table             = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_table};
 		my $profile_fields_attributes_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_attributes_table};
 		my $clickthrough_urls_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{clickthrough_urls_table};
-
+		my $clickthrough_url_log_table       = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{clickthrough_url_log_table};
+		my $mass_mailing_event_log_table     = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{mass_mailing_event_log_table};
+		
+		
 		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
 		$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
 		$_ =~ s{CREATE TABLE dada_archives}{CREATE TABLE $archives_table}; 
@@ -448,9 +458,12 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
 		$_ =~ s{CREATE TABLE dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};
 		$_ =~ s{CREATE TABLE dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
+		$_ =~ s{CREATE TABLE dada_clickthrough_url_log}{CREATE TABLE $clickthrough_url_log_table};	
+		$_ =~ s{CREATE TABLE dada_mass_mailing_event_log}{CREATE TABLE $mass_mailing_event_log_table};	
 
 	    my $sth = $dbh->prepare($_); #  or croak $DBI::errstr; 
 	       $sth->execute or carp $DBI::errstr; 
+		#print "query: $_"; 
     
     }
     
@@ -487,9 +500,15 @@ sub destroy_PostgreSQL_db {
 	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_attributes_table})
     	or carp "cannot do statement! $DBI::errstr\n";
 
-		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{clickthrough_urls_table})
-        	or carp "cannot do statement! $DBI::errstr\n";
+	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{clickthrough_urls_table})
+       	or carp "cannot do statement! $DBI::errstr\n";
 
+	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{clickthrough_url_log_table})
+       	or carp "cannot do statement! $DBI::errstr\n";
+
+	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{mass_mailing_event_log_table})
+       	or carp "cannot do statement! $DBI::errstr\n";
+	
 }
 
 
@@ -500,6 +519,9 @@ sub wipe_out {
 	if(-e './test_only_dada_files'){ 
 		`rm -Rf ./test_only_dada_files`;
 	}	
+	if(-e './test_only_dada_files'){ 
+		warn "wiping out didn't work!"; 
+	}
 }
 
 sub MySQL_test_enabled { 

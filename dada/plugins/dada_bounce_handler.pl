@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+
+
 package dada_bounce_handler;
 use strict; 
 $|++; 
@@ -1240,7 +1242,7 @@ my $parser = new MIME::Parser;
    $parser = optimize_mime_parser($parser); 
 
 my $Remove_List       = {}; 
-my $Bounce_History    = {}; 
+#my $Bounce_History    = {}; 
 
 my $Rules_To_Carry_Out = [];
 my $debug = 0; 
@@ -2359,6 +2361,10 @@ sub parse_bounce {
                         if(!$debug){ 
                             #push(@$Rules_To_Carry_Out, [$rule, $list, $email, $diagnostics, $message]);
                             $rule_report = carry_out_rule($rule, $list, $email, $diagnostics, $message); 
+							
+							
+
+
                         } 
                     
                     }
@@ -2539,6 +2545,7 @@ sub run_all_parses {
 		$diagnostics->{'Simplified-Message-Id'} = $diagnostics->{'Message-Id'}; 
 		$diagnostics->{'Simplified-Message-Id'} =~ s/\<|\>//g;
 	    $diagnostics->{'Simplified-Message-Id'} =~ s/\.(.*)//; #greedy
+	    $diagnostics->{'Simplified-Message-Id'} =~ DADA::App::Guts::strip($diagnostics->{'Simplified-Message-Id'});
 	}	
 	
 	return ($email, $list, $diagnostics); 
@@ -2588,6 +2595,52 @@ sub carry_out_rule {
 		}else{ 
 			warn "unknown rule trying to be carried out, ignoring"; 
 		}
+		
+		my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+		if ( $ls->param('enable_bounce_logging') ) {
+			if(exists($diagnostics->{'Simplified-Message-Id'})){ 
+				$report .= "\nSaving bounced email report in tracker\n";
+				require DADA::Logging::Clickthrough;
+	            my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
+		    	
+				my $hard_bounce = 0; 
+				if($action eq 'add_to_score' && $actions->{$action} == $Plugin_Config->{Default_Hard_Bounce_Score}){ 
+					$hard_bounce = 1; 
+				}
+				elsif($action ne 'add_to_score'){ 
+					$hard_bounce = 1; 
+				}
+				else { 
+					# Else, it's either a soft bounce, 
+					# soft bounces and hard bounces are scored the same (?!?!) 
+					# or it's a different rule followed and we're going to count 
+					# that as a hard bounce. 
+				}
+				if($hard_bounce == 1){ 
+					$r->bounce_log(
+						{ 
+						-type  => 'hard', 
+						-mid   => $diagnostics->{'Simplified-Message-Id'},
+						-email => $email,
+						}
+					);					
+				}
+				else { 
+					$r->bounce_log(
+						{ 
+						-type  => 'soft', 
+						-mid   => $diagnostics->{'Simplified-Message-Id'},
+						-email => $email
+						}
+					);					
+				}
+			}
+			else { 
+				warn "cannot log bounced email from, '$email' for, '$list' in tracker log - no Simplified-Message-Id found. Ignoring!"; 
+			}
+		}
+		
+		
 		log_action($list, $email, $diagnostics, "$action $actions->{$action}");
 	}
 	
@@ -2633,7 +2686,7 @@ sub unsubscribe_bounced_email {
 		warn "unknown action: '$action', no unsubscription will be made from this email!"; 
 	}
 	
-	$Bounce_History->{$list}->{$email} = [$diagnostics, $action];	
+	#$Bounce_History->{$list}->{$email} = [$diagnostics, $action];	
 	
 	my $report; 
 	
@@ -3999,13 +4052,6 @@ sub remove_bounces {
                         },
                     }
                 );
-                if ( $li->{enable_bounce_logging} ) {
-                    $r->bounce_log(
-                        $Bounce_History->{$list}->{$d_email}->[0]
-                          ->{'Simplified-Message-Id'},
-                        $d_email
-                    );
-                }
             }
         }
     }
@@ -5177,7 +5223,7 @@ END {
 
 =head1 Name
 
-Mystery Girl - A Bounce Handler For Dada Mail
+Mystery Girl - Bounce Handler For Dada Mail
 
 =head1 Description
 
@@ -5266,6 +5312,16 @@ How to do this exactly is covered, below
 =item * Set the cronjob (optional)
 
 =back
+
+=head1 Screencasts
+
+=head2 Part 1 
+
+=for html <object width="640" height="510"><param name="movie" value="http://www.youtube.com/v/tvdIj1s19Vo?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/tvdIj1s19Vo?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1" type="application/x-shockwave-flash" width="640" height="510" allowscriptaccess="always" allowfullscreen="true"></embed></object>
+
+=head2 Part 2
+
+=for html <object width="640" height="510"><param name="movie" value="http://www.youtube.com/v/CnsM994xa7A?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/CnsM994xa7A?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1" type="application/x-shockwave-flash" width="640" height="510" allowscriptaccess="always" allowfullscreen="true"></embed></object>
 
 Below is the detailed version of the above: 
 

@@ -179,6 +179,51 @@ sub search_list {
 
 }
 
+
+
+sub domain_stats { 
+	my $self    = shift;
+	my $count   = shift || 10;  
+	my $domains = {};
+	
+	my $query = "SELECT email FROM " . 
+				$self->{sql_params}->{subscriber_table} . 
+				" WHERE list_type = ? AND list_status = ? AND list = ?";
+
+	# Count All the Domains
+	my $sth = $self->{dbh}->prepare($query);
+	$sth->execute('list', 1, $self->{list});
+	 while ( ( my $email ) = $sth->fetchrow_array ) {
+		my ($name, $domain) = split('@', $email); 
+		if(!exists($domains->{$domain})){ 
+			$domains->{$domain} = 0;
+		}
+		$domains->{$domain} = $domains->{$domain} + 1; 
+	}
+	$sth->finish; 
+	
+	# Sorted Index
+	my @index = sort { $domains->{$b} <=> $domains->{$a} } keys %$domains; 
+	
+	# Top n
+	my @top = splice(@index,0,($count-1));
+	
+	# Everyone else
+	my $other = 0; 
+	foreach(@index){ 
+		$other = $other + $domains->{$_};
+	}
+	my $final = {};
+	foreach(@top){ 
+		$final->{$_} = $domains->{$_};
+	}
+	$final->{other} = $other; 
+	
+	# Return!
+	return $final;
+
+}
+
 sub SQL_subscriber_profile_join_statement {
 
     my $self = shift;

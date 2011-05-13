@@ -766,7 +766,7 @@ sub sql_port_from_params {
         if ( $q->param('backend') =~ /mysql/i ) {
             $port = 3306;
         }
-        elsif ( $q->param('backend') =~ /pg/i ) {
+        elsif ( $q->param('backend') =~ /Pg/i ) {
             $port = 5432;
         }
 		else { 
@@ -1077,6 +1077,8 @@ sub test_complete_dada_files_dir_structure_exists {
 
 sub test_sql_connection {
 	
+#	use Data::Dumper; 
+#	die Dumper([@_]);
     my $dbtype   = shift;
     my $dbserver = shift;
     my $port     = shift;
@@ -1088,7 +1090,7 @@ sub test_sql_connection {
         if ( $dbtype =~ /mysql/i ) {
             $port = 3306;
         }
-        elsif ( $dbtype =~ /pg/i ) {
+        elsif ( $dbtype =~ /Pg/i ) {
             $port = 5432;
         }
     }
@@ -1156,6 +1158,9 @@ sub test_database_has_all_needed_tables {
 	    dada_sessions => 1, 
 	    dada_bounce_scores => 1, 
 	    dada_clickthrough_urls => 1,
+		dada_clickthrough_url_log => 1, 
+		dada_mass_mailing_event_log => 1, 
+		
 	}; 
 	my $dbh; 
 	
@@ -1169,6 +1174,8 @@ sub test_database_has_all_needed_tables {
     my @tables = $dbh->tables;
 	my $checks = 0; 
 	
+#	use Data::Dumper; 
+#	die Dumper([@tables]);
 	for my $table(@tables){ 
 		
 		# Not sure why this is so non-standard between different setups...
@@ -1181,7 +1188,7 @@ sub test_database_has_all_needed_tables {
 	}
 	
 	
-	if($checks == 9){ 
+	if($checks >= 9){ 
 		return 0; 
 	}
 	else { 

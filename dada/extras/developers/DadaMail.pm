@@ -38,6 +38,12 @@ CGI::Session::ExpireSessions
 
 Class::Accessor
 
+Class::Accessor::Chained::Fast
+
+Data::Page
+
+Data::PageSet
+
 Date::Format
 
 Digest 
@@ -153,6 +159,8 @@ Text::Wrap
 Time::Local
 
 URI::Escape
+
+URI::GoogleChart
 
 =head1 Other Required Modules to Install
 
