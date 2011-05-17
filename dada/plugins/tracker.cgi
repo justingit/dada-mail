@@ -526,7 +526,7 @@ sub domain_breakdown_img {
 	    encoding => "s",
 	    background => "white",
 		margin => [150, 150, 10, 10],
-		title => 'Total Subscribers: ' . $num_subs,
+		title => 'Total Subscribers: ' . commify($num_subs),
 	);
 	
 	use HTML::Entities;
