@@ -320,17 +320,17 @@ sub parse_string {
     my $str  = shift;
 	my $type = shift || 'PlainText'; 
 
-	warn "Auto Parsing Test!"; 
+	#warn "Auto Parsing Test!"; 
 	if($self->{ls}->param('tracker_auto_parse_links') == 1){ 
-		warn "it's on!"; 
+		# warn "it's on!"; 
 		$str = $self->auto_redirect_tag($str, $type); 
 	}
 	else { 
 		# ... 
-		warn "it's off."; 
+		# warn "it's off."; 
 	}
 
-	warn "now, the string looks like this! \n $str"; 
+	#warn "now, the string looks like this! \n $str"; 
 	
     my $pat = $self->redirect_regex();
     $str =~ s/$pat/&redirect_encode($self, $mid, $1)/eg;
