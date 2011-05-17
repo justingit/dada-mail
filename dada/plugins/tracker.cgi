@@ -1383,6 +1383,23 @@ sub message_report {
 	# use Data::Dumper ;
 	# die Dumper($m_report); 
 
+	# This is strange, as we have to first break it out of the data structure, 
+	# and stick it back in: 
+	
+	my $u_url_report = {}; 
+	foreach(@{$m_report->{url_report}}){ 
+		$u_url_report->{$_->{url}} = $_->{count}; 
+	}
+	my $s_url_report = []; 
+	foreach my $v (sort {$u_url_report->{$b} <=> $u_url_report->{$a} }
+	           keys %$u_url_report)
+	{
+		 push(@$s_url_report, {url => $v, count => $u_url_report->{$v}}); 
+	}
+	
+	
+	
+	
     my $tmpl = message_report_tmpl();
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -1394,21 +1411,19 @@ sub message_report {
                 -List       => $ls->param('list'),
             },
             -vars => {
-                mid        => $q->param('mid')                         || '',
-                subject    => find_message_subject( $q->param('mid') ) || '',
-                url_report => $m_report->{url_report}                  || [],
-                num_subscribers => commify($m_report->{num_subscribers}) || 0,
-                opens           => commify($m_report->{'open'}) || 0, 
-                clickthroughs   => commify($m_report->{'clickthroughs'}) || 0, 
-				soft_bounce     => commify($m_report->{'soft_bounce'})   || 0,
-                hard_bounce     => commify($m_report->{'hard_bounce'})   || 0,
-				soft_bounce_report => $m_report->{'soft_bounce_report'}   || [],
-				hard_bounce_report => $m_report->{'hard_bounce_report'}   || [],
-				
+                mid                        => $q->param('mid')                         || '',
+                subject                    => find_message_subject( $q->param('mid') ) || '',
+                url_report                 => $s_url_report                            || [],
+                num_subscribers            => commify($m_report->{num_subscribers})    || 0,
+                opens                      => commify($m_report->{'open'})             || 0, 
+                clickthroughs              => commify($m_report->{'clickthroughs'})    || 0, 
+				soft_bounce                => commify($m_report->{'soft_bounce'})      || 0,
+                hard_bounce                => commify($m_report->{'hard_bounce'})      || 0,
+				soft_bounce_report         => $m_report->{'soft_bounce_report'}        || [],
+				hard_bounce_report         => $m_report->{'hard_bounce_report'}        || [],
 				can_use_country_geoip_data => $rd->can_use_country_geoip_data, 
-				
-				Plugin_URL         => $Plugin_Config->{Plugin_URL},
-				Plugin_Name        => $Plugin_Config->{Plugin_Name},			
+				Plugin_URL                 => $Plugin_Config->{Plugin_URL},
+				Plugin_Name                => $Plugin_Config->{Plugin_Name},			
             },
         },
     );
@@ -1422,8 +1437,9 @@ sub country_geoip_chart_tmpl{
 			<table cellpadding="5" cellspacing="0" border="0"> 
 			<tr> 
 			<td> 
+			
 			<div> 
-				<div style="max-height: 225; overflow: auto; border:1px solid black">
+				<div style="max-height: 225px; overflow: auto; border:1px solid black">
 			 	<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0">
 			<tr style="background:#fff"> 
 			<td> 
