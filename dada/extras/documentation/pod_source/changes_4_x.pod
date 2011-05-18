@@ -2,6 +2,30 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.5.1
+
+=head2 Summary 4.5.1
+
+v4.5.1 fixes some small bugs found in v4.5.0 of Dada Mail, mostly dealing with the Tracker plugin
+
+=head2 Bug Fixes 4.5.1
+
+=head3 broken link to Tracker plugin in example_dada_config.tmpl template
+
+https://github.com/justingit/dada-mail/issues/165
+
+=head3 Clickthrough.pm misc. debug code (warnings) 
+
+https://github.com/justingit/dada-mail/issues/166
+
+=head3 Tracker: Clickthrough URL report isn't contained
+
+https://github.com/justingit/dada-mail/issues/167
+
+=head3 Tracker: GeoIP Country -> # report table has no order
+
+https://github.com/justingit/dada-mail/issues/168
+
 =head1 4.5.0
 
 =head2 Features 4.5.0
