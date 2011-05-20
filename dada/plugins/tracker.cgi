@@ -93,6 +93,7 @@ sub run {
 		'download_activity_logs'     => \&download_activity_logs, 
 		'domain_breakdown_img'       => \&domain_breakdown_img, 
 		'country_geoip_chart'        => \&country_geoip_chart, 
+		'data_ot_img'                  => \&data_ot_img, 
 	);
 	if ($f) {
 	    if ( exists( $Mode{$f} ) ) {
@@ -540,10 +541,6 @@ sub domain_breakdown_img {
             -vars => {
 				domain_breakdown_chart_url => $enc_chart,
             },
-#            -list_settings_vars_param => {
-#                -list   => $list,
-#                -dot_it => 1,
-#            },
         }
     );
 	print $q->header(); 
@@ -680,6 +677,78 @@ sub subscriber_history_img {
     );
 	print $q->header(); 
     e_print($scrn);
+}
+
+sub data_ot_img_tmpl { 
+	
+return q{ 
+	<!-- tmpl_if data_ot_img_url --> 
+	<p> 
+	 <img src="<!-- tmpl_var data_ot_img_url -->" width="720" height="250" style="border:1px solid black" />
+	</p>
+	<!-- tmpl_else --> 
+		<p class="alert">Nothing to Report.</p> 
+	<!-- /tmpl_if --> 
+	
+};	
+	
+}
+
+sub data_ot_img { 
+	
+	my $msg_id = $q->param('mid'); 
+	my $type   = $q->param('type'); 
+	
+	my $ct_ot = $rd->data_over_time(
+		{
+			-msg_id => $msg_id,
+			-type   => $type, 
+		}
+	); 
+	my $range = [];
+	my $chxl  = [];
+	
+	foreach(@$ct_ot){ 
+		push(@$chxl, $_->{mdy}); 
+		push(@$range, $_->{count}); 
+		
+	}
+	
+	require     URI::GoogleChart; 
+	my $chart = URI::GoogleChart->new("lines", 720, 250,
+    data => [
+ 		{ range => "a", v => $range },
+  	],
+ 	range => {
+		a => { round => 0, show => "left" },
+	},	
+	color => ['blue'],
+	label => ["# " . ucfirst($type)],
+	chxt => 'x',
+	chm  => 'B,99ccff,0,0,0',
+	chg  => '0,10',
+	chxl => '0:|' . join('|', @$chxl), 
+	);
+	
+	use HTML::Entities;
+	my $enc_chart = encode_entities($chart);
+	
+	if(!exists($ct_ot->[0])) { 
+		$enc_chart = undef; 
+	}
+	my $tmpl = data_ot_img_tmpl();
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::screen(
+        {
+            -data           => \$tmpl,
+            -vars => {
+				data_ot_img_url => $enc_chart,
+				
+            },
+        }
+    );
+	print $q->header(); 
+    e_print($scrn);		
 }
 
 
@@ -1019,13 +1088,19 @@ my $tmpl = q{
 	<!-- tmpl_set name="title" value="Tracker - Message Report" -->
 	
 	
-<!-- tmpl_if can_use_country_geoip_data --> 
+
 	
 	<script type="text/javascript">
 	    //<![CDATA[
 		Event.observe(window, 'load', function() {
-		  country_geoip_chart_clickthroughs();	
-		  country_geoip_chart_opens();
+		  <!-- tmpl_if can_use_country_geoip_data --> 
+			country_geoip_chart_clickthroughs();	
+			country_geoip_chart_opens();
+		  <!-- /tmpl_if --> 
+
+		ct_ot_img(); 
+		opens_ot_img();
+
 		});
 		
 		function country_geoip_chart_clickthroughs(){ 
@@ -1068,10 +1143,46 @@ my $tmpl = q{
 				});
 		}
 		
-
+		function ct_ot_img(){ 
+			new Ajax.Updater(
+				'ct_ot_img', '<!-- tmpl_var Plugin_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						f:       'data_ot_img',
+						mid:     '<!-- tmpl_var mid -->',
+						type:    'clickthroughs'
+					},
+				onCreate: 	 function() {
+					$('ct_ot_img_loading').update('<p class="alert">Loading...</p>');
+				},
+				onComplete: 	 function() {
+					$('ct_ot_img_loading').update('<p class="alert">&nbsp;</p>');
+					Effect.BlindDown('ct_ot_img');
+				}	
+				});
+		}
+		function opens_ot_img(){ 
+			new Ajax.Updater(
+				'opens_ot_img', '<!-- tmpl_var Plugin_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						f:       'data_ot_img',
+						mid:     '<!-- tmpl_var mid -->',
+						type:    'opens'
+					},
+				onCreate: 	 function() {
+					$('opens_ot_img_loading').update('<p class="alert">Loading...</p>');
+				},
+				onComplete: 	 function() {
+					$('opens_ot_img_loading').update('<p class="alert">&nbsp;</p>');
+					Effect.BlindDown('opens_ot_img');
+				}	
+				});
+		}		
 	    //]]>
 	</script>
-<!-- /tmpl_if --> 
 	
 	  <p id="breadcrumbs">
         <a href="<!-- tmpl_var Plugin_URL -->">
@@ -1245,7 +1356,17 @@ my $tmpl = q{
 
 <!-- /tmpl_if --> 
 
-<!-- tmpl_if can_use_country_geoip_data --> 
+
+
+
+
+<fieldset> 
+<legend>Clickthroughs Over Time</Legend> 
+<div id="ct_ot_img_loading"> 
+</div> 
+<div id="ct_ot_img"> 
+</div> 
+</fieldset>
 
 
 <fieldset> 
@@ -1253,13 +1374,30 @@ my $tmpl = q{
 	Message Opens by Country
 </legend>
 
-<div id="country_geoip_chart_opens_loading"> 
+
+<!-- tmpl_if can_use_country_geoip_data --> 
+	<div id="country_geoip_chart_opens_loading"> 
+	</div> 
+	<div id="country_geoip_chart_opens"> 
+	</div>
+	</fieldset>
+<!-- /tmpl_if --> 
+
+
+
+<fieldset> 
+<legend>Opens Over Time</Legend> 
+<div id="opens_ot_img_loading"> 
 </div> 
-<div id="country_geoip_chart_opens"> 
-</div>
+<div id="opens_ot_img"> 
+</div> 
 </fieldset>
 
-<!-- /tmpl_if --> 
+
+
+
+
+
 
 
 <fieldset> 
@@ -1268,6 +1406,7 @@ my $tmpl = q{
 <fieldset> 
 <legend>Soft Bounces</legend> 
 
+ 
 <div> 
 	<div style="max-height: 300px; overflow: auto; border:1px solid black;width:500px">
 	
@@ -1299,6 +1438,9 @@ my $tmpl = q{
 	</div> 
 
 	</div> 
+	<p>
+	<img src="<!-- tmpl_var soft_bounce_image -->" style="border:1px solid black" /> 
+	<p>
 	
 	</fieldset> 
 <!-- tmpl_else --> 
@@ -1339,6 +1481,11 @@ my $tmpl = q{
 	
 	</div> 
 	</div> 
+	
+	<p>
+	<img src="<!-- tmpl_var hard_bounce_image -->" style="border:1px solid black" /> 
+	<p>
+	
 	</fieldset> 
 	<!-- tmpl_else --> 
 	<p class="alert">No hard bounces to report.</p>	
@@ -1380,9 +1527,6 @@ sub message_report {
 
     my $m_report = $rd->report_by_message( $q->param('mid') );
 
-	# use Data::Dumper ;
-	# die Dumper($m_report); 
-
 	# This is strange, as we have to first break it out of the data structure, 
 	# and stick it back in: 
 	
@@ -1397,7 +1541,7 @@ sub message_report {
 		 push(@$s_url_report, {url => $v, count => $u_url_report->{$v}}); 
 	}
 	
-	
+	my ($soft_bounce_image, $hard_bounce_image) = bounces_by_domain($m_report); 
 	
 	
     my $tmpl = message_report_tmpl();
@@ -1421,6 +1565,8 @@ sub message_report {
                 hard_bounce                => commify($m_report->{'hard_bounce'})      || 0,
 				soft_bounce_report         => $m_report->{'soft_bounce_report'}        || [],
 				hard_bounce_report         => $m_report->{'hard_bounce_report'}        || [],
+				soft_bounce_image          => $soft_bounce_image, 
+				hard_bounce_image          => $hard_bounce_image, 
 				can_use_country_geoip_data => $rd->can_use_country_geoip_data, 
 				Plugin_URL                 => $Plugin_Config->{Plugin_URL},
 				Plugin_Name                => $Plugin_Config->{Plugin_Name},			
@@ -1429,6 +1575,79 @@ sub message_report {
     );
     e_print($scrn);
 
+}
+
+
+sub bounces_by_domain { 
+
+	my $m_report = shift; 
+		 
+	return (
+		by_domain_img(
+			$m_report->{'soft_bounce_report'}
+		), 
+		by_domain_img(
+			$m_report->{'hard_bounce_report'}
+		)
+	); 
+}
+
+sub by_domain_img { 
+	my $domains = shift; 
+	my $count   = shift || 15; 
+	
+	my $data = {};
+	
+	for my $bounce_report(@$domains ){ 
+
+		my $email = $bounce_report->{email};
+
+		my ($name, $domain) = split('@', $email); 
+		if(!exists($data->{$domain})){ 
+			$data->{$domain} = 0;
+		}
+		$data->{$domain} = $data->{$domain} + 1; 	
+	}
+	# Sorted Index
+	my @index = sort { $data->{$b} <=> $data->{$a} } keys %$data; 
+	
+	# Top n
+	my @top = splice(@index,0,($count-1));
+	
+	# Everyone else
+	my $other = 0; 
+	foreach(@index){ 
+		$other = $other + $data->{$_};
+	}
+	my $final = {};
+	foreach(@top){ 
+		$final->{$_} = $data->{$_};
+	}
+	if($other > 0){ 
+		$final->{other} = $other;
+	}
+	my @values = (); 
+	my @labels = (); 
+	foreach(keys %$final){ 
+		push(@values, $final->{$_}), 
+		push(@labels, $_ . ' - ' . $final->{$_} ); 	
+	}
+	
+	require URI::GoogleChart; 
+	my $chart = URI::GoogleChart->new("pie", 480, 300,
+	    data => [@values],
+	    rotate => -90,
+	    label => [@labels],
+	    encoding => "s",
+	    background => "white",
+		margin => [150, 150, 10, 10],
+		title => '',
+	);
+	
+	use HTML::Entities;
+	my $enc_chart = encode_entities($chart);
+	
+	
 }
 
 sub country_geoip_chart_tmpl{ 

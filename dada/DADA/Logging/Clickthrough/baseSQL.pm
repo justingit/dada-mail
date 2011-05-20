@@ -803,6 +803,65 @@ sub country_geoip_data {
 }
 
 
+sub data_over_time {
+	 
+	my $self   = shift; 
+	my ($args) = @_; 
+	my $msg_id = undef; 
+	my $data   = {};
+	my $order  = [];
+	my $r      = [];
+	
+	if(exists($args->{-msg_id})){ 
+		$msg_id = $args->{-msg_id};
+	}
+	if(!exists($args->{-type})){ 
+		$args->{-type} = 'clickthroughs';
+	}
+	my $query; 
+	if($args->{-type} eq 'clickthroughs'){ 
+		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ? '; 	
+	}
+	else { 
+		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'open\' AND list = ? '; 			
+	}
+	 
+	if($msg_id){ 
+		$query .= ' AND msg_id = ?'; 
+	}
+	$query .= ' ORDER BY timestamp'; 
+	
+	
+    my $sth = $self->{dbh}->prepare($query);
+	if($msg_id){ 		
+	    $sth->execute($self->{name}, $msg_id)
+	      or croak "cannot do statement! $DBI::errstr\n";
+	}
+	else { 
+	    $sth->execute($self->{name})
+	      or croak "cannot do statement! $DBI::errstr\n";
+	}
+	
+	my $row; 
+	while ( $row = $sth->fetchrow_hashref ) {
+		my $date = $row->{timestamp}; 
+		my ($mdy, $rest) = split(' ', $date, 2);
+		if(!exists($data->{$mdy})){ 
+			$data->{$mdy} = 0; 
+			push(@$order, $mdy)
+		}
+		$data->{$mdy}++; 
+      }
+
+	foreach(@$order){ 
+		push(@$r, {mdy => $_, count => $data->{$_}});
+	}
+
+	return $r; 
+	
+}
+
+
 
 
 sub purge_log { 
