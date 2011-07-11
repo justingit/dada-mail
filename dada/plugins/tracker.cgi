@@ -679,6 +679,34 @@ sub subscriber_history_img {
     e_print($scrn);
 }
 
+
+
+sub every_nth { 
+	my $array_ref = shift; 
+	my $nth       = shift || 10; 
+	
+	if($nth < 0){ 
+		return $array_ref; 
+	}
+	if(scalar(@$array_ref) < $nth){ 
+		return $array_ref; 
+	}
+	
+	my $index =  int(scalar(@$array_ref) / $nth);
+	my $count = 0; 
+	my @group = (); 
+	for(@$array_ref){ 
+	
+		unless($count % $index ){ 
+			push(@group, $_); 
+		}
+		$count++; 
+	}
+
+	return [@group];
+}
+
+
 sub data_ot_img_tmpl { 
 	
 return q{ 
@@ -713,6 +741,8 @@ sub data_ot_img {
 		push(@$range, $_->{count}); 
 		
 	}
+	
+	$chxl = every_nth($chxl, 5); 
 	
 	require     URI::GoogleChart; 
 	my $chart = URI::GoogleChart->new("lines", 720, 250,
