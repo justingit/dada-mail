@@ -248,9 +248,15 @@ sub print_out_list {
 			# https://sourceforge.net/tracker/index.php?func=detail&aid=2147102&group_id=13002&atid=113002
 			$email =~ s/\n|\r/ /gi;
 			
+			# And... then... get rid of the last space? 
+			$email =~ s/ $//gi;
+			
 			
 			#	chomp($email);
 			print $fh $email; 
+			
+			# And then, and then, put the newline back? 
+			print "\n"; 
 			$count++; 
 			
 		}
