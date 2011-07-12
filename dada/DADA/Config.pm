@@ -4982,7 +4982,7 @@ and to say that you've got the freshest tools on the Web.
 
 
 $VERSION = 4.5.2; 
-$VER     = '4.5.2 Stable - 6/5/11';
+$VER     = '4.5.2 Stable - 7/12/11';
 
 
 #
