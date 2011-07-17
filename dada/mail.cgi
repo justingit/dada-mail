@@ -2068,17 +2068,60 @@ sub sending_preferences {
 		# Nice logic, Justin.
          if(
 			!$li->{smtp_server}  &&
-			$li->{send_via_smtp} &&
-			$li->{send_via_smtp} == 1
+			$li->{sending_method} eq "smtp"
 		 ) {
 			$no_smtp_server_set = 1;
          }
 
+
+		# Amazon SES Test for stuff. 
+		my $has_aws_credentials_file = 0; 
+		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file})){ 
+			$has_aws_credentials_file = 1; 
+		}
+		my $has_ses_send_email_script = 0; 
+		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script})){ 
+			$has_ses_send_email_script = 1; 
+		}
+		
+		my $amazon_ses_required_modules = [ 
+			{module => 'Digest::SHA', installed => 0}, 
+			{module => 'URI::Escape', installed => 0}, 
+			{module => 'Bundle::LWP', installed => 0}, 		
+			{module => 'MIME::Base64', installed => 0}, 	
+			{module => 'Crypt::SSLeay', installed => 0}, 	
+			{module => 'XML::LibXML', installed => 0}, 
+		];
+		my $ses_installed = {
+			
+			
+			'Digest::SHA'   => 0, 
+			'URI::Escape'   => 0,
+			'Bundle::LWP'   => 0, 
+			'MIME::Base64'  => 0, 
+			'Crypt::SSLeay' => 0, 
+			'XML::LibXML'   => 0, 
+		}; 
+		eval {require Digest::SHA;};   if(!$@){$ses_installed->{'Digest::SHA'} => 1}
+		eval {require URI::Escape;};   if(!$@){$ses_installed->{'URI::Escape'} => 1}
+		eval {require Bundle::LWP;};   if(!$@){$ses_installed->{'Bundle::LWP'} => 1}
+		eval {require MIME::Base64;};  if(!$@){$ses_installed->{'MIME::Base64'} => 1}
+		eval {require Crypt::SSLeay;}; if(!$@){$ses_installed->{'Crypt::SSLeay'} => 1}
+		eval {require XML::LibXML;};   if(!$@){$ses_installed->{'XML::LibXML'} => 1}
+		
+		
+		my $amazon_ses_has_needed_cpan_modules = 1; 
+		for(@$amazon_ses_required_modules){ 
+			my $module = $_->{module};
+			$_->{installed} = $ses_installed->{$module}; 
+		}
+		
         require    DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
 			{
 				-screen         => 'sending_preferences_screen.tmpl',
 				-with           => 'admin', 
+				-expr           => 1, 
 				-wrapper_params => { 
 					-Root_Login => $root_login,
 					-List       => $list,  
@@ -2102,10 +2145,18 @@ sub sending_preferences {
 					sasl_auth_mechanism => $q->param('sasl_auth_mechanism') ? $q->param('sasl_auth_mechanism') : $li->{sasl_auth_mechanism},
 					sasl_smtp_username  => $q->param('sasl_smtp_username') ? $q->param('sasl_smtp_username') : $li->{sasl_smtp_username},
 					sasl_smtp_password  => $q->param('sasl_smtp_password') ? $q->param('sasl_smtp_password') : $decrypted_sasl_pass,
+				
+					# Amazon SES 
+					has_aws_credentials_file            => $has_aws_credentials_file, 
+					has_ses_send_email_script           => $has_ses_send_email_script, 
+					aws_credentials_file                => $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file},
+					ses_send_email_script               => $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script},
+					amazon_ses_has_needed_cpan_modules  => $amazon_ses_has_needed_cpan_modules, 
+					amazon_ses_required_modules         => $amazon_ses_required_modules, 
 				},
 				-list_settings_vars_param => {
-				-list    => $list,
-				-dot_it => 1,
+					-list    => $list,
+					-dot_it => 1,
 				},
 			}
 		);
@@ -2137,7 +2188,7 @@ sub sending_preferences {
             {
                 -associate => $q,
                 -settings  => {
-                    send_via_smtp       => 0,
+                    sending_method      => undef,
                     add_sendmail_f_flag => 0,
                     use_pop_before_smtp => 0,
                     set_smtp_sender     => 0,
@@ -2460,7 +2511,7 @@ sub sending_tuning_options {
 
     my @allowed_tunings = qw(
         domain
-        send_via_smtp
+        
         add_sendmail_f_flag
         print_return_path_header
         verp_return_path
@@ -2610,7 +2661,7 @@ sub sending_tuning_options {
                                                             use_domain_sending_tunings => ($li->{use_domain_sending_tunings} ? 1 : 0),
 
                                                             # For pre-filling in the "new" forms
-                                                            list_send_via_smtp               => $li->{send_via_smtp},
+                                                           # list_send_via_smtp               => $li->{send_via_smtp},
                                                             list_add_sendmail_f_flag         => $li->{add_sendmail_f_flag},
                                                             list_print_return_path_header    => $li->{print_return_path_header},
                                                             list_verp_return_path            => $li->{verp_return_path},

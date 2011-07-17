@@ -2,7 +2,7 @@
 
 <!-- tmpl_set name="title" value="Sending Preferences" -->
 
-<!-- tmpl_if list_settings.send_via_smtp --> 
+<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" --> 
 	<p class="alert">Messages are currently being sent via SMTP
 <!-- tmpl_if no_smtp_server_set -->
 		, but make sure to set up your SMTP server settings.
@@ -27,11 +27,11 @@
 	<table>
 	 <tr>
 	  <td>
-	   <input type="radio" name="send_via_smtp" id="send_via_sendmail" value="0" <!-- tmpl_unless list_settings.send_via_smtp -->checked="checked"<!--/tmpl_unless--> />
+	   <input type="radio" name="sending_method" id="sendmail" value="sendmail" <!-- tmpl_if expr="list_settings.sending_method eq 'sendmail'" -->checked="checked"<!--/tmpl_if --> />
 	  </td>
 	  <td>
 	   <p>
-	    <label for="send_via_sendmail">
+	    <label for="sendmail">
 	     Send Email Using the <em>sendmail</em> Command
 	    </label>
 	<!-- tmpl_if comment --> 
@@ -110,11 +110,11 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 <table>
  <tr>
   <td>
-   <input type="radio" name="send_via_smtp" id="send_via_smtp" value="1" <!-- tmpl_if list_settings.send_via_smtp -->checked="checked"<!--/tmpl_if--> />
+   <input type="radio" name="sending_method" id="smtp" value="1" <!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" -->checked="checked"<!--/tmpl_if --> />
   </td>
   <td>
    <p>
-    <label for="send_via_smtp">
+    <label for="smtp">
      Send Email Using SMTP
     </label>
     <br />
@@ -420,9 +420,78 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 	
 	</fieldset>
 
-
    
 </fieldset>
+
+
+	<fieldset>
+	<legend>
+	 Amazon SES Options
+	</legend>
+
+
+
+	<table>
+	 <tr>
+	  <td>
+	   <input type="radio" name="sending_method" id="amazon_ses" value="amazon_ses" <!-- tmpl_if expr="list_settings.sending_method eq 'amazon_ses'" -->checked="checked"<!--/tmpl_if --> />
+	  </td>
+	  <td>
+	   <p>
+	    <label for="amazon_ses">
+	     Send Email Using the <em>Amazon Simple Email Service</em>
+	    </label>
+		<!-- tmpl_if has_aws_credentials_file --> 
+			<p class="postive">You AWS crendentials are being looked for in:</p> 
+			<ul> 
+				<li><p class="postive"><!-- tmpl_var aws_credentials_file --></p></li> 
+			</ul>
+		<!-- tmpl_else --> 
+			<p class="error">
+				Cannot find your AWS crendentials (<!-- tmpl_var aws_credentials_file default="not set!" -->)
+			</p>
+		<!-- /tmpl_if --> 
+		
+		<!-- tmpl_if has_ses_send_email_script --> 
+			<p class="postive">The, &quot;ses-send-email.pl&quot; script is being looked for at:</p> 
+			<ul> 
+				<li><p class="postive"><!-- tmpl_var ses_send_email_script --></p></li> 
+			</ul>
+		<!-- tmpl_else --> 
+		<p class="error">
+			Cannot find your &quot;ses-send-email.pl&quot; script (<!-- tmpl_var ses_send_email_script default="not set!" -->)
+		</p>
+		<!-- /tmpl_if -->
+		
+		<!-- tmpl_if amazon_ses_has_needed_cpan_modules --> 
+			<p class="positive"> 
+				All needed CPAN modules are installed!
+			</p> 
+		<!-- tmpl_else --> 
+			<p class="error"> 
+				One or more of the following CPAN modules needs to be installed for Amazon SES sending to work:
+			</p>
+			
+			<ul> 
+				<!-- tmpl_loop amazon_ses_required_modules --> 
+					<!-- tmpl_unless installed --> 
+						 <li>
+						 <p class="error">  
+						  <!-- tmpl_var module --> 
+						 </p> 
+						</li> 
+					<!-- /tmpl_unless --> 
+				<!-- /tmpl_loop --> 
+			</ul> 
+		<!-- /tmpl_if --> 
+	
+	  </td>
+	 </tr>
+	</table>
+	
+	
+</fieldset>
+
 
 <input type="hidden" name="process" id="process" value="1" /> 
 <input type="hidden" name="f" id="flavor" value="sending_preferences" />
@@ -441,26 +510,13 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 	    //<![CDATA[
 
 		 function test_smtp(){ 
-			
-/*			 How we find if we're sending via sendmail or SMTP: */
-			var send_via_smtp = 0; 
-			if(document.default_form.send_via_smtp.length){ 
-				for (var i=0; i < document.default_form.send_via_smtp.length; i++){
-					if (document.default_form.send_via_smtp[i].checked){
-						if(document.default_form.send_via_smtp[i].value == 1){ 
-							send_via_smtp = 1; 
-						}
-					}
-				}
-			}
+	
 
 			new Ajax.Updater(
 				'sending_preferences_test', '<!-- tmpl_var S_PROGRAM_URL -->', 
 				{ 
 				    method: 'post', 
 					parameters: {
-
-						send_via_smtp:             send_via_smtp, 
 						add_sendmail_f_flag:       $F('add_sendmail_f_flag'), 
 						smtp_server:               $F('smtp_server'), 
 						smtp_port:                 $F('smtp_port'),
