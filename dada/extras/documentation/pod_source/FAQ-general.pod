@@ -237,7 +237,7 @@ The following unsubscription links/tags can be used:
 
 =item * Path Info style, embeds in the email address of the subscriber
 
-<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/
+	<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/
 
 =item * Path Info style, DOES NOT embed the email address of the subscriber
 
