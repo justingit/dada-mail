@@ -2051,6 +2051,9 @@ sub wrap_screen {
 
 sub validate_screen { 
 	my ($args) = @_; 
+	$args->{-expr} = 1; # DEV: The validate_screen doesn't know the differences between
+					    # HTML::Template and HTML::Template::Expr, which isn't good. 
+						# What to do?!
 	eval { 
 		my $scrn = screen($args)
 	};

@@ -377,10 +377,10 @@ sub send {
             $fields{'Return-Path'} =  '<'. $local_li->{admin_email} . '>'; 
         }
     }	
-
+	
 	if(
-	   defined($local_li->{smtp_server}) >  0  &&
-	   $local_li->{send_via_smtp}        == 1       
+	   defined($local_li->{smtp_server}) &&
+	   $local_li->{sending_method} eq 'smtp'       
 	){ 
 		
          $self->_pop_before_smtp;
@@ -605,8 +605,8 @@ sub send {
                 carp "Problems sending via SMTP: $@"; 
             }
          
-         }else{ 
-    
+         }
+		elsif($local_li->{sending_method} eq 'sendmail' ) { 
             my $live_mailing_settings; 
             # carp ' $fields{To} ' . $fields{To}; 
             
@@ -740,7 +740,82 @@ sub send {
 				# 	return -1; 
 				#}
         }
-        
+		elsif($local_li->{sending_method} eq 'amazon_ses' ) { 
+			# As listed in: 
+			# http://docs.amazonwebservices.com/ses/2010-12-01/DeveloperGuide/index.html?AppendixHeaders.html
+        	my $allowed_ses_headers = {
+				'Accept-Language' => 1,
+				'Bcc' => 1,
+				'Cc' => 1,
+				'Comments' => 1,
+				'Content-Type' => 1,
+				'Content-Transfer-Encoding' => 1,
+				'Content-ID' => 1,
+				'Content-Description' => 1,
+				'Content-Disposition' => 1,
+				'Content-Language' => 1,
+				'Date' => 1,
+				'DKIM-Signature' => 1,
+				'DomainKey-Signature' => 1,
+				'From' => 1,
+				'In-Reply-To' => 1,
+				'Keywords' => 1,
+				'List-Archive' => 1,
+				'List-Help' => 1,
+				'List-Id' => 1,
+				'List-Owner' => 1,
+				'List-Post' => 1,
+				'List-Subscribe' => 1,
+				'List-Unsubscribe' => 1,
+				'Message-Id' => 1,
+				'MIME-Version' => 1,
+				'Received' => 1,
+				'References' => 1,
+				'Reply-To' => 1,
+				'Return-Path' => 1,
+				'Sender' => 1,
+				'Subject' => 1,
+				'Thread-Index' => 1,
+				'Thread-Topic' => 1,
+				'To' => 1,
+				'User-Agent' => 1,				
+			};
+			
+            	
+			open(MAIL,$SES_STUFF) 
+				or $self->_send_die($fields{Debug});		
+
+			# Well, probably, no? 
+			binmode MAIL, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
+            
+			# DEV: I guess the idea is, I want this header first?
+            if (exists($fields{'Return-Path'})){
+            	if ($fields{'Return-Path'} ne undef){
+					print MAIL 'Return-Path: ' . $fields{'Return-Path'} . "\n"; 	
+				} 
+			}
+            
+            for my $field (@default_headers){
+				if($allowed_ses_headers->{$field} != 1){ 
+                    print MAIL "$field: $fields{$field}\n"
+                        if(
+	 						exists($fields{$field})                  && 
+							defined $fields{$field}                  && 
+                            $fields{$field}         ne ""            && 
+                            $field                  ne 'Return-Path'
+                         );
+            	}
+			}
+            print MAIL "\n"; 
+
+
+            print MAIL $fields{Body} . "\n"; # DEV: Why the last, "\n"?
+            close(MAIL) 
+                or carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: 
+                         didn't close pipe to '$SES_STUFF' while 
+                         attempting to send a message to: '" . $fields{To} ." because:' $!";   
+				
+		}
         
        
 		$self->{mj_log}->mj_log($local_li->{list}, 'Mail Sent', "Recipient:$recipient_for_log, Subject:$fields{Subject}") 
@@ -782,10 +857,8 @@ This message was sent out by <!-- tmpl_var PROGRAM_NAME --> to test out mail sen
 		
 If you've received this message, it looks like mail sending is working. 
 
-<!-- tmpl_if list_settings.send_via_smtp --> 
+<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" --> 
 	* Mail is being sent via SMTP
-<!-- tmpl_else --> 
-	* Mail is being sent via sendmail
 <!--/tmpl_if --> 
 
 -- <!-- tmpl_var PROGRAM_NAME --> 
@@ -803,10 +876,13 @@ EOF
 			}, 
 			-body => $msg,
 			-tmpl_params => {
+				
 				-list_settings_vars_param => {
 					-list   => 	$self->{list}, 
 					-dot_it => 1,
 				},
+				 -expr => 1,
+				
 			},		 
 		}
 	);

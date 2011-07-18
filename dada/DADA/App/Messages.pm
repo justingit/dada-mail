@@ -127,7 +127,7 @@ sub send_generic_email {
 	}
 	$fm->use_header_info(1);
 	$fm->use_email_templates(0);	
-			
+
 	my ($email_str) = $fm->format_message(
                             -msg => $fm->string_from_dada_style_args(
                                         {
@@ -137,6 +137,8 @@ sub send_generic_email {
                        );
 		
 #	warn '$email_str ' . $email_str; 
+	
+ 
 	
 	$email_str = safely_decode($email_str); 
 #	warn '$email_str ' . $email_str; 
@@ -148,7 +150,8 @@ my $entity = $fm->email_template(
 					-data => safely_encode($email_str),
 				}
 			),
-  			-expr   => $expr, 
+  			-expr => 1,
+			#-expr   => $expr, 
 			%{$args->{-tmpl_params}},
         }
     );

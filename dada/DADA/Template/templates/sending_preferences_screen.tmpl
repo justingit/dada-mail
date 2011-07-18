@@ -110,7 +110,7 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 <table>
  <tr>
   <td>
-   <input type="radio" name="sending_method" id="smtp" value="1" <!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" -->checked="checked"<!--/tmpl_if --> />
+   <input type="radio" name="sending_method" id="smtp" value="smtp" <!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" -->checked="checked"<!--/tmpl_if --> />
   </td>
   <td>
    <p>
@@ -509,9 +509,15 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 	<script type="text/javascript">
 	    //<![CDATA[
 
-		 function test_smtp(){ 
-	
-
+		 function test_sending_preferences(){ 
+			var sending_method = '';
+			if(document.default_form.sending_method.length){
+				for (var i=0; i < document.default_form.sending_method.length; i++){
+					if (document.default_form.sending_method[i].checked){
+							sending_method = document.default_form.sending_method[i].value;	
+					}
+				}
+			}			
 			new Ajax.Updater(
 				'sending_preferences_test', '<!-- tmpl_var S_PROGRAM_URL -->', 
 				{ 
@@ -532,7 +538,8 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 						pop3_use_ssl:              $F('pop3_use_ssl'), 
 						set_smtp_sender:           $F('set_smtp_sender'),
 						process:                   $F('process'),
-						f:                         'sending_preferences_test'
+						f:                         'sending_preferences_test',
+						sending_method:             sending_method, 
 
 						},
 
@@ -555,7 +562,7 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 	</script>
 
 	<p>
-		<input type="button"  value="Save, Then Test Your Sending Preferences..." class="processing" onClick="test_smtp();" /> 
+		<input type="button"  value="Save, Then Test Your Sending Preferences..." class="processing" onClick="test_sending_preferences();" /> 
 	</p> 
 
 	<div id="sending_preferences_test_loading" style="display:none;background:#fff">

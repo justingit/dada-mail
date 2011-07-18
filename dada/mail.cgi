@@ -106,7 +106,7 @@ use lib qw(
 #	use constant ERRORS_TO_BROWSER => 2;
 #
 
-use constant ERRORS_TO_BROWSER => 1;
+use constant ERRORS_TO_BROWSER => 2;
 #
 # Why would you want this commented? Security.
 #
@@ -1999,8 +1999,6 @@ sub sending_preferences {
 
     if(!$process){
 
-
-
 	    require DADA::MailingList::Settings;
 
 	    my $ls = DADA::MailingList::Settings->new({-list => $list});
@@ -2009,12 +2007,12 @@ sub sending_preferences {
 	    require DADA::Security::Password;
 
 
-	    my $decrypted_sasl_pass = q{};
+	    my $decrypted_sasl_pass = '';
 	    if($li->{sasl_smtp_password}){
 	         $decrypted_sasl_pass = DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $li->{sasl_smtp_password});
 	   }
 
-	    my $decrypted_pop3_pass = q{};
+	    my $decrypted_pop3_pass = '';
 	    if($li->{pop3_password}){
 	        $decrypted_pop3_pass = DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $li->{pop3_password});
 	    }
@@ -2057,15 +2055,12 @@ sub sending_preferences {
 
 	                                         );
 
-
-
 	    my $wrong_uid = 0;
            $wrong_uid = 1
             if $< != $>;
 
 
         my $no_smtp_server_set = 0;
-		# Nice logic, Justin.
          if(
 			!$li->{smtp_server}  &&
 			$li->{sending_method} eq "smtp"
@@ -2108,8 +2103,6 @@ sub sending_preferences {
 		eval {require MIME::Base64;};  if(!$@){$ses_installed->{'MIME::Base64'} => 1}
 		eval {require Crypt::SSLeay;}; if(!$@){$ses_installed->{'Crypt::SSLeay'} => 1}
 		eval {require XML::LibXML;};   if(!$@){$ses_installed->{'XML::LibXML'} => 1}
-		
-		
 		my $amazon_ses_has_needed_cpan_modules = 1; 
 		for(@$amazon_ses_required_modules){ 
 			my $module = $_->{module};
@@ -2728,6 +2721,7 @@ sub sending_preferences_test {
     e_print(DADA::Template::Widgets::screen(
         {
             -screen => 'sending_preferences_test_widget.tmpl',
+			-expr   => 1, 
             -vars   => {
                 report  => $ht_report,
                 raw_log => $results,
