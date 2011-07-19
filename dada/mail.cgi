@@ -106,7 +106,7 @@ use lib qw(
 #	use constant ERRORS_TO_BROWSER => 2;
 #
 
-use constant ERRORS_TO_BROWSER => 2;
+use constant ERRORS_TO_BROWSER => 1;
 #
 # Why would you want this commented? Security.
 #
@@ -2080,6 +2080,7 @@ sub sending_preferences {
 		}
 		
 		my $amazon_ses_required_modules = [ 
+			{module => 'Cwd', installed => 0}, 
 			{module => 'Digest::SHA', installed => 0}, 
 			{module => 'URI::Escape', installed => 0}, 
 			{module => 'Bundle::LWP', installed => 0}, 		
@@ -2089,7 +2090,7 @@ sub sending_preferences {
 		];
 		my $ses_installed = {
 			
-			
+			'Cwd'           => 0, 			
 			'Digest::SHA'   => 0, 
 			'URI::Escape'   => 0,
 			'Bundle::LWP'   => 0, 
@@ -2097,12 +2098,13 @@ sub sending_preferences {
 			'Crypt::SSLeay' => 0, 
 			'XML::LibXML'   => 0, 
 		}; 
-		eval {require Digest::SHA;};   if(!$@){$ses_installed->{'Digest::SHA'} => 1}
-		eval {require URI::Escape;};   if(!$@){$ses_installed->{'URI::Escape'} => 1}
-		eval {require Bundle::LWP;};   if(!$@){$ses_installed->{'Bundle::LWP'} => 1}
-		eval {require MIME::Base64;};  if(!$@){$ses_installed->{'MIME::Base64'} => 1}
+		eval {require Cwd;};           if(!$@){$ses_installed->{'Cwd'}           => 1}
+		eval {require Digest::SHA;};   if(!$@){$ses_installed->{'Digest::SHA'}   => 1}
+		eval {require URI::Escape;};   if(!$@){$ses_installed->{'URI::Escape'}   => 1}
+		eval {require Bundle::LWP;};   if(!$@){$ses_installed->{'Bundle::LWP'}   => 1}
+		eval {require MIME::Base64;};  if(!$@){$ses_installed->{'MIME::Base64'}  => 1}
 		eval {require Crypt::SSLeay;}; if(!$@){$ses_installed->{'Crypt::SSLeay'} => 1}
-		eval {require XML::LibXML;};   if(!$@){$ses_installed->{'XML::LibXML'} => 1}
+		eval {require XML::LibXML;};   if(!$@){$ses_installed->{'XML::LibXML'}   => 1}
 		my $amazon_ses_has_needed_cpan_modules = 1; 
 		for(@$amazon_ses_required_modules){ 
 			my $module = $_->{module};
@@ -2670,6 +2672,7 @@ sub sending_tuning_options {
 
 sub sending_preferences_test {
 
+
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'sending_preferences'
@@ -2694,13 +2697,18 @@ sub sending_preferences_test {
         }
     );
 
+
+	
     my ( $results, $lines, $report );
 	eval {
-    	( $results, $lines, $report ) = $mh->sending_preferences_test;
-	};
+   		( $results, $lines, $report ) = $mh->sending_preferences_test;
+	}; 
 	if($@){
-		$results = $@;
+		$results .= $@;
 	}
+	#else { 
+	#	# ... 
+	#}
 
     $results =~ s/\</&lt;/g;
     $results =~ s/\>/&gt;/g;
@@ -2715,8 +2723,7 @@ sub sending_preferences_test {
             { SMTP_command => $s_f, message => $f->{message} } );
     }
 
-    print $q->header();
-
+	print $q->header(); 
     require DADA::Template::Widgets;
     e_print(DADA::Template::Widgets::screen(
         {

@@ -1326,9 +1326,10 @@ $MASS_MAIL_SETTINGS ||= "|$MAILPROG -t";
 
 =cut
 
-$AMAZON_SES_OPTIONS = { 
-	aws_credentials_file  => undef, 
-	ses_send_email_script => undef, 
+$AMAZON_SES_OPTIONS ||= { 
+	aws_credentials_file            => undef, 
+	ses_send_email_script           => undef, 
+	ses_verify_email_address_script => undef, 
 };
 
 =pod

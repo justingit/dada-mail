@@ -378,6 +378,9 @@ sub send {
         }
     }	
 	
+	
+
+	
 	if(
 	   defined($local_li->{smtp_server}) &&
 	   $local_li->{sending_method} eq 'smtp'       
@@ -607,6 +610,7 @@ sub send {
          
          }
 		elsif($local_li->{sending_method} eq 'sendmail' ) { 
+			
             my $live_mailing_settings; 
             # carp ' $fields{To} ' . $fields{To}; 
             
@@ -699,6 +703,7 @@ sub send {
             
             }
 
+			
 			# Well, probably, no? 
 			binmode MAIL, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
             
@@ -709,6 +714,7 @@ sub send {
 				} 
 			}
             
+
             for my $field (@default_headers){
                     print MAIL "$field: $fields{$field}\n"
                         if(
@@ -739,8 +745,12 @@ sub send {
 				# 	}
 				# 	return -1; 
 				#}
+				
+				
         }
 		elsif($local_li->{sending_method} eq 'amazon_ses' ) { 
+
+						
 			# As listed in: 
 			# http://docs.amazonwebservices.com/ses/2010-12-01/DeveloperGuide/index.html?AppendixHeaders.html
         	my $allowed_ses_headers = {
@@ -780,50 +790,63 @@ sub send {
 				'To' => 1,
 				'User-Agent' => 1,				
 			};
+						
+            
+
 			
-            	
-			open(MAIL,$SES_STUFF) 
-				or $self->_send_die($fields{Debug});		
+			open(MAIL, '|'. $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script} . ' -r -k ' . $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file})
+				or carp "couldn't open, " . $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script} . ' - $!'; 
 
 			# Well, probably, no? 
 			binmode MAIL, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
             
-			# DEV: I guess the idea is, I want this header first?
-            if (exists($fields{'Return-Path'})){
-            	if ($fields{'Return-Path'} ne undef){
-					print MAIL 'Return-Path: ' . $fields{'Return-Path'} . "\n"; 	
-				} 
-			}
-            
+			# DEV: for this to work, you need to verify the address. Ugh! :) 
+			#print MAIL 'Return-Path: ' . 'somebouncehandleraddress' . "\n"; 	
+		    #print MAIL 'Bounces-To: ' . 'somebouncehandleraddress@skazat.com' . "\n"; 
+
+			
             for my $field (@default_headers){
-				if($allowed_ses_headers->{$field} != 1){ 
-                    print MAIL "$field: $fields{$field}\n"
-                        if(
+				if($allowed_ses_headers->{$field} == 1){ 
+                     if(
 	 						exists($fields{$field})                  && 
 							defined $fields{$field}                  && 
                             $fields{$field}         ne ""            && 
                             $field                  ne 'Return-Path'
-                         );
+                         ) { 
+							print MAIL "$field: $fields{$field}\n";
+                   }
             	}
 			}
             print MAIL "\n"; 
 
 
+
+			
             print MAIL $fields{Body} . "\n"; # DEV: Why the last, "\n"?
+
+
+
             close(MAIL) 
                 or carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: 
-                         didn't close pipe to '$SES_STUFF' while 
+                         didn't close pipe to '" . $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script} ."' while 
                          attempting to send a message to: '" . $fields{To} ." because:' $!";   
+
+
+
 				
+		}
+		else { 
+			die "Unknown Sending Method: " . $local_li->{sending_method}; 
 		}
         
        
 		$self->{mj_log}->mj_log($local_li->{list}, 'Mail Sent', "Recipient:$recipient_for_log, Subject:$fields{Subject}") 
 			if $DADA::Config::LOG{mailings};     
+			
+		$local_li = {};
+			
    		return 1; 
 
-	
-	$local_li = {};
 }
 
 
@@ -835,10 +858,12 @@ sub sending_preferences_test {
 
     require DADA::Security::Password; 
     
-    my $filename = time . '_' . DADA::Security::Password::generate_rand_string(); 
+    my $filename = $DADA::Config::TMP . '/' .  time . '_' . DADA::Security::Password::generate_rand_string(); 
+       $filename = make_safer($filename); 
+
     chmod($DADA::Config::DIR_CHMOD , $filename);
 	
-    open(SMTPTEST, ">$DADA::Config::TMP/$filename") or die "That didn't work."; 
+    open(SMTPTEST, ">$filename") or die "Couldn't open file, $filename - $!"; 
     
     *STDERR = *SMTPTEST; 
     
@@ -857,9 +882,15 @@ This message was sent out by <!-- tmpl_var PROGRAM_NAME --> to test out mail sen
 		
 If you've received this message, it looks like mail sending is working. 
 
+<!-- tmpl_if expr="list_settings.sending_method eq 'sendmail'" --> 
+	* Mail is being sent via the sendmail command
+<!--/tmpl_if -->
 <!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" --> 
 	* Mail is being sent via SMTP
 <!--/tmpl_if --> 
+<!-- tmpl_if expr="list_settings.sending_method eq 'amazon_ses'" --> 
+	* Mail is being sent via Amazon Simple Email Service
+<!--/tmpl_if -->
 
 -- <!-- tmpl_var PROGRAM_NAME --> 
 EOF
@@ -881,17 +912,18 @@ EOF
 					-list   => 	$self->{list}, 
 					-dot_it => 1,
 				},
-				 -expr => 1,
+				-expr => 1,
 				
 			},		 
 		}
 	);
     
     close(SMTPTEST); 
+	
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_SMTP} = $orig_debug_smtp; 
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} = $orig_debug_pop3;     
-    open(RESULTS, "<$DADA::Config::TMP/$filename")
-        or die "that didn't work $!"; 
+    open(RESULTS, "<" . $filename)
+        or die "Couldn't open " . $filename . " - $!"; 
     my $smtp_msg = do { local $/; <RESULTS> };
 
     close(RESULTS); 
@@ -917,8 +949,9 @@ EOF
 		
     }
 
-	unlink($DADA::Config::TMP . '/' . $filename); 
+	unlink($filename) or warn $!; 
  
+	
     return ($smtp_msg, \@r_l, $report);  
 
 
@@ -1035,11 +1068,7 @@ sub mass_send {
 				  $self->tagged_list_headers, 
 				   %param_headers, 
 				); 
-	
-
-
-	#print q{ HERE: $fields{From} } .  $fields{From}; 
-	
+		
 
 	%fields = $self->clean_headers(%fields); 
 	
@@ -1705,8 +1734,6 @@ sub mass_send {
 				    }
 				);
 
-#use Data::Dumper; 
-#warn "AFTER " . Dumper(\%nfields);
 				
 				# Debug Information, Always nice
                 $nfields{Debug} = {
@@ -2014,7 +2041,7 @@ sub mass_send {
             $mailout->clean_up; 
             
 
-			# Undef'ing net_smpt_obj if needed... 
+			# Undef'ing net_smtp_obj if needed... 
 			if(defined($self->net_smtp_obj)){ 	
 				
 				warn  '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' Quitting a SMTP connection at end of mass_send' 
