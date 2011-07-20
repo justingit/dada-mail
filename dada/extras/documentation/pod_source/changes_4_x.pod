@@ -2,6 +2,17 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.6.0 Alpha 1
+
+=head2 Summary 4.6.0 Alpha 1
+
+v4.6.0 alpha 1 introduces Amazon SES support. This allows you to send email 
+messages with Dada Mail using the Amazon SES Web Service.
+
+=head3 See Also: 
+
+L<http://dadamailproject.com/support/documentation/features-amazon_ses_support.pod.html>
+
 =head1 4.5.2
 
 =head2 Summary 4.5.2

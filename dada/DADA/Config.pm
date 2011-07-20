@@ -1330,6 +1330,7 @@ $AMAZON_SES_OPTIONS ||= {
 	aws_credentials_file            => undef, 
 	ses_send_email_script           => undef, 
 	ses_verify_email_address_script => undef, 
+	ses_get_stats_script            => undef, 
 };
 
 =pod
@@ -4996,8 +4997,8 @@ and to say that you've got the freshest tools on the Web.
 
 
 
-$VERSION = 4.5.2; 
-$VER     = '4.5.2 Stable - 7/12/11';
+$VERSION = 4.6.0; 
+$VER     = '4.6.0 Alpha 1 - 7/20/11';
 
 
 #

@@ -25,6 +25,7 @@
 </legend>
 
 <div id="previewBatchSendingSpeed"></div> 
+<div id="amazon_ses_get_stats"></div> 
 
 <p>
  Make sure to set these options to be below any hourly limitations that may be imposed on your hosting account!
@@ -238,7 +239,25 @@
 
 			});
 	}
+	 function amazon_ses_get_stats(){ 
+		new Ajax.Updater(
+			'amazon_ses_get_stats', '<!-- tmpl_var S_PROGRAM_URL -->', 
+			{ 
+			    method: 'post', 
+				parameters: {
+					f:                    'amazon_ses_get_stats', 
+				},
+			onCreate: 	 function() {
+			},
+			onComplete: 	 function() {
+
+				$('amazon_ses_get_stats').show(); 
+			
+			}
+			});
+	}
 	previewBatchSendingSpeed(); 
+	amazon_ses_get_stats(); 
     //]]>
 
 </script>

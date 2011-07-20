@@ -472,10 +472,6 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 		</p>
 		<!-- /tmpl_if -->		
 		
-		
-		
-		
-		
 		<!-- tmpl_if amazon_ses_has_needed_cpan_modules --> 
 			<p class="positive"> 
 				All needed CPAN modules are installed!
@@ -498,7 +494,8 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 			</ul> 
 		<!-- /tmpl_if --> 
 	
-	
+		<div id="amazon_ses_get_stats"></div> 
+		
 		<fieldset>
 		<legend>
 		 Amazon SES Tools
@@ -538,7 +535,7 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 	<script type="text/javascript">
 	    //<![CDATA[
 	
-		 function get_sending_method { 
+		 function get_sending_method() { 
 			var sending_method = '';
 			if(document.default_form.sending_method.length){
 				for (var i=0; i < document.default_form.sending_method.length; i++){
@@ -619,6 +616,27 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 
 				});
 		}
+		
+		 function amazon_ses_get_stats() { 
+			new Ajax.Updater(
+				'amazon_ses_get_stats', '<!-- tmpl_var S_PROGRAM_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						f:                    'amazon_ses_get_stats', 
+					},
+
+				onCreate: 	 function() {
+				},
+				onComplete: 	 function() {
+
+					$('amazon_ses_get_stats').show(); 
+				}
+				});
+		}
+		
+		amazon_ses_get_stats();
+		
 	    //]]>
 	</script>
 

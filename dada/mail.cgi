@@ -609,7 +609,8 @@ sub run {
 	'list_options'            =>    \&list_options,
 	'sending_preferences'     =>    \&sending_preferences,
 	'amazon_ses_verify_email' =>    \&amazon_ses_verify_email, 
-	'mass_mailing_preferences' =>    \&mass_mailing_preferences,
+	'amazon_ses_get_stats'    =>    \&amazon_ses_get_stats,
+	'mass_mailing_preferences' =>   \&mass_mailing_preferences,
 	'previewBatchSendingSpeed' =>   \&previewBatchSendingSpeed,
 	'adv_sending_preferences' =>    \&adv_sending_preferences,
 	'sending_tuning_options'  =>    \&sending_tuning_options,
@@ -2340,6 +2341,39 @@ sub amazon_ses_verify_email {
 
 }
 
+sub amazon_ses_get_stats { 
+
+	my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'mass_mailing_preferences'
+    );
+	$list = $admin_list; 
+	
+	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+	
+	if($ls->param('sending_method') eq 'amazon_ses'){ 
+		
+		if(!-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script}){ 
+			print $q->header(); 
+			print '<p class="error">Cannot find, "' . $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script} .'"</p>'; 
+			return; 
+		}
+		else { 
+			my $result = `$DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script} -k $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file} -q`; 
+			my ($label, $data) = split("\n", $result); 
+			my ($SentLast24Hours, $Max24HourSend, $MaxSendRate) = split(/\s+/, $data);     
+		
+			print $q->header(); 
+			print '<p class="positive">Your current Amazon SES sending limit is: ' . $MaxSendRate . ' message(s)/second with a limit of ' . $Max24HourSend . ' messages every 24 hours.</p>'; 
+
+		}
+	}
+	else { 
+		print $q->header(); 
+		# Nothing... 
+	}
+}
+
 
 
 
@@ -2352,7 +2386,7 @@ sub previewBatchSendingSpeed {
     $list = $admin_list;
 
 	my $lh = DADA::MailingList::Subscribers->new({-list => $list});
-
+	
 
     print $q->header();
 
