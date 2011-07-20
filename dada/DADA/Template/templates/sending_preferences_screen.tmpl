@@ -429,8 +429,6 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 	 Amazon SES Options
 	</legend>
 
-
-
 	<table>
 	 <tr>
 	  <td>
@@ -440,11 +438,12 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 	   <p>
 	    <label for="amazon_ses">
 	     Send Email Using the <em>Amazon Simple Email Service</em>
-	    </label>
+	    </label></p>
+	
 		<!-- tmpl_if has_aws_credentials_file --> 
-			<p class="postive">You AWS crendentials are being looked for in:</p> 
+			<p class="positive">Your AWS crendentials are being looked for in:</p> 
 			<ul> 
-				<li><p class="postive"><!-- tmpl_var aws_credentials_file --></p></li> 
+				<li><p class="positive"><!-- tmpl_var aws_credentials_file --></p></li> 
 			</ul>
 		<!-- tmpl_else --> 
 			<p class="error">
@@ -453,15 +452,29 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 		<!-- /tmpl_if --> 
 		
 		<!-- tmpl_if has_ses_send_email_script --> 
-			<p class="postive">The, &quot;ses-send-email.pl&quot; script is being looked for at:</p> 
+			<p class="positive">The, &quot;ses-send-email.pl&quot; script is being looked for at:</p> 
 			<ul> 
-				<li><p class="postive"><!-- tmpl_var ses_send_email_script --></p></li> 
+				<li><p class="positive"><!-- tmpl_var ses_send_email_script --></p></li> 
 			</ul>
 		<!-- tmpl_else --> 
 		<p class="error">
 			Cannot find your &quot;ses-send-email.pl&quot; script (<!-- tmpl_var ses_send_email_script default="not set!" -->)
 		</p>
 		<!-- /tmpl_if -->
+		<!-- tmpl_if has_ses_verify_email_address_script --> 
+			<p class="positive">The, &quot;ses-verify-email-address.pl&quot; script is being looked for at:</p> 
+			<ul> 
+				<li><p class="positive"><!-- tmpl_var ses_verify_email_address_script --></p></li> 
+			</ul>
+		<!-- tmpl_else --> 
+		<p class="error">
+			Cannot find your &quot;ses-send-email.pl&quot; script (<!-- tmpl_var ses_send_email_script default="not set!" -->)
+		</p>
+		<!-- /tmpl_if -->		
+		
+		
+		
+		
 		
 		<!-- tmpl_if amazon_ses_has_needed_cpan_modules --> 
 			<p class="positive"> 
@@ -484,6 +497,22 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 				<!-- /tmpl_loop --> 
 			</ul> 
 		<!-- /tmpl_if --> 
+	
+	
+		<fieldset>
+		<legend>
+		 Amazon SES Tools
+		</legend>
+		<p>
+		<input type="text" name="amazon_ses_verify_email" id="amazon_ses_verify_email" value="<!-- tmpl_var list_settings.list_owner_email -->" /> <input type="button" class="" value="Verify Address for Sending" onClick="amazon_verify_email();" /> 
+		</p> 
+		<div id="amazon_ses_verify_email_results"> 
+		</div> 
+		<div id="amazon_ses_verify_email_loading" style="display:none;"> 
+		<p class="positive">Loading...</p>
+		</div> 
+		
+	</fieldset> 
 	
 	  </td>
 	 </tr>
@@ -508,8 +537,8 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 
 	<script type="text/javascript">
 	    //<![CDATA[
-
-		 function test_sending_preferences(){ 
+	
+		 function get_sending_method { 
 			var sending_method = '';
 			if(document.default_form.sending_method.length){
 				for (var i=0; i < document.default_form.sending_method.length; i++){
@@ -517,7 +546,39 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 							sending_method = document.default_form.sending_method[i].value;	
 					}
 				}
-			}			
+			}
+			return sending_method; 
+		}
+
+		 function amazon_verify_email() { 
+			new Ajax.Updater(
+				'amazon_ses_verify_email_results', '<!-- tmpl_var S_PROGRAM_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						f: 'amazon_ses_verify_email',
+						amazon_ses_verify_email: $F('amazon_ses_verify_email')
+						},
+
+				onCreate: 	 function() {
+					$('amazon_ses_verify_email_results').hide(); 
+					$('amazon_ses_verify_email_loading').show();
+
+				},
+				onComplete: 	 function() {
+
+					$('amazon_ses_verify_email_loading').hide();
+					Effect.BlindDown('amazon_ses_verify_email_results');
+
+				}	
+
+
+				});
+		}
+		
+		
+		 function test_sending_preferences(){ 
+			var sending_method = get_sending_method(); 
 			new Ajax.Updater(
 				'sending_preferences_test', '<!-- tmpl_var S_PROGRAM_URL -->', 
 				{ 

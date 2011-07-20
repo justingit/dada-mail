@@ -608,6 +608,7 @@ sub run {
 	'edit_html_type'          =>    \&edit_html_type,
 	'list_options'            =>    \&list_options,
 	'sending_preferences'     =>    \&sending_preferences,
+	'amazon_ses_verify_email' =>    \&amazon_ses_verify_email, 
 	'mass_mailing_preferences' =>    \&mass_mailing_preferences,
 	'previewBatchSendingSpeed' =>   \&previewBatchSendingSpeed,
 	'adv_sending_preferences' =>    \&adv_sending_preferences,
@@ -2078,6 +2079,11 @@ sub sending_preferences {
 		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script})){ 
 			$has_ses_send_email_script = 1; 
 		}
+		my $has_ses_verify_email_address_script = 0; 
+		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script})){ 
+			$has_ses_verify_email_address_script = 1; 
+		}
+	 
 		
 		my $amazon_ses_required_modules = [ 
 			{module => 'Cwd', installed => 0}, 
@@ -2144,8 +2150,10 @@ sub sending_preferences {
 					# Amazon SES 
 					has_aws_credentials_file            => $has_aws_credentials_file, 
 					has_ses_send_email_script           => $has_ses_send_email_script, 
+					has_ses_verify_email_address_script => $has_ses_verify_email_address_script, 
 					aws_credentials_file                => $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file},
 					ses_send_email_script               => $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script},
+					ses_verify_email_address_script     => $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script},
 					amazon_ses_has_needed_cpan_modules  => $amazon_ses_has_needed_cpan_modules, 
 					amazon_ses_required_modules         => $amazon_ses_required_modules, 
 				},
@@ -2305,6 +2313,31 @@ sub mass_mailing_preferences {
         print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
               . '?flavor=mass_mailing_preferences&done=1' );
     }
+}
+
+sub amazon_ses_verify_email { 
+
+	my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'sending_preferences'
+    );
+
+	my $amazon_ses_verify_email = $q->param('amazon_ses_verify_email'); 
+	if(!-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script}){ 
+		print $q->header(); 
+		print '<p class="error">Cannot find, "' . $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script} .'"</p>'; 
+		return; 
+	}
+	if(check_for_valid_email($amazon_ses_verify_email) == 1){ 
+		print $q->header(); 
+		print '<p class="error">Invalid Email Address!</p>'; 
+	}
+	else { 
+		`$DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script} -v $amazon_ses_verify_email -k $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file}`; 
+		print $q->header(); 
+		print '<p class="positive">Verification Sent! Check the email account for: ' . $amazon_ses_verify_email . ' to complete the verification!</p>'; 
+	}
+
 }
 
 
@@ -2506,7 +2539,7 @@ sub sending_tuning_options {
 
     my @allowed_tunings = qw(
         domain
-        
+        sending_method
         add_sendmail_f_flag
         print_return_path_header
         verp_return_path
@@ -2645,7 +2678,7 @@ sub sending_tuning_options {
 													-Root_Login => $root_login,
 													-List       => $list,  
 												},
-		
+											  -expr   => 1, 
                                               -vars   => {
 
                                                             tunings => $saved_tunings,
