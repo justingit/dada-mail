@@ -55,7 +55,7 @@ my $Big_Pile_Of_Errors  = undef;
 
 # Show these errors in the web browser? 
 #
-my $Trace               = 0; 
+my $Trace               = 1; 
 
 # These are strings we look for in the example_dada_config.tmpl file which 
 # we need to remove. 
@@ -75,6 +75,103 @@ use DADA::Config 4.0.0;
 # An unconfigured Dada Mail won't have these exactly handy to use. 
 $DADA::Config::PROGRAM_URL   = program_url_guess();
 $DADA::Config::S_PROGRAM_URL = program_url_guess();
+
+my $admin_menu_begin_cut = quotemeta(
+q{# start cut for list control panel menu
+=cut}); 
+my $admin_menu_end_cut = quotemeta(
+q{=cut
+# end cut for list control panel menu}	
+); 
+my $plugins_extensions = { 
+	change_root_password   => {installed => 0}, 
+	screen_cache           => {installed => 0}, 
+	log_viewer             => {installed => 0}, 
+	tracker                => {installed => 0}, 
+	dada_bridge            => {installed => 0}, 
+	dada_bounce_handler    => {installed => 0}, 
+	scheduled_mailings     => {installed => 0}, 
+	multiple_subscribe     => {installed => 0}, 
+	ajax_include_subscribe => {installed => 0}, 	
+	blog_index             => {installed => 0}, 
+	auto_pickup            => {installed => 0}, 
+};
+$plugins_extensions->{change_root_password}->{code} = 
+q{#					{
+#					-Title      => 'Change the Program Root Password',
+#					-Title_URL  => $PLUGIN_URL."/change_root_password.cgi",
+#					-Function   => 'change_root_password',
+#					-Activated  => 0,
+#					},};
+$plugins_extensions->{screen_cache}->{code} = 
+q{#					{
+#					-Title      => 'Screen Cache',
+#					-Title_URL  => $PLUGIN_URL."/screen_cache.cgi",
+#					-Function   => 'screen_cache',
+#					-Activated  => 0,
+#					},};
+$plugins_extensions->{log_viewer}->{code} = 
+q{#					{
+#					-Title      => 'View Logs',
+#					-Title_URL  => $PLUGIN_URL."/log_viewer.cgi",
+#					-Function   => 'log_viewer',
+#					-Activated  => 1,
+#					},};
+$plugins_extensions->{tracker}->{code} = 
+q{#					{
+#					-Title      => 'Tracker',
+#					-Title_URL  => $PLUGIN_URL."/tracker.cgi",
+#					-Function   => 'tracker',
+#					-Activated  => 1,
+#					},};
+$plugins_extensions->{dada_bridge}->{code} = 
+q{#					{
+#					-Title      => 'Discussion Lists',
+#					-Title_URL  => $PLUGIN_URL."/dada_bridge.pl",
+#					-Function   => 'dada_bridge',
+#					-Activated  => 1,
+#					},};
+$plugins_extensions->{dada_bounce_handler}->{code} = 
+q{#					{
+#					-Title      => 'Bounce Handler',
+#					-Title_URL  => $PLUGIN_URL."/dada_bounce_handler.pl",
+#					-Function   => 'dada_bounce_handler',
+#					-Activated  => 1,
+#					},};
+$plugins_extensions->{scheduled_mailings}->{code} = 
+q{#					{-Title      => 'Scheduled Mailings',
+#					 -Title_URL  => $PLUGIN_URL."/scheduled_mailings.pl",
+#					 -Function   => 'scheduled_mailings',
+#					 -Activated  => 1,
+#					},};
+$plugins_extensions->{multiple_subscribe}->{code} = 
+q{#					{
+#					-Title      => 'Multiple Subscribe',
+#					-Title_URL  => $EXT_URL."/multiple_subscribe.cgi",
+#					-Function   => 'multiple_subscribe',
+#					-Activated  => 1,
+#					},};
+$plugins_extensions->{ajax_include_subscribe}->{code} = 
+q{#					{
+#					-Title      => 'Ajax\'d Subscription Form',
+#					-Title_URL  => $EXT_URL."/ajax_include_subscribe.cgi?mode=html",
+#					-Function   => 'ajax_include_subscribe',
+#					-Activated  => 1,
+#					},};
+$plugins_extensions->{blog_index}->{code} = 
+q{#					{
+#					-Title      => 'Archive Blog Index',
+#					-Title_URL  => $EXT_URL."/blog_index.cgi?mode=html&list=<!-- tmpl_var list_settings.list -->",
+#					-Function   => 'blog_index',
+#					-Activated  => 1,
+#					},};
+$plugins_extensions->{auto_pickup}->{code} = 
+q{#					{
+#					-Title      => 'Sending Monitor Outside Extension',
+#					-Title_URL  => $EXT_URL."/auto_pickup.pl",
+#					-Function   => 'auto_pickup',
+#					-Activated  => 1,
+#					}};
 
 use DADA::App::Guts;
 use DADA::Template::Widgets;
@@ -698,6 +795,8 @@ sub create_dada_config_file {
     print $dada_config_fh $outside_config_file or die $!;
     close $dada_config_fh or die $!;
 
+	edit_config_file_for_plugins($args); 
+	
      };
      if ($@) {
 		warn $@; 
@@ -912,6 +1011,64 @@ sub install_dada_files_dir_at_from_params() {
 	$install_dada_files_dir_at =~ s/\/$//; 
 	return $install_dada_files_dir_at; 
 
+}
+
+
+sub edit_config_file_for_plugins { 
+
+	my ($args) = @_;
+
+    my $dot_configs_file_loc = make_safer($args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config');
+
+=cut
+
+    if ( ! -e $dot_configs_file_loc) {
+        die "$dot_configs_file_loc does not exist! Stopping!";
+    }
+
+=cut
+
+	
+	
+
+
+	my $config_file = slurp($dot_configs_file_loc);
+
+
+
+
+	#die '$config_file'  . $config_file; 
+	
+	# Get those pesky cut tags out of the way... 
+	$config_file =~ s/$admin_menu_begin_cut//; 
+	$config_file =~ s/$admin_menu_end_cut//; 	 
+	
+	# For now, let's enable everything!
+	for my $plugins_data(%$plugins_extensions){ 
+		if(exists($plugins_extensions->{$plugins_data}->{code})){ 
+			my $orig_code = $plugins_extensions->{$plugins_data}->{code}; 
+			my $uncommented_code = uncomment_admin_menu_entry($orig_code);
+	 		$orig_code = quotemeta($orig_code); 
+			$config_file =~ s/$orig_code/$uncommented_code/;
+		}
+	}
+	# write it back? 
+
+
+
+	installer_chmod(0777, $dot_configs_file_loc); 
+	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($dot_configs_file_loc) or die $!;
+	print $config_fh $config_file or die $!;
+	close $config_fh or die $!;
+
+
+}
+
+sub uncomment_admin_menu_entry { 
+
+	my $str = shift; 
+	$str =~ s/\#//g; 
+	return $str; 	
 }
 
 
