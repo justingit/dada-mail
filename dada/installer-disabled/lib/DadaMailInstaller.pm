@@ -1060,6 +1060,7 @@ sub edit_config_file_for_plugins {
 	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($dot_configs_file_loc) or die $!;
 	print $config_fh $config_file or die $!;
 	close $config_fh or die $!;
+	installer_chmod(0644, $dot_configs_file_loc); 
 
 
 }
