@@ -68,13 +68,14 @@ my $sql_end_cut = quotemeta(
 # end cut for SQL Backend
 }
 );
-
-use DADA::Config 4.0.0;
-	$DADA::Config::USER_TEMPLATE = '';
-	
-# An unconfigured Dada Mail won't have these exactly handy to use. 
-$DADA::Config::PROGRAM_URL   = program_url_guess();
-$DADA::Config::S_PROGRAM_URL = program_url_guess();
+my $plugins_config_begin_cut = quotemeta(
+q{# start cut for plugin configs
+=cut}
+); 
+	my $plugins_config_end_cut = quotemeta(
+q{=cut
+# end cut for plugin configs}
+); 
 
 my $admin_menu_begin_cut = quotemeta(
 q{# start cut for list control panel menu
@@ -83,18 +84,28 @@ my $admin_menu_end_cut = quotemeta(
 q{=cut
 # end cut for list control panel menu}	
 ); 
+
+my $list_settings_defaults_begin_cut = quotemeta(
+q{# start cut for list settings defaults
+=cut}
+);
+my $list_settings_defaults_end_cut = quotemeta(
+q{=cut
+# end cut for list settings defaults}
+); 
+
 my $plugins_extensions = { 
-	change_root_password   => {installed => 0}, 
-	screen_cache           => {installed => 0}, 
-	log_viewer             => {installed => 0}, 
-	tracker                => {installed => 0}, 
-	dada_bridge            => {installed => 0}, 
-	dada_bounce_handler    => {installed => 0}, 
-	scheduled_mailings     => {installed => 0}, 
-	multiple_subscribe     => {installed => 0}, 
-	ajax_include_subscribe => {installed => 0}, 	
-	blog_index             => {installed => 0}, 
-	auto_pickup            => {installed => 0}, 
+	change_root_password   => {installed => 0, loc => '../plugins/change_root_password.cgi'}, 
+	screen_cache           => {installed => 0, loc => '../plugins/screen_cache.cgi'}, 
+	log_viewer             => {installed => 0, loc => '../plugins/log_viewer.cgi'}, 
+	tracker                => {installed => 0, loc => '../plugins/tracker.cgi'}, 
+	dada_bridge            => {installed => 0, loc => '../plugins/dada_bridge.pl'}, 
+	dada_bounce_handler    => {installed => 0, loc => '../plugins/dada_bounce_handler.pl'}, 
+	scheduled_mailings     => {installed => 0, loc => '../plugins/scheduled_mailings.pl'}, 
+	multiple_subscribe     => {installed => 0, loc => '../extensions/multiple_subscribe.cgi'}, 
+	ajax_include_subscribe => {installed => 0, loc => '../extensions/ajax_include_subscribe.cgi'}, 	
+	blog_index             => {installed => 0, loc => '../extensions/blog_index.cgi'}, 
+	auto_pickup            => {installed => 0, loc => '../extensions/auto_pickup.pl'}, 
 };
 $plugins_extensions->{change_root_password}->{code} = 
 q{#					{
@@ -173,6 +184,13 @@ q{#					{
 #					-Activated  => 1,
 #					}};
 
+# An unconfigured Dada Mail won't have these exactly handy to use. 
+$DADA::Config::PROGRAM_URL   = program_url_guess();
+$DADA::Config::S_PROGRAM_URL = program_url_guess();
+
+use DADA::Config 4.0.0;
+	$DADA::Config::USER_TEMPLATE = '';
+	
 use DADA::App::Guts;
 use DADA::Template::Widgets;
 use DADA::Template::HTML;
@@ -1045,16 +1063,63 @@ sub edit_config_file_for_plugins {
 	
 	# For now, let's enable everything!
 	for my $plugins_data(%$plugins_extensions){ 
-		if(exists($plugins_extensions->{$plugins_data}->{code})){ 
-			my $orig_code = $plugins_extensions->{$plugins_data}->{code}; 
-			my $uncommented_code = uncomment_admin_menu_entry($orig_code);
-	 		$orig_code = quotemeta($orig_code); 
-			$config_file =~ s/$orig_code/$uncommented_code/;
+		if(exists($plugins_extensions->{$plugins_data}->{code})){
+			if($q->param('install_' . $plugins_data) == 1){ 
+				my $orig_code = $plugins_extensions->{$plugins_data}->{code}; 
+				my $uncommented_code = uncomment_admin_menu_entry($orig_code);
+		 		$orig_code = quotemeta($orig_code); 
+				$config_file =~ s/$orig_code/$uncommented_code/;
+				
+				# Fancy stuff for bounce handler, 
+				if($plugins_data eq 'dada_bounce_handler'){ 
+					# uncomment the plugins config, 
+					$config_file =~ s/$plugins_config_begin_cut//; 
+					$config_file =~ s/$plugins_config_end_cut//; 
+				 	# then, we have to fill in all the stuff in.
+				 	# Not a fav. tecnique!
+					my $plugins_config_dada_bounce_handler_orig = quotemeta(
+q|	Mystery_Girl => {
+		Server                      => undef,
+		Username                    => undef,
+		Password                    => undef,|
+					);
+					my $dada_bounce_handler_address  = $q->param('dada_bounce_handler_address'); 
+					my $dada_bounce_handler_server   = $q->param('dada_bounce_handler_server');
+					my $dada_bounce_handler_username = $q->param('dada_bounce_handler_username'); 
+					my $dada_bounce_handler_password = $q->param('dada_bounce_handler_password'); 
+					 
+					my $plugins_config_dada_bounce_handler_replace_with = 
+"	Mystery_Girl => {
+		Server                      => '$dada_bounce_handler_server',
+		Username                    => '$dada_bounce_handler_username',
+		Password                    => '$dada_bounce_handler_password',";
+					$config_file =~ s/$plugins_config_dada_bounce_handler_orig/$plugins_config_dada_bounce_handler_replace_with/; 
+					# Now, do the same for list settings defaults: 
+					$config_file =~ s/$list_settings_defaults_begin_cut//; 
+					$config_file =~ s/$list_settings_defaults_end_cut//; 
+					
+					# Now replace out the default code, with the config'd code: 
+					my $plugins_config_list_settings_default_orig = quotemeta(
+q|%LIST_SETUP_INCLUDE = (
+	set_smtp_sender              => 1, # For SMTP
+	add_sendmail_f_flag          => 1, # For Sendmail Command
+	admin_email                  => 'bounces@example.com',
+);|
+					); 
+					# Now replace out the default code, with the config'd code: 
+					my $plugins_config_list_settings_default_replace_with =
+qq|\%LIST_SETUP_INCLUDE = (
+	set_smtp_sender              => 1, # For SMTP
+	add_sendmail_f_flag          => 1, # For Sendmail Command
+	admin_email                  => 'dada_bounce_handler_address',
+);|; 
+					$config_file =~ s/$plugins_config_list_settings_default_orig/$plugins_config_list_settings_default_replace_with/;
+				}
+				my $installer_successful = installer_chmod(0755, make_safer($plugins_extensions->{$plugins_data}->{loc}));
+			}
 		}
 	}
 	# write it back? 
-
-
 
 	installer_chmod(0777, $dot_configs_file_loc); 
 	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($dot_configs_file_loc) or die $!;
