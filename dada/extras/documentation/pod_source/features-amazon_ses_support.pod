@@ -135,7 +135,7 @@ and I copied the, C<bin> directory from the developer tools download into a dire
 If you then change into the C<ses> directory, you should be able to run the scripts. For example: 
 
 	./ses-verify-email-address.pl -k /home/myaccount/aws-credentials -v me@example.com
-	
+
 I<and once that email address is verified...>
 
 	./ses-send-email.pl -k /home/myaccount/aws-credentials -r
@@ -167,7 +167,7 @@ ready to be used within Dada Mail.
 
 In Dada Mail, log into Dada Mail and go to: 
 
-I<Mail Sending -> Sending Preferences> 
+I<Mail Sending - Sending Preferences> 
 
 There should be an option, along with sending via the sendmail command and sending via SMTP, 
 to I<Send Email Using the Amazon Simple Email Service>. 
