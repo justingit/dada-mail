@@ -371,16 +371,13 @@ sub scrn_configure_dada_mail {
 		$lists_available = 1; 
 	}
 	# This is a test to see if the, "auto" placement will work for us - or 
-	# for example, there's somethign in the way. 
+	# for example, there's something in the way. 
 	# First, let's see if there's any errors: 
 	if ( defined( $q->param('errors') )) {
     	# No? Good - 
 	}
 	else { 
 		if(test_can_create_dada_files_dir(auto_dada_files_dir()) == 1 ){ 
-			# Failed the test. 
-			#$q->param('errors', [{dada_files_dir_exists => 1}]);
-			#$q->param('error_dada_files_dir_exists', 1);
 			# HTML::FillInForm::Lite will pick up on this 
 			$q->param('dada_files_loc', auto_dada_files_dir()); 
 			$q->param('dada_files_dir_setup', 'manual');  
@@ -646,6 +643,17 @@ sub install_dada_mail {
 		}
     }
 
+	$log .= "* Installing plugins/extensions...\n";
+	eval {edit_config_file_for_plugins($args);}; 
+	if($@){ 
+        $log .= "* WARNING: Couldn't complete installing plugins/extensions!\n";
+        $errors->{cant_install_plugins_extensions} = 1;
+	}
+	else { 
+        $log .= "* Success!\n";		
+	} 
+	
+
     # That's it.
     $log .= "* Installation and Configuration Complete! Yeah!\n";
     return ( $log, $status, $errors );
@@ -813,7 +821,6 @@ sub create_dada_config_file {
     print $dada_config_fh $outside_config_file or die $!;
     close $dada_config_fh or die $!;
 
-	edit_config_file_for_plugins($args); 
 	
      };
      if ($@) {
@@ -1036,97 +1043,95 @@ sub edit_config_file_for_plugins {
 
 	my ($args) = @_;
 
-    my $dot_configs_file_loc = make_safer($args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config');
-
-=cut
-
-    if ( ! -e $dot_configs_file_loc) {
-        die "$dot_configs_file_loc does not exist! Stopping!";
-    }
-
-=cut
-
+    my $dot_configs_file_loc = make_safer(
+		$args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config'
+	);
 	
-	
-
-
 	my $config_file = slurp($dot_configs_file_loc);
 
-
-
-
-	#die '$config_file'  . $config_file; 
-	
 	# Get those pesky cut tags out of the way... 
 	$config_file =~ s/$admin_menu_begin_cut//; 
 	$config_file =~ s/$admin_menu_end_cut//; 	 
 	
-	# For now, let's enable everything!
 	for my $plugins_data(%$plugins_extensions){ 
 		if(exists($plugins_extensions->{$plugins_data}->{code})){
-			if($q->param('install_' . $plugins_data) == 1){ 
-				my $orig_code = $plugins_extensions->{$plugins_data}->{code}; 
-				my $uncommented_code = uncomment_admin_menu_entry($orig_code);
-		 		$orig_code = quotemeta($orig_code); 
-				$config_file =~ s/$orig_code/$uncommented_code/;
+			if($args->{-skip_configure_dada_files} != 1) { 
+				if($q->param('install_' . $plugins_data) == 1){ 
+					my $orig_code = $plugins_extensions->{$plugins_data}->{code}; 
+					my $uncommented_code = uncomment_admin_menu_entry($orig_code);
+			 		$orig_code = quotemeta($orig_code); 
+					$config_file =~ s/$orig_code/$uncommented_code/;
 				
-				# Fancy stuff for bounce handler, 
-				if($plugins_data eq 'dada_bounce_handler'){ 
-					# uncomment the plugins config, 
-					$config_file =~ s/$plugins_config_begin_cut//; 
-					$config_file =~ s/$plugins_config_end_cut//; 
-				 	# then, we have to fill in all the stuff in.
-				 	# Not a fav. tecnique!
-					my $plugins_config_dada_bounce_handler_orig = quotemeta(
-q|	Mystery_Girl => {
-		Server                      => undef,
-		Username                    => undef,
-		Password                    => undef,|
-					);
-					my $dada_bounce_handler_address  = $q->param('dada_bounce_handler_address'); 
-					my $dada_bounce_handler_server   = $q->param('dada_bounce_handler_server');
-					my $dada_bounce_handler_username = $q->param('dada_bounce_handler_username'); 
-					my $dada_bounce_handler_password = $q->param('dada_bounce_handler_password'); 
+					# Fancy stuff for bounce handler, 
+					if($plugins_data eq 'dada_bounce_handler'){ 
+						# uncomment the plugins config, 
+						$config_file =~ s/$plugins_config_begin_cut//; 
+						$config_file =~ s/$plugins_config_end_cut//; 
+					 	# then, we have to fill in all the stuff in.
+					 	# Not a fav. tecnique!
+						my $plugins_config_dada_bounce_handler_orig = quotemeta(
+	q|	Mystery_Girl => {
+			Server                      => undef,
+			Username                    => undef,
+			Password                    => undef,|
+						);
+						my $dada_bounce_handler_address  = $q->param('dada_bounce_handler_address'); 
+						my $dada_bounce_handler_server   = $q->param('dada_bounce_handler_server');
+						my $dada_bounce_handler_username = $q->param('dada_bounce_handler_username'); 
+						my $dada_bounce_handler_password = $q->param('dada_bounce_handler_password'); 
 					 
-					my $plugins_config_dada_bounce_handler_replace_with = 
-"	Mystery_Girl => {
-		Server                      => '$dada_bounce_handler_server',
-		Username                    => '$dada_bounce_handler_username',
-		Password                    => '$dada_bounce_handler_password',";
-					$config_file =~ s/$plugins_config_dada_bounce_handler_orig/$plugins_config_dada_bounce_handler_replace_with/; 
-					# Now, do the same for list settings defaults: 
-					$config_file =~ s/$list_settings_defaults_begin_cut//; 
-					$config_file =~ s/$list_settings_defaults_end_cut//; 
+						my $plugins_config_dada_bounce_handler_replace_with = 
+	"	Mystery_Girl => {
+			Server                      => '$dada_bounce_handler_server',
+			Username                    => '$dada_bounce_handler_username',
+			Password                    => '$dada_bounce_handler_password',";
+						$config_file =~ s/$plugins_config_dada_bounce_handler_orig/$plugins_config_dada_bounce_handler_replace_with/; 
+						# Now, do the same for list settings defaults: 
+						$config_file =~ s/$list_settings_defaults_begin_cut//; 
+						$config_file =~ s/$list_settings_defaults_end_cut//; 
 					
-					# Now replace out the default code, with the config'd code: 
-					my $plugins_config_list_settings_default_orig = quotemeta(
-q|%LIST_SETUP_INCLUDE = (
-	set_smtp_sender              => 1, # For SMTP
-	add_sendmail_f_flag          => 1, # For Sendmail Command
-	admin_email                  => 'bounces@example.com',
-);|
-					); 
-					# Now replace out the default code, with the config'd code: 
-					my $plugins_config_list_settings_default_replace_with =
-qq|\%LIST_SETUP_INCLUDE = (
-	set_smtp_sender              => 1, # For SMTP
-	add_sendmail_f_flag          => 1, # For Sendmail Command
-	admin_email                  => 'dada_bounce_handler_address',
-);|; 
-					$config_file =~ s/$plugins_config_list_settings_default_orig/$plugins_config_list_settings_default_replace_with/;
+						# Now replace out the default code, with the config'd code: 
+						my $plugins_config_list_settings_default_orig = quotemeta(
+	q|%LIST_SETUP_INCLUDE = (
+		set_smtp_sender              => 1, # For SMTP
+		add_sendmail_f_flag          => 1, # For Sendmail Command
+		admin_email                  => 'bounces@example.com',
+	);|
+						); 
+						# Now replace out the default code, with the config'd code: 
+						my $plugins_config_list_settings_default_replace_with =
+	qq|\%LIST_SETUP_INCLUDE = (
+		set_smtp_sender              => 1, # For SMTP
+		add_sendmail_f_flag          => 1, # For Sendmail Command
+		admin_email                  => 'dada_bounce_handler_address',
+	);|; 
+						$config_file =~ s/$plugins_config_list_settings_default_orig/$plugins_config_list_settings_default_replace_with/;
+					}
+					my $installer_successful = installer_chmod(0755, make_safer($plugins_extensions->{$plugins_data}->{loc}));
 				}
-				my $installer_successful = installer_chmod(0755, make_safer($plugins_extensions->{$plugins_data}->{loc}));
+				else { 
+					# If we can already find the entry, we'll change the permissions of the 
+					# plugin/extension
+					my $orig_code = $plugins_extensions->{$plugins_data}->{code}; 
+					my $uncommented_code = quotemeta(uncomment_admin_menu_entry($orig_code));
+					if($config_file =~ m/$uncommented_code/){ 
+						my $installer_successful = installer_chmod(0755, make_safer($plugins_extensions->{$plugins_data}->{loc}));
+					}
+				}
 			}
 		}
 	}
-	# write it back? 
-
-	installer_chmod(0777, $dot_configs_file_loc); 
-	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($dot_configs_file_loc) or die $!;
-	print $config_fh $config_file or die $!;
-	close $config_fh or die $!;
-	installer_chmod(0644, $dot_configs_file_loc); 
-
+	
+	if($args->{-skip_configure_dada_files} != 1) { 
+		# write it back? 
+		installer_chmod(0777, $dot_configs_file_loc); 
+		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($dot_configs_file_loc) or die $!;
+		print $config_fh $config_file or die $!;
+		close $config_fh or die $!;
+		installer_chmod(0644, $dot_configs_file_loc); 
+	}
+	return 1; 
+	
 
 }
 
