@@ -2008,7 +2008,7 @@ my $PLUGIN_URL            = $S_PROGRAM_URL;
 my $EXT_URL = $PLUGIN_URL;
    $EXT_URL =~ s/plugins/extensions/;
 
-$ADMIN_MENU = [
+$ADMIN_MENU ||= [
 
 	{-Title      => 'Mass Mailing',
 	 -Activated  => 1,
