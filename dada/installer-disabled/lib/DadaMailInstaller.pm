@@ -55,7 +55,7 @@ my $Big_Pile_Of_Errors  = undef;
 
 # Show these errors in the web browser? 
 #
-my $Trace               = 1; 
+my $Trace               = 0; 
 
 # These are strings we look for in the example_dada_config.tmpl file which 
 # we need to remove. 
@@ -384,6 +384,10 @@ sub scrn_configure_dada_mail {
 		}	
 	}
 	
+	my $DOC_VER = $DADA::Config::VER; 
+	   $DOC_VER =~ s/\s(.*?)$//;
+	   $DOC_VER =~ s/\./\_/g;
+	
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen => 'installer_configure_dada_mail_scrn.tmpl',
@@ -414,6 +418,8 @@ sub scrn_configure_dada_mail {
 				Big_Pile_Of_Errors             => $Big_Pile_Of_Errors,
 				Trace                          => $Trace, 
 				lists_available                => $lists_available, 
+				DOC_VER                        => $DOC_VER, 
+				DOC_URL                        => 'http://dadamailproject.com/support/documentation-' . $DOC_VER, 
 
             },
         }
