@@ -22,7 +22,6 @@ $ROOT_PASS_IS_ENCRYPTED   = '<!-- tmpl_var ROOT_PASS_IS_ENCRYPTED -->';
 # End Root Password
 
 
-
 # start cut for SQL Backend
 =cut
 
@@ -32,7 +31,6 @@ $SETTINGS_DB_TYPE         = 'SQL';
 $SESSION_DB_TYPE          = 'SQL'; 
 $BOUNCE_SCORECARD_DB_TYPE = 'SQL';
 $CLICKTHROUGH_DB_TYPE     = 'SQL'; 
-
 
 %SQL_PARAMS = ( 
 
@@ -67,10 +65,8 @@ $CLICKTHROUGH_DB_TYPE     = 'SQL';
 
 $LIST_IN_ORDER = 1; 
 
-
 =cut
 # end cut for SQL Backend
-
 
 
 =cut
@@ -86,10 +82,10 @@ $PROFILE_OPTIONS = {
 	cookie_params =>
 	{ 
 		-name    => 'dada_profile',  
-	    -path    => '/',
-	    -expires => '+7d',		
+		-path    => '/',
+		-expires => '+7d',		
 	},
-	
+
 	gravatar_options => 
 	{
 		enable_gravators     => 1, 
@@ -99,10 +95,6 @@ $PROFILE_OPTIONS = {
 
 =cut
 # end cut for Dada Mail Profile Options
-
-
-
-
 
 
 # start cut for list settings defaults
@@ -116,8 +108,6 @@ $PROFILE_OPTIONS = {
 
 =cut
 # end cut for list settings defaults
-
-
 
 
 # start cut for plugin configs
@@ -210,16 +200,15 @@ $PLUGIN_CONFIGS = {
 # end cut for plugin configs
 
 
-
 # start cut for list control panel menu
 =cut
 
 $S_PROGRAM_URL            = $PROGRAM_URL;
-my $PLUGIN_URL            = $S_PROGRAM_URL; 
+my $PLUGIN_URL            = $S_PROGRAM_URL;
    $PLUGIN_URL            =~ s/\/(\w+)\.(cgi|pl)$/\//;
    $PLUGIN_URL           .= 'plugins';
-my $EXT_URL = $PLUGIN_URL; 
-   $EXT_URL =~ s/plugins/extensions/; 
+my $EXT_URL = $PLUGIN_URL;
+   $EXT_URL =~ s/plugins/extensions/;
 
 $ADMIN_MENU = [
 
@@ -617,4 +606,3 @@ $ADMIN_MENU = [
 
 =cut
 # end cut for list control panel menu
-
