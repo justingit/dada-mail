@@ -1108,7 +1108,7 @@ q|%LIST_SETUP_INCLUDE = (
 qq|\%LIST_SETUP_INCLUDE = (
 	set_smtp_sender              => 1, # For SMTP
 	add_sendmail_f_flag          => 1, # For Sendmail Command
-	admin_email                  => 'dada_bounce_handler_address',
+	admin_email                  => '$dada_bounce_handler_address',
 );|; 
 						$config_file =~ s/$plugins_config_list_settings_default_orig/$plugins_config_list_settings_default_replace_with/;
 					}
