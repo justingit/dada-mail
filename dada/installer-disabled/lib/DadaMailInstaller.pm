@@ -801,11 +801,10 @@ sub create_dada_config_file {
                 ? (
                     backend      => $args->{-backend},
                     sql_server   => $args->{-sql_server},
-                    sql_database => $args->{-sql_database},
-                    sql_port     => $args->{-sql_port},
-                    sql_username => $args->{-sql_username},
-                    sql_password => $args->{-sql_password},
-
+                    sql_database => clean_up_var($args->{-sql_database}),
+                    sql_port     => clean_up_var($args->{-sql_port}),
+                    sql_username => clean_up_var($args->{-sql_username}),
+                    sql_password => clean_up_var($args->{-sql_password}),
                   )
                 : ()
             }
@@ -1075,42 +1074,42 @@ sub edit_config_file_for_plugins {
 						$config_file =~ s/$plugins_config_end_cut//; 
 					 	# then, we have to fill in all the stuff in.
 					 	# Not a fav. tecnique!
-						my $plugins_config_dada_bounce_handler_orig = quotemeta(
-	q|	Mystery_Girl => {
-			Server                      => undef,
-			Username                    => undef,
-			Password                    => undef,|
-						);
-						my $dada_bounce_handler_address  = $q->param('dada_bounce_handler_address'); 
-						my $dada_bounce_handler_server   = $q->param('dada_bounce_handler_server');
-						my $dada_bounce_handler_username = $q->param('dada_bounce_handler_username'); 
-						my $dada_bounce_handler_password = $q->param('dada_bounce_handler_password'); 
-					 
-						my $plugins_config_dada_bounce_handler_replace_with = 
-	"	Mystery_Girl => {
-			Server                      => '$dada_bounce_handler_server',
-			Username                    => '$dada_bounce_handler_username',
-			Password                    => '$dada_bounce_handler_password',";
-						$config_file =~ s/$plugins_config_dada_bounce_handler_orig/$plugins_config_dada_bounce_handler_replace_with/; 
-						# Now, do the same for list settings defaults: 
-						$config_file =~ s/$list_settings_defaults_begin_cut//; 
-						$config_file =~ s/$list_settings_defaults_end_cut//; 
-					
-						# Now replace out the default code, with the config'd code: 
-						my $plugins_config_list_settings_default_orig = quotemeta(
-	q|%LIST_SETUP_INCLUDE = (
-		set_smtp_sender              => 1, # For SMTP
-		add_sendmail_f_flag          => 1, # For Sendmail Command
-		admin_email                  => 'bounces@example.com',
-	);|
-						); 
-						# Now replace out the default code, with the config'd code: 
-						my $plugins_config_list_settings_default_replace_with =
-	qq|\%LIST_SETUP_INCLUDE = (
-		set_smtp_sender              => 1, # For SMTP
-		add_sendmail_f_flag          => 1, # For Sendmail Command
-		admin_email                  => 'dada_bounce_handler_address',
-	);|; 
+					my $plugins_config_dada_bounce_handler_orig = quotemeta(
+q|	Mystery_Girl => {
+		Server                      => undef,
+		Username                    => undef,
+		Password                    => undef,|
+					);
+					my $dada_bounce_handler_address  = clean_up_var($q->param('dada_bounce_handler_address')); 
+					my $dada_bounce_handler_server   = clean_up_var($q->param('dada_bounce_handler_server'));
+					my $dada_bounce_handler_username = clean_up_var($q->param('dada_bounce_handler_username')); 
+					my $dada_bounce_handler_password = clean_up_var($q->param('dada_bounce_handler_password')); 
+				 
+					my $plugins_config_dada_bounce_handler_replace_with = 
+"	Mystery_Girl => {
+		Server                      => '$dada_bounce_handler_server',
+		Username                    => '$dada_bounce_handler_username',
+		Password                    => '$dada_bounce_handler_password',";
+					$config_file =~ s/$plugins_config_dada_bounce_handler_orig/$plugins_config_dada_bounce_handler_replace_with/; 
+					# Now, do the same for list settings defaults: 
+					$config_file =~ s/$list_settings_defaults_begin_cut//; 
+					$config_file =~ s/$list_settings_defaults_end_cut//; 
+				
+					# Now replace out the default code, with the config'd code: 
+					my $plugins_config_list_settings_default_orig = quotemeta(
+q|%LIST_SETUP_INCLUDE = (
+	set_smtp_sender              => 1, # For SMTP
+	add_sendmail_f_flag          => 1, # For Sendmail Command
+	admin_email                  => 'bounces@example.com',
+);|
+					); 
+					# Now replace out the default code, with the config'd code: 
+					my $plugins_config_list_settings_default_replace_with =
+qq|\%LIST_SETUP_INCLUDE = (
+	set_smtp_sender              => 1, # For SMTP
+	add_sendmail_f_flag          => 1, # For Sendmail Command
+	admin_email                  => 'dada_bounce_handler_address',
+);|; 
 						$config_file =~ s/$plugins_config_list_settings_default_orig/$plugins_config_list_settings_default_replace_with/;
 					}
 					my $installer_successful = installer_chmod(0755, make_safer($plugins_extensions->{$plugins_data}->{loc}));
@@ -1610,6 +1609,8 @@ sub guess_home_dir_via_FileHomeDir {
 
 }
 
+
+
 sub guess_home_dir_via_getpwuid_call{ 
  
 	# I hate this. 
@@ -1627,6 +1628,15 @@ sub guess_home_dir_via_getpwuid_call{
         $home_dir_guess =~ s/\/$pub_html_dir$//g;
     }
     return $home_dir_guess;	
+}
+
+
+
+
+sub clean_up_var { 
+	my $var = shift; 
+	   $var = quotemeta($var); 
+	return $var; 
 }
 
 
