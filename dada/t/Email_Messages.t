@@ -37,7 +37,7 @@ my $ls = DADA::MailingList::Settings->new({-list => $list});
 
 $ls->save(
     {
-    send_via_smtp => 0,     
+    sending_method => 'sendmail',     
     }
 );
 

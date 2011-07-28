@@ -101,11 +101,11 @@
         
          <tr> 
           <td> 
-           <input type="checkbox" name="send_via_smtp" id="<!-- tmpl_var domain -->_send_via_smtp" value="1" <!-- tmpl_if send_via_smtp -->checked="checked"<!--/tmpl_if--> /> 
+           <input type="checkbox" name="sending_method" id="<!-- tmpl_var domain -->_sending_method_smtp" value="1" <!-- tmpl_if expr="sending_method eq 'smtp'" -->checked="checked"<!--/tmpl_if--> /> 
           </td> 
           <td> 
            <p>
-            <label for="<!-- tmpl_var domain -->_send_via_smtp">
+            <label for="<!-- tmpl_var domain -->_sending_method_smtp">
              Send Email Using SMTP
             </label> 
            </p>
@@ -214,7 +214,7 @@
  
  <tr> 
   <td> 
-   <input type="checkbox" name="new_tuning_send_via_smtp" id="new_tuning_send_via_smtp" value="1" <!-- tmpl_if list_send_via_smtp -->checked="checked"<!--/tmpl_if--> /> 
+   <input type="checkbox" name="new_tuning_sending_method" id="new_tuning_sending_method" value="smtp" <!-- tmpl_if list_sending_method -->checked="checked"<!--/tmpl_if--> /> 
   </td> 
   <td> 
    <p>
@@ -224,10 +224,6 @@
    </p>
   </td> 
  </tr> 
- 
- 
- 
- 
  
  <tr> 
   <td> 

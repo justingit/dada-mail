@@ -608,7 +608,9 @@ sub run {
 	'edit_html_type'          =>    \&edit_html_type,
 	'list_options'            =>    \&list_options,
 	'sending_preferences'     =>    \&sending_preferences,
-	'mass_mailing_preferences' =>    \&mass_mailing_preferences,
+	'amazon_ses_verify_email' =>    \&amazon_ses_verify_email, 
+	'amazon_ses_get_stats'    =>    \&amazon_ses_get_stats,
+	'mass_mailing_preferences' =>   \&mass_mailing_preferences,
 	'previewBatchSendingSpeed' =>   \&previewBatchSendingSpeed,
 	'adv_sending_preferences' =>    \&adv_sending_preferences,
 	'sending_tuning_options'  =>    \&sending_tuning_options,
@@ -1999,8 +2001,6 @@ sub sending_preferences {
 
     if(!$process){
 
-
-
 	    require DADA::MailingList::Settings;
 
 	    my $ls = DADA::MailingList::Settings->new({-list => $list});
@@ -2009,12 +2009,12 @@ sub sending_preferences {
 	    require DADA::Security::Password;
 
 
-	    my $decrypted_sasl_pass = q{};
+	    my $decrypted_sasl_pass = '';
 	    if($li->{sasl_smtp_password}){
 	         $decrypted_sasl_pass = DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $li->{sasl_smtp_password});
 	   }
 
-	    my $decrypted_pop3_pass = q{};
+	    my $decrypted_pop3_pass = '';
 	    if($li->{pop3_password}){
 	        $decrypted_pop3_pass = DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $li->{pop3_password});
 	    }
@@ -2057,28 +2057,73 @@ sub sending_preferences {
 
 	                                         );
 
-
-
 	    my $wrong_uid = 0;
            $wrong_uid = 1
             if $< != $>;
 
 
         my $no_smtp_server_set = 0;
-		# Nice logic, Justin.
          if(
 			!$li->{smtp_server}  &&
-			$li->{send_via_smtp} &&
-			$li->{send_via_smtp} == 1
+			$li->{sending_method} eq "smtp"
 		 ) {
 			$no_smtp_server_set = 1;
          }
 
+
+		# Amazon SES Test for stuff. 
+		my $has_aws_credentials_file = 0; 
+		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file})){ 
+			$has_aws_credentials_file = 1; 
+		}
+		my $has_ses_send_email_script = 0; 
+		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script})){ 
+			$has_ses_send_email_script = 1; 
+		}
+		my $has_ses_verify_email_address_script = 0; 
+		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script})){ 
+			$has_ses_verify_email_address_script = 1; 
+		}
+	 
+		
+		my $amazon_ses_required_modules = [ 
+			{module => 'Cwd', installed => 0}, 
+			{module => 'Digest::SHA', installed => 0}, 
+			{module => 'URI::Escape', installed => 0}, 
+			{module => 'Bundle::LWP', installed => 0}, 		
+			{module => 'MIME::Base64', installed => 0}, 	
+			{module => 'Crypt::SSLeay', installed => 0}, 	
+			{module => 'XML::LibXML', installed => 0}, 
+		];
+		my $ses_installed = {
+			
+			'Cwd'           => 0, 			
+			'Digest::SHA'   => 0, 
+			'URI::Escape'   => 0,
+			'Bundle::LWP'   => 0, 
+			'MIME::Base64'  => 0, 
+			'Crypt::SSLeay' => 0, 
+			'XML::LibXML'   => 0, 
+		}; 
+		eval {require Cwd;};           if(!$@){$ses_installed->{'Cwd'}           => 1}
+		eval {require Digest::SHA;};   if(!$@){$ses_installed->{'Digest::SHA'}   => 1}
+		eval {require URI::Escape;};   if(!$@){$ses_installed->{'URI::Escape'}   => 1}
+		eval {require Bundle::LWP;};   if(!$@){$ses_installed->{'Bundle::LWP'}   => 1}
+		eval {require MIME::Base64;};  if(!$@){$ses_installed->{'MIME::Base64'}  => 1}
+		eval {require Crypt::SSLeay;}; if(!$@){$ses_installed->{'Crypt::SSLeay'} => 1}
+		eval {require XML::LibXML;};   if(!$@){$ses_installed->{'XML::LibXML'}   => 1}
+		my $amazon_ses_has_needed_cpan_modules = 1; 
+		for(@$amazon_ses_required_modules){ 
+			my $module = $_->{module};
+			$_->{installed} = $ses_installed->{$module}; 
+		}
+		
         require    DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
 			{
 				-screen         => 'sending_preferences_screen.tmpl',
 				-with           => 'admin', 
+				-expr           => 1, 
 				-wrapper_params => { 
 					-Root_Login => $root_login,
 					-List       => $list,  
@@ -2102,10 +2147,20 @@ sub sending_preferences {
 					sasl_auth_mechanism => $q->param('sasl_auth_mechanism') ? $q->param('sasl_auth_mechanism') : $li->{sasl_auth_mechanism},
 					sasl_smtp_username  => $q->param('sasl_smtp_username') ? $q->param('sasl_smtp_username') : $li->{sasl_smtp_username},
 					sasl_smtp_password  => $q->param('sasl_smtp_password') ? $q->param('sasl_smtp_password') : $decrypted_sasl_pass,
+				
+					# Amazon SES 
+					has_aws_credentials_file            => $has_aws_credentials_file, 
+					has_ses_send_email_script           => $has_ses_send_email_script, 
+					has_ses_verify_email_address_script => $has_ses_verify_email_address_script, 
+					aws_credentials_file                => $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file},
+					ses_send_email_script               => $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script},
+					ses_verify_email_address_script     => $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script},
+					amazon_ses_has_needed_cpan_modules  => $amazon_ses_has_needed_cpan_modules, 
+					amazon_ses_required_modules         => $amazon_ses_required_modules, 
 				},
 				-list_settings_vars_param => {
-				-list    => $list,
-				-dot_it => 1,
+					-list    => $list,
+					-dot_it => 1,
 				},
 			}
 		);
@@ -2137,7 +2192,7 @@ sub sending_preferences {
             {
                 -associate => $q,
                 -settings  => {
-                    send_via_smtp       => 0,
+                    sending_method      => undef,
                     add_sendmail_f_flag => 0,
                     use_pop_before_smtp => 0,
                     set_smtp_sender     => 0,
@@ -2261,6 +2316,64 @@ sub mass_mailing_preferences {
     }
 }
 
+sub amazon_ses_verify_email { 
+
+	my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'sending_preferences'
+    );
+
+	my $amazon_ses_verify_email = $q->param('amazon_ses_verify_email'); 
+	if(!-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script}){ 
+		print $q->header(); 
+		print '<p class="error">Cannot find, "' . $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script} .'"</p>'; 
+		return; 
+	}
+	if(check_for_valid_email($amazon_ses_verify_email) == 1){ 
+		print $q->header(); 
+		print '<p class="error">Invalid Email Address!</p>'; 
+	}
+	else { 
+		`$DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script} -v $amazon_ses_verify_email -k $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file}`; 
+		print $q->header(); 
+		print '<p class="positive">Verification Sent! Check the email account for: ' . $amazon_ses_verify_email . ' to complete the verification!</p>'; 
+	}
+
+}
+
+sub amazon_ses_get_stats { 
+
+	my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'mass_mailing_preferences'
+    );
+	$list = $admin_list; 
+	
+	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+	
+	if($ls->param('sending_method') eq 'amazon_ses'){ 
+		
+		if(!-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script}){ 
+			print $q->header(); 
+			print '<p class="error">Cannot find, "' . $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script} .'"</p>'; 
+			return; 
+		}
+		else { 
+			my $result = `$DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script} -k $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file} -q`; 
+			my ($label, $data) = split("\n", $result); 
+			my ($SentLast24Hours, $Max24HourSend, $MaxSendRate) = split(/\s+/, $data);     
+		
+			print $q->header(); 
+			print '<p class="positive">Your current Amazon SES sending limit is: ' . $MaxSendRate . ' message(s)/second with a limit of ' . $Max24HourSend . ' messages every 24 hours.</p>'; 
+
+		}
+	}
+	else { 
+		print $q->header(); 
+		# Nothing... 
+	}
+}
+
 
 
 
@@ -2273,7 +2386,7 @@ sub previewBatchSendingSpeed {
     $list = $admin_list;
 
 	my $lh = DADA::MailingList::Subscribers->new({-list => $list});
-
+	
 
     print $q->header();
 
@@ -2460,7 +2573,7 @@ sub sending_tuning_options {
 
     my @allowed_tunings = qw(
         domain
-        send_via_smtp
+        sending_method
         add_sendmail_f_flag
         print_return_path_header
         verp_return_path
@@ -2599,7 +2712,7 @@ sub sending_tuning_options {
 													-Root_Login => $root_login,
 													-List       => $list,  
 												},
-		
+											  -expr   => 1, 
                                               -vars   => {
 
                                                             tunings => $saved_tunings,
@@ -2610,7 +2723,7 @@ sub sending_tuning_options {
                                                             use_domain_sending_tunings => ($li->{use_domain_sending_tunings} ? 1 : 0),
 
                                                             # For pre-filling in the "new" forms
-                                                            list_send_via_smtp               => $li->{send_via_smtp},
+                                                           # list_send_via_smtp               => $li->{send_via_smtp},
                                                             list_add_sendmail_f_flag         => $li->{add_sendmail_f_flag},
                                                             list_print_return_path_header    => $li->{print_return_path_header},
                                                             list_verp_return_path            => $li->{verp_return_path},
@@ -2625,6 +2738,7 @@ sub sending_tuning_options {
 }
 
 sub sending_preferences_test {
+
 
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
@@ -2650,13 +2764,18 @@ sub sending_preferences_test {
         }
     );
 
+
+	
     my ( $results, $lines, $report );
 	eval {
-    	( $results, $lines, $report ) = $mh->sending_preferences_test;
-	};
+   		( $results, $lines, $report ) = $mh->sending_preferences_test;
+	}; 
 	if($@){
-		$results = $@;
+		$results .= $@;
 	}
+	#else { 
+	#	# ... 
+	#}
 
     $results =~ s/\</&lt;/g;
     $results =~ s/\>/&gt;/g;
@@ -2671,12 +2790,12 @@ sub sending_preferences_test {
             { SMTP_command => $s_f, message => $f->{message} } );
     }
 
-    print $q->header();
-
+	print $q->header(); 
     require DADA::Template::Widgets;
     e_print(DADA::Template::Widgets::screen(
         {
             -screen => 'sending_preferences_test_widget.tmpl',
+			-expr   => 1, 
             -vars   => {
                 report  => $ht_report,
                 raw_log => $results,

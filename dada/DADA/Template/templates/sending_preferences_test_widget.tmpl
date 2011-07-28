@@ -4,11 +4,16 @@
 
 	<!-- tmpl_var name="GOOD_JOB_MESSAGE" -->
 	<p class="alert">
-		<!-- tmpl_if list_settings.send_via_smtp --> 
+		
+		<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" --> 
 			Testing SMTP Sending... 
-		<!-- tmpl_else --> 
+		<!--/tmpl_if --> 
+		<!-- tmpl_if expr="list_settings.sending_method eq 'sendmail'" --> 
 			Testing Sending via sendmail... 
-		<!-- /tmpl_if --> 
+		<!--/tmpl_if --> 
+		<!-- tmpl_if expr="list_settings.sending_method eq 'amazon_ses'" --> 
+			Testing Sending via Amazon SES....
+		<!--/tmpl_if -->
 	</p>
 	<!-- tmpl_if report --> 
 		<h2>

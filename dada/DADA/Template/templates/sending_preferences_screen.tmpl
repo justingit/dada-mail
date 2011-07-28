@@ -4,16 +4,21 @@
 
 <!-- tmpl_include help_link_widget.tmpl -->
 
-<!-- tmpl_if list_settings.send_via_smtp --> 
+<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" --> 
+
 	<p class="alert">Messages are currently being sent via SMTP
-<!-- tmpl_if no_smtp_server_set -->
+	
+	<!-- tmpl_if no_smtp_server_set -->
 		, but make sure to set up your SMTP server settings.
 	<!-- tmpl_else --> 
 		using SMTP server, <!-- tmpl_var list_settings.smtp_server --> 
 	<!-- /tmpl_if --> 
 	</p>	
+
 <!-- tmpl_else --> 
+
 	<p class="positive">Messages are currently being sent via the sendmail command.</p>
+
 <!-- /tmpl_if -->
 
 
@@ -29,11 +34,11 @@
 	<table>
 	 <tr>
 	  <td>
-	   <input type="radio" name="send_via_smtp" id="send_via_sendmail" value="0" <!-- tmpl_unless list_settings.send_via_smtp -->checked="checked"<!--/tmpl_unless--> />
+	   <input type="radio" name="sending_method" id="sendmail" value="sendmail" <!-- tmpl_if expr="list_settings.sending_method eq 'sendmail'" -->checked="checked"<!--/tmpl_if --> />
 	  </td>
 	  <td>
 	   <p>
-	    <label for="send_via_sendmail">
+	    <label for="sendmail">
 	     Send Email Using the <em>sendmail</em> Command
 	    </label>
 	<!-- tmpl_if comment --> 
@@ -112,11 +117,11 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 <table>
  <tr>
   <td>
-   <input type="radio" name="send_via_smtp" id="send_via_smtp" value="1" <!-- tmpl_if list_settings.send_via_smtp -->checked="checked"<!--/tmpl_if--> />
+   <input type="radio" name="sending_method" id="smtp" value="smtp" <!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" -->checked="checked"<!--/tmpl_if --> />
   </td>
   <td>
    <p>
-    <label for="send_via_smtp">
+    <label for="smtp">
      Send Email Using SMTP
     </label>
     <br />
@@ -422,9 +427,104 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 	
 	</fieldset>
 
-
    
 </fieldset>
+
+
+	<fieldset>
+	<legend>
+	 Amazon SES Options
+	</legend>
+
+	<table>
+	 <tr>
+	  <td>
+	   <input type="radio" name="sending_method" id="amazon_ses" value="amazon_ses" <!-- tmpl_if expr="list_settings.sending_method eq 'amazon_ses'" -->checked="checked"<!--/tmpl_if --> />
+	  </td>
+	  <td>
+	   <p>
+	    <label for="amazon_ses">
+	     Send Email Using the <em>Amazon Simple Email Service</em>
+	    </label></p>
+	
+		<!-- tmpl_if has_aws_credentials_file --> 
+			<p class="positive">Your AWS crendentials are being looked for in:</p> 
+			<ul> 
+				<li><p class="positive"><!-- tmpl_var aws_credentials_file --></p></li> 
+			</ul>
+		<!-- tmpl_else --> 
+			<p class="error">
+				Cannot find your AWS crendentials (<!-- tmpl_var aws_credentials_file default="not set!" -->)
+			</p>
+		<!-- /tmpl_if --> 
+		
+		<!-- tmpl_if has_ses_send_email_script --> 
+			<p class="positive">The, &quot;ses-send-email.pl&quot; script is being looked for at:</p> 
+			<ul> 
+				<li><p class="positive"><!-- tmpl_var ses_send_email_script --></p></li> 
+			</ul>
+		<!-- tmpl_else --> 
+		<p class="error">
+			Cannot find your &quot;ses-send-email.pl&quot; script (<!-- tmpl_var ses_send_email_script default="not set!" -->)
+		</p>
+		<!-- /tmpl_if -->
+		<!-- tmpl_if has_ses_verify_email_address_script --> 
+			<p class="positive">The, &quot;ses-verify-email-address.pl&quot; script is being looked for at:</p> 
+			<ul> 
+				<li><p class="positive"><!-- tmpl_var ses_verify_email_address_script --></p></li> 
+			</ul>
+		<!-- tmpl_else --> 
+		<p class="error">
+			Cannot find your &quot;ses-send-email.pl&quot; script (<!-- tmpl_var ses_send_email_script default="not set!" -->)
+		</p>
+		<!-- /tmpl_if -->		
+		
+		<!-- tmpl_if amazon_ses_has_needed_cpan_modules --> 
+			<p class="positive"> 
+				All needed CPAN modules are installed!
+			</p> 
+		<!-- tmpl_else --> 
+			<p class="error"> 
+				One or more of the following CPAN modules needs to be installed for Amazon SES sending to work:
+			</p>
+			
+			<ul> 
+				<!-- tmpl_loop amazon_ses_required_modules --> 
+					<!-- tmpl_unless installed --> 
+						 <li>
+						 <p class="error">  
+						  <!-- tmpl_var module --> 
+						 </p> 
+						</li> 
+					<!-- /tmpl_unless --> 
+				<!-- /tmpl_loop --> 
+			</ul> 
+		<!-- /tmpl_if --> 
+	
+		<div id="amazon_ses_get_stats"></div> 
+		
+		<fieldset>
+		<legend>
+		 Amazon SES Tools
+		</legend>
+		<p>
+		<input type="text" name="amazon_ses_verify_email" id="amazon_ses_verify_email" value="<!-- tmpl_var list_settings.list_owner_email -->" /> <input type="button" class="" value="Verify Address for Sending" onClick="amazon_verify_email();" /> 
+		</p> 
+		<div id="amazon_ses_verify_email_results"> 
+		</div> 
+		<div id="amazon_ses_verify_email_loading" style="display:none;"> 
+		<p class="positive">Loading...</p>
+		</div> 
+		
+	</fieldset> 
+	
+	  </td>
+	 </tr>
+	</table>
+	
+	
+</fieldset>
+
 
 <input type="hidden" name="process" id="process" value="1" /> 
 <input type="hidden" name="f" id="flavor" value="sending_preferences" />
@@ -441,28 +541,53 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 
 	<script type="text/javascript">
 	    //<![CDATA[
-
-		 function test_smtp(){ 
-			
-/*			 How we find if we're sending via sendmail or SMTP: */
-			var send_via_smtp = 0; 
-			if(document.default_form.send_via_smtp.length){ 
-				for (var i=0; i < document.default_form.send_via_smtp.length; i++){
-					if (document.default_form.send_via_smtp[i].checked){
-						if(document.default_form.send_via_smtp[i].value == 1){ 
-							send_via_smtp = 1; 
-						}
+	
+		 function get_sending_method() { 
+			var sending_method = '';
+			if(document.default_form.sending_method.length){
+				for (var i=0; i < document.default_form.sending_method.length; i++){
+					if (document.default_form.sending_method[i].checked){
+							sending_method = document.default_form.sending_method[i].value;	
 					}
 				}
 			}
+			return sending_method; 
+		}
 
+		 function amazon_verify_email() { 
+			new Ajax.Updater(
+				'amazon_ses_verify_email_results', '<!-- tmpl_var S_PROGRAM_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						f: 'amazon_ses_verify_email',
+						amazon_ses_verify_email: $F('amazon_ses_verify_email')
+						},
+
+				onCreate: 	 function() {
+					$('amazon_ses_verify_email_results').hide(); 
+					$('amazon_ses_verify_email_loading').show();
+
+				},
+				onComplete: 	 function() {
+
+					$('amazon_ses_verify_email_loading').hide();
+					Effect.BlindDown('amazon_ses_verify_email_results');
+
+				}	
+
+
+				});
+		}
+		
+		
+		 function test_sending_preferences(){ 
+			var sending_method = get_sending_method(); 
 			new Ajax.Updater(
 				'sending_preferences_test', '<!-- tmpl_var S_PROGRAM_URL -->', 
 				{ 
 				    method: 'post', 
 					parameters: {
-
-						send_via_smtp:             send_via_smtp, 
 						add_sendmail_f_flag:       $F('add_sendmail_f_flag'), 
 						smtp_server:               $F('smtp_server'), 
 						smtp_port:                 $F('smtp_port'),
@@ -478,7 +603,8 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 						pop3_use_ssl:              $F('pop3_use_ssl'), 
 						set_smtp_sender:           $F('set_smtp_sender'),
 						process:                   $F('process'),
-						f:                         'sending_preferences_test'
+						f:                         'sending_preferences_test',
+						sending_method:             sending_method, 
 
 						},
 
@@ -497,11 +623,32 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 
 				});
 		}
+		
+		 function amazon_ses_get_stats() { 
+			new Ajax.Updater(
+				'amazon_ses_get_stats', '<!-- tmpl_var S_PROGRAM_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						f:                    'amazon_ses_get_stats', 
+					},
+
+				onCreate: 	 function() {
+				},
+				onComplete: 	 function() {
+
+					$('amazon_ses_get_stats').show(); 
+				}
+				});
+		}
+		
+		amazon_ses_get_stats();
+		
 	    //]]>
 	</script>
 
 	<p>
-		<input type="button"  value="Save, Then Test Your Sending Preferences..." class="processing" onClick="test_smtp();" /> 
+		<input type="button"  value="Save, Then Test Your Sending Preferences..." class="processing" onClick="test_sending_preferences();" /> 
 	</p> 
 
 	<div id="sending_preferences_test_loading" style="display:none;background:#fff">

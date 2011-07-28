@@ -1968,7 +1968,7 @@ sub email_template {
             my $body    = $args->{-entity}->bodyhandle;
             my $content = $args->{-entity}->bodyhandle->as_string;
             $content = safely_decode($content);
-
+			
             if ($content) {
 
                 # And, that's it.
