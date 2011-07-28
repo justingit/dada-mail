@@ -4,22 +4,21 @@
 
 <!-- tmpl_include help_link_widget.tmpl -->
 
-<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" --> 
-
+<!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" --> 
+	<p class="positive">Messages are currently being sent via the sendmail command.</p>
+<!-- /tmpl_if --> 
+<!-- tmpl_if expr="(list_settings.sending_method eq 'smtp')" --> 
 	<p class="alert">Messages are currently being sent via SMTP
-	
-	<!-- tmpl_if no_smtp_server_set -->
+<!-- tmpl_if no_smtp_server_set -->
 		, but make sure to set up your SMTP server settings.
 	<!-- tmpl_else --> 
 		using SMTP server, <!-- tmpl_var list_settings.smtp_server --> 
 	<!-- /tmpl_if --> 
 	</p>	
-
-<!-- tmpl_else --> 
-
-	<p class="positive">Messages are currently being sent via the sendmail command.</p>
-
 <!-- /tmpl_if -->
+<!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" --> 
+	<p class="positive">Messages are currently being sent via Amazon SES.</p>
+<!-- /tmpl_if --> 
 
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form">
@@ -34,7 +33,7 @@
 	<table>
 	 <tr>
 	  <td>
-	   <input type="radio" name="sending_method" id="sendmail" value="sendmail" <!-- tmpl_if expr="list_settings.sending_method eq 'sendmail'" -->checked="checked"<!--/tmpl_if --> />
+	   <input type="radio" name="sending_method" id="sendmail" value="sendmail" <!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" -->checked="checked"<!--/tmpl_if --> />
 	  </td>
 	  <td>
 	   <p>
@@ -117,7 +116,7 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 <table>
  <tr>
   <td>
-   <input type="radio" name="sending_method" id="smtp" value="smtp" <!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" -->checked="checked"<!--/tmpl_if --> />
+   <input type="radio" name="sending_method" id="smtp" value="smtp" <!-- tmpl_if expr="(list_settings.sending_method eq 'smtp')" -->checked="checked"<!--/tmpl_if --> />
   </td>
   <td>
    <p>
@@ -439,7 +438,7 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 	<table>
 	 <tr>
 	  <td>
-	   <input type="radio" name="sending_method" id="amazon_ses" value="amazon_ses" <!-- tmpl_if expr="list_settings.sending_method eq 'amazon_ses'" -->checked="checked"<!--/tmpl_if --> />
+	   <input type="radio" name="sending_method" id="amazon_ses" value="amazon_ses" <!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" -->checked="checked"<!--/tmpl_if --> />
 	  </td>
 	  <td>
 	   <p>

@@ -1959,6 +1959,8 @@ All this message-specific data can also be exported via .csv files that may be d
 
 =head1 Installing tracker.cgi
 
+This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin manually.
+
 The tracker.cgi plugin comes with Dada Mail. You'll find it in the, I<dada/plugins> directory with the file name, I<tracker.cgi> 
 
 Change its permission to, C<755>. 
@@ -1979,18 +1981,20 @@ If they are, remove them.
 
 Then, find these lines: 
 
- #					{-Title      => 'Tracker',
- #					 -Title_URL  => $PLUGIN_URL."/tracker.cgi",
- #					 -Function   => 'tracker',
- #					 -Activated  => 1,
+ #					{
+ #					-Title      => 'Tracker',
+ #					-Title_URL  => $PLUGIN_URL."/tracker.cgi",
+ #					-Function   => 'tracker',
+ #					-Activated  => 1,
  #					},
 
 Uncomment the lines, by taking off the, "#"'s: 
 
- 					{-Title      => 'Tracker',
- 					 -Title_URL  => $PLUGIN_URL."/tracker.cgi",
- 					 -Function   => 'tracker',
- 					 -Activated  => 1,
+ 					{
+ 					-Title      => 'Tracker',
+ 					-Title_URL  => $PLUGIN_URL."/tracker.cgi",
+ 					-Function   => 'tracker',
+ 					-Activated  => 1,
  					},
 
 Save your C<.dada_config> file.

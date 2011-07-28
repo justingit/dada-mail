@@ -5291,6 +5291,12 @@ If you do not know how to set up a cronjob, attempting to set one up for Dada Ma
 
 =back
 
+=head1 Installation
+
+This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin manually.
+
+If you do install this way, note that you still have to create the create the bounce handler email account as well set the crojob. Both are covered below. 
+
 =head1 Lightning Configuration/Installation Instructions 
 
 =over

@@ -5065,6 +5065,12 @@ If you do not have this available, I do urgently suggest you do not use archivin
 
 Dada Bridge is located in the, I<dada/plugins> directory of the Dada Mail distribution, under the name: I<dada_bridge.pl>
 
+=head1 Installation 
+
+This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin manually.
+
+If you do install this way, note that you still have set the crojob, which is  covered below. 
+
 =head1 Lightning Configuration/Installation Instructions
 
 =over 

@@ -209,7 +209,7 @@ EOF
 }
 
 
-
+=pod
 
 =head1 NAME
 
@@ -227,8 +227,9 @@ B<Note>, that by default, this plugin can only be accessed if you log into a lis
 
 =head1 DESCRIPTION
 
-.... 
+=head1 Installation
 
+This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin manually. 
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
@@ -242,9 +243,8 @@ Here's what you'll need to have:
 
 =item * Outside Config File (.dada_config)
 
-Currently, this plugin only works with the outside configuration file called, I<.dada_config>. For information on how to set up the outside config file do see: 
+Currently, this plugin only works when you do a contemporary installation of Dada Mail. Refer to the installation instructions that come with Dada Mail to understand the difference between a contemporary installation and a basic installation. If you use the installer that comes with Dada Mail, you will have a B<Contemporary Installation> of Dada Mail. 
 
-L<http://dadamailproject.com/purchase/sample_chapter-dada_mail_setup.html>
 
 =item * Specific Markers in the Outside Config File
 
@@ -260,7 +260,7 @@ This plugin very simply looks for a, B<Start Marker> and an, B<End Marker> and b
 
 =back
 
-By default, the two markers are set in this very plugin under the variables, B<$Start_Marker> and B<$End_Marker>. So, in your .dada_config file, you should have something that looks similar to this: 
+By default, the two markers are set in this very plugin under the variables, B<$Start_Marker> and B<$End_Marker>. So, in your C<.dada_config> file, you should have something that looks similar to this: 
 
  # Start Root Password
  
@@ -270,61 +270,48 @@ By default, the two markers are set in this very plugin under the variables, B<$
  
  # End Root Password
 
-So, following the advanced installation instructions, this is what your outside config file would look like: 
-
- my $DIR = '/home/account/.dada_files';
- #---------------------------------------------------------------------#
- $PROGRAM_URL              = 'http://www.yoursite.com/cgi-bin/dada/mail.cgi';
- 
- # Start Root Password
-  
- $ROOT_PASS_IS_ENCRYPTED = 0; 
-   
- $PROGRAM_ROOT_PASSWORD  = 'root_password';  
- 
- # End Root Password
- 
- $MAILPROG                 = "/usr/sbin/sendmail";
- #---------------------------------------------------------------------#
- $FILES                    = $DIR . '/.lists';
- $TEMPLATES                = $DIR . '/.templates';
- $TMP                      = $DIR . '/.tmp';
- $BACKUPS                  = $DIR . '/.backups';
- $ARCHIVES                 = $DIR . '/.archives';
- $LOGS                     = $DIR . '/.logs'; 
- #---------------------------------------------------------------------#
-
-One of the more interesting features of this plugin is that no matter if you had your current Dada Mail Root Password encrypted before, changing it via this plugin will encrypt to the Dada Mail Root Password. 
-
-Once your C<.dada_config> file is configured like this, you are ready to use this plugin. 
-
+If your C<.dada_config> file does not have a part of its content that looks like this, this plugin will not work. 
 
 =back
 
+=head2 Change permissions of "change_root_password.cgi" to 755
 
-=head2 Upload B<change_root_password.cgi> into the plugins directory
+The, C<change_root_password.cgi> plugin will be located in your, I<dada/plugins> diretory. Change the script to, C<755>
 
-We're assuming your cgi-bin looks like this: 
+=head2 Configure your .dada_config file
 
- /home/account/cgi-bin/dada
+Now, edit your C<.dada_config> file, so that it shows the plugin in the left-hand menu, under the, B<Plugins> heading: 
 
-and inside the I<dada> directory is the I<mail.cgi> file and the I<DADA> (uppercase) directory. Good! Make a B<new> directory in the I<dada> directory called, B<plugins>. 
+First, see if the following lines are present in your C<.dada_config> file: 
 
-Upload your tweaked copy of I<change_root_password.cgi> into that B<plugins> directory. chmod 755 change_root_password.cgi
+ # start cut for list control panel menu
+ =cut
 
-=head2 Configure the Config.pm file
+ =cut
+ # end cut for list control panel menu
 
-This plugin will give you a new menu item in your list control panel. Tell Dada Mail to make this menu item by tweaking the Config.pm file. Find this line (or the line(s) similar) in Config.pm file: 
+If they are, remove them. 
 
- #					{-Title      => 'Change the Program Root Password',
- #					 -Title_URL  => $PLUGIN_URL."/change_root_password.cgi",
- #					 -Function   => 'change_root_password',
- #					 -Activated  => 0,
+Then, find these lines: 
+
+ #					{
+ #					-Title      => 'Change the Program Root Password',
+ #					-Title_URL  => $PLUGIN_URL."/change_root_password.cgi",
+ #					-Function   => 'change_root_password',
+ #					-Activated  => 0,
  #					},
 
-Uncomment it (take off the "#"'s) 
+Uncomment the lines, by taking off the, "#"'s: 
 
-Save the Config.pm file. 
+ 					{
+ 					-Title      => 'Change the Program Root Password',
+ 					-Title_URL  => $PLUGIN_URL."/change_root_password.cgi",
+ 					-Function   => 'change_root_password',
+ 					-Activated  => 0,
+ 					},
+
+Save your C<.dada_config> file.
+
 
 =head1 DEPENDENCIES
 

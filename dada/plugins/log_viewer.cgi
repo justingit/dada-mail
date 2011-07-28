@@ -602,38 +602,51 @@ sub get_logs {
 This plugin allows you to view the Dada Mail, Error, Bounce and Clickthrough logs
 that  Dada Mail creates in its activities through your web browser. 
 
-=head2 Installation
+=head1 Installation 
 
-Upload log_viewer.cgi into your cgi-bin. We suggest you create 
-a 'plugins' directory in the same directory that the mail.cgi script 
-is in. For example. If mail.cgi is at: 
+This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin manually.
 
- /home/account/cgi-bin/dada/mail.cgi 
+=head2 Change permissions of "log_viewer.cgi" to 755
 
-create a directory called plugins at: 
+The, C<log_viewer.cgi> plugin will be located in your, I<dada/plugins> diretory. Change the script to, C<755>
 
-  /home/account/cgi-bin/dada/plugins
+=head2 Configure your .dada_config file
 
-and upload this script into that directory:
+Now, edit your C<.dada_config> file, so that it shows the plugin in the left-hand menu, under the, B<Plugins> heading: 
 
- /home/account/cgi-bin/dada/plugins/log_viewer.cgi
+First, see if the following lines are present in your C<.dada_config> file: 
 
-Once uploaded in plain text or ASCII mode, chmod the script to 755.   
+ # start cut for list control panel menu
+ =cut
 
-Add this entry to the $ADMIN_MENU array ref:
+ =cut
+ # end cut for list control panel menu
 
-	 {-Title          => 'View Logs', 
-	  -Title_URL      => $PLUGIN_URL."/log_viewer.cgi",
-	  -Function       => 'log_viewer',
-	  -Activated      => 1, 
-	  },
+If they are, remove them. 
 
-It's possible that this has already been added to $ADMIN_MENU and all
-you would need to do is uncomment this entry.
+Then, find these lines: 
+
+ #					{
+ #					-Title      => 'View Logs',
+ #					-Title_URL  => $PLUGIN_URL."/log_viewer.cgi",
+ #					-Function   => 'log_viewer',
+ #					-Activated  => 1,
+ #					},
+
+Uncomment the lines, by taking off the, "#"'s: 
+
+ 					{
+ 					-Title      => 'View Logs',
+ 					-Title_URL  => $PLUGIN_URL."/log_viewer.cgi",
+ 					-Function   => 'log_viewer',
+ 					-Activated  => 1,
+ 					},
+
+Save your C<.dada_config> file.
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2008 
+Copyright (c) 1999 - 2011 
 
 Justin Simoni
 

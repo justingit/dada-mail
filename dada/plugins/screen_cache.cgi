@@ -325,24 +325,47 @@ L<http://dadamailproject.com/support/documentation/features-screen_cache.pod.htm
 This plugins allows you to view and remove any currently cached screens. 
 
 
-=head1 INSTALLATION
+=head1 Installation 
 
-screen_cache.cgi should be installed into your dada/plugins directory. Upload the script and change it's permissions to 755. 
+This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin manually.
 
-Add this entry to the $ADMIN_MENU array ref:
+=head2 Change permissions of "screen_cache.cgi" to 755
 
-					{-Title      => 'Screen Cache',
-					 -Title_URL  => $PLUGIN_URL."/screen_cache.cgi",
-					 -Function   => 'screen_cache',
-					 -Activated  => 0,
-					},
+The, C<screen_cache.cgi> plugin will be located in your, I<dada/plugins> diretory. Change the script to, C<755>
 
-It's possible that this has already been added to $ADMIN_MENU and all
-you would need to do is uncomment this entry.
+=head2 Configure your .dada_config file
 
-You can then visit the plugin in your web browser, via a URL, like this: 
+Now, edit your C<.dada_config> file, so that it shows the plugin in the left-hand menu, under the, B<Plugins> heading: 
 
-L<http://example.com/cgi-bin/dada/plugins/screen_cache.cgi>
+First, see if the following lines are present in your C<.dada_config> file: 
+
+ # start cut for list control panel menu
+ =cut
+
+ =cut
+ # end cut for list control panel menu
+
+If they are, remove them. 
+
+Then, find these lines: 
+
+ #					{
+ #					-Title      => 'Screen Cache',
+ #					-Title_URL  => $PLUGIN_URL."/screen_cache.cgi",
+ #					-Function   => 'screen_cache',
+ #					-Activated  => 0,
+ #					},
+
+Uncomment the lines, by taking off the, "#"'s: 
+
+ 					{
+ 					-Title      => 'Screen Cache',
+ 					-Title_URL  => $PLUGIN_URL."/screen_cache.cgi",
+ 					-Function   => 'screen_cache',
+ 					-Activated  => 0,
+ 					},
+
+Save your C<.dada_config> file.
 
 =head1 Using screen_cache.cgi as a cronjob
 

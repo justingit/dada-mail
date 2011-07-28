@@ -2,16 +2,27 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
-=head1 4.6.0 Alpha 1
+=head1 4.6.0 Alpha 2
 
-=head2 Summary 4.6.0 Alpha 1
+=head2 Summary 4.6.0 Alpha 2
 
-v4.6.0 alpha 1 introduces Amazon SES support. This allows you to send email 
+v4.6.0 alpha 2 introduces Amazon SES support. This allows you to send email 
 messages with Dada Mail using the Amazon SES Web Service.
 
 =head3 See Also: 
 
 L<http://dadamailproject.com/support/documentation/features-amazon_ses_support.pod.html>
+
+=head2 Features 4.6.0 Alpha 2 
+
+=head3 Installer Enhancements
+
+The installer that comes with Dada Mail now supports the installation of most of the 
+plugins and extensions that come with Dada Mail.
+
+The installer also gives you the option, when used to upgrade your current Dada Mail, 
+to either keep your current C<.dada_config> file, or to create a new C<.dada_config> file, 
+while also keeping your current C<.dada_files> directory structure and contents. 
 
 =head1 4.5.2
 

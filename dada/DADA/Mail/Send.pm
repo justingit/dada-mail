@@ -871,30 +871,6 @@ sub sending_preferences_test {
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_SMTP} = 1; 
     my $orig_debug_pop3                          = $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3}; 
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} = 1; 
-    
-my $subject = 'Sending Preference Test Email for, <!-- tmpl_var list_settings.list_name -->'; 
-my $msg = <<EOF
-Hello, <!-- tmpl_var list_settings.list_owner_email -->, 
-
-This message was sent out by <!-- tmpl_var PROGRAM_NAME --> to test out mail sending for the mailing list, 
-
-		<!-- tmpl_var list_settings.list_name --> 
-		
-If you've received this message, it looks like mail sending is working. 
-
-<!-- tmpl_if expr="list_settings.sending_method eq 'sendmail'" --> 
-	* Mail is being sent via the sendmail command
-<!--/tmpl_if -->
-<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" --> 
-	* Mail is being sent via SMTP
-<!--/tmpl_if --> 
-<!-- tmpl_if expr="list_settings.sending_method eq 'amazon_ses'" --> 
-	* Mail is being sent via Amazon Simple Email Service
-<!--/tmpl_if -->
-
--- <!-- tmpl_var PROGRAM_NAME --> 
-EOF
-;
 
 	require DADA::App::Messages; 
 	DADA::App::Messages::send_generic_email(
@@ -903,9 +879,9 @@ EOF
 			-headers => { 
 				To              => $self->{ls}->param('list_owner_email'),
 				From            => $self->{ls}->param('list_owner_email'), 
-			    Subject         => $subject,
+			    Subject         => $DADA::Config::SENDING_PREFS_MESSAGE_SUBJECT,
 			}, 
-			-body => $msg,
+			-body => $DADA::Config::SENDING_PREFS_MESSAGE,
 			-tmpl_params => {
 				
 				-list_settings_vars_param => {

@@ -2122,7 +2122,11 @@ Shell access also facilitates testing of the program.
 
 =back
 
-=head2 Installation Difficulty: moderate
+=head1 Installation 
+
+This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin manually. 
+
+If you do install this way, note that you still have set the crojob, which is  covered below. 
 
 =head1 Lightning Configuration/Installation Instructions
 
@@ -2141,37 +2145,47 @@ To get to the point:
 =back
 
 
-=head1 INSTALLATION
+=head1 Manual Installation
 
 =head2 Configuring scheduled_mailings.pl Plugin Side
 
-=head2 #1 Upload into the plugins directory
+=head2 Change permissions of "scheduled_mailings.pl" to 755
 
-We're assuming your cgi-bin looks like this: 
+The, C<scheduled_mailings.pl> plugin will be located in your, I<dada/plugins> diretory. Change the script to, C<755>
 
- /home/account/cgi-bin/dada
+=head2 Configure your .dada_config file
 
-and inside the I<dada> directory is the I<mail.cgi> file and the I<DADA> (uppercase) directory. Make a B<new> directory in the I<dada> directory called, B<plugins> (if it's not already there). 
+Now, edit your C<.dada_config> file, so that it shows the plugin in the left-hand menu, under the, B<Plugins> heading: 
 
-If not already there, upload your copy of I<scheduled_mailings.pl> into that B<plugins> directory. C<chmod 755 scheduled_mailings.pl>
+First, see if the following lines are present in your C<.dada_config> file: 
 
-=head2 #2 Configure the Config.pm file
+ # start cut for list control panel menu
+ =cut
 
-This plugin will give you a new menu item in your list control panel. Tell Dada Mail to make this menu item by tweaking the Config.pm file. Find these lines in the Config.pm file: 
+ =cut
+ # end cut for list control panel menu
 
- #					{-Title      => 'Scheduled Mailings',
- #					 -Title_URL  => $PLUGIN_URL."/scheduled_mailings.pl",
- #					 -Function   => 'scheduled_mailings',
- #					 -Activated  => 1,
+If they are, remove them. 
+
+Then, find these lines: 
+
+ #					{
+ #					-Title      => 'Scheduled Mailings',
+ #					-Title_URL  => $PLUGIN_URL."/scheduled_mailings.pl",
+ #					-Function   => 'scheduled_mailings',
+ #					-Activated  => 1,
  #					},
 
-Uncomment it (take off the "#"'s) 
+Uncomment the lines, by taking off the, "#"'s: 
 
-Save the Config.pm file. 
+ 					{
+ 					-Title      => 'Scheduled Mailings',
+ 					-Title_URL  => $PLUGIN_URL."/scheduled_mailings.pl",
+ 					-Function   => 'scheduled_mailings',
+ 					-Activated  => 1,
+ 					},
 
-You're basically done configurating the Beatitude plugin.
-
-You can now log into your List Control Panel and under the, B<plugins> heading you should now see a linked entitled, "Scheduled Mailings". Clicking that will allow you to set up a scheduled mailing.
+Save your C<.dada_config> file.
 
 =head1 Configurating the Cronjob to Automatically Run Beatitude
 
