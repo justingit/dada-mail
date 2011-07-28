@@ -68,14 +68,129 @@ my $sql_end_cut = quotemeta(
 # end cut for SQL Backend
 }
 );
+my $plugins_config_begin_cut = quotemeta(
+q{# start cut for plugin configs
+=cut}
+); 
+	my $plugins_config_end_cut = quotemeta(
+q{=cut
+# end cut for plugin configs}
+); 
 
-use DADA::Config 4.0.0;
-	$DADA::Config::USER_TEMPLATE = '';
-	
+my $admin_menu_begin_cut = quotemeta(
+q{# start cut for list control panel menu
+=cut}); 
+my $admin_menu_end_cut = quotemeta(
+q{=cut
+# end cut for list control panel menu}	
+); 
+
+my $list_settings_defaults_begin_cut = quotemeta(
+q{# start cut for list settings defaults
+=cut}
+);
+my $list_settings_defaults_end_cut = quotemeta(
+q{=cut
+# end cut for list settings defaults}
+); 
+
+my $plugins_extensions = { 
+	change_root_password   => {installed => 0, loc => '../plugins/change_root_password.cgi'}, 
+	screen_cache           => {installed => 0, loc => '../plugins/screen_cache.cgi'}, 
+	log_viewer             => {installed => 0, loc => '../plugins/log_viewer.cgi'}, 
+	tracker                => {installed => 0, loc => '../plugins/tracker.cgi'}, 
+	dada_bridge            => {installed => 0, loc => '../plugins/dada_bridge.pl'}, 
+	dada_bounce_handler    => {installed => 0, loc => '../plugins/dada_bounce_handler.pl'}, 
+	scheduled_mailings     => {installed => 0, loc => '../plugins/scheduled_mailings.pl'}, 
+	multiple_subscribe     => {installed => 0, loc => '../extensions/multiple_subscribe.cgi'}, 
+	ajax_include_subscribe => {installed => 0, loc => '../extensions/ajax_include_subscribe.cgi'}, 	
+	blog_index             => {installed => 0, loc => '../extensions/blog_index.cgi'}, 
+	auto_pickup            => {installed => 0, loc => '../extensions/auto_pickup.pl'}, 
+};
+$plugins_extensions->{change_root_password}->{code} = 
+q{#					{
+#					-Title      => 'Change the Program Root Password',
+#					-Title_URL  => $PLUGIN_URL."/change_root_password.cgi",
+#					-Function   => 'change_root_password',
+#					-Activated  => 0,
+#					},};
+$plugins_extensions->{screen_cache}->{code} = 
+q{#					{
+#					-Title      => 'Screen Cache',
+#					-Title_URL  => $PLUGIN_URL."/screen_cache.cgi",
+#					-Function   => 'screen_cache',
+#					-Activated  => 0,
+#					},};
+$plugins_extensions->{log_viewer}->{code} = 
+q{#					{
+#					-Title      => 'View Logs',
+#					-Title_URL  => $PLUGIN_URL."/log_viewer.cgi",
+#					-Function   => 'log_viewer',
+#					-Activated  => 1,
+#					},};
+$plugins_extensions->{tracker}->{code} = 
+q{#					{
+#					-Title      => 'Tracker',
+#					-Title_URL  => $PLUGIN_URL."/tracker.cgi",
+#					-Function   => 'tracker',
+#					-Activated  => 1,
+#					},};
+$plugins_extensions->{dada_bridge}->{code} = 
+q{#					{
+#					-Title      => 'Discussion Lists',
+#					-Title_URL  => $PLUGIN_URL."/dada_bridge.pl",
+#					-Function   => 'dada_bridge',
+#					-Activated  => 1,
+#					},};
+$plugins_extensions->{dada_bounce_handler}->{code} = 
+q{#					{
+#					-Title      => 'Bounce Handler',
+#					-Title_URL  => $PLUGIN_URL."/dada_bounce_handler.pl",
+#					-Function   => 'dada_bounce_handler',
+#					-Activated  => 1,
+#					},};
+$plugins_extensions->{scheduled_mailings}->{code} = 
+q{#					{-Title      => 'Scheduled Mailings',
+#					 -Title_URL  => $PLUGIN_URL."/scheduled_mailings.pl",
+#					 -Function   => 'scheduled_mailings',
+#					 -Activated  => 1,
+#					},};
+$plugins_extensions->{multiple_subscribe}->{code} = 
+q{#					{
+#					-Title      => 'Multiple Subscribe',
+#					-Title_URL  => $EXT_URL."/multiple_subscribe.cgi",
+#					-Function   => 'multiple_subscribe',
+#					-Activated  => 1,
+#					},};
+$plugins_extensions->{ajax_include_subscribe}->{code} = 
+q{#					{
+#					-Title      => 'Ajax\'d Subscription Form',
+#					-Title_URL  => $EXT_URL."/ajax_include_subscribe.cgi?mode=html",
+#					-Function   => 'ajax_include_subscribe',
+#					-Activated  => 1,
+#					},};
+$plugins_extensions->{blog_index}->{code} = 
+q{#					{
+#					-Title      => 'Archive Blog Index',
+#					-Title_URL  => $EXT_URL."/blog_index.cgi?mode=html&list=<!-- tmpl_var list_settings.list -->",
+#					-Function   => 'blog_index',
+#					-Activated  => 1,
+#					},};
+$plugins_extensions->{auto_pickup}->{code} = 
+q{#					{
+#					-Title      => 'Sending Monitor Outside Extension',
+#					-Title_URL  => $EXT_URL."/auto_pickup.pl",
+#					-Function   => 'auto_pickup',
+#					-Activated  => 1,
+#					}};
+
 # An unconfigured Dada Mail won't have these exactly handy to use. 
 $DADA::Config::PROGRAM_URL   = program_url_guess();
 $DADA::Config::S_PROGRAM_URL = program_url_guess();
 
+use DADA::Config 4.0.0;
+	$DADA::Config::USER_TEMPLATE = '';
+	
 use DADA::App::Guts;
 use DADA::Template::Widgets;
 use DADA::Template::HTML;
@@ -120,7 +235,7 @@ sub cl_run {
     my %h = ();
     Getopt::Long::GetOptions(
         \%h,
-        'skip_configure_dada_files=i',
+        'if_dada_files_already_exists=s',
         'program_url=s',
         'dada_root_pass=s',
         'dada_files_loc=s', 
@@ -173,20 +288,18 @@ sub cl_run {
 	   my $install_dada_files_loc = install_dada_files_dir_at_from_params(); 
 	   my ( $install_log, $install_status, $install_errors ) = install_dada_mail(
 	        {
-	            -program_url                => $q->param('program_url') || '',
-	            -dada_root_pass             => $q->param('dada_root_pass') || '',
-				-dada_files_dir_setup       => $q->param('dada_files_dir_setup') || 'manual', 
-	            -backend                    => $q->param('backend') || 'default',
-	            -sql_server                 => $q->param('sql_server') || '',
-	            -sql_database               => $q->param('sql_database') || '',
-	            -sql_username               => $q->param('sql_username') || '',
-	            -sql_password               => $q->param('sql_password') || '',
-	
-		        -sql_port                   => sql_port_from_params(),
-	    
-				-install_dada_files_loc     => $install_dada_files_loc, 			
-				-skip_configure_SQL         => $q->param('skip_configure_SQL') || 0, 
-				-skip_configure_dada_files  => $q->param('skip_configure_dada_files') || 0,
+	            -program_url                   => $q->param('program_url') || '',
+	            -dada_root_pass                => $q->param('dada_root_pass') || '',
+				-dada_files_dir_setup          => $q->param('dada_files_dir_setup') || 'manual', 
+	            -backend                       => $q->param('backend') || 'default',
+	            -sql_server                    => $q->param('sql_server') || '',
+	            -sql_database                  => $q->param('sql_database') || '',
+	            -sql_username                  => $q->param('sql_username') || '',
+	            -sql_password                  => $q->param('sql_password') || '',
+		        -sql_port                      => sql_port_from_params(),
+				-install_dada_files_loc        => $install_dada_files_loc, 			
+				-skip_configure_SQL            => $q->param('skip_configure_SQL') || 0, 
+				-if_dada_files_already_exists  => $q->param('if_dada_files_already_exists') || undef,
 	        }
 	    );
 
@@ -256,21 +369,22 @@ sub scrn_configure_dada_mail {
 		$lists_available = 1; 
 	}
 	# This is a test to see if the, "auto" placement will work for us - or 
-	# for example, there's somethign in the way. 
+	# for example, there's something in the way. 
 	# First, let's see if there's any errors: 
 	if ( defined( $q->param('errors') )) {
     	# No? Good - 
 	}
 	else { 
 		if(test_can_create_dada_files_dir(auto_dada_files_dir()) == 1 ){ 
-			# Failed the test. 
-			#$q->param('errors', [{dada_files_dir_exists => 1}]);
-			#$q->param('error_dada_files_dir_exists', 1);
 			# HTML::FillInForm::Lite will pick up on this 
 			$q->param('dada_files_loc', auto_dada_files_dir()); 
 			$q->param('dada_files_dir_setup', 'manual');  
 		}	
 	}
+	
+	my $DOC_VER = $DADA::Config::VER; 
+	   $DOC_VER =~ s/\s(.*?)$//;
+	   $DOC_VER =~ s/\./\_/g;
 	
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
@@ -302,6 +416,8 @@ sub scrn_configure_dada_mail {
 				Big_Pile_Of_Errors             => $Big_Pile_Of_Errors,
 				Trace                          => $Trace, 
 				lists_available                => $lists_available, 
+				DOC_VER                        => $DOC_VER, 
+				DOC_URL                        => 'http://dadamailproject.com/support/documentation-' . $DOC_VER, 
 
             },
         }
@@ -368,18 +484,18 @@ sub scrn_install_dada_mail {
 
     my ( $log, $status, $errors ) = install_dada_mail(
         {
-			-skip_configure_dada_files  => $q->param('skip_configure_dada_files') || 0,
-            -program_url                => $q->param('program_url'),
-            -dada_root_pass             => $q->param('dada_root_pass'),
-			-dada_files_dir_setup       => $q->param('dada_files_dir_setup'), 
-			-install_dada_files_loc     => $install_dada_files_loc, 
-            -backend                    => $q->param('backend'),
-			-skip_configure_SQL         => $q->param('skip_configure_SQL') || 0, 
-            -sql_server                 => $q->param('sql_server'),
-            -sql_port                   => sql_port_from_params(),
-            -sql_database               => $q->param('sql_database'),
-            -sql_username               => $q->param('sql_username'),
-            -sql_password               => $q->param('sql_password'),
+			-if_dada_files_already_exists  => $q->param('if_dada_files_already_exists') || undef,
+            -program_url                   => $q->param('program_url'),
+            -dada_root_pass                => $q->param('dada_root_pass'),
+			-dada_files_dir_setup          => $q->param('dada_files_dir_setup'), 
+			-install_dada_files_loc        => $install_dada_files_loc, 
+            -backend                       => $q->param('backend'),
+			-skip_configure_SQL            => $q->param('skip_configure_SQL') || 0, 
+            -sql_server                    => $q->param('sql_server'),
+            -sql_port                      => sql_port_from_params(),
+            -sql_database                  => $q->param('sql_database'),
+            -sql_username                  => $q->param('sql_username'),
+            -sql_password                  => $q->param('sql_password'),
         }
     );
 
@@ -419,8 +535,23 @@ sub install_dada_mail {
     my $status = 1;
 
 
-	if($args->{-skip_configure_dada_files} == 1){ 
-		$log .= "* Skipping configuration of directory creation, config file and backend options\n"; 
+	if($args->{-if_dada_files_already_exists} eq 'keep_dir_create_new_config'){ 
+		$log .= "* Backing up current configuration file\n";
+		eval { 
+			backup_current_config_file($args); 
+		}; 
+		if($@){ 
+			$log .= "* Problems backing up config file: $@\n"; 
+			$errors->{cant_backup_orig_config_file} = 1;
+		}
+		else { 
+			$log .= "* Success!\n"; 
+		}	
+	}
+
+	
+	if(	$args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files' || $args->{-if_dada_files_already_exists} eq 'keep_dir_create_new_config'){ 
+	
 		$log .= "* Removing old screen cache files...\n"; 
 		eval { 
 			require DADA::App::ScreenCache; 
@@ -434,22 +565,32 @@ sub install_dada_mail {
 			$log .="* Success!\n"; 
 		}
 	}
+
+	
+	if($args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files'){ 
+		$log .= "* Skipping configuration of directory creation, config file and backend options\n"; 
+	}
 	else { 
     	$log .=
 	        "* Attempting to make $DADA::Config::PROGRAM_NAME Files at, "
 	      . $args->{-install_dada_files_loc} . '/'
 	      . $Dada_Files_Dir_Name . "\n";
 
-	    # Making the .dada_files structure
-	    if ( create_dada_files_dir_structure( $args->{-install_dada_files_loc} ) == 1 ) {
-	        $log .= "* Success!\n";
-	    }
-	    else {
-	        $log .= "* Problems Creating Directory Structure! STOPPING!\n";
-	        $errors->{cant_create_dada_files} = 1;
-	        $status = 0;
-	        return ( $log, $status, $errors );
-	    }
+		if($args->{-if_dada_files_already_exists} eq 'keep_dir_create_new_config'){ 
+			$log .= "* Skipping directory creation\n"; 
+		}
+		else { 			
+		    # Making the .dada_files structure
+		    if ( create_dada_files_dir_structure( $args->{-install_dada_files_loc} ) == 1 ) {
+		        $log .= "* Success!\n";
+		    }
+		    else {
+		        $log .= "* Problems Creating Directory Structure! STOPPING!\n";
+		        $errors->{cant_create_dada_files} = 1;
+		        $status = 0;
+		        return ( $log, $status, $errors );
+		    }
+		}
 
 	    # Making the .dada_config file
 	    $log .= "* Attempting to create .dada_config file...\n";
@@ -531,8 +672,19 @@ sub install_dada_mail {
 		}
     }
 
+	$log .= "* Installing plugins/extensions...\n";
+	eval {edit_config_file_for_plugins($args);}; 
+	if($@){ 
+        $log .= "* WARNING: Couldn't complete installing plugins/extensions! $@\n";
+        $errors->{cant_install_plugins_extensions} = 1;
+	}
+	else { 
+        $log .= "* Success!\n";		
+	} 
+	
+
     # That's it.
-    $log .= "* Installation and Configuration Complete! Yeah!\n";
+    $log .= "* Installation and Configuration Complete!\n";
     return ( $log, $status, $errors );
 }
 
@@ -599,6 +751,34 @@ sub backup_config_dot_pm {
 	#chmod(0775, $backup_loc);
 	installer_chmod(0775, $backup_loc);
 
+}
+
+
+
+sub backup_current_config_file { 
+	my ($args) = @_; 
+	
+	my $dot_configs_file_loc = make_safer(
+		$args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config'
+	);
+	my $config_file = slurp(
+		$dot_configs_file_loc
+	);
+	
+	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+
+	my $timestamp = sprintf("%4d-%02d-%02d", $year+1900,$mon+1,$mday) . '-' . localtime;
+	
+	my $new_loc = make_safer(
+		$args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config-backup-' . $timestamp
+	); 
+	
+	open my $config_backup, '>', $new_loc or die $!; 
+	print $config_backup $config_file; 
+	close($config_backup) or die $!; 
+	
+	unlink($dot_configs_file_loc); 
+	
 }
 
 sub create_dada_files_dir_structure {
@@ -672,11 +852,10 @@ sub create_dada_config_file {
                 ? (
                     backend      => $args->{-backend},
                     sql_server   => $args->{-sql_server},
-                    sql_database => $args->{-sql_database},
-                    sql_port     => $args->{-sql_port},
-                    sql_username => $args->{-sql_username},
-                    sql_password => $args->{-sql_password},
-
+                    sql_database => clean_up_var($args->{-sql_database}),
+                    sql_port     => clean_up_var($args->{-sql_port}),
+                    sql_username => clean_up_var($args->{-sql_username}),
+                    sql_password => clean_up_var($args->{-sql_password}),
                   )
                 : ()
             }
@@ -698,6 +877,7 @@ sub create_dada_config_file {
     print $dada_config_fh $outside_config_file or die $!;
     close $dada_config_fh or die $!;
 
+	
      };
      if ($@) {
 		warn $@; 
@@ -779,7 +959,7 @@ sub sql_port_from_params {
 sub check_setup {
     my $errors = {};
     if (
-        $q->param('skip_configure_dada_files') == 1
+        $q->param('if_dada_files_already_exists') eq 'skip_configure_dada_files'
         && test_complete_dada_files_dir_structure_exists(
             install_dada_files_dir_at_from_params()
         ) == 1    # This still has to check out,
@@ -858,16 +1038,40 @@ sub check_setup {
             $errors->{dada_files_dir_exists} = 0;
         }
         else {
-            $errors->{dada_files_dir_exists} = 1;
-        }
-
-        if ( test_can_create_dada_files_dir($install_dada_files_dir_at) == 1 ) {
-            $errors->{create_dada_files_dir} = 1;
-        }
-        else {
-            $errors->{create_dada_files_dir} = 0;
-        }
-
+	
+			if (
+		        $q->param('if_dada_files_already_exists') eq 'keep_dir_create_new_config'
+		        && test_complete_dada_files_dir_structure_exists(
+		            install_dada_files_dir_at_from_params()
+		        ) == 1    # This still has to check out,
+		      ) { 
+				# skip this test, basically, 
+				$errors->{dada_files_dir_exists} = 0;
+			}
+			else { 
+            	$errors->{dada_files_dir_exists} = 1;
+        	}
+		}
+		
+		if (
+	        $q->param('if_dada_files_already_exists') eq 'keep_dir_create_new_config'
+	        && test_complete_dada_files_dir_structure_exists(
+	            install_dada_files_dir_at_from_params()
+	        ) == 1    # This still has to check out,
+	      ) {
+		
+			# Skip.
+			$errors->{create_dada_files_dir} = 0;
+		}
+		else { 
+			
+			if ( test_can_create_dada_files_dir($install_dada_files_dir_at) == 1 ) {
+	            $errors->{create_dada_files_dir} = 1;
+	        }
+	        else {
+	            $errors->{create_dada_files_dir} = 0;
+	        }			
+		}
     }
 
     my $status = 1;
@@ -881,10 +1085,6 @@ sub check_setup {
 
                 # Skip!
             }
-
-#	elsif($_ eq 'dada_files_dir_exists' && $q->param('skip_configure_dada_files') == 1){
-#		# Skip!
-#	}
             else {
                 $status = 0;
                 last;
@@ -912,6 +1112,113 @@ sub install_dada_files_dir_at_from_params() {
 	$install_dada_files_dir_at =~ s/\/$//; 
 	return $install_dada_files_dir_at; 
 
+}
+
+
+sub edit_config_file_for_plugins { 
+
+	my ($args) = @_;
+
+    my $dot_configs_file_loc = make_safer(
+		$args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config'
+	);
+	
+	my $config_file = slurp($dot_configs_file_loc);
+
+	# Get those pesky cut tags out of the way... 
+	$config_file =~ s/$admin_menu_begin_cut//; 
+	$config_file =~ s/$admin_menu_end_cut//; 	 
+	
+	for my $plugins_data(%$plugins_extensions){ 
+		if(exists($plugins_extensions->{$plugins_data}->{code})){
+			if($args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files') { 
+				# If we can already find the entry, we'll change the permissions of the 
+				# plugin/extension
+				my $orig_code = $plugins_extensions->{$plugins_data}->{code}; 
+				my $uncommented_code = quotemeta(uncomment_admin_menu_entry($orig_code));
+				if($config_file =~ m/$uncommented_code/){ 
+					my $installer_successful = installer_chmod(0755, make_safer($plugins_extensions->{$plugins_data}->{loc}));
+				}
+			}
+			else { 
+				if($q->param('install_' . $plugins_data) == 1){ 
+					my $orig_code = $plugins_extensions->{$plugins_data}->{code}; 
+					my $uncommented_code = uncomment_admin_menu_entry($orig_code);
+			 		$orig_code = quotemeta($orig_code); 
+					$config_file =~ s/$orig_code/$uncommented_code/;
+
+					# Fancy stuff for bounce handler, 
+					if($plugins_data eq 'dada_bounce_handler'){ 
+						# uncomment the plugins config, 
+						$config_file =~ s/$plugins_config_begin_cut//; 
+						$config_file =~ s/$plugins_config_end_cut//; 
+					 	# then, we have to fill in all the stuff in.
+					 	# Not a fav. tecnique!
+					my $plugins_config_dada_bounce_handler_orig = quotemeta(
+q|	Mystery_Girl => {
+		Server                      => undef,
+		Username                    => undef,
+		Password                    => undef,|
+					);
+					my $dada_bounce_handler_address  = clean_up_var($q->param('dada_bounce_handler_address')); 
+					my $dada_bounce_handler_server   = clean_up_var($q->param('dada_bounce_handler_server'));
+					my $dada_bounce_handler_username = clean_up_var($q->param('dada_bounce_handler_username')); 
+					my $dada_bounce_handler_password = clean_up_var($q->param('dada_bounce_handler_password')); 
+
+					my $plugins_config_dada_bounce_handler_replace_with = 
+"	Mystery_Girl => {
+		Server                      => '$dada_bounce_handler_server',
+		Username                    => '$dada_bounce_handler_username',
+		Password                    => '$dada_bounce_handler_password',";
+					$config_file =~ s/$plugins_config_dada_bounce_handler_orig/$plugins_config_dada_bounce_handler_replace_with/; 
+					# Now, do the same for list settings defaults: 
+					$config_file =~ s/$list_settings_defaults_begin_cut//; 
+					$config_file =~ s/$list_settings_defaults_end_cut//; 
+
+					# Now replace out the default code, with the config'd code: 
+					my $plugins_config_list_settings_default_orig = quotemeta(
+q|%LIST_SETUP_INCLUDE = (
+	set_smtp_sender              => 1, # For SMTP
+	add_sendmail_f_flag          => 1, # For Sendmail Command
+	admin_email                  => 'bounces@example.com',
+);|
+					); 
+					# Now replace out the default code, with the config'd code: 
+					my $plugins_config_list_settings_default_replace_with =
+qq|\%LIST_SETUP_INCLUDE = (
+	set_smtp_sender              => 1, # For SMTP
+	add_sendmail_f_flag          => 1, # For Sendmail Command
+	admin_email                  => '$dada_bounce_handler_address',
+);|; 
+						$config_file =~ s/$plugins_config_list_settings_default_orig/$plugins_config_list_settings_default_replace_with/;
+					}
+					my $installer_successful = installer_chmod(0755, make_safer($plugins_extensions->{$plugins_data}->{loc}));
+				}
+			}
+		}
+	}
+	
+	if($args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files') { 
+
+	}
+	else { 
+		# write it back? 
+		installer_chmod(0777, $dot_configs_file_loc); 
+		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($dot_configs_file_loc) or die $!;
+		print $config_fh $config_file or die $!;
+		close $config_fh or die $!;
+		installer_chmod(0644, $dot_configs_file_loc);	
+	}
+	return 1; 
+	
+
+}
+
+sub uncomment_admin_menu_entry { 
+
+	my $str = shift; 
+	$str =~ s/\#//g; 
+	return $str; 	
 }
 
 
@@ -1376,6 +1683,8 @@ sub guess_home_dir_via_FileHomeDir {
 
 }
 
+
+
 sub guess_home_dir_via_getpwuid_call{ 
  
 	# I hate this. 
@@ -1393,6 +1702,15 @@ sub guess_home_dir_via_getpwuid_call{
         $home_dir_guess =~ s/\/$pub_html_dir$//g;
     }
     return $home_dir_guess;	
+}
+
+
+
+
+sub clean_up_var { 
+	my $var = shift; 
+	   $var = quotemeta($var); 
+	return $var; 
 }
 
 

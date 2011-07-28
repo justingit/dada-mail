@@ -76,7 +76,7 @@ The installer should be relatively straightforward on how it's used - just fill 
 
 =head2 A Warning Up Top? 
 
-It's possible, before you even start using Dada Mail, that you'll receive a warning stating that Dada Mail won't be able to edit the, C<dada/DADA/Config.pm> file. This would be because there's a difference in file permissions/privileges between the user that the installer is running under,and the user that owns the C<dada/DADA/Config.pm> file. 
+It's possible, before you even start using Dada Mail, that you'll receive a warning stating that Dada Mail won't be able to edit the, C<dada/DADA/Config.pm> file. This would be because there's a difference in file permissions/privileges between the user that the installer is running under and the user that owns the C<dada/DADA/Config.pm> file. 
 
 This will mean, if you're comfortable with the idea, you'll need to edit I<one> line in the C<dada/DADA/Config.pm> file, to get Dada Mail running correctly. The majority of the time, this won't be the case and if you're selecting B<AUTO> for the first step, it will not be the case, even if there is the warning. 
 
@@ -104,11 +104,24 @@ If you do not know where your home directory is, or if you like the location tha
 
 =head3 Upgrading? 
 
-If you are upgrading Dada Mail, you may type in the current location of your, C<.dada_files> directory. 
+If you are upgrading Dada Mail, you may type in the current location of your, C<.dada_files> directory. The installer may also see that it's "best guess" is
+already the current location of your C<.dada_files> directory. It'll warn you about this, just in case it is not your intention to upgrade Dada Mail using that specific C<.dada_files> directory. This is probably only an issue if you have multiple copies of Dada Mail installed. 
 
-Make sure to double check the Dada Mail changelogs and fix any incompatibility between versions. Currently, this will be something you'll have to do manually.
+If you're doing an upgrade, you may simply use the same location of your C<.dada_files>. Instead of filling in any of the configuration below, you may simply click the, B<Configure Dada Mail!> button on the bottom of the installation screen. 
 
-If the installer finds your current C<.dada_files> directory, it'll give you a new option, labeled,  I<I know that the, ".dada_files" directory already exists >. Check this option - all other options will then be hidden. 
+When you do so, the installer will refresh the screen with the same configuration screen, but two new options, under another warning that the installer couldn't create the, C<.dada_files> directory. 
+
+The first option, I<Use the existing directory structure and configuration file, ignoring the configuration below.> will leave your Dada Mail configuration alone, and simply allow you to upgrade to the latest version of Dada Mail.
+
+If you have any plugins/extensions that you've installed with the installer from a previous installation, the installer will try its best to at least change the permissions of each plugin/extension you have already installed to continue working. It's possible that the installer cannot detect a plugin/extension install, so you may have to reinstall the plugin/extension manually. 
+
+The second option, I<Use the existing directory structure, but create a new configuration file, using the configuration below> allows you to upgrade your current Dada Mail, while using a fresh copy of the C<.dada_config> file. 
+
+This second option may be more useful in helping you keep a current C<.dada_config> file. In many cases, upgrades to Dada Mail come with changes to the default C<.dada_config> file. These changes may include incompatibilities if you use your current C<.dada_config> file. 
+
+The downside of using this option is that any changes you've personally made to your C<.dada_config> file will be lost. You still may manually move over your customizations from the old C<.dada_config> file, which is backed up for you and the new C<.dada_config> file. 
+
+Make sure to double check the Dada Mail changelog and fix any incompatibility between versions. Currently, this will be something you'll have to do manually.
 
 =head2 Dada Mail URL
 
@@ -170,11 +183,18 @@ Fill this with the password associated with the username.
 
 =head3 Another Shortcut to Upgrading
 
-If you have an already existing database from a previous Dada Mail installation, you may fill in the SQL server login information for this existing database and Dada Mail will use it, instead of creating a set of new tables for you. 
+If you have an already existing database from a previous Dada Mail installation, you may fill in the SQL server login information for this existing database and Dada Mail will use it, instead of creating a set of new tables for you.
+
+
+=head2 Plugins/Extensions
+
+Optionally, you may also install many of the plugins and extensions that come with Dada Mail. Access to the plugins/extensions will be available in the list control panel's admin menu.
+
+Some of the plugins/extensions have additional configuration that will need to done, before they work completely. For the majority of these plugins/extensions, you'll need to also set a cron job. One plugin, the bounce handler, also requires you to fill out the credentials for the bounce handler email account you need to set up to capture bounced emails. 
 
 =head2 Completing the Installation and Configuration. 
 
-Once you've filled out the form completely, just click the, C<Configure Dada Mail!> button. The screen will refresh and go about configuring Dada Mail for your hosting setup. 
+Once you've filled out the form completely, just click the, B<Configure Dada Mail!> button. The screen will refresh and go about configuring Dada Mail for your hosting setup. 
 
 If everything works well (and we hope it does) you should be all set to run Dada Mail.
 
@@ -201,6 +221,15 @@ Making additional configurations is a lot more advanced than running the install
 Once you've gotten the, C<dada/DADA/Config.pm> file edited (if needed) and moved the, C<installer> directory out of the way, it's time to begin using Dada Mail. Click the, C<Start Working With Dada Mail!> button to begin!
 
 Good Luck! 
+
+=head1 Command Line Interface
+
+An alternative, command line interface is available, instructions can be 
+found on how to use it, by invoking the script with the, C<--help> flag, 
+
+ shell>./installer.cgi --help
+
+most of the options available on the web-based interface are available in the command line interface, except the installation of the plugins/extensions. 
 
 =head1 Screencasts
 

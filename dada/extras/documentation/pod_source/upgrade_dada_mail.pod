@@ -22,7 +22,6 @@ A, "Basic" installation changes the configuration variables right in the, C<dada
 
 =item * $MAILPROG
 
-
 =item * $PROGRAM_URL
 
 =back

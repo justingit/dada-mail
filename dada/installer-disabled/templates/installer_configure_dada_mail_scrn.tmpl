@@ -43,7 +43,7 @@
 	</p>
 	<p> 
 		You may still perform this installation, but you may have to edit parts of the <em>dada/DADA/Config.pm</em>
-		file yourself. (We'll let you know, where.)
+		file yourself. (We'll let you know where.)
 	</p>
 	</div> 
 
@@ -98,15 +98,29 @@
 		</p>
 
 		<!-- tmpl_if test_complete_dada_files_dir_structure_exists --> 
+				<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+				
 				<p>
-				<input type="checkbox" name="skip_configure_dada_files"	id="skip_configure_dada_files" value="1" onClick="ToggleConfigurationOptions();" /> 
-				<label for="skip_configure_dada_files">I know that the,  &quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; directory already exists. Please:</label> <br /> 
-				<ul> 
-					<li>
-						<p>Use the existing directory structure and configuration file, ignoring the configuration below. 
-						</p></li>
-						<li><p>I understand no checks are done to make sure that the current  setup is correct!)</p></li> 
-					</ul>
+				 <strong>
+					I know that the,  &quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; directory already exists. Please:
+				 </strong> 
+			    </p>
+				
+				<input type="radio" name="if_dada_files_already_exists"	id="skip_configure_dada_files" value="skip_configure_dada_files" onClick="ToggleConfigurationOptions('hide');" /> 
+				<label for="skip_configure_dada_files">
+			
+						 Use the existing directory structure and configuration file, ignoring the configuration below. 
+						 I understand no checks are done to make sure that the current setup is correct!
+						</label></p>
+					  
+					<p>
+				<input type="radio" name="if_dada_files_already_exists"	id="keep_dir_create_new_config" value="keep_dir_create_new_config" checked="checked" onClick="ToggleConfigurationOptions('show');"  /> 
+				<label for="keep_dir_create_new_config">
+					 Use the existing directory structure, but create a new configuration file, using the configuration below. 
+					 Your former configuration file will be backed up. 
+				</label></p>
+			</div> 
+			
 		<!-- /tmpl_if --> 
 		
 		</ul> 
@@ -120,7 +134,7 @@
 
 	<p class="positive">	
 		<!-- tmpl_var PROGRAM_NAME --> will need to write various files and will need a directory for which to do this in. You'll 
-		have to tell Dada Mail where you'd like this directory to live. The directory will be called, <em><!-- tmpl_var Dada_Files_Dir_Name --></em>. 
+		have to tell <!-- tmpl_var PROGRAM_NAME --> where you'd like this directory to live. The directory will be called, <em><!-- tmpl_var Dada_Files_Dir_Name --></em>. 
 		</p>
 		<p class="positive">
 		Usually, this directory will live under your home directory and <!-- tmpl_var PROGRAM_NAME --> can usually guess where that is, but if it guesses wrong
@@ -291,7 +305,7 @@ If using either the SQL backends, make sure to create a new database before conf
 	<ul>
 		<li>
 			<p class="error">
-				The SQL information below is correct, but there are tables in this database that correspond to the tables that Dada Mail requires.
+				The SQL information below is correct, but there are tables in this database that correspond to the tables that <!-- tmpl_var PROGRAM_NAME --> requires.
 			</p>
 			<p>
 				<input type="checkbox" name="skip_configure_SQL" id="skip_configure_SQL" value="1">
@@ -333,15 +347,74 @@ If using either the SQL backends, make sure to create a new database before conf
 </fieldset> 
 
 </fieldset> 
+
+<fieldset> 
+<legend>Plugins/Extensions [<a href="#" onclick="toggleDisplay('plugins_extensions_help');return false;">?</a>]</legend>
+
+<div id="plugins_extensions_help" style="display:none"> 
+
+<p class="positive">
+	<!-- tmpl_var PROGRAM_NAME --> comes with several plugins/extensions that add additional functionality to your <!-- tmpl_var PROGRAM_NAME --> install. 
+</p>
+
+<p class="positive">
+<em>Some</em> of the plugins/extensions require additional configuration, usually a cronjob has to be manually set, 
+for it to work correctly. For help on setting the cronjob, see the 
+<a href="<!-- tmpl_var DOC_URL -->" target="_blank">online documentation</a> for the plugin/extension. 
+</p>
+
+	
 </div> 
 
+<p><input type="checkbox" name="install_change_root_password" id="install_change_root_password" value="1" /><label for="install_change_root_password">Change the Program Root Password</label></p> 
 
+<p><input type="checkbox" name="install_screen_cache" id="install_screen_cache" value="1" /><label for="install_screen_cache">Screen Cache</label></p> 
 
+<p><input type="checkbox" name="install_log_viewer" id="install_log_viewer" value="1" /><label for="install_log_viewer">View Logs</label></p> 
+
+<p><input type="checkbox" name="install_tracker" id="install_tracker" value="1" /><label for="install_tracker">Tracker</label></p> 
+
+<p><input type="checkbox" name="install_dada_bridge" id="install_dada_bridge" value="1" /><label for="install_dada_bridge">Discussion Lists</label> <span class="alert">Requires Additional Configuration (cronjob)</span>	
+</p> 
+
+<p><input type="checkbox" name="install_dada_bounce_handler" id="install_dada_bounce_handler" value="1" /><label for="install_dada_bounce_handler">Bounce Handler</label> <span class="alert">Requires Additional Configuration (cronjob)</span></p> 
+<fieldset> 
+	<legend>Additional Bounce Handler Configuration [<a href="#" onclick="toggleDisplay('bounce_handler_configuration_help');return false;">?</a>]</legend>
+	
+	<div id="bounce_handler_configuration_help" style="display:none">
+		<p class="positive">
+			The Bounce Handler requires a new POP3 email account to be created, in order to work correctly. Make sure the email address isn't used for 
+			any other purpose, except for the bounce handler. See the <a href="<!-- tmpl_var DOC_URL -->/dada_bounce_handler.pl.html"  target="_blank">documentation for this plugin</a> for additional information. 
+			</p> 
+	</div> 
+	
+	<p><label style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block" for="dada_bounce_handler_address">Bounce Handler Email Address:</label> <input type="text" name="dada_bounce_handler_address" id="dada_bounce_handler_address" value="" /></p>
+	<p><label style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block" for="dada_bounce_handler_server">Mail Server:</label> <input type="text" name="dada_bounce_handler_server" id="dada_bounce_handler_server" value="" /></p>
+	<p><label style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block" for="dada_bounce_handler_username">Username:</label> <input type="text" name="dada_bounce_handler_username" id="dada_bounce_handler_username" value="" /></p>
+	<p><label style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block" for="dada_bounce_handler_password">Password:</label> <input type="text" name="dada_bounce_handler_password" id="dada_bounce_handler_password" value="" /></p>
+	 
+
+</fieldset> 
+
+<p><input type="checkbox" name="install_scheduled_mailings" id="install_scheduled_mailings" value="1" /><label for="install_scheduled_mailings">Scheduled Mailings</label>	
+ <span class="alert">Requires Additional Configuration (cronjob)</span></p> 
+
+<p><input type="checkbox" name="install_multiple_subscribe" id="install_multiple_subscribe" value="1" /><label for="install_multiple_subscribe">Multiple Subscribe</label></p> 
+
+<p><input type="checkbox" name="install_ajax_include_subscribe" id="install_ajax_include_subscribe" value="1" /><label for="install_ajax_include_subscribe">Ajax'd Subscription Form</label></p> 
+
+<p><input type="checkbox" name="install_blog_index" id="install_blog_index" value="1"  /><label for="install_blog_index">Archive Blog Index</label></p> 
+
+<p><input type="checkbox" name="install_auto_pickup" id="install_auto_pickup" value="1" /><label for="install_auto_pickup">Sending Monitor Outside Extension</label></p> 
+
+</fieldset> 
+
+</div> 
 
 <input type="hidden" name="f" value="check" /> 
 
 <p style="text-align:center">
- <input type="submit" value="Configure  <!-- tmpl_var PROGRAM_NAME -->!" class="processing" /> 
+ <input type="submit" value="        Configure  <!-- tmpl_var PROGRAM_NAME -->!        " class="processing" /> 
 </p>
 
 
