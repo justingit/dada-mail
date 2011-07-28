@@ -98,15 +98,29 @@
 		</p>
 
 		<!-- tmpl_if test_complete_dada_files_dir_structure_exists --> 
+				<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+				
 				<p>
-				<input type="checkbox" name="skip_configure_dada_files"	id="skip_configure_dada_files" value="1" onClick="ToggleConfigurationOptions();" /> 
-				<label for="skip_configure_dada_files">I know that the,  &quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; directory already exists. Please:</label> <br /> 
-				<ul> 
-					<li>
-						<p>Use the existing directory structure and configuration file, ignoring the configuration below. 
-						</p></li>
-						<li><p>I understand no checks are done to make sure that the current  setup is correct!)</p></li> 
-					</ul>
+				 <strong>
+					I know that the,  &quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; directory already exists. Please:
+				 </strong> 
+			    </p>
+				
+				<input type="radio" name="if_dada_files_already_exists"	id="skip_configure_dada_files" value="skip_configure_dada_files" onClick="ToggleConfigurationOptions('hide');" /> 
+				<label for="skip_configure_dada_files">
+			
+						 Use the existing directory structure and configuration file, ignoring the configuration below. 
+						 I understand no checks are done to make sure that the current setup is correct!
+						</label></p>
+					  
+					<p>
+				<input type="radio" name="if_dada_files_already_exists"	id="keep_dir_create_new_config" value="keep_dir_create_new_config" checked="checked" onClick="ToggleConfigurationOptions('show');"  /> 
+				<label for="keep_dir_create_new_config">
+					 Use the existing directory structure, but create a new configuration file, using the configuration below. 
+					 Your former configuration file will be backed up. 
+				</label></p>
+			</div> 
+			
 		<!-- /tmpl_if --> 
 		
 		</ul> 
