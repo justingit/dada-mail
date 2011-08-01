@@ -2,17 +2,17 @@
 
 =head1 Upgrading Dada Mail
 
-=head1 Before We Get Started
+=head1 Introduction
 
 Before upgrading Dada Mail, find out how you installed and configured Dada Mail before. If you don't know or aren't sure, don't upgrade Dada Mail: you will run into major headaches. 
 
-=head2 "Basic", or, "Contemporary"? 
+=head2 "Basic", or, "Contemporary"? (Or Simple Scripts?)
 
-We're going to only differentiate between two types of installations: "Basic" and, "Contemporary"
+We're going to only differentiate between two types of installations: "Basic" and, "Contemporary" I<(If you installed Dada Mail using the included installer, you have a B<Contemporary> installation)>
 
 =head3 Basic Installation 
 
-A, "Basic" installation changes the configuration variables right in the, C<dada/DADA/Config.pm> file - usually you want to be very much aware of the following variables: 
+A, B<Basic> installation changes the configuration variables right in the, C<dada/DADA/Config.pm> file - usually you want to be very much aware of the following variables: 
 
 =over
 
@@ -26,10 +26,10 @@ A, "Basic" installation changes the configuration variables right in the, C<dada
 
 =back
 
-You'll know if you have a, "Basic" installation of Dada Mail, if the,
+You'll know if you have a B<Basic> installation of Dada Mail if the
  C<$FILES> variable in the, C<dada/DADA/Config.pm> file is  filled out to a directory that I<actually> exists and that directory holds files/directories that have something to do with Dada Mail. 
 
-If you are running a "Basic" Installation of Dada Mail, we really suggest upgrading by taking note of where your C<$FILES> variable is located and importing the old information I<after> a clean installation.
+If you are running a B<Basic> Installation of Dada Mail, we really suggest upgrading by taking note of where your C<$FILES> variable is located and importing the old information I<after> a clean installation.
 
 =head4 More Information
 
@@ -58,11 +58,25 @@ functioning fine. This probably means that your config variables are being read 
 
 For upgrade purposes, note what the, C<$PROGRAM_CONFIG_FILE_DIR> in the, C<dada/DADA/Config.pm> is set to. It's OK if it's only set to, C<auto>. 
 
+=head3 Simple Scripts Installation
+
+If you installed Dada Mail through Simple Scripts (L<http://simplescripts.com>) you have two good choices when it comes to upgrading. 
+
+=head4 Upgrade Through Simple Scripts
+
+Upgrade a Simple Scripts installed Dada Mail through Simple Scripts on interface (look for an "Upgrade" link, or Simple Scripts may alert you of updates). 
+
+=head4 Turn a Simple Scripts Install into a Contemporary Installation
+
+If you want to use the included Dada Mail installer to upgrade Dada Mail (perhaps, you purchased Pro Dada?), you can turn a Simple Scripts install into a Contemporary Installation with these directions: 
+
+L<http://dadamailproject.com/d/upgrade_from_simple_scripts.pod.html>
+
 =head1 Step #1 Move The Old Program Files Out of the Way
 
 Dada Mail, "The Program" is the collection of files and directories that are in the directory called, C<dada>. 
 
-This directory is most likely located in your cgi-bin. It's directory structure like this: 
+If you've followed out installation instructions, this directory is most likely located in your I<cgi-bin>. It's directory structure like this: 
 
  cgi-bin (directory)
     - dada (directory, _lower_ case)
@@ -72,9 +86,9 @@ This directory is most likely located in your cgi-bin. It's directory structure 
             - Config.pm
             - etc, etc, etc
 
-This is Dada Mail, "The Program"
+This is Dada Mail, B<"The Program">
 
-Simply rename this directory on the server from: 
+Simply rename this directory on your hosting account from: 
 
  dada
 
