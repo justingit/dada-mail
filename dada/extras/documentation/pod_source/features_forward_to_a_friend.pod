@@ -1,0 +1,72 @@
+=pod
+
+=head1 Forward to a Friend
+
+=head1 Introduction
+
+Dada Mail's B<Forward to a Friend> system is a very simple mechanism to allow your
+readers and visitors to send a copy of a mailing list message out to someone else. 
+
+Your readers do not have to even be subscribed to your mailing list to forward 
+a message to a friend. 
+
+=head1 How Forward to a Friend Works
+
+The B<Forward to a Friend> form is located at the bottom of any archived message. If you 
+do not see it, make sure to enable the option in the list control panel under, 
+
+B<Message Archives -E<gt> Archive Options>
+
+Look for the option labled, B<Enable "Forward to a Friend">
+
+Your visitor will need to fill out B<their email address>, B<their friend or associate's email address>, 
+fill out an optional B<note> and click the, B<Forward to a Friend> button.
+
+=head2 CAPTCHA
+
+There is an option to attach a CAPTCHA challenge/response to the form to stop abuse of the form 
+itself and we absolutely suggest using it. You may enable CAPTCH in the list control panel, on that same screen
+by enabling the option: 
+
+B<Enable CAPTCHA'ing on the, "Forward to a Friend" Form>
+
+=head4 More Information
+
+B<CAPTCHA in Dada Mail:>
+
+L<http://dadamailproject.com/d/Config.pm.html#captcha_in_dada_mail>
+
+=head1 Adding a "Forward to a Friend" link to your outgoing mailing list messages
+
+You may add a, B<Forward to a Friend> link to your outgoing mailing list message, 
+by using the following tag: 
+
+	<!-- tmpl_var forward_to_a_friend_link -->
+
+Since the B<Forward to a Friend> doesn't work unless you have both B<enabled archiving> and 
+B<Enabled Forward to a Friend>, you may want to wrap the link in C<E<lt>!-- tmpl_if ... --E<gt>> tags, so 
+that the link does not show if you have disabled either of these options. An example of this, in HTML 
+would look like this: 
+
+
+	<!-- tmpl_if list_settings.show_archives --> 
+		<!-- tmpl_if list_settings.archive_send_form --> 
+	
+			<p style="font:.8em/1.6em Helvetica,Verdana,'Sans-serif'">
+			 <strong>
+			  <a href="<!-- tmpl_var forward_to_a_friend_link -->">
+			   Forward this Message to a Friend &#187;
+			  </a>
+			 </strong>
+			</p>
+			
+		<!-- /tmpl_if --> 
+	<!-- /tmpl_if -->
+
+=head4 More Information: 
+
+B<The Dada Mail Email Template Syntax>
+
+L<http://dadamailproject.com/d/features-email_template_syntax.pod.html>
+
+=cut
