@@ -3382,98 +3382,67 @@ Similar to $MAILING_LIST_MESSAGE, but used specifically for HTML messages.
 
 $MAILING_LIST_MESSAGE_HTML ||= <<EOF
 <!--opening-->
-<p><em>(Mailing list information, including how to remove yourself, 
-is located at the end of this message.)</em><br/></p>
-<!--/opening-->
+<p style="font:.8em/1.6em Helvetica,Verdana,'Sans-serif'">
+ <em>
+  (Mailing list information, including how to remove yourself, 
+is located at the end of this message.)
+  </em>
+</p>
 
 <!-- tmpl_var message_body -->
 
-<!--signature-->
 
-<p>
- Here's a reminder about your current mailing list subscription:
-</p>
-
-<ul> 
-
-<li>
-<p>
- You are subscribed to the following mailing list:
-</p>
-</li> 
-<ul> 
-
- <li>
-  <p>
-   <strong>
-    <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/"> 
-     <!-- tmpl_var list_settings.list_name -->
-    </a> 
-   </strong>
-  </p>
- </li> 
-</ul> 
+<!-- tmpl_if list_settings.show_archives --> 
+	<!-- tmpl_if list_settings.archive_send_form --> 
 	
-<p>using the following email:</p>
+		<p style="font:.8em/1.6em Helvetica,Verdana,'Sans-serif'">
+		 <strong>
+		  <a href="<!-- tmpl_var forward_to_a_friend_link -->">
+		   Forward this Message to a Friend &#187;
+		  </a>
+		 </strong>
+		</p>
+	<!-- /tmpl_if --> 
+<!-- /tmpl_if --> 
 
-<ul> 
- <li>
-  <p>
-   <strong>
-    <!-- tmpl_var subscriber.email -->
-   </strong>
-  </p>
- </li>
-</ul> 
-</li> 
- <li>
-  <p>Want to remove yourself from this mailing list at any time? Use this link:</p>
-  <p>
-   <a href="<!-- tmpl_var list_unsubscribe_link -->">
-    <!-- tmpl_var list_unsubscribe_link -->
-   </a> 
-  </p> 
+<p style="font:.8em/1.6em Helvetica,Verdana,'Sans-serif'">
+ <strong>
+  Subscription Reminder:</strong> You're Subscribed to:
+ <strong>
+  <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/"> 
+  <!-- tmpl_var list_settings.list_name -->
+ </a>
+ </strong> 
+ using the address: 
+ <strong>
+  <!-- tmpl_var subscriber.email --> 
+ </strong>
+</p>
 
-<p>If the above URL is inoperable, make sure that you have copied the 
-entire address. Some mail readers will wrap a long URL and thus break
-this automatic unsubscribe mechanism.</p> 
+<p style="font:.8em/1.6em Helvetica,Verdana,'Sans-serif'">
+ From: 
+ <strong>
+  <!-- tmpl_var list_settings.list_owner_email -->
+ </strong>
+<br />
+<!-- tmpl_var list_settings.physical_address -->
+</p>
 
-</li>
-<li>
- <p>
-  <strong>
-   Need Help? Contact:
-  </strong>
- </p> 
- <p>
-  <a href="<!-- tmpl_var list_settings.list_owner_email -->">
-   <!-- tmpl_var list_settings.list_owner_email -->
-  </a> 
- </p> 
-</li> 
-<li>
- <p>
-  <strong>
-   Privacy Policy:
-  </strong>
- </p>
+<p style="font:.8em/1.6em Helvetica,Verdana,'Sans-serif'">
 
- <blockquote> 
-  <!-- tmpl_var list_settings.privacy_policy -->
- </blockquote> 
-</li>
+<!-- tmpl_if PROFILE_ENABLED --> 
+<strong>
+ <a href="<!-- tmpl_var PROGRAM_URL -->/profile_login/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/">Manage Your Subscription &#187;</a>
+ </strong>
+ 
+ or, 
+<!-- /tmpl_if --> 
 
-<li>
- <p>
-  <strong>
-   Physical Address:
-  </strong>
- </p>
- <blockquote> 
-  <!-- tmpl_var list_settings.physical_address -->
- </blockquote> 
-</li>
-</ul> 
+<strong>
+ <a href="<!-- tmpl_var list_unsubscribe_link -->">
+  Unsubscribe Automatically &#187;
+ </a>
+</strong> </p> 
 
 <!--/signature-->
 
@@ -4498,10 +4467,10 @@ encrypted.
     # TODO - this variable should really be called, "reload_mailings_after_each_batch"
 	restart_mailings_after_each_batch  => 0, 
     
+	# sendmail, smtp, amazon_ses
     sending_method                   => 'sendmail',
     
-
-	# Dummy variable
+	# This isn't used anymore - see, "sending_method"
     send_via_smtp                      => undef, 
 
 
