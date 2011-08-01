@@ -84,7 +84,7 @@
 	     Use One SMTP Connection per Batch <em>(Experimental)</em> 
 	    </label>
 	    <br />
-	<!-- tmpl_if list_settings.send_via_smtp --> 
+	<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" --> 
 		<p class="alert">
 			SMTP Sending is enabled.
 		</p>

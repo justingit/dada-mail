@@ -137,6 +137,7 @@ sub send_email {
             {
                 -screen         => 'send_email_screen.tmpl',
                 -with           => 'admin',
+				-expr           => 1, 
                 -wrapper_params => {
                     -Root_Login => $root_login,
                     -List       => $list,

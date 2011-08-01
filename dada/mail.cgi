@@ -2271,8 +2271,9 @@ sub mass_mailing_preferences {
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
 			{
-				-screen => 'mass_mailing_preferences_screen.tmpl',
+				-screen         => 'mass_mailing_preferences_screen.tmpl',
 				-with           => 'admin', 
+				-expr           => 1, 
 				-wrapper_params => { 
 					-Root_Login => $root_login,
 					-List       => $list,  

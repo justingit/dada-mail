@@ -8,7 +8,7 @@
 <!--/tmpl_if--> 
 
 <!-- tmpl_unless list_settings.smtp_server -->	
-	<!-- tmpl_if list_settings.send_via_smtp  -->
+	<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'"  -->
 		<p class="error">
 		 Warning! No SMTP Server has been set!
 		</p>

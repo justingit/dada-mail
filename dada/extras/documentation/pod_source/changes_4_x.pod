@@ -6,8 +6,9 @@
 
 =head2 Summary 4.6.0 Alpha 2
 
-v4.6.0 alpha 2 introduces Amazon SES support. This allows you to send email 
-messages with Dada Mail using the Amazon SES Web Service.
+v4.6.0  introduces Amazon SES support. This allows you to send email 
+messages with Dada Mail using the Amazon SES Web Service. This feature is currently labeled, 
+I<Experimental>. 
 
 =head3 See Also: 
 
