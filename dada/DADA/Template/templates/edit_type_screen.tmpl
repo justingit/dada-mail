@@ -410,16 +410,16 @@
 
 <fieldset>
 	<legend>
-		Send Archived Message to a Friend Message 
+		Forward to a Friend
 	</legend>
 
 	<!-- tmpl_if list_settings.archive_send_form --> 
 		<p class="positive">
-		 "Send an Archive" form is Enabled.
+		 "Forward to a Friend" form is Enabled.
 		</p> 
 	<!-- tmpl_else --> 
 	<p class="error">
-	 "Send an Archive" form is Disabled.
+	 "Forward to a Friend" form is Disabled.
 	</p>	
 	<!-- /tmpl_if --> 
 
@@ -446,10 +446,6 @@
 	</legend>
 	
 	<p>
-		<label for="send_archive_message_html">
-			Send Archived Message to a Friend (HTML Version): 
-		</label>
-		<br />
 <textarea name="send_archive_message_html" id="send_archive_message_html" rows="10" cols="50" ><!-- tmpl_var list_settings.send_archive_message_html escape=HTML -->
 </textarea> 
 	</p>
