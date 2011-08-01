@@ -517,7 +517,7 @@ sub _give_props {
     if ( $DADA::Config::GIVE_PROPS_IN_EMAIL == 1 ) {
 
         my $html_props = "\n"
-          . '<p><a href="'
+          . '<p style="font:.8em/1.6em Helvetica,Verdana,\'Sans-serif\';text-align:center"><a href="'
           . $DADA::Config::PROGRAM_URL
           . '/what_is_dada_mail/">Mailing List Powered by Dada Mail</a></p>'
           . "\n";
@@ -1105,7 +1105,10 @@ sub _parse_in_list_info {
 	$data =~ s/\<\!\-\- tmpl_var list_confirm_unsubscribe_link \-\-\>/$cus_link/g;
 
 	
+	my $f_to_a_f_l = quotemeta('<!-- tmpl_var forward_to_a_friend_link -->'); 
+	my $f_to_a_f_l_expanded = '<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/#forward_to_a_friend';
 	
+	$data =~ s/$f_to_a_f_l/$f_to_a_f_l_expanded/g; 
 # This is kinda out of place...
     if($self->originating_message_url){ 
         my $omu = $self->originating_message_url; 
