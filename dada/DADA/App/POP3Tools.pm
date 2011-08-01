@@ -30,13 +30,14 @@ use vars qw(@EXPORT);
 sub mail_pop3client_login { 
 
     my ($args) = @_;
-    
+    my $params = {};
+
     require Mail::POP3Client; 
 
     if(! exists($args->{server})){ 
         croak "No Server Passed!";
     }
-    
+	$params->{HOST} = $args->{server};
     
    if(! exists($args->{username})){ 
         croak "No Username Passed!";
@@ -49,30 +50,39 @@ sub mail_pop3client_login {
     if(! exists($args->{verbose})){ 
         $args->{verbose} = 0; 
     }
-
 	if(exists($args->{port})){ 
 		if($args->{port} eq 'AUTO'){ 
-			delete($args->{port});
+			# ...
+		}
+		else { 
+			$params->{PORT} = $args->{port};
 		}
 	}
-    
-    
+	if(exists($args->{USESSL})){ 
+		if($args->{USESSL} == 1){ 
+			$params->{USESSL} = 1;
+		}
+	}
+	if(exists($args->{AUTH_MODE})){ 
+		if($args->{AUTH_MODE} ne 'BEST'){ 
+			$params->{AUTH_MODE} = $args->{AUTH_MODE};
+		}
+	}
+	if(exists($args->{port})){ 
+			$params->{PORT} = $args->{port};
+	}
+	if($DADA::Config::CPAN_DEBUG_SETTINGS{MAIL_POP3CLIENT} == 1){ 
+		$params->{DEBUG} = 1;	
+	}
+	
+#	print "params:"; 
+#	use Data::Dumper; 
+#	print Dumper($params); 
+	
     print "\tLogging into POP3 server: " . $args->{server} . "\n"
         if $args->{verbose};
     
-    my $pop = new Mail::POP3Client( 
-	
-		HOST  => $args->{server},
-    
-	    (($args->{USESSL} == 1)  ? (USESSL    => 1,                 ) : ()),
-	    (($args->{AUTH_MODE})    ? (AUTH_MODE => $args->{AUTH_MODE},) : ()),
-    	((exists($args->{port})) ? (PORT      => $args->{port},     ) : ()),
-
-
-	    (($DADA::Config::CPAN_DEBUG_SETTINGS{MAIL_POP3CLIENT} == 1) ? (DEBUG => 1, ) : ()) ,
-    
-    
-    );
+    my $pop = new Mail::POP3Client(%$params);
        $pop->User( $args->{username} );
        $pop->Pass( $args->{password} );
 
@@ -85,8 +95,6 @@ sub mail_pop3client_login {
        
             print "\tPOP3 Login succeeded.\n"
                 if $args->{verbose}; 
-          #  print "\tPOP3 Server says: " . $pop->banner 
-          #      if $args->{verbose}; 
             print "\n\tMessage count: " . $pop->Count . "\n"
                 if $args->{verbose}; 
        }
