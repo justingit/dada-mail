@@ -3340,31 +3340,18 @@ __
 <!-- tmpl_var message_body -->
 
 -- 
-Here's a reminder about your current mailing list subscription: 
+<!-- tmpl_if list_settings.show_archives --><!-- tmpl_if list_settings.archive_send_form --> 
+Forward this Message to a Friend:
+<!-- tmpl_var forward_to_a_friend_link -->
+<!-- /tmpl_if --><!-- /tmpl_if -->
+Subscription Reminder: You're Subscribed to, <!-- tmpl_var list_settings.list_name --> 
+using the address: <!-- tmpl_var subscriber.email -->
 
-You are subscribed to the following mailing list:
-  
-	<!-- tmpl_var list_settings.list_name -->
-	
-using the following email:
- 
-	<!-- tmpl_var subscriber.email -->
-
-* Want to remove yourself from this mailing list at any time? Use this link: 
-<!-- tmpl_var list_unsubscribe_link -->
-
-If the above URL is inoperable, make sure that you have copied the 
-entire address. Some mail readers will wrap a long URL and thus break
-this automatic unsubscribe mechanism. 
-
-* Need Help? Contact: 
-<!-- tmpl_var list_settings.list_owner_email -->
-
-* Privacy Policy: 
-<!-- tmpl_var list_settings.privacy_policy -->
-
-* Physical Address:
+From: <!-- tmpl_var list_settings.list_owner_email -->
 <!-- tmpl_var list_settings.physical_address -->
+
+Unsubscribe Automatically:
+<!-- tmpl_var list_unsubscribe_link -->
 
 EOF
 ; 
@@ -3402,6 +3389,7 @@ is located at the end of this message.)
 		  </a>
 		 </strong>
 		</p>
+		
 	<!-- /tmpl_if --> 
 <!-- /tmpl_if --> 
 
