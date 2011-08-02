@@ -1507,8 +1507,6 @@ sub can_find_unsub_link {
         '<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->',
         '<!-- tmpl_var PROGRAM_URL -->?f=u&l=<!-- tmpl_var list_settings.list -->',
 		'<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/',
-   	
-
  );
     if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
         1 )
@@ -1544,9 +1542,8 @@ sub unsubscriptionation {
         if ( $args->{-type} eq 'text/html' ) {
             $args->{-str} = '
 <p>
-Unsubscribe:
-</p>
-<p>
+Unsubscribe Automatically:
+<br />
 <a href="<!-- tmpl_var list_unsubscribe_link -->">
 <!-- tmpl_var list_unsubscribe_link -->
 </a>
@@ -1555,12 +1552,12 @@ Unsubscribe:
 ' . $args->{-str};
         }
         else {
-            $args->{-str} = '
-			
-Unsubscribe: 
+            $args->{-str} = 
+q{
+Unsubscribe Automatically:
 <!-- tmpl_var list_unsubscribe_link -->
-
-' . $args->{-str};
+}
+. $args->{-str};
         }
     }
 

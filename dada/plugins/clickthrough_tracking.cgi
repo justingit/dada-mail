@@ -12,6 +12,6 @@ new Tracker plugin.
 
 =head4 More Information 
 
-L<http://dadamailproject.com/d/tracker.cgi.pod>
+L<http://dadamailproject.com/d/tracker.cgi.html>
 
 =cut

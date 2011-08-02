@@ -2,10 +2,7 @@
 
 =head1 Mailing List Sending FAQ
 
-This FAQ specifically tries to answer questions about sending a whole lotta mail, to a whole lotta people, through Dada Mail. 
-
-What's, "a whole lotta mail to a whole latta people?"  Depends on your server setup - if you're on a shared hosting setup, a lot of people could be 500. If you have a dedicated server, it could be over 25,000. Regardless, we're going to be talking about sending out messages to your entire list, instead of just simply how Dada Mail sends a single email message. 
-
+This FAQ specifically tries to answer questions about sending mass mailings using Dada Mail
 
 This FAQ goes through quite a bit of detail on how to use the B<batch settings> and B<auto pickup> features in Dada Mail. 
 
@@ -21,7 +18,7 @@ We'll be throwing a few words around that you may not be familiar with, so here'
 
 Sending a message to your mailing list. Usually, this means you're entire mailing list, or at least a part of it. 
 
-This type of mailing is a little different from the other types of mailings Dada Mail does, which include subscription and unsubscription requests,  sending archives to individucals, etc. 
+This type of mailing is a little different from the other types of mailings Dada Mail does, which include subscription and unsubscription requests,  sending archives to individucals, etc. These are known as B<transaction emails>
 
 =item * Mailout
 
@@ -51,7 +48,7 @@ These changes should be done in your list control panel, Under, B<Manage List - 
 
 =back
 
-Thankfuly out of the box, these are the default settings of Dada Mail. 
+Thankfully "out of the box", these are the default settings of Dada Mail. 
 
 One last step: 
 
@@ -59,7 +56,9 @@ One last step:
 
 =item * Keep the Mailing Monitor Screen Open! 
 
-After you've submitted a mailing list message, keep that screen open until your message has completed!
+After you've submitted a mailing list message, keep that screen open until your message has completed! 
+
+Read below on how to set up a cronjob (scheduled task) to monitor your mailing for you. 
 
 =back
 
@@ -85,25 +84,6 @@ Batch sending does B<not> work by sending a specific amount of messages during a
 
 Batch setting is configured in the list's control panel: Log into your list and go to: B<Mail Sending - Mass Mailing Preferences>. You should see the settings to change. Pretty simple. 
 
-If you'd like to set a default for all B<new> lists, you may in the B<Config.pm> variable, B<%LIST_SETUP_DEFAULTS>. The key/values are:
-
-=over
-
-=item * enable_bulk_batching
-
-Takes either, 1 to enable, 0 to disable
-
-=item * mass_send_amount
-
-Amount of email messages sent out per batch
-
-=item * bulk_sleep_amount
-
-The amount of time, in seconds, to wait between batches
-
-=back
-
-Pretty straight-forward. For more information on the %LIST_SETUP_DEFAULTS Config.pm variable, see: L<http://dadamailproject.com/support/documentation/Config.pm.html#_list_setup_defaults> 
 
 =head2 Should I send my mailing in batches? What are the benefits?
 
@@ -176,9 +156,9 @@ Let's say your email message - what you're sending, is 40k is size. You have 25,
 
 Now, 25,000 messages at once will B<flood your mail server>. It's going to hate you and probably tell you, in its own little way, to stop - it won't want to process that many messages at once. Sometimes this is by silently dropping the messages you send to it, into the Great Ether of the Intarweb. A big culprit in the, "My messages aren't being delivered" puzzle. It drops messages, because it's better to do this than crash. 
 
-And also consider that every mailing list message sendout that you do, B<will have bounces> - for whatever reason. Sending a whole lot of messages out, will give you many messages coming in - from different places - basically, you'll give yourself a Denial of Service attack. Don't do that. 
+And also consider that every mailing list message mailing that you do, B<will have bounces> - for whatever reason. Sending a whole lot of messages out, will give you many messages coming in - from different places - basically, you'll give yourself a Denial of Service attack. Don't do that. 
 
-So have a heart, batch at something that's realistic. If you're on a shared server, realistic may mean what you're hosting companies impose. Follow their restrictions - don't ever go over. If it's too strict, tell them - ask them what can be done. Use your right as a consumer. Find a better host that'll work and tell your current host about it. Hosting companies are nothing if competitive against each other. By again, B<be realisitic>: For a few bucks a month for hosting, you are not going to get the moon and stars - hopefully, you'll get something realistic. If you need more, consider upgrading to a plan that allows more resources at your disposal. If you have a large enough list, you may have a big enough business to require it. 
+So have a heart, batch at something that's realistic. If you're on a shared server, realistic may mean what you're hosting companies impose. Follow their restrictions - don't ever go over. If it's too strict, tell them - ask them what can be done. Use your right as a consumer. Find a better host that'll work and tell your current host about it. Hosting companies are nothing if competitive against each other. By again, B<be realisitic>: For a few bucks a month for hosting, you are not going to get the moon and stars - hopefully, you'll get something usable. If you need more, consider upgrading to a plan that allows more resources at your disposal. If you have a large enough list, you may have a big enough business to require it. 
 
 =back
 
@@ -203,13 +183,11 @@ Hope I helped to dispell that myth.
 
 The, B<Auto-Pickup Dropped List Message Mailings> is going to be your best friend. 
 
-Basically, this feature, once enabled will make sure the process of sending out a mailing will succeed to completion. 
+Once enabled, this feature will make sure the process of sending out a mailing will succeed to completion. 
 
 You can configure the feature in the list control panel. Log into your list and under B<Mail Sending - Mass Mailing Preferences>, you should see the settings to change. 
 
 =head2 Why do you need to use the Auto Pickup feature?
-
-Sounds like this feature is something bolted on, to fix a larger, underlying bug in Dada Mail. Here's the skinny: 
 
 Unlike traditional Mailing List Managers (Mailman, Majordomo, EZelm), B<Dada Mail does not run as a daemon> - (and this is simplifying things) which is a program that is B<always running>, just waiting to do something. 
 
@@ -283,19 +261,21 @@ Log into your list via the list control panel. Under Send a Message, click on, B
 
 Indeed there is, 
 
-=head3 The, auto_pickup.pl Extension
+=head3 The, Mailing Monitor Plugin
 
-See the L<auto_pickup.pl.html> extension. It is run by a cronjob. If this extension is installed and running correctly, you won't have to use the Sending Monitor screen at all. See: 
+B<See the Mailing Monitor Plugin Documentation:>
 
-L<http://dadamailproject.com/support/documentation/auto_pickup.pl.html>
+L<http://dadamailproject.com/d/mailing_monitor.cgi.html>
 
-If you do use the, I<Restart Mailings After Each Batch>, this extension isn't really going to work very well, since you're probably going to run it via cron much less than is realistically needed for your mailing to go out in good time. 
+Which can be run via cronjob. If this plugin is installed and running correctly, you won't have to use the B<Monitor Your Mailings> screen at all.
+
+If you do use the, I<Restart Mailings After Each Batch>, this plugin isn't really going to work very well, since you're probably going to run it via cron much less than is realistically needed for your mailing to go out in good time. 
 
 =head3 Setting, $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION to, 1
 
 Another option, is to set the Config.pm variable, C<$MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION> to, B<1>. 
 
-When set to, B<1> after every time Dada Mail is run via the, C<mail.cgi> script, the mailing monitor will be run, exactly like the C<auto_pickup.pl> extension and monitor your mailings. This is somewhat of an imperfect option for you, but could come in handy if you cannot or do not know how to set up a cronjob. 
+When set to, B<1> after every time Dada Mail is run via the, C<mail.cgi> script, the mailing monitor will be run, exactly like the C<Mailing Monitor> plugin and monitor your mailings. This is somewhat of an imperfect option for you, but could come in handy if you cannot or do not know how to set up a cronjob. 
 
 The problem is, you never are guaranteed when Dada Mail is going to be run, so your mailing monitoring will be somewhat lopsided. 
 
@@ -303,19 +283,19 @@ I<This option is currently experimental>.
 
 =head3 Dada Bridge
 
-If you're using the Dada Bridge plugin, it also has the same functionality as the C<auto_pickup.pl> extension built in (although, no report will ever be printed out). Because of this, you won't be absolutely required to run both, but if you want to run both, stagger the timing of the cronjobs - if you're running Dada Bridge every 5 minutes, run the C<auto_pickup.pl> extension every 6. 
+If you're using the Dada Bridge plugin, it also has the same functionality as the B<Mailing Monitor> plugin built in (although, no report will ever be printed out). Because of this, you won't be absolutely required to run both, but if you want to run both, stagger the timing of the cronjobs - if you're running Dada Bridge every 5 minutes, run the B<Mailing Monitor> plugin every 6. 
 
 =head2 I'm a nerd. Any documentation on the Mailout/Auto Pickup API? 
 
 Indeed, see: L<http://dadamailproject.com/support/documentation/Mail_MailOut.pm.html>
 
-in Dada Mail itself, see the L<auto_pickup.pl> extension noted above, or the C<sending_monitor()> subroutine in the mail.cgi file. 
+in Dada Mail itself, see the B<Mailing Monitor> plugin noted above, or the C<sending_monitor()> subroutine in the mail.cgi file. 
 
 =head1 Multiple Mailouts at the Same Time
 
 Multiple Mailouts can go on at one time. 
 
-By default (conservatively) Dada Mail only allows you to have B<one> mailout at one time. You can change this in the Config.pm file, under the variable, B<$MAILOUT_AT_ONCE_LIMIT>.
+By default (conservatively) Dada Mail only allows you to have B<one> mailout at one time. You can change this in your config using the variable, C<$MAILOUT_AT_ONCE_LIMIT>.
 
 This is to allow you to have a good idea on how to easily keep below any server restrictions on how much email you can send in a specified  period of time. 
 
@@ -323,7 +303,7 @@ For example, if you're allowed to send 500 messages and hour, and you have your 
 
 There's a bit of wiggle room for other emails that may get sent out, like subscription and unsubscription requests. 
 
-Any mailouts that have been submitted to Dada Mail that are over the limit set in B<$MAILOUT_AT_ONCE_LIMIT> will be B<Queued>. They'll just wait in line until the number of mailouts is less than the limit. 
+Any mailouts that have been submitted to Dada Mail that are over the limit set in C<$MAILOUT_AT_ONCE_LIMIT> will be B<queued>. They'll just wait in line until the number of mailouts is less than the limit. 
 
 One exception to this rule is sending out test mass mailings. Test mailings will go through to completion, without having to wait in the queue. 
 
@@ -458,11 +438,11 @@ This log is vitaly important and much of the following advice will center around
 
 Here's how: 
 
-L<http://dadamailproject.com/support/documentation/Config.pm.html#_program_error_log>
+L<http://dadamailproject.com/d/Config.pm.html#_program_error_log>
 
 =item * Setup Debugging for various CPAN modules
 
-If you're using SMTP sending, set up the debugging/trace settings for Net::SMTP and Net::POP3. This is done in the Config.pm file, in the variable, B<%CPAN_DEBUG_SETTINGS>. More information: 
+If you're using SMTP sending, set up the debugging/trace settings for Net::SMTP and Net::POP3. This is done in the Config.pm file, in the variable, C<%CPAN_DEBUG_SETTINGS>. More information: 
 
     http://dadamailproject.com/support/documentation/Config.pm.html#_cpan_debug_settings
 

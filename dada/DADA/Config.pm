@@ -1044,8 +1044,7 @@ $REFERER_CHECK ||= 0;
 
 =head1 CAPTCHA in Dada Mail
 
-Dada Mail supports a few CAPTCHA tricks. All the configuration of the CAPTCHA
-system may be done in the Config.pm file (or outside Config file) 
+Dada Mail supports a few CAPTCHA tricks.
 
 More information: 
 
@@ -1683,7 +1682,7 @@ L<http://dadamailproject.com/support/documentation/FAQ-mailing_list_sending.pod.
 
 For more information. 
 
-It's suggested that you use the, B<auto_pickup.pl> extension that's mentioned in the above documentation, as this method has less testing  done to it, but if you can't be bothered (and for the sake of variety), this method is available. 
+It's suggested that you use the, B<Monitor Mailing> plugin that's mentioned in the above documentation, as this method has less testing  done to it, but if you can't be bothered (and for the sake of variety), this method is available. 
 
 If you do enable this option, every single time the, I<mail.cgi> program is run, the mailing monitor will be run just before the program quits. This makes things convenient, since you can you just have a cronjob set to run Dada Mail: 
 
@@ -1740,7 +1739,7 @@ Uncompress the distribution you receive. It should make a directory called, "fck
 
 You'll want to put this entire directory into your public html directory of your hosting accout. Take note of the URL you'll need to access this directory. 
 
-Set the B<$FCKEDITOR_URL> Config.pm variable to this URL. 
+Set the C<$FCKEDITOR_URL> variable to this URL. 
 
 Done!
 
@@ -1795,7 +1794,7 @@ Uncompress the distribution you receive. It should make a directory called, "cke
 You'll want to put this entire directory into your public html directory of your hosting accout. 
 Take note of the URL you'll need to access this directory. 
 
-Set the B<$CKEDITOR_URL> Config.pm variable to this URL. 
+Set the C<$CKEDITOR_URL> variable to this URL. 
 
 Done!
 
@@ -2343,6 +2342,13 @@ $ADMIN_MENU ||= [
 #					-Activated  => 1,
 #					},
 
+#					{
+#					-Title      => 'Mailing Monitor',
+#					-Title_URL  => $PLUGIN_URL."/mailing_monitor.cgi",
+#					-Function   => 'mailing_monitor',
+#					-Activated  => 0,
+#					},
+
 				],
 			},
 
@@ -2372,13 +2378,6 @@ $ADMIN_MENU ||= [
 #					-Title      => 'Archive Blog Index',
 #					-Title_URL  => $EXT_URL."/blog_index.cgi?mode=html&list=<!-- tmpl_var list_settings.list -->",
 #					-Function   => 'blog_index',
-#					-Activated  => 1,
-#					},
-
-#					{
-#					-Title      => 'Sending Monitor Outside Extension',
-#					-Title_URL  => $EXT_URL."/auto_pickup.pl",
-#					-Function   => 'auto_pickup',
 #					-Activated  => 1,
 #					},
 
@@ -2982,7 +2981,7 @@ $MIME_OPTIMIZE ||= 'no tmp files';
 
 =head1 Default Email Message Templates
 
-The global default Email Message Templates are saved right here in the Config.pm file. 
+The global default Email Message Templates are saved in the Config.pm file. 
 
 Many of these email tempaltes are list-centric and can be edited list by list in the list 
 control panel under, B<Manage Copy - Email Templates>. If what you desire is to edit an email template 
@@ -3991,7 +3990,7 @@ EOF
 
 =head1 Default HTML Screen Templates
 
-The global default HTML Screen Templates are saved right here in the Config.pm file. 
+The global default HTML Screen Templates are saved in the Config.pm file. 
 
 Many of these HTML screen templates are list-centric and can be edited list by list in the list 
 control panel under, B<Manage Copy -  HTML Screen Templates>. If what you desire is to edit an HTML screen template 

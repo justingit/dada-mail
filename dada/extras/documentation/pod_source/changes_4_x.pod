@@ -6,16 +6,25 @@
 
 =head2 Summary 4.6.0 Beta 1
 
-This release 
-
 =head2 Features 4.6.0 Beta 1 
+
+=head3 New Plugin: Sending Monitor
+
+The, B<Sending Monitor> plugin replaces the, C<auto_pickup.pl> extension, has a nicer list control panel interface and much more simplified instructions. 
+
+The C<auto_pickup.pl> extension will still be shipped with Dada Mail, but will simply be a redirect to this new plugin. 
+
+=head4 See Also: 
+
+L<http://dadamailproject.com/d/mailing_monitor.cgi.html>
+
 
 =head3 Amazon SES Mail Sending Support
 
 Amazon SES allows you to send email messages with Dada Mail using the Amazon 
 SES Web Service. This feature is currently labeled, I<Experimental>. 
 
-=head3 See Also: 
+=head4 See Also: 
 
 L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
 

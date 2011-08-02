@@ -105,7 +105,7 @@ my $plugins_extensions = {
 	multiple_subscribe     => {installed => 0, loc => '../extensions/multiple_subscribe.cgi'}, 
 	ajax_include_subscribe => {installed => 0, loc => '../extensions/ajax_include_subscribe.cgi'}, 	
 	blog_index             => {installed => 0, loc => '../extensions/blog_index.cgi'}, 
-	auto_pickup            => {installed => 0, loc => '../extensions/auto_pickup.pl'}, 
+	mailing_monitor            => {installed => 0, loc => '../plugins/mailing_monitor.cgi'}, 
 };
 $plugins_extensions->{change_root_password}->{code} = 
 q{#					{
@@ -176,13 +176,13 @@ q{#					{
 #					-Function   => 'blog_index',
 #					-Activated  => 1,
 #					},};
-$plugins_extensions->{auto_pickup}->{code} = 
+$plugins_extensions->{mailing_monitor}->{code} = 
 q{#					{
-#					-Title      => 'Sending Monitor Outside Extension',
-#					-Title_URL  => $EXT_URL."/auto_pickup.pl",
-#					-Function   => 'auto_pickup',
-#					-Activated  => 1,
-#					}};
+#					-Title      => 'Mailing Monitor',
+#					-Title_URL  => $PLUGIN_URL."/mailing_monitor.cgi",
+#					-Function   => 'mailing_monitor',
+#					-Activated  => 0,
+#					},};
 
 # An unconfigured Dada Mail won't have these exactly handy to use. 
 $DADA::Config::PROGRAM_URL   = program_url_guess();
