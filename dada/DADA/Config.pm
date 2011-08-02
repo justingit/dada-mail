@@ -660,85 +660,97 @@ configuration names and values are and do.
 
 
 $PLUGIN_CONFIGS ||= { 
-    
-    Mystery_Girl => { 
-    
-        Server                    			=> undef, 
-        Username                  			=> undef, 
-        Password                  			=> undef, 
-        USESSL                              => undef, 
-        AUTH_MODE                           => undef, 
-        Log                       			=> undef,         
-        Send_Messages_To          			=> undef, 
-        MessagesAtOnce            			=> undef, 
-        Max_Size_Of_Any_Message             => undef, 
-        Default_Soft_Bounce_Score 			=> undef, 
-        Default_Hard_Bounce_Score 			=> undef, 
-        Score_Threshold           			=> undef, 
-        Allow_Manual_Run          			=> undef, 
-        Manual_Run_Passcode       			=> undef, 
-        Plugin_URL                			=> undef, 
-        Rules                     			=> undef,
-        Bounce_Handler_Name       			=> undef, 
+
+	Mystery_Girl => {
+		Server                      => undef,
+		Username                    => undef,
+		Password                    => undef,
+		Port                        => undef,
+		USESSL                      => undef,
+		AUTH_MODE                   => undef,
+		Plugin_Name                 => undef,
+		Plugin_URL                  => undef,
+		Allow_Manual_Run            => undef,
+		Manual_Run_Passcode         => undef,
+		Log                         => undef,
+		Send_Messages_To            => undef,
+		MessagesAtOnce              => undef,
+		Max_Size_Of_Any_Message     => undef,
+		Default_Soft_Bounce_Score   => undef,
+		Default_Hard_Bounce_Score   => undef,
+		Score_Threshold             => undef,
+		Rules                       => undef,
+
+	},
+
+	Beatitude => {
+
+		Plugin_Name                 => undef,
+		Plugin_URL                  => undef,
+		Allow_Manual_Run            => undef,
+		Manual_Run_Passcode         => undef,
+		Log                         => undef,
+
+	},
 	
-    
-    }, 
-    
-    Beatitude => { 
-    
-        Log                       			=> undef, 
-        Plugin_URL                			=> undef, 
-        Allow_Manual_Run          			=> undef, 
-        Manual_Run_Passcode       			=> undef,         
-    }, 
-    
-    Dada_Bridge => { 
-        
-        Plugin_URL                          => undef, 
-		Plugin_Name                         => undef, 
-        Allow_Manual_Run                    => undef, 
-        Manual_Run_Passcode                 => undef, 
-        MessagesAtOnce                      => undef, 
-        Max_Size_Of_Any_Message             => undef, 
-        Allow_Open_Discussion_List          => undef, 
-        Room_For_One_More_Check             => undef, 
-		Enable_POP3_File_Locking            => undef, 
-		Check_List_Owner_Return_Path_Header => undef, 
-		Check_Multiple_Return_Path_Headers  => undef, 
-    
+	Dada_Bridge => {
+
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
+		Allow_Manual_Run                    => undef,
+		Manual_Run_Passcode                 => undef,
+		MessagesAtOnce                      => undef,
+		Soft_Max_Size_Of_Any_Message        => undef,
+		Max_Size_Of_Any_Message             => undef,
+		Allow_Open_Discussion_List          => undef,
+		Room_For_One_More_Check             => undef,
+		Enable_POP3_File_Locking            => undef,
+		Check_List_Owner_Return_Path_Header => undef,
+		Check_Multiple_Return_Path_Headers  => undef,
+
     },
 
-	Tracker => { 
-		Plugin_URL                          => undef, 
+	Tracker => {
+
 		Plugin_Name                         => undef,
-		Geo_IP_Db                           => undef, 
+		Plugin_URL                          => undef,
+		Geo_IP_Db                           => undef,
+		
 	},
 
-	ajax_include_subscribe => { 
-	
-        Plugin_URL                          => undef, 
-		Default_List                        => undef, 
-		
-	}, 
-    
+	Mailing_Monitor => {
+
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
+		Allow_Manual_Run                    => undef,
+		Manual_Run_Passcode                 => undef,
+
+	}
+
+	ajax_include_subscribe => {
+
+		Plugin_URL                          => undef,
+		Default_List                        => undef,
+
+	},
+
     blog_index => {
 
-        Default_List                        => undef, 
-        Entries                             => undef, 
-        Style                               => undef, 
+		Default_List                        => undef,
+		Entries                             => undef,
+		Style                               => undef,
 		Allow_QS_Overrides                  => undef,
-        Template                            => undef, 
+		Template                            => undef,
 
     }, 
 
+    log_viewer => {	
 
-    log_viewer => { 
-	
-		Plugin_URL                          => undef, 
- 		tail_command                        => undef, 
-    
+		Plugin_URL                          => undef,
+		tail_command                        => undef,
+
 	},
-    
+
 };
 
 

@@ -30,10 +30,10 @@ my $q = new CGI;
 
 
 my $Plugin_Config = {}; 
-   $Plugin_Config->{Allow_Manual_Run}    = 1;
    $Plugin_Config->{Plugin_Name}         = 'Mailing Monitor';
+   $Plugin_Config->{Plugin_URL}          = $q->url;
+   $Plugin_Config->{Allow_Manual_Run}    = 1;
    $Plugin_Config->{Manual_Run_Passcode} = undef; 
-   $Plugin_Config->{Plugin_URL} = $q->url; 
 
 use Getopt::Long;
 

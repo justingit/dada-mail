@@ -348,9 +348,9 @@ http://dadamailproject.com/cgi-bin/dada/mail.cgi
 
 =head2 Do I need to keep my browser window open for the entire mail sending? 
 
-It's not the worst idea - the best thing to do is put on the, "Sending Monitor" screen to the mailing you currently want to keep an eye on. 
+It's not the worst idea - the best thing to do is put on the, "Monitor Your Mailings" screen to the mailing you currently want to keep an eye on. 
 
-There are chances that a mailing will stop unexpectantly, and keeping this monitor up will prevent that. There are also ways to not have to have this sending monitor screen open, regardless of your hosting setup. 
+There are chances that a mailing will stop unexpectantly, and keeping this monitor up will prevent that. There are also ways to not have to have this Monitor Your Mailings screen open, regardless of your hosting setup. 
 
 This topic has it's own FAQ: 
 

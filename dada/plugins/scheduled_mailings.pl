@@ -65,7 +65,7 @@ $Plugin_Config->{Manual_Run_Passcode} = undef;
 
 
 
-$Plugin_Config->{Program_Name} = 'Beatitude'; 
+$Plugin_Config->{Plugin_Name} = 'Beatitude'; 
 
 
 my $App_Version          = '.6';
@@ -467,7 +467,7 @@ sub edit  {
 						-Root_Login => $yeah_root_login
 						);
 
-	$scrn .= '<p><a href="' . $Plugin_Config->{Plugin_URL} . '">' . $Plugin_Config->{Program_Name} . '</a> &#187 Add/Edit</p>';
+	$scrn .= '<p><a href="' . $Plugin_Config->{Plugin_URL} . '">' . $Plugin_Config->{Plugin_Name} . '</a> &#187 Add/Edit</p>';
 
 
 	$scrn .=  $schedule_form; 
@@ -513,7 +513,7 @@ sub run_all_handler {
       $scrn .=
         '<p><a href="'
       . $Plugin_Config->{Plugin_URL} . '">'
-      . $Plugin_Config->{Program_Name}
+      . $Plugin_Config->{Plugin_Name}
       . '</a> &#187 Manually Running Schedules</p>';
 
     $scrn .= '<pre>';
@@ -555,7 +555,7 @@ sub schedule_index {
 	
 	my $r;
 	   
-    	$r .= '<p><a href="' . $Plugin_Config->{Plugin_URL} . '">' . $Plugin_Config->{Program_Name} . '</a></p>';
+    	$r .= '<p><a href="' . $Plugin_Config->{Plugin_URL} . '">' . $Plugin_Config->{Plugin_Name} . '</a></p>';
 	
 	
 	   $r .= "<p class=error>Scheduled Mailing Removed.</p>" if $q->param('message') eq 'r'; 
@@ -612,7 +612,7 @@ $r .= '</fieldset>';
 my $manually_run_tmpl = q{ 
 	
 	<fieldset> 
-	 <legend>Manually Run <!-- tmpl_var Program_Name --></legend> 
+	 <legend>Manually Run <!-- tmpl_var Plugin_Name --></legend> 
 			
 	<form action="<!-- tmpl_var Plugin_URL -->">
 	<input type="hidden" name="flavor" value="run_all" /> 	
@@ -649,7 +649,7 @@ $r .= DADA::Template::Widgets::screen(
 		{
 			-data => \$manually_run_tmpl, 
 			-vars => { 
-				Program_Name        => $Plugin_Config->{Program_Name},  
+				Plugin_Name        => $Plugin_Config->{Plugin_Name},  
 				Plugin_URL          => $Plugin_Config->{Plugin_URL}, 
 				Manual_Run_Passcode => $Plugin_Config->{Manual_Run_Passcode}, 
 				Allow_Manual_Run    => $Plugin_Config->{Allow_Manual_Run}, 
@@ -2017,7 +2017,7 @@ pod2text ./schedule_mailings.pl | less
 sub version { 
 
 	#heh, subversion, wild. 
-	print $Plugin_Config->{Program_Name} . " Version: $App_Version\n"; 
+	print $Plugin_Config->{Plugin_Name} . " Version: $App_Version\n"; 
 	print "$DADA::Config::PROGRAM_NAME Version: $DADA::Config::VER\n\n"; 
 	exit; 
 	

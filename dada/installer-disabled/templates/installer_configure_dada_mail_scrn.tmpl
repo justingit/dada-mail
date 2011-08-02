@@ -80,6 +80,20 @@
 	<legend>
 		&quot;<!-- tmpl_var Dada_Files_Dir_Name -->	&quot; Directory Location [<a href="#" onclick="toggleDisplay('dada_files_help');return false;">?</a>]
 	</legend>
+	
+	<div id="dada_files_help" style="display:none"> 
+
+	<p class="positive">	
+		<!-- tmpl_var PROGRAM_NAME --> will need to write various files and will need a directory for which to do this in. You'll 
+		have to tell <!-- tmpl_var PROGRAM_NAME --> where you'd like this directory to live. The directory will be called, <em><!-- tmpl_var Dada_Files_Dir_Name --></em>. 
+		</p>
+		<p class="positive">
+		Usually, this directory will live under your home directory and <!-- tmpl_var PROGRAM_NAME --> can usually guess where that is, but if it guesses wrong
+		or it cannot create the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory in your home directory, you may need to set an alternative directory. 
+	</p> 
+	</div> 
+	
+	
 	<!-- tmpl_if error_create_dada_files_dir  --> 
 		<ul> 
 		<li>
@@ -106,19 +120,22 @@
 				 </strong> 
 			    </p>
 				
-				<input type="radio" name="if_dada_files_already_exists"	id="skip_configure_dada_files" value="skip_configure_dada_files" onClick="ToggleConfigurationOptions('hide');" /> 
-				<label for="skip_configure_dada_files">
-			
-						 Use the existing directory structure and configuration file, ignoring the configuration below. 
-						 I understand no checks are done to make sure that the current setup is correct!
-						</label></p>
-					  
 					<p>
 				<input type="radio" name="if_dada_files_already_exists"	id="keep_dir_create_new_config" value="keep_dir_create_new_config" checked="checked" onClick="ToggleConfigurationOptions('show');"  /> 
 				<label for="keep_dir_create_new_config">
 					 Use the existing directory structure, but create a new configuration file, using the configuration below. 
 					 Your former configuration file will be backed up. 
 				</label></p>
+				
+				
+				<p><input type="radio" name="if_dada_files_already_exists"	id="skip_configure_dada_files" value="skip_configure_dada_files" onClick="ToggleConfigurationOptions('hide');" /> 
+				<label for="skip_configure_dada_files">
+			
+						 Use the existing directory structure and configuration file, ignoring the configuration below. 
+						 I understand no checks are done to make sure that the current setup is correct!
+						</label></p>
+					  
+				
 			</div> 
 			
 		<!-- /tmpl_if --> 
@@ -130,17 +147,6 @@
 	
 
 
-	<div id="dada_files_help" style="display:none"> 
-
-	<p class="positive">	
-		<!-- tmpl_var PROGRAM_NAME --> will need to write various files and will need a directory for which to do this in. You'll 
-		have to tell <!-- tmpl_var PROGRAM_NAME --> where you'd like this directory to live. The directory will be called, <em><!-- tmpl_var Dada_Files_Dir_Name --></em>. 
-		</p>
-		<p class="positive">
-		Usually, this directory will live under your home directory and <!-- tmpl_var PROGRAM_NAME --> can usually guess where that is, but if it guesses wrong
-		or it cannot create the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory in your home directory, you may need to set an alternative directory. 
-	</p> 
-	</div> 
 
 
 
@@ -290,9 +296,9 @@ If using either the SQL backends, make sure to create a new database before conf
 </div>
 <p>
 	<select name="backend" id="backend" onChange="ToggleSQLOptions(); return false;"> 
-		<option value="default" selected="selected">Default Backend</option>
+		<option value="default">Default Backend</option>
 		<!-- tmpl_if can_use_DBI --> 
-			<option value="mysql">MySQL (recommended)</option> 
+			<option value="mysql" selected="selected">MySQL (recommended)</option> 
 			<option value="Pg">PostgreSQL</option> 			
 		<!-- /tmpl_if --> 
 	</select>

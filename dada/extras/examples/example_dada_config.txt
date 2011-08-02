@@ -125,6 +125,10 @@ $PLUGIN_CONFIGS = {
 		Port                        => undef,
 		USESSL                      => undef,
 		AUTH_MODE                   => undef,
+		Plugin_Name                 => undef,
+		Plugin_URL                  => undef,
+		Allow_Manual_Run            => undef,
+		Manual_Run_Passcode         => undef,
 		Log                         => undef,
 		Send_Messages_To            => undef,
 		MessagesAtOnce              => undef,
@@ -132,27 +136,24 @@ $PLUGIN_CONFIGS = {
 		Default_Soft_Bounce_Score   => undef,
 		Default_Hard_Bounce_Score   => undef,
 		Score_Threshold             => undef,
-		Allow_Manual_Run            => undef,
-		Manual_Run_Passcode         => undef,
-		Plugin_URL                  => undef,
 		Rules                       => undef,
-		Bounce_Handler_Name         => undef,
 
 	},
 
 	Beatitude => {
 
-		Log                         => undef,
+		Plugin_Name                 => undef,
 		Plugin_URL                  => undef,
 		Allow_Manual_Run            => undef,
 		Manual_Run_Passcode         => undef,
+		Log                         => undef,
 
 	},
 	
-    Dada_Bridge => {
+	Dada_Bridge => {
 
-		Plugin_URL                          => undef,
 		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
 		Allow_Manual_Run                    => undef,
 		Manual_Run_Passcode                 => undef,
 		MessagesAtOnce                      => undef,
@@ -168,11 +169,20 @@ $PLUGIN_CONFIGS = {
 
 	Tracker => {
 
-		Plugin_URL                          => undef,
 		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
 		Geo_IP_Db                           => undef,
 		
 	},
+
+	Mailing_Monitor => {
+
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
+		Allow_Manual_Run                    => undef,
+		Manual_Run_Passcode                 => undef,
+
+	}
 
 	ajax_include_subscribe => {
 
@@ -191,12 +201,13 @@ $PLUGIN_CONFIGS = {
 
     }, 
 
-    log_viewer => { 	
+    log_viewer => {	
 
 		Plugin_URL                          => undef,
 		tail_command                        => undef,
 
-	},  
+	},
+
 };
 
 =cut
