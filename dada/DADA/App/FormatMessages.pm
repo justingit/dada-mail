@@ -1207,8 +1207,14 @@ sub _macro_tags {
 	
 	}elsif($args{-type} eq 'unsubscribe'){ 
 	
-		$type = 'u'; 
-	
+		# And, that's it.
+		if($self->{ls}->param('unsub_link_behavior') eq 'show_unsub_form'){ 
+			$type = 'ur'; 
+		}
+		else { 
+			$type = 'u'; 
+		}
+		
 	}elsif($args{-type} eq 'confirm_subscribe'){ 
 	
 		$type = 'n';
@@ -1507,6 +1513,11 @@ sub can_find_unsub_link {
         '<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->',
         '<!-- tmpl_var PROGRAM_URL -->?f=u&l=<!-- tmpl_var list_settings.list -->',
 		'<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/',
+
+        '<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->',
+        '<!-- tmpl_var PROGRAM_URL -->?f=ur&l=<!-- tmpl_var list_settings.list -->',
+		'<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/',
+
  );
     if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
         1 )

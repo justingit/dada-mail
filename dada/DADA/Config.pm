@@ -725,7 +725,7 @@ $PLUGIN_CONFIGS ||= {
 		Allow_Manual_Run                    => undef,
 		Manual_Run_Passcode                 => undef,
 
-	}
+	},
 
 	ajax_include_subscribe => {
 
@@ -3356,7 +3356,7 @@ Forward this Message to a Friend:
 <!-- tmpl_var forward_to_a_friend_link -->
 <!-- /tmpl_if --><!-- /tmpl_if -->
 Subscription Reminder: You're Subscribed to, <!-- tmpl_var list_settings.list_name --> 
-using the address: <!-- tmpl_var subscriber.email -->
+Using the address: <!-- tmpl_var subscriber.email -->
 
 From: <!-- tmpl_var list_settings.list_owner_email -->
 <!-- tmpl_var list_settings.physical_address -->
@@ -4414,7 +4414,9 @@ encrypted.
 	    alt_url_unsub_failed_w_qs      => 0, 
 		alt_url_unsub_failed           => '',
 	enable_subscription_approval_step => 0, 
-	captcha_sub                        => 0, 	
+	captcha_sub                        => 0, 
+	
+	unsub_link_behavior                => 'process_immediately',
 
 # SMTP Options
 

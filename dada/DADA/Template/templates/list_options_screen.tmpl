@@ -36,7 +36,7 @@
       <!-- tmpl_var PROGRAM_NAME --> main screen</a>. 
      This list will still have a 
      <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank">
-      list page 
+      List Page 
      </a>
      and people will still be able to subscribe/unsubscribe 
      with the proper information.
@@ -430,6 +430,40 @@
  </table>
 
 </fieldset>
+
+
+
+<fieldset>
+
+<legend>
+Unsubscribe Tag Options (Experimental)
+</legend>
+<p class="positive">
+	The Unsubscribe Tag (<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>)
+	is <strong>required</strong> to be present in all outgoing mass mailings. When a mass mailing is sent, 
+	this tag is replaced with a custom Unsubscribe Link, specific to your mailing list 
+	and your individual subscribers.</p>
+	
+	<p class="positive">
+The option below changes the 
+	behavior of <!-- tmpl_var PROGRAM_NAME --> when this Unsubscribe Link is clicked. 
+
+	</p> 
+	
+	<p>When the Unsubscribe Link is clicked,</p> 
+	<p>
+		<input type="radio" name="unsub_link_behavior" value="process_immediately" id="process_immediately" <!-- tmpl_if expr="(list_settings.unsub_link_behavior eq 'process_immediately')" -->checked="checked"<!-- /tmpl_if -->/><label for="process_immediately">
+			Immediately process the unsubscribe/removal request
+		</label>
+		<br /> 
+	<input type="radio" name="unsub_link_behavior" value="show_unsub_form" id="show_unsub_form" <!-- tmpl_if expr="(list_settings.unsub_link_behavior eq 'show_unsub_form')" -->checked="checked"<!-- /tmpl_if -->/><label for="show_unsub_form">
+		Bring the subscriber to a screen to unsubscribe
+		</label><br /> 
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They will then have to fill out an unsubscribe form to begin the removal process
+	</p> 
+
+
+</fieldset> 
 
 
 <fieldset>

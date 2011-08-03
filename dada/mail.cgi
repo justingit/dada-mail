@@ -391,7 +391,7 @@ if($ENV{PATH_INFO}){
         $q->param('img_string',   $pi_img_string)
             if $pi_img_string;
 
-    }elsif($info =~ /^(s|n|u)/){
+    }elsif($info =~ /^(s|n|u|ur)/){
 
         my ($pi_flavor, $pi_list, $pi_email, $pi_domain, $pi_pin) = split('/', $info, 5);
 
@@ -665,6 +665,7 @@ sub run {
 	's'                       =>    \&subscribe,
 	'n'                       =>    \&confirm,
 	'u'                       =>    \&unsubscribe,
+	'ur'                      =>    \&unsubscribe_request, 
 	'smtm'                    =>    \&what_is_dada_mail,
 	'test_layout'             =>    \&test_layout,
 	'send_email_testsuite'    =>    \&send_email_testsuite,
@@ -1910,6 +1911,7 @@ sub list_options {
 					-Root_Login => $root_login,
 					-List       => $list,  
 				},
+				-expr   => 1, 
 	            -list   => $list,
 	            -vars   => {
 	                screen => 'list_options',
@@ -1975,6 +1977,8 @@ sub list_options {
                     alt_url_unsub_failed_w_qs          => 0,
                     enable_subscription_approval_step  => 0,
                     captcha_sub                        => 0,
+
+					unsub_link_behavior                => undef, 
                 }
             }
         );
@@ -6177,6 +6181,30 @@ sub unsubscribe {
 
 
 
+sub unsubscribe_request { 
+
+	if(check_if_list_exists(-List => $list) == 0){
+		&default;
+		return;
+	}
+
+
+	  require DADA::Template::Widgets;
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+			{
+				-screen                   => 'unsubscribe_request.tmpl',
+				-with                     => 'list', 
+				-list                     => $list, 
+                -list_settings_vars_param => {-list => $list,},
+                -subscriber_vars_param    => {-list => $list, -email => $email, -type => 'list'},
+                -dada_pseudo_tag_filter   => 1, 
+			}
+		);
+		e_print($scrn);
+}
+
+
+
 sub confirm {
 
     my %args = (-html_output => 1, @_) ;
@@ -7617,10 +7645,18 @@ sub send_archive {
         return;
     }
 
-    $errors++ if(check_for_valid_email($to_email)   == 1);
-    $errors++ if(check_for_valid_email($from_email) == 1);
-    $errors++ if(check_referer($q->referer()))      != 1;
-
+	if(check_for_valid_email($to_email)   == 1){ 
+    	$errors++;
+	}
+    
+	if(check_for_valid_email($from_email) == 1){ 
+		$errors++;
+	}
+	if($DADA::Config::REFERER_CHECK == 1){ 
+		if(check_referer($q->referer()) != 1) {
+			$errors++;
+		}
+	}
     require  DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
@@ -7671,11 +7707,13 @@ sub send_archive {
             # yeah, we're gonna need that...
             $errors++;
             $captcha_fail = 1;
-        }
+		}
     }
 
-    $errors++ if $li->{archive_send_form}        != 1;
-
+	if($li->{archive_send_form}        != 1){ 
+    	$errors++;
+	}
+	
     if($errors > 0){
         print $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?f=archive&l=' . $list . '&id=' . $entry . '&send_archive_errors=' . $errors . '&captcha_fail=' . $captcha_fail);
     }else{
@@ -7761,17 +7799,19 @@ sub send_archive {
 		                          );
 
 
-
+			my ($e_name, $e_domain) = split('@', $to_email, 2);
 		    my $entity = $fm->email_template(
 		        {
 		            -entity                   => $fm->get_entity({-data => $email_str}),
 		            -list_settings_vars_param => {-list => $list,},
 		            -vars                     => {
-						from_email               => $from_email,
-						to_email                 => $to_email,
-						note                     => $note,
-						archive_message_url      => $archive_message_url,
-						archived_message_subject => $subject,
+						from_email                => $from_email,
+						to_email                  => $to_email,
+						note                      => $note,
+						archive_message_url       => $archive_message_url,
+						archived_message_subject  => $subject,
+						'subscriber.email_name'   => $e_name, 
+						'subscriber.email_domain' => $e_domain, 
 		        	},
 		        }
 		    );

@@ -1,0 +1,15 @@
+<!-- begin unsubscribe_request.tmpl --> 
+
+<fieldset> 
+	<legend>Unsubscribe From, <!-- tmpl_var list_settings.list_name --></legend>
+	
+<form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
+	<input type="hidden" name="f" value="u" /> 
+	<input type="hidden" name="list" value="<!-- tmpl_var list_settings.list -->" />
+	<input type="text"   name="email" value="<!-- tmpl_var subscriber.email escape="HTML" -->" />
+	<input class="processing" type="submit" value="Remove."  />
+</form> 
+
+</fieldset> 
+
+<!-- end unsubscribe_request.tmpl --> 
