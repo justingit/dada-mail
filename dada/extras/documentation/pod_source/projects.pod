@@ -17,6 +17,13 @@ If you have ideas, please post them, we could really use your help!
 
 =head2 Mail Sending Web Services API Integration
 
+B<I<Update 8/1/11 - Amazon SES Web Service Integration has been added in v4.6.0 as
+an experimental feature. See:>>
+
+L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
+
+B<I<Postmark is not looking super interesting, as they're focusing on transactional emails only>>
+
 Currently, there's two ways to send mail with Dada Mail: 
 
 =over
@@ -169,6 +176,11 @@ The downside of envelope sending is that you would lose absolutely all your mail
 
 =head2 Click through Tracking Enhancements 
 
+
+B<I<Update 8/1/11: Many of these features are found in the Tracker Plugin:>>
+
+L<http://dadamailproject.com/d/tracker.cgi.html>
+
 The Click through Tracker plugin currently tracks the following: 
 
 =over
@@ -188,6 +200,10 @@ We'd like to extend the tracking to include Subscriptions and Unsubscriptions.
 We would also like to have the addition of graphing features in Dada Mail, so you can graph the data that's saved in the clickthrough tracker logs in practically any way you'd like. 
 
 =head2 Dada Mail Installer
+
+B<I<Update 8/1/11: There is an installer for Dada Mail:>>
+
+L<http://dadamailproject.com/d/install_dada_mail.pod.html>
 
 Currently, there is no installer for Dada Mail - you have to, albeit minimally, edit Dada Mail's source file's manually to get Dada Mail installed. 
 

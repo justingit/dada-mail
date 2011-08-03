@@ -4,7 +4,7 @@
 
 =head1 Step #1: Download Dada Mail
 
-Here's the direct download to Dada Mail v4.6.0 alpha 2: 
+Here's the direct download to Dada Mail v4.6.0 beta 2: 
 
 L<https://github.com/downloads/justingit/dada-mail/dada-4_6_0-beta2.tar.gz>
 
@@ -28,7 +28,7 @@ Download the, C<uncompress_dada.cgi> script from here:
 
 and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> - right alongside the I<dada-4_6_0-beta2.tar.gz> distro you just put up. 
 
-=head1 Step #4 Change permissions of the, C<uncompress_dada.cgi> file to, B<755>
+=head1 Step #4 Change permissions of the, "uncompress_dada.cgi" file to, B<755>
 
 =head1 Step #5 Visit the, C<uncompress_dada.cgi> script in your web browser. 
 
@@ -121,8 +121,6 @@ Dada Mail will need to save its mailing lists and other information in various f
 =back
 
 Tons of stuff
-
-=over
 
 =head4 Default 
 
