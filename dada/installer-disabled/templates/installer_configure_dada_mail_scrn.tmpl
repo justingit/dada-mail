@@ -19,12 +19,42 @@
 	<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
 
 	<h3>Warning!</h3> 
-	<p>At least with the current configuration you have, there are already mailing lists available via <!-- tmpl_var PROGRAM_NAME -->.</p> 
+	<p>
+		At least with the current configuration discovered at, </p> 
+		
+		<ul>
+			<li>
+			 <p>
+			 <!-- tmpl_var configured_dada_config_file -->
+			</p>
+		</li>
+		</ul>
+		
+		<p>there are already mailing lists available via <!-- tmpl_var PROGRAM_NAME -->
+		</p> 
 
-	<p>Reconfiguring <!-- tmpl_var PROGRAM_NAME --> could potentially lose these lists. </p> 
+	<p>
+		Reconfiguring <!-- tmpl_var PROGRAM_NAME --> could potentially lose these lists. 
+	</p> 
 
-	<p>Please only continue with this installation/configuration, if you're sure you know what you're doing. </p> 
+	<p>
+		Please only continue with this installation/configuration, if you're sure you know what you're doing.
+		</p> 
 	 
+	<form target="_blank" action="<!-- tmpl_var Self_URL -->"> 
+		<input type="hidden" name="f" value="show_current_dada_config" /> 
+
+
+		<div class="buttonfloat">
+		<input type="submit" value="View Your Current .dada_config Configuration" class="processing" />
+		</div >
+		<div class="floatclear"></div>
+		
+
+	</form> 
+
+	
+	
 	</div> 
 
 <!-- /tmpl_if --> 
@@ -313,6 +343,8 @@ If using either the SQL backends, make sure to create a new database before conf
 			<p class="error">
 				The SQL information below is correct, but there are tables in this database that correspond to the tables that <!-- tmpl_var PROGRAM_NAME --> requires.
 			</p>
+			<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+				
 			<p>
 				<input type="checkbox" name="skip_configure_SQL" id="skip_configure_SQL" value="1">
 				 <label for="skip_configure_SQL">
@@ -321,6 +353,8 @@ If using either the SQL backends, make sure to create a new database before conf
 				<br />
 				Use these existing tables, instead of making new ones.
 			</p>
+		</div> 
+		
 		</li>
 	</ul><!-- /tmpl_if -->
 	<p>

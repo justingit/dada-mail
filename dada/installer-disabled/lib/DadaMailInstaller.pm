@@ -212,6 +212,7 @@ sub run {
             scrn_configure_dada_mail => \&scrn_configure_dada_mail,
             check                    => \&check,
             move_installer_dir_ajax  => \&move_installer_dir_ajax,
+			show_current_dada_config => \&show_current_dada_config, 
 
         );
         my $flavor = $q->param('f');
@@ -416,6 +417,7 @@ sub scrn_configure_dada_mail {
 				Big_Pile_Of_Errors             => $Big_Pile_Of_Errors,
 				Trace                          => $Trace, 
 				lists_available                => $lists_available, 
+				configured_dada_config_file    => $DADA::Config::CONFIG_FILE,
 				DOC_VER                        => $DOC_VER, 
 				DOC_URL                        => 'http://dadamailproject.com/support/documentation-' . $DOC_VER, 
 
@@ -1560,6 +1562,18 @@ sub move_installer_dir_ajax {
 	
 }
 
+
+
+sub show_current_dada_config { 
+	print $q->header('text/plain'); 
+    my $config_file_contents = undef;
+    if ( -e $DADA::Config::CONFIG_FILE ) {
+        $config_file_contents =
+          DADA::Template::Widgets::_slurp($DADA::Config::CONFIG_FILE);
+    }
+	print e_print($config_file_contents);
+}
+
 sub move_installer_dir { 
 	
 	my $time = time;
@@ -1709,7 +1723,7 @@ sub guess_home_dir_via_getpwuid_call{
 
 sub clean_up_var { 
 	my $var = shift; 
-	   $var = quotemeta($var); 
+	   $var =~ s/\'/\\\'/g; 
 	return $var; 
 }
 
