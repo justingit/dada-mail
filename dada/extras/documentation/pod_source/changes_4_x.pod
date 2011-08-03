@@ -2,11 +2,23 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
-=head1 4.6.0 Beta 1
+=head1 4.6.0 Beta 2
 
-=head2 Summary 4.6.0 Beta 1
+=head2 Summary 4.6.0 Beta 2
 
-=head2 Features 4.6.0 Beta 1 
+=head2 Features 4.6.0 Beta 2 
+
+=head2 New Experimental Feature: controlling the behavior of the List Unsubscribe Link
+
+You can now set the behavior of Dada Mail, after a user clicks the Unsubscriber Link. 
+
+The unsubscription request can either be automatically processed, 
+
+or you may have the subscriber submit a unsubscription form. 
+
+The second option is hoped to thwart absent-minded clicks, as well as auto link prefetching. 
+
+This feature is currently labeled, I<Experimental>. 
 
 =head3 New Plugin: Mailing Monitor
 
@@ -17,7 +29,6 @@ The C<auto_pickup.pl> extension will still be shipped with Dada Mail, but will s
 =head4 See Also: 
 
 L<http://dadamailproject.com/d/mailing_monitor.cgi.html>
-
 
 =head3 Amazon SES Mail Sending Support
 
@@ -41,11 +52,9 @@ L<http://dadamailproject.com/d/features_forward_to_a_friend.pod.html>
 The installer that comes with Dada Mail now supports the installation of most of the 
 plugins and extensions that come with Dada Mail.
 
-The installer also gives you the option, when used to upgrade your current Dada Mail, 
-to either keep your current C<.dada_config> file, or to create a new C<.dada_config> file, 
-while also keeping your current C<.dada_files> directory structure and contents. 
+The installer also gives you the option, when used to upgrade your current Dada Mail,  to either keep your current C<.dada_config> file, or to create a new C<.dada_config> file,  while also keeping your current C<.dada_files> directory structure and contents. 
 
-=head2 Changes 4.6.0 Beta 1 
+=head2 Changes 4.6.0 Beta 2 
 
 =head3 Default Mailing List Message Templates
 
@@ -61,7 +70,7 @@ The freshest GeoIP data has been included with Dada Mail
 The Facebook link has been replaced by the Facebook, B<Like> button and 
 the, B<Plus Google> button has been added. 
 
-=head2 Bug Fixes 4.6.0 Beta 1 
+=head2 Bug Fixes 4.6.0 Beta 2 
 
 =head3 POP3 Login Paramaters not getting passed correctly?
 
