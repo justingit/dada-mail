@@ -19,16 +19,37 @@ your hosting account. Everybody wins!
 Users who are logged in via their Dada Mail Profile will still see custom screens
 on certain assets of Dada Mail, since these screens will be different for each user. 
 
-=head1 with a UTF-8 configuration
+=head1 with an UTF-8 configuration
 
 Dada Mail Screen Caches should be 100% comptable with unicode/UTF-8. 
 
 =head1 Location of Cache Screens
 
 Cached Screens are located in a directory called, C<_screen_cache>, inside wherever
-your Dada Mail tmp directory (C<$TMP>) is set up. 
+your Dada Mail .tmp directory (C<(.dada_files/.tmp/_screen_cache)>) is set up. 
 
 Removing this directory is safe to do. If enabled, the cache will be re-created. 
+
+=head2 Types of Screens Cached 
+
+=over
+
+=item * The Dada Mail default screen
+
+=item * The Dada Mail administration screen
+
+=item * list screens
+
+=item * archive screens
+
+=item * archive search result screens (in most cases)
+
+=item * many administration screens
+
+=item * RSS/Atom feeds
+
+=back
+
 
 =head1 Managing the Screen Cache
 
