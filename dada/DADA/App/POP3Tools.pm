@@ -68,9 +68,7 @@ sub mail_pop3client_login {
 			$params->{AUTH_MODE} = $args->{AUTH_MODE};
 		}
 	}
-	if(exists($args->{port})){ 
-			$params->{PORT} = $args->{port};
-	}
+
 	if($DADA::Config::CPAN_DEBUG_SETTINGS{MAIL_POP3CLIENT} == 1){ 
 		$params->{DEBUG} = 1;	
 	}
@@ -89,6 +87,8 @@ sub mail_pop3client_login {
        $pop->Connect() >= 0 || die $pop->Message();
        
        if($pop->Count == -1){ 
+			# use Data::Dumper; 
+			# die Dumper($args, $params); 
             die "\tConnection to '" . $args->{server} . "' wasn't successful: " . $pop->Message();;
        }
        else { 
