@@ -9,7 +9,7 @@ use Test::More;
 eval "use Test::HTML::Lint qw(no_plan)";
 plan skip_all => "Test::HTML::Lint required for testing Templates." if $@;
 
-use HTML::Template::Expr; 
+use HTML::Template::MyExpr; 
 use DADA::Config; 
 
 
@@ -57,7 +57,7 @@ for my $test_file(@files){
 	html_ok( strip_comments(open_file($dir . '/' . $test_file)), $test_file . 'through Lint test');
        
 	eval { 
-    my $template = HTML::Template::Expr->new(path => $dir,
+    my $template = HTML::Template::MyExpr->new(path => $dir,
     		                                 die_on_bad_params => 0,	
 		                                     loop_context_vars => 1,
 		                                     filename          => $test_file, 
@@ -67,7 +67,7 @@ for my $test_file(@files){
     $template->output();  
 
 };
-ok(! $@, "$test_file through HTML::Template::Exp"); 
+ok(! $@, "$test_file through HTML::Template::MyExpr"); 
     if($@){ 
         diag($@); 
     }
@@ -141,7 +141,7 @@ for(keys %$template_strings){
 		eval { 
 		my $str = $template_strings->{$_};
 	
-	    my $template = HTML::Template::Expr->new(
+	    my $template = HTML::Template::MyExpr->new(
 	    		                                 die_on_bad_params => 0,	
 			                                     loop_context_vars => 1,
 			                                     scalarref          => \$str, 
@@ -151,7 +151,7 @@ for(keys %$template_strings){
 	    $template->output();  
 
 	};
-	ok(! $@, "$_ through HTML::Template::Exp"); 
+	ok(! $@, "$_ through HTML::Template::MyExpr"); 
 	    if($@){ 
 	        diag($@); 
 	    }
