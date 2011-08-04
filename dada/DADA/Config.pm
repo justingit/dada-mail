@@ -3386,9 +3386,13 @@ $MAILING_LIST_MESSAGE_HTML ||= <<EOF
 is located at the end of this message.)
   </em>
 </p>
+<!--/opening-->
+
 
 <!-- tmpl_var message_body -->
 
+
+<!--signature-->
 
 <!-- tmpl_if list_settings.show_archives --> 
 	<!-- tmpl_if list_settings.archive_send_form --> 
