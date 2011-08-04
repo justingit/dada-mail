@@ -6,34 +6,21 @@
 
 =head2 Summary 4.6.0
 
+v4.6.0 includes experimental subprojects, like Amazon SES support and unsubscribe tag/link 
+flexibility, as well as updates and refinements to the default mailing list message templates, 
+social bookmarking links, forward to a friend functionality, as well as a new plugin called, B<Mailing Monitor> 
+
 =head2 Features 4.6.0 
-
-=head2 New Experimental Feature: controlling the behavior of the List Unsubscribe Link
-
-You can now set the behavior of Dada Mail, after a user clicks the Unsubscriber Link. 
-
-The unsubscription request can either be automatically processed, 
-
-or you may have the subscriber submit a unsubscription form. 
-
-The second option is hoped to thwart absent-minded clicks, as well as auto link prefetching. 
-
-This feature is currently labeled, I<Experimental>. 
-
-=head3 New Plugin: Mailing Monitor
-
-The, B<Mailing Monitor> plugin replaces the, C<auto_pickup.pl> extension, has a nicer list control panel interface and much more simplified instructions. 
-
-The C<auto_pickup.pl> extension will still be shipped with Dada Mail, but will simply be a redirect to this new plugin. 
-
-=head4 See Also: 
-
-L<http://dadamailproject.com/d/mailing_monitor.cgi.html>
 
 =head3 Amazon SES Mail Sending Support
 
 Amazon SES allows you to send email messages with Dada Mail using the Amazon 
-SES Web Service. This feature is currently labeled, I<Experimental>. 
+SES Web Service. This service could potentially allow someone running a website with 
+a small mailing quota send out mass mailings to a very large list, utilizing Amazon's 
+services.
+
+This feature is currently labeled, I<Experimental>. We need feedback. 
+We want to make the feature better. Give us feedback!
 
 =head4 See Also: 
 
@@ -41,34 +28,76 @@ L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
 
 =head3 Forward to a Friend
 
-It's now easier to write in a, "Forward to a Friend" feature in your messages. 
+It's now possible to place a, "Forward to a Friend" link into your mailing list messages. 
+
+The Forward to a Friend form is available to both subscribers as well as visitors
+to your mailing list archives. 
 
 =head4 More Information: 
 
 L<http://dadamailproject.com/d/features_forward_to_a_friend.pod.html>
 
-=head3 Installer Enhancements
+=head2 Unsubscribe Tag/Link Flexibility
+
+You can now change the behavior of what Dada Mail does, 
+after a user clicks the Unsubscriber Link. 
+
+=over
+
+=item * The unsubscription request can either be automatically processed, 
+
+=item * or you may have the subscriber submit a unsubscription form. 
+
+=back
+
+The second option is hoped to thwart absent-minded clicks, as well as auto link prefetching.
+ 
+
+This feature is currently labeled, I<Experimental>. We need feedback. 
+We want to make the feature better. Give us feedback!
+
+=head3 New Plugin: Mailing Monitor
+
+The, B<Mailing Monitor> plugin replaces the, C<auto_pickup.pl> extension. 
+
+Compared to the old extension, the Mailing Monitor plugin has a nicer list control panel interface and much more simplified instructions. 
+
+The C<auto_pickup.pl> extension will still be shipped with Dada Mail, but will simply be a redirect to this new plugin. 
+
+=head4 See Also: 
+
+L<http://dadamailproject.com/d/mailing_monitor.cgi.html>
+
+=head3 Install Plugins/Extensions with the Dada Mail Installer
 
 The installer that comes with Dada Mail now supports the installation of most of the 
 plugins and extensions that come with Dada Mail.
 
 The installer also gives you the option, when used to upgrade your current Dada Mail,  to either keep your current C<.dada_config> file, or to create a new C<.dada_config> file,  while also keeping your current C<.dada_files> directory structure and contents. 
 
+=head4 See Also
+
+L<http://dadamailproject.com/d/install_dada_mail.pod.html>
+
 =head2 Changes 4.6.0 
 
-=head3 Default Mailing List Message Templates
+=head3 Better-Written Mailing List Message Templates
 
-The default mailing list message templates have been changed to be less verbose 
-and to include the "Forward to a Friend" link
-
-=head3 GeoIP data updated
-
-The freshest GeoIP data has been included with Dada Mail
+Default Mailing List Messages are now much less verbose and more useful, with 
+already-included "Forward to a Friend" link and better design. 
 
 =head3 Social Bookmarking Links Updated
 
 The Facebook link has been replaced by the Facebook, B<Like> button and 
-the, B<Plus Google> button has been added. 
+the, B<Plus Google> button has been added.
+
+=head3 GeoIP data updated
+
+The freshest GeoIP data has been included with Dada Mail. 
+
+I<Fresh as of 03-Aug-2011>, fetched from: 
+
+L<http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/>
 
 =head2 Bug Fixes 4.6.0 
 
