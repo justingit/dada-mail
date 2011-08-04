@@ -4,9 +4,9 @@
 
 =head1 Step #1: Download Dada Mail
 
-Here's the direct download to Dada Mail v4.6.0 beta 2: 
+Here's the direct download to Dada Mail v4.6.0: 
 
-L<https://github.com/downloads/justingit/dada-mail/dada-4_6_0-beta2.tar.gz>
+L<https://github.com/downloads/justingit/dada-mail/dada-4_6_0.tar.gz>
 
 =head2 Pro Dada Subscriber?
 
@@ -14,9 +14,9 @@ Download Pro Dada at:
 
 L<http://dadamailproject.com/pro_dada>
 
-=head1 Step #2 Upload the, "dada-4_6_0-beta2.tar.gz" distro to your cgi-bin
+=head1 Step #2 Upload the, "dada-4_6_0.tar.gz" distro to your cgi-bin
 
-Download the C<dada-4_6_0-beta2.tar.gz> distro (you will B<not> have to uncompress the distribution) and then upload it to your hosting account's I<cgi-bin>.
+Download the C<dada-4_6_0.tar.gz> distro (you will B<not> have to uncompress the distribution) and then upload it to your hosting account's I<cgi-bin>.
 
 I<In these directions we suggest the cgi-bin, but feel free to use any directory that you B<know> will work.>
 
@@ -24,15 +24,15 @@ I<In these directions we suggest the cgi-bin, but feel free to use any directory
 
 Download the, C<uncompress_dada.cgi> script from here: 
 
-=for html <ul><li><strong><a href="https://github.com/justingit/dada-mail/raw/v4_6_0_beta2-2011_08_02/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
+=for html <ul><li><strong><a href="https://github.com/justingit/dada-mail/raw/v4_6_0_stable-2011_08_03/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
 
-and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> - right alongside the I<dada-4_6_0-beta2.tar.gz> distro you just put up. 
+and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> - right alongside the I<dada-4_6_0.tar.gz> distro you just put up. 
 
 =head1 Step #4 Change permissions of the, "uncompress_dada.cgi" file to, B<755>
 
 =head1 Step #5 Visit the, C<uncompress_dada.cgi> script in your web browser. 
 
-The, C<uncompress_dada.cgi> should attempt to uncompress the I<dada-4_6_0-beta2.tar.gz> distro, change the necessary permissions of various files and prep the actual installer for you to use. 
+The, C<uncompress_dada.cgi> should attempt to uncompress the I<dada-4_6_0.tar.gz> distro, change the necessary permissions of various files and prep the actual installer for you to use. 
 
 Once it's finished running, you should be presented a link to use the actual installer. Click the link at the end of the screen and go ahead and configure Dada Mail! 
 
