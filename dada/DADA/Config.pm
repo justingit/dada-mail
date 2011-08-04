@@ -578,7 +578,7 @@ The default setting is the online version that we provide - but it is a paid ser
 
 =cut
 
-$HELP_LINKS_URL ||= 'http://dadamailproject.com/pro_dada/4.3.0';
+$HELP_LINKS_URL ||= 'http://dadamailproject.com/pro_dada/4.6.0';
 
 
 =pod
@@ -4563,7 +4563,7 @@ encrypted.
 	url_template                     => '',
 	apply_list_template_to_html_msgs => 0, 
 	
-# Create a back link prefs
+# Create a Back Link prefs
     
     website_name       => '', 
     website_url        => '', 
