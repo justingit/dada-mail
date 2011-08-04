@@ -54,6 +54,14 @@ Dada Mail usually sends messages out with a different set of email headers. Emai
 
 No performance benchmarks have currently been performed. 
 
+=head2 Sending Quota
+
+Amazon SES starts out with a small sending quota - 1,000 messages you may send in 24 hours, with a maximum 1 message you can send every second. This quota can grow (and quickly), but make sure not to try to send out quicker than your quota can grow. 
+
+=head4 More Information
+
+L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?ManagingActivity.PlanningAhead.html>
+
 =head1 Configuration
 
 There's a few steps you need to take, before you can start using Amazon SES with Dada Mail. None of them are particularily hard, but it's suggested you have a fairly good understanding on how to administrate your own hosting account, can make simple edits to already-created perl scripts and don't mind taking a little while to make sure everything is working. Take the time to set everything up correctly.
@@ -191,6 +199,30 @@ L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/IntegratingWithSer
 Just remember again that SES only supports a limited number of headers. You'll want to 
 take the headers that SES does not support out of the Dada Mail Config variable, C<@EMAIL_HEADERS_ORDER>. If you 
 do not do this step, messages will not be sent from Dada Mail. 
+
+=head1 SPF, Sender ID, and DKIM
+
+Since you're asking a third party to send email on behalf of you, you'll most likely want to make sure you have  a correct B<SPF Record> set up to tell the world that that's OK. 
+
+Amazon's doc's have an overview on how to do this, 
+
+L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?SPFSenderIDDKIM.html>
+
+=over
+
+=item * SPF
+
+http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?SPF.html
+
+=item * Send-ID
+
+http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?SenderID.html
+
+=item * DKIM
+
+http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?DKIM.html
+
+=back
 
 =head1 Bugs
 
