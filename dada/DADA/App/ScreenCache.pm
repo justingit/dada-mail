@@ -56,7 +56,7 @@ sub _init {
 
     my $self = shift;
 
-    return if $DADA::Config::SCREEN_CACHE == 0;
+    return if $DADA::Config::SCREEN_CACHE ne '1';
 
     if ( !-d $self->cache_dir ) {
     	if(mkdir( $self->cache_dir, $DADA::Config::DIR_CHMOD )) { 
@@ -76,7 +76,7 @@ sub cache_dir {
 
     my $self = shift;
 
-    return if $DADA::Config::SCREEN_CACHE == 0;
+    return if $DADA::Config::SCREEN_CACHE  ne '1';
 
     return DADA::App::Guts::make_safer( $DADA::Config::TMP . '/_screen_cache' );
 
@@ -87,7 +87,7 @@ sub cached {
     my $self   = shift;
     my $screen = shift;
 
-    return if $DADA::Config::SCREEN_CACHE == 0;
+    return if $DADA::Config::SCREEN_CACHE  ne '1';
 	my $filename = make_safer($self->cache_dir . '/' . $self->translate_name($screen)); 
 	#    exists          readable. 
     if ( -e $filename && -r _ ) { 
@@ -266,7 +266,7 @@ sub cache {
 
 	eval { 
 	    my $unref = $$data;
-	    return if $DADA::Config::SCREEN_CACHE == 0;
+	    return if $DADA::Config::SCREEN_CACHE  ne '1';
 	    my $filename =
 	      DADA::App::Guts::make_safer(
 	        $self->cache_dir . '/' . $self->translate_name($screen) );
@@ -311,7 +311,7 @@ sub flush {
 
     my $self = shift;
 
-    return if $DADA::Config::SCREEN_CACHE == 0;
+    return if $DADA::Config::SCREEN_CACHE  ne '1';
 
     my $f;
     opendir( CACHE, $self->cache_dir )
