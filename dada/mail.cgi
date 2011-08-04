@@ -1832,7 +1832,6 @@ sub delete_list {
                         -list   => $list,
 						-vars   => {
 							screen => 'delete_list',
-							title  => 'Delete This Mailing List',
 						},
 						-list_settings_vars_param => {
 							-list    => $list,
@@ -8553,6 +8552,7 @@ sub setup_info {
                     PROGRAM_CONFIG_FILE_DIR =>
                       $DADA::Config::PROGRAM_CONFIG_FILE_DIR,
                     PROGRAM_ERROR_LOG       => $DADA::Config::PROGRAM_ERROR_LOG,
+					screen                  => 'setup_info',
                     c_install               => $c_install,
                     config_file_contents    => $config_file_contents,
                     config_pm_file_contents => $config_pm_file_contents,
