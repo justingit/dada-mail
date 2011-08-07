@@ -115,6 +115,7 @@ Now, you can just follow the instructions for an installation of Dada Mail:
 
 L<http://dadamailproject.com/support/documentation/install_dada_mail.pod.html>
 
+
 =over
 
 =item * If your last installation was a Contemporary Installation, use the same value as before for your C<.dada_files> location. 
@@ -133,6 +134,26 @@ L<http://dadamailproject.com/support/documentation/basic_two_contemporary_instal
 
 =back
 
+In the installer, type in the current location of your, C<.dada_files> directory. The installer may also see that it's "best guess" is
+already the current location of your C<.dada_files> directory. It'll warn you about this, just in case it is not your intention to upgrade Dada Mail using that specific C<.dada_files> directory. This is probably only an issue if you have multiple copies of Dada Mail installed. 
+
+Fill out the form fields of the installer, just like you were doing a installation. Click the, "Configure Dada Mail!" button. 
+
+The installer will refresh the screen with the same configuration screen, but with B<two new options>, under another warning that the installer couldn't create the, C<.dada_files> directory. 
+
+
+=head4 Use the existing directory structure, but create a new configuration file, using the configuration below
+
+The first option, I<Use the existing directory structure, but create a new configuration file, using the configuration below> allows you to upgrade your current Dada Mail, while using a fresh copy of the C<.dada_config> file. 
+
+This option may be useful in helping you keep a current C<.dada_config> file. In many cases, upgrades to Dada Mail between minor dot releases (for example, v4.B<5>.0 and v4.B<6>.0 come with changes to the default C<.dada_config> file. These changes may include incompatibilities if you use your current C<.dada_config> file. 
+
+The downside of using this option is that any changes you've personally made to your C<.dada_config> file will be lost. You still may manually move over your customizations from the old C<.dada_config> file, which is backed up for you and the new C<.dada_config> file. 
+
+Make sure to double check the Dada Mail changelog and fix any incompatibility between versions. Currently, this will be something you'll have to do manually.
+
+If you are upgrading a Dada Mail install that is configured with an SQL backend, you may also have to confirm that the SQL database you've typed in the login information for is OK to use. 
+
 =head2 Changelog 
 
 It's a B<I<very very>> good idea to look at the changelog and not B<any> incompatibilities> between versions. It's possible that incompatibilities could break your installation, when you upgrade. 
@@ -141,5 +162,5 @@ It's a B<I<very very>> good idea to look at the changelog and not B<any> incompa
 
 The following screencast walks through how to upgrade Dada Mail. The original Dada Mail was installed using the Dada Mail installer: 
 
-=for html <p><object width="960" height="745"><param name="movie" value="http://www.youtube.com/v/mr4veygFD8U?fs=1&amp;hl=en_US&amp;hd=1&amp;color1=0x2b405b&amp;color2=0x6b8ab6"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/mr4veygFD8U?fs=1&amp;hl=en_US&amp;hd=1&amp;color1=0x2b405b&amp;color2=0x6b8ab6" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="960" height="745"></embed></object></p>
+=for html <p><iframe width="640" height="390" src="http://www.youtube.com/embed/lNRpQ7LxvtU?hd=1" frameborder="0" allowfullscreen></iframe></p>
 

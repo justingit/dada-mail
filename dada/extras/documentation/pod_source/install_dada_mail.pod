@@ -66,26 +66,6 @@ I<(and fill in the location you'd like)> if the installer doesn't pick a good lo
 
 =back
 
-=head3 Upgrading? 
-
-If you are upgrading Dada Mail, you may type in the current location of your, C<.dada_files> directory. The installer may also see that it's "best guess" is
-already the current location of your C<.dada_files> directory. It'll warn you about this, just in case it is not your intention to upgrade Dada Mail using that specific C<.dada_files> directory. This is probably only an issue if you have multiple copies of Dada Mail installed. 
-
-Fill out the form fields of the installer, like you were doing a installation. Click the, "Configure Dada Mail!" button. 
-
-The installer will refresh the screen with the same configuration screen, but with B<two new options>, under another warning that the installer couldn't create the, C<.dada_files> directory. 
-
-
-=head4 Use the existing directory structure, but create a new configuration file, using the configuration below
-
-The first option, I<Use the existing directory structure, but create a new configuration file, using the configuration below> allows you to upgrade your current Dada Mail, while using a fresh copy of the C<.dada_config> file. 
-
-This option may be useful in helping you keep a current C<.dada_config> file. In many cases, upgrades to Dada Mail between minor dot releases (for example, v4.B<5>.0 and v4.B<6>.0 come with changes to the default C<.dada_config> file. These changes may include incompatibilities if you use your current C<.dada_config> file. 
-
-The downside of using this option is that any changes you've personally made to your C<.dada_config> file will be lost. You still may manually move over your customizations from the old C<.dada_config> file, which is backed up for you and the new C<.dada_config> file. 
-
-Make sure to double check the Dada Mail changelog and fix any incompatibility between versions. Currently, this will be something you'll have to do manually.
-
 =head4 Use the existing directory structure and configuration file, ignoring the configuration below.
 
 The second option, I<Use the existing directory structure and configuration file, ignoring the configuration below.> will leave your Dada Mail configuration alone, and simply allow you to upgrade to the latest version of Dada Mail.
@@ -214,13 +194,9 @@ most of the options available on the web-based interface are available in the co
 
 The below screencasts go through the installation process: 
 
-B<How to Download, Install and Configure Dada Mail v4.2.0>
+B<How to Download, Install and Configure Dada Mail v4.6.0>
 
-=for html <p><object width="960" height="745"><param name="movie" value="http://www.youtube.com/v/md8NNRkjRR4?fs=1&amp;hl=en_US&amp;hd=1&amp;color1=0x2b405b&amp;color2=0x6b8ab6"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/md8NNRkjRR4?fs=1&amp;hl=en_US&amp;hd=1&amp;color1=0x2b405b&amp;color2=0x6b8ab6" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="960" height="745"></embed></object></p>
-
-B<Install and Configure Dada Mail 4.2.1 w/the MySQL Backend>
-
-=for html <p><object width="960" height="745"><param name="movie" value="http://www.youtube.com/v/A_YRRlmIxak?fs=1&amp;hl=en_US&amp;hd=1&amp;color1=0x2b405b&amp;color2=0x6b8ab6"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/A_YRRlmIxak?fs=1&amp;hl=en_US&amp;hd=1&amp;color1=0x2b405b&amp;color2=0x6b8ab6" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="960" height="745"></embed></object></p>
+=for html <p><p><iframe width="640" height="390" src="http://www.youtube.com/embed/MWz8O13yc0s?hd=1" frameborder="0" allowfullscreen></iframe></p>
 
 =head2 Manual Installation
 
