@@ -5010,7 +5010,7 @@ and to say that you've got the freshest tools on the Web.
 
 
 $VERSION = 4.6.0; 
-$VER     = '4.6.0 Release Candidate - 08/04/11';
+$VER     = '4.6.0 Stable - 08/07/11';
 
 
 #

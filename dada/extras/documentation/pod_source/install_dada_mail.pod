@@ -24,7 +24,7 @@ I<In these directions we suggest the cgi-bin, but feel free to use any directory
 
 Download the, C<uncompress_dada.cgi> script from here: 
 
-=for html <ul><li><strong><a href="https://github.com/justingit/dada-mail/raw/v4_6_0_rc1-2011_08_04/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
+=for html <ul><li><strong><a href="https://github.com/justingit/dada-mail/raw/v4_6_0_stable-2011_08_07/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
 
 and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> - right alongside the I<dada-4_6_0.tar.gz> distro you just put up. 
 
