@@ -139,20 +139,17 @@ already the current location of your C<.dada_files> directory. It'll warn you ab
 
 Fill out the form fields of the installer, just like you were doing a installation. Click the, "Configure Dada Mail!" button. 
 
-The installer will refresh the screen with the same configuration screen, but with B<two new options>, under another warning that the installer couldn't create the, C<.dada_files> directory. 
+When the screen refreshes, you'll see the same B<same configuration form>, I<but> with B<two new options>. 
 
+If you are upgrading an installation with a MySQL backend, you'll also get a warning about your SQL databases already having tables that exist. Don't worry - that's a good thing! Just make sure to check the checkbox that says, B<I know these tables already exist.> 
 
 =head4 First Option: Use the existing directory structure, but create a new configuration file, using the configuration below
 
-The first option, I<Use the existing directory structure, but create a new configuration file, using the configuration below> allows you to upgrade your current Dada Mail, while using a fresh copy of the C<.dada_config> file. 
+The first option, I<Use the existing directory structure, but create a new configuration file, using the configuration below> allows you to upgrade your current Dada Mail, while using a I<fresh> copy of the C<.dada_config> file. 
 
 This option may be useful in helping you keep a current C<.dada_config> file. In many cases, upgrades to Dada Mail between minor dot releases (for example, v4.B<5>.0 and v4.B<6>.0 come with changes to the default C<.dada_config> file. These changes may include incompatibilities if you use your current C<.dada_config> file. 
 
-The downside of using this option is that any changes you've personally made to your C<.dada_config> file will be lost. You still may manually move over your customizations from the old C<.dada_config> file, which is backed up for you and the new C<.dada_config> file. 
-
-Make sure to double check the Dada Mail changelog and fix any incompatibility between versions. Currently, this will be something you'll have to do manually.
-
-If you are upgrading a Dada Mail install that is configured with an SQL backend, you may also have to confirm that the SQL database you've typed in the login information for is OK to use. 
+You may not want to use this option if you've made custom changes to your C<.dada_config> file that you do not want to lose. You still may manually move over your customizations from your old C<.dada_config> file (which is backed up for you) to the new C<.dada_config> file that will be generated. 
 
 =head4 Second Option: Use the existing directory structure and configuration file, ignoring the configuration below.
 
