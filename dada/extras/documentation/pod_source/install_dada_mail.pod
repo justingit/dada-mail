@@ -28,9 +28,9 @@ Download the, C<uncompress_dada.cgi> script from here:
 
 and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> - right alongside the I<dada-4_6_0.tar.gz> distro you just put up. 
 
-=head1 Step #4 Change permissions of the, "uncompress_dada.cgi" file to, B<755>
+=head1 Step #4 Change permissions of the, "uncompress_dada.cgi" file to, "755"
 
-=head1 Step #5 Visit the, C<uncompress_dada.cgi> script in your web browser. 
+=head1 Step #5 Visit the, "uncompress_dada.cgi" script in your web browser. 
 
 The, C<uncompress_dada.cgi> should attempt to uncompress the I<dada-4_6_0.tar.gz> distro, change the necessary permissions of various files and prep the actual installer for you to use. 
 
