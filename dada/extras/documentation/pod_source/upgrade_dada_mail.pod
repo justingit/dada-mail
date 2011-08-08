@@ -142,7 +142,7 @@ Fill out the form fields of the installer, just like you were doing a installati
 The installer will refresh the screen with the same configuration screen, but with B<two new options>, under another warning that the installer couldn't create the, C<.dada_files> directory. 
 
 
-=head4 Use the existing directory structure, but create a new configuration file, using the configuration below
+=head4 First Option: Use the existing directory structure, but create a new configuration file, using the configuration below
 
 The first option, I<Use the existing directory structure, but create a new configuration file, using the configuration below> allows you to upgrade your current Dada Mail, while using a fresh copy of the C<.dada_config> file. 
 
@@ -153,6 +153,12 @@ The downside of using this option is that any changes you've personally made to 
 Make sure to double check the Dada Mail changelog and fix any incompatibility between versions. Currently, this will be something you'll have to do manually.
 
 If you are upgrading a Dada Mail install that is configured with an SQL backend, you may also have to confirm that the SQL database you've typed in the login information for is OK to use. 
+
+=head4 Second Option: Use the existing directory structure and configuration file, ignoring the configuration below.
+
+The second option, I<Use the existing directory structure and configuration file, ignoring the configuration below.> will leave your Dada Mail configuration alone, and simply allow you to upgrade to the latest version of Dada Mail.
+
+If you have any plugins/extensions that you've installed with the installer from a previous installation, the installer will I<try> its best to at least change the permissions of each plugin/extension you have already installed to continue working. It's possible that the installer I<cannot> detect a plugin/extension install, so you may have to reinstall the plugin/extension manually.
 
 =head2 Changelog 
 

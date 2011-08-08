@@ -66,12 +66,6 @@ I<(and fill in the location you'd like)> if the installer doesn't pick a good lo
 
 =back
 
-=head4 Use the existing directory structure and configuration file, ignoring the configuration below.
-
-The second option, I<Use the existing directory structure and configuration file, ignoring the configuration below.> will leave your Dada Mail configuration alone, and simply allow you to upgrade to the latest version of Dada Mail.
-
-If you have any plugins/extensions that you've installed with the installer from a previous installation, the installer will I<try> its best to at least change the permissions of each plugin/extension you have already installed to continue working. It's possible that the installer I<cannot> detect a plugin/extension install, so you may have to reinstall the plugin/extension manually.
-
 =head2 Dada Mail URL
 
 The Dada Mail URL is simply the URL that you will access Dada Mail's, C<mail.cgi> file from. This form field should be filled out automatically, but if something doesn't look right, just look at the URL of the installer - for example, if the URL of the installer is: 
