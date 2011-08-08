@@ -190,7 +190,7 @@ The below screencasts go through the installation process:
 
 B<How to Download, Install and Configure Dada Mail v4.6.0>
 
-=for html <p><p><iframe width="640" height="390" src="http://www.youtube.com/embed/MWz8O13yc0s?hd=1" frameborder="0" allowfullscreen></iframe></p>
+=for html <p><iframe width="853" height="510" src="http://www.youtube.com/embed/MWz8O13yc0s?hd=1" frameborder="0" allowfullscreen></iframe></p>
 
 =head2 Manual Installation
 
