@@ -10,7 +10,7 @@ Key:
 [*] Naw...
 [?] Someday
 
-
+[ ] Ability to have a, "I see your email has changed - want to change it in Dada Mail?" functionality in the list control panel. 
 
 [ ] Ability to move "selected" list members from one list to another... so from Subscriber to Black or White List, Black List to Subscriber or White list, and White List to Subscriber or Black list
 
