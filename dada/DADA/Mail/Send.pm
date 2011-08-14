@@ -504,7 +504,10 @@ sub send {
 					
 					my $formatted_disc_email = $fm->_encode_header(
 							'To', 
-							Email::Address->new($self->{ls}->param('list_name'), $local_li->{discussion_pop_email})->format
+							$fm->format_phrase_address(
+								$self->{ls}->param('list_name'), 
+								$local_li->{discussion_pop_email}
+							)
 						);
 
                     # This is what we're going to say we are...
@@ -665,7 +668,10 @@ sub send {
 				
 				my $formatted_disc_email = $fm->_encode_header(
 						'To', 
-						Email::Address->new($self->{ls}->param('list_name'), $local_li->{discussion_pop_email})->format
+						$fm->format_phrase_address(
+							$self->{ls}->param('list_name'), 
+							$local_li->{discussion_pop_email}
+						)
 					);
 					
 			   $fields{To} =  $formatted_disc_email;
@@ -1679,28 +1685,28 @@ sub mass_send {
 				
 				# This is new - see the note in the 2nd if statement below. 
 				$stop_email = $mailing;
-                
-
-                require Email::Address; 
-
+ 
 				# This is kind of weird, since list messages aren't the only thing sent en-mass - 
 				# invite messages are, too. 
-
-				if($self->list_type eq 'invitelist'){ 
-					$fields{To}   = Email::Address->new($self->{ls}->param('invite_message_to_phrase'), $mailing)->format;					
-				}
-				else { 
-                	$fields{To}   = Email::Address->new($self->{ls}->param('mailing_list_message_to_phrase'), $mailing)->format;
-				}
-				
-					
 
 				require DADA::App::FormatMessages; 
 			    my $fm = DADA::App::FormatMessages->new(
 							-List        => $self->{list},  
 							-ls_obj      => $self->{ls},
-						); 
-              
+				);
+					
+				if($self->list_type eq 'invitelist'){ 
+					$fields{To}   = $fm->format_phrase_address(
+							$self->{ls}->param('invite_message_to_phrase'), 
+							$mailing
+						);					
+				}
+				else { 
+                	$fields{To}   = $fm->format_phrase_address(
+						$self->{ls}->param('mailing_list_message_to_phrase'), 
+						$mailing
+					);
+				}
 				
  				my %nfields = $self->_mail_merge(
 				    {
@@ -2199,85 +2205,75 @@ sub _make_general_headers {
 	# PHRASE, ADDRESS, [ COMMENT ]
 	require Email::Address;		
 
-	my $ln = undef; 
-	if(defined($self->{list})){ 
-		require DADA::App::FormatMessages; 
-		my $fm = DADA::App::FormatMessages->new(
-			-List => $self->{list}
-		); 
-    	$ln = $fm->_encode_header(
-			'just_phrase',
-			DADA::App::Guts::escape_for_sending(
-				$self->{ls}->param('list_name')
-			)
-		);	   
-		undef $fm; 
-	}
-	my $From_obj = undef; 
+	my $ln = undef;	 
+	require  DADA::App::FormatMessages; 
+	my $fm = DADA::App::FormatMessages->new(
+		-List => $self->{list}
+	); 
+   	$ln = $fm->_encode_header(
+		'just_phrase',
+		DADA::App::Guts::escape_for_sending(
+			$self->{ls}->param('list_name')
+		)
+	);	   
 
-	# if it doesn't, we're in trouble...
-				
+	my $from_phrase  = undef; 
+	my $from_address = undef; 
+		
 	if($self->im_mass_sending == 1){ 
 		
 		if($self->list_type eq 'invitelist'){ 
-			$From_obj = Email::Address->new($self->{ls}->param('invite_message_from_phrase') , $self->{ls}->param('list_owner_email'));	
+			
+			$from_phrase  = $self->{ls}->param('invite_message_from_phrase'); 
+			$from_address = $self->{ls}->param('list_owner_email');
+			
 		}
 		else { 
-			$From_obj = Email::Address->new($self->{ls}->param('mailing_list_message_from_phrase') , $self->{ls}->param('list_owner_email'));	
+			$from_phrase  = $self->{ls}->param('mailing_list_message_from_phrase');
+			$from_address = $self->{ls}->param('list_owner_email');
 		}
 	}
 	else { 
 		if(defined($self->{list})){ 
-			$From_obj = Email::Address->new($ln, $self->{ls}->param('list_owner_email'));	
+			$from_phrase  = $ln;
+			$from_address = $self->{ls}->param('list_owner_email');	
 		}
 		else { 
 			#...
 		}
 	}
 	
-	if($From_obj){ 
-		# TODO BUG These need to be Encoded - right now - the ain't - Well, what do I have to do to encode it? 
-		$gh{From}       = $From_obj->format;
-	}
+	$gh{From} = $fm->format_phrase_address($from_phrase, $from_address); 
 	# time  + random number + sender, woot!
 	require DADA::Security::Password; 	
 	my $ran_number = DADA::Security::Password::generate_rand_string('1234567890');
 
-	if(defined($self->{list})){ 
-		$gh{'Message-ID'} = '<' .  
-							DADA::App::Guts::message_id() . 
-							'.'. 
-							$ran_number . 
-							'@' . 
-							$From_obj->host . 
-							'>';					
-	}
-	else { 
-		# ...
-	}
-
-	if(defined($self->{list})){
+	my ($name, $host) = split('@', $from_address, 2); 
+	$gh{'Message-ID'} = '<' .  
+						DADA::App::Guts::message_id() . 
+						'.'. 
+						$ran_number . 
+						'@' . 
+						$host . 
+						'>';					
 		
-		# Deprecated.
-		if($self->{ls}->param('print_errors_to_header') == 1){ 	
-			my $Errors_To_obj = Email::Address->new(undef, $self->{ls}->param('admin_email'));
-			$gh{'Errors-To'}   = $Errors_To_obj->format;
-		} 	
-	
-		# again, this stuff should always be defined by default... 
-		if(defined($self->{ls}->param('precedence'))) { 
-		    $gh{'Precedence'}  = $self->{ls}->param('precedence');
-		}
-		if(defined($self->{ls}->param('priority'))) { 
-		    if($self->{ls}->param('priority') ne 'none'){ 
-		        $gh{'X-Priority'}  = $self->{ls}->param('priority');
-		    }
-	    }
-		# I'm not setting it here, since it gets re-written somewhere - but where? 
-		# Instead, it's being written in the send() method. Weird? Yes.  
-	
-		# $gh{Date} = $self->_Date(); 
+	# Deprecated.
+	if($self->{ls}->param('print_errors_to_header') == 1){ 	
+		$gh{'Errors-To'} = $fm->format_phrase_address(
+			undef, 
+			$self->{ls}->param('admin_email')
+		);
+	} 	
+
+	# again, this stuff should always be defined by default... 
+	if(defined($self->{ls}->param('precedence'))) { 
+	    $gh{'Precedence'}  = $self->{ls}->param('precedence');
 	}
+	if(defined($self->{ls}->param('priority'))) { 
+	    if($self->{ls}->param('priority') ne 'none'){ 
+	        $gh{'X-Priority'}  = $self->{ls}->param('priority');
+	    }
+    }
 	
 	return %gh;
 }
@@ -2486,7 +2482,7 @@ sub _pop_before_smtp {
 sub _email_batched_finished_notification {
 
     my $self = shift;
-
+	
     # DEV:
     # Dum... we need ta hashref this out...
 
@@ -2502,6 +2498,12 @@ sub _email_batched_finished_notification {
         @_
     );
 
+    require DADA::App::FormatMessages;
+    my $fm = DADA::App::FormatMessages->new(
+		-List        => $self->{list},  
+		-ls_obj      => $self->{ls},
+	);
+	
     my $fields               = $args{-fields};
     my $formatted_start_time = '';
     my $formatted_end_time   = '';
@@ -2536,15 +2538,9 @@ sub _email_batched_finished_notification {
       $self->_formatted_runtime( ( $args{-end_time} - $args{-start_time} ) );
 
     require MIME::Entity;
-
-    require Email::Address;
-
     my $entity = MIME::Entity->build(
         Type => 'multipart/mixed',
-        To   => safely_encode( Email::Address->new(
-            'List Owner For ' . $self->{ls}->param('list_name'),
-            $self->{ls}->param('list_owner_email')
-          )->format),
+        To   => safely_encode( $fm->format_phrase_address('List Owner For ' . $self->{ls}->param('list_name'), $self->{ls}->param('list_owner_email'))),
         Subject  => safely_encode( $DADA::Config::MAILING_FINISHED_MESSAGE_SUBJECT),
         Datestamp => 0,
 
@@ -2571,13 +2567,6 @@ sub _email_batched_finished_notification {
         Disposition => "inline",
         Data => safely_decode( safely_encode( $att ) ),
     );
-
-    require DADA::App::FormatMessages;
-    #my $fm = DADA::App::FormatMessages->new( -yeah_no_list => 1 );
-	my $fm = DADA::App::FormatMessages->new(
-		-List        => $self->{list},  
-		-ls_obj      => $self->{ls},
-	);
 
     my $n_entity = $fm->email_template(
         {
