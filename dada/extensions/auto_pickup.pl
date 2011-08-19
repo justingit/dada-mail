@@ -1,7 +1,7 @@
 #!/usr/bin/perl 
 use lib qw(./); 
-do "../plugins/tracker.cgi"; 
-tracker->run(); 
+do "../plugins/mailing_monitor.cgi"; 
+mailing_monitor->run(); 
 
 =pod
 
