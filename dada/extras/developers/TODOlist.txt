@@ -10,6 +10,11 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+[ ] "Invite Only" List functionality. 
+
+[ ] "You are Subscribed" Message sending to recent subscribed people. 
+
 [ ] A truly random pin for subs and unsubs. 
 
 [ ] - Tracker - track use of "forward to a friend"
