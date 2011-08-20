@@ -7,7 +7,7 @@ use Carp qw(croak);
 
 use vars qw($VERSION);
 
-$VERSION = "1.003";
+$VERSION = "1.003.1";
 
 sub FB_CROAK { 0x1; }
 sub FB_PERLQQ { 0x100; }
@@ -27,6 +27,8 @@ sub resolve_alias {
     my $cset = lc(shift);
     if ($cset eq "8bit" or $cset !~ /\S/) {
 	return undef;
+    } elsif ($cset eq '_unicode_') {
+	return $cset;
     } else {
 	# Taken from Encode-2.24.
 	my %Winlatin2cp = (

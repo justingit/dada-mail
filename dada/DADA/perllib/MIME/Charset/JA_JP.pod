@@ -13,7 +13,7 @@ MIME::Charset::JA_JP - MIME のためのキャラクタセット情報
 キャラクタセット情報の取得:
 
     $benc = $charset->body_encoding; # 例 "Q"
-    $cset = $charset->canonical_charset; # 例 "US-ASCII"
+    $cset = $charset->as_string; # 例 "US-ASCII"
     $henc = $charset->header_encoding; # 例 "S"
     $cset = $charset->output_charset; # 例 "ISO-2022-JP"
 
@@ -22,20 +22,23 @@ MIME::Charset::JA_JP - MIME のためのキャラクタセット情報
     ($text, $charset, $encoding) =
         $charset->header_encode(
            "\xc9\xc2\xc5\xaa\xc0\xde\xc3\xef\xc5\xaa".
-           "\xc7\xd1\xca\xaa\xbd\xd0\xce\xcf\xb4\xef");
-    # ...例えば (<converted>, "ISO-2022-JP", "B") を返す
+           "\xc7\xd1\xca\xaa\xbd\xd0\xce\xcf\xb4\xef",
+           Charset => 'euc-jp');
+    # ...例えば (<変換ずみ文字列>, "ISO-2022-JP", "B") を返す。
 
     ($text, $charset, $encoding) =
         $charset->body_encode(
-            "Collectioneur path\xe9tiquement ".
-    # ...例えば (<original>, "ISO-8859-1", "QUOTED-PRINTABLE") を返す
+            "Collectioneur path\xe9tiquement ",
+            Charset => 'latin1');
+    # ...例えば (<元の文字列>, "ISO-8859-1", "QUOTED-PRINTABLE") を返す。
 
     $len = $charset->encoded_header_len(
-        "Perl\xe8\xa8\x80\xe8\xaa\x9e", "b"); # 例 28
+        "Perl\xe8\xa8\x80\xe8\xaa\x9e",
+        Charset => "utf-8",
+        Encoding => "b");
+    # ...例えば 28 を返す。
 
 モジュール既定値の操作:
-
-    use MIME::Charset;
 
     MIME::Charset::alias("csEUCKR", "euc-kr");
     MIME::Charset::default("iso-8859-1");
@@ -85,21 +88,21 @@ B<エンコーディング> とは、MIME でのそれのことで、
 メッセージ本体やメッセージヘッダ本体を印字可能な
 US-ASCII 文字の列として表現する方法を指す。
 
-=over 4
-
 
 =cut
 
 =head2 コンストラクタ
 
+=over
+
 =item $charset = MIME::Charset->new([CHARSET [, OPTS]])
 
 キャラクタセットオブジェクトを作成して返す。
 
-OPTS には以下の対を指定できる。
+OPTS には次の対を指定できる。
 B<NOTE>:
 Unicode/マルチバイト対応が有効になっていないとき (L<"USE_ENCODE"> 参照) は、
-変換を行わないので、以下のオプションは効果を持たない。
+変換を行わないので、次のオプションは効果を持たない。
 
 =over 4
 
@@ -114,7 +117,11 @@ C<"STANDARD"> は標準化されている厳密なマッピングを使う。
 
 =cut
 
+=back
+
 =head2 キャラクタセット情報の取得
+
+=over
 
 =item $charset->body_encoding
 
@@ -122,7 +129,7 @@ C<"STANDARD"> は標準化されている厳密なマッピングを使う。
 
 CHARSET のメッセージ本体で推奨される伝送エンコーディングを取得する。
 
-返値は C<"B"> (BASE64)、C<"Q"> (QUOTED-PRINTABLE)、
+返値は C<"B"> (BASE64)、C<"Q"> (QUOTED-PRINTABLE)、C<"S"> (どちらか短いほう)、
 C<undef> (伝送エンコードしなくてよい --- 7BIT か 8BIT)
 のいずれか。これはメッセージヘッダのエンコーディングとは違うこともある。
 
@@ -140,6 +147,13 @@ C<undef> (伝送エンコードしなくてよい --- 7BIT か 8BIT)
 
 キャラクタセットを Unicode に復号するのに使う
 L<"Encode::Encoding"> オブジェクトを返す。
+キャラクタセットが指定されていなかったか、当モジュールの知らないキャラクタセットであった場合は、undef 値を返す。
+
+=cut
+
+=item detect_7bit_charset STRING
+
+文字列 STRING を符号化している7 ビットキャラクタセットを推測する。
 
 =cut
 
@@ -189,7 +203,11 @@ Unicode/マルチバイト対応が有効になっていないとき (L<"USE_ENC
 
 =cut
 
+=back
+
 =head2 テキストデータの変換
+
+=over
 
 =item $charset->body_encode(STRING [, OPTS])
 
@@ -305,9 +323,6 @@ I<出力のキャラクタセット> が決定できず、I<変換ずみの文�
 I<出力のキャラクタセット> が C<"US-ASCII">
 となるのは、文字列が ASCII以外のバイトを含まないときに限る。
 
-=back
-
-
 =cut
 
 =item $charset->undecode(STRING [,CHECK])
@@ -322,9 +337,11 @@ Unicode/マルチバイト対応が有効になっていないとき (L<"USE_ENC
 
 =cut
 
+=back
+
 =head2 モジュール既定値の操作
 
-=over 4
+=over
 
 =item alias ALIAS [, CHARSET]
 
@@ -393,7 +410,7 @@ C<"B">、C<"Q">、C<"S"> (どちらか短くなるほう)、
 C<undef> (エンコードしなくてよい) を指定できる。
 
 BODYENC はメッセージ本体で推奨される伝送エンコーディング。
-C<"B">、C<"Q">、C<undef> (伝送エンコードしなくてよい) を指定できる。
+C<"B">、C<"Q">、C<"S"> (どちらか短くなるほう)、C<undef> (伝送エンコードしなくてよい) を指定できる。
 
 ENCCHARSET は、指定した CHARSET と互換で、インターネット上の
 MIME メッセージで使うことを推奨されるキャラクタセット名。
@@ -408,18 +425,26 @@ L<"header_encoding">、L<"body_encoding">、L<"output_charset"> を使ってほ�
 
 =cut
 
+=back
+
 =head2 定数
+
+=over
 
 =item USE_ENCODE
 
 Unicode/マルチバイト対応フラグ。
 Unicode とマルチバイトへの対応が有効になっているときは、空でない文字列が設定されている。
-現在、このフラグは Perl 5.8.1 以降で空でなく、それより以前の Perl では空の文字列。
+現在、このフラグは Perl 5.7.3 以降で空でなく、それより以前の Perl では空の文字列。
+
+=back
 
 =head2 エラー処理
 
 L<"body_encode"> と L<"header_encode"> の
 C<Replacement> オプションには以下のものを指定できる:
+
+=over
 
 =item C<"DEFAULT">
 
@@ -473,16 +498,61 @@ $VERSION 変数を見てほしい。
 このモジュールの開発版が
 L<http://hatuka.nezumi.nu/repos/MIME-Charset/> にある。
 
+=head2 非互換な変更
+
+=over 4
+
+=item リリース 1.001
+
+=over 4
+
+=item *
+
+new() メソッドは CHARSET 引数を指定しなくてもオブジェクトを返すようになった。
+
+=back
+
+=item リリース 1.005
+
+=over 4
+
+=item *
+
+encoded-word に含まれる文字種を RFC 2047 の 5 (3) 節のとおりにした。
+encoded_header_len() メソッドの返値も変わる。
+
+=back
+
+=item リリース 1.008.2
+
+=over 4
+
+=item *
+
+body_encoding() メソッドも C<"S"> を返せるようになった。
+
+=item *
+
+body_encode() メソッドの UTF-8 に対する返値のエンコーディング要素は、
+これまでのリリースでは C<"BASE64"> に固定だったが、C<"QUOTED-PRINTABLE"> になることがある。
+
+=back
+
+=back
+
 =head1 SEE ALSO
 
 Multipurpose Internet Mail Extensions (MIME).
 
-=head1 AUTHORS
+=head1 AUTHOR
 
-Copyright (C) 2006-2008 Hatuka*nezumi - IKEDA Soji <hatuka(at)nezumi.nu>.
+Hatuka*nezumi - IKEDA Soji <hatuka(at)nezumi.nu>
 
-All rights reserved.  This program is free software; you can redistribute
-it and/or modify it under the same terms as Perl itself.
+=head1 COPYRIGHT
+
+Copyright (C) 2006-2011 Hatuka*nezumi - IKEDA Soji.
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
 
 
 =cut
