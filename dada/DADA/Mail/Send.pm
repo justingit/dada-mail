@@ -2330,7 +2330,21 @@ sub tagged_list_headers {
 	$lh{'List'}             =   $self->{list};
 	$lh{'List-URL'}         =   '<<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/>';
 	$lh{'List-Subscribe'}   =   '<<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
-	$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
+
+	# I'm not using the _macro_tags method, out of sake of performance
+	# That method should really be moved into DADA::Template::Widgets
+	#
+	if($self->{ls}->param('unsub_link_behavior') eq 'show_unsub_form'){ 
+		$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
+	}
+	else { 
+		$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
+	}
+	
+	
+	
+
+
 	$lh{'List-Owner'}       =   '<<!-- tmpl_var list_settings.list_owner_email -->>';
 
 	return %lh;
