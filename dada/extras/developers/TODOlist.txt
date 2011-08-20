@@ -10,6 +10,10 @@ Key:
 [*] Naw...
 [?] Someday
 
+[ ] HTML Forms: Specify accept-charset in your <form> tag to tell the browser to submit user-entered data encoded in UTF-8:
+
+	<form action="foo" accept-charset="UTF-8">...</form>
+
 
 [ ] "Invite Only" List functionality. 
 
