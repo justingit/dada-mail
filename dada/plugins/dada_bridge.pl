@@ -903,57 +903,51 @@ sub validate_list_email {
 	if($list_email eq ''){ 
 		return (1, $errors); 
 	}
+	
 	require DADA::MailingList::Settings; 
-	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-	if ( $ls->param('list_owner_email') eq $list_email ) {
-        $errors->{list_email_set_to_list_owner_email} = 1; 
-		$status = 0; 
-    }
-	if ( $ls->param('admin_email') eq $list_email ) {
-        $errors->{list_email_set_to_list_admin_email} = 1;     
-		$status = 0; 
-	}
 	require DADA::MailingList::Subscribers; 
-	my $lh = DADA::MailingList::Subscribers->new({-list => $list});
+	
+	for my $t_list(available_lists()){ 
+		
+		my $ls = DADA::MailingList::Settings->new({-list => $t_list}); 
+		if ( $ls->param('list_owner_email') eq $list_email ) {
+			if($t_list eq $list_email){ 
+			    $errors->{list_email_set_to_list_owner_email} = 1;
+			}
+			else { 
+			    $errors->{list_email_set_to_another_list_owner_email} = 1;
+			}
+			$status = 0; 
+	    }
+		if ( $ls->param('admin_email') eq $list_email ) {
+			
+			if($t_list eq $list_email){ 
+	        	$errors->{list_email_set_to_list_admin_email} = 1;     
+			}
+			else { 
+				$errors->{list_email_set_to_another_list_admin_email} = 1;     
+			}
+			$status = 0; 
+			
+		}
+		my $lh = DADA::MailingList::Subscribers->new({-list => $t_list});
 
-	for my $type(@list_types){ 
-		if($lh->check_for_double_email(
-	        -Email => $list_email,
-	        -Type  => $type,
-	    ) == 1){
-			$errors->{'list_email_subscribed_to_' . $type} = 1;     
-			$status = 0;
+		for my $type(@list_types){ 
+			if($lh->check_for_double_email(
+		        -Email => $list_email,
+		        -Type  => $type,
+		    ) == 1){
+				if($t_list eq $list_email){ 
+					$errors->{'list_email_subscribed_to_' . $type} = 1;   
+				}
+				else { 
+					$errors->{'list_email_subscribed_to_another_' . $type} = 1;   					
+				}  
+				$status = 0;
+			}
 		}
 	}
 	
-	
-	
-=cut
-	
-    my @lists = DADA::App::Guts::available_lists;
-    for my $this_list (@lists) {
-
-        my $this_ls =
-          DADA::MailingList::Settings->new( { -list => $this_list } );
-        my $this_li = $this_ls->get;
-
-        if ( $this_li->{list_owner_email} eq $email ) {
-            $valid = 0;
-        }
-        elsif ( $this_li->{admin_email} eq $email ) {
-            $valid = 0;
-        }
-
-        next if $this_list eq $list;
-
-        if ( $this_li->{discussion_pop_email} eq $email ) {
-            $valid = 0;
-        }
-    }
-
-=cut
-
-
     return ($status, $errors);
 }
 
@@ -961,8 +955,8 @@ sub cgi_default {
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get();
-    my $list_email_validation = 1;
- 	my %dada_bridge_settings_defaults = (
+
+	my %dada_bridge_settings_defaults = (
 		disable_discussion_sending                 => 0,
 		group_list                                 => 0,
 		append_list_name_to_subject                => 0,
@@ -999,11 +993,15 @@ sub cgi_default {
 		discussion_pop_use_ssl                     => 0,
 		discussion_template_defang                 => 0,
 	); 
+
     # Validation, basically.
     my $list_email_status = 1; 
 	my $list_email_errors = {}; 
 
-	my $discussion_pop_password = DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $li->{discussion_pop_password}); 
+	my $discussion_pop_password = DADA::Security::Password::cipher_decrypt(
+		$li->{cipher_key}, 
+		$li->{discussion_pop_password}
+	); 
 	
     if ( $q->param('process') eq 'edit' ) {
 		($list_email_status, $list_email_errors) = validate_list_email(
@@ -1091,7 +1089,7 @@ sub cgi_default {
 
     my $tmpl = default_cgi_template();
 
-	my $saved = $q->param('saved') || 0; 
+	my $saved = $q->param('saved') || 0;
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
@@ -1132,13 +1130,19 @@ sub cgi_default {
                       'looking_for_embedded_headers'
                   ) ? 1 : 0,
 
-				list_email_status                                 => $list_email_status, 
-				error_list_email_set_to_list_owner_email          => $list_email_errors->{list_email_set_to_list_owner_email}, 
-				error_list_email_set_to_list_admin_email          => $list_email_errors->{list_email_set_to_list_admin_email},
-				error_list_email_subscribed_to_list               => $list_email_errors->{list_email_subscribed_to_list},
-				error_list_email_subscribed_to_authorized_senders => $list_email_errors->{list_email_subscribed_to_authorized_senders},				
+				list_email_status                                         => $list_email_status, 
+				
+				error_list_email_set_to_list_owner_email                  => $list_email_errors->{list_email_set_to_list_owner_email}, 
+				error_list_email_set_to_list_admin_email                  => $list_email_errors->{list_email_set_to_list_admin_email},
+				error_list_email_subscribed_to_list                       => $list_email_errors->{list_email_subscribed_to_list},
+				error_list_email_subscribed_to_authorized_senders         => $list_email_errors->{list_email_subscribed_to_authorized_senders},				
 
-            },
+				error_list_email_set_to_another_list_owner_email          => $list_email_errors->{list_email_set_to_another_list_owner_email}, 
+				error_list_email_set_to_another_list_admin_email          => $list_email_errors->{list_email_set_to_another_list_admin_email},
+				error_list_email_subscribed_to_another_list               => $list_email_errors->{list_email_subscribed_to_another_list},
+				error_list_email_subscribed_to_another_authorized_senders => $list_email_errors->{list_email_subscribed_to_another_authorized_senders},
+								
+            },                                            
 			-list_settings_vars       => $li, 
 			-list_settings_vars_param => { 
 				-list                 => $list,
@@ -3628,6 +3632,17 @@ sub default_cgi_template {
 			</li>
 		</ul>
 	<!-- /tmpl_if -->
+	
+<!-- tmpl_if error_list_email_set_to_another_list_owner_email --> 
+		<ul> 
+			<li>
+				<p class="error">
+					Your List Email was set to the same address as a List Owner Email address of a different list. It needs to be set to a different address. 
+				</p>
+			</li>
+		</ul>
+	<!-- /tmpl_if -->
+		
 <!-- tmpl_if error_list_email_set_to_list_admin_email --> 
 	<ul> 
 		<li>
@@ -3637,6 +3652,16 @@ sub default_cgi_template {
 		</li>
 	</ul>
 <!-- /tmpl_if -->
+<!-- tmpl_if error_list_email_set_to_another_list_admin_email --> 
+	<ul> 
+		<li>
+			<p class="error">
+				Your List Email was set to the same address as the List Admin Email address of a different list. It needs to be set to a different address. 
+			</p>
+		</li>
+	</ul>
+<!-- /tmpl_if -->
+
 <!-- tmpl_if error_list_email_subscribed_to_list --> 
 	<ul> 
 		<li>
@@ -3655,6 +3680,27 @@ sub default_cgi_template {
 		</li>
 	</ul>
 <!-- /tmpl_if -->
+
+<!-- tmpl_if error_list_email_subscribed_to_another_list --> 
+	<ul> 
+		<li>
+			<p class="error">
+				Your List Email is currently subscribed to another mailing list's Subscription List. It needs to be set to a different address. 
+			</p>
+		</li>
+	</ul>
+<!-- /tmpl_if -->
+<!-- tmpl_if error_list_email_subscribed_to_another_authorized_senders --> 
+	<ul> 
+		<li>
+			<p class="error">
+				Your List Email is currently subscribed to another mailing list's Authorized Senders List. It needs to be set to a different address. 
+			</p>
+		</li>
+	</ul>
+<!-- /tmpl_if -->
+
+
 
 
  <table width="100%" cellpadding="5" cellspacing="0">
