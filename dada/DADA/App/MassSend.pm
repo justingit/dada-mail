@@ -433,7 +433,7 @@ sub send_email {
             %mailing = $mh->clean_headers(%mailing);
 
             %mailing =
-              ( %mailing, $mh->_make_general_headers, $mh->_make_list_headers );
+              ( %mailing, $mh->_make_general_headers, $mh->list_headers );
 
             require DADA::Security::Password;
             my $ran_number =
@@ -856,7 +856,7 @@ sub send_url_email {
                     %mailing = (
                                 %mailing,
                                 $mh->_make_general_headers, 
-                                $mh->_make_list_headers
+                                $mh->list_headers
                            ); 
                     
                     $mailing{'Message-ID'} = '<' .  $msg_id . '.'. $ran_number . '.' . $li->{list_owner_email} . '>'; 

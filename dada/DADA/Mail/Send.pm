@@ -267,7 +267,7 @@ sub send {
 	my %fields = ( 
 				  %defaults,  
 				  $self->_make_general_headers, 
-				  $self->_make_list_headers, 
+				  $self->list_headers, 
 				   %param_headers, 
 				); 
 
@@ -1046,8 +1046,7 @@ sub mass_send {
 	my %fields = ( 
 				  %defaults,  
 				  $self->_make_general_headers, 
-				  $self->_make_list_headers, 
-				  $self->tagged_list_headers, 
+				  $self->list_headers, 
 				   %param_headers, 
 				); 
 		
@@ -2320,17 +2319,28 @@ sub _Date {
 
 };
 
-
-
-sub tagged_list_headers { 
+sub list_headers { 
 	
 	my $self = shift; 
-	my %lh = (); 
+	my %lh;
 	
+	# List
 	$lh{'List'}             =   $self->{list};
+	
+	# List-URL
 	$lh{'List-URL'}         =   '<<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/>';
-	$lh{'List-Subscribe'}   =   '<<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
 
+	# List-Subscribe
+	if($self->{ls}->param('closed_list') == 1){ 
+		if(exists($lh{'List-Subscribe'})){ 
+			delete($lh{'List-Subscribe'});
+		}
+	}
+	else { 
+		$lh{'List-Subscribe'}   =   '<<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
+	}
+
+	# List-Unsubscribe
 	# I'm not using the _macro_tags method, out of sake of performance
 	# That method should really be moved into DADA::Template::Widgets
 	#
@@ -2340,77 +2350,55 @@ sub tagged_list_headers {
 	else { 
 		$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
 	}
-	
-	
-	
 
-
+	# List-Owner
 	$lh{'List-Owner'}       =   '<<!-- tmpl_var list_settings.list_owner_email -->>';
-
-	return %lh;
 	
-}
+	# List-Archive
+	if($self->{ls}->param('show_archives') ne "0"){
+		$lh{'List-Archive'} =  '<' . $DADA::Config::PROGRAM_URL.'/archive/'. $self->{list} . '/>';   
+	}
 	
-
-
-sub _make_list_headers { 
 	
-	my $self = shift; 
-	my %lh;
-	if($self->{list}){ 
+	# List-Post
+	# http://www.faqs.org/rfcs/rfc2369.html
+    # The List-Post field describes the method for posting to the list. 
+	# This is typically the address of the list, but MAY be a moderator, 
+	# or potentially some other form of submission. For the special case 
+	# of a list that does not allow posting (e.g., an announcements list), 
+	# the List-Post field may contain the special value "NO".
+	if(
+	   $self->{ls}->param('group_list')           == 1 && 
+	   $self->{ls}->param('discussion_pop_email')
+	  ){ 
+		$lh{'List-Post'} = '<mailto:' . $self->{ls}->param('discussion_pop_email') . '>';
+	}
+	else { 
+		$lh{'List-Post'} = 'NO';
 		
-			$lh{List}               =   $self->{list};
-			$lh{'List-URL'}         =   '<' . $DADA::Config::PROGRAM_URL . '/list/'.$self->{list}  . '/>';
-			$lh{'List-Unsubscribe'}   =   '<' . $DADA::Config::PROGRAM_URL . '/u/'   . $self->{list} . '/>'; 
-			$lh{'List-Subscribe'}   =   '<' . $DADA::Config::PROGRAM_URL . '/s/'   . $self->{list} . '/>'; 
+	}
+	
+	# List-ID
+	# Is there a reason I continue to use this? 	
+	# http://www.faqs.org/rfcs/rfc2111.html
+	eval "require Net::Domain";
+	if(!$@){ 
+		
+		my $domain = undef; 
+		
+		if($self->test || $DADA::Config::PROGRAM_URL =~ /http\:\/\/localhost/){ 
+			# just to speed things up... 
+		} 
+		else { 
 			
-			$lh{'List-Owner'}       =   '<' . $self->{ls}->param('list_owner_email').'>';
-
-			if($self->{ls}->param('show_archives') ne "0"){
-				$lh{'List-Archive'} =  '<' . $DADA::Config::PROGRAM_URL.'/archive/'. $self->{list} . '/>';   
-			}
-			
-			# http://www.faqs.org/rfcs/rfc2369.html
-		    # The List-Post field describes the method for posting to the list. 
-			# This is typically the address of the list, but MAY be a moderator, 
-			# or potentially some other form of submission. For the special case 
-			# of a list that does not allow posting (e.g., an announcements list), 
-			# the List-Post field may contain the special value "NO".
-
-
-
-			if(
-			   $self->{ls}->param('group_list')           == 1 && 
-			   $self->{ls}->param('discussion_pop_email')
-			  ){ 
-				$lh{'List-Post'} = '<mailto:' . $self->{ls}->param('discussion_pop_email') . '>';
-			}
-			else { 
-				$lh{'List-Post'} = 'NO';
-				
-			}
-			
-			# Is there a reason I continue to use this? 	
-			# http://www.faqs.org/rfcs/rfc2111.html
-			eval "require Net::Domain";
-			if(!$@){ 
-				
-				my $domain = undef; 
-				
-				if($self->test || $DADA::Config::PROGRAM_URL =~ /http\:\/\/localhost/){ 
-					# just to speed things up... 
-				} 
-				else { 
-					
-					$domain = Net::Domain::hostfqdn() || 
-					carp "no domain found for: Net::Domain::hostfqdn()";
-				}
-				
-				$domain ||= 'localhost'; # not sure about this one, I believe if you use localhost, you need a random # as well...
-				$lh{'List-ID'} = '<' . $self->{list} .'.'. $domain .'>';
-			}else{ 
-				carp "Net::Domain should be installed!";
-			}
+			$domain = Net::Domain::hostfqdn() || 
+			carp "no domain found for: Net::Domain::hostfqdn()";
+		}
+		
+		$domain ||= 'localhost'; # not sure about this one, I believe if you use localhost, you need a random # as well...
+		$lh{'List-ID'} = '<' . $self->{list} .'.'. $domain .'>';
+	}else{ 
+		carp "Net::Domain should be installed!";
 	}
 	
 	
@@ -3233,11 +3221,11 @@ Return a hash containing the following Email Headers:
 
 The idea behind C<_make_general_headers> is to create usable defaults to email headers that should be included in your email messags. 
 
-=head2 _make_list_headers
+=head2 list_headers
 
- my %list_headers = $mh->_make_list_headers
+ my %list_headers = $mh->list_headers
 
-Similar to C<_make_general_headers>, C<_make_list_headers> creates a set of email headers - in this case headers that deal with 
+Similar to C<_make_general_headers>, C<list_headers> creates a set of email headers - in this case headers that deal with 
 Mailing Lists. They are: 
 
 =over
