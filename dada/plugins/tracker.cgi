@@ -412,6 +412,23 @@ sub default_tmpl {
    </p>
   </td>
   </tr>
+
+   <tr> 
+  <td> 
+   <p>
+    <input type="checkbox" name="tracker_show_message_reports_in_mailing_monitor" id="tracker_show_message_reports_in_mailing_monitor"  value="1" <!-- tmpl_if list_settings.tracker_show_message_reports_in_mailing_monitor -->checked="checked"<!--/tmpl_if --> 
+   </p>
+  </td> 
+  <td> 
+   <p>
+    <label for="tracker_show_message_reports_in_mailing_monitor"> 
+    Show Message Reports in Mailing Monitor
+    </label> 
+   </p>
+  </td>
+  </tr>
+
+
   
 </table> 
 
@@ -1115,19 +1132,38 @@ sub message_report_tmpl {
     
 my $tmpl = q{ 
 	
-	<!-- tmpl_set name="title" value="Tracker - Message Report" -->
+	<!-- tmpl_unless chrome --> 
+		<html> 
+		 <head>
+		   <link rel="stylesheet" href="<!-- tmpl_var S_PROGRAM_URL -->/css/" type="text/css" media="screen" />
+		  <script src="<!-- tmpl_var S_PROGRAM_URL -->/javascripts/dada_mail_admin_js.js" type="text/javascript"></script>
+		  <script src="<!-- tmpl_var S_PROGRAM_URL -->/javascripts/prototype.js" type="text/javascript"></script>
+		  <script src="<!-- tmpl_var S_PROGRAM_URL -->/javascripts/scriptaculous.js?load=effects" type="text/javascript"></script>
+		 </head> 
+		<body style="background:#fff"> 
+		
+	<!-- /tmpl_unless -->
 	
+	
+	<!-- tmpl_if chrome --> 
+		<!-- tmpl_set name="title" value="Tracker - Message Report" -->
+	<!-- /tmpl_if --> 
+	
+		<script type="text/javascript">
+	    //<![CDATA[
+	
+			
+			
+		Event.observe(window, 'load', function() {
 	
 
-	
-	<script type="text/javascript">
-	    //<![CDATA[
-		Event.observe(window, 'load', function() {
 		  <!-- tmpl_if can_use_country_geoip_data --> 
 			country_geoip_chart_clickthroughs();	
 			country_geoip_chart_opens();
-		  <!-- /tmpl_if --> 
+			
 
+		  <!-- /tmpl_if --> 
+	
 		ct_ot_img(); 
 		opens_ot_img();
 
@@ -1213,18 +1249,23 @@ my $tmpl = q{
 		}		
 	    //]]>
 	</script>
-	
-	  <p id="breadcrumbs">
-        <a href="<!-- tmpl_var Plugin_URL -->">
-		 <!-- tmpl_var Plugin_Name -->
-	</a> &#187; <!-- tmpl_var subject escape="HTML" --> 
-   </p>
+	<!-- tmpl_if chrome --> 
+		
+		  <p id="breadcrumbs">
+	        <a href="<!-- tmpl_var Plugin_URL -->">
+			 <!-- tmpl_var Plugin_Name -->
+		</a> &#187; <!-- tmpl_var subject escape="HTML" --> 
+	   </p>
 
+	<!-- /tmpl_if --> 
 	
-	<h1>Tracking Info For: 
-	 <!-- tmpl_var subject escape="HTML" --> 
-	</h1> 
-
+	<!-- tmpl_if chrome --> 
+		
+		<h1>Tracking Info For: 
+		 <!-- tmpl_var subject escape="HTML" --> 
+		</h1> 
+	
+	<!-- /tmpl_if --> 
 
 
 	<fieldset> 
@@ -1526,28 +1567,31 @@ my $tmpl = q{
 
 
 
+<!-- tmpl_if chrome -->
 
-<fieldset> 
-<legend>Export Message Logs</legend> 
+	<fieldset> 
+	<legend>Export Message Logs</legend> 
 
-<div class="buttonfloat">
-<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-<input type="hidden" name="f" value="download_activity_logs" /> 
-<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
- <input type="submit" class="processing" name="process" value="Download Raw Activity Logs (.csv)" />
-</form> 
-</div>
+	<div class="buttonfloat">
+	<form action="<!-- tmpl_var PluginURL -->" method="post"> 
+	<input type="hidden" name="f" value="download_activity_logs" /> 
+	<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
+	 <input type="submit" class="processing" name="process" value="Download Raw Activity Logs (.csv)" />
+	</form> 
+	</div>
 
 
-<div class="buttonfloat">
-<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-<input type="hidden" name="f" value="download_clickthrough_logs" /> 
-<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
- <input type="submit" class="processing" name="process" value="Download Raw Clickthrough Logs (.csv)" />
-</form> 
-</div>
-<div class="floatclear"></div>
-</fieldset> 
+	<div class="buttonfloat">
+	<form action="<!-- tmpl_var PluginURL -->" method="post"> 
+	<input type="hidden" name="f" value="download_clickthrough_logs" /> 
+	<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
+	 <input type="submit" class="processing" name="process" value="Download Raw Clickthrough Logs (.csv)" />
+	</form> 
+	</div>
+	<div class="floatclear"></div>
+	</fieldset> 
+
+<!-- /tmpl_if chrome -->
 
 };
 
@@ -1555,6 +1599,22 @@ my $tmpl = q{
 
 sub message_report {
 
+	my $mid = $q->param('mid'); 
+	$mid =~ s/\.(.*?)$//;
+	$q->param('mid', $mid); 
+	
+	my $chrome = 1; 
+	if(defined($q->param('chrome'))){ 
+		$chrome = $q->param('chrome') || 0; 
+	}
+	my $Plugin_Url = $Plugin_Config->{Plugin_URL}; 
+	if(defined($q->param('tracker_url'))){ 
+		$Plugin_Url = $q->param('tracker_url');
+	}
+	
+#	die '$Plugin_Url ' . $Plugin_Url; 
+	
+	
     my $m_report = $rd->report_by_message( $q->param('mid') );
 
 	# This is strange, as we have to first break it out of the data structure, 
@@ -1574,35 +1634,54 @@ sub message_report {
 	my ($soft_bounce_image, $hard_bounce_image) = bounces_by_domain($m_report); 
 	
 	
-    my $tmpl = message_report_tmpl();
-    require DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::wrap_screen(
-        {
-            -data           => \$tmpl,
-            -with           => 'admin',
-            -wrapper_params => {
-                -Root_Login => $root_login,
-                -List       => $ls->param('list'),
-            },
-            -vars => {
-                mid                        => $q->param('mid')                         || '',
-                subject                    => find_message_subject( $q->param('mid') ) || '',
-                url_report                 => $s_url_report                            || [],
-                num_subscribers            => commify($m_report->{num_subscribers})    || 0,
-                opens                      => commify($m_report->{'open'})             || 0, 
-                clickthroughs              => commify($m_report->{'clickthroughs'})    || 0, 
-				soft_bounce                => commify($m_report->{'soft_bounce'})      || 0,
-                hard_bounce                => commify($m_report->{'hard_bounce'})      || 0,
-				soft_bounce_report         => $m_report->{'soft_bounce_report'}        || [],
-				hard_bounce_report         => $m_report->{'hard_bounce_report'}        || [],
-				soft_bounce_image          => $soft_bounce_image, 
-				hard_bounce_image          => $hard_bounce_image, 
-				can_use_country_geoip_data => $rd->can_use_country_geoip_data, 
-				Plugin_URL                 => $Plugin_Config->{Plugin_URL},
-				Plugin_Name                => $Plugin_Config->{Plugin_Name},			
-            },
-        },
-    );
+	my %tmpl_vars = (
+		mid                        => $q->param('mid')                         || '',
+        subject                    => find_message_subject( $q->param('mid') ) || '',
+        url_report                 => $s_url_report                            || [],
+        num_subscribers            => commify($m_report->{num_subscribers})    || 0,
+        opens                      => commify($m_report->{'open'})             || 0, 
+        clickthroughs              => commify($m_report->{'clickthroughs'})    || 0, 
+		soft_bounce                => commify($m_report->{'soft_bounce'})      || 0,
+        hard_bounce                => commify($m_report->{'hard_bounce'})      || 0,
+		soft_bounce_report         => $m_report->{'soft_bounce_report'}        || [],
+		hard_bounce_report         => $m_report->{'hard_bounce_report'}        || [],
+		soft_bounce_image          => $soft_bounce_image, 
+		hard_bounce_image          => $hard_bounce_image, 
+		can_use_country_geoip_data => $rd->can_use_country_geoip_data, 
+		Plugin_URL                 => $Plugin_Url,
+		Plugin_Name                => $Plugin_Config->{Plugin_Name},
+		chrome                     => $chrome, 
+	); 
+	my $tmpl = message_report_tmpl();
+	my $scrn = ''; 
+	require DADA::Template::Widgets;
+    	
+	if($chrome == 0){ 
+		print $q->header();
+	    $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -data           => \$tmpl,
+	            -vars => {
+					%tmpl_vars, 
+	            },
+	        },
+	    );
+	}
+	else { 
+		 $scrn = DADA::Template::Widgets::wrap_screen(
+		        {
+		            -data           => \$tmpl,
+		            -with           => 'admin',
+		            -wrapper_params => {
+		                -Root_Login => $root_login,
+		                -List       => $ls->param('list'),
+		            },
+		            -vars => {
+						%tmpl_vars, 
+		            },
+		        },
+		    );		
+	}
     e_print($scrn);
 
 }
@@ -1723,6 +1802,12 @@ sub country_geoip_chart_tmpl{
 		<!-- tmpl_else --> 
 			<p class="alert">Nothing to report.</p> 
 		<!-- /tmpl_if --> 
+		
+			<!-- tmpl_unless chrome --> 
+				</body> 
+				</html> 
+				
+			<!-- /tmpl_unless -->
 	};
 }
 sub country_geoip_chart {

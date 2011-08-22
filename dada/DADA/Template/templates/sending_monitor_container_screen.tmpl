@@ -1,13 +1,14 @@
 <!-- begin sending_monitor_container_screen.tmpl --> 
 
+
 <!-- tmpl_set name="title" value="Monitor Your Mailing" -->
-
-
-
 <script type="text/javascript">
     //<![CDATA[
 	Event.observe(window, 'load', function() {
-	  update_sending_monitor();				
+	  update_sending_monitor();	
+		<!-- tmpl_if list_settings.tracker_show_message_reports_in_mailing_monitor --> 
+			refresh_tracker();
+		<!-- /tmpl_if --> 
 	});
 	
 	 function update_sending_monitor() { 
@@ -26,24 +27,34 @@
 		}
 		);
 	}
+	
+
+    function refresh_tracker()
+    {
+        document.getElementById('tracker_plugin').contentWindow.location.reload();
+	    setTimeout("refresh_tracker()",5000 * 60);
+    }	
+	
     //]]>
 </script>
-
-
-
-
-
 
 
 <!-- tmpl_include help_link_widget.tmpl -->
 
 
-<div id="sending_monitor_ajax"> 
-</div> 
+<div id="sending_monitor_ajax"></div> 
 
+<!-- tmpl_if list_settings.tracker_show_message_reports_in_mailing_monitor --> 
 
+	<fieldset> 
+	<legend>Tracker Reports</legend>
+		<div style="padding:10px; margin: 10px; border:0px">
+		<iframe id="tracker_plugin" src="<!-- tmpl_var tracker_url -->?chrome=0;f=m;mid=<!-- tmpl_var message_id -->"  width="100%" height="640"></iframe> 
+	</div> 
 
+	</fieldset>
 
+<!-- /tmpl_if --> 
 
 
 

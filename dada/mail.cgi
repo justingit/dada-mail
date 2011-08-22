@@ -1455,7 +1455,7 @@ sub sending_monitor {
 			-decode_before => 1,
 			}
 		);
-
+		
 		my $scrn = DADA::Template::Widgets::screen(
 				{
 					-screen => 'sending_monitor_screen.tmpl',
@@ -1492,7 +1492,6 @@ sub sending_monitor {
 						MAILOUT_AT_ONCE_LIMIT        => $DADA::Config::MAILOUT_AT_ONCE_LIMIT,
 						will_restart_in              => $will_restart_in,
 						integrity_check              => $status->{integrity_check},
-
 					},
 				}
 			);
@@ -1500,6 +1499,11 @@ sub sending_monitor {
 		e_print($scrn);
     }
 	else { 
+		
+		my $tracker_url = $DADA::Config::S_PROGRAM_URL; 
+		   $tracker_url =~ m/(^.*\/)(.*?)/; #just use the url to get the filename with a regex 
+		   $tracker_url = $1 . 'plugins/tracker.cgi'; 
+	
 		require DADA::Template::Widgets; 
 		my $scrn = DADA::Template::Widgets::wrap_screen(
 			{ 
@@ -1513,6 +1517,9 @@ sub sending_monitor {
 					message_id                   => DADA::App::Guts::strip($id),
 					message_type                 => $q->param('type'),
 					refresh_after                => $refresh_after,
+					tracker_url                  => $tracker_url, 
+					'list_settings.tracker_show_message_reports_in_mailing_monitor' 
+						=> $li->{tracker_show_message_reports_in_mailing_monitor},
 				}
 			}
 		); 
