@@ -2,6 +2,61 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.6.1
+
+=head2 Summary 4.6.1
+
+This a purely bug fix release, with most of the bugs fixed for the Dada Bridge
+plugin, to stop potential infinite loops from occuring. 
+
+=head2 Changes 4.6.1
+
+=head3 CPAN Module Updates
+
+=over
+
+=item * MIME::EncWords updated v1.012.3
+
+=back
+
+=head2 Features 4.6.1
+
+=head2 Bug Fixes 4.6.1 
+
+=head3 auto_pickup.pl: Can't locate object method "run" via package "tracker"
+
+https://github.com/justingit/dada-mail/issues/174
+
+=head3 "Revert ALL Text to Defaults" at "Email Message Templates" not working
+
+https://github.com/justingit/dada-mail/issues/175
+
+=head3 Discussion Lists with a List Name the same as the List Email can cause Infinite Loops!
+
+https://github.com/justingit/dada-mail/issues/176
+
+=head3 Dada Bridge: Ability to subscribe List Email to Subscription List
+
+https://github.com/justingit/dada-mail/issues/177
+
+=head3 Dada Bridge: Ability to set List Email address to same address used for List Owner or List Admin address
+
+https://github.com/justingit/dada-mail/issues/178
+
+=head3 Dada Bridge: Ability to set List Email to a List Email used on a different list
+
+https://github.com/justingit/dada-mail/issues/179
+
+=head3  Closes #180 List-Subscribe: header used even if the list is CLOSED
+
+https://github.com/justingit/dada-mail/issues/180
+
+=head3 "Unsubscribe Tag Options" not reflected in, "List-Unsubscribe" header
+
+https://github.com/justingit/dada-mail/issues/181
+
+
+
 =head1 4.6.0
 
 =head2 Summary 4.6.0
