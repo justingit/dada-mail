@@ -104,7 +104,7 @@ sub send_generic_email {
 					(
 						exists($args->{-list})
 					) ? ( 
-						$mh->tagged_list_headers,
+						$mh->list_headers,
 					) : 
 					(
 					),

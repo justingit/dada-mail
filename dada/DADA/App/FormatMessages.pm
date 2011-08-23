@@ -328,6 +328,20 @@ sub format_headers_and_body {
 }
 
 
+sub format_phrase_address {
+	 
+	my $self    = shift; 
+	my $phrase  = shift;
+	my $address = shift; 
+	
+	$phrase =~ s/\@/\\\@/g; 
+	require Email::Address; 
+	return Email::Address->new($phrase, $address)->format;
+	
+}
+
+
+
 =pod
 
 =head1 PRIVATE METHODS
@@ -784,10 +798,8 @@ sub _format_headers {
                 warn "couldn't get a valid Email::Address object? SILENTLY (*wink wink*) ignorning"; 
             
             }elsif(!$to_addy->phrase){ 
-            	
-                $to_addy->phrase($self->{ls}->param('list_name')); 
-                $entity->head->delete('To');
-                $entity->head->add('To', safely_encode( $to_addy->format )); 
+            	$entity->head->delete('To');
+				$entity->head->add('To', $self->format_phrase_address($self->{ls}->param('list_name'), $to_addy)); 
             
             }
         }

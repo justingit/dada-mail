@@ -873,149 +873,184 @@ sub cgi_mod {
 
 sub validate_list_email {
 
-    my $email = shift;
-    $email = DADA::App::Guts::strip($email);
-    my $valid = 1;
-
-	if($email eq ''){ 
-		return 1; 
+	my ($args) = @_; 
+	
+	my $list       = $args->{-list};  
+	if(!exists($args->{-list_email})){ 
+		return (1, {}); 
 	}
+	
+	my $list_email = $args->{-list_email}; 
+	
+    $list_email = DADA::App::Guts::strip($list_email);
+    my $status = 1;
 
-    my @lists = DADA::App::Guts::available_lists;
-    for my $this_list (@lists) {
+	my @list_types = qw(
+		list               
+		authorized_senders 
+	); 
+	# white_list                
+	# black_list
 
-        my $this_ls =
-          DADA::MailingList::Settings->new( { -list => $this_list } );
-        my $this_li = $this_ls->get;
+	my $errors = {
+		list_email_set_to_list_owner_email => 0, 
+		list_email_set_to_list_admin_email => 0, 
+	}; 
+	for(@list_types){ 
+		$errors->{'list_email_subscribed_to_' . $_} = 0; 
+	}
+	
+	if($list_email eq ''){ 
+		return (1, $errors); 
+	}
+	
+	require DADA::MailingList::Settings; 
+	require DADA::MailingList::Subscribers; 
+	
+	for my $t_list(available_lists()){ 
+		
+		my $ls = DADA::MailingList::Settings->new({-list => $t_list}); 
+		if ( $ls->param('list_owner_email') eq $list_email ) {
+			if($t_list eq $list_email){ 
+			    $errors->{list_email_set_to_list_owner_email} = 1;
+			}
+			else { 
+			    $errors->{list_email_set_to_another_list_owner_email} = 1;
+			}
+			$status = 0; 
+	    }
+		if ( $ls->param('admin_email') eq $list_email ) {
+			
+			if($t_list eq $list_email){ 
+	        	$errors->{list_email_set_to_list_admin_email} = 1;     
+			}
+			else { 
+				$errors->{list_email_set_to_another_list_admin_email} = 1;     
+			}
+			$status = 0; 
+			
+		}
+		my $lh = DADA::MailingList::Subscribers->new({-list => $t_list});
 
-        if ( $this_li->{list_owner_email} eq $email ) {
-            $valid = 0;
-        }
-        elsif ( $this_li->{admin_email} eq $email ) {
-            $valid = 0;
-        }
-
-        next if $this_list eq $list;
-
-        if ( $this_li->{discussion_pop_email} eq $email ) {
-            $valid = 0;
-        }
-    }
-
-    return $valid;
+		for my $type(@list_types){ 
+			if($lh->check_for_double_email(
+		        -Email => $list_email,
+		        -Type  => $type,
+		    ) == 1){
+				if($t_list eq $list_email){ 
+					$errors->{'list_email_subscribed_to_' . $type} = 1;   
+				}
+				else { 
+					$errors->{'list_email_subscribed_to_another_' . $type} = 1;   					
+				}  
+				$status = 0;
+			}
+		}
+	}
+	
+    return ($status, $errors);
 }
 
 sub cgi_default {
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get();
-    my $list_email_validation = 1;
-    
 
+	my %dada_bridge_settings_defaults = (
+		disable_discussion_sending                 => 0,
+		group_list                                 => 0,
+		append_list_name_to_subject                => 0,
+		no_append_list_name_to_subject_in_archives => 0,
+		discussion_pop_email                       => undef,
+		discussion_pop_server                      => undef, 
+		discussion_pop_username                    => undef, 
+		discussion_pop_password                    => undef,
+		discussion_pop_auth_mode                   => undef, 
+		append_discussion_lists_with               => '', 
+		enable_moderation                          =>  0,
+		moderate_discussion_lists_with             => 'list_owner_email',
+		send_moderation_msg                        => 0, 
+		send_moderation_accepted_msg               => 0,
+		send_moderation_rejection_msg              => 0,
+		enable_authorized_sending                  => 0,
+		authorized_sending_no_moderation           => 0,
+		subscriber_sending_no_moderation           => 0,
+		send_msgs_to_list                          => 0,
+		send_msg_copy_to                           => 0,
+		send_msg_copy_address                      => '',
+		send_not_allowed_to_post_msg               => 0,
+		send_invalid_msgs_to_owner                 => 0,
+		mail_discussion_message_to_poster          => 0,
+		strip_file_attachments                     => 0,
+		file_attachments_to_strip                  => '',
+		ignore_spam_messages                       => 0,
+		ignore_spam_messages_with_status_of        => 0,
+		rejected_spam_messages                     => 0,
+		set_to_header_to_list_address              => 0,
+		find_spam_assassin_score_by                => undef,
+		open_discussion_list                       => 0,
+		rewrite_anounce_from_header                => 0,
+		discussion_pop_use_ssl                     => 0,
+		discussion_template_defang                 => 0,
+	); 
+
+    # Validation, basically.
+    my $list_email_status = 1; 
+	my $list_email_errors = {}; 
+
+	my $discussion_pop_password = DADA::Security::Password::cipher_decrypt(
+		$li->{cipher_key}, 
+		$li->{discussion_pop_password}
+	); 
+	
     if ( $q->param('process') eq 'edit' ) {
+		($list_email_status, $list_email_errors) = validate_list_email(
+			{ 
+				-list       => $list, 
+				-list_email => $q->param('discussion_pop_email'), 
+			}
+		);
+		
+        if ( $list_email_status == 1 ) {
 
-        # Vaidation, basically.
-        $list_email_validation =
-          validate_list_email( $q->param('discussion_pop_email') );
-
-        my $p = {};
-        $p->{disable_discussion_sending} =
-          $q->param('disable_discussion_sending') || 0;
-        $p->{group_list} = $q->param('group_list') || 0;
-        $p->{append_list_name_to_subject} =
-          $q->param('append_list_name_to_subject') || 0;
-        $p->{no_append_list_name_to_subject_in_archives} =
-          $q->param('no_append_list_name_to_subject_in_archives') || 0;
-        $p->{discussion_pop_email} = $q->param('discussion_pop_email') || undef;
-        $p->{discussion_pop_server} = $q->param('discussion_pop_server')
-          || undef;
-        $p->{discussion_pop_username} = $q->param('discussion_pop_username')
-          || undef;
-        $p->{discussion_pop_password} = $q->param('discussion_pop_password')
-          || undef;
-        $p->{discussion_pop_auth_mode} = $q->param('discussion_pop_auth_mode')
-          || undef;
-        $p->{append_discussion_lists_with} =
-          $q->param('append_discussion_lists_with') || '';
-        $p->{enable_moderation} = $q->param('enable_moderation') || 0;
-        $p->{moderate_discussion_lists_with} =
-          $q->param('moderate_discussion_lists_with') || 'list_owner_email';
-        $p->{send_moderation_msg} = $q->param('send_moderation_msg') || 0;
-        $p->{send_moderation_accepted_msg} =
-          $q->param('send_moderation_accepted_msg') || 0;
-        $p->{send_moderation_rejection_msg} =
-          $q->param('send_moderation_rejection_msg') || 0;
-        $p->{enable_authorized_sending} = $q->param('enable_authorized_sending')
-          || 0;
-        $p->{authorized_sending_no_moderation} =
-          $q->param('authorized_sending_no_moderation') || 0;
-        $p->{subscriber_sending_no_moderation} =
-          $q->param('subscriber_sending_no_moderation') || 0;
-        $p->{send_msgs_to_list}     = $q->param('send_msgs_to_list')     || 0;
-        $p->{send_msg_copy_to}      = $q->param('send_msg_copy_to')      || 0;
-        $p->{send_msg_copy_address} = $q->param('send_msg_copy_address') || '';
-        $p->{send_not_allowed_to_post_msg} =
-          $q->param('send_not_allowed_to_post_msg') || 0;
-        $p->{send_invalid_msgs_to_owner} =
-          $q->param('send_invalid_msgs_to_owner') || 0;
-        $p->{mail_discussion_message_to_poster} =
-          $q->param('mail_discussion_message_to_poster') || 0;
-        $p->{strip_file_attachments} = $q->param('strip_file_attachments') || 0;
-        $p->{file_attachments_to_strip} = $q->param('file_attachments_to_strip')
-          || '';
-        $p->{ignore_spam_messages} = $q->param('ignore_spam_messages') || 0;
-        $p->{ignore_spam_messages_with_status_of} =
-          $q->param('ignore_spam_messages_with_status_of') || 0;
-
-		$p->{rejected_spam_messages} =
-          $q->param('rejected_spam_messages') || 0;
-
-
-
-        $p->{set_to_header_to_list_address} =
-          $q->param('set_to_header_to_list_address') || 0;
-        $p->{find_spam_assassin_score_by} =
-          $q->param('find_spam_assassin_score_by') || undef;
-        $p->{open_discussion_list} = $q->param('open_discussion_list') || 0;
-        $p->{rewrite_anounce_from_header} =
-          $q->param('rewrite_anounce_from_header') || 0;
-        $p->{discussion_pop_use_ssl} = $q->param('discussion_pop_use_ssl') || 0;
-
-        $p->{open_discussion_list} =
-          ( $Plugin_Config->{Allow_Open_Discussion_List} == 1 )
-          ? $p->{open_discussion_list}
-          : 0;
-        $p->{discussion_pop_password} =
-          DADA::Security::Password::cipher_encrypt( $li->{cipher_key},
-            $p->{discussion_pop_password} );
+			if($Plugin_Config->{Allow_Open_Discussion_List} == 1) { 
+				$q->param('open_discussion_list', 0); 
+			}
+			else { 
+			}
+			$q->param(
+				'discussion_pop_password', 
+				DADA::Security::Password::cipher_encrypt( 
+					$li->{cipher_key},
+					$q->param('discussion_pop_password') 
+				)
+			);
 			
-		$p->{discussion_template_defang} = $q->param('discussion_template_defang') || 0; 
-
-        if ( $list_email_validation == 1 ) {
-
-            $ls->save($p);
-
+		    $ls->save_w_params(
+		        {
+		            -associate => $q,
+		            -settings  => {
+						%dada_bridge_settings_defaults
+		            }
+		        }
+		    );
+			
             print $q->redirect(
                 -uri => $Plugin_Config->{Plugin_URL} . '?saved=1' );
             return;
         }
         else {
 
-         # rewind
-         # DEV: Beats me why there's these two that need to be explicitly named,
-         # but the others, aren't:
-            $p->{open_discussion_list} = $q->param('open_discussion_list') || 0;
-            $p->{discussion_pop_password} = $q->param('discussion_pop_password')
-              || undef;
-
-            for ( keys %$p ) {
-                $li->{$_} = $p->{$_};
-            }
-
-            $q->param( 'saved', 0 );
-
+			for ( keys %dada_bridge_settings_defaults) {
+				$li->{$_} = $q->param($_);
+			}
+			$q->param('saved', 0);
+			$discussion_pop_password = $q->param('discussion_pop_password'); 
         }
     }
+	else { 
+		# Not editing!
+	}
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
     my $auth_senders_count =
@@ -1054,6 +1089,7 @@ sub cgi_default {
 
     my $tmpl = default_cgi_template();
 
+	my $saved = $q->param('saved') || 0;
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
@@ -1066,10 +1102,21 @@ sub cgi_default {
             },
             -vars => {
 
+				Plugin_URL                 => $Plugin_Config->{Plugin_URL},
+                Plugin_Name                => $Plugin_Config->{Plugin_Name},
+                Allow_Open_Discussion_List => $Plugin_Config->{Allow_Open_Discussion_List},
+                Allow_Manual_Run           => $Plugin_Config->{Allow_Manual_Run},
+                Plugin_URL                 => $Plugin_Config->{Plugin_URL},
+                Manual_Run_Passcode        => $Plugin_Config->{Manual_Run_Passcode},
+
+                curl_location => $curl_location,
+				can_use_ssl   => $can_use_ssl, 
+                saved         => $saved,
                 authorized_senders             => $authorized_senders,
                 show_authorized_senders_table  => $show_authorized_senders_table,
-                list_email_validation          => $list_email_validation,
-              	discussion_pop_password        => DADA::Security::Password::cipher_decrypt($li->{cipher_key}, $li->{discussion_pop_password}),
+
+             	discussion_pop_password        => $discussion_pop_password,
+
                 discussion_pop_auth_mode_popup => $discussion_pop_auth_mode_popup,
                 can_use_spam_assassin          => &can_use_spam_assassin(),
                 spam_level_popup_menu          => $spam_level_popup_menu,
@@ -1082,22 +1129,21 @@ sub cgi_default {
                     $li->{find_spam_assassin_score_by} eq
                       'looking_for_embedded_headers'
                   ) ? 1 : 0,
-                
-                Plugin_URL                 => $Plugin_Config->{Plugin_URL},
-                Plugin_Name                => $Plugin_Config->{Plugin_Name},
 
-                Allow_Open_Discussion_List =>
-                  $Plugin_Config->{Allow_Open_Discussion_List},
+				list_email_status                                         => $list_email_status, 
+				
+				error_list_email_set_to_list_owner_email                  => $list_email_errors->{list_email_set_to_list_owner_email}, 
+				error_list_email_set_to_list_admin_email                  => $list_email_errors->{list_email_set_to_list_admin_email},
+				error_list_email_subscribed_to_list                       => $list_email_errors->{list_email_subscribed_to_list},
+				error_list_email_subscribed_to_authorized_senders         => $list_email_errors->{list_email_subscribed_to_authorized_senders},				
 
-                Allow_Manual_Run    => $Plugin_Config->{Allow_Manual_Run},
-                Plugin_URL          => $Plugin_Config->{Plugin_URL},
-                Manual_Run_Passcode => $Plugin_Config->{Manual_Run_Passcode},
-
-                curl_location => $curl_location,
-				can_use_ssl   => $can_use_ssl, 
-                saved         => $q->param('saved'),
-
-            },
+				error_list_email_set_to_another_list_owner_email          => $list_email_errors->{list_email_set_to_another_list_owner_email}, 
+				error_list_email_set_to_another_list_admin_email          => $list_email_errors->{list_email_set_to_another_list_admin_email},
+				error_list_email_subscribed_to_another_list               => $list_email_errors->{list_email_subscribed_to_another_list},
+				error_list_email_subscribed_to_another_authorized_senders => $list_email_errors->{list_email_subscribed_to_another_authorized_senders},
+								
+            },                                            
+			-list_settings_vars       => $li, 
 			-list_settings_vars_param => { 
 				-list                 => $list,
 				-dot_it               => 1,
@@ -3515,9 +3561,12 @@ sub default_cgi_template {
 	<!-- tmpl_var GOOD_JOB_MESSAGE  -->
 <!-- /tmpl_if -->
 
-<!-- tmpl_unless list_email_validation -->
-<p class="error">Information Not Saved! Please fix the below problems:</p>
-
+<!-- tmpl_unless list_email_status -->
+	<div style="background:#fcc;margin:5px;padding:5px;text-align:center">
+		  <h1>
+			Information Not Saved! Please Fix Problems Below.
+		<h1/>
+	</div> 
 <!--/tmpl_unless--> 
 <form name="default_form" action="<!-- tmpl_var Plugin_URL --> "method="post">
 
@@ -3540,7 +3589,7 @@ sub default_cgi_template {
 
 <fieldset> 
 
-<legend>List Address Configuration</legend>
+<legend>List Email Address Configuration</legend>
 
  
 
@@ -3573,6 +3622,87 @@ sub default_cgi_template {
  </p>
 </blockquote> 
 
+
+<!-- tmpl_if error_list_email_set_to_list_owner_email --> 
+		<ul> 
+			<li>
+				<p class="error">
+					Your List Email was set to the same address as the List Owner Email. It needs to be set to a different address. 
+				</p>
+			</li>
+		</ul>
+	<!-- /tmpl_if -->
+	
+<!-- tmpl_if error_list_email_set_to_another_list_owner_email --> 
+		<ul> 
+			<li>
+				<p class="error">
+					Your List Email was set to the same address as a List Owner Email address of a different list. It needs to be set to a different address. 
+				</p>
+			</li>
+		</ul>
+	<!-- /tmpl_if -->
+		
+<!-- tmpl_if error_list_email_set_to_list_admin_email --> 
+	<ul> 
+		<li>
+			<p class="error">
+				Your List Email was set to the same address as the List Admin Email. It needs to be set to a different address. 
+			</p>
+		</li>
+	</ul>
+<!-- /tmpl_if -->
+<!-- tmpl_if error_list_email_set_to_another_list_admin_email --> 
+	<ul> 
+		<li>
+			<p class="error">
+				Your List Email was set to the same address as the List Admin Email address of a different list. It needs to be set to a different address. 
+			</p>
+		</li>
+	</ul>
+<!-- /tmpl_if -->
+
+<!-- tmpl_if error_list_email_subscribed_to_list --> 
+	<ul> 
+		<li>
+			<p class="error">
+				Your List Email is currently subscribed to your Subscription List. It needs to be set to a different address. 
+			</p>
+		</li>
+	</ul>
+<!-- /tmpl_if -->
+<!-- tmpl_if error_list_email_subscribed_to_authorized_senders --> 
+	<ul> 
+		<li>
+			<p class="error">
+				Your List Email is currently subscribed to your Authorized Senders List. It needs to be set to a different address. 
+			</p>
+		</li>
+	</ul>
+<!-- /tmpl_if -->
+
+<!-- tmpl_if error_list_email_subscribed_to_another_list --> 
+	<ul> 
+		<li>
+			<p class="error">
+				Your List Email is currently subscribed to another mailing list's Subscription List. It needs to be set to a different address. 
+			</p>
+		</li>
+	</ul>
+<!-- /tmpl_if -->
+<!-- tmpl_if error_list_email_subscribed_to_another_authorized_senders --> 
+	<ul> 
+		<li>
+			<p class="error">
+				Your List Email is currently subscribed to another mailing list's Authorized Senders List. It needs to be set to a different address. 
+			</p>
+		</li>
+	</ul>
+<!-- /tmpl_if -->
+
+
+
+
  <table width="100%" cellpadding="5" cellspacing="0">
   <tr> 
    <td>
@@ -3581,11 +3711,11 @@ sub default_cgi_template {
     </label>
    </td>
    <td>
-    <input name="discussion_pop_email" id="discussion_pop_email" type="text" value="<!-- tmpl_var list_settings.discussion_pop_email -->" class="full" />
-    <!-- tmpl_unless list_email_validation --> 
-	<p class="error">!!! This email address is already being used for another List Owner Address, List Admin Email Address or List Email Address.</p>
-   <!-- /tmpl_unless --> 
 
+
+    <input name="discussion_pop_email" id="discussion_pop_email" type="text" value="<!-- tmpl_var list_settings.discussion_pop_email -->" class="full" <!-- tmpl_unless list_email_status -->style="background:red;font-weight:bold;color:white;border:3px solid black"<!-- /tmpl_unless -->/>
+	
+	
    </td>
   </tr>
   <tr> 

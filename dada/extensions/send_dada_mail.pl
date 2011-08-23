@@ -127,7 +127,7 @@ sub deliver {
             %mailing = (
                         %mailing,
                         $mh->_make_general_headers, 
-                        $mh->_make_list_headers
+                        $mh->list_headers
                    ); 
                     
 

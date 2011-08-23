@@ -1,3 +1,5 @@
+#-*- perl -*-
+
 package MIME::Charset;
 
 =head1 NAME

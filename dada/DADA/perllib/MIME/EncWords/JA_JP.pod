@@ -83,7 +83,7 @@ C<(^_^)>.
 =item decode_mimewords ENCODED, [OPTS...]
 
 I<関数>。
-文字列から RFC-1522 スタイルの "Q" エンコーディング
+文字列から RFC 2047 スタイルの "Q" エンコーディング
 (quoted-printable の一種) や "B" エンコーディング (base64)
 を探し、それをデコードする。
 
@@ -100,6 +100,9 @@ C<[DATA]> で返す (CHARSET は実質的に C<undef>)。
 B<**>
 ただし、隣り合う「encoded-word」を、キャラクタセットがおなじなら連結する。
 これは、マルチバイト列を安全に扱えるようにするためである。
+
+B<**>
+RFC2231 第 5 節で定義している言語情報があれば、第 3 の要素として追加する。
 
 B<*>
 エンコードされていなかったデータの両端の空白文字は取り去らない。
@@ -122,13 +125,13 @@ B<**>
 エラーが見つからなければ、$@ は偽となる。
 
 B<*>
-base64 の「encoded-word」が壊れているときは、エンコードしたままのものを返す。
+「encoded-word」が壊れているときは、エンコードしたままのものを返す。
 この場合、$@ をセットする。
 
 ENCODED に引き続く引数は、ハッシュによるオプションの定義とみなす。
 B<**>
 Unicode/マルチバイト文字対応が有効になっていないとき
-(L<MIME::Charset/USE_ENCODE> 参照) は、
+(L<MIME::Charset::JA_JP/USE_ENCODE> 参照) は、
 以下のオプションはなんの効果も持たない。
 
 =over 4
@@ -202,8 +205,8 @@ I<関数>。
 
 B<**>
 RAW は Unicode でもよい。ただし Unicode/マルチバイト対応が有効な場合
-(see L<MIME::Charset/USE_ENCODE>)。
-さらに RAW は、L<"decode_mimewords">
+(L<MIME::Charset::JA_JP/USE_ENCODE> 参照)。
+さらに RAW は、L</decode_mimewords>
 が配列コンテクストで返すものへの参照でもよい。
 後の場合は、"Charset" オプション (下記参照) が適宜上書きされる
 (下の注も参照)。
@@ -235,7 +238,7 @@ B<**>
 RAW 文字列の 7 ビットキャラクタセットを判別しようとする。
 初期値は C<"YES">。
 Unicode/マルチバイト文字対応が有効になっていないとき
-(L<MIME::Charset/USE_ENCODE> 参照) は、
+(L<MIME::Charset::JA_JP/USE_ENCODE> 参照) は、
 このオプションはなんの効果も持たない。
 
 =item Encoding
@@ -244,7 +247,7 @@ Unicode/マルチバイト文字対応が有効になっていないとき
 B<**>
 「特殊」な値も指定できる。C<"a"> は推奨されるエンコーディングを自動選択する
 (キャラクタセットに別のものが推奨されるときはキャラクタセット変換も行う。
-L<MIME::Charset> 参照)。
+L<MIME::Charset::JA_JP> 参照)。
 C<"s"> は C<"q"> と C<"b"> のうち短くなるほうを選ぶ。
 B<Note>:
 B<*>
@@ -261,12 +264,13 @@ B<**>
 B<**>
 
 エンコードする行を「行折り」する文字の列。初期値は C<"\n">。
-空文字列 C<""> を指定すると、行長 (下記 L<"MaxLineLen"> 参照)
+空文字列 C<""> を指定すると、行長 (下記 L</MaxLineLen> 参照)
 を超える「encoded-word」を SPACE で分割するだけ。
 
 B<Note>:
 B<*>
-RFC 2822 には、行は CRLF (C<"\r\n">) で分割すると明記してあるが、
+RFC 5822 (旧 RFC 2822) には、インターネットのメッセージでは行を
+CRLF (C<"\r\n">) で区切ると明記してあるが、
 このモジュールでは後方互換性を保つために LF (C<"\n">) を初期値としてきた。
 初期値を使っている場合、
 エンコードしたヘッダをセッションへと放つ前に、
@@ -280,7 +284,7 @@ C<"EXTENDED"> は拡張マッピングを使う。
 C<"STANDARD"> は標準化されている厳密なマッピングを使う。
 初期値は C<"EXTENDED">。
 Unicode/マルチバイト文字対応が有効になっていないとき
-(L<MIME::Charset/USE_ENCODE> 参照) は、
+(L<MIME::Charset::JA_JP/USE_ENCODE> 参照) は、
 このオプションはなんの効果も持たない。
 
 =item MaxLineLen
@@ -288,26 +292,34 @@ B<**>
 
 行の最大長 (改行を除く)。
 初期値は 76。
+負の値は行長無制限を意味する (リリース 1.012.3 以降)。
 
 =item Minimal
 B<**>
 
 エンコードするテキストの中の自然な語分離子 (要するに空白文字)
 に注意を払う。
-C<"NO"> を指定すると、このモジュールはテキストをまとめてエンコード
-(エンコードが必要なら) し、空白文字を考慮しない。
-行長を超える「encoded-word」は単にその長さによって分割される。
-初期値は C<"YES">。
+C<"NO"> を指定すると、
+このモジュールは空白文字を考慮せずにテキスト全体をエンコード
+(エンコードが必要なら)
+し、行長を超える「encoded-word」は単にその長さによって分割される。
+初期値は C<"YES"> で、最小限の部分だけエンコードする。
+C<"DISPNAME"> を指定すると、RFC5322 (旧 RFC2822、RFC822)
+のアドレス仕様 (3.4節) で述べている特殊文字を含む部分もエンコードする。
+これはアドレスフィールド中の display-name をエンコードする際に有用である。
 
 B<Note>:
 リリース 0.040 で、初期値が C<"YES"> に変わった。
 MIME::Words との互換性を保つためである。
 それ以前のリリースでは、このオプションは C<"NO"> 固定であった。
 
+B<Note>:
+C<"DISPNAME"> はリリース 1.012 で導入された。
+
 =item Replacement
 B<**>
 
-L<MIME::Charset/Error Handling> 参照。
+L<MIME::Charset::JA_JP/エラー処理> 参照。
 
 =back
 
@@ -319,15 +331,15 @@ L<MIME::Charset/Error Handling> 参照。
 =head2 設定ファイル
 B<**>
 
-L<"decode_mimewords"> ('Charset' オプションを除く) および
-L<"encode_mimewords"> のオプション引数の組み込み初期値は、
+L</decode_mimewords> ('Charset' オプションを除く) および
+L</encode_mimewords> のオプション引数の組み込み初期値は、
 設定ファイルで上書きできる。
 F<MIME/Charset/Defaults.pm> と F<MIME/EncWords/Defaults.pm>。
 詳細は F<MIME/EncWords/Defaults.pm.sample> を読んでほしい。
 
 =head1 VERSION
 
-$VERSION 変数を参照してほしい。
+C<$VERSION> 変数を参照してほしい。
 
 このモジュールの開発版が
 L<http://hatuka.nezumi.nu/repos/MIME-EncWords/>
@@ -335,7 +347,7 @@ L<http://hatuka.nezumi.nu/repos/MIME-EncWords/>
 
 =head1 SEE ALSO
 
-L<MIME::Charset>,
+L<MIME::Charset::JA_JP>,
 L<MIME::Tools>
 
 =head1 AUTHORS
@@ -345,12 +357,11 @@ decode_mimewords() 関数の元の版は L<MIME::Words>
     Eryq (F<eryq@zeegee.com>), ZeeGee Software Inc (F<http://www.zeegee.com>).
     David F. Skoll (dfs@roaringpenguin.com) http://www.roaringpenguin.com
 
-そのほかの部分は、以下の者が書き直しあるいは加えた:
+そのほかの部分は、次の者が書き直しあるいは加えた:
     Hatuka*nezumi - IKEDA Soji <hatuka(at)nezumi.nu>.
 
-All rights reserved.  This program is free software; you can redistribute
+This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.
 
 
 =cut
-

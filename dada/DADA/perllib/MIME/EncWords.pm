@@ -10,8 +10,8 @@ MIME::EncWords - deal with RFC 2047 encoded words (improved)
 =head1 SYNOPSIS
 
 I<L<MIME::EncWords> is aimed to be another implimentation
-of L<MIME::Words> so that it will achive more exact conformance with
-RFC 2047 (former RFC 1522) specifications.  Additionally, it contains
+of L<MIME::Words> so that it will achieve more exact conformance with
+RFC 2047 (formerly RFC 1522) specifications.  Additionally, it contains
 some improvements.
 Following synopsis and descriptions are inherited from its inspirer,
 then added descriptions on improvements (B<**>) or changes and
@@ -106,6 +106,15 @@ use MIME::Charset qw(:trans);
 my @ENCODE_SUBS = qw(FB_CROAK is_utf8 resolve_alias);
 if (MIME::Charset::USE_ENCODE) {
     eval "use ".MIME::Charset::USE_ENCODE." \@ENCODE_SUBS;";
+    if ($@) { # Perl 5.7.3 + Encode 0.40
+	eval "use ".MIME::Charset::USE_ENCODE." qw(is_utf8);";
+	require MIME::Charset::_Compat;
+	for my $sub (@ENCODE_SUBS) {
+	    no strict "refs";
+	    *{$sub} = \&{"MIME::Charset::_Compat::$sub"}
+		unless $sub eq 'is_utf8';
+	}
+    }
 } else {
     require MIME::Charset::_Compat;
     for my $sub (@ENCODE_SUBS) {
@@ -121,7 +130,7 @@ if (MIME::Charset::USE_ENCODE) {
 #------------------------------
 
 ### The package version, both in 1.23 style *and* usable by MakeMaker:
-$VERSION = '1.010.101';
+$VERSION = '1.012.3';
 
 ### Public Configuration Attributes
 $Config = {
@@ -137,13 +146,13 @@ eval { require MIME::EncWords::Defaults; };
 
 ### Private Constants
 
-### Nonprintables (controls + x7F + 8bit):
-#my $NONPRINT = "\\x00-\\x1F\\x7F-\\xFF";
 my $PRINTABLE = "\\x21-\\x7E";
+#my $NONPRINT = "\\x00-\\x1F\\x7F-\\xFF";
 my $NONPRINT = qr{[^$PRINTABLE]}; # Improvement: Unicode support.
 my $UNSAFE = qr{[^\x01-\x20$PRINTABLE]};
 my $WIDECHAR = qr{[^\x00-\xFF]};
 my $ASCIITRANS = qr{^(?:HZ-GB-2312|UTF-7)$}i;
+my $DISPNAMESPECIAL = "\\x22(),:;<>\\x40\\x5C"; # RFC5322 name-addr specials.
 
 #------------------------------
 
@@ -162,10 +171,14 @@ sub _decode_B {
 # _decode_Q STRING
 #     Private: used by _decode_header() to decode "Q" encoding, which is
 #     almost, but not exactly, quoted-printable.  :-P
+#     Improvement by this module: sanity check on encoded sequence (>=1.012.3).
 sub _decode_Q {
     my $str = shift;
-    $str =~ s/_/\x20/g;					# RFC-1522, Q rule 2
-    $str =~ s/=([\da-fA-F]{2})/pack("C", hex($1))/ge;	# RFC-1522, Q rule 1
+    if ($str =~ /=(?![0-9a-fA-F][0-9a-fA-F])/) { #XXX:" " and "\t" are allowed
+	return undef;
+    }
+    $str =~ s/_/\x20/g;					# RFC 2047, Q rule 2
+    $str =~ s/=([0-9a-fA-F]{2})/pack("C", hex($1))/ge;	# RFC 2047, Q rule 1
     $str;
 }
 
@@ -194,7 +207,7 @@ sub _encode_Q {
 =item decode_mimewords ENCODED, [OPTS...]
 
 I<Function.>
-Go through the string looking for RFC-1522-style "Q"
+Go through the string looking for RFC 2047-style "Q"
 (quoted-printable, sort of) or "B" (base64) encoding, and decode them.
 
 B<In an array context,> splits the ENCODED string into a list of decoded
@@ -210,6 +223,10 @@ CHARSET of C<undef>.
 B<**>
 However, adjacent encoded-words with same charset will be concatenated
 to handle multibyte sequences safely.
+
+B<**>
+Language information defined by RFC2231, section 5 will be additonal
+third element, if any.
 
 B<*>
 Whitespaces surrounding unencoded data will not be stripped so that
@@ -230,7 +247,7 @@ get I<something> back when decoding headers).
 $@ will be false if no error was detected.
 
 B<*>
-Malformed base64 encoded-words will be kept encoded.
+Malformed encoded-words will be kept encoded.
 In this case $@ will be set.
 
 Any arguments past the ENCODED string are taken to define a hash of options.
@@ -336,6 +353,7 @@ sub decode_mimewords {
 		next;
 	    }
 
+	  { local $@;
 	    if (scalar(@tokens) and
 		lc($charset || "") eq lc($tokens[-1]->[1] || "") and
 		resolve_alias($charset) and
@@ -350,6 +368,7 @@ sub decode_mimewords {
 		push @tokens, [$dec];
 	    }
 	    $spc = $tspc;
+	  }
             next;
         }
 
@@ -384,9 +403,10 @@ sub decode_mimewords {
 
     # Detect 7-bit charset
     if ($Params{Detect7bit} ne "NO") {
+	local $@;
 	foreach my $t (@tokens) {
 	    unless ($t->[0] =~ $UNSAFE or $t->[1]) {
-		my $charset = &MIME::Charset::_detect_7bit_charset($t->[0]);
+		my $charset = MIME::Charset::_detect_7bit_charset($t->[0]);
 		if ($charset and $charset ne &MIME::Charset::default()) {
 		    $t->[1] = $charset;
 		}
@@ -394,9 +414,13 @@ sub decode_mimewords {
 	}
     }
 
-    return (wantarray ? @tokens : join('',map {
-	&_convert($_->[0], $_->[1], $cset, $Params{Mapping})
-	} @tokens));
+    if (wantarray) {
+	@tokens;
+    } else {
+	join('', map {
+	    &_convert($_->[0], $_->[1], $cset, $Params{Mapping})
+	} @tokens);
+    }
 }
 
 #------------------------------
@@ -412,16 +436,14 @@ sub _convert($$$$) {
     my $charset = shift;
     my $cset = shift;
     my $mapping = shift;
-    return $s unless MIME::Charset::USE_ENCODE;
+    return $s unless &MIME::Charset::USE_ENCODE;
     return $s unless $cset->as_string;
     croak "unsupported charset ``".$cset->as_string."''"
 	unless $cset->decoder or $cset->as_string eq "_UNICODE_";
 
-    my $preserveerr = $@;
-
+    local($@);
     $charset = MIME::Charset->new($charset, Mapping => $mapping);
     if ($charset->as_string and $charset->as_string eq $cset->as_string) {
-	$@ = $preserveerr;
 	return $s;
     }
     # build charset object to transform string from $charset to $cset.
@@ -454,8 +476,6 @@ sub _convert($$$$) {
     } elsif ($charset->decoder) {
 	$converted = $charset->encode($s);
     }
-
-    $@ = $preserveerr;
     return $converted;
 }
 
@@ -537,14 +557,14 @@ B<**>
 RAW may be a Unicode string when Unicode/multibyte support is enabled
 (see L<MIME::Charset/USE_ENCODE>).
 Furthermore, RAW may be a reference to that returned
-by L<"decode_mimewords"> on array context.  In latter case "Charset"
+by L</decode_mimewords> on array context.  In latter case "Charset"
 option (see below) will be overridden (see also a note below).
 
 B<Note>:
 B<*>
 When RAW is an arrayref,
 adjacent encoded-words (i.e. elements having non-ASCII charset element)
-are concatenated.  Then they are splitted taking
+are concatenated.  Then they are split taking
 care of character boundaries of multibyte sequences when Unicode/multibyte
 support is enabled.
 Portions for unencoded data should include surrounding whitespace(s), or
@@ -594,11 +614,12 @@ B<**>
 
 A Sequence to fold encoded lines.  The default is C<"\n">.
 If empty string C<""> is specified, encoded-words exceeding line length
-(see L<"MaxLineLen"> below) will be splitted by SPACE.
+(see L</MaxLineLen> below) will be split by SPACE.
 
 B<Note>:
 B<*>
-Though RFC 2822 states that the lines are delimited by CRLF (C<"\r\n">), 
+Though RFC 5322 (formerly RFC 2822) states that the lines in
+Internet messages are delimited by CRLF (C<"\r\n">), 
 this module chose LF (C<"\n">) as a default to keep backward compatibility.
 When you use the default, you might need converting newlines
 before encoded headers are thrown into session.
@@ -619,6 +640,7 @@ B<**>
 
 Maximum line length excluding newline.
 The default is 76.
+Negative value means unlimited line length (as of release 1.012.3).
 
 =item Minimal
 B<**>
@@ -627,14 +649,21 @@ Takes care of natural word separators (i.e. whitespaces)
 in the text to be encoded.
 If C<"NO"> is specified, this module will encode whole text
 (if encoding needed) not regarding whitespaces;
-encoded-words exceeding line length will be splitted based only on their
+encoded-words exceeding line length will be split based only on their
 lengths.
-Default is C<"YES">.
+Default is C<"YES"> by which minimal portions of text are encoded.
+If C<"DISPNAME"> is specified, portions including special characters
+described in RFC5322 (formerly RFC2822, RFC822) address specification
+(section 3.4) are also encoded.
+This is useful for encoding display-name of address fields.
 
 B<Note>:
 As of release 0.040, default has been changed to C<"YES"> to ensure
 compatibility with MIME::Words.
 On earlier releases, this option was fixed to be C<"NO">.
+
+B<Note>:
+C<"DISPNAME"> option was introduced at release 1.012.
 
 =item Replacement
 B<**>
@@ -649,10 +678,11 @@ sub encode_mimewords  {
     my $words = shift;
     my %params = @_;
     my %Params = &_getparams(\%params,
-			     YesNo => [qw(Detect7bit Minimal)],
+			     YesNo => [qw(Detect7bit)],
 			     Others => [qw(Charset Encoding Field Folding
-					   Mapping MaxLineLen Replacement)],
-			     ToUpper => [qw(Charset Encoding Mapping
+					   Mapping MaxLineLen Minimal
+					   Replacement)],
+			     ToUpper => [qw(Charset Encoding Mapping Minimal
 					    Replacement)],
 			    );
     croak "unsupported encoding ``$Params{Encoding}''"
@@ -675,9 +705,18 @@ sub encode_mimewords  {
     my $firstlinelen = $Params{MaxLineLen} -
 	($Params{Field}? length("$Params{Field}: "): 0);
     my $maxrestlen = $Params{MaxLineLen} - length($fwsspc);
+    # minimal encoding flag
+    if (!$Params{Minimal}) {
+	$Params{Minimal} = 'NO';
+    } elsif ($Params{Minimal} !~ /^(NO|DISPNAME)$/) {
+	$Params{Minimal} = 'YES';
+    }
+    # unsafe ASCII sequences
     my $UNSAFEASCII = ($maxrestlen <= 1)?
 	qr{(?: =\? )}ox:
 	qr{(?: =\? | [$PRINTABLE]{$Params{MaxLineLen}} )}ox;
+    $UNSAFEASCII = qr{(?: [$DISPNAMESPECIAL] | $UNSAFEASCII )}ox
+	if $Params{Minimal} eq 'DISPNAME';
 
     unless (ref($words) eq "ARRAY") {
 	my @words = ();
@@ -685,7 +724,7 @@ sub encode_mimewords  {
 	$words =~ s/(?:[\r\n]+[\t ])*[\r\n]+([\t ]|\Z)/$1? " ": ""/eg;
 	$words =~ s/[\r\n]+/ /g;
 	# split if required
-	if ($Params{Minimal} eq "YES") {
+	if ($Params{Minimal} =~ /YES|DISPNAME/) {
 	    my ($spc, $unsafe_last) = ('', 0);
 	    foreach my $w (split(/([\t ]+)/, $words)) {
 		next unless scalar(@words) or length($w); # skip garbage
@@ -762,6 +801,12 @@ sub encode_mimewords  {
 				Detect7bit => $Params{Detect7bit},
 				Replacement => $Params{Replacement},
 				Encoding => $Params{Encoding});
+	# Resolve 'S' encoding based on global length. See (*).
+	$enc = 'S'
+	    if defined $enc and
+	       ($Params{Encoding} eq 'S' or
+		$Params{Encoding} eq 'A' and $obj->header_encoding eq 'S');
+
 	# pure ASCII
 	if ($cset eq "US-ASCII" and !$enc and $s =~ /$UNSAFEASCII/) {
 	    # pure ASCII with unsafe sequences should be encoded
@@ -770,7 +815,10 @@ sub encode_mimewords  {
 		$ascii->output_charset;
 	    $csetobj = MIME::Charset->new($cset,
 					  Mapping => $Params{Mapping});
-	    $enc = $csetobj->header_encoding || 'Q';
+	    # Preserve original Encoding option unless it was 'A'.
+	    $enc = ($Params{Encoding} eq 'A') ?
+		   ($csetobj->header_encoding || 'Q') :
+		   $Params{Encoding};
 	} else {
 	    $csetobj = MIME::Charset->new($cset,
 					  Mapping => $Params{Mapping});
@@ -813,6 +861,36 @@ sub encode_mimewords  {
 	push @triplets, [$s, $enc, $csetobj];
     }
 
+    # (*) Resolve 'S' encoding based on global length.
+    my @s_enc = grep { $_->[1] and $_->[1] eq 'S' } @triplets;
+    if (scalar @s_enc) {
+	my $enc;
+	my $b = scalar grep { $_->[1] and $_->[1] eq 'B' } @triplets;
+	my $q = scalar grep { $_->[1] and $_->[1] eq 'Q' } @triplets;
+	# 'A' chooses 'B' or 'Q' when all other encoded-words have same enc.
+	if ($Params{Encoding} eq 'A' and $b and ! $q) {
+	    $enc = 'B';
+	} elsif ($Params{Encoding} eq 'A' and ! $b and $q) {
+	    $enc = 'Q';
+	# Otherwise, assuming 'Q', when characters to be encoded are more than
+	# 6th of total, 'B' will win.
+	# Note: This might give 'Q' so great advantage...
+	} else {
+	    my @no_enc = grep { ! $_->[1] } @triplets;
+	    my $total = length join('', map { $_->[0] } (@no_enc, @s_enc));
+	    my $q = scalar(() = join('', map { $_->[0] } @s_enc) =~
+			   m{[^- !*+/0-9A-Za-z]}g);
+	    if ($total < $q * 6) {
+		$enc = 'B';
+	    } else {
+		$enc = 'Q';
+	    }
+	}
+        foreach (@triplets) {
+	    $_->[1] = $enc if $_->[1] and $_->[1] eq 'S';
+	}
+    }
+
     # chop leading FWS
     while (scalar(@triplets) and $triplets[0]->[0] =~ s/^[\r\n\t ]+//) {
 	shift @triplets unless length($triplets[0]->[0]);
@@ -820,8 +898,12 @@ sub encode_mimewords  {
 
     # Split long ``words''.
     my @splitted;
-    my $restlen = $firstlinelen;
-    foreach (@triplets) {
+    my $restlen;
+    if ($Params{MaxLineLen} < 0) {
+      @splitted = @triplets;
+    } else {
+      $restlen = $firstlinelen;
+      foreach (@triplets) {
 	my ($s, $enc, $csetobj) = @$_;
 
 	push @splitted, &_split($s, $enc, $csetobj, $restlen, $maxrestlen);
@@ -834,6 +916,7 @@ sub encode_mimewords  {
 	}
 	$restlen -= $lastlen; # FIXME: Sometimes estimated longer
 	$restlen = $maxrestlen if $restlen <= 1;
+      }
     }
 
     # Do encoding.
@@ -854,6 +937,8 @@ sub encode_mimewords  {
 		   $s =~ /^[\r\n\t ]/)? '': ' ';
 	if (!scalar(@lines)) {
 	    push @lines, $s;
+	} elsif ($Params{MaxLineLen} < 0) {
+	    $lines[-1] .= $spc.$s;
 	} elsif (length($lines[-1].$spc.$s) <= $restlen) {
 	    $lines[-1] .= $spc.$s;
 	} else {
@@ -1078,15 +1163,15 @@ sub _getparams {
 =head2 Configuration Files
 B<**>
 
-Built-in defaults of option parameters for L<"decode_mimewords">
+Built-in defaults of option parameters for L</decode_mimewords>
 (except 'Charset' option) and
-L<"encode_mimewords"> can be overridden by configuration files:
+L</encode_mimewords> can be overridden by configuration files:
 F<MIME/Charset/Defaults.pm> and F<MIME/EncWords/Defaults.pm>.
 For more details read F<MIME/EncWords/Defaults.pm.sample>.
 
 =head1 VERSION
 
-Consult $VERSION variable.
+Consult C<$VERSION> variable.
 
 Development versions of this module may be found at
 L<http://hatuka.nezumi.nu/repos/MIME-EncWords/>.
@@ -1106,7 +1191,7 @@ L<MIME::Words> module that was written by:
 Other stuff are rewritten or added by:
     Hatuka*nezumi - IKEDA Soji <hatuka(at)nezumi.nu>.
 
-All rights reserved.  This program is free software; you can redistribute
+This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.
 
 =cut

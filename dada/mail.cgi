@@ -5524,14 +5524,16 @@ sub edit_type {
             invite_message_subject
           ))
         {
-            my $tmp_setting = $q->param($_);
-            $tmp_setting =~ s/\r\n/\n/g;
-            $q->param( $_, $tmp_setting );
-
+          
             # a very odd place to put this, but, hey,  easy enough.
             if ( $q->param('revert') ) {
-                $q->param( $_, undef );
+                $q->param( $_, '' );
             }
+			else { 
+				  my $tmp_setting = $q->param($_);
+		             $tmp_setting =~ s/\r\n/\n/g;
+		          $q->param( $_, $tmp_setting );
+			}
         }
 
         $ls->save_w_params(
