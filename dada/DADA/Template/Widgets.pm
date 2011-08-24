@@ -2417,19 +2417,23 @@ sub subscription_form {
                             
                             subscriber_fields        => $named_subscriber_fields,
                             list                     => $list, 
-                            list_name                => $li->{list_name}, 
                             email                    => $args->{-email},
                             flavor_is_subscribe      => $flavor_is_subscribe, 
                             flavor_is_unsubscribe    => $flavor_is_unsubscribe,
-                            closed_list              => $li->{closed_list}, 
-                            list_popup_menu          => list_popup_menu(),
+                            # list_popup_menu          => list_popup_menu(),
+                            # list_checkbox_menu       => list_popup_menu(-as_checkboxes => 1), 
                             give_props               => $args->{-give_props}, 
                             ajax_subscribe_extension => $args->{-ajax_subscribe_extension},
                             script_url               => $args->{-script_url}, 
 							show_fields              => $args->{-show_fields}, 
 							profile_logged_in        => $args->{-profile_logged_in}, 
-                            
-                        }
+							
+                        },
+						-list_settings_vars_param => {
+							-list    => $list,
+							-dot_it => 1,
+						},
+						
                     });  
                 
     }
@@ -2455,9 +2459,6 @@ sub subscription_form {
 							profile_logged_in        => $args->{-profile_logged_in}, 
                         }
                     });      
-    
-    
-    
     }
 
 }

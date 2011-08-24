@@ -1944,6 +1944,7 @@ sub list_options {
                 -settings  => {
                     hide_list                          => 0,
                     closed_list                        => 0,
+                    invite_only_list                   => 0,
                     get_sub_notice                     => 0,
                     get_unsub_notice                   => 0,
                     enable_closed_loop_opt_in          => 0,
@@ -3402,6 +3403,14 @@ sub add {
                 }
             );
         }
+		
+		my $list_is_closed = 0; 
+		if(
+			$type eq 'list' &&
+			$ls->param('closed_list') == 1
+		){ 
+			$list_is_closed = 1;
+		}
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -3443,6 +3452,8 @@ sub add {
 
                     can_have_subscriber_fields =>
                       $lh->can_have_subscriber_fields,
+
+					list_is_closed => $list_is_closed,
 
                 },
                 -list_settings_vars_param => {
@@ -3651,6 +3662,15 @@ sub add_email {
         for (@$subscriber_fields) {
             push ( @$field_names, { name => $_ } );
         }
+
+		if(
+			$type eq 'list' &&
+			$ls->param('closed_list') == 1
+		){ 
+			die "Your list is currently CLOSED to subscribers."; 
+		}
+		
+		
 
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(

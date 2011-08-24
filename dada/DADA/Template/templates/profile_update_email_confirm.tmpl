@@ -71,10 +71,18 @@
 		
 		    <!-- tmpl_if closed_list --> 
 					<li><p class="error">
-					This list is closed and new subscribers can only be added by the list owner. 
+					This mailing list is closed to new subscribers.  
 				</p>
 				</li>
 			<!-- /tmpl_if --> 
+			
+			<!-- tmpl_if invite_only_list --> 
+					<li><p class="error">
+					This mailing list is by invitation-only.  
+				</p>
+				</li>
+			<!-- /tmpl_if -->
+			
 	
 		    <!-- tmpl_if  mx_lookup_failed --> 
 					<li><p class="error">

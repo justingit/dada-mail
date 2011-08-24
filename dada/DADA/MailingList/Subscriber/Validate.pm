@@ -87,7 +87,13 @@ sub subscription_check {
 
     if (   $args->{ -type } ne 'black_list'
         || $args->{ -type } ne 'authorized_senders' )
+		# uh... white listed?!
     {
+	
+		if ( !$skip{invite_only_list} ) {
+            $errors{invite_only_list} = 1 if $list_info->{invite_only_list} == 1;
+        }
+
         if ( !$skip{closed_list} ) {
             $errors{closed_list} = 1 if $list_info->{closed_list} == 1;
         }

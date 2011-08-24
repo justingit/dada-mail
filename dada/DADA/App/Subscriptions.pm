@@ -261,6 +261,7 @@ sub subscribe {
                     mx_lookup_failed
                     subscribed
                     closed_list
+                    invite_only_list
                     over_subscription_quota
                     black_listed
                     not_white_listed
@@ -692,6 +693,7 @@ sub confirm {
                     mx_lookup_failed
                     subscribed
                     closed_list
+                    invite_only_list
                     over_subscription_quota
                     black_listed
                     not_white_listed
