@@ -74,6 +74,7 @@ for my $list(DADA::App::Guts::available_lists()){
 												-type => $sublist, 
 												-skip => [qw(
 																no_list 
+																invite_only_list
 																closed_list 
 																mx_lookup_failed 
 																black_listed 

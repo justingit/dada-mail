@@ -77,16 +77,18 @@ my %Subscription_Descriptions = (
     invalid_email                 => 'Your email address isn\'t valid!', 
     
     subscribed                    => 'Your email address is already subscribed!', 
-    
-    closed_list                   => 'This list is currently closed to future subscribers!', 
+
+    invite_only_list              => 'This mailing list can currently by subscribed by invitation only.', 
+
+    closed_list                   => 'This mailing list is currently closed to future subscribers!', 
     
     mx_lookup_failed              => 'Your email address doesn\'t appear to be from a valid host!', 
     
     black_listed                   => 'That email address is currently not allowed to subscribe to this list!', 
     
-    not_white_listed              => 'You currently aren\'t allowed to subscribe to this list!', 
+    not_white_listed              => 'You currently aren\'t allowed to subscribe to this mailing list!', 
     
-    over_subscription_quota       => 'This list has reached its subscription quota!', 
+    over_subscription_quota       => 'This mailing list has reached its subscription quota!', 
     
     already_sent_sub_confirmation => 'Check your email - we\'ve already sent you a subscription confirmation email!', 
     

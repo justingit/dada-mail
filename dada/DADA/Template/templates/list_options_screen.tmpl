@@ -57,52 +57,12 @@
       Close Your List
      </label>
      <br/>
-     No one will be allowed to subscribe to this mailing list. You will not be able to 
-	send mailing list invitations. 
-     Subscribers can only be added via the administration 
-     control panel. People may still unsubscribe at any time.
+     No subscriptions may be made to your mailing list. People may still unsubscribe at any time.
     </p>
    </td>
   </tr>
- </table>
- <table cellspacing="5" <!-- tmpl_unless can_use_mx_lookup -->class="disabled"<!--/tmpl_unless--> >
-  <tr>
-   <td>
-    <input type="checkbox" name="mx_check" id="mx_check" value="1" <!-- tmpl_if list_settings.mx_check -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless can_use_mx_lookup -->disabled="disabled"<!--/tmpl_unless--> />
-   </td>
-   <td> 
-    <p>
-     <label for="mx_check">
-      Look Up Hostnames When Validating Email Addresses (MX Lookup)
-     </label>
-     <br />
-     When a request to subscribe is submitted by an individual the 
-     domain of the address will be checked for its existence. (Add/Invitations 
-	in the list control panel currently do not use MX Lookups.)
-    </p>
-<!-- tmpl_unless can_use_mx_lookup -->
-	    <p class="error">
-	     <em>
-	      Disabled. The Net::DNS module needs to be installed.
-	     </em>
-	    </p>
-<!--/tmpl_unless-->
-    
-   </td>
-  </tr>
- </table>
-</fieldset>
 
-
-
-<fieldset>
-<legend>
- Subscription Confirmations
-</legend>
-
-
-<table cellspacing="5">
-  <tr>
+ <tr>
    <td>
     <p>
      <input type="checkbox" name="invite_only_list" id="invite_only_list" value="1" <!-- tmpl_if list_settings.invite_only_list -->checked="checked"<!--/tmpl_if--> />
@@ -111,29 +71,16 @@
    <td>
     <p>
      <label for="invite_only_list">
-      Invitation Only List
+      Invitation-Only List
      </label>
      <br />
-     Subscribers may only be subscribed by a list invitation.
+     Subscribers may only be subscribed by a List Invitation from the List Owner. 
     </p>
-
-	<!-- 
-
-
-	<p>
-	 <em>
-	  Allow subscribers to invite other people. 
-	 </em>
-	</p>
-
---> 
-
-
    </td>
   </tr>
-</table> 
+ </table>
 
-</fieldset> 
+</fieldset>
 
 
 
@@ -144,7 +91,6 @@
 
 
 <fieldset>
-
 <legend>
  Subscription Confirmations
 </legend>
@@ -757,6 +703,38 @@ If someone not currently subscribed to your mailing list attempts to unsubscribe
 
 </fieldset>
 
+
+<fieldset> 
+	<legend>Misc.</legend>
+	 <table cellspacing="5" <!-- tmpl_unless can_use_mx_lookup -->class="disabled"<!--/tmpl_unless--> >
+	  <tr>
+	   <td>
+	    <input type="checkbox" name="mx_check" id="mx_check" value="1" <!-- tmpl_if list_settings.mx_check -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless can_use_mx_lookup -->disabled="disabled"<!--/tmpl_unless--> />
+	   </td>
+	   <td> 
+	    <p>
+	     <label for="mx_check">
+	      Look Up Hostnames When Validating Email Addresses (MX Lookup)
+	     </label>
+	     <br />
+	     When a request to subscribe is submitted by an individual the 
+	     domain of the address will be checked for its existence. (Add/Invitations 
+		in the list control panel currently do not use MX Lookups.)
+	    </p>
+	<!-- tmpl_unless can_use_mx_lookup -->
+		    <p class="error">
+		     <em>
+		      Disabled. The Net::DNS module needs to be installed.
+		     </em>
+		    </p>
+	<!--/tmpl_unless-->
+
+	   </td>
+	  </tr>
+	 </table>
+	
+	</fieldset> 
+	
 <hr />
 <div class="floatclear"></div>
 

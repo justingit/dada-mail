@@ -111,6 +111,8 @@ The error values are as follows:
 
 =item * blacklisted
 
+=item * invite_only_list
+
 =item * closed_list
 
 =item * invalid_email

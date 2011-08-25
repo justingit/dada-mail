@@ -286,7 +286,7 @@ sub search {
 										{
 											-email => $query, 
 											-type  => 'list', 
-											-skip => ['already_sent_sub_confirmation', 'subscribed', 'closed_list']
+											-skip => ['already_sent_sub_confirmation', 'subscribed', 'invite_only_list', 'closed_list']
 										}
 									); 
              for(keys %$errors){ 

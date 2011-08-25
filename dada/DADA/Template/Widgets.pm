@@ -2407,8 +2407,19 @@ sub subscription_form {
 	){ 
 		require DADA::MailingList::Settings; 
         my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-           $li = $ls->get(); 
-           
+  
+
+      
+		# This is so that we don't show the entire form, if we don't have to:
+		if(
+			
+			$ls->param('invite_only_list') == 1 || 
+			$ls->param('closed_list') == 1 
+			
+		){ 
+			 $args->{-show_fields} = 0;
+		}
+		
         return screen({
             -screen => 'subscription_form_widget.tmpl', 
             -vars   => {
