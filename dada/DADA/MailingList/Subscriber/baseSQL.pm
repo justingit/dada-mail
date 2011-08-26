@@ -176,7 +176,7 @@ sub move {
         croak "You must pass a value in the -to paramater!";
     }
 
-    if ( $self->{lh}->allowed_list_types->{ $args->{ -to } } != 1 ) {
+    if ( $self->{lh}->allowed_list_types( $args->{ -to }) != 1 ) {
         croak "list_type passed in, -to is not valid";
     }
 	if(!exists($args->{-confirmed})){ 

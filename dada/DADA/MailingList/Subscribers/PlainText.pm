@@ -897,7 +897,7 @@ sub remove_this_listtype {
 	    croak('You MUST specific a list type in the "-Type" paramater'); 
 	}
 	else { 
-	    if(!exists( $self->allowed_list_types()->{$args{-Type}})){ 
+	    if($self->allowed_list_types($args{-Type}) != 1){ 
 	        croak '"' . $args{-Type} . '" is not a valid list type! '; 
 	    }
 	}

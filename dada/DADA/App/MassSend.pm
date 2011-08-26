@@ -1580,6 +1580,123 @@ print $scrn;
 
 
 
+sub just_subscribed_mass_mailing { 
+	
+	my ($args) = @_; 
+	if(! exists( $args->{-list} ) ) { 
+		croak "You MUST pass a list in the, '-list' paramater!"; 
+	}
+	if(!  $args->{-addresses}->[0] ) {  
+		return; 
+	}
+	
+	# Subscribe 'em
+	require DADA::MailingList::Subscribers; 
+	my $lh = DADA::MailingList::Subscribers->new({-list => $args->{-list}});
+	
+	my $type = '_tmp-just_subscribed-' . time; 
+	
+	for my $a (@{$args->{-addresses}}){ 
+		my $info = $lh->csv_to_cds($a);
+        my $dmls = $lh->add_subscriber(
+            {
+                -email 		    => $info->{email},
+                -type   		=> $type,
+				-dupe_check    => {
+					-enable  => 1,
+					-on_dupe => 'ignore_add',
+            	},
+            }
+        );
+	}
+	
+	require DADA::App::FormatMessages;  
+	my $fm = DADA::App::FormatMessages->new( -List => $args->{-list} );
+	$fm->mass_mailing(1);
+	$fm->use_email_templates(0); 
+
+	require DADA::MailingList::Settings;
+	my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
+	my ($header_glob, $message_string) =  $fm->format_headers_and_body(
+		-msg => $fm->string_from_dada_style_args(
+			{
+                    -fields => { 
+							Subject => $ls->param('subscribed_by_list_owner_message_subject'), 
+							Body    => $ls->param('subscribed_by_list_owner_message'), 
+						},
+                }
+		)
+ 	);
+
+
+	require DADA::Mail::Send; 
+	my $mh = DADA::Mail::Send->new({-list => $args->{-list}}); 
+	   $mh->list_type($type);
+	my $message_id = $mh->mass_send(
+            {
+                -msg             => {				   
+					 $mh->return_headers($header_glob),    
+					 Body      => $message_string,                      
+				},
+            }
+        );
+		return 1; 
+
+}
+
+
+sub send_last_archived_msg_mass_mailing { 
+
+	my ($args) = @_; 
+	if(! exists( $args->{-list} ) ) { 
+		croak "You MUST pass a list in the, '-list' paramater!"; 
+	}
+	if(!  $args->{-addresses}->[0] ) {  
+		return; 
+	}
+	
+	# Subscribe 'em
+	require DADA::MailingList::Subscribers; 
+	my $lh = DADA::MailingList::Subscribers->new({-list => $args->{-list}});
+	
+	my $type = '_tmp-just_subed_archive-' . time; 
+	
+	for my $a (@{$args->{-addresses}}){ 
+		my $info = $lh->csv_to_cds($a);
+        my $dmls = $lh->add_subscriber(
+            {
+                -email 		    => $info->{email},
+                -type   		=> $type,
+				-dupe_check    => {
+					-enable  => 1,
+					-on_dupe => 'ignore_add',
+            	},
+            }
+        );
+	}
+	
+	require DADA::MailingList::Archives; 
+	my $la = DADA::MailingList::Archives->new({-list => $args->{-list}}); 
+    my $newest_entry = $la->newest_entry; 
+	
+		my ($head, $body) = $la->massage_msg_for_resending(
+								-key     => $newest_entry, 
+								'-split' => 1,
+							);
+							
+		require DADA::Mail::Send; 
+		my $mh = DADA::Mail::Send->new({-list => $args->{-list}}); 
+		   $mh->list_type($type);
+		my $message_id = $mh->mass_send(
+	            {
+	                -msg             => {				   
+						$mh->return_headers($head),  
+						Body => $body, 
+					},
+	            }
+	        );
+			return 1;
+}
 
 
 

@@ -1145,13 +1145,13 @@ sub mass_send {
 		
 	
     # This is so awkwardly placed...	
-	if($self->list_type eq 'invitelist'){ 
+	if($self->list_type eq 'invitelist' || $self->list_type =~ m/tmp/){ 
 		my $lh = DADA::MailingList::Subscribers->new(
 					{
 						-list => $self->{list}
 					}
 				);
-		   $lh->remove_this_listtype(-Type=> 'invitelist');
+		   $lh->remove_this_listtype(-Type=> $self->list_type);
 	}
 
 	# Probably right here we can put the, 

@@ -327,6 +327,68 @@
 
 
 
+
+
+
+<fieldset>
+	<legend>
+		
+		Subscribed by List Owner Message
+	</legend>
+
+	<fieldset>
+		<legend>
+			Headers: 
+		</legend>
+  
+    <p>
+     <label for="subscribed_by_list_owner_message_subject" class="label_by_5">Subject:</label> <input type="text" name="subscribed_by_list_owner_message_subject" id="subscribed_by_list_owner_message_subject" value="<!-- tmpl_var list_settings.subscribed_by_list_owner_message_subject escape=HTML -->" class="midi" />
+    </p>
+    
+	
+	
+	</fieldset>
+
+	<fieldset>
+		<legend>
+			PlainText Message: 
+		</legend>
+
+		<!-- tmpl_if unsub_link_found_in_pt_subscribed_by_list_owner_msg --> 
+			<p class="positive">
+				Unsubscribe Link found in Template. Good!
+			</p>
+		<!-- tmpl_else --> 
+			<p class="error">
+				Yikes! Couldn't find an Unsubscribe Link (<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, somewhere, an unsubscribe link will be automatically appended to the top of your message. 
+			</p>
+		<!-- /tmpl_if -->
+
+	
+	
+	<p>
+<textarea name="subscribed_by_list_owner_message" id="subscribed_by_list_owner_message" rows="10" cols="50" ><!-- tmpl_var list_settings.subscribed_by_list_owner_message escape=HTML -->
+</textarea> 
+	</p>
+</fieldset> 
+
+
+
+</fieldset>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <fieldset>
 	<legend>
 		Not Allowed to Post Message

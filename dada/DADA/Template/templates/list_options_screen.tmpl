@@ -332,6 +332,23 @@
     </p>
    </td>
   </tr>
+
+	<tr>
+	  <td>
+	   <input type="checkbox" name="send_newest_archive" id="send_newest_archive" value="1" <!-- tmpl_if list_settings.send_newest_archive -->checked="checked"<!--/tmpl_if--> />
+	  </td>
+	  <td>
+	   <p>
+	    <label for="send_newest_archive">
+	     Send the Newest Archived Message to All New Subscribers. 
+	    </label>
+	    <br />
+	    Visitors that sign up themselves will receive a copy of the last archived message after they complete the subscription process. 
+	   </p>
+	  </td>
+	 </tr>
+
+
  </table>
   
  <table cellspacing="5" <!-- tmpl_unless can_use_captcha -->class="disabled"<!--/tmpl_unless--> >
@@ -424,6 +441,89 @@
  </table>
 
 </fieldset>
+
+
+<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN --> 
+	<!-- ... --> 
+<!-- tmpl_else -->
+
+	<fieldset>
+	<legend>
+		List Control Panel Subscriptions
+	</legend>
+
+	<table cellpadding="5" border="0"> 
+		<tr> 
+			<td>
+				<p>
+					<input type="checkbox" name="enable_mass_subscribe" id="enable_mass_subscribe" <!-- tmpl_if list_settings.enable_mass_subscribe -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
+				</p>
+			</td>
+			<td>
+				<p>
+					<label for="enable_mass_subscribe">
+						Allow Subscriptions in the List Control Panel
+					</label><br /> 
+					 When enabled, this will allow you to add subscribers, via the List Control Panel without any email confirmation. 
+					</p> 
+					<p>
+					 <em>
+					  You will want to disable this feature, if you would closely follow the 
+					   <strong>
+						Closed-List, Opt-In
+					   </strong> 
+					  system.
+					</em>
+				</p>
+			
+				<table cellpadding="5" border="0"> 
+					<tr> 
+						<td>
+							<p>
+								<input type="checkbox" name="send_subscribed_by_list_owner_message" id="send_subscribed_by_list_owner_message" <!-- tmpl_if list_settings.send_subscribed_by_list_owner_message -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
+							</p>
+						</td>
+						<td>
+							<p>
+								<label for="send_subscribed_by_list_owner_message">
+									Send a "Welcome" Message to Addresses Subscribed by the List Owner. 
+								</label><br /> 
+							
+							</p>
+							
+								
+						</td>
+					</tr>
+					
+					<tr> 
+						<td>
+							<p>
+								<input type="checkbox" name="send_last_archived_msg_mass_mailing" id="send_last_archived_msg_mass_mailing" <!-- tmpl_if list_settings.send_last_archived_msg_mass_mailing -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
+							</p>
+						</td>
+						<td>
+							<p>
+								<label for="send_last_archived_msg_mass_mailing">
+									Send the Newest Archived Message to Addresses Subscribed by the List Owner. 
+								</label><br /> 
+							
+							</p>
+							
+								
+						</td>
+					</tr>
+					
+					
+				</table>
+			
+			
+			</td>
+		</tr>
+	</table>
+
+	</fieldset> 
+
+<!-- /tmpl_if --> 
 
 
 

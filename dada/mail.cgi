@@ -1942,50 +1942,53 @@ sub list_options {
             {
                 -associate => $q,
                 -settings  => {
-                    hide_list                          => 0,
-                    closed_list                        => 0,
-                    invite_only_list                   => 0,
-                    get_sub_notice                     => 0,
-                    get_unsub_notice                   => 0,
-                    enable_closed_loop_opt_in          => 0,
-                    skip_sub_confirm_if_logged_in      => 0,
-                    unsub_confirm_email                => 0,
-                    skip_unsub_confirm_if_logged_in    => 0,
-                    send_unsub_success_email           => 0,
-                    send_sub_success_email             => 0,
-                    mx_check                           => 0,
-                    limit_sub_confirm                  => 0,
-                    limit_unsub_confirm                => 0,
-                    email_your_subscribed_msg          => 0,
-                    email_you_are_not_subscribed_msg   => 0,
-                    use_alt_url_sub_confirm_success    => 0,
-                    alt_url_sub_confirm_success        => '',
-                    alt_url_sub_confirm_success_w_qs   => 0,
-                    use_alt_url_sub_confirm_failed     => 0,
-                    alt_url_sub_confirm_failed         => '',
-                    alt_url_sub_confirm_failed_w_qs    => 0,
-                    use_alt_url_sub_success            => 0,
-                    alt_url_sub_success                => '',
-                    alt_url_sub_success_w_qs           => 0,
-                    use_alt_url_sub_failed             => 0,
-                    alt_url_sub_failed                 => '',
-                    alt_url_sub_failed_w_qs            => 0,
-                    use_alt_url_unsub_confirm_success  => 0,
-                    alt_url_unsub_confirm_success      => '',
-                    alt_url_unsub_confirm_success_w_qs => 0,
-                    use_alt_url_unsub_confirm_failed   => 0,
-                    alt_url_unsub_confirm_failed       => '',
-                    alt_url_unsub_confirm_failed_w_qs  => 0,
-                    use_alt_url_unsub_success          => 0,
-                    alt_url_unsub_success              => '',
-                    alt_url_unsub_success_w_qs         => 0,
-                    use_alt_url_unsub_failed           => 0,
-                    alt_url_unsub_failed               => '',
-                    alt_url_unsub_failed_w_qs          => 0,
-                    enable_subscription_approval_step  => 0,
-                    captcha_sub                        => 0,
-
-					unsub_link_behavior                => undef, 
+                    hide_list                             => 0,
+                    closed_list                           => 0,
+                    invite_only_list                        => 0,
+                    get_sub_notice                        => 0,
+                    get_unsub_notice                      => 0,
+                    enable_closed_loop_opt_in             => 0,
+                    skip_sub_confirm_if_logged_in         => 0,
+                    unsub_confirm_email                   => 0,
+                    skip_unsub_confirm_if_logged_in       => 0,
+                    send_unsub_success_email              => 0,
+                    send_sub_success_email                => 0,
+					send_newest_archive                   => 0,
+                    mx_check                              => 0,
+                    limit_sub_confirm                     => 0,
+                    limit_unsub_confirm                   => 0,
+                    email_your_subscribed_msg             => 0,
+                    email_you_are_not_subscribed_msg      => 0,
+                    use_alt_url_sub_confirm_success       => 0,
+                    alt_url_sub_confirm_success           => '',
+                    alt_url_sub_confirm_success_w_qs      => 0,
+                    use_alt_url_sub_confirm_failed        => 0,
+                    alt_url_sub_confirm_failed            => '',
+                    alt_url_sub_confirm_failed_w_qs       => 0,
+                    use_alt_url_sub_success               => 0,
+                    alt_url_sub_success                   => '',
+                    alt_url_sub_success_w_qs              => 0,
+                    use_alt_url_sub_failed                => 0,
+                    alt_url_sub_failed                    => '',
+                    alt_url_sub_failed_w_qs               => 0,
+                    use_alt_url_unsub_confirm_success     => 0,
+                    alt_url_unsub_confirm_success         => '',
+                    alt_url_unsub_confirm_success_w_qs    => 0,
+                    use_alt_url_unsub_confirm_failed      => 0,
+                    alt_url_unsub_confirm_failed          => '',
+                    alt_url_unsub_confirm_failed_w_qs     => 0,
+                    use_alt_url_unsub_success             => 0,
+                    alt_url_unsub_success                 => '',
+                    alt_url_unsub_success_w_qs            => 0,
+                    use_alt_url_unsub_failed              => 0,
+                    alt_url_unsub_failed                  => '',
+                    alt_url_unsub_failed_w_qs             => 0,
+                    enable_subscription_approval_step     => 0,
+					enable_mass_subscribe                 => 0,
+					send_subscribed_by_list_owner_message => 0,
+					send_last_archived_msg_mass_mailing   => 0, 
+                    captcha_sub                           => 0,
+					unsub_link_behavior                   => undef, 
                 }
             }
         );
@@ -3607,8 +3610,6 @@ sub add_email {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
-
 	require DADA::ProfileFieldsManager;
 	my $pfm =  DADA::ProfileFieldsManager->new;
 
@@ -3651,8 +3652,8 @@ sub add_email {
 
         $going_over_quota = 1
           if ( ( $num_subscribers + $#$not_subscribed ) >=
-            $li->{subscription_quota} )
-          && ( $li->{use_subscription_quota} == 1 );
+            $ls->param('subscription_quota') )
+          && ( $ls->param('use_subscription_quota') == 1 );
 
         my $addresses_to_add = 0;
         $addresses_to_add = 1
@@ -3717,7 +3718,7 @@ sub add_email {
         else {
 
 			if(
-				$li->{enable_mass_subscribe} != 1 &&
+				$ls->param('enable_mass_subscribe') != 1 &&
 				$type eq 'list'
 			){
 				die "Mass Subscribing via the List Control Panel has been disabled.";
@@ -3750,6 +3751,34 @@ sub add_email {
             	}
 				else { 
 					$skipped_email_count++; 
+				}
+			}
+
+			if($type eq 'list') { 
+				if($ls->param('send_subscribed_by_list_owner_message') == 1){
+					require DADA::App::MassSend; 
+					eval { 
+						DADA::App::MassSend::just_subscribed_mass_mailing(
+							{ 
+								-list      => $list, 
+								-addresses => [@address], 
+							}	
+						); 
+					};
+					if($@){ 
+						carp $@; 
+					}	
+					eval { 
+						DADA::App::MassSend::send_last_archived_msg_mass_mailing(
+							{ 
+								-list      => $list, 
+								-addresses => [@address], 
+							}	
+						);
+					};				
+					if($@){ 
+						carp $@; 
+					}	
 				}
 			}
 
@@ -3839,14 +3868,6 @@ sub delete_email {
         print $fh $delete_list;
         close($fh);
         chmod( 0666, $outfile );
-
-
-        #my @delete_addresses = split(/\n/, $delete_list);
-        #
-        ## xss filter...
-        #for(@delete_addresses){
-        #    $_ = xss_filter(strip($_));
-        #}
 
 		my $new_emails = [];
 		my $new_info   = [];
@@ -4348,7 +4369,6 @@ sub archive_options {
                     archive_search_form                    => 0,
                     archive_send_form                      => 0,
                     captcha_archive_send_form              => 0,
-                    send_newest_archive                    => 0,
                 }
             }
         );
@@ -5494,6 +5514,12 @@ sub edit_type {
                       $dfm->can_find_sub_confirm_link(
                         { -str => $li->{confirmation_message} }
                       ),
+
+                    unsub_link_found_in_pt_subscribed_by_list_owner_msg => $dfm->can_find_unsub_link(
+                        { -str => $li->{subscribed_by_list_owner_message} }
+                    ),
+
+
                     sub_confirm_link_found_in_pt_invite_msg =>
                       $dfm->can_find_sub_confirm_link(
                         { -str => $li->{invite_message_text} }
@@ -5519,6 +5545,10 @@ sub edit_type {
         for (qw(
             subscribed_message_subject
             subscribed_message
+
+			subscribed_by_list_owner_message_subject
+			subscribed_by_list_owner_message
+
             unsubscribed_message_subject
             unsubscribed_message
             confirmation_message_subject
@@ -5564,6 +5594,8 @@ sub edit_type {
                     confirmation_message                       => undef,
                     subscribed_message_subject                 => undef,
                     subscribed_message                         => undef,
+					subscribed_by_list_owner_message_subject   => undef, 
+					subscribed_by_list_owner_message           => undef, 
                     unsubscribed_message_subject               => undef,
                     unsubscribed_message                       => undef,
                     unsub_confirmation_message_subject         => undef,
@@ -5862,7 +5894,6 @@ sub list_cp_options {
                 -associate => $q,
                 -settings  => {
                     enable_fckeditor            => 0,
-                    enable_mass_subscribe       => 0,
                     view_list_subscriber_number => 0,
                 }
             }

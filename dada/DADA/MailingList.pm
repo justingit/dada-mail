@@ -187,7 +187,7 @@ sub Remove {
 
 
     #mostly for the SQL backends
-	for(keys  %{$lh->allowed_list_types }){ 
+	for(keys  %{$lh->get_list_types }){ 
     	$lh->remove_this_listtype(-Type => $_);
 	}
 
