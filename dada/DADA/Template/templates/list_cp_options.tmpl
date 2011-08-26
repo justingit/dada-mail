@@ -84,35 +84,7 @@
 
 
 
-<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN --> 
-	<!-- ... --> 
-<!-- tmpl_else --> 
-	<fieldset> 
-	<legend>
-	Manage Subscribers: Invite/Add Screen
-	</legend> 
 
-	<table cellpadding="5" border="0"> 
-		<tr> 
-			<td>
-				<p>
-					<input type="checkbox" name="enable_mass_subscribe" id="enable_mass_subscribe" <!-- tmpl_if list_settings.enable_mass_subscribe -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
-				</p>
-			</td>
-			<td>
-				<p>
-					<label for="enable_mass_subscribe">
-						Enable, "Subscribe Checked Subscribers" button in the, <em>Manage Subscribers -&gt; Invite/Add -&gt; Verify</em> screen
-					</label><br /> 
-					When enabled, this will allow you to add subscribers, via the List Control Panel without any email confirmation. </p> 
-				
-					<p> You will want to disable this feature, if you would closely follow the Closed-List, Opt-In system.
-				</p>
-			</td>
-		</tr>
-	</table>
-	</fieldset> 
-<!-- /tmpl_if --> 
 
 
 

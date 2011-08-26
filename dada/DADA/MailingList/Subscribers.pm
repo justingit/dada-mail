@@ -250,24 +250,39 @@ sub add_to_email_list {
 
 
 
+sub get_list_types { 
 
+	my $self = shift; 
+	return { 
+		list                => 1,       
+		black_list          => 1, 
+		authorized_senders  => 1, 
+		testers             => 1, 
+		white_list          => 1, 
+		sub_confirm_list    => 1, 
+		unsub_confirm_list  => 1, 
+		invitelist          => 1, 
+		sub_request_list    => 1,			
+	};
+	
+}
 sub allowed_list_types { 
 
     my $self = shift; 
+    my $type = shift; 
+
+    my $named_list_types = $self->get_list_types;
     
-    return {
-    
-        list                => 1,       
-        black_list          => 1, 
-        authorized_senders  => 1, 
-        testers             => 1, 
-        white_list          => 1, 
-        sub_confirm_list    => 1, 
-        unsub_confirm_list  => 1, 
-        invitelist          => 1, 
-		sub_request_list    => 1,   
-    } 
-       
+	if( exists( $named_list_types->{$type} ) ){ 
+		return 1; 
+	}
+	elsif($type =~ m/_tmp(.*?)/){ 
+			return 1; 
+	}
+	else { 
+		return 0;
+	}
+   
 }
 
 sub subscription_check { 
@@ -1246,9 +1261,9 @@ You forgot to pass an email in the, -email paramater, ie:
 
 =head2 Validating a Subscriber
 
-=head2 allowed_list_types
+=head2 get_list_types
 
- my $list_types = $lh->allowed_list_types
+ my $list_types = $lh->get_list_types
 
 Returns a hashref of the allowed sublist types. The keys are the actual sublist types, the value is simply set to, C<1>, for 
 easy lookup tabling. 

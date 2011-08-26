@@ -244,7 +244,7 @@ sub SQL_subscriber_profile_join_statement {
     }
 
     # Sanity Check.
-    if ( !exists( $self->allowed_list_types()->{ $args->{ -type } } ) ) {
+    if (  $self->allowed_list_types( $args->{ -type } )  != 1) {
         croak '"' . $args->{ -type } . '" is not a valid list type! ';
     }
 
@@ -1244,7 +1244,7 @@ sub remove_this_listtype {
         croak('You MUST specific a list type in the "-Type" paramater');
     }
     else {
-        if ( !exists( $self->allowed_list_types()->{ $args{ -Type } } ) ) {
+        if ( $self->allowed_list_types( $args{ -Type } ) != 1 ) {
             croak '"' . $args{ -Type } . '" is not a valid list type! ';
         }
     }

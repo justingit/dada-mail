@@ -129,7 +129,7 @@ sub _init {
 
 	##############################################################################
 	# This is the new stuff, I guess:
-	if($self->{lh}->allowed_list_types->{$args->{-type}} != 1){ 
+	if($self->{lh}->allowed_list_types($args->{-type}) != 1){ 
         croak "list_type passed in, -type is not valid"; 
     }	
 	#/This is the new stuff, I guess: 
@@ -215,7 +215,7 @@ sub copy {
         croak "You must pass a value in the -to paramater!"; 
     }
 
-    if($self->{lh}->allowed_list_types->{$args->{-to}} != 1){ 
+    if($self->{lh}->allowed_list_types($args->{-to}) != 1){ 
         croak "list_type passed in, -to is not valid"; 
     }
 
