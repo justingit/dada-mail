@@ -65,7 +65,7 @@ Will not. Consult the Config.pm file for how to set the special prefix.
 
 Currently, all the subscription fields are optional, except the email address. 
 
-You may acquire the HTML code needed to embed the subscription form in a webpage in the usual location: B<Under Manage Appearance>, click on, B<Subscription Form HTML>. 
+You may acquire the HTML code needed to embed the subscription form in a webpage in the usual location: Under B<Appearance and Templates >, click on, B<Subscription Form HTML>. 
 
 There's also a new option to embed a javascript call that will create the HTML form for you. This is beneficial, since the subscription form on your webpage will automatically update, if you add/remove a form field. 
 
