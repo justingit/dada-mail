@@ -5063,8 +5063,8 @@ and to say that you've got the freshest tools on the Web.
 
 
 
-$VERSION = 4.6.1; 
-$VER     = '4.6.1 Stable - 08/22/11';
+$VERSION = 4.7.0; 
+$VER     = '4.7.0 alpha 1 - 08/26/11';
 
 
 #
