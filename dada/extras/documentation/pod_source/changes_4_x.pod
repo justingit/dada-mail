@@ -2,6 +2,51 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.7.0 alpha 1
+
+=head2 Summary 4.7.0 alpha 1
+
+... 
+
+=head2 Bug Fixes 4.7.0 alpha 1
+
+I<Pending merge w/B<bugfixes-4_6_2> branch>
+
+=head2 Features 4.7.0 alpha 1
+
+=head3 Invitation-Only Mailing Lists
+
+Mailing List can now be truly, I<Invitation-Only>. The list owner of a mailing list must send out an Invitation Message from the list control panel and individuals may not self-subscribe. 
+
+=head3 List Control Panel Subscriptions Enhancements
+
+=head4 Send a "Welcome" Message to Addresses Subscribed by the List Owner. 
+
+Mass subscriptions in the list control panel I<(if this option is enabled)> can automatically be followed up with a, "Welcome" message sent to only the new subscribers. 
+
+This welcome message can be customized in the list control panel in the, B<Appearance and Templates - Email Message Templates> screen under, B<Subscribed by List Owner Message> I<(Should be simply, Welcome from List Owner message?)>
+
+=head4 Send the Newest Archived Message to Addresses Subscribed by the List Owner. 
+
+As well as sending out a welcome message, you may now send out the newest archived message to just the subscribers that were newly added. 
+
+=head2 Changes 4.7.0 alpha 1
+
+=head3 "Enable, "Subscribe Checked Subscribers" button in the, Manage Subscribers -> Invite/Add -> Verify screen" option MOVED
+
+The option, B<Enable, "Subscribe Checked Subscribers" button in the, Manage Subscribers -> Invite/Add -> Verify screen > was not removed, 
+but was moved to, B<Your Mailing List - Mailing List Options> under, B<List Control Panel Subscriptions>. The option has been relabled, B<Allow Subscriptions in the List Control Panel>
+
+=head3 Closed Lists Behavior Changed
+
+"Closed" lists are now truly closed, meaning that now subscriptions may be made either by a individual, or in the list control panel. 
+
+The behavior you may want instead, if you were running a closed list, is an, "Invitation-Only" list. 
+
+=head3 "Send the Newest Archived Message to All New Subscribers." Option Moved 
+
+The, B<Send the Newest Archived Message to All New Subscribers.> option has been moved from, B<Message Archives - Archive Options> to, B<Your Mailing List -  Mailing List Options> under, B<Subscriptions>
+
 =head1 4.6.1
 
 =head2 Summary 4.6.1
