@@ -571,10 +571,10 @@ sub confirm {
                                  	-email => $email, 
 	                                     ($li->{allow_blacklisted_to_subscribe} == 1) ? 
 	                                     (
-	                                     -skip  => ['black_listed', 'already_sent_sub_confirmation'], 
+ 	                                     -skip  => ['black_listed', 'already_sent_sub_confirmation', 'invite_only_list'], 
 	                                     ) : 
 	                                     (
-	                                     -skip => ['already_sent_sub_confirmation'], 
+	                                     -skip => ['already_sent_sub_confirmation', 'invite_only_list'], 
 	                                     ),
 	 								}
                               );
@@ -693,7 +693,6 @@ sub confirm {
                     mx_lookup_failed
                     subscribed
                     closed_list
-                    invite_only_list
                     over_subscription_quota
                     black_listed
                     not_white_listed
