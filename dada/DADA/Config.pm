@@ -538,7 +538,7 @@ $PROFILE_OPTIONS ||= {
 	{ 
 		-name    => 'dada_profile',  
 	    -path    => '/',
-	    -expires => '+7d',		
+	    -expires => '+1y',		
 	},
 	
 	gravatar_options => 

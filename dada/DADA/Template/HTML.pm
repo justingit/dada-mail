@@ -465,6 +465,7 @@ sub list_template {
         -header_params => {},	 # this is used only when you delete a list. 
         -data          => undef, # used in previewing a template.  
         -vars          => {},
+		-prof_sess_obj => undef,
         @_,
     );
     my $list = undef;
@@ -522,12 +523,20 @@ sub list_template {
     my $prof_email         = '';
     my $is_logged_in       = 0;
     my $subscribed_to_list = 0;
+    my $prof_sess          = undef; 
 
     eval {
 
         require DADA::Profile::Session;
         require DADA::Profile;
-        my $prof_sess = DADA::Profile::Session->new;
+		if(defined($args{-prof_sess_obj})){ 
+			warn "yes! Defined!"; 
+			$prof_sess = $args{-prof_sess_obj};
+		}
+		else { 
+			$prof_sess = DADA::Profile::Session->new;
+			warn "nope. Not defined."; 
+		}
 
         if ( $prof_sess->is_logged_in ) {
             $is_logged_in = 1;
@@ -542,10 +551,19 @@ sub list_template {
     }
 
     my $profile_widget = undef;
-    eval { $profile_widget = DADA::Template::Widgets::profile_widget(); };
-    if ($@) {
-        $profile_widget = '';
-    }
+#    eval { 
+		if(defined($args{-prof_sess_obj})){ 
+			carp "Good! Here!"; 
+			$profile_widget = DADA::Template::Widgets::profile_widget({-prof_sess_obj => $args{-prof_sess_obj}}); 
+		}
+		else { 
+			warn "nope. Here."; 
+			$profile_widget = DADA::Template::Widgets::profile_widget(); 
+		}
+#	};
+ #   if ($@) {
+  #      $profile_widget = '';
+   # }
 
     my $final_list_template = DADA::Template::Widgets::screen(
         {

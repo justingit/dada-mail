@@ -1060,6 +1060,14 @@ sub archive_send_form {
 
 sub profile_widget {
 
+	my ($args) = @_; 
+	my $prof_sess_obj = undef; 
+	
+	if(defined($args->{-prof_sess_obj})){ 
+		$prof_sess_obj = $args->{-prof_sess_obj};
+	}
+	
+	
     my $scr              = '';
     my $email            = '';
     my $is_logged_in     = 0;
@@ -1072,20 +1080,27 @@ sub profile_widget {
         $profiles_enabled = 0;
     }
     else {
-        require DADA::Profile;
-        my $dp = DADA::Profile->new( { -from_session => 1 } );
-        if ($dp) {
-            require DADA::Profile::Session;
-            require CGI;
-            my $q = new CGI;
-		 	   $q = decode_cgi_obj($q); 
-		   
-            my $prof_sess = DADA::Profile::Session->new;
-            if ( $prof_sess->is_logged_in( { -cgi_obj => $q } ) ) {
+		if(defined($prof_sess_obj)){ 
+			if ( $prof_sess_obj->is_logged_in( { -cgi_obj => $q } ) ) {
                 $is_logged_in = 1;
-                $email = $prof_sess->get( { -cgi_obj => $q } );
-            }
-        }
+                $email = $prof_sess_obj->get( { -cgi_obj => $q } );
+			}
+		}
+		else {
+	        require DADA::Profile;
+	        my $dp = DADA::Profile->new( { -from_session => 1 } );
+	        if ($dp) {
+	            require DADA::Profile::Session;
+	            require CGI;
+	            my $q = new CGI;
+			 	   $q = decode_cgi_obj($q); 
+	            my $prof_sess = DADA::Profile::Session->new;
+	            if ( $prof_sess->is_logged_in( { -cgi_obj => $q } ) ) {
+	                $is_logged_in = 1;
+	                $email = $prof_sess->get( { -cgi_obj => $q } );
+	            }
+	        }
+		}
     }
 
     return screen(
