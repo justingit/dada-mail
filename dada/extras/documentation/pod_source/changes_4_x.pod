@@ -35,7 +35,7 @@ As well as sending out a welcome message, you may now send out the newest archiv
 =head3 "Enable, "Subscribe Checked Subscribers" button in the, Manage Subscribers -> Invite/Add -> Verify screen" option MOVED
 
 The option, B<Enable, "Subscribe Checked Subscribers" button in the, Manage Subscribers -> Invite/Add -> Verify screen > was not removed, 
-but was moved to, B<Your Mailing List - Mailing List Options> under, B<List Control Panel Subscriptions>. The option has been relabled, B<Allow Subscriptions in the List Control Panel>
+but was moved to, B<Your Mailing List - Mailing List Options> under, B<List Control Panel Subscriptions>. The option has been relabled, B<Enable Adding Subscribers from the List Control Panel>
 
 =head3 Closed Lists Behavior Changed
 
