@@ -179,30 +179,12 @@ This will be a more advanced topic.
 
 =head2 Mass Subscribing Email Addresses via the List Control Panel
 
-I<Is there a way to Mass-Subscribe email addresses in the list control panel?>
+I<Is there a way to Mass-Subscribe email addresses from the list control panel?>
 
-The best way to mass-subscribe email addresses and the only way we suggest, is to B<Send a List Invitation>. This makes sure you stick with a closed-loop opt in system, which itself makes sure only people who want to subscribe to your mailing list, will be. To run a successful and sustainable mailing list, this a closed-loop opt in system is tantamount. 
+Login into your list and go to: B<Your Mailing List -Mailing List Options>
 
-Several different scenarios are explained, using the closed-loop, opt in system: 
+Under the heading, B<List Control Panel Subscriptions> check the option, B<Enable Adding Subscribers from the List Control Panel> 
 
-L<http://dadamailproject.com/installation/using_dada_mail.html>
-
-
-We do understand that this causes a headache when moving from a previous mailing list system, to Dada Mail, since the addresses may already be verified with the previous system, using a closed-loop opt in system and sending a List Invitation to all these addresses essentially requires each individual subscriber to confirm twice. 
-
-We'd really like your opinions on how to make this type of import of a previous mailing list available, without having Dada Mail also open for abuse by people who would rather just mass-subscribe unconfirmed email addresses, which we do not condone. Please join the current discussion about this, here: 
-
-L<http://dadamailproject.com/support/boards/viewtopic.php?f=25&t=2457>
-
-Enabling mass-subscribing via the list control panel is still an option. 
-
-For each mailing list where you want mass subscribing in the list control panel available, log into your mailing list with the B<Dada Mail Root Password> and go to, 
-
-I<Your List Control Panel - Options> 
-
-Check the option labeled, B<Enable, "Subscribe Checked Subscribers" button [...]>
-
-Although I<once> slated for deprecation, we're instead looking at alternatives to keep Dada Mail flexible, yet still not so appealing to be used for abuse. Again, we could really use your feedback.
 
 =head1 Unsubscriptions 
 
