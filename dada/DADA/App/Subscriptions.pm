@@ -771,6 +771,11 @@ sub confirm {
 		}
 		else { 
 		
+			my $new_pass    = ''; 
+	        my $new_profile = 0; 
+			my $sess_cookie = undef;
+			my $sess        = undef; 
+			
         	if($mail_your_subscribed_msg == 0){ 
                            warn '>>>> >>>> $mail_your_subscribed_msg is set to: ' . $mail_your_subscribed_msg
                     if $t; 
@@ -792,9 +797,7 @@ sub confirm {
 		        		-confirmed        => 1, 
                     }
                 );
-		        
-		        my $new_pass    = ''; 
-		        my $new_profile = 0; 
+				
 		        if(
 		           $DADA::Config::PROFILE_OPTIONS->{enabled} == 1 && 
 		           $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/
@@ -813,7 +816,24 @@ sub confirm {
 		        		); 
 		        	}
 		        	# / Make a profile, if needed, 
-		        }
+		        
+		
+					require DADA::Profile::Session;
+					$sess = DADA::Profile::Session->new; 
+					if($sess->is_logged_in){	
+						my $sess_email = $sess->get;
+						if ($sess_email eq $email){ 
+							#...
+						}
+						else { 
+							$sess->logout; 
+							$sess_cookie = $sess->_login_cookie({-email => $email});
+						}
+					}
+					else { 
+						$sess_cookie = $sess->_login_cookie({-email => $email});
+				    }
+				}
                 warn '>>>> >>>> $li->{send_sub_success_email} is set to: ' . $li->{send_sub_success_email}
                     if $t; 
                     
@@ -905,12 +925,19 @@ sub confirm {
                     warn 'Printing out, Subscription Successful screen' 
                         if $t; 
                     
+			
                    my $s = $li->{html_subscribed_message};
                    require DADA::Template::Widgets; 
                    my $r .= DADA::Template::Widgets::wrap_screen(
                                 { 
                                    -data                     => \$s,
 								   -with                     => 'list', 
+								   -wrapper_params           => { 
+										-header_params => { 
+											-cookie => [$sess_cookie],
+										},
+										-prof_sess_obj => $sess,
+									},
                                    -list_settings_vars_param => {-list => $li->{list},},
                                    -subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'list'},
                                    -dada_pseudo_tag_filter   => 1, 
@@ -1279,15 +1306,10 @@ sub unsub_confirm {
     }
     
     require DADA::MailingList::Subscribers;  
-    
     my $lh = DADA::MailingList::Subscribers->new({-list => $list});
 
     require DADA::MailingList::Settings; 
-
     my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-    my $li = $ls->get(); 
-    
-
     
     my($status, $errors) = $lh->unsubscription_check(
 								{
@@ -1332,7 +1354,7 @@ sub unsub_confirm {
 	# send you're already unsub'd message? 
 	# First, only one error and is the error that you're not sub'd?
 	my $send_you_are_not_subscribed_email = 0;
-	if (   $li->{email_you_are_not_subscribed_msg} == 1
+	if (   $ls->param('email_you_are_not_subscribed_msg') == 1
 	    && $status == 0
 	    && scalar( keys %$errors ) == 1
 	    && $errors->{not_subscribed} == 1 )
@@ -1399,19 +1421,19 @@ sub unsub_confirm {
         if($args->{-html_output} != 0){ 
     
             if(
-                $li->{use_alt_url_unsub_failed} == 1 &&
-                isa_url($li->{alt_url_unsub_failed})
+                $ls->param('use_alt_url_unsub_failed') == 1 &&
+                isa_url($ls->param('alt_url_unsub_failed'))
             ){ 
             
                 my $qs = ''; 
-                if($li->{alt_url_unsub_failed_w_qs} == 1){ 
+                if($ls->param('alt_url_unsub_failed_w_qs') == 1){ 
                     $qs = '?list=' . $list . '&rm=unsub&status=0&email=' . uriescape($email); 
                     $qs .= '&errors[]=' . $_ for keys %$errors; 
                 }
-                warn 'Redirecting to: ' . $li->{alt_url_unsub_failed} . $qs 
+                warn 'Redirecting to: ' . $ls->param('alt_url_unsub_failed') . $qs 
                     if $t; 
                     
-                my $r = $q->redirect(-uri => $li->{alt_url_unsub_failed} . $qs);
+                my $r = $q->redirect(-uri => $ls->param('alt_url_unsub_failed') . $qs);
                 $self->test ? return $r : print $fh safely_encode(  $r) and return; 
                     
             }else{ 
@@ -1463,8 +1485,8 @@ sub unsub_confirm {
         
 		
         if(
-            $li->{black_list}               == 1 && 
-            $li->{add_unsubs_to_black_list} == 1
+            $ls->param('black_list')               == 1 && 
+            $ls->param('add_unsubs_to_black_list') == 1
 
         ){
         	if($lh->check_for_double_email(-Email => $email, -Type  => 'black_list')  == 0){ 
@@ -1504,7 +1526,7 @@ sub unsub_confirm {
 			}
 		);
         
-        if($li->{send_unsub_success_email} == 1){ 
+        if($ls->param('send_unsub_success_email') == 1){ 
 	
             require DADA::App::Messages; 
             DADA::App::Messages::send_unsubscribed_message(
@@ -1520,24 +1542,24 @@ sub unsub_confirm {
 
         if($args->{-html_output} != 0){ 
             if(
-                $li->{use_alt_url_unsub_success} == 1 && 
-                isa_url($li->{alt_url_unsub_success})
+                $ls->param('use_alt_url_unsub_success') == 1 && 
+                isa_url($ls->param('alt_url_unsub_success'))
               ){ 
                 my $qs = ''; 
-                if($li->{alt_url_unsub_success_w_qs} == 1){ 
+                if($ls->param('alt_url_unsub_success_w_qs') == 1){ 
                     $qs = '?list=' . $list . '&rm=unsub&status=1&email=' . uriescape($email);  
                 }
-                my $r = $q->redirect(-uri => $li->{alt_url_unsub_success} . $qs);
+                my $r = $q->redirect(-uri => $ls->param('alt_url_unsub_success') . $qs);
                 $self->test ? return $r : print $fh safely_encode(  $r) and return;
             
             }else{                
-               my $s = $li->{html_unsubscribed_message};
+               my $s = $ls->param('html_unsubscribed_message');
                require DADA::Template::Widgets; 
                my $r =  DADA::Template::Widgets::wrap_screen(
 					{ 
   						-data                     => \$s,
 						-with                     => 'list', 
-						-list_settings_vars_param => {-list => $li->{list}},
+						-list_settings_vars_param => {-list => $ls->param('list')},
 						-dada_pseudo_tag_filter   => 1, 
 						-subscriber_vars          => {'subscriber.email' => $email},
 						}
