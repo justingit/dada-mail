@@ -1540,6 +1540,8 @@ sub mass_send {
 			# this problem, in hopes that we can find a solution, that doesn't
 			# involve a workaround, but a fix, instead. 
 			#
+			
+			# DEV: Should we only use this for mass mailings to, "list"?!
 			if($self->{ls}->param('clickthrough_tracking') == 1){ 
 				# This still sucks, since this'll reparse after each restart.
 				require DADA::Logging::Clickthrough; 
@@ -1550,7 +1552,7 @@ sub mass_send {
 								# I guess one way to find out if the
 								# InactiveDestroy stuff is working, 
 								# Is isf DADA::Logging::Clickthrough
-								# is working without this cludge: 
+								# is working without this kludge: 
 								#
 								#-li   => $self->{ls}->params, 
 								#
