@@ -14,6 +14,12 @@ I<Pending merge w/B<bugfixes-4_6_2> branch>
 
 =head2 Features 4.7.0 alpha 1
 
+=head3 Tracker Reports in Mailing Monitor
+
+Tracker Reports are available right in the mailing monitor of mass mailings to your subscribers and updated while your mass mailing goes out.
+
+Enable this option in the Tracker plugin, the option is labeled, B<Show Message Reports in Mailing Monitor> 
+
 =head3 Invitation-Only Mailing Lists
 
 Mailing List can now be truly, I<Invitation-Only>. The list owner of a mailing list must send out an Invitation Message from the list control panel and individuals may not self-subscribe. 
