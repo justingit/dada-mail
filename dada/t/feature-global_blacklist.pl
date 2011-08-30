@@ -62,9 +62,9 @@ $lh->add_subscriber(
 );
 
 
-ok($lh->num_subscribers(-Type => 'black_list') == 1,  "We have one black listed subscriber in #1"); 
-ok($lh2->num_subscribers(-Type => 'black_list') == 1, "We have one black listed subscriber in #2"); 
-ok($lh3->num_subscribers(-Type => 'black_list') == 1, "We have one black listed subscriber in #3"); 
+ok($lh->num_subscribers({-type => 'black_list'}) == 1,  "We have one black listed subscriber in #1"); 
+ok($lh2->num_subscribers({-type => 'black_list'}) == 1, "We have one black listed subscriber in #2"); 
+ok($lh3->num_subscribers({-type => 'black_list'}) == 1, "We have one black listed subscriber in #3"); 
 
 
 

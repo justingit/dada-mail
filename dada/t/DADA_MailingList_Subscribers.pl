@@ -42,8 +42,6 @@ chmod(0777, $DADA::Config::TMP . '/mail.txt');
 
 my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
 
-
-
 ok($lh->{ls}->isa('DADA::MailingList::Settings'), "looks like there's a Settings obj in ->{ls}, good!"); 
 
 
@@ -1430,7 +1428,7 @@ $lh->remove_from_list(-Email_List => [$dupe_email]);
 ### /search_list
 
 
-	### Does a newline scew up thingies? 
+	### Does a newline screw up thingies? 
 	my $withanewline_subscriber = 'withanewline@example.com' . "\n"; 
 
 	my ($status, $errors) = $lh->subscription_check(
@@ -1498,6 +1496,25 @@ ok(($#$sub_list + 1) == 1000, "1000 subscribers were returned! (" . ($#$sub_list
 # remove_all_subscribers
 ok($lh->remove_all_subscribers == 1000, "Removed all the subscribers!"); 
 
+
+# clone 
+for('one@one.com', 'two@two.com', 'three@three.com'){ 
+	$lh->add_subscriber({
+	     -email => $_,
+	     -type  => 'list', 
+	 });
+}
+
+my $tmp_list = '_tmp-blah' . time;
+ok($lh->num_subscribers({-type => 'list'}) == 3); 
+ok($lh->clone(
+	{ 
+		-from => 'list', 
+		-to   => $tmp_list,
+	}
+) == 1);
+ok($lh->num_subscribers({-type => $tmp_list}) == 3); 
+ok($lh->remove_this_listtype({-type => $tmp_list}) == 1);
 
 
 

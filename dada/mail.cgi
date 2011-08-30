@@ -585,7 +585,7 @@ sub run {
 	'sending_monitor'         =>    \&sending_monitor,
 	'print_mass_mailing_log'  =>    \&print_mass_mailing_log,
 	'preview_form'            =>    \&preview_form,
-	'checker'                 =>    \&checker,
+	'remove_subscribers'      =>    \&remove_subscribers,
 	'edit_template'           =>    \&edit_template,
 	'view_archive'            =>    \&view_archive,
 	'display_message_source'  =>    \&display_message_source,
@@ -1943,53 +1943,54 @@ sub list_options {
             {
                 -associate => $q,
                 -settings  => {
-                    hide_list                             => 0,
-                    closed_list                           => 0,
+                    hide_list                               => 0,
+                    closed_list                             => 0,
                     invite_only_list                        => 0,
-                    get_sub_notice                        => 0,
-                    get_unsub_notice                      => 0,
-                    enable_closed_loop_opt_in             => 0,
-                    skip_sub_confirm_if_logged_in         => 0,
-                    unsub_confirm_email                   => 0,
-                    skip_unsub_confirm_if_logged_in       => 0,
-                    send_unsub_success_email              => 0,
-                    send_sub_success_email                => 0,
-					send_newest_archive                   => 0,
-                    mx_check                              => 0,
-                    limit_sub_confirm                     => 0,
-                    limit_unsub_confirm                   => 0,
-                    email_your_subscribed_msg             => 0,
-                    email_you_are_not_subscribed_msg      => 0,
-                    use_alt_url_sub_confirm_success       => 0,
-                    alt_url_sub_confirm_success           => '',
-                    alt_url_sub_confirm_success_w_qs      => 0,
-                    use_alt_url_sub_confirm_failed        => 0,
-                    alt_url_sub_confirm_failed            => '',
-                    alt_url_sub_confirm_failed_w_qs       => 0,
-                    use_alt_url_sub_success               => 0,
-                    alt_url_sub_success                   => '',
-                    alt_url_sub_success_w_qs              => 0,
-                    use_alt_url_sub_failed                => 0,
-                    alt_url_sub_failed                    => '',
-                    alt_url_sub_failed_w_qs               => 0,
-                    use_alt_url_unsub_confirm_success     => 0,
-                    alt_url_unsub_confirm_success         => '',
-                    alt_url_unsub_confirm_success_w_qs    => 0,
-                    use_alt_url_unsub_confirm_failed      => 0,
-                    alt_url_unsub_confirm_failed          => '',
-                    alt_url_unsub_confirm_failed_w_qs     => 0,
-                    use_alt_url_unsub_success             => 0,
-                    alt_url_unsub_success                 => '',
-                    alt_url_unsub_success_w_qs            => 0,
-                    use_alt_url_unsub_failed              => 0,
-                    alt_url_unsub_failed                  => '',
-                    alt_url_unsub_failed_w_qs             => 0,
-                    enable_subscription_approval_step     => 0,
-					enable_mass_subscribe                 => 0,
-					send_subscribed_by_list_owner_message => 0,
-					send_last_archived_msg_mass_mailing   => 0, 
-                    captcha_sub                           => 0,
-					unsub_link_behavior                   => undef, 
+                    get_sub_notice                          => 0,
+                    get_unsub_notice                        => 0,
+                    enable_closed_loop_opt_in               => 0,
+                    skip_sub_confirm_if_logged_in           => 0,
+                    unsub_confirm_email                     => 0,
+                    skip_unsub_confirm_if_logged_in         => 0,
+                    send_unsub_success_email                => 0,
+                    send_sub_success_email                  => 0,
+					send_newest_archive                     => 0,
+                    mx_check                                => 0,
+                    limit_sub_confirm                       => 0,
+                    limit_unsub_confirm                     => 0,
+                    email_your_subscribed_msg               => 0,
+                    email_you_are_not_subscribed_msg        => 0,
+                    use_alt_url_sub_confirm_success         => 0,
+                    alt_url_sub_confirm_success             => '',
+                    alt_url_sub_confirm_success_w_qs        => 0,
+                    use_alt_url_sub_confirm_failed          => 0,
+                    alt_url_sub_confirm_failed              => '',
+                    alt_url_sub_confirm_failed_w_qs         => 0,
+                    use_alt_url_sub_success                 => 0,
+                    alt_url_sub_success                     => '',
+                    alt_url_sub_success_w_qs                => 0,
+                    use_alt_url_sub_failed                  => 0,
+                    alt_url_sub_failed                      => '',
+                    alt_url_sub_failed_w_qs                 => 0,
+                    use_alt_url_unsub_confirm_success       => 0,
+                    alt_url_unsub_confirm_success           => '',
+                    alt_url_unsub_confirm_success_w_qs      => 0,
+                    use_alt_url_unsub_confirm_failed        => 0,
+                    alt_url_unsub_confirm_failed            => '',
+                    alt_url_unsub_confirm_failed_w_qs       => 0,
+                    use_alt_url_unsub_success               => 0,
+                    alt_url_unsub_success                   => '',
+                    alt_url_unsub_success_w_qs              => 0,
+                    use_alt_url_unsub_failed                => 0,
+                    alt_url_unsub_failed                    => '',
+                    alt_url_unsub_failed_w_qs               => 0,
+                    enable_subscription_approval_step       => 0,
+					enable_mass_subscribe                   => 0,
+					send_subscribed_by_list_owner_message   => 0,
+					send_unsubscribed_by_list_owner_message => 0, 
+					send_last_archived_msg_mass_mailing     => 0, 
+                    captcha_sub                             => 0,
+					unsub_link_behavior                     => undef, 
                 }
             }
         );
@@ -2858,7 +2859,7 @@ sub view_list {
 
     my $start                 = int($q->param('start')) || 0;
     my $length                = $li->{view_list_subscriber_number};
-    my $num_subscribers       = $lh->num_subscribers(-Type => $type);
+    my $num_subscribers       = $lh->num_subscribers({-type => $type});
     my $screen_finish         = $length+$start;
        $screen_finish         =  $num_subscribers if $num_subscribers < $length+$start;
     my $screen_start          = $start;
@@ -2986,11 +2987,11 @@ sub view_list {
 
                                                      flavor                      => 'view_list',
    
-                                                     list_subscribers_num             => $lh->num_subscribers(-Type => 'list'),
-                                                     black_list_subscribers_num       => $lh->num_subscribers(-Type => 'black_list'),
-                                                     white_list_subscribers_num       => $lh->num_subscribers(-Type => 'white_list'),
-                                                     authorized_senders_num           => $lh->num_subscribers(-Type => 'authorized_senders'),
- 													 sub_request_list_subscribers_num => $lh->num_subscribers(-Type => 'sub_request_list'),
+                                                     list_subscribers_num             => $lh->num_subscribers({-type => 'list'}),
+                                                     black_list_subscribers_num       => $lh->num_subscribers({-type => 'black_list'}),
+                                                     white_list_subscribers_num       => $lh->num_subscribers({-type => 'white_list'}),
+                                                     authorized_senders_num           => $lh->num_subscribers({-type => 'authorized_senders'}),
+ 													 sub_request_list_subscribers_num => $lh->num_subscribers({-type => 'sub_request_list'}),
                                                   	 flavor_is_view_list              => 1,
 													},
 													-list_settings_vars_param => {
@@ -3114,6 +3115,16 @@ sub subscription_requests {
 
 sub remove_all_subscribers {
 
+	# This needs that email notification as well...
+	# I need to first, clone the list and then do my thing. 
+	# Cloning will be really be resource intensive, so we can't do 
+	# checks on each address, 
+	# maybe the only check we'll do is to see if anything currently exists. 
+	# If there is? Don't do the clone. 
+	# If there isn't Do the clone
+	# maybe have a paramater saying what to do on an error. 
+	# or just return undef. 
+	
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'view_list',
@@ -3122,8 +3133,16 @@ sub remove_all_subscribers {
 
     my $type  = xss_filter( $q->param('type') );
     my $lh    = DADA::MailingList::Subscribers->new( { -list => $list } );
+
+	require DADA::App::MassSend; 
+	DADA::App::MassSend::just_unsubscribed_mass_mailing(
+		{
+			-list              => $list, 
+			-send_to_everybody => 1, 
+		}
+	); 
     my $count = $lh->remove_all_subscribers( { -type => $type, } );
-    print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=view_list&delete_email_count=' . $count .'&type=' . $type);
+  	print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=view_list&delete_email_count=' . $count .'&type=' . $type);
 	return;
 }
 
@@ -3145,15 +3164,6 @@ sub filter_using_black_list {
         my $li = $ls->get;
 
         my $filtered = $lh->filter_list_through_blacklist;
-
-        my $should_add_to_black_list = 0;
-
-         $should_add_to_black_list = 1
-            if ($li->{black_list} eq "1") &&
-               ($li->{add_unsubs_to_black_list} eq "1");
-
-
-
         require DADA::Template::Widgets;
         my $scrn =  DADA::Template::Widgets::wrap_screen(
 			{
@@ -3166,7 +3176,6 @@ sub filter_using_black_list {
 				},
 				-vars   => {
 					filtered          => $filtered,
-					add_to_black_list => $should_add_to_black_list,
 			},
 			}
 		);
@@ -3444,13 +3453,13 @@ sub add {
                     rand_string => $rand_string,
 
                     list_subscribers_num =>
-                      $lh->num_subscribers( -Type => 'list' ),
+                      $lh->num_subscribers({-type => 'list'}),
                     black_list_subscribers_num =>
-                      $lh->num_subscribers( -Type => 'black_list' ),
+                      $lh->num_subscribers({-type => 'black_list'}),
                     white_list_subscribers_num =>
-                      $lh->num_subscribers( -Type => 'white_list' ),
+                      $lh->num_subscribers({-type => 'white_list'}),
                     authorized_senders_num =>
-                      $lh->num_subscribers( -Type => 'authorized_senders' ),
+                      $lh->num_subscribers({-type => 'authorized_senders'}),
 
                     fields => $fields,
 
@@ -3833,10 +3842,10 @@ sub delete_email {
 					type                                => $type,
 					type_title                          => $type_title,
 					flavor                              => 'delete_email',
-					list_subscribers_num                => $lh->num_subscribers(-Type => 'list'),
-					black_list_subscribers_num          => $lh->num_subscribers(-Type => 'black_list'),
-					white_list_subscribers_num          => $lh->num_subscribers(-Type => 'white_list'),
-					authorized_senders_num              => $lh->num_subscribers(-Type => 'authorized_senders'),
+					list_subscribers_num                => $lh->num_subscribers({-type => 'list'}),
+					black_list_subscribers_num          => $lh->num_subscribers({-type => 'black_list'}),
+					white_list_subscribers_num          => $lh->num_subscribers({-type => 'white_list'}),
+					authorized_senders_num              => $lh->num_subscribers({-type => 'authorized_senders'}),
 				},
 				-list_settings_vars_param => {
 					-list    => $list,
@@ -3885,11 +3894,6 @@ sub delete_email {
 				}
 			);
 
-        my $should_add_to_black_list = 0;
-           $should_add_to_black_list = 1
-            if ($li->{black_list} eq "1") &&
-               ($li->{add_unsubs_to_black_list} eq "1");
-
         my $have_subscribed_addresses = 0;
            $have_subscribed_addresses = 1
             if $subscribed->[0];
@@ -3921,7 +3925,6 @@ sub delete_email {
 												},
 											
                                               -vars   => {
-                                                            should_add_to_black_list  => $should_add_to_black_list,
                                                             have_subscribed_addresses => $have_subscribed_addresses,
                                                             addresses_to_remove       => $addresses_to_remove,
                                                             not_subscribed_addresses  => $not_subscribed_addresses,
@@ -5549,7 +5552,10 @@ sub edit_type {
 
 			subscribed_by_list_owner_message_subject
 			subscribed_by_list_owner_message
-
+			
+			unsubscribed_by_list_owner_message_subject
+			unsubscribed_by_list_owner_message
+			
             unsubscribed_message_subject
             unsubscribed_message
             confirmation_message_subject
@@ -5596,7 +5602,10 @@ sub edit_type {
                     subscribed_message_subject                 => undef,
                     subscribed_message                         => undef,
 					subscribed_by_list_owner_message_subject   => undef, 
-					subscribed_by_list_owner_message           => undef, 
+					subscribed_by_list_owner_message           => undef,
+					
+					unsubscribed_by_list_owner_message_subject => undef, 
+					unsubscribed_by_list_owner_message         => undef,  
                     unsubscribed_message_subject               => undef,
                     unsubscribed_message                       => undef,
                     unsub_confirmation_message_subject         => undef,
@@ -6456,7 +6465,7 @@ sub search_list {
 
     my $start                 = int($q->param('start')) || 0;
     my $length                = $li->{view_list_subscriber_number};
-    my $num_subscribers       = $lh->num_subscribers(-Type => $type);
+    my $num_subscribers       = $lh->num_subscribers({-type => $type});
     my $screen_finish         = $length+$start;
        $screen_finish         =  $num_subscribers if $num_subscribers < $length+$start;
     my $screen_start          = $start;
@@ -6512,11 +6521,11 @@ sub search_list {
 
                                                      list_type_label             => $list_types{$type},
 													 flavor_is_view_list		 => 1, # which, it's not. 
-                                                     list_subscribers_num            => $lh->num_subscribers(-Type => 'list'),
-                                                     black_list_subscribers_num      => $lh->num_subscribers(-Type => 'black_list'),
-                                                     white_list_subscribers_num      => $lh->num_subscribers(-Type => 'white_list'),
-                                                     authorized_senders_num          => $lh->num_subscribers(-Type => 'authorized_senders'),
- 													 sub_request_list_subscribers_num => $lh->num_subscribers(-Type => 'sub_request_list'),
+                                                     list_subscribers_num            => $lh->num_subscribers({-type => 'list'}),
+                                                     black_list_subscribers_num      => $lh->num_subscribers({-type => 'black_list'}),
+                                                     white_list_subscribers_num      => $lh->num_subscribers({-type => 'white_list'}),
+                                                     authorized_senders_num          => $lh->num_subscribers({-type => 'authorized_senders'}),
+ 													 sub_request_list_subscribers_num => $lh->num_subscribers({-type => 'sub_request_list'}),
 
 
                                                      #This sucks.
@@ -8343,18 +8352,14 @@ sub change_login {
 
 
 
-sub checker {
+sub remove_subscribers {
 
     # I really don't understand how this subroutine got.. invented.
 
     my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
-                                                        -Function => 'checker');
+                                                        -Function => 'remove_subscribers');
 
     $list = $admin_list;
-
-    # TODO - why isn't his here? Why aren't we reading it from the pref?!
-
-    my $add_to_black_list = $q->param('add_to_black_list') || 0;
 
     my $lh = DADA::MailingList::Subscribers->new({-list => $list});
     my $ls = DADA::MailingList::Settings->new({-list => $list});
@@ -8372,9 +8377,7 @@ sub checker {
 	}
 
 	my $black_list_count = 0; 
-	
-    my $should_add_to_black_list = 0;
-    if($type eq 'list'){
+	if($type eq 'list'){
         if($li->{black_list}               == 1 &&
            $li->{add_unsubs_to_black_list} == 1
            ){
@@ -8396,6 +8399,24 @@ sub checker {
 			}
         }
     }
+
+	if($type eq 'list') { 
+		if($ls->param('send_unsubscribed_by_list_owner_message') == 1){
+			require DADA::App::MassSend; 
+			eval { 
+				DADA::App::MassSend::just_unsubscribed_mass_mailing(
+					{ 
+						-list      => $list, 
+						-addresses => [@address], 
+					}	
+				); 
+			};
+			if($@){ 
+				carp $@; 
+			}	
+		}
+	}
+	
 	my $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=view_list&delete_email_count=' . $email_count. '&type=' . $type; 
 	if($black_list_count > 0){ 
 		$uri .= '&black_list_add=' . $black_list_count; 

@@ -268,6 +268,41 @@ sub print_out_list {
 
 
 
+sub clone { 
+	my $self = shift; 
+	my ($args) = @_; 
+	if ( !exists( $args->{ -from } ) ) {
+       croak "Need to pass the, '-from' (list type) paramater!"; 
+    }
+	if ( !exists( $args->{ -to } ) ) {
+       croak "Need to pass the, '-from' (list type) paramater!"; 
+    }
+	if($self->allowed_list_types($args->{ -from }) == 0){ 
+		croak $args->{ -from } . " is not a valid list type!"; 
+	}
+	if($self->allowed_list_types($args->{ -to }) == 0){ 
+		croak $args->{ -to } . " is not a valid list type!"; 
+	}
+
+	# First we see if there's ANY current members in this list; 
+	if($self->num_subscribers({-type => $args->{-to}})  > 0){ 
+		carp "CANNOT clone a list subtype to another list subtype that already exists!";
+		return undef; 
+	}
+	else { 
+		require File::Copy; 
+		File::Copy::copy(
+			make_safer($DADA::Config::FILES . '/' . $self->{list} . '.' . $args->{ -from }),
+			make_safer($DADA::Config::FILES . '/' . $self->{list} . '.' . $args->{ -to }),
+		); 
+		return 1; 
+	}
+	
+}
+
+
+
+
 sub subscription_list { 
 	
     my $self = shift;
@@ -379,12 +414,16 @@ sub check_for_double_email {
 
 
 sub num_subscribers { 
-	my $self = shift; 
-	my %args = (-Type => 'list',
-	            @_);
+	my $self = shift;
+	my ($args) = @_; 
+	if(! exists($args->{-type})){ 
+		$args->{-type} = 'list'; 
+	}
+
+
 	my $count = 0; 
 	my $buffer; 
-	$self->open_list_handle(-Type => $args{-Type});
+	$self->open_list_handle(-Type => $args->{-type});
 	while (sysread LIST, $buffer, 4096) {
 		$count += ($buffer =~ tr/\n//);
 	}
@@ -406,7 +445,7 @@ sub remove_all_subscribers {
         $args->{ -count } = 0;
     }
 
-	my $num_subscribers = $self->num_subscribers(-Type => $args->{-type});
+	my $num_subscribers = $self->num_subscribers({-type => $args->{-type}});
 	my $count = 1000;
     if ( $count > $num_subscribers ) {
         $count = $num_subscribers;
@@ -891,31 +930,34 @@ sub unique_and_duplicate {
 sub remove_this_listtype {
 
     my $self = shift;
-    my %args = (@_); 
-    
-    if(!exists($args{-Type})){ 
-	    croak('You MUST specific a list type in the "-Type" paramater'); 
-	}
-	else { 
-	    if($self->allowed_list_types($args{-Type}) != 1){ 
-	        croak '"' . $args{-Type} . '" is not a valid list type! '; 
-	    }
-	}
+    my ($args) = @_;
 
-	my $deep_six = $DADA::Config::FILES . '/' . $self->{list} . '.' . $args{-Type};
-
-
-	$deep_six = make_safer($deep_six); 
-	$deep_six=~ /(.*)/; 
-	$deep_six = $1; 
-
-#    warn '$deep_six ' . $deep_six;  
-    if(-e $deep_six){ 
-        my $n = unlink($deep_six);
-        carp "couldn't delete '$deep_six'! " . $!
-            if $n == 0;
+    if ( !exists( $args->{-type} ) ) {
+        croak('You MUST specific a list type in the "-Type" paramater');
     }
-    
+    else {
+        if ( $self->allowed_list_types( $args->{-type} ) != 1 ) {
+            croak '"' . $args->{-type} . '" is not a valid list type! ';
+        }
+    }
+
+    my $deep_six = make_safer(
+        $DADA::Config::FILES . '/' . $self->{list} . '.' . $args->{-type} );
+
+    if ( -e $deep_six ) {
+        my $n = unlink($deep_six);
+        if ( $n == 0 ) {
+            carp "couldn't delete '$deep_six'! " . $!;
+ 			return 0;
+        }
+        else {
+            return 1;
+        }
+    }
+    else {
+        return 1;
+    }
+
 }
 
 

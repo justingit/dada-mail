@@ -1645,6 +1645,81 @@ sub just_subscribed_mass_mailing {
 }
 
 
+
+sub just_unsubscribed_mass_mailing { 
+	
+	my ($args) = @_; 
+	if(! exists( $args->{-list} ) ) { 
+		croak "You MUST pass a list in the, '-list' paramater!"; 
+	}
+	
+	my $type = '_tmp-just_unsubscribed-' . time; 
+	require DADA::MailingList::Subscribers; 
+	my $lh = DADA::MailingList::Subscribers->new({-list => $args->{-list}});
+		
+	if(!  $args->{-addresses}->[0] ) {  
+		if(exists($args->{-send_to_everybody})){ 
+			$lh->clone(
+				{
+					-from => 'list', 
+					-to   => $type, 
+				}
+			);
+		}
+		else { 
+			return;
+		} 
+	}
+	else { 
+		for my $a (@{$args->{-addresses}}){ 
+	        my $dmls = $lh->add_subscriber(
+	            {
+	                -email		    => $a,
+	                -type   		=> $type,
+					-dupe_check    => {
+						-enable  => 1,
+						-on_dupe => 'ignore_add',
+	            	},
+	            }
+	        );
+		}
+	}
+
+	require DADA::App::FormatMessages;  
+	my $fm = DADA::App::FormatMessages->new( -List => $args->{-list} );
+	$fm->mass_mailing(1);
+	$fm->use_email_templates(0); 
+
+	require DADA::MailingList::Settings;
+	my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
+	my ($header_glob, $message_string) =  $fm->format_headers_and_body(
+		-msg => $fm->string_from_dada_style_args(
+			{
+                    -fields => { 
+							Subject => $ls->param('unsubscribed_by_list_owner_message_subject'), 
+							Body    => $ls->param('unsubscribed_by_list_owner_message'), 
+						},
+                }
+		)
+ 	);
+
+	require DADA::Mail::Send; 
+	my $mh = DADA::Mail::Send->new({-list => $args->{-list}}); 
+	   $mh->list_type($type);
+	my $message_id = $mh->mass_send(
+            {
+                -msg             => {				   
+					 $mh->return_headers($header_glob),    
+					 Body      => $message_string,                      
+				},
+            }
+        );
+		return 1;
+}
+
+
+
+
 sub send_last_archived_msg_mass_mailing { 
 
 	my ($args) = @_; 

@@ -1054,7 +1054,7 @@ sub cgi_default {
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
     my $auth_senders_count =
-      $lh->num_subscribers( -Type => 'authorized_senders' );
+      $lh->num_subscribers({-type => 'authorized_senders'});
     my $show_authorized_senders_table = 1;
     my $authorized_senders            = [];
 

@@ -602,6 +602,43 @@ sub print_out_list {
 
 }
 
+sub clone {
+    my $self = shift;
+    my ($args) = @_;
+    if ( !exists( $args->{-from} ) ) {
+        croak "Need to pass the, '-from' (list type) paramater!";
+    }
+    if ( !exists( $args->{-to} ) ) {
+        croak "Need to pass the, '-from' (list type) paramater!";
+    }
+    if ( $self->allowed_list_types( $args->{-from} ) == 0 ) {
+        croak $args->{-from} . " is not a valid list type!";
+    }
+    if ( $self->allowed_list_types( $args->{-to} ) == 0 ) {
+        croak $args->{-to} . " is not a valid list type!";
+    }
+
+    # First we see if there's ANY current members in this list;
+    if ( $self->num_subscribers( { -type => $args->{-to} } ) > 0 ) {
+        carp
+"CANNOT clone a list subtype to another list subtype that already exists!";
+        return undef;
+    }
+    else {
+        my $query =
+            'INSERT INTO '
+          . $self->{sql_params}->{subscriber_table}
+          . '(email, list, list_type, list_status) SELECT email, "' . $self->{list} . '", "'. $args->{-to}. '", 1 FROM ' . $self->{sql_params}->{subscriber_table} . ' WHERE list = ? AND list_type = ? AND list_status = ?';
+        my $sth = $self->{dbh}->prepare($query);
+        $sth->execute( $self->{list}, $args->{-from}, 1 )
+        or croak "cannot do statement! $DBI::errstr\n";
+    }
+
+    return 1;
+
+}
+
+
 sub subscription_list {
 
     my $self = shift;
@@ -874,14 +911,17 @@ sub check_for_double_email {
 
 sub num_subscribers {
 
-    my $self = shift;
-    my %args = (
-        -Type => 'list',
-        @_
-    );
+    my $self   = shift;
+    my ($args) = @_; 
+	if(! exists($args->{-type})){ 
+		$args->{-type} = 'list';
+	} 
+	
     my @row;
 
     my $query = '';
+my $sth = $self->{dbh}->prepare('SELECT * FROM ' . $self->{sql_params}->{subscriber_table});
+$sth->execute(); 
 
     $query .= 'SELECT COUNT(*) ';
     $query .= ' FROM '
@@ -889,7 +929,7 @@ sub num_subscribers {
       . ' WHERE list_type = ? AND list_status = ' . $self->{dbh}->quote('1');
 
 	# I'm sort of guessing, that it's a good idea to do... this!
-	if (   $args{ -Type } eq 'black_list'
+	if (   $args->{-type} eq 'black_list'
         && $DADA::Config::GLOBAL_BLACK_LIST == 1 )
     {
         # ...
@@ -897,13 +937,10 @@ sub num_subscribers {
     else {
         $query .= ' AND list = ' . $self->{dbh}->quote($self->{list});
     }
-    
-    my $sth = $self->{dbh}->prepare($query);
-    $sth->execute( $args{ -Type } )
-      or croak "cannot do statment (num_subscribers)! $DBI::errstr\n";
-    @row = $sth->fetchrow_array();
-    $sth->finish;
-    return $row[0];
+	
+    my $count = $self->{dbh}->selectrow_array($query, undef,  $args->{-type}); 
+	return $count;
+
 }
 
 sub remove_from_list {
@@ -1238,14 +1275,14 @@ sub tables {
 
 sub remove_this_listtype {
     my $self = shift;
-    my %args = ( -Type => undef, @_ );
+    my ($args) = @_; 
 
-    if ( !exists( $args{ -Type } ) ) {
-        croak('You MUST specific a list type in the "-Type" paramater');
+    if ( !exists( $args->{ -type } ) ) {
+        croak('You MUST specific a list type in the "-type" paramater');
     }
     else {
-        if ( $self->allowed_list_types( $args{ -Type } ) != 1 ) {
-            croak '"' . $args{ -Type } . '" is not a valid list type! ';
+        if ( $self->allowed_list_types( $args->{ -type } ) != 1 ) {
+            croak '"' . $args->{ -type } . '" is not a valid list type! ';
         }
     }
 
@@ -1255,10 +1292,12 @@ sub remove_this_listtype {
           . " WHERE list    = ?
 		                              AND list_type = ?"
     );
-    $sth->execute( $self->{list}, $args{ -Type } )
+    $sth->execute( $self->{list}, $args->{ -type } )
       or croak
       "cannot do statement! (at: remove_this_listttype) $DBI::errstr\n";
     $sth->finish;
+
+	return 1; 
 }
 
 sub can_use_global_black_list {
