@@ -24,7 +24,7 @@ Mailing List can now be truly, I<Invitation-Only>. The list owner of a mailing l
 
 Mass subscriptions in the list control panel I<(if this option is enabled)> can automatically be followed up with a, "Welcome" message sent to only the new subscribers. 
 
-This welcome message can be customized in the list control panel in the, B<Appearance and Templates - Email Message Templates> screen under, B<Subscribed by List Owner Message> I<(Should be simply, Welcome from List Owner message?)>
+This farewell message can be customized in the list control panel in the, B<Appearance and Templates - Email Message Templates> screen under, B<Subscribed by List Owner Message> I<(Should be simply, Welcome from List Owner message?)>
 
 =head4 Send the Newest Archived Message to Addresses Subscribed by the List Owner. 
 
@@ -34,7 +34,7 @@ As well as sending out a welcome message, you may now send out the newest archiv
 
 =head4 Send a "Farewell" Message to Addresses Unsubscribed by the List Owner. 
 
-Mass unsubscriptions in the list control panel I<(if this option is enabled)> can automatically be followed up with a, "Farewell" message sent to only addresses that have just been removed. 
+Mass unsubscriptions in the list control panel can automatically be followed up with a, "Farewell" message sent to only addresses that have just been removed. 
 
 This welcome message can be customized in the list control panel in the, B<Appearance and Templates - Email Message Templates> screen under, B<Unsubscribed by List Owner Message>
 
