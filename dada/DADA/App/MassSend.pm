@@ -1652,29 +1652,39 @@ sub just_unsubscribed_mass_mailing {
 	if(! exists( $args->{-list} ) ) { 
 		croak "You MUST pass a list in the, '-list' paramater!"; 
 	}
-	if(!  $args->{-addresses}->[0] ) {  
-		return; 
-	}
-
-	# Subscribe 'em
-	require DADA::MailingList::Subscribers; 
-	my $lh = DADA::MailingList::Subscribers->new({-list => $args->{-list}});
 	
 	my $type = '_tmp-just_unsubscribed-' . time; 
-	
-	for my $a (@{$args->{-addresses}}){ 
-        my $dmls = $lh->add_subscriber(
-            {
-                -email		    => $a,
-                -type   		=> $type,
-				-dupe_check    => {
-					-enable  => 1,
-					-on_dupe => 'ignore_add',
-            	},
-            }
-        );
+	require DADA::MailingList::Subscribers; 
+	my $lh = DADA::MailingList::Subscribers->new({-list => $args->{-list}});
+		
+	if(!  $args->{-addresses}->[0] ) {  
+		if(exists($args->{-send_to_everybody})){ 
+			$lh->clone(
+				{
+					-from => 'list', 
+					-to   => $type, 
+				}
+			);
+		}
+		else { 
+			return;
+		} 
 	}
-	
+	else { 
+		for my $a (@{$args->{-addresses}}){ 
+	        my $dmls = $lh->add_subscriber(
+	            {
+	                -email		    => $a,
+	                -type   		=> $type,
+					-dupe_check    => {
+						-enable  => 1,
+						-on_dupe => 'ignore_add',
+	            	},
+	            }
+	        );
+		}
+	}
+
 	require DADA::App::FormatMessages;  
 	my $fm = DADA::App::FormatMessages->new( -List => $args->{-list} );
 	$fm->mass_mailing(1);

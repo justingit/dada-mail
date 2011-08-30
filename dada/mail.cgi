@@ -2858,7 +2858,7 @@ sub view_list {
 
     my $start                 = int($q->param('start')) || 0;
     my $length                = $li->{view_list_subscriber_number};
-    my $num_subscribers       = $lh->num_subscribers(-Type => $type);
+    my $num_subscribers       = $lh->num_subscribers({-type => $type});
     my $screen_finish         = $length+$start;
        $screen_finish         =  $num_subscribers if $num_subscribers < $length+$start;
     my $screen_start          = $start;
@@ -2986,11 +2986,11 @@ sub view_list {
 
                                                      flavor                      => 'view_list',
    
-                                                     list_subscribers_num             => $lh->num_subscribers(-Type => 'list'),
-                                                     black_list_subscribers_num       => $lh->num_subscribers(-Type => 'black_list'),
-                                                     white_list_subscribers_num       => $lh->num_subscribers(-Type => 'white_list'),
-                                                     authorized_senders_num           => $lh->num_subscribers(-Type => 'authorized_senders'),
- 													 sub_request_list_subscribers_num => $lh->num_subscribers(-Type => 'sub_request_list'),
+                                                     list_subscribers_num             => $lh->num_subscribers({-type => 'list'}),
+                                                     black_list_subscribers_num       => $lh->num_subscribers({-type => 'black_list'}),
+                                                     white_list_subscribers_num       => $lh->num_subscribers({-type => 'white_list'}),
+                                                     authorized_senders_num           => $lh->num_subscribers({-type => 'authorized_senders'}),
+ 													 sub_request_list_subscribers_num => $lh->num_subscribers({-type => 'sub_request_list'}),
                                                   	 flavor_is_view_list              => 1,
 													},
 													-list_settings_vars_param => {
@@ -3132,8 +3132,16 @@ sub remove_all_subscribers {
 
     my $type  = xss_filter( $q->param('type') );
     my $lh    = DADA::MailingList::Subscribers->new( { -list => $list } );
+
+	require DADA::App::MassSend; 
+	DADA::App::MassSend::just_unsubscribed_mass_mailing(
+		{
+			-list              => $list, 
+			-send_to_everybody => 1, 
+		}
+	); 
     my $count = $lh->remove_all_subscribers( { -type => $type, } );
-    print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=view_list&delete_email_count=' . $count .'&type=' . $type);
+  	print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=view_list&delete_email_count=' . $count .'&type=' . $type);
 	return;
 }
 
@@ -3444,13 +3452,13 @@ sub add {
                     rand_string => $rand_string,
 
                     list_subscribers_num =>
-                      $lh->num_subscribers( -Type => 'list' ),
+                      $lh->num_subscribers({-type => 'list'}),
                     black_list_subscribers_num =>
-                      $lh->num_subscribers( -Type => 'black_list' ),
+                      $lh->num_subscribers({-type => 'black_list'}),
                     white_list_subscribers_num =>
-                      $lh->num_subscribers( -Type => 'white_list' ),
+                      $lh->num_subscribers({-type => 'white_list'}),
                     authorized_senders_num =>
-                      $lh->num_subscribers( -Type => 'authorized_senders' ),
+                      $lh->num_subscribers({-type => 'authorized_senders'}),
 
                     fields => $fields,
 
@@ -3833,10 +3841,10 @@ sub delete_email {
 					type                                => $type,
 					type_title                          => $type_title,
 					flavor                              => 'delete_email',
-					list_subscribers_num                => $lh->num_subscribers(-Type => 'list'),
-					black_list_subscribers_num          => $lh->num_subscribers(-Type => 'black_list'),
-					white_list_subscribers_num          => $lh->num_subscribers(-Type => 'white_list'),
-					authorized_senders_num              => $lh->num_subscribers(-Type => 'authorized_senders'),
+					list_subscribers_num                => $lh->num_subscribers({-type => 'list'}),
+					black_list_subscribers_num          => $lh->num_subscribers({-type => 'black_list'}),
+					white_list_subscribers_num          => $lh->num_subscribers({-type => 'white_list'}),
+					authorized_senders_num              => $lh->num_subscribers({-type => 'authorized_senders'}),
 				},
 				-list_settings_vars_param => {
 					-list    => $list,
@@ -6456,7 +6464,7 @@ sub search_list {
 
     my $start                 = int($q->param('start')) || 0;
     my $length                = $li->{view_list_subscriber_number};
-    my $num_subscribers       = $lh->num_subscribers(-Type => $type);
+    my $num_subscribers       = $lh->num_subscribers({-type => $type});
     my $screen_finish         = $length+$start;
        $screen_finish         =  $num_subscribers if $num_subscribers < $length+$start;
     my $screen_start          = $start;
@@ -6512,11 +6520,11 @@ sub search_list {
 
                                                      list_type_label             => $list_types{$type},
 													 flavor_is_view_list		 => 1, # which, it's not. 
-                                                     list_subscribers_num            => $lh->num_subscribers(-Type => 'list'),
-                                                     black_list_subscribers_num      => $lh->num_subscribers(-Type => 'black_list'),
-                                                     white_list_subscribers_num      => $lh->num_subscribers(-Type => 'white_list'),
-                                                     authorized_senders_num          => $lh->num_subscribers(-Type => 'authorized_senders'),
- 													 sub_request_list_subscribers_num => $lh->num_subscribers(-Type => 'sub_request_list'),
+                                                     list_subscribers_num            => $lh->num_subscribers({-type => 'list'}),
+                                                     black_list_subscribers_num      => $lh->num_subscribers({-type => 'black_list'}),
+                                                     white_list_subscribers_num      => $lh->num_subscribers({-type => 'white_list'}),
+                                                     authorized_senders_num          => $lh->num_subscribers({-type => 'authorized_senders'}),
+ 													 sub_request_list_subscribers_num => $lh->num_subscribers({-type => 'sub_request_list'}),
 
 
                                                      #This sucks.

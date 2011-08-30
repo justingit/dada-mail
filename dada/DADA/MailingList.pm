@@ -188,7 +188,7 @@ sub Remove {
 
     #mostly for the SQL backends
 	for(keys  %{$lh->get_list_types }){ 
-    	$lh->remove_this_listtype(-Type => $_);
+    	$lh->remove_this_listtype({-type => $_});
 	}
 
     $la->delete_all_archive_entries();

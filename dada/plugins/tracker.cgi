@@ -527,7 +527,7 @@ sub domain_breakdown_img {
 	require DADA::MailingList::Subscribers; 
 	my $lh       = DADA::MailingList::Subscribers->new({-list => $list});
 	my $stats    = $lh->domain_stats(15); 
-	my $num_subs = $lh->num_subscribers();
+	my $num_subs = $lh->num_subscribers;
 	
 	my @values = (); 
 	my @labels = (); 

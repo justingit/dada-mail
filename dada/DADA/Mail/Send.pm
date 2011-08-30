@@ -1151,7 +1151,7 @@ sub mass_send {
 						-list => $self->{list}
 					}
 				);
-		   $lh->remove_this_listtype(-Type=> $self->list_type);
+		   $lh->remove_this_listtype({-type => $self->list_type});
 	}
 
 	# Probably right here we can put the, 
