@@ -30,6 +30,14 @@ This welcome message can be customized in the list control panel in the, B<Appea
 
 As well as sending out a welcome message, you may now send out the newest archived message to just the subscribers that were newly added. 
 
+=head3 List Control Panel Unubscriptions Enhancements
+
+=head4 Send a "Farewell" Message to Addresses Unsubscribed by the List Owner. 
+
+Mass unsubscriptions in the list control panel I<(if this option is enabled)> can automatically be followed up with a, "Farewell" message sent to only addresses that have just been removed. 
+
+This welcome message can be customized in the list control panel in the, B<Appearance and Templates - Email Message Templates> screen under, B<Unsubscribed by List Owner Message>
+
 =head2 Changes 4.7.0 alpha 1
 
 =head3 "Enable, "Subscribe Checked Subscribers" button in the, Manage Subscribers -> Invite/Add -> Verify screen" option MOVED

@@ -16,15 +16,9 @@ Remove
 
 <form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
  <input type="hidden" name="process" value="delete" />
- <input type="hidden" name="f"       value="checker" />
+ <input type="hidden" name="f"       value="remove_subscribers" />
  <input type="hidden" name="type"    value="<!-- tmpl_var type -->" />
- 
-<!-- tmpl_if should_add_to_black_list -->
-	 
-	 <input type="hidden" name="add_to_black_list" value="1" />
-	
-<!--/tmpl_if-->
- 
+  
 <!-- tmpl_if have_subscribed_addresses -->
 	 
 	<fieldset> 
