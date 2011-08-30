@@ -1520,6 +1520,7 @@ sub sending_monitor {
 					tracker_url                  => $tracker_url, 
 					'list_settings.tracker_show_message_reports_in_mailing_monitor' 
 						=> $li->{tracker_show_message_reports_in_mailing_monitor},
+					list_type_isa_list           => ($q->param('type') eq 'list')       ? 1 : 0,
 				}
 			}
 		); 
