@@ -2,17 +2,17 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
-=head1 4.7.0 alpha 1
+=head1 4.7.0 alpha 2
 
-=head2 Summary 4.7.0 alpha 1
+=head2 Summary 4.7.0 alpha 2
 
 ... 
 
-=head2 Bug Fixes 4.7.0 alpha 1
+=head2 Bug Fixes 4.7.0 alpha 2
 
 I<Pending merge w/B<bugfixes-4_6_2> branch>
 
-=head2 Features 4.7.0 alpha 1
+=head2 Features 4.7.0 alpha 2
 
 =head3 Tracker Reports in Mailing Monitor
 
@@ -54,7 +54,7 @@ The Tracker plugin now has the ability to log every time the, "Forward to a Frie
 
 The Tracker plugin now has the ability to log every time an archived message is viewed. Enabled by default. 
 
-=head2 Changes 4.7.0 alpha 1
+=head2 Changes 4.7.0 alpha 2
 
 =head3 "Enable, "Subscribe Checked Subscribers" button in the, Manage Subscribers -> Invite/Add -> Verify screen" option MOVED
 

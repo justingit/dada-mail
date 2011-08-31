@@ -4685,7 +4685,7 @@ encrypted.
     unsub_confirmation_message_subject         => '<!-- tmpl_var list_settings.list_name --> Mailing List Unsubscription Confirmation',
 	unsub_confirmation_message                 =>   $UNSUB_CONFIRMATION_MESSAGE,
 	
-	unsubscribed_message_subject               =>   'Unsubscribed from <!-- tmpl_var list_settings.list_name -->',
+	unsubscribed_message_subject               =>   'Farewell from <!-- tmpl_var list_settings.list_name -->',
 	unsubscribed_message                       =>   $UNSUBSCRIBED_MESSAGE, 
 
     mailing_list_message_from_phrase           =>   '<!-- tmpl_var list_settings.list_name -->', 
@@ -5091,7 +5091,7 @@ and to say that you've got the freshest tools on the Web.
 
 
 $VERSION = 4.7.0; 
-$VER     = '4.7.0 alpha 1 - 08/26/11';
+$VER     = '4.7.0 alpha 2 - 08/31/11';
 
 
 #

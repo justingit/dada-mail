@@ -19,6 +19,53 @@
 </legend>
 
  <table cellspacing="5">
+
+
+	 <tr>
+	   <td>
+	    <p>
+	     <input type="checkbox" name="invite_only_list" id="invite_only_list" value="1" <!-- tmpl_if list_settings.invite_only_list -->checked="checked"<!--/tmpl_if--> />
+	    </p>
+	   </td>
+	   <td>
+	    <p>
+	     <label for="invite_only_list">
+	      Invitation-Only List
+	     </label>
+     	</p>
+
+	     <ul>
+		  <li>
+			Subscribers may only be subscribed by a List Invitation from the List Owner. 
+		  </li>
+		 </ul> 
+		
+	   </td>
+	  </tr>
+	
+	
+  <tr>
+   <td>
+    <input type="checkbox" name="closed_list" id="closed_list" value="1" <!-- tmpl_if list_settings.closed_list --> checked="checked" <!-- /tmpl_if --> />
+   </td>
+   <td>
+    <p>
+     <label for="closed_list">
+      Closed List
+     </label>
+   </p>
+
+     <ul>
+	<li>
+		No subscriptions may be made to your mailing list. People may still unsubscribe at any time.
+	</li>
+</ul> 
+
+   </td>
+  </tr>
+
+
+
   <tr>
    <td>
     <p>
@@ -28,56 +75,39 @@
    <td>
     <p>
      <label for="hide_list">
-      Hide Your List
+      Hidden List
      </label>
-     <br />
-     This list will not be listed on the 
+ </p>
+<ul> 
+	<li> 
+This mailing list will not be listed on the 
      <a href="<!-- tmpl_var PROGRAM_URL -->" target="_blank">
       <!-- tmpl_var PROGRAM_NAME --> main screen</a>. 
-     This list will still have a 
+    </li>
+<li>
+	
+
+ This mailing list will still have a 
      <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank">
       List Page 
      </a>
-     and people will still be able to subscribe/unsubscribe 
+ </li>
+<li>
+People will still be able to subscribe/unsubscribe 
      with the proper information.
-    </p>
-    <p>
+    </li>
+
+<li>
+	
      You will also have to manually enter this list's 
      Short Name when logging onto the list control panel.
-    </p>
-   </td>
-  </tr>
-  <tr>
-   <td>
-    <input type="checkbox" name="closed_list" id="closed_list" value="1" <!-- tmpl_if list_settings.closed_list --> checked="checked" <!-- /tmpl_if --> />
-   </td>
-   <td>
-    <p>
-     <label for="closed_list">
-      Close Your List
-     </label>
-     <br/>
-     No subscriptions may be made to your mailing list. People may still unsubscribe at any time.
-    </p>
+    </li>
+</ul> 
+
    </td>
   </tr>
 
- <tr>
-   <td>
-    <p>
-     <input type="checkbox" name="invite_only_list" id="invite_only_list" value="1" <!-- tmpl_if list_settings.invite_only_list -->checked="checked"<!--/tmpl_if--> />
-    </p>
-   </td>
-   <td>
-    <p>
-     <label for="invite_only_list">
-      Invitation-Only List
-     </label>
-     <br />
-     Subscribers may only be subscribed by a List Invitation from the List Owner. 
-    </p>
-   </td>
-  </tr>
+
  </table>
 
 </fieldset>
@@ -98,13 +128,25 @@
 
 <!-- tmpl_if list_settings.enable_closed_loop_opt_in --> 
 	<p class="positive">
-		Subscription Confirmation Emails (Closed-Loop Opt-In) is enabled. 
+		(Closed-Loop Opt-In) is enabled. 
 	</p>
 <!-- tmpl_else --> 
 <p class="error">
-	Subscription Confirmation Emails (Closed-Loop Opt-In) is disabled! 
+		(Closed-Loop Opt-In) has been disabled! 
 </p>
 <!-- /tmpl_if --> 
+<!-- tmpl_if list_settings.invite_only_list --> 
+	<p class="error">
+		Subscription Confirmations are not used, since this mailing list is Invitation-Only.
+	</p> 
+<!-- /tmpl_if -->
+<!-- tmpl_if list_settings.closed_list --> 
+	<p class="error">
+		Subscription Confirmations are not used, since this mailing list is Closed.
+	</p> 
+<!-- /tmpl_if -->
+
+
 
  <table cellspacing="5" width="100%">
 	
@@ -128,140 +170,147 @@
      Subscribers will have to reply to a confirmation email 
      sent to their address before they are joined to the list.
     </p>
+
+
+
+
+	<table cellspacing="5" width="100%">
+ 
+	<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN -->
+
+	<!-- tmpl_else --> 
+
+		<tr>
+		 <td>
+		  <input type="checkbox" name="skip_sub_confirm_if_logged_in" id="skip_sub_confirm_if_logged_in" value="1" <!-- tmpl_if list_settings.skip_sub_confirm_if_logged_in -->checked="checked"<!--/tmpl_if--> />
+		 </td>
+		 <td width="99%">
+		  <p>
+		   <label for="skip_sub_confirm_if_logged_in">
+		    Skip Subscription Confirmation Process if the subscriber already has a <!-- tmpl_var PROGRAM_NAME --> profile.
+		   </label>
+		   <br /> 
+
+			A user that already has a profile may already have a confirmed email address. 
+			The user will still need to be logged in when making the subscription request. 
+		  </p>
+		 </td>
+		</tr>
+
+	<!-- /tmpl_if --> 
+
+
+	<tr>
+	   <td>
+	    <input type="checkbox" name="limit_sub_confirm" id="limit_sub_confirm" value="1" <!-- tmpl_if list_settings.limit_sub_confirm -->checked="checked"<!--/tmpl_if--> />
+	   </td>
+	   <td width="99%">
+	    <p>
+	     <label for="limit_sub_confirm">
+	      Limit Subscription Confirmation Sending 
+	     </label>
+	     <br />
+		When enabled, only one confirmation message can be sent out at one time per subscriber, without the subscriber manually requesting (basically, clicking a button) a new subscription confirmation to be sent. 
+		This helps cut down on unneeded message sending and abuse of the subscription confirmation system. 
+	    </p>
+	   </td>
+	  </tr>
+
+
+
+
+	  <tr>
+	   <td>
+	    <input type="checkbox" name="email_your_subscribed_msg" id="email_your_subscribed_msg" value="1" <!-- tmpl_if list_settings.email_your_subscribed_msg -->checked="checked"<!--/tmpl_if--> />
+	   </td>
+	   <td width="99%">
+	    <p>
+	     <label for="email_your_subscribed_msg">
+	      If a current subscriber attempts to subscribe again, send a, "You're Already Subscribed!" message via email, instead of showing this error in their web browser. 
+	     </label>
+	     <br />
+	       Usually, if a subscriber attempts to subscribe to a list they're already subscribed to, they'll receive an error stating that they are already subscribed to a particular list. 
+	       This could be seen as an easy way for a third party to find out if an individual is subscribed to a list, by simply entering the email address they want to check, when subscribing. 
+	      </p>
+
+	      <p>
+	       With this option checked, an email will instead be sent to the subscriber, stating they are already subscribed and an error will not be raised by <!-- tmpl_var PROGRAM_NAME --> 
+	      </p> 
+
+	   </td>
+	  </tr>
+
+
+	  <tr>
+	   <td>
+	         <input type="checkbox" name="use_alt_url_sub_confirm_success" id="use_alt_url_sub_confirm_success" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_confirm_success -->checked="checked"<!--/tmpl_if--> />
+	   </td>
+	   <td>
+
+
+	  <p>
+	        <label for="use_alt_url_sub_confirm_success">
+	         If the first step of the Closed-Loop Opt-In is successful 
+	         (and a Closed-Loop Opt-In Confirmation email is on its way), redirect to this URL:
+	        </label>
+	        </p>
+	        <table cellspacing="5" width="100%">
+	         <tr> 
+	          <td> 
+	           <input type="text" name="alt_url_sub_confirm_success" value="<!-- tmpl_var list_settings.alt_url_sub_confirm_success escape="HTML" -->" class="full" />
+	          </td>
+	         </tr> 
+	         <tr> 
+	          <td>
+	           <input type="checkbox" name="alt_url_sub_confirm_success_w_qs" id="alt_url_sub_confirm_success_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_sub_confirm_success_w_qs -->checked="checked"<!--/tmpl_if--> />
+	           <label for="alt_url_sub_confirm_success_w_qs">Redirect with query string</label>
+	          </td> 
+	         </tr> 
+	        </table>
+
+	      </td>
+	     </tr>
+	     <tr>
+	      <td>
+	       <input type="checkbox" name="use_alt_url_sub_confirm_failed" id="use_alt_url_sub_confirm_failed" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_confirm_failed -->checked="checked"<!--/tmpl_if--> />
+	      </td>
+	      <td width="99%">
+	       <p>
+	        <label for="use_alt_url_sub_confirm_failed">
+	         If the first step of the Closed-Loop Opt-In Confirmation fails, 
+	         redirect to this URL:
+	        </label>
+	       </p>
+	       <table cellspacing="5" width="100%"> 
+	        <tr> 
+	         <td> 
+	          <input type="text" name="alt_url_sub_confirm_failed" value="<!-- tmpl_var list_settings.alt_url_sub_confirm_failed escape="HTML" -->" class="full" />
+	         </td>
+	        </tr> 
+	        <tr> 
+	         <td> 
+	          <input type="checkbox" name="alt_url_sub_confirm_failed_w_qs" id="alt_url_sub_confirm_failed_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_sub_confirm_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
+	          <label for="alt_url_sub_confirm_failed_w_qs">Redirect with query string</label>
+	          </td> 
+	         </tr> 
+	        </table>
+	   </td>
+	  </tr>
+	</table> 
+		
    </td>
   </tr>
 
 <!-- /tmpl_if --> 
  
   
-
-<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN -->
-
-<!-- tmpl_else --> 
-
-	<tr>
-	 <td>
-	  <input type="checkbox" name="skip_sub_confirm_if_logged_in" id="skip_sub_confirm_if_logged_in" value="1" <!-- tmpl_if list_settings.skip_sub_confirm_if_logged_in -->checked="checked"<!--/tmpl_if--> />
-	 </td>
-	 <td width="99%">
-	  <p>
-	   <label for="skip_sub_confirm_if_logged_in">
-	    Skip Subscription Confirmation Process if the subscriber already has a <!-- tmpl_var PROGRAM_NAME --> profile.
-	   </label>
-	   <br /> 
-	
-		A user that already has a profile may already have a confirmed email address. 
-		The user will still need to be logged in when making the subscription request. 
-	  </p>
-	 </td>
-	</tr>
-
-<!-- /tmpl_if --> 
-
-
-<tr>
-   <td>
-    <input type="checkbox" name="limit_sub_confirm" id="limit_sub_confirm" value="1" <!-- tmpl_if list_settings.limit_sub_confirm -->checked="checked"<!--/tmpl_if--> />
-   </td>
-   <td width="99%">
-    <p>
-     <label for="limit_sub_confirm">
-      Limit Subscription Confirmation Sending 
-     </label>
-     <br />
-	When enabled, only one confirmation message can be sent out at one time per subscriber, without the subscriber manually requesting (basically, clicking a button) a new subscription confirmation to be sent. 
-	This helps cut down on unneeded message sending and abuse of the subscription confirmation system. 
-    </p>
-   </td>
-  </tr>
-  
-  
-  
-  
-  <tr>
-   <td>
-    <input type="checkbox" name="email_your_subscribed_msg" id="email_your_subscribed_msg" value="1" <!-- tmpl_if list_settings.email_your_subscribed_msg -->checked="checked"<!--/tmpl_if--> />
-   </td>
-   <td width="99%">
-    <p>
-     <label for="email_your_subscribed_msg">
-      If a current subscriber attempts to subscribe again, send a, "You're Already Subscribed!" message via email, instead of showing this error in their web browser. 
-     </label>
-     <br />
-       Usually, if a subscriber attempts to subscribe to a list they're already subscribed to, they'll receive an error stating that they are already subscribed to a particular list. 
-       This could be seen as an easy way for a third party to find out if an individual is subscribed to a list, by simply entering the email address they want to check, when subscribing. 
-      </p>
-      
-      <p>
-       With this option checked, an email will instead be sent to the subscriber, stating they are already subscribed and an error will not be raised by <!-- tmpl_var PROGRAM_NAME --> 
-      </p> 
-       
-   </td>
-  </tr>
-  
-  
-  <tr>
-   <td>
-         <input type="checkbox" name="use_alt_url_sub_confirm_success" id="use_alt_url_sub_confirm_success" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_confirm_success -->checked="checked"<!--/tmpl_if--> />
-   </td>
-   <td>
-  
-  
-  <p>
-        <label for="use_alt_url_sub_confirm_success">
-         If the first step of the Closed-Loop Opt-In is successful 
-         (and a Closed-Loop Opt-In Confirmation email is on its way), redirect to this URL:
-        </label>
-        </p>
-        <table cellspacing="5" width="100%">
-         <tr> 
-          <td> 
-           <input type="text" name="alt_url_sub_confirm_success" value="<!-- tmpl_var list_settings.alt_url_sub_confirm_success escape="HTML" -->" class="full" />
-          </td>
-         </tr> 
-         <tr> 
-          <td>
-           <input type="checkbox" name="alt_url_sub_confirm_success_w_qs" id="alt_url_sub_confirm_success_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_sub_confirm_success_w_qs -->checked="checked"<!--/tmpl_if--> />
-           <label for="alt_url_sub_confirm_success_w_qs">Redirect with query string</label>
-          </td> 
-         </tr> 
-        </table>
-    
-      </td>
-     </tr>
-     <tr>
-      <td>
-       <input type="checkbox" name="use_alt_url_sub_confirm_failed" id="use_alt_url_sub_confirm_failed" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_confirm_failed -->checked="checked"<!--/tmpl_if--> />
-      </td>
-      <td width="99%">
-       <p>
-        <label for="use_alt_url_sub_confirm_failed">
-         If the first step of the Closed-Loop Opt-In Confirmation fails, 
-         redirect to this URL:
-        </label>
-       </p>
-       <table cellspacing="5" width="100%"> 
-        <tr> 
-         <td> 
-          <input type="text" name="alt_url_sub_confirm_failed" value="<!-- tmpl_var list_settings.alt_url_sub_confirm_failed escape="HTML" -->" class="full" />
-         </td>
-        </tr> 
-        <tr> 
-         <td> 
-          <input type="checkbox" name="alt_url_sub_confirm_failed_w_qs" id="alt_url_sub_confirm_failed_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_sub_confirm_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
-          <label for="alt_url_sub_confirm_failed_w_qs">Redirect with query string</label>
-          </td> 
-         </tr> 
-        </table>
-   </td>
-  </tr>
  </table>
 </fieldset>
 
 <fieldset>
 
 <legend>
-  Subscription Requests Approving/Denying (Experimental)
+  Subscription Requests Approving/Denying
 </legend>
 <table cellspacing="5">
 
@@ -443,87 +492,6 @@
 </fieldset>
 
 
-<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN --> 
-	<!-- ... --> 
-<!-- tmpl_else -->
-
-	<fieldset>
-	<legend>
-		List Control Panel Subscriptions
-	</legend>
-
-	<table cellpadding="5" border="0"> 
-		<tr> 
-			<td>
-				<p>
-					<input type="checkbox" name="enable_mass_subscribe" id="enable_mass_subscribe" <!-- tmpl_if list_settings.enable_mass_subscribe -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
-				</p>
-			</td>
-			<td>
-				<p>
-					<label for="enable_mass_subscribe">
-						Enable Adding Subscribers from the List Control Panel
-					</label><br /> 
-					 When enabled, this will allow you to add subscribers, via the List Control Panel without any email confirmation. 
-					</p> 
-					<p>
-					 <em>
-					  You will want to disable this feature, if you would closely follow the 
-					   <strong>
-						Closed-List, Opt-In
-					   </strong> 
-					  system.
-					</em>
-				</p>
-			
-				<table cellpadding="5" border="0"> 
-					<tr> 
-						<td>
-							<p>
-								<input type="checkbox" name="send_subscribed_by_list_owner_message" id="send_subscribed_by_list_owner_message" <!-- tmpl_if list_settings.send_subscribed_by_list_owner_message -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
-							</p>
-						</td>
-						<td>
-							<p>
-								<label for="send_subscribed_by_list_owner_message">
-									Send a "Welcome" Message to Addresses Subscribed in the List Control Panel.  
-								</label><br /> 
-							
-							</p>
-							
-								
-						</td>
-					</tr>
-					
-					<tr> 
-						<td>
-							<p>
-								<input type="checkbox" name="send_last_archived_msg_mass_mailing" id="send_last_archived_msg_mass_mailing" <!-- tmpl_if list_settings.send_last_archived_msg_mass_mailing -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
-							</p>
-						</td>
-						<td>
-							<p>
-								<label for="send_last_archived_msg_mass_mailing">
-									Send the Newest Archived Message to Addresses Subscribed in the List Control Panel
-								</label><br /> 
-							
-							</p>
-							
-								
-						</td>
-					</tr>
-					
-					
-				</table>
-			
-			
-			</td>
-		</tr>
-	</table>
-
-	</fieldset> 
-
-<!-- /tmpl_if --> 
 
 
 
@@ -567,7 +535,7 @@ Unsubscription Confirmations
 </legend>
   
 
- <table cellspacing="5">
+ <table cellspacing="5" width="100%">
   <tr>
    <td>
     <input type="checkbox" name="unsub_confirm_email" id="unsub_confirm_email" value="1" <!-- tmpl_if list_settings.unsub_confirm_email -->checked="checked"<!--/tmpl_if--> />
@@ -578,132 +546,131 @@ Unsubscription Confirmations
       Send Unsubscription Confirmation Emails (Closed-Loop Opt-Out)
      </label>
     </p>
+		<table cellspacing="5" width="100%">
+
+		<tr>
+		 <td>
+		  <input type="checkbox" name="skip_unsub_confirm_if_logged_in" id="skip_unsub_confirm_if_logged_in" value="1" <!-- tmpl_if list_settings.skip_unsub_confirm_if_logged_in -->checked="checked"<!--/tmpl_if--> />
+		 </td>
+		 <td width="99%">
+		  <p>
+		   <label for="skip_unsub_confirm_if_logged_in">
+		    Skip Unsubscription Confirmation Process if the subscriber already has a <!-- tmpl_var PROGRAM_NAME --> profile.
+		   </label>
+		   <br /> 
+
+			A user that already has a profile may already have a confirmed email address. 
+			The user will still need to be logged in when making the unsubscription request. 
+		  </p>
+		 </td>
+		</tr>
+
+
+		  <tr>
+		   <td>
+		    <input type="checkbox" name="limit_unsub_confirm" id="limit_unsub_confirm" value="1" <!-- tmpl_if list_settings.limit_unsub_confirm -->checked="checked"<!--/tmpl_if--> />
+		   </td>
+		   <td width="99%">
+		    <p>
+		     <label for="limit_unsub_confirm">
+		      Limit Unsubscription Confirmation Sending 
+		     </label>
+		     <br />
+			When enabled, only one confirmation message can be sent out at one time per subscriber, without the subscriber manually requesting (basically, clicking a button) a new unsubsciption confirmation to be sent. 
+			This helps cut down on unneeded message sending and abuse of the unsubscription confirmation system. 
+		    </p>
+		   </td>
+		  </tr>
+
+
+		  <tr>
+		   <td>
+		    <input type="checkbox" name="email_you_are_not_subscribed_msg" id="email_you_are_not_subscribed_msg" value="1" <!-- tmpl_if list_settings.email_you_are_not_subscribed_msg -->checked="checked"<!--/tmpl_if--> />
+		   </td>
+		   <td width="99%">
+		    <p>
+		     <label for="email_you_are_not_subscribed_msg">
+		If someone not currently subscribed to your mailing list attempts to unsubscribe, send a, "You are not Subscribed!" message via email,  instead of showing this error in their web browser. 
+		     </label>
+		  </p> 
+		   </td>
+		  </tr>
+
+
+
+
+		  <tr>
+		   <td>
+
+		       <input type="checkbox" name="use_alt_url_unsub_confirm_success" id="use_alt_url_unsub_confirm_success" value="1" <!-- tmpl_if list_settings.use_alt_url_unsub_confirm_success -->checked="checked"<!--/tmpl_if--> />
+
+
+		   </td>
+		   <td>
+
+		       <p>
+		        <label for="use_alt_url_unsub_confirm_success">
+		         If the first step of the double opt-out is successful 
+		         (and a confirmation email is on its way), redirect to this URL:
+
+		        </label>
+		        </p>
+
+		        <table cellspacing="5" width="100%">
+		         <tr> 
+		          <td> 
+		           <input type="text" name="alt_url_unsub_confirm_success" value="<!-- tmpl_var list_settings.alt_url_unsub_confirm_success escape="HTML" -->" class="full" />
+		          </td>
+		         </tr> 
+		         <tr> 
+		          <td>
+		           <input type="checkbox" name="alt_url_unsub_confirm_success_w_qs" id="alt_url_unsub_confirm_success_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_unsub_confirm_success_w_qs -->checked="checked"<!--/tmpl_if--> />
+		           <label for="alt_url_unsub_confirm_success_w_qs">Redirect with query string</label>
+		          </td> 
+		         </tr> 
+		        </table>
+
+
+
+
+
+
+		      </td>
+		     </tr>
+		     <tr>
+		      <td>
+		       <input type="checkbox" name="use_alt_url_unsub_confirm_failed" id="use_alt_url_unsub_confirm_failed" value="1" <!-- tmpl_if list_settings.use_alt_url_unsub_confirm_failed -->checked="checked"<!--/tmpl_if--> />
+		      </td>
+		      <td width="99%">
+		       <p>
+		        <label for="use_alt_url_unsub_confirm_failed">
+		         If the first step of the double opt-out fails, 
+		         redirect to this URL:
+		        </label>
+		        </p>
+
+		        <table cellspacing="5" width="100%">
+		         <tr> 
+		          <td> 
+		           <input type="text" name="alt_url_unsub_confirm_failed" value="<!-- tmpl_var list_settings.alt_url_unsub_confirm_failed escape="HTML" -->" class="full" />
+		          </td>
+		         </tr> 
+		         <tr> 
+		          <td>
+		           <input type="checkbox" name="alt_url_unsub_confirm_failed_w_qs" id="alt_url_unsub_confirm_failed_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_unsub_confirm_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
+		           <label for="alt_url_unsub_confirm_failed_w_qs">Redirect with query string</label>
+		          </td> 
+		         </tr> 
+		        </table>       
+		   </td>
+		  </tr>
+		</table> 
+
+
    </td>
   </tr>
   
-    
-
-<tr>
- <td>
-  <input type="checkbox" name="skip_unsub_confirm_if_logged_in" id="skip_unsub_confirm_if_logged_in" value="1" <!-- tmpl_if list_settings.skip_unsub_confirm_if_logged_in -->checked="checked"<!--/tmpl_if--> />
- </td>
- <td width="99%">
-  <p>
-   <label for="skip_unsub_confirm_if_logged_in">
-    Skip Unsubscription Confirmation Process if the subscriber already has a <!-- tmpl_var PROGRAM_NAME --> profile.
-   </label>
-   <br /> 
-
-	A user that already has a profile may already have a confirmed email address. 
-	The user will still need to be logged in when making the unsubscription request. 
-  </p>
- </td>
-</tr>
-
-
-  <tr>
-   <td>
-    <input type="checkbox" name="limit_unsub_confirm" id="limit_unsub_confirm" value="1" <!-- tmpl_if list_settings.limit_unsub_confirm -->checked="checked"<!--/tmpl_if--> />
-   </td>
-   <td width="99%">
-    <p>
-     <label for="limit_unsub_confirm">
-      Limit Unsubscription Confirmation Sending 
-     </label>
-     <br />
-	When enabled, only one confirmation message can be sent out at one time per subscriber, without the subscriber manually requesting (basically, clicking a button) a new unsubsciption confirmation to be sent. 
-	This helps cut down on unneeded message sending and abuse of the unsubscription confirmation system. 
-    </p>
-   </td>
-  </tr>
-
-
-  <tr>
-   <td>
-    <input type="checkbox" name="email_you_are_not_subscribed_msg" id="email_you_are_not_subscribed_msg" value="1" <!-- tmpl_if list_settings.email_you_are_not_subscribed_msg -->checked="checked"<!--/tmpl_if--> />
-   </td>
-   <td width="99%">
-    <p>
-     <label for="email_you_are_not_subscribed_msg">
-If someone not currently subscribed to your mailing list attempts to unsubscribe, send a, "You are not Subscribed!" message via email,  instead of showing this error in their web browser. 
-     </label>
-  </p> 
-   </td>
-  </tr>
-
    
-   
-   
-  <tr>
-   <td>
-
-       <input type="checkbox" name="use_alt_url_unsub_confirm_success" id="use_alt_url_unsub_confirm_success" value="1" <!-- tmpl_if list_settings.use_alt_url_unsub_confirm_success -->checked="checked"<!--/tmpl_if--> />
-
-
-   </td>
-   <td>
- 
-       <p>
-        <label for="use_alt_url_unsub_confirm_success">
-         If the first step of the double opt-out is successful 
-         (and a confirmation email is on its way), redirect to this URL:
-         
-        </label>
-        </p>
-        
-        <table cellspacing="5" width="100%">
-         <tr> 
-          <td> 
-           <input type="text" name="alt_url_unsub_confirm_success" value="<!-- tmpl_var list_settings.alt_url_unsub_confirm_success escape="HTML" -->" class="full" />
-          </td>
-         </tr> 
-         <tr> 
-          <td>
-           <input type="checkbox" name="alt_url_unsub_confirm_success_w_qs" id="alt_url_unsub_confirm_success_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_unsub_confirm_success_w_qs -->checked="checked"<!--/tmpl_if--> />
-           <label for="alt_url_unsub_confirm_success_w_qs">Redirect with query string</label>
-          </td> 
-         </tr> 
-        </table>
-        
-        
-       
-       
-       
-       
-      </td>
-     </tr>
-     <tr>
-      <td>
-       <input type="checkbox" name="use_alt_url_unsub_confirm_failed" id="use_alt_url_unsub_confirm_failed" value="1" <!-- tmpl_if list_settings.use_alt_url_unsub_confirm_failed -->checked="checked"<!--/tmpl_if--> />
-      </td>
-      <td width="99%">
-       <p>
-        <label for="use_alt_url_unsub_confirm_failed">
-         If the first step of the double opt-out fails, 
-         redirect to this URL:
-        </label>
-        </p>
-       
-        <table cellspacing="5" width="100%">
-         <tr> 
-          <td> 
-           <input type="text" name="alt_url_unsub_confirm_failed" value="<!-- tmpl_var list_settings.alt_url_unsub_confirm_failed escape="HTML" -->" class="full" />
-          </td>
-         </tr> 
-         <tr> 
-          <td>
-           <input type="checkbox" name="alt_url_unsub_confirm_failed_w_qs" id="alt_url_unsub_confirm_failed_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_unsub_confirm_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
-           <label for="alt_url_unsub_confirm_failed_w_qs">Redirect with query string</label>
-          </td> 
-         </tr> 
-        </table>       
-       
-       
-       
-       
-    
-   </td>
-  </tr>
  </table>
 </fieldset>
 
@@ -802,6 +769,92 @@ If someone not currently subscribed to your mailing list attempts to unsubscribe
 </table> 
 
 </fieldset>
+
+
+
+
+<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN --> 
+	<!-- List Control Panel Subscriptions is disabled. --> 
+<!-- tmpl_else -->
+
+	<fieldset>
+	<legend>
+		List Control Panel Subscriptions
+	</legend>
+
+	<table cellpadding="5" border="0"> 
+		<tr> 
+			<td>
+				<p>
+					<input type="checkbox" name="enable_mass_subscribe" id="enable_mass_subscribe" <!-- tmpl_if list_settings.enable_mass_subscribe -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
+				</p>
+			</td>
+			<td>
+				<p>
+					<label for="enable_mass_subscribe">
+						Enable Adding Subscribers from the List Control Panel
+					</label><br /> 
+					 When enabled, this will allow you to add subscribers, via the List Control Panel without any email confirmation. 
+					</p> 
+					<p>
+					 <em>
+					  You will want to disable this feature, if you would closely follow the 
+					   <strong>
+						Closed-List, Opt-In
+					   </strong> 
+					  system.
+					</em>
+				</p>
+			
+				<table cellpadding="5" border="0"> 
+					<tr> 
+						<td>
+							<p>
+								<input type="checkbox" name="send_subscribed_by_list_owner_message" id="send_subscribed_by_list_owner_message" <!-- tmpl_if list_settings.send_subscribed_by_list_owner_message -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
+							</p>
+						</td>
+						<td>
+							<p>
+								<label for="send_subscribed_by_list_owner_message">
+									Send a "Welcome" Message to Addresses Subscribed in the List Control Panel.  
+								</label><br /> 
+							
+							</p>
+							
+								
+						</td>
+					</tr>
+					
+					<tr> 
+						<td>
+							<p>
+								<input type="checkbox" name="send_last_archived_msg_mass_mailing" id="send_last_archived_msg_mass_mailing" <!-- tmpl_if list_settings.send_last_archived_msg_mass_mailing -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
+							</p>
+						</td>
+						<td>
+							<p>
+								<label for="send_last_archived_msg_mass_mailing">
+									Send the Newest Archived Message to Addresses Subscribed in the List Control Panel
+								</label><br /> 
+							
+							</p>
+							
+								
+						</td>
+					</tr>
+					
+					
+				</table>
+			
+			
+			</td>
+		</tr>
+	</table>
+
+	</fieldset> 
+
+<!-- /tmpl_if -->
+
 
 <fieldset>
 <legend>

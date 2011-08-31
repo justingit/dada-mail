@@ -491,7 +491,7 @@ sub default_tmpl {
 <p><code>
 &lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;
 </code></p>
-<p>Replace, <code>http://example.com</code> with the URL you want to track clickthroughs. 
+<p>Replace, <code>http://example.com</code> with the URL you would like to track clickthroughs. 
 </fieldset> 
 
 };
@@ -1003,11 +1003,15 @@ sub clickthrough_table_tmpl {
 		</div>		
 	
 		</div> 
+		<!-- tmpl_if comment --> 
+		
 		<fieldset> 
 			<pre>
 			<!-- tmpl_var report_by_message_id_dump escape="HTML" --> 
 			</pre> 
 		</fieldset> 
+		<!-- /tmpl_if --> 
+		
 	<!-- tmpl_else --> 
 		<p class="alert">
 		  No logs to report.
@@ -1054,15 +1058,15 @@ sub clickthrough_table {
 	}
 
 	my $report_by_message_id = $rd->report_by_message_index({-all_mids => $msg_ids}) || []; 
-	require Data::Dumper; 
-	my $report_by_message_id_dump = Data::Dumper::Dumper($report_by_message_id); 
+#	require Data::Dumper; 
+#	my $report_by_message_id_dump = Data::Dumper::Dumper($report_by_message_id); 
     require    DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::screen(
         {
             -data           => \$tmpl,
             -vars => {
                 report_by_message_index   => $report_by_message_id,
-				report_by_message_id_dump => $report_by_message_id_dump, 
+#				report_by_message_id_dump => $report_by_message_id_dump, 
 				first_page                => $page_info->first_page(), 
 				last_page                 => $page_info->last_page(), 
 				next_page                 => $page_info->next_page(), 
