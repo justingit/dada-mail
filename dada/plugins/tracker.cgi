@@ -368,6 +368,41 @@ sub default_tmpl {
    </p>
   </td>
   </tr> 
+
+
+   <tr> 
+  <td> 
+   <p>
+    <input type="checkbox" name="enable_forward_to_a_friend_logging" id="enable_forward_to_a_friend_logging"  value="1" <!-- tmpl_if list_settings.enable_forward_to_a_friend_logging -->checked="checked"<!--/tmpl_if --> 
+   </p>
+  </td> 
+  <td> 
+   <p>
+    <label for="enable_forward_to_a_friend_logging"> 
+     Enable &quot;Forward to a Friend&quot; Logging
+    </label> 
+   </p>
+  </td>
+  </tr>
+
+   <tr> 
+  <td> 
+   <p>
+    <input type="checkbox" name="enable_view_archive_logging" id="enable_view_archive_logging"  value="1" <!-- tmpl_if list_settings.enable_view_archive_logging -->checked="checked"<!--/tmpl_if --> 
+   </p>
+  </td> 
+  <td> 
+   <p>
+    <label for="enable_view_archive_logging"> 
+     Enable Archive Views Logging
+    </label> 
+   </p>
+  </td>
+  </tr>
+
+
+
+
   
    <tr> 
   <td> 
@@ -807,6 +842,7 @@ sub clickthrough_table_tmpl {
 
 	<!-- tmpl_if report_by_message_index --> 
 		
+		
 		<table width="100%">
 		 <tr> 
 		<td width="33%" align="left"> 
@@ -967,6 +1003,11 @@ sub clickthrough_table_tmpl {
 		</div>		
 	
 		</div> 
+		<fieldset> 
+			<pre>
+			<!-- tmpl_var report_by_message_id_dump escape="HTML" --> 
+			</pre> 
+		</fieldset> 
 	<!-- tmpl_else --> 
 		<p class="alert">
 		  No logs to report.
@@ -1012,12 +1053,16 @@ sub clickthrough_table {
 		}
 	}
 
+	my $report_by_message_id = $rd->report_by_message_index({-all_mids => $msg_ids}) || []; 
+	require Data::Dumper; 
+	my $report_by_message_id_dump = Data::Dumper::Dumper($report_by_message_id); 
     require    DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::screen(
         {
             -data           => \$tmpl,
             -vars => {
-                report_by_message_index   => $rd->report_by_message_index({-all_mids => $msg_ids}) || [],
+                report_by_message_index   => $report_by_message_id,
+				report_by_message_id_dump => $report_by_message_id_dump, 
 				first_page                => $page_info->first_page(), 
 				last_page                 => $page_info->last_page(), 
 				next_page                 => $page_info->next_page(), 
@@ -1111,13 +1156,15 @@ sub edit_prefs {
         {
             -associate => $q,
             -settings  => {
-                clickthrough_tracking           => 0,
-                enable_open_msg_logging         => 0,
-                enable_subscriber_count_logging => 0,
-                enable_bounce_logging           => 0,
-				tracker_record_view_count       => 0,
-				tracker_clean_up_reports        => 0, 
-				tracker_auto_parse_links        => 0, 
+                clickthrough_tracking              => 0,
+                enable_open_msg_logging            => 0,
+                enable_subscriber_count_logging    => 0,
+				enable_forward_to_a_friend_logging => 0, 
+				enable_view_archive_logging        => 0,
+                enable_bounce_logging              => 0,
+				tracker_record_view_count          => 0,
+				tracker_clean_up_reports           => 0, 
+				tracker_auto_parse_links           => 0, 
             }
         }
     );
@@ -1160,12 +1207,15 @@ my $tmpl = q{
 		  <!-- tmpl_if can_use_country_geoip_data --> 
 			country_geoip_chart_clickthroughs();	
 			country_geoip_chart_opens();
+			country_geoip_chart_forwards();
+			country_geoip_chart_view_archive(); 
 			
-
 		  <!-- /tmpl_if --> 
 	
 		ct_ot_img(); 
 		opens_ot_img();
+		forwards_ot_img(); 
+		view_archive_ot_img(); 
 
 		});
 		
@@ -1209,6 +1259,50 @@ my $tmpl = q{
 				});
 		}
 		
+		function country_geoip_chart_forwards(){ 
+			new Ajax.Updater(
+				'country_geoip_chart_forwards', '<!-- tmpl_var Plugin_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						f:       'country_geoip_chart',
+						mid:     '<!-- tmpl_var mid -->',
+						type:    'forward_to_a_friend'
+					},
+				onCreate: 	 function() {
+					$('country_geoip_chart_forwards_loading').update('<p class="alert">Loading...</p>');
+				},
+				onComplete: 	 function() {
+					$('country_geoip_chart_forwards_loading').update('<p class="alert">&nbsp;</p>');
+					Effect.BlindDown('country_geoip_chart_forwards');
+				}	
+			});
+		}
+		
+		
+		
+		function country_geoip_chart_view_archive(){ 
+			new Ajax.Updater(
+				'country_geoip_chart_view_archive', '<!-- tmpl_var Plugin_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						f:       'country_geoip_chart',
+						mid:     '<!-- tmpl_var mid -->',
+						type:    'view_archive'
+					},
+				onCreate: 	 function() {
+					$('country_geoip_chart_view_archive_loading').update('<p class="alert">Loading...</p>');
+				},
+				onComplete: 	 function() {
+					$('country_geoip_chart_view_archive_loading').update('<p class="alert">&nbsp;</p>');
+					Effect.BlindDown('country_geoip_chart_view_archive');
+				}	
+			});
+		}
+		
+		
+		
 		function ct_ot_img(){ 
 			new Ajax.Updater(
 				'ct_ot_img', '<!-- tmpl_var Plugin_URL -->', 
@@ -1246,7 +1340,49 @@ my $tmpl = q{
 					Effect.BlindDown('opens_ot_img');
 				}	
 				});
-		}		
+		}
+		function forwards_ot_img(){ 
+			new Ajax.Updater(
+				'forwards_ot_img', '<!-- tmpl_var Plugin_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						f:       'data_ot_img',
+						mid:     '<!-- tmpl_var mid -->',
+						type:    'forward_to_a_friend'
+					},
+				onCreate: 	 function() {
+					$('forwards_ot_img_loading').update('<p class="alert">Loading...</p>');
+				},
+				onComplete: 	 function() {
+					$('forwards_ot_img_loading').update('<p class="alert">&nbsp;</p>');
+					Effect.BlindDown('forwards_ot_img');
+				}	
+			});
+		}	
+		
+		
+		function view_archive_ot_img(){ 
+			new Ajax.Updater(
+				'view_archive_ot_img', '<!-- tmpl_var Plugin_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						f:       'data_ot_img',
+						mid:     '<!-- tmpl_var mid -->',
+						type:    'view_archive'
+					},
+				onCreate: 	 function() {
+					$('view_archive_ot_img_loading').update('<p class="alert">Loading...</p>');
+				},
+				onComplete: 	 function() {
+					$('view_archive_ot_img_loading').update('<p class="alert">&nbsp;</p>');
+					Effect.BlindDown('view_archive_ot_img');
+				}	
+			});
+		}
+		
+			
 	    //]]>
 	</script>
 	<!-- tmpl_if chrome --> 
@@ -1325,6 +1461,40 @@ my $tmpl = q{
 	 </p>
 	</td> 
 	</tr>
+	
+	
+	<tr style="background:#ccf">
+	<td> 
+	 <p>
+	  <strong>
+	   Archive Views
+	  </strong> 
+	 </p> 
+	 </td> 
+	 <td> 
+	 <p>
+	  <!-- tmpl_var view_archive --> 
+	 </p>
+	</td> 
+	</tr>
+	
+	
+	
+	<tr>
+	<td> 
+	 <p>
+	  <strong>
+	   Forwards
+	  </strong> 
+	 </p> 
+	 </td> 
+	 <td> 
+	 <p>
+	  <!-- tmpl_var forward_to_a_friend --> 
+	 </p>
+	</td> 
+	</tr>
+	
 	
 	<tr style="background:#ccf">
 	<td> 
@@ -1457,7 +1627,7 @@ my $tmpl = q{
 
 
 <fieldset> 
-<legend>Opens Over Time</Legend> 
+<legend>Message Opens Over Time</Legend> 
 <div id="opens_ot_img_loading"> 
 </div> 
 <div id="opens_ot_img"> 
@@ -1465,6 +1635,53 @@ my $tmpl = q{
 </fieldset>
 
 
+
+
+<fieldset> 
+<legend> 
+	Archive Views by Country
+</legend>
+
+<div id="country_geoip_chart_view_archive_loading"> 
+</div> 
+<div id="country_geoip_chart_view_archive"> 
+</div> 
+</fieldset>
+
+
+
+<fieldset> 
+<legend>Archive Views Over Time</Legend> 
+<div id="view_archive_ot_img_loading"> 
+</div> 
+<div id="view_archive_ot_img"> 
+</div> 
+</fieldset>
+
+
+
+
+
+<fieldset> 
+<legend> 
+	&quot;Forward to a Friend&quot; by Country
+</legend>
+
+<div id="country_geoip_chart_forwards_loading"> 
+</div> 
+<div id="country_geoip_chart_forwards"> 
+</div> 
+</fieldset>
+
+
+
+<fieldset> 
+<legend>&quot;Forward to a Friend&quot; Over Time</Legend> 
+<div id="forwards_ot_img_loading"> 
+</div> 
+<div id="forwards_ot_img"> 
+</div> 
+</fieldset>
 
 
 
@@ -1635,16 +1852,18 @@ sub message_report {
 	
 	
 	my %tmpl_vars = (
-		mid                        => $q->param('mid')                         || '',
-        subject                    => find_message_subject( $q->param('mid') ) || '',
-        url_report                 => $s_url_report                            || [],
-        num_subscribers            => commify($m_report->{num_subscribers})    || 0,
-        opens                      => commify($m_report->{'open'})             || 0, 
-        clickthroughs              => commify($m_report->{'clickthroughs'})    || 0, 
-		soft_bounce                => commify($m_report->{'soft_bounce'})      || 0,
-        hard_bounce                => commify($m_report->{'hard_bounce'})      || 0,
-		soft_bounce_report         => $m_report->{'soft_bounce_report'}        || [],
-		hard_bounce_report         => $m_report->{'hard_bounce_report'}        || [],
+		mid                        => $q->param('mid')                            || '',
+        subject                    => find_message_subject( $q->param('mid') )    || '',
+        url_report                 => $s_url_report                               || [],
+        num_subscribers            => commify($m_report->{num_subscribers})       || 0,
+        opens                      => commify($m_report->{'open'})                || 0, 
+        clickthroughs              => commify($m_report->{'clickthroughs'})       || 0, 
+		soft_bounce                => commify($m_report->{'soft_bounce'})         || 0,
+        hard_bounce                => commify($m_report->{'hard_bounce'})         || 0,
+		view_archive               => commify($m_report->{'view_archive'})        || 0, 
+		forward_to_a_friend        => commify($m_report->{'forward_to_a_friend'}) || 0,
+		soft_bounce_report         => $m_report->{'soft_bounce_report'}           || [],
+		hard_bounce_report         => $m_report->{'hard_bounce_report'}           || [],
 		soft_bounce_image          => $soft_bounce_image, 
 		hard_bounce_image          => $hard_bounce_image, 
 		can_use_country_geoip_data => $rd->can_use_country_geoip_data, 
@@ -1822,8 +2041,7 @@ sub country_geoip_chart {
 			); 
 			
 		my $tmpl = country_geoip_chart_tmpl(); 
-
-
+		
 	    require DADA::Template::Widgets;
 	    my $scrn = DADA::Template::Widgets::screen(
 	        {
@@ -2112,6 +2330,17 @@ messages they receive.
 
 When enabled, tracks how many subscribers are on your mailing list when each mass
 mailing goes out
+
+=head3 Enable "Forward to a Friend" Logging 
+
+When enabled, use of the "Forward to a Friend" function for each message will be counted.  
+
+B<More Information>:
+L<http://dadamailproject.com/d/features_forward_to_a_friend.pod.html>
+
+=head3 Enable Archive Views Logging 
+
+When enabled, allows you to track every time a visitor views an archived message. 
 
 =head3 Enable Bounce Logging
 

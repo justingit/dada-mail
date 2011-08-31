@@ -4804,6 +4804,8 @@ encrypted.
 	enable_open_msg_logging             => 1, 
 	enable_subscriber_count_logging     => 1, 
 	enable_bounce_logging               => 1,
+	enable_forward_to_a_friend_logging  => 1, 
+	enable_view_archive_logging         => 1, 
 	
 	tracker_record_view_count           => 10, 
 	tracker_clean_up_reports            => 1, 

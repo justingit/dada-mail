@@ -44,6 +44,16 @@ Mass unsubscriptions in the list control panel can automatically be followed up 
 
 This welcome message can be customized in the list control panel in the, B<Appearance and Templates - Email Message Templates> screen under, B<Unsubscribed by List Owner Message>
 
+=head3 Tracker Enhancements 
+
+=head4 Forward to a Friend" Logging 
+
+The Tracker plugin now has the ability to log every time the, "Forward to a Friend" form is used. Enabled by default. 
+
+=head4 Archive Views Logging 
+
+The Tracker plugin now has the ability to log every time an archived message is viewed. Enabled by default. 
+
 =head2 Changes 4.7.0 alpha 1
 
 =head3 "Enable, "Subscribe Checked Subscribers" button in the, Manage Subscribers -> Invite/Add -> Verify screen" option MOVED

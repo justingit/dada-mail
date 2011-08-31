@@ -7110,15 +7110,10 @@ sub archive {
 
     if ( !$id ) {
 
-		# This is strange, because if there is NO id, there wouldn't be a "send a friend this archive" sorta form!?
-        #if (   $li->{archive_send_form} != 1
-        #    && $li->{captcha_archive_send_form} != 1 )
-        #{
-            if (!$c->profile_on && $c->cached( 'archive/' . $list . '/' . $start  . '.scrn') ) {
-                $c->show( 'archive/' . $list . '/' . $start  . '.scrn');
-                return;
-            }
-        #}
+		if (!$c->profile_on && $c->cached( 'archive/' . $list . '/' . $start  . '.scrn') ) {
+		    $c->show( 'archive/' . $list . '/' . $start  . '.scrn');
+		    return;
+		}
 
         my $th_entries = [];
 
@@ -7284,7 +7279,15 @@ sub archive {
             if (!$c->profile_on &&
 	 			$c->cached( 'archive/' . $list . '/' . $id . '.scrn' )
 			) {
-                $c->show( 'archive/' . $list . '/' . $id . '.scrn' );
+                $c->show( 'archive/' . $list . '/' . $id . '.scrn' );				
+				require DADA::Logging::Clickthrough; 
+				my $r = DADA::Logging::Clickthrough->new({-list => $list});
+				$r->view_archive_log(
+					{ 
+						-mid => $id, 
+					}
+				);
+				
                 return;
             }
         }
@@ -7464,6 +7467,14 @@ sub archive {
             }
         );
         e_print($scrn);
+
+		require DADA::Logging::Clickthrough; 
+		my $r = DADA::Logging::Clickthrough->new({-list => $list});
+		$r->view_archive_log(
+			{ 
+				-mid => $id, 
+			}
+		);
 
         if (!$c->profile_on &&
 	   		$li->{archive_send_form} != 1
@@ -7702,7 +7713,6 @@ sub send_archive {
     my $entry        = xss_filter($q->param('entry'));
     my $from_email   = xss_filter($q->param('from_email'));
     my $to_email     = xss_filter($q->param('to_email'));
-
     my $note         = xss_filter($q->param('note'));
 
     my $errors       = 0;
@@ -7900,6 +7910,15 @@ sub send_archive {
 			    $mh->return_headers($header_str),
 				Body => $body_str,
 		    );
+		
+			require DADA::Logging::Clickthrough; 
+			my $r = DADA::Logging::Clickthrough->new({-list => $list});
+			$r->forward_to_a_friend_log(
+				{ 
+					-mid => $entry, 
+				}
+			); 
+			
             print $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?f=archive&l=' . $list . '&id=' . $entry . '&send_archive_success=1');
     }
 }

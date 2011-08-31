@@ -388,6 +388,109 @@ sub sc_log {
     }
 }
 
+
+
+
+sub forward_to_a_friend_log {
+
+	my $self      = shift; 
+    my ($args)    = @_;
+	my $timestamp = undef; 
+	if(exists($args->{-timestamp})){ 
+		$timestamp = $args->{-timestamp};
+	}
+	my $ts_snippet = ''; 
+	my $place_holder_string = ''; 
+	
+	if(defined($timestamp)){ 
+		$ts_snippet = 'timestamp,'; 
+		$place_holder_string .= ' ,?';
+	}
+
+	my $remote_address = undef; 
+	if(!exists($args->{-remote_addr})){ 
+		$remote_address = $self->remote_addr;
+	}
+	else { 
+		$remote_address = $args->{-remote_addr}; 
+	}
+	
+	
+    if ( $self->{ls}->param('enable_forward_to_a_friend_logging') == 1 ) {
+		my $query =
+'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
+        
+		my $sth = $self->{dbh}->prepare($query);
+		if(defined($timestamp)){ 
+	        $sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'forward_to_a_friend') 
+				or carp "cannot do statement! $DBI::errstr\n";
+		}
+		else { 
+	        $sth->execute($self->{name}, $remote_address, $args->{-mid}, 'forward_to_a_friend') 
+				or carp "cannot do statement! $DBI::errstr\n";;			
+		}
+        $sth->finish;
+
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+
+
+
+sub view_archive_log { 
+	my $self      = shift; 
+    my ($args)    = @_;
+	my $timestamp = undef; 
+	if(exists($args->{-timestamp})){ 
+		$timestamp = $args->{-timestamp};
+	}
+	my $ts_snippet = ''; 
+	my $place_holder_string = ''; 
+
+	if(defined($timestamp)){ 
+		$ts_snippet = 'timestamp,'; 
+		$place_holder_string .= ' ,?';
+	}
+
+	my $remote_address = undef; 
+	if(!exists($args->{-remote_addr})){ 
+		$remote_address = $self->remote_addr;
+	}
+	else { 
+		$remote_address = $args->{-remote_addr}; 
+	}
+
+
+    if ( $self->{ls}->param('enable_view_archive_logging') == 1 ) {
+		my $query =
+'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
+
+		my $sth = $self->{dbh}->prepare($query);
+		if(defined($timestamp)){ 
+	        $sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'view_archive') 
+				or carp "cannot do statement! $DBI::errstr\n";
+		}
+		else { 
+	        $sth->execute($self->{name}, $remote_address, $args->{-mid}, 'view_archive') 
+				or carp "cannot do statement! $DBI::errstr\n";;			
+		}
+        $sth->finish;
+
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+
+
+
+
 sub bounce_log {
    # my ( $self, $type, $mid, $email ) = @_;
 
@@ -558,17 +661,20 @@ sub report_by_message_index {
 
         my $misc_count_query =
 'SELECT COUNT(msg_id) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
-        $report->{$msg_id}->{open} =
+
+	for(
+		qw(
+			open
+			soft_bounce
+			hard_bounce
+			forward_to_a_friend
+			view_archive
+		)
+	){ 
+		$report->{$msg_id}->{$_} =
           $self->{dbh}
-          ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, 'open' )->[0];
-        $report->{$msg_id}->{soft_bounce} =
-          $self->{dbh}
-          ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, 'soft_bounce' )
-          ->[0];
-        $report->{$msg_id}->{hard_bounce} =
-          $self->{dbh}
-          ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, 'hard_bounce' )
-          ->[0];
+          ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, $_ )->[0];
+	}
 
         my $num_sub_query =
 'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
@@ -617,18 +723,17 @@ sub report_by_message {
     my $misc_count_query =
 'SELECT COUNT(msg_id) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? AND event = ?';
 
-    #	# This may be different.
-    $report->{open} =
-      $self->{dbh}->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, 'open' )
-      ->[0];
-    $report->{soft_bounce} =
-      $self->{dbh}
-      ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, 'soft_bounce' )
-      ->[0];
-    $report->{hard_bounce} =
-      $self->{dbh}
-      ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, 'hard_bounce' )
-      ->[0];
+	for(
+		qw(
+			open
+			soft_bounce
+			hard_bounce
+			forward_to_a_friend
+			view_archive
+		)
+	){
+	$report->{$_} = $self->{dbh}->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, $_ )->[0];
+   }
 
     my $url_clickthroughs_query =
 'SELECT url, COUNT(url) AS count FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' where list = ? AND msg_id = ? GROUP BY url';
@@ -755,8 +860,13 @@ sub country_geoip_data {
 	}
 	elsif($args->{-type} eq 'opens'){ 
 		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'open\' AND list = ?'; 	
-	}			# SELECT remote_addr FROM dada_mass_mailing_event_log WHERE event = 'open' AND list = 'dadadev'; 
-	
+	}
+	elsif($args->{-type} eq 'forward_to_a_friend') { 
+		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'forward_to_a_friend\' AND list = ?'; 			
+	}
+	elsif($args->{-type} eq 'view_archive') { 
+		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'view_archive\' AND list = ?'; 			
+	}
 		
 	if(defined($args->{-mid})){ 
 		$query .= ' AND msg_id=?'; 
@@ -822,8 +932,14 @@ sub data_over_time {
 	if($args->{-type} eq 'clickthroughs'){ 
 		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ? '; 	
 	}
-	else { 
+	elsif($args->{-type} eq 'opens') { 
 		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'open\' AND list = ? '; 			
+	}
+	elsif($args->{-type} eq 'forward_to_a_friend') { 
+		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'forward_to_a_friend\' AND list = ? '; 					
+	}
+	elsif($args->{-type} eq 'view_archive') { 
+		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'view_archive\' AND list = ? '; 					
 	}
 	 
 	if($msg_id){ 
