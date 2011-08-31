@@ -52,11 +52,11 @@ Your list has a whole slew of attributes that make up its behavior. Most of the 
 
 You'll know you're working with a list-specific attribute, as the tag will start out with: 
 
-	<!-- tmpl_var list_settings
+	<!-- tmpl_var list_settings.
 
 Notice the dot, C<.> at the end. 
 
-The tag will then be proceeded with the attribute you want to use and end with
+The tag will then be proceeded with the attribute you want to use and end with,
 
  -->
 
