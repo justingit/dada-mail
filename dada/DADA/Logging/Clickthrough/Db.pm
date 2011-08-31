@@ -268,6 +268,70 @@ sub sc_log {
 
 
 
+sub forward_to_a_friend_log {
+	
+	
+	my $self      = shift; 
+	my ($args)    = @_;
+	my $timestamp = undef; 
+	if(exists($args->{-timestamp})){ 
+		$timestamp = $args->{-timestamp};
+	}
+	else { 
+		$timestamp = scalar(localtime()); 
+	}
+	
+    if ( $self->{ls}->param('enable_view_archive_logging') == 1 ) {
+	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
+	    	if -e $self->clickthrough_log_location; 
+		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $self->clickthrough_log_location)
+			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
+		flock(LOG, LOCK_SH);
+		
+		print LOG $timestamp . "\t" . $args->{-mid} . "\t" . 'forward_to_a_friend'  . "\n";
+	
+		close (LOG);
+		return 1; 
+	}else{ 
+		return 0;
+	}
+	
+}
+
+
+
+
+sub view_archive_log { 
+	
+	my $self      = shift; 
+	my ($args)    = @_;
+	my $timestamp = undef; 
+	if(exists($args->{-timestamp})){ 
+		$timestamp = $args->{-timestamp};
+	}
+	else { 
+		$timestamp = scalar(localtime()); 
+	}
+	
+    if ( $self->{ls}->param('enable_view_archive_logging') == 1 ) {
+	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
+	    	if -e $self->clickthrough_log_location; 
+		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $self->clickthrough_log_location)
+			or warn "Couldn't open file: '" . $self->clickthrough_log_location . '\'because: ' .  $!;
+		flock(LOG, LOCK_SH);
+		
+		print LOG $timestamp . "\t" . $args->{-mid} . "\t" . 'view_archive' . "\n";
+	
+		close (LOG);
+		return 1; 
+	}else{ 
+		return 0;
+	}
+}
+
+
+
+
 sub bounce_log { 
 
 	my $self      = shift; 
@@ -438,6 +502,8 @@ sub report_by_message_index {
                 && $url ne 'bounce'
                 && $url ne 'hard_bounce'
                 && $url ne 'soft_bounce'
+				&& $url ne 'forward_to_a_friend'
+				&& $url ne 'view_archive'
                 && $url ne undef )
             {
                 $report->{$mid}->{count}++;
@@ -456,17 +522,15 @@ sub report_by_message_index {
             elsif ( $url eq 'num_subscribers' ) {				
                 $report->{$mid}->{num_subscribers} = $extra;
             }
+            elsif ( $url eq 'forward_to_a_friend' ) {				
+                $report->{$mid}->{forward_to_a_friend}++;
+            }
+            elsif ( $url eq 'view_archive' ) {				
+                $report->{$mid}->{view_archive}++;
+            }
 			else { 
 				# warn "What? url:'$url', extra:$extra";
 			}
-
-            #$report->{$mid}->{date} =
-            #DADA::App::Guts::date_this(
-            #    -Packed_Date => $mid,
-            #);
-
-            #$unsorted_report->{$mid} = $i_report;
-
         }
         close(LOG);
 
@@ -525,11 +589,13 @@ sub report_by_message {
 		
 		if($match_mid eq $mid){ 
 		
-			if($url ne 'open' && 
-			   $url ne 'num_subscribers' && 
-			   $url ne 'bounce' && 
-			   $url ne 'soft_bounce' && 
-			   $url ne 'hard_bounce' && 
+			if($url ne 'open'                && 
+			   $url ne 'num_subscribers'     && 
+			   $url ne 'bounce'              && 
+			   $url ne 'soft_bounce'         && 
+			   $url ne 'hard_bounce'         && 
+			   $url ne 'forward_to_a_friend' && 
+			   $url ne 'view_archive'        &&
 			   $url ne undef
 			){
 				
@@ -561,10 +627,19 @@ sub report_by_message {
 					if(!exists($report->{hard_bounce})){ 
 						$report->{hard_bounce} = 0; 
 					}
-					$report->{hard_bounce}++; 
+				$report->{hard_bounce}++; 
+				push(@{$report->{'hard_bounce_report'}}, {email => $extra, timestamp => $t});
+			}elsif($url eq 'forward_to_a_friend'){ 	
+					if(!exists($report->{forward_to_a_friend})){ 
+						$report->{forward_to_a_friend} = 0; 
+					}
+				$report->{forward_to_a_friend}++;
+			}elsif($url eq 'view_archive'){ 	
+					if(!exists($report->{view_archive})){ 
+						$report->{view_archive} = 0; 
+					}
+				$report->{view_archive}++;
 					
-					push(@{$report->{'hard_bounce_report'}}, {email => $extra, timestamp => $t});
-
 			}	
 		}		
 	}

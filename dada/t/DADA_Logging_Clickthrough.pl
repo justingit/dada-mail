@@ -15,12 +15,16 @@ my $list = dada_test_config::create_test_list;
 
 # Make sure everything is on: 
 my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-$ls->save({ 
-'clickthrough_tracking' =>  1,
-'enable_open_msg_logging' =>  1,
-'enable_subscriber_count_logging' =>  1,
-'enable_bounce_logging' =>  1,
-}); 
+   $ls->save(
+	{ 
+		clickthrough_tracking              => 1,
+		enable_open_msg_logging            => 1,
+		enable_subscriber_count_logging    => 1,
+		enable_bounce_logging              => 1,
+		enable_forward_to_a_friend_logging => 1, 
+		enable_view_archive_logging        => 1, 
+	}
+); 
 
 my $key; 
 
@@ -397,9 +401,6 @@ for(1 .. 100){
 	); 
 }
 
-
-
-
 $report = $lc->report_by_message_index; 
 ok($report->[0]->{open} == 101);
 
@@ -453,6 +454,29 @@ ok($m_report->{soft_bounce} == 1);
 ok($m_report->{open} == 101); 
 ok($m_report->{num_subscribers} == 5); 
 ok(scalar @{$m_report->{url_report}} == 3); 
+
+# Forward to a Friend: 
+$lc->forward_to_a_friend_log(
+	{ 
+		-mid => 12345678901234,
+	}
+);
+$report = $lc->report_by_message_index; 
+ok($report->[0]->{forward_to_a_friend} == 1, "forward to a friend");
+ok($lc->report_by_message( 12345678901234 )->{forward_to_a_friend} == 1, "forward_to_a_friend 2");
+
+
+# View Archive 
+$lc->view_archive_log(
+	{ 
+		-mid => 12345678901234,
+	}
+);
+$report = $lc->report_by_message_index; 
+ok($report->[0]->{view_archive} == 1, "view archive");
+ok($lc->report_by_message( 12345678901234 )->{view_archive} == 1, "view_archive 2");
+
+
 
 
 # auto_redirect_tag
