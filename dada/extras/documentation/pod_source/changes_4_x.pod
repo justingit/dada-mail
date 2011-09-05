@@ -2,17 +2,31 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
-=head1 4.7.0 alpha 2
+=head1 4.7.0
 
-=head2 Summary 4.7.0 alpha 2
+=head2 Summary 4.7.0
 
-... 
+=head2 Features 4.7.0
 
-=head2 Bug Fixes 4.7.0 alpha 2
+This release of Dada Mail provides additional tools to help you manage your mailing list through the list control panel. 
 
-I<Pending merge w/B<bugfixes-4_6_2> branch>
+With this version, you know have the ability to: 
 
-=head2 Features 4.7.0 alpha 2
+=over
+
+=item * Send a "Welcome" message to subscribers you've added from within the list control panel
+
+=item * Send a copy of the last archived message to subscribers you've added from within the list control panel
+
+=item * Send a, "Farewell" message to subscribers you've removed from within the list control panel. 
+
+=item * View mass mailing tracker information from right within the mailing monitor I< (opens, link clickthroughs, bounces, forward-to-a-friend, arvhive views, etc)>
+
+=item * New tracker features: track forward-to-a-friend usage and archive views by country of origin and over time
+
+=item * Truly, "Closed" and, "Invitation-only" mailing list behaviors
+
+=back
 
 =head3 Tracker Reports in Mailing Monitor
 
@@ -22,7 +36,7 @@ Enable this option in the Tracker plugin, the option is labeled, B<Show Message 
 
 =head3 Invitation-Only Mailing Lists
 
-Mailing List can now be truly, I<Invitation-Only>. The list owner of a mailing list must send out an Invitation Message from the list control panel and individuals may not self-subscribe. 
+Mailing Lists can now be truly, I<Invitation-Only>. The list owner of a mailing list must send out an Invitation Message from the list control panel and individuals may not self-subscribe. 
 
 =head3 List Control Panel Subscriptions Enhancements
 
@@ -30,11 +44,11 @@ Mailing List can now be truly, I<Invitation-Only>. The list owner of a mailing l
 
 Mass subscriptions in the list control panel I<(if this option is enabled)> can automatically be followed up with a, "Welcome" message sent to only the new subscribers. 
 
-This farewell message can be customized in the list control panel in the, B<Appearance and Templates - Email Message Templates> screen under, B<Subscribed by List Owner Message> I<(Should be simply, Welcome from List Owner message?)>
+This welcome message can be customized in the list control panel in the, B<Appearance and Templates - Email Message Templates> screen under, B<"Welcome" Message to Addresses Subscribed in the List Control Panel>
 
 =head4 Send the Newest Archived Message to Addresses Subscribed by the List Owner. 
 
-As well as sending out a welcome message, you may now send out the newest archived message to just the subscribers that were newly added. 
+As well as sending out a Welcome Message, you may now send out the newest archived message to just the subscribers that were newly added. 
 
 =head3 List Control Panel Unubscriptions Enhancements
 
@@ -42,19 +56,23 @@ As well as sending out a welcome message, you may now send out the newest archiv
 
 Mass unsubscriptions in the list control panel can automatically be followed up with a, "Farewell" message sent to only addresses that have just been removed. 
 
-This welcome message can be customized in the list control panel in the, B<Appearance and Templates - Email Message Templates> screen under, B<Unsubscribed by List Owner Message>
+This Farewell Message can be customized in the list control panel in the, B<Appearance and Templates - Email Message Templates> screen under, B<"Farewell" Message to Addresses Unsubscribed in the List Control Panel>
 
 =head3 Tracker Enhancements 
 
-=head4 Forward to a Friend" Logging 
+=head4 "Forward to a Friend" Logging 
 
-The Tracker plugin now has the ability to log every time the, "Forward to a Friend" form is used. Enabled by default. 
+The Tracker plugin now has the ability to log every time the, "Forward to a Friend" form is used. Enabled by default.
+
+Individual message reports will show the total number of times "Forward to a Friend" was used, as well as usage over time and by geography.  
 
 =head4 Archive Views Logging 
 
 The Tracker plugin now has the ability to log every time an archived message is viewed. Enabled by default. 
 
-=head2 Changes 4.7.0 alpha 2
+Individual message reports will show the total number of times an archived message was viewed, as well as views over time and by geography. 
+
+=head2 Changes 4.7.0
 
 =head3 "Enable, "Subscribe Checked Subscribers" button in the, Manage Subscribers -> Invite/Add -> Verify screen" option MOVED
 
@@ -70,6 +88,21 @@ The behavior you may want instead, if you were running a closed list, is an, "In
 =head3 "Send the Newest Archived Message to All New Subscribers." Option Moved 
 
 The, B<Send the Newest Archived Message to All New Subscribers.> option has been moved from, B<Message Archives - Archive Options> to, B<Your Mailing List -  Mailing List Options> under, B<Subscriptions>
+
+=head2 Bug Fixes 4.7.0
+
+=head3 Dada Bridge: Messages not checked, when stale messages in the way
+
+https://github.com/justingit/dada-mail/issues/183
+
+=head3 "Manage Appearance" used instead of, "Appearance and Templates "
+
+https://github.com/justingit/dada-mail/issues/184
+
+=head3 Docs: Missing dot ( . ) in code example.
+
+https://github.com/justingit/dada-mail/issues/185
+
 
 =head1 4.6.1
 
