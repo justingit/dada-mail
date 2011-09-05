@@ -103,6 +103,13 @@ https://github.com/justingit/dada-mail/issues/184
 
 https://github.com/justingit/dada-mail/issues/185
 
+=head3 Docs: Missing dot ( . ) in code example.
+
+https://github.com/justingit/dada-mail/issues/185
+
+=head3 "Monitor Your Mailing" documentation(?) page is blank on pro 4.3
+
+https://github.com/justingit/dada-mail/issues/186
 
 =head1 4.6.1
 
