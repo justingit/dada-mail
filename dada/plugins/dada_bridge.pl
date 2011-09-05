@@ -1219,18 +1219,25 @@ sub start {
     }
 
     require DADA::Mail::MailOut;
-    my @mailouts = DADA::Mail::MailOut::current_mailouts();
+	  my (
+	        $monitor_mailout_report, $total_mailouts,
+	        $active_mailouts,        $paused_mailouts,
+	        $queued_mailouts,        $inactive_mailouts
+	      )
+	      = DADA::Mail::MailOut::monitor_mailout(
+	        {
+	            -verbose => 0,
+	            -action  => 0,
+	        }
+	      );
 
-    # DEV: This is wrong, as the number of mailouts will be different from the
-    # number of *active* mailouts. Hmm...
 
-    # KLUDGE!
     if ( $Plugin_Config->{Room_For_One_More_Check} == 1 ) {
 
         #/KLUDGE!
-        if ( ( $#mailouts + 1 ) >= $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
+        if ( ( $active_mailouts + $queued_mailouts) >= $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
             e_print( "There are currently, "
-              . ( $#mailouts + 1 )
+              . ( $active_mailouts + $queued_mailouts )
               . " mass mailout(s) running or queued. Going to wait until that number falls below, "
               . $DADA::Config::MAILOUT_AT_ONCE_LIMIT
               . " mass mailout(s) \n")
@@ -1239,21 +1246,17 @@ sub start {
         }
         else {
             e_print( "Currently, "
-              . ( $#mailouts + 1 )
+              . ( $active_mailouts + $queued_mailouts )
               . " mass mailout(s) running or queued. \n\n"
               . "That's below our limit ($DADA::Config::MAILOUT_AT_ONCE_LIMIT). \n"
               . "Checking awaiting  messages:\n\n")
               if $verbose;
         }
-
-        #KLUDGE!
     }
     else {
         e_print( "Skipping, 'Room for one more?' check\n")
           if $verbose;
     }
-
-    #/KLUDGE!
 
     my $messages_viewed = 0;
   QUEUE: for my $list (@lists) {

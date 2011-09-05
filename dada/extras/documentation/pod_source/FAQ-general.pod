@@ -153,7 +153,7 @@ Visitors to your website can subscribe to your mailing list by filling out a Lis
 
 This form is located  on the default screen of Dada Mail (for all lists) and also on the list-specific screen (for just that list)
 
-You can also place this subscription form on any page of an already existing website. The HTML form code can be copied from the List Control Panel screen, located at: B<Manage Appearance - Subscription Form HTML>
+You can also place this subscription form on any page of an already existing website. The HTML form code can be copied from the List Control Panel screen, located at: B<Appearance and Templates - Subscription Form HTML>
 
 And pasting the HTML into your page's source. 
 
@@ -297,7 +297,7 @@ http://dadamailproject.com/support/documentation/dada_bounce_handler.pl.html
 
 =head2 How do I create the HTML Subscription form code to place on my web pages to allow people to subscribe to my list? 
 
-Log into your list control panel, click, B< Manage Appearance -  Subscription Form HTML>
+Log into your list control panel, click, B< Appearance and Templates -  Subscription Form HTML>
 
 =head2 Can I hook Dada Mail up to a form on my website? 
 
@@ -731,7 +731,7 @@ These are the list templates that correspond to each of your lists.
 
 =item * Change the default list template, using the techniques above. 
 
-Either, don't edit the individual copy of the list template in the admin control panel under, B<Manage Appearance - Your Mailing List Template>, check the option, " Use the default list template."  in that same screen, or, to be even more authorative, add this to your %LIST_SETUP_OVERRIDES Config.pm hash: 
+Either, don't edit the individual copy of the list template in the admin control panel under, B<Appearance and Templates - Your Mailing List Template>, check the option, " Use the default list template."  in that same screen, or, to be even more authorative, add this to your %LIST_SETUP_OVERRIDES Config.pm hash: 
 
  get_template_data                => 'from_default_template',
 
