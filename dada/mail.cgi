@@ -1514,6 +1514,7 @@ sub sending_monitor {
 					-List       => $list,  
 				},
 				-vars => { 
+					screen                       => 'sending_monitor',
 					message_id                   => DADA::App::Guts::strip($id),
 					message_type                 => $q->param('type'),
 					refresh_after                => $refresh_after,
