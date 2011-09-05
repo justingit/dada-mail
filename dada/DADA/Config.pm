@@ -3678,17 +3678,17 @@ This email message is sent to the list owner, when a mass mailing has finished.
 
 $MAILING_FINISHED_MESSAGE_SUBJECT ||= '<!-- tmpl_var list_settings.list_name -->  Mailing Complete - <!-- tmpl_var message_subject -->'; 
 $MAILING_FINISHED_MESSAGE         ||= <<EOF
-Your List Mailing has been successful!
+Your mailing list's mass mailing has completed. 
 -----------------------------------------------------------------------
-Your mailing has reached: <!-- tmpl_var addresses_sent_to --> e-mail address(es)
+This mass mailing has reached: <!-- tmpl_var addresses_sent_to --> e-mail address(es)
 
-Mailing Started:    <!-- tmpl_var mailing_start_time -->                              
-Mailing Ended:      <!-- tmpl_var mailing_finish_time -->                        
+Mailing Started:    <!-- tmpl_var mailing_start_time -->
+Mailing Ended:      <!-- tmpl_var mailing_finish_time -->
 Total Mailing Time: <!-- tmpl_var total_mailing_time -->
-Last Email Sent to: <!-- tmpl_var last_email_send_to -->                               
+Last Email Sent to: <!-- tmpl_var last_email_send_to -->
 
-A copy of your Mailing List Message has been attached.
-	   	
+A copy of the mailing list message has been attached.
+
 -<!-- tmpl_var PROGRAM_NAME -->
 
 EOF
