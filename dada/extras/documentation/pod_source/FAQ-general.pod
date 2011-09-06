@@ -20,14 +20,14 @@ Complete installation docs are located at:
 
 L<http://dadamailproject.com/d/install_dada_mail.pod.html>
 
-We highly suggest using the installer that comes with Dada Mail, but you may install 
-Dada Mail manually, as well. 
 
 =head3 Install Dada Mail via Simple Scripts
 
 Simple Scripts, also has a installer for Dada Mail, which we think is great: 
 
 L<https://www.simplescripts.com/page/id:8-pCU3Jz0E>
+
+Double check the version they are offering to install, as it sometimes lags behind the official, stable release. 
 
 =head4 cPanel
 
@@ -75,7 +75,7 @@ If you do not remember the B<list short name> of the list you want to log into, 
 
 Log into a list using the Dada Mail Root Password. You'll see the option under the, B<Manage List> heading. 
 
-=head2 Can I Rename the mail.cgi File?
+=head2 Can I rename the mail.cgi file?
 
 Yes. You can rename the, B<mail.cgi> file to any other valid filename, like I<newsletter.cgi> or I<craaaaazyname.cgi>. You'll most likely have to keep the file ending either, B<.cgi> or B<.pl>
 
@@ -181,10 +181,25 @@ This will be a more advanced topic.
 
 I<Is there a way to Mass-Subscribe email addresses from the list control panel?>
 
-Login into your list and go to: B<Your Mailing List -Mailing List Options>
+B<4.7.0+>:
 
-Under the heading, B<List Control Panel Subscriptions> check the option, B<Enable Adding Subscribers from the List Control Panel> 
+Login into your mailing list and go to: B<Your Mailing List - Mailing List Options>
 
+Under the heading, B<List Control Panel Subscriptions> check the option, B<Enable Adding Subscribers from within the List Control Panel> 
+
+You can then go to: B<Your Subscribers - Invite/Add> and mass-subscribe 
+addresses. 
+
+B<4.6.1 - 4.4.0>
+
+Login into your mailing list and go to: 
+
+B<Your List Control Panel - Options>
+
+Check the option labeled, B<Enable, "Subscribe Checked Subscribers" button [...]>
+
+You can then go to: B<Your Subscribers - Invite/Add> and mass-subscribe 
+addresses. 
 
 =head1 Unsubscriptions 
 

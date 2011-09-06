@@ -14,9 +14,6 @@ The other neat thing is, if you find some of those other steps uneeded and redun
 this allows you to have another, alternative and direct confirmation process, without
 giving up too much security. 
 
-=head1 Status - Experimental! 
-
-This feature is quite new in Dada Mail and experimental. Have fun with it! 
 
 =head1 Enabling
 
@@ -26,7 +23,7 @@ I<Your Mailing list - Mailing List Options>
 
 Looking for the fieldset labeled, 
 
-I<Subscription Requests Approving/Denying (Experimental)> 
+I<Subscription Requests Approving/Denying> 
 
 Check the option labeled, 
 
@@ -83,7 +80,5 @@ Even though the email messages that get sent out and the, "Subscription Successf
 interface to edit them on a per-list basis has not been made. 
 
 You may edit them on a installation-wide basis by editing the defaults in the Config.pm file. 
-
-
 
 =cut

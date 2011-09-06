@@ -10,7 +10,7 @@
 
 This release of Dada Mail provides additional tools to help you manage your mailing list through the list control panel. 
 
-With this version, you know have the ability to: 
+With this version, you now have the ability to: 
 
 =over
 
@@ -20,7 +20,7 @@ With this version, you know have the ability to:
 
 =item * Send a, "Farewell" message to subscribers you've removed from within the list control panel. 
 
-=item * View mass mailing tracker information from right within the mailing monitor I< (opens, link clickthroughs, bounces, forward-to-a-friend, arvhive views, etc)>
+=item * View mass mailing tracker information from right within the mailing monitor I< (opens, link clickthroughs, bounces, forward-to-a-friend, archive views, etc)>
 
 =item * New tracker features: track forward-to-a-friend usage and archive views by country of origin and over time
 
@@ -77,7 +77,7 @@ Individual message reports will show the total number of times an archived messa
 =head3 "Enable, "Subscribe Checked Subscribers" button in the, Manage Subscribers -> Invite/Add -> Verify screen" option MOVED
 
 The option, B<Enable, "Subscribe Checked Subscribers" button in the, Manage Subscribers -> Invite/Add -> Verify screen > was not removed, 
-but was moved to, B<Your Mailing List - Mailing List Options> under, B<List Control Panel Subscriptions>. The option has been relabled, B<Enable Adding Subscribers from the List Control Panel>
+but was moved to, B<Your Mailing List - Mailing List Options> under, B<List Control Panel Subscriptions>. The option has been relabled, B<Enable Adding Subscribers from within the List Control Panel>
 
 =head3 Closed Lists Behavior Changed
 
