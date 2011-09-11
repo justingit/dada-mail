@@ -1160,15 +1160,16 @@ sub edit_prefs {
         {
             -associate => $q,
             -settings  => {
-                clickthrough_tracking              => 0,
-                enable_open_msg_logging            => 0,
-                enable_subscriber_count_logging    => 0,
-				enable_forward_to_a_friend_logging => 0, 
-				enable_view_archive_logging        => 0,
-                enable_bounce_logging              => 0,
-				tracker_record_view_count          => 0,
-				tracker_clean_up_reports           => 0, 
-				tracker_auto_parse_links           => 0, 
+                clickthrough_tracking                           => 0,
+                enable_open_msg_logging                         => 0,
+                enable_subscriber_count_logging                 => 0,
+				enable_forward_to_a_friend_logging              => 0, 
+				enable_view_archive_logging                     => 0,
+                enable_bounce_logging                           => 0,
+				tracker_record_view_count                       => 0,
+				tracker_clean_up_reports                        => 0, 
+				tracker_auto_parse_links                        => 0, 
+				tracker_show_message_reports_in_mailing_monitor => 0, 
             }
         }
     );
