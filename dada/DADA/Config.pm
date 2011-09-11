@@ -578,7 +578,7 @@ The default setting is the online version that we provide - but it is a paid ser
 
 =cut
 
-$HELP_LINKS_URL ||= 'http://dadamailproject.com/pro_dada/4.6.0';
+$HELP_LINKS_URL ||= 'http://dadamailproject.com/pro_dada/4.7.0';
 
 
 =pod
