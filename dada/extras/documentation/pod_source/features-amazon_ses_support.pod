@@ -116,10 +116,10 @@ In your C<.dada_config> file, add the following lines:
 And fill out the necessary information. In this example: 
 
 	$AMAZON_SES_OPTIONS = { 
-		aws_credentials_file            => '/home/myaccount/aws-credentials, 
-		ses_send_email_script           => '/home/myaccount/ses/bin/ses-send-email.pl, 
-		ses_verify_email_address_script => '/home/myaccount/ses/bin/ses-verify-email-address.pl,
-		ses_get_stats_script            => '/home/myaccount/ses/bin/ses-get-stats.pl, 
+		aws_credentials_file            => '/home/myaccount/aws-credentials', 
+		ses_send_email_script           => '/home/myaccount/ses/bin/ses-send-email.pl', 
+		ses_verify_email_address_script => '/home/myaccount/ses/bin/ses-verify-email-address.pl',
+		ses_get_stats_script            => '/home/myaccount/ses/bin/ses-get-stats.pl', 
 		 
 	};
 
