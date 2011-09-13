@@ -584,16 +584,10 @@ sub _add_opener_image {
 
 	my $self    = shift; 
 	my $content = shift; 
-	
-	# body tags will now be on their own line, regardless.
-	$content =~ s/(\<body.*?\>|<\/body\>)/\n$1\n/gi; 
-	
-	my $img_opener_code = '<!--open_img--><img src="' . $DADA::Config::PROGRAM_URL . '/spacer_image/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/spacer.png" /><!--/open_img-->';
-
-	$content =~ s/(\<body.*?\>)/$1\n$img_opener_code/i;
-	
+	my $img_opener_code = '<!--open_img--><img src="' . $DADA::Config::PROGRAM_URL . '/spacer_image/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/spacer.png" width="1" height="1" /><!--/open_img-->';
+				#</body>
+	$content =~ s/(\<\/body(.*?)\>)/$img_opener_code\n$1/i;
 	return $content; 
-
 }
 
 
