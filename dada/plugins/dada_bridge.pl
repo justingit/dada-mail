@@ -143,16 +143,16 @@ my $Moderation_Msg = <<EOF
 The attached message needs to be moderated:
 
     List:    <!-- tmpl_var list_settings.list_name -->
-    From:    [subscriber.email]
-    Subject: [message_subject]
+    From:    <!-- tmpl_var subscriber.email -->
+    Subject: <!-- tmpl_var message_subject -->
 
 To send this message to the list, click here: 
 
-    <[moderation_confirmation_link]>
+    <<!-- tmpl_var moderation_confirmation_link -->>
     
 To deny sending this message to the list, click here: 
 
-    <[moderation_deny_link]>
+    <<!-- tmpl_var moderation_deny_link -->>
 
 -- [Plugin_Name]
 
@@ -618,17 +618,17 @@ EOF
         my $confirmation_link = "<a href="
           . $Plugin_Config->{Plugin_URL}
           . '?flavor=mod&list='
-          . $list
+          . DADA::App::Guts::uriescape($list)
           . '&process=confirm&msg_id='
-          . $messagename
+          . DADA::App::Guts::uriescape($messagename)
           . ">Accept</a>";
 
         my $deny_link = "<a href="
           . $Plugin_Config->{Plugin_URL}
           . '?flavor=mod&list='
-          . $list
+          . DADA::App::Guts::uriescape($list)
           . '&process=deny&msg_id='
-          . $messagename
+          . DADA::App::Guts::uriescape($messagename)
           . ">Reject</a>";
 
         print $confirmation_link . " or "
@@ -4679,15 +4679,15 @@ sub moderation_msg {
     my $confirmation_link =
       $Plugin_Config->{Plugin_URL}
       . '?flavor=mod&list='
-      . $self->{list}
+      . DADA::App::Guts::uriescape($self->{list})
       . '&process=confirm&msg_id='
-      . $args->{ -msg_id };
+      . DADA::App::Guts::uriescape($args->{ -msg_id });
     my $deny_link =
       $Plugin_Config->{Plugin_URL}
       . '?flavor=mod&list='
-      . $self->{list}
+      . DADA::App::Guts::uriescape($self->{list})
       . '&process=deny&msg_id='
-      . $args->{ -msg_id };
+      . DADA::App::Guts::uriescape($args->{ -msg_id });
 
     #  create an array of recepients
     my @moderators;
@@ -5091,8 +5091,8 @@ sub mod_msg_filename {
     $message_id =~ s/\@/_at_/g;
     $message_id =~ s/\>|\<//g;
     $message_id = DADA::App::Guts::strip($message_id);
-
-    return $self->mod_dir . '/' . $self->{list} . '-' . $message_id;
+	$message_id = DADA::App::Guts::uriescape($message_id); 
+    return $self->mod_dir . '/' . DADA::App::Guts::uriescape($self->{list}) . '-' . $message_id;
 
 }
 
