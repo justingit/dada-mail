@@ -33,7 +33,6 @@ use vars qw(@EXPORT);
 
 
 sub send_generic_email { 
-
 	my ($args) = @_; 
 	
 	if(! exists($args->{-test})){ 
@@ -87,6 +86,7 @@ sub send_generic_email {
 	
 	if(!exists($args->{-tmpl_params})){ 
 		if(exists($args->{-list})){ 
+
 			$args->{-tmpl_params} = 
 				{
 					-list_settings_vars_param => 
@@ -100,6 +100,8 @@ sub send_generic_email {
 		}
 	}	
 	
+			
+			
 	my $data = { 
 					(
 						exists($args->{-list})
@@ -116,9 +118,11 @@ sub send_generic_email {
 			$data->{$key} = safely_encode( $value); 
 		}
 		
-			
+	
 	require DADA::App::FormatMessages; 
 	my $fm = undef; 
+		
+		
 	if(exists($args->{-list})){ 
 		$fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
    	}  
@@ -128,56 +132,6 @@ sub send_generic_email {
 	$fm->use_header_info(1);
 	$fm->use_email_templates(0);	
 
-	my $subject = ''; 
-	my $body = q{ 
-Hello!
-
-Your mailing list subscription for the address, 
-
-	<!-- tmpl_var subscriber.email -->
-
-to the mailing list: 
-
-	<!-- tmpl_var list_settings.list_name -->
-
-is complete. Thanks for subscribing! 
-
-<!-- tmpl_if list_settings.group_list --> 
-* This mailing list is a group discussion list <!-- tmpl_if list_settings.enable_moderation -->(moderated)<!-- tmpl_else -->(unmoderated)<!-- /tmpl_if -->. You can start a new thread, by sending an email message to, <!-- tmpl_var list_settings.discussion_pop_email --> 
-<!-- tmpl_else --> 
-* This mailing list is an announce-only mailing list. 
-<!-- /tmpl_if -->
-
-Please save this email message for future reference. 
-
-* Date of this subscription: 
-<!-- tmpl_var date -->
-
-* Want to remove yourself from this mailing list at any time? Use the form at: 
-<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->
-
-* Need Help? Contact: 
-<!-- tmpl_var list_settings.list_owner_email -->
-
-<!-- tmpl_if PROFILE_ENABLED --><!-- tmpl_if new_profile --> 
-* Check out your Profile to update your subscription information: 
-
-	Profile Login: <!-- tmpl_var PROGRAM_URL -->/profile_login/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/
-	Username: <!-- tmpl_var profile.email --> 
-	Password: <!-- tmpl_var profile.password --> 
-<!-- /tmpl_if --><!-- /tmpl_if --> 
-
-* Privacy Policy: 
-<!-- tmpl_var list_settings.privacy_policy -->
-
-* Physical Address:
-<!-- tmpl_var list_settings.physical_address -->
-
-Thanks! 
-- <!-- tmpl_var list_settings.list_owner_email -->
-}; 
-
-
 	my ($email_str) = $fm->format_message(
                             -msg => $fm->string_from_dada_style_args(
                                         {
@@ -185,6 +139,8 @@ Thanks!
                                         }
                                     ) 
                        );
+				 
+
 		
 #	warn '$email_str ' . $email_str; 
 	
