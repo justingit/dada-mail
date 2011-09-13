@@ -481,7 +481,8 @@ sub _format_text {
 					}
 				}
 				
-			   unless($self->no_list == 1){
+			  if($self->no_list != 1){
+			
 				   $content = $self->_parse_in_list_info(
 						-data => $content, 
 						-type => $entity->head->mime_type, 
@@ -495,7 +496,7 @@ sub _format_text {
                     );
                 }
                 
-				unless($self->no_list == 1) { 
+				if($self->no_list != 1) { 
 	      			if(defined($self->{list})){
 						if ($self->{ls}->param('enable_open_msg_logging') == 1 && $entity->head->mime_type  eq 'text/html'){ 
 							$content = $self->_add_opener_image($content);
@@ -1085,7 +1086,7 @@ sub _parse_in_list_info {
  	die "no data! $!" if ! $args{-data}; 
  	
  	my $data = $args{-data}; 
-   unless($self->no_list == 1){ 
+   if($self->no_list == 1){ 
 		return $data; 
 	}
  	   	   
