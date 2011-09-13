@@ -22,7 +22,7 @@ use DADA::App::Guts;
 		
 use vars qw($AUTOLOAD); 
 use Carp qw(croak carp);
-
+   $Carp::Verbose = 1; 
 use Fcntl qw(:DEFAULT :flock	O_WRONLY	O_TRUNC		O_CREAT	LOCK_EX	);
 
 my %allowed = (
@@ -73,12 +73,7 @@ sub new {
 	bless $self, $class;
 	
 	my ($args) = @_; 
-	
-	# Validate
-	#if(!exists($args->{-list})){ 
-	#	croak "You MUST pass the -list paramater!"; 
-	#}
-	
+		
 	$self->{list} = undef; 
 	
 	if(exists($args->{-list})){ 
@@ -133,7 +128,7 @@ sub _init {
 	my ($args) = @_; 
 	$self->{mj_log} = $log;
 	
-	if(exists($args->{-list})){ 
+	if(defined($args->{-list})){ 
 			
 		if($self->{list_info}->{use_domain_sending_tunings} == 1) { 
 	    #if($self->{ls}->param('use_domain_sending_tunings') == 1) { 
@@ -327,7 +322,6 @@ sub send {
 	if(defined($self->{list})){ 
 		for(keys %{$self->{ls}->params}){ 
 			if(exists($DADA::Config::LIST_SETUP_DEFAULTS{$_})){ 
-        
 		    	$local_li->{$_} = $self->{ls}->param($_); 
 			}
 		}
@@ -345,6 +339,9 @@ sub send {
 	        }
         
 		}
+	}
+	else { 
+		%{$local_li} = %DADA::Config::LIST_SETUP_DEFAULTS;
 	}
     
     
@@ -637,7 +634,7 @@ sub send {
                 carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER, \$DADA::Config::MAIL_SETTINGS of \$DADA::Config::MASS_MAIL_SETTINGS variable already has the -f flag set ($DADA::Config::MAIL_SETTINGS), not setting again $!";
                 $live_mailing_settings = $l_mail_settings;
             
-            }elsif($local_li->{add_sendmail_f_flag} == 1){	    
+            }elsif($local_li->{add_sendmail_f_flag} == 1 && defined($local_li->{admin_email})){	    
             
                 if($local_li->{verp_return_path} == 1){ 
                     $live_mailing_settings = $l_mail_settings . ' -f'. $self->_verp($plain_to_address);
@@ -2206,18 +2203,21 @@ sub _make_general_headers {
 	# PHRASE, ADDRESS, [ COMMENT ]
 	require Email::Address;		
 
-	my $ln = undef;	 
-	require  DADA::App::FormatMessages; 
-	my $fm = DADA::App::FormatMessages->new(
-		-List => $self->{list}
-	); 
-   	$ln = $fm->_encode_header(
-		'just_phrase',
-		DADA::App::Guts::escape_for_sending(
-			$self->{ls}->param('list_name')
-		)
-	);	   
-
+	my $ln = undef;
+	my $fm = undef; 
+	if(defined($self->{list})){ 
+		require  DADA::App::FormatMessages; 
+		$fm = DADA::App::FormatMessages->new(
+			-List => $self->{list}
+		); 
+	   	$ln = $fm->_encode_header(
+			'just_phrase',
+			DADA::App::Guts::escape_for_sending(
+				$self->{ls}->param('list_name')
+			)
+		);	   
+	}
+	
 	my $from_phrase  = undef; 
 	my $from_address = undef; 
 		
@@ -2240,42 +2240,48 @@ sub _make_general_headers {
 			$from_address = $self->{ls}->param('list_owner_email');	
 		}
 		else { 
-			#...
+			$from_phrase  = ''; 
+			$from_address = '';
 		}
 	}
 	
-	$gh{From} = $fm->format_phrase_address($from_phrase, $from_address); 
-	# time  + random number + sender, woot!
-	require DADA::Security::Password; 	
-	my $ran_number = DADA::Security::Password::generate_rand_string('1234567890');
-
-	my ($name, $host) = split('@', $from_address, 2); 
-	$gh{'Message-ID'} = '<' .  
-						DADA::App::Guts::message_id() . 
-						'.'. 
-						$ran_number . 
-						'@' . 
-						$host . 
-						'>';					
-		
-	# Deprecated.
-	if($self->{ls}->param('print_errors_to_header') == 1){ 	
-		$gh{'Errors-To'} = $fm->format_phrase_address(
-			undef, 
-			$self->{ls}->param('admin_email')
-		);
-	} 	
-
-	# again, this stuff should always be defined by default... 
-	if(defined($self->{ls}->param('precedence'))) { 
-	    $gh{'Precedence'}  = $self->{ls}->param('precedence');
-	}
-	if(defined($self->{ls}->param('priority'))) { 
-	    if($self->{ls}->param('priority') ne 'none'){ 
-	        $gh{'X-Priority'}  = $self->{ls}->param('priority');
-	    }
-    }
+	if(defined($self->{list})){
 	
+		$gh{From} = $fm->format_phrase_address($from_phrase, $from_address); 
+		# time  + random number + sender, woot!
+		require DADA::Security::Password; 	
+		my $ran_number = DADA::Security::Password::generate_rand_string('1234567890');
+
+		my ($name, $host) = split('@', $from_address, 2); 
+		$gh{'Message-ID'} = '<' .  
+							DADA::App::Guts::message_id() . 
+							'.'. 
+							$ran_number . 
+							'@' . 
+							$host . 
+							'>';					
+		
+		# Deprecated.
+		if($self->{ls}->param('print_errors_to_header') == 1){ 	
+			$gh{'Errors-To'} = $fm->format_phrase_address(
+				undef, 
+				$self->{ls}->param('admin_email')
+			);
+		} 	
+
+		# again, this stuff should always be defined by default... 
+		if(defined($self->{ls}->param('precedence'))) { 
+		    $gh{'Precedence'}  = $self->{ls}->param('precedence');
+		}
+		if(defined($self->{ls}->param('priority'))) { 
+		    if($self->{ls}->param('priority') ne 'none'){ 
+		        $gh{'X-Priority'}  = $self->{ls}->param('priority');
+		    }
+	    }
+	}
+	else { 
+		# No list... 
+	}
 	return %gh;
 }
 
@@ -2324,87 +2330,92 @@ sub _Date {
 sub list_headers { 
 	
 	my $self = shift; 
-	my %lh;
 	
-	# List
-	$lh{'List'}             =   $self->{list};
-	
-	# List-URL
-	$lh{'List-URL'}         =   '<<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/>';
+	if(defined($self->{list})){
 
-	# List-Subscribe
-	if($self->{ls}->param('closed_list') == 1){ 
-		if(exists($lh{'List-Subscribe'})){ 
-			delete($lh{'List-Subscribe'});
+		my %lh;
+	
+		# List
+		$lh{'List'}             =   $self->{list};
+	
+		# List-URL
+		$lh{'List-URL'}         =   '<<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/>';
+
+		# List-Subscribe
+		if($self->{ls}->param('closed_list') == 1){ 
+			if(exists($lh{'List-Subscribe'})){ 
+				delete($lh{'List-Subscribe'});
+			}
 		}
-	}
-	else { 
-		$lh{'List-Subscribe'}   =   '<<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
-	}
-
-	# List-Unsubscribe
-	# I'm not using the _macro_tags method, out of sake of performance
-	# That method should really be moved into DADA::Template::Widgets
-	#
-	if($self->{ls}->param('unsub_link_behavior') eq 'show_unsub_form'){ 
-		$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
-	}
-	else { 
-		$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
-	}
-
-	# List-Owner
-	$lh{'List-Owner'}       =   '<<!-- tmpl_var list_settings.list_owner_email -->>';
-	
-	# List-Archive
-	if($self->{ls}->param('show_archives') ne "0"){
-		$lh{'List-Archive'} =  '<' . $DADA::Config::PROGRAM_URL.'/archive/'. $self->{list} . '/>';   
-	}
-	
-	
-	# List-Post
-	# http://www.faqs.org/rfcs/rfc2369.html
-    # The List-Post field describes the method for posting to the list. 
-	# This is typically the address of the list, but MAY be a moderator, 
-	# or potentially some other form of submission. For the special case 
-	# of a list that does not allow posting (e.g., an announcements list), 
-	# the List-Post field may contain the special value "NO".
-	if(
-	   $self->{ls}->param('group_list')           == 1 && 
-	   $self->{ls}->param('discussion_pop_email')
-	  ){ 
-		$lh{'List-Post'} = '<mailto:' . $self->{ls}->param('discussion_pop_email') . '>';
-	}
-	else { 
-		$lh{'List-Post'} = 'NO';
-		
-	}
-	
-	# List-ID
-	# Is there a reason I continue to use this? 	
-	# http://www.faqs.org/rfcs/rfc2111.html
-	eval "require Net::Domain";
-	if(!$@){ 
-		
-		my $domain = undef; 
-		
-		if($self->test || $DADA::Config::PROGRAM_URL =~ /http\:\/\/localhost/){ 
-			# just to speed things up... 
-		} 
 		else { 
-			
-			$domain = Net::Domain::hostfqdn() || 
-			carp "no domain found for: Net::Domain::hostfqdn()";
+			$lh{'List-Subscribe'}   =   '<<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
 		}
+
+		# List-Unsubscribe
+		# I'm not using the _macro_tags method, out of sake of performance
+		# That method should really be moved into DADA::Template::Widgets
+		#
+		if($self->{ls}->param('unsub_link_behavior') eq 'show_unsub_form'){ 
+			$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
+		}
+		else { 
+			$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
+		}
+
+		# List-Owner
+		$lh{'List-Owner'}       =   '<<!-- tmpl_var list_settings.list_owner_email -->>';
+	
+		# List-Archive
+		if($self->{ls}->param('show_archives') ne "0"){
+			$lh{'List-Archive'} =  '<' . $DADA::Config::PROGRAM_URL.'/archive/'. $self->{list} . '/>';   
+		}
+	
+	
+		# List-Post
+		# http://www.faqs.org/rfcs/rfc2369.html
+	    # The List-Post field describes the method for posting to the list. 
+		# This is typically the address of the list, but MAY be a moderator, 
+		# or potentially some other form of submission. For the special case 
+		# of a list that does not allow posting (e.g., an announcements list), 
+		# the List-Post field may contain the special value "NO".
+		if(
+		   $self->{ls}->param('group_list')           == 1 && 
+		   $self->{ls}->param('discussion_pop_email')
+		  ){ 
+			$lh{'List-Post'} = '<mailto:' . $self->{ls}->param('discussion_pop_email') . '>';
+		}
+		else { 
+			$lh{'List-Post'} = 'NO';
 		
-		$domain ||= 'localhost'; # not sure about this one, I believe if you use localhost, you need a random # as well...
-		$lh{'List-ID'} = '<' . $self->{list} .'.'. $domain .'>';
-	}else{ 
-		carp "Net::Domain should be installed!";
+		}
+	
+		# List-ID
+		# Is there a reason I continue to use this? 	
+		# http://www.faqs.org/rfcs/rfc2111.html
+		eval "require Net::Domain";
+		if(!$@){ 
+		
+			my $domain = undef; 
+		
+			if($self->test || $DADA::Config::PROGRAM_URL =~ /http\:\/\/localhost/){ 
+				# just to speed things up... 
+			} 
+			else { 
+			
+				$domain = Net::Domain::hostfqdn() || 
+				carp "no domain found for: Net::Domain::hostfqdn()";
+			}
+		
+			$domain ||= 'localhost'; # not sure about this one, I believe if you use localhost, you need a random # as well...
+			$lh{'List-ID'} = '<' . $self->{list} .'.'. $domain .'>';
+		}else{ 
+			carp "Net::Domain should be installed!";
+		}
+		return %lh;
 	}
-	
-	
-	return %lh;
+	else { 
+		return (); 
+	}
 }
 
 

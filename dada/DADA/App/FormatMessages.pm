@@ -90,6 +90,7 @@ my %allowed = (
 	im_encoding_headers          => 0, 
 	mass_mailing                 => 0, 
 	list_invitation              => 0, 	
+	no_list                      => 0,
 );
 
 
@@ -191,6 +192,9 @@ sub _init  {
 			$self->im_encoding_headers(1); 
 		}
     }
+	else { 
+		$self->no_list(1);  
+	}
 
 	$self->use_email_templates(1); 
 
@@ -435,6 +439,7 @@ sub _format_text {
 			
 			if($content){ # do I need this?
 				if(
+					$self->no_list                                   != 1 &&
 					$self->treat_as_discussion_msg                        &&
 					$self->{ls}->param('group_list')                 == 1 &&  
 					$self->{ls}->param('discussion_template_defang') == 1
@@ -476,10 +481,12 @@ sub _format_text {
 					}
 				}
 				
-			   $content = $self->_parse_in_list_info(
-					-data => $content, 
-					-type => $entity->head->mime_type, 
-				);
+			   unless($self->no_list == 1){
+				   $content = $self->_parse_in_list_info(
+						-data => $content, 
+						-type => $entity->head->mime_type, 
+					);
+				}
 
 			    if($DADA::Config::GIVE_PROPS_IN_EMAIL == 1){ 
                     $content = $self->_give_props(
@@ -488,10 +495,11 @@ sub _format_text {
                     );
                 }
                 
-
-      			if(defined($self->{list})){
-					if ($self->{ls}->param('enable_open_msg_logging') == 1 && $entity->head->mime_type  eq 'text/html'){ 
-						$content = $self->_add_opener_image($content);
+				unless($self->no_list == 1) { 
+	      			if(defined($self->{list})){
+						if ($self->{ls}->param('enable_open_msg_logging') == 1 && $entity->head->mime_type  eq 'text/html'){ 
+							$content = $self->_add_opener_image($content);
+						}
 					}
 				}
 				
@@ -1077,7 +1085,9 @@ sub _parse_in_list_info {
  	die "no data! $!" if ! $args{-data}; 
  	
  	my $data = $args{-data}; 
-
+   unless($self->no_list == 1){ 
+		return $data; 
+	}
  	   	   
 #### Not completely happy with the below --v
 
@@ -1219,14 +1229,19 @@ sub _macro_tags {
 	
 	}elsif($args{-type} eq 'unsubscribe'){ 
 	
-		# And, that's it.
-		if($self->{ls}->param('unsub_link_behavior') eq 'show_unsub_form'){ 
-			$type = 'ur'; 
-		}
-		else { 
+		# We really shouldn't even been in this sub, if there's no list... 
+		if($self->no_list == 1){ 
 			$type = 'u'; 
 		}
-		
+		else { 	
+			# And, that's it.
+			if($self->{ls}->param('unsub_link_behavior') eq 'show_unsub_form'){ 
+				$type = 'ur'; 
+			}
+			else { 
+				$type = 'u'; 
+			}
+		}
 	}elsif($args{-type} eq 'confirm_subscribe'){ 
 	
 		$type = 'n';
