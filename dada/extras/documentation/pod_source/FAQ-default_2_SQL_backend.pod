@@ -62,6 +62,18 @@ http://dadamailproject.com/support/documentation/dada_subscribers_plaintext2sql.
 
 =back
 
+
+=item * dada_clickthrough_plaintext2sql.pl
+
+I<You'll only need to run this, if you were using the Clickthrough Tracking extension or Tracker plugin>
+
+Docs: 
+
+http://dadamailproject.com/support/documentation/dada_clickthrough_plaintext2sql.pl.html
+
+=back
+
+
 You may run them by simply visiting the scripts in your web browser, or running them from a shell. 
 
 B<Do Not> run these scripts twice, or data will be doubled-up. 

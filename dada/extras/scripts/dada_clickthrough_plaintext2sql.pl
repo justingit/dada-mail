@@ -8,6 +8,9 @@ print '<pre>';
 use lib qw(
 ./
 ./DADA/perllib	
+
+../../
+../../DADA/perllib
 );
 
 use DADA::Config; 
@@ -153,3 +156,41 @@ sub convert_timestamp {
 	my @s = split(' ', $ts);
 	return $s[4] . '-' . $lt{$s[1]} . '-' . $s[2] . ' ' . $s[3];
 }
+
+
+
+=pod
+
+=head1 dada_clickthrough_plaintext2sql.pl
+
+=head2 Description
+
+This script is used to import data from the B<plaintext> backend used by the Clickthrough Tracking (any version of Dada Mail) 
+extension or the Tracker plugin to the SQL backend. 
+
+=head1 Usage
+
+Docs on how to move from the default backend of Dada Mail to one of the SQL backends is covered in length here: 
+
+L<http://dadamailproject.com/support/documentation-4_7_0/FAQ-default_2_SQL_backend.pod.html>
+
+This script should be run once you have moved over your backend from the Default to the SQL backend, NOT before. 
+
+You may also use this script, even though you have always run the SQL backend, since the Clickthrough Tracking extension always 
+kept its logs in PlainText format. The Clickthrough Tracking extension was superceded by the Tracker plugin in v4.5.0 of Dada Mail. 
+
+B<Change the permissions> of this script to, B<755>
+
+Visit this script in your web browser. 
+
+=head1 See Also
+
+=over
+
+=item * The docs for the Tracker plugin
+
+L<http://dadamailproject.com/d/tracker.cgi.html>
+
+=back
+
+=cut

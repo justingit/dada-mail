@@ -1,6 +1,12 @@
 #!/usr/bin/perl -w
 
-use lib qw(./ ./DADA/perllib); 
+use lib qw(
+./ 
+./DADA/perllib
+
+../../
+../../DADA/perllib
+); 
 
 use CGI::Carp qw(fatalsToBrowser); 
 
