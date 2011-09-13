@@ -535,7 +535,6 @@ sub list_template {
 		}
 		else { 
 			$prof_sess = DADA::Profile::Session->new;
-			warn "nope. Not defined."; 
 		}
 
         if ( $prof_sess->is_logged_in ) {
@@ -557,14 +556,9 @@ sub list_template {
 			$profile_widget = DADA::Template::Widgets::profile_widget({-prof_sess_obj => $args{-prof_sess_obj}}); 
 		}
 		else { 
-			warn "nope. Here."; 
 			$profile_widget = DADA::Template::Widgets::profile_widget(); 
 		}
-#	};
- #   if ($@) {
-  #      $profile_widget = '';
-   # }
-
+		
     my $final_list_template = DADA::Template::Widgets::screen(
         {
             -data                   => \$list_template,
