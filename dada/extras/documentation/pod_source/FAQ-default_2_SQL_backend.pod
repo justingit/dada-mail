@@ -60,9 +60,6 @@ Docs:
 
 http://dadamailproject.com/support/documentation/dada_subscribers_plaintext2sql.pl.html
 
-=back
-
-
 =item * dada_clickthrough_plaintext2sql.pl
 
 I<You'll only need to run this, if you were using the Clickthrough Tracking extension or Tracker plugin>
