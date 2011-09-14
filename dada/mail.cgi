@@ -26,11 +26,6 @@ BEGIN {
 # How To Ask For Free Help:
 #    http://dadamailproject.com/support/documentation/getting_help.pod.html
 #
-# Please Do Not Contact the Author directly about Dada Mail support,
-# unless for paid support! Please, and thank you.
-#
-# How to ask for paid consultation:
-#    http://dadamailproject.com/support/regular.html
 #---------------------------------------------------------------------#
 
 
@@ -78,11 +73,11 @@ use lib qw(
 #
 # Add that line after, "./DADA/perllib" above.
 #
-# Add "DADA", and, "DADA/perllib" from the absolute path you just made right
+# Add "DADA/perllib" from the absolute path you just made right
 # after your last entry into the Path to your Perl Libraries:
 #
-#    /home/youraccount/www/cgi-bin/dada/DADA
-#   /home/youraccount/www/cgi-bin/dada/DADA/perllib
+#    /home/youraccount/www/cgi-bin/dada
+#    /home/youraccount/www/cgi-bin/dada/DADA/perllib
 #
 # and you should be good to go.
 #
@@ -107,11 +102,21 @@ use lib qw(
 #
 
 use constant ERRORS_TO_BROWSER => 1;
+
 #
-# Why would you want this commented? Security.
-#
-# More information would probably be printed to the program's error log
-#
+# If you don't want Dada Mail to show any error messages in your web browser, 
+# comment remove all the lines (below) between the markers: 
+
+	# Start Web Browser Error Reporting
+	
+	# End Web Browser Error Reporting
+
+
+
+
+
+# Start Web Browser Error Reporting
+#---------------------------------------------------------------------#
 
 use Carp qw(croak carp);
 use CGI::Carp qw(fatalsToBrowser set_message);
@@ -135,7 +140,7 @@ use CGI::Carp qw(fatalsToBrowser set_message);
     }
 
 #---------------------------------------------------------------------#
-
+# End Web Browser Error Reporting
 
 
 
@@ -146,22 +151,10 @@ use CGI::Carp qw(fatalsToBrowser set_message);
 #
 # file and:
 #
-# for instructions on how to install Dada Mail (easiest install)
+# for instructions on how to install Dada Mail:
 #
 #     http://dadamailproject.com/installation/
-#
-# and:
-#
-# http://dadamailproject.com/purchase/sample_chapter-dada_mail_setup.html
-#
-# for, "Advanced" setup
-#
-# and:
-#
-#    http://dadamailproject.com/support/documentation/Config.pm.html
-#
-# for more than you'd ever want to know.
-#---------------------------------------------------------------------#
+#-------------------------------------------------------------------#
 
 $|++;
 
