@@ -46,6 +46,10 @@ https://github.com/justingit/dada-mail/issues/188
 
 https://github.com/justingit/dada-mail/issues/187
 
+=head3 Using the entity, "&#65279;" borks up mass mailing - HTML to Plaintext Conversion?
+
+https://github.com/justingit/dada-mail/issues/199
+
 =head1 4.7.0
 
 =head2 Summary 4.7.0
