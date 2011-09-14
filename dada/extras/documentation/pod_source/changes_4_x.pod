@@ -2,11 +2,53 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.7.1
+
+=head2 Summary 4.7.1
+
+This release is a bug fix-only release of bugs found in the 4.7.0 release. 
+
+=head2 Bug Fixes 4.7.1
+
+=head3 Docs: Amazon SES $AMAZON_SES_OPTIONS examples incorrect
+
+https://github.com/justingit/dada-mail/issues/189
+
+=head3 Wrong Manual version used in v4.7.0 (defaults to 4.6.0)
+
+https://github.com/justingit/dada-mail/issues/193
+
+=head3 Mailing Monitor: embedded tracker shows Server Error 500 if not "installed"
+
+https://github.com/justingit/dada-mail/issues/191
+
+=head3 Dada Mail cannot send Profile email messages
+
+https://github.com/justingit/dada-mail/issues/190
+
+=head3 Messages saved with "+" symbol in name, moderation links doesn't work
+
+https://github.com/justingit/dada-mail/issues/198
+
+=head3 S_PROGRAM_URL override does not seem to work
+
+https://github.com/justingit/dada-mail/issues/197
+
+=head3 Library error in dada_clickthrough_plaintext2sql.pl
+
+https://github.com/justingit/dada-mail/issues/195
+
+=head3 Opener Image: No dimensions set, set on top
+
+https://github.com/justingit/dada-mail/issues/188
+
+=head3 Amazon SES: Some headers not written (Content-type)
+
+https://github.com/justingit/dada-mail/issues/187
+
 =head1 4.7.0
 
 =head2 Summary 4.7.0
-
-=head2 Features 4.7.0
 
 This release of Dada Mail provides additional tools to help you manage your mailing list through the list control panel. 
 
@@ -27,6 +69,8 @@ With this version, you now have the ability to:
 =item * Truly, "Closed" and, "Invitation-only" mailing list behaviors
 
 =back
+
+=head2 Features 4.7.0
 
 =head3 Tracker Reports in Mailing Monitor
 
