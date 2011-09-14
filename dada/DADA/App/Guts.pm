@@ -1100,6 +1100,10 @@ $message_body = HTML::Entities::Numbered::name2decimal($message_body);
 $message_body =~ s/\&\#\d\d\d\;//g;  
 $message_body =~ s/\&\#\d\d\d\d\;//g;
 
+# &#12345; won't work, even with UTF-8. I think this is UTF-8+BOM
+$message_body =~ s/\&\#\d\d\d\d\d\;//g; # seriously, 5 (BOM stuff?)
+
+
 
 
 ## Currently, I don't know what to set this as... so we'll set it as... this!
