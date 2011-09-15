@@ -181,7 +181,7 @@ This will be a more advanced topic.
 
 I<Is there a way to Mass-Subscribe email addresses from the list control panel?>
 
-B<4.7.0+>:
+B<Versions 4.7.0+>:
 
 Login into your mailing list and go to: B<Your Mailing List - Mailing List Options>
 
@@ -190,7 +190,7 @@ Under the heading, B<List Control Panel Subscriptions> check the option, B<Enabl
 You can then go to: B<Your Subscribers - Invite/Add> and mass-subscribe 
 addresses. 
 
-B<4.6.1 - 4.4.0>
+B<Versions 4.4.0 - 4.6.1>
 
 Login into your mailing list and go to: 
 
