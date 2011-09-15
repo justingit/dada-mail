@@ -172,7 +172,7 @@ extension or the Tracker plugin to the SQL backend.
 
 Docs on how to move from the default backend of Dada Mail to one of the SQL backends is covered in length here: 
 
-L<http://dadamailproject.com/support/documentation-4_7_0/FAQ-default_2_SQL_backend.pod.html>
+L<http://dadamailproject.com/d/FAQ-default_2_SQL_backend.pod.html>
 
 This script should be run once you have moved over your backend from the Default to the SQL backend, NOT before. 
 
