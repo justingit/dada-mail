@@ -1615,21 +1615,17 @@ my $tmpl = q{
 </fieldset>
 
 
+<!-- tmpl_if can_use_country_geoip_data --> 
 <fieldset> 
 <legend> 
 	Message Opens by Country
 </legend>
-
-
-<!-- tmpl_if can_use_country_geoip_data --> 
 	<div id="country_geoip_chart_opens_loading"> 
 	</div> 
 	<div id="country_geoip_chart_opens"> 
 	</div>
-	</fieldset>
+</fieldset>
 <!-- /tmpl_if --> 
-
-
 
 <fieldset> 
 <legend>Message Opens Over Time</Legend> 
@@ -1641,7 +1637,7 @@ my $tmpl = q{
 
 
 
-
+<!-- tmpl_if can_use_country_geoip_data --> 
 <fieldset> 
 <legend> 
 	Archive Views by Country
@@ -1652,7 +1648,7 @@ my $tmpl = q{
 <div id="country_geoip_chart_view_archive"> 
 </div> 
 </fieldset>
-
+<!-- /tmpl_if --> 
 
 
 <fieldset> 
@@ -1666,7 +1662,7 @@ my $tmpl = q{
 
 
 
-
+<!-- tmpl_if can_use_country_geoip_data --> 
 <fieldset> 
 <legend> 
 	&quot;Forward to a Friend&quot; by Country
@@ -1677,7 +1673,7 @@ my $tmpl = q{
 <div id="country_geoip_chart_forwards"> 
 </div> 
 </fieldset>
-
+<!-- /tmpl_if --> 
 
 
 <fieldset> 

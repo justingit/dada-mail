@@ -763,15 +763,112 @@ sub report_by_url {
 
 
 
+
+sub data_over_time {
+
+    my $self   = shift;
+    my ($args) = @_;
+    my $msg_id = undef;
+    my $data   = {};
+    my $order  = [];
+    my $r      = [];
+
+    if ( exists( $args->{-msg_id} ) ) {
+        $msg_id = $args->{-msg_id};
+    }
+    if ( !exists( $args->{-type} ) ) {
+        $args->{-type} = 'clickthroughs';
+    }
+
+    my $type = undef;
+    if ( $args->{-type} eq 'clickthroughs' ) {
+        $type = 'clickthroughs';
+    }
+    elsif ( $args->{-type} eq 'opens' ) {
+        $type = 'open';
+    }
+    elsif ( $args->{-type} eq 'forward_to_a_friend' ) {
+        $type = 'forward_to_a_friend';
+    }
+    elsif ( $args->{-type} eq 'view_archive' ) {
+        $type = 'view_archive';
+    }
+
+    my $l = undef;
+    open( LOG,
+        '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',
+        $self->clickthrough_log_location
+      )
+      or croak "Couldn't open file: '"
+      . $self->clickthrough_log_location
+      . '\'because: '
+      . $!;
+    while ( defined( $l = <LOG> ) ) {
+
+        chomp($l);
+        my ( $t, $mid, $url, $extra ) = split( "\t", $l, 4 );
+
+        my $need = 0;
+
+		if ( $type ne 'clickthroughs' ) {
+	        if ( $url eq $type ) {
+	            $need = 1;
+	        }
+		}
+		else { 
+        # then its a clickthrough its a clickthrough:
+			if ( $type eq 'clickthroughs' ) {
+            	if (   $url ne 'open'
+ 	               && $url ne 'num_subscribers'
+	                && $url ne 'bounce'
+	                && $url ne 'hard_bounce'
+	                && $url ne 'soft_bounce'
+	                && $url ne 'forward_to_a_friend'
+	                && $url ne 'view_archive'
+	                && $url ne undef )
+	            {
+					$need = 1;
+	            }
+			}
+        }
+
+        if ( $need == 1 ) {
+
+            if ( defined($msg_id) ) {
+                if ( $msg_id ne $mid ) {
+                    next;
+                }
+            }
+
+            my ( $named_day, $month, $day, $time, $year ) =
+              split( ' ', $t );    #Sat Feb 12 21:43:00 2011
+            my $mdy = "$month $day $year";
+            if ( !exists( $data->{$mdy} ) ) {
+                $data->{$mdy} = 0;
+                push( @$order, $mdy );
+            }
+            $data->{$mdy}++;
+        }
+
+    }
+
+    foreach (@$order) {
+        push( @$r, { mdy => $_, count => $data->{$_} } );
+    }
+
+    return $r;
+
+}
+
+
+
+
 sub purge_log { 
 	my $self = shift; 
 	unlink($self->clickthrough_log_location); 
 	# probably better to, return unlink(...);
 	return 1; 
 }
-
-
-
 
 
 
