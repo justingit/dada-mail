@@ -50,6 +50,14 @@ https://github.com/justingit/dada-mail/issues/187
 
 https://github.com/justingit/dada-mail/issues/199
 
+=head3 New "nope. Not defined." errors
+
+https://github.com/justingit/dada-mail/issues/201
+
+=head3 "x Over Time" Tracker graphs are broken in Default Backend
+
+https://github.com/justingit/dada-mail/issues/200
+
 =head1 4.7.0
 
 =head2 Summary 4.7.0
