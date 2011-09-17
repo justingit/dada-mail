@@ -2,6 +2,25 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.7.2
+
+=head2 Summary 4.7.2
+
+This release has a small bug fix from v4.7.1, but is I<really> to fix the problem with the 
+4.7.1 release, namely the download link is not working on Github. 
+
+=head2 Bug Fixes 4.7.2
+
+=head3 Tracker: Tracking "message opens" enabled by default
+
+https://github.com/justingit/dada-mail/issues/205
+
+=head2 Changes 4.7.2
+
+=head3 Tracking Message Opens is NOT enabled by default
+
+See Issue #205
+
 =head1 4.7.1
 
 =head2 Summary 4.7.1
