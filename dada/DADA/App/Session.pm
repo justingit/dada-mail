@@ -450,8 +450,10 @@ sub check_session_list_security {
            # I forget why this was commented out - didn't work?!
            # I'll add evals around it for now...
 
-            if (   $self->{can_use_cgi_session} == 1
-                && $self->{can_use_data_dumper} == 1 )
+            if (   $self->{can_use_cgi_session}      == 1
+                && $self->{can_use_data_dumper}      == 1
+ 				&& $flags->{no_admin_permissions}    != 1
+				)
             {
                 eval {
                     $session->delete();
