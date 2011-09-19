@@ -91,11 +91,8 @@ sub save {
 	if($new_settings){  
 
  		$self->_existence_check($new_settings); 	    
- 	
-	#	use Data::Dumper; 
-	#	croak Data::Dumper::Dumper($new_settings); 
- 		for my $setting(keys %$new_settings){ 
- 		
+  		for my $setting(keys %$new_settings){ 
+
  		    my $sth_d = $self->{dbh}->prepare($d_query); 
  			   $sth_d->execute($self->{name}, $setting)
  			   	or die "cannot do statment $DBI::errstr\n";   
