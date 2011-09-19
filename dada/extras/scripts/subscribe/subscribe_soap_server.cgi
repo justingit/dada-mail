@@ -6,7 +6,7 @@ use lib qw(
 	../../
 	../../DADA/perllib
 	./
-	./DADA/perlib
+	./DADA/perllib
 ); 
 
 use SOAP::Transport::HTTP;
