@@ -1017,7 +1017,7 @@ sub _list_name_subject {
 	# This really needs to look for both list name and list short name... I'm thinking...
 	$orig_subject   =~ s/\[($list|$list_name)\]//; # This only looks for list shortname...
 
-	$orig_subject   =~ s/^((RE:|AW:)\s+)+//i; # AW (German!) 
+	$orig_subject =~ s/^((RE:|AW:|FW:|WG:)\s+)+//i; # AW & WG are German!
 	
 	my $re      = $1;
 	   $re      =~ s/^(\s+)//; 

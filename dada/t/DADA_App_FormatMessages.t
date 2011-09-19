@@ -338,6 +338,19 @@ undef $fm;
 undef $new_subject; 
 
 
+# Forward
+$fm = DADA::App::FormatMessages->new(-List => $list);
+$subject = 'Fw: [' . $ls->param('list') . '] Subject';
+$new_subject = quotemeta('[<!-- tmpl_var list_settings.list -->] Fw: Subject'); 
+
+like($fm->_list_name_subject($subject), qr/$new_subject/, "Subject set correctly with forward 1"); 
+undef $fm; 
+undef $new_subject;
+
+
+
+
+
 $ls->param('append_list_name_to_subject', 1); 
 $ls->param('append_discussion_lists_with', 'list_name');
 
