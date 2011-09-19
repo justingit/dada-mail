@@ -130,6 +130,8 @@ if($DADA::Config::ARCHIVE_DB_TYPE =~ m/SQL/i){
 }
 
 
+
+
 my $Remove = DADA::MailingList::Remove({ -name => $list }); 
 ok($Remove == 1, "Remove returned a status of, '1'");
 

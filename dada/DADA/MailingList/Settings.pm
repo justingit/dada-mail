@@ -336,7 +336,12 @@ sub save_w_params {
 
         # is it here?
         if ( defined( $associate->param($setting) ) ) {
-            $saved_settings->{$setting} = $associate->param($setting);
+			if($associate->param($setting) ne '') { 
+            	$saved_settings->{$setting} = $associate->param($setting);
+			}
+			else { 
+            	$saved_settings->{$setting} = $settings->{$setting};				
+			}
         }
         else {
 
@@ -351,7 +356,7 @@ sub save_w_params {
 
 #	use Data::Dumper; 
 #	croak Data::Dumper::Dumper($saved_settings); 
-    # Save, as always.
+
     return $self->save($saved_settings);
 	
 }
