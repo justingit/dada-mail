@@ -2197,7 +2197,6 @@ sub sending_preferences {
             );
         }
 
-
         $ls->save_w_params(
             {
                 -associate => $q,
@@ -5597,7 +5596,6 @@ sub edit_type {
                     subscribed_message                         => undef,
 					subscribed_by_list_owner_message_subject   => undef, 
 					subscribed_by_list_owner_message           => undef,
-					
 					unsubscribed_by_list_owner_message_subject => undef, 
 					unsubscribed_by_list_owner_message         => undef,  
                     unsubscribed_message_subject               => undef,
