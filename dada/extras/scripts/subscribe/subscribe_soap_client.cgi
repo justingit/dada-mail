@@ -20,8 +20,8 @@ my $fields = {
 	# last_name  => 'Doe', 
 	#
 	# (etc)
-}
-#
+};
+
 
 
 print header(); 
