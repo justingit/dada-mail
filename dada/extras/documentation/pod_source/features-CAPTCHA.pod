@@ -1,0 +1,175 @@
+=pod
+
+=head1 CAPTCHA in Dada Mail
+
+CAPTCHA may be used for: 
+
+=head2 Subscription Confirmations 
+
+A CAPTCHA form is shown after a subscriber clicks on a subscription confirmation URL and before they are allowed to subscribed.
+
+I<Why then, instead of say, on the initial sign up form?>
+
+First, showing the CAPTCHA later is one less hurtle at the beginning of the
+subscription process. 
+
+Second, the actual confirmation process of Dada Mail is quite the hurtle for a 
+bot to go through, before even attempting to solve a CAPTCHA. 
+
+=head3 Enabling
+
+In the list control panel, navigate to: B<Manage List - Mailing List Options>, under B<Subscriptions>, check the option labeled, B<Enable CAPTCHA'ing>
+
+=head2 "Forward a Friend"
+
+CAPTCHA protection in the "Forward to a Friend" Form is I<highly suggested>, as this form is easy to spoof. 
+
+In the list control panel, navigate to: B<Message Archives - Archive Options>. 
+
+Under, B<Basic Options> check the option labeled, B<Enable CAPTCHA'ing on the, "Forward to a Friend" Form> 
+
+=head2 Profile Registrations
+
+CAPTCHA protection is available for Dada Mail Profile Registrations.
+
+=head3 Enabling
+
+CAPTCHA for Profile Registrations is enabled by default. If you'd like to I<disable> CAPTCHA, you can do so in the config variable, C<$PROFILE_OPTIONS>
+
+
+=head1 CAPTCHA Configuration
+
+=head2 $CAPTCHA_TYPE
+
+Dada Mail supports two different CAPTCHA types. The first is just called, B<Default>, the other one is called, B<reCAPTCHA>. The Default CAPTCHA type is based on: 
+
+L<http://search.cpan.org/~burak/GD-SecurityImage/lib/GD/SecurityImage.pm>
+
+reCAPTCHA is based on the reCAPTCHA service: 
+
+L<http://recaptcha.net/>
+
+It's suggested that you use the B<reCAPTCHA service>, as it's a lot more sophisticated than the Default type. 
+
+=head3 reCAPTCHA Configuration
+
+Add the following lines to your C<.dada_config> file:
+
+	$CAPTCHA_TYPE     = 'reCAPTCHA';
+	$RECAPTCHA_PARAMS = { 
+
+	    remote_address => $ENV{'REMOTE_ADDR'}, 
+	    public_key     => undef,
+	    private_key    => undef,
+
+	};
+
+You will then have to fill in the, C<public_key> and C<private_key> in the C<$RECAPTCHA_PARAMS> hashref: 
+
+First, grab an account: 
+
+L<https://www.google.com/recaptcha/admin/create>
+
+and fill in the C<public_key> and C<private_key> in C<$RECAPTCHA_PARAMS> that are provided to you. 
+
+B<See Also:>
+
+L<http://search.cpan.org/~andya/Captcha-reCAPTCHA/>
+
+=head3 Default CAPTCHA Configuration
+
+This CAPTCHA type also requires the B<GD> CPAN Perl Module, which itself require the GD C Library. If you do not have those, you will have to install them separately. 
+
+In your C<.dada_config> file, add the following line: 
+
+	$CAPTCHA_TYPE = 'Default';
+
+If you would like to customize the Default CAPTCHA, also add the C<$GD_SECURITYIMAGE_PARAMS> hashref: 
+
+	$GD_SECURITYIMAGE_PARAMS = { 
+
+	    'rand_string_from' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZaeiouy', 
+	    'rand_string_size' => 6, 
+   
+	    'new' => { 
+    
+	        width      => 250,
+	        height     => 125,
+	        lines      => 10,
+	        #gd_font    => 'Giant',
+	        send_ctobg => 1, 
+        
+	        # There's some magic here, 
+	        # If the font is located in the, 
+	        # dada/DADA/Template/templates directory, 
+	        # You don't have to put the absolute path, 
+	        # just the filename. 
+        
+	        font       => 'StayPuft.ttf', 
+	        bgcolor    => "#CCFFCC",
+	        angle      => 13, 
+	        ptsize     => 30,
+                                          
+	    }, 
+    
+	    create => {
+    
+	       ttf => 'circle',
+	       # normal => 'circle',      
+	    }, 
+    
+	    particle => [
+	        500, 
+	        undef
+	    ], 
+
+	};
+
+and tailor to your taste.
+
+See Also: 
+
+L<http://search.cpan.org/~burak/GD-SecurityImage/lib/GD/SecurityImage.pm>
+
+Each key in the C<$GD_SECURITYIMAGE_PARAMS> hashref corresponds to the different methods of this module ie:
+
+=over
+
+=item * new
+
+=item * create
+
+=item * particle
+
+=back
+
+=head1 reCAPTCHA Mailhide
+
+If you're using the reCAPTCHA service, you an also take advantage of reCAPTCHA Mailhide. In Dada Mail, this is used to protect individual email addresses in mailing list archives. Before an email address can be viewed, a CAPTCHA has to be solved. 
+
+=head2 Configuration 
+
+Add the following lines to your C<.dada_config> file: 
+
+	$RECAPTHCA_MAILHIDE_PARAMS ||= { 
+	    public_key     => '',
+	    private_key    => '',
+	};
+
+You'll need to fill out the C<public_key> and C<private_key> with what's provided to you at: 
+
+L<http://www.google.com/recaptcha/mailhide/apikey>
+
+=head2 Enabling
+
+In your list control panel, go to: B<Manage Archives - Advanced Archive Options>, under, B<Email Address Protection> select, B<reCAPTCHA MailHide>.
+
+=head2 Requirements
+
+Although Dada Mail supports C<Captcha::reCAPTCHA::Mailhide>, it B<does not come with it.> This is because it's not possible to bundle the module with Dada Mail. You'll need to install it manually (using the CPAN shell, etc). 
+
+See also: 
+
+L<http://search.cpan.org/~andya/Captcha-reCAPTCHA-Mailhide/>
+
+=cut
