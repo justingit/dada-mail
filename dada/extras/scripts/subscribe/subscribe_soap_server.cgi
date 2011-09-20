@@ -70,7 +70,6 @@ sub subscribe {
 		   $q->param('email', $email); 
 
 		# Profile Fields
-		my $fields = {}; 
 	    for(@{$lh->subscriber_fields}){ 
 			if(exists($fields->{$_})){ 
 	        	$q->param($_, $fields->{$_}); 
