@@ -306,8 +306,8 @@ undef $filename;
 my $prefix; 
 my $subject; 
 
-$ls->param('append_list_name_to_subject', 1); 
-$ls->param('append_discussion_lists_with', 'list_name'); 
+$ls->param('prefix_list_name_to_subject', 1); 
+$ls->param('prefix_discussion_list_subjects_with', 'list_name'); 
 $prefix = quotemeta('[<!-- tmpl_var list_settings.list_name -->]'); 
 
 undef $fm; 
@@ -318,7 +318,7 @@ like($subject, qr/$prefix Subject/, "Subject set correctly (list name)");
 
 
 undef $fm; 
-$ls->param('append_discussion_lists_with', 'list_shortname'); 
+$ls->param('prefix_discussion_list_subjects_with', 'list_shortname'); 
 $subject = 'Subject';
 $prefix = quotemeta('[<!-- tmpl_var list_settings.list -->]');  
 
@@ -351,8 +351,8 @@ undef $new_subject;
 
 
 
-$ls->param('append_list_name_to_subject', 1); 
-$ls->param('append_discussion_lists_with', 'list_name');
+$ls->param('prefix_list_name_to_subject', 1); 
+$ls->param('prefix_discussion_list_subjects_with', 'list_name');
 
 $fm = DADA::App::FormatMessages->new(-List => $list);
 

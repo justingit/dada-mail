@@ -959,14 +959,14 @@ sub cgi_default {
 	my %dada_bridge_settings_defaults = (
 		disable_discussion_sending                 => 0,
 		group_list                                 => 0,
-		append_list_name_to_subject                => 0,
-		no_append_list_name_to_subject_in_archives => 0,
+		prefix_list_name_to_subject                => 0,
+		no_prefix_list_name_to_subject_in_archives => 0,
 		discussion_pop_email                       => undef,
 		discussion_pop_server                      => undef, 
 		discussion_pop_username                    => undef, 
 		discussion_pop_password                    => undef,
 		discussion_pop_auth_mode                   => undef, 
-		append_discussion_lists_with               => '', 
+		prefix_discussion_list_subjects_with               => '', 
 		enable_moderation                          =>  0,
 		moderate_discussion_lists_with             => 'list_owner_email',
 		send_moderation_msg                        => 0, 
@@ -2916,7 +2916,7 @@ sub archive {
         if ($entity) {
 
             my $Subject = $entity->head->get( 'Subject', 0 );
-            if ( $ls->param('no_append_list_name_to_subject_in_archives') == 1 )
+            if ( $ls->param('no_prefix_list_name_to_subject_in_archives') == 1 )
             {
                 $Subject = $la->strip_subjects_appended_list_name($Subject);
             }
@@ -3970,17 +3970,17 @@ General
    	 
 	<tr> 
    <td align="right">
-    <input name="append_list_name_to_subject" id="append_list_name_to_subject" type="checkbox" value="1" <!--tmpl_if list_settings.append_list_name_to_subject -->checked="checked"<!--/tmpl_if--> />
+    <input name="prefix_list_name_to_subject" id="prefix_list_name_to_subject" type="checkbox" value="1" <!--tmpl_if list_settings.prefix_list_name_to_subject -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td>  
     <p>
-     <label for="append_discussion_lists_with">
-      Append message subjects with the:
+     <label for="prefix_discussion_list_subjects_with">
+      Prefix message subjects with the:
      </label>
      <br />
-     <select name="append_discussion_lists_with">
-      <option value="list_shortname" <!--tmpl_if expr="(list_settings.append_discussion_lists_with eq 'list_shortname')" -->selected="selected" <!--/tmpl_if--> >list shortname (<!-- tmpl_var list_settings.list escape="HTML" -->)</option>
-      <option value="list_name"      <!--tmpl_if expr="(list_settings.append_discussion_lists_with eq 'list_name')" -->selected="selected" <!--/tmpl_if--> >List Name (<!-- tmpl_var list_settings.list_name escape="HTML" -->)</option>
+     <select name="prefix_discussion_list_subjects_with">
+      <option value="list_shortname" <!--tmpl_if expr="(list_settings.prefix_discussion_list_subjects_with eq 'list_shortname')" -->selected="selected" <!--/tmpl_if--> >list shortname: [<!-- tmpl_var list_settings.list escape="HTML" -->]</option>
+      <option value="list_name"      <!--tmpl_if expr="(list_settings.prefix_discussion_list_subjects_with eq 'list_name')" -->selected="selected" <!--/tmpl_if--> >List Name: [<!-- tmpl_var list_settings.list_name escape="HTML" -->]</option>
      </select> 
      <br />
      The List Name/Short Name will be surrounded by square brackets. 
@@ -3988,10 +3988,10 @@ General
      <table>
       <tr> 
        <td>
-           <input name="no_append_list_name_to_subject_in_archives" id="no_append_list_name_to_subject_in_archives" type="checkbox" value="1" <!--tmpl_if list_settings.no_append_list_name_to_subject_in_archives -->checked="checked"<!--/tmpl_if--> />
+           <input name="no_prefix_list_name_to_subject_in_archives" id="no_prefix_list_name_to_subject_in_archives" type="checkbox" value="1" <!--tmpl_if list_settings.no_prefix_list_name_to_subject_in_archives -->checked="checked"<!--/tmpl_if--> />
        </td> 
        <td> 
-        <label for="no_append_list_name_to_subject_in_archives">
+        <label for="no_prefix_list_name_to_subject_in_archives">
          Do not append the list/list shortname to archived messages (only outgoing messages).  
         </label>
        </td> 

@@ -730,9 +730,9 @@ sub _format_headers {
 	if($self->{ls}->param('group_list') == 1){
 		
 
-		#carp q{ $self->{ls}->param('append_list_name_to_subject') } . $self->{ls}->param('append_list_name_to_subject'); 
+		#carp q{ $self->{ls}->param('prefix_list_name_to_subject_list_name_to_subject') } . $self->{ls}->param('prefix_list_name_to_subject'); 
 		
-		if($self->{ls}->param('append_list_name_to_subject') == 1){ 
+		if($self->{ls}->param('prefix_list_name_to_subject') == 1){ 
 
 			my $subject = $entity->head->get('Subject', 0);
 			   $subject = safely_decode( $subject); 
@@ -1026,12 +1026,12 @@ sub _list_name_subject {
 	   
 	$orig_subject    =~ s/^(\s+)//;
 	
-	if($self->{ls}->param('append_list_name_to_subject') == 1){ 
+	if($self->{ls}->param('prefix_list_name_to_subject') == 1){ 
 					
-		if($self->{ls}->param('append_discussion_lists_with') eq "list_name"){ 
+		if($self->{ls}->param('prefix_discussion_list_subjects_with') eq "list_name"){ 
 			$orig_subject    = '[' . '<!-- tmpl_var list_settings.list_name -->' . ']' . "$re $orig_subject"; 		
 		}
-		elsif($self->{ls}->param('append_discussion_lists_with') eq "list_shortname"){ 
+		elsif($self->{ls}->param('prefix_discussion_list_subjects_with') eq "list_shortname"){ 
 			$orig_subject    = '[' . '<!-- tmpl_var list_settings.list -->' . ']' . "$re $orig_subject"; 
 		}
 	}

@@ -308,7 +308,7 @@ sub get_header {
 	#Special Case. 
 	if($args{-header} eq 'Subject'){ 
 		$header = $self->strip_subjects_appended_list_name($header)
-			if $self->{ls}->param('no_append_list_name_to_subject_in_archives') == 1; 
+			if $self->{ls}->param('no_prefix_list_name_to_subject_in_archives') == 1; 
 	}
 
 	

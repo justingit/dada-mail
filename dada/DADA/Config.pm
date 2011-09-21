@@ -1060,8 +1060,6 @@ See the doc on CAPTCHA features in Dada Mail:
 
 L<http://dadamailproject.com/d/features-CAPTCHA.pod.html>
 
-=back
-
 =head2 $CAPTCHA_TYPE
 
 =cut
@@ -4656,12 +4654,12 @@ encrypted.
 	discussion_template_defang   => 1,
 	only_allow_group_plain_text  => 0,
 	mail_group_message_to_poster => 1,
-	append_list_name_to_subject  => 1,
+	prefix_list_name_to_subject  => 1,
 	
-	no_append_list_name_to_subject_in_archives => 1, 
+	no_prefix_list_name_to_subject_in_archives => 1, 
 	
 	set_to_header_to_list_address     => 0, 
-	append_discussion_lists_with      => 'list_shortname',
+	prefix_discussion_list_subjects_with      => 'list_shortname',
 	send_msgs_to_list                 => 1, 
 	disable_discussion_sending        => 1, 
 	mail_discussion_message_to_poster => 1, 
