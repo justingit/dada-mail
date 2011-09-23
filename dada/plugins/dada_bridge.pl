@@ -948,6 +948,8 @@ sub validate_list_email {
 		}
 	}
 	
+#	use Data::Dumper; 
+#	die Dumper([$status, $errors]); 
     return ($status, $errors);
 }
 
@@ -1087,10 +1089,25 @@ sub cgi_default {
     my $curl_location = `which curl`;
        $curl_location = strip( make_safer($curl_location) );
 
+    require DADA::Template::Widgets;
+
+	my $mailing_list_message_from_phrase = $li->{mailing_list_message_from_phrase}; 
+	   $mailing_list_message_from_phrase = DADA::Template::Widgets::screen(
+		{ 
+			-data => \$mailing_list_message_from_phrase,
+			-list_settings_vars_param => { 
+				-list                 => $list,
+				-dot_it               => 1,
+			}
+		}
+	); 
+	my $mailing_list_message_from = Email::Address->new($mailing_list_message_from_phrase, $li->{list_owner_email})->format();
+	
+	
+
     my $tmpl = default_cgi_template();
 
 	my $saved = $q->param('saved') || 0;
-    require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -expr => 1,
@@ -1131,6 +1148,7 @@ sub cgi_default {
                   ) ? 1 : 0,
 
 				list_email_status                                         => $list_email_status, 
+				mailing_list_message_from                                 => $mailing_list_message_from, 
 				
 				error_list_email_set_to_list_owner_email                  => $list_email_errors->{list_email_set_to_list_owner_email}, 
 				error_list_email_set_to_list_admin_email                  => $list_email_errors->{list_email_set_to_list_admin_email},
@@ -2663,7 +2681,7 @@ sub process_stripping_file_attachments {
         {
 
             print
-"\t\t\t * Stripping attachment with:\n\t\t\t\tname: $name and mime-type:\n\t\t\t\t"
+"\t\t\t * Stripping attachment with:\n\t\t\t\tname: $name and MIME-Type:\n\t\t\t\t"
               . $entity->head->mime_type . "\n";
             return ( undef, $ls );
         }
@@ -3724,7 +3742,7 @@ sub default_cgi_template {
   <tr> 
    <td width="125">
     <label for="discussion_pop_server">
-     POP3 Server
+     POP3 Server:
     </label>
    </td>
    <td>
@@ -3909,12 +3927,7 @@ General
      </label>
      <br /> 
      
-     Outgoing announce-only messages will go out with the address, 
-
-      <strong> 
-       <!-- tmpl_var list_settings.list_owner_email -->
-      </strong> 
-      set in the From: header. 
+     Outgoing announce-only mass mailings will have the From: header set to: <code><!-- tmpl_var mailing_list_message_from escape="HTML" --></code>
      </p>
     </td> 
    </tr> 
@@ -3941,32 +3954,16 @@ General
    <td>
     <p>
      <label for="group_list">
-      Make this list a discussion list
+      Make this mailing list a Discussion List
      </label>
      <br />
      Everyone subscribed to your list may post messages for everyone else 
      on your list by sending  messages to (<strong><!-- tmpl_var list_settings.discussion_pop_email escape="HTML" --></strong>).
    </p>
-  
-
-
-
   	 <table width="100%" cellspacing="0" cellpadding="5">
         <tr> 
         
- <!-- tmpl_if Allow_Open_Discussion_List -->
-        <tr> 
-       <td align="right">
-        <input name="open_discussion_list" id="open_discussion_list" type="checkbox" value="1" <!--tmpl_if list_settings.open_discussion_list -->checked="checked"<!--/tmpl_if--> />
-       </td>
-       <td>
-        <label for="open_discussion_list">
-         Allow messages to also be posted to the list from non-subscribers.         
-        </label>
-         <br /><span class="alert">(Opens up list to possible abuse, unless moderated)</span> 
-       </td>
-      </tr>
- <!-- /tmpl_if -->  
+ 
    	 
 	<tr> 
    <td align="right">
@@ -4011,27 +4008,6 @@ General
     <br />
    </td>
   </tr>
-  
-  
-
-
-<!-- 
-
-<td align="right">
- <input name="set_to_header_to_list_address" id="set_to_header_to_list_address" type="checkbox" value="1" <!--tmpl_if list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_if--> />
-</td>
-
-    <label for="set_to_header_to_list_address">
-     Set the <strong>To:</strong> header of discussion list messages to the <strong>List Address</strong>, rather than the subscribers address.
-    </label>
-    <br />
-   </td>
-  </tr>
---> 
-
-
-
-
 
      <tr> 
    <td align="right">
@@ -4075,8 +4051,27 @@ General
 
       </td>
   </tr>
+
+
+<!-- tmpl_if Allow_Open_Discussion_List -->
+        <tr> 
+       <td align="right">
+        <input name="open_discussion_list" id="open_discussion_list" type="checkbox" value="1" <!--tmpl_if list_settings.open_discussion_list -->checked="checked"<!--/tmpl_if--> />
+       </td>
+       <td>
+        <label for="open_discussion_list">
+         Allow messages to also be posted to the list from non-subscribers.         
+        </label>
+         <br /><span class="alert">(This opens up your mailing list to possible abuse, unless moderated)</span> 
+       </td>
+      </tr>
+ <!-- /tmpl_if -->
+
+
+
+
  </table> 
-</fieldset> 
+
 
 <fieldset> 
  <legend>List Moderation Options</legend> 
@@ -4161,7 +4156,7 @@ General
        <td>
         <p>
          <label for="send_moderation_msg">
-          Send a Message Received, Awaiting Moderation Message
+          Send a, &quot;Message Received, Awaiting Moderation&quot; Message
          </label><br /> 
          The original poster will receive a message stating that the message has been received, but requires moderation.
         </p>
@@ -4175,7 +4170,7 @@ General
        <td>
         <p>
          <label for="send_moderation_accepted_msg">
-          Send an Acceptance Message
+          Send an, &quot;Acceptance&quot; Message
          </label><br /> 
          The original poster will receive a message stating that the moderated message was accepted.
         </p>
@@ -4189,7 +4184,7 @@ General
        <td>
         <p>
          <label for="send_moderation_rejection_msg">
-          Send a Rejection Message
+          Send a, &quot;Rejection&quot; Message
          </label><br /> 
          The original poster will receive a message stating that the moderated message was rejected.
         </p>
@@ -4213,10 +4208,10 @@ General
 </fieldset> 
 
 
-
+</fieldset> 
 <fieldset> 
  <legend> 
- Message Routing
+ Delivery
  </legend> 
 
  <table width="100%" cellspacing="0" cellpadding="5">
@@ -4224,8 +4219,8 @@ General
    <td> 
     <p>
      <label>
-      Messages from addresses that are <em>allowed</em> to post to this list should:
-     </label>
+     	When allowed messages are received:
+	</label>
     </p>
     <table>
      <tr>
@@ -4234,7 +4229,7 @@ General
       </td> 
       <td>
        <label for="send_msgs_to_list">
-        be sent to the Subscription List.
+        send the messages to the Subscription List.
        </label>
       </td>
      </tr> 
@@ -4244,7 +4239,7 @@ General
       </td>
       <td>
        <label for="send_msg_copy_to">
-        have a copy of the original message forwarded <label for="send_msg_copy_address">to</label>:
+        forwarded  a copy <label for="send_msg_copy_address">to</label>:
        </label>
        <p>
         <input type="text" name="send_msg_copy_address" id="send_msg_copy_address"value="<!-- tmpl_var list_settings.send_msg_copy_address -->" />
@@ -4276,7 +4271,7 @@ General
    <td> 
     <p>
      <label>
-      Message from addresses <em>not allowed</em> to post to this list should:
+  		When disallowed messages are received:
      </label>
     </p>
     <table> 
@@ -4286,7 +4281,7 @@ General
       </td> 
       <td>
        <label for="send_invalid_msgs_to_owner">
-        send the list owner a &quot;Not a Subscriber&quot; email message, with original message attached.
+        send the List Owner a &quot;Not a Subscriber&quot; email message, with the original message attached.
        </label>
       </td>
      </tr> 
@@ -4418,7 +4413,7 @@ Mailing List Security
  </td>
  <td>
  <p>
- <label for="strip_file_attachments">Strip attachments that have the following file ending or mime-type:</label> <em>(separated by spaces)</em>
+ <label for="strip_file_attachments">Strip attachments that have the following file ending or MIME-Type:</label> <em>(separated by spaces)</em>
 	 <br />
 	 
          <input type="text" name="file_attachments_to_strip" id="file_attachments_to_strip"value="<!-- tmpl_var list_settings.file_attachments_to_strip -->" class="full" />
