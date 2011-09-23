@@ -910,8 +910,8 @@ sub validate_list_email {
 	for my $t_list(available_lists()){ 
 		
 		my $ls = DADA::MailingList::Settings->new({-list => $t_list}); 
-		if ( $ls->param('list_owner_email') eq $list_email ) {
-			if($t_list eq $list_email){ 
+		if ( $ls->param('list_owner_email') eq $list_email ) { 
+			if($t_list eq $list){ 
 			    $errors->{list_email_set_to_list_owner_email} = 1;
 			}
 			else { 
@@ -921,7 +921,7 @@ sub validate_list_email {
 	    }
 		if ( $ls->param('admin_email') eq $list_email ) {
 			
-			if($t_list eq $list_email){ 
+			if($t_list eq $list){ 
 	        	$errors->{list_email_set_to_list_admin_email} = 1;     
 			}
 			else { 
