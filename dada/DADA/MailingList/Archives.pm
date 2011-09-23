@@ -727,7 +727,7 @@ sub _scrub_js {
     my @rules = (
         script => 0,
                 );
-    # all this stuff should probably go into the 
+    # DEV: all this stuff should probably go into the 
     # Config.pm file. 
     
     my @default = (
