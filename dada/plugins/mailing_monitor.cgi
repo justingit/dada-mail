@@ -297,7 +297,7 @@ Mass Mailings B<drop> because a mass mailing process may need to run longer than
 
 This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin manually.
 
-If you do install this way, note that you still have set the cronjob, which is covered below. 
+If you install the plugin using the Dada Mail installer, you will still have set the cronjob manually, which is covered below.
 
 =head2 Change permissions of "mailing_monitor.cgi" to 755
 
