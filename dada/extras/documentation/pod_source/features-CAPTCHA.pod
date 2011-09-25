@@ -151,7 +151,7 @@ If you're using the reCAPTCHA service, you an also take advantage of reCAPTCHA M
 
 Add the following lines to your C<.dada_config> file: 
 
-	$RECAPTHCA_MAILHIDE_PARAMS ||= { 
+	$RECAPTHCA_MAILHIDE_PARAMS = { 
 	    public_key     => '',
 	    private_key    => '',
 	};
@@ -167,6 +167,31 @@ In your list control panel, go to: B<Manage Archives - Advanced Archive Options>
 =head2 Requirements
 
 Although Dada Mail supports C<Captcha::reCAPTCHA::Mailhide>, it B<does not come with it.> This is because it's not possible to bundle the module with Dada Mail. You'll need to install it manually (using the CPAN shell, etc). 
+
+=head3 Installing the needed CPAN modules (cPanel)
+
+If you have a cPanel-powered hosting account (Bluehost, for example) search within your cPanel for an icon labled, "Perl Modules" - the icon itself will be of the famous Perl camel. This part of your cPanel will allow you to install the needed CPAN Perl modules. 
+
+Within the screen, find the textbox labeled, B<Install a Perl Module> and in the textbox itself, type in, 
+
+	Captcha::reCAPTCHA::Mailhide
+
+and click the button labled, B<Install Now>. The screen will refresh and go through the installation process. 
+
+Once finished and on the main B<Perl Modules> screen, find the heading entitled, B<Using Your Perl Module(s)>. Below this heading, will be some snippets of code that you can include in your Perl program (like, Dada Mail) to then take advantage of the Perl modules you just installed. It'll look similar to this: 
+
+	BEGIN {
+	    my $b__dir = (-d '/home8/dadademo/perl'?'/home8/dadademo/perl':( getpwuid($>) )[7].'/perl');
+	    unshift @INC,$b__dir.'5/lib/perl5',$b__dir.'5/lib/perl5/x86_64-linux-thread-multi',map { $b__dir . $_ } @INC;
+	}
+
+I<Copy> B<your specific> snippet of code and I<Paste> it into the C<dada/mail.cgi> file, near the top - say, on the third line. The first two lines look like this: 
+
+	#!/usr/bin/perl
+	package mail;
+
+
+Save the C<dada/mail.cgi> file and you should now have the ability to use B<reCAPTCHA Mailhide> in Dada Mail. Rejoice! 
 
 See also: 
 
