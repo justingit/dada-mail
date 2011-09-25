@@ -44,22 +44,6 @@ use lib qw(
 	../../../perllib
 );
 
-# This helps with cPanel-based hosting setups, where Perl Modules can be added
-# from within cPanel, but you need to explicitly set the perl library
-# directories. Uncomment to activate:
-
-#BEGIN {
-#    my $homedir = ( getpwuid($>) )[7];
-#    my @user_include;
-#    for my $path (@INC) {
-#        if ( -d $homedir . '/perl' . $path ) {
-#            push @user_include, $homedir . '/perl' . $path;
-#        }
-#    }
-#    unshift @INC, @user_include;
-#}
-
-
 # This list may need to be added to. Find the absolute to path to this
 # very file. This:
 #
@@ -4433,7 +4417,9 @@ sub adv_archive_options {
 
         my $can_use_recaptcha_mailhide = 0;
 
+
         eval { require Captcha::reCAPTCHA::Mailhide; };
+
         if ( !$@ ) {
 
             if (
@@ -4446,7 +4432,7 @@ sub adv_archive_options {
               )
             {
                 warn
-'You need to configure Recaptcha Mailhide in the DADA::Config.pm file!';
+'You need to configure Recaptcha Mailhide in your configuration.';
             }
 
             $can_use_recaptcha_mailhide = 1;
