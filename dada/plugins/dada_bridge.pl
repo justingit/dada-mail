@@ -67,6 +67,8 @@ use Encode;
 
 my $Plugin_Config = {};
 
+$Plugin_Config->{Plugin_Name} = 'Dada Bridge';
+
 # Usually, this doesn't need to be changed.
 # But, if you are having trouble saving settings
 # and are redirected to an
@@ -104,7 +106,7 @@ $Plugin_Config->{Soft_Max_Size_Of_Any_Message} = 1048576;    # 1   meg
 
 $Plugin_Config->{Max_Size_Of_Any_Message} = 2621440;         # 2.5 meg
 
-$Plugin_Config->{Plugin_Name} = 'Dada Bridge';
+
 
 $Plugin_Config->{Allow_Open_Discussion_List} = 0;
 
@@ -1335,13 +1337,13 @@ sub start {
             for my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
 
                 $local_msg_viewed++;
-                e_print( "\tMessage Size: " . $msgnums->{$msgnum} . "\n")
+                e_print( "\t* Message Size: " . $msgnums->{$msgnum} . "\n")
                   if $verbose;
                 if ( $msgnums->{$msgnum} >
                     $Plugin_Config->{Max_Size_Of_Any_Message} )
                 {
 
-                    e_print( "\t\tWarning! Message size ( "
+                    e_print( "\t* Warning! Message size ( "
                       . $msgnums->{$msgnum}
                       . " ) is larger than the maximum size allowed ( "
                       . $Plugin_Config->{Max_Size_Of_Any_Message} . " )\n")
@@ -1369,7 +1371,7 @@ sub start {
                             $Plugin_Config->{Soft_Max_Size_Of_Any_Message} )
                         {
 
-                            e_print( "\t\tWarning! Message size ( "
+                            e_print( "\t* Warning! Message size ( "
                               . $msgnums->{$msgnum}
                               . " ) is larger than the soft maximum size allowed ( "
                               . $Plugin_Config->{Soft_Max_Size_Of_Any_Message}
@@ -1412,7 +1414,7 @@ sub start {
                                 else {
 
                                     e_print(
-"\tMessage did not pass verification - handling issues...\n")
+"\t* Message did not pass verification - handling issues...\n")
                                       if $verbose;
 
                                     handle_errors( $list, $errors, $full_msg,
@@ -1438,7 +1440,7 @@ sub start {
                     }
                     else {
                         e_print(
-"\tThis sending method has been disabled for $list, deleting message... \n")
+"\t* This sending method has been disabled for $list, deleting message... \n")
                           if $verbose;
                     }
                 }
@@ -1457,7 +1459,7 @@ sub start {
             my $delete_msg_count = 0;
 
             for my $msgnum_d ( sort { $a <=> $b } keys %$msgnums ) {
-                e_print( "\tRemoving message from server...\n")
+                e_print( "\t* Removing message from server...\n")
                   if $verbose;
                  $pop->Delete($msgnum_d);
                 $delete_msg_count++;
@@ -1466,7 +1468,7 @@ sub start {
                   if $delete_msg_count >= $local_msg_viewed;
 
             }
-            e_print( "\tDisconnecting from POP3 server\n")
+            e_print( "\t* Disconnecting from POP3 server\n")
               if $verbose;
 
             $pop->Close();
@@ -1485,13 +1487,13 @@ sub start {
                     message_was_deleted_check( $list, $li );
                 }
                 else {
-                    e_print( "\tNo messages received, skipping deletion check.\n")
+                    e_print( "\t* No messages received, skipping deletion check.\n")
                       if $verbose;
                 }
             }
         }
         else {
-            e_print( "\tPOP3 connection failed!\n")
+            e_print( "\t* POP3 connection failed!\n")
               if $verbose;
         }
     }
@@ -1502,7 +1504,7 @@ sub message_was_deleted_check {
     # DEV: Nice for testing...
     #return;
 
-    e_print( "\n\tWaiting 5 seconds before removal check...\n")
+    e_print( "\n\t* Waiting 5 seconds before removal check...\n")
       if $verbose;
 
     sleep(5);
@@ -1554,13 +1556,13 @@ sub message_was_deleted_check {
 
                 if ( $cs eq $s_cs ) {
                     e_print(
-"\t\tMessage was NOT deleted from POP server! Will attempt to do that now...\n")
+"\t* Message was NOT deleted from POP server! Will attempt to do that now...\n")
                       if $verbose;
                     $pop->Delete($msgnum);
                 }
                 else {
                     e_print(
-"\t\tMessage checksum does not match saved checksum, keeping message for later delivery...\n")
+"\t* Message checksum does not match saved checksum, keeping message for later delivery...\n")
                       if $verbose;
                 }
             }
@@ -1903,7 +1905,7 @@ sub validate_msg {
             lc_email( $li->{discussion_pop_email} ) )
         {
             print
-"\t\tMessage is from myself (the, X-BeenThere header has been set), message should be ignored...\n"
+"\t* Message is from myself (the, X-BeenThere header has been set), message should be ignored...\n"
               if $verbose;
             $errors->{x_been_there_header_found} = 1;
         }
@@ -1925,16 +1927,16 @@ sub validate_msg {
 		# ... 
 	}
 
-    print '\t\tWarning! Something\'s wrong with the From address - ' . $@
+    print '\t*Warning! Something\'s wrong with the From address - ' . $@
       if $@ && $verbose;
 
     $from_address = lc_email($from_address);
 
-    print "\t\tMessage is from: '" . $from_address . "'\n"
+    print "\t* Message is from: '" . $from_address . "'\n"
       if $verbose;
 
     if ( lc_email($from_address) eq lc_email( $li->{list_owner_email} ) ) {
-        print "\t\t * From: address is the list owner address ; ("
+        print "\t* From: address is the list owner address ; ("
           . $li->{list_owner_email} . ')' . "\n"
           if $verbose;
 
@@ -1948,12 +1950,12 @@ sub validate_msg {
     }
     else {
 
-        print "\t\t * From address is NOT from list owner address\n"
+        print "\t* From address is NOT from list owner address\n"
           if $verbose;
         $errors->{msg_not_from_list_owner} = 1;
 
         if ( $li->{enable_moderation} ) {
-            print "\t\tModeration enabled...\n"
+            print "\t* Moderation enabled...\n"
               if $verbose;
             $errors->{needs_moderation} = 1;
 
@@ -1961,13 +1963,13 @@ sub validate_msg {
 
         }
         else {
-            print "\t\tModeration disabled...\n"
+            print "\t* Moderation disabled...\n"
               if $verbose;
         }
 
         if ( $li->{group_list} == 1 ) {
 
-            print "\t\tDiscussion List Support enabled...\n"
+            print "\t* Discussion List Support enabled...\n"
               if $verbose;
 
 #if($li->{enable_authorized_sending} && $errors->{msg_not_from_an_authorized_sender} == 0){
@@ -1981,7 +1983,7 @@ sub validate_msg {
               $lh->subscription_check( { -email => $from_address, } );
 
             if ( $s_errors->{subscribed} == 1 ) {
-                print "\t\t * Message *is* from a current subscriber.\n"
+                print "\t* Message *is* from a current subscriber.\n"
                   if $verbose;
                 $errors->{msg_not_from_list_owner} = 0;
                 if ( $li->{subscriber_sending_no_moderation} ) {
@@ -1989,17 +1991,17 @@ sub validate_msg {
                 }
                 elsif ( $errors->{needs_moderation} == 1 ) {
                     print
-                      "\t\t ** however Message still *requires* moderation!\n"
+                      "\t * however Message still *requires* moderation!\n"
                       if $verbose;
                 }
             }
             else {
-                print "\t\t * Message is NOT from a subscriber.\n"
+                print "\t * Message is NOT from a subscriber.\n"
                   if $verbose;
                 if (   $li->{open_discussion_list} == 1
                     && $Plugin_Config->{Allow_Open_Discussion_List} == 1 )
                 {
-                    print "\t\tPostings from non-subscribers is enabled...\n"
+                    print "\tPostings from non-subscribers is enabled...\n"
                       if $verbose;
                     $errors->{msg_not_from_list_owner} = 0;
                 }
@@ -2012,7 +2014,7 @@ sub validate_msg {
 
         }
         else {
-            print "\t\tDiscussion Support disabled...\n"
+            print "\tDiscussion Support disabled...\n"
               if $verbose;
         }
     }
@@ -2020,7 +2022,7 @@ sub validate_msg {
     if ( $li->{enable_authorized_sending} == 1 ) {
 
         # cancel out other errors???
-        print "\t\tAuthorized Senders List enabled...\n"
+        print "\t* Authorized Senders List enabled...\n"
           if $verbose;
         my ( $m_status, $m_errors ) = $lh->subscription_check(
             {
@@ -2029,7 +2031,7 @@ sub validate_msg {
             }
         );
         if ( $m_errors->{subscribed} == 1 ) {
-            print "\t\t * Message *is* from an Authorized Sender!\n"
+            print "\t * Message *is* from an Authorized Sender!\n"
               if $verbose;
             $errors->{msg_not_from_list_owner} = 0;
             $errors->{msg_not_from_subscriber} = 0;
@@ -2037,29 +2039,29 @@ sub validate_msg {
                 $errors->{needs_moderation} = 0;
             }
             elsif ( $errors->{needs_moderation} == 1 ) {
-                print "\t\t ** however Message still *requires* moderation!\n"
+                print "\t * however Message still *requires* moderation!\n"
                   if $verbose;
             }
         }
         else {
-            print "\t\t * Message is NOT from an Authorized Sender!\n"
+            print "\t* Message is NOT from an Authorized Sender!\n"
               if $verbose;
         }
     }
     else {
-        print "\t\tAuthorized Senders List disabled...\n"
+        print "\t* Authorized Senders List disabled...\n"
           if $verbose;
     }
 
     if ( $li->{ignore_spam_messages} == 1 ) {
-        print "\n\t\tSpamAssassin check enabled...\n\n"
+        print "\t* SpamAssassin check enabled...\n"
           if $verbose;
 
         if ( $li->{find_spam_assassin_score_by} eq
             'calling_spamassassin_directly' )
         {
 
-            print "\t\tLoading SpamAssassin directly...\n"
+            print "\t* Loading SpamAssassin directly...\n"
               if $verbose;
 
             eval { require Mail::SpamAssassin; };
@@ -2103,7 +2105,7 @@ sub validate_msg {
 
                     if ( $score eq undef && $score != 0 ) {
                         print
-"\t\t\tTrouble parsing scoring information - letting message pass...\n"
+"\t* Trouble parsing scoring information - letting message pass...\n"
                           if $verbose
 
                     }
@@ -2113,7 +2115,7 @@ sub validate_msg {
                             $li->{ignore_spam_messages_with_status_of} )
                         {
                             print
-"\t\t\t Message has *failed* Spam Test (Score of: $score, "
+"\t*  Message has *failed* Spam Test (Score of: $score, "
                               . $li->{ignore_spam_messages_with_status_of}
                               . " needed.) - ignoring message.\n"
                               if $verbose;
@@ -2128,7 +2130,7 @@ sub validate_msg {
                             $errors->{message_seen_as_spam} = 0; 
 
                             print
-"\t\t\t Message passed! Spam Test (Score of: $score, "
+"\t* Message passed! Spam Test (Score of: $score, "
                               . $li->{ignore_spam_messages_with_status_of}
                               . " needed.)\n"
                               if $verbose;
@@ -2162,7 +2164,7 @@ sub validate_msg {
 
                     if ( $score eq undef && $score != 0 ) {
                         print
-"\t\t\tTrouble parsing scoring information - letting message pass...\n"
+"\t* Trouble parsing scoring information - letting message pass...\n"
                           if $verbose
                     }
                     else {
@@ -2171,7 +2173,7 @@ sub validate_msg {
                             $li->{ignore_spam_messages_with_status_of}) || $spam_status->is_spam())
                         {
                             print
-"\t\t\tMessage has *failed* Spam Test (Score of: $score, "
+"\t* Message has *failed* Spam Test (Score of: $score, "
                               . $li->{ignore_spam_messages_with_status_of}
                               . " needed.) - ignoring message.\n"
                               if $verbose;
@@ -2185,7 +2187,7 @@ sub validate_msg {
                             $errors->{message_seen_as_spam} = 0;
 
                             print
-"\t\t\tMessage passed! Spam Test (Score of: $score, "
+"\t* Message passed! Spam Test (Score of: $score, "
                               . $li->{ignore_spam_messages_with_status_of}
                               . " needed.)\n"
                               if $verbose;
@@ -2200,14 +2202,14 @@ sub validate_msg {
                 }
                 else {
                     print
-"\t\tSpamAssassin 2.x and 3.x are currently supported, you have version $Mail::SpamAssassin::VERSION, skipping test\n"
+"\t* SpamAssassin 2.x and 3.x are currently supported, you have version $Mail::SpamAssassin::VERSION, skipping test\n"
                       if $verbose;
                 }
 
             }
             else {
                 print
-"\t\tSpamAssassin doesn't seem to be available. Skipping test.\n"
+"\t* SpamAssassin doesn't seem to be available. Skipping test.\n"
                   if $verbose;
             }
 
@@ -2216,7 +2218,7 @@ sub validate_msg {
             'looking_for_embedded_headers' )
         {
 
-            print "\t\tLooking for embedding SpamAssassin Headers...\n"
+            print "*\t Looking for embedding SpamAssassin Headers...\n"
               if $verbose;
 
             my $score = undef;
@@ -2229,7 +2231,7 @@ sub validate_msg {
                         $score = $_;
                         $score =~ s/score\=//;
 
-                        print "\t\tFound them...\n"
+                        print "\t* Found them...\n"
                           if $verbose;
 
                         last;
@@ -2241,7 +2243,7 @@ sub validate_msg {
             if ( $score eq undef && $score != 0 ) {
 
                 print
-"\t\t\tTrouble parsing scoring information - letting message pass...\n"
+"\t* Trouble parsing scoring information - letting message pass...\n"
                   if $verbose
 
             }
@@ -2249,7 +2251,7 @@ sub validate_msg {
 
                 if ( $score >= $li->{ignore_spam_messages_with_status_of} ) {
                     print
-"\t\t\t Message has *failed* Spam Test (Score of: $score, "
+"\t*  Message has *failed* Spam Test (Score of: $score, "
                       . $li->{ignore_spam_messages_with_status_of}
                       . " needed.) - ignoring message.\n"
                       if $verbose;
@@ -2266,7 +2268,7 @@ sub validate_msg {
                 else {
                     $errors->{message_seen_as_spam} = 0;
 
-                    print "\t\t\t Message passed! Spam Test (Score of: $score, "
+                    print "\t*  Message passed! Spam Test (Score of: $score, "
                       . $li->{ignore_spam_messages_with_status_of}
                       . " needed.)\n"
                       if $verbose;
@@ -2277,14 +2279,14 @@ sub validate_msg {
         else {
 
             print
-              "\t\t\tDon't know how to find the SpamAssassin score, sorry!\n"
+              "\t* Don't know how to find the SpamAssassin score, sorry!\n"
               if $verbose;
 
         }
 
     }
     else {
-        print "\n\t\tSpamAssassin check disabled...\n"
+        print "\t* SpamAssassin check disabled...\n"
           if $verbose;
     }
 
@@ -2294,7 +2296,7 @@ sub validate_msg {
     # This below probably can't happen anymore...
     if ( lc_email( $li->{discussion_pop_email} ) eq lc_email($from_address) ) {
         $errors->{msg_from_list_address} = 1;
-        print "\t\t *WARNING!* Message is from the List Address. That's bad.\n"
+        print "\t* *WARNING!* Message is from the List Address. That's bad.\n"
           if $verbose;
     }
 
@@ -2494,7 +2496,7 @@ sub process {
 	# $msg is a scalarref
     my $msg  = $args->{ -msg };
 	
-    print "\n\t\tProcessing Message...\n"
+    print "\t* Processing Message...\n"
       if $verbose;
 
     if ( $ls->param('send_msgs_to_list') == 1 ) {
@@ -2507,7 +2509,7 @@ sub process {
             }
         );
 
-        print "\t\tMessage being delivered! \n"
+        print "\t* Message being delivered! \n"
           if $verbose;
 
         my ( $msg_id, $saved_message ) = deliver(
@@ -2532,7 +2534,7 @@ sub process {
     if (   $ls->param('send_msg_copy_to')
         && $ls->param('send_msg_copy_address') )
     {
-        print "\t\t Sending a copy of the message to: "
+        print "\t* Sending a copy of the message to: "
           . $ls->param('send_msg_copy_address') . "\n"
           if $verbose;
 
@@ -2545,7 +2547,7 @@ sub process {
         );
     }
 
-    print "\t\tFinished Processing Message.\n\n"
+    print "\t* Finished Processing Message.\n\n"
       if $verbose;
 
 }
@@ -2609,7 +2611,7 @@ sub strip_file_attachments {
         die "no entity found! die'ing!";
     }
 
-    print "\t\t\tStripping banned file attachments...\n\n"
+    print "\t* Stripping banned file attachments...\n\n"
       if $verbose;
 
     ( $entity, $ls ) = process_stripping_file_attachments( $entity, $ls );
@@ -2681,7 +2683,7 @@ sub process_stripping_file_attachments {
         {
 
             print
-"\t\t\t * Stripping attachment with:\n\t\t\t\tname: $name and MIME-Type:\n\t\t\t\t"
+"\t* Stripping attachment with:\n\t\t* name: $name and MIME-Type: "
               . $entity->head->mime_type . "\n";
             return ( undef, $ls );
         }
@@ -2698,7 +2700,7 @@ sub process_stripping_file_attachments {
 
 sub deliver_copy {
 
-    print "Delivering Copy...\n"
+    print "\t* Delivering Copy...\n"
       if $verbose;
 
     my ($args) = @_;
@@ -2744,7 +2746,7 @@ sub deliver_copy {
 	};
 
     if ( !$entity ) {
-        print "\t\tMessage sucks!\n"
+        print "\t* Message sucks!\n"
           if $verbose;
 
     }
@@ -2757,8 +2759,8 @@ sub deliver_copy {
         $headers{To} = $ls->param('send_msg_copy_address');
 
         if ($verbose) {
-            print "\tMessage Details: \n\t" . '-' x 50 . "\n";
-            print "\tSubject: " . $headers{Subject} . "\n";
+            print "\t* Message Details:\n";
+            print "\t* Subject: " . $headers{Subject} . "\n";
         }
 
         # Um. I'm not touching that.
@@ -2827,7 +2829,7 @@ sub deliver {
 	};
 
     if ( !$entity ) {
-        print "\t\tMessage sucks!\n"
+        print "\t* Message sucks!\n"
           if $verbose;
 
     }
@@ -2840,8 +2842,8 @@ sub deliver {
         $headers{To} = $ls->param('list_owner_email');
 
         if ($verbose) {
-            print "\tMessage Details: \n\t" . '-' x 50 . "\n";
-            print "\tSubject: " . $headers{Subject} . "\n";
+            print "\t* Message Details: \n";
+            print "\t* Subject: " . $headers{Subject} . "\n";
         }
 
         if (   $ls->param('group_list') == 1
@@ -2860,12 +2862,12 @@ sub deliver {
 
             if ( !$@ ) {
                 print
-"\tGoing to skip sending original poster ($f_a) a copy of their own  message...\n"
+"\t* Going to skip sending original poster ($f_a) a copy of their own  message...\n"
                   if $verbose;
                 $mh->do_not_send_to( [$f_a] );
             }
             else {
-                print "Problems not sending copy to original sender: $@\n\n"
+                print "\t* Problems not sending copy to original sender: $@\n\n"
                   if $verbose;
             }
         }
@@ -5101,21 +5103,23 @@ sub mod_dir {
 
 =pod
 
-=head1 Name 
-
-Dada Bridge 
+=head1 Dada Bridge
 
 =head1 Description 
 
-Dada Bridge is a program created to allow the support of sending email from your mail reader to a Dada Mail list, both for announce-only tasks and discussion lists.
+Dada Bridge is a plugin for Dada Mail that adds support to send email from your mail reader to a Dada Mail mailing list, both for announce-only tasks and discussion lists.
 
 Dada Bridge allows you to do two things, fairly easily: 
 
 =over
 
-=item * Set up an announce-only list. Dada Bridge allows you to send an email message to the List Email address, which will then be sent to your entire mailing list. 
+=item * Set up an Announce-Only list. 
 
-=item * Set up a discussion list. Anyone subscribed to your mailing list will be able send an email to the List Email Address, which will then be sent to the entire mailing list. Anyone else may reply to messages sent to the same mailing list. 
+Dada Bridge allows you to send an email message to the List Email address, which will then be sent to your entire mailing list. 
+
+=item * Set up a Discussion List. 
+
+Anyone subscribed to your mailing list will be able send an email to the List Email Address, which will then be sent to the entire mailing list. Anyone else may reply to messages sent to the same mailing list. 
 
 =back
 
@@ -5140,18 +5144,17 @@ Many of Dada Bridge's concepts are slightly different than what you may be used 
 
 =item * Subscription/Unsubscription requests are handled via Dada Mail itself
 
-In other words, it's all web-based. There are currently no subscription mechanisms that use email commands (although, that would be cool). 
-
+In other words, it's all web-based. There are currently no subscription mechanisms that use email commands.
 
 =item *  A, "List Email" is just a POP3 email account. 
 
-In Dada Mail, a "List Email" is the address you send to when you want to post a message to the list. This differs from the "List Owner" email, which is the address that messages will be sent on behalf of (unless discussion lists are enabled). 
+In Dada Mail, the B<List Email> is the address you send to when you want to post a message to the list. This differs from the, B<List Owner> email, which is the address that messages will be sent on behalf of (unless discussion lists are enabled). 
 
-Usually in a mailing list manager, this address is created automatically by the program itself: not so in Dada Mail - you'll have to manually create the email  (POP3) account and plug in the email, pop3 server and username/password into Dada Mail.
+Usually in a mailing list manager, this address is created automatically by the program itself. In Dada Mail, you'll have to manually create the email  (POP3) account and plug in the email address, POP3 server and username/password into Dada Mail.
 
-This sounds like a step I<backward>, but it allows anyone who can make POP3 accounts to have a discussion mailing list. You also have a whole lot of flexibility when it comes to what the List Email can be. 
+This allows anyone who can make POP3 accounts to have a discussion mailing list. You also have a whole lot of flexibility when it comes to what the B<List Email> can be. 
 
-In normal use, Dada Bridge will check this account and route any messages it finds accordingly. When in normal use, do not check this account yourself. 
+In normal use, Dada Bridge will check this account and deliver any messages it finds accordingly. When in normal use, do not check this account yourself. 
 
 =back
 
@@ -5163,9 +5166,7 @@ In normal use, Dada Bridge will check this account and route any messages it fin
 
 If you do not know how to set up a cron job, attempting to set one up for Dada Bridge will result in much aggravation. Please read up on the topic before attempting!
 
-=item * a free POP3 account for each list. 
-
-=item * Ability to set cron jobs
+=item * a free POP3 account for each mailing list you want to use Dada Bridge for. 
 
 =back 
 
@@ -5195,9 +5196,9 @@ Dada Bridge is located in the, I<dada/plugins> directory of the Dada Mail distri
 
 =head1 Installation 
 
-This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin manually.
+This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin B<manually>.
 
-If you do install this way, note that you still have set the cronjob, which is covered below. 
+If you install the plugin using the Dada Mail installer, you will still have set the cronjob manually, which is covered below. 
 
 =head1 Lightning Configuration/Installation Instructions
 
@@ -5242,7 +5243,7 @@ Before we get into installation, here's how Dada Bridge is used:
 
 One part of Dada Bridge is run as a Dada Mail plugin - you'll have to log into your list before you're able to make any changes to its settings. 
 
-The second part of Dada Bridge is the part that actually looks for any new mail to be examined and hopefully, broadcasted and sent out to your list. This part of Dada Bridge is usually run via a cronjob.  
+The second part of Dada Bridge is the part that actually looks for any new mail to be examined and hopefully, broadcasted and sent out to your list. This part of Dada Bridge is usually run via a B<cronjob>.  
 
 There's a few ways that Dada Bridge can do the second part, and we'll go in detail on how to set up both ways. 
 
@@ -5306,7 +5307,7 @@ Generally, setting the cronjob to have Dada Bridge run automatically just means 
 
 Where, I<http://example.com/cgi-bin/dada/plugins/dada_bridge.pl> is the URL to your copy of dada_bridge.pl
 
-You'll see the specific URL used for your installation of Dada Mail in the web-based control panel for Dada Bridge, under the fieldset legend, Manually Run Dada Bridge. under the heading, Manual Run URL:
+You'll see the specific URL used for your installation of Dada Mail in the web-based control panel for Dada Bridge, under the fieldset legend, B<Manually Run Dada Bridge>. under the heading, B<Manual Run URL:>
 
 This will have Dada Bridge check any awaiting messages.
 
@@ -5316,41 +5317,27 @@ A Pretty Good Guess of what the entire cronjob should be set to is located in th
 
 From my testing, this should work for most Cpanel-based hosting accounts.
 
-Here's the entire thing explained:
+Here's the entire cronjob explained:
 
-In all these examples, I'll be running the script every 5 minutes ( */5 * * * * ) - tailor to your taste.
+In this example, I'll be running the script every 5 minutes ( */5 * * * * ) - tailor to your taste.
 
-=over
 
-=item * Using Curl:
+	*/5 * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0\; --url http://example.com/cgi-bin/dada/plugins/dada_bridge.pl
 
- */5 * * * * /usr/local/bin/curl -s --get --data run=1 --url http://example.com/cgi-bin/dada/plugins/dada_bridge.pl
+=head2 Disallowing running Dada Bridge manually (via URL) 
 
-=item * Using Curl, a few more options (we'll cover those in just a bit):
+If you DO NOT want to use this way of invoking the program to check awaiting messages and send them out, make sure to set the B<plugin config variable> (which we'll cover below) C<Allow_Manual_Run> to, C<0>. 
 
- */5 * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0\;test=0 --url http://example.com/cgi-bin/dada/plugins/dada_bridge.pl
-
-=back
-
-=head3 $Plugin_Config->{Allow_Manual_Run}
-
-If you DO NOT want to use this way of invoking the program to check awaiting messages and send them out, make sure to change the variable, $Plugin_Config-{Allow_Manual_Run}> to, 0:
-
- $Plugin_Config->{Allow_Manual_Run}    = 0;
-
-at the top of the dada_bridge.pl script. If this variable is not set to, 1 this method will not work.
-
-=head2 Security Concerns and $Plugin_Config->{Manual_Run_Passcode}
+=head2 Security Concerns "Manual_Run_Passcode"
 
 Running the plugin like this is somewhat risky, as you're allowing an anonymous web browser to run the script in a way that was originally designed to only be run either after successfully logging into the list control panel, or, when invoking this script via the command line.
 
-If you'd like, you can set up a simple Passcode, to have some semblence of security over who runs the program. Do this by setting the, C<$Plugin_Config-{Manual_Run_Passcode}> variable in the dada_bridge.pl source itself.
+If you'd like, you can set up a simple B<Passcode>, to have some semblence of security over who runs the program. Do this by setting the, plugin config (again, we'll cover plugin configs, below), C<Manual_Run_Passcode> to a password-like string: 
 
-If you set the variable like so:
+	Manual_Run_Passcode                 => 'sneaky', 
 
-    $Plugin_Config->{Manual_Run_Passcode} = 'sneaky';
 
-You'll then have to change the URL in these examples to:
+In this example, you'll then have to change the URL in these examples to:
 
  http://example.com/cgi-bin/dada/plugins/dada_bridge.pl?run=1&passcode=sneaky
 
@@ -5362,7 +5349,7 @@ You can control quite a few things by setting variables right in the query strin
 
 =item * passcode
 
-As mentioned above, the C<$Plugin_Config-{Manual_Run_Passcode}> allows you to set some sort of security while running in this mode. Passing the actual password is done in the query string:
+As mentioned above, the C<Manual_Run_Passcode> allows you to set some sort of security while running in this mode. Passing the actual password is done in the query string:
 
  http://example.com/cgi-bin/dada/plugins/dada_bridge.pl?run=1&passcode=sneaky
 
@@ -5378,7 +5365,7 @@ The, >/dev/null 2>&1 line throws away any values returned.
 
 Since all the information being returned from the program is done sort of indirectly, this also means that any problems actually running the program will also be thrown away.
 
-If you set verbose to, ``0'', under normal operation, Dada Bridge won't show any output, but if there's a server error, you'll receive an email about it. This is probably a good thing. Example:
+If you set verbose to, C<0>, under normal operation, Dada Bridge won't show any output, but if there's a server error, you'll receive an email about it. This is probably a good thing. Example:
 
  * * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0 --url http://example.com/cgi-bin/dada/plugins/dada_bridge.pl
 
@@ -5416,57 +5403,13 @@ There's a slew of optional arguments you can give to this script. To use Dada Br
 
 =head2 Command Line Interface for Cronjobs: 
 
-One reason that the web-based way of running the cronjob is better, is that it 
-doesn't involve reconfiguring the plugin, every time you upgrade. This makes 
-the web-based invoking a bit more convenient. 
+You can also invoke C<dada_bridge.pl> from the command line interface for cronjobs. The secret is to actually have two commands in one. The first command changes into the same directory as the C<dada_bridge.pl> script, the second invokes the script with the paramaters you'd like. 
 
-=head2 #1 Change the lib path
+For example: 
 
-You'll need to explicitly state where both the:
+ */5 * * * * cd /home/myaccount/cgi-bin/dada/plugins; /usr/bin/perl ./dada_bridge.pl  >/dev/null 2>&1
 
-=over
-
-=item * Absolute Path to the site-wide Perl libraries
-
-=item * Absolute Path of the local Dada Mail libraries
-
-=back
-
-I'm going to rush through this, since if you want to run Dada Bridge this way
-you probably know the terminology, but: 
-
-This script will be running in a different environment and from a different location than what you'd run it as, when you visit it in a web-browser. It's annoying, but one of the things you have to do when running a command line script via a cronjob. 
-
-As an example: C<use lib qw()> lines probably look like: 
-
- use lib qw(
- 
- ../ 
- ../DADA/perllib 
- ../../../../perl 
- ../../../../perllib 
- 
- );
-
-
-To this list, you'll want to append your site-wide Perl Libraries and the 
-path to the Dada Mail libraries. 
-
-If you don't know where your site-wide Perl libraries are, try running this via the command line:
-
- perl -e 'print $_ ."\n" for @INC'; 
-
-If you do not know how to run the above command, visit your Dada Mail in a web browser, log into your list and on the left hand menu and: click, B<About Dada Mail> 
-
-Under B<Script Information>, click the, B< +/- More Information> link and under the, B<Perl Library Locations>, select each point that begins with a, "/" and use those as your site-wide path to your perl libraries. 
-
-=head2 #2 Set the cron job 
-
-Cron Jobs are scheduled tasks. We're going to set a cron job to test for new messages every 5 minutes. Here's an example cron tab: 
-
-  */5  *  *  *  * /usr/bin/perl /home/myaccount/cgi-bin/dada/plugins/dada_bridge.pl >/dev/null 2>&1
-
-Where, I</home/myaccount/cgi-bin/dada/plugins/dada_bridge.pl> is the full path to the script we just configured. 
+Where, I</home/myaccount/cgi-bin/dada/plugins> is the full path to the directory the C<dada_bridge.pl> script is located. 
 
 =head1 Remember to enable sending using this method! 
 
@@ -5482,7 +5425,7 @@ And you're off to the races.
 
 The below settings are available to you, if you wish to further configure the plugin. You'll find the settings within the plugin itself - look at the top of the, C<dada_bridge.pl> script. 
 
-BUT, we suggest that you set these plugin config settings in your outside config file (C<.dada_config>). 
+B<BUT>, we suggest that you set these plugin config settings in your outside config file (C<.dada_config>). 
 
 First, search and see if the following lines are present in your C<.dada_config> file: 
 
@@ -5496,22 +5439,26 @@ If they are present, remove them.
 
 You can then configure the plugin variables on these lines: 
 
-	Dada_Bridge => { 
-    
-	    Plugin_URL                          => undef, 
-		Plugin_Name                         => undef, 
-	    Allow_Manual_Run                    => undef, 
-	    Manual_Run_Passcode                 => undef, 
-	    MessagesAtOnce                      => undef, 
-		Soft_Max_Size_Of_Any_Message        => undef, 
-	    Max_Size_Of_Any_Message             => undef, 
-	    Allow_Open_Discussion_List          => undef, 
-	    Room_For_One_More_Check             => undef, 
-		Enable_POP3_File_Locking            => undef, 
-		Check_List_Owner_Return_Path_Header => undef, 
-		Check_Multiple_Return_Path_Headers  => undef, 
+	Dada_Bridge => {
+
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
+		Allow_Manual_Run                    => undef,
+		Manual_Run_Passcode                 => undef,
+		MessagesAtOnce                      => undef,
+		Soft_Max_Size_Of_Any_Message        => undef,
+		Max_Size_Of_Any_Message             => undef,
+		Allow_Open_Discussion_List          => undef,
+		Room_For_One_More_Check             => undef,
+		Enable_POP3_File_Locking            => undef,
+		Check_List_Owner_Return_Path_Header => undef,
+		Check_Multiple_Return_Path_Headers  => undef,
 
 	},
+
+=head2 Plugin_Name
+
+The name of the plugin. By default, B<Dada Bridge>.
 
 =head2 Plugin_URL
 
@@ -5519,24 +5466,15 @@ Sometimes, the plugin has a hard time guessing what its own URL is. If this is h
 
 =head2 Allow_Manual_Run
 
-Allows you to invoke the plugin to check and send awaiting messages via a URL. See, "The Easy Way" cronjob setting up docs, above. 
+Allows you to invoke the plugin to check and send awaiting messages via a URL. 
 
 =head2 Manual_Run_Passcode
 
-Allows you to set a passcode if you want to allow manually running the plugin. See, "Tehe Easy Way" cronjob setting up docs, above. 
+Allows you to set a passcode if you want to allow manually running the plugin. 
 
 =head2 MessagesAtOnce
 
-You can specify how many messages you want to have the program actually handle per execution of the script by changing the, B<MessagesAtOnce> variable in the source of the script itself. By default, it's set conservatively to, B<1>.
-
-
-=head2 Max_Size_Of_Any_Message
-
-Sets a hard limit on how large a single message can actually be, before you won't allow the message to be processed. If a message is too large, it'll be simple deleted. A warning will be written in the error log, but the original sender will not be notified. 
-
-=head2 Allow_Open_Discussion_List
-
-If set to, C<1> a new option will be available in Dada Bridge's list control panel to allow you to have a discussion list that anyone can send messages to. 
+You can specify how many messages you want to have the program actually handle per execution of the script by changing the, B<MessagesAtOnce> variable. By default, it's set conservatively to, B<1>.
 
 =head2 Soft_Max_Size_Of_Any_Message
 
@@ -5545,6 +5483,14 @@ If the message falls between, C<Soft_Max_Size_Of_Any_Message> and, C<Max_Size_Of
 be sent to the original poster. 
 
 Set the size in octects. 
+
+=head2 Max_Size_Of_Any_Message
+
+Sets a hard limit on how large a single message can actually be, before you won't allow the message to be processed. If a message is too large, it'll be simple deleted. A warning will be written in the error log, but the original sender will not be notified.
+
+=head2 Allow_Open_Discussion_List
+
+If set to, C<1> a new option will be available in Dada Bridge's list control panel to allow you to have a discussion list that anyone can send messages to. 
 
 =head2 Room_For_One_More_Check
 
@@ -5558,7 +5504,7 @@ C<Enable_POP3_File_Locking>. Sometimes, the pop3 locking stuff in Dada Mail simp
 
 When testing the validity of a received message, Dada Mail will look to see if the, C<Return-Path> header matches what's set in the, C<From> header. If they do not match, this test fails and the message will be rejected. Setting, C<Check_List_Owner_Return_Path_Header> will disable this test. 
 
-=head2 heck_Multiple_Return_Path_Headers
+=head2 Check_Multiple_Return_Path_Headers
 
 C<Check_Multiple_Return_Path_Headers> is another validity test for received messages. This time, the message is looked to see if it has more than one C<Return-Path> header. If it does, it is rejected. If you set, C<Check_Multiple_Return_Path_Headers> to, C<0>, this test will be disabled. 
 
