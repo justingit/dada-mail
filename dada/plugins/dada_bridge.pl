@@ -3328,12 +3328,69 @@ sub cgi_show_plugin_config {
 }
 
 
+sub cgi_edit_email_msgs_tmpl { 
+	
+return q{ 
 
-sub edit_email_msgs {
+
+	<!-- tmpl_set name="title" value="Blah Blah Blah" -->
+
+	<!-- tmpl_include help_link_widget.tmpl -->
+
+	<!-- tmpl_if done -->
+	    <!-- tmpl_var GOOD_JOB_MESSAGE -->
+	<!--/tmpl_if-->
+
+
+
+	<form>
+
+
+	<fieldset>
+		<legend>
+			Subscription Confirmation Email 
+		</legend>
+		<p>
+		 <label for="confirmation_message_subject" class="label_by_5">Subject:</label><input type="text" name="confirmation_message_subject" id="confirmation_message_subject" value="<!-- tmpl_var list_settings.confirmation_message_subject escape=HTML -->" class="midi" />
+		</p>
+
+		<p><label for="confirmation_message">PlainText Message:</label>
+	<textarea name="confirmation_message" id="confirmation_message" rows="10" cols="50" ><!-- tmpl_var list_settings.confirmation_message escape=HTML --></textarea> 
+		</p>
+	</fieldset>
+
+
+
+
+
+
+
+
+
+
+
+	<input type="hidden" name="process" value="1" />
+	<input type="hidden" name="f" value="edit_type" />
+	<div class="buttonfloat">
+		<input type="reset" class="cautionary" value="Clear All Changes" />
+		<input type="submit" class="alertive" name="revert" value="Revert ALL Text to Defaults" />
+		<input type="submit" class="processing" value="Save All Changes" />
+	</div>
+	<div class="floatclear">
+	</div>
+
+	</form>
+
+
+};
+
+}
+
+sub cgi_edit_email_msgs {
 
 
 	my $process = $q->param('process') || undef; 
-	my $done = $q->param('done') || undef; 
+	my $done    = $q->param('done')    || undef; 
 	
 	
     require DADA::Template::Widgets;
@@ -3359,7 +3416,7 @@ sub edit_email_msgs {
 
     if ( !$process ) {
 
-		my $tmpl = 'Hello, World!'; 
+		my $tmpl = cgi_edit_email_msgs_tmpl();
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
