@@ -1,10 +1,6 @@
 #!/usr/bin/perl
 package dada_bridge;
 
-# Some questions I have on the new moderation stuff:
-# If there are no authorized senders, is the list owner allowed to moderate messages?
-# is the authorized senders moderation activated?
-# Can a subscriber moderate their own message?
 
 use strict;
 $ENV{PATH} = "/bin:/usr/bin";
@@ -29,24 +25,6 @@ use lib qw(
 	../
 	../DADA/perllib 
 );
-
-# This helps with cPanel-based hosting setups, where Perl Modules can be added
-# from within cPanel, but you need to explicitly set the perl library
-# directories. Uncomment to activate: 
-
-#BEGIN {
-#    my $homedir = ( getpwuid($>) )[7];
-#    my @user_include;
-#    for my $path (@INC) {
-#        if ( -d $homedir . '/perl' . $path ) {
-#            push @user_include, $homedir . '/perl' . $path;
-#        }
-#    }
-#    unshift @INC, @user_include;
-#}
-
-
-
 
 
 use CGI::Carp qw(fatalsToBrowser);
@@ -150,47 +128,47 @@ The attached message needs to be moderated:
 
 To send this message to the list, click here: 
 
-    <<!-- tmpl_var moderation_confirmation_link -->>
+    <!-- tmpl_var moderation_confirmation_link -->
     
 To deny sending this message to the list, click here: 
 
-    <<!-- tmpl_var moderation_deny_link -->>
+    <!-- tmpl_var moderation_deny_link -->
 
--- [Plugin_Name]
+-- <!-- tmpl_var Plugin_Name --> 
 
 EOF
-  ;
+;
 
 my $AwaitModeration_Message_Subject =
-'Message to: <!-- tmpl_var list_settings.list_name --> w/ Subject: [message_subject] is awaiting approval.';
+'Message to: <!-- tmpl_var list_settings.list_name --> w/ Subject: <!-- tmpl_var message_subject --> is awaiting approval.';
 my $AwaitModeration_Message = <<EOF
 
 Hello, 
 
 Your recent message to <!-- tmpl_var list_settings.list_name --> with the subject of: 
 
-    [message_subject]
-    
+    <!-- tmpl_var message_subject --> 
+  
 is awaiting approval. 
 
--- [Plugin_Name]
+-- <!-- tmpl_var Plugin_Name -->
 
 EOF
   ;
 
 my $Accept_Message_Subject =
-'Message to: <!-- tmpl_var list_settings.list_name --> w/ Subject: [message_subject] is accepted.';
+'Message to: <!-- tmpl_var list_settings.list_name --> w/ Subject: <!-- tmpl_var message_subject --> has been accepted.';
 my $Accept_Message = <<EOF
 
 Hello, 
 
 Your recent message to <!-- tmpl_var list_settings.list_name --> with the subject of: 
 
-    [message_subject]
+    <!-- tmpl_var message_subject -->
     
 was accepted by the list owner. It will be forwarded to the list soon. 
 
--- [Plugin_Name]
+-- <!-- tmpl_var Plugin_Name -->
 
 EOF
   ;
@@ -260,8 +238,6 @@ If you did not send a message with this subject, please disregard this message.
 
 EOF
 ;
-
-
 
 #
 # There is nothing else to configure in this program.
