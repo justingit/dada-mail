@@ -103,7 +103,8 @@ sub search_list {
     my $count   = 0;
     
     $self->open_list_handle(-Type => $args->{-type});
-    while(defined($email = <LIST>)){ 
+    while(defined($email = <LIST>)){
+		chomp($email); 
         if($email =~ m/$query/i){ 
 			
 			push(
