@@ -5454,7 +5454,6 @@ sub edit_type {
         unsubscribed_message
         mailing_list_message
         mailing_list_message_html
-        not_allowed_to_post_message
         send_archive_message
         send_archive_message_html
         you_are_already_subscribed_message
@@ -5546,8 +5545,6 @@ sub edit_type {
             mailing_list_message_subject
             mailing_list_message
             mailing_list_message_html
-            not_allowed_to_post_message_subject
-            not_allowed_to_post_message
             send_archive_message_subject
             send_archive_message
             send_archive_message_html
@@ -5593,8 +5590,6 @@ sub edit_type {
                     mailing_list_message_subject               => undef,
                     mailing_list_message                       => undef,
                     mailing_list_message_html                  => undef,
-                    not_allowed_to_post_message_subject        => undef,
-                    not_allowed_to_post_message                => undef,
                     send_archive_message_subject               => undef,
                     send_archive_message                       => undef,
                     send_archive_message_html                  => undef,

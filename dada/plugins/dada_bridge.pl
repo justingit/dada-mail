@@ -112,132 +112,6 @@ $Plugin_Config->{Check_Multiple_Return_Path_Headers} = 0;
 # Stops From: header spoofing (a little bit, anyways) 
 $Plugin_Config->{Check_Multiple_From_Addresses} = 1; 
 
-# This is the message sent to the List Owner,
-# telling them a message is waiting for their
-# Approval! Yeah!
-
-my $Moderation_Msg_Subject =
-'Message on: <!-- tmpl_var list_settings.list_name --> needs to be moderated. (original message attached)';
-my $Moderation_Msg = <<EOF
-
-The attached message needs to be moderated:
-
-    List:    <!-- tmpl_var list_settings.list_name -->
-    From:    <!-- tmpl_var subscriber.email -->
-    Subject: <!-- tmpl_var message_subject -->
-
-To send this message to the list, click here: 
-
-    <!-- tmpl_var moderation_confirmation_link -->
-    
-To deny sending this message to the list, click here: 
-
-    <!-- tmpl_var moderation_deny_link -->
-
--- <!-- tmpl_var Plugin_Name --> 
-
-EOF
-;
-
-my $AwaitModeration_Message_Subject =
-'Message to: <!-- tmpl_var list_settings.list_name --> w/ Subject: <!-- tmpl_var message_subject --> is awaiting approval.';
-my $AwaitModeration_Message = <<EOF
-
-Hello, 
-
-Your recent message to <!-- tmpl_var list_settings.list_name --> with the subject of: 
-
-    <!-- tmpl_var message_subject --> 
-  
-is awaiting approval. 
-
--- <!-- tmpl_var Plugin_Name -->
-
-EOF
-  ;
-
-my $Accept_Message_Subject =
-'Message to: <!-- tmpl_var list_settings.list_name --> w/ Subject: <!-- tmpl_var message_subject --> has been accepted.';
-my $Accept_Message = <<EOF
-
-Hello, 
-
-Your recent message to <!-- tmpl_var list_settings.list_name --> with the subject of: 
-
-    <!-- tmpl_var message_subject -->
-    
-was accepted by the list owner. It will be forwarded to the list soon. 
-
--- <!-- tmpl_var Plugin_Name -->
-
-EOF
-  ;
-
-my $Rejection_Message_Subject =
-  'Message to: <!-- tmpl_var list_settings.list_name --> Subject: <!-- tmpl_var message_subject --> rejected.';
-my $Rejection_Message = <<EOF
-
-Hello, 
-
-Your recent message to <!-- tmpl_var list_settings.list_name --> with the subject of: 
-
-    <!-- tmpl_var message_subject -->
-    
-was rejected by the list owner. You may email the list owner at: 
-
-    <!-- tmpl_var list_settings.list_owner_email -->
-    
-for more details. 
-
--- <!-- tmpl_var Plugin_Name -->
-
-EOF
-  ;
-
-my $Message_Too_Big_Subject =
-  'Message to: <!-- tmpl_var list_settings.list_name -->  Subject: <!-- tmpl_var original_subject --> rejected';
-my $Message_Too_Big_Message = <<EOF
-
-Hello, <!-- tmpl_var subscriber.email -->, 
-
-We've received a message from you with the Subject,
-
-	<!-- tmpl_var original_subject -->
-		
-but couldn't deliver it to the mailing list because the size of the message, 
-
-	<!-- tmpl_var size_of_original_message --> kilobytes
-
-is larger than the maximum allowed: 
-
-	<!-- tmpl_var Soft_Max_Size_Of_Any_Message --> kilobytes
-
-Please try to resend the message again, but within the maximum size allowed, 
-
--- <!-- tmpl_var list_settings.list_owner_email -->
-
-EOF
-;
-
-my $Message_Labeled_As_Spam_Subject =
-  'Message to: <!-- tmpl_var list_settings.list_name -->  Subject: <!-- tmpl_var original_subject --> Labeled as Spam';
-my $Message_Labeled_As_Spam_Message = <<EOF
-
-Hello, <!-- tmpl_var subscriber.email -->, 
-
-We've received a message from you with the Subject,
-
-	<!-- tmpl_var original_subject -->
-		
-but couldn't deliver it to the mailing list because it hit the spam filters and seems 
-suspicious. 
-
-If you did not send a message with this subject, please disregard this message. 
-
--- <!-- tmpl_var list_settings.list_owner_email -->
-
-EOF
-;
 
 #
 # There is nothing else to configure in this program.
@@ -382,6 +256,7 @@ sub cgi_main {
             'manual_start'                => \&admin_cgi_manual_start,
             'admin_cgi_manual_start_ajax' => \&admin_cgi_manual_start_ajax,
             'cgi_test_pop3_ajax'          => \&cgi_test_pop3_ajax,
+			'edit_email_msgs'             => \&cgi_edit_email_msgs, 
             # 'mod'                       => \&cgi_mod,
         );
 
@@ -2413,9 +2288,9 @@ sub send_msg_too_big {
                 -list    => $list,
                 -headers => {
                     To      => $from_address,
-                    Subject => $Message_Too_Big_Subject,
+                    Subject => $li->{msg_too_big_msg_subject}, 
                 },
-                -body        => $Message_Too_Big_Message,
+                -body        => $li->{msg_too_big_msg}
                 -tmpl_params => {
                     -list_settings_vars       => $li,
                     -list_settings_vars_param => { -dot_it => 1, },
@@ -3016,9 +2891,9 @@ sub send_spam_rejection_message {
                 -headers => {
                     To      => $from_address,
                     From    => $ls->param('list_owner_email'),
-                    Subject => $Message_Labeled_As_Spam_Subject,
+                    Subject => $ls->param('msg_labeled_as_spam_msg_subject'),
                 },
-                -body        => $Message_Labeled_As_Spam_Message,
+                -body        => $ls->param('msg_labeled_as_spam_msg'),
                 -tmpl_params => {
 
                     -list_settings_vars       => $ls->params, 
@@ -3372,39 +3247,8 @@ sub find_return_path {
     }
 }
 
-sub cgi_show_plugin_config {
-	 
-    my $configs = [];
-    for ( sort keys %$Plugin_Config ) {
-        if ( $_ eq 'Password' ) {
-            push( @$configs, { name => $_, value => '(Not Shown)' } );
-        }
-        else {
-            push( @$configs, { name => $_, value => $Plugin_Config->{$_} } );
-        }
-    }
 
-    my $tmpl = cgi_show_plugin_config_tmpl();
 
-    require DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::wrap_screen(
-        {
-            -data           => \$tmpl,
-            -with           => 'admin',
-            -wrapper_params => {
-                -Root_Login => $root_login,
-                -List       => $list,
-            },
-            -vars => {
-                Plugin_URL  => $Plugin_Config->{Plugin_URL},
-                Plugin_Name => $Plugin_Config->{Plugin_Name},
-                configs     => $configs,
-            },
-        },
-    );
-    e_print($scrn);
-
-}
 
 sub cgi_show_plugin_config_tmpl {
 
@@ -3445,6 +3289,130 @@ sub cgi_show_plugin_config_tmpl {
  
     };
 
+}
+
+
+
+sub cgi_show_plugin_config {
+	 
+    my $configs = [];
+    for ( sort keys %$Plugin_Config ) {
+        if ( $_ eq 'Password' ) {
+            push( @$configs, { name => $_, value => '(Not Shown)' } );
+        }
+        else {
+            push( @$configs, { name => $_, value => $Plugin_Config->{$_} } );
+        }
+    }
+
+    my $tmpl = cgi_show_plugin_config_tmpl();
+
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -data           => \$tmpl,
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+            -vars => {
+                Plugin_URL  => $Plugin_Config->{Plugin_URL},
+                Plugin_Name => $Plugin_Config->{Plugin_Name},
+                configs     => $configs,
+            },
+        },
+    );
+    e_print($scrn);
+
+}
+
+
+
+sub edit_email_msgs {
+
+
+	my $process = $q->param('process') || undef; 
+	my $done = $q->param('done') || undef; 
+	
+	
+    require DADA::Template::Widgets;
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get;
+
+    # Backwards Compatibility!
+    for (
+        qw(
+			...
+        )
+      )
+    {
+        my $m = $li->{$_};
+        DADA::Template::Widgets::dada_backwards_compatibility( \$m );
+        $li->{$_} = $m;
+    }
+
+    require DADA::App::FormatMessages;
+    my $dfm = DADA::App::FormatMessages->new( -List => $list );
+
+    if ( !$process ) {
+
+		my $tmpl = 'Hello, World!'; 
+        require DADA::Template::Widgets;
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -data => \$tmpl, 
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+                -list   => $list,
+                -vars   => {
+                    screen => 'edit_type',
+                    title  => 'Email Templates',
+                    done   => $done,
+                },
+                -list_settings_vars       => $li,
+                -list_settings_vars_param => { -dot_it => 1, },
+            }
+        );
+        e_print($scrn);
+
+    }
+    else {
+
+        for (qw(
+            
+          ))
+        {
+          
+            # a very odd place to put this, but, hey,  easy enough.
+            if ( $q->param('revert') ) {
+                $q->param( $_, '' );
+            }
+			else { 
+				  my $tmp_setting = $q->param($_);
+		             $tmp_setting =~ s/\r\n/\n/g;
+		          $q->param( $_, $tmp_setting );
+			}
+        }
+
+        $ls->save_w_params(
+            {
+                -associate => $q,
+                -settings  => {
+ 
+                }
+            }
+        );
+
+        print $q->redirect(
+            -uri => $Plugin_Config->{Plugin_URL} . '?flavor=edit_email_msgs&done=1' );
+
+    }
 }
 
 sub inject {
@@ -4644,7 +4612,6 @@ sub moderation_msg {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
-    my $li = $ls->get;
 
     my $parser = $args->{ -parser };
     my $entity = $parser->parse_data(DADA::App::Guts::safely_encode( $args->{ -msg } ));
@@ -4664,7 +4631,7 @@ sub moderation_msg {
 
     #  create an array of recepients
     my @moderators;
-    if ( $li->{moderate_discussion_lists_with} eq 'authorized_sender_email' ) {
+    if ( $ls->param('moderate_discussion_lists_with') eq 'authorized_sender_email' ) {
         my $lh =
           DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
         my $authorized_senders = [];
@@ -4699,7 +4666,7 @@ sub moderation_msg {
     for my $to_address (@moderators) {                   # recepient loop
         $reply = MIME::Entity->build(
             Type    => "multipart/mixed",
-            Subject => $Moderation_Msg_Subject,
+            Subject => $ls->param('moderation_msg_subject'),
             To      => $to_address,
         );
         print "\t * Sent moderation request to $to_address\n"
@@ -4708,7 +4675,7 @@ sub moderation_msg {
         # attach parts
         $reply->attach(
             Type => 'text/plain',
-            Data => $Moderation_Msg,
+            Data => $ls->param('moderation_msg'),
         );
         $reply->attach(
             Type        => 'message/rfc822',
@@ -4728,7 +4695,7 @@ sub moderation_msg {
                 },
                 -body        => $reply->stringify_body,
                 -tmpl_params => {
-                    -list_settings_vars       => $li,
+                    -list_settings_vars       => $ls->get,
                     -list_settings_vars_param => { -dot_it => 1, },
 
                     #-subscriber_vars =>
@@ -4792,8 +4759,8 @@ sub send_moderation_msg {
     my $reply = MIME::Entity->build(
         Type    => "text/plain",
         To      => $from,
-        Subject => $AwaitModeration_Message_Subject,
-        Data    => $AwaitModeration_Message,
+        Subject => $ls->param('await_moderation_msg_subject'),
+        Data    => $ls->param('await_moderation_msg'),
     );
 
     require DADA::App::Messages;
@@ -4870,8 +4837,8 @@ sub send_accept_msg {
     my $reply = MIME::Entity->build(
         Type    => "text/plain",
         To      => $from,
-        Subject => $Accept_Message_Subject,
-        Data    => $Accept_Message,
+        Subject => $ls->param('accept_msg_subject'), 
+        Data    => $ls->param('accept_msg'), 
     );
 
     require DADA::App::Messages;
@@ -4943,8 +4910,8 @@ sub send_reject_msg {
     my $reply = MIME::Entity->build(
         Type    => "text/plain",
         To      => $from,
-        Subject => $Rejection_Message_Subject,
-        Data    => $Rejection_Message,
+        Subject => $ls->param('rejection_msg_subject'),
+        Data    => $ls->param('rejection_msg'),
     );
 
     require DADA::App::Messages;
