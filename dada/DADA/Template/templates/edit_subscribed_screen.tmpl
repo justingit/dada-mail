@@ -21,7 +21,7 @@
 		You must be logged in with the <!-- tmpl_var PROGRAM_NAME --> Root Password to be able to edit a Subscriber's Profile Fields. 
 	</p>
 <!-- /tmpl_unless --> 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
 <!-- tmpl_if root_login --> 
 	 <input type="hidden" name="email"   value="<!-- tmpl_var email escape="HTML" -->" />
@@ -68,7 +68,7 @@
 <div class="floatclear"></div>
 
 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
  <input type="hidden" name="process" value="delete" />
  <input type="hidden" name="address" value="<!-- tmpl_var email escape="HTML" -->" />
  <input type="hidden" name="f"       value="remove_subscribers" />

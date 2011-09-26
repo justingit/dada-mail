@@ -143,7 +143,7 @@ function confirm_profile_removal(form_name) {
 <legend>
 	Subscriber Profile Fields
 </legend> 
-	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
+	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
 		<input type="hidden" name="f"        value="profile" /> 
 		<input type="hidden" name="process"  value="edit_subscriber_fields" /> 
 
@@ -292,7 +292,7 @@ Your Mailing List Subscriptions
 
 	<h1>Unsubscribe from ALL lists</h1> 
 
-	<form><input type="submit" value="Zoom!" /> </form> 
+	<form accept-charset="<!-- tmpl_var HTML_CHARSET -->"><input type="submit" value="Zoom!" /> </form> 
 
 
 	<!-- /tmpl_if -->  
@@ -318,7 +318,7 @@ Your Mailing List Subscriptions
 
 
 
-<form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
+<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
 	<input type="hidden" name="f"        value="profile" /> 
 	<input type="hidden" name="process"  value="update_email" />
 	
@@ -374,7 +374,7 @@ Your Mailing List Subscriptions
 		
 <div id="change_profile_password" <!-- tmpl_if errors_change_password --><!-- tmpl_else -->style="display:none"<!-- /tmpl_if -->>
 
-<form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
+<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
 	<input type="hidden" name="f"        value="profile" /> 
 	<input type="hidden" name="process"  value="change_password" />
 	
@@ -426,7 +426,7 @@ Your Mailing List Subscriptions
 	
 	
 	
-<form action="<!-- tmpl_var PROGRAM_URL -->" method="post"> 
+<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
 	<input type="hidden" name="f"        value="profile" /> 
 	<input type="hidden" name="process"  value="delete_profile" />
 	

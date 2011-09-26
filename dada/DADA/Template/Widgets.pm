@@ -144,7 +144,7 @@ MASS_MAIL_SETTINGS            => $DADA::Config::MASS_MAIL_SETTINGS,
 ENV_SCRIPT_URI                => $ENV{SCRIPT_URI}, 
 ENV_SERVER_ADMIN              => $ENV{SERVER_ADMIN},
 HELP_LINKS_URL                => $DADA::Config::HELP_LINKS_URL, 
-
+HTML_CHARSET                  => $DADA::Config::HTML_CHARSET, 
 PROFILE_ENABLED               => $DADA::Config::PROFILE_OPTIONS->{enabled}, 
 
 MULTIPLE_LIST_SENDING         => $DADA::Config::MULTIPLE_LIST_SENDING, 

@@ -36,7 +36,7 @@
 	
 	<fieldset style="background:#e6e6e6">
 	<legend>Paste Addresses Below:</legend>
-	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
     <p>
       <label for="delete_list">
@@ -74,7 +74,7 @@
   a text file that contains the addresses you'd like to unsubscribe:
  </p> 
 
-<form enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+<form enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
  <input type="file" name="delete_email_file" />
 

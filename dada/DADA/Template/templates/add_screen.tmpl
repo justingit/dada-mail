@@ -128,7 +128,7 @@
 		</legend>
 	<div id ="add_one" style="display:none"> 
 	
-		<form name="via_add_one"  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+		<form name="via_add_one"  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 	
 		 <input type="hidden" name="f"    id="f" value="add" />
 		 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
@@ -195,7 +195,7 @@
 	<fieldset> 
 		<legend>Paste Addresses Below:</legend>
 
-	<form name="paste_addresses"  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+	<form name="paste_addresses"  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 	 <input type="hidden" name="f"    id="f" value="add" />
 	 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
 	 <input type="hidden" name="process" value="1" />
@@ -236,7 +236,7 @@
 	  a text file in the same <strong>CSV format</strong> mentioned above.
 	 </p>
 
-	<form name="default_form" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" onSubmit="enable_check();">
+	<form name="default_form" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" onSubmit="enable_check();" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
 		<div id="statusbar" style="width:1px solid black"></div>
 		<div class="floatclear"></div>
