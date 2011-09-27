@@ -24,7 +24,7 @@
 	<!-- tmpl_unless name="help" -->
 	
 		<p style="text-align:right">
-		 <form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
+		 <form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 		  <input type="hidden" name="help" value="yes" />
 		  <input type="hidden" name="f"    value="new_list" />
 		  <input type="hidden" name="root_password" value="<!-- tmpl_var name="root_password" escape="HTML" -->" />
@@ -35,7 +35,7 @@
 	<!-- /tmpl_unless -->
 
 
-	<form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
+	<form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 	 <input type="hidden" name="f"       value="new_list" />
 	 <input type="hidden" name="process" value="true" />
 	 <input type="hidden" name="root_password" value="<!-- tmpl_var name="root_password" escape="HTML" -->" />

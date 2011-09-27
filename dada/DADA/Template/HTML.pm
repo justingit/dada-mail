@@ -524,7 +524,7 @@ sub list_template {
     my $is_logged_in       = 0;
     my $subscribed_to_list = 0;
     my $prof_sess          = undef; 
-
+    my $profile_widget     = undef;
     eval {
 
         require DADA::Profile::Session;
@@ -544,20 +544,16 @@ sub list_template {
             $subscribed_to_list =
               $prof->subscribed_to_list( { -list => $list } );
         }
-    };
-    if ($@) {
-        carp "CAUGHT Error with Sessioning: $@";
-    }
-
-    my $profile_widget = undef;
-#    eval { 
 		if(defined($args{-prof_sess_obj})){ 
-			carp "Good! Here!"; 
 			$profile_widget = DADA::Template::Widgets::profile_widget({-prof_sess_obj => $args{-prof_sess_obj}}); 
 		}
 		else { 
 			$profile_widget = DADA::Template::Widgets::profile_widget(); 
 		}
+    };
+    if ($@) {
+        carp "CAUGHT Error with Sessioning: $@";
+    }
 		
     my $final_list_template = DADA::Template::Widgets::screen(
         {

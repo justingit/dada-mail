@@ -156,7 +156,7 @@
    <label for="admin_password">
     Password:
    </label>
-   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST"> 
+   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
     <input type="hidden"   name="f"          value="login" />
     <input type="hidden"   name="admin_list" value="<!-- tmpl_var list -->" />
     <input type="password" name="admin_password" id="admin_password" maxlength="24" />
