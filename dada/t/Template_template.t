@@ -93,8 +93,8 @@ my $template_strings = {
       $DADA::Config::SUBSCRIPTION_REQUEST_APPROVED_MESSAGE,
     SUBSCRIPTION_REQUEST_DENIED_MESSAGE =>
       $DADA::Config::SUBSCRIPTION_REQUEST_DENIED_MESSAGE,
-    MAILING_LIST_MESSAGE       => $DADA::Config::MAILING_LIST_MESSAGE,
-    MAILING_LIST_MESSAGE_HTML  => $DADA::Config::MAILING_LIST_MESSAGE_HTML,
+    MAILING_LIST_MESSAGE        => $DADA::Config::MAILING_LIST_MESSAGE,
+    MAILING_LIST_MESSAGE_HTML   => $DADA::Config::MAILING_LIST_MESSAGE_HTML,
     NOT_ALLOWED_TO_POST_MESSAGE => $DADA::Config::NOT_ALLOWED_TO_POST_MESSAGE,
     NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT =>
       $DADA::Config::NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT,
@@ -108,14 +108,16 @@ my $template_strings = {
     TEXT_INVITE_MESSAGE      => $DADA::Config::TEXT_INVITE_MESSAGE,
     PROFILE_ACTIVATION_MESSAGE_SUBJECT =>
       $DADA::Config::PROFILE_OPTIONS_ACTIVATION_MESSAGE_SUBJECT,
-    PROFILE_ACTIVATION_MESSAGE => $DADA::Config::PROFILE_OPTIONS_ACTIVATION_MESSAGE,
+    PROFILE_ACTIVATION_MESSAGE =>
+      $DADA::Config::PROFILE_OPTIONS_ACTIVATION_MESSAGE,
     PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT =>
       $DADA::Config::PROFILE_OPTIONS_RESET_PASSWORD_MESSAGE_SUBJECT,
     PROFILE_RESET_PASSWORD_MESSAGE =>
       $DADA::Config::PROFILE_OPTIONS_RESET_PASSWORD_MESSAGE,
     PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT =>
       $DADA::Config::PROFILE_OPTIONS_UPDATE_EMAIL_MESSAGE_SUBJECT,
-    PROFILE_UPDATE_EMAIL_MESSAGE => $DADA::Config::PROFILE_OPTIONS_UPDATE_EMAIL_MESSAGE,
+    PROFILE_UPDATE_EMAIL_MESSAGE =>
+      $DADA::Config::PROFILE_OPTIONS_UPDATE_EMAIL_MESSAGE,
     LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT =>
       $DADA::Config::LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT,
     LIST_CONFIRM_PASSWORD_MESSAGE =>
@@ -132,11 +134,52 @@ my $template_strings = {
     HTML_SUBSCRIBED_MESSAGE => $DADA::Config::HTML_SUBSCRIBED_MESSAGE,
     HTML_SUBSCRIPTION_REQUEST_MESSAGE =>
       $DADA::Config::HTML_SUBSCRIPTION_REQUEST_MESSAGE,
-    HTML_UNSUBSCRIBED_MESSAGE => $DADA::Config::HTML_UNSUBSCRIBED_MESSAGE,
-SENDING_PREFS_MESSAGE_SUBJECT => $SENDING_PREFS_MESSAGE_SUBJECT, 
-SENDING_PREFS_MESSAGE => $SENDING_PREFS_MESSAGE
+    HTML_UNSUBSCRIBED_MESSAGE     => $DADA::Config::HTML_UNSUBSCRIBED_MESSAGE,
+    SENDING_PREFS_MESSAGE_SUBJECT => $SENDING_PREFS_MESSAGE_SUBJECT,
+    SENDING_PREFS_MESSAGE         => $SENDING_PREFS_MESSAGE,
+
+	NOT_ALLOWED_TO_POST_MSG => $NOT_ALLOWED_TO_POST_MSG, 
+	MODERATION_MSG          => $MODERATION_MSG, 
+	AWAIT_MODERATION_MSG    => $AWAIT_MODERATION_MSG, 
+	ACCEPT_MSG              => $ACCEPT_MSG, 
+	REJECTION_MSG           => $REJECTION_MSG, 
+	MSG_TOO_BIG_MSG         => $MSG_TOO_BIG_MSG, 
+	MSG_LABELED_AS_SPAM_MSG => $MSG_LABELED_AS_SPAM_MSG, 
+
+	
 };
 
+my @list_settings = qw(
+confirmation_message_subject
+subscription_request_approved_message_subject
+subscription_request_denied_message_subject
+subscription_approval_request_message_subject
+subscribed_message_subject
+subscribed_by_list_owner_message
+unsubscribed_by_list_owner_message_subject
+unsub_confirmation_message_subject
+unsubscribed_message_subject
+mailing_list_message_from_phrase
+mailing_list_message_to_phrase
+mailing_list_message_subject
+send_archive_message_subject
+you_are_already_subscribed_message_subject
+you_are_not_subscribed_message_subject
+invite_message_from_phrase
+invite_message_to_phrase
+invite_message_subject
+not_allowed_to_post_msg_subject
+moderation_msg_subject
+await_moderation_msg_subject
+accept_msg_subject
+rejection_msg_subject
+msg_too_big_msg_subject
+msg_labeled_as_spam_msg_subject
+); 
+
+for(@list_settings){ 
+	$template_strings->{$_} = $DADA::Config::LIST_SETUP_DEFAULTS{$_}; 	
+}
 for(keys %$template_strings){ 
 		eval { 
 		my $str = $template_strings->{$_};
