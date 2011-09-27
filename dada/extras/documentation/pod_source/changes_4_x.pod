@@ -2,6 +2,105 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.8.0
+
+=head2 Summary 4.8.0
+
+=head2 Features 4.8.0
+
+=head3 Dada Bridge: Customize Email Templates per Mailing List
+
+The following email messages that used to be embedded in the source of Dada Bridge
+are now saved in the Dada Mail global config and can now be edited in the list control 
+panel of Dada Bridge: 
+
+=over
+
+=item * Not Allowed to Post Message 
+
+=item * Moderation Message 
+
+=item * Awaiting Moderation Message
+
+=item * Moderated Message Accepted Message 
+
+=item * Moderated Message Rejected Message 
+
+=item * Message Was Labeled As SPAM Message 
+
+=item * Message Too Big Message 
+
+=back
+
+=head2 Changes 4.8.0
+
+=head3 CAPTCHA docs
+
+Documentation on the CAPTCHA for Dada Mail has been moved out of the Config.pm docs and expanded.
+
+They're now located at: 
+
+L<http://dadamailproject.com/d/features-CAPTCHA.pod.html>
+
+This the addition of docs for reCAPTCHA Mailhide, including how to install the
+missing CPAN Module needed, via a cPanel setup. 
+
+=head3 HTML::Scrubber CPAN module included with Dada Mail distro
+
+The C<HTML::Scrubber> CPAN module is used in Dada Mail to remove potentially insecure
+JavaScripts from email messages. This is particularily important for B<discussion lists> 
+where messages are coming from a potentially untrusted source. 
+
+More information on C<HTML::Scrubber>:
+
+L<http://search.cpan.org/dist/HTML-Scrubber/>
+
+Parameters for C<HTML::Scrubber> are also now saved by default in the C<Config.pm> 
+file and can be overridden and customized in your own C<.dada_config> file. Look for the 
+config variable named, C<$HTML_SCRUBBER_OPTIONS>. 
+
+=head2 Bug Fixes 4.8.0
+
+=head3 subscribe_soap_server.cgi has library typo
+
+https://github.com/justingit/dada-mail/issues/202
+
+=head3 SOAP fields don't seem to work? (And bug in subscribe_soap_client.cgi)
+
+https://github.com/justingit/dada-mail/issues/203
+
+=head3 Subject tags don't work well for emails forwarded through Dada Bridge
+
+https://github.com/justingit/dada-mail/issues/204
+
+=head3 User logged out of list control panel if accesssed disable control panel screen. Why?
+
+https://github.com/justingit/dada-mail/issues/206
+
+=head3 "Save, Then Test Your Sending Preferences..." button removes "Add the Sendmail '-f' flag..." pref
+
+https://github.com/justingit/dada-mail/issues/207
+
+=head3 Dada Bridge: Append message subjects with the... Should be, "PREFIX message subjects..."
+
+https://github.com/justingit/dada-mail/issues/208
+
+=head3 Unsubscribing Emails from Search gives error (Default Backend)
+
+https://github.com/justingit/dada-mail/issues/209
+
+=head3 Dada Bridge: List Email check incorrect for List Owner/Admin
+
+https://github.com/justingit/dada-mail/issues/210
+
+=head3 <form> tags have no, 'accept-charset="..."' paramater
+
+https://github.com/justingit/dada-mail/issues/211
+
+=head3 Installer broken if current SQL config is incorrect
+
+https://github.com/justingit/dada-mail/issues/212
+
 =head1 4.7.2
 
 =head2 Summary 4.7.2

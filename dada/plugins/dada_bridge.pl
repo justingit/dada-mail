@@ -3539,14 +3539,9 @@ return q{
 		 <textarea name="msg_labeled_as_spam_msg" id="msg_labeled_as_spam_msg" rows="10" cols="50" ><!-- tmpl_var list_settings.msg_labeled_as_spam_msg escape="HTML" --></textarea> 
 		</p>
 	</fieldset>
-
-
-
-
-
-
-	Soft_Max_Size_Of_Any_Message
-	Max_Size_Of_Any_Message     
+	
+	
+	
 	
 	
 	<fieldset>
