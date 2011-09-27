@@ -62,7 +62,7 @@ use vars qw(
 	$OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET 
 	$HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE 
 	$RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME 
-	%COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE 
+	%COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $HTML_SCRUBBER_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE 
 	$LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS 
 	@EMAIL_HEADERS_ORDER
 );
@@ -2812,7 +2812,7 @@ binary
 
 =head2 Plain Text to HTML Encoding
 
-Dada Mail uses the HTML::TextToHTM CPAN module to convert plain text 
+Dada Mail uses the C<HTML::TextToHTML> CPAN module to convert plain text 
 to HTML when showing plain text in archives and things like that. 
 You can change the behavior of this formatting by changing what 
 arguments get passed to the HTML::TextToHTML module, as described here: 
@@ -2826,6 +2826,66 @@ $HTML_TEXTTOHTML_OPTIONS ||= {
 							# BUT! Dada Mail will provide it's own 
 							# escape_HTML_chars-like routine
 
+};
+
+=head2 $HTML_SCRUBBER_OPTIONS
+
+Dada Mail uses the C<HTML::Scrubber> CPAN module to attempt to strip JavaScript
+from potentially harmful HTML messages when displaying them in its archives. 
+
+C<$HTML_SCRUBBER_OPTIONS> holds the parameters that are passed to C<HTML::Scrubber> 
+when creating a new C<HTML::Scrubber> object. 
+
+=cut
+
+
+$HTML_SCRUBBER_OPTIONS ||= { 
+    rules   => [
+		script => 0,
+    ],
+    default => [
+	1   =>  
+    {
+        '*'           => 1, # default rule, allow all attributes
+        'href'        => qr{^(?!(?:java)?script)}i,
+        'src'         => qr{^(?!(?:java)?script)}i,
+        'cite'        => '(?i-xsm:^(?!(?:java)?script))',
+        'language'    => 0,
+        'name'        => 1, # could be sneaky, but hey ;)
+        'onblur'      => 0,
+        'onchange'    => 0,
+        'onclick'     => 0,
+        'ondblclick'  => 0,
+        'onerror'     => 0,
+        'onfocus'     => 0,
+        'onkeydown'   => 0,
+        'onkeypress'  => 0,
+        'onkeyup'     => 0,
+        'onload'      => 0,
+        'onmousedown' => 0,
+        'onmousemove' => 0,
+        'onmouseout'  => 0,
+        'onmouseover' => 0,
+        'onmouseup'   => 0,
+        'onreset'     => 0,
+        'onselect'    => 0,
+        'onsubmit'    => 0,
+        'onunload'    => 0,
+        #'src'        => 0, # borks images?
+        'type'        => 0,
+    },
+	],
+    deny    => [
+		qw(
+			embed 
+			object 
+			frame 
+			iframe 
+			meta
+		)
+	],
+    comment => 1,
+    process => 0,
 };
 
 =pod
