@@ -805,7 +805,7 @@ sub send_newest_archive {
 
 # This one's weird, since it's a part of Dada Bridge 
 
-sub send_not_allowed_to_post_message { 
+sub send_not_allowed_to_post_msg { 
 	
 	my ($args) = @_; 
 
@@ -831,13 +831,13 @@ sub send_not_allowed_to_post_message {
 	
 
 	my $reply = MIME::Entity->build(Type 	=> "multipart/mixed", 
-									Subject => $li->{not_allowed_to_post_message_subject}, 									
+									Subject => $li->{not_allowed_to_post_msg_subject}, 									
 									%{$args->{-headers}},
 									To           => '"'. escape_for_sending($li->{list_name}) .'" <'. $args->{-email} .'>',
 									);
 									
 	$reply->attach(Type => 'text/plain', 
-				   Data  => $li->{not_allowed_to_post_message}
+				   Data  => $li->{not_allowed_to_post_msg}
 				  ); 
 				
 	$reply->attach( Type        => 'message/rfc822', 

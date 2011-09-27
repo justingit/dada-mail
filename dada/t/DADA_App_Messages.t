@@ -814,7 +814,7 @@ ok(DADA::App::Messages::send_newest_archive(
     -test         => 1,
 	-la_obj       => $mla, 
 	}
-) == 1, "Archive to send returns, '1'");
+) == 1, "Archive to send returns, '1' (1)");
 
 $msg     = slurp($mh->test_send_file); 
 $entity  = $parser->parse_data(safely_encode($msg)); 
@@ -886,7 +886,7 @@ undef $msg_str;
 	    -test         => 1,
 		-la_obj       => $mla, 
 		}
-	) == 1, "Archive to send returns, '1'");
+	) == 1, "Archive to send returns, '1' (2)");
 
 
 	$msg     = slurp($mh->test_send_file); 
@@ -927,7 +927,7 @@ Body
 	    -test         => 1,
 		-la_obj       => $mla, 
 		}
-	) == 1, "Archive to send returns, '1'");
+	) == 1, "Archive to send returns, '1' (3)");
 
 
 	$msg     = slurp($mh->test_send_file); 
@@ -954,7 +954,7 @@ Body
 #/ [ 2099456 ] 3.0.0 - Send last msg to new subscribers msg corrupted?
 
 ##################################
-# send_not_allowed_to_post_message
+# send_not_allowed_to_post_msg
 
 my $fake_message_back = qq{
 To: list\@example.com
@@ -964,7 +964,7 @@ Subject: Dud
 This isn't getting too far, is it?
 };
 
-DADA::App::Messages::send_not_allowed_to_post_message(
+DADA::App::Messages::send_not_allowed_to_post_msg(
 	{
 		-list       => $list, 
 		-email      => $email,	
@@ -1039,12 +1039,12 @@ undef $msg_str1;
 ok(
 	$ls->save(
 		{
-			not_allowed_to_post_message         => $alt_message_body, 
-			not_allowed_to_post_message_subject => $alt_message_subject,	
+			not_allowed_to_post_msg         => $alt_message_body, 
+			not_allowed_to_post_msg_subject => $alt_message_subject,	
 		},	
 	),
 );
-DADA::App::Messages::send_not_allowed_to_post_message(
+DADA::App::Messages::send_not_allowed_to_post_msg(
 	{
         -list       => $list, 
         -email      => $email, 
@@ -1111,7 +1111,7 @@ undef $msg_str;
 
 
 
-DADA::App::Messages::send_not_allowed_to_post_message(
+DADA::App::Messages::send_not_allowed_to_post_msg(
 	{
         -list       => $list, 
         -email      => $email, 

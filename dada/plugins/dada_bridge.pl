@@ -2835,13 +2835,13 @@ sub send_msg_not_from_subscriber {
 		require DADA::MailingList::Settings; 
 		my $ls = DADA::MailingList::Settings->new({-list => $list});
 		if($from_address eq $ls->param('discussion_pop_email')) {
-			warn "Message is from List Email ($from_address)? Not sending, 'not_allowed_to_post_message' so to not send message back to list!" ;
+			warn "Message is from List Email ($from_address)? Not sending, 'not_allowed_to_post_msg' so to not send message back to list!" ;
 		}
 		else {  	
 			my $att = $entity->as_string; 
 			   $att = safely_decode($att); 
 	        require DADA::App::Messages;
-	        DADA::App::Messages::send_not_allowed_to_post_message(
+	        DADA::App::Messages::send_not_allowed_to_post_msg(
 	            {
 	                -list       => $list,
 	                -email      => $from_address,
@@ -3333,29 +3333,210 @@ sub cgi_edit_email_msgs_tmpl {
 return q{ 
 
 
-	<!-- tmpl_set name="title" value="Blah Blah Blah" -->
+	<!-- tmpl_set name="title" value="Email Templates" -->
 
 	<!-- tmpl_include help_link_widget.tmpl -->
+
+  <p id="breadcrumbs">
+   <a href="<!-- tmpl_var Plugin_URL -->"> 
+   <!-- tmpl_var Plugin_Name --> 
+   </a> 
+   &#187;
+        Email Templates
+   </a> 
+  </p>
+
 
 	<!-- tmpl_if done -->
 	    <!-- tmpl_var GOOD_JOB_MESSAGE -->
 	<!--/tmpl_if-->
 
+<p class="alert">Leave an Subject or Message blank to have it revert to the default subject or message.</p> 
+
+	<form method="post" action="<!-- tmpl_var Plugin_URL -->" accept-charet="<!-- tmpl_var HTML_CHARSET -->">
+	
+	<fieldset>
+		<legend>
+			Not Allowed to Post Message
+		</legend>
+		
+		<p class="alert">
+		This message is sent out when <!-- tmpl_var Plugin_Name --> receives a message 
+		from an address that's not allowed to post a message to your mailing list. 
+		</p>
+		
+		<!-- tmpl_if list_settings.send_not_allowed_to_post_msg --> 
+			<p class="postive">
+				Enabled.
+			</p>
+		<!-- tmpl_else --> 
+			<p class="error">
+				Sending out this message is currently Disabled.
+			</p>		
+		<!-- /tmpl_if --> 
+		
+		<p>
+		 <label for="not_allowed_to_post_msg_subject" class="label_by_5">Subject:</label><input type="text" name="not_allowed_to_post_msg_subject" id="not_allowed_to_post_msg_subject" value="<!-- tmpl_var list_settings.not_allowed_to_post_msg_subject escape="HTML" -->" class="midi" />
+		</p>
+
+		<p>
+		 <label for="not_allowed_to_post_msg">PlainText Message:</label>
+		 <textarea name="not_allowed_to_post_msg" id="not_allowed_to_post_msg" rows="10" cols="50" ><!-- tmpl_var list_settings.not_allowed_to_post_msg escape="HTML" --></textarea> 
+		</p>
+	</fieldset>
 
 
-	<form>
+
 
 
 	<fieldset>
 		<legend>
-			Subscription Confirmation Email 
+			Moderation Message
 		</legend>
+		
+		
+		<p class="alert">
+		This message is sent out to the List Owner (and Authorized Senders, if 
+		enabled to do so), when a message posted to the <strong>List Email</strong> 
+		requires moderation. 
+		</p>
+		
+		<!-- tmpl_if list_settings.enable_moderation --> 
+			<p class="postive">
+				Moderation is Enabled.
+			</p>
+		<!-- tmpl_else --> 
+			<p class="error">
+				Moderation is currently Disabled.
+				</p>
+		<!-- /tmpl_if --> 
+		
+		
 		<p>
-		 <label for="confirmation_message_subject" class="label_by_5">Subject:</label><input type="text" name="confirmation_message_subject" id="confirmation_message_subject" value="<!-- tmpl_var list_settings.confirmation_message_subject escape=HTML -->" class="midi" />
+		 <label for="moderation_msg_subject" class="label_by_5">Subject:</label><input type="text" name="moderation_msg_subject" id="moderation_msg_subject" value="<!-- tmpl_var list_settings.moderation_msg_subject escape="HTML" -->" class="midi" />
 		</p>
 
-		<p><label for="confirmation_message">PlainText Message:</label>
-	<textarea name="confirmation_message" id="confirmation_message" rows="10" cols="50" ><!-- tmpl_var list_settings.confirmation_message escape=HTML --></textarea> 
+		<p>
+		 <label for="moderation_msg">PlainText Message:</label>
+		 <textarea name="moderation_msg" id="moderation_msg" rows="10" cols="50" ><!-- tmpl_var list_settings.moderation_msg escape="HTML" --></textarea> 
+		</p>
+	</fieldset>
+
+
+
+
+
+	<fieldset>
+		<legend>
+			Awaiting Moderation Message
+		</legend>	
+		
+		<!-- tmpl_if list_settings.send_moderation_msg --> 
+			<p class="postive">
+				Enabled.
+			</p>
+		<!-- tmpl_else --> 
+			<p class="error">
+				Sending out this message is currently Disabled.
+			</p>
+		<!-- /tmpl_if -->
+		
+		<p>
+		 <label for="await_moderation_msg_subject" class="label_by_5">Subject:</label><input type="text" name="await_moderation_msg_subject" id="await_moderation_msg_subject" value="<!-- tmpl_var list_settings.await_moderation_msg_subject escape="HTML" -->" class="midi" />
+		</p>
+
+		<p>
+		 <label for="await_moderation_msg">PlainText Message:</label>
+		 <textarea name="await_moderation_msg" id="await_moderation_msg" rows="10" cols="50" ><!-- tmpl_var list_settings.await_moderation_msg escape="HTML" --></textarea> 
+		</p>
+	</fieldset>
+
+
+
+
+
+	<fieldset>
+		<legend>
+			Moderated Message Accepted Message
+		</legend>
+		
+		<!-- tmpl_if list_settings.send_moderation_accepted_msg --> 
+			<p class="postive">
+				Enabled.
+			</p>
+		<!-- tmpl_else --> 
+			<p class="error">
+				Sending out this message is currently Disabled.
+			</p>
+		<!-- /tmpl_if -->
+		
+		<p>
+		 <label for="accept_msg_subject" class="label_by_5">Subject:</label><input type="text" name="accept_msg_subject" id="accept_msg_subject" value="<!-- tmpl_var list_settings.accept_msg_subject escape="HTML" -->" class="midi" />
+		</p>
+
+		<p>
+		 <label for="accept_msg_subject">PlainText Message:</label>
+		 <textarea name="accept_msg" id="accept_msg" rows="10" cols="50" ><!-- tmpl_var list_settings.accept_msg escape="HTML" --></textarea> 
+		</p>
+	</fieldset>
+
+
+
+
+
+	<fieldset>
+		<legend>
+			Moderated Message Rejected Message
+		</legend>
+
+		<!-- tmpl_if list_settings.send_moderation_rejection_msg --> 
+			<p class="postive">
+				Enabled.
+			</p>
+		<!-- tmpl_else --> 
+			<p class="error">
+				Sending out this message is currently Disabled.
+			</p>
+		<!-- /tmpl_if -->
+
+
+
+		<p>
+		 <label for="rejection_msg_subject" class="label_by_5">Subject:</label><input type="text" name="rejection_msg_subject" id="rejection_msg_subject" value="<!-- tmpl_var list_settings.rejection_msg_subject escape="HTML" -->" class="midi" />
+		</p>
+
+		<p>
+		 <label for="rejection_msg">PlainText Message:</label>
+		 <textarea name="rejection_msg" id="rejection_msg" rows="10" cols="50" ><!-- tmpl_var list_settings.rejection_msg escape="HTML" --></textarea> 
+		</p>
+	</fieldset>
+
+
+
+
+
+	<fieldset>
+		<legend>
+			Message Was Labeled As SPAM Message
+		</legend>
+
+		<!-- tmpl_if list_settings."send_spam_rejection_message --> 
+			<p class="postive">
+				Enabled.
+			</p>
+		<!-- tmpl_else --> 
+			<p class="error">
+				Sending out this message is currently Disabled.
+			</p>
+		<!-- /tmpl_if -->
+
+		<p>
+		 <label for="msg_labeled_as_spam_msg_subject" class="label_by_5">Subject:</label><input type="text" name="msg_labeled_as_spam_msg_subject" id="msg_labeled_as_spam_msg_subject" value="<!-- tmpl_var list_settings.msg_labeled_as_spam_msg_subject escape="HTML" -->" class="midi" />
+		</p>
+
+		<p>
+		 <label for="msg_labeled_as_spam_msg">PlainText Message:</label>
+		 <textarea name="msg_labeled_as_spam_msg" id="msg_labeled_as_spam_msg" rows="10" cols="50" ><!-- tmpl_var list_settings.msg_labeled_as_spam_msg escape="HTML" --></textarea> 
 		</p>
 	</fieldset>
 
@@ -3364,13 +3545,38 @@ return q{
 
 
 
+	Soft_Max_Size_Of_Any_Message
+	Max_Size_Of_Any_Message     
+	
+	
+	<fieldset>
+		<legend>
+			Message Too Big Message
+		</legend>
+		
+		<p class="alert">
+			A global message size limit of <!-- tmpl_var Soft_Max_Size_Of_Any_Message --> KB 
+			for all mailing lists. If a message is received that is larger than this limit, 
+			it will be rejected and the original poster will receive this message. Any messages
+			larger than <!-- tmpl_var Max_Size_Of_Any_Message --> KB  will simply be ignored. 
+		</p>
+		
+		<p>
+		 <label for="msg_too_big_msg_subject" class="label_by_5">Subject:</label><input type="text" name="msg_too_big_msg_subject" id="msg_too_big_msg_subject" value="<!-- tmpl_var list_settings.msg_too_big_msg_subject escape="HTML" -->" class="midi" />
+		</p>
 
-
-
-
-
+		<p>
+		 <label for="msg_too_big_msg">PlainText Message:</label>
+		 <textarea name="msg_too_big_msg" id="msg_too_big_msg" rows="10" cols="50" ><!-- tmpl_var list_settings.msg_too_big_msg escape="HTML" --></textarea> 
+		</p>
+	</fieldset>
+	
+	
+	
+	
+	
 	<input type="hidden" name="process" value="1" />
-	<input type="hidden" name="f" value="edit_type" />
+	<input type="hidden" name="flavor" value="edit_email_msgs" />
 	<div class="buttonfloat">
 		<input type="reset" class="cautionary" value="Clear All Changes" />
 		<input type="submit" class="alertive" name="revert" value="Revert ALL Text to Defaults" />
@@ -3402,7 +3608,20 @@ sub cgi_edit_email_msgs {
     # Backwards Compatibility!
     for (
         qw(
-			...
+			not_allowed_to_post_msg_subject 
+			not_allowed_to_post_msg         
+			moderation_msg_subject          
+			moderation_msg                  
+			await_moderation_msg_subject    
+			await_moderation_msg            
+			accept_msg_subject              
+			accept_msg                      
+			rejection_msg_subject           
+			rejection_msg                   
+			msg_too_big_msg_subject         
+			msg_too_big_msg                 
+			msg_labeled_as_spam_msg_subject 
+			msg_labeled_as_spam_msg
         )
       )
     {
@@ -3428,9 +3647,14 @@ sub cgi_edit_email_msgs {
 				},
                 -list   => $list,
                 -vars   => {
-                    screen => 'edit_type',
-                    title  => 'Email Templates',
-                    done   => $done,
+                    screen                       => 'dada_bridge',
+                    title                        => 'Email Templates',
+                    done                         => $done,
+                    Plugin_Name                  => $Plugin_Config->{Plugin_Name},
+                    Plugin_URL                   => $Plugin_Config->{Plugin_URL},
+					Soft_Max_Size_Of_Any_Message => sprintf( "%.1f", ( $Plugin_Config->{Soft_Max_Size_Of_Any_Message} / 1024 ) ),
+					Max_Size_Of_Any_Message      => sprintf( "%.1f", ( $Plugin_Config->{Max_Size_Of_Any_Message} / 1024 ) ),
+					
                 },
                 -list_settings_vars       => $li,
                 -list_settings_vars_param => { -dot_it => 1, },
@@ -3442,7 +3666,20 @@ sub cgi_edit_email_msgs {
     else {
 
         for (qw(
-            
+            not_allowed_to_post_msg_subject 
+			not_allowed_to_post_msg         
+			moderation_msg_subject          
+			moderation_msg                  
+			await_moderation_msg_subject    
+			await_moderation_msg            
+			accept_msg_subject              
+			accept_msg                      
+			rejection_msg_subject           
+			rejection_msg                   
+			msg_too_big_msg_subject         
+			msg_too_big_msg                 
+			msg_labeled_as_spam_msg_subject 
+			msg_labeled_as_spam_msg
           ))
         {
           
@@ -3461,7 +3698,20 @@ sub cgi_edit_email_msgs {
             {
                 -associate => $q,
                 -settings  => {
- 
+ 					not_allowed_to_post_msg_subject => '',
+					not_allowed_to_post_msg         => '',
+					moderation_msg_subject          => '',
+					moderation_msg                  => '',
+					await_moderation_msg_subject    => '',
+					await_moderation_msg            => '',
+					accept_msg_subject              => '',
+					accept_msg                      => '',
+					rejection_msg_subject           => '',
+					rejection_msg                   => '',
+					msg_too_big_msg_subject         => '',
+					msg_too_big_msg                 => '',
+					msg_labeled_as_spam_msg_subject => '',
+					msg_labeled_as_spam_msg			=> '',
                 }
             }
         );
@@ -4493,20 +4743,32 @@ Mailing List Security
 
 </fieldset> 
 
+<fieldset> 
+<legend><!-- tmpl_var Plugin_Name --> Email Templates</legend>
+
+ <div class="buttonfloat"> 
+ <form action="<!-- tmpl_var Plugin_URL -->" method="get"> 
+  <input type="hidden" name="flavor" value="edit_email_msgs" /> 
+  <input type="submit" value="Customize Email Templates..." class="processing" /> 
+ </form> 
+ </div> 
+
+<div class="floatclear"></div> 
+
+</fieldset> 
 
 
 <fieldset> 
 <legend><!-- tmpl_var Plugin_Name --> Configuration</legend>
 
  <div class="buttonfloat"> 
- <form action="<!-- tmpl_var Plugin_URL -->"> 
+ <form action="<!-- tmpl_var Plugin_URL -->" method="get"> 
   <input type="hidden" name="flavor" value="cgi_show_plugin_config" /> 
-  <input type="submit" value="View All Plugin Configurations..." class="cautionary" /> 
+  <input type="submit" value="View All Plugin Configurations..." class="processing" /> 
  </form> 
  </div> 
 
 <div class="floatclear"></div> 
-
 
 </fieldset> 
 
@@ -5507,24 +5769,6 @@ When testing the validity of a received message, Dada Mail will look to see if t
 =head2 Check_Multiple_Return_Path_Headers
 
 C<Check_Multiple_Return_Path_Headers> is another validity test for received messages. This time, the message is looked to see if it has more than one C<Return-Path> header. If it does, it is rejected. If you set, C<Check_Multiple_Return_Path_Headers> to, C<0>, this test will be disabled. 
-
-=head1 Dada Bridge-Specific Email Messages
-
-=head2 $Moderation_Msg
-
-The text of the email message that gets sent out to the list owner, when they receive an email message that requires moderation. 
-
-=head2 $AwaitModeration_Msg
-
-The text of the email message that gets sent out to the message sender, who has a email message sent to the list that requires moderation. 
-
-=head2 $Moderation_Msg
-
-The text of the email message that gets sent out to the message sender who has a email message sent to the list that was accepted during moderation. 
-
-=head2 $Rejection_Message
-
-The text of the email message that gets sent out to the message sender who has a email message sent to the list that was rejected during moderation. 
 
 =head1 DEBUGGING 
 
