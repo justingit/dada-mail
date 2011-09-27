@@ -686,21 +686,24 @@ sub available_lists {
     if ( $DADA::Config::SETTINGS_DB_TYPE =~ /SQL/i ) {
 
         ######################################################################
-        my $dbi_handle;
-        require DADA::App::DBIHandle;
-        $dbi_handle = DADA::App::DBIHandle->new;
-        my $dbh = $dbi_handle->dbh_obj;
-        ######################################################################
+        my $dbi_handle = undef;
+		my $sth        = undef; 
+        eval {
+			require DADA::App::DBIHandle;
+	        $dbi_handle = DADA::App::DBIHandle->new;
+	        my $dbh     = $dbi_handle->dbh_obj;
+	        ######################################################################
 
-        my $query = 'SELECT DISTINCT list from '
-          . $DADA::Config::SQL_PARAMS{settings_table};
+	        my $query = 'SELECT DISTINCT list from '
+	          . $DADA::Config::SQL_PARAMS{settings_table};
 
-        if ( $in_order == 1 ) {
-            $query .= ' ORDER BY list ASC';
-        }
+	        if ( $in_order == 1 ) {
+	            $query .= ' ORDER BY list ASC';
+	        }
 
-        my $sth = $dbh->prepare($query);
-        eval { $sth->execute() or croak; };
+	        $sth = $dbh->prepare($query);
+	        $sth->execute() or croak; 
+		};
 
 # BUGFIX:
 # 2219954  	 3.0.0 - Guts.pm sub available_lists param, -Dont_Die broken
