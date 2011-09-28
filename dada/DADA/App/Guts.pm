@@ -2377,7 +2377,7 @@ sub mailhide_encode {
     eval { require Captcha::reCAPTCHA::Mailhide; };
 	
     if($@){ 
-        carp 'Captcha::reCAPTCHA::Mailhide support is not installed ' . $@; 
+        # carp 'Captcha::reCAPTCHA::Mailhide support is not installed ' . $@; 
         return $str;    
     }
 	else { 
@@ -2386,7 +2386,7 @@ sub mailhide_encode {
 			! defined($DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key}) ||
 			! defined($DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key})
 	    ){
-			warn 'You need to configure mailhide in the DADA::Config file!';
+			warn 'You need to configure reCaptcha Mailhide!';
 			return $str; 
 		}
 	}
