@@ -325,7 +325,7 @@ sub cgi_test_pop3_tmpl {
 
 	return q{ 
 	<!-- tmpl_set name="title" value="POP3 Login Test" --> 
-	
+	<!-- tmpl_include help_link_widget.tmpl -->
 	
 	<script type="text/javascript">
 	    //<![CDATA[
@@ -383,7 +383,12 @@ sub cgi_test_pop3 {
 								-Root_Login => $root_login,
 								-List       => $list,  
 							},
-						-vars => $Plugin_Config,
+						-vars => {
+							screen       => 'using_dada_bridge',
+							Plugin_Name  => $Plugin_Config->{Plugin_Name}, 
+							Plugin_URL   => $Plugin_Config->{Plugin_URL},
+						},
+						
 					}
 	); 
 	e_print($scrn); 
@@ -528,6 +533,7 @@ sub admin_cgi_manual_start {
             },
 			
 			-vars => {
+				screen         => 'using_dada_bridge',
 				Plugin_Name    => $Plugin_Config->{Plugin_Name}, 
 				Plugin_URL     => $Plugin_Config->{Plugin_URL}, 
 			}, 
@@ -545,7 +551,8 @@ sub admin_cgi_manual_start_tmpl {
 	return q{ 
 		
 		<!-- tmpl_set name="title" value="Manually Running Mailing..." --> 
-
+		<!-- tmpl_include help_link_widget.tmpl -->
+		
 	   <p id="breadcrumbs">
 	        <a href="<!-- tmpl_var Plugin_URL -->">
 			 <!-- tmpl_var Plugin_Name -->
@@ -972,6 +979,7 @@ sub cgi_default {
             },
             -vars => {
 
+				screen                     => 'using_dada_bridge',
 				Plugin_URL                 => $Plugin_Config->{Plugin_URL},
                 Plugin_Name                => $Plugin_Config->{Plugin_Name},
                 Allow_Open_Discussion_List => $Plugin_Config->{Allow_Open_Discussion_List},
@@ -3256,6 +3264,7 @@ sub cgi_show_plugin_config_tmpl {
     
     
 	<!-- tmpl_set name="title" value="<!-- tmpl_var Plugin_Name --> Plugin Configuration" -->
+	<!-- tmpl_include help_link_widget.tmpl -->
 	
   <p id="breadcrumbs">
    <a href="<!-- tmpl_var Plugin_URL -->"> 
@@ -3317,6 +3326,7 @@ sub cgi_show_plugin_config {
                 -List       => $list,
             },
             -vars => {
+				screen      => 'using_dada_bridge',
                 Plugin_URL  => $Plugin_Config->{Plugin_URL},
                 Plugin_Name => $Plugin_Config->{Plugin_Name},
                 configs     => $configs,
@@ -3334,7 +3344,6 @@ return q{
 
 
 	<!-- tmpl_set name="title" value="Email Templates" -->
-
 	<!-- tmpl_include help_link_widget.tmpl -->
 
   <p id="breadcrumbs">
@@ -3642,7 +3651,7 @@ sub cgi_edit_email_msgs {
 				},
                 -list   => $list,
                 -vars   => {
-                    screen                       => 'dada_bridge',
+                    screen                       => 'using_dada_bridge',
                     title                        => 'Email Templates',
                     done                         => $done,
                     Plugin_Name                  => $Plugin_Config->{Plugin_Name},
@@ -3823,8 +3832,8 @@ sub default_cgi_template {
 
     return q{ 
 
-
-<!-- tmpl_set name="title" value="Discussion List Options" --> 
+<!-- tmpl_set name="title" value="Dada Bridge" -->
+<!-- tmpl_include help_link_widget.tmpl -->
 
 <!-- tmpl_if saved -->
 	<!-- tmpl_var GOOD_JOB_MESSAGE  -->
