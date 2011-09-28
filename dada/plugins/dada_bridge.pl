@@ -324,7 +324,7 @@ sub cgi_test_pop3_ajax {
 sub cgi_test_pop3_tmpl { 
 
 	return q{ 
-	<!-- tmpl_set name="title" value="POP3 Login Test" --> 
+	<!-- tmpl_set name="title" value="Dada Bridge: POP3 Login Test" --> 
 	<!-- tmpl_include help_link_widget.tmpl -->
 	
 	<script type="text/javascript">
@@ -550,7 +550,7 @@ sub admin_cgi_manual_start_tmpl {
 	
 	return q{ 
 		
-		<!-- tmpl_set name="title" value="Manually Running Mailing..." --> 
+		<!-- tmpl_set name="title" value="Dada Bridge: Manually Running Mailing..." --> 
 		<!-- tmpl_include help_link_widget.tmpl -->
 		
 	   <p id="breadcrumbs">
@@ -3263,7 +3263,7 @@ sub cgi_show_plugin_config_tmpl {
     return q{ 
     
     
-	<!-- tmpl_set name="title" value="<!-- tmpl_var Plugin_Name --> Plugin Configuration" -->
+	<!-- tmpl_set name="title" value="Dada Bridge: Plugin Configuration" -->
 	<!-- tmpl_include help_link_widget.tmpl -->
 	
   <p id="breadcrumbs">
@@ -3343,7 +3343,7 @@ sub cgi_edit_email_msgs_tmpl {
 return q{ 
 
 
-	<!-- tmpl_set name="title" value="Email Templates" -->
+	<!-- tmpl_set name="title" value="Dada Bridge: Customize Email Messages" -->
 	<!-- tmpl_include help_link_widget.tmpl -->
 
   <p id="breadcrumbs">
