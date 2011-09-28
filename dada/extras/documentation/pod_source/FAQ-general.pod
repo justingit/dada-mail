@@ -20,7 +20,6 @@ Complete installation docs are located at:
 
 L<http://dadamailproject.com/d/install_dada_mail.pod.html>
 
-
 =head3 Install Dada Mail via Simple Scripts
 
 Simple Scripts, also has a installer for Dada Mail, which we think is great: 
@@ -41,6 +40,18 @@ We do install Dada Mail on behalf of our clients:
 L<http://dadamailproject.com/installation/request.html>
 
 We do a great job!
+
+=head2 Can I install more than one copy of Dada Mail on the same hosting account? 
+
+Yes. 
+
+The Dada Mail Installer usually picks your home directory as the location for the C<.dada_files> directory. If you choose to install another copy of Dada Mail, the installer will then want to use this same (and currently in-use) location. 
+
+The trick is to simply tell the installer to use a different location. For example, create a new directory in your home directory (call it something like C<dada_files_for_xyz> and then point the installer to that directory (use the I<Manual> location, instead of I<Automatic>) and you're done!. 
+
+=head2 Can I use one Dada Mail installation for multiple domains? 
+
+Currently, no. One Dada Mail installation will only work for one domain. 
 
 =head2 How Do I Create a New List? 
 
@@ -83,29 +94,53 @@ The only place that this variable is hardcoded is in the, C<$PROGRAM_URL> variab
 
 =head2 How do I fetch/reset the Dada Mail Root Password
 
-There is a plugin, described here: 
+The Dada Mail Root Password is usually saved in an encrypted form, so cannot be simply read from the configuration. You may manually reset the Dada Mail Root Password yourself. 
+
+If you're running a contemporary installation of Dada Mail, 
+the Dada Mail Root Password is stored your C<.dada_config> file. 
+
+I<(The location of the C<.dada_config>> file is saved in the directory set in the C<dada/DADA/Config.pm> file, in a variable called, C<$PROGRAM_CONFIG_FILE_DIR>. That variable should hold the absolute path to the directory that your, I<.dada_config>)
+
+Look for these lines: 
+
+	# Start Root_Password
+	
+	$ROOT_PASS_IS_ENCRYPTED = 1;
+	
+	$PROGRAM_ROOT_PASSWORD  = 'ws9shkqd4LeFI';
+	
+	# End Root_Password
+
+In this example, the C<$PROGRAM_ROOT_PASSWORD> variable holds an encrypted password as C<$ROOT_PASS_IS_ENCRYPTED> is set to, C<1>. There's no way to decrypt the password.
+
+You can encrypt a new password by visiting your Dada Mail with the query string, C<?f=pass_gen>, like this: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi?f=pass_gen>
+
+Where, I<http://example.com/cgi-bin/dada/mail.cgi> is the URL of your Dada Mail and have a new password encrypted. Copy the encrypted password and set the C<$PROGRAM_ROOT_PASSWORD> variable to your new encrypted password. 
+
+If you cannot figure out how to encrypt your own password, set, C<$ROOT_PASS_IS_ENCRYPTED> to, C<0> and type in a new Dada Mail Root Password: 
+
+	# Start Root_Password
+	
+	$ROOT_PASS_IS_ENCRYPTED = 0;
+	
+	$PROGRAM_ROOT_PASSWORD  = 'new_unsafe_pass';
+	
+	# End Root_Password
+
+
+We do not suggest this, as now you're open to someone exploiting your Dada Mail, by simply reading your configuration. 
+
+If you are running a Basic Installation of Dada Mail (ie: NO .dada_config file), look for the C<$PROGRAM_ROOT_PASSWORD> variable in the C<dada/DADA/Config.pm> file itself. It may or may not be encrypted. Again, the 
+C<$ROOT_PASS_IS_ENCRYPTED> will let you know. follow similar steps to reset the C<$PROGRAM_ROOT_PASSWORD> variable to either an encrypted or non-encrypted password, but do all the editing in your C<dada/DADA/Config.pm> file. 
+
+There is also plugin, described here: 
 
 L<http://dadamailproject.com/support/documentation/change_root_password.cgi.html>
 
-That will allow you to change the Dada Mail Root Password. 
+That will allow you to change the Dada Mail Root Password. You will first have to log into your list control panel, with the Dada Mail Root Password.  
 
-Other than that plugin, there is currently no way, through the Dada Mail web-based interface to fetch the Dada Mail Root Password - you'll have to actually retrieve it from a config file - here's how:
-
-I<Usually>, The Dada Mail Root Password is stored in the Config.pm file, which itself is located in the, I<dada/DADA/> directory of your cgi-bin. It's under the variable, B<$PROGRAM_ROOT_PASSWORD>. It should look something like this: 
-
- $PROGRAM_ROOT_PASSWORD ||= 'sneakysneaky'; 
-
-In this case, the Dada Mail Root Password is, B<sneakysneaky>. 
-
-If this variable is set to, B<root_password> and that doesn't work, see if the password isn't set in the outside config file. 
-
-The outside config file is saved in the directory set in the same Config.pm file we are talking about, in a variable called, B<$PROGRAM_CONFIG_FILE_DIR>. That variable should hold the absolute server path to a directory that holds a file named, I<.dada_config>. The file is a plain text file, so open it up in a text editor and again look for the, B<$PROGRAM_ROOT_PASSWORD> variable. 
-
-If, in either of these locations you find that the Dada Mail Root Password has been set to an odd mixture of numbers/letters/dashes, etc - the Dada Mail Root Password is most likely encrypted and there B<is no way to decrypt the password>, so the best you can do is reset it. You can encrypt a password by visiting your Dada Mail with a query string like this: 
-
-http://example.com/cgi-bin/dada/mail.cgi?f=pass_gen
-
-and follow the instructions. 
 
 =head2 Is there any way to stop a mass mailing once it is started? 
 
@@ -183,7 +218,7 @@ I<Is there a way to Mass-Subscribe email addresses from the list control panel?>
 
 B<Versions 4.7.0+>:
 
-Login into your mailing list and go to: B<Your Mailing List - Mailing List Options>
+Log into your mailing list and go to: B<Your Mailing List - Mailing List Options>
 
 Under the heading, B<List Control Panel Subscriptions> check the option, B<Enable Adding Subscribers from within the List Control Panel> 
 
@@ -192,7 +227,7 @@ addresses.
 
 B<Versions 4.4.0 - 4.6.1>
 
-Login into your mailing list and go to: 
+Log into your mailing list with the B<Dada Mail Root Password> and go to: 
 
 B<Your List Control Panel - Options>
 
@@ -215,9 +250,9 @@ With the following:
 
  <!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->
 
-This will provide a link to unsubscribe, but the user will have to manually enter their email address. 
+This will provide a link to unsubscribe, but the user will have to manually enter their email address. Good to use for discussion lists.
 
-=head2 Unubscription links are placed on top of my mailing list messages, why? 
+=head2 Unsubscription links are placed on top of my mailing list messages, why? 
 
 Dada Mail has an in-program policy of requiring the unsubscription link to be prsent 
 in any mass mailing messages it sends out. This is to stop blatant abuse of the program, but we also 
@@ -276,17 +311,8 @@ L<http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html>
 
 =head2 I have an older version of Dada Mail, or something called Mojo Mail, should I upgrade? 
 
-I<Yes!> 
+Please, yes. 
 
-Always try to stay current with the latest version of Dada Mail. Great lengths are taken to make sure that the program for the most part is backwards compatible with previous versions, so you shouldn't have many problems. 
-
-Before upgrading, you may want to look at the B<NOTES>, that will list any change/incompatibility: 
-
-http://dadamailproject.com/support/documentation/NOTES.pod.html
-
-There's an upgrade FAQ available as well: 
-
-http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html
 
 =head1 Features
 
@@ -294,25 +320,22 @@ http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html
 
 Dada Mail handles announce only lists with ease - a standard installation will be all you need to run Dada Mail as an announce-only list. 
 
-Dada Mail can also be set up to allow discussion lists. At the moment, this is done using a plugin called B<Dada Bridge> 
+Dada Mail can also be set up to allow discussion lists, you'll have to also install the B<Dada Bridge> plugin. 
 
 http://dadamailproject.com/support/documentation/dada_bridge.pl.html
 
 The Dada Bridge Plugin can also be set up to provide announce-only message sending from your mail reader - 
 
-so instead of having to log into Dada Mail to write your message, you write the message in your mail reader and send it to a specific address for the message to be broadcasted to your list. 
-
-B<Note:> even with the installation of the Dada Bridge Plugin, you're list won't "automatically" become a discussion list. A list will only become a discussion list after you have checked the, I< Make this list a discussion list > option in the the Dada Bridge Plugin administration screen. 
 
 =head2 Does Dada Mail handle bounced messages? 
 
-See Mystery Girl, the bounce handler for Dada Mail: 
+See the B<Mystery Girl> plugin, the bounce handler for Dada Mail: 
 
 http://dadamailproject.com/support/documentation/dada_bounce_handler.pl.html
 
 =head2 How do I create the HTML Subscription form code to place on my web pages to allow people to subscribe to my list? 
 
-Log into your list control panel, click, B< Appearance and Templates -  Subscription Form HTML>
+Log into your list control panel, click, B<Appearance and Templates -  Subscription Form HTML>
 
 =head2 Can I hook Dada Mail up to a form on my website? 
 
@@ -341,13 +364,13 @@ From the very begining of the project in 1999, I set out to make something that 
 
 Yes! - see: 
 
-http://dadamailproject.com/cgi-bin/dada/mail.cgi
+L<http://demo.dadamailproject.com>
 
 =head2 Do I need to keep my browser window open for the entire mail sending? 
 
 It's not the worst idea - the best thing to do is put on the, "Monitor Your Mailings" screen to the mailing you currently want to keep an eye on. 
 
-There are chances that a mailing will stop unexpectantly, and keeping this monitor up will prevent that. There are also ways to not have to have this Monitor Your Mailings screen open, regardless of your hosting setup. 
+There are chances that a mailing will stop unexpectantly, and keeping this monitor up will prevent that. There are also ways to not need to have this Monitor Your Mailings screen open, regardless of your hosting setup. 
 
 This topic has it's own FAQ: 
 
@@ -369,16 +392,15 @@ There are many many MANY ways to send an HTML-formatted email using Dada Mail.
 
 =over
 
-=item * The, "Send a Message" Basic/Advanced screen
+=item * The, "Send a Message" screen
 
-In the list control panel, go to, B<Send a Message>. In the basic screen, there is a pulldown menu labeled, B<Format:> Select, B<HTML> and write your message in HTML.
+In the list control panel, go to, B<Send a Message>. Twiddle the B<HTML Version> into view by clicking, 
 
-In the same screen, click the, B<Advanced> Link. You will see an entire textarea labeled, B<HTML Version:> in which to write your HTML message. 
+B<+/- HTML Version> 
 
-If you do not know HTML, or are setting Dada Mail up for someone who does not know HTML, but wants to create HTML images, you can transform this textarea into a WYSIWYG HTML editor by installing FCKeditor (which is relatively painless). Directions on how to do so are at: 
+If you do not know HTML, or are setting Dada Mail up for someone who does not know HTML, but want to create HTML images, you can transform this textarea into a WYSIWYG HTML editor by installing FCKeditor (which is relatively painless). Directions on how to do so are at: 
 
 http://dadamailproject.com/support/documentation/Config.pm.html#fckeditor_integration___fckeditor_url
-
 
 =item * The, "Send a Webpage" screen
 
@@ -668,7 +690,7 @@ http://search.cpan.org/~samtregar/HTML-Template-2.7/Template.pm
 
 A description of the templating language, by the author, is: 
 
-I<just a normal HTML file with a few extra tags, the simplest being <TMPL_VAR>
+I<just a normal HTML file with a few extra tags, the simplest being C< E<lt>  TMPL_VAR E<gt> >>
 
 meaning, if you read the HTML::Template docs, you should have a pretty firm understanding on how to play with these templates.
 
@@ -869,9 +891,9 @@ Basically, follow the instructions used to customize the Dada Mail templates (ab
 
 There's a few different things you'll need to change: 
 
-HTML screens are control by the Config.pm variable, C<$HTML_CHARSET>. You can change this to whatever you'd like. For example, if I'd want to change this to, B<ut-8> I'd write: 
+HTML screens are control by the Config.pm variable, C<$HTML_CHARSET>. You can change this to whatever you'd like. For example, if I'd want to change this to, B<UTF-8> I'd write: 
 
- $HTML_CHARSET ||= 'utf-8'; 
+ $HTML_CHARSET ||= 'UTF-8'; 
 
 Email messages are controlled per list. In the list control, go to: B<Mail Settings - Advanced Sending Preferences> and select the charset you'd like to use under, B<Default Character Set of Mailings>
 
@@ -903,6 +925,10 @@ Dada Mail supports MySQL and Postgres with saving its:
 
 =item * List Settings/Preferences
 
+=item * Sessions
+
+=item * Profiles
+
 =back
 
 It does not support SQL with saving its: 
@@ -919,19 +945,6 @@ Again, DB File flavor - with a wrapper to provide saving complex data structures
 
 =back
 
-=head2 What do I have to do to have Dada Mail use its SQL backend?
-
-You'll need to create the needed SQL tables manually. 
-
-The correct SQL table schemas to use to create both the Subscriber and Archive tables are located at: 
-
-dada/extras/SQL 
-
-and at: 
-
-http://dadamailproject.com/support/documentation/Config.pm.html#_sql_params
-
-the above URL also gives more information on how to setup Dada Mail to use the SQL backend - basically, you have to set some of the Config.pm variables - no real surprises. 
 
 =head2 What are the benifits of using the SQL backends?
 
@@ -1000,7 +1013,7 @@ http://dadamailproject.com/support/documentation/FAQ-default_2_SQL_backend.pod.h
 
 By default, the Mailing List Messages - meaning, messages that are sent to everyone on a list, provide quite a bit of information about the list and how to unsubscribe. It's very verbose, but we feel that it's a good start. 
 
-To change the mailing list message template, login into your list control panel and navigate to: B<Manage Copy - Email Messages>
+To change the mailing list message template, login into your list control panel and navigate to: B<Appearance and Templates - Email Message Templates>
 
 You'll see many text fields with all the email message templates that are easy to change. You are looking for two: B< Mailing List Message (Text Version) > and B< Mailing List Message (HTML Version) >
 
@@ -1012,51 +1025,9 @@ These two messages can be changed globaly in the Config.pm file, under the varia
 
 If a list already has edited any of the email message templates, your global changes will not take affect for that list. 
 
-=head2 Hey, are the messages I send traceable back to me? 
+=head2 Are the messages I send with Dada Mail traceable back to me? 
 
-Oh yeah.
-
-Dada Mail makes absolutely no effort to, "mask", "hide", put you in, "stealth mode", or any other such tom-foolery. If you're dealing with software that touts these very features, stop using it, as you're using spamming software. 
-
-In fact, Dada Mail goes I<out of its way> to present a traceable path from the messages it sends, to its source.
-
-Some techniques that Dada Mail B<does not employ>:
-
-=over
-
-=item * The creation of invalid (as in broken) message headers
-
-=item * The creation of, "faked" message headers
-
-=item * Incorrect From:, To:, etc headers
-
-=item * Unsubscribe links that do not work
-
-=back
-
-Some techniques Dada Mail B<does take advantage of> include:
-
-=over
-
-=item * Full use of List-* headers, 
-
-Including: 
-
-List, List-Archive, List-ID, List-Owner, List-Post, List-Subscribe, List-Unsubscribe and List-URL
-
-See RFC 2919 for more information: 
-
-http://www.faqs.org/rfcs/rfc2919.html
-
-and RFC 2369:
-
-http://www.faqs.org/rfcs/rfc2369.html
-
-=item * And many, many other things
-
-=back
-
-Basically, Dada Mail sends an email message B<exactly> as you're supposed to send one - no tricks. Mom taught us the best defense is honestly. 
+Yes. 
 
 =head1 List Subscribers
 
@@ -1070,30 +1041,18 @@ I have listed some hosts I like here:
 
 http://dadamailproject.com/support/hosting.html
 
-=head2 Is there a set limit? 
-
-At the moment, no, there is no factory set limit. 
-
-You can impose a limit on the amount of subscribers per list by logging into a list using the Dada Mail Root Password. Navigate to:  B<Manage Subscribers - Options>
-
-Check: B<Limit The Number of Subscribers>
-
-And then select what that limit should be. 
-
-To impose a limit on the amount of lists that can be created, set the Config.pm variable, B<$LIST_QUOTA> to the number of lists you allow. Setting this variable to, I<undef> will allow you to have an unlimited number of lists. 
-
 
 =head2 Can I track statistics like, who opens my email messages, who clicks on my URLs or anything else that ties activity of my mailing list to specific email addresses?
 
-See the B<clickthrough_tracking.cgi> plugin.
+Yes. See the B<Tracker> plugin: 
 
-It can keep track of url clickthroughs, email opens, # subscribers per message sent and bounces. 
+L<http://dadamailproject.com/d/tracker.cgi.html>
 
-http://dadamailproject.com/support/documentation/clickthrough_tracking.cgi.html
+It can keep track of url clickthroughs, email opens, forwards, archive views, # subscribers in your mailing list, when a message is sent and soft/hard bounces. 
 
 =head2 Can I directly work with the subscription list?
 
-Sure - although Dada Mail's, "Add" admin screen does a good job in keeping your list's clean of invalid email addresses, duplicates, blacklisted addresses - etc. 
+Yes, we do not suggest it. Dada Mail's, C<Invite/Add> admin screen does a good job in keeping your list's clean of invalid email addresses, duplicates, blacklisted addresses - etc. 
 
 If you're starting a new list and know for sure that you're list is squeaky clean and you're using the default, PlainText subscription backend, you can just open the subscription list. The list itself is saved in a file called:
 
@@ -1323,58 +1282,6 @@ Dada Mail does have some modes where it can be run from a command line/cron job,
 No. Dada Mail is not an autoresponder.
 
 The closet thing in Dada Mail is going to be B<Beatitude>, which allows you to set mass mailings on a preset schedule, but it does not keep track, on a subscriber-by-subscriber basis, which messages an individual subscriber has received. 
-
-
-=head1 About The Author
-
-=head2 So, you're a Computer Science grad, genius? 
-
-Ha. No. I actually went to school for Art (Painting/Drawing). I partly worked on Dada Mail, because I thought I could do anything I set myself out to do. 
-
-Anyone, with enough time, can do something similar - no genius involved, just an open mind. 
-
-=head2 So, you make a living off of Dada Mail? 
-
-Basically, yes. 
-
-=head2 You're rich, huh? 
-
-Ha. No. I live very simply, in a communal living space, with about 10 other people. We all share common resources. I don't have a car, nor many pleasantries. That's just fine with me - to each his/her own I guess. 
-
-=head2 I don't get it, why do you give the thing away? You could be making some REAL money!
-
-First, thank you for the advice. I know this way of doing business isn't especially common. I will attempt to break this down: 
-
-=over
-
-=item * The program is given away for free
-
-=item * The support for it, is not. 
-
-=back
-
-Allow me to elaborate on this second point: 
-
-The I<majority> of support for the program B<is given away for free>, and is mostly done so, by me. This comes in the from of posts to the support forum, email lists, personal email correspondences, IM conversations, phone calls, taps on the shoulder at coffee shops (honestly!), etc. 
-
-There is a minority of people who actually pay for support, mainly with installations of the program: I provide a service for a product that is free. A good majority of people who pay for installation actually pay me and I'm thankful for that majority. Thank you majority! Hiss! minority!
-
-A minority of this minority (people who cough up some green) ask for new features to be added to the program. This is: a very small minority. The rest of the features are put in, by myself, written for free, and then given away for free. The idea is that the work will pay off, "In the future". This future is usually pretty hazy. 
-
-The small minority that do pay for support, also (indirectly) support the program for everyone else, including keeping the developer alive. Interesting, no?
-
-Business-minded people will agree with me that this is not the best way to maximize my profit margin. This, as ludicris it may sound, is not my intention. The intention is to create B<a sustainable  project>, that does make enough money to keep me afloat. The less money that comes in, the less time I'll personally spend on the project. The more money comes in, the more I'll spend. Ebbs and flows. Also interesting. 
-
-Bottom line: You like the program, help out by supporting it with some money - or like anything you don't believe in - it'll go away. 
-
-So - can you use this same model for your business? Sure. But, be willing to work a few years for free to become an expert on something you made up. In this respect, it's very much similar to having a small business.
-
-=head2 Can I outright BUY OUT Dada Mail?
-
-I suppose so - but I have no idea what you'd buy. If what you want to do is transfer the copyrights of the program to yourself and then relicense the program, I guess  you could do that. Don't expect me to catch a low-ball figure. 
-
-
-=head1 Etc, Etc
 
 =head2 What is Dada Mail? 
 
