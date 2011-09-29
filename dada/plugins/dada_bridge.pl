@@ -1320,7 +1320,7 @@ sub start {
             for my $msgnum_d ( sort { $a <=> $b } keys %$msgnums ) {
                 e_print( "\t* Removing message from server...\n")
                   if $verbose;
-                 $pop->Delete($msgnum_d);
+                  $pop->Delete($msgnum_d);
                 $delete_msg_count++;
 
                 last
@@ -1417,7 +1417,7 @@ sub message_was_deleted_check {
                     e_print(
 "\t* Message was NOT deleted from POP server! Will attempt to do that now...\n")
                       if $verbose;
-                    $pop->Delete($msgnum);
+                     $pop->Delete($msgnum);
                 }
                 else {
                     e_print(
@@ -1850,17 +1850,17 @@ sub validate_msg {
                 }
                 elsif ( $errors->{needs_moderation} == 1 ) {
                     print
-                      "\t * however Message still *requires* moderation!\n"
+                      "\t* However, message still *requires* moderation!\n"
                       if $verbose;
                 }
             }
             else {
-                print "\t * Message is NOT from a subscriber.\n"
+                print "\t* Message is NOT from a subscriber.\n"
                   if $verbose;
                 if (   $li->{open_discussion_list} == 1
                     && $Plugin_Config->{Allow_Open_Discussion_List} == 1 )
                 {
-                    print "\tPostings from non-subscribers is enabled...\n"
+                    print "\t* Postings from non-subscribers is enabled...\n"
                       if $verbose;
                     $errors->{msg_not_from_list_owner} = 0;
                 }
@@ -1873,7 +1873,7 @@ sub validate_msg {
 
         }
         else {
-            print "\tDiscussion Support disabled...\n"
+            print "\t* Discussion Support disabled...\n"
               if $verbose;
         }
     }
@@ -2077,7 +2077,7 @@ sub validate_msg {
             'looking_for_embedded_headers' )
         {
 
-            print "*\t Looking for embedding SpamAssassin Headers...\n"
+            print "\t* Looking for embedding SpamAssassin Headers...\n"
               if $verbose;
 
             my $score = undef;
@@ -2489,11 +2489,9 @@ sub process_stripping_file_attachments {
     my $lt     = {};
 
     for (@att_bl) {
-
-        $lt->{$_} = lc( $lt->{$_} );
-        $lt->{$_} = 1;
-    }
-
+        $lt->{lc($_)} = 1;
+	}
+ 
     my @parts = $entity->parts;
 
     if (@parts) {
@@ -2529,21 +2527,23 @@ sub process_stripping_file_attachments {
 
     }
     else {
-
+			
         my $name = $entity->head->mime_attr("content-type.name")
           || $entity->head->mime_attr("content-disposition.filename");
 
         my $f_ending = $name;
-
-        $f_ending =~ s/(.*)\.//g;
-
+           $f_ending =~ s/(.*)\.//g;
+				
         if (   $lt->{ lc( $entity->head->mime_type ) } == 1
-            || $lt->{ lc($f_ending) } == 1 )
+            || $lt->{ lc($f_ending) } == 1
+	        || $lt->{'.' . lc($f_ending) } == 1
+			
+			)
         {
 
-            print
-"\t* Stripping attachment with:\n\t\t* name: $name and MIME-Type: "
-              . $entity->head->mime_type . "\n";
+            print "\t* Stripping attachment with:\n\t\t* name: $name \n\t\t* MIME-Type: " . $entity->head->mime_type . "\n"
+				if $verbose; 
+				
             return ( undef, $ls );
         }
 
@@ -3059,16 +3059,16 @@ sub handle_errors {
     warn
 "dada_bridge.pl rejecting sending of received message - \tFrom: $from\tSubject: $subject\tMessage-ID: $message_id\tReasons: $reasons";
 
-    print "\t\tError delivering message! Reasons:\n\n"
+    print "\t* Error delivering message! Reasons:\n"
       if $verbose;
     for ( keys %$errors ) {
-        print "\t\t\t" . $_ . "\n"
+        print "\t\t* " . $_ . "\n"
           if $errors->{$_} == 1 && $verbose;
     }
 
     if ( $errors->{list_owner_return_path_set_funny} == 1 ) {
 
-        print "\n\n\t\tlist_owner_return_path_set_funny\n\n"
+        print "\t\t* list_owner_return_path_set_funny\n"
           if $verbose;
 
         # and I'm not going to do anything...
@@ -3078,23 +3078,23 @@ sub handle_errors {
     if ( $errors->{message_seen_as_spam} == 1 ) {
 
 		if ( $li->{rejected_spam_messages} eq 'send_spam_rejection_message' ) {
-				print "\t\send_spam_rejection_message on its way! \n\n"
+				print "\t\t* end_spam_rejection_message on its way!\n"
 	              if $verbose;
 	            send_spam_rejection_message( $list, $full_msg );
 
 		}
 		elsif ( $li->{rejected_spam_messages} eq 'ignore_spam' ) {
-        	print "\n\n\t\t *** Message seen as SPAM - ignoring. ***\n\n"
+        	print "\t\t *** Message seen as SPAM - ignoring. ***\n"
           		if $verbose;
 		}
 		else { 
-			print "\n\n\t\tlist_settings.rejected_spam_messages is setup impoperly - ignoring message!\n\n";
+			print "\t\tlist_settings.rejected_spam_messages is setup impoperly - ignoring message!\n";
 		}
 		
     }
     elsif ( $errors->{multiple_return_path_headers} == 1 ) {
 
-        print "\t\tMessage has multiple 'Return-Path' headers. Ignoring. \n\n"
+        print "\t\t* Message has multiple 'Return-Path' headers. Ignoring. \n"
           if $verbose;
         warn
 "$DADA::Config::PROGRAM_NAME Error: Message has multiple 'Return-Path' headers. Ignoring.1023";
@@ -3103,7 +3103,7 @@ sub handle_errors {
     elsif ( $errors->{msg_from_list_address} ) {
 
         print
-"\t\tmessage was from the list address - will not process! - (ignoring) \n\n"
+"\t\t* message was from the list address - will not process! - (ignoring) \n"
           if $verbose;
         warn
 "$DADA::Config::PROGRAM_NAME Error: message was from the list address - will not process! - (ignoring)";
@@ -3115,14 +3115,14 @@ sub handle_errors {
 
         if ( $li->{send_not_allowed_to_post_msg} == 1 ) {
 
-            print "\t\tmsg_not_from_subscriber on its way! \n\n"
+            print "\t\t* msg_not_from_subscriber on its way!\n"
               if $verbose;
             send_msg_not_from_subscriber( $list, $full_msg );
 
         }
 
         if ( $li->{send_invalid_msgs_to_owner} == 1 ) {
-            print "\t\tinvalid_msgs_to_owner on its way! \n\n"
+            print "\t\t* invalid_msgs_to_owner on its way!\n"
               if $verbose;
             send_invalid_msgs_to_owner( $li, $list, $full_msg );
 
@@ -3135,7 +3135,7 @@ sub handle_errors {
     }
     elsif ( $errors->{needs_moderation} ) {
 
-        print "\t\tMessage being saved for moderation by list owner... \n\n"
+        print "\t\t* Message being saved for moderation by list owner...\n"
           if $verbose;
 
         my $mod = SimpleModeration->new( { -List => $list } );
@@ -3153,7 +3153,7 @@ sub handle_errors {
         );
 
         if ( $li->{send_moderation_msg} == 1 ) {
-            print "\t\t * Sending 'awaiting moderation' message!\n\n"
+            print "\t\t * Sending 'awaiting moderation' message!\n"
               if $verbose;
             $mod->send_moderation_msg(
                 {
@@ -3166,7 +3166,7 @@ sub handle_errors {
 
         my $awaiting_msgs = $mod->awaiting_msgs();
 
-        print "\t\tOther awaiting messages:\n\n"
+        print "\t* Other awaiting messages:\n"
           if $verbose;
 
         for (@$awaiting_msgs) {
@@ -4976,11 +4976,11 @@ sub moderation_msg {
         	}
 		}
         print
-"\t\Message being sent to Authorized Senders and List Owner for moderation... \n\n"
+"\t* Message being sent to Authorized Senders and List Owner for moderation... \n"
           if $verbose;
     }
     else {
-        print "\t\Message being sent to List Owner for moderation... \n"
+        print "\t* Message being sent to List Owner for moderation... \n"
           if $verbose;
     }
     push ( @moderators, $ls->param('list_owner_email') );    # always addressed
@@ -4992,7 +4992,7 @@ sub moderation_msg {
             Subject => $ls->param('moderation_msg_subject'),
             To      => $to_address,
         );
-        print "\t * Sent moderation request to $to_address\n"
+        print "\t* Sent moderation request to $to_address\n"
           if $verbose;
 
         # attach parts
