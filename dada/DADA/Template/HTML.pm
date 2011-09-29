@@ -530,7 +530,6 @@ sub list_template {
         require DADA::Profile::Session;
         require DADA::Profile;
 		if(defined($args{-prof_sess_obj})){ 
-			warn "yes! Defined!"; 
 			$prof_sess = $args{-prof_sess_obj};
 		}
 		else { 
