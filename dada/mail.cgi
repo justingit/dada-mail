@@ -8573,7 +8573,7 @@ sub setup_info {
             $files_var_exist = 1;
         }
 
-        my $CONFIG_vals = ();
+        my $config_vals = [];
 
         for (@DADA::Config::EXPORT_OK) {
             my $orig_name = $_;
@@ -8600,8 +8600,8 @@ sub setup_info {
 		   $var_val =~ s/(\';|\'$)$//;
            $var_val =~ s/\;$//;
 
-            push( @$CONFIG_vals, { name => $orig_name, value => $var_val } );
-        }
+            push( @$config_vals, { name => $orig_name, value => $var_val } );
+        } 
 
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -8631,7 +8631,7 @@ sub setup_info {
                     config_file_contents    => $config_file_contents,
                     config_pm_file_contents => $config_pm_file_contents,
                     files_var_exist         => $files_var_exist,
-                    CONFIG_vals             => $CONFIG_vals,
+                    config_vals             => $config_vals,
 
                 },
             }
