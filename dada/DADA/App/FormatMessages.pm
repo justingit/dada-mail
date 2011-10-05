@@ -1638,7 +1638,9 @@ sub _apply_list_template {
 					-HTML_Header  => 0,
 					-vars => { 
 						# kludge
-						message_id => '[message_id]', 
+						message_id => '[message_id]', # DEV: shouldn't be, "<!-- tmpl_var message_id -->" ?
+						
+						show_profile_widget => 0, 
 					}
 			     )) . 
 									   
