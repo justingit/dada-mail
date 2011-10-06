@@ -2496,6 +2496,14 @@ sub _pop_before_smtp {
 sub _email_batched_finished_notification {
 
     my $self = shift;
+
+	# Amazon SES may have a limit of 1 message/sec, 
+	# so we give ourselves a little space after a mass mailing
+	if($self->{ls}->param('sending_method') eq 'amazon_ses'){ 
+		sleep(1); 
+	}
+	#
+
 	
     # DEV:
     # Dum... we need ta hashref this out...
@@ -2511,6 +2519,7 @@ sub _email_batched_finished_notification {
         -last_email  => undef,
         @_
     );
+
 
     require DADA::App::FormatMessages;
     my $fm = DADA::App::FormatMessages->new(
@@ -2576,11 +2585,21 @@ sub _email_batched_finished_notification {
     }
     $att .= "\n" . $fields->{Body};
 
-    $entity->attach(
-        Type        => 'message/rfc822',
-        Disposition => "inline",
-        Data => safely_decode( safely_encode( $att ) ),
-    );
+	# Amazon SES seems to not allow you to attach message/rfc822 attachments. 
+	# Not sure why!
+	warn q{ $self->{ls}->{sending_method} } . $self->{ls}->{sending_method}; 
+	if($self->{ls}->param('sending_method') eq 'amazon_ses'){ 
+		warn "YES! " . q{$self->{ls}->{sending_method} eq 'amazon_ses'}; 
+	}
+	else { 
+		
+	    $entity->attach(
+	        Type        => 'message/rfc822',
+	        Disposition => "inline",
+	        Data => safely_decode( safely_encode( $att ) ),
+	    );
+
+	}
 
     my $n_entity = $fm->email_template(
         {
