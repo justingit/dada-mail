@@ -8,17 +8,17 @@ Multiple Mailing List Sending in Dada Mail allows you to create one message in
 Dada Mail's, "Send a Message", or "Send a Webpage" screens to more than one 
 Mailing List at one time. 
 
-Multiple Mialing List Sending has the idea of a host list, which is just 
-whatever list you're currently logged into. 
+Multiple Mailing List Sending has the idea of a host mailing list, which is just 
+whatever mailing list you're currently logged into. 
 
-Partial list sending, using Dada Mail's Subscriber Profile Fields is supported. 
+Partial mailing list sending, using Dada Mail's Subscriber Profile Fields is supported. 
 
 =head1 Using Multiple Mailing List Sending
 
-Multiple Mailing List Sending is currently available in the, "Send a Message" and "Send a Webpage" screens. 
+Multiple Mailing List Sending is currently available in the, B<Send a Message> and B<Send a Webpage> screens. 
 If it's enabled and supported, you'll see  a field set labled, "+/- Multiple Mailing List Sending". 
 
-Once revealed, you should be able to see a group of  checkboxes, that will allow you to select 
+Once revealed, you should be able to see a group of checkboxes, that will allow you to select 
 one or more other mailing lists to send your message to. The host mailing list will always receive a copy of your message. 
 
 If you do not see this field set, you either do not have the feature configured to be enabled, or do not have an installation 
@@ -30,28 +30,20 @@ You'll need to be running Dada Mail with an SQL Subscriber backend. Any of them 
 
 =head1 Configuration
 
-Multiple List Sending is NOT enabled by default. To enable it, change the config variable, 
-
- $MULTIPLE_LIST_SENDING
-
-to, C<1>, like this: 
+Multiple List Sending is NOT enabled by default. To enable Multiple Mailing List Sending, add the following to your C<.dada_config> file: 
 
  $MULTIPLE_LIST_SENDING = 1; 
 
-Change it back to C<0>
-
- $MULTIPLE_LIST_SENDING = 0; 
-
-to disable. 
+=head2 Configurating 
 
 Currently, Dada Mail support two ways to send to multiple lists at once. You can
 configure which way you'd like it to work in the config variable, C<$MULTIPLE_LIST_SENDING_TYPE>
 
 The two types are, 
 
-=over
+=head3 merged
 
-=item * merged
+I<(This is the default type)>
 
 The C<merged> method collates all the subscribers you'd like to send into one mass mailing, 
 weeding out duplicates and sends in a, "on behalf of" style. You're basically going to send 
@@ -67,11 +59,23 @@ probably reflect the list the subscriber is subscriber on, though.
 
 This method is the faster of the two methods, but you don't have much say in which list 
 a subscriber will be sent from. Because of that, it's highly recommended that you never use this 
-method, without also enabling Global Black Listing and Global Unsubscribe. 
+method, without also enabling B<Global Black Listing> and B<Global Unsubscribe>. 
 
 Generally, this method will make all your Dada Mail List act as if it's one giant mailing list. 
 
-=item * individual
+To use this multiple list sending type, add this to your C<.dada_config> file: 
+
+	$MULTIPLE_LIST_SENDING_TYPE = 'merged'; 
+
+To Enable B<Global Black Listing>, add this line to your C<.dada_config> file: 
+
+	$GLOBAL_BLACK_LIST = 1; 
+
+To Enable B<Global Unsubscribe>, add this line to your C<.dada_config> file: 
+
+	$GLOBAL_UNSUBSCRIBE = 1; 
+
+=head3 individual
 
 The C<individual> method mass mails all the mailing lists you'd like to send to, 
 on a per-list basis. Instead of one mass mailing that has subscribers from 
@@ -87,7 +91,9 @@ Global Black Listing and Global Unsubscribe do not have to be turned on, as you'
 at the same time. This feature also has the option to have, or not have duplicate messages sent, if a subscriber is on more than 
 one list. 
 
+To use this multiple list sending type, add this to your C<.dada_config> file: 
 
-=back
+	$MULTIPLE_LIST_SENDING_TYPE = 'individual';
+
 
 =cut
