@@ -4031,8 +4031,8 @@ EOF
 ;
 
 
-my $SENDING_PREFS_MESSAGE_SUBJECT ||= 'Sending Preference Test Email for, <!-- tmpl_var list_settings.list_name -->'; 
-my $SENDING_PREFS_MESSAGE ||= <<EOF
+$SENDING_PREFS_MESSAGE_SUBJECT ||= 'Sending Preference Test Email for, <!-- tmpl_var list_settings.list_name -->'; 
+$SENDING_PREFS_MESSAGE ||= <<EOF
 Hello, <!-- tmpl_var list_settings.list_owner_email -->, 
 
 This message was sent out by <!-- tmpl_var PROGRAM_NAME --> to test out mail sending for the mailing list, 
