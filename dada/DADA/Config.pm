@@ -5140,8 +5140,8 @@ and to say that you've got the freshest tools on the Web.
 
 
 
-$VERSION = 4.8.0; 
-$VER     = '4.8.0 Stable 9/28/11';
+$VERSION = 4.8.1; 
+$VER     = '4.8.1 Stable 10/10/11';
 
 
 #

@@ -2,6 +2,34 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.8.1
+
+=head2 Summary 4.8.1
+
+This release consists of fixes for issues found in the 4.8.0 release.
+
+=head2 Bug Fixes 4.8.1
+
+=head3 "Setup Info" screen broken w/error: "attempt to set parameter 'config_vals' with a scalar"
+
+https://github.com/justingit/dada-mail/issues/213
+
+=head3 Profile Widget shown in Mailing List Messages when, "Wrap your HTML Mailing List Messages in your Mailing List Template " is enabled.
+
+https://github.com/justingit/dada-mail/issues/215
+
+=head3 "Mailing Finished" messages aren't sent when using Amazon SES
+
+https://github.com/justingit/dada-mail/issues/216
+
+=head3 Multiple Mailing List Sending docs refer you to edit the Config.pm file, not the .dada_config file
+
+https://github.com/justingit/dada-mail/issues/217
+
+=head3 "Sending Preferences" Test Message sent blank
+
+https://github.com/justingit/dada-mail/issues/218
+
 =head1 4.8.0
 
 =head2 Summary 4.8.0
