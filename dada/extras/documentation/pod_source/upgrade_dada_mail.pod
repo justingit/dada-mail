@@ -76,7 +76,7 @@ L<http://dadamailproject.com/d/upgrade_from_simple_scripts.pod.html>
 
 Dada Mail, "The Program" is the collection of files and directories that are in the directory called, C<dada>. 
 
-If you've followed out installation instructions, this directory is most likely located in your I<cgi-bin>. It's directory structure like this: 
+If you've followed our installation instructions, this directory is most likely located in your I<cgi-bin>. It's directory structure like this: 
 
  cgi-bin (directory)
     - dada (directory, _lower_ case)
@@ -159,7 +159,7 @@ If you have any plugins/extensions that you've installed with the installer from
 
 =head2 Changelog 
 
-It's a B<I<very very>> good idea to look at the changelog and not B<any> incompatibilities> between versions. It's possible that incompatibilities could break your installation, when you upgrade. 
+It's a B<I<very very>> good idea to look at the changelog and not B<any> incompatibilities between versions. It's possible that incompatibilities could break your installation, when you upgrade. 
 
 =head1 Screencasts
 
