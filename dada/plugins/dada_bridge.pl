@@ -5561,7 +5561,7 @@ For that to happen - two things will have to be configured. The first is setting
 
 The second is to set up the cronjob and that's what we'll talk about next: 
 
-=head1 Configurating the Cronjob to Automatically Run Dada Bridge
+=head1 Configuring the Cronjob to Automatically Run Dada Bridge
 
 We're going to assume that you already know how to set up the actual cronjob, but we'll be explaining in depth on what the cronjob you need to set is.
 

@@ -2187,7 +2187,7 @@ Uncomment the lines, by taking off the, "#"'s:
 
 Save your C<.dada_config> file.
 
-=head1 Configurating the Cronjob to Automatically Run Beatitude
+=head1 Configuring the Cronjob to Automatically Run Beatitude
 
 We're going to assume that you already know how to set up the actual cronjob, but we'll be explaining in depth on what the cronjob you need to set is.
 

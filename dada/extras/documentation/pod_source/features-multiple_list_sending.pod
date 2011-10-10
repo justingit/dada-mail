@@ -34,7 +34,7 @@ Multiple List Sending is NOT enabled by default. To enable Multiple Mailing List
 
  $MULTIPLE_LIST_SENDING = 1; 
 
-=head2 Configurating 
+=head2 Configuring 
 
 Currently, Dada Mail support two ways to send to multiple lists at once. You can
 configure which way you'd like it to work in the config variable, C<$MULTIPLE_LIST_SENDING_TYPE>

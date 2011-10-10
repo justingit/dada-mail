@@ -5491,7 +5491,7 @@ whoever replies to my message will reply to me, not the bounce handler.
 Once you've dialed in your list to use the bounce handler, you should
 be all set.
 
-=head1 Configurating the Cronjob to Automatically Run Mystery Girl
+=head1 Configuring the Cronjob to Automatically Run Mystery Girl
 
 We're going to assume that you already know how to set up the actual cronjob, 
 but we'll be explaining in depth on what the cronjob you need to set B<is>.
