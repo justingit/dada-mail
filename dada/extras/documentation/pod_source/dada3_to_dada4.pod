@@ -110,13 +110,13 @@ The, C<%SQL_PARAMS> in .dada_config for 3.0.x may look like this:
 	
 		user             => '',          
 		pass             => '',
-
+		
 		subscriber_table    => 'dada_subscribers',
 		archives_table      => 'dada_archives', 
 		settings_table      => 'dada_settings', 
 		session_table       => 'dada_sessions', 
 		bounce_scores_table => 'dada_bounce_scores', 
-
+		
 	);
 
 In 4.x, it's going to look like this: 
@@ -139,7 +139,7 @@ In 4.x, it's going to look like this:
 	
 		user             => '',          
 		pass             => '',
-
+		
 		subscriber_table                => 'dada_subscribers',
 		profile_table                   => 'dada_profiles', 
 		profile_fields_table 	        => 'dada_profile_fields', 
@@ -149,7 +149,7 @@ In 4.x, it's going to look like this:
 		session_table                   => 'dada_sessions', 
 		bounce_scores_table             => 'dada_bounce_scores', 
 		clickthrough_urls_table         => 'dada_clickthrough_urls',
-
+		
 	);
 
 New lines in 4.x: 
