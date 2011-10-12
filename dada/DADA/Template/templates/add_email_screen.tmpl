@@ -543,7 +543,12 @@ Invalid Email Addresses
 <!-- /tmpl_if --> 
 
 <!-- tmpl_if not_subscribed --> 
-
+	<!-- ... -->
+<!-- tmpl_else --> 
+	<p class="alert"> 
+		No addresses have passed verification. 
+	</p> 
+<!-- /tmpl_if -->
 
 
 	 <div class="buttonfloat">
@@ -568,40 +573,36 @@ Invalid Email Addresses
 
 
 
-<!-- tmpl_if list_type_isa_list --> 
-	<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN -->
+	<!-- tmpl_if list_type_isa_list --> 
+		<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN -->
 
-	<!-- tmpl_else --> 
+		<!-- tmpl_else --> 
 
-		<!-- tmpl_if list_settings.send_subscribed_by_list_owner_message --> 
+			<!-- tmpl_if list_settings.send_subscribed_by_list_owner_message --> 
+				<ul> 
+					<li>
+					 <p class="positive">
+						Addresses <strong>Subscribed</strong> will be sent a, "Welcome" message. 
+					</p> 
+				</ul> 
+			<!-- /tmpl_if --> 
+
+			<!-- tmpl_if list_settings.send_last_archived_msg_mass_mailing --> 
 			<ul> 
 				<li>
 				 <p class="positive">
-					Addresses <strong>Subscribed</strong> will be sent a, "Welcome" message. 
+						Addresses <strong>Subscribed</strong> will be sent the latest archived message.				
 				</p> 
-			</ul> 
+			</ul>		
+			<!-- /tmpl_if --> 
+
+
 		<!-- /tmpl_if --> 
 
-		<!-- tmpl_if list_settings.send_last_archived_msg_mass_mailing --> 
-		<ul> 
-			<li>
-			 <p class="positive">
-					Addresses <strong>Subscribed</strong> will be sent the latest archived message.				
-			</p> 
-		</ul>		
-		<!-- /tmpl_if --> 
-
-
-	<!-- /tmpl_if --> 
-
-<!-- /tmpl_if -->
+	<!-- /tmpl_if -->
 
 	
-<!-- tmpl_else --> 
-	<p class="alert"> 
-		No addresses have passed verification. 
-	</p> 
-<!-- /tmpl_if --> 
+
 
 
  </form>

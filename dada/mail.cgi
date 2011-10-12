@@ -3658,8 +3658,18 @@ sub add_email {
 			die "Your list is currently CLOSED to subscribers."; 
 		}
 		
+		# If we're using the black list, but 
+		# the list owner is allowed to subscribed blacklisted addresses, 
+		# we have to communicate that to the template: 
+		if(
+			$ls->param('black_list') == 1 
+		 && $ls->param('allow_admin_to_subscribe_blacklisted') == 1
+		){ 
+			for(@$black_listed){ 
+				$_->{'list_settings.allow_admin_to_subscribe_blacklisted'} = 1
+			}
+		}
 		
-
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
