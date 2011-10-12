@@ -126,6 +126,19 @@
 	
 	<p class="alert">
 	 Currently, there are no <!-- tmpl_var type_title -->.
+	
+	    <!-- tmpl_unless list_type_isa_sub_request_list -->
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
+	     			<!-- tmpl_if list_type_isa_list -->
+						Invite
+						<!-- tmpl_if list_settings.enable_mass_subscribe -->
+				/ Add
+						<!-- /tmpl_if -->
+					<!-- tmpl_else --> 
+						Add
+					<!-- /tmpl_if -->
+	    	</a>
+	   	<!-- /tmpl_unless -->
 	</p>
 	
 <!-- tmpl_else -->
