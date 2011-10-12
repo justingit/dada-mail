@@ -2981,6 +2981,10 @@ sub view_list {
     }
 }
 
+
+
+
+
 sub subscription_requests {
 
 	my ($admin_list, $root_login) = check_list_security(
@@ -3106,20 +3110,53 @@ sub remove_all_subscribers {
         -cgi_obj  => $q,
         -Function => 'view_list',
     );
-    $list = $admin_list;
+    $list              = $admin_list;
+	my $black_list_add = 0; 
 
     my $type  = xss_filter( $q->param('type') );
     my $lh    = DADA::MailingList::Subscribers->new( { -list => $list } );
 
+	my $ls    = DADA::MailingList::Settings->new( { -list => $list } );
+	
 	require DADA::App::MassSend; 
-	DADA::App::MassSend::just_unsubscribed_mass_mailing(
-		{
-			-list              => $list, 
-			-send_to_everybody => 1, 
+	if($type eq 'list') { 
+		if($ls->param('send_unsubscribed_by_list_owner_message') == 1){
+			require DADA::App::MassSend; 
+			eval {
+				
+				DADA::App::MassSend::just_unsubscribed_mass_mailing(
+					{
+						-list              => $list, 
+						-send_to_everybody => 1, 
+					}
+				); 
+			};
+			if($@){ 
+				carp $@; 
+			}
 		}
-	); 
+		
+		
+		if(
+			$ls->param('black_list')               == 1 &&
+			$ls->param('add_unsubs_to_black_list') == 1
+		){
+			$black_list_add = $lh->copy_all_subscribers(
+				{ 
+					-from => 'list', 
+					-to   => 'black_list',
+				}
+			);
+		}
+		
+	}
+	
+	
+
+	
     my $count = $lh->remove_all_subscribers( { -type => $type, } );
-  	print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=view_list&delete_email_count=' . $count .'&type=' . $type);
+
+  	print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=view_list&delete_email_count=' . $count .'&type=' . $type . '&black_list_add=' .$black_list_add);
 	return;
 }
 

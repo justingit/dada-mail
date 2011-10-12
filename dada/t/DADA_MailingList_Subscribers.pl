@@ -40,6 +40,9 @@ my @email_list = qw(
 chmod(0777, $DADA::Config::TMP . '/mail.txt'); 
 
 
+
+
+
 my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
 
 ok($lh->{ls}->isa('DADA::MailingList::Settings'), "looks like there's a Settings obj in ->{ls}, good!"); 
@@ -1517,6 +1520,39 @@ ok($lh->num_subscribers({-type => $tmp_list}) == 3);
 ok($lh->remove_this_listtype({-type => $tmp_list}) == 1);
 
 
+##############################################################################
+# copy_all_subscribers #
+########################
+$lh->remove_all_subscribers({-type => 'list'});
+$lh->remove_all_subscribers({-type => 'black_list'});
+
+
+for('one@one.com', 'two@two.com', 'three@three.com'){ 
+	$lh->add_subscriber({
+	     -email => $_,
+	     -type  => 'list', 
+	 });
+}
+$lh->copy_all_subscribers(
+	{ 
+		-from => 'list', 
+		-to   => 'black_list', 
+	}
+);
+
+ok($lh->num_subscribers({-type => 'list'}) == 3); 
+ok($lh->num_subscribers({-type => 'black_list'}) == 3); 
+
+# Do it again! 
+$lh->copy_all_subscribers(
+	{ 
+		-from => 'list', 
+		-to   => 'black_list', 
+	}
+);
+# Should be the same thing: 
+ok($lh->num_subscribers({-type => 'list'}) == 3); 
+ok($lh->num_subscribers({-type => 'black_list'}) == 3);
 
 
 dada_test_config::remove_test_list;

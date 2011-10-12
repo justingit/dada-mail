@@ -209,7 +209,7 @@ $q->param('email', '');
 			like($confirm_email, qr/$confirm_url/, 'Confirmation link found and correct.'); 
 	}
 	
-	ok($lh->check_for_double_email(-Email => $email, -Type => 'sub_confirm_list')); 
+	ok($lh->check_for_double_email(-Email => $email, -Type => 'sub_confirm_list'), 'check_for_double_email'); 
 	
 	ok(unlink($mh->test_send_file)); 
 	undef $confirm_email; 
@@ -235,8 +235,8 @@ $q->param('email', '');
 	$regex = quotemeta('<h1>Subscription is successful!</h1>'); 
 	like($dap->confirm({-cgi_obj => $q}), qr/$regex/);
 
-	ok($lh->check_for_double_email(-Email => $email, -Type => 'list')); 
-	ok($lh->check_for_double_email(-Email => $email, -Type => 'sub_confirm_list') == 0); 
+	ok($lh->check_for_double_email(-Email => $email, -Type => 'list'), 'check_for_double_email'); 
+	ok($lh->check_for_double_email(-Email => $email, -Type => 'sub_confirm_list') == 0, 'check_for_double_email'); 
 	
 	my $msg = 	slurp($mh->test_send_file); 
 	   $entity = $parser->parse_data($msg); 
@@ -298,7 +298,7 @@ undef $log;
 
 	$regex = '<h1>Please confirm your mailing list unsubscription</h1>';
 	like($dap->unsubscribe({-cgi_obj => $q,}), qr/$regex/);
-	ok($lh->check_for_double_email(-Email => $email, -Type => 'unsub_confirm_list')); 
+	ok($lh->check_for_double_email(-Email => $email, -Type => 'unsub_confirm_list'), 'check_for_double_email'); 
 
 	$msg = slurp($mh->test_send_file); 
 	$entity = $parser->parse_data($msg); 
@@ -359,8 +359,8 @@ undef $log;
 	
 	$regex = '<h1>You have been unsubscribed from the list:';
 	like($dap->unsub_confirm({-cgi_obj => $q,}), qr/$regex/);
-	ok($lh->check_for_double_email(-Email => $email, -Type => 'unsub_confirm_list') == 0); 
-	ok($lh->check_for_double_email(-Email => $email, -Type => 'list') == 0);
+	ok($lh->check_for_double_email(-Email => $email, -Type => 'unsub_confirm_list') == 0, 'check_for_double_email'); 
+	ok($lh->check_for_double_email(-Email => $email, -Type => 'list') == 0, 'check_for_double_email');
 	
 	my $unsubscribed_email = slurp($mh->test_send_file); 
 

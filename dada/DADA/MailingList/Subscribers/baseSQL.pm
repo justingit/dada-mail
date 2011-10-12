@@ -603,6 +603,7 @@ sub print_out_list {
 }
 
 sub clone {
+
     my $self = shift;
     my ($args) = @_;
     if ( !exists( $args->{-from} ) ) {
@@ -1014,6 +1015,58 @@ sub remove_all_subscribers {
 
     return $count;
 }
+
+
+
+sub copy_all_subscribers { 
+	
+	my $self   = shift ;
+	my ($args) = @_; 
+	my $total  = 0; 
+	if(! exists($args->{-from})){ 
+		croak "you MUST pass '-from'";
+	}
+	else { 
+		if ( $self->allowed_list_types( $args->{-from} ) != 1 ) {
+            croak '"' . $args->{ -from } . '" is not a valid list type! ';
+        }
+	}
+	if(! exists($args->{-to})){ 
+		croak "you MUST pass '-to'";
+	}
+	else { 
+		if ( $self->allowed_list_types( $args->{-to} ) != 1 ) {
+            croak '"' . $args->{ -to } . '" is not a valid list type! ';
+        }	
+	}
+	
+	my $query = 'SELECT email from ' . $self->{sql_params}->{subscriber_table} . ' WHERE list = ? AND list_type = ?'; 	
+	my $sth   = $self->{dbh}->prepare($query); 
+	$sth->execute($self->{list}, $args->{-from})
+      or croak "cannot do statement $DBI::errstr\n";
+	
+	while ( ( my $email ) = $sth->fetchrow_array ) {
+         chomp($email);
+		 my $n_sub = $self->add_subscriber(
+			{
+				-email         => $email,
+				-type          => $args->{-to}, 
+				-dupe_check    => {
+									-enable  => 1, 
+									-on_dupe => 'ignore_add',  
+            					},
+			}
+		 );
+		if(defined($n_sub)){ 
+			$total++; 
+		}
+	}
+	
+	return $total; 
+}
+
+
+
 
 sub create_mass_sending_file {
 

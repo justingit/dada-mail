@@ -78,8 +78,9 @@ sub open_list_handle {
 	my $path_to_file = make_safer($DADA::Config::FILES . '/' . $self->{list} . '.' . $args{-Type}); 
 	
 	sysopen(LIST, $path_to_file, O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD ) 
-	    or croak "couldn't open '$path_to_file' for reading: $!\n";
-		   flock(LIST, LOCK_SH);
+	   or croak "couldn't open '$path_to_file' for reading: $!\n";
+	
+	   flock(LIST, LOCK_SH);
 		binmode LIST, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
 }
 
@@ -362,13 +363,25 @@ sub check_for_double_email {
 
     if ( $self->{list} and $args{-Email} ) {
 
-        $self->open_list_handle( -Type => $args{-Type} );
+       # $self->open_list_handle( -Type => $args{-Type} );
+		#my $path_to_file = make_safer($DADA::Config::FILES . '/' . $self->{list} . '.' . $args{-Type}); 
+		#open my $LIST, '+>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $path_to_file or die "can't open '$path_to_file': $!"; 
+		
+		
+		my $path_to_file = make_safer($DADA::Config::FILES . '/' . $self->{list} . '.' . $args{-Type}); 
 
+		sysopen(LIST2, $path_to_file, O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD ) 
+	   		or croak "couldn't open '$path_to_file' for reading: $!\n";
+
+	   flock(LIST2, LOCK_SH);
+		binmode LIST2, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
+			
+			
         my $check_this = undef;
         my $email      = $args{-Email};
         my $in_list    = 0;
 
-        while ( defined( $check_this = <LIST> ) ) {
+        while ( defined( $check_this = <LIST2> ) ) {
 
             chomp($check_this);
             if (
@@ -399,7 +412,7 @@ sub check_for_double_email {
             }
         }
 
-        close(LIST);
+        close(LIST2);
 
         return $in_list;
 
@@ -430,6 +443,57 @@ sub num_subscribers {
 	}
 	close LIST or die $!;
 	return $count; 
+}
+
+
+
+sub copy_all_subscribers { 
+	
+	my $self   = shift ;
+	my ($args) = @_; 
+	my $total  = 0; 
+	if(! exists($args->{-from})){ 
+		croak "you MUST pass '-from'";
+	}
+	else { 
+		if ( $self->allowed_list_types( $args->{-from} ) != 1 ) {
+            croak '"' . $args->{ -from } . '" is not a valid list type! ';
+        }
+	}
+	if(! exists($args->{-to})){ 
+		croak "you MUST pass '-to'";
+	}
+	else { 
+		if ( $self->allowed_list_types( $args->{-to} ) != 1 ) {
+            croak '"' . $args->{ -to } . '" is not a valid list type! ';
+        }	
+	}
+	
+	
+	$self->open_list_handle( -Type => $args->{ -from } );
+
+    my $i     = 0;
+    my $cache = [];
+    my $email = undef;
+    while ( defined( $email = <LIST> ) ) {
+		chomp($email); 
+		 my $n_sub = $self->add_subscriber(
+			{
+				-email         => $email,
+				-type          => $args->{-to}, 
+				-dupe_check    => {
+									-enable  => 1, 
+									-on_dupe => 'ignore_add',  
+            					},
+			}
+		 );
+		if(defined($n_sub)){ 
+			$total++; 
+		}
+    }
+    close(LIST);
+
+	return $total; 
 }
 
 
