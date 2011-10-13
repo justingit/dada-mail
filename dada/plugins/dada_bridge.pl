@@ -124,8 +124,6 @@ delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 
 my $App_Version = $DADA::Config::VERSION;
 
-$DADA::Config::LIST_SETUP_DEFAULTS{open_discussion_list} = 0;
-
 # Phowaa - let's import *a few* things
 use DADA::Template::HTML;
 use DADA::App::Guts;
@@ -875,11 +873,13 @@ sub cgi_default {
 		
         if ( $list_email_status == 1 ) {
 
-			if($Plugin_Config->{Allow_Open_Discussion_List} == 1) { 
+			if($Plugin_Config->{Allow_Open_Discussion_List} == 0) { 
 				$q->param('open_discussion_list', 0); 
 			}
 			else { 
 			}
+			
+			
 			$q->param(
 				'discussion_pop_password', 
 				DADA::Security::Password::cipher_encrypt( 
