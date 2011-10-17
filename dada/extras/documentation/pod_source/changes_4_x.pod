@@ -2,6 +2,30 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.8.2
+
+=head2 Summary 4.8.2
+
+This release consists of fixes for issues found in the 4.8.1 release.
+
+=head2 Bug Fixes 4.8.2
+
+=head3 Open discussion list setting broke
+
+https://github.com/justingit/dada-mail/issues/219
+
+=head3 "Unsubscribe ALL Subscribed Subscribers" will send "Farewell" mass mailing message, even if option disabled
+
+https://github.com/justingit/dada-mail/issues/221
+
+=head3 "Unsubscribe ALL Subscribed Subscribers" will NOT add removed addresses to Black List, even if that option is enabled
+
+https://github.com/justingit/dada-mail/issues/222
+
+=head3 Setting, "Continue to Allow Black Listed Addresses to be Invited/Subscribed Via The List Control Panel. " doesn't work
+
+https://github.com/justingit/dada-mail/issues/223
+
 =head1 4.8.1
 
 =head2 Summary 4.8.1
