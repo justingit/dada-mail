@@ -734,15 +734,15 @@ SKIP: {
 
 =cut
 
-$scalar = "<!-- tmpl_time_piece %a, %d %b %Y -->
+$scalar = "<!-- tmpl_strftime %a, %d %b %Y -->
 
 Something, 
 
-<!-- tmpl_time_piece  %b %Y %a, %d -->
+<!-- tmpl_strftime  %b %Y %a, %d -->
 
 Something more...
 
-<!-- tmpl_time_piece  %Y %Y %b  %a, %d -->
+<!-- tmpl_strftime  %Y %Y %b  %a, %d -->
 
 Again something else. 
 
