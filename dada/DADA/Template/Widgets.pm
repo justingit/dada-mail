@@ -2346,7 +2346,7 @@ sub filter_time_piece {
 		while (@taglist) {
 			my $time = shift @taglist; 
 			my $formatted_time = $t->strftime($time);
-			my $formatted_match = quotemeta("<!-- tmpl_time_piece $time -->");
+			my $formatted_match = quotemeta("<!-- tmpl_strftime $time -->");
 			$$text_ref =~ s/$formatted_match/$formatted_time/gi;
 	    }
 
