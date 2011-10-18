@@ -184,32 +184,44 @@ sub flush_old_scores {
 sub raw_scorecard { 
 
     my $self = shift; 
-    my ($offset, $rows) = @_; 
+    #my ($offset, $rows) = @_; 
+	my $page = shift; 
+	my $rows = shift || 100; 
+	
     
 	my $query = 'SELECT email, score FROM ' . $self->{sql_params}->{bounce_scores_table} .' WHERE list = ? ORDER BY email'; 
 	my $sth   = $self->{dbh}->prepare($query);
 	   $sth->execute($self->{name})
 			or croak "cannot do statment '$query'! $DBI::errstr\n";	
 	
-	my $all_scores = {}; 
-	my @keys = (); 
+	my $scorecard = []; 
 	
 
 	while( my ($email, $score) = $sth->fetchrow_array){ 
-		$all_scores->{$email} = $score; 
-		push(@keys, $email); 
+		#$all_scores->{$email} = $score; 
+		#push(@keys, $email); 
+		push(@$scorecard, {
+			email => $email,
+			score => $score,
+		}); 
 	}
 	
 	$sth->finish; 
 	
-    my $return_array = [];
-    
-    
-     for (my $x = 0; $x < $rows; $x++) {
-        push(@$return_array, [ $keys[$offset + $x], $all_scores->{$keys[$offset + $x]}]);
-     }
+	my $total = 0; 
+	   $total = $self->num_scorecard_rows; 
+	
+	
+	my $begin = ($rows - 1) * ($page - 1);
+	my $end   = $begin + ($rows - 1);
 
-    return ($return_array);
+	if($end > $total - 1){ 
+		$end = $total -1; 
+	}
+
+	@$scorecard = @$scorecard[$begin..$end];
+	
+    return ($scorecard);
 	
 }
 

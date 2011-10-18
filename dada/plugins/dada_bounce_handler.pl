@@ -1414,7 +1414,7 @@ sub cgi_default {
 									Default_Soft_Bounce_Score => $Plugin_Config->{Default_Soft_Bounce_Score},
 									Default_Hard_Bounce_Score => $Plugin_Config->{Default_Hard_Bounce_Score},
 									Score_Threshold           => $Plugin_Config->{Score_Threshold},
-									Plugin_Name              => $Plugin_Config->{Plugin_Name},
+									Plugin_Name               => $Plugin_Config->{Plugin_Name},
 								    Allow_Manual_Run          => $Plugin_Config->{Allow_Manual_Run},
 								    Manual_Run_Passcode       => $Plugin_Config->{Manual_Run_Passcode},
 									curl_location             => $curl_location, 
@@ -1587,75 +1587,63 @@ sub cgi_manual_start {
 
 sub cgi_scorecard { 
 
+    my $page     = $q->param('page') || 1; 
 
     require   DADA::App::BounceScoreKeeper; 
     my $bsk = DADA::App::BounceScoreKeeper->new(-List => $list); 
-                     
-    require HTML::Pager; 
-    require HTML::Template;
-    
-    my $table_tmpl = bounce_score_table();
-    my $template   = HTML::Template->new(
-        %Global_Template_Options,
-		scalarref          => \$table_tmpl, 
-	    global_vars        => 1, 
-	    loop_context_vars  => 1, 
-	    
-	);
-   $template->param(
-        Plugin_URL => $Plugin_Config->{Plugin_URL}
-   ); 										
-    
-    my $get_data_sub = sub { 
-        my ($offset, $rows) = @_;
-        return $bsk->raw_scorecard($offset, $rows); 
-    }; 
-    my $num_rows = $bsk->num_scorecard_rows;   
-    
-    my $pager = undef; 
-    if($num_rows >= 1) { 
-        $pager = HTML::Pager->new(
-           
-            # required parameters
-            query             => $q,
-            get_data_callback => $get_data_sub,
-            rows              => $num_rows,
-            page_size         => ($num_rows < 100) ? $num_rows : 100,
-            
-            persist_vars     => ['flavor'], 
-            
-            template         => $template, 
-            
-            # some optional parameters
-            #
-            # cell_space_color => '#000000',    
-            # cell_background_color => '#ffffff',
-            # nav_background_color => '#dddddd',
-            # javascript_presubmit => 'last_minute_javascript()'  
-            # debug => 1,
-        );
-    }
 
+	my $num_rows = $bsk->num_scorecard_rows;   
+	my $scorecard = $bsk->raw_scorecard($page, 100); 
+
+    my $pager = undef; 
+	my $pages_in_set = [];
+
+	require Data::Pageset; 
+	my $page_info = Data::Pageset->new(
+		{
+		'total_entries'       => $num_rows, 
+		'entries_per_page'    => 100, #$ls->param('tracker_record_view_count'), # needs to be tweakable...  
+		'current_page'        => $page,
+		'mode'                => 'slide', # default fixed
+ 		}
+	);
+	
+	foreach my $page_num (@{$page_info->pages_in_set()}) {
+		if($page_num == $page_info->current_page()) {
+			push(@$pages_in_set, {page => $page_num, on_current_page => 1});
+		}
+		else { 
+			push(@$pages_in_set, {page => $page_num, on_current_page => undef});
+		}
+	}
+		
+	
 	my $tmpl = cgi_scorecode_tmpl(); 
 	
 	require DADA::Template::Widgets; 
-	my $scrn = DADA::Template::Widgets::wrap_screen(
+	my $scrn = DADA::Template::Widgets::screen(
 		{ 
 			-data => \$tmpl, 
-			-with => 'admin', 
-			-wrapper_params => {
-                -Root_Login => $root_login,
-                -List       => $list,
-            },
+
 			-vars => { 
 				Plugin_URL => $Plugin_Config->{Plugin_URL}, 
 				Plugin_Name => $Plugin_Config->{Plugin_Name},
 				num_rows => $num_rows,
-				(($num_rows >= 1) ? (
-				scorecard => $pager->output,) : ()), 
+			#	(($num_rows >= 1) ? (
+			#	scorecard => $pager->output,) : ()), 
+				
+				first_page                => $page_info->first_page(), 
+				last_page                 => $page_info->last_page(), 
+				next_page                 => $page_info->next_page(), 
+				previous_page             => $page_info->previous_page(), 
+				pages_in_set              => $pages_in_set,
+				scorecard                 => $scorecard, 
+				
+				
 			}
 		}
 	); 
+	print $q->header(); 
 	e_print($scrn); 
     
 }
@@ -1664,16 +1652,92 @@ sub cgi_scorecode_tmpl {
 	
 return <<EOF
 
-<!-- tmpl_set name="title" value="Bounce Scorecard" -->
 
-<p id="breadcrumbs">
-    <a href="<!-- tmpl_var Plugin_URL -->">
-        <!-- tmpl_var Plugin_Name -->
-    </a> &#187; Scorecard
-</p>
 <!-- tmpl_if num_rows --> 
-	<!-- tmpl_var scorecard --> 
 	
+	<table width="100%">
+	 <tr> 
+	<td width="33%" align="left"> 
+
+	<strong><a href="javascript:turn_page(<!-- tmpl_var first_page -->);">First</a></strong>
+
+	</td> 
+
+	<td width="33%" align="center"> 
+	<p>
+
+	<!-- tmpl_if previous_page --> 
+		<strong><a href="javascript:turn_page(<!-- tmpl_var previous_page -->);">Previous</a></strong>
+	<!-- tmpl_else --> 
+	<!-- /tmpl_if -->
+	&nbsp;&nbsp;&nbsp;&nbsp;
+		<!-- tmpl_loop pages_in_set --> 
+			<!-- tmpl_if on_current_page --> 
+				<strong> 
+				 <!-- tmpl_var page --> 
+				</strong> 
+			<!-- tmpl_else --> 
+				<a href="javascript:turn_page(<!-- tmpl_var page -->);">
+				 <!-- tmpl_var page --> 
+				</a>
+			<!-- /tmpl_if --> 
+
+		<!-- /tmpl_loop --> 
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<!-- tmpl_if next_page -->
+		<strong><a href="javascript:turn_page(<!-- tmpl_var next_page -->);">Next</a></strong>
+		<!-- tmpl_else --> 
+		<!-- /tmpl_if --> 
+		</p>
+	</td> 
+
+	<td width="33%" align="right"> 
+
+	<strong><a href="javascript:turn_page(<!-- tmpl_var last_page -->);">Last</a></strong>
+
+	</td>
+
+	</tr> 
+	</table>
+
+	<div> 
+		<div style="max-height: 300px; overflow: auto; border:1px solid black">
+
+		  <table cellpadding="5" cellspacing="0" border="0" width="100%"> 
+		   <tr style="background:#fff"> 
+		   		<td>
+					<p>
+						<strong>Email</strong>
+					</p>
+				</td>
+				<td>
+					<p>
+						<strong>Score</strong>
+					</p>
+				</td>
+			</tr> 
+
+			<!-- tmpl_loop scorecard --> 
+		   	<tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!-- tmpl_else -->style="background-color:#fff;"<!--/tmpl_if-->>
+				<td>
+					<p>
+					<a href="<!-- tmpl_var PLUGIN_URL -->?flavor=cgi_bounce_score_search&amp;query=<!-- tmpl_var email ESCAPE="URL" -->">
+					 <!-- tmpl_var email --></p>
+					</a>
+				</td>
+				<td>
+					<p><!-- tmpl_var score --></p>
+				</td>
+			</tr> 
+			
+			<!-- /tmpl_loop --> 
+
+	     </table> 
+	</div>		
+
+	</div> 
+
+
 	
 <form action="<!-- tmpl_var Plugin_URL -->" method="post"> 
 <input type="hidden" name="flavor" value="cgi_erase_scorecard" /> 
@@ -1862,20 +1926,20 @@ sub cgi_bounce_score_search {
 
             # Date!
             $entries[0] =~ s/^\[|\]$//g;
-            $entries[0] = $searcher->html_highlight_line(
-                { -query => $query, -line => $entries[0] } );
-
+           # $entries[0] = $searcher->html_highlight_line(
+           #     { -query => $query, -line => $entries[0] } );
+		   #
             # ListShortName!
-            $entries[1] = $searcher->html_highlight_line(
-                { -query => $query, -line => $entries[1] } );
-
+            #$entries[1] = $searcher->html_highlight_line(
+            #    { -query => $query, -line => $entries[1] } );
+			#
             # Action Taken!
-            $entries[2] = $searcher->html_highlight_line(
-                { -query => $query, -line => $entries[2] } );
-
+            #$entries[2] = $searcher->html_highlight_line(
+             #   { -query => $query, -line => $entries[2] } );
+#
             # Email Address!
-            $entries[3] = $searcher->html_highlight_line(
-                { -query => $query, -line => $entries[3] } );
+ #           $entries[3] = $searcher->html_highlight_line(
+  #              { -query => $query, -line => $entries[3] } );
 
             my @diags = split( ",", $entries[4] );
             my $labeled_digs = [];
@@ -1886,12 +1950,14 @@ sub cgi_bounce_score_search {
                 push(
                     @$labeled_digs,
                     {
-                        diagnostic_label => $searcher->html_highlight_line(
-                            { -query => $query, -line => $label }
-                        ),
-                        diagnostic_value => $searcher->html_highlight_line(
-                            { -query => $query, -line => $value }
-                        ),
+						diagnostic_label => $label,
+                      #  diagnostic_label => $searcher->html_highlight_line(
+                      #      { -query => $query, -line => $label }
+                      #  ),
+                        diagnostic_value => $value
+					  # $searcher->html_highlight_line(
+                      #      { -query => $query, -line => $value }
+                      #  ),
 
                     }
                 );
@@ -1965,13 +2031,7 @@ my $template = q{
    
    &#187;
    
-      <a href="<!-- tmpl_var Plugin_URL -->?flavor=cgi_scorecard"> 
-         Scorecard
-   </a> 
-   
-   &#187;
-   
-   Search Results for:<!-- tmpl_var query ESCAPE="HTML" --> 
+   Search Results for: <!-- tmpl_var query ESCAPE="HTML" --> 
   </p> 
  
  
@@ -2005,7 +2065,9 @@ my $template = q{
    <!-- tmpl_if results_found --> 
    
        <!-- tmpl_loop search_results --> 
-       
+
+      <div <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!-- tmpl_else -->style="background-color:#fff;"<!--/tmpl_if-->>
+
            <h2>
             Date: <!-- tmpl_var date --> 
            </h2> 
@@ -2025,7 +2087,7 @@ my $template = q{
 			<tr>
              	<td> 
               <strong>List Name:</strong>
-            </td> <td><!-- tmpl_var list_name --> (<!-- tmpl_var list -->) </td>
+            </td> <td><!-- tmpl_var list_name ESCAPE="HTML" --> (<!-- tmpl_var list -->) </td>
 
         	</tr>             
 			<tr>
@@ -2035,7 +2097,7 @@ my $template = q{
               <strong>Action Taken:</strong> 
             </td> 
 <td>
-<!-- tmpl_var action --> 
+<!-- tmpl_var action ESCAPE="HTML" --> 
 </td> 
 
 </tr> 
@@ -2057,12 +2119,12 @@ my $template = q{
                 <tr>
 <td>
                     <strong> 
-                     <!-- tmpl_var diagnostic_label -->:
+                     <!-- tmpl_var diagnostic_label ESCAPE="HTML" -->:
                     </strong> 
     </td>
 <td>
                 
-                    <!-- tmpl_var diagnostic_value -->
+                    <!-- tmpl_var diagnostic_value ESCAPE="HTML" -->
 </td>
 </tr> 
                 
@@ -2073,8 +2135,8 @@ my $template = q{
 </div> 
 </div> 
 
-            <hr /> 
-    
+    </div> 
+
         <!-- /tmpl_loop --> 
 
     <!-- tmpl_else --> 
@@ -2584,6 +2646,8 @@ sub carry_out_rule {
 	
 		if($action eq 'add_to_score'){ 
 		  $report .= add_to_score($list, $email, $diagnostics, $actions->{$action}); 
+		  $report .= append_message_to_file($list, $email, $diagnostics, $actions->{$action}, $message);
+			
 		}elsif($action eq 'unsubscribe_bounced_email'){ 
 			$report .= unsubscribe_bounced_email($list, $email, $diagnostics, $actions->{$action}); 
 		}elsif($action eq 'mail_list_owner'){
@@ -2836,13 +2900,13 @@ sub append_message_to_file {
 	
 	my $report ;
 	
-	
-	$report .= "Appending Email to '$action'\n"; 
+	my $file = $DADA::Config::TMP . '/bounced_messages-' . $list . '.mbox'; 
+	$report .= "Appending Email to '$file'\n"; 
 	    
-	$action = DADA::App::Guts::make_safer($action); 
+	$file = DADA::App::Guts::make_safer($file); 
 			
-	open(APPENDLOG, ">>$action") or die $!; 
-	chmod($DADA::Config::FILE_CHMOD, $action); 
+	open(APPENDLOG, ">>$file") or die $!; 
+	chmod($DADA::Config::FILE_CHMOD, $file); 
 	print APPENDLOG "\n" . $message; 
 	close(APPENDLOG) or die $!; 
 
@@ -3375,8 +3439,13 @@ sub parse_for_qmail {
 						
 						}elsif ($data =~ /Remote host said:\s(\d{3}.*)/){ 
 						
-							$diag->{'Diagnostic-Code'} = $1; 
-						
+							$diag->{'Diagnostic-Code'} = $1;
+						}
+						elsif ($data =~ /\d{3}(\-|\s)\d+\.\d+\.\d+/) { #550-5.1.1 550 5.1.1
+							if(!exists($diag->{'Diagnostic-Code'})){ 
+								$diag->{'Diagnostic-Code'} = ''; 
+							}
+							$diag->{'Diagnostic-Code'} .= $data; 
 						}elsif ($data =~ /(.*)\s\(\#(\d+\.\d+\.\d+)\)/){ 
 						
 							$diag->{'Diagnostic-Code'} = $1; 
@@ -4207,7 +4276,10 @@ sub log_action {
 
     if ($Have_Log) {
         my $d;
+		# DEV: should probably be using Text::CSV (or whatever)... 
         for ( keys %$diagnostics ) {
+			$diagnostics->{$_} =~ s/(\n|\r)/\\n/g; 
+			# $diagnostics->{$_} =~ s/:/\:/g; # Or, what I'm literally meaning, here. 		
             $d .= $_ . ': ' . $diagnostics->{$_} . ', ';
         }
         print BOUNCELOG "[$time]\t$list\t$action\t$email\t$d\n";
@@ -4925,6 +4997,51 @@ sub default_cgi_template {
 
 return q { 
 
+
+
+	<script type="text/javascript">
+	    //<![CDATA[
+		Event.observe(window, 'load', function() {
+		  show_bounce_scorecard();	
+		});
+
+		function show_bounce_scorecard(){ 
+	
+			new Ajax.Updater(
+				'bounce_scorecard', '<!-- tmpl_var Plugin_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						flavor:       'cgi_scorecard',
+						page:         $F('page')
+					},
+				onCreate: 	 function() {
+					$('bounce_scorecard_loading').update('<p class="alert">Loading...</p>');
+				},
+				onComplete: 	 function() {
+
+					$('bounce_scorecard_loading').update('<p class="alert">&nbsp;</p>');
+					Effect.BlindDown('bounce_scorecard');
+				}	
+			}
+		);
+
+		}
+		
+		function turn_page(page_to_turn_to) { 
+			Form.Element.setValue('page', page_to_turn_to) ; 
+			show_bounce_scorecard();
+		}
+		
+		
+
+		
+		
+	//]]>
+			
+	</script>
+	
+		
 	<!-- tmpl_set name="title" value="Bounce Handling" -->
 	
      <p id="breadcrumbs">
@@ -4953,17 +5070,13 @@ Bounce Email Scorecard
  </legend> 
  
  <p>The bounce scorecard keeps track of addresses that bounce back messages sent to it. </p> 
- 
 
-<form action="<!-- tmpl_var Plugin_URL -->" method="get"> 
- <input type="hidden" name="flavor" value="cgi_scorecard" /> 
+<div id="bounce_scorecard_loading"><p>&nbsp;</p></div>
+<div id="bounce_scorecard"></div> 
 
-<div class="buttonfloat"> 
- <input type="submit" value="View The Bounce Scorecard..." class="cautionary" />
-</div> 
-<div class="floatclear"></div> 
-
-</form>
+<form> 
+<input type="hidden" name="page" value="1" id="page" /> 
+</form> 
 
  
 </fieldset> 
@@ -5137,77 +5250,6 @@ Bounce Email Scorecard
 </legend> 
 
 
-};
-
-}
-
-
-
-
-sub bounce_score_table { 
-
-return q{ 
-    
-    
-    
-  <!-- tmpl_var PAGER_JAVASCRIPT -->
-  
-  <form>
-  
-<table cellpadding="2" cellspacing="0" border="0" width="100%">
-<tr>
-<td style="background:#fff"><p><strong>Email</strong></p>
-
-<td style="background:#fff" width="30">
-<p><strong>Score</strong></p>
-</td>
-</tr>
-
-</table> 
-
-   <div style="max-height: 400px; overflow: auto; border:1px solid black">
-    <table cellpadding="2" cellspacing="0" border="0" width="100%">
-     
-    
-    
- <!-- tmpl_loop PAGER_DATA_LIST -->
-   
-    
- 
-    
-   <tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!--/tmpl_if-->>
-
-    <td>
-        <a href="<!-- tmpl_var PLUGIN_URL -->?flavor=cgi_bounce_score_search&amp;query=<!-- tmpl_var PAGER_DATA_COL_0 ESCAPE=URL -->"> 
-         <!-- tmpl_var PAGER_DATA_COL_0 -->
-        </a> 
-      </td>
-        
-      <td  width="30">
-       <!-- tmpl_var PAGER_DATA_COL_1 -->
-     </td>
-    </tr>
-  <!-- /tmpl_loop -->
-  
-</table>
-
-</div> 
-
-    <table cellpadding="2" cellspacing="0" border="0" width="100%">
-
-<tr>
-   <td style="background:#DDD" colspan="3" align="center">
-    <!-- tmpl_var PAGER_PREV -->
-    <!-- tmpl_var PAGER_JUMP -->
-    <!-- tmpl_var PAGER_NEXT -->
-  </td>
- </tr>
- 
- </table> 
- 
-<!-- tmpl_var PAGER_HIDDEN -->
-  </form>
-  
 };
 
 }
