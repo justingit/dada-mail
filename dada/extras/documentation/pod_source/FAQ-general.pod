@@ -81,10 +81,11 @@ When the screen is refreshed, the popup menu will be replaced by a text box. You
 
 If you do not remember the B<list short name> of the list you want to log into, you can also simply log into any list with your Dada Mail Root Password and once logged in, switch which list you want to work on, by selecting the list you want to work inthe popup menu on the upper left hand side of the List Control Panel. All lists available will be listed in this popup menu. 
 
+=head2 How Do I Delete a List? 
 
-=head2  How Do I Delete a List? 
+Log into your mailing list using the B<Dada Mail Root Password>.
 
-Log into a list using the Dada Mail Root Password. You'll see the option under the, B<Manage List> heading. 
+In the left-hand menu, go to B<Your Mailing List -E<gt> Delete This Mailing List >
 
 =head2 Can I rename the mail.cgi file?
 
