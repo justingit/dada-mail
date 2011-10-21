@@ -649,8 +649,9 @@ sub send {
             }
             
            if( $local_li->{group_list}                    == 1 && 
-               $fields{from_mass_send}                   == 1 &&
-               defined($local_li->{discussion_pop_email}) # safegaurd?
+               $fields{from_mass_send}                    == 1 &&
+               defined($local_li->{discussion_pop_email}	# safegaurd?
+			) 
              ){
                
 				$live_mailing_settings  =~ s/\-t//; # remove any, "-t" flags... 

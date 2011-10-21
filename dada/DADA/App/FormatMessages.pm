@@ -724,14 +724,13 @@ sub _format_headers {
 	
 	
 	require Email::Address; 
-
-	#carp q{ $self->{ls}->param('group_list') } . $self->{ls}->param('group_list'); 
+		
+	# DEV: this if() shouldn't really need to be here, if this is only used for 
+	# discussion messages
+	# 
 	
 	if($self->{ls}->param('group_list') == 1){
-		
-
-		#carp q{ $self->{ls}->param('prefix_list_name_to_subject_list_name_to_subject') } . $self->{ls}->param('prefix_list_name_to_subject'); 
-		
+			
 		if($self->{ls}->param('prefix_list_name_to_subject') == 1){ 
 
 			my $subject = $entity->head->get('Subject', 0);
@@ -752,30 +751,44 @@ sub _format_headers {
 	    	$entity->head->delete('From'); 
 	    }
 	}
+	
+	# DEV:  Send mass mailings via sendmail, OTHER THAN via a discussion list, 
+	# still uses the -t flag - perhaps I should just go and change that? 
+	# I also really shouldn't have to do some of these checks twice, as 
+	# _format_headers should only be called for discussion lists. 
+	# 
+	
+	if(
+		   $self->mass_mailing              == 1
+		&& $self->{ls}->param('group_list') != 1
+		&& defined($self->{ls}->param('discussion_pop_email'))
+	) { 
+		if($entity->head->count('Cc')) { 
+			$entity->head->delete('Cc');
+		}
+		
+		if($entity->head->count('Bcc')) { 
+	    	$entity->head->delete('Bcc');
+    	}
+    }
 
-	$entity->head->delete('Cc')
-	    if $entity->head->count('Cc');
-    $entity->head->delete('Bcc')
-        if $entity->head->count('Bcc');
-        
 	
 	
 	$entity->head->delete('Message-ID'); 
 	
-	
-	
 	# If there ain't a TO: header, add one: 
 	# (usually, this happens (or doesn't happen) in program
 	
-	$entity->head->add('To', 
-		safely_encode( $self->{ls}->param('list_owner_email'))
-	)
-	 if ! $entity->head->get('To', 0); 
-	
+	if ( ! $entity->head->get('To', 0) ) { 
+		$entity->head->add(
+			'To', 
+			safely_encode( $self->{ls}->param('list_owner_email'))
+		);
+	}
+	 
 	
 	# If there's already a To: header, put a phrase in it, to make it look
 	# nice...
-	
 	
 	my $test_To = $entity->head->get('To', 0); 
 	chomp($test_To); 
@@ -813,9 +826,12 @@ sub _format_headers {
          $entity->head->add('X-BeenThere', safely_encode($self->{ls}->param('discussion_pop_email'))); 
    } 
    
- 	return $entity;
+	return $entity;
 	
 }
+
+
+
 
 sub _encode_header { 
 	
