@@ -132,48 +132,40 @@ sub flush_old_scores {
 sub raw_scorecard { 
 
     my $self = shift; 
-    my ($offset, $rows) = @_; 
+	my ($args) = @_;
+	
+	if(!exists($args->{-page})){ 
+		$args->{-page} = 1; 
+	}
+	if(!exists($args->{-entries})){ 
+		$args->{-entries} = 100; 
+	}    
     
-    
-    $self->_open_db; 
+    $self->_open_db;
+    my $scorecard = [];
 
-    
-    my @keys = sort keys %{$self->{DB_HASH}};
-
-    my $return_array = [];
-    
-    
-     for (my $x = 0; $x < $rows; $x++) {
-        push(@$return_array, [ $keys[$offset + $x], $self->{DB_HASH}->{$keys[$offset + $x]}]);
-     }
-
-	# THis may have hidden bugs: 
-	#
-	#my $count = 0; 
-	#for(@keys){ 
-#		if($count < $offset){ 
-#			$count++; 
-#			next; 
-#		}
-#		else { 
-#			$count++; 
-#			push(@$return_array, [ $_, $self->{DB_HASH}->{$_}]);
-#			last if $count >= $rows; 
-#		} 
-#	}
+	foreach(sort keys %{$self->{DB_HASH}}){ 
+	   	push(@$scorecard, {
+			email => $_,
+			score => $self->{DB_HASH}->{$_}, 
+		});
+	}
 
     $self->_close_db;
     
-	if($#$return_array < ($rows-1)){ 
-		$return_array[$rows-1] = undef; 
-	}
+	my $total = 0; 
+	   $total = $self->num_scorecard_rows; 
 	
+	my $begin = ($args->{-entries} - 1) * ($args->{-page} - 1);
+	my $end   = $begin + ($args->{-entries} - 1);
 
-    #$rows = keys %{$self->{DB_HASH}}; 
-    
-    return ($return_array);
-     
-     
+	if($end > $total - 1){ 
+		$end = $total -1; 
+	}
+
+	@$scorecard = @$scorecard[$begin..$end];
+	
+    return ($scorecard);
 	
 }
 

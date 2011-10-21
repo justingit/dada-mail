@@ -1593,7 +1593,12 @@ sub cgi_scorecard {
     my $bsk = DADA::App::BounceScoreKeeper->new(-List => $list); 
 
 	my $num_rows = $bsk->num_scorecard_rows;   
-	my $scorecard = $bsk->raw_scorecard($page, 100); 
+	my $scorecard = $bsk->raw_scorecard(
+		{ 
+			-page => $page, 
+			-entries => 100, 
+		}
+	); 
 
     my $pager = undef; 
 	my $pages_in_set = [];

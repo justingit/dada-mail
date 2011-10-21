@@ -44,15 +44,17 @@ ok($bsk->num_scorecard_rows == 1);
 $bsk->tally_up_scores({'test2@example.com' => 10});
 ok($bsk->num_scorecard_rows == 2);
 
-my $something = $bsk->raw_scorecard(0, 100); 
+my $something = $bsk->raw_scorecard({-page => 1, -entries => 100}); 
 
-# a hundred thingies?
-ok($#$something == 99); 
-ok($something->[0][0] eq 'test2@example.com'); 
-ok($something->[0][1] == 10); 
 
-ok($something->[1][0] eq 'test@example.com'); 
-ok($something->[1]->[1] == 12, $something->[1]->[1] . ' == 12');
+#diag '$#$something ' . $#$something; 
+
+ok($#$something == 1, '1!'); 
+ok($something->[0]->{email} eq 'test2@example.com'); 
+ok($something->[0]->{score} == 10); 
+
+ok($something->[1]->{email} eq 'test@example.com'); 
+ok($something->[1]->{score} == 12, $something->[1]->{score} . ' == 12');
 
 
 $bsk->erase; 
@@ -86,14 +88,14 @@ $bsk->tally_up_scores(
 #diag($bsk->num_scorecard_rows); 
 ok($bsk->num_scorecard_rows == 3, $bsk->num_scorecard_rows . ' == 3');
 
-my $rsc = $bsk->raw_scorecard(0, 100); 
+my $rsc = $bsk->raw_scorecard({-page => 1, -entries => 100}); 
 
 	# a hundred thingies?
-ok($#$rsc == 99); 
+ok($#$rsc == 2); 
 
-ok($rsc->[0]->[1] == 5, ($rsc->[0]->[0] . ': ' . $rsc->[0]->[1]) . ' == 5'); 
-ok($rsc->[1]->[1] == 5, ($rsc->[1]->[0] . ': ' .$rsc->[1]->[1]) . ' == 5'); 
-ok($rsc->[2]->[1] == 5, ($rsc->[2]->[0] . ': ' .$rsc->[2]->[1]) . ' == 5'); 
+ok($rsc->[0]->{score} == 5, ($rsc->[0]->{email} . ': ' . $rsc->[0]->{score}) . ' == 5'); 
+ok($rsc->[1]->{score} == 5, ($rsc->[1]->{email} . ': ' . $rsc->[1]->{score}) . ' == 5'); 
+ok($rsc->[2]->{score} == 5, ($rsc->[2]->{email} . ': ' . $rsc->[2]->{score}) . ' == 5'); 
 
 
 

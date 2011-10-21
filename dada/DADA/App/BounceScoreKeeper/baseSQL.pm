@@ -184,9 +184,14 @@ sub flush_old_scores {
 sub raw_scorecard { 
 
     my $self = shift; 
-    #my ($offset, $rows) = @_; 
-	my $page = shift; 
-	my $rows = shift || 100; 
+	my ($args) = @_;
+	
+	if(!exists($args->{-page})){ 
+		$args->{-page} = 1; 
+	}
+	if(!exists($args->{-entries})){ 
+		$args->{-entries} = 100; 
+	}
 	
     
 	my $query = 'SELECT email, score FROM ' . $self->{sql_params}->{bounce_scores_table} .' WHERE list = ? ORDER BY email'; 
@@ -198,8 +203,6 @@ sub raw_scorecard {
 	
 
 	while( my ($email, $score) = $sth->fetchrow_array){ 
-		#$all_scores->{$email} = $score; 
-		#push(@keys, $email); 
 		push(@$scorecard, {
 			email => $email,
 			score => $score,
@@ -212,8 +215,8 @@ sub raw_scorecard {
 	   $total = $self->num_scorecard_rows; 
 	
 	
-	my $begin = ($rows - 1) * ($page - 1);
-	my $end   = $begin + ($rows - 1);
+	my $begin = ($args->{-entries} - 1) * ($args->{-page} - 1);
+	my $end   = $begin + ($args->{-entries} - 1);
 
 	if($end > $total - 1){ 
 		$end = $total -1; 
