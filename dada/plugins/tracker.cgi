@@ -147,7 +147,7 @@ sub default_tmpl {
 				onComplete: 	 function() {
 
 					$('show_table_results_loading').update('<p class="alert">&nbsp;</p>');
-					Effect.Highlight('show_table_results');
+					Effect.BlindDown('show_table_results');
 				}	
 				});
 		}
@@ -173,7 +173,7 @@ sub default_tmpl {
 				},
 				onComplete: 	 function() {
 					$('subscriber_history_img_loading').update('<p class="alert">&nbsp;</p>');
-					Effect.Highlight('subscriber_history_img');
+					Effect.BlindDown('subscriber_history_img');
 				}	
 				});
 		}
@@ -191,7 +191,7 @@ sub default_tmpl {
 				},
 				onComplete: 	 function() {
 					$('domain_breakdown_img_loading').update('<p class="alert">&nbsp;</p>');
-					Effect.Highlight('domain_breakdown_img');
+					Effect.BlindDown('domain_breakdown_img');
 				}	
 				});
 		}
@@ -2559,12 +2559,16 @@ goes a long way.
 It's interesting to track one or a view links using the redirect tags to track clickthroughs, but another
 trend to follow would be how all links in an email message fare against each other. 
 
-=head3 Discussion Lists and Clickthrough Tracker
+=head3 Discussion Lists and Clickthrough Tracking
 
 Discussion Lists may not benefit as much from clickthrough tracking and tracking all lists in a message, since 
 the list owner gives up control over the content of a message. Rather, the members of a list create the content and 
 having clickthrough URLs in place of the actual URLs written can get in the way of discussions. There's also a chance that 
 nefarious URLs can be hidden within a clickthrough URL - not something you want. 
+
+=head2 Sending a Test Message? 
+
+Test message will not be shown in the Tracker's reports. 
 
 =head1 Compatibility with clickthrough_tracking.cgi
 

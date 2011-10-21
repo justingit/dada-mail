@@ -14,7 +14,7 @@
 			
 			if(state == 'hide'){
 				if(togglin.style.display == ""){	
-					Effect.Fade('configuration');
+					Effect.BlindUp('configuration');
 				}
 				else { 
 					/* ... */
@@ -22,7 +22,7 @@
 			}
 			if(state == 'show'){ 
 				if(togglin.style.display == "none"){
-					Effect.Appear('configuration');
+					Effect.BlindDown('configuration');
 				}
 			}
 			else { 
@@ -41,22 +41,22 @@
 			
 				var togglin = document.getElementById( 'sql_info' );
 				if(togglin.style.display != ""){	
-						Effect.Appear('sql_info');
+						Effect.BlindDown('sql_info');
 				}
 			}
 			else { 
-				Effect.Fade('sql_info');
+				Effect.BlindUp('sql_info');
 			}
 		}	
 		function Toggle_dada_files_dirOptions() { 
 			var dada_files_dir_setup_choice = Form.getInputs('installform','radio','dada_files_dir_setup').find(function(radio) { return radio.checked; }).value;				
 			if(dada_files_dir_setup_choice == 'auto'){ 
-				Effect.Fade('manual_dada_files_dir_setup');
+				Effect.BlindUp('manual_dada_files_dir_setup');
 			}
 			else { 
 				var togglin = document.getElementById( 'manual_dada_files_dir_setup' );
 				if(togglin.style.display != ""){	
-						Effect.Appear('manual_dada_files_dir_setup');
+						Effect.BlindDown('manual_dada_files_dir_setup');
 				}
 			}
 
