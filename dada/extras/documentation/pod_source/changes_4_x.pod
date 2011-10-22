@@ -2,6 +2,30 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.8.3
+
+=head2 Summary 4.8.3
+
+This release consists of fixes for issues found in the 4.8.3 release.
+
+=head2 Bug Fixes 4.8.3
+
+=head3 Verbose errors in the error log?
+
+https://github.com/justingit/dada-mail/issues/226
+
+=head3 "Advanced Templating Syntax" does not work for Mass Mailings
+
+https://github.com/justingit/dada-mail/issues/225
+
+=head3 Tracker: Internet Explorer and Display Problems
+
+https://github.com/justingit/dada-mail/issues/173
+
+=head3 Dada Bridge strips Cc and Bcc headers from list emails
+
+https://github.com/justingit/dada-mail/issues/224
+
 =head1 4.8.2
 
 =head2 Summary 4.8.2
