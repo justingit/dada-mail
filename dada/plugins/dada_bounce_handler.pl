@@ -2181,154 +2181,174 @@ sub cl_main {
 	}elsif(defined($version)){ 
 		&version(); 
 	}
-	
-	 if(!$Plugin_Config->{Server} ||
-	       !$Plugin_Config->{Username} || 
-	       !$Plugin_Config->{Password}
-	    ){ 
-	        print "The Server Username and/password haven't been filled out, stopping." 
-	            if $verbose;        
-	            return;
-	    }
-	
-	print "Testing is enabled.\n\n"
-		if $test; 
-	print "Making POP3 Connection...\n" 
-	    if $verbose; 
-	
-	
-	require DADA::App::POP3Tools;
-	
-	my $lock_file_fh; 
-	if($Plugin_Config->{Enable_POP3_File_Locking} == 1){ 
-		$lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
+	else { 
+		parse_all_bounces(
 			{
-				name => 'dada_bounce_handler.lock'
+				-list    => $list, 
+				-test    => $test, 
+				-verbose => $verbose, 
 			}
-		);
-	}
-	
-	my $pop = DADA::App::POP3Tools::mail_pop3client_login(
-	    { 
-        server    => $Plugin_Config->{Server}, 
-        username  => $Plugin_Config->{Username}, 
-        password  => $Plugin_Config->{Password},
-		port      => $Plugin_Config->{Port}, 
-        USESSL    => $Plugin_Config->{USESSL},
-        AUTH_MODE => $Plugin_Config->{AUTH_MODE},
-        verbose   => $verbose, 
-        
-        }
-    ); 
-    
-    
-    
-    
-    my @delete_list = (); 
-    
-    my @List = $pop->List; 
-    
-    if(!$List[0]){ 
-    
-        print "No bounces to handle.\n"
-            if $verbose;
-    }
-    else { 
-    
-        MSGCHECK:
-        for my $msg_info(@List){ 
-         
-        my ($msgnum, $msgsize) = split('\s+', $msg_info);
-        #for my $msgnum (sort { $a <=> $b } keys %$msgnums) {
-                    
-            my $delete = undef; 
-            
-            #if($msgnums->{$msgnum} > $Plugin_Config->{Max_Size_Of_Any_Message}){ 
-            if($msgsize > $Plugin_Config->{Max_Size_Of_Any_Message}){
-                print "\tWarning! Message size ( " . $msgsize . " ) is larger than the maximum size allowed ( " . $Plugin_Config->{Max_Size_Of_Any_Message} . ")"
-                        if $verbose; 
-                warn  "dada_bounce_handler.pl $App_Version: Warning! Message size ( " . $msgsize . " ) is larger than the maximum size allowed ( " . $Plugin_Config->{Max_Size_Of_Any_Message} . ")";
-                
-                $delete = 1; 
-                
-            }
-            else { 
-                    
-               my $msg = $pop->Retrieve($msgnum); 
-               my $full_msg = $msg;     
-                
-        
-                eval { 
-                
-                    $delete = parse_bounce(-message => $full_msg); 
-                };
-                if($@){ 
-                     
-                    warn  "dada_bounce_handler.pl - irrecoverable error processing message. Skipping message (sorry!): $@"; 
-                    print "dada_bounce_handler.pl - irrecoverable error processing message. Skipping message (sorry!): $@"
-                    if $verbose; 
-                    
-                    $delete = 1; 
-                
-                }
-                
-            }
-            
-            if($delete == 1){ 
-                push(@delete_list, $msgnum); 
-            }
-            
-            
-            #if ($messages_viewed >= $Plugin_Config->{MessagesAtOnce}){ 
-            if(($#delete_list + 1) >= $Plugin_Config->{MessagesAtOnce}){ 
-            
-                print "\n\nThe limit has been reached of the amount of messages to be looked at for this execution\n\n"
-                    if $verbose;
-                last MSGCHECK; 
-            
-            }
-    
-    
-        } 
-        
-        if(! $debug){ 
-        	for(@delete_list){ 
-	
-	            print "deleting message #: $_\n" 
-					if $verbose;
-					
-	            $pop->Delete($_);            
-	        }
-		}
-		else {
-			print "Skipping Message Deletion - Debugging is on.\n"; 
-		}
-                    
-        
-        #$pop->quit();
-         $pop->Close; 
-         
-    	if($Plugin_Config->{Enable_POP3_File_Locking} == 1){ 
-	        DADA::App::POP3Tools::_unlock_pop3_check(
-				{
-					name => 'dada_bounce_handler.lock',
-					fh   => $lock_file_fh, 
-				},
-			);
-		}
-		
-		
-        print "\nSaving Scores...\n\n"
-           if $verbose; 			
-        save_scores($Score_Card); 
-        
-        remove_bounces($Remove_List) 
-			if ! $debug; 
-        
-        &close_log; 
-
+		); 
     }
 }
+
+
+
+
+sub parse_all_bounces {
+
+    my ($args)  = @_;
+    my $list    = $args->{-list};
+    my $test    = $args->{-test};
+    my $verbose = $args->{-verbose};
+
+    if (   !$Plugin_Config->{Server}
+        || !$Plugin_Config->{Username}
+        || !$Plugin_Config->{Password} )
+    {
+        print
+          "The Server Username and/password haven't been filled out, stopping."
+          if $verbose;
+        return;
+    }
+
+    print "Testing is enabled.\n\n"
+      if $test;
+    print "Making POP3 Connection...\n"
+      if $verbose;
+
+    require DADA::App::POP3Tools;
+
+    my $lock_file_fh;
+    if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
+        $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
+            { name => 'dada_bounce_handler.lock' } );
+    }
+
+    my $pop = DADA::App::POP3Tools::mail_pop3client_login(
+        {
+            server    => $Plugin_Config->{Server},
+            username  => $Plugin_Config->{Username},
+            password  => $Plugin_Config->{Password},
+            port      => $Plugin_Config->{Port},
+            USESSL    => $Plugin_Config->{USESSL},
+            AUTH_MODE => $Plugin_Config->{AUTH_MODE},
+            verbose   => $verbose,
+
+        }
+    );
+
+    my @delete_list = ();
+
+    my @List = $pop->List;
+
+    if ( !$List[0] ) {
+
+        print "No bounces to handle.\n"
+          if $verbose;
+    }
+    else {
+
+      MSGCHECK:
+        for my $msg_info (@List) {
+
+            my $delete = undef;
+            my ( $msgnum, $msgsize ) = split( '\s+', $msg_info );
+
+            if ( $msgsize > $Plugin_Config->{Max_Size_Of_Any_Message} ) {
+                print "\tWarning! Message size ( " 
+                  . $msgsize
+                  . " ) is larger than the maximum size allowed ( "
+                  . $Plugin_Config->{Max_Size_Of_Any_Message} . ")"
+                  if $verbose;
+                warn
+"dada_bounce_handler.pl $App_Version: Warning! Message size ( "
+                  . $msgsize
+                  . " ) is larger than the maximum size allowed ( "
+                  . $Plugin_Config->{Max_Size_Of_Any_Message} . ")";
+
+                $delete = 1;
+
+            }
+            else {
+
+                my $msg      = $pop->Retrieve($msgnum);
+                my $full_msg = $msg;
+
+                eval {
+
+                    $delete = parse_bounce(	 					 
+							{
+								-list    => $list, 
+								-test    => $test, 
+								-verbose => $verbose, 
+								-message => $full_msg 
+							}
+					);
+                };
+                if ($@) {
+
+                    warn
+"dada_bounce_handler.pl - irrecoverable error processing message. Skipping message (sorry!): $@";
+                    print
+"dada_bounce_handler.pl - irrecoverable error processing message. Skipping message (sorry!): $@"
+                      if $verbose;
+
+                    $delete = 1;
+
+                }
+
+            }
+
+            if ( $delete == 1 ) {
+                push( @delete_list, $msgnum );
+            }
+
+            if ( ( $#delete_list + 1 ) >= $Plugin_Config->{MessagesAtOnce} ) {
+
+                print
+"\n\nThe limit has been reached of the amount of messages to be looked at for this execution\n\n"
+                  if $verbose;
+                last MSGCHECK;
+
+            }
+        }
+
+    }
+    if ( !$debug ) {
+        for (@delete_list) {
+
+            print "deleting message #: $_\n"
+              if $verbose;
+
+            $pop->Delete($_);
+        }
+    }
+    else {
+        print "Skipping Message Deletion - Debugging is on.\n";
+    }
+
+    $pop->Close;
+
+    if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
+        DADA::App::POP3Tools::_unlock_pop3_check(
+            {
+                name => 'dada_bounce_handler.lock',
+                fh   => $lock_file_fh,
+            },
+        );
+    }
+
+    print "\nSaving Scores...\n\n"
+      if $verbose;
+    save_scores($Score_Card);
+
+    remove_bounces($Remove_List)
+      if !$debug;
+
+    &close_log;
+}
+
 
 sub init { 
 
@@ -2371,9 +2391,11 @@ sub parse_bounce {
     my $only_this_list = $list; 
     my $msg_report = ''; 
 
-	my %args = (-message => undef, @_); 
-				
-	my $message = $args{-message}; 
+   my ($args)   = @_;
+    my $list    = $args->{-list};
+    my $test    = $args->{-test};
+    my $verbose = $args->{-verbose};
+	my $message = $args->{-message}; 
 	 
 	my $email       = '';
 	my $list        = '';
@@ -4153,7 +4175,14 @@ sub test_script {
     my $i = 1;
     for my $testfile (@files_to_test) {
         print "test #$i: $testfile\n" . '-' x 60 . "\n";
-        parse_bounce( -message => openfile($testfile) );
+        parse_bounce(
+			{ 
+				-list    => $list, 
+				-test    => $test, 
+				-verbose => $verbose,
+				-message => openfile($testfile),
+			}
+		);
         ++$i;
     }
     exit;
