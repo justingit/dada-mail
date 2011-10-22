@@ -468,43 +468,41 @@ like($r, qr/info: $li->{info}/);
 undef($r); 
 undef($d);
 
-
-
-
-### 
-# Let's set our own subscriber information, and see if it comes back: 
-=cut
-$d = q{ 
-Subscriber: <!-- tmpl_var subscriber.email --> 
-}; 
-
-
-$r =  DADA::Template::Widgets::screen(
-   {
-   -data                     => \$d, 
-   -list_settings_vars_param => {-list => $list}, 
-   }
-);
-
-like($r, qr/list: $list/); 
-like($r, qr/list_name: $li->{list_name}/); 
-like($r, qr/list_owner_email: $li->{list_owner_email}/); 
-like($r, qr/info: $li->{info}/); 
-
-undef($r); 
-undef($d);
-
-=cut
-
-
-
-
-###
-
-
-
-  
 ###/ screen
+
+#
+#
+# validate_screen
+
+my @expr_tmpls = qw(
+	expr1.tmpl	
+); 
+for(@expr_tmpls){ 
+	my $d = dada_test_config::slurp('t/corpus/templates/' . $_); 
+	my ($status, $errors) = DADA::Template::Widgets::validate_screen(
+		{ 
+			-data => \$d, 
+			-expr => 1, 
+		}
+	); 
+	ok($status == 1); 
+	ok($errors eq undef); 
+}
+for(@expr_tmpls){ 
+	my $d = dada_test_config::slurp('t/corpus/templates/' . $_); 
+	my ($status, $errors) = DADA::Template::Widgets::validate_screen(
+		{ 
+			-data => \$d, 
+			-expr => 0, 
+		}
+	); 
+	ok($status == 0); 
+	ok(defined($errors)); 
+}
+# /validate_screen
+
+
+
 
 
 ### dada_backwards_compatibility
