@@ -2,7 +2,6 @@ package DadaMailInstaller;
 
 # Gimme some errors in my browser for debugging
 use Carp qw(croak carp);
-$Carp::Verbose = 1;
 use CGI::Carp qw(fatalsToBrowser);
 
 
