@@ -508,11 +508,11 @@ sub _format_text {
 				require DADA::Template::Widgets; 
 				my ($valid, $errors);
 				
-				if($self->no_list != 1){ 
+				if($self->no_list == 1){ 
 				
 					($valid, $errors)  = DADA::Template::Widgets::validate_screen(
 						{
-							-data => \$content
+							-data => \$content,
 							-expr => 1, 
 						}
 					); 
