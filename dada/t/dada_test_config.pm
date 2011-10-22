@@ -58,6 +58,8 @@ MySQL_test_enabled
 PostgreSQL_test_enabled
 SQLite_test_enabled
 
+slurp
+
 );
 
 
@@ -533,5 +535,26 @@ sub PostgreSQL_test_enabled {
 sub SQLite_test_enabled { 
 	return $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{test_enabled}; 
 }
+
+
+
+sub slurp { 
+		
+		my ($file) = @_;
+
+        local($/) = wantarray ? $/ : undef;
+        local(*F);
+        my $r;
+        my (@r);
+
+        open(F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $file) || die "open $file: $!";
+        @r = <F>;
+        close(F) || die "close $file: $!";
+
+        return $r[0] unless wantarray;
+        return @r;
+
+}
+
 
 
