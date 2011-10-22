@@ -506,7 +506,27 @@ sub _format_text {
 				
 				# simple validation
 				require DADA::Template::Widgets; 
-				my ($valid, $errors) = DADA::Template::Widgets::validate_screen({-data => \$content}); 
+				my ($valid, $errors);
+				
+				if($self->no_list != 1){ 
+				
+					($valid, $errors)  = DADA::Template::Widgets::validate_screen(
+						{
+							-data => \$content
+							-expr => 1, 
+						}
+					); 
+				}
+				else { 
+					($valid, $errors)  = DADA::Template::Widgets::validate_screen(
+						{
+							-data => \$content,
+							-expr => $self->{ls}->param('enable_email_template_expr'), 
+						}
+					); 
+				}
+				
+				
 				if($valid == 0){ 
 					my $munge = quotemeta('/fake/path/for/non/file/template'); 
 					$errors =~ s/$munge/line/; 
