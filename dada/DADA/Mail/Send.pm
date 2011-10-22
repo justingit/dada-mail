@@ -22,8 +22,14 @@ use DADA::App::Guts;
 		
 use vars qw($AUTOLOAD); 
 use Carp qw(croak carp);
-   $Carp::Verbose = 1; 
-use Fcntl qw(:DEFAULT :flock	O_WRONLY	O_TRUNC		O_CREAT	LOCK_EX	);
+use Fcntl qw(
+	:DEFAULT 
+	:flock
+	O_WRONLY
+	O_TRUNC
+	O_CREAT
+	LOCK_EX
+);
 
 my %allowed = (
 	
@@ -649,9 +655,8 @@ sub send {
             }
             
            if( $local_li->{group_list}                    == 1 && 
-               $fields{from_mass_send}                    == 1 &&
-               defined($local_li->{discussion_pop_email}	# safegaurd?
-			) 
+               $fields{from_mass_send}                   == 1 &&
+               defined($local_li->{discussion_pop_email}) # safegaurd?
              ){
                
 				$live_mailing_settings  =~ s/\-t//; # remove any, "-t" flags... 
@@ -2588,7 +2593,7 @@ sub _email_batched_finished_notification {
 
 	# Amazon SES seems to not allow you to attach message/rfc822 attachments. 
 	# Not sure why!
-	warn q{ $self->{ls}->{sending_method} } . $self->{ls}->{sending_method}; 
+	# warn q{ $self->{ls}->{sending_method} } . $self->{ls}->{sending_method}; 
 	if($self->{ls}->param('sending_method') eq 'amazon_ses'){ 
 		warn "YES! " . q{$self->{ls}->{sending_method} eq 'amazon_ses'}; 
 	}
@@ -2600,6 +2605,10 @@ sub _email_batched_finished_notification {
 	        Data => safely_decode( safely_encode( $att ) ),
 	    );
 
+	}
+	my $expr = 0; 
+	if($self->{ls}->param('enable_email_template_expr') == 1){ 
+		$expr = 1; 
 	}
 
     my $n_entity = $fm->email_template(
@@ -2614,7 +2623,8 @@ sub _email_batched_finished_notification {
                 total_mailing_time  => $total_time,
                 last_email_send_to  => $args{-last_email},
                 message_subject     => safely_encode( $fm->_decode_header($fields->{Subject} )),
-            }
+            }, 
+			-expr => $expr, 
         }
     );
 
@@ -2757,7 +2767,11 @@ sub _mail_merge {
                                     }
                              );
 	
-
+	my $expr = 0; 
+	if($self->{ls}->param('enable_email_template_expr') == 1){ 
+		$expr = 1; 
+	}
+							
     my $entity = $fm->email_template(
                     {
                         -entity                   => $orig_entity,                         
@@ -2770,6 +2784,7 @@ sub _mail_merge {
 								message_id => $labeled_data{message_id},
                                %labeled_data,
                             },
+						-expr => $expr, 
                     }
                 );
 

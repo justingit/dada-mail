@@ -54,7 +54,6 @@ sub send_generic_email {
 		$li = $ls->get;
 	}
 	
-
 	# We'll use this, later
 	require DADA::Mail::Send;  
 	my $mh = DADA::Mail::Send->new(
@@ -72,10 +71,16 @@ sub send_generic_email {
 
 	# /We'll use this, later			
 	
-	my $expr = 0; 	
-	if($li->{enable_email_template_expr} == 1){ 
-		$expr = 1;
+	my $expr = 1; # Default it to 1, if there's no list. 
+	if(exists($args->{-list})){ 
+		if($ls->param('enable_email_template_expr') == 1){ 
+			$expr = 1; 
+		}
+		else { 
+			$expr = 0; 
+		}
 	}
+
 	
 	if(!exists($args->{-headers})){ 
 		$args->{-headers} = {}; 
@@ -156,8 +161,7 @@ my $entity = $fm->email_template(
 					-data => safely_encode($email_str),
 				}
 			),
-  			-expr => 1,
-			#-expr   => $expr, 
+  			-expr   => $expr, 
 			%{$args->{-tmpl_params}},
         }
     );
