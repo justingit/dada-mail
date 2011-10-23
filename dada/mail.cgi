@@ -2877,8 +2877,6 @@ sub view_list {
 
     }elsif($process eq 'set_white_list_prefs'){
 
-        my $enable_white_list = $q->param('enable_white_list') || 0;
-
         $ls->save_w_params(
 			{
 				-associate => $q, 

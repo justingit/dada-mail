@@ -366,7 +366,7 @@
 	      White List Options
 		 </legend>
 		
-			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="white_list_option_form">
+			<form action="<!-- tmpl_var S_PROGRAM_URL -->"  name="white_list_option_form" method="post">
 			 <input type="hidden" name="f"       value="view_list" />
 			 <input type="hidden" name="type"    value="<!-- tmpl_var type -->" />
 			 <input type="hidden" name="process" value="set_white_list_prefs" />
@@ -375,7 +375,7 @@
 		   <tr>
 		    <td>
 		     <p>
-		      <input type="checkbox" name="enable_white_list" id="enable_white_list" value="1" <!-- tmpl_if enable_white_list -->checked="checked"<!--/tmpl_if--> />
+		      <input type="checkbox" name="enable_white_list" id="enable_white_list" value="1" <!-- tmpl_if list_settings.enable_white_list -->checked="checked"<!--/tmpl_if--> />
 		     </p>
 		    </td>
 		    <td>
