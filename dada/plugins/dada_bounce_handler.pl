@@ -2201,152 +2201,180 @@ sub parse_all_bounces {
     my $list    = $args->{-list};
     my $test    = $args->{-test};
     my $verbose = $args->{-verbose};
+	my @all_lists_to_check = (); 
+	if(defined($list)){ 
+		push(@all_lists_to_check, $list); 
+	}
+	else { 
+		# Guess, we'll do 'em all! 
+		@all_lists_to_check = available_lists(); 
+	}
 
-    if (   !$Plugin_Config->{Server}
-        || !$Plugin_Config->{Username}
-        || !$Plugin_Config->{Password} )
-    {
-        print
-          "The Server Username and/password haven't been filled out, stopping."
-          if $verbose;
-        return;
-    }
 
-    print "Testing is enabled.\n\n"
-      if $test;
-    print "Making POP3 Connection...\n"
-      if $verbose;
+	for my $list_to_check(@all_lists_to_check){ 
 
-    require DADA::App::POP3Tools;
+		my $ls = DADA::MailingList::Settings->new({-list => $list_to_check}); 
+		my $lh = DADA::MailingList::Subscribers->new({-list => $list_to_check});
+		
+		print "Checking Bounces for Mailing List: " . $ls->param('list_name') . "\n"
+		 if $verbose; 
+		 
+	    if (   !$Plugin_Config->{Server}
+	        || !$Plugin_Config->{Username}
+	        || !$Plugin_Config->{Password} )
+	    {
+	        print
+	          "The Server Username and/password haven't been filled out, stopping."
+	          if $verbose;
+	        return;
+	    }
 
-    my $lock_file_fh;
-    if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
-        $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
-            { name => 'dada_bounce_handler.lock' } );
-    }
+	    print "Testing is enabled.\n\n"
+	      if $test;
+	    print "Making POP3 Connection...\n"
+	      if $verbose;
 
-    my $pop = DADA::App::POP3Tools::mail_pop3client_login(
-        {
-            server    => $Plugin_Config->{Server},
-            username  => $Plugin_Config->{Username},
-            password  => $Plugin_Config->{Password},
-            port      => $Plugin_Config->{Port},
-            USESSL    => $Plugin_Config->{USESSL},
-            AUTH_MODE => $Plugin_Config->{AUTH_MODE},
-            verbose   => $verbose,
+	    require DADA::App::POP3Tools;
 
-        }
-    );
+	    my $lock_file_fh;
+	    if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
+	        $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
+	            { name => 'dada_bounce_handler.lock' } );
+	    }
 
-    my @delete_list = ();
+	    my $pop = DADA::App::POP3Tools::mail_pop3client_login(
+	        {
+	            server    => $Plugin_Config->{Server},
+	            username  => $Plugin_Config->{Username},
+	            password  => $Plugin_Config->{Password},
+	            port      => $Plugin_Config->{Port},
+	            USESSL    => $Plugin_Config->{USESSL},
+	            AUTH_MODE => $Plugin_Config->{AUTH_MODE},
+	            verbose   => $verbose,
 
-    my @List = $pop->List;
+	        }
+	    );
 
-    if ( !$List[0] ) {
+	    my @delete_list = ();
 
-        print "No bounces to handle.\n"
-          if $verbose;
-    }
-    else {
+	    my @List = $pop->List;
 
-      MSGCHECK:
-        for my $msg_info (@List) {
+	    if ( !$List[0] ) {
 
-            my $delete = undef;
-            my ( $msgnum, $msgsize ) = split( '\s+', $msg_info );
+	        print "No bounces to handle.\n"
+	          if $verbose;
+	    }
+	    else {
 
-            if ( $msgsize > $Plugin_Config->{Max_Size_Of_Any_Message} ) {
-                print "\tWarning! Message size ( " 
-                  . $msgsize
-                  . " ) is larger than the maximum size allowed ( "
-                  . $Plugin_Config->{Max_Size_Of_Any_Message} . ")"
-                  if $verbose;
-                warn
-"dada_bounce_handler.pl $App_Version: Warning! Message size ( "
-                  . $msgsize
-                  . " ) is larger than the maximum size allowed ( "
-                  . $Plugin_Config->{Max_Size_Of_Any_Message} . ")";
+	      MSGCHECK:
+	        for my $msg_info (@List) {
 
-                $delete = 1;
+	            my $need_to_delete = undef;
+	            my ( $msgnum, $msgsize ) = split( '\s+', $msg_info );
 
-            }
-            else {
+	            if ( $msgsize > $Plugin_Config->{Max_Size_Of_Any_Message} ) {
+	                print "\tWarning! Message size ( " 
+	                  . $msgsize
+	                  . " ) is larger than the maximum size allowed ( "
+	                  . $Plugin_Config->{Max_Size_Of_Any_Message} . ")"
+	                  if $verbose;
+	                warn
+	"dada_bounce_handler.pl $App_Version: Warning! Message size ( "
+	                  . $msgsize
+	                  . " ) is larger than the maximum size allowed ( "
+	                  . $Plugin_Config->{Max_Size_Of_Any_Message} . ")";
 
-                my $msg      = $pop->Retrieve($msgnum);
-                my $full_msg = $msg;
+	                $need_to_delete = 1;
 
-                eval {
+	            }
+	            else {
 
-                    $delete = parse_bounce(	 					 
-							{
-								-list    => $list, 
-								-test    => $test, 
-								-verbose => $verbose, 
-								-message => $full_msg 
-							}
-					);
-                };
-                if ($@) {
+	                my $msg      = $pop->Retrieve($msgnum);
+	                my $full_msg = $msg;
 
-                    warn
-"dada_bounce_handler.pl - irrecoverable error processing message. Skipping message (sorry!): $@";
-                    print
-"dada_bounce_handler.pl - irrecoverable error processing message. Skipping message (sorry!): $@"
-                      if $verbose;
+	                my $msg_report  = '';
+	                my $rule_report = '';
+	                eval {
 
-                    $delete = 1;
+	                    ( $need_to_delete, $msg_report, $rule_report ) =
+	                      parse_bounce(
+	                        {
+	                            -list    => $list_to_check,
+	                            -test    => $test,
+	                            -verbose => $verbose,
+	                            -message => $full_msg
+	                        }
+	                      );
+	                };
+	                if ($@) {
 
-                }
+	                    warn
+	"dada_bounce_handler.pl - irrecoverable error processing message. Skipping message (sorry!): $@";
+	                    print
+	"dada_bounce_handler.pl - irrecoverable error processing message. Skipping message (sorry!): $@"
+	                      if $verbose;
 
-            }
+	                    $need_to_delete = 1;
 
-            if ( $delete == 1 ) {
-                push( @delete_list, $msgnum );
-            }
+	                }
+	                if ($verbose) {
+	                    print $msg_report;
+	                    print $rule_report;
+	                }
 
-            if ( ( $#delete_list + 1 ) >= $Plugin_Config->{MessagesAtOnce} ) {
+	            }
 
-                print
-"\n\nThe limit has been reached of the amount of messages to be looked at for this execution\n\n"
-                  if $verbose;
-                last MSGCHECK;
+	            if ( $need_to_delete == 1 ) {
+	                push( @delete_list, $msgnum );
+	            }
 
-            }
-        }
+	            if ( ( $#delete_list + 1 ) >= $Plugin_Config->{MessagesAtOnce} ) {
 
-    }
-    if ( !$debug ) {
-        for (@delete_list) {
+	                print
+	"\n\nThe limit has been reached of the amount of messages to be looked at for this execution\n\n"
+	                  if $verbose;
+	                last MSGCHECK;
 
-            print "deleting message #: $_\n"
-              if $verbose;
+	            }
+	        }
 
-            $pop->Delete($_);
-        }
-    }
-    else {
-        print "Skipping Message Deletion - Debugging is on.\n";
-    }
+	    }
+	    if ( !$debug ) {
+	        for (@delete_list) {
 
-    $pop->Close;
+	            print "deleting message #: $_\n"
+	              if $verbose;
 
-    if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
-        DADA::App::POP3Tools::_unlock_pop3_check(
-            {
-                name => 'dada_bounce_handler.lock',
-                fh   => $lock_file_fh,
-            },
-        );
-    }
+	            $pop->Delete($_);
+	        }
+	    }
+	    else {
+	        print "Skipping Message Deletion - Debugging is on.\n";
+	    }
 
-    print "\nSaving Scores...\n\n"
-      if $verbose;
-    save_scores($Score_Card);
+	    $pop->Close;
 
-    remove_bounces($Remove_List)
-      if !$debug;
+	    if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
+	        DADA::App::POP3Tools::_unlock_pop3_check(
+	            {
+	                name => 'dada_bounce_handler.lock',
+	                fh   => $lock_file_fh,
+	            },
+	        );
+	    }
 
-    &close_log;
+	    print "\nSaving Scores...\n\n"
+	      if $verbose;
+	    save_scores($Score_Card);
+
+	    remove_bounces($Remove_List)
+	      if !$debug;
+
+	    &close_log;
+	
+		print "Finished for" . $ls->param('list_name') . "\n"
+			if $verbose; 
+	}
 }
 
 
@@ -2385,129 +2413,110 @@ sub init {
 
 
 
+sub parse_bounce {
 
-sub parse_bounce { 
+    my $msg_report = '';
 
-    my $only_this_list = $list; 
-    my $msg_report = ''; 
-
-   my ($args)   = @_;
+    my ($args)  = @_;
     my $list    = $args->{-list};
     my $test    = $args->{-test};
-    my $verbose = $args->{-verbose};
-	my $message = $args->{-message}; 
-	 
-	my $email       = '';
-	my $list        = '';
-	my $diagnostics = {};
-	
-	my $entity; 
-	
-	eval { $entity = $parser->parse_data($message) };
-	
-	if(!$entity){
-	
-		warn   "No MIME entity found, this message could be garbage, skipping";
-		$msg_report .=  "No MIME entity found, this message could be garbage, skipping"
-			if $verbose;
-			
-	}else{ 
-	
-		($email, $list, $diagnostics) = run_all_parses($entity);
+    my $message = $args->{-message};
 
-        # Means, either there is no $list set, or the $list that *is* set is the one we want set. 
-        
-        
-      #  if(! defined($only_this_list) ){ 
-      #      die "NO DEFINED! LIST!"; 
-      #      
-      #  }
-       if(! defined($only_this_list) || ($list eq $only_this_list)){ 
-        
-            my $rule_report; 
-            
-            $msg_report .= generate_nerd_report($list, $email, $diagnostics) if $verbose;  
-                my $rule = find_rule_to_use($list, $email, $diagnostics); 
-                $msg_report .= "\nUsing Rule: $rule\n\n" 
-                    if $verbose; 	
-            if(!bounce_from_me($entity)){			
-                
-                ###
-                
-                my $valid_list_1;
-                if(DADA::App::Guts::check_if_list_exists(-List=>$list) != 0){
-	    	 		$valid_list_1 = 1; 
-	    	 	}
-	    	 	else { 
-	    	 	    $valid_list_1  = 0; 
-	    	 	}
-	    	 	
-	    	 	if($valid_list_1 == 1){ 
-	    	 	
-                    my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
-                    if($lh->check_for_double_email(-Email => $email) == 1){ 
-                    
-                        if(!$debug){ 
-                            #push(@$Rules_To_Carry_Out, [$rule, $list, $email, $diagnostics, $message]);
-                            $rule_report = carry_out_rule($rule, $list, $email, $diagnostics, $message); 
-							
-							
+    my $email       = '';
+    my $found_list  = '';
+    my $diagnostics = {};
 
+    my $entity;
 
-                        } 
-                    
-                    }
-                    else { 
-                        print "Bounced Message is from an email address that isn't subscribed to: $list. Ignorning.\n"
-                            if $verbose;
-                    }
-                }
-                else { 
-                    print 'List, ' . $list . ' doesn\'t exist. Ignoring and deleting.'
-						if $verbose;
-                }
-                ###
-                
-            }else{ 
-                
-                print "Bounced message was sent by myself. Ignoring and deleting\n"
-                    if $verbose; 
-                warn "Bounced message was sent by myself. Ignoring and deleting";
-            }
-        
-            if($verbose){ 
-                
-                print '-' x 72 . "\n"; 
-                $entity->dump_skeleton; 
-                print '-' x 72 . "\n";
-                
-                print $msg_report; 
-                
-                print $rule_report; 
-            }
-            
-            return 1; 
-        }
-        elsif (! $list){ 
-        
-            if($verbose){ 
-                print '-' x 72 . "\n"; 
-                $entity->dump_skeleton; 
-                print '-' x 72 . "\n";
-                
-                print "No valid list found, ignoring and deleting...\n";
-            }
-               
-            return 1; 
-        
-        }
-        else { 
-            return 0; 
-        }
-        
-	}
-	#sleep(1);
+    eval { $entity = $parser->parse_data($message) };
+
+    ##########################################################################
+    # Tests!
+    # DEV: Should really be made into their own subs
+    #
+    # Is this a valid email message?
+    if ( !$entity ) {
+
+        warn "No MIME entity found, this message could be garbage, skipping";
+        $msg_report .=
+          "No MIME entity found, this message could be garbage, skipping";
+        return ( 1, $msg_report, '' );
+
+    }
+
+    # Run it through the ringer.
+    ( $email, $found_list, $diagnostics ) = run_all_parses($entity);
+
+    # Test:  Can't find a list?
+    if ( !$found_list ) {
+
+        #$msg_report .= '-' x 72 . "\n";
+        #$entity->dump_skeleton;
+        #$msg_report .= '-' x 72 . "\n";\
+
+        $msg_report .= "No valid list found, ignoring and deleting...\n";
+
+        return ( 1, $msg_report, '' );
+    }
+
+    # Test:  Hey, is this a bounce from me?!
+    if ( bounce_from_me($entity) ) {
+        $msg_report .=
+          "Bounced message was sent by myself. Ignoring and deleting\n";
+		warn
+          "Bounced message was sent by myself. Ignoring and deleting";
+        return ( 1, $msg_report, '' );
+    }
+
+    # Is this from a mailing list I'm currently lookin gat?
+    if ( $found_list ne $list ) {
+
+        # Save it for another go.
+        return ( 0, '', '' );
+    }
+
+    # /Tests!
+    ##########################################################################
+
+    # OK, all tests done? Let's get to it:
+
+    my $rule_report = '';
+    $msg_report .= generate_nerd_report( $found_list, $email, $diagnostics );
+    my $rule = find_rule_to_use( $found_list, $email, $diagnostics );
+    $msg_report .= "\nUsing Rule: $rule\n\n";
+
+    ###
+
+    # Is this needed?
+    my $valid_list_1;
+    if ( DADA::App::Guts::check_if_list_exists( -List => $found_list ) == 0 ) {
+        $msg_report .=
+          'List, ' . $found_list . ' doesn\'t exist. Ignoring and deleting.';
+        return ( 1, $msg_report, '' );
+    }
+
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $found_list } );
+    if ( $lh->check_for_double_email( -Email => $email ) != 1 ) {
+        $msg_report .=
+"Bounced Message is from an email address that isn't subscribed to: $found_list. Ignorning.\n";
+        return ( 1, $msg_report, '' );
+    }
+
+    if ( !$debug ) {
+
+        $rule_report = carry_out_rule( $rule, $found_list, $email, $diagnostics, $message );
+    }
+###
+
+    #print '-' x 72 . "\n";
+    #$entity->dump_skeleton;
+    #print '-' x 72 . "\n";
+
+    return ( 1, $msg_report, $rule_report );
+
 }
+
+
 
 sub run_all_parses { 
 
@@ -4175,14 +4184,18 @@ sub test_script {
     my $i = 1;
     for my $testfile (@files_to_test) {
         print "test #$i: $testfile\n" . '-' x 60 . "\n";
-        parse_bounce(
+        my ($need_to_delete, $msg_report, $rule_report) = parse_bounce(
 			{ 
 				-list    => $list, 
 				-test    => $test, 
-				-verbose => $verbose,
 				-message => openfile($testfile),
 			}
 		);
+		if($verbose){ 
+			# Which, it is, since we set it up there, 
+			print $msg_report; 
+			# No need to show rule report, since this is a "dry" run
+		}
         ++$i;
     }
     exit;
