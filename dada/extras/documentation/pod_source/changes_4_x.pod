@@ -6,7 +6,7 @@
 
 =head2 Summary 4.8.3
 
-This release consists of fixes for issues found in the 4.8.3 release.
+This release consists of fixes for issues found in the 4.8.2 release.
 
 =head2 Bug Fixes 4.8.3
 
@@ -49,6 +49,11 @@ https://github.com/justingit/dada-mail/issues/222
 =head3 Setting, "Continue to Allow Black Listed Addresses to be Invited/Subscribed Via The List Control Panel. " doesn't work
 
 https://github.com/justingit/dada-mail/issues/223
+
+=head3 "Activate White List " option broken
+
+https://github.com/justingit/dada-mail/issues/227
+
 
 =head1 4.8.1
 
