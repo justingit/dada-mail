@@ -583,7 +583,7 @@ sub is_activated {
 
 sub activate {
     my $self = shift;
-    my ($args) = shift;
+    my ($args) = @_;
 
 	if(!$self->exists){ 
 		croak "Profile does not exist!"; 
@@ -1041,7 +1041,7 @@ sub send_update_profile_email_email {
 sub is_valid_activation {
 
     my $self = shift;
-    my ($args) = shift;
+    my ($args) = @_; 
 
     my $status = 1;
     my $errors = { invalid_auth_code => 0, };

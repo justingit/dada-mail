@@ -73,10 +73,6 @@ sub mail_pop3client_login {
 		$params->{DEBUG} = 1;	
 	}
 	
-#	print "params:"; 
-#	use Data::Dumper; 
-#	print Dumper($params); 
-	
     print "\tLogging into POP3 server: " . $args->{server} . "\n"
         if $args->{verbose};
     
@@ -87,12 +83,9 @@ sub mail_pop3client_login {
        $pop->Connect() >= 0 || die $pop->Message();
        
        if($pop->Count == -1){ 
-			# use Data::Dumper; 
-			# die Dumper($args, $params); 
             die "\tConnection to '" . $args->{server} . "' wasn't successful: " . $pop->Message();;
        }
        else { 
-       
             print "\tPOP3 Login succeeded.\n"
                 if $args->{verbose}; 
             print "\n\tMessage count: " . $pop->Count . "\n"

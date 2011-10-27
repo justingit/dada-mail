@@ -1592,7 +1592,7 @@ sub pop3_login {
         my $pop = undef;
 
         eval {
-            $pop = DADA::App::POP3Tools::mail_pop3client_login(
+           	my ($pop, $status, $log) =  DADA::App::POP3Tools::mail_pop3client_login(
                 {
                     server   => $server,
                     username => $username,

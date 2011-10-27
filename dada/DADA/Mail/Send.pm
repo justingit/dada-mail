@@ -2430,6 +2430,8 @@ sub _cipher_decrypt {
 
 sub _pop_before_smtp { 
 	my $self = shift; 
+	my $status = 0; 
+	
 	require DADA::Security::Password; 
 	
 	my %args = (-pop3_server         => $self->{ls}->param('pop3_server'),
@@ -2451,9 +2453,9 @@ sub _pop_before_smtp {
 		$args{-pop3_username}   = make_safer($args{-pop3_username});
 		$args{-pop3_password}   = make_safer($args{-pop3_password});
 		
-		return undef if ! $args{-pop3_server};
-		return undef if ! $args{-pop3_username}; 
-		return undef if ! $args{-pop3_password}; 
+		return (undef, 0, '') if ! $args{-pop3_server};
+		return (undef, 0, '') if ! $args{-pop3_username}; 
+		return (undef, 0, '') if ! $args{-pop3_password}; 
 		
         require DADA::App::POP3Tools; 
         
@@ -2463,7 +2465,7 @@ sub _pop_before_smtp {
 								}
 							);
         
-        my $pop = DADA::App::POP3Tools::mail_pop3client_login(
+        my ($pop, $status, $log) = DADA::App::POP3Tools::mail_pop3client_login(
 	
             {
                 server    => $args{-pop3_server},
@@ -2484,7 +2486,7 @@ sub _pop_before_smtp {
 				fh   => $lock_file_fh, 
 			},
 		);
-        return $count; 
+        return ($status); 
                 
 
 	}
