@@ -135,970 +135,9 @@ $Plugin_Config->{Plugin_Name} = 'Mystery Girl';
 # End of Optional Settings.
 #---------------------------------------------------------------------#
 
-my $Score_Card = {};
 
-my $Rules = [
 
-    #{
-    #	hotmail_notification => {
-    #		Examine => {
-    #			Message_Fields => {
-    #			   'Remote-MTA'          => [qw(Windows_Live)],
-    #				Bounce_From_regex    =>  [qr/staff\@hotmail.com/],
-    #				Bounce_Subject_regex => [qr/complaint/],
-    #			},
-    #
-    #			Data => {
-    #				Email => 'is_valid',
-    #				List  => 'is_valid',
-    #			}
-    #		},
-    #		Action => {
-    #			unsubscribe_bounced_email	=> 'from_list',
-    #		}
-    #	}
-    #},
-
-    {
-        qmail_delivery_delay_notification => {
-            Examine => {
-                Message_Fields => {
-                    Guessed_MTA => [qw(Qmail)],
-                    'Diagnostic-Code_regex' =>
-                      [qr/The mail system will continue delivery attempts/],
-                },
-
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #nothing!
-            }
-        }
-    },
-
-    {
-        over_quota => {
-            Examine => {
-                Message_Fields => {
-                    Action                  => [qw(failed Failed)],
-                    Status                  => [qw(5.2.2 4.2.2 5.0.0 5.1.1)],
-                    'Final-Recipient_regex' => [ (qr/822/) ],
-                    'Diagnostic-Code_regex' => [
-                        (
-qr/552|exceeded storage allocation|over quota|storage full|mailbox full|disk quota exceeded|Mail quota exceeded|Quota violation/
-                        )
-                    ]
-                },
-
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #mail_list_owner => 'over_quota_message',
-                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
-            }
-        }
-    },
-
-    {
-        hotmail_over_quota => {
-            Examine => {
-                Message_Fields => {
-                    Action                  => [qw(failed)],
-                    Status                  => [qw(5.2.3)],
-                    'Final-Recipient_regex' => [ (qr/822/) ],
-                    'Diagnostic-Code_regex' =>
-                      [ (qr/larger than the current system limit/) ]
-                },
-
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #mail_list_owner => 'over_quota_message',
-                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
-            }
-        }
-    },
-
-    {
-        over_quota_obscure_mta => {
-            Examine => {
-                Message_Fields => {
-                    Action                  => [qw(failed)],
-                    Status                  => [qw(5.0.0)],
-                    'Final-Recipient_regex' => [ (qr/LOCAL\;\<\>/) ],
-                },
-
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #mail_list_owner => 'over_quota_message',
-                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
-            }
-        }
-    },
-
-    {
-        over_quota_obscure_mta_two => {
-            Examine => {
-
-                Message_Fields => {
-                    Action => [qw(failed)],
-                    Status => [qw(4.2.2)],
-                },
-
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #mail_list_owner => 'over_quota_message',
-                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
-            }
-        }
-    },
-
-    {
-        yahoo_over_quota => {
-            Examine => {
-                Message_Fields => {
-                    Action                  => [qw(failed)],
-                    Status                  => [qw(5.0.0)],
-                    'Remote-MTA_regex'      => [ (qr/yahoo.com/) ],
-                    'Final-Recipient_regex' => [ (qr/822/) ],
-                    'Diagnostic-Code_regex' => [ (qr/over quota/) ],
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #mail_list_owner => 'over_quota_message',
-                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
-            }
-        }
-    },
-
-    {
-        yahoo_over_quota_two => {
-            Examine => {
-                Message_Fields => {
-                    'Remote-MTA'            => [qw(yahoo.com)],
-                    'Diagnostic-Code_regex' => [ (qr/over quota/) ],
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #mail_list_owner => 'over_quota_message',
-                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
-            }
-        }
-    },
-
-    {
-        qmail_over_quota => {
-            Examine => {
-                Message_Fields => {
-
-                    Guessed_MTA             => [qw(Qmail)],
-                    Status                  => [qw(5.2.2 5.x.y)],
-                    'Diagnostic-Code_regex' => [
-                        (
-qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox full|storage full/
-                        )
-                    ],
-
-                },
-
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #mail_list_owner => 'over_quota_message',
-                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
-            }
-        }
-    },
-
-    {
-        over_quota_552 => {
-            Examine => {
-                Message_Fields => {
-                    'Diagnostic-Code_regex' =>
-                      [ (qr/552 recipient storage full/) ],
-                },
-
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #mail_list_owner => 'over_quota_message',
-                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
-            }
-        }
-    },
-
-    {
-        qmail_tmp_disabled => {
-            Examine => {
-                Message_Fields => {
-
-                    Guessed_MTA             => [qw(Qmail)],
-                    Status                  => [qw(4.x.y)],
-                    'Diagnostic-Code_regex' => [ (qr/temporarily disabled/) ],
-
-                },
-
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action =>
-              { add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score}, }
-        }
-    },
-
-    {
-        delivery_time_expired => {
-            Examine => {
-                Message_Fields => {
-                    Status_regex => [qr(/4.4.7|delivery time expired/)],
-                    Action_regex => [qr(/Failed|failed/)],
-                    'Final-Recipient_regex' => [qr(/822/)],
-
-                },
-
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                # TODO:
-                # Not sure what to put here ATM.
-            }
-        }
-    },
-
-    {
-        status_over_quota => {
-            Examine => {
-                Message_Fields => {
-
-                    Action => [qw(Failed failed)],    #originally Failed
-                    Status => [qr/mailbox full/],     # like, wtf?
-                },
-
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #mail_list_owner => 'over_quota_message',
-                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
-            }
-        }
-    },
-
-    {
-        earthlink_over_quota => {
-            Examine => {
-                Message_Fields => {
-                    'Diagnostic-Code_regex' => [qr/522|Quota violation/],
-                    'Remote-MTA'            => [qw(Earthlink)],
-                },
-
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #mail_list_owner => 'over_quota_message',
-                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
-            }
-        }
-    },
-
-    {
-        qmail_error_5dot5dot1 => {
-            Examine => {
-                Message_Fields => {
-
-                    Guessed_MTA => [qw(Qmail)],
-
-                    #Status                  => [qw(5.1.1)],
-                    'Diagnostic-Code_regex' => [ (qr/551/) ],
-
-                },
-
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action =>
-              { add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score}, }
-        }
-    },
-
-    {
-        qmail2_error_5dot5dot1 => {
-            Examine => {
-                Message_Fields => {
-
-                    Guessed_MTA => [qw(Qmail)],
-                    Status      => [qw(5.1.1)],
-                    'Diagnostic-Code_regex' =>
-                      [ (qr/no mailbox here by that name/) ],
-                },
-
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => { unsubscribe_bounced_email => 'from_list', }
-        }
-    },
-
-    {
-
-        # AOL, apple.com, mac.com, altavista.net, pobox.com...
-        delivery_error_550 => {
-            Examine => {
-                Message_Fields => {
-                    Action                  => [qw(failed)],
-                    Status                  => [qw(5.1.1)],
-                    'Final-Recipient_regex' => [ (qr/822/) ],
-                    'Diagnostic-Code_regex' => [
-                        (
-qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User unknown|No such mail drop/
-                        )
-                    ],
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #unsubscribe_bounced_email => 'from_list',
-                #mail_list_owner => 'user_unknown_message',
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-            }
-          } },
-
-    {
-
-        # same as above, but without the Diagnostic_Code_regex.
-
-        delivery_error_5dot5dot1_status => {
-            Examine => {
-                Message_Fields => {
-                    Action                  => [qw(failed)],
-                    Status                  => [qw(5.1.1)],
-                    'Final-Recipient_regex' => [ (qr/822/) ],
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #unsubscribe_bounced_email => 'from_list',
-                #mail_list_owner => 'user_unknown_message',
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-            }
-          } },
-
-    {
-
-        # Yahoo!
-        delivery_error_554 => {
-            Examine => {
-                Message_Fields => {
-                    Action                  => [qw(failed)],
-                    Status                  => [qw(5.0.0)],
-                    'Diagnostic-Code_regex' => [ (qr/554 delivery error/) ],
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #unsubscribe_bounced_email => 'from_list',
-                #mail_list_owner => 'user_unknown_message',
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-            }
-          } },
-
-    {
-        qmail_user_unknown => {
-            Examine => {
-                Message_Fields => {
-                    Status      => [qw(5.x.y)],
-                    Guessed_MTA => [qw(Qmail)],
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #unsubscribe_bounced_email => 'from_list',
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-            }
-        }
-    },
-
-    {
-        qmail_error_554 => {
-            Examine => {
-                Message_Fields => {
-                    'Diagnostic-Code_regex' => [ (qr/554/) ],
-                    Guessed_MTA => [qw(Qmail)],
-
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #unsubscribe_bounced_email => 'from_list',
-                #mail_list_owner => 'user_unknown_message',
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-            }
-        }
-    },
-
-    {
-        qmail_error_550 => {
-            Examine => {
-                Message_Fields => {
-                    'Diagnostic-Code_regex' => [ (qr/550/) ],
-                    Guessed_MTA => [qw(Qmail)],
-
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #unsubscribe_bounced_email => 'from_list',
-                #mail_list_owner => 'user_unknown_message',
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-            }
-        }
-    },
-
-    {
-        qmail_unknown_domain => {
-            Examine => {
-                Message_Fields => {
-                    Status      => [qw(5.1.2)],
-                    Guessed_MTA => [qw(Qmail)],
-
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #unsubscribe_bounced_email => 'from_list',
-                #mail_list_owner => 'user_unknown_message',
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-            }
-        }
-    },
-
-    {
-
-        # more info:
-        # http://www.qmail.org/man/man1/bouncesaying.html
-
-        qmail_bounce_saying => {
-            Examine => {
-                Message_Fields => {
-                    'Diagnostic-Code_regex' =>
-                      [qr/This address no longer accepts mail./],
-                    Guessed_MTA => [qw(Qmail)],
-
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #unsubscribe_bounced_email => 'from_list',
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-            }
-          } },
-
-    {
-        exim_user_unknown => {
-            Examine => {
-                Message_Fields => {
-                    Status      => [qw(5.x.y)],
-                    Guessed_MTA => [qw(Exim)],
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #unsubscribe_bounced_email => 'from_list',
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-            },
-        }
-    },
-
-    {
-        exchange_user_unknown => {
-            Examine => {
-                Message_Fields => {
-
-                    #Status      => [qw(5.x.y)],
-                    Guessed_MTA             => [qw(Exchange)],
-                    'Diagnostic-Code_regex' => [ (qr/Unknown Recipient/) ],
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                },
-            },
-            Action => {
-
-                #unsubscribe_bounced_email => 'from_list',
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-            }
-        }
-    },
-
-    #{
-    #novell_access_denied => {
-    #	Examine => {
-    #			Message_Fields => {
-    #				#Status         => [qw(5.x.y)],
-    #				'X-Mailer_regex' => [qw(Novell)],
-    #				'Diagnostic-Code_regex' => [(qr/access denied/)],
-    #			},
-    #			Data => {
-    #				Email       => 'is_valid',
-    #				List        => 'is_valid',
-    #			},
-    #
-    #		},
-    #			Action => {
-    #				#unsubscribe_bounced_email => 'from_list',
-    #               add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-    #		}
-    #	}
-    #},
-
-    {
-
-    # note! this should really make no sense, but I believe this is a bounce....
-        aol_user_unknown => {
-            Examine => {
-                Message_Fields => {
-                    Status                  => [qw(2.0.0)],
-                    Action                  => [qw(failed)],
-                    'Reporting-MTA_regex'   => [ (qr/aol\.com/) ],
-                    'Final-Recipient_regex' => [ (qr/822/) ],
-                    'Diagnostic-Code_regex' => [ (qr/250 OK/) ]
-                    ,    # no for real, everything's "OK" #
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #unsubscribe_bounced_email => 'from_list',
-                #mail_list_owner => 'user_unknown_message',
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-            },
-          } },
-
-    {
-
-        user_unknown_5dot3dot0_status => {
-            Examine => {
-                Message_Fields => {
-                    Action                  => [qw(failed)],
-                    Status                  => [qw(5.3.0)],
-                    'Final-Recipient_regex' => [ (qr/822/) ],
-                    'Diagnostic-Code_regex' =>
-                      [ (qr/No such user|Addressee unknown/) ],
-
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #unsubscribe_bounced_email => 'from_list',
-                #mail_list_owner => 'user_unknown_message',
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-            }
-          } },
-
-    {
-        user_inactive => {
-            Examine => {
-                Message_Fields => {
-
-                    Status_regex            => [ (qr/5\.0\.0/) ],
-                    Action                  => [qw(failed)],
-                    'Final-Recipient_regex' => [ (qr/822/) ],
-                    'Diagnostic-Code_regex' =>
-                      [ (qr/user inactive|Bad destination|bad destination/) ],
-
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #unsubscribe_bounced_email => 'from_list',
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-            },
-        }
-    },
-
-    {
-        postfix_5dot0dot0_error => {
-            Examine => {
-                Message_Fields => {
-
-                    Status      => [qw(5.0.0)],
-                    Guessed_MTA => [qw(Postfix)],
-                    Action      => [qw(failed)],
-
-                    #said_regex              => [(qr/550\-Mailbox unknown/)],
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #unsubscribe_bounced_email => 'from_list',
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-            },
-        }
-    },
-
-    {
-        permanent_move_failure => {
-            Examine => {
-                Message_Fields => {
-
-                    Status                  => [qw(5.1.6)],
-                    Action                  => [qw(failed)],
-                    'Final-Recipient_regex' => [ (qr/822/) ],
-                    'Diagnostic-Code_regex' => [
-                        (
-qr/551 not our customer|User unknown|ecipient no longer/
-                        )
-                    ],
-
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #unsubscribe_bounced_email => 'from_list',
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-            },
-        }
-    },
-
-    {
-        unknown_domain => {
-            Examine => {
-                Message_Fields => {
-
-                    Status                  => [qw(5.1.2)],
-                    Action                  => [qw(failed)],
-                    'Final-Recipient_regex' => [ (qr/822/) ],
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-                #unsubscribe_bounced_email => 'from_list',
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-            },
-        }
-    },
-
-    {
-        relaying_denied => {
-            Examine => {
-                Message_Fields => {
-
-                    Status                  => [qw( 5.7.1)],
-                    Action                  => [qw(failed)],
-                    'Final-Recipient_regex' => [ (qr/822/) ],
-                    'Diagnostic-Code_regex' =>
-                      [ (qr/Relaying denied|relaying denied/) ],
-
-                },
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                }
-            },
-            Action => {
-
-            # TODO
-            # Again, not sure quite what to put here - will be silently ignored.
-
-                # NOTE: Sometimes this message is sent by servers of spammers.
-            },
-        }
-    },
-
-#{
-# Supposively permanent error.
-#access_denied => {
-#					Examine => {
-#						Message_Fields => {
-#
-#							Status                  => [qw(5.7.1)],
-#							Action                  => [qw(failed)],
-#						    'Final-Recipient_regex' => [(qr/822/)],
-#						    'Diagnostic-Code_regex' => [(qr/ccess denied/)],
-#
-#					},
-#					Data => {
-#						Email => 'is_valid',
-#						List  => 'is_valid',
-#					}
-#					},
-#					Action => {
-#						#unsubscribe_bounced_email => 'from_list',
-#                        add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-#					},
-#					}
-#},
-
-    {
-
-        unknown_bounce_type => {
-            Examine => {
-                Data => {
-                    Email => 'is_valid',
-                    List  => 'is_valid',
-                },
-            },
-            Action => {
-
-                #mail_list_owner => 'unknown_bounce_type_message',
-                #append_message_to_file => $Plugin_Config->{Log},
-                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
-              }
-
-          } },
-
-    {
-        email_not_found => {
-            Examine => {
-                Data => {
-                    Email => 'is_invalid',
-                    List  => 'is_valid',
-                },
-            },
-            Action => {
-
-                # mail_list_owner => 'email_not_found_message',
-            }
-        }
-    },
-
-    #{
-    #who_knows => {
-    #				Examine => {
-    #					Message_Fields => {},
-    #				},
-    #				Action  => {append_message_to_file => $Plugin_Config->{Log}},
-    #			},
-    #},
-
-];
-
-my $Over_Quota_Subject = "Bounce Handler - warning user over quota";
-my $Over_Quota_Message = qq{
-Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME --> 
-
-I received a message and it needs your attention. It seems
-that the user, <!-- tmpl_var subscriber.email --> is over their email quota. 
-
-This is probably a *temporary* problem, but if the problem persists,
-you may want to unbsubscribe this address. 
-
-I've attached what I was sent, if you're curious (or bored, what have you).  
-
-You can remove this address from your list by clicking this link: 
-
-<!-- tmpl_var list_unsubscribe_link -->
-
-Below is the nerdy diagnostic report: 
------------------------------------------------------------------------
-<!-- tmpl_var report -->
-
-<!-- tmpl_var status_report -->
------------------------------------------------------------------------
-
-- <!-- tmpl_var Plugin_Name -->
-
-};
-
-my $User_Unknown_Subject = "Bounce Handler - warning user doesn't exist";
-my $User_Unknown_Message = qq{
-Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var ROGRAM_NAME -->
-
-I received a message and it needs your attention. It seems
-that the user, <!-- tmpl_var subscriber.email --> doesn't exist, was deleted 
-from the system, kicked the big can, etc. 
-
-This is probably a *permanent* problem and I suggest you unsubscribe the
-email address, but I'll let you have the last judgement. 
-
-I've attached what I was sent, if you're curious (or bored, what have you).  
-
-You can remove this address from your list by clicking this link: 
-
-<!-- tmpl_var list_unsubscribe_link -->
-
-Below is the nerdy diagnostic report: 
------------------------------------------------------------------------
-<!-- tmpl_var report -->
-
-<!-- tmpl_var status_report -->
------------------------------------------------------------------------
-
-- <!-- tmpl_var Plugin_Name -->
-
-};
-
-my $Email_Not_Found_Subject = "Bounce Handler - warning";
-my $Email_Not_Found_Message = qq{
-Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
-
-I received a message and it needs your attention. The message was
-bounced, but I cannot find the email associated with the bounce. 
-
-Either I can't understand the bounced report, or there's a bug
-in my sourcecode. Internet time is lighting fast and I fear I
-may already be reduced to wasted 1's and 0's, *sigh*. 
-
-I've attached what I was sent, if you're curious (or bored, what have you).  
-
-Below is the nerdy diagnostic report: 
------------------------------------------------------------------------
-<!-- tmpl_var report -->
-
-<!-- tmpl_var status_report -->
------------------------------------------------------------------------
-
-- <!-- tmpl_var Plugin_Name -->
-
-};
-
-my $Email_Unknown_Bounce_Type_Subject = "Bounce Handler - warning";
-my $Email_Unknown_Bounce_Type_Message = qq{
-Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
-
-I received a message and it needs your attention. The message was
-bounced, but I dont know for what reason.
-
-Either I can't understand the bounced report, or there's a bug
-in my sourcecode. Internet time is lighting fast and I fear I
-may already be reduced to wasted 1's and 0's, *sigh*. 
-
-I've attached what I was sent, if you're curious (or bored, what have you).  
-
-You can remove this address from your list by clicking this link: 
-
-<!-- tmpl_var list_unsubscribe_link -->
-
-Below is the nerdy diagnostic report: 
------------------------------------------------------------------------
-<!-- tmpl_var report -->
-
-<!-- tmpl_var status_report -->
-
------------------------------------------------------------------------
-
-- <!-- tmpl_var Plugin_Name -->
-
-};
-
-my $Email_Unsubscribed_Because_Of_Bouncing_Subject =
+my $Plugin_Config->{Email_Unsubscribed_Because_Of_Bouncing_Subject} =
 "Unsubscribed from: <!-- tmpl_var list_settings.list_name --> because of excessive bouncing";
 my $Email_Unsubscribed_Because_Of_Bouncing_Message = qq{
 Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
@@ -1163,7 +202,6 @@ my $Remove_List = {};
 
 #my $Bounce_History    = {};
 
-my $Rules_To_Carry_Out = [];
 my $debug              = 0;
 
 my $help = 0;
@@ -2661,6 +1699,821 @@ use vars qw($AUTOLOAD);
 
 my %allowed = ();
 
+my $Score_Card = {};
+
+my $Rules = [
+
+    #{
+    #	hotmail_notification => {
+    #		Examine => {
+    #			Message_Fields => {
+    #			   'Remote-MTA'          => [qw(Windows_Live)],
+    #				Bounce_From_regex    =>  [qr/staff\@hotmail.com/],
+    #				Bounce_Subject_regex => [qr/complaint/],
+    #			},
+    #
+    #			Data => {
+    #				Email => 'is_valid',
+    #				List  => 'is_valid',
+    #			}
+    #		},
+    #		Action => {
+    #			unsubscribe_bounced_email	=> 'from_list',
+    #		}
+    #	}
+    #},
+
+    {
+        qmail_delivery_delay_notification => {
+            Examine => {
+                Message_Fields => {
+                    Guessed_MTA => [qw(Qmail)],
+                    'Diagnostic-Code_regex' =>
+                      [qr/The mail system will continue delivery attempts/],
+                },
+
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                #nothing!
+            }
+        }
+    },
+
+    {
+        over_quota => {
+            Examine => {
+                Message_Fields => {
+                    Action                  => [qw(failed Failed)],
+                    Status                  => [qw(5.2.2 4.2.2 5.0.0 5.1.1)],
+                    'Final-Recipient_regex' => [ (qr/822/) ],
+                    'Diagnostic-Code_regex' => [
+                        (
+qr/552|exceeded storage allocation|over quota|storage full|mailbox full|disk quota exceeded|Mail quota exceeded|Quota violation/
+                        )
+                    ]
+                },
+
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
+            }
+        }
+    },
+
+    {
+        hotmail_over_quota => {
+            Examine => {
+                Message_Fields => {
+                    Action                  => [qw(failed)],
+                    Status                  => [qw(5.2.3)],
+                    'Final-Recipient_regex' => [ (qr/822/) ],
+                    'Diagnostic-Code_regex' =>
+                      [ (qr/larger than the current system limit/) ]
+                },
+
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
+            }
+        }
+    },
+
+    {
+        over_quota_obscure_mta => {
+            Examine => {
+                Message_Fields => {
+                    Action                  => [qw(failed)],
+                    Status                  => [qw(5.0.0)],
+                    'Final-Recipient_regex' => [ (qr/LOCAL\;\<\>/) ],
+                },
+
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
+            }
+        }
+    },
+
+    {
+        over_quota_obscure_mta_two => {
+            Examine => {
+
+                Message_Fields => {
+                    Action => [qw(failed)],
+                    Status => [qw(4.2.2)],
+                },
+
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
+            }
+        }
+    },
+
+    {
+        yahoo_over_quota => {
+            Examine => {
+                Message_Fields => {
+                    Action                  => [qw(failed)],
+                    Status                  => [qw(5.0.0)],
+                    'Remote-MTA_regex'      => [ (qr/yahoo.com/) ],
+                    'Final-Recipient_regex' => [ (qr/822/) ],
+                    'Diagnostic-Code_regex' => [ (qr/over quota/) ],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
+            }
+        }
+    },
+
+    {
+        yahoo_over_quota_two => {
+            Examine => {
+                Message_Fields => {
+                    'Remote-MTA'            => [qw(yahoo.com)],
+                    'Diagnostic-Code_regex' => [ (qr/over quota/) ],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
+            }
+        }
+    },
+
+    {
+        qmail_over_quota => {
+            Examine => {
+                Message_Fields => {
+
+                    Guessed_MTA             => [qw(Qmail)],
+                    Status                  => [qw(5.2.2 5.x.y)],
+                    'Diagnostic-Code_regex' => [
+                        (
+qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox full|storage full/
+                        )
+                    ],
+
+                },
+
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
+            }
+        }
+    },
+
+    {
+        over_quota_552 => {
+            Examine => {
+                Message_Fields => {
+                    'Diagnostic-Code_regex' =>
+                      [ (qr/552 recipient storage full/) ],
+                },
+
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
+            }
+        }
+    },
+
+    {
+        qmail_tmp_disabled => {
+            Examine => {
+                Message_Fields => {
+
+                    Guessed_MTA             => [qw(Qmail)],
+                    Status                  => [qw(4.x.y)],
+                    'Diagnostic-Code_regex' => [ (qr/temporarily disabled/) ],
+
+                },
+
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action =>
+              { add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score}, }
+        }
+    },
+
+    {
+        delivery_time_expired => {
+            Examine => {
+                Message_Fields => {
+                    Status_regex => [qr(/4.4.7|delivery time expired/)],
+                    Action_regex => [qr(/Failed|failed/)],
+                    'Final-Recipient_regex' => [qr(/822/)],
+
+                },
+
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                # TODO:
+                # Not sure what to put here ATM.
+            }
+        }
+    },
+
+    {
+        status_over_quota => {
+            Examine => {
+                Message_Fields => {
+
+                    Action => [qw(Failed failed)],    #originally Failed
+                    Status => [qr/mailbox full/],     # like, wtf?
+                },
+
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
+            }
+        }
+    },
+
+    {
+        earthlink_over_quota => {
+            Examine => {
+                Message_Fields => {
+                    'Diagnostic-Code_regex' => [qr/522|Quota violation/],
+                    'Remote-MTA'            => [qw(Earthlink)],
+                },
+
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
+            }
+        }
+    },
+
+    {
+        qmail_error_5dot5dot1 => {
+            Examine => {
+                Message_Fields => {
+
+                    Guessed_MTA => [qw(Qmail)],
+
+                    #Status                  => [qw(5.1.1)],
+                    'Diagnostic-Code_regex' => [ (qr/551/) ],
+
+                },
+
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action =>
+              { add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score}, }
+        }
+    },
+
+    {
+        qmail2_error_5dot5dot1 => {
+            Examine => {
+                Message_Fields => {
+
+                    Guessed_MTA => [qw(Qmail)],
+                    Status      => [qw(5.1.1)],
+                    'Diagnostic-Code_regex' =>
+                      [ (qr/no mailbox here by that name/) ],
+                },
+
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => { unsubscribe_bounced_email => 'from_list', }
+        }
+    },
+
+    {
+
+        # AOL, apple.com, mac.com, altavista.net, pobox.com...
+        delivery_error_550 => {
+            Examine => {
+                Message_Fields => {
+                    Action                  => [qw(failed)],
+                    Status                  => [qw(5.1.1)],
+                    'Final-Recipient_regex' => [ (qr/822/) ],
+                    'Diagnostic-Code_regex' => [
+                        (
+qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User unknown|No such mail drop/
+                        )
+                    ],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+            }
+          } },
+
+    {
+
+        # same as above, but without the Diagnostic_Code_regex.
+
+        delivery_error_5dot5dot1_status => {
+            Examine => {
+                Message_Fields => {
+                    Action                  => [qw(failed)],
+                    Status                  => [qw(5.1.1)],
+                    'Final-Recipient_regex' => [ (qr/822/) ],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+,
+                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+            }
+          } },
+
+    {
+
+        # Yahoo!
+        delivery_error_554 => {
+            Examine => {
+                Message_Fields => {
+                    Action                  => [qw(failed)],
+                    Status                  => [qw(5.0.0)],
+                    'Diagnostic-Code_regex' => [ (qr/554 delivery error/) ],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+,
+                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+            }
+          } },
+
+    {
+        qmail_user_unknown => {
+            Examine => {
+                Message_Fields => {
+                    Status      => [qw(5.x.y)],
+                    Guessed_MTA => [qw(Qmail)],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                #unsubscribe_bounced_email => 'from_list',
+                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+            }
+        }
+    },
+
+    {
+        qmail_error_554 => {
+            Examine => {
+                Message_Fields => {
+                    'Diagnostic-Code_regex' => [ (qr/554/) ],
+                    Guessed_MTA => [qw(Qmail)],
+
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+            }
+        }
+    },
+
+    {
+        qmail_error_550 => {
+            Examine => {
+                Message_Fields => {
+                    'Diagnostic-Code_regex' => [ (qr/550/) ],
+                    Guessed_MTA => [qw(Qmail)],
+
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+            }
+        }
+    },
+
+    {
+        qmail_unknown_domain => {
+            Examine => {
+                Message_Fields => {
+                    Status      => [qw(5.1.2)],
+                    Guessed_MTA => [qw(Qmail)],
+
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+            }
+        }
+    },
+
+    {
+
+        # more info:
+        # http://www.qmail.org/man/man1/bouncesaying.html
+
+        qmail_bounce_saying => {
+            Examine => {
+                Message_Fields => {
+                    'Diagnostic-Code_regex' =>
+                      [qr/This address no longer accepts mail./],
+                    Guessed_MTA => [qw(Qmail)],
+
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                #unsubscribe_bounced_email => 'from_list',
+                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+            }
+          } },
+
+    {
+        exim_user_unknown => {
+            Examine => {
+                Message_Fields => {
+                    Status      => [qw(5.x.y)],
+                    Guessed_MTA => [qw(Exim)],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                #unsubscribe_bounced_email => 'from_list',
+                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+            },
+        }
+    },
+
+    {
+        exchange_user_unknown => {
+            Examine => {
+                Message_Fields => {
+
+                    #Status      => [qw(5.x.y)],
+                    Guessed_MTA             => [qw(Exchange)],
+                    'Diagnostic-Code_regex' => [ (qr/Unknown Recipient/) ],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                },
+            },
+            Action => {
+
+                #unsubscribe_bounced_email => 'from_list',
+                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+            }
+        }
+    },
+
+    #{
+    #novell_access_denied => {
+    #	Examine => {
+    #			Message_Fields => {
+    #				#Status         => [qw(5.x.y)],
+    #				'X-Mailer_regex' => [qw(Novell)],
+    #				'Diagnostic-Code_regex' => [(qr/access denied/)],
+    #			},
+    #			Data => {
+    #				Email       => 'is_valid',
+    #				List        => 'is_valid',
+    #			},
+    #
+    #		},
+    #			Action => {
+    #				#unsubscribe_bounced_email => 'from_list',
+    #               add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+    #		}
+    #	}
+    #},
+
+    {
+
+    # note! this should really make no sense, but I believe this is a bounce....
+        aol_user_unknown => {
+            Examine => {
+                Message_Fields => {
+                    Status                  => [qw(2.0.0)],
+                    Action                  => [qw(failed)],
+                    'Reporting-MTA_regex'   => [ (qr/aol\.com/) ],
+                    'Final-Recipient_regex' => [ (qr/822/) ],
+                    'Diagnostic-Code_regex' => [ (qr/250 OK/) ]
+                    ,    # no for real, everything's "OK" #
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+            },
+          } },
+
+    {
+
+        user_unknown_5dot3dot0_status => {
+            Examine => {
+                Message_Fields => {
+                    Action                  => [qw(failed)],
+                    Status                  => [qw(5.3.0)],
+                    'Final-Recipient_regex' => [ (qr/822/) ],
+                    'Diagnostic-Code_regex' =>
+                      [ (qr/No such user|Addressee unknown/) ],
+
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+            }
+          } },
+
+    {
+        user_inactive => {
+            Examine => {
+                Message_Fields => {
+
+                    Status_regex            => [ (qr/5\.0\.0/) ],
+                    Action                  => [qw(failed)],
+                    'Final-Recipient_regex' => [ (qr/822/) ],
+                    'Diagnostic-Code_regex' =>
+                      [ (qr/user inactive|Bad destination|bad destination/) ],
+
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                #unsubscribe_bounced_email => 'from_list',
+                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+            },
+        }
+    },
+
+    {
+        postfix_5dot0dot0_error => {
+            Examine => {
+                Message_Fields => {
+
+                    Status      => [qw(5.0.0)],
+                    Guessed_MTA => [qw(Postfix)],
+                    Action      => [qw(failed)],
+
+                    #said_regex              => [(qr/550\-Mailbox unknown/)],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                #unsubscribe_bounced_email => 'from_list',
+                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+            },
+        }
+    },
+
+    {
+        permanent_move_failure => {
+            Examine => {
+                Message_Fields => {
+
+                    Status                  => [qw(5.1.6)],
+                    Action                  => [qw(failed)],
+                    'Final-Recipient_regex' => [ (qr/822/) ],
+                    'Diagnostic-Code_regex' => [
+                        (
+qr/551 not our customer|User unknown|ecipient no longer/
+                        )
+                    ],
+
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                #unsubscribe_bounced_email => 'from_list',
+                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+            },
+        }
+    },
+
+    {
+        unknown_domain => {
+            Examine => {
+                Message_Fields => {
+
+                    Status                  => [qw(5.1.2)],
+                    Action                  => [qw(failed)],
+                    'Final-Recipient_regex' => [ (qr/822/) ],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                #unsubscribe_bounced_email => 'from_list',
+                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+            },
+        }
+    },
+
+    {
+        relaying_denied => {
+            Examine => {
+                Message_Fields => {
+
+                    Status                  => [qw( 5.7.1)],
+                    Action                  => [qw(failed)],
+                    'Final-Recipient_regex' => [ (qr/822/) ],
+                    'Diagnostic-Code_regex' =>
+                      [ (qr/Relaying denied|relaying denied/) ],
+
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+            # TODO
+            # Again, not sure quite what to put here - will be silently ignored.
+
+                # NOTE: Sometimes this message is sent by servers of spammers.
+            },
+        }
+    },
+
+#{
+# Supposively permanent error.
+#access_denied => {
+#					Examine => {
+#						Message_Fields => {
+#
+#							Status                  => [qw(5.7.1)],
+#							Action                  => [qw(failed)],
+#						    'Final-Recipient_regex' => [(qr/822/)],
+#						    'Diagnostic-Code_regex' => [(qr/ccess denied/)],
+#
+#					},
+#					Data => {
+#						Email => 'is_valid',
+#						List  => 'is_valid',
+#					}
+#					},
+#					Action => {
+#						#unsubscribe_bounced_email => 'from_list',
+#                        add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+#					},
+#					}
+#},
+
+    {
+
+        unknown_bounce_type => {
+            Examine => {
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                },
+            },
+            Action => {
+
+                add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
+              }
+
+          } },
+
+    {
+        email_not_found => {
+            Examine => {
+                Data => {
+                    Email => 'is_invalid',
+                    List  => 'is_valid',
+                },
+            },
+            Action => {
+            }
+        }
+    },
+
+];
+
+
+
 my $parser;
 
 sub new {
@@ -3403,11 +3256,6 @@ sub carry_out_rule {
               unsubscribe_bounced_email( $list, $email, $diagnostics,
                 $actions->{$action} );
         }
-        elsif ( $action eq 'mail_list_owner' ) {
-            $report .=
-              mail_list_owner( $list, $email, $diagnostics, $actions->{$action},
-                $message );
-        }
         elsif ( $action eq 'append_message_to_file' ) {
             $report .=
               append_message_to_file( $list, $email, $diagnostics,
@@ -3533,138 +3381,7 @@ sub unsubscribe_bounced_email {
 
 }
 
-sub mail_list_owner {
 
-    my $self = shift;
-    my ( $list, $email, $diagnostics, $action, $message ) = @_;
-
-    my $report = '';
-
-    my $Body;
-    my $Subject;
-
-    if ( $action eq 'over_quota_message' ) {
-        $Subject = $Over_Quota_Subject;
-        $Body    = $Over_Quota_Message;
-    }
-    elsif ( $action eq 'user_unknown_message' ) {
-        $Subject = $User_Unknown_Subject;
-        $Body    = $User_Unknown_Message;
-    }
-    elsif ( $action eq 'email_not_found_message' ) {
-        $Subject = $Email_Not_Found_Subject;
-        $Body    = $Email_Not_Found_Message;
-    }
-    elsif ( $action eq 'unknown_bounce_type_message' ) {
-        $Subject = $Email_Unknown_Bounce_Type_Subject;
-        $Body    = $Email_Unknown_Bounce_Type_Message;
-    }
-    else {
-        warn
-"There's been a misconfiguration somewhere, $Plugin_Config->{Plugin_Name} is about to die..., ";
-        warn "AARRGGGGH!";
-    }
-
-    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
-
-    my $li = $ls->get;
-
-    my ( $sub_status, $sub_errors ) =
-      $lh->unsubscription_check( { -email => $email, } );
-
-    # A little sanity check...
-    if ( $email eq $li->{admin_email} ) {
-        warn "Bounce is from bounce handler, stopping '$action'";
-
-    }
-    elsif (
-        ( $sub_errors->{not_subscribed} == 1 )
-        && (   ( $action ne 'user_unknown_message' )
-            || ( $action ne 'over_quota_message' )
-            || ( $action ne 'email_not_found_message' ) )
-      )
-    {
-        $report .=
-"parsed message contains an email ($email) that's not even subscribed. No reason to tell list owner\n";
-    }
-    else {
-
-        my $mh = DADA::Mail::Send->new(
-            {
-                -list   => $list,
-                -ls_obj => $ls,
-            }
-        );
-
-        my $to = $Plugin_Config->{Send_Messages_To} || $li->{list_owner_email};
-
-        my $msg = MIME::Entity->build(
-
-            To      => $email,
-            From    => $li->{admin_email},
-            Subject => $Subject,
-            Type    => 'multipart/mixed',
-        );
-
-        $msg->attach(
-            Type        => 'text/plain',
-            Disposition => 'inline',
-            Data        => $Body,
-            Encoding    => $li->{plaintext_encoding}
-        );
-
-        $msg->attach(
-            Type        => 'message/rfc822',
-            Disposition => "attachment",
-            Data        => $message
-        );
-
-        my $report = generate_nerd_report( $list, $email, $diagnostics );
-        my $status_report = rfc1893_status( $diagnostics->{Status} );
-
-        require DADA::App::FormatMessages;
-
-        my $fm = DADA::App::FormatMessages->new( -List => $list );
-        $fm->use_header_info(1);
-        $fm->use_email_templates(0);
-
-        $msg = $fm->email_template(
-            {
-                -entity                   => $msg,
-                -subscriber_vars          => { 'subscriber.email' => $email, },
-                -list_settings_vars       => $ls->params,
-                -list_settings_vars_param => { -dot_it => 1 },
-                -vars                     => {
-                    report        => $report,
-                    status_report => $status_report,
-                    Plugin_Name   => $Plugin_Config->{Plugin_Name},
-                    Plugin_Name   => $Plugin_Config->{Plugin_Name},
-                },
-            }
-        );
-
-        # ?
-        my ( $header_str, $body_str ) =
-          $fm->format_headers_and_body( -msg => $msg->as_string );
-
-        $mh->send(
-
-            # Trust me on these :)
-            $mh->return_headers($header_str),
-            'X-BounceHandler' => $Plugin_Config->{Plugin_Name},
-            To                => $to,
-            Body              => $body_str,
-
-        );
-
-        $report .= "mail for: $action is on its way!\n";
-
-    }
-
-    return $report;
-
-}
 
 sub append_message_to_file {
 
@@ -4318,6 +4035,10 @@ use Carp qw(croak carp);
 use vars qw($AUTOLOAD);
 
 my %allowed = ();
+
+
+
+
 
 sub new {
 
@@ -5967,46 +5688,6 @@ to:
 
 Also, changing B<from_list>, to B<from_all_lists> will do the trick. 
 
-I could change the line: 
-
- unsubscribe_bounced_email => 'from_list', 
-
-to: 
-
- mail_list_owner => 'user_unknown_message'
-
-This will, instead of deleting the email automatically, send a message 
-to the list owner, stating that, "Hey, the message bounced, what do you
-want to do?" 
-
-Another example: 
-
- {
- over_quota => {
-	 Examine => {
-		Message_Fields => {
-			Status => [qw(5.2.2)]
-		},
-		Data => { 
-			Email => 'is_valid', 
-			List  => 'is_valid',
-		}
-	},
-	Action => { 
-		mail_list_owner => 'over_quota_message', 
-	},
- }                    
-
-This time, I created a list for messages that get bounced because the
-mailbox is full. This is still considered a hard bounce, but I don't
-want the subscriber removed because they haven't check their inbox 
-during the week. In this case, the B<Action> has been set to: 
-
- mail_list_owner => 'over_quota_message', 
-
-Which will do what it sounds like, it'll mail the list owner a message
-explaining the circumstances. 
-
 Here's a schematic of all the different things you can do: 
 
  {
@@ -6030,9 +5711,6 @@ Here's a schematic of all the different things you can do:
 	},
 	Action => { 
 	           add_to_score             =>  $x, # where, "$x" is a number
-			   mail_list_owner           => 'user_unknown_message', 
-			   mail_list_owner           => 'email_not_found_message', 
-			   mail_list_owner           => 'over_quota_message', 
 			   unsubscribe_bounced_email => 'from_list' | 'from_all_lists',
 	},
  },	
