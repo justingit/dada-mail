@@ -22,7 +22,6 @@ use DADA::App::Guts;
 		
 use vars qw($AUTOLOAD); 
 use Carp qw(croak carp);
-   $Carp::Verbose = 1; 
 use Fcntl qw(:DEFAULT :flock	O_WRONLY	O_TRUNC		O_CREAT	LOCK_EX	);
 
 my %allowed = (

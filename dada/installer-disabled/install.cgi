@@ -1,7 +1,6 @@
 #!/usr/bin/perl -T
 use strict;
 use Carp qw(croak carp);
-$Carp::Verbose = 1;
 use CGI::Carp qw(fatalsToBrowser);
 
 # -T flag stuff. 
