@@ -152,27 +152,28 @@ sub test_bounces {
         $test_type = $args->{-test_type};
     }
 
-    my @files_to_test;
+    my $files_to_test = [];
 
     if ( $test_type eq 'pop3' ) {
         my ( $pop3_obj, $pop3_status, $pop3_log ) = $self->test_pop3;
         return $pop3_log;
     }
     elsif ( -d $test_type ) {
-        @files_to_test = $self->dir_list($test_type);
+        @$files_to_test = $self->dir_list($test_type);
     }
     elsif ( -f $test_type ) {
-        push( @files_to_test, $test_type );
+        push( @$files_to_test, $test_type );
     }
     else {
         return "I don't know what you want me to test!\n";
     }
 
-    if ( scalar @files_to_test > 0 ) {
-        return test_files(
+
+    if ( scalar @$files_to_test > 0 ) {
+        return $self->test_files(
             {
                 -list       => $list,
-                -test_files => [@files_to_test],
+                -test_files => $files_to_test,
             }
         );
     }
@@ -234,14 +235,14 @@ sub test_files {
         $test_files = $args->{-test_files};
     }
 
-    if ( scalar @{$test_files} <= 0 ) {
+    if ( scalar @$test_files <= 0 ) {
         $r .= "no files to test!\n";
         return $r;
     }
 
     my $i = 1;
     for my $testfile (@$test_files) {
-        print "test #$i: $testfile\n" . '-' x 60 . "\n";
+        $r .= "Test #$i: $testfile\n" . '-' x 60 . "\n";
         my ( $need_to_delete, $msg_report, $rule_report ) =
           $self->parse_bounce( { -message => $self->openfile($testfile), } );
 
@@ -316,7 +317,6 @@ sub parse_all_bounces {
         # Guess, we'll do 'em all!
         @all_lists_to_check = available_lists();
     }
-
     for my $list_to_check (@all_lists_to_check) {
 
         my $ls =
@@ -327,9 +327,10 @@ sub parse_all_bounces {
         $log .= "Checking Bounces for Mailing List: "
           . $ls->param('list_name') . "\n";
 
-        if (   !$self->config->{Server}
-            || !$self->config->{Username}
-            || !$self->config->{Password} )
+        if (   !defined($self->config->{Server})
+            || !defined($self->config->{Username})
+            || !defined($self->config->{Password}) 
+		)
         {
             $log .=
 "The Server Username and/password haven't been filled out, stopping.";
@@ -339,7 +340,7 @@ sub parse_all_bounces {
 
         $log .= "Testing is enabled.\n\n"
           if $test;
-        $log .= "Making POP3 Connection...\n";
+        $log .= "Making POP3 Connection to " . $self->config->{Server} . "...\n";
 
         require DADA::App::POP3Tools;
 
@@ -360,6 +361,11 @@ sub parse_all_bounces {
                 AUTH_MODE => $self->config->{AUTH_MODE},
             }
           );
+		if($pop3status != 1){ 
+			$log .= "Status returned $pop3status\n\n$pop3log"; 
+			return $log; 
+		}
+
         $log .= $pop3log;
         if ( $pop3status == 0 ) {
             return $log;
@@ -480,7 +486,7 @@ sub parse_all_bounces {
 
         &close_log;
 
-        $log .= "Finished for" . $ls->param('list_name') . "\n";
+        $log .= "Finished:" . $ls->param('list_name') . "\n";
     }
 
     return $log;
@@ -511,9 +517,9 @@ sub parse_bounce {
     # Is this a valid email message?
     if ( !$entity ) {
 
-        warn "No MIME entity found, this message could be garbage, skipping";
+        warn "No MIME entity found, this message could be garbage, skipping\n";
         $msg_report .=
-          "No MIME entity found, this message could be garbage, skipping";
+          "No MIME entity found, this message could be garbage, skipping\n";
         return ( 1, $msg_report, '' );
 
     }
