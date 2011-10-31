@@ -6,6 +6,7 @@ use lib qw(../../../ ../../../DADA/perllib);
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
 use 5.008_001;
+use Mail::Verp;
 
 use Carp qw(croak carp);
 use vars qw($AUTOLOAD);
@@ -62,7 +63,7 @@ sub run_all_parses {
     my $list        = '';
     my $diagnostics = {};
 
-    $email = find_verp($entity);
+    $email = $self->find_verp($entity);
 
     my ( $gp_list, $gp_email, $gp_diagnostics ) = $self->generic_parse($entity);
 
@@ -168,7 +169,7 @@ sub run_all_parses {
     #small hack, turns, %2 into, '-'
     $list =~ s/\%2d/\-/g;
 
-    $list = $self->strip($list);
+    $list = strip($list);
 
     if ( !$diagnostics->{'Message-Id'} ) {
         $diagnostics->{'Message-Id'} =
@@ -337,7 +338,9 @@ sub find_message_id_in_headers {
     if ( $entity->head->mime_type eq 'message/rfc822' ) {
         my $orig_msg_copy = $parts[0];
         $m_id = $orig_msg_copy->head->get( 'Message-ID', 0 );
+		$m_id = strip($m_id); 
         chomp($m_id);
+
         return $m_id;
     }
     else {
@@ -379,6 +382,7 @@ sub find_message_id_in_body {
         }
 
         $IO->close;
+		$m_id = strip($m_id); 
         return $m_id;
     }
     else {
@@ -388,6 +392,7 @@ sub find_message_id_in_body {
 
 sub generic_delivery_status_parse {
 
+    my $self   = shift;
     my $entity = shift;
     my $diag   = {};
     my $email;
@@ -453,6 +458,7 @@ sub generic_body_parse_for_list {
 
 sub find_list_from_unsub_list {
 
+    my $self   = shift;
     my $entity = shift;
     my $list;
 
@@ -630,6 +636,12 @@ sub parse_for_qmail {
                 }
             }
 
+# Not Good: 
+#			if(!defined($diag->{Action})){ 
+#				if($diag->{'Diagnostic-Code'} =~ m/The email account that you tried to reach does not exist/){ 
+#					$diag->{Action} = 'failed'; 
+#				}
+#			}
             $list ||= $self->generic_body_parse_for_list($entity);
             return ( $list, $email, $diag );
         }
@@ -1107,4 +1119,5 @@ sub parse_using_m_ds_bp {
 
 }
 
+sub DESTROY { }
 1;

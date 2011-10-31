@@ -1,7 +1,11 @@
 package Mail::DeliveryStatus::Report;
 
+our $VERSION = '1.527';
+$VERSION = eval $VERSION;
+
 use Mail::Header;
 use strict;
+use warnings;
 use vars qw(@ISA);
 BEGIN { @ISA = qw(Mail::Header) };
 

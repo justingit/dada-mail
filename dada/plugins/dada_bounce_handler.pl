@@ -187,7 +187,6 @@ my %Global_Template_Options = (
 );
 
 use Getopt::Long;
-use Mail::Verp;
 use MIME::Entity;
 
 use Fcntl qw(

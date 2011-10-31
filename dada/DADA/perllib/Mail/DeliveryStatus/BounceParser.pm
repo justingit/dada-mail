@@ -38,10 +38,12 @@ appropriate action can be taken.
 
 =cut
 
-use 5.00503;
+use 5.006;
 use strict;
+use warnings;
 
-$Mail::DeliveryStatus::BounceParser::VERSION = '1.519';
+our $VERSION = '1.527';
+$VERSION = eval $VERSION;
 
 use MIME::Parser;
 use Mail::DeliveryStatus::Report;
@@ -66,16 +68,17 @@ my $Not_An_Error = qr/
   | Your \s message .{0,100} was \s delivered \s to \s the \s following \s recipient
 /six;
 
-my $Really_An_Error = qr/this is a permanent error/i;
+# added "permanent fatal errors" - fix for bug #41874
+my $Really_An_Error = qr/this is a permanent error|permanent fatal errors/i;
 
 my $Returned_Message_Below = qr/(
     (?:original|returned) \s message \s (?:follows|below)
   | (?: this \s is \s a \s copy \s of
       | below \s this \s line \s is \s a \s copy
-    ) .{0,100} \s message
+    ) .{0,100} \s message\.?
   | message \s header \s follows
   | ^ (?:return-path|received|from):
-)/sixm;
+)\s+/sixm;
 
 my @Preprocessors = qw(
   p_ims
@@ -94,7 +97,7 @@ used as a logging callback.
 
 NON-BOUNCES.  If the message is recognizably a vacation autoresponse, or is a
 report of a transient nonfatal error, or a spam or virus autoresponse, you'll
-still get back a C<$bounce>, but its C<<$bounce->is_bounce()>> will return
+still get back a C<$bounce>, but its C<< $bounce->is_bounce() >> will return
 false.
 
 It is possible that some bounces are not really bounces; such as
@@ -110,8 +113,10 @@ sub parse {
   # my $bounce = Mail::DeliveryStatus::BounceParser->new( \*STDIN | $fh |
   # "entire\nmessage" | ["array","of","lines"] );
 
-  my $parser = new MIME::Parser;
+  my $parser = MIME::Parser->new;
      $parser->output_to_core(1);
+     $parser->decode_headers(1);
+
   my $message;
 
   if (not $data) {
@@ -136,9 +141,9 @@ sub parse {
 
   $self->log(
     "received message with type "
-    . $message->effective_type
+    . (defined($message->effective_type) ? $message->effective_type : "undef")
     . ", subject "
-    . $message->head->get("subject")
+    . (defined($message->head->get("subject")) ? $message->head->get("subject") : "CAN'T GET SUBJECT")
   );
 
   # before we even start to analyze the bounce, we recognize certain special
@@ -155,7 +160,7 @@ sub parse {
     "now the message is type "
     . $message->effective_type
     . ", subject "
-    . $message->head->get("subject")
+    . (defined($message->head->get("subject")) ? $message->head->get("subject") : "CAN'T GET SUBJECT")
   );
 
   my $first_part = _first_non_multi_part($message);
@@ -168,6 +173,36 @@ sub parse {
     $self->{type} = "Challenge / Response system autoreply";
     $self->{is_bounce} = 0;
     return $self;
+  }
+
+  {
+    last unless ($message->head->get("X-Bluebottle-Request") and $first_part->stringify_body =~ /This account is protected by Bluebottle/);
+    $self->log("looks like a challenge/response autoresponse; ignoring.");
+    $self->{type} = "Challenge / Response system autoreply";
+    $self->{is_bounce} = 0;
+    return $self;
+  }
+
+  {
+    last unless defined $first_part and $first_part->stringify_body =~ /Your server requires confirmation/;
+    $self->log("Looks like a challenge/response autoresponse; ignoring.");
+    $self->{type} = "Challenge / Response system autoreply";
+    $self->{is_bounce} = 0;
+    return $self;
+  }
+
+  {
+    last unless defined $first_part and $first_part->stringify_body =~ /Please add yourself to my Boxbe Guest List/;
+	$self->log("Looks like a challenge/response autoresponse; ignoring.");
+	$self->{type} = "Challenge / Response system autoreply";
+	$self->{is_bounce} = 0;
+  }
+
+  {
+    last unless defined $first_part and $first_part->stringify_body =~ /This\s+is\s+a\s+one-time\s+automated\s+message\s+to\s+confirm\s+that\s+you're\s+listed\s+on\s+my\s+Boxbe\s+Guest\s+List/;
+	$self->log("Looks like a challenge/response autoresponse; ignoring.");
+	$self->{type} = "Challenge / Response system autoreply";
+	$self->{is_bounce} = 0;
   }
 
   # we'll deem autoreplies to be usually less than a certain size.
@@ -185,13 +220,40 @@ sub parse {
     last if !$first_part || $first_part->effective_type ne 'text/plain';
     my $string = $first_part->as_string;
     last if length($string) > 3000;
-    last if $string !~ /auto.{0,20}reply|vacation|(out|away|on holiday).*office/i;
+    # added return receipt (fix for bug #41870)
+    last if $string !~ /auto.{0,20}(reply|response)|return receipt|vacation|(out|away|on holiday).*office/i;
     $self->log("looks like a vacation autoreply, ignoring.");
     $self->{type} = "vacation autoreply";
     $self->{is_bounce} = 0;
     return $self;
   }
 
+  # vacation autoreply tagged in the subject
+  {
+    last if $message->effective_type eq 'multipart/report';
+    last if !$first_part || $first_part->effective_type ne 'text/plain';
+    my $subject = $message->head->get('Subject');
+    last if !defined($subject);
+    last if $subject !~ /^AUTO/;
+    last if $subject !~ /is out of the office/;
+    $self->log("looks like a vacation autoreply, ignoring.");
+    $self->{type} = "vacation autoreply";
+    $self->{is_bounce} = 0;
+    return $self;
+  }
+
+  # Polish auto-reply
+  {
+    last if $message->effective_type eq 'multipart/report';
+    last if !$first_part || $first_part->effective_type ne 'text/plain';
+    my $subject = $message->head->get('Subject');
+    last if !defined($subject);
+    last if $subject !~ /Automatyczna\s+odpowied/;
+    $self->log("looks like a polish autoreply, ignoring.");
+    $self->{type} = "polish autoreply";
+    $self->{is_bounce} = 0;
+    return $self;
+  }
 
   # "Email address changed but your message has been forwarded"
   {
@@ -273,8 +335,12 @@ sub parse {
     ) {
       # see MIME::Entity regarding REPLACE
       my $orig_message_id = $orig_message->parts(0)->head->get("message-id");
-      chomp $orig_message_id;
-      $self->log("extracted original message-id $orig_message_id from the original rfc822/message");
+      if ($orig_message_id) {
+		$orig_message_id =~ s/(\r|\n)*$//g;
+        $self->log("extracted original message-id [$orig_message_id] from the original rfc822/message");
+      } else {
+        $self->log("Couldn't extract original message-id from the original rfc822/message");
+      }
       $self->{orig_message_id} = $orig_message_id;
       $self->{orig_message} = $orig_message->parts(0);
     }
@@ -284,14 +350,17 @@ sub parse {
     # message/rfc822.  yow!
 
     if (! $self->{orig_message_id}
-	     and
-	     my ($rfc822_headers) =
+      and
+      my ($rfc822_headers) =
          grep { lc $_->effective_type eq "text/rfc822-headers" } $message->parts
     ) {
       my $orig_head = Mail::Header->new($rfc822_headers->body);
-      chomp ($self->{orig_message_id} = $orig_head->get("message-id"));
-      $self->{orig_header} = $orig_head;
-      $self->log("extracted original message-id $self->{orig_message_id} from text/rfc822-headers");
+      my $message_id = $orig_head->get("message-id");
+      if ($message_id) {
+        chomp ($self->{orig_message_id} = $orig_head->get("message-id"));
+        $self->{orig_header} = $orig_head;
+        $self->log("extracted original message-id $self->{orig_message_id} from text/rfc822-headers");
+      }
     }
   }
 
@@ -305,7 +374,6 @@ sub parse {
   if (! $self->{orig_message_id}) {
     $self->log("couldn't find original message id.");
   }
-
 
   #
   # try to extract email addresses to identify members.
@@ -336,6 +404,8 @@ sub parse {
 
       # See t/surfcontrol-extra-newline.t - deal with bug #21249
       $para =~ s/\A\n+//g;
+      # added the following line as part of fix for #41874
+      $para =~ s/\r/ /g;
 
       my $report = Mail::Header->new([split /\n/, $para]);
 
@@ -348,7 +418,8 @@ sub parse {
       # Some MTAs send unsought delivery-status notifications indicating
       # success; others send RFC1892/RFC3464 delivery status notifications
       # for transient failures.
-      if (my $action = lc $report->get('Action')) {
+      if (defined $report->get('Action') and lc $report->get('Action')) {
+		my $action = lc $report->get('Action');
         $action =~ s/^\s+//;
         if ($action =~ s/^\s*([a-z]+)\b.*/$1/s) {
           # In general, assume that anything other than 'failed' is a
@@ -369,7 +440,10 @@ sub parse {
       }
 
       for my $hdr (qw(Reporting-MTA Arrival-Date)) {
-        $report->replace($hdr => $global{$hdr} ||= $report->get($hdr))
+        my $val = $global{$hdr} ||= $report->get($hdr);
+        if (defined($val)) {
+          $report->replace($hdr => $val)
+        }
       }
 
       my $email;
@@ -390,12 +464,19 @@ sub parse {
       my $reason = $report->get("diagnostic-code");
 
       $email  =~ s/[^;]+;\s*//; # strip leading RFC822; or LOCAL; or system;
-      $reason =~ s/[^;]+;\s*//; # strip leading X-Postfix;
+      if (defined $reason) {
+        $reason =~ s/[^;]+;\s*//; # strip leading X-Postfix;
+      }
 
       $email = _cleanup_email($email);
 
       $report->replace(email      => $email);
-      $report->replace(reason     => $reason);
+      if (defined $reason) {
+        $report->replace(reason     => $reason);
+      } else {
+        $report->delete("reason");
+      }
+
       if (my $status = $report->get('Status')) {
         # RFC 1893... prefer Status: if it exists and is something we know
         # about
@@ -406,6 +487,11 @@ sub parse {
           $report->replace(std_reason => "domain_error");
         } elsif ($status eq "5.2.2") {
           $report->replace(std_reason => "over_quota");
+          # this fits my reading of RFC 3463
+          # FIXME: I suspect there's something wrong with the parsing earlier
+          # that this has to be a regexp rather than a straight comparison
+        } elsif ($status =~ /^5\.4\.4/) {
+          $report->replace(std_reason => "domain_error");
         } else {
           $report->replace(
             std_reason => _std_reason($report->get("diagnostic-code"))
@@ -416,19 +502,35 @@ sub parse {
           std_reason => _std_reason($report->get("diagnostic-code"))
         );
       }
-      my ($host) = $report->get("diagnostic-code") =~ /\bhost\s+(\S+)/;
-      $report->replace( host => ($host)) if $host;
+      my $diag_code = $report->get("diagnostic-code");
 
-      my ($code) = $report->get('diagnostic-code') =~
-         m/ ( ( [245] \d{2} ) \s | \s ( [245] \d{2} ) (?!\.) ) /x;
-
-      $report->replace(smtp_code => $code);
-
-      if (not $report->get("host")) {
-        $report->replace(host => ($report->get("email") =~ /\@(.+)/)[0])
+      my $host;
+      if (defined $diag_code) {
+        ($host) = $diag_code =~ /\bhost\s+(\S+)/;
       }
 
-      if ($report->get("smtp_code") =~ /^2../) {
+      $report->replace(host => ($host)) if $host;
+
+      my ($code);
+
+      if (defined $diag_code) {
+        ($code) = $diag_code =~
+         m/ ( ( [245] \d{2} ) \s | \s ( [245] \d{2} ) (?!\.) ) /x;
+      }
+
+      if ($code) {
+        $report->replace(smtp_code => $code);
+      }
+
+      if (not $report->get("host")) {
+        my $email = $report->get("email");
+        if (defined $email) {
+          my $host = ($email =~ /\@(.+)/)[0];
+          $report->replace(host => $host) if $host;
+        }
+      }
+
+      if ($report->get("smtp_code") and ($report->get("smtp_code") =~ /^2../)) {
         $self->log(
           "smtp code is "
           . $report->get("smtp_code")
@@ -489,11 +591,11 @@ sub parse {
 
     if ($body_string =~ $Returned_Message_Below) {
       my ($stuff_before, $stuff_splitted, $stuff_after) =
-        split $Returned_Message_Below, $message->bodyhandle->as_string, 3;
+        split $Returned_Message_Below, $message->bodyhandle->as_string, 2;
       # $self->log("splitting on \"$stuff_splitted\", " . length($stuff_before)
       # . " vs " . length($stuff_after) . " bytes.") if $DEBUG > 3;
       push @{$self->{reports}}, $self->_extract_reports($stuff_before);
-      $self->{orig_text} = $stuff_before;
+      $self->{orig_text} = $stuff_after;
     } elsif ($body_string =~ /(.+)\n\n(.+?Message-ID:.+)/is) {
       push @{$self->{reports}}, $self->_extract_reports($1);
       $self->{orig_text} = $2;
@@ -562,6 +664,11 @@ sub _extract_reports {
       next;
     }
 
+    if($split[$i-1] =~ /A message sent by/) {
+      # sender block
+      next;
+    }
+
     my $std_reason = "unknown";
     $std_reason = _std_reason($split[$i+1]) if $#split > $i;
     $std_reason = _std_reason($split[$i-1]) if $std_reason eq "unknown";
@@ -576,10 +683,14 @@ sub _extract_reports {
       ne "unknown" and $std_reason eq "unknown"
     );
 
+    my $reason = $split[$i-1];
+    $reason =~ s/(.*?). (Your mail to the following recipients could not be delivered)/$2/;
+
     $by_email{$email} = {
       email => $email,
       raw   => join ("", @split[$i-1..$i+1]),
       std_reason => $std_reason,
+      reason => $reason
     };
   }
 
@@ -648,14 +759,20 @@ standardized reasons:
   user_unknown
   over_quota
   domain_error
+  spam
+  message_too_large
   unknown
   no_problemo
 
+The "spam" standard reason indicates that the message bounced because
+the recipient considered it spam.
+
 (no_problemo will only appear if you set {report_non_bounces=>1})
 
-If the bounce message is not structured according to RFC1892, BounceParser will
-still try to return as much information as it can; in particular, you can count
-on "email" and "std_reason" to be present.
+If the bounce message is not structured according to RFC1892,
+BounceParser will still try to return as much information as it can;
+in particular, you can count on "email" and "std_reason" to be
+present.
 
 =cut
 
@@ -779,13 +896,13 @@ Original author: Meng Weng Wong, E<lt>mengwong+bounceparser@pobox.comE<gt>
 
 Current maintainer: Ricardo SIGNES, E<lt>rjbs@cpan.orgE<gt>
 
-Massive contributions to the 1.5xx series were made by William Yardley.
-Ricardo mostly just helped out and managed releases.
+Massive contributions to the 1.5xx series were made by William Yardley and
+Michael Stevens.  Ricardo mostly just helped out and managed releases.
 
 =head1 COPYRIGHT AND LICENSE
 
   Copyright (C) 2003-2006, IC Group, Inc.
-	pobox.com permanent email forwarding with spam filtering
+  pobox.com permanent email forwarding with spam filtering
   listbox.com mailing list services for announcements and discussion
 
 This library is free software; you can redistribute it and/or modify
@@ -801,7 +918,17 @@ it under the same terms as Perl itself.
 sub _std_reason {
   local $_ = shift;
 
-  if (/(?:domain|host)\s+(?:not\s+found|unknown)/i) { return "domain_error" }
+  if (!defined $_) {
+    return "unknown";
+  }
+
+  if (/(?:domain|host|service)\s+(?:not\s+found|unknown|not\s+known)/i) {
+    return "domain_error"
+  }
+
+  if (/sorry,\s+that\s+domain\s+isn't\s+in\s+my\s+list\s+of\s+allowed\s+rcpthosts/i) {
+    return "domain_error";
+  }
 
   if (
     /try.again.later/is or
@@ -809,7 +936,12 @@ sub _std_reason {
     /storage/i          or
     /quota/i            or
     /\s552\s/           or
-    /\s#?5\.2\.2\s/                                     # rfc 1893
+    /\s#?5\.2\.2\s/     or                                # rfc 1893
+    /User\s+mailbox\s+exceeds\s+allowed\s+size/i or
+    /Mailbox\s+size\s+limit\s+exceeded/i or
+    /message\s+size\s+\d+\s+exceeds\s+size\s+limit\s+\d+/i or
+    /max\s+message\s+size\s+exceeded/i or
+	/Benutzer\s+hat\s+zuviele\s+Mails\s+auf\s+dem\s+Server/i 
   ) {
     return "over_quota";
   }
@@ -820,11 +952,12 @@ sub _std_reason {
 
   if (
     /\s \(? \#? 5\.1\.[01] \)? \s/x or                  # rfc 1893
-    /$user_re\s+ (?:\S+\s+)? (?:is\s+)?                 # Generic
+    /$user_re\s+(?:\S+\s+)? (?:is\s+)?                  # Generic
      (?: (?: un|not\s+) (?: known | recognized )
       | [dw]oes\s?n[o']?t 
      (?: exist|found ) | disabled | expired ) /ix or
-    /no\s+(?:such\s+)?$user_re/i or                     # Gmail and other
+    /no\s+(?:such)\s+?$user_re/i or                     # Gmail and other (mofified for bug #41874)
+    /unrouteable address/i or                           # bug #41874
     /inactive user/i or                                 # Outblaze
     /unknown local part/i or                            # Exim(?)
     /user\s+doesn't\s+have\s+a/i or                     # Yahoo!
@@ -844,7 +977,21 @@ sub _std_reason {
     /not\s+listed\s+in\s+Domino/i or                    # Domino
     /account not activated/i or                         # usa.net
     /not\s+our\s+customer/i or                          # Comcast
-    /doesn't handle mail for that user/i                # mailfoundry
+    /doesn't handle mail for that user/i or             # mailfoundry
+    /$user_re\s+does\s+not\s+exist/i or
+    /Recipient\s+<?$EMAIL_ADDR_REGEX>?\s+does\s+not\s+exist/i or
+    /recipient\s+no\s+longer\s+on\s+server/i or # me.com
+    /is\s+not\s+a\s+known\s+user\s+on\s+this\s+system/i or # cam.ac.uk
+    /Rcpt\s+<?$EMAIL_ADDR_REGEX>?\s+does\s+not\s+exist/i or
+    /Mailbox\s+not\s+available/i or
+    /No\s+mailbox\s+found/i or
+    /<?$EMAIL_ADDR_REGEX>?\s+is\s+a\s+deactivated\s+mailbox/i or
+    /Recipient\s+does\s+not\s+exist\s+on\s+this\s+system/i or
+	/user\s+mail-box\s+not\s+found/i or
+	/No\s+mail\s+box\s+available\s+for\s+this\s+user/i or
+	/User\s+\[\S+\]\s+does\s+not\s+exist/i or
+	/email\s+account\s+that\s+you\s+tried\s+to\s+reach\s+is\s+disabled/i or
+	/not\s+an\s+active\s+address\s+at\s+this\s+host/i
   ) {
     return "user_unknown";
   }
@@ -854,16 +1001,50 @@ sub _std_reason {
     /timed\s+out/i or
     /route\s+to\s+host/i or
     /connection\s+refused/i or
-    /no\s+data\s+record\s+of\s+requested\s+type/i
+    /no\s+data\s+record\s+of\s+requested\s+type/i or
+    /Malformed name server reply/i or
+    /as\s+a\s+relay,\s+but\s+I\s+have\s+not\s+been\s+configured\s+to\s+let/i or
+    /550\s+relay\s+not\s+permitted/i or
+    /550\s+relaying\s+denied/i or
+    /Relay\s+access\s+denied/i or
+    /Relaying\s+denied/i or
+    /No\s+such\s+domain\s+at\s+this\s+location/i
   ) {
     return "domain_error";
+  }
+
+  if (
+    /Blocked\s+by\s+SpamAssassin/i or
+    /spam\s+rejection/i or
+    /identified\s+SPAM,\s+message\s+permanently\s+rejected/i or
+    /Mail\s+appears\s+to\s+be\s+unsolicited/i or
+    /Message\s+rejected\s+as\s+spam\s+by\s+Content\s+Filtering/i or
+    /message\s+looks\s+like\s+SPAM\s+to\s+me/i or
+    /NOT\s+JUNKEMAILFILTER/i or
+    /your\s+message\s+has\s+triggered\s+a\s+SPAM\s+block/i or
+    /Spam\s+detected/i or
+    /Message\s+looks\s+like\s+spam/i or
+	/Message\s+content\s+rejected,\s+UBE/i or
+	/Blocked\s+using\s+spam\s+pattern/i or
+	/breaches\s+local\s+URIBL\s+policy/i or
+	/Your\s+email\s+had\s+spam-like\s+header\s+contents/i or
+	/detected\s+as\s+spam/i or
+	/Denied\s+due\s+to\s+spam\s+list/i
+  ) {
+    return "spam";
+  }
+
+  if (
+    /RESOLVER.RST.RecipSizeLimit/i
+  ) {
+    return "message_too_large";
   }
 
   return "unknown";
 }
 
 # ---------------------------------------------------------------------
-# 		       preprocessors
+# preprocessors
 # ---------------------------------------------------------------------
 
 sub p_ims {
@@ -1100,9 +1281,12 @@ sub _analyze_smtp_transcripts {
 
   # parse the text part for the actual SMTP transcript
   for (split /\n\n|(?=>>>)/, $plain_smtp_transcript) {
-    # $self->log("_analyze_smtp_transcripts: $_") if $DEBUG > 3;
-
     $email = _cleanup_email($1) if /RCPT TO:\s*(\S+)/im;
+
+    if (/The\s+following\s+addresses\s+had\s+permanent\s+fatal\s+errors\s+-----\s+\<(.*)\>/im) {
+      $email = _cleanup_email($1);
+    }
+
     $by_email{$email}->{host} = $host if $email;
 
     if (/while talking to (\S+)/im) {
