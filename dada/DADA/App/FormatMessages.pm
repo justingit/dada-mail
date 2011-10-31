@@ -91,6 +91,8 @@ my %allowed = (
 	mass_mailing                 => 0, 
 	list_invitation              => 0, 	
 	no_list                      => 0,
+	
+	override_validation_type     => undef, 
 );
 
 
@@ -507,25 +509,25 @@ sub _format_text {
 				# simple validation
 				require DADA::Template::Widgets; 
 				my ($valid, $errors);
+					
+				my $expr = 0; 
 				
 				if($self->no_list == 1){ 
-				
-					($valid, $errors)  = DADA::Template::Widgets::validate_screen(
-						{
-							-data => \$content,
-							-expr => 1, 
-						}
-					); 
+					$expr = 1; 
+				}
+				elsif($self->override_validation_type eq 'expr'){ 
+					$expr = 1; 
 				}
 				else { 
-					($valid, $errors)  = DADA::Template::Widgets::validate_screen(
-						{
-							-data => \$content,
-							-expr => $self->{ls}->param('enable_email_template_expr'), 
-						}
-					); 
+					$expr = $self->{ls}->param('enable_email_template_expr'); 
 				}
 				
+				($valid, $errors)  = DADA::Template::Widgets::validate_screen(
+					{
+						-data => \$content,
+						-expr => $expr, 
+					}
+				); 
 				
 				if($valid == 0){ 
 					my $munge = quotemeta('/fake/path/for/non/file/template'); 
