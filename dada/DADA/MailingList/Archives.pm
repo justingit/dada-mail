@@ -792,8 +792,11 @@ sub _email_protect {
 	$finder->find(\$body); 
 	
 	for my $fa (@$found_addresses){ 
-		#my $pe = spam_me_not_encode($fa);
 		
+		if($fa =~ m/\@MIME\-Lite\-HTML/){ 
+			# Good work Email::Find, that's not *even* an email address!
+			next; 
+		}
 		
 		if($self->{ls}->param('archive_protect_email') eq 'recaptcha_mailhide'){ 
             my $pe = mailhide_encode($fa);
