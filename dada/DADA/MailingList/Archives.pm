@@ -720,15 +720,20 @@ sub _scrub_js {
 
 	my $self = shift; 
 	my $body = shift; 
-	
+
 	eval {require HTML::Scrubber; };
-	return $body if $@; 
-	                                                                                                                                                     #
-    my $scrubber = HTML::Scrubber->new(
-    	%{$DADA::Config::HTML_SCRUBBER_OPTIONS}
-    );
-    return  $scrubber->scrub($body); 
 	
+	if($@){ 
+
+		return $body;
+	}
+	else {
+		
+	    my $scrubber = HTML::Scrubber->new(
+	    	%{$DADA::Config::HTML_SCRUBBER_OPTIONS}
+	    );
+		return  $scrubber->scrub($body); 
+	}
 }
 
 
