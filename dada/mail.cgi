@@ -4170,6 +4170,7 @@ sub view_archive {
                     index_nav  => $index_nav,
 
                 },
+				-expr => 1, 
             }
         );
         e_print($scrn);
