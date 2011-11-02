@@ -62,6 +62,7 @@ my %allowed = (
 	exclude_from                  => [],
 	
 	net_smtp_obj                  => undef, 
+	ses_obj                       => undef, 
 	
 ); 
 
@@ -801,18 +802,20 @@ sub send {
 			  'To'                        => 1,
 			  'User-Agent'                => 1,
 			};
-						
-			open(MAIL, '|'. $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script} . ' -r -k ' . $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file})
-				or carp "couldn't open, " . $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script} . ' - $!'; 
-
-			# Well, probably, no? 
-			binmode MAIL, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
-            
-			# DEV: for this to work, you need to verify the address. Ugh! :) 
-			#print MAIL 'Return-Path: ' . 'somebouncehandleraddress' . "\n"; 	
-		    #print MAIL 'Bounces-To: ' . 'somebouncehandleraddress@skazat.com' . "\n"; 
-
 			
+			my $ses_obj = undef;
+			require Net::Amazon::SES;  	
+			if(defined($self->ses_obj) && $self->im_mass_sending == 1){
+				$ses_obj = $self->ses_obj; 
+			}
+			else { 
+				$ses_obj = Net::Amazon::SES->new(
+					{ 
+						-creds => $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file}, 
+					}
+				); 
+			}		
+			my $msg = ''; 
             for my $field (@default_headers){
 				if($allowed_ses_headers->{$field} == 1){ 
                      if(
@@ -821,27 +824,17 @@ sub send {
                             $fields{$field}         ne ""            && 
                             $field                  ne 'Return-Path'
                          ) { 
-							print MAIL "$field: $fields{$field}\n";
+							$msg .= "$field: $fields{$field}\n";
                    }
             	}
 			}
-            print MAIL "\n"; 
-
-
-
-			
-            print MAIL $fields{Body} . "\n"; # DEV: Why the last, "\n"?
-
-
-
-            close(MAIL) 
-                or carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: 
-                         didn't close pipe to '" . $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script} ."' while 
-                         attempting to send a message to: '" . $fields{To} ." because:' $!";   
-
-
-
-				
+            $msg .= "\n"; 
+            $msg .= $fields{Body} . "\n"; # DEV: Why the last, "\n"?
+			$ses_obj->send_msg(
+				{
+					-msg => $msg, 
+				}
+			);
 		}
 		else { 
 			die "Unknown Sending Method: " . $local_li->{sending_method}; 
@@ -1792,6 +1785,10 @@ sub mass_send {
 		
 								$self->net_smtp_obj(undef); 
 							}
+
+							if(defined($self->ses_obj)){ 
+								$self->ses_obj(undef);
+							}
 							
 							warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' calling Mail::MailOut::status() '
 								if $t;
@@ -1972,7 +1969,9 @@ sub mass_send {
                		or carp "problems 'QUIT'ing SMTP server.";
 			}
 			
-
+			if(defined($self->ses_obj)){ 
+				$self->ses_obj(undef); 
+			}
 			my $ending_status = $mailout->status({-mail_fields => 0}); # most likely safe to called status() as much as I'd like...
 			
 			
@@ -2038,6 +2037,10 @@ sub mass_send {
 				$self->net_smtp_obj(undef);
 			
 			}	
+			
+			if(defined($self->ses_obj)){ 
+				$self->ses_obj(undef); 
+			}
 			
 
 			warn  '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' We\'re done. exit()ing!' 
@@ -2594,8 +2597,8 @@ sub _email_batched_finished_notification {
 	# Amazon SES seems to not allow you to attach message/rfc822 attachments. 
 	# Not sure why!
 	# warn q{ $self->{ls}->{sending_method} } . $self->{ls}->{sending_method}; 
-	if($self->{ls}->param('sending_method') eq 'amazon_ses'){ 
-		warn "YES! " . q{$self->{ls}->{sending_method} eq 'amazon_ses'}; 
+	if($self->{ls}->param('sending_method') eq 'amazon_ses'){
+		# ... 
 	}
 	else { 
 		
