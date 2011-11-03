@@ -805,15 +805,25 @@ sub send {
 			
 			my $ses_obj = undef;
 			require Net::Amazon::SES;  	
-			if(defined($self->ses_obj) && $self->im_mass_sending == 1){
+			#carp '$self->ses_obj' . $self->ses_obj; 
+			#carp '$self->im_mass_sending' . $self->im_mass_sending; 
+			if(
+				defined($self->ses_obj) 
+				&& $self->im_mass_sending == 1
+			){
+				#carp "reusing ses_obj"; 
 				$ses_obj = $self->ses_obj; 
+				
 			}
 			else { 
+				#carp "creating a new ses_obj"; 
 				$ses_obj = Net::Amazon::SES->new(
 					{ 
 						-creds => $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file}, 
+						# -trace => 1, 
 					}
 				); 
+				$self->ses_obj($ses_obj); 
 			}		
 			my $msg = ''; 
             for my $field (@default_headers){
@@ -830,11 +840,13 @@ sub send {
 			}
             $msg .= "\n"; 
             $msg .= $fields{Body} . "\n"; # DEV: Why the last, "\n"?
+			#warn "sending " . time; 
 			$ses_obj->send_msg(
 				{
 					-msg => $msg, 
 				}
 			);
+			#warn "sent! " . time; 
 		}
 		else { 
 			die "Unknown Sending Method: " . $local_li->{sending_method}; 
@@ -1787,6 +1799,7 @@ sub mass_send {
 							}
 
 							if(defined($self->ses_obj)){ 
+								warn "undefin ses_obj"; 
 								$self->ses_obj(undef);
 							}
 							
@@ -1969,7 +1982,8 @@ sub mass_send {
                		or carp "problems 'QUIT'ing SMTP server.";
 			}
 			
-			if(defined($self->ses_obj)){ 
+			if(defined($self->ses_obj)){
+				warn "undefin ses_obj"; 
 				$self->ses_obj(undef); 
 			}
 			my $ending_status = $mailout->status({-mail_fields => 0}); # most likely safe to called status() as much as I'd like...
@@ -2038,7 +2052,8 @@ sub mass_send {
 			
 			}	
 			
-			if(defined($self->ses_obj)){ 
+			if(defined($self->ses_obj)){
+				warn "undefin ses_obj"; 
 				$self->ses_obj(undef); 
 			}
 			
