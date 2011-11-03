@@ -1020,16 +1020,16 @@ sub check_setup {
                 if (
                     test_database_has_all_needed_tables(
                         $q->param('backend'),      $q->param('sql_server'),
-                        'auto',                    $q->param('sql_database'),
+                        sql_port_from_params(),    $q->param('sql_database'),
                         $q->param('sql_username'), $q->param('sql_password'),
                     ) == 1
                   )
                 {
-                    $errors->{sql_table_populated} = 0;
+                    $errors->{sql_table_populated} = 1;
 
                 }
                 else {
-                    $errors->{sql_table_populated} = 1;
+                    $errors->{sql_table_populated} = 0;
                 }
 
             }
