@@ -1799,7 +1799,6 @@ sub mass_send {
 							}
 
 							if(defined($self->ses_obj)){ 
-								warn "undefin ses_obj"; 
 								$self->ses_obj(undef);
 							}
 							
@@ -1983,7 +1982,6 @@ sub mass_send {
 			}
 			
 			if(defined($self->ses_obj)){
-				warn "undefin ses_obj"; 
 				$self->ses_obj(undef); 
 			}
 			my $ending_status = $mailout->status({-mail_fields => 0}); # most likely safe to called status() as much as I'd like...
@@ -2053,7 +2051,6 @@ sub mass_send {
 			}	
 			
 			if(defined($self->ses_obj)){
-				warn "undefin ses_obj"; 
 				$self->ses_obj(undef); 
 			}
 			
