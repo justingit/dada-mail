@@ -1448,70 +1448,63 @@ sub test_can_write_config_dot_pm {
 	}
 }
 
-sub test_database_has_all_needed_tables { 
-#	my $dbtype   = shift;
-#    my $dbserver = shift;
-#    my $port     = shift;
-#    my $database = shift;
-#    my $user     = shift;
-#    my $pass     = shift;
-	
-	my $default_table_names = {
-	    dada_subscribers => 1,
-	    dada_profiles => 1, 
-	    dada_profile_fields => 1, 
-	    dada_profile_fields_attributes => 1,
-	    dada_archives => 1, 
-	    dada_settings => 1, 
-	    dada_sessions => 1, 
-	    dada_bounce_scores => 1, 
-	    dada_clickthrough_urls => 1,
-		dada_clickthrough_url_log => 1, 
-		dada_mass_mailing_event_log => 1, 
-		
-	}; 
-	my $dbh; 
-	
+sub test_database_has_all_needed_tables {
+
+    my $default_table_names = {
+        dada_subscribers               => 1,
+        dada_profiles                  => 1,
+        dada_profile_fields            => 1,
+        dada_profile_fields_attributes => 1,
+        dada_archives                  => 1,
+        dada_settings                  => 1,
+        dada_sessions                  => 1,
+        dada_bounce_scores             => 1,
+        dada_clickthrough_urls         => 1,
+        dada_clickthrough_url_log      => 1,
+        dada_mass_mailing_event_log    => 1,
+
+    };
+    my $dbh;
+
     eval { $dbh = connectdb(@_); };
-    if ($@) { 
-		warn $@; 
-		$Big_Pile_Of_Errors .= $@; 
-		return 0;
-	 }
+    if ($@) {
+        carp $@;
+        $Big_Pile_Of_Errors .= $@;
+        return 0;
+    }
 
     my @tables = $dbh->tables;
-	my $checks = 0; 
-	
-#	use Data::Dumper; 
-#	die Dumper([@tables]);
-	for my $table(@tables){ 
-		
-		# Not sure why this is so non-standard between different setups...
-		$table =~ s/`//g; 
-		$table =~ s/^(.*?)\.//; #This removes something like, "database_name.table"
-		
-		if(exists($default_table_names->{$table})){ 
-			$checks++;	
-		}
-	}
-	
-	
-	if($checks >= 9){ 
-		return 0; 
-	}
-	else { 
-		return 1; 
-	}
-	
-	
-	
+    my $checks = 0;
+
+    #	use Data::Dumper;
+    #	croak Dumper([@tables]);
+    for my $table (@tables) {
+
+        # Not sure why this is so non-standard between different setups...
+        $table =~ s/`//g;
+        $table =~
+          s/^(.*?)\.//;    #This removes something like, "database_name.table"
+
+        if ( exists( $default_table_names->{$table} ) ) {
+            $checks++;
+        }
+    }
+
+    if ( $checks >= 9 ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+
 }
+
 sub test_database_empty {
     my $dbh = undef;
 
     eval { $dbh = connectdb(@_); };
     if ($@) { 
-		warn $@; 
+		carp $@; 
 		$Big_Pile_Of_Errors .= $@; 
 		return 0;
 	 }
