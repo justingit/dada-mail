@@ -2609,18 +2609,20 @@ sub _email_batched_finished_notification {
 	# Amazon SES seems to not allow you to attach message/rfc822 attachments. 
 	# Not sure why!
 	# warn q{ $self->{ls}->{sending_method} } . $self->{ls}->{sending_method}; 
+	my $disposition = 'inline'; 
+	my $type        = 'message/rfc822';
 	if($self->{ls}->param('sending_method') eq 'amazon_ses'){
-		# ... 
+		$disposition = 'attachment'; 
+			$type = 'text/plain'; 
 	}
-	else { 
 		
 	    $entity->attach(
-	        Type        => 'message/rfc822',
-	        Disposition => "inline",
+	        Type        => $type,
+	        Disposition => $disposition,
 	        Data => safely_decode( safely_encode( $att ) ),
 	    );
 
-	}
+	
 	my $expr = 0; 
 	if($self->{ls}->param('enable_email_template_expr') == 1){ 
 		$expr = 1; 
