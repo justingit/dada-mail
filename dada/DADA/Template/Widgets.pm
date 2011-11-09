@@ -1834,6 +1834,7 @@ else {
 		}
 	}
 	
+#	$args->{-pro} = 1; 
 	if($args->{-expr}){ 
 	
 		if($args->{-screen}){ 
@@ -1869,13 +1870,24 @@ else {
 		if($args->{-decode_before} == 1){ 
 			${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
 		}
+		if($args->{-pro} == 1){ 
 		
-   		require HTML::Template;
-			$template = HTML::Template->new(
-				%Global_Template_Options, 
-				scalarref => $args->{-data},
-				filter => $filters,   
-			);		   					   
+			require HTML::Template::Pro;
+				$template = HTML::Template::Pro->new(
+					%Global_Template_Options, 
+					scalarref => $args->{-data},
+					filter => $filters,   
+				);
+						
+		}
+		else { 
+   			require HTML::Template;
+				$template = HTML::Template->new(
+					%Global_Template_Options, 
+					scalarref => $args->{-data},
+					filter => $filters,   
+				);	
+		}	   					   
    		}else{ 
 			carp "what are you trying to do?!"; 
 		}

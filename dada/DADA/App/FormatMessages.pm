@@ -1691,64 +1691,53 @@ sub _apply_list_template {
 	
 }
 
-sub entity_from_dada_style_args { 
+sub entity_from_dada_style_args {
 
-    my $self = shift; 
-    my ($args) = @_; 
+    my $self = shift;
+    my ($args) = @_;
 
-    if(! exists($args->{-fields})){ 
-    
-        croak 'did not pass data in, "-fields"' ;
+    if ( !exists( $args->{-fields} ) ) {
+
+        croak 'did not pass data in, "-fields"';
     }
-    
-    
 
-
-    if(!exists($args->{-parser_params})){ 
+    if ( !exists( $args->{-parser_params} ) ) {
         $args->{-parser_params} = {};
     }
-    elsif(!exists($args->{-parser_params}->{-input_mechanism})){ 
+    elsif ( !exists( $args->{-parser_params}->{-input_mechanism} ) ) {
         $args->{-parser_params}->{-input_mechanism} = 'parse';
     }
 
-    if($args->{-parser_params}->{-input_mechanism} eq 'parse_open'){ 
-    
-        
-       my $filename = $self->file_from_dada_style_args(
-                                        {
-                                            -fields => $args->{-fields},
-                                         }
-                                      ); 
+    if ( $args->{-parser_params}->{-input_mechanism} eq 'parse_open' ) {
 
-			# This is going to return a Entity from a decoded message...?
-            return ($self->get_entity(
-                            {
-                                -data          => $filename,
-                                -parser_params => {-input_mechanism => 'parse_open'},
-                            }
-                    ), $filename); 
-    
+        my $filename =
+          $self->file_from_dada_style_args( { -fields => $args->{-fields}, } );
+
+        # This is going to return a Entity from a decoded message...?
+        return (
+            $self->get_entity(
+                {
+                    -data          => $filename,
+                    -parser_params => { -input_mechanism => 'parse_open' },
+                }
+            ),
+            $filename
+        );
+
     }
-    else { 
-    
-  
+    else {
+
         my $str = $self->string_from_dada_style_args(
-                                        {
-                                            -fields => $args->{-fields},
-                                         }
-                                      );
-		
-			$str = safely_encode($str); 
-            my $entity =  $self->get_entity(
-                            {
-                                -data => $str, 
-                            }
-                    ); 
-				
-            return $entity;        
+            { -fields => $args->{-fields}, } );
+
+        $str = safely_encode($str);
+        my $entity = $self->get_entity( { -data => $str, } );
+
+        return $entity;
 
     }
 }
+
 
 sub string_from_dada_style_args { 
 
