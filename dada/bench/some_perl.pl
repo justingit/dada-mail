@@ -1,6 +1,4 @@
 #!/usr/bin/perl
-
-
 #Perhaps one thing to benchmark is the, "parse" vs. "parse open" I don't quite understand when one would ever use, "parse_open"? 
 
 
@@ -11,95 +9,39 @@ use lib qw(../t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib 
 use dada_test_config; 
 my $list = dada_test_config::create_test_list;
 
-use Benchmark qw(cmpthese timethese);
-use DADA::Config; 
-use DADA::Template::Widgets; 
-use DADA::App::Guts; 
+use DADA::Mail::Send; 
+use DADA::MailingList::Subscribers; 
+use DADA::MailingList::Settings; 
+my $ls = DADA::MailingList::Settings->new({-list => $list}); 
 
-use HTML::Template; 
-use HTML::Template::Pro; 
+$ls->save({'enable_bulk_batching' => 0}); 
+my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
 
-my $tmpl = tmpl(); 
-
-my %params = (
-	'alert'         => 'I am alert.',
-    'company.name'  => "MY NAME IS",
-    'company_id'    => "10001",
-    'office_id'     => "10103214",
-    'name'          => 'SAM I AM',
-    'address'       => '101011 North Something Something',
-    'city'          => 'NEW York',
-    'state'         => 'NEw York',
-    'zip'           => '10014',
-    'phone'         => '212-929-4315',
-    'phone2'        => '',
-    'subcategories' => 'kfldjaldsf',
-    'description' =>
-      "dsa;kljkldasfjkldsajflkjdsfklfjdsgkfld\nalskdjklajsdlkajfdlkjsfd\n\talksjdklajsfdkljdsf\ndsa;klfjdskfj",
-    'website'       => 'http://www.assforyou.com/',
-    'intranet_url'  => 'http://www.something.com',
-    'remove_button' => "<INPUT TYPE=SUBMIT NAME=command VALUE=\"Remove Office\">",
-    'company_admin_area' =>
-      "<A HREF=administrator.cgi?office_id=office_id&command=manage>Manage Office Administrators</A>",
-    'casestudies_list' =>
-      "adsfkljdskldszfgfdfdsgdsfgfdshghdmfldkgjfhdskjfhdskjhfkhdsakgagsfjhbvdsaj hsgbf jhfg sajfjdsag ffasfj hfkjhsdkjhdsakjfhkj kjhdsfkjhdskfjhdskjfkjsda kjjsafdkjhds kjds fkj skjh fdskjhfkj kj kjhf kjh sfkjhadsfkj hadskjfhkjhs ajhdsfkj akj fkj kj kj  kkjdsfhk skjhadskfj haskjh fkjsahfkjhsfk ksjfhdkjh sfkjhdskjfhakj shiou weryheuwnjcinuc 3289u4234k 5 i 43iundsinfinafiunai saiufhiudsaf afiuhahfwefna uwhf u auiu uh weiuhfiuh iau huwehiucnaiuncianweciuninc iuaciun iucniunciunweiucniuwnciwe",
-    'number_of_contacts' => "aksfjdkldsajfkljds",
-    'country_selector'   => "klajslkjdsafkljds",
-    'logo_link'          => "dsfpkjdsfkgljdsfkglj",
-    'photo_link'         => "lsadfjlkfjdsgkljhfgklhasgh",
-); 
-
-require DADA::App::FormatMessages; 
-my $fm = DADA::App::FormatMessages->new(-List => $list); 
+for(1 .. 1000){ 
+	$lh->add_subscriber({-email => $_ . '@example.com'}); 
+}
 
 
 
+my $mh = DADA::Mail::Send->new({-list => $list}); 
+my %args = dsa(); 
+$mh->test(1); 
+my $msg_id =  $mh->mass_send(%args); 
 
-my $count = 25000; 
-timethese($count, {
-    'HTML Template' => sub {
+
+#dada_test_config::remove_test_list;
+#dada_test_config::wipe_out;
+
+sub dsa { 
 	
-	    my $entity = $fm->email_template(
-		        {
-		            -entity => $fm->get_entity(
-						{
-							-data => safely_encode($tmpl),
-						}
-					),
-					-vars => {%params},
-		        }
-		    );
-		
-},
-    'HTML Template Pro' => sub {
+my %args = ( 
+'To' =>  q{"<!-- tmpl_var country_selector -->" <user@example.com>}, 
+'From' => q{"<!-- tmpl_var country_selector -->" <user@example.com>},
+'Subject' => q{Some Subject <!-- tmpl_var country_selector -->}, 
+'Content-type' =>  'text/html', 
+'Content-Transfer-Encoding' => '8bit', 
 
-	    my $entity = $fm->email_template(
-		        {
-		            -entity => $fm->get_entity(
-						{
-							-data => safely_encode($tmpl),
-						}
-					),
-					-vars => {%params},
-					-pro  => 1, 
-		        }
-		    );
-},
-
-});
-
-dada_test_config::remove_test_list;
-dada_test_config::wipe_out;
-
-sub tmpl { 
-	
-return q{ 
-To: "<!-- tmpl_var country_selector -->" <user@example.com>
-From: "<!-- tmpl_var country_selector -->" <user@example.com>
-Subject: Some Subject <!-- tmpl_var country_selector -->
-Content-type: text/html
-
-
+'Body' => q{
 	
 	<HTML>  
 	<HEAD>
@@ -318,6 +260,14 @@ Content-type: text/html
 	</TABLE>
 	</BODY>
 	</HTML>
-	
-}; 
+}
+); 
+ 
+for(0..4){ 
+	my $b = $args{Body} ; 
+	$args{Body} = $args{Body} . $b; 
+}
+
+return  %args; 
+
 }

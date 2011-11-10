@@ -1403,7 +1403,9 @@ information (for example:DBI)
 
 =pod
 
-=head1 Templates 							
+=head1 Templates 
+
+=pod
 
 You can change the look and feel of Dada Mail globally by specifying a
 different template file to use. Examples of what these templates 
@@ -2821,10 +2823,41 @@ And are nothing but HTML::Template-style tags. We'd like to move away from the
 old-style tags, but still 100% support them, for the time being. Setting this 
 paramater to, C<0> is B<very> much experimental. 
 
+=head4 engine
+
+B<engine> May be changed to one of the following:
+
+=over
+
+=item * Best
+
+=item * HTML Template Pro
+
+=item * HTML Template
+
+=back
+
+When set to, B<Best> or B<HTML Template Pro>, Dada Mail will use C<HTML::Template::Pro>
+if available as the templating engine. If C<HTML::Template::Pro> is not available, 
+Dada Mail will use either HTML::Template. B<Note:> Any templates that required the advanced templating syntax
+ will currently still use C<HTML::Template::Expr>. 
+
+When set to, B<HTML Template>, Dada Mail will only use C<HTML::Template> or C<HTML::Template::Expr>, 
+depending on what's needed.
+
+C<HTML::Template::Pro> will most likely be the faster choice, so it's preferred and 
+Dada Mail will automatically use it, if it is available. 
+
+If you do not want to use C<HTML::Template::Pro> at all, just set C<engine> 
+to, B<HTML Template>. 
+
+=cut
+
 =cut
 
 $TEMPLATE_SETTINGS ||= { 
 	oldstyle_backwards_compatibility => 1, 
+	engine                           => 'Best', 
 };
 
 

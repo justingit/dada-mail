@@ -6,8 +6,9 @@ use lib qw(
 use Encode; 
 
 use CGI::Carp qw(croak carp); 
-
 use DADA::Config qw(!:DEFAULT);  
+
+use constant HAS_HTML_TEMPLATE_PRO => eval { require HTML::Template::Pro; 1; }; 
 
 # A weird fix.
 BEGIN {
@@ -24,7 +25,7 @@ my $q = new CGI;
    $q->charset($DADA::Config::HTML_CHARSET);
    $q = decode_cgi_obj($q); 
 	
-	
+
 my $wierd_abs_path = __FILE__; 
    $wierd_abs_path =~ s{^/}{}g;
 
@@ -1793,9 +1794,6 @@ else {
 	    	$template_vars->{$_} = webify_plain_text($template_vars->{$_});
 	    }
 	}
-
-
-	my $template; 
 	
 	my $filters = []; 
  	if($args->{-screen}){
@@ -1834,65 +1832,115 @@ else {
 		}
 	}
 	
-#	$args->{-pro} = 1; 
+	# Which templating engine to use? 
+	#
+	my $template;
+	my $engine = 'html_template'; 
+ 
 	if($args->{-expr}){ 
+
+		# DEV: 
+		# I'm still using H::T::Expr on all templates that require H::T::Expr
+		# syntax, even though H::T::Pro supports it, because H::T::Expr will
+		# barf of variable names w/dots in them. 
+		# What to do? 
+		# * Write a filter to remove dots, replace with, "_dot_" instead?
+		# * change any variables with a dot name with, "_dot_" too. Will 
+		# That inpose too much of a speed hit?
+		
+		$engine = 'html_template_expr'; 
+	}
+	elsif ( $args->{-pro} == 1
+        && HAS_HTML_TEMPLATE_PRO == 1 )
+    {
+        $engine = 'html_template_pro';
+    }
+    elsif ( $args->{-pro} == 0 ) {
+            $engine = 'html_template';
+    }
+    elsif ( $DADA::Config::TEMPLATE_SETTINGS->{engine} =~ m/HTML Template Pro|Best/i
+        && HAS_HTML_TEMPLATE_PRO == 1 )
+    {
+        $engine = 'html_template_pro';
+    }
+    else {
+            $engine = 'html_template';
+    }
 	
+	if($engine eq 'html_template'){ 
+		require HTML::Template;
+		if($args->{-screen}){
+			 $template = HTML::Template->new(
+			 	%Global_Template_Options, 
+				filename => $args->{-screen},
+				filter => $filters,                 
+			);
+		}
+		elsif($args->{-data}){ 
+
+			if($args->{-decode_before} == 1){ 
+				${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
+			}
+			$template = HTML::Template->new(
+			%Global_Template_Options, 
+			scalarref => $args->{-data},
+			filter => $filters,   
+			);
+		}
+		else { 
+			croak "you MUST pass either a scarlarref in, '-date' or a filename in, '-screen'!"; 
+		}	
+	}
+	elsif($engine eq 'html_template_expr'){ 
+		require HTML::Template::MyExpr;
 		if($args->{-screen}){ 
-			require HTML::Template::MyExpr;
 			$template = HTML::Template::MyExpr->new(
 				%Global_Template_Options, 
 				filename => $args->{-screen},
 				filter   => $filters, 
 			);
 		}elsif($args->{-data}){ 
-			require HTML::Template::MyExpr;
+			
+			if($args->{-decode_before} == 1){ 
+				${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
+			}
+			
 			$template = HTML::Template::MyExpr->new(
 				%Global_Template_Options, 
 				scalarref => $args->{-data},
 				filter    => $filters, 
 			);
 		}else{ 
-			carp "what are you trying to do?!"; 
+			croak "you MUST pass either a scarlarref in, '-date' or a filename in, '-screen'!"; 
 		}
+	}
+	elsif($engine eq 'html_template_pro'){
 		
-   }else{ 
-   
-   	if($args->{-screen}){ 
-		require HTML::Template;
-		 $template = HTML::Template->new(
-		 	%Global_Template_Options, 
-			filename => $args->{-screen},
-			filter => $filters,                 
-		);
-
-	}elsif($args->{-data}){ 
-
-		if($args->{-decode_before} == 1){ 
-			${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
-		}
-		if($args->{-pro} == 1){ 
-		
-			require HTML::Template::Pro;
+			if($args->{-screen}){ 
+				$template = HTML::Template::Pro->new(
+					%Global_Template_Options, 
+					filename => $args->{-screen},
+					filter   => $filters, 
+				);
+			}elsif($args->{-data}){ 
+				
+				if($args->{-decode_before} == 1){ 
+					${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
+				}
+				
 				$template = HTML::Template::Pro->new(
 					%Global_Template_Options, 
 					scalarref => $args->{-data},
 					filter => $filters,   
 				);
-						
-		}
-		else { 
-   			require HTML::Template;
-				$template = HTML::Template->new(
-					%Global_Template_Options, 
-					scalarref => $args->{-data},
-					filter => $filters,   
-				);	
-		}	   					   
-   		}else{ 
-			carp "what are you trying to do?!"; 
-		}
-   }
-
+			}else{ 
+				croak "you MUST pass either a scarlarref in, '-date' or a filename in, '-screen'!"; 
+			}
+	}
+	else { 
+		croak "Invalid Templating Engine $engine"; 
+	}
+	
 	my %final_params = (
 		%Global_Template_Variables,					
 		# I like that, (not) 
