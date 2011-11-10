@@ -1427,6 +1427,10 @@ sub screen {
         $args->{-expr} = 0;
     }    
     
+	if(! exists($args->{-pro})){ 
+		$args->{-pro} = 0; 
+	}
+
     if(! exists($args->{-dada_pseudo_tag_filter})){ 
         $args->{-dada_pseudo_tag_filter} = 0;
     }
