@@ -77,7 +77,7 @@ sub _init  {
 		#$self->{-dpfm_obj} = $args->{-dpfm_obj} = undef; 
 	}
 	
-    $self->{'log'}      = new DADA::Logging::Usage;
+    $self->{'log'}      = DADA::Logging::Usage->new;
     $self->{list}       = $args->{-list};
 
     $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
