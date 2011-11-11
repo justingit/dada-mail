@@ -1498,6 +1498,7 @@ sub convert_to_html_entities {
 sub webify_plain_text { 
 
 	my $s = shift; 
+	my $r; 
 	my $multi_line = 0; 
 
 	if($s =~ m/\r|\n/){ 
@@ -1509,16 +1510,17 @@ sub webify_plain_text {
 	require HTML::TextToHTML;
 	my $conv = HTML::TextToHTML->new; 
 	   $conv->args(
+			%{$DADA::Config::HTML_TEXTTOHTML_OPTIONS},
 	   		escape_HTML_chars => 0
 		); 
-	   $s = $conv->process_chunk($s); 
-
+	   $r = $conv->process_chunk($s); 
+	   undef $conv; 
 	if($multi_line == 0){ 
-		# Sigh.
-		$s =~ s/\<p\>|\<\/p\>//g; 
+		# I do not remember what this is all about.
+		$r =~ s/\<p\>|\<\/p\>//g; 
 	}
-	
-	return $s; 
+	undef $s;
+	return $r; 
 }
 
 
