@@ -493,9 +493,12 @@ for(@expr_tmpls){
 	my ($status, $errors) = DADA::Template::Widgets::validate_screen(
 		{ 
 			-data => \$d, 
-			-expr => 0, 
+			-expr => 0,
+			-pro  => 0,  
 		}
 	); 
+	# These will fail, if you have HTML::Template::Pro, since it can 
+	# Handle -expr stuff, no problemo, OR it doesn't die if it fails. Ugh!
 	ok($status == 0); 
 	ok(defined($errors)); 
 }
