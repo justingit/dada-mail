@@ -17,7 +17,7 @@ my $ls = DADA::MailingList::Settings->new({-list => $list});
 $ls->save({'enable_bulk_batching' => 0}); 
 my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
 
-for(1 .. 1000){ 
+for(1 .. 100){ 
 	$lh->add_subscriber({-email => $_ . '@example.com'}); 
 }
 
@@ -40,6 +40,9 @@ my %args = (
 'Subject' => q{Some Subject <!-- tmpl_var country_selector -->}, 
 'Content-type' =>  'text/html', 
 'Content-Transfer-Encoding' => '8bit', 
+Body => 'test', 
+); 
+=cut
 
 'Body' => q{
 	
@@ -262,12 +265,13 @@ my %args = (
 	</HTML>
 }
 ); 
- 
+
 for(0..4){ 
 	my $b = $args{Body} ; 
 	$args{Body} = $args{Body} . $b; 
 }
 
+=cut
 return  %args; 
 
 }
