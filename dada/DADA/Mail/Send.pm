@@ -162,7 +162,11 @@ sub _init {
     
 	
         require DADA::MailingList::Subscribers; 
-        my $lh = DADA::MailingList::Subscribers->new({-list => $self->{list}});
+        my $lh = DADA::MailingList::Subscribers->new(
+			{
+				-list => $self->{list}
+			}
+		);
         my $merge_fields = $lh->subscriber_fields;
 				
         $self->{merge_fields} = $merge_fields;
@@ -172,7 +176,7 @@ sub _init {
 			my $pfm = DADA::ProfileFieldsManager->new; 
         	$self->{field_attr} = $pfm->get_all_field_attributes(); 
        		undef $lh; 
-
+			undef $pfm;
 	}
  }
 
@@ -253,26 +257,40 @@ sub send {
 	my $self = shift; 
 
 	
-	# DEV: This will just be generally, well, chatty. 
-	no strict;
-	# DEV: This needs to be cleaned up; 
+
 	my %param_headers = @_; 
-	for(keys %param_headers){
-		if(strip($param_headers{$_}) eq ''){ 
-			delete($param_headers{$_}); 
-		}
+	if($self->im_mass_sending == 1){ 
+		# ... 
 	}
-	use strict; 
-	#/ DEV: This will just be generally, well, chatty. 
-	    
-	my %fields = ( 
+	else { 
+		# This is done in mass_send, already. 
+		# DEV: This will just be generally, well, chatty. 
+		# DEV: This needs to be cleaned up;
+		no strict;
+		for(keys %param_headers){
+			if(strip($param_headers{$_}) eq ''){ 
+				delete($param_headers{$_}); 
+			}
+		}
+		use strict;
+		#/ DEV: This will just be generally, well, chatty. 
+	}
+ 
+	
+	
+	my %fields = (); 
+	if($self->im_mass_sending == 1){ 
+		%fields = %param_headers;
+	}
+	else {     
+		%fields = ( 
 				  %defaults,  
 				  $self->_make_general_headers, 
 				  $self->list_headers, 
 				   %param_headers, 
 				); 
-
-
+	}
+	undef(%param_headers); 
 
 	# Here's the thing - 
     # If there's no Content-Transfer-Encoding header, 
@@ -1065,8 +1083,6 @@ sub mass_send {
     
 	require DADA::MailingList::Subscribers;
 	       $DADA::MailingList::Subscribers::dbi_obj = $dbi_obj; 
-	
-	
 	my $lh = DADA::MailingList::Subscribers->new({-list => $self->{list}});
 	
 	
@@ -1148,12 +1164,7 @@ sub mass_send {
 	
     # This is so awkwardly placed...	
 	if($self->list_type eq 'invitelist' || $self->list_type =~ m/tmp/){ 
-		my $lh = DADA::MailingList::Subscribers->new(
-					{
-						-list => $self->{list}
-					}
-				);
-		   $lh->remove_this_listtype({-type => $self->list_type});
+		$lh->remove_this_listtype({-type => $self->list_type});
 	}
 
 	# Probably right here we can put the, 
@@ -1271,7 +1282,7 @@ sub mass_send {
 		# number. Those two things will be separated with a '::' so we can split 
 		# it apart later.
 
-	   undef $lh;
+	undef $lh;
 
 	my $pid; 
 
@@ -1484,6 +1495,9 @@ sub mass_send {
 			
 			my $somethings_wrong = 0;
 			
+			require Text::CSV; 
+			my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+			
 			
 			open(MAILLIST, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $mailout->subscriber_list) or 
 				croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: 
@@ -1566,6 +1580,7 @@ sub mass_send {
 						-mid    => $fields{'Message-ID'},
 				    }
 				);
+				undef $ct; 
 				# And, that's it.
 			}
 			else { 
@@ -1579,9 +1594,13 @@ sub mass_send {
             $mailout->batch_lock;
 
 			my $batch_start_time = time; 
+			require DADA::App::FormatMessages; 
+		    my $fm = DADA::App::FormatMessages->new(
+						-List        => $self->{list},  
+						-ls_obj      => $self->{ls},
+			);
 			
-			require   Text::CSV; 
-							
+						
 			# while we have people on the list.. 
 			SUBSCRIBERLOOP: while(defined($mail_info = <MAILLIST>)){ 	
 				chomp($mail_info);	
@@ -1622,19 +1641,16 @@ sub mass_send {
 
 				
 				
-				my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+				
 
-				require DADA::App::Guts;
-
-				my @ml_info = undef; 
+				my @ml_info; 
 				if ($csv->parse($mail_info)) {
 			     	@ml_info = $csv->fields;
 			    } else {
 			        carp $DADA::Config::PROGRAM_NAME . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag ();
-			    	next SUBSCRIBERLOOP;
+			    	undef(@ml_info);
+					next SUBSCRIBERLOOP;
 				}
-
-
 
 				my $mailing      = $ml_info[0];
 														
@@ -1691,12 +1707,6 @@ sub mass_send {
  
 				# This is kind of weird, since list messages aren't the only thing sent en-mass - 
 				# invite messages are, too. 
-
-				require DADA::App::FormatMessages; 
-			    my $fm = DADA::App::FormatMessages->new(
-							-List        => $self->{list},  
-							-ls_obj      => $self->{ls},
-				);
 					
 				if($self->list_type eq 'invitelist'){ 
 					$fields{To}   = $fm->format_phrase_address(
@@ -1718,8 +1728,7 @@ sub mass_send {
 						-fm_obj => $fm, 
 				    }
 				);
-
-				
+								
 				# Debug Information, Always nice
                 $nfields{Debug} = {
                     -Messages_Sent    => $n_people, 
@@ -1741,7 +1750,7 @@ sub mass_send {
 					exit(0);
 				}
 				else { 
-					 
+					 # ...
 				}
 
                 warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' counting subscriber.'
@@ -1962,7 +1971,6 @@ sub mass_send {
 			
 			warn  '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' We\'ve gone through the MAILLIST, it seems?'
 			    if $t; 
-			#warn "I'm still here!"; 
 			
 			if(defined($self->net_smtp_obj)){ 
 				# Guess we gotta quit the connection that's still going on... 
@@ -2746,20 +2754,14 @@ sub _mail_merge {
     # Right. Now we just have to feed this all into our -HTML- Email::Template thingamajig and we get to go home: 
 	my $fm; 
 	if(exists($args->{-fm_obj})) { 
-		$fm = $args->{-fm_obj}; 
+		# ...  
 	}
 	else { 
-				
-	    require DADA::App::FormatMessages; 
-	    my $fm = DADA::App::FormatMessages->new(
-					# -yeah_no_list => 1, 
-					-List        => $self->{list},  
-					-ls_obj      => $self->{ls},
-				); 
+		croak "you MUST pass the -fm_obj!"; 
 	}
 	
 	
- 	my ($orig_entity, $filename) = $fm->entity_from_dada_style_args(
+ 	my ($orig_entity, $filename) = $args->{-fm_obj}->entity_from_dada_style_args(
  
                                   {
                                         -fields        => $args->{-fields},
@@ -2772,7 +2774,7 @@ sub _mail_merge {
 		$expr = 1; 
 	}
 							
-    my $entity = $fm->email_template(
+    my $entity = $args->{-fm_obj}->email_template(
                     {
                         -entity                   => $orig_entity,                         
                         -list_settings_vars       => $self->{ls}->params, 
@@ -2812,6 +2814,7 @@ sub _mail_merge {
     
     
     my ($h, $b) = split("\n\n", $msg, 2); 
+	undef ($msg);
 	
 	my %final = (
         $self->return_headers($h), 
