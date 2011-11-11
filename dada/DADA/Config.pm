@@ -2853,8 +2853,6 @@ to, B<HTML Template>.
 
 =cut
 
-=cut
-
 $TEMPLATE_SETTINGS ||= { 
 	oldstyle_backwards_compatibility => 1, 
 	engine                           => 'Best', 
