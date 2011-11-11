@@ -1931,7 +1931,8 @@ else {
 				if($args->{-decode_before} == 1){ 
 					${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
 				}
-				
+				else { 
+				}
 				$template = HTML::Template::Pro->new(
 					%Global_Template_Options, 
 					scalarref => $args->{-data},
@@ -1962,15 +1963,33 @@ else {
 	#my %return_params = %_ht_tmpl_set_params; 
 	%_ht_tmpl_set_params = (); 
 	if(exists($args->{-return_params})){ 
-		if($args->{-return_params} == 1){ 
-			return ($template->output(), {%final_params});	
+		if($args->{-return_params} == 1){ 	
+			if($engine eq 'html_template_pro'){
+				# No, I do not know why I have to decode what H::T::Pro gives me. 
+				return (safely_decode($template->output(), 1), {%final_params}); 
+			}
+			else { 
+				return ($template->output(), {%final_params});	
+			}
+		}
+		else { 
+			if($engine eq 'html_template_pro'){
+				# No, I do not know why I have to decode what H::T::Pro gives me. 
+				return safely_decode($template->output(), 1); 
+			}
+			else { 
+				return $template->output();
+			}
+		}
+	}
+	else { 
+		if($engine eq 'html_template_pro'){
+			# No, I do not know why I have to decode what H::T::Pro gives me. 
+			return safely_decode($template->output(), 1); 
 		}
 		else { 
 			return $template->output();
 		}
-	}
-	else { 
-		return $template->output();
 	}
 }
 
