@@ -2116,6 +2116,7 @@ sub email_template {
 					  
 					
 					if($phrase =~ m/\[|\</){ # does it even look like we have a templated thingy? (optimization)
+						#carp "$phrase needs to be templated out!"; 
 						   # Template it Out
 						   $phrase = DADA::Template::Widgets::screen(
 	                        {
@@ -2138,7 +2139,10 @@ sub email_template {
 					
 						# Add the new
 						$args->{-entity}->head->add($header, $new_header); 
-					} #/ does it even look like we have a templated thingy? (optimization)
+					} 
+					else { 
+						# carp "Skipping: $phrase since there ain't no template in there."; 
+					}#/ does it even look like we have a templated thingy? (optimization)
                 }
                 else { 
 					
@@ -2166,7 +2170,7 @@ sub email_template {
 					if $t; 
 				
 				if($header_value =~ m/\[|\</){ # has a template? (optimization)
-					
+					# carp "$header_value needs to be templated out!"; 
 					# Template
 					$header_value = DADA::Template::Widgets::screen(
 	                    {
@@ -2190,7 +2194,10 @@ sub email_template {
 				
 					# Add
 					$args->{-entity}->head->add($header, $header_value);
-				}  # /has a template? (optimization)
+				}
+				else { 
+					#carp "Skipping: $header_value since there ain't no template in there."; 
+				} # /has a template? (optimization)
 			 
 				warn 'now:'. safely_encode( $header_value)
 					if $t;
