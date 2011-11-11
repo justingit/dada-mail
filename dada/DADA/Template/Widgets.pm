@@ -1428,7 +1428,7 @@ sub screen {
     }    
     
 	if(! exists($args->{-pro})){ 
-		$args->{-pro} = 0; 
+		$args->{-pro} = undef; 
 	}
 
     if(! exists($args->{-dada_pseudo_tag_filter})){ 
@@ -1841,7 +1841,7 @@ else {
 	my $template;
 	my $engine = 'html_template'; 
  
-	if($args->{-expr}){ 
+	if($args->{-expr} == 1){ 
 
 		# DEV: 
 		# I'm still using H::T::Expr on all templates that require H::T::Expr
@@ -1852,25 +1852,25 @@ else {
 		# * change any variables with a dot name with, "_dot_" too. Will 
 		# That inpose too much of a speed hit?
 		
-		$engine = 'html_template_expr'; 
+		$engine = 'html_template_expr';  
 	}
 	elsif ( $args->{-pro} == 1
-        && HAS_HTML_TEMPLATE_PRO == 1 )
+        && HAS_HTML_TEMPLATE_PRO )
     {
-        $engine = 'html_template_pro';
+        $engine = 'html_template_pro'; 
     }
-    elsif ( $args->{-pro} == 0 ) {
-            $engine = 'html_template';
+    elsif (defined($args->{-pro}) && $args->{-pro} == 0 ) {
+            $engine = 'html_template'; 
     }
     elsif ( $DADA::Config::TEMPLATE_SETTINGS->{engine} =~ m/HTML Template Pro|Best/i
-        && HAS_HTML_TEMPLATE_PRO == 1 )
+        && HAS_HTML_TEMPLATE_PRO )
     {
-        $engine = 'html_template_pro';
+        $engine = 'html_template_pro'; 
     }
-    else {
+    else { 
             $engine = 'html_template';
     }
-	
+		
 	if($engine eq 'html_template'){ 
 		require HTML::Template;
 		if($args->{-screen}){
