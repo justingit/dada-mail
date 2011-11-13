@@ -622,11 +622,14 @@ ok(
 	"\"$li->{list_name}\" \<$email_name\@$email_domain\>", 
 	"To: Set Correctly 6"
 );
+
+diag "Subject: " . safely_encode(decode_header($entity->head->get('Subject', 0)));
+ 
 ok(
 	decode_header($entity->head->get('Subject', 0))
 	eq
-	"Unsubscribed from $li->{list_name}", 
-	"Subject: Set Correctly"
+	"Farewell from $li->{list_name}", 
+	"Subject: Set Correctly (1)"
 );
 
 
