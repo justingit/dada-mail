@@ -1497,30 +1497,60 @@ sub convert_to_html_entities {
 
 sub webify_plain_text { 
 
-	my $s = shift; 
-	my $multi_line = 0; 
-
-	if($s =~ m/\r|\n/){ 
-		$multi_line = 1; 
-	}
-
-	$s = convert_to_html_entities($s); 
+	my ($args) = @_; 
 	
-	require HTML::TextToHTML;
-	my $conv = HTML::TextToHTML->new; 
-	   $conv->args(
-	   		escape_HTML_chars => 0
-		); 
-	   $s = $conv->process_chunk($s); 
-
-	if($multi_line == 0){ 
-		# Sigh.
-		$s =~ s/\<p\>|\<\/p\>//g; 
+	if(!exists($args->{-str})){ 
+		croak "you MUST pass a string to 1510 in the, '-str' paramater!"; 
 	}
+	if(!exists($args->{-method})){ 
+		$args->{-method} = "thorough"; 
+	}
+	my $r; 
 	
-	return $s; 
+	if($args->{-method} eq 'fast'){ 
+		
+		# There's a memory leak in HTML::TextToHTML 
+		# so, I use the below for Text Versions of HTML messages
+		
+		require HTML::FromText;
+		$args->{-str} = convert_to_html_entities($args->{-str}); 
+	    $r = HTML::FromText::text2html($args->{-str}, 
+			metachars => 1, 
+			urls      => 1, 
+			email     => 1,
+			paras     => 1, 
+			#bold      => 1, 
+			#underline => 1,
+			lines     => 1,
+			metachars => 0, 
+		);
+		return $r; 
+	}
+	else { 
+	
+		my $multi_line = 0; 
+
+		if($args->{-str} =~ m/\r|\n/){ 
+			$multi_line = 1; 
+		}
+
+		$args->{-str} = convert_to_html_entities($args->{-str}); 
+	
+		require HTML::TextToHTML;
+		my $conv = HTML::TextToHTML->new; 
+		   $conv->args(
+				%{$DADA::Config::HTML_TEXTTOHTML_OPTIONS},
+		   		escape_HTML_chars => 0
+			); 
+		   $r = $conv->process_chunk($args->{-str}); 
+		   undef $conv; 
+		if($multi_line == 0){ 
+			# I do not remember what this is all about.
+			$r =~ s/\<p\>|\<\/p\>//g; 
+		}		
+	}
+	return $r; 
 }
-
 
 
 =pod

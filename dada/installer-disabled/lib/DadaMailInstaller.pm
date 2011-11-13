@@ -505,7 +505,7 @@ sub scrn_install_dada_mail {
             -screen => 'installer_install_dada_mail_scrn.tmpl',
 			-with   => 'list', 
             -vars => { 
-			 install_log                  => webify_plain_text($log), 
+			 install_log                  => webify_plain_text({-str => $log}), 
 			 status                       => $status, 
 			install_dada_files_loc        => $install_dada_files_loc,
 			Dada_Files_Dir_Name           => $Dada_Files_Dir_Name, 

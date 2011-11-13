@@ -1832,7 +1832,7 @@ sub massaged_msg_for_display {
             # ...
         }
         else {
-			$body = webify_plain_text($body);
+			$body = webify_plain_text({-str => $body});
         }
 
         if ( $self->{ls}->param('style_quoted_archive_text') == 1 ) {
