@@ -17,7 +17,8 @@ Mail::Mailer - Simple interface to electronic mailing mechanisms
 
   $mailer->open(\%headers);
   print $mailer $body;
-  $mailer->close;
+  $mailer->close
+      or die "couldn't send whole message: $!\n";
 
 =head1 DESCRIPTION
 
@@ -35,14 +36,23 @@ Use the C<sendmail> program to deliver the mail.
 Use the C<smtp> protocol via Net::SMTP to deliver the mail. The server
 to use can be specified in C<@args> with
 
-    $mailer = Mail::Mailer->new('smtp', Server => $server);
+ $mailer = Mail::Mailer->new('smtp', Server => $server);
 
 The smtp mailer does not handle C<Cc> and C<Bcc> lines, neither their
 C<Resent-*> fellows. The C<Debug> options enables debugging output
 from C<Net::SMTP>.
 
 You may also use the C<< Auth => [ $user, $password ] >> option for SASL
-authentication (requires L<Authen::SASL> and L<MIME::Base64>).
+authentication. To make this work, you have to install the L<Authen::SASL>
+distribution yourself: it is not automatically installed.
+
+=item C<smtps>
+
+Use the smtp over ssl protocol via L<Net::SMTP::SSL> to deliver the mail.
+Usage is identical to C<smtp>. You have to install Authen::SASL as
+well.
+
+ $mailer = Mail::Mailer->new('smtps', Server => $server);
 
 =item C<qmail>
 
@@ -63,19 +73,15 @@ default mailer will be the first one found.
 
 =head2 Constructors
 
-Mail::Mailer-E<gt>B<new>(TYPE, ARGS)
-
 =over 4
+
+=item Mail::Mailer-E<gt>B<new>(TYPE, ARGS)
 
 The TYPE is one of the back-end sender implementations, as described in
 the DESCRIPTION chapter of this manual page.  The ARGS are passed to
 that back-end.
 
-=back
-
-$obj-E<gt>B<open>(HASH)
-
-=over 4
+=item $obj-E<gt>B<open>(HASH)
 
 The HASH consists of key and value pairs, the key being the name of
 the header field (eg, C<To>), and the value being the corresponding
@@ -126,7 +132,7 @@ F<http://perl.overmeer.net/mailtools/>.
 =head1 AUTHORS
 
 The MailTools bundle was developed by Graham Barr.  Later, Mark
-Overmeer took over maintenance without development.
+Overmeer took over maintenance without commitment to further development.
 
 Mail::Cap by Gisle Aas E<lt>aas@oslonett.noE<gt>.
 Mail::Field::AddrList by Peter Orbaek E<lt>poe@cit.dkE<gt>.

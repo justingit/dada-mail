@@ -1,36 +1,35 @@
 package MIME::Words;
 
-
 =head1 NAME
 
-MIME::Words - deal with RFC-1522 encoded words
+MIME::Words - deal with RFC 2047 encoded words
 
 
 =head1 SYNOPSIS
 
-Before reading further, you should see L<MIME::Tools> to make sure that 
+Before reading further, you should see L<MIME::Tools> to make sure that
 you understand where this module fits into the grand scheme of things.
-Go on, do it now.  I'll wait.  
+Go on, do it now.  I'll wait.
 
 Ready?  Ok...
 
 
-    use MIME::Words qw(:all);   
-     
+    use MIME::Words qw(:all);
+
     ### Decode the string into another string, forgetting the charsets:
     $decoded = decode_mimewords(
           'To: =?ISO-8859-1?Q?Keld_J=F8rn_Simonsen?= <keld@dkuug.dk>',
           );
-    
+
     ### Split string into array of decoded [DATA,CHARSET] pairs:
     @decoded = decode_mimewords(
           'To: =?ISO-8859-1?Q?Keld_J=F8rn_Simonsen?= <keld@dkuug.dk>',
           );
-     
+
     ### Encode a single unsafe word:
     $encoded = encode_mimeword("\xABFran\xE7ois\xBB");
-    
-    ### Encode a string, trying to find the unsafe words inside it: 
+
+    ### Encode a string, trying to find the unsafe words inside it:
     $encoded = encode_mimewords("Me and \xABFran\xE7ois\xBB in town");
 
 
@@ -38,7 +37,7 @@ Ready?  Ok...
 =head1 DESCRIPTION
 
 Fellow Americans, you probably won't know what the hell this module
-is for.  Europeans, Russians, et al, you probably do.  C<:-)>. 
+is for.  Europeans, Russians, et al, you probably do.  C<:-)>.
 
 For example, here's a valid MIME header you might get:
 
@@ -94,10 +93,10 @@ use MIME::QuotedPrint;
 #------------------------------
 
 ### The package version, both in 1.23 style *and* usable by MakeMaker:
-$VERSION = "5.420";
+$VERSION = "5.502";
 
 ### Nonprintables (controls + x7F + 8bit):
-my $NONPRINT = "\\x00-\\x1F\\x7F-\\xFF"; 
+my $NONPRINT = "\\x00-\\x1F\\x7F-\\xFF";
 
 
 #------------------------------
@@ -117,7 +116,7 @@ sub _decode_Q {
 #     almost, but not exactly, quoted-printable.  :-P
 sub _encode_Q {
     my $str = shift;
-    $str =~ s{([_\?\=$NONPRINT])}{sprintf("=%02X", ord($1))}eog;
+    $str =~ s{([ _\?\=$NONPRINT])}{sprintf("=%02X", ord($1))}eog;
     $str;
 }
 
@@ -139,15 +138,15 @@ sub _encode_B {
 
 #------------------------------
 
-=item decode_mimewords ENCODED, [OPTS...]
+=item decode_mimewords ENCODED
 
 I<Function.>
-Go through the string looking for RFC-1522-style "Q"
+Go through the string looking for RFC 2047-style "Q"
 (quoted-printable, sort of) or "B" (base64) encoding, and decode them.
 
-B<In an array context,> splits the ENCODED string into a list of decoded 
-C<[DATA, CHARSET]> pairs, and returns that list.  Unencoded 
-data are returned in a 1-element array C<[DATA]>, giving an effective 
+B<In an array context,> splits the ENCODED string into a list of decoded
+C<[DATA, CHARSET]> pairs, and returns that list.  Unencoded
+data are returned in a 1-element array C<[DATA]>, giving an effective
 CHARSET of C<undef>.
 
     $enc = '=?ISO-8859-1?Q?Keld_J=F8rn_Simonsen?= <keld@dkuug.dk>';
@@ -155,34 +154,26 @@ CHARSET of C<undef>.
         print "", ($_[1] || 'US-ASCII'), ": ", $_[0], "\n";
     }
 
-B<In a scalar context,> joins the "data" elements of the above 
+B<In a scalar context,> joins the "data" elements of the above
 list together, and returns that.  I<Warning: this is information-lossy,>
-and probably I<not> what you want, but if you know that all charsets 
+and probably I<not> what you want, but if you know that all charsets
 in the ENCODED string are identical, it might be useful to you.
 (Before you use this, please see L<MIME::WordDecoder/unmime>,
 which is probably what you want.)
 
-In the event of a syntax error, $@ will be set to a description 
+In the event of a syntax error, $@ will be set to a description
 of the error, but parsing will continue as best as possible (so as to
 get I<something> back when decoding headers).
 $@ will be false if no error was detected.
 
 Any arguments past the ENCODED string are taken to define a hash of options:
 
-=over 4
-
-=item Field
-
-Name of the mail field this string came from.  I<Currently ignored.>
-
-=back
-
 =cut
 
 sub decode_mimewords {
     my $encstr = shift;
-    my %params = @_;
     my @tokens;
+    local($1,$2,$3);
     $@ = '';           ### error-return
 
     ### Collapse boundaries between adjacent encoded words:
@@ -209,7 +200,7 @@ sub decode_mimewords {
 	    next;
 	}
 
-	### Case 2: are we looking at a bad "=?..." prefix? 
+	### Case 2: are we looking at a bad "=?..." prefix?
 	### We need this to detect problems for case 3, which stops at "=?":
 	pos($encstr) = $pos;               # reset the pointer.
 	if ($encstr =~ m{\G=\?}xg) {
@@ -221,10 +212,10 @@ sub decode_mimewords {
 	### Case 3: are we looking at ordinary text?
 	pos($encstr) = $pos;               # reset the pointer.
 	if ($encstr =~ m{\G                # from where we left off...
-			 ([\x00-\xFF]*?    #   shortest possible string,
+			 (.*?    #   shortest possible string,
 			  \n*)             #   followed by 0 or more NLs,
 		         (?=(\Z|=\?))      # terminated by "=?" or EOS
-			}xg) {
+			}sxg) {
 	    length($1) or die "MIME::Words: internal logic err: empty token\n";
 	    push @tokens, [$1];
 	    next;
@@ -266,7 +257,7 @@ sub encode_mimeword {
 =item encode_mimewords RAW, [OPTS]
 
 I<Function.>
-Given a RAW string, try to find and encode all "unsafe" sequences 
+Given a RAW string, try to find and encode all "unsafe" sequences
 of characters:
 
     ### Encode a string with some unsafe "words":
@@ -286,17 +277,13 @@ a.k.a. "Latin-1".
 
 The encoding to use, C<"q"> or C<"b">.  The default is C<"q">.
 
-=item Field
-
-Name of the mail field this string will be used in.  I<Currently ignored.>
-
 =back
 
 B<Warning:> this is a quick-and-dirty solution, intended for character
-sets which overlap ASCII.  B<It does not comply with the RFC-1522
+sets which overlap ASCII.  B<It does not comply with the RFC 2047
 rules regarding the use of encoded words in message headers>.
 You may want to roll your own variant,
-using C<encoded_mimeword()>, for your application.
+using C<encode_mimeword()>, for your application.
 I<Thanks to Jan Kasprzak for reminding me about this problem.>
 
 =cut
@@ -307,15 +294,16 @@ sub encode_mimewords {
     my $encoding = lc($params{Encoding} || 'q');
 
     ### Encode any "words" with unsafe characters.
-    ###    We limit such words to 18 characters, to guarantee that the 
+    ###    We limit such words to 18 characters, to guarantee that the
     ###    worst-case encoding give us no more than 54 + ~10 < 75 characters
     my $word;
-    $rawstr =~ s{([a-zA-Z0-9\x7F-\xFF]{1,18})}{     ### get next "word"
+    $rawstr =~ s{([ a-zA-Z0-9\x7F-\xFF]{1,18})}{     ### get next "word"
 	$word = $1;
-	(($word !~ /[$NONPRINT]/o) 
+	(($word !~ /(?:[$NONPRINT])|(?:^\s+$)/o)
 	 ? $word                                          ### no unsafe chars
 	 : encode_mimeword($word, $encoding, $charset));  ### has unsafe chars
     }xeg;
+    $rawstr =~ s/\?==\?/?= =?/g;
     $rawstr;
 }
 
@@ -325,9 +313,21 @@ __END__
 
 =back
 
+=head1 SEE ALSO
+
+L<MIME::Base64>, L<MIME::QuotedPrint>, L<MIME::Tools>
+
+For other implementations of this or similar functionality (particularly, ones
+with proper UTF8 support), see:
+
+L<Encode::MIME::Header>, L<MIME::EncWords>, L<MIME::AltWords>
+
+At some future point, one of these implementations will likely replace
+MIME::Words and MIME::Words will become deprecated.
+
 =head1 NOTES
 
-Exports its principle functions by default, in keeping with 
+Exports its principle functions by default, in keeping with
 MIME::Base64 and MIME::QuotedPrint.
 
 
@@ -336,72 +336,14 @@ MIME::Base64 and MIME::QuotedPrint.
 Eryq (F<eryq@zeegee.com>), ZeeGee Software Inc (F<http://www.zeegee.com>).
 David F. Skoll (dfs@roaringpenguin.com) http://www.roaringpenguin.com
 
-All rights reserved.  This program is free software; you can redistribute 
+All rights reserved.  This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.
 
 Thanks also to...
 
-      Kent Boortz        For providing the idea, and the baseline 
+      Kent Boortz        For providing the idea, and the baseline
                          RFC-1522-decoding code!
       KJJ at PrimeNet    For requesting that this be split into
                          its own module.
       Stephane Barizien  For reporting a nasty bug.
-
-
-=head1 VERSION
-
-$Revision: 1.14 $ $Date: 2006/03/17 21:03:23 $
-
-=cut
-
-
-#------------------------------
-# Execute simple test if run as a script.
-#------------------------------
-{ 
-  package main; no strict;
-  eval join('',<main::DATA>) || die "$@ $main::DATA" unless caller();
-}
-1;           # end the module
-__END__
-
-
-### Pick up other MIME stuff, just in case...
-BEGIN { unshift @INC, ".", "./etc", "./lib" };
-import MIME::Words;
-
-my @encs = (
-	    '=?US-ASCII?Q?Keith_Moore?= <moore@cs.utk.edu>',
-	    '=?ISO-8859-1?Q?Keld_J=F8rn_Simonsen?= <keld@dkuug.dk>',
-	    '=?ISO-8859-1?Q?Andr=E9_?= Pirard <PIRARD@vm1.ulg.ac.be>',
-	    ('=?ISO-8859-1?B?SWYgeW91IGNhbiByZWFkIHRoaXMgeW8=?='.
-	     '=?ISO-8859-2?B?dSB1bmRlcnN0YW5kIHRoZSBleGFtcGxlLg==?='.
-	     '=?US-ASCII?Q?.._cool!?='));
-foreach $enc (@encs) {
-    $x = decode_mimewords($enc);
-    print "DEC: ", $x, "\n";
-}
-
-### Encode a single unsafe word:
-$encoded = encode_mimeword("\xABFran\xE7ois\xBB");
-print "ENC1: ", $encoded, "\n";
-    
-### Encode a string, trying to find the unsafe words inside it: 
-$encoded = encode_mimewords("Me and \xABFran\xE7ois\xBB at the beach");
-print "ENC2: ", $encoded, "\n";
-
-### Encode "<<Franc,ois>>":
-my $unsafe = <<EOF;
-Me and \xABFran\xE7ois\xBB, down at the beach
-with Dave <dave\@ether.net>
-EOF
-$encoded = encode_mimewords($unsafe);
-print "ENC3: ", $encoded, "\n";
-print "DEC3: ", scalar(decode_mimewords($encoded)), "\n";
-
-### So we know everything went well...
-exit 0;
-
-#------------------------------
-
 

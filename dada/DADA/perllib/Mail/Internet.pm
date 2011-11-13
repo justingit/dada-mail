@@ -1,10 +1,11 @@
-# Copyrights 1995-2008 by Mark Overmeer <perl@overmeer.net>.
+# Copyrights 1995-2011 by Mark Overmeer <perl@overmeer.net>.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.04.
+# Pod stripped from pm file by OODoc 2.00.
 package Mail::Internet;
 use vars '$VERSION';
-$VERSION = '2.03';
+$VERSION = '2.08';
+
 use strict;
 # use warnings?  probably breaking too much code
 
@@ -405,7 +406,8 @@ sub smtpsend($@)
 	    last if defined $smtp;
 	}
     }
-    elsif(ref($host) && UNIVERSAL::isa($host,'Net::SMTP'))
+    elsif(UNIVERSAL::isa($host,'Net::SMTP')
+       || UNIVERSAL::isa($host,'Net::SMTP::SSL'))
     {   $smtp = $host;
 	$quit = 0;
     }
@@ -418,8 +420,6 @@ sub smtpsend($@)
 
     my $head = $self->cleaned_header_dup;
 
-    $head->delete('Bcc');
-
     # Who is it to
 
     my @rcpt = map { ref $_ ? @$_ : $_ } grep { defined } @opt{'To','Cc','Bcc'};
@@ -428,6 +428,8 @@ sub smtpsend($@)
 
     my @addr = map {$_->address} Mail::Address->parse(@rcpt);
     @addr or return ();
+
+    $head->delete('Bcc');
 
     # Send it
 

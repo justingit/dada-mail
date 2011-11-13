@@ -1,10 +1,11 @@
-# Copyrights 1995-2008 by Mark Overmeer <perl@overmeer.net>.
+# Copyrights 1995-2011 by Mark Overmeer <perl@overmeer.net>.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.04.
+# Pod stripped from pm file by OODoc 2.00.
 package Mail::Header;
 use vars '$VERSION';
-$VERSION = '2.03';
+$VERSION = '2.08';
+
 
 use strict;
 use Carp;
@@ -544,6 +545,7 @@ sub get
 
     if(defined $idx || !wantarray)
     {    $idx ||= 0;
+         defined $def->[$idx] or return undef;
          my $val = ${$def->[$idx]};
          defined $val or return undef;
 

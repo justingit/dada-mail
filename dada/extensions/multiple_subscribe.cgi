@@ -227,7 +227,11 @@ foreach(@available_lists){
         
             
         my $html_info = $li->{info};
-           $html_info = webify_plain_text($html_info);
+           $html_info = webify_plain_text(
+				{ 
+					-str =>$html_info
+				}
+			);
     
         # Just trying this out...
     

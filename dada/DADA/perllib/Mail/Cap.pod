@@ -2,8 +2,6 @@
 
 Mail::Cap - Parse mailcap files
 
-=head1 INHERITANCE
-
 =head1 SYNOPSIS
 
  my $mc = new Mail::Cap;
@@ -33,31 +31,27 @@ and therefore have succeeded the mail-cap specifications on modern
 
 =head2 Constructors
 
-Mail::Cap-E<gt>B<new>(OPTIONS)
-
 =over 4
+
+=item Mail::Cap-E<gt>B<new>(OPTIONS)
 
 Create and initialize a new Mail::Cap object.  If you give it an
 argument it will try to parse the specified file.  Without any
 arguments it will search for the mailcap file using the standard
 mailcap path, or the MAILCAPS environment variable if it is defined.
 
- Option  --Default
- filename  undef
- take      'FIRST'
+ -Option  --Default
+  filename  undef
+  take      'FIRST'
 
-. filename => FILENAME
+=over 2
 
-=over 4
+=item filename => FILENAME
 
 Add the specified file to the list to standard locations.  This file
 is tried first.
 
-=back
-
-. take => 'ALL'|'FIRST'
-
-=over 4
+=item take => 'ALL'|'FIRST'
 
 Include all mailcap files you can find.  By default, only the first
 file is parsed, however the RFC tells us to include ALL.  To maintain
@@ -82,27 +76,15 @@ media object in the specified file.  They all return C<1> if a command
 was found, and C<0> otherwise.  You might test C<$?> for the outcome
 of the command.
 
-$obj-E<gt>B<compose>(TYPE, FILE)
-
 =over 4
 
-=back
+=item $obj-E<gt>B<compose>(TYPE, FILE)
 
-$obj-E<gt>B<edit>(TYPE, FILE)
+=item $obj-E<gt>B<edit>(TYPE, FILE)
 
-=over 4
+=item $obj-E<gt>B<print>(TYPE, FILE)
 
-=back
-
-$obj-E<gt>B<print>(TYPE, FILE)
-
-=over 4
-
-=back
-
-$obj-E<gt>B<view>(TYPE, FILE)
-
-=over 4
+=item $obj-E<gt>B<view>(TYPE, FILE)
 
 =back
 
@@ -113,27 +95,15 @@ in order to invoke a suitable progam presenting or manipulating the
 media object in the specified file.  It will return C<undef> if no
 suitable specification exists.
 
-$obj-E<gt>B<composeCmd>(TYPE, FILE)
-
 =over 4
 
-=back
+=item $obj-E<gt>B<composeCmd>(TYPE, FILE)
 
-$obj-E<gt>B<editCmd>(TYPE, FILE)
+=item $obj-E<gt>B<editCmd>(TYPE, FILE)
 
-=over 4
+=item $obj-E<gt>B<printCmd>(TYPE, FILE)
 
-=back
-
-$obj-E<gt>B<printCmd>(TYPE, FILE)
-
-=over 4
-
-=back
-
-$obj-E<gt>B<viewCmd>(TYPE, FILE)
-
-=over 4
+=item $obj-E<gt>B<viewCmd>(TYPE, FILE)
 
 =back
 
@@ -141,36 +111,20 @@ $obj-E<gt>B<viewCmd>(TYPE, FILE)
 
 Methods return the corresponding mailcap field for the type.
 
-$obj-E<gt>B<description>(TYPE)
-
 =over 4
 
-=back
+=item $obj-E<gt>B<description>(TYPE)
 
-$obj-E<gt>B<field>(TYPE, FIELD)
-
-=over 4
+=item $obj-E<gt>B<field>(TYPE, FIELD)
 
 Returns the specified field for the type.  Returns undef if no
 specification exsists.
 
-=back
+=item $obj-E<gt>B<nametemplate>(TYPE)
 
-$obj-E<gt>B<nametemplate>(TYPE)
+=item $obj-E<gt>B<textualnewlines>(TYPE)
 
-=over 4
-
-=back
-
-$obj-E<gt>B<textualnewlines>(TYPE)
-
-=over 4
-
-=back
-
-$obj-E<gt>B<x11_bitmap>(TYPE)
-
-=over 4
+=item $obj-E<gt>B<x11_bitmap>(TYPE)
 
 =back
 
@@ -182,7 +136,7 @@ F<http://perl.overmeer.net/mailtools/>.
 =head1 AUTHORS
 
 The MailTools bundle was developed by Graham Barr.  Later, Mark
-Overmeer took over maintenance without development.
+Overmeer took over maintenance without commitment to further development.
 
 Mail::Cap by Gisle Aas E<lt>aas@oslonett.noE<gt>.
 Mail::Field::AddrList by Peter Orbaek E<lt>poe@cit.dkE<gt>.

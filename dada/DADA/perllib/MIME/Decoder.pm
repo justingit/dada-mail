@@ -85,12 +85,12 @@ use strict;
 use vars qw($VERSION %DecoderFor);
 
 ### System modules:
-use FileHandle;
 use IPC::Open2;
+use IO::Select;
+use FileHandle;
 
 ### Kit modules:
 use MIME::Tools qw(:config :msgs);
-use IO::Wrap;
 use Carp;
 
 #------------------------------
@@ -126,7 +126,7 @@ use Carp;
 );
 
 ### The package version, both in 1.23 style *and* usable by MakeMaker:
-$VERSION = "5.420";
+$VERSION = "5.502";
 
 ### Me:
 my $ME = 'MIME::Decoder';
@@ -161,18 +161,22 @@ Returns the undefined value if no known decoders are appropriate.
 sub new {
     my ($class, @args) = @_;
     my ($encoding) = @args;
-    my ($concrete_name, $concrete_path);
 
     ### Coerce the type to be legit:
     $encoding = lc($encoding || '');
 
     ### Get the class:
-    ($concrete_name = $DecoderFor{$encoding}) or return undef;
-    ($concrete_path = $concrete_name.'.pm') =~ s{::}{/}g;
+    my $concrete_name = $DecoderFor{$encoding};
+
+    if( ! $concrete_name ) {
+	carp "no decoder for $encoding";
+	return undef;
+    }
 
     ### Create the new object (if we can):
     my $self = { MD_Encoding => lc($encoding) };
-    unless (eval "require '$concrete_path';") {
+    unless (eval "require $concrete_name;") {
+	carp $@;
 	return undef;
     }
     bless $self, $concrete_name;
@@ -226,10 +230,6 @@ sub decode {
     ### Set up the default input record separator to be CRLF:
     ### $in->input_record_separator("\012\015");
 
-    ### Coerce old-style filehandles to legit objects, and do it!
-    $in  = wraphandle($in);
-    $out = wraphandle($out);
-
     ### Invoke back-end method to do the work:
     $self->decode_it($in, $out) ||
 	die "$ME: ".$self->encoding." decoding failed\n";
@@ -254,10 +254,6 @@ Returns true on success, throws exception on failure.
 
 sub encode {
     my ($self, $in, $out, $textual_type) = @_;
-
-    ### Coerce old-style filehandles to legit objects, and do it!
-    $in  = wraphandle($in);
-    $out = wraphandle($out);
 
     ### Invoke back-end method to do the work:
     $self->encode_it($in, $out, $self->encoding eq 'quoted-printable' ? ($textual_type) : ()) ||
@@ -340,10 +336,6 @@ are some other methods you'll need to know about:
 
 =over 4
 
-=cut
-
-#------------------------------
-
 =item decode_it INSTREAM,OUTSTREAM
 
 I<Abstract instance method.>
@@ -370,8 +362,6 @@ It may also throw an exception to indicate failure.
 sub decode_it {
     die "attempted to use abstract 'decode_it' method!";
 }
-
-#------------------------------
 
 =item encode_it INSTREAM,OUTSTREAM
 
@@ -400,8 +390,6 @@ sub encode_it {
     die "attempted to use abstract 'encode_it' method!";
 }
 
-#------------------------------
-
 =item filter IN, OUT, COMMAND...
 
 I<Class method, utility.>
@@ -422,29 +410,65 @@ so you can specify COMMAND as a single argument or as an array.
 
 =cut
 
-sub filter {
-    my ($self, $in, $out, @cmd) = @_;
-    my $buf = '';
+sub filter
+{
+	my ($self, $in, $out, @cmd) = @_;
+	my $buf = '';
 
-    ### Make sure we've got MIME::IO-compliant objects:
-    $in  = wraphandle($in);
-    $out = wraphandle($out);
+	### Open pipe:
+	STDOUT->flush;  ### very important, or else we get duplicate output!
 
-    ### Open pipe:
-    STDOUT->flush;       ### very important, or else we get duplicate output!
-    my $kidpid = open2(\*CHILDOUT, \*CHILDIN, @cmd) || die "open2 failed: $!";
+	my $kidpid = open2(my $child_out, my $child_in, @cmd) || die "@cmd: open2 failed: $!";
 
-    ### Write all:
-    while ($in->read($buf, 2048)) { print CHILDIN $buf }
-    close \*CHILDIN;
+	### We have to use select() for doing both reading and writing.
+	my $rsel = IO::Select->new( $child_out );
+	my $wsel = IO::Select->new( $child_in  );
 
-    ### Read all:
-    while (read(\*CHILDOUT, $buf, 2048)) { $out->print($buf) }
-    close \*CHILDOUT;
+	while (1) {
 
-    ### Wait for it:
-    waitpid($kidpid,0) or die "couldn't reap child $kidpid";
-    1;
+		### Wait for one hour; if that fails, it's too bad.
+		my ($read, $write) = IO::Select->select( $rsel, $wsel, undef, 3600);
+
+		if( !defined $read && !defined $write ) {
+			kill 1, $kidpid;
+			waitpid $kidpid, 0;
+			die "@cmd: select failed: $!";
+		}
+
+		### If can read from child:
+		if( my $fh = shift @$read ) {
+			if( $fh->sysread(my $buf, 1024) ) {
+				$out->print($buf);
+			} else {
+				$rsel->remove($fh);
+				$fh->close();
+			}
+		}
+
+		### If can write to child:
+		if( my $fh = shift @$write ) {
+			if($in->read(my $buf, 1024)) {
+				local $SIG{PIPE} = sub {
+					warn "got SIGPIPE from @cmd";
+					$wsel->remove($fh);
+					$fh->close();
+				};
+				$fh->syswrite( $buf );
+			} else {
+				$wsel->remove($fh);
+				$fh->close();
+			}
+		}
+
+		### If both $child_out and $child_in are done:
+		last unless ($rsel->count() || $wsel->count());
+	}
+
+	### Wait for it:
+	waitpid($kidpid, 0) == $kidpid or die "@cmd: couldn't reap child $kidpid";
+	### Check if it failed:
+	$? == 0 or die "@cmd: bad exit status: \$? = $?";
+	1;
 }
 
 
@@ -546,11 +570,6 @@ interface; minimally:
       getline
       read(BUF,NBYTES)
 
-For backwards compatibilty, if you supply a scalar filehandle name
-(like C<"STDOUT">) or an unblessed glob reference (like C<\*STDOUT>)
-where an INSTREAM or OUTSTREAM is expected, this package will
-automatically wrap it in an object that fits these criteria, via IO::Wrap.
-
 I<Thanks to Achim Bohnet for suggesting this more-generic I/O model.>
 
 
@@ -628,6 +647,9 @@ write a MIME::Decoder for any future standard encodings.
 The C<"binary"> decoder, however, really required block reads and writes:
 see L<"MIME::Decoder::Binary"> for details.
 
+=head1 SEE ALSO
+
+L<MIME::Tools>, other MIME::Decoder subclasses.
 
 =head1 AUTHOR
 
@@ -635,12 +657,5 @@ Eryq (F<eryq@zeegee.com>), ZeeGee Software Inc (F<http://www.zeegee.com>).
 
 All rights reserved.  This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.
-
-
-=head1 VERSION
-
-$Revision: 1.16 $ $Date: 2006/03/17 21:03:23 $
-
-=cut
 
 1;

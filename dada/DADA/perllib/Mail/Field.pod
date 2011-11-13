@@ -36,18 +36,14 @@ MailTools, to maintain a consistent set of packages and documentation.
 Mail::Field (and it's sub-classes) define several methods which return
 new objects. These can all be categorized as constructor.
 
-Mail::Field-E<gt>B<combine>(FIELDS)
-
 =over 4
+
+=item Mail::Field-E<gt>B<combine>(FIELDS)
 
 Take a LIST of C<Mail::Field> objects (which should all be of the same
 sub-class) and create a new object in that same class.
 
-=back
-
-Mail::Field-E<gt>B<extract>(TAG, HEAD [, INDEX ])
-
-=over 4
+=item Mail::Field-E<gt>B<extract>(TAG, HEAD [, INDEX ])
 
 Takes as arguments the tag name, a C<Mail::Head> object
 and optionally an index.
@@ -62,11 +58,7 @@ will be as if C<extract> was called with an index value of zero. If called
 in an array context then all tags will be retrieved and a list of
 C<Mail::Field> objects will be returned.
 
-=back
-
-Mail::Field-E<gt>B<new>(TAG [, STRING | OPTIONS])
-
-=over 4
+=item Mail::Field-E<gt>B<new>(TAG [, STRING | OPTIONS])
 
 Create an object in the class which defines the field specified by
 the TAG argument.
@@ -75,19 +67,15 @@ the TAG argument.
 
 =head2 "Fake" constructors
 
-$obj-E<gt>B<create>(OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<create>(OPTIONS)
 
 This constructor is used internally with preprocessed field information.
 When called on an existing object, its original content will get
 replaced.
 
-=back
-
-$obj-E<gt>B<parse>
-
-=over 4
+=item $obj-E<gt>B<parse>
 
 Parse a field line.
 
@@ -95,27 +83,19 @@ Parse a field line.
 
 =head2 Accessors
 
-$obj-E<gt>B<set>(OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<set>(OPTIONS)
 
 Change the settings (the content, but then smart) of this field.
 
-=back
-
-$obj-E<gt>B<stringify>
-
-=over 4
+=item $obj-E<gt>B<stringify>
 
 Returns the field as a string.
 
-=back
+=item $obj-E<gt>B<tag>
 
-$obj-E<gt>B<tag>
-
-Mail::Field-E<gt>B<tag>
-
-=over 4
+=item Mail::Field-E<gt>B<tag>
 
 Return the tag (in the correct case) for this item.  Well, actually any
 casing is OK, because the field tags are treated case-insentitive; however
@@ -125,9 +105,9 @@ people have some preferences.
 
 =head2 Smart accessors
 
-$obj-E<gt>B<text>([STRING])
-
 =over 4
+
+=item $obj-E<gt>B<text>([STRING])
 
 Without arguments, the field is returned as L<stringify()|Mail::Field/"Accessors"> does.  Otherwise,
 the STRING is parsed with L<parse()|Mail::Field/""Fake" constructors"> to replace the object's content.
@@ -178,9 +158,9 @@ C<_header_pkg_name()> subroutine in C<Mail::Field>
 
 =head1 DIAGNOSTICS
 
-Error: Undefined subroutine <method> called
-
 =over 4
+
+=item Error: Undefined subroutine <method> called
 
 Mail::Field objects use autoloading to compile new functionality.
 Apparently, the mehod called is not implemented for the specific
@@ -196,7 +176,7 @@ F<http://perl.overmeer.net/mailtools/>.
 =head1 AUTHORS
 
 The MailTools bundle was developed by Graham Barr.  Later, Mark
-Overmeer took over maintenance without development.
+Overmeer took over maintenance without commitment to further development.
 
 Mail::Cap by Gisle Aas E<lt>aas@oslonett.noE<gt>.
 Mail::Field::AddrList by Peter Orbaek E<lt>poe@cit.dkE<gt>.

@@ -12,13 +12,13 @@ don't need to be looking at it at all.  But just in case...
 
     ### Create a top-level reader, where chunks end at EOF:
     $rdr = MIME::Parser::Reader->new();
-      
+
     ### Spawn a child reader, where chunks also end at a boundary:
     $subrdr = $rdr->spawn->add_boundary($bound);
-     
+
     ### Spawn a child reader, where chunks also end at a given string:
     $subrdr = $rdr->spawn->add_terminator($string);
-     
+
     ### Read until boundary or terminator:
     $subrdr->read_chunk($in, $out);
 
@@ -26,7 +26,7 @@ don't need to be looking at it at all.  But just in case...
 =head1 DESCRIPTION
 
 A line-oriented reader which can deal with virtual end-of-stream
-defined by a collection of boundaries. 
+defined by a collection of boundaries.
 
 B<Warning:> this is a private class solely for use by MIME::Parser.
 This class has no official public interface
@@ -34,7 +34,6 @@ This class has no official public interface
 =cut
 
 use strict;
-use IO::ScalarArray;
 
 ### All possible end-of-line sequences.
 ### Note that "" is included because last line of stream may have no newline!
@@ -67,7 +66,7 @@ sub new {
 # spawn
 #
 # I<Instance method.>
-# Return a reader which is mostly a duplicate, except that the EOS 
+# Return a reader which is mostly a duplicate, except that the EOS
 # accumulator is shared.
 #
 sub spawn {
@@ -126,7 +125,7 @@ sub has_bounds {
 # depth
 #
 # I<Instance method.>
-# How many levels are there? 
+# How many levels are there?
 #
 sub depth {
     scalar(@{shift->{Bounds}});
@@ -154,7 +153,7 @@ sub eos {
 # Return the high-level type of the given token (defaults to our token).
 #
 #    DELIM       saw an innermost boundary like --xyz
-#    CLOSE       saw an innermost boundary like --xyz-- 
+#    CLOSE       saw an innermost boundary like --xyz--
 #    DONE        callback returned false
 #    EOF         end of file
 #    EXT         saw boundary of some higher-level
@@ -184,8 +183,8 @@ sub eos_type {
 #
 sub native_handle {
     my $fh = shift;
-    return $fh  if $fh->isa('IO::File');
-    return $$fh if ($fh->isa('IO::Wrap') && (ref($$fh) eq 'GLOB'));
+    return $fh if $fh->isa('IO::File');
+    return $fh if (ref $fh eq 'GLOB');
     undef;
 }
 
@@ -203,11 +202,11 @@ sub native_handle {
 #    EOF         end of file
 
 # Parse up to (and including) the boundary, and dump output.
-# Follows the RFC-1521 specification, that the CRLF immediately preceding 
+# Follows the RFC 2046 specification, that the CRLF immediately preceding
 # the boundary is part of the boundary, NOT part of the input!
 #
-# NOTE: while parsing, we take care to remember the EXACT end-of-line
-# sequence.  This is because we *may* be handling 'binary' encoded data, and 
+# NOTE: while parsing bodies, we take care to remember the EXACT end-of-line
+# sequence.  This is because we *may* be handling 'binary' encoded data, and
 # in that case we can't just massage \r\n into \n!  Don't worry... if the
 # data is styled as '7bit' or '8bit', the "decoder" will massage the CRLF
 # for us.  For now, we're just trying to chop up the data stream.
@@ -218,8 +217,13 @@ sub native_handle {
 # last.  I strip the last CRLF when I hit the boundary.
 
 sub read_chunk {
-    my ($self, $in, $out) = @_;
-    
+    my ($self, $in, $out, $keep_newline, $normalize_newlines) = @_;
+
+    # If we're parsing a preamble or epilogue, we need to keep the blank line
+    # that precedes the boundary line.
+    $keep_newline ||= 0;
+
+    $normalize_newlines ||= 0;
     ### Init:
     my %bh = %{$self->{BH}};
     my %th = %{$self->{TH}}; my $thx = keys %th;
@@ -227,7 +231,7 @@ sub read_chunk {
     my $maybe;
     my $last = '';
     my $eos  = '';
-    
+
     ### Determine types:
     my $n_in  = native_handle($in);
     my $n_out = native_handle($out);
@@ -236,50 +240,60 @@ sub read_chunk {
     if ($n_in) {
 	if ($n_out) {            ### native input, native output [fastest]
 	    while (<$n_in>) {
+		# Normalize line ending
+		$_ =~ s/(:?\n\r|\r\n|\r)$/\n/ if $normalize_newlines;
 		if (substr($_, 0, 2) eq '--') {
 		    ($maybe = $_) =~ s/[ \t\r\n]+\Z//;
 		    $bh{$maybe} and do { $eos = $bh{$maybe}; last };
 		}
 		$thx and $th{$_} and do { $eos = $th{$_}; last };
-		print $n_out $last; $last = $_; 
+		print $n_out $last; $last = $_;
 	    }
 	}
 	else {                   ### native input, OO output [slower]
-	    while (<$n_in>) { 
+	    while (<$n_in>) {
+		# Normalize line ending
+		$_ =~ s/(:?\n\r|\r\n|\r)$/\n/ if $normalize_newlines;
 		if (substr($_, 0, 2) eq '--') {
 		    ($maybe = $_) =~ s/[ \t\r\n]+\Z//;
 		    $bh{$maybe} and do { $eos = $bh{$maybe}; last };
 		}
 		$thx and $th{$_} and do { $eos = $th{$_}; last };
-		$out->print($last); $last = $_; 
+		$out->print($last); $last = $_;
 	    }
 	}
     }
     else {
 	if ($n_out) {            ### OO input, native output [even slower]
-	    while (defined($_ = $in->getline)) { 
+	    while (defined($_ = $in->getline)) {
+		# Normalize line ending
+		$_ =~ s/(:?\n\r|\r\n|\r)$/\n/ if $normalize_newlines;
 		if (substr($_, 0, 2) eq '--') {
 		    ($maybe = $_) =~ s/[ \t\r\n]+\Z//;
 		    $bh{$maybe} and do { $eos = $bh{$maybe}; last };
 		}
 		$thx and $th{$_} and do { $eos = $th{$_}; last };
-		print $n_out $last; $last = $_;  
+		print $n_out $last; $last = $_;
 	    }
 	}
 	else {                   ### OO input, OO output [slowest]
-	    while (defined($_ = $in->getline)) { 
+	    while (defined($_ = $in->getline)) {
+		# Normalize line ending
+		$_ =~ s/(:?\n\r|\r\n|\r)$/\n/ if $normalize_newlines;
 		if (substr($_, 0, 2) eq '--') {
 		    ($maybe = $_) =~ s/[ \t\r\n]+\Z//;
 		    $bh{$maybe} and do { $eos = $bh{$maybe}; last };
 		}
 		$thx and $th{$_} and do { $eos = $th{$_}; last };
-		$out->print($last); $last = $_; 
+		$out->print($last); $last = $_;
 	    }
 	}
     }
-    
-    ### Write out last held line, removing terminating CRLF if ended on bound:
-    $last =~ s/[\r\n]+\Z// if ($eos =~ /^(DELIM|CLOSE)/);
+
+    # Write out last held line, removing terminating CRLF if ended on bound,
+    # unless the line consists only of CRLF and we're wanting to keep the
+    # preceding blank line (as when parsing a preamble)
+    $last =~ s/[\r\n]+\Z// if ($eos =~ /^(DELIM|CLOSE)/ && !($keep_newline && $last =~ m/^[\r\n]\z/));
     $out->print($last);
 
     ### Save and return what we finished on:
@@ -293,14 +307,22 @@ sub read_chunk {
 #
 # I<Instance method.>
 # Read lines into the given array.
-# 
+#
 sub read_lines {
     my ($self, $in, $outlines) = @_;
-    $self->read_chunk($in, IO::ScalarArray->new($outlines));
-    shift @$outlines if ($outlines->[0] eq '');   ### leading empty line
+
+    my $data = '';
+    open(my $fh, '>', \$data) or die $!;
+    $self->read_chunk($in, $fh);
+    @$outlines =  split(/^/, $data);
+    close $fh;
+
     1;
 }
 
 1;
 __END__
 
+=head1 SEE ALSO
+
+L<MIME::Tools>, L<MIME::Parser>

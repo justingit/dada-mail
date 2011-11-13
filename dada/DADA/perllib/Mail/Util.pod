@@ -19,9 +19,9 @@ the calling package.
 
 =head1 FUNCTIONS
 
-B<mailaddress>
-
 =over 4
+
+=item B<mailaddress>
 
 Return a guess at the current users mail address. The user can force
 the return value by setting the MAILADDRESS environment variable.
@@ -43,11 +43,7 @@ example:
  use Mail::Util 'mailaddress';
  print mailaddress;
 
-=back
-
-B<maildomain>
-
-=over 4
+=item B<maildomain>
 
 Attempt to determine the current uers mail domain string via the following
 methods
@@ -79,11 +75,7 @@ example:
  use Mail::Util 'maildomain';
  print maildomain;
 
-=back
-
-B<read_mbox>(FILE)
-
-=over 4
+=item B<read_mbox>(FILE)
 
 Read FILE, a binmail mailbox file, and return a list of  references.
 Each reference is a reference to an array containg one message.
@@ -103,7 +95,7 @@ F<http://perl.overmeer.net/mailtools/>.
 =head1 AUTHORS
 
 The MailTools bundle was developed by Graham Barr.  Later, Mark
-Overmeer took over maintenance without development.
+Overmeer took over maintenance without commitment to further development.
 
 Mail::Cap by Gisle Aas E<lt>aas@oslonett.noE<gt>.
 Mail::Field::AddrList by Peter Orbaek E<lt>poe@cit.dkE<gt>.

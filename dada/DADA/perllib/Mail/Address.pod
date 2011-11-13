@@ -2,8 +2,6 @@
 
 Mail::Address - Parse mail addresses
 
-=head1 INHERITANCE
-
 =head1 SYNOPSIS
 
  use Mail::Address;
@@ -49,25 +47,13 @@ of existing applications.  If you wish for a fully RFC2822 compliant
 implementation you may take a look at L<Mail::Message::Field::Full>,
 part of MailBox.
 
-example: 
-
-  my $s = Mail::Message::Field::Full->parse($header);
-  # ref $s isa Mail::Message::Field::Addresses;
-
-  my @g = $s->groups;          # all groups, at least one
-  # ref $g[0] isa Mail::Message::Field::AddrGroup;
-  my $ga = $g[0]->addresses;   # group addresses
-
-  my @a = $s->addresses;       # all addresses
-  # ref $a[0] isa Mail::Message::Field::Address;
-
 =head1 METHODS
 
 =head2 Constructors
 
-Mail::Address-E<gt>B<new>(PHRASE, ADDRESS, [ COMMENT ])
-
 =over 4
+
+=item Mail::Address-E<gt>B<new>(PHRASE, ADDRESS, [ COMMENT ])
 
 Create a new C<Mail::Address> object which represents an address with the
 elements given. In a message these 3 elements would be seen like:
@@ -79,11 +65,7 @@ example:
 
  Mail::Address->new("Perl5 Porters", "perl5-porters@africa.nicoh.com");
 
-=back
-
-$obj-E<gt>B<parse>(LINE)
-
-=over 4
+=item $obj-E<gt>B<parse>(LINE)
 
 Parse the given line a return a list of extracted C<Mail::Address> objects.
 The line would normally be one taken from a To,Cc or Bcc line in a message
@@ -96,36 +78,24 @@ example:
 
 =head2 Accessors
 
-$obj-E<gt>B<address>
-
 =over 4
+
+=item $obj-E<gt>B<address>
 
 Return the address part of the object.
 
-=back
-
-$obj-E<gt>B<comment>
-
-=over 4
+=item $obj-E<gt>B<comment>
 
 Return the comment part of the object
 
-=back
-
-$obj-E<gt>B<format>([ADDRESSes])
-
-=over 4
+=item $obj-E<gt>B<format>([ADDRESSes])
 
 Return a string representing the address in a suitable form to be placed
 on a C<To>, C<Cc>, or C<Bcc> line of a message.  This method is called on
 the first ADDRESS to be used; other specified ADDRESSes will be appended,
 separated with commas.
 
-=back
-
-$obj-E<gt>B<phrase>
-
-=over 4
+=item $obj-E<gt>B<phrase>
 
 Return the phrase part of the object.
 
@@ -133,26 +103,18 @@ Return the phrase part of the object.
 
 =head2 Smart accessors
 
-$obj-E<gt>B<host>
-
 =over 4
+
+=item $obj-E<gt>B<host>
 
 Return the address excluding the user id and '@'
 
-=back
-
-$obj-E<gt>B<name>
-
-=over 4
+=item $obj-E<gt>B<name>
 
 Using the information contained within the object attempt to identify what
 the person or groups name is.
 
-=back
-
-$obj-E<gt>B<user>
-
-=over 4
+=item $obj-E<gt>B<user>
 
 Return the address excluding the '@' and the mail domain
 
@@ -166,7 +128,7 @@ F<http://perl.overmeer.net/mailtools/>.
 =head1 AUTHORS
 
 The MailTools bundle was developed by Graham Barr.  Later, Mark
-Overmeer took over maintenance without development.
+Overmeer took over maintenance without commitment to further development.
 
 Mail::Cap by Gisle Aas E<lt>aas@oslonett.noE<gt>.
 Mail::Field::AddrList by Peter Orbaek E<lt>poe@cit.dkE<gt>.

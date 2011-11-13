@@ -1,0 +1,515 @@
+=head1 NAME
+
+Mail::Internet - manipulate email messages
+
+=head1 INHERITANCE
+
+=head1 SYNOPSIS
+
+  use Mail::Internet;
+  my $msg = Mail::Internet->new(\*STDIN);
+
+=head1 DESCRIPTION
+
+This package implements reading, creating, manipulating, and writing email
+messages.  Sometimes, the implementation tries to be too smart, but in
+the general case it works as expected.
+
+If you start writing a B<new application>, you should use the L<Mail::Box>
+distribution, which has more features and handles messages much better
+according to the RFCs.  See L<http://perl.overmeer.net/mailbox/>.
+You may also chose L<MIME::Entity>, to get at least some multipart
+support in your application.
+
+=head1 METHODS
+
+=head2 Constructors
+
+$obj-E<gt>B<dup>
+
+=over 4
+
+Duplicate the message as a whole.  Both header and body will be
+deep-copied: a new L<Mail::Internet|Mail::Internet> object is returned.
+
+=back
+
+$obj-E<gt>B<extract>(ARRAY-of-LINES)
+
+=over 4
+
+Extract header and body from an ARRAY of message lines.  Requires an
+object already created with L<new()|Mail::Internet/"Constructors">, which contents will get overwritten.
+
+=back
+
+$obj-E<gt>B<new>([ARG], [OPTIONS])
+
+Mail::Internet-E<gt>B<new>([ARG], [OPTIONS])
+
+=over 4
+
+ARG is optional and may be either a file descriptor (reference to a GLOB)
+or a reference to an array. If given the new object will be
+initialized with headers and body either from the array of read from 
+the file descriptor.
+
+The L<Mail::Header::new()|Mail::Header/"Constructors"> OPTIONS C<Modify>, C<MailFrom> and C<FoldLength>
+may also be given.
+
+ Option--Default
+ Body    []
+ Header  undef
+
+. Body => ARRAY-of-LINES
+
+=over 4
+
+The value of this option should be a reference to an array which contains
+the lines for the body of the message. Each line should be terminated with
+C<\n> (LF). If Body is given then C<Mail::Internet> will not attempt to
+read the body from C<ARG> (even if it is specified).
+
+=back
+
+. Header => Mail::Header
+
+=over 4
+
+The value of this option should be a L<Mail::Header|Mail::Header> object. If given then
+C<Mail::Internet> will not attempt to read a mail header from C<ARG>, if
+it was specified.
+
+=back
+
+=back
+
+$obj-E<gt>B<read>(FILEHANDLE)
+
+=over 4
+
+Read a message from the FILEHANDLE into an already existing message
+object.  Better use L<new()|Mail::Internet/"Constructors"> with the FILEHANDLE as first argument.
+
+=back
+
+=head2 Accessors
+
+$obj-E<gt>B<body>([BODY])
+
+=over 4
+
+Returns the body of the message. This is a reference to an array.
+Each entry in the array represents a single line in the message.
+
+If I<BODY> is given, it can be a reference to an array or an array, then
+the body will be replaced. If a reference is passed, it is used directly
+and not copied, so any subsequent changes to the array will change the
+contents of the body.
+
+=back
+
+$obj-E<gt>B<head>
+
+=over 4
+
+Returns the C<Mail::Header> object which holds the headers for the current
+message
+
+=back
+
+=head2 Processing the message as a whole
+
+$obj-E<gt>B<as_mbox_string>([ALREADY_ESCAPED])
+
+=over 4
+
+Returns the message as a string in mbox format.  C<ALREADY_ESCAPED>, if
+given and true, indicates that L<escape_from()|Mail::Internet/"High-level functionality"> has already been called on
+this object.
+
+=back
+
+$obj-E<gt>B<as_string>
+
+=over 4
+
+Returns the message as a single string.
+
+=back
+
+$obj-E<gt>B<print>([FILEHANDLE])
+
+=over 4
+
+Print the header, body or whole message to file descriptor I<FILEHANDLE>.
+I<$fd> should be a reference to a GLOB. If I<FILEHANDLE> is not given the
+output will be sent to STDOUT.
+
+example: 
+
+    $mail->print( \*STDOUT );  # Print message to STDOUT
+
+=back
+
+$obj-E<gt>B<print_body>([FILEHANDLE])
+
+=over 4
+
+Print only the body to the FILEHANDLE (default STDOUT).
+
+=back
+
+$obj-E<gt>B<print_header>([FILEHANDLE])
+
+=over 4
+
+Print only the header to the FILEHANDLE (default STDOUT).
+
+=back
+
+=head2 Processing the header
+
+Most of these methods are simply wrappers around methods provided
+by L<Mail::Header|Mail::Header>.
+
+$obj-E<gt>B<add>(PAIRS-of-FIELD)
+
+=over 4
+
+The PAIRS are field-name and field-content.  For each PAIR,
+L<Mail::Header::add()|Mail::Header/"Processing"> is called.  All fields are added after
+existing fields.  The last addition is returned.
+
+=back
+
+$obj-E<gt>B<combine>(TAG, [WITH])
+
+=over 4
+
+See L<Mail::Header::combine()|Mail::Header/"Processing">.
+
+=back
+
+$obj-E<gt>B<delete>(TAG, [TAGs])
+
+=over 4
+
+Delete all fields with the name TAG.  L<Mail::Header::delete()|Mail::Header/"Processing"> is doing the
+work.
+
+=back
+
+$obj-E<gt>B<fold>([LENGTH])
+
+=over 4
+
+See L<Mail::Header::fold()|Mail::Header/"Processing">.
+
+=back
+
+$obj-E<gt>B<fold_length>([TAG], [LENGTH])
+
+=over 4
+
+See L<Mail::Header::fold_length()|Mail::Header/"Accessors">.
+
+=back
+
+$obj-E<gt>B<get>(TAG, [TAGs])
+
+=over 4
+
+In LIST context, all fields with the name TAG are returned.  In SCALAR
+context, only the first field which matches the earliest TAG is returned.
+L<Mail::Header::get()|Mail::Header/"Processing"> is called to collect the data.
+
+=back
+
+$obj-E<gt>B<header>([ARRAY-of-LINES])
+
+=over 4
+
+See L<Mail::Header::header()|Mail::Header/""Fake" constructors">.
+
+=back
+
+$obj-E<gt>B<replace>(PAIRS-of-FIELD)
+
+=over 4
+
+The PAIRS are field-name and field-content.  For each PAIR,
+L<Mail::Header::replace()|Mail::Header/"Processing"> is called with INDEX 0. If a FIELD is already
+in the header, it will be removed first.  Do not specified the same
+field-name twice.
+
+=back
+
+=head2 Processing the body
+
+$obj-E<gt>B<remove_sig>([NLINES])
+
+=over 4
+
+Attempts to remove a users signature from the body of a message. It does this 
+by looking for a line equal to C<'-- '> within the last C<NLINES> of the
+message. If found then that line and all lines after it will be removed. If
+C<NLINES> is not given a default value of 10 will be used. This would be of
+most use in auto-reply scripts.
+
+=back
+
+$obj-E<gt>B<sign>(OPTIONS)
+
+=over 4
+
+Add your signature to the body.  L<remove_sig()|Mail::Internet/"Processing the body"> will strip existing
+signatures first.
+
+ Option   --Default
+ File       undef
+ Signature  []
+
+. File => FILEHANDLE
+
+=over 4
+
+Take from the FILEHANDLE all lines starting from the first C<< -- >>.
+
+=back
+
+. Signature => STRING|ARRAY-of-LINES
+
+=back
+
+$obj-E<gt>B<tidy_body>
+
+=over 4
+
+Removes all leading and trailing lines from the body that only contain
+white spaces.
+
+=back
+
+=head2 High-level functionality
+
+$obj-E<gt>B<escape_from>
+
+=over 4
+
+It can cause problems with some applications if a message contains a line
+starting with C<`From '>, in particular when attempting to split a folder.
+This method inserts a leading C<`>'> on anyline that matches the regular
+expression C</^>*From/>
+
+=back
+
+$obj-E<gt>B<nntppost>([OPTIONS])
+
+=over 4
+
+Post an article via NNTP.  Requires Net::NNTP to be installed.
+
+ Option--Default
+ Debug   <false>
+ Host    <required>
+ Port    119
+
+. Debug => BOOLEAN
+
+=over 4
+
+Debug value to pass to Net::NNTP, see L<Net::NNTP>
+
+=back
+
+. Host => HOSTNAME|Net::NNTP object
+
+=over 4
+
+Name of NNTP server to connect to, or a Net::NNTP object to use.
+
+=back
+
+. Port => INTEGER
+
+=over 4
+
+Port number to connect to on remote host
+
+=back
+
+=back
+
+$obj-E<gt>B<reply>(OPTIONS)
+
+=over 4
+
+Create a new object with header initialised for a reply to the current 
+object. And the body will be a copy of the current message indented.
+
+The C<.mailhdr> file in your home directory (if exists) will be read
+first, to provide defaults.
+
+ Option  --Default
+ Exclude   []
+ Indent    '>'
+ Keep      []
+ ReplyAll  false
+
+. Exclude => ARRAY-of-FIELDS
+
+=over 4
+
+Remove the listed FIELDS from the produced message.
+
+=back
+
+. Indent => STRING
+
+=over 4
+
+Use as indentation string.  The string may contain C<%%> to get a single C<%>,
+C<%f> to get the first from name, C<%F> is the first character of C<%f>,
+C<%l> is the last name, C<%L> its first character, C<%n> the whole from
+string, and C<%I> the first character of each of the names in the from string.
+
+=back
+
+. Keep => ARRAY-of-FIELDS
+
+=over 4
+
+Copy the listed FIELDS from the original message.
+
+=back
+
+. ReplyAll => BOOLEAN
+
+=over 4
+
+Automatically include all To and Cc addresses of the original mail,
+excluding those mentioned in the Bcc list.
+
+=back
+
+=back
+
+$obj-E<gt>B<send>([TYPE, [ARGS...]])
+
+=over 4
+
+Send a Mail::Internet message using L<Mail::Mailer|Mail::Mailer>.  TYPE and ARGS are
+passed on to L<Mail::Mailer::new()|Mail::Mailer/"Constructors">.
+
+=back
+
+$obj-E<gt>B<smtpsend>([OPTIONS])
+
+=over 4
+
+Send a Mail::Internet message using direct SMTP.  to the given
+ADDRESSES, each can be either a string or a reference to a list of email
+addresses. If none of C<To>, <Cc> or C<Bcc> are given then the addresses
+are extracted from the message being sent.
+
+The return value will be a list of email addresses that the message was sent
+to. If the message was not sent the list will be empty.
+
+Requires Net::SMTP and Net::Domain to be installed.
+
+ Option  --Default
+ Bcc       undef
+ Cc        undef
+ Debug     <false>
+ Hello     localhost.localdomain
+ Host      $ENV{SMTPHOSTS}
+ MailFrom  Mail::Util::mailaddress()
+ Port      25
+ To        undef
+
+. Bcc => ADDRESSES
+
+. Cc => ADDRESSES
+
+. Debug => BOOLEAN
+
+=over 4
+
+Debug value to pass to Net::SMPT, see <Net::SMTP>
+
+=back
+
+. Hello => STRING
+
+=over 4
+
+Send a HELO (or EHLO) command to the server with the given name.
+
+=back
+
+. Host => HOSTNAME
+
+=over 4
+
+Name of the SMTP server to connect to, or a Net::SMTP object to use
+
+If C<Host> is not given then the SMTP host is found by attempting
+connections first to hosts specified in C<$ENV{SMTPHOSTS}>, a colon
+separated list, then C<mailhost> and C<localhost>.
+
+=back
+
+. MailFrom => ADDRESS
+
+=over 4
+
+The e-mail address which is used as sender.  By default,
+L<Mail::Util::mailaddress()|Mail::Util/"FUNCTIONS"> provides the address of the sender.
+
+=back
+
+. Port => INTEGER
+
+=over 4
+
+Port number to connect to on remote host
+
+=back
+
+. To => ADDRESSES
+
+=back
+
+$obj-E<gt>B<unescape_from>(())
+
+=over 4
+
+Remove the escaping added by L<escape_from()|Mail::Internet/"High-level functionality">.
+
+=back
+
+=head1 SEE ALSO
+
+This module is part of the MailTools distribution,
+F<http://perl.overmeer.net/mailtools/>.
+
+=head1 AUTHORS
+
+The MailTools bundle was developed by Graham Barr.  Later, Mark
+Overmeer took over maintenance without development.
+
+Mail::Cap by Gisle Aas E<lt>aas@oslonett.noE<gt>.
+Mail::Field::AddrList by Peter Orbaek E<lt>poe@cit.dkE<gt>.
+Mail::Mailer and Mail::Send by Tim Bunce E<lt>Tim.Bunce@ig.co.ukE<gt>.
+For other contributors see ChangeLog.
+
+=head1 LICENSE
+
+Copyrights 1995-2000 Graham Barr E<lt>gbarr@pobox.comE<gt> and
+2001-2007 Mark Overmeer E<lt>perl@overmeer.netE<gt>.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+
