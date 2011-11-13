@@ -1600,7 +1600,24 @@ sub mass_send {
 						-ls_obj      => $self->{ls},
 			);
 			
-						
+			
+			# Perhaps just use, "parse" instead of "parse_open"? Why am I using "parse_open"?
+			my ($entity, $filename) = $fm->entity_from_dada_style_args(
+
+			                              {
+			                                    -fields        => \%fields,
+			                                    -parser_params => {-input_mechanism => 'parse_open'}, 
+			                                }
+			                         );
+			if( -e $filename){ 
+				chmod($DADA::Config::FILE_CHMOD , make_safer($filename));
+				if(	unlink($filename) < 1){ 
+					carp "Couldn't delete tmp file, '$filename'?"; 
+				}
+			}
+			else { 
+				carp "'$filename' doesn't exist?"; 
+			}
 			# while we have people on the list.. 
 			SUBSCRIBERLOOP: while(defined($mail_info = <MAILLIST>)){ 	
 				chomp($mail_info);	
@@ -1704,26 +1721,11 @@ sub mass_send {
 				
 				# This is new - see the note in the 2nd if statement below. 
 				$stop_email = $mailing;
- 
-				# This is kind of weird, since list messages aren't the only thing sent en-mass - 
-				# invite messages are, too. 
-					
-				if($self->list_type eq 'invitelist'){ 
-					$fields{To}   = $fm->format_phrase_address(
-							$self->{ls}->param('invite_message_to_phrase'), 
-							$mailing
-						);					
-				}
-				else { 
-                	$fields{To}   = $fm->format_phrase_address(
-						$self->{ls}->param('mailing_list_message_to_phrase'), 
-						$mailing
-					);
-				}
+				
 				
  				my %nfields = $self->_mail_merge(
 				    {
-				        -fields => \%fields,
+				        -entity => $entity->dup,
 				        -data   => \@ml_info, 
 						-fm_obj => $fm, 
 				    }
@@ -2699,16 +2701,29 @@ sub _verp {
 sub _mail_merge { 
 
     my $self = shift; 
+	my $orig_entity; 
     
     my ($args) = @_; 
-    
-    if(! exists($args->{-fields})){ 
-        croak 'you need to pass the -fields paramater'; 
+
+    if(! exists($args->{-entity})){ 
+        croak 'you need to pass the -entity paramater'; 
     }
+	else { 
+		$orig_entity = $args->{-entity}; 
+	}
 
    if(! exists($args->{-data})){ 
         croak 'you need to pass the -data paramater'; 
     }
+
+	if(exists($args->{-fm_obj})) { 
+		# ...  
+	}
+	else { 
+		croak "you MUST pass the -fm_obj paramater!"; 
+	}
+
+
 
     # So all we really have to do is label and arrange the values we have and populate the email message. 
     # Here we go: 
@@ -2751,29 +2766,42 @@ sub _mail_merge {
         }
     }
 
-    # Right. Now we just have to feed this all into our -HTML- Email::Template thingamajig and we get to go home: 
-	my $fm; 
-	if(exists($args->{-fm_obj})) { 
-		# ...  
+	# Add the, "To:" header (very important!) 
+	my $To_header = ''; 
+	
+	if($self->list_type eq 'invitelist'){ 
+		$To_header   = $args->{-fm_obj}->format_phrase_address(
+				$self->{ls}->param('invite_message_to_phrase'), 
+				$subscriber_vars->{'subscriber.email'}
+			);					
 	}
 	else { 
-		croak "you MUST pass the -fm_obj!"; 
+    	$To_header   = $args->{-fm_obj}->format_phrase_address(
+			$self->{ls}->param('mailing_list_message_to_phrase'), 
+			$subscriber_vars->{'subscriber.email'}
+		);
 	}
-	
-	
- 	my ($orig_entity, $filename) = $args->{-fm_obj}->entity_from_dada_style_args(
- 
-                                  {
-                                        -fields        => $args->{-fields},
-                                        -parser_params => {-input_mechanism => 'parse_open'}, 
-                                    }
-                             );
-	
+	if($orig_entity->head->get('To', 0)){ 
+	   $orig_entity->head->delete('To');
+	}
+	$orig_entity->head->add('To', $To_header);
+			
 	my $expr = 0; 
 	if($self->{ls}->param('enable_email_template_expr') == 1){ 
 		$expr = 1; 
 	}
-							
+	
+	#carp "ORIGINAL ENTITY: \n";
+	#carp '-' x 72 . "\n"; 
+	#carp $orig_entity->as_string;
+	#carp '-' x 72 . "\n"; 
+	
+	#carp "LABELED DATA\n" ;
+	#carp '-' x 72 . "\n"; 
+	#use Data::Dumper; 
+	#carp Dumper({%labeled_data}); 
+	#carp '-' x 72 . "\n"; 
+	
     my $entity = $args->{-fm_obj}->email_template(
                     {
                         -entity                   => $orig_entity,                         
@@ -2790,29 +2818,18 @@ sub _mail_merge {
                     }
                 );
 
+	#carp "MODIFIED ENTITY\n"; 
+	#carp '-' x 72 . "\n"; 
+	#carp $entity->as_string;
+	#carp '-' x 72 . "\n"; 
+	
+	
    my $msg = $entity->as_string; 
 	   $msg = safely_decode($msg); 
 	
 	
     undef($entity); 
-    # I do not like this part. 
-    
-    
-    if( -e $filename){ 
-        chmod($DADA::Config::FILE_CHMOD , make_safer($filename));
-        if(	unlink($filename) < 1){ 
-            carp "Couldn't delete tmp file, '$filename'?"; 
-        }
-	}
-	else { 
-	    carp "'$filename' doesn't exist?"; 
-	}
-
-
-	
-		
-    
-    
+	undef($orig_entity); 
     my ($h, $b) = split("\n\n", $msg, 2); 
 	undef ($msg);
 	
