@@ -2,6 +2,61 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+
+=head1 4.8.4
+
+=head2 Summary 4.8.4
+
+This release consists of fixes for issues found in the 4.8.3 release.
+
+Of large note is a big memory leak found and fixed in v4.8.4 that happens 
+whenever you mass mail an HTML email message, regardless of how it was first created. 
+
+This memory leak could grow to many 100's of megabytes to gigabytes of memory 
+within a few thousand messages sent and could potentially kill off the sending 
+process and more likely than not, slow down mass mailing by ~10% (potenitally 
+ much greater, depending on how large the amount of RAM is consumed). 
+
+For more information, see this issue: 
+
+L<https://github.com/justingit/dada-mail/issues/236>
+
+=head2 Bug Fixes 4.8.4
+
+=head3 Sending Preference Test Doesn't Work
+
+https://github.com/justingit/dada-mail/issues/229
+
+=head3 "You Are Not Subscribed Message" not editable
+
+https://github.com/justingit/dada-mail/issues/230
+
+=head3 Embedded images mangled by reCaptcha MailHide
+
+https://github.com/justingit/dada-mail/issues/231
+
+=head3 Archived Messages with, "advanced templating syntax" will break message archives
+
+https://github.com/justingit/dada-mail/issues/232
+
+=head3 Installer: SQL connection test uses, "auto" for port, instead of actual port number
+
+https://github.com/justingit/dada-mail/issues/234
+
+=head3 Installer: SQL "tables exist" test is whack
+
+https://github.com/justingit/dada-mail/issues/234
+
+=head3 $HTML_TEXTTOHTML_OPTIONS not used.
+
+https://github.com/justingit/dada-mail/issues/235
+
+=head3 arge Memory Leak when sending out HTML mass mailing
+
+https://github.com/justingit/dada-mail/issues/236
+
+
+
 =head1 4.8.3
 
 =head2 Summary 4.8.3
