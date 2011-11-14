@@ -2941,11 +2941,10 @@ $MIME_HUSH ||= 0;
 Set to: 'faster', 'less memory', or 'no tmp files'. This controls how 
 the MIME::Parser works. For more information: 
 
-http://search.cpan.org/~dskoll/MIME-tools-5.417/lib/MIME/Parser.pm#OPTIMIZING_YOUR_PARSER
-
+http://search.cpan.org/~dskoll/MIME-tools-5.502/lib/MIME/Parser.pm#OPTIMIZING_YOUR_PARSER
 =cut
 
-$MIME_OPTIMIZE ||= 'no tmp files'; 
+$MIME_OPTIMIZE ||= 'not tmp files'; 
 
 
 =pod

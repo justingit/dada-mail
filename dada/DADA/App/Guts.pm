@@ -2493,13 +2493,17 @@ sub optimize_mime_parser {
 		
 	
 	# what's going on - 
-	# http://search.cpan.org/~dskoll/MIME-tools-5.417/lib/MIME/Parser.pm#OPTIMIZING_YOUR_PARSER
+	# http://search.cpan.org/~dskoll/MIME-tools-5.502/lib/MIME/Parser.pm#OPTIMIZING_YOUR_PARSER
 	
 	if($DADA::Config::MIME_OPTIMIZE eq 'faster'){
 	
 		$parser->output_to_core(0);
 		$parser->tmp_to_core(0);
-		$parser->use_inner_files(0);
+		# MIME::Parser no longer supports IO::InnerFile, but this method is retained 
+		# for backwards compatibility. It does nothing.
+		#
+		# $parser->use_inner_files(0);
+		#
 		$parser->output_dir($DADA::Config::TMP );
 	
 	}elsif($DADA::Config::MIME_OPTIMIZE eq 'less memory'){ 
@@ -2510,9 +2514,10 @@ sub optimize_mime_parser {
 	
 	}elsif($DADA::Config::MIME_OPTIMIZE eq 'no tmp files'){ 
 	
-		$parser->output_dir($DADA::Config::TMP );	# uneeded, but just in case?
 		$parser->tmp_to_core(1); 
 		$parser->output_to_core(1); # pretty bad when it comes to large files...
+		$parser->output_dir($DADA::Config::TMP );	# uneeded, but just in case?
+
 		
 	}else{ 
 	
