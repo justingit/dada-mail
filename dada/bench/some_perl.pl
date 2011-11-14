@@ -17,7 +17,7 @@ my $ls = DADA::MailingList::Settings->new({-list => $list});
 $ls->save({'enable_bulk_batching' => 0}); 
 my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
 
-for(1 .. 300){ 
+for(1 .. 100){ 
 	$lh->add_subscriber({-email => $_ . '@example.com'}); 
 }
 
@@ -29,8 +29,9 @@ $mh->test(1);
 my $msg_id =  $mh->mass_send(%args); 
 
 
-#dada_test_config::remove_test_list;
-#dada_test_config::wipe_out;
+
+dada_test_config::remove_test_list;
+dada_test_config::wipe_out;
 
 sub dsa { 
 	
@@ -267,9 +268,6 @@ for(0..4){
 	$args{Body} = $args{Body} . $b; 
 }
 
-open my $f, '>', 'somefile.txt' or die $!; 
-print $f $args{Body};
-close $f;
 
 
 return  %args; 
