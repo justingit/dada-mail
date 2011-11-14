@@ -19,6 +19,7 @@ my $parser;
 my %allowed = (
 
     'config' => undef,
+	parser   => undef, 
 
 );
 
@@ -61,11 +62,13 @@ sub AUTOLOAD {
 sub _init {
 
     my $self = shift;
-    my $args = shift;
+    my ($args) = @_;
 
     require MIME::Parser;
     $parser = new MIME::Parser;
     $parser = optimize_mime_parser($parser);
+
+	$self->parser($parser); 
 
     $self->config($args);
 
@@ -358,7 +361,7 @@ sub parse_all_bounces {
 
         if ( !$List[0] ) {
 
-            $log .= "No bounces to handle.\n";
+            $log .= "\tNo bounces to handle.\n";
         }
         else {
 
@@ -431,6 +434,8 @@ sub parse_all_bounces {
             }
 
         }
+=cut
+
         if ( $args->{-test} != 1 ) {
             for (@delete_list) {
 
@@ -442,6 +447,8 @@ sub parse_all_bounces {
         else {
             $log .= "Skipping Message Deletion - Debugging is on.\n";
         }
+
+=cut
 
         $pop3_obj->Close;
 
@@ -477,7 +484,7 @@ sub parse_bounce {
 
     my $self       = shift;
     my $msg_report = '';
-
+	   $msg_report .= '-' x 72 . "\n";
     my ($args)  = @_;
     my $list    = $args->{-list};
     my $test    = $args->{-test};
@@ -488,7 +495,7 @@ sub parse_bounce {
     my $diagnostics = {};
 
     my $entity;
-
+	
     eval { $entity = $self->parser->parse_data($message) };
 
     ##########################################################################
@@ -540,9 +547,10 @@ sub parse_bounce {
     $msg_report .=
       $self->generate_nerd_report( $found_list, $email, $diagnostics );
 	require DADA::App::BounceHandler::Rules; 
-	my $bhr = DADA::App::BounceHandler::Rules->new; 
+	my $bhr = DADA::App::BounceHandler::Rules->new($self->config); 
     my $rule = $bhr->find_rule_to_use( $found_list, $email, $diagnostics );
-    $msg_report .= "\nUsing Rule: $rule\n\n";
+	
+    $msg_report .= "\n* Using Rule: $rule\n";
 
     ###
 
@@ -622,8 +630,8 @@ sub save_scores {
             if ( keys %$give_back_scores ) {
                 $m .= "\nScore Totals for $d_list:\n\n";
                 for ( keys %$give_back_scores ) {
-                    $m .= "\tEmail: $_ total score: "
-                      . $give_back_scores->{$_} . "\n";
+                    $m .= "\tEmail: $_\n";
+ 					$m .= "\tTotal Score: ". $give_back_scores->{$_} . "\n";
 
                 }
             }
@@ -657,7 +665,7 @@ sub remove_bounces {
     my $self   = shift;
     my $report = shift;
     my $m      = '';
-    $m .= "Removing addresses from all lists:\n" . '-' x 72 . "\n";
+       $m .= "Unsubscribing addresses:\n" . '-' x 72 . "\n";
 
     for my $list ( keys %$report ) {
 
@@ -752,9 +760,8 @@ sub carry_out_rule {
     my $self = shift;
 
 	require DADA::App::BounceHandler::Rules; 
-	my $bhr = DADA::App::BounceHandler::Rules->new;
-	
-    my $Rules = $bhr->rules;
+	my $bhr    = DADA::App::BounceHandler::Rules->new($self->config);
+    my $Rules  = $bhr->rules;
 
     my ( $title, $list, $email, $diagnostics, $message ) = @_;
     my $actions = {};
@@ -773,25 +780,25 @@ sub carry_out_rule {
 
         if ( $action eq 'add_to_score' ) {
             $report .=
-              add_to_score( $list, $email, $diagnostics, $actions->{$action} );
+              $self->add_to_score( $list, $email, $diagnostics, $actions->{$action} );
             $report .=
-              append_message_to_file( $list, $email, $diagnostics,
+              $self->append_message_to_file( $list, $email, $diagnostics,
                 $actions->{$action}, $message );
 
         }
         elsif ( $action eq 'unsubscribe_bounced_email' ) {
             $report .=
-              unsubscribe_bounced_email( $list, $email, $diagnostics,
+              $self->unsubscribe_bounced_email( $list, $email, $diagnostics,
                 $actions->{$action} );
         }
         elsif ( $action eq 'append_message_to_file' ) {
             $report .=
-              append_message_to_file( $list, $email, $diagnostics,
+              $self->append_message_to_file( $list, $email, $diagnostics,
                 $actions->{$action}, $message );
         }
         elsif ( $action eq 'default' ) {
             $report .=
-              default_action( $list, $email, $diagnostics, $actions->{$action},
+              $self->default_action( $list, $email, $diagnostics, $actions->{$action},
                 $message );
         }
         else {
@@ -872,8 +879,7 @@ sub add_to_score {
         $Score_Card->{$list}->{$email} = $action;
     }
 
-    return
-"Email, '$email', on list: $list -  adding  $action to total score. Will remove after score reaches, $self->config->{Score_Threshold}\n";
+    return "* Adding  $action to scorecard. (Removal at or above score:" . $self->config->{Score_Threshold} . ")\n";
 
 }
 

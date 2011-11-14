@@ -187,6 +187,7 @@ sub run_all_parses {
         $diagnostics->{'Simplified-Message-Id'} =
           strip( $diagnostics->{'Simplified-Message-Id'} );
     }
+	
 
     return ( $email, $list, $diagnostics );
 }

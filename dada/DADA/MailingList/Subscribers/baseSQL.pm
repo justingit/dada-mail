@@ -988,13 +988,15 @@ sub remove_all_subscribers {
         $args->{ -type } = 'list';
     }
 
-    my $query =
-      'SELECT email FROM '
-      . $self->{sql_params}->{subscriber_table}
-      . " WHERE list_type = '"
-      . $args->{ -type } . "' 
-                  AND list_status =      1  
-                  AND list = '" . $self->{list} . "'";
+	# Why is this a complete clusterf**k?
+	my $query =
+	  'SELECT email FROM '
+	  . $self->{sql_params}->{subscriber_table}
+	  . " WHERE list_type = '"
+	  . $args->{ -type } . "' 
+	              AND list_status = " . $self->{dbh}->quote('1') . "
+	              AND list = '" . $self->{list} . "'";
+
 
     my $sth = $self->{dbh}->prepare($query);
 

@@ -1,7 +1,10 @@
 package DADA::App::BounceHandler::Rules; 
 
 use strict;
-use lib qw(../../../ ../../../DADA/perllib);
+use lib qw(
+	../../../ 
+	../../../DADA/perllib
+);
 
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
@@ -11,7 +14,9 @@ use Mail::Verp;
 use Carp qw(croak carp);
 use vars qw($AUTOLOAD);
 
-my %allowed = ();
+my %allowed = (
+	'config' => undef, 	
+);
 
 sub new {
 
@@ -25,8 +30,8 @@ sub new {
 
     bless $self, $class;
 
-    my %args = (@_);
-    $self->_init( \%args );
+    my ($args) = @_;
+    $self->_init($args);
     return $self;
 }
 
@@ -52,7 +57,10 @@ sub AUTOLOAD {
 sub _init {
 
     my $self = shift;
-    my $args = shift;
+    my ($args) = @_; 
+
+	$self->config($args);
+
 }
 
 
@@ -62,7 +70,8 @@ sub _init {
 sub find_rule_to_use {
 
     my $self  = shift;
-    my $Rules = $self->rules;
+    my $Rules = []; 
+	   $Rules = $self->rules;
 
     my ( $list, $email, $diagnostics ) = @_;
 
@@ -182,9 +191,7 @@ sub rules {
 
     my $self = shift;
 
-    my $Rules = [
-
-        #{
+	   #{
         #	hotmail_notification => {
         #		Examine => {
         #			Message_Fields => {
@@ -203,6 +210,11 @@ sub rules {
         #		}
         #	}
         #},
+
+    my $Rules = [
+
+
+     
 
         {
             qmail_delivery_delay_notification => {
@@ -225,31 +237,7 @@ sub rules {
             }
         },
 
-        {
-            over_quota => {
-                Examine => {
-                    Message_Fields => {
-                        Action => [qw(failed Failed)],
-                        Status => [qw(5.2.2 4.2.2 5.0.0 5.1.1)],
-                        'Final-Recipient_regex' => [ (qr/822/) ],
-                        'Diagnostic-Code_regex' => [
-                            (
-qr/552|exceeded storage allocation|over quota|storage full|mailbox full|disk quota exceeded|Mail quota exceeded|Quota violation/
-                            )
-                        ]
-                    },
 
-                    Data => {
-                        Email => 'is_valid',
-                        List  => 'is_valid',
-                    }
-                },
-                Action => {
-
-                    add_to_score => $self->config->{Default_Soft_Bounce_Score},
-                }
-            }
-        },
 
         {
             hotmail_over_quota => {
@@ -274,6 +262,10 @@ qr/552|exceeded storage allocation|over quota|storage full|mailbox full|disk quo
             }
         },
 
+
+
+
+
         {
             over_quota_obscure_mta => {
                 Examine => {
@@ -294,6 +286,32 @@ qr/552|exceeded storage allocation|over quota|storage full|mailbox full|disk quo
                 }
             }
         },
+
+        {
+            over_quota => {
+                Examine => {
+                    Message_Fields => {
+                        Action => [qw(failed Failed)],
+                        Status => [qw(5.2.2 4.2.2 5.0.0 5.1.1)],
+                        'Final-Recipient_regex' => [ (qr/822/) ],
+                        'Diagnostic-Code_regex' => [
+                            ( qr/552|exceeded storage allocation|over quota|storage full|mailbox full|disk quota exceeded|Mail quota exceeded|Quota violation/
+     )
+                        ]
+                    },
+
+                    Data => {
+                        Email => 'is_valid',
+                        List  => 'is_valid',
+                    }
+                },
+                Action => {
+
+                    add_to_score => $self->config->{Default_Soft_Bounce_Score},
+                }
+            }
+        },
+
 
         {
             over_quota_obscure_mta_two => {
@@ -491,6 +509,7 @@ qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox fu
             }
         },
 
+
         {
             qmail_error_5dot5dot1 => {
                 Examine => {
@@ -558,7 +577,8 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
 
                     add_to_score => $self->config->{Default_Hard_Bounce_Score},
                 }
-              } },
+              } 
+			},
 
         {
 
@@ -979,7 +999,8 @@ qr/551 not our customer|User unknown|ecipient no longer/
                     add_to_score => $self->config->{Default_Soft_Bounce_Score},
                   }
 
-              } },
+              } 
+		},
 
         {
             email_not_found => {
@@ -995,9 +1016,14 @@ qr/551 not our customer|User unknown|ecipient no longer/
 
     ];
 
+
+
     return $Rules;
 }
 
+sub DESTROY {}
+
+1;
 
 =pod
 

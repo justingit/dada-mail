@@ -978,7 +978,7 @@ sub cgi_erase_scorecard {
     $bsk->erase;
 
     print $q->redirect(
-        -uri => $Plugin_Config->{Plugin_URL} . '?flavor=cgi_scorecard', );
+        -uri => $Plugin_Config->{Plugin_URL}, );
 
 }
 
@@ -1098,7 +1098,7 @@ sub cgi_bounce_score_search {
 
     if ( !defined($query) ) {
         $q->redirect(
-            -uri => $Plugin_Config->{Plugin_URL} . '?flavor=cgi_scorecard' );
+            -uri => $Plugin_Config->{Plugin_URL} );
         return;
     }
 
