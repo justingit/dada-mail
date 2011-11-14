@@ -1,17 +1,17 @@
-package DADA::App::BounceScoreKeeper::baseSQL; 
+package DADA::App::BounceHandler::ScoreKeeper::baseSQL; 
 
 use strict; 
 
 
 use lib qw(
-	../../../ 
-	../../../perllib 
+	../../../../ 
+	../../../../perllib 
 );
 
 use DADA::Config; 
 use DADA::App::Guts; 
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_BounceScoreKeeper}; 
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_BounceHandler_ScoreKeeper}; 
 
 
 my $dbi_obj; 

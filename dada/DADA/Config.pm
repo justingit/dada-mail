@@ -1334,7 +1334,7 @@ $DEBUG_TRACE ||= {
 	DADA_Profile_Session       => 0, 
     DADA_Mail_MailOut          => 0, 
     DADA_Mail_Send             => 0, 
-	DADA_App_BounceScoreKeeper => 0, 
+	DADA_App_BounceHandler_ScoreKeeper => 0, 
     DADA_MailingList_baseSQL   => 0,  
 
  

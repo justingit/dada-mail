@@ -22,7 +22,7 @@ use Test::More qw(no_plan);
     
     
     
-    open(FILE, "t/DADA_App_BounceScoreKeeper.pl") or die $!; 
+    open(FILE, "t/DADA_App_BounceHandler_ScoreKeeper.pl") or die $!; 
     
     {
         local $/ = undef; 

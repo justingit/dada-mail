@@ -1,7 +1,7 @@
-package DADA::App::BounceScoreKeeper; 
+package DADA::App::BounceHandler::ScoreKeeper; 
 use strict; 
 
-use lib qw(../../ ../../perllib); 
+use lib qw(../../../ ../../../perllib); 
 
 use DADA::Config; 	
 
@@ -13,7 +13,7 @@ BEGIN {
 		$type = 'baseSQL'; 
 	}
 }
-use base "DADA::App::BounceScoreKeeper::$type";
+use base "DADA::App::BounceHandler::ScoreKeeper::$type";
 
 
 

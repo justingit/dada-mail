@@ -99,7 +99,7 @@ undef $diag;
 undef $entity;
 
 
-$msg    = dada_test_config::slurp('t/corpus/email_messages/bounce-qmail-551-no_mailbox_here.t'); 
+$msg    = dada_test_config::slurp('t/corpus/email_messages/bounce-qmail-551-no_mailbox_here.eml'); 
 $entity = $parser->parse_data($msg);
 ( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
 

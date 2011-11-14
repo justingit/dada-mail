@@ -1,8 +1,8 @@
-package DADA::App::BounceScoreKeeper::Db; 
+package DADA::App::BounceHandler::ScoreKeeper::Db; 
 
 use lib qw(
-	../../../ 
-	../../../perllib 
+	../../../../ 
+	../../../../perllib
 );
 
 use DADA::Config; 

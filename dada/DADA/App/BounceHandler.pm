@@ -58,25 +58,6 @@ sub AUTOLOAD {
     }
 }
 
-=cut
-
-my $config = {}; 
-
-sub config { 
-	my $self = shift; 
-	my $v = shift || undef; 
-	if(! defined($v)){ 
-		return $config; 
-	}
-	else { 
-		$config = $v; 
-	}
-	return $config; 
-}
-
-
-=cut
-
 sub _init {
 
     my $self = shift;
@@ -124,8 +105,8 @@ sub erase_score_card {
 
     for my $list (@delete_list) {
 
-        require DADA::App::BounceScoreKeeper;
-        my $bsk = DADA::App::BounceScoreKeeper->new( -List => $list );
+        require DADA::App::BounceHandler::ScoreKeeper;
+        my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( -List => $list );
 
         $bsk->erase;
 
@@ -613,8 +594,8 @@ sub save_scores {
 
             $m .= "\nWorking on list: $d_list\n";
 
-            require DADA::App::BounceScoreKeeper;
-            my $bsk = DADA::App::BounceScoreKeeper->new( -List => $d_list );
+            require DADA::App::BounceHandler::ScoreKeeper;
+            my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( -List => $d_list );
 
             my $list_scores = $score->{$d_list};
 

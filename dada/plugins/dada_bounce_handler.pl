@@ -44,18 +44,15 @@ use DADA::App::BounceHandler;
 
 my $Plugin_Config = {};
 
-# All the below variables can also be set in your .dada_config file, which is
-# recommended. See the docs for this plugin for more information.
+# All the below variables should be set in your .dada_config file. Below are simply the
+# current *Default Values* are really should be left alone. 
 #
-# Required!
 # What is the POP3 mail server of the bounce email address?
 $Plugin_Config->{Server} = undef;
 
-# Required!
 # And the username?
 $Plugin_Config->{Username} = undef;
 
-# Required!
 # And the password?
 $Plugin_Config->{Password} = undef;
 
@@ -170,21 +167,6 @@ for more information.
 #---------------------------------------------------------------------#
 # Nothing else to be configured.                                      #
 
-my $App_Version = '1.6';
-
-my %Global_Template_Options = (
-
-    #debug             => 1,
-    path              => [$DADA::Config::TEMPLATES],
-    die_on_bad_params => 0,
-
-    (
-          ( $DADA::Config::CPAN_DEBUG_SETTINGS{HTML_TEMPLATE} == 1 )
-        ? ( debug => 1, )
-        : ()
-    ),
-
-);
 
 use Getopt::Long;
 use MIME::Entity;
@@ -197,7 +179,6 @@ use Fcntl qw(
 );
 
 my $debug = 0;
-
 my $help = 0;
 my $test;
 my $server;
@@ -206,11 +187,8 @@ my $password;
 my $verbose = 0;
 my $log;
 my $messages = 0;
-
 my $erase_score_card = 0;
-
 my $version;
-
 my $list;
 my $admin_list;
 my $root_login;
@@ -337,8 +315,6 @@ sub cgi_default_tmpl {
 
     return q { 
 
-
-
 	<script type="text/javascript">
 	    //<![CDATA[
 		Event.observe(window, 'load', function() {
@@ -372,11 +348,6 @@ sub cgi_default_tmpl {
 			Form.Element.setValue('page', page_to_turn_to) ; 
 			show_bounce_scorecard();
 		}
-		
-		
-
-		
-		
 	//]]>
 			
 	</script>
@@ -825,8 +796,8 @@ sub cgi_scorecard {
 
     my $page = $q->param('page') || 1;
 
-    require DADA::App::BounceScoreKeeper;
-    my $bsk = DADA::App::BounceScoreKeeper->new( -List => $list );
+    require DADA::App::BounceHandler::ScoreKeeper;
+    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( -List => $list );
 
     my $num_rows  = $bsk->num_scorecard_rows;
     my $scorecard = $bsk->raw_scorecard(
@@ -1002,8 +973,8 @@ EOF
 
 sub cgi_erase_scorecard {
 
-    require DADA::App::BounceScoreKeeper;
-    my $bsk = DADA::App::BounceScoreKeeper->new( -List => $list );
+    require DADA::App::BounceHandler::ScoreKeeper;
+    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( -List => $list );
     $bsk->erase;
 
     print $q->redirect(
@@ -1105,8 +1076,8 @@ sub cgi_bounce_score_search {
 
     require HTML::Template;
 
-    require DADA::App::BounceScoreKeeper;
-    my $bsk = DADA::App::BounceScoreKeeper->new( -List => $list );
+    require DADA::App::BounceHandler::ScoreKeeper;
+    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( -List => $list );
 
     require DADA::App::LogSearch;
 
@@ -1627,7 +1598,7 @@ You'll see similar output that you would if you were testing a file.
 sub version {
 
     my $r = '';
-    $r .= "$Plugin_Config->{Plugin_Name} Version: $App_Version\n";
+    $r .= "$Plugin_Config->{Plugin_Name}\n";
     $r .= "$DADA::Config::PROGRAM_NAME Version: $DADA::Config::VER\n";
     $r .= "Perl Version: $]\n\n";
 
@@ -2135,100 +2106,6 @@ an insight of how it all works.
 
 View how Mystery Girl is configured. 
 
-
-
-
-=head1 Advanced Configuration: Rules, Rule! 
-
-dada_bounce_handler.pl figures out what to do with the bounce messages
-receives by consulting a group of rules. These rules are highly configurable, 
-so if you need to change the behavior of this script, you don't have to 
-change the code. 
-
-
-These rules are stored in the B<$Plugin_Config-\>{Rules}> hashref. An example rule:
-
-     {
-        exim_user_unknown => { 
-            Examine => { 
-                Message_Fields => { 
-                    Status      => [qw(5.x.y)], 
-                    Guessed_MTA => [qw(Exim)],  
-                }, 
-                Data => { 
-                    Email       => 'is_valid',
-                    List        => 'is_valid', 
-                }
-            },
-                Action => { 
-                     add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-                }, 
-            }
-    }, 
-
-B<exim_user_unknown> is the title of the rule -  just a label, nothing else.
-
-B<Examine> holds a set of parameters that the handler looks at when
-trying to figure out what to do with a bounced message. This example
-has a B<Message_Fields> entry and inside that, a B<Status> entry. The
-B<Status> entry holds a list of status codes. The ones in shown there
-all correspond to hard bounces; the mailbox probably doesn't exist. B<Message_Fields> also hold a, B<Guessed_MTA> entry - it's explicitly looking for a bounce back from the, I<Exim> mail server. 
-
-
-B<Examine> also holds a B<Data> entry, which holds the B<Email> or B<List> 
-entries, or both. Their values are either 'is_valid', or 'is_invalid'. 
-
-So, to sum this all up, this rule will match a message that has B<Status:> 
-B<Message Field> contaning a user unknown error code, B<(5.1.1, etc)> and also a B<Guessed_MTA> B<Message Field> containing, B<Exim>. The message
-also has to be parsed to have found a valid email and list name. 
-
-Pretty Slick, eh? 
-
-If this all matches, the B<Action> is... acted upon. In this case, the offending email address will be appended a, B<Bounce Score> of, whatever, B<$Plugin_Config->{Default_Hard_Bounce_Score}>, which is by default, B<4>. 
-
-If you would like to have the bounced address automatically removed, without any sort of scoring happening, change the B<action> from,
-
-    add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score}
-
-to: 
-
-    unsubscribe_bounced_email => 'from_list'
-
-Also, changing B<from_list>, to B<from_all_lists> will do the trick. 
-
-Here's a schematic of all the different things you can do: 
-
- {
- rule_name => {
-	 Examine => {
-		Message_Fields => {
-			Status               => qw([    ]), 
-			Last-Attempt-Date    => qw([    ]), 
-			Action               => qw([    ]), 
-			Status               => qw([    ]), 
-			Diagnostic-Code      => qw([    ]), 
-			Final-Recipient      => qw([    ]), 
-			Remote-MTA           => qw([    ]), 
-			# etc, etc, etc
-			
-		},
-		Data => { 
-			Email => 'is_valid' | 'is_invalid' 
-			List  => 'is_valid' | 'is_invalid' 
-		}
-	},
-	Action => { 
-	           add_to_score             =>  $x, # where, "$x" is a number
-			   unsubscribe_bounced_email => 'from_list' | 'from_all_lists',
-	},
- },	
-
-Mystery Girl also supports the use of regular expressions for matching any of the B<Message_Fields>. To tell the parser that you're using a regular expression, make the Message_Field key end in '_regex': 
-
- 'Final-Recipient_regex' => [(qr/RFC822/)], 
-
-Setting rules is sort of the super advanced part of the configuration,
-but it may come in handy. 
 
 =head1 More on Scores, Thresholds, etc
 

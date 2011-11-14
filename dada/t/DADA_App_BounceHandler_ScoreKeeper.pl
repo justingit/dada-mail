@@ -21,10 +21,10 @@ use DADA::MailingList::Settings;
 my $list = dada_test_config::create_test_list;
 my $ls  = DADA::MailingList::Settings->new({-list => $list}); 
    
-require DADA::App::BounceScoreKeeper; 
-my $bsk = DADA::App::BounceScoreKeeper->new(-List => $list); 
+require DADA::App::BounceHandler::ScoreKeeper; 
+my $bsk = DADA::App::BounceHandler::ScoreKeeper->new(-List => $list); 
 
-ok($bsk->isa('DADA::App::BounceScoreKeeper'));
+ok($bsk->isa('DADA::App::BounceHandler::ScoreKeeper'));
 
 ok($bsk->num_scorecard_rows == 0, $bsk->num_scorecard_rows . ' == 0'); 
 
