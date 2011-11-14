@@ -51,7 +51,7 @@ https://github.com/justingit/dada-mail/issues/234
 
 https://github.com/justingit/dada-mail/issues/235
 
-=head3 arge Memory Leak when sending out HTML mass mailing
+=head3 Large Memory Leak when sending out HTML mass mailing
 
 https://github.com/justingit/dada-mail/issues/236
 
