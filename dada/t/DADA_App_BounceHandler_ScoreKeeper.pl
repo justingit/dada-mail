@@ -22,7 +22,7 @@ my $list = dada_test_config::create_test_list;
 my $ls  = DADA::MailingList::Settings->new({-list => $list}); 
    
 require DADA::App::BounceHandler::ScoreKeeper; 
-my $bsk = DADA::App::BounceHandler::ScoreKeeper->new(-List => $list); 
+my $bsk = DADA::App::BounceHandler::ScoreKeeper->new({-list => $list}); 
 
 ok($bsk->isa('DADA::App::BounceHandler::ScoreKeeper'));
 

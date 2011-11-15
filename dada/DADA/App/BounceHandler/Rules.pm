@@ -1,9 +1,9 @@
-package DADA::App::BounceHandler::Rules; 
+package DADA::App::BounceHandler::Rules;
 
 use strict;
 use lib qw(
-	../../../ 
-	../../../DADA/perllib
+  ../../../
+  ../../../DADA/perllib
 );
 
 use DADA::Config qw(!:DEFAULT);
@@ -14,9 +14,7 @@ use Mail::Verp;
 use Carp qw(croak carp);
 use vars qw($AUTOLOAD);
 
-my %allowed = (
-	'config' => undef, 	
-);
+my %allowed = ( 'config' => undef, );
 
 sub new {
 
@@ -57,21 +55,17 @@ sub AUTOLOAD {
 sub _init {
 
     my $self = shift;
-    my ($args) = @_; 
+    my ($args) = @_;
 
-	$self->config($args);
+    $self->config($args);
 
 }
-
-
-
-
 
 sub find_rule_to_use {
 
     my $self  = shift;
-    my $Rules = []; 
-	   $Rules = $self->rules;
+    my $Rules = [];
+    $Rules = $self->rules;
 
     my ( $list, $email, $diagnostics ) = @_;
 
@@ -184,37 +178,31 @@ sub find_rule_to_use {
     return 'default';
 }
 
-
-
-
 sub rules {
 
     my $self = shift;
 
-	   #{
-        #	hotmail_notification => {
-        #		Examine => {
-        #			Message_Fields => {
-        #			   'Remote-MTA'          => [qw(Windows_Live)],
-        #				Bounce_From_regex    =>  [qr/staff\@hotmail.com/],
-        #				Bounce_Subject_regex => [qr/complaint/],
-        #			},
-        #
-        #			Data => {
-        #				Email => 'is_valid',
-        #				List  => 'is_valid',
-        #			}
-        #		},
-        #		Action => {
-        #			unsubscribe_bounced_email	=> 'from_list',
-        #		}
-        #	}
-        #},
+    #{
+    #	hotmail_notification => {
+    #		Examine => {
+    #			Message_Fields => {
+    #			   'Remote-MTA'          => [qw(Windows_Live)],
+    #				Bounce_From_regex    =>  [qr/staff\@hotmail.com/],
+    #				Bounce_Subject_regex => [qr/complaint/],
+    #			},
+    #
+    #			Data => {
+    #				Email => 'is_valid',
+    #				List  => 'is_valid',
+    #			}
+    #		},
+    #		Action => {
+    #			unsubscribe_bounced_email	=> 'from_list',
+    #		}
+    #	}
+    #},
 
     my $Rules = [
-
-
-     
 
         {
             qmail_delivery_delay_notification => {
@@ -237,8 +225,6 @@ sub rules {
             }
         },
 
-
-
         {
             hotmail_over_quota => {
                 Examine => {
@@ -257,14 +243,10 @@ sub rules {
                 },
                 Action => {
 
-                    add_to_score => $self->config->{Default_Soft_Bounce_Score},
+                    add_to_score => 'softbounce_score',
                 }
             }
         },
-
-
-
-
 
         {
             over_quota_obscure_mta => {
@@ -282,7 +264,7 @@ sub rules {
                 },
                 Action => {
 
-                    add_to_score => $self->config->{Default_Soft_Bounce_Score},
+                    add_to_score => 'softbounce_score',
                 }
             }
         },
@@ -295,8 +277,9 @@ sub rules {
                         Status => [qw(5.2.2 4.2.2 5.0.0 5.1.1)],
                         'Final-Recipient_regex' => [ (qr/822/) ],
                         'Diagnostic-Code_regex' => [
-                            ( qr/552|exceeded storage allocation|over quota|storage full|mailbox full|disk quota exceeded|Mail quota exceeded|Quota violation/
-     )
+                            (
+qr/552|exceeded storage allocation|over quota|storage full|mailbox full|disk quota exceeded|Mail quota exceeded|Quota violation/
+                            )
                         ]
                     },
 
@@ -307,11 +290,10 @@ sub rules {
                 },
                 Action => {
 
-                    add_to_score => $self->config->{Default_Soft_Bounce_Score},
+                    add_to_score => 'softbounce_score',
                 }
             }
         },
-
 
         {
             over_quota_obscure_mta_two => {
@@ -329,7 +311,7 @@ sub rules {
                 },
                 Action => {
 
-                    add_to_score => $self->config->{Default_Soft_Bounce_Score},
+                    add_to_score => 'softbounce_score',
                 }
             }
         },
@@ -351,7 +333,7 @@ sub rules {
                 },
                 Action => {
 
-                    add_to_score => $self->config->{Default_Soft_Bounce_Score},
+                    add_to_score => 'softbounce_score',
                 }
             }
         },
@@ -370,7 +352,7 @@ sub rules {
                 },
                 Action => {
 
-                    add_to_score => $self->config->{Default_Soft_Bounce_Score},
+                    add_to_score => 'softbounce_score',
                 }
             }
         },
@@ -397,7 +379,7 @@ qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox fu
                 },
                 Action => {
 
-                    add_to_score => $self->config->{Default_Soft_Bounce_Score},
+                    add_to_score => 'softbounce_score',
                 }
             }
         },
@@ -417,7 +399,7 @@ qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox fu
                 },
                 Action => {
 
-                    add_to_score => $self->config->{Default_Soft_Bounce_Score},
+                    add_to_score => 'softbounce_score',
                 }
             }
         },
@@ -439,9 +421,7 @@ qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox fu
                         List  => 'is_valid',
                     }
                 },
-                Action => {
-                    add_to_score => $self->config->{Default_Soft_Bounce_Score},
-                }
+                Action => { add_to_score => 'softbounce_score', }
             }
         },
 
@@ -484,7 +464,7 @@ qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox fu
                 },
                 Action => {
 
-                    add_to_score => $self->config->{Default_Soft_Bounce_Score},
+                    add_to_score => 'softbounce_score',
                 }
             }
         },
@@ -504,11 +484,10 @@ qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox fu
                 },
                 Action => {
 
-                    add_to_score => $self->config->{Default_Soft_Bounce_Score},
+                    add_to_score => 'softbounce_score',
                 }
             }
         },
-
 
         {
             qmail_error_5dot5dot1 => {
@@ -527,9 +506,7 @@ qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox fu
                         List  => 'is_valid',
                     }
                 },
-                Action => {
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
-                }
+                Action => { add_to_score => 'hardbounce_score', }
             }
         },
 
@@ -575,10 +552,9 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                 },
                 Action => {
 
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
+                    add_to_score => 'hardbounce_score',
                 }
-              } 
-			},
+              } },
 
         {
 
@@ -596,9 +572,7 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                         List  => 'is_valid',
                     }
                 },
-                Action => {
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
-                }
+                Action => { add_to_score => 'hardbounce_score', }
               } },
 
         {
@@ -618,7 +592,7 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                 },
                 Action => {
 
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
+                    add_to_score => 'hardbounce_score',
                 }
               } },
 
@@ -637,7 +611,7 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                 Action => {
 
                     #unsubscribe_bounced_email => 'from_list',
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
+                    add_to_score => 'hardbounce_score',
                 }
             }
         },
@@ -657,7 +631,7 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                 },
                 Action => {
 
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
+                    add_to_score => 'hardbounce_score',
                 }
             }
         },
@@ -675,9 +649,7 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                         List  => 'is_valid',
                     }
                 },
-                Action => {
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
-                }
+                Action => { add_to_score => 'hardbounce_score', }
             }
         },
 
@@ -694,9 +666,7 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                         List  => 'is_valid',
                     }
                 },
-                Action => {
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
-                }
+                Action => { add_to_score => 'hardbounce_score', }
             }
         },
 
@@ -721,7 +691,7 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                 Action => {
 
                     #unsubscribe_bounced_email => 'from_list',
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
+                    add_to_score => 'hardbounce_score',
                 }
               } },
 
@@ -740,7 +710,7 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                 Action => {
 
                     #unsubscribe_bounced_email => 'from_list',
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
+                    add_to_score => 'hardbounce_score',
                 },
             }
         },
@@ -762,31 +732,31 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                 Action => {
 
                     #unsubscribe_bounced_email => 'from_list',
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
+                    add_to_score => 'hardbounce_score',
                 }
             }
         },
 
-     #{
-     #novell_access_denied => {
-     #	Examine => {
-     #			Message_Fields => {
-     #				#Status         => [qw(5.x.y)],
-     #				'X-Mailer_regex' => [qw(Novell)],
-     #				'Diagnostic-Code_regex' => [(qr/access denied/)],
-     #			},
-     #			Data => {
-     #				Email       => 'is_valid',
-     #				List        => 'is_valid',
-     #			},
-     #
-     #		},
-     #			Action => {
-     #				#unsubscribe_bounced_email => 'from_list',
-     #               add_to_score => $self->config->{Default_Hard_Bounce_Score},
-     #		}
-     #	}
-     #},
+        #{
+        #novell_access_denied => {
+        #	Examine => {
+        #			Message_Fields => {
+        #				#Status         => [qw(5.x.y)],
+        #				'X-Mailer_regex' => [qw(Novell)],
+        #				'Diagnostic-Code_regex' => [(qr/access denied/)],
+        #			},
+        #			Data => {
+        #				Email       => 'is_valid',
+        #				List        => 'is_valid',
+        #			},
+        #
+        #		},
+        #			Action => {
+        #				#unsubscribe_bounced_email => 'from_list',
+        #               add_to_score => 'hardbounce_score',
+        #		}
+        #	}
+        #},
 
         {
 
@@ -808,7 +778,7 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                 },
                 Action => {
 
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
+                    add_to_score => 'hardbounce_score',
                 },
               } },
 
@@ -829,9 +799,7 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                         List  => 'is_valid',
                     }
                 },
-                Action => {
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
-                }
+                Action => { add_to_score => 'hardbounce_score', }
               } },
 
         {
@@ -855,7 +823,7 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                 Action => {
 
                     #unsubscribe_bounced_email => 'from_list',
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
+                    add_to_score => 'hardbounce_score',
                 },
             }
         },
@@ -879,7 +847,7 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                 Action => {
 
                     #unsubscribe_bounced_email => 'from_list',
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
+                    add_to_score => 'hardbounce_score',
                 },
             }
         },
@@ -907,7 +875,7 @@ qr/551 not our customer|User unknown|ecipient no longer/
                 Action => {
 
                     #unsubscribe_bounced_email => 'from_list',
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
+                    add_to_score => 'hardbounce_score',
                 },
             }
         },
@@ -929,7 +897,7 @@ qr/551 not our customer|User unknown|ecipient no longer/
                 Action => {
 
                     #unsubscribe_bounced_email => 'from_list',
-                    add_to_score => $self->config->{Default_Hard_Bounce_Score},
+                    add_to_score => 'hardbounce_score',
                 },
             }
         },
@@ -961,29 +929,29 @@ qr/551 not our customer|User unknown|ecipient no longer/
             }
         },
 
-#{
-# Supposively permanent error.
-#access_denied => {
-#					Examine => {
-#						Message_Fields => {
-#
-#							Status                  => [qw(5.7.1)],
-#							Action                  => [qw(failed)],
-#						    'Final-Recipient_regex' => [(qr/822/)],
-#						    'Diagnostic-Code_regex' => [(qr/ccess denied/)],
-#
-#					},
-#					Data => {
-#						Email => 'is_valid',
-#						List  => 'is_valid',
-#					}
-#					},
-#					Action => {
-#						#unsubscribe_bounced_email => 'from_list',
-#                        add_to_score => $self->config->{Default_Hard_Bounce_Score},
-#					},
-#					}
-#},
+        #{
+        # Supposively permanent error.
+        #access_denied => {
+        #					Examine => {
+        #						Message_Fields => {
+        #
+        #							Status                  => [qw(5.7.1)],
+        #							Action                  => [qw(failed)],
+        #						    'Final-Recipient_regex' => [(qr/822/)],
+        #						    'Diagnostic-Code_regex' => [(qr/ccess denied/)],
+        #
+        #					},
+        #					Data => {
+        #						Email => 'is_valid',
+        #						List  => 'is_valid',
+        #					}
+        #					},
+        #					Action => {
+        #						#unsubscribe_bounced_email => 'from_list',
+        #                        add_to_score => 'hardbounce_score',
+        #					},
+        #					}
+        #},
 
         {
 
@@ -996,11 +964,10 @@ qr/551 not our customer|User unknown|ecipient no longer/
                 },
                 Action => {
 
-                    add_to_score => $self->config->{Default_Soft_Bounce_Score},
+                    add_to_score => 'softbounce_score',
                   }
 
-              } 
-		},
+              } },
 
         {
             email_not_found => {
@@ -1016,12 +983,10 @@ qr/551 not our customer|User unknown|ecipient no longer/
 
     ];
 
-
-
     return $Rules;
 }
 
-sub DESTROY {}
+sub DESTROY { }
 
 1;
 
@@ -1045,7 +1010,7 @@ An example Rule:
                 }
             },
                 Action => { 
-                     add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
+                     add_to_score => 'hardbounce_score',
                 }, 
             }
     }, 
@@ -1070,11 +1035,11 @@ B<Message Field> contaning a user unknown error code, B<(5.1.1, etc)> and also a
 also has to be parsed to have found a valid email and list name. 
 
 If this all matches, the B<Action> is... acted upon. In this case, the offending email address will be appended a, B<Bounce Score> of,
- whatever, B<$Plugin_Config->{Default_Hard_Bounce_Score}>, which is by default, B<4>. 
+ whatever, B<UPDATE THIS>, which is by default, B<4>. 
 
 If you would like to have the bounced address automatically removed, without any sort of scoring happening, change the B<action> from,
 
-    add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score}
+    add_to_score => 'hardbounce_score',
 
 to: 
 

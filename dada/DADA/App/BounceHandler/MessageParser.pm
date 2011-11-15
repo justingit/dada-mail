@@ -187,7 +187,6 @@ sub run_all_parses {
         $diagnostics->{'Simplified-Message-Id'} =
           strip( $diagnostics->{'Simplified-Message-Id'} );
     }
-	
 
     return ( $email, $list, $diagnostics );
 }
@@ -339,7 +338,7 @@ sub find_message_id_in_headers {
     if ( $entity->head->mime_type eq 'message/rfc822' ) {
         my $orig_msg_copy = $parts[0];
         $m_id = $orig_msg_copy->head->get( 'Message-ID', 0 );
-		$m_id = strip($m_id); 
+        $m_id = strip($m_id);
         chomp($m_id);
 
         return $m_id;
@@ -383,7 +382,7 @@ sub find_message_id_in_body {
         }
 
         $IO->close;
-		$m_id = strip($m_id); 
+        $m_id = strip($m_id);
         return $m_id;
     }
     else {
@@ -637,10 +636,10 @@ sub parse_for_qmail {
                 }
             }
 
-# Not Good: 
-#			if(!defined($diag->{Action})){ 
-#				if($diag->{'Diagnostic-Code'} =~ m/The email account that you tried to reach does not exist/){ 
-#					$diag->{Action} = 'failed'; 
+# Not Good:
+#			if(!defined($diag->{Action})){
+#				if($diag->{'Diagnostic-Code'} =~ m/The email account that you tried to reach does not exist/){
+#					$diag->{Action} = 'failed';
 #				}
 #			}
             $list ||= $self->generic_body_parse_for_list($entity);

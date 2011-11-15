@@ -85,15 +85,6 @@ $Plugin_Config->{MessagesAtOnce} = 100;
 #
 $Plugin_Config->{Max_Size_Of_Any_Message} = 2621440;
 
-# "Soft" bounces are given a score of:
-$Plugin_Config->{Default_Soft_Bounce_Score} = 1;
-
-# "Hard" bounces are given a score of:
-$Plugin_Config->{Default_Hard_Bounce_Score} = 4;
-
-# What score does an email address need to go until they're unsubscribed?
-$Plugin_Config->{Score_Threshold} = 10;
-
 # Can the checking of awaiting messages to send out happen by invoking this
 # script from a URL? (CGI mode?)
 # The URL would look like this:
@@ -300,6 +291,7 @@ sub cgi_main {
             'cgi_show_plugin_config'     => \&cgi_show_plugin_config,
             'ajax_parse_bounces_results' => \&ajax_parse_bounces_results,
             'cgi_erase_scorecard'        => \&cgi_erase_scorecard,
+			'edit_prefs'                 => \&edit_prefs, 
         );
 
         if ( exists( $Mode{$flavor} ) ) {
@@ -393,6 +385,70 @@ Bounce Email Scorecard
 </fieldset> 
 
 
+
+<fieldset> 
+<legend>
+ Preferences
+</legend> 
+
+<form action="<!-- tmpl_var Plugin_URL -->" method="post">
+
+<input type="hidden" name="flavor" value="edit_prefs" /> 
+<table border="0"> 
+ <tr> 
+  <td> 
+   <p>
+   	<label>"Soft" Bounce Score</label>
+	</p>
+  </td> 
+  <td> 
+	<!-- tmpl_var bounce_handler_softbounce_score_popup_menu -->
+  </td>
+  </tr>
+ <tr> 
+  <td> 
+   <p>
+   	<label>"Hard" Bounce Score</label>
+	</p>
+  </td> 
+  <td> 
+	<!-- tmpl_var bounce_handler_hardbounce_score_popup_menu -->
+  </td>
+  </tr>
+ <tr> 
+  <td> 
+   <p>
+   	<label>Decay Rate</label>
+	</p>
+  </td> 
+  <td> 
+	<!-- tmpl_var bounce_handler_decay_score_popup_menu -->
+  </td>
+  </tr>
+ <tr> 
+  <td> 
+   <p>
+   	 <label>Bounce Score Threshold</label>
+	</p>
+  </td> 
+  <td> 
+	<!-- tmpl_var bounce_handler_threshold_score_popup_menu -->
+  </td>
+  </tr>
+  
+</table> 
+
+
+<div class="buttonfloat">   
+ <input type="submit" class="processing" value="Save Preferences" /> 
+ </div>
+<div class="floatclear"></div>
+</form> 
+</fieldset>
+
+
+
+
 <fieldset> 
  <legend>Manually Run <!-- tmpl_var Plugin_Name --></legend> 
 
@@ -479,43 +535,6 @@ Bounce Email Scorecard
    </td> 
    </tr> 
    
-   
-      <tr> 
-   <td>
-    <p><strong>"Soft" Bounce Score:</strong>
-    </p>
-    </td>
-    <td>
-     <p>
-      <!-- tmpl_var  Default_Soft_Bounce_Score --></p>
-   </td> 
-   </tr> 
-   
-    
-      <tr> 
-   <td>
-    <p><strong>"Hard" Bounce Score:</strong>
-    </p>
-    </td>
-    <td>
-     <p>
-      <!-- tmpl_var  Default_Hard_Bounce_Score --></p>
-   </td> 
-   </tr>   
-  
-
-      <tr> 
-   <td>
-    <p><strong>Addresses Removed After a Score of:</strong>
-    </p>
-    </td>
-    <td>
-     <p>
-      <!-- tmpl_var  Score_Threshold --></p>
-   </td> 
-   </tr>   
-   
-   
   </table> 
   
  <div class="buttonfloat"> 
@@ -528,6 +547,19 @@ Bounce Email Scorecard
 <div class="floatclear"></div> 
   
 </fieldset> 
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <fieldset> 
 
@@ -578,6 +610,31 @@ sub cgi_default {
         700, 750, 800, 850, 900, 950, 1000
     );
 
+		my $bounce_handler_softbounce_score_popup_menu 
+			= $q->popup_menu( -name => 'bounce_handler_softbounce_score', 
+							  -values => [(0 .. 10)],
+							  -default => $ls->param('bounce_handler_softbounce_score'), 
+			); 
+
+			my $bounce_handler_hardbounce_score_popup_menu 
+				= $q->popup_menu( -name => 'bounce_handler_hardbounce_score', 
+								  -values => [(0 .. 10)],
+								  -default => $ls->param('bounce_handler_hardbounce_score'), 
+				); 
+
+		my $bounce_handler_decay_score_popup_menu 
+			= $q->popup_menu( -name => 'bounce_handler_decay_score', 
+							  -values => [(0 .. 10)],
+							  -default => $ls->param('bounce_handler_decay_score'), 
+			);
+
+		my $bounce_handler_threshold_score_popup_menu
+			= $q->popup_menu( -name => 'bounce_handler_threshold_score', 
+						  -values => [(0 .. 100)],
+						  -default => $ls->param('bounce_handler_threshold_score'), 
+		);
+
+
     my $curl_location = `which curl`;
     $curl_location = strip( make_safer($curl_location) );
 
@@ -614,17 +671,19 @@ sub cgi_default {
                 Username      => $Plugin_Config->{Username},
                 Server        => $Plugin_Config->{Server},
                 Plugin_URL    => $Plugin_Config->{Plugin_URL},
-                Default_Soft_Bounce_Score =>
-                  $Plugin_Config->{Default_Soft_Bounce_Score},
-                Default_Hard_Bounce_Score =>
-                  $Plugin_Config->{Default_Hard_Bounce_Score},
-                Score_Threshold     => $Plugin_Config->{Score_Threshold},
                 Plugin_Name         => $Plugin_Config->{Plugin_Name},
                 Allow_Manual_Run    => $Plugin_Config->{Allow_Manual_Run},
                 Manual_Run_Passcode => $Plugin_Config->{Manual_Run_Passcode},
                 curl_location       => $curl_location,
                 plugin_configured   => $plugin_configured,
                 parse_amount_widget => $parse_amount_widget,
+				bounce_handler_softbounce_score_popup_menu => $bounce_handler_softbounce_score_popup_menu, 
+				bounce_handler_hardbounce_score_popup_menu => $bounce_handler_hardbounce_score_popup_menu, 
+				bounce_handler_decay_score_popup_menu      => $bounce_handler_decay_score_popup_menu, 
+				bounce_handler_threshold_score_popup_menu  => $bounce_handler_threshold_score_popup_menu, 
+				
+
+
             },
             -list_settings_vars_param => {
                 -list   => $list,
@@ -634,6 +693,26 @@ sub cgi_default {
     );
     e_print($scrn);
 }
+
+sub edit_prefs {
+
+	my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    $ls->save_w_params(
+        {
+            -associate => $q,
+            -settings  => {
+				bounce_handler_softbounce_score => undef, 
+				bounce_handler_hardbounce_score => undef, 
+				bounce_handler_decay_score => undef, 
+				bounce_handler_threshold_score => undef, 
+            }
+        }
+    );
+
+    print $q->redirect( -uri => $Plugin_Config->{Plugin_URL} . '?done=1' );
+}
+
+
 
 sub ajax_parse_bounces_results {
 
@@ -797,7 +876,7 @@ sub cgi_scorecard {
     my $page = $q->param('page') || 1;
 
     require DADA::App::BounceHandler::ScoreKeeper;
-    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( -List => $list );
+    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new({ -list => $list });
 
     my $num_rows  = $bsk->num_scorecard_rows;
     my $scorecard = $bsk->raw_scorecard(
@@ -974,7 +1053,7 @@ EOF
 sub cgi_erase_scorecard {
 
     require DADA::App::BounceHandler::ScoreKeeper;
-    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( -List => $list );
+    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new({ -list => $list });
     $bsk->erase;
 
     print $q->redirect(
@@ -1077,7 +1156,7 @@ sub cgi_bounce_score_search {
     require HTML::Template;
 
     require DADA::App::BounceHandler::ScoreKeeper;
-    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( -List => $list );
+    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new({ -list => $list });
 
     require DADA::App::LogSearch;
 
@@ -2119,15 +2198,7 @@ Once the email address's B<Bounce Score> reaches the B<Threshold>, the email add
 
 You can manipulate the Soft and Hard Bounce Scores and Threshold pretty easily. On the top of this script, you'll see the necessary variables to tweak, 
 
-=over
-
-=item * $Plugin_Config->{Default_Soft_Bounce_Score}
-
-=item * $Plugin_Config->{Default_Hard_Bounce_Score}
-
-=item * $Plugin_Config->{Score_Threshold}
-
-=back
+UPDATE THIS AS IT'S IN THE LIST SETTINGS. YEAH!
 
 Fairly self-explanitory. 
 

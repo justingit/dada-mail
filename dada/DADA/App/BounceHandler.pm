@@ -19,7 +19,7 @@ my $parser;
 my %allowed = (
 
     'config' => undef,
-	parser   => undef, 
+    parser   => undef,
 
 );
 
@@ -68,7 +68,7 @@ sub _init {
     $parser = new MIME::Parser;
     $parser = optimize_mime_parser($parser);
 
-	$self->parser($parser); 
+    $self->parser($parser);
 
     $self->config($args);
 
@@ -109,7 +109,8 @@ sub erase_score_card {
     for my $list (@delete_list) {
 
         require DADA::App::BounceHandler::ScoreKeeper;
-        my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( -List => $list );
+        my $bsk =
+          DADA::App::BounceHandler::ScoreKeeper->new( { -list => $list } );
 
         $bsk->erase;
 
@@ -151,7 +152,6 @@ sub test_bounces {
     else {
         return "I don't know what you want me to test!\n";
     }
-
 
     if ( scalar @$files_to_test > 0 ) {
         return $self->test_files(
@@ -311,10 +311,9 @@ sub parse_all_bounces {
         $log .= "Checking Bounces for Mailing List: "
           . $ls->param('list_name') . "\n";
 
-        if (   !defined($self->config->{Server})
-            || !defined($self->config->{Username})
-            || !defined($self->config->{Password}) 
-		)
+        if (   !defined( $self->config->{Server} )
+            || !defined( $self->config->{Username} )
+            || !defined( $self->config->{Password} ) )
         {
             $log .=
 "The Server Username and/password haven't been filled out, stopping.";
@@ -324,7 +323,8 @@ sub parse_all_bounces {
 
         $log .= "Testing is enabled.\n\n"
           if $test;
-        $log .= "Making POP3 Connection to " . $self->config->{Server} . "...\n";
+        $log .=
+          "Making POP3 Connection to " . $self->config->{Server} . "...\n";
 
         require DADA::App::POP3Tools;
 
@@ -345,10 +345,10 @@ sub parse_all_bounces {
                 AUTH_MODE => $self->config->{AUTH_MODE},
             }
           );
-		if($pop3status != 1){ 
-			$log .= "Status returned $pop3status\n\n$pop3log"; 
-			return $log; 
-		}
+        if ( $pop3status != 1 ) {
+            $log .= "Status returned $pop3status\n\n$pop3log";
+            return $log;
+        }
 
         $log .= $pop3log;
         if ( $pop3status == 0 ) {
@@ -434,6 +434,7 @@ sub parse_all_bounces {
             }
 
         }
+
 =cut
 
         if ( $args->{-test} != 1 ) {
@@ -484,7 +485,7 @@ sub parse_bounce {
 
     my $self       = shift;
     my $msg_report = '';
-	   $msg_report .= '-' x 72 . "\n";
+    $msg_report .= '-' x 72 . "\n";
     my ($args)  = @_;
     my $list    = $args->{-list};
     my $test    = $args->{-test};
@@ -495,7 +496,7 @@ sub parse_bounce {
     my $diagnostics = {};
 
     my $entity;
-	
+
     eval { $entity = $self->parser->parse_data($message) };
 
     ##########################################################################
@@ -546,10 +547,10 @@ sub parse_bounce {
     my $rule_report = '';
     $msg_report .=
       $self->generate_nerd_report( $found_list, $email, $diagnostics );
-	require DADA::App::BounceHandler::Rules; 
-	my $bhr = DADA::App::BounceHandler::Rules->new($self->config); 
+    require DADA::App::BounceHandler::Rules;
+    my $bhr = DADA::App::BounceHandler::Rules->new( $self->config );
     my $rule = $bhr->find_rule_to_use( $found_list, $email, $diagnostics );
-	
+
     $msg_report .= "\n* Using Rule: $rule\n";
 
     ###
@@ -603,7 +604,8 @@ sub save_scores {
             $m .= "\nWorking on list: $d_list\n";
 
             require DADA::App::BounceHandler::ScoreKeeper;
-            my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( -List => $d_list );
+            my $bsk = DADA::App::BounceHandler::ScoreKeeper->new(
+                { -list => $d_list } );
 
             my $list_scores = $score->{$d_list};
 
@@ -631,13 +633,12 @@ sub save_scores {
                 $m .= "\nScore Totals for $d_list:\n\n";
                 for ( keys %$give_back_scores ) {
                     $m .= "\tEmail: $_\n";
- 					$m .= "\tTotal Score: ". $give_back_scores->{$_} . "\n";
+                    $m .= "\tTotal Score: " . $give_back_scores->{$_} . "\n";
 
                 }
             }
 
-            my $removal_list =
-              $bsk->removal_list( $self->config->{Score_Threshold} );
+            my $removal_list = $bsk->removal_list();
 
             $m .= "Addresses to be removed:\n" . '-' x 72 . "\n";
             for my $bad_email (@$removal_list) {
@@ -646,9 +647,8 @@ sub save_scores {
             }
 
             # DEV: Hmm, this gets repeated for each list?
-            $m .= "Flushing old scores over "
-              . $self->config->{Score_Threshold} . "\n";
-            $bsk->flush_old_scores( $self->config->{Score_Threshold} );
+            $m .= "Flushing old scores\n";
+            $bsk->flush_old_scores();
         }
 
     }
@@ -665,7 +665,7 @@ sub remove_bounces {
     my $self   = shift;
     my $report = shift;
     my $m      = '';
-       $m .= "Unsubscribing addresses:\n" . '-' x 72 . "\n";
+    $m .= "Unsubscribing addresses:\n" . '-' x 72 . "\n";
 
     for my $list ( keys %$report ) {
 
@@ -759,9 +759,9 @@ sub carry_out_rule {
 
     my $self = shift;
 
-	require DADA::App::BounceHandler::Rules; 
-	my $bhr    = DADA::App::BounceHandler::Rules->new($self->config);
-    my $Rules  = $bhr->rules;
+    require DADA::App::BounceHandler::Rules;
+    my $bhr   = DADA::App::BounceHandler::Rules->new( $self->config );
+    my $Rules = $bhr->rules;
 
     my ( $title, $list, $email, $diagnostics, $message ) = @_;
     my $actions = {};
@@ -780,7 +780,8 @@ sub carry_out_rule {
 
         if ( $action eq 'add_to_score' ) {
             $report .=
-              $self->add_to_score( $list, $email, $diagnostics, $actions->{$action} );
+              $self->add_to_score( $list, $email, $diagnostics,
+                $actions->{$action} );
             $report .=
               $self->append_message_to_file( $list, $email, $diagnostics,
                 $actions->{$action}, $message );
@@ -798,8 +799,8 @@ sub carry_out_rule {
         }
         elsif ( $action eq 'default' ) {
             $report .=
-              $self->default_action( $list, $email, $diagnostics, $actions->{$action},
-                $message );
+              $self->default_action( $list, $email, $diagnostics,
+                $actions->{$action}, $message );
         }
         else {
             warn "unknown rule trying to be carried out, ignoring";
@@ -870,16 +871,32 @@ sub add_to_score {
 
     my $self = shift;
     my ( $list, $email, $diagnostics, $action ) = @_;
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $score = 0;
+    if ( $action eq 'softbounce_score' ) {
+        $score = $ls->param('bounce_handler_softbounce_score');
+    }
+    elsif ( $action eq 'hardbounce_score' ) {
+        $score = $ls->param('bounce_handler_hardbounce_score');
+    }
+    else {
+        carp "don't know what to score this with?: '$action'";
+    }
+
     if ( $Score_Card->{$list}->{$email} ) {
-        $Score_Card->{$list}->{$email} += $action;
+        $Score_Card->{$list}->{$email} += $score;
 
         # Hmm. That was easy.
     }
     else {
-        $Score_Card->{$list}->{$email} = $action;
+        $Score_Card->{$list}->{$email} = $score;
     }
 
-    return "* Adding  $action to scorecard. (Removal at or above score:" . $self->config->{Score_Threshold} . ")\n";
+    return
+      "* Adding  $score to Scorecard for $email. (Removal at or above score:"
+      . $ls->param('bounce_handler_threshold_score') . ")\n";
 
 }
 
@@ -949,8 +966,6 @@ sub generate_nerd_report {
     return $report;
 
 }
-
-
 
 sub open_log {
     my $self = shift;
@@ -1432,8 +1447,6 @@ sub rfc1893_status {
     return "\n" . '-' x 72 . "\n" . $rfc1893{$key} . "\n";
 
 }
-
-
 
 END {
 

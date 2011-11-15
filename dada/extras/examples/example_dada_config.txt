@@ -133,9 +133,6 @@ $PLUGIN_CONFIGS = {
 		Send_Messages_To            => undef,
 		MessagesAtOnce              => undef,
 		Max_Size_Of_Any_Message     => undef,
-		Default_Soft_Bounce_Score   => undef,
-		Default_Hard_Bounce_Score   => undef,
-		Score_Threshold             => undef,
 		Rules                       => undef,
 
 	},

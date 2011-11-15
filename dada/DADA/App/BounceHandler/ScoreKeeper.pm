@@ -5,6 +5,8 @@ use lib qw(../../../ ../../../perllib);
 
 use DADA::Config; 	
 
+use Carp qw(carp croak); 
+
 my $type; 
 BEGIN { 
 	
@@ -19,12 +21,23 @@ use base "DADA::App::BounceHandler::ScoreKeeper::$type";
 
 
 sub _init  { 
-    my ($self, $args) = @_; 
+    my $self   = shift; 
+	my ($args) = @_; 
+	
     if($self->{new_list} != 1){ 
-    	croak('BAD List name "' . $args->{-List} . '" ' . $!) if $self->_list_name_check($args->{-List}) == 0; 
+		if($self->_list_name_check($args->{-list}) == 0) { 
+			croak('BAD List name "' . $args->{-list} . '" ' . $!); 
+		}
+		else { 
+			$self->{list} = $args->{-list}; 			
+		}
 	}else{ 
-		$self->{name} = $args->{-List}; 
+		$self->{list} = $args->{-list}; 
 	}
+	
+	require DADA::MailingList::Settings; 
+	$self->{ls} = DADA::MailingList::Settings->new({-list => $self->{list}}); 
+	
 	
 	return $self;
 }
