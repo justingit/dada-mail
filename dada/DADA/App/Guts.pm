@@ -1529,7 +1529,6 @@ sub webify_plain_text {
 	else { 
 	
 		my $multi_line = 0; 
-
 		if($args->{-str} =~ m/\r|\n/){ 
 			$multi_line = 1; 
 		}
@@ -1551,7 +1550,6 @@ sub webify_plain_text {
 	}
 	return $r; 
 }
-
 
 
 =pod

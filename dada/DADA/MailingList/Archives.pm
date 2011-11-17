@@ -720,15 +720,20 @@ sub _scrub_js {
 
 	my $self = shift; 
 	my $body = shift; 
-	
+
 	eval {require HTML::Scrubber; };
-	return $body if $@; 
-	                                                                                                                                                     #
-    my $scrubber = HTML::Scrubber->new(
-    	%{$DADA::Config::HTML_SCRUBBER_OPTIONS}
-    );
-    return  $scrubber->scrub($body); 
 	
+	if($@){ 
+
+		return $body;
+	}
+	else {
+		
+	    my $scrubber = HTML::Scrubber->new(
+	    	%{$DADA::Config::HTML_SCRUBBER_OPTIONS}
+	    );
+		return  $scrubber->scrub($body); 
+	}
 }
 
 
@@ -792,8 +797,11 @@ sub _email_protect {
 	$finder->find(\$body); 
 	
 	for my $fa (@$found_addresses){ 
-		#my $pe = spam_me_not_encode($fa);
 		
+		if($fa =~ m/\@MIME\-Lite\-HTML/){ 
+			# Good work Email::Find, that's not *even* an email address!
+			next; 
+		}
 		
 		if($self->{ls}->param('archive_protect_email') eq 'recaptcha_mailhide'){ 
             my $pe = mailhide_encode($fa);
@@ -1824,11 +1832,7 @@ sub massaged_msg_for_display {
             # ...
         }
         else {
-			$body = webify_plain_text(
-				{ 
-					-str => $body,
-				}
-			);
+			$body = webify_plain_text({-str => $body});
         }
 
         if ( $self->{ls}->param('style_quoted_archive_text') == 1 ) {
@@ -1922,12 +1926,15 @@ sub _parse_in_list_info {
     return  DADA::Template::Widgets::screen(
         {
             -data                     => \$args{-data},
+			-expr => 1, 
             -vars                     => $self->{ls}->params,
             -list_settings_vars       => $self->{ls}->params,
             -list_settings_vars_param => {-dot_it => 1},
 			-subscriber_vars_param    => {-list => $self->{list}, -use_fallback_vars => 1},
             -dada_pseudo_tag_filter   => 1, 
-        }
+
+        }, 
+
     )
     
  }

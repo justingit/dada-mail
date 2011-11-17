@@ -534,11 +534,7 @@ sub default_screen {
 
             # This is strange...
             $all_list_info_dotted->{'list_settings.info'} =
-              webify_plain_text(
-				{ 
-					-str => $all_list_info_dotted->{'list_settings.info'}
-			 	}
-			);
+              webify_plain_text({-str => $all_list_info_dotted->{'list_settings.info'} });
             $all_list_info_dotted->{'list_settings.info'} =
               _email_protect({-string => $all_list_info_dotted->{'list_settings.info'}} );
 
@@ -2294,7 +2290,11 @@ sub webify_and_santize {
     foreach(@{$args->{-to_sanitize}}){ 
     
         
+<<<<<<< HEAD:dada/DADA/Template/Widgets.pm
         $args->{-vars}->{$_} = webify_plain_text({-str =>$args->{-vars}->{$_}});
+=======
+        $args->{-vars}->{$_} = webify_plain_text({-str => $args->{-vars}->{$_}});
+>>>>>>> bugfixes-4_8_4:dada/DADA/Template/Widgets.pm
         $args->{-vars}->{$_} = _email_protect(
 			{
 				-string => $args->{-vars}->{$_},

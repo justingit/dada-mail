@@ -453,7 +453,7 @@ sub connectdb {
     my $dbh;
     my $that_didnt_work = 1;
     $dbh = DBI->connect( "$data_source", $user, $pass )
-      || die("can't connect to db: $!");
+      || croak "can't connect to db: '$data_source' '$DBI::errstr'";
     return $dbh;
 }
 
@@ -696,7 +696,7 @@ sub edit_config_dot_pm {
 	my $search2      = quotemeta(q{$PROGRAM_ERROR_LOG = undef;});
 	
 	if($loc eq 'auto') { 
-		warn "\$loc has been set to, 'auto' - nothing to edit!"; 
+		carp "\$loc has been set to, 'auto' - nothing to edit!"; 
 		return 1; 
 	}
 	else { 
@@ -720,16 +720,16 @@ sub edit_config_dot_pm {
 			#unlink($Config_LOC); 
 			installer_rm($Config_LOC); 
 			
-	        open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $Config_LOC or die $!;
-	        print $config_fh $config or die $!;
-	        close $config_fh or die $!;
+	        open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $Config_LOC or croak $!;
+	        print $config_fh $config or croak $!;
+	        close $config_fh or croak $!;
 			#chmod(0775, $Config_LOC);
 			installer_chmod(0775, $Config_LOC);
 			
 	    #};
 
 	    #if ($@) {
-		#	warn $@; 
+		#	carp $@; 
 		#	$Big_Pile_Of_Errors .= $@; 
 	     #   return 0;
 	    #}
@@ -745,9 +745,9 @@ sub backup_config_dot_pm {
 	
 	my $config = slurp($Config_LOC);
 	my $backup_loc = make_safer($Config_LOC . '-backup.' . time); 
-    open my $backup, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $backup_loc or die $!;
-    print $backup $config or die $!;
-    close $backup or die $!;
+    open my $backup, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $backup_loc or croak $!;
+    print $backup $config or croak $!;
+    close $backup or croak $!;
 
 	#chmod(0775, $backup_loc);
 	installer_chmod(0775, $backup_loc);
@@ -774,9 +774,9 @@ sub backup_current_config_file {
 		$args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config-backup-' . $timestamp
 	); 
 	
-	open my $config_backup, '>', $new_loc or die $!; 
+	open my $config_backup, '>', $new_loc or croak $!; 
 	print $config_backup $config_file; 
-	close($config_backup) or die $!; 
+	close($config_backup) or croak $!; 
 	
 	unlink($dot_configs_file_loc); 
 	
@@ -808,7 +808,7 @@ sub create_dada_files_dir_structure {
         }
     };
     if ($@) {
-        warn $@;
+        carp $@;
         $Big_Pile_Of_Errors .= $@; 
 		return 0;
     }
@@ -824,7 +824,7 @@ sub create_dada_config_file {
 
      eval {
     if ( !-e $loc . '/.configs' ) {
-        die "$loc does not exist! Stopping!";
+        croak "$loc does not exist! Stopping!";
     }
 
     require DADA::Security::Password;
@@ -874,14 +874,14 @@ sub create_dada_config_file {
     }
 
     open my $dada_config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer( $loc . '/.configs/.dada_config' )
-      or die $!;
-    print $dada_config_fh $outside_config_file or die $!;
-    close $dada_config_fh or die $!;
+      or croak $!;
+    print $dada_config_fh $outside_config_file or croak $!;
+    close $dada_config_fh or croak $!;
 
 	
      };
      if ($@) {
-		warn $@; 
+		carp $@; 
         $Big_Pile_Of_Errors .= $Big_Pile_Of_Errors; 
 		return 0;
     }
@@ -925,13 +925,13 @@ sub create_sql_tables {
             # print "\nquery:\n" . $_;
             my $sth = $dbh->prepare($_);
             $sth->execute
-              or die "cannot do statement! $DBI::errstr\n";
+              or croak "cannot do statement! $DBI::errstr\n";
         }
     }
 
     	};
     	if($@){
-    		warn $!;
+    		carp $!;
     		$Big_Pile_Of_Errors .= $@; 
 			return 0;
     	}
@@ -968,7 +968,7 @@ sub check_setup {
     {
 
         # Skip a lot of the tests!
-        # die "Skipping!";
+        # croak "Skipping!";
     }
     else {
 
@@ -1020,16 +1020,16 @@ sub check_setup {
                 if (
                     test_database_has_all_needed_tables(
                         $q->param('backend'),      $q->param('sql_server'),
-                        'auto',                    $q->param('sql_database'),
+                        sql_port_from_params(),    $q->param('sql_database'),
                         $q->param('sql_username'), $q->param('sql_password'),
                     ) == 1
                   )
                 {
-                    $errors->{sql_table_populated} = 0;
+                    $errors->{sql_table_populated} = 1;
 
                 }
                 else {
-                    $errors->{sql_table_populated} = 1;
+                    $errors->{sql_table_populated} = 0;
                 }
 
             }
@@ -1093,7 +1093,7 @@ sub check_setup {
         }
     }
    # require Data::Dumper;
-    #die Data::Dumper::Dumper( $status, $errors );
+    #croak Data::Dumper::Dumper( $status, $errors );
     return ( $status, $errors );
 
 }
@@ -1205,9 +1205,9 @@ qq|\%LIST_SETUP_INCLUDE = (
 	else { 
 		# write it back? 
 		installer_chmod(0777, $dot_configs_file_loc); 
-		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($dot_configs_file_loc) or die $!;
-		print $config_fh $config_file or die $!;
-		close $config_fh or die $!;
+		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($dot_configs_file_loc) or croak $!;
+		print $config_fh $config_file or croak $!;
+		close $config_fh or croak $!;
 		installer_chmod(0644, $dot_configs_file_loc);	
 	}
 	return 1; 
@@ -1298,7 +1298,7 @@ sub test_can_use_DBI {
 
     eval { require DBI; };
     if ($@) {
-		warn $@; 
+		carp $@; 
 		$Big_Pile_Of_Errors .= $@; 
         return 0;
     }
@@ -1386,7 +1386,7 @@ sub test_complete_dada_files_dir_structure_exists {
 sub test_sql_connection {
 	
 #	use Data::Dumper; 
-#	die Dumper([@_]);
+#	croak Dumper([@_]);
     my $dbtype   = shift;
     my $dbserver = shift;
     my $port     = shift;
@@ -1410,7 +1410,7 @@ sub test_sql_connection {
           connectdb( $dbtype, $dbserver, $port, $database, $user, $pass, );
     };
     if ($@) {
-		warn $@; 
+		carp $@; 
         $Big_Pile_Of_Errors .= $@; 
 		return 0;
     }
@@ -1432,7 +1432,7 @@ sub test_can_read_config_dot_pm {
         }
     };
     if ($@) {
-		warn $@; 
+		carp $@; 
         $Big_Pile_Of_Errors .= $@; 
 		return 1;
     }
@@ -1448,70 +1448,63 @@ sub test_can_write_config_dot_pm {
 	}
 }
 
-sub test_database_has_all_needed_tables { 
-#	my $dbtype   = shift;
-#    my $dbserver = shift;
-#    my $port     = shift;
-#    my $database = shift;
-#    my $user     = shift;
-#    my $pass     = shift;
-	
-	my $default_table_names = {
-	    dada_subscribers => 1,
-	    dada_profiles => 1, 
-	    dada_profile_fields => 1, 
-	    dada_profile_fields_attributes => 1,
-	    dada_archives => 1, 
-	    dada_settings => 1, 
-	    dada_sessions => 1, 
-	    dada_bounce_scores => 1, 
-	    dada_clickthrough_urls => 1,
-		dada_clickthrough_url_log => 1, 
-		dada_mass_mailing_event_log => 1, 
-		
-	}; 
-	my $dbh; 
-	
+sub test_database_has_all_needed_tables {
+
+    my $default_table_names = {
+        dada_subscribers               => 1,
+        dada_profiles                  => 1,
+        dada_profile_fields            => 1,
+        dada_profile_fields_attributes => 1,
+        dada_archives                  => 1,
+        dada_settings                  => 1,
+        dada_sessions                  => 1,
+        dada_bounce_scores             => 1,
+        dada_clickthrough_urls         => 1,
+        dada_clickthrough_url_log      => 1,
+        dada_mass_mailing_event_log    => 1,
+
+    };
+    my $dbh;
+
     eval { $dbh = connectdb(@_); };
-    if ($@) { 
-		warn $@; 
-		$Big_Pile_Of_Errors .= $@; 
-		return 0;
-	 }
+    if ($@) {
+        carp $@;
+        $Big_Pile_Of_Errors .= $@;
+        return 0;
+    }
 
     my @tables = $dbh->tables;
-	my $checks = 0; 
-	
-#	use Data::Dumper; 
-#	die Dumper([@tables]);
-	for my $table(@tables){ 
-		
-		# Not sure why this is so non-standard between different setups...
-		$table =~ s/`//g; 
-		$table =~ s/^(.*?)\.//; #This removes something like, "database_name.table"
-		
-		if(exists($default_table_names->{$table})){ 
-			$checks++;	
-		}
-	}
-	
-	
-	if($checks >= 9){ 
-		return 0; 
-	}
-	else { 
-		return 1; 
-	}
-	
-	
-	
+    my $checks = 0;
+
+    #	use Data::Dumper;
+    #	croak Dumper([@tables]);
+    for my $table (@tables) {
+
+        # Not sure why this is so non-standard between different setups...
+        $table =~ s/`//g;
+        $table =~
+          s/^(.*?)\.//;    #This removes something like, "database_name.table"
+
+        if ( exists( $default_table_names->{$table} ) ) {
+            $checks++;
+        }
+    }
+
+    if ( $checks >= 9 ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+
 }
+
 sub test_database_empty {
     my $dbh = undef;
 
     eval { $dbh = connectdb(@_); };
     if ($@) { 
-		warn $@; 
+		carp $@; 
 		$Big_Pile_Of_Errors .= $@; 
 		return 0;
 	 }
@@ -1603,9 +1596,9 @@ sub slurp {
     my (@r);
 
     open( F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
-      || die "open $file: $!";
+      || croak "open $file: $!";
     @r = <F>;
-    close(F) || die "close $file: $!";
+    close(F) || croak "close $file: $!";
 
     return $r[0] unless wantarray;
     return @r;
@@ -1617,14 +1610,14 @@ sub slurp {
 sub installer_cp { 
 	require File::Copy; 
 	my ($to, $from) = @_; 
-	my $r = File::Copy::copy($to,$from);# or die "Copy failed: $!";
+	my $r = File::Copy::copy($to,$from);# or croak "Copy failed: $!";
 	return $r; 
 }
 
 sub installer_mv { 
 	require File::Copy; 
 	my ($to, $from) = @_; 
-	my $r = File::Copy::move($to,$from);# or die "Copy failed: $!";
+	my $r = File::Copy::move($to,$from);# or croak "Copy failed: $!";
 	return $r; 
 }
 
@@ -1658,9 +1651,9 @@ sub auto_dada_files_dir {
 sub create_htaccess_deny_from_all_file { 
 	my $loc = shift; 
 	my $htaccess_file = make_safer($loc . '/.htaccess');
-	open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or die $!;
-	print   $htaccess "deny from all\n" or die $!;
-	close   $htaccess or die $!;
+	open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or croak $!;
+	print   $htaccess "deny from all\n" or croak $!;
+	close   $htaccess or croak $!;
 	installer_chmod(0644, $htaccess_file); 
 }
 
@@ -1672,7 +1665,7 @@ sub guess_home_dir {
 	};
 	if($@){ 
 		$Big_Pile_Of_Errors .= $@; 
-		warn 'File::HomeDir not installed? ' . $@; 
+		carp 'File::HomeDir not installed? ' . $@; 
 		$home_dir = guess_home_dir_via_getpwuid_call(); 
 	}
 	else { 

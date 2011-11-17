@@ -136,13 +136,21 @@ sub send_generic_email {
 	}
 	$fm->use_header_info(1);
 	$fm->use_email_templates(0);	
-
+	
+	# Some templates always uses HTML::Template::Expr, example, the sending
+	# preferences. This makes sure that the correct templating system is validated
+	# correctly. 
+	# As far as I know, this really is only needed for the sending prefs test. 
+	# 
+	if($args->{-tmpl_params}->{-expr} == 1){ 
+		$fm->override_validation_type('expr');
+	}
 	my ($email_str) = $fm->format_message(
                             -msg => $fm->string_from_dada_style_args(
                                         {
                                             -fields => $data,
                                         }
-                                    ) 
+                                    ), 
                        );
 				 
 
@@ -162,7 +170,7 @@ my $entity = $fm->email_template(
 				}
 			),
   			-expr   => $expr, 
-			%{$args->{-tmpl_params}},
+			%{$args->{-tmpl_params}}, # note: this may have -expr param. 
         }
     );
     my $msg = $entity->as_string; 

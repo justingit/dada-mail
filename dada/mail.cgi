@@ -4170,6 +4170,7 @@ sub view_archive {
                     index_nav  => $index_nav,
 
                 },
+				-expr => 1, 
             }
         );
         e_print($scrn);
@@ -5595,6 +5596,8 @@ sub edit_type {
             send_archive_message_html
             you_are_already_subscribed_message_subject
             you_are_already_subscribed_message
+			you_are_not_subscribed_message_subject
+			you_are_not_subscribed_message
             invite_message_from_phrase
             invite_message_to_phrase
             invite_message_text
@@ -5640,6 +5643,8 @@ sub edit_type {
                     send_archive_message_html                  => undef,
                     you_are_already_subscribed_message_subject => undef,
                     you_are_already_subscribed_message         => undef,
+					you_are_not_subscribed_message_subject     => undef, 
+					you_are_not_subscribed_message             => undef, 
                     invite_message_from_phrase                 => undef,
                     invite_message_to_phrase                   => undef,
                     invite_message_text                        => undef,
