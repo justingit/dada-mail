@@ -730,11 +730,34 @@ SKIP: {
 	undef $scalar; 
 	undef $r;
 	undef $email; 
-	
-	
-	
 		
 };
+
+=cut
+
+$scalar = "<!-- tmpl_strftime %a, %d %b %Y -->
+
+Something, 
+
+<!-- tmpl_strftime  %b %Y %a, %d -->
+
+Something more...
+
+<!-- tmpl_strftime  %Y %Y %b  %a, %d -->
+
+Again something else. 
+
+";
+   $r = DADA::Template::Widgets::screen(
+	{ 
+		-data => \$scalar, 
+	}
+);
+
+diag "time piece!" . $r; 
+
+=cut
+
 
 
 # wrap_screen
