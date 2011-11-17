@@ -2078,8 +2078,8 @@ sub sending_preferences {
 		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script})){ 
 			$has_ses_verify_email_address_script = 1; 
 		}
-	 
 		
+
 		my $amazon_ses_required_modules = [ 
 			{module => 'Cwd', installed => 0}, 
 			{module => 'Digest::SHA', installed => 0}, 
@@ -2089,29 +2089,45 @@ sub sending_preferences {
 			{module => 'Crypt::SSLeay', installed => 0}, 	
 			{module => 'XML::LibXML', installed => 0}, 
 		];
-		my $ses_installed = {
-			
-			'Cwd'           => 0, 			
-			'Digest::SHA'   => 0, 
-			'URI::Escape'   => 0,
-			'Bundle::LWP'   => 0, 
-			'MIME::Base64'  => 0, 
-			'Crypt::SSLeay' => 0, 
-			'XML::LibXML'   => 0, 
-		}; 
-		eval {require Cwd;};           if(!$@){$ses_installed->{'Cwd'}           => 1}
-		eval {require Digest::SHA;};   if(!$@){$ses_installed->{'Digest::SHA'}   => 1}
-		eval {require URI::Escape;};   if(!$@){$ses_installed->{'URI::Escape'}   => 1}
-		eval {require Bundle::LWP;};   if(!$@){$ses_installed->{'Bundle::LWP'}   => 1}
-		eval {require MIME::Base64;};  if(!$@){$ses_installed->{'MIME::Base64'}  => 1}
-		eval {require Crypt::SSLeay;}; if(!$@){$ses_installed->{'Crypt::SSLeay'} => 1}
-		eval {require XML::LibXML;};   if(!$@){$ses_installed->{'XML::LibXML'}   => 1}
+
+
 		my $amazon_ses_has_needed_cpan_modules = 1; 
-		for(@$amazon_ses_required_modules){ 
-			my $module = $_->{module};
-			$_->{installed} = $ses_installed->{$module}; 
+		eval {require Cwd;};           
+		if($@){
+			$amazon_ses_required_modules->[0]->{installed}           = 0;
+			$amazon_ses_has_needed_cpan_modules = 0;
 		}
-		
+		eval {require Digest::SHA;};   
+		if($@){
+			$amazon_ses_required_modules->[1]->{installed}           = 0;
+			$amazon_ses_has_needed_cpan_modules = 0;
+		}
+		eval {require URI::Escape;};
+		if($@){
+			$amazon_ses_required_modules->[2]->{installed}           = 0;
+			$amazon_ses_has_needed_cpan_modules = 0;
+		}
+		eval {require Bundle::LWP;};   
+		if($@){
+			$amazon_ses_required_modules->[3]->{installed}           = 0;
+			$amazon_ses_has_needed_cpan_modules = 0;
+		}
+		eval {require MIME::Base64;};  
+		if($@){
+			$amazon_ses_required_modules->[4]->{installed}           = 0;
+			$amazon_ses_has_needed_cpan_modules = 0;
+		}
+		eval {require Crypt::SSLeay;}; 
+		if($@){
+			$amazon_ses_required_modules->[5]->{installed}           = 0;
+			$amazon_ses_has_needed_cpan_modules = 0;
+		}
+		eval {require XML::LibXML;};
+		if($@){
+			$amazon_ses_required_modules->[6]->{installed}           = 0;
+			$amazon_ses_has_needed_cpan_modules = 0; 
+		}
+
         require    DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
 			{

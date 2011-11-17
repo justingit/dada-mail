@@ -641,7 +641,9 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 				});
 		}
 		
-		amazon_ses_get_stats();
+		<!-- tmpl_if amazon_ses_has_needed_cpan_modules --> 
+			amazon_ses_get_stats();
+		<!-- /tmpl_if --> 
 		
 	    //]]>
 	</script>
