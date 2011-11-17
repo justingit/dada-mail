@@ -2944,7 +2944,7 @@ the MIME::Parser works. For more information:
 http://search.cpan.org/~dskoll/MIME-tools-5.502/lib/MIME/Parser.pm#OPTIMIZING_YOUR_PARSER
 =cut
 
-$MIME_OPTIMIZE ||= 'not tmp files'; 
+$MIME_OPTIMIZE ||= 'no tmp files'; 
 
 
 =pod
