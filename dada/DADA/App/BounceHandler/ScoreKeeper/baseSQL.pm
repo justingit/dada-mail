@@ -130,6 +130,43 @@ sub tally_up_scores {
     return $give_back_scores;
 }
 
+
+
+sub decay_scorecard {
+
+    my $self = shift;
+
+    # Decay
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+    my $decay_rate = $ls->param('bounce_handler_decay_score');
+    my $query =
+        "UPDATE "
+      . $self->{sql_params}->{bounce_scores_table}
+      . " SET score=score-"
+      . $decay_rate
+      . " WHERE list = ?";
+    my $sth = $self->{dbh}->prepare($query);
+    $sth->execute( $self->{list} )
+      or croak "cannot do statement $DBI::errstr\n";
+    $sth->finish;
+
+    # Then remove scores <= 0
+    undef $sth;
+    undef $query;
+
+    my $query =
+        'DELETE FROM '
+      . $self->{sql_params}->{bounce_scores_table}
+      . ' WHERE list = ? AND score <= ?';
+    my $sth = $self->{dbh}->prepare($query);
+    $sth->execute( $self->{list}, 0 )
+      or croak "cannot do statment! $DBI::errstr\n";
+    $sth->finish;
+
+}
+
+
 sub removal_list {
 
     warn "removal_list method called."

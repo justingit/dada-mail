@@ -1126,12 +1126,13 @@ sub mass_send {
                    }); 
 
 		
-		
     	if($self->test_return_after_mo_create == 1){ 
 			warn "test_return_after_mo_create is set to 1, and we're getting out of the mass_send method"
 				if $t; 
 			return; 
 		}
+		
+		$self->_adjust_bounce_score; 
     
     }													 				
 	
@@ -2052,9 +2053,22 @@ sub mass_send {
 		}
 	} 
 
+sub _adjust_bounce_score {
+	 
+	my $self = shift; 
 
+	# If we need to, let's decay the bounce scorecard:
+	if($self->{ls}->param('bounce_handler_decay_score') >= 1){ 
+		#if(the bounce handler is enabled for this){ (which currently, there is no "off" for the bounce handler...
+			require DADA::App::BounceHandler::ScoreKeper;
+			my $bhsk = DADA::App::BounceHandler::ScoreKeeper->new({-list => $self->{list}});
+			   $bhsk->decay_scorecard;
+			undef $bhsk; 
+			return 1; 
+		#}
+	}
 
-
+}
 
 
 sub _content_transfer_encode { 

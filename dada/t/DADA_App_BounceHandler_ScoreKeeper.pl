@@ -96,6 +96,66 @@ ok($#$rsc == 2);
 ok($rsc->[0]->{score} == 5, ($rsc->[0]->{email} . ': ' . $rsc->[0]->{score}) . ' == 5'); 
 ok($rsc->[1]->{score} == 5, ($rsc->[1]->{email} . ': ' . $rsc->[1]->{score}) . ' == 5'); 
 ok($rsc->[2]->{score} == 5, ($rsc->[2]->{email} . ': ' . $rsc->[2]->{score}) . ' == 5'); 
+$bsk->erase; 
+ok($bsk->num_scorecard_rows == 0, $bsk->num_scorecard_rows . ' equals 0');
+undef $rsc; 
+
+
+$bsk->tally_up_scores(
+	{
+		'test@example.com'  => 5,
+		'test2@example.com' => 5,		
+		'test3@example.com' => 5,		
+		}
+	
+	);
+ok($bsk->num_scorecard_rows == 3, $bsk->num_scorecard_rows . ' == 3');
+# Just to have a default:
+$ls->save({bounce_handler_decay_score => 1}); 
+$bsk->decay_scorecard;
+my $rsc = $bsk->raw_scorecard({-page => 1, -entries => 100}); 
+ok($rsc->[0]->{score} == 4, ($rsc->[0]->{email} . ': ' . $rsc->[0]->{score}) . ' == 4'); 
+ok($rsc->[1]->{score} == 4, ($rsc->[1]->{email} . ': ' . $rsc->[1]->{score}) . ' == 4'); 
+ok($rsc->[2]->{score} == 4, ($rsc->[2]->{email} . ': ' . $rsc->[2]->{score}) . ' == 4'); 
+undef $rsc; 
+$bsk->decay_scorecard;
+my $rsc = $bsk->raw_scorecard({-page => 1, -entries => 100}); 
+ok($rsc->[0]->{score} == 3, ($rsc->[0]->{email} . ': ' . $rsc->[0]->{score}) . ' == 3'); 
+ok($rsc->[1]->{score} == 3, ($rsc->[1]->{email} . ': ' . $rsc->[1]->{score}) . ' == 3'); 
+ok($rsc->[2]->{score} == 3, ($rsc->[2]->{email} . ': ' . $rsc->[2]->{score}) . ' == 3'); 
+undef $rsc; 
+
+
+$bsk->erase; 
+ok($bsk->num_scorecard_rows == 0, $bsk->num_scorecard_rows . ' equals 0');
+
+
+# And just to make sure it's not happening to everyone: 
+
+$bsk->tally_up_scores(
+	{
+		'test@example.com'  => 1,
+		'test2@example.com' => 2,		
+		'test3@example.com' => 3,		
+		}
+	
+	);
+$bsk->decay_scorecard;
+ok($bsk->num_scorecard_rows == 2, $bsk->num_scorecard_rows . ' equals 2');
+
+
+my $rsc = $bsk->raw_scorecard({-page => 1, -entries => 100}); 
+ok($rsc->[0]->{score} == 1, ($rsc->[0]->{email} . ': ' . $rsc->[0]->{score}) . ' == 1'); 
+ok($rsc->[1]->{score} == 2, ($rsc->[1]->{email} . ': ' . $rsc->[1]->{score}) . ' == 2'); 
+undef $rsc; 
+
+
+
+
+
+
+
+
 
 
 

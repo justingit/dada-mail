@@ -815,8 +815,7 @@ sub carry_out_rule {
 
                 my $hard_bounce = 0;
                 if (   $action eq 'add_to_score'
-                    && $actions->{$action} ==
-                    $self->config->{Default_Hard_Bounce_Score} )
+                    && $actions->{$action} eq 'hardbounce_score' )
                 {
                     $hard_bounce = 1;
                 }
@@ -899,6 +898,10 @@ sub add_to_score {
       . $ls->param('bounce_handler_threshold_score') . ")\n";
 
 }
+
+
+
+
 
 sub unsubscribe_bounced_email {
 

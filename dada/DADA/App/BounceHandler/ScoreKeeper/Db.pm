@@ -68,6 +68,31 @@ sub tally_up_scores {
     return $give_back_scores;
 }
 
+sub decay_scorecard {
+
+    my $self = shift;
+
+    # Decay
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+    my $decay_rate = $ls->param('bounce_handler_decay_score');
+   $self->_open_db;
+
+    for ( keys %{ $self->{DB_HASH} } ) {
+		if(($self->{DB_HASH}->{$_} - $decay_rate) <= 0){ 
+			delete($self->{DB_HASH}->{$_}); 
+		}
+		else { 
+			$self->{DB_HASH}->{$_} = $self->{DB_HASH}->{$_} - $decay_rate; 
+		}
+    }
+    $self->_close_db;
+
+}
+
+
+
+
 sub removal_list {
 
     my $self         = shift;
