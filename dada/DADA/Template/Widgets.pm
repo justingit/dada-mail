@@ -1955,7 +1955,7 @@ else {
 	else { 
 		croak "Invalid Templating Engine $engine"; 
 	}
-	
+	my %date_params = date_params(); 
 	my %final_params = (
 		%Global_Template_Variables,					
 		%$template_vars,
@@ -2455,11 +2455,7 @@ sub webify_and_santize {
     foreach(@{$args->{-to_sanitize}}){ 
     
         
-<<<<<<< HEAD:dada/DADA/Template/Widgets.pm
         $args->{-vars}->{$_} = webify_plain_text({-str =>$args->{-vars}->{$_}});
-=======
-        $args->{-vars}->{$_} = webify_plain_text({-str => $args->{-vars}->{$_}});
->>>>>>> bugfixes-4_8_4:dada/DADA/Template/Widgets.pm
         $args->{-vars}->{$_} = _email_protect(
 			{
 				-string => $args->{-vars}->{$_},
