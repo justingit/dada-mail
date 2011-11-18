@@ -2830,16 +2830,15 @@ B<engine> May be changed to one of the following:
 
 =item * Best
 
-=item * HTML Template Pro
-
 =item * HTML Template
 
 =back
 
 When set to, B<Best> or B<HTML Template Pro>, Dada Mail will use C<HTML::Template::Pro>
 if available as the templating engine. If C<HTML::Template::Pro> is not available, 
-Dada Mail will use either HTML::Template. B<Note:> Any templates that required the advanced templating syntax
- will currently still use C<HTML::Template::Expr>. 
+Dada Mail will use HTML::Template/HTML::Template::Expr. 
+
+B<Note:> Any templates that required the advanced templating syntax will currently still use C<HTML::Template::Expr>. 
 
 When set to, B<HTML Template>, Dada Mail will only use C<HTML::Template> or C<HTML::Template::Expr>, 
 depending on what's needed.

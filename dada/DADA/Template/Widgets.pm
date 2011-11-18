@@ -2293,7 +2293,9 @@ sub wrap_screen {
 sub validate_screen { 
 	my ($args) = @_; 
 	eval { 
-		my $scrn = screen($args)
+		my $scrn = screen({%$args, -pro  => 0}); 
+		# I like the idea of forcing it to use HTML::Template, as the H::T::Pro does not barf, 
+		# when finding things it does not like.
 	};
 	if($@){ 
 		return (0, $@);

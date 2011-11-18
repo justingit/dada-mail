@@ -566,13 +566,13 @@ B<( Images in this Webpage Should:) "be embedded in the message itself. ">
 
 L<http://docs.fckeditor.net/FCKeditor_2.x/Developers_Guide/Configuration/Built_in_File_Browser>
 
-=head2 How do install, "CPAN Perl Modules"
+=head2 How do you install, "CPAN Perl Modules"
 
 There are many advanced features in Dada Mail, that rely on I<CPAN Perl Modules>
 
-CPAN is the I<Comprehensive Perl Archive Network> - it's a fast collection of reusable Perl code.
+CPAN is the I<Comprehensive Perl Archive Network> - it's a great collection of reusable Perl code.
 
-Installing these modules may be tricky. We'll go over a few ways you can install these modules: 
+Installing these modules may be tricky for the uninitiated. We'll go over a few ways you can install these modules: 
 
 =head3 The cpan Shell
  
@@ -1069,22 +1069,61 @@ Be very careful when editing the file manually, as unexpected things may happen 
 
 =head1 Performance
 
+=head2 Tuning Dada Mail to Send Mass Mailings Faster 
 
-=head2 How can I get the highest performance when using Dada Mail?
+I<Before trying any of these, make sure you do not have an hourly or daily quota on how many messages you 
+can send out with your current hosting account.> Many popular hosting companies have such limitations on their 
+most popular hosting packages (Bluehost, Hostmonster, etc)
 
 =over
 
-=item * Use the SQL backends
+=item * Install HTML::Template::Pro
 
-=item * Use the SMTP Engine
+L<./features-html_template-pro.pod.html>
 
-=item * Get a dedicated server. 
+C<HTML::Template::Pro> can render email templates faster than the included C<HTML::Template>
 
-=item * Have a dedicated mail server.
+=item * Do not use the advanced email templating syntax
 
-=item * Set the Config.pm variable, B<$MIME_OPTIMIZE> to, I<faster>
+The advanced email templating syntax engine (C<HTML::Template::Expr>) is much slower than the regular syntax. 
 
-=item * use Mystery Girl, the bounce handler to remove bad email addresses
+Uncheck, B<Enable use of the advanced templating syntax for email messages.> in I<Appearance and Templates - Email Message Templates> (under, I<Advanced Options
+>). Make sure there are no email messages that use any, CE<lt>!-- tmpl_expr ... --E<gt>> tags. 
+
+=item * Set the config variable, $MIME_OPTIMIZE to, 'faster'
+
+Add this to your C<.dada_config> file: 
+
+	$MIME_OPTIMIZE = 'faster'; 
+
+=item * Offload your mail sending to a separate mail server or mail service
+
+This could mean different things for different setups. You may want to use a separate SMTP server, either your own, or a 
+SMTP host, like SendGrid (L<http://sendgrid.com>). If you do use SMTP to send message, enable this option: 
+
+B<Use One SMTP Connection per Batch (Experimental)>
+
+In, I<Mail Sending - Mass Mailing Preferences>
+
+You could also experiment with using B<Amazon SES> for mail sending. See:
+
+L<./features-amazon_ses_support.pod.html>
+
+Using a seperate mail service, like Sendgrid or Amazon SES will allow you to go over any hourly/daily email limitation imposted by your hosting company, 
+since you I<are not> sending messages through this host's mail servers.
+
+=item * Use the bounce handler plugin to keep a clean mailing list
+
+Invalid email addresses on your list just make mass mailing go slower. Use the bounce handler 
+to remove those addresses from your mailing list: 
+
+L<./dada_bounce_handler.pl.html>
+
+=item * Adjust your batch settings
+
+Adjust your batc setting to send more messages out per batch and/or wait less time between batches. 
+It's not recommended that you totally I<disable> batch sending, but if you do not have a hourly/daily mail sending 
+limit, you can certainly bump up the batch settings to accomodate the resources you have available. 
 
 =back
 
