@@ -2070,10 +2070,6 @@ sub sending_preferences {
 		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file})){ 
 			$has_aws_credentials_file = 1; 
 		}
-		my $has_ses_send_email_script = 0; 
-		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script})){ 
-			$has_ses_send_email_script = 1; 
-		}
 		my $has_ses_verify_email_address_script = 0; 
 		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script})){ 
 			$has_ses_verify_email_address_script = 1; 
@@ -2081,13 +2077,14 @@ sub sending_preferences {
 		
 
 		my $amazon_ses_required_modules = [ 
-			{module => 'Cwd', installed => 0}, 
-			{module => 'Digest::SHA', installed => 0}, 
-			{module => 'URI::Escape', installed => 0}, 
-			{module => 'Bundle::LWP', installed => 0}, 		
-			{module => 'MIME::Base64', installed => 0}, 	
-			{module => 'Crypt::SSLeay', installed => 0}, 	
-			{module => 'XML::LibXML', installed => 0}, 
+			{module => 'Cwd', installed => 1}, 
+			{module => 'Digest::SHA', installed => 1}, 
+			{module => 'URI::Escape', installed => 1}, 
+			{module => 'Bundle::LWP', installed => 1}, 		
+			{module => 'MIME::Base64', installed => 1}, 	
+			{module => 'Crypt::SSLeay', installed => 1}, 	
+			{module => 'XML::LibXML', installed => 1},
+			{module => 'LWP 6',       installed => 1}, 
 		];
 
 
@@ -2127,6 +2124,17 @@ sub sending_preferences {
 			$amazon_ses_required_modules->[6]->{installed}           = 0;
 			$amazon_ses_has_needed_cpan_modules = 0; 
 		}
+		eval {require LWP;};
+		if($@){
+			$amazon_ses_required_modules->[7]->{installed}           = 0;
+			$amazon_ses_has_needed_cpan_modules = 0; 
+		}
+		else { 
+			if($LWP::VERSION < 6){ 
+				$amazon_ses_required_modules->[7]->{installed}           = 0;
+				$amazon_ses_has_needed_cpan_modules = 0;
+			}
+		}
 
         require    DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -2160,10 +2168,8 @@ sub sending_preferences {
 				
 					# Amazon SES 
 					has_aws_credentials_file            => $has_aws_credentials_file, 
-					has_ses_send_email_script           => $has_ses_send_email_script, 
 					has_ses_verify_email_address_script => $has_ses_verify_email_address_script, 
 					aws_credentials_file                => $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file},
-					ses_send_email_script               => $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script},
 					ses_verify_email_address_script     => $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script},
 					amazon_ses_has_needed_cpan_modules  => $amazon_ses_has_needed_cpan_modules, 
 					amazon_ses_required_modules         => $amazon_ses_required_modules, 

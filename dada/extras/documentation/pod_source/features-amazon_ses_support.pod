@@ -52,7 +52,7 @@ Dada Mail usually sends messages out with a different set of email headers. Emai
 
 =head2 Performance 
 
-No performance benchmarks have currently been performed. 
+Sending via Amazon SES is done with a persistent HTTP connection (as of v4.9.0 of Dada Mail), so performance shouldn't be too bad. Expect around .3 seconds/message for I<just> passing the email message from Dada Mail to the Amazon SES service. 
 
 =head2 Sending Quota
 
@@ -80,11 +80,11 @@ None of this information will be saved within Dada Mail.
 
 The Amazon SES Developer Tools are located at: 
 
-L<http://aws.amazon.com/developertools/Amazon-SES/8945574369528337> 
+L<http://aws.amazon.com/code/Amazon-SES/8945574369528337> 
 
-As of 7/31/11, this is the direct link to the developer tools: 
+As of 11/17/11, this is the direct link to the developer tools: 
 
-L<http://aws-catalog-download-files.s3.amazonaws.com/AmazonSES-2011-03-03.zip>
+L<http://d36cz9buwru1tt.cloudfront.net/catalog/attachments/ses-tools-2011-10-31.zip>
 
 These scripts require you to create a AWS Credentials file, which is outlined here: 
 
@@ -102,13 +102,12 @@ L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/ManagingActivity.S
 
 None of the Amazon AWS credentials are stored within Dada Mail - only in that AWS Credentials file. 
 
-But, you'll need to tell Dada Mail where that AWS Credentials file is, as well as those three scripts, C<ses-send-email.pl>, C<ses-verify-email-address.pl> and C<ses-get-stats.pl>. 
+But, you'll need to tell Dada Mail where that AWS Credentials file is, as well as two of the three scripts, C<ses-verify-email-address.pl> and C<ses-get-stats.pl> (C<ses-send-email.pl> is not used directly by Dada Mail). 
 
 In your C<.dada_config> file, add the following lines: 
 
 	$AMAZON_SES_OPTIONS = { 
 		aws_credentials_file            => undef, 
-		ses_send_email_script           => undef, 
 		ses_verify_email_address_script => undef, 
 		ses_get_stats_script            => undef, 
 	};
@@ -117,7 +116,6 @@ And fill out the necessary information. In this example:
 
 	$AMAZON_SES_OPTIONS = { 
 		aws_credentials_file            => '/home/myaccount/aws-credentials', 
-		ses_send_email_script           => '/home/myaccount/ses/bin/ses-send-email.pl', 
 		ses_verify_email_address_script => '/home/myaccount/ses/bin/ses-verify-email-address.pl',
 		ses_get_stats_script            => '/home/myaccount/ses/bin/ses-get-stats.pl', 
 		 
@@ -241,6 +239,14 @@ L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
 And/or file an issue: 
 
 L<http://github.com/justingit/dada-mail/issues>
+
+=head1 Related Projects
+
+We've seperated out the work we've done with Amazon and using a persistent HTTP connection. That project is located at: 
+
+L<https://github.com/justingit/Net--Amazon--SES>
+
+
 
 
 =cut

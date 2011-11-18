@@ -455,17 +455,6 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 			<p class="error">
 				Cannot find your AWS crendentials (<!-- tmpl_var aws_credentials_file default="not set!" -->)
 			</p>
-		<!-- /tmpl_if --> 
-		
-		<!-- tmpl_if has_ses_send_email_script --> 
-			<p class="positive">The, &quot;ses-send-email.pl&quot; script is being looked for at:</p> 
-			<ul> 
-				<li><p class="positive"><!-- tmpl_var ses_send_email_script --></p></li> 
-			</ul>
-		<!-- tmpl_else --> 
-		<p class="error">
-			Cannot find your &quot;ses-send-email.pl&quot; script (<!-- tmpl_var ses_send_email_script default="not set!" -->)
-		</p>
 		<!-- /tmpl_if -->
 		<!-- tmpl_if has_ses_verify_email_address_script --> 
 			<p class="positive">The, &quot;ses-verify-email-address.pl&quot; script is being looked for at:</p> 
@@ -474,7 +463,7 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 			</ul>
 		<!-- tmpl_else --> 
 		<p class="error">
-			Cannot find your &quot;ses-send-email.pl&quot; script (<!-- tmpl_var ses_send_email_script default="not set!" -->)
+			Cannot find your &quot;ses-verify-email-address.pl&quot; script (<!-- tmpl_var ses_verify_email_address_script default="not set!" -->)
 		</p>
 		<!-- /tmpl_if -->		
 		
