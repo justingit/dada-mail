@@ -145,7 +145,7 @@ Will print out the current date and time in a format like this:
 
 	Mon Oct 17 14:55:39 2011
 
-=imte * <!-- tmpl_var date.24_time -->
+=item * <!-- tmpl_var date.24_time -->
 
 Will print out the time (hour:minute:second) in 24 hour time. So, if it's 4:33 PM, this will be printed out as: 
 
@@ -211,7 +211,7 @@ L<http://php.net/manual/en/function.strftime.php>
 
 it's the same thing. 
 
-To use this in Dada Mail's templating syntax, use the C<E<lt>!-- tmpl_strftime --E<gt> tag, like this: 
+To use this in Dada Mail's templating syntax, use the C<E<lt>!-- tmpl_strftime --E<gt>> tag, like this: 
 
 	<!-- tmpl_strftime %a, %d %b %Y -->
 

@@ -132,34 +132,6 @@ for my $list(local_available_lists()){
 				
 				
 			}
-
-=cut			
-			    for(keys %new_values){ 
-			    
-			        if(! exists($DADA::Config::LIST_SETUP_DEFAULTS{$_})){ 
-			            carp "skipping restoring setting: $_ (not used anymore?) on list: " . $list; 
-			            delete($new_values{$_}); 
-			        } else { 
-			        
-			             #print "list: $list\n\key: $_\n"; #value: $new_values{$_}\n\n";
-			             #save_setting($list, $_, $new_values{$_}); 
-			        }
-
-
-			    }
-
-		
-
-		#	}
-			    
-			#$self->save({%new_values});
-            #save_setting($list, $_, $new_values{$_}); 
-           
-           
-          # print "list: $list\n\key: $_\nvalue: $new_values{$_}\n\n";
-=cut	       
-         
-         
          
         }
         
