@@ -46,7 +46,7 @@ The URL to Dada Mail, ie: L<http://example.com/cgi-bin/dada/mail.cgi>
 
 =back
 
-=head2 Date-related tags
+=head3 Date-related tags
 
 Dada Mail includes a few tags to dynamically put the current data in your email message. They'll take on the form: 
 
