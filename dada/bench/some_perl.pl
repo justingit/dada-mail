@@ -30,8 +30,8 @@ my $msg_id =  $mh->mass_send(%args);
 
 
 
-dada_test_config::remove_test_list;
-dada_test_config::wipe_out;
+#dada_test_config::remove_test_list;
+#dada_test_config::wipe_out;
 
 sub dsa { 
 	
