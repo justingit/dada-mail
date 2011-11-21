@@ -55,7 +55,9 @@ https://github.com/justingit/dada-mail/issues/235
 
 https://github.com/justingit/dada-mail/issues/236
 
+=head3 "Remove ALL Subscribers" broken in PostgreSQL
 
+https://github.com/justingit/dada-mail/issues/237
 
 =head1 4.8.3
 
