@@ -4,11 +4,12 @@
 
 =head1 4.9.0 
 
-This release is currently in ALPHA and there are many unknown bugs. Probably. 
+This release is currently in ALPHA and there are many unknown bugs. Many. Probably. 
 
 =head2 Summary 4.9.0
 
-This release focuses on many parts of Dada Mail to enhance performance: 
+This release focuses on many parts of Dada Mail to optimize performance. Benifits of all this work include
+faster mass sending speeds. Potentially must faster. 
 
 =over
 
@@ -43,11 +44,12 @@ Navigating the scorecard is now a little more intuitive, as well.
 
 C<HTML::Template::Pro> renders the templates that Dada Mail uses throughout the app, 
 including HTML screens and custom email messages, much faster than what's included
-with Dada Mail (C<HTML::Template>). C<HTML::Template::Pro> will need to be installed seperately. 
+with Dada Mail (C<HTML::Template>). C<HTML::Template::Pro> will need to be installed separately. 
 
 See the features doc on C<HTML::Template::Pro> for more information: 
 
 L<./features-html_template-pro.pod.html>
+
 
 =head3 Faster sending using Amazon SES
 
@@ -60,6 +62,11 @@ Dada Mail now has support for various simple Date and Time formats to use in HTM
 as well support for more flexible/advanced C<strftime> formats:
 
 L<./features-email_template_syntax.pod#FIXMEFIXMEFIXME>
+
+=head3 New import script, dada_archives_backup_to_sql.pl
+
+This script allows you to import archive data from the backup of a DB File, to the SQL backend. This helps if your 
+DB Files are corrupted/incompatible with your current server environment. 
 
 =head2 Changes 4.9.0
 
@@ -75,7 +82,8 @@ L<FIX ME FIX ME FIX ME>
 
 The C<LWP> group of Perl modules is no longer available with Dada Mail. C<LWP> is used for
 such things as, B<Send a Webpage> and some web services, like B<Amazon SES>. You 
-will have to install C<LWP> yourself. 
+will have to install C<LWP> yourself. Most shared hosting companies will have this already installed, 
+for you. 
 
 =head3 MIME::Tools upgraded to v5.502
 
