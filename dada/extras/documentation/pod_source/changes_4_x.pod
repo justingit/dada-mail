@@ -6,6 +6,8 @@
 
 This release is currently in ALPHA and there are many unknown bugs. Many. Probably. 
 
+Please do not use in a production environment. Only use for testing purposes. 
+
 =head2 Summary 4.9.0
 
 This release focuses on many parts of Dada Mail to optimize performance. Benifits of all this work include
