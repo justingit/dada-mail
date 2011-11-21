@@ -984,21 +984,18 @@ sub remove_all_subscribers {
     my $self = shift;
     my ($args) = @_;
 
-    if ( !exists $args->{ -type } ) {
-        $args->{ -type } = 'list';
+    if ( !exists $args->{-type} ) {
+        $args->{-type} = 'list';
     }
 
     my $query =
-      'SELECT email FROM '
+        'SELECT email FROM '
       . $self->{sql_params}->{subscriber_table}
-      . " WHERE list_type = '"
-      . $args->{ -type } . "' 
-                  AND list_status =      1  
-                  AND list = '" . $self->{list} . "'";
+      . " WHERE list_type = ? AND list_status = ? AND list = ?";
 
     my $sth = $self->{dbh}->prepare($query);
 
-    $sth->execute()
+    $sth->execute( $args->{-type}, 1, $self->{list} )
       or croak
       "cannot do statement (at remove_all_subscribers)! $DBI::errstr\n";
 
@@ -1007,7 +1004,7 @@ sub remove_all_subscribers {
         $self->remove_subscriber(
             {
                 -email => $email,
-                -type  => $args->{ -type },
+                -type  => $args->{-type},
             }
         );
         $count++;
@@ -1015,6 +1012,7 @@ sub remove_all_subscribers {
 
     return $count;
 }
+
 
 
 
