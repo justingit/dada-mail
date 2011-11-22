@@ -14,7 +14,7 @@ whenever you mass mail an HTML email message, regardless of how it was first cre
 
 This memory leak could grow to many 100's of megabytes to gigabytes of memory 
 within a few thousand messages sent and could potentially kill off the sending 
-process and more likely than not, slow down mass mailing by ~10% (potenitally 
+process and more likely than not, slow down mass mailing by ~10% (potentially 
  much greater, depending on how large the amount of RAM is consumed). 
 
 For more information, see this issue: 
