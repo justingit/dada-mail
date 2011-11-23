@@ -185,15 +185,16 @@ a simple subroutine to take off leading and trailing white spaces
 
 =cut
 
-sub strip { 
-my $string = shift || undef; 
-	if($string){ 
-		$string =~ s/^\s+//o;
-		$string =~ s/\s+$//o;
-		return $string;
-	}else{ 
-		return undef; 
-	}
+sub strip {
+    my $string = shift || undef;
+    if ($string) {
+        $string =~ s/^\s+//o;
+        $string =~ s/\s+$//o;
+        return $string;
+    }
+    else {
+        return undef;
+    }
 }
 
 

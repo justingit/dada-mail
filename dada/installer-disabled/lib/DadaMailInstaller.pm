@@ -892,7 +892,7 @@ sub create_dada_config_file {
 }
 
 sub create_sql_tables {
-    my ($args) = shift;
+    my ($args) = @_;
 
     my $sql_file = '';
     if ( $args->{-backend} eq 'mysql' ) {

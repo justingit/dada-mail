@@ -45,7 +45,9 @@ $test_msg = slurp('t/corpus/email_messages/bouncing_email_with_brackets.eml');
 
 $entity = $parser->parse_data($test_msg);
 
-my ($e, $l, $d) = dada_bounce_handler::run_all_parses($entity); 
+require DADA::App::BounceHandler::MessageParser;
+my $bhmp = DADA::App::BounceHandler::MessageParser->new;
+my ($e, $l, $d) = $bhmp->run_all_parses($entity); 
 ok($e eq 'bouncing.email@example.com'); 
  
 dada_test_config::remove_test_list;

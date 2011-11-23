@@ -537,7 +537,6 @@ sub SQLite_test_enabled {
 }
 
 
-
 sub slurp { 
 		
 		my ($file) = @_;

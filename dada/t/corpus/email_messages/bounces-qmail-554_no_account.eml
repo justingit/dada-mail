@@ -1,0 +1,65 @@
+Return-path: <>
+Envelope-to: bounces@dadademo.com
+Delivery-date: Sun, 30 Oct 2011 22:34:06 -0600
+Received: from [67.222.48.103] (helo=outbound-ss-1830.hostmonster.com)
+	by box575.bluehost.com with smtp (Exim 4.76)
+	id 1RKjZW-0007rp-If
+	for bounces@dadademo.com; Sun, 30 Oct 2011 22:34:06 -0600
+Received: (qmail 29170 invoked for bounce); 31 Oct 2011 04:34:06 -0000
+Date: 31 Oct 2011 04:34:06 -0000
+From: MAILER-DAEMON@outbound-ss-1742.bluehost.com
+To: bounces@dadademo.com
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="1320035645outbound-ss-1742.bluehost.com15929041"
+Subject: failure notice
+
+--1320035645outbound-ss-1742.bluehost.com15929041
+
+Hi. This is the qmail-send program at outbound-ss-1742.bluehost.com.
+I'm afraid I wasn't able to deliver your message to the following addresses.
+This is a permanent error; I've given up. Sorry it didn't work out.
+
+<ljdfsajlkadfsmndfsalkjfdsapimoiasdfiodfsakl@yahoo.com>:
+209.191.88.254 failed after I sent the message.
+Remote host said: 554 delivery error: dd This user doesn't have a yahoo.com account (ljdfsajlkadfsmndfsalkjfdsapimoiasdfiodfsakl@yahoo.com) [0] - mta1076.mail.mud.yahoo.com
+
+--- Enclosed are the original headers of the message.
+
+--1320035645outbound-ss-1742.bluehost.com15929041
+Content-Type: message/rfc822
+
+Return-Path: <bounces@dadademo.com>
+Received: (qmail 29126 invoked by uid 0); 31 Oct 2011 04:34:05 -0000
+Received: from unknown (HELO box575.bluehost.com) (66.147.242.175)
+  by cpsoproxy1.bluehost.com with SMTP; 31 Oct 2011 04:34:05 -0000
+Received: from localhost ([127.0.0.1] helo=box575.bluehost.com)
+	by box575.bluehost.com with esmtp (Exim 4.76)
+	(envelope-from <bounces@dadademo.com>)
+	id 1RKjZU-0007qo-SK
+	for ljdfsajlkadfsmndfsalkjfdsapimoiasdfiodfsakl@yahoo.com; Sun, 30 Oct 2011 22:34:05 -0600
+Date: Sun, 30 Oct 2011 22:34:04 -0600
+From:  "dadatest" <justin@skazat.com>
+To: "dadatest Subscriber" <ljdfsajlkadfsmndfsalkjfdsapimoiasdfiodfsakl@yahoo.com>
+X-Priority: 3
+List: dadatest
+List-Archive: <http://dadademo.com/cgi-bin/dev/dada/mail.cgi/archive/dadatest/>
+List-ID: <dadatest.box575.bluehost.com>
+List-Owner: <justin@skazat.com>
+List-Post: NO
+List-Subscribe: =?UTF-8?Q?=3Chttp=3A//dadademo=2Ecom/cgi-bin/dev/dada/mail=2Ecgi/s/dadates?=
+ =?UTF-8?Q?t/ljdfsajlkadfsmndfsalkjfdsapimoiasdfiodfsakl/yahoo=2Ecom/=3E?=
+List-Unsubscribe: =?UTF-8?Q?=3Chttp=3A//dadademo=2Ecom/cgi-bin/dev/dada/mail=2Ecgi/u/dadates?=
+ =?UTF-8?Q?t/ljdfsajlkadfsmndfsalkjfdsapimoiasdfiodfsakl/yahoo=2Ecom/=3E?=
+List-URL: <http://dadademo.com/cgi-bin/dev/dada/mail.cgi/list/dadatest/>
+Message-ID: <20111030223332.29501507@skazat.com>
+X-Mailer: Dada Mail 4.8.0 Stable 9/28/11 
+Content-type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+MIME-Version: 1.0
+Subject: Bounce
+X-Identified-User: {:box575.bluehost.com:dadademo:box575.bluehost.com} {sentby:program running on server}
+
+(Body supressed)
+
+--1320035645outbound-ss-1742.bluehost.com15929041--

@@ -22,6 +22,7 @@ use DADA::App::Guts;
 		
 use vars qw($AUTOLOAD); 
 use Carp qw(croak carp);
+
 use Fcntl qw(
 	:DEFAULT 
 	:flock
@@ -1154,12 +1155,13 @@ sub mass_send {
                    }); 
 
 		
-		
     	if($self->test_return_after_mo_create == 1){ 
 			warn "test_return_after_mo_create is set to 1, and we're getting out of the mass_send method"
 				if $t; 
 			return; 
 		}
+		
+		$self->_adjust_bounce_score; 
     
     }													 				
 	
@@ -2084,9 +2086,22 @@ sub mass_send {
 		}
 	} 
 
+sub _adjust_bounce_score {
+	 
+	my $self = shift; 
 
+	# If we need to, let's decay the bounce scorecard:
+	if($self->{ls}->param('bounce_handler_decay_score') >= 1){ 
+		#if(the bounce handler is enabled for this){ (which currently, there is no "off" for the bounce handler...
+			require DADA::App::BounceHandler::ScoreKeper;
+			my $bhsk = DADA::App::BounceHandler::ScoreKeeper->new({-list => $self->{list}});
+			   $bhsk->decay_scorecard;
+			undef $bhsk; 
+			return 1; 
+		#}
+	}
 
-
+}
 
 
 sub _content_transfer_encode { 
@@ -2461,6 +2476,8 @@ sub _cipher_decrypt {
 
 sub _pop_before_smtp { 
 	my $self = shift; 
+	my $status = 0; 
+	
 	require DADA::Security::Password; 
 	
 	my %args = (-pop3_server         => $self->{ls}->param('pop3_server'),
@@ -2482,9 +2499,9 @@ sub _pop_before_smtp {
 		$args{-pop3_username}   = make_safer($args{-pop3_username});
 		$args{-pop3_password}   = make_safer($args{-pop3_password});
 		
-		return undef if ! $args{-pop3_server};
-		return undef if ! $args{-pop3_username}; 
-		return undef if ! $args{-pop3_password}; 
+		return (undef, 0, '') if ! $args{-pop3_server};
+		return (undef, 0, '') if ! $args{-pop3_username}; 
+		return (undef, 0, '') if ! $args{-pop3_password}; 
 		
         require DADA::App::POP3Tools; 
         
@@ -2494,7 +2511,7 @@ sub _pop_before_smtp {
 								}
 							);
         
-        my $pop = DADA::App::POP3Tools::mail_pop3client_login(
+        my ($pop, $status, $log) = DADA::App::POP3Tools::mail_pop3client_login(
 	
             {
                 server    => $args{-pop3_server},
@@ -2515,7 +2532,7 @@ sub _pop_before_smtp {
 				fh   => $lock_file_fh, 
 			},
 		);
-        return $count; 
+        return ($status); 
                 
 
 	}

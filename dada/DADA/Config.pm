@@ -647,9 +647,6 @@ $PLUGIN_CONFIGS ||= {
 		Send_Messages_To            => undef,
 		MessagesAtOnce              => undef,
 		Max_Size_Of_Any_Message     => undef,
-		Default_Soft_Bounce_Score   => undef,
-		Default_Hard_Bounce_Score   => undef,
-		Score_Threshold             => undef,
 		Rules                       => undef,
 
 	},
@@ -1333,7 +1330,7 @@ $DEBUG_TRACE ||= {
 	DADA_Profile_Session       => 0, 
     DADA_Mail_MailOut          => 0, 
     DADA_Mail_Send             => 0, 
-	DADA_App_BounceScoreKeeper => 0, 
+	DADA_App_BounceHandler_ScoreKeeper => 0, 
     DADA_MailingList_baseSQL   => 0,  
 
  
@@ -4889,6 +4886,12 @@ encrypted.
 	tracker_clean_up_reports                            => 1, 
 	tracker_auto_parse_links                            => 0, 
 	tracker_show_message_reports_in_mailing_monitor     => 0, 
+
+# Bounce Handler
+bounce_handler_threshold_score                          => 10, 
+bounce_handler_hardbounce_score                         => 4, 
+bounce_handler_softbounce_score                         => 1, 
+bounce_handler_decay_score                              => 1, 
 
     
 # dada_digest.pl 
