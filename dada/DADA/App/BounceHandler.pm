@@ -435,21 +435,16 @@ sub parse_all_bounces {
 
         }
 
-=cut
-
         if ( $args->{-test} != 1 ) {
             for (@delete_list) {
 
                 $log .= "deleting message #: $_\n";
-
                 $pop3_obj->Delete($_);
             }
         }
         else {
             $log .= "Skipping Message Deletion - Debugging is on.\n";
         }
-
-=cut
 
         $pop3_obj->Close;
 
