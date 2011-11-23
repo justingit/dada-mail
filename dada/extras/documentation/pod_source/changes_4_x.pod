@@ -143,7 +143,13 @@ https://github.com/justingit/dada-mail/issues/235
 
 https://github.com/justingit/dada-mail/issues/236
 
+=head3 "Remove ALL Subscribers" broken in PostgreSQL
 
+https://github.com/justingit/dada-mail/issues/237
+
+=head3 Mailing Monitor - verbose flag/parameter set to, "0" doesn't stop verbosity
+
+https://github.com/justingit/dada-mail/issues/239
 
 =head1 4.8.3
 

@@ -43,9 +43,8 @@ my $root_login = undef;
 my $list       = undef; 
 
 
-
 GetOptions(
-    "verbose"    => \$verbose
+    "verbose!"    => \$verbose
 );
 
 &init_vars; 
@@ -87,14 +86,15 @@ sub run {
             && $Plugin_Config->{Allow_Manual_Run} == 1 )
         {
 			print $q->header(); 
+			if(defined($q->param('verbose'))){ 
+				$verbose = $q->param('verbose'); 
+			}
 			if($verbose == 1){ 
 				print '<pre>'; 
+				DADA::Mail::MailOut::monitor_mailout( { -verbose => $verbose } );
+	            print '</pre>';		
 			}
-            DADA::Mail::MailOut::monitor_mailout( { -verbose => $verbose } );
-			if($verbose == 1){ 
-				print '</pre>'; 
-			}
-
+		
 
         }
         else {
@@ -352,6 +352,18 @@ A B<Best Guess> at what the entire cronjob that's needed (using the, C<curl> com
 Where, I<http://example.com/cgi-bin/dada/plugins/mailing_monitor.cgi> is the URL to this plugin. We suggest running this cronjob every 5 to 15 minutes. A complete cronjob, with the time set for, "every 5 minutes" would look like this: 
 
  */5 * * * * /usr/bin/curl  -s --get --data run=1\;passcode=\;verbose=0  --url http://example.com/cgi-bin/dada/plugins/mailing_monitor.cgi
+
+=head3 Command Line
+
+This plugin can also be called directory on the command line and that can itself be used for the cronjob: 
+
+	cd /home/youraccount/cgi-bin/dada/plugins; /usr/bin/perl ./mailing_monitor.cgi
+
+You may pass the, C<--noverbose> flag to have the script return nothing at all:
+
+	cd /home/youraccount/cgi-bin/dada/plugins; /usr/bin/perl ./mailing_monitor.cgi --noverbose
+
+By default, it will print out the mailing monitor report. 
 
 =head1 BUGS AND LIMITATIONS
 
