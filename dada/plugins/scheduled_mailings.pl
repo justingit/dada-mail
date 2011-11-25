@@ -1933,6 +1933,7 @@ my $t = q{
 <div class="buttonfloat">
 <label for="test_recipient">Send Test Messages To:</label>
  <input type="text" id="test_recipient" name="test_recipient" value="<!-- tmpl_var list_settings.list_owner_email -->" />
+</div>
 <div class="floatclear"></div>
 
 };
