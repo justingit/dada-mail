@@ -72,12 +72,7 @@ sub _init {
 
     $self->config($args);
 
-    # init a hashref of hashrefs
-    # for unsub optimization
-    my @a_Lists = DADA::App::Guts::available_lists();
-    for (@a_Lists) {
-        $Remove_List->{$_} = {};
-    }
+	$Remove_List =  {};
 
     $self->open_log( $self->config->{Log} );
 
@@ -300,8 +295,9 @@ sub parse_all_bounces {
 
         # Guess, we'll do 'em all!
         @all_lists_to_check = available_lists();
-    }
-    for my $list_to_check (@all_lists_to_check) {
+    }	
+    LISTCHECK: 
+	for my $list_to_check (@all_lists_to_check) {
 
         my $ls =
           DADA::MailingList::Settings->new( { -list => $list_to_check } );
@@ -347,12 +343,12 @@ sub parse_all_bounces {
           );
         if ( $pop3status != 1 ) {
             $log .= "Status returned $pop3status\n\n$pop3log";
-            return $log;
+            next LISTCHECK;
         }
 
         $log .= $pop3log;
         if ( $pop3status == 0 ) {
-            return $log;
+            next LISTCHECK;
         }
 
         my @delete_list = ();
@@ -457,21 +453,24 @@ sub parse_all_bounces {
             );
         }
 
-        $log .= "\nSaving Scores...\n\n";
-        my $r = $self->save_scores($Score_Card);
+       $log .= "Finished: " . $ls->param('list_name') . "\n\n";
+    }
+
+    $log .= "\nSaving Scores...\n\n";
+    my $r = $self->save_scores($Score_Card);
+    $log .= $r;
+    undef $r;
+
+
+    if ( $args->{-test} != 1 ) {
+        $r = $self->remove_bounces($Remove_List);
         $log .= $r;
         undef $r;
-
-        if ( $args->{-test} != 1 ) {
-            $r = $self->remove_bounces($Remove_List);
-            $log .= $r;
-            undef $r;
-        }
-
-        &close_log;
-
-        $log .= "Finished:" . $ls->param('list_name') . "\n";
     }
+
+    &close_log;
+
+
 
     return $log;
 }

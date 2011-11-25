@@ -267,7 +267,7 @@ sub cgi_main {
         && xss_filter( $q->param('run') ) == 1
         && $Plugin_Config->{Allow_Manual_Run} == 1 )
     {
-        cgi_manual_start();
+        print cgi_manual_start();
     }
     else {
 
@@ -372,7 +372,7 @@ sub cgi_default_tmpl {
 Bounce Email Scorecard
  </legend> 
  
- <p>The bounce scorecard keeps track of addresses that bounce back messages sent to it. </p> 
+ <p>The Bounce Scorecard keeps track of addresses that bounce back message sent from your mailing list. </p> 
 
 <div id="bounce_scorecard_loading"><p>&nbsp;</p></div>
 <div id="bounce_scorecard"></div> 
@@ -823,7 +823,7 @@ sub cgi_parse_bounce {
 sub cgi_manual_start {
 
     # This is basically just a wrapper around, cl_main();
-
+	my $r = ''; 
     if (
         (
             xss_filter( $q->param('passcode') ) eq
@@ -850,8 +850,13 @@ sub cgi_manual_start {
             $Plugin_Config->{MessagesAtOnce} =
               xss_filter( $q->param('messages') );
         }
-
-        my $r = '';
+		if(defined($q->param('list'))){ 
+			$list = $q->param('list');
+		}
+		else { 
+			$list = undef; # just to make that perfectly clear. 
+		}
+		
         $r .= $q->header();
         if ($verbose) {
             $r .= '<pre>';
@@ -865,10 +870,12 @@ sub cgi_manual_start {
 
     }
     else {
-        print $q->header();
-        print
-"$DADA::Config::PROGRAM_NAME $DADA::Config::VER Authorization Denied.";
+        $r = $q->header();
+        $r .=
+"$DADA::Config::PROGRAM_NAME $DADA::Config::VER Access Denied.";
     }
+
+	return $r; 
 }
 
 sub cgi_scorecard {
@@ -1462,8 +1469,8 @@ sub cl_main {
         my $bh = DADA::App::BounceHandler->new($Plugin_Config);
         $bh->parse_all_bounces(
             {
+				-list => $list,
                 -test => $test,
-                -list => $list
             }
         );
     }
