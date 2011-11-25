@@ -714,9 +714,10 @@ sub send_scheduled_mailing {
 	
 	my $self = shift; 
 	
-	my %args = (-key  => undef, 
-				-test => 0,
-				-hold => 0,  
+	my %args = (-key            => undef, 
+				-test           => 0,
+				-hold           => 0,
+				-test_recipient => undef,   
 				@_); 
 				
 	croak "no key!" if ! $args{-key}; 
@@ -740,7 +741,12 @@ sub send_scheduled_mailing {
 				); 		   
 				
 		   $mh->ignore_schedule_bulk_mailings(1);
-		   $mh->mass_test(1) if $args{-test} == 1;    
+		   if($args{-test} == 1){ 
+		   		$mh->mass_test(1);
+		  		if(defined($args{-test_recipient})){ 
+					$mh->mass_test_recipient($args{-test_recipient});
+				}
+  		 	}
 
 		### Partial Sending Stuff... 
 		### This is very much... busy, to say the least... 
