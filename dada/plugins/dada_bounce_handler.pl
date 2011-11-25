@@ -371,10 +371,7 @@ sub cgi_default_tmpl {
  <legend> 
 Bounce Email Scorecard
  </legend> 
- 
- <p>The Bounce Scorecard keeps track of addresses that bounce back message sent from your mailing list. </p> 
-
-<div id="bounce_scorecard_loading"><p>&nbsp;</p></div>
+ <div id="bounce_scorecard_loading"><p>&nbsp;</p></div>
 <div id="bounce_scorecard"></div> 
 
 <form> 
@@ -383,68 +380,6 @@ Bounce Email Scorecard
 
  
 </fieldset> 
-
-
-
-<fieldset> 
-<legend>
- Preferences
-</legend> 
-
-<form action="<!-- tmpl_var Plugin_URL -->" method="post">
-
-<input type="hidden" name="flavor" value="edit_prefs" /> 
-<table border="0"> 
- <tr> 
-  <td> 
-   <p>
-   	<label>"Soft" Bounce Score</label>
-	</p>
-  </td> 
-  <td> 
-	<!-- tmpl_var bounce_handler_softbounce_score_popup_menu -->
-  </td>
-  </tr>
- <tr> 
-  <td> 
-   <p>
-   	<label>"Hard" Bounce Score</label>
-	</p>
-  </td> 
-  <td> 
-	<!-- tmpl_var bounce_handler_hardbounce_score_popup_menu -->
-  </td>
-  </tr>
- <tr> 
-  <td> 
-   <p>
-   	<label>Decay Rate</label>
-	</p>
-  </td> 
-  <td> 
-	<!-- tmpl_var bounce_handler_decay_score_popup_menu -->
-  </td>
-  </tr>
- <tr> 
-  <td> 
-   <p>
-   	 <label>Bounce Score Threshold</label>
-	</p>
-  </td> 
-  <td> 
-	<!-- tmpl_var bounce_handler_threshold_score_popup_menu -->
-  </td>
-  </tr>
-  
-</table> 
-
-
-<div class="buttonfloat">   
- <input type="submit" class="processing" value="Save Preferences" /> 
- </div>
-<div class="floatclear"></div>
-</form> 
-</fieldset>
 
 
 
@@ -491,6 +426,99 @@ Bounce Email Scorecard
 </li>
 </ul> 
 </fieldset> 
+
+
+
+
+<fieldset> 
+<legend>
+Scorecard Preferences
+</legend> 
+
+<form action="<!-- tmpl_var Plugin_URL -->" method="post">
+
+<input type="hidden" name="flavor" value="edit_prefs" /> 
+<p>
+	Addresses that bounce back reports because of <strong>temporary</strong> 
+	problems, like the mailbox being full or a network problem are given the
+	<strong>Soft Bounce Score</strong>
+</p>
+<table border="0"> 
+ <tr> 
+  <td> 
+   <p>
+   	<label style="width: 12em;float: left;text-align: right;margin-right: 0.5em;display: block">"Soft" Bounce Score</label>
+	</p>
+  </td> 
+  <td> 
+	<!-- tmpl_var bounce_handler_softbounce_score_popup_menu -->
+  </td>
+  </tr>
+</table> 
+
+<p>
+	Address that bounce back reports because of <strong>permanent</strong>
+	problems, like the address not existing anymore, or messages being blocked
+	from being received are given the <strong>Hard Bounce Score</strong>
+</p>
+
+<table border="0"> 
+
+ <tr> 
+  <td> 
+	
+   <label style="width: 12em;float: left;text-align: right;margin-right: 0.5em;display: block">"Hard" Bounce Score</label>
+  </td> 
+  <td> 
+	<!-- tmpl_var bounce_handler_hardbounce_score_popup_menu -->
+  </td>
+  </tr>
+</table> 
+
+
+   <p>
+	All addresses that currently have a score on the Bounce Scorecard will be 
+	lessened by the <strong>Decay Rate</strong>, each time a mass mailing is sent to 
+	the mailing list. This helps make sure <strong>temporary problems</strong> do 
+	not inadvertantly remove addresses from your list <strong>permanently</strong>.
+	</p>
+
+
+<table border="0"> 
+<tr>
+<td>
+
+   	<label style="width: 12em;float: left;text-align: right;margin-right: 0.5em;display: block">Decay Rate</label>
+  </td> 
+  <td> 
+	<!-- tmpl_var bounce_handler_decay_score_popup_menu -->
+  </td>
+  </tr>
+</table> 
+
+<p>
+	Addresses that reach the <strong>Score Threshold</strong> will be unsunbscribed
+	from your mailing list. 
+</p>
+<table border="0"> 
+<tr>
+<td>
+
+   	 <label style="width: 12em;float: left;text-align: right;margin-right: 0.5em;display: block">Bounce Score Threshold</label>
+  </td> 
+  <td> 
+	<!-- tmpl_var bounce_handler_threshold_score_popup_menu -->
+  </td>
+  </tr>
+</table> 
+
+
+<div class="buttonfloat">   
+ <input type="submit" class="processing" value="Save Preferences" /> 
+ </div>
+<div class="floatclear"></div>
+</form> 
+</fieldset>
 
 
 <fieldset>
@@ -949,7 +977,10 @@ sub cgi_scorecode_tmpl {
 
 
 <!-- tmpl_if num_rows --> 
-	
+
+	<p class="alert">The Bounce Scorecard keeps track of subscribed address on your mailing list that bounce back message reports. Click on any address to see
+ these message report summaries.</p> 
+
 	<table width="100%">
 	 <tr> 
 	<td width="33%" align="left"> 
@@ -1193,8 +1224,12 @@ sub cgi_bounce_score_search {
         {
             -query => $query,
             -files => [ $Plugin_Config->{Log} ],
+			
         }
     );
+
+	# -list  => $list, 
+	
 
     my $search_results = [];
     my $results_found  = 0;
@@ -1329,7 +1364,7 @@ sub cgi_bounce_score_search_template {
    <!-- tmpl_if valid_email --> 
    
        <!-- tmpl_if subscribed_address --> 
-            <p class="positive">
+            <p class="alert">
             <!-- tmpl_var query ESCAPE="HTML" --> is currently subscribed to your list (<!-- tmpl_var list_name ESCAPE="HTML" -->) - 
             <strong> 
             <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_subscriber&email=<!-- tmpl_var query ESCAPE="URL" -->&type=list">
@@ -1351,8 +1386,9 @@ sub cgi_bounce_score_search_template {
    
        <!-- tmpl_loop search_results --> 
 
-      <div <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!-- tmpl_else -->style="background-color:#fff;"<!--/tmpl_if-->>
-
+      <div style="<!-- tmpl_if __odd__ -->background-color:#ccf;<!-- tmpl_else -->background-color:#fff;<!--/tmpl_if-->border:1px solid black;">
+	  <div style="padding:5px"> 
+	
            <h2>
             Date: <!-- tmpl_var date --> 
            </h2> 
@@ -1361,6 +1397,18 @@ sub cgi_bounce_score_search_template {
 <div style="padding-left:5px"> 
 
            <table>
+
+			<tr>
+             <td> 
+              <strong>List Name:</strong>
+             </td>
+             <td>
+              <!-- tmpl_var list_name ESCAPE="HTML" --> (<!-- tmpl_var list -->)
+             </td>
+
+       	</tr>             
+			<tr>
+			
          	<tr>
              <td> 
               <strong>Email:</strong>
@@ -1369,13 +1417,7 @@ sub cgi_bounce_score_search_template {
 			 <!-- tmpl_var email --> 
 			</td> 
 			</tr>             
-			<tr>
-             	<td> 
-              <strong>List Name:</strong>
-            </td> <td><!-- tmpl_var list_name ESCAPE="HTML" --> (<!-- tmpl_var list -->) </td>
-
-        	</tr>             
-			<tr>
+			
 		     
              
             	<td> 
@@ -1421,7 +1463,7 @@ sub cgi_bounce_score_search_template {
 </div> 
 
     </div> 
-
+    </div> 
         <!-- /tmpl_loop --> 
 
     <!-- tmpl_else --> 
