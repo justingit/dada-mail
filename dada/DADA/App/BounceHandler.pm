@@ -223,7 +223,13 @@ sub test_files {
     for my $testfile (@$test_files) {
         $r .= "Test #$i: $testfile\n" . '-' x 60 . "\n";
         my ( $need_to_delete, $msg_report, $rule_report ) =
-          $self->parse_bounce( { -message => $self->openfile($testfile), } );
+          $self->parse_bounce( 
+			{ 
+				-message => $self->openfile($testfile), 
+				-test    => 1, 
+				-list    => $list, 
+			} 
+		);
 
         $r .= $msg_report;
         ++$i;
@@ -233,17 +239,25 @@ sub test_files {
 }
 
 sub openfile {
+	
+
     my $self = shift;
     my $file = shift;
-    my $data = shift;
+    my $data = undef;
 
     $file = make_safer($file);
+	if(-e $file){ 
+		# ...
+	}
+	else { 
+		carp "file, '$file' doesn't exist!";
+		return undef; 
+	}
+    open my $FILE, '<', $file or die $!;
 
-    open( FILE, "<$file" ) or die "$!";
+    $data = do { local $/; <$FILE> };
 
-    $data = do { local $/; <FILE> };
-
-    close(FILE);
+    close($FILE);
     return $data;
 }
 
@@ -316,9 +330,11 @@ sub parse_all_bounces {
 
             return $log;
         }
-
-        $log .= "Testing is enabled.\n\n"
-          if $test;
+		
+		if($test) { 
+        	$log .= "Testing is enabled -  messages will be parsed and examined, but will not be acted upon.\n\n"
+		}
+		
         $log .=
           "Making POP3 Connection to " . $self->config->{Server} . "...\n";
 
@@ -360,10 +376,13 @@ sub parse_all_bounces {
             $log .= "\tNo bounces to handle.\n";
         }
         else {
-
+		#$log .= scalar(@List) . " total messages to be handled\n"; 
+		my $msg_num = 0; 
           MSGCHECK:
             for my $msg_info (@List) {
-
+				
+				$msg_num++; 
+				$log .= "\n# $msg_num:\n"; 
                 my $need_to_delete = undef;
                 my ( $msgnum, $msgsize ) = split( '\s+', $msg_info );
 
@@ -395,7 +414,7 @@ sub parse_all_bounces {
                             {
                                 -list    => $list_to_check,
                                 -message => $full_msg,
-                                -test    => $args->{-test},
+                                -test    => $test,
                             }
                           );
                     };
@@ -431,7 +450,7 @@ sub parse_all_bounces {
 
         }
 
-        if ( $args->{-test} != 1 ) {
+        if (!$test) {
             for (@delete_list) {
 
                 $log .= "deleting message #: $_\n";
@@ -439,7 +458,7 @@ sub parse_all_bounces {
             }
         }
         else {
-            $log .= "Skipping Message Deletion - Debugging is on.\n";
+            $log .= "Skipping Message Deletion.\n";
         }
 
         $pop3_obj->Close;
@@ -456,21 +475,19 @@ sub parse_all_bounces {
        $log .= "Finished: " . $ls->param('list_name') . "\n\n";
     }
 
-    $log .= "\nSaving Scores...\n\n";
-    my $r = $self->save_scores($Score_Card);
-    $log .= $r;
-    undef $r;
-
-
-    if ( $args->{-test} != 1 ) {
-        $r = $self->remove_bounces($Remove_List);
+	if (!$test) {
+	    $log .= "\nSaving Scores...\n\n";
+	    my $r = $self->save_scores($Score_Card);
+	    $log .= $r;
+	    undef $r;
+	}
+    if (!$test) {
+        my $r = $self->remove_bounces($Remove_List);
         $log .= $r;
         undef $r;
     }
 
     &close_log;
-
-
 
     return $log;
 }
@@ -479,15 +496,27 @@ sub parse_bounce {
 
     my $self       = shift;
     my $msg_report = '';
-    $msg_report .= '-' x 72 . "\n";
+
     my ($args)  = @_;
-    my $list    = $args->{-list};
+
+    my $list    = undef; 
+	if(exists($args->{-list})){ 
+		$list = $args->{-list};
+	}
+	else { 
+		$msg_report .= "You MUST pass the, '-list' paramater to, parse_bounce!\n"; 
+		return ( 0, $msg_report, '' );
+	}
+	
+	
     my $test    = $args->{-test};
     my $message = $args->{-message};
 
     my $email       = '';
     my $found_list  = '';
     my $diagnostics = {};
+
+    $msg_report .= '-' x 72 . "\n";
 
     my $entity;
 
@@ -514,7 +543,8 @@ sub parse_bounce {
 
     # Test:  Can't find a list?
     if ( !$found_list ) {
-        $msg_report .= "No valid list found, ignoring and deleting...\n";
+		# $msg_report .= "No valid list found. Ignoring and deleting.\n\n" . $entity->as_string . "\n\n";
+        $msg_report .= "No valid list found. Ignoring and deleting.\n";
         return ( 1, $msg_report, '' );
     }
 
@@ -528,9 +558,9 @@ sub parse_bounce {
 
     # Is this from a mailing list I'm currently lookin gat?
     if ( $found_list ne $list ) {
-
+	  	$msg_report .= "Bounced message is from a different list. Skipping over.\n"; 
         # Save it for another go.
-        return ( 0, '', '' );
+        return ( 0, $msg_report, '' );
     }
 
     # /Tests!
@@ -546,11 +576,6 @@ sub parse_bounce {
     my $rule = $bhr->find_rule_to_use( $found_list, $email, $diagnostics );
 
     $msg_report .= "\n* Using Rule: $rule\n";
-
-    ###
-
-    # Is this needed?
-    my $valid_list_1;
     if ( DADA::App::Guts::check_if_list_exists( -List => $found_list ) == 0 ) {
         $msg_report .=
           'List, ' . $found_list . ' doesn\'t exist. Ignoring and deleting.';
@@ -937,7 +962,7 @@ sub append_message_to_file {
     my $report;
 
     my $file = $DADA::Config::TMP . '/bounced_messages-' . $list . '.mbox';
-    $report .= "Appending Email to '$file'\n";
+    $report .= "* Appending Email to '$file'\n";
 
     $file = DADA::App::Guts::make_safer($file);
 

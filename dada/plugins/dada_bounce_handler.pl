@@ -195,6 +195,7 @@ GetOptions(
     "messages=i"       => \$messages,
     "erase_score_card" => \$erase_score_card,
     "version"          => \$version,
+	"list=s"             => \$list, 
 );
 
 &init_vars;
@@ -246,7 +247,7 @@ sub init {
 sub run {
     if ( !$ENV{GATEWAY_INTERFACE} ) {
         my $r = cl_main();
-        if ($verbose) {
+        if ($verbose || $help) {
             print $r;
         }
         exit;
@@ -391,7 +392,7 @@ Bounce Email Scorecard
 
 <input type="checkbox" name="bounce_test" id="bounce_test" value="bounces" /><label for="test"><label for="bounce_test">Test With Awaiting Messages</label>
 
-<p><label for="parse_amount">Review</label> <!-- tmpl_var parse_amount_widget --> Messages.</p>
+<p><label for="parse_amount">Review</label> up to <!-- tmpl_var parse_amount_widget --> Messages.</p>
 
 <input type="hidden" name="flavor" value="cgi_parse_bounce" /> 
 <div class="buttonfloat"> 
@@ -593,31 +594,41 @@ Scorecard Preferences
 
 <legend>Mailing List Configuration</legend>
 
-<!-- tmpl_if list_settings.send_via_smtp --> 
+<!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" --> 
+	<p>Messages for this list are  being sent via <strong>the sendmail command <!-- tmpl_if list_settings.add_sendmail_f_flag -->with the '-f' flag<!--/tmpl_if--></strong>:</p>
 
-	<p>Mailing is being sent via: <strong>SMTP</strong>. 
-	
+	<blockquote>
+	<p>
+	 <em>
+	  <!-- tmpl_var MAIL_SETTINGS --><!-- tmpl_if list_settings.add_sendmail_f_flag --> <strong>-f<!--tmpl_var list_settings.admin_email --><!--/tmpl_if--></strong></em></p>
+	</blockquote>
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if expr="(list_settings.sending_method eq 'smtp')" --> 
+
+	<p>Messages for this mailing list are being sent via: <strong>SMTP</strong>. 
+
 	<!-- tmpl_if list_settings.set_smtp_sender --> 
-	
+
 		<p>The SMTP Sender is being set to: <strong><!-- tmpl_var list_settings.admin_email --></strong>. This should
 		be the same address as the above <strong>Bounce Handler POP3 Username</strong></p> 
-		
+	
 	<!-- tmpl_else --> 
 
 		<p>The SMTP Sender has not be explicitly set.  Bounces may go to the list owner (<!-- tmpl_var list_settings.list_owner_email -->) or to 
 		a server default address.</p> 
-	
-	<!--/tmpl_if--> 
-	
-<!--tmpl_else--> 
-	
-	<p>Mailing is being sent via <strong>the sendmail command <!-- tmpl_if list_settings.add_sendmail_f_flag -->'-f' flagged added<!--/tmpl_if--></strong>:</p>
-	
-	<blockquote>
-	<p><em><!-- tmpl_var MAIL_SETTINGS --><!-- tmpl_if list_settings.add_sendmail_f_flag --> -f<!--tmpl_var list_settings.admin_email --><!--/tmpl_if--></em></p>
-	</blockquote>
 
-<!--/tmpl_if--> 
+	<!--/tmpl_if-->
+
+<!--/tmpl_if-->
+
+<!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" --> 
+	<p>Messages are currently being sent via Amazon SES.</p>
+	
+	<p>The bounce handler is currently <strong>not compatible</strong> with Amazon SES.
+	
+<!-- /tmpl_if -->
+
 </legend> 
 
 
@@ -690,6 +701,7 @@ sub cgi_default {
         {
             -data           => \$tmpl,
             -with           => 'admin',
+			-expr           => 1, 
             -wrapper_params => {
                 -Root_Login => $root_login,
                 -List       => $list,
@@ -709,8 +721,6 @@ sub cgi_default {
 				bounce_handler_hardbounce_score_popup_menu => $bounce_handler_hardbounce_score_popup_menu, 
 				bounce_handler_decay_score_popup_menu      => $bounce_handler_decay_score_popup_menu, 
 				bounce_handler_threshold_score_popup_menu  => $bounce_handler_threshold_score_popup_menu, 
-				
-
 
             },
             -list_settings_vars_param => {
@@ -1267,6 +1277,9 @@ sub cgi_bounce_score_search {
 
             for my $diag (@diags) {
                 my ( $label, $value ) = split( ":", $diag );
+				my $newline = quotemeta('\n'); 
+				# Make fake newlines, newlines: 
+				$value =~ s/$newline/\n/g;
 
                 push(
                     @$labeled_digs,

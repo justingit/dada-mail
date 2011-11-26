@@ -850,8 +850,7 @@ sub send {
                      if(
 	 						exists($fields{$field})                  && 
 							defined $fields{$field}                  && 
-                            $fields{$field}         ne ""            && 
-                            $field                  ne 'Return-Path'
+                            $fields{$field}         ne ""
                          ) { 
 							$msg .= "$field: $fields{$field}\n";
                    }
