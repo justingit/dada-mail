@@ -1179,7 +1179,8 @@ sub start {
             $li->{discussion_pop_use_ssl},
         );
 
-		e_print($pop3_log); 
+		e_print($pop3_log)
+			if $verbose;
         if ($pop3_status == 1) {
 
             my $msg_count = $pop3_obj->Count;
@@ -1557,7 +1558,8 @@ sub test_pop3 {
                 $li->{discussion_pop_auth_mode},
                 $li->{discussion_pop_use_ssl},
             );
-			e_print($pop3_log); 
+			e_print($pop3_log)
+			 if $verbose;
             if ($pop3_status == 1) {
                 $pop3_obj->Close();
 
