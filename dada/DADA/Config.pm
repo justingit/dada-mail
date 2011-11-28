@@ -5283,6 +5283,7 @@ References
 X-Priority
 
 List
+X-List
 List-Archive
 List-Digest
 List-Help
@@ -5294,6 +5295,7 @@ List-Unsubscribe
 List-URL
 X-BeenThere
 
+X-Message-ID
 Message-ID
 Precedence
 

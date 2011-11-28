@@ -14,7 +14,7 @@ use Mail::Verp;
 use Carp qw(croak carp);
 use vars qw($AUTOLOAD);
 
-my %allowed = ( 'config' => undef, );
+my %allowed = ();
 
 sub new {
 
@@ -56,8 +56,6 @@ sub _init {
 
     my $self = shift;
     my ($args) = @_;
-
-    $self->config($args);
 
 }
 
@@ -203,7 +201,28 @@ sub rules {
     #},
 
     my $Rules = [
+	
+    {
+        amazon_ses_dsn_no_such_user => {
+            Examine => {
+                Message_Fields => {
+                    Guessed_MTA  => [qw(Amazon_SES)],
+					Action => [qw(failed)],
+					Status_regex => [qr/5\.0\.0/],
+                    'Diagnostic-Code_regex' => [qr/Unknown address/],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+				add_to_score => 'hardbounce_score',
+            }
+        }
+    },
 
+		
         {
             qmail_delivery_delay_notification => {
                 Examine => {
@@ -511,7 +530,7 @@ qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox fu
         },
 
         {
-            qmail2_error_5dot5dot1 => {
+            qmail_error_5dot1dot1 => {
                 Examine => {
                     Message_Fields => {
 
@@ -526,7 +545,29 @@ qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox fu
                         List  => 'is_valid',
                     }
                 },
-                Action => { unsubscribe_bounced_email => 'from_list', }
+                Action => { add_to_score => 'hardbounce_score', }
+            }
+        },
+		{
+           qmail_error2_5dot1dot1 => {
+                Examine => {
+                    Message_Fields => {
+
+                        Guessed_MTA => [qw(Qmail)],
+                       # Status      => [qw(5.1.1)],
+                        'Diagnostic-Code_regex' =>
+                          [ (qr/511 sorry, no mailbox here by that name/) ],
+                    },
+
+                    Data => {
+                        Email => 'is_valid',
+                        List  => 'is_valid',
+                    }
+                },
+                Action => { 
+					add_to_score => 'hardbounce_score',
+                     
+				}
             }
         },
 
@@ -554,7 +595,8 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
 
                     add_to_score => 'hardbounce_score',
                 }
-              } },
+              } 
+	},
 
         {
 

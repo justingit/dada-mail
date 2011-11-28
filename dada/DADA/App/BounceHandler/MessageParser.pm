@@ -65,13 +65,30 @@ sub run_all_parses {
 
     $email = $self->find_verp($entity);
 
-    my ( $gp_list, $gp_email, $gp_diagnostics ) = $self->generic_parse($entity);
+	# Amazon SES is sort of special, since it's very, very easy to understand if
+	# It's coming from it: 
+	if($self->bounce_from_ses($entity)){ 
+		  my ( $ses_list, $ses_email, $ses_diagnostics ) =
+	          $self->parse_for_amazon_ses($entity);
+	        $list  ||= $ses_list;
+	        $email ||= $ses_email;
+	        %{$diagnostics} = ( %{$diagnostics}, %{$ses_diagnostics} )
+	          if $ses_diagnostics;
+	}
+	else { 
+		# Else, let's try other things: 
+	    my ( $gp_list, $gp_email, $gp_diagnostics ) = $self->generic_parse($entity);
 
-    $list = $gp_list if $gp_list;
-    $email ||= $gp_email;
-    $diagnostics = $gp_diagnostics
-      if $gp_diagnostics;
+	    $list = $gp_list if $gp_list;
+	    $email ||= $gp_email;
+	    $diagnostics = $gp_diagnostics
+	      if $gp_diagnostics;
+	}
 
+	# This should really do the same thing, first look for tell-tale signs
+	# that the bounce is a qmail-like bounce, before parsing it out. 
+	# (and along down the line...)
+	
     if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
         my ( $qmail_list, $qmail_email, $qmail_diagnostics ) =
           $self->parse_for_qmail($entity);
@@ -300,10 +317,13 @@ sub find_list_in_list_headers {
     my $list;
     if ( $entity->head->mime_type eq 'message/rfc822' ) {
         my $orig_msg_copy = $parts[0];
-
         my $list_header = $orig_msg_copy->head->get( 'List', 0 );
         $list = $list_header if $list_header !~ /\:/;
 
+		if ( !$list ) {
+	        $list_header = $orig_msg_copy->head->get( 'X-List', 0 );
+	        $list = $list_header if $list_header !~ /\:/;
+		}
         if ( !$list ) {
             my $list_id = $orig_msg_copy->head->get( 'List-ID', 0 );
             if ( $list_id =~ /\<(.*?)\./ ) {
@@ -334,21 +354,30 @@ sub find_message_id_in_headers {
     my $self   = shift;
     my $entity = shift;
     my @parts  = $entity->parts;
-    my $m_id;
+    my $mid;
     if ( $entity->head->mime_type eq 'message/rfc822' ) {
         my $orig_msg_copy = $parts[0];
-        $m_id = $orig_msg_copy->head->get( 'Message-ID', 0 );
-        $m_id = strip($m_id);
-        chomp($m_id);
 
-        return $m_id;
+		# Amazon SES finds this in the, "X-Message-ID" header: 
+		# Amazon SES will also set its own Message-ID. Maddening!
+		
+		if($orig_msg_copy->head->get( 'X-Message-ID', 0 )){ 
+			$mid = $orig_msg_copy->head->get( 'X-Message-ID', 0 );
+		}
+		else { 
+        	$mid = $orig_msg_copy->head->get( 'Message-ID', 0 );
+        }
+
+		$mid = strip($mid);
+        chomp($mid);
+        return $mid;
     }
     else {
         my $i;
         for $i ( 0 .. $#parts ) {
             my $part = $parts[$i];
-            $m_id = $self->find_message_id_in_headers($part);
-            return $m_id if $m_id;
+            $mid = $self->find_message_id_in_headers($part);
+            return $mid if $mid;
         }
     }
 }
@@ -496,6 +525,56 @@ sub find_list_from_unsub_list {
 
     $IO->close;
     return $list;
+}
+
+sub bounce_from_ses { 
+	my $self = shift; 
+	my $entity = shift; 
+	# As far as I know, it's all from: 
+	my $amazon_ses_from = 'MAILER-DAEMON@email-bounces.amazonses.com'; 
+	my $qm_ses = quotemeta($amazon_ses_from); 
+	
+	if($entity->head->get( 'From', 0 ) =~ m/$qm_ses/){ 
+		return 1; 
+	}
+	else { 
+		return 0; 
+	}
+}
+
+
+
+
+sub parse_for_amazon_ses { 
+	
+	my $self   = shift; 
+	my $entity = shift; 
+	
+	my $diag = {};
+	my $email; 
+	my $list; 
+	
+	my @parts = $entity->parts; 
+	if($parts[1]){ 
+		my $mds_entity = $parts[1];
+		
+		if ( $mds_entity->head->mime_type eq 'message/delivery-status' ) {
+	    	( $email, $diag ) = $self->generic_delivery_status_parse($mds_entity);
+		}
+	}
+	if($parts[2]){ 
+		my $orig_msg_entity = $parts[2];
+		if ( $orig_msg_entity->head->mime_type eq 'message/rfc822' ) {
+			$list = $self->find_list_in_list_headers($orig_msg_entity);	
+			$diag->{'Message-Id'} = $self->find_message_id_in_headers($orig_msg_entity);
+		}
+	}
+	
+	
+	$diag->{Guessed_MTA} = 'Amazon_SES'; 
+	return ( $list, $email, $diag );
+    
+
 }
 
 sub parse_for_qmail {

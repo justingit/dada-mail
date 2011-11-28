@@ -1779,6 +1779,7 @@ sub validate_msg {
 
     if ( defined($rough_from) ) {
         eval {
+			# This correct ? 
             $from_address = ( Email::Address->parse($rough_from) )[0]->address;
         };
     }

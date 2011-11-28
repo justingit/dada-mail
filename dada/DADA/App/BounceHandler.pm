@@ -572,7 +572,7 @@ sub parse_bounce {
     $msg_report .=
       $self->generate_nerd_report( $found_list, $email, $diagnostics );
     require DADA::App::BounceHandler::Rules;
-    my $bhr = DADA::App::BounceHandler::Rules->new( $self->config );
+    my $bhr = DADA::App::BounceHandler::Rules->new;
     my $rule = $bhr->find_rule_to_use( $found_list, $email, $diagnostics );
 
     $msg_report .= "\n* Using Rule: $rule\n";
@@ -779,10 +779,14 @@ sub carry_out_rule {
     my $self = shift;
 
     require DADA::App::BounceHandler::Rules;
-    my $bhr   = DADA::App::BounceHandler::Rules->new( $self->config );
+    my $bhr   = DADA::App::BounceHandler::Rules->new;
     my $Rules = $bhr->rules;
 
     my ( $title, $list, $email, $diagnostics, $message ) = @_;
+
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
+
     my $actions = {};
 
     my $report = '';
@@ -801,6 +805,7 @@ sub carry_out_rule {
             $report .=
               $self->add_to_score( $list, $email, $diagnostics,
                 $actions->{$action} );
+
             $report .=
               $self->append_message_to_file( $list, $email, $diagnostics,
                 $actions->{$action}, $message );
@@ -825,7 +830,6 @@ sub carry_out_rule {
             warn "unknown rule trying to be carried out, ignoring";
         }
 
-        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
         if ( $ls->param('enable_bounce_logging') ) {
             if ( exists( $diagnostics->{'Simplified-Message-Id'} ) ) {
                 $report .= "\nSaving bounced email report in tracker\n";
@@ -842,11 +846,7 @@ sub carry_out_rule {
                     $hard_bounce = 1;
                 }
                 else {
-
-                    # Else, it's either a soft bounce,
-                    # soft bounces and hard bounces are scored the same (?!?!)
-                    # or it's a different rule followed and we're going to count
-                    # that as a hard bounce.
+					# ... 
                 }
                 if ( $hard_bounce == 1 ) {
                     $r->bounce_log(
@@ -958,8 +958,8 @@ sub append_message_to_file {
 
     my $self = shift;
     my ( $list, $email, $diagnostics, $action, $message ) = @_;
-
     my $report;
+
 
     my $file = $DADA::Config::TMP . '/bounced_messages-' . $list . '.mbox';
     $report .= "* Appending Email to '$file'\n";
@@ -967,8 +967,27 @@ sub append_message_to_file {
     $file = DADA::App::Guts::make_safer($file);
 
     open( APPENDLOG, ">>$file" ) or die $!;
+
     chmod( $DADA::Config::FILE_CHMOD, $file );
-    print APPENDLOG "\n" . $message;
+
+		my $entity;
+	    eval { 
+			$entity = $self->parser->parse_data($message) ;
+			require Email::Address;		
+			require POSIX; 
+		
+			# This is wrong in a few ways: 
+			# The should be the envelope sender, not the "From:" header
+			# the date should probably be the datein the email message. 
+			# We'll try this out... 	
+			my $rough_from = $entity->head->get('From', 0);
+			my $from_address = ( Email::Address->parse($rough_from) )[0]->address;
+			print APPENDLOG 'From ' . $from_address . ' ' . POSIX::ctime(time); 
+		};
+		if($@){ 
+			carp "problem, somewhere: $@"; 
+		}	
+    print APPENDLOG $message. "\n\n";
     close(APPENDLOG) or die $!;
 
     return $report;

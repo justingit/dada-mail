@@ -820,7 +820,18 @@ sub send {
 			  'Thread-Topic'              => 1,
 			  'To'                        => 1,
 			  'User-Agent'                => 1,
+			
+			  'X-List'                    => 1, 
+			  'X-Message-ID'              => 1, 
 			};
+			# DEV: TODO: it probably would be best to simply allow all X- headers... 
+			
+			# List is one of the headers, usually not allowed for Amazon SES
+			# So, we'll use, "X-List"
+			#
+			
+			$fields{'X-List'}      = $fields{List}; 
+			$fields{'X-Message-ID'} = $fields{'Message-ID'}; 
 			
 			my $ses_obj = undef;
 			require Net::Amazon::SES;  	
