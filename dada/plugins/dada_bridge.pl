@@ -1172,21 +1172,22 @@ sub start {
                 { name => 'dada_bridge.lock' } );
         }
 
-        my $pop = pop3_login(
+        my ($pop3_obj, $pop3_status, $pop3_log) = pop3_login(
             $list,                          $li,
             $li->{discussion_pop_server},   $li->{discussion_pop_username},
             $li->{discussion_pop_password}, $li->{discussion_pop_auth_mode},
             $li->{discussion_pop_use_ssl},
         );
 
-        if ( defined($pop) ) {
+		e_print($pop3_log); 
+        if ($pop3_status == 1) {
 
-            my $msg_count = $pop->Count;
+            my $msg_count = $pop3_obj->Count;
             my $msgnums   = {};
 
             # This is weird - do we get everything out of order, here?
             for ( my $cntr = 1 ; $cntr <= $msg_count ; $cntr++ ) {
-                my ( $msg_num, $msg_size ) = split ( '\s+', $pop->List($cntr) );
+                my ( $msg_num, $msg_size ) = split ( '\s+', $pop3_obj->List($cntr) );
                 $msgnums->{$msg_num} = $msg_size;
             }
 
@@ -1217,7 +1218,7 @@ sub start {
 
                     if ( $li->{disable_discussion_sending} != 1 ) {
 
-                        my $full_msg = $pop->Retrieve($msgnum);
+                        my $full_msg = $pop3_obj->Retrieve($msgnum);
 						   # We're taking a guess on this one: 
 						   $full_msg = safely_decode($full_msg); 
 						
@@ -1320,7 +1321,7 @@ sub start {
             for my $msgnum_d ( sort { $a <=> $b } keys %$msgnums ) {
                 e_print( "\t* Removing message from server...\n")
                   if $verbose;
-                  $pop->Delete($msgnum_d);
+                  $pop3_obj->Delete($msgnum_d);
                 $delete_msg_count++;
 
                 last
@@ -1330,7 +1331,7 @@ sub start {
             e_print( "\t* Disconnecting from POP3 server\n")
               if $verbose;
 
-            $pop->Close();
+            $pop3_obj->Close();
 
             if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
                 DADA::App::POP3Tools::_unlock_pop3_check(
@@ -1378,25 +1379,25 @@ sub message_was_deleted_check {
             { name => 'dada_bridge.lock', } );
     }
 
-    my $pop = pop3_login(
+    my ($pop3_obj, $pop3_status, $pop3_log) = pop3_login(
         $list,                          $li,
         $li->{discussion_pop_server},   $li->{discussion_pop_username},
         $li->{discussion_pop_password}, $li->{discussion_pop_auth_mode},
         $li->{discussion_pop_use_ssl},
     );
 
-    if ($pop) {
+    if ($pop3_status == 1) {
 
-        my $msg_count = $pop->Count;
+        my $msg_count = $pop3_obj->Count;
         my $msgnums   = {};
 
         for ( my $cntr = 1 ; $cntr <= $msg_count ; $cntr++ ) {
-            my ( $msg_num, $msg_size ) = split ( '\s+', $pop->List($cntr) );
+            my ( $msg_num, $msg_size ) = split ( '\s+', $pop3_obj->List($cntr) );
             $msgnums->{$msg_num} = $msg_size;
         }
 
         for my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
-            my $msg = $pop->Retrieve($msgnum);
+            my $msg = $pop3_obj->Retrieve($msgnum);
 
             my $cs = create_checksum( \$msg );
 
@@ -1417,7 +1418,7 @@ sub message_was_deleted_check {
                     e_print(
 "\t* Message was NOT deleted from POP server! Will attempt to do that now...\n")
                       if $verbose;
-                     $pop->Delete($msgnum);
+                     $pop3_obj->Delete($msgnum);
                 }
                 else {
                     e_print(
@@ -1426,7 +1427,7 @@ sub message_was_deleted_check {
                 }
             }
         }
-        $pop->Close();
+        $pop3_obj->Close();
 
     }
     else {
@@ -1547,7 +1548,7 @@ sub test_pop3 {
                     { name => 'dada_bridge.lock', } );
             }
 
-            my $pop = pop3_login(
+            my ($pop3_obj, $pop3_status, $pop3_log) = pop3_login(
                 $l,
                 $li,
                 $li->{discussion_pop_server},
@@ -1556,8 +1557,9 @@ sub test_pop3 {
                 $li->{discussion_pop_auth_mode},
                 $li->{discussion_pop_use_ssl},
             );
-            if ($pop) {
-                $pop->Close();
+			e_print($pop3_log); 
+            if ($pop3_status == 1) {
+                $pop3_obj->Close();
 
                 if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
                     DADA::App::POP3Tools::_unlock_pop3_check(
@@ -1589,10 +1591,12 @@ sub pop3_login {
     }
     else {
 
-        my $pop = undef;
-
+        my $pop;
+		my $status; 
+		my $log; 
+		
         eval {
-           	my ($pop, $status, $log) =  DADA::App::POP3Tools::mail_pop3client_login(
+        	($pop, $status, $log) =  DADA::App::POP3Tools::mail_pop3client_login(
                 {
                     server   => $server,
                     username => $username,
@@ -1606,7 +1610,7 @@ sub pop3_login {
             );
         };
         if ( !$@ ) {
-            return $pop;
+            return ($pop, $status, $log);
         }
         else {
             e_print( "Problems Logging in:\n$@")
