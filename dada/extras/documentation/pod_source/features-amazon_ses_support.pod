@@ -26,7 +26,21 @@ Support for Amazon SES is currently labled as, B<Experimental>. We would love yo
 
 =head1 Closed-List Opt-In Subscriptions Lists Only
 
-Since Amazon SES is a outside, third party sending service, you'll absolutely need to use a mailing list that's B<100% confirmed opt-in>. If you don't, complaints of abuse sent to Amazon, manually sent or automatically sent, will most likely disallow you from furthering your use of the service. 
+Since Amazon SES is an outside, third party sending service, you'll absolutely need to use a mailing list that's B<100% confirmed opt-in>. If you don't, complaints of abuse sent to Amazon, manually sent or automatically sent, will most likely disallow you from furthering your use of their service. 
+
+=head2 Bounce Handler Support
+
+Here's the overview of Bounce support for SES:
+L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?SendingEmail.BounceAndComplaintNotifications.html>
+
+Dada Mail's support for bounce handling w/SES sending is also B<Experimental>. We'd love to get your feedback. 
+
+When you use Dada Mail with SES, Dada Mail I<will> set the C<Return-Path> header explicitly, which it wouldn't for sendmail or SMTP. For sendmail, it'll set the C<-f> flag to your List Administrator Address, SMTP it will set the Sender to your List Administrator Address - both of which will set the C<Return-Path>, but by the MTA itself.
+
+Dada Mail's included bounce handler has rules specifically for Amazon SES. It's not quite clear if you need to authenticate the email address that the bounce handler uses with Amazon or not. Watch this thread: 
+
+L<https://forums.aws.amazon.com/thread.jspa?threadID=80961>
+
 
 =head1 Limitations
 
@@ -34,9 +48,7 @@ Since Amazon SES is a outside, third party sending service, you'll absolutely ne
 
 Currently, Dada Mail relies heavily on the Amazon SES Developer Tools and the scripts that come with it to send out email messages using Amazon SES. You'll need to separately install these scripts.
 
-=head2 No bounce handler support
-
-Currently, there's no support for Dada Mail's bounce handler. Support may be added in the future.
+B<v4.9.0> of Dada Mail does not need the B<ses-send-email.pl> script, but instead uses it's own (superior, I think) method in its place. 
 
 =head2 No Discussion List Support
 

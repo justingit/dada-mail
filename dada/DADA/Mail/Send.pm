@@ -832,7 +832,8 @@ sub send {
 			
 			$fields{'X-List'}      = $fields{List}; 
 			$fields{'X-Message-ID'} = $fields{'Message-ID'}; 
-			
+			$fields{'Return-Path'} =  '<'. $local_li->{admin_email} . '>'; 
+            
 			my $ses_obj = undef;
 			require Net::Amazon::SES;  	
 			#carp '$self->ses_obj' . $self->ses_obj; 
