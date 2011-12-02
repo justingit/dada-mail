@@ -432,7 +432,24 @@ sub parse_all_bounces {
                     $log .= $msg_report;
                     $log .= $rule_report;
 
+					if($ls->param('bounce_handler_forward_msgs_to_list_owner')){ 
+						my $r = self->forward_to_list_owner(
+							{ 
+								-ls_obj => $ls,
+								-msg    => $full_msg
+							}
+						);
+						if($r == 1){ 
+							$log .= "Forwarding bounces message to the List Owner (" . $ls->param('list_owner_email') . ")\n"; 
+						}
+						else { 
+							$log .= "Problems forwarding message to the List Owner!\n";
+						}
+					}
+					
                 }
+
+				
 
                 if ( $need_to_delete == 1 ) {
                     push( @delete_list, $msgnum );
@@ -599,19 +616,86 @@ sub parse_bounce {
 
 }
 
+
+
+sub forward_to_list_owner { 
+	my $self   = shift; 
+	my ($args) = @_; 
+	my $msg; 
+	
+	 
+	if(!exists($args->{-msg})){ 	
+		croak "you MUST pass a msg in the, '-msg' paramater!"; 
+	}
+	else { 
+		$msg = $args->{-msg}; 
+	}
+	if(!exists($args->{-ls_obj})){ 	
+		croak "you MUST pass a DM::ML::LS object in the, '-ls_obj' paramater!"; 
+	}
+	
+	
+	my $entity; 
+	eval { $entity = $self->parser->parse_data($msg) };
+    if($@){ 
+		carp "problem with parsing message! $@"; 
+		return undef; 
+	}
+	
+	if ($entity->head->get('To', 0)){ 
+		$entity->head->delete('To'); 
+	} 
+	$entity->head->add('To', $args->{-ls_obj}->param('list_owner_email')); 
+	
+	require Email::Address; 
+	$entity->head->add('X-BeenThere', Email::Address->new($self->config->{Plugin_Name}, $args->{-ls_obj}->param('admin_email'))->format); 
+	
+	my $header = $entity->head->as_string;
+	   $header = safely_decode($header); 
+
+	my $body   = $entity->body_as_string;	
+ 	   $body = safely_decode($body); 
+	
+	
+	require DADA::Mail::Send; 
+	my $mh = DADA::Mail::Send->new(
+		{
+			list => $args->{-ls_obj}->param('list')
+		}
+	); 
+	
+	$mh->send(
+			$mh->return_headers($header),
+			Body => $body
+		);
+
+	return 1; 
+} 
+
+
 sub bounce_from_me {
     my $self      = shift;
     my $entity    = shift;
-    my $bh_header = $entity->head->get( 'X-BounceHandler', 0 );
-    $bh_header =~ s/\n//g;
-    $bh_header = $self->strip($bh_header);
-    $bh_header eq $self->config->{Plugin_Name} ? return 1 : return 0;
+	if($entity->head->count('X-BeenThere' > 0)){ # Uh oh.. 
+		require Email::Address; 
+		my @addr = Email::Address->parse($entity->head->get( 'X-BeenThere', 0 )); 
+	    my $pn = 	$self->config->{Plugin_Name}; 
+		for my $a(@addr){ 
+			if($a->phrase =~ m/$pn/){ 
+				return 1;
+			}
+		}
+		return 0; 
+	}
+	else { 
+		return 0; 
+	}
 }
 
 sub save_scores {
 
     my $self  = shift;
-    my $score = shift;
+    my $score = shift; 
     my $m     = '';
 
     if ( keys %$score ) {

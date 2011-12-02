@@ -4892,6 +4892,7 @@ bounce_handler_threshold_score                          => 10,
 bounce_handler_hardbounce_score                         => 4, 
 bounce_handler_softbounce_score                         => 1, 
 bounce_handler_decay_score                              => 1, 
+bounce_handler_forward_msgs_to_list_owner               => 0, 
 
     
 # dada_digest.pl 
@@ -5238,8 +5239,7 @@ References                  =>    undef,
  Precedence                 =>    undef,
 
 'X-Mailer'                  =>   "$PROGRAM_NAME $VER ", 
-'X-BounceHandler'           =>    undef, 
-   
+
  Sender                     =>    undef, 
 'Content-type'              =>    undef, 
 'Content-Transfer-Encoding' =>    undef, 
@@ -5300,7 +5300,7 @@ Message-ID
 Precedence
 
 X-Mailer
-X-BounceHandler
+
 
 Sender
 Content-type

@@ -5,7 +5,7 @@ use strict;
 $|++;
 
 #---------------------------------------------------------------------#
-# dada_bounce_handler.pl (Mystery Girl)
+# dada_bounce_handler.pl
 #
 # Documentation:
 #
@@ -119,7 +119,7 @@ $q = decode_cgi_obj($q);
 $Plugin_Config->{Plugin_URL} = $q->url;
 
 # Plugin Name!
-$Plugin_Config->{Plugin_Name} = 'Mystery Girl';
+$Plugin_Config->{Plugin_Name} = 'Bounce Handler';
 
 # End of Optional Settings.
 #---------------------------------------------------------------------#
@@ -514,6 +514,18 @@ Scorecard Preferences
 </table> 
 
 
+<table cellpadding="5"> 
+<tr>
+<td>
+<input type="checkbox" name="bounce_handler_forward_msgs_to_list_owner" id="bounce_handler_forward_msgs_to_list_owner" value="1" <!-- tmpl_if list_settings.bounce_handler_forward_msgs_to_list_owner -->checked="checked"<!-- /tmpl_if --> />
+</td>
+<td>
+<label for="bounce_handler_forward_msgs_to_list_owner">Forward bounces to the List Owner After Processing</label>
+<br />Bounce Messages will be delivered to the List Owner (after being parsed and scored) for manual inspection. 
+</td>
+</tr> 
+</table> 
+
 <div class="buttonfloat">   
  <input type="submit" class="processing" value="Save Preferences" /> 
  </div>
@@ -739,10 +751,11 @@ sub edit_prefs {
         {
             -associate => $q,
             -settings  => {
-				bounce_handler_softbounce_score => undef, 
-				bounce_handler_hardbounce_score => undef, 
-				bounce_handler_decay_score => undef, 
-				bounce_handler_threshold_score => undef, 
+				bounce_handler_softbounce_score           => undef, 
+				bounce_handler_hardbounce_score           => undef, 
+				bounce_handler_decay_score                => undef, 
+				bounce_handler_threshold_score            => undef, 
+				bounce_handler_forward_msgs_to_list_owner => 0, 
             }
         }
     );
@@ -1587,10 +1600,9 @@ Obligatory help text printed out. Written as geeky as possible.
 
 * --version
 
-Will print out both the version of Mystery Girl and also of Dada Mail. 
+Will print the version of Dada Mail. 
 Good for debugging. Looks like this: 
 
- Mystery Girl version: 1.6
  Dada Mail version: 2.10.9
 
 * --log
@@ -1640,7 +1652,7 @@ Removes the score card of bounced email addresses. This makes sense, once you re
 
 -----------------------------------------------------------
 
-Testing Mystery Girl via the Command Line
+Testing Bounce Handler via the Command Line
 
 You can pass the B<--test> argument to dada_bounce_handler.pl to make
 sure everything is workings as it should. The B<--test> argument needs to 
@@ -1759,27 +1771,23 @@ sub version {
 
 =head1 Name
 
-Mystery Girl - Bounce Handler For Dada Mail
+Bounce Handler For Dada Mail
 
 =head1 Description
 
-Mystery Girl intelligently handles bounces from Dada Mail list messages.
+Bounce Handler intelligently handles bounces from Dada Mail list messages.
 
-Mystery Girl hooks into your Dada Mail mailing lists indirectly. You'll first need to create a new POP3 email address which will be used to send all bounces from the Dada Mail lists. This address is known as your B<Bounce Email Address> 
+Messages sent to subscribers of your mailing list that bounce back will be directed to the B<List Administrator Address>. This email account is checked by the Bounc Handler. 
 
-This same address will also be set in the B<Return-Path> of messages sent by Dada Mail. Thus, when a message is bounced, it gets sent to this address, which is monitored by Mystery Girl.
+Awaiting messages are first B<read>, then, the message is B<parsed> in an attempt to understand why the message has bounced. 
 
-Once Mystery Girl connects to this  POP3 acccount, awaiting messages are first B<read>, then, the message is B<parsed>, in an attempt to understand why the message has bounced. 
+The B<parsed> email will then be B<examined> and an B<action> will be taken. The examination and action are set in a collection of B<rules>.  
 
-The B<parsed> email will then be B<examined> and an B<action> will be taken. The examination and action are set in a collection of B<rules>.  These rules can be customized.
-
-The usual action that is taken is to apply a, B<score> to the offending email address, everytime the address bounces back a message. Once the, B<Threshold> is reached, the email address is unsubscribed from the list. 
-
-This usually means that it takes a few bounces from a particular email address to get it removed from a list. This gives a bit of wiggle room and makes sure an email address that is bouncing is bouncing for a fairly good reason, for example: it no longer exists. 
+The usual action that is taken is to apply a, B<score> to the offending email address, everytime the address bounces back a message. Once the, B<Threshold> is reached, the email address is unsubscribed from the mailing list. 
 
 =head1 Obtaining a Copy of the Plugin
 
-Mystery Girl is located in the, I<dada/plugins> directory of the main Dada Mail distribution, under the name, B<dada_bounce_handler.pl>
+Bounce Handler is located in the, I<dada/plugins> directory of the main Dada Mail distribution, under the name, B<dada_bounce_handler.pl>
 
 =head1 Requirements
 
@@ -1789,23 +1797,25 @@ Please make sure you have them before you try to install this plugin:
 
 =item * A POP3 Email Account
 
-Mystery Girl works by checking a bounce email address via the POP3 protocol. 
+Bounce Handler works by checking a bounce email address via POP3. IMAP is currently not supported.  
 
-You will need to setup a new email address for Mystery Girl to check. I usually set up an account named, "bounces@yourdomain.com", where, "yourdomain.com" is the name of the domain Dada Mail is installed on. 
+Set up a new email address for the Bounce Handler to check. 
 
-Some things to consider: 
+Example: B<bounces@yourdomain.com>, where, "yourdomain.com" is the name of the domain Dada Mail is installed on. 
+
+Guidelines on this address: 
 
 =over
 
-=item * Do NOT use this address for anything but Mystery Girl's functions
+=item * Do NOT use this address for anything but the Bounce Handler
 
-You don't periodically check this POP3 account yourself via a mail reader. Doing so will not break Dada Mail, but it will stop Mystery Girl from working correctly. Why? Because sometimes checking a POP3 address will download the messages awaiting in the POP3 Inbox and remove them from this inbox. If you need to periodically check this inbox, make sure to have your mail reader set to B<not> automatically remove the mssages. 
+You don't periodically check this POP3 account yourself via a mail reader. Doing so won't break Dada Mail, but it will stop Bounce Handler from working correctly, if when checking messages, your mail reader then removes those messages from the POP3 account.  If you do need to periodically check this inbox, make sure to have your mail reader set to B<not> automatically remove the mssages. 
 
 =item * The email address MUST belong to the domain you have Dada Mail installed
 
 Meaning, if your domain is, "yourdomain.com", the bounce email address should be something like, "bounces@yourdomain.com". In other words, do not use a Yahoo! Gmail, or Hotmail account for your bounce address. This will most likely disrupt all regular mail sending in Dada Mail. 
 
-=item * Mystery Girl MUST be able to check the POP3 account
+=item * Bounce Handler MUST be able to check the POP3 account
 
 Check to make sure that the POP3 server (usually, port 110) is not blocked from requests coming from your hosting account server.  
 
@@ -1815,13 +1825,13 @@ Check to make sure that the POP3 server (usually, port 110) is not blocked from 
 
 =head1 Recommended
 
-These points are not required, but recommended to use Mystery Girl:
+These points are not required, but recommended to use Bounce Handler:
 
 =over
 
 =item * Ability to set Cron Jobs. 
 
-Mystery Girl can be configured to run automatically by using a cronjob.
+Bounce Handler can be configured to run automatically by using a cronjob.
 
 If you do not know how to set up a cronjob, attempting to set one up for Dada Mail will result in much aggravation. Please read up on the topic before attempting! 
 
@@ -2027,28 +2037,28 @@ whoever replies to my message will reply to me, not the bounce handler.
 Once you've dialed in your list to use the bounce handler, you should
 be all set.
 
-=head1 Configuring the Cronjob to Automatically Run Mystery Girl
+=head1 Configuring the Cronjob to Automatically Run Bounce Handler
 
 We're going to assume that you already know how to set up the actual cronjob, 
 but we'll be explaining in depth on what the cronjob you need to set B<is>.
 
 =head2 Setting the cronjob
 
-Generally, setting the cronjob to have Mystery Girl run automatically, just 
+Generally, setting the cronjob to have Bounce Handler run automatically, just 
 means that you have to have a cronjob access a specific URL. The URL looks something like this: 
 
  http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&verbose=1
 
 Where, L<http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl> is the URL to your copy of dada_bounce_handler.pl
 
-You'll see the specific URL used for your installation of Dada Mail in the web-based control panel for Mystery Girl, under the fieldset legend, B<Manually Run Mystery Girl>, under the heading, B<Manual Run URL:>
+You'll see the specific URL used for your installation of Dada Mail in the web-based control panel for Bounce Handler, under the fieldset legend, B<Manually Run Bounce Handler>, under the heading, B<Manual Run URL:>
 
-This will have Mystery Girl check any awaiting messages. 
+This will have Bounce Handler check any awaiting messages. 
 
 You may have to look through your hosting account's own FAQ, Knowledgebase and/or other docs to see exactly how you invoke a URL via a cronjob. 
 
 A I<Pretty Good Guess> of what the entire cronjob should be set to is located 
-in the web-based crontrol panel for Mystery Girl, under the fieldset legend, B<Manually Run Mystery Girl>, under the heading, B<curl command example (for a cronjob):>
+in the web-based crontrol panel for Bounce Handler, under the fieldset legend, B<Manually Run Bounce Handler>, under the heading, B<curl command example (for a cronjob):>
 
 From my testing, this should work for most Cpanel-based hosting accounts. 
 
@@ -2110,7 +2120,7 @@ Overrides B<$Plugin_Config->{MessagesAtOnce}>. States how many messages should b
 
 =item * verbose
 
-By default, you'll receive the a report of how Mystery Girl is doing parsing and adding scores (and what not). This is sometimes not so desired, especially in a cron environment, since all this informaiton will be emailed to you (or someone) everytime the script is run.  You can run Mystery Girl with a cron that looks like this: 
+By default, you'll receive the a report of how Bounce Handler is doing parsing and adding scores (and what not). This is sometimes not so desired, especially in a cron environment, since all this informaiton will be emailed to you (or someone) everytime the script is run.  You can run Bounce Handler with a cron that looks like this: 
 
  */5 * * * * /usr/local/bin/curl -s --get --data run=1 --url http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl >/dev/null 2>&1
 
@@ -2118,13 +2128,13 @@ The, C<E<gt>/dev/null 2E<gt>&1> line throws away any values returned.
 
 Since B<all> the information being returned from the program is done sort of indirectly, this also means that any problems actually running the program will also be thrown away. 
 
-If you set B<verbose> to, "0", under normal operation, Mystery Girl won't show any output, but if there's a server error, you'll receive an email about it. This is probably a good thing. Example: 
+If you set B<verbose> to, "0", under normal operation, Bounce Handler won't show any output, but if there's a server error, you'll receive an email about it. This is probably a good thing. Example: 
 
  * * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0 --url http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl
 
 =item * test
 
-Runs Mystery Girl in test mode by checking the bounces and parsing them, but not actually carrying out the Rules. 
+Runs Bounce Handler in test mode by checking the bounces and parsing them, but not actually carrying out the Rules. 
 
 =back
 
@@ -2150,13 +2160,13 @@ Finally, I also had to pass the actual URL of the plugin using the B<--url> flag
 
 =head1 Command Line Interface
 
-There's a slew of optional arguments you can give to this script. To use Mystery Girl via the command line, first change into the directory that Mystery Girl resides in, and issue the command: 
+There's a slew of optional arguments you can give to this script. To use Bounce Handler via the command line, first change into the directory that Bounce Handler resides in, and issue the command: 
 
  ./dada_bounce_handler.pl --help
 
 For a full list of paramaters. 
 
-One of the reasons why you may want to run Mystery Girl via the command line is to set the cronjob via the command line interface, rather than the web-based way. Fair enough!
+One of the reasons why you may want to run Bounce Handler via the command line is to set the cronjob via the command line interface, rather than the web-based way. Fair enough!
 
 =head2 Command Line Interface for Cronjobs: 
 
@@ -2176,7 +2186,7 @@ You'll need to explicitly state where both the:
 
 =back
 
-I'm going to rush through this, since if you want to run Mystery Girl this way
+I'm going to rush through this, since if you want to run Bounce Handler this way
 you probably know the terminology, but: 
 
 This script will be running in a different environment and from a different location than what you'd run it as, when you visit it in a web-browser. It's annoying, but one of the things you have to do when running a command line script via a cronjob. 
@@ -2213,39 +2223,39 @@ Cron Jobs are scheduled tasks. We need something to check your POP3 email accoun
 
 Where, I</home/myaccount/cgi-bin/dada/plugins/dada_bounce_handler.pl> is the full path to the script we just configured. 
 
-=head1 How Mystery Girl Works
+=head1 How Bounce Handler Works
 
-Once you've set up and installed Mystery Girl correctly, bounced email messages 
-now been set to be delivered to the email address that Mystery Girl checks - 
+Once you've set up and installed Bounce Handler correctly, bounced email messages 
+now been set to be delivered to the email address that Bounce Handler checks - 
 that is, the, C<Return-Path> header has been set to the B<Bounce Email Address>,
  which is also the address set for your B<List Admin Email Address>. 
 
-When Mystery Girl checks each bounced email message, it'll attempt to figure 
+When Bounce Handler checks each bounced email message, it'll attempt to figure 
 out the severity of the bounce and score the email address belonging to the 
 subscriber accordingly. 
 
-=head2 Mystery Girl's Web-Based Control Panel
+=head2 Bounce Handler's Web-Based Control Panel
 
-There's a few things you may also do in Mystery Girl's own control panel: 
+There's a few things you may also do in Bounce Handler's own control panel: 
 
 =head3 Bounce Email Scorecard
 
-You can view the bounce email scorecard - the scores that Mystery Girl gives
+You can view the bounce email scorecard - the scores that Bounce Handler gives
 to email addresses that are currently bouncing and haven't been unsubscribed
 yet. 
 
 Selecting an email address (and clicking it) will give you a rundown of the 
 bounce report for each bounce the email address creates. 
 
-=head3 Manually Run Mystery Girl
+=head3 Manually Run Bounce Handler
 
-If you like, you can run Mystery Girl whenever you like. Running Mystery Girl 
+If you like, you can run Bounce Handler whenever you like. Running Bounce Handler 
 this way is a good way to see if everything is working correctly and give you 
 an insight of how it all works. 
 
-=head3 Mystery Girl Configuration
+=head3 Bounce Handler Configuration
 
-View how Mystery Girl is configured. 
+View how Bounce Handler is configured. 
 
 
 =head1 More on Scores, Thresholds, etc
@@ -2289,7 +2299,7 @@ Dada Mail basically works by saying, I<After x amount of bounces, just remove fr
 
 =item * I keep getting, 'permission denied' errors, what's wrong?
 
-It's very possible that Mystery Girl can't read your subscription database or the list settings database. This is because Dada Mail may be running under the webserver's username, usually, B<nobody>, and not what Mystery Girl is running under, usually your account username. 
+It's very possible that Bounce Handler can't read your subscription database or the list settings database. This is because Dada Mail may be running under the webserver's username, usually, B<nobody>, and not what Bounce Handler is running under, usually your account username. 
 
 You'll need to do a few things: 
 
@@ -2314,52 +2324,19 @@ Notice there are no quotes around 0777.
 
 Report it to the bug tracker: 
 
-http://sourceforge.net/tracker/?group_id=13002&atid=113002
+L<http://github.com/justingit/dada-mail/issues>
 
-=item * I keep getting this bounced message, but Mystery Girl isn't handling it, what do I do? 
+=item * I keep getting this bounced message, but Bounce Handler isn't handling it, what do I do? 
 
 You'll most likely have to make a new rule for it. If you want, attach a copy of the bounced message to the bug tracker: 
 
-http://sourceforge.net/tracker/?group_id=13002&atid=113002
+L<http://github.com/justingit/dada-mail/issues>
 
 And we'll see if we can't get that kind of bounce in a new version.
 
-=item * What's up with the name, Mystery Girl?
-
-It's from a I<Yeah Yeah Yeahs> song: B<Mystery Girl>. A bounce handler
-is sort of a mysterious tool, making decisions for you and a mysterious
-girl just seems to be one full of power and allusion. The song itself 
-is about rejecting a guy that just doesn't make it anymore, 
-so that gives a good metaphor to  a bounced mail, in a slightly weird, 
-nerdy, nerdy, nerdy... artsy way.   
-
-When the bounce handler emails a list owner, you can do nothing but
-answer back to it. Yeah Yeah Yeah. 
-
-B<(colophon)> 
-
-Actually, the lyrics I'm thinking of aren't from the song, Mystery Girl, 
-but from the song, "Bang!" off of the YYY's self titled release. Mystery Girl
-is the next song on that album.  The song after that is one called,
-"Art Star", which is what I am in the daytime! The next song is 
-called, "Miles Away", which is where you probably are to me. All this
-in, "Our Time" (the last song) See? it's like this was all written in
-the stars. 
-
-http://yeahyeahyeahs.com
-
-Here's a small clip of the YYY's performing "Mystery Girl" at the Gothic on 11.20.03 that I took: 
-
-http://dadamailproject.com/media/YYYs_Mystery_Girl_Clip.mov
-
-hot!
-
-=back
-
-
 =head1 Thanks
 
-Thanks to: Jake Ortman Henry Hughes for some prelim bounce examples.
+Thanks to: Jake Ortman, Henry Hughes for some prelim bounce examples.
 
 Thanks to Eryq ( http://www.zeegee.com ) for the amazing MIME-tools
 collection. It's a gnarly group of modules. 
