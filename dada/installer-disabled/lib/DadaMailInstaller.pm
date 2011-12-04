@@ -1156,7 +1156,7 @@ sub edit_config_file_for_plugins {
 					 	# then, we have to fill in all the stuff in.
 					 	# Not a fav. tecnique!
 					my $plugins_config_dada_bounce_handler_orig = quotemeta(
-q|	Mystery_Girl => {
+q|	Bounce_Handler => {
 		Server                      => undef,
 		Username                    => undef,
 		Password                    => undef,|
@@ -1167,7 +1167,7 @@ q|	Mystery_Girl => {
 					my $dada_bounce_handler_password = clean_up_var($q->param('dada_bounce_handler_password')); 
 
 					my $plugins_config_dada_bounce_handler_replace_with = 
-"	Mystery_Girl => {
+"	Bounce_Handler => {
 		Server                      => '$dada_bounce_handler_server',
 		Username                    => '$dada_bounce_handler_username',
 		Password                    => '$dada_bounce_handler_password',";

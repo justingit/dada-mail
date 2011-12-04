@@ -41,88 +41,28 @@ use DADA::MailingList::Subscribers;
 use DADA::MailingList::Settings;
 use DADA::Template::HTML;
 use DADA::App::BounceHandler;
-
-my $Plugin_Config = {};
-
-# All the below variables should be set in your .dada_config file. Below are simply the
-# current *Default Values* are really should be left alone. 
-#
-# What is the POP3 mail server of the bounce email address?
-$Plugin_Config->{Server} = undef;
-
-# And the username?
-$Plugin_Config->{Username} = undef;
-
-# And the password?
-$Plugin_Config->{Password} = undef;
-
-#---------------------------------------------------------------------#
-# Optional Settings - #
-#######################
-# What POP3 mail server Port Number are you using?
-# Auto will set this to, "110" automatically or,
-# "995" if is USESSL is set to, "1"
-$Plugin_Config->{Port} = 'AUTO';
-
-# Are you using SSL?
-$Plugin_Config->{USESSL} = 0;
-
-# What's the method? 'BEST', 'PASS', 'APOP' or 'CRAM-MD5'
-$Plugin_Config->{AUTH_MODE} = 'BEST';
-
-# The bounce handler log should be written at:
-$Plugin_Config->{Log} = $DADA::Config::LOGS . '/bounces.txt';
-
-# Message sent from the bounce handler should go to..
-# (Leave, undef, if you'd like these messages to go to the list owner)
-$Plugin_Config->{Send_Messages_To} = undef;
-
-# How many messages should I check in one go?
-$Plugin_Config->{MessagesAtOnce} = 100;
-
-# Is there a limit on how large a single email message can be, until we outright # reject it?
-# In, "octects" (bytes) - this is about 2.5 megs...
-#
-$Plugin_Config->{Max_Size_Of_Any_Message} = 2621440;
-
-# Can the checking of awaiting messages to send out happen by invoking this
-# script from a URL? (CGI mode?)
-# The URL would look like this:
-#
-# http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1
-
-$Plugin_Config->{Allow_Manual_Run} = 1;
-
-# Set a passcode that you'll have to also pass to invoke this script as
-# explained above in, "$Plugin_Config->{Allow_Manual_Run}" Setting this to,
-# "undef" means no passcode is required.
-
-$Plugin_Config->{Manual_Run_Passcode} = undef;
-
-# Another Undocumented Feature - Enable Pop3 File Locking?
-# Sometimes, the file lock for the POP3 server doesn't work correctly
-# and you get a stale lock. Setting this config variable to, "0"
-# will disable this plugin's own lock file scheme. Should be fairly safe to use.
-
-$Plugin_Config->{Enable_POP3_File_Locking} = 1;
-
 use CGI;
 my $q = new CGI;
 $q->charset($DADA::Config::HTML_CHARSET);
 $q = decode_cgi_obj($q);
 
-# Usually, this doesn't need to be changed.
-# But, if you are having trouble saving settings
-# and are redirected to an
-# outside page, you may need to set this manually.
+my $Plugin_Config = {
+    Server                   => undef,
+    Username                 => undef,
+    Password                 => undef,
+    Port                     => 'AUTO',
+    USESSL                   => 0,
+    AUTH_MODE                => 'BEST',
+    Log                      => $DADA::Config::LOGS . '/bounces.txt',
+    MessagesAtOnce           => 100,
+    Max_Size_Of_Any_Message  => 2621440,
+    Allow_Manual_Run         => 1,
+    Manual_Run_Passcode      => undef,
+    Enable_POP3_File_Locking => 1,
+    Plugin_URL               => $q->url,
+    Plugin_Name              => 'Bounce Handler',
+};
 
-$Plugin_Config->{Plugin_URL} = $q->url;
-
-# Plugin Name!
-$Plugin_Config->{Plugin_Name} = 'Bounce Handler';
-
-# End of Optional Settings.
-#---------------------------------------------------------------------#
 
 $Plugin_Config->{Email_Unsubscribed_Because_Of_Bouncing_Subject} =
 "Unsubscribed from: <!-- tmpl_var list_settings.list_name --> because of excessive bouncing";
@@ -195,7 +135,7 @@ GetOptions(
     "messages=i"       => \$messages,
     "erase_score_card" => \$erase_score_card,
     "version"          => \$version,
-	"list=s"             => \$list, 
+	"list=s"            => \$list, 
 );
 
 &init_vars;
@@ -209,17 +149,17 @@ sub init_vars {
 
     while ( my $key = each %$Plugin_Config ) {
 
-        if ( exists( $DADA::Config::PLUGIN_CONFIGS->{Mystery_Girl}->{$key} ) ) {
+        if ( exists( $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{$key} ) ) {
 
             if (
                 defined(
-                    $DADA::Config::PLUGIN_CONFIGS->{Mystery_Girl}->{$key}
+                    $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{$key}
                 )
               )
             {
 
                 $Plugin_Config->{$key} =
-                  $DADA::Config::PLUGIN_CONFIGS->{Mystery_Girl}->{$key};
+                  $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{$key};
 
             }
         }
@@ -1313,19 +1253,21 @@ sub cgi_bounce_score_search {
 
             }
 
-            push(
-                @$search_results,
-                {
-                    date      => $entries[0],
-                    list      => $entries[1],
-                    list_name => $l_label{ $entries[1] },
-                    action    => $entries[2],
-                    email     => $entries[3],
+			if($entries[1] eq $list) { # only show entries for this list... 
+	            push(
+	                @$search_results,
+	                {
+	                    date      => $entries[0],
+	                    list      => $entries[1],
+	                    list_name => $l_label{ $entries[1] },
+	                    action    => $entries[2],
+	                    email     => $entries[3],
 
-                    diagnostics => $labeled_digs,
+	                    diagnostics => $labeled_digs,
 
-                }
-            );
+	                }
+	            );
+			}
 
         }
     }
@@ -1412,7 +1354,7 @@ sub cgi_bounce_score_search_template {
    
        <!-- tmpl_loop search_results --> 
 
-      <div style="<!-- tmpl_if __odd__ -->background-color:#ccf;<!-- tmpl_else -->background-color:#fff;<!--/tmpl_if-->border:1px solid black;">
+      <div style="<!-- tmpl_if __odd__ -->background-color:#fff;<!-- tmpl_else -->background-color:#ccf;<!--/tmpl_if-->border:1px solid black;">
 	  <div style="padding:5px"> 
 	
            <h2>
@@ -1777,13 +1719,13 @@ Bounce Handler For Dada Mail
 
 Bounce Handler intelligently handles bounces from Dada Mail list messages.
 
-Messages sent to subscribers of your mailing list that bounce back will be directed to the B<List Administrator Address>. This email account is checked by the Bounc Handler. 
+Messages sent to subscribers of your mailing list that bounce back will be directed to the B<List Administrator Address>. This email account is then checked periodically by the Bounce Handler. 
 
-Awaiting messages are first B<read>, then, the message is B<parsed> in an attempt to understand why the message has bounced. 
+The Bounce Handler then reads awaiting messages and B<parses> the messages in an attempt to understand why the message has bounced. 
 
-The B<parsed> email will then be B<examined> and an B<action> will be taken. The examination and action are set in a collection of B<rules>.  
+The B<parsed> message will then be B<examined> and an B<action> will be taken. 
 
-The usual action that is taken is to apply a, B<score> to the offending email address, everytime the address bounces back a message. Once the, B<Threshold> is reached, the email address is unsubscribed from the mailing list. 
+The usual action that is taken is to apply a, B<score> to the email address that has bounced the message. Once the, B<Score Threshold> is reached, the email address is unsubscribed from the mailing list. 
 
 =head1 Obtaining a Copy of the Plugin
 
@@ -1791,25 +1733,27 @@ Bounce Handler is located in the, I<dada/plugins> directory of the main Dada Mai
 
 =head1 Requirements
 
-Please make sure you have them before you try to install this plugin: 
+Please make sure you have these requirements before installing this plugin: 
 
 =over
 
 =item * A POP3 Email Account
 
-Bounce Handler works by checking a bounce email address via POP3. IMAP is currently not supported.  
+Bounce Handler works by checking a email address via POP3. (IMAP is currently not supported).  
 
-Set up a new email address for the Bounce Handler to check. 
+You will need to create a new email address account for the Bounce Handler to utilize. 
 
-Example: B<bounces@yourdomain.com>, where, "yourdomain.com" is the name of the domain Dada Mail is installed on. 
+Example: create B<bounces@yourdomain.com>, where, I<yourdomain.com> is the name of the domain Dada Mail is installed on. 
 
 Guidelines on this address: 
 
 =over
 
-=item * Do NOT use this address for anything but the Bounce Handler
+=item * Do NOT use this address for anything except the Bounce Handler
 
-You don't periodically check this POP3 account yourself via a mail reader. Doing so won't break Dada Mail, but it will stop Bounce Handler from working correctly, if when checking messages, your mail reader then removes those messages from the POP3 account.  If you do need to periodically check this inbox, make sure to have your mail reader set to B<not> automatically remove the mssages. 
+No one will be checking this POP3 account via a mail reader.
+
+Doing so won't break Dada Mail, but it will stop Bounce Handler from working correctly, if when checking messages, your mail reader then removes those messages from the POP3 account.  If you do need to periodically check this inbox, make sure to have your mail reader set to B<not> automatically remove the messages. 
 
 =item * The email address MUST belong to the domain you have Dada Mail installed
 
@@ -1849,7 +1793,9 @@ If you do install this way, note that you still have to create the create the bo
 
 =item * Create the bounce handler email account
 
-=item * Set your list to use this email address for its, "List Administrator Address" in the list control panel, under,
+=item * Configure your mailing list to use this email address for its, "List Administrator Address"
+
+Set this email address as our "List Administrator Adress" in the list control panel, under,
 
 B<Your Mailing List -  Change List Information> 
 
@@ -1879,12 +1825,12 @@ Below is the detailed version of the above:
 
 =head1 Configuration
 
-There's a few things you need to configure in this plugin. You can either configure the plugin variables in the C<dada_bounce_handler.pl> file itself (not recommended), or in the C<.dada_config> file (recommended!). We will only be going over configuring this plugin via your C<.dada_config> file. 
+There's a few things you need to configure for this plugin. Configure the plugin variables in your C<.dada_config> file (not in the plugin itself!)
 
 =head3 POP3 Server Information. 
 
 Create a new POP3 email account. This email account will be the address that
-bounced messages will be directed towards. This will be your B<Bounce Email Address> 
+bounced messages will be delivered to. 
 
 Open up your C<.dada_config> file for editing. 
 
@@ -1900,7 +1846,7 @@ If they are present, remove them.
 
 You can then configure the plugin variables on these lines: 
 
-	Mystery_Girl => { 
+	Bounce_Handler => { 
 
 	    Server                    			=> undef, 
 	    Username                  			=> undef, 
@@ -1910,14 +1856,17 @@ You can then configure the plugin variables on these lines:
 	
 For example: 
 
-	Server                    			=> 'mail.yourdomain.com', 
-	Username                  			=> 'bounces+yourdomain.com', 
-	Password                  			=> 'password', 
+Bounce_Handler => { 
+
+		Server                    			=> 'mail.yourdomain.com', 
+		Username                  			=> 'bounces+yourdomain.com', 
+		Password                  			=> 'password', 
+},
 
 
-=head2 Set your Bounce Email Address as the default List Administration Email Address
+=head2 Set this address as the default List Administration Email Address
 
-You may also want to set a default value for the, Adminstration Email, so that all new lists already have the bounce handler enabled. 
+You may also want to set a default value for the, List Adminstration Email, so that all new lists already have the Bounce Handler enabled. 
 
 Find this chunk of lines in your C<.dada_config> file: 
 
@@ -1933,7 +1882,7 @@ Find this chunk of lines in your C<.dada_config> file:
 	=cut
 	# end cut for list settings defaults
 
-Remove the =cut lines, like before: 
+Remove the =cut lines, similar to before: 
 
 	# start cut for list settings defaults
 	=cut
@@ -1988,7 +1937,7 @@ Save your C<.dada_config> file.
 
 You're going to have to tell Dada Mail explicitly that you want
 bounces to go to the bounce handler. The first step is to set the 
-B<Dada List Administrator> to your bounce email address. You'll set this per list in the each list's control panel, under 
+B<Dada List Administrator> to your bounce email address. You'll set this per list in the each mailing list's control panel, under 
 
 B<Your Mailing List -  Change List Information>
 
@@ -2007,6 +1956,10 @@ B<Return-Path> header. Dada Mail is shipped to have this option set by default.
 In the list control panel, go to: B<Sending Preferences - Sending Preferences>
 and check the box labeled: B<Set the Sender of SMTP mailings to the 
 list administration email address>  Dada Mail is shipped to have this option set by default. 
+
+=head3 If you're using Amazon SES: 
+
+Dada Mail will automatically have bounces go to the List Administration Address when using Amazon SES. 
 
 =head2 Testing
 
@@ -2029,134 +1982,89 @@ mail headers, you should see the B<Return-Path> header:
  Precedence:list
  Content-type:text/plain; charset=iso-8859-1
 
-Notice that the first line has the B<Return-Path> header, correctly
-putting my bounce email address. My List Owner address, 
-justin@myhost.com still occupies the To: and Reply-To headers, so 
-whoever replies to my message will reply to me, not the bounce handler.
+The first line has the B<Return-Path> header has the Bounce Handler Email set: 
 
-Once you've dialed in your list to use the bounce handler, you should
-be all set.
+	Return-Path: <dadabounce@myhost.com>
+
+My List Owner address, B<justin@myhost.com> still occupies the C<To:> and C<Reply-To headers>, so whoever replies to my message will reply to me, I<not> the Bounce Handler.
 
 =head1 Configuring the Cronjob to Automatically Run Bounce Handler
 
 We're going to assume that you already know how to set up the actual cronjob, 
 but we'll be explaining in depth on what the cronjob you need to set B<is>.
 
-=head2 Setting the cronjob
+=head2 Setting the cronjob via curl
 
 Generally, setting the cronjob to have Bounce Handler run automatically, just 
-means that you have to have a cronjob access a specific URL. The URL looks something like this: 
+means that you have to have a cronjob access a specific URL (via a utility, like curl). The URL looks something like this: 
 
  http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&verbose=1
 
-Where, L<http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl> is the URL to your copy of dada_bounce_handler.pl
+Where, L<http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl> is the URL to your copy of C<dada_bounce_handler.pl>
 
 You'll see the specific URL used for your installation of Dada Mail in the web-based control panel for Bounce Handler, under the fieldset legend, B<Manually Run Bounce Handler>, under the heading, B<Manual Run URL:>
 
 This will have Bounce Handler check any awaiting messages. 
 
-You may have to look through your hosting account's own FAQ, Knowledgebase and/or other docs to see exactly how you invoke a URL via a cronjob. 
-
 A I<Pretty Good Guess> of what the entire cronjob should be set to is located 
 in the web-based crontrol panel for Bounce Handler, under the fieldset legend, B<Manually Run Bounce Handler>, under the heading, B<curl command example (for a cronjob):>
 
-From my testing, this should work for most Cpanel-based hosting accounts. 
+=head3 Customizing your cronjob with added paramaters
 
-Here's the entire thing explained: 
+=head4 passcode
 
-In all these examples, I'll be running the script every 5 minutes ( */5 * * * * ) - tailor to your taste.  
+Since anyone (or anything) can run your Bounce Handler, by following that same URL, (C<http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&verbose=1>), you can set up a simple B<Passcode>, to have some semblence of security over who runs the program. 
 
-=over
+Set a B<passcode> in the Bounce Handler's Config variable, B<Manual_Run_Passcode>. This is done in your C<.dada_config> file - the same place the B<mail server>, B<username> and B<password> were set. Find the lines in your C<.dada_config> file that look like this: 
 
-=item * Using Curl: 
+	$PLUGIN_CONFIGS = { 
 
- */5 * * * * /usr/local/bin/curl -s --get --data run=1 --url http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl
+		Bounce_Handler => {
+			Server                      => 'mail.yourdomain.com', 
+			Username                    => 'bounces+yourdomain.com', 
+			Password                    => 'password', 
+			Port                        => undef,
+			USESSL                      => undef,
+			AUTH_MODE                   => undef,
+			Plugin_Name                 => undef,
+			Plugin_URL                  => undef,
+			Allow_Manual_Run            => undef,
+			Manual_Run_Passcode         => undef,
+			Enable_POP3_File_Locking    => undef, 
+			Log                         => undef,
+			MessagesAtOnce              => undef,
+			Max_Size_Of_Any_Message     => undef,
+			Rules                       => undef,
 
-=item * Using Curl, a few more options (we'll cover those in just a bit): 
+		},
 
- */5 * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0\;test=0\;messages=100 --url http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl
+Find the config named, B<Manual_Run_Passcode> and set it to whatever you'd like this Passcode to be: 
 
-=back
+		Manual_Run_Passcode         => 'sneaky',
 
-=head3 $Plugin_Config->{Allow_Manual_Run}
-
-If you B<DO NOT> want to use this way of invoking the program to check awaiting messages and send them out, make sure to change the variable, B<$Plugin_Config->{Allow_Manual_Run}> to, B<0>:
-
- $Plugin_Config->{Allow_Manual_Run}    = 0; 
-
-at the top of the dada_bounce_handler.pl script. If this variable is not set to, B<1> this method will not work. 
-
-=head3 Security Concerns and $Plugin_Config->{Manual_Run_Passcode}
-
-Running the plugin like this is somewhat risky, as you're allowing an anonymous web browser to run the script in a way that was originally designed to only be run either after successfully logging into the list control panel, or, when invoking this script via the command line. 
-
-If you'd like, you can set up a simple B<Passcode>, to have some semblence of security over who runs the program. Do this by setting the, B<$Plugin_Config->{Manual_Run_Passcode}> variable in the dada_bounce_handler.pl source itself. 
-
-If you set the variable like so: 
-
-    $Plugin_Config->{Manual_Run_Passcode} = 'sneaky'; 
-
-You'll then have to change the URL in these examples to: 
+Then change the URL to include this passcode. In our examples, it would then look like this: 
 
  http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&passcode=sneaky
 
-=head3 Other options you may pass
+The example cronjob for curl in the Bounce Handler's list control panel should also use the new passcode. 
 
-You can control quite a few things by setting variables right in the query string: 
+=head3 messages
 
-=over
+Sets how many messages should be checked and parsed in one execution of the program. Example: 
 
-=item * passcode
+ http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&messages=10
 
-As mentioned above, the B<$Plugin_Config->{Manual_Run_Passcode}> allows you to set some sort of security while running in this mode. Passing the actual password is done in the query string: 
+=head3 verbose
 
- http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&passcode=sneaky
+When set to, B<1>, you'll receive the a report of how Bounce Handler is doing parsing and adding scores (and what not). This is sometimes not so desired, especially in a cron environment, since all this informaiton will be emailed to you (or someone) everytime the script is run.
 
-=item * messages
-
-Overrides B<$Plugin_Config->{MessagesAtOnce}>. States how many messages should be checked and parsed in one execution of the program. Example: 
-
-  http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&messages=10
-
-=item * verbose
-
-By default, you'll receive the a report of how Bounce Handler is doing parsing and adding scores (and what not). This is sometimes not so desired, especially in a cron environment, since all this informaiton will be emailed to you (or someone) everytime the script is run.  You can run Bounce Handler with a cron that looks like this: 
-
- */5 * * * * /usr/local/bin/curl -s --get --data run=1 --url http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl >/dev/null 2>&1
-
-The, C<E<gt>/dev/null 2E<gt>&1> line throws away any values returned. 
-
-Since B<all> the information being returned from the program is done sort of indirectly, this also means that any problems actually running the program will also be thrown away. 
-
-If you set B<verbose> to, "0", under normal operation, Bounce Handler won't show any output, but if there's a server error, you'll receive an email about it. This is probably a good thing. Example: 
+If you set B<verbose> to, "0", under normal operation, Bounce Handler won't show any output, but if there's a server error, you'll receive an email about it. This is probably a good thing. Example (for cronjob-run curl command): 
 
  * * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0 --url http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl
 
-=item * test
+=head3 test
 
-Runs Bounce Handler in test mode by checking the bounces and parsing them, but not actually carrying out the Rules. 
-
-=back
-
-=head3 Notes on Setting the Cronjob for curl 
-
-You may want to check your version of C<curl> and see if there's a speific way to pass a query string. For example, this: 
-
- */5 * * * * /usr/local/bin/curl -s http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&passcode=sneaky
-
-Doesn't work for me. 
-
-I have to use the C<--get> and C<--data> flags, like this: 
-
- */5 * * * * /usr/local/bin/curl -s --get --data run=1\;passcode=sneaky --url http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl
-
-my query string is this part: 
-
- run=1\;passcode=sneaky
-
-And also note I had to escape the, B<;> character. You'll probably have to do the same for the B<&> character. 
-
-Finally, I also had to pass the actual URL of the plugin using the B<--url> flag. 
+Runs Bounce Handler in test mode by checking the bounces and parsing them, but not actually carrying out any rules (no scores added, no email addresses unsubscribed). 
 
 =head1 Command Line Interface
 
@@ -2166,180 +2074,116 @@ There's a slew of optional arguments you can give to this script. To use Bounce 
 
 For a full list of paramaters. 
 
-One of the reasons why you may want to run Bounce Handler via the command line is to set the cronjob via the command line interface, rather than the web-based way. Fair enough!
+You may set the cronjob via the command line interface, rather than the web-based way. You may run into file permission problems when running it this way, depending on your server setup. 
 
 =head2 Command Line Interface for Cronjobs: 
 
-One reason that the web-based way of running the cronjob is better, is that it 
-doesn't involve reconfiguring the plugin, every time you upgrade. This makes 
-the web-based invoking a bit more convenient. 
+The secret is to actually have two commands in one. The first command changes into the same directory as the C<dada_bounce_handler.pl> script, the second invokes the script with the paramaters you'd like. 
 
-=head3 #1 Change the lib path
+For example: 
 
-You'll need to explicitly state where both the:
+ */5 * * * * cd /home/myaccount/cgi-bin/dada/plugins; /usr/bin/perl ./dada_bounce_handler.pl  >/dev/null 2>&1
+
+Where, I</home/myaccount/cgi-bin/dada/plugins> is the full path to the directory the C<dada_bounc_handler.pl> script resides.
+
+=head1 Plugin Configs
+
+These plugin configs are located in your C<.dada_config> file, as mentioned above. 
+
+=head2 Server, Username, Password
+
+These configs need to be set, to hook the Bounce Handler to the email address you want the bounce messages to go. 
+
+=head2 Port
+
+Defaults to: B<110> for regular connections, C<995> for SSL connections. 
+
+Sets the B<port> Bounce Handler uses connect to the POP server. 
+
+=head2 USESSL
+
+Defaults to: B<0>. Set to, B<1>, if you'd like (and can) connect to the POP server with an SSL connection.
+
+=head2 AUTH_MODE
+
+Defaults to: B<BEST>
+
+Allowed paramaters: B<BEST>, B<PASS>, B<APOP>, B<CRAM-MD5>. 
+
+If the default of, B<BEST> isn't working, try the various allowed paramaters. B<PASS> passes the POP3 password in cleartext. 
 
 =over
 
-=item * Absolute Path to the site-wide Perl libraries
+=item * BEST
 
-=item * Absolute Path of the local Dada Mail libraries
+Tries, B<APOP>, B<CRAM-MD5> and B<PASS> modes, in that order of availability. 
 
 =back
 
-I'm going to rush through this, since if you want to run Bounce Handler this way
-you probably know the terminology, but: 
+=head2 Plugin_Name
 
-This script will be running in a different environment and from a different location than what you'd run it as, when you visit it in a web-browser. It's annoying, but one of the things you have to do when running a command line script via a cronjob. 
+The name of this plugin. 
 
-As an example: C<use lib qw()> lines probably look like: 
+Defaults to: B<Bounce Handler>
 
- use lib qw(
- 
- ../ 
- ../DADA/perllib 
- ../../../../perl 
- ../../../../perllib 
- 
- );
+=head2 Plugin_URL
 
+The URL of the plugin. This is usually figured out by default, but if it's not (you'll know, as links are broken in the plugin and nothing seems to work) you may have to set this, manually. 
 
-To this list, you'll want to append your site-wide Perl Libraries and the 
-path to the Dada Mail libraries. 
+=head2 Allow_Manual_Run
 
-If you don't know where your site-wide Perl libraries are, try running this via the command line:
+Defaults to B<1> (enabled)
 
- perl -e 'print $_ ."\n" for @INC'; 
+Sets whether you may use the B<manual run URL> to run the Bounce Handler. The manual run URL is what the curl-powered cronjob uses. If you want to disable this method, set this config variable to, B<0>
 
-If you do not know how to run the above command, visit your Dada Mail in a web browser, log into your list and on the left hand menu and: click, B<About Dada Mail> 
+=head2 Manual_Run_Passcode
 
-Under B<Script Information>, click the, B< +/- More Information> link and under the, B<Perl Library Locations>, select each point that begins with a, "/" and use those as your site-wide path to your perl libraries. 
+This is covered above, under, B<passcode> 
 
+=head2 Enable_POP3_File_Locking
 
-=head2 #2 Set the cron job 
+Defaults to B<1> 
 
-Cron Jobs are scheduled tasks. We need something to check your POP3 email account quite a bit. We're going to set a cron job to test for new messages every 5 minutes. Here's an example cron tab: 
+When enabled, Bounce Handler will use a lock file to make sure only one connection to the POP server is done at one time. Disable this by setting this paramater to, B<0>. 
 
-  */5  *  *  *  * /usr/bin/perl /home/myaccount/cgi-bin/dada/plugins/dada_bounce_handler.pl >/dev/null 2>&1
+=head2 Log
 
-Where, I</home/myaccount/cgi-bin/dada/plugins/dada_bounce_handler.pl> is the full path to the script we just configured. 
+Sets the path to the logfile the Bounce Handler creates. Defaults to:
+ C<bounces.txt> in your C<.dada_files/.logs> directory. 
 
-=head1 How Bounce Handler Works
+=head2 MessagesAtOnce
 
-Once you've set up and installed Bounce Handler correctly, bounced email messages 
-now been set to be delivered to the email address that Bounce Handler checks - 
-that is, the, C<Return-Path> header has been set to the B<Bounce Email Address>,
- which is also the address set for your B<List Admin Email Address>. 
+Sets how many messages are checke, per running of the plugin. 
 
-When Bounce Handler checks each bounced email message, it'll attempt to figure 
-out the severity of the bounce and score the email address belonging to the 
-subscriber accordingly. 
+Defaults to: B<100>
 
-=head2 Bounce Handler's Web-Based Control Panel
+Since there could be many bounce messages awaiting to be checked, there is a limit that's set on how many mesages are looked at, at one time. This also means that it may take a few runnings of the plugin to clear all the awaiting messages. 
 
-There's a few things you may also do in Bounce Handler's own control panel: 
+=head3 Max_Size_Of_Any_Message
 
-=head3 Bounce Email Scorecard
+Defaults to: B<2,621,440> bytes (2.5 megs). Set in, B<octets>
 
-You can view the bounce email scorecard - the scores that Bounce Handler gives
-to email addresses that are currently bouncing and haven't been unsubscribed
-yet. 
-
-Selecting an email address (and clicking it) will give you a rundown of the 
-bounce report for each bounce the email address creates. 
-
-=head3 Manually Run Bounce Handler
-
-If you like, you can run Bounce Handler whenever you like. Running Bounce Handler 
-this way is a good way to see if everything is working correctly and give you 
-an insight of how it all works. 
-
-=head3 Bounce Handler Configuration
-
-View how Bounce Handler is configured. 
+Sets the maximum size of any bounced message that Bounce Handler will deal with. Anything larger than this will simply be ignored and deleted. 
 
 
 =head1 More on Scores, Thresholds, etc
 
-We talked about scoring, but not in great detail, so let's do that: 
-
 By default, The Bounce Handler assigns a particular score to each email address that bounces back a message. These scores are tallied each time an email address bounces a message.
 
-Since Dada Mail understands the differences between B<Hard Bounces> and B<Soft Bounces>, it'll append a smaller score for soft bounces, and a larger score for hard bounces. 
+Since Dada Mail understands the differences between B<Hard Bounces> and B<Soft Bounces>, it'll append a smaller score for soft bounces, and a larger score for hard bounces. There's also a B<Decay Rate>, an amount that all scores are decreased by, every time a mass mailing is sent out.
 
 Once the email address's B<Bounce Score> reaches the B<Threshold>, the email address is then removed from the list. 
 
-You can manipulate the Soft and Hard Bounce Scores and Threshold pretty easily. On the top of this script, you'll see the necessary variables to tweak, 
-
-UPDATE THIS AS IT'S IN THE LIST SETTINGS. YEAH!
-
-Fairly self-explanitory. 
-
-If you want even greater control over what kind of bounces give what scores, you can manipulate the B<Bounce Rules> themselves, as described above. 
-
-Some things to understand: 
-
-If you would like to periodically erase the saved scores, you may do so, by running this script via the command line, like so: 
-
-    ./dada_bounce_handler.pl --erase_score_card
-
-
 =head1 FAQs
 
-=over
+=head2 Bounce Email Address
 
-=item * Does the bounce handler differentiate between "hard' bounces and 'soft' bounces?
+=head3 Do you use only one Bounce Email Address  for all the mailing lists? 
 
-Yes. Because of the Rules, you can set what happens, depending on what 
-type of bounce you receive. By default, the bounce handler is set up to think, "hard bounces" are email addresses that 
-are  invalid because they simply don't exist, and
-soft bounces as email addresses that because the email box
-is full, or there was some sort of problem actually sending the message to the subscriber. 
+Yes. 
 
-Dada Mail basically works by saying, I<After x amount of bounces, just remove from the list.>
+Even though there's only one Bounce Email Address, it is used by all the mailing lists of your Dada Mail, but the Bounce Handler will work with every mailing list I<individually>. Each mailing list also has a separate Bounce Scorecard. 
 
-=item * I keep getting, 'permission denied' errors, what's wrong?
-
-It's very possible that Bounce Handler can't read your subscription database or the list settings database. This is because Dada Mail may be running under the webserver's username, usually, B<nobody>, and not what Bounce Handler is running under, usually your account username. 
-
-You'll need to do a few things: 
-
-=over
-
-=item * Change the permissions of the list subscription and settings databases
-
-You'll most likely need to change the permissions of these files to, '777'. PlainText subscription databases have the format of B<listshortname.list> and are usually located where you set the B<$FILES> Config file variable. .List settings Databases have the format of B<mj-listshortname> and are usually located in the same location.
-
-
-=item * Change the $FILE_CHMOD variable
-
-So you don't need to change the permissions of the list files for every new list you create, set the $FILE_CMOD Config variable to 0777:
-	
- $FILE_CHMOD = 0777; 
-
-Notice there are no quotes around 0777. 
-
-=back
-
-=item * I found a bug in this program, what do I do? 
-
-Report it to the bug tracker: 
-
-L<http://github.com/justingit/dada-mail/issues>
-
-=item * I keep getting this bounced message, but Bounce Handler isn't handling it, what do I do? 
-
-You'll most likely have to make a new rule for it. If you want, attach a copy of the bounced message to the bug tracker: 
-
-L<http://github.com/justingit/dada-mail/issues>
-
-And we'll see if we can't get that kind of bounce in a new version.
-
-=head1 Thanks
-
-Thanks to: Jake Ortman, Henry Hughes for some prelim bounce examples.
-
-Thanks to Eryq ( http://www.zeegee.com ) for the amazing MIME-tools
-collection. It's a gnarly group of modules. 
 
 =head1 COPYRIGHT
 

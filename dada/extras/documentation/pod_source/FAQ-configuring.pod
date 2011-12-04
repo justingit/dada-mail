@@ -69,7 +69,7 @@ Several oft-used global configuration variables are placed in the C<.dada_config
 
  $PLUGIN_CONFIGS = { 
      
-     Mystery_Girl => { 
+     Bounce_Handler => { 
      
          # A whole bunch of stuff... 
      
