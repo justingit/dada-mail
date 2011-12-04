@@ -74,21 +74,22 @@ to worry about, but we'll go through some detail.
 
 
 my %allowed = (
-	Subject                      => undef, 
-	use_list_template            => 0, 
-	use_html_email_template      => 1,
-	use_plaintext_email_template => 1, 
-	treat_as_discussion_msg      => 0, 
-	use_header_info              => 0, 
-	#orig_entity                  => undef, 
+	Subject                        => undef, 
+	use_list_template              => 0, 
+	use_html_email_template        => 1,
+	use_plaintext_email_template   => 1, 
+	treat_as_discussion_msg        => 0, 
+	use_header_info                => 0, 
+	#orig_entity                   => undef, 
 	
-	originating_message_url      => undef, 
+	originating_message_url        => undef, 
 	
-	reset_from_header            => 1, 
-	im_encoding_headers          => 0, 
-	mass_mailing                 => 0, 
-	list_invitation              => 0, 	
-	no_list                      => 0,
+	reset_from_header              => 1, 
+	im_encoding_headers            => 0, 
+	mass_mailing                   => 0, 
+	just_unsubscribed_mass_mailing => 0, 
+	list_invitation                => 0, 	
+	no_list                        => 0,
 	
 	override_validation_type     => undef, 
 );
@@ -464,7 +465,10 @@ sub _format_text {
 				);
 				
 				if($self->mass_mailing == 1){ 
-					if($self->list_invitation == 1){ 
+					if($self->just_unsubscribed_mass_mailing == 1){ 
+						# ... well, nothing, really. 
+					}
+					elsif($self->list_invitation == 1){ 
 						$content = $self->subscription_confirmationation(
 							{
 								-str => $content, 
