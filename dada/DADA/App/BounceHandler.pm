@@ -433,7 +433,7 @@ sub parse_all_bounces {
                     $log .= $rule_report;
 
 					if($ls->param('bounce_handler_forward_msgs_to_list_owner')){ 
-						my $r = self->forward_to_list_owner(
+						my $r = $self->forward_to_list_owner(
 							{ 
 								-ls_obj => $ls,
 								-msg    => $full_msg

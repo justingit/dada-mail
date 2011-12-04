@@ -308,6 +308,10 @@ sub cgi_default_tmpl {
 		
 		<!-- /tmpl_unless --> 
 		
+		<!-- tmpl_if done -->
+			<!-- tmpl_var GOOD_JOB_MESSAGE -->
+		<!--/tmpl_if-->
+		
 <fieldset> 
  <legend> 
 Bounce Email Scorecard
@@ -592,7 +596,9 @@ sub cgi_default {
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get();
-
+	
+	my $done = $q->param('done') || 0; 
+	
     my $tmpl = cgi_default_tmpl();
 
     my @amount = (
@@ -669,6 +675,7 @@ sub cgi_default {
                 curl_location       => $curl_location,
                 plugin_configured   => $plugin_configured,
                 parse_amount_widget => $parse_amount_widget,
+				done                => $done, 
 				bounce_handler_softbounce_score_popup_menu => $bounce_handler_softbounce_score_popup_menu, 
 				bounce_handler_hardbounce_score_popup_menu => $bounce_handler_hardbounce_score_popup_menu, 
 				bounce_handler_decay_score_popup_menu      => $bounce_handler_decay_score_popup_menu, 

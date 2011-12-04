@@ -8418,8 +8418,6 @@ sub change_login {
 
 sub remove_subscribers {
 
-    # I really don't understand how this subroutine got.. invented.
-
     my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
                                                         -Function => 'remove_subscribers');
 
