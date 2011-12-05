@@ -890,10 +890,10 @@ sub carry_out_rule {
               $self->add_to_score( $list, $email, $diagnostics,
                 $actions->{$action} );
 
-            $report .=
-              $self->append_message_to_file( $list, $email, $diagnostics,
-                $actions->{$action}, $message );
-
+#            $report .=
+#             $self->append_message_to_file( $list, $email, $diagnostics,
+#              $actions->{$action}, $message );
+#
         }
         elsif ( $action eq 'unsubscribe_bounced_email' ) {
             $report .=
