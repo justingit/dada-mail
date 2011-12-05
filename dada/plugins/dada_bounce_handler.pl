@@ -1732,7 +1732,7 @@ The Bounce Handler then reads awaiting messages and B<parses> the messages in an
 
 The B<parsed> message will then be B<examined> and an B<action> will be taken. 
 
-The usual action that is taken is to apply a, B<score> to the email address that has bounced the message. Once the, B<Score Threshold> is reached, the email address is unsubscribed from the mailing list. 
+The usual action that is taken is to apply a B<score> to the email address that has bounced the message. Once the B<Score Threshold> is reached, the email address is unsubscribed from the mailing list. 
 
 =head1 Obtaining a Copy of the Plugin
 
