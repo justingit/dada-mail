@@ -31,6 +31,31 @@ faster mass sending speeds. Potentially must faster.
 
 =head3 Bounce Handler
 
+=head4 Rename to: Bounce Handler
+
+The Bounce Handler (Known in the past as, "Mystery Girl") has been renamed to simply, B<Bounce Handler>. I don't very much listen to the 
+Yeah Yeah Yeahs anymore. 
+
+The config variable C<$PLUGIN_CONFIGS> also referred to this plugin as, "Mystery_Girl" - as in this code snippet: 
+
+	$PLUGIN_CONFIGS = { 
+
+		Myster_Girl => {
+			Server                      => undef,
+			Username                    => undef,
+			Password                    => undef,
+			# ...etc
+
+This has also been change to simply, C<Bounce_Handler>:
+
+	$PLUGIN_CONFIGS = { 
+
+		Bounce_Handler => {
+			Server                      => undef,
+			Username                    => undef,
+			Password                    => undef,
+			# ...etc
+
 =head4 Set Scorecard Prefs per-list, instead of Globally
 
 Bounce Handler preferences, including the Soft Bounce Score, Hard Bounce Score and Score Threshold 
