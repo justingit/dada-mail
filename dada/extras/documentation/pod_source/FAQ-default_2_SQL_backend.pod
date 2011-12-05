@@ -12,7 +12,7 @@ Although easier to set up, the Default backend for Dada Mail does not have as ma
 
 We highly suggest that you use the SQL Backend with a Contemporary Installation setup and NOT the Basic Installation setup. If you're not currently using a Contemporary Installation Method, switch:
 
-L<http://dadamailproject.com/support/documentation/basic_two_contemporary_installation.pod.html>
+L<http://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html>
 
 =head1 Setup a SQL Database
 

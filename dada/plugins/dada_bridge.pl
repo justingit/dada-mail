@@ -5378,6 +5378,13 @@ sub mod_dir {
 
 =head1 Dada Bridge
 
+=head1 User Guide
+
+The below documentation go into detail on how to install and configure Dada Bridge. A user guide for Dada Bridge is
+ available in the Dada Mail Manual chapter, B<Using Dada Bridge>: 
+
+L<http://dadamailproject.com/pro_dada/using_dada_bridge.html>
+
 =head1 Description 
 
 Dada Bridge is a plugin for Dada Mail that adds support to send email from your mail reader to a Dada Mail mailing list, both for announce-only tasks and discussion lists.

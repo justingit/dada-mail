@@ -4,7 +4,7 @@
 
 =head1 4.9.0 
 
-This release is currently in ALPHA and there are many unknown bugs. Many. Probably. 
+This release is currently in BETA and there are many unknown bugs. Many. Probably. 
 
 Please do not use in a production environment. Only use for testing purposes. 
 
@@ -21,7 +21,7 @@ faster mass sending speeds. Potentially must faster.
 
 =item * New time and date template tags available
 
-=item * HTML::Template::Pro support Added
+=item * HTML::Template::Pro support added. 
 
 =item * Bounce Handler improvements, including per-list preferences and a "bounce score decay" feature.
 
@@ -47,6 +47,10 @@ at or below, B<0>.
 
 The Bounce Scorecard is now presented on the default screen for the bounce handler, instead of being shown on a separate screen. 
 Navigating the scorecard is now a little more intuitive, as well. 
+
+=head4 Forward bounces to List Owner
+
+Bounce messages can now be forwarded to the List Owner, once the Bounce Handler has reviewed the message. 
 
 =head4 SES Support
 
@@ -87,6 +91,28 @@ A new/update entry in the General FAQ, I<Tuning Dada Mail to Send Mass Mailings 
 
 L<http://dadamailproject.com/support/documentation/FAQ-general.pod.html#tuning_dada_mail_to_send_mass_mailings_faster>
 
+=head3 Installer: some plugins/extensions installed by default
+
+=over
+
+=item * Mailing Monitor (although the cronjob will still need to be set, manually) 
+
+=item * Change Root Password
+
+=item * Screen Cache
+
+=item * Log Viewer
+
+=item * Tracker
+
+=item * Multiple Subscribe
+
+=item * AJAX'd Subscription Form
+
+=item * Blog Index
+
+=back
+
 =head2 CPAN Module Changes and Updates
 
 =head3 LWP unbundled
@@ -99,6 +125,12 @@ for you.
 =head3 MIME::Tools upgraded to v5.502
 
 This upgrade to MIME::Tools has a very positive improvement on sending speed. 
+
+=head2 Bugfixes 4.9.0
+
+=head3 Unsub Notices when removing addresses from the email come with unsub link?
+
+https://github.com/justingit/dada-mail/issues/240
 
 =head1 4.8.4
 
@@ -1605,7 +1637,7 @@ L<http://dadamailproject.com/support/documentation/manually_install_dada_mail.po
 The, "Basic" Installation method is not recommended or supported. If upgrading from a, "Basic" installation, 
 it's recommended to move to a more contemporary installation setup: 
 
-L<http://dadamailproject.com/support/documentation/basic_two_contemporary_installation.pod.html>
+L<http://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html>
 
 =head2 Setup Info Screen 
 
@@ -2130,7 +2162,7 @@ http://dadamailproject.com/support/documentation/FAQ-default_2_SQL_backend.pod.h
 
 =item * Converting from a Basic to Contemporary Installation
 
-http://dadamailproject.com/support/documentation/basic_two_contemporary_installation.pod.html
+http://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html
 
 =back
 

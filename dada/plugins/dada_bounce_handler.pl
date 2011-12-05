@@ -1722,6 +1722,13 @@ sub version {
 
 Bounce Handler For Dada Mail
 
+=head1 User Guide
+
+The below documentation go into detail on how to install and configure the Bounce Handler. A user guide for Bounce Handler is
+ available in the Dada Mail Manual chapter, B<Using the Dada Bounce Handler>: 
+
+L<http://dadamailproject.com/pro_dada/using_dada_bounce_handler.html>
+
 =head1 Description
 
 Bounce Handler intelligently handles bounces from Dada Mail list messages.

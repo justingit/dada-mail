@@ -651,6 +651,25 @@ http://dadamailproject.com/support/documentation/FAQ-errors.pod.html
 
 =head1 Dada Mail and HTML Templates
 
+=head2 How do you change the Dada Mail Logo? 
+
+Create a new image around 175 x 75 px (if you want to match the size of what's currently be used). Save it as, "dada_mail_logo.png"
+
+Place it in the, I<dada/DADA/Template/templates> directory. 
+
+I<Or> place it in your I<.dada_files/.templates> directory. This copy will override the copy that comes with Dada Mail and any additional upgrades of the script will 
+not overwrite the custom version of the file you want to use. (This works for all templates located in the I<dada/DADA/Template/templates> directory)
+
+Remove your screen cache (either delete the, I<.dada_files/.tmp/_screen_cache> directory, or use the Screen Cache plugin) to see your changes take effect. 
+
+=head2 Can I change the Program's Name? 
+
+Add this line to your C<.dada_config> file: 
+
+	$PROGRAM_NAME = 'My Program'; 
+	
+Where, B<My Program> is the new name you'd like to use. 
+
 =head2 How do I change the default look of Dada Mail? 
 
 B<Short Answer:> 

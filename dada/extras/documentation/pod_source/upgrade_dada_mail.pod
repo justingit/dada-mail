@@ -33,7 +33,7 @@ If you are running a B<Basic> Installation of Dada Mail, we really suggest upgra
 
 =head4 More Information
 
-L<http://dadamailproject.com/support/documentation/basic_two_contemporary_installation.pod.html>
+L<http://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html>
 
 =head3 Contemporary Installation 
 
@@ -130,7 +130,7 @@ I</home/myaccount/.dada_files>
 
 =item * If your last installation was a Basic Installation, install Dada Mail as if it's a brand new installation and then move your old list/settings/archives/etc files over: 
 
-L<http://dadamailproject.com/support/documentation/basic_two_contemporary_installation.pod.html>
+L<http://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html>
 
 =back
 
