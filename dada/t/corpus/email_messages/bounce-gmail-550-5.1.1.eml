@@ -1,0 +1,99 @@
+Return-Path: <bounces@example.com>
+Delivered-To: justin@example.com
+Received: (qmail 37896 invoked by uid 89); 6 Dec 2011 02:09:48 -0000
+Received: from unknown (HELO smh01.opentransfer.com) (71.18.216.112)
+  by hedwig.summersault.com with SMTP; 6 Dec 2011 02:09:47 -0000
+Received-SPF: neutral (hedwig.summersault.com: 71.18.216.112 is neither permitted nor denied by SPF record at amazonses.com)
+Received: by smh01.opentransfer.com (Postfix, from userid 8)
+	id B075A7ECFEF; Mon,  5 Dec 2011 21:10:21 -0500 (EST)
+Received: from web1015.opentransfer.com (unknown [173.83.247.194])
+	by smh01.opentransfer.com (Postfix) with ESMTP id 873247ED03D
+	for <justin@example.com>; Mon,  5 Dec 2011 21:10:21 -0500 (EST)
+Received: from web1015.opentransfer.com (localhost [127.0.0.1])
+	by web1015.opentransfer.com (8.14.4/8.14.4) with ESMTP id pB62ATuC008830
+	for <justin@example.com>; Mon, 5 Dec 2011 21:10:29 -0500
+X-opentransfer-URL:  http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl 
+Received: (from c74244@localhost)
+	by web1015.opentransfer.com (8.14.4/8.14.4) id pB62ATZb008822;
+	Mon, 5 Dec 2011 21:10:29 -0500
+Message-Id: <201112060210.pB62ATZb008822@web1015.opentransfer.com>
+X-Authentication-Warning: web1015.opentransfer.com: c74244 set sender to bounces@example.com using -f
+Date: Mon, 05 Dec 2011 21:10:29 -0500
+From: MAILER-DAEMON@email-bounces.amazonses.com
+To: justin@example.com
+Content-type: multipart/report; report-type=delivery-status; boundary="dlZCk.4isBpf2tf.sMbBC.6dY8UWE"; charset=UTF-8
+MIME-Version: 1.0
+Subject: Delivery Status Notification (Failure)
+
+--dlZCk.4isBpf2tf.sMbBC.6dY8UWE
+content-type: text/plain;
+    charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+The following message to <this.is.going.to.bounce.67876543@gmail.com> was u=
+ndeliverable.
+The reason for the problem:
+5.1.0 - Unknown address error 550-"5.1.1 The email account that you tried t=
+o reach does not exist. Please try\n5.1.1 double-checking the recipient's e=
+mail address for typos or\n5.1.1 unnecessary spaces. Learn more at         =
+                    \n5.1.1 http://mail.google.com/support/bin/answer.py?an=
+swer=3D6596 z8si6421489qct.139"
+
+--dlZCk.4isBpf2tf.sMbBC.6dY8UWE
+content-type: message/delivery-status
+
+Reporting-MTA: dns; a192-84.smtp-out.amazonses.com
+
+Final-Recipient: rfc822;this.is.going.to.bounce.67876543@gmail.com
+Action: failed
+Status: 5.0.0 (permanent failure)
+Remote-MTA: dns; [74.125.91.26]
+Diagnostic-Code: smtp; 5.1.0 - Unknown address error 550-"5.1.1 The email account that you tried to reach does not exist. Please try\n5.1.1 double-checking the recipient's email address for typos or\n5.1.1 unnecessary spaces. Learn more at                             \n5.1.1 http://mail.google.com/support/bin/answer.py?answer=6596 z8si6421489qct.139" (delivery attempts: 0)
+
+--dlZCk.4isBpf2tf.sMbBC.6dY8UWE
+content-type: message/rfc822
+
+Received: from unknown (HELO aws-bacon-dlvr-svc-na-i-a3c53ac2.us-east-1.amazon.com) ([10.13.55.147])
+  by na-mm-outgoing-6102-bacon.iad6.amazon.com with ESMTP; 06 Dec 2011 02:11:22 +0000
+Date: Tue, 6 Dec 2011 02:09:20 +0000
+From: "Justin's Test List" <justin@example.com>
+To: "Justin's Test List Subscriber" <this.is.going.to.bounce.67876543@gmail.com>
+Return-Path: 000001341121e102-2d69cf17-138f-4215-b52c-b3db0bc9fd72-000000@email-bounces.amazonses.com
+X-List: dadatest
+List-Archive: <http://example.com/cgi-bin/dada/mail.cgi/archive/dadatest/>
+List-Owner: <justin@example.com>
+List-Post: NO
+List-Subscribe: =?UTF-8?Q?=3Chttp=3A//twiku=2Ecom/cgi-bin/dada/mail=2Ecgi/s/dadatest/this=2Eis=2E?=
+ =?UTF-8?Q?going=2Eto=2Ebounce=2E67876543/gmail=2Ecom/=3E?=
+List-Unsubscribe: =?UTF-8?Q?=3Chttp=3A//twiku=2Ecom/cgi-bin/dada/mail=2Ecgi/u/dadatest/this=2Eis=2E?=
+ =?UTF-8?Q?going=2Eto=2Ebounce=2E67876543/gmail=2Ecom/=3E?=
+X-Message-ID: <20111205210918.41632815@example.com>
+Content-type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+MIME-Version: 1.0
+Subject: Justin's Test List Message
+Message-ID: <000001341121e102-2d69cf17-138f-4215-b52c-b3db0bc9fd72-000000@email.amazonses.com>
+X-AWS-Outgoing: 199.255.192.84
+
+(Mailing list information, including how to remove yourself, is located at =
+the end of this message.)
+__=20
+
+boing
+
+--=20
+
+Subscription Reminder: You're Subscribed to, Justin's Test List=20
+Using the address: this.is.going.to.bounce.67876543@gmail.com
+
+From: justin@example.com
+lov
+
+Unsubscribe Automatically:
+http://example.com/cgi-bin/dada/mail.cgi/u/dadatest/this.is.going.to.bounce.67876543=
+/gmail.com/=3D=
+
+--dlZCk.4isBpf2tf.sMbBC.6dY8UWE--
+
+
