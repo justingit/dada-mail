@@ -583,8 +583,8 @@ Scorecard Preferences
 <!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" --> 
 	<p>Messages are currently being sent via Amazon SES.</p>
 	
-	<p>The bounce handler is currently <strong>not compatible</strong> with Amazon SES.
-	
+	<p>Outgoing messages will have the Return-Path header set to the List Administrator Email (<strong><!-- tmpl_var list_settings.admin_email --></strong>)
+
 <!-- /tmpl_if -->
 
 </legend> 
