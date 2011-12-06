@@ -458,7 +458,10 @@ sub generic_delivery_status_parse {
     for ( keys %$diag ) {
         $diag->{$_} = strip( $diag->{$_} );
     }
-
+	chomp ($email);
+	$email =~ s/\n$//g;
+	$email =~ s/\r$//g;
+	
     return ( $email, $diag );
 }
 

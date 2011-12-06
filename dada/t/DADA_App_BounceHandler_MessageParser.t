@@ -248,6 +248,25 @@ undef $entity;
 
 
 
+$msg    = dada_test_config::slurp('t/corpus/email_messages/bounce-gmail-550-5.1.1.eml'); 
+$entity = $parser->parse_data($msg);
+( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
+diag 'email: ' . $email; 
+diag 'list: ' . $list; 
+#diag Dumper($diag); 
+$rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
+diag 'rule: ' . $rule; 
+
+#ok($rule eq 'user_inactive', "rule is: $rule"); 
+undef $msg; 
+undef $email; 
+undef $found_list; 
+undef $diag; 
+undef $entity;
+
+
+
+
 $parser->filer->purge;
 
 dada_test_config::remove_test_list;
