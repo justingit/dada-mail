@@ -286,7 +286,9 @@ sub cgi_default_tmpl {
 	</script>
 	
 		
-	<!-- tmpl_set name="title" value="Bounce Handling" -->
+	<!-- tmpl_set name="title" value="Bounce Handler" -->
+	<!-- tmpl_include help_link_widget.tmpl -->
+	
 	
      <p id="breadcrumbs">
         
@@ -665,10 +667,13 @@ sub cgi_default {
                 -List       => $list,
             },
             -vars => {
-                MAIL_SETTINGS => $DADA::Config::MAIL_SETTINGS,
-                Username      => $Plugin_Config->{Username},
-                Server        => $Plugin_Config->{Server},
-                Plugin_URL    => $Plugin_Config->{Plugin_URL},
+	
+				screen              => 'using_dada_bounce_handler',
+				
+                MAIL_SETTINGS       => $DADA::Config::MAIL_SETTINGS,
+                Username            => $Plugin_Config->{Username},
+                Server              => $Plugin_Config->{Server},
+                Plugin_URL          => $Plugin_Config->{Plugin_URL},
                 Plugin_Name         => $Plugin_Config->{Plugin_Name},
                 Allow_Manual_Run    => $Plugin_Config->{Allow_Manual_Run},
                 Manual_Run_Passcode => $Plugin_Config->{Manual_Run_Passcode},
