@@ -35,12 +35,11 @@ L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?Sending
 
 Dada Mail's support for bounce handling w/SES sending is also B<Experimental>. We'd love to get your feedback. 
 
-When you use Dada Mail with SES, Dada Mail I<will> set the C<Return-Path> header explicitly, which it wouldn't for sendmail or SMTP. For sendmail, it'll set the C<-f> flag to your List Administrator Address, SMTP it will set the Sender to your List Administrator Address - both of which will set the C<Return-Path>, but by the MTA itself.
+When you use Dada Mail with SES, Dada Mail I<will> set the C<Return-Path> header explicitly, which it wouldn't for sendmail or SMTP. I<(For sendmail, it'll set the C<-f> flag to your List Administrator Address, SMTP it will set the Sender to your List Administrator Address - both of which will set the C<Return-Path>, but by the MTA itself.)>
 
-Dada Mail's included bounce handler has rules specifically for Amazon SES. It's not quite clear if you need to authenticate the email address that the bounce handler uses with Amazon or not. Watch this thread: 
+Dada Mail's included bounce handler has rules specifically for Amazon SES.
 
-L<https://forums.aws.amazon.com/thread.jspa?threadID=80961>
-
+One caveat of using Bounce Handler is that the Bounce Handler email address has to be verified by Amazon to receive the bounces, just like you would verify a sender. Best thing to do would be to create the bounce handler email address and verify it I<before> you configure the Bounce Handler and the rest of Dada Mail with this address, since Bounce Handler will not automatically verify itself - it'll most likely simply ignore the request. 
 
 =head1 Limitations
 
