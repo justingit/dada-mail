@@ -1870,7 +1870,7 @@ You can then configure the plugin variables on these lines:
 	    Server                    			=> undef, 
 	    Username                  			=> undef, 
 	    Password                  			=> undef, 
-		# etc. 
+	    # etc.
 	},
 	
 For example: 
@@ -1880,6 +1880,7 @@ Bounce_Handler => {
 		Server                    			=> 'mail.yourdomain.com', 
 		Username                  			=> 'bounces+yourdomain.com', 
 		Password                  			=> 'password', 
+	    # etc.
 },
 
 
@@ -1891,13 +1892,13 @@ Find this chunk of lines in your C<.dada_config> file:
 
 	# start cut for list settings defaults
 	=cut
-
+	
 	%LIST_SETUP_INCLUDE = (
 		set_smtp_sender              => 1, # For SMTP   
 		add_sendmail_f_flag          => 1, # For Sendmail Command
 		admin_email                  => 'bounces@example.com',
 	);
-
+	
 	=cut
 	# end cut for list settings defaults
 
@@ -1956,7 +1957,7 @@ Save your C<.dada_config> file.
 
 You're going to have to tell Dada Mail explicitly that you want
 bounces to go to the bounce handler. The first step is to set the 
-B<Dada List Administrator> to your bounce email address. You'll set this per list in the each mailing list's control panel, under 
+B<Dada List Administrator> to your bounce email address. You'll set this per mailing list in the each mailing list's control panel, under 
 
 B<Your Mailing List -  Change List Information>
 
@@ -1978,11 +1979,11 @@ list administration email address>  Dada Mail is shipped to have this option set
 
 =head3 If you're using Amazon SES: 
 
-Dada Mail will automatically have bounces go to the List Administration Address when using Amazon SES. 
+Dada Mail will automatically have bounces go to the List Administration Address when using Amazon SES. Make sure before you configure any of the above that you Verify this email address, just like you would a Amazon SES Sender. If you do not, your messages sent through Dada Mail will not be delivered.
 
 =head2 Testing
 
-To test out any of these configurations, Send yourself a test message
+To test out any of these configurations, Send yourself a test message through Dada Mail
 and view the source of the message itself, in your mail reader. In the
 mail headers, you should see the B<Return-Path> header: 
 
@@ -2001,11 +2002,11 @@ mail headers, you should see the B<Return-Path> header:
  Precedence:list
  Content-type:text/plain; charset=iso-8859-1
 
-The first line has the B<Return-Path> header has the Bounce Handler Email set: 
+The first line has the B<Return-Path> header should have the Bounce Handler Email set: 
 
 	Return-Path: <dadabounce@myhost.com>
 
-My List Owner address, B<justin@myhost.com> still occupies the C<To:> and C<Reply-To headers>, so whoever replies to my message will reply to me, I<not> Bounce Handler.
+In this example, my List Owner address, B<justin@myhost.com> still occupies the C<To:> and C<Reply-To headers>, so whoever replies to my message will reply to me, I<not> Bounce Handler.
 
 =head1 Configuring the Cronjob to Automatically Run Bounce Handler
 
@@ -2037,7 +2038,7 @@ Since anyone (or anything) can run your Bounce Handler, by following that same U
 Set a B<passcode> in Bounce Handler's Config variable, B<Manual_Run_Passcode>. This is done in your C<.dada_config> file - the same place the B<mail server>, B<username> and B<password> were set. Find the lines in your C<.dada_config> file that look like this: 
 
 	$PLUGIN_CONFIGS = { 
-
+	
 		Bounce_Handler => {
 			Server                      => 'mail.yourdomain.com', 
 			Username                    => 'bounces+yourdomain.com', 
@@ -2054,10 +2055,10 @@ Set a B<passcode> in Bounce Handler's Config variable, B<Manual_Run_Passcode>. T
 			MessagesAtOnce              => undef,
 			Max_Size_Of_Any_Message     => undef,
 			Rules                       => undef,
-
+			
 		},
 
-Find the config named, B<Manual_Run_Passcode> and set it to whatever you'd like this Passcode to be: 
+Find the config paramater named, B<Manual_Run_Passcode> and set it to whatever you'd like this Passcode to be: 
 
 		Manual_Run_Passcode         => 'sneaky',
 
@@ -2065,7 +2066,7 @@ Then change the URL to include this passcode. In our examples, it would then loo
 
  http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&passcode=sneaky
 
-The example cronjob for curl in Bounce Handler's list control panel should also use the new passcode. 
+The example cronjob for curl in Bounce Handler's list control panel should also update use the new passcode. 
 
 =head3 messages
 
