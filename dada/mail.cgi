@@ -386,6 +386,16 @@ if($ENV{PATH_INFO}){
                 if !$pi_pin;
         }
 
+		# For whatever reason (bug somewhere?!) the 
+		# last character of an unsubscription link - say on the last line of an 
+		# email message, contains a, "=". No fun! 
+		# If that's so, it's not a valid pin and we should ignore.
+		#
+		
+		if($pi_pin eq '='){ 
+			undef $pi_pin;
+		}
+		
         $q->param('flavor', $pi_flavor)
             if $pi_flavor;
         $q->param('list',   $pi_list)

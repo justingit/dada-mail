@@ -5174,7 +5174,7 @@ and to say that you've got the freshest tools on the Web.
 
 
 $VERSION = 4.9.0; 
-$VER     = '4.9.0 Stable 12/06/11';
+$VER     = '4.9.0a Stable 12/07/11';
 
 
 #
