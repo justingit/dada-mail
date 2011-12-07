@@ -17,7 +17,7 @@ my $ls = DADA::MailingList::Settings->new({-list => $list});
 $ls->save({'enable_bulk_batching' => 0}); 
 my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
 
-for(1 .. 100){ 
+for(1 .. 500){ 
 	$lh->add_subscriber({-email => $_ . '@example.com'}); 
 }
 
