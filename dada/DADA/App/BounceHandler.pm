@@ -432,20 +432,23 @@ sub parse_all_bounces {
                     $log .= $msg_report;
                     $log .= $rule_report;
 
-					if($ls->param('bounce_handler_forward_msgs_to_list_owner')){ 
-						my $r = $self->forward_to_list_owner(
-							{ 
-								-ls_obj => $ls,
-								-msg    => $full_msg
+					if ( $need_to_delete == 1 ) {
+						if($ls->param('bounce_handler_forward_msgs_to_list_owner')){ 
+							my $r = $self->forward_to_list_owner(
+								{ 
+									-ls_obj => $ls,
+									-msg    => $full_msg
+								}
+							);
+							if($r == 1){ 
+								$log .= "Forwarding bounces message to the List Owner (" . $ls->param('list_owner_email') . ")\n"; 
 							}
-						);
-						if($r == 1){ 
-							$log .= "Forwarding bounces message to the List Owner (" . $ls->param('list_owner_email') . ")\n"; 
-						}
-						else { 
-							$log .= "Problems forwarding message to the List Owner!\n";
+							else { 
+								$log .= "Problems forwarding message to the List Owner!\n";
+							}
 						}
 					}
+					
 					
                 }
 
