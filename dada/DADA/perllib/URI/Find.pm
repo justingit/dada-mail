@@ -10,7 +10,7 @@ use strict;
 use base qw(Exporter);
 use vars qw($VERSION @EXPORT);
 
-$VERSION        = 20100505;
+$VERSION        = 20111103;
 @EXPORT         = qw(find_uris);
 
 use constant YES => (1==1);
@@ -113,10 +113,11 @@ sub find {
     # Might be slower, but it makes the code simpler
     $escape_func ||= sub { return $_[0] };
 
-    $self->{_uris_found} = 0;
+    # Store the escape func in the object temporarily for use
+    # by other methods.
+    local $self->{escape_func} = $escape_func;
 
-    # Don't assume http.
-    my $old_strict = URI::URL::strict(1);
+    $self->{_uris_found} = 0;
 
     # Yes, evil.  Basically, look for something vaguely resembling a URL,
     # then hand it off to URI::URL for examination.  If it passes, throw
@@ -135,7 +136,7 @@ sub find {
         else {
             my $maybe_uri = '';
 
-            $replace = $escape_func->($1);
+            $replace = $escape_func->($1) if length $1;
 
             if( defined $2 ) {
                 $maybe_uri = $3;
@@ -161,7 +162,7 @@ sub find {
                         my $post = $4;
                         do { $self->find(\$maybe_uri, $escape_func) };
                         $replace .= $escape_func->($pre);
-                        $replace .= $maybe_uri;
+                        $replace .= $maybe_uri;  # already escaped by find()
                         $replace .= $escape_func->($post);
                     }
                     else {
@@ -177,7 +178,6 @@ sub find {
         $replace;
     }gsex;
 
-    URI::URL::strict($old_strict);
     return $self->{_uris_found};
 }
 
@@ -201,7 +201,7 @@ sub _uri_filter {
     }
     else {
         # False alarm
-        $replacement = $orig_match;
+        $replacement = $self->{escape_func}->($orig_match);
     }
 
     # Return recrufted replacement
@@ -324,6 +324,13 @@ sub decruft {
         if( $cruft =~ /^;/ && $orig_match =~ /\&(\#[1-9]\d{1,3}|[a-zA-Z]{2,8})$/) {
             $orig_match .= ';';
             $cruft =~ s/^;//;
+        }
+
+        my $opening = $orig_match =~ tr/(/(/;
+        my $closing = $orig_match =~ tr/)/)/;
+        if ( $cruft =~ /\)$/ && $opening == ( $closing + 1 ) ) {
+            $orig_match .= ')';
+            $cruft =~ s/\)$//;
         }
 
         $self->{end_cruft} = $cruft if $cruft;
@@ -485,9 +492,15 @@ sub _is_uri {
       $uri =~ $self->schemeless_uri_re   and
       $uri !~ /^<?$schemeRe:/;
 
+    # Set strict to avoid bogus schemes
+    my $old_strict = URI::URL::strict(1);
+
     eval {
         $uri = URI::URL->new($uri);
     };
+
+    # And restore it
+    URI::URL::strict($old_strict);
 
     if($@ || !defined $uri) {   # leave everything untouched, its not a URI.
         return NO;

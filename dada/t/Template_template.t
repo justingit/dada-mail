@@ -48,33 +48,75 @@ while(defined($file = readdir TMPL)) {
  }
 
 
-
-
-
-
-for my $test_file(@files){ 
-
-	html_ok( strip_comments(open_file($dir . '/' . $test_file)), $test_file . 'through Lint test');
-       
-	eval { 
-    my $template = HTML::Template::MyExpr->new(path => $dir,
-    		                                 die_on_bad_params => 0,	
-		                                     loop_context_vars => 1,
-		                                     filename          => $test_file, 
-											filter   => [{sub    => \&shh_tmpl_set,
-											format => 'scalar'}], 
-		                                    );		                              
-    $template->output();  
-
-};
-ok(! $@, "$test_file through HTML::Template::MyExpr"); 
-    if($@){ 
-        diag($@); 
-    }
-    
-	undef $template; 
-		
+for my $test_file (@files) {
+    html_ok( strip_comments( open_file( $dir . '/' . $test_file ) ),
+        $test_file . 'through Lint test' );
 }
+
+
+
+
+for my $test_file (@files) {
+
+    eval {
+        my $template = HTML::Template::MyExpr->new(
+            path              => $dir,
+            die_on_bad_params => 0,
+            loop_context_vars => 1,
+            filename          => $test_file,
+            filter            => [
+                {
+                    sub    => \&shh_tmpl_set,
+                    format => 'scalar'
+                }
+            ],
+        );
+        $template->output();
+
+    };
+    ok( !$@, "$test_file through HTML::Template::MyExpr" );
+    if ($@) {
+        diag($@);
+    }
+
+    undef $template;
+}
+
+
+=cut
+
+SKIP: {
+
+	eval { require HTML::Template::Pro };
+	skip "HTML::Template::Pro is not installed", 2 if $@;
+
+	for my $test_file (@files) {
+	    eval {
+	        my $template = HTML::Template::Pro->new(
+	            path              => $dir,
+	            die_on_bad_params => 0,
+	            loop_context_vars => 1,
+	            filename          => $test_file,
+	            filter            => [
+	                {
+	                    sub    => \&shh_tmpl_set,
+	                    format => 'scalar'
+	                }
+	            ],
+	        );
+	        my $foo = $template->output();
+	    };
+	    ok( !$@, "$test_file through HTML::Template::Pro" );
+	    if ($@) {
+	        diag($@);
+	    }
+	    undef $template;
+	}
+}
+
+=cut
+
+
 
 my $template_strings = {
     SUBSCRIBED_MESSAGE => $DADA::Config::SUBSCRIBED_MESSAGE,

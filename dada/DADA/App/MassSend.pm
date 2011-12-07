@@ -1687,8 +1687,10 @@ sub just_unsubscribed_mass_mailing {
 
 	require DADA::App::FormatMessages;  
 	my $fm = DADA::App::FormatMessages->new( -List => $args->{-list} );
-	$fm->mass_mailing(1);
 	$fm->use_email_templates(0); 
+	$fm->mass_mailing(1);
+	$fm->just_unsubscribed_mass_mailing(1);
+	
 
 	require DADA::MailingList::Settings;
 	my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 

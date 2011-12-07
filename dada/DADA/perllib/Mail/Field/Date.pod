@@ -20,25 +20,17 @@ Represents one "Date" header field.
 
 =head2 Constructors
 
-Mail::Field::Date-E<gt>B<combine>(FIELDS)
-
 =over 4
+
+=item Mail::Field::Date-E<gt>B<combine>(FIELDS)
 
 See L<Mail::Field/"Constructors">
 
-=back
-
-Mail::Field::Date-E<gt>B<extract>(TAG, HEAD [, INDEX ])
-
-=over 4
+=item Mail::Field::Date-E<gt>B<extract>(TAG, HEAD [, INDEX ])
 
 See L<Mail::Field/"Constructors">
 
-=back
-
-Mail::Field::Date-E<gt>B<new>(TAG [, STRING | OPTIONS])
-
-=over 4
+=item Mail::Field::Date-E<gt>B<new>(TAG [, STRING | OPTIONS])
 
 See L<Mail::Field/"Constructors">
 
@@ -46,17 +38,13 @@ See L<Mail::Field/"Constructors">
 
 =head2 "Fake" constructors
 
-$obj-E<gt>B<create>(OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<create>(OPTIONS)
 
 See L<Mail::Field/""Fake" constructors">
 
-=back
-
-$obj-E<gt>B<parse>
-
-=over 4
+=item $obj-E<gt>B<parse>
 
 See L<Mail::Field/""Fake" constructors">
 
@@ -64,39 +52,31 @@ See L<Mail::Field/""Fake" constructors">
 
 =head2 Accessors
 
-$obj-E<gt>B<set>(OPTIONS)
-
 =over 4
 
- Option --Default
- Time     undef
- TimeStr  undef
+=item $obj-E<gt>B<set>(OPTIONS)
 
-. Time => SECONDS
+ -Option --Default
+  Time     undef
+  TimeStr  undef
 
-. TimeStr => STRING
+=over 2
 
-=over 4
+=item Time => SECONDS
+
+=item TimeStr => STRING
 
 A string acceptable to Date::Parse.
 
 =back
 
-=back
-
-$obj-E<gt>B<stringify>
-
-=over 4
+=item $obj-E<gt>B<stringify>
 
 See L<Mail::Field/"Accessors">
 
-=back
+=item $obj-E<gt>B<tag>
 
-$obj-E<gt>B<tag>
-
-Mail::Field::Date-E<gt>B<tag>
-
-=over 4
+=item Mail::Field::Date-E<gt>B<tag>
 
 See L<Mail::Field/"Accessors">
 
@@ -104,29 +84,23 @@ See L<Mail::Field/"Accessors">
 
 =head2 Smart accessors
 
-$obj-E<gt>B<text>([STRING])
-
 =over 4
+
+=item $obj-E<gt>B<text>([STRING])
 
 See L<Mail::Field/"Smart accessors">
 
-=back
-
-$obj-E<gt>B<time>([TIME])
-
-=over 4
+=item $obj-E<gt>B<time>([TIME])
 
 Query (or change) the TIME (as stored in the field) in seconds.
 
 =back
 
-=head1 DETAILS
-
 =head1 DIAGNOSTICS
 
-Error: Undefined subroutine <method> called
-
 =over 4
+
+=item Error: Undefined subroutine <method> called
 
 Mail::Field objects use autoloading to compile new functionality.
 Apparently, the mehod called is not implemented for the specific
@@ -142,7 +116,7 @@ F<http://perl.overmeer.net/mailtools/>.
 =head1 AUTHORS
 
 The MailTools bundle was developed by Graham Barr.  Later, Mark
-Overmeer took over maintenance without development.
+Overmeer took over maintenance without commitment to further development.
 
 Mail::Cap by Gisle Aas E<lt>aas@oslonett.noE<gt>.
 Mail::Field::AddrList by Peter Orbaek E<lt>poe@cit.dkE<gt>.

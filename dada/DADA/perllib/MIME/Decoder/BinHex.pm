@@ -22,6 +22,9 @@ data are binhex-encoded.  Common non-standard MIME encodings for this:
     x-uu
     x-uuencode
 
+=head1 SEE ALSO
+
+L<MIME::Decoder>
 
 =head1 AUTHOR
 
@@ -29,10 +32,6 @@ Julian Field (F<mailscanner@ecs.soton.ac.uk>).
 
 All rights reserved.  This program is free software; you can redistribute 
 it and/or modify it under the same terms as Perl itself.
-
-=head1 VERSION
-
-$Revision: 1.17 $ $Date: 2006/03/17 21:03:23 $
 
 =cut
 
@@ -46,7 +45,7 @@ use Convert::BinHex;
 @ISA = qw(MIME::Decoder);
 
 # The package version, both in 1.23 style *and* usable by MakeMaker:
-$VERSION = "5.420";
+$VERSION = "5.502";
 
 
 #------------------------------

@@ -26,11 +26,11 @@ Not all tags will represent everything - for example, you can't just have a tag 
 
 and expect Dada Mail to figure out what you want. 
 
-=head3 Built-in Tags
+=head2 Built-in Tags
 
 There's basically three different groups of tags that you can be sure are always available to you. 
 
-=head4 Global Tags
+=head3 Global Tags
 
 These tags can be used in most every email message. This list isn't exhaustive, but should give you a good start
 
@@ -46,7 +46,180 @@ The URL to Dada Mail, ie: L<http://example.com/cgi-bin/dada/mail.cgi>
 
 =back
 
-=head4 List-Specific Tags
+=head3 Date-related tags
+
+Dada Mail includes a few tags to dynamically put the current data in your email message. They'll take on the form: 
+
+	<!-- tmpl_var date.x --> 
+
+Where, C<x> is a specific variable, which we'll explain below. 
+
+For example, if the current date is: B<Monday, October 15th, 2011 at 2:55 PM>, the following tags would return: 
+
+=over
+
+=item * <!-- tmpl_var date.month -->
+
+Will print out the month. For "October", this would print out, 
+
+	10
+
+
+=item * <!-- tmpl_var date.padded_month -->
+
+Will return the month, padded with a, "0" if the value is less than "0". For October, it would look the same as, C<date.month>: 
+
+	10
+
+But, for something like January, it'll look like this:
+
+	01
+
+=item * <!-- tmpl_var date.named_month -->
+
+Will print out the name of the month. For October, this would print out, 
+
+	October
+
+=item * <!-- tmpl_var date.abbr_named_month -->
+
+Will print out the name of the month, in an abbreviated form. For October, this would print out, 
+
+	Oct
+
+=item * <!-- tmpl_var date.day -->
+
+Will print the day of the month. For, "October 17th", this would print out: 
+
+	17
+
+=item * <!-- tmpl_var date.nth_day --> 
+
+Will print the day of the month, with the correct ordinal suffix. For, "October 17th", this would print out: 
+
+	17th
+
+=item * <!-- tmpl_var date.padded_day --> 
+
+Will print the day of the month, padded for values less than, "10". For the 17th, this would print out, 
+
+	17
+
+But for October 1st, this would print out: 
+
+	01
+
+=item * <!-- tmpl_var date.day_of_the_week -->
+
+Will print out the day of the week. For, "Monday, October 15th", this would print out, 
+
+	Monday
+
+=item * <!-- tmpl_var date.abbr_day_of_the_week -->
+
+Will print out the day of the week, in an abbreviated form. For, "Monday", this would print out, 
+
+	Mon
+
+=item * <!-- tmpl_var date.year -->
+
+Will print out the current year. For example: 
+
+	2011
+
+=item * <!-- tmpl_var date.abbr_year -->
+
+Will print out the abbreviated year (last two digits). For example 2011, will be printed out as: 
+
+	11
+
+=item * <!-- tmpl_var date.time -->
+
+Will print out the, "Unix Time" For example: 
+
+	1318884939
+
+=item * <!-- tmpl_var date.localtime --> 
+
+Will print out the current date and time in a format like this: 
+
+	Mon Oct 17 14:55:39 2011
+
+=item * <!-- tmpl_var date.24_time -->
+
+Will print out the time (hour:minute:second) in 24 hour time. So, if it's 4:33 PM, this will be printed out as: 
+
+	16:33:25
+
+=back
+
+You can then use these different tags to create different date formats. 
+
+=head4 Little endian forms
+
+=over
+
+=item * 18 October 2011
+
+	<!-- tmpl_var date.day --> <!-- tmpl_var date.named_month --> <!-- tmpl_var date.year -->
+
+=item * 10/18/2011
+
+	<!-- tmpl_var date.day -->/<!-- tmpl_var date.month -->/<!-- tmpl_var date.year -->
+
+=back
+
+=head4 Big endian forms
+
+=over
+
+=item * 2011-10-17 (ISO 8601 international standard)
+
+	<!-- tmpl_var date.year -->-<!-- tmpl_var date.padded_month -->-<!-- tmpl_var date.padded_day -->
+
+=item * 2011-Oct-17, Monday
+
+	<!-- tmpl_var date.year -->-<!-- tmpl_var date.abbr_named_month -->-<!-- tmpl_var date.day -->, <!-- tmpl_var date.day_of_the_week -->
+
+=back
+
+=head4 Middle endian forms
+
+=over
+
+=item * Monday, October 17, 2011
+
+	<!-- tmpl_var date.day_of_the_week -->, <!-- tmpl_var date.named_month --> <!-- tmpl_var date.day -->, <!-- tmpl_var date.year -->
+
+=item * 11/09/03
+
+	<!-- tmpl_var date.padded_month -->/<!-- tmpl_var date.padded_day -->/<!-- tmpl_var date.abbr_year -->
+
+=back
+
+=head4 Flexible Date and Time formats
+
+If the included simple date tags are not enough, Dada Mail has support for C<strftime> formatting.
+
+The formatting is documented at:
+
+L<http://www.unix.com/man-page/FreeBSD/3/strftime/>
+
+If you're familiar with PHP's time formatting: 
+
+L<http://php.net/manual/en/function.strftime.php> 
+
+it's the same thing. 
+
+To use this in Dada Mail's templating syntax, use the C<E<lt>!-- tmpl_strftime --E<gt>> tag, like this: 
+
+	<!-- tmpl_strftime %a, %d %b %Y -->
+
+This will print out,
+
+	Mon, 17 Oct 2011
+
+=head3 List-Specific Tags
 
 Your list has a whole slew of attributes that make up its behavior. Most of the these attributes can be used  as tags in your email messages. 
 
@@ -98,7 +271,7 @@ Your list's physical address
 
 =back
 
-=head4 Subscriber-Specific Tags
+=head3 Subscriber-Specific Tags
 
 Information about whom you are emailing to is also available to you. 
 

@@ -549,7 +549,7 @@ The default setting is the online version that we provide - but it is a paid ser
 
 =cut
 
-$HELP_LINKS_URL ||= 'http://dadamailproject.com/pro_dada/4.8.0';
+$HELP_LINKS_URL ||= 'http://dadamailproject.com/pro_dada/4.9.0';
 
 
 =pod
@@ -632,7 +632,7 @@ configuration names and values are and do.
 
 $PLUGIN_CONFIGS ||= { 
 
-	Mystery_Girl => {
+	Bounce_Handler => {
 		Server                      => undef,
 		Username                    => undef,
 		Password                    => undef,
@@ -643,13 +643,10 @@ $PLUGIN_CONFIGS ||= {
 		Plugin_URL                  => undef,
 		Allow_Manual_Run            => undef,
 		Manual_Run_Passcode         => undef,
+		Enable_POP3_File_Locking    => undef, 
 		Log                         => undef,
-		Send_Messages_To            => undef,
 		MessagesAtOnce              => undef,
 		Max_Size_Of_Any_Message     => undef,
-		Default_Soft_Bounce_Score   => undef,
-		Default_Hard_Bounce_Score   => undef,
-		Score_Threshold             => undef,
 		Rules                       => undef,
 
 	},
@@ -1207,7 +1204,6 @@ $MASS_MAIL_SETTINGS ||= "|$MAILPROG -t";
 
 $AMAZON_SES_OPTIONS ||= { 
 	aws_credentials_file            => undef, 
-	ses_send_email_script           => undef, 
 	ses_verify_email_address_script => undef, 
 	ses_get_stats_script            => undef, 
 };
@@ -1334,7 +1330,7 @@ $DEBUG_TRACE ||= {
 	DADA_Profile_Session       => 0, 
     DADA_Mail_MailOut          => 0, 
     DADA_Mail_Send             => 0, 
-	DADA_App_BounceScoreKeeper => 0, 
+	DADA_App_BounceHandler_ScoreKeeper => 0, 
     DADA_MailingList_baseSQL   => 0,  
 
  
@@ -1403,7 +1399,9 @@ information (for example:DBI)
 
 =pod
 
-=head1 Templates 							
+=head1 Templates 
+
+=pod
 
 You can change the look and feel of Dada Mail globally by specifying a
 different template file to use. Examples of what these templates 
@@ -2821,10 +2819,38 @@ And are nothing but HTML::Template-style tags. We'd like to move away from the
 old-style tags, but still 100% support them, for the time being. Setting this 
 paramater to, C<0> is B<very> much experimental. 
 
+=head4 engine
+
+B<engine> May be changed to one of the following:
+
+=over
+
+=item * Best
+
+=item * HTML Template
+
+=back
+
+When set to, B<Best> or B<HTML Template Pro>, Dada Mail will use C<HTML::Template::Pro>
+if available as the templating engine. If C<HTML::Template::Pro> is not available, 
+Dada Mail will use HTML::Template/HTML::Template::Expr. 
+
+B<Note:> Any templates that required the advanced templating syntax will currently still use C<HTML::Template::Expr>. 
+
+When set to, B<HTML Template>, Dada Mail will only use C<HTML::Template> or C<HTML::Template::Expr>, 
+depending on what's needed.
+
+C<HTML::Template::Pro> will most likely be the faster choice, so it's preferred and 
+Dada Mail will automatically use it, if it is available. 
+
+If you do not want to use C<HTML::Template::Pro> at all, just set C<engine> 
+to, B<HTML Template>. 
+
 =cut
 
 $TEMPLATE_SETTINGS ||= { 
 	oldstyle_backwards_compatibility => 1, 
+	engine                           => 'Best', 
 };
 
 
@@ -2910,8 +2936,7 @@ $MIME_HUSH ||= 0;
 Set to: 'faster', 'less memory', or 'no tmp files'. This controls how 
 the MIME::Parser works. For more information: 
 
-http://search.cpan.org/~dskoll/MIME-tools-5.417/lib/MIME/Parser.pm#OPTIMIZING_YOUR_PARSER
-
+http://search.cpan.org/~dskoll/MIME-tools-5.502/lib/MIME/Parser.pm#OPTIMIZING_YOUR_PARSER
 =cut
 
 $MIME_OPTIMIZE ||= 'no tmp files'; 
@@ -4862,6 +4887,13 @@ encrypted.
 	tracker_auto_parse_links                            => 0, 
 	tracker_show_message_reports_in_mailing_monitor     => 0, 
 
+# Bounce Handler
+bounce_handler_threshold_score                          => 10, 
+bounce_handler_hardbounce_score                         => 4, 
+bounce_handler_softbounce_score                         => 1, 
+bounce_handler_decay_score                              => 1, 
+bounce_handler_forward_msgs_to_list_owner               => 0, 
+
     
 # dada_digest.pl 
 last_digest_sent                        => undef, 
@@ -5140,8 +5172,9 @@ and to say that you've got the freshest tools on the Web.
 
 
 
-$VERSION = 4.8.4; 
-$VER     = '4.8.4 Stable 11/22/11';
+
+$VERSION = 4.9.0; 
+$VER     = '4.9.0 Stable 12/06/11';
 
 
 #
@@ -5207,8 +5240,7 @@ References                  =>    undef,
  Precedence                 =>    undef,
 
 'X-Mailer'                  =>   "$PROGRAM_NAME $VER ", 
-'X-BounceHandler'           =>    undef, 
-   
+
  Sender                     =>    undef, 
 'Content-type'              =>    undef, 
 'Content-Transfer-Encoding' =>    undef, 
@@ -5252,6 +5284,7 @@ References
 X-Priority
 
 List
+X-List
 List-Archive
 List-Digest
 List-Help
@@ -5263,11 +5296,12 @@ List-Unsubscribe
 List-URL
 X-BeenThere
 
+X-Message-ID
 Message-ID
 Precedence
 
 X-Mailer
-X-BounceHandler
+
 
 Sender
 Content-type

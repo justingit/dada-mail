@@ -2,6 +2,154 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head2 Summary 4.9.0
+
+This release focuses on many parts of Dada Mail to optimize performance. Benefits of all this work include
+faster mass sending speeds. Potentially must faster. 
+
+=over
+
+=item * Sending performance has been optimized. Less memory used, faster template parsing
+
+=item * Amazon SES sending performance has also been improved
+
+=item * New time and date template tags available
+
+=item * HTML::Template::Pro support added. 
+
+=item * Bounce Handler improvements, including per-list preferences and a "bounce score decay" feature.
+
+=back
+
+=head2 Features 4.9.0
+
+=head3 Bounce Handler
+
+=head4 Rename to: Bounce Handler
+
+The Bounce Handler (Known in the past as, "Mystery Girl") has been renamed to simply, B<Bounce Handler>. I don't very much listen to the 
+Yeah Yeah Yeahs anymore. 
+
+The config variable C<$PLUGIN_CONFIGS> also referred to this plugin as, "Mystery_Girl" - as in this code snippet: 
+
+	$PLUGIN_CONFIGS = { 
+
+		Myster_Girl => {
+			Server                      => undef,
+			Username                    => undef,
+			Password                    => undef,
+			# ...etc
+
+This has also been change to simply, C<Bounce_Handler>:
+
+	$PLUGIN_CONFIGS = { 
+
+		Bounce_Handler => {
+			Server                      => undef,
+			Username                    => undef,
+			Password                    => undef,
+			# ...etc
+
+=head4 Set Scorecard Prefs per-list, instead of Globally
+
+Bounce Handler preferences, including the Soft Bounce Score, Hard Bounce Score and Score Threshold 
+are now set B<per mailing list>, instead of having to be set in the global config. 
+
+=head4 Decaying Scores
+
+Bounce Scores can now, B<decay>, or be reduced every time a mass mailing is sent out. This is to help
+minimize scores from email addresses that temporarily have had problems with delivery, but are otherwise
+valid email addresses.  An email address's bounce score will also now be automatically removed, if the score goes 
+at or below, B<0>.
+
+=head4 Bounce Scorecard Conveniently on the default screen
+
+The Bounce Scorecard is now presented on the default screen for the bounce handler, instead of being shown on a separate screen. 
+Navigating the scorecard is now a little more intuitive, as well. 
+
+=head4 Forward bounces to List Owner
+
+Bounce messages can now be forwarded to the List Owner, once the Bounce Handler has reviewed the message. 
+
+=head4 SES Support
+
+Dada Mail/Bounce Handler should now have support for Amazon SES sending. This is still marked as, B<Experimental> (as is SES support in total), but SES-specific rules have been whipped up. Please give us feedback!
+
+=head3 HTML::Template::Pro support, Faster Template Rendering
+
+C<HTML::Template::Pro> renders the templates that Dada Mail uses throughout the app, 
+including HTML screens and custom email messages, much faster than what's included
+with Dada Mail (C<HTML::Template>). C<HTML::Template::Pro> will need to be installed separately. 
+
+See the features doc on C<HTML::Template::Pro> for more information: 
+
+L<http://dadamailproject.com/support/documentation/features-html_template-pro.pod.html>
+
+=head3 Faster sending using Amazon SES
+
+Dada Mail now uses a persistent HTTP connection when talking with Amazon SES. This can 
+speed up sending by .3 - .7 seconds/I<message>. 
+
+=head3 New Template Tags for Date/Time
+
+Dada Mail now has support for various simple Date and Time formats to use in HTML and Email templates, 
+as well support for more flexible/advanced C<strftime> formats:
+
+L<http://dadamailproject.com/support/documentation/features-email_template_syntax.pod#date_related_tags>
+
+=head3 New import script, dada_archives_backup_to_sql.pl
+
+This script allows you to import archive data from the backup of a DB File, to the SQL backend. This helps if your 
+DB Files are corrupted/incompatible with your current server environment. 
+
+=head2 Changes 4.9.0
+
+=head3 Documentation Updates
+
+A new/update entry in the General FAQ, I<Tuning Dada Mail to Send Mass Mailings Faster>:
+
+L<http://dadamailproject.com/support/documentation/FAQ-general.pod.html#tuning_dada_mail_to_send_mass_mailings_faster>
+
+=head3 Installer: some plugins/extensions installed by default
+
+=over
+
+=item * Mailing Monitor (although the cronjob will still need to be set, manually) 
+
+=item * Change Root Password
+
+=item * Screen Cache
+
+=item * Log Viewer
+
+=item * Tracker
+
+=item * Multiple Subscribe
+
+=item * AJAX'd Subscription Form
+
+=item * Blog Index
+
+=back
+
+=head2 CPAN Module Changes and Updates
+
+=head3 LWP unbundled
+
+The C<LWP> group of Perl modules is no longer available with Dada Mail. C<LWP> is used for
+such things as, B<Send a Webpage> and some web services, like B<Amazon SES>. You 
+will have to install C<LWP> yourself. Most shared hosting companies will have this already installed, 
+for you. 
+
+=head3 MIME::Tools upgraded to v5.502
+
+This upgrade to MIME::Tools has a very positive improvement on sending speed. 
+
+=head2 Bugfixes 4.9.0
+
+=head3 Unsub Notices when removing addresses from the email come with unsub link?
+
+https://github.com/justingit/dada-mail/issues/240
 
 =head1 4.8.4
 
@@ -1508,7 +1656,7 @@ L<http://dadamailproject.com/support/documentation/manually_install_dada_mail.po
 The, "Basic" Installation method is not recommended or supported. If upgrading from a, "Basic" installation, 
 it's recommended to move to a more contemporary installation setup: 
 
-L<http://dadamailproject.com/support/documentation/basic_two_contemporary_installation.pod.html>
+L<http://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html>
 
 =head2 Setup Info Screen 
 
@@ -2033,7 +2181,7 @@ http://dadamailproject.com/support/documentation/FAQ-default_2_SQL_backend.pod.h
 
 =item * Converting from a Basic to Contemporary Installation
 
-http://dadamailproject.com/support/documentation/basic_two_contemporary_installation.pod.html
+http://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html
 
 =back
 

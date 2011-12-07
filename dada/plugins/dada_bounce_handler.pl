@@ -1,1177 +1,72 @@
 #!/usr/bin/perl
 
-
-
 package dada_bounce_handler;
-use strict; 
-$|++; 
+use strict;
+$|++;
+
 #---------------------------------------------------------------------#
-# dada_bounce_handler.pl (Mystery Girl) 
+# dada_bounce_handler.pl
 #
 # Documentation:
-#  
+#
 #  http://dadamailproject.com/d/dada_bounce_handler.pl.html
 #
 #---------------------------------------------------------------------#
 
-
 # A weird fix.
 BEGIN {
-   if($] > 5.008){
-      require Errno;
-      require Config;
-   }
+    if ( $] > 5.008 ) {
+        require Errno;
+        require Config;
+    }
 }
 
-
-
-$ENV{PATH} = "/bin:/usr/bin"; 
-delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
+$ENV{PATH} = "/bin:/usr/bin";
+delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 
 use lib qw(
 
-../ 
-../DADA/perllib 
-../../../../perl 
-../../../../perllib 
+  ../
+  ../DADA/perllib
+  ../../../../perl
+  ../../../../perllib
 
-); 
+);
 
-use DADA::Config 4.0.0;
-use CGI::Carp qw(fatalsToBrowser); 
-use DADA::App::Guts; 
-use DADA::Mail::Send; 
-use DADA::MailingList::Subscribers; 
+use DADA::Config 4.8.0;
+use CGI::Carp qw(fatalsToBrowser);
+use DADA::App::Guts;
+use DADA::Mail::Send;
+use DADA::MailingList::Subscribers;
 use DADA::MailingList::Settings;
-use DADA::Template::HTML; 
-
-
-
-my $Plugin_Config = {}; 
-
-# All the below variables can also be set in your .dada_config file, which is 
-# recommended. See the docs for this plugin for more information. 
-#
-# Required!
-# What is the POP3 mail server of the bounce email address? 	
-$Plugin_Config->{Server}   = undef;
-
-# Required!
-# And the username? 
-$Plugin_Config->{Username} = undef; 
-
-# Required!
-# And the password?
-$Plugin_Config->{Password} = undef;
-
-#---------------------------------------------------------------------#
-# Optional Settings - #
-#######################
-# What POP3 mail server Port Number are you using? 
-# Auto will set this to, "110" automatically or, 
-# "995" if is USESSL is set to, "1"
-$Plugin_Config->{Port} = 'AUTO';
-
-# Are you using SSL?
-$Plugin_Config->{USESSL} = 0;
-
-# What's the method? 'BEST', 'PASS', 'APOP' or 'CRAM-MD5'
-$Plugin_Config->{AUTH_MODE} = 'BEST';
-
-# The bounce handler log should be written at:
-$Plugin_Config->{Log} = $DADA::Config::LOGS . '/bounces.txt';
-
-# Message sent from the bounce handler should go to.. 
-# (Leave, undef, if you'd like these messages to go to the list owner)
-$Plugin_Config->{Send_Messages_To}          = undef; 
-
-# How many messages should I check in one go?
-$Plugin_Config->{MessagesAtOnce}            = 100; 
-
-# Is there a limit on how large a single email message can be, until we outright # reject it? 
-# In, "octects" (bytes) - this is about 2.5 megs...
-#
-$Plugin_Config->{Max_Size_Of_Any_Message} = 2621440;
-
-# "Soft" bounces are given a score of: 
-$Plugin_Config->{Default_Soft_Bounce_Score} = 1;
-
-# "Hard" bounces are given a score of:
-$Plugin_Config->{Default_Hard_Bounce_Score} = 4; 
-
-# What score does an email address need to go until they're unsubscribed?
-$Plugin_Config->{Score_Threshold}           = 10; 
-
-# Can the checking of awaiting messages to send out happen by invoking this 
-# script from a URL? (CGI mode?) 
-# The URL would look like this: 
-#
-# http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1
-
-$Plugin_Config->{Allow_Manual_Run}    = 1; 
-
-# Set a passcode that you'll have to also pass to invoke this script as 
-# explained above in, "$Plugin_Config->{Allow_Manual_Run}" Setting this to, 
-# "undef" means no passcode is required. 
-
-$Plugin_Config->{Manual_Run_Passcode} = undef;
-
-
-# Another Undocumented Feature - Enable Pop3 File Locking?
-# Sometimes, the file lock for the POP3 server doesn't work correctly
-# and you get a stale lock. Setting this config variable to, "0"
-# will disable this plugin's own lock file scheme. Should be fairly safe to use. 
-
-$Plugin_Config->{Enable_POP3_File_Locking} = 1;
-
-
-
+use DADA::Template::HTML;
+use DADA::App::BounceHandler;
 use CGI;
 my $q = new CGI;
-   $q->charset($DADA::Config::HTML_CHARSET);
-   $q = decode_cgi_obj($q);
-
-# Usually, this doesn't need to be changed. 
-# But, if you are having trouble saving settings 
-# and are redirected to an 
-# outside page, you may need to set this manually. 
-
-$Plugin_Config->{Plugin_URL} = $q->url; 
-
-# Plugin Name!
-$Plugin_Config->{Plugin_Name} = 'Mystery Girl'; 
-
-# End of Optional Settings. 
-#---------------------------------------------------------------------#
-
-
-my $Score_Card = {}; 
-
-my $Rules = [
-
-#{	
-#	hotmail_notification => {
-#		Examine => {
-#			Message_Fields => {
-#			   'Remote-MTA'          => [qw(Windows_Live)], 
-#				Bounce_From_regex    =>  [qr/staff\@hotmail.com/],	
-#				Bounce_Subject_regex => [qr/complaint/],	
-#			},
-#				
-#			Data => { 
-#				Email => 'is_valid', 
-#				List  => 'is_valid',
-#			}
-#		},
-#		Action => { 
-#			unsubscribe_bounced_email	=> 'from_list',
-#		}
-#	}
-#},
-
-
-
-{	
-	qmail_delivery_delay_notification => {
-		Examine => {
-			Message_Fields => {
-				Guessed_MTA             => [qw(Qmail)],
-			    'Diagnostic-Code_regex' => [qr/The mail system will continue delivery attempts/],		
-				},
-				
-			Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-			#nothing!
-		}
-	}
-},
-
-
-
-{	
-	over_quota => {
-		Examine => {
-			Message_Fields => {
-				Action                 => [qw(failed Failed)],
-				Status                 => [qw(5.2.2 4.2.2 5.0.0 5.1.1)],
-				'Final-Recipient_regex' => [(qr/822/)], 
-				'Diagnostic-Code_regex' => [(qr/552|exceeded storage allocation|over quota|storage full|mailbox full|disk quota exceeded|Mail quota exceeded|Quota violation/)]	
-			},
-				
-			Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-			#mail_list_owner => 'over_quota_message',
-			 add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score}, 
-		}
-	}
-},
-
-
-{	
-	hotmail_over_quota => {
-		Examine => {
-			Message_Fields => {
-				Action                 => [qw(failed)],
-				Status                 => [qw(5.2.3)],
-				'Final-Recipient_regex' => [(qr/822/)], 
-				'Diagnostic-Code_regex' => [(qr/larger than the current system limit/)]	
-			},
-				
-			Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-			#mail_list_owner => 'over_quota_message',
-			 add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score}, 
-		}
-	}
-},
-
-
-
-{
-over_quota_obscure_mta => {
-		Examine => {
-			Message_Fields => {
-				Action                 => [qw(failed)],
-				Status                 => [qw(5.0.0)],
-				'Final-Recipient_regex' => [(qr/LOCAL\;\<\>/)], 
-			},
-				
-			Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-			#mail_list_owner => 'over_quota_message',
-			 add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score}, 
-		}
-	}
-},
-
-
-
-
-{
-over_quota_obscure_mta_two => {
-		Examine => {
-		
-			Message_Fields => {
-				Action                 => [qw(failed)],
-				Status                 => [qw(4.2.2)],
-			},
-				
-			Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-			#mail_list_owner => 'over_quota_message',
-			 add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score}, 
-		}
-	}
-},
-
-
-
-
-{
-	yahoo_over_quota => {
-		Examine => {
-			Message_Fields => {
-				Action                 => [qw(failed)],
-				Status                 => [qw(5.0.0)],
-			   'Remote-MTA_regex'      => [(qr/yahoo.com/)], 
-			   'Final-Recipient_regex' => [(qr/822/)], 
-			   'Diagnostic-Code_regex' => [(qr/over quota/)],	
-			},
-			Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-			#mail_list_owner => 'over_quota_message',
-			 add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score}, 
-		}
-	}
-},
-
-
-{
-	yahoo_over_quota_two => {
-		Examine => {
-			Message_Fields => {
-			   'Remote-MTA'            => [qw(yahoo.com)], 
-			   'Diagnostic-Code_regex' => [(qr/over quota/)],	
-			},
-			Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-			#mail_list_owner => 'over_quota_message',
-			 add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score}, 
-		}
-	}
-},
-
-
-{	
-	qmail_over_quota => {
-		Examine => {
-			Message_Fields => {
-				
-				Guessed_MTA             => [qw(Qmail)],
-				Status                  => [qw(5.2.2 5.x.y)],
-				'Diagnostic-Code_regex' => [(qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox full|storage full/)],
-					
-			},
-				
-			Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-			#mail_list_owner => 'over_quota_message',
-			 add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score}, 
-		}
-	}
-},
-
-{	
-	over_quota_552 => {
-		Examine => {
-			Message_Fields => {
-				'Diagnostic-Code_regex' => [(qr/552 recipient storage full/)],	
-			},
-				
-			Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-			#mail_list_owner => 'over_quota_message',
-			 add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score}, 
-		}
-	}
-},
-
-
-
-
-{	
-	qmail_tmp_disabled => {
-		Examine => {
-			Message_Fields => {
-				
-				Guessed_MTA             => [qw(Qmail)],
-				Status                  => [qw(4.x.y)],
-				'Diagnostic-Code_regex' => [(qr/temporarily disabled/)],
-					
-			},
-				
-			Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-		    add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score}, 
-		}
-	}
-},
-
-
-
-
-{	
-	delivery_time_expired => {
-		Examine => {
-			Message_Fields => {
-				Status_regex            => [qr(/4.4.7|delivery time expired/)],
-				Action_regex            => [qr(/Failed|failed/)],
-			    'Final-Recipient_regex' => [qr(/822/)], 
-
-			},
-				
-			Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-			# TODO:
-			# Not sure what to put here ATM. 
-		}
-	}
-},
-
-
-
-
-
-
-
-{	
-	status_over_quota => {
-		Examine => {
-			Message_Fields => {
-			
-				Action                  => [qw(Failed failed)], #originally Failed
-				Status                  =>[qr/mailbox full/], # like, wtf?					
-			},
-				
-			Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-			#mail_list_owner => 'over_quota_message',
-			 add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score}, 
-		}
-	}
-},
-
-
-{	
-	earthlink_over_quota => {
-		Examine => {
-			Message_Fields => {
-				'Diagnostic-Code_regex' => [qr/522|Quota violation/],	
-				'Remote-MTA'            => [qw(Earthlink)],				
-			},
-				
-			Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-			#mail_list_owner => 'over_quota_message',
-			 add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score}, 
-		}
-	}
-},
-
-
-
-
-
-{	
-	qmail_error_5dot5dot1 => {
-		Examine => {
-			Message_Fields => {
-				
-				Guessed_MTA             => [qw(Qmail)],
-				#Status                  => [qw(5.1.1)],
-				'Diagnostic-Code_regex' => [(qr/551/)],
-					
-			},
-				
-			Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score}, 
-		}
-	}
-},
-
-
-{
-qmail2_error_5dot5dot1 => {
-	Examine => {
-		Message_Fields => {
-		
-			Guessed_MTA => [qw(Qmail)],
-			Status => [qw(5.1.1)],
-		    'Diagnostic-Code_regex' => [(qr/no mailbox here by that name/)],
-			},
-		
-		Data => {
-				Email => 'is_valid',
-				List => 'is_valid',
-			}
-		},
-		Action => {
-			unsubscribe_bounced_email	=> 'from_list',
-		}
-	}
-},
-
-
-
-
-
-
-
-{ 
-	# AOL, apple.com, mac.com, altavista.net, pobox.com...  
-	delivery_error_550 => { 
-		Examine => {
-			Message_Fields => {
-				Action                =>  [qw(failed)],
-				Status                =>  [qw(5.1.1)],
-			   'Final-Recipient_regex' => [(qr/822/)], 
-			   'Diagnostic-Code_regex' =>  [(qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User unknown|No such mail drop/)], 
-		},
-		Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-				#unsubscribe_bounced_email => 'from_list', 
-				#mail_list_owner => 'user_unknown_message', 
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-		}
-	}
-},
-
-
-
-
-
-{ 
-	# same as above, but without the Diagnostic_Code_regex. 
-	
-	delivery_error_5dot5dot1_status => { 
-		Examine => {
-			Message_Fields => {
-				Action                =>  [qw(failed)],
-				Status                =>  [qw(5.1.1)],
-			   'Final-Recipient_regex' => [(qr/822/)], 
-		},
-		Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-				#unsubscribe_bounced_email => 'from_list', 
-				#mail_list_owner => 'user_unknown_message', 
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-		}
-	}
-},
-
-
-
-
-
-{ 
-	# Yahoo!
-	delivery_error_554 => { 
-		Examine => {
-			Message_Fields => {
-				Action                =>  [qw(failed)],
-				Status                =>  [qw(5.0.0)],
-			   'Diagnostic-Code_regex' => [(qr/554 delivery error/)], 
-		},
-		Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-				}
-		},
-		Action => { 
-				#unsubscribe_bounced_email => 'from_list', 
-				#mail_list_owner => 'user_unknown_message', 
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-		}
-	}
-},
-
-
-
-
-
-{
-qmail_user_unknown => { 
-	Examine => { 
-			Message_Fields => { 
-				Status      => [qw(5.x.y)], 
-				Guessed_MTA => [qw(Qmail)],  
-			}, 
-			Data => { 
-				Email       => 'is_valid',
-				List        => 'is_valid', 
-			}
-		},
-			Action => { 
-				#unsubscribe_bounced_email => 'from_list', 
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},                
-		} 
-	}
-}, 
-
-
-
-
-
-{
-	qmail_error_554 => { 
-		Examine => {
-			Message_Fields => {
-			   'Diagnostic-Code_regex' => [(qr/554/)], 
-			   	Guessed_MTA => [qw(Qmail)], 
-			   				
-		},
-		Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-				}
-		},
-		Action => { 
-				#unsubscribe_bounced_email => 'from_list', 
-				#mail_list_owner => 'user_unknown_message', 
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-		}
-	}
-},
-
-
-
-
-
-{ 
-	qmail_error_550 => { 
-		Examine => {
-			Message_Fields => {
-			   'Diagnostic-Code_regex' => [(qr/550/)], 
-			   	Guessed_MTA => [qw(Qmail)], 
-			   				
-		},
-		Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-				}
-		},
-		Action => { 
-				#unsubscribe_bounced_email => 'from_list', 
-				#mail_list_owner => 'user_unknown_message', 
-                 add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-		}
-	}
-},
-
-
-
-
-
-{ 
-	qmail_unknown_domain => { 
-		Examine => {
-			Message_Fields => {
-			    Status                 => [qw(5.1.2)], 
-			   	Guessed_MTA            => [qw(Qmail)], 
-			   				
-		},
-		Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-				}
-		},
-		Action => { 
-				#unsubscribe_bounced_email => 'from_list', 
-				#mail_list_owner => 'user_unknown_message', 
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-		}
-	}
-},
-
-
-{ 
-	# more info:
-	# http://www.qmail.org/man/man1/bouncesaying.html
-
-	qmail_bounce_saying => { 
-		Examine => {
-			Message_Fields => {
-			    'Diagnostic-Code_regex' =>  [qr/This address no longer accepts mail./],  
-			   	Guessed_MTA             =>  [qw(Qmail)], 
-			   				
-		},
-		Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-				}
-		},
-		Action => { 
-				#unsubscribe_bounced_email => 'from_list', 
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-		}
-	}
-},
-
-
-{
-	exim_user_unknown => { 
-		Examine => { 
-			Message_Fields => { 
-				Status      => [qw(5.x.y)], 
-				Guessed_MTA => [qw(Exim)],  
-			}, 
-			Data => { 
-				Email       => 'is_valid',
-				List        => 'is_valid', 
-			}
-		},
-			Action => { 
-				#unsubscribe_bounced_email => 'from_list', 
-                 add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-   			}, 
-		}
-}, 
-
-
-
-
-{
-exchange_user_unknown => { 
-	Examine => { 
-			Message_Fields => { 
-				#Status      => [qw(5.x.y)], 
-				Guessed_MTA => [qw(Exchange)],  
-				'Diagnostic-Code_regex' => [(qr/Unknown Recipient/)],
-			}, 
-			Data => { 
-				Email       => 'is_valid',
-				List        => 'is_valid', 
-			},
-		},
-			Action => { 
-				#unsubscribe_bounced_email => 'from_list', 
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-		} 
-	}
-},
-
-
-
-
-#{
-#novell_access_denied => { 
-#	Examine => { 
-#			Message_Fields => { 
-#				#Status         => [qw(5.x.y)], 
-#				'X-Mailer_regex' => [qw(Novell)],  
-#				'Diagnostic-Code_regex' => [(qr/access denied/)],
-#			}, 
-#			Data => { 
-#				Email       => 'is_valid',
-#				List        => 'is_valid', 
-#			},
-#			
-#		},
-#			Action => { 
-#				#unsubscribe_bounced_email => 'from_list',
-#               add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-#		} 
-#	}
-#}, 
-
-
-
-
-
-{
-# note! this should really make no sense, but I believe this is a bounce....
-aol_user_unknown => {
-	Examine => {
-		Message_Fields => {
-			Status => [qw(2.0.0)],
-			Action => [qw(failed)],
-			'Reporting-MTA_regex'   => [(qr/aol\.com/)], 
-			'Final-Recipient_regex' => [(qr/822/)], 
-			'Diagnostic-Code_regex' => [(qr/250 OK/)], # no for real, everything's "OK" #
-	},
-	Data => { 
-		Email => 'is_valid', 
-		List  => 'is_valid',
-	}
-	},
-	Action => { 
-		#unsubscribe_bounced_email => 'from_list', 
-		#mail_list_owner => 'user_unknown_message', 
-         add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-	},
-	}
-},	
-
-
-
-
-
-{
-
-user_unknown_5dot3dot0_status => {
-	Examine => {
-		Message_Fields => {
-			Action                =>  [qw(failed)],
-			Status                =>  [qw(5.3.0)],
-		   'Final-Recipient_regex' => [(qr/822/)], 
-		   'Diagnostic-Code_regex' => [(qr/No such user|Addressee unknown/)], 
-		
-		},
-		Data => { 
-				Email => 'is_valid', 
-				List  => 'is_valid',
-			}
-		},
-		Action => { 
-				#unsubscribe_bounced_email => 'from_list', 
-				#mail_list_owner => 'user_unknown_message', 
-                add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-		}
-	}
-},
-
-
-
-
-
-{
-	user_inactive => {
-		Examine => { 
-			Message_Fields => {
-			   
-				Status_regex            => [(qr/5\.0\.0/)],
-				Action                  => [qw(failed)],
-				'Final-Recipient_regex' => [(qr/822/)], 
-				'Diagnostic-Code_regex' => [(qr/user inactive|Bad destination|bad destination/)],
-				
-				
-		},
-		Data => { 
-			Email => 'is_valid', 
-			List  => 'is_valid',
-			}
-		},
-		Action => { 
-			#unsubscribe_bounced_email => 'from_list', 
-            add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-		},
-	}
-},	
-
-
-
-
-
-{
-	postfix_5dot0dot0_error => {
-		Examine => {
-			Message_Fields => {
-			   
-				Status                  => [qw(5.0.0)],
-				Guessed_MTA             => [qw(Postfix)],
-				Action                  => [qw(failed)],
-				#said_regex              => [(qr/550\-Mailbox unknown/)],
-		},
-		Data => { 
-			Email => 'is_valid', 
-			List  => 'is_valid',
-			}
-		},
-		Action => { 
-            #unsubscribe_bounced_email => 'from_list', 
-            add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-		},
-	}
-},	
-
-
-
-
-{
-	permanent_move_failure => {
-		Examine => {
-			Message_Fields => {
-			   
-				Status                  => [qw(5.1.6)],
-				Action                  => [qw(failed)],
-				'Final-Recipient_regex' => [(qr/822/)], 
-				'Diagnostic-Code_regex' => [(qr/551 not our customer|User unknown|ecipient no longer/)],
-				
-		},
-		Data => { 
-			Email => 'is_valid', 
-			List  => 'is_valid',
-		}
-		},
-		Action => { 
-			#unsubscribe_bounced_email => 'from_list', 
-            add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-		},
-	}
-},	
-
-
-
-
-
-{
-unknown_domain => {
-	Examine => {
-		Message_Fields => {
-		   
-			Status                  => [qw(5.1.2)],
-			Action                  => [qw(failed)],
-			'Final-Recipient_regex' => [(qr/822/)], 
-		},
-		Data => { 
-			Email => 'is_valid', 
-			List  => 'is_valid',
-		}
-		},
-		Action => { 
-			#unsubscribe_bounced_email => 'from_list', 
-             add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score}, 
-		},
-	}
-},	
-
-
-
-
-{
-relaying_denied => {
-	Examine => {
-		Message_Fields => {
-		   
-			Status                  => [qw( 5.7.1)],
-			Action                  => [qw(failed)],
-			'Final-Recipient_regex' => [(qr/822/)], 
-			'Diagnostic-Code_regex' => [(qr/Relaying denied|relaying denied/)],
-
-		},
-		Data => { 
-			Email => 'is_valid', 
-			List  => 'is_valid',
-		}
-		},
-		Action => { 
-			# TODO
-			# Again, not sure quite what to put here - will be silently ignored. 
-			
-			# NOTE: Sometimes this message is sent by servers of spammers. 
-		},
-	}
-},	
-
-
-
-
-
-
-
-#{
-# Supposively permanent error. 
-#access_denied => {
-#					Examine => {
-#						Message_Fields => {
-#						   
-#							Status                  => [qw(5.7.1)],
-#							Action                  => [qw(failed)],
-#						    'Final-Recipient_regex' => [(qr/822/)], 
-#						    'Diagnostic-Code_regex' => [(qr/ccess denied/)],
-#							
-#					},
-#					Data => { 
-#						Email => 'is_valid', 
-#						List  => 'is_valid',
-#					}
-#					},
-#					Action => { 
-#						#unsubscribe_bounced_email => 'from_list', 
-#                        add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-#					},
-#					}
-#},	
-
-
-
-{ 
-
-	unknown_bounce_type => {
-					Examine => { 
-						Data => { 
-							Email => 'is_valid', 
-							List  => 'is_valid', 
-						},
-					}, 
-					Action => { 
-						#mail_list_owner => 'unknown_bounce_type_message', 
-						#append_message_to_file => $Plugin_Config->{Log},
-						add_to_score => $Plugin_Config->{Default_Soft_Bounce_Score},
-					}
-					
-					}
-},
-
-
-
-{
-	email_not_found => {
-		Examine => { 
-			Data => { 
-				Email => 'is_invalid', 
-				List  => 'is_valid', 
-			},
-		}, 
-		Action => { 
-			# mail_list_owner => 'email_not_found_message', 
-		}
-	}
-},
-
-#{
-#who_knows => { 
-#				Examine => {
-#					Message_Fields => {},	
-#				}, 
-#				Action  => {append_message_to_file => $Plugin_Config->{Log}},
-#			},
-#},
-
-]; 
-
-
-
-my $Over_Quota_Subject = "Bounce Handler - warning user over quota";
-my $Over_Quota_Message = qq{
-Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME --> 
-
-I received a message and it needs your attention. It seems
-that the user, <!-- tmpl_var subscriber.email --> is over their email quota. 
-
-This is probably a *temporary* problem, but if the problem persists,
-you may want to unbsubscribe this address. 
-
-I've attached what I was sent, if you're curious (or bored, what have you).  
-
-You can remove this address from your list by clicking this link: 
-
-<!-- tmpl_var list_unsubscribe_link -->
-
-Below is the nerdy diagnostic report: 
------------------------------------------------------------------------
-<!-- tmpl_var report -->
-
-<!-- tmpl_var status_report -->
------------------------------------------------------------------------
-
-- <!-- tmpl_var Plugin_Name -->
-
-}; 
-
-
-my $User_Unknown_Subject = "Bounce Handler - warning user doesn't exist";
-my $User_Unknown_Message = qq{
-Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var ROGRAM_NAME -->
-
-I received a message and it needs your attention. It seems
-that the user, <!-- tmpl_var subscriber.email --> doesn't exist, was deleted 
-from the system, kicked the big can, etc. 
-
-This is probably a *permanent* problem and I suggest you unsubscribe the
-email address, but I'll let you have the last judgement. 
-
-I've attached what I was sent, if you're curious (or bored, what have you).  
-
-You can remove this address from your list by clicking this link: 
-
-<!-- tmpl_var list_unsubscribe_link -->
-
-Below is the nerdy diagnostic report: 
------------------------------------------------------------------------
-<!-- tmpl_var report -->
-
-<!-- tmpl_var status_report -->
------------------------------------------------------------------------
-
-- <!-- tmpl_var Plugin_Name -->
-
-}; 
-
-my $Email_Not_Found_Subject = "Bounce Handler - warning";
-my $Email_Not_Found_Message = qq{
-Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
-
-I received a message and it needs your attention. The message was
-bounced, but I cannot find the email associated with the bounce. 
-
-Either I can't understand the bounced report, or there's a bug
-in my sourcecode. Internet time is lighting fast and I fear I
-may already be reduced to wasted 1's and 0's, *sigh*. 
-
-I've attached what I was sent, if you're curious (or bored, what have you).  
-
-Below is the nerdy diagnostic report: 
------------------------------------------------------------------------
-<!-- tmpl_var report -->
-
-<!-- tmpl_var status_report -->
------------------------------------------------------------------------
-
-- <!-- tmpl_var Plugin_Name -->
-
-}; 
-
-
-my $Email_Unknown_Bounce_Type_Subject = "Bounce Handler - warning";
-my $Email_Unknown_Bounce_Type_Message = qq{
-Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
-
-I received a message and it needs your attention. The message was
-bounced, but I dont know for what reason.
-
-Either I can't understand the bounced report, or there's a bug
-in my sourcecode. Internet time is lighting fast and I fear I
-may already be reduced to wasted 1's and 0's, *sigh*. 
-
-I've attached what I was sent, if you're curious (or bored, what have you).  
-
-You can remove this address from your list by clicking this link: 
-
-<!-- tmpl_var list_unsubscribe_link -->
-
-Below is the nerdy diagnostic report: 
------------------------------------------------------------------------
-<!-- tmpl_var report -->
-
-<!-- tmpl_var status_report -->
-
------------------------------------------------------------------------
-
-- <!-- tmpl_var Plugin_Name -->
-
-}; 
-
-
-
-
-my $Email_Unsubscribed_Because_Of_Bouncing_Subject = "Unsubscribed from: <!-- tmpl_var list_settings.list_name --> because of excessive bouncing";
-my $Email_Unsubscribed_Because_Of_Bouncing_Message = qq{
+$q->charset($DADA::Config::HTML_CHARSET);
+$q = decode_cgi_obj($q);
+
+my $Plugin_Config = {
+    Server                   => undef,
+    Username                 => undef,
+    Password                 => undef,
+    Port                     => 'AUTO',
+    USESSL                   => 0,
+    AUTH_MODE                => 'BEST',
+    Log                      => $DADA::Config::LOGS . '/bounces.txt',
+    MessagesAtOnce           => 100,
+    Max_Size_Of_Any_Message  => 2621440,
+    Allow_Manual_Run         => 1,
+    Manual_Run_Passcode      => undef,
+    Enable_POP3_File_Locking => 1,
+    Plugin_URL               => $q->url,
+    Plugin_Name              => 'Bounce Handler',
+};
+
+
+$Plugin_Config->{Email_Unsubscribed_Because_Of_Bouncing_Subject} =
+"Unsubscribed from: <!-- tmpl_var list_settings.list_name --> because of excessive bouncing";
+$Plugin_Config->{Email_Unsubscribed_Because_Of_Bouncing_Message} = qq{
 Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
 
 This is a notice that your email address:
@@ -1198,182 +93,546 @@ for more information.
 
 - <!-- tmpl_var PROGRAM_NAME -->
 
-}; 
+};
 
 #---------------------------------------------------------------------#
 # Nothing else to be configured.                                      #
 
 
-my $App_Version = '1.6';
-
-
-
-
-my %Global_Template_Options = (
-		#debug             => 1, 		
-		path              => [$DADA::Config::TEMPLATES],
-		die_on_bad_params => 0,									
-
-        (
-            ($DADA::Config::CPAN_DEBUG_SETTINGS{HTML_TEMPLATE} == 1) ? 
-                (debug => 1, ) :
-                ()
-        ), 
-
-
-);
-
-
-use Getopt::Long; 
-use Mail::Verp; 
-use MIME::Parser;
-use MIME::Entity; 
-
+use Getopt::Long;
+use MIME::Entity;
 
 use Fcntl qw(
-    O_CREAT 
-    O_RDWR
-    LOCK_EX
-    LOCK_NB
-); 
+  O_CREAT
+  O_RDWR
+  LOCK_EX
+  LOCK_NB
+);
 
-
-my $parser = new MIME::Parser; 
-   $parser = optimize_mime_parser($parser); 
-
-my $Remove_List       = {}; 
-#my $Bounce_History    = {}; 
-
-my $Rules_To_Carry_Out = [];
-my $debug = 0; 
-
+my $debug = 0;
 my $help = 0;
-my $test; 
-my $server; 
-my $username; 
-my $password; 
-my $verbose = 0; 
-my $log; 
-my $Have_Log = 0; 
-my $messages = 0; 
-
-my $erase_score_card = 0; 
-
-my $version; 
-
-
+my $test;
+my $server;
+my $username;
+my $password;
+my $verbose = 0;
+my $log;
+my $messages = 0;
+my $erase_score_card = 0;
+my $version;
 my $list;
-my $admin_list; 
-my $root_login; 
-	
+my $admin_list;
+my $root_login;
 
-GetOptions("help"             => \$help, 
-		   "test=s"           => \$test, 
-		   "server=s"         => \$server, 
-		   "username=s"       => \$username, 
-		   "password=s"       => \$password, 
-		   "verbose"          => \$verbose, 
-		   "log=s"            => \$log,
-		   "messages=i"       => \$messages, 
-		   "erase_score_card" => \$erase_score_card, 
-		   "version"          => \$version,  
-		); 		
+GetOptions(
+    "help"             => \$help,
+    "test=s"           => \$test,
+    "server=s"         => \$server,
+    "username=s"       => \$username,
+    "password=s"       => \$password,
+    "verbose"          => \$verbose,
+    "log=s"            => \$log,
+    "messages=i"       => \$messages,
+    "erase_score_card" => \$erase_score_card,
+    "version"          => \$version,
+	"list=s"            => \$list, 
+);
 
-&init_vars; 
+&init_vars;
 
 run()
-	unless caller();
-	
-sub init_vars { 
+  unless caller();
 
-    # DEV: This NEEDS to be in its own module - perhaps DADA::App::PluginHelper or something?
+sub init_vars {
 
-     while ( my $key = each %$Plugin_Config ) {
-        
-        if(exists($DADA::Config::PLUGIN_CONFIGS->{Mystery_Girl}->{$key})){ 
-        
-            if(defined($DADA::Config::PLUGIN_CONFIGS->{Mystery_Girl}->{$key})){ 
-                    
-                $Plugin_Config->{$key} = $DADA::Config::PLUGIN_CONFIGS->{Mystery_Girl}->{$key};
-        
+# DEV: This NEEDS to be in its own module - perhaps DADA::App::PluginHelper or something?
+
+    while ( my $key = each %$Plugin_Config ) {
+
+        if ( exists( $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{$key} ) ) {
+
+            if (
+                defined(
+                    $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{$key}
+                )
+              )
+            {
+
+                $Plugin_Config->{$key} =
+                  $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{$key};
+
             }
         }
-     }
+    }
 }
 
+sub init {
 
+    $Plugin_Config->{Server}         = $server   if $server;
+    $Plugin_Config->{Username}       = $username if $username;
+    $Plugin_Config->{Password}       = $password if $password;
+    $Plugin_Config->{Log}            = $log      if $log;
+    $Plugin_Config->{MessagesAtOnce} = $messages if $messages > 0;
 
-sub run { 
-	if(!$ENV{GATEWAY_INTERFACE}){ 
-		&cl_main(); 
-	}else{ 
-		&cgi_main(); 
-	}
+    if ($test) {
+        $debug = 1
+          if $test eq 'bounces';
+    }
+
+    $verbose = 1
+      if $debug == 1;
+
 }
 
-
-
-sub test_sub { 
-	return "Hello, World!"; 
+sub run {
+    if ( !$ENV{GATEWAY_INTERFACE} ) {
+        my $r = cl_main();
+        if ($verbose || $help) {
+            print $r;
+        }
+        exit;
+    }
+    else {
+        &cgi_main();
+    }
 }
 
-
+sub test_sub {
+    return "Hello, World!";
+}
 
 sub cgi_main {
 
-    if(keys %{$q->Vars}                        && 
-       $q->param('run')                        && 
-       xss_filter($q->param('run'))       == 1 &&
-       $Plugin_Config->{Allow_Manual_Run} == 1
-      ) { 
-        cgi_manual_start();
-    } 
-    else { 
+    if (   keys %{ $q->Vars }
+        && $q->param('run')
+        && xss_filter( $q->param('run') ) == 1
+        && $Plugin_Config->{Allow_Manual_Run} == 1 )
+    {
+        print cgi_manual_start();
+    }
+    else {
 
-        
-        ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,  
-                                                         -Function => 'dada_bounce_handler');
-                                                                                                                
-        $list = $admin_list; 
-        
-        my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-        my $li = $ls->get(); 
-                                                                  
+        ( $admin_list, $root_login ) = check_list_security(
+            -cgi_obj  => $q,
+            -Function => 'dada_bounce_handler'
+        );
+
+        $list = $admin_list;
+
+        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+        my $li = $ls->get();
+
         my $flavor = $q->param('flavor') || 'cgi_default';
-        my %Mode = ( 
-        
-        'cgi_default'             => \&cgi_default, 
-        'cgi_parse_bounce'        => \&cgi_parse_bounce, 
-        'cgi_scorecard'           => \&cgi_scorecard, 
-        'cgi_bounce_score_search' => \&cgi_bounce_score_search, 
-        'cgi_show_plugin_config'  => \&cgi_show_plugin_config,
-		'ajax_parse_bounces_results' => \&ajax_parse_bounces_results, 
-		'cgi_erase_scorecard'        => \&cgi_erase_scorecard, 
-        ); 
+        my %Mode = (
 
-        if(exists($Mode{$flavor})) { 
-            $Mode{$flavor}->();  #call the correct subroutine 
-        }else{
+            'cgi_default'                => \&cgi_default,
+            'cgi_parse_bounce'           => \&cgi_parse_bounce,
+            'cgi_scorecard'              => \&cgi_scorecard,
+            'cgi_bounce_score_search'    => \&cgi_bounce_score_search,
+            'cgi_show_plugin_config'     => \&cgi_show_plugin_config,
+            'ajax_parse_bounces_results' => \&ajax_parse_bounces_results,
+            'cgi_erase_scorecard'        => \&cgi_erase_scorecard,
+			'edit_prefs'                 => \&edit_prefs, 
+        );
+
+        if ( exists( $Mode{$flavor} ) ) {
+            $Mode{$flavor}->();    #call the correct subroutine
+        }
+        else {
             &cgi_default;
         }
     }
 }
 
+sub cgi_default_tmpl {
+
+    return q { 
+
+	<script type="text/javascript">
+	    //<![CDATA[
+		Event.observe(window, 'load', function() {
+		  show_bounce_scorecard();	
+		});
+
+		function show_bounce_scorecard(){ 
+	
+			new Ajax.Updater(
+				'bounce_scorecard', '<!-- tmpl_var Plugin_URL -->', 
+				{ 
+				    method: 'post', 
+					parameters: {
+						flavor:       'cgi_scorecard',
+						page:         $F('page')
+					},
+				onCreate: 	 function() {
+					$('bounce_scorecard_loading').update('<p class="alert">Loading...</p>');
+				},
+				onComplete: 	 function() {
+
+					$('bounce_scorecard_loading').update('<p class="alert">&nbsp;</p>');
+					Effect.BlindDown('bounce_scorecard');
+				}	
+			}
+		);
+
+		}
+		
+		function turn_page(page_to_turn_to) { 
+			Form.Element.setValue('page', page_to_turn_to) ; 
+			show_bounce_scorecard();
+		}
+	//]]>
+			
+	</script>
+	
+		
+	<!-- tmpl_set name="title" value="Bounce Handler" -->
+	<!-- tmpl_include help_link_widget.tmpl -->
+	
+	
+     <p id="breadcrumbs">
+        
+           <!-- tmpl_var Plugin_Name --> 
+    </p> 
+ 
+		<!-- tmpl_unless plugin_configured --> 
+		
+			<div style="background:#fcc;margin:5px;padding:5px;text-align:center;border:2px #ccc dotted">
+			  <h1>
+			   Warning! <!-- tmpl_var Plugin_Name --> Not Configured!
+			  </h1> 
+	
+			<p class="error">
+			 You must set up the Bounce Handler Email Address in the plugin-specific configuration. 
+			</p> 
+	 		
+			 </div>
+		
+		<!-- /tmpl_unless --> 
+		
+		<!-- tmpl_if done -->
+			<!-- tmpl_var GOOD_JOB_MESSAGE -->
+		<!--/tmpl_if-->
+		
+<fieldset> 
+ <legend> 
+Bounce Email Scorecard
+ </legend> 
+ <div id="bounce_scorecard_loading"><p>&nbsp;</p></div>
+<div id="bounce_scorecard"></div> 
+
+<form> 
+<input type="hidden" name="page" value="1" id="page" /> 
+</form> 
+
+ 
+</fieldset> 
 
 
 
-sub cgi_default { 
+
+<fieldset> 
+ <legend>Manually Run <!-- tmpl_var Plugin_Name --></legend> 
+
+<form action="<!-- tmpl_var Plugin_URL -->">
+
+<input type="checkbox" name="bounce_test" id="bounce_test" value="bounces" /><label for="test"><label for="bounce_test">Test With Awaiting Messages</label>
+
+<p><label for="parse_amount">Review</label> up to <!-- tmpl_var parse_amount_widget --> Messages.</p>
+
+<input type="hidden" name="flavor" value="cgi_parse_bounce" /> 
+<div class="buttonfloat"> 
+
+<input type="submit" class="cautionary" value="Parse Bounces..." />
+</div> 
+
+<div class="floatclear"></div> 
+
+</form>
+
+<p>
+ <label for="cronjob_url">Manual Run URL:</label><br /> 
+<input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var Plugin_URL -->?run=1&verbose=1&passcode=<!-- tmpl_var Manual_Run_Passcode -->" />
+</p>
+<!-- tmpl_unless Allow_Manual_Run --> 
+    <span class="error">(Currently disabled)</a>
+<!-- /tmpl_unless -->
+
+
+<p> <label for="cronjob_command">curl command example (for a cronjob):</label><br /> 
+<input type="text" class="full" id="cronjob_command" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --data run=1\;passcode=<!-- tmpl_var Manual_Run_Passcode -->\;verbose=0  --url <!-- tmpl_var Plugin_URL -->" />
+<!-- tmpl_unless curl_location --> 
+	<span class="error">Can't find the location to curl!</span><br />
+<!-- /tmpl_unless --> 
+
+<!-- tmpl_unless Allow_Manual_Run --> 
+    <span class="error">(Currently disabled)</a>
+<!-- /tmpl_unless --> 
+
+</p>
+</li>
+</ul> 
+</fieldset> 
+
+
+
+
+<fieldset> 
+<legend>
+Scorecard Preferences
+</legend> 
+
+<form action="<!-- tmpl_var Plugin_URL -->" method="post">
+
+<input type="hidden" name="flavor" value="edit_prefs" /> 
+<p>
+	Addresses that bounce back reports because of <strong>temporary</strong> 
+	problems, like the mailbox being full or a network problem are given the
+	<strong>Soft Bounce Score</strong>
+</p>
+<table border="0"> 
+ <tr> 
+  <td> 
+   <p>
+   	<label style="width: 12em;float: left;text-align: right;margin-right: 0.5em;display: block">"Soft" Bounce Score</label>
+	</p>
+  </td> 
+  <td> 
+	<!-- tmpl_var bounce_handler_softbounce_score_popup_menu -->
+  </td>
+  </tr>
+</table> 
+
+<p>
+	Address that bounce back reports because of <strong>permanent</strong>
+	problems, like the address not existing anymore, or messages being blocked
+	from being received are given the <strong>Hard Bounce Score</strong>
+</p>
+
+<table border="0"> 
+
+ <tr> 
+  <td> 
+	
+   <label style="width: 12em;float: left;text-align: right;margin-right: 0.5em;display: block">"Hard" Bounce Score</label>
+  </td> 
+  <td> 
+	<!-- tmpl_var bounce_handler_hardbounce_score_popup_menu -->
+  </td>
+  </tr>
+</table> 
+
+
+   <p>
+	All addresses that currently have a score on the Bounce Scorecard will be 
+	lessened by the <strong>Decay Rate</strong>, each time a mass mailing is sent to 
+	the mailing list. This helps make sure <strong>temporary problems</strong> do 
+	not inadvertantly remove addresses from your list <strong>permanently</strong>.
+	</p>
+
+
+<table border="0"> 
+<tr>
+<td>
+
+   	<label style="width: 12em;float: left;text-align: right;margin-right: 0.5em;display: block">Decay Rate</label>
+  </td> 
+  <td> 
+	<!-- tmpl_var bounce_handler_decay_score_popup_menu -->
+  </td>
+  </tr>
+</table> 
+
+<p>
+	Addresses that reach the <strong>Score Threshold</strong> will be unsunbscribed
+	from your mailing list. 
+</p>
+<table border="0"> 
+<tr>
+<td>
+
+   	 <label style="width: 12em;float: left;text-align: right;margin-right: 0.5em;display: block">Bounce Score Threshold</label>
+  </td> 
+  <td> 
+	<!-- tmpl_var bounce_handler_threshold_score_popup_menu -->
+  </td>
+  </tr>
+</table> 
+
+
+<table cellpadding="5"> 
+<tr>
+<td>
+<input type="checkbox" name="bounce_handler_forward_msgs_to_list_owner" id="bounce_handler_forward_msgs_to_list_owner" value="1" <!-- tmpl_if list_settings.bounce_handler_forward_msgs_to_list_owner -->checked="checked"<!-- /tmpl_if --> />
+</td>
+<td>
+<label for="bounce_handler_forward_msgs_to_list_owner">Forward bounces to the List Owner After Processing</label>
+<br />Bounce Messages will be delivered to the List Owner (after being parsed and scored) for manual inspection. 
+</td>
+</tr> 
+</table> 
+
+<div class="buttonfloat">   
+ <input type="submit" class="processing" value="Save Preferences" /> 
+ </div>
+<div class="floatclear"></div>
+</form> 
+</fieldset>
+
+
+<fieldset>
+ <legend> 
+  <!-- tmpl_var Plugin_Name --> Configuration</h1>
+ </legend> 
+ 
+ 
+ 
+
+<table cellpadding="5">
+ <tr> 
+  <td>
+   <p><strong>Your Bounce Handler POP3 Username:</strong>
+   </td> 
+   <td> 
+    <p>
+
+<!-- tmpl_if Username --> 
+	<!-- tmpl_var Username -->
+<!-- tmpl_else --> 
+	<span class="error">Not Set!</span>
+<!-- /tmpl_if --> 
+
+</p>
+   </td> 
+   </tr> 
+   <tr> 
+   <td>
+    <p><strong>On:</strong>
+    </p>
+    </td>
+    <td>
+     <p>
+
+	<!-- tmpl_if Server --> 
+      <!-- tmpl_var Server --></p>
+	<!-- tmpl_else --> 
+		<span class="error">Not Set!</span>
+	<!-- /tmpl_if -->	
+
+   </td> 
+   </tr> 
+   
+  </table> 
+  
+ <div class="buttonfloat"> 
+ <form action="<!-- tmpl_var Plugin_URL -->"> 
+  <input type="hidden" name="flavor" value="cgi_show_plugin_config" /> 
+  <input type="submit" value="View All Plugin Configurations..." class="cautionary" /> 
+ </form> 
+ </div> 
+
+<div class="floatclear"></div> 
+  
+</fieldset> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<fieldset> 
+
+<legend>Mailing List Configuration</legend>
+
+<!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" --> 
+	<p>Messages for this list are  being sent via <strong>the sendmail command <!-- tmpl_if list_settings.add_sendmail_f_flag -->with the '-f' flag<!--/tmpl_if--></strong>:</p>
+
+	<blockquote>
+	<p>
+	 <em>
+	  <!-- tmpl_var MAIL_SETTINGS --><!-- tmpl_if list_settings.add_sendmail_f_flag --> <strong>-f<!--tmpl_var list_settings.admin_email --><!--/tmpl_if--></strong></em></p>
+	</blockquote>
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if expr="(list_settings.sending_method eq 'smtp')" --> 
+
+	<p>Messages for this mailing list are being sent via: <strong>SMTP</strong>. 
+
+	<!-- tmpl_if list_settings.set_smtp_sender --> 
+
+		<p>The SMTP Sender is being set to: <strong><!-- tmpl_var list_settings.admin_email --></strong>. This should
+		be the same address as the above <strong>Bounce Handler POP3 Username</strong></p> 
+	
+	<!-- tmpl_else --> 
+
+		<p>The SMTP Sender has not be explicitly set.  Bounces may go to the list owner (<!-- tmpl_var list_settings.list_owner_email -->) or to 
+		a server default address.</p> 
+
+	<!--/tmpl_if-->
+
+<!--/tmpl_if-->
+
+<!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" --> 
+	<p>Messages are currently being sent via Amazon SES.</p>
+	
+	<p>Outgoing messages will have the Return-Path header set to the List Administrator Email (<strong><!-- tmpl_var list_settings.admin_email --></strong>)
+
+<!-- /tmpl_if -->
+
+</legend> 
+
+
+};
+
+}
+
+sub cgi_default {
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get();
-
-    my $tmpl = default_cgi_template();
+	
+	my $done = $q->param('done') || 0; 
+	
+    my $tmpl = cgi_default_tmpl();
 
     my @amount = (
         1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  25,  50,
         100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650,
         700, 750, 800, 850, 900, 950, 1000
     );
+
+		my $bounce_handler_softbounce_score_popup_menu 
+			= $q->popup_menu( -name => 'bounce_handler_softbounce_score', 
+							  -values => [(0 .. 10)],
+							  -default => $ls->param('bounce_handler_softbounce_score'), 
+			); 
+
+			my $bounce_handler_hardbounce_score_popup_menu 
+				= $q->popup_menu( -name => 'bounce_handler_hardbounce_score', 
+								  -values => [(0 .. 10)],
+								  -default => $ls->param('bounce_handler_hardbounce_score'), 
+				); 
+
+		my $bounce_handler_decay_score_popup_menu 
+			= $q->popup_menu( -name => 'bounce_handler_decay_score', 
+							  -values => [(0 .. 10)],
+							  -default => $ls->param('bounce_handler_decay_score'), 
+			);
+
+		my $bounce_handler_threshold_score_popup_menu
+			= $q->popup_menu( -name => 'bounce_handler_threshold_score', 
+						  -values => [(0 .. 100)],
+						  -default => $ls->param('bounce_handler_threshold_score'), 
+		);
+
 
     my $curl_location = `which curl`;
     $curl_location = strip( make_safer($curl_location) );
@@ -1396,39 +655,66 @@ sub cgi_default {
     {
         $plugin_configured = 0;
     }
-											 
-	require DADA::Template::Widgets; 
-	my $scrn = DADA::Template::Widgets::wrap_screen(
-						{ 
-							-data => \$tmpl, 
-							-with           => 'admin', 
-							-wrapper_params => { 
-								-Root_Login => $root_login,
-								-List       => $list,  
-							},
-							-vars => { 
-									MAIL_SETTINGS             => $DADA::Config::MAIL_SETTINGS, 						
-				 					Username                  => $Plugin_Config->{Username},
-									Server                    => $Plugin_Config->{Server},
-									Plugin_URL                => $Plugin_Config->{Plugin_URL}, 
-									Default_Soft_Bounce_Score => $Plugin_Config->{Default_Soft_Bounce_Score},
-									Default_Hard_Bounce_Score => $Plugin_Config->{Default_Hard_Bounce_Score},
-									Score_Threshold           => $Plugin_Config->{Score_Threshold},
-									Plugin_Name              => $Plugin_Config->{Plugin_Name},
-								    Allow_Manual_Run          => $Plugin_Config->{Allow_Manual_Run},
-								    Manual_Run_Passcode       => $Plugin_Config->{Manual_Run_Passcode},
-									curl_location             => $curl_location, 
-									plugin_configured         => $plugin_configured, 
-									parse_amount_widget       => $parse_amount_widget, 
-								},
-								-list_settings_vars_param => {
-				                    -list   => $list,
-				                    -dot_it => 1,
-				                },
-						}
-					);
-	e_print($scrn);
+
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -data           => \$tmpl,
+            -with           => 'admin',
+			-expr           => 1, 
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+            -vars => {
+	
+				screen              => 'using_dada_bounce_handler',
+				
+                MAIL_SETTINGS       => $DADA::Config::MAIL_SETTINGS,
+                Username            => $Plugin_Config->{Username},
+                Server              => $Plugin_Config->{Server},
+                Plugin_URL          => $Plugin_Config->{Plugin_URL},
+                Plugin_Name         => $Plugin_Config->{Plugin_Name},
+                Allow_Manual_Run    => $Plugin_Config->{Allow_Manual_Run},
+                Manual_Run_Passcode => $Plugin_Config->{Manual_Run_Passcode},
+                curl_location       => $curl_location,
+                plugin_configured   => $plugin_configured,
+                parse_amount_widget => $parse_amount_widget,
+				done                => $done, 
+				bounce_handler_softbounce_score_popup_menu => $bounce_handler_softbounce_score_popup_menu, 
+				bounce_handler_hardbounce_score_popup_menu => $bounce_handler_hardbounce_score_popup_menu, 
+				bounce_handler_decay_score_popup_menu      => $bounce_handler_decay_score_popup_menu, 
+				bounce_handler_threshold_score_popup_menu  => $bounce_handler_threshold_score_popup_menu, 
+
+            },
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+    e_print($scrn);
 }
+
+sub edit_prefs {
+
+	my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    $ls->save_w_params(
+        {
+            -associate => $q,
+            -settings  => {
+				bounce_handler_softbounce_score           => undef, 
+				bounce_handler_hardbounce_score           => undef, 
+				bounce_handler_decay_score                => undef, 
+				bounce_handler_threshold_score            => undef, 
+				bounce_handler_forward_msgs_to_list_owner => 0, 
+            }
+        }
+    );
+
+    print $q->redirect( -uri => $Plugin_Config->{Plugin_URL} . '?done=1' );
+}
+
 
 
 sub ajax_parse_bounces_results {
@@ -1442,18 +728,18 @@ sub ajax_parse_bounces_results {
           xss_filter( $q->param('parse_amount') );
     }
 
-    $verbose = 1;
+    my $r = '';
+    $r .= $q->header();
+    $r .= '<pre>';
+    $r .= cl_main();
+    $r .= '</pre>';
 
-    print $q->header();
-    print '<pre>';     # Do not like.
-    cl_main();
-    print '</pre>';    # Do not like.
-
+    print $r;
 }
 
-sub cgi_parse_bounce_template { 
-	
-	return q{ 
+sub cgi_parse_bounce_template {
+
+    return q{ 
 		
 		<!-- tmpl_set name="title" value="Parsing Bounces..." --> 
 		
@@ -1511,169 +797,248 @@ sub cgi_parse_bounce_template {
 	};
 }
 
+sub cgi_parse_bounce {
 
-
-
-sub cgi_parse_bounce { 
-
-	my $tmpl = cgi_parse_bounce_template(); 
-	require DADA::Template::Widgets; 
-	my $scrn = DADA::Template::Widgets::wrap_screen(
-		{ 
-			-data => \$tmpl, 
-			-with => 'admin', 
-			-wrapper_params => {
+    my $tmpl = cgi_parse_bounce_template();
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -data           => \$tmpl,
+            -with           => 'admin',
+            -wrapper_params => {
                 -Root_Login => $root_login,
                 -List       => $list,
             },
-			
-			-vars => {
-				parse_amount   => xss_filter($q->param('parse_amount')), 
-				bounce_test    => xss_filter($q->param('bounce_test')),
-				Plugin_Name   => $Plugin_Config->{Plugin_Name}, 
-				Plugin_URL     => $Plugin_Config->{Plugin_URL}, 
-				MessagesAtOnce => $Plugin_Config->{MessagesAtOnce}, 
-			}, 
-		}
-	); 
-	e_print($scrn); 
-	
-}
 
-
-
-
-sub cgi_manual_start { 
-        
-        if(
-            (xss_filter($q->param('passcode')) eq $Plugin_Config->{Manual_Run_Passcode}) ||             
-            ($Plugin_Config->{Manual_Run_Passcode}              eq ''                  )
-            
-          ) {
-            
-            if(defined(xss_filter($q->param('verbose')))){
-                $verbose = xss_filter($q->param('verbose'));
-            }
-            else { 
-                $verbose = 1;
-            }
-            
-            
-            if(defined(xss_filter($q->param('test')))){
-                $test = $q->param('test');
-            }
-            
-            if(defined(xss_filter($q->param('messages')))){ 
-                $Plugin_Config->{MessagesAtOnce} = xss_filter($q->param('messages')); 
-            }
-			
-			
-            print $q->header();
-        	print '<pre>'
-        	    if $verbose; 
-            cl_main();
-            print '</pre>'
-                if $verbose; 
-            
-
-        } else { 
-            print $q->header(); 
-            print "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Authorization Denied.";
+            -vars => {
+                parse_amount   => xss_filter( $q->param('parse_amount') ),
+                bounce_test    => xss_filter( $q->param('bounce_test') ),
+                Plugin_Name    => $Plugin_Config->{Plugin_Name},
+                Plugin_URL     => $Plugin_Config->{Plugin_URL},
+                MessagesAtOnce => $Plugin_Config->{MessagesAtOnce},
+            },
         }
+    );
+    e_print($scrn);
+
 }
 
+sub cgi_manual_start {
 
+    # This is basically just a wrapper around, cl_main();
+	my $r = ''; 
+    if (
+        (
+            xss_filter( $q->param('passcode') ) eq
+            $Plugin_Config->{Manual_Run_Passcode}
+        )
+        || ( $Plugin_Config->{Manual_Run_Passcode} eq '' )
 
+      )
+    {
 
-sub cgi_scorecard { 
+        my $verbose;
+        if ( defined( xss_filter( $q->param('verbose') ) ) ) {
+            $verbose = xss_filter( $q->param('verbose') );
+        }
+        else {
+            $verbose = 1;
+        }
 
+        if ( defined( xss_filter( $q->param('test') ) ) ) {
+            $test = $q->param('test');
+        }
 
-    require   DADA::App::BounceScoreKeeper; 
-    my $bsk = DADA::App::BounceScoreKeeper->new(-List => $list); 
-                     
-    require HTML::Pager; 
-    require HTML::Template;
-    
-    my $table_tmpl = bounce_score_table();
-    my $template   = HTML::Template->new(
-        %Global_Template_Options,
-		scalarref          => \$table_tmpl, 
-	    global_vars        => 1, 
-	    loop_context_vars  => 1, 
-	    
-	);
-   $template->param(
-        Plugin_URL => $Plugin_Config->{Plugin_URL}
-   ); 										
-    
-    my $get_data_sub = sub { 
-        my ($offset, $rows) = @_;
-        return $bsk->raw_scorecard($offset, $rows); 
-    }; 
-    my $num_rows = $bsk->num_scorecard_rows;   
-    
-    my $pager = undef; 
-    if($num_rows >= 1) { 
-        $pager = HTML::Pager->new(
-           
-            # required parameters
-            query             => $q,
-            get_data_callback => $get_data_sub,
-            rows              => $num_rows,
-            page_size         => ($num_rows < 100) ? $num_rows : 100,
-            
-            persist_vars     => ['flavor'], 
-            
-            template         => $template, 
-            
-            # some optional parameters
-            #
-            # cell_space_color => '#000000',    
-            # cell_background_color => '#ffffff',
-            # nav_background_color => '#dddddd',
-            # javascript_presubmit => 'last_minute_javascript()'  
-            # debug => 1,
-        );
+        if ( defined( xss_filter( $q->param('messages') ) ) ) {
+            $Plugin_Config->{MessagesAtOnce} =
+              xss_filter( $q->param('messages') );
+        }
+		if(defined($q->param('list'))){ 
+			$list = $q->param('list');
+		}
+		else { 
+			$list = undef; # just to make that perfectly clear. 
+		}
+		
+        $r .= $q->header();
+        if ($verbose) {
+            $r .= '<pre>';
+            $r .= cl_main();
+            $r .= '</pre>';
+        }
+        else {
+            cl_main();
+        }
+        return $r;
+
+    }
+    else {
+        $r = $q->header();
+        $r .=
+"$DADA::Config::PROGRAM_NAME $DADA::Config::VER Access Denied.";
     }
 
-	my $tmpl = cgi_scorecode_tmpl(); 
-	
-	require DADA::Template::Widgets; 
-	my $scrn = DADA::Template::Widgets::wrap_screen(
-		{ 
-			-data => \$tmpl, 
-			-with => 'admin', 
-			-wrapper_params => {
-                -Root_Login => $root_login,
-                -List       => $list,
-            },
-			-vars => { 
-				Plugin_URL => $Plugin_Config->{Plugin_URL}, 
-				Plugin_Name => $Plugin_Config->{Plugin_Name},
-				num_rows => $num_rows,
-				(($num_rows >= 1) ? (
-				scorecard => $pager->output,) : ()), 
-			}
-		}
-	); 
-	e_print($scrn); 
-    
+	return $r; 
+}
+
+sub cgi_scorecard {
+
+    my $page = $q->param('page') || 1;
+
+    require DADA::App::BounceHandler::ScoreKeeper;
+    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new({ -list => $list });
+
+    my $num_rows  = $bsk->num_scorecard_rows;
+    my $scorecard = $bsk->raw_scorecard(
+        {
+            -page    => $page,
+            -entries => 100,
+        }
+    );
+
+    my $pager        = undef;
+    my $pages_in_set = [];
+
+    require Data::Pageset;
+    my $page_info = Data::Pageset->new(
+        {
+            'total_entries'    => $num_rows,
+            'entries_per_page' => 100
+            , #$ls->param('tracker_record_view_count'), # needs to be tweakable...
+            'current_page' => $page,
+            'mode'         => 'slide',    # default fixed
+        }
+    );
+
+    foreach my $page_num ( @{ $page_info->pages_in_set() } ) {
+        if ( $page_num == $page_info->current_page() ) {
+            push( @$pages_in_set, { page => $page_num, on_current_page => 1 } );
+        }
+        else {
+            push( @$pages_in_set,
+                { page => $page_num, on_current_page => undef } );
+        }
+    }
+
+    my $tmpl = cgi_scorecode_tmpl();
+
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::screen(
+        {
+            -data => \$tmpl,
+
+            -vars => {
+                Plugin_URL    => $Plugin_Config->{Plugin_URL},
+                Plugin_Name   => $Plugin_Config->{Plugin_Name},
+                num_rows      => $num_rows,
+                first_page    => $page_info->first_page(),
+                last_page     => $page_info->last_page(),
+                next_page     => $page_info->next_page(),
+                previous_page => $page_info->previous_page(),
+                pages_in_set  => $pages_in_set,
+                scorecard     => $scorecard,
+
+            }
+        }
+    );
+    print $q->header();
+    e_print($scrn);
+
 }
 
 sub cgi_scorecode_tmpl {
-	
-return <<EOF
 
-<!-- tmpl_set name="title" value="Bounce Scorecard" -->
+    return <<EOF
 
-<p id="breadcrumbs">
-    <a href="<!-- tmpl_var Plugin_URL -->">
-        <!-- tmpl_var Plugin_Name -->
-    </a> &#187; Scorecard
-</p>
+
 <!-- tmpl_if num_rows --> 
-	<!-- tmpl_var scorecard --> 
-	
+
+	<p class="alert">The Bounce Scorecard keeps track of subscribed address on your mailing list that bounce back message reports. Click on any address to see
+ these message report summaries.</p> 
+
+	<table width="100%">
+	 <tr> 
+	<td width="33%" align="left"> 
+
+	<strong><a href="javascript:turn_page(<!-- tmpl_var first_page -->);">First</a></strong>
+
+	</td> 
+
+	<td width="33%" align="center"> 
+	<p>
+
+	<!-- tmpl_if previous_page --> 
+		<strong><a href="javascript:turn_page(<!-- tmpl_var previous_page -->);">Previous</a></strong>
+	<!-- tmpl_else --> 
+	<!-- /tmpl_if -->
+	&nbsp;&nbsp;&nbsp;&nbsp;
+		<!-- tmpl_loop pages_in_set --> 
+			<!-- tmpl_if on_current_page --> 
+				<strong> 
+				 <!-- tmpl_var page --> 
+				</strong> 
+			<!-- tmpl_else --> 
+				<a href="javascript:turn_page(<!-- tmpl_var page -->);">
+				 <!-- tmpl_var page --> 
+				</a>
+			<!-- /tmpl_if --> 
+
+		<!-- /tmpl_loop --> 
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<!-- tmpl_if next_page -->
+		<strong><a href="javascript:turn_page(<!-- tmpl_var next_page -->);">Next</a></strong>
+		<!-- tmpl_else --> 
+		<!-- /tmpl_if --> 
+		</p>
+	</td> 
+
+	<td width="33%" align="right"> 
+
+	<strong><a href="javascript:turn_page(<!-- tmpl_var last_page -->);">Last</a></strong>
+
+	</td>
+
+	</tr> 
+	</table>
+
+	<div> 
+		<div style="max-height: 300px; overflow: auto; border:1px solid black">
+
+		  <table cellpadding="5" cellspacing="0" border="0" width="100%"> 
+		   <tr style="background:#fff"> 
+		   		<td>
+					<p>
+						<strong>Email</strong>
+					</p>
+				</td>
+				<td>
+					<p>
+						<strong>Score</strong>
+					</p>
+				</td>
+			</tr> 
+
+			<!-- tmpl_loop scorecard --> 
+		   	<tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!-- tmpl_else -->style="background-color:#fff;"<!--/tmpl_if-->>
+				<td>
+					<p>
+					<a href="<!-- tmpl_var PLUGIN_URL -->?flavor=cgi_bounce_score_search&amp;query=<!-- tmpl_var email ESCAPE="URL" -->">
+					 <!-- tmpl_var email --></p>
+					</a>
+				</td>
+				<td>
+					<p><!-- tmpl_var score --></p>
+				</td>
+			</tr> 
+			
+			<!-- /tmpl_loop --> 
+
+	     </table> 
+	</div>		
+
+	</div> 
+
+
 	
 <form action="<!-- tmpl_var Plugin_URL -->" method="post"> 
 <input type="hidden" name="flavor" value="cgi_erase_scorecard" /> 
@@ -1695,23 +1060,19 @@ return <<EOF
 <!-- /tmpl_if --> 
 
 EOF
-; 
+      ;
 }
 
+sub cgi_erase_scorecard {
 
+    require DADA::App::BounceHandler::ScoreKeeper;
+    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new({ -list => $list });
+    $bsk->erase;
 
-sub cgi_erase_scorecard { 
-	
-    require DADA::App::BounceScoreKeeper;
-    my $bsk = DADA::App::BounceScoreKeeper->new( -List => $list );
-       $bsk->erase;
-
-	print $q->redirect(
-		-uri => $Plugin_Config->{Plugin_URL} . '?flavor=cgi_scorecard', 
-	);
+    print $q->redirect(
+        -uri => $Plugin_Config->{Plugin_URL}, );
 
 }
-
 
 sub cgi_show_plugin_config {
 
@@ -1736,19 +1097,16 @@ sub cgi_show_plugin_config {
                 -List       => $list,
             },
             -vars => {
-                Plugin_URL   => $Plugin_Config->{Plugin_URL},
+                Plugin_URL  => $Plugin_Config->{Plugin_URL},
                 Plugin_Name => $Plugin_Config->{Plugin_Name},
-                configs      => $configs,
+                configs     => $configs,
             },
         }
     );
-	e_print($scrn); 
+    e_print($scrn);
 }
 
-
-
-
-sub cgi_show_plugin_config_template { 
+sub cgi_show_plugin_config_template {
 
     return q{ 
     
@@ -1795,9 +1153,6 @@ sub cgi_show_plugin_config_template {
 
 }
 
-
-
-
 sub cgi_bounce_score_search {
 
     #TODO DEV: THIS NEEDS ITS OWN METHOD!!!
@@ -1813,8 +1168,8 @@ sub cgi_bounce_score_search {
 
     require HTML::Template;
 
-    require DADA::App::BounceScoreKeeper;
-    my $bsk = DADA::App::BounceScoreKeeper->new( -List => $list );
+    require DADA::App::BounceHandler::ScoreKeeper;
+    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new({ -list => $list });
 
     require DADA::App::LogSearch;
 
@@ -1835,7 +1190,7 @@ sub cgi_bounce_score_search {
 
     if ( !defined($query) ) {
         $q->redirect(
-            -uri => $Plugin_Config->{Plugin_URL} . '?flavor=cgi_scorecard' );
+            -uri => $Plugin_Config->{Plugin_URL} );
         return;
     }
 
@@ -1844,8 +1199,12 @@ sub cgi_bounce_score_search {
         {
             -query => $query,
             -files => [ $Plugin_Config->{Log} ],
+			
         }
     );
+
+	# -list  => $list, 
+	
 
     my $search_results = [];
     my $results_found  = 0;
@@ -1862,55 +1221,65 @@ sub cgi_bounce_score_search {
 
             # Date!
             $entries[0] =~ s/^\[|\]$//g;
-            $entries[0] = $searcher->html_highlight_line(
-                { -query => $query, -line => $entries[0] } );
 
+            # $entries[0] = $searcher->html_highlight_line(
+            #     { -query => $query, -line => $entries[0] } );
+            #
             # ListShortName!
-            $entries[1] = $searcher->html_highlight_line(
-                { -query => $query, -line => $entries[1] } );
-
+            #$entries[1] = $searcher->html_highlight_line(
+            #    { -query => $query, -line => $entries[1] } );
+            #
             # Action Taken!
-            $entries[2] = $searcher->html_highlight_line(
-                { -query => $query, -line => $entries[2] } );
-
+            #$entries[2] = $searcher->html_highlight_line(
+            #   { -query => $query, -line => $entries[2] } );
+            #
             # Email Address!
-            $entries[3] = $searcher->html_highlight_line(
-                { -query => $query, -line => $entries[3] } );
+            #           $entries[3] = $searcher->html_highlight_line(
+            #              { -query => $query, -line => $entries[3] } );
 
             my @diags = split( ",", $entries[4] );
             my $labeled_digs = [];
 
             for my $diag (@diags) {
                 my ( $label, $value ) = split( ":", $diag );
+				my $newline = quotemeta('\n'); 
+				# Make fake newlines, newlines: 
+				$value =~ s/$newline/\n/g;
 
                 push(
                     @$labeled_digs,
                     {
-                        diagnostic_label => $searcher->html_highlight_line(
-                            { -query => $query, -line => $label }
-                        ),
-                        diagnostic_value => $searcher->html_highlight_line(
-                            { -query => $query, -line => $value }
-                        ),
+                        diagnostic_label => $label,
+
+                        #  diagnostic_label => $searcher->html_highlight_line(
+                        #      { -query => $query, -line => $label }
+                        #  ),
+                        diagnostic_value => $value
+
+                          # $searcher->html_highlight_line(
+                          #      { -query => $query, -line => $value }
+                          #  ),
 
                     }
                 );
 
             }
 
-            push(
-                @$search_results,
-                {
-                    date      => $entries[0],
-                    list      => $entries[1],
-                    list_name => $l_label{ $entries[1] },
-                    action    => $entries[2],
-                    email     => $entries[3],
+			if($entries[1] eq $list) { # only show entries for this list... 
+	            push(
+	                @$search_results,
+	                {
+	                    date      => $entries[0],
+	                    list      => $entries[1],
+	                    list_name => $l_label{ $entries[1] },
+	                    action    => $entries[2],
+	                    email     => $entries[3],
 
-                    diagnostics => $labeled_digs,
+	                    diagnostics => $labeled_digs,
 
-                }
-            );
+	                }
+	            );
+			}
 
         }
     }
@@ -1924,37 +1293,34 @@ sub cgi_bounce_score_search {
 
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
-		{
-        -data           => \$tmpl,
-        -with           => 'admin',
-        -wrapper_params => {
-            -Root_Login => $root_login,
-            -List       => $list,
-        },
-        -vars => {
-            query              => $query,
-            list_name          => $li->{list_name},
-            subscribed_address => $subscribed_address,
-            valid_email        => $valid_email,
-            search_results     => $search_results,
-            results_found      => $results_found,
+        {
+            -data           => \$tmpl,
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+            -vars => {
+                query              => $query,
+                list_name          => $li->{list_name},
+                subscribed_address => $subscribed_address,
+                valid_email        => $valid_email,
+                search_results     => $search_results,
+                results_found      => $results_found,
 
-            S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL,
-            Plugin_URL    => $Plugin_Config->{Plugin_URL},
-            Plugin_Name  => $Plugin_Config->{Plugin_Name},
-          }
-	}
+                S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL,
+                Plugin_URL    => $Plugin_Config->{Plugin_URL},
+                Plugin_Name   => $Plugin_Config->{Plugin_Name},
+            }
+        }
 
     );
     e_print($scrn);
 }
 
+sub cgi_bounce_score_search_template {
 
-
-
-sub cgi_bounce_score_search_template { 
-
-my $template = q{
+    my $template = q{
 
 	<!-- tmpl_set name="title" value="Bounce Log Search Results" --> 
 	
@@ -1965,13 +1331,7 @@ my $template = q{
    
    &#187;
    
-      <a href="<!-- tmpl_var Plugin_URL -->?flavor=cgi_scorecard"> 
-         Scorecard
-   </a> 
-   
-   &#187;
-   
-   Search Results for:<!-- tmpl_var query ESCAPE="HTML" --> 
+   Search Results for: <!-- tmpl_var query ESCAPE="HTML" --> 
   </p> 
  
  
@@ -1984,7 +1344,7 @@ my $template = q{
    <!-- tmpl_if valid_email --> 
    
        <!-- tmpl_if subscribed_address --> 
-            <p class="positive">
+            <p class="alert">
             <!-- tmpl_var query ESCAPE="HTML" --> is currently subscribed to your list (<!-- tmpl_var list_name ESCAPE="HTML" -->) - 
             <strong> 
             <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_subscriber&email=<!-- tmpl_var query ESCAPE="URL" -->&type=list">
@@ -2005,7 +1365,10 @@ my $template = q{
    <!-- tmpl_if results_found --> 
    
        <!-- tmpl_loop search_results --> 
-       
+
+      <div style="<!-- tmpl_if __odd__ -->background-color:#fff;<!-- tmpl_else -->background-color:#ccf;<!--/tmpl_if-->border:1px solid black;">
+	  <div style="padding:5px"> 
+	
            <h2>
             Date: <!-- tmpl_var date --> 
            </h2> 
@@ -2014,6 +1377,18 @@ my $template = q{
 <div style="padding-left:5px"> 
 
            <table>
+
+			<tr>
+             <td> 
+              <strong>List Name:</strong>
+             </td>
+             <td>
+              <!-- tmpl_var list_name ESCAPE="HTML" --> (<!-- tmpl_var list -->)
+             </td>
+
+       	</tr>             
+			<tr>
+			
          	<tr>
              <td> 
               <strong>Email:</strong>
@@ -2022,20 +1397,14 @@ my $template = q{
 			 <!-- tmpl_var email --> 
 			</td> 
 			</tr>             
-			<tr>
-             	<td> 
-              <strong>List Name:</strong>
-            </td> <td><!-- tmpl_var list_name --> (<!-- tmpl_var list -->) </td>
-
-        	</tr>             
-			<tr>
+			
 		     
              
             	<td> 
               <strong>Action Taken:</strong> 
             </td> 
 <td>
-<!-- tmpl_var action --> 
+<!-- tmpl_var action ESCAPE="HTML" --> 
 </td> 
 
 </tr> 
@@ -2057,12 +1426,12 @@ my $template = q{
                 <tr>
 <td>
                     <strong> 
-                     <!-- tmpl_var diagnostic_label -->:
+                     <!-- tmpl_var diagnostic_label ESCAPE="HTML" -->:
                     </strong> 
     </td>
 <td>
                 
-                    <!-- tmpl_var diagnostic_value -->
+                    <!-- tmpl_var diagnostic_value ESCAPE="HTML" -->
 </td>
 </tr> 
                 
@@ -2073,8 +1442,8 @@ my $template = q{
 </div> 
 </div> 
 
-            <hr /> 
-    
+    </div> 
+    </div> 
         <!-- /tmpl_loop --> 
 
     <!-- tmpl_else --> 
@@ -2091,2142 +1460,46 @@ my $template = q{
 
 };
 
-return $template; 
-
+    return $template;
 
 }
 
+sub cl_main {
 
-
-
-sub cl_main { 
-	
-	&init; 
-	
-	if($help == 1){ 
-		show_help(); 
-	}
-	elsif($erase_score_card){ 
-	   erase_score_card(); 
-	}
-	elsif(defined($test) && $test ne 'bounces'){
-		test_script(); 
-	}elsif(defined($version)){ 
-		&version(); 
-	}
-	
-	 if(!$Plugin_Config->{Server} ||
-	       !$Plugin_Config->{Username} || 
-	       !$Plugin_Config->{Password}
-	    ){ 
-	        print "The Server Username and/password haven't been filled out, stopping." 
-	            if $verbose;        
-	            return;
-	    }
-	
-	print "Testing is enabled.\n\n"
-		if $test; 
-	print "Making POP3 Connection...\n" 
-	    if $verbose; 
-	
-	
-	require DADA::App::POP3Tools;
-	
-	my $lock_file_fh; 
-	if($Plugin_Config->{Enable_POP3_File_Locking} == 1){ 
-		$lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
-			{
-				name => 'dada_bounce_handler.lock'
-			}
-		);
-	}
-	
-	my $pop = DADA::App::POP3Tools::mail_pop3client_login(
-	    { 
-        server    => $Plugin_Config->{Server}, 
-        username  => $Plugin_Config->{Username}, 
-        password  => $Plugin_Config->{Password},
-		port      => $Plugin_Config->{Port}, 
-        USESSL    => $Plugin_Config->{USESSL},
-        AUTH_MODE => $Plugin_Config->{AUTH_MODE},
-        verbose   => $verbose, 
-        
-        }
-    ); 
-    
-    
-    
-    
-    my @delete_list = (); 
-    
-    my @List = $pop->List; 
-    
-    if(!$List[0]){ 
-    
-        print "No bounces to handle.\n"
-            if $verbose;
+    &init;
+    if ( $help == 1 ) {
+        return help();
     }
-    else { 
-    
-        MSGCHECK:
-        for my $msg_info(@List){ 
-         
-        my ($msgnum, $msgsize) = split('\s+', $msg_info);
-        #for my $msgnum (sort { $a <=> $b } keys %$msgnums) {
-                    
-            my $delete = undef; 
-            
-            #if($msgnums->{$msgnum} > $Plugin_Config->{Max_Size_Of_Any_Message}){ 
-            if($msgsize > $Plugin_Config->{Max_Size_Of_Any_Message}){
-                print "\tWarning! Message size ( " . $msgsize . " ) is larger than the maximum size allowed ( " . $Plugin_Config->{Max_Size_Of_Any_Message} . ")"
-                        if $verbose; 
-                warn  "dada_bounce_handler.pl $App_Version: Warning! Message size ( " . $msgsize . " ) is larger than the maximum size allowed ( " . $Plugin_Config->{Max_Size_Of_Any_Message} . ")";
-                
-                $delete = 1; 
-                
-            }
-            else { 
-                    
-               my $msg = $pop->Retrieve($msgnum); 
-               my $full_msg = $msg;     
-                
-        
-                eval { 
-                
-                    $delete = parse_bounce(-message => $full_msg); 
-                };
-                if($@){ 
-                     
-                    warn  "dada_bounce_handler.pl - irrecoverable error processing message. Skipping message (sorry!): $@"; 
-                    print "dada_bounce_handler.pl - irrecoverable error processing message. Skipping message (sorry!): $@"
-                    if $verbose; 
-                    
-                    $delete = 1; 
-                
-                }
-                
-            }
-            
-            if($delete == 1){ 
-                push(@delete_list, $msgnum); 
-            }
-            
-            
-            #if ($messages_viewed >= $Plugin_Config->{MessagesAtOnce}){ 
-            if(($#delete_list + 1) >= $Plugin_Config->{MessagesAtOnce}){ 
-            
-                print "\n\nThe limit has been reached of the amount of messages to be looked at for this execution\n\n"
-                    if $verbose;
-                last MSGCHECK; 
-            
-            }
-    
-    
-        } 
-        
-        if(! $debug){ 
-        	for(@delete_list){ 
-	
-	            print "deleting message #: $_\n" 
-					if $verbose;
-					
-	            $pop->Delete($_);            
-	        }
-		}
-		else {
-			print "Skipping Message Deletion - Debugging is on.\n"; 
-		}
-                    
-        
-        #$pop->quit();
-         $pop->Close; 
-         
-    	if($Plugin_Config->{Enable_POP3_File_Locking} == 1){ 
-	        DADA::App::POP3Tools::_unlock_pop3_check(
-				{
-					name => 'dada_bounce_handler.lock',
-					fh   => $lock_file_fh, 
-				},
-			);
-		}
-		
-		
-        print "\nSaving Scores...\n\n"
-           if $verbose; 			
-        save_scores($Score_Card); 
-        
-        remove_bounces($Remove_List) 
-			if ! $debug; 
-        
-        &close_log; 
-
+    elsif ($erase_score_card) {
+        my $bh = DADA::App::BounceHandler->new($Plugin_Config);
+        return $bh->erase_score_card( { -list => $list } );
     }
-}
-
-sub init { 
-
-	$Plugin_Config->{Server}         = $server   if $server;
-	$Plugin_Config->{Username}       = $username if $username; 
-	$Plugin_Config->{Password}       = $password if $password; 
-	$Plugin_Config->{Log}            = $log      if $log; 
-    $Plugin_Config->{MessagesAtOnce} = $messages if $messages > 0; 
-    
- 
-	if($test){
-		$debug = 1 
-			if $test eq 'bounces'; 
-	}
-	
-	$verbose = 1 
-		if $debug == 1; 
-	
-	# init a hashref of hashrefs
-	# for unsub optimization 
-	my @a_Lists = DADA::App::Guts::available_lists(); 
- 	for(@a_Lists){ 
- 		$Remove_List->{$_} = {}; 
- 	}
- 	
-	open_log($Plugin_Config->{Log}); 
-}
-
-
-
-
-
-
-
-
-
-
-sub parse_bounce { 
-
-    my $only_this_list = $list; 
-    my $msg_report = ''; 
-
-	my %args = (-message => undef, @_); 
-				
-	my $message = $args{-message}; 
-	 
-	my $email       = '';
-	my $list        = '';
-	my $diagnostics = {};
-	
-	my $entity; 
-	
-	eval { $entity = $parser->parse_data($message) };
-	
-	if(!$entity){
-	
-		warn   "No MIME entity found, this message could be garbage, skipping";
-		$msg_report .=  "No MIME entity found, this message could be garbage, skipping"
-			if $verbose;
-			
-	}else{ 
-	
-		($email, $list, $diagnostics) = run_all_parses($entity);
-
-        # Means, either there is no $list set, or the $list that *is* set is the one we want set. 
-        
-        
-      #  if(! defined($only_this_list) ){ 
-      #      die "NO DEFINED! LIST!"; 
-      #      
-      #  }
-       if(! defined($only_this_list) || ($list eq $only_this_list)){ 
-        
-            my $rule_report; 
-            
-            $msg_report .= generate_nerd_report($list, $email, $diagnostics) if $verbose;  
-                my $rule = find_rule_to_use($list, $email, $diagnostics); 
-                $msg_report .= "\nUsing Rule: $rule\n\n" 
-                    if $verbose; 	
-            if(!bounce_from_me($entity)){			
-                
-                ###
-                
-                my $valid_list_1;
-                if(DADA::App::Guts::check_if_list_exists(-List=>$list) != 0){
-	    	 		$valid_list_1 = 1; 
-	    	 	}
-	    	 	else { 
-	    	 	    $valid_list_1  = 0; 
-	    	 	}
-	    	 	
-	    	 	if($valid_list_1 == 1){ 
-	    	 	
-                    my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
-                    if($lh->check_for_double_email(-Email => $email) == 1){ 
-                    
-                        if(!$debug){ 
-                            #push(@$Rules_To_Carry_Out, [$rule, $list, $email, $diagnostics, $message]);
-                            $rule_report = carry_out_rule($rule, $list, $email, $diagnostics, $message); 
-							
-							
-
-
-                        } 
-                    
-                    }
-                    else { 
-                        print "Bounced Message is from an email address that isn't subscribed to: $list. Ignorning.\n"
-                            if $verbose;
-                    }
-                }
-                else { 
-                    print 'List, ' . $list . ' doesn\'t exist. Ignoring and deleting.'
-						if $verbose;
-                }
-                ###
-                
-            }else{ 
-                
-                print "Bounced message was sent by myself. Ignoring and deleting\n"
-                    if $verbose; 
-                warn "Bounced message was sent by myself. Ignoring and deleting";
-            }
-        
-            if($verbose){ 
-                
-                print '-' x 72 . "\n"; 
-                $entity->dump_skeleton; 
-                print '-' x 72 . "\n";
-                
-                print $msg_report; 
-                
-                print $rule_report; 
-            }
-            
-            return 1; 
-        }
-        elsif (! $list){ 
-        
-            if($verbose){ 
-                print '-' x 72 . "\n"; 
-                $entity->dump_skeleton; 
-                print '-' x 72 . "\n";
-                
-                print "No valid list found, ignoring and deleting...\n";
-            }
-               
-            return 1; 
-        
-        }
-        else { 
-            return 0; 
-        }
-        
-	}
-	#sleep(1);
-}
-
-sub run_all_parses { 
-
-
-	my ($entity) = shift; 
-	my $email        = ''; 
-	my $list        = ''; 
-	my $diagnostics = {}; 
-	
-	$email = find_verp($entity);
-
-	my ($gp_list, $gp_email, $gp_diagnostics) = generic_parse($entity); 	
-
-	$list        = $gp_list if $gp_list; 
-	$email     ||=  $gp_email; 
-	$diagnostics = $gp_diagnostics
-		if $gp_diagnostics;
-
-	if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
-		my ($qmail_list, $qmail_email, $qmail_diagnostics) = parse_for_qmail($entity); 
-		$list  ||= $qmail_list;
-		$email ||= $qmail_email;
-		%{$diagnostics} = (%{$diagnostics}, %{$qmail_diagnostics})
-			if $qmail_diagnostics; 
-	} 
-
-	if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
-
-		my ($exim_list, $exim_email, $exim_diagnostics) = parse_for_exim($entity); 
-		$list  ||= $exim_list;
-		$email ||= $exim_email;
-		%{$diagnostics} = (%{$diagnostics}, %{$exim_diagnostics})
-			if $exim_diagnostics; 
-	}
-
-
-	if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
-
-		my ($ms_list, $ms_email, $ms_diagnostics) = parse_for_f__king_exchange($entity); 
-		$list  ||= $ms_list;
-		$email ||= $ms_email;
-		%{$diagnostics} = (%{$diagnostics}, %{$ms_diagnostics})
-			if $ms_diagnostics; 
-	}
-	if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
-
-		my ($nv_list, $nv_email, $nv_diagnostics) = parse_for_novell($entity); 
-		$list  ||= $nv_list;
-		$email ||= $nv_email;
-		%{$diagnostics} = (%{$diagnostics}, %{$nv_diagnostics})
-			if $nv_diagnostics; 
-	}
-
-	if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
-
-		my ($g_list, $g_email, $g_diagnostics) = parse_for_gordano($entity); 
-		$list  ||= $g_list;
-		$email ||= $g_email;
-		%{$diagnostics} = (%{$diagnostics}, %{$g_diagnostics})
-			if $g_diagnostics; 
-	}
-
-	if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
-
-		my ($y_list, $y_email, $y_diagnostics) = parse_for_overquota_yahoo($entity); 
-		$list  ||= $y_list;
-		$email ||= $y_email;
-		%{$diagnostics} = (%{$diagnostics}, %{$y_diagnostics})
-			if $y_diagnostics;
-	}	
-
-	if((!$list) || (!$email) || !keys %{$diagnostics}){ 		    
-
-		my ($el_list, $el_email, $el_diagnostics) = parse_for_earthlink($entity); 
-		$list  ||= $el_list;
-		$email ||= $el_email;
-		%{$diagnostics} = (%{$diagnostics}, %{$el_diagnostics})
-			if $el_diagnostics; 
-	}	
-
-	if((!$list) || (!$email) || !keys %{$diagnostics}){ 	
-			my ($wl_list, $wl_email, $wl_diagnostics) = parse_for_windows_live($entity); 
-		
-			$list  ||= $wl_list;
-			$email ||= $wl_email;
-			%{$diagnostics} = (%{$diagnostics}, %{$wl_diagnostics})
-				if $wl_diagnostics; 
-	}
-
-
-
-
-	# This is a special case - since this outside module adds pseudo diagonistic
-	# reports, we'll say, add them if they're NOT already there:
-
-	my ($bp_list, $bp_email, $bp_diagnostics) = parse_using_m_ds_bp($entity); 
-
-	# There's no test for these in the module itself, so we 
-	# won't even look for them. 
-	#$list  ||= $bp_list;
-	#$email ||= $bp_email;
-
-	%{$diagnostics} = (%{$bp_diagnostics}, %{$diagnostics})
-	    if $bp_diagnostics; 
-
-
-	chomp($email) if $email; 
-
-
-
-	#small hack, turns, %2 into, '-'
-	$list =~ s/\%2d/\-/g;
-
-	$list = trim($list); 
-
-	if(!$diagnostics->{'Message-Id'}){ 
-		$diagnostics->{'Message-Id'} = find_message_id_in_headers($entity);
-		if(!$diagnostics->{'Message-Id'}){ 
-			$diagnostics->{'Message-Id'} = find_message_id_in_body($entity);
-		}
-	}
-
-	if($diagnostics->{'Message-Id'}){ 
-		$diagnostics->{'Simplified-Message-Id'} = $diagnostics->{'Message-Id'}; 
-		$diagnostics->{'Simplified-Message-Id'} =~ s/\<|\>//g;
-	    $diagnostics->{'Simplified-Message-Id'} =~ s/\.(.*)//; #greedy
-	    $diagnostics->{'Simplified-Message-Id'} = DADA::App::Guts::strip($diagnostics->{'Simplified-Message-Id'});
-	}	
-	
-	return ($email, $list, $diagnostics); 
-}
-
-
-
-
-sub bounce_from_me(){ 
-	my $entity = shift; 
-	my $bh = $entity->head->get('X-BounceHandler', 0);
-	$bh =~ s/\n//g; 
-	$bh = trim($bh); 
-	$bh eq $Plugin_Config->{Plugin_Name} ? return 1 : return 0; 
-}
-
-
-
-
-sub carry_out_rule { 
-	
-	my ($title, $list, $email, $diagnostics, $message) = @_; 
-	my $actions = {};
-    
-    my $report = ''; 
-    
-	my $i = 0;
-	for my $rule(@$Rules){ 
-		if((keys %$rule)[0] eq $title){ 
-			$actions = $Rules->[$i]->{$title}->{Action}; # wooo that was fun.
-		}
-		$i++;
-	}	
-	
-	for my $action(keys %$actions){ 
-	
-		if($action eq 'add_to_score'){ 
-		  $report .= add_to_score($list, $email, $diagnostics, $actions->{$action}); 
-		}elsif($action eq 'unsubscribe_bounced_email'){ 
-			$report .= unsubscribe_bounced_email($list, $email, $diagnostics, $actions->{$action}); 
-		}elsif($action eq 'mail_list_owner'){
-			$report .= mail_list_owner($list, $email, $diagnostics, $actions->{$action}, $message);
-		}elsif($action eq 'append_message_to_file'){
-			$report .= append_message_to_file($list, $email, $diagnostics, $actions->{$action}, $message);		
-		}elsif($action eq 'default'){
-			$report .= default_action($list, $email, $diagnostics, $actions->{$action}, $message);
-		}else{ 
-			warn "unknown rule trying to be carried out, ignoring"; 
-		}
-		
-		my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-		if ( $ls->param('enable_bounce_logging') ) {
-			if(exists($diagnostics->{'Simplified-Message-Id'})){ 
-				$report .= "\nSaving bounced email report in tracker\n";
-				require DADA::Logging::Clickthrough;
-	            my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
-		    	
-				my $hard_bounce = 0; 
-				if($action eq 'add_to_score' && $actions->{$action} == $Plugin_Config->{Default_Hard_Bounce_Score}){ 
-					$hard_bounce = 1; 
-				}
-				elsif($action ne 'add_to_score'){ 
-					$hard_bounce = 1; 
-				}
-				else { 
-					# Else, it's either a soft bounce, 
-					# soft bounces and hard bounces are scored the same (?!?!) 
-					# or it's a different rule followed and we're going to count 
-					# that as a hard bounce. 
-				}
-				if($hard_bounce == 1){ 
-					$r->bounce_log(
-						{ 
-						-type  => 'hard', 
-						-mid   => $diagnostics->{'Simplified-Message-Id'},
-						-email => $email,
-						}
-					);					
-				}
-				else { 
-					$r->bounce_log(
-						{ 
-						-type  => 'soft', 
-						-mid   => $diagnostics->{'Simplified-Message-Id'},
-						-email => $email
-						}
-					);					
-				}
-			}
-			else { 
-				warn "cannot log bounced email from, '$email' for, '$list' in tracker log - no Simplified-Message-Id found. Ignoring!"; 
-			}
-		}
-		
-		
-		log_action($list, $email, $diagnostics, "$action $actions->{$action}");
-	}
-	
-	return $report; 
-}
-
-
-
-
-sub default_action { 
-	warn "Parsing... really didn't work. Ignoring and deleting bounce."; 
-}
-
-
-
-
-sub add_to_score { 
-
-    	my ($list, $email, $diagnostics, $action) = @_; 
-        if($Score_Card->{$list}->{$email}){ 
-            $Score_Card->{$list}->{$email} += $action; 
-            # Hmm. That was easy. 
-        }else{ 
-            $Score_Card->{$list}->{$email} = $action;
-        }
-        
-        return "Email, '$email', on list: $list -  adding  $action to total score. Will remove after score reaches, $Plugin_Config->{Score_Threshold}\n";
-           
-}
-
-
-
-sub unsubscribe_bounced_email {
-
-	my ($list, $email, $diagnostics, $action) = @_; 
-	my @delete_list; 
-	
-	if($action eq 'from_list'){ 
-		$delete_list[0] = $list; 
-	}elsif($action eq 'from_all_lists'){ 
-		@delete_list = DADA::App::Guts::available_lists(); 
-	}else{ 
-		warn "unknown action: '$action', no unsubscription will be made from this email!"; 
-	}
-	
-	#$Bounce_History->{$list}->{$email} = [$diagnostics, $action];	
-	
-	my $report; 
-	
-	$report .= "\n";
-	
-	for(@delete_list){ 
-		$Remove_List->{$_}->{$email} = 1;
-		$report .="$email to be deleted off of: '$_'\n";
-	} 
-	
-	return $report; 
-		
-}
-
-
-
-
-sub mail_list_owner { 
-
-	my ($list, $email, $diagnostics, $action, $message) = @_; 
-	
-	my $report = ''; 
-	
-	my $Body; 
-	my $Subject; 
-	
-	if($action eq 'over_quota_message'){ 
-		$Subject = $Over_Quota_Subject;  
-		$Body    = $Over_Quota_Message; 
-	}elsif($action eq 'user_unknown_message'){ 
-		$Subject = $User_Unknown_Subject;  
-		$Body    = $User_Unknown_Message; 
-	}elsif($action eq 'email_not_found_message'){ 
-		$Subject = $Email_Not_Found_Subject;  
-		$Body    = $Email_Not_Found_Message; 
-	}elsif($action eq 'unknown_bounce_type_message'){ 
-		$Subject = $Email_Unknown_Bounce_Type_Subject; 	
-		$Body    = $Email_Unknown_Bounce_Type_Message; 		
-	}else{ 
-		warn "There's been a misconfiguration somewhere, $Plugin_Config->{Plugin_Name} is about to die..., ";
-		warn "AARRGGGGH!";
-	}
-	
-		my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-		my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
-		
-	
-	my $li = $ls->get; 
-	
-	my ($sub_status, $sub_errors) = $lh->unsubscription_check(
-										{
-											-email => $email,
-										}
-									); 
-	
-	# A little sanity check... 
-	if($email eq $li->{admin_email}){ 
-		warn "Bounce is from bounce handler, stopping '$action'"; 
-	
-	
-	}elsif(($sub_errors->{not_subscribed} == 1) &&   (($action ne 'user_unknown_message') || ($action ne 'over_quota_message')|| ($action ne 'email_not_found_message')) ){ 
-		$report .= "parsed message contains an email ($email) that's not even subscribed. No reason to tell list owner\n";
-	}else{ 
-		
-		my $mh = DADA::Mail::Send->new(
-					{
-						-list   => $list, 
-						-ls_obj => $ls,  
-					}
-				); 
-	 
-		my $to  = $Plugin_Config->{Send_Messages_To} || $li->{list_owner_email}; 
-		
-		my $msg = MIME::Entity->build(
-		
-		                              To      => $email, 
-									  From    => $li->{admin_email},
-									  Subject => $Subject,
-									  Type    => 'multipart/mixed',
-									  );
-									  
-									   
-			$msg->attach(Type        => 'text/plain', 
-						 Disposition => 'inline', 
-						 Data        => $Body,
-						 Encoding    => $li->{plaintext_encoding}
-						); 
-											 
-			$msg->attach(Type        => 'message/rfc822', 
-						Disposition  => "attachment",
-						Data         => $message); 
-
-			my $report        = generate_nerd_report($list, $email, $diagnostics); 
-			my $status_report = rfc1893_status($diagnostics->{Status});
-
-		
-			require DADA::App::FormatMessages; 
-	
-			my $fm = DADA::App::FormatMessages->new(-List => $list); 
-	  		   $fm->use_header_info(1);
-	           $fm->use_email_templates(0); 
-
-		    $msg = $fm->email_template(
-		                    {
-		                        -entity                   => $msg,        
-		                 		 -subscriber_vars         => { 
-									'subscriber.email'    => $email, 
-								},
-		                        -list_settings_vars       => $ls->params, 
-		                        -list_settings_vars_param => {-dot_it => 1},
-		                        -vars                   => 
-		                            {
-										report         => $report, 
-										status_report  => $status_report, 
-										Plugin_Name   => $Plugin_Config->{Plugin_Name},
-										Plugin_Name    => $Plugin_Config->{Plugin_Name},
-		                            },
-		                    }
-		                );
-	        # ?
-	        my ($header_str, $body_str) = $fm->format_headers_and_body(-msg => $msg->as_string);
-
-
-		
-		   $mh->send(
-				  # Trust me on these :) 
-				  $mh->return_headers($header_str),
-				  'X-BounceHandler' => $Plugin_Config->{Plugin_Name},
-				  To                => $to, 
-				  Body => $body_str,
-				  
-				 );
-
-		$report .= "mail for: $action is on its way!\n";
-		    
-	}	
-	
-	return $report; 
-
-
-} 
-
-
-sub append_message_to_file { 
-	
-	my ($list, $email, $diagnostics, $action, $message) = @_; 
-	
-	my $report ;
-	
-	
-	$report .= "Appending Email to '$action'\n"; 
-	    
-	$action = DADA::App::Guts::make_safer($action); 
-			
-	open(APPENDLOG, ">>$action") or die $!; 
-	chmod($DADA::Config::FILE_CHMOD, $action); 
-	print APPENDLOG "\n" . $message; 
-	close(APPENDLOG) or die $!; 
-
-    return $report; 
-    
-}
-
-
-
-
-
-sub generate_nerd_report { 
-
-	my ($list, $email, $diagnostics) = @_;
-	my $report; 
-	$report = "List: $list\nEmail: $email\n\n"; 
-	for(keys %$diagnostics){ 
-		$report .= "$_: " . $diagnostics->{$_} . "\n"; 
-	}	
-	
-	return $report; 
-
-}
-
-
-
-
-
-
-
-sub find_rule_to_use { 
-	my ($list, $email, $diagnostics) = @_;
-	
-	my $ir = 0;
-	 
-	
-	RULES: for ($ir = 0; $ir <= $#$Rules; $ir++){ 
-		my $rule = $Rules->[$ir];  
-		my $title = (keys %$rule)[0]; 
-		
-		next if $title eq 'default'; 
-		my $match = {}; 
-		my $examine = $Rules->[$ir]->{$title}->{Examine}; 
-		
-		my $message_fields = $examine->{Message_Fields};
-		my %ThingsToMatch; 
-		
-		
-		for my $m_field(keys %$message_fields){ 
-			my $is_regex   = 0; 
-			my $real_field = $m_field; 
-			$ThingsToMatch{$m_field} = 0; 
-			
-			if($m_field =~ m/_regex$/){ 
-				$is_regex = 1; 
-				$real_field = $m_field; 
-				$real_field =~ s/_regex$//;  
-			}
-			
-			MESSAGEFIELD: for my $pos_match(@{$message_fields->{$m_field}}){ 
-				if($is_regex == 1){ 
-					if($diagnostics->{$real_field} =~ m/$pos_match/){ 	
-						$ThingsToMatch{$m_field} = 1;
-						next MESSAGEFIELD;
-					}				
-				}else{ 
-				
-					if($diagnostics->{$real_field} eq $pos_match){ 	
-						$ThingsToMatch{$m_field} = 1;
-						next MESSAGEFIELD;
-					}
-				
-				}
-			}	
-			
-		}
-
-		# If we miss one, the rule doesn't work, 
-		# All or nothin', just like life. 
-		
-		for(keys %ThingsToMatch){ 
-			if($ThingsToMatch{$_} == 0){
-				next RULES; 
-			}
-		}
-
-   
-	    if(keys %{$examine->{Data}}){ 
-	    	if($examine->{Data}->{Email}){ 
-	    	 	my $valid_email = 0; 
-	    	 	my $email_match; 
-	    	 	if(DADA::App::Guts::check_for_valid_email($email) == 0){
-	    	 			$valid_email = 1; 
-	    	 	}
-	    	 	if((($examine->{Data}->{Email} eq 'is_valid')   && ($valid_email == 1)) ||
-				   (($examine->{Data}->{Email} eq 'is_invalid') && ($valid_email == 0))){
-	    	 		$email_match = 1; 
-	    	 	}else{ 
-	    	 		next RULES;
-	    	 	} 
-	   		}
-	   		
-	   		if($examine->{Data}->{List}){ 
-	    	 	my $valid_list = 0; 
-	    	 	my $list_match; 
-	    	 	if(DADA::App::Guts::check_if_list_exists(-List=>$list) != 0){
-	    	 		$valid_list = 1; 
-	    	 	}
-	    	 	if((($examine->{Data}->{List} eq 'is_valid')   && ($valid_list == 1)) ||
-				   
-				
-				   (($examine->{Data}->{List} eq 'is_invalid') && ($valid_list == 0))){
-	    	 		$list_match = 1;  
-	    	 	}else{ 
-	    	 		next RULES;
-	    	 	}	 
-	   		}
-	    }
-		return $title; 
-	}
-	return 'default'; 
-}
-
-
-
-
-sub find_verp { 
-
-	my $entity = shift; 
-	my $mv = Mail::Verp->new;
-	   $mv->separator($DADA::Config::MAIL_VERP_SEPARATOR);
-	if($entity->head->count('To') > 0){ 
-		my ($sender, $recipient) = $mv->decode($entity->head->get('To', 0));
-		return $recipient || undef; 
-	}	
-	return undef; 
-}
-
-
-
-
-sub generic_parse { 
-
-	my $entity = shift; 
-	my ($email, $list); 
-	my %return = (); 
-	my $headers_diag = {}; 
-	   $headers_diag = get_orig_headers($entity); 
-	my $diag = {}; 
-	($email, $diag) = find_delivery_status($entity); 	
-
-	if(keys %$diag){ 	
-		%return = (%{$diag}, %{$headers_diag});
-	}
-	else { 
-		%return = %{$headers_diag};
-	}
-	
-	$list = find_list_in_list_headers($entity); 
-		
-	$list ||= generic_body_parse_for_list($entity); 
-	
-	$email = DADA::App::Guts::strip($email);
-	$email =~ s/^\<|\>$//g if $email;  
-	$list  = DADA::App::Guts::strip($list) if $list; 
-	return ($list, $email, \%return); 
-	
-}
-
-sub get_orig_headers { 
-	
-	my $entity = shift; 
-	my $diag = {}; 
-	
-	for('From', 'To', 'Subject'){ 
-
-		if ($entity->head->count($_)){ 
-	
-			my $header = $entity->head->get($_, 0);
-			chomp $header; 
-			$diag->{'Bounce_' . $_} = $header; 
-		}
-
-	}
-	
-	return $diag; 
-	
-	
-}
-
-
-
-
-sub find_delivery_status {
-
-	my $entity = shift; 
-	my @parts = $entity->parts; 
-	my $email; 
-
-	my $diag = {}; 
-		
-	if(!@parts){ 
-		if($entity->head->mime_type eq 'message/delivery-status'){ 
-			($email, $diag) = generic_delivery_status_parse($entity); 
-	    	return ($email, $diag); 
-		} 
-	}else{ 
-		my $i;
-		for $i (0 .. $#parts) {
-	    	my $part = $parts[$i];
-			($email, $diag) = find_delivery_status($part); 
-			if(($email) && (keys %$diag)){ 
-				return ($email, $diag); 
-			}
-		}
-	}
-} 
-
-
-
-sub find_mailer_bounce_headers { 
-
-	my $entity = shift; 
-	my $mailer = $entity->head->get('X-Mailer', 0); 
-	   $mailer =~ s/\n//g;
-	return $mailer if $mailer; 
-
-}
-
-
-
-
-sub find_list_in_list_headers { 
-
-	my $entity = shift; 
-	my @parts = $entity->parts; 
-	my $list; 	
-	if($entity->head->mime_type eq 'message/rfc822'){ 
-		my $orig_msg_copy = $parts[0];
-		
-			my $list_header = $orig_msg_copy->head->get('List', 0); 
-			$list = $list_header if $list_header !~ /\:/;
-	
-			if(!$list){ 
-				my $list_id = $orig_msg_copy->head->get('List-ID', 0);
-				if($list_id =~ /\<(.*?)\./){ 
-					$list = $1 if $1 !~ /\:/;
-				}
-			}
-			if(!$list){ 
-				my $list_sub = $orig_msg_copy->head->get('List-Subscribe', 0);
-				if($list_sub =~ /l\=(.*?)\>/){ 
-					$list = $1; 
-				}
-			}
-		chomp $list; 
-		return $list;
-	}else{ 
-		my $i;
-		for $i (0 .. $#parts) {
-	    	my $part = $parts[$i];
-			$list = find_list_in_list_headers($part);  
-			return $list if $list;
-		}
-	}
-}
-
-
-
-
-sub find_message_id_in_headers { 
-
-	my $entity = shift; 
-	my @parts = $entity->parts; 
-	my $m_id; 	
-	if($entity->head->mime_type eq 'message/rfc822'){ 
-		my $orig_msg_copy = $parts[0];	
-		   $m_id = $orig_msg_copy->head->get('Message-ID', 0); 
-		chomp($m_id); 
-		return $m_id;
-	}else{ 
-		my $i;
-		for $i (0 .. $#parts) {
-	    	my $part = $parts[$i];
-			$m_id = find_message_id_in_headers($part);  
-			return $m_id if $m_id;
-		}
-	}
-}
-
-
-
-
-sub find_message_id_in_body { 
-
-	my $entity = shift; 
-	my $m_id; 		
-	
-	my @parts = $entity->parts; 
-
-	# for singlepart stuff only. 
-	if(!@parts){ 
-		
-		my $body = $entity->bodyhandle; 
-		my $IO; 
-		
-		return undef if ! defined($body); 
-	
-		if($IO = $body->open("r")){ # "r" for reading.  
-			while (defined($_ = $IO->getline)){ 
-				chomp($_); 
-				if($_ =~ m/^Message\-Id\:(.*?)$/ig){ 
-					#yeah, sometimes the headers are in the body of
-					#an attached message. Go figure. 
-					$m_id = $1; 
-				}
-			}
-		} 
-		
-		$IO->close;	
-		return $m_id; 
-	}else{ 
-		return undef; 
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
-sub generic_delivery_status_parse { 
-
-	my $entity = shift; 
-	my $diag = {}; 
-	my $email; 
-	
-		# sanity check
-		#if($delivery_status_entity->head->mime_type eq 'message/delivery-status'){ 	
-			my $body = $entity->bodyhandle;
-			my @lines;
-			my $IO; 
-			my %bodyfields;
-			if($IO = $body->open("r")){ # "r" for reading.  
-				while (defined($_ = $IO->getline)){ 
-					if ($_ =~ m/\:/){ 
-						my ($k, $v) = split(':', $_);
-						chomp($v); 
-						#$bodyfields{$k} = $v;
-						$diag->{$k} = $v; 
-					}
-				} 
-				$IO->close;
-			}
-			
-			if($diag->{'Diagnostic-Code'} =~ /X\-Postfix/){
-				$diag->{Guessed_MTA} = 'Postfix';
-			} 
-			
-			my ($rfc, $remail) = split(';', $diag->{'Final-Recipient'});
-			if($remail eq '<>'){ #example: Final-Recipient: LOCAL;<>
-			 	($rfc, $remail) = split(';', $diag->{'Original-Recipient'});
-			}
-			$email = $remail; 
-			
-		for(keys %$diag){ 
-			$diag->{$_} = DADA::App::Guts::strip($diag->{$_}); 
-		}
-		
-	return ($email, $diag); 
-}
-
-
-
-
-sub generic_body_parse_for_list { 
-
-	my $entity = shift; 
-	my $list; 
-	
-	my @parts = $entity->parts; 
-	if(!@parts){ 
-		$list = find_list_from_unsub_list($entity); 
-		return $list if $list; 
-	}else{ 
-		my $i; 
-		for $i (0 .. $#parts) {
-	    	my $part = $parts[$i];
-			$list = generic_body_parse_for_list($part);
-			if($list){ 
-				return $list; 
-			}
-		}
-	}	
-}
-
-
-
-
-sub find_list_from_unsub_list { 
-	
-	my $entity = shift; 
-	my $list; 		
-
-
-	my $body = $entity->bodyhandle; 
-	my $IO; 
-	
-	return undef if ! defined($body); 
-
-	if($IO = $body->open("r")){ # "r" for reading.  
-		while (defined($_ = $IO->getline)){ 
-			chomp($_); 
-			
-			# DEV: BUGFIX:
-			# 2351425 - 3.0.0 - find_list_from_unsub_list sub out-of-date
-			# https://sourceforge.net/tracker2/?func=detail&aid=2351425&group_id=13002&atid=113002
-			if($_ =~ m/$DADA::Config::PROGRAM_URL\/(u|list)\/(.*?)\//){
-				$list = $2;
-			}
-			# /DEV: BUGFIX
-			elsif($_ =~ m/^List\:(.*?)$/){ 
-				#yeah, sometimes the headers are in the body of
-				#an attached message. Go figure. 
-				$list = $1; 
-			}
-			elsif($_ =~ m/(.*?)\?l\=(.*?)\&f\=u\&e\=/){ 
-				$list = $2;
-			}
-			elsif($_ =~ m/(.*?)\?f\=u\&l\=(.*?)\&e\=/){ 
-				$list = $2; 	
-			} 
-		}
-	} 
-	
-	$IO->close;	
-	return $list; 
-}
-
-
-
-
-sub parse_for_qmail {
-
-	# When I'm bored
-	# => http://cr.yp.to/proto/qsbmf.txt
-	# => http://mikoto.sapporo.iij.ad.jp/cgi-bin/cvsweb.cgi/fmlsrc/fml/lib/Mail/Bounce/Qmail.pm
-	
-	my $entity = shift;	
-	my ($email, $list); 
-	my $diag = {}; 
-	my @parts = $entity->parts; 
-	
-	my $state        = 0;
-	my $pattern      = 'Hi. This is the';
-	my $pattern2     = 'Your message has been enqueued by';
-	
-	my $end_pattern  = '--- Undelivered message follows ---';
-	my $end_pattern2 = '--- Below this line is a copy of the message.';
-	my $end_pattern3 = '--- Enclosed is a copy of the message.';
-	my $end_pattern4 = 'Your original message headers are included below.';
-	
-	my ($addr, $reason);
-		
-	if(!@parts){ 
-		my $body = $entity->bodyhandle; 
-		my $IO;
-		if($body){ 
-			if($IO = $body->open("r")){ # "r" for reading.  
-				while (defined($_ = $IO->getline)){ 
-					
-					my $data = $_;
-					$state = 1 if $data =~ /$pattern|$pattern2/;
-					$state = 0 if $data =~ /$end_pattern|$end_pattern2|$end_pattern3/;
-					
-					if ($state == 1) {	
-						$data =~ s/\n/ /g;
-	
-						if($data =~ /\t(\S+\@\S+)/){ 
-							$email = $1; 
-						} elsif ($data =~ /\<(\S+\@\S+)\>:\s*(.*)/) {
-							($addr, $reason) = ($1, $2);	
-							 $diag->{Action} = $reason;
-							my $status = '5.x.y';
-							if($data =~ /\#(\d+\.\d+\.\d+)/) {
-								$status = $1;
-							}elsif ($data =~ /\s+(\d{3})\s+/) {
-								my $code = $1;
-								$status  = '5.x.y' if $code =~ /^5/;
-								$status  = '4.x.y' if $code =~ /^4/;
-							
-							    $diag->{Status} = $status;
-								$diag->{Action} = $code; 
-								
-							}
-						
-							$email                 = $addr; 
-							$diag->{Guessed_MTA}   = 'Qmail'; 
-							
-						}elsif ($data =~ /(.*)\s\(\#(\d+\.\d+\.\d+)\)/){		# Recipient's mailbox is full, message returned to sender. (#5.2.2)
-
-								$diag->{'Diagnostic-Code'} = $1; 
-								$diag->{Status}            = $2; 
-								$diag->{Guessed_MTA}       = 'Qmail'; 
-								
-						}elsif($data =~ /Remote host said:\s(\d{3})\s(\d+\.\d+\.\d+)\s\<(\S+\@\S+)\>(.*)/){ 	# Remote host said: 550 5.1.1 <xxx@xxx>... Account is over quota. Please try again later..[EOF] 
-
-						$diag->{Status}             = $2; 
-						$email                      = $3; 
-						$diag->{'Diagnostic-Code'}  = $4;
-						$diag->{Action}             = 'failed'; #munging this for now...
-						$diag->{'Final-Recipient'}  = 'rfc822'; #munging, again. 
-						
-						}elsif($data =~ /Remote host said:\s(.*?)\s(\S+\@\S+)\s(.*)/){ 
-							
-							my $status;	
-							$email                   ||= $2; 
-
-
-							$status                  ||= $1;
-							$diag->{Status}          ||= '5.x.y' if $status =~ /^5/;
-							$diag->{Status}          ||= '4.x.y' if $status =~ /^4/;
-							$diag->{'Diagnostic-Code'} = $data;
-							$diag->{Guessed_MTA}       = 'Qmail'; 
-						
-						}elsif ($data =~ /Remote host said:\s(\d{3}.*)/){ 
-						
-							$diag->{'Diagnostic-Code'} = $1; 
-						
-						}elsif ($data =~ /(.*)\s\(\#(\d+\.\d+\.\d+)\)/){ 
-						
-							$diag->{'Diagnostic-Code'} = $1; 
-							$diag->{Status}            = $2;
-						
-						}elsif ($data =~ /(No User By That Name)/){ 
-						
-							$diag->{'Diagnostic-Code'} = $data; 
-							$diag->{Status} = '5.x.y';
-						
-						}elsif ($data =~ /(This address no longer accepts mail)/){ 
-						
-							$diag->{'Diagnostic-Code'} = $data; 
-						
-						}elsif($data =~ /The mail system will continue delivery attempts/){ 
-							$diag->{Guessed_MTA}       = 'Qmail'; 
-							$diag->{'Diagnostic-Code'} = $data;
-						}
-					}
-				}
-			}
-			
-			$list ||= generic_body_parse_for_list($entity);
-			return ($list, $email, $diag); 
-		}else{ 
-			# no body part to parse
-			return (undef, undef, {});
-		}
-	}else{ 
-		my $i;
-		for $i (0 .. $#parts) {
-	    	my $part = $parts[$i];
-			($list, $email, $diag) = parse_for_qmail($part); 
-			if(($email) && (keys %$diag)){ 
-				return ($list, $email, $diag); 
-			}
-		}
-	} 
-}
-
-
-
-sub parse_for_exim { 
-
-my $entity = shift;	
-	my ($email, $list); 
-	my $diag = {}; 
-	
-	my @parts = $entity->parts;
-	if(!@parts){ 
-		if($entity->head->mime_type =~ /text/){ 
-			# Yeah real hard. Bring it onnnn!
-			if($entity->head->get('X-Failed-Recipients', 0)){ 
-				
-				$email                  = $entity->head->get('X-Failed-Recipients', 0);
-				$email                  =~ s/\n//; 
-				$email                  = trim($email); 
-				$list                   = generic_body_parse_for_list($entity);
-				$diag->{Status}         = '5.x.y'; 
-				$diag->{Guessed_MTA}    = 'Exim'; 
-				return ($list, $email, $diag);
-				
-			}else{ 
-				
-				my $body = $entity->bodyhandle; 
-				my $IO;
-				if($body){ 
-				
-					if($IO = $body->open("r")){ # "r" for reading.  
-						
-						my $pattern     = 'This message was created automatically by mail delivery software (Exim).';
-						my $end_pattern = '------ This is a copy of the message';
-						my $state       = 0;
-						
-						while (defined($_ = $IO->getline)){ 
-						
-							my $data = $_;
-						
-							$state = 1 if $data =~ /\Q$pattern/;
-							$state = 0 if $data =~ /$end_pattern/;
-						
-							if ($state == 1) {
-						
-								$diag->{Guessed_MTA} = 'Exim';
-					
-								if($data =~ /(\S+\@\S+)/){
-						
-									$email = $1;
-									$email = trim($email);
-						
-								}elsif($data =~ m/unknown local-part/){ 
-						
-									$diag->{'Diagnostic-Code'} = 'unknown local-part';
-									$diag->{'Status'}          = '5.x.y';
-						
-								}	
-							}
-						}
-					}
-				}
-				return ($list, $email, $diag);
-			} 
-		}else{ 
-			return (undef, undef, {});
-		}
-	}else{ 
-		# no body part to parse
-		return (undef, undef, {});
-	}	  
-} 
-
-
-sub parse_for_f__king_exchange { 
-
-	my $entity = shift; 
-	my @parts = $entity->parts; 
-	my $email; 
-	my $diag = {}; 
-	my $list;
-	my $state       = 0;
-	my $pattern     = 'Your message';
-						
-	if(!@parts){ 
-		if($entity->head->mime_type eq 'text/plain'){ 
-			my $body = $entity->bodyhandle; 
-			my $IO;
-			if($body){ 
-				if($IO = $body->open("r")){ # "r" for reading.  
-					while (defined($_ = $IO->getline)){ 
-						my $data = $_;
-						$state = 1 if $data =~ /$pattern/;
-						if ($state == 1) {
-							$data =~ s/\n/ /g;
-							if($data =~ /\s{2}To:\s{6}(\S+\@\S+)/){ 
-								$email =  $1;
-							}
-							elsif($data =~ /(MSEXCH)(.*?)(Unknown\sRecipient|Unknown|)/){ # I know, not perfect.
-								$diag->{Guessed_MTA}       = 'Exchange';
-								$diag->{'Diagnostic-Code'} = 'Unknown Recipient';
-							}else{ 
-								#...
-								#warn "nope: " . $data; 
-							}
-						}
-					}
-				}
-			}
-		} 
-		return ($list, $email, $diag);
-	}else{ 
-		my $i;
-		for $i (0 .. $#parts) {
-	    	my $part = $parts[$i];
-			($list, $email, $diag) = parse_for_f__king_exchange($part); 
-			if(($email) && (keys %$diag)){ 
-				return ($list, $email, $diag); 
-			}
-		}
-	}
-}
-
-
-
-
-sub parse_for_novell { #like, really...
-
-	my $entity = shift; 
-
-	my @parts = $entity->parts; 
-	my $email; 
-	my $diag = {}; 
-	my $list;
-	my $state       = 0;
-	my $pattern     = qr/(A|The) message that you sent/;
-	my $end_pattern = quotemeta('--- The header of the original message is following. ---');
-	 
-	if(!@parts){ 
-		if($entity->head->mime_type eq 'text/plain'){ 
-			my $body = $entity->bodyhandle; 
-			my $IO;
-			if($body){ 
-				if($IO = $body->open("r")){ # "r" for reading.  
-					while (defined($_ = $IO->getline)){ 
-						my $data = $_;
-						$state = 1 if $data =~ m/$pattern/;
-						$state = 0 if $data =~ m/$end_pattern/; 
-						if ($state == 1) {
-							
-							$data =~ s/\n/ /g;
-						
-							if($data =~ /\s+(\S+\@\S+)\s\((.*?)\)/){ 
-								$email                     =  $1;
-							
-								$diag->{'Diagnostic-Code'} =  $2;
-							}
-							elsif($data =~ m/\<+(\S+\@\S+)\>+/){ 
-								$email = $1; 
-									
-							}else{ 
-								#...
-							}
-						}
-					}
-				}
-			}
-		} 
-		return ($list, $email, $diag);
-	}else{ 
-
-		my $i;
-		for $i (0 .. $#parts) {
-	    	my $part = $parts[$i];
-			($list, $email, $diag) = parse_for_novell($part); 
-			if(($email) && (keys %$diag)){ 
-				$diag->{'X-Mailer'} = find_mailer_bounce_headers($entity);
-				return ($list, $email, $diag); 
-			}
-		}
-	}
-}
-
-
-
-
-sub parse_for_gordano { # what... ever that is there...
-	
-	my $entity = shift; 
-	my @parts = $entity->parts; 
-	my $email; 
-	my $diag = {}; 
-	my $list;
-	my $state       = 0;
-	
-	my $pattern     = 'Your message to';
-	my $end_pattern = 'The message headers';
-	
-	if(!@parts){ 
-		if($entity->head->mime_type eq 'text/plain'){ 
-			my $body = $entity->bodyhandle; 
-			my $IO;
-			if($body){ 
-				if($IO = $body->open("r")){ # "r" for reading.  
-					while (defined($_ = $IO->getline)){ 
-						my $data = $_;
-						$state = 1 if $data =~ /$pattern/;
-						$state = 0 if $data =~ /$end_pattern/;
-						if ($state == 1) {
-							$data =~ s/\n/ /g;
-							if($data =~ /RCPT To:\<(\S+\@\S+)\>/){	#    RCPT To:<xxx@usnews.com>
-								$email                     =  $1;
-							}elsif($data =~ /(.*?)\s(\d+\.\d+\.\d+)\s(.*)/){	# 550 5.1.1 No such mail drop defined.
-								$diag->{Status}			   = $2; 
-								$diag->{'Diagnostic-Code'} = $3;
-								$diag->{'Final-Recipient'} = 'rfc822'; #munge; 
-								$diag->{Action}            = 'failed'; #munge;
-							}else{ 
-								#...
-							}
-						}
-					}
-				}
-			}
-		} 
-		return ($list, $email, $diag);
-	}else{ 
-		my $i;
-		for $i (0 .. $#parts) {
-	    	my $part = $parts[$i];
-			($list, $email, $diag) = parse_for_gordano($part); 
-			if(($email) && (keys %$diag)){ 
-				$diag->{'X-Mailer'} = find_mailer_bounce_headers($entity);
-				return ($list, $email, $diag); 
-			}
-		}
-	}
-}
-
-
-
-
-sub parse_for_overquota_yahoo { 
-
-	my $entity = shift; 
-	my @parts = $entity->parts; 
-	my $email; 
-	my $diag = {}; 
-	my $list;
-	my $state       = 0;
-	my $pattern     = 'Message from  yahoo.com.';
-
-	if(!@parts){ 
-		if($entity->head->mime_type eq 'text/plain'){ 
-			my $body = $entity->bodyhandle; 
-			my $IO;
-			if($body){ 
-				if($IO = $body->open("r")){ # "r" for reading.  
-					while (defined($_ = $IO->getline)){ 
-						my $data = $_;
-						$state = 1 if $data =~ /$pattern/;
-						$diag->{'Remote-MTA'} = 'yahoo.com';
-						
-						if ($state == 1) {
-							$data =~ s/\n/ /g; #what's up with that?	
-							if($data =~ /\<(\S+\@\S+)\>\:/){ 
-								$email                     =  $1;
-							}else{ 
-								if($data =~ m/(over quota)/){ 
-									$diag->{'Diagnostic-Code'} = $data;
-								}
-							}
-						}
-					}
-				}
-			}
-		} 
-		return ($list, $email, $diag);
-	}else{ 
-
-		my $i;
-		for $i (0 .. $#parts) {
-	    	my $part = $parts[$i];
-			($list, $email, $diag) = parse_for_overquota_yahoo($part); 
-			if(($email) && (keys %$diag)){ 
-				$diag->{'X-Mailer'} = find_mailer_bounce_headers($entity);
-				return ($list, $email, $diag); 
-			}
-		}
-	}
-}
-
-
-
-
-sub parse_for_earthlink { 
-
-	my $entity = shift; 
-	my @parts = $entity->parts; 
-	my $email; 
-	my $diag = {}; 
-	my $list;
-	my $state       = 0;
-	my $pattern     = 'Sorry, unable to deliver your message to';
-
-	if(!@parts){ 
-		if($entity->head->mime_type eq 'text/plain'){ 
-			my $body = $entity->bodyhandle; 
-			my $IO;
-			if($body){ 
-				if($IO = $body->open("r")){ # "r" for reading.  
-					while (defined($_ = $IO->getline)){ 
-						my $data = $_;
-						$state = 1 if $data =~ /$pattern/;
-						if ($state == 1) {
-							$diag->{'Remote-MTA'} = 'Earthlink';
-							$data =~ s/\n/ /g; #what's up with that?	
-							if($data =~ /(\d{3})\s(.*?)\s(\S+\@\S+)/){	#  552 Quota violation for postmaster@example.com
-								$diag->{'Diagnostic-Code'} = $1 . ' ' . $2; 
-								$email = $3; 
-							}
-						}
-					}
-				}
-			}
-		} 
-		return ($list, $email, $diag);
-	}else{ 
-
-		my $i;
-		for $i (0 .. $#parts) {
-	    	my $part = $parts[$i];
-			($list, $email, $diag) = parse_for_earthlink($part); 
-			if(($email) && (keys %$diag)){ 
-				$diag->{'X-Mailer'} = find_mailer_bounce_headers($entity);
-				return ($list, $email, $diag); 
-			}
-		}
-	}
-}
-
-
-
-sub parse_for_windows_live { 
-
-	my $entity = shift; 
-#	
-	my $email; 
-	my $diag = {}; 
-	my $list;
-	my $state       = 0;
-	
-	if(defined($entity)){ 
-		my @parts  = $entity->parts; 
-		if($parts[0]) { 
-			my @parts0 = $parts[0]->parts; 
-			if($parts0[0]){
-				if ($parts0[0]->head->count('X-HmXmrOriginalRecipient')){ 
-					$email = $parts0[0]->head->get('X-HmXmrOriginalRecipient', 0);
-					$diag->{'Remote-MTA'} = 'Windows_Live'; 
-					return ($list, $email, $diag);
-				}
-			}
-		}
-	}
-
-
-}
-
-
-
-
-sub parse_using_m_ds_bp { 
-
-    eval { require Mail::DeliveryStatus::BounceParser; };
-    
-    
-    return (undef, undef, {}) if $@; 
-    
-    # else, let's get to work; 
-    
-    my $entity  = shift; 
-    my $message = $entity->as_string;
-    
-    my $bounce = eval { Mail::DeliveryStatus::BounceParser->new($message); };
-    
-    if ($@) {
-        # couldn't parse.
-        return (undef, undef, {}) if $@; 
-     }
-         
-      # examples:
-      # my @addresses       = $bounce->addresses;       # email address strings
-      # my @reports         = $bounce->reports;         # Mail::Header objects
-      # my $orig_message_id = $bounce->orig_message_id; # <ABCD.1234@mx.example.com>
-      # my $orig_message    = $bounce->orig_message;    # Mail::Internet object
-
-    return (undef, undef, {})
-        if $bounce->is_bounce != 1; 
-
-    my ($report) = $bounce->reports;
-
-    return (undef, undef, {})
-        if ! defined $report; 
-        
-    my $diag = {}; 
-        
-    $diag->{'Message-Id'} = $report->get('orig_message_id')
-        if $report->get('orig_message_id');     
-    
-    $diag->{Action} = $report->get('action')
-        if $report->get('action');     
-
-    $diag->{Status} = $report->get('status')
-        if $report->get('status');     
-    
-     $diag->{'Diagnostic-Code'} = $report->get('diagnostic-code')
-        if $report->get('diagnostic-code'); 
-
-    $diag->{'Final-Recipient'} = $report->get('final-recipient')
-        if $report->get('final-recipient');
-        
-    # these aren't used particularily in Dada Mail, but let's play around with them...
-    
-    $diag->{std_reason} = $report->get('std_reason') 
-        if $report->get('std_reason'); 
-        
-    $diag->{reason}     = $report->get('reason')
-        if $report->get('reason'); 
-        
-    $diag->{host}       = $report->get('host')
-        if $report->get('host'); 
-        
-    $diag->{smtp_code}  = $report->get('smtp_code')
-        if $report->get('smtp_code');
-    
-    my $email = $report->get('email') || undef; 
-    
-    return (undef, $email, $diag); 
-    
-    
-}
-
-
-
-
-#sub carry_out_all_rules { 
-#	my $array_ref = shift; 
-#	for my $dead(@$Rules_To_Carry_Out){
-#		 carry_out_rule(@$dead); #hope this works
-#	}
-#
-#}
-
-
-
-
-
-sub save_scores { 
-
-    
-    my $score = shift; 
-    
-    if(keys %$score){
-        
-        my @delete_list = DADA::App::Guts::available_lists(); 
-
-        for my $d_list(@delete_list){ 
-        
-			print "\nWorking on list: $list\n"
-			 if $verbose; 
-			
-            require   DADA::App::BounceScoreKeeper; 
-            my $bsk = DADA::App::BounceScoreKeeper->new(-List => $d_list); 
-            
-            my $list_scores = $score->{$d_list}; 
-            
-            my $lh = DADA::MailingList::Subscribers->new({-list => $d_list}); 
-            
-            for my $bouncing_email(keys %$list_scores){ 
-	
-			#	print "Examining: $bouncing_email\n"
-			#		if $verbose; 
-	
-                if($lh->check_for_double_email(-Email => $bouncing_email) == 0){ 
-                    undef($list_scores->{$bouncing_email}); 
-                    delete($list_scores->{$bouncing_email});
-                    
-             #       print "Email: $bouncing_email not subscribed to: $d_list - ignoring.\n"
-              #          if $verbose;
-                }
-				else { 
-                   # print "Email: $bouncing_email subscribed to: $d_list - will unsubscribe.\n"
-                   #     if $verbose;
-				}
-            }
-            
-            my $give_back_scores = $bsk->tally_up_scores($list_scores); 
-
-            if(keys %$give_back_scores){ 
-                print "\nScore Totals for $d_list:\n\n"
-                    if $verbose; 
-                for(keys %$give_back_scores){ 
-                print "\tEmail: $_ total score: " . $give_back_scores->{$_} . "\n"
-                    if $verbose; 
-                }
-            } 
-            
-            my $removal_list = $bsk->removal_list($Plugin_Config->{Score_Threshold}); 			
-    
-			print "Addresses to be removed:\n" . '-' x 72 . "\n"
-				if $verbose; 
-				
-            for my $bad_email(@$removal_list){
-                    $Remove_List->{$d_list}->{$bad_email} = 1;
-                    print "\t$bad_email\n" 
-                        if $verbose;
-            
-            }
-        
-			# DEV: Hmm, this gets repeated for each list?
-            print "Flushing old scores over " . $Plugin_Config->{Score_Threshold} . "\n" 
-				if $verbose; 
-            $bsk->flush_old_scores($Plugin_Config->{Score_Threshold}); 
-        }
-        
-    }else{ 
-
-        print "No scores to tally.\n"
-            if $verbose; 
-            
-    }
-}
-
-
-
-
-sub remove_bounces {
-
-    my $report = shift;
-
-    print "Removing addresses from all lists:\n" . '-' x 72 . "\n"
-      if $verbose;
-
-    for my $list ( keys %$report ) {
-
-        print "\nList: $list\n"
-          if $verbose;
-
-        my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
-        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-        my $li = $ls->get;
-
-        my @remove_list = keys %{ $report->{$list} };
-
-        for (@remove_list) {
-            $lh->remove_subscriber( { -email => $_, } );
-            print "Removing: $_\n"
-              if $verbose;
-        }
-
-        if (   ( $li->{black_list} == 1 )
-            && ( $li->{add_unsubs_to_black_list} == 1 ) )
-        {
-            for my $re (@remove_list) {
-                $lh->add_subscriber(
-                    {
-                        -email => $re,
-                        -type  => 'black_list',
-					    -dupe_check    => {
-											-enable  => 1, 
-											-on_dupe => 'ignore_add',  
-	                					},
-                    }
-                );
-            }
-        }
-
-        # Bang Bang Baby, The Bigger The Better.
-        # Bang Bang Baby, The Bigger The Better.
-        # Bang Bang Baby, The Bigger The Better.
-        # Bang Bang Baby, The Bigger The Better.
-        # You aint a baby no more baby
-        # You aint no bigger than before baby
-        # I'll rub that cheap black off your lips baby
-        # so take a swallow as i spit baby
-
-        if ( $li->{get_unsub_notice} == 1 ) {
-            require DADA::App::Messages;
-
-            my $r;
-
-            if ( $li->{enable_bounce_logging} ) {
-                require DADA::Logging::Clickthrough;
-                $r = DADA::Logging::Clickthrough->new( { -list => $list } );
-
-            }
-
-            print "\n"
-              if $verbose;
-
-            my $aa = 0;
-
-            for my $d_email (@remove_list) {
-
-                DADA::App::Messages::send_owner_happenings(
-                    {
-                        -list   => $list,
-                        -email  => $d_email,
-                        -role   => 'unsubscribed',
-                        -lh_obj => $lh,
-                        -ls_obj => $ls,
-                        -note   => 'Reason: Address is bouncing messages.',
-                    }
-                );
-
-                DADA::App::Messages::send_generic_email(
-                    {
-                        -list    => $list,
-                        -email   => $d_email,
-                        -ls_obj  => $ls,
-                        -headers => {
-                            Subject =>
-                              $Email_Unsubscribed_Because_Of_Bouncing_Subject,
-                        },
-                        -body =>
-                          $Email_Unsubscribed_Because_Of_Bouncing_Message,
-                        -tmpl_params => {
-                            -list_settings_vars_param => { -list => $list, },
-                            -subscriber_vars =>
-                              { 'subscriber.email' => $d_email, },
-                            -vars => {
-                                Plugin_Name => $Plugin_Config->{Plugin_Name},
-                            },
-                        },
-                    }
-                );
-            }
-        }
-    }
-}
-
-
-
-
-sub test_script {
-
-    $verbose = 1;
-
-    my @files_to_test;
-
-    if ( $test eq 'pop3' ) {
-        test_pop3();
-    }
-    elsif ( -d $test ) {
-        @files_to_test = dir_list($test);
-    }
-    elsif ( -f $test ) {
-        push( @files_to_test, $test );
-    }
-
-    my $i = 1;
-    for my $testfile (@files_to_test) {
-        print "test #$i: $testfile\n" . '-' x 60 . "\n";
-        parse_bounce( -message => openfile($testfile) );
-        ++$i;
-    }
-    exit;
-
-}
-
-
-
-
-sub test_pop3 {
-
-    require DADA::App::POP3Tools;
-
-    my $lock_file_fh;
-    if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
-
-        $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
-            { name => 'dada_bounce_handler.lock', } );
-    }
-
-    my $pop = DADA::App::POP3Tools::mail_pop3client_login(
-        {
-
-            server    => $Plugin_Config->{Server},
-            username  => $Plugin_Config->{Username},
-            password  => $Plugin_Config->{Password},
-            port      => $Plugin_Config->{Port},
-            USESSL    => $Plugin_Config->{USESSL},
-            AUTH_MODE => $Plugin_Config->{AUTH_MODE},
-            verbose   => $verbose,
-
-        }
-    );
-
-    if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
-        DADA::App::POP3Tools::_unlock_pop3_check(
+    elsif ( defined($test) && $test ne 'bounces' ) {
+        my $bh = DADA::App::BounceHandler->new($Plugin_Config);
+        $bh->test_bounces(
             {
-                name => 'dada_bounce_handler.lock',
-                fh   => $lock_file_fh,
-            },
+                -test_type => $test,
+                -list      => $list
+            }
         );
     }
+    elsif ( defined($version) ) {
+        return version();
+    }
+    else {
 
-    if ( defined($pop) ) {
-        $pop->Close();
+        my $bh = DADA::App::BounceHandler->new($Plugin_Config);
+        $bh->parse_all_bounces(
+            {
+				-list => $list,
+                -test => $test,
+            }
+        );
     }
 }
 
-
-
-
-sub version {
-
-    print "$Plugin_Config->{Plugin_Name} Version: $App_Version\n";
-    print "$DADA::Config::PROGRAM_NAME Version: $DADA::Config::VER\n";
-    print "Perl Version: $]\n\n";
-
-    my @ap = (
-        'No sane man will dance. - Cicero ',
-        'Be happy. It is a way of being wise.  - Colette',
-        'There is more to life than increasing its speed. - Mahatma Gandhi',
-        'Life is short. Live it up. - Nikita Khrushchev'
-    );
-
-    print "Random Aphorism: " . $ap[ int rand( $#ap + 1 ) ] . "\n\n";
-
-    exit;
-
-}
-
-
-
-
-sub dir_list {
-    my $dir = shift;
-    my $file;
-    my @files;
-    $dir = DADA::App::Guts::make_safer($file);
-    opendir( DIR, $dir ) or die "$!";
-    while ( defined( $file = readdir DIR ) ) {
-        next if $file =~ /^\.\.?$/;
-        $file =~ s(^.*/)();
-        if ( -f $dir . '/' . $file ) {
-            push( @files, $dir . '/' . $file );
-
-        }
-
-    }
-    closedir(DIR);
-    return @files;
-}
-
-
-
-sub openfile {
-    my $file = shift;
-    my $data = shift;
-
-    $file = DADA::App::Guts::make_safer($file);
-
-    open( FILE, "<$file" ) or die "$!";
-
-    $data = do { local $/; <FILE> };
-
-    close(FILE);
-    return $data;
-}
-
-sub open_log {
-    my $log = shift;
-    $log = DADA::App::Guts::make_safer($log);
-    if ($log) {
-        open( BOUNCELOG, ">>$log" )
-          or warn "Can't open bounce log at '$log' because: $!";
-        chmod( $DADA::Config::FILE_CHMOD, $log );
-        $Have_Log = 1;
-        return 1;
-    }
-}
-
-sub log_action {
-
-    my ( $list, $email, $diagnostics, $action ) = @_;
-    my $time = scalar( localtime() );
-
-    if ($Have_Log) {
-        my $d;
-        for ( keys %$diagnostics ) {
-            $d .= $_ . ': ' . $diagnostics->{$_} . ', ';
-        }
-        print BOUNCELOG "[$time]\t$list\t$action\t$email\t$d\n";
-    }
-
-}
-
-sub close_log {
-    if ($Have_Log) {
-        close(BOUNCELOG);
-    }
-}
-
-
-
-
-
-sub show_help { 
-print q{ 
+sub help {
+    return q{ 
 
 arguments: 
 -----------------------------------------------------------
@@ -4281,10 +1554,9 @@ Obligatory help text printed out. Written as geeky as possible.
 
 * --version
 
-Will print out both the version of Mystery Girl and also of Dada Mail. 
+Will print the version of Dada Mail. 
 Good for debugging. Looks like this: 
 
- Mystery Girl version: 1.6
  Dada Mail version: 2.10.9
 
 * --log
@@ -4334,7 +1606,7 @@ Removes the score card of bounced email addresses. This makes sense, once you re
 
 -----------------------------------------------------------
 
-Testing Mystery Girl via the Command Line
+Testing Bounce Handler via the Command Line
 
 You can pass the B<--test> argument to dada_bounce_handler.pl to make
 sure everything is workings as it should. The B<--test> argument needs to 
@@ -4427,849 +1699,86 @@ test on any live bounce email messages in the mailbox.
 You'll see similar output that you would if you were testing a file.
 
 };
-	exit; 
-}
-
-
-
-sub erase_score_card {
-
-    print "Removing the Bounce Score Card...\n\n";
-
-    my @delete_list;
-
-    if ($list) {
-        @delete_list = ($list);
-    }
-    else {
-
-        @delete_list = DADA::App::Guts::available_lists();
-
-    }
-
-    for (@delete_list) {
-
-        require DADA::App::BounceScoreKeeper;
-        my $bsk = DADA::App::BounceScoreKeeper->new( -List => $_ );
-
-        $bsk->erase;
-
-        print "Kapow! All scores for $_ have been erased.\n";
-
-    }
-
-    exit;
-}
-
-sub trim {
-    my $string = shift || undef;
-    if ($string) {
-        $string =~ s/^\s+//o;
-        $string =~ s/\s+$//o;
-
-        return $string;
-    }
-    else {
-        return undef;
-    }
-}
-
-
-sub rfc1893_status { 
-
-	my $status = shift; 
-       $status = trim($status); 
-       
-	return "" if ! $status; 
-	my $key; 
-
-	my ($class, $subject, $detail) = split(/\./, $status); 
-
-	$key = 'X' . '.' . $subject . '.' . $detail; 
-	
-	my %rfc1893; 
-	
-	$rfc1893{'X.0.0'} = qq {  
-	Other undefined status is the only undefined error code. It
-	should be used for all errors for which only the class of the
-	error is known.
-	}; 
-	
-	$rfc1893{'X.1.0'} = qq { 
-	X.1.0   Other address status
-	
-	Something about the address specified in the message caused
-	this DSN.
-	}; 
-	
-	$rfc1893{'X.1.1'} = qq { 
-	X.1.1   Bad destination mailbox address
-	
-	The mailbox specified in the address does not exist.  For
-	Internet mail names, this means the address portion to the
-	left of the "@" sign is invalid.  This code is only useful
-	for permanent failures.
-	};
-	
-	$rfc1893{'X.1.2'} = qq { 
-	X.1.2   Bad destination system address
-	
-	The destination system specified in the address does not
-	exist or is incapable of accepting mail.  For Internet mail
-	names, this means the address portion to the right of the
-	"@" is invalid for mail.  This codes is only useful for
-	permanent failures.
-	}; 
-	
-	$rfc1893{'X.1.3'} = qq { 
-	X.1.3   Bad destination mailbox address syntax
-	
-	The destination address was syntactically invalid.  This can
-	apply to any field in the address.  This code is only useful
-	for permanent failures.
-	};
-	
-	$rfc1893{'X.1.4'} = qq { 
-	X.1.4   Destination mailbox address ambiguous
-	
-	The mailbox address as specified matches one or more
-	recipients on the destination system.  This may result if a
-	heuristic address mapping algorithm is used to map the
-	specified address to a local mailbox name.
-	}; 
-	
-	$rfc1893{'X.1.5'} = qq { 
-	X.1.5   Destination address valid
-	
-	This mailbox address as specified was valid.  This status
-	code should be used for positive delivery reports.
-	};
-	
-	$rfc1893{'X.1.6'} = qq { 
-	X.1.6   Destination mailbox has moved, No forwarding address
-	
-	The mailbox address provided was at one time valid, but mail
-	is no longer being accepted for that address.  This code is
-	only useful for permanent failures.
-	}; 
-	
-	$rfc1893{'X.1.7'} = qq { 
-	X.1.7   Bad sender's mailbox address syntax
-	
-	The sender's address was syntactically invalid.  This can
-	apply to any field in the address.
-	}; 
-	
-	$rfc1893{'X.1.8'} = qq { 
-	X.1.8   Bad sender's system address
-	
-	The sender's system specified in the address does not exist
-	or is incapable of accepting return mail.  For domain names,
-	this means the address portion to the right of the "@" is
-	invalid for mail.
-	}; 
-	
-	$rfc1893{'X.2.0'} = qq { 
-	X.2.0   Other or undefined mailbox status
-	
-	The mailbox exists, but something about the destination
-	mailbox has caused the sending of this DSN.
-	};
-	
-	$rfc1893{'X.2.1'} = qq {  
-	X.2.1   Mailbox disabled, not accepting messages
-	
-	The mailbox exists, but is not accepting messages.  This may
-	be a permanent error if the mailbox will never be re-enabled
-	or a transient error if the mailbox is only temporarily
-	disabled.
-	}; 
-	
-	$rfc1893{'X.2.2'} = qq {  
-	X.2.2   Mailbox full
-	
-	The mailbox is full because the user has exceeded a
-	per-mailbox administrative quota or physical capacity.  The
-	general semantics implies that the recipient can delete
-	messages to make more space available.  This code should be
-	used as a persistent transient failure.
-	};
-	
-	$rfc1893{'X.2.3'} = qq {  
-	X.2.3   Message length exceeds administrative limit
-	
-	A per-mailbox administrative message length limit has been
-	exceeded.  This status code should be used when the
-	per-mailbox message length limit is less than the general
-	system limit.  This code should be used as a permanent
-	failure.
-	}; 
-	
-	$rfc1893{'X.2.4'} = qq {  
-	X.2.4   Mailing list expansion problem
-	
-	The mailbox is a mailing list address and the mailing list
-	was unable to be expanded.  This code may represent a
-	permanent failure or a persistent transient failure.
-	};
-	
-	$rfc1893{'X.3.0'} = qq {  
-	X.3.0   Other or undefined mail system status
-	
-	The destination system exists and normally accepts mail, but
-	something about the system has caused the generation of this
-	DSN.
-	};
-	
-	$rfc1893{'X.3.1'} = qq {  
-	X.3.1   Mail system full
-	
-	Mail system storage has been exceeded.  The general
-	semantics imply that the individual recipient may not be
-	able to delete material to make room for additional
-	messages.  This is useful only as a persistent transient
-	error.
-	};
-	
-	$rfc1893{'X.3.2'} = qq {  
-	X.3.2   System not accepting network messages
-	
-	The host on which the mailbox is resident is not accepting
-	messages.  Examples of such conditions include an immanent
-	shutdown, excessive load, or system maintenance.  This is
-	useful for both permanent and permanent transient errors.
-	};
-	
-	$rfc1893{'X.3.3'} = qq {  
-	X.3.3   System not capable of selected features
-	
-	Selected features specified for the message are not
-	supported by the destination system.  This can occur in
-	gateways when features from one domain cannot be mapped onto
-	the supported feature in another.
-	};
-	
-	$rfc1893{'X.3.4'} = qq {  
-	X.3.4   Message too big for system
-	
-	The message is larger than per-message size limit.  This
-	limit may either be for physical or administrative reasons.
-	This is useful only as a permanent error.
-	}; 
-	
-	$rfc1893{'X.3.5'} = qq {  
-	X.3.5 System incorrectly configured
-	
-	The system is not configured in a manner which will permit
-	it to accept this message.
-	};
-	
-	$rfc1893{'X.4.0'} = qq {  
-	X.4.0   Other or undefined network or routing status
-	
-	Something went wrong with the networking, but it is not
-	clear what the problem is, or the problem cannot be well
-	expressed with any of the other provided detail codes.
-	}; 
-	
-	$rfc1893{'X.4.1'} = qq {  
-	X.4.1   No answer from host
-	
-	The outbound connection attempt was not answered, either
-	because the remote system was busy, or otherwise unable to
-	take a call.  This is useful only as a persistent transient
-	error.
-	}; 
-	
-	$rfc1893{'X.4.2'} = qq {  
-	X.4.2   Bad connection
-
-	
-	The outbound connection was established, but was otherwise
-	unable to complete the message transaction, either because
-	of time-out, or inadequate connection quality. This is
-	useful only as a persistent transient error.
-	};
-	
-	$rfc1893{'X.4.3'} = qq {   
-	X.4.3   Directory server failure
-	
-	The network system was unable to forward the message,
-	because a directory server was unavailable.  This is useful
-	only as a persistent transient error.
-	
-	The inability to connect to an Internet DNS server is one
-	example of the directory server failure error.
-	}; 
-	
-	$rfc1893{'X.4.4'} = qq { 
-	X.4.4   Unable to route
-	
-	The mail system was unable to determine the next hop for the
-	message because the necessary routing information was
-	unavailable from the directory server. This is useful for
-	both permanent and persistent transient errors.
-	
-	A DNS lookup returning only an SOA (Start of Administration)
-	record for a domain name is one example of the unable to
-	route error.
-	};
-	
-	$rfc1893{'X.4.5'} = qq { 
-	X.4.5   Mail system congestion
-	
-	The mail system was unable to deliver the message because
-	the mail system was congested. This is useful only as a
-	persistent transient error.
-	};
-	
-	$rfc1893{'X.4.6'} = qq { 
-	X.4.6   Routing loop detected
-	
-	A routing loop caused the message to be forwarded too many
-	times, either because of incorrect routing tables or a user
-	forwarding loop. This is useful only as a persistent
-	transient error.
-	};
-	
-	$rfc1893{'X.4.7'} = qq { 
-	X.4.7   Delivery time expired
-	
-	The message was considered too old by the rejecting system,
-	either because it remained on that host too long or because
-	the time-to-live value specified by the sender of the
-	message was exceeded. If possible, the code for the actual
-	problem found when delivery was attempted should be returned
-	rather than this code.  This is useful only as a persistent
-	transient error.
-	};
-	
-	$rfc1893{'X.5.0'} = qq { 
-	X.5.0   Other or undefined protocol status
-	
-	Something was wrong with the protocol necessary to deliver
-	the message to the next hop and the problem cannot be well
-	expressed with any of the other provided detail codes.
-	};
-	
-	$rfc1893{'X.5.1'} = qq { 
-	X.5.1   Invalid command
-	
-	A mail transaction protocol command was issued which was
-	either out of sequence or unsupported.  This is useful only
-	as a permanent error.
-	};
-	
-	$rfc1893{'X.5.2'} = qq { 
-	X.5.2   Syntax error
-	
-	A mail transaction protocol command was issued which could
-	not be interpreted, either because the syntax was wrong or
-	the command is unrecognized. This is useful only as a
-	permanent error.
-	};
-	
-	$rfc1893{'X.5.3'} = qq { 
-	X.5.3   Too many recipients
-	
-	More recipients were specified for the message than could
-	have been delivered by the protocol.  This error should
-	normally result in the segmentation of the message into two,
-	the remainder of the recipients to be delivered on a
-	subsequent delivery attempt.  It is included in this list in
-	the event that such segmentation is not possible.
-	};
-	
-	$rfc1893{'X.5.4'} = qq { 
-	X.5.4   Invalid command arguments
-	
-	A valid mail transaction protocol command was issued with
-	invalid arguments, either because the arguments were out of
-	range or represented unrecognized features. This is useful
-	only as a permanent error.
-	};
-	
-	$rfc1893{'X.5.5'} = qq { 
-	X.5.5   Wrong protocol version
-	
-	A protocol version mis-match existed which could not be
-	automatically resolved by the communicating parties.
-	};
-	
-	$rfc1893{'X.6.0'} = qq { 
-	X.6.0   Other or undefined media error
-	
-	Something about the content of a message caused it to be
-	considered undeliverable and the problem cannot be well
-	expressed with any of the other provided detail codes.
-	};
-	
-	$rfc1893{'X.6.1'} = qq { 
-	X.6.1   Media not supported
-	
-	The media of the message is not supported by either the
-	delivery protocol or the next system in the forwarding path.
-	This is useful only as a permanent error.
-	};
-	
-	$rfc1893{'X.6.2'} = qq { 
-	X.6.2   Conversion required and prohibited
-	
-	The content of the message must be converted before it can
-	be delivered and such conversion is not permitted.  Such
-	prohibitions may be the expression of the sender in the
-	message itself or the policy of the sending host.
-	}; 
-	
-	$rfc1893{'X.6.3'} = qq { 
-	X.6.3   Conversion required but not supported
-	
-	The message content must be converted to be forwarded but
-	such conversion is not possible or is not practical by a
-	host in the forwarding path.  This condition may result when
-	an ESMTP gateway supports 8bit transport but is not able to
-	downgrade the message to 7 bit as required for the next hop.
-	};
-	
-	$rfc1893{'X.6.4'} = qq {          
-	X.6.4   Conversion with loss performed
-	
-	This is a warning sent to the sender when message delivery
-	was successfully but when the delivery required a conversion
-	in which some data was lost.  This may also be a permanant
-	error if the sender has indicated that conversion with loss
-	is prohibited for the message.
-	};
-	
-	$rfc1893{'X.6.5'} = qq {    
-	X.6.5   Conversion Failed
-	
-	A conversion was required but was unsuccessful.  This may be
-	useful as a permanent or persistent temporary notification.
-	};
-	
-	$rfc1893{'X.7.0'} = qq {   
-	X.7.0   Other or undefined security status
-	
-	Something related to security caused the message to be
-	returned, and the problem cannot be well expressed with any
-	of the other provided detail codes.  This status code may
-	also be used when the condition cannot be further described
-	because of security policies in force.
-	};
-	
-	$rfc1893{'X.7.1'} = qq {  
-	X.7.1   Delivery not authorized, message refused
-	
-	The sender is not authorized to send to the destination.
-	This can be the result of per-host or per-recipient
-	filtering.  This memo does not discuss the merits of any
-	such filtering, but provides a mechanism to report such.
-	This is useful only as a permanent error.
-	};
-	
-	$rfc1893{'X.7.2'} = qq {  
-	X.7.2   Mailing list expansion prohibited
-	
-	The sender is not authorized to send a message to the
-	intended mailing list. This is useful only as a permanent
-	error.
-	};
-	
-	$rfc1893{'X.7.3'} = qq {  
-	X.7.3   Security conversion required but not possible
-	
-	A conversion from one secure messaging protocol to another
-	was required for delivery and such conversion was not
-	possible. This is useful only as a permanent error.
-	};
-	
-	$rfc1893{'X.7.4'} = qq {  
-	A message contained security features such as secure
-	authentication which could not be supported on the delivery
-	protocol. This is useful only as a permanent error.
-	};
-	
-	$rfc1893{'X.7.5'} = qq {  
-	A transport system otherwise authorized to validate or
-	decrypt a message in transport was unable to do so because
-	necessary information such as key was not available or such
-	information was invalid.
-	};
-	
-	$rfc1893{'X.7.6'} = qq {  
-	A transport system otherwise authorized to validate or
-	decrypt a message was unable to do so because the necessary
-	algorithm was not supported.
-	};
-	
-	$rfc1893{'X.7.7'} = qq {  
-	X.7.7   Message integrity failure
-	
-	A transport system otherwise authorized to validate a
-	message was unable to do so because the message was
-	corrupted or altered.  This may be useful as a permanent,
-	transient persistent, or successful delivery code.
-	};
-	
-	
-	 return "\n" . '-' x 72 . "\n" . $rfc1893{$key} . "\n"; 	
 
 }
 
+sub version {
 
+    my $r = '';
+    $r .= "$Plugin_Config->{Plugin_Name}\n";
+    $r .= "$DADA::Config::PROGRAM_NAME Version: $DADA::Config::VER\n";
+    $r .= "Perl Version: $]\n\n";
 
+    my @ap = (
+        'No sane man will dance. - Cicero ',
+        'Be happy. It is a way of being wise.  - Colette',
+        'There is more to life than increasing its speed. - Mahatma Gandhi',
+        'Life is short. Live it up. - Nikita Khrushchev'
+    );
 
-sub default_cgi_template {
+    $r .= "Random Aphorism: " . $ap[ int rand( $#ap + 1 ) ] . "\n\n";
+    return $r;
 
-
-return q { 
-
-	<!-- tmpl_set name="title" value="Bounce Handling" -->
-	
-     <p id="breadcrumbs">
-        
-           <!-- tmpl_var Plugin_Name --> 
-    </p> 
- 
-		<!-- tmpl_unless plugin_configured --> 
-		
-			<div style="background:#fcc;margin:5px;padding:5px;text-align:center;border:2px #ccc dotted">
-			  <h1>
-			   Warning! <!-- tmpl_var Plugin_Name --> Not Configured!
-			  </h1> 
-	
-			<p class="error">
-			 You must set up the Bounce Handler Email Address in the plugin-specific configuration. 
-			</p> 
-	 		
-			 </div>
-		
-		<!-- /tmpl_unless --> 
-		
-<fieldset> 
- <legend> 
-Bounce Email Scorecard
- </legend> 
- 
- <p>The bounce scorecard keeps track of addresses that bounce back messages sent to it. </p> 
- 
-
-<form action="<!-- tmpl_var Plugin_URL -->" method="get"> 
- <input type="hidden" name="flavor" value="cgi_scorecard" /> 
-
-<div class="buttonfloat"> 
- <input type="submit" value="View The Bounce Scorecard..." class="cautionary" />
-</div> 
-<div class="floatclear"></div> 
-
-</form>
-
- 
-</fieldset> 
-
-
-<fieldset> 
- <legend>Manually Run <!-- tmpl_var Plugin_Name --></legend> 
-
-<form action="<!-- tmpl_var Plugin_URL -->">
-
-<input type="checkbox" name="bounce_test" id="bounce_test" value="bounces" /><label for="test"><label for="bounce_test">Test With Awaiting Messages</label>
-
-<p><label for="parse_amount">Review</label> <!-- tmpl_var parse_amount_widget --> Messages.</p>
-
-<input type="hidden" name="flavor" value="cgi_parse_bounce" /> 
-<div class="buttonfloat"> 
-
-<input type="submit" class="cautionary" value="Parse Bounces..." />
-</div> 
-
-<div class="floatclear"></div> 
-
-</form>
-
-<p>
- <label for="cronjob_url">Manual Run URL:</label><br /> 
-<input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var Plugin_URL -->?run=1&verbose=1&passcode=<!-- tmpl_var Manual_Run_Passcode -->" />
-</p>
-<!-- tmpl_unless Allow_Manual_Run --> 
-    <span class="error">(Currently disabled)</a>
-<!-- /tmpl_unless -->
-
-
-<p> <label for="cronjob_command">curl command example (for a cronjob):</label><br /> 
-<input type="text" class="full" id="cronjob_command" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --data run=1\;passcode=<!-- tmpl_var Manual_Run_Passcode -->\;verbose=0  --url <!-- tmpl_var Plugin_URL -->" />
-<!-- tmpl_unless curl_location --> 
-	<span class="error">Can't find the location to curl!</span><br />
-<!-- /tmpl_unless --> 
-
-<!-- tmpl_unless Allow_Manual_Run --> 
-    <span class="error">(Currently disabled)</a>
-<!-- /tmpl_unless --> 
-
-</p>
-</li>
-</ul> 
-</fieldset> 
-
-
-<fieldset>
- <legend> 
-  <!-- tmpl_var Plugin_Name --> Configuration</h1>
- </legend> 
- 
- 
- 
-
-<table cellpadding="5">
- <tr> 
-  <td>
-   <p><strong>Your Bounce Handler POP3 Username:</strong>
-   </td> 
-   <td> 
-    <p>
-
-<!-- tmpl_if Username --> 
-	<!-- tmpl_var Username -->
-<!-- tmpl_else --> 
-	<span class="error">Not Set!</span>
-<!-- /tmpl_if --> 
-
-</p>
-   </td> 
-   </tr> 
-   <tr> 
-   <td>
-    <p><strong>On:</strong>
-    </p>
-    </td>
-    <td>
-     <p>
-
-	<!-- tmpl_if Server --> 
-      <!-- tmpl_var Server --></p>
-	<!-- tmpl_else --> 
-		<span class="error">Not Set!</span>
-	<!-- /tmpl_if -->	
-
-   </td> 
-   </tr> 
-   
-   
-      <tr> 
-   <td>
-    <p><strong>"Soft" Bounce Score:</strong>
-    </p>
-    </td>
-    <td>
-     <p>
-      <!-- tmpl_var  Default_Soft_Bounce_Score --></p>
-   </td> 
-   </tr> 
-   
-    
-      <tr> 
-   <td>
-    <p><strong>"Hard" Bounce Score:</strong>
-    </p>
-    </td>
-    <td>
-     <p>
-      <!-- tmpl_var  Default_Hard_Bounce_Score --></p>
-   </td> 
-   </tr>   
-  
-
-      <tr> 
-   <td>
-    <p><strong>Addresses Removed After a Score of:</strong>
-    </p>
-    </td>
-    <td>
-     <p>
-      <!-- tmpl_var  Score_Threshold --></p>
-   </td> 
-   </tr>   
-   
-   
-  </table> 
-  
- <div class="buttonfloat"> 
- <form action="<!-- tmpl_var Plugin_URL -->"> 
-  <input type="hidden" name="flavor" value="cgi_show_plugin_config" /> 
-  <input type="submit" value="View All Plugin Configurations..." class="cautionary" /> 
- </form> 
- </div> 
-
-<div class="floatclear"></div> 
-  
-</fieldset> 
-
-<fieldset> 
-
-<legend>Mailing List Configuration</legend>
-
-<!-- tmpl_if list_settings.send_via_smtp --> 
-
-	<p>Mailing is being sent via: <strong>SMTP</strong>. 
-	
-	<!-- tmpl_if list_settings.set_smtp_sender --> 
-	
-		<p>The SMTP Sender is being set to: <strong><!-- tmpl_var list_settings.admin_email --></strong>. This should
-		be the same address as the above <strong>Bounce Handler POP3 Username</strong></p> 
-		
-	<!-- tmpl_else --> 
-
-		<p>The SMTP Sender has not be explicitly set.  Bounces may go to the list owner (<!-- tmpl_var list_settings.list_owner_email -->) or to 
-		a server default address.</p> 
-	
-	<!--/tmpl_if--> 
-	
-<!--tmpl_else--> 
-	
-	<p>Mailing is being sent via <strong>the sendmail command <!-- tmpl_if list_settings.add_sendmail_f_flag -->'-f' flagged added<!--/tmpl_if--></strong>:</p>
-	
-	<blockquote>
-	<p><em><!-- tmpl_var MAIL_SETTINGS --><!-- tmpl_if list_settings.add_sendmail_f_flag --> -f<!--tmpl_var list_settings.admin_email --><!--/tmpl_if--></em></p>
-	</blockquote>
-
-<!--/tmpl_if--> 
-</legend> 
-
-
-};
-
-}
-
-
-
-
-sub bounce_score_table { 
-
-return q{ 
-    
-    
-    
-  <!-- tmpl_var PAGER_JAVASCRIPT -->
-  
-  <form>
-  
-<table cellpadding="2" cellspacing="0" border="0" width="100%">
-<tr>
-<td style="background:#fff"><p><strong>Email</strong></p>
-
-<td style="background:#fff" width="30">
-<p><strong>Score</strong></p>
-</td>
-</tr>
-
-</table> 
-
-   <div style="max-height: 400px; overflow: auto; border:1px solid black">
-    <table cellpadding="2" cellspacing="0" border="0" width="100%">
-     
-    
-    
- <!-- tmpl_loop PAGER_DATA_LIST -->
-   
-    
- 
-    
-   <tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!--/tmpl_if-->>
-
-    <td>
-        <a href="<!-- tmpl_var PLUGIN_URL -->?flavor=cgi_bounce_score_search&amp;query=<!-- tmpl_var PAGER_DATA_COL_0 ESCAPE=URL -->"> 
-         <!-- tmpl_var PAGER_DATA_COL_0 -->
-        </a> 
-      </td>
-        
-      <td  width="30">
-       <!-- tmpl_var PAGER_DATA_COL_1 -->
-     </td>
-    </tr>
-  <!-- /tmpl_loop -->
-  
-</table>
-
-</div> 
-
-    <table cellpadding="2" cellspacing="0" border="0" width="100%">
-
-<tr>
-   <td style="background:#DDD" colspan="3" align="center">
-    <!-- tmpl_var PAGER_PREV -->
-    <!-- tmpl_var PAGER_JUMP -->
-    <!-- tmpl_var PAGER_NEXT -->
-  </td>
- </tr>
- 
- </table> 
- 
-<!-- tmpl_var PAGER_HIDDEN -->
-  </form>
-  
-};
-
-}
-
-
-END { 
-
-	$parser->filer->purge 
-	    if $parser;
 }
 
 =pod
 
 =head1 Name
 
-Mystery Girl - Bounce Handler For Dada Mail
+Bounce Handler For Dada Mail
+
+=head1 User Guide
+
+The below documentation go into detail on how to install and configure Bounce Handler. A user guide for Bounce Handler is
+ available in the Dada Mail Manual chapter, B<Using the Dada Bounce Handler>: 
+
+L<http://dadamailproject.com/pro_dada/using_dada_bounce_handler.html>
 
 =head1 Description
 
-Mystery Girl intelligently handles bounces from Dada Mail list messages.
+Bounce Handler intelligently handles bounces from Dada Mail list messages.
 
-Mystery Girl hooks into your Dada Mail mailing lists indirectly. You'll first need to create a new POP3 email address which will be used to send all bounces from the Dada Mail lists. This address is known as your B<Bounce Email Address> 
+Messages sent to subscribers of your mailing list that bounce back will be directed to the B<List Administrator Address>. This email account is then checked periodically by Bounce Handler. 
 
-This same address will also be set in the B<Return-Path> of messages sent by Dada Mail. Thus, when a message is bounced, it gets sent to this address, which is monitored by Mystery Girl.
+Bounce Handler then reads awaiting messages and B<parses> the messages in an attempt to understand why the message has bounced. 
 
-Once Mystery Girl connects to this  POP3 acccount, awaiting messages are first B<read>, then, the message is B<parsed>, in an attempt to understand why the message has bounced. 
+The B<parsed> message will then be B<examined> and an B<action> will be taken. 
 
-The B<parsed> email will then be B<examined> and an B<action> will be taken. The examination and action are set in a collection of B<rules>.  These rules can be customized.
-
-The usual action that is taken is to apply a, B<score> to the offending email address, everytime the address bounces back a message. Once the, B<Threshold> is reached, the email address is unsubscribed from the list. 
-
-This usually means that it takes a few bounces from a particular email address to get it removed from a list. This gives a bit of wiggle room and makes sure an email address that is bouncing is bouncing for a fairly good reason, for example: it no longer exists. 
+The usual action that is taken is to apply a B<score> to the email address that has bounced the message. Once the B<Score Threshold> is reached, the email address is unsubscribed from the mailing list. 
 
 =head1 Obtaining a Copy of the Plugin
 
-Mystery Girl is located in the, I<dada/plugins> directory of the main Dada Mail distribution, under the name, B<dada_bounce_handler.pl>
+Bounce Handler is located in the, I<dada/plugins> directory of the main Dada Mail distribution, under the name, B<dada_bounce_handler.pl>
 
 =head1 Requirements
 
-Please make sure you have them before you try to install this plugin: 
+Please make sure you have these requirements before installing this plugin: 
 
 =over
 
 =item * A POP3 Email Account
 
-Mystery Girl works by checking a bounce email address via the POP3 protocol. 
+Bounce Handler works by checking a email address via POP3. (IMAP is currently not supported).  
 
-You will need to setup a new email address for Mystery Girl to check. I usually set up an account named, "bounces@yourdomain.com", where, "yourdomain.com" is the name of the domain Dada Mail is installed on. 
+You will need to create a new email address account for Bounce Handler to utilize. 
 
-Some things to consider: 
+Example: create B<bounces@yourdomain.com>, where, I<yourdomain.com> is the name of the domain Dada Mail is installed on. 
+
+Guidelines on this address: 
 
 =over
 
-=item * Do NOT use this address for anything but Mystery Girl's functions
+=item * Do NOT use this address for anything except Bounce Handler
 
-You don't periodically check this POP3 account yourself via a mail reader. Doing so will not break Dada Mail, but it will stop Mystery Girl from working correctly. Why? Because sometimes checking a POP3 address will download the messages awaiting in the POP3 Inbox and remove them from this inbox. If you need to periodically check this inbox, make sure to have your mail reader set to B<not> automatically remove the mssages. 
+No one will be checking this POP3 account via a mail reader.
+
+Doing so won't break Dada Mail, but it will stop Bounce Handler from working correctly, if when checking messages, your mail reader then removes those messages from the POP3 account.  If you do need to periodically check this inbox, make sure to have your mail reader set to B<not> automatically remove the messages. 
 
 =item * The email address MUST belong to the domain you have Dada Mail installed
 
 Meaning, if your domain is, "yourdomain.com", the bounce email address should be something like, "bounces@yourdomain.com". In other words, do not use a Yahoo! Gmail, or Hotmail account for your bounce address. This will most likely disrupt all regular mail sending in Dada Mail. 
 
-=item * Mystery Girl MUST be able to check the POP3 account
+=item * Bounce Handler MUST be able to check the POP3 account
 
 Check to make sure that the POP3 server (usually, port 110) is not blocked from requests coming from your hosting account server.  
 
@@ -5279,13 +1788,13 @@ Check to make sure that the POP3 server (usually, port 110) is not blocked from 
 
 =head1 Recommended
 
-These points are not required, but recommended to use Mystery Girl:
+These points are not required, but recommended to use Bounce Handler:
 
 =over
 
 =item * Ability to set Cron Jobs. 
 
-Mystery Girl can be configured to run automatically by using a cronjob.
+Bounce Handler can be configured to run automatically by using a cronjob.
 
 If you do not know how to set up a cronjob, attempting to set one up for Dada Mail will result in much aggravation. Please read up on the topic before attempting! 
 
@@ -5303,7 +1812,9 @@ If you do install this way, note that you still have to create the create the bo
 
 =item * Create the bounce handler email account
 
-=item * Set your list to use this email address for its, "List Administrator Address" in the list control panel, under,
+=item * Configure your mailing list to use this email address for its, "List Administrator Address"
+
+Set this email address as our "List Administrator Adress" in the list control panel, under,
 
 B<Your Mailing List -  Change List Information> 
 
@@ -5333,12 +1844,12 @@ Below is the detailed version of the above:
 
 =head1 Configuration
 
-There's a few things you need to configure in this plugin. You can either configure the plugin variables in the C<dada_bounce_handler.pl> file itself (not recommended), or in the C<.dada_config> file (recommended!). We will only be going over configuring this plugin via your C<.dada_config> file. 
+There's a few things you need to configure for this plugin. Configure the plugin variables in your C<.dada_config> file (not in the plugin itself!)
 
 =head3 POP3 Server Information. 
 
 Create a new POP3 email account. This email account will be the address that
-bounced messages will be directed towards. This will be your B<Bounce Email Address> 
+bounced messages will be delivered to. 
 
 Open up your C<.dada_config> file for editing. 
 
@@ -5354,7 +1865,7 @@ If they are present, remove them.
 
 You can then configure the plugin variables on these lines: 
 
-	Mystery_Girl => { 
+	Bounce_Handler => { 
 
 	    Server                    			=> undef, 
 	    Username                  			=> undef, 
@@ -5364,14 +1875,17 @@ You can then configure the plugin variables on these lines:
 	
 For example: 
 
-	Server                    			=> 'mail.yourdomain.com', 
-	Username                  			=> 'bounces+yourdomain.com', 
-	Password                  			=> 'password', 
+Bounce_Handler => { 
+
+		Server                    			=> 'mail.yourdomain.com', 
+		Username                  			=> 'bounces+yourdomain.com', 
+		Password                  			=> 'password', 
+},
 
 
-=head2 Set your Bounce Email Address as the default List Administration Email Address
+=head2 Set this address as the default List Administration Email Address
 
-You may also want to set a default value for the, Adminstration Email, so that all new lists already have the bounce handler enabled. 
+You may also want to set a default value for the, List Adminstration Email, so that all new lists already have Bounce Handler enabled. 
 
 Find this chunk of lines in your C<.dada_config> file: 
 
@@ -5387,7 +1901,7 @@ Find this chunk of lines in your C<.dada_config> file:
 	=cut
 	# end cut for list settings defaults
 
-Remove the =cut lines, like before: 
+Remove the =cut lines, similar to before: 
 
 	# start cut for list settings defaults
 	=cut
@@ -5406,7 +1920,7 @@ And then change the, C<admin_email> to your bounce handler email address:
 
 =head2 List Control Panel Menu
 
-Now, edit your C<.dada_config> file, so that it shows the Bounce Handler in the left-hand menu, under the, B<Plugins> heading: 
+Now, edit your C<.dada_config> file, so that it shows Bounce Handler in the left-hand menu, under the, B<Plugins> heading: 
 
 First, see if the following lines are present in your C<.dada_config> file: 
 
@@ -5438,11 +1952,11 @@ Uncomment the lines, by taking off the, "#"'s:
 Save your C<.dada_config> file.
 
 
-=head2 Telling Dada Mail to use the Bounce Handler. 
+=head2 Telling Dada Mail to use Bounce Handler. 
 
 You're going to have to tell Dada Mail explicitly that you want
 bounces to go to the bounce handler. The first step is to set the 
-B<Dada List Administrator> to your bounce email address. You'll set this per list in the each list's control panel, under 
+B<Dada List Administrator> to your bounce email address. You'll set this per list in the each mailing list's control panel, under 
 
 B<Your Mailing List -  Change List Information>
 
@@ -5461,6 +1975,10 @@ B<Return-Path> header. Dada Mail is shipped to have this option set by default.
 In the list control panel, go to: B<Sending Preferences - Sending Preferences>
 and check the box labeled: B<Set the Sender of SMTP mailings to the 
 list administration email address>  Dada Mail is shipped to have this option set by default. 
+
+=head3 If you're using Amazon SES: 
+
+Dada Mail will automatically have bounces go to the List Administration Address when using Amazon SES. 
 
 =head2 Testing
 
@@ -5483,495 +2001,208 @@ mail headers, you should see the B<Return-Path> header:
  Precedence:list
  Content-type:text/plain; charset=iso-8859-1
 
-Notice that the first line has the B<Return-Path> header, correctly
-putting my bounce email address. My List Owner address, 
-justin@myhost.com still occupies the To: and Reply-To headers, so 
-whoever replies to my message will reply to me, not the bounce handler.
+The first line has the B<Return-Path> header has the Bounce Handler Email set: 
 
-Once you've dialed in your list to use the bounce handler, you should
-be all set.
+	Return-Path: <dadabounce@myhost.com>
 
-=head1 Configuring the Cronjob to Automatically Run Mystery Girl
+My List Owner address, B<justin@myhost.com> still occupies the C<To:> and C<Reply-To headers>, so whoever replies to my message will reply to me, I<not> Bounce Handler.
+
+=head1 Configuring the Cronjob to Automatically Run Bounce Handler
 
 We're going to assume that you already know how to set up the actual cronjob, 
 but we'll be explaining in depth on what the cronjob you need to set B<is>.
 
-=head2 Setting the cronjob
+=head2 Setting the cronjob via curl
 
-Generally, setting the cronjob to have Mystery Girl run automatically, just 
-means that you have to have a cronjob access a specific URL. The URL looks something like this: 
+Generally, setting the cronjob to have Bounce Handler run automatically, just 
+means that you have to have a cronjob access a specific URL (via a utility, like curl). The URL looks something like this: 
 
  http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&verbose=1
 
-Where, L<http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl> is the URL to your copy of dada_bounce_handler.pl
+Where, L<http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl> is the URL to your copy of C<dada_bounce_handler.pl>
 
-You'll see the specific URL used for your installation of Dada Mail in the web-based control panel for Mystery Girl, under the fieldset legend, B<Manually Run Mystery Girl>, under the heading, B<Manual Run URL:>
+You'll see the specific URL used for your installation of Dada Mail in the web-based control panel for Bounce Handler, under the fieldset legend, B<Manually Run Bounce Handler>, under the heading, B<Manual Run URL:>
 
-This will have Mystery Girl check any awaiting messages. 
-
-You may have to look through your hosting account's own FAQ, Knowledgebase and/or other docs to see exactly how you invoke a URL via a cronjob. 
+This will have Bounce Handler check any awaiting messages. 
 
 A I<Pretty Good Guess> of what the entire cronjob should be set to is located 
-in the web-based crontrol panel for Mystery Girl, under the fieldset legend, B<Manually Run Mystery Girl>, under the heading, B<curl command example (for a cronjob):>
+in the web-based crontrol panel for Bounce Handler, under the fieldset legend, B<Manually Run Bounce Handler>, under the heading, B<curl command example (for a cronjob):>
 
-From my testing, this should work for most Cpanel-based hosting accounts. 
+=head3 Customizing your cronjob with added paramaters
 
-Here's the entire thing explained: 
+=head4 passcode
 
-In all these examples, I'll be running the script every 5 minutes ( */5 * * * * ) - tailor to your taste.  
+Since anyone (or anything) can run your Bounce Handler, by following that same URL, (C<http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&verbose=1>), you can set up a simple B<Passcode>, to have some semblence of security over who runs the program. 
 
-=over
+Set a B<passcode> in Bounce Handler's Config variable, B<Manual_Run_Passcode>. This is done in your C<.dada_config> file - the same place the B<mail server>, B<username> and B<password> were set. Find the lines in your C<.dada_config> file that look like this: 
 
-=item * Using Curl: 
+	$PLUGIN_CONFIGS = { 
 
- */5 * * * * /usr/local/bin/curl -s --get --data run=1 --url http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl
+		Bounce_Handler => {
+			Server                      => 'mail.yourdomain.com', 
+			Username                    => 'bounces+yourdomain.com', 
+			Password                    => 'password', 
+			Port                        => undef,
+			USESSL                      => undef,
+			AUTH_MODE                   => undef,
+			Plugin_Name                 => undef,
+			Plugin_URL                  => undef,
+			Allow_Manual_Run            => undef,
+			Manual_Run_Passcode         => undef,
+			Enable_POP3_File_Locking    => undef, 
+			Log                         => undef,
+			MessagesAtOnce              => undef,
+			Max_Size_Of_Any_Message     => undef,
+			Rules                       => undef,
 
-=item * Using Curl, a few more options (we'll cover those in just a bit): 
+		},
 
- */5 * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0\;test=0\;messages=100 --url http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl
+Find the config named, B<Manual_Run_Passcode> and set it to whatever you'd like this Passcode to be: 
 
-=back
+		Manual_Run_Passcode         => 'sneaky',
 
-=head3 $Plugin_Config->{Allow_Manual_Run}
-
-If you B<DO NOT> want to use this way of invoking the program to check awaiting messages and send them out, make sure to change the variable, B<$Plugin_Config->{Allow_Manual_Run}> to, B<0>:
-
- $Plugin_Config->{Allow_Manual_Run}    = 0; 
-
-at the top of the dada_bounce_handler.pl script. If this variable is not set to, B<1> this method will not work. 
-
-=head3 Security Concerns and $Plugin_Config->{Manual_Run_Passcode}
-
-Running the plugin like this is somewhat risky, as you're allowing an anonymous web browser to run the script in a way that was originally designed to only be run either after successfully logging into the list control panel, or, when invoking this script via the command line. 
-
-If you'd like, you can set up a simple B<Passcode>, to have some semblence of security over who runs the program. Do this by setting the, B<$Plugin_Config->{Manual_Run_Passcode}> variable in the dada_bounce_handler.pl source itself. 
-
-If you set the variable like so: 
-
-    $Plugin_Config->{Manual_Run_Passcode} = 'sneaky'; 
-
-You'll then have to change the URL in these examples to: 
+Then change the URL to include this passcode. In our examples, it would then look like this: 
 
  http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&passcode=sneaky
 
-=head3 Other options you may pass
+The example cronjob for curl in Bounce Handler's list control panel should also use the new passcode. 
 
-You can control quite a few things by setting variables right in the query string: 
+=head3 messages
 
-=over
+Sets how many messages should be checked and parsed in one execution of the program. Example: 
 
-=item * passcode
+ http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&messages=10
 
-As mentioned above, the B<$Plugin_Config->{Manual_Run_Passcode}> allows you to set some sort of security while running in this mode. Passing the actual password is done in the query string: 
+=head3 verbose
 
- http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&passcode=sneaky
+When set to, B<1>, you'll receive the a report of how Bounce Handler is doing parsing and adding scores (and what not). This is sometimes not so desired, especially in a cron environment, since all this informaiton will be emailed to you (or someone) everytime the script is run.
 
-=item * messages
-
-Overrides B<$Plugin_Config->{MessagesAtOnce}>. States how many messages should be checked and parsed in one execution of the program. Example: 
-
-  http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&messages=10
-
-=item * verbose
-
-By default, you'll receive the a report of how Mystery Girl is doing parsing and adding scores (and what not). This is sometimes not so desired, especially in a cron environment, since all this informaiton will be emailed to you (or someone) everytime the script is run.  You can run Mystery Girl with a cron that looks like this: 
-
- */5 * * * * /usr/local/bin/curl -s --get --data run=1 --url http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl >/dev/null 2>&1
-
-The, C<E<gt>/dev/null 2E<gt>&1> line throws away any values returned. 
-
-Since B<all> the information being returned from the program is done sort of indirectly, this also means that any problems actually running the program will also be thrown away. 
-
-If you set B<verbose> to, "0", under normal operation, Mystery Girl won't show any output, but if there's a server error, you'll receive an email about it. This is probably a good thing. Example: 
+If you set B<verbose> to, "0", under normal operation, Bounce Handler won't show any output, but if there's a server error, you'll receive an email about it. This is probably a good thing. Example (for cronjob-run curl command): 
 
  * * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0 --url http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl
 
-=item * test
+=head3 test
 
-Runs Mystery Girl in test mode by checking the bounces and parsing them, but not actually carrying out the Rules. 
-
-=back
-
-=head3 Notes on Setting the Cronjob for curl 
-
-You may want to check your version of C<curl> and see if there's a speific way to pass a query string. For example, this: 
-
- */5 * * * * /usr/local/bin/curl -s http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&passcode=sneaky
-
-Doesn't work for me. 
-
-I have to use the C<--get> and C<--data> flags, like this: 
-
- */5 * * * * /usr/local/bin/curl -s --get --data run=1\;passcode=sneaky --url http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl
-
-my query string is this part: 
-
- run=1\;passcode=sneaky
-
-And also note I had to escape the, B<;> character. You'll probably have to do the same for the B<&> character. 
-
-Finally, I also had to pass the actual URL of the plugin using the B<--url> flag. 
+Runs Bounce Handler in test mode by checking the bounces and parsing them, but not actually carrying out any rules (no scores added, no email addresses unsubscribed). 
 
 =head1 Command Line Interface
 
-There's a slew of optional arguments you can give to this script. To use Mystery Girl via the command line, first change into the directory that Mystery Girl resides in, and issue the command: 
+There's a slew of optional arguments you can give to this script. To use Bounce Handler via the command line, first change into the directory that Bounce Handler resides in, and issue the command: 
 
  ./dada_bounce_handler.pl --help
 
 For a full list of paramaters. 
 
-One of the reasons why you may want to run Mystery Girl via the command line is to set the cronjob via the command line interface, rather than the web-based way. Fair enough!
+You may set the cronjob via the command line interface, rather than the web-based way. You may run into file permission problems when running it this way, depending on your server setup. 
 
 =head2 Command Line Interface for Cronjobs: 
 
-One reason that the web-based way of running the cronjob is better, is that it 
-doesn't involve reconfiguring the plugin, every time you upgrade. This makes 
-the web-based invoking a bit more convenient. 
+The secret is to actually have two commands in one. The first command changes into the same directory as the C<dada_bounce_handler.pl> script, the second invokes the script with the paramaters you'd like. 
 
-=head3 #1 Change the lib path
+For example: 
 
-You'll need to explicitly state where both the:
+ */5 * * * * cd /home/myaccount/cgi-bin/dada/plugins; /usr/bin/perl ./dada_bounce_handler.pl  >/dev/null 2>&1
+
+Where, I</home/myaccount/cgi-bin/dada/plugins> is the full path to the directory the C<dada_bounc_handler.pl> script resides.
+
+=head1 Plugin Configs
+
+These plugin configs are located in your C<.dada_config> file, as mentioned above. 
+
+=head2 Server, Username, Password
+
+These configs need to be set, to hook Bounce Handler to the email address you want the bounce messages to go. 
+
+=head2 Port
+
+Defaults to: B<110> for regular connections, C<995> for SSL connections. 
+
+Sets the B<port> Bounce Handler uses connect to the POP server. 
+
+=head2 USESSL
+
+Defaults to: B<0>. Set to, B<1>, if you'd like (and can) connect to the POP server with an SSL connection.
+
+=head2 AUTH_MODE
+
+Defaults to: B<BEST>
+
+Allowed paramaters: B<BEST>, B<PASS>, B<APOP>, B<CRAM-MD5>. 
+
+If the default of, B<BEST> isn't working, try the various allowed paramaters. B<PASS> passes the POP3 password in cleartext. 
 
 =over
 
-=item * Absolute Path to the site-wide Perl libraries
+=item * BEST
 
-=item * Absolute Path of the local Dada Mail libraries
+Tries, B<APOP>, B<CRAM-MD5> and B<PASS> modes, in that order of availability. 
 
 =back
 
-I'm going to rush through this, since if you want to run Mystery Girl this way
-you probably know the terminology, but: 
+=head2 Plugin_Name
 
-This script will be running in a different environment and from a different location than what you'd run it as, when you visit it in a web-browser. It's annoying, but one of the things you have to do when running a command line script via a cronjob. 
+The name of this plugin. 
 
-As an example: C<use lib qw()> lines probably look like: 
+Defaults to: B<Bounce Handler>
 
- use lib qw(
- 
- ../ 
- ../DADA/perllib 
- ../../../../perl 
- ../../../../perllib 
- 
- );
+=head2 Plugin_URL
 
+The URL of the plugin. This is usually figured out by default, but if it's not (you'll know, as links are broken in the plugin and nothing seems to work) you may have to set this, manually. 
 
-To this list, you'll want to append your site-wide Perl Libraries and the 
-path to the Dada Mail libraries. 
+=head2 Allow_Manual_Run
 
-If you don't know where your site-wide Perl libraries are, try running this via the command line:
+Defaults to B<1> (enabled)
 
- perl -e 'print $_ ."\n" for @INC'; 
+Sets whether you may use the B<manual run URL> to run Bounce Handler. The manual run URL is what the curl-powered cronjob uses. If you want to disable this method, set this config variable to, B<0>
 
-If you do not know how to run the above command, visit your Dada Mail in a web browser, log into your list and on the left hand menu and: click, B<About Dada Mail> 
+=head2 Manual_Run_Passcode
 
-Under B<Script Information>, click the, B< +/- More Information> link and under the, B<Perl Library Locations>, select each point that begins with a, "/" and use those as your site-wide path to your perl libraries. 
+This is covered above, under, B<passcode> 
 
+=head2 Enable_POP3_File_Locking
 
-=head2 #2 Set the cron job 
+Defaults to B<1> 
 
-Cron Jobs are scheduled tasks. We need something to check your POP3 email account quite a bit. We're going to set a cron job to test for new messages every 5 minutes. Here's an example cron tab: 
+When enabled, Bounce Handler will use a lock file to make sure only one connection to the POP server is done at one time. Disable this by setting this paramater to, B<0>. 
 
-  */5  *  *  *  * /usr/bin/perl /home/myaccount/cgi-bin/dada/plugins/dada_bounce_handler.pl >/dev/null 2>&1
+=head2 Log
 
-Where, I</home/myaccount/cgi-bin/dada/plugins/dada_bounce_handler.pl> is the full path to the script we just configured. 
+Sets the path to the logfile Bounce Handler creates. Defaults to:
+ C<bounces.txt> in your C<.dada_files/.logs> directory. 
 
-=head1 How Mystery Girl Works
+=head2 MessagesAtOnce
 
-Once you've set up and installed Mystery Girl correctly, bounced email messages 
-now been set to be delivered to the email address that Mystery Girl checks - 
-that is, the, C<Return-Path> header has been set to the B<Bounce Email Address>,
- which is also the address set for your B<List Admin Email Address>. 
+Sets how many messages are checke, per running of the plugin. 
 
-When Mystery Girl checks each bounced email message, it'll attempt to figure 
-out the severity of the bounce and score the email address belonging to the 
-subscriber accordingly. 
+Defaults to: B<100>
 
-=head2 Mystery Girl's Web-Based Control Panel
+Since there could be many bounce messages awaiting to be checked, there is a limit that's set on how many mesages are looked at, at one time. This also means that it may take a few runnings of the plugin to clear all the awaiting messages. 
 
-There's a few things you may also do in Mystery Girl's own control panel: 
+=head3 Max_Size_Of_Any_Message
 
-=head3 Bounce Email Scorecard
+Defaults to: B<2,621,440> bytes (2.5 megs). Set in, B<octets>
 
-You can view the bounce email scorecard - the scores that Mystery Girl gives
-to email addresses that are currently bouncing and haven't been unsubscribed
-yet. 
+Sets the maximum size of any bounced message that Bounce Handler will deal with. Anything larger than this will simply be ignored and deleted. 
 
-Selecting an email address (and clicking it) will give you a rundown of the 
-bounce report for each bounce the email address creates. 
-
-=head3 Manually Run Mystery Girl
-
-If you like, you can run Mystery Girl whenever you like. Running Mystery Girl 
-this way is a good way to see if everything is working correctly and give you 
-an insight of how it all works. 
-
-=head3 Mystery Girl Configuration
-
-View how Mystery Girl is configured. 
-
-
-
-
-=head1 Advanced Configuration: Rules, Rule! 
-
-dada_bounce_handler.pl figures out what to do with the bounce messages
-receives by consulting a group of rules. These rules are highly configurable, 
-so if you need to change the behavior of this script, you don't have to 
-change the code. 
-
-
-These rules are stored in the B<$Plugin_Config-\>{Rules}> hashref. An example rule:
-
-     {
-        exim_user_unknown => { 
-            Examine => { 
-                Message_Fields => { 
-                    Status      => [qw(5.x.y)], 
-                    Guessed_MTA => [qw(Exim)],  
-                }, 
-                Data => { 
-                    Email       => 'is_valid',
-                    List        => 'is_valid', 
-                }
-            },
-                Action => { 
-                     add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score},
-                }, 
-            }
-    }, 
-
-B<exim_user_unknown> is the title of the rule -  just a label, nothing else.
-
-B<Examine> holds a set of parameters that the handler looks at when
-trying to figure out what to do with a bounced message. This example
-has a B<Message_Fields> entry and inside that, a B<Status> entry. The
-B<Status> entry holds a list of status codes. The ones in shown there
-all correspond to hard bounces; the mailbox probably doesn't exist. B<Message_Fields> also hold a, B<Guessed_MTA> entry - it's explicitly looking for a bounce back from the, I<Exim> mail server. 
-
-
-B<Examine> also holds a B<Data> entry, which holds the B<Email> or B<List> 
-entries, or both. Their values are either 'is_valid', or 'is_invalid'. 
-
-So, to sum this all up, this rule will match a message that has B<Status:> 
-B<Message Field> contaning a user unknown error code, B<(5.1.1, etc)> and also a B<Guessed_MTA> B<Message Field> containing, B<Exim>. The message
-also has to be parsed to have found a valid email and list name. 
-
-Pretty Slick, eh? 
-
-If this all matches, the B<Action> is... acted upon. In this case, the offending email address will be appended a, B<Bounce Score> of, whatever, B<$Plugin_Config->{Default_Hard_Bounce_Score}>, which is by default, B<4>. 
-
-If you would like to have the bounced address automatically removed, without any sort of scoring happening, change the B<action> from,
-
-    add_to_score => $Plugin_Config->{Default_Hard_Bounce_Score}
-
-to: 
-
-    unsubscribe_bounced_email => 'from_list'
-
-Also, changing B<from_list>, to B<from_all_lists> will do the trick. 
-
-I could change the line: 
-
- unsubscribe_bounced_email => 'from_list', 
-
-to: 
-
- mail_list_owner => 'user_unknown_message'
-
-This will, instead of deleting the email automatically, send a message 
-to the list owner, stating that, "Hey, the message bounced, what do you
-want to do?" 
-
-Another example: 
-
- {
- over_quota => {
-	 Examine => {
-		Message_Fields => {
-			Status => [qw(5.2.2)]
-		},
-		Data => { 
-			Email => 'is_valid', 
-			List  => 'is_valid',
-		}
-	},
-	Action => { 
-		mail_list_owner => 'over_quota_message', 
-	},
- }                    
-
-This time, I created a list for messages that get bounced because the
-mailbox is full. This is still considered a hard bounce, but I don't
-want the subscriber removed because they haven't check their inbox 
-during the week. In this case, the B<Action> has been set to: 
-
- mail_list_owner => 'over_quota_message', 
-
-Which will do what it sounds like, it'll mail the list owner a message
-explaining the circumstances. 
-
-Here's a schematic of all the different things you can do: 
-
- {
- rule_name => {
-	 Examine => {
-		Message_Fields => {
-			Status               => qw([    ]), 
-			Last-Attempt-Date    => qw([    ]), 
-			Action               => qw([    ]), 
-			Status               => qw([    ]), 
-			Diagnostic-Code      => qw([    ]), 
-			Final-Recipient      => qw([    ]), 
-			Remote-MTA           => qw([    ]), 
-			# etc, etc, etc
-			
-		},
-		Data => { 
-			Email => 'is_valid' | 'is_invalid' 
-			List  => 'is_valid' | 'is_invalid' 
-		}
-	},
-	Action => { 
-	           add_to_score             =>  $x, # where, "$x" is a number
-			   mail_list_owner           => 'user_unknown_message', 
-			   mail_list_owner           => 'email_not_found_message', 
-			   mail_list_owner           => 'over_quota_message', 
-			   unsubscribe_bounced_email => 'from_list' | 'from_all_lists',
-	},
- },	
-
-Mystery Girl also supports the use of regular expressions for matching any of the B<Message_Fields>. To tell the parser that you're using a regular expression, make the Message_Field key end in '_regex': 
-
- 'Final-Recipient_regex' => [(qr/RFC822/)], 
-
-Setting rules is sort of the super advanced part of the configuration,
-but it may come in handy. 
 
 =head1 More on Scores, Thresholds, etc
 
-We talked about scoring, but not in great detail, so let's do that: 
+By default, Bounce Handler assigns a particular score to each email address that bounces back a message. These scores are tallied each time an email address bounces a message.
 
-By default, The Bounce Handler assigns a particular score to each email address that bounces back a message. These scores are tallied each time an email address bounces a message.
-
-Since Dada Mail understands the differences between B<Hard Bounces> and B<Soft Bounces>, it'll append a smaller score for soft bounces, and a larger score for hard bounces. 
+Since Dada Mail understands the differences between B<Hard Bounces> and B<Soft Bounces>, it'll append a smaller score for soft bounces, and a larger score for hard bounces. There's also a B<Decay Rate>, an amount that all scores are decreased by, every time a mass mailing is sent out.
 
 Once the email address's B<Bounce Score> reaches the B<Threshold>, the email address is then removed from the list. 
 
-You can manipulate the Soft and Hard Bounce Scores and Threshold pretty easily. On the top of this script, you'll see the necessary variables to tweak, 
-
-=over
-
-=item * $Plugin_Config->{Default_Soft_Bounce_Score}
-
-=item * $Plugin_Config->{Default_Hard_Bounce_Score}
-
-=item * $Plugin_Config->{Score_Threshold}
-
-=back
-
-Fairly self-explanitory. 
-
-If you want even greater control over what kind of bounces give what scores, you can manipulate the B<Bounce Rules> themselves, as described above. 
-
-Some things to understand: 
-
-If you would like to periodically erase the saved scores, you may do so, by running this script via the command line, like so: 
-
-    ./dada_bounce_handler.pl --erase_score_card
-
-
 =head1 FAQs
 
-=over
+=head2 Bounce Email Address
 
-=item * Does the bounce handler differentiate between "hard' bounces and 'soft' bounces?
+=head3 Do you use only one Bounce Email Address  for all the mailing lists? 
 
-Yes. Because of the Rules, you can set what happens, depending on what 
-type of bounce you receive. By default, the bounce handler is set up to think, "hard bounces" are email addresses that 
-are  invalid because they simply don't exist, and
-soft bounces as email addresses that because the email box
-is full, or there was some sort of problem actually sending the message to the subscriber. 
+Yes. 
 
-Dada Mail basically works by saying, I<After x amount of bounces, just remove from the list.>
+Even though there's only one Bounce Email Address, it is used by all the mailing lists of your Dada Mail, but Bounce Handler will work with every mailing list I<individually>. Each mailing list also has a separate Bounce Scorecard. 
 
-=item * I keep getting, 'permission denied' errors, what's wrong?
-
-It's very possible that Mystery Girl can't read your subscription database or the list settings database. This is because Dada Mail may be running under the webserver's username, usually, B<nobody>, and not what Mystery Girl is running under, usually your account username. 
-
-You'll need to do a few things: 
-
-=over
-
-=item * Change the permissions of the list subscription and settings databases
-
-You'll most likely need to change the permissions of these files to, '777'. PlainText subscription databases have the format of B<listshortname.list> and are usually located where you set the B<$FILES> Config file variable. .List settings Databases have the format of B<mj-listshortname> and are usually located in the same location.
-
-
-=item * Change the $FILE_CHMOD variable
-
-So you don't need to change the permissions of the list files for every new list you create, set the $FILE_CMOD Config variable to 0777:
-	
- $FILE_CHMOD = 0777; 
-
-Notice there are no quotes around 0777. 
-
-=back
-
-=item * I found a bug in this program, what do I do? 
-
-Report it to the bug tracker: 
-
-http://sourceforge.net/tracker/?group_id=13002&atid=113002
-
-=item * I keep getting this bounced message, but Mystery Girl isn't handling it, what do I do? 
-
-You'll most likely have to make a new rule for it. If you want, attach a copy of the bounced message to the bug tracker: 
-
-http://sourceforge.net/tracker/?group_id=13002&atid=113002
-
-And we'll see if we can't get that kind of bounce in a new version.
-
-=item * What's up with the name, Mystery Girl?
-
-It's from a I<Yeah Yeah Yeahs> song: B<Mystery Girl>. A bounce handler
-is sort of a mysterious tool, making decisions for you and a mysterious
-girl just seems to be one full of power and allusion. The song itself 
-is about rejecting a guy that just doesn't make it anymore, 
-so that gives a good metaphor to  a bounced mail, in a slightly weird, 
-nerdy, nerdy, nerdy... artsy way.   
-
-When the bounce handler emails a list owner, you can do nothing but
-answer back to it. Yeah Yeah Yeah. 
-
-B<(colophon)> 
-
-Actually, the lyrics I'm thinking of aren't from the song, Mystery Girl, 
-but from the song, "Bang!" off of the YYY's self titled release. Mystery Girl
-is the next song on that album.  The song after that is one called,
-"Art Star", which is what I am in the daytime! The next song is 
-called, "Miles Away", which is where you probably are to me. All this
-in, "Our Time" (the last song) See? it's like this was all written in
-the stars. 
-
-http://yeahyeahyeahs.com
-
-Here's a small clip of the YYY's performing "Mystery Girl" at the Gothic on 11.20.03 that I took: 
-
-http://dadamailproject.com/media/YYYs_Mystery_Girl_Clip.mov
-
-hot!
-
-=back
-
-
-=head1 Thanks
-
-Thanks to: Jake Ortman Henry Hughes for some prelim bounce examples.
-
-Thanks to Eryq ( http://www.zeegee.com ) for the amazing MIME-tools
-collection. It's a gnarly group of modules. 
 
 =head1 COPYRIGHT
 

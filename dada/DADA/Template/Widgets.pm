@@ -6,8 +6,9 @@ use lib qw(
 use Encode; 
 
 use CGI::Carp qw(croak carp); 
-
 use DADA::Config qw(!:DEFAULT);  
+
+use constant HAS_HTML_TEMPLATE_PRO => eval { require HTML::Template::Pro; 1; }; 
 
 # A weird fix.
 BEGIN {
@@ -24,7 +25,7 @@ my $q = new CGI;
    $q->charset($DADA::Config::HTML_CHARSET);
    $q = decode_cgi_obj($q); 
 	
-	
+
 my $wierd_abs_path = __FILE__; 
    $wierd_abs_path =~ s{^/}{}g;
 
@@ -1425,6 +1426,10 @@ sub screen {
         $args->{-expr} = 0;
     }    
     
+	if(! exists($args->{-pro})){ 
+		$args->{-pro} = undef; 
+	}
+
     if(! exists($args->{-dada_pseudo_tag_filter})){ 
         $args->{-dada_pseudo_tag_filter} = 0;
     }
@@ -1797,9 +1802,6 @@ else {
 			);
 	    }
 	}
-
-
-	my $template; 
 	
 	my $filters = []; 
  	if($args->{-screen}){
@@ -1816,7 +1818,13 @@ else {
 			format => 'scalar' 
 		},
 	);
- 
+	push(@$filters, 
+	    { 
+			sub => \&filter_time_piece,
+			format => 'scalar' 
+		},
+	);
+	 
 	if($args->{-dada_pseudo_tag_filter} == 1){ 
 		push(@$filters, 
 		{ 
@@ -1838,59 +1846,121 @@ else {
 		}
 	}
 	
-	if($args->{-expr}){ 
-	
+	# Which templating engine to use? 
+	#
+	my $template;
+	my $engine = 'html_template'; 
+ 
+	if($args->{-expr} == 1){ 
+
+		# DEV: 
+		# I'm still using H::T::Expr on all templates that require H::T::Expr
+		# syntax, even though H::T::Pro supports it, because H::T::Expr will
+		# barf of variable names w/dots in them. 
+		# What to do? 
+		# * Write a filter to remove dots, replace with, "_dot_" instead?
+		# * change any variables with a dot name with, "_dot_" too. Will 
+		# That inpose too much of a speed hit?
+		
+		$engine = 'html_template_expr';  
+	}
+	elsif ( $args->{-pro} == 1
+        && HAS_HTML_TEMPLATE_PRO )
+    {
+        $engine = 'html_template_pro'; 
+    }
+    elsif (defined($args->{-pro}) && $args->{-pro} == 0 ) {
+            $engine = 'html_template'; 
+    }
+    elsif ( $DADA::Config::TEMPLATE_SETTINGS->{engine} =~ m/HTML Template Pro|Best/i
+        && HAS_HTML_TEMPLATE_PRO )
+    {
+        $engine = 'html_template_pro'; 
+    }
+    else { 
+            $engine = 'html_template';
+    }
+		
+	if($engine eq 'html_template'){ 
+		require HTML::Template;
+		if($args->{-screen}){
+			 $template = HTML::Template->new(
+			 	%Global_Template_Options, 
+				filename => $args->{-screen},
+				filter => $filters,                 
+			);
+		}
+		elsif($args->{-data}){ 
+
+			if($args->{-decode_before} == 1){ 
+				${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
+			}
+			$template = HTML::Template->new(
+			%Global_Template_Options, 
+			scalarref => $args->{-data},
+			filter => $filters,   
+			);
+		}
+		else { 
+			croak "you MUST pass either a scarlarref in, '-date' or a filename in, '-screen'!"; 
+		}	
+	}
+	elsif($engine eq 'html_template_expr'){ 
+		require HTML::Template::MyExpr;
 		if($args->{-screen}){ 
-			require HTML::Template::MyExpr;
 			$template = HTML::Template::MyExpr->new(
 				%Global_Template_Options, 
 				filename => $args->{-screen},
 				filter   => $filters, 
 			);
 		}elsif($args->{-data}){ 
-			require HTML::Template::MyExpr;
+			
+			if($args->{-decode_before} == 1){ 
+				${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
+			}
+			
 			$template = HTML::Template::MyExpr->new(
 				%Global_Template_Options, 
 				scalarref => $args->{-data},
 				filter    => $filters, 
 			);
 		}else{ 
-			carp "what are you trying to do?!"; 
+			croak "you MUST pass either a scarlarref in, '-date' or a filename in, '-screen'!"; 
 		}
+	}
+	elsif($engine eq 'html_template_pro'){
 		
-   }else{ 
-   
-   	if($args->{-screen}){ 
-		require HTML::Template;
-		 $template = HTML::Template->new(
-		 	%Global_Template_Options, 
-			filename => $args->{-screen},
-			filter => $filters,                 
-		);
-
-	}elsif($args->{-data}){ 
-
-		if($args->{-decode_before} == 1){ 
-			${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
-		}
-		
-   		require HTML::Template;
-			$template = HTML::Template->new(
-				%Global_Template_Options, 
-				scalarref => $args->{-data},
-				filter => $filters,   
-			);		   					   
-   		}else{ 
-			carp "what are you trying to do?!"; 
-		}
-   }
-
+			if($args->{-screen}){ 
+				$template = HTML::Template::Pro->new(
+					%Global_Template_Options, 
+					filename => $args->{-screen},
+					filter   => $filters, 
+				);
+			}elsif($args->{-data}){ 
+				
+				if($args->{-decode_before} == 1){ 
+					${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
+				}
+				else { 
+				}
+				$template = HTML::Template::Pro->new(
+					%Global_Template_Options, 
+					scalarref => $args->{-data},
+					filter => $filters,   
+				);
+			}else{ 
+				croak "you MUST pass either a scarlarref in, '-date' or a filename in, '-screen'!"; 
+			}
+	}
+	else { 
+		croak "Invalid Templating Engine $engine"; 
+	}
+	my %date_params = date_params(); 
 	my %final_params = (
 		%Global_Template_Variables,					
-		# I like that, (not) 
-		date    => scalar(localtime()),
 		%$template_vars,
 		%_ht_tmpl_set_params,
+		%date_params,
 	);
 	if(exists($args->{-list})){ 
 		$final_params{list} =  $args->{-list};  
@@ -1902,16 +1972,168 @@ else {
 	#my %return_params = %_ht_tmpl_set_params; 
 	%_ht_tmpl_set_params = (); 
 	if(exists($args->{-return_params})){ 
-		if($args->{-return_params} == 1){ 
-			return ($template->output(), {%final_params});	
+		if($args->{-return_params} == 1){ 	
+			if($engine eq 'html_template_pro'){
+				# No, I do not know why I have to decode what H::T::Pro gives me. 
+				return (safely_decode($template->output(), 1), {%final_params}); 
+			}
+			else { 
+				return ($template->output(), {%final_params});	
+			}
+		}
+		else { 
+			if($engine eq 'html_template_pro'){
+				# No, I do not know why I have to decode what H::T::Pro gives me. 
+				return safely_decode($template->output(), 1); 
+			}
+			else { 
+				return $template->output();
+			}
+		}
+	}
+	else { 
+		if($engine eq 'html_template_pro'){
+			# No, I do not know why I have to decode what H::T::Pro gives me. 
+			return safely_decode($template->output(), 1); 
 		}
 		else { 
 			return $template->output();
 		}
 	}
-	else { 
-		return $template->output();
-	}
+}
+
+
+sub date_params { 
+	
+	my $time = shift || time;
+	
+	my %params = ();
+	 
+	
+	# Anything more than this, and I should probably use 
+	# DateTime or something. 
+	# Don't want to for performance reasons
+	# OR, use Time::Piece and probably remove some bugs I've created. 
+	#
+	# 0 1 2 3 4 5 6 7 8
+	# $mday = '17'; (Date)
+	# $wday = '1' (Monday)
+	# $yday =  289the day of the year (ie: in 365 days, this is the nth day")
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
+    	localtime($time);	
+
+    my $months = [
+	qw(
+        January  
+        February 
+        March    
+        April    
+        May      
+        June     
+        July     
+        August   
+        September
+        October  
+        November 
+        December 
+	)
+    ];           
+
+
+    my $abbr_months = [
+	qw(
+        Jan
+        Feb
+        Mar    
+        Apr    
+        May      
+        Jun     
+        Jul     
+        Aug   
+        Sep
+        Oct 
+        Nov
+        Dec 
+	)
+    ];
+
+	
+	my $days = [
+	qw( 
+		Sunday   
+		Monday   
+		Tuesday  
+		Wednesday
+		Thursday 
+		Friday   
+		Saturday    
+	)
+	];
+
+	my $abbr_days = [
+	qw( 
+		Sun
+		Mon   
+		Tue  
+		Wed
+		Thu 
+		Fri   
+		Sat    
+	)
+	];
+	
+	
+	my $mail_day_values = {
+		1  => '1st', 
+		2  => '2nd', 
+		3  => '3rd', 
+		4  => '4th', 
+		5  => '5th',
+		6  => '6th', 
+		7  => '7th', 
+		8  => '8th', 
+		9  => '9th', 
+		10 => '10th', 
+		11 => '11th',
+		12 => '12th', 
+		13 => '13th', 
+		14 => '14th', 
+		15 => '15th', 
+		16 => '16th', 
+		17 => '17th', 
+		18 => '18th', 
+		19 => '19th', 
+		20 => '20th', 
+		21 => '21st', 
+		22 => '22nd', 
+		23 => '23rd', 
+		24 => '24th', 
+		25 => '25th', 
+		26 => '26th', 
+		27 => '27th', 
+		28 => '28th', 
+		29 => '29th', 
+		30 => '30th', 
+		31 => '31st',
+	};
+	
+    $params{'data.time'}                 = $time;
+    $params{'date.localtime'}            = scalar( localtime($time) );
+    $params{'date.month'}                = $mon + 1;
+    $params{'date.named_month'}          = $months->[$mon];
+    $params{'date.padded_month'}         = sprintf( "%02d", $mon + 1 );
+    $params{'date.abbr_named_month'}     = $abbr_months->[$mon];
+    $params{'date.day'}                  = $mday;
+    $params{'date.day_of_the_week'}      = $days->[$wday];
+    $params{'date.padded_day'}           = sprintf( "%02d", $mday );
+    $params{'date.abbr_day_of_the_week'} = $abbr_days->[$wday];
+    $params{'date.nth_day'}              = $mail_day_values->{$mday};
+    $params{'date.year'}                 = $year += 1900;
+    $params{'date.abbr_year'}            = sprintf( "%02d", $year % 100 );
+	$params{'date.24_time'}              = sprintf("%02d:%02d:%02d", $hour, $min, $sec);
+	
+	return %params;
+	
 }
 
 
@@ -2071,7 +2293,9 @@ sub wrap_screen {
 sub validate_screen { 
 	my ($args) = @_; 
 	eval { 
-		my $scrn = screen($args)
+		my $scrn = screen({%$args, -pro  => 0}); 
+		# I like the idea of forcing it to use HTML::Template, as the H::T::Pro does not barf, 
+		# when finding things it does not like.
 	};
 	if($@){ 
 		return (0, $@);
@@ -2189,6 +2413,32 @@ sub hack_in_tmpl_set_support {
     $$text_ref =~ s/$match//gi;
 }
 
+sub filter_time_piece {
+	
+    my $text_ref = shift;
+
+    my $match = qr/\<\!\-\- tmpl_time_piece (.*?) \-\-\>/;
+    
+	my @taglist = (); 
+	@taglist = $$text_ref =~ m/$match/gi;
+    
+	if(exists($taglist[0])){ 
+		
+		require Time::Piece; 
+		my $t = Time::Piece->new;
+	
+		while (@taglist) {
+			my $time = shift @taglist; 
+			my $formatted_time = $t->strftime($time);
+			my $formatted_match = quotemeta("<!-- tmpl_strftime $time -->");
+			$$text_ref =~ s/$formatted_match/$formatted_time/gi;
+	    }
+
+	}
+   
+}
+
+
 sub webify_and_santize { 
 
     my ($args) = @_; 
@@ -2207,7 +2457,7 @@ sub webify_and_santize {
     foreach(@{$args->{-to_sanitize}}){ 
     
         
-        $args->{-vars}->{$_} = webify_plain_text({-str => $args->{-vars}->{$_}});
+        $args->{-vars}->{$_} = webify_plain_text({-str =>$args->{-vars}->{$_}});
         $args->{-vars}->{$_} = _email_protect(
 			{
 				-string => $args->{-vars}->{$_},

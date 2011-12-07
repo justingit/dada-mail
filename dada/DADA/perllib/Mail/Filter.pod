@@ -2,8 +2,6 @@
 
 Mail::Filter - Filter mail through multiple subroutines
 
-=head1 INHERITANCE
-
 =head1 SYNOPSIS
 
  use Mail::Filter;
@@ -36,9 +34,9 @@ mail object.
 
 =head2 Constructors
 
-Mail::Filter-E<gt>B<new>([FILTER [, ... ]])
-
 =over 4
+
+=item Mail::Filter-E<gt>B<new>([FILTER [, ... ]])
 
 Create a new C<Mail::Filter> object with the given filter subroutines. Each
 filter may be either a code reference or the name of a method to call
@@ -48,9 +46,9 @@ on the <Mail::Filter> object.
 
 =head2 Accessors
 
-$obj-E<gt>B<add>(FILTER [, FILTER ...])
-
 =over 4
+
+=item $obj-E<gt>B<add>(FILTER [, FILTER ...])
 
 Add the given filters to the end of the fliter list.
 
@@ -58,29 +56,21 @@ Add the given filters to the end of the fliter list.
 
 =head2 Processing
 
-$obj-E<gt>B<filter>(MAIL-OBJECT | MAIL-FOLDER)
-
 =over 4
+
+=item $obj-E<gt>B<filter>(MAIL-OBJECT | MAIL-FOLDER)
 
 If the first argument is a C<Mail::Internet> object, then this object will
 be passed through the filter list. If the first argument is a C<Mail::Folder>
 object, then each message in turn will be passed through the filter list.
 
-=back
-
-$obj-E<gt>B<folder>
-
-=over 4
+=item $obj-E<gt>B<folder>
 
 While the C<filter> method is called with a C<Mail::Folder> object, these
 filter subroutines can call this method to obtain the folder object that is
 being processed.
 
-=back
-
-$obj-E<gt>B<msgnum>
-
-=over 4
+=item $obj-E<gt>B<msgnum>
 
 If the C<filter> method is called with a C<Mail::Folder> object, then the
 filter subroutines may call this method to obtain the message number
@@ -96,7 +86,7 @@ F<http://perl.overmeer.net/mailtools/>.
 =head1 AUTHORS
 
 The MailTools bundle was developed by Graham Barr.  Later, Mark
-Overmeer took over maintenance without development.
+Overmeer took over maintenance without commitment to further development.
 
 Mail::Cap by Gisle Aas E<lt>aas@oslonett.noE<gt>.
 Mail::Field::AddrList by Peter Orbaek E<lt>poe@cit.dkE<gt>.

@@ -24,25 +24,17 @@ importance/format.
 
 =head2 Constructors
 
-Mail::Field::Generic-E<gt>B<combine>(FIELDS)
-
 =over 4
+
+=item Mail::Field::Generic-E<gt>B<combine>(FIELDS)
 
 See L<Mail::Field/"Constructors">
 
-=back
-
-Mail::Field::Generic-E<gt>B<extract>(TAG, HEAD [, INDEX ])
-
-=over 4
+=item Mail::Field::Generic-E<gt>B<extract>(TAG, HEAD [, INDEX ])
 
 See L<Mail::Field/"Constructors">
 
-=back
-
-Mail::Field::Generic-E<gt>B<new>(TAG [, STRING | OPTIONS])
-
-=over 4
+=item Mail::Field::Generic-E<gt>B<new>(TAG [, STRING | OPTIONS])
 
 See L<Mail::Field/"Constructors">
 
@@ -50,20 +42,20 @@ See L<Mail::Field/"Constructors">
 
 =head2 "Fake" constructors
 
-$obj-E<gt>B<create>(OPTIONS)
-
 =over 4
 
- Option--Default
- Text    ''
+=item $obj-E<gt>B<create>(OPTIONS)
 
-. Text => STRING
+ -Option--Default
+  Text    ''
+
+=over 2
+
+=item Text => STRING
 
 =back
 
-$obj-E<gt>B<parse>([STRING])
-
-=over 4
+=item $obj-E<gt>B<parse>([STRING])
 
 Set the new text, which is empty when no STRING is provided.
 
@@ -71,27 +63,19 @@ Set the new text, which is empty when no STRING is provided.
 
 =head2 Accessors
 
-$obj-E<gt>B<set>(OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<set>(OPTIONS)
 
 See L<Mail::Field/"Accessors">
 
-=back
-
-$obj-E<gt>B<stringify>
-
-=over 4
+=item $obj-E<gt>B<stringify>
 
 See L<Mail::Field/"Accessors">
 
-=back
+=item $obj-E<gt>B<tag>
 
-$obj-E<gt>B<tag>
-
-Mail::Field::Generic-E<gt>B<tag>
-
-=over 4
+=item Mail::Field::Generic-E<gt>B<tag>
 
 See L<Mail::Field/"Accessors">
 
@@ -99,21 +83,19 @@ See L<Mail::Field/"Accessors">
 
 =head2 Smart accessors
 
-$obj-E<gt>B<text>([STRING])
-
 =over 4
+
+=item $obj-E<gt>B<text>([STRING])
 
 See L<Mail::Field/"Smart accessors">
 
 =back
 
-=head1 DETAILS
-
 =head1 DIAGNOSTICS
 
-Error: Undefined subroutine <method> called
-
 =over 4
+
+=item Error: Undefined subroutine <method> called
 
 Mail::Field objects use autoloading to compile new functionality.
 Apparently, the mehod called is not implemented for the specific
@@ -129,7 +111,7 @@ F<http://perl.overmeer.net/mailtools/>.
 =head1 AUTHORS
 
 The MailTools bundle was developed by Graham Barr.  Later, Mark
-Overmeer took over maintenance without development.
+Overmeer took over maintenance without commitment to further development.
 
 Mail::Cap by Gisle Aas E<lt>aas@oslonett.noE<gt>.
 Mail::Field::AddrList by Peter Orbaek E<lt>poe@cit.dkE<gt>.

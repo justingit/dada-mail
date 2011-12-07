@@ -437,7 +437,10 @@ sub edit  {
 	if($q->param('process') eq 'true'){ 
 		if($q->param('role') =~ m/test/i){ 
 			$key = $mss->save_from_params({-cgi_obj => $q });
-			my $status = test_handler(-key => $key );
+			my $status = test_handler(
+				-key => $key,
+				-test_recipient => $q->param('test_recipient'), 
+			 );
 			if(! keys %$status){ 
 				$message = '<p class="positive">Your test message has been sent.</p>';
 			}else{ 
@@ -490,9 +493,11 @@ sub test_handler {
 	if (! $args{-key}){
 		die "no key! $!"; 
 	}
+	
 	my ($status, $cs) = $mss->send_scheduled_mailing(
 							-key  => $args{-key}, 
-							-test => 1
+							-test => 1,
+							-test_recipient => $args{-test_recipient}, 
 						);
 	return $status; 
 }
@@ -1912,40 +1917,41 @@ sub single_attachment_widget {
 
 sub submit_widget { 
 	my $key = shift || undef; 
-	
-	my $r; 
-	   $r .= $q->table({-align => 'right'}, 
-			 $q->Tr(
-			 $q->td([
-			 (
-			 $q->submit(-name  => 'role', 
-						-value => 'Send Test Mailing to List Owner', 
-						-class => 'cautionary', 
-					   ), 
-			 ), 
-			 (
-			 $q->submit(-name  => 'role', 
-						-value => 'Save Schedule', 
-						-class => 'processing'
-					   ),
-			 ), 
-			  (
-			 
-			 (($key) ? 
-			 (
-			 $q->submit(-name  => 'role', 
-						-value => 'Remove Schedule', 
-						-class => 'alertive'
-					   ),
-			 
-			 ) : ())
-			 
-			 
-			 ),
-			 ])
-			 )
-			 );  	   		  
-	return $r; 
+
+my $t = q{ 
+
+
+<div class="buttonfloat">
+<input type="submit" name="role" value="Save Schedule, Then Send Test Message" class="cautionary" /> 
+<input type="submit" name="role" value="Save Schedule" class="processing" /> 
+<!-- tmpl_if key --> 
+	<input type="submit" name="role" value="Remove Schedule" class="alertive" /> 
+<!-- /tmpl_if --> 
+</div> 
+<div class="floatclear"></div>
+
+<div class="buttonfloat">
+<label for="test_recipient">Send Test Messages To:</label>
+ <input type="text" id="test_recipient" name="test_recipient" value="<!-- tmpl_var list_settings.list_owner_email -->" />
+</div>
+<div class="floatclear"></div>
+
+};
+
+my $r = DADA::Template::Widgets::screen(
+		{
+			-data => \$t, 
+			-vars => { 
+				key => $key,
+			},
+			-list_settings_vars       => $li, # Uh, ok - $li is global. That's stupid. 
+			-list_settings_vars_param => 
+				{
+						-dot_it => 1, 
+				},
+		},
+	);
+return $r; 
 } 
 
 

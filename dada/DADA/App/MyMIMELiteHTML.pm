@@ -271,7 +271,9 @@ sub include_css(\%$$) {
 		$self->set_err($err);
 		carp $err; 
 		
-		return '<style type="text/css">';	
+		# DEV: so, why was this returning an open <style> tag? 
+		# Because that's dumb.
+		return ''; #<style type="text/css">';	
 		
 	}
 

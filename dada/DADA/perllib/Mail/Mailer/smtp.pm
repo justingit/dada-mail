@@ -1,12 +1,13 @@
-# Copyrights 1995-2008 by Mark Overmeer <perl@overmeer.net>.
+# Copyrights 1995-2011 by Mark Overmeer <perl@overmeer.net>.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.04.
+# Pod stripped from pm file by OODoc 2.00.
 use strict;
 
 package Mail::Mailer::smtp;
 use vars '$VERSION';
-$VERSION = '2.03';
+$VERSION = '2.08';
+
 use base 'Mail::Mailer::rfc822';
 
 use Net::SMTP;
@@ -21,7 +22,6 @@ sub exec {
     my $host  = $opt{Server} || undef;
     $opt{Debug} ||= 0;
 
-    # for Net::SMTP we do not really exec
     my $smtp = Net::SMTP->new($host, %opt)
 	or return undef;
 
@@ -33,6 +33,8 @@ sub exec {
     ${*$self}{sock} = $smtp;
 
     $smtp->mail(mailaddress);
+    $smtp->mail($opt{From}) if $opt{From};
+
     $smtp->to($_) for @$to;
     $smtp->data;
 
@@ -55,11 +57,12 @@ sub epilogue()
 {   my $self = shift;
     my $sock = ${*$self}{sock};
 
-    $sock->dataend;
+    my $ok = $sock->dataend;
     $sock->quit;
 
     delete ${*$self}{sock};
     untie *$self;
+    $ok;
 }
 
 sub close(@)
@@ -69,22 +72,23 @@ sub close(@)
     $sock && fileno $sock
         or return 1;
 
-    $self->epilogue;
+    my $ok = $self->epilogue;
 
     # Epilogue should destroy the SMTP filehandle,
     # but just to be on the safe side.
     $sock && fileno $sock
-        or return 1;
+        or return $ok;
 
     close $sock
         or croak 'Cannot destroy socket filehandle';
 
-    1;
+    $ok;
 }
 
 package Mail::Mailer::smtp::pipe;
 use vars '$VERSION';
-$VERSION = '2.03';
+$VERSION = '2.08';
+
 
 sub TIEHANDLE
 {   my ($class, $self) = @_;

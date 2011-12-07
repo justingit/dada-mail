@@ -10,8 +10,6 @@ use 5.008_001;
 use Encode qw(encode decode);
 use MIME::Parser;
 use MIME::Entity; 
-
-use DADA::Config qw(!:DEFAULT); 
 use DADA::App::Guts; 
 
 
@@ -76,21 +74,22 @@ to worry about, but we'll go through some detail.
 
 
 my %allowed = (
-	Subject                      => undef, 
-	use_list_template            => 0, 
-	use_html_email_template      => 1,
-	use_plaintext_email_template => 1, 
-	treat_as_discussion_msg      => 0, 
-	use_header_info              => 0, 
-	#orig_entity                  => undef, 
+	Subject                        => undef, 
+	use_list_template              => 0, 
+	use_html_email_template        => 1,
+	use_plaintext_email_template   => 1, 
+	treat_as_discussion_msg        => 0, 
+	use_header_info                => 0, 
+	#orig_entity                   => undef, 
 	
-	originating_message_url      => undef, 
+	originating_message_url        => undef, 
 	
-	reset_from_header            => 1, 
-	im_encoding_headers          => 0, 
-	mass_mailing                 => 0, 
-	list_invitation              => 0, 	
-	no_list                      => 0,
+	reset_from_header              => 1, 
+	im_encoding_headers            => 0, 
+	mass_mailing                   => 0, 
+	just_unsubscribed_mass_mailing => 0, 
+	list_invitation                => 0, 	
+	no_list                        => 0,
 	
 	override_validation_type     => undef, 
 );
@@ -466,7 +465,10 @@ sub _format_text {
 				);
 				
 				if($self->mass_mailing == 1){ 
-					if($self->list_invitation == 1){ 
+					if($self->just_unsubscribed_mass_mailing == 1){ 
+						# ... well, nothing, really. 
+					}
+					elsif($self->list_invitation == 1){ 
 						$content = $self->subscription_confirmationation(
 							{
 								-str => $content, 
@@ -1693,64 +1695,53 @@ sub _apply_list_template {
 	
 }
 
-sub entity_from_dada_style_args { 
+sub entity_from_dada_style_args {
 
-    my $self = shift; 
-    my ($args) = @_; 
+    my $self = shift;
+    my ($args) = @_;
 
-    if(! exists($args->{-fields})){ 
-    
-        croak 'did not pass data in, "-fields"' ;
+    if ( !exists( $args->{-fields} ) ) {
+
+        croak 'did not pass data in, "-fields"';
     }
-    
-    
 
-
-    if(!exists($args->{-parser_params})){ 
+    if ( !exists( $args->{-parser_params} ) ) {
         $args->{-parser_params} = {};
     }
-    elsif(!exists($args->{-parser_params}->{-input_mechanism})){ 
+    elsif ( !exists( $args->{-parser_params}->{-input_mechanism} ) ) {
         $args->{-parser_params}->{-input_mechanism} = 'parse';
     }
 
-    if($args->{-parser_params}->{-input_mechanism} eq 'parse_open'){ 
-    
-        
-       my $filename = $self->file_from_dada_style_args(
-                                        {
-                                            -fields => $args->{-fields},
-                                         }
-                                      ); 
+    if ( $args->{-parser_params}->{-input_mechanism} eq 'parse_open' ) {
 
-			# This is going to return a Entity from a decoded message...?
-            return ($self->get_entity(
-                            {
-                                -data          => $filename,
-                                -parser_params => {-input_mechanism => 'parse_open'},
-                            }
-                    ), $filename); 
-    
+        my $filename =
+          $self->file_from_dada_style_args( { -fields => $args->{-fields}, } );
+
+        # This is going to return a Entity from a decoded message...?
+        return (
+            $self->get_entity(
+                {
+                    -data          => $filename,
+                    -parser_params => { -input_mechanism => 'parse_open' },
+                }
+            ),
+            $filename
+        );
+
     }
-    else { 
-    
-  
+    else {
+
         my $str = $self->string_from_dada_style_args(
-                                        {
-                                            -fields => $args->{-fields},
-                                         }
-                                      );
-		
-			$str = safely_encode($str); 
-            my $entity =  $self->get_entity(
-                            {
-                                -data => $str, 
-                            }
-                    ); 
-				
-            return $entity;        
+            { -fields => $args->{-fields}, } );
+
+        $str = safely_encode($str);
+        my $entity = $self->get_entity( { -data => $str, } );
+
+        return $entity;
 
     }
 }
+
 
 sub string_from_dada_style_args { 
 
@@ -2040,7 +2031,7 @@ sub email_template {
 
             my $body    = $args->{-entity}->bodyhandle;
             my $content = $args->{-entity}->bodyhandle->as_string;
-            $content = safely_decode($content);
+               $content = safely_decode($content);
 			
             if ($content) {
 
@@ -2049,17 +2040,18 @@ sub email_template {
                     {
                         %screen_vars,
                         -data => \$content,
-                        (
-                            (
-                                $args->{-entity}->head->mime_type eq 'text/html'
-                            )
-                            ? (
-                                -webify_these => [
-                                    qw(list_settings.info list_settings.privacy_policy list_settings.physical_address)
-                                ],
-                              )
-                            : ()
-                        ),
+						(
+						    (
+						        $args->{-entity}->head->mime_type eq 'text/html'
+						    )
+						    ? (
+						        -webify_these => [
+						            qw(list_settings.info list_settings.privacy_policy list_settings.physical_address)
+						        ],
+						      )
+						    : ()
+						),
+
 
                     }
                 );
@@ -2129,6 +2121,7 @@ sub email_template {
 					  
 					
 					if($phrase =~ m/\[|\</){ # does it even look like we have a templated thingy? (optimization)
+						#carp "$phrase needs to be templated out!"; 
 						   # Template it Out
 						   $phrase = DADA::Template::Widgets::screen(
 	                        {
@@ -2151,7 +2144,10 @@ sub email_template {
 					
 						# Add the new
 						$args->{-entity}->head->add($header, $new_header); 
-					} #/ does it even look like we have a templated thingy? (optimization)
+					} 
+					else { 
+						# carp "Skipping: $phrase since there ain't no template in there."; 
+					}#/ does it even look like we have a templated thingy? (optimization)
                 }
                 else { 
 					
@@ -2179,7 +2175,7 @@ sub email_template {
 					if $t; 
 				
 				if($header_value =~ m/\[|\</){ # has a template? (optimization)
-					
+					# carp "$header_value needs to be templated out!"; 
 					# Template
 					$header_value = DADA::Template::Widgets::screen(
 	                    {
@@ -2203,7 +2199,10 @@ sub email_template {
 				
 					# Add
 					$args->{-entity}->head->add($header, $header_value);
-				}  # /has a template? (optimization)
+				}
+				else { 
+					#carp "Skipping: $header_value since there ain't no template in there."; 
+				} # /has a template? (optimization)
 			 
 				warn 'now:'. safely_encode( $header_value)
 					if $t;

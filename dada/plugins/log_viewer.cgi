@@ -522,7 +522,7 @@ sub search_logs {
                   
 					# BUGFIX: [ 2124123 ] 3.0.0 - Log viewer does not escape ">" "<" etc. 
 					# http://sourceforge.net/tracker/index.php?func=detail&aid=2124123&group_id=13002&atid=113002
-					#$diff_lines = webify_plain_text({-str => $diff_lines});
+					#$diff_lines = webify_plain_text({-str =>$diff_lines});
 					$diff_lines =~ s/& /&amp; /g;
 			        $diff_lines =~ s/</&lt;/g;
 			        $diff_lines =~ s/>/&gt;/g;

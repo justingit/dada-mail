@@ -1,0 +1,69 @@
+Return-path: <>
+Envelope-to: bounces@dadademo.com
+Delivery-date: Sun, 30 Oct 2011 22:33:44 -0600
+Received: from [70.40.195.124] (helo=outbound-ss-1985.bluehost.com)
+	by box575.bluehost.com with smtp (Exim 4.76)
+	id 1RKjZA-0007eb-H9
+	for bounces@dadademo.com; Sun, 30 Oct 2011 22:33:44 -0600
+Received: (qmail 23536 invoked for bounce); 31 Oct 2011 04:33:44 -0000
+Date: 31 Oct 2011 04:33:44 -0000
+From: MAILER-DAEMON@outbound-ss-2114.bluehost.com
+To: bounces@dadademo.com
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="1320035621outbound-ss-2114.bluehost.com50760573"
+Subject: failure notice
+
+--1320035621outbound-ss-2114.bluehost.com50760573
+
+Hi. This is the qmail-send program at outbound-ss-2114.bluehost.com.
+I'm afraid I wasn't able to deliver your message to the following addresses.
+This is a permanent error; I've given up. Sorry it didn't work out.
+
+<ljdfsajlkadfsmndfsalkjfdsapimoiasdfiodfsakl@gmail.com>:
+74.125.127.26 does not like recipient.
+Remote host said: 550-5.1.1 The email account that you tried to reach does not exist. Please try
+550-5.1.1 double-checking the recipient's email address for typos or
+550-5.1.1 unnecessary spaces. Learn more at                             
+550 5.1.1 http://mail.google.com/support/bin/answer.py?answer=6596 p8si5913219pbj.37
+Giving up on 74.125.127.26.
+
+--- Enclosed are the original headers of the message.
+
+--1320035621outbound-ss-2114.bluehost.com50760573
+Content-Type: message/rfc822
+
+Return-Path: <bounces@dadademo.com>
+Received: (qmail 23443 invoked by uid 0); 31 Oct 2011 04:33:41 -0000
+Received: from unknown (HELO box575.bluehost.com) (66.147.242.175)
+  by soproxy1.bluehost.com with SMTP; 31 Oct 2011 04:33:41 -0000
+Received: from localhost ([127.0.0.1] helo=box575.bluehost.com)
+	by box575.bluehost.com with esmtp (Exim 4.76)
+	(envelope-from <bounces@dadademo.com>)
+	id 1RKjZ6-0007Zo-FS
+	for ljdfsajlkadfsmndfsalkjfdsapimoiasdfiodfsakl@gmail.com; Sun, 30 Oct 2011 22:33:40 -0600
+Date: Sun, 30 Oct 2011 22:33:40 -0600
+From:  "dadatest" <justin@skazat.com>
+To: "dadatest Subscriber" <ljdfsajlkadfsmndfsalkjfdsapimoiasdfiodfsakl@gmail.com>
+X-Priority: 3
+List: dadatest
+List-Archive: <http://dadademo.com/cgi-bin/dev/dada/mail.cgi/archive/dadatest/>
+List-ID: <dadatest.box575.bluehost.com>
+List-Owner: <justin@skazat.com>
+List-Post: NO
+List-Subscribe: =?UTF-8?Q?=3Chttp=3A//dadademo=2Ecom/cgi-bin/dev/dada/mail=2Ecgi/s/dadates?=
+ =?UTF-8?Q?t/ljdfsajlkadfsmndfsalkjfdsapimoiasdfiodfsakl/gmail=2Ecom/=3E?=
+List-Unsubscribe: =?UTF-8?Q?=3Chttp=3A//dadademo=2Ecom/cgi-bin/dev/dada/mail=2Ecgi/u/dadates?=
+ =?UTF-8?Q?t/ljdfsajlkadfsmndfsalkjfdsapimoiasdfiodfsakl/gmail=2Ecom/=3E?=
+List-URL: <http://dadademo.com/cgi-bin/dev/dada/mail.cgi/list/dadatest/>
+Message-ID: <20111030223332.29501507@skazat.com>
+X-Mailer: Dada Mail 4.8.0 Stable 9/28/11 
+Content-type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+MIME-Version: 1.0
+Subject: Bounce
+X-Identified-User: {:box575.bluehost.com:dadademo:box575.bluehost.com} {sentby:program running on server}
+
+(Body supressed)
+
+--1320035621outbound-ss-2114.bluehost.com50760573--

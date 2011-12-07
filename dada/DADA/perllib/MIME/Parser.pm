@@ -65,6 +65,8 @@ Ready?  Ok...
     ### Change how nameless message-component files are named:
     $parser->output_prefix("msg");
 
+    ### Put temporary files somewhere else
+    $parser->tmp_dir("/var/tmp/mytmpdir");
 
 =head2 Examples of error recovery
 
@@ -88,7 +90,7 @@ Ready?  Ok...
 
 =head2 Examples of parser options
 
-    ### Automatically attempt to RFC-1522-decode the MIME headers?
+    ### Automatically attempt to RFC 2047-decode the MIME headers?
     $parser->decode_headers(1);             ### default is false
 
     ### Parse contained "message/rfc822" objects as nested MIME streams?
@@ -104,8 +106,8 @@ Ready?  Ok...
 =head2 Miscellaneous examples
 
     ### Convert a Mail::Internet object to a MIME::Entity:
-    @lines = (@{$mail->header}, "\n", @{$mail->body});
-    $entity = $parser->parse_data(\@lines);
+    my $data = join('', (@{$mail->header}, "\n", @{$mail->body}));
+    $entity = $parser->parse_data(\$data);
 
 
 
@@ -121,22 +123,14 @@ that parse MIME streams into MIME::Entity objects.
 
 #------------------------------
 
-# We require the new FileHandle methods, and a non-buggy version
-# of FileHandle->new_tmpfile:
 require 5.004;
 
 ### Pragmas:
 use strict;
 use vars (qw($VERSION $CAT $CRLF));
 
-### Built-in modules:
-use FileHandle ();
-use IO::Wrap;
-use IO::Scalar       1.117;
-use IO::ScalarArray  1.114;
-use IO::Lines        1.108;
+### core Perl modules
 use IO::File;
-use IO::InnerFile;
 use File::Spec;
 use File::Path;
 use Config qw(%Config);
@@ -152,31 +146,6 @@ use MIME::Parser::Reader;
 use MIME::Parser::Filer;
 use MIME::Parser::Results;
 
-
-#============================================================
-#
-# A special kind of inner file that we can virtually print to.
-#
-package MIME::Parser::InnerFile;
-
-use vars qw(@ISA);
-@ISA = qw(IO::InnerFile);
-
-sub print {
-    shift->add_length(length(join('', @_)));
-    1;
-}
-
-sub PRINT  {
-    shift->{LG} += length(join('', @_));
-    1;
-}
-
-#============================================================
-
-package MIME::Parser;
-
-
 #------------------------------
 #
 # Globals
@@ -184,7 +153,7 @@ package MIME::Parser;
 #------------------------------
 
 ### The package version, both in 1.23 style *and* usable by MakeMaker:
-$VERSION = "5.420";
+$VERSION = "5.502";
 
 ### How to catenate:
 $CAT = '/bin/cat';
@@ -247,13 +216,11 @@ sub init {
     $self->{MP5_DecodeBodies}    = 1;
     $self->{MP5_Interface}       = {};
     $self->{MP5_ParseNested}     = 'NEST';
-    $self->{MP5_Tmp}             = undef;
-    $self->{MP5_TmpRecycling}    = 1;
     $self->{MP5_TmpToCore}       = 0;
     $self->{MP5_IgnoreErrors}    = 1;
-    $self->{MP5_UseInnerFiles}   = 0;
     $self->{MP5_UUDecode}        = 0;
     $self->{MP5_MaxParts}        = -1;
+    $self->{MP5_TmpDir}          = undef;
 
     $self->interface(ENTITY_CLASS => 'MIME::Entity');
     $self->interface(HEAD_CLASS   => 'MIME::Head');
@@ -279,8 +246,8 @@ sub init_parse {
     $self->{MP5_Results} = new MIME::Parser::Results;
 
     $self->{MP5_Filer}->results($self->{MP5_Results});
+    $self->{MP5_Filer}->purgeable([]);
     $self->{MP5_Filer}->init_parse();
-    $self->{MP5_Filer}->purgeable([]);   ### just to be safe
     $self->{MP5_NumParts} = 0;
     1;
 }
@@ -307,7 +274,7 @@ sub init_parse {
 
 I<Instance method.>
 Controls whether the parser will attempt to decode all the MIME headers
-(as per RFC-1522) the moment it sees them.  B<This is not advisable
+(as per RFC 2047) the moment it sees them.  B<This is not advisable
 for two very important reasons:>
 
 =over
@@ -582,7 +549,19 @@ sub process_preamble {
 
     ### Parse preamble:
     my @saved;
-    $rdr->read_lines($in, \@saved);
+    my $data = '';
+    open(my $fh, '>', \$data) or die $!;
+    $rdr->read_chunk($in, $fh, 1);
+    close $fh;
+
+    # Ugh.  Horrible.  If the preamble consists only of CRLF, squash it down
+    # to the empty string.  Else, remove the trailing CRLF.
+    if( $data =~ m/^[\r\n]\z/ ) {
+	@saved = ('');
+    } else {
+	$data =~ s/[\r\n]\z//;
+        @saved = split(/^/, $data);
+    }
     $ent->preamble(\@saved);
     1;
 }
@@ -643,8 +622,11 @@ sub process_header {
     my $hdr_rdr = $rdr->spawn;
     $hdr_rdr->add_terminator("");
     $hdr_rdr->add_terminator("\r");           ### sigh
-    $hdr_rdr->read_lines($in, \@headlines);
-    foreach (@headlines) { s/[\r\n]+\Z/\n/ }  ### fold
+
+    my $headstr = '';
+    open(my $outfh, '>:scalar', \$headstr) or die $!;
+    $hdr_rdr->read_chunk($in, $outfh, 0, 1);
+    close $outfh;
 
     ### How did we do?
     if ($hdr_rdr->eos_type eq 'DELIM') {
@@ -654,29 +636,18 @@ sub process_header {
     ($hdr_rdr->eos_type eq 'DONE') or
 	$self->error("unexpected end of header\n");
 
-    ### Cleanup bogus header lines.
-    ###    Some folks like to parse mailboxes, so the header will start
-    ###    with "From " or ">From ".  Tolerate this by removing both kinds
-    ###    of lines silently (can't we use Mail::Header for this, and try
-    ###    and keep the envelope?).  Ditto for POP.
-    while (@headlines) {
-	if    ($headlines[0] =~ /^>?From /) {    ### mailbox
-	    $self->whine("skipping bogus mailbox 'From ' line");
-	    shift @headlines;
-	}
-	elsif ($headlines[0] =~ /^\+OK/) {       ### POP3 status line
-	    $self->whine("skipping bogus POP3 '+OK' line");
-	    shift @headlines;
-	}
-	else { last }
+    ### Extract the header (note that zero-size headers are admissible!):
+    open(my $readfh, '<:scalar', \$headstr) or die $!;
+    $head->read( $readfh );
+
+    unless( $readfh->eof() ) {
+	# Not entirely correct, since ->read consumes the line it gives up on.
+	# it's actually the line /before/ the one we get with ->getline
+	$self->error("couldn't parse head; error near:\n", $readfh->getline());
     }
 
-    ### Extract the header (note that zero-size headers are admissible!):
-    $head->extract(\@headlines);
-    @headlines and
-	$self->error("couldn't parse head; error near:\n",@headlines);
 
-    ### If desired, auto-decode the header as per RFC-1522.
+    ### If desired, auto-decode the header as per RFC 2047
     ###    This shouldn't affect non-encoded headers; however, it will decode
     ###    headers with international characters.  WARNING: currently, the
     ###    character-set information is LOST after decoding.
@@ -704,7 +675,7 @@ sub process_multipart {
     $self->debug("process_multipart...");
 
     ### Get actual type and subtype from the header:
-    my ($type, $subtype) = (split('/', $head->mime_type), "");
+    my ($type, $subtype) = (split('/', $head->mime_type, -1), '');
 
     ### If this was a type "multipart/digest", then the RFCs say we
     ### should default the parts to have type "message/rfc822".
@@ -794,17 +765,8 @@ sub process_singlepart {
     }
     else {
 
-	### Can we read real fast?
-	if ($self->{MP5_UseInnerFiles} &&
-	    $in->can('seek') && $in->can('tell')) {
-	    $self->debug("using inner file");
-	    $ENCODED = MIME::Parser::InnerFile->new($in, $in->tell, 0);
-	}
-	else {
-	    $self->debug("using temp file");
-	    $ENCODED = $self->new_tmpfile($self->{Tmp});
-	    $self->{Tmp} = $ENCODED if $self->{TmpRecycle};
-	}
+	$self->debug("using temp file");
+	$ENCODED = $self->new_tmpfile();
 
 	### Read encoded body until boundary (or EOF)...
 	$self->process_to_bound($in, $rdr, $ENCODED);
@@ -926,10 +888,10 @@ sub hunt_for_uuencode {
     $self->whine("Found a $how_encoded attachment");
     my $pre;
     while (1) {
-	my @bin_data;
+	my $bin_data = '';
 
 	### Try next part:
-	my $out = IO::ScalarArray->new(\@bin_data);
+	my $out = IO::File->new(\$bin_data, '>:');
 	eval { $decoder->decode($ENCODED, $out) }; last if $@;
 	my $preamble = $decoder->last_preamble;
 	my $filename = $decoder->last_filename;
@@ -965,7 +927,7 @@ sub hunt_for_uuencode {
 	    $bin_ent->bodyhandle($self->new_body_for($bin_ent->head));
 	    $bin_ent->bodyhandle->binmode(1) or die "$ME: can't set to binmode: $!";
 	    my $io = $bin_ent->bodyhandle->open("w") or die "$ME: can't create: $!";
-	    $io->print(@bin_data) or die "$ME: can't print: $!";
+	    $io->print($bin_data) or die "$ME: can't print: $!";
 	    $io->close or die "$ME: can't close: $!";
 	    push @parts, $bin_ent;
 	}
@@ -1057,7 +1019,7 @@ sub process_part {
     if (not defined $head) {
        $self->debug("bogus empty part");
        $head = $self->interface('HEAD_CLASS')->new;
-       $head->mime_type('text/plain; charset=US-ASCII');
+       $head->mime_type('text/plain');
        $ent->head($head);
        $ent->bodyhandle($self->new_body_for($head));
        $ent->bodyhandle->open("w")->close or die "$ME: can't close: $!";
@@ -1071,7 +1033,7 @@ sub process_part {
     $head->mime_type($p{Retype}) if $p{Retype};
 
     ### Get the MIME type and subtype:
-    my ($type, $subtype) = (split('/', $head->mime_type), '');
+    my ($type, $subtype) = (split('/', $head->mime_type, -1), '');
     $self->debug("type = $type, subtype = $subtype");
 
     ### Handle, according to the MIME type:
@@ -1109,23 +1071,34 @@ sub process_part {
 =item parse_data DATA
 
 I<Instance method.>
-Parse a MIME message that's already in core.
+Parse a MIME message that's already in core.  This internally creates an "in
+memory" filehandle on a Perl scalar value using PerlIO
+
 You may supply the DATA in any of a number of ways...
 
 =over 4
 
 =item *
 
-B<A scalar> which holds the message.
+B<A scalar> which holds the message.  A reference to this scalar will be used
+internally.
 
 =item *
 
-B<A ref to a scalar> which holds the message.  This is an efficiency hack.
+B<A ref to a scalar> which holds the message.  This reference will be used
+internally.
 
 =item *
 
-B<A ref to an array of scalars.>  They are treated as a stream
-which (conceptually) consists of simply concatenating the scalars.
+B<DEPRECATED>
+
+B<A ref to an array of scalars.>  The array is internally concatenated into a
+temporary string, and a reference to the new string is used internally.
+
+It is much more efficient to pass in a scalar reference, so please consider
+refactoring your code to use that interface instead.  If you absolutely MUST
+pass an array, you may be better off using IO::ScalarArray in the calling code
+to generate a filehandle, and passing that filehandle to I<parse()>
 
 =back
 
@@ -1138,18 +1111,20 @@ sub parse_data {
 
     ### Get data as a scalar:
     my $io;
-  switch: while(1) {
-      (!ref($data)) and do {
-	  $io = new IO::Scalar \$data; last switch;
-      };
-      (ref($data) eq 'SCALAR') and do {
-	  $io = new IO::Scalar $data; last switch;
-      };
-      (ref($data) eq 'ARRAY') and do {
-	  $io = new IO::ScalarArray $data; last switch;
-      };
-      croak "parse_data: wrong argument ref type: ", ref($data);
-  }
+
+    if (! ref $data ) {
+        $io = IO::File->new(\$data, '<:');
+    } elsif( ref $data eq 'SCALAR' ) {
+        $io = IO::File->new($data, '<:');
+    } elsif( ref $data eq 'ARRAY' ) {
+	# Passing arrays is deprecated now that we've nuked IO::ScalarArray
+	# but for backwards compatability we still support it by joining the
+	# array lines to a scalar and doing scalar IO on it.
+	my $tmp_data = join('', @$data);
+	$io = IO::File->new(\$tmp_data, '<:');
+    } else {
+        croak "parse_data: wrong argument ref type: ", ref($data);
+    }
 
     ### Parse!
     return $self->parse($io);
@@ -1162,10 +1137,9 @@ sub parse_data {
 I<Instance method.>
 Takes a MIME-stream and splits it into its component entities.
 
-The INSTREAM can be given as a readable FileHandle, an IO::File,
-a globref filehandle (like C<\*STDIN>),
-or as I<any> blessed object conforming to the IO:: interface
-(which minimally implements getline() and read()).
+The INSTREAM can be given as an IO::File, a globref filehandle (like
+C<\*STDIN>), or as I<any> blessed object conforming to the IO::
+interface (which minimally implements getline() and read()).
 
 Returns the parsed MIME::Entity on success.
 Throws exception on failure.  If the message contained too many
@@ -1175,7 +1149,7 @@ parts (as set by I<max_parts>), returns undef.
 
 sub parse {
     my $self = shift;
-    my $in = wraphandle(shift);    ### coerce old-style filehandles to objects
+    my $in = shift;
     my $entity;
     local $/ = "\n";    ### just to be safe
 
@@ -1247,13 +1221,13 @@ Throws exception on failure.
 
 sub parse_two {
     my ($self, $headfile, $bodyfile) = @_;
-    my @lines;
+    my $data;
     foreach ($headfile, $bodyfile) {
 	open IN, "<$_" or die "$ME: open $_: $!";
-	push @lines, <IN>;
+	$data .= do { local $/; <IN> };
 	close IN or die "$ME: can't close: $!";
     }
-    return $self->parse_data(\@lines);
+    return $self->parse_data($data);
 }
 
 =back
@@ -1482,29 +1456,24 @@ sub output_to_core {
     $self->{MP5_FilerToCore};
 }
 
-#------------------------------
 
-=item tmp_recycling [YESNO]
+=item tmp_recycling
 
-I<Instance method.>
-Normally, tmpfiles are created when needed during parsing, and
-destroyed automatically when they go out of scope.  But for efficiency,
-you might prefer for your parser to attempt to rewind and reuse the
-same file until the parser itself is destroyed.
+I<Instance method, DEPRECATED.>
 
-If YESNO is true (the default), we allow recycling;
-tmpfiles persist until the parser itself is destroyed.
-If YESNO is false, we do not allow recycling;
-tmpfiles persist only as long as they are needed during the parse.
-With no argument, just returns the current setting.
+This method is a no-op to preserve the pre-5.421 API.
+
+The tmp_recycling() feature was removed in 5.421 because it had never actually
+worked.  Please update your code to stop using it.
 
 =cut
 
-sub tmp_recycling {
-    my ($self, $yesno) = @_;
-    $self->{MP5_TmpRecycling} = $yesno if (@_ > 1);
-    $self->{MP5_TmpRecycling};
+sub tmp_recycling 
+{
+	return;
 }
+
+
 
 #------------------------------
 
@@ -1532,28 +1501,32 @@ sub tmp_to_core {
 
 =item use_inner_files [YESNO]
 
+I<REMOVED>.
+
 I<Instance method.>
-If you are parsing from a handle which supports seek() and tell(),
-then we can avoid tmpfiles completely by using IO::InnerFile, if so
-desired: basically, we simulate a temporary file via pointers
-to virtual start- and end-positions in the input stream.
 
-If YESNO is false (the default), then we will not use IO::InnerFile.
-If YESNO is true, we use IO::InnerFile if we can.
-With no argument, just returns the current setting.
+MIME::Parser no longer supports IO::InnerFile, but this method is retained for
+backwards compatibility.  It does nothing.
 
-B<Note:> inner files are slower than I<real> tmpfiles,
-but possibly faster than I<in-core> tmpfiles... so your choice for
-this option will probably depend on your choice for
-L<tmp_to_core()|/tmp_to_core> and the kind of input streams you are
-parsing.
+The original reasoning for IO::InnerFile was that inner files were faster than
+"in-core" temp files.  At the time, the "in-core" tempfile support was
+implemented with IO::Scalar from the IO-Stringy distribution, which used the
+tie() interface to wrap a scalar with the appropriate IO::Handle operations.
+The penalty for this was fairly hefty, and IO::InnerFile actually was faster.
+
+Nowadays, MIME::Parser uses Perl's built in ability to open a filehandle on an
+in-memory scalar variable via PerlIO.  Benchmarking shows that IO::InnerFile is
+slightly slower than using in-memory temporary files, and is slightly faster
+than on-disk temporary files.  Both measurements are within a few percent of
+each other.  Since there's no real benefit, and since the IO::InnerFile abuse
+was fairly hairy and evil ("writes" to it were faked by extending the size of
+the inner file with the assumption that the only data you'd ever ->print() to
+it would be the line from the "outer" file, for example) it's been removed.
 
 =cut
 
 sub use_inner_files {
-    my ($self, $yesno) = @_;
-    $self->{MP5_UseInnerFiles} = $yesno if (@_ > 1);
-    $self->{MP5_UseInnerFiles};
+	return 0;
 }
 
 =back
@@ -1641,13 +1614,48 @@ sub new_body_for {
 
 #------------------------------
 
-=item new_tmpfile [RECYCLE]
+=pod
+
+=back
+
+=head2 Temporary File Creation
+
+=over
+
+=item tmp_dir DIRECTORY
+
+I<Instance method.>
+Causes any temporary files created by this parser to be created in the
+given DIRECTORY.
+
+If called without arguments, returns current value.
+
+The default value is undef, which will cause new_tmpfile() to use the
+system default temporary directory.
+
+=cut
+
+sub tmp_dir
+{
+    my ($self, $dirname) = @_;
+    if ( $dirname ) {
+	$self->{MP5_TmpDir} = $dirname;
+    }
+
+    return $self->{MP5_TmpDir};
+}
+
+=item new_tmpfile
 
 I<Instance method.>
 Return an IO handle to be used to hold temporary data during a parse.
-The default uses the standard IO::File->new_tmpfile() method unless
-L<tmp_to_core()|/tmp_to_core> dictates otherwise, but you can override this.
-You shouldn't need to.
+
+The default uses MIME::Tools::tmpopen() to create a new temporary file,
+unless L<tmp_to_core()|/tmp_to_core> dictates otherwise, but you can
+override this.  You shouldn't need to.
+
+The location for temporary files can be changed on a per-parser basis
+with L<tmp_dir()>.
 
 If you do override this, make certain that the object you return is
 set for binmode(), and is able to handle the following methods:
@@ -1661,34 +1669,22 @@ set for binmode(), and is able to handle the following methods:
 
 Fatal exception if the stream could not be established.
 
-If RECYCLE is given, it is an object returned by a previous invocation
-of this method; to recycle it, this method must effectively rewind and
-truncate it, and return the same object.  If you don't want to support
-recycling, just ignore it and always return a new object.
-
 =cut
 
 sub new_tmpfile {
-    my ($self, $recycle) = @_;
+    my ($self) = @_;
 
     my $io;
-    if ($self->{MP5_TmpToCore}) {         ### Use an in-core tmpfile (slow)
-	$io = IO::ScalarArray->new;
-    }
-    else {                                ### Use a real tmpfile (fast)
-					       ### Recycle?
-	if ($self->{TmpRecycling} &&                 ### we're recycling
-	    $recycle &&                              ### something to recycle
-	    $Config{'truncate'} && $io->can('seek')  ### recycling will work
-	    ){
-	    $self->debug("recycling tmpfile: $io");
-	    $io->seek(0, 0) or die "$ME: can't seek: $!";
-	    truncate($io, 0) or die "$ME: can't truncate: $!";
+    if ($self->{MP5_TmpToCore}) {
+	my $var;
+	$io = IO::File->new(\$var, '+>:') or die "$ME: Can't open in-core tmpfile: $!";
+    } else {
+	my $args = {};
+	if( $self->tmp_dir ) {
+		$args->{DIR} = $self->tmp_dir;
 	}
-	else {                                 ### Return a new one:
-	    $io = tmpopen() or die "$ME: can't open tmpfile: $!\n";
-	    binmode($io) or die "$ME: can't set to binmode: $!";
-	}
+	$io = tmpopen( $args ) or die "$ME: can't open tmpfile: $!\n";
+	binmode($io) or die "$ME: can't set to binmode: $!";
     }
     return $io;
 }
@@ -1790,23 +1786,7 @@ Optimum settings:
     extract_nested_messages()  0   (may be slightly faster, but in
 				    general you want it set to 1)
     output_to_core()           0   (will be MUCH faster)
-    tmp_recycling()            1?  (probably, but should be investigated)
     tmp_to_core()              0   (will be MUCH faster)
-    use_inner_files()          0   (if tmp_to_core() is 0;
-				    use 1 otherwise)
-
-B<File I/O is much faster than in-core I/O.>
-Although it I<seems> like slurping a message into core and
-processing it in-core should be faster... it isn't.
-Reason: Perl's filehandle-based I/O translates directly into
-native operating-system calls, whereas the in-core I/O is
-implemented in Perl.
-
-B<Inner files are slower than real tmpfiles, but faster than in-core ones.>
-If speed is your concern, that's why
-you should set use_inner_files(true) if you set tmp_to_core(true):
-so that we can bypass the slow in-core tmpfiles if the input stream
-permits.
 
 B<Native I/O is much faster than object-oriented I/O.>
 It's much faster to use E<lt>$fooE<gt> than $foo-E<gt>getline.
@@ -1838,13 +1818,8 @@ Optimum settings:
     decode_headers()           *** (no real difference)
     extract_nested_messages()  *** (no real difference)
     output_to_core()           0   (will use MUCH less memory)
-    tmp_recycling()            0?  (promotes faster GC if
 				    tmp_to_core is 1)
     tmp_to_core()              0   (will use MUCH less memory)
-    use_inner_files()          *** (no real difference, but set it to 1
-				    if you *must* have tmp_to_core set to 1,
-				    so that you avoid in-core tmpfiles)
-
 
 =head2 Maximizing tolerance of bad MIME
 
@@ -1861,9 +1836,7 @@ Optimum settings:
     extract_nested_messages()  0   (sidesteps problems of bad nested messages,
 				    but often you want it set to 1 anyway).
     output_to_core()           *** (doesn't matter)
-    tmp_recycling()            *** (doesn't matter)
     tmp_to_core()              *** (doesn't matter)
-    use_inner_files()          *** (doesn't matter)
 
 
 =head2 Avoiding disk-based temporary files
@@ -1880,19 +1853,10 @@ Optimum settings:
     decode_headers()           *** (doesn't matter)
     extract_nested_messages()  *** (doesn't matter)
     output_to_core()           *** (doesn't matter)
-    tmp_recycling              1   (restricts created files to 1 per parser)
     tmp_to_core()              1
-    use_inner_files()          1
-
-B<If we can use them, inner files avoid most tmpfiles.>
-If you parse from a seekable-and-tellable filehandle, then the internal
-process_to_bound() doesn't need to extract each part into a temporary
-buffer; it can use IO::InnerFile (B<warning:> this will slow down
-the parsing of messages with large attachments).
 
 B<You can veto tmpfiles entirely.>
-If you might not be parsing from a seekable-and-tellable filehandle,
-you can set L<tmp_to_core()|/tmp_to_core> true: this will always
+You can set L<tmp_to_core()|/tmp_to_core> true: this will always
 use in-core I/O for the buffering (B<warning:> this will slow down
 the parsing of messages with large attachments).
 
@@ -1948,7 +1912,7 @@ the temp-file use adds significant overhead.
 
 =item Fuzzing of CRLF and newline on input
 
-RFC-1521 dictates that MIME streams have lines terminated by CRLF
+RFC 2045 dictates that MIME streams have lines terminated by CRLF
 (C<"\r\n">).  However, it is extremely likely that folks will want to
 parse MIME streams where each line ends in the local newline
 character C<"\n"> instead.
@@ -1972,14 +1936,14 @@ each line... I<but this is as it should be>.
 =item Inability to handle multipart boundaries that contain newlines
 
 First, let's get something straight: I<this is an evil, EVIL practice,>
-and is incompatible with RFC-1521... hence, it's not valid MIME.
+and is incompatible with RFC 2046... hence, it's not valid MIME.
 
 If your mailer creates multipart boundary strings that contain
 newlines I<when they appear in the message body,> give it two weeks notice
 and find another one.  If your mail robot receives MIME mail like this,
 regard it as syntactically incorrect MIME, which it is.
 
-Why do I say that?  Well, in RFC-1521, the syntax of a boundary is
+Why do I say that?  Well, in RFC 2046, the syntax of a boundary is
 given quite clearly:
 
       boundary := 0*69<bchars> bcharsnospace
@@ -2021,7 +1985,9 @@ my attention.>
 
 =back
 
+=head1 SEE ALSO
 
+L<MIME::Tools>, L<MIME::Head>, L<MIME::Body>, L<MIME::Entity>, L<MIME::Decoder>
 
 =head1 AUTHOR
 
@@ -2030,11 +1996,5 @@ David F. Skoll (dfs@roaringpenguin.com) http://www.roaringpenguin.com
 
 All rights reserved.  This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.
-
-
-
-=head1 VERSION
-
-$Revision: 1.20 $ $Date: 2006/03/17 21:03:23 $
 
 =cut

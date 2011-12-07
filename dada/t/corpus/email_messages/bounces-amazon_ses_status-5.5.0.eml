@@ -1,0 +1,85 @@
+Return-Path: <>
+Delivered-To: justin@skazat.com
+Received: (qmail 46033 invoked by uid 89); 28 Nov 2011 01:28:46 -0000
+Received: from unknown (HELO a192-77.smtp-out.amazonses.com) (199.255.192.77)
+  by hedwig.summersault.com with SMTP; 28 Nov 2011 01:28:46 -0000
+Received-SPF: none (hedwig.summersault.com: domain at a192-77.smtp-out.amazonses.com does not designate permitted sender hosts)
+X-Original-To: 00000133e7ca7294-f9f8d6e2-3a66-4a5c-a5de-bd17f768024e-000000@email-bounces.amazonses.com
+Delivered-To: 00000133e7ca7294-f9f8d6e2-3a66-4a5c-a5de-bd17f768024e-000000@email-bounces.amazonses.com
+Message-Id: <00000133e7ca7f36-685a03fd-1960-11e1-a98c-850d76f44255-000000@email.amazonses.com>
+Date: Mon, 28 Nov 2011 01:29:27 +0000
+To: Justin's Test List <justin@skazat.com>
+From: MAILER-DAEMON@email-bounces.amazonses.com
+Subject: Delivery Status Notification (Failure)
+MIME-Version: 1.0
+Content-Type: multipart/report; report-type=delivery-status; boundary="bvH67.4ii5txY3D.1Zp4H7.AecglRp"
+X-AWS-Outgoing: 199.255.192.77
+
+--bvH67.4ii5txY3D.1Zp4H7.AecglRp
+content-type: text/plain;
+    charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+The following message to <nonexistingaddress@dadademo.com> was undeliverabl=
+e.
+The reason for the problem:
+5.1.0 - Unknown address error 550-'No Such User Here"'
+
+--bvH67.4ii5txY3D.1Zp4H7.AecglRp
+content-type: message/delivery-status
+
+Reporting-MTA: dns; a192-79.smtp-out.amazonses.com
+
+Final-Recipient: rfc822;nonexistingaddress@dadademo.com
+Action: failed
+Status: 5.0.0 (permanent failure)
+Remote-MTA: dns; [66.147.242.175]
+Diagnostic-Code: smtp; 5.1.0 - Unknown address error 550-'No Such User Here"' (delivery attempts: 0)
+
+--bvH67.4ii5txY3D.1Zp4H7.AecglRp
+content-type: message/rfc822
+
+Received: from unknown (HELO aws-bacon-delivery-svc-iad-6019.iad6.amazon.com) ([10.127.20.31])
+  by na-mm-outgoing-6102-bacon.iad6.amazon.com with ESMTP; 28 Nov 2011 01:31:56 +0000
+Return-Path: 00000133e7ca7294-f9f8d6e2-3a66-4a5c-a5de-bd17f768024e-000000@email-bounces.amazonses.com
+Date: Mon, 28 Nov 2011 01:29:24 +0000
+From: "Justin's Test List" <justin@skazat.com>
+To: "Justin's Test List Subscriber" <nonexistingaddress@dadademo.com>
+X-List: dadatest
+List-Archive: <http://localhost/cgi-bin/test_dada/mail.cgi/archive/dadatest/>
+List-Owner: <justin@skazat.com>
+List-Post: NO
+List-Subscribe: =?UTF-8?Q?=3Chttp=3A//localhost/cgi-bin/test=5Fdada/mail=2Ecgi/s/dadatest/nonexis?=
+ =?UTF-8?Q?tingaddress/dadademo=2Ecom/=3E?=
+List-Unsubscribe: =?UTF-8?Q?=3Chttp=3A//localhost/cgi-bin/test=5Fdada/mail=2Ecgi/u/dadatest/nonexis?=
+ =?UTF-8?Q?tingaddress/dadademo=2Ecom/=3E?=
+X-Message-ID: <20111127194053.58725276@skazat.com>
+Content-type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+MIME-Version: 1.0
+Subject: Justin's Test List Message
+Message-ID: <00000133e7ca7294-f9f8d6e2-3a66-4a5c-a5de-bd17f768024e-000000@email.amazonses.com>
+X-AWS-Outgoing: 199.255.192.79
+
+(Mailing list information, including how to remove yourself, is located at the end of this message.)
+__ 
+
+test
+
+-- 
+
+Subscription Reminder: You're Subscribed to, Justin's Test List 
+Using the address: nonexistingaddress@dadademo.com
+
+From: justin@skazat.com
+a
+
+Unsubscribe Automatically:
+http://localhost/cgi-bin/test_dada/mail.cgi/u/dadatest/nonexistingaddress/dadademo.com/
+
+Mailing List Powered by Dada Mail
+http://localhost/cgi-bin/test_dada/mail.cgi/what_is_dada_mail/
+
+--bvH67.4ii5txY3D.1Zp4H7.AecglRp--
+

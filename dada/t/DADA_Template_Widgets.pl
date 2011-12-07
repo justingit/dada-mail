@@ -493,9 +493,12 @@ for(@expr_tmpls){
 	my ($status, $errors) = DADA::Template::Widgets::validate_screen(
 		{ 
 			-data => \$d, 
-			-expr => 0, 
+			-expr => 0,
+			-pro  => 0,  
 		}
 	); 
+	# These will fail, if you have HTML::Template::Pro, since it can 
+	# Handle -expr stuff, no problemo, OR it doesn't die if it fails. Ugh!
 	ok($status == 0); 
 	ok(defined($errors)); 
 }
@@ -727,11 +730,34 @@ SKIP: {
 	undef $scalar; 
 	undef $r;
 	undef $email; 
-	
-	
-	
 		
 };
+
+=cut
+
+$scalar = "<!-- tmpl_strftime %a, %d %b %Y -->
+
+Something, 
+
+<!-- tmpl_strftime  %b %Y %a, %d -->
+
+Something more...
+
+<!-- tmpl_strftime  %Y %Y %b  %a, %d -->
+
+Again something else. 
+
+";
+   $r = DADA::Template::Widgets::screen(
+	{ 
+		-data => \$scalar, 
+	}
+);
+
+diag "time piece!" . $r; 
+
+=cut
+
 
 
 # wrap_screen

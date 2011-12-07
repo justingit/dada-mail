@@ -1,0 +1,87 @@
+Return-Path: <>
+Delivered-To: justin@skazat.com
+Received: (qmail 50680 invoked by uid 89); 28 Nov 2011 02:40:26 -0000
+Received: from unknown (HELO a192-92.smtp-out.amazonses.com) (199.255.192.92)
+  by hedwig.summersault.com with SMTP; 28 Nov 2011 02:40:26 -0000
+Received-SPF: none (hedwig.summersault.com: domain at a192-92.smtp-out.amazonses.com does not designate permitted sender hosts)
+X-Original-To: 00000133e80c12aa-aeae4469-afb2-416f-839e-d9f0a294c50d-000000@email-bounces.amazonses.com
+Delivered-To: 00000133e80c12aa-aeae4469-afb2-416f-839e-d9f0a294c50d-000000@email-bounces.amazonses.com
+Message-Id: <00000133e80c1d30-6b83e7e5-196a-11e1-837d-8376d22f658f-000000@email.amazonses.com>
+Date: Mon, 28 Nov 2011 02:41:08 +0000
+To: Justin's Test List <justin@skazat.com>
+From: MAILER-DAEMON@email-bounces.amazonses.com
+Subject: Delivery Status Notification (Failure)
+MIME-Version: 1.0
+Content-Type: multipart/report; report-type=delivery-status; boundary="bvjqr.4ii9uFjX1.1UOJza.EmhVeqP"
+X-AWS-Outgoing: 199.255.192.92
+
+--bvjqr.4ii9uFjX1.1UOJza.EmhVeqP
+content-type: text/plain;
+    charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+The following message to <asdfljasdfljkasdfjklasdfjklasdflasdflafsdjkl@sdfa=
+jdsafljfadsjldfsajl.com> was undeliverable.
+The reason for the problem:
+5.1.2 - Bad destination host 'DNS Hard Error looking up sdfajdsafljfadsjldf=
+sajl.com (MX):  NXDomain'
+
+--bvjqr.4ii9uFjX1.1UOJza.EmhVeqP
+content-type: message/delivery-status
+
+Reporting-MTA: dns; na-mm-outgoing-6102-bacon.iad6.amazon.com
+
+Final-Recipient: rfc822;asdfljasdfljkasdfjklasdfjklasdflasdflafsdjkl@sdfajdsafljfadsjldfsajl.com
+Action: failed
+Status: 5.0.0 (permanent failure)
+Diagnostic-Code: smtp; 5.1.2 - Bad destination host 'DNS Hard Error looking up sdfajdsafljfadsjldfsajl.com (MX):  NXDomain' (delivery attempts: 0)
+
+--bvjqr.4ii9uFjX1.1UOJza.EmhVeqP
+content-type: message/rfc822
+
+Received: from unknown (HELO aws-bacon-dlvr-svc-na-i-0cd5cd63.us-east-1.amazon.com) ([10.13.221.87])
+  by na-mm-outgoing-6102-bacon.iad6.amazon.com with ESMTP; 28 Nov 2011 02:43:37 +0000
+Return-Path: 00000133e80c12aa-aeae4469-afb2-416f-839e-d9f0a294c50d-000000@email-bounces.amazonses.com
+Date: Mon, 28 Nov 2011 02:41:05 +0000
+From: "Justin's Test List" <justin@skazat.com>
+To: "Justin's Test List Subscriber" <asdfljasdfljkasdfjklasdfjklasdflasdflafsdjkl@sdfajdsafljfadsjldfsajl.com>
+X-List: dadatest
+List-Archive: <http://localhost/cgi-bin/test_dada/mail.cgi/archive/dadatest/>
+List-Owner: <justin@skazat.com>
+List-Post: NO
+List-Subscribe: =?UTF-8?Q?=3Chttp=3A//localhost/cgi-bin/test=5Fdada/mail=2Ecgi/s/dadatest/asdflja?=
+ =?UTF-8?Q?sdfljkasdfjklasdfjklasdflasdflafsdjkl/sdfajdsafljfadsjldfsajl?=
+ =?UTF-8?Q?=2Ecom/=3E?=
+List-Unsubscribe: =?UTF-8?Q?=3Chttp=3A//localhost/cgi-bin/test=5Fdada/mail=2Ecgi/u/dadatest/asdflja?=
+ =?UTF-8?Q?sdfljkasdfjklasdfjklasdflasdflafsdjkl/sdfajdsafljfadsjldfsajl?=
+ =?UTF-8?Q?=2Ecom/=3E?=
+X-Message-ID: <20111127194053.58725276@skazat.com>
+Content-type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+MIME-Version: 1.0
+Subject: Justin's Test List Message
+Message-ID: <00000133e80c12aa-aeae4469-afb2-416f-839e-d9f0a294c50d-000000@email.amazonses.com>
+X-AWS-Outgoing: 199.255.192.79
+
+(Mailing list information, including how to remove yourself, is located at the end of this message.)
+__ 
+
+away
+
+-- 
+
+Subscription Reminder: You're Subscribed to, Justin's Test List 
+Using the address: asdfljasdfljkasdfjklasdfjklasdflasdflafsdjkl@sdfajdsafljfadsjldfsajl.com
+
+From: justin@skazat.com
+a
+
+Unsubscribe Automatically:
+http://localhost/cgi-bin/test_dada/mail.cgi/u/dadatest/asdfljasdfljkasdfjklasdfjklasdflasdflafsdjkl/sdfajdsafljfadsjldfsajl.com/
+
+Mailing List Powered by Dada Mail
+http://localhost/cgi-bin/test_dada/mail.cgi/what_is_dada_mail/
+
+--bvjqr.4ii9uFjX1.1UOJza.EmhVeqP--
+

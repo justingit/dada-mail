@@ -108,7 +108,7 @@ sub _init {
 sub _login_cookie {
 
     my $self = shift;
-    my ($args) = shift;
+    my ($args) = @_;
 
 	require CGI; 
     my $q = new CGI; 

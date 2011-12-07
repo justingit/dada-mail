@@ -13,14 +13,14 @@ use Test::More qw(no_plan);
 
 
 
-BEGIN{ use_ok('DADA::App::BounceScoreKeeper'); }
-BEGIN{ use_ok('DADA::App::BounceScoreKeeper::Db'); }
+BEGIN{ use_ok('DADA::App::BounceHandler::ScoreKeeper'); }
+BEGIN{ use_ok('DADA::App::BounceHandler::ScoreKeeper::Db'); }
 
 SKIP: {
 
 eval { require DBI };
      skip "DBI not installed", 1 if $@;     
-     use_ok('DADA::App::BounceScoreKeeper::baseSQL'); 
+     use_ok('DADA::App::BounceHandler::ScoreKeeper::baseSQL'); 
 }
 
 

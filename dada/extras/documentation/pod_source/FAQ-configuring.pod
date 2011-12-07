@@ -26,7 +26,7 @@ L<http://dadamailproject.com/installation/installation_advanced.html>
 
 The, "Basic" installation instructions are no longer supported and we suggest moving your installation to a more contemporary installation setup: 
 
-L<http://dadamailproject.com/support/documentation/basic_two_contemporary_installation.pod.html>
+L<http://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html>
 
 =head2 How do I know if Dada Mail is configured in the Config.pm file, or in the .dada_config file? 
 
@@ -69,7 +69,7 @@ Several oft-used global configuration variables are placed in the C<.dada_config
 
  $PLUGIN_CONFIGS = { 
      
-     Mystery_Girl => { 
+     Bounce_Handler => { 
      
          # A whole bunch of stuff... 
      

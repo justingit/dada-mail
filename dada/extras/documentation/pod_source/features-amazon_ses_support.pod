@@ -26,7 +26,20 @@ Support for Amazon SES is currently labled as, B<Experimental>. We would love yo
 
 =head1 Closed-List Opt-In Subscriptions Lists Only
 
-Since Amazon SES is a outside, third party sending service, you'll absolutely need to use a mailing list that's B<100% confirmed opt-in>. If you don't, complaints of abuse sent to Amazon, manually sent or automatically sent, will most likely disallow you from furthering your use of the service. 
+Since Amazon SES is an outside, third party sending service, you'll absolutely need to use a mailing list that's B<100% confirmed opt-in>. If you don't, complaints of abuse sent to Amazon, manually sent or automatically sent, will most likely disallow you from furthering your use of their service. 
+
+=head2 Bounce Handler Support
+
+Here's the overview of Bounce support for SES:
+L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?SendingEmail.BounceAndComplaintNotifications.html>
+
+Dada Mail's support for bounce handling w/SES sending is also B<Experimental>. We'd love to get your feedback. 
+
+When you use Dada Mail with SES, Dada Mail I<will> set the C<Return-Path> header explicitly, which it wouldn't for sendmail or SMTP. I<(For sendmail, it'll set the C<-f> flag to your List Administrator Address, SMTP it will set the Sender to your List Administrator Address - both of which will set the C<Return-Path>, but by the MTA itself.)>
+
+Dada Mail's included bounce handler has rules specifically for Amazon SES.
+
+One caveat of using Bounce Handler is that the Bounce Handler email address has to be verified by Amazon to receive the bounces, just like you would verify a sender. Best thing to do would be to create the bounce handler email address and verify it I<before> you configure the Bounce Handler and the rest of Dada Mail with this address, since Bounce Handler will not automatically verify itself - it'll most likely simply ignore the request. 
 
 =head1 Limitations
 
@@ -34,9 +47,7 @@ Since Amazon SES is a outside, third party sending service, you'll absolutely ne
 
 Currently, Dada Mail relies heavily on the Amazon SES Developer Tools and the scripts that come with it to send out email messages using Amazon SES. You'll need to separately install these scripts.
 
-=head2 No bounce handler support
-
-Currently, there's no support for Dada Mail's bounce handler. Support may be added in the future.
+B<v4.9.0> of Dada Mail does not need the B<ses-send-email.pl> script, but instead uses it's own (superior, I think) method in its place. 
 
 =head2 No Discussion List Support
 
@@ -52,7 +63,7 @@ Dada Mail usually sends messages out with a different set of email headers. Emai
 
 =head2 Performance 
 
-No performance benchmarks have currently been performed. 
+Sending via Amazon SES is done with a persistent HTTP connection (as of v4.9.0 of Dada Mail), so performance shouldn't be too bad. Expect around .3 seconds/message for I<just> passing the email message from Dada Mail to the Amazon SES service. 
 
 =head2 Sending Quota
 
@@ -80,11 +91,11 @@ None of this information will be saved within Dada Mail.
 
 The Amazon SES Developer Tools are located at: 
 
-L<http://aws.amazon.com/developertools/Amazon-SES/8945574369528337> 
+L<http://aws.amazon.com/code/Amazon-SES/8945574369528337> 
 
-As of 7/31/11, this is the direct link to the developer tools: 
+As of 11/17/11, this is the direct link to the developer tools: 
 
-L<http://aws-catalog-download-files.s3.amazonaws.com/AmazonSES-2011-03-03.zip>
+L<http://d36cz9buwru1tt.cloudfront.net/catalog/attachments/ses-tools-2011-10-31.zip>
 
 These scripts require you to create a AWS Credentials file, which is outlined here: 
 
@@ -102,13 +113,12 @@ L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/ManagingActivity.S
 
 None of the Amazon AWS credentials are stored within Dada Mail - only in that AWS Credentials file. 
 
-But, you'll need to tell Dada Mail where that AWS Credentials file is, as well as those three scripts, C<ses-send-email.pl>, C<ses-verify-email-address.pl> and C<ses-get-stats.pl>. 
+But, you'll need to tell Dada Mail where that AWS Credentials file is, as well as two of the three scripts, C<ses-verify-email-address.pl> and C<ses-get-stats.pl> (C<ses-send-email.pl> is not used directly by Dada Mail). 
 
 In your C<.dada_config> file, add the following lines: 
 
 	$AMAZON_SES_OPTIONS = { 
 		aws_credentials_file            => undef, 
-		ses_send_email_script           => undef, 
 		ses_verify_email_address_script => undef, 
 		ses_get_stats_script            => undef, 
 	};
@@ -117,7 +127,6 @@ And fill out the necessary information. In this example:
 
 	$AMAZON_SES_OPTIONS = { 
 		aws_credentials_file            => '/home/myaccount/aws-credentials', 
-		ses_send_email_script           => '/home/myaccount/ses/bin/ses-send-email.pl', 
 		ses_verify_email_address_script => '/home/myaccount/ses/bin/ses-verify-email-address.pl',
 		ses_get_stats_script            => '/home/myaccount/ses/bin/ses-get-stats.pl', 
 		 
@@ -241,6 +250,14 @@ L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
 And/or file an issue: 
 
 L<http://github.com/justingit/dada-mail/issues>
+
+=head1 Related Projects
+
+We've seperated out the work we've done with Amazon and using a persistent HTTP connection. That project is located at: 
+
+L<https://github.com/justingit/Net--Amazon--SES>
+
+
 
 
 =cut

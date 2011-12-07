@@ -485,6 +485,8 @@ sub create_subscriber_list {
     warn 'create_subscriber_list successful, subscriber_list set to: ' . $self->dir . '/' . $file_names->{tmp_subscriber_list} . 'total sending out set to: ' . $total_sending_out_num
         if $t;
     
+	undef $lh; 
+	
     return 1; 
     
 }
@@ -1584,6 +1586,7 @@ sub mail_fields_from_raw_message {
 	   $value = $fm->_decode_header( $value);
 		$headers->{$label} =  $value;
 	}
+	undef $fm; 
 	return $headers; 
 }
 

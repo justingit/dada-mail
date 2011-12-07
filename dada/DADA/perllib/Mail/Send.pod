@@ -2,8 +2,6 @@
 
 Mail::Send - Simple electronic mail interface
 
-=head1 INHERITANCE
-
 =head1 SYNOPSIS
 
   require Mail::Send;
@@ -29,7 +27,8 @@ Mail::Send - Simple electronic mail interface
   $fh = $msg->open;   # some default mailer
   $fh = $msg->open('sendmail'); # explicit
   print $fh "Body of message";
-  $fh->close;         # complete the message and send it
+  $fh->close          # complete the message and send it
+      or die "couldn't send whole message: $!\n";
 
 =head1 DESCRIPTION
 
@@ -43,9 +42,9 @@ When you have time, take a look at Mail::Transport
 
 =head2 Constructors
 
-Mail::Send-E<gt>B<new>(PAIRS)
-
 =over 4
+
+=item Mail::Send-E<gt>B<new>(PAIRS)
 
 A list of header fields (provided as key-value PAIRS) can be
 used to initialize the object.
@@ -54,58 +53,34 @@ used to initialize the object.
 
 =head2 Header fields
 
-$obj-E<gt>B<add>(FIELDNAME, VALUES)
-
 =over 4
+
+=item $obj-E<gt>B<add>(FIELDNAME, VALUES)
 
 Add values to the list of defined values for the FIELDNAME.
 
-=back
+=item $obj-E<gt>B<bcc>(VALUES)
 
-$obj-E<gt>B<bcc>(VALUES)
+=item $obj-E<gt>B<cc>(VALUES)
 
-=over 4
+=item $obj-E<gt>B<delete>(FIELDNAME)
 
-=back
-
-$obj-E<gt>B<cc>(VALUES)
-
-=over 4
-
-=back
-
-$obj-E<gt>B<delete>(FIELDNAME)
-
-=over 4
-
-=back
-
-$obj-E<gt>B<set>(FIELDNAME, VALUES)
-
-=over 4
+=item $obj-E<gt>B<set>(FIELDNAME, VALUES)
 
 VALUES will replace the old values for the FIELDNAME.  Returned is
 the LIST of values after modification.
 
-=back
+=item $obj-E<gt>B<subject>(VALUES)
 
-$obj-E<gt>B<subject>(VALUES)
-
-=over 4
-
-=back
-
-$obj-E<gt>B<to>(VALUES)
-
-=over 4
+=item $obj-E<gt>B<to>(VALUES)
 
 =back
 
 =head2 Sending
 
-$obj-E<gt>B<open>(OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<open>(OPTIONS)
 
 The OPTIONS are used to initiate a mailer object via
 L<Mail::Mailer::new()|Mail::Mailer/"Constructors">.  Then L<Mail::Mailer::open()|Mail::Mailer/"Constructors"> is called
@@ -121,7 +96,7 @@ F<http://perl.overmeer.net/mailtools/>.
 =head1 AUTHORS
 
 The MailTools bundle was developed by Graham Barr.  Later, Mark
-Overmeer took over maintenance without development.
+Overmeer took over maintenance without commitment to further development.
 
 Mail::Cap by Gisle Aas E<lt>aas@oslonett.noE<gt>.
 Mail::Field::AddrList by Peter Orbaek E<lt>poe@cit.dkE<gt>.

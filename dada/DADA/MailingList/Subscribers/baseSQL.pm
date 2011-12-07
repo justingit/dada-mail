@@ -992,7 +992,6 @@ sub remove_all_subscribers {
         'SELECT email FROM '
       . $self->{sql_params}->{subscriber_table}
       . " WHERE list_type = ? AND list_status = ? AND list = ?";
-
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute( $args->{-type}, 1, $self->{list} )

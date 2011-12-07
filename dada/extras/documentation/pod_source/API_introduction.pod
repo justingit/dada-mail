@@ -13,7 +13,7 @@ This doc is to help give you a birds eye view of the API  and describe which  mo
 
 The C<DADA::App> namespace holds a mish-mash of modules that make up the program's behaviour, which doesn't fit in anywhere else. Very quickly: 
 
-=head2 DADA::App::BounceScoreKeeper
+=head2 DADA::App::BounceHandler::ScoreKeeper
 
 Used to manage the, "Bounce Score Card" for the bounce handler
 

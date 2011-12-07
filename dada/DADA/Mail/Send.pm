@@ -22,6 +22,7 @@ use DADA::App::Guts;
 		
 use vars qw($AUTOLOAD); 
 use Carp qw(croak carp);
+
 use Fcntl qw(
 	:DEFAULT 
 	:flock
@@ -62,6 +63,7 @@ my %allowed = (
 	exclude_from                  => [],
 	
 	net_smtp_obj                  => undef, 
+	ses_obj                       => undef, 
 	
 ); 
 
@@ -162,7 +164,11 @@ sub _init {
     
 	
         require DADA::MailingList::Subscribers; 
-        my $lh = DADA::MailingList::Subscribers->new({-list => $self->{list}});
+        my $lh = DADA::MailingList::Subscribers->new(
+			{
+				-list => $self->{list}
+			}
+		);
         my $merge_fields = $lh->subscriber_fields;
 				
         $self->{merge_fields} = $merge_fields;
@@ -172,7 +178,7 @@ sub _init {
 			my $pfm = DADA::ProfileFieldsManager->new; 
         	$self->{field_attr} = $pfm->get_all_field_attributes(); 
        		undef $lh; 
-
+			undef $pfm;
 	}
  }
 
@@ -253,26 +259,40 @@ sub send {
 	my $self = shift; 
 
 	
-	# DEV: This will just be generally, well, chatty. 
-	no strict;
-	# DEV: This needs to be cleaned up; 
+
 	my %param_headers = @_; 
-	for(keys %param_headers){
-		if(strip($param_headers{$_}) eq ''){ 
-			delete($param_headers{$_}); 
-		}
+	if($self->im_mass_sending == 1){ 
+		# ... 
 	}
-	use strict; 
-	#/ DEV: This will just be generally, well, chatty. 
-	    
-	my %fields = ( 
+	else { 
+		# This is done in mass_send, already. 
+		# DEV: This will just be generally, well, chatty. 
+		# DEV: This needs to be cleaned up;
+		no strict;
+		for(keys %param_headers){
+			if(strip($param_headers{$_}) eq ''){ 
+				delete($param_headers{$_}); 
+			}
+		}
+		use strict;
+		#/ DEV: This will just be generally, well, chatty. 
+	}
+ 
+	
+	
+	my %fields = (); 
+	if($self->im_mass_sending == 1){ 
+		%fields = %param_headers;
+	}
+	else {     
+		%fields = ( 
 				  %defaults,  
 				  $self->_make_general_headers, 
 				  $self->list_headers, 
 				   %param_headers, 
 				); 
-
-
+	}
+	undef(%param_headers); 
 
 	# Here's the thing - 
     # If there's no Content-Transfer-Encoding header, 
@@ -800,48 +820,63 @@ sub send {
 			  'Thread-Topic'              => 1,
 			  'To'                        => 1,
 			  'User-Agent'                => 1,
-			};
-						
-			open(MAIL, '|'. $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script} . ' -r -k ' . $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file})
-				or carp "couldn't open, " . $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script} . ' - $!'; 
-
-			# Well, probably, no? 
-			binmode MAIL, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
-            
-			# DEV: for this to work, you need to verify the address. Ugh! :) 
-			#print MAIL 'Return-Path: ' . 'somebouncehandleraddress' . "\n"; 	
-		    #print MAIL 'Bounces-To: ' . 'somebouncehandleraddress@skazat.com' . "\n"; 
-
 			
+			  'X-List'                    => 1, 
+			  'X-Message-ID'              => 1, 
+			};
+			# DEV: TODO: it probably would be best to simply allow all X- headers... 
+			
+			# List is one of the headers, usually not allowed for Amazon SES
+			# So, we'll use, "X-List"
+			#
+			
+			$fields{'X-List'}      = $fields{List}; 
+			$fields{'X-Message-ID'} = $fields{'Message-ID'}; 
+			$fields{'Return-Path'} =  '<'. $local_li->{admin_email} . '>'; 
+            
+			my $ses_obj = undef;
+			require Net::Amazon::SES;  	
+			#carp '$self->ses_obj' . $self->ses_obj; 
+			#carp '$self->im_mass_sending' . $self->im_mass_sending; 
+			if(
+				defined($self->ses_obj) 
+				&& $self->im_mass_sending == 1
+			){
+				#carp "reusing ses_obj"; 
+				$ses_obj = $self->ses_obj; 
+				
+			}
+			else { 
+				#carp "creating a new ses_obj"; 
+				$ses_obj = Net::Amazon::SES->new(
+					{ 
+						-creds => $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file}, 
+						# -trace => 1, 
+					}
+				); 
+				$self->ses_obj($ses_obj); 
+			}		
+			my $msg = ''; 
             for my $field (@default_headers){
 				if($allowed_ses_headers->{$field} == 1){ 
                      if(
 	 						exists($fields{$field})                  && 
 							defined $fields{$field}                  && 
-                            $fields{$field}         ne ""            && 
-                            $field                  ne 'Return-Path'
+                            $fields{$field}         ne ""
                          ) { 
-							print MAIL "$field: $fields{$field}\n";
+							$msg .= "$field: $fields{$field}\n";
                    }
             	}
 			}
-            print MAIL "\n"; 
-
-
-
-			
-            print MAIL $fields{Body} . "\n"; # DEV: Why the last, "\n"?
-
-
-
-            close(MAIL) 
-                or carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: 
-                         didn't close pipe to '" . $DADA::Config::AMAZON_SES_OPTIONS->{ses_send_email_script} ."' while 
-                         attempting to send a message to: '" . $fields{To} ." because:' $!";   
-
-
-
-				
+            $msg .= "\n"; 
+            $msg .= $fields{Body} . "\n"; # DEV: Why the last, "\n"?
+			#warn "sending " . time; 
+			$ses_obj->send_msg(
+				{
+					-msg => $msg, 
+				}
+			);
+			#warn "sent! " . time; 
 		}
 		else { 
 			die "Unknown Sending Method: " . $local_li->{sending_method}; 
@@ -1065,8 +1100,6 @@ sub mass_send {
     
 	require DADA::MailingList::Subscribers;
 	       $DADA::MailingList::Subscribers::dbi_obj = $dbi_obj; 
-	
-	
 	my $lh = DADA::MailingList::Subscribers->new({-list => $self->{list}});
 	
 	
@@ -1133,12 +1166,13 @@ sub mass_send {
                    }); 
 
 		
-		
     	if($self->test_return_after_mo_create == 1){ 
 			warn "test_return_after_mo_create is set to 1, and we're getting out of the mass_send method"
 				if $t; 
 			return; 
 		}
+		
+		$self->_adjust_bounce_score; 
     
     }													 				
 	
@@ -1148,12 +1182,7 @@ sub mass_send {
 	
     # This is so awkwardly placed...	
 	if($self->list_type eq 'invitelist' || $self->list_type =~ m/tmp/){ 
-		my $lh = DADA::MailingList::Subscribers->new(
-					{
-						-list => $self->{list}
-					}
-				);
-		   $lh->remove_this_listtype({-type => $self->list_type});
+		$lh->remove_this_listtype({-type => $self->list_type});
 	}
 
 	# Probably right here we can put the, 
@@ -1271,7 +1300,7 @@ sub mass_send {
 		# number. Those two things will be separated with a '::' so we can split 
 		# it apart later.
 
-	   undef $lh;
+	undef $lh;
 
 	my $pid; 
 
@@ -1484,6 +1513,9 @@ sub mass_send {
 			
 			my $somethings_wrong = 0;
 			
+			require Text::CSV; 
+			my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+			
 			
 			open(MAILLIST, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $mailout->subscriber_list) or 
 				croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: 
@@ -1566,6 +1598,7 @@ sub mass_send {
 						-mid    => $fields{'Message-ID'},
 				    }
 				);
+				undef $ct; 
 				# And, that's it.
 			}
 			else { 
@@ -1579,9 +1612,30 @@ sub mass_send {
             $mailout->batch_lock;
 
 			my $batch_start_time = time; 
+			require DADA::App::FormatMessages; 
+		    my $fm = DADA::App::FormatMessages->new(
+						-List        => $self->{list},  
+						-ls_obj      => $self->{ls},
+			);
 			
-			require   Text::CSV; 
-							
+			
+			# Perhaps just use, "parse" instead of "parse_open"? Why am I using "parse_open"?
+			my ($entity, $filename) = $fm->entity_from_dada_style_args(
+
+			                              {
+			                                    -fields        => \%fields,
+			                                    -parser_params => {-input_mechanism => 'parse_open'}, 
+			                                }
+			                         );
+			if( -e $filename){ 
+				chmod($DADA::Config::FILE_CHMOD , make_safer($filename));
+				if(	unlink($filename) < 1){ 
+					carp "Couldn't delete tmp file, '$filename'?"; 
+				}
+			}
+			else { 
+				carp "'$filename' doesn't exist?"; 
+			}
 			# while we have people on the list.. 
 			SUBSCRIBERLOOP: while(defined($mail_info = <MAILLIST>)){ 	
 				chomp($mail_info);	
@@ -1622,19 +1676,16 @@ sub mass_send {
 
 				
 				
-				my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+				
 
-				require DADA::App::Guts;
-
-				my @ml_info = undef; 
+				my @ml_info; 
 				if ($csv->parse($mail_info)) {
 			     	@ml_info = $csv->fields;
 			    } else {
 			        carp $DADA::Config::PROGRAM_NAME . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag ();
-			    	next SUBSCRIBERLOOP;
+			    	undef(@ml_info);
+					next SUBSCRIBERLOOP;
 				}
-
-
 
 				my $mailing      = $ml_info[0];
 														
@@ -1688,38 +1739,16 @@ sub mass_send {
 				
 				# This is new - see the note in the 2nd if statement below. 
 				$stop_email = $mailing;
- 
-				# This is kind of weird, since list messages aren't the only thing sent en-mass - 
-				# invite messages are, too. 
-
-				require DADA::App::FormatMessages; 
-			    my $fm = DADA::App::FormatMessages->new(
-							-List        => $self->{list},  
-							-ls_obj      => $self->{ls},
-				);
-					
-				if($self->list_type eq 'invitelist'){ 
-					$fields{To}   = $fm->format_phrase_address(
-							$self->{ls}->param('invite_message_to_phrase'), 
-							$mailing
-						);					
-				}
-				else { 
-                	$fields{To}   = $fm->format_phrase_address(
-						$self->{ls}->param('mailing_list_message_to_phrase'), 
-						$mailing
-					);
-				}
+				
 				
  				my %nfields = $self->_mail_merge(
 				    {
-				        -fields => \%fields,
+				        -entity => $entity->dup,
 				        -data   => \@ml_info, 
 						-fm_obj => $fm, 
 				    }
 				);
-
-				
+								
 				# Debug Information, Always nice
                 $nfields{Debug} = {
                     -Messages_Sent    => $n_people, 
@@ -1741,7 +1770,7 @@ sub mass_send {
 					exit(0);
 				}
 				else { 
-					 
+					 # ...
 				}
 
                 warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' counting subscriber.'
@@ -1791,6 +1820,10 @@ sub mass_send {
 								    if $t;
 		
 								$self->net_smtp_obj(undef); 
+							}
+
+							if(defined($self->ses_obj)){ 
+								$self->ses_obj(undef);
 							}
 							
 							warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' calling Mail::MailOut::status() '
@@ -1962,7 +1995,6 @@ sub mass_send {
 			
 			warn  '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' We\'ve gone through the MAILLIST, it seems?'
 			    if $t; 
-			#warn "I'm still here!"; 
 			
 			if(defined($self->net_smtp_obj)){ 
 				# Guess we gotta quit the connection that's still going on... 
@@ -1972,7 +2004,9 @@ sub mass_send {
                		or carp "problems 'QUIT'ing SMTP server.";
 			}
 			
-
+			if(defined($self->ses_obj)){
+				$self->ses_obj(undef); 
+			}
 			my $ending_status = $mailout->status({-mail_fields => 0}); # most likely safe to called status() as much as I'd like...
 			
 			
@@ -2039,6 +2073,10 @@ sub mass_send {
 			
 			}	
 			
+			if(defined($self->ses_obj)){
+				$self->ses_obj(undef); 
+			}
+			
 
 			warn  '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' We\'re done. exit()ing!' 
 			    if $t;
@@ -2059,9 +2097,24 @@ sub mass_send {
 		}
 	} 
 
+sub _adjust_bounce_score {
+	 
+	my $self = shift; 
+	
+	if($self->list_type eq 'list') { 
+		# If we need to, let's decay the bounce scorecard:
+		if($self->{ls}->param('bounce_handler_decay_score') >= 1){ 
+			#if(the bounce handler is enabled for this){ (which currently, there is no "off" for the bounce handler...
+				require DADA::App::BounceHandler::ScoreKeeper;
+				my $bhsk = DADA::App::BounceHandler::ScoreKeeper->new({-list => $self->{list}});
+				   $bhsk->decay_scorecard;
+				undef $bhsk; 
+				return 1; 
+			#}
+		}
+	}
 
-
-
+}
 
 
 sub _content_transfer_encode { 
@@ -2436,6 +2489,8 @@ sub _cipher_decrypt {
 
 sub _pop_before_smtp { 
 	my $self = shift; 
+	my $status = 0; 
+	
 	require DADA::Security::Password; 
 	
 	my %args = (-pop3_server         => $self->{ls}->param('pop3_server'),
@@ -2457,9 +2512,9 @@ sub _pop_before_smtp {
 		$args{-pop3_username}   = make_safer($args{-pop3_username});
 		$args{-pop3_password}   = make_safer($args{-pop3_password});
 		
-		return undef if ! $args{-pop3_server};
-		return undef if ! $args{-pop3_username}; 
-		return undef if ! $args{-pop3_password}; 
+		return (undef, 0, '') if ! $args{-pop3_server};
+		return (undef, 0, '') if ! $args{-pop3_username}; 
+		return (undef, 0, '') if ! $args{-pop3_password}; 
 		
         require DADA::App::POP3Tools; 
         
@@ -2469,7 +2524,7 @@ sub _pop_before_smtp {
 								}
 							);
         
-        my $pop = DADA::App::POP3Tools::mail_pop3client_login(
+        my ($pop, $status, $log) = DADA::App::POP3Tools::mail_pop3client_login(
 	
             {
                 server    => $args{-pop3_server},
@@ -2490,7 +2545,7 @@ sub _pop_before_smtp {
 				fh   => $lock_file_fh, 
 			},
 		);
-        return $count; 
+        return ($status); 
                 
 
 	}
@@ -2594,18 +2649,20 @@ sub _email_batched_finished_notification {
 	# Amazon SES seems to not allow you to attach message/rfc822 attachments. 
 	# Not sure why!
 	# warn q{ $self->{ls}->{sending_method} } . $self->{ls}->{sending_method}; 
-	if($self->{ls}->param('sending_method') eq 'amazon_ses'){ 
-		warn "YES! " . q{$self->{ls}->{sending_method} eq 'amazon_ses'}; 
+	my $disposition = 'inline'; 
+	my $type        = 'message/rfc822';
+	if($self->{ls}->param('sending_method') eq 'amazon_ses'){
+		$disposition = 'attachment'; 
+			$type = 'text/plain'; 
 	}
-	else { 
 		
 	    $entity->attach(
-	        Type        => 'message/rfc822',
-	        Disposition => "inline",
+	        Type        => $type,
+	        Disposition => $disposition,
 	        Data => safely_decode( safely_encode( $att ) ),
 	    );
 
-	}
+	
 	my $expr = 0; 
 	if($self->{ls}->param('enable_email_template_expr') == 1){ 
 		$expr = 1; 
@@ -2691,16 +2748,29 @@ sub _verp {
 sub _mail_merge { 
 
     my $self = shift; 
+	my $orig_entity; 
     
     my ($args) = @_; 
-    
-    if(! exists($args->{-fields})){ 
-        croak 'you need to pass the -fields paramater'; 
+
+    if(! exists($args->{-entity})){ 
+        croak 'you need to pass the -entity paramater'; 
     }
+	else { 
+		$orig_entity = $args->{-entity}; 
+	}
 
    if(! exists($args->{-data})){ 
         croak 'you need to pass the -data paramater'; 
     }
+
+	if(exists($args->{-fm_obj})) { 
+		# ...  
+	}
+	else { 
+		croak "you MUST pass the -fm_obj paramater!"; 
+	}
+
+
 
     # So all we really have to do is label and arrange the values we have and populate the email message. 
     # Here we go: 
@@ -2743,36 +2813,43 @@ sub _mail_merge {
         }
     }
 
-    # Right. Now we just have to feed this all into our -HTML- Email::Template thingamajig and we get to go home: 
-	my $fm; 
-	if(exists($args->{-fm_obj})) { 
-		$fm = $args->{-fm_obj}; 
+	# Add the, "To:" header (very important!) 
+	my $To_header = ''; 
+	
+	if($self->list_type eq 'invitelist'){ 
+		$To_header   = $args->{-fm_obj}->format_phrase_address(
+				$self->{ls}->param('invite_message_to_phrase'), 
+				$subscriber_vars->{'subscriber.email'}
+			);					
 	}
 	else { 
-				
-	    require DADA::App::FormatMessages; 
-	    my $fm = DADA::App::FormatMessages->new(
-					# -yeah_no_list => 1, 
-					-List        => $self->{list},  
-					-ls_obj      => $self->{ls},
-				); 
+    	$To_header   = $args->{-fm_obj}->format_phrase_address(
+			$self->{ls}->param('mailing_list_message_to_phrase'), 
+			$subscriber_vars->{'subscriber.email'}
+		);
 	}
-	
-	
- 	my ($orig_entity, $filename) = $fm->entity_from_dada_style_args(
- 
-                                  {
-                                        -fields        => $args->{-fields},
-                                        -parser_params => {-input_mechanism => 'parse_open'}, 
-                                    }
-                             );
-	
+	if($orig_entity->head->get('To', 0)){ 
+	   $orig_entity->head->delete('To');
+	}
+	$orig_entity->head->add('To', $To_header);
+			
 	my $expr = 0; 
 	if($self->{ls}->param('enable_email_template_expr') == 1){ 
 		$expr = 1; 
 	}
-							
-    my $entity = $fm->email_template(
+	
+	#carp "ORIGINAL ENTITY: \n";
+	#carp '-' x 72 . "\n"; 
+	#carp $orig_entity->as_string;
+	#carp '-' x 72 . "\n"; 
+	
+	#carp "LABELED DATA\n" ;
+	#carp '-' x 72 . "\n"; 
+	#use Data::Dumper; 
+	#carp Dumper({%labeled_data}); 
+	#carp '-' x 72 . "\n"; 
+	
+    my $entity = $args->{-fm_obj}->email_template(
                     {
                         -entity                   => $orig_entity,                         
                         -list_settings_vars       => $self->{ls}->params, 
@@ -2788,30 +2865,20 @@ sub _mail_merge {
                     }
                 );
 
+	#carp "MODIFIED ENTITY\n"; 
+	#carp '-' x 72 . "\n"; 
+	#carp $entity->as_string;
+	#carp '-' x 72 . "\n"; 
+	
+	
    my $msg = $entity->as_string; 
 	   $msg = safely_decode($msg); 
 	
 	
     undef($entity); 
-    # I do not like this part. 
-    
-    
-    if( -e $filename){ 
-        chmod($DADA::Config::FILE_CHMOD , make_safer($filename));
-        if(	unlink($filename) < 1){ 
-            carp "Couldn't delete tmp file, '$filename'?"; 
-        }
-	}
-	else { 
-	    carp "'$filename' doesn't exist?"; 
-	}
-
-
-	
-		
-    
-    
+	undef($orig_entity); 
     my ($h, $b) = split("\n\n", $msg, 2); 
+	undef ($msg);
 	
 	my %final = (
         $self->return_headers($h), 

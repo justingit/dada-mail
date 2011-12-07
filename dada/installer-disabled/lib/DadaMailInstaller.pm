@@ -104,7 +104,7 @@ my $plugins_extensions = {
 	multiple_subscribe     => {installed => 0, loc => '../extensions/multiple_subscribe.cgi'}, 
 	ajax_include_subscribe => {installed => 0, loc => '../extensions/ajax_include_subscribe.cgi'}, 	
 	blog_index             => {installed => 0, loc => '../extensions/blog_index.cgi'}, 
-	mailing_monitor            => {installed => 0, loc => '../plugins/mailing_monitor.cgi'}, 
+	mailing_monitor        => {installed => 0, loc => '../plugins/mailing_monitor.cgi'}, 
 };
 $plugins_extensions->{change_root_password}->{code} = 
 q{#					{
@@ -361,6 +361,19 @@ sub scrn_upgrade_dada {
 
 sub scrn_configure_dada_mail {
 	
+	# Have we've been here, before? 
+	my %params = $q->Vars;
+	if(! keys %params){ 
+		# well, then place some defaults: 
+		$q->param('install_mailing_monitor', 1); 
+		$q->param('install_change_root_password', 1); 
+		$q->param('install_screen_cache', 1); 
+		$q->param('install_log_viewer', 1); 
+		$q->param('install_tracker', 1); 
+		$q->param('install_multiple_subscribe', 1); 
+		$q->param('install_ajax_include_subscribe', 1); 
+		$q->param('install_blog_index', 1); 
+	}
 	
 	# Is there some stuff happenin already? 
 	my @lists = DADA::App::Guts::available_lists(-Dont_Die => 1); 
@@ -429,12 +442,12 @@ sub scrn_configure_dada_mail {
 	# Uh, do are darnest to get the $PROGRAM_URL stuff working correctly, 
 	$scrn = hack_program_url($scrn); 
 
-    # Refill in all the stuff we just had;
-    if ( defined($q->param('errors')) ) {
+#    # Refill in all the stuff we just had;
+#    if ( defined($q->param('errors')) ) {
         require HTML::FillInForm::Lite;
         my $h = HTML::FillInForm::Lite->new();
         $scrn = $h->fill( \$scrn, $q );
-    }
+#   }
     e_print($scrn);
 
 }
@@ -505,7 +518,7 @@ sub scrn_install_dada_mail {
             -screen => 'installer_install_dada_mail_scrn.tmpl',
 			-with   => 'list', 
             -vars => { 
-			 install_log                  => webify_plain_text({-str => $log}), 
+			 install_log                  => webify_plain_text({-str =>$log}), 
 			 status                       => $status, 
 			install_dada_files_loc        => $install_dada_files_loc,
 			Dada_Files_Dir_Name           => $Dada_Files_Dir_Name, 
@@ -892,7 +905,7 @@ sub create_dada_config_file {
 }
 
 sub create_sql_tables {
-    my ($args) = shift;
+    my ($args) = @_;
 
     my $sql_file = '';
     if ( $args->{-backend} eq 'mysql' ) {
@@ -1156,7 +1169,7 @@ sub edit_config_file_for_plugins {
 					 	# then, we have to fill in all the stuff in.
 					 	# Not a fav. tecnique!
 					my $plugins_config_dada_bounce_handler_orig = quotemeta(
-q|	Mystery_Girl => {
+q|	Bounce_Handler => {
 		Server                      => undef,
 		Username                    => undef,
 		Password                    => undef,|
@@ -1167,7 +1180,7 @@ q|	Mystery_Girl => {
 					my $dada_bounce_handler_password = clean_up_var($q->param('dada_bounce_handler_password')); 
 
 					my $plugins_config_dada_bounce_handler_replace_with = 
-"	Mystery_Girl => {
+"	Bounce_Handler => {
 		Server                      => '$dada_bounce_handler_server',
 		Username                    => '$dada_bounce_handler_username',
 		Password                    => '$dada_bounce_handler_password',";
