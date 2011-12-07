@@ -2,6 +2,8 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.9.0
+
 =head2 Summary 4.9.0
 
 This release focuses on many parts of Dada Mail to optimize performance. Benefits of all this work include
@@ -83,7 +85,7 @@ with Dada Mail (C<HTML::Template>). C<HTML::Template::Pro> will need to be insta
 
 See the features doc on C<HTML::Template::Pro> for more information: 
 
-L<http://dadamailproject.com/support/documentation/features-html_template-pro.pod.html>
+L<http://dadamailproject.com/support/documentation/features-html_template_pro.pod.html>
 
 =head3 Faster sending using Amazon SES
 
