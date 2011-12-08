@@ -1949,7 +1949,7 @@ else {
 					filter => $filters,   
 				);
 			}else{ 
-				croak "you MUST pass either a scarlarref in, '-date' or a filename in, '-screen'!"; 
+				croak "you MUST pass either a scarlarref in, '-data' or a filename in, '-screen'!"; 
 			}
 	}
 	else { 
@@ -2117,8 +2117,9 @@ sub date_params {
 		31 => '31st',
 	};
 	
-    $params{'data.time'}                 = $time;
+    $params{'date.time'}                 = $time;
     $params{'date.localtime'}            = scalar( localtime($time) );
+    $params{'date'}                      = $params{'date.localtime'};
     $params{'date.month'}                = $mon + 1;
     $params{'date.named_month'}          = $months->[$mon];
     $params{'date.padded_month'}         = sprintf( "%02d", $mon + 1 );
