@@ -36,7 +36,7 @@ SKIP: {
     
     my $count = $lh->add_subscriber(
 		{
-			-email => 'test',
+			-email => 'test@',
 			-type  => 'black_list',
         }
 	);
@@ -72,7 +72,7 @@ SKIP: {
     undef $errors; 
     
 
-    my $r_count = $lh->remove_from_list(-Email_List => ['test'], -Type => 'black_list'); 
+    my $r_count = $lh->remove_from_list(-Email_List => ['test@'], -Type => 'black_list'); 
     ok($r_count == 1, "removed one address");                           
     undef($r_count); 
 
@@ -97,7 +97,7 @@ SKIP: {
 
     my $count = $lh->add_subscriber(
 		{ 
-			-email => 'test',
+			-email => 'test@',
 			-type  => 'black_list',
 		}
     );
@@ -159,6 +159,30 @@ my $count = $lh->add_subscriber(
      }
 );
 ok($lh->inexact_match({-against => 'black_list', -email => 'somewherefaraway@adifferentdomain.com'}) == 0, 'no inexact_match'); 
+
+# Make sure that a partial match doesn't give me a false match: 
+my $count = $lh->add_subscriber(
+	{
+		-email => 'address@example.com', 
+        -type  => 'black_list',
+     }
+);
+ok($lh->inexact_match({-against => 'black_list', -email => 'someaddress@example.com'}) == 0, 'no inexact_match'); 
+
+my ($status, $errors) = $lh->subscription_check(
+							{
+								-email => 'someaddress@example.com',
+							}
+						);     
+ok($status == 1, "Status returned 1");
+ok($errors->{black_listed} == 0, "Subscriber is not black listed.");
+ok($lh->check_for_double_email(-Email => 'someaddress@example.com', -Type => 'black_list') == 0, "Address is not subscribed to black list"); 
+ 
+
+undef $status; 
+undef $errors;
+
+
 
 
 

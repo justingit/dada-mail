@@ -1509,23 +1509,25 @@ for('one@one.com', 'two@two.com', 'three@three.com'){
 }
 
 my $tmp_list = '_tmp-blah' . time;
-ok($lh->num_subscribers({-type => 'list'}) == 3); 
+ok($lh->num_subscribers({-type => 'list'}) == 3, "3 subscribers!"); 
+
 ok($lh->clone(
 	{ 
 		-from => 'list', 
 		-to   => $tmp_list,
 	}
 ) == 1);
-ok($lh->num_subscribers({-type => $tmp_list}) == 3); 
-ok($lh->remove_this_listtype({-type => $tmp_list}) == 1);
 
+ok($lh->num_subscribers({-type => $tmp_list}) == 3, "3 subscribers (x2)"); 
+
+ok($lh->remove_this_listtype({-type => $tmp_list}) == 1, "list type removed!");
 
 ##############################################################################
 # copy_all_subscribers #
 ########################
 $lh->remove_all_subscribers({-type => 'list'});
 $lh->remove_all_subscribers({-type => 'black_list'});
-
+diag "here."; 
 
 for('one@one.com', 'two@two.com', 'three@three.com'){ 
 	$lh->add_subscriber({
@@ -1533,15 +1535,17 @@ for('one@one.com', 'two@two.com', 'three@three.com'){
 	     -type  => 'list', 
 	 });
 }
+diag "here.";
 $lh->copy_all_subscribers(
 	{ 
 		-from => 'list', 
 		-to   => 'black_list', 
 	}
 );
-
-ok($lh->num_subscribers({-type => 'list'}) == 3); 
-ok($lh->num_subscribers({-type => 'black_list'}) == 3); 
+diag "here.";
+ok($lh->num_subscribers({-type => 'list'}) == 3, "3 subscribers! (x3)"); 
+diag "here.";
+ok($lh->num_subscribers({-type => 'black_list'}) == 3, "3 black listed!"); 
 
 # Do it again! 
 $lh->copy_all_subscribers(

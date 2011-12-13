@@ -178,6 +178,8 @@ sub domain_stats {
 
 sub inexact_match {
 
+	# DEV: The only thing weird is that there's really no locking going on. Important?
+	
     my $self = shift;
     my ($args) = @_;
     my $email = cased( $args->{ -email } );
@@ -396,11 +398,19 @@ sub check_for_double_email {
                     carp "blank line in subscription list?!";
                     next;
                 }
-                $check_this = quotemeta($check_this);
-                if ( cased($email) =~ m/$check_this/i ) {
-                    $in_list = 1;
-                    last;
-                }
+
+				my ( $name, $domain ) = split ( '@', $email );
+				$name = $name . '@'; 
+				$domain = '@' . $domain;
+
+					if (   
+						$email eq $check_this
+				        || $check_this eq $name
+				        || $check_this eq $domain )
+				    {		
+						 $in_list = 1;
+		                    last;
+				    }
 
             }
             else {

@@ -59,13 +59,6 @@ sub inexact_match {
         && $DADA::Config::GLOBAL_BLACK_LIST == 1 )
     {
 
-#        $sth->execute(
-#            $args->{ -against },
-#            $email,
-#            $name . '@%',
-#            '%@' . $domain,
-#          )
-#          or croak "cannot do statment (inexact_match)! $DBI::errstr\n";
 
 		$sth->execute(
 		    $args->{ -against },
@@ -77,15 +70,6 @@ sub inexact_match {
 
     }
     else {
-#        $sth->execute(
-#            $args->{ -against },
-#            $self->{list},
-#            $email,
-#            $name . '@%',
-#            '%@' . $domain,
-#
-#          )
-#          or croak "cannot do statment (inexact_match)! $DBI::errstr\n";
 
 	$sth->execute(
 	    $args->{ -against },
@@ -804,48 +788,15 @@ sub check_for_double_email {
         if (   $args{ -Type } eq 'black_list'
             && $args{ -Match_Type } eq 'sublist_centric' )
         {
-
-            my $query =
-              "SELECT email FROM "
-              . $self->{sql_params}->{subscriber_table}
-              . " WHERE list_type = ? AND list_status = ?";
-
-            if ( $DADA::Config::GLOBAL_BLACK_LIST == 1 ) {
-
-                # ... nothin'
-            }
-            else {
-
-                $query .= ' AND list = ?';
-            }
-
-            my $sth = $self->{dbh}->prepare($query);
-
-            if ( $DADA::Config::GLOBAL_BLACK_LIST == 1 ) {
-
-                $sth->execute( $args{ -Type }, $args{ -Status } )
-                  or croak
-"cannot do statment (for check for double email)! $DBI::errstr\n";
-
-            }
-            else {
-
-                $sth->execute( $args{ -Type }, $args{ -Status }, $self->{list} )
-                  or croak
-"cannot do statment (for check for double email)! $DBI::errstr\n";
-
-            }
-
-            while ( ( my $email ) = $sth->fetchrow_array ) {
-
-                $email = quotemeta($email);
-
-                next if !$email || $email eq '';
-
-                if ( DADA::App::Guts::cased( $args{ -Email } ) =~ m/$email/i ) {
-                    return 1;
-                }
-            }
+			my $m = $self->inexact_match(
+				{
+					-against => 'black_list', 
+					-email => $args{-Email},
+				}
+			);
+			if($m == 1){ 
+				return $m; 
+			}
             return 0;
 
         }
@@ -854,28 +805,15 @@ sub check_for_double_email {
             && $args{ -Match_Type } eq 'sublist_centric' )
         {
 
-            my $query =
-              "SELECT email FROM "
-              . $self->{sql_params}->{subscriber_table}
-              . " WHERE list_type = ? AND list_status = ?";
-            $query .= " AND list = ?";
-
-            my $sth = $self->{dbh}->prepare($query);
-
-            $sth->execute( $args{ -Type }, $args{ -Status }, $self->{list} )
-              or croak
-              "cannot do statment (for check for double email)! $DBI::errstr\n";
-
-            while ( ( my $email ) = $sth->fetchrow_array ) {
-
-                $email = quotemeta($email);
-
-                next if !$email || $email eq '';
-
-                if ( DADA::App::Guts::cased( $args{ -Email } ) =~ m/$email/i ) {
-                    return 1;
-                }
-            }
+			my $m = $self->inexact_match(
+				{
+					-against => 'white_list', 
+					-email => $args{-Email},
+				}
+			);
+			if($m == 1){ 
+				return $m; 
+			}
             return 0;
 
         }
