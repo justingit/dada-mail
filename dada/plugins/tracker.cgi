@@ -344,7 +344,7 @@ sub default_tmpl {
 			<p>
 			 <label for="tracker_auto_parse_mailto_links">Clickthrough Track mailto: links</label> 
 			 <br /> 
-			 email addresses in Plaintext Messages and mailto: links in HTML Messages will also be parsed into redirect links and tracked.
+			 email addresses in <strong>mailto:</strong> links will also be parsed into redirect links and tracked.
 			</p> 
 
 		  </td> 
