@@ -372,6 +372,12 @@ sub auto_redirect_tag {
 			else { 
 				# ... 
 			}
+			
+			# skip email addresses.
+			return 
+				if $link =~ m/^mailto\:/ && $self->{ls}->param('tracker_auto_parse_mailto_links') != 1; 
+				
+			
 
 			my $redirected_link = $self->redirect_tagify($link); 
 			my $qm_link         = quotemeta($link);
@@ -409,7 +415,15 @@ sub auto_redirect_tag {
 			my $other_specific_url = $specific_url; 
 			   $other_specific_url =~ s/\/$//;
 			my $qm_link3 = quotemeta('[redirect='.$other_specific_url.']'); 
-			my $qm_link4 = quotemeta('url="'.$other_specific_url.'"');			if($tmp_s =~ m/$qm_link1|$qm_link2|$qm_link3|$qm_link4/g){ 
+			my $qm_link4 = quotemeta('url="'.$other_specific_url.'"');
+			
+			if($tmp_s =~ m/$qm_link1|$qm_link2|$qm_link3|$qm_link4/g){ 
+				# ... 
+			}
+			elsif(
+				$specific_url =~ m/mailto\:/ && 
+				$self->{ls}->param('tracker_auto_parse_mailto_links') != 1
+				){  
 				# ... 
 			}
 			else { 

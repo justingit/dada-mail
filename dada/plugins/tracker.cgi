@@ -313,7 +313,9 @@ sub default_tmpl {
 
 
 
-	<table <!-- tmpl_unless can_use_auto_redirect_tag -->class="disabled"<!--/tmpl_unless-->>	 <tr> 
+	<table <!-- tmpl_unless can_use_auto_redirect_tag -->class="disabled"<!--/tmpl_unless-->>	 
+	
+	<tr> 
 	  <td> 
   	<input type="checkbox" id="tracker_auto_parse_links" name="tracker_auto_parse_links"  value="1" <!-- tmpl_if list_settings.tracker_auto_parse_links -->checked="checked"<!--/tmpl_if -->/>
 	  </td> 
@@ -330,6 +332,27 @@ sub default_tmpl {
 				Disabled. You must have the HTML::LinkExtor and URI::Find CPAN modules installed. 
 			</p>
 		<!-- /tmpl_unless --> 
+		
+		<table <!-- tmpl_unless can_use_auto_redirect_tag -->class="disabled"<!--/tmpl_unless-->>	 
+
+		<tr> 
+		  <td> 
+	  	<input type="checkbox" id="tracker_auto_parse_mailto_links" name="tracker_auto_parse_mailto_links"  value="1" <!-- tmpl_if list_settings.tracker_auto_parse_mailto_links -->checked="checked"<!--/tmpl_if -->/>
+		  </td> 
+		  <td> 
+
+			<p>
+			 <label for="tracker_auto_parse_mailto_links">Clickthrough Track mailto: links</label> 
+			 <br /> 
+			 email addresses in Plaintext Messages and mailto: links in HTML Messages will also be parsed into redirect links and tracked.
+			</p> 
+
+		  </td> 
+		</tr> 
+
+		</table>
+		
+		
 	  </td> 
 	</tr> 
 	
@@ -1169,6 +1192,7 @@ sub edit_prefs {
 				tracker_record_view_count                       => 0,
 				tracker_clean_up_reports                        => 0, 
 				tracker_auto_parse_links                        => 0, 
+				tracker_auto_parse_mailto_links                 => 0, 
 				tracker_show_message_reports_in_mailing_monitor => 0, 
             }
         }

@@ -9272,11 +9272,13 @@ sub redirection {
 			if($url =~ m/mailto\:/){ 
 				print $q->header(
 					-location => $url, 
-					-status   => 200, 
+					-status   => 302, 
 				);
 			}
-	        print $q->redirect(-uri => $url);
-	    	return;
+			else{ 
+	        	print $q->redirect(-uri => $url);
+	    		return;
+			}
 	    }else{
 	        print $q->redirect(-uri => $DADA::Config::PROGRAM_URL);
 	    }
