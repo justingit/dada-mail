@@ -9269,6 +9269,12 @@ sub redirection {
 				);
 			}
 	    if($url){
+			if($url =~ m/mailto\:/){ 
+				print $q->header(
+					-location => $url, 
+					-status   => 200, 
+				);
+			}
 	        print $q->redirect(-uri => $url);
 	    	return;
 	    }else{
