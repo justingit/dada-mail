@@ -10,7 +10,9 @@ I<Amazon Simple Email Service (Amazon SES) is a highly scalable and
 cost-effective bulk and transactional email-sending service for businesses 
 and developers. Amazon SES eliminates the complexity and expense of building an in-house email solution or licensing, installing, and operating a third-party email service. The service integrates with other AWS services, making it easy to send emails from applications being hosted on services such as Amazon EC2. With Amazon SES there  is no long-term commitment, minimum spend or negotiation required - businesses can utilize a free usage tier and after that enjoy low fees for the number of emails sent plus data transfer fees.>
 
-Dada Mail supports using Amazon SES for its mail sending, along with sending messages via the sendmail command and SMTP. If you're having trouble sending messages using your hosting account's mail server, perhaps because of the time it takes to complete a mass mailing, or because of the amount of mail you're sending, using Amazon SES may be an interesting alternative. 
+Dada Mail has support for Amazon SES, both by using the Amazon SES API and using the Amazon SES SMTP Interface. The SMTP Interface is probably B<easier to set up>, it's possible that the SES API is B<faster>. 
+
+If you're having trouble sending messages using your hosting account's mail server, perhaps because of the time it takes to complete a mass mailing, or because of the amount of mail you're sending, using Amazon SES may be an interesting alternative. 
 
 Amazon SES costs around $0.10 per thousand messages you send. See: 
 
@@ -18,13 +20,15 @@ L<http://aws.amazon.com/ses/pricing/>
 
 for current pricing. Using the service in a non-production mode is free. 
 
-Dada Mail does not currently work 100% with Amazon's EC2 hosting. 
+Dada Mail does not currently work 100% with Amazon's EC2 hosting, which is something else, entirely.  
 
 =head1 Experimental Support! 
 
-Support for Amazon SES is currently labled as, B<Experimental>. We would love your feedback on how it's working for you, but please understand there may be a few unknowns left to uncover. 
+Support for Amazon SES is currently labeled as, B<Experimental> (as Amazon labels SES itself as, I<Beta>). We would love your feedback on how it's working for you, but please understand there may be a few unknowns left to uncover. 
 
-=head1 Closed-List Opt-In Subscriptions Lists Only
+Some things to consider: 
+
+=head1 Use for Closed-List Opt-In Subscriptions Lists Only
 
 Since Amazon SES is an outside, third party sending service, you'll absolutely need to use a mailing list that's B<100% confirmed opt-in>. If you don't, complaints of abuse sent to Amazon, manually sent or automatically sent, will most likely disallow you from furthering your use of their service. 
 
@@ -35,37 +39,55 @@ L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?Sending
 
 Dada Mail's support for bounce handling w/SES sending is also B<Experimental>. We'd love to get your feedback. 
 
-When you use Dada Mail with SES, Dada Mail I<will> set the C<Return-Path> header explicitly, which it wouldn't for sendmail or SMTP. I<(For sendmail, it'll set the C<-f> flag to your List Administrator Address, SMTP it will set the Sender to your List Administrator Address - both of which will set the C<Return-Path>, but by the MTA itself.)>
+When you use Dada Mail with SES, Dada Mail I<will> set the C<Return-Path> header explicitly.
 
-Dada Mail's included bounce handler has rules specifically for Amazon SES.
+Dada Mail's included bounce handler has rules specifically for Amazon SES. 
 
 One caveat of using Bounce Handler is that the Bounce Handler email address has to be verified by Amazon to receive the bounces, just like you would verify a sender. Best thing to do would be to create the bounce handler email address and verify it I<before> you configure the Bounce Handler and the rest of Dada Mail with this address, since Bounce Handler will not automatically verify itself - it'll most likely simply ignore the request. 
 
 =head1 Limitations
 
-=head2 Additional Things to Installl 
+=head2 Method: Amazon SES API
+
+=head3 Additional Things to Installl 
 
 Currently, Dada Mail relies heavily on the Amazon SES Developer Tools and the scripts that come with it to send out email messages using Amazon SES. You'll need to separately install these scripts.
 
 B<v4.9.0> of Dada Mail does not need the B<ses-send-email.pl> script, but instead uses it's own (superior, I think) method in its place. 
 
-=head2 No Discussion List Support
+=head3 Performance 
+
+Sending via Amazon SES is done with a persistent HTTP connection (as of v4.9.0 of Dada Mail), so performance shouldn't be too bad. Expect around .3 seconds/message for I<just> passing the email message from Dada Mail to the Amazon SES service. 
+
+=head2 Method: Amazon SES SMTP Interface
+
+=head3 Performance 
+
+It's not known how performance compares to the SES API. 
+
+
+=head2 Both Methods
+
+
+=head3 No Discussion List Support
 
 Since every email address that's set in the C<From:> header of any outgoing email message sent through Amazon SES, setting up a discussion list using it is probably unrealistic. 
 
-=head2 Different email headers sent
+=head3 Different email headers sent
 
 Amazon has a list of supported email headers: 
 
 L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/AppendixHeaders.html>
 
-Dada Mail usually sends messages out with a different set of email headers. Email headers that are not supported by Amazon SES are automatically not sent out. 
+Dada Mail usually sends messages out with a different set of email headers: 
 
-=head2 Performance 
+The, B<Message-ID> header will be sent as the, B<X-Message-ID> header. 
 
-Sending via Amazon SES is done with a persistent HTTP connection (as of v4.9.0 of Dada Mail), so performance shouldn't be too bad. Expect around .3 seconds/message for I<just> passing the email message from Dada Mail to the Amazon SES service. 
+The, B<List> header will be sent as the, B<X-List> header. 
 
-=head2 Sending Quota
+Email headers that are not supported by Amazon SES are automatically not sent out. 
+
+=head3 Sending Quota
 
 Amazon SES starts out with a small sending quota - 1,000 messages you may send in 24 hours, with a maximum 1 message you can send every second. This quota can grow (and quickly), but make sure not to try to send out quicker than your quota can grow. 
 
@@ -73,11 +95,10 @@ Amazon SES starts out with a small sending quota - 1,000 messages you may send i
 
 L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?ManagingActivity.PlanningAhead.html>
 
+
 =head1 Configuration
 
-There's a few steps you need to take, before you can start using Amazon SES with Dada Mail. None of them are particularily hard, but it's suggested you have a fairly good understanding on how to administrate your own hosting account, can make simple edits to already-created perl scripts and don't mind taking a little while to make sure everything is working. Take the time to set everything up correctly.
-
-=head2 Sign up for Amazon Web Services
+=head2 Both Methods: Sign up for Amazon Web Services
 
 Begin the signup procedure for Amazon's AWS: 
 
@@ -85,9 +106,13 @@ L<https://aws-portal.amazon.com/gp/aws/developer/registration>
 
 You'll be asked to create a new Amazon account and give Amazon your payment information.
 
-None of this information will be saved within Dada Mail. 
+None of this information will be saved within Dada Mail.
 
-=head2 Install the Amazon SES Developer Tools
+=head2 Method: Amazon SES API
+
+There's a few steps you need to take, before you can start using the Amazon SES API with Dada Mail. None of them are particularily hard, but it's suggested you have a fairly good understanding on how to administrate your own hosting account, can make simple edits to already-created perl scripts and don't mind taking a little while to make sure everything is working. Take the time to set everything up correctly.
+
+=head3 Install the Amazon SES Developer Tools
 
 The Amazon SES Developer Tools are located at: 
 
@@ -109,7 +134,7 @@ L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/InitialSetup.Email
 
 L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/ManagingActivity.SendingLimits.html>
 
-=head2 Configure Dada Mail with your Amazon SES configuration. 
+=head3 Configure Dada Mail with your Amazon SES configuration. 
 
 None of the Amazon AWS credentials are stored within Dada Mail - only in that AWS Credentials file. 
 
@@ -164,9 +189,9 @@ I<Top of ses-send-email.pl and/or ses-verify-email-address.pl)>
 	use lib qw(/home/myaccount/ses/bin); # <- now this script can find the, SES.pm module!
 
 Once these steps are taken, Amazon SES should be working on your account and 
-ready to be used within Dada Mail. 
+ready to be used within Dada Mail.
 
-=head2 Using Amazon SES with Dada Mail
+=head3 Configuring Dada Mail to use the Amazon SES API
 
 In Dada Mail, log into your list control panel and go to: 
 
@@ -177,7 +202,8 @@ to I<Send Email Using the Amazon Simple Email Service>.
 
 If Dada Mail cannot find your AWS Credentials file, I<ses-send-email.pl> script, I<ses-verify-email-address.pl> script or the C<ses-get-stats.pl> script
 or you're missing any required CPAN modules, it'll notify you. Don't try using sending via this method, 
-until all these prerequisites are met. 
+until all these prerequisites are met.
+
 
 =head3 Verify your List Owner
 
@@ -191,7 +217,46 @@ If it is, congratulations! You're now using Amazon SES to send email out, using 
 on a small test list by verifying individual addresses in your subscription list using the same verification utility. To 
 really use Amazon SES for mass mailing, you'll need to request full production access from Amazon. 
 
-=head2 Request Full Production Access
+
+=head2 Method: Amazon SES SMTP Interface
+
+Here's the overview of Amazon SES SMTP Interface: 
+
+L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/SMTP.html>
+
+You'll first have to create a SMTP username and password: 
+
+L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/SMTP.Credentials.html>
+
+and then configure Dada Mail to use these credentials: 
+
+=head3 Configuring Dada Mail to use the Amazon SES SMTP Interface
+
+Log into your Dada Mail List and go to: B<Mail Sending - Sending Preferences> 
+
+Choose, B<Send Email Using SMTP>
+
+For the, B<SMTP Server:>, use, C<email-smtp.us-east-1.amazonaws.com>
+
+For the B<Port> use, C<465>
+
+B<Check> I<Use Secure Sockets Layer (SSL)>
+
+B<Check> I<Use SMTP Authentication (SASL)>
+
+For B<Type:> use, B<PLAIN>
+
+Fill out the, B<Username> and B<Password> with the username and password provided by Amazon. 
+
+=head3 Verify your List Owner
+
+B<Sign in to the AWS Management Console> at, 
+
+L<https://console.aws.amazon.com/s3/home>
+
+Once at the Amazon AWS Console, click the, B<Amazon SES> tab, click on, B<Verified Senders> and click the button labeled, B<Verify a New Sender>. Enter in your List Owner. You will have to do this for each different List Owner you plan to use. 
+
+=head2 Both Methods: Request Full Production Access
 
 Once you're done testing Amazon SES, you'll want to request full production access: 
 
@@ -205,9 +270,6 @@ You can use Amazon SES through your existing mail server, as outlined here:
 
 L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/IntegratingWithServer.html>
 
-Just remember again that SES only supports a limited number of headers. You'll want to 
-take the headers that SES does not support out of the Dada Mail Config variable, C<@EMAIL_HEADERS_ORDER>. If you 
-do not do this step, messages will not be sent from Dada Mail. 
 
 =head1 SPF, Sender ID, and DKIM
 
@@ -256,8 +318,5 @@ L<http://github.com/justingit/dada-mail/issues>
 We've seperated out the work we've done with Amazon and using a persistent HTTP connection. That project is located at: 
 
 L<https://github.com/justingit/Net--Amazon--SES>
-
-
-
 
 =cut

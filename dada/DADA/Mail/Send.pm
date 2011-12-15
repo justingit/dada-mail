@@ -409,6 +409,15 @@ sub send {
 	   $local_li->{sending_method} eq 'smtp'       
 	){ 
 		
+		if($local_li->{smtp_server} =~ m/amazonaws\.com/){ 
+			%fields = $self->_massage_fields_for_amazon_ses(
+	        	{ 
+					-fields      => {%fields}, 
+					-admin_email => $local_li->{admin_email}, 
+				}
+			);
+		}
+		
          $self->_pop_before_smtp;
         
      
@@ -780,60 +789,13 @@ sub send {
 		elsif($local_li->{sending_method} eq 'amazon_ses' ) { 
 
 						
-			# As listed in: 
-			# http://docs.amazonwebservices.com/ses/2010-12-01/DeveloperGuide/index.html?AppendixHeaders.html
-        	my $allowed_ses_headers = {
-			  'Accept-Language'           => 1,
-			  'Bcc'                       => 1,
-			  'Cc'                        => 1,
-			  'Comments'                  => 1,
-			  'Content-Type'              => 1,
-			  'Content-type'              => 1,
-			  'Content-Transfer-Encoding' => 1,
-			  'Content-transfer-encoding' => 1,
-			  'Content-ID'                => 1,
-			  'Content-Description'       => 1,
-			  'Content-Disposition'       => 1,
-			  'Content-Language'          => 1,
-			  'Date'                      => 1,
-			  'DKIM-Signature'            => 1,
-			  'DomainKey-Signature'       => 1,
-			  'From'                      => 1,
-			  'In-Reply-To'               => 1,
-			  'Keywords'                  => 1,
-			  'List-Archive'              => 1,
-			  'List-Help'                 => 1,
-			  'List-Id'                   => 1,
-			  'List-Owner'                => 1,
-			  'List-Post'                 => 1,
-			  'List-Subscribe'            => 1,
-			  'List-Unsubscribe'          => 1,
-			  'Message-Id'                => 1,
-			  'MIME-Version'              => 1,
-			  'Received'                  => 1,
-			  'References'                => 1,
-			  'Reply-To'                  => 1,
-			  'Return-Path'               => 1,
-			  'Sender'                    => 1,
-			  'Subject'                   => 1,
-			  'Thread-Index'              => 1,
-			  'Thread-Topic'              => 1,
-			  'To'                        => 1,
-			  'User-Agent'                => 1,
-			
-			  'X-List'                    => 1, 
-			  'X-Message-ID'              => 1, 
-			};
-			# DEV: TODO: it probably would be best to simply allow all X- headers... 
-			
-			# List is one of the headers, usually not allowed for Amazon SES
-			# So, we'll use, "X-List"
-			#
-			
-			$fields{'X-List'}      = $fields{List}; 
-			$fields{'X-Message-ID'} = $fields{'Message-ID'}; 
-			$fields{'Return-Path'} =  '<'. $local_li->{admin_email} . '>'; 
-            
+			%fields = $self->_massage_fields_for_amazon_ses(
+            	{ 
+					-fields      => {%fields}, 
+					-admin_email => $local_li->{admin_email}, 
+				}
+			); 
+
 			my $ses_obj = undef;
 			require Net::Amazon::SES;  	
 			#carp '$self->ses_obj' . $self->ses_obj; 
@@ -857,17 +819,16 @@ sub send {
 				$self->ses_obj($ses_obj); 
 			}		
 			my $msg = ''; 
-            for my $field (@default_headers){
-				if($allowed_ses_headers->{$field} == 1){ 
-                     if(
-	 						exists($fields{$field})                  && 
-							defined $fields{$field}                  && 
-                            $fields{$field}         ne ""
-                         ) { 
-							$msg .= "$field: $fields{$field}\n";
-                   }
-            	}
-			}
+            for my $field (@default_headers){			
+				if(
+ 					exists($fields{$field})                  && 
+					defined $fields{$field}                  && 
+                    $fields{$field}         ne ""
+                 ) { 
+					$msg .= "$field: $fields{$field}\n";
+                  }
+           	}
+			
             $msg .= "\n"; 
             $msg .= $fields{Body} . "\n"; # DEV: Why the last, "\n"?
 			#warn "sending " . time; 
@@ -890,6 +851,85 @@ sub send {
 			
    		return 1; 
 
+}
+
+
+
+
+sub _massage_fields_for_amazon_ses { 
+	
+	my $self = shift; 
+	my ($args) = @_; 
+	my $fields = $args->{-fields}; 
+	my $admin_email = $args->{-admin_email}, 
+	
+	# As listed in: 
+	# http://docs.amazonwebservices.com/ses/2010-12-01/DeveloperGuide/index.html?AppendixHeaders.html
+	my $allowed_ses_headers = {
+	  'Accept-Language'           => 1,
+	  'Bcc'                       => 1,
+	  'Cc'                        => 1,
+	  'Comments'                  => 1,
+	  'Content-Type'              => 1,
+	  'Content-type'              => 1,
+	  'Content-Transfer-Encoding' => 1,
+	  'Content-transfer-encoding' => 1,
+	  'Content-ID'                => 1,
+	  'Content-Description'       => 1,
+	  'Content-Disposition'       => 1,
+	  'Content-Language'          => 1,
+	  'Date'                      => 1,
+	  'DKIM-Signature'            => 1,
+	  'DomainKey-Signature'       => 1,
+	  'From'                      => 1,
+	  'In-Reply-To'               => 1,
+	  'Keywords'                  => 1,
+	  'List-Archive'              => 1,
+	  'List-Help'                 => 1,
+	  'List-Id'                   => 1,
+	  'List-Owner'                => 1,
+	  'List-Post'                 => 1,
+	  'List-Subscribe'            => 1,
+	  'List-Unsubscribe'          => 1,
+	  'Message-Id'                => 1,
+	  'MIME-Version'              => 1,
+	  'Received'                  => 1,
+	  'References'                => 1,
+	  'Reply-To'                  => 1,
+	  'Return-Path'               => 1,
+	  'Sender'                    => 1,
+	  'Subject'                   => 1,
+	  'Thread-Index'              => 1,
+	  'Thread-Topic'              => 1,
+	  'To'                        => 1,
+	  'User-Agent'                => 1,
+
+	  'X-List'                    => 1, 
+	  'X-Message-ID'              => 1, 
+	};
+	# DEV: TODO: it probably would be best to simply allow all X- headers... 
+
+	# List is one of the headers, usually not allowed for Amazon SES
+	# So, we'll use, "X-List"
+	#
+
+	$fields->{'X-List'}      = $fields->{List}; 
+	$fields->{'X-Message-ID'} = $fields->{'Message-ID'}; 
+	$fields->{'Return-Path'} =  '<'. $args->{-admin_email} . '>';
+	
+	for my $field (@default_headers){
+		if(exists($fields->{$field})) { 
+			if($allowed_ses_headers->{$field} == 1){
+				# ... 
+			}
+			else { 
+				delete($fields->{$field})
+			}
+		}
+	}
+	
+	return %$fields; 
+	
 }
 
 
