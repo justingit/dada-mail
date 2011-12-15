@@ -36,6 +36,13 @@ The, C<uncompress_dada.cgi> should attempt to uncompress the I<dada-4_9_0.tar.gz
 
 Once it's finished running, you should be presented a link to use the actual installer. Click the link at the end of the screen and go ahead and configure Dada Mail! 
 
+If this doesn't happen and you get a message in your browser window, sort of like this: 
+
+	Can't find dada-4_9_0.tar to uncompress!
+	You may have to uncompress and prep Dada Mail manually.
+
+Try using the, B<Prepping Dada Mail Manually> instructions, below. 
+
 =head1 Configuring Dada Mail with the, "install.cgi" Script 
 
 The installer should be relatively straightforward on how it's used - just fill it out with the information it's asking for. Below, we'll explain exactly what it's looking for. 
@@ -192,7 +199,35 @@ B<How to Download, Install and Configure Dada Mail v4.9.0>
 
 =for html <p><iframe width="853" height="510" src="http://www.youtube.com/embed/MWz8O13yc0s?hd=1" frameborder="0" allowfullscreen></iframe></p>
 
-=head2 Manual Installation
+=head1 Prepping Dada Mail Manually
+
+If the, B<uncompress_dada.cgi> script fails to uncompress the Dada Mail distro, you may have to a few steps, yourself. This usually is because the C<gunzip> utility just isn't available to whatever is running the helper script. Shucks. 
+
+=head2 Uncompress the Distribution
+
+The tar.gz distribution you just downloaded to your Desktop Computer should uncompress to one folder/directory called, B<dada>.
+
+=head2 Upload the, "dada" directory into your cgi-bin
+
+There are a lot of files and this will take a few minutes.
+
+I<(If you're familiar with accessing your hosting account via ssh, feel free to simply upload the distribution to your hosting account and uncompress from there.)>
+
+=head2 Change the name of the, "dada/installer-disabled" directory to, "dada/installer"
+
+By default, the installer is disabled, so not to pose as a security issue. Rename the, I<dada/B<installer-disabled>> directory to, I<dada/B<installer>>. 
+
+=head2 Change permissions of the, "dada/mail.cgi" and "dada/installer/install.cgi" scripts to, "755"
+
+B<BOTH> of these scripts need to have their permissions changed to, B<755>
+
+=head2 Visit the, dada/installer/install.cgi script in your web browser
+
+The, C<install.cgi> script should take over from there.
+
+You can now jump back to the instructions above at, B<Configuring Dada Mail with the, "install.cgi" Script >
+
+=head1 Manual Installation
 
 We suggest using the Dada Mail Installer, but you can still install Dada Mail manually: 
 
