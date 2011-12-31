@@ -1,0 +1,107 @@
+=pod
+
+=head1 Installation/Upgrade FAQ
+
+This FAQ is to help answer questions about installation and upgrading Dada Mail that is not covered in any of the other installation/upgrade docs. To keep those docs clean and simple, some topics are covered here, instead of in the main docs. 
+
+=head1 Prepping Dada Mail Manually
+
+If the, C<uncompress_dada.cgi> script fails to uncompress the Dada Mail distro, you may have to a few steps, yourself. This usually is because the C<gunzip> utility just isn't available to whatever is running the C<uncompress_dada.cgi> script. Shucks. 
+
+=head2 Uncompress the Distribution
+
+The tar.gz distribution you just downloaded to your Desktop Computer should uncompress to one folder/directory called, B<dada>.
+
+=head2 Upload the, "dada" directory into your cgi-bin
+
+There are a lot of files and this may take a few minutes.
+
+I<(If you're familiar with accessing your hosting account via ssh, feel free to simply upload the distribution to your hosting account and uncompress from there.)>
+
+=head2 Change the name of the, "dada/installer-disabled" directory to, "dada/installer"
+
+By default, the installer is disabled, so not to pose as a security issue. Rename the, I<dada/B<installer-disabled>> directory to, I<dada/B<installer>>. 
+
+=head2 Change permissions of the, "dada/mail.cgi" and "dada/installer/install.cgi" scripts to, "755"
+
+B<BOTH> of these scripts need to have their permissions changed to, B<755>
+
+=head2 Visit the, I<dada/installer/install.cgi> script in your web browser
+
+The, C<install.cgi> script should take over from there.
+
+=begin html
+
+<p>
+You can now jump back to the installation instructions at, <a href="./install_dada_mail.pod.html#configuring_dada_mail_with_the__install_cgi_script">Configuring Dada Mail with the, &quot;install.cgi&quot; Script</a>
+</p>
+
+=end html
+
+=head1 Installing Dada Mail in a directory other than in your, "cgi-bin"
+
+It used to be common practice that CGI scripts could only be installed in a hosting account that had a, I<cgi-bin> directory which itself had the correct server configuration to allow the execution for CGI scripts, like Dada Mail. 
+
+This is really not the case anymore and usually one can install CGI scripts wherever one want with little or no additional configuration. Our directions still tell you to install Dada Mail in your C<cgi-bin> to be as universal as possible.
+
+=head3 .htaccess file
+
+If additional configuration is needed, you may simply need to create an C<.htaccess> file inside the directory you decide to place Dada Mail in. The C<.htaccess> file should have the following, "I<configuration directives>":
+
+	Options +ExecCGI
+	AddHandler cgi-script cgi pl
+
+=head3 Location Considerations
+
+=head4 Inside a regular directory
+
+It may be helpful to still install Dada Mail inside some other directory, instead of right inside your public html directory. This should make upgrades easier. For example, if your public html directory is located at: 
+
+ /home/youraccount/public_html
+
+You may want to set up an additional directory called, "apps" (or, whatever you'd like it to be called): 
+
+ /home/youraccount/public_html/apps
+
+and place the, C<.htaccess> file, with the configuration directives listed above in that directory. Then while installing, upload both the, C<uncompress_dada.cgi> script and Dada Mail C<dada-x_x_x.tar.gz> distro in that same directory. The, C<uncompress_dada.cgi> script should be allowed to execute, creating the, C<dada> directory inside your, C<app> directory. 
+
+Upgrades would also be simple and you'll be able to follow the directions of the Upgrade docs - renaming the, C<dada> directory to get it out of the way, etc. 
+
+This would give you a URL similar to: 
+
+L<http://example.com/apps/dada/mail.cgi>
+
+Clean and simple
+
+You may also want to think about creating a subdomain just for Dada Mail, allowing you to easily separate Dada Mail from the rest of your website. A suggest would be to call it: 
+
+L<http://ml.example.com> 
+
+B<ml> standing or, B<mailing list>. Your URL would then be: 
+
+L<http://ml.example.com/dada/mail.cgi>
+
+The directory your mapping your subdomain onto would then be that, "extra" directory to install Dada Mail in, complete with C<.htaccess> file (if needed). For example, you could map your subdomain to a directory in your home directory: 
+
+ /home/youraccount/ml.example.com
+
+or a directory in your public html directory: 
+
+ /home/youraccount/public_html/ml
+
+=head1 .dada_files Directory Location
+
+The C<.dada_files> directory really needs to be created in a secure location, so if at all possible, have it created somewhere outside of your public html directory, so as to not be accessable easily via a web browser. 
+
+By default, the Dada Mail Installer tries to find your B<home directory> and sets this directory as the location it will automatically create the C<.dada_files> directory.
+
+It is possible that the Dada Mail Installer will not have permissions to create the C<.dada_files> directory in your home directory, or that it will not be able to correctly find your home directory. In this case, you will want to set another directory location. 
+
+See if there's a directory called, C<private>, or, C<files> or even, C<etc> that already exist in your B<home directory> and give the Dada Mail Installer the full, absolute path to that directory. 
+
+If those directories do not exist, see if you cannot create your own new directory, within your home directory.
+
+Change this new directory's permissions to, C<777>, give the Dada Mail Installer the full, absolute path to this new directory and see if its accepted. We suggest that you reset the permissions to the new directory you created to, C<755>, to be less of a security problem, once the installation is complete. 
+
+
+=cut
