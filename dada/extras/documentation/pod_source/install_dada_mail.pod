@@ -22,7 +22,7 @@ Download the C<dada-4_9_1-beta1.tar.gz> distro (you will B<not> have to uncompre
 
 <div class="see_also">
 <p>
- In these directions we suggest the <code>cgi-bin</code>, but feel free to use any directory that you <strong>know</strong> will work. See also: <a href="./FAQ-install_upgrade.pod#fix_me">Installing Dada Mail in a directory other than in your, &quot;cgi-bin&quot;</a>
+ In these directions we suggest the <code>cgi-bin</code>, but feel free to use any directory that you <strong>know</strong> will work. See also: <a href="./FAQ-install_upgrade.pod.html#installing_dada_mail_in_a_directory_other_than_in_your__cgi_bin">Installing Dada Mail in a directory other than in your, &quot;cgi-bin&quot;</a>
 </p>
 </div>
 
@@ -53,7 +53,7 @@ Once it's finished running, you should be presented a link to use the actual ins
 
 <div class="see_also">
 
-<p>See, <a href="./FAQ-install_upgrade#prepping_dada_mail_manually">Prepping Dada Mail Manually</a> if this doesn't happen and you get a message in your browser window, sort of like this: </p>
+<p>See, <a href="./FAQ-install_upgrade.pod.html#prepping_dada_mail_manually">Prepping Dada Mail Manually</a> if this doesn't happen and you get a message in your browser window, sort of like this: </p>
 
 <pre>
 Can't find dada-4_9_1-beta1.tar to uncompress!
@@ -94,6 +94,19 @@ If the installer has successfully selected your home directory, or you like the 
 =item * Select B<MANUAL> 
 
 I<(and fill in the location you'd like)> if the installer doesn't pick a good location or you'd rather the directory be somewhere else. 
+
+=begin html
+
+<div class="see_also">
+<p>
+	See, <a href="./FAQ-install_upgrade.pod.html#_dada_files_directory_location">.dada_files Directory Location</a> for help on picking an alternative location for your .dada_files directory.
+</p>
+</div> 
+
+=end html
+
+
+
 
 =back
 
