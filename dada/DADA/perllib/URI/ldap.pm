@@ -7,7 +7,7 @@ package URI::ldap;
 use strict;
 
 use vars qw(@ISA $VERSION);
-$VERSION = "1.11";
+$VERSION = "1.12";
 
 require URI::_server;
 require URI::_ldap;
@@ -105,7 +105,7 @@ the form of list that is returned.
 
 =head1 SEE ALSO
 
-L<RFC-2255|http://www.cis.ohio-state.edu/htbin/rfc/rfc2255.html>
+L<http://tools.ietf.org/html/rfc2255>
 
 =head1 AUTHOR
 

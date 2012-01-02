@@ -5,4 +5,6 @@ require URI::news;
 
 sub default_port { 563 }
 
+sub secure { 1 }
+
 1;
