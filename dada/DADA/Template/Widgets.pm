@@ -234,8 +234,6 @@ my %Global_Template_Options = (
 );
 
 my %_ht_tmpl_set_params = (); 
-
-
 											
 =pod
 
@@ -1955,6 +1953,7 @@ else {
 	else { 
 		croak "Invalid Templating Engine $engine"; 
 	}
+
 	my %date_params = date_params(); 
 	my %final_params = (
 		%Global_Template_Variables,					
@@ -1969,16 +1968,28 @@ else {
 	
 	
    $template->param(%final_params); 
-	#my %return_params = %_ht_tmpl_set_params; 
 	%_ht_tmpl_set_params = (); 
 	if(exists($args->{-return_params})){ 
 		if($args->{-return_params} == 1){ 	
 			if($engine eq 'html_template_pro'){
-				# No, I do not know why I have to decode what H::T::Pro gives me. 
-				return (safely_decode($template->output(), 1), {%final_params}); 
+				
+				# This won't work with H::T::Pro, since 
+				# filters aren't run until ->output is called, not before, 
+				# like H::T (which does things in two passes)
+				# So, you'll have to pick them up, afterwards...
+				#
+				# return (safely_decode($template->output(), 1), {$template->param()}); 
+			
+				
+				my $str = safely_decode($template->output(), 1);
+				# ... like this. 
+				
+				%final_params = (%final_params, %_ht_tmpl_set_params); 
+				return ($str, {%final_params}); 
 			}
 			else { 
 				return ($template->output(), {%final_params});	
+
 			}
 		}
 		else { 
@@ -2222,11 +2233,11 @@ sub wrap_screen {
 	delete $args->{-with}; 
 	
 	# I need params from the first template passed. 
-	$args->{-return_params} = 1; 
+	$args->{-return_params} = 1;
 	my ($tmpl, $params) = screen($args);
 	if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1 && $with eq 'list') {
         $tmpl = $tmpl . $DADA::Template::HTML::HTML_Footer; 
-    }
+    }	
 	# "content" is passed to the wrapper template
 	my $vars = { 
 		content => $tmpl, 
@@ -2411,6 +2422,7 @@ sub hack_in_tmpl_set_support {
         my ( $t, $v ) = ( shift @taglist, shift @taglist );		
         $_ht_tmpl_set_params{$t} = $v;
     }
+
     $$text_ref =~ s/$match//gi;
 }
 

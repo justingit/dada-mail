@@ -787,6 +787,33 @@ like($@, qr/$regex/);
 
 
 
+# https://github.com/justingit/dada-mail/issues/245
+$d = q{ 
+	
+	Blah blah blah
+	
+	<!-- tmpl_set name="somename" value="some value" -->
+
+	blah blah blah
+
+}; 
+
+my $p = {};
+($r, $p)  =  DADA::Template::Widgets::screen(
+   {
+   -data                     => \$d, 
+   -return_params            => 1,
+   }
+);
+ok($p->{somename} eq 'some value', "got 'some value'!"); 
+
+undef($r); 
+undef($d);
+undef($p);
+
+
+
+
 
 
 
