@@ -1837,7 +1837,7 @@ else {
 		}
 		);
 	}
-	# This is very strange - but the filters were break images (binary stuff) 
+	# This is very strange - but filters break images (binary stuff) 
 	if(exists($args->{-img})){ 
 		if($args->{-img} == 1){ 
 			$filters = [];
@@ -2783,7 +2783,13 @@ sub _raw_screen {
 	my $path = file_path($screen);
 	
 	if($path){ 
-		return _slurp($path);
+		if($args->{-encoding} == 0) {  
+			return _slurp_raw($path);
+		}
+		else { 
+			return _slurp($path);
+			
+		}
 	}
 	else { 
 		carp "cannot find, $screen to open!"; 
@@ -2809,6 +2815,23 @@ sub _slurp {
         return $r[0] unless wantarray;
         return @r;
 
+}
+
+sub _slurp_raw { 
+	my ($file) = @_;
+
+    local($/) = wantarray ? $/ : undef;
+    local(*F);
+    my $r;
+    my (@r);
+
+	$file = make_safer($file); 
+    open(F, '<', $file) || die "open $file: $!";
+    @r = <F>;
+    close(F) || die "close $file: $!";
+
+    return $r[0] unless wantarray;
+    return @r;
 }
 
 

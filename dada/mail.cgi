@@ -9404,7 +9404,12 @@ sub img {
         if($c->cached($img_name)){
 			$c->show($img_name); return;}
         my $r =  $q->header('image/png');
-           $r .= DADA::Template::Widgets::screen({-screen => $img_name, -img => 1}); # maybe, _raw_screen?
+           $r .= DADA::Template::Widgets::_raw_screen(
+			{
+				-screen   => $img_name,
+				-encoding => 0, 
+			}
+		); # maybe, _raw_screen?
          print $r;
         $c->cache($img_name, \$r);
 
