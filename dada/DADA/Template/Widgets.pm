@@ -2849,7 +2849,7 @@ sub _slurp_raw {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2011 Justin Simoni 
+Copyright (c) 1999 - 2012 Justin Simoni 
 http://justinsimoni.com 
 All rights reserved. 
 

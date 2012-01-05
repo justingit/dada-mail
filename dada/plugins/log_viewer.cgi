@@ -646,7 +646,7 @@ Save your C<.dada_config> file.
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2011 
+Copyright (c) 1999 - 2012 
 
 Justin Simoni
 

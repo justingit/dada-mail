@@ -570,7 +570,7 @@ happening behind the curtains.
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2012 Justin Simoni All rights reserved. 
 
 To contact info, please see: 
 

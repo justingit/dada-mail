@@ -163,7 +163,7 @@ you would need to do is uncomment this entry.
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2011
+Copyright (c) 1999 - 2012
 
 Justin Simoni
 

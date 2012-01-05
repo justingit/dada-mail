@@ -382,7 +382,7 @@ You may also just use the, C<rm> command directly, but this has the possibility 
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2011 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2012 Justin Simoni All rights reserved. 
 
 =head1 LICENSE
 
