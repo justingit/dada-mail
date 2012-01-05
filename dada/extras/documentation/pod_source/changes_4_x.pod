@@ -6,6 +6,8 @@
 
 =head2 Summary 4.9.1
 
+This release of Dada Mail includes fixes for bugs found in the 4.9.0 version of Dada Mail, plus support for the Amazon SES SMTP Interface. 
+
 =head2 Features 4.9.1
 
 =head3 Amazon SES SMTP Interface Supported
@@ -14,9 +16,19 @@ You can learn more about Amazon's SES SMTP Interface here:
 
 L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/SMTP.html>
 
-Dada Mail can now be configured to use Amazon's SES SMTP Interface, as well as working with the Amazon SES API - whichever you prefer. 
+Dada Mail can now be configured to use Amazon's SES SMTP Interface, as well as working with the Amazon SES API - whichever you prefer. See the Amazon SES docs for more information: 
+
+L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
 
 =head2 Bugfixes 4.9.1
+
+=head3 Images do not show up with HTML::Template::Pro template engine
+
+https://github.com/justingit/dada-mail/issues/246
+
+=head3 tmpl_set tag not working with HTML::Template::Pro
+
+https://github.com/justingit/dada-mail/issues/245
 
 =head3 Black List Matching Problems
 
@@ -29,6 +41,10 @@ https://github.com/justingit/dada-mail/issues/243
 =head3 dead link for email links in clickthrough tracker
 
 https://github.com/justingit/dada-mail/issues/242
+
+=head3 Send a Webpage: some <link rel="stylesheet" [...] /> tags confuse Dada Mail, break HTML Message
+
+https://github.com/justingit/dada-mail/issues/241
 
 
 =head1 4.9.0
