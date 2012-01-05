@@ -6,7 +6,7 @@ This FAQ is to help answer questions about installation and upgrading Dada Mail 
 
 =head1 Prepping Dada Mail Manually
 
-If the, C<uncompress_dada.cgi> script fails to uncompress the Dada Mail distro, you may have to a few steps, yourself. This usually is because the C<gunzip> utility just isn't available to whatever is running the C<uncompress_dada.cgi> script. Shucks. 
+If the, C<uncompress_dada.cgi> script fails to uncompress the Dada Mail distro, you may have to complete a few steps, yourself. This usually is because the C<gunzip> utility just isn't available to whatever is running the C<uncompress_dada.cgi> script. Shucks. 
 
 =head2 Uncompress the Distribution
 
@@ -63,7 +63,7 @@ You may want to set up an additional directory called, "apps" (or, whatever you'
 
  /home/youraccount/public_html/apps
 
-and place the, C<.htaccess> file, with the configuration directives listed above in that directory. Then while installing, upload both the, C<uncompress_dada.cgi> script and Dada Mail C<dada-x_x_x.tar.gz> distro in that same directory. The, C<uncompress_dada.cgi> script should be allowed to execute, creating the, C<dada> directory inside your, C<app> directory. 
+and place the, C<.htaccess> file, with the configuration directives listed above in that directory. Then while installing, upload both the, C<uncompress_dada.cgi> script and Dada Mail C<dada-x_x_x.tar.gz> distro in that same directory. The, C<uncompress_dada.cgi> script should be allowed to execute, creating the, C<dada> directory inside your, C<apps> directory. 
 
 Upgrades would also be simple and you'll be able to follow the directions of the Upgrade docs - renaming the, C<dada> directory to get it out of the way, etc. 
 
@@ -71,13 +71,13 @@ This would give you a URL similar to:
 
 L<http://example.com/apps/dada/mail.cgi>
 
-Clean and simple
+Clean and simple.
 
 You may also want to think about creating a subdomain just for Dada Mail, allowing you to easily separate Dada Mail from the rest of your website. A suggest would be to call it: 
 
 L<http://ml.example.com> 
 
-B<ml> standing or, B<mailing list>. Your URL would then be: 
+B<ml> standing for, B<mailing list>. Your URL would then be: 
 
 L<http://ml.example.com/dada/mail.cgi>
 
@@ -97,7 +97,7 @@ By default, the Dada Mail Installer tries to find your B<home directory> and set
 
 It is possible that the Dada Mail Installer will not have permissions to create the C<.dada_files> directory in your home directory, or that it will not be able to correctly find your home directory. In this case, you will want to set another directory location. 
 
-See if there's a directory called, C<private>, or, C<files> or even, C<etc> that already exist in your B<home directory> and give the Dada Mail Installer the full, absolute path to that directory. 
+See if there's a directory called, C<private>, or, C<files> or even, C<etc> that already exists in your B<home directory> and give the Dada Mail Installer the full, absolute path to that directory. 
 
 If those directories do not exist, see if you cannot create your own new directory, within your home directory.
 
