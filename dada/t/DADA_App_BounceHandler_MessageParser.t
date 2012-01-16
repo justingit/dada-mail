@@ -247,7 +247,7 @@ undef $entity;
 
 
 
-
+# ??? 
 $msg    = dada_test_config::slurp('t/corpus/email_messages/bounce-gmail-550-5.1.1.eml'); 
 $entity = $parser->parse_data($msg);
 ( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
@@ -263,6 +263,41 @@ undef $email;
 undef $found_list; 
 undef $diag; 
 undef $entity;
+
+
+$msg    = dada_test_config::slurp('t/corpus/email_messages/bounce-secureservers.net-mailfolder_is_full.eml'); 
+$entity = $parser->parse_data($msg);
+( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
+ok($email eq 'subscriber@example.com'); 
+ok($found_list eq 'dadatest', 'found list');
+$rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
+ok($rule eq 'secureserver_dot_net_mailbox_full', "rule is: $rule"); 
+undef $msg; 
+undef $email; 
+undef $found_list; 
+undef $diag; 
+undef $entity;
+
+
+
+
+$msg    = dada_test_config::slurp('t/corpus/email_messages/bounce_secureserver.net-mail_quota_exceeded.eml'); 
+$entity = $parser->parse_data($msg);
+( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
+ok($email eq 'subscriber@example.com'); 
+ok($found_list eq 'dadatest', 'found list');
+$rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
+ok($rule eq 'secureserver_dot_net_mailbox_full', "rule is: $rule"); 
+undef $msg; 
+undef $email; 
+undef $found_list; 
+undef $diag; 
+undef $entity;
+
+
+
+
+
 
 
 

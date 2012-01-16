@@ -75,14 +75,23 @@ sub run_all_parses {
 	        %{$diagnostics} = ( %{$diagnostics}, %{$ses_diagnostics} )
 	          if $ses_diagnostics;
 	}
+	elsif($self->bounce_from_secureserver_dot_net($entity)){ 
+		  my ( $ss_list, $ss_email, $ss_diagnostics ) =
+	          $self->parse_for_secureserver_dot_net($entity);
+	        $list  ||= $ss_list;
+	        $email ||= $ss_email;
+	        %{$diagnostics} = ( %{$diagnostics}, %{$ss_diagnostics} )
+	          if $ss_diagnostics;
+	}
 	else { 
 		# Else, let's try other things: 
 	    my ( $gp_list, $gp_email, $gp_diagnostics ) = $self->generic_parse($entity);
 
 	    $list = $gp_list if $gp_list;
 	    $email ||= $gp_email;
-	    $diagnostics = $gp_diagnostics
-	      if $gp_diagnostics;
+	    $diagnostics = $gp_diagnostics;
+	    %{$diagnostics} = ( %{$diagnostics}, %{$gp_diagnostics} )
+			if $gp_diagnostics;
 	}
 
 	# This should really do the same thing, first look for tell-tale signs
@@ -94,7 +103,7 @@ sub run_all_parses {
           $self->parse_for_qmail($entity);
         $list  ||= $qmail_list;
         $email ||= $qmail_email;
-        %{$diagnostics} = ( %{$diagnostics}, %{$qmail_diagnostics} )
+        %{$diagnostics} = (%{$qmail_diagnostics}, %{$diagnostics})
           if $qmail_diagnostics;
     }
 
@@ -104,7 +113,7 @@ sub run_all_parses {
           $self->parse_for_exim($entity);
         $list  ||= $exim_list;
         $email ||= $exim_email;
-        %{$diagnostics} = ( %{$diagnostics}, %{$exim_diagnostics} )
+        %{$diagnostics} = (%{$exim_diagnostics}, %{$diagnostics} )
           if $exim_diagnostics;
     }
 
@@ -114,7 +123,7 @@ sub run_all_parses {
           $self->parse_for_f__king_exchange($entity);
         $list  ||= $ms_list;
         $email ||= $ms_email;
-        %{$diagnostics} = ( %{$diagnostics}, %{$ms_diagnostics} )
+        %{$diagnostics} = (%{$ms_diagnostics},  %{$diagnostics} )
           if $ms_diagnostics;
     }
     if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
@@ -123,7 +132,7 @@ sub run_all_parses {
           $self->parse_for_novell($entity);
         $list  ||= $nv_list;
         $email ||= $nv_email;
-        %{$diagnostics} = ( %{$diagnostics}, %{$nv_diagnostics} )
+        %{$diagnostics} = (  %{$nv_diagnostics}, %{$diagnostics} )
           if $nv_diagnostics;
     }
 
@@ -133,7 +142,7 @@ sub run_all_parses {
           $self->parse_for_gordano($entity);
         $list  ||= $g_list;
         $email ||= $g_email;
-        %{$diagnostics} = ( %{$diagnostics}, %{$g_diagnostics} )
+        %{$diagnostics} = (%{$g_diagnostics}, %{$diagnostics})
           if $g_diagnostics;
     }
 
@@ -143,7 +152,7 @@ sub run_all_parses {
           $self->parse_for_overquota_yahoo($entity);
         $list  ||= $y_list;
         $email ||= $y_email;
-        %{$diagnostics} = ( %{$diagnostics}, %{$y_diagnostics} )
+        %{$diagnostics} = (%{$y_diagnostics} ,%{$diagnostics} )
           if $y_diagnostics;
     }
 
@@ -153,7 +162,7 @@ sub run_all_parses {
           $self->parse_for_earthlink($entity);
         $list  ||= $el_list;
         $email ||= $el_email;
-        %{$diagnostics} = ( %{$diagnostics}, %{$el_diagnostics} )
+        %{$diagnostics} = (%{$el_diagnostics}, %{$diagnostics} )
           if $el_diagnostics;
     }
 
@@ -163,7 +172,7 @@ sub run_all_parses {
 
         $list  ||= $wl_list;
         $email ||= $wl_email;
-        %{$diagnostics} = ( %{$diagnostics}, %{$wl_diagnostics} )
+        %{$diagnostics} = (%{$wl_diagnostics}, %{$diagnostics} )
           if $wl_diagnostics;
     }
 
@@ -178,7 +187,7 @@ sub run_all_parses {
     #$list  ||= $bp_list;
     #$email ||= $bp_email;
 
-    %{$diagnostics} = ( %{$bp_diagnostics}, %{$diagnostics} )
+    %{$diagnostics} = ( %{$diagnostics}, %{$bp_diagnostics} )
       if $bp_diagnostics;
 
     chomp($email) if $email;
@@ -545,6 +554,22 @@ sub bounce_from_ses {
 	}
 }
 
+sub bounce_from_secureserver_dot_net { 
+	my $self = shift; 
+	my $entity = shift; 
+	# As far as I know, it's all from: 
+	my $secure_server_from_fragment = 'secureserver.net'; 
+	my $qm = quotemeta($secure_server_from_fragment); 
+	
+	if($entity->head->get( 'From', 0 ) =~ m/$qm/){ 
+		return 1; 
+	}
+	else { 
+		return 0; 
+	}
+}
+
+
 
 
 
@@ -579,6 +604,82 @@ sub parse_for_amazon_ses {
     
 
 }
+
+
+
+sub parse_for_secureserver_dot_net { 
+	
+	# This seems to be qmail. Sometimes. 
+	
+	my $self   = shift; 
+	my $entity = shift; 
+	
+	my $diag = {};
+	my $email; 
+	my $list;	
+	
+	# <subscriber@example.com>:
+	# child status 100...The e-mail message could not be delivered because the user's mailfolder is full.
+	
+	
+	
+	my @parts = $entity->parts; 
+	if(scalar @parts == 0){ 
+		my $body =  $entity->bodyhandle; 
+		# Your mail message to the following address(es) could not be delivered. This
+		# is a permanent error. Please verify the addresses and try again. If you are
+		# still having difficulty sending mail to these addresses, please contact
+		# Customer Support at 480-624-2500.
+		
+		# tell me why I'm not using the range operator? 
+		my $begin  = quotemeta('Customer Support at 480-624-2500.');
+ 		my $begin2 = quotemeta("This is a permanent error; I've given up. Sorry it didn't work out.");
+
+		my $end = quotemeta('--- Below this line is a copy of the message.');
+		my $stuff = ''; 
+		my $state = 0; 
+		
+		my $IO;
+        if ( $IO = $body->open("r") ) {    # "r" for reading.
+            while ( defined( $_ = $IO->getline ) ) {
+   				my $data = $_;
+                if($data =~ /$begin|$begin2/) { 
+					$state = 1;
+                	next;
+				}
+				if($data =~ /$end/){ 
+					$state = 0;
+					last; 
+				}
+				if ( $state == 1 ) {
+                	$stuff .= $data; 
+				}
+
+			}
+		}
+		
+		$stuff =~ m/\<(.*?)\>\:(.*)/ms; 
+	 	$email =  $1;
+		$email = strip($email); 
+		$diag->{'Diagnostic-Code'} = $2; 
+		$diag->{'Diagnostic-Code'} = strip($diag->{'Diagnostic-Code'}); 
+		#$list = $self->generic_body_parse_for_list($entity); 
+		
+		# Right now, I only have rules for, mailbox full kin of stuff so if it's not one of those , 
+	    # I'd rather this be parsed with the Qmail stuff, 
+		# Looks like invalid mailboxes are handled by the local mail server ala: 
+		# SMTP error from remote mail server after RCPT TO:<bouncedaddress@example.org>:
+		#   host mail.example.org [...]: 550 sorry, no mailbox here by that name. (#5.7.17)
+		if($diag->{'Diagnostic-Code'} =~ m/mailfolder is full|Mail quota exceeded/){ 
+			$diag->{Guessed_MTA} = 'secureserver_dot_net'; 
+		}
+	} 
+	return ( $list, $email, $diag );
+	
+}
+
+
+
 
 sub parse_for_qmail {
 

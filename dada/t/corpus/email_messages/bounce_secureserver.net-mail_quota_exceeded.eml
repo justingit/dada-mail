@@ -1,0 +1,84 @@
+Return-path: <simoni@vhost1.example.com>
+Envelope-to: listowner@example.com
+Delivery-date: Fri, 09 Dec 2011 00:15:25 -0500
+Received: from simoni by vhost1.example.com with local (Exim 4.69 (FreeBSD))
+	(envelope-from <simoni@vhost1.example.com>)
+	id 1RYsnt-000LY3-7S
+	for listowner@example.com; Fri, 09 Dec 2011 00:15:25 -0500
+Date: Fri, 09 Dec 2011 00:15:25 -0500
+From: MAILER-DAEMON@ip-173-201-21-91.ip.secureserver.net
+To: listowner@example.com
+X-BeenThere: "Bounce Handler" <bounces@example.com>
+X-Mailer: Pro Dada 4.9.0 Stable 12/06/11 
+Content-type: text/plain; charset=UTF-8
+Subject: failure notice
+Message-Id: <E1RYsnt-000LY3-7S@vhost1.example.com>
+
+Hi. This is the qmail-send program at ip-173-201-21-91.ip.secureserver.net.
+I'm afraid I wasn't able to deliver your message to the following addresses.
+This is a permanent error; I've given up. Sorry it didn't work out.
+
+<subscriber@example.com>:
+Mail quota exceeded.
+
+--- Below this line is a copy of the message.
+
+Return-Path: <bounces@example.com>
+Received: (qmail 6243 invoked from network); 7 Dec 2011 20:32:04 -0700
+Received: from vhost1.example.com (12.161.105.151)
+  by 10.0.0.1 with SMTP; 7 Dec 2011 20:32:04 -0700
+Received: from simoni by vhost1.example.com with local (Exim 4.69 (FreeBSD))
+	(envelope-from <bounces@example.com>)
+	id 1RYdqj-0000BL-8h
+	for subscriber@example.com; Thu, 08 Dec 2011 08:17:21 -0500
+Date: Thu, 08 Dec 2011 08:17:21 -0500
+From: "Test List" <listowner@example.com>
+To: "Test List Subscriber" <subscriber@example.com>
+X-Priority: 3
+List: dadatest
+List-Archive: <http://example.com/cgi-bin/dada/mail.cgi/archive/dadatest/>
+List-ID: <dadatest.vhost1.example.com>
+List-Owner: <listowner@example.com>
+List-Post: NO
+List-Subscribe: =?UTF-8?Q?=3Chttp=3A//dadamailproject=2Ecom/cgi-bin/dada/mail=2Ecgi/s/dada?=
+ =?UTF-8?Q?=5Fannounce/organizing/adc=2Eorg/=3E?=
+List-Unsubscribe: =?UTF-8?Q?=3Chttp=3A//dadamailproject=2Ecom/cgi-bin/dada/mail=2Ecgi/u/dada?=
+ =?UTF-8?Q?=5Fannounce/organizing/adc=2Eorg/=3E?=
+List-URL: <http://example.com/cgi-bin/dada/mail.cgi/list/dadatest/>
+Message-ID: <20111207180210.28549468@example.com>
+X-Mailer: Pro Dada 4.9.0 Stable 12/06/11 
+Content-type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+MIME-Version: 1.0
+Subject: Dada Mail v4.9.0 Released
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - vhost1.example.com
+X-AntiAbuse: Original Domain - adc.org
+X-AntiAbuse: Originator/Caller UID/GID - [1015 1004] / [26 6]
+X-AntiAbuse: Sender Address Domain - example.com
+X-Source: /usr/local/bin/perl
+X-Source-Args: /usr/bin/perl mail.cgi 
+X-Source-Dir: justinsimoni.com:/example.com/cgi-bin/dada
+
+(Mailing list information, including how to remove yourself, is located at =
+the end of this message.)
+__=20
+=20
+yadd yadd =20
+=20
+Forward this Message to a Friend:
+http://example.com/cgi-bin/dada/mail.cgi/archive/dadatest/2011=
+1207180210/#forward_to_a_friend
+
+Subscription Reminder: You're Subscribed to, Test List=20
+Using the address: subscriber@example.com
+
+From: listowner@example.com
+PO BOX 18234 =0D
+Denver, CO=0D
+80218
+
+Unsubscribe Automatically:
+http://example.com/cgi-bin/dada/mail.cgi/u/dadatest/organizing=
+/adc.org/=3D=

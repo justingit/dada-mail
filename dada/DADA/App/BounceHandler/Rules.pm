@@ -221,6 +221,23 @@ sub rules {
             }
         }
     },
+    {
+        secureserver_dot_net_mailbox_full => {
+            Examine => {
+                Message_Fields => {
+                    Guessed_MTA  => [qw(secureserver_dot_net)],
+					'Diagnostic-Code_regex' => [qr/mailfolder is full|Mail quota exceeded/],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+				add_to_score => 'softbounce_score',
+            }
+        }
+    },
 
 		
         {
