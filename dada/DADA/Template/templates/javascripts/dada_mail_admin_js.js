@@ -200,6 +200,21 @@ function removeAllArchives(form_name) {
     
 }
 
+function revertEditType(form_name) { 
+    
+    var confirm_msg =  "Are you sure you want to revert to the default for ALL email messages?";	
+    if(!confirm(confirm_msg)){
+        alert("Messages not reverted to default.");
+        return false;
+    }
+	else { 
+		return true; 
+	}
+    
+}
+
+
+
 
 
 
