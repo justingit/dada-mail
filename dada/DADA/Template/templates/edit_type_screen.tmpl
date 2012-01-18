@@ -571,9 +571,11 @@
 <input type="hidden" name="process" value="1" />
 <input type="hidden" name="f" value="edit_type" />
 <div class="buttonfloat">
+		<input type="submit" class="processing" value="Save All Changes" />
 	<input type="reset" class="cautionary" value="Clear All Changes" />
-	<input type="submit" class="alertive" name="revert" value="Revert ALL Text to Defaults" />
-	<input type="submit" class="processing" value="Save All Changes" />
+
+	<input type="submit" class="alertive" name="revert" value="Revert ALL Text to Defaults" onclick="return revertEditType(this.form);" />
+
 </div>
 <div class="floatclear">
 </div>

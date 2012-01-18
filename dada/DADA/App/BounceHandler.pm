@@ -11,8 +11,6 @@ use DADA::App::Guts;
 use Carp qw(croak carp);
 use vars qw($AUTOLOAD);
 
-my $Score_Card  = {};
-my $Remove_List = {};
 my $Have_Log    = 0;
 
 my $parser;
@@ -71,10 +69,10 @@ sub _init {
     $self->parser($parser);
 
     $self->config($args);
-
-	$Remove_List =  {};
-
     $self->open_log( $self->config->{Log} );
+
+	$self->{tmp_scorecard}   = {}; 
+	$self->{tmp_remove_list} = {};
 
 }
 
@@ -492,22 +490,47 @@ sub parse_all_bounces {
             );
         }
 
-       $log .= "Finished: " . $ls->param('list_name') . "\n\n";
-    }
-
-	if (!$test) {
-	    $log .= "\nSaving Scores...\n\n";
-	    my $r = $self->save_scores($Score_Card);
+		if (!$test) {
+		    $log .= "\nSaving Scores...\n\n";
+		    my $r = $self->save_scores(
+				{
+					-list => $list_to_check
+				}
+			);
+		    $log .= $r;
+		    undef $r;
+		}
+	    if (!$test) {
+			my $r = "la la la la la \n";
+			
+			if($ls->param('bounce_handler_when_threshold_reached') eq 'move_to_bounced_sublist') {  
+				$log .= "yup, we're gonna move to the sublist..."; 
+			# Move Subscriber to "Bounced" sublist: 
+				$r = $self->move_bouncing_subscribers(
+					{
+						-list => $list_to_check,
+					}
+				); 
+			}
+			elsif($ls->param('bounce_handler_when_threshold_reached') eq 'unsub_subscriber') {  
+				$log .= "yup, just gonna unsub the address."; 
+				$r = $self->remove_bounces(
+						{
+							-list => $list_to_check,
+						}
+					);
+			}
 	    $log .= $r;
-	    undef $r;
-	}
-    if (!$test) {
-        my $r = $self->remove_bounces($Remove_List);
-        $log .= $r;
-        undef $r;
+	        undef $r;
+	    }
+	
+	   $log .= "Finished: " . $ls->param('list_name') . "\n\n";
+    
+		# &close_log;
+
     }
 
-    &close_log;
+
 
     return $log;
 }
@@ -697,65 +720,61 @@ sub bounce_from_me {
 
 sub save_scores {
 
-    my $self  = shift;
-    my $score = shift; 
-    my $m     = '';
+    my $self   = shift;
+    my ($args) = @_;
+    my $list   = $args->{-list};
 
-    if ( keys %$score ) {
+    my $m = '';
 
-        my @delete_list = DADA::App::Guts::available_lists();
+    if ( keys %{ $self->{tmp_scorecard} }) {
 
-        for my $d_list (@delete_list) {
+        $m .= "\nWorking on list: $list\n";
 
-            $m .= "\nWorking on list: $d_list\n";
+        require DADA::App::BounceHandler::ScoreKeeper;
+        my $bsk =
+          DADA::App::BounceHandler::ScoreKeeper->new( { -list => $list } );
 
-            require DADA::App::BounceHandler::ScoreKeeper;
-            my $bsk = DADA::App::BounceHandler::ScoreKeeper->new(
-                { -list => $d_list } );
+        my $list_scores = $self->{tmp_scorecard}->{$list};
 
-            my $list_scores = $score->{$d_list};
+        my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
-            my $lh =
-              DADA::MailingList::Subscribers->new( { -list => $d_list } );
+        for my $bouncing_email ( keys %$list_scores ) {
+			
+			# Remove scores from addresses that are not correctly subscribed.
+			# 
+            if ( $lh->check_for_double_email( -Email => $bouncing_email ) == 0 )
+            {
+                undef( $list_scores->{$bouncing_email} );
+                delete( $list_scores->{$bouncing_email} );
 
-            for my $bouncing_email ( keys %$list_scores ) {
-
-                if ( $lh->check_for_double_email( -Email => $bouncing_email ) ==
-                    0 )
-                {
-                    undef( $list_scores->{$bouncing_email} );
-                    delete( $list_scores->{$bouncing_email} );
-
-                }
-                else {
-
-                    # ?
-                }
             }
+            else {
 
-            my $give_back_scores = $bsk->tally_up_scores($list_scores);
-
-            if ( keys %$give_back_scores ) {
-                $m .= "\nScore Totals for $d_list:\n\n";
-                for ( keys %$give_back_scores ) {
-                    $m .= "\tEmail: $_\n";
-                    $m .= "\tTotal Score: " . $give_back_scores->{$_} . "\n";
-
-                }
+                # ?
             }
-
-            my $removal_list = $bsk->removal_list();
-
-            $m .= "Addresses to be removed:\n" . '-' x 72 . "\n";
-            for my $bad_email (@$removal_list) {
-                $Remove_List->{$d_list}->{$bad_email} = 1;
-                $m .= "\t$bad_email\n";
-            }
-
-            # DEV: Hmm, this gets repeated for each list?
-            $m .= "Flushing old scores\n";
-            $bsk->flush_old_scores();
         }
+
+        my $give_back_scores = $bsk->tally_up_scores($list_scores);
+
+        if ( keys %$give_back_scores ) {
+            $m .= "\nScore Totals for $list:\n\n";
+            for ( keys %$give_back_scores ) {
+                $m .= "\tEmail: $_\n";
+                $m .= "\tTotal Score: " . $give_back_scores->{$_} . "\n";
+
+            }
+        }
+
+        my $removal_list = $bsk->removal_list();
+
+        $m .= "Addresses to be removed:\n" . '-' x 72 . "\n";
+        for my $bad_email (@$removal_list) {
+            $self->{tmp_remove_list}->{$list}->{$bad_email} = 1;
+            $m .= "\t$bad_email\n";
+        }
+
+        $m .= "Flushing old scores\n";
+        $bsk->flush_old_scores();
 
     }
     else {
@@ -766,100 +785,125 @@ sub save_scores {
     return $m;
 }
 
+
 sub remove_bounces {
 
-    my $self   = shift;
-    my $report = shift;
-    my $m      = '';
+    my $self = shift;
+    my ($args) = @_;
+    my $list = $args->{-list};
+
+    my $m    = '';
     $m .= "Unsubscribing addresses:\n" . '-' x 72 . "\n";
 
-    for my $list ( keys %$report ) {
+    $m .= "\nList: $list\n";
 
-        $m .= "\nList: $list\n";
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-        my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
-        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-        my $li = $ls->get;
+    my @remove_list = keys %{ $self->{tmp_remove_list}->{$list} };
 
-        my @remove_list = keys %{ $report->{$list} };
+    # Remove the Subscriber:
+    for (@remove_list) {
+        $lh->remove_subscriber( { -email => $_, } );
+        $m .= "Removing: $_\n";
+    }
 
-        for (@remove_list) {
-            $lh->remove_subscriber( { -email => $_, } );
-            $m .= "Removing: $_\n";
+    if (   ( $ls->param('black_list') == 1 )
+        && ( $ls->param('add_unsubs_to_black_list') == 1 ) )
+    {
+        for my $re (@remove_list) {
+            $lh->add_subscriber(
+                {
+                    -email      => $re,
+                    -type       => 'black_list',
+                    -dupe_check => {
+                        -enable  => 1,
+                        -on_dupe => 'ignore_add',
+                    },
+                }
+            );
         }
+    }
 
-        if (   ( $li->{black_list} == 1 )
-            && ( $li->{add_unsubs_to_black_list} == 1 ) )
-        {
-            for my $re (@remove_list) {
-                $lh->add_subscriber(
-                    {
-                        -email      => $re,
-                        -type       => 'black_list',
-                        -dupe_check => {
-                            -enable  => 1,
-                            -on_dupe => 'ignore_add',
-                        },
-                    }
-                );
-            }
-        }
+    if ( $ls->param('get_unsub_notice') == 1 ) {
+        require DADA::App::Messages;
 
-        if ( $li->{get_unsub_notice} == 1 ) {
-            require DADA::App::Messages;
+         $m .= "\n";
 
-            my $r;
+        my $aa = 0;
 
-            if ( $li->{enable_bounce_logging} ) {
-                require DADA::Logging::Clickthrough;
-                $r = DADA::Logging::Clickthrough->new( { -list => $list } );
+        for my $d_email (@remove_list) {
 
-            }
+            DADA::App::Messages::send_owner_happenings(
+                {
+                    -list   => $list,
+                    -email  => $d_email,
+                    -role   => 'unsubscribed',
+                    -lh_obj => $lh,
+                    -ls_obj => $ls,
+                    -note   => 'Reason: Address is bouncing messages.',
+                }
+            );
 
-            $m .= "\n";
-
-            my $aa = 0;
-
-            for my $d_email (@remove_list) {
-
-                DADA::App::Messages::send_owner_happenings(
-                    {
-                        -list   => $list,
-                        -email  => $d_email,
-                        -role   => 'unsubscribed',
-                        -lh_obj => $lh,
-                        -ls_obj => $ls,
-                        -note   => 'Reason: Address is bouncing messages.',
-                    }
-                );
-
-                DADA::App::Messages::send_generic_email(
-                    {
-                        -list    => $list,
-                        -email   => $d_email,
-                        -ls_obj  => $ls,
-                        -headers => {
-                            Subject => $self->config
-                              ->{Email_Unsubscribed_Because_Of_Bouncing_Subject}
-                            ,
-                        },
-                        -body => $self->config
-                          ->{Email_Unsubscribed_Because_Of_Bouncing_Message},
-                        -tmpl_params => {
-                            -list_settings_vars_param => { -list => $list, },
-                            -subscriber_vars =>
-                              { 'subscriber.email' => $d_email, },
-                            -vars =>
-                              { Plugin_Name => $self->config->{Plugin_Name}, },
-                        },
-                    }
-                );
-            }
+            DADA::App::Messages::send_generic_email(
+                {
+                    -list    => $list,
+                    -email   => $d_email,
+                    -ls_obj  => $ls,
+                    -headers => {
+                        Subject => $self->config
+                          ->{Email_Unsubscribed_Because_Of_Bouncing_Subject},
+                    },
+                    -body => $self->config
+                      ->{Email_Unsubscribed_Because_Of_Bouncing_Message},
+                    -tmpl_params => {
+                        -list_settings_vars_param => { -list => $list, },
+                        -subscriber_vars => { 'subscriber.email' => $d_email, },
+                        -vars =>
+                          { Plugin_Name => $self->config->{Plugin_Name}, },
+                    },
+                }
+            );
         }
     }
 
     return $m;
 }
+
+
+
+sub move_bouncing_subscribers {
+
+	my $self = shift;
+    my ($args) = @_;
+    my $list = $args->{-list};
+
+    my $m    = '';
+    $m .= "Moving addresses:\n" . '-' x 72 . "\n";
+
+    $m .= "\nList: $list\n";
+
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
+    my @remove_list = keys %{ $self->{tmp_remove_list}->{$list} };
+    
+	foreach my $sub(@remove_list){ 	
+		$m .= "moving: $sub\n";
+		$lh->move_subscriber(
+            {
+                -email            => $sub,
+                -from             => 'list',
+                -to               => 'bounced_list', 
+        		-mode             => 'writeover', 
+            }
+		);
+	}
+	
+	return $m; 
+}
+
+
 
 sub carry_out_rule {
 
@@ -990,13 +1034,13 @@ sub add_to_score {
         carp "don't know what to score this with?: '$action'";
     }
 
-    if ( $Score_Card->{$list}->{$email} ) {
-        $Score_Card->{$list}->{$email} += $score;
+    if ( $self->{tmp_scorecard}->{$list}->{$email} ) {
+        $self->{tmp_scorecard}->{$list}->{$email} += $score;
 
         # Hmm. That was easy.
     }
     else {
-        $Score_Card->{$list}->{$email} = $score;
+        $self->{tmp_scorecard}->{$list}->{$email} = $score;
     }
 
     return
@@ -1033,7 +1077,7 @@ sub unsubscribe_bounced_email {
     $report .= "\n";
 
     for (@delete_list) {
-        $Remove_List->{$_}->{$email} = 1;
+        $self->{tmp_remove_list}->{$_}->{$email} = 1;
         $report .= "$email to be deleted off of: '$_'\n";
     }
 

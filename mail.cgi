@@ -240,6 +240,7 @@ my %list_types = (
                   testers            => 'Testers',
                   white_list         => 'White Listed', # White listed isn't working, no?
                   sub_request_list   => 'Subscription Requests',
+				  bounced_list       => 'Bouncing Addresses',
 				);
 
 my $type = $q->param('type') || 'list';
@@ -2862,20 +2863,31 @@ sub view_list {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
-    my $li = $ls->get;
-
     my $lh                    = DADA::MailingList::Subscribers->new({-list => $list});
 
     my $start                 = int($q->param('start')) || 0;
-    my $length                = $li->{view_list_subscriber_number};
+    my $length                = $ls->param('view_list_subscriber_number');
     my $num_subscribers       = $lh->num_subscribers({-type => $type});
-    my $screen_finish         = $length+$start;
-       $screen_finish         =  $num_subscribers if $num_subscribers < $length+$start;
+    my $screen_finish         = $length + $start;
+
+	if($num_subscribers < $length+$start) { 
+		$screen_finish         =  $num_subscribers;
+	}
+
     my $screen_start          = $start;
-       $screen_start          = 1 if (($start == 0) && ($num_subscribers != 0));
+
+	if (($start == 0) && ($num_subscribers != 0)) { 
+       $screen_start          = 1;
+	}
+	
     my $previous_screen       = $start-$length;
     my $next_screen           = $start+$length;
 
+	my $show_bounced_list     = 0;
+	if($lh->num_subscribers({-type => 'bounced_list'}) > 0){ 
+		$show_bounced_list = 1; 
+	}
+	
     my $subscribers           = $lh->subscription_list(
 									{
 										-start    => $start,
@@ -2933,7 +2945,6 @@ sub view_list {
             push(@$field_names, {name => $_, label => $fields_attr->{$_}->{label}});
         }
 
-
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen({-list  => $list,
                                                 -screen => 'view_list_screen.tmpl',
@@ -2942,6 +2953,7 @@ sub view_list {
 													-Root_Login => $root_login,
 													-List       => $list,  
 												},
+												 #-expr => 1, 
                                                   -vars  =>
                                                   {
 
@@ -2949,7 +2961,7 @@ sub view_list {
 
                                                      field_names                 => $field_names,
 
-                                                     view_list_subscriber_number => $li->{view_list_subscriber_number},
+                                                     view_list_subscriber_number => $ls->param('view_list_subscriber_number'),
                                                      next_screen                 => $next_screen,
                                                      previous_screen             => $previous_screen,
                                                      use_previous_screen         => ($start-$length >= 0 && $start > 0) ? 1 : 0,
@@ -2967,14 +2979,15 @@ sub view_list {
                                                      type                        => $type,
                                                      type_title                  => $type_title,
 
+													show_bounced_list            => $show_bounced_list, 
 
-
-                                                     list_type_isa_list                  => ($type eq 'list')       ? 1 : 0,
-                                                     list_type_isa_black_list            => ($type eq 'black_list') ? 1 : 0,
+                                                     list_type_isa_list                  => ($type eq 'list')               ? 1 : 0,
+                                                     list_type_isa_black_list            => ($type eq 'black_list')         ? 1 : 0,
                                                      list_type_isa_authorized_senders    => ($type eq 'authorized_senders') ? 1 : 0,
-                                                     list_type_isa_testers               => ($type eq 'testers')    ? 1 : 0,
-                                                     list_type_isa_white_list            => ($type eq 'white_list') ? 1 : 0,
-                                                     list_type_isa_sub_request_list      => ($type eq 'sub_request_list') ? 1 : 0,
+                                                     list_type_isa_testers               => ($type eq 'testers')            ? 1 : 0,
+                                                     list_type_isa_white_list            => ($type eq 'white_list')         ? 1 : 0,
+                                                     list_type_isa_sub_request_list      => ($type eq 'sub_request_list')   ? 1 : 0,
+                                                     list_type_isa_bounced_list          => ($type eq 'bounced_list')       ? 1 : 0,
 
 
                                                      GLOBAL_BLACK_LIST           => $DADA::Config::GLOBAL_BLACK_LIST,
@@ -2987,10 +3000,10 @@ sub view_list {
 
                                                      black_list_changes_done     => ($q->param('black_list_changes_done')) ? 1 : 0,
 
-                                                     black_list                           => $li->{black_list},
-                                                     add_unsubs_to_black_list             => $li->{add_unsubs_to_black_list},
-                                                     allow_blacklisted_to_subscribe       => $li->{allow_blacklisted_to_subscribe},
-                                                     allow_admin_to_subscribe_blacklisted => $li->{allow_admin_to_subscribe_blacklisted},
+                                                     black_list                           => $ls->param('black_list'),
+                                                     add_unsubs_to_black_list             => $ls->param('add_unsubs_to_black_list'),
+                                                     allow_blacklisted_to_subscribe       => $ls->param('allow_blacklisted_to_subscribe'),
+                                                     allow_admin_to_subscribe_blacklisted => $ls->param('allow_admin_to_subscribe_blacklisted'),
 
                                                      flavor                      => 'view_list',
    
@@ -2999,6 +3012,7 @@ sub view_list {
                                                      white_list_subscribers_num       => $lh->num_subscribers({-type => 'white_list'}),
                                                      authorized_senders_num           => $lh->num_subscribers({-type => 'authorized_senders'}),
  													 sub_request_list_subscribers_num => $lh->num_subscribers({-type => 'sub_request_list'}),
+													 bounced_list_num                 => $lh->num_subscribers({-type => 'bounced_list'}),
                                                   	 flavor_is_view_list              => 1,
 													},
 													-list_settings_vars_param => {

@@ -69,52 +69,6 @@
  </div>
  
  
- 
- 
-<!-- 
-		DEV: Turning off for now... 
-	 
-	  <div> 
-	
-		<!-- tmpl_if list_type_isa_testers -->
-		  <span>
-		   Testers
-		  </span>
-	<!-- tmpl_else -->
-		  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=testers">
-		   Testers
-		  </a>
-	<!-- /tmpl_if -->
-	  
-	 </div>
- 
- --> 
- 
-
-<!-- 
-
-
- 
-<!-- tmpl_if enable_moderation -->
-	 <div>
-	  
-	<!-- tmpl_if list_type_isa_moderators -->
-		  <span>
-		   Moderators
-		  </span>
-	<!-- tmpl_else -->
-		  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=moderators">
-		   Moderators
-		  </a>
-	<!-- /tmpl_if -->
-	  
-	
-	</div> 
-	
-	<!--/tmpl_if-->
- 
- --> 
- 
  <!-- tmpl_if list_settings.enable_authorized_sending -->
 	 <div>
 	  
@@ -133,8 +87,28 @@
 	
 	<!--/tmpl_if-->
 
- </div> 
+
+
+
+<!-- tmpl_if flavor_is_view_list --> 
+	<!-- tmpl_if show_bounced_list -->
+		<div>
+		<!-- tmpl_if list_type_isa_bounced_list -->
+			  <span>
+			   Bouncing Addresses (<!-- tmpl_var bounced_list_num -->)
+			  </span>
+		<!-- tmpl_else -->
+			  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=bounced_list&keyword=<!-- tmpl_var keyword escape="HTML" -->">
+			   Bouncing Addresses (<!-- tmpl_var bounced_list_num -->)
+			  </a>
+		<!-- /tmpl_if -->
+		</div>
+	<!-- /tmpl_if --> 
+<!-- /tmpl_if --> 
+
+
  
+</div> 
 
 
  <div class="floatclear"></div>   

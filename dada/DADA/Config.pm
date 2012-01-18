@@ -4888,13 +4888,14 @@ encrypted.
 	tracker_show_message_reports_in_mailing_monitor     => 0, 
 
 # Bounce Handler
-bounce_handler_threshold_score                          => 10, 
-bounce_handler_hardbounce_score                         => 4, 
-bounce_handler_softbounce_score                         => 1, 
-bounce_handler_decay_score                              => 1, 
-bounce_handler_forward_msgs_to_list_owner               => 0, 
 
-    
+	bounce_handler_threshold_score                          => 10, 
+	bounce_handler_hardbounce_score                         => 4, 
+	bounce_handler_softbounce_score                         => 1, 
+	bounce_handler_decay_score                              => 1, 
+	bounce_handler_forward_msgs_to_list_owner               => 0, 
+	bounce_handler_when_threshold_reached                   => 'unsub_subscriber', 
+
 # dada_digest.pl 
 last_digest_sent                        => undef, 
     

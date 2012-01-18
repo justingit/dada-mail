@@ -33,7 +33,7 @@ use lib qw(
 
 );
 
-use DADA::Config 4.8.0;
+use DADA::Config;
 use CGI::Carp qw(fatalsToBrowser);
 use DADA::App::Guts;
 use DADA::Mail::Send;
@@ -444,7 +444,7 @@ Scorecard Preferences
 </table> 
 
 <p>
-	Addresses that reach the <strong>Score Threshold</strong> will be unsunbscribed
+	Addresses that reach the <strong>Score Threshold</strong> will be unsubscribed
 	from your mailing list. 
 </p>
 <table border="0"> 
@@ -470,6 +470,21 @@ Scorecard Preferences
 <br />Bounce Messages will be delivered to the List Owner (after being parsed and scored) for manual inspection. 
 </td>
 </tr> 
+<tr> 
+
+<td> 
+&nbsp;
+</td> 
+<td> 
+	<p>Addresses the reach the <strong>Bounce Score Threshold</strong> Should:</p>
+
+	 <p><input type="radio" name="bounce_handler_when_threshold_reached" value="unsub_subscriber" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'unsub_subscriber')" -->checked="checked"<!-- /tmpl_if --> /><label>Be Unsubscribed Right Away</label><br />
+	 <input type="radio" name="bounce_handler_when_threshold_reached"  value="move_to_bounced_sublist" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'move_to_bounced_sublist')" -->checked="checked"<!-- /tmpl_if --> /><label>Be Moved to the, "Bounced Addresses" Sublist</label>
+</p> 
+
+</td>
+
+</tr>
 </table> 
 
 <div class="buttonfloat">   
@@ -708,7 +723,8 @@ sub edit_prefs {
 				bounce_handler_decay_score                => undef, 
 				bounce_handler_threshold_score            => undef, 
 				bounce_handler_forward_msgs_to_list_owner => 0, 
-            }
+            	bounce_handler_when_threshold_reached     => undef, 
+			}
         }
     );
 

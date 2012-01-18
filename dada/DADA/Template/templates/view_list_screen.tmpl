@@ -184,7 +184,16 @@
 
 	<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 	
-	 <!-- tmpl_include view_list_table_widget.tmpl --> 
+	 <!-- tmpl_if list_type_isa_bounced_list --> 
+	
+		<p>Bounced List!</p>
+		
+	 <!-- tmpl_else --> 
+	
+	 	<!-- tmpl_include view_list_table_widget.tmpl --> 
+	
+	<!-- /tmpl_if --> 
+	
 	 <!-- tmpl_include view_list_prev_next_table.tmpl -->
 	 <p align="center">
 	  <a href="#" onclick="SetChecked(1);return false;">
@@ -432,6 +441,7 @@
 
 <!-- /tmpl_if --> 
 
+<!-- tmpl_include list_type_switch_widget.tmpl -->
 
 
 <!-- end view_list_screen.tmpl -->
