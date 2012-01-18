@@ -798,7 +798,18 @@ sub _email_protect {
 	
 	for my $fa (@$found_addresses){ 
 		
-		if($fa =~ m/\@MIME\-Lite\-HTML/){ 
+		warn '$fa! ' . $fa; 
+		
+		
+		# https://github.com/justingit/dada-mail/issues/231
+		# https://github.com/justingit/dada-mail/issues/247
+		#
+		# Not sure how, "cid:" turns into, "cid=" (equals sign), but it seems to do that. 
+		# *really* not sure how Email::Find thinks either is a valid email address.
+		if(
+			$fa =~ m/\@MIME\-Lite\-HTML/
+		||  $fa =~ m/cid(\=|\:)(.*?)\@)/
+		){ 
 			# Good work Email::Find, that's not *even* an email address!
 			next; 
 		}
