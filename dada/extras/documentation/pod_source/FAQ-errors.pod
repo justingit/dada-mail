@@ -173,8 +173,23 @@ still print something about having the wrong version of Perl, in the error log. 
 
  Perl v5.8.1 required--this is only v5.6.0
 
-
 =back
+
+=head2 403 Error
+
+If you receive a 403 error in Dada Mail, when submitting something, like a mass mailing message, see if it isn't a problem with C<mod_security> getting in the way of Dada Mail. 
+
+You can try turning off C<mod_security> for Dada Mail, (temporary for testing), by creating an C<.htaccess> file in your C<dada> directory, with the following directive: 
+
+	<IfModule mod_security.c>
+	SecFilterInheritance Off
+	</IfModule>
+
+If the problem you were having goes away, after setting this directive, there's a pretty good chance that C<mod_security> is getting in the way of Dada Mail. 
+
+More information on C<mod_security>: 
+
+L<http://www.modsecurity.org/documentation/modsecurity-apache/1.9.3/modsecurity-manual.html#03-configuration>
 
 =head2 Problems Logging In
 
