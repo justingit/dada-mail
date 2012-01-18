@@ -185,9 +185,9 @@
 	<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 	
 	 <!-- tmpl_if list_type_isa_bounced_list --> 
-	
-		<p>Bounced List!</p>
-		
+
+	 	<!-- tmpl_include bounced_list_table_widget.tmpl --> 
+			
 	 <!-- tmpl_else --> 
 	
 	 	<!-- tmpl_include view_list_table_widget.tmpl --> 
