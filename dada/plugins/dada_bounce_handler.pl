@@ -1171,31 +1171,35 @@ sub cgi_show_plugin_config_template {
 
 sub cgi_bounce_score_search {
 
-    #TODO DEV: THIS NEEDS ITS OWN METHOD!!!
-    my %l_label;
-    my @l_lists = available_lists();
-
-    for my $l_list (@l_lists) {
-        my $l_ls = DADA::MailingList::Settings->new( { -list => $l_list } );
-        my $l_li = $l_ls->get;
-        $l_label{$l_list} = $l_li->{list_name};
-
-    }
 
     require HTML::Template;
-
-    require DADA::App::BounceHandler::ScoreKeeper;
-    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new({ -list => $list });
-
-    require DADA::App::LogSearch;
-
     my $query = xss_filter( $q->param('query') );
 
-    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
-    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
+	 if ( !defined($query) ) {
+	        $q->redirect(
+	            -uri => $Plugin_Config->{Plugin_URL} );
+	        return;
+	    }
 
-    my $valid_email        = 0;
+
+	require DADA::App::BounceHandler::Logs; 
+	my $bhl = DADA::App::BounceHandler::Logs->new;
+	my $results = $bhl->search(
+		{ 
+			-query => $query, 
+			-list  => $list, 
+			-file  => $Plugin_Config->{Log},
+		}
+	);
+	my $results_found = 0; 
+	if($results->[0]){ 
+		$results_found = 1; 
+	}
+	
+	require DADA::MailingList::Subscribers;
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+    
+	my $valid_email        = 0;
     my $subscribed_address = 0;
     if ( DADA::App::Guts::check_for_valid_email($query) == 0 ) {
         $valid_email = 1;
@@ -1203,107 +1207,8 @@ sub cgi_bounce_score_search {
             $subscribed_address = 1;
         }
     }
+    
 
-    if ( !defined($query) ) {
-        $q->redirect(
-            -uri => $Plugin_Config->{Plugin_URL} );
-        return;
-    }
-
-    my $searcher = DADA::App::LogSearch->new;
-    my $results  = $searcher->search(
-        {
-            -query => $query,
-            -files => [ $Plugin_Config->{Log} ],
-			
-        }
-    );
-
-	# -list  => $list, 
-	
-
-    my $search_results = [];
-    my $results_found  = 0;
-
-    if ( $results->{ $Plugin_Config->{Log} }->[0] ) {
-
-        $results_found = 1;
-
-        for my $l ( @{ $results->{ $Plugin_Config->{Log} } } ) {
-
-            my @entries = split( "\t", $l, 5 );    # Limit of 5
-
-            # Let us try to munge the data!
-
-            # Date!
-            $entries[0] =~ s/^\[|\]$//g;
-
-            # $entries[0] = $searcher->html_highlight_line(
-            #     { -query => $query, -line => $entries[0] } );
-            #
-            # ListShortName!
-            #$entries[1] = $searcher->html_highlight_line(
-            #    { -query => $query, -line => $entries[1] } );
-            #
-            # Action Taken!
-            #$entries[2] = $searcher->html_highlight_line(
-            #   { -query => $query, -line => $entries[2] } );
-            #
-            # Email Address!
-            #           $entries[3] = $searcher->html_highlight_line(
-            #              { -query => $query, -line => $entries[3] } );
-
-            my @diags = split( ",", $entries[4] );
-            my $labeled_digs = [];
-
-            for my $diag (@diags) {
-                my ( $label, $value ) = split( ":", $diag );
-				my $newline = quotemeta('\n'); 
-				# Make fake newlines, newlines: 
-				$value =~ s/$newline/\n/g;
-
-                push(
-                    @$labeled_digs,
-                    {
-                        diagnostic_label => $label,
-
-                        #  diagnostic_label => $searcher->html_highlight_line(
-                        #      { -query => $query, -line => $label }
-                        #  ),
-                        diagnostic_value => $value
-
-                          # $searcher->html_highlight_line(
-                          #      { -query => $query, -line => $value }
-                          #  ),
-
-                    }
-                );
-
-            }
-
-			if($entries[1] eq $list) { # only show entries for this list... 
-	            push(
-	                @$search_results,
-	                {
-	                    date      => $entries[0],
-	                    list      => $entries[1],
-	                    list_name => $l_label{ $entries[1] },
-	                    action    => $entries[2],
-	                    email     => $entries[3],
-
-	                    diagnostics => $labeled_digs,
-
-	                }
-	            );
-			}
-
-        }
-    }
-    else {
-
-        $results_found = 0;
-
-    }
 
     my $tmpl = cgi_bounce_score_search_template();
 
@@ -1318,16 +1223,18 @@ sub cgi_bounce_score_search {
             },
             -vars => {
                 query              => $query,
-                list_name          => $li->{list_name},
                 subscribed_address => $subscribed_address,
                 valid_email        => $valid_email,
-                search_results     => $search_results,
+                search_results     => $results,
                 results_found      => $results_found,
-
-                S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL,
-                Plugin_URL    => $Plugin_Config->{Plugin_URL},
-                Plugin_Name   => $Plugin_Config->{Plugin_Name},
-            }
+                S_PROGRAM_URL      => $DADA::Config::S_PROGRAM_URL,
+                Plugin_URL         => $Plugin_Config->{Plugin_URL},
+                Plugin_Name        => $Plugin_Config->{Plugin_Name},
+            }, 
+			-list_settings_vars_param => {
+				-list   => $list,
+				-dot_it => 1,
+			},
         }
 
     );
@@ -1361,7 +1268,7 @@ sub cgi_bounce_score_search_template {
    
        <!-- tmpl_if subscribed_address --> 
             <p class="alert">
-            <!-- tmpl_var query ESCAPE="HTML" --> is currently subscribed to your list (<!-- tmpl_var list_name ESCAPE="HTML" -->) - 
+            <!-- tmpl_var query ESCAPE="HTML" --> is currently subscribed to your list (<!-- tmpl_var list_settings.list_name ESCAPE="HTML" -->) - 
             <strong> 
             <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_subscriber&email=<!-- tmpl_var query ESCAPE="URL" -->&type=list">
              More Information...
@@ -1371,7 +1278,7 @@ sub cgi_bounce_score_search_template {
        <!-- tmpl_else --> 
        
                 <p class="error">
-            <!-- tmpl_var query ESCAPE="HTML" --> is currently not subscribed to your list (<!-- tmpl_var list_name ESCAPE="HTML" -->)
+            <!-- tmpl_var query ESCAPE="HTML" --> is currently not subscribed to your list (<!-- tmpl_var list_settings.list_name ESCAPE="HTML" -->)
             </p
        
        <!-- /tmpl_if --> 
