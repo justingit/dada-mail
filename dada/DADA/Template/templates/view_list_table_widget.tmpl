@@ -63,13 +63,26 @@
 	<td>
 	     <p>
 		
-	     <!-- tmpl_unless no_email_links --> 
-	 	<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_subscriber&amp;email=<!-- tmpl_var email -->&amp;type=<!-- tmpl_var type -->" >
-	       <!-- tmpl_var email -->  
-	      </a>
-	    <!-- tmpl_else --> 
-		     <!-- tmpl_var email -->
-		<!-- /tmpl_unless--> 
+	 	
+		<!-- tmpl_if expr="(type eq 'bounced_list')" -->
+		
+			<a href="./plugins/dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email ESCAPE=URL -->" target="_blank" >
+		       <!-- tmpl_var email -->  
+		      </a>
+		 	
+		<!-- tmpl_else --> 
+		
+			<!-- tmpl_unless no_email_links --> 
+    
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_subscriber&amp;email=<!-- tmpl_var email -->&amp;type=<!-- tmpl_var type -->" >
+		       <!-- tmpl_var email -->  
+		      </a>
+    
+			<!-- tmpl_else --> 
+		    	<!-- tmpl_var email -->
+			<!-- /tmpl_unless--> 
+			
+		<!-- /tmpl_if -->
 	 	</p>
 	    </td>
 	    

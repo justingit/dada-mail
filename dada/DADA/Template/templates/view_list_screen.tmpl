@@ -122,6 +122,21 @@
 	
 <!--/tmpl_if-->
 
+
+<!-- tmpl_if list_type_isa_bounced_list -->
+	
+	<h1>
+	 Your Bouncing Addresses
+	</h1>
+	<p>
+	 These addresses are subscribers that have been routinely bouncing message back and have been removed from your Subscribers list</p> 
+	<p>
+		You may remove them permanently or reinstate their subscription. 
+	</p>
+	
+<!-- /tmpl_if -->
+
+
 <!-- tmpl_unless num_subscribers -->
 	
 	<p class="alert">
@@ -184,16 +199,8 @@
 
 	<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 	
-	 <!-- tmpl_if list_type_isa_bounced_list --> 
-
-	 	<!-- tmpl_include bounced_list_table_widget.tmpl --> 
-			
-	 <!-- tmpl_else --> 
-	
 	 	<!-- tmpl_include view_list_table_widget.tmpl --> 
-	
-	<!-- /tmpl_if --> 
-	
+		
 	 <!-- tmpl_include view_list_prev_next_table.tmpl -->
 	 <p align="center">
 	  <a href="#" onclick="SetChecked(1);return false;">
@@ -205,7 +212,9 @@
 	  </a>
 	 </p>
 
-	<!-- tmpl_unless list_type_isa_sub_request_list -->
+
+
+	<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
 
 		 <input type=hidden name="process" value="delete" />
 		 <input type=hidden name="f"       value="remove_subscribers" />
@@ -216,21 +225,34 @@
 
 		<div class="floatclear"></div> 
 
-	<!-- tmpl_else --> 
+	<!-- /tmpl_if -->
+
+	<!-- tmpl_if EXPR="(type eq 'sub_request_list')" -->
+
 		<div class="buttonfloat">
 		 <input type=hidden name="f"       value="subscription_requests" />
-	
-		<!-- hopefully ,this is, "sub_request_list" --> 
 		 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
 		 <input type="submit" name="process" class="processing" value="Approve Checked Subscription Requests" />
 		 <input type="submit" name="process" class="alertive" value="Deny Checked Subscription Requests" />
 		</div>
 		<div class="floatclear"></div>
-	<!-- /tmpl_unless --> 
 
+	<!-- /tmpl_if -->
+	
+	<!-- tmpl_if EXPR="(type eq 'bounced_list')" -->
+	
+			<div class="buttonfloat">
+			 <input type="button" value="-> Move Selected Bouncing Address Back to Subscribers" />
+			 <input type="button" value="[x] Remove Selected Bouncing Addresses" />
+			</div>
+			<div class="floatclear"></div>
+	
+	<!-- /tmpl_if -->
+	
 	</form>
 
-	<!-- tmpl_unless list_type_isa_sub_request_list -->
+	<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
+
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 		 <input type=hidden name="f"       value="remove_all_subscribers" />
 		 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
@@ -239,15 +261,15 @@
 		 </div>
 		</form>
 		<div class="floatclear"></div>
-	<!-- tmpl_else --> 
-		<!-- ... --> 
-	<!-- /tmpl_unless --> 
+		
+	<!-- /tmpl_if -->
 
 <!-- /tmpl_unless --> 
 
 
 
 <!-- tmpl_if list_type_isa_black_list -->
+
 	<!-- tmpl_if can_filter_subscribers_through_blacklist --> 
 	
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="blacklist_filter_form">
@@ -415,29 +437,8 @@
 
 	<!-- tmpl_include list_search_form_widget.tmpl --> 
 
-		<hr />
-
-		<table cellpadding="5">
-		 <tr>
-		  <td>
-		   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-		    <input type="hidden" name="f"    value="text_list" />
-		    <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
-		    <input type="submit" class="plain" value="Download <!-- tmpl_var type_title --> (.csv)" />
-		   </form>
-		  </td>
-	<!-- tmpl_if comment --> 
-	<!-- I've disabled this, for the time being --> 
-			  <td>
-			   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get">
-			    <input type="hidden" name="f"    value="send_list_to_admin" />
-			    <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
-			    <input type="submit" class="plain" value="Send <!-- tmpl_var type_title --> to List Owner" />
-			   </form>
-			  </td>
-	<!-- /tmpl_if --> 
-		 </tr>
-		</table>
+	<!-- tmpl_include list_download_widget.tmpl -->
+	
 
 <!-- /tmpl_if --> 
 

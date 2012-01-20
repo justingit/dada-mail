@@ -237,7 +237,6 @@ my %list_types = (
 				  list               => 'Subscribers',
                   black_list         => 'Black Listed',
                   authorized_senders => 'Authorized Senders',
-                  testers            => 'Testers',
                   white_list         => 'White Listed', # White listed isn't working, no?
                   sub_request_list   => 'Subscription Requests',
 				  bounced_list       => 'Bouncing Addresses',
@@ -2953,7 +2952,7 @@ sub view_list {
 													-Root_Login => $root_login,
 													-List       => $list,  
 												},
-												 #-expr => 1, 
+												 -expr => 1, 
                                                   -vars  =>
                                                   {
 
@@ -2984,7 +2983,6 @@ sub view_list {
                                                      list_type_isa_list                  => ($type eq 'list')               ? 1 : 0,
                                                      list_type_isa_black_list            => ($type eq 'black_list')         ? 1 : 0,
                                                      list_type_isa_authorized_senders    => ($type eq 'authorized_senders') ? 1 : 0,
-                                                     list_type_isa_testers               => ($type eq 'testers')            ? 1 : 0,
                                                      list_type_isa_white_list            => ($type eq 'white_list')         ? 1 : 0,
                                                      list_type_isa_sub_request_list      => ($type eq 'sub_request_list')   ? 1 : 0,
                                                      list_type_isa_bounced_list          => ($type eq 'bounced_list')       ? 1 : 0,
@@ -3500,7 +3498,6 @@ sub add {
                     : 0,
                     list_type_isa_authorized_senders =>
                       ( $type eq 'authorized_senders' ) ? 1 : 0,
-                    list_type_isa_testers => ( $type eq 'testers' ) ? 1 : 0,
                     list_type_isa_white_list => ( $type eq 'white_list' ) ? 1
                     : 0,
 
@@ -3764,7 +3761,6 @@ sub add_email {
 					list_type_isa_list                  => ($type eq 'list')       ? 1 : 0,
 					list_type_isa_black_list            => ($type eq 'black_list') ? 1 : 0,
 					list_type_isa_authorized_senders    => ($type eq 'authorized_senders') ? 1 : 0,
-					list_type_isa_testers               => ($type eq 'testers')    ? 1 : 0,
 					list_type_isa_white_list            => ($type eq 'white_list') ? 1 : 0,
 					can_have_subscriber_fields          => $lh->can_have_subscriber_fields,
                     going_over_quota   => $going_over_quota,
@@ -3905,7 +3901,6 @@ sub delete_email {
 					list_type_isa_list                  => ($type eq 'list')       ? 1 : 0,
 					list_type_isa_black_list            => ($type eq 'black_list') ? 1 : 0,
 					list_type_isa_authorized_senders    => ($type eq 'authorized_senders') ? 1 : 0,
-					list_type_isa_testers               => ($type eq 'testers')    ? 1 : 0,
 					list_type_isa_white_list            => ($type eq 'white_list') ? 1 : 0,
 					type                                => $type,
 					type_title                          => $type_title,
@@ -6601,7 +6596,6 @@ sub search_list {
                                                      list_type_isa_list                  => ($type eq 'list')       ? 1 : 0,
                                                      list_type_isa_black_list            => ($type eq 'black_list') ? 1 : 0,
                                                      list_type_isa_authorized_senders    => ($type eq 'authorized_senders') ? 1 : 0,
-                                                     list_type_isa_testers               => ($type eq 'testers')    ? 1 : 0,
                                                      list_type_isa_white_list            => ($type eq 'white_list')       ? 1 : 0,
                                                      list_type_isa_sub_request_list      => ($type eq 'sub_request_list') ? 1 : 0,
 
