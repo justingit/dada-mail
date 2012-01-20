@@ -1,7 +1,12 @@
 #!/usr/bin/perl 
 
 package subscribe_email;
-use lib qw(./ ./DADA/perllib);
+use lib qw(
+	./ 
+	./DADA/perllib
+	../../../
+	../../../DADA/perllib
+	);
 
 use DADA::Config;
 use DADA::App::Subscriptions;
