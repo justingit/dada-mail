@@ -541,121 +541,122 @@ sub run {
 	#external (mostly..) functions called from the web browser)
 	# a few things this program  can do.... :)
 	my %Mode = (
-	'default'                 =>    \&default,
-	'subscribe'               =>    \&subscribe,
-	'subscribe_flash_xml'     =>    \&subscribe_flash_xml,
-	'unsubscribe_flash_xml'   =>    \&unsubscribe_flash_xml,
-	'new'                     =>    \&confirm,
-	'unsubscribe'             =>    \&unsubscribe,
-	'login'                   =>    \&login,
-	'logout'                  =>    \&logout,
-	'log_into_another_list'   =>    \&log_into_another_list,
-	'change_login'            =>    \&change_login,
-	'new_list'                =>    \&new_list,
-	'change_info'             =>    \&change_info,
-	'html_code'               =>    \&html_code,
-	'admin_help'              =>    \&admin_help,
-	'delete_list'             =>    \&delete_list,
-	'view_list'               =>    \&view_list,
-	'subscription_requests'   =>    \&subscription_requests,
-	'remove_all_subscribers'  =>    \&remove_all_subscribers,
-	'view_list_options'       =>    \&list_cp_options,
-	'edit_subscriber'         =>    \&edit_subscriber,
-	'add'                     =>    \&add,
-	'check_status'            =>    \&check_status,
-	'email_password'          =>    \&email_password,
-	'add_email'               =>    \&add_email,
-	'delete_email'            =>    \&delete_email,
-	'subscription_options'    =>    \&subscription_options,
-	'send_email'              =>    \&send_email,
-	'previewMessageReceivers' =>    \&previewMessageReceivers,
-	'sending_monitor'         =>    \&sending_monitor,
-	'print_mass_mailing_log'  =>    \&print_mass_mailing_log,
-	'preview_form'            =>    \&preview_form,
-	'remove_subscribers'      =>    \&remove_subscribers,
-	'edit_template'           =>    \&edit_template,
-	'view_archive'            =>    \&view_archive,
-	'display_message_source'  =>    \&display_message_source,
-	'purge_all_archives'      =>    \&purge_all_archives,
-	'delete_archive'          =>    \&delete_archive,
-	'edit_archived_msg'       =>    \&edit_archived_msg,
-	'archive'                 =>    \&archive,
-	'archive_bare'            =>    \&archive_bare,
-	'archive_rss'             =>    \&archive_rss,
-	'archive_atom'            =>    \&archive_atom,
-	'manage_script'           =>    \&manage_script,
-	'change_password'         =>    \&change_password,
-	'text_list'               =>    \&text_list,
-	'send_list_to_admin'      =>    \&send_list_to_admin,
-	'search_list'             =>    \&search_list,
-	'archive_options'         =>    \&archive_options,
-	'adv_archive_options'     =>    \&adv_archive_options,
-	'back_link'               =>    \&back_link,
-	'edit_type'               =>    \&edit_type,
-	'edit_html_type'          =>    \&edit_html_type,
-	'list_options'            =>    \&list_options,
-	'sending_preferences'     =>    \&sending_preferences,
-	'amazon_ses_verify_email' =>    \&amazon_ses_verify_email, 
-	'amazon_ses_get_stats'    =>    \&amazon_ses_get_stats,
-	'mass_mailing_preferences' =>   \&mass_mailing_preferences,
-	'previewBatchSendingSpeed' =>   \&previewBatchSendingSpeed,
-	'adv_sending_preferences' =>    \&adv_sending_preferences,
-	'sending_tuning_options'  =>    \&sending_tuning_options,
-	'filter_using_black_list' =>    \&filter_using_black_list,
-	'search_archive'          =>    \&search_archive,
-	'send_archive'            =>    \&send_archive,
-	'list_invite'             =>    \&list_invite,
-	'pass_gen'                =>    \&pass_gen,
-	'send_url_email'          =>    \&send_url_email,
-	'feature_set'             =>    \&feature_set,
-	'list_cp_options'         =>    \&list_cp_options,
-	'profile_fields'          =>    \&profile_fields,
-	'sending_preferences_test' =>    \&sending_preferences_test,
-	'author'                  =>    \&author,
-	'list'                    =>    \&list_page,
-	'setup_info'              =>    \&setup_info,
-	'reset_cipher_keys'       =>    \&reset_cipher_keys,
-	'restore_lists'           =>    \&restore_lists,
-	'r'                       =>    \&redirection,
-	'subscriber_help'         =>    \&subscriber_help,
-	'show_img'                =>    \&show_img,
-	'file_attachment'         =>    \&file_attachment,
-	'm_o_c'                   =>    \&m_o_c,
-	'img'                     =>    \&img,
-	'javascripts'             =>    \&javascripts,
-	'captcha_img'             =>    \&captcha_img,
-	'ver'                     =>    \&ver,
-	'css'                     =>    \&css,
-	'resend_conf'             =>    \&resend_conf,
+	'default'                    =>    \&default,
+	'subscribe'                  =>    \&subscribe,
+	'subscribe_flash_xml'        =>    \&subscribe_flash_xml,
+	'unsubscribe_flash_xml'      =>    \&unsubscribe_flash_xml,
+	'new'                        =>    \&confirm,
+	'unsubscribe'                =>    \&unsubscribe,
+	'login'                      =>    \&login,
+	'logout'                     =>    \&logout,
+	'log_into_another_list'      =>    \&log_into_another_list,
+	'change_login'               =>    \&change_login,
+	'new_list'                   =>    \&new_list,
+	'change_info'                =>    \&change_info,
+	'html_code'                  =>    \&html_code,
+	'admin_help'                 =>    \&admin_help,
+	'delete_list'                =>    \&delete_list,
+	'view_list'                  =>    \&view_list,
+	'subscription_requests'      =>    \&subscription_requests,
+	'remove_all_subscribers'     =>    \&remove_all_subscribers,
+	'view_list_options'          =>    \&list_cp_options,
+	'edit_subscriber'            =>    \&edit_subscriber,
+	'add'                        =>    \&add,
+	'check_status'               =>    \&check_status,
+	'email_password'             =>    \&email_password,
+	'add_email'                  =>    \&add_email,
+	'delete_email'               =>    \&delete_email,
+	'subscription_options'       =>    \&subscription_options,
+	'send_email'                 =>    \&send_email,
+	'previewMessageReceivers'    =>    \&previewMessageReceivers,
+	'sending_monitor'            =>    \&sending_monitor,
+	'print_mass_mailing_log'     =>    \&print_mass_mailing_log,
+	'preview_form'               =>    \&preview_form,
+	'remove_subscribers'         =>    \&remove_subscribers,
+	'process_bouncing_addresses' =>    \&process_bouncing_addresses, 
+	'edit_template'              =>    \&edit_template,
+	'view_archive'               =>    \&view_archive,
+	'display_message_source'     =>    \&display_message_source,
+	'purge_all_archives'         =>    \&purge_all_archives,
+	'delete_archive'             =>    \&delete_archive,
+	'edit_archived_msg'          =>    \&edit_archived_msg,
+	'archive'                    =>    \&archive,
+	'archive_bare'               =>    \&archive_bare,
+	'archive_rss'                =>    \&archive_rss,
+	'archive_atom'               =>    \&archive_atom,
+	'manage_script'              =>    \&manage_script,
+	'change_password'            =>    \&change_password,
+	'text_list'                  =>    \&text_list,
+	'send_list_to_admin'         =>    \&send_list_to_admin,
+	'search_list'                =>    \&search_list,
+	'archive_options'            =>    \&archive_options,
+	'adv_archive_options'        =>    \&adv_archive_options,
+	'back_link'                  =>    \&back_link,
+	'edit_type'                  =>    \&edit_type,
+	'edit_html_type'             =>    \&edit_html_type,
+	'list_options'               =>    \&list_options,
+	'sending_preferences'        =>    \&sending_preferences,
+	'amazon_ses_verify_email'    =>    \&amazon_ses_verify_email, 
+	'amazon_ses_get_stats'       =>    \&amazon_ses_get_stats,
+	'mass_mailing_preferences'   =>    \&mass_mailing_preferences,
+	'previewBatchSendingSpeed'   =>    \&previewBatchSendingSpeed,
+	'adv_sending_preferences'    =>    \&adv_sending_preferences,
+	'sending_tuning_options'     =>    \&sending_tuning_options,
+	'filter_using_black_list'    =>    \&filter_using_black_list,
+	'search_archive'             =>    \&search_archive,
+	'send_archive'               =>    \&send_archive,
+	'list_invite'                =>    \&list_invite,
+	'pass_gen'                   =>    \&pass_gen,
+	'send_url_email'             =>    \&send_url_email,
+	'feature_set'                =>    \&feature_set,
+	'list_cp_options'            =>    \&list_cp_options,
+	'profile_fields'             =>    \&profile_fields,
+	'sending_preferences_test'   =>    \&sending_preferences_test,
+	'author'                     =>    \&author,
+	'list'                       =>    \&list_page,
+	'setup_info'                 =>    \&setup_info,
+	'reset_cipher_keys'          =>    \&reset_cipher_keys,
+	'restore_lists'              =>    \&restore_lists,
+	'r'                          =>    \&redirection,
+	'subscriber_help'            =>    \&subscriber_help,
+	'show_img'                   =>    \&show_img,
+	'file_attachment'            =>    \&file_attachment,
+	'm_o_c'                      =>    \&m_o_c,
+	'img'                        =>    \&img,
+	'javascripts'                =>    \&javascripts,
+	'captcha_img'                =>    \&captcha_img,
+	'ver'                        =>    \&ver,
+	'css'                        =>    \&css,
+	'resend_conf'                =>    \&resend_conf,
 
 
 
-	'subscription_form_html'  =>     \&subscription_form_html,
-	'subscription_form_js'    =>     \&subscription_form_js,
+	'subscription_form_html'     =>    \&subscription_form_html,
+	'subscription_form_js'       =>    \&subscription_form_js,
 
 
-	'what_is_dada_mail'       =>    \&what_is_dada_mail,
-	'profile_activate'        =>    \&profile_activate,
-	'profile_register'        =>    \&profile_register,
-	'profile_reset_password'  =>    \&profile_reset_password,
-	'profile_update_email'    =>    \&profile_update_email,
-	'profile_login'           =>    \&profile_login,
-	'profile_logout'          =>    \&profile_logout,
-	'profile_help'            =>    \&profile_help,
-	'profile'                 =>    \&profile,
+	'what_is_dada_mail'          =>    \&what_is_dada_mail,
+	'profile_activate'           =>    \&profile_activate,
+	'profile_register'           =>    \&profile_register,
+	'profile_reset_password'     =>    \&profile_reset_password,
+	'profile_update_email'       =>    \&profile_update_email,
+	'profile_login'              =>    \&profile_login,
+	'profile_logout'             =>    \&profile_logout,
+	'profile_help'               =>    \&profile_help,
+	'profile'                    =>    \&profile,
 
 
 
 	# these params are the same as above, but are smaller in actual size
 	# this comes into play when you have to create a url using these as parts of it.
 
-	's'                       =>    \&subscribe,
-	'n'                       =>    \&confirm,
-	'u'                       =>    \&unsubscribe,
-	'ur'                      =>    \&unsubscribe_request, 
-	'smtm'                    =>    \&what_is_dada_mail,
-	'test_layout'             =>    \&test_layout,
-	'send_email_testsuite'    =>    \&send_email_testsuite,
+	's'                         =>    \&subscribe,
+	'n'                         =>    \&confirm,
+	'u'                         =>    \&unsubscribe,
+	'ur'                        =>    \&unsubscribe_request, 
+	'smtm'                      =>    \&what_is_dada_mail,
+	'test_layout'               =>    \&test_layout,
+	'send_email_testsuite'      =>    \&send_email_testsuite,
 
 
 	$DADA::Config::ADMIN_FLAVOR_NAME        =>    \&admin,
@@ -8436,74 +8437,96 @@ sub change_login {
 
 sub remove_subscribers {
 
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
-                                                        -Function => 'remove_subscribers');
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'view_list'
+    );
 
     $list = $admin_list;
 
-    my $lh = DADA::MailingList::Subscribers->new({-list => $list});
-    my $ls = DADA::MailingList::Settings->new({-list => $list});
-    my $li = $ls->get;
-	
-	my $email_count = 0; 
-	for my $address(@address){ 
-		my $c = $lh->remove_subscriber(
-			{ 
-				-email => $address, 
-				-type  => $type, 
-			}
-		); 
-		$email_count = $email_count + $c; 
-	}
-
-	my $black_list_count = 0; 
-	if($type eq 'list'){
-        if($li->{black_list}               == 1 &&
-           $li->{add_unsubs_to_black_list} == 1
-           ){
-
-  			for(@address){
-				my $a = $lh->add_subscriber(
-					{
-						-email => $_,
-						-type  => 'black_list',
-						-dupe_check    => {
-											-enable  => 1,
-											-on_dupe => 'ignore_add',
-	                					},
-					}
-				);
-				if(defined($a)){ 
-					$black_list_count++;
-				}
-			}
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+    my ( $d_count, $bl_count ) = $lh->admin_remove_subscribers(
+        {
+            -addresses => [@address],
+            -type      => $type,
         }
-    }
+    );
+    my $uri =
+        $DADA::Config::S_PROGRAM_URL
+      . '?flavor=view_list&delete_email_count='
+      . $d_count
+      . '&type='
+      . $type
+      . '&black_list_add='
+      . $bl_count;
 
-	if($type eq 'list') { 
-		if($ls->param('send_unsubscribed_by_list_owner_message') == 1){
-			require DADA::App::MassSend; 
-			eval { 
-				DADA::App::MassSend::just_unsubscribed_mass_mailing(
-					{ 
-						-list      => $list, 
-						-addresses => [@address], 
-					}	
-				); 
-			};
-			if($@){ 
-				carp $@; 
-			}	
+    print $q->redirect( -uri => $uri );
+
+}
+
+
+
+sub process_bouncing_addresses { 
+	
+	my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'view_list'
+    );
+
+	$list = $admin_list;
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+
+	if($q->param('process') =~ m/remove/i){ 
+	    my ( $d_count, $bl_count ) = $lh->admin_remove_subscribers(
+	        {
+	            -addresses => [@address],
+				-type      => 'bounced_list',
+	        }
+	    );
+		 my $uri =
+		        $DADA::Config::S_PROGRAM_URL
+		      . '?flavor=view_list&delete_email_count='
+		      . $d_count
+		      . '&type='
+		      . $type
+		      . '&black_list_add='
+		      . $bl_count;
+			print $q->redirect( -uri => $uri );
+		
+	}
+	elsif($q->param('process') =~ m/move/i){ 
+
+		my $m_count = 0; 
+		
+        for my $address (@address) {
+			$lh->move_subscriber(
+	            {
+	                -email            => $address,
+	                -from             => 'bounced_list',
+	                -to               => 'list', 
+	        		-mode             => 'writeover', 
+	            }
+			);
+			$m_count++; 
 		}
-	}
+		
+		# maybe if the bounce_list num_subscribers count is 0, we just go to the view_list screen.
+		my $uri =
+	        $DADA::Config::S_PROGRAM_URL
+	      . '?flavor=view_list'
+	      . '&type='
+	      . $type
+	      . '&m_count='
+	      . $m_count;
+		print $q->redirect( -uri => $uri );
+	 
 	
-	my $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=view_list&delete_email_count=' . $email_count. '&type=' . $type; 
-	if($black_list_count > 0){ 
-		$uri .= '&black_list_add=' . $black_list_count; 
 	}
-	
-    print $q->redirect(-uri=> $uri);
 
+	
+	else { 
+		croak "I'm not sure what I'm supposed to do!"; 
+	}
 }
 
 

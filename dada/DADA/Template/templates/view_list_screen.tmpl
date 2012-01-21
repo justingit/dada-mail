@@ -142,7 +142,8 @@
 	<p class="alert">
 	 Currently, there are no <!-- tmpl_var type_title -->.
 	
-	    <!-- tmpl_unless list_type_isa_sub_request_list -->
+	    <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
+		
 			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
 	     			<!-- tmpl_if list_type_isa_list -->
 						Invite
@@ -153,7 +154,7 @@
 						Add
 					<!-- /tmpl_if -->
 	    	</a>
-	   	<!-- /tmpl_unless -->
+	   	<!-- /tmpl_if -->
 	</p>
 	
 <!-- tmpl_else -->
@@ -178,7 +179,7 @@
 	    <strong>
 	     <!-- tmpl_var name="num_subscribers" -->
 	    </strong>
-	    <!-- tmpl_unless list_type_isa_sub_request_list -->
+		<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
 			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
 	     			<!-- tmpl_if list_type_isa_list -->
 						Invite
@@ -189,8 +190,8 @@
 						Add
 					<!-- /tmpl_if -->
 	    	</a>
-	   	<!-- /tmpl_unless -->
-		...
+			...
+	   	<!-- /tmpl_if -->
 		</p>
 	  </td>
 	 </tr>
@@ -202,18 +203,17 @@
 	 	<!-- tmpl_include view_list_table_widget.tmpl --> 
 		
 	 <!-- tmpl_include view_list_prev_next_table.tmpl -->
-	 <p align="center">
-	  <a href="#" onclick="SetChecked(1);return false;">
+
+
+
+	<a href="#" onclick="SetChecked(1);return false;">
 	   check all 
 	  </a>
 	  :: 
 	  <a href="#" onclick="SetChecked(0);return false;">
 	   uncheck all
 	  </a>
-	 </p>
-
-
-
+	
 	<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
 
 		 <input type=hidden name="process" value="delete" />
@@ -242,8 +242,11 @@
 	<!-- tmpl_if EXPR="(type eq 'bounced_list')" -->
 	
 			<div class="buttonfloat">
-			 <input type="button" value="-> Move Selected Bouncing Address Back to Subscribers" />
-			 <input type="button" value="[x] Remove Selected Bouncing Addresses" />
+			<input type=hidden name="f"     value="process_bouncing_addresses" />
+			 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
+			
+			 <input type="submit" name="process" class="processing"  value="-> Move Selected Bouncing Address Back to Subscribers" />
+			 <input type="submit" name="process" class="processing"  value="[x] Remove Selected Bouncing Addresses" />
 			</div>
 			<div class="floatclear"></div>
 	
