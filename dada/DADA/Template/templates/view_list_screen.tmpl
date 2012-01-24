@@ -2,6 +2,14 @@
 
 <!-- tmpl_set name="title" value="View" -->
 
+
+<p>
+<a href="<!-- tmpl_var PROGRAM_URL -->?f=ver" title="Title Test" onclick="
+Modalbox.show(this.href, {title: this.title, width: 600}); return false;
+">Hit Me!</a>
+</p>
+
+
 <!-- tmpl_include help_link_widget.tmpl --> 
 
 

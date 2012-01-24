@@ -9408,8 +9408,8 @@ sub css {
 	my $allowed_css = {
 		'default.css' => 1, 
 		'modalbox.css'    => 1, 
-	}
-	if(!exists($allowed_css->{$css_file}){ 
+	};
+	if(!exists($allowed_css->{$css_file})){ 
 		# DEV: perhaps even put the backwards compat, "default.css" here, too... 
 		return; 
 	}
