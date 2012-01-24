@@ -1,4 +1,4 @@
-<!-- begin javascripts/dada_mail_admin.tmpl -->
+<!-- begin js/dada_mail_admin.tmpl -->
 
 var refreshLocation = ''; 
 
@@ -291,4 +291,4 @@ function removeSubscriberField(form_name) {
     form_name.target = "_self";
     
 }
-<!-- end javascripts/dada_mail_admin.tmpl -->
+<!-- end js/dada_mail_admin.tmpl -->

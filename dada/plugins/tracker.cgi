@@ -1187,10 +1187,10 @@ my $tmpl = q{
 	<!-- tmpl_unless chrome --> 
 		<html> 
 		 <head>
-		   <link rel="stylesheet" href="<!-- tmpl_var S_PROGRAM_URL -->/css/" type="text/css" media="screen" />
-		  <script src="<!-- tmpl_var S_PROGRAM_URL -->/javascripts/dada_mail_admin_js.js" type="text/javascript"></script>
-		  <script src="<!-- tmpl_var S_PROGRAM_URL -->/javascripts/prototype.js" type="text/javascript"></script>
-		  <script src="<!-- tmpl_var S_PROGRAM_URL -->/javascripts/scriptaculous.js?load=effects" type="text/javascript"></script>
+		   <link rel="stylesheet" href="<!-- tmpl_var S_PROGRAM_URL -->/css/default.css" type="text/css" media="screen" />
+		  <script src="<!-- tmpl_var S_PROGRAM_URL -->/js/dada_mail_admin_js.js" type="text/javascript"></script>
+		  <script src="<!-- tmpl_var S_PROGRAM_URL -->/js/prototype.js" type="text/javascript"></script>
+		  <script src="<!-- tmpl_var S_PROGRAM_URL -->/js/scriptaculous.js?load=effects" type="text/javascript"></script>
 		 </head> 
 		<body style="background:#fff"> 
 		

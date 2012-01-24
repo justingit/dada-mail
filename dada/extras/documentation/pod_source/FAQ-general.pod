@@ -676,7 +676,7 @@ B<Short Answer:>
 
 If all you want to do is tweak the CSS styles of Dada Mail, the global CSS file is located at: 
 
- dada/DADA/Template/templates/default_css.css
+ dada/DADA/Template/templates/default.css
 
 You will never see this file directly in use in Dada Mail, but you can view it in your web browser by adding I</css> to the end of the URL to Dada Mail: 
 

@@ -291,7 +291,7 @@ customizing Dada Mail. For example (in mail.cgi):
  # my $message_subject = $li->{list_name};
 
 Basically, HOWTO provides an instructional bridge for people who want to 
-go beyond the customization options available in Config.pm, default_css.css,
+go beyond the customization options available in Config.pm, default.css,
 and the default templates, but who aren't yet Perl (or Dada Mail) experts.
 Whether or not you use the HOWTO flag, doing this here and there is a really 
 nice afterthought if you have the time and inclination.

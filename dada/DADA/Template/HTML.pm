@@ -239,7 +239,7 @@ sub admin_template {
 										-data => \$admin_template, 
 										-vars => 
 											{
-												javascript          => DADA::Template::Widgets::screen({-screen => 'javascripts/dada_mail_admin_js.js'}), 
+												javascript          => DADA::Template::Widgets::screen({-screen => 'js/dada_mail_admin_js.js'}), 
 												login_switch_widget => $login_switch_widget, 
 												admin_menu          => $admin_menu, 
 												title               => $args{-Title},
@@ -560,7 +560,7 @@ sub list_template {
             -dada_pseudo_tag_filter => 1,
             -vars                   => {
                 default_css => DADA::Template::Widgets::screen(
-                    { -screen => 'default_css.css', -vars => $args{ -vars } }
+                    { -screen => 'css/default.css', -vars => $args{ -vars } }
                 ),
                 title              => $args{ -Title },
                 'profile.email'    => $prof_email,

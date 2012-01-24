@@ -283,11 +283,7 @@ if($ENV{PATH_INFO}){
        }
 
 
-    if($info =~ m/^css$/){
-
-        $q->param('f', 'css');
-
-     }elsif($info =~ m/subscription_form_js$/){
+  	if($info =~ m/subscription_form_js$/){
 
         my ($pi_flavor, $pi_list) = split('/', $info, 2);
 
@@ -350,14 +346,28 @@ if($ENV{PATH_INFO}){
             if $img_name;
 
 
-}elsif($info =~ /^javascripts/){
+}elsif($info =~ /^js/){
 
         my ($pi_flavor, $js_lib, $extran) = split('/', $info);
 
-        $q->param('flavor', 'javascripts');
+        $q->param('flavor', 'js');
 
         $q->param('js_lib',    $js_lib)
             if $js_lib;
+
+}elsif($info =~ /^css/){
+
+        my ($pi_flavor, $css_file, $extran) = split('/', $info);
+
+        $q->param('flavor', 'css');
+		
+		if($css_file){ 
+        	$q->param('css_file',    $css_file)
+		}
+		else { 
+			# this is backwards compat. 
+			$q->param('css_file', 'default.css'); 
+		}
 
    }elsif($info =~ /^captcha_img/){
 
@@ -623,10 +633,10 @@ sub run {
 	'file_attachment'            =>    \&file_attachment,
 	'm_o_c'                      =>    \&m_o_c,
 	'img'                        =>    \&img,
-	'javascripts'                =>    \&javascripts,
+	'js'                         =>    \&js,
+	'css'                        =>    \&css, 
 	'captcha_img'                =>    \&captcha_img,
 	'ver'                        =>    \&ver,
-	'css'                        =>    \&css,
 	'resend_conf'                =>    \&resend_conf,
 
 
@@ -9348,7 +9358,7 @@ EOF
 
 
 
-sub javascripts {
+sub js {
     my $js_lib = xss_filter( $q->param('js_lib') );
 
     my @allowed_js = qw(
@@ -9364,6 +9374,7 @@ sub javascripts {
       sound.js
       unittest.js
       scriptaculous.js
+      modalbox.js
 
     );
 
@@ -9374,13 +9385,13 @@ sub javascripts {
 #warn '$js_lib ' . $js_lib;
 
     if ( $lt{$js_lib} == 1 ) {
-        if ( $c->cached('javascripts/' . $js_lib . '.scrn') ) {
-			$c->show('javascripts/' . $js_lib . '.scrn'); return;
+        if ( $c->cached('js/' . $js_lib . '.scrn') ) {
+			$c->show('js/' . $js_lib . '.scrn'); return;
 		}
         my $r = $q->header('text/javascript');
-        $r .= DADA::Template::Widgets::screen( { -screen => 'javascripts/' . $js_lib } );
+        $r .= DADA::Template::Widgets::screen( { -screen => 'js/' . $js_lib } );
         e_print($r);
-        $c->cache( 'javascripts/' . $js_lib . '.scrn', \$r );
+        $c->cache( 'js/' . $js_lib . '.scrn', \$r );
 
     }
     else {
@@ -9390,61 +9401,90 @@ sub javascripts {
 
 }
 
+sub css {
+
+	my $css_file = xss_filter( $q->param('css_file') );
+    
+	my $allowed_css = {
+		'default.css' => 1, 
+		'modalbox.css'    => 1, 
+	}
+	if(!exists($allowed_css->{$css_file}){ 
+		# DEV: perhaps even put the backwards compat, "default.css" here, too... 
+		return; 
+	}
+	
+	require DADA::Template::Widgets;
+    e_print( $q->header('text/css') ); 
+	e_print(  DADA::Template::Widgets::screen( { -screen => 'css/' . $css_file } ));
+    
+}
+
+
 
 
 sub img {
 
-    my $img_name = xss_filter($q->param('img_name'));
-
+    my $img_name = xss_filter( $q->param('img_name') );
 
     my @allowed_images = qw(
 
-        badge_feed.png
-        dada_mail_logo.png
+      3f0.png
+      badge_blinklist.png
+      badge_blogmarks.png
+      badge_delicious.png
+      badge_digg.png
+      badge_fark.png
+      badge_feed.png
+      badge_furl.png
+      badge_magnolia.png
+      badge_newsvine.png
+      badge_reddit.png
+      badge_segnalo.png
+      badge_simpy.png
+      badge_smarking.png
+      badge_spurl.png
+      badge_wists.png
+      badge_yahoo.png
 
-        badge_delicious.png
-        badge_digg.png
-        badge_spurl.png
-        badge_wists.png
-        badge_simpy.png
-        badge_newsvine.png
-        badge_blinklist.png
-        badge_furl.png
-        badge_reddit.png
-        badge_fark.png
-        badge_blogmarks.png
-        badge_yahoo.png
-        badge_smarking.png
-        badge_magnolia.png
-        badge_segnalo.png
+      cff.png
 
-        3f0.png
-        cff.png
+      dada_mail_logo.png
 
-        dada_mail_screenshot.jpg
+      dada_mail_screenshot.jpg
+
+      spinner.gif
 
     );
 
     my %lt = ();
-    for(@allowed_images){ $lt{$_} = 1; }
+    for (@allowed_images) { $lt{$_} = 1; }
 
     require DADA::Template::Widgets;
 
+    if ( $lt{$img_name} == 1 ) {
+        if ( $c->cached( 'img/' . $img_name ) ) {
+            $c->show( 'img/' . $img_name );
+            return;
+        }
+        my $r;
+        if ( $img_name =~ m/\.png$/ ) {
+            $r = $q->header('image/png');
+        }
+        elsif ( $img_name =~ m/\.gif$/ ) {
+            $r = $q->header('image/gif');
+        }
+        $r .= DADA::Template::Widgets::_raw_screen(
+            {
+                -screen   => 'img/' . $img_name,
+                -encoding => 0,
+            }
+        );    # maybe, _raw_screen?
+        print $r;
+        $c->cache( 'img/' . $img_name, \$r );
 
-    if($lt{$img_name} == 1){
-        if($c->cached($img_name)){
-			$c->show($img_name); return;}
-        my $r =  $q->header('image/png');
-           $r .= DADA::Template::Widgets::_raw_screen(
-			{
-				-screen   => $img_name,
-				-encoding => 0, 
-			}
-		); # maybe, _raw_screen?
-         print $r;
-        $c->cache($img_name, \$r);
-
-    } else {
+    }
+    else {
 
         # nothing for now...
     }
@@ -9491,12 +9531,7 @@ sub ver {
 
 }
 
-sub css {
 
-    require DADA::Template::Widgets;
-    print $q->header('text/css');
-    e_print(DADA::Template::Widgets::screen({-screen => 'default_css.css'}));
-}
 
 sub author {
 

@@ -422,7 +422,7 @@ dada/DADA/Template/templates/default_admin_template.tmpl
 =item * The Default CSS file: 
 
 
-dada/DADA/Template/templates/default_css.css
+dada/DADA/Template/templates/default.css
 
 =back
 
