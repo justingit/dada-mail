@@ -1,5 +1,6 @@
 <!-- begin view_list_table_widget.tmpl --> 
 
+
 <div style="max-height: 200px; overflow: auto; border:1px solid black">
  
  <table cellpadding="2" cellspacing="0" border="0" width="100%" style="background-color:#fff">
@@ -65,11 +66,9 @@
 		
 	 	
 		<!-- tmpl_if expr="(type eq 'bounced_list')" -->
+	
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_bounce_history;email=<!-- tmpl_var email ESCAPE=URL -->" title="Bounce Log for <!-- tmpl_var email escape=HTML -->" onclick="Modalbox.show(this.href, {title: this.title, width: 640, height:480}); return false;	"><!-- tmpl_var email --></a>
 		
-			<a href="./plugins/dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email ESCAPE=URL -->" target="_blank" >
-		       <!-- tmpl_var email -->  
-		      </a>
-		 	
 		<!-- tmpl_else --> 
 		
 			<!-- tmpl_unless no_email_links --> 

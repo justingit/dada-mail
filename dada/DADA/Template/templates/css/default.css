@@ -540,6 +540,16 @@ textarea {
 	color:#333;
 }
 
+input.small_button { 
+	margin:2px;
+	padding:2px;
+	border-width:1px;
+	border-style:solid; 
+	border-color:#666 #999 #ccc #999;
+	font-family:Helvetica,Verdana,Arial,sans-serif;
+	font-size: .9em;
+
+}
 /* affects buttons only: */
 input.plain,
 input.processing,
@@ -692,4 +702,65 @@ padding-right: 7px;
 }
 
 
+
+
+/* matthewjamestaylor.com/blog/beautiful-css-centered-menus-no-hacks-full-cross-browser-support */
+
+#centeredmenu {
+	clear: left;
+	float: left;
+	padding: 0;
+	background: #fff url(<!-- tmpl_var PROGRAM_URL -->/img/centeredmenu.gif) bottom repeat-x;
+	width: 100%;
+	overflow: hidden;
+	font-family: Verdana, Geneva, sans-serif;
+}
+#centeredmenu ul {
+	float: left;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	position: relative;
+	left: 50%;
+	text-align: center;
+}
+#centeredmenu ul li {
+	display: block;
+	float: left;
+	list-style: none;
+	margin: 20px 0 0 0;
+	padding: 0;
+	position: relative;
+	right: 50%;
+}
+#centeredmenu ul li a {
+	display: block;
+	float: left;
+	margin: 0 1px;
+	padding: 5px 10px;
+	background: #fff;
+	text-decoration: none;
+	color: #000;
+	border-top: 1px solid #369;
+	border-left: 1px solid #369;
+	border-right: 1px solid #369;
+	position: relative;
+	bottom: 1px;
+}
+#centeredmenu ul li a:hover {
+	background: #36f;
+	color: #fff;
+}
+#centeredmenu ul li.active {
+	margin-top: 10px;
+}
+#centeredmenu ul li.active a,
+#centeredmenu ul li.active a:hover {
+	position: relative;
+	bottom: 0;
+	padding: 10px;
+	background: #fff;
+	color: #000;
+	font-weight: bold;
+}
 

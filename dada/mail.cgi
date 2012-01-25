@@ -567,6 +567,7 @@ sub run {
 	'admin_help'                 =>    \&admin_help,
 	'delete_list'                =>    \&delete_list,
 	'view_list'                  =>    \&view_list,
+	'view_bounce_history'        =>    \&view_bounce_history, 
 	'subscription_requests'      =>    \&subscription_requests,
 	'remove_all_subscribers'     =>    \&remove_all_subscribers,
 	'view_list_options'          =>    \&list_cp_options,
@@ -3032,6 +3033,43 @@ sub view_list {
 		e_print($scrn);
 
     }
+}
+
+
+sub view_bounce_history { 
+
+
+    my ($admin_list, $root_login) = check_list_security(
+		-cgi_obj  => $q,
+		-Function => 'view_list'
+	);
+    $list  = $admin_list;
+
+
+	require DADA::App::BounceHandler::Logs; 
+	my $bhl = DADA::App::BounceHandler::Logs->new;
+	my $results = $bhl->search(
+		{ 
+			-query => $email, 
+			-list  => $list, 
+			-file  => $DADA::Config::LOGS . '/bounces.txt',
+		}
+	);
+
+	require DADA::Template::Widgets; 
+	e_print($q->header); 
+	e_print(DADA::Template::Widgets::screen(
+		{
+			-screen => 'bounce_search_results_modal_menu.tmpl',
+			-vars   => {
+				search_results => $results,
+				total_bounces  => scalar(@$results), 
+				email          => $email,
+				type           => 'bounced_list', 
+			}
+		}
+	));
+	
 }
 
 
@@ -9447,6 +9485,8 @@ sub img {
       badge_wists.png
       badge_yahoo.png
 
+	  centeredmenu.gif
+	
       cff.png
 
       dada_mail_logo.png

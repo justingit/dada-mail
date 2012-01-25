@@ -19,6 +19,12 @@ function SetChecked(val) {
 	}
 }
 
+function toggleCheckBoxes(source, name) { 
+  checkboxes = document.getElementsByName(name);
+  for(var i in checkboxes)
+    checkboxes[i].checked = source.checked;
+}
+
 function SetListChecked(val) {
 
 	dml=document.send_email;

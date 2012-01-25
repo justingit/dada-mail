@@ -2,18 +2,12 @@
 
 <!-- tmpl_set name="title" value="View" -->
 
-
-<p>
-<a href="<!-- tmpl_var PROGRAM_URL -->?f=ver" title="Title Test" onclick="
-Modalbox.show(this.href, {title: this.title, width: 600}); return false;
-">Hit Me!</a>
-</p>
-
-
 <!-- tmpl_include help_link_widget.tmpl --> 
 
-
 <!-- tmpl_include list_type_switch_widget.tmpl -->
+
+
+<!-- some sort of dialogue box-y looking thing... --> 
 
 <!-- tmpl_if delete_email_count -->
 	
@@ -50,98 +44,114 @@ Modalbox.show(this.href, {title: this.title, width: 600}); return false;
 	</p>
 <!-- /tmpl_if -->
 
+<!-- /some sort of dialogue box-y looking thing... --> 
 
 
+<p>&nbsp;</p> 
 
-<!-- tmpl_if list_type_isa_list -->
+	<!-- tmpl_if comment --> 
 	
-	<h1>
-	 Your Subscription List
-	</h1>
-	
-<!--/tmpl_if-->
+					<h1>
+					 Your Subscription List
+					</h1>
 
-<!-- tmpl_if list_type_isa_authorized_senders -->
+					<h1>
+					 Your Authorized Senders
+					</h1>
+
+					<h1>
+					 Your White List
+					</h1>
 	
-	<h1>
-	 Your Authorized Senders
-	</h1>
-	<p>
-	 This shows all email addresses that are allowed to send messages to the list (via the Dada Bridge Plugin) other than the list owner (for announce-only lists) and without moderation. 
-	</p>
+					<h1>
+					 Your Black List
+					</h1>
 	
-<!--/tmpl_if-->
+					<h1>
+					 Your Bouncing Addresses
+					</h1>
+	
+	<!-- /tmpl_if --> 
+	
+<!-- tmpl_if --> 
 
 
-<!-- tmpl_if list_type_isa_white_list -->
+					<!-- tmpl_if list_type_isa_list -->
 	
-	<h1>
-	 Your White List
-	</h1>
-	<p>
-	 Your white list is a list of email addresses that are allowed to subscribe to your list.
-	</p>
-	
-<!--/tmpl_if-->
+					<!--/tmpl_if-->
 
-<!-- tmpl_if list_type_isa_black_list -->
+					<!-- tmpl_if list_type_isa_authorized_senders -->
 	
-	<h1>
-	 Your Black List
-	</h1>
-	<p class="alert">
-	 Your Black List is a set of rules that say who is not allowed to subscribe to 
-	 your Subscribers Mailing List . You may add both complete email addresses  (you@example.com) or 
-	 part of an email address (example.com) to you Black List.</p>
+						<p>
+						 This shows all email addresses that are allowed to send messages to the list (via the Dada Bridge Plugin) other than the list owner (for announce-only lists) and without moderation. 
+						</p>
 	
-	<p class="alert">Parts of addresses will match whole addresses - "example.com" will match, "you@example.com" and, "someone.else@example.com"</p>
+					<!--/tmpl_if-->
+
+
+					<!-- tmpl_if list_type_isa_white_list -->
+	
+
+						<p>
+						 Your white list is a list of email addresses that are allowed to subscribe to your list.
+						</p>
+	
+					<!--/tmpl_if-->
+
+					<!-- tmpl_if list_type_isa_black_list -->
+
+						<p class="alert">
+						 Your Black List is a set of rules that say who is not allowed to subscribe to 
+						 your Subscribers Mailing List . You may add both complete email addresses  (you@example.com) or 
+						 part of an email address (example.com) to you Black List.</p>
+	
+						<p class="alert">Parts of addresses will match whole addresses - "example.com" will match, "you@example.com" and, "someone.else@example.com"</p>
 		
-	<!-- tmpl_if can_use_global_black_list --> 
+						<!-- tmpl_if can_use_global_black_list --> 
 		
-		<!-- tmpl_if GLOBAL_BLACK_LIST -->
+							<!-- tmpl_if GLOBAL_BLACK_LIST -->
 			
-			<p class="positive">
-			 * The Global Black List has been enabled.
-			</p>
+								<p class="positive">
+								 * The Global Black List has been enabled.
+								</p>
 			
-		<!--/tmpl_if-->
+							<!--/tmpl_if-->
 		
-	<!--/tmpl_if-->
+						<!--/tmpl_if-->
 	
-	<!-- tmpl_if can_use_global_unsubscribe --> 
+						<!-- tmpl_if can_use_global_unsubscribe --> 
 		
-		<!-- tmpl_if GLOBAL_UNSUBSCRIBE -->
+							<!-- tmpl_if GLOBAL_UNSUBSCRIBE -->
 			
-			<p class="positive">
-			 * Global Unsubscribe has been enabled.
-			</p>
+								<p class="positive">
+								 * Global Unsubscribe has been enabled.
+								</p>
 			
-		<!--/tmpl_if-->
+							<!--/tmpl_if-->
 		
-	<!--/tmpl_if-->
+						<!--/tmpl_if-->
 	
-	<!-- tmpl_if black_list_changes_done -->
+						<!-- tmpl_if black_list_changes_done -->
 	
-		<p class="positive">
-		 Your changes to the Black List settings were successful!
-		</p>
+							<p class="positive">
+							 Your changes to the Black List settings were successful!
+							</p>
 		
-	<!--/tmpl_if-->
+						<!--/tmpl_if-->
 	
-<!--/tmpl_if-->
+					<!--/tmpl_if-->
 
 
-<!-- tmpl_if list_type_isa_bounced_list -->
+					<!-- tmpl_if list_type_isa_bounced_list -->
 	
-	<h1>
-	 Your Bouncing Addresses
-	</h1>
-	<p>
-	 These addresses are subscribers that have been routinely bouncing message back and have been removed from your Subscribers list</p> 
-	<p>
-		You may remove them permanently or reinstate their subscription. 
-	</p>
+
+						<p>
+						 These addresses were Subscribers, that had been routinely bouncing messages. They have been moved here from your Subscribers list, after reaching the limit of message bounces.</p> 
+						<p>
+							You may either move these addresses back to your Subscribers list, or permanently remove them from your mailing list. Click on any address to view the bouncing history of that address.
+						</p>
 	
+					<!-- /tmpl_if -->
 <!-- /tmpl_if -->
 
 
@@ -167,10 +177,10 @@ Modalbox.show(this.href, {title: this.title, width: 600}); return false;
 	
 <!-- tmpl_else -->
 
-	<table width="100%">
+	<table width="100%" cellpadding="0" cellspacing="0">
 	 <tr>
-	  <td>
-	   <p>
+	  <td valign="bottom">
+	   <br />
 	    <!-- tmpl_var type_title -->
 	    <strong>
 	     <!-- tmpl_var name="screen_start" -->
@@ -179,14 +189,10 @@ Modalbox.show(this.href, {title: this.title, width: 600}); return false;
 	    <strong>
 	     <!-- tmpl_var name="screen_finish" -->
 	    </strong>
-	   </p>
-	  </td>
-	  <td align="right">
-	   <p>
-	    Total number of <!-- tmpl_var type_title -->:
-	    <strong>
-	     <!-- tmpl_var name="num_subscribers" -->
-	    </strong>
+		of
+		<strong>
+			<!-- tmpl_var num_subscribers --> 
+	   </strong>
 		<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
 			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
 	     			<!-- tmpl_if list_type_isa_list -->
@@ -197,11 +203,25 @@ Modalbox.show(this.href, {title: this.title, width: 600}); return false;
 					<!-- tmpl_else --> 
 						Add
 					<!-- /tmpl_if -->
-	    	</a>
-			...
+	    	</a>...
 	   	<!-- /tmpl_if -->
+	  </td>
+<!-- tmpl_if comment --> 
+	  <td align="right" valign="bottom">
+	   <p>
+	    Total number of <!-- tmpl_var type_title -->:
+	    <strong>
+	     <!-- tmpl_var name="num_subscribers" -->
+	    </strong>
+		
 		</p>
 	  </td>
+<!-- /tmpl_if --> 
+	
+	<td align="right">
+		<!-- tmpl_include list_search_form_widget.tmpl --> 
+	</td> 
+	
 	 </tr>
 	</table>
 
@@ -211,69 +231,60 @@ Modalbox.show(this.href, {title: this.title, width: 600}); return false;
 	 	<!-- tmpl_include view_list_table_widget.tmpl --> 
 		
 	 <!-- tmpl_include view_list_prev_next_table.tmpl -->
+	<table cellpadding="2" cellspacing="0" border="0" width="100%" style="background-color:#fff">
+	  <tr>
+	   		<td width="25">
+	    		<p><input type="checkbox" onClick="toggleCheckBoxes(this, 'address')"/></p>
+	   		</td>
 
-
-
-	<a href="#" onclick="SetChecked(1);return false;">
-	   check all 
-	  </a>
-	  :: 
-	  <a href="#" onclick="SetChecked(0);return false;">
-	   uncheck all
-	  </a>
+		
+			<td>
+				
 	
 	<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
 
 		 <input type=hidden name="process" value="delete" />
 		 <input type=hidden name="f"       value="remove_subscribers" />
 		 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
-		 <div class="buttonfloat">
-		  <input type="submit" class="alertive" value="Unsubscribe Checked '<!-- tmpl_var type_title -->' Subscribers" />
-		 </div>
-
-		<div class="floatclear"></div> 
-
+		 <input type="submit" class="small_button" value="Unsubscribe Checked '<!-- tmpl_var type_title -->' Subscribers" />
+		 
+		
 	<!-- /tmpl_if -->
 
 	<!-- tmpl_if EXPR="(type eq 'sub_request_list')" -->
 
-		<div class="buttonfloat">
 		 <input type=hidden name="f"       value="subscription_requests" />
 		 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
-		 <input type="submit" name="process" class="processing" value="Approve Checked Subscription Requests" />
-		 <input type="submit" name="process" class="alertive" value="Deny Checked Subscription Requests" />
-		</div>
-		<div class="floatclear"></div>
+		 <input type="submit" name="process" class="small_button" value="Approve Checked Subscription Requests" />
+		 <input type="submit" name="process" class="small_button" value="Deny Checked Subscription Requests" />
 
 	<!-- /tmpl_if -->
 	
 	<!-- tmpl_if EXPR="(type eq 'bounced_list')" -->
 	
-			<div class="buttonfloat">
 			<input type=hidden name="f"     value="process_bouncing_addresses" />
 			 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
 			
-			 <input type="submit" name="process" class="processing"  value="-> Move Selected Bouncing Address Back to Subscribers" />
-			 <input type="submit" name="process" class="processing"  value="[x] Remove Selected Bouncing Addresses" />
-			</div>
-			<div class="floatclear"></div>
-	
+			 <input type="submit" name="process" class="small_button"  value="-> Move Selected Bouncing Address Back to Subscribers" />
+			 <input type="submit" name="process" class="small_button"  value="[x] Remove Selected Bouncing Addresses" />
+			
 	<!-- /tmpl_if -->
 	
 	</form>
 
 	<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
 
-		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" style="display:inline">
 		 <input type=hidden name="f"       value="remove_all_subscribers" />
 		 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
-		 <div class="buttonfloat">
-		  <input type="submit" class="alertive" value="Unsubscribe ALL '<!-- tmpl_var type_title -->' Subscribers" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   />
-		 </div>
+		  <input type="submit" class="small_button" value="Unsubscribe ALL '<!-- tmpl_var type_title -->'" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   />
 		</form>
-		<div class="floatclear"></div>
 		
 	<!-- /tmpl_if -->
+</td>
+
+			</tr> 
+		</table>
 
 <!-- /tmpl_unless --> 
 
@@ -446,7 +457,6 @@ Modalbox.show(this.href, {title: this.title, width: 600}); return false;
 
 <!-- tmpl_if num_subscribers -->
 
-	<!-- tmpl_include list_search_form_widget.tmpl --> 
 
 	<!-- tmpl_include list_download_widget.tmpl -->
 	
