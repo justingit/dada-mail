@@ -45,14 +45,13 @@
 
 
 
-<!-- tmpl_include list_type_switch_widget.tmpl -->
 
 
 <p>
  Manage Subscribers (<!-- tmpl_var type_title -->)
 &#187;
  <strong>
-	<!-- tmpl_if list_type_isa_list -->
+	<!-- tmpl_if EXPR="(type eq 'list')" -->
 		Invite
 		<!-- tmpl_if list_settings.enable_mass_subscribe -->
 / Add
@@ -64,7 +63,7 @@
 &#187;
  Verify
 &#187;
-<!-- tmpl_if list_type_isa_list -->
+<!-- tmpl_if EXPR="(type eq 'list')" -->
 	Send Invitation
 	<!-- tmpl_if list_settings.enable_mass_subscribe -->
 		/ Subscribe
@@ -74,7 +73,12 @@
 <!-- /tmpl_if -->
 </p>
 
-<!-- tmpl_if list_type_isa_list -->
+
+<!-- tmpl_include list_type_switch_widget.tmpl -->
+
+
+
+<!-- tmpl_if EXPR="(type eq 'list')" -->
 	
 	<!-- tmpl_if list_settings.use_subscription_quota -->
 		
@@ -115,7 +119,7 @@
 			 <a href="#" onclick="toggleDisplay('add_one');return false;">
 			+/- 
 		</a>
-		<!-- tmpl_if list_type_isa_list -->
+		<!-- tmpl_if EXPR="(type eq 'list')" -->
 			Invite
 			<!-- tmpl_if list_settings.enable_mass_subscribe -->
 				/ Add
@@ -171,7 +175,7 @@
 	<fieldset style="background:#e6e6e6">
 		<legend>
 		
-			<!-- tmpl_if list_type_isa_list -->
+			<!-- tmpl_if EXPR="(type eq 'list')" -->
 				Invite
 				<!-- tmpl_if list_settings.enable_mass_subscribe -->
 					/ Add

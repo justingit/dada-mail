@@ -1,0 +1,43 @@
+<!-- begin view_list_slide_nav_widget.tmpl --> 
+
+<table width="100%" cellpadding="0" cellspacing="0">
+ <tr> 
+<td align="left"> 
+<strong><a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;page=<!-- tmpl_var first_page -->;query=<!-- tmpl_var query -->">&lt;&lt;</a></strong>
+</td> 
+<td align="center"> 
+
+
+<!-- tmpl_if previous_page --> 
+	<strong><a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;page=<!-- tmpl_var previous_page -->;query=<!-- tmpl_var query -->">&lt; </a></strong>
+<!-- tmpl_else --> 
+<!-- /tmpl_if -->
+	<!-- tmpl_loop pages_in_set --> 
+		<!-- tmpl_if on_current_page --> 
+			<strong> 
+			 <!-- tmpl_var page --> 
+			</strong> 
+		<!-- tmpl_else --> 
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;page=<!-- tmpl_var page -->;query=<!-- tmpl_var query -->">
+			 <!-- tmpl_var page --> 
+			</a>
+		<!-- /tmpl_if --> 
+
+	<!-- /tmpl_loop --> 
+	<!-- tmpl_if next_page -->
+	 <strong><a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;page=<!-- tmpl_var next_page -->;query=<!-- tmpl_var query -->"> &gt;</a></strong>
+	<!-- tmpl_else --> 
+	<!-- /tmpl_if --> 
+	
+</td> 
+
+<td align="right"> 
+
+<strong><a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;page=<!-- tmpl_var last_page -->;query=<!-- tmpl_var query -->">&gt;&gt;</a></strong>
+
+</td>
+
+</tr> 
+</table>
+
+<!-- end view_list_slide_nav_widget.tmpl --> 

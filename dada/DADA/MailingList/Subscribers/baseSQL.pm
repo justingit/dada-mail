@@ -129,7 +129,7 @@ sub search_list {
 
     my $sth = $self->{dbh}->prepare($query);
 
-    $sth->execute()
+    my $rv = $sth->execute()
       or croak "cannot do statment (for search_list)! $DBI::errstr\n";
 
     my $row   = {};
@@ -159,7 +159,10 @@ sub search_list {
 
     $sth->finish();
 
-    return $r;
+	if($rv eq '0E0'){ 
+		$rv = 0; 
+	}
+    return ($rv, $r);
 
 }
 

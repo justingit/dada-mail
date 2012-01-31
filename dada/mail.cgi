@@ -2857,6 +2857,8 @@ sub view_list {
 		-Function => 'view_list'
 	);
     $list  = $admin_list;
+
+	# DEV: Yup. Forgot what this was for. 
 	if(defined($q->param('list'))){
 		if($list ne $q->param('list')){
 			# I should look instead to see if we're logged in view ROOT and then just
@@ -2869,43 +2871,86 @@ sub view_list {
 		}
 	}
 
-
-
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $lh                    = DADA::MailingList::Subscribers->new({-list => $list});
 
-    my $start                 = int($q->param('start')) || 0;
-    my $length                = $ls->param('view_list_subscriber_number');
-    my $num_subscribers       = $lh->num_subscribers({-type => $type});
-    my $screen_finish         = $length + $start;
-
-	if($num_subscribers < $length+$start) { 
-		$screen_finish         =  $num_subscribers;
-	}
-
-    my $screen_start          = $start;
-
-	if (($start == 0) && ($num_subscribers != 0)) { 
-       $screen_start          = 1;
-	}
-	
-    my $previous_screen       = $start-$length;
-    my $next_screen           = $start+$length;
-
+	my $num_subscribers       = $lh->num_subscribers({-type => $type});
+   
 	my $show_bounced_list     = 0;
 	if($lh->num_subscribers({-type => 'bounced_list'}) > 0){ 
 		$show_bounced_list = 1; 
 	}
 	
-    my $subscribers           = $lh->subscription_list(
-									{
-										-start    => $start,
-										'-length' => $length,
-										-type     => $type,
-									}
-								);
+    my $subscribers = [];
+	my $query       = $q->param('query') || undef; 
+	
+	require Data::Pageset;
+	my $page                  = $q->param('page') || 1;
+    my $page_info = undef; 
+	my $pages_in_set = [];
+	my $total_num    = 0; 
+    if ($query) {
+        ($total_num, $subscribers) = $lh->search_list(
+            {
+                -query    => $query,
+                -type     => $type,
+                -start    => ($page - 1),
+                '-length' => $ls->param('view_list_subscriber_number'),
+            }
+        );
+
+		$page_info = Data::Pageset->new(
+	        {
+	            total_entries    => $total_num,
+	            entries_per_page => $ls->param('view_list_subscriber_number'),
+	            current_page     => $page,
+	            mode             => 'slide',    # default fixed
+				pages_per_set    => 5, 
+	        }
+	    );
+	
+    }
+    else {
+	
+	
+        $subscribers = $lh->subscription_list(
+            {
+                -type     => $type,
+				# this really should be just, $page, but subscription_list() would have to be updated, which will break a lot of things...
+                -start    => ($page - 1), 
+                '-length' => $ls->param('view_list_subscriber_number'),
+            }
+        );
+		$total_num = $num_subscribers; 
+	    $page_info = Data::Pageset->new(
+	        {
+	            total_entries    => $num_subscribers,
+	            entries_per_page => $ls->param('view_list_subscriber_number'),
+	            current_page     => $page,
+	            mode             => 'slide',    # default fixed
+				pages_per_set    => 5, 
+	        }
+	    );
+
+
+    }
+
+
+    foreach my $page_num ( @{ $page_info->pages_in_set() } ) {
+        if ( $page_num == $page_info->current_page() ) {
+            push( @$pages_in_set, { page => $page_num, on_current_page => 1 } );
+        }
+        else {
+            push( @$pages_in_set,
+                { page => $page_num, on_current_page => undef } );
+        }
+    }
+
+
+ 
+
     my $email_count           = $q->param('email_count');
     my $delete_email_count    = $q->param('delete_email_count');
 	my $black_list_add        = $q->param('black_list_add') || 0; 
@@ -2969,17 +3014,23 @@ sub view_list {
                                                   {
 
 													 screen                      => 'view_list',
-
                                                      field_names                 => $field_names,
-
-                                                     view_list_subscriber_number => $ls->param('view_list_subscriber_number'),
-                                                     next_screen                 => $next_screen,
-                                                     previous_screen             => $previous_screen,
-                                                     use_previous_screen         => ($start-$length >= 0 && $start > 0) ? 1 : 0,
+													
+													first_page    => $page_info->first_page(),
+									                last_page     => $page_info->last_page(),
+									                next_page     => $page_info->next_page(),
+									                previous_page => $page_info->previous_page(),
+													pages_in_set => $pages_in_set, 
+                                                     #next_screen                 => $next_screen,
+                                                     #previous_screen             => $previous_screen,
+                                                     #use_previous_screen         => ($start-$length >= 0 && $start > 0) ? 1 : 0,
                                                      num_subscribers             => $num_subscribers,
-                                                     show_next_screen_link       => ($num_subscribers > ($start + $length)) ? 1 : 0,
-                                                     screen_start                => $screen_start,
-                                                     screen_finish               => $screen_finish,
+                                                     #show_next_screen_link       => ($num_subscribers > ($start + $length)) ? 1 : 0,
+                                                    total_num => $total_num, 
+ 													first => $page_info->first, 
+													last => $page_info->last, 
+													#screen_start                => $screen_start,
+                                                     #screen_finish               => $screen_finish,
                                                      delete_email_count          => $delete_email_count,
 													 black_list_add              => $black_list_add, 
                                                      email_count                 => $email_count,
@@ -2989,16 +3040,9 @@ sub view_list {
 
                                                      type                        => $type,
                                                      type_title                  => $type_title,
+													 query                       => $query, 
 
 													show_bounced_list            => $show_bounced_list, 
-
-                                                     list_type_isa_list                  => ($type eq 'list')               ? 1 : 0,
-                                                     list_type_isa_black_list            => ($type eq 'black_list')         ? 1 : 0,
-                                                     list_type_isa_authorized_senders    => ($type eq 'authorized_senders') ? 1 : 0,
-                                                     list_type_isa_white_list            => ($type eq 'white_list')         ? 1 : 0,
-                                                     list_type_isa_sub_request_list      => ($type eq 'sub_request_list')   ? 1 : 0,
-                                                     list_type_isa_bounced_list          => ($type eq 'bounced_list')       ? 1 : 0,
-
 
                                                      GLOBAL_BLACK_LIST           => $DADA::Config::GLOBAL_BLACK_LIST,
                                                      GLOBAL_UNSUBSCRIBE          => $DADA::Config::GLOBAL_UNSUBSCRIBE,
@@ -3538,18 +3582,11 @@ sub add {
 					-Root_Login => $root_login,
 					-List       => $list,  
 				},
+				-expr   => 1, 
                 -vars   => {
 					screen                     => 'add',
                     subscription_quota_reached => $subscription_quota_reached,
                     num_subscribers            => $num_subscribers,
-                    list_type_isa_list         => ( $type eq 'list' ) ? 1 : 0,
-                    list_type_isa_black_list => ( $type eq 'black_list' ) ? 1
-                    : 0,
-                    list_type_isa_authorized_senders =>
-                      ( $type eq 'authorized_senders' ) ? 1 : 0,
-                    list_type_isa_white_list => ( $type eq 'white_list' ) ? 1
-                    : 0,
-
                     type       => $type,
                     type_title => $type_title,
                     flavor     => 'add',
@@ -3564,6 +3601,8 @@ sub add {
                       $lh->num_subscribers({-type => 'white_list'}),
                     authorized_senders_num =>
                       $lh->num_subscribers({-type => 'authorized_senders'}),
+                   bounced_list_num =>
+                      $lh->num_subscribers({-type => 'bounced_list'}),
 
                     fields => $fields,
 
@@ -5977,7 +6016,7 @@ sub list_cp_options {
     if ( !$process ) {
 
         my @list_amount = (
-            10,   25,   50,    100,   150,   200,   250,   300,
+            3, 5, 10,   25,   50,    100,   150,   200,   250,   300,
             350,  400,  450,   500,   550,   600,   650,   700,
             750,  800,  850,   900,   950,   1000,  2000,  3000,
             4000, 5000, 10000, 15000, 20000, 25000, 50000, 100000
@@ -6551,119 +6590,6 @@ sub resend_conf {
 	    }
 
 	}
-}
-
-
-
-
-sub search_list {
-
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
-                                                        -Function => 'search_list');
-    $list = $admin_list;
-
-    require  DADA::MailingList::Settings;
-    my $ls = DADA::MailingList::Settings->new({-list => $list});
-    my $li = $ls->get;
-
-    my $lh = DADA::MailingList::Subscribers->new({-list => $list});
-
-###
-    # See, here's the thing - this is directly lifted from the view_list screen (Yes! I know! Sorry!)
-    # pager stuff is supposed to have all sorts of bugs for home-brewed implementation.
-    # This below should have bugs, as does the view_list() screen.
-    # Hmm...
-    # TODO would be to use something like this:
-    # http://search.cpan.org/~llap/Data-Pageset/lib/Data/Pageset.pm
-
-    my $start                 = int($q->param('start')) || 0;
-    my $length                = $li->{view_list_subscriber_number};
-    my $num_subscribers       = $lh->num_subscribers({-type => $type});
-    my $screen_finish         = $length+$start;
-       $screen_finish         =  $num_subscribers if $num_subscribers < $length+$start;
-    my $screen_start          = $start;
-       $screen_start          = 1 if (($start == 0) && ($num_subscribers != 0));
-    my $previous_screen       = $start-$length;
-    my $next_screen           = $start+$length;
-    my $subscribers           =  $lh->search_list(
-                                                  {
-                                                      -query   => $keyword,
-                                                      -type    => $type,
-                                                      -start   => $start,
-                                                     '-length' => $length,
-                                                  }
-                                              );
-
-    if(defined($keyword)){
-
-
-        # DEV: Why isn't this its own method? It seems to be in the code in a whole bunch of places...
-        my $field_names = [];
-        for(@{$lh->subscriber_fields}){
-            push(@$field_names, {name => $_});
-        }
-
-         require DADA::Template::Widgets;
-        my $scrn =  DADA::Template::Widgets::wrap_screen(
-                                                {
-                                                -screen => 'search_list_screen.tmpl',
-												-with           => 'admin', 
-												-wrapper_params => { 
-													-Root_Login => $root_login,
-													-List       => $list,  
-												},
-                                                -vars => {
-
-                                                     field_names                 => $field_names,
-                                                     subscribers                 => $subscribers,
-
-                                                     view_list_subscriber_number => $li->{view_list_subscriber_number},
-                                                     next_screen                 => $next_screen,
-                                                     previous_screen             => $previous_screen,
-                                                     use_previous_screen         => ($start-$length >= 0 && $start > 0) ? 1 : 0,
-                                                     num_subscribers             => $num_subscribers,
-                                                     show_next_screen_link       => ($num_subscribers > ($start + $length)) ? 1 : 0,
-                                                     screen_start                => $screen_start,
-                                                     screen_finish               => $screen_finish,
-
-                                                     type                        => $type,
-													type_title                  => $type_title, 
-                                                     flavor                      => 'search_list',
-
-                                                     keyword                     => $keyword,
-
-                                                     list_type_label             => $list_types{$type},
-													 flavor_is_view_list		 => 1, # which, it's not. 
-                                                     list_subscribers_num            => $lh->num_subscribers({-type => 'list'}),
-                                                     black_list_subscribers_num      => $lh->num_subscribers({-type => 'black_list'}),
-                                                     white_list_subscribers_num      => $lh->num_subscribers({-type => 'white_list'}),
-                                                     authorized_senders_num          => $lh->num_subscribers({-type => 'authorized_senders'}),
- 													 sub_request_list_subscribers_num => $lh->num_subscribers({-type => 'sub_request_list'}),
-
-
-                                                     #This sucks.
-                                                     list_type_isa_list                  => ($type eq 'list')       ? 1 : 0,
-                                                     list_type_isa_black_list            => ($type eq 'black_list') ? 1 : 0,
-                                                     list_type_isa_authorized_senders    => ($type eq 'authorized_senders') ? 1 : 0,
-                                                     list_type_isa_white_list            => ($type eq 'white_list')       ? 1 : 0,
-                                                     list_type_isa_sub_request_list      => ($type eq 'sub_request_list') ? 1 : 0,
-
-
-                                                },
-												-list_settings_vars_param => {
-													-list    => $list,
-													-dot_it => 1,
-												},
-                                                });
-
-
-
-		e_print($scrn);
-
-    }else{
-        print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=view_list&type=' . $type);
-        return;
-    }
 }
 
 
