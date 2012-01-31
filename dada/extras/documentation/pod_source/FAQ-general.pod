@@ -115,8 +115,22 @@ Before running, make a full backup of your Dada Mail SQL database, as changes co
 	
 	UPDATE dada_subscribers SET list = 'new' WHERE list = 'old'; 
 
-In the above SQL, change, C<new> to the new list short name you would like to use and, C<old> to the old list short name you would like to rename. 
+In the above SQL, change, C<new> to the new list short name you would like to use and, C<old> to the old list short name you would like to rename.
 
+Make sure the new list short name: 
+
+=over
+
+=item * Does not currently exist! 
+
+=item * is all lowercase
+
+=item * is no more than 16 characters 
+
+=item * only consists of alpha-numeric characters
+
+=back 
+ 
 After running, make sure to clear your Dada Mail screen cache, as links will need to be updated. 
 
 Although this will modify your SQL database to use this new short name, this will not: 
