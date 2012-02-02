@@ -598,8 +598,6 @@ sub run {
 	'manage_script'              =>    \&manage_script,
 	'change_password'            =>    \&change_password,
 	'text_list'                  =>    \&text_list,
-	'send_list_to_admin'         =>    \&send_list_to_admin,
-	'search_list'                =>    \&search_list,
 	'archive_options'            =>    \&archive_options,
 	'adv_archive_options'        =>    \&adv_archive_options,
 	'back_link'                  =>    \&back_link,
@@ -2852,91 +2850,97 @@ sub sending_preferences_test {
 
 sub view_list {
 
-    my ($admin_list, $root_login) = check_list_security(
-		-cgi_obj  => $q,
-		-Function => 'view_list'
-	);
-    $list  = $admin_list;
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'view_list'
+    );
+    $list = $admin_list;
 
-	# DEV: Yup. Forgot what this was for. 
-	if(defined($q->param('list'))){
-		if($list ne $q->param('list')){
-			# I should look instead to see if we're logged in view ROOT and then just
-			# *Switch* the login. Brilliant! --- maybe I don't want to switch lists automatically - without
-			# someone perhaps knowing that THAT's what I did...
-			logout(
-				-redirect_url => $DADA::Config::S_PROGRAM_URL . '?' . $q->query_string(),
-			);
-			return;
-		}
-	}
+    # DEV: Yup. Forgot what this was for.
+    if ( defined( $q->param('list') ) ) {
+        if ( $list ne $q->param('list') ) {
+
+# I should look instead to see if we're logged in view ROOT and then just
+# *Switch* the login. Brilliant! --- maybe I don't want to switch lists automatically - without
+# someone perhaps knowing that THAT's what I did...
+            logout( -redirect_url => $DADA::Config::S_PROGRAM_URL . '?'
+                  . $q->query_string(), );
+            return;
+        }
+    }
 
     require DADA::MailingList::Settings;
 
-    my $ls = DADA::MailingList::Settings->new({-list => $list});
-    my $lh                    = DADA::MailingList::Subscribers->new({-list => $list});
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
-	my $num_subscribers       = $lh->num_subscribers({-type => $type});
-   
-	my $show_bounced_list     = 0;
-	if($lh->num_subscribers({-type => 'bounced_list'}) > 0){ 
-		$show_bounced_list = 1; 
-	}
-	
+    my $num_subscribers = $lh->num_subscribers( { -type => $type } );
+
+    my $show_bounced_list = 0;
+    if ( $lh->num_subscribers( { -type => 'bounced_list' } ) > 0  || $ls->param('bounce_handler_when_threshold_reached') eq 'move_to_bounced_sublist') {
+        $show_bounced_list = 1;
+    }
+
     my $subscribers = [];
-	my $query       = $q->param('query') || undef; 
-	
-	require Data::Pageset;
-	my $page                  = $q->param('page') || 1;
-    my $page_info = undef; 
-	my $pages_in_set = [];
-	my $total_num    = 0; 
+    my $query = xss_filter( $q->param('query') ) || undef;
+
+    my $order_by  = $q->param('order_by')  || 'email';
+    my $order_dir = $q->param('order_dir') || 'asc';
+
+    require Data::Pageset;
+    my $page         = $q->param('page') || 1;
+    my $page_info    = undef;
+    my $pages_in_set = [];
+    my $total_num    = 0;
     if ($query) {
-        ($total_num, $subscribers) = $lh->search_list(
+        ( $total_num, $subscribers ) = $lh->search_list(
             {
-                -query    => $query,
-                -type     => $type,
-                -start    => ($page - 1),
-                '-length' => $ls->param('view_list_subscriber_number'),
+                -query     => $query,
+                -type      => $type,
+                -start     => ( $page - 1 ),
+                '-length'  => $ls->param('view_list_subscriber_number'),
+                -order_by  => $order_by,
+                -order_dir => $order_dir,
+
             }
         );
 
-		$page_info = Data::Pageset->new(
-	        {
-	            total_entries    => $total_num,
-	            entries_per_page => $ls->param('view_list_subscriber_number'),
-	            current_page     => $page,
-	            mode             => 'slide',    # default fixed
-				pages_per_set    => 5, 
-	        }
-	    );
-	
+        $page_info = Data::Pageset->new(
+            {
+                total_entries    => $total_num,
+                entries_per_page => $ls->param('view_list_subscriber_number'),
+                current_page     => $page,
+                mode          => 'slide',    # default fixed
+                pages_per_set => 5,
+            }
+        );
+
     }
     else {
-	
-	
+
         $subscribers = $lh->subscription_list(
             {
-                -type     => $type,
-				# this really should be just, $page, but subscription_list() would have to be updated, which will break a lot of things...
-                -start    => ($page - 1), 
-                '-length' => $ls->param('view_list_subscriber_number'),
+                -type => $type,
+
+# this really should be just, $page, but subscription_list() would have to be updated, which will break a lot of things...
+                -start     => ( $page - 1 ),
+                '-length'  => $ls->param('view_list_subscriber_number'),
+                -order_by  => $order_by,
+                -order_dir => $order_dir,
             }
         );
-		$total_num = $num_subscribers; 
-	    $page_info = Data::Pageset->new(
-	        {
-	            total_entries    => $num_subscribers,
-	            entries_per_page => $ls->param('view_list_subscriber_number'),
-	            current_page     => $page,
-	            mode             => 'slide',    # default fixed
-				pages_per_set    => 5, 
-	        }
-	    );
-
+        $total_num = $num_subscribers;
+        $page_info = Data::Pageset->new(
+            {
+                total_entries    => $num_subscribers,
+                entries_per_page => $ls->param('view_list_subscriber_number'),
+                current_page     => $page,
+                mode          => 'slide',    # default fixed
+                pages_per_set => 5,
+            }
+        );
 
     }
-
 
     foreach my $page_num ( @{ $page_info->pages_in_set() } ) {
         if ( $page_num == $page_info->current_page() ) {
@@ -2948,174 +2952,157 @@ sub view_list {
         }
     }
 
-
- 
-
-    my $email_count           = $q->param('email_count');
-    my $delete_email_count    = $q->param('delete_email_count');
-	my $black_list_add        = $q->param('black_list_add') || 0; 
-    my $approved_count        = $q->param('approved_count');
-    my $denied_count          = $q->param('denied_count');
-
-
-    if($process eq 'set_black_list_prefs'){
-
-        $ls->save_w_params(
-			{
-				-associate => $q, 
-				-settings  => { 
-                    black_list                           => 0,
-                    add_unsubs_to_black_list             => 0,
-                    allow_blacklisted_to_subscribe       => 0,
-                    allow_admin_to_subscribe_blacklisted => 0,
-				}
-			}
-		);
-
-        print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=view_list&type=black_list&black_list_changes_done=1');
-        return;
-
-    }elsif($process eq 'set_white_list_prefs'){
-
-        $ls->save_w_params(
-			{
-				-associate => $q, 
-				-settings  => { 
-                    enable_white_list => 0,
-                 }
-			}
-		);
-
-        print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=view_list&type=white_list&white_list_changes_done=1');
-        return;
-
-
-    }else{
-
-        require DADA::ProfileFieldsManager;
-		my $pfm = DADA::ProfileFieldsManager->new;
-		my $fields_attr = $pfm->get_all_field_attributes;
-
-        my $field_names = [];
-        for(@{$lh->subscriber_fields}){
-            push(@$field_names, {name => $_, label => $fields_attr->{$_}->{label}});
-        }
-
-        require DADA::Template::Widgets;
-        my $scrn = DADA::Template::Widgets::wrap_screen({-list  => $list,
-                                                -screen => 'view_list_screen.tmpl',
-												-with           => 'admin', 
-												-wrapper_params => { 
-													-Root_Login => $root_login,
-													-List       => $list,  
-												},
-												 -expr => 1, 
-                                                  -vars  =>
-                                                  {
-
-													 screen                      => 'view_list',
-                                                     field_names                 => $field_names,
-													
-													first_page    => $page_info->first_page(),
-									                last_page     => $page_info->last_page(),
-									                next_page     => $page_info->next_page(),
-									                previous_page => $page_info->previous_page(),
-													pages_in_set => $pages_in_set, 
-                                                     #next_screen                 => $next_screen,
-                                                     #previous_screen             => $previous_screen,
-                                                     #use_previous_screen         => ($start-$length >= 0 && $start > 0) ? 1 : 0,
-                                                     num_subscribers             => $num_subscribers,
-                                                     #show_next_screen_link       => ($num_subscribers > ($start + $length)) ? 1 : 0,
-                                                    total_num => $total_num, 
- 													first => $page_info->first, 
-													last => $page_info->last, 
-													#screen_start                => $screen_start,
-                                                     #screen_finish               => $screen_finish,
-                                                     delete_email_count          => $delete_email_count,
-													 black_list_add              => $black_list_add, 
-                                                     email_count                 => $email_count,
- 													 approved_count              => $approved_count,
-													 denied_count                => $denied_count,
-                                                     subscribers                 => $subscribers,
-
-                                                     type                        => $type,
-                                                     type_title                  => $type_title,
-													 query                       => $query, 
-
-													show_bounced_list            => $show_bounced_list, 
-
-                                                     GLOBAL_BLACK_LIST           => $DADA::Config::GLOBAL_BLACK_LIST,
-                                                     GLOBAL_UNSUBSCRIBE          => $DADA::Config::GLOBAL_UNSUBSCRIBE,
-
-                                                     can_use_global_black_list   => $lh->can_use_global_black_list,
-                                                     can_use_global_unsubscribe  => $lh->can_use_global_unsubscribe,
-
-                                                     can_filter_subscribers_through_blacklist => $lh->can_filter_subscribers_through_blacklist,
-
-                                                     black_list_changes_done     => ($q->param('black_list_changes_done')) ? 1 : 0,
-
-                                                     black_list                           => $ls->param('black_list'),
-                                                     add_unsubs_to_black_list             => $ls->param('add_unsubs_to_black_list'),
-                                                     allow_blacklisted_to_subscribe       => $ls->param('allow_blacklisted_to_subscribe'),
-                                                     allow_admin_to_subscribe_blacklisted => $ls->param('allow_admin_to_subscribe_blacklisted'),
-
-                                                     flavor                      => 'view_list',
-   
-                                                     list_subscribers_num             => $lh->num_subscribers({-type => 'list'}),
-                                                     black_list_subscribers_num       => $lh->num_subscribers({-type => 'black_list'}),
-                                                     white_list_subscribers_num       => $lh->num_subscribers({-type => 'white_list'}),
-                                                     authorized_senders_num           => $lh->num_subscribers({-type => 'authorized_senders'}),
- 													 sub_request_list_subscribers_num => $lh->num_subscribers({-type => 'sub_request_list'}),
-													 bounced_list_num                 => $lh->num_subscribers({-type => 'bounced_list'}),
-                                                  	 flavor_is_view_list              => 1,
-													},
-													-list_settings_vars_param => {
-														-list    => $list,
-														-dot_it => 1,
-													},
-                                                  });
-		e_print($scrn);
-
-    }
-}
-
-
-sub view_bounce_history { 
-
-
-    my ($admin_list, $root_login) = check_list_security(
-		-cgi_obj  => $q,
-		-Function => 'view_list'
-	);
-    $list  = $admin_list;
-
-
-	require DADA::App::BounceHandler::Logs; 
-	my $bhl = DADA::App::BounceHandler::Logs->new;
-	my $results = $bhl->search(
-		{ 
-			-query => $email, 
-			-list  => $list, 
-			-file  => $DADA::Config::LOGS . '/bounces.txt',
-		}
-	);
-
-	require DADA::Template::Widgets; 
-	e_print($q->header); 
-	e_print(DADA::Template::Widgets::screen(
-		{
-			-screen => 'bounce_search_results_modal_menu.tmpl',
-			-vars   => {
-				search_results => $results,
-				total_bounces  => scalar(@$results), 
-				email          => $email,
-				type           => 'bounced_list', 
-			}
-		}
-	));
+    my $add_email_count                  = $q->param('add_email_count') || 0;
+    my $delete_email_count               = $q->param('delete_email_count');
+    my $black_list_add                   = $q->param('black_list_add') || 0;
+    my $approved_count                   = $q->param('approved_count');
+    my $denied_count                     = $q->param('denied_count');
+	my $bounced_list_moved_to_list_count = $q->param('bounced_list_moved_to_list_count') || 0; 
+	my $bounced_list_removed_from_list   = $q->param('bounced_list_removed_from_list') || 0; 
 	
+
+
+    require DADA::ProfileFieldsManager;
+    my $pfm         = DADA::ProfileFieldsManager->new;
+    my $fields_attr = $pfm->get_all_field_attributes;
+
+    my $field_names = [];
+    for ( @{ $lh->subscriber_fields } ) {
+        push(
+            @$field_names,
+            {
+                name          => $_,
+                label         => $fields_attr->{$_}->{label},
+                S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL
+            }
+        );
+    }
+
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -list           => $list,
+            -screen         => 'view_list_screen.tmpl',
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+            -expr => 1,
+            -vars => {
+
+                screen           => 'view_list',
+                flavor           => 'view_list',
+                show_list_column => 0,
+                field_names      => $field_names,
+                first              => $page_info->first,
+                last               => $page_info->last,
+                first_page         => $page_info->first_page,
+                last_page          => $page_info->last_page,
+                next_page          => $page_info->next_page,
+                previous_page      => $page_info->previous_page,
+                page               => $page_info->current_page,
+                pages_in_set       => $pages_in_set,
+                num_subscribers    => $num_subscribers,
+                total_num          => $total_num,
+                delete_email_count => $delete_email_count,
+                black_list_add     => $black_list_add,
+                add_email_count    => $add_email_count,
+                approved_count     => $approved_count,
+                denied_count       => $denied_count,
+                subscribers        => $subscribers,
+
+				bounced_list_moved_to_list_count => $bounced_list_moved_to_list_count,
+				bounced_list_removed_from_list   => $bounced_list_removed_from_list,
+								
+
+                type       => $type,
+                type_title => $type_title,
+                query      => $query,
+                order_by   => $order_by,
+                order_dir  => $order_dir,
+
+                show_bounced_list => $show_bounced_list,
+
+                GLOBAL_BLACK_LIST  => $DADA::Config::GLOBAL_BLACK_LIST,
+                GLOBAL_UNSUBSCRIBE => $DADA::Config::GLOBAL_UNSUBSCRIBE,
+
+                can_use_global_black_list  => $lh->can_use_global_black_list,
+                can_use_global_unsubscribe => $lh->can_use_global_unsubscribe,
+
+                can_filter_subscribers_through_blacklist =>
+                  $lh->can_filter_subscribers_through_blacklist,
+
+                black_list_changes_done =>
+                  ( $q->param('black_list_changes_done') ) ? 1 : 0,
+
+                black_list => $ls->param('black_list'),
+                add_unsubs_to_black_list =>
+                  $ls->param('add_unsubs_to_black_list'),
+                allow_blacklisted_to_subscribe =>
+                  $ls->param('allow_blacklisted_to_subscribe'),
+                allow_admin_to_subscribe_blacklisted =>
+                  $ls->param('allow_admin_to_subscribe_blacklisted'),
+
+                list_subscribers_num =>
+                  $lh->num_subscribers( { -type => 'list' } ),
+                black_list_subscribers_num =>
+                  $lh->num_subscribers( { -type => 'black_list' } ),
+                white_list_subscribers_num =>
+                  $lh->num_subscribers( { -type => 'white_list' } ),
+                authorized_senders_num =>
+                  $lh->num_subscribers( { -type => 'authorized_senders' } ),
+                sub_request_list_subscribers_num =>
+                  $lh->num_subscribers( { -type => 'sub_request_list' } ),
+                bounced_list_num =>
+                  $lh->num_subscribers( { -type => 'bounced_list' } ),
+                flavor_is_view_list => 1,
+            },
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+    e_print($scrn);
+
 }
 
+sub view_bounce_history {
+
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'view_list'
+    );
+    $list = $admin_list;
+
+    require DADA::App::BounceHandler::Logs;
+    my $bhl     = DADA::App::BounceHandler::Logs->new;
+    my $results = $bhl->search(
+        {
+            -query => $email,
+            -list  => $list,
+            -file  => $DADA::Config::LOGS . '/bounces.txt',
+        }
+    );
+
+    require DADA::Template::Widgets;
+    e_print( $q->header );
+    e_print(
+        DADA::Template::Widgets::screen(
+            {
+                -screen => 'bounce_search_results_modal_menu.tmpl',
+                -vars   => {
+                    search_results => $results,
+                    total_bounces  => scalar(@$results),
+                    email          => $email,
+                    type           => 'bounced_list',
+                }
+            }
+        )
+    );
+
+}
 
 
 
@@ -3348,6 +3335,14 @@ sub edit_subscriber {
                                                         -Function => 'edit_subscriber');
 
     $list = $admin_list;
+
+	my $page        = $q->param('page') || 1; 
+	my $query       = xss_filter($q->param('query')) || undef; 
+	my $type        = $q->param('type');
+	my $order_by    = $q->param('order_by')  || 'email'; 
+	my $order_dir   = $q->param('order_dir') || 'asc'; 
+ 
+
     require  DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $li = $ls->get;
@@ -3414,10 +3409,14 @@ sub edit_subscriber {
                           done                  => $done,
                           email                 => $email,
                           type                  => $type,
+						  page                  => $page, 
+						  query                 => $query,
+						 order_by                     => $order_by, 
+						 order_dir                    => $order_dir,
                           type_title            => $type_title,
                           fields                => $fields,
                           root_login            => $root_login,
-                          log_viewer_plugin_url => $DADA::Config::LOG_VIEWER_PLUGIN_URL,
+                          #log_viewer_plugin_url => $DADA::Config::LOG_VIEWER_PLUGIN_URL,
 
                     },
            }
@@ -3945,7 +3944,7 @@ sub add_email {
 			}
 
             print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
-                  . '?flavor=view_list&email_count='
+                  . '?flavor=view_list&add_email_count='
                   . $new_email_count 
                   . '&skipped_email_count='
                   . $skipped_email_count
@@ -4097,86 +4096,98 @@ sub delete_email {
 
 sub subscription_options {
 
-    my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
-                                                        -Function => 'subscription_options');
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'subscription_options'
+    );
     $list = $admin_list;
 
-    require  DADA::MailingList::Settings;
-    my $ls = DADA::MailingList::Settings->new({-list => $list});
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
 
     my @d_quota_values = qw(1 10 25 50 100 150 200 250 300 350 400 450 500 600
-                          700 800 900 1000 1500 2000 2500 3000 3500 4000 4500
-                          5000 5500 6000 6500 7000 7500 8000 8500 9000 9500
-                          10000 11000 12000 13000 14000 15000 16000 17000
-                          18000 19000 20000 30000 40000 50000 60000 70000
-                          80000 90000 100000 200000 300000 400000 500000
-                          600000 700000 800000 900000 1000000
-                         );
+      700 800 900 1000 1500 2000 2500 3000 3500 4000 4500
+      5000 5500 6000 6500 7000 7500 8000 8500 9000 9500
+      10000 11000 12000 13000 14000 15000 16000 17000
+      18000 19000 20000 30000 40000 50000 60000 70000
+      80000 90000 100000 200000 300000 400000 500000
+      600000 700000 800000 900000 1000000
+    );
 
-    $DADA::Config::SUBSCRIPTION_QUOTA = undef if strip($DADA::Config::SUBSCRIPTION_QUOTA) eq '';
+    $DADA::Config::SUBSCRIPTION_QUOTA = undef
+      if strip($DADA::Config::SUBSCRIPTION_QUOTA) eq '';
     my @quota_values;
 
-    if(defined($DADA::Config::SUBSCRIPTION_QUOTA)){
+    if ( defined($DADA::Config::SUBSCRIPTION_QUOTA) ) {
 
-        for(@d_quota_values){
-            if($_ < $DADA::Config::SUBSCRIPTION_QUOTA){
-                push(@quota_values, $_);
+        for (@d_quota_values) {
+            if ( $_ < $DADA::Config::SUBSCRIPTION_QUOTA ) {
+                push( @quota_values, $_ );
             }
         }
-        push(@quota_values, $DADA::Config::SUBSCRIPTION_QUOTA);
+        push( @quota_values, $DADA::Config::SUBSCRIPTION_QUOTA );
 
     }
     else {
         @quota_values = @d_quota_values;
     }
+
     # Now that's a weird line (now)
-    unshift(@quota_values, $li->{subscription_quota});
+    unshift( @quota_values, $li->{subscription_quota} );
 
+    if ( !$process ) {
 
-    if(!$process){
-
-        my $subscription_quota_menu = $q->popup_menu(-name    => 'subscription_quota',
-                                                    '-values' => [@quota_values],
-                                                     -default => $li->{subscription_quota},
-                                                    );
+        my $subscription_quota_menu = $q->popup_menu(
+            -name     => 'subscription_quota',
+            '-values' => [@quota_values],
+            -default  => $li->{subscription_quota},
+        );
 
         require DADA::Template::Widgets;
-        my $scrn =   DADA::Template::Widgets::wrap_screen(
-					{
-						-screen => 'subscription_options_screen.tmpl',
-						-with           => 'admin', 
-						-wrapper_params => { 
-							-Root_Login => $root_login,
-							-List       => $list,  
-						},
-						
-						-vars   => {
-							screen                  => 'subscription_options',
-							title                   => 'Subscriber Options',
-							done                    => $done,
-							subscription_quota_menu => $subscription_quota_menu,
-							SUBSCRIPTION_QUOTA      => $DADA::Config::SUBSCRIPTION_QUOTA,
-						},
-						-list_settings_vars_param => {
-		                    -list   => $list,
-		                    -dot_it => 1,
-		                },
-					}
-				);
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen         => 'subscription_options_screen.tmpl',
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+
+                -vars => {
+                    screen                  => 'subscription_options',
+                    title                   => 'Subscriber Options',
+                    done                    => $done,
+                    subscription_quota_menu => $subscription_quota_menu,
+                    SUBSCRIPTION_QUOTA => $DADA::Config::SUBSCRIPTION_QUOTA,
+                },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+            }
+        );
         e_print($scrn);
-    }else{
+    }
+    else {
 
         $ls->save_w_params(
-			{
-				-associate => $q, 
-				-settings  => { 
-                    use_subscription_quota => 0,
-                    subscription_quota     => undef,
+            {
+                -associate => $q,
+                -settings  => {
+                    use_subscription_quota               => 0,
+                    subscription_quota                   => undef,
+                    black_list                           => 0,
+                    add_unsubs_to_black_list             => 0,
+                    allow_blacklisted_to_subscribe       => 0,
+                    allow_admin_to_subscribe_blacklisted => 0,
+                    enable_white_list => 0,
+
                 }
-			}
-		);
-        print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=subscription_options&done=1');
+            }
+        );
+        print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+              . '?f=subscription_options&done=1' );
     }
 
 }
@@ -6604,6 +6615,10 @@ sub text_list {
 
     $list = $admin_list;
 	my $type = $q->param('type') || 'list';
+	my $query       = xss_filter($q->param('query')) || undef; 
+	my $order_by    = $q->param('order_by')  || 'email'; 
+	my $order_dir   = $q->param('order_dir') || 'asc'; 
+
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -6617,141 +6632,15 @@ sub text_list {
 	   $header .= 'Content-type: text/csv' . "\n\n"; 
 	
 	print $header; 
-
-   # $email_count is then not used...
-    my $email_count = $lh->print_out_list( -List => $list, -Type => $type );
-
-}
-
-
-
-
-
-
-sub send_list_to_admin {
-
-    my ( $admin_list, $root_login ) = check_list_security(
-        -cgi_obj  => $q,
-        -Function => 'send_list_to_admin'
-    );
-
-    $list = $admin_list;
-
-    require DADA::MailingList::Settings;
-    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
-
-    my $email;
-
-    my ( $sec, $min, $hour, $day, $month, $year ) =
-      (localtime)[ 0, 1, 2, 3, 4, 5 ];
-    $year  = $year + 1900;
-    $month = $month + 1;
-
-    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
-
-    my $tmp_file = $lh->write_plaintext_list( -Type => $type );
-
-    my $message = q{
-
-Attached to this email is the subscriber list for <!-- tmpl_var list_settings.list_name -->
-as of <!-- tmpl_var month -->/<!-- tmpl_var day -->/<!-- tmpl_var year --> - <!-- tmpl_var hour -->:<!-- tmpl_var min -->:<!-- tmpl_var sec -->.
-
-This was sent to the list owner (<!-- tmpl_var list_settings.list_owner_email -->) from the list control panel.
-
-    -<!-- tmpl_var PROGRAM_NAME -->
-};
-
-    require DADA::Template::Widgets;
-    $message = DADA::Template::Widgets::screen(
-        {
-            -data => \$message,
-            -vars => {
-                day   => $day,
-                hour  => $hour,
-                min   => $min,
-                sec   => $sec,
-                month => $month,
-                year  => $year,
-            },
-            -list_settings_vars_param => {
-                -list   => $list,
-                -dot_it => 1
-            },
-        }
-    );
-
-    require MIME::Lite;
-    MIME::Lite->quiet(1)
-      if $DADA::Config::MIME_HUSH == 1;    ### I know what I'm doing
-    $MIME::Lite::PARANOID = $DADA::Config::MIME_PARANOID;
-
-    my $msg = MIME::Lite->new( Type => 'multipart/mixed' );
-
-    $msg->attach(
-        Type         => 'text/plain',
-        Data         => safely_encode($message ),
-        Encoding     => $li->{plaintext_encoding},
-
-		#  Data => $message,
-    );
-
-    my $listname = make_safer( $li->{list} . '_' . $type . '.list' );
-
-    $msg->attach(
-        Type        => 'text/csv',
-        Path        => $tmp_file,
-        Filename    => $listname . '.csv',
-        Disposition => 'attachment',
-        Encoding    => $li->{plaintext_encoding},
-    );
-
-    $msg->replace( 'X-Mailer' => "" );
-
-    #... not worrying about this, yet,
-    my $msg_headers = $msg->header_as_string();
-       $msg_headers = safely_decode($msg_headers );
-    my $msg_body = $msg->body_as_string();
-       $msg_body = safely_decode($msg_body );
-
-    require DADA::Mail::Send;
-    my $mh = DADA::Mail::Send->new(
-        {
-            -list   => $list,
-            -ls_obj => $ls,
-        }
-    );
-
-    my %mail_headers = $mh->return_headers($msg_headers);
-
-    # Death.
-	require DADA::App::FormatMessages;
-    my $fm = DADA::App::FormatMessages->new( -List => $list );
-
-    my $subject = "$li->{list_name} $type subscriber list $month/$day/$year";
-    $subject = $fm->_encode_header( 'just_phrase', $subject );
-    my $to = '"'
-      . $fm->_encode_header( 'just_phrase',
-        escape_for_sending( $li->{list_name} ) )
-      . '" <'
-      . $li->{list_owner_email} . '>';
-
-	  undef $fm;
-	#/Death
-      my %mailing = (
-        %mail_headers,
-        To      => $to,
-        Subject => $subject,
-        Body    => $msg_body,
-      );
-
-    $mh->send(%mailing);
-
-    unlink($tmp_file);
-
-    print $q->redirect(
-        -uri => "$DADA::Config::S_PROGRAM_URL?flavor=view_list&type=" . $type );
-
+		
+	    $lh->print_out_list(
+			{ 
+				-type      => $type,
+				-query     => $query, 
+				-order_by  => $order_by, 
+				-order_dir => $order_dir, 
+			}
+		 );
 }
 
 
@@ -8459,7 +8348,8 @@ sub process_bouncing_addresses {
 	    );
 		 my $uri =
 		        $DADA::Config::S_PROGRAM_URL
-		      . '?flavor=view_list&delete_email_count='
+		      . '?flavor=view_list'
+		      . '&bounced_list_removed_from_list='
 		      . $d_count
 		      . '&type='
 		      . $type
@@ -8490,7 +8380,7 @@ sub process_bouncing_addresses {
 	      . '?flavor=view_list'
 	      . '&type='
 	      . $type
-	      . '&m_count='
+	      . '&bounced_list_moved_to_list_count='
 	      . $m_count;
 		print $q->redirect( -uri => $uri );
 	 

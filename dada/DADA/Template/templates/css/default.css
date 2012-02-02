@@ -325,6 +325,17 @@ p.link_to_screen {
 	background-color:#fff;
 }
 
+.psuedomodalbox {
+	margin-left: auto;
+	margin-right: auto;
+	width: 350px;
+	border: 1px solid #333;
+	background-color: #EFEFEF;
+	color: #000;
+	text-align: left;
+	padding:5px
+}
+
 .login_message { 
     float: right; 
     padding:5px;
@@ -498,6 +509,17 @@ input {
 	font-family:Helvetica,Verdana,Arial,sans-serif;
 	font-size: 1em;
 }
+.small_input { 
+
+	margin:2px;
+	padding:2px;
+	border-width:1px;
+	border-style:solid; 
+	border-color:#666 #999 #ccc #999;
+	font-family:Helvetica,Verdana,Arial,sans-serif;
+	font-size: .9em;
+}
+
 
 /* removes checkbox/radio-button borders in IE 5.0+: */
 /* (commented out for validation, uncomment to apply)
@@ -548,7 +570,6 @@ input.small_button {
 	border-color:#666 #999 #ccc #999;
 	font-family:Helvetica,Verdana,Arial,sans-serif;
 	font-size: .9em;
-
 }
 /* affects buttons only: */
 input.plain,

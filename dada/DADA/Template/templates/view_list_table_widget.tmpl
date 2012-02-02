@@ -1,8 +1,10 @@
 <!-- begin view_list_table_widget.tmpl --> 
 
-
+<!-- 
 <div style="max-height: 200px; overflow: auto; border:1px solid black">
- 
+--> 
+<div style="border:1px solid black">
+	
  <table cellpadding="2" cellspacing="0" border="0" width="100%" style="background-color:#fff">
   <tr>
 	 <!-- tmpl_unless no_checkboxes --> 
@@ -10,6 +12,8 @@
     		<p>&nbsp;</p>
    		</td>
 	<!-- /tmpl_unless --> 
+	
+	<!-- tmpl_if show_list_column --> 
 	<td>
 	    <p>
 	     <strong>
@@ -17,23 +21,80 @@
 	     </strong>
 	    </p>
 	   </td>
+	<!-- /tmpl_if --> 
+	
    <td>
     <p>
+
+		<!-- tmpl_if expr="(order_by ne 'email')" -->
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;order_by=email;order_dir=asc;query=<!-- tmpl_var query -->">
+		<!-- /tmpl_if --> 
+		
+		<!-- tmpl_if expr="(order_by eq 'email') && (order_dir eq 'asc')" -->
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;order_by=email;order_dir=desc;query=<!-- tmpl_var query -->">
+		<!-- /tmpl_if --> 
+		
+		
+		<!-- tmpl_if expr="(order_by eq 'email') && (order_dir eq 'desc')" -->
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;order_by=email;order_dir=asc;query=<!-- tmpl_var query -->">
+		<!-- /tmpl_if -->
+		
+
      <strong>
-      Email
-     </strong>
+		Email
+		</strong>
+		
+		<!-- tmpl_if expr="(order_by eq 'email') && (order_dir eq 'asc')" -->
+			<sub>&#x25B2;</sub>
+		<!-- /tmpl_if -->
+		
+		<!-- tmpl_if expr="(order_by eq 'email') && (order_dir eq 'desc')" -->
+			<sub>&#x25BC;</sub>
+		<!-- /tmpl_if -->     
+		
+
+	</a>
     </p>
    </td>
   <!-- tmpl_loop field_names --> 
    <td>
     <p>
+	   	<!-- tmpl_if expr="(order_by ne name)" -->
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;order_by=<!-- tmpl_var name -->;order_dir=asc;query=<!-- tmpl_var query -->">
+		<!-- /tmpl_if --> 
+		<!-- tmpl_if expr="(order_by eq name) && (order_dir eq 'asc')" -->
+    		<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;order_by=<!-- tmpl_var name -->;order_dir=desc;query=<!-- tmpl_var query -->">
+		<!-- /tmpl_if -->
+		
+		<!-- tmpl_if expr="(order_by eq name) && (order_dir eq 'desc')" -->
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;order_by=<!-- tmpl_var name -->;order_dir=asc;query=<!-- tmpl_var query -->">
+	    	
+		<!-- /tmpl_if -->
+		
+		
+	
+	
      <strong>
+	
+
+	
 	  <!-- tmpl_if label --> 
 			<!-- tmpl_var label --> 
 	  <!-- tmpl_else --> 
       		<!-- tmpl_var name --> 
       <!-- /tmpl_if --> 
 	</strong>
+
+		<!-- tmpl_if expr="(order_by eq name) && (order_dir eq 'asc')" -->
+			<sub>&#x25B2;</sub>
+		<!-- /tmpl_if -->
+		
+		<!-- tmpl_if expr="(order_by eq name) && (order_dir eq 'desc')" -->
+			<sub>&#x25BC;</sub>
+		<!-- /tmpl_if -->
+
+
+	</a>
     </p>
    </td>
   <!--/tmpl_loop --> 
@@ -52,14 +113,17 @@
 		</td>
 			    <!-- /tmpl_unless --> 
 	    
+			<!-- tmpl_if show_list_column --> 
 	
-			<td>
-			    <p>
-			     <strong>
-			      <!-- tmpl_var list --> 
-			     </strong>
-			    </p>
-			   </td>
+				<td>
+				    <p>
+				     <strong>
+				      <!-- tmpl_var list --> 
+				     </strong>
+				    </p>
+				   </td>
+			
+			<!-- /tmpl_if --> 
 				
 	<td>
 	     <p>
@@ -73,7 +137,7 @@
 		
 			<!-- tmpl_unless no_email_links --> 
     
-			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_subscriber&amp;email=<!-- tmpl_var email -->&amp;type=<!-- tmpl_var type -->" >
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_subscriber;email=<!-- tmpl_var email -->;type=<!-- tmpl_var type -->;page=<!-- tmpl_var page -->;query=<!-- tmpl_var query -->;order_by=<!-- tmpl_var order_by -->;order_dir=<!-- tmpl_var order_dir -->;query=<!-- tmpl_var query -->" >
 		       <!-- tmpl_var email -->  
 		      </a>
     
@@ -85,12 +149,12 @@
 	 	</p>
 	    </td>
 	    
-	    <!-- tmpl_loop name="fields" --> 
+	    <!-- tmpl_loop fields --> 
 	    
 	    <td>
 	     <p>
-	       <!-- tmpl_var value -->
-	     </p>
+			<!-- tmpl_var value -->
+	 	</p>
 	    </td>
 	    <!-- /tmpl_loop --> 
 	   </tr>

@@ -1,13 +1,8 @@
 <!-- begin list_search_form_widget.tmpl --> 
-<div style="font-size: .80em">
     <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" accept-charset="<!-- tmpl_var HTML_CHARSET -->" style="display: inline; margin: 0;">
-      <input type="text"   name="query" id="query" value="<!-- tmpl_var query default="" escape="HTML" -->" />
+      <input type="text"   name="query" id="query" class="small_input" value="<!-- tmpl_var query default="" escape="HTML" -->" />
       <input type="hidden" name="f"    value="view_list" />
       <input type="hidden" name="type" value="<!-- tmpl_var type default="list" -->" />
-      <input type="submit" value="Search <!-- tmpl_var type_title escape="HTML" -->" />
-     <!-- tmpl_if comment --></p><!-- /tmpl_if -->
+      <input type="submit" class="small_button" value="Search <!-- tmpl_var type_title escape="HTML" -->" />
     </form>
-</div> 
-
-
 <!-- end list_search_form_widget.tmpl --> 

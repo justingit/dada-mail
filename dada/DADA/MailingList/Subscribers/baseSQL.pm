@@ -124,6 +124,8 @@ sub search_list {
             -type            => $args->{ -type },
             -partial_listing => $partial_listing,
             -search_type     => 'any',
+			-order_by        => $args->{-order_by}, 
+			-order_dir       => $args->{-order_dir}, 
         }
     );
 
@@ -226,38 +228,46 @@ sub SQL_subscriber_profile_join_statement {
     # init vars:
 
     # type list black_List, white_listed, etc
-    if ( !$args->{ -type } ) {
-        $args->{ -type } = 'list';
+    if ( !$args->{-type} ) {
+        $args->{-type} = 'list';
     }
 
     # Sanity Check.
-    if (  $self->allowed_list_types( $args->{ -type } )  != 1) {
-        croak '"' . $args->{ -type } . '" is not a valid list type! ';
+    if ( $self->allowed_list_types( $args->{-type} ) != 1 ) {
+        croak '"' . $args->{-type} . '" is not a valid list type! ';
+    }
+
+    if ( !exists( $args->{-order_by} ) ) {
+        $args->{-order_by} = 'email';
+    }
+
+    if ( !exists( $args->{-order_dir} ) ) {
+        $args->{-order_dir} = 'asc';
     }
 
 
-	if(exists($args->{-include_from})){ 
-		if(exists($args->{-include_from}->[0])){ 
-			# ... 
-		}
-		else { 
-			delete($args->{-include_from}); 
-		}
-	}
 
+    if ( exists( $args->{-include_from} ) ) {
+        if ( exists( $args->{-include_from}->[0] ) ) {
 
-	
+            # ...
+        }
+        else {
+            delete( $args->{-include_from} );
+        }
+    }
+
 # Right now, we can either have an any/all boolean type of thing. "OR" is used for
 # searches, I'm not sure if this would be helpful for the Partial List Sending stuff.
 
     my $query_type = 'AND';
-    if ( !$args->{ -search_type } ) {
-        $args->{ -search_type } = 'all';
+    if ( !$args->{-search_type} ) {
+        $args->{-search_type} = 'all';
     }
-    if ( $args->{ -search_type } !~ /any|all/ ) {
-        $args->{ -search_type } = 'all';
+    if ( $args->{-search_type} !~ /any|all/ ) {
+        $args->{-search_type} = 'all';
     }
-    if ( $args->{ -search_type } eq 'any' ) {
+    if ( $args->{-search_type} eq 'any' ) {
         $query_type = 'OR';
     }
 
@@ -271,23 +281,26 @@ sub SQL_subscriber_profile_join_statement {
         $merge_field_query .= ', ' . $profile_fields_table . '.' . $_;
     }
 
-    #/ This is to select which Subscriber Profile Fields to return with our query
+   #/ This is to select which Subscriber Profile Fields to return with our query
 
     # We need the email and list from $subscriber_table
     my $query;
 
-	if(exists($args->{-include_from}) && $self->{sql_params}->{dbtype} eq 'Pg'){ 
-	    $query .= ' SELECT DISTINCT ON(' . $subscriber_table . '.email) ';
- 	}
-	else { 
-		$query  = 'SELECT ';	
-	}
-	
-	$query .= $subscriber_table . '.email, ' . $subscriber_table . '.list';
+    if ( exists( $args->{-include_from} )
+        && $self->{sql_params}->{dbtype} eq 'Pg' )
+    {
+        $query .= ' SELECT DISTINCT ON(' . $subscriber_table . '.email) ';
+    }
+    else {
+        $query = 'SELECT ';
+    }
+
+    $query .= $subscriber_table . '.email, ' . $subscriber_table . '.list';
     $query .= $merge_field_query;
 
 # And we need to match this with the info in $profile_fields_table - this fast/slow?
-    $query .= ' FROM '
+    $query .=
+        ' FROM '
       . $subscriber_table
       . ' LEFT OUTER JOIN '
       . $profile_fields_table . ' ON ';
@@ -300,51 +313,54 @@ sub SQL_subscriber_profile_join_statement {
     # Global Black List spans across all lists (yes, we're still using this).
     $query .= ' WHERE  ';
     if (   $DADA::Config::GLOBAL_BLACK_LIST
-        && $args->{ -type } eq 'black_list' )
+        && $args->{-type} eq 'black_list' )
     {
 
         #... Nothin'
     }
     else {
 
-		if(exists($args->{-include_from})){ 
-			my @include_from = ($self->{list}, @{$args->{-include_from}}); 
-			@include_from = map($self->{dbh}->quote($_), @include_from);
-			@include_from = map($_ = $subscriber_table . '.list = ' . $_, @include_from); 
-			
-			my $include_from_query = join(
-				' OR ' , 
-				@include_from
-			);
-			$include_from_query = '( ' . $include_from_query . ' )'; 
-			$include_from_query .= ' AND '; 
-			$query .= $include_from_query;
-		}
-		else { 			
-	        $query .=
-	          $subscriber_table . '.list = ' . $self->{dbh}->quote( $self->{list} ) . ' AND '; 
-		}
+        if ( exists( $args->{-include_from} ) ) {
+            my @include_from = ( $self->{list}, @{ $args->{-include_from} } );
+            @include_from = map( $self->{dbh}->quote($_), @include_from );
+            @include_from =
+              map( $_ = $subscriber_table . '.list = ' . $_, @include_from );
+
+            my $include_from_query = join( ' OR ', @include_from );
+            $include_from_query = '( ' . $include_from_query . ' )';
+            $include_from_query .= ' AND ';
+            $query .= $include_from_query;
+        }
+        else {
+            $query .=
+                $subscriber_table
+              . '.list = '
+              . $self->{dbh}->quote( $self->{list} ) . ' AND ';
+        }
     }
 
     # list_status is almost always 1
-    $query .= $subscriber_table
-      . '.list_type = '
-      . $self->{dbh}->quote( $args->{ -type } );
     $query .=
-      ' AND ' . $subscriber_table . '.list_status = ' . $self->{dbh}->quote('1') . ' ';
+        $subscriber_table
+      . '.list_type = '
+      . $self->{dbh}->quote( $args->{-type} );
+    $query .= ' AND '
+      . $subscriber_table
+      . '.list_status = '
+      . $self->{dbh}->quote('1') . ' ';
 
     # This is all to query the $dada_profile_fields_table
     # The main thing, is that we only want the SQL statement to hold
     # fields that we're actually looking for.
 
-    if ( keys %{ $args->{ -partial_listing } } ) {
+    if ( keys %{ $args->{-partial_listing} } ) {
 
         # This *really* needs its own method, as well...
         # It's somewhat strange, as this relies on the email address in the
         # profile (I think?) to work, if we're looking for email addresses...
 
         my @add_q = ();
-        for ( keys %{ $args->{ -partial_listing } } ) {
+        for ( keys %{ $args->{-partial_listing} } ) {
 
             # This is to make sure we're always using the email from the
             # subscriber table - this stops us from not seeing an email
@@ -356,28 +372,28 @@ sub SQL_subscriber_profile_join_statement {
 
             # /
 
-            if ( exists( $args->{ -partial_listing }->{$_}->{equal_to} ) ) {
-                if (
-                    length( $args->{ -partial_listing }->{$_}->{equal_to} ) >
-                    0 )
+            if ( exists( $args->{-partial_listing}->{$_}->{equal_to} ) ) {
+                if ( length( $args->{-partial_listing}->{$_}->{equal_to} ) > 0 )
                 {
-                    push (
+                    push(
                         @add_q,
-                        $table . '.' . $_ . ' = '
+                        $table . '.' 
+                          . $_ . ' = '
                           . $self->{dbh}->quote(
-                            $args->{ -partial_listing }->{$_}->{equal_to}
+                            $args->{-partial_listing}->{$_}->{equal_to}
                           )
                     );
                 }
             }
-            elsif ( exists( $args->{ -partial_listing }->{$_}->{like} ) ) {
-                if ( length( $args->{ -partial_listing }->{$_}->{like} ) > 0 ) {
-                    push (
+            elsif ( exists( $args->{-partial_listing}->{$_}->{like} ) ) {
+                if ( length( $args->{-partial_listing}->{$_}->{like} ) > 0 ) {
+                    push(
                         @add_q,
-                        $table . '.' . $_ . ' LIKE '
+                        $table . '.' 
+                          . $_ 
+                          . ' LIKE '
                           . $self->{dbh}->quote(
-                            '%'
-                              . $args->{ -partial_listing }->{$_}->{like} . '%'
+                            '%' . $args->{-partial_listing}->{$_}->{like} . '%'
                           )
                     );
                 }
@@ -386,7 +402,7 @@ sub SQL_subscriber_profile_join_statement {
         my $query_pl;
         if ( $add_q[0] ) {
             $query_pl =
-              ' AND ( ' . join ( ' ' . $query_type . ' ', @add_q ) . ') ';
+              ' AND ( ' . join( ' ' . $query_type . ' ', @add_q ) . ') ';
             $query .= $query_pl;
         }
     }
@@ -394,44 +410,65 @@ sub SQL_subscriber_profile_join_statement {
    # -exclude_from is to return results from subscribers who *aren't* subscribed
    # to another list.
 
+    # A correlated subquery is a subquery that contains a reference to a
+    # table that also appears in the outer query.
 
-	# A correlated subquery is a subquery that contains a reference to a 
-	# table that also appears in the outer query.
-	
-    if ( exists( $args->{ -exclude_from } ) ) {
-        if ( $args->{ -exclude_from }->[0] ) {
+    if ( exists( $args->{-exclude_from} ) ) {
+        if ( $args->{-exclude_from}->[0] ) {
             my @excludes = ();
-            for my $ex_list ( @{ $args->{ -exclude_from } } ) {
-                push ( @excludes,                    
-                      ' b.list = '
-                      . $self->{dbh}->quote($ex_list) );
-            }			
-			my $ex_from_query = ' AND NOT EXISTS (SELECT * FROM ' . $subscriber_table .' b
-			    WHERE ( ' . join ( ' OR ', @excludes ) . 
-			    ' ) AND ' . $subscriber_table . '.email = b.email) '; 
+            for my $ex_list ( @{ $args->{-exclude_from} } ) {
+                push( @excludes, ' b.list = ' . $self->{dbh}->quote($ex_list) );
+            }
+            my $ex_from_query =
+              ' AND NOT EXISTS (SELECT * FROM ' . $subscriber_table . ' b
+			    WHERE ( '
+              . join( ' OR ', @excludes )
+              . ' ) AND '
+              . $subscriber_table
+              . '.email = b.email) ';
             $query .= $ex_from_query;
         }
     }
 
     # /
 
-
-	if(exists($args->{-include_from}) && $self->{sql_params}->{dbtype} =~ m/^mysql$|^SQLite$/){ 
-	    $query .= ' GROUP BY ' . $subscriber_table . '.email '
- 	}
-
-
-    if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
-        $query .= ' ORDER BY '
-          . $subscriber_table . '.list, '
-          . $subscriber_table
-          . '.email'
-		  ;
+    if ( exists( $args->{-include_from} )
+        && $self->{sql_params}->{dbtype} =~ m/^mysql$|^SQLite$/ )
+    {
+        $query .= ' GROUP BY ' . $subscriber_table . '.email ';
     }
-    warn 'QUERY: ' . $query
-     if $t;
 
-    
+    #   if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
+    if ( $args->{-order_by} eq 'email' ) {
+
+        $query .=
+            ' ORDER BY '
+          . $subscriber_table
+          . '.list, '
+          . $subscriber_table
+          . '.email';
+    }
+    else {
+        $query .=
+            ' ORDER BY '
+          . $subscriber_table
+          . '.list, '
+          . $profile_fields_table . '.'
+          . $args->{-order_by};
+
+    }
+	if($args->{-order_dir} eq 'desc'){ 
+		$query .= ' DESC'; 
+	}
+	else { 
+		$query .= ' ASC'; 
+	}
+	
+
+    #    }
+    warn 'QUERY: ' . $query
+      if $t;
+	
     return $query;
 }
 
@@ -490,21 +527,64 @@ sub fancy_print_out_list {
 sub print_out_list {
 
     my $self = shift;
+	my ($args) = @_; 
+	
+	if(! exists($args->{-fh})){ 
+			$args->{-fh} =  \*STDOUT;
+	}
+	if(! exists($args->{-type})){ 
+		$args->{-type} = 'list'; 
+	}	
 
-    my %args = (
-        -FH => \*STDOUT,
-        @_
-    );
-
-    my $fh = $args{ -FH };
+	if(! exists($args->{-query})){ 
+		$args->{-query} = undef; 
+	}	
+	if(! exists($args->{-order_by})){ 
+		$args->{-order_by} = undef; 
+	}	
+	if(! exists($args->{-order_dir})){ 
+		$args->{-order_dir} = undef; 
+	}
+	
+	# DEV: There's a reason for this tmp var, correct?
+    my $fh = $args->{ -fh };
 
 	binmode $fh, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
 
     my $count;
+	my $query = ''; 
 
-    my $query =
-      $self->SQL_subscriber_profile_join_statement(
-        { -type => $args{ -Type }, } );
+	if(defined($args->{-query})){
+	 
+		my $partial_listing = {};
+
+	    my $fields = $self->subscriber_fields;
+	    for (@$fields) {
+	        $partial_listing->{$_} = { like => $args->{ -query } };
+	    }
+	    # Do I have to do this, explicitly?
+	    $partial_listing->{email} = { like => $args->{ -query } };
+	
+		$query = $self->SQL_subscriber_profile_join_statement(  
+			{ 
+		    -partial_listing => $partial_listing,
+	        -search_type     => 'any',
+			-type            => $args->{-type},
+			-query           => $args->{-query},
+			-order_by        => $args->{-order_by},
+			-order_dir       => $args->{-order_dir},
+			}
+		);  
+	}
+	else { 
+	    $query =
+	      $self->SQL_subscriber_profile_join_statement(
+	        { 
+				-type      => $args->{-type}, 
+
+			} 
+		);
+	}
 
     my $sth = $self->{dbh}->prepare($query);
 
@@ -571,10 +651,10 @@ sub print_out_list {
             if ( $csv->combine(@new_info) ) {
                 my $hstring2 = $csv->string;
                 print $fh $hstring2, "\n";
-                carp "that worked.";
+               # carp "that worked.";
             }
             else {
-                carp "nope, that didn't work - combine() failed on argument: "
+                carp "combine() failed on argument: "
                   . $csv->error_input;
 
             }

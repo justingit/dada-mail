@@ -81,16 +81,8 @@
 
 </fieldset> 
 
-<!-- tmpl_if comment --> 
-<!-- tmpl_if log_viewer_plugin_url --> 
+<p>
+ <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;page=<!-- tmpl_var page -->;query=<!-- tmpl_var query -->;order_by=<!-- tmpl_var order_by -->;order_dir=<!-- tmpl_var order_dir -->">&lt;&lt; Back</a>
+</p>
 
-    <p style="font-weight:bold;">
-     <a href="#"onClick="external(['process__search','query__<!-- tmpl_var email escape=HTML -->', 'only_content__1','NO_CACHE'], ['log_search_results']); ">
-     <!-- tmpl_var email escape=HTML -->'s Raw Logs Below:
-     </a>
-     </p>     
-     
-<div id="log_search_results" style="border:1px solid black;padding:5px"></div> 
-<!-- /tmpl_if --> 
-<!-- /tmpl_if --> 
 <!-- end edit_subscribed_screen.tmpl -->
