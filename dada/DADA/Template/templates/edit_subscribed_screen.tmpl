@@ -12,15 +12,79 @@
  </a> &#187; <!-- tmpl_var email escape="HTML" -->
 </p>
 
+
 <fieldset> 
-<legend><!-- tmpl_var email escape="HTML" --></legend>
+<legend>Membership</legend>
+
+
+<!-- tmpl_unless member_of_num --> 
+	<h2><!-- tmpl_var email --> isn't a part of your Mailing List!</h2>
+<!-- tmpl_else --> 
+
+	<h2>Member of:</h2>
+
+	<ul style="list-style: none;">
+		<!-- tmpl_loop member_of --> 
+			<li>
+				<strong><!-- tmpl_var type_title --></strong>
+			</li>
+		<!-- /tmpl_loop -->
+	</ul>
+<!-- /tmpl_unless --> 
+
+
+<!--
+
+Will need to be different for Subscription Requests - at least another popup for Approve/Deny?
+
+(What happens to Requests when you outright Subscribe them?!)
+
+
+-->
+
+
+<!-- tmpl_if add_to_num --> 
+
+	<form  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+		<input type="hidden" name="email" value="<!-- tmpl_var email -->" />
+		<input type="hidden" name="f"    id="f" value="add" />
+		<input type="hidden" name="process" value="1" />
+		<input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" />
+		<input type="hidden" name="method" value="via_add_one" />
+		<input type="hidden" name="return_to" value="edit_subscriber" />
+		<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" />
+
+		
+	<p><label for="type_add">&#8594; Add</label> address to: <!-- tmpl_var add_to_popup_menu --><input type="submit" value="Add" /></p>
+	</form>
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if remove_from_num --> 
+
+	<form  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+	<input type="hidden" name="process" value="delete" />
+	
+	<input type="hidden" name="address" value="<!-- tmpl_var email -->" />
+	<input type="hidden" name="f"       value="remove_subscribers" />	
+	<input type="hidden" name="return_to" value="edit_subscriber" />
+	
+	<p><label for="type_remove">&#8592;  Remove</label> address from: <!-- tmpl_var remove_from_popup_menu --><input type="submit" value="Remove" /></p>
+	</form>
+
+<!-- /tmpl_if --> 
+
+</fieldset> 
+
+<fieldset> 
+<legend>Profile Fields</legend>
 
 
 <!-- tmpl_unless root_login --> 
 	<p class="error">
 		You must be logged in with the <!-- tmpl_var PROGRAM_NAME --> Root Password to be able to edit a Subscriber's Profile Fields. 
 	</p>
-<!-- /tmpl_unless --> 
+<!-- /tmpl_unless -->
+
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
 <!-- tmpl_if root_login --> 
@@ -44,7 +108,7 @@
 <!-- tmpl_else --> 
 
 	<p class="alert">
-		Subscriber Profile Fields information will be changed for all lists.
+		Subscriber Profile Fields information will be changed for all Mailing Lists.
 	</p>
 	<!-- tmpl_loop fields --> 
 	    <p>
@@ -68,18 +132,57 @@
 <div class="floatclear"></div>
 
 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
- <input type="hidden" name="process" value="delete" />
- <input type="hidden" name="address" value="<!-- tmpl_var email escape="HTML" -->" />
- <input type="hidden" name="f"       value="remove_subscribers" />
- <input type="hidden" name="type"    value="<!-- tmpl_var type -->" />
- <div class="buttonfloat">
-  <input type="submit" value="Unsubscribe Address From This List" class="alertive" />
- </div>
-</form>
-
 
 </fieldset> 
+
+
+<h1>Mailing List History</h1> 
+
+
+<ul style="list-style: none;">
+<!-- tmpl_loop history --> 
+
+	<!-- tmpl_if expr="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list') || (type eq 'sub_request_list') || (type eq 'bounced_list'))" -->
+	
+	<li>
+	
+	
+	<!-- tmpl_if expr="(action eq 'subscribed')" --> 
+		&#8594;
+		<!-- tmpl_if expr="(type eq 'list')" -->
+			<strong>Subscribed</strong>
+		<!-- tmpl_else -->
+			<strong>Added</strong>
+		<!-- /tmpl_if -->
+		 to
+	<!-- /tmpl_if -->
+	<!-- tmpl_if expr="(action eq 'unsubscribed')" --> 
+		&#8592; 
+		<!-- tmpl_if expr="(type eq 'list')" -->
+			<strong>Unsubscribed</strong>
+		<!-- tmpl_else -->
+			<strong>Removed</strong>
+		<!-- /tmpl_if -->
+		from
+	<!-- /tmpl_if -->
+	<strong><!-- tmpl_var type_title --></strong>
+	
+	on 
+		<!-- tmpl_var date -->  
+	<!-- 
+	from
+		
+	 	<!-- tmpl_var ip -->
+	-->
+	
+	</li>
+	
+	<!-- /tmpl_if -->
+	
+	<!-- /tmpl_loop -->
+</ul>
+
+
 
 <p>
  <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;page=<!-- tmpl_var page -->;query=<!-- tmpl_var query -->;order_by=<!-- tmpl_var order_by -->;order_dir=<!-- tmpl_var order_dir -->">&lt;&lt; Back</a>

@@ -1,7 +1,7 @@
 package DADA::App::LogSearch; 
 
 use strict; 
-use lib qw(./ ../  ../DADA ../DADA/perllib); 
+use lib qw(../../  ../../DADA/perllib); 
 
 use DADA::Config qw(!:DEFAULT);  
 use DADA::App::Guts; 
@@ -117,6 +117,79 @@ sub search {
 
 
 
+sub subscription_search { 
+
+	#$DADA::Config::PROGRAM_USAGE_LOG	
+
+	
+	my $self = shift; 
+	my ($args) = @_;
+	if(! exists($args->{-email})){ 
+		croak "you MUST pass the, '-email' paramater!"; 
+	}
+	if(! exists($args->{-list})){ 
+		croak "you MUST pass the, '-list' paramater!"; 
+	}
+
+	my $results = []; 
+
+	my $file = $DADA::Config::PROGRAM_USAGE_LOG;
+	
+	open my $LOG_FILE, '<', $file
+    or die "Cannot read log at: '" . $file
+    . "' because: "
+    . $!;
+
+	my %list_types = (
+					  list               => 'Subscribers',
+	                  black_list         => 'Black Listed',
+	                  authorized_senders => 'Authorized Senders',
+	                  white_list         => 'White Listed', # White listed isn't working, no?
+	                  sub_request_list   => 'Subscription Requests',
+					  bounced_list       => 'Bouncing Addresses',
+					);
+					
+    
+    while(my $l = <$LOG_FILE>){ 
+    	chomp($l); 
+    	# Looking for entries like, 
+		# [Mon Jan 30 22:56:41 2012]	list	174.16.92.159	Subscribed to list.list	example209@example.com
+		my ($date, $list, $ip, $action, $email) = split(/\t/, $l, 5); 
+		if($list eq $args->{-list} && $email eq $args->{-email}){ 
+			my $sublist     = undef; 
+			my $base_action = undef; 
+			if($action =~ m/Subscribed to/){ 
+				$action =~ m/^Subscribed to list\.(.*?)$/; 
+				$base_action = 'subscribed'; 
+				$sublist = $1;
+			}
+			elsif($action =~ m/Unsubscribed from/){ 
+				$action =~ m/Unsubscribed from list.(.*?)$/;
+				$base_action = 'unsubscribed'; 
+				$sublist = $1;
+			}
+			$date =~ s/(\[|\])//g;
+			push(@$results, {
+					date       => $date,
+					list       => $list, 
+					ip         => $ip, 
+					email      => $email, 
+					type       => $sublist,
+					type_title => $list_types{$sublist},
+					action     => $base_action, 
+				}
+			);
+		}
+
+    }
+    close $LOG_FILE;
+
+
+	return $results; 
+
+	
+	
+}
 
 sub _validate_files { 
 

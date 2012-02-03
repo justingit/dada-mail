@@ -182,10 +182,23 @@ function warnAboutMassSubscription(form_name) {
 
 function unsubscribeAllSubscribers(form_name, type) { 
     
-    var confirm_msg =  "Are you sure you want to remove all, '"+ type +"' subscribers? ";	
-    if(!confirm(confirm_msg)){
-        alert("'" + type + "' subscribers not removed.");
-        return false;
+	var confirm_msg = '';
+	if(type == 'Subscribers'){ 
+		confirm_msg = "Are you sure you want to unsubscribe all Subscribers? ";	
+	}
+	else { 
+		confirm_msg = "Are you sure you want to remove all " + type + "?";			
+	}
+	
+	if(!confirm(confirm_msg)){
+		if(type == 'Subscribers'){ 	
+			alert("Subscribers not unsubscribed.");        	
+        }
+		else { 
+			alert("'" + type + "' not removed.");
+        	
+		}
+		return false;
     }
 	else { 
 		return true; 

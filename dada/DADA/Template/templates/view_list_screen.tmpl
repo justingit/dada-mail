@@ -25,7 +25,7 @@
 
 <!-- tmpl_if delete_email_count -->
 	<p class="alert">
-	<!-- tmpl_var delete_email_count --> address(es) have been remove from your <!-- tmpl_var type_title -->.
+	<!-- tmpl_var delete_email_count --> address(es) have been removed from your <!-- tmpl_var type_title -->.
 	</p>
 <!-- /tmpl_if -->
 
@@ -172,7 +172,7 @@
 	<!-- tmpl_else --> 
 	
 		<p class="alert">
-		 Currently, there are no <!-- tmpl_var type_title -->.
+		 There are currently no <!-- tmpl_var type_title -->.
 	
 		    <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
 		
@@ -284,9 +284,9 @@
 	
 	<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
 
-		 <input type=hidden name="process" value="delete" />
-		 <input type=hidden name="f"       value="remove_subscribers" />
-		 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
+		 <input type="hidden" name="process" value="delete" />
+		 <input type="hidden" name="f"       value="remove_subscribers" />
+		 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
 		<!-- tmpl_if expr="(type eq 'list')" -->
 		 	<input type="submit" class="small_button" value="Unsubscribe Checked Subscribers" />
 		<!-- tmpl_else --> 
@@ -297,8 +297,8 @@
 
 	<!-- tmpl_if EXPR="(type eq 'sub_request_list')" -->
 
-		 <input type=hidden name="f"       value="subscription_requests" />
-		 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
+		 <input type="hidden" name="f"       value="subscription_requests" />
+		 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
 		 <input type="submit" name="process" class="small_button" value="Approve Checked Subscription Requests" />
 		 <input type="submit" name="process" class="small_button" value="Deny Checked Subscription Requests" />
 
@@ -306,8 +306,8 @@
 	
 	<!-- tmpl_if EXPR="(type eq 'bounced_list')" -->
 	
-			<input type=hidden name="f"     value="process_bouncing_addresses" />
-			 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
+			<input type="hidden" name="f"     value="process_bouncing_addresses" />
+			 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
 			
 			 <input type="submit" name="process" class="small_button"  value="-> Move Selected Bouncing Address Back to Subscribers" />
 			 <input type="submit" name="process" class="small_button"  value="[x] Remove Selected Bouncing Addresses" />
@@ -319,8 +319,8 @@
 	<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
 
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" style="display:inline">
-		 <input type=hidden name="f"       value="remove_all_subscribers" />
-		 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
+		 <input type="hidden" name="f"       value="remove_all_subscribers" />
+		 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
 		<!-- tmpl_if expr="(type eq 'list')" -->
 		
 		  <input type="submit" class="small_button" value="Unsubscribe ALL <!-- tmpl_var type_title -->" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   />

@@ -163,7 +163,15 @@ sub copy_subscriber {
     return $dmls->copy($args);
 }
 
-
+sub subscribed_to { 
+	my $self = shift; 
+	my ($args) = @_;
+	$args->{-list} = $self->{list};
+	
+ my $dmls =
+      DADA::MailingList::Subscriber->new( $args );
+    return $dmls->subscribed_to($args);	
+}
 
 sub admin_remove_subscribers { 
 	
