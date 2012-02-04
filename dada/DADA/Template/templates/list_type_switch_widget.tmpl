@@ -32,14 +32,16 @@
 			</a>
 			</li>
 			
-			<li <!-- tmpl_if EXPR="(type eq 'white_list')" --> class="active" <!-- /tmpl_if -->>
+			<!-- tmpl_if list_settings.enable_white_list -->
+				<li <!-- tmpl_if EXPR="(type eq 'white_list')" --> class="active" <!-- /tmpl_if -->>
 			
-			<a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->;type=white_list;query=<!-- tmpl_var query escape="HTML" -->">
-			   <span>
-				White List (<!-- tmpl_var white_list_subscribers_num -->)
-			    </span>
-			 </a>
-			</li>
+				<a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->;type=white_list;query=<!-- tmpl_var query escape="HTML" -->">
+				   <span>
+					White List (<!-- tmpl_var white_list_subscribers_num -->)
+				    </span>
+				 </a>
+				</li>
+			<!-- /tmpl_if --> 
 			
 			<!-- tmpl_if list_settings.enable_authorized_sending -->
 				<li <!-- tmpl_if EXPR="(type eq 'authorized_senders')" --> class="active" <!-- /tmpl_if -->>

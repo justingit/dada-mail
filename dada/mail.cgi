@@ -3324,7 +3324,6 @@ sub filter_using_black_list {
 
 
 
-
 sub edit_subscriber {
 
     if ( !$email ) {
@@ -3332,7 +3331,7 @@ sub edit_subscriber {
         return;
 
     }
-	my $type = $q->param('type') || 'list';
+    my $type = $q->param('type') || 'list';
 
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
@@ -3352,18 +3351,6 @@ sub edit_subscriber {
     my $li = $ls->get;
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
-
-=cut
-
-    if ( $lh->check_for_double_email( -Email => $email, -Type => $type ) == 0 )
-    {
-        print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
-              . '?f=view_list&error=no_such_address&type='
-              . $type );
-        return;
-    }
-
-=cut
 
     if ($process) {
         if ( !$root_login ) {
@@ -3409,90 +3396,106 @@ sub edit_subscriber {
         );
     }
 
-	require DADA::App::LogSearch;
+    require DADA::App::LogSearch;
     my $searcher = DADA::App::LogSearch->new;
-    my $r  = $searcher->subscription_search(
+    my $r        = $searcher->subscription_search(
         {
-			-list  => $list, 
-			-email => $email,
+            -list  => $list,
+            -email => $email,
         }
     );
- 
-	my $subscribed_to_lt = {};
-	for(@{$lh->subscribed_to({-email => $email})}){ 
-		$subscribed_to_lt->{$_} = 1;
-	}
-	
-	my $add_to = { 
-		list               => 1, 
-	    black_list       => 1,
-		white_list         => 1, 
-		authorized_senders => 1, 	
-	};
-	# Except when, it's already a part of that sublist: 
-	for(keys %$subscribed_to_lt){ 
-		delete($add_to->{$_}); # if $subscribed_to_lt->{$_} == 1;
-	}
-	# Or if it's blacklisted... can't add!
-	if($ls->param('closed_list') == 1){ 
-		delete($add_to->{list});	
-	}
-	elsif(
-		$ls->param('black_list') == 1 
-	&& $ls->param('allow_admin_to_subscribe_blacklisted') != 1 
-	&& $subscribed_to_lt->{black_list} == 1){ 
-		delete($add_to->{list});	
-	}
-	
-	# if Authorized Senders isn't active, well, let's not allow to be added:
-	if($ls->param('enable_authorized_sending') == 1){ 
-		#... 
-	}
-	else { 
-		delete($add_to->{authorized_senders});	
-	}
-	# Same with the white list
-	if($ls->param('enable_white_list') == 1){ 
-		#... 
-	}
-	else { 
-		delete($add_to->{white_list});	
-		
-	}
-	#%list_types
-	
-	my $add_to_popup_menu = $q->popup_menu(
+
+    my $subscribed_to_lt = {};
+    for ( @{ $lh->subscribed_to( { -email => $email } ) } ) {
+        $subscribed_to_lt->{$_} = 1;
+    }
+
+    my $add_to = {
+        list               => 1,
+        black_list         => 1,
+        white_list         => 1,
+        authorized_senders => 1,
+    };
+
+    # Except when, it's already a part of that sublist:
+    for ( keys %$subscribed_to_lt ) {
+        delete( $add_to->{$_} );    # if $subscribed_to_lt->{$_} == 1;
+    }
+
+    # Or if it's blacklisted... can't add!
+    if ( $ls->param('closed_list') == 1 ) {
+        delete( $add_to->{list} );
+    }
+    elsif ($ls->param('black_list') == 1
+        && $ls->param('allow_admin_to_subscribe_blacklisted') != 1
+        && $subscribed_to_lt->{black_list} == 1 )
+    {
+        delete( $add_to->{list} );
+    }
+
+    # if Authorized Senders isn't active, well, let's not allow to be added:
+    if ( $ls->param('enable_authorized_sending') == 1 ) {
+
+        #...
+    }
+    else {
+        delete( $add_to->{authorized_senders} );
+    }
+
+    # Same with the white list
+    if ( $ls->param('enable_white_list') == 1 ) {
+
+        #...
+    }
+    else {
+        delete( $add_to->{white_list} );
+
+    }
+
+    #%list_types
+
+    my $add_to_popup_menu = $q->popup_menu(
         -name     => 'type',
-		-id       => 'type_add',
-		-default  => 'list', 
+        -id       => 'type_add',
+        -default  => 'list',
         '-values' => [ keys %$add_to ],
         -labels   => \%list_types,
     );
-	# Only if black list is enabled and they're not currently subscribed.
-	if($ls->param('black_list') == 1 && $subscribed_to_lt->{list} != 1){ 
-		# ... 
-	}
-	else { 
-		delete($add_to->{black_list});				
-	}
 
-	my $member_of = [];
-	my $remove_from = [];
-	foreach(%$subscribed_to_lt){ 
-		if($_ =~ m/^(list|black_list|white_list|authorized_senders|bounced_list)$/){ 
-			push(@$member_of, {type => $_, type_title => $list_types{$_}}); 
-			push(@$remove_from, $_); 
-		}
-	}
-	
-	my $remove_from_popup_menu = $q->popup_menu(
+    # Only if black list is enabled and they're not currently subscribed.
+    if ( $ls->param('black_list') == 1 && $subscribed_to_lt->{list} != 1 ) {
+
+        # ...
+    }
+    else {
+        delete( $add_to->{black_list} );
+    }
+
+    my $member_of   = [];
+    my $remove_from = [];
+    foreach (%$subscribed_to_lt) {
+        if ( $_ =~
+            m/^(list|black_list|white_list|authorized_senders|bounced_list)$/ )
+        {
+            push( @$member_of, { type => $_, type_title => $list_types{$_} } );
+            push( @$remove_from, $_ );
+        }
+    }
+
+    my $remove_from_popup_menu = $q->popup_menu(
         -name     => 'type',
-		-id       => 'type_remove',
+        -id       => 'type_remove',
         '-values' => $remove_from,
         -labels   => \%list_types,
     );
 
-
+	my $subscribed_to_list = $lh->check_for_double_email(
+	        -Email => $email,
+	        -Type  => 'list'
+		);
+		
+	use Data::Dumper; 
+	
 
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -3503,28 +3506,33 @@ sub edit_subscriber {
                 -Root_Login => $root_login,
                 -List       => $list,
             },
-			-expr => 1, 
+            -expr => 1,
             -vars => {
-                done       => $done,
-                email      => $email,
-                type       => $type,
-                page       => $page,
-                query      => $query,
-                order_by   => $order_by,
-                order_dir  => $order_dir,
-                type_title => $type_title,
-                fields     => $fields,
-                root_login => $root_login,
-				history    => $r, 
-				# add_to => Dumper($also_add_to), 
-			   add_to_popup_menu => $add_to_popup_menu, 
-               remove_from_popup_menu => $remove_from_popup_menu, 
-			   remove_from_num => scalar(@$remove_from),
-			   member_of => $member_of, 
-			   rand_string => generate_rand_string(),
-		       member_of_num => scalar(@$remove_from),  
-		       add_to_num => scalar(keys %$add_to),  
-		
+                done                   => $done,
+                email                  => $email,
+                type                   => $type,
+                page                   => $page,
+                query                  => $query,
+                order_by               => $order_by,
+                order_dir              => $order_dir,
+                type_title             => $type_title,
+                fields                 => $fields,
+                root_login             => $root_login,
+                history                => $r,
+				raw_history            => Dumper($r),
+                add_to_popup_menu      => $add_to_popup_menu,
+                remove_from_popup_menu => $remove_from_popup_menu,
+                remove_from_num        => scalar(@$remove_from),
+                member_of              => $member_of,
+                rand_string            => generate_rand_string(),
+                member_of_num          => scalar(@$remove_from),
+                add_to_num             => scalar( keys %$add_to ),
+				subscribed_to_list     => $subscribed_to_list, 
+
+            },
+			-list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
             },
         }
     );

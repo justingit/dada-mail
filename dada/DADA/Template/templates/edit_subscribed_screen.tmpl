@@ -33,6 +33,8 @@
 <!-- /tmpl_unless --> 
 
 
+
+
 <!--
 
 Will need to be different for Subscription Requests - at least another popup for Approve/Deny?
@@ -70,10 +72,74 @@ Will need to be different for Subscription Requests - at least another popup for
 	
 	<p><label for="type_remove">&#8592;  Remove</label> address from: <!-- tmpl_var remove_from_popup_menu --><input type="submit" value="Remove" /></p>
 	</form>
+	
+	<!-- tmpl_if subscribed_to_list -->
+		<!-- tmpl_if list_settings.black_list -->
+			<!-- tmpl_if list_settings.add_unsubs_to_black_list -->
+				<p class="alert">
+					Subscribers that are removed will be added to the Black List.
+				</p>
+			<!-- /tmpl_if -->
+		<!-- /tmpl_if -->
+	<!-- /tmpl_if -->
+
 
 <!-- /tmpl_if --> 
 
 </fieldset> 
+
+
+
+<h1>Mailing List History</h1> 
+
+
+<ul style="list-style: none;">
+<!-- tmpl_loop history --> 
+
+	<!-- tmpl_if expr="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list') || (type eq 'sub_request_list') || (type eq 'bounced_list'))" -->
+	
+	<li>
+	
+	
+	<!-- tmpl_if expr="(action eq 'subscribed')" --> 
+		&#8594;
+		<!-- tmpl_if expr="(type eq 'list')" -->
+			<strong>Subscribed</strong>
+		<!-- tmpl_else -->
+			<strong>Added</strong>
+		<!-- /tmpl_if -->
+		 to
+	<!-- /tmpl_if -->
+	<!-- tmpl_if expr="(action eq 'unsubscribed')" --> 
+		&#8592; 
+		<!-- tmpl_if expr="(type eq 'list')" -->
+			<strong>Unsubscribed</strong>
+		<!-- tmpl_else -->
+			<strong>Removed</strong>
+		<!-- /tmpl_if -->
+		from
+	<!-- /tmpl_if -->
+	<strong><!-- tmpl_var type_title --></strong>
+	
+	on 
+		<!-- tmpl_var date -->  
+	<!-- 
+	from
+		
+	 	<!-- tmpl_var ip -->
+	-->
+	
+	</li>
+	
+	<!-- /tmpl_if -->
+	
+	<!-- /tmpl_loop -->
+</ul>
+<!--
+				<pre>
+				<!-- tmpl_var raw_history -->
+				</pre>
+-->
 
 <fieldset> 
 <legend>Profile Fields</legend>
@@ -133,55 +199,7 @@ Will need to be different for Subscription Requests - at least another popup for
 
 
 
-</fieldset> 
-
-
-<h1>Mailing List History</h1> 
-
-
-<ul style="list-style: none;">
-<!-- tmpl_loop history --> 
-
-	<!-- tmpl_if expr="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list') || (type eq 'sub_request_list') || (type eq 'bounced_list'))" -->
-	
-	<li>
-	
-	
-	<!-- tmpl_if expr="(action eq 'subscribed')" --> 
-		&#8594;
-		<!-- tmpl_if expr="(type eq 'list')" -->
-			<strong>Subscribed</strong>
-		<!-- tmpl_else -->
-			<strong>Added</strong>
-		<!-- /tmpl_if -->
-		 to
-	<!-- /tmpl_if -->
-	<!-- tmpl_if expr="(action eq 'unsubscribed')" --> 
-		&#8592; 
-		<!-- tmpl_if expr="(type eq 'list')" -->
-			<strong>Unsubscribed</strong>
-		<!-- tmpl_else -->
-			<strong>Removed</strong>
-		<!-- /tmpl_if -->
-		from
-	<!-- /tmpl_if -->
-	<strong><!-- tmpl_var type_title --></strong>
-	
-	on 
-		<!-- tmpl_var date -->  
-	<!-- 
-	from
-		
-	 	<!-- tmpl_var ip -->
-	-->
-	
-	</li>
-	
-	<!-- /tmpl_if -->
-	
-	<!-- /tmpl_loop -->
-</ul>
-
+</fieldset>
 
 
 <p>

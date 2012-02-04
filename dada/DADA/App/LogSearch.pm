@@ -144,7 +144,7 @@ sub subscription_search {
 					  list               => 'Subscribers',
 	                  black_list         => 'Black Listed',
 	                  authorized_senders => 'Authorized Senders',
-	                  white_list         => 'White Listed', # White listed isn't working, no?
+	                  white_list         => 'White Listed',
 	                  sub_request_list   => 'Subscription Requests',
 					  bounced_list       => 'Bouncing Addresses',
 					);
@@ -159,12 +159,12 @@ sub subscription_search {
 			my $sublist     = undef; 
 			my $base_action = undef; 
 			if($action =~ m/Subscribed to/){ 
-				$action =~ m/^Subscribed to list\.(.*?)$/; 
+				$action =~ m/^Subscribed to $list\.(.*?)$/; 
 				$base_action = 'subscribed'; 
 				$sublist = $1;
 			}
 			elsif($action =~ m/Unsubscribed from/){ 
-				$action =~ m/Unsubscribed from list.(.*?)$/;
+				$action =~ m/Unsubscribed from $list\.(.*?)$/;
 				$base_action = 'unsubscribed'; 
 				$sublist = $1;
 			}
