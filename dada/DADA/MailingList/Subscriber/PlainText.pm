@@ -222,4 +222,26 @@ sub remove {
 
 
 
+sub subscribed_to {
+	
+    my $self = shift;	
+	my $found = [];
+	
+	my $lh = DADA::MailingList::Subscribers->new({-list => $self->{list}});
+	foreach(keys %{$lh->get_list_types}){ 
+		if($lh->check_for_double_email(
+	        -Email => $self->email,
+	        -Type  => $_,
+	    ) == 1){
+			push(@$found, $_); 
+		}
+	}
+	return $found; 
+} 
+
+
+
+
+
+
 1;

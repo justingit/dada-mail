@@ -98,16 +98,21 @@ sub search_list {
         $args->{'-length'} = 100;     
     }
         
-	my $r       = [];
-	my $email   = ''; 
+	my $r         = [];
+	my $email     = ''; 
 	my $query = quotemeta($args->{-query}); 
     my $count   = 0;
     
     $self->open_list_handle(-Type => $args->{-type});
     while(defined($email = <LIST>)){
 		chomp($email); 
-        if($email =~ m/$query/i){ 
+        if($email =~ m/$query/i){ # case insensitive?
+			$count++;
 			
+			# This is to still count, but not return...
+			next if $count <  $args->{-start}; 
+			next if $count > ($args->{-start} + $args->{'-length'});
+	        
 			push(
 				@$r, 
 				{
@@ -116,17 +121,13 @@ sub search_list {
 					fields => []
 				}
 			);
-    
-			$count++; 
-	        next if $count <  $args->{-start}; 
-	        last if $count > ($args->{-start} + $args->{'-length'});
 	
         }
     }
     close(LIST); 
     
 
-	return $r; 
+	return ($count, $r); 
 
 
 }

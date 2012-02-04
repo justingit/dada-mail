@@ -100,8 +100,8 @@ sub search_list {
 
     my ($args) = @_;
 
-    if ( !exists( $args->{ -start } ) ) {
-        $args->{ -start } = 1;
+    if ( !exists( $args->{-start} ) ) {
+        $args->{-start} = 1;
     }
     if ( !exists( $args->{'-length'} ) ) {
         $args->{'-length'} = 100;
@@ -113,25 +113,25 @@ sub search_list {
 
     my $fields = $self->subscriber_fields;
     for (@$fields) {
-        $partial_listing->{$_} = { like => $args->{ -query } };
+        $partial_listing->{$_} = { like => $args->{-query} };
     }
 
     # Do I have to do this, explicitly?
-    $partial_listing->{email} = { like => $args->{ -query } };
+    $partial_listing->{email} = { like => $args->{-query} };
 
     my $query = $self->SQL_subscriber_profile_join_statement(
         {
-            -type            => $args->{ -type },
+            -type            => $args->{-type},
             -partial_listing => $partial_listing,
             -search_type     => 'any',
-			-order_by        => $args->{-order_by}, 
-			-order_dir       => $args->{-order_dir}, 
+            -order_by        => $args->{-order_by},
+            -order_dir       => $args->{-order_dir},
         }
     );
 
     my $sth = $self->{dbh}->prepare($query);
 
-    my $rv = $sth->execute()
+    $sth->execute()
       or croak "cannot do statment (for search_list)! $DBI::errstr\n";
 
     my $row   = {};
@@ -140,33 +140,30 @@ sub search_list {
     while ( $row = $sth->fetchrow_hashref ) {
 
         $count++;
-        next if $count < $args->{ -start };
-        last if $count > ( $args->{ -start } + $args->{'-length'} );
+        next if $count < $args->{-start};
+        next if $count > ( $args->{-start} + $args->{'-length'} );
 
         my $info = {};
-        $info->{email}     = $row->{email};
-        $info->{type} = $args->{ -type };    # Whazza?!
+        $info->{email} = $row->{email};
+        $info->{type}  = $args->{-type};    # Whazza?!
 
         delete( $row->{email} );
         $info->{fields} = [];
 
-        #    for(keys %$row){
         for (@$fields) {
-            push ( @{ $info->{fields} }, { name => $_, value => $row->{$_} } );
+            push( @{ $info->{fields} }, { name => $_, value => $row->{$_} } );
         }
 
-        push ( @$r, $info );
+        push( @$r, $info );
 
     }
 
     $sth->finish();
 
-	if($rv eq '0E0'){ 
-		$rv = 0; 
-	}
-    return ($rv, $r);
+    return ( $count, $r );
 
 }
+
 
 
 
@@ -237,7 +234,7 @@ sub SQL_subscriber_profile_join_statement {
         croak '"' . $args->{-type} . '" is not a valid list type! ';
     }
 
-    if ( !exists( $args->{-order_by} ) ) {
+    if ( !exists( $args->{-order_by}) || !defined($args->{-order_by}) ) {
         $args->{-order_by} = 'email';
     }
 
@@ -438,6 +435,7 @@ sub SQL_subscriber_profile_join_statement {
         $query .= ' GROUP BY ' . $subscriber_table . '.email ';
     }
 
+	
     #   if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
     if ( $args->{-order_by} eq 'email' ) {
 
@@ -539,9 +537,9 @@ sub print_out_list {
 	if(! exists($args->{-query})){ 
 		$args->{-query} = undef; 
 	}	
-	if(! exists($args->{-order_by})){ 
-		$args->{-order_by} = undef; 
-	}	
+#	if(! exists($args->{-order_by})){ 
+#		$args->{-order_by} = undef; 
+#	}	
 	if(! exists($args->{-order_dir})){ 
 		$args->{-order_dir} = undef; 
 	}
