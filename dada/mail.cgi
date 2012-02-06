@@ -566,6 +566,7 @@ sub run {
 	'admin_help'                 =>    \&admin_help,
 	'delete_list'                =>    \&delete_list,
 	'view_list'                  =>    \&view_list,
+	'list_activity'              =>    \&list_activity,
 	'view_bounce_history'        =>    \&view_bounce_history, 
 	'subscription_requests'      =>    \&subscription_requests,
 	'remove_all_subscribers'     =>    \&remove_all_subscribers,
@@ -2957,8 +2958,8 @@ sub view_list {
     my $add_email_count                  = $q->param('add_email_count') || 0;
     my $delete_email_count               = $q->param('delete_email_count');
     my $black_list_add                   = $q->param('black_list_add') || 0;
-    my $approved_count                   = $q->param('approved_count');
-    my $denied_count                     = $q->param('denied_count');
+    my $approved_count                   = $q->param('approved_count') || 0;
+    my $denied_count                     = $q->param('denied_count') || 0;
 	my $bounced_list_moved_to_list_count = $q->param('bounced_list_moved_to_list_count') || 0; 
 	my $bounced_list_removed_from_list   = $q->param('bounced_list_removed_from_list') || 0; 
 	
@@ -3070,6 +3071,50 @@ sub view_list {
 
 }
 
+
+
+sub list_activity { 
+	
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'list_activity'
+    );
+    $list = $admin_list;
+
+	require DADA::App::LogSearch; 
+	my $dals = DADA::App::LogSearch->new; 
+	my $r = $dals->list_activity(
+		{
+			-list => $list, 
+		}
+	); 
+	my $i;
+	for($i = 0; $i <= (scalar(@$r) - 1); $i++){ 
+		$r->[$i]->{show_email} = 1;
+	}
+
+	require DADA::Template::Widgets; 
+	e_print(
+        DADA::Template::Widgets::wrap_screen(
+            {
+				-list   => $list,
+                -screen => 'list_activity.tmpl',
+				-with           => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+                -vars   => {
+                   history => $r, 
+                },
+				-expr => 1,
+            }
+        )
+    );
+
+}
+
+
 sub view_bounce_history {
 
     my ( $admin_list, $root_login ) = check_list_security(
@@ -3111,107 +3156,144 @@ sub view_bounce_history {
 
 sub subscription_requests {
 
-	my ($admin_list, $root_login) = check_list_security(
-		-cgi_obj  => $q,
-		-Function => 'view_list'
-	);
-    $list  = $admin_list;
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'view_list'
+    );
+    $list = $admin_list;
 
-	if(defined($q->param('list'))){
-		if($list ne $q->param('list')){
-			logout(
-				-redirect_url => $DADA::Config::S_PROGRAM_URL . '?' . $q->query_string(),
-			);
-			return;
-		}
-	}
+    if ( defined( $q->param('list') ) ) {
+        if ( $list ne $q->param('list') ) {
+            logout( -redirect_url => $DADA::Config::S_PROGRAM_URL . '?'
+                  . $q->query_string(), );
+            return;
+        }
+    }
 
+    my @address        = $q->param('address')        || ();
+    my $return_to      = $q->param('return_to')      || '';
+    my $return_address = $q->param('return_address') || '';
 
-	my @address = $q->param('address') || ();
-	my $count   = 0;
-	require DADA::MailingList::Settings;
+    my $count = 0;
+    require DADA::MailingList::Settings;
 
-    my $ls = DADA::MailingList::Settings   ->new({-list => $list});
-    my $lh = DADA::MailingList::Subscribers->new({-list => $list});
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
-
-	if($q->param('process') =~ m/approve/i){
-		for my $email(@address){
-			$lh->move_subscriber(
+    if ( $q->param('process') =~ m/approve/i ) {
+        for my $email (@address) {
+            $lh->move_subscriber(
                 {
-                    -email            => $email,
-                    -from             => 'sub_request_list',
-                    -to               => 'list',
-	        		-mode             => 'writeover',
-	        		-confirmed        => 1,
+                    -email     => $email,
+                    -from      => 'sub_request_list',
+                    -to        => 'list',
+                    -mode      => 'writeover',
+                    -confirmed => 1,
                 }
-			);
+            );
 
-			my $new_pass    = '';
-	        my $new_profile = 0;
-			if(
-	           $DADA::Config::PROFILE_OPTIONS->{enabled} == 1 &&
-	           $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/
-	        ){
-	        	# Make a profile, if needed,
-	        	require DADA::Profile;
-	        	my $prof = DADA::Profile->new({-email => $email});
-	        	if(!$prof->exists){
-	        		$new_profile = 1;
-	        		$new_pass    = $prof->_rand_str(8);
-	        		$prof->insert(
-	        			{
-	        				-password  => $new_pass,
-	        				-activated => 1,
-	        			}
-	        		);
-	        	}
-	        	# / Make a profile, if needed,
-	        }
-			require DADA::App::Messages;
+            my $new_pass    = '';
+            my $new_profile = 0;
+            if (   $DADA::Config::PROFILE_OPTIONS->{enabled} == 1
+                && $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ )
+            {
+
+                # Make a profile, if needed,
+                require DADA::Profile;
+                my $prof = DADA::Profile->new( { -email => $email } );
+                if ( !$prof->exists ) {
+                    $new_profile = 1;
+                    $new_pass    = $prof->_rand_str(8);
+                    $prof->insert(
+                        {
+                            -password  => $new_pass,
+                            -activated => 1,
+                        }
+                    );
+                }
+
+                # / Make a profile, if needed,
+            }
+            require DADA::App::Messages;
             DADA::App::Messages::send_subscription_request_approved_message(
-				{
-	                -list   => $list,
-	                -email  => $email,
-	                -ls_obj => $ls,
-					#-test   => $self->test,
-					-vars         => {
-        								new_profile        => $new_profile,
-        								'profile.email'    =>  $email,
-        								'profile.password' =>  $new_pass,
+                {
+                    -list   => $list,
+                    -email  => $email,
+                    -ls_obj => $ls,
 
-        						 	 }
-        		}
-			);
-			$count++;
-		}
-        print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=view_list&type=' . $q->param('type') . '&approved_count=' . $count);
-	}
-	elsif($q->param('process') =~ m/deny/i){
-		for my $email(@address){
-			$lh->remove_subscriber(
-	            {
-	                -email            => $email,
-	                -type             => 'sub_request_list',
-	            }
-			);
-			require DADA::App::Messages;
+                    #-test   => $self->test,
+                    -vars => {
+                        new_profile        => $new_profile,
+                        'profile.email'    => $email,
+                        'profile.password' => $new_pass,
+
+                    }
+                }
+            );
+            $count++;
+        }
+
+        my $flavor_to_return_to = 'view_list';
+        if ( $return_to eq 'edit_subscriber' ) {    # or, others...
+            $flavor_to_return_to = $return_to;
+        }
+
+        my $qs = 'f='
+          . $flavor_to_return_to
+          . ';type='
+          . $q->param('type')
+          . ';approved_count='
+          . $count;
+
+        if ( $return_to eq 'edit_subscriber' ) {
+            $qs .= ';email=' . $return_address;
+        }
+
+        print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?' . $qs );
+    }
+    elsif ( $q->param('process') =~ m/deny/i ) {
+        for my $email (@address) {
+            $lh->remove_subscriber(
+                {
+                    -email => $email,
+                    -type  => 'sub_request_list',
+                }
+            );
+            require DADA::App::Messages;
             DADA::App::Messages::send_subscription_request_denied_message(
-				{
-	                -list   => $list,
-	                -email  => $email,
-	                -ls_obj => $ls,
-					#-test   => $self->test,
-        		}
-			);
-			$count++;
-		}
-		print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=view_list&type=' . $q->param('type') . '&denied_count=' . $count);
+                {
+                    -list   => $list,
+                    -email  => $email,
+                    -ls_obj => $ls,
 
-	}
-	else {
-		die "unknown process!";
-	}
+                    #-test   => $self->test,
+                }
+            );
+            $count++;
+        }
+
+        my $flavor_to_return_to = 'view_list';
+        if ( $return_to eq 'edit_subscriber' ) {    # or, others...
+            $flavor_to_return_to = $return_to;
+        }
+
+        my $qs = 'f='
+          . $flavor_to_return_to
+          . ';type='
+          . $q->param('type')
+          . ';denied_count='
+          . $count;
+
+        if ( $return_to eq 'edit_subscriber' ) {
+            $qs .= ';email=' . $return_address;
+        }
+
+        print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?' . $qs );
+
+    }
+    else {
+        die "unknown process!";
+    }
 
 }
 
@@ -3346,6 +3428,15 @@ sub edit_subscriber {
     my $order_by  = $q->param('order_by')            || 'email';
     my $order_dir = $q->param('order_dir')           || 'asc';
 
+
+    my $add_email_count                  = $q->param('add_email_count') || 0;
+    my $delete_email_count               = $q->param('delete_email_count');
+    my $black_list_add                   = $q->param('black_list_add') || 0;
+    my $approved_count                   = $q->param('approved_count') || 0;
+    my $denied_count                     = $q->param('denied_count') || 0;
+	my $bounced_list_moved_to_list_count = $q->param('bounced_list_moved_to_list_count') || 0; 
+	my $bounced_list_removed_from_list   = $q->param('bounced_list_removed_from_list') || 0;
+	
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
@@ -3404,6 +3495,10 @@ sub edit_subscriber {
             -email => $email,
         }
     );
+	my $i;
+	for($i = 0; $i <= (scalar(@$r) - 1); $i++){ 
+		$r->[$i]->{show_email} = 0;
+	}
 
     my $subscribed_to_lt = {};
     for ( @{ $lh->subscribed_to( { -email => $email } ) } ) {
@@ -3426,16 +3521,18 @@ sub edit_subscriber {
     if ( $ls->param('closed_list') == 1 ) {
         delete( $add_to->{list} );
     }
-    elsif ($ls->param('black_list') == 1
+    if ($ls->param('black_list') == 1
         && $ls->param('allow_admin_to_subscribe_blacklisted') != 1
         && $subscribed_to_lt->{black_list} == 1 )
     {
         delete( $add_to->{list} );
     }
-
+	if($ls->param('enable_subscription_approval_step') && $subscribed_to_lt->{sub_request_list}){ 
+        delete( $add_to->{list} );
+	}
     # if Authorized Senders isn't active, well, let's not allow to be added:
     if ( $ls->param('enable_authorized_sending') == 1 ) {
-
+		
         #...
     }
     else {
@@ -3489,10 +3586,18 @@ sub edit_subscriber {
         -labels   => \%list_types,
     );
 
-	my $subscribed_to_list = $lh->check_for_double_email(
-	        -Email => $email,
-	        -Type  => 'list'
-		);
+	my $subscribed_to_list = 0;
+	if($subscribed_to_lt->{list} == 1){ 
+		$subscribed_to_list = 1; 
+		
+	}
+
+	my $subscribed_to_sub_request_list = 0;
+	if($subscribed_to_lt->{sub_request_list} == 1){ 
+		$subscribed_to_sub_request_list = 1; 
+		
+	}
+
 		
 	use Data::Dumper; 
 	
@@ -3528,6 +3633,20 @@ sub edit_subscriber {
                 member_of_num          => scalar(@$remove_from),
                 add_to_num             => scalar( keys %$add_to ),
 				subscribed_to_list     => $subscribed_to_list, 
+				subscribed_to_sub_request_list => $subscribed_to_sub_request_list, 
+				
+				add_email_count                  =>    $add_email_count, 				
+				delete_email_count               =>		$delete_email_count,		
+				black_list_add                   =>		$black_list_add,		
+				approved_count                   =>		$approved_count,		
+				denied_count                     =>		$denied_count,		
+				bounced_list_moved_to_list_count =>		$bounced_list_moved_to_list_count, 		
+				bounced_list_removed_from_list   =>		$bounced_list_removed_from_list, 		
+				
+				
+				
+				
+				
 
             },
 			-list_settings_vars_param => {
@@ -8449,6 +8568,10 @@ sub remove_subscribers {
 
     $list = $admin_list;
 
+	my $return_to      = $q->param('return_to')      || ''; 
+	my $return_address = $q->param('return_address') || ''; 
+	
+	 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
     my ( $d_count, $bl_count ) = $lh->admin_remove_subscribers(
         {
@@ -8456,16 +8579,28 @@ sub remove_subscribers {
             -type      => $type,
         }
     );
-    my $uri =
-        $DADA::Config::S_PROGRAM_URL
-      . '?flavor=view_list&delete_email_count='
+
+	my $flavor_to_return_to = 'view_list'; 
+	if($return_to eq 'edit_subscriber'){ # or, others...
+		$flavor_to_return_to = $return_to;
+	}
+	
+    my $qs =
+        
+       'flavor=' . $flavor_to_return_to 
+      . ';delete_email_count='
       . $d_count
-      . '&type='
+      . ';type='
       . $type
-      . '&black_list_add='
+      . ';black_list_add='
       . $bl_count;
 
-    print $q->redirect( -uri => $uri );
+	if($return_to eq 'edit_subscriber'){
+		$qs .= ';email=' . $return_address;
+	}
+
+
+    print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?' . $qs );
 
 }
 

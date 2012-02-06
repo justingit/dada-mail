@@ -785,3 +785,10 @@ padding-right: 7px;
 	font-weight: bold;
 }
 
+#list_activity ul { 
+	list-style: none;
+}
+#list_activity li { 
+	line-height:200%;
+}
+

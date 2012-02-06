@@ -13,12 +13,33 @@
 </p>
 
 
+<!-- tmpl_include view_list_modalmenu_widget.tmpl -->
+
+<!-- tmpl_if list_settings.enable_subscription_approval_step -->
+	<!-- tmpl_if subscribed_to_sub_request_list --> 
+	
+		<fieldset>
+		<legend>Subscription Requests</legend>
+		<p><!-- tmpl_var email --> has requested to be Subscribed to your Mailing List.</p>
+		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+			<input type="hidden" name="f"       value="subscription_requests" />
+			<input type="hidden" name="type" value="sub_request_list" />
+			<input type="hidden" name="address" value="<!-- tmpl_var email -->" />
+			<input type="hidden" name="return_to" value="edit_subscriber" />
+			<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" />
+			<input type="submit" name="process"  value="Approve Subscription Request" />
+			<input type="submit" name="process"  value="Deny Subscription Request" />
+		</form>
+		</fieldset>
+	<!-- /tmpl_if -->
+<!-- /tmpl_if -->
+
 <fieldset> 
 <legend>Membership</legend>
 
 
 <!-- tmpl_unless member_of_num --> 
-	<h2><!-- tmpl_var email --> isn't a part of your Mailing List!</h2>
+	<h2><!-- tmpl_var email --> isn't a part of your Mailing List</h2>
 <!-- tmpl_else --> 
 
 	<h2>Member of:</h2>
@@ -35,14 +56,6 @@
 
 
 
-<!--
-
-Will need to be different for Subscription Requests - at least another popup for Approve/Deny?
-
-(What happens to Requests when you outright Subscribe them?!)
-
-
--->
 
 
 <!-- tmpl_if add_to_num --> 
@@ -69,6 +82,7 @@ Will need to be different for Subscription Requests - at least another popup for
 	<input type="hidden" name="address" value="<!-- tmpl_var email -->" />
 	<input type="hidden" name="f"       value="remove_subscribers" />	
 	<input type="hidden" name="return_to" value="edit_subscriber" />
+	<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" />
 	
 	<p><label for="type_remove">&#8592;  Remove</label> address from: <!-- tmpl_var remove_from_popup_menu --><input type="submit" value="Remove" /></p>
 	</form>
@@ -92,53 +106,13 @@ Will need to be different for Subscription Requests - at least another popup for
 
 <h1>Mailing List History</h1> 
 
+<!-- tmpl_include filtered_list_activity_widget.tmpl -->
 
-<ul style="list-style: none;">
-<!-- tmpl_loop history --> 
 
-	<!-- tmpl_if expr="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list') || (type eq 'sub_request_list') || (type eq 'bounced_list'))" -->
-	
-	<li>
-	
-	
-	<!-- tmpl_if expr="(action eq 'subscribed')" --> 
-		&#8594;
-		<!-- tmpl_if expr="(type eq 'list')" -->
-			<strong>Subscribed</strong>
-		<!-- tmpl_else -->
-			<strong>Added</strong>
-		<!-- /tmpl_if -->
-		 to
-	<!-- /tmpl_if -->
-	<!-- tmpl_if expr="(action eq 'unsubscribed')" --> 
-		&#8592; 
-		<!-- tmpl_if expr="(type eq 'list')" -->
-			<strong>Unsubscribed</strong>
-		<!-- tmpl_else -->
-			<strong>Removed</strong>
-		<!-- /tmpl_if -->
-		from
-	<!-- /tmpl_if -->
-	<strong><!-- tmpl_var type_title --></strong>
-	
-	on 
-		<!-- tmpl_var date -->  
-	<!-- 
-	from
-		
-	 	<!-- tmpl_var ip -->
-	-->
-	
-	</li>
-	
-	<!-- /tmpl_if -->
-	
-	<!-- /tmpl_loop -->
-</ul>
 <!--
-				<pre>
-				<!-- tmpl_var raw_history -->
-				</pre>
+			<pre>
+			<!-- tmpl_var raw_history -->
+			</pre>
 -->
 
 <fieldset> 

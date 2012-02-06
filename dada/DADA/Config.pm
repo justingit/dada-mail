@@ -1935,6 +1935,13 @@ $ADMIN_MENU ||= [
 					-Function   => 'view_list',
 					-Activated  => 1,
 					},
+					
+					{
+					-Title      => 'Recent Activity',
+					-Title_URL  => "$S_PROGRAM_URL?f=list_activity",
+					-Function   => 'list_activity',
+					-Activated  => 1,
+					},
 
 					{
 					-Title      => 'Invite<!-- tmpl_if list_settings.enable_mass_subscribe -->/Add<!-- /tmpl_if -->',

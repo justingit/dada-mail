@@ -117,77 +117,152 @@ sub search {
 
 
 
-sub subscription_search { 
-
-	#$DADA::Config::PROGRAM_USAGE_LOG	
-
+sub subscription_search {
 	
-	my $self = shift; 
-	my ($args) = @_;
-	if(! exists($args->{-email})){ 
-		croak "you MUST pass the, '-email' paramater!"; 
-	}
-	if(! exists($args->{-list})){ 
-		croak "you MUST pass the, '-list' paramater!"; 
-	}
-
-	my $results = []; 
-
-	my $file = $DADA::Config::PROGRAM_USAGE_LOG;
-	
-	open my $LOG_FILE, '<', $file
-    or die "Cannot read log at: '" . $file
-    . "' because: "
-    . $!;
-
-	my %list_types = (
-					  list               => 'Subscribers',
-	                  black_list         => 'Black Listed',
-	                  authorized_senders => 'Authorized Senders',
-	                  white_list         => 'White Listed',
-	                  sub_request_list   => 'Subscription Requests',
-					  bounced_list       => 'Bouncing Addresses',
-					);
-					
-    
-    while(my $l = <$LOG_FILE>){ 
-    	chomp($l); 
-    	# Looking for entries like, 
-		# [Mon Jan 30 22:56:41 2012]	list	174.16.92.159	Subscribed to list.list	example209@example.com
-		my ($date, $list, $ip, $action, $email) = split(/\t/, $l, 5); 
-		if($list eq $args->{-list} && $email eq $args->{-email}){ 
-			my $sublist     = undef; 
-			my $base_action = undef; 
-			if($action =~ m/Subscribed to/){ 
-				$action =~ m/^Subscribed to $list\.(.*?)$/; 
-				$base_action = 'subscribed'; 
-				$sublist = $1;
-			}
-			elsif($action =~ m/Unsubscribed from/){ 
-				$action =~ m/Unsubscribed from $list\.(.*?)$/;
-				$base_action = 'unsubscribed'; 
-				$sublist = $1;
-			}
-			$date =~ s/(\[|\])//g;
-			push(@$results, {
-					date       => $date,
-					list       => $list, 
-					ip         => $ip, 
-					email      => $email, 
-					type       => $sublist,
-					type_title => $list_types{$sublist},
-					action     => $base_action, 
-				}
-			);
-		}
-
+    my $self = shift;
+    my ($args) = @_;
+    if ( !exists( $args->{-email} ) ) {
+        croak "you MUST pass the, '-email' paramater!";
     }
+    if ( !exists( $args->{-list} ) ) {
+        croak "you MUST pass the, '-list' paramater!";
+    }
+
+    my $results = [];
+
+    my $file = $DADA::Config::PROGRAM_USAGE_LOG;
+
+    open my $LOG_FILE, '<', $file
+      or die "Cannot read log at: '" . $file . "' because: " . $!;
+
+    while ( my $l = <$LOG_FILE> ) {
+        chomp($l);
+
+# Looking for entries like,
+# [Mon Jan 30 22:56:41 2012]	list	174.16.92.159	Subscribed to list.list	example209@example.com
+        my $llr = $self->log_line_report(
+		{ 
+			-list => $args->{-list}, 
+			-email => $args->{-email}, 
+			-line  => $l
+		}
+	);
+		next if ! keys %$llr; 
+        if (   $llr->{list} eq $args->{-list}
+            && $llr->{email} eq $args->{-email} )
+        {
+            push( @$results, $llr );
+        }
+    }
+
     close $LOG_FILE;
 
+    return $results;
 
-	return $results; 
+}
 
+sub log_line_report {
 	
+    my $self = shift;
+    my ($args) = @_; 
+	
+    my ( $date, $list, $ip, $action, $email ) = split( /\t/, $args->{-line}, 5 );
+
+ my %list_types = (
+        list               => 'Subscribers',
+        black_list         => 'Black Listed',
+        authorized_senders => 'Authorized Senders',
+        white_list         => 'White Listed',
+        sub_request_list   => 'Subscription Requests',
+        bounced_list       => 'Bouncing Addresses',
+    );
+
+	my $list_names = {};
+	require DADA::App::Guts; 
+	require DADA::MailingList::Settings;
+	foreach my $l( available_lists() ){
+		my $ls = DADA::MailingList::Settings->new({-list => $l}); 
+			$list_names->{$l} = $ls->param('list_name');				
+	}
+	
+	if(exists($args->{-email}) && exists($args->{-list})){ 
+		return {} if($email ne $args->{-email} && $list ne $args->{-list}); 
+	}
+	elsif(exists($args->{-email})){ 
+		return {} if $email ne $args->{-email}; 
+	}
+	elsif(exists($args->{-list})){ 
+		return {} if $list ne $args->{-list}; 
+	}
+   
+
+    my $sublist     = undef;
+    my $base_action = undef;
+
+    # Subscribed to announce.sub_confirm_list	nillajess@yahoo.com
+
+    if ( $action =~ m/Subscribed to/ ) {
+        $action =~ m/^Subscribed to $list\.(.*?)$/;
+        $base_action = 'subscribed';
+        $sublist     = $1;
+    }
+    elsif ( $action =~ m/Unsubscribed from/ ) {
+        $action =~ m/Unsubscribed from $list\.(.*?)$/;
+        $base_action = 'unsubscribed';
+        $sublist     = $1;
+    }
+    elsif ( $action =~ m/Subscription Confirmation Sent/ ) {
+        $action =~ m/Subscription Confirmation Sent for $list\.(.*?)$/;
+        $base_action = 'confirmation_sent';
+        $sublist     = $1;
+    }
+    $date =~ s/(\[|\])//g;
+
+    return {
+        date       => $date,
+        list       => $list,
+		list_name  => $list_names->{$list}, 
+        ip         => $ip,
+        email      => $email,
+        type       => $sublist,
+        type_title => $list_types{$sublist},
+        action     => $base_action,
+    };
+
+}
+
+
+sub list_activity { 
+	
+	my $self = shift; 
+	my ($args) = @_; 
+	my $r = []; 
+	
+	require File::ReadBackwards; 
+	
+    my $bw = File::ReadBackwards->new( $DADA::Config::PROGRAM_USAGE_LOG ) or
+                        die "can't read '" . $DADA::Config::PROGRAM_USAGE_LOG . "' $!" ;
+
+	my $limit = 100; 
+	my $count = 0; 
+    while( defined(my  $log_line = $bw->readline ) ) {
+		chomp($log_line); 
+		my $llr = $self->log_line_report(
+			{ 
+				-list  => $args->{-list}, 
+				-line => $log_line,
+			}
+		); 
+		if(keys %$llr){
+			push(@$r, $llr);
+			$count++;  
+		}
+		if($count >= $limit){ 
+			last; 
+		}
+    }
+	$bw->close;
+	return $r; 
 	
 }
 

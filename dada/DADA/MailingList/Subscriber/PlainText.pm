@@ -190,15 +190,18 @@ sub move {
         }
     ); 
 
-
-    
-    #if ($DADA::Config::LOG{subscriptions}) { 
-    #    $self->{'log'}->mj_log(
-    #        $self->{list}, 
-    #        'Moved from:  ' . $self->{list} . '.' . $self->type . ' to: ' . $new_self->{list} . '.' . $new_self->type, 
-    #        $new_self->email, 
-    #    );
-    #}
+	if ( $DADA::Config::LOG{subscriptions} == 1 ) {
+		$self->{'log'}->mj_log( 
+			$self->{list},
+	        "Unsubscribed from ". $self->{list} . "." . $self->type,
+	         $self->email 
+		);
+	    $self->{'log'}->mj_log( 
+			$self->{list},
+	        'Subscribed to ' . $self->{list} . '.' . $args->{ -to },
+	        $self->email 
+		);
+	}
 
 	$self = $new_self; 
 	return 1; 

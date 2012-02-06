@@ -1,0 +1,64 @@
+<!-- begin filtered_list_activity_widget --> 
+
+<div id="list_activity">
+<ul>
+<!-- tmpl_loop history --> 
+
+	<!-- tmpl_if expr="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list') || (type eq 'sub_request_list') || (type eq 'bounced_list'))" -->
+	
+		<li>
+			
+		<!-- tmpl_if expr="(action eq 'subscribed')" --> 
+			&#8594; <!-- tmpl_if show_email --><a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_subscriber;email=<!-- tmpl_var email escape=URL -->;type=<!-- tmpl_var type -->"><!-- tmpl_var email --></a><!-- /tmpl_if -->
+			<!-- tmpl_if expr="(type eq 'list')" -->
+				<strong>Subscribed</strong>
+			<!-- tmpl_else -->
+				<strong>Added</strong>
+			<!-- /tmpl_if -->
+			 to
+		<!-- /tmpl_if -->
+		<!-- tmpl_if expr="(action eq 'unsubscribed')" --> 
+			&#8592; <!-- tmpl_if show_email --><a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_subscriber;email=<!-- tmpl_var email escape=URL -->;type=<!-- tmpl_var type -->"><!-- tmpl_var email --></a><!-- /tmpl_if -->
+			<!-- tmpl_if expr="(type eq 'list')" -->
+				<strong>Unsubscribed</strong>
+			<!-- tmpl_else -->
+				<strong>Removed</strong>
+			<!-- /tmpl_if -->
+			from
+		<!-- /tmpl_if -->
+		<!-- tmpl_if expr="(action eq 'confirmation_sent')" -->
+			&#8596; <!-- tmpl_if show_email --><a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_subscriber;email=<!-- tmpl_var email escape=URL -->;type=<!-- tmpl_var type -->"><!-- tmpl_var email --></a><!-- /tmpl_if -->
+			<!-- tmpl_if expr="(type eq 'list')" -->
+				<strong>Subscription Confirmation Sent</strong>
+			<!-- tmpl_else -->
+				<strong>Unsubscription Confirmation Sent</strong>
+			<!-- /tmpl_if -->
+			for 
+		<!-- /tmpl_if -->
+		
+		<!-- tmpl_if expr="((action eq 'subscribed') || (action eq 'unsubscribed')  || (action eq 'confirmation_sent'))" --> 
+	
+			
+			
+			<strong><!-- tmpl_var type_title --></strong>
+	
+			on 
+				<!-- tmpl_var date -->  
+			<!-- 
+			from
+		
+			 	<!-- tmpl_var ip -->
+			-->
+	
+			</li>
+	
+		<!-- /tmpl_if --> 
+	
+	<!-- /tmpl_if -->
+	
+	<!-- /tmpl_loop -->
+</ul>
+
+</div> 
+
+<!-- end filtered_list_activity_widget --> 
