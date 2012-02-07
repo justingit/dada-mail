@@ -39,13 +39,13 @@ Download the, C<uncompress_dada.cgi> script from here:
 
 =end html
 
-and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> - right alongside the I<dada-4_9_1.tar.gz> distro you just put up. 
+and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> - right alongside the I<dada-4_10_0-alpha1.tar.gz> distro you just put up. 
 
 =head1 Step #4 Change permissions of the, "uncompress_dada.cgi" file to, "755"
 
 =head1 Step #5 Visit the, "uncompress_dada.cgi" script in your web browser. 
 
-The, C<uncompress_dada.cgi> should attempt to uncompress the I<dada-4_9_1.tar.gz> distro, change the necessary permissions of various files and prep the actual installer for you to use. 
+The, C<uncompress_dada.cgi> should attempt to uncompress the I<dada-4_10_0-alpha1.tar.gz> distro, change the necessary permissions of various files and prep the actual installer for you to use. 
 
 Once it's finished running, you should be presented a link to use the actual installer. Click the link at the end of the screen and go ahead and configure Dada Mail! 
 
@@ -56,7 +56,7 @@ Once it's finished running, you should be presented a link to use the actual ins
 <p>See, <a href="./FAQ-install_upgrade.pod.html#prepping_dada_mail_manually">Prepping Dada Mail Manually</a> if this doesn't happen and you get a message in your browser window, sort of like this: </p>
 
 <pre>
-Can't find dada-4_9_1.tar to uncompress!
+Can't find dada-4_10_0-alpha1.tar to uncompress!
 You may have to uncompress and prep Dada Mail manually.
 </pre> 
 
