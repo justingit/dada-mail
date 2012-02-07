@@ -4901,7 +4901,7 @@ encrypted.
 	bounce_handler_softbounce_score                         => 1, 
 	bounce_handler_decay_score                              => 1, 
 	bounce_handler_forward_msgs_to_list_owner               => 0, 
-	bounce_handler_when_threshold_reached                   => 'unsub_subscriber', 
+	bounce_handler_when_threshold_reached                   => 'move_to_bounced_sublist', 
 
 # dada_digest.pl 
 last_digest_sent                        => undef, 
@@ -5181,8 +5181,8 @@ and to say that you've got the freshest tools on the Web.
 
 
 
-$VERSION = 4.9.1; 
-$VER     = '4.9.1';
+$VERSION = 4.10.0; 
+$VER     = '4.10.0 Alpha 1 - 2/6/11';
 
 
 #

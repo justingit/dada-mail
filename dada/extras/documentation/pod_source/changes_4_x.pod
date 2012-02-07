@@ -2,6 +2,32 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
+=head1 4.10.0
+
+=head2 Summary 4.10.0
+
+This release of Dada Mail features the continuing work on the Bounce Handler. This round of enhancements
+centers around a new sublist called, "Bouncing Addresses" (or, "bounced_list", internally). 
+You may now direct the Bounce Handler to move addresses that have reached the Bounce Score Threshold  
+to this list, instead of outright removing them from your Subscribers. 
+
+From there, you may view the bounced history of each bouncing  address and either permanently remove the address from your mailing list, or reinstate the address as a subscriber
+
+This release of Dada Mail also features a clean-up of the, "View" screen in Dada Mail. 
+These changes are to help a list owner feel more in control over their mailing list, by making the various mailing lists 
+more malleable to work with. 
+
+Members of all sublists can be easily browsed through using enhancement pagination links - first, last, previous, next pages (etc), as well as more organized searching,
+that features the same refined user interface. The data can now be sorted alphabetically, ascending or descending by email address or by any of the profile fields.
+
+Individual subscribers can now be more easily administrated. From each subscriber's membership screen, you can see all the 
+sublists an individual address is a member of and move the address to and from. A running history of the addresses membership is
+also available. 
+
+Recent subscription/unsubscription activity is also now easily viewed in a new admin screen titled, B<Recent Activity> which 
+currently shows the last 100 seperate events that have happened in your mailing list. 
+
+
 =head1 4.9.1
 
 =head2 Summary 4.9.1

@@ -4,9 +4,9 @@
 
 =head1 Step #1: Download Dada Mail
 
-Here's the direct download to Dada Mail v4.9.1: 
+Here's the direct download to Dada Mail v4.10.0 alpha 1: 
 
-L<https://github.com/downloads/justingit/dada-mail/dada-4_9_1.tar.gz>
+L<https://github.com/downloads/justingit/dada-mail/dada-4_10_0-alpha1.tar.gz>
 
 =head2 Pro Dada Subscriber?
 
@@ -14,9 +14,9 @@ Download Pro Dada at:
 
 L<http://dadamailproject.com/pro_dada>
 
-=head1 Step #2 Upload the, "dada-4_9_1.tar.gz" distro to your cgi-bin
+=head1 Step #2 Upload the, "dada-4_10_0-alpha1.tar.gz" distro to your cgi-bin
 
-Download the C<dada-4_9_1.tar.gz> distro (you will B<not> have to uncompress the distribution) and then upload it to your hosting account's I<cgi-bin>.
+Download the C<dada-4_10_0-alpha1.tar.gz> distro (you will B<not> have to uncompress the distribution) and then upload it to your hosting account's I<cgi-bin>.
 
 =begin html
 
@@ -35,7 +35,7 @@ Download the, C<uncompress_dada.cgi> script from here:
 =begin html 
 
 <ul>
-<li><strong><a href="https://github.com/justingit/dada-mail/raw/v4_9_1-stable_2012_01_04/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
+<li><strong><a href="https://github.com/justingit/dada-mail/raw/v4_10_0-alpha1_2012_02_06/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
 
 =end html
 
@@ -232,7 +232,7 @@ most of the options available on the web-based interface are available in the co
 
 The below screencasts go through the installation process: 
 
-B<How to Download, Install and Configure Dada Mail v4.9.1>
+B<How to Download, Install and Configure Dada Mail v4.10.0>
 
 =for html <p><iframe width="853" height="510" src="http://www.youtube.com/embed/MWz8O13yc0s?hd=1" frameborder="0" allowfullscreen></iframe></p>
 

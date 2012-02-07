@@ -501,19 +501,16 @@ sub parse_all_bounces {
 		    undef $r;
 		}
 	    if (!$test) {
-			my $r = "la la la la la \n";
+			my $r;
 			
 			if($ls->param('bounce_handler_when_threshold_reached') eq 'move_to_bounced_sublist') {  
-				$log .= "yup, we're gonna move to the sublist..."; 
-			# Move Subscriber to "Bounced" sublist: 
 				$r = $self->move_bouncing_subscribers(
 					{
 						-list => $list_to_check,
 					}
 				); 
 			}
-			elsif($ls->param('bounce_handler_when_threshold_reached') eq 'unsub_subscriber') {  
-				$log .= "yup, just gonna unsub the address."; 
+			elsif($ls->param('bounce_handler_when_threshold_reached') eq 'unsub_subscriber') {  	
 				$r = $self->remove_bounces(
 						{
 							-list => $list_to_check,
@@ -770,10 +767,10 @@ sub save_scores {
         $m .= "Addresses to be removed:\n" . '-' x 72 . "\n";
         for my $bad_email (@$removal_list) {
             $self->{tmp_remove_list}->{$list}->{$bad_email} = 1;
-            $m .= "\t$bad_email\n";
+            $m .= "* $bad_email\n";
         }
 
-        $m .= "Flushing old scores\n";
+        $m .= "\nFlushing old scores\n";
         $bsk->flush_old_scores();
 
     }
@@ -793,7 +790,7 @@ sub remove_bounces {
     my $list = $args->{-list};
 
     my $m    = '';
-    $m .= "Unsubscribing addresses:\n" . '-' x 72 . "\n";
+    $m .= "Unsubscribing bouncing addresses:\n" . '-' x 72 . "\n";
 
     $m .= "\nList: $list\n";
 
@@ -879,8 +876,7 @@ sub move_bouncing_subscribers {
     my $list = $args->{-list};
 
     my $m    = '';
-    $m .= "Moving addresses:\n" . '-' x 72 . "\n";
-
+    $m .= "Moving Subscribers to Bouncing Addresses sublist:\n" . '-' x 72 . "\n";
     $m .= "\nList: $list\n";
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
@@ -889,7 +885,7 @@ sub move_bouncing_subscribers {
     my @remove_list = keys %{ $self->{tmp_remove_list}->{$list} };
     
 	foreach my $sub(@remove_list){ 	
-		$m .= "moving: $sub\n";
+		$m .= "Moving: $sub\n";
 		$lh->move_subscriber(
             {
                 -email            => $sub,

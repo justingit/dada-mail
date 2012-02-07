@@ -513,7 +513,8 @@ sub fancy_print_out_list {
                 no_checkboxes  => 1,
                 no_email_links => 1,
                 count          => scalar @{$subscribers},
-            }
+            }, 
+			-expr => 1, 
         }
     );
 	print $fh $scrn; 

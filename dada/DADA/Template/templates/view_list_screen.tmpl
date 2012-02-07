@@ -225,9 +225,9 @@
 		 <input type="hidden" name="f"       value="remove_subscribers" />
 		 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
 		<!-- tmpl_if expr="(type eq 'list')" -->
-		 	<input type="submit" class="small_button" value="Unsubscribe Checked Subscribers" />
+		 	<input type="submit" class="small_button" value="&#8592; Unsubscribe Checked Subscribers" />
 		<!-- tmpl_else --> 
-			<input type="submit" class="small_button" value="Remove Checked <!-- tmpl_var type_title -->" />
+			<input type="submit" class="small_button" value="&#8592; Remove Checked <!-- tmpl_var type_title -->" />
 		<!-- /tmpl_if --> 
 		
 	<!-- /tmpl_if -->
@@ -246,30 +246,44 @@
 			<input type="hidden" name="f"     value="process_bouncing_addresses" />
 			 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
 			
-			 <input type="submit" name="process" class="small_button"  value="-> Move Selected Bouncing Address Back to Subscribers" />
-			 <input type="submit" name="process" class="small_button"  value="[x] Remove Selected Bouncing Addresses" />
+			 <input type="submit" name="process" class="small_button"  value="&#8594; Move Selected Bouncing Address Back to Subscribers" />
+			 <input type="submit" name="process" class="small_button"  value="&#8855; Remove Selected Bouncing Addresses" />
 			
 	<!-- /tmpl_if -->
 	
 	</form>
-
 	<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
-
-		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" style="display:inline">
-		 <input type="hidden" name="f"       value="remove_all_subscribers" />
-		 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
-		<!-- tmpl_if expr="(type eq 'list')" -->
-		
-		  <input type="submit" class="small_button" value="Unsubscribe ALL <!-- tmpl_var type_title -->" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   />
-		<!-- tmpl_else --> 
-		  <input type="submit" class="small_button" value="Remove ALL <!-- tmpl_var type_title -->" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   />
-		<!-- /tmpl_if --> 
-		
-		</form>
-		
+		<!-- tmpl_unless query -->
+			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" style="display:inline">
+			 <input type="hidden" name="f"       value="remove_all_subscribers" />
+			 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+			<!-- tmpl_if expr="(type eq 'list')" -->
+			  <input type="submit" class="small_button" value="&#8656; Unsubscribe ALL <!-- tmpl_var type_title -->" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   />
+			<!-- tmpl_else --> 
+			  <input type="submit" class="small_button" value="&#8656; Remove ALL <!-- tmpl_var type_title -->" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   />
+			<!-- /tmpl_if --> 
+			</form>
+		<!-- /tmpl_unless -->
 	<!-- /tmpl_if -->
 	
 </td>
+
+<!-- tmpl_if total_num -->
+	<!-- tmpl_if EXPR="(type eq 'black_list')" -->
+		<!-- tmpl_if can_filter_subscribers_through_blacklist --> 
+			<!-- tmpl_unless query --> 
+				<td>
+				 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="blacklist_filter_form">
+				  <input type="hidden" name="f" value="filter_using_black_list" />
+				  <div class="buttonfloat">
+				   <input type="submit" class="small_button" value="Filter Your Subscribers Through The Black List..." />
+				  </div>
+				 </form>
+				</td>
+			<!-- /tmpl_unless -->
+		<!--/tmpl_if-->
+	<!--/tmpl_if-->
+<!--/tmpl_if-->
 
 <td align="right">
 	<!-- tmpl_include list_download_widget.tmpl -->	
@@ -282,25 +296,7 @@
 <!-- /tmpl_unless --> 
 
 
-<!-- tmpl_if total_num -->
 
-
-	<!-- tmpl_if EXPR="(type eq 'black_list')" -->
-
-		<!-- tmpl_if can_filter_subscribers_through_blacklist --> 
-	
-			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="blacklist_filter_form">
-			 <input type="hidden" name="f" value="filter_using_black_list" />
-			 <div class="buttonfloat">
-			  <input type="submit" class="cautionary" value="Filter Your Subscribers Through The Black List..." />
-			 </div>
-			</form>
-		<!--/tmpl_if-->
-
-	
-	<!--/tmpl_if-->
-
-<!--/tmpl_if-->
 
 
 
