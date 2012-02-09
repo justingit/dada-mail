@@ -1926,7 +1926,7 @@ $ADMIN_MENU ||= [
 			]
 	},
 
-	{-Title      => 'Your Subscribers',
+	{-Title      => 'Membership',
 	 -Activated  => 1,
 	 -Submenu    => [
 					{
@@ -2282,21 +2282,7 @@ $ADMIN_MENU ||= [
 	-Function   => 'setup_info',
 	-Activated  => 1,
 	},
-
-	{
-	-Title      => 'Logout',
-	-Title_URL  => "$S_PROGRAM_URL?f=logout",
-	-Function   => 'logout',
-	-Activated  => 1,
-	},
-
-	{
-	-Title      => 'Log Into Another List',
-	-Title_URL  => "$S_PROGRAM_URL?f=log_into_another_list",
-	-Function   => 'log_into_another_list',
-	-Activated  => 1,
-	},
-
+	
 ];
 
 =pod

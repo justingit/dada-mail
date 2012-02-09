@@ -249,7 +249,7 @@ $ADMIN_MENU = [
 			]
 	},
 
-	{-Title      => 'Your Subscribers',
+	{-Title      => 'Membership',
 	 -Activated  => 1,
 	 -Submenu    => [
 					{

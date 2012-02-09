@@ -5,28 +5,22 @@ body {
 	background-color:#fff;
 	/*font-family:Georgia,Times,'Times New Roman',serif;*/
 	font-family:helvetic,arial,san-serif;
-
 	line-height:1.50em;
 	font-size:.825em;
-	background: #ededed; 
+	background: #fff; 
 }
 
 /* for list/archive pages only: */
 body#Dada {
 	margin:50px 0;
 	padding:0;
-	text-align:center;                /* page centering hack for IE */
-	
-		
-	
+	text-align:center;                /* page centering hack for IE */	
 }
 
 /* for admin pages only: */
 body#DadaAdmin {
 	margin:0;
 	padding:0;
-
-
 }
 
 
@@ -38,23 +32,35 @@ body#DadaAdmin {
 }
 
 #Header {
-	width:550px;
-	height:35px;
+/*	width:550px; */
+	height:50px;
 	margin:0 auto;                    /* page centering for all but IE */
-	padding:20px;
-	border:1px solid #000;
+	padding:0px;
+	border-bottom: 1px solid #333; 
+	
+/*	border:1px solid #000;*/
 	/*background-color:#c00;*/
-	background-color:#00adef;
-	background-image: url('<!-- tmpl_var S_PROGRAM_URL -->/img/dada_mail_logo.png/');
-	background-repeat: no-repeat;
+	background-color:#669999; /* 99cc99 */
+	background-image: url('<!-- tmpl_var S_PROGRAM_URL -->/img/header_bg.gif/');
+	background-repeat:repeat-y;
 	
 	text-align:left;                  /* overrides page centering hack for IE (in the body) */
+
+
+	font: 1.1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	text-shadow:  1px 1px 2px #330033;
+
+	
+	
+/* 
 	font-family: 'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;
-	font-size: 1.65em;
+	font-size: 1em;
 	font-style:italic;
 	font-weight:bold;
 	text-transform:uppercase;
-	color:#000;
+
+*/
+
 }
 
 /* box model hack for IE: \*/
@@ -83,8 +89,22 @@ body#DadaAdmin #Header {
 #Title {
 	float:right;
 	text-align:right;
-	padding-top:15px; 
+	padding-right: 10px;
+	padding-top:20px; 
+	color:#fff;
 }
+#Title a 
+ { 
+	color: #fff;
+	text-decoration:none;
+	
+}
+#Title a:hover { 
+	color: #fff;
+	text-decoration:underline;
+	
+} 
+
 
 /* alas, IE doesn't understand the next three CSS2 rules, 
    which add the dots before and after the header copy: */
@@ -124,14 +144,16 @@ body#DadaAdmin #Header {
 }
 
 #AdminContentWrapper {
-	margin:0 0 50px 200px;
-	padding:10px;
+	margin:0 0 0px 200px;
+
 }
 
 #AdminContent {
 	width:100%;
+/*
 	padding-top:8px;
-	
+	padding:10px;
+*/
 }
 
 #MenuWrapper {
@@ -140,46 +162,26 @@ body#DadaAdmin #Header {
 
 #Menu {
 	position:absolute;
-	top:110px;
-	left:20px;
-	width:160px;
-	padding:1px 10px 0 10px;
-	border:1px solid #000;
+	top:50px; /* Double-check that one.. */
+	left:0px;
+	width:199px;
+	padding:0;
+	/*border:1px solid #000;*/
+	border-right:1px solid #666; 
 	background-color:#fff;
 	text-align:left;
 	line-height:150%;
 }
-
+/* http://tantek.com/CSS/Examples/boxmodelhack.html */
 /* box model hack for IE: \*/
 * html #Menu {
-	width:182px;
+	width:200px;
 } 
 /* ends the box model hack. see: http://tinyurl.com/9yld6 */
 
 /* ----- IDS: Navigation ----- */
 
-#Menu li {
-	line-height:125%;
-}
 
-#Menu p, 
-#Menu ul
-{
-	margin-left: 0px;
-	padding-left: 0px;
-	list-style: none;
-	font-family: 'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;
-	/*font-size: 12px;*/
-	font-size: .95em; 
-	font-weight: bold;
-}
-
-#Menu ul ul {
-	padding-left:12px;
-	font-weight:normal;
-    list-style-type: square;
-    color: #ccc;
-}
 
 #list_type_switcher div { 
 	
@@ -394,6 +396,17 @@ p {
     margin-bottom: 0.75em;
 }
 
+#AdminContent h1, 
+#AdminContent h2, 
+#AdminContent h3, 
+#AdminContent h4, 
+#AdminContent h5,
+#AdminContent p { 
+	padding-left:5px; 
+	padding-right:5px;
+} 
+
+
 p.small {
 	font-family:Helvetica,Verdana,Arial,sans-serif;
 	/*font-size:11px;*/
@@ -417,18 +430,20 @@ a {
 }
 
 a:link {
-	color:#339;
+	color:#330066;
 }
 
 a:visited {
-	color:#03c;
+	color:#330066;
 }
 
 a:hover {
-	color:#33c;
+	color:#330066;
+	text-decoration:underline;
 }
 
 a:active {
+	color:330066
 }
 
 #Logo a:link, 
@@ -472,11 +487,14 @@ fieldset {
     padding-left:   7px;
     padding-right:  7px;
 
-    margin-left:    5px;
-    margin-right:  5px;
+    margin-left:   0px;
+    margin-right:  0px;
     margin-top:    10px;
     margin-bottom: 10px;
-    border: 1px solid black;
+	border-left:0px;
+	border-right:0px;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
     background:#ededed;
     
     
@@ -484,6 +502,7 @@ fieldset {
 
 fieldset fieldset { 
 	background:#e6e6e6;
+	border:1px solid black;
 }
 
 
@@ -500,13 +519,13 @@ legend {
 
 
 
-input {
-	margin:5px;
-	padding:5px;
+input, select {
+	margin:3px;
+	padding:3px;
 	border-width:1px;
 	border-style:solid; 
 	border-color:#666 #999 #ccc #999;
-	font-family:Helvetica,Verdana,Arial,sans-serif;
+	font:"Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 	font-size: 1em;
 }
 .small_input { 
@@ -516,7 +535,7 @@ input {
 	border-width:1px;
 	border-style:solid; 
 	border-color:#666 #999 #ccc #999;
-	font-family:Helvetica,Verdana,Arial,sans-serif;
+	font:"Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 	font-size: .9em;
 }
 
@@ -563,27 +582,40 @@ textarea {
 }
 
 input.small_button { 
-	margin:2px;
+	
+	background-color:#ededed;
+	margin:1px;
 	padding:2px;
 	border-width:1px;
 	border-style:solid; 
-	border-color:#666 #999 #ccc #999;
-	font-family:Helvetica,Verdana,Arial,sans-serif;
-	font-size: .9em;
+	border-color:#ccc #999 #666 #999;
+	font:  .8em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 }
+
+input.small_button:hover,
+input.plain:hover,
+input.processing:hover,
+input.cautionary:hover,
+input.alertive:hover,
+input.help:hover { 
+	background-color: #ffe1af;
+}
+
 /* affects buttons only: */
 input.plain,
 input.processing,
 input.cautionary,
 input.alertive,
 input.help {
-	font-weight:bold;
+	font:  1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 	color:#000;
 	border-color:#ccc #999 #666 #999;		
 }
 
+
+
 input.plain {
-	background-color:#9cf;
+	background-color:#ededed;
 	/*color:#000;*/
 	border-color:#ccc #999 #666 #999;		
 	color:#333;
@@ -596,7 +628,6 @@ input.processing {
 	color:#333;
 	
 }
-
 input.cautionary {
 	/* background-color:#ffc; */
 	background-color:#ff9;
@@ -734,7 +765,8 @@ padding-right: 7px;
 	background: #fff url(<!-- tmpl_var PROGRAM_URL -->/img/centeredmenu.gif) bottom repeat-x;
 	width: 100%;
 	overflow: hidden;
-	font-family: Verdana, Geneva, sans-serif;
+	font: 1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+/*	text-shadow:  1px 1px 2px #330033;*/
 }
 #centeredmenu ul {
 	float: left;
@@ -759,7 +791,7 @@ padding-right: 7px;
 	float: left;
 	margin: 0 1px;
 	padding: 5px 10px;
-	background: #fff;
+	background: #ededed;
 	text-decoration: none;
 	color: #000;
 	border-top: 1px solid #369;
@@ -769,8 +801,8 @@ padding-right: 7px;
 	bottom: 1px;
 }
 #centeredmenu ul li a:hover {
-	background: #36f;
-	color: #fff;
+	background: #ffe1af;
+	color: #000;
 }
 #centeredmenu ul li.active {
 	margin-top: 10px;
@@ -791,4 +823,134 @@ padding-right: 7px;
 #list_activity li { 
 	line-height:200%;
 }
+
+
+
+
+
+
+
+#navcontainer { margin: 0px; border-bottom:1px solid #666; }
+
+#navcontainer ul
+{
+margin: 0;
+padding: 0;
+list-style-type: none;
+font-family: verdana, arial, Helvetica, sans-serif;
+}
+
+/* this is the horizontal separator */
+#navcontainer li { 
+	margin: 0 0 1px 0; 
+}
+
+#navcontainer a
+{
+display: block;
+padding: 2px 5px;
+width: 189;
+color: #666;
+background-color: #ededed;
+text-decoration: none;
+}
+
+#navcontainer a:hover
+{
+color: #666;
+background-color: #ffe1af;
+text-decoration: none;
+}
+
+#navcontainer span { 
+	display: block;
+			/* h, w */
+	padding: 2px 5px;
+	width: 189;
+	color: #fff;
+	background-color: #99bccc;
+	font-weight:bold;
+	border-top: 1px solid #333; 
+	height:22px;
+	
+	font:  1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	text-shadow:  1px 1px 2px #330033;
+	
+	
+}
+
+/* this is the horizontal separator */
+#navcontainer ul ul li { margin: 0 0 1px 0; }
+
+#navcontainer ul ul a
+{
+display: block;
+padding: 2px 2px 2px 20px;
+width: 177px; / *20 + 2 */
+background-color: #ededed;
+text-decoration: none;
+
+font-size: .9em;
+
+
+}
+#navcontainer ul ul span { 
+	color:#fff;
+}
+
+#navcontainer ul ul a:hover
+{
+color: #666;
+background-color: #ffe1af;
+text-decoration: none;
+}
+
+/* currently, there is no subactive state... 
+ul#navlist li#active ul#subnavlist li#subactive a
+{
+font-weight:bold;
+color: #000;
+background: #fff;
+text-decoration: none;
+}
+*/
+
+
+
+.stripedtable { 
+	
+	 border-collapse:collapse; 	
+	background-color:#fff;
+	width: 100%; 
+	border: 0px;
+	/* 
+	cellpadding="2" cellspacing="0" border="0" width="100%"
+	*/	
+}
+.stripedtable td { 
+	padding: 2px;
+	margin: 0px;
+}
+.stripedtable tr.alt td  {
+	background-color:#fff;	
+}
+.stripedtable tr.alt td  {
+	background-color:#ededed;
+} 
+
+.stripedtable a { 
+	color: #666; 
+/*	border-bottom:1px dotted #ffe1af; */
+	text-decoration:none;
+	
+}
+
+.stripedtable a:hover { 
+	color: #666; 
+/*	border-bottom:1px solid #000; */
+	background-color: #ffe1af;
+}
+
+
+
 

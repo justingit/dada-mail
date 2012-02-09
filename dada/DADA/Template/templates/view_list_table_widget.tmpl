@@ -3,9 +3,8 @@
 <!-- 
 <div style="max-height: 200px; overflow: auto; border:1px solid black">
 --> 
-<div style="border:1px solid black">
 	
- <table cellpadding="2" cellspacing="0" border="0" width="100%" style="background-color:#fff">
+ <table class="stripedtable">
   <tr>
 	 <!-- tmpl_unless no_checkboxes --> 
    		<td width="25">
@@ -102,7 +101,7 @@
 
 <!-- tmpl_loop subscribers -->
 	   
-	   <tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!--/tmpl_if-->>
+	   <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
 
 		   <!-- tmpl_unless no_checkboxes --> 
 		
@@ -157,7 +156,6 @@
 <!-- /tmpl_loop -->
    
   </table>
- </div>
 
 
 

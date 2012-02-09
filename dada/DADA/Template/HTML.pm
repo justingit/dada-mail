@@ -173,7 +173,7 @@ sub admin_template {
 
 
 	# DEV: This is horrible.
-
+	
 	if($args{-Root_Login} == 1){ 
 		$Yeah_Root_Login = 1
 	}
@@ -244,6 +244,7 @@ sub admin_template {
 												admin_menu          => $admin_menu, 
 												title               => $args{-Title},
 												root_login_message  => $root_login_message, 
+												root_login          => $args{-Root_Login} == 1,
 												content             => '[_dada_content]',	
 												go_pro              => $go_pro, 
 												%{ $args{ -vars } }, # content, etc

@@ -9583,8 +9583,11 @@ sub img {
       cff.png
 
       dada_mail_logo.png
+	dada_mail_logo_sm.png
 
       dada_mail_screenshot.jpg
+
+	header_bg.gif
 
       spinner.gif
 

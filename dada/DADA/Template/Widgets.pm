@@ -983,8 +983,10 @@ sub login_switch_widget {
 	if($lists[1]){ 
 		$scrn = $q->start_form(-action => $DADA::Config::S_PROGRAM_URL, 
 							  -method => "post",
+							  -style => 'display:inline;margin:0px',
 							  ) . 
-			   $q->popup_menu(-style   => 'width:75px', 
+			   $q->popup_menu( -class => 'small_input',
+							   -style   => 'width:75px', 
 							  -name    => 'change_to_list', 
 							  -value   => [@lists], 
 							  -default => $args->{-list},
@@ -998,7 +1000,7 @@ sub login_switch_widget {
 						   -override => 1,
 				 ) . 
 	
-			   $q->submit(-value => 'switch', -class=>'plain') .
+			   $q->submit(-value => 'switch', -class=>'small_button') .
 			   $q->end_form(); 
 	}else{ 
 		$scrn = '';
@@ -2290,7 +2292,7 @@ sub wrap_screen {
 			%{$args->{-wrapper_params}}, 
 			-vars => $vars,				 						 
 			-Part => 'full', 
-			); 			
+			); 
 		return $template;
 	}
 	else { 
