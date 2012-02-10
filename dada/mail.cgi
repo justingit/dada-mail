@@ -1684,7 +1684,6 @@ sub change_info {
 				},
 					-vars   => {
 					screen                         => 'change_info',
-					title                          => 'Change List Information',
 					done                           => $done,
 					errors                         => $errors,
 					errors_ending                  => $errors_ending,

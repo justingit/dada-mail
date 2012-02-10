@@ -203,6 +203,21 @@ The session type is set in the config variable, C<$SESSION_DB_TYPE>. It can be s
 All these session types work the same way, but C<Classic> is the least secure - we don't recommend using it, but if it helps you 
 get out of a pinch, then it can help you get out of a pinch. 
 
+=head2 Links in Dada Mail don't work/just go to the default screen
+
+If you're having problems with links in Dada Mail being seemingly broken - for example, going to: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi/admin>
+
+Doesn't bring you to the admin script, but instead simply goes to the default screen, you may have a problem with a separate web app or 
+server configuration impacting Dada Mail. 
+
+This could be solved by turning off C<mod_rewrite> for the directory Dada Mail resides in:
+
+Create an C<.htaccess> file in your, C<dada> directory and placing this directive inside it: 
+
+	RewriteEngine off
+
 =head2 Duplicate Email Addresses in Your Mailing List 
 
 If there are duplicate email addresses in your mailing list, please open up a bug report. 

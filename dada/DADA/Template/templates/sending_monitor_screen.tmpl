@@ -1,27 +1,16 @@
 <!-- begin sending_monitor_screen.tmpl -->
 
-<p>
+<div id="titlestuff"> 
+	<div id="screentitlepadding">
+		Mass Mailing &#187; Monitor Your Mailings
+		<!-- tmpl_if header_subject_label --> 
+			 &#187;
+			 <!-- tmpl_var name="header_subject_label" escape="HTML" --> 
+		<!-- /tmpl_if --> 
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
 
-<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=send_email"> 
- Send a Message 
-</a> 
-
-  &#187;
-
-   <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor">
-    Monitor Your Mailings
-  </a>
-
-
-<!-- tmpl_if header_subject_label --> 
-
-	
-	 &#187;
-	 <!-- tmpl_var name="header_subject_label" escape="HTML" --> 
-
-	</p>
-
-<!-- /tmpl_if --> 
 
 
 <!-- tmpl_if mailout_exists -->

@@ -1,9 +1,6 @@
 <!-- begin add_screen.tmpl -->
 
-<!-- tmpl_set name="title" value="Your Subscribers - Invite/Add" -->
-<!-- tmpl_include help_link_widget.tmpl --> 
-
-
+<!-- tmpl_set name="title" value="Membership &#187; Invite/Add" -->
 
 <script type="text/javascript">
     //<![CDATA[
@@ -43,35 +40,37 @@
     //]]>
 </script>
 
-
-
-
-
-<p>
- Manage Subscribers (<!-- tmpl_var type_title -->)
-&#187;
- <strong>
-	<!-- tmpl_if EXPR="(type eq 'list')" -->
-		Invite
-		<!-- tmpl_if list_settings.enable_mass_subscribe -->
-/ Add
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		 Membership (<!-- tmpl_var type_title -->)
+		&#187;
+		 <strong>
+			<!-- tmpl_if EXPR="(type eq 'list')" -->
+				Invite
+				<!-- tmpl_if list_settings.enable_mass_subscribe -->
+		/ Add
+				<!-- /tmpl_if -->
+			<!-- tmpl_else --> 
+				Add
+			<!-- /tmpl_if --> 
+			</strong>
+		&#187;
+		 Verify
+		&#187;
+		<!-- tmpl_if EXPR="(type eq 'list')" -->
+			Send Invitation
+			<!-- tmpl_if list_settings.enable_mass_subscribe -->
+				/ Subscribe
+			<!-- /tmpl_if -->
+		<!-- tmpl_else --> 
+			Add
 		<!-- /tmpl_if -->
-	<!-- tmpl_else --> 
-		Add
-	<!-- /tmpl_if --> 
-	</strong>
-&#187;
- Verify
-&#187;
-<!-- tmpl_if EXPR="(type eq 'list')" -->
-	Send Invitation
-	<!-- tmpl_if list_settings.enable_mass_subscribe -->
-		/ Subscribe
-	<!-- /tmpl_if -->
-<!-- tmpl_else --> 
-	Subscribe
-<!-- /tmpl_if -->
-</p>
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+
+
+
 
 
 <!-- tmpl_include list_type_switch_widget.tmpl -->

@@ -1,20 +1,21 @@
 <!-- begin delete_email_screen.tmpl -->
 
-<!-- tmpl_set name="title" value="Manage Deletions" -->
+<!-- tmpl_set name="title" value="Membership &#187; Remove" -->
 
-<!-- tmpl_include help_link_widget.tmpl -->
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+	Membership (<!-- tmpl_var type_title -->)
+	&#187;
+	 <strong>Remove</strong>
+	&#187;
+	 Verify
+	&#187;
+	 Unsubscribe
+	</div> 
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
 
 <!-- tmpl_include list_type_switch_widget.tmpl -->
-
-<p>
- Manage Subscribers (<!-- tmpl_var type_title -->)
-&#187;
- <strong>Remove</strong>
-&#187;
- Verify
-&#187;
- Unsubscribe
-</p>
 
 <!-- tmpl_if GLOBAL_UNSUBSCRIBE -->
 	

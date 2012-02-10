@@ -150,6 +150,12 @@ sub default_screen {
 return <<EOF
 
 <!-- tmpl_set name="title" value="Change Your <!-- tmpl_var PROGRAM_NAME --> Root Password" -->
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
 
 <form method="post"> 
 

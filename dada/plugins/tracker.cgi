@@ -115,7 +115,13 @@ sub default_tmpl {
 
     my $tmpl = q{ 
 
-<!-- tmpl_set name="title" value="Tracker" -->
+<!-- tmpl_set name="title" value="Tracker" --> 
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
 
 <!-- tmpl_if done --> 
 	<p class="positive"><!-- tmpl_var GOOD_JOB_MESSAGE --></p>
@@ -843,7 +849,7 @@ sub clickthrough_table_tmpl {
 	<!-- tmpl_if report_by_message_index --> 
 		
 		
-		<table width="100%">
+		<table class="stripedtable">
 		 <tr> 
 		<td width="33%" align="left"> 
 
@@ -891,8 +897,8 @@ sub clickthrough_table_tmpl {
 		<div> 
 			<div style="max-height: 300px; overflow: auto; border:1px solid black">
 
-			  <table cellpadding="5" cellspacing="0" border="0" width="100%"> 
-			   <tr style="background:#fff"> 
+			  <table class="stripedtable">
+			   <tr> 
 			    <td> 
 				 <p>
 				  <strong> 
@@ -938,7 +944,7 @@ sub clickthrough_table_tmpl {
 				</tr> 
 
 				<!-- tmpl_loop report_by_message_index --> 
-				<tr <!-- tmpl_if __odd__>style="background:#fff"<!-- tmpl_else -->style="background:#ccf"<!-- /tmpl_if -->> 
+				<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
 				 <td> 
 		          <p>
 		          
@@ -1198,7 +1204,13 @@ my $tmpl = q{
 	
 	
 	<!-- tmpl_if chrome --> 
-		<!-- tmpl_set name="title" value="Tracker - Message Report" -->
+		<!-- tmpl_set name="title" value="Tracker &#187; Message Report" --> 
+		<div id="screentitle"> 
+			<div id="screentitlepadding">
+				<!-- tmpl_var title --> 
+			</div>
+			<!-- tmpl_include help_link_widget.tmpl -->
+		</div>
 	<!-- /tmpl_if --> 
 	
 		<script type="text/javascript">
@@ -1413,7 +1425,7 @@ my $tmpl = q{
 	<legend>The Basics</legend> 
 
 	<div style=" border: 1px solid black;">
- 	<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0" width="100%">
+ 	<table class="stripedtable">
 		<tr style="background:#fff">
 	<tr> 
 	<td>
@@ -1436,7 +1448,7 @@ my $tmpl = q{
 
 
 
-	<tr style="background:#ccf">
+	<tr class="alt">
 	<td> 
 	 <p>
 	  <strong>
@@ -1468,7 +1480,7 @@ my $tmpl = q{
 	</tr>
 	
 	
-	<tr style="background:#ccf">
+	<tr class="alt">
 	<td> 
 	 <p>
 	  <strong>
@@ -1501,7 +1513,7 @@ my $tmpl = q{
 	</tr>
 	
 	
-	<tr style="background:#ccf">
+	<tr class="alt">
 	<td> 
 	 <p>
 	  <strong>
@@ -1531,7 +1543,7 @@ my $tmpl = q{
 	
 	
 	<div style="max-height: 200px; overflow: auto; border: 1px solid black;">
- 	<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0" width="100%">
+ 	<table class="stripedtable">
 	
 		<tr style="background:#fff"> 
 		<td> 
@@ -1545,7 +1557,7 @@ my $tmpl = q{
 		
 		
 			<!-- tmpl_loop url_report --> 
-			<tr <!-- tmpl_if __odd__>style="background:#ccf"<!-- tmpl_else -->style="background:#fff"<!-- /tmpl_if -->> 
+			<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
 			 <td> 
 			 <p> 
 	
@@ -1710,7 +1722,7 @@ my $tmpl = q{
 	 </tr> 
 	
 	<!-- tmpl_loop soft_bounce_report --> 
-	<tr <!-- tmpl_if __odd__>style="background:#ccf"<!-- tmpl_else -->style="background:#fff"<!-- /tmpl_if -->> 
+	<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
 	  <td> 
 	   <!-- tmpl_var timestamp --> 
 	  </td> 
@@ -1752,7 +1764,7 @@ my $tmpl = q{
 	 </tr> 
 	
 	<!-- tmpl_loop hard_bounce_report --> 
-	<tr <!-- tmpl_if __odd__>style="background:#ccf"<!-- tmpl_else -->style="background:#fff"<!-- /tmpl_if -->> 
+	<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
 	  <td> 
 	   <!-- tmpl_var timestamp --> 
 	  </td> 
@@ -1999,7 +2011,7 @@ sub country_geoip_chart_tmpl{
 			</tr> 
 
 			<!-- tmpl_loop c_geo_ip_report --> 
-			<tr <!-- tmpl_if __odd__>style="background:#fff"<!-- tmpl_else -->style="background:#ccf"<!-- /tmpl_if -->> 
+			<tr <!-- tmpl_if __odd__> class="alt"<!-- /tmpl_if -->> 
 			<td>
 			<!-- tmpl_var country --> 
 			</td> 
@@ -2103,9 +2115,7 @@ sub country_geoip_data {
 
 sub url_report_tmpl { 
 	
-	my $tmpl = q{ 
-		<!-- tmpl_set name="title" value="Tracker - URL Report" -->
-		
+	my $tmpl = q{ 		
 		<p>
 		 <strong> 
 		  Clickthrough Message Summary for: <!-- tmpl_var subject -->

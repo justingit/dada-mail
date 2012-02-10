@@ -1,8 +1,14 @@
 <!-- being sending_preferences_screen.tmpl --> 
 
-<!-- tmpl_set name="title" value="Sending Preferences" -->
+<!-- tmpl_set name="title" value="Mailing Sending &#187; Sending Preferences" -->
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 
+	</div> 
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
 
-<!-- tmpl_include help_link_widget.tmpl -->
+
 
 <!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" --> 
 	<p class="positive">Messages are currently being sent via the sendmail command.</p>

@@ -1,8 +1,11 @@
 <!-- begin add_email_screen.tmpl -->
 
-<!-- tmpl_set name="title" value="Your Subscribers - Verify Invitations/Additions" -->
-<p>
-Manage Subscribers (<!-- tmpl_var type_title -->) 
+<!-- tmpl_set name="title" value="Membership &#187; Verify Invitations/Additions" -->
+
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+
+Membership (<!-- tmpl_var type_title -->) 
 &#187; 
 <!-- tmpl_if expr="(type eq 'list')" --> 
 	Invite
@@ -21,9 +24,14 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
 		/ Subscribe
 	<!-- /tmpl_if -->
 <!-- tmpl_else --> 
-	Subscribe
+	Add
 <!-- /tmpl_if -->
-</p>
+
+</div>
+
+</div> 
+
+
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
 	<!-- tmpl_if going_over_quota -->
@@ -70,7 +78,7 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
 
  <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
 
- <table cellpadding="2" cellspacing="0" border="0" width="100%">
+ <table class="stripedtable">
   <tr>
    <td width="25">
     <p>&nbsp;</p>
@@ -98,8 +106,8 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
   
   <!-- tmpl_loop name="not_subscribed" -->
 
-    <tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!--/tmpl_if-->>
-     <td width="25">
+	<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>     
+		<td width="25">
       <input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" />
      </td>
      <td>
@@ -175,7 +183,7 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
 		  
 <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
 
- <table cellpadding="2" cellspacing="0" border="0" width="100%">
+ <table class="stripedtable">
   <tr>
    <td width="25">
     <p>&nbsp;</p>
@@ -203,7 +211,7 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
   
   <!-- tmpl_loop name="black_listed" -->
 
-    <tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!--/tmpl_if-->>
+    <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
      <td width="25">
       <!-- tmpl_if list_settings.allow_admin_to_subscribe_blacklisted --> 
 		<input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" />
@@ -281,7 +289,7 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
 
 <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
 
- <table cellpadding="2" cellspacing="0" border="0" width="100%">
+ <table class="stripedtable">
   <tr>
    <td width="25">
     <p>&nbsp;</p>
@@ -309,7 +317,7 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
   
   <!-- tmpl_loop name="not_white_listed" -->
 
-    <tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!--/tmpl_if-->>
+    <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
      <td width="25">
       <input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" />
      </td>
@@ -389,7 +397,7 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
 
 <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
 
- <table cellpadding="2" cellspacing="0" border="0" width="100%">
+ <table class="stripedtable">
   <tr>
    <td width="25">
     <p>&nbsp;</p>
@@ -417,7 +425,7 @@ Manage Subscribers (<!-- tmpl_var type_title -->)
   
   <!-- tmpl_loop name="subscribed" -->
 
-    <tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!--/tmpl_if-->>
+    <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
      <td width="25">
       &nbsp;
      </td>
@@ -473,7 +481,7 @@ Invalid Email Addresses
 	
 	<div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
 
- <table cellpadding="2" cellspacing="0" border="0" width="100%">
+ <table class="stripedtable">
   <tr>
    <td width="25">
     <p>&nbsp;</p>
@@ -501,7 +509,7 @@ Invalid Email Addresses
   
   <!-- tmpl_loop name="invalid" -->
 
-    <tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!--/tmpl_if-->>
+    <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
      <td width="25">
 &nbsp;     </td>
      <td>

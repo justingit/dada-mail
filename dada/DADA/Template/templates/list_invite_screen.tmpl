@@ -1,8 +1,33 @@
 <!-- begin list_invite_screen.tmpl -->
 
-<!-- tmpl_set name="title" value="Invitations" -->
-<!-- tmpl_include help_link_widget.tmpl --> 
+<!-- tmpl_set name="title" value="Membership &#187; Invite" -->
 
+
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		 Manage Subscribers (Subscribers) 
+		<!-- tmpl_if list_type_isa_list -->
+			Invite
+			<!-- tmpl_if list_settings.enable_mass_subscribe -->
+				/ Add
+			<!-- /tmpl_if -->
+		<!-- tmpl_else --> 
+			Add
+		<!-- /tmpl_if -->
+		&#187;
+		 Verify 
+		&#187;
+		<!-- tmpl_if list_type_isa_list -->
+			<strong>Send Invitation</strong>
+			<!-- tmpl_if list_settings.enable_mass_subscribe -->
+				/ Subscribe
+			<!-- /tmpl_if -->
+		<!-- tmpl_else --> 
+			Add
+		<!-- /tmpl_if -->
+	
+ </div> 
+</div>
 
 <!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
 
@@ -14,28 +39,7 @@
 
 
 
-<p>
- Manage Subscribers (Subscribers) 
-<!-- tmpl_if list_type_isa_list -->
-	Invite
-	<!-- tmpl_if list_settings.enable_mass_subscribe -->
-		/ Add
-	<!-- /tmpl_if -->
-<!-- tmpl_else --> 
-	Add
-<!-- /tmpl_if -->
-&#187;
- Verify 
-&#187;
-<!-- tmpl_if list_type_isa_list -->
-	<strong>Send Invitation</strong>
-	<!-- tmpl_if list_settings.enable_mass_subscribe -->
-		/ Subscribe
-	<!-- /tmpl_if -->
-<!-- tmpl_else --> 
-	Subscribe
-<!-- /tmpl_if -->
-</p>
+
 
 <!-- tmpl_if verified_addresses --> 
 
@@ -47,7 +51,7 @@
 
 	 <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
 
-	 <table cellpadding="2" cellspacing="0" border="0" width="100%">
+	 <table class="stripedtable">
 	  <tr>
 	   <td width="25">
 	    <p>&nbsp;</p>
@@ -75,7 +79,7 @@
   
 	  <!-- tmpl_loop verified_addresses -->
 
-	    <tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!--/tmpl_if-->>
+	    <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
 	     <td width="25">
 	      <input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" />
 	     </td>

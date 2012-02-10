@@ -2,9 +2,9 @@
 
 <!-- tmpl_set name="title" value="Membership &#187; View" -->
 
-<div id="titlestuff"> 
-	<div style="padding:3px;float:left">
-		Membership &#187; View
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title -->
 	</div>
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
@@ -131,7 +131,7 @@
 	
 <!-- tmpl_else -->
 
-	<table width="100%" cellpadding="0" cellspacing="0">
+	<table class="stripedtable">
 	 <tr>
 	  <td valign="bottom">
 	   <br />
@@ -210,10 +210,10 @@
 	
 	 	<!-- tmpl_include view_list_table_widget.tmpl --> 
 	
-	<table cellpadding="2" cellspacing="0" border="0" width="100%" style="background-color:#fff">
+	<table class="stripedtable">
 	  <tr>
 	   		<td width="25">
-	    		<p><input type="checkbox" onClick="toggleCheckBoxes(this, 'address')"/></p>
+	    		<input type="checkbox" onClick="toggleCheckBoxes(this, 'address')"/>
 	   		</td>
 
 		
@@ -255,7 +255,7 @@
 	</form>
 	<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
 		<!-- tmpl_unless query -->
-			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" style="display:inline">
+			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" style="display:inline;margin:0">
 			 <input type="hidden" name="f"       value="remove_all_subscribers" />
 			 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
 			<!-- tmpl_if expr="(type eq 'list')" -->

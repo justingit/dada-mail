@@ -1,6 +1,16 @@
 <!-- begin edit_archived_msg.tmpl --> 
 
 <!-- tmpl_set name="title" value="Edit Archived Message" -->
+
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 
+	</div> 
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+
+
+
 <!-- tmpl_if done --> 
 	<!-- tmpl_var GOOD_JOB_MESSAGE --> 
 <!-- /tmpl_if --> 
@@ -10,9 +20,6 @@
 
 
 <!-- tmpl_var big_blob_of_form_widgets_to_edit_an_archived_message --> 
-
-
-
 
    <input type="hidden" name="process" value="1"                    /> 
    <input type="hidden" name="id"      value="<!-- tmpl_var id -->" /> 

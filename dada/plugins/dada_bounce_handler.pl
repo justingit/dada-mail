@@ -1020,7 +1020,7 @@ sub cgi_scorecode_tmpl {
 	<div> 
 		<div style="max-height: 300px; overflow: auto; border:1px solid black">
 
-		  <table cellpadding="5" cellspacing="0" border="0" width="100%"> 
+		  <table class="stripedtable">
 		   <tr style="background:#fff"> 
 		   		<td>
 					<p>
@@ -1035,7 +1035,7 @@ sub cgi_scorecode_tmpl {
 			</tr> 
 
 			<!-- tmpl_loop scorecard --> 
-		   	<tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!-- tmpl_else -->style="background-color:#fff;"<!--/tmpl_if-->>
+		   	<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
 				<td>
 					<p>
 					<a href="<!-- tmpl_var PLUGIN_URL -->?flavor=cgi_bounce_score_search&amp;query=<!-- tmpl_var email ESCAPE="URL" -->">

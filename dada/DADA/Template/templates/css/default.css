@@ -1,26 +1,26 @@
 
 /* ----- GENERAL ----- */
 
-body { 
-	background-color:#fff;
+body {
+	background-color: #fff;
 	/*font-family:Georgia,Times,'Times New Roman',serif;*/
 	font-family:helvetic,arial,san-serif;
-	line-height:1.50em;
-	font-size:.825em;
-	background: #fff; 
+	line-height: 1.50em;
+	font-size: .825em;
+	background: #fff;
 }
 
 /* for list/archive pages only: */
 body#Dada {
-	margin:50px 0;
-	padding:0;
-	text-align:center;                /* page centering hack for IE */	
+	margin: 50px 0;
+	padding: 0;
+	text-align: center; /* page centering hack for IE */
 }
 
 /* for admin pages only: */
 body#DadaAdmin {
-	margin:0;
-	padding:0;
+	margin: 0;
+	padding: 0;
 }
 
 
@@ -32,183 +32,172 @@ body#DadaAdmin {
 }
 
 #Header {
-/*	width:550px; */
-	height:50px;
-	margin:0 auto;                    /* page centering for all but IE */
-	padding:0px;
-	border-bottom: 1px solid #333; 
-	
-/*	border:1px solid #000;*/
-	/*background-color:#c00;*/
-	background-color:#669999; /* 99cc99 */
-	background-image: url('<!-- tmpl_var S_PROGRAM_URL -->/img/header_bg.gif/');
-	background-repeat:repeat-y;
-	
-	text-align:left;                  /* overrides page centering hack for IE (in the body) */
+/* width:550px; */
+height:50px;
+margin: 0 auto; /* page centering for all but IE */
+padding:0px;
+border-bottom: 1px solid #333;
+
+/* border:1px solid #000;*/
+/*background-color:#c00;*/
+background-color:#669999; /* 99cc99 */
+background-image: url('<!-- tmpl_var S_PROGRAM_URL -->/img/header_bg.gif/');
+background-repeat: repeat-y;
+text-align: left; /* overrides page centering hack for IE (in the body) */
 
 
-	font: 1.1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
-	text-shadow:  1px 1px 2px #330033;
+font: 1.1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+text-shadow: 1px 1px 2px #330033;
 
-	
-	
-/* 
-	font-family: 'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;
-	font-size: 1em;
-	font-style:italic;
-	font-weight:bold;
-	text-transform:uppercase;
+
+
+/*
+font-family: 'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+font-size: 1em;
+font-style: italic;
+font-weight: bold;
+text-transform: uppercase;
 
 */
-
 }
 
 /* box model hack for IE: \*/
 * html #Header {
-	width:592px;
+	width: 592px;
 }
 /* ends the box model hack. see: http://tinyurl.com/9yld6 */
 
 /* override for admin pages only: */
 body#DadaAdmin #Header {
-	width:auto;
+	width: auto;
 }
 
 /* override for admin pages only: */
 /* box model hack for IE: \*/
 * html body#DadaAdmin #Header {
-	width:100%;
+	width: 100%;
 }
 /* ends the box model hack. see: http://tinyurl.com/9yld6 */
 
 #Logo {
-	float:left;
-	text-align:left;
+	float: left;
+	text-align: left;
 }
 
 #Title {
-	float:right;
-	text-align:right;
+	float: right;
+	text-align: right;
 	padding-right: 10px;
-	padding-top:20px; 
-	color:#fff;
-}
-#Title a 
- { 
+	padding-top: 20px;
 	color: #fff;
-	text-decoration:none;
-	
 }
-#Title a:hover { 
+#Title a {
 	color: #fff;
-	text-decoration:underline;
-	
-} 
+	text-decoration: none;
+}
+#Title a:hover {
+	color: #fff;
+	text-decoration: underline;
+}
 
 
-/* alas, IE doesn't understand the next three CSS2 rules, 
-   which add the dots before and after the header copy: */
+/* alas, IE doesn't understand the next three CSS2 rules,
+which add the dots before and after the header copy: */
 #Logo:before {
-	/*content: ".: "; */
+/*content: ".: "; */
 }
 
 #Title:before {
-	/* content: ":: "; */
+/* content: ":: "; */
 }
 
 #Title:after {
-	/* content: " ::"; */
+/* content: " ::"; */
 }
 
 #Content {
-	width:550px;
-	margin:0 auto;                    /* page centering for all but IE */
+	width: 550px;
+	margin: 0 auto; /* page centering for all but IE */
 	padding:20px;
-	border:1px solid #000;
-	border-top:0;
-	background-color:#fff;
-	text-align:left;                  /* overrides page centering hack for IE (in the body) */
+	border: 1px solid #000;
+	border-top: 0;
+	background-color: #fff;
+	text-align: left; /* overrides page centering hack for IE (in the body) */
 }
 
 /* box model hack for IE: \*/
 * html #Content {
-	width:592px;
+	width: 592px;
 }
 /* ends the box model hack. see: http://tinyurl.com/9yld6 */
 
 #AdminPageWrapper {
-	
-	background: #fff; 
-	
-	
+	background: #fff;
 }
 
 #AdminContentWrapper {
-	margin:0 0 0px 200px;
-
+	margin: 0 0 0px 200px;
 }
 
 #AdminContent {
-	width:100%;
-/*
+	width: 100%;
+	/*
 	padding-top:8px;
-	padding:10px;
-*/
+	padding: 10px;
+	*/
 }
 
 #MenuWrapper {
-	
 }
 
 #Menu {
-	position:absolute;
-	top:50px; /* Double-check that one.. */
+	position: absolute;
+	top: 50px; /* Double-check that one.. */
 	left:0px;
-	width:199px;
-	padding:0;
+	width: 199px;
+	padding: 0;
 	/*border:1px solid #000;*/
-	border-right:1px solid #666; 
-	background-color:#fff;
-	text-align:left;
-	line-height:150%;
+	border-right:1px solid #666;
+	background-color: #fff;
+	text-align: left;
+	line-height: 150%;
 }
 /* http://tantek.com/CSS/Examples/boxmodelhack.html */
 /* box model hack for IE: \*/
 * html #Menu {
-	width:200px;
-} 
+	width: 200px;
+}
 /* ends the box model hack. see: http://tinyurl.com/9yld6 */
 
 /* ----- IDS: Navigation ----- */
 
 
 
-#list_type_switcher div { 
-	
-	font-family: 'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;	
-	float:left;
-	margin-right:2px;
-	width:150px;
-	border:1px solid #000;
-	background-color:#ededed;
-	text-align:center;
+#list_type_switcher div {
+	font-family: 'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	float: left;
+	margin-right: 2px;
+	width: 150px;
+	border: 1px solid #000;
+	background-color: #ededed;
+	text-align: center;
 }
 
-#list_type_switcher div a, 
+#list_type_switcher div a,
 #list_type_switcher div span {
-	padding:8px 0;
-	                                  /* these next two make the entire "button" clickable: */
+	padding: 8px 0;
+	/* these next two make the entire "button" clickable: */
 	display:block; /* Moz, etc. */
-	width:150px;   /* IE */
+	width:150px; /* IE */
 }
 
 #list_type_switcher div span {
-	background-color:#fff;
-	font-weight:bold;
+	background-color: #fff;
+	font-weight: bold;
 }
 
 #list_type_switcher div a:hover {
-	background-color: #e6e6e6;	
+	background-color: #e6e6e6;
 }
 
 /* ----- IDS: Widgets/Other ----- */
@@ -217,76 +206,75 @@ body#DadaAdmin #Header {
 }
 
 #help_link {
-	float:right;
-	margin-top:.8em;
-	font-weight:bold;
-	clear:both;
+	float: right;
+	margin-top: .8em;
+	font-weight: bold;
+	clear: both;
 }
 
 #root_login_message {
-	/* float:right; */
-	margin-right:0.5em;
-	color:#fff;
+/* float:right; */
+margin-right:0.5em;
+color: #fff;
 }
 
 /* ----- CLASSES ----- */
 
 .disabled {
-	background-color:#ccc;
-	border:1px solid #fff;
+	background-color: #ccc;
+	border: 1px solid #fff;
 }
 
 
 
 
 .error {
-	font-family:Helvetica,Verdana,Arial,sans-serif;
+	font-family: Helvetica,Verdana,Arial,sans-serif;
 	/*font-size:11px;*/
-	font-size: .9em; 
-	
-	font-style:italic;
-	color:#600;
+	font-size: .9em;
+	font-style: italic;
+	color: #600;
 }
 
-.alert { 
-	font-family:Helvetica,Verdana,Arial,sans-serif;
+.alert {
+	font-family: Helvetica,Verdana,Arial,sans-serif;
 	/*font-size:11px;*/
-	font-size: .9em; 
-	
-	/*font-style:italic;*/
-	color:#09c;
+	font-size: .9em;
+
+/*font-style:italic;*/
+color:#09c;
 }
 
 
 
 .hidden {
-	display:none;
+	display: none;
 }
 
 
 a.menu_disabled {
-    color: #999;
-    font-style:italic;
+	color: #999;
+	font-style: italic;
 }
 
 a.menu_disabled:link {
-    color: #999;
-    font-style:italic;
+	color: #999;
+	font-style: italic;
 }
 
 a.menu_disabled:visited {
-    color: #999;
-    font-style:italic;
+	color: #999;
+	font-style: italic;
 }
 
 a.menu_disabled:hover {
-    color: #999;
-    font-style:italic;
+	color: #999;
+	font-style: italic;
 }
 
 a.menu_disabled:active {
 	color: #999;
-    font-style:italic;
+	font-style: italic;
 }
 
 
@@ -295,36 +283,33 @@ a.menu_disabled:active {
 
 
 
-.highlighted { 
-    font-style: normal;
-    background-color:#6F3;
-
+.highlighted {
+	font-style: normal;
+	background-color: #6F3;
 }
 
 p.link_to_screen {
-	text-align:right;
-	font-weight:bold;
+	text-align: right;
+	font-weight: bold;
 }
 
 .positive {
-	font-family:Helvetica,Verdana,Arial,sans-serif;
+	font-family: Helvetica,Verdana,Arial,sans-serif;
 	/*font-size:11px;*/
-	font-size: .9em; 
-
-	
-	color:#063;
+	font-size: .9em;
+	color: #063;
 }
 
-.positive_greeting { 
-	padding:2px; 
+.positive_greeting {
+	padding: 2px;
 	border: 1px solid #363;
 	background-color: #CFC;
 }
 
 .simplebox {
-	padding:7px;
-	border:1px solid #000;
-	background-color:#fff;
+	padding: 7px;
+	border: 1px solid #000;
+	background-color: #fff;
 }
 
 .psuedomodalbox {
@@ -335,124 +320,122 @@ p.link_to_screen {
 	background-color: #EFEFEF;
 	color: #000;
 	text-align: left;
-	padding:5px
+	padding: 5px
 }
 
-.login_message { 
-    float: right; 
-    padding:5px;
-    /* width:150px; */
-    background-color:#ffc;
-    border:1px dotted #333;
+.login_message {
+	float: right;
+	padding: 5px;
+	/* width:150px; */
+	background-color:#ffc;
+	border: 1px dotted #333;
 }
 
-.login_message p { 
-    line-height: 100%;
+.login_message p {
+	line-height: 100%;
 }
 
-.login_message ul { 
-
-    list-style-type: square;
-    color: #ccc;
-    
+.login_message ul {
+	list-style-type: square;
+	color: #ccc;
 }
 
 
 /* all but IE/Win & NN4: */
 .simplebox>p {
-	margin:0;
+	margin: 0;
 }
 
 /* ----- HEADINGS ----- */
 
 
-h1, h2, h3 { 
-	font-family:'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;
-	font-weight:bold;
+h1, h2, h3 {
+	font-family: 'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	font-weight: bold;
 }
 
 h1 {
-    
-	/*font-size:18px;*/
 
-	
-	font-size: 1.4em;
+/*font-size:18px;*/
+
+
+font-size: 1.4em;
 }
 
 h2 {
-	/*font-size:16px;*/
-	font-size: 1.2em;
+/*font-size:16px;*/
+font-size: 1.2em;
 }
 
 h3 {
-	/*font-size:14px;*/
-	font-size: 1em
+/*font-size:14px;*/
+font-size: 1em
 }
 
 /* ----- PARAGRAPHS ----- */
 
 p {
-	margin-top:    0.75em;
-    margin-bottom: 0.75em;
+	margin-top: 0.75em;
+	margin-bottom: 0.75em;
 }
 
-#AdminContent h1, 
-#AdminContent h2, 
-#AdminContent h3, 
-#AdminContent h4, 
+#AdminContent h1,
+#AdminContent h2,
+#AdminContent h3,
+#AdminContent h4,
 #AdminContent h5,
-#AdminContent p { 
-	padding-left:5px; 
-	padding-right:5px;
-} 
+#AdminContent p {
+	padding-left: 5px;
+	padding-right: 5px;
+}
 
 
 p.small {
-	font-family:Helvetica,Verdana,Arial,sans-serif;
+	font-family: Helvetica,Verdana,Arial,sans-serif;
 	/*font-size:11px;*/
-	font-size: .9em; 
+	font-size: .9em;
 }
 
 /* ----- CODE ----- */
 
 code, pre {
-	margin:3px;
-	padding:3px;
-	border:1px dotted #000;
-	background-color:#ccf;
-	font:.8em/1.6em Monaco,Mono,'Courier New',Courier,monospace;
+	margin: 5px;
+	padding: 5px;
+	border: 1px dotted #666;
+	background-color: #ccff99;
+	font: .8em/1.6em Monaco,Mono,'Courier New',Courier,monospace;
 }
 
 /* ----- LINKS ----- */
 
 a {
-	text-decoration:none;
+	text-decoration: none;
 }
 
 a:link {
-	color:#330066;
+	color: #330066;
 }
 
 a:visited {
-	color:#330066;
+	color: #330066;
 }
 
 a:hover {
-	color:#330066;
-	text-decoration:underline;
+	color: #330066;
+	text-decoration: underline;
 }
 
 a:active {
-	color:330066
+	color: 330066
 }
 
-#Logo a:link, 
+#Logo a:link,
 #Logo a:visited {
-	color:#000;
+	color: #000;
 }
 
 #Logo a:hover {
-	color:#000;
+	color: #000;
 }
 
 #Logo a:active {
@@ -461,17 +444,15 @@ a:active {
 /* ----- FORMS ----- */
 
 label {
-	
-	font-family:Helvetica,Verdana,Arial,sans-serif;
-	
-	/*font-size:12px;*/
-	/*font-size: .95em; */
-	font-weight:bold;
-	color:#000;
-	
+	font-family: Helvetica,Verdana,Arial,sans-serif;
+
+/*font-size:12px;*/
+/*font-size: .95em; */
+font-weight:bold;
+color: #000;
 }
 
-.label_by_5 { 
+.label_by_5 {
 	width: 4em;
 	float: left;
 	text-align: right;
@@ -479,63 +460,54 @@ label {
 	display: block;
 }
 
-fieldset { 
-
-
-    padding-top:    4px;
-    padding-bottom: 9px;
-    padding-left:   7px;
-    padding-right:  7px;
-
-    margin-left:   0px;
-    margin-right:  0px;
-    margin-top:    10px;
-    margin-bottom: 10px;
-	border-left:0px;
-	border-right:0px;
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
-    background:#ededed;
-    
-    
+fieldset {
+	padding-top: 4px;
+	padding-bottom: 9px;
+	padding-left: 7px;
+	padding-right: 7px;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	border-left: 0px;
+	border-right: 0px;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	background: #ededed;
 }
 
-fieldset fieldset { 
-	background:#e6e6e6;
-	border:1px solid black;
+fieldset fieldset {
+	background: #e6e6e6;
+	border: 1px solid black;
 }
 
 
 legend {
-	
-	
 	font-family: 'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;
-	font-weight:bold;
-    /*font-size:16px;*/
-    font-size: 1.15em;
-
+	font-weight: bold;
+	/*font-size:16px;*/
+	font-size: 1.15em;
 }
 
 
 
 
 input, select {
-	margin:3px;
-	padding:3px;
-	border-width:1px;
-	border-style:solid; 
-	border-color:#666 #999 #ccc #999;
-	font:"Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	margin: 3px;
+	padding: 3px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #666 #999 #ccc #999;
+	font: "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 	font-size: 1em;
 }
-.small_input { 
-
-	margin:2px;
-	padding:2px;
-	border-width:1px;
-	border-style:solid; 
-	border-color:#666 #999 #ccc #999;
-	font:"Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+.small_input {
+	margin: 2px;
+	padding: 2px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #666 #999 #ccc #999;
+	font: "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 	font-size: .9em;
 }
 
@@ -543,53 +515,48 @@ input, select {
 /* removes checkbox/radio-button borders in IE 5.0+: */
 /* (commented out for validation, uncomment to apply)
 input {
-    border: expression(this.type=="checkbox"? 'none':
-                       this.type=="radio"?    'none':
-                       '1px solid #000');
+border: expression(this.type=="checkbox"? 'none':
+this.type=="radio"? 'none':
+'1px solid #000');
 }
 */
 
 input.full {
-	margin-top:-5px;
-	width:95%;
-	
+	margin-top: -5px;
+	width: 95%;
 }
 input.midi {
-	width:50%;
-	margin-top:-5px;
-	
+	width: 50%;
+	margin-top: -5px;
 }
 
 
 select {
-	margin:3px;
-	font-family:Helvetica,Verdana,Arial,sans-serif;
+	margin: 3px;
+	font-family: Helvetica,Verdana,Arial,sans-serif;
 	font-size: 1em;
-	color:#333;
+	color: #333;
 }
 
 textarea {
-	padding:10px;
-	width:95%;
-	border-width:1px;
-	border-style:solid;
-	border-color:#666 #999 #ccc #999;
-	font-family:Helvetica,Verdana,Arial,sans-serif;
-	
+	padding: 10px;
+	width: 95%;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #666 #999 #ccc #999;
+	font-family: Helvetica,Verdana,Arial,sans-serif;
 	font-size: 1em;
-	
-	color:#333;
+	color: #333;
 }
 
-input.small_button { 
-	
-	background-color:#ededed;
-	margin:1px;
-	padding:2px;
-	border-width:1px;
-	border-style:solid; 
-	border-color:#ccc #999 #666 #999;
-	font:  .8em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+input.small_button {
+	background-color: #ededed;
+	margin: 1px;
+	padding: 2px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #ccc #999 #666 #999;
+	font: .8em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 }
 
 input.small_button:hover,
@@ -597,7 +564,7 @@ input.plain:hover,
 input.processing:hover,
 input.cautionary:hover,
 input.alertive:hover,
-input.help:hover { 
+input.help:hover {
 	background-color: #ffe1af;
 }
 
@@ -607,105 +574,101 @@ input.processing,
 input.cautionary,
 input.alertive,
 input.help {
-	font:  1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
-	color:#000;
-	border-color:#ccc #999 #666 #999;		
+	font: 1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	color: #000;
+	border-color: #ccc #999 #666 #999;
 }
 
 
 
 input.plain {
-	background-color:#ededed;
+	background-color: #ededed;
 	/*color:#000;*/
-	border-color:#ccc #999 #666 #999;		
-	color:#333;
-	
+	border-color:#ccc #999 #666 #999;
+	color: #333;
 }
 
 input.processing {
-	/*background-color:#9c9;*/
-	background-color:#9f9; 
-	color:#333;
-	
+/*background-color:#9c9;*/
+background-color:#9f9;
+color: #333;
 }
 input.cautionary {
-	/* background-color:#ffc; */
-	background-color:#ff9;
-	color:#333;
-	
+/* background-color:#ffc; */
+background-color:#ff9;
+color: #333;
 }
 
 input.alertive {
-	/* background-color:#f66; */
-	background-color:#f33;
-	color:#fcc;
-	
+/* background-color:#f66; */
+background-color:#f33;
+color: #fcc;
 }
 
 input.help {
-	/*background-color:#9c9;*/
-	background-color:#fcf; 
-	color:#333;	
-	
+/*background-color:#9c9;*/
+background-color:#fcf;
+color: #333;
 }
 
 input.disabled {
-    color: #999; 
-	background-color:#ccc;
-	border:1px solid black;
+	color: #999;
+	background-color: #ccc;
+	border: 1px solid black;
 }
 
 /* IE doesn't understand this: */
-input:focus, 
-textarea:focus {}
+input:focus,
+textarea:focus {
+}
 
 div.buttonfloat {
-	float:right;
+	float: right;
 }
 
 /* ----- TABLES ----- */
 
 table {
-	font-size:100%;                   /* fixes IE inheritance bug, redundant for others */
+	font-size: 100%; /* fixes IE inheritance bug, redundant for others */
 }
 
 td {
-	vertical-align:top;
+	vertical-align: top;
 }
 
 /* all but IE/Win & NN4: */
 td>p {
-	margin:0;
+	margin: 0;
 }
 
 table.tagchart {
-	border-collapse:collapse;
-	border:2px solid #000;
-	background-color:#fff;
-	width:100%;
+	border-collapse: collapse;
+	border: 2px solid #000;
+	background-color: #fff;
+	width: 100%;
 }
 
 table.tagchart td {
-	border:1px solid #000;
-	padding:5px;
+	border: 1px solid #000;
+	padding: 5px;
 }
 
 /* ----- BREAKS ----- */
 
 hr {
-	width:66%;
-	text-align:center;
-	height:1px;
-	border:0;
-	color:#000;                       /* IE */
-	background-color:#000;            /* Moz & Opera */
+	width: 66%;
+	text-align: center;
+	height: 1px;
+	border: 0;
+	color: #000; /* IE */
+	background-color:#000; /* Moz & Opera */
 	clear:both;
 }
 
 div.floatclear {
-	clear:both;
-	height:1px;
-	overflow:hidden;
+	clear: both;
+	height: 1px;
+	overflow: hidden;
 }
 
 /* ----- ARCHIVES ----- */
@@ -717,40 +680,39 @@ div.floatclear {
 }
 
 iframe#archived_message_body_container {
-	height:500px;
-	width:100%;
-	border:1px solid #000;
+	height: 500px;
+	width: 100%;
+	border: 1px solid #000;
 	/* text-styling rules will have NO effect in here. see below instead. */
 }
 
 #archived_message_body {
 /* inline-displayed HTML messages keep their inline styles, but can otherwise be styled here.
-   iframe-displayed HTML messages *always* retain their own style. this does nothing for 'em.
-   plain text messages, whether inline or iframed, will be styled here also. */
+iframe-displayed HTML messages *always* retain their own style. this does nothing for 'em.
+plain text messages, whether inline or iframed, will be styled here also. */
 }
 
-.quoted_reply { 
-	color:#666;
-	font-style:italic;
+.quoted_reply {
+	color: #666;
+	font-style: italic;
 }
 
 #archived_attachments_wrapper {
 }
 
 
- ul.archive_badges_ul{ 
- 
-/* font-size:  11px; */
-font-size: .9em; 
+ul.archive_badges_ul {
 
-
-line-height: 13px; }
+/* font-size: 11px; */
+font-size: .9em;
+line-height: 13px;
+}
 
 li.archive_badges_li {
-display: inline;
-padding-left: 3px;
-padding-right: 7px;
-/* border-right: 1px dotted #066; */
+	display: inline;
+	padding-left: 3px;
+	padding-right: 7px;
+	/* border-right: 1px dotted #066; */
 }
 
 
@@ -766,7 +728,7 @@ padding-right: 7px;
 	width: 100%;
 	overflow: hidden;
 	font: 1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
-/*	text-shadow:  1px 1px 2px #330033;*/
+	/* text-shadow: 1px 1px 2px #330033;*/
 }
 #centeredmenu ul {
 	float: left;
@@ -817,98 +779,107 @@ padding-right: 7px;
 	font-weight: bold;
 }
 
-#list_activity ul { 
+#list_activity ul {
 	list-style: none;
 }
-#list_activity li { 
-	line-height:200%;
+#list_activity li {
+	line-height: 200%;
+}
+
+#screentitle {
+	width: 100%;
+	height: 25px;
+	background-color: #cc9999;
+	border-bottom: 1px solid #666;
+	color: #fff;
+	font: 1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	text-shadow: 1px 1px 2px #330033;
+}
+#screentitle a,
+#screentitle hover,
+#screentitle link,
+#screentitle visited {
+	color: #fff;
+}
+
+#screentitlepadding { 
+	float:left; 
+	padding:3px;
 }
 
 
+#navcontainer {
+	margin: 0px;
+	border-bottom: 1px solid #666;
+}
 
-
-
-
-
-#navcontainer { margin: 0px; border-bottom:1px solid #666; }
-
-#navcontainer ul
-{
-margin: 0;
-padding: 0;
-list-style-type: none;
-font-family: verdana, arial, Helvetica, sans-serif;
+#navcontainer ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	font-family: verdana, arial, Helvetica, sans-serif;
 }
 
 /* this is the horizontal separator */
-#navcontainer li { 
-	margin: 0 0 1px 0; 
+#navcontainer li {
+	margin: 0 0 1px 0;
 }
 
-#navcontainer a
-{
-display: block;
-padding: 2px 5px;
-width: 189;
-color: #666;
-background-color: #ededed;
-text-decoration: none;
-}
-
-#navcontainer a:hover
-{
-color: #666;
-background-color: #ffe1af;
-text-decoration: none;
-}
-
-#navcontainer span { 
+#navcontainer a {
 	display: block;
-			/* h, w */
+	padding: 2px 5px;
+	width: 189;
+	color: #666;
+	background-color: #ededed;
+	text-decoration: none;
+}
+
+#navcontainer a:hover {
+	color: #666;
+	background-color: #ffe1af;
+	text-decoration: none;
+}
+
+#navcontainer span {
+	display: block;
+	/* h, w */
 	padding: 2px 5px;
 	width: 189;
 	color: #fff;
 	background-color: #99bccc;
-	font-weight:bold;
-	border-top: 1px solid #333; 
-	height:22px;
-	
-	font:  1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
-	text-shadow:  1px 1px 2px #330033;
-	
-	
+	font-weight: bold;
+	border-top: 1px solid #333;
+	height: 22px;
+	font: 1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	text-shadow: 1px 1px 2px #330033;
 }
 
 /* this is the horizontal separator */
-#navcontainer ul ul li { margin: 0 0 1px 0; }
-
-#navcontainer ul ul a
-{
-display: block;
-padding: 2px 2px 2px 20px;
-width: 177px; / *20 + 2 */
-background-color: #ededed;
-text-decoration: none;
-
-font-size: .9em;
-
-
-}
-#navcontainer ul ul span { 
-	color:#fff;
+#navcontainer ul ul li {
+	margin: 0 0 1px 0;
 }
 
-#navcontainer ul ul a:hover
-{
-color: #666;
-background-color: #ffe1af;
-text-decoration: none;
+#navcontainer ul ul a {
+	display: block;
+	padding: 2px 2px 2px 20px;
+	width: 177px; / *20 + 2 */
+	background-color: #ededed;
+	text-decoration: none;
+	font-size: .9em;
+}
+#navcontainer ul ul span {
+	color: #fff;
 }
 
-/* currently, there is no subactive state... 
-ul#navlist li#active ul#subnavlist li#subactive a
-{
-font-weight:bold;
+#navcontainer ul ul a:hover {
+	color: #666;
+	background-color: #ffe1af;
+	text-decoration: none;
+}
+
+/* currently, there is no subactive state...
+ul#navlist li#active ul#subnavlist li#subactive a {
+font-weight: bold;
 color: #000;
 background: #fff;
 text-decoration: none;
@@ -917,37 +888,35 @@ text-decoration: none;
 
 
 
-.stripedtable { 
-	
-	 border-collapse:collapse; 	
-	background-color:#fff;
-	width: 100%; 
+.stripedtable {
+	border-collapse: collapse;
+	background-color: #fff;
+	width: 100%;
 	border: 0px;
-	/* 
+	/*
 	cellpadding="2" cellspacing="0" border="0" width="100%"
-	*/	
+	*/
 }
-.stripedtable td { 
+.stripedtable td {
 	padding: 2px;
 	margin: 0px;
 }
-.stripedtable tr.alt td  {
-	background-color:#fff;	
+.stripedtable tr.alt td {
+	background-color: #fff;
 }
-.stripedtable tr.alt td  {
-	background-color:#ededed;
-} 
+.stripedtable tr.alt td {
+	background-color: #ededed;
+}
 
-.stripedtable a { 
-	color: #666; 
-/*	border-bottom:1px dotted #ffe1af; */
+.stripedtable a {
+	color: #666;
+	/* border-bottom:1px dotted #ffe1af; */
 	text-decoration:none;
-	
 }
 
-.stripedtable a:hover { 
-	color: #666; 
-/*	border-bottom:1px solid #000; */
+.stripedtable a:hover {
+	color: #666;
+	/* border-bottom:1px solid #000; */
 	background-color: #ffe1af;
 }
 
