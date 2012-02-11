@@ -9,9 +9,6 @@
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
 
-
-<!-- tmpl_include help_link_widget.tmpl -->
-
 <form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
  <input type="hidden" name="f" value="delete_archive" /> 
 
@@ -66,29 +63,25 @@
 	    </td>
 	    
 	    <td> 
-	     <p>
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive;id=<!-- tmpl_var id -->">
 			<!-- tmpl_var name="from" ESCAPE="HTML" -->
-		</p>
+		</a>
 		</td>
 	    
 	    
 	    
 	    <td> 
-	     <p>
-	     <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive&id=<!-- tmpl_var id -->">
+	     <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive;id=<!-- tmpl_var id -->">
 			<!-- tmpl_var name="subject" ESCAPE="HTML" -->
 			</a>
-		</p>
 		</td>
 		<td>
-		 <p>
+		  <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive;id=<!-- tmpl_var id -->">
 		 <!-- tmpl_var date -->
-		</p>
+		</a>
 		</td> 
 		<td>
-		 <p>
 	      <input type="button" class="cautionary" onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?f=edit_archived_msg&id=<!-- tmpl_var id -->'" value="[edit]"/>
-		  </p>
 		 </td>
 		</tr>
 

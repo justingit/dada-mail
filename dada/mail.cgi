@@ -571,7 +571,7 @@ sub run {
 	'subscription_requests'      =>    \&subscription_requests,
 	'remove_all_subscribers'     =>    \&remove_all_subscribers,
 	'view_list_options'          =>    \&list_cp_options,
-	'edit_subscriber'            =>    \&edit_subscriber,
+	'membership'            =>    \&membership,
 	'add'                        =>    \&add,
 	'check_status'               =>    \&check_status,
 	'email_password'             =>    \&email_password,
@@ -3233,7 +3233,7 @@ sub subscription_requests {
         }
 
         my $flavor_to_return_to = 'view_list';
-        if ( $return_to eq 'edit_subscriber' ) {    # or, others...
+        if ( $return_to eq 'membership' ) {    # or, others...
             $flavor_to_return_to = $return_to;
         }
 
@@ -3244,7 +3244,7 @@ sub subscription_requests {
           . ';approved_count='
           . $count;
 
-        if ( $return_to eq 'edit_subscriber' ) {
+        if ( $return_to eq 'membership' ) {
             $qs .= ';email=' . $return_address;
         }
 
@@ -3272,7 +3272,7 @@ sub subscription_requests {
         }
 
         my $flavor_to_return_to = 'view_list';
-        if ( $return_to eq 'edit_subscriber' ) {    # or, others...
+        if ( $return_to eq 'membership' ) {    # or, others...
             $flavor_to_return_to = $return_to;
         }
 
@@ -3283,7 +3283,7 @@ sub subscription_requests {
           . ';denied_count='
           . $count;
 
-        if ( $return_to eq 'edit_subscriber' ) {
+        if ( $return_to eq 'membership' ) {
             $qs .= ';email=' . $return_address;
         }
 
@@ -3405,7 +3405,7 @@ sub filter_using_black_list {
 
 
 
-sub edit_subscriber {
+sub membership {
 
     if ( !$email ) {
         view_list();
@@ -3416,7 +3416,7 @@ sub edit_subscriber {
 
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'edit_subscriber'
+        -Function => 'membership'
     );
 
     $list = $admin_list;
@@ -3453,7 +3453,7 @@ sub edit_subscriber {
                 $new_fields->{$nfield} = $q->param($nfield);
             }
         }
-        $lh->edit_subscriber(
+        $lh->membership(
             {
                 -email  => $email,
                 -type   => $type,
@@ -3604,7 +3604,7 @@ sub edit_subscriber {
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-            -screen         => 'edit_subscribed_screen.tmpl',
+            -screen         => 'membership.tmpl',
             -with           => 'admin',
             -wrapper_params => {
                 -Root_Login => $root_login,
@@ -4187,7 +4187,7 @@ sub add_email {
 			}
 
 			my $flavor_to_return_to = 'view_list'; 
-			if($return_to eq 'edit_subscriber'){ # or, others...
+			if($return_to eq 'membership'){ # or, others...
 				$flavor_to_return_to = $return_to;
 			}
 			
@@ -4199,7 +4199,7 @@ sub add_email {
               . ';type='
               . $type;
 
-			if($return_to eq 'edit_subscriber'){
+			if($return_to eq 'membership'){
 				$qs .= ';email=' . $return_address;
 			}
 
@@ -8580,7 +8580,7 @@ sub remove_subscribers {
     );
 
 	my $flavor_to_return_to = 'view_list'; 
-	if($return_to eq 'edit_subscriber'){ # or, others...
+	if($return_to eq 'membership'){ # or, others...
 		$flavor_to_return_to = $return_to;
 	}
 	
@@ -8594,7 +8594,7 @@ sub remove_subscribers {
       . ';black_list_add='
       . $bl_count;
 
-	if($return_to eq 'edit_subscriber'){
+	if($return_to eq 'membership'){
 		$qs .= ';email=' . $return_address;
 	}
 

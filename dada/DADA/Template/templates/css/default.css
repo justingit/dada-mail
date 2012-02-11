@@ -3,81 +3,42 @@
 
 body {
 	background-color: #fff;
-	/*font-family:Georgia,Times,'Times New Roman',serif;*/
-	font-family:helvetic,arial,san-serif;
+	font-family: helvetic,arial,san-serif;
 	line-height: 1.50em;
 	font-size: .825em;
 	background: #fff;
 }
 
-/* for list/archive pages only: */
+/* non-admin */
 body#Dada {
-	margin: 50px 0;
+	margin: 0;
 	padding: 0;
-	text-align: center; /* page centering hack for IE */
 }
-
-/* for admin pages only: */
+/* admin */
 body#DadaAdmin {
 	margin: 0;
 	padding: 0;
 }
 
-
-
-
 /* ----- IDS: General Page Layout ----- */
 
+/* non-admin */
 #PageWrapper {
 }
 
 #Header {
-/* width:550px; */
-height:50px;
-margin: 0 auto; /* page centering for all but IE */
-padding:0px;
-border-bottom: 1px solid #333;
-
-/* border:1px solid #000;*/
-/*background-color:#c00;*/
-background-color:#669999; /* 99cc99 */
-background-image: url('<!-- tmpl_var S_PROGRAM_URL -->/img/header_bg.gif/');
-background-repeat: repeat-y;
-text-align: left; /* overrides page centering hack for IE (in the body) */
-
-
-font: 1.1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
-text-shadow: 1px 1px 2px #330033;
-
-
-
-/*
-font-family: 'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;
-font-size: 1em;
-font-style: italic;
-font-weight: bold;
-text-transform: uppercase;
-
-*/
+	min-width: 800px;
+	height: 50px;
+	margin: 0 auto; /* page centering for all but IE */
+	padding:0px;
+	border-bottom: 1px solid #333;
+	background-color: #669999; /* 99cc99 */
+	background-image: url('<!-- tmpl_var S_PROGRAM_URL -->/img/header_bg.gif/');
+	background-repeat: repeat-y;
+	text-align: left; /* overrides page centering hack for IE (in the body) */
+	font: 1.1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	text-shadow: 1px 1px 2px #330033;
 }
-
-/* box model hack for IE: \*/
-* html #Header {
-	width: 592px;
-}
-/* ends the box model hack. see: http://tinyurl.com/9yld6 */
-
-/* override for admin pages only: */
-body#DadaAdmin #Header {
-	width: auto;
-}
-
-/* override for admin pages only: */
-/* box model hack for IE: \*/
-* html body#DadaAdmin #Header {
-	width: 100%;
-}
-/* ends the box model hack. see: http://tinyurl.com/9yld6 */
 
 #Logo {
 	float: left;
@@ -101,35 +62,21 @@ body#DadaAdmin #Header {
 }
 
 
-/* alas, IE doesn't understand the next three CSS2 rules,
-which add the dots before and after the header copy: */
-#Logo:before {
-/*content: ".: "; */
-}
-
-#Title:before {
-/* content: ":: "; */
-}
-
-#Title:after {
-/* content: " ::"; */
-}
-
+/* non-admin */
 #Content {
-	width: 550px;
-	margin: 0 auto; /* page centering for all but IE */
-	padding:20px;
-	border: 1px solid #000;
-	border-top: 0;
-	background-color: #fff;
-	text-align: left; /* overrides page centering hack for IE (in the body) */
+	padding-left:50px; 
+	padding-right:50px;
+	padding-top:20px;
+	padding-bottom:20px;
 }
 
 /* box model hack for IE: \*/
 * html #Content {
-	width: 592px;
 }
 /* ends the box model hack. see: http://tinyurl.com/9yld6 */
+
+
+
 
 #AdminPageWrapper {
 	background: #fff;
@@ -137,6 +84,7 @@ which add the dots before and after the header copy: */
 
 #AdminContentWrapper {
 	margin: 0 0 0px 200px;
+	min-width: 640px;
 }
 
 #AdminContent {
@@ -402,32 +350,31 @@ code, pre {
 	margin: 5px;
 	padding: 5px;
 	border: 1px dotted #666;
-	background-color: #ccff99;
+	background-color: #dcffd2;
 	font: .8em/1.6em Monaco,Mono,'Courier New',Courier,monospace;
 }
 
 /* ----- LINKS ----- */
 
 a {
-	text-decoration: none;
+	text-decoration:none;
 }
 
 a:link {
-	color: #330066;
+	color:#339;
 }
 
 a:visited {
-	color: #330066;
+	color:#03c;
 }
 
 a:hover {
-	color: #330066;
-	text-decoration: underline;
+	color:#33c;
 }
 
 a:active {
-	color: 330066
 }
+
 
 #Logo a:link,
 #Logo a:visited {
@@ -469,14 +416,18 @@ fieldset {
 	margin-right: 0px;
 	margin-top: 10px;
 	margin-bottom: 10px;
-	border-left: 0px;
-	border-right: 0px;
-	border-top: 1px solid black;
-	border-bottom: 1px solid black;
+	border: 1px solid black;
 	background: #ededed;
 }
+#AdminContent fieldset {
+	border-left: 0px;
+	border-right: 0px;
+}
+#Content fieldset {
+	width: 75%;
+}
 
-fieldset fieldset {
+#AdminContent fieldset fieldset {
 	background: #e6e6e6;
 	border: 1px solid black;
 }
@@ -489,16 +440,13 @@ legend {
 	font-size: 1.15em;
 }
 
-
-
-
 input, select {
 	margin: 3px;
 	padding: 3px;
 	border-width: 1px;
 	border-style: solid;
 	border-color: #666 #999 #ccc #999;
-	font: "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	font-family: "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 	font-size: 1em;
 }
 .small_input {
@@ -507,7 +455,7 @@ input, select {
 	border-width: 1px;
 	border-style: solid;
 	border-color: #666 #999 #ccc #999;
-	font: "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	font-family: "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 	font-size: .9em;
 }
 
@@ -531,12 +479,7 @@ input.midi {
 }
 
 
-select {
-	margin: 3px;
-	font-family: Helvetica,Verdana,Arial,sans-serif;
-	font-size: 1em;
-	color: #333;
-}
+
 
 textarea {
 	padding: 10px;
@@ -556,7 +499,7 @@ input.small_button {
 	border-width: 1px;
 	border-style: solid;
 	border-color: #ccc #999 #666 #999;
-	font: .8em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	font: .9em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 }
 
 input.small_button:hover,
@@ -802,9 +745,9 @@ li.archive_badges_li {
 	color: #fff;
 }
 
-#screentitlepadding { 
-	float:left; 
-	padding:3px;
+#screentitlepadding {
+	float: left;
+	padding: 3px;
 }
 
 
@@ -828,7 +771,7 @@ li.archive_badges_li {
 #navcontainer a {
 	display: block;
 	padding: 2px 5px;
-	width: 189;
+	width: 189px;
 	color: #666;
 	background-color: #ededed;
 	text-decoration: none;
@@ -844,7 +787,7 @@ li.archive_badges_li {
 	display: block;
 	/* h, w */
 	padding: 2px 5px;
-	width: 189;
+	width: 189px;
 	color: #fff;
 	background-color: #99bccc;
 	font-weight: bold;
@@ -862,7 +805,7 @@ li.archive_badges_li {
 #navcontainer ul ul a {
 	display: block;
 	padding: 2px 2px 2px 20px;
-	width: 177px; / *20 + 2 */
+	width: 177px; /* 20 + 2 */
 	background-color: #ededed;
 	text-decoration: none;
 	font-size: .9em;

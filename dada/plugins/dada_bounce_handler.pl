@@ -1270,7 +1270,7 @@ sub cgi_bounce_score_search_template {
             <p class="alert">
             <!-- tmpl_var query ESCAPE="HTML" --> is currently subscribed to your list (<!-- tmpl_var list_settings.list_name ESCAPE="HTML" -->) - 
             <strong> 
-            <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_subscriber&email=<!-- tmpl_var query ESCAPE="URL" -->&type=list">
+            <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=membership&email=<!-- tmpl_var query ESCAPE="URL" -->&type=list">
              More Information...
              </a> 
             </strong>

@@ -2269,20 +2269,26 @@ $ADMIN_MENU ||= [
 				],
 		},
 
-	{
-	-Title      => 'About Dada Mail',
-	-Title_URL  => "$S_PROGRAM_URL?f=manage_script",
-	-Function   => 'manage_script',
-	-Activated  => 1,
-	},
+		{
+		-Title      => 'App Information',
+		-Activated  => 1,
+		-Submenu    => [
+					{
+					-Title      => 'Configuration',
+					-Title_URL  => "$S_PROGRAM_URL?f=setup_info",
+					-Function   => 'setup_info',
+					-Activated  => 1,
+					},
 
-	{
-	-Title      => '<!-- tmpl_var PROGRAM_NAME --> Setup Info',
-	-Title_URL  => "$S_PROGRAM_URL?f=setup_info",
-	-Function   => 'setup_info',
-	-Activated  => 1,
-	},
-	
+					{
+					-Title      => 'About Dada Mail',
+					-Title_URL  => "$S_PROGRAM_URL?f=manage_script",
+					-Function   => 'manage_script',
+					-Activated  => 1,
+					},
+
+				],
+			},
 ];
 
 =pod

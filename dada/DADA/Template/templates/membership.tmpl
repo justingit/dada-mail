@@ -1,4 +1,4 @@
-<!-- begin edit_subscribed_screen.tmpl -->
+<!-- begin membership.tmpl -->
 
 <!-- tmpl_set name="title" value="Membership" -->
 
@@ -26,10 +26,10 @@
 			<input type="hidden" name="f"       value="subscription_requests" />
 			<input type="hidden" name="type" value="sub_request_list" />
 			<input type="hidden" name="address" value="<!-- tmpl_var email -->" />
-			<input type="hidden" name="return_to" value="edit_subscriber" />
+			<input type="hidden" name="return_to" value="membership" />
 			<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" />
-			<input type="submit" name="process"  value="Approve Subscription Request" />
-			<input type="submit" name="process"  value="Deny Subscription Request" />
+			<input type="submit" name="process"  class="plain" value="Approve Subscription Request" />
+			<input type="submit" name="process"  class="plain" value="Deny Subscription Request" />
 		</form>
 		</fieldset>
 	<!-- /tmpl_if -->
@@ -67,11 +67,11 @@
 		<input type="hidden" name="process" value="1" />
 		<input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" />
 		<input type="hidden" name="method" value="via_add_one" />
-		<input type="hidden" name="return_to" value="edit_subscriber" />
+		<input type="hidden" name="return_to" value="membership" />
 		<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" />
 
 		
-	<p><label for="type_add">&#8594; Add</label> address to: <!-- tmpl_var add_to_popup_menu --><input type="submit" value="Add" /></p>
+	<p><label for="type_add">&#8594; Add</label> address to: <!-- tmpl_var add_to_popup_menu --><input type="submit" value="Add"  class="plain"  /></p>
 	</form>
 <!-- /tmpl_if --> 
 
@@ -82,10 +82,10 @@
 	
 	<input type="hidden" name="address" value="<!-- tmpl_var email -->" />
 	<input type="hidden" name="f"       value="remove_subscribers" />	
-	<input type="hidden" name="return_to" value="edit_subscriber" />
+	<input type="hidden" name="return_to" value="membership" />
 	<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" />
 	
-	<p><label for="type_remove">&#8592;  Remove</label> address from: <!-- tmpl_var remove_from_popup_menu --><input type="submit" value="Remove" /></p>
+	<p><label for="type_remove">&#8592;  Remove</label> address from: <!-- tmpl_var remove_from_popup_menu --><input type="submit" value="Remove"  class="plain"  /></p>
 	</form>
 	
 	<!-- tmpl_if subscribed_to_list -->
@@ -130,7 +130,7 @@
 
 <!-- tmpl_if root_login --> 
 	 <input type="hidden" name="email"   value="<!-- tmpl_var email escape="HTML" -->" />
-	 <input type="hidden" name="f"       value="edit_subscriber" />
+	 <input type="hidden" name="f"       value="membership" />
 	 <input type="hidden" name="process" value="1" />
 	 <input type="hidden" name="type"    value="<!-- tmpl_var type -->" />
 <!-- /tmpl_if --> 
@@ -181,4 +181,4 @@
  <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;page=<!-- tmpl_var page -->;query=<!-- tmpl_var query -->;order_by=<!-- tmpl_var order_by -->;order_dir=<!-- tmpl_var order_dir -->">&lt;&lt; Back</a>
 </p>
 
-<!-- end edit_subscribed_screen.tmpl -->
+<!-- end membership.tmpl -->

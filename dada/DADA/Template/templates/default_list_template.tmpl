@@ -6,14 +6,7 @@
  <head>
   <!-- <!-- tmpl_var PROGRAM_NAME --> <!-- tmpl_var VER --> -->
   <title><!-- tmpl_var title --></title>
-  <style type="text/css" media="all">
-   <!-- tmpl_if comment --> 
-	   /* Not @imported, since AOL rejects msgs with linked stylesheets 
-	      (see: http://www.alistapart.com/articles/cssemail/ )
-	   */
-   <!-- /tmpl_if --> 
-   <!-- tmpl_var default_css -->
-  </style>
+  <link rel="stylesheet" href="<!-- tmpl_var S_PROGRAM_URL -->/css/default.css" type="text/css" media="screen" />
 
 <!-- tmpl_if list_settings.show_archives --> 
 	<!-- tmpl_if list_settings.publish_archives_rss --> 
@@ -26,14 +19,18 @@
  
  <body id="Dada">
   <div id="PageWrapper">
-   <div id="Header"  onclick="location.href='<!-- tmpl_var PROGRAM_URL -->';" style="cursor:pointer;">
-    <span id="Title">
-     <!-- tmpl_var title -->
-    </span>
-    <div class="floatclear"></div>
-   </div><!-- ends id="Header" -->
-   <div id="Content">
+ 	<div id="Header">
+		<a href="<!-- tmpl_var PROGRAM_URL -->">
+			<img src="<!-- tmpl_var S_PROGRAM_URL -->/img/dada_mail_logo_sm.png/" />
+	    </a>
+		<span id="Title">
+			<!-- tmpl_var title -->
+	    </span>
+	    <div class="floatclear"></div>
+	  </div><!-- ends id="Header" -->
 	
+	
+   <div id="Content">	
 	<!-- tmpl_if show_profile_widget --> 
 		<!-- tmpl_var profile_widget --> 
 	<!-- /tmpl_if --> 
@@ -68,7 +65,6 @@
 	
 		<!-- /tmpl_if --> 
 	<!-- /tmpl_if -->
-	
    </div><!-- ends id="Content" -->
   </div><!-- ends id="PageWrapper" -->
  </body>
