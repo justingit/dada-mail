@@ -140,8 +140,8 @@ sub search_list {
     while ( $row = $sth->fetchrow_hashref ) {
 
         $count++;
-        next if $count < $args->{-start};
-        next if $count > ( $args->{-start} + $args->{'-length'} );
+        next if $count < ( $args->{ -start } * $args->{ '-length' });
+        next if $count > ( ( $args->{ -start } * $args->{ '-length' }) + ($args->{'-length'}) );
 
         my $info = {};
         $info->{email} = $row->{email};
@@ -743,13 +743,13 @@ sub subscription_list {
 
     while ( $hashref = $sth->fetchrow_hashref ) {
 
-		if($count < $args->{ -start }) { 
+		if($count < ( $args->{ -start } * $args->{ '-length' })) { 
 			$count++;
 			next; 
 		}
         if ( exists( $args->{'-length'} ) ) {
 			$count++;
-            last if $count > ( $args->{ -start } + ($args->{'-length'}) );
+            last if $count > ( ( $args->{ -start } * $args->{ '-length' }) + ($args->{'-length'}) );
         }
 		else { 
 		}

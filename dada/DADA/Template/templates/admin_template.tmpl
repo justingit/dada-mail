@@ -26,7 +26,6 @@
 </head>
  
  <body id="DadaAdmin">
-  <div id="AdminPageWrapper">
    <div id="Header">
 	<a href="<!-- tmpl_var PROGRAM_URL -->">
 		<img src="<!-- tmpl_var S_PROGRAM_URL -->/img/dada_mail_logo_sm.png/" />
@@ -52,19 +51,29 @@
     </span>
     <div class="floatclear"></div>
   </div><!-- ends id="Header" -->
-  <div id="AdminContentWrapper">
+ 
 
 
+ <div id="AdminContentWrapper">
    <div id="AdminContent">
 		<!-- tmpl_var content -->
    </div><!-- ends id="AdminContent" -->
   </div><!-- ends id="AdminContentWrapper" -->
    
-   <div id="MenuWrapper">
-    <div id="Menu">     
-     <!-- tmpl_var admin_menu -->
-    </div><!-- ends id="Menu" -->
-   </div><!-- ends id="MenuWrapper" -->
-  </div><!-- ends id="AdminPageWrapper" -->
+
+ <div id="Menu">     
+  <!-- tmpl_var admin_menu -->
+ </div><!-- ends id="Menu" -->
+
+
+
+ 
+	<div id="Footer">
+		<div id="FooterPadding">
+			<p><!-- tmpl_var footer_props --></p>
+		</div>
+	</div> 
+
+
  </body>
 </html>

@@ -124,7 +124,7 @@ sub default_tmpl {
 </div>
 
 <!-- tmpl_if done --> 
-	<p class="positive"><!-- tmpl_var GOOD_JOB_MESSAGE --></p>
+	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!-- /tmpl_if --> 
 	
 

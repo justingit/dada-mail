@@ -112,7 +112,7 @@ for their HTML::Template includes.
 These document containers include the bare-minimum (X)HTML structure for 
 the document (e.g.: the doctype, head, and body), plus the general 
 structure of the type of page in question (for instance, separate #Header 
-and #Content sections for default_list_template.tmpl). 
+and #Content sections for list_template.tmpl). 
 
 A few extra <div> and <span> "wrappers" can also be found in some of 
 these templates, for CSS customization and cross-browser bugfixing 

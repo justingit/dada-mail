@@ -2164,8 +2164,8 @@ sub date_params {
 	); 
 
 C<wrap_screen> allows you to wrap either one of the two templates (currently) 
-that Dada Mail uses to wrap other template in: C<default_list_template.tmpl> and
-C<default_admin_template.tmpl>. 
+that Dada Mail uses to wrap other template in: C<list_template.tmpl> and
+C<admin_template.tmpl>. 
 
 It takes the same options as, C<screen> and adds a few of its own: 
 
@@ -2237,9 +2237,7 @@ sub wrap_screen {
 	# I need params from the first template passed. 
 	$args->{-return_params} = 1;
 	my ($tmpl, $params) = screen($args);
-	if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1 && $with eq 'list') {
-        $tmpl = $tmpl . $DADA::Template::HTML::HTML_Footer; 
-    }	
+
 	# "content" is passed to the wrapper template
 	my $vars = { 
 		content => $tmpl, 
@@ -2276,6 +2274,10 @@ sub wrap_screen {
 			$list_param = $args->{-list_settings_vars_param}->{-list}; 
 		}
 		
+		if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1 && $with eq 'list') {
+			$vars->{footer_props} = DADA::Template::HTML::HTML_Footer(); 
+	    }
+	
 		require DADA::Template::HTML; 	
 		my $template = DADA::Template::HTML::list_template(
 			%{$args->{-wrapper_params}}, # This is currently, "blank" - where is put in here - header_params? 

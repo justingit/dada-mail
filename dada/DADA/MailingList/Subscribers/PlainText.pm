@@ -110,8 +110,8 @@ sub search_list {
 			$count++;
 			
 			# This is to still count, but not return...
-			next if $count <  $args->{-start}; 
-			next if $count > ($args->{-start} + $args->{'-length'});
+	        next if $count < ( $args->{ -start } * $args->{ '-length' });
+	        next if $count > ( ( $args->{ -start } * $args->{ '-length' }) + ($args->{'-length'}) );
 	        
 			push(
 				@$r, 
@@ -325,13 +325,13 @@ sub subscription_list {
 	
 	$self->open_list_handle(-Type => $args->{-type}); 
 	while(defined($email = <LIST>)){ 
-			if($count < $args->{ -start }) { 
+			if($count < ( $args->{ -start } * $args->{ '-length' })) { 
 				$count++;
 				next; 
 			}
 	        if ( exists( $args->{'-length'} ) ) {
 				$count++;
-	            last if $count > ( $args->{ -start } + ($args->{'-length'}) );
+	            last if $count > ( ( $args->{ -start } * $args->{ '-length' }) + ($args->{'-length'}) );
 	        }
 			else { 
 			}

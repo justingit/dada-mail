@@ -311,7 +311,7 @@ sub cgi_default_tmpl {
 		<!-- /tmpl_unless --> 
 		
 		<!-- tmpl_if done -->
-			<!-- tmpl_var GOOD_JOB_MESSAGE -->
+			<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 		<!--/tmpl_if-->
 		
 <fieldset> 
