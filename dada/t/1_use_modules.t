@@ -245,7 +245,7 @@ BEGIN{ use_ok('HTML::Template::Expr'); }
 # I wish I could subclass this a little nicer: 
 BEGIN{ use_ok('HTML::Template::MyExpr'); }
 
-BEGIN{ use_ok('HTML::Pager');}
+BEGIN{ use_ok('Data::Pageset');}
 BEGIN{ use_ok('IO::Stringy'); }
 
 
