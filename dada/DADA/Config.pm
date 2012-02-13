@@ -1012,7 +1012,7 @@ not have the same IP address per session.
 Setting $REFERER_CHECK to '1' will only allow you to access admin
 screens if the referer in your web browser is whatever is set in 
 $PROGRAM_URL or $S_PROGRAM_URL. In other words, you won't be able to 
-sign in to your list control panel, then stop, check your email on 
+log in to your list control panel, then stop, check your email on 
 Yahoo! and come back to the list control panel by typing in its URL. 
 
 =cut

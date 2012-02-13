@@ -39,16 +39,25 @@ body {
 
 #Title {
 	float: right;
-	text-align: right;
+	text-align: right; /* HUH? */
 	padding-right: 10px;
-	padding-top: 20px;
+	margin-top: 20px;
 	color: #fff;
 }
+#Title img { 
+	vertical-align: bottom;
+	margin-top:-20px;
+	border:1px solid #666; 
+	margin-right:5px;
+	margin-left:5px;
+}
 #Title a {
+	font-weight: bold;
 	color: #fff;
 	text-decoration: none;
 }
 #Title a:hover {
+	font-weight: bold;
 	color: #fff;
 	text-decoration: underline;
 }
@@ -72,7 +81,8 @@ body {
 	line-height: 150%;
 }
 
-#AdminContentWrapper {
+#AdminContentWrapper,
+#ContentWrapper {
 	border-top: 1px solid #666;
 	float: left;
 	width: 100%
@@ -221,16 +231,22 @@ p.link_to_screen {
 	background-color: #fff;
 }
 
-.psuedomodalbox {
+.psuedomodalbox, 
+.profilegreeting, 
+.clearskiesbox,
+.badweatherbox {
 
+	margin-top: 10px;
+	margin-bottom: 10px;
 	margin-left: auto;
 	margin-right: auto;
 	width: 350px;
 	border: 1px solid #333; 
-	background-color: #EFEFEF;
-	color: #000;
+	background-color: #efefef;
+	color: #666;
 	text-align: left;
-	padding: 5px
+	padding: 5px;
+	font-size:.9em;
 	
 	-webkit-box-shadow: 0px 0px 10px #330033;
 	   -moz-box-shadow: 0px 0px 10px #330033;
@@ -240,6 +256,21 @@ p.link_to_screen {
 	   -moz-border-radius: 5px;
 	        border-radius: 5px;
 	
+}
+
+.profilegreeting { 
+	background:#cfc;
+	width: 500px;	
+}
+
+.clearskiesbox { 
+	background:#cbecff;
+	width: 500px;		
+}
+
+.badweatherbox { 
+	width: 500px;	
+	background: #fcc;
 }
 
 .login_message {
@@ -389,18 +420,30 @@ fieldset {
 	margin-bottom: 10px;
 	border: 1px solid black;
 	background: #ededed;
+
 }
 #AdminContent fieldset {
 	border-left: 0px;
 	border-right: 0px;
 }
 #Content fieldset {
+	margin-left: auto;
+	margin-right: auto;
 	width: 75%;
+	
+	-webkit-border-radius: 5px;
+	   -moz-border-radius: 5px;
+	        border-radius: 5px;
+	
 }
 
 #AdminContent fieldset fieldset {
 	background: #e6e6e6;
 	border: 1px solid black;
+	
+	-webkit-border-radius: 5px;
+	   -moz-border-radius: 5px;
+	        border-radius: 5px;
 }
 
 

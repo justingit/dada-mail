@@ -23,32 +23,32 @@
 		<a href="<!-- tmpl_var PROGRAM_URL -->">
 			<img src="<!-- tmpl_var S_PROGRAM_URL -->/img/dada_mail_logo_sm.png/" />
 	    </a>
-		<span id="Title">
-			<!-- tmpl_var title -->
+			<!-- tmpl_if show_profile_widget --> 
+				<!-- tmpl_var profile_widget --> 
+			<!-- /tmpl_if --> 
+
+			
 	    </span>
 	    <div class="floatclear"></div>
 	  </div><!-- ends id="Header" -->
 	
-	<div id="AdminContentWrapper">
+	<div id="ContentWrapper">
 		
    <div id="Content">	
-	<!-- tmpl_if show_profile_widget --> 
-		<!-- tmpl_var profile_widget --> 
-	<!-- /tmpl_if --> 
-	
-	<!-- tmpl_if list_settings.list --> 
-		<!-- tmpl_if subscribed_to_list --> 
-		
-			<div class="positive_greeting">
-				<p style="text-align:center" class="positive">
-					You are currently subscribed to, <!-- tmpl_var list_settings.list_name -->!
-				</p> 
-			</div> 
-		<!-- tmpl_else --> 
 
-		<!-- /tmpl_if --> 
-	<!-- /tmpl_if --> 
+	<h1><!-- tmpl_var title --></h1>
 
+		<!-- tmpl_if list_settings.list --> 
+			<!-- tmpl_if subscribed_to_list --> 
+
+				<div class="clearskiesbox">
+					<p>
+						You are currently subscribed to, <!-- tmpl_var list_settings.list_name -->!
+					</p> 
+				</div> 
+			<!-- tmpl_else --> 
+			<!-- /tmpl_if -->
+						<!-- /tmpl_if -->
 
 	
     <!-- tmpl_var content --> 

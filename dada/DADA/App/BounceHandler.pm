@@ -598,7 +598,7 @@ sub parse_bounce {
 
     # Is this from a mailing list I'm currently lookin gat?
     if ( $found_list ne $list ) {
-	  	$msg_report .= "Bounced message is from a different list. Skipping over.\n"; 
+	  	$msg_report .= "Bounced message is from a different Mailing List. Skipping over.\n"; 
         # Save it for another go.
         return ( 0, $msg_report, '' );
     }

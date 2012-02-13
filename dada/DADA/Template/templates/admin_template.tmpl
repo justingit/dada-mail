@@ -31,14 +31,14 @@
 		<img src="<!-- tmpl_var S_PROGRAM_URL -->/img/dada_mail_logo_sm.png/" />
     </a>
 	<span id="Title">
-		Signed in as
+		Logged in as
 		<!-- tmpl_if root_login --> 
 		 <strong><!-- tmpl_var PROGRAM_NAME --> Root</strong>
 		<!-- tmpl_else --> 
 			List Owner
 		<!-- /tmpl_if -->
 		of 
-		<strong><a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank"><!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)</a></strong>   
+		<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank"><!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)</a>   
 	 	
 		<!-- tmpl_if login_switch_widget --> 
 			<!-- tmpl_if root_login --> 
@@ -46,7 +46,7 @@
 				<!-- tmpl_var login_switch_widget -->
 			<!-- /tmpl_if -->
 		<!-- /tmpl_if -->
-		| <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=logout">Sign Out</a>
+		| <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=logout">Log Out</a>
 		
     </span>
     <div class="floatclear"></div>

@@ -16,7 +16,8 @@
 
 <!-- tmpl_if lists_available --> 
 
-	<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+	<br />
+	<div class="badweatherbox">
 
 	<h3>Warning!</h3> 
 	<p>
@@ -46,7 +47,7 @@
 
 
 		<div class="buttonfloat">
-		<input type="submit" value="View Your Current .dada_config Configuration" class="processing" />
+		<input type="submit" value="View Your Current .dada_config Configuration..." class="processing" />
 		</div >
 		<div class="floatclear"></div>
 		
@@ -63,7 +64,8 @@
 
 <!-- tmpl_if error_cant_read_config_dot_pm --> 
 
-	<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+	<br />
+	<div class="badweatherbox">
 
 
 	<h3>Warning!</h3>
@@ -76,11 +78,13 @@
 		file yourself. (We'll let you know where.)
 	</p>
 	</div> 
+	<br />
 
 <!-- /tmpl_if --> 
 <!-- tmpl_if error_cant_write_config_dot_pm --> 
 
-<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+<br />
+<div class="badweatherbox">
 
 
 <h3>Warning!</h3> 
@@ -92,6 +96,7 @@
 	file yourself. (We'll let you know, where.)
 </p>
 </div> 
+<br />
 <!-- /tmpl_if --> 
 
 <!-- tmpl_if comment --> 
@@ -142,7 +147,8 @@
 		</p>
 
 		<!-- tmpl_if test_complete_dada_files_dir_structure_exists --> 
-				<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+				<br />
+				<div class="badweatherbox">
 				
 				<p>
 				 <strong>
@@ -167,6 +173,7 @@
 					  
 				
 			</div> 
+			<br />
 			
 		<!-- /tmpl_if --> 
 		
@@ -343,7 +350,8 @@ If using either the SQL backends, make sure to create a new database before conf
 			<p class="error">
 				The SQL information below is correct, but there are tables in this database that correspond to the tables that <!-- tmpl_var PROGRAM_NAME --> requires.
 			</p>
-			<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+			<br />
+			<div class="badweatherbox">
 				
 			<p>
 				<input type="checkbox" name="skip_configure_SQL" id="skip_configure_SQL" value="1">
@@ -353,7 +361,8 @@ If using either the SQL backends, make sure to create a new database before conf
 				<br />
 				Use these existing tables, instead of making new ones.
 			</p>
-		</div> 
+			</div> 
+			<br />
 		
 		</li>
 	</ul><!-- /tmpl_if -->

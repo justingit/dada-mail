@@ -3,18 +3,8 @@
 <!-- tmpl_set name="title" value="Profile" --> 
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
-<script> 
-function toggleDisplay(target) {
-	if (document.getElementById){
-		var togglin = document.getElementById( target );
-		if(togglin.style.display == ""){
-			togglin.style.display = "none";
-		}else{
-			togglin.style.display = "";
-		}
-	}
-}
-
+<script type="text/javascript">
+ 
 function confirm_profile_removal(form_name) {
 		
 	
@@ -111,7 +101,7 @@ function confirm_profile_removal(form_name) {
 
 
 
-<div class="positive_greeting">
+<div class="profilegreeting">
 	<h1>
 		
 		<!-- tmpl_if gravators_enabled --> 
@@ -165,7 +155,7 @@ function confirm_profile_removal(form_name) {
 
     <!-- /tmpl_loop -->
 	<div class="buttonfloat">	
-    <input type="submit" value="Update Information" /> 
+    <input type="submit"  class="plain"  value="Update Information" /> 
 	</div>
 	<div class="floatclear"></div>
 	</form>
@@ -175,10 +165,11 @@ function confirm_profile_removal(form_name) {
 </fieldset> 
 
 
+<fieldset> 
 	
-<h1>
+<legend>
 Your Mailing List Subscriptions
-</h1> 
+</legend> 
 
 	<!-- tmpl_if has_subscriptions --> 
 
@@ -285,31 +276,17 @@ Your Mailing List Subscriptions
 	
 <!-- /tmpl_loop -->
 
-
-<!-- tmpl_if comment --> 
-
-	<!-- tmpl_if has_subscriptions --> 
-
-	<h1>Unsubscribe from ALL lists</h1> 
-
-	<form accept-charset="<!-- tmpl_var HTML_CHARSET -->"><input type="submit" value="Zoom!" /> </form> 
-
-
-	<!-- /tmpl_if -->  
-
-<!-- /tmpl_if --> 
-
-<hr /> 
+</fieldset> 
 
 
 	
 <fieldset> 
 	<legend> 
-	    <a href="#" onclick="toggleDisplay('update_profile_email');return false;">+/-</a>Update Your Profile Email Address
+	   Update Your Profile Email Address
 	   </legend>
 
 	 
-	<div id="update_profile_email" <!-- tmpl_if errors_update_email --><!-- tmpl_else -->style="display:none"<!-- /tmpl_if --> >
+	<div id="update_profile_email">
 
 <p class="alert">
 	The Profile Email Address and Subscriptions using your current email address (<!-- tmpl_var profile.email -->) 
@@ -350,7 +327,7 @@ Your Mailing List Subscriptions
         </p>
 
 	<div class="buttonfloat">	
-    <input type="submit" value="Confirm and Update Your New Profile Email Address" /> 
+    <input type="submit" class="plain" value="Confirm and Update Your New Profile Email Address" /> 
 	</div>
 	<div class="floatclear"></div>
 
@@ -368,11 +345,11 @@ Your Mailing List Subscriptions
 <fieldset> 
 	
 <legend> 
-    <a href="#" onclick="toggleDisplay('change_profile_password');return false;">+/-</a> Change Your Profile Password
+  Change Your Profile Password
    </legend>
      
 		
-<div id="change_profile_password" <!-- tmpl_if errors_change_password --><!-- tmpl_else -->style="display:none"<!-- /tmpl_if -->>
+<div id="change_profile_password">
 
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
 	<input type="hidden" name="f"        value="profile" /> 
@@ -400,7 +377,7 @@ Your Mailing List Subscriptions
        </p>
 
 	<div class="buttonfloat">	
-    <input type="submit" value="Change Password" /> 
+    <input type="submit"  class="plain"  value="Change Password" /> 
 	</div>
 	<div class="floatclear"></div>
 
@@ -418,11 +395,11 @@ Your Mailing List Subscriptions
 <fieldset> 
 
    <legend>
-    <a href="#" onclick="toggleDisplay('delete_profile');return false;">+/-</a> Delete This Profile
+ Delete This Profile
    </legend>
      
 		
-<div id="delete_profile" style="display:none">
+<div id="delete_profile">
 	
 	
 	

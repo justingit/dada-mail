@@ -415,7 +415,8 @@ sub cgi_awaiting_msgs {
     $run_list = $list;
     $verbose  = 1;
     my $popupscript = <<EOF
-<script language="JavaScript">
+
+<script type="text/javascript">
 <!-- 
 // This is the function that will open the
 // new window when the mouse is moved over the link
@@ -3924,7 +3925,7 @@ sub default_cgi_template {
 		<ul> 
 			<li>
 				<p class="error">
-					Your List Email was set to the same address as a List Owner Email address of a different list. It needs to be set to a different address. 
+					Your List Email was set to the same address as a List Owner Email address of a different Mailing List. It needs to be set to a different address. 
 				</p>
 			</li>
 		</ul>
@@ -3943,7 +3944,7 @@ sub default_cgi_template {
 	<ul> 
 		<li>
 			<p class="error">
-				Your List Email was set to the same address as the List Admin Email address of a different list. It needs to be set to a different address. 
+				Your List Email was set to the same address as the List Admin Email address of a different Mailing List. It needs to be set to a different address. 
 			</p>
 		</li>
 	</ul>

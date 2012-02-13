@@ -32,6 +32,34 @@ Membership (<!-- tmpl_var type_title -->)
 </div> 
 
 
+<!-- tmpl_if expr="(type eq 'list')" --> 
+	<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN -->
+	<!-- tmpl_else --> 
+		<!-- tmpl_if list_settings.send_subscribed_by_list_owner_message --> 
+			<div class="clearskiesbox">
+				<ul> 
+					<li>
+					 <p>
+						Addresses <strong>Subscribed</strong> will be sent a, "Welcome" message. 
+					</p> 
+				</ul> 
+			<!-- /tmpl_if --> 
+
+			<!-- tmpl_if list_settings.send_last_archived_msg_mass_mailing --> 
+			<ul> 
+				<li>
+				 <p>
+						Addresses <strong>Subscribed</strong> will be sent the latest archived message.				
+				</p> 
+			</ul>		
+		</div>
+		<!-- /tmpl_if --> 
+	<!-- /tmpl_if --> 
+<!-- /tmpl_if -->
+
+
+
+
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
 	<!-- tmpl_if going_over_quota -->
@@ -575,34 +603,6 @@ Invalid Email Addresses
 	<!-- /tmpl_if -->
 	 </div>
 	 <div class="floatclear"></div>
-
-	<!-- tmpl_if expr="(type eq 'list')" --> 
-		<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN -->
-
-		<!-- tmpl_else --> 
-
-			<!-- tmpl_if list_settings.send_subscribed_by_list_owner_message --> 
-				<ul> 
-					<li>
-					 <p class="positive">
-						Addresses <strong>Subscribed</strong> will be sent a, "Welcome" message. 
-					</p> 
-				</ul> 
-			<!-- /tmpl_if --> 
-
-			<!-- tmpl_if list_settings.send_last_archived_msg_mass_mailing --> 
-			<ul> 
-				<li>
-				 <p class="positive">
-						Addresses <strong>Subscribed</strong> will be sent the latest archived message.				
-				</p> 
-			</ul>		
-			<!-- /tmpl_if --> 
-
-
-		<!-- /tmpl_if --> 
-
-	<!-- /tmpl_if -->
 
 	
 
