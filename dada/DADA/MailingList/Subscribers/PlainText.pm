@@ -92,7 +92,7 @@ sub search_list {
 	my ($args) = @_; 
 
     if(!exists($args->{-start})){ 
-        $args->{-start} = 1;     
+        $args->{-start} = 0;     
     }
     if(!exists($args->{'-length'})){ 
         $args->{'-length'} = 100;     

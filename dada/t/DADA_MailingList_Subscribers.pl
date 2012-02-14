@@ -1522,9 +1522,7 @@ my $results     = 0;
     }
 );
 
-my @results = @$results;
-
-ok( $results->[9],   "Have 10 results ($#results)" );
+ok( $results->[9],   "Have 10 results (scalar @$results)" );
 ok( !$results->[10], "Do NOT have 11 results." );
 ok($num_results == 10, "num results = 10 ($num_results)"); 
 
@@ -1758,8 +1756,8 @@ $sub_list = $lh->subscription_list(
         -type     => 'list',
     }
 );
-ok( ( $#$sub_list + 1 ) == 100,
-    "100 subscribers were returned! (" . ( $#$sub_list + 1 ) . ")" );
+ok( ( scalar(@$sub_list) ) == 0,
+    "0 subscribers were returned! (" . ( scalar(@$sub_list) ) . ")" );
 
 # Just to be weird:
 $sub_list = $lh->subscription_list(
@@ -1769,8 +1767,8 @@ $sub_list = $lh->subscription_list(
         -type     => 'list',
     }
 );
-ok( ( $#$sub_list + 1 ) == 55,
-    "55 subscribers were returned! (" . ( $#$sub_list + 1 ) . ")" );
+ok( ( scalar(@$sub_list) ) == 0,
+    "0 subscribers were returned! (" . ( scalar(@$sub_list) ) . ")" );
 
 $sub_list = $lh->subscription_list(
     {

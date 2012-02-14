@@ -37,8 +37,6 @@
 		<!-- tmpl_if expr="(order_by eq 'email') && (order_dir eq 'desc')" -->
 			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;order_by=email;order_dir=asc;query=<!-- tmpl_var query -->">
 		<!-- /tmpl_if -->
-		
-
      <strong>
 		Email
 		</strong>
@@ -50,8 +48,6 @@
 		<!-- tmpl_if expr="(order_by eq 'email') && (order_dir eq 'desc')" -->
 			<sub>&#x25BC;</sub>
 		<!-- /tmpl_if -->     
-		
-
 	</a>
     </p>
    </td>
@@ -64,19 +60,10 @@
 		<!-- tmpl_if expr="(order_by eq name) && (order_dir eq 'asc')" -->
     		<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;order_by=<!-- tmpl_var name -->;order_dir=desc;query=<!-- tmpl_var query -->">
 		<!-- /tmpl_if -->
-		
 		<!-- tmpl_if expr="(order_by eq name) && (order_dir eq 'desc')" -->
 			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;order_by=<!-- tmpl_var name -->;order_dir=asc;query=<!-- tmpl_var query -->">
-	    	
 		<!-- /tmpl_if -->
-		
-		
-	
-	
      <strong>
-	
-
-	
 	  <!-- tmpl_if label --> 
 			<!-- tmpl_var label --> 
 	  <!-- tmpl_else --> 
@@ -91,8 +78,6 @@
 		<!-- tmpl_if expr="(order_by eq name) && (order_dir eq 'desc')" -->
 			<sub>&#x25BC;</sub>
 		<!-- /tmpl_if -->
-
-
 	</a>
     </p>
    </td>

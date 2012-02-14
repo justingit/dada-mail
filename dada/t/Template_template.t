@@ -50,7 +50,7 @@ while(defined($file = readdir TMPL)) {
 
 for my $test_file (@files) {
     html_ok( strip_comments( open_file( $dir . '/' . $test_file ) ),
-        $test_file . 'through Lint test' );
+        $test_file . ' through Lint test' );
 }
 
 

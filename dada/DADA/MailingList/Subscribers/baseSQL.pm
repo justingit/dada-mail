@@ -101,7 +101,7 @@ sub search_list {
     my ($args) = @_;
 
     if ( !exists( $args->{-start} ) ) {
-        $args->{-start} = 1;
+        $args->{-start} = 0;
     }
     if ( !exists( $args->{'-length'} ) ) {
         $args->{'-length'} = 100;
@@ -141,7 +141,7 @@ sub search_list {
 
         $count++;
         next if $count < ( $args->{ -start } * $args->{ '-length' });
-        next if $count > ( ( $args->{ -start } * $args->{ '-length' }) + ($args->{'-length'}) );
+        next if $count >  ( $args->{ -start } * $args->{ '-length' }) + ($args->{'-length'}) ;
 
         my $info = {};
         $info->{email} = $row->{email};

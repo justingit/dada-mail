@@ -119,7 +119,7 @@ my $email = 'this@example.com';
 $q->param('email', $email); 
 $q->param('list',  $list );
 
-$regex = '<h1>Please confirm your mailing list subscription</h1>';
+$regex = '<h1>Please Confirm Your Mailing List Subscription</h1>';
 like($dap->subscribe({-cgi_obj => $q,}), qr/$regex/); 
 
 my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
@@ -184,7 +184,7 @@ $q->param('email', '');
 	$q->param('email', $email); 
 	$q->param('list', $list); 
 
-	$regex = '<h1>Please confirm your mailing list subscription</h1>';
+	$regex = '<h1>Please Confirm Your Mailing List Subscription</h1>';
 	like($dap->subscribe({-cgi_obj => $q,}), qr/$regex/, 'subscribe');
 
 	my $confirm_email = slurp($mh->test_send_file); 
@@ -232,7 +232,7 @@ $q->param('email', '');
 
 	$q->param('pin', $pin);
 	
-	$regex = quotemeta('<h1>Subscription is successful!</h1>'); 
+	$regex = quotemeta('<h1>Your Mailing List Subscription is Successful</h1>'); 
 	like($dap->confirm({-cgi_obj => $q}), qr/$regex/);
 
 	ok($lh->check_for_double_email(-Email => $email, -Type => 'list'), 'check_for_double_email'); 
@@ -296,7 +296,7 @@ undef $log;
 	
 # Step #3: Unsubscribe: 
 
-	$regex = '<h1>Please confirm your mailing list unsubscription</h1>';
+	$regex = '<h1>Please Confirm Your Mailing List Unsubscription</h1>';
 	like($dap->unsubscribe({-cgi_obj => $q,}), qr/$regex/);
 	ok($lh->check_for_double_email(-Email => $email, -Type => 'unsub_confirm_list'), 'check_for_double_email'); 
 
@@ -357,7 +357,7 @@ undef $log;
 
 	$q->param('pin', $pin); 
 	
-	$regex = '<h1>You have been unsubscribed from the list:';
+	$regex = '<h1>Unsubscription is Successful</h1>';
 	like($dap->unsub_confirm({-cgi_obj => $q,}), qr/$regex/);
 	ok($lh->check_for_double_email(-Email => $email, -Type => 'unsub_confirm_list') == 0, 'check_for_double_email'); 
 	ok($lh->check_for_double_email(-Email => $email, -Type => 'list') == 0, 'check_for_double_email');
@@ -412,8 +412,8 @@ like($dap->unsubscribe({-cgi_obj => $q,}), qr/$regex/, "Got the, error_not_subsc
 # Now, we're going to do the same, but let's turn the email-notification stuff on: 
 $q->param('email', 'notsubscribed2@example.com'); 
 $ls->param('email_you_are_not_subscribed_msg', 1);
-$regex = 'Please confirm your mailing list unsubscription';
-like($dap->unsubscribe({-cgi_obj => $q,}), qr/$regex/, "Please confirm your mailing list unsubscription in the browser!"); 
+$regex = 'Please Confirm Your Mailing List Unsubscription';
+like($dap->unsubscribe({-cgi_obj => $q,}), qr/$regex/, "Please Confirm Your Mailing List Unsubscription"); 
 $regex = 'You Are Not Subscribed'; # or, whatever. 
 like(slurp($mh->test_send_file), qr/$regex/, "Got the, You Are Not Subscribed message!"); 
 unlink($mh->test_send_file);
@@ -435,8 +435,8 @@ like($foo, qr/$regex/, "Got the, error_not_subscribed_screen template in browser
 # Now, we're going to do the same, but let's turn the email-notification stuff on: 
 $q->param('email', 'notsubscribed4@example.com'); 
 $ls->param('email_you_are_not_subscribed_msg', 1);
-$regex = 'Please confirm your mailing list unsubscription';
-like($dap->unsubscribe({-cgi_obj => $q,}), qr/$regex/, "Please confirm your mailing list unsubscription in the browser!"); 
+$regex = 'Please Confirm Your Mailing List Unsubscription';
+like($dap->unsubscribe({-cgi_obj => $q,}), qr/$regex/, "Please Confirm Your Mailing List Unsubscription"); 
 $regex = 'You Are Not Subscribed'; # or, whatever. 
 like(slurp($mh->test_send_file), qr/$regex/, "Got the, You Are Not Subscribed message!"); 
 unlink($mh->test_send_file);
