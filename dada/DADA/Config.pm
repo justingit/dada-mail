@@ -4151,9 +4151,7 @@ Shown when a request to subscribe is successful.
 
 $HTML_CONFIRMATION_MESSAGE ||= <<EOF
 
-<!-- tmpl_set name="title" value="Please Confirm Your Subscription" --> 
-
-<h1>Please confirm your mailing list subscription</h1>  
+<!-- tmpl_set name="title" value="Please Confirm Your Mailing List Subscription" --> 
 
 <p>An email message has been sent to the following address:</p>
 
@@ -4241,9 +4239,7 @@ Shown when a request to unsubscribe is successful.
 
 $HTML_UNSUB_CONFIRMATION_MESSAGE ||= <<EOF
 
-<!-- tmpl_set name="title" value="Please Confirm Your Unsubscription" -->
-
-<h1>Please confirm your mailing list unsubscription</h1>  
+<!-- tmpl_set name="title" value="Please Confirm Your Mailing List Unsubscription" -->
 
 <p>An email message has been sent to the following address:</p>
 
@@ -4298,9 +4294,7 @@ Shown when a subscription is successful.
 
 $HTML_SUBSCRIBED_MESSAGE ||= <<EOF 
 
-<!-- tmpl_set name="title" value="Subscription Successful" -->
-
-<h1>Subscription is successful!</h1>
+<!-- tmpl_set name="title" value="Your Mailing List Subscription is Successful" -->
 
 <p>You are now subscribed to the following mailing list:</p>
 
@@ -4337,9 +4331,7 @@ I<(List-centric, editable per list)>
 
 $HTML_SUBSCRIPTION_REQUEST_MESSAGE ||= <<EOF 
 
-<!-- tmpl_set name="title" value="Subscription Request Successful" -->
-
-<h1>Your Request For Subscription is Complete</h1>
+<!-- tmpl_set name="title" value="Your Request For Subscription is Complete" -->
 
 <p>The list owner for:</p>
 
@@ -4381,9 +4373,7 @@ Shown when an unsubscription is successful.
 
 $HTML_UNSUBSCRIBED_MESSAGE ||= <<EOF  
 
-<!-- tmpl_set name="title" value="Unsubscription Successful" --> 
-
-<h1>You have been unsubscribed from the list: <!-- tmpl_var list_settings.list_name --></h1>
+<!-- tmpl_set name="title" value="Unsubscription is Successful" --> 
 
 <p>The email address:</p>
 
@@ -5149,8 +5139,8 @@ and to say that you've got the freshest tools on the Web.
 
 
 
-$VERSION = 4.10.0; 
-$VER     = '4.10.0 Alpha 1 - 2/6/11';
+$VERSION = 5.0.0; 
+$VER     = '5.0.0 Beta 1 - 2/14/11';
 
 
 #

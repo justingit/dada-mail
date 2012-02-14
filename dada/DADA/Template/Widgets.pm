@@ -215,8 +215,18 @@ else {
 	$Global_Template_Variables{template_oldstyle_backwards_compatibility} = 0; 
 }
 
-
-
+if($Global_Template_Variables{PROGRAM_URL} eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
+	require CGI;
+	my $q = CGI->new;  
+	$Global_Template_Variables{PROGRAM_URL} = $q->url; 
+	# Well, what if we're running as the installer?
+	if($Global_Template_Variables{PROGRAM_URL} =~ m/installer\/install\.cgi$/){ 
+		$Global_Template_Variables{PROGRAM_URL} =~ s{installer\/install\.cgi}{mail.cgi};
+	}
+}
+if($Global_Template_Variables{S_PROGRAM_URL} eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
+	$Global_Template_Variables{S_PROGRAM_URL} = $Global_Template_Variables{PROGRAM_URL}; 
+}
 my %Global_Template_Options = (
 		# DEV: Dude, it's no wonder any templates are ever found.  		
 		path              => [
@@ -985,9 +995,7 @@ sub login_switch_widget {
 							  -method => "post",
 							  -style => 'display:inline;margin:0px',
 							  ) . 
-			   $q->popup_menu( -class => 'small_input',
-							   -style   => 'width:75px', 
-							  -name    => 'change_to_list', 
+			   $q->popup_menu(-name    => 'change_to_list', 
 							  -value   => [@lists], 
 							  -default => $args->{-list},
 							  -labels  => {%label}, 

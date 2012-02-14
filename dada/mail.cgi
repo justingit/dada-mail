@@ -6888,9 +6888,9 @@ sub text_list {
 
     my $email;
 
-	my $header  = 'Content-disposition: attachement; filename=' . $list . '-' . $type . '.csv' .  "\n"; 
+	my $header  = 'Content-Disposition: attachement; filename="' . $list . '-' . $type . '.csv"' .  "\n"; 
 	   $header .= 'Content-type: text/csv' . "\n\n"; 
-	
+		
 	print $header; 
 		
 	    $lh->print_out_list(
@@ -8400,10 +8400,10 @@ sub login {
                               -nph     => $DADA::Config::NPH,
                               -Refresh =>'0; URL=' . $referer);
 
-            print $q->start_html(-title=>'Logging On...',
+            print $q->start_html(-title=>'Logging in...',
                                  -BGCOLOR=>'#FFFFFF'
                                 );
-            print $q->p($q->a({-href => $referer}, 'Logging On...'));
+            print $q->p($q->a({-href => $referer}, 'Logging in...'));
             print $q->end_html();
 
             $dada_session->remove_old_session_files();
@@ -9783,10 +9783,10 @@ sub profile_login {
 			);
 
             print $q->start_html(
-				-title=>'Logging On...',
+				-title=>'Logging in...',
                 -BGCOLOR=>'#FFFFFF'
             );
-            print $q->p($q->a({-href => $DADA::Config::PROGRAM_URL . '/profile/'}, 'Logging On...'));
+            print $q->p($q->a({-href => $DADA::Config::PROGRAM_URL . '/profile/'}, 'Logging in...'));
             print $q->end_html();
 			return;
 		}
@@ -10413,10 +10413,10 @@ sub profile_update_email {
                 -Refresh =>'0; URL=' . $DADA::Config::PROGRAM_URL . '/profile/'
 			);
             print $q->start_html(
-				-title=>'Logging On...',
+				-title=>'Logging in...',
                 -BGCOLOR=>'#FFFFFF'
             );
-            print $q->p($q->a({-href => $DADA::Config::PROGRAM_URL . '/profile/'}, 'Logging On...'));
+            print $q->p($q->a({-href => $DADA::Config::PROGRAM_URL . '/profile/'}, 'Logging in...'));
             print $q->end_html();
 			return;
 

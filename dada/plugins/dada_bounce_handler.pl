@@ -297,12 +297,12 @@ sub cgi_default_tmpl {
  
 		<!-- tmpl_unless plugin_configured --> 
 		
-			<div style="background:#fcc;margin:5px;padding:5px;text-align:center;border:2px #ccc dotted">
-			  <h1>
+			<div class="badweatherbox">
+			  <p><strong>
 			   Warning! <!-- tmpl_var Plugin_Name --> Not Configured!
-			  </h1> 
+			  </strong></p> 
 	
-			<p class="error">
+			<p>
 			 You must set up the Bounce Handler Email Address in the plugin-specific configuration. 
 			</p> 
 	 		

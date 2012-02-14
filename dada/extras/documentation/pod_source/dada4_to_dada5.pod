@@ -1,0 +1,35 @@
+=pod
+
+=head1 Dada Mail 4 to Dada Mail 5 Upgrade Guide
+
+=head1 Database Schema
+
+There are no changes in any of the database schemas between Dada Mail 4 and Dada Mail 5. 
+
+Upgrading is fairly straightforward, with no need for any Dada Mail 4 to Dada Mail 5 upgrade scripts. 
+
+=head1 Template Changes
+
+There has been considerable changes in the Dada Mail Templates (files that live in, I<dada/DADA/Template/templates>)
+
+=head2 Default List Template and Admin Template Name Changes
+
+The default list template has been renamed: C<list_template.tmpl> (from, C<default_list_template.tmpl>)
+
+The default admin template has been renamed: C<admin_template.tmpl> (from, C<default_admin_template.tmpl>)
+
+Both of these templates have been redesigned.
+
+=head2 css Files Moved to, templates/css
+
+css files Dada Mail uses are now in, I<dada/DADA/Template/templates/css>
+
+C<default_css.css> has been renamed to, C<default.css>
+
+=head2 Javascript Files Moved to, templates/js
+
+Javascript files Dada Mail uses are now in, I<dada/DADA/Template/templates/js>
+
+=head2 image files have been moved to, template/img
+
+image files Dada Mail uses are now in, I<dada/DADA/Template/templates/img>

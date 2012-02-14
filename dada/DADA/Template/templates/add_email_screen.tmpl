@@ -63,11 +63,13 @@ Membership (<!-- tmpl_var type_title -->)
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
 	<!-- tmpl_if going_over_quota -->
-		<p class="error">
-		 Warning! You cannot subscribe all the addresses that you have submitted,
-		 since you will go over your subscription limit of <!-- tmpl_var list_settings.subscription_quota -->
-		 subscribers. Please resubmit a smaller number of addresses to subscribe.
-		</p>
+		 <div class="clearskiesbox">
+			<p>
+			 Warning! You cannot subscribe all the addresses that you have submitted,
+			 since you will go over your subscription limit of <!-- tmpl_var list_settings.subscription_quota -->
+			 subscribers. Please re-submit a smaller number of addresses to subscribe.
+			</p>
+		</div>
 	<!--/tmpl_if-->
 <!-- /tmpl_if --> 
 
@@ -75,8 +77,8 @@ Membership (<!-- tmpl_var type_title -->)
 <!-- tmpl_if expr="(type eq 'list')" --> 
 	<!-- tmpl_if list_settings.closed_list -->
 		<!-- tmpl_unless list_settings.enable_mass_subscribe -->
-		 <div style="background:#fcc;margin:5px;padding:5px;text-align:center">
-		 <h1>Warning!</h1> 
+		 <div class="clearskiesbox">
+		 <p><strong>Warning!</strong></p> 
 		 <p>
 		 	You currently have a <strong>Closed List</strong> and subscribing members via the list 
 			control panel is <strong>Disabled</strong>. Subscribers will not be able to 

@@ -3,14 +3,14 @@
 <!-- tmpl_set name="title" value="<!-- tmpl_var list_settings.list_name -->" -->
 
 <!-- tmpl_include name="list_breadcrumbs_widget.tmpl" -->
-<h1>
- <!-- tmpl_var name="list_settings.list_name" -->
-</h1>
 
 <!-- tmpl_if error_no_email --> 
-    <p class="error">
+
+	<div class="badweatherbox">
+    <p>
      Please fill in your email address in the form below:
     </p>
+	</div>
 <!--/tmpl_if--> 
 
 <!-- tmpl_var subscription_form --> 

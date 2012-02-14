@@ -1,12 +1,12 @@
 
 /* ----- GENERAL ----- */
-html { 
+html {
 	margin: 0;
-	padding: 0	
+	padding: 0
 }
 body {
 	margin: 0;
-	padding: 0;	
+	padding: 0;
 	background-color: #fff;
 	font-family: helvetic,arial,san-serif;
 	line-height: 1.50em;
@@ -17,11 +17,12 @@ body {
 /* ----- IDS: General Page Layout ----- */
 
 /* non-admin */
-#PageWrapper {}
+#PageWrapper {
+}
 
 #Header {
 	min-width: 800px;
-	height: 50px;
+	min-height: 50px;
 	margin: 0 auto; /* page centering for all but IE */
 	padding:0px;
 	background-color: #669999; /* 99cc99 */
@@ -44,12 +45,12 @@ body {
 	margin-top: 20px;
 	color: #fff;
 }
-#Title img { 
+#Title img {
 	vertical-align: bottom;
-	margin-top:-20px;
-	border:1px solid #666; 
-	margin-right:5px;
-	margin-left:5px;
+	margin-top: -20px;
+	border: 1px solid #666;
+	margin-right: 5px;
+	margin-left: 5px;
 }
 #Title a {
 	font-weight: bold;
@@ -64,18 +65,18 @@ body {
 
 /* non-admin */
 #Content {
-	padding-left:50px; 
-	padding-right:50px;
-	padding-top:20px;
-	padding-bottom:20px;
+	padding-left: 50px;
+	padding-right: 50px;
+	padding-top: 20px;
+	padding-bottom: 20px;
 }
 
-#Menu {	
+#Menu {
 	margin-left: -100%;
-	float:left;
+	float: left;
 	width: 199px;
 	padding: 0;
-	border-right:1px solid #666;
+	border-right: 1px solid #666;
 	background-color: #fff;
 	text-align: left;
 	line-height: 150%;
@@ -86,7 +87,6 @@ body {
 	border-top: 1px solid #666;
 	float: left;
 	width: 100%
-	
 }
 #AdminContent {
 	margin-left: 200px;
@@ -96,12 +96,11 @@ body {
 #Footer {
 	border-top: 1px solid #666;
 	background-color: #669999;
-	height:50px;
+	height: 50px;
 	color: #fff;
 	font: 1.1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 	text-shadow: 1px 1px 2px #330033;
-	clear:both;
-	
+	clear: both;
 }
 
 #Footer a {
@@ -114,8 +113,8 @@ body {
 }
 
 
-#FooterPadding { 
-	padding:5px;
+#FooterPadding {
+	padding: 5px;
 }
 
 
@@ -123,32 +122,6 @@ body {
 
 
 
-#list_type_switcher div {
-	font-family: 'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;
-	float: left;
-	margin-right: 2px;
-	width: 150px;
-	border: 1px solid #000;
-	background-color: #ededed;
-	text-align: center;
-}
-
-#list_type_switcher div a,
-#list_type_switcher div span {
-	padding: 8px 0;
-	/* these next two make the entire "button" clickable: */
-	display:block; /* Moz, etc. */
-	width:150px; /* IE */
-}
-
-#list_type_switcher div span {
-	background-color: #fff;
-	font-weight: bold;
-}
-
-#list_type_switcher div a:hover {
-	background-color: #e6e6e6;
-}
 
 /* ----- IDS: Widgets/Other ----- */
 
@@ -231,45 +204,35 @@ p.link_to_screen {
 	background-color: #fff;
 }
 
-.psuedomodalbox, 
-.profilegreeting, 
+.psuedomodalbox,
 .clearskiesbox,
 .badweatherbox {
-
 	margin-top: 10px;
 	margin-bottom: 10px;
 	margin-left: auto;
 	margin-right: auto;
 	width: 350px;
-	border: 1px solid #333; 
+	border: 1px solid #333;
 	background-color: #efefef;
 	color: #666;
 	text-align: left;
 	padding: 5px;
-	font-size:.9em;
-	
+	font-size: .9em;
 	-webkit-box-shadow: 0px 0px 10px #330033;
-	   -moz-box-shadow: 0px 0px 10px #330033;
-	        box-shadow: 0px 0px 10px #330033;
-	
+	-moz-box-shadow: 0px 0px 10px #330033;
+	box-shadow: 0px 0px 10px #330033;
 	-webkit-border-radius: 5px;
-	   -moz-border-radius: 5px;
-	        border-radius: 5px;
-	
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 }
 
-.profilegreeting { 
-	background:#cfc;
-	width: 500px;	
+.clearskiesbox {
+	background: #cbecff;
+	width: 500px;
 }
 
-.clearskiesbox { 
-	background:#cbecff;
-	width: 500px;		
-}
-
-.badweatherbox { 
-	width: 500px;	
+.badweatherbox {
+	width: 500px;
 	background: #fcc;
 }
 
@@ -359,19 +322,19 @@ code, pre {
 /* ----- LINKS ----- */
 
 a {
-	text-decoration:none;
+	text-decoration: none;
 }
 
 a:link {
-	color:#339;
+	color: #339;
 }
 
 a:visited {
-	color:#03c;
+	color: #03c;
 }
 
 a:hover {
-	color:#33c;
+	color: #33c;
 }
 
 a:active {
@@ -420,7 +383,6 @@ fieldset {
 	margin-bottom: 10px;
 	border: 1px solid black;
 	background: #ededed;
-
 }
 #AdminContent fieldset {
 	border-left: 0px;
@@ -430,20 +392,17 @@ fieldset {
 	margin-left: auto;
 	margin-right: auto;
 	width: 75%;
-	
 	-webkit-border-radius: 5px;
-	   -moz-border-radius: 5px;
-	        border-radius: 5px;
-	
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 }
 
 #AdminContent fieldset fieldset {
 	background: #e6e6e6;
 	border: 1px solid black;
-	
 	-webkit-border-radius: 5px;
-	   -moz-border-radius: 5px;
-	        border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 }
 
 
@@ -454,34 +413,31 @@ legend {
 	font-size: 1.15em;
 }
 
-input, select {
+input[type="text"],
+select,
+textarea {
 	margin: 3px;
 	padding: 3px;
 	border-width: 1px;
 	border-style: solid;
 	border-color: #666 #999 #ccc #999;
-	font-family: "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 	font-size: 1em;
+	font-family: Helvetica,Verdana,Arial,sans-serif;
 }
+#Header select { 
+	font: .9em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	width:150px;
+	background-color: #efefef;
+	margin:0px;
+	padding:0px;
+}
+
 .small_input {
 	margin: 2px;
 	padding: 2px;
-	border-width: 1px;
-	border-style: solid;
-	border-color: #666 #999 #ccc #999;
-	font-family: "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 	font-size: .9em;
 }
 
-
-/* removes checkbox/radio-button borders in IE 5.0+: */
-/* (commented out for validation, uncomment to apply)
-input {
-border: expression(this.type=="checkbox"? 'none':
-this.type=="radio"? 'none':
-'1px solid #000');
-}
-*/
 
 input.full {
 	margin-top: -5px;
@@ -492,28 +448,43 @@ input.midi {
 	margin-top: -5px;
 }
 
-
-
-
 textarea {
 	padding: 10px;
 	width: 95%;
-	border-width: 1px;
-	border-style: solid;
-	border-color: #666 #999 #ccc #999;
-	font-family: Helvetica,Verdana,Arial,sans-serif;
-	font-size: 1em;
 	color: #333;
 }
 
+
+/* affects buttons only: */
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+button,
+input.plain,
+input.processing,
+input.cautionary,
+input.alertive,
+input.help,
 input.small_button {
+	margin:3px;
+	padding:3px;
+	border-width: 1px;
+	font: 1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	color: #333;
+	border-color: #ccc #999 #666 #999;
 	background-color: #ededed;
+	
+}
+
+input.small_button {
 	margin: 1px;
 	padding: 2px;
-	border-width: 1px;
-	border-style: solid;
-	border-color: #ccc #999 #666 #999;
-	font: .9em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	font-size: .9em;
+}
+
+#Header input.small_button { 
+	padding-top: 1px;
+	padding-bottom: 1px;
 }
 
 input.small_button:hover,
@@ -525,58 +496,29 @@ input.help:hover {
 	background-color: #ffe1af;
 }
 
-/* affects buttons only: */
-input.plain,
-input.processing,
-input.cautionary,
-input.alertive,
-input.help {
-	font: 1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
-	color: #000;
-	border-color: #ccc #999 #666 #999;
+input.processing {
+	background-color: #9f9;
+	color: #333;
 }
-
-
-
-input.plain {
-	background-color: #ededed;
-	/*color:#000;*/
-	border-color:#ccc #999 #666 #999;
+input.cautionary {
+	background-color: #ff9;
 	color: #333;
 }
 
-input.processing {
-/*background-color:#9c9;*/
-background-color:#9f9;
-color: #333;
-}
-input.cautionary {
-/* background-color:#ffc; */
-background-color:#ff9;
-color: #333;
-}
-
 input.alertive {
-/* background-color:#f66; */
-background-color:#f33;
-color: #fcc;
+	background-color: #f33;
+	color: #fcc;
 }
 
 input.help {
-/*background-color:#9c9;*/
-background-color:#fcf;
-color: #333;
+	background-color: #fcf;
+	color: #333;
 }
 
 input.disabled {
 	color: #999;
 	background-color: #ccc;
 	border: 1px solid black;
-}
-
-/* IE doesn't understand this: */
-input:focus,
-textarea:focus {
 }
 
 div.buttonfloat {
@@ -838,8 +780,7 @@ li.archive_badges_li {
 #navcontainer ul ul a.menu_disabled:link,
 #navcontainer ul ul a.menu_disabled:visited,
 #navcontainer ul ul a.menu_disabled:hover,
-#navcontainer ul ul a.menu_disabled:active 
- {
+#navcontainer ul ul a.menu_disabled:active {
 	color: #ccc;
 	font-style: italic;
 }

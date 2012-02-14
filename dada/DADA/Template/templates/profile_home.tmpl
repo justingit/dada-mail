@@ -3,6 +3,32 @@
 <!-- tmpl_set name="title" value="Profile" --> 
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
+<p style="text-align:right"> 
+	[ <a href="<!-- tmpl_var PROGRAM_URL -->/profile_logout/">Logout</a>]
+</p>
+
+<div class="clearskiesbox">
+	<h1>
+		
+		<!-- tmpl_if gravators_enabled --> 
+			<!-- tmpl_if gravatar_img_url --> 
+			
+					<a href="http://gravatar.com/" target="_blank">
+						<img src="<!-- tmpl_var gravatar_img_url -->" style="float:left; padding:5px;padding-top:0px;border:0px" />
+					</a>
+		
+			<!-- /tmpl_if -->
+		<!-- /tmpl_if -->
+				
+		Hello, <!-- tmpl_var profile.email -->!
+		
+	</h1> 
+
+<div class="floatclear"></div>
+
+</div>
+
+
 <script type="text/javascript">
  
 function confirm_profile_removal(form_name) {
@@ -21,22 +47,24 @@ function confirm_profile_removal(form_name) {
 
 </script> 
 
-<p style="text-align:right"> 
-	[ <a href="<!-- tmpl_var PROGRAM_URL -->/profile_logout/">Logout</a>]
-</p>
+
 
 
 <!-- tmpl_if welcome --> 
-	<p class="alert">
+	<div class="clearskiesbox">
+	<p>
 	 Welcome to your profile home. From here, you may subscribe/unsubscribe 
 	 to the available mailing lists, as well as update your subscription 
 	information.
 	</p> 
+	</div> 
 <!-- /tmpl_if --> 
 <!-- tmpl_if edit --> 
-	<p class="positive">
+	<div class="clearskiesbox">
+	<p>
 		Your changes have been saved!
 	</p> 
+	</div>
 <!-- /tmpl_if --> 
 
 
@@ -45,54 +73,54 @@ function confirm_profile_removal(form_name) {
 
 
 <!-- tmpl_if errors --> 
-	<p class="error"> 
-		There was an error with your last request:
+	<div class="badweatherbox">
+	<p> 
+		<strong>There was an error with your last request:</strong>
 	</p> 
-<!-- /tmpl_if --> 
 
-
-
-<!-- tmpl_if errors_change_password --> 
-	<p class="error">Changing Your Password:</p>
-	<ul> 
-		<li>
-		<p class="error">
-			Make sure that you re-typed your password correctly. 
-		</p>
-	</li> 
-	</ul> 
-
-<!-- /tmpl_if -->
-
-
-
-<!-- tmpl_if errors_update_email --> 
-	
-	<p class="error">
-		Update Your Profile Email: 
-	</p>
-	<ul> 
-	<!-- tmpl_if error_invalid_email --> 
-		<li>
-			<p class="error"> 
-			The email address you submitted is not valid.
-		</p>
+	<!-- tmpl_if errors_change_password --> 
+		<p>Your Password:</p>
+		<ul> 
+			<li>
+			<p>
+				Make sure that you re-typed your password correctly. 
+			</p>
 		</li> 
+		</ul> 
+
+	<!-- /tmpl_if -->
+
+
+
+	<!-- tmpl_if errors_update_email --> 
+	
+		<p>
+			Update Your Profile Email: 
+		</p>
+		<ul> 
+		<!-- tmpl_if error_invalid_email --> 
+			<li>
+				<p> 
+				The email address you submitted is not valid.
+			</p>
+			</li> 
 		 
-	<!-- /tmpl_if --> 
+		<!-- /tmpl_if --> 
 	
-	<!-- tmpl_if error_profile_exists --> 
-		<li>
+		<!-- tmpl_if error_profile_exists --> 
+			<li>
 			
-		 <p class="error"> 
-		 	A Profile already exists for the email address, <!-- tmpl_var updated_email -->.
-		 </p>
-		</li> 
+			 <p> 
+			 	A Profile already exists for the email address, <!-- tmpl_var updated_email -->.
+			 </p>
+			</li> 
 		
-	<!-- /tmpl_if --> 
-	</ul> 
+		<!-- /tmpl_if --> 
+		</ul> 
 
-<!-- tmpl_else --> 
+	<!-- /tmpl_if --> 
+
+</div>
 
 <!-- /tmpl_if --> 
 
@@ -101,28 +129,6 @@ function confirm_profile_removal(form_name) {
 
 
 
-<div class="profilegreeting">
-	<h1>
-		
-		<!-- tmpl_if gravators_enabled --> 
-			<!-- tmpl_if gravatar_img_url --> 
-			
-					<a href="http://gravatar.com/" target="_blank">
-						<img src="<!-- tmpl_var gravatar_img_url -->" style="float:left; padding:5px;padding-top:0px;border:0px" />
-					</a>
-		
-			<!-- /tmpl_if -->
-		<!-- /tmpl_if -->
-				
-		Hello, <!-- tmpl_var profile.email -->!
-		
-	</h1> 
-
-
-
-<div class="floatclear"></div>
-
-</div> 
 
 
 <!-- tmpl_if subscriber_fields --> 
