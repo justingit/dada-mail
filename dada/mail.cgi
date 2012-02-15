@@ -143,7 +143,7 @@ use CGI::Carp qw(fatalsToBrowser set_message);
 $|++;
 
 
-use DADA::Config 4.0.0;
+use DADA::Config 5.0.0;
 
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
@@ -571,7 +571,8 @@ sub run {
 	'subscription_requests'      =>    \&subscription_requests,
 	'remove_all_subscribers'     =>    \&remove_all_subscribers,
 	'view_list_options'          =>    \&list_cp_options,
-	'membership'            =>    \&membership,
+	'membership'                 =>    \&membership,
+	'mailing_list_history'       =>    \&mailing_list_history, 
 	'add'                        =>    \&add,
 	'check_status'               =>    \&check_status,
 	'email_password'             =>    \&email_password,
@@ -3420,12 +3421,11 @@ sub membership {
     );
 
     $list = $admin_list;
-
-    my $page      = $q->param('page')                || 1;
-    my $query     = xss_filter( $q->param('query') ) || undef;
-    my $type      = $q->param('type');
-    my $order_by  = $q->param('order_by')            || 'email';
-    my $order_dir = $q->param('order_dir')           || 'asc';
+    my $query     = xss_filter( $q->param('query') )             || undef;
+    my $page      = xss_filter($q->param('page') )               || 1;
+    my $type      = xss_filter($q->param('type'));
+    my $order_by  = xss_filter($q->param('order_by'))            || 'email';
+    my $order_dir = xss_filter($q->param('order_dir'))           || 'asc';
 
 
     my $add_email_count                  = $q->param('add_email_count') || 0;
@@ -3453,7 +3453,7 @@ sub membership {
                 $new_fields->{$nfield} = $q->param($nfield);
             }
         }
-        $lh->membership(
+        $lh->edit_subscriber(
             {
                 -email  => $email,
                 -type   => $type,
@@ -3486,18 +3486,7 @@ sub membership {
         );
     }
 
-    require DADA::App::LogSearch;
-    my $searcher = DADA::App::LogSearch->new;
-    my $r        = $searcher->subscription_search(
-        {
-            -list  => $list,
-            -email => $email,
-        }
-    );
-	my $i;
-	for($i = 0; $i <= (scalar(@$r) - 1); $i++){ 
-		$r->[$i]->{show_email} = 0;
-	}
+	
 
     my $subscribed_to_lt = {};
     for ( @{ $lh->subscribed_to( { -email => $email } ) } ) {
@@ -3595,11 +3584,7 @@ sub membership {
 	if($subscribed_to_lt->{sub_request_list} == 1){ 
 		$subscribed_to_sub_request_list = 1; 
 		
-	}
-
-		
-	use Data::Dumper; 
-	
+	}	
 
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -3622,8 +3607,6 @@ sub membership {
                 type_title             => $type_title,
                 fields                 => $fields,
                 root_login             => $root_login,
-                history                => $r,
-				raw_history            => Dumper($r),
                 add_to_popup_menu      => $add_to_popup_menu,
                 remove_from_popup_menu => $remove_from_popup_menu,
                 remove_from_num        => scalar(@$remove_from),
@@ -3656,6 +3639,47 @@ sub membership {
     );
 
     e_print($scrn);
+}
+
+
+
+sub mailing_list_history { 
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'membership'
+    );
+    $list = $admin_list;
+	
+	my $email = xss_filter($q->param('email')); 
+
+    require DADA::App::LogSearch;
+    my $searcher = DADA::App::LogSearch->new;
+    my $r        = $searcher->subscription_search(
+        {
+            -list  => $list,
+            -email => $email,
+        }
+    );
+	my $i;
+	for($i = 0; $i <= (scalar(@$r) - 1); $i++){ 
+		$r->[$i]->{show_email} = 0;
+	}
+
+
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::screen(
+		{ 
+			-screen => 'filtered_list_activity_widget.tmpl',
+			-expr   => 1,
+			-vars   => { 
+				history => $r,
+				#raw_history            => Dumper($r),
+			},
+		}
+	); 
+	print $q->header(); 
+	print $scrn;
+
 }
 
 

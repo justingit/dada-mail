@@ -28,7 +28,7 @@ use lib qw(
 
 
 use CGI::Carp qw(fatalsToBrowser);
-use DADA::Config 4.0.0;
+use DADA::Config 5.0.0;
 
 use CGI;
 CGI->nph(1) if $DADA::Config::NPH == 1;

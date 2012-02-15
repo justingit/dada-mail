@@ -13,7 +13,7 @@ use lib qw(
 );
 
 use CGI::Carp "fatalsToBrowser";
-use DADA::Config 4.0.0 qw(!:DEFAULT);
+use DADA::Config 5.0.0 qw(!:DEFAULT);
 use DADA::Template::HTML;
 use DADA::App::Guts;
 use DADA::MailingList::Settings;

@@ -7,7 +7,7 @@ use lib qw(../ ../DADA/perllib ../../../../perl ../../../../perllib);
 use CGI::Carp qw(fatalsToBrowser); 
 
 # use some of those Modules
-use DADA::Config 4.0.0;
+use DADA::Config 5.0.0;
 use DADA::Template::HTML; 
 use DADA::Template::Widgets; 
 use DADA::App::Guts;

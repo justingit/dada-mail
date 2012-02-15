@@ -5,6 +5,14 @@ use lib qw(../../  ../../DADA/perllib);
 
 use DADA::Config qw(!:DEFAULT);  
 use DADA::App::Guts; 
+use DADA::MailingList::Settings;
+
+# Sorry - global!
+my $List_Names = {};
+foreach my $l( available_lists() ){
+	my $ls = DADA::MailingList::Settings->new({-list => $l}); 
+		$List_Names->{$l} = $ls->param('list_name');				
+}
 
 use Carp qw(croak carp);
 use Fcntl qw(	O_WRONLY	O_TRUNC		O_CREAT		);
@@ -177,14 +185,7 @@ sub log_line_report {
         bounced_list       => 'Bouncing Addresses',
     );
 
-	my $list_names = {};
-	require DADA::App::Guts; 
-	require DADA::MailingList::Settings;
-	foreach my $l( available_lists() ){
-		my $ls = DADA::MailingList::Settings->new({-list => $l}); 
-			$list_names->{$l} = $ls->param('list_name');				
-	}
-	
+	# An attempt at optimization
 	if(exists($args->{-email}) && exists($args->{-list})){ 
 		return {} if($email ne $args->{-email} && $list ne $args->{-list}); 
 	}
@@ -221,7 +222,7 @@ sub log_line_report {
     return {
         date       => $date,
         list       => $list,
-		list_name  => $list_names->{$list}, 
+		list_name  => $List_Names->{$list}, 
         ip         => $ip,
         email      => $email,
         type       => $sublist,

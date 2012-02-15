@@ -8,7 +8,7 @@ use lib qw(
 	../../../../perl 
 	../../../../perllib
 ); 
-use DADA::Config 4.0.0;
+use DADA::Config 5.0.0;
 # use some of those Modules
 use DADA::Template::HTML; 
 use DADA::App::Guts;

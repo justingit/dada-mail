@@ -8,7 +8,7 @@ use strict;
 use lib qw(../ ../DADA/perllib);
 
 use CGI::Carp qw(fatalsToBrowser); 
-use DADA::Config 4.0.0;
+use DADA::Config 5.0.0;
 # we need this for cookies things
 use CGI;
 my $q = new CGI;
