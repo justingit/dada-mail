@@ -815,6 +815,9 @@ text-decoration: none;
 .stripedtable tr.alt td {
 	background-color: #ededed;
 }
+div.alt { 
+	background-color: #ededed;	
+}
 
 .stripedtable a {
 	color: #666;

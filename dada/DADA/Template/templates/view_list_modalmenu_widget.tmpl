@@ -2,7 +2,6 @@
 
 <!-- tmpl_if expr="((add_email_count > 0) || (delete_email_count  > 0) || (black_list_add > 0) || (approved_count  > 0) || (denied_count  > 0) || (bounced_list_moved_to_list_count  > 0) || (bounced_list_removed_from_list > 0) )" --> 
 
-<br />
 <div class="clearskiesbox" id="alertbox">
 	
 	
@@ -71,7 +70,7 @@
 		<!-- tmpl_else --> 
 			<!-- tmpl_var name="bounced_list_moved_to_list_count" --> address(es) have been 
 		<!-- /tmpl_if -- >
-			moved back to your <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=list;">Subscription List</a>.
+			moved back to your <a href="javascript:change_type('list');">Subscription List</a>.
 	</p>
 <!-- /tmpl_if -->
 
@@ -83,7 +82,7 @@
 	<!-- tmpl_else --> 
 		<!-- tmpl_var name="bounced_list_removed_from_list" --> bouncing address(es) have been 
 	<!-- /tmpl_if -->
-	permanently removed from you <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=list;">Subscribers</a>.
+	permanently removed from you <a href="javascript:change_type('list');">Subscribers</a>.
 	</p>
 <!-- /tmpl_if -->
 
@@ -95,7 +94,7 @@
 			<!-- tmpl_var black_list_add --> address(es) have been
 		<!-- /tmpl_if -->
 		
-		 added to your <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=black_list">Black List</a>. 
+		 added to your <a href="javascript:change_type('black_list');">Black List</a>. 
 	</p>
 <!-- /tmpl_if -->
 
@@ -110,6 +109,5 @@
 <!-- /tmpl_if -->
 
 
-<br />
 
 <!-- end view_list_modalmenu_widget.tmpl --> 

@@ -2,7 +2,7 @@
 <div id="centeredmenu">
 		<ul>
 			<li <!-- tmpl_if EXPR="(type eq 'list')" --> class="active" <!-- /tmpl_if -->>
-				<a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->;type=list;query=<!-- tmpl_var query escape="HTML" -->">
+				<a href="javascript:change_type('list');">
 				  <span>
 					Subscribers  (<!-- tmpl_var list_subscribers_num -->)
 				  </span>
@@ -14,7 +14,7 @@
 			<!-- tmpl_if flavor_is_view_list --> 
 				<!-- tmpl_if list_settings.enable_subscription_approval_step -->
 					<li <!-- tmpl_if EXPR="(type eq 'sub_request_list')" --> class="active" <!-- /tmpl_if -->>
-					<a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->;type=sub_request_list;query=<!-- tmpl_var query escape="HTML" -->">
+					<a href="javascript:change_type('sub_request_list');">
 					  <span>
 						Subscription Requests  (<!-- tmpl_var sub_request_list_subscribers_num -->)
 					  </span>
@@ -25,7 +25,7 @@
 			
 			
 			<li <!-- tmpl_if EXPR="(type eq 'black_list')" --> class="active" <!-- /tmpl_if -->>
-			<a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->;type=black_list;query=<!-- tmpl_var query escape="HTML" -->">
+			<a href="javascript:change_type('black_list');">
 				<span>
 			   		Black List (<!-- tmpl_var black_list_subscribers_num -->)
 				</span>
@@ -35,7 +35,7 @@
 			<!-- tmpl_if list_settings.enable_white_list -->
 				<li <!-- tmpl_if EXPR="(type eq 'white_list')" --> class="active" <!-- /tmpl_if -->>
 			
-				<a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->;type=white_list;query=<!-- tmpl_var query escape="HTML" -->">
+				<a href="javascript:change_type('white_list');">
 				   <span>
 					White List (<!-- tmpl_var white_list_subscribers_num -->)
 				    </span>
@@ -45,7 +45,7 @@
 			
 			<!-- tmpl_if list_settings.enable_authorized_sending -->
 				<li <!-- tmpl_if EXPR="(type eq 'authorized_senders')" --> class="active" <!-- /tmpl_if -->>
-				  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->;type=authorized_senders;query=<!-- tmpl_var query escape="HTML" -->">
+				  <a href="javascript:change_type('authorized_senders');">
 				   <span>
 					Authorized Senders (<!-- tmpl_var authorized_senders_num -->)
 			   	  </span>
@@ -58,7 +58,7 @@
 				<!-- tmpl_if show_bounced_list -->
 				<li <!-- tmpl_if EXPR="(type eq 'bounced_list')" --> class="active" <!-- /tmpl_if -->>
 				
-					<a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->;type=bounced_list;query=<!-- tmpl_var query escape="HTML" -->">
+					<a href="javascript:change_type('bounced_list');">
 					 <span>
 						Bouncing Addresses (<!-- tmpl_var bounced_list_num -->)
 					</span>  
