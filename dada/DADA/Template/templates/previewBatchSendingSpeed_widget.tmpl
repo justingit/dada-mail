@@ -2,17 +2,28 @@
 
 <!-- tmpl_if enable_bulk_batching --> 
 <!-- tmpl_if somethings_wrong --> 
-<p class="error">
+<div class="badweatherbox">
+<p>
 	what kind of information are you giving me?!
-</p><!-- tmpl_else -->
-<p class="positive">
-	Messages will be sent at a rate of up to <strong><!-- tmpl_var per_hour --> Messages/Hour</strong> . Mailing to <strong><!-- tmpl_var num_subscribers --> subscribers</strong> will take at least <strong><!-- tmpl_var time_to_send --></strong>.
-</p><!-- /tmpl_if -->
+</p>
+</div> 
 
 <!-- tmpl_else -->
-<p class="error">
+
+<div class="clearskiesbox">
+<p>
+	Messages will be sent at a rate of up to <strong><!-- tmpl_var per_hour --> Messages/Hour</strong> . Mailing to <strong><!-- tmpl_var num_subscribers --> subscribers</strong> will take at least <strong><!-- tmpl_var time_to_send --></strong>.
+</p>
+</div>
+<!-- /tmpl_if -->
+
+<!-- tmpl_else -->
+<div class="clearskiesbox">
+<p>
 	Batch Settings will not be used.
-</p><!-- /tmpl_if -->
+</p>
+</div>
+<!-- /tmpl_if -->
 
 
 <!-- end previewBatchSendingSpeed_widget.tmpl --> 

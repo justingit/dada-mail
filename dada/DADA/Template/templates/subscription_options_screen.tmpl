@@ -13,27 +13,40 @@
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!--/tmpl_if-->
 
-<!-- tmpl_if SUBSCRIPTION_QUOTA --> 
-
-	<div class="clearskiesbox">
-    	<p>
-     	Currently, there is a Global limit of <!-- tmpl_var SUBSCRIPTION_QUOTA --> subscribers per Mailing List.
-    	</p>
-	</div>
-
-<!-- tmpl_else --> 
-
-    <p class="positive"> 
-     There are no global subscription quotas!
-    </p>
-
-<!--/tmpl_if--> 
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form">
 	
-<fieldset>
-	<legend>Subscription Options</legend>
+<fieldset> 
+	<legend>
+	Membership &#187; View
+	</legend>
+	<p>
+	 Show <!-- tmpl_var vlsn_menu --> addresses at a time, in the <strong> Membership &#187; View</strong> screen.
+	</p>
+
+</fieldset>
 	
+	
+<fieldset>
+	<legend>Subscribers</legend>
+
+	<!-- tmpl_if SUBSCRIPTION_QUOTA --> 
+
+		<div class="clearskiesbox">
+	    	<p>
+	     	Currently, there is a Global limit of <!-- tmpl_var commified_subscription_quota --> Subscribers per Mailing List.
+	    	</p>
+		</div>
+
+	<!-- tmpl_else --> 
+
+		<div class="clearskiesbox">
+	     <p>There are no Global Subscription Quotas!</p>
+	    </div>
+
+	<!--/tmpl_if--> 
+
+
 <table cellpadding="5">
  <tr>
   <td>
@@ -66,7 +79,7 @@
 
 <fieldset>
  <legend>
-	  Black List Options
+	  Black List
  </legend>
 	 <table>
 	   <tr>
@@ -146,7 +159,7 @@
 
 <fieldset>
 	 <legend>
-      White List Options
+      White List
 	 </legend>
 	 <table>
 	   <tr>

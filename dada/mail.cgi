@@ -2481,9 +2481,10 @@ sub previewBatchSendingSpeed {
 
 sub commify {
    my $input = shift;
-   $input = reverse $input;
-   $input =~ s/(\d\d\d)(?=\d)(?!\d*\.)/$1,/g;
-   return reverse $input;
+      $input = reverse($input);
+      $input =~ s/(\d\d\d)(?=\d)(?!\d*\.)/$1,/g;
+      $input = reverse($input);
+	return $input; 
 }
 
 
@@ -3045,8 +3046,9 @@ sub view_list {
                 field_names        => $field_names,
 
                 pages_in_set       => $pages_in_set,
-                num_subscribers    => $num_subscribers,
+                num_subscribers    => commify($num_subscribers),
                 total_num          => $total_num,
+				total_num_commified => commify($total_num), 
                 subscribers        => $subscribers,
                 query              => $query,
                 order_by           => $order_by,
@@ -3064,12 +3066,12 @@ sub view_list {
 
                 flavor_is_view_list => 1,
 
-				list_subscribers_num              => $lh->num_subscribers( { -type => 'list' } ),
-			     black_list_subscribers_num       =>  $lh->num_subscribers( { -type => 'black_list' } ),
-			     white_list_subscribers_num       =>  $lh->num_subscribers( { -type => 'white_list' } ),
-			     authorized_senders_num           =>  $lh->num_subscribers( { -type => 'authorized_senders' } ),
-			     sub_request_list_subscribers_num =>  $lh->num_subscribers( { -type => 'sub_request_list' } ),
-			     bounced_list_num                 =>  $lh->num_subscribers( { -type => 'bounced_list' } ),
+				 list_subscribers_num              => commify($lh->num_subscribers( { -type => 'list' } )),
+			     black_list_subscribers_num       =>  commify($lh->num_subscribers( { -type => 'black_list' } )),
+			     white_list_subscribers_num       =>  commify($lh->num_subscribers( { -type => 'white_list' } )),
+			     authorized_senders_num           =>  commify($lh->num_subscribers( { -type => 'authorized_senders' } )),
+			     sub_request_list_subscribers_num =>  commify($lh->num_subscribers( { -type => 'sub_request_list' } )),
+			     bounced_list_num                 =>  commify($lh->num_subscribers( { -type => 'bounced_list' } )),
             },
             -list_settings_vars_param => {
                 -list   => $list,
@@ -4439,6 +4441,19 @@ sub subscription_options {
             -default  => $li->{subscription_quota},
         );
 
+        my @list_amount = (
+            3, 5, 10,   25,   50,    100,   150,   200,   250,   300,
+            350,  400,  450,   500,   550,   600,   650,   700,
+            750,  800,  850,   900,   950,   1000,  2000,  3000,
+            4000, 5000, 10000, 15000, 20000, 25000, 50000, 100000
+        );
+        my $vlsn_menu = $q->popup_menu(
+            -name    => 'view_list_subscriber_number',
+            -values  => [@list_amount],
+            -default => $li->{view_list_subscriber_number}
+        );
+
+
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -4450,11 +4465,13 @@ sub subscription_options {
                 },
 
                 -vars => {
-                    screen                  => 'subscription_options',
-                    title                   => 'Subscriber Options',
-                    done                    => $done,
-                    subscription_quota_menu => $subscription_quota_menu,
-                    SUBSCRIPTION_QUOTA => $DADA::Config::SUBSCRIPTION_QUOTA,
+                    screen                       => 'subscription_options',
+                    title                        => 'Subscriber Options',
+                    done                         => $done,
+                    subscription_quota_menu      => $subscription_quota_menu,
+					vlsn_menu                    => $vlsn_menu, 
+					SUBSCRIPTION_QUOTA           => $DADA::Config::SUBSCRIPTION_QUOTA, 
+                    commified_subscription_quota => commify(int($DADA::Config::SUBSCRIPTION_QUOTA)),
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -4470,6 +4487,7 @@ sub subscription_options {
             {
                 -associate => $q,
                 -settings  => {
+                    view_list_subscriber_number          => undef,
                     use_subscription_quota               => 0,
                     subscription_quota                   => undef,
                     black_list                           => 0,
@@ -4477,7 +4495,6 @@ sub subscription_options {
                     allow_blacklisted_to_subscribe       => 0,
                     allow_admin_to_subscribe_blacklisted => 0,
                     enable_white_list => 0,
-
                 }
             }
         );
@@ -6321,17 +6338,6 @@ sub list_cp_options {
 
     if ( !$process ) {
 
-        my @list_amount = (
-            3, 5, 10,   25,   50,    100,   150,   200,   250,   300,
-            350,  400,  450,   500,   550,   600,   650,   700,
-            750,  800,  850,   900,   950,   1000,  2000,  3000,
-            4000, 5000, 10000, 15000, 20000, 25000, 50000, 100000
-        );
-        my $vlsn_menu = $q->popup_menu(
-            -name    => 'view_list_subscriber_number',
-            -values  => [@list_amount],
-            -default => $li->{view_list_subscriber_number}
-        );
 
    require DADA::Template::Widgets;
    my $scrn =   DADA::Template::Widgets::wrap_screen(
@@ -6346,7 +6352,6 @@ sub list_cp_options {
                                                -list   => $list,
                                                -vars   => {
 													screen    => 'list_cp_options',
-													vlsn_menu => $vlsn_menu,
 													done      => xss_filter($q->param('done')),
 												},
 											-list_settings_vars       => $li,
@@ -6362,7 +6367,6 @@ sub list_cp_options {
                 -associate => $q,
                 -settings  => {
                     enable_fckeditor            => 0,
-                    view_list_subscriber_number => 0,
                 }
             }
         );

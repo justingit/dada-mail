@@ -314,7 +314,7 @@ p.small {
 code, pre {
 	margin: 5px;
 	padding: 5px;
-	border: 1px dotted #666;
+	border: 1px solid #ccc;
 	background-color: #dcffd2;
 	font: .8em/1.6em Monaco,Mono,'Courier New',Courier,monospace;
 }

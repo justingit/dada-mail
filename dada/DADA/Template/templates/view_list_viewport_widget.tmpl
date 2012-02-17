@@ -4,86 +4,11 @@
 
 <!-- tmpl_include list_type_switch_widget.tmpl -->
 
-<!-- tmpl_if comment --> 
-
-
-					<!-- tmpl_if EXPR="(type eq 'list')" -->
-	
-					<!--/tmpl_if-->
-
-					<!-- tmpl_if EXPR="(type eq 'authorized_senders')" -->
-	
-						<p>
-						 This shows all email addresses that are allowed to send messages to the list (via the Dada Bridge Plugin) other than the list owner (for announce-only lists) and without moderation. 
-						</p>
-	
-					<!--/tmpl_if-->
-
-
-					<!-- tmpl_if EXPR="(type eq 'white_list')" -->
-	
-
-						<p>
-						 Your white list is a list of email addresses that are allowed to subscribe to your list.
-						</p>
-	
-					<!--/tmpl_if-->
-
-					<!-- tmpl_if EXPR="(type eq 'black_list')" -->
-
-						<p class="alert">
-						 Your Black List is a set of rules that say who is not allowed to subscribe to 
-						 your Subscribers Mailing List . You may add both complete email addresses  (you@example.com) or 
-						 part of an email address (example.com) to you Black List.</p>
-	
-						<p class="alert">Parts of addresses will match whole addresses - "example.com" will match, "you@example.com" and, "someone.else@example.com"</p>
-		
-						<!-- tmpl_if can_use_global_black_list --> 
-		
-							<!-- tmpl_if GLOBAL_BLACK_LIST -->
-			
-								<p class="positive">
-								 * The Global Black List has been enabled.
-								</p>
-			
-							<!--/tmpl_if-->
-		
-						<!--/tmpl_if-->
-	
-						<!-- tmpl_if can_use_global_unsubscribe --> 
-		
-							<!-- tmpl_if GLOBAL_UNSUBSCRIBE -->
-			
-								<p class="positive">
-								 * Global Unsubscribe has been enabled.
-								</p>
-			
-							<!--/tmpl_if-->
-		
-						<!--/tmpl_if-->
-	
-	
-					<!--/tmpl_if-->
-
-
-					<!-- tmpl_if EXPR="(type eq 'bounced_list')" -->
-	
-
-						<p>
-						 These addresses were Subscribers, that had been routinely bouncing messages. They have been moved here from your Subscribers list, after reaching the limit of message bounces.</p> 
-						<p>
-							You may either move these addresses back to your Subscribers list, or permanently remove them from your mailing list. Click on any address to view the bouncing history of that address.
-						</p>
-	
-					<!-- /tmpl_if -->
-<!-- /tmpl_if -->
-
-
 <!-- tmpl_unless total_num -->
 	
 	<!-- tmpl_if query --> 
 			<p class="alert">
-				No Results were found. <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->">Clear Search</a>
+				No Results were found.
 			</p>
 			<p><label for="query">Search Again:</label></p> 
 			<!-- tmpl_include list_search_form_widget.tmpl -->
@@ -133,7 +58,7 @@
 		    </strong>
 			of
 			<strong>
-				<!-- tmpl_var total_num --> 
+				<!-- tmpl_var total_num_commified --> 
 		   </strong>
 		
 		  for, <em><!-- tmpl_var query escape=HTML --></em>

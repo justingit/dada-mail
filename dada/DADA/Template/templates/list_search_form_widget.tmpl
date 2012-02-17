@@ -4,5 +4,11 @@
       <input type="hidden" name="f"    value="view_list" />
       <input type="hidden" name="type" value="<!-- tmpl_var type default="list" -->" />
       <input type="button" class="small_button" value="Search <!-- tmpl_var type_title escape="HTML" -->" onclick="search_list();return false;" />
+	  <!-- tmpl_if query --> 
+		<input type="button" class="small_button" value="Clear" onclick="clear_search();return false;" />
+      
+	 <!-- /tmpl_if --> 
+
+
     </form>
 <!-- end list_search_form_widget.tmpl --> 

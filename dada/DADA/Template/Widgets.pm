@@ -2250,7 +2250,7 @@ sub wrap_screen {
 	my $vars = { 
 		content => $tmpl, 
 	};
-	for(qw(title show_profile_widget)){ 
+	for(qw(title show_profile_widget load_wysiwyg_editor load_modalbox)){ 
 		if(exists($params->{$_})){ 
 			# variables within variables... 
 			$vars->{$_} = $params->{$_}; 

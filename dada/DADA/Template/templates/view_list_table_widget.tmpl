@@ -23,16 +23,16 @@
     <p>
 
 		<!-- tmpl_if expr="(order_by ne 'email')" -->
-			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;order_by=email;order_dir=asc;query=<!-- tmpl_var query -->">
+			<a href="javascript:change_order('email', 'asc');">
 		<!-- /tmpl_if --> 
 		
 		<!-- tmpl_if expr="(order_by eq 'email') && (order_dir eq 'asc')" -->
-			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;order_by=email;order_dir=desc;query=<!-- tmpl_var query -->">
+			<a href="javascript:change_order('email', 'desc');">
 		<!-- /tmpl_if --> 
 		
 		
 		<!-- tmpl_if expr="(order_by eq 'email') && (order_dir eq 'desc')" -->
-			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;order_by=email;order_dir=asc;query=<!-- tmpl_var query -->">
+			<a href="javascript:change_order('email', 'asc');">
 		<!-- /tmpl_if -->
      <strong>
 		Email
@@ -52,13 +52,13 @@
    <td>
     <p>
 	   	<!-- tmpl_if expr="(order_by ne name)" -->
-			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;order_by=<!-- tmpl_var name -->;order_dir=asc;query=<!-- tmpl_var query -->">
+			<a href="javascript:change_order('<!-- tmpl_var name escape="HTML" -->', 'asc');">
 		<!-- /tmpl_if --> 
 		<!-- tmpl_if expr="(order_by eq name) && (order_dir eq 'asc')" -->
-    		<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;order_by=<!-- tmpl_var name -->;order_dir=desc;query=<!-- tmpl_var query -->">
+    		<a href="javascript:change_order('<!-- tmpl_var name escape="HTML" -->', 'desc');">
 		<!-- /tmpl_if -->
 		<!-- tmpl_if expr="(order_by eq name) && (order_dir eq 'desc')" -->
-			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list;type=<!-- tmpl_var type -->;order_by=<!-- tmpl_var name -->;order_dir=asc;query=<!-- tmpl_var query -->">
+			<a href="javascript:change_order('<!-- tmpl_var name escape="HTML" -->', 'asc');">
 		<!-- /tmpl_if -->
      <strong>
 	  <!-- tmpl_if label --> 

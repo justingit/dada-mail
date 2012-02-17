@@ -2,7 +2,11 @@
 <div id="centeredmenu">
 		<ul>
 			<li <!-- tmpl_if EXPR="(type eq 'list')" --> class="active" <!-- /tmpl_if -->>
-				<a href="javascript:change_type('list');">
+				<!-- tmpl_if flavor_is_view_list --> 
+					<a href="javascript:change_type('list');">
+				<!-- tmpl_else --> 
+					<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=<!-- tmpl_var flavor -->;type=list">					
+				<!-- /tmpl_if -->
 				  <span>
 					Subscribers  (<!-- tmpl_var list_subscribers_num -->)
 				  </span>
@@ -13,8 +17,8 @@
 			
 			<!-- tmpl_if flavor_is_view_list --> 
 				<!-- tmpl_if list_settings.enable_subscription_approval_step -->
-					<li <!-- tmpl_if EXPR="(type eq 'sub_request_list')" --> class="active" <!-- /tmpl_if -->>
-					<a href="javascript:change_type('sub_request_list');">
+					<li <!-- tmpl_if EXPR="(type eq 'sub_request_list')" --> class="active" <!-- /tmpl_if -->> 
+						<a href="javascript:change_type('sub_request_list');">
 					  <span>
 						Subscription Requests  (<!-- tmpl_var sub_request_list_subscribers_num -->)
 					  </span>
@@ -25,7 +29,11 @@
 			
 			
 			<li <!-- tmpl_if EXPR="(type eq 'black_list')" --> class="active" <!-- /tmpl_if -->>
-			<a href="javascript:change_type('black_list');">
+			<!-- tmpl_if flavor_is_view_list -->
+				<a href="javascript:change_type('black_list');">
+			<!-- tmpl_else --> 
+				<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=<!-- tmpl_var flavor -->;type=black_list">
+			<!-- /tmpl_if -->
 				<span>
 			   		Black List (<!-- tmpl_var black_list_subscribers_num -->)
 				</span>
@@ -34,8 +42,11 @@
 			
 			<!-- tmpl_if list_settings.enable_white_list -->
 				<li <!-- tmpl_if EXPR="(type eq 'white_list')" --> class="active" <!-- /tmpl_if -->>
-			
-				<a href="javascript:change_type('white_list');">
+				<!-- tmpl_if flavor_is_view_list --> 
+					<a href="javascript:change_type('white_list');">
+				<!-- tmpl_else --> 
+					<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=<!-- tmpl_var flavor -->;type=white_list">
+				<!-- /tmpl_if -->
 				   <span>
 					White List (<!-- tmpl_var white_list_subscribers_num -->)
 				    </span>
@@ -45,7 +56,11 @@
 			
 			<!-- tmpl_if list_settings.enable_authorized_sending -->
 				<li <!-- tmpl_if EXPR="(type eq 'authorized_senders')" --> class="active" <!-- /tmpl_if -->>
-				  <a href="javascript:change_type('authorized_senders');">
+				<!-- tmpl_if flavor_is_view_list --> 
+				  	<a href="javascript:change_type('authorized_senders');">
+				<!-- tmpl_else --> 
+					<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=<!-- tmpl_var flavor -->;type=authorized_senders">
+				<!-- /tmpl_if -->
 				   <span>
 					Authorized Senders (<!-- tmpl_var authorized_senders_num -->)
 			   	  </span>

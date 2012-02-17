@@ -70,32 +70,30 @@
 </div>
 
 
-
-
-
-<!-- tmpl_include list_type_switch_widget.tmpl -->
-
-
-
 <!-- tmpl_if EXPR="(type eq 'list')" -->
 	
 	<!-- tmpl_if list_settings.use_subscription_quota -->
 		
 		<!-- tmpl_if subscription_quota_reached -->
-			
-			<p class="error">
-			 Warning! You are at or above the number of 
-			 subscribers allowed (<!-- tmpl_var list_settings.subscription_quota -->)! 
-			 You cannot add anymore subscribers.
+			<div class="badweatherbox">
+			<p>
+			 <strong>Warning!</strong>
+			<p> You are at or above the number of 
+			 Subscribers allowed (<!-- tmpl_var list_settings.subscription_quota -->)! 
+			 You may not Subscribe any more.
 			</p>
+			</div>
 			
 		<!--tmpl_else-->
-			
-			<p class="error">
-			 You have a limit of <!-- tmpl_var list_settings.subscription_quota -->
-			 subscriber(s) maximum allowed onto this list. You currently have 
-			 <!-- tmpl_var num_subscribers --> subscriber(s).
+			<div class="badweatherbox">			
+			<p>
+				<strong>Warning!</strong>
+			</p> 
+			</p>You have a limit of <!-- tmpl_var list_settings.subscription_quota -->
+			 subscriber(s) maximum allowed onto this Mailing List. You currently have 
+			 <!-- tmpl_var num_subscribers --> Subscriber(s).
 			</p>
+		</div>
 			
 		<!--/tmpl_if-->
 		
@@ -104,13 +102,23 @@
 <!--/tmpl_if-->
 
 <!-- tmpl_if list_is_closed -->
-		 <p class="error">
-		 	<strong>Disabled</strong>. You currently have a <strong>closed list</strong>.
+		<div class="badweatherbox"> 
+		<p>
+		 	<strong>Disabled</strong>.
+	 	</p>
+		<p>
+			You currently have a <strong>Closed List</strong>.
 			 </p> 
-			
-<!-- tmpl_else -->
+		</div>
+<!-- /tmpl_if --> 
 
-	<p>
+
+
+	<!-- tmpl_include list_type_switch_widget.tmpl -->
+	
+<!-- tmpl_if list_is_closed -->
+
+<!-- tmpl_else --> 
 
 	<fieldset> 
 	

@@ -1,6 +1,7 @@
 <!-- begin view_list_screen.tmpl -->
 
 <!-- tmpl_set name="title" value="Membership &#187; View" -->
+<!-- tmpl_set name="load_modalbox" value="1" -->
 
 <script type="text/javascript">
 //<![CDATA[
@@ -50,6 +51,17 @@ function search_list(){
 	Form.Element.setValue('page', 1) ; 
 	Form.Element.setValue('query', $F('search_query')) ; 
 	view_list_viewport();
+}
+function clear_search(){ 
+	Form.Element.setValue('query', '');
+		Form.Element.setValue('page', 1) ; 
+		view_list_viewport(); 
+}
+function change_order(order_by, order_dir) { 
+		Form.Element.setValue('order_by', order_by) ; 
+		Form.Element.setValue('order_dir', order_dir) ; 
+		Form.Element.setValue('page', 1) ;
+		view_list_viewport();	 
 }
 
 //]]>
