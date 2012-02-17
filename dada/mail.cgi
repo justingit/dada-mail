@@ -7416,8 +7416,8 @@ sub archive {
               $archive->_parse_in_list_info( -data => $in_reply_to_subject );
 
             # That. Sucked.
-            $header_subject      = strip( xss_filter($header_subject) );
-            $in_reply_to_subject = xss_filter($in_reply_to_subject);
+            $header_subject      = $header_subject;
+            $in_reply_to_subject = $in_reply_to_subject;
 
         }
 
