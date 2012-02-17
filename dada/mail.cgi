@@ -7480,8 +7480,8 @@ sub archive {
                     id        => $id,
 
                     # DEV. OK - riddle ME why there's two of these...
-                    header_subject => decode_he($header_subject),
-                    subject        => decode_he($subject),
+                    header_subject => $header_subject,
+                    subject        => $subject,
 
                     js_enc_subject      => js_enc($subject),
                     uri_encoded_subject => uriescape($subject),

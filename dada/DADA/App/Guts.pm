@@ -1326,39 +1326,6 @@ sub e_print { # be nice to prototype this.
 
 
 
-
-# This is also, not used very often (what *is* it for?) 
-sub decode_he { 
-
-# http://popcorn.cx/talks/beyond-ascii/
-#	HTML encode everything
-#
-#	    * charset of the page can be any one that includes ASCII
-#	    * All text that may contain non-ASCII is run through
-#
-#	        $binary = HTML::Entities::encode_entities($text)
-#
-#	    * By default this entity encodes all non-ASCII
-#	    * Page size will increase
-#	    * but the characters will be correct
-#	    * - even if the user changes it in browser
-
-	
-	my $str = shift; 
-	eval {require HTML::Entities;}; 
-	if(!$@){ 
-		$str = HTML::Entities::encode_entities($str); 
-	
-	}else{       
-		eval {require HTML::EntitiesPurePerl;}; 
-		if(!$@){ 
-	    	$str = HTML::EntitiesPurePerl::encode_entities($str); 
-		}
-	}
-	return $str;	
-	
-}
-
 =pod
 
 =head2 uriescape
