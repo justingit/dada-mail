@@ -192,7 +192,7 @@
 
 			<!-- /tmpl_if --> 
 
-			 <p class="alert"> This screen will refresh every <!-- tmpl_var refresh_after --> seconds.</p>
+			 <li><p class="alert"> This screen will refresh every <!-- tmpl_var refresh_after --> seconds.</p></li>
 
 		<!-- /tmpl_unless --> 
 
@@ -362,17 +362,20 @@
 <!--tmpl_else--> 
 
     <!-- tmpl_if killed_it -->
-	<div class="clearskiesbox">    
+    	<div class="clearskiesbox" id="alertbox">
         <p>
-         Your mailing was successfully stopped.
+         Your Mass Mailing was successfully stopped.
         </p>
-	</div>
-    
+		<div style="text-align: center;">
+
+		<input type="button" class="small_button" value="Thanks!" onClick="Effect.Fade('alertbox');" />
+		</div>
+	</div>    
     <!-- tmpl_else --> 
         
 	<div class="clearskiesbox">
         <p> 
-         This mass mailing has completed.
+         This Mass Mailing has completed.
         </p>
 	</div>
 	

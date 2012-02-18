@@ -14,14 +14,20 @@
 
 
 <!-- tmpl_if list_settings.group_list --> 
-    <p class="positive">Discussion List Support is enabled and Discussion List preferences will be honored.
+    <div class="clearskiesbox">
+		<p>Discussion List Support is enabled and Discussion List preferences will be honored.
+	</div> 
+	
 <!--/tmpl_if--> 
 
 <!-- tmpl_unless list_settings.smtp_server -->	
 	<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'"  -->
-		<p class="error">
+		<div class="badweatherbox">
+		<p>
 		 Warning! No SMTP Server has been set!
 		</p>
+	</div> 
+	
 	<!-- /tmpl_if -->
 <!-- /tmpl_unless -->
 

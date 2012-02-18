@@ -10,20 +10,44 @@
 </div>
 
 
-
- <p class="alert"> 
+<div class="clearskiesbox">
+ <p> 
   Screen will refresh every 60 seconds.
  </p>
+
+<!-- tmpl_if list_settings.auto_pickup_dropped_mailings --> 
+
+<p>
+  Auto Pickup of Dropped Mailings is enabled.
+</p> 
+
+<!-- tmpl_else --> 
+
+<p>
+ Auto Pickup of Dropped Mailings is disabled.
+</p> 
+
+<!--/tmpl_if --> 
+
+
+
+</div> 
+
 <script type="text/javascript">
   refreshpage(60, "<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor"); 
  </script> 
 
 
  <!-- tmpl_if killed_it -->
-    
-        <p class="error">
-         Your mailing was successfully stopped.
+    	<div class="clearskiesbox" id="alertbox">
+        <p>
+         Your Mass Mailing was successfully stopped.
         </p>
+		<div style="text-align: center;">
+
+		<input type="button" class="small_button" value="Thanks!" onClick="Effect.Fade('alertbox');" />
+		</div>
+	</div>
 <!-- /tmpl_if --> 
 
         
@@ -37,7 +61,6 @@ Current Mass Mailings:
 
 <!-- tmpl_if mailout_status --> 
 
- <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
     <table class="stripedtable">
      <tr> 
 	
@@ -114,7 +137,7 @@ Current Mass Mailings:
     <!-- tmpl_loop mailout_status --> 
 
     
-    	<tr style="<!-- tmpl_if integrity_check --> <!-- tmpl_if __odd__ -->background-color:#ccf;<!--/tmpl_if--><!-- tmpl_else -->style=background-color:#cc3<!-- /tmpl_if -->">
+    	<tr <!-- tmpl_if integrity_check --> <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if--><!-- tmpl_else -->style="background-color:#cc3"<!-- /tmpl_if -->>
 
 		      <td> 
 		      <p>
@@ -259,7 +282,6 @@ Current Mass Mailings:
 
     </table> 
 
-</div> 
 
 
 
@@ -267,26 +289,13 @@ Current Mass Mailings:
 
 
     <p class="positive"> 
-     Currently, there are no active Mass Mailings for this list.
+     Currently, there are no active Mass Mailings for this Mailing List.
     </p>
 
 <!--/tmpl_if--> 
 
 </fieldset> 
 
-<!-- tmpl_if list_settings.auto_pickup_dropped_mailings --> 
-
-<p class="alert">
-  Auto Pickup of Dropped Mailings is enabled!
-</p> 
-
-<!-- tmpl_else --> 
-
-<p class="error">
- * Auto Pickup of Dropped Mailings is disabled.
-</p> 
-
-<!--/tmpl_if --> 
 
 <p style="font-weight:bold;">
  <a href="#" onclick="toggleDisplay('verbose_sending_information');return false;">

@@ -2,7 +2,7 @@
 /* ----- GENERAL ----- */
 html {
 	margin: 0;
-	padding: 0
+	padding: 0;
 }
 body {
 	margin: 0;
@@ -20,15 +20,16 @@ body {
 #PageWrapper {
 }
 
+/* BOTH */
 #Header {
 	min-width: 800px;
 	min-height: 50px;
 	margin: 0 auto; /* page centering for all but IE */
 	padding:0px;
-	background-color: #669999; /* 99cc99 */
+	background-color: #669999;
 	background-image: url('<!-- tmpl_var S_PROGRAM_URL -->/img/header_bg.gif/');
 	background-repeat: repeat-y;
-	text-align: left; /* overrides page centering hack for IE (in the body) */
+	text-align: left;
 	font: 1.1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 	text-shadow: 1px 1px 2px #330033;
 }
@@ -40,7 +41,6 @@ body {
 
 #Title {
 	float: right;
-	text-align: right; /* HUH? */
 	padding-right: 10px;
 	margin-top: 20px;
 	color: #fff;
@@ -71,28 +71,33 @@ body {
 	padding-bottom: 20px;
 }
 
+/* admin */
 #Menu {
 	margin-left: -100%;
 	float: left;
 	width: 199px;
 	padding: 0;
-	border-right: 1px solid #666;
+	border-right: 1px solid #666; /* so, 200px total */
 	background-color: #fff;
 	text-align: left;
 	line-height: 150%;
 }
 
+/* BOTH */
 #AdminContentWrapper,
 #ContentWrapper {
 	border-top: 1px solid #666;
 	float: left;
 	width: 100%
 }
+
+/* admin */
 #AdminContent {
 	margin-left: 200px;
 	padding-bottom: 10px;
 }
 
+/* BOTH */
 #Footer {
 	border-top: 1px solid #666;
 	background-color: #669999;
@@ -102,7 +107,6 @@ body {
 	text-shadow: 1px 1px 2px #330033;
 	clear: both;
 }
-
 #Footer a {
 	color: #fff;
 	text-decoration: none;
@@ -111,34 +115,11 @@ body {
 	color: #fff;
 	text-decoration: underline;
 }
-
-
 #FooterPadding {
 	padding: 5px;
 }
 
-
-/* ----- IDS: Navigation ----- */
-
-
-
-
-/* ----- IDS: Widgets/Other ----- */
-
 #breadcrumbs {
-}
-
-#help_link {
-	float: right;
-	margin-top: .8em;
-	font-weight: bold;
-	clear: both;
-}
-
-#root_login_message {
-/* float:right; */
-margin-right:0.5em;
-color: #fff;
 }
 
 /* ----- CLASSES ----- */
@@ -147,10 +128,6 @@ color: #fff;
 	background-color: #ccc;
 	border: 1px solid #fff;
 }
-
-
-
-
 .error {
 	font-family: Helvetica,Verdana,Arial,sans-serif;
 	/*font-size:11px;*/
@@ -161,11 +138,8 @@ color: #fff;
 
 .alert {
 	font-family: Helvetica,Verdana,Arial,sans-serif;
-	/*font-size:11px;*/
 	font-size: .9em;
-
-/*font-style:italic;*/
-color:#09c;
+	color: #09c;
 }
 
 
@@ -180,22 +154,11 @@ color:#09c;
 	background-color: #6F3;
 }
 
-p.link_to_screen {
-	text-align: right;
-	font-weight: bold;
-}
-
 .positive {
 	font-family: Helvetica,Verdana,Arial,sans-serif;
 	/*font-size:11px;*/
 	font-size: .9em;
 	color: #063;
-}
-
-.positive_greeting {
-	padding: 2px;
-	border: 1px solid #363;
-	background-color: #CFC;
 }
 
 .simplebox {
@@ -204,7 +167,11 @@ p.link_to_screen {
 	background-color: #fff;
 }
 
-.psuedomodalbox,
+/* all but IE/Win & NN4: */
+.simplebox>p {
+	margin: 0;
+}
+
 .clearskiesbox,
 .badweatherbox {
 	margin-top: 10px;
@@ -239,8 +206,7 @@ p.link_to_screen {
 .login_message {
 	float: right;
 	padding: 5px;
-	/* width:150px; */
-	background-color:#ffc;
+	background-color: #ffc;
 	border: 1px dotted #333;
 }
 
@@ -253,36 +219,22 @@ p.link_to_screen {
 	color: #ccc;
 }
 
-
-/* all but IE/Win & NN4: */
-.simplebox>p {
-	margin: 0;
-}
-
 /* ----- HEADINGS ----- */
-
 
 h1, h2, h3 {
 	font-family: 'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;
-	font-weight: bold;
 }
 
 h1 {
-
-/*font-size:18px;*/
-
-
-font-size: 1.4em;
+	font-size: 1.4em;
 }
 
 h2 {
-/*font-size:16px;*/
-font-size: 1.2em;
+	font-size: 1.2em;
 }
 
 h3 {
-/*font-size:14px;*/
-font-size: 1em
+	font-size: 1em
 }
 
 /* ----- PARAGRAPHS ----- */
@@ -340,19 +292,6 @@ a:hover {
 a:active {
 }
 
-
-#Logo a:link,
-#Logo a:visited {
-	color: #000;
-}
-
-#Logo a:hover {
-	color: #000;
-}
-
-#Logo a:active {
-}
-
 /* ----- FORMS ----- */
 
 label {
@@ -405,11 +344,9 @@ fieldset {
 	border-radius: 5px;
 }
 
-
 legend {
 	font-family: 'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 	font-weight: bold;
-	/*font-size:16px;*/
 	font-size: 1.15em;
 }
 
@@ -424,12 +361,12 @@ textarea {
 	font-size: 1em;
 	font-family: Helvetica,Verdana,Arial,sans-serif;
 }
-#Header select { 
+#Header select {
 	font: .9em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
-	width:150px;
+	width: 150px;
 	background-color: #efefef;
-	margin:0px;
-	padding:0px;
+	margin: 0px;
+	padding: 0px;
 }
 
 .small_input {
@@ -437,7 +374,6 @@ textarea {
 	padding: 2px;
 	font-size: .9em;
 }
-
 
 input.full {
 	margin-top: -5px;
@@ -466,14 +402,13 @@ input.cautionary,
 input.alertive,
 input.help,
 input.small_button {
-	margin:3px;
-	padding:3px;
+	margin: 3px;
+	padding: 3px;
 	border-width: 1px;
 	font: 1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 	color: #333;
 	border-color: #ccc #999 #666 #999;
 	background-color: #ededed;
-	
 }
 
 input.small_button {
@@ -482,7 +417,7 @@ input.small_button {
 	font-size: .9em;
 }
 
-#Header input.small_button { 
+#Header input.small_button {
 	padding-top: 1px;
 	padding-bottom: 1px;
 }
@@ -617,7 +552,7 @@ li.archive_badges_li {
 
 
 
-/* matthewjamestaylor.com/blog/beautiful-css-centered-menus-no-hacks-full-cross-browser-support */
+/* http://matthewjamestaylor.com/blog/beautiful-css-centered-menus-no-hacks-full-cross-browser-support */
 
 #centeredmenu {
 	clear: left;
@@ -655,9 +590,9 @@ li.archive_badges_li {
 	background: #ededed;
 	text-decoration: none;
 	color: #000;
-	border-top: 1px solid #369;
-	border-left: 1px solid #369;
-	border-right: 1px solid #369;
+	border-top: 1px solid #000;
+	border-left: 1px solid #000;
+	border-right: 1px solid #000;
 	position: relative;
 	bottom: 1px;
 }
@@ -785,17 +720,6 @@ li.archive_badges_li {
 	font-style: italic;
 }
 
-
-
-/* currently, there is no subactive state...
-ul#navlist li#active ul#subnavlist li#subactive a {
-font-weight: bold;
-color: #000;
-background: #fff;
-text-decoration: none;
-}
-*/
-
 .stripedtable {
 	border-collapse: collapse;
 	background-color: #fff;
@@ -809,14 +733,13 @@ text-decoration: none;
 	padding: 2px;
 	margin: 0px;
 }
-.stripedtable tr.alt td {
+.stripedtable tr td {
 	background-color: #fff;
 }
+
+div.alt,
 .stripedtable tr.alt td {
 	background-color: #ededed;
-}
-div.alt { 
-	background-color: #ededed;	
 }
 
 .stripedtable a {
@@ -827,10 +750,5 @@ div.alt {
 
 .stripedtable a:hover {
 	color: #666;
-	/* border-bottom:1px solid #000; */
 	background-color: #ffe1af;
 }
-
-
-
-

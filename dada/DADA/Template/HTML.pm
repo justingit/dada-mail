@@ -202,12 +202,6 @@ sub admin_template {
 				
 	### /Admin Menu Creation...
  
-	my $root_login_message = '';	
-	if($args{-Root_Login} == 1){
-		$root_login_message = '<span id="root_login_message">Logged In as Root</span>'; 
-	}
-	
-
 	my $admin_template; 
 	
 	if($DADA::Config::ADMIN_TEMPLATE){ 	
@@ -237,8 +231,7 @@ sub admin_template {
 												login_switch_widget => $login_switch_widget, 
 												admin_menu          => $admin_menu, 
 												title               => $args{-Title},
-												root_login_message  => $root_login_message, 
-												root_login          => $args{-Root_Login} == 1,
+												root_login          => $args{-Root_Login},
 												content             => '[_dada_content]',	
 												footer_props        => $footer_props, 
 												%{ $args{ -vars } }, # content, etc

@@ -1,6 +1,6 @@
 =pod
 
-=head1 Dada Mail Changelog for version 4.x.x
+=head1 Dada Mail Changelog for version 5.x.x
 
 =head1 5.0.0
 
