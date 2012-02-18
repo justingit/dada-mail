@@ -354,5 +354,20 @@ In rare occassions, the mail server will actually strip out the HTML version of 
 
 If you have root access to your own server and NO mail is being sent with any email utility, try rebooting your server. If that doesn't work, sincerely look for professional help, to solve the problem. 
 
+=head1 Debugging Sendmail
+
+=head2 Set your $MAILPROG to a file, instead of piping to sendmail
+
+Adding the following lines to your C<.dada_config> file: 
+
+	$MAIL_SETTINGS      = '>>' . $TMP . '/mail.txt';
+	$MASS_MAIL_SETTINGS = '>>' . $TMP . '/mail.txt';
+
+Will simply write out all email messages sent from all mailing lists (that are set up to use sendmail to send out messages) into a file in the C<.dada_files/.tmp> directory called, C<mail.txt>
+
+You can then manually inspect the output of what Dada Mail is creating to spot any problems. 
+
+ 
+
 =cut
 

@@ -8,7 +8,7 @@ use strict;
 use lib qw(../ ../DADA/perllib);
 
 use CGI::Carp qw(fatalsToBrowser); 
-use DADA::Config 4.0.0;
+use DADA::Config 5.0.0;
 # we need this for cookies things
 use CGI;
 my $q = new CGI;
@@ -198,7 +198,7 @@ return q{
 
 		<div style="max-height: 300px; overflow: auto; border:1px solid black">
 
-		<table style="width:100%" cellpadding="2" cellspacing="0" border="0"> 
+		<table class="stripedtable">
 
 
 		<tr> 
@@ -217,7 +217,7 @@ return q{
 
 		<!-- tmpl_loop file_list --> 
 
-			   <tr<!-- tmpl_if name="__odd__" --> style="background-color:#ccf;"<!--/tmpl_if-->>
+			   <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
 		  <td>
 
 

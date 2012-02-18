@@ -1,12 +1,16 @@
 <!-- begin default_screen.tmpl -->
 
-<!-- tmpl_set name="title" value="Sign Up for a List" -->
+<!-- tmpl_set name="title" value="Subscribe to a Mailing List" -->
  
 
 <!-- tmpl_if error_invalid_list --> 
-<p class="error">
- * Warning! The list you are trying to subscribe to/unsubscribe from is not available. Webmaster: please make sure your outside subscription/unsubscription forms are correct and up-to-date.
-</p> 
+	<div class="badweatherbox">
+	<p>
+	 <strong>Warning!</strong>
+
+	<p> The list you are trying to subscribe to/unsubscribe from is not available. Webmaster: please make sure your outside subscription/unsubscription forms are correct and up-to-date.
+	</p> 
+	</div>
 
 <!--/tmpl_if-->
 
@@ -15,7 +19,7 @@
     <!-- tmpl_var subscription_form --> 
     
     <h1>
-     Available Lists:
+     Available Mailing Lists:
     </h1>
     
     <!-- tmpl_loop list_information -->
@@ -67,10 +71,9 @@
 
 <!-- tmpl_else --> 
 
-
-    <p class="error"> 
-     No lists are currently available from this screen. 
-    </p>
+	<div class="clearskiesbox">
+     	<p>No Mailing Lists are currently available from this screen.</p>
+	</div>
 
 <!-- /tmpl_if --> 
 

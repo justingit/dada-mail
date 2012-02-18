@@ -1,18 +1,14 @@
 <!-- begin list_search_form_widget.tmpl --> 
-
-    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-     <p>
-      <label for="keyword">
-       Search <!-- tmpl_var type_title --> Subscribers
-      </label>
-       List for a Particular Address:
-      <br />
-      <input type="text"   name="keyword" id="keyword" value="<!-- tmpl_var keyword default="" escape="HTML" -->" />
-      <input type="hidden" name="f"    value="search_list" />
+    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" style="display: inline; margin: 0;" id="search_form" onsubmit="search_list();return false;">
+      <input type="text"   name="query" id="search_query" class="small_input" value="<!-- tmpl_var query default="" escape="HTML" -->" />
+      <input type="hidden" name="f"    value="view_list" />
       <input type="hidden" name="type" value="<!-- tmpl_var type default="list" -->" />
-      <input type="submit" class="processing" value="Search List" />
-     </p>
+      <input type="button" class="small_button" value="Search <!-- tmpl_var type_title escape="HTML" -->" onclick="search_list();return false;" />
+	  <!-- tmpl_if query --> 
+		<input type="button" class="small_button" value="Clear" onclick="clear_search();return false;" />
+      
+	 <!-- /tmpl_if --> 
+
+
     </form>
-
-
 <!-- end list_search_form_widget.tmpl --> 

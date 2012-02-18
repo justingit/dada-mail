@@ -1,39 +1,34 @@
 <!-- begin archive_list_widget.tmpl -->
 
 <!-- tmpl_if allowed_to_view_archives --> 
-	<ol>
 
 	<!-- tmpl_loop entries -->
 
-		 <li value="<!-- tmpl_var bullet -->">
 		 <!-- Archive Id: <!-- tmpl_var id --> --> 
-		  <p>
-		   <strong>
-		    <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var uri_escaped_list -->/<!-- tmpl_var id -->/">
-		     <!-- tmpl_var subject escape="HTML" -->
-		    </a>
-		   </strong>
-		   <br />
-		   <em>
+<h2>
+			    <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var uri_escaped_list -->/<!-- tmpl_var id -->/">
+		     <!-- tmpl_var subject -->
+		</a>
+</h2>
+	<p> <em>
 		    Sent <!-- tmpl_var date -->
 		   </em>
 		  </p>
 
 		<!-- tmpl_if message_blurb -->
 
-			  <p>
+			  <blockquote><p>
 			   <em>
 			    <!-- tmpl_var message_blurb -->...
 			   </em>
 			  </p>
+			</blockquote>
 
 		<!--/tmpl_if-->
 
-	 </li>
 
 	<!--/tmpl_loop-->
 
-	</ol>
 
 
 	<!-- tmpl_var index_nav --> 

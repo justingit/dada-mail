@@ -1,436 +1,94 @@
 <!-- begin view_list_screen.tmpl -->
 
-<!-- tmpl_set name="title" value="View" -->
+<!-- tmpl_set name="title" value="Membership &#187; View" -->
+<!-- tmpl_set name="load_modalbox" value="1" -->
 
-<!-- tmpl_include help_link_widget.tmpl --> 
-
-
-<!-- tmpl_include list_type_switch_widget.tmpl -->
-
-<!-- tmpl_if delete_email_count -->
-	
-	<p class="alert">
-	 <!-- tmpl_var delete_email_count --> address(es) of your <!-- tmpl_var type_title --> have been unsubscribed.
-	</p>
-	
-<!-- /tmpl_if -->
-
-<!-- tmpl_if black_list_add --> 
-
-	<p class="alert">
-	 <!-- tmpl_var black_list_add --> address(es) have been added to the <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list&type=black_list">Black List</a>. 
-</p>
-
-<!-- /tmpl_if --> 
-
-<!-- tmpl_if email_count -->
-	
-	<p class="positive">
-	 <!-- tmpl_var name="email_count" --> address(es) of your <!-- tmpl_var type_title --> have been subscribed.
-	</p>
-	
-<!-- /tmpl_if -->
-
-<!-- tmpl_if approved_count --> 
-	<p class="positive">
-	 <!-- tmpl_var name="approved_count" --> address(es) have been approved for subscription.
-	</p>
-<!-- /tmpl_if --> 
-<!-- tmpl_if denied_count --> 
-	<p class="positive">
-	 <!-- tmpl_var name="denied_count" --> address(es) have been denied a subscription.
-	</p>
-<!-- /tmpl_if -->
-
-
-
-
-<!-- tmpl_if list_type_isa_list -->
-	
-	<h1>
-	 Your Subscription List
-	</h1>
-	
-<!--/tmpl_if-->
-
-<!-- tmpl_if list_type_isa_authorized_senders -->
-	
-	<h1>
-	 Your Authorized Senders
-	</h1>
-	<p>
-	 This shows all email addresses that are allowed to send messages to the list (via the Dada Bridge Plugin) other than the list owner (for announce-only lists) and without moderation. 
-	</p>
-	
-<!--/tmpl_if-->
-
-
-<!-- tmpl_if list_type_isa_white_list -->
-	
-	<h1>
-	 Your White List
-	</h1>
-	<p>
-	 Your white list is a list of email addresses that are allowed to subscribe to your list.
-	</p>
-	
-<!--/tmpl_if-->
-
-<!-- tmpl_if list_type_isa_black_list -->
-	
-	<h1>
-	 Your Black List
-	</h1>
-	<p class="alert">
-	 Your Black List is a set of rules that say who is not allowed to subscribe to 
-	 your Subscribers Mailing List . You may add both complete email addresses  (you@example.com) or 
-	 part of an email address (example.com) to you Black List.</p>
-	
-	<p class="alert">Parts of addresses will match whole addresses - "example.com" will match, "you@example.com" and, "someone.else@example.com"</p>
-		
-	<!-- tmpl_if can_use_global_black_list --> 
-		
-		<!-- tmpl_if GLOBAL_BLACK_LIST -->
-			
-			<p class="positive">
-			 * The Global Black List has been enabled.
-			</p>
-			
-		<!--/tmpl_if-->
-		
-	<!--/tmpl_if-->
-	
-	<!-- tmpl_if can_use_global_unsubscribe --> 
-		
-		<!-- tmpl_if GLOBAL_UNSUBSCRIBE -->
-			
-			<p class="positive">
-			 * Global Unsubscribe has been enabled.
-			</p>
-			
-		<!--/tmpl_if-->
-		
-	<!--/tmpl_if-->
-	
-	<!-- tmpl_if black_list_changes_done -->
-	
-		<p class="positive">
-		 Your changes to the Black List settings were successful!
-		</p>
-		
-	<!--/tmpl_if-->
-	
-<!--/tmpl_if-->
-
-<!-- tmpl_unless num_subscribers -->
-	
-	<p class="alert">
-	 Currently, there are no <!-- tmpl_var type_title -->.
-	
-	    <!-- tmpl_unless list_type_isa_sub_request_list -->
-			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
-	     			<!-- tmpl_if list_type_isa_list -->
-						Invite
-						<!-- tmpl_if list_settings.enable_mass_subscribe -->
-				/ Add
-						<!-- /tmpl_if -->
-					<!-- tmpl_else --> 
-						Add
-					<!-- /tmpl_if -->
-	    	</a>
-	   	<!-- /tmpl_unless -->
-	</p>
-	
-<!-- tmpl_else -->
-
-	<table width="100%">
-	 <tr>
-	  <td>
-	   <p>
-	    <!-- tmpl_var type_title -->
-	    <strong>
-	     <!-- tmpl_var name="screen_start" -->
-	    </strong>
-	    to 
-	    <strong>
-	     <!-- tmpl_var name="screen_finish" -->
-	    </strong>
-	   </p>
-	  </td>
-	  <td align="right">
-	   <p>
-	    Total number of <!-- tmpl_var type_title -->:
-	    <strong>
-	     <!-- tmpl_var name="num_subscribers" -->
-	    </strong>
-	    <!-- tmpl_unless list_type_isa_sub_request_list -->
-			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
-	     			<!-- tmpl_if list_type_isa_list -->
-						Invite
-						<!-- tmpl_if list_settings.enable_mass_subscribe -->
-				/ Add
-						<!-- /tmpl_if -->
-					<!-- tmpl_else --> 
-						Add
-					<!-- /tmpl_if -->
-	    	</a>
-	   	<!-- /tmpl_unless -->
-		...
-		</p>
-	  </td>
-	 </tr>
-	</table>
-
-
-	<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-	
-	 <!-- tmpl_include view_list_table_widget.tmpl --> 
-	 <!-- tmpl_include view_list_prev_next_table.tmpl -->
-	 <p align="center">
-	  <a href="#" onclick="SetChecked(1);return false;">
-	   check all 
-	  </a>
-	  :: 
-	  <a href="#" onclick="SetChecked(0);return false;">
-	   uncheck all
-	  </a>
-	 </p>
-
-	<!-- tmpl_unless list_type_isa_sub_request_list -->
-
-		 <input type=hidden name="process" value="delete" />
-		 <input type=hidden name="f"       value="remove_subscribers" />
-		 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
-		 <div class="buttonfloat">
-		  <input type="submit" class="alertive" value="Unsubscribe Checked '<!-- tmpl_var type_title -->' Subscribers" />
-		 </div>
-
-		<div class="floatclear"></div> 
-
-	<!-- tmpl_else --> 
-		<div class="buttonfloat">
-		 <input type=hidden name="f"       value="subscription_requests" />
-	
-		<!-- hopefully ,this is, "sub_request_list" --> 
-		 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
-		 <input type="submit" name="process" class="processing" value="Approve Checked Subscription Requests" />
-		 <input type="submit" name="process" class="alertive" value="Deny Checked Subscription Requests" />
-		</div>
-		<div class="floatclear"></div>
-	<!-- /tmpl_unless --> 
-
-	</form>
-
-	<!-- tmpl_unless list_type_isa_sub_request_list -->
-		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-		 <input type=hidden name="f"       value="remove_all_subscribers" />
-		 <input type=hidden name="type" value="<!-- tmpl_var type -->" />
-		 <div class="buttonfloat">
-		  <input type="submit" class="alertive" value="Unsubscribe ALL '<!-- tmpl_var type_title -->' Subscribers" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   />
-		 </div>
-		</form>
-		<div class="floatclear"></div>
-	<!-- tmpl_else --> 
-		<!-- ... --> 
-	<!-- /tmpl_unless --> 
-
-<!-- /tmpl_unless --> 
-
-
-
-<!-- tmpl_if list_type_isa_black_list -->
-	<!-- tmpl_if can_filter_subscribers_through_blacklist --> 
-	
-		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="blacklist_filter_form">
-		 <input type="hidden" name="f" value="filter_using_black_list" />
-		 <div class="buttonfloat">
-		  <input type="submit" class="cautionary" value="Filter Your Subscribers Through The Black List..." />
-		 </div>
-		</form>
-	<!--/tmpl_if-->
-
-
-	<hr />
-
+<script type="text/javascript">
+//<![CDATA[
 
 	
 	
-
-
-	<fieldset>
-
-
-		
-		
-	 <legend>
-		  Black List Options
-     </legend>
-		
-		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="blacklist_option_form">
-		 <input type="hidden" name="f"       value="view_list" />
-		 <input type="hidden" name="type"    value="<!-- tmpl_var type -->" />
-		 <input type="hidden" name="process" value="set_black_list_prefs" />
-		
-		
-		 <table>
-		   <tr>
-		    <td>
-		     <p>
-		      <input type="checkbox" name="black_list" id="black_list" value="1" <!-- tmpl_if black_list -->checked="checked"<!--/tmpl_if--> />
-		     </p>
-		    </td>
-		    <td>
-		     <p>
-		      <label for="black_list">
-		       Activate Black List
-		      </label>
-		     </p>
-			<table> 
-				 <tr>
-				    <td>
-				     <p>
-				      <input type="checkbox" name="add_unsubs_to_black_list" id="add_unsubs_to_black_list" value="1" <!-- tmpl_if add_unsubs_to_black_list -->checked="checked"<!--/tmpl_if--> />
-				     </p>
-				    </td>
-				    <td>
-				     <p>
-				      <label for="add_unsubs_to_black_list">
-				       Move Addresses to the Black List after they are Removed/Unsubscribed.
-				      </label>
-				     </p>
-				    </td>
-				   </tr>
-				   <tr>
-				    <td>
-				     <p>
-				      <input type="checkbox" name="allow_blacklisted_to_subscribe" id="allow_blacklisted_to_subscribe" value="1" <!-- tmpl_if allow_blacklisted_to_subscribe -->checked="checked"<!--/tmpl_if--> />
-				     </p>
-				    </td>
-				    <td>
-				     <p>
-				      <label for="allow_blacklisted_to_subscribe">
-				       Continue to Allow Black Listed Addresses to Subscribe Themselves
-				      </label>
-				     </p>
-				    </td>
-				   </tr>
-
-				<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN --> 
-					<!-- ... --> 
-				<!-- tmpl_else --> 
-				
-					   <tr>
-					    <td>
-					     <p>
-					      <input type="checkbox" name="allow_admin_to_subscribe_blacklisted" id="allow_admin_to_subscribe_blacklisted" value="1" <!-- tmpl_if allow_admin_to_subscribe_blacklisted -->checked="checked"<!--/tmpl_if--> />
-					     </p>
-					    </td>
-					    <td>
-					     <p>
-					      <label for="allow_admin_to_subscribe_blacklisted">
-					       Continue to Allow Black Listed Addresses to be Invited/Subscribed Via The List Control Panel. 
-					      </label>
-						  <br />
-						  Black Listed Addresses will just need to be manually, checked/selected to be Invited/Subscribed.  
-					     </p>
-					   </td>
-					  </tr>
-				
-				<!-- /tmpl_if --> 
-				
-				</table> 
-		    </td>
-		   </tr>
-		  
-		 </table>
-
-		 <div class="buttonfloat">
-		  <input type=reset  class="cautionary" value="Clear Changes" />
-		  <input type=submit class="processing" value="Save Changes" />
-		 </div>
-		 <div class="floatclear"></div>
-		</form>
-	</fieldset>
-
+Event.observe(window, 'load', function() {
+	view_list_viewport();
 	
-<!--/tmpl_if-->
+});
+
+function view_list_viewport(){ 	
+	new Ajax.Updater(
+		'view_list_viewport', '<!-- tmpl_var S_PROGRAM_URL -->', 
+		{ 
+		    method: 'post', 
+			parameters: {
+				f:         'view_list',
+				mode:      'viewport', 
+				type:      $F('type'),
+				page:      $F('page'),			
+				query:     $F('query'),				
+				order_by:  $F('order_by'), 				
+				order_dir: $F('order_dir'),
+
+			},
+		onCreate: 	 function() {
+			$('view_list_viewport_loading').update('<p class="alert">Loading...</p>');
+		},
+		onComplete: 	 function() {
+			$('view_list_viewport_loading').update('<p class="alert">&nbsp;</p>');
+			//Effect.BlindDown('view_list_viewport');
+		}	
+	});
+}
+
+function turn_page(page_to_turn_to) { 
+	Form.Element.setValue('page', page_to_turn_to) ; 
+	view_list_viewport();
+}
+function change_type(type_to_go_to) { 
+	Form.Element.setValue('type', type_to_go_to) ; 
+	Form.Element.setValue('page', 1) ; 
+	view_list_viewport();
+}
+function search_list(){ 
+	Form.Element.setValue('page', 1) ; 
+	Form.Element.setValue('query', $F('search_query')) ; 
+	view_list_viewport();
+}
+function clear_search(){ 
+	Form.Element.setValue('query', '');
+		Form.Element.setValue('page', 1) ; 
+		view_list_viewport(); 
+}
+function change_order(order_by, order_dir) { 
+		Form.Element.setValue('order_by', order_by) ; 
+		Form.Element.setValue('order_dir', order_dir) ; 
+		Form.Element.setValue('page', 1) ;
+		view_list_viewport();	 
+}
+
+//]]>
+</script>
 
 
-<!-- tmpl_if list_type_isa_white_list -->
-	
-	<fieldset>
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title -->
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
 
 
-
-		 <legend>
-	      White List Options
-		 </legend>
-		
-			<form action="<!-- tmpl_var S_PROGRAM_URL -->"  name="white_list_option_form" method="post">
-			 <input type="hidden" name="f"       value="view_list" />
-			 <input type="hidden" name="type"    value="<!-- tmpl_var type -->" />
-			 <input type="hidden" name="process" value="set_white_list_prefs" />
-
-		 <table>
-		   <tr>
-		    <td>
-		     <p>
-		      <input type="checkbox" name="enable_white_list" id="enable_white_list" value="1" <!-- tmpl_if list_settings.enable_white_list -->checked="checked"<!--/tmpl_if--> />
-		     </p>
-		    </td>
-		    <td>
-		     <p>
-		      <label for="enable_white_list">
-		       Activate White List
-		      </label>
-		     </p>
-		    </td>
-		   </tr>
-	      </table> 
-		 <div class="buttonfloat">
-		  <input type=reset  class="cautionary" value="Clear Changes" />
-		  <input type=submit class="processing" value="Save Changes" />
-		 </div>
-		      
-	     </form> 
-	
-	<div class="floatclear"></div> 
-	
-	
-	</fieldset>
-
-<!--/tmpl_if--> 
+<form id="viewport_values">
+	<input type="hidden" id="type"      name="type"      value="<!-- tmpl_var type escape="HTML" -->" />	
+	<input type="hidden" id="page"      name="page"      value="<!-- tmpl_var page escape="HTML"  -->" />	
+	<input type="hidden" id="query"     name="query"     value="<!-- tmpl_var query escape="HTML"  -->" />	      
+  	<input type="hidden" id="order_by"  name="order_by"  value="<!-- tmpl_var order_by escape="HTML"  -->" />	      
+  	<input type="hidden" id="order_dir" name="order_dir" value="<!-- tmpl_var order_dir escape="HTML"  -->" />	      
+</form>
 
 
-<!-- tmpl_if num_subscribers -->
+<!-- tmpl_include view_list_modalmenu_widget.tmpl -->
 
-	<!-- tmpl_include list_search_form_widget.tmpl --> 
-
-		<hr />
-
-		<table cellpadding="5">
-		 <tr>
-		  <td>
-		   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-		    <input type="hidden" name="f"    value="text_list" />
-		    <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
-		    <input type="submit" class="plain" value="Download <!-- tmpl_var type_title --> (.csv)" />
-		   </form>
-		  </td>
-	<!-- tmpl_if comment --> 
-	<!-- I've disabled this, for the time being --> 
-			  <td>
-			   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get">
-			    <input type="hidden" name="f"    value="send_list_to_admin" />
-			    <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
-			    <input type="submit" class="plain" value="Send <!-- tmpl_var type_title --> to List Owner" />
-			   </form>
-			  </td>
-	<!-- /tmpl_if --> 
-		 </tr>
-		</table>
-
-<!-- /tmpl_if --> 
+<div id="view_list_viewport_loading" style="margin:0; padding:0"><p class="alert">&nbsp;</p></div>
+<div id="view_list_viewport"></div> 
 
 
 

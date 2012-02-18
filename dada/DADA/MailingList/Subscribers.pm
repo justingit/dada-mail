@@ -163,6 +163,85 @@ sub copy_subscriber {
     return $dmls->copy($args);
 }
 
+sub subscribed_to { 
+	my $self = shift; 
+	my ($args) = @_;
+	$args->{-list} = $self->{list};
+	
+ my $dmls =
+      DADA::MailingList::Subscriber->new( $args );
+    return $dmls->subscribed_to($args);	
+}
+
+sub admin_remove_subscribers { 
+	
+	my $self = shift; 
+	my ($args) = @_; 
+	
+	my $addresses = $args->{-addresses}; 
+	if(! exists($args->{-type})){ 
+		croak "you MUST pass the, '-type' paramater!"; 
+	}
+	my $type      = $args->{-type};
+	
+
+	my $d_count = 0; 
+	for my $address(@$addresses){ 
+		my $c = $self->remove_subscriber(
+			{ 
+				-email => $address, 
+				-type  => $type, 
+			}
+		); 
+		$d_count = $d_count + $c; 
+	}
+
+	my $bl_count = 0; 
+	if($type eq 'list' || $type eq 'bounced_list'){
+	    if($self->{ls}->param('black_list')               == 1 &&
+	       $self->{ls}->param('add_unsubs_to_black_list') == 1
+	       ){
+
+			for(@$addresses){
+				my $a = $self->add_subscriber(
+					{
+						-email => $_,
+						-type  => 'black_list',
+						-dupe_check    => {
+											-enable  => 1,
+											-on_dupe => 'ignore_add',
+	                					},
+					}
+				);
+				if(defined($a)){ 
+					$bl_count++;
+				}
+			}
+	    }
+	}
+
+	if($type eq 'list') { 
+		if($self->{ls}->param('send_unsubscribed_by_list_owner_message') == 1){
+			require DADA::App::MassSend; 
+			eval { 
+				DADA::App::MassSend::just_unsubscribed_mass_mailing(
+					{ 
+						-list      => $self->{list}, 
+						-addresses => $addresses, 
+					}	
+				); 
+			};
+			if($@){ 
+				carp $@; 
+			}	
+		}
+	}
+	
+	
+	return($d_count, $bl_count); 
+		
+}
+
 
 
 
@@ -262,7 +341,8 @@ sub get_list_types {
 		sub_confirm_list    => 1, 
 		unsub_confirm_list  => 1, 
 		invitelist          => 1, 
-		sub_request_list    => 1,			
+		sub_request_list    => 1,
+		bounced_list        => 1,			
 	};
 	
 }

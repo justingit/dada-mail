@@ -1,22 +1,22 @@
 <!-- begin view_archive_index_screen.tmpl --> 
 
-<!-- tmpl_set name="title" value="View Archive" -->
+<!-- tmpl_set name="title" value="Message Archives &#187; View Archive" -->
 
-<!-- tmpl_include help_link_widget.tmpl -->
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 
+	</div> 
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
 
 <form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
  <input type="hidden" name="f" value="delete_archive" /> 
 
-	
-
-<div style="max-height: 300px; overflow: auto; border:1px solid black">
- 
- <table cellpadding="2" cellspacing="0" border="0" width="100%">
+ <table class="stripedtable">
   <tr>
    <td width="25">
     <p>&nbsp;</p>
    </td>
-   
      <td>
     <p>
      <strong>
@@ -24,9 +24,6 @@
      </strong>
     </p>
    </td>
-   
-   
-   
    <td>
     <p>
      <strong>
@@ -56,95 +53,53 @@
 
   <!-- tmpl_loop index_list --> 
   
-	   <tr<!-- tmpl_if name="__odd__" --> style="background-color:#ccf;"<!--/tmpl_if--> title="<!-- tmpl_var message_blurb -->">
+	   <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if--> title="<!-- tmpl_var message_blurb -->">
 	    <td width="25">
 	     <input type="checkbox" name="address" value="<!-- tmpl_var id -->" />
 	    </td>
 	    
 	    <td> 
-	     <p>
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive;id=<!-- tmpl_var id -->">
 			<!-- tmpl_var name="from" ESCAPE="HTML" -->
-		</p>
+		</a>
 		</td>
 	    
 	    
 	    
 	    <td> 
-	     <p>
-	     <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive&id=<!-- tmpl_var id -->">
+	     <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive;id=<!-- tmpl_var id -->">
 			<!-- tmpl_var name="subject" ESCAPE="HTML" -->
 			</a>
-		</p>
 		</td>
 		<td>
-		 <p>
+		  <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive;id=<!-- tmpl_var id -->">
 		 <!-- tmpl_var date -->
-		</p>
+		</a>
 		</td> 
 		<td>
-		 <p>
 	      <input type="button" class="cautionary" onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?f=edit_archived_msg&id=<!-- tmpl_var id -->'" value="[edit]"/>
-		  </p>
 		 </td>
 		</tr>
 
 <!-- /tmpl_loop -->
 
- </table> 
-</div> 
-
-
- <p align="center">
-  <a href="#" onclick="SetChecked(1);return false;">
-   check all 
-  </a>
-  :: 
-  <a href="#" onclick="SetChecked(0);return false;">
-   uncheck all
-  </a>
- </p>
- 
- <!-- tmpl_var index_nav --> 
- 
- 
- <div class="buttonfloat">
-<input type="submit" class="alertive" value="Delete Checked" />
-
-	 </div>
-	 <div class="floatclear"></div>
-	 
-	 
-
-  </form>
-  
-  
-   <form action="<!-- tmpl_var S_PROGRAM_URL -->">  
-	   <input type="hidden" name="f" value="purge_all_archives" />
-	    <div class="buttonfloat">
-	    
-	   <input type="submit" class="alertive" value="Purge All Archive Messages" onclick="return removeAllArchives(this.form);" />
-	   
-	 </div>
-	 <div class="floatclear"></div>
-	 
-   </form> 
-	  
-	  
-  
-  <!-- tmpl_if show_broken_things --> 
-  <!-- this form currently doesn't work. Uncommenting it will not make it magically work :) -->
-	  
-	  <form action="<!-- tmpl_var S_PROGRAM_URL -->">  
-	   <input type="hidden" name="f" value="edit_archive" />
-	   <input type="hidden" name="new_archive" value="1" />
-	   <input type="submit" class="alertive" value="New Archived Message..." />
-	  </form> 
-		
-	  <!-- end --> 
-  <!--/tmpl_if-->
+</table> 
+<table class="stripedtable">
+  <tr>
+   		<td width="25">
+    		<input type="checkbox" onClick="toggleCheckBoxes(this, 'address')"/>
+   		</td>
+		<td>
+		 <input type="submit" class="small_button" value="Delete Checked" /></form>
+			<form action="<!-- tmpl_var S_PROGRAM_URL -->" style="display:inline;margin:0">  
+			   <input type="hidden" name="f" value="purge_all_archives" />  
+			   <input type="submit" class="small_button" value="Purge All Archive Messages" onclick="return removeAllArchives(this.form);" />
+		   </form> 
+		 </td>
+		</tr>
+	</table>
 	
-
  
-
+<!-- tmpl_var index_nav --> 
 
 <!-- end view_archive_index_screen.tmpl --> 

@@ -991,7 +991,10 @@ sub sending_preferences_test {
    
    my $report =  []; 
    
+	my @munged_l = (); 
 	for my $l(@r_l){ 
+		$l =~ s/Net\:\:SMTP(.*?)\)//;
+		push(@munged_l, $l); 
 		if($l =~ m/502 unimplemented/i){ 
 			push (@$report, {line => $l, message => 'SASL Authentication may not be available on this SMTP server - try POP-before-SMTP Authentication.'}); 
 		}elsif($l =~ m/250\-AUTH PLAIN LOGIN|250 AUTH LOGIN PLAIN|250\-AUTH\=LOGIN PLAIN/i){ 
@@ -1009,7 +1012,13 @@ sub sending_preferences_test {
     }
 
 	unlink($filename) or warn $!; 
- 
+
+	$smtp_msg = ''; 
+ 	foreach(@munged_l){ 
+		$_ = strip($_); 
+		next unless length($_) > 0;
+		$smtp_msg .= $_ . "\n";
+	}
 	
     return ($smtp_msg, \@r_l, $report);  
 

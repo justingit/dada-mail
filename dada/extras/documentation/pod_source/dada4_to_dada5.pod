@@ -1,0 +1,88 @@
+=pod
+
+=head1 Dada Mail 4 to Dada Mail 5 Upgrade Guide
+
+=head1 Database Schema
+
+There are no changes in any of the database schemas between Dada Mail 4 and Dada Mail 5. 
+
+Upgrading is fairly straightforward, with no need for any Dada Mail 4 to Dada Mail 5 upgrade scripts. 
+
+Users upgrading from Dada Mail v2 or v3 will still need to use the, C<dada3_to_dada4_sql.pl> upgrade script, 
+but I<won't> have to first upgrade to Dada Mail v4 and then, v5. 
+
+=head1 Template Changes
+
+There has been considerable changes in the Dada Mail Templates (files that live in, I<dada/DADA/Template/templates>)
+
+=head2 Default List Template and Admin Template Name Changes
+
+The default list template has been renamed: C<list_template.tmpl> (from, C<default_list_template.tmpl>)
+
+The default admin template has been renamed: C<admin_template.tmpl> (from, C<default_admin_template.tmpl>)
+
+Both of these templates have been redesigned.
+
+=head2 css Files Moved to, templates/css
+
+css files Dada Mail uses are now in, I<dada/DADA/Template/templates/css>
+
+C<default_css.css> has been renamed to, C<default.css>
+
+=head2 Javascript Files Moved to, templates/js
+
+Javascript files Dada Mail uses are now in, I<dada/DADA/Template/templates/js>
+
+=head2 image files have been moved to, template/img
+
+image files Dada Mail uses are now in, I<dada/DADA/Template/templates/img>
+
+=head1 List Control Panel Changes
+
+The List Control Panel has been redesigned, but most things are where they were in v4. 
+
+=head2 Admin Menu Changes
+
+The List Admin Menu has changed in the List Control Panel. If you are upgrading, tell 
+the installer to keep the directory structure, but produce a new C<.dada_config> file. You B<will> 
+need to reconfigure Dada Mail again, but use the same values for configuration as before. (if you 
+forget what they are, view your old C<.dada_config> file and just copy the old values and paste them in the installer)
+
+=head3 Your Subscribers
+
+The B<Your Subscribers> heading has been renamed, B<Membership>
+
+The, B<Edit Subscriber> screen, accessed by clicking an email address in the B<Membership (or Your Subscribers) - View> 
+screen is now called, B<Membership> and has additional features
+
+B<Membership - List Activity> is a new screen.
+
+The B<View> screen has been given a hefty design. We hope it's not as I<Guuuuuugh!> 
+as previous, "designs".  
+
+=head3 Your Mailing List
+
+B<Change List Information> has been renamed to, B<List Information> 
+
+B<Change List Password> has been renamed to, B<List Password>
+
+=head3 Black List and White List Options
+
+Black/White List Options are now located in the, B<Membership - Options> screen
+
+=head3 Your List Control Panel
+
+Has been moved to be after B<Plugins> and B<Extensions>
+
+=head3 App Information
+
+A new header titled, B<App Information> has been created. 
+
+It contains B<Configuration>, renamed from B<Dada Mail Setup Info>, and, B<About Dada Mail>
+
+=head3 List Page link, Logout and Switch Widget 
+
+The link to your Mailing List's List Page, the Logout Link and the Mailing List Switch form have moved to the 
+header of the Admin Template. 
+
+

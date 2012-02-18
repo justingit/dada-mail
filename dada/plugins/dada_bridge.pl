@@ -28,7 +28,7 @@ use lib qw(
 
 
 use CGI::Carp qw(fatalsToBrowser);
-use DADA::Config 4.0.0;
+use DADA::Config 5.0.0;
 
 use CGI;
 CGI->nph(1) if $DADA::Config::NPH == 1;
@@ -322,8 +322,13 @@ sub cgi_test_pop3_ajax {
 sub cgi_test_pop3_tmpl { 
 
 	return q{ 
-	<!-- tmpl_set name="title" value="Dada Bridge: POP3 Login Test" --> 
-	<!-- tmpl_include help_link_widget.tmpl -->
+	<!-- tmpl_set name="title" value="Dada Bridge &#187; POP3 Login Test" --> 
+	<div id="screentitle"> 
+		<div id="screentitlepadding">
+			<!-- tmpl_var title --> 
+		</div>
+		<!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 	
 	<script type="text/javascript">
 	    //<![CDATA[
@@ -410,7 +415,8 @@ sub cgi_awaiting_msgs {
     $run_list = $list;
     $verbose  = 1;
     my $popupscript = <<EOF
-<script language="JavaScript">
+
+<script type="text/javascript">
 <!-- 
 // This is the function that will open the
 // new window when the mouse is moved over the link
@@ -548,15 +554,14 @@ sub admin_cgi_manual_start_tmpl {
 	
 	return q{ 
 		
-		<!-- tmpl_set name="title" value="Dada Bridge: Manually Running Mailing..." --> 
-		<!-- tmpl_include help_link_widget.tmpl -->
-		
-	   <p id="breadcrumbs">
-	        <a href="<!-- tmpl_var Plugin_URL -->">
-			 <!-- tmpl_var Plugin_Name -->
-		</a> &#187; Manually Running Mailing
-	   </p>
-			
+		<!-- tmpl_set name="title" value="Dada Bridge &#187; Manually Running Mailing..." --> 
+		<div id="screentitle"> 
+			<div id="screentitlepadding">
+				<!-- tmpl_var title --> 
+			</div>
+			<!-- tmpl_include help_link_widget.tmpl -->
+		</div>
+					
 			<script type="text/javascript">
 			    //<![CDATA[
 				Event.observe(window, 'load', function() {
@@ -3268,20 +3273,16 @@ sub find_return_path {
 sub cgi_show_plugin_config_tmpl {
 
     return q{ 
-    
-    
-	<!-- tmpl_set name="title" value="Dada Bridge: Plugin Configuration" -->
-	<!-- tmpl_include help_link_widget.tmpl -->
-	
-  <p id="breadcrumbs">
-   <a href="<!-- tmpl_var Plugin_URL -->"> 
-   <!-- tmpl_var Plugin_Name --> 
-   </a> 
-   &#187;
-        Plugin Configuration
-   </a> 
-  </p> 
 
+
+	<!-- tmpl_set name="title" value="Dada Bridge &#187; Plugin Configuration" --> 
+	<div id="screentitle"> 
+		<div id="screentitlepadding">
+			<!-- tmpl_var title --> 
+		</div>
+		<!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+	
         <table> 
         
         <!-- tmpl_loop configs --> 
@@ -3350,21 +3351,18 @@ sub cgi_edit_email_msgs_tmpl {
 return q{ 
 
 
-	<!-- tmpl_set name="title" value="Dada Bridge: Customize Email Messages" -->
-	<!-- tmpl_include help_link_widget.tmpl -->
+	<!-- tmpl_set name="title" value="Dada Bridge &#187; Customize Email Messages" -->
+	<div id="screentitle"> 
+		<div id="screentitlepadding">
+			<!-- tmpl_var title --> 
+		</div>
+		<!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 
-  <p id="breadcrumbs">
-   <a href="<!-- tmpl_var Plugin_URL -->"> 
-   <!-- tmpl_var Plugin_Name --> 
-   </a> 
-   &#187;
-        Email Templates
-   </a> 
-  </p>
-
+  
 
 	<!-- tmpl_if done -->
-	    <!-- tmpl_var GOOD_JOB_MESSAGE -->
+	    <!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 	<!--/tmpl_if-->
 
 <p class="alert">Leave an Subject or Message blank to have it revert to the default subject or message.</p> 
@@ -3840,7 +3838,12 @@ sub default_cgi_template {
     return q{ 
 
 <!-- tmpl_set name="title" value="Dada Bridge" -->
-<!-- tmpl_include help_link_widget.tmpl -->
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
 
 <!-- tmpl_if saved -->
 	<!-- tmpl_var GOOD_JOB_MESSAGE  -->
@@ -3922,7 +3925,7 @@ sub default_cgi_template {
 		<ul> 
 			<li>
 				<p class="error">
-					Your List Email was set to the same address as a List Owner Email address of a different list. It needs to be set to a different address. 
+					Your List Email was set to the same address as a List Owner Email address of a different Mailing List. It needs to be set to a different address. 
 				</p>
 			</li>
 		</ul>
@@ -3941,7 +3944,7 @@ sub default_cgi_template {
 	<ul> 
 		<li>
 			<p class="error">
-				Your List Email was set to the same address as the List Admin Email address of a different list. It needs to be set to a different address. 
+				Your List Email was set to the same address as the List Admin Email address of a different Mailing List. It needs to be set to a different address. 
 			</p>
 		</li>
 	</ul>
@@ -4144,11 +4147,10 @@ General
   		  <!-- tmpl_if show_authorized_senders_table --> 
 			<p><strong>Your Authorized Senders:</strong></p>
 			<div style="max-height: 200px; width:250px; overflow: auto; border:1px solid black">
-			 <table cellpadding="2" cellspacing="0" border="0" width="100%">
+			 <table class="stripedtable">
 	
 				<!-- tmpl_loop authorized_senders --> 
-					  <tr
-					 <!-- tmpl_if name="__odd__" --> style="background-color:#ccf;"<!-- tmpl_else --> style="background-color:#fff;" <!--/tmpl_if-->>
+					  <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
 					 <td> 
 					 <p><!-- tmpl_var email --></p>
 					</td> 

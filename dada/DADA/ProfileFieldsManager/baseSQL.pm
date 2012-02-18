@@ -173,6 +173,7 @@ sub add_field {
 
     my $sth = $self->{dbh}->prepare($query);
 
+		
     my $rv = $sth->execute()
       or croak "cannot do statement (at add_field)! $DBI::errstr\n";
 

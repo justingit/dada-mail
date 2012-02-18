@@ -33,7 +33,7 @@ use lib qw(
 
 );
 
-use DADA::Config 4.8.0;
+use DADA::Config;
 use CGI::Carp qw(fatalsToBrowser);
 use DADA::App::Guts;
 use DADA::Mail::Send;
@@ -297,12 +297,12 @@ sub cgi_default_tmpl {
  
 		<!-- tmpl_unless plugin_configured --> 
 		
-			<div style="background:#fcc;margin:5px;padding:5px;text-align:center;border:2px #ccc dotted">
-			  <h1>
+			<div class="badweatherbox">
+			  <p><strong>
 			   Warning! <!-- tmpl_var Plugin_Name --> Not Configured!
-			  </h1> 
+			  </strong></p> 
 	
-			<p class="error">
+			<p>
 			 You must set up the Bounce Handler Email Address in the plugin-specific configuration. 
 			</p> 
 	 		
@@ -311,7 +311,7 @@ sub cgi_default_tmpl {
 		<!-- /tmpl_unless --> 
 		
 		<!-- tmpl_if done -->
-			<!-- tmpl_var GOOD_JOB_MESSAGE -->
+			<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 		<!--/tmpl_if-->
 		
 <fieldset> 
@@ -444,7 +444,7 @@ Scorecard Preferences
 </table> 
 
 <p>
-	Addresses that reach the <strong>Score Threshold</strong> will be unsunbscribed
+	Addresses that reach the <strong>Score Threshold</strong> will be unsubscribed
 	from your mailing list. 
 </p>
 <table border="0"> 
@@ -470,6 +470,21 @@ Scorecard Preferences
 <br />Bounce Messages will be delivered to the List Owner (after being parsed and scored) for manual inspection. 
 </td>
 </tr> 
+<tr> 
+
+<td> 
+&nbsp;
+</td> 
+<td> 
+	<p>Addresses the reach the <strong>Bounce Score Threshold</strong> Should:</p>
+
+	 <p><input type="radio" name="bounce_handler_when_threshold_reached" value="unsub_subscriber" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'unsub_subscriber')" -->checked="checked"<!-- /tmpl_if --> /><label>Be Unsubscribed Right Away</label><br />
+	 <input type="radio" name="bounce_handler_when_threshold_reached"  value="move_to_bounced_sublist" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'move_to_bounced_sublist')" -->checked="checked"<!-- /tmpl_if --> /><label>Be Moved to the, "Bounced Addresses" Sublist</label>
+</p> 
+
+</td>
+
+</tr>
 </table> 
 
 <div class="buttonfloat">   
@@ -708,7 +723,8 @@ sub edit_prefs {
 				bounce_handler_decay_score                => undef, 
 				bounce_handler_threshold_score            => undef, 
 				bounce_handler_forward_msgs_to_list_owner => 0, 
-            }
+            	bounce_handler_when_threshold_reached     => undef, 
+			}
         }
     );
 
@@ -1004,7 +1020,7 @@ sub cgi_scorecode_tmpl {
 	<div> 
 		<div style="max-height: 300px; overflow: auto; border:1px solid black">
 
-		  <table cellpadding="5" cellspacing="0" border="0" width="100%"> 
+		  <table class="stripedtable">
 		   <tr style="background:#fff"> 
 		   		<td>
 					<p>
@@ -1019,7 +1035,7 @@ sub cgi_scorecode_tmpl {
 			</tr> 
 
 			<!-- tmpl_loop scorecard --> 
-		   	<tr <!-- tmpl_if __odd__ -->style="background-color:#ccf;"<!-- tmpl_else -->style="background-color:#fff;"<!--/tmpl_if-->>
+		   	<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
 				<td>
 					<p>
 					<a href="<!-- tmpl_var PLUGIN_URL -->?flavor=cgi_bounce_score_search&amp;query=<!-- tmpl_var email ESCAPE="URL" -->">
@@ -1155,31 +1171,35 @@ sub cgi_show_plugin_config_template {
 
 sub cgi_bounce_score_search {
 
-    #TODO DEV: THIS NEEDS ITS OWN METHOD!!!
-    my %l_label;
-    my @l_lists = available_lists();
-
-    for my $l_list (@l_lists) {
-        my $l_ls = DADA::MailingList::Settings->new( { -list => $l_list } );
-        my $l_li = $l_ls->get;
-        $l_label{$l_list} = $l_li->{list_name};
-
-    }
 
     require HTML::Template;
-
-    require DADA::App::BounceHandler::ScoreKeeper;
-    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new({ -list => $list });
-
-    require DADA::App::LogSearch;
-
     my $query = xss_filter( $q->param('query') );
 
-    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
-    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
+	 if ( !defined($query) ) {
+	        $q->redirect(
+	            -uri => $Plugin_Config->{Plugin_URL} );
+	        return;
+	    }
 
-    my $valid_email        = 0;
+
+	require DADA::App::BounceHandler::Logs; 
+	my $bhl = DADA::App::BounceHandler::Logs->new;
+	my $results = $bhl->search(
+		{ 
+			-query => $query, 
+			-list  => $list, 
+			-file  => $Plugin_Config->{Log},
+		}
+	);
+	my $results_found = 0; 
+	if($results->[0]){ 
+		$results_found = 1; 
+	}
+	
+	require DADA::MailingList::Subscribers;
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+    
+	my $valid_email        = 0;
     my $subscribed_address = 0;
     if ( DADA::App::Guts::check_for_valid_email($query) == 0 ) {
         $valid_email = 1;
@@ -1187,107 +1207,8 @@ sub cgi_bounce_score_search {
             $subscribed_address = 1;
         }
     }
+    
 
-    if ( !defined($query) ) {
-        $q->redirect(
-            -uri => $Plugin_Config->{Plugin_URL} );
-        return;
-    }
-
-    my $searcher = DADA::App::LogSearch->new;
-    my $results  = $searcher->search(
-        {
-            -query => $query,
-            -files => [ $Plugin_Config->{Log} ],
-			
-        }
-    );
-
-	# -list  => $list, 
-	
-
-    my $search_results = [];
-    my $results_found  = 0;
-
-    if ( $results->{ $Plugin_Config->{Log} }->[0] ) {
-
-        $results_found = 1;
-
-        for my $l ( @{ $results->{ $Plugin_Config->{Log} } } ) {
-
-            my @entries = split( "\t", $l, 5 );    # Limit of 5
-
-            # Let us try to munge the data!
-
-            # Date!
-            $entries[0] =~ s/^\[|\]$//g;
-
-            # $entries[0] = $searcher->html_highlight_line(
-            #     { -query => $query, -line => $entries[0] } );
-            #
-            # ListShortName!
-            #$entries[1] = $searcher->html_highlight_line(
-            #    { -query => $query, -line => $entries[1] } );
-            #
-            # Action Taken!
-            #$entries[2] = $searcher->html_highlight_line(
-            #   { -query => $query, -line => $entries[2] } );
-            #
-            # Email Address!
-            #           $entries[3] = $searcher->html_highlight_line(
-            #              { -query => $query, -line => $entries[3] } );
-
-            my @diags = split( ",", $entries[4] );
-            my $labeled_digs = [];
-
-            for my $diag (@diags) {
-                my ( $label, $value ) = split( ":", $diag );
-				my $newline = quotemeta('\n'); 
-				# Make fake newlines, newlines: 
-				$value =~ s/$newline/\n/g;
-
-                push(
-                    @$labeled_digs,
-                    {
-                        diagnostic_label => $label,
-
-                        #  diagnostic_label => $searcher->html_highlight_line(
-                        #      { -query => $query, -line => $label }
-                        #  ),
-                        diagnostic_value => $value
-
-                          # $searcher->html_highlight_line(
-                          #      { -query => $query, -line => $value }
-                          #  ),
-
-                    }
-                );
-
-            }
-
-			if($entries[1] eq $list) { # only show entries for this list... 
-	            push(
-	                @$search_results,
-	                {
-	                    date      => $entries[0],
-	                    list      => $entries[1],
-	                    list_name => $l_label{ $entries[1] },
-	                    action    => $entries[2],
-	                    email     => $entries[3],
-
-	                    diagnostics => $labeled_digs,
-
-	                }
-	            );
-			}
-
-        }
-    }
-    else {
-
-        $results_found = 0;
-
-    }
 
     my $tmpl = cgi_bounce_score_search_template();
 
@@ -1302,16 +1223,18 @@ sub cgi_bounce_score_search {
             },
             -vars => {
                 query              => $query,
-                list_name          => $li->{list_name},
                 subscribed_address => $subscribed_address,
                 valid_email        => $valid_email,
-                search_results     => $search_results,
+                search_results     => $results,
                 results_found      => $results_found,
-
-                S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL,
-                Plugin_URL    => $Plugin_Config->{Plugin_URL},
-                Plugin_Name   => $Plugin_Config->{Plugin_Name},
-            }
+                S_PROGRAM_URL      => $DADA::Config::S_PROGRAM_URL,
+                Plugin_URL         => $Plugin_Config->{Plugin_URL},
+                Plugin_Name        => $Plugin_Config->{Plugin_Name},
+            }, 
+			-list_settings_vars_param => {
+				-list   => $list,
+				-dot_it => 1,
+			},
         }
 
     );
@@ -1345,9 +1268,9 @@ sub cgi_bounce_score_search_template {
    
        <!-- tmpl_if subscribed_address --> 
             <p class="alert">
-            <!-- tmpl_var query ESCAPE="HTML" --> is currently subscribed to your list (<!-- tmpl_var list_name ESCAPE="HTML" -->) - 
+            <!-- tmpl_var query ESCAPE="HTML" --> is currently subscribed to your list (<!-- tmpl_var list_settings.list_name ESCAPE="HTML" -->) - 
             <strong> 
-            <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_subscriber&email=<!-- tmpl_var query ESCAPE="URL" -->&type=list">
+            <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=membership&email=<!-- tmpl_var query ESCAPE="URL" -->&type=list">
              More Information...
              </a> 
             </strong>
@@ -1355,7 +1278,7 @@ sub cgi_bounce_score_search_template {
        <!-- tmpl_else --> 
        
                 <p class="error">
-            <!-- tmpl_var query ESCAPE="HTML" --> is currently not subscribed to your list (<!-- tmpl_var list_name ESCAPE="HTML" -->)
+            <!-- tmpl_var query ESCAPE="HTML" --> is currently not subscribed to your list (<!-- tmpl_var list_settings.list_name ESCAPE="HTML" -->)
             </p
        
        <!-- /tmpl_if --> 
@@ -1364,87 +1287,9 @@ sub cgi_bounce_score_search_template {
    
    <!-- tmpl_if results_found --> 
    
-       <!-- tmpl_loop search_results --> 
-
-      <div style="<!-- tmpl_if __odd__ -->background-color:#fff;<!-- tmpl_else -->background-color:#ccf;<!--/tmpl_if-->border:1px solid black;">
-	  <div style="padding:5px"> 
-	
-           <h2>
-            Date: <!-- tmpl_var date --> 
-           </h2> 
-           
-
-<div style="padding-left:5px"> 
-
-           <table>
-
-			<tr>
-             <td> 
-              <strong>List Name:</strong>
-             </td>
-             <td>
-              <!-- tmpl_var list_name ESCAPE="HTML" --> (<!-- tmpl_var list -->)
-             </td>
-
-       	</tr>             
-			<tr>
-			
-         	<tr>
-             <td> 
-              <strong>Email:</strong>
-             </td>
-             <td>
-			 <!-- tmpl_var email --> 
-			</td> 
-			</tr>             
-			
-		     
-             
-            	<td> 
-              <strong>Action Taken:</strong> 
-            </td> 
-<td>
-<!-- tmpl_var action ESCAPE="HTML" --> 
-</td> 
-
-</tr> 
-
-</table> 
-
-        
-           <div style="padding-left:5px"> 
-        
-            <h2>
-             Diagnostics of the Bounced Message:
-            </h2> 
+	<!-- tmpl_include bouncing_search_results_widget.tmpl -->
             
-         <table style="margin-left:10px;padding-left:10px">
-          
-            
-             <!-- tmpl_loop diagnostics --> 
-              
-                <tr>
-<td>
-                    <strong> 
-                     <!-- tmpl_var diagnostic_label ESCAPE="HTML" -->:
-                    </strong> 
-    </td>
-<td>
-                
-                    <!-- tmpl_var diagnostic_value ESCAPE="HTML" -->
-</td>
-</tr> 
-                
-             <!-- /tmpl_loop --> 
-            
-</table> 
 
-</div> 
-</div> 
-
-    </div> 
-    </div> 
-        <!-- /tmpl_loop --> 
 
     <!-- tmpl_else --> 
     

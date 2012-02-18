@@ -7,7 +7,7 @@ use lib qw(../ ../DADA/perllib ../../../../perl ../../../../perllib);
 use CGI::Carp qw(fatalsToBrowser); 
 
 # use some of those Modules
-use DADA::Config 4.0.0;
+use DADA::Config 5.0.0;
 use DADA::Template::HTML; 
 use DADA::Template::Widgets; 
 use DADA::App::Guts;
@@ -150,6 +150,12 @@ sub default_screen {
 return <<EOF
 
 <!-- tmpl_set name="title" value="Change Your <!-- tmpl_var PROGRAM_NAME --> Root Password" -->
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
 
 <form method="post"> 
 

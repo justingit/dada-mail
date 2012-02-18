@@ -1,9 +1,8 @@
 <!-- begin sending_preferences_test_widget.tmpl --> 
 
-<div style="width:96%; height:300px; margin: 5px; padding: 5px; border:1px solid black; overflow:auto;">
 
 	<!-- tmpl_var name="GOOD_JOB_MESSAGE" -->
-	<p class="alert">
+	<p>
 		
 		<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" --> 
 			Testing SMTP Sending... 
@@ -31,13 +30,12 @@
 <!-- /tmpl_if --> 
 
 
-<p class="alert">
+<p>
 	Check your email inbox for, <!-- tmpl_var list_settings.list_owner_email --> to see if you've received a message from <!-- tmpl_var PROGRAM_NAME -->.
 </p>
-<p class="alert">
+<p>
 	If a message has been received, email sending for your list is working properly!
 </p>
-</div>
 
 <!-- end sending_preferences_test_widget.tmpl --> 
 

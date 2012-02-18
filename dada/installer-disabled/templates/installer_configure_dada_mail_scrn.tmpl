@@ -3,20 +3,22 @@
 <!-- tmpl_set name="title" value="Install <!-- tmpl_var PROGRAM_NAME -->" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
-<h1>Install <!-- tmpl_var PROGRAM_NAME --></h1> 
+<!-- <h1>Install <!-- tmpl_var PROGRAM_NAME --></h1>  -->
 	
 <!-- tmpl_if errors --> 
 	<h2>
 		Problems When Attempting to Install!
 	</h2>
-	<p class="error"> 
-	 Some problems were encountered, when attempting to install and configure <!-- tmpl_var PROGRAM_NAME -->. Details are marked below:
-	</p>  
+	<div class="badweatherbox"> 
+	 <p>
+		Some problems were encountered, when attempting to install and configure 
+		<!-- tmpl_var PROGRAM_NAME -->. Details are marked below:</p>
+	</div>  
 <!-- /tmpl_if --> 
 
 <!-- tmpl_if lists_available --> 
 
-	<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+	<div class="badweatherbox">
 
 	<h3>Warning!</h3> 
 	<p>
@@ -46,7 +48,7 @@
 
 
 		<div class="buttonfloat">
-		<input type="submit" value="View Your Current .dada_config Configuration" class="processing" />
+		<input type="submit" value="View Your Current .dada_config Configuration..." class="processing" />
 		</div >
 		<div class="floatclear"></div>
 		
@@ -63,7 +65,7 @@
 
 <!-- tmpl_if error_cant_read_config_dot_pm --> 
 
-	<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+	<div class="badweatherbox">
 
 
 	<h3>Warning!</h3>
@@ -80,7 +82,8 @@
 <!-- /tmpl_if --> 
 <!-- tmpl_if error_cant_write_config_dot_pm --> 
 
-<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+<br />
+<div class="badweatherbox">
 
 
 <h3>Warning!</h3> 
@@ -127,22 +130,23 @@
 	<!-- tmpl_if error_create_dada_files_dir  --> 
 		<ul> 
 		<li>
-		<p class="error"> 
+		<div class="badweatherbox">
 		 Can not create, <em><!-- tmpl_var install_dada_files_dir_at -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em>
 		</p>
-		</li>
+		</div>
 		</ul>
 
 	<!-- /tmpl_if --> 
 	<!-- tmpl_if error_dada_files_dir_exists  --> 
 		<ul> 
 		<li>
-		<p class="error"> 
+			<div class="badweatherbox">
 			The directory, <em><!-- tmpl_var dada_files_loc -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em> already exists.
-		</p>
+		</div>
 
 		<!-- tmpl_if test_complete_dada_files_dir_structure_exists --> 
-				<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+				<br />
+				<div class="badweatherbox">
 				
 				<p>
 				 <strong>
@@ -224,13 +228,14 @@
 
 
 <!-- tmpl_if error_program_url_is_blank  --> 
+	<div class="badweatherbox">
+	
 	<ul>
 	<li>
-	<p class="error"> 
-	Your <!-- tmpl_var PROGRAM_NAME --> URL is blank.</em>
+		<p>	Your <!-- tmpl_var PROGRAM_NAME --> URL is blank.</em>
 	</p></li>
 	</ul> 
-	
+</div>
 <!-- /tmpl_if -->
 
 
@@ -260,21 +265,26 @@
 
 
 <!-- tmpl_if error_root_pass_is_blank  --> 
+	<div class="badweatherbox">
+	
 	<ul>
 	<li>
-	<p class="error"> 
+	<p> 
 	Your <!-- tmpl_var PROGRAM_NAME --> Root Password is Blank.</em>
 	</p></li></ul> 
-	
+</div>
+
 <!-- /tmpl_if -->
 <!-- tmpl_if error_pass_no_match  --> 
+	<div class="badweatherbox">
+	
 	<ul>
 	<li>
-	<p class="error"> 
+	<p> 
 	Your <!-- tmpl_var PROGRAM_NAME --> Root Passwords Do Not Match.</em>
 	</p></li>
 	</ul> 
-	
+</div>
 <!-- /tmpl_if -->
 
 <div id="root_pass_help" style="display:none"> 
@@ -299,13 +309,17 @@ access <em>any</em> mailing list.</p>
 <legend><!-- tmpl_var PROGRAM_NAME --> Backend [<a href="#" onclick="toggleDisplay('backend_help');return false;">?</a>]</legend> 
 
 <!-- tmpl_if error_sql_connection  --> 
+	<div class="badweatherbox">
+	
 	<ul>
 	<li>
-	<p class="error"> 
+	<p> 
 		Could not connect to your SQL Server
 	</p>
 	</li>
 	</ul> 
+	</div>
+	
 <!-- /tmpl_if -->
 
 
@@ -337,13 +351,18 @@ If using either the SQL backends, make sure to create a new database before conf
 <!-- tmpl_if can_use_DBI --> 
 <div id="sql_info" style="display:none;"> 
 <fieldset>
-	<legend>SQL Information</legend> <!-- tmpl_if error_sql_table_populated -->
+	<legend>SQL Information</legend> 
+	
+	<!-- tmpl_if error_sql_table_populated -->
+	<div class="badweatherbox">
+	
 	<ul>
 		<li>
-			<p class="error">
+			<p>
 				The SQL information below is correct, but there are tables in this database that correspond to the tables that <!-- tmpl_var PROGRAM_NAME --> requires.
 			</p>
-			<div style="background:#fcc;margin:5px;padding:5px;border:2px #ccc dotted">
+			<br />
+			<div class="badweatherbox">
 				
 			<p>
 				<input type="checkbox" name="skip_configure_SQL" id="skip_configure_SQL" value="1">
@@ -353,10 +372,14 @@ If using either the SQL backends, make sure to create a new database before conf
 				<br />
 				Use these existing tables, instead of making new ones.
 			</p>
-		</div> 
+			</div> 
+			<br />
 		
 		</li>
-	</ul><!-- /tmpl_if -->
+	</ul>
+</div>
+
+	<!-- /tmpl_if -->
 	<p>
 		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_server">Server:</label> <input type="text" name="sql_server" id="sql_server" value="localhost" />
 	</p>
@@ -379,9 +402,10 @@ If using either the SQL backends, make sure to create a new database before conf
 
 
 <!-- tmpl_else --> 
-	<p class="error"> 
-		Your current server setup does not support the SQL backend. 
+	<div class="badweatherbox">
+	<p>Your current server setup does not support the SQL backend. 
 	</p>
+</div>
 	
 <!-- /tmpl_if --> 
 </fieldset> 

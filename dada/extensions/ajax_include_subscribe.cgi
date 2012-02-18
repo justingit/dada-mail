@@ -25,7 +25,7 @@ BEGIN {
 
 use CGI::Carp qw(fatalsToBrowser); 
 
-use DADA::Config 3.0.0 qw(!:DEFAULT);
+use DADA::Config 5.0.0 qw(!:DEFAULT);
 use DADA::MailingList::Subscribers; 
 use DADA::MailingList::Settings;
 use DADA::Template::Widgets; 

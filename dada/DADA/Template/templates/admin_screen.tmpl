@@ -50,8 +50,6 @@
      </strong>
      are enabled in your browser.
     </p>
-    
-    <hr />
 
 <!--/tmpl_if--> 
 
@@ -67,14 +65,14 @@
     <!-- tmpl_if expr="list_max_reached == 1" -->
         
         <p class="error">
-         You have reached the maximum number of lists that can be created.
+         You have reached the maximum number of Mailing Lists that can be created.
         </p>
         
     <!-- tmpl_else -->
         
         <p>
          You will need to know the <!-- tmpl_var name="PROGRAM_NAME" -->
-         Root Password to create a new list.
+         Root Password to create a new Mailing List.
         </p>
         
         <form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
@@ -94,7 +92,7 @@
             <input type="password" name="root_password" id="root_password" maxlength="24" />
            </td>
            <td>
-            <input type="submit" class="plain" value="Create a New List..." />
+            <input type="submit" class="plain" value="Create a New Mailing List..." />
            </td>
           </tr>
          </table>

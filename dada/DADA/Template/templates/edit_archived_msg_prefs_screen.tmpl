@@ -7,17 +7,17 @@
 	
 	<!-- tmpl_if done --> 
 	
-	  <!-- tmpl_var GOOD_JOB_MESSAGE --> 
+	  <!-- tmpl_include changes_saved_dialog_box_widget.tmpl  --> 
 	  
 	<!--/tmpl_if--> 
 	
 	<p><strong>Editable Headers:</strong></p>
 	
 	<div style="max-height: 200px; width:250px; overflow: auto; border:1px solid black">
-	 <table cellpadding="2" cellspacing="0" border="0" width="100%">
+	 <table class="stripedtable">
      
 	<!-- tmpl_loop edit_headers_menu --> 
-	  <tr<!-- tmpl_if name="__odd__" --> style="background-color:#ccf;"<!--/tmpl_if-->>
+	  <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
 
 		    <td width="25">
 
@@ -37,14 +37,8 @@
 	</div>
 	
 	<hr /> 
-		<input type="hidden" name="process" value="prefs" /> 
-
+	<input type="hidden" name="process" value="prefs" /> 
 	<input type="hidden" name="process_prefs" value="1" /> 
-
-<!-- 
-<input type="hidden" name="flavor" value="prefs" /> 
---> 
-
 	<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
 
 	<div class="buttonfloat">
@@ -56,6 +50,6 @@
 	
 	</form> 
 	
-	<p><a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_archived_msg&id=<!-- tmpl_var id -->">&lt;-- Back to the Archived Message</a></p>
+	<p><a href="<!-- tmpl_var S_PROGRAM_URL -->?f=edit_archived_msg;id=<!-- tmpl_var id -->">&lt;-- Back to the Archived Message</a></p>
 
 <!-- end edit_archived_msg_prefs_screen.tmpl --> 

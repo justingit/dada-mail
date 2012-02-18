@@ -92,22 +92,27 @@ sub search_list {
 	my ($args) = @_; 
 
     if(!exists($args->{-start})){ 
-        $args->{-start} = 1;     
+        $args->{-start} = 0;     
     }
     if(!exists($args->{'-length'})){ 
         $args->{'-length'} = 100;     
     }
         
-	my $r       = [];
-	my $email   = ''; 
+	my $r         = [];
+	my $email     = ''; 
 	my $query = quotemeta($args->{-query}); 
     my $count   = 0;
     
     $self->open_list_handle(-Type => $args->{-type});
     while(defined($email = <LIST>)){
 		chomp($email); 
-        if($email =~ m/$query/i){ 
+        if($email =~ m/$query/i){ # case insensitive?
+			$count++;
 			
+			# This is to still count, but not return...
+	        next if $count < ( $args->{ -start } * $args->{ '-length' });
+	        next if $count > ( ( $args->{ -start } * $args->{ '-length' }) + ($args->{'-length'}) );
+	        
 			push(
 				@$r, 
 				{
@@ -116,17 +121,13 @@ sub search_list {
 					fields => []
 				}
 			);
-    
-			$count++; 
-	        next if $count <  $args->{-start}; 
-	        last if $count > ($args->{-start} + $args->{'-length'});
 	
         }
     }
     close(LIST); 
     
 
-	return $r; 
+	return ($count, $r); 
 
 
 }
@@ -324,13 +325,13 @@ sub subscription_list {
 	
 	$self->open_list_handle(-Type => $args->{-type}); 
 	while(defined($email = <LIST>)){ 
-			if($count < $args->{ -start }) { 
+			if($count < ( $args->{ -start } * $args->{ '-length' })) { 
 				$count++;
 				next; 
 			}
 	        if ( exists( $args->{'-length'} ) ) {
 				$count++;
-	            last if $count > ( $args->{ -start } + ($args->{'-length'}) );
+	            last if $count > ( ( $args->{ -start } * $args->{ '-length' }) + ($args->{'-length'}) );
 	        }
 			else { 
 			}

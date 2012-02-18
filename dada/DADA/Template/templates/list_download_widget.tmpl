@@ -1,0 +1,23 @@
+<!-- begin list_download_widget.tmpl -->
+
+  <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+	
+    <input type="hidden" name="f"    value="text_list" />
+    <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+
+	<!-- tmpl_if query --> 
+		
+		<input type="hidden" name="query" value="<!-- tmpl_var query -->" />
+		<input type="hidden" name="order_by" value="<!-- tmpl_var order_by -->" />
+		<input type="hidden" name="order_dir" value="<!-- tmpl_var order_dir -->" />
+		<input type="submit" class="small_button" value="&#8595; Export Search Results (.csv)" />
+		
+	<!-- tmpl_else --> 
+	
+		<input type="submit" class="small_button" value="&#8595; Export <!-- tmpl_var type_title --> (.csv)" />
+
+	<!-- /tmpl_if --> 
+	
+   </form>
+ 
+<!-- end list_download_widget.tmpl -->

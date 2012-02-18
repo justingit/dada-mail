@@ -3,28 +3,28 @@
 <!-- tmpl_set name="title" value="<!-- tmpl_var list_settings.list_name -->" -->
 
 <!-- tmpl_include name="list_breadcrumbs_widget.tmpl" -->
-<h1>
- <!-- tmpl_var name="list_settings.list_name" -->
-</h1>
 
 <!-- tmpl_if error_no_email --> 
-    <p class="error">
+
+	<div class="badweatherbox">
+    <p>
      Please fill in your email address in the form below:
     </p>
+	</div>
 <!--/tmpl_if--> 
 
 <!-- tmpl_var subscription_form --> 
 
 
-<div id="list_information"><!-- tmpl_if comment -->Not sure what this id is for!<!-- /tmpl_if -->
-
-<h2>List Information:</h2>
+<div>
+	
+<h2>Mailing List Information:</h2>
 
 <ul> 
     <!-- tmpl_if list_settings.group_list --> 
         <li>
          <p>
-			This list is a group discussion list
+			This mailing list is a group discussion list
          
             <!-- tmpl_if list_settings.enable_moderation --> 
                 (moderated)
@@ -43,7 +43,7 @@
         
         <li>
          <p>
-			This list is an announce-only list.
+			This mailing list is announce-only.
          </p>
 		</li>
 

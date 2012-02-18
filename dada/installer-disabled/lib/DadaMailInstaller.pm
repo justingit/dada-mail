@@ -187,9 +187,8 @@ q{#					{
 $DADA::Config::PROGRAM_URL   = program_url_guess();
 $DADA::Config::S_PROGRAM_URL = program_url_guess();
 
-use DADA::Config 4.0.0;
-	$DADA::Config::USER_TEMPLATE = '';
-	
+use DADA::Config 5.0.0;
+    $DADA::Config::USER_TEMPLATE = '';
 use DADA::App::Guts;
 use DADA::Template::Widgets;
 use DADA::Template::HTML;

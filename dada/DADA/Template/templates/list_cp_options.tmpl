@@ -1,11 +1,16 @@
 <!-- begin list_cp_options.tmpl --> 
 
-<!-- tmpl_set name="title" value="Options" -->
+<!-- tmpl_set name="title" value="Your List Control Panel &#187; Options" -->
 
-<!-- tmpl_include help_link_widget.tmpl -->
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
 
 <!-- tmpl_if done -->
-	<!-- tmpl_var GOOD_JOB_MESSAGE -->
+	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!--/tmpl_if -->
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
@@ -66,25 +71,6 @@
 </table>
 				
 </fieldset> 
-
-
-
-
-<fieldset> 
-	<legend>
-	Subscription Tables
-	</legend>
-	<p>
-	 Show <!-- tmpl_var vlsn_menu --> addresses at once, in the View and Search subscription tables.
-	</p>
-
-</fieldset> 
-
-
-
-
-
-
 
 
 

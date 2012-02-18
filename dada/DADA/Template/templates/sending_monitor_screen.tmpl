@@ -1,39 +1,29 @@
 <!-- begin sending_monitor_screen.tmpl -->
 
-<p>
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		Mass Mailing &#187; Monitor Your Mailings
+		<!-- tmpl_if header_subject_label --> 
+			 &#187;
+			 <!-- tmpl_var name="header_subject_label" escape="HTML" --> 
+		<!-- /tmpl_if --> 
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
 
-<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=send_email"> 
- Send a Message 
-</a> 
-
-  &#187;
-
-   <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor">
-    Monitor Your Mailings
-  </a>
-
-
-<!-- tmpl_if header_subject_label --> 
-
-	
-	 &#187;
-	 <!-- tmpl_var name="header_subject_label" escape="HTML" --> 
-
-	</p>
-
-<!-- /tmpl_if --> 
 
 
 <!-- tmpl_if mailout_exists -->
 
 	<!-- tmpl_unless integrity_check --> 
 
-		<div style="background:#fcc;margin:5px;padding:5px;text-align:center;border:2px #ccc dotted">
-		  <h1>
-		   Warning! Mailout seems broken!
-		  </h1> 
-	
-		<p class="error">
+		<div class="badweatherbox">
+		  <p>
+			<strong>
+		   Warning! Mass Mailing seems broken!
+		  </strong> 
+		</p>
+		<p>
 		 Metadata about Mass Mailing is missing/corrupted or an internal process goofed up.
 		 <br />  
 		 Mass Mailing will be paused and cannot be resumed.</p> 
@@ -43,7 +33,7 @@
 	<!-- /tmpl_unless --> 
 
 	<p class="alert"> 
-	   To guarantee this mailout keeps sending, keep this window open!
+	   To guarantee this mass mailing keeps sending out, keep this window open!
 	  </p>
 
 
@@ -286,28 +276,33 @@
     
 	    <!-- tmpl_if sending_done --> 
     
-	        <p class="positive"> 
+			<div class="clearskiesbox">
+	        <p> 
 	         Your mailing looks finished! You may navigate away from this window!
 	        </p>
+		</div>
     
     
 	    <!-- tmpl_else --> 
         
 	        <!-- tmpl_if its_killed --> 
         
-        
-	            <p class="error"> 
+        		<div class="badweatherbox">
+	            <p> 
 	             Message Sending seems to have stopped. 
 	            </p>
+			</div>
         
 	        <!--/tmpl_if-->
         
 	        <!-- tmpl_if status_mailout_stale --> 
         
-            
-	            <p class="error"> 
-	             The time since the last message sent has elapsed past a certain period and is considered, &quot;Stale&quot; You may continue the mailing by clicking, &quot;Pickup Mailing&quot;
+            	<div class="badweatherbox">
+	            <p> 
+	             The time since the last message sent has elapsed past a certain period and is considered, 
+					&quot;Stale&quot; You may continue the mailing by clicking, &quot;Pickup Mailing&quot;
 	            </p>
+			</div>
             
         
 	        <!-- /tmpl_if --> 
@@ -367,16 +362,20 @@
 <!--tmpl_else--> 
 
     <!-- tmpl_if killed_it -->
-    
-        <p class="error">
+	<div class="clearskiesbox">    
+        <p>
          Your mailing was successfully stopped.
         </p>
+	</div>
     
     <!-- tmpl_else --> 
         
-        <p class="positive"> 
-         This mailing has completed.
+	<div class="clearskiesbox">
+        <p> 
+         This mass mailing has completed.
         </p>
+	</div>
+	
     <!-- /tmpl_if --> 
 
 <!--/tmpl_if --> 

@@ -30,7 +30,7 @@ use lib qw(
 );
 
 
-use DADA::Config 4.0.0 qw(!:DEFAULT);
+use DADA::Config 5.0.0 qw(!:DEFAULT);
 use DADA::Template::HTML; 
 use DADA::App::Guts;
 use DADA::MailingList::Schedules;
@@ -405,6 +405,7 @@ sub default {
         -List       => $list,
         -Form       => 0,
         -Root_Login => $yeah_root_login,
+
 	);
 
     $scrn .= schedule_index();
@@ -467,7 +468,10 @@ sub edit  {
 						-Title      => "Scheduled Mailings - Edit",
 						-List       => $li->{list},
 						-Form       => 0,
-						-Root_Login => $yeah_root_login
+						-Root_Login => $yeah_root_login,
+						-vars => { 
+							load_wysiwyg_editor => 1, 
+						}
 						);
 
 	$scrn .= '<p><a href="' . $Plugin_Config->{Plugin_URL} . '">' . $Plugin_Config->{Plugin_Name} . '</a> &#187 Add/Edit</p>';

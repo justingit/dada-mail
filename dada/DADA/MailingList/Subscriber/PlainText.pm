@@ -190,15 +190,18 @@ sub move {
         }
     ); 
 
-
-    
-    #if ($DADA::Config::LOG{subscriptions}) { 
-    #    $self->{'log'}->mj_log(
-    #        $self->{list}, 
-    #        'Moved from:  ' . $self->{list} . '.' . $self->type . ' to: ' . $new_self->{list} . '.' . $new_self->type, 
-    #        $new_self->email, 
-    #    );
-    #}
+	if ( $DADA::Config::LOG{subscriptions} == 1 ) {
+		$self->{'log'}->mj_log( 
+			$self->{list},
+	        "Unsubscribed from ". $self->{list} . "." . $self->type,
+	         $self->email 
+		);
+	    $self->{'log'}->mj_log( 
+			$self->{list},
+	        'Subscribed to ' . $self->{list} . '.' . $args->{ -to },
+	        $self->email 
+		);
+	}
 
 	$self = $new_self; 
 	return 1; 
@@ -218,6 +221,28 @@ sub remove {
 	);
 	return undef; 
 }
+
+
+
+
+sub subscribed_to {
+	
+    my $self = shift;	
+	my $found = [];
+	
+	my $lh = DADA::MailingList::Subscribers->new({-list => $self->{list}});
+	foreach(keys %{$lh->get_list_types}){ 
+		if($lh->check_for_double_email(
+	        -Email => $self->email,
+	        -Type  => $_,
+	    ) == 1){
+			push(@$found, $_); 
+		}
+	}
+	return $found; 
+} 
+
+
 
 
 

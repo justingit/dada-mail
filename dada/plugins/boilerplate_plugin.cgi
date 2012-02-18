@@ -6,7 +6,7 @@ use strict;
 use lib qw(../ ../DADA/perllib);
 
 # use some of those Modules
-use DADA::Config 4.0.0;
+use DADA::Config 5.0.0;
 use DADA::Template::HTML;
 use DADA::App::Guts;
 use DADA::MailingList::Settings;

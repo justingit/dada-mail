@@ -249,13 +249,20 @@ $ADMIN_MENU = [
 			]
 	},
 
-	{-Title      => 'Your Subscribers',
+	{-Title      => 'Membership',
 	 -Activated  => 1,
 	 -Submenu    => [
 					{
 					-Title      => 'View',
 					-Title_URL  => "$S_PROGRAM_URL?f=view_list",
 					-Function   => 'view_list',
+					-Activated  => 1,
+					},
+					
+					{
+					-Title      => 'Recent Activity',
+					-Title_URL  => "$S_PROGRAM_URL?f=list_activity",
+					-Function   => 'list_activity',
 					-Activated  => 1,
 					},
 
@@ -288,14 +295,14 @@ $ADMIN_MENU = [
 	 -Activated  => 1,
 	 -Submenu    => [
 					{
-					-Title      => 'Change List Information',
+					-Title      => 'List Information',
 					-Title_URL  => "$S_PROGRAM_URL?f=change_info",
 					-Function   => 'change_info',
 					-Activated  => 1,
 					},
 
 					{
-					-Title      => 'Change List Password',
+					-Title      => 'List Password',
 					-Title_URL  => "$S_PROGRAM_URL?f=change_password",
 					-Function   => 'change_password',
 					-Activated  => 1,
@@ -432,26 +439,6 @@ $ADMIN_MENU = [
 
 
 	{
-	-Title      => 'Your List Control Panel',
-	-Activated  => 0,
-	-Submenu    => [
-				{
-				-Title      => 'Customize Feature Set',
-				-Title_URL  => "$S_PROGRAM_URL?f=feature_set",
-				-Function   => 'feature_set',
-				-Activated  => 0,
-				},
-
-				{
-				-Title      => 'Options',
-				-Title_URL  => "$S_PROGRAM_URL?f=list_cp_options",
-				-Function   => 'list_cp_options',
-				-Activated  => 0,
-				}
-			], 
-	},
-
-	{
 	-Title      => 'Plugins',
 	-Activated  => 1,
 	-Submenu    => [
@@ -584,34 +571,46 @@ $ADMIN_MENU = [
 				],
 		},
 
-	{
-	-Title      => 'About Dada Mail',
-	-Title_URL  => "$S_PROGRAM_URL?f=manage_script",
-	-Function   => 'manage_script',
-	-Activated  => 1,
-	},
+		{
+		-Title      => 'Your List Control Panel',
+		-Activated  => 0,
+		-Submenu    => [
+					{
+					-Title      => 'Customize Feature Set',
+					-Title_URL  => "$S_PROGRAM_URL?f=feature_set",
+					-Function   => 'feature_set',
+					-Activated  => 0,
+					},
 
-	{
-	-Title      => '<!-- tmpl_var PROGRAM_NAME --> Setup Info',
-	-Title_URL  => "$S_PROGRAM_URL?f=setup_info",
-	-Function   => 'setup_info',
-	-Activated  => 1,
-	},
+					{
+					-Title      => 'Options',
+					-Title_URL  => "$S_PROGRAM_URL?f=list_cp_options",
+					-Function   => 'list_cp_options',
+					-Activated  => 0,
+					}
+				], 
+		},
+		
+		{
+		-Title      => 'App Information',
+		-Activated  => 1,
+		-Submenu    => [
+					{
+					-Title      => 'Configuration',
+					-Title_URL  => "$S_PROGRAM_URL?f=setup_info",
+					-Function   => 'setup_info',
+					-Activated  => 1,
+					},
 
-	{
-	-Title      => 'Logout',
-	-Title_URL  => "$S_PROGRAM_URL?f=logout",
-	-Function   => 'logout',
-	-Activated  => 1,
-	},
+					{
+					-Title      => 'About Dada Mail',
+					-Title_URL  => "$S_PROGRAM_URL?f=manage_script",
+					-Function   => 'manage_script',
+					-Activated  => 1,
+					},
 
-	{
-	-Title      => 'Log Into Another List',
-	-Title_URL  => "$S_PROGRAM_URL?f=log_into_another_list",
-	-Function   => 'log_into_another_list',
-	-Activated  => 1,
-	},
-
+				],
+			},
 ];
 
 

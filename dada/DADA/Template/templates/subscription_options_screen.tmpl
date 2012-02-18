@@ -1,31 +1,52 @@
 <!-- begin subscription_options_screen.tmpl -->
 
-<!-- tmpl_set name="title" value="Subscriber Options" -->
+<!-- tmpl_set name="title" value="Membership &#187; Options" -->
 
-<!-- tmpl_include help_link_widget.tmpl -->
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 	
+	</div> 
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div> 
 
 <!-- tmpl_if done -->
-	<!-- tmpl_var GOOD_JOB_MESSAGE -->
+	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!--/tmpl_if-->
 
-<!-- tmpl_if SUBSCRIPTION_QUOTA --> 
-
-    <p class="alert">
-     Currently, there is a global limit of, <!-- tmpl_var SUBSCRIPTION_QUOTA --> subscribers per Mailing List.
-    </p>
-<!-- tmpl_else --> 
-
-    <p class="positive"> 
-     There are no global subscription quotas!
-    </p>
-
-<!--/tmpl_if--> 
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form">
 	
-<fieldset>
-	<legend>Subscription Options</legend>
+<fieldset> 
+	<legend>
+	Membership &#187; View
+	</legend>
+	<p>
+	 Show <!-- tmpl_var vlsn_menu --> addresses at a time, in the <strong> Membership &#187; View</strong> screen.
+	</p>
+
+</fieldset>
 	
+	
+<fieldset>
+	<legend>Subscribers</legend>
+
+	<!-- tmpl_if SUBSCRIPTION_QUOTA --> 
+
+		<div class="clearskiesbox">
+	    	<p>
+	     	Currently, there is a Global limit of <!-- tmpl_var commified_subscription_quota --> Subscribers per Mailing List.
+	    	</p>
+		</div>
+
+	<!-- tmpl_else --> 
+
+		<div class="clearskiesbox">
+	     <p>There are no Global Subscription Quotas!</p>
+	    </div>
+
+	<!--/tmpl_if--> 
+
+
 <table cellpadding="5">
  <tr>
   <td>
@@ -52,9 +73,110 @@
   </td>
  </tr>
 </table>
-<p>&nbsp;</p>
+</fieldset>
 
 
+
+<fieldset>
+ <legend>
+	  Black List
+ </legend>
+	 <table>
+	   <tr>
+	    <td>
+	     <p>
+	      <input type="checkbox" name="black_list" id="black_list" value="1" <!-- tmpl_if list_settings.black_list -->checked="checked"<!--/tmpl_if--> />
+	     </p>
+	    </td>
+	    <td>
+	     <p>
+	      <label for="black_list">
+	       Activate Black List
+	      </label>
+	     </p>
+		<table> 
+			 <tr>
+			    <td>
+			     <p>
+			      <input type="checkbox" name="add_unsubs_to_black_list" id="add_unsubs_to_black_list" value="1" <!-- tmpl_if list_settings.add_unsubs_to_black_list -->checked="checked"<!--/tmpl_if--> />
+			     </p>
+			    </td>
+			    <td>
+			     <p>
+			      <label for="add_unsubs_to_black_list">
+			       Move Addresses to the Black List after they are Removed/Unsubscribed.
+			      </label>
+			     </p>
+			    </td>
+			   </tr>
+			   <tr>
+			    <td>
+			     <p>
+			      <input type="checkbox" name="allow_blacklisted_to_subscribe" id="allow_blacklisted_to_subscribe" value="1" <!-- tmpl_if list_settings.allow_blacklisted_to_subscribe -->checked="checked"<!--/tmpl_if--> />
+			     </p>
+			    </td>
+			    <td>
+			     <p>
+			      <label for="allow_blacklisted_to_subscribe">
+			       Continue to Allow Black Listed Addresses to Subscribe Themselves
+			      </label>
+			     </p>
+			    </td>
+			   </tr>
+
+			<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN --> 
+				<!-- ... --> 
+			<!-- tmpl_else --> 
+			
+				   <tr>
+				    <td>
+				     <p>
+				      <input type="checkbox" name="allow_admin_to_subscribe_blacklisted" id="allow_admin_to_subscribe_blacklisted" value="1" <!-- tmpl_if list_settings.allow_admin_to_subscribe_blacklisted -->checked="checked"<!--/tmpl_if--> />
+				     </p>
+				    </td>
+				    <td>
+				     <p>
+				      <label for="allow_admin_to_subscribe_blacklisted">
+				       Continue to Allow Black Listed Addresses to be Invited/Subscribed Via The List Control Panel. 
+				      </label>
+					  <br />
+					  Black Listed Addresses will just need to be manually, checked/selected to be Invited/Subscribed.  
+				     </p>
+				   </td>
+				  </tr>
+			
+			<!-- /tmpl_if --> 
+			
+			</table> 
+	    </td>
+	   </tr>
+	  
+	 </table>
+
+</fieldset>
+
+
+
+<fieldset>
+	 <legend>
+      White List
+	 </legend>
+	 <table>
+	   <tr>
+	    <td>
+	     <p>
+	      <input type="checkbox" name="enable_white_list" id="enable_white_list" value="1" <!-- tmpl_if list_settings.enable_white_list -->checked="checked"<!--/tmpl_if--> />
+	     </p>
+	    </td>
+	    <td>
+	     <p>
+	      <label for="enable_white_list">
+	       Activate White List
+	      </label>
+	     </p>
+	    </td>
+	   </tr>
+      </table>
 </fieldset>
 	
 <input type="hidden" name="process" value="1" />

@@ -1,0 +1,33 @@
+<!-- begin bounce_search_results_modal_menu.tmpl --> 
+
+
+<p>
+	 <strong>
+		 Total Number of Bounces: <!-- tmpl_var total_bounces -->
+	</strong>
+</p>
+
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->"> 
+	
+<div class="buttonfloat">
+
+<input type="hidden" name="address" value="<!-- tmpl_var email ESCAPE=HTML -->" />
+<input type="hidden" name="f"     value="process_bouncing_addresses" />
+<input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+
+<input type="submit" name="process" class="processing"  value="-> Move Address Back to Subscribers" />
+<input type="submit" name="process" class="processing"  value="[x] Remove Address" />
+</div>
+<div class="floatclear"></div>
+</form>
+
+
+
+<!-- tmpl_include bouncing_search_results_widget.tmpl --> 
+
+
+
+
+<!-- end bounce_search_results_modal_menu.tmpl --> 
+

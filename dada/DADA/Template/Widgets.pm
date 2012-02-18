@@ -215,8 +215,18 @@ else {
 	$Global_Template_Variables{template_oldstyle_backwards_compatibility} = 0; 
 }
 
-
-
+if($Global_Template_Variables{PROGRAM_URL} eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
+	require CGI;
+	my $q = CGI->new;  
+	$Global_Template_Variables{PROGRAM_URL} = $q->url; 
+	# Well, what if we're running as the installer?
+	if($Global_Template_Variables{PROGRAM_URL} =~ m/installer\/install\.cgi$/){ 
+		$Global_Template_Variables{PROGRAM_URL} =~ s{installer\/install\.cgi}{mail.cgi};
+	}
+}
+if($Global_Template_Variables{S_PROGRAM_URL} eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
+	$Global_Template_Variables{S_PROGRAM_URL} = $Global_Template_Variables{PROGRAM_URL}; 
+}
 my %Global_Template_Options = (
 		# DEV: Dude, it's no wonder any templates are ever found.  		
 		path              => [
@@ -983,9 +993,9 @@ sub login_switch_widget {
 	if($lists[1]){ 
 		$scrn = $q->start_form(-action => $DADA::Config::S_PROGRAM_URL, 
 							  -method => "post",
+							  -style => 'display:inline;margin:0px',
 							  ) . 
-			   $q->popup_menu(-style   => 'width:75px', 
-							  -name    => 'change_to_list', 
+			   $q->popup_menu(-name    => 'change_to_list', 
 							  -value   => [@lists], 
 							  -default => $args->{-list},
 							  -labels  => {%label}, 
@@ -998,7 +1008,7 @@ sub login_switch_widget {
 						   -override => 1,
 				 ) . 
 	
-			   $q->submit(-value => 'switch', -class=>'plain') .
+			   $q->submit(-value => 'switch', -class=>'small_button') .
 			   $q->end_form(); 
 	}else{ 
 		$scrn = '';
@@ -2162,8 +2172,8 @@ sub date_params {
 	); 
 
 C<wrap_screen> allows you to wrap either one of the two templates (currently) 
-that Dada Mail uses to wrap other template in: C<default_list_template.tmpl> and
-C<default_admin_template.tmpl>. 
+that Dada Mail uses to wrap other template in: C<list_template.tmpl> and
+C<admin_template.tmpl>. 
 
 It takes the same options as, C<screen> and adds a few of its own: 
 
@@ -2235,14 +2245,12 @@ sub wrap_screen {
 	# I need params from the first template passed. 
 	$args->{-return_params} = 1;
 	my ($tmpl, $params) = screen($args);
-	if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1 && $with eq 'list') {
-        $tmpl = $tmpl . $DADA::Template::HTML::HTML_Footer; 
-    }	
+
 	# "content" is passed to the wrapper template
 	my $vars = { 
 		content => $tmpl, 
 	};
-	for(qw(title show_profile_widget)){ 
+	for(qw(title show_profile_widget load_wysiwyg_editor load_modalbox)){ 
 		if(exists($params->{$_})){ 
 			# variables within variables... 
 			$vars->{$_} = $params->{$_}; 
@@ -2274,6 +2282,10 @@ sub wrap_screen {
 			$list_param = $args->{-list_settings_vars_param}->{-list}; 
 		}
 		
+		if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1 && $with eq 'list') {
+			$vars->{footer_props} = DADA::Template::HTML::HTML_Footer(); 
+	    }
+	
 		require DADA::Template::HTML; 	
 		my $template = DADA::Template::HTML::list_template(
 			%{$args->{-wrapper_params}}, # This is currently, "blank" - where is put in here - header_params? 
@@ -2290,7 +2302,7 @@ sub wrap_screen {
 			%{$args->{-wrapper_params}}, 
 			-vars => $vars,				 						 
 			-Part => 'full', 
-			); 			
+			); 
 		return $template;
 	}
 	else { 

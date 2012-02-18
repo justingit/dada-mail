@@ -1583,7 +1583,7 @@ sub message_blurb {
 
 	my $self = shift; 
 	my %args = (-key       => undef,
-			 	-size      => 256, 
+			 	-size      => 525, 
 			    @_); 
 	
 	$args{-key} = $self->newest_entry

@@ -1,15 +1,11 @@
 <!-- begin error_no_archive_screen.tmpl --> 
 
-<!-- tmpl_set name="title" value="There Seems to be a Problem" -->
+<!-- tmpl_set name="title" value="Archive Not Available" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
 
-<h1>
- No Archive for <!-- list_settings.list_name -->
-</h1> 
-
 <p>
- I couldn't find an archive for [list_name]. Either the archive database 
+ I couldn't find an archive for <!-- tmpl_var list_settings.list_name -->. Either the archive database 
 is corrupted, or you never sent a message to be archived.
 </p>
 

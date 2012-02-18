@@ -1,16 +1,20 @@
 <!-- begin delete_list_screen.tmpl -->
 
-<!-- tmpl_set name="title" value="Delete This Mailing List" -->
+<!-- tmpl_set name="title" value="Your Mailing List &#187; Delete This Mailing List" -->
 
-<!-- tmpl_include help_link_widget.tmpl --> 
-
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 
+	</div> 
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
 
 <fieldset> 
 	
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
 	
 <p class="error">
- Are you <em>sure</em> you want to totally delete this list?
+ Are you <em>sure</em> you want to completely this Mailing List?
 </p>
 <p>
  <strong>

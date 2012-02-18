@@ -1,4 +1,4 @@
-<!-- begin javascripts/dada_mail_admin.tmpl -->
+<!-- begin js/dada_mail_admin.tmpl -->
 
 var refreshLocation = ''; 
 
@@ -17,6 +17,12 @@ function SetChecked(val) {
 			dml.elements[i].checked=val;
 		}
 	}
+}
+
+function toggleCheckBoxes(source, name) { 
+  checkboxes = document.getElementsByName(name);
+  for(var i in checkboxes)
+    checkboxes[i].checked = source.checked;
 }
 
 function SetListChecked(val) {
@@ -176,10 +182,23 @@ function warnAboutMassSubscription(form_name) {
 
 function unsubscribeAllSubscribers(form_name, type) { 
     
-    var confirm_msg =  "Are you sure you want to remove all, '"+ type +"' subscribers? ";	
-    if(!confirm(confirm_msg)){
-        alert("'" + type + "' subscribers not removed.");
-        return false;
+	var confirm_msg = '';
+	if(type == 'Subscribers'){ 
+		confirm_msg = "Are you sure you want to unsubscribe all Subscribers? ";	
+	}
+	else { 
+		confirm_msg = "Are you sure you want to remove all " + type + "?";			
+	}
+	
+	if(!confirm(confirm_msg)){
+		if(type == 'Subscribers'){ 	
+			alert("Subscribers not unsubscribed.");        	
+        }
+		else { 
+			alert("'" + type + "' not removed.");
+        	
+		}
+		return false;
     }
 	else { 
 		return true; 
@@ -291,4 +310,4 @@ function removeSubscriberField(form_name) {
     form_name.target = "_self";
     
 }
-<!-- end javascripts/dada_mail_admin.tmpl -->
+<!-- end js/dada_mail_admin.tmpl -->

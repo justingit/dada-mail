@@ -566,7 +566,7 @@ in Manage Archives - Archive Options - Advanced
  
  =head2 CSS file changes!
  
- The default_css.css file has been basically rewritten. If you are currently relying heavily on changes to this file, please review the new version before upgrading. 
+ The default.css file has been basically rewritten. If you are currently relying heavily on changes to this file, please review the new version before upgrading. 
 
 =head2 %STYLE Config.pm button styles removed!
 
@@ -675,7 +675,7 @@ New Way:
 
 =head2 %STYLE Config.pm button styles deprecated!
 
-Consult the default_css.css file in dada/DADA/Template/templates for ALL style information. 
+Consult the default.css file in dada/DADA/Template/templates for ALL style information. 
 
 As a guide, here's how the old inline styles relate to the new style classes: 
 

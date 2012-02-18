@@ -170,7 +170,7 @@ be sent out.
 
 use strict;
 
-use DADA::Config 3.0.0 qw(!:DEFAULT);
+use DADA::Config 5.0.0 qw(!:DEFAULT);
 
 use DADA::App::Guts;
 use DADA::MailingList::Archives;

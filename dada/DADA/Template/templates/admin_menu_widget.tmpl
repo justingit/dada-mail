@@ -1,11 +1,15 @@
 <!-- begin admin_menu_widget.tmpl -->
 
+
+<div id="navcontainer">
+
+
 <!-- tmpl_loop name="NAV" -->
-	<ul>
+	<ul id="navlist">
 	
 	 <!-- tmpl_unless Activated --> 
 	    <!-- tmpl_if hide_nav --> 
-	    
+	 
 	        <li class="hidden">
 	    
 	    <!-- tmpl_else --> 
@@ -37,11 +41,11 @@
             <!--/tmpl_if--> 
             
 	<!--tmpl_else-->
-		  <!-- tmpl_var Title -->
+		  <span><!-- tmpl_var Title --></span>
 	<!--/tmpl_if-->
 	  
 	<!-- tmpl_if SUBNAV -->
-		  <ul>
+		  <ul id="subnavlist">
 		   
 		<!-- tmpl_loop SUBNAV -->
 
@@ -93,5 +97,8 @@
 	 </li>
 	</ul>
 <!--/tmpl_loop-->
+
+
+</div> 
 
 <!-- end admin_menu_widget.tmpl -->

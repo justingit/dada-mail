@@ -72,7 +72,7 @@ HTML::Template
 
 HTML::Tiny
 
-HTML::Pager
+Data::Pageset
 
 HTML::Template::Expr
 

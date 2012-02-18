@@ -393,7 +393,19 @@ sub remove {
 
     undef $self;
 	return $rv;	
+
+}
+
+sub subscribed_to {
 	
+    my $self = shift;	
+	# SELECT list_type FROM dada_subscribers WHERE email = '101example@example.com' AND  list = 'list' AND list_status = '1'
+    my $query =
+        'SELECT list_type FROM '
+      . $self->{sql_params}->{subscriber_table}
+      . ' WHERE email = ? AND  list = ? AND list_status = ?';
+    return $self->{dbh}->selectcol_arrayref( $query, {},
+        ( $self->email,  $self->{list}, 1 ) );
 
 }
 

@@ -1,7 +1,17 @@
 <!-- begin send_email_screen.tmpl -->
 
-<!-- tmpl_set name="title" value="Send a Message" -->
-<!-- tmpl_include help_link_widget.tmpl -->
+<!-- tmpl_set name="title" value="Mass Mailing &#187; Send a Message" -->
+<!-- tmpl_set name="load_wysiwyg_editor" value="1" -->
+
+
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+	 	<!-- tmpl_var title --> 
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+
+
 
 <!-- tmpl_if list_settings.group_list --> 
     <p class="positive">Discussion List Support is enabled and Discussion List preferences will be honored.

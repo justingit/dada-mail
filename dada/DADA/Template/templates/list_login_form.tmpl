@@ -1,6 +1,6 @@
 <!-- begin list_login_form.tmpl -->
 
-<!-- tmpl_set name="title" value="Sign In to <!-- tmpl_var list_settings.list_name -->" -->
+<!-- tmpl_set name="title" value="Log into <!-- tmpl_var list_settings.list_name -->" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
 
@@ -12,7 +12,8 @@
   Enter Your List Control Panel
  </h1>
  <p>
-  You will need to know your List Password to access your control panel.
+	You may use either your <strong>List Password</strong> or <!-- tmpl_var PROGRAM_NAME --> Root Password to to log into the List Control Panel. 
+	Your <!-- tmpl_var PROGRAM_NAME --> Root Password will work for all Mailing Lists. 
  </p>
 
  <table align="center" cellpadding="5">
@@ -21,7 +22,7 @@
     <p>
      Enter in your
      <label for="admin_password">
-      Mailing List Password:
+      Password:
      </label>
     </p>
    </td>

@@ -1,0 +1,79 @@
+<!-- begin bouncing_search_results_widget.tmpl -->
+
+
+
+
+
+<!-- tmpl_loop search_results -->
+<div <!-- tmpl_if __odd__ -->class="alt"<!-- tmpl_else -->style="background:#fff"<!-- /tmpl_if -->>
+	<div style="padding:5px">
+		<h2>
+			Date: 
+			<!-- tmpl_var date -->
+		</h2>
+		<div style="padding-left:5px">
+			<table>
+				<tr>
+					<td>
+						<strong>
+							List Name:
+						</strong>
+					</td>
+					<td>
+					<!-- tmpl_var list_name ESCAPE="HTML" -->
+						(
+						<!-- tmpl_var list -->
+						) 
+					</td>
+				</tr>
+				<tr>
+				<tr>
+					<td>
+						<strong>
+							Email:
+						</strong>
+					</td>
+					<td>
+					<!-- tmpl_var email -->
+					</td>
+				</tr>
+			<td>
+				<strong>
+					Action Taken:
+				</strong>
+			</td>
+		<td>
+		<!-- tmpl_var action ESCAPE="HTML" -->
+		</td>
+		</tr>
+	</table>
+	<div style="padding-left:5px">
+		<h2>
+			Diagnostics of the Bounced Message: 
+		</h2>
+		<table style="margin-left:10px;padding-left:10px">
+		<!-- tmpl_loop diagnostics -->
+			<tr>
+				<td>
+					<strong>
+					<!-- tmpl_var diagnostic_label ESCAPE="HTML" -->
+						: 
+					</strong>
+				</td>
+				<td>
+				<!-- tmpl_var diagnostic_value ESCAPE="HTML" -->
+				</td>
+			</tr>
+<!-- /tmpl_loop -->
+
+</table> 
+
+</div> 
+</div> 
+
+    </div> 
+    </div> 
+        <!-- /tmpl_loop -->
+
+
+<!-- end bouncing_search_results_widget.tmpl -->

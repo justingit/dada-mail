@@ -34,7 +34,6 @@ LOCK_NB
 require Exporter; 
 our @ISA = qw(Exporter); 
 
-use vars qw($HTML_Footer);
 
 @EXPORT = qw(
 	
@@ -49,18 +48,13 @@ open_template
 list_template
 make_feature_menu
 admin_header_params
+HTML_Footer
 
 );
 
 
 use strict; 
 use vars qw(@EXPORT); 
-#@EXPORT_OK($HTML_Footer); 
-
-
-$HTML_Footer =  '<p style="font-size:10px;font-family:Verdana,Arial;text-align:center">Powered by <a href="http://dadamailproject.com" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Dada Mail ' . $DADA::Config::VER . '</a><br />Copyright &copy; 1999-2011, <a href="http://dadamailproject.com/justin" target="_blank" style="font-size:10px;font-family:Verdana,Arial">Simoni Creative</a>.</p>';
-
-
 =pod
 
 =head1 NAME
@@ -173,7 +167,7 @@ sub admin_template {
 
 
 	# DEV: This is horrible.
-
+	
 	if($args{-Root_Login} == 1){ 
 		$Yeah_Root_Login = 1
 	}
@@ -219,7 +213,7 @@ sub admin_template {
 	if($DADA::Config::ADMIN_TEMPLATE){ 	
 		$admin_template = fetch_admin_template($DADA::Config::ADMIN_TEMPLATE); 
 	}else{ 
-		$admin_template = DADA::Template::Widgets::_raw_screen({-screen => 'default_admin_template.tmpl'}); 
+		$admin_template = DADA::Template::Widgets::_raw_screen({-screen => 'admin_template.tmpl'}); 
 	}
 	
 	my $login_switch_widget = ''; 
@@ -228,9 +222,9 @@ sub admin_template {
 	}
 
 
-    my $go_pro; 
+    my $footer_props; 
     if($DADA::Config::GIVE_PROPS_IN_ADMIN == 1){ 
-        $go_pro = '<a href="http://dadamailproject.com/purchase/pro.html">[Go Pro]</a>'; 
+		$footer_props = HTML_Footer() . '| <strong><a href="http://dadamailproject.com/purchase/pro.html" target="_blank">Go Pro</a></strong>';
     }
 
 
@@ -239,13 +233,14 @@ sub admin_template {
 										-data => \$admin_template, 
 										-vars => 
 											{
-												javascript          => DADA::Template::Widgets::screen({-screen => 'javascripts/dada_mail_admin_js.js'}), 
+												javascript          => DADA::Template::Widgets::screen({-screen => 'js/dada_mail_admin_js.js'}), 
 												login_switch_widget => $login_switch_widget, 
 												admin_menu          => $admin_menu, 
 												title               => $args{-Title},
 												root_login_message  => $root_login_message, 
+												root_login          => $args{-Root_Login} == 1,
 												content             => '[_dada_content]',	
-												go_pro              => $go_pro, 
+												footer_props        => $footer_props, 
 												%{ $args{ -vars } }, # content, etc
 											}, 
 										-list_settings_vars_param => { 
@@ -312,7 +307,7 @@ sub default_template {
 	# DEV: should the templates found in the other ways be run through the templating system? I kinda think they should...  
 	if(!$DADA::Config::USER_TEMPLATE){ 		
 		require DADA::Template::Widgets; 	   
-		return DADA::Template::Widgets::_raw_screen({-screen => 'default_list_template.tmpl'}); 
+		return DADA::Template::Widgets::_raw_screen({-screen => 'list_template.tmpl'}); 
 	}else{ 
 		if(DADA::App::Guts::isa_url($DADA::Config::USER_TEMPLATE)){ 
 			return open_template_from_url(-URL => $DADA::Config::USER_TEMPLATE);
@@ -553,14 +548,19 @@ sub list_template {
     if ($@) {
         carp "CAUGHT Error with Sessioning: $@";
     }
-		
+	
+	my $footer_props; 
+	if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1) {
+		$footer_props = DADA::Template::HTML::HTML_Footer(); 
+    }
+	
     my $final_list_template = DADA::Template::Widgets::screen(
         {
             -data                   => \$list_template,
             -dada_pseudo_tag_filter => 1,
             -vars                   => {
                 default_css => DADA::Template::Widgets::screen(
-                    { -screen => 'default_css.css', -vars => $args{ -vars } }
+                    { -screen => 'css/default.css', -vars => $args{ -vars } }
                 ),
                 title              => $args{ -Title },
                 'profile.email'    => $prof_email,
@@ -573,6 +573,7 @@ sub list_template {
                 dada                => '[_dada_content]',
                 profile_widget      => $profile_widget,
                 show_profile_widget => 1,
+				footer_props => $footer_props, 
 
                 %{ $args{ -vars } },
             },
@@ -616,18 +617,16 @@ sub list_template {
 	        }
 	    }
 	    else {
-
-	        if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1 ) {
-	            return "\n$HTML_Footer \n" . $footer . "\n";
-	        }
-	        else {
-	            return $footer;
-	        }
+        	return $footer;
 	    }
 	}
 
 }
 
+sub HTML_Footer { 
+	return '<a href="http://dadamailproject.com" target="_blank">Dada Mail ' . $DADA::Config::VER . '</a> | Copyright &copy; 1999-2012, <a href="http://dadamailproject.com/justin" target="_blank">Simoni Creative</a>';
+	
+}
 
 sub open_template_from_url { 
 	my %args = (

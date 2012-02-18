@@ -1,143 +1,89 @@
 <!-- begin list_type_switch_widget.tmpl -->
-
-
-
-
-<div id="list_type_switcher">     
-
-<div>
-  
-<!-- tmpl_if list_type_isa_list -->
-	  <span>
-	   Subscribers (<!-- tmpl_var list_subscribers_num -->)
-	  </span>
-<!-- tmpl_else -->
-	  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=list&keyword=<!-- tmpl_var keyword escape="HTML" -->">
-	   Subscribers  (<!-- tmpl_var list_subscribers_num -->)
-	  </a>
-<!-- /tmpl_if -->
-  
-</div>
-
-
-<!-- tmpl_if flavor_is_view_list --> 
-	<!-- tmpl_if list_settings.enable_subscription_approval_step -->
-		<div>
-		<!-- tmpl_if list_type_isa_sub_request_list -->
-			  <span>
-			   Subscription Requests (<!-- tmpl_var sub_request_list_subscribers_num -->)
-			  </span>
-		<!-- tmpl_else -->
-			  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=sub_request_list&keyword=<!-- tmpl_var keyword escape="HTML" -->">
-			   Subscription Requests  (<!-- tmpl_var sub_request_list_subscribers_num -->)
-			  </a>
-		<!-- /tmpl_if -->
-  
-		</div>
-	<!-- /tmpl_if --> 
-<!-- /tmpl_if --> 
-
-
-
-  
- <div> 
- 
-<!-- tmpl_if list_type_isa_black_list -->
-	  <span>
-	   Black List (<!-- tmpl_var black_list_subscribers_num -->)
-	  </span>
-<!-- tmpl_else -->
-	  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=black_list&keyword=<!-- tmpl_var keyword escape="HTML" -->">
-	   Black List (<!-- tmpl_var black_list_subscribers_num -->)
-	  </a>
-<!-- /tmpl_if -->
-  
- </div>
- 
-
-<div>   
-<!-- tmpl_if list_type_isa_white_list -->
-	  <span>
-	   White List (<!-- tmpl_var white_list_subscribers_num -->)
-	  </span>
-<!-- tmpl_else -->
-	  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=white_list&keyword=<!-- tmpl_var keyword escape="HTML" -->">
-	   White List (<!-- tmpl_var white_list_subscribers_num -->)
-	  </a>
-<!-- /tmpl_if -->
-  
- </div>
- 
- 
- 
- 
-<!-- 
-		DEV: Turning off for now... 
-	 
-	  <div> 
-	
-		<!-- tmpl_if list_type_isa_testers -->
-		  <span>
-		   Testers
-		  </span>
-	<!-- tmpl_else -->
-		  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=testers">
-		   Testers
-		  </a>
-	<!-- /tmpl_if -->
-	  
-	 </div>
- 
- --> 
- 
-
-<!-- 
-
-
- 
-<!-- tmpl_if enable_moderation -->
-	 <div>
-	  
-	<!-- tmpl_if list_type_isa_moderators -->
-		  <span>
-		   Moderators
-		  </span>
-	<!-- tmpl_else -->
-		  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=moderators">
-		   Moderators
-		  </a>
-	<!-- /tmpl_if -->
-	  
-	
-	</div> 
-	
-	<!--/tmpl_if-->
- 
- --> 
- 
- <!-- tmpl_if list_settings.enable_authorized_sending -->
-	 <div>
-	  
-	<!-- tmpl_if list_type_isa_authorized_senders -->
-		  <span>
-		   Authorized Senders (<!-- tmpl_var authorized_senders_num -->)
-		  </span> 
-	<!-- tmpl_else -->
-		  <a href="<!-- tmpl_var PROGRAM_NAME-->?f=<!-- tmpl_var flavor -->&amp;type=authorized_senders&keyword=<!-- tmpl_var keyword escape="HTML" -->">
-		   Authorized Senders (<!-- tmpl_var authorized_senders_num -->)
-		  </a>
-	<!-- /tmpl_if -->
-	  
-	
-	</div> 
-	
-	<!--/tmpl_if-->
-
- </div> 
- 
-
-
- <div class="floatclear"></div>   
+<div id="centeredmenu">
+		<ul>
+			<li <!-- tmpl_if EXPR="(type eq 'list')" --> class="active" <!-- /tmpl_if -->>
+				<!-- tmpl_if flavor_is_view_list --> 
+					<a href="javascript:change_type('list');">
+				<!-- tmpl_else --> 
+					<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=<!-- tmpl_var flavor -->;type=list">					
+				<!-- /tmpl_if -->
+				  <span>
+					Subscribers  (<!-- tmpl_var list_subscribers_num -->)
+				  </span>
+				</a>
+				
+			</li>
+			
+			
+			<!-- tmpl_if flavor_is_view_list --> 
+				<!-- tmpl_if list_settings.enable_subscription_approval_step -->
+					<li <!-- tmpl_if EXPR="(type eq 'sub_request_list')" --> class="active" <!-- /tmpl_if -->> 
+						<a href="javascript:change_type('sub_request_list');">
+					  <span>
+						Subscription Requests  (<!-- tmpl_var sub_request_list_subscribers_num -->)
+					  </span>
+					</a>
+					</li>
+				<!-- /tmpl_if --> 
+			<!-- /tmpl_if --> 
+			
+			
+			<li <!-- tmpl_if EXPR="(type eq 'black_list')" --> class="active" <!-- /tmpl_if -->>
+			<!-- tmpl_if flavor_is_view_list -->
+				<a href="javascript:change_type('black_list');">
+			<!-- tmpl_else --> 
+				<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=<!-- tmpl_var flavor -->;type=black_list">
+			<!-- /tmpl_if -->
+				<span>
+			   		Black List (<!-- tmpl_var black_list_subscribers_num -->)
+				</span>
+			</a>
+			</li>
+			
+			<!-- tmpl_if list_settings.enable_white_list -->
+				<li <!-- tmpl_if EXPR="(type eq 'white_list')" --> class="active" <!-- /tmpl_if -->>
+				<!-- tmpl_if flavor_is_view_list --> 
+					<a href="javascript:change_type('white_list');">
+				<!-- tmpl_else --> 
+					<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=<!-- tmpl_var flavor -->;type=white_list">
+				<!-- /tmpl_if -->
+				   <span>
+					White List (<!-- tmpl_var white_list_subscribers_num -->)
+				    </span>
+				 </a>
+				</li>
+			<!-- /tmpl_if --> 
+			
+			<!-- tmpl_if list_settings.enable_authorized_sending -->
+				<li <!-- tmpl_if EXPR="(type eq 'authorized_senders')" --> class="active" <!-- /tmpl_if -->>
+				<!-- tmpl_if flavor_is_view_list --> 
+				  	<a href="javascript:change_type('authorized_senders');">
+				<!-- tmpl_else --> 
+					<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=<!-- tmpl_var flavor -->;type=authorized_senders">
+				<!-- /tmpl_if -->
+				   <span>
+					Authorized Senders (<!-- tmpl_var authorized_senders_num -->)
+			   	  </span>
+			   </a>
+				</li>
+			<!-- /tmpl_if -->
+			
+			
+			<!-- tmpl_if flavor_is_view_list --> 
+				<!-- tmpl_if show_bounced_list -->
+				<li <!-- tmpl_if EXPR="(type eq 'bounced_list')" --> class="active" <!-- /tmpl_if -->>
+				
+					<a href="javascript:change_type('bounced_list');">
+					 <span>
+						Bouncing Addresses (<!-- tmpl_var bounced_list_num -->)
+					</span>  
+					</a>
+				</li>
+					
+				<!-- /tmpl_if -->
+			<!-- /tmpl_if --> 
+		</ul>
+	</div>
 
 
 <!-- end list_type_switch_widget.tmpl --> 

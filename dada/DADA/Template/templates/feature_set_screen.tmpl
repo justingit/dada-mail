@@ -1,14 +1,19 @@
 <!-- begin feature_set_screen.tmpl --> 
 
-<!-- tmpl_set name="title" value="Customize Feature Set" -->
+<!-- tmpl_set name="title" value="Your List Control Panel &#187; Customize Feature Set" -->
 
-<!-- tmpl_include help_link_widget.tmpl -->
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div> 
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">  
   
 <!-- tmpl_if done --> 
 
-    <!-- tmpl_var GOOD_JOB_MESSAGE --> 
+    <!-- tmpl_include changes_saved_dialog_box_widget.tmpl  --> 
 
 <!--/tmpl_if--> 
 

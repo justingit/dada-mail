@@ -787,7 +787,7 @@ B<Short Answer:>
 
 If all you want to do is tweak the CSS styles of Dada Mail, the global CSS file is located at: 
 
- dada/DADA/Template/templates/default_css.css
+ dada/DADA/Template/templates/default.css
 
 You will never see this file directly in use in Dada Mail, but you can view it in your web browser by adding I</css> to the end of the URL to Dada Mail: 
 
@@ -861,7 +861,7 @@ Some of the places this system is used are as follows:
 
 Sometimes called the User Template, the default template lives at: 
 
- dada/DADA/Template/templates/default_list_template.tmpl
+ dada/DADA/Template/templates/list_template.tmpl
 
 You may edit this file directly, although you most likely do not want to, since your changes will be lost when you upgrade the program. 
 
@@ -871,11 +871,11 @@ There are a few ways to make changes to this template, without changing this cop
 
 =item * Use the $USER_TEMPLATE Config.pm variable
 
-This is the preferred method. Simply make a copy of the default_list_template.tmpl file, save it in a another location on your server and set the Config.pm variable, B<$USER_TEMPLATE> to the absolute path of its location. 
+This is the preferred method. Simply make a copy of the list_template.tmpl file, save it in a another location on your server and set the Config.pm variable, B<$USER_TEMPLATE> to the absolute path of its location. 
 
 You can also set B<$USER_TEMPLATE> to a URL - if your server supports that. There's more overhead involved with Dada Mail fetching the program this way, but it does allow you to preprocess the Template before it's seen by Dada Mail. For example, you want to have PHP calls in the template itself, or generate any sort of dynamic content. 
 
-=item * Make a copy of default_list_template.tmpl and place it in your $TEMPLATES directory
+=item * Make a copy of list_template.tmpl and place it in your $TEMPLATES directory
 
 Dada Mail will actually look for any of the template that are located in the default template directory, 
 
@@ -916,9 +916,9 @@ Again, any list screen that does not have a single list associated with it, will
 
 The Default Admin Template lives at: 
 
- default_admin_template.tmpl
+ admin_template.tmpl
 
-The information about the Default List Template also follows for the Default Admin Template. The Config.pm variable for it is: B<$DEFAULT_ADMIN_TEMPLATE>
+The information about the Default List Template also follows for the Default Admin Template. The Config.pm variable for it is: B<$admin_template>
 
 You may also be interested in the B<admin_menu_widget.tmpl>, which is used to created the left hand menu. It's written using the HTML::Template templating system. 
 
