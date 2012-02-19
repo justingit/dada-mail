@@ -394,6 +394,10 @@ sub scrn_configure_dada_mail {
 		}	
 	}
 	
+	my $configured_dada_config_file = $DADA::Config::CONFIG_FILE;
+	my $configured_dada_files_loc = $configured_dada_config_file;
+		$configured_dada_files_loc =~ s/\/\.dada_files\/\.configs\/\.dada_config//;
+	
 	my $DOC_VER = $DADA::Config::VER; 
 	   $DOC_VER =~ s/\s(.*?)$//;
 	   $DOC_VER =~ s/\./\_/g;
@@ -428,7 +432,8 @@ sub scrn_configure_dada_mail {
 				Big_Pile_Of_Errors             => $Big_Pile_Of_Errors,
 				Trace                          => $Trace, 
 				lists_available                => $lists_available, 
-				configured_dada_config_file    => $DADA::Config::CONFIG_FILE,
+				configured_dada_config_file    => $configured_dada_config_file,
+				configured_dada_files_loc      => $configured_dada_files_loc, 
 				DOC_VER                        => $DOC_VER, 
 				DOC_URL                        => 'http://dadamailproject.com/support/documentation-' . $DOC_VER, 
 

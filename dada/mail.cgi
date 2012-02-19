@@ -9621,7 +9621,6 @@ sub img {
       cff.png
 
       dada_mail_logo.png
-	dada_mail_logo_sm.png
 
       dada_mail_screenshot.jpg
 
@@ -9648,12 +9647,18 @@ sub img {
         elsif ( $img_name =~ m/\.gif$/ ) {
             $r = $q->header('image/gif');
         }
+        elsif ( $img_name =~ m/\.jpg$/ ) {
+            $r = $q->header('image/jpg');
+        }
+		else { 
+			die "can't show image!"; 
+		}
         $r .= DADA::Template::Widgets::_raw_screen(
             {
                 -screen   => 'img/' . $img_name,
                 -encoding => 0,
             }
-        );    # maybe, _raw_screen?
+        ); 
         print $r;
         $c->cache( 'img/' . $img_name, \$r );
 

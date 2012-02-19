@@ -10,50 +10,47 @@
 		Problems When Attempting to Install!
 	</h2>
 	<div class="badweatherbox"> 
-	 <p>
-		Some problems were encountered, when attempting to install and configure 
-		<!-- tmpl_var PROGRAM_NAME -->. Details are marked below:</p>
+	 <p><strong>Yikes!</strong>
+		<p>Some problems were encountered, when attempting to install and configure 
+		<!-- tmpl_var PROGRAM_NAME -->. Details are marked below.</p>
 	</div>  
 <!-- /tmpl_if --> 
 
 <!-- tmpl_if lists_available --> 
 
-	<div class="badweatherbox">
+	<div class="clearskiesbox">
 
 	<h3>Warning!</h3> 
 	<p>
-		At least with the current configuration discovered at, </p> 
+		A current <!-- tmpl_var PROGRAM_NAME --> configuration was discovered at:</p> 
 		
 		<ul>
 			<li>
 			 <p>
-			 <!-- tmpl_var configured_dada_config_file -->
+			 <strong><!-- tmpl_var configured_dada_config_file --></strong>
 			</p>
 		</li>
 		</ul>
 		
-		<p>there are already mailing lists available via <!-- tmpl_var PROGRAM_NAME -->
-		</p> 
+		<p>and Mailing Lists are currently available. </p> 
 
-	<p>
-		Reconfiguring <!-- tmpl_var PROGRAM_NAME --> could potentially lose these lists. 
-	</p> 
-
-	<p>
-		Please only continue with this installation/configuration, if you're sure you know what you're doing.
-		</p> 
-	 
-	<form target="_blank" action="<!-- tmpl_var Self_URL -->"> 
-		<input type="hidden" name="f" value="show_current_dada_config" /> 
-
-
-		<div class="buttonfloat">
-		<input type="submit" value="View Your Current .dada_config Configuration..." class="processing" />
-		</div >
-		<div class="floatclear"></div>
+		<form target="_blank" action="<!-- tmpl_var Self_URL -->"> 
+			<input type="hidden" name="f" value="show_current_dada_config" /> 
+			<div style="text-align:center">
+			<input type="submit" value="View this .dada_config Configuration..." class="plain" />
+			</div >
+		</form>
+		
+		
+		<p>Use:</p>
+		<ul><li><p><strong><!-- tmpl_var configured_dada_files_loc --></strong></p></li></ul>
+		<p>for the <strong>&quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; Directory Location</strong> below, to 
+			<strong>upgrade</strong> this <!-- tmpl_var PROGRAM_NAME --> installation.</p>
+			
+		<p>Use a <em>different</em> <!-- tmpl_var Dada_Files_Dir_Name --> location for a <strong>new installation</strong> of <!-- tmpl_var PROGRAM_NAME --></p>
 		
 
-	</form> 
+
 
 	
 	
@@ -82,7 +79,7 @@
 <!-- /tmpl_if --> 
 <!-- tmpl_if error_cant_write_config_dot_pm --> 
 
-<br />
+
 <div class="badweatherbox">
 
 
@@ -111,41 +108,49 @@
 
 
 	<legend>
-		&quot;<!-- tmpl_var Dada_Files_Dir_Name -->	&quot; Directory Location [<a href="#" onclick="toggleDisplay('dada_files_help');return false;">?</a>]
+		&quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; Directory Location [<a href="#" onclick="toggleDisplay('dada_files_help');return false;">?</a>]
 	</legend>
 	
-	<div id="dada_files_help" style="display:none"> 
-
-	<p class="positive">	
+	<div id="dada_files_help" class="clearskiesbox" style="display:none"> 
+	<p>	
 		<!-- tmpl_var PROGRAM_NAME --> will need to write various files and will need a directory for which to do this in. You'll 
 		have to tell <!-- tmpl_var PROGRAM_NAME --> where you'd like this directory to live. The directory will be called, <em><!-- tmpl_var Dada_Files_Dir_Name --></em>. 
 		</p>
-		<p class="positive">
+		<p>
 		Usually, this directory will live under your home directory and <!-- tmpl_var PROGRAM_NAME --> can usually guess where that is, but if it guesses wrong
-		or it cannot create the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory in your home directory, you may need to set an alternative directory. 
+		or it cannot create the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory in your home directory, you may need to set an alternative location. 
 	</p> 
 	</div> 
 	
 	
 	<!-- tmpl_if error_create_dada_files_dir  --> 
+	
+		<div class="badweatherbox">
 		<ul> 
 		<li>
-		<div class="badweatherbox">
 		 Can not create, <em><!-- tmpl_var install_dada_files_dir_at -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em>
 		</p>
-		</div>
+		</li>
 		</ul>
+		</div>
+	
 
 	<!-- /tmpl_if --> 
 	<!-- tmpl_if error_dada_files_dir_exists  --> 
-		<ul> 
-		<li>
+		
 			<div class="badweatherbox">
-			The directory, <em><!-- tmpl_var dada_files_loc -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em> already exists.
+				<ul> 
+				<li>
+					<p>
+						The directory, <em><!-- tmpl_var dada_files_loc -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em> already exists.
+					</p>
+				</li>
+			</ul>
+			
 		</div>
 
 		<!-- tmpl_if test_complete_dada_files_dir_structure_exists --> 
-				<br />
+		
 				<div class="badweatherbox">
 				
 				<p>
@@ -157,17 +162,20 @@
 					<p>
 				<input type="radio" name="if_dada_files_already_exists"	id="keep_dir_create_new_config" value="keep_dir_create_new_config" checked="checked" onClick="ToggleConfigurationOptions('show');"  /> 
 				<label for="keep_dir_create_new_config">
-					 Use the existing directory structure, but create a new configuration file, using the configuration below. 
-					 Your former configuration file will be backed up. 
-				</label></p>
-				
+					Create a new .dada_config  file.
+				</label><br />
+				Use the existing directory structure, but create a new configuration 
+				file, using the information below. 
+				 (Your former .dada_config  file will be saved in a backup)
+				</p>
 				
 				<p><input type="radio" name="if_dada_files_already_exists"	id="skip_configure_dada_files" value="skip_configure_dada_files" onClick="ToggleConfigurationOptions('hide');" /> 
 				<label for="skip_configure_dada_files">
-			
-						 Use the existing directory structure and configuration file, ignoring the configuration below. 
-						 I understand no checks are done to make sure that the current setup is correct!
-						</label></p>
+					Use the current .dada_config  file.
+						</label>
+						<br />
+						No new .dada_config file will be created.
+					</p>
 					  
 				
 			</div> 
@@ -195,12 +203,12 @@
 	  <input type="radio"  id="dada_files_dir_setup_manual" name="dada_files_dir_setup" value="manual" onChange="Toggle_dada_files_dirOptions(); return false;">
 	<label for="dada_files_dir_setup_manual"> 
 	 MANUAL.
-	</label>  Explicitly set the Absolute Path to where the <em><strong>.dada_files</strong></em> directory should be installed:</p>
+	</label>  Explicitly set the Absolute Path to where the <em><strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em> directory should be installed:</p>
 
 	<div id="manual_dada_files_dir_setup">
 	<fieldset> 
 	<legend> 
-		Manual Configuration of the, <em>.dada_files</em> directory
+		Manual Configuration of the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory
 	</legend> 
 	<p> 
 	 <input type="text" name="dada_files_loc" value="<!-- tmpl_var home_dir_guess -->" style="width:70%" />/<em><strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em>
@@ -242,8 +250,8 @@
 
 <p><label for="program_url"><!-- tmpl_var PROGRAM_NAME --> Program URL:</label>
 </p>
-<div id="program_url_help" style="display:none"> 
-	 <p class="positive">
+<div id="program_url_help" style="display:none" class="clearskiesbox"> 
+	 <p>
 	 	The <!-- tmpl_var PROGRAM_NAME --> Program URL should be set to where you access the, <em>mail.cgi</em> script, currently. 
 	 </p> 
 </div> 
@@ -287,9 +295,9 @@
 </div>
 <!-- /tmpl_if -->
 
-<div id="root_pass_help" style="display:none"> 
+<div id="root_pass_help" style="display:none" class="clearskiesbox"> 
 
-<p class="positive">This is the main password to <!-- tmpl_var PROGRAM_NAME -->, used to create new mailing lists and to 
+<p>This is the main password to <!-- tmpl_var PROGRAM_NAME -->, used to create new mailing lists and to 
 access <em>any</em> mailing list.</p> 
 </div> 
 
@@ -324,17 +332,17 @@ access <em>any</em> mailing list.</p>
 
 
 
-<div id="backend_help" style="display:none"> 
+<div id="backend_help" style="display:none" class="clearskiesbox"> 
  
-<p class="positive">	
+<p>	
 	<!-- tmpl_var PROGRAM_NAME --> supports a few different types of backends to save its mailing list settings, lists, archive, etc into. 
 </p> 
-<p class="positive">	
+<p>	
 	The <strong>Default</strong> backend should be available for almost any server setup, but doesn't allow you to use some of the more 
 	advanced features of <!-- tmpl_var PROGRAM_NAME -->. </p> 
-	<p class="positive">	
+	<p>	
 Both the <strong>MySQ</strong>L and <strong>PostgreSQL</strong> backends allow you to use these advanced features and just require you to fill in the database details.
-If using either the SQL backends, make sure to create a new database before configuring <!-- tmpl_var PROGRAM_NAME --> and plug the SQL information below. <!-- tmpl_var PROGRAM_NAME --> will create the necessary tables. 
+If using either the SQL backends, make sure to create a new database before configuring <!-- tmpl_var PROGRAM_NAME --> and type in the SQL information below. <!-- tmpl_var PROGRAM_NAME --> will create the necessary tables. 
 </p> 
 	
 </div>
@@ -361,7 +369,7 @@ If using either the SQL backends, make sure to create a new database before conf
 			<p>
 				The SQL information below is correct, but there are tables in this database that correspond to the tables that <!-- tmpl_var PROGRAM_NAME --> requires.
 			</p>
-			<br />
+			
 			<div class="badweatherbox">
 				
 			<p>
@@ -373,7 +381,7 @@ If using either the SQL backends, make sure to create a new database before conf
 				Use these existing tables, instead of making new ones.
 			</p>
 			</div> 
-			<br />
+			
 		
 		</li>
 	</ul>
@@ -415,13 +423,13 @@ If using either the SQL backends, make sure to create a new database before conf
 <fieldset> 
 <legend>Plugins/Extensions (Optional) [<a href="#" onclick="toggleDisplay('plugins_extensions_help');return false;">?</a>]</legend>
 
-<div id="plugins_extensions_help" style="display:none"> 
+<div id="plugins_extensions_help" class="clearskiesbox" style="display:none"> 
 
-<p class="positive">
+<p>
 	<!-- tmpl_var PROGRAM_NAME --> comes with several plugins/extensions that add additional functionality to your <!-- tmpl_var PROGRAM_NAME --> install. 
 </p>
 
-<p class="positive">
+<p>
 <em>Some</em> of the plugins/extensions require additional configuration, usually a cronjob has to be manually set, 
 for it to work correctly. For help on setting the cronjob, see the 
 <a href="<!-- tmpl_var DOC_URL -->" target="_blank">online documentation</a> for the plugin/extension. 
@@ -448,17 +456,20 @@ for it to work correctly. For help on setting the cronjob, see the
 <fieldset> 
 	<legend>Additional Bounce Handler Configuration [<a href="#" onclick="toggleDisplay('bounce_handler_configuration_help');return false;">?</a>]</legend>
 	
-	<div id="bounce_handler_configuration_help" style="display:none">
-		<p class="positive">
+	<div id="bounce_handler_configuration_help" style="display:none" class="clearskiesbox">
+		<p>
 			The Bounce Handler requires a new POP3 email account to be created, in order to work correctly. Make sure the email address isn't used for 
 			any other purpose, except for the bounce handler. See the <a href="<!-- tmpl_var DOC_URL -->/dada_bounce_handler.pl.html"  target="_blank">documentation for this plugin</a> for additional information. 
 			</p> 
 	</div> 
 	
-	<p><label style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block" for="dada_bounce_handler_address">Bounce Handler Email Address:</label> <input type="text" name="dada_bounce_handler_address" id="dada_bounce_handler_address" value="" /></p>
-	<p><label style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block" for="dada_bounce_handler_server">Mail Server:</label> <input type="text" name="dada_bounce_handler_server" id="dada_bounce_handler_server" value="" /></p>
-	<p><label style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block" for="dada_bounce_handler_username">Username:</label> <input type="text" name="dada_bounce_handler_username" id="dada_bounce_handler_username" value="" /></p>
-	<p><label style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block" for="dada_bounce_handler_password">Password:</label> <input type="text" name="dada_bounce_handler_password" id="dada_bounce_handler_password" value="" /></p>
+	<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="dada_bounce_handler_address">Bounce Handler Email Address:</label> <input type="text" name="dada_bounce_handler_address" id="dada_bounce_handler_address" value="" /></p>
+
+	<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="dada_bounce_handler_server">Mail Server:</label> <input type="text" name="dada_bounce_handler_server" id="dada_bounce_handler_server" value="" /></p>
+
+	<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="dada_bounce_handler_username">Username:</label> <input type="text" name="dada_bounce_handler_username" id="dada_bounce_handler_username" value="" /></p>
+
+	<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="dada_bounce_handler_password">Password:</label> <input type="text" name="dada_bounce_handler_password" id="dada_bounce_handler_password" value="" /></p>
 	 
 
 </fieldset> 

@@ -6,7 +6,7 @@
 
 Here's the direct download to Dada Mail v5.0.0 Beta 1: 
 
-L<https://github.com/downloads/justingit/dada-mail/dada-5_0_0-beta1.tar.gz>
+L<https://github.com/downloads/justingit/dada-mail/dada-5_0_0-beta2.tar.gz>
 
 =head2 Pro Dada Subscriber?
 
@@ -14,9 +14,9 @@ Download Pro Dada at:
 
 L<http://dadamailproject.com/pro_dada>
 
-=head1 Step #2 Upload the, "dada-5_0_0-beta1.tar.gz" distro to your cgi-bin
+=head1 Step #2 Upload the, "dada-5_0_0-beta2.tar.gz" distro to your cgi-bin
 
-Download the C<dada-5_0_0-beta1.tar.gz> distro (you will B<not> have to uncompress the distribution) and then upload it to your hosting account's I<cgi-bin>.
+Download the C<dada-5_0_0-beta2.tar.gz> distro (you will B<not> have to uncompress the distribution) and then upload it to your hosting account's I<cgi-bin>.
 
 =begin html
 
@@ -45,7 +45,7 @@ and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting acco
 
 =head1 Step #5 Visit the, "uncompress_dada.cgi" script in your web browser. 
 
-The, C<uncompress_dada.cgi> should attempt to uncompress the I<dada-5_0_0-beta1.tar.gz> distro, change the necessary permissions of various files and prep the actual installer for you to use. 
+The, C<uncompress_dada.cgi> should attempt to uncompress the I<dada-5_0_0-beta2.tar.gz> distro, change the necessary permissions of various files and prep the actual installer for you to use. 
 
 Once it's finished running, you should be presented a link to use the actual installer. Click the link at the end of the screen and go ahead and configure Dada Mail! 
 
@@ -56,7 +56,7 @@ Once it's finished running, you should be presented a link to use the actual ins
 <p>See, <a href="./FAQ-install_upgrade.pod.html#prepping_dada_mail_manually">Prepping Dada Mail Manually</a> if this doesn't happen and you get a message in your browser window, sort of like this: </p>
 
 <pre>
-Can't find dada-5_0_0-beta1.tar to uncompress!
+Can't find dada-5_0_0-beta2.tar to uncompress!
 
 You may have to uncompress and prep Dada Mail manually.
 </pre> 
