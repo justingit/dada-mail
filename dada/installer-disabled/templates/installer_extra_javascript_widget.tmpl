@@ -7,11 +7,28 @@
 		
 	 //<![CDATA[
 	
+		function ToggleOtherChoices(state, id) { 
+			var togglin = document.getElementById( id );
+			if(state == 'hide'){
+				if(togglin.style.display == ""){	
+					Effect.BlindUp(id);
+				}
+				else { 
+					/* ... */
+				}
+			}
+			if(state == 'show'){ 
+				if(togglin.style.display == "none"){
+					Effect.BlindDown(id);
+				}
+			}
+			else { 
+				/* ... */
+			}
+
+		}
 		function ToggleConfigurationOptions(state){ 
 			var togglin = document.getElementById( 'configuration' );
-		//	alert('togglin.style.display ' + togglin.style.display); 
-		//	alert('state ' + state); 
-			
 			if(state == 'hide'){
 				if(togglin.style.display == ""){	
 					Effect.BlindUp('configuration');
@@ -28,10 +45,8 @@
 			else { 
 				/* ... */
 			}
-			
-		//	alert('togglin.style.display ' + togglin.style.display); 
 		}
-		
+	
 		function ToggleSQLOptions() { 
 			
 			var sql_picker = document.getElementById('backend');
@@ -116,9 +131,11 @@
 			
 		
 		function setStuffUp() { 
+			//ToggleOtherChoices('hide', 'upgrade_options');
 			ToggleSQLOptions(); 
 			Toggle_dada_files_dirOptions();
 			ToggleConfigurationOptions(); 
+		
 		}
 		
 		

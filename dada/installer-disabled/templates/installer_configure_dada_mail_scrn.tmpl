@@ -16,47 +16,7 @@
 	</div>  
 <!-- /tmpl_if --> 
 
-<!-- tmpl_if lists_available --> 
 
-	<div class="clearskiesbox">
-
-	<h3>Warning!</h3> 
-	<p>
-		A current <!-- tmpl_var PROGRAM_NAME --> configuration was discovered at:</p> 
-		
-		<ul>
-			<li>
-			 <p>
-			 <strong><!-- tmpl_var configured_dada_config_file --></strong>
-			</p>
-		</li>
-		</ul>
-		
-		<p>and Mailing Lists are currently available. </p> 
-
-		<form target="_blank" action="<!-- tmpl_var Self_URL -->"> 
-			<input type="hidden" name="f" value="show_current_dada_config" /> 
-			<div style="text-align:center">
-			<input type="submit" value="View this .dada_config Configuration..." class="plain" />
-			</div >
-		</form>
-		
-		
-		<p>Use:</p>
-		<ul><li><p><strong><!-- tmpl_var configured_dada_files_loc --></strong></p></li></ul>
-		<p>for the <strong>&quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; Directory Location</strong> below, to 
-			<strong>upgrade</strong> this <!-- tmpl_var PROGRAM_NAME --> installation.</p>
-			
-		<p>Use a <em>different</em> <!-- tmpl_var Dada_Files_Dir_Name --> location for a <strong>new installation</strong> of <!-- tmpl_var PROGRAM_NAME --></p>
-		
-
-
-
-	
-	
-	</div> 
-
-<!-- /tmpl_if --> 
 
 
 
@@ -98,134 +58,165 @@
 	<!-- tmpl_loop errors --> 
 		<p>Error <!-- tmpl_var error --> 
 	<!-- /tmpl_loop --> 
-<!-- /tmpl_if --> 
-
-<form action="<!-- tmpl_var Self_URL -->" method="post" id="installform"> 
+<!-- /tmpl_if -->
 
 
+	<!-- tmpl_if test_complete_dada_files_dir_structure_exists --> 
 
-	<fieldset> 
-
-
-	<legend>
-		&quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; Directory Location [<a href="#" onclick="toggleDisplay('dada_files_help');return false;">?</a>]
-	</legend>
-	
-	<div id="dada_files_help" class="clearskiesbox" style="display:none"> 
-	<p>	
-		<!-- tmpl_var PROGRAM_NAME --> will need to write various files and will need a directory for which to do this in. You'll 
-		have to tell <!-- tmpl_var PROGRAM_NAME --> where you'd like this directory to live. The directory will be called, <em><!-- tmpl_var Dada_Files_Dir_Name --></em>. 
-		</p>
+		<div <!-- tmpl_if expr="(install_type eq 'install')" -->class="badweatherbox"<!-- tmpl_else -->class="clearskiesbox"<!-- /tmpl_if -->>
 		<p>
-		Usually, this directory will live under your home directory and <!-- tmpl_var PROGRAM_NAME --> can usually guess where that is, but if it guesses wrong
-		or it cannot create the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory in your home directory, you may need to set an alternative location. 
-	</p> 
-	</div> 
-	
-	
-	<!-- tmpl_if error_create_dada_files_dir  --> 
-	
-		<div class="badweatherbox">
-		<ul> 
-		<li>
-		 Can not create, <em><!-- tmpl_var install_dada_files_dir_at -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em>
-		</p>
-		</li>
-		</ul>
-		</div>
-	
+			A current <!-- tmpl_var PROGRAM_NAME --> configuration was discovered at:</p> 
+
+			<ul>
+				<li>
+				 <p>
+				 <strong><!-- tmpl_var configured_dada_config_file --></strong>
+				</p>
+			</li>
+			</ul>
+
+			<p>and Mailing Lists are currently available. </p> 
+
+			<form target="_blank" action="<!-- tmpl_var Self_URL -->"> 
+				<input type="hidden" name="f" value="show_current_dada_config" /> 
+				<div style="text-align:center">
+				<input type="submit" value="View this .dada_config Configuration..." class="plain" />
+				</div >
+			</form>
+
+			<!-- tmpl_if expr="(install_type eq 'install')" -->
+				Choose a different location for your .dada_files directory, 
+				or <a href="<!-- tmpl_var Self_URL -->">start over and Upgrade</a>.
+				
+			<!-- /tmpl_if --> 
+			
+			<!-- tmpl_if comment --> 
+			<p>Use:</p>
+			<ul><li><p><strong><!-- tmpl_var configured_dada_files_loc --></strong></p></li></ul>
+			<p>for the <strong>&quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; Directory Location</strong> below, to 
+				<strong>upgrade</strong> this <!-- tmpl_var PROGRAM_NAME --> installation.</p>
+
+			<p>Use a <em>different</em> <!-- tmpl_var Dada_Files_Dir_Name --> location for a <strong>new installation</strong> of <!-- tmpl_var PROGRAM_NAME --></p>
+			<!-- /tmpl_if -->
+		</div> 
 
 	<!-- /tmpl_if --> 
-	<!-- tmpl_if error_dada_files_dir_exists  --> 
+
+	<form action="<!-- tmpl_var Self_URL -->" method="post" id="installform"> 
+		<input type="hidden" name="install_type"                       value="<!-- tmpl_var install_type -->" />
+		<input type="hidden" name="current_dada_files_parent_location" value="<!-- tmpl_var current_dada_files_parent_location -->" />
 		
-			<div class="badweatherbox">
+	<!-- tmpl_if expr="(install_type eq 'upgrade')" -->
+	
+		<fieldset style="background:#cbecff">
+			<legend>Upgrade Options</legend>	
+
+				<p>
+			<input type="radio" name="if_dada_files_already_exists"	id="keep_dir_create_new_config" value="keep_dir_create_new_config" checked="checked" onClick="ToggleConfigurationOptions('show');"  /> 
+			<label for="keep_dir_create_new_config">
+				Create a new .dada_config  file.
+			</label><br />
+			Use the existing directory structure, but create a new configuration 
+			file, using the information below. 
+			 (Your previous .dada_config  file will be backed up and saved.)
+			</p>
+
+	
+			<p><input type="radio" name="if_dada_files_already_exists"	id="skip_configure_dada_files" value="skip_configure_dada_files" onClick="ToggleConfigurationOptions('hide');" /> 
+			<label for="skip_configure_dada_files">
+				Use the current .dada_config  file.
+					</label>
+					<br />
+					No new .dada_config file will be created.
+				</p>
+					</fieldset>
+	<!-- /tmpl_if -->
+
+			
+			<!-- tmpl_if expr="(install_type eq 'install')" -->	
+			<!-- tmpl_if error_create_dada_files_dir  --> 
+
+				<div class="badweatherbox">
 				<ul> 
 				<li>
-					<p>
-						The directory, <em><!-- tmpl_var dada_files_loc -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em> already exists.
-					</p>
-				</li>
-			</ul>
-			
-		</div>
-
-		<!-- tmpl_if test_complete_dada_files_dir_structure_exists --> 
-		
-				<div class="badweatherbox">
-				
-				<p>
-				 <strong>
-					I know that the,  &quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; directory already exists. Please:
-				 </strong> 
-			    </p>
-				
-					<p>
-				<input type="radio" name="if_dada_files_already_exists"	id="keep_dir_create_new_config" value="keep_dir_create_new_config" checked="checked" onClick="ToggleConfigurationOptions('show');"  /> 
-				<label for="keep_dir_create_new_config">
-					Create a new .dada_config  file.
-				</label><br />
-				Use the existing directory structure, but create a new configuration 
-				file, using the information below. 
-				 (Your former .dada_config  file will be saved in a backup)
+				 Can not create, <em><!-- tmpl_var install_dada_files_dir_at -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em>
 				</p>
-				
-				<p><input type="radio" name="if_dada_files_already_exists"	id="skip_configure_dada_files" value="skip_configure_dada_files" onClick="ToggleConfigurationOptions('hide');" /> 
-				<label for="skip_configure_dada_files">
-					Use the current .dada_config  file.
-						</label>
-						<br />
-						No new .dada_config file will be created.
-					</p>
-					  
-				
-			</div> 
-			
-		<!-- /tmpl_if --> 
-		
-		</ul> 
+				</li>
+				</ul>
+				</div>
 
-		
-	<!-- /tmpl_if -->
+
+			<!-- /tmpl_if --> 
+			<!-- tmpl_if error_dada_files_dir_exists  --> 
+
+					<div class="badweatherbox">
+						<ul> 
+						<li>
+							<p>
+								The directory, <em><!-- tmpl_var dada_files_loc -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em> already exists.
+							</p>
+						</li>
+					</ul>
+
+				</div>
+				<!-- /tmpl_if -->
+			<!-- /tmpl_if -->  
+
+
+	<!-- tmpl_if expr="(install_type eq 'upgrade')" -->
+		<input type="hidden" name="dada_files_dir_setup" value="manual" />
+		<input type="hidden" name="dada_files_loc"       value="<!-- tmpl_var current_dada_files_parent_location escape=HTML -->" />
+	<!-- tmpl_else --> 
+		<fieldset> 
+		<legend>
+			&quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; Directory Location [<a href="#" onclick="toggleDisplay('dada_files_help');return false;">?</a>]
+		</legend>
 	
+		<div id="dada_files_help" class="clearskiesbox" style="display:none"> 
+		<p>	
+			<!-- tmpl_var PROGRAM_NAME --> will need to write various files and will need a directory for which to do this in. You'll 
+			have to tell <!-- tmpl_var PROGRAM_NAME --> where you'd like this directory to live. The directory will be called, <em><!-- tmpl_var Dada_Files_Dir_Name --></em>. 
+			</p>
+			<p>
+			Usually, this directory will live under your home directory and <!-- tmpl_var PROGRAM_NAME --> can usually guess where that is, but if it guesses wrong
+			or it cannot create the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory in your home directory, you may need to set an alternative location. 
+		</p> 
+		</div> 
+
+		<p>
+		 <input type="radio" checked="checked" id="dada_files_dir_setup_auto"  name="dada_files_dir_setup" value="auto" onChange="Toggle_dada_files_dirOptions(); return false;">
+			<label for="dada_files_dir_setup_auto">AUTO 
+			Use <!-- tmpl_var PROGRAM_NAME -->'s best guess.  </label>(<em> <!-- tmpl_var home_dir_guess --></em>). 
+		</p> 
+
+		 <p>
+		  <input type="radio"  id="dada_files_dir_setup_manual" name="dada_files_dir_setup" value="manual" onChange="Toggle_dada_files_dirOptions(); return false;">
+		<label for="dada_files_dir_setup_manual"> 
+		 MANUAL.
+		</label>  Explicitly set the Absolute Path to where the <em><strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em> directory should be installed:</p>
+
+		<div id="manual_dada_files_dir_setup">
+		<fieldset> 
+		<legend> 
+			Manual Configuration of the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory
+		</legend> 
+		<p> 
+		 <input type="text" name="dada_files_loc" value="<!-- tmpl_var home_dir_guess -->" style="width:70%" />/<em><strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em>
+		</p> 
+
+		</fieldset>
+
+		</div> 
+
+		</fieldset>
+<!-- /tmpl_if --> 
 
 
-
-
-
-
-	<p>
-	 <input type="radio" checked="checked" id="dada_files_dir_setup_auto"  name="dada_files_dir_setup" value="auto" onChange="Toggle_dada_files_dirOptions(); return false;">
-		<label for="dada_files_dir_setup_auto">AUTO 
-		Use <!-- tmpl_var PROGRAM_NAME -->'s best guess.  </label>(<em> <!-- tmpl_var home_dir_guess --></em>). 
-	</p> 
-
-	 <p>
-	  <input type="radio"  id="dada_files_dir_setup_manual" name="dada_files_dir_setup" value="manual" onChange="Toggle_dada_files_dirOptions(); return false;">
-	<label for="dada_files_dir_setup_manual"> 
-	 MANUAL.
-	</label>  Explicitly set the Absolute Path to where the <em><strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em> directory should be installed:</p>
-
-	<div id="manual_dada_files_dir_setup">
-	<fieldset> 
-	<legend> 
-		Manual Configuration of the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory
-	</legend> 
-	<p> 
-	 <input type="text" name="dada_files_loc" value="<!-- tmpl_var home_dir_guess -->" style="width:70%" />/<em><strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em>
-	</p> 
-
-	</fieldset>
-
-	</div> 
-
-	</fieldset>
 
 <div id="configuration"> 
 	
 
-<fieldset> 
-	<legend>Configuration</legend> 
-	
+<h1>Configuration</h1> 	
 <fieldset> 
 
 <legend>
@@ -418,7 +409,6 @@ If using either the SQL backends, make sure to create a new database before conf
 <!-- /tmpl_if --> 
 </fieldset> 
 
-</fieldset> 
 
 <fieldset> 
 <legend>Plugins/Extensions (Optional) [<a href="#" onclick="toggleDisplay('plugins_extensions_help');return false;">?</a>]</legend>

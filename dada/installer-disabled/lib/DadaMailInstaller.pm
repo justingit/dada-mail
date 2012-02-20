@@ -206,6 +206,7 @@ sub run {
         # Old-school switcheroo
         my %Mode = (
 
+			install_or_upgrade       => \&install_or_upgrade, 
             install_dada             => \&install_dada,
             scrn_configure_dada_mail => \&scrn_configure_dada_mail,
             check                    => \&check,
@@ -219,11 +220,11 @@ sub run {
                 $Mode{$flavor}->();    #call the correct subroutine
             }
             else {
-                &scrn_configure_dada_mail;
+                &install_or_upgrade;
             }
         }
         else {
-            &scrn_configure_dada_mail;
+            &install_or_upgrade;
         }
 
     }
@@ -351,14 +352,39 @@ sub cl_help {
 
 
 
-sub scrn_upgrade_dada {
- 
-	# This.. doesn't do anything. 
-    print $q->header();
-    print "Upgrading $DADA::Config::PROGRAM_NAME!";
+sub install_or_upgrade { 
+	
+	my $dada_files_parent_dir = $DADA::Config::CONFIG_FILE;
+	   $dada_files_parent_dir =~ s/\/.dada_files\/\.configs\/\.dada_config//;
+	my $found_existing_dada_files_dir = test_complete_dada_files_dir_structure_exists($dada_files_parent_dir);
+	
+   my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -screen => 'install_or_upgrade.tmpl',
+			-with   => 'list', 
+            -vars => {
+				dada_files_parent_dir         => $dada_files_parent_dir, 
+				found_existing_dada_files_dir => $found_existing_dada_files_dir ,
+			},
+		}
+	); 
+	
+	# Let's get some fancy js stuff!
+    $scrn = hack_in_scriptalicious($scrn);
+	# Uh, do are darnest to get the $PROGRAM_URL stuff working correctly, 
+	$scrn = hack_program_url($scrn); 
+    
+	print $scrn; 
 }
 
+
+
 sub scrn_configure_dada_mail {
+	
+	my $current_dada_files_parent_location = $q->param('current_dada_files_parent_location'); 	
+	my $install_type                      = $q->param('install_type'); 
+	$q->delete('current_dada_files_parent_location', 'install_type', 'f', 'submitbutton');
+
 	
 	# Have we've been here, before? 
 	my %params = $q->Vars;
@@ -373,13 +399,16 @@ sub scrn_configure_dada_mail {
 		$q->param('install_ajax_include_subscribe', 1); 
 		$q->param('install_blog_index', 1); 
 	}
-	
+
+=cut	
 	# Is there some stuff happenin already? 
 	my @lists = DADA::App::Guts::available_lists(-Dont_Die => 1); 
 	my $lists_available = 0; 
 	if(exists($lists[0])){
 		$lists_available = 1; 
 	}
+=cut
+
 	# This is a test to see if the, "auto" placement will work for us - or 
 	# for example, there's something in the way. 
 	# First, let's see if there's any errors: 
@@ -406,7 +435,12 @@ sub scrn_configure_dada_mail {
         {
             -screen => 'installer_configure_dada_mail_scrn.tmpl',
 			-with   => 'list', 
+			-expr   => 1, 
             -vars => {
+				
+				install_type                => $install_type, 
+				current_dada_files_parent_location => $current_dada_files_parent_location, 
+				
                 program_url_guess              => program_url_guess(),
                 can_use_DBI                    => test_can_use_DBI(),
                 error_cant_read_config_dot_pm  => test_can_read_config_dot_pm(),
@@ -431,7 +465,7 @@ sub scrn_configure_dada_mail {
                 Dada_Files_Dir_Name            => $Dada_Files_Dir_Name,
 				Big_Pile_Of_Errors             => $Big_Pile_Of_Errors,
 				Trace                          => $Trace, 
-				lists_available                => $lists_available, 
+				#lists_available                => $lists_available, 
 				configured_dada_config_file    => $configured_dada_config_file,
 				configured_dada_files_loc      => $configured_dada_files_loc, 
 				DOC_VER                        => $DOC_VER, 
@@ -497,9 +531,6 @@ sub check {
 
 sub scrn_install_dada_mail {
 	my $install_dada_files_loc = install_dada_files_dir_at_from_params(); 
-
-
-
     my ( $log, $status, $errors ) = install_dada_mail(
         {
 			-if_dada_files_already_exists  => $q->param('if_dada_files_already_exists') || undef,
@@ -709,8 +740,8 @@ sub install_dada_mail {
 
 sub edit_config_dot_pm {
     my $loc          = shift;
-    my $search       = quotemeta(q{$PROGRAM_CONFIG_FILE_DIR = 'auto';});
-	my $search2      = quotemeta(q{$PROGRAM_ERROR_LOG = undef;});
+    my $search       = qr/\$PROGRAM_CONFIG_FILE_DIR \= \'(.*?)\'\;/;
+	my $search2      = qr/\$PROGRAM_ERROR_LOG \= (.*?)\;/;
 	
 	if($loc eq 'auto') { 
 		carp "\$loc has been set to, 'auto' - nothing to edit!"; 
