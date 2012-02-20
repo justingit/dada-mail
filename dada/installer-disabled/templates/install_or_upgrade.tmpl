@@ -1,20 +1,20 @@
 <!-- begin install_or_upgrade -->
 
-<fieldset> 
-	<form action="<!-- tmpl_var Self_URL -->" method="post" id="installform"> 
-	<p><input type="radio" name="install_type" id="install" value="install" checked="checked" onChange="ToggleOtherChoices('hide', 'upgrade_options'); return false;" /><label for="install">Installation</label></p>
-	<p><input type="radio" name="install_type" id="upgrade" value="upgrade" onChange="ToggleOtherChoices('show', 'upgrade_options'); return false;" /><label for="upgrade">Upgrade</label></p>
-	
-	<div id="upgrade_options" style="display:none">
-	<input type="hidden" name="f" value="scrn_configure_dada_mail" />
-	
-		<!-- tmpl_if found_existing_dada_files_dir --> 
-			<div class="clearskiesbox">
-				<p>Found an existing .dada_files directory at:</p>
-				<p><em><!-- tmpl_var dada_files_parent_dir -->/.dada_files</em></p> 
-			</div> 
-		<!-- /tmpl_if --> 
+<!-- tmpl_if found_existing_dada_files_dir --> 
+	<div class="clearskiesbox">
+		<p>Found an existing .dada_files directory at:</p>
+		<p><em><!-- tmpl_var dada_files_parent_dir -->/.dada_files</em></p> 
+		<p>Want to upgrade?</p>
+	</div> 
+<!-- /tmpl_if -->
 
+<fieldset> 	
+	<form action="<!-- tmpl_var Self_URL -->" method="post" id="installform"> 
+	<p><input type="radio" name="install_type" id="install" value="install" <!-- tmpl_unless found_existing_dada_files_dir -->checked="checked"<!-- /tmpl_unless --> onChange="ToggleOtherChoices('hide', 'upgrade_options'); return false;" /><label for="install">Installation</label></p>
+	<p><input type="radio" name="install_type" id="upgrade" value="upgrade" <!-- tmpl_if found_existing_dada_files_dir -->checked="checked"<!-- /tmpl_if --> onChange="ToggleOtherChoices('show', 'upgrade_options'); return false;" /><label for="upgrade">Upgrade</label></p>
+	
+	<div id="upgrade_options" <!-- tmpl_unless found_existing_dada_files_dir -->style="display:none"<!-- /tmpl_unless -->>
+	<input type="hidden" name="f" value="scrn_configure_dada_mail" />
 		<p><label for="current_dada_files_parent_location">Current .dada_files Location:</label><br/>
 			<input type="text" name="current_dada_files_parent_location" value="<!-- tmpl_if found_existing_dada_files_dir --><!-- tmpl_var dada_files_parent_dir --><!-- /tmpl_if -->" /><strong>/.dada_files</strong>
 		</p>
