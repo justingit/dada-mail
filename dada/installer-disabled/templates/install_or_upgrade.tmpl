@@ -1,4 +1,7 @@
 <!-- begin install_or_upgrade -->
+<!-- tmpl_set name="title" value="Install <!-- tmpl_var PROGRAM_NAME -->" -->
+<!-- tmpl_set name="show_profile_widget" value="0" -->
+
 
 <!-- tmpl_if found_existing_dada_files_dir --> 
 	<div class="clearskiesbox">
@@ -14,7 +17,18 @@
 	<p><input type="radio" name="install_type" id="upgrade" value="upgrade" <!-- tmpl_if found_existing_dada_files_dir -->checked="checked"<!-- /tmpl_if --> onChange="ToggleOtherChoices('show', 'upgrade_options'); return false;" /><label for="upgrade">Upgrade</label></p>
 	
 	<div id="upgrade_options" <!-- tmpl_unless found_existing_dada_files_dir -->style="display:none"<!-- /tmpl_unless -->>
-	<input type="hidden" name="f" value="scrn_configure_dada_mail" />
+	<input type="hidden" name="f" value="check_install_or_upgrade" />
+
+		<!-- tmpl_if error_cant_find_dada_files_location --> 
+		<div class="clearskiesbox">
+			<p><strong>Sorry!</strong></p>
+			
+			<p>Couldn't find a complete .dada_files directory structure at, <em><!-- tmpl_var current_dada_files_parent_location -->/.dada_files</em></p>
+			
+			<p>Double-check the path is correct and all files/directories required exist.</p>
+			
+		</div>
+		<!-- /tmpl_if --> 
 		<p><label for="current_dada_files_parent_location">Current .dada_files Location:</label><br/>
 			<input type="text" name="current_dada_files_parent_location" value="<!-- tmpl_if found_existing_dada_files_dir --><!-- tmpl_var dada_files_parent_dir --><!-- /tmpl_if -->" /><strong>/.dada_files</strong>
 		</p>
@@ -22,7 +36,7 @@
 		
 		<div style="text-align:center">
 
-	<input type="submit" name="submitbutton" value="Continue..." class="Plain" />
+	<input type="submit" name="submitbutton" value="Continue..." class="processing" />
 </div>
 	</form>
 </fieldset> 

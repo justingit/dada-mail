@@ -75,8 +75,6 @@
 			</li>
 			</ul>
 
-			<p>and Mailing Lists are currently available. </p> 
-
 			<form target="_blank" action="<!-- tmpl_var Self_URL -->"> 
 				<input type="hidden" name="f" value="show_current_dada_config" /> 
 				<div style="text-align:center">
@@ -85,8 +83,8 @@
 			</form>
 
 			<!-- tmpl_if expr="(install_type eq 'install')" -->
-				Choose a different location for your .dada_files directory, 
-				or <a href="<!-- tmpl_var Self_URL -->">start over and Upgrade</a>.
+				<strong>Choose a different location</strong> for your .dada_files directory below, 
+				or <strong><a href="<!-- tmpl_var Self_URL -->">start over and Upgrade</a></strong>.
 				
 			<!-- /tmpl_if --> 
 			
@@ -331,18 +329,23 @@ access <em>any</em> mailing list.</p>
 <p>	
 	The <strong>Default</strong> backend should be available for almost any server setup, but doesn't allow you to use some of the more 
 	advanced features of <!-- tmpl_var PROGRAM_NAME -->. </p> 
-	<p>	
-Both the <strong>MySQ</strong>L and <strong>PostgreSQL</strong> backends allow you to use these advanced features and just require you to fill in the database details.
-If using either the SQL backends, make sure to create a new database before configuring <!-- tmpl_var PROGRAM_NAME --> and type in the SQL information below. <!-- tmpl_var PROGRAM_NAME --> will create the necessary tables. 
+	<p>The <strong>MySQL</strong>, <strong>PostgreSQL</strong> and <strong>SQLite</strong> 
+		backends allow you to use these advanced features and just require you to fill in the database details.
+If using either the SQL backends, make sure to create a new database before configuring 
+<!-- tmpl_var PROGRAM_NAME --> and type in the SQL information below. <!-- tmpl_var PROGRAM_NAME -->
+ will create the necessary tables. 
 </p> 
+
+<p><strong>SQLite</strong> is only suggested for testing purposes and never for production.</p>
 	
 </div>
 <p>
 	<select name="backend" id="backend" onChange="ToggleSQLOptions(); return false;"> 
 		<option value="default">Default Backend</option>
 		<!-- tmpl_if can_use_DBI --> 
-			<option value="mysql" selected="selected">MySQL (recommended)</option> 
-			<option value="Pg">PostgreSQL</option> 			
+			<option value="mysql" <!-- tmpl_unless can_use_MySQL -->disabled="disabled"<!-- tmpl_else -->selected="selected"<!-- /tmpl_unless -->><!-- tmpl_if can_use_MySQL -->MySQL (recommended)<!-- tmpl_else -->MySQL (not available)<!-- /tmpl_if --></option> 
+			<option value="Pg" <!-- tmpl_unless can_use_Pg -->disabled="disabled"<!-- /tmpl_unless -->>PostgreSQL <!-- tmpl_unless can_use_Pg -->(not available)<!-- /tmpl_unless --></option> 	
+			<option value="SQLite" <!-- tmpl_unless can_use_SQLite -->disabled="disabled"<!-- /tmpl_unless -->>SQLite<!-- tmpl_unless can_use_SQLite -->(not available)<!-- /tmpl_unless --></option> 
 		<!-- /tmpl_if --> 
 	</select>
 </p>
@@ -361,7 +364,6 @@ If using either the SQL backends, make sure to create a new database before conf
 				The SQL information below is correct, but there are tables in this database that correspond to the tables that <!-- tmpl_var PROGRAM_NAME --> requires.
 			</p>
 			
-			<div class="badweatherbox">
 				
 			<p>
 				<input type="checkbox" name="skip_configure_SQL" id="skip_configure_SQL" value="1">
@@ -371,7 +373,6 @@ If using either the SQL backends, make sure to create a new database before conf
 				<br />
 				Use these existing tables, instead of making new ones.
 			</p>
-			</div> 
 			
 		
 		</li>

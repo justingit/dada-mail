@@ -71,15 +71,21 @@ You may have to uncompress and prep Dada Mail manually.
 
 The installer should be relatively straightforward on how it's used - just fill it out with the information it's asking for. Below, we'll explain exactly what it's looking for. 
 
+=head2 Choose, "Installation"
+
+The first screen of the installer will ask you if you'd like to Install, or Upgrade Dada Mail. Choose, "Installation" and click, "Continue..."
+
+Onto the next screen! 
+
 =head2 A Warning Up Top? 
 
-It's possible that before you even start using Dada Mail, that you'll receive a warning stating that Dada Mail won't be able to edit the, C<dada/DADA/Config.pm> file. This would be because there's a difference in file permissions/privileges between the user that the installer is running under and the user that owns the C<dada/DADA/Config.pm> file. 
+It's possible that before you even start using the Dada Mail installer, that you'll receive a warning stating that Dada Mail won't be able to edit the, C<dada/DADA/Config.pm> file. This would be because there's a difference in file permissions/privileges between the user that the installer is running under and the user that owns the C<dada/DADA/Config.pm> file. 
 
 This means you'll need to edit I<one> line in the C<dada/DADA/Config.pm> file to get Dada Mail running correctly.
 
 =head2 ".dada_files " Directory Location
 
-The first thing you'll need to fill out in the installer is the location to place the, C<.dada_files> directory. 
+You'll need to fill out in the installer is the location to place the, C<.dada_files> directory. 
 
 The installer will do its best to pre-fill out the best location for you - and you can just use it's best guess and forgo having to know the exact details. 
 
@@ -104,9 +110,6 @@ I<(and fill in the location you'd like)> if the installer doesn't pick a good lo
 </div> 
 
 =end html
-
-
-
 
 =back
 
@@ -138,19 +141,24 @@ Dada Mail will need to save its mailing lists and other information in various f
 
 =back
 
-Tons of stuff
+Tons of stuff.
 
 =head4 Default 
 
-Select B<Default> if you cannot, don't know how, or do not want the SQL backend option I<(we really suggest going the distance and using the SQL backend)>
+Select B<Default> if you cannot, do not know how, or do not want the SQL backend option I<(we really suggest going the distance and using the SQL backend)>
 
-=head4 MySQL or PostgreSQL
+=head4 MySQL, PostgreSQL or SQLite
 
-Both B<MySQL> and B<PostgreSQL> will have the same features available and work under the hood, basically the same way. We like PostgreSQL better, but MySQL is going to be tested a bit more thouroughly and probably is more familiar to most people, so at the moment, it's the backend that we recommend. 
+Both B<MySQL> and B<PostgreSQL> will have the same features available and work under the hood, basically the same way. We personally like PostgreSQL better, but MySQL is going to be tested a bit more thouroughly and probably is more familiar to most people, so at the moment, it's the backend that we recommend. 
+
+B<SQLite> is also an option, but we recommend using it for testing purposes, only. 
 
 When you select one of the SQL backends, you'll also be asked to fill in the SQL connection information, including the database server, the port number, the name of the database itself and the username and password. 
 
-The database has to be set up beforehand. It's not too hard to do if you have a cPanel w/phpMyAdmin to help you along. Just note the B<Server>, B<Database>, B<Username> and B<Password>, once you create the database (No tables have to be created, beforehand). The SQL user will need full priviliges to your database. We don't suggest, for security reasons, giving this same user any permissions to any other database. 
+This database has to be set up beforehand. It's not too hard to do if you have a cPanel w/phpMyAdmin to help you along. Just note the B<Server>, B<Database>, B<Username> and B<Password>, once you create the database (No tables have to be created, beforehand). The SQL user will need full priviliges to your database. We don't suggest, for security reasons, giving this same user any permissions to any other database. 
+
+I<Don't worry about filling any of these out if you've chosen to use the B<SQLite> backend. Yeah!>
+
 
 =over
 
@@ -176,10 +184,6 @@ Fill this with the password associated with the username.
 
 =back
 
-=head3 Another Shortcut to Upgrading
-
-If you have an already existing database from a previous Dada Mail installation, you may fill in the SQL server login information for this existing database and Dada Mail will use it, instead of creating a set of new tables for you. This is particularily useful if you're B<moving> Dada Mail from one server to another. 
-
 
 =head2 Plugins/Extensions
 
@@ -187,7 +191,7 @@ Optionally, you may also install many of the plugins and extensions that come wi
 
 Some of the plugins/extensions have additional configuration that will need to done, before they work completely. For the majority of these plugins/extensions, you'll need to also set a cron job. 
 
-One plugin, the bounce handler, also requires you to fill out the credentials for the bounce handler email account you need to set up to capture bounced emails. 
+One plugin, Bounce Handler, also requires you to fill out the credentials for the bounce handler email account you need to set up to capture bounced emails. 
 
 =head2 Completing the Installation and Configuration. 
 

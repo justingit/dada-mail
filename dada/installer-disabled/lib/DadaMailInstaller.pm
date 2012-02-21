@@ -54,7 +54,7 @@ my $Big_Pile_Of_Errors  = undef;
 
 # Show these errors in the web browser? 
 #
-my $Trace               = 0; 
+my $Trace               = 1; 
 
 # These are strings we look for in the example_dada_config.tmpl file which 
 # we need to remove. 
@@ -207,7 +207,8 @@ sub run {
         my %Mode = (
 
 			install_or_upgrade       => \&install_or_upgrade, 
-            install_dada             => \&install_dada,
+            check_install_or_upgrade => \&check_install_or_upgrade, 
+			install_dada             => \&install_dada,
             scrn_configure_dada_mail => \&scrn_configure_dada_mail,
             check                    => \&check,
             move_installer_dir_ajax  => \&move_installer_dir_ajax,
@@ -363,8 +364,10 @@ sub install_or_upgrade {
             -screen => 'install_or_upgrade.tmpl',
 			-with   => 'list', 
             -vars => {
-				dada_files_parent_dir         => $dada_files_parent_dir, 
-				found_existing_dada_files_dir => $found_existing_dada_files_dir ,
+				dada_files_parent_dir               => $dada_files_parent_dir, 
+				found_existing_dada_files_dir       => $found_existing_dada_files_dir ,
+				current_dada_files_parent_location  => $q->param('current_dada_files_parent_location'), 
+				error_cant_find_dada_files_location => $q->param('error_cant_find_dada_files_location'), 
 			},
 		}
 	); 
@@ -374,8 +377,35 @@ sub install_or_upgrade {
 	# Uh, do are darnest to get the $PROGRAM_URL stuff working correctly, 
 	$scrn = hack_program_url($scrn); 
     
+	if($q->param('error_cant_find_dada_files_location') == 1){ 
+	    require HTML::FillInForm::Lite;
+	    my $h = HTML::FillInForm::Lite->new();
+	    $scrn = $h->fill( \$scrn, $q );
+	}
+
 	print $scrn; 
 }
+
+
+
+sub check_install_or_upgrade { 
+	if($q->param('install_type') eq 'install'){ 
+		&scrn_configure_dada_mail; 
+		return;
+	}
+	else { 
+		my $current_dada_files_parent_location = $q->param('current_dada_files_parent_location'); 	
+		if(test_complete_dada_files_dir_structure_exists($current_dada_files_parent_location) == 1){ 
+			&scrn_configure_dada_mail; 
+			return;			
+		}
+		else { 
+			$q->param('error_cant_find_dada_files_location', 1); 
+			&install_or_upgrade; 
+			return; 
+		}
+	}
+}		
 
 
 
@@ -443,6 +473,9 @@ sub scrn_configure_dada_mail {
 				
                 program_url_guess              => program_url_guess(),
                 can_use_DBI                    => test_can_use_DBI(),
+				can_use_MySQL                  => test_can_use_MySQL(), 
+				can_use_Pg                     => test_can_use_Pg(), 
+				can_use_SQLite                 => test_can_use_SQLite(), 								
                 error_cant_read_config_dot_pm  => test_can_read_config_dot_pm(),
                 error_cant_write_config_dot_pm => test_can_write_config_dot_pm(),
 				home_dir_guess                 => guess_home_dir(),
@@ -499,7 +532,17 @@ sub connectdb {
     my $database    = shift;
     my $user        = shift;
     my $pass        = shift;
-    my $data_source = "dbi:$dbtype:dbname=$database;host=$dbserver;port=$port";
+    my $data_source;
+
+	if($dbtype eq 'SQLite'){ 
+		
+		require DADA::Security::Password; 
+		# I doubt that's going to work for everything... 
+		 $data_source = 'dbi:' . $dbtype . ':' . '/tmp' . '/' . 'dadamail' . DADA::Security::Password::generate_rand_string();
+	} else {
+		$data_source = "dbi:$dbtype:dbname=$database;host=$dbserver;port=$port";
+	}
+	
     require DBI;
     my $dbh;
     my $that_didnt_work = 1;
@@ -763,41 +806,24 @@ sub edit_config_dot_pm {
 			# (what about the error log? ) 
 			$config =~ s/$search2/$replace_with2/; 
 			
-			#chmod(0777, make_safer('../DADA'));
 			installer_chmod(0777, make_safer('../DADA'));
-			#unlink($Config_LOC); 
 			installer_rm($Config_LOC); 
 			
 	        open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $Config_LOC or croak $!;
 	        print $config_fh $config or croak $!;
 	        close $config_fh or croak $!;
-			#chmod(0775, $Config_LOC);
 			installer_chmod(0775, $Config_LOC);
-			
-	    #};
-
-	    #if ($@) {
-		#	carp $@; 
-		#	$Big_Pile_Of_Errors .= $@; 
-	     #   return 0;
-	    #}
-	    #else {
 	        return 1;
-	    #}
 	}
 }
 
 sub backup_config_dot_pm {
-	#chmod(0777, '../DADA');
-    installer_chmod(0777, '../DADA');
-	
+    installer_chmod(0777, '../DADA');	
 	my $config = slurp($Config_LOC);
 	my $backup_loc = make_safer($Config_LOC . '-backup.' . time); 
     open my $backup, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $backup_loc or croak $!;
     print $backup $config or croak $!;
     close $backup or croak $!;
-
-	#chmod(0775, $backup_loc);
 	installer_chmod(0775, $backup_loc);
 
 }
@@ -886,6 +912,14 @@ sub create_dada_config_file {
 		$args->{-program_url} = $prog_url;
 	}
 
+	if($args->{-backend} eq 'SQLite'){ 
+		$args->{-sql_server} = ''; 
+        $args->{-sql_database} = 'dadamail';  
+        $args->{-sql_port} = ''; 
+        $args->{-sql_username} = ''; 
+        $args->{-sql_password} = ''; 
+	}
+	
     my $outside_config_file = DADA::Template::Widgets::screen(
         {
             -screen => 'example_dada_config.tmpl',
@@ -947,8 +981,11 @@ sub create_sql_tables {
         $sql_file = 'mysql_schema.sql';
     }
     elsif ( $args->{-backend} eq 'Pg' ) {
-        $sql_file = 'postgres_schema.sql';
+	}
+	elsif ( $args->{-backend} eq 'SQLite' ) {
+        $sql_file = 'sqlite_schema.sql';
     }
+
 
     eval {
 
@@ -960,9 +997,17 @@ sub create_sql_tables {
     my $database = $args->{-sql_database};
     my $user     = $args->{-sql_username};
     my $pass     = $args->{-sql_password};
-
-    my $data_source = "dbi:$dbtype:dbname=$database;host=$dbserver;port=$port";
-    my $dbh = DBI->connect( "$data_source", $user, $pass );
+	
+	my $data_source = ''; 
+	my $dbh         = undef; 
+	if($dbtype eq 'SQLite'){ 
+		$data_source = 'dbi:' . $dbtype . ':' . $args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.lists/' . 'dadamail';
+		$dbh = DBI->connect( $data_source, "", "" );
+	}
+	else { 
+		$data_source = "dbi:$dbtype:dbname=$database;host=$dbserver;port=$port";
+		$dbh = DBI->connect( "$data_source", $user, $pass );
+	}
 
     my $schema = slurp( make_safer( '../extras/SQL/' . $sql_file ) );
     my @statements = split( ';', $schema );
@@ -997,6 +1042,9 @@ sub sql_port_from_params {
         }
         elsif ( $q->param('backend') =~ /Pg/i ) {
             $port = 5432;
+        }
+        elsif ( $q->param('backend') =~ /SQLite/i ) {
+            $port = '';
         }
 		else { 
 			# well, we don't change this... 
@@ -1073,8 +1121,14 @@ sub check_setup {
                     ) == 1
                   )
                 {
-                    $errors->{sql_table_populated} = 1;
-
+					if($q->param('install_type') eq 'install'){ 
+                    	$errors->{sql_table_populated} = 1;
+					}
+					else { 
+						# else, no problemo, right?
+						$errors->{sql_table_populated} = 0;
+						$q->param('skip_configure_SQL', 1); 
+					}
                 }
                 else {
                     $errors->{sql_table_populated} = 0;
@@ -1354,6 +1408,45 @@ sub test_can_use_DBI {
         return 1;
     }
 }
+
+sub test_can_use_MySQL {
+	
+    eval { require DBD::mysql; };
+    if ($@) {
+		carp $@; 
+		$Big_Pile_Of_Errors .= $@; 
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+sub test_can_use_Pg {
+	
+    eval { require DBD::Pg; };
+    if ($@) {
+		carp $@; 
+		$Big_Pile_Of_Errors .= $@; 
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+sub test_can_use_SQLite {
+	
+    eval { require DBD::SQLite; };
+    if ($@) {
+		carp $@; 
+		$Big_Pile_Of_Errors .= $@; 
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+
+
 
 sub test_str_is_blank {
 	

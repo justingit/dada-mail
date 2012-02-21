@@ -2100,7 +2100,6 @@ sub sending_preferences {
 			{module => 'Cwd', installed => 1}, 
 			{module => 'Digest::SHA', installed => 1}, 
 			{module => 'URI::Escape', installed => 1}, 
-			{module => 'Bundle::LWP', installed => 1}, 		
 			{module => 'MIME::Base64', installed => 1}, 	
 			{module => 'Crypt::SSLeay', installed => 1}, 	
 			{module => 'XML::LibXML', installed => 1},
@@ -2124,34 +2123,29 @@ sub sending_preferences {
 			$amazon_ses_required_modules->[2]->{installed}           = 0;
 			$amazon_ses_has_needed_cpan_modules = 0;
 		}
-		eval {require Bundle::LWP;};   
+		eval {require MIME::Base64;};  
 		if($@){
 			$amazon_ses_required_modules->[3]->{installed}           = 0;
 			$amazon_ses_has_needed_cpan_modules = 0;
 		}
-		eval {require MIME::Base64;};  
+		eval {require Crypt::SSLeay;}; 
 		if($@){
 			$amazon_ses_required_modules->[4]->{installed}           = 0;
 			$amazon_ses_has_needed_cpan_modules = 0;
 		}
-		eval {require Crypt::SSLeay;}; 
-		if($@){
-			$amazon_ses_required_modules->[5]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
 		eval {require XML::LibXML;};
 		if($@){
-			$amazon_ses_required_modules->[6]->{installed}           = 0;
+			$amazon_ses_required_modules->[5]->{installed}           = 0;
 			$amazon_ses_has_needed_cpan_modules = 0; 
 		}
 		eval {require LWP;};
 		if($@){
-			$amazon_ses_required_modules->[7]->{installed}           = 0;
+			$amazon_ses_required_modules->[6]->{installed}           = 0;
 			$amazon_ses_has_needed_cpan_modules = 0; 
 		}
 		else { 
 			if($LWP::VERSION < 6){ 
-				$amazon_ses_required_modules->[7]->{installed}           = 0;
+				$amazon_ses_required_modules->[6]->{installed}           = 0;
 				$amazon_ses_has_needed_cpan_modules = 0;
 			}
 		}
