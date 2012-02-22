@@ -630,7 +630,7 @@ B<Install> TinyMCE. Here's a simple walkthrough:
 
 L<http://www.tinymce.com/wiki.php/%22For_Dummies%22>
 
-B<Edit> the, C<dada/DADA/Template/templates/default_admin_template.tmpl> file. Add the following lines in the head of the HTML: 
+B<Edit> the, C<dada/DADA/Template/templates/admin_template.tmpl> file. Add the following lines in the head of the HTML: 
 
 	<script language="javascript" type="text/javascript" src="http://example.com/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
 	<script language="javascript" type="text/javascript">
@@ -1201,10 +1201,6 @@ Be very careful when editing the file manually, as unexpected things may happen 
 
 =head2 Tuning Dada Mail to Send Mass Mailings Faster 
 
-I<Before trying any of these, make sure you do not have an hourly or daily quota on how many messages you 
-can send out with your current hosting account.> Many popular hosting companies have such limitations on their 
-most popular hosting packages (Bluehost, Hostmonster, etc)
-
 =over
 
 =item * Install HTML::Template::Pro
@@ -1239,10 +1235,10 @@ You could also experiment with using B<Amazon SES> for mail sending. See:
 
 L<./features-amazon_ses_support.pod.html>
 
-Using a seperate mail service, like Sendgrid or Amazon SES will allow you to go over any hourly/daily email limitation imposted by your hosting company, 
+Using a separate mail service, like Sendgrid or Amazon SES will allow you to go over any hourly/daily email limitation imposted by your hosting company, 
 since you I<are not> sending messages through this host's mail servers.
 
-=item * Use the bounce handler plugin to keep a clean mailing list
+=item * Use the Bounce Handler plugin to keep a clean mailing list
 
 Invalid email addresses on your list just make mass mailing go slower. Use the bounce handler 
 to remove those addresses from your mailing list: 
@@ -1251,89 +1247,118 @@ L<./dada_bounce_handler.pl.html>
 
 =item * Adjust your batch settings
 
-Adjust your batc setting to send more messages out per batch and/or wait less time between batches. 
+
+Adjust your batch settings to send more messages out per batch and/or wait less time between batches. 
 It's not recommended that you totally I<disable> batch sending, but if you do not have a hourly/daily mail sending 
 limit, you can certainly bump up the batch settings to accomodate the resources you have available. 
 
 =back
 
-=head2 Is there a way to speed up screen rendering? (How to use the Screen Cache)
+=head2 Screen Load Times
 
-Yes. 
+Dada Mail loads its images, javascript and css files through the app itself. Requests for these types of 
+resources fires up a copy of Dada Mail, which then serves it up.
 
-As of version 2.10.6, Dada Mail has a caching system for the HTML screens  displayed in web browsers. This is handy, since many of the screens Dada Mail creates can be quite resource-intensive.
+Dada Mail's screen load times can be significantly faster, if you instead copy these types of resources to a different 
+location and call them directly. 
 
-To turn on the Screen Cache, set the Config.pm variable, B<$SCREEN_CACHE> to, B<1>
+In these examples, we'll use: B<http://example.com/static_dada_files> as the location we're going to copy these resources to.
 
- $SCREEN_CACHE = 1;
+Before beginning this, be warned that these files may be changed between versions, so these steps would have to be taken every time 
+you upgrade Dada Mail. 
 
-Screens cached include: 
+=head3 css files
 
-=over
+Dada Mail's css files are in the, I<dada/DADA/Template/templates/css> directory. Copy this directory and place this copy in 
+a different location of your hosting account, where the files can be served statically.
 
-=item * The default screen
+In these examples, we'll use: B<http://example.com/static_dada_files/css>
 
-=item * The admin screen
+In the B<list_template.tmpl> file, find: 
 
-=item * List screens
+	<link rel="stylesheet" href="<!-- tmpl_var S_PROGRAM_URL -->/css/default.css" type="text/css" media="screen" />
 
-=item * List Archive Index screens
+In our example, we would change this to: 
 
-=item * Individual Archived Messages screens
+	<link rel="stylesheet" href="http://example.com/static_dada_files/css/default.css" type="text/css" media="screen" />
 
-=item * Archive Search Results (if the search term is a single word - no funny characters)
+In the B<admin_template.tmpl> file, find: 
 
-=item * File Attachments in archived messages
+	  <link rel="stylesheet" href="<!-- tmpl_var S_PROGRAM_URL -->/css/default.css" type="text/css" media="screen" />
+	<!-- tmpl_if load_modalbox --> 
+	  <link rel="stylesheet" href="<!-- tmpl_var S_PROGRAM_URL -->/css/modalbox.css" type="text/css"  media="screen" />
+	<!-- /tmpl_if -->
 
-=item * Inline Images in archived messages
+In our example, we would change this to: 
 
-=item * List Atom Feeds
+  <link rel="stylesheet" href="http://example.com/static_dada_files/css/default.css" type="text/css" media="screen" />
+<!-- tmpl_if load_modalbox --> 
+  <link rel="stylesheet" href="http://example.com/static_dada_files/css/modalbox.css" type="text/css"  media="screen" />
+<!-- /tmpl_if -->
 
-=item * List RSS Feeds
+You will also need to find the following in the default.css and modalbox.css file: 
 
-=back
+	<!-- tmpl_var S_PROGRAM_URL -->
 
-Of particular, archived messages take quite a bit of resources to parse, edit and display. 
+and, 
 
-The cache is, B<flushed>, or deleted every time each list changes any list setting via the list control panel, add/edit/removes an archived message in any list and when any change is made in the, "Your Mailing List Template" list control panel screen.
+	<!-- tmpl_var PROGRAM_URL -->
 
-You can also administrate the cache by visiting: 
+and change it to your actual Dada Mail URL (or your static img directory - covered below).
 
-http://example.com/cgi-bin/dada/mail.cgi?f=clear_screen_cache
+=head3 image files
 
-You'll be able to view cached screens, etc, remove individual cached items and flush the entire cache. Handy.
+Dada Mail's image files are in the, I<dada/DADA/Template/templates/img> directory. Copy this directory and place this copy in 
+a different location of your hosting account, where the files can be served statically.
 
-You may also manually remove these files from the cache. The cache is saved in the directory called, B<cache> which itself is created in the directory set in the, B<$TMP> Config variable. If you have not explicitly set this variable, it will be set to the directory you set in the, B<$FILES> Config variable. 
+In these examples, we'll use: B<http://example.com/static_dada_files/img>
 
-Each file in the B<cache> directory corresponds to a different screen cached. The names of the cache files correspond loosely to what they represent - for example: 
+In the B<list_template.tmpl> file, find: 
+	
+	<img src="<!-- tmpl_var S_PROGRAM_URL -->/img/dada_mail_logo.png/" title="<!-- tmpl_var PROGRAM_NAME -->" alt="<!-- tmpl_var PROGRAM_NAME -->" />
 
- archive_rss.mylist
+In our example, we would change this to: 
 
-is the cache for the RSS feed for the list, B<mylist>. Another example: 
+	<img src="http://example.com/static_dada_files/img/dada_mail_logo.png/" title="<!-- tmpl_var PROGRAM_NAME -->" alt="<!-- tmpl_var PROGRAM_NAME -->" />
 
- archive.mylist.20060129172502
+In the B<admin_template.tmpl> file, find: 
 
-is the cache for the archived message with the key (internal identification number) for the list, B<mylist>. You can visit this screen by visiting: 
+	<img src="<!-- tmpl_var S_PROGRAM_URL -->/img/dada_mail_logo.png/" alt="<!-- tmpl_var PROGRAM_NAME -->" />
 
-http://example.com/cgi-bin/dada/mail.cgi/achive/mylist/20060129172502/
+In our example, we would change this to: 
 
-B<Note> that cached screens are not wholly HTML, RSS, Atom, Image, etc files, but will also include the HTTP headers required to be sent from the webserver for correct viewing. 
+	<img src="http://example.com/static_dada_files/img/dada_mail_logo.png/" alt="<!-- tmpl_var PROGRAM_NAME -->" />
 
-When the cache is enabled, be sure to realize that any changes to Dada Mail's Templates may not be viewable until the cache is flushed. Also remember that any dynamic content from outside of Dada Mail will be made static via the caching scheme. For example, if you pull a list template from a URL and the list template is actually a php script that dynamically creates, say, a side navigation bar, this navigation bar will become static. 
+There are other images you may swap out for their static kin - do a directory search in, I<dada/DADA/Template/templates> for the following: 
 
-If you would like to flush the Cache on a regular basis, create a script like:
+	<!-- tmpl_var PROGRAM_URL -->/img/
 
- #!/usr/bin/perl
- 
- # change the below line to absolute values:
- use lib qw(./ ./DADA ./DADA/perllib);
- 
- use DADA::App::ScreenCache; 
- 
- my $c = DADA::App::ScreenCache->new; 
-    $c->flush;
+And replace this with your static URL, in a similar way. 
 
-And run it as a cron job. 
+=head3 javascript files
+
+Dada Mail's javascript files are in the, I<dada/DADA/Template/templates/js> directory. Copy this directory and place this copy in 
+a different location of your hosting account, where the files can be served statically. 
+
+In these examples, we'll use: B<http://example.com/static_dada_files/js>
+
+In the B<admin_template.tmpl> file, find: 
+
+	  <script src="<!-- tmpl_var S_PROGRAM_URL -->/js/dada_mail_admin_js.js"         type="text/javascript"></script>
+	  <script src="<!-- tmpl_var S_PROGRAM_URL -->/js/prototype_scriptaculous_package.js" type="text/javascript"></script>
+
+	<!-- tmpl_if load_modalbox --> 
+	  <script src="<!-- tmpl_var S_PROGRAM_URL -->/js/modalbox.js"                   type="text/javascript"></script>
+	<!-- /tmpl_if --> 
+
+In our example, we would change this to: 
+
+	  <script src="http://example.com/static_dada_files/js/dada_mail_admin_js.js"         type="text/javascript"></script>
+	  <script src="http://example.com/static_dada_files/js/prototype_scriptaculous_package.js" type="text/javascript"></script>
+
+	<!-- tmpl_if load_modalbox --> 
+	  <script src="http://example.com/static_dada_files/js/modalbox.js"                   type="text/javascript"></script>
+	<!-- /tmpl_if --> 
 
 =head1 Mail Sending
 
