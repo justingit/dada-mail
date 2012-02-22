@@ -122,7 +122,7 @@ sub view {
 				Manual_Run_Passcode => $Plugin_Config->{Manual_Run_Passcode},
                 file_list           => $app_file_list,
 				curl_location       => $curl_location, 
-                cache_active        => $DADA::Config::SCREEN_CACHE != 0 ? 1 : 0,
+                cache_active        => $DADA::Config::SCREEN_CACHE ne "1" ? 0 : 1,
             },
         }
     );
@@ -168,6 +168,8 @@ return q{
 	<!-- begin clear_screen_cache.tmpl --> 
 
 	<!-- tmpl_set name="title" value="Screen Cache" -->
+
+	<div class="clearskiesbox">
 	
 		<p>Screen Caching is currently <strong>
 	<!-- tmpl_if cache_active --> 
@@ -181,6 +183,8 @@ return q{
 	<!-- /tmpl_if -->
 	</strong>
 
+	</div> 
+	
 
 	<!-- tmpl_if file_list --> 
 
@@ -269,10 +273,14 @@ return q{
 
 	<!-- tmpl_else --> 
 
-		<p class="positive">
-		  There are currently no cached screens.
-		</p>
-
+		<!-- tmpl_if cache_active --> 
+		
+			<p class="positive">
+			  There are currently no cached screens.
+			</p>
+		
+		<!-- /tmpl_if --> 
+		
 	<!--/tmpl_if-->
 	
 	<fieldset> 

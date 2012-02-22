@@ -379,6 +379,7 @@ sub cached_screens {
     my $f;
     my $listing = [];
 
+	return $listing if ! -d $self->cache_dir(); 
 	
     opendir( CACHE, $self->cache_dir() )
       or croak
