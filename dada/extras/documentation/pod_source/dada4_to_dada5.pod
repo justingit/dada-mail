@@ -4,7 +4,7 @@
 
 =head1 Database Schema
 
-There are no changes in any of the database schemas between Dada Mail 4 and Dada Mail 5. 
+There are B<no> changes in any of the database schemas between Dada Mail 4 and Dada Mail 5. 
 
 Upgrading is fairly straightforward, with no need for any Dada Mail 4 to Dada Mail 5 upgrade scripts. 
 

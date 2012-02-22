@@ -20,11 +20,12 @@ These changes are to help a list owner feel more in control over their mailing l
 more malleable to work with. 
 
 Members of all sublists can be easily browsed through using enhancement pagination links - first, last, previous, next pages (etc), as well as more organized searching,
-that features the same refined user interface. The data can now be sorted alphabetically, ascending or descending by email address or by any of the profile fields.
+that features the same refined user interface. The data can now be sorted alphabetically, 
+ascending or descending by email address or by any of the profile fields.
 
-Individual subscribers can now be more easily administrated. From each subscriber's membership screen, you can see all the 
-sublists an individual address is a member of and move the address to and from. A running history of the addresses membership is
+Individual subscribers can now be more easily administrated. From each subscriber's membership screen, you can now see all the 
+sublists an individual address is a member of and move the address to and from various sublists. A running history of the addresses membership is
 also available. 
 
 Recent subscription/unsubscription activity is also now easily viewed in a new admin screen titled, B<Recent Activity> which 
-currently shows the last 100 seperate events that have happened in your mailing list. 
+currently shows the last 100 seperate events that have happened in your mailing list.

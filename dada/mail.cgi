@@ -9539,6 +9539,9 @@ sub js {
       scriptaculous.js
       modalbox.js
 
+	  prototype_scriptaculous_package.js
+	
+
     );
 
     my %lt = ();
