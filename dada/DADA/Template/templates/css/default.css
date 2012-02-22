@@ -98,6 +98,7 @@ body {
 }
 
 /* BOTH */
+/* It would be nice if this footer was, "sticky" - any takers for implementation? :) */
 #Footer {
 	border-top: 1px solid #666;
 	background-color: #669999;

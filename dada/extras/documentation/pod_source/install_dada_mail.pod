@@ -4,7 +4,7 @@
 
 =head1 Step #1: Download Dada Mail
 
-Here's the direct download to Dada Mail v5.0.0 Beta 1: 
+Here's the direct download to Dada Mail v5.0.0 Beta 2: 
 
 L<https://github.com/downloads/justingit/dada-mail/dada-5_0_0-beta2.tar.gz>
 
@@ -35,11 +35,11 @@ Download the, C<uncompress_dada.cgi> script from here:
 =begin html 
 
 <ul>
-<li><strong><a href="https://github.com/justingit/dada-mail/raw/v5_0_0-beta1_2012_02_14/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
+<li><strong><a href="https://github.com/justingit/dada-mail/raw/v5_0_0-beta2_2012_02_21/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
 
 =end html
 
-and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> - right alongside the I<dada-5_10_0-beta1.tar.gz> distro you just put up. 
+and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> - right alongside the I<dada-5_0_0-beta2.tar.gz> distro you just put up. 
 
 =head1 Step #4 Change permissions of the, "uncompress_dada.cgi" file to, "755"
 

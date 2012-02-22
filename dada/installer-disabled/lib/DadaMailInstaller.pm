@@ -54,7 +54,7 @@ my $Big_Pile_Of_Errors  = undef;
 
 # Show these errors in the web browser? 
 #
-my $Trace               = 1; 
+my $Trace               = 0; 
 
 # These are strings we look for in the example_dada_config.tmpl file which 
 # we need to remove. 

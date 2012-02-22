@@ -111,51 +111,47 @@ Moving the directory:
 
 =head2 Step #2 Install the new Dada Mail
 
-Now, you can just follow the instructions for an installation of Dada Mail: 
+Upgrading will now be similar to installing Dada Mail (L<http://dadamailproject.com/support/documentation/install_dada_mail.pod.html>) 
 
-L<http://dadamailproject.com/support/documentation/install_dada_mail.pod.html>
+=head2 Choose, "Upgrade"
 
+The first screen of the installer will ask you if you'd like to Install, or Upgrade Dada Mail. Choose, B<Upgrade>. 
+
+A new form field will appear, labeled, B<Current .dada_files Location>. 
+
+If it can automatically be found, the textbox will be pre-filled with
+the absolute path to the parent directory of where the C<.dada_files> directory lives. If this path looks correct, click, B<Continue...>. 
+
+If this isn't the correct location, or no location was pre-filled in, fill in the correct location manually. The installer shouldn't 
+allow you to continue, unless this directory is successfully found. 
+
+=head2 Upgrade Options
+
+Two new options are presented to you in the installer, if you are B<upgrading>. 
 
 =over
 
-=item * If your last installation was a Contemporary Installation, use the same value as before for your C<.dada_files> location. 
+=item * Create a new .dada_config file
 
-Your Dada Files Location is usually the directory above your C<PROGRAM_CONFIG_FILE_DIR> variable. For example, if my C<PROGRAM_CONFIG_FILE_DIR> is set to: 
+Select this option if you are B<upgrading between major versions> of Dada Mail. For example, version B<4>.0.0 to version B<5>.0.0 or, 
+from version 5.B<0>.0 to version 5.B<1>.0. 
 
-I</home/myaccount/.dada_files/.configs>
+Changes are preiodically made to Dada Mail's default configuration and it's a good idea to have the installer create a new C<.dada_config> file to 
+take advantage of any new enhancements and also to keep your C<.dada_config> file current and compatible with your new copy of 
+Dada Mail. 
 
-my C<.dada_files> directory is: 
+The Dada Mail installer does not read your old C<.dada_config> file, so you will have to manually read your old C<.dada_config> file 
+and type in the old values. You can view your current C<.dada_config> file clicking the buttom on top of the installer labeled, 
 
-I</home/myaccount/.dada_files>
+B<View this .dada_config Configuration...>
 
-=item * If your last installation was a Basic Installation, install Dada Mail as if it's a brand new installation and then move your old list/settings/archives/etc files over: 
+=item * Use the current .dada_config file
 
-L<http://dadamailproject.com/support/documentation/basic_to_contemporary_installation.pod.html>
+Select this option if you are upgrading between minor versions of Dada Mail. For example, version 5.0.B<0> to 5.0.B<1>. 
+
+The rest of the installer form will be hidden, as no extra configuration is needed. 
 
 =back
-
-In the installer, type in the current location of your, C<.dada_files> directory. The installer may also see that it's "best guess" is
-already the current location of your C<.dada_files> directory. It'll warn you about this, just in case it is not your intention to upgrade Dada Mail using that specific C<.dada_files> directory. This is probably only an issue if you have multiple copies of Dada Mail installed. 
-
-Fill out the form fields of the installer, just like you were doing a installation. Click the, "Configure Dada Mail!" button. 
-
-When the screen refreshes, you'll see the same B<same configuration form>, I<but> with B<two new options>. 
-
-If you are upgrading an installation with a MySQL backend, you'll also get a warning about your SQL databases already having tables that exist. Don't worry - that's a good thing! Just make sure to check the checkbox that says, B<I know these tables already exist.> 
-
-=head4 First Option: Use the existing directory structure, but create a new configuration file, using the configuration below
-
-The first option, I<Use the existing directory structure, but create a new configuration file, using the configuration below> allows you to upgrade your current Dada Mail, while using a I<fresh> copy of the C<.dada_config> file. 
-
-This option may be useful in helping you keep a current C<.dada_config> file. In many cases, upgrades to Dada Mail between minor dot releases (for example, v4.B<5>.0 and v4.B<6>.0 come with changes to the default C<.dada_config> file. These changes may include incompatibilities if you use your current C<.dada_config> file. 
-
-You may not want to use this option if you've made custom changes to your C<.dada_config> file that you do not want to lose. You still may manually move over your customizations from your old C<.dada_config> file (which is backed up for you) to the new C<.dada_config> file that will be generated. 
-
-=head4 Second Option: Use the existing directory structure and configuration file, ignoring the configuration below.
-
-The second option, I<Use the existing directory structure and configuration file, ignoring the configuration below.> will leave your Dada Mail configuration alone, and simply allow you to upgrade to the latest version of Dada Mail.
-
-If you have any plugins/extensions that you've installed with the installer from a previous installation, the installer will I<try> its best to at least change the permissions of each plugin/extension you have already installed to continue working. It's possible that the installer I<cannot> detect a plugin/extension install, so you may have to reinstall the plugin/extension manually.
 
 =head2 Changelog 
 

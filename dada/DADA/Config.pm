@@ -2,7 +2,7 @@ package DADA::Config;
 
 ##############################################################################
 # For information on how to install Dada Mail, please see: 
-# http://dadamailproject.com/support/documentation/install_dada_mail.pod.html 
+# http://dadamailproject.com/d/install_dada_mail.pod.html 
 ##############################################################################
 
 require Exporter;  
@@ -5136,7 +5136,7 @@ and to say that you've got the freshest tools on the Web.
 =cut
 
 $VERSION = 5.0.0; 
-$VER     = '5.0.0 Beta 1 - 2/14/11';
+$VER     = '5.0.0 Beta 2 - 2/21/12';
 
 #
 #
