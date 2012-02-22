@@ -1,6 +1,9 @@
 package DADA::MailingList::Subscribers;
 
-use lib qw(./ ../ ../../ ../../DADA ../../perllib ../../../ ../../../perllib);
+use lib qw(
+	../../
+	../../DADA/perllib
+);
 
 
 use Carp qw(carp croak);
@@ -34,8 +37,6 @@ use base "DADA::MailingList::Subscribers::$backend";
 use DADA::MailingList::Subscriber; 
 use DADA::MailingList::Subscriber::Validate;
 use DADA::Profile::Fields; 
-
-
 use DADA::Logging::Usage;
 my $log = new DADA::Logging::Usage;
 
