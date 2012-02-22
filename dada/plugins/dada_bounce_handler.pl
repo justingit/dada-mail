@@ -286,14 +286,14 @@ sub cgi_default_tmpl {
 	</script>
 	
 		
-	<!-- tmpl_set name="title" value="Bounce Handler" -->
-	<!-- tmpl_include help_link_widget.tmpl -->
-	
-	
-     <p id="breadcrumbs">
-        
-           <!-- tmpl_var Plugin_Name --> 
-    </p> 
+	<!-- tmpl_set name="title" value="Bounce Handler" -->	
+	<div id="screentitle"> 
+		<div id="screentitlepadding">
+			<!-- tmpl_var title -->
+		</div>
+		<!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+
  
 		<!-- tmpl_unless plugin_configured --> 
 		
@@ -470,14 +470,20 @@ Scorecard Preferences
 <br />Bounce Messages will be delivered to the List Owner (after being parsed and scored) for manual inspection. 
 </td>
 </tr> 
-<tr> 
+</table>
 
-<td> 
-&nbsp;
-</td> 
+</td>
+</tr>
+</table> 
+
+<table cellpadding="5"> 
+<tr> 
 <td> 
 	<p>Addresses the reach the <strong>Bounce Score Threshold</strong> Should:</p>
-
+</td>
+</tr>
+<tr>
+<td>
 	 <p><input type="radio" name="bounce_handler_when_threshold_reached" value="unsub_subscriber" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'unsub_subscriber')" -->checked="checked"<!-- /tmpl_if --> /><label>Be Unsubscribed Right Away</label><br />
 	 <input type="radio" name="bounce_handler_when_threshold_reached"  value="move_to_bounced_sublist" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'move_to_bounced_sublist')" -->checked="checked"<!-- /tmpl_if --> /><label>Be Moved to the, "Bounced Addresses" Sublist</label>
 </p> 

@@ -1402,15 +1402,6 @@ my $tmpl = q{
 			
 	    //]]>
 	</script>
-	<!-- tmpl_if chrome --> 
-		
-		  <p id="breadcrumbs">
-	        <a href="<!-- tmpl_var Plugin_URL -->">
-			 <!-- tmpl_var Plugin_Name -->
-		</a> &#187; <!-- tmpl_var subject escape="HTML" --> 
-	   </p>
-
-	<!-- /tmpl_if --> 
 	
 	<!-- tmpl_if chrome --> 
 		
@@ -1426,7 +1417,6 @@ my $tmpl = q{
 
 	<div style=" border: 1px solid black;">
  	<table class="stripedtable">
-		<tr style="background:#fff">
 	<tr> 
 	<td>
 	<p>
@@ -1464,7 +1454,7 @@ my $tmpl = q{
 	</tr>
 		
 	
-	<tr style="background:#fff">
+	<tr>
 	<td> 
 	 <p>
 	  <strong>
@@ -1711,7 +1701,7 @@ my $tmpl = q{
 <div> 
 	<div style="max-height: 300px; overflow: auto; border:1px solid black;width:500px">
 	
-	<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0"  width="500">
+	<table class="stripedtable" style="width:500px">
 	 <tr> 
 	  <td> 
 	   <strong>Date</strong>
@@ -1753,7 +1743,7 @@ my $tmpl = q{
 <legend>Hard Bounces</legend>
 <div> 
 	<div style="max-height: 300px; overflow: auto; border:1px solid black; width:500px">
-		<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0" width="500">
+		<table class="stripedtable" style="width:500px">
 	 <tr> 
 	  <td> 
 	   <strong>Date</strong>
@@ -1994,13 +1984,13 @@ sub by_domain_img {
 sub country_geoip_chart_tmpl{ 
 	return q{ 
 		<!-- tmpl_if c_geo_ip_report --> 
-			<table cellpadding="5" cellspacing="0" border="0"> 
+			<table class="stripedtable">
 			<tr> 
 			<td> 
 			
 			<div> 
 				<div style="max-height: 225px; overflow: auto; border:1px solid black">
-			 	<table style="background-color: rgb(255, 255, 255);" border="0" cellpadding="2" cellspacing="0">
+			 	<table class="stripedtable">
 			<tr style="background:#fff"> 
 			<td> 
 			<p><strong>Country</strong></p> 
@@ -2130,9 +2120,9 @@ sub url_report_tmpl {
 	 </p> 
 	<hr /> 
 	
-	<table cellpadding="5"> 
+	<table class="stripedtable"> 
 	 <!-- tmpl_loop url_report --> 
-		<tr>
+		<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
 		 <td> 
 		  <p> 
 		   <!-- tmpl_var url --> 

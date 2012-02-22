@@ -3850,10 +3850,10 @@ sub default_cgi_template {
 <!-- /tmpl_if -->
 
 <!-- tmpl_unless list_email_status -->
-	<div style="background:#fcc;margin:5px;padding:5px;text-align:center">
-		  <h1>
+	<div class="badweatherbox">
+		  <p><strong>
 			Information Not Saved! Please Fix Problems Below.
-		<h1/>
+		<strong/></p>
 	</div> 
 <!--/tmpl_unless--> 
 <form name="default_form" action="<!-- tmpl_var Plugin_URL --> "method="post">
@@ -3861,10 +3861,10 @@ sub default_cgi_template {
 
 
 <!-- tmpl_if list_settings.disable_discussion_sending -->
- <div style="background:#fcc;margin:5px;padding:5px;text-align:center">
-  <h1>
+<div class="badweatherbox">
+  <p><strong>
    This Plugin is Currently Disabled for This List!
-  </h1> 
+  </strong></p> 
 
 <p>
  Uncheck the option labeled, <em>Disable sending using this method</em> below to enable this plugin for this Mailing List.

@@ -27,7 +27,7 @@ body {
 	margin: 0 auto; /* page centering for all but IE */
 	padding:0px;
 	background-color: #669999;
-	background-image: url('<!-- tmpl_var S_PROGRAM_URL -->/img/header_bg.gif/');
+	background-image: url('<!-- tmpl_var PROGRAM_URL -->/img/header_bg.gif/');
 	background-repeat: repeat-y;
 	text-align: left;
 	font: 1.1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
@@ -562,7 +562,7 @@ li.archive_badges_li {
 	clear: left;
 	float: left;
 	padding: 0;
-	background: #fff url(<!-- tmpl_var PROGRAM_URL -->/img/centeredmenu.gif) bottom repeat-x;
+	background: #fff url(<!-- tmpl_var S_PROGRAM_URL -->/img/centeredmenu.gif) bottom repeat-x;
 	width: 100%;
 	overflow: hidden;
 	font: 1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
