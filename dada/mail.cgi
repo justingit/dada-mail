@@ -6469,7 +6469,7 @@ sub profile_fields {
 		###
         $pfm->remove_field({-field => $field});
         $c->flush;
-        print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=profile_fields&deletion=1&working_field=' . $field});
+        print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=profile_fields;deletion=1;working_field=' . $field . ';field_changes=1'});
         return;
      }
      elsif($process eq 'add_field'){
@@ -6491,7 +6491,7 @@ sub profile_fields {
 				}
 			);
 
-            print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=profile_fields&addition=1&working_field=' . $field});
+            print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=profile_fields;addition=1;working_field=' . $field . ';field_changes=1'});
             $c->flush;
 			return;
          }
@@ -6529,7 +6529,7 @@ sub profile_fields {
 				}
 			);
 			$c->flush;
-			print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=profile_fields&edited=1&working_field=' . $field});
+			print $q->redirect({-uri => $DADA::Config::S_PROGRAM_URL . '?f=profile_fields;edited=1;working_field=' . $field . ';field_changes=1'});
              return;
 		}
          else {
@@ -6597,6 +6597,7 @@ sub profile_fields {
                                                        HIDDEN_SUBSCRIBER_FIELDS_PREFIX  => $DADA::Config::HIDDEN_SUBSCRIBER_FIELDS_PREFIX,
 
 														using_SQLite                     => $DADA::Config::SUBSCRIBER_DB_TYPE eq 'SQLite' ? 1 : 0,
+														field_changes                    => xss_filter($q->param('field_changes')), 
 														working_field                    => xss_filter($q->param('working_field')),
 														deletion                         => xss_filter($q->param('deletion')),
 														addition                         => xss_filter($q->param('addition')),

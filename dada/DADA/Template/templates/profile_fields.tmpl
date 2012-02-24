@@ -18,25 +18,33 @@
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
 
+<!-- tmpl_if field_changes --> 
 
+	<div class="clearskiesbox" id="changed_saved_dialog_box">
+	
+	<!-- tmpl_if deletion --> 
+		<p>
+			The Profile Field, "<!-- tmpl_var working_field -->"  has been deleted.
+		</p>
+	<!-- /tmpl_if --> 
 
+	<!-- tmpl_if addition --> 
+		<p>
+			The Profile Field, "<!-- tmpl_var working_field -->"  has been added.
+		</p>
+	<!-- /tmpl_if --> 
 
-<!-- tmpl_if deletion --> 
-	<p class="positive">
-		The Profile Field, "<!-- tmpl_var working_field -->"  has been deleted.
-	</p>
-<!-- /tmpl_if --> 
+	<!-- tmpl_if edited --> 
+		<p>
+			The Profile Field, "<!-- tmpl_var working_field -->"  has been edited.
+		</p>
+	<!-- /tmpl_if --> 
+	
+	<div style="text-align: center;">
+	<input type="button" class="small_button" value="Ok!" onClick="Effect.Fade('changed_saved_dialog_box');" />
+	</div>
 
-<!-- tmpl_if addition --> 
-	<p class="positive">
-		The Profile Field, "<!-- tmpl_var working_field -->"  has been added.
-	</p>
-<!-- /tmpl_if --> 
-
-<!-- tmpl_if edited --> 
-	<p class="positive">
-		The Profile Field, "<!-- tmpl_var working_field -->"  has been edited.
-	</p>
+	</div> 
 <!-- /tmpl_if --> 
 
 
@@ -49,24 +57,21 @@
 
 <!-- tmpl_if can_have_subscriber_fields --> 
     
-	<div class="clearskiesbox">
-	<p>
-	 Subscriber Profile Fields are global and changing them will affect all Mailing Lists. You may only change the Subscriber Profile Fields if you are logged in to an existing list using the <!-- tmpl_var PROGRAM_NAME --> Root Password.
-	</p>
-	</div>
-    
+	
     
     <!-- tmpl_if field_errors --> 
     
+		<div class="badweatherbox"> 
+		
 		<!-- tmpl_unless edit_field --> 
 		
-	        <p class="error"> 
-	         There were problems when adding your new field!
+	        <p> 
+	         There were problems when adding your new Profile Field:
 	        </p>
 
 		<!-- tmpl_else --> 
 
-			<p class="error"> 
+			<p> 
 	         There were problems when editing your field, <!-- tmpl_var field -->
 	        </p>
 
@@ -75,7 +80,7 @@
         <ul>
          <!-- tmpl_if field_error_field_blank -->
              <li>
-              <p class="error"> 
+              <p> 
                 The field name you submitted was blank.
               </p>
               </li>
@@ -83,7 +88,7 @@
          
           <!-- tmpl_if field_error_field_name_too_long -->
              <li>
-              <p class="error"> 
+              <p> 
                 The field name is too long - make sure it's less than 64 characters.
               </p>
               </li>
@@ -91,7 +96,7 @@
          
         <!-- tmpl_if field_error_slashes_in_field_name -->
              <li>
-              <p class="error"> 
+              <p> 
                 The field name has slashes in its name. 
               </p>
               </li>
@@ -100,7 +105,7 @@
          
          <!-- tmpl_if field_error_weird_characters -->
              <li>
-              <p class="error"> 
+              <p> 
                 The field name has some weird characters. 
               </p>
               </li>
@@ -108,7 +113,7 @@
          
          <!-- tmpl_if field_error_quotes -->
              <li>
-              <p class="error"> 
+              <p> 
                 The field name has quotes in it. 
               </p>
               </li>
@@ -117,7 +122,7 @@
         
          <!-- tmpl_if field_error_field_exists -->
              <li>
-              <p class="error"> 
+              <p> 
                 The field name already exists! 
               </p>
               </li>
@@ -126,7 +131,7 @@
          
           <!-- tmpl_if field_error_spaces -->
              <li>
-              <p class="error"> 
+              <p> 
                 The field name has spaces (hint: use an underscore instead of a space). 
               </p>
               </li>
@@ -135,16 +140,24 @@
          
          <!-- tmpl_if field_error_field_is_special_field -->
              <li>
-              <p class="error"> 
+              <p> 
                 The field name you're trying to add/edit is a special, reserved field (email_id, email, list, list_type, list_status )
               </p>
               </li>
          <!-- /tmpl_if -->   
         </ul> 
     
-    
+	</div> 
+	
     <!-- /tmpl_if --> 
     
+
+	<p>
+	 Subscriber Profile Fields are Global. Customizing them will reflect on all Mailing Lists. 
+	 You may only change the Subscriber Profile Fields if you are logged in using the <!-- tmpl_var PROGRAM_NAME --> 
+	  Root Password.
+	</p>
+
 
 		    
   <!-- tmpl_unless edit_field -->   
