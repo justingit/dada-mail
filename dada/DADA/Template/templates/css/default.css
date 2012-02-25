@@ -174,7 +174,8 @@ body {
 }
 
 .clearskiesbox,
-.badweatherbox {
+.badweatherbox,
+.login_message {
 	margin-top: 10px;
 	margin-bottom: 10px;
 	margin-left: auto;
@@ -182,16 +183,16 @@ body {
 	width: 350px;
 	border: 1px solid #333;
 	background-color: #efefef;
-	color: #666;
+	color: #333;
 	text-align: left;
 	padding-top: 5px;
 	padding-bottom: 5px;
 	padding-left: 10px;
 	padding-right: 10px;
-	font-size: .9em;
-	-webkit-box-shadow: 0px 0px 10px #330033;
-	-moz-box-shadow: 0px 0px 10px #330033;
-	box-shadow: 0px 0px 10px #330033;
+	font-size: 1em;
+	-webkit-box-shadow: 0 4px 8px rgba(51,0,0,0.5);
+	-moz-box-shadow:    0 4px 8px rgba(51,0,0,0.5);
+	box-shadow:         0 4px 8px rgba(51,0,0,0.5);
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
@@ -208,10 +209,10 @@ body {
 }
 
 .login_message {
+	width:auto;
 	float: right;
-	padding: 5px;
 	background-color: #ffc;
-	border: 1px dotted #333;
+
 }
 
 .login_message p {
@@ -355,22 +356,28 @@ legend {
 }
 
 input[type="text"],
+input[type="password"],
 select,
 textarea {
 	margin: 3px;
-	padding: 3px;
+	padding: 5px;
 	border-width: 1px;
 	border-style: solid;
-	border-color: #666 #999 #ccc #999;
+	border-color:#666;
 	font-size: 1em;
 	font-family: Helvetica,Verdana,Arial,sans-serif;
+	
+	-moz-box-shadow: inset 0px 1px 3px rgba(51,0,0,0.3);
+	-webkit-box-shadow: inset 0px 1px 3px rgba(51,0,0,0.3);
+	box-shadow: inset 0px 1px 3px rgba(51,0,0,0.3)
+	
 }
 #Header select {
 	font: .9em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 	width: 150px;
 	background-color: #efefef;
 	margin: 0px;
-	padding: 0px;
+	padding: 1px;
 }
 
 .small_input {

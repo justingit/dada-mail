@@ -15,6 +15,31 @@
 
 <!-- tmpl_if mailout_exists -->
 
+	<!-- tmpl_if sending_done --> 
+		<div class="clearskiesbox">
+	    <p> 
+	     Your mailing looks finished! You may navigate away from this window!
+	    </p>
+		</div>
+	<!-- tmpl_else --> 
+	    <!-- tmpl_if its_killed -->
+			<div class="badweatherbox">
+	        <p> 
+	         Message Sending seems to have stopped. 
+	        </p>
+			</div>
+	    <!--/tmpl_if-->
+	    <!-- tmpl_if status_mailout_stale --> 
+	    	<div class="badweatherbox">
+	        <p> 
+	         The time since the last message sent has elapsed past a certain period and is considered, 
+				&quot;Stale&quot; You may continue the mailing by clicking, &quot;Pickup Mailing&quot;
+	        </p>
+			</div>
+	    <!-- /tmpl_if -->
+	<!--/tmpl_if-->
+
+
 	<!-- tmpl_unless integrity_check --> 
 
 		<div class="badweatherbox">
@@ -174,26 +199,7 @@
 		  <ul> 
 	  
 		<!-- tmpl_unless sending_done --> 
-	
-	
-			<!-- tmpl_if comment --> I haven't implemented this in ajax, yet. 
-			
-			    <li>
-			
-				  <form name="refresh_control"> 
-					 <p class="alert"> 
-					<input type="checkbox" name="refresh_on" checked="checked" onChange="updateRefresh();" /> 	
-			      When checked, this screen will refresh every <!-- tmpl_var refresh_after --> seconds.
-		 
-			
-			     </p>
-				</form>
-				</li>
-
-			<!-- /tmpl_if --> 
-
 			 <li><p class="alert"> This screen will refresh every <!-- tmpl_var refresh_after --> seconds.</p></li>
-
 		<!-- /tmpl_unless --> 
 
 		<!-- tmpl_if auto_pickup_dropped_mailings --> 
@@ -203,7 +209,6 @@
 	        </p> 
 	    	</li>
 	    <!-- tmpl_else --> 
-    
 			<li>
 	        <p class="error">
 	         Auto Pickup of Dropped Mailings is disabled.
@@ -212,111 +217,51 @@
 		<!--/tmpl_if -->
 
 		<!-- tmpl_if integrity_check --> 
-
 	        <!-- tmpl_if is_paused --> 
 	        <li>
 	          <p class="error">
 	              Mail Sending is currently paused. Click, "Resume Mailing" to resume.
 	           </p>	
 			</li>
-        
 	        <!--/tmpl_if --> 
-    
-    
-      
-	        <!-- tmpl_if sending_done --> 
-        
-        
-	        <!-- tmpl_else --> 
-            
 
+		    <!-- tmpl_if sending_done --> 
+	  		<!-- tmpl_else --> 
+	    	<!--/tmpl_if--> 
        
-            
-	<!--/tmpl_if--> 
-    
-    
-    
-	<!-- tmpl_if queue --> 
+			<!-- tmpl_if queue --> 
+			    <!-- tmpl_if queued_mailout --> 
+					<!-- tmpl_if is_paused --> 
+						<li>
+			           <p class="error"> 
+				         Your message is currently queued but has lost its place in the queue,  since it is also paused. <br />Resuming this mailing will 
+				 		 put it back into the queue line, at its original place. 
+				        </p>
+						</li>
+					<!-- tmpl_else --> 
+						<li>
+			 	       <p class="error"> 
+				         Your message is currently queued and will be sent after other mailouts have completed. 
+				        </p>
+			        	</li>
+						<li>
+				        <p class="error">
+				         This mailout is currently #<!-- tmpl_var queue_place --> of a total of <!-- tmpl_var queue_total --> mailouts.
+				        </p>
+			        	</li>
+				        <li>
+						<p class="error">This mailout will start when it is in the # <!-- tmpl_var MAILOUT_AT_ONCE_LIMIT --> place in the queue.</p>
+						</li>
+			    	<!-- /tmpl_if --> 
+			    <!-- /tmpl_if --> 
+			<!-- /tmpl_if --> 
+			</ul> 
 
-	    <!-- tmpl_if queued_mailout --> 
-    
-			<!-- tmpl_if is_paused --> 
-				<li>
-	           <p class="error"> 
-		         Your message is currently queued but has lost its place in the queue,  since it is also paused. <br />Resuming this mailing will 
-		 		 put it back into the queue line, at its original place. 
-		        </p>
-				</li>
 			<!-- tmpl_else --> 
-				<li>
-	 	       <p class="error"> 
-		         Your message is currently queued and will be sent after other mailouts have completed. 
-		        </p>
-	        	</li>
-				<li>
-		        <p class="error">
-		         This mailout is currently #<!-- tmpl_var queue_place --> of a total of <!-- tmpl_var queue_total --> mailouts.
-		        </p>
-	        	</li>
-		        <li>
-				<p class="error">This mailout will start when it is in the # <!-- tmpl_var MAILOUT_AT_ONCE_LIMIT --> place in the queue.</p>
-				</li>
-	            <!-- /tmpl_if --> 
-	    <!-- /tmpl_if --> 
-
-	<!-- /tmpl_if --> 
-
-	</ul> 
-    
-       
+				<!-- ... --> 
+			<!-- /tmpl_if --> 
 
 
-       
-    
-    
-	    <!-- tmpl_if sending_done --> 
-    
-			<div class="clearskiesbox">
-	        <p> 
-	         Your mailing looks finished! You may navigate away from this window!
-	        </p>
-		</div>
-    
-    
-	    <!-- tmpl_else --> 
-        
-	        <!-- tmpl_if its_killed --> 
-        
-        		<div class="badweatherbox">
-	            <p> 
-	             Message Sending seems to have stopped. 
-	            </p>
-			</div>
-        
-	        <!--/tmpl_if-->
-        
-	        <!-- tmpl_if status_mailout_stale --> 
-        
-            	<div class="badweatherbox">
-	            <p> 
-	             The time since the last message sent has elapsed past a certain period and is considered, 
-					&quot;Stale&quot; You may continue the mailing by clicking, &quot;Pickup Mailing&quot;
-	            </p>
-			</div>
-            
-        
-	        <!-- /tmpl_if --> 
-    
-    
-	    <!--/tmpl_if-->
-
-	<!-- tmpl_else --> 
-	
-		<!-- ... --> 
-		
-	<!-- /tmpl_if --> 
-
-<hr /> 
 
 <fieldset> 
 	

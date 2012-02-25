@@ -487,7 +487,7 @@ Create an HTML document using your favorite HTML editor. Post it somewhere on yo
 
 =back
 
-In the list control panel, go to, <Send a Webpage>. Under, B<HTML Verson (Your Webpage)>, check: I<Grab content from this webpage address (URL):> and fill in the url to use. 
+In the list control panel, go to, <Send a Webpage>. Under, B<HTML Version (Your Webpage)>, check: I<Grab content from this webpage address (URL):> and fill in the url to use. 
 
 =item * Install the the Dada Bridge Plugin and format and send your messages from your mail reader. Your messages B<should> come through almost exactly as you've created them.
 
