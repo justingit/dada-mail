@@ -351,7 +351,7 @@ fieldset {
 legend {
 	font-family: 'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;
 	font-weight: bold;
-	font-size: 1.15em;
+	font-size: 1.25em;
 }
 
 input[type="text"],
@@ -432,6 +432,7 @@ input.processing:hover,
 input.cautionary:hover,
 input.alertive:hover,
 input.help:hover {
+	color: #333;
 	background-color: #ffe1af;
 }
 

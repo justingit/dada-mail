@@ -2903,179 +2903,180 @@ sub view_list {
 		); 
 		
 		e_print($scrn); 
-		exit; 
+		return; 
 	}
+	else { 
 
-    # DEV: Yup. Forgot what this was for.
-    if ( defined( $q->param('list') ) ) {
-        if ( $list ne $q->param('list') ) {
+	    # DEV: Yup. Forgot what this was for.
+	    if ( defined( $q->param('list') ) ) {
+	        if ( $list ne $q->param('list') ) {
 
-# I should look instead to see if we're logged in view ROOT and then just
-# *Switch* the login. Brilliant! --- maybe I don't want to switch lists automatically - without
-# someone perhaps knowing that THAT's what I did...
-            logout( -redirect_url => $DADA::Config::S_PROGRAM_URL . '?'
-                  . $q->query_string(), );
-            return;
-        }
-    }
+				# I should look instead to see if we're logged in view ROOT and then just
+				# *Switch* the login. Brilliant! --- maybe I don't want to switch lists automatically - without
+				# someone perhaps knowing that THAT's what I did...
+	            logout( -redirect_url => $DADA::Config::S_PROGRAM_URL . '?'
+	                  . $q->query_string(), );
+	            return;
+	        }
+	    }
 
 	
-    require DADA::MailingList::Settings;
+	    require DADA::MailingList::Settings;
 
-    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+	    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+	    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
-    my $num_subscribers = $lh->num_subscribers( { -type => $type } );
+	    my $num_subscribers = $lh->num_subscribers( { -type => $type } );
 
-    my $show_bounced_list = 0;
-    if ( $lh->num_subscribers( { -type => 'bounced_list' } ) > 0  || $ls->param('bounce_handler_when_threshold_reached') eq 'move_to_bounced_sublist') {
-        $show_bounced_list = 1;
-    }
+	    my $show_bounced_list = 0;
+	    if ( $lh->num_subscribers( { -type => 'bounced_list' } ) > 0  || $ls->param('bounce_handler_when_threshold_reached') eq 'move_to_bounced_sublist') {
+	        $show_bounced_list = 1;
+	    }
 
-    my $subscribers = [];
-
-
-    require Data::Pageset;
-    my $page_info    = undef;
-    my $pages_in_set = [];
-    my $total_num    = 0;
-    if ($query) {
-        ( $total_num, $subscribers ) = $lh->search_list(
-            {
-                -query     => $query,
-                -type      => $type,
-                -start     => ( $page - 1 ),
-                '-length'  => $ls->param('view_list_subscriber_number'),
-                -order_by  => $order_by,
-                -order_dir => $order_dir,
-
-            }
-        );
-
-        $page_info = Data::Pageset->new(
-            {
-                total_entries    => $total_num,
-                entries_per_page => $ls->param('view_list_subscriber_number'),
-                current_page     => $page,
-                mode          => 'slide',    # default fixed
-                pages_per_set => 5,
-            }
-        );
-
-    }
-    else {
-
-        $subscribers = $lh->subscription_list(
-            {
-                -type => $type,
-
-# this really should be just, $page, but subscription_list() would have to be updated, which will break a lot of things...
-                -start     => ( $page - 1 ),
-                '-length'  => $ls->param('view_list_subscriber_number'),
-                -order_by  => $order_by,
-                -order_dir => $order_dir,
-            }
-        );
-        $total_num = $num_subscribers;
-        $page_info = Data::Pageset->new(
-            {
-                total_entries    => $num_subscribers,
-                entries_per_page => $ls->param('view_list_subscriber_number'),
-                current_page     => $page,
-                mode          => 'slide',    # default fixed
-                pages_per_set => 5,
-            }
-        );
-
-    }
-
-    foreach my $page_num ( @{ $page_info->pages_in_set() } ) {
-        if ( $page_num == $page_info->current_page() ) {
-            push( @$pages_in_set, { page => $page_num, on_current_page => 1 } );
-        }
-        else {
-            push( @$pages_in_set,
-                { page => $page_num, on_current_page => undef } );
-        }
-    }
-
-    require DADA::ProfileFieldsManager;
-    my $pfm         = DADA::ProfileFieldsManager->new;
-    my $fields_attr = $pfm->get_all_field_attributes;
-
-    my $field_names = [];
-    for ( @{ $lh->subscriber_fields } ) {
-        push(
-            @$field_names,
-            {
-                name          => $_,
-                label         => $fields_attr->{$_}->{label},
-                S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL
-            }
-        );
-    }
-
-    require DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::screen(
-        {
-            -list           => $list,
-            -screen         => 'view_list_viewport_widget.tmpl',
-            -expr => 1,
-            -vars => {
-
-				screen             => 'view_list',
-                flavor             => 'view_list',
-                type               => $type,
-                type_title         => $type_title,
+	    my $subscribers = [];
 
 
-                first              => $page_info->first,
-                last               => $page_info->last,
-                first_page         => $page_info->first_page,
-                last_page          => $page_info->last_page,
-                next_page          => $page_info->next_page,
-                previous_page      => $page_info->previous_page,
-                page               => $page_info->current_page,
-                show_list_column   => 0,
-                field_names        => $field_names,
+	    require Data::Pageset;
+	    my $page_info    = undef;
+	    my $pages_in_set = [];
+	    my $total_num    = 0;
+	    if ($query) {
+	        ( $total_num, $subscribers ) = $lh->search_list(
+	            {
+	                -query     => $query,
+	                -type      => $type,
+	                -start     => ( $page - 1 ),
+	                '-length'  => $ls->param('view_list_subscriber_number'),
+	                -order_by  => $order_by,
+	                -order_dir => $order_dir,
 
-                pages_in_set       => $pages_in_set,
-                num_subscribers    => commify($num_subscribers),
-                total_num          => $total_num,
-				total_num_commified => commify($total_num), 
-                subscribers        => $subscribers,
-                query              => $query,
-                order_by           => $order_by,
-                order_dir          => $order_dir,
+	            }
+	        );
 
-                show_bounced_list  => $show_bounced_list,
+	        $page_info = Data::Pageset->new(
+	            {
+	                total_entries    => $total_num,
+	                entries_per_page => $ls->param('view_list_subscriber_number'),
+	                current_page     => $page,
+	                mode          => 'slide',    # default fixed
+	                pages_per_set => 10,
+	            }
+	        );
 
-                GLOBAL_BLACK_LIST  => $DADA::Config::GLOBAL_BLACK_LIST,
-                GLOBAL_UNSUBSCRIBE => $DADA::Config::GLOBAL_UNSUBSCRIBE,
+	    }
+	    else {
 
-                can_use_global_black_list                => $lh->can_use_global_black_list,
-                can_use_global_unsubscribe               => $lh->can_use_global_unsubscribe,
+	        $subscribers = $lh->subscription_list(
+	            {
+	                -type => $type,
 
-                can_filter_subscribers_through_blacklist => $lh->can_filter_subscribers_through_blacklist,
+	# this really should be just, $page, but subscription_list() would have to be updated, which will break a lot of things...
+	                -start     => ( $page - 1 ),
+	                '-length'  => $ls->param('view_list_subscriber_number'),
+	                -order_by  => $order_by,
+	                -order_dir => $order_dir,
+	            }
+	        );
+	        $total_num = $num_subscribers;
+	        $page_info = Data::Pageset->new(
+	            {
+	                total_entries    => $num_subscribers,
+	                entries_per_page => $ls->param('view_list_subscriber_number'),
+	                current_page     => $page,
+	                mode          => 'slide',    # default fixed
+	                pages_per_set => 10,
+	            }
+	        );
 
-                flavor_is_view_list => 1,
+	    }
 
-				 list_subscribers_num              => commify($lh->num_subscribers( { -type => 'list' } )),
-			     black_list_subscribers_num       =>  commify($lh->num_subscribers( { -type => 'black_list' } )),
-			     white_list_subscribers_num       =>  commify($lh->num_subscribers( { -type => 'white_list' } )),
-			     authorized_senders_num           =>  commify($lh->num_subscribers( { -type => 'authorized_senders' } )),
-			     sub_request_list_subscribers_num =>  commify($lh->num_subscribers( { -type => 'sub_request_list' } )),
-			     bounced_list_num                 =>  commify($lh->num_subscribers( { -type => 'bounced_list' } )),
-            },
-            -list_settings_vars_param => {
-                -list   => $list,
-                -dot_it => 1,
-            },
-        }
-    );
-	print $q->header(); 
-    e_print($scrn);
+	    foreach my $page_num ( @{ $page_info->pages_in_set() } ) {
+	        if ( $page_num == $page_info->current_page() ) {
+	            push( @$pages_in_set, { page => $page_num, on_current_page => 1 } );
+	        }
+	        else {
+	            push( @$pages_in_set,
+	                { page => $page_num, on_current_page => undef } );
+	        }
+	    }
 
+	    require DADA::ProfileFieldsManager;
+	    my $pfm         = DADA::ProfileFieldsManager->new;
+	    my $fields_attr = $pfm->get_all_field_attributes;
+
+	    my $field_names = [];
+	    for ( @{ $lh->subscriber_fields } ) {
+	        push(
+	            @$field_names,
+	            {
+	                name          => $_,
+	                label         => $fields_attr->{$_}->{label},
+	                S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL
+	            }
+	        );
+	    }
+
+	    require DADA::Template::Widgets;
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -list           => $list,
+	            -screen         => 'view_list_viewport_widget.tmpl',
+	            -expr => 1,
+	            -vars => {
+
+					screen             => 'view_list',
+	                flavor             => 'view_list',
+	                type               => $type,
+	                type_title         => $type_title,
+
+
+	                first              => $page_info->first,
+	                last               => $page_info->last,
+	                first_page         => $page_info->first_page,
+	                last_page          => $page_info->last_page,
+	                next_page          => $page_info->next_page,
+	                previous_page      => $page_info->previous_page,
+	                page               => $page_info->current_page,
+	                show_list_column   => 0,
+	                field_names        => $field_names,
+
+	                pages_in_set       => $pages_in_set,
+	                num_subscribers    => commify($num_subscribers),
+	                total_num          => $total_num,
+					total_num_commified => commify($total_num), 
+	                subscribers        => $subscribers,
+	                query              => $query,
+	                order_by           => $order_by,
+	                order_dir          => $order_dir,
+
+	                show_bounced_list  => $show_bounced_list,
+
+	                GLOBAL_BLACK_LIST  => $DADA::Config::GLOBAL_BLACK_LIST,
+	                GLOBAL_UNSUBSCRIBE => $DADA::Config::GLOBAL_UNSUBSCRIBE,
+
+	                can_use_global_black_list                => $lh->can_use_global_black_list,
+	                can_use_global_unsubscribe               => $lh->can_use_global_unsubscribe,
+
+	                can_filter_subscribers_through_blacklist => $lh->can_filter_subscribers_through_blacklist,
+
+	                flavor_is_view_list => 1,
+
+					 list_subscribers_num              => commify($lh->num_subscribers( { -type => 'list' } )),
+				     black_list_subscribers_num       =>  commify($lh->num_subscribers( { -type => 'black_list' } )),
+				     white_list_subscribers_num       =>  commify($lh->num_subscribers( { -type => 'white_list' } )),
+				     authorized_senders_num           =>  commify($lh->num_subscribers( { -type => 'authorized_senders' } )),
+				     sub_request_list_subscribers_num =>  commify($lh->num_subscribers( { -type => 'sub_request_list' } )),
+				     bounced_list_num                 =>  commify($lh->num_subscribers( { -type => 'bounced_list' } )),
+	            },
+	            -list_settings_vars_param => {
+	                -list   => $list,
+	                -dot_it => 1,
+	            },
+	        }
+	    );
+		print $q->header(); 
+	    e_print($scrn);
+	}
 }
 
 
@@ -3412,13 +3413,11 @@ sub filter_using_black_list {
 }
 
 
-
 sub membership {
 
     if ( !$email ) {
         view_list();
         return;
-
     }
     my $type = $q->param('type') || 'list';
 
@@ -3428,25 +3427,25 @@ sub membership {
     );
 
     $list = $admin_list;
-    my $query     = xss_filter( $q->param('query') )             || undef;
-    my $page      = xss_filter($q->param('page') )               || 1;
-    my $type      = xss_filter($q->param('type'));
-    my $order_by  = xss_filter($q->param('order_by'))            || 'email';
-    my $order_dir = xss_filter($q->param('order_dir'))           || 'asc';
+    my $query     = xss_filter( $q->param('query') )     || undef;
+    my $page      = xss_filter( $q->param('page') )      || 1;
+    my $type      = xss_filter( $q->param('type') );
+    my $order_by  = xss_filter( $q->param('order_by') )  || 'email';
+    my $order_dir = xss_filter( $q->param('order_dir') ) || 'asc';
 
+    my $add_email_count    = $q->param('add_email_count') || 0;
+    my $delete_email_count = $q->param('delete_email_count');
+    my $black_list_add     = $q->param('black_list_add') || 0;
+    my $approved_count     = $q->param('approved_count') || 0;
+    my $denied_count       = $q->param('denied_count') || 0;
+    my $bounced_list_moved_to_list_count =
+      $q->param('bounced_list_moved_to_list_count') || 0;
+    my $bounced_list_removed_from_list =
+      $q->param('bounced_list_removed_from_list') || 0;
 
-    my $add_email_count                  = $q->param('add_email_count') || 0;
-    my $delete_email_count               = $q->param('delete_email_count');
-    my $black_list_add                   = $q->param('black_list_add') || 0;
-    my $approved_count                   = $q->param('approved_count') || 0;
-    my $denied_count                     = $q->param('denied_count') || 0;
-	my $bounced_list_moved_to_list_count = $q->param('bounced_list_moved_to_list_count') || 0; 
-	my $bounced_list_removed_from_list   = $q->param('bounced_list_removed_from_list') || 0;
-	
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
-
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
     if ($process) {
@@ -3460,192 +3459,201 @@ sub membership {
                 $new_fields->{$nfield} = $q->param($nfield);
             }
         }
-        $lh->edit_subscriber(
+		
+		my $fields = DADA::Profile::Fields->new;
+        $fields->insert(
             {
                 -email  => $email,
-                -type   => $type,
                 -fields => $new_fields,
-                -method => 'writeover',
             }
         );
 
-        $done = 1;
-
+        print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+              . '?f=membership;email='
+              . $email
+              . ';type='
+              . $type
+              . ';done=1' );
+        return;
     }
+    else {
 
-    my $fields = [];
+        my $fields = [];
 
-    my $subscriber_info =
-      $lh->get_subscriber( { -email => $email, -type => $type } );
+        my $subscriber_info =
+          $lh->get_subscriber( { -email => $email, -type => $type } );
 
-    # DEV: This is repeated quite a bit...
-    require DADA::ProfileFieldsManager;
-    my $pfm         = DADA::ProfileFieldsManager->new;
-    my $fields_attr = $pfm->get_all_field_attributes;
-    for my $field ( @{ $lh->subscriber_fields() } ) {
-        push(
-            @$fields,
+        # DEV: This is repeated quite a bit...
+        require DADA::ProfileFieldsManager;
+        my $pfm         = DADA::ProfileFieldsManager->new;
+        my $fields_attr = $pfm->get_all_field_attributes;
+        for my $field ( @{ $lh->subscriber_fields() } ) {
+            push(
+                @$fields,
+                {
+                    name  => $field,
+                    value => $subscriber_info->{$field},
+                    label => $fields_attr->{$field}->{label},
+                }
+            );
+        }
+
+        my $subscribed_to_lt = {};
+        for ( @{ $lh->subscribed_to( { -email => $email } ) } ) {
+            $subscribed_to_lt->{$_} = 1;
+        }
+
+        my $add_to = {
+            list               => 1,
+            black_list         => 1,
+            white_list         => 1,
+            authorized_senders => 1,
+        };
+
+        # Except when, it's already a part of that sublist:
+        for ( keys %$subscribed_to_lt ) {
+            delete( $add_to->{$_} );    # if $subscribed_to_lt->{$_} == 1;
+        }
+
+        # Or if it's blacklisted... can't add!
+        if ( $ls->param('closed_list') == 1 ) {
+            delete( $add_to->{list} );
+        }
+        if (   $ls->param('black_list') == 1
+            && $ls->param('allow_admin_to_subscribe_blacklisted') != 1
+            && $subscribed_to_lt->{black_list} == 1 )
+        {
+            delete( $add_to->{list} );
+        }
+        if (   $ls->param('enable_subscription_approval_step')
+            && $subscribed_to_lt->{sub_request_list} )
+        {
+            delete( $add_to->{list} );
+        }
+
+        # if Authorized Senders isn't active, well, let's not allow to be added:
+        if ( $ls->param('enable_authorized_sending') == 1 ) {
+
+            #...
+        }
+        else {
+            delete( $add_to->{authorized_senders} );
+        }
+
+        # Same with the white list
+        if ( $ls->param('enable_white_list') == 1 ) {
+
+            #...
+        }
+        else {
+            delete( $add_to->{white_list} );
+
+        }
+
+        #%list_types
+
+        my $add_to_popup_menu = $q->popup_menu(
+            -name     => 'type',
+            -id       => 'type_add',
+            -default  => 'list',
+            '-values' => [ keys %$add_to ],
+            -labels   => \%list_types,
+        );
+
+        # Only if black list is enabled and they're not currently subscribed.
+        if ( $ls->param('black_list') == 1 && $subscribed_to_lt->{list} != 1 ) {
+
+            # ...
+        }
+        else {
+            delete( $add_to->{black_list} );
+        }
+
+        my $member_of   = [];
+        my $remove_from = [];
+        foreach (%$subscribed_to_lt) {
+            if ( $_ =~
+m/^(list|black_list|white_list|authorized_senders|bounced_list)$/
+              )
             {
-                name  => $field,
-                value => $subscriber_info->{$field},
-                label => $fields_attr->{$field}->{label},
+                push( @$member_of,
+                    { type => $_, type_title => $list_types{$_} } );
+                push( @$remove_from, $_ );
+            }
+        }
+
+        my $remove_from_popup_menu = $q->popup_menu(
+            -name     => 'type',
+            -id       => 'type_remove',
+            '-values' => $remove_from,
+            -labels   => \%list_types,
+        );
+
+        my $subscribed_to_list = 0;
+        if ( $subscribed_to_lt->{list} == 1 ) {
+            $subscribed_to_list = 1;
+
+        }
+
+        my $subscribed_to_sub_request_list = 0;
+        if ( $subscribed_to_lt->{sub_request_list} == 1 ) {
+            $subscribed_to_sub_request_list = 1;
+
+        }
+
+        require DADA::Template::Widgets;
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen         => 'membership.tmpl',
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+                -expr => 1,
+                -vars => {
+                    done                   => $done,
+                    email                  => $email,
+                    type                   => $type,
+                    page                   => $page,
+                    query                  => $query,
+                    order_by               => $order_by,
+                    order_dir              => $order_dir,
+                    type_title             => $type_title,
+                    fields                 => $fields,
+                    root_login             => $root_login,
+                    add_to_popup_menu      => $add_to_popup_menu,
+                    remove_from_popup_menu => $remove_from_popup_menu,
+                    remove_from_num        => scalar(@$remove_from),
+                    member_of              => $member_of,
+                    rand_string            => generate_rand_string(),
+                    member_of_num          => scalar(@$remove_from),
+                    add_to_num             => scalar( keys %$add_to ),
+                    subscribed_to_list     => $subscribed_to_list,
+                    subscribed_to_sub_request_list =>
+                      $subscribed_to_sub_request_list,
+
+                    add_email_count    => $add_email_count,
+                    delete_email_count => $delete_email_count,
+                    black_list_add     => $black_list_add,
+                    approved_count     => $approved_count,
+                    denied_count       => $denied_count,
+                    bounced_list_moved_to_list_count =>
+                      $bounced_list_moved_to_list_count,
+                    bounced_list_removed_from_list =>
+                      $bounced_list_removed_from_list,
+
+                },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
             }
         );
-    }
 
-	
-
-    my $subscribed_to_lt = {};
-    for ( @{ $lh->subscribed_to( { -email => $email } ) } ) {
-        $subscribed_to_lt->{$_} = 1;
-    }
-
-    my $add_to = {
-        list               => 1,
-        black_list         => 1,
-        white_list         => 1,
-        authorized_senders => 1,
-    };
-
-    # Except when, it's already a part of that sublist:
-    for ( keys %$subscribed_to_lt ) {
-        delete( $add_to->{$_} );    # if $subscribed_to_lt->{$_} == 1;
-    }
-
-    # Or if it's blacklisted... can't add!
-    if ( $ls->param('closed_list') == 1 ) {
-        delete( $add_to->{list} );
-    }
-    if ($ls->param('black_list') == 1
-        && $ls->param('allow_admin_to_subscribe_blacklisted') != 1
-        && $subscribed_to_lt->{black_list} == 1 )
-    {
-        delete( $add_to->{list} );
-    }
-	if($ls->param('enable_subscription_approval_step') && $subscribed_to_lt->{sub_request_list}){ 
-        delete( $add_to->{list} );
-	}
-    # if Authorized Senders isn't active, well, let's not allow to be added:
-    if ( $ls->param('enable_authorized_sending') == 1 ) {
-		
-        #...
-    }
-    else {
-        delete( $add_to->{authorized_senders} );
-    }
-
-    # Same with the white list
-    if ( $ls->param('enable_white_list') == 1 ) {
-
-        #...
-    }
-    else {
-        delete( $add_to->{white_list} );
+        e_print($scrn);
 
     }
-
-    #%list_types
-
-    my $add_to_popup_menu = $q->popup_menu(
-        -name     => 'type',
-        -id       => 'type_add',
-        -default  => 'list',
-        '-values' => [ keys %$add_to ],
-        -labels   => \%list_types,
-    );
-
-    # Only if black list is enabled and they're not currently subscribed.
-    if ( $ls->param('black_list') == 1 && $subscribed_to_lt->{list} != 1 ) {
-
-        # ...
-    }
-    else {
-        delete( $add_to->{black_list} );
-    }
-
-    my $member_of   = [];
-    my $remove_from = [];
-    foreach (%$subscribed_to_lt) {
-        if ( $_ =~
-            m/^(list|black_list|white_list|authorized_senders|bounced_list)$/ )
-        {
-            push( @$member_of, { type => $_, type_title => $list_types{$_} } );
-            push( @$remove_from, $_ );
-        }
-    }
-
-    my $remove_from_popup_menu = $q->popup_menu(
-        -name     => 'type',
-        -id       => 'type_remove',
-        '-values' => $remove_from,
-        -labels   => \%list_types,
-    );
-
-	my $subscribed_to_list = 0;
-	if($subscribed_to_lt->{list} == 1){ 
-		$subscribed_to_list = 1; 
-		
-	}
-
-	my $subscribed_to_sub_request_list = 0;
-	if($subscribed_to_lt->{sub_request_list} == 1){ 
-		$subscribed_to_sub_request_list = 1; 
-		
-	}	
-
-    require DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::wrap_screen(
-        {
-            -screen         => 'membership.tmpl',
-            -with           => 'admin',
-            -wrapper_params => {
-                -Root_Login => $root_login,
-                -List       => $list,
-            },
-            -expr => 1,
-            -vars => {
-                done                   => $done,
-                email                  => $email,
-                type                   => $type,
-                page                   => $page,
-                query                  => $query,
-                order_by               => $order_by,
-                order_dir              => $order_dir,
-                type_title             => $type_title,
-                fields                 => $fields,
-                root_login             => $root_login,
-                add_to_popup_menu      => $add_to_popup_menu,
-                remove_from_popup_menu => $remove_from_popup_menu,
-                remove_from_num        => scalar(@$remove_from),
-                member_of              => $member_of,
-                rand_string            => generate_rand_string(),
-                member_of_num          => scalar(@$remove_from),
-                add_to_num             => scalar( keys %$add_to ),
-				subscribed_to_list     => $subscribed_to_list, 
-				subscribed_to_sub_request_list => $subscribed_to_sub_request_list, 
-				
-				add_email_count                  =>    $add_email_count, 				
-				delete_email_count               =>		$delete_email_count,		
-				black_list_add                   =>		$black_list_add,		
-				approved_count                   =>		$approved_count,		
-				denied_count                     =>		$denied_count,		
-				bounced_list_moved_to_list_count =>		$bounced_list_moved_to_list_count, 		
-				bounced_list_removed_from_list   =>		$bounced_list_removed_from_list, 		
-				
-				
-				
-				
-				
-
-            },
-			-list_settings_vars_param => {
-                -list   => $list,
-                -dot_it => 1,
-            },
-        }
-    );
-
-    e_print($scrn);
 }
 
 

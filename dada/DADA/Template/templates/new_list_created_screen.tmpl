@@ -1,12 +1,9 @@
 <!-- begin new_list_created_screen.tmpl -->
 
-<!-- tmpl_set name="title" value="Your New List Has Been Created" -->
+<!-- tmpl_set name="title" value="Your New Mailing List Has Been Created" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
-<h1>
- The Following Information Was Saved: 
-</h1>
-<table align="center">
+<table class="stripedtable">
  <tr>
   <td>
    <p>
@@ -17,11 +14,11 @@
   </td>
   <td>
    <p>
-    <!-- tmpl_var list_name -->
+    <!-- tmpl_var list_name escape="HTML" -->
    </p>
   </td>
  </tr>
- <tr>
+ <tr class="alt">
   <td>
    <p>
     <strong>
@@ -31,7 +28,7 @@
   </td>
   <td>
    <p>
-    <!-- tmpl_var list -->
+    <!-- tmpl_var list  escape="HTML" -->
    </p>
   </td>
  </tr>
@@ -51,7 +48,7 @@
    </p>
   </td>
  </tr>
- <tr>
+ <tr class="alt">
   <td>
    <p>
     <strong>
@@ -61,7 +58,7 @@
   </td>
   <td>
    <p>
-    <!-- tmpl_var list_owner_email -->
+    <!-- tmpl_var list_owner_email  escape="HTML" -->
    </p>
   </td>
  </tr>
@@ -75,11 +72,11 @@
   </td>
   <td>
    <p>
-    <!-- tmpl_var info -->
+    <!-- tmpl_var info  escape="HTML" -->
    </p>
   </td>
  </tr>
- <tr>
+ <tr class="alt">
   <td>
    <p>
     <strong>
@@ -89,7 +86,7 @@
   </td>
   <td>
    <p>
-    <!-- tmpl_var privacy_policy -->
+    <!-- tmpl_var privacy_policy  escape="HTML" -->
    </p>
   </td>
  </tr>
@@ -103,74 +100,31 @@
   </td>
   <td>
    <p>
-    <!-- tmpl_var physical_address -->
+    <!-- tmpl_var physical_address  escape="HTML" -->
    </p>
   </td>
  </tr>
 </table>
-<hr />
-
-<p>
- For future reference, here are some relevant URLs for this list. 
- You may want to bookmark these links now (a new window will open for each link):
-</p>
-
-<ul> 
-	<li>
- <strong>
-  <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var SIGN_IN_FLAVOR_NAME -->&amp;list=<!-- tmpl_var escaped_list -->" target="_blank">
-   Log in to your control panel
-  </a>
-</strong>
-</li> 
- <li>
- <strong>
-  <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var escaped_list -->/" target="_blank">
-   View your message archives
-  </a>
- </strong>
-</li> 
-
-</ul> 
 
 
-<hr />
+<fieldset>
+<legend>Log into Your New Mailing List</legend>
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
 
-<p>
- Please log in with the correct password to access your control panel.
-</p>
-
-<table>
- <tr>
-  <td>
-   <p>
-    <strong>
-     Log into your control panel for list: <!-- tmpl_var list_name -->
-    </strong>
-   </p>
-  </td>
- </tr>
- <tr>
- <td>
   <p>
    <label for="admin_password">
-    Password:
-   </label>
-   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+    List/<!-- tmpl_var PROGRAM_NAME --> Root Password:
+   </label><br />
     <input type="hidden"   name="f"          value="login" />
     <input type="hidden"   name="admin_list" value="<!-- tmpl_var list -->" />
     <input type="password" name="admin_password" id="admin_password" maxlength="24" />
-   
-   
    <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" /> 
-   
-   
-   
-   <input type="submit" class="plain" value="Log Into Your New Mailing List" />
-   
+   <input type="submit" class="plain" value="Log Into Your New Mailing List" />   
+</p>
+
    </form>
-  </td>
- </tr>
-</table>
+
+
+</fieldset> 
 
 <!-- end new_list_created_screen.tmpl -->

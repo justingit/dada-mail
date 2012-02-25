@@ -9,18 +9,23 @@
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
 
+
+
+	<div class="badweatherbox">
+	<p>
+	 Are you sure you want to completely delete your Mailing List?
+	</p>
+
+	<p>Mailing List Deletion cannot be undone.</p> 
+
+	</div> 
+
+
 <fieldset> 
 	
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-	
-<p class="error">
- Are you <em>sure</em> you want to completely this Mailing List?
-</p>
-<p>
- <strong>
-  This will delete this list and cannot be undone.
- </strong>
-</p>
+
+
 <input type="hidden" name="f"       value="delete_list" />
 <input type="hidden" name="process" value="true" />
 
