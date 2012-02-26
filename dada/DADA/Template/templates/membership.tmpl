@@ -124,7 +124,7 @@ function mailing_list_history(){
 		<!-- tmpl_if list_settings.black_list -->
 			<!-- tmpl_if list_settings.add_unsubs_to_black_list -->
 				<p class="alert">
-					Subscribers that are removed will be added to the Black List.
+					Subscribers that are unsubscribed will be added to the Black List.
 				</p>
 			<!-- /tmpl_if -->
 		<!-- /tmpl_if -->
@@ -150,9 +150,12 @@ function mailing_list_history(){
 
 
 	<!-- tmpl_unless root_login --> 
-		<p class="error">
-			You must be logged in with the <!-- tmpl_var PROGRAM_NAME --> Root Password to be able to edit a Subscriber's Profile Fields. 
-		</p>
+		<div class="clearskiesbox">
+			<p>
+				You must be logged in with the <!-- tmpl_var PROGRAM_NAME --> Root Password to be able to edit a Subscriber's Profile Fields. 
+			</p>
+		</div>
+	
 	<!-- /tmpl_unless -->
 
 	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
