@@ -96,9 +96,6 @@ sub subscribe {
 
     my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list);
 	my $ls          = undef; 
-	my $li          = undef; 
-	
-	
 	
 	require DADA::MailingList::Settings;
 	
@@ -106,7 +103,6 @@ sub subscribe {
 	
 	if($list_exists){ 
 		$ls = DADA::MailingList::Settings->new({-list => $list}); 
-		$li = $ls->get();
 	}	
     if($args->{-html_output} == 1){
 	
@@ -119,7 +115,7 @@ sub subscribe {
 		else { 
 			
 			 if (!$email){ 
-					if($li->{use_alt_url_sub_confirm_failed} != 1) { 
+					if($ls->param('use_alt_url_sub_confirm_failed') != 1) { 
 						# Test sub-subscribe-redirect-error_no_email
 						# This is just so we don't use the actual error screen.
 				  		my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?f=list&list=' . $list . '&error_no_email=1&set_flavor=s'); 
@@ -154,7 +150,7 @@ sub subscribe {
                                 -email => $email,   
    								-type  => 'list', 
 
-                                    ($li->{allow_blacklisted_to_subscribe} == 1) ? 
+                                    ($ls->param('allow_blacklisted_to_subscribe') == 1) ? 
                                     (
                                     -skip  => ['black_listed'], 
                                     ) : (),
@@ -168,7 +164,7 @@ sub subscribe {
 	if($status == 1){ 
 	
 		my $skip_sub_confirm_if_logged_in = 0; 
-		if($li->{skip_sub_confirm_if_logged_in}){
+		if($ls->param('skip_sub_confirm_if_logged_in')){
 			require DADA::Profile::Session; 
 			my $sess = DADA::Profile::Session->new; 
 			if($sess->is_logged_in){	
@@ -180,7 +176,7 @@ sub subscribe {
 			}
 		}	
 		if(
-			$li->{enable_closed_loop_opt_in}    == 0 || 
+			$ls->param('enable_closed_loop_opt_in')    == 0 || 
 			$skip_sub_confirm_if_logged_in == 1
 		){    
 	
@@ -212,7 +208,7 @@ sub subscribe {
 							
      my $mail_your_subscribed_msg = 0; 
      
-     if($li->{email_your_subscribed_msg} == 1){ 
+     if($ls->param('email_your_subscribed_msg') == 1){ 
         if($errors->{subscribed} == 1){ 
         
 			# This is a strange one, as this *could* potentially be set, 
@@ -240,18 +236,17 @@ sub subscribe {
         
 			# Test sub-subscribe-alt_url_sub_confirm_failed
             if(
-				$li->{use_alt_url_sub_confirm_failed} == 1 &&
-			    isa_url($li->{alt_url_sub_confirm_failed})
+				$ls->param('use_alt_url_sub_confirm_failed') == 1
 			){ 
             
                 my $qs = ''; 
-                if($li->{alt_url_sub_confirm_failed_w_qs} == 1){ 
-                    $qs = '?list=' . $list . '&rm=sub_confirm&status=0&email=' . uriescape($email);
+                if($ls->param('alt_url_sub_confirm_failed_w_qs') == 1){ 
+                    $qs = 'list=' . $list . '&rm=sub_confirm&status=0&email=' . uriescape($email);
                     $qs .= '&errors[]=' . $_ for keys %$errors; 
                     $qs .= '&' . $_ . '=' . uriescape($fields->{$_}) for keys %$fields; 
                 }
                 
-                my $r = $q->redirect(-uri => $li->{alt_url_sub_confirm_failed} . $qs); 
+                my $r = $self->alt_redirect($ls->param('alt_url_sub_confirm_failed'), $qs); 
 				$self->test ? return $r : print $fh safely_encode(  $r) and return; 
 
             }else{
@@ -343,29 +338,28 @@ sub subscribe {
         
         if($args->{-html_output} != 0){         
             if(
-                $li->{use_alt_url_sub_confirm_success}       ==  1 && 
-                isa_url($li->{alt_url_sub_confirm_success})
+                $ls->param('use_alt_url_sub_confirm_success')       ==  1 
               ){ 
                 my $qs = ''; 
-                if($li->{alt_url_sub_confirm_success_w_qs} == 1){ 
-                    $qs  = '?list=' . $list . '&rm=sub_confirm&status=1&email=' . uriescape($email); 
+                if($ls->param('alt_url_sub_confirm_success_w_qs') == 1){ 
+                    $qs  = 'list=' . $list . '&rm=sub_confirm&status=1&email=' . uriescape($email); 
                     $qs .= '&' . $_ . '=' . uriescape($fields->{$_}) for keys %$fields; 
                     
                 }
-                my $r = $q->redirect(-uri => $li->{alt_url_sub_confirm_success} . $qs); 
+                my $r = $self->alt_redirect($ls->param('alt_url_sub_confirm_success'), $qs); 
 
       			$self->test ? return $r : print $fh safely_encode(  $r) and return; 
 
             }else{ 
     			
-				my $s = $li->{html_confirmation_message}; 
+				my $s = $ls->param('html_confirmation_message'); 
 				require DADA::Template::Widgets; 
 				my $r =   DADA::Template::Widgets::wrap_screen(
 				{ 
 					-data                     => \$s,
 					-with                     => 'list', 
-					-list_settings_vars_param => {-list => $li->{list},}, # um, -dot_it? 
-					-subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'sub_confirm_list'},
+					-list_settings_vars_param => {-list => $ls->param('list'),}, # um, -dot_it? 
+					-subscriber_vars_param    => {-list => $ls->param('list'), -email => $email, -type => 'sub_confirm_list'},
 					-dada_pseudo_tag_filter   => 1,             
 				} 
 
@@ -424,13 +418,10 @@ sub confirm {
     my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list);
     
 	require DADA::MailingList::Settings;
-
 		my $ls = undef; 
-		my $li = undef; 
 	
 	if($list_exists == 1){ 
 		$ls = DADA::MailingList::Settings->new({-list => $list}); 
-	    $li = $ls->get();
 	}
 	
     if($args->{-html_output} == 1){ 
@@ -446,7 +437,7 @@ sub confirm {
 			# Again!
 			
 	        if (!$email){ 	
-				if($li->{use_alt_url_sub_failed} != 1) { 
+				if($ls->param('use_alt_url_sub_failed') != 1) { 
 	            	warn '>>>> >>>> no email passed. Redirecting to list screen'
 		                if $t; 
 		            my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?f=list&list=' . $list . '&error_no_email=1&set_flavor=s'); 
@@ -458,10 +449,10 @@ sub confirm {
               
     my $lh = DADA::MailingList::Subscribers->new({-list => $list});
 
-    warn '$li->{captcha_sub} set to: ' . $li->{captcha_sub}
+    warn 'captcha_sub set to: ' . $ls->param('captcha_sub')
         if $t; 
     
-    if($li->{captcha_sub} == 1){
+    if($ls->param('captcha_sub') == 1){
 	 
 		my $can_use_captcha = 0; 
 		eval { require DADA::Security::AuthenCAPTCHA; };
@@ -523,8 +514,8 @@ sub confirm {
 					{
 					-screen                   => 'confirm_captcha_step_screen.tmpl', 
 					-with                     => 'list',
-					-list_settings_vars_param => {-list => $li->{list}},
-					-subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'sub_confirm_list'},
+					-list_settings_vars_param => {-list => $ls->param('list')},
+					-subscriber_vars_param    => {-list => $ls->param('list'), -email => $email, -type => 'sub_confirm_list'},
 					-dada_pseudo_tag_filter   => 1, 
 
 					-vars   => {
@@ -569,7 +560,7 @@ sub confirm {
     my ($status, $errors) = $lh->subscription_check(
 								{
                                  	-email => $email, 
-	                                     ($li->{allow_blacklisted_to_subscribe} == 1) ? 
+	                                     ($ls->param('allow_blacklisted_to_subscribe') == 1) ? 
 	                                     (
  	                                     -skip  => ['black_listed', 'already_sent_sub_confirmation', 'invite_only_list'], 
 	                                     ) : 
@@ -591,9 +582,9 @@ sub confirm {
  
 	
      my $mail_your_subscribed_msg = 0; 
-     warn '$li->{email_your_subscribed_msg} is set to: ' . $li->{email_your_subscribed_msg}
+     warn 'email_your_subscribed_msg is set to: ' . $ls->param('email_your_subscribed_msg')
         if $t; 
-     if($li->{email_your_subscribed_msg} == 1){ 
+     if($ls->param('email_your_subscribed_msg') == 1){ 
         warn '>>>> $errors->{subscribed} set to: ' . $errors->{subscribed}
             if $t; 
             
@@ -662,27 +653,26 @@ sub confirm {
             if $t; 
         if($args->{-html_output} != 0){ 
 
-            warn '>>>> >>>> $li->{use_alt_url_sub_failed} set to: ' . $li->{use_alt_url_sub_failed}
+            warn '>>>> >>>> use_alt_url_sub_failed set to: ' . $ls->param('use_alt_url_sub_failed')
                 if $t; 
-            warn '>>>> >>>> ($li->{alt_url_sub_failed} set to: ' . $li->{alt_url_sub_failed} 
+            warn '>>>> >>>> alt_url_sub_failed set to: ' . $ls->param('alt_url_sub_failed')
                 if $t; 
             if(
-				$li->{use_alt_url_sub_failed}      == 1 && 
-				isa_url($li->{alt_url_sub_failed})
+				$ls->param('use_alt_url_sub_failed')      == 1 
 			){ 
                         
                 my $qs = ''; 
-                warn '>>>> >>>> >>>> $li->{alt_url_sub_failed_w_qs} set to: ' . $li->{alt_url_sub_failed_w_qs}
+                warn '>>>> >>>> >>>> alt_url_sub_failed_w_qs set to: ' . $ls->param('alt_url_sub_failed_w_qs')
                     if $t; 
                     
-                if($li->{alt_url_sub_failed_w_qs} == 1){ 
-                    $qs = '?list=' . $list . '&rm=sub&status=0&email=' . uriescape($email);
+                if($ls->param('alt_url_sub_failed_w_qs') == 1){ 
+                    $qs = 'list=' . $list . '&rm=sub&status=0&email=' . uriescape($email);
                     $qs .= '&errors[]=' . $_ for keys %$errors; 
                     
                 }
-                warn '>>>> >>>> >>>> redirecting to: ' . $li->{alt_url_sub_failed} . $qs
+                warn '>>>> >>>> >>>> redirecting to: ' . $ls->param('alt_url_sub_failed') . $qs
                     if $t; 
-                my $r = $q->redirect(-uri => $li->{alt_url_sub_failed} . $qs); 
+                my $r = $self->alt_redirect($ls->param('alt_url_sub_failed'), $qs); 
                 $self->test ? return $r : print $fh safely_encode(  $r) and return; 
                 
             }else{            
@@ -724,7 +714,7 @@ sub confirm {
     
     
     else{ 
-    	if($li->{enable_subscription_approval_step} == 1){ 
+    	if($ls->param('enable_subscription_approval_step') == 1){ 
  			# we go HERE, if subscriptions need to be approved. Got that?S
 			$lh->move_subscriber(
                 {
@@ -735,14 +725,14 @@ sub confirm {
 	        		-confirmed        => 1, 
                 }
 			);
-            my $s = $li->{html_subscription_request_message};
+            my $s = $ls->param('html_subscription_request_message');
             require DADA::Template::Widgets; 
             my $r .= DADA::Template::Widgets::wrap_screen(
                          { 
                             -data                     => \$s,
 							-with                     => 'list', 
-                            -list_settings_vars_param => {-list => $li->{list},},
-                            -subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'sub_request_list'},
+                            -list_settings_vars_param => {-list => $ls->param('list'),},
+                            -subscriber_vars_param    => {-list => $ls->param('list'), -email => $email, -type => 'sub_request_list'},
                             -dada_pseudo_tag_filter   => 1, 
                             -vars                     => { email => $email, subscriber_email => $email}, 
                          } 
@@ -751,15 +741,15 @@ sub confirm {
 			require DADA::App::Messages; 
 			DADA::App::Messages::send_generic_email(
 				{
-					-list    => $li->{list}, 
+					-list    => $ls->param('list'), 
 					-headers => { 
-						To      => '"'. escape_for_sending($li->{list_name}) .'" <'. $li->{list_owner_email} .'>',
-					    Subject         => $li->{subscription_approval_request_message_subject}, 
+						To      => '"'. escape_for_sending($ls->param('list_name')) .'" <'. $ls->param('list_owner_email') .'>',
+					    Subject         => $ls->param('subscription_approval_request_message_subject'), 
 					}, 
-					-body => $li->{subscription_approval_request_message},
+					-body => $ls->param('subscription_approval_request_message'),
 					-tmpl_params => {
-						-list_settings_vars_param => {-list => $li->{list}},
-			            -subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'sub_request_list'},
+						-list_settings_vars_param => {-list => $ls->param('list')},
+			            -subscriber_vars_param    => {-list => $ls->param('list'), -email => $email, -type => 'sub_request_list'},
 			            -vars                     => {},
 					},
 					-test => $self->test,
@@ -834,10 +824,10 @@ sub confirm {
 						$sess_cookie = $sess->_login_cookie({-email => $email});
 				    }
 				}
-                warn '>>>> >>>> $li->{send_sub_success_email} is set to: ' . $li->{send_sub_success_email}
+                warn '>>>> >>>> send_sub_success_email is set to: ' . $ls->param('send_sub_success_email')
                     if $t; 
                     
-                if($li->{send_sub_success_email} == 1){                                             
+                if($ls->param('send_sub_success_email') == 1){                                             
         
                     warn '>>>> >>>> >>>> sending subscribed message'
                         if $t; 
@@ -869,10 +859,10 @@ sub confirm {
 		        	}
 		        ); 
         
-                warn '$li->{send_newest_archive} set to: ' . $li->{send_newest_archive}
+                warn 'send_newest_archive set to: ' . $ls->param('send_newest_archive')
                     if $t; 
                     
-                if($li->{send_newest_archive} == 1){ 
+                if($ls->param('send_newest_archive') == 1){ 
                     
                     warn 'Sending newest archive.'
                         if $t; 
@@ -906,18 +896,17 @@ sub confirm {
         	if($args->{-html_output} != 0){    
         
                 if(
-		        	$li->{use_alt_url_sub_success} == 1 &&
-		        	isa_url($li->{alt_url_sub_success})
+		        	$ls->param('use_alt_url_sub_success') == 1
 		        ){
         
                     my $qs = ''; 
-                    if($li->{alt_url_sub_success_w_qs} == 1){ 
-                        $qs = '?list=' . $list . '&rm=sub&status=1&email=' . uriescape($email); 
+                    if($ls->param('alt_url_sub_success_w_qs') == 1){ 
+                        $qs = 'list=' . $list . '&rm=sub&status=1&email=' . uriescape($email); 
                     }
-                    warn 'redirecting to: ' . $li->{alt_url_sub_success} . $qs
+                    warn 'redirecting to: ' . $ls->param('alt_url_sub_success') . $qs
                         if $t; 
                     	
-		        		my $r = $q->redirect(-uri => $li->{alt_url_sub_success} . $qs); 
+		        		my $r = $self->alt_redirect($ls->param('alt_url_sub_success'), $qs); 
                     	$self->test ? return $r : print $fh safely_encode(  $r) and return;
                     
                 }else{        
@@ -926,7 +915,7 @@ sub confirm {
                         if $t; 
                     
 			
-                   my $s = $li->{html_subscribed_message};
+                   my $s = $ls->param('html_subscribed_message');
                    require DADA::Template::Widgets; 
                    my $r .= DADA::Template::Widgets::wrap_screen(
                                 { 
@@ -938,8 +927,8 @@ sub confirm {
 										},
 										-prof_sess_obj => $sess,
 									},
-                                   -list_settings_vars_param => {-list => $li->{list},},
-                                   -subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'list'},
+                                   -list_settings_vars_param => {-list => $ls->param('list'),},
+                                   -subscriber_vars_param    => {-list => $ls->param('list'), -email => $email, -type => 'list'},
                                    -dada_pseudo_tag_filter   => 1, 
                                    -vars                     => { email => $email, subscriber_email => $email}, 
                                 } 
@@ -1018,7 +1007,6 @@ sub unsubscribe {
     
    
     my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-    my $li = $ls->get(); 
 
     require DADA::MailingList::Subscribers;  
     my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
@@ -1030,7 +1018,7 @@ sub unsubscribe {
     # just in a different place. 
   
   	my $skip_unsub_confirm_if_logged_in = 0; 
-	if($li->{skip_unsub_confirm_if_logged_in}){
+	if($ls->param('skip_unsub_confirm_if_logged_in')){
 		require DADA::Profile::Session; 
 		my $sess = DADA::Profile::Session->new; 
 		if($sess->is_logged_in){	
@@ -1044,7 +1032,7 @@ sub unsubscribe {
 	
     if(
 		(
-		$li->{unsub_confirm_email}       == 0 || 
+		$ls->param('unsub_confirm_email')       == 0 || 
 		$skip_unsub_confirm_if_logged_in == 1
 		)
 		&&
@@ -1107,7 +1095,7 @@ sub unsubscribe {
     # send you're already unsub'd message? 
 	# First, only one error and is the error that you're not sub'd?
     my $send_you_are_not_subscribed_email = 0;
-    if (   $li->{email_you_are_not_subscribed_msg} == 1
+    if (   $ls->param('email_you_are_not_subscribed_msg') == 1
         && $status == 0
         && scalar( keys %$errors ) == 1
         && $errors->{not_subscribed} == 1 )
@@ -1134,17 +1122,16 @@ sub unsubscribe {
         
             # URL redirect?
             if(
-				$li->{use_alt_url_unsub_confirm_failed} == 1 && 
-				isa_url($li->{alt_url_unsub_confirm_failed})
+				$ls->param('use_alt_url_unsub_confirm_failed') == 1 
 			){ 
                 
                 my $qs = ''; 
                 # With a query string?
-                if($li->{alt_url_unsub_confirm_failed_w_qs} == 1){ 
-                    $qs = '?list=' . $list . '&rm=unsub_confirm&status=0&email=' . uriescape($email);
+                if($ls->param('alt_url_unsub_confirm_failed_w_qs') == 1){ 
+                    $qs = 'list=' . $list . '&rm=unsub_confirm&status=0&email=' . uriescape($email);
                     $qs .= '&errors[]=' . $_ for keys %$errors; 
                 }
-                my $r = $q->redirect(-uri => $li->{alt_url_unsub_confirm_failed} . $qs);
+                my $r = $self->alt_redirect($ls->param('alt_url_unsub_confirm_failed'), $qs);
                 $self->test ? return $r : print $fh safely_encode(  $r) and return; 
                 
             }else{        
@@ -1230,26 +1217,25 @@ sub unsubscribe {
         
             # Redirect?
             if(
-                $li->{use_alt_url_unsub_confirm_success} == 1 &&
-                isa_url($li->{alt_url_unsub_confirm_success})
+                $ls->param('use_alt_url_unsub_confirm_success') == 1 
             ){ 
             
                 # With... Query String?
                 my $qs = ''; 
-                if($li->{alt_url_unsub_confirm_success_w_qs} == 1){ 
-                    $qs = '?list=' . $list . '&rm=unsub_confirm&status=1&email=' . uriescape($email); 
+                if($ls->param('alt_url_unsub_confirm_success_w_qs') == 1){ 
+                    $qs = 'list=' . $list . '&rm=unsub_confirm&status=1&email=' . uriescape($email); 
                 }
-                my $r = $q->redirect(-uri => $li->{alt_url_unsub_confirm_success} . $qs);
+                my $r = $self->alt_redirect($ls->param('alt_url_unsub_confirm_success'), $qs);
                 $self->test ? return $r : print $fh safely_encode(  $r) and return; 
                 
             }else{ 
-               my $s = $li->{html_unsub_confirmation_message};
+               my $s = $ls->param('html_unsub_confirmation_message');
                require DADA::Template::Widgets; 
                my $r = DADA::Template::Widgets::wrap_screen({ 
                                                        -data                     => \$s,
 													   -with                     => 'list', 
-                                                       -list_settings_vars_param => {-list => $li->{list},},
-                                                       -subscriber_vars_param    => {-list => $li->{list}, -email => $email, -type => 'list'},
+                                                       -list_settings_vars_param => {-list => $ls->param('list'),},
+                                                       -subscriber_vars_param    => {-list => $ls->param('list'), -email => $email, -type => 'list'},
                                                        -dada_pseudo_tag_filter  => 1, 
                                                        -vars                    => { email => $email, subscriber_email => $email}, 
             
@@ -1421,19 +1407,18 @@ sub unsub_confirm {
         if($args->{-html_output} != 0){ 
     
             if(
-                $ls->param('use_alt_url_unsub_failed') == 1 &&
-                isa_url($ls->param('alt_url_unsub_failed'))
+                $ls->param('use_alt_url_unsub_failed') == 1
             ){ 
             
                 my $qs = ''; 
                 if($ls->param('alt_url_unsub_failed_w_qs') == 1){ 
-                    $qs = '?list=' . $list . '&rm=unsub&status=0&email=' . uriescape($email); 
+                    $qs = 'list=' . $list . '&rm=unsub&status=0&email=' . uriescape($email); 
                     $qs .= '&errors[]=' . $_ for keys %$errors; 
                 }
                 warn 'Redirecting to: ' . $ls->param('alt_url_unsub_failed') . $qs 
                     if $t; 
                     
-                my $r = $q->redirect(-uri => $ls->param('alt_url_unsub_failed') . $qs);
+                my $r = $self->alt_redirect($ls->param('alt_url_unsub_failed'), $qs);
                 $self->test ? return $r : print $fh safely_encode(  $r) and return; 
                     
             }else{ 
@@ -1542,14 +1527,13 @@ sub unsub_confirm {
 
         if($args->{-html_output} != 0){ 
             if(
-                $ls->param('use_alt_url_unsub_success') == 1 && 
-                isa_url($ls->param('alt_url_unsub_success'))
+                $ls->param('use_alt_url_unsub_success') == 1
               ){ 
                 my $qs = ''; 
                 if($ls->param('alt_url_unsub_success_w_qs') == 1){ 
-                    $qs = '?list=' . $list . '&rm=unsub&status=1&email=' . uriescape($email);  
+                    $qs = 'list=' . $list . '&rm=unsub&status=1&email=' . uriescape($email);  
                 }
-                my $r = $q->redirect(-uri => $ls->param('alt_url_unsub_success') . $qs);
+                my $r = $self->redirect($ls->param('alt_url_unsub_success'), $qs);
                 $self->test ? return $r : print $fh safely_encode(  $r) and return;
             
             }else{                
@@ -1570,6 +1554,32 @@ sub unsub_confirm {
         }
     } 
 }
+
+
+
+sub alt_redirect {
+
+    my $self = shift;
+    my $url  = shift;
+    my $qs   = shift;
+
+    require CGI;
+    my $q = CGI->new;
+       $q->charset($DADA::Config::HTML_CHARSET);
+
+    $url = strip($url);
+
+    if ( isa_url($url) ) {
+
+        #...
+    }
+    else {
+        $url = 'http://' . $url;
+    }
+
+    return $q->redirect( $url . '?' . $qs );
+}
+
 
 
 
