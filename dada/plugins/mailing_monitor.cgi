@@ -215,7 +215,7 @@ sub default_tmpl {
 
 						},
 					onCreate: 	 function() {
-						Form.Element.setValue('mailing_monitor_button', 'Parsing...');
+						Form.Element.setValue('mailing_monitor_button', 'Refreshing...');
 						$('mailing_monitor_results').hide();
 						$('mailing_monitor_results_loading').show();
 					},
