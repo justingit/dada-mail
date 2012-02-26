@@ -104,9 +104,7 @@ sub subscribe {
 	if($list_exists){ 
 		$ls = DADA::MailingList::Settings->new({-list => $list}); 
 	}	
-    if($args->{-html_output} == 1){
-	
-	         
+    if($args->{-html_output} == 1){         
         if($list_exists == 0){ 
             # Test sub-subscribe-redirect-error_invalid_list
 			my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1');  
@@ -126,12 +124,9 @@ sub subscribe {
 		}
 	}
 	else { 
-		# ...?!?!
+		#  List does not exist.
 	}
 	
-
-
-    
     require DADA::MailingList::Subscribers;         
     my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
     
@@ -418,7 +413,7 @@ sub confirm {
     my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list);
     
 	require DADA::MailingList::Settings;
-		my $ls = undef; 
+	my $ls = undef; 
 	
 	if($list_exists == 1){ 
 		$ls = DADA::MailingList::Settings->new({-list => $list}); 
