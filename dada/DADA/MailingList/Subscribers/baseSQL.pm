@@ -784,6 +784,10 @@ sub subscription_list {
 
 sub filter_list_through_blacklist {
 
+
+	# This makes no sense - why not just use a query that looks for unique addresses, 
+	# that are in both sublists?
+	
     my $self = shift;
     my $list = [];
 
