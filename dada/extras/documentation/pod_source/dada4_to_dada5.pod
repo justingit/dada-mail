@@ -52,6 +52,9 @@ forget what they are, view your old C<.dada_config> file and just copy the old v
 
 The B<Your Subscribers> heading has been renamed, B<Membership>
 
+The B<Invite/Add> heading has been renamed, B<Invite/Add/Subscribe>. If you do not have 
+Mass Subscribing via the List Control Panel enabled (it's disabled by default), it should read, B<Invite/Add>.
+
 The, B<Edit Subscriber> screen, accessed by clicking an email address in the B<Membership (or Your Subscribers) - View> 
 screen is now called, B<Membership> and has additional features
 
