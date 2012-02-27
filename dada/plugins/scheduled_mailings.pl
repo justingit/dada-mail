@@ -2505,7 +2505,7 @@ I'll come back and if I have a few messages that I didn't send, I'll know the cr
 
 =item * I keep getting, 'permission denied' errors, what's wrong?
 
-It's very possible that Beatitude can't read your subscription database or the list settings database. This is because Dada Mail may be running under the webserver's username, usually, B<nobody>, and not what Mystery Girl is running under, usually your account username. 
+It's very possible that Beatitude can't read your subscription database or the list settings database. This is because Dada Mail may be running under the webserver's username, usually, B<nobody>, and not what Beatitude is running under, usually your account username. 
 
 You'll need to do a few things: 
 

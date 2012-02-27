@@ -2239,8 +2239,7 @@ Clicking on the email address will allow you to view the data about the bounced 
 in the bounce handler plugin. 
 
 I<(No bounces will be recorded, unless you've separately set up and 
-installed the bounce handler plugin that comes with Dada Mail 
-called Mystery Girl/dada_bounce_handler.pl)> 
+installed the Bounce Handler plugin that comes with Dada Mail)> 
 
 If you suddenly get a ton of bounced messages for a mailing from addresses you know 
 look legitimate, there's a good chance that something seriously went wrong in the 

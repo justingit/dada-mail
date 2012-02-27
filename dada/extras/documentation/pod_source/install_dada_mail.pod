@@ -85,7 +85,7 @@ This means you'll need to edit I<one> line in the C<dada/DADA/Config.pm> file to
 
 =head2 ".dada_files " Directory Location
 
-You'll need to fill out in the installer is the location to place the, C<.dada_files> directory. 
+Fill out the location on where to place the, C<.dada_files> directory. 
 
 The installer will do its best to pre-fill out the best location for you - and you can just use it's best guess and forgo having to know the exact details. 
 

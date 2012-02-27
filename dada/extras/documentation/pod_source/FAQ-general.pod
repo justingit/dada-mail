@@ -384,7 +384,7 @@ The Dada Bridge Plugin can also be set up to provide announce-only message sendi
 
 =head2 Does Dada Mail handle bounced messages? 
 
-See the B<Mystery Girl> plugin, the bounce handler for Dada Mail: 
+See the B<Bounce Handler> plugin: 
 
 http://dadamailproject.com/support/documentation/dada_bounce_handler.pl.html
 

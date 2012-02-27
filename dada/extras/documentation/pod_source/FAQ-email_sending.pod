@@ -238,7 +238,7 @@ In my findings, this sometimes works for servers running Qmail - although you're
 
 And, that's it. 
 
-Now that you know how to set the B<Return-Path> header, put it to some good use! Set up Mystery Girl, the Bounce Handler for Dada Mail: 
+Now that you know how to set the B<Return-Path> header, put it to some good use! Set up the Bounce Handler for Dada Mail: 
 
 http://dadamailproject.com/support/documentation/dada_bounce_handler.pl.html
 
@@ -307,7 +307,7 @@ Nothing to it.
 Another option may be to just setup a separate subdomain and a different MX record, so that mail sent to an email address with this 
 subdomain will simply be handled by your hosting account instead of Google Apps. This workflow works exactly like you'd work with Dada Mail, without Google Apps
 
-=head2 Using Mystery Girl (Bounce Handler)
+=head2 Using Bounce Handler
 
 Using the Bounce Handler may be tricky. 
 
@@ -319,7 +319,7 @@ bounce handler email address. If it can't find it, no bounced message will get d
 
 One option is to simply setup that local mailbox and use the login info that points to your hosting account's mail server, instead of using Google Apps. 
 This is a very strange setup, as you cannot I<send> an email message to this mailbox, as you regularly would - it would just be checked via Google Apps, 
-but it I<can> be used locally by your local mail server to store the bounce messages, as well as by Mystery Girl to, I<check> this local messages. 
+but it I<can> be used locally by your local mail server to store the bounce messages, as well as by Bounce Handler to, I<check> this local messages. 
 
 =head3 Method #2 Setup a subdomain with a different MX record
 
