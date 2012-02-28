@@ -35,7 +35,7 @@ Download the, C<uncompress_dada.cgi> script from here:
 =begin html 
 
 <ul>
-<li><strong><a href="https://github.com/justingit/dada-mail/raw/v5_0_0-rc2_2012_02_25/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
+<li><strong><a href="https://github.com/justingit/dada-mail/raw/v5_0_0-rc2_2012_02_28/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
 
 =end html
 
