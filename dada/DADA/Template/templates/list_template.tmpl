@@ -2,6 +2,7 @@
  <head>
   <!-- <!-- tmpl_var PROGRAM_NAME --> <!-- tmpl_var VER --> -->
   <title><!-- tmpl_var title --></title>
+
   <link rel="stylesheet" href="<!-- tmpl_var S_PROGRAM_URL -->/css/default.css" type="text/css" media="screen" />
 
 <!-- tmpl_if list_settings.show_archives --> 
@@ -23,17 +24,14 @@
 				<!-- tmpl_var profile_widget --> 
 			<!-- /tmpl_if --> 
 	    <div class="floatclear"></div>
-	  </div><!-- ends id="Header" -->
+	  </div><!-- ends Header -->
 	
 	<div id="ContentWrapper">
-		
-   <div id="Content">	
-
-	<h1><!-- tmpl_var title --></h1>
-
+		<div id="Content">	
+			
+		<h1><!-- tmpl_var title --></h1>
 		<!-- tmpl_if list_settings.list --> 
 			<!-- tmpl_if subscribed_to_list --> 
-
 				<div class="clearskiesbox">
 					<p>
 						You are currently subscribed to, <!-- tmpl_var list_settings.list_name -->!
@@ -41,26 +39,25 @@
 				</div> 
 			<!-- tmpl_else --> 
 			<!-- /tmpl_if -->
-						<!-- /tmpl_if -->
-
-	
-    <!-- tmpl_var content --> 
-
-
-
-	<!-- tmpl_if list_settings.website_name --> 
-		<!-- tmpl_if list_settings.website_url --> 
-			<p>
-		     Go back to 
-		       <a href="<!-- tmpl_var list_settings.website_url -->">
-			  		<!-- tmpl_var list_settings.website_name -->
-			   </a>
-		    </p>
-	
-		<!-- /tmpl_if --> 
-	<!-- /tmpl_if -->
-   </div><!-- ends id="Content" -->
-</div> 
+		<!-- /tmpl_if -->
+		
+		
+	    <!-- tmpl_var content --> 
+		
+		
+		<!-- tmpl_if list_settings.website_name --> 
+			<!-- tmpl_if list_settings.website_url --> 
+				<p>
+			     Go back to 
+			       <a href="<!-- tmpl_var list_settings.website_url -->">
+				  		<!-- tmpl_var list_settings.website_name -->
+				   </a>
+			    </p>
+			<!-- /tmpl_if --> 
+		<!-- /tmpl_if -->
+		
+		</div><!-- ends Content -->
+	</div> <!-- ends ContentWrapper -->
 
 	<div id="Footer">
 		<div id="FooterPadding">

@@ -8,7 +8,7 @@ body {
 	margin: 0;
 	padding: 0;
 	background-color: #fff;
-	font-family: helvetic,arial,san-serif;
+	font-family: Helvetica,Verdana,Arial,sans-serif;
 	line-height: 1.50em;
 	font-size: .825em;
 	background: #fff;
@@ -315,6 +315,14 @@ color: #000;
 	margin-right: 0.5em;
 	display: block;
 }
+.label_profile_fields { 
+	width: 20em;
+	float: left;
+	text-align: right;
+	margin-right: 0.5em;
+	display: block;
+}
+
 
 fieldset {
 	padding-top: 4px;

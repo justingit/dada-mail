@@ -49,7 +49,7 @@
     <!-- tmpl_else --> 
     
         <p>
-        <label for="list" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" >
+        <label for="list" class="label_profile_fields" >
         Choose a Mailing List: 
         </label>
         <!-- tmpl_var list_popup_menu -->
@@ -59,7 +59,7 @@
     
 <!-- /tmpl_if -->
 <p>
-<label for="email" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" >
+<label for="email" class="label_profile_fields" >
 Email&nbsp;Address: 
 </label>
 <!-- tmpl_if profile_logged_in --> 
@@ -82,7 +82,7 @@ Email&nbsp;Address:
 	    <!-- tmpl_loop subscriber_fields --> 
   
 	        <p>
-	        <label for="<!-- tmpl_var name escape=HTML -->" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+	        <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
 	        <!-- tmpl_if pretty_name --> 
 				<!-- tmpl_var pretty_name escape=HTML -->: 
 	        <!-- tmpl_else --> 
@@ -106,7 +106,7 @@ Email&nbsp;Address:
 
  
     <p> 
-    <label for="f_u" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">Unsubscribe</label> 
+    <label for="f_u" class="label_profile_fields">Unsubscribe</label> 
     <input type="radio" name="f"  id="f_u"  value="unsubscribe" checked="checked" />
     </p>  
 
@@ -115,20 +115,20 @@ Email&nbsp;Address:
 	<!-- tmpl_if list_settings.invite_only_list -->
 		
 		<p> 
-	    <label for="f_u" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">Unsubscribe</label> 
+	    <label for="f_u" class="label_profile_fields">Unsubscribe</label> 
 	    <input type="radio" name="f"  id="f_u"  value="unsubscribe" checked="checked" />
 	    </p>
 	
 	<!-- tmpl_else --> 
 		<p>
-	    <label for="f_s" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+	    <label for="f_s" class="label_profile_fields">
 	    Subscribe
 	    </label>
 	    <input type="radio" name="f" id="f_s" value="subscribe" <!-- tmpl_if flavor_is_subscribe -->checked="checked"<!-- /tmpl_if --> />
 	    </p> 
     
 	    <p> 
-	    <label for="f_u" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">Unsubscribe</label> 
+	    <label for="f_u" class="label_profile_fields">Unsubscribe</label> 
 	    <input type="radio" name="f"  id="f_u"  value="unsubscribe" <!-- tmpl_if flavor_is_unsubscribe -->checked="checked"<!-- /tmpl_if --> />
 	    </p>
 	<!-- /tmpl_if --> 

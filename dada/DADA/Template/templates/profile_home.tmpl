@@ -147,7 +147,7 @@ function confirm_profile_removal(form_name) {
     <!-- tmpl_loop subscriber_fields --> 
     
         <p>
-        <label for="<!-- tmpl_var name escape=HTML -->" style="width: 10em;float: left;text-align: right;margin-right: 0.5em;display: block">
+        <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
         
         <!-- tmpl_if label --> 
 			<!-- tmpl_var label escape=HTML -->: 
@@ -326,7 +326,7 @@ Your Mailing List Subscriptions
 
 		<!-- /tmpl_if -->
 	  <p>
-        <label for="updated_email" style="width: 10em;float: left;text-align: right;margin-right: 0.5em;display: block">
+        <label for="updated_email" class="label_profile_fields">
         Your New Profile Email Address: 
         </label>
         <input type="text" name="updated_email" id="updated_email" value=""  />
@@ -369,14 +369,14 @@ Your Mailing List Subscriptions
 	
 	
 	  <p>
-        <label for="password" style="width: 10em;float: left;text-align: right;margin-right: 0.5em;display: block">
+        <label for="password" class="label_profile_fields">
         New Password: 
         </label>
         <input type="password" name="password" id="password" value=""  />
         </p>
 
 	  <p>
-        <label for="again_password" style="width: 10em;float: left;text-align: right;margin-right: 0.5em;display: block">
+        <label for="again_password" class="label_profile_fields">
         New Password Again: 
         </label>
         <input type="password" name="again_password" id="again_password" value=""  />
