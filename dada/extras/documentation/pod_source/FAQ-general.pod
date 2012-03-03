@@ -1135,7 +1135,7 @@ It is now my official recommendation that you use the SQL backend, if possible. 
 
 See: 
 
-http://dadamailproject.com/support/documentation/FAQ-default_2_SQL_backend.pod.html
+http://dadamailproject.com/support/documentation/FAQ-default_to_SQL_backend.pod.html
 
 
 =head1 Mailing List Messages

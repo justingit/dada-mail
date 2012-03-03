@@ -2628,7 +2628,7 @@ See the appropriate schema files in, I<dada/extras/SQL> for the exact SQL query 
 Data saved within the older, PlainText clickthrough logs would have to 
 be moved over, 
 
-There is a script called, I<dada_clickthrough_plaintext2sql.pl> located in the, 
+There is a script called, I<dada_clickthrough_plaintext_to_sql.pl> located in the, 
 I<dada/extras/scripts> directory that will do this conversion. Move it into your, 
 I<dada> directory, change its permissions to, C<755> and run it I<once> in your 
 web browser. It may take a few minutes to run to completion. 

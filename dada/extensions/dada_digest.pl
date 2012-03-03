@@ -30,75 +30,9 @@ Creates a digest message from one list, to be sent to another list.
 =head1 INSTRUCTIONS
 
 dada_digest.pl is designed to be called from the command line or a cron
-job. It is not a cgi script and shys away from the limelight that is
-the Graphical WWW.
+job. It is not a cgi script.
 
-=head1 INSTALLTION
-
-You need to change two things on the top of dada_digest.pl, the first 
-is the B<$Digests> variable which we'll get to shortly, the second 
-thing you need to do is set the path to both the Dada libraries and 
-your site's Perl library. Since dada_digest.pl will most likely but 
-run from a cron job, it doesn't know off the bat where the Perl or 
-the Dada libraries are. You tell the script where these places are
-by tweaking the 'use lib' statement:
-
-use lib qw( 
-/home/account/public_html/cgi-bin/dada/ 
-/home/account/public_html/cgi-bin/dada/DADA
-/home/account/public_html/cgi-bin/dada/DADA/perllib
-/usr/libdata/perl/5.00503/mach 
-/usr/libdata/perl/5.00503 
-/usr/local/lib/perl5/site_perl/5.005/i386-freebsd 
-/usr/local/lib/perl5/site_perl/5.005 
-);
-
-The first two are where my Dada libraries are, they're in my cgi-bin 
-right along with mail.cgi. The ones after that are places where 
-the site-wide Perl libraries are located. 
-
-
-Upload dada_digest.pl to your hosting account. I recommend NOT putting 
-this script in your cgi-bin, simply because it isn't a cgi-script.
-You may want to make a directory for dada scripts like this one in your home account: 
-
- mkdir /home/account/dada_scripts
-
-B<Putting this script in your cgi-bin would probably constitute a security threat!>  
-
-change the permissions of dada_digest.pl to 755.  
-
-To use this script, simple run it: 
-
- >perl dada_digest.pl
-
-That's the essence of it. 
-
-=head2 OPTIONS
-
-=over
-
-=item --test
-
-running dada_digest.pl with the test option will only send out the 
-digest to the list owner. Very handy for testing purposes. 
-
- >perl dada_digest.pl --test
-
-=item --reset listname
-
-This takes a bit of explaination, but it basically resets the time
-dada_digest.pl remembers when it last sent out a digest. If I send out 
-a digest ever day, dada_digest.pl will remember this and won't send out
-a message in a digest it has already sent. This will make 
-dada_digest.pl forget this. 
-
- >perl dada_digest.pl --reset listname
-
-listname is the shortname of the list you're grabbing the messages to be
-digested, not the digest list 
-
-=back
+=head1 INSTALLATION
 
 =head2 SETTING UP A DIGEST
 
@@ -146,7 +80,48 @@ after my first one:
 	];
 	
 
-All there is to it. 	
+
+Upload dada_digest.pl to your hosting account. I recommend NOT putting 
+this script in your cgi-bin, simply because it isn't a cgi-script.
+You may want to make a directory for dada scripts like this one in your home account: 
+
+ mkdir /home/account/dada_scripts
+
+B<Putting this script in your cgi-bin would probably constitute a security threat!>  
+
+change the permissions of dada_digest.pl to 755.  
+
+To use this script, simple run it: 
+
+ >perl dada_digest.pl
+
+That's the essence of it. 
+
+=head2 OPTIONS
+
+=over
+
+=item --test
+
+running dada_digest.pl with the test option will only send out the 
+digest to the list owner. Very handy for testing purposes. 
+
+ >perl dada_digest.pl --test
+
+=item --reset listname
+
+This takes a bit of explaination, but it basically resets the time
+dada_digest.pl remembers when it last sent out a digest. If I send out 
+a digest ever day, dada_digest.pl will remember this and won't send out
+a message in a digest it has already sent. This will make 
+dada_digest.pl forget this. 
+
+ >perl dada_digest.pl --reset listname
+
+listname is the shortname of the list you're grabbing the messages to be
+digested, not the digest list 
+
+=back
 
 =head2 Setting up a Cron Tab
 

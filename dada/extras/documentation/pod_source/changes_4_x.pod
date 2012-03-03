@@ -505,7 +505,7 @@ https://github.com/justingit/dada-mail/issues/198
 
 https://github.com/justingit/dada-mail/issues/197
 
-=head3 Library error in dada_clickthrough_plaintext2sql.pl
+=head3 Library error in dada_clickthrough_plaintext_to_sql.pl
 
 https://github.com/justingit/dada-mail/issues/195
 
@@ -2240,7 +2240,7 @@ The following topics were added to the documentation:
 
 =item * Converting from Default to SQL Backend
 
-http://dadamailproject.com/support/documentation/FAQ-default_2_SQL_backend.pod.html
+http://dadamailproject.com/support/documentation/FAQ-default_to_SQL_backend.pod.html
 
 =item * Converting from a Basic to Contemporary Installation
 

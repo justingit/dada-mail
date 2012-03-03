@@ -1958,7 +1958,7 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=1528774&group_id=13002&
 
 doesn't exist. All instances of it in documentation should be changed to:
 
-dada_settings_dbtosql.pl.html
+dada_settings_db_to_sql.pl.html
 
 http://sourceforge.net/tracker/index.php?func=detail&aid=1527084&group_id=13002&atid=113002
 
@@ -2179,11 +2179,11 @@ Pretty easy to set up, create the table located in dada/extras/SQL/dada_settings
 
 and set the, $SETTINGS_DB_TYPE to MySQL, or Postgres
 
-DB FIle to *SQL migration isn't too hard, see the script, dada_settings_dbtosql.pl in the dada/extras/scripts directory, 
+DB FIle to *SQL migration isn't too hard, see the script, dada_settings_db_to_sql.pl in the dada/extras/scripts directory, 
 
 Whose instructions are: 
 
-Name dada_settings_dbtosql.pl
+Name dada_settings_db_to_sql.pl
 Description
     Cute name, huh?
 

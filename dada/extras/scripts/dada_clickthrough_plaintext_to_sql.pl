@@ -161,36 +161,45 @@ sub convert_timestamp {
 
 =pod
 
-=head1 dada_clickthrough_plaintext2sql.pl
+=head1 dada_clickthrough_plaintext_to_sql.pl
 
-=head2 Description
+=head1 Description
 
-This script is used to import data from the B<plaintext> backend used by the Clickthrough Tracking (any version of Dada Mail) 
-extension or the Tracker plugin to the SQL backend. 
+C<dada_clickthrough_plaintext_to_sql.pl> migration script converts your Dada Mail List Clickthrough Logs from the Default backend, to one of the SQL backends. 
 
-=head1 Usage
+The Default backend for the Clickthrough Log is going to be a plaintext file. 
 
-Docs on how to move from the default backend of Dada Mail to one of the SQL backends is covered in length here: 
+C<dada_clickthrough_plaintext_to_sql.pl> is to be used I<after> you have reconfigured Dada Mail to use one of the SQL backends - you'll most likely do this via the Dada Mail installer. Once you have reconfigured your Dada Mail, none of your previous mailing lists will be available, until after you run this migration script. 
 
-L<http://dadamailproject.com/d/FAQ-default_2_SQL_backend.pod.html>
+This script may also be used, even though you have always run the SQL backend, since the Clickthrough Tracking extension have historically  
+kept Clickthrough logs in PlainText format. The Clickthrough Tracking extension was superceded by the Tracker plugin in v4.5.0 of Dada Mail. So, if you are upgrading a Dada Mail, with an SQL from a version of v4.5.0 and want to migrate over your Clickthrough logs, use this script. 
 
-This script should be run once you have moved over your backend from the Default to the SQL backend, NOT before. 
+Before running this migration script, please make sure to backup your important Dada Mail files/information, most notably, the B<.dada_files> directory. 
 
-You may also use this script, even though you have always run the SQL backend, since the Clickthrough Tracking extension always 
-kept its logs in PlainText format. The Clickthrough Tracking extension was superceded by the Tracker plugin in v4.5.0 of Dada Mail. 
+=head1 Configuration
 
-B<Change the permissions> of this script to, B<755>
+No configuration will need to be done in this script itself. The permissions of this script simply need to be set to, C<755>.
 
-Visit this script in your web browser. 
+=head1 Using
 
-=head1 See Also
+Visit C<dada_clickthrough_plaintext_to_sql.pl> in your web browser, or run the script via the command line. Make sure to B<only run this script once>, or data will be duplicated. 
 
-=over
+=head1 COPYRIGHT 
 
-=item * The docs for the Tracker plugin
+Copyright (c) 1999 - 2012 Justin Simoni All rights reserved. 
 
-L<http://dadamailproject.com/d/tracker.cgi.html>
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-=back
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 =cut

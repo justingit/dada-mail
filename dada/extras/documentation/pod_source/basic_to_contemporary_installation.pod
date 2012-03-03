@@ -19,11 +19,11 @@ configuration. The Basic Installation instructions are not currently supported.
 
 A B<Basic Installation> means simply changing the first four variables in the C<dada/DADA/Config.pm> file itself. One of these variables is the C<$FILES> variable, which is set to a directory where B<all> the files/directories Dada Mail creates that represent a Mailing List in Dada Mail are stored. 
 
-Contemporary installations of Dada Mail need only one variable in the C<Config.pm> file changed. This variable is called. C<$PROGRAM_CONFIG_FILE_DIR>. All other configuration changes are put in an outside configuration file called, C<.dada_config>. 
+Contemporary Installations of Dada Mail need only one variable in the C<Config.pm> file changed. This variable is called. C<$PROGRAM_CONFIG_FILE_DIR>. All other configuration changes are put in an outside configuration file called, C<.dada_config>. 
 
 The instructions below will try to guide you from changing between and Basic and Contemporary Installation. 
 
-What we suggest is that you perform this change during an upgrade, by first installing the new version of Dada Mail using the Dada Mail Installer and then moving over the files from the old installation into the directory structure of the new installation.
+It's suggested that you perform this change after upgrading. First, install Dada Mail using the Dada Mail Installer, then move over the files from the old installation into the directory structure of the new installation.
 
 =head2 Find the $FILES directory
 
@@ -41,7 +41,7 @@ Or Manually install Dada Mail (more difficult)
 
 L<http://dadamailproject.com/installation/installation_advanced.html>
 
-Once you've done the install/upgrade, you probably won't see any of your old lists yet. This is OK. 
+Once you've done the install/upgrade, your previous mailing lists will not be available, until after you manually move over the previous installation's Dada Mail files. 
 
 =head2 Move Old Files over to the New Directory Structure
 
@@ -75,5 +75,13 @@ All that's needed now to do is to move your old files in the old directory (save
 
 =back
 
-Now, visit your Dada Mail in your web browser and see if your previous mailing lists seem to be back. If they're not, double check any other variables that may have been set in the previous version of Dada Mail's, C<dada/DADA/Config.pm> file. It's possible that your previous version was set up to use one of the SQL backends. 
+You've now moved your Basic Installation of Dada Mail to a Contemporary Installation of Dada Mail. 
+
+If you upgraded Dada Mail to use the B<Default> Backend, visiting  Dada Mail should show your original mailing lists. If so, you are done. 
+
+
+If you upgraded Dada Mail using the SQL backend (and had previously used the Default Backend> you will need to migrate your old Mailing List Information to the SQL backend. Moving from the Default Backend to one of the SQL backends is covered here: 
+
+L<http://dadamailproject.com/d/FAQ-default_to_SQL_backend.pod.html>
+
 =cut

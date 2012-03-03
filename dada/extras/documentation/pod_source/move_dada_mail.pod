@@ -6,12 +6,20 @@
 
 Moving Dada Mail between servers will basically require you to move two sets of Stuff: 
 
-Dada Mail, "The Program" and the group of files that make up your various mailing lists. 
+=over
+
+=item * Dada Mail, "The Program" 
+
+=item * .dada_files directory 
+
+(or if you have an older, Basic installation, whatever directory you've set in your C<$FILES> variable.)
+
+=back
 
 Once you've moved over the Stuff, you will need to reconfigure Dada Mail for
 the new environment. 
 
-=head1 Gather Some Information
+=head1 Gathering Information
 
 =head2 "Basic", or, "Contemporary" Installation? 
 

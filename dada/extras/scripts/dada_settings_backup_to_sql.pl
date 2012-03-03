@@ -263,53 +263,34 @@ sub local_available_lists {
 
 __END__
 
+
 =pod
 
-=head1 Name dada_settings_backup_to_sql.pl
+=head1 dada_settings_backup_to_sql.pl
 
 =head1 Description
 
-Cute name, huh? 
+C<dada_settings_backup_to_sql.pl> migration script converts your Dada Mail List Settings I<Backups> from the Default backend, to one of the SQL backends. 
 
-Basically, this small script takes the information of a Dada Mail list settings I<backup directories> and ports it to the MySQL format.
+The Default backend for the List Settings is going to be a database file, like the Berkeley DB file format. The I<Backup> of this will be a collection of files/directories, usually saved in the I<.dada_files/.backups> directory. This script should only be used if your List Settings are corrupted are unusable - both of which can happen during a server move. Backups are only made for the Default Backend and no backups are made for the SQL backend. 
 
-Fairly simple and straightforward. 
+If you List Settings are not corrupted use the, C<dada_settings_db_to_sql.pl> script. 
 
-=head1 How to use this script
+C<dada_settings_backup_to_sql.pl> is to be used I<after> you have reconfigured Dada Mail to use one of the SQL backends - you'll most likely do this via the Dada Mail installer. Once you have reconfigured your Dada Mail, none of your previous mailing lists will be available, until after you run this migration script. 
 
-=over
+Before running this migration script, please make sure to backup your important Dada Mail files/information, most notably, the B<.dada_files> directory. 
 
-=item * Backup Everything
+=head1 Configuration
 
-SQL tables, list files (all of them) 
+No configuration will need to be done in this script itself. The permissions of this script simply need to be set to, C<755>.
 
-=item * Create the List Settings SQL table
+=head1 Using
 
-The SQL statement to run should be saved in a file called I<dada_settings.sql> which is located in the I<dada/extras/SQL> directory of the distribution
-
-=item * Set B<$SETTINGS_DB_TYPE> to the correct SQL type (MySQL, Postgres)
-
-Directions are located in the Config.pm about this, search for, I<$SETTINGS_DB_TYPE>
-
-=item * Fill in %SQL_PARAMS in the Config.pm file
-
-Again, directions should be supplied in the Config.pm file. 
-
-=back
-
-After the above (do not skip a step) are done, make sure Dada Mail is still running by visiting it in your webbrowser. The program should run as if no lists existed - not to worry! We shall fix that soon enough.
-
-Upload this script into the same directory that you have the I<mail.cgi> script in, and run it, either from your web browser, or via the command line. 
-
-That should be it. 
-
-
-ps. backup everything. 
- 
+Visit C<dada_settings_backup_to_sql.pl> in your web browser, or run the script via the command line. Make sure to B<only run this script once>, or data will be duplicated. 
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999-2008 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2012 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -326,7 +307,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 =cut
-
 
 
 

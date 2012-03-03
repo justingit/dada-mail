@@ -88,4 +88,37 @@ It contains B<Configuration>, renamed from B<Dada Mail Setup Info>, and, B<About
 The link to your Mailing List's List Page, the Logout Link and the Mailing List Switch form have moved to the 
 header of the Admin Template. 
 
+=head1 REMOVED plugins/extensions
 
+The following plugins/extensions have been removed from the main Dada Mail distribution. The have been marked as, B<deprecated> in 
+previous versions of Dada Mail, or removed to provide a cleaner distribution: 
+
+=over
+
+=item * clickthrough_tracking.cgi
+
+Replaced by the, C<tracker.cgi> plugin
+
+=item * email_list_owners.cgi
+
+=item * mx_lookup.cgi
+
+=item * dada_backup.pl
+
+Best to use the SQL backend and backup your database. 
+
+=item * dada_tester.cgi
+
+Best to simply run, C<prove -r> from the, C<dada> directory. 
+
+=back
+
+=head1 DEPRECATED plugins/extensions
+
+=over
+
+=item * multi_admin_subscribers.cgi
+
+Will be removed in a future version of Dada Mail.
+
+=back

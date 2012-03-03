@@ -374,6 +374,10 @@ Multi List Sub/Unsub Check
 
 A Plugin to allow you to administrate subscriptions/unsubscriptions for multiple lists at one time. 
 
+=head1 DEPRECATION NOTICE
+
+This plugin will be removed in future versions of Dada Mail. 
+
 =head1 USAGE
 
 This script is a Dada Mail plugin. Once configured, you should be able to log into your list and access this plugin under the, B<Plugins> menu. 
