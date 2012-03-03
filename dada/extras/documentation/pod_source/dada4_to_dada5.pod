@@ -111,6 +111,10 @@ Best to use the SQL backend and backup your database.
 
 Best to simply run, C<prove -r> from the, C<dada> directory. 
 
+=item * auto_pickup.pl
+
+Replaced by the, <mailing_monitor.cgi> plugin
+
 =back
 
 =head1 DEPRECATED plugins/extensions
