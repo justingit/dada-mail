@@ -237,8 +237,8 @@ Create an C<.htaccess> file in your, C<dada> directory and placing this directiv
 
 If there are duplicate email addresses in your mailing list, please open up a bug report. 
 
-	L<http://github.com/justingit/dada-mail/issues> 
-	
+L<http://github.com/justingit/dada-mail/issues> 
+
 At least in the Dada Mail program, duplicates should never be present. 
 
 If you are edited the plain text list files (if you're using the default back end), or if you're using the SQL dada_subscribers SQL backend directly, then all bets are off, in terms of duplicates. You CAN, easily add duplicates to a mailing list

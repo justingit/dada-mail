@@ -123,4 +123,8 @@ L<http://dadamailproject.com/d/Config.pm.html#_list_setup_include>
 
 Presently, there isn't. It's basically a global (well, to Dada Mail) unique identifier of your Mailing List, so changing it would either involving changing every single instance used, including all the logs, or, saying, the heck with the past, let's move forward and just changing the various files that refer to the List short name. Either way is messy. It's not impossible, but it's currently not easily possible with hacking about. 
 
+See: 
+
+L<http://dadamailproject.com/support/documentation/FAQ-general.pod.html#how_do_i_change_the_list_short_name>
+
 =cut

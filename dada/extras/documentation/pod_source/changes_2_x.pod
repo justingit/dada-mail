@@ -2959,7 +2959,7 @@ looked stupid in HTML, so I made the:
 <!--signature-->
 <!--/signature-->
 
-"signature" comment pair. Again, completely local to Dada Mail. Use them, reap the benifits; ignore them, life as it was; 
+"signature" comment pair. Again, completely local to Dada Mail. Use them, reap the benefits; ignore them, life as it was; 
 
 From my tests with Spamassassin, these comments aren't flagged as bad things. Which is good!
 

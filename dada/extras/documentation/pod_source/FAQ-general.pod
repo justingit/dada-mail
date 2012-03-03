@@ -130,7 +130,7 @@ Make sure the new list short name:
 =item * only consists of alpha-numeric characters
 
 =back 
- 
+
 After running, make sure to clear your Dada Mail screen cache, as links will need to be updated. 
 
 Although this will modify your SQL database to use this new short name, this will not: 
@@ -669,9 +669,9 @@ The most important part that you will want to make sure to keep the same is:
 B<Edit> the, C<dada/DADA/Template/templates/html_message_form_field_widget.tmpl> file. Change the contents of the file to the below:
 
 	<!-- begin html_message_form_field_widget.tmpl --> 
-
+	
 	<textarea name="html_message_body" cols="80" rows="30" id="html_message_body" class="mceEditor"><!-- tmpl_var html_message_body_content --></textarea>
-
+	
 	<!-- end html_message_form_field_widget.tmpl --> 
 
 TinyMCE should now work with Dada Mail in the "Send a Message" and "Send a Webpage" screens. 
@@ -764,11 +764,11 @@ http://dadamailproject.com/support/documentation/FAQ-errors.pod.html
 
 =head2 How do you change the Dada Mail Logo? 
 
-Create a new image around 175 x 75 px (if you want to match the size of what's currently be used). Save it as, "dada_mail_logo.png"
+Create a new image around 125 x 50 px (if you want to match the size of what's currently be used). Save it as, "dada_mail_logo.png"
 
-Place it in the, I<dada/DADA/Template/templates> directory. 
+Place it in the, I<dada/DADA/Template/templates/img> directory. 
 
-I<Or> place it in your I<.dada_files/.templates> directory. This copy will override the copy that comes with Dada Mail and any additional upgrades of the script will 
+I<Or> place it in your I<.dada_files/.templates/img> directory. This copy will override the copy that comes with Dada Mail and any additional upgrades of the script will 
 not overwrite the custom version of the file you want to use. (This works for all templates located in the I<dada/DADA/Template/templates> directory)
 
 Remove your screen cache (either delete the, I<.dada_files/.tmp/_screen_cache> directory, or use the Screen Cache plugin) to see your changes take effect. 
@@ -1077,9 +1077,9 @@ Again, DB File flavor - with a wrapper to provide saving complex data structures
 =back
 
 
-=head2 What are the benifits of using the SQL backends?
+=head2 What are the benefits of using the SQL backends?
 
-Well, there are the basic benifits of SQL over a, "Flat File" DB:
+Well, there are the basic benefits of SQL over a, "Flat File" DB:
 
 =over
 
@@ -1346,7 +1346,7 @@ In the B<admin_template.tmpl> file, find:
 
 	  <script src="<!-- tmpl_var S_PROGRAM_URL -->/js/dada_mail_admin_js.js"         type="text/javascript"></script>
 	  <script src="<!-- tmpl_var S_PROGRAM_URL -->/js/prototype_scriptaculous_package.js" type="text/javascript"></script>
-
+	
 	<!-- tmpl_if load_modalbox --> 
 	  <script src="<!-- tmpl_var S_PROGRAM_URL -->/js/modalbox.js"                   type="text/javascript"></script>
 	<!-- /tmpl_if --> 
@@ -1355,7 +1355,7 @@ In our example, we would change this to:
 
 	  <script src="http://example.com/static_dada_files/js/dada_mail_admin_js.js"         type="text/javascript"></script>
 	  <script src="http://example.com/static_dada_files/js/prototype_scriptaculous_package.js" type="text/javascript"></script>
-
+	
 	<!-- tmpl_if load_modalbox --> 
 	  <script src="http://example.com/static_dada_files/js/modalbox.js"                   type="text/javascript"></script>
 	<!-- /tmpl_if --> 
