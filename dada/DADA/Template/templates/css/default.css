@@ -388,28 +388,6 @@ textarea {
 	padding: 1px;
 }
 
-.small_input {
-	margin: 2px;
-	padding: 2px;
-	font-size: .9em;
-}
-
-input.full {
-	margin-top: -5px;
-	width: 95%;
-}
-input.midi {
-	width: 50%;
-	margin-top: -5px;
-}
-
-textarea {
-	padding: 10px;
-	width: 95%;
-	color: #333;
-}
-
-
 /* affects buttons only: */
 input[type="submit"],
 input[type="button"],
@@ -450,6 +428,31 @@ input.help:hover {
 	color: #333;
 	background-color: #ffe1af;
 }
+
+
+
+
+input.small_input {
+	margin: 1px;
+	padding: 3px;
+	font-size: .9em;
+}
+
+input.full {
+	margin-top: -5px;
+	width: 95%;
+}
+input.midi {
+	width: 50%;
+	margin-top: -5px;
+}
+
+textarea {
+	padding: 10px;
+	width: 95%;
+	color: #333;
+}
+
 
 input.processing {
 	background-color: #9f9;

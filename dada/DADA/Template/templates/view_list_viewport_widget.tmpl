@@ -38,10 +38,14 @@
 <!-- tmpl_else -->
 
 	<br />
+	
+	<div style="padding-top:10px">
+		&nbsp;<!-- ugly hack to get the below table down a bit. -->
+	</div>
+	
 	<table class="stripedtable">
 	 <tr>
-	  <td valign="bottom">
-	   <br />
+	  <td>
 
 
 	<!-- tmpl_if query --> 
@@ -99,13 +103,12 @@
 	
 	  </td>
 	
-	<td align="center" valign="bottom">
-		<br />
+	<td align="center">
 		<!-- tmpl_include view_list_slide_nav_widget.tmpl -->
 	</td>
 
 	
-	<td align="right" valign="bottom">
+	<td align="right">
 		<!-- tmpl_include list_search_form_widget.tmpl --> 
 	</td> 
 	
@@ -200,6 +203,8 @@
 
 			</tr> 
 		</table>
+		
+	
 
 <!-- /tmpl_unless -->
 
