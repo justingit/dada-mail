@@ -116,7 +116,21 @@
 	 </tr>
 	
 	
-
+	 <tr>
+	  <td>
+	   <input type="checkbox" name="mass_mailing_send_to_list_owner" id="mass_mailing_send_to_list_owner" value="1" <!-- tmpl_if list_settings.mass_mailing_send_to_list_owner -->checked="checked"<!--/tmpl_if--> />
+	  </td>
+	  <td>
+	   <p>
+	    <label for="mass_mailing_send_to_list_owner">
+	     Send Mass Mailing Messages to the List Owner
+	    </label>
+	    <br />
+		The List Owner will receive a copy of all mass mailings sent to your Mailing List. 
+	   </p>
+	  </td>
+	 </tr>
+	
 
 	 <tr>
 	  <td>
@@ -125,10 +139,10 @@
 	  <td>
 	   <p>
 	    <label for="get_finished_notification">
-	     Receive Finishing Message
+	     Send Finishing Message
 	    </label>
 	    <br />
-	    Receive notice via email when <!-- tmpl_var PROGRAM_NAME --> has sent all the messages of a mailout.
+	    The List Owner will be emailed when all the messages of mass mailings have been sent.
 	   </p>
 	  </td>
 	 </tr>

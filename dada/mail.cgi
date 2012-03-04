@@ -2335,11 +2335,10 @@ sub mass_mailing_preferences {
                     auto_pickup_dropped_mailings      => 0,
                     restart_mailings_after_each_batch => 0,
                     smtp_connection_per_batch         => 0,
-
+                    mass_mailing_send_to_list_owner   => 0, 
                 }
             }
         );
-
 
         print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
               . '?flavor=mass_mailing_preferences&done=1' );
@@ -2754,7 +2753,6 @@ sub sending_tuning_options {
                                                             use_domain_sending_tunings => ($li->{use_domain_sending_tunings} ? 1 : 0),
 
                                                             # For pre-filling in the "new" forms
-                                                           # list_send_via_smtp               => $li->{send_via_smtp},
                                                             list_add_sendmail_f_flag         => $li->{add_sendmail_f_flag},
                                                             list_print_return_path_header    => $li->{print_return_path_header},
                                                             list_verp_return_path            => $li->{verp_return_path},

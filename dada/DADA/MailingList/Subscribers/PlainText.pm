@@ -848,39 +848,52 @@ sub create_mass_sending_file {
 	flock($SENDINGFILE, LOCK_EX);	
 
 
-    my $first_email = $li->{list_owner_email}; 
-    
-    if($args{'-Bulk_Test'} == 1 && $args{-Test_Recipient}){ 
-        $first_email = $args{-Test_Recipient};
-    }
-    
-	my $to_pin = make_pin(-Email => $first_email, -List => $list);
-	my ($lo_e_name, $lo_e_domain) = split('@', $first_email); 
+	my $have_first_recipient = 1; 
+	if(
+		$args{'-Bulk_Test'} == 0 
+	 && $self->{ls}->param('mass_mailing_send_to_list_owner') == 0
+	){ 
+		$have_first_recipient = 0; 
+	}
 	
-	
+	require     Text::CSV;
+	my $csv   = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 	my $total = 0; 
-
-	require Text::CSV;
-	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
-	my @lo = ( 
-				$first_email,
-				$lo_e_name, 
-				$lo_e_domain, 
-				$to_pin, 
-				$list,
-                $self->{ls}->param('list_name'), 
-				$n_msg_id,
-			);
-	 if ( $csv->combine(@lo) ) {
-	     my $hstring = $csv->string;
-	     print $SENDINGFILE $hstring, "\n";
-	 }
-	 else {
-	     my $err = $csv->error_input;
-	     carp "combine() failed on argument: ", $err, "\n";
-	 }
 	
-	$total++;
+	if($have_first_recipient == 1){ 
+	
+	
+	    my $first_email = $li->{list_owner_email}; 
+    
+	    if($args{'-Bulk_Test'} == 1 && $args{-Test_Recipient}){ 
+	        $first_email = $args{-Test_Recipient};
+	    }
+    
+		my $to_pin = make_pin(-Email => $first_email, -List => $list);
+		my ($lo_e_name, $lo_e_domain) = split('@', $first_email); 
+	
+	
+
+		my @lo = ( 
+					$first_email,
+					$lo_e_name, 
+					$lo_e_domain, 
+					$to_pin, 
+					$list,
+	                $self->{ls}->param('list_name'), 
+					$n_msg_id,
+				);
+		 if ( $csv->combine(@lo) ) {
+		     my $hstring = $csv->string;
+		     print $SENDINGFILE $hstring, "\n";
+		 }
+		 else {
+		     my $err = $csv->error_input;
+		     carp "combine() failed on argument: ", $err, "\n";
+		 }
+	
+		$total++;
+	}
 	
 	if($args{'-Bulk_Test'} != 1){ 
         while(defined($email  = <LISTFILE>)){ 

@@ -1137,10 +1137,6 @@ SKIP: {
     undef $l2;
     undef $l2;
 
-    #undef $lh;
-    #my $lh = DADA::MailingList::Subscribers->new({-list => $list});
-
-    ###
 
     # We'll just do this again, for good measure...
 
@@ -1260,13 +1256,42 @@ SKIP: {
           #-partial_sending => $args->{-partial_sending},
       );
 
-    ok( $lh->num_subscribers + 1 == $total_sending_out_num,
+    ok( ($lh->num_subscribers + 1) == $total_sending_out_num,
         "This file is to send to " . $total_sending_out_num . 'subscribers' );
     ok( unlink($path_to_list) == 1, 'Unlinking ' . $path_to_list . ' worked.' );
     undef($path_to_list);
     undef($total_sending_out_num);
-
     sleep(1);
+
+
+	# this is to make sure the mass_mailing_send_to_list_owner pref works
+	$ls->save({mass_mailing_send_to_list_owner => 0}); 
+	# reset the setttings...
+    undef $lh;
+       my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );	
+    my ( $path_to_list, $total_sending_out_num ) =
+      $lh->create_mass_sending_file(
+        -ID   => DADA::App::Guts::message_id(),    #argh. That's messy.
+        -Type => 'list',
+      );
+
+	#diag "DEV: \$total_sending_out_num" . $total_sending_out_num;
+	#diag "DEV \$lh->num_subscribers " . $lh->num_subscribers; 
+    ok(
+        $total_sending_out_num == $lh->num_subscribers,
+        "This file is to send to " . $lh->num_subscribers . " people ($total_sending_out_num)",
+    );
+    ok( unlink($path_to_list) == 1, 'Unlinking ' . $path_to_list . ' worked.' );
+    undef($path_to_list);
+    undef($total_sending_out_num);
+	$ls->save({mass_mailing_send_to_list_owner => 1}); 
+	#/ this is to make sure the mass_mailing_send_to_list_owner pref works
+	undef $lh;
+       my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );	
+
+	
+
+
 
     my ( $path_to_list, $total_sending_out_num ) =
       $lh->create_mass_sending_file(
@@ -1391,6 +1416,9 @@ SKIP: {
       $lh->remove_from_list( -Email_List => ['raymond.lame@example.com'] );
     ok( $r_count == 1, "removed one address (raymond.lame\@example.com)" );
     undef($r_count);
+
+
+
 
     # This is quite different - we're testing to see if the profile field
     # For the list owner is picked up, if a test message is sent out:
@@ -1817,7 +1845,7 @@ ok( $lh->remove_this_listtype( { -type => $tmp_list } ) == 1,
 ########################
 $lh->remove_all_subscribers( { -type => 'list' } );
 $lh->remove_all_subscribers( { -type => 'black_list' } );
-diag "here.";
+#diag "here.";
 
 for ( 'one@one.com', 'two@two.com', 'three@three.com' ) {
     $lh->add_subscriber(

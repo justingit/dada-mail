@@ -559,6 +559,7 @@ sub send_url_email {
 							-Root_Login => $root_login,
 							-List       => $list,  
 						},
+						-expr       => 1, 
 						-vars       =>  {
 							
 							screen                           => 'send_url_email', 							
@@ -963,17 +964,19 @@ sub list_invite {
 							-Root_Login => $root_login,
 							-List       => $list,  
 						},
+						-expr => 1, 
 						-vars   => {						
-							screen                        => 'add',
-							list_type_isa_list             => 1, # I think this only works with Subscribers at the moment, so no need to do a harder check... 
+							screen                               => 'add',
+							list_type_isa_list                   => 1, # I think this only works with Subscribers at the moment, so no need to do a harder check... 
 							# This is sort of weird, as it default to the "Send a Message" Subject
-							Subject                        => $ls->param('invite_message_subject'), 
-							field_names                    => $field_names, 
-							verified_addresses             => $verified_addresses, 
+							mass_mailing_type                    => 'invite', 
+							Subject                              => $ls->param('invite_message_subject'), 
+							field_names                          => $field_names, 
+							verified_addresses                   => $verified_addresses, 
 							html_message_body_content            => $li->{invite_message_html}, 
 							html_message_body_content_js_escaped => js_enc($li->{invite_message_html}),
-							MAILOUT_AT_ONCE_LIMIT      => $DADA::Config::MAILOUT_AT_ONCE_LIMIT, 
-							mailout_will_be_queued     => $mailout_will_be_queued, 
+							MAILOUT_AT_ONCE_LIMIT                => $DADA::Config::MAILOUT_AT_ONCE_LIMIT, 
+							mailout_will_be_queued               => $mailout_will_be_queued, 
 							num_list_mailouts          => $num_list_mailouts, 
 							num_total_mailouts         => $num_total_mailouts,
 							active_mailouts            => $active_mailouts,

@@ -4562,8 +4562,8 @@ encrypted.
 	# sendmail, smtp, amazon_ses
     sending_method                   => 'sendmail',
     
-	# This isn't used anymore - see, "sending_method"
-    send_via_smtp                      => undef, 
+	# Send a copy to the list owner
+	mass_mailing_send_to_list_owner    => 1, 
 
 
 	# For mass mailings, connect only once per batch? 

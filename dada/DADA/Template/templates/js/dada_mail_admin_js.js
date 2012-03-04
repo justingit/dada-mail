@@ -110,6 +110,23 @@ function toggleDisplay(target) {
 		
 	} 	
 }
+
+
+
+function ChangeMassMailingButtonLabel() { 
+	if(Form.Element.getValue('archive_message') == 1 && $('archive_no_send').checked == true){ 
+		Form.Element.setValue('submit_mass_mailing', 'Archive Message');
+		$('submit_test_mailing').hide();	
+		$('send_test_messages_to').hide();
+	}
+	else { 
+		Form.Element.setValue('submit_mass_mailing', $F('default_mass_mailing_button_label'));
+		$('submit_test_mailing').show();
+		$('send_test_messages_to').show();
+			
+	}	
+}
+
     
 function sendMailingListMessage(form_name, testornot) {
 		

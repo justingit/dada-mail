@@ -1,8 +1,9 @@
 <!-- begin send_a_list_message_button_widget.tmpl -->
 
 <div class="buttonfloat">
- <input type="submit" class="cautionary" onclick="return sendMailingListMessage(this.form, 'test');" name="process" value="Submit Test Message" />
- <input type="submit" class="processing" onclick="return sendMailingListMessage(this.form);"         name="process" value="Submit Mailing List Message" />
+ <input type="submit" class="cautionary" onclick="return sendMailingListMessage(this.form, 'test');" name="process" id="submit_test_mailing" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send a Test Invitation<!-- tmpl_else -->Send a Test Message<!-- /tmpl_if -->" />
+ <input type="submit" class="processing" onclick="return sendMailingListMessage(this.form);"         name="process" id="submit_mass_mailing" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send Invitations<!-- tmpl_else -->Send Mass Mailing<!-- /tmpl_if -->" />
+ <input type="hidden" id="default_mass_mailing_button_label" name="default_mass_mailing_button_label" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send Invitations<!-- tmpl_else -->Send Mass Mailing<!-- /tmpl_if -->" />
 </div>
 <br />
 <div class="floatclear"></div>
@@ -28,12 +29,14 @@
 
 <div class="buttonfloat">
 
+<!-- nice. -->
 <br />
 <br />
 
-
+<div id="send_test_messages_to"> 
  <label for="test_recipient">Send Test Messages To:</label>
  <input type="text" id="test_recipient" name="test_recipient" value="<!-- tmpl_var list_settings.list_owner_email -->" />
+</div>
 
 </div>
 <div class="floatclear"></div>

@@ -1103,12 +1103,12 @@ sub create_mass_sending_file {
         -Test_Recipient  => undef,
         -partial_sending => {},
         -exclude_from    => [],
-		
+
         @_
     );
 
     my $list = $self->{list};
-    my $type = $args{ -Type };
+    my $type = $args{-Type};
 
     my @f_a_lists = available_lists();
     my %list_names;
@@ -1139,86 +1139,98 @@ sub create_mass_sending_file {
 
     my %banned_list;
 
-    if ( $args{ -Ban } ) {
-        my $banned_list = $args{ -Ban };
+    if ( $args{-Ban} ) {
+        my $banned_list = $args{-Ban};
         $banned_list{$_} = 1 for (@$banned_list);
     }
 
     my $list_file =
       make_safer( $DADA::Config::FILES . '/' . $list . '.' . $type );
-    my $sending_file = make_safer( $args{ -Save_At } )
+    my $sending_file = make_safer( $args{-Save_At} )
       || make_safer(
         $DADA::Config::TMP . '/msg-' . $list . '-' . $type . '-' . $letter_id );
 
     #open one file, write to the other.
     my $email;
 
-    open my $SENDINGFILE, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $sending_file
+    open my $SENDINGFILE, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')',
+      $sending_file
       or croak
 "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: Cannot create temporary email list file for sending out bulk message: $!";
     chmod( $SENDINGFILE, $DADA::Config::FILE_CHMOD );
     flock( $SENDINGFILE, LOCK_EX );
 
-    my $first_email = $self->{ls}->param('list_owner_email');
-    if ( $args{'-Bulk_Test'} == 1 && $args{ -Test_Recipient } ) {
-        $first_email = $args{ -Test_Recipient };
-    }
-    my $to_pin = make_pin( -Email => $first_email, -List => $self->{list} );
-    my ( $lo_e_name, $lo_e_domain ) = split ( '@', $first_email );
+	my $have_first_recipient = 1; 
+	if(
+		$args{'-Bulk_Test'} == 0 
+	 && $self->{ls}->param('mass_mailing_send_to_list_owner') == 0
+	){ 
+		$have_first_recipient = 0; 
+	}
 
+    require     Text::CSV;
+    my $csv   = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
     my $total = 0;
 
-    require Text::CSV;
-    my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
-    my @lo  = (
-        $first_email, $lo_e_name, $lo_e_domain, $to_pin, $self->{list},
-        $list_names{ $self->{list} }, $n_msg_id,
-    );
+	if($have_first_recipient == 1){ 
+	    my $first_email = $self->{ls}->param('list_owner_email');
+	    if ( 
+			$args{'-Bulk_Test'} == 1 
+		 && $args{-Test_Recipient} 
+		) {
+	        $first_email = $args{-Test_Recipient};
+	    }
+	    my $to_pin = make_pin( -Email => $first_email, -List => $self->{list} );
+	    my ( $lo_e_name, $lo_e_domain ) = split( '@', $first_email );
+
+	    my @lo  = (
+	        $first_email, $lo_e_name, $lo_e_domain, $to_pin, $self->{list},
+	        $list_names{ $self->{list} }, $n_msg_id,
+	    );
+
 	# To add to @lo, I want to bring up the Dada Profile and see if there's anything
-	# in there... 
-	if($DADA::Config::PROFILE_OPTIONS->{enabled} == 1){
-		require DADA::Profile; 
-		my $dp = DADA::Profile->new({-email => $first_email}); 
-		if($dp->exists()){ 
-			require DADA::Profile::Fields; 
-			my $dpf                  = DADA::Profile::Fields->new({-email => $first_email});
-			my $fields               = $dpf->{manager}->fields;
-			my $profile_field_values = $dpf->get;
-			for(@$fields){ 
-				push(@lo, $profile_field_values->{$_});
-			}
-		}
+	# in there...
+	    if ( $DADA::Config::PROFILE_OPTIONS->{enabled} == 1 ) {
+	        require DADA::Profile;
+	        my $dp = DADA::Profile->new( { -email => $first_email } );
+	        if ( $dp->exists() ) {
+	            require DADA::Profile::Fields;
+	            my $dpf = DADA::Profile::Fields->new( { -email => $first_email } );
+	            my $fields               = $dpf->{manager}->fields;
+	            my $profile_field_values = $dpf->get;
+	            for (@$fields) {
+	                push( @lo, $profile_field_values->{$_} );
+	            }
+	        }
+	    }
+
+	    if ( $csv->combine(@lo) ) {
+	        my $hstring = $csv->string;
+	        print $SENDINGFILE $hstring, "\n";
+	    }
+	    else {
+	        my $err = $csv->error_input;
+	        carp "combine() failed on argument: ", $err, "\n";
+	    }
+	    $total++;
 	}
 	
-    if ( $csv->combine(@lo) ) {
-        my $hstring = $csv->string;
-        print $SENDINGFILE $hstring, "\n";
-    }
-    else {
-        my $err = $csv->error_input;
-        carp "combine() failed on argument: ", $err, "\n";
-    }
-    $total++;
-
-    # TODO: these three lines need to be one
-    # And tell me why I have to chomp, "bulk test"
-    my $test_test = $args{'-Bulk_Test'};
-    chomp($test_test);    #Why Chomp?!
-    unless ( $test_test == 1 ) {
-
+	if($args{'-Bulk_Test'} != 1){ 
+		
         my $query = $self->SQL_subscriber_profile_join_statement(
             {
-                -type            => $args{ -Type },
-                -partial_listing => $args{ -partial_sending },
-                -exclude_from    => $args{ -exclude_from },
-				-include_from    => $args{ -include_from },
+                -type            => $args{-Type},
+                -partial_listing => $args{-partial_sending},
+                -exclude_from    => $args{-exclude_from},
+                -include_from    => $args{-include_from},
             }
         );
 
         my $sth = $self->{dbh}->prepare($query);
 
         $sth->execute()
-          or croak "cannot do statement (at create mass_sending_file)! $DBI::errstr\n";
+          or croak
+          "cannot do statement (at create mass_sending_file)! $DBI::errstr\n";
 
         my $field_ref;
 
@@ -1230,7 +1242,7 @@ sub create_mass_sending_file {
 
                 my @sub = (
                     $field_ref->{email},
-                    ( split ( '@', $field_ref->{email} ) ),
+                    ( split( '@', $field_ref->{email} ) ),
                     make_pin(
                         -Email => $field_ref->{email},
                         -List  => $self->{list}
@@ -1249,7 +1261,7 @@ sub create_mass_sending_file {
                         $field_ref->{$_} = '';
                     }
 
-                    push ( @sub, $field_ref->{$_} );
+                    push( @sub, $field_ref->{$_} );
 
                 }
                 if ( $csv->combine(@sub) ) {
