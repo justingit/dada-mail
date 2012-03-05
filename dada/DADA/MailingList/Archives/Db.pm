@@ -163,45 +163,6 @@ sub save {
 	$self->_open_db;
 }
 
-
-
-
-
-sub get_available_archives{ 
-	my $self = shift;
-	
-	
-	my @all_dbs = ();
-	my @available_lists = (); 
-	my @available_archives = ();
-	
-	# What?
-	while (defined(my $present_list = <$DADA::Config::ARCHIVES/mj-*>)){
-	  
-	  $present_list =~ s#.*/##;
-	  $present_list =~ s/mj-//;
-	  $present_list =~ s/\..*//; 
-	  push(@all_dbs, $present_list);                             	 
-	}
-		 
-		 
-	 for my $all_those(@all_dbs) { 
-		 if($all_those =~ m/.*-archive/) { 
-		  	push( @available_archives, $all_those)
-		}
-	}    
-	@available_archives = sort(@available_archives); 
-	my %seen = (); 
-	my @unique = grep {! $seen{$_} ++ }  @available_archives; 
-	return \@unique; 
-
-
-
-
-} 
-
-
-
 =pod
 
 
@@ -209,7 +170,7 @@ sub get_available_archives{
 
 	my $entries = $archive -> get_archive_entries(); 
 
-this will give you a refernce to an array that has the keys to your entries there. 
+this will give you a reference to an array that has the keys to your entries there. 
 
 =cut 
 

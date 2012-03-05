@@ -1735,6 +1735,13 @@ sub send_last_archived_msg_mass_mailing {
 		return; 
 	}
 	
+	require DADA::MailingList::Archives; 
+	my $la = DADA::MailingList::Archives->new({-list => $args->{-list}}); 
+	my $entries = $la->get_archive_entries(); 
+	if(scalar(@$entries) <= 0){ 
+    	return;
+	}
+
 	# Subscribe 'em
 	require DADA::MailingList::Subscribers; 
 	my $lh = DADA::MailingList::Subscribers->new({-list => $args->{-list}});
@@ -1755,8 +1762,6 @@ sub send_last_archived_msg_mass_mailing {
         );
 	}
 	
-	require DADA::MailingList::Archives; 
-	my $la = DADA::MailingList::Archives->new({-list => $args->{-list}}); 
     my $newest_entry = $la->newest_entry; 
 	
 		my ($head, $body) = $la->massage_msg_for_resending(

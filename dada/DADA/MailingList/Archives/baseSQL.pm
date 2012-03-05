@@ -135,26 +135,6 @@ sub print_message_source {
 	}
 }
 
-sub get_available_archives{ 
-	
-	my $self = shift;	
-	my @list; 
-	my $query  = 'SELECT DISTINCT list FROM '. $self->{sql_params}->{archives_table};
-	my $sth    = $self->{dbh}->prepare($query);    
-							   
-	$sth->execute() or croak "cannot do statement! $DBI::errstr\n";   
-
-   while((my $list) = $sth->fetchrow_array){ 
-		push(@list, $list); 
-	}
-	$sth->finish;
-	return \@list; 
-
-} 
-
-
-
-
 =pod
 
 
@@ -195,7 +175,7 @@ sub get_archive_entries {
 
 
 
-sub get_archive_info{ 
+sub get_archive_info { 
 
 	my $self  = shift; 
 	my $key   = shift; 

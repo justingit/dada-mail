@@ -4208,7 +4208,9 @@ sub add_email {
 					};
 					if($@){ 
 						carp $@; 
-					}	
+					}
+				}
+				if($ls->param('send_last_archived_msg_mass_mailing') == 1){ 	
 					eval { 
 						DADA::App::MassSend::send_last_archived_msg_mass_mailing(
 							{ 
