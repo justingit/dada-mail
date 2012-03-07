@@ -98,42 +98,12 @@ for my $header(qw(To From Subject)){
     ok($sv      eq $test_message{$header}); 
 }
 
-my $precedence = $entity->head->get('Precedence', 0);
-chomp $precedence; 
-
-ok($precedence eq $DADA::Config::LIST_SETUP_DEFAULTS{precedence}, "'$precedence' equals '$DADA::Config::LIST_SETUP_DEFAULTS{precedence}'"); 
-
 
 unlink($mh->test_send_file); 
 undef($mh); 
 undef $entity; 
 
 
-
-# 1647628  	  2.10.12 - Precedence Header not set
-# https://sourceforge.net/tracker/index.php?func=detail&aid=1647628&group_id=13002&atid=113002
-
-
-for(@DADA::Config::PRECEDENCES){ 
-    
-    $ls->save({precedence => $_}); 
-    undef $li;
-    my $li = $ls->get; 
-    
-    my $mh = DADA::Mail::Send->new({-list => $list});
-       $mh->test(1);
-	   $mh->send(%test_message);
-    
-    my $entity; 
-       $entity = $parser->parse_open($mh->test_send_file()); 
-    
-    my $precedence = $entity->head->get('Precedence', 0);
-    chomp($precedence); 
-    
-    ok($precedence eq $_); 
-
-	ok(unlink($mh->test_send_file));
-}
 
 
 

@@ -2376,10 +2376,6 @@ sub _make_general_headers {
 			);
 		} 	
 
-		# again, this stuff should always be defined by default... 
-		if(defined($self->{ls}->param('precedence'))) { 
-		    $gh{'Precedence'}  = $self->{ls}->param('precedence');
-		}
 		if(defined($self->{ls}->param('priority'))) { 
 		    if($self->{ls}->param('priority') ne 'none'){ 
 		        $gh{'X-Priority'}  = $self->{ls}->param('priority');
@@ -3376,7 +3372,6 @@ Return a hash containing the following Email Headers:
 
 =item * Message-ID
 
-=item * Precedence
 
 =item * Date
 

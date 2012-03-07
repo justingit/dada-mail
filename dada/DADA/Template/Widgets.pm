@@ -91,7 +91,7 @@ use vars (@ISA, @EXPORT);
  
 templates_dir
 
-precendence_popup_menu
+
 priority_popup_menu
 
 list_popup_menu
@@ -269,25 +269,6 @@ list shortnames as values
 
 =cut
 
-
-sub precendence_popup_menu { 
-	
-	my $li       = shift; 
-	my $default = shift || undef; 
-	
-	if(! defined($default)){ 
-		$default = $li->{precedence};
-	}
-
-	my $precendence_popup_menu = $q->popup_menu(
-									-name    => 'Precedence',
-	                                -values  =>  \@DADA::Config::PRECEDENCES ,
-	                                -default =>  $default,
-								);
-
-	return $precendence_popup_menu; 
-
-}
 
 sub priority_popup_menu { 
 

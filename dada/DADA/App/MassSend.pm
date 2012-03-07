@@ -147,8 +147,6 @@ sub send_email {
                     flavor => $flavor,
                     priority_popup_menu =>
                       DADA::Template::Widgets::priority_popup_menu($li),
-                    precendence_popup_menu =>
-                      DADA::Template::Widgets::precendence_popup_menu($li),
                     type            => 'list',
                     fields          => $fields,
                     undotted_fields => $undotted_fields,
@@ -190,7 +188,6 @@ sub send_email {
             Errors-To
             Return-Path
             X-Priority
-            Precedence
             Subject
             )
           )
@@ -246,6 +243,7 @@ sub send_email {
             $msg = MIME::Lite->new(
                 Type      => 'multipart/alternative',
                 Datestamp => 0,
+				%headers,
             );
             $msg->attr( 'content-type.charset' => $li->{charset_value} );
 
@@ -278,6 +276,7 @@ sub send_email {
                 Data      => $html_message_body,
                 Encoding  => $li->{html_encoding},
                 Datestamp => 0,
+                %headers
             );
             $msg->attr( 'content-type.charset' => $li->{charset_value} );
         }
@@ -285,11 +284,12 @@ sub send_email {
 
             $text_message_body = safely_encode($text_message_body);
 			return undef if redirect_tag_check($text_message_body, $list, $root_login) eq undef;
-            $msg               = MIME::Lite->new(
+            $msg  = MIME::Lite->new(
                 Type      => 'TEXT',
                 Data      => $text_message_body,
                 Encoding  => $li->{plaintext_encoding},
                 Datestamp => 0,
+                %headers,
             );
             $msg->attr( 'content-type.charset' => $li->{charset_value} );
         }
@@ -337,10 +337,7 @@ sub send_email {
 
         $fm->Subject( $headers{Subject} );
         $fm->use_list_template( $q->param('apply_template') );
-        if ( $li->{group_list} == 1 ) {
-            $fm->treat_as_discussion_msg(1);
-        }
-
+ 
 		my ( $final_header, $final_body ); 
 		eval {
 	        ( $final_header, $final_body ) =
@@ -366,9 +363,11 @@ sub send_email {
         $mh->test( $self->test );
 
         my %mailing =
-          ( $mh->return_headers($final_header), %headers, Body => $final_body,
-          );
-
+          ( 
+			$mh->return_headers($final_header),  
+			Body => $final_body,
+          );		
+	
         ###### Blah blah blah, parital listing
         my $partial_sending = {};
         for my $field (@$undotted_fields) {
@@ -401,6 +400,7 @@ sub send_email {
             my $multi_list_send_no_dupes = $q->param('multi_list_send_no_dupes')
               || 0;
 
+				
             $message_id = $mh->mass_send(
                 {
                     -msg             => {%mailing},
@@ -573,7 +573,6 @@ sub send_url_email {
 							can_have_subscriber_fields       => $lh->can_have_subscriber_fields,
 							SERVER_ADMIN                     => $ENV{SERVER_ADMIN}, 
 							priority_popup_menu              => DADA::Template::Widgets::priority_popup_menu($li),
-							precendence_popup_menu           => DADA::Template::Widgets::precendence_popup_menu($li),
 							
 							global_list_sending_checkbox_widget => DADA::Template::Widgets::global_list_sending_checkbox_widget($list), 
 							
@@ -605,8 +604,7 @@ sub send_url_email {
 				Reply-To 
 				Errors-To 
 				Return-Path
-				X-Priority
-				Precedence 
+				X-Priority 
 				Subject 
 			)) { 
 				if(defined($q->param($h))){
@@ -645,7 +643,7 @@ sub send_url_email {
 	                                                (Debug => 1, ) :
 	                                                ()
 	                                                ), 
-                                                                     
+                                                    %headers,          
 	                                                ); 
 
                                 
@@ -732,8 +730,6 @@ sub send_url_email {
                $fm->mass_mailing(1); 
                $fm->originating_message_url($url); 
                $fm->Subject($headers{Subject}); 
-               $fm->treat_as_discussion_msg(1)
-                    if $li->{group_list} == 1;
             
             my $problems = 0; 
 			my $eval_error = ''; 
@@ -795,7 +791,6 @@ sub send_url_email {
              
 		
                 my %mailing = (
-							   %headers,
 							   $mh->return_headers($header_glob),    
                                Body      => $template,
                               );
@@ -821,6 +816,7 @@ sub send_url_email {
 					
 					$mh->mass_test_recipient($og_test_recipient); 
 		            $test_recipient = $mh->mass_test_recipient;
+
 
 		            # send away
 		            $message_id = $mh->mass_send(
@@ -1026,8 +1022,7 @@ sub list_invite {
 			Reply-To 
 			Errors-To 
 			Return-Path
-			X-Priority
-			Precedence 
+			X-Priority 
 			Subject 
 		)) { 
 			if(defined($q->param($h))){
@@ -1074,6 +1069,7 @@ sub list_invite {
             $msg = MIME::Lite->new(
 					Type      =>  'multipart/alternative',
 					Datestamp => 0, 
+					%headers, 
 				  );  
 			$msg->attr( 'content-type.charset' => $li->{charset_value} );
 	        
@@ -1105,6 +1101,7 @@ sub list_invite {
 						Data      => $html_message_body,
 						Encoding  => $li->{html_encoding},
 						Datestamp => 0, 
+						%headers, 
 					);
 			$msg->attr( 'content-type.charset' => $li->{charset_value} );
         
@@ -1117,6 +1114,7 @@ sub list_invite {
 					Data      => $text_message_body,
 					Datestamp => 0, 
 					Encoding  => $li->{plaintext_encoding},
+					%headers, 
 			); 
 			$msg->attr( 'content-type.charset' => $li->{charset_value} );             	                          
         } else{ 
@@ -1129,6 +1127,7 @@ sub list_invite {
 						Data      => safely_encode( $ls->param('invite_message_text')),
 						Datestamp => 0, 
 						Encoding => $li->{plaintext_encoding},
+						%headers, 
 				  );           
 			$msg->attr( 'content-type.charset' => $li->{charset_value} );                     
 
@@ -1165,7 +1164,6 @@ sub list_invite {
 					}
 				 ); 
         # translate the glob into a hash
-        %headers = ($mh->return_headers($header_glob), %headers); 
 
         $mh->list_type('invitelist');
         
@@ -1179,7 +1177,7 @@ sub list_invite {
         }
         
 	my  $message_id = $mh->mass_send( 
-					  		%headers,  
+					  		$mh->return_headers($header_glob),  
 							Body     =>    $message_string,
 					 );
 					

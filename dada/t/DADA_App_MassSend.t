@@ -80,7 +80,6 @@ $q->param('process', 1);
 # Only the To: Phrase can be edited... 
 $q->param('Reply-To',   '"Changed Reply-To" <reply@example.com>'); 
 $q->param('X-Priority',  1); 
-$q->param('Precedence', 'list'); 
 $q->param('Subject',     'Changed Subject'); 
 $q->param('text_message_body',     'This is the text message body!'); 
 $ms->send_email(
@@ -96,7 +95,6 @@ $msg = slurp($mh->test_send_file);
 
 
 like($msg, qr/Subject\: Changed Subject/, "Subject set Correctly."); 
-like($msg, qr/Precedence\: list/, "Precendence: set correctly."); 
 like($msg, qr/X\-Priority\: 1/, "X-Priority set correctly."); 
 like($msg, qr/Reply\-To\: \"Changed Reply\-To\" \<reply\@example\.com\>/, "Reply-To set correctly."); 
 like($msg, qr/Content-type\: text\/plain\;/, "Content-Type set correctly."); 

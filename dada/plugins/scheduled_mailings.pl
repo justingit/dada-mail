@@ -835,7 +835,6 @@ $f .= DADA::Template::Widgets::screen(
 		-vars                          => 
 			{ 
 				priority_popup_menu    => DADA::Template::Widgets::priority_popup_menu($li,    $form_vals{headers}->{'X-Priority'}),
-				precendence_popup_menu => DADA::Template::Widgets::precendence_popup_menu($li, $form_vals{headers}->{Precedence}),
 				'Reply-To'             => $form_vals{headers}->{'Reply-To'}, 
 				'Errors-To'			   => $form_vals{headers}->{'Errors-To'},
 				'Return-Path'          => $form_vals{headers}->{'Return-Path'},

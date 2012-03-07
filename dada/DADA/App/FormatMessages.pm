@@ -42,9 +42,6 @@ DADA::App::FormatMessages
  # Use the email template.
    $fm->use_email_templates(1);  
  
- # Consider this message as if it's from a discussion list
-   $fm->treat_as_discussion_msg(1);
- 
  my ($header_str, $body_str) = $fm->format_headers_and_body(-msg => $msg);
  
  # (... later on... 
@@ -78,7 +75,6 @@ my %allowed = (
 	use_list_template              => 0, 
 	use_html_email_template        => 1,
 	use_plaintext_email_template   => 1, 
-	treat_as_discussion_msg        => 0, 
 	use_header_info                => 0, 
 	#orig_entity                   => undef, 
 	
@@ -261,10 +257,6 @@ If set to a true value, will apply the list template to the HTML part of your me
 If set to a true value, will apply your email templates to the HTML/PlainText parts 
 of your message. 
 
-=head2 treat_as_discussion_msg 
-
-When set to a true value, will try the message as if it was from a discussion list. 
-
 =head2 use_header_info
 
 If set to a true value, will inspect the headers of a message (for example, the From: line) 
@@ -300,8 +292,6 @@ sub format_headers_and_body {
 		}
 	}
 	
-#	$self->orig_entity($entity); 
-
 	if($entity->head->get('Subject', 0)){ 
 		$self->Subject($entity->head->get('Subject', 0));
 	}
@@ -310,9 +300,7 @@ sub format_headers_and_body {
 			$entity->head->add(   'Subject', safely_encode($self->Subject));#?
 		}
 	}
-	if($self->treat_as_discussion_msg == 1){ 
-		$entity = $self->_format_headers($entity)
-	}
+	$entity     = $self->_format_headers($entity); # Dada Bridge stuff. 
 	$entity     = $self->_fix_for_only_html_part($entity); 
 	$entity     = $self->_format_text($entity);		
 	
@@ -327,8 +315,8 @@ sub format_headers_and_body {
 
 	my $body   = $entity->body_as_string;	
  	   $body = safely_decode($body); 
-
 	return ($header, $body) ;
+	
 
 }
 
@@ -441,7 +429,7 @@ sub _format_text {
 			if($content){ # do I need this?
 				if(
 					$self->no_list                                   != 1 &&
-					$self->treat_as_discussion_msg                        &&
+					$self->{ls}->param('disable_discussion_sending') != 1 &&
 					$self->{ls}->param('group_list')                 == 1 &&  
 					$self->{ls}->param('discussion_template_defang') == 1
 				) { 
@@ -745,6 +733,8 @@ sub _format_headers {
 
 	my $self   = shift; 	 
 	my $entity = shift; 
+	return $entity 
+		if $self->{ls}->param('disable_discussion_sending') == 1; 
 	
 	
 	require Email::Address; 
@@ -753,28 +743,25 @@ sub _format_headers {
 	# discussion messages
 	# 
 	
-	if($self->{ls}->param('group_list') == 1){
-			
-		if($self->{ls}->param('prefix_list_name_to_subject') == 1){ 
-
-			my $subject = $entity->head->get('Subject', 0);
-			   $subject = safely_decode( $subject); 
-	
-			my $new_subject = $self->_list_name_subject($subject);
-					
-			$entity->head->delete('Subject');
-			$entity->head->add(   'Subject', safely_encode($new_subject));
-			
-		}
 		
+	if($self->{ls}->param('group_list') == 1){	
 		$entity->head->delete('Return-Path'); 
-
 	}else{ 
-	
 	    if($self->reset_from_header){ 
 	    	$entity->head->delete('From'); 
 	    }
 	}
+
+	if($self->{ls}->param('prefix_list_name_to_subject') == 1){ 
+		my $new_subject = $self->_list_name_subject(
+			safely_decode(
+				$entity->head->get('Subject', 0)
+			)
+		);
+		$entity->head->delete('Subject');
+		$entity->head->add(   'Subject', safely_encode($new_subject));
+	}
+	
 	
 	# DEV:  Send mass mailings via sendmail, OTHER THAN via a discussion list, 
 	# still uses the -t flag - perhaps I should just go and change that? 
@@ -1066,14 +1053,12 @@ sub _list_name_subject {
 	   
 	$orig_subject    =~ s/^(\s+)//;
 	
-	if($self->{ls}->param('prefix_list_name_to_subject') == 1){ 
 					
-		if($self->{ls}->param('prefix_discussion_list_subjects_with') eq "list_name"){ 
-			$orig_subject    = '[' . '<!-- tmpl_var list_settings.list_name -->' . ']' . "$re $orig_subject"; 		
-		}
-		elsif($self->{ls}->param('prefix_discussion_list_subjects_with') eq "list_shortname"){ 
-			$orig_subject    = '[' . '<!-- tmpl_var list_settings.list -->' . ']' . "$re $orig_subject"; 
-		}
+	if($self->{ls}->param('prefix_discussion_list_subjects_with') eq "list_name"){ 
+		$orig_subject    = '[' . '<!-- tmpl_var list_settings.list_name -->' . ']' . "$re $orig_subject"; 		
+	}
+	elsif($self->{ls}->param('prefix_discussion_list_subjects_with') eq "list_shortname"){ 
+		$orig_subject    = '[' . '<!-- tmpl_var list_settings.list -->' . ']' . "$re $orig_subject"; 
 	}
 	
 	warn 'in _list_name_subject before encode: ' . $orig_subject 

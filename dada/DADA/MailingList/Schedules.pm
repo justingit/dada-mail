@@ -69,7 +69,6 @@ sub schedule_schema {
 
 					'Reply-To'        => undef, 
 					'Return-Path'     => undef,
-					Precedence      => undef, 
 					'X-Priority'    => undef, 
 					Subject         => undef,
 
@@ -156,9 +155,6 @@ sub save_from_params {
 	}
 	if(defined($q->param('X-Priority'))){
 		$form_vals{headers}->{'X-Priority'}   = $q->param('X-Priority');	
-	}
-	if(defined($q->param('Precedence'))){
-		$form_vals{headers}->{Precedence}     = $q->param('Precedence');
 	}
 	if(defined($q->param('Subject'))){	
 		$form_vals{headers}->{Subject}        = $q->param('Subject');

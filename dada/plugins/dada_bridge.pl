@@ -2449,7 +2449,6 @@ sub dm_format {
 
     my $fm = DADA::App::FormatMessages->new( -List => $list );
 	   $fm->mass_mailing(1); 
-   	   $fm->treat_as_discussion_msg(1);
 	
     if (   $ls->param('group_list') == 0
         && $ls->param('rewrite_anounce_from_header') == 0 )
@@ -4142,6 +4141,41 @@ General
    </td>
   </tr>
 
+	<tr> 
+	<td>
+	 <input name="prefix_list_name_to_subject" id="prefix_list_name_to_subject" type="checkbox" value="1" <!--tmpl_if list_settings.prefix_list_name_to_subject -->checked="checked"<!--/tmpl_if--> />
+	</td>
+	<td>  
+	 <p>
+	  <label for="prefix_discussion_list_subjects_with">
+	   Prefix message subjects with the:
+	  </label>
+	  <br />
+	  <select name="prefix_discussion_list_subjects_with">
+	   <option value="list_shortname" <!--tmpl_if expr="(list_settings.prefix_discussion_list_subjects_with eq 'list_shortname')" -->selected="selected" <!--/tmpl_if--> >list shortname: [<!-- tmpl_var list_settings.list escape="HTML" -->]</option>
+	   <option value="list_name"      <!--tmpl_if expr="(list_settings.prefix_discussion_list_subjects_with eq 'list_name')" -->selected="selected" <!--/tmpl_if--> >List Name: [<!-- tmpl_var list_settings.list_name escape="HTML" -->]</option>
+	  </select> 
+	  <br />
+	  The List Name/Short Name will be surrounded by square brackets. 
+
+	  <table>
+	   <tr> 
+	    <td>
+	        <input name="no_prefix_list_name_to_subject_in_archives" id="no_prefix_list_name_to_subject_in_archives" type="checkbox" value="1" <!--tmpl_if list_settings.no_prefix_list_name_to_subject_in_archives -->checked="checked"<!--/tmpl_if--> />
+	    </td> 
+	    <td> 
+	     <label for="no_prefix_list_name_to_subject_in_archives">
+	      Do not append the list/list shortname to archived messages (only outgoing messages).  
+	     </label>
+	    </td> 
+	   </tr> 
+	  </table> 
+	 </p>
+	</td>
+	</tr>
+
+
+
 
   <tr> 
    <td> 
@@ -4245,7 +4279,7 @@ General
 
  <table width="100%" cellspacing="0" cellpadding="5">
   <tr> 
-   <td align="right">
+   <td>
     <input name="group_list" id="group_list" type="checkbox" value="1" <!--tmpl_if list_settings.group_list -->checked="checked"<!--/tmpl_if--> /> 
    </td>
    <td>
@@ -4258,44 +4292,9 @@ General
      on your list by sending  messages to (<strong><!-- tmpl_var list_settings.discussion_pop_email escape="HTML" --></strong>).
    </p>
   	 <table width="100%" cellspacing="0" cellpadding="5">
-        <tr> 
-        
- 
-   	 
-	<tr> 
-   <td align="right">
-    <input name="prefix_list_name_to_subject" id="prefix_list_name_to_subject" type="checkbox" value="1" <!--tmpl_if list_settings.prefix_list_name_to_subject -->checked="checked"<!--/tmpl_if--> />
-   </td>
-   <td>  
-    <p>
-     <label for="prefix_discussion_list_subjects_with">
-      Prefix message subjects with the:
-     </label>
-     <br />
-     <select name="prefix_discussion_list_subjects_with">
-      <option value="list_shortname" <!--tmpl_if expr="(list_settings.prefix_discussion_list_subjects_with eq 'list_shortname')" -->selected="selected" <!--/tmpl_if--> >list shortname: [<!-- tmpl_var list_settings.list escape="HTML" -->]</option>
-      <option value="list_name"      <!--tmpl_if expr="(list_settings.prefix_discussion_list_subjects_with eq 'list_name')" -->selected="selected" <!--/tmpl_if--> >List Name: [<!-- tmpl_var list_settings.list_name escape="HTML" -->]</option>
-     </select> 
-     <br />
-     The List Name/Short Name will be surrounded by square brackets. 
-     
-     <table>
-      <tr> 
-       <td>
-           <input name="no_prefix_list_name_to_subject_in_archives" id="no_prefix_list_name_to_subject_in_archives" type="checkbox" value="1" <!--tmpl_if list_settings.no_prefix_list_name_to_subject_in_archives -->checked="checked"<!--/tmpl_if--> />
-       </td> 
-       <td> 
-        <label for="no_prefix_list_name_to_subject_in_archives">
-         Do not append the list/list shortname to archived messages (only outgoing messages).  
-        </label>
-       </td> 
-      </tr> 
-     </table> 
-    </p>
-   </td>
   </tr>
    <tr> 
-   <td align="right">
+   <td>
     <input name="mail_discussion_message_to_poster" id="mail_discussion_message_to_poster" type="checkbox" value="1" <!--tmpl_if list_settings.mail_discussion_message_to_poster -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td>
@@ -4307,7 +4306,7 @@ General
   </tr>
 
      <tr> 
-   <td align="right">
+   <td>
     <input name="discussion_template_defang" id="discussion_template_defang" type="checkbox" value="1" <!--tmpl_if list_settings.discussion_template_defang -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td>
@@ -4350,6 +4349,9 @@ General
   </tr>
 
 
+
+
+
 <!-- tmpl_if Allow_Open_Discussion_List -->
         <tr> 
        <td align="right">
@@ -4363,6 +4365,7 @@ General
        </td>
       </tr>
  <!-- /tmpl_if -->
+
 
 
 
