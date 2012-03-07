@@ -126,7 +126,7 @@ Replaced by the, <mailing_monitor.cgi> plugin
 Will be removed in a future version of Dada Mail.
 
 =item * dada_digest.pl
-Will be removed in a future version of Dada Mail.
+Will be removed in a future version of Dada Mail. This script does not kindly reflect the code or documentation quality we'd like to strive for in the Dada Mail project. 
 
 
 

@@ -138,10 +138,8 @@ my $template_strings = {
     MAILING_LIST_MESSAGE        => $DADA::Config::MAILING_LIST_MESSAGE,
     MAILING_LIST_MESSAGE_HTML   => $DADA::Config::MAILING_LIST_MESSAGE_HTML,
     NOT_ALLOWED_TO_POST_MESSAGE => $DADA::Config::NOT_ALLOWED_TO_POST_MESSAGE,
-    NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT =>
-      $DADA::Config::NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT,
-    NOT_ALLOWED_TO_POST_NOTICE_MESSAGE =>
-      $DADA::Config::NOT_ALLOWED_TO_POST_NOTICE_MESSAGE,
+    NOT_ALLOWED_TO_POST_MSG =>
+      $DADA::Config::NOT_ALLOWED_TO_POST_MSG,
     YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE =>
       $DADA::Config::YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE,
     MAILING_FINISHED_MESSAGE_SUBJECT =>
@@ -211,12 +209,15 @@ invite_message_from_phrase
 invite_message_to_phrase
 invite_message_subject
 not_allowed_to_post_msg_subject
+invalid_msgs_to_owner_msg_subject
 moderation_msg_subject
 await_moderation_msg_subject
 accept_msg_subject
 rejection_msg_subject
 msg_too_big_msg_subject
 msg_labeled_as_spam_msg_subject
+
+
 ); 
 
 for(@list_settings){ 
