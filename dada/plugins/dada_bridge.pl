@@ -2945,7 +2945,7 @@ sub send_invalid_msgs_to_owner {
     my $entity = $parser->parse_data(
 					$msg
 			);
-
+	
 	require DADA::App::Messages;
 	
     my $rough_from = $entity->head->get( 'From', 0 );
@@ -2963,21 +2963,22 @@ sub send_invalid_msgs_to_owner {
             Type    => "multipart/mixed",
             From    => $li->{list_owner_email},
             To      => $li->{list_owner_email},
-            Subject =>
-              $DADA::Config::NOT_ALLOWED_TO_POST_NOTICE_MESSAGE_SUBJECT,
+            Subject => $li->{invalid_msgs_to_owner_msg_subject},
         );
 
-        # DEV: If the above works, we'll have to make this a per-list thingy.
         $reply->attach(
             Type => 'text/plain',
-            Data => $DADA::Config::NOT_ALLOWED_TO_POST_NOTICE_MESSAGE,
+            Data => $li->{invalid_msgs_to_owner_msg},
         );
+
+
         $reply->attach(
             Type        => 'message/rfc822',
             Disposition => "inline",
-            Data        => safely_decode(safely_encode($entity->as_string)),
+            Data        => safely_decode($entity->as_string),
         );
 
+		
         my %msg_headers =
           DADA::App::Messages::_mime_headers_from_string(
             $reply->stringify_header );
@@ -3365,22 +3366,21 @@ return q{
 	    <!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 	<!--/tmpl_if-->
 
-<p class="alert">Leave an Subject or Message blank to have it revert to the default subject or message.</p> 
+<p class="alert">Leave a Subject or Message blank to have it revert to the default subject or message.</p> 
 
 	<form method="post" action="<!-- tmpl_var Plugin_URL -->" accept-charet="<!-- tmpl_var HTML_CHARSET -->">
 	
 	<fieldset>
 		<legend>
-			Not Allowed to Post Message
+			Not Allowed to Post Message (Message Sender)
 		</legend>
 		
 		<p class="alert">
-		This message is sent out when <!-- tmpl_var Plugin_Name --> receives a message 
-		from an address that's not allowed to post a message to your mailing list. 
+		This message is sent out to a <strong>message sender</strong> if they do not have permission to post a message to this Mailing List. 
 		</p>
 		
 		<!-- tmpl_if list_settings.send_not_allowed_to_post_msg --> 
-			<p class="postive">
+			<p class="alert">
 				Enabled.
 			</p>
 		<!-- tmpl_else --> 
@@ -3398,8 +3398,37 @@ return q{
 		 <textarea name="not_allowed_to_post_msg" id="not_allowed_to_post_msg" rows="10" cols="50" ><!-- tmpl_var list_settings.not_allowed_to_post_msg escape="HTML" --></textarea> 
 		</p>
 	</fieldset>
+	
+	
+	<fieldset>
+		<legend>
+			Not Allowed to Post Message (List Owner)
+		</legend>
+		
+		<p class="alert">
+		This message is sent out to the <strong>List Owner</strong> if a message is received from a sender that does not have permission to post a message to this Mailing List. 
+		</p>
+		
+		<!-- tmpl_if list_settings.send_invalid_msgs_to_owner --> 
+			<p class="alert">
+				Enabled.
+			</p>
+		<!-- tmpl_else --> 
+			<p class="error">
+				Sending out this message is currently Disabled.
+			</p>		
+		<!-- /tmpl_if --> 
+		
+		<p>
+		 <label for="invalid_msgs_to_owner_msg_subject" class="label_by_5">Subject:</label><input type="text" name="invalid_msgs_to_owner_msg_subject" id="invalid_msgs_to_owner_msg_subject" value="<!-- tmpl_var list_settings.invalid_msgs_to_owner_msg_subject escape="HTML" -->" class="midi" />
+		</p>
 
-
+		<p>
+		 <label for="invalid_msgs_to_owner_msg">PlainText Message:</label>
+		 <textarea name="invalid_msgs_to_owner_msg" id="invalid_msgs_to_owner_msg" rows="10" cols="50" ><!-- tmpl_var list_settings.invalid_msgs_to_owner_msg escape="HTML" --></textarea> 
+		</p>
+	</fieldset>
+	
 
 
 
@@ -3416,7 +3445,7 @@ return q{
 		</p>
 		
 		<!-- tmpl_if list_settings.enable_moderation --> 
-			<p class="postive">
+			<p class="alert">
 				Moderation is Enabled.
 			</p>
 		<!-- tmpl_else --> 
@@ -3446,7 +3475,7 @@ return q{
 		</legend>	
 		
 		<!-- tmpl_if list_settings.send_moderation_msg --> 
-			<p class="postive">
+			<p class="alert">
 				Enabled.
 			</p>
 		<!-- tmpl_else --> 
@@ -3475,7 +3504,7 @@ return q{
 		</legend>
 		
 		<!-- tmpl_if list_settings.send_moderation_accepted_msg --> 
-			<p class="postive">
+			<p class="alert">
 				Enabled.
 			</p>
 		<!-- tmpl_else --> 
@@ -3504,7 +3533,7 @@ return q{
 		</legend>
 
 		<!-- tmpl_if list_settings.send_moderation_rejection_msg --> 
-			<p class="postive">
+			<p class="alert">
 				Enabled.
 			</p>
 		<!-- tmpl_else --> 
@@ -3535,7 +3564,7 @@ return q{
 		</legend>
 
 		<!-- tmpl_if list_settings."send_spam_rejection_message --> 
-			<p class="postive">
+			<p class="alert">
 				Enabled.
 			</p>
 		<!-- tmpl_else --> 
@@ -3707,20 +3736,22 @@ sub cgi_edit_email_msgs {
             {
                 -associate => $q,
                 -settings  => {
- 					not_allowed_to_post_msg_subject => '',
-					not_allowed_to_post_msg         => '',
-					moderation_msg_subject          => '',
-					moderation_msg                  => '',
-					await_moderation_msg_subject    => '',
-					await_moderation_msg            => '',
-					accept_msg_subject              => '',
-					accept_msg                      => '',
-					rejection_msg_subject           => '',
-					rejection_msg                   => '',
-					msg_too_big_msg_subject         => '',
-					msg_too_big_msg                 => '',
-					msg_labeled_as_spam_msg_subject => '',
-					msg_labeled_as_spam_msg			=> '',
+ 					not_allowed_to_post_msg_subject   => '',
+					not_allowed_to_post_msg           => '',	
+					invalid_msgs_to_owner_msg_subject => '', 
+					invalid_msgs_to_owner_msg         => '',
+					moderation_msg_subject            => '',
+					moderation_msg                    => '',
+					await_moderation_msg_subject      => '',
+					await_moderation_msg              => '',
+					accept_msg_subject                => '',
+					accept_msg                        => '',
+					rejection_msg_subject             => '',
+					rejection_msg                     => '',
+					msg_too_big_msg_subject           => '',
+					msg_too_big_msg                   => '',
+					msg_labeled_as_spam_msg_subject   => '',
+					msg_labeled_as_spam_msg			  => '',
                 }
             }
         );

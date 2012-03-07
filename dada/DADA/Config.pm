@@ -1459,7 +1459,7 @@ Hopefully, this variable will not need to be used - it's a little
 confusing on what it does.... 
 
 Dada Mail, internally, uses a separate templating language from what 
-is exposed to list owners and such, called HTML::Template. 
+is exposed to List Owners and such, called HTML::Template. 
 More information:
 
 http://search.cpan.org/~samtregar/HTML-Template-2.7/Template.pm
@@ -3067,7 +3067,7 @@ EOF
 
 =head2 $SUBSCRIPTION_NOTICE_MESSAGE
 
-This email message is sent to the list owner, when a new subscription has been made by a subscriber. 
+This email message is sent to the List Owner, when a new subscription has been made by a subscriber. 
 
 =cut
 
@@ -3111,7 +3111,7 @@ EOF
 
 =head2 $SUBSCRIPTION_NOTICE_MESSAGE
 
-This email message is sent to the list owner, when a new subscription has been made by a subscriber. 
+This email message is sent to the List Owner, when a new subscription has been made by a subscriber. 
 
 =cut
 
@@ -3174,7 +3174,7 @@ visiting the following URL:
 
 <!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->
 
-If you're still having trouble, please contact the list owner at: 
+If you're still having trouble, please contact the List Owner at: 
 
 	mailto:<!-- tmpl_var list_settings.list_owner_email -->
 
@@ -3324,7 +3324,7 @@ You've recently have asked to be subscribed to:
 
 	<!-- tmpl_var list_settings.list_name --> 
 	
-This subscription request has been denied by the list owner. 
+This subscription request has been denied by the List Owner. 
 
 -- mailto:<!-- tmpl_var list_settings.list_owner_email --> 
 
@@ -3495,7 +3495,7 @@ Your recent message to <!-- tmpl_var list_settings.list_name --> with the subjec
 
     <!-- tmpl_var message_subject -->
     
-was accepted by the list owner. It will be forwarded to the list soon. 
+was accepted by the List Owner. It will be forwarded to the list soon. 
 
 -- <!-- tmpl_var Plugin_Name -->
 
@@ -3510,7 +3510,7 @@ Your recent message to <!-- tmpl_var list_settings.list_name --> with the subjec
 
     <!-- tmpl_var message_subject -->
     
-was rejected by the list owner. You may email the list owner at: 
+was rejected by the List Owner. You may email the List Owner at: 
 
     <!-- tmpl_var list_settings.list_owner_email -->
     
@@ -3580,26 +3580,32 @@ can be customized for each list in the list's Control Panel.
 
 $NOT_ALLOWED_TO_POST_MSG ||= <<EOF  
 
-<!-- tmpl_var PROGRAM_NAME --> Error - 
+Hello, 
 
-Sorry, it doesn't seem that you are allowed to post on: 
+You recently sent a message to, 
 
-	<!-- tmpl_var list_settings.list_name -->
+	<!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.discussion_pop_email -->)
 	
 with the email address: 
 
     <!-- tmpl_var subscriber.email -->
 
-This may be because you have to first subscribe to the list to post to the 
-list itself. 
+But, it doesn't seem that you currently have permission to do so. 
+
+This may be because you have to first Subscribe to this Mailing List before
+sending messages to it.
 
 Please see: 
 
 	<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->
 
-for more information, or email the list owner at: 
+for more information. 
+
+You may email the List Owner at: 
 
 	<mailto:<!-- tmpl_var list_settings.list_owner_email -->>
+
+	-- <!-- tmpl_var PROGRAM_NAME -->
 
 EOF
 ; 
@@ -3609,12 +3615,17 @@ EOF
 
 =head2 $NOT_ALLOWED_TO_POST_NOTICE_MSG
 
-This message is sent to the list owner, usually in a discussion list setup, when a message is sent to the list from an email address
+This message is sent to the List Owner, usually in a discussion list setup, when a message is sent to the list from an email address
 who does not have access to do so. 
 
 =cut
 $NOT_ALLOWED_TO_POST_NOTICE_MSG         ||= <<EOF
-The attached message was not sent from one of the subscribers of <!-- tmpl_var list_settings.list_name -->
+
+The attached message was not sent to your Mailing List, 
+
+	<!-- tmpl_var list_settings.list_name -->
+	
+but was not sent from an address that has permission to do so. 
 
 -- <!-- tmpl_var PROGRAM_NAME -->
 
@@ -3716,7 +3727,7 @@ EOF
 
 =head2 $MAILING_FINISHED_MESSAGE
 
-This email message is sent to the list owner, when a mass mailing has finished. 
+This email message is sent to the List Owner, when a mass mailing has finished. 
 
 =cut
 
@@ -4201,7 +4212,7 @@ address: </p>
 
 <p>If you still do not receive a confirmation for subscription in 
 the next twenty-four hours or you have any other questions regarding 
-this mailing list, please contact the list owner at: </p>
+this mailing list, please contact the List Owner at: </p>
 
 <p style="text-align:center">
  <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->">
@@ -4256,7 +4267,7 @@ email address.</p>
 
 <p>If you do not receive a confirmation for <em>removal</em> in the 
 next twenty-four hours or you have any other questions regarding this 
-mailing list, please contact the list owner at: </p>
+mailing list, please contact the List Owner at: </p>
 
 <p style="text-align:center">
  <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->">
@@ -4319,7 +4330,7 @@ $HTML_SUBSCRIPTION_REQUEST_MESSAGE ||= <<EOF
 
 <!-- tmpl_set name="title" value="Your Request For Subscription is Complete" -->
 
-<p>The list owner for:</p>
+<p>The List Owner for:</p>
 
 <blockquote>
  <p>
@@ -4562,7 +4573,7 @@ encrypted.
 	# sendmail, smtp, amazon_ses
     sending_method                   => 'sendmail',
     
-	# Send a copy to the list owner
+	# Send a copy to the List Owner
 	mass_mailing_send_to_list_owner    => 1, 
 
 
@@ -4809,8 +4820,12 @@ encrypted.
     rewrite_anounce_from_header           => 1,
 
 
-	not_allowed_to_post_msg_subject   => '<!-- tmpl_var PROGRAM_NAME --> Error - <!-- tmpl_var subscriber.email --> Not Allowed to Post On <!-- tmpl_var list_settings.list_name --> (original message attached)', 
-	not_allowed_to_post_msg           =>   $NOT_ALLOWED_TO_POST_MSG, 
+	not_allowed_to_post_msg_subject   => 'Not Allowed to Post On <!-- tmpl_var list_settings.list_name --> (your original message is attached)', 
+	not_allowed_to_post_msg           =>  $NOT_ALLOWED_TO_POST_MSG, 
+	
+	invalid_msgs_to_owner_msg_subject  => '<!-- tmpl_var PROGRAM_NAME --> Error - <!-- tmpl_var subscriber.email --> Not Allowed to Post On <!-- tmpl_var list_settings.list_name --> (original message attached)', 
+	invalid_msgs_to_owner_msg         => $NOT_ALLOWED_TO_POST_NOTICE_MSG, 
+
 	moderation_msg_subject            => 'Message on: <!-- tmpl_var list_settings.list_name --> needs to be moderated. (original message attached)', 
 	moderation_msg                    => $MODERATION_MSG, 
 	await_moderation_msg_subject      => 'Message to: <!-- tmpl_var list_settings.list_name --> w/ Subject: <!-- tmpl_var message_subject --> is awaiting approval.',
