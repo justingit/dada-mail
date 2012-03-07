@@ -8,12 +8,16 @@
 
 =head2 Summary 5.0.0
 
+=head1 Bounce Handler
+
 This release of Dada Mail features the continuing work on the Bounce Handler. This round of enhancements
 centers around a new sublist called, "Bouncing Addresses" (or, "bounced_list", internally). 
 You may now direct the Bounce Handler to move addresses that have reached the Bounce Score Threshold  
 to this list, instead of outright removing them from your Subscribers. 
 
 From there, you may view the bounced history of each bouncing  address and either permanently remove the address from your mailing list, or reinstate the address as a subscriber
+
+=head1 New View Screen
 
 This release of Dada Mail also features a clean-up of the, "View" screen in Dada Mail. 
 These changes are to help a list owner feel more in control over their mailing list, by making the various mailing lists 
@@ -23,9 +27,32 @@ Members of all sublists can be easily browsed through using enhancement paginati
 that features the same refined user interface. The data can now be sorted alphabetically, 
 ascending or descending by email address or by any of the profile fields.
 
+=head1 New Address Membership Screen
+
 Individual subscribers can now be more easily administrated. From each subscriber's membership screen, you can now see all the 
 sublists an individual address is a member of and move the address to and from various sublists. A running history of the addresses membership is
 also available. 
 
 Recent subscription/unsubscription activity is also now easily viewed in a new admin screen titled, B<Recent Activity> which 
 currently shows the last 100 seperate events that have happened in your mailing list.
+
+=head1 Mass Mailing Preferences
+
+=head2 Sending a Copy to the List Owner
+
+You may now enable or disable sending a copy of Mass Mailings to the List Owner. 
+
+=head1 Bugfixes 5.0.0
+
+=head3 notification error on discussion list
+
+L<https://github.com/justingit/dada-mail/issues/255>
+
+=head1 Changes 5.0.0
+
+=head2 Precedence header 
+
+Setting the Precedence header and customizations to that header have been removed in Dada Mail, in an attempt at simplifying things. 
+
+The Precedence header is still set in Dada Mail by default and given a value of, C<list>. 
+
