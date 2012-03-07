@@ -223,7 +223,7 @@ my $sent_from =  MIME::EncWords::decode_mimewords($sent_entity->head->get('From'
 
 
 
-
+diag "this will fail, since the list short name is prepended, so..."; 
 ok(
 	$orig_sub 
 	eq 
