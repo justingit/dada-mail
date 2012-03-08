@@ -429,6 +429,7 @@ sub _format_text {
 			if($content){ # do I need this?
 				if(
 					$self->no_list                                   != 1 &&
+					$self->mass_mailing                              == 1 &&
 					$self->{ls}->param('disable_discussion_sending') != 1 &&
 					$self->{ls}->param('group_list')                 == 1 &&  
 					$self->{ls}->param('discussion_template_defang') == 1
