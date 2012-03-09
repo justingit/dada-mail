@@ -153,8 +153,8 @@
     
 
 	<p>
-	 Subscriber Profile Fields are Global. Customizing them will reflect on all Mailing Lists. 
-	 You may only change the Subscriber Profile Fields if you are logged in using the <!-- tmpl_var PROGRAM_NAME --> 
+	 Subscriber Profile Fields are Global and will affect all Mailing Lists
+	 You may only change the Subscriber Profile Fields if you are logged in with the <!-- tmpl_var PROGRAM_NAME --> 
 	  Root Password.
 	</p>
 
@@ -295,7 +295,7 @@
              <input type="hidden" name="f" value="profile_fields" /> 
              <input type="hidden" name="process" value="delete_field" /> 
              <input type="hidden" name="field"  value="<!-- tmpl_var field -->" /> 
-            <input type="submit" value="[X]" class="alertive"  onclick="return removeSubscriberField(this.form);" /> 
+            <input type="submit" value="&#8855;" class="alertive"  onclick="return removeSubscriberField(this.form);" /> 
             </form> 
              </td> 
         
