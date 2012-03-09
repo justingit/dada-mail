@@ -34,6 +34,7 @@ Membership (<!-- tmpl_var type_title -->)
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
 	<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN -->
+		<!-- ... -->
 	<!-- tmpl_else --> 
 		<!-- tmpl_if list_settings.send_subscribed_by_list_owner_message --> 
 			<div class="clearskiesbox">
@@ -42,18 +43,22 @@ Membership (<!-- tmpl_var type_title -->)
 					 <p>
 						Addresses <strong>Subscribed</strong> will be sent a, &quot;Welcome&quot; message. 
 					</p> 
+					</li>
 				</ul> 
+			</div>
 			<!-- /tmpl_if --> 
-
 			<!-- tmpl_if list_settings.send_last_archived_msg_mass_mailing --> 
+			<div class="clearskiesbox">
 			<ul> 
 				<li>
 				 <p>
 						Addresses <strong>Subscribed</strong> will be sent the latest archived message.				
 				</p> 
+			</li>
 			</ul>	
+			</div>
 			<!-- /tmpl_if --> 	
-		</div>
+		
 	<!-- /tmpl_if --> 
 <!-- /tmpl_if -->
 
@@ -83,8 +88,8 @@ Membership (<!-- tmpl_var type_title -->)
 		 	You currently have a <strong>Closed List</strong> and subscribing members via the list 
 			control panel is <strong>Disabled</strong>. Subscribers will not be able to 
 			confirm any list invitations that you send. 
-			 </p> 
-			</div> 
+			</p> 
+		</div> 
 		<!-- /tmpl_unless --> 
 	<!-- /tmpl_if -->
 <!-- /tmpl_if -->
