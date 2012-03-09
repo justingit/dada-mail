@@ -574,7 +574,7 @@ sub domain_breakdown_img {
 	my @labels = (); 
 	foreach(keys %$stats){ 
 		push(@values, $stats->{$_}), 
-		push(@labels, $_ . ' ' . percent($stats->{$_}, $num_subs) .  '% (' . $stats->{$_} . ')' ); 	
+		push(@labels, $_ . ' ' . percent($stats->{$_}, $num_subs) .  '% (' . commify($stats->{$_}) . ')' ); 	
 	}
 	
 	require URI::GoogleChart; 
@@ -1425,7 +1425,7 @@ my $tmpl = q{
      </strong> 
     </p>
 	</td> 
-	<td> 
+	<td align="right"> 
 	 </p> 
 	<!-- tmpl_if num_subscribers --> 
 		<!-- tmpl_var num_subscribers -->
@@ -1446,7 +1446,7 @@ my $tmpl = q{
 	  </strong> 
 	 </p> 
 	 </td> 
-	 <td> 
+	 <td align="right"> 
 	 <p>
 	  <!-- tmpl_var clickthroughs -->
 	 </p>
@@ -1462,7 +1462,7 @@ my $tmpl = q{
 	  </strong> 
 	 </p> 
 	 </td> 
-	 <td> 
+	 <td align="right"> 
 	 <p>
 	  <!-- tmpl_var opens --> 
 	 </p>
@@ -1478,7 +1478,7 @@ my $tmpl = q{
 	  </strong> 
 	 </p> 
 	 </td> 
-	 <td> 
+	 <td align="right"> 
 	 <p>
 	  <!-- tmpl_var view_archive --> 
 	 </p>
@@ -1495,7 +1495,7 @@ my $tmpl = q{
 	  </strong> 
 	 </p> 
 	 </td> 
-	 <td> 
+	 <td align="right"> 
 	 <p>
 	  <!-- tmpl_var forward_to_a_friend --> 
 	 </p>
@@ -1511,7 +1511,7 @@ my $tmpl = q{
 	  </strong> 
 	 </p> 
 	 </td> 
-	 <td> 
+	 <td align="right"> 
 	 <p>
 	  <!-- tmpl_var soft_bounce default="0" -->/<!-- tmpl_var hard_bounce -->
 	 </p>
@@ -1565,7 +1565,7 @@ my $tmpl = q{
 						
 			</p> 
 			</td> 
-			<td> 
+			<td align="right"> 
 			 <p>
 				<!-- tmpl_var count --> 
 			 </p> 
