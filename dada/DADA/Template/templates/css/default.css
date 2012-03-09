@@ -1,3 +1,35 @@
+/* Begin css Reset */
+
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+html,body,div,span,applet,object,iframe,
+h1,h2,h3,h4,h5,h6,p,blockquote,pre,
+a,abbr,acronym,address,big,cite,code,
+del,dfn,em,img,ins,kbd,q,s,samp,
+small,strike,strong,sub,sup,tt,var,
+b,u,i,center,
+dl,dt,dd,ol,ul,li,
+fieldset,form,label,legend,
+table,caption,tbody,tfoot,thead,tr,th,td,
+article,aside,canvas,details,embed,
+figure,figcaption,footer,header,hgroup,
+menu,nav,output,ruby,section,summary,
+time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline;}
+/* HTML5 display-role reset for older browsers */
+article,aside,details,figcaption,figure,
+footer,header,hgroup,menu,nav,section{display:block;}
+body{line-height:1;}
+ol,ul{list-style:none;}
+blockquote,q{quotes:none;}
+blockquote:before,blockquote:after,
+q:before,q:after{content:'';content:none;}
+table{border-collapse:collapse;border-spacing:0;}
+/* End css Reset */
+
+
+
 
 /* ----- GENERAL ----- */
 html {
@@ -10,7 +42,7 @@ body {
 	background-color: #fff;
 	font-family: Helvetica,Verdana,Arial,sans-serif;
 	line-height: 1.50em;
-	font-size: .825em;
+	font-size: .8em;
 	background: #fff;
 }
 
@@ -30,7 +62,8 @@ body {
 	background-image: url('<!-- tmpl_var PROGRAM_URL -->/img/header_bg.gif/');
 	background-repeat: repeat-y;
 	text-align: left;
-	font: 1.1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	font-size: 1.1em;
+	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	text-shadow: 1px 1px 2px #330033;
 }
 
@@ -104,7 +137,8 @@ body {
 	background-color: #669999;
 	height: 50px;
 	color: #fff;
-	font: 1.1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	font-size: 1.1em;
+	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	text-shadow: 1px 1px 2px #330033;
 	clear: both;
 }
@@ -130,9 +164,9 @@ body {
 	border: 1px solid #fff;
 }
 .error {
+	font-size: .9em;
 	font-family: Helvetica,Verdana,Arial,sans-serif;
 	/*font-size:11px;*/
-	font-size: .9em;
 	font-style: italic;
 	color: #600;
 }
@@ -191,8 +225,8 @@ body {
 	padding-right: 10px;
 	font-size: 1em;
 	-webkit-box-shadow: 0 4px 8px rgba(51,0,0,0.5);
-	-moz-box-shadow:    0 4px 8px rgba(51,0,0,0.5);
-	box-shadow:         0 4px 8px rgba(51,0,0,0.5);
+	-moz-box-shadow: 0 4px 8px rgba(51,0,0,0.5);
+	box-shadow: 0 4px 8px rgba(51,0,0,0.5);
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
@@ -209,10 +243,9 @@ body {
 }
 
 .login_message {
-	width:auto;
+	width: auto;
 	float: right;
 	background-color: #ffc;
-
 }
 
 .login_message p {
@@ -227,7 +260,7 @@ body {
 /* ----- HEADINGS ----- */
 
 h1, h2, h3 {
-	font-family: 'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 }
 
 h1 {
@@ -315,7 +348,7 @@ color: #000;
 	margin-right: 0.5em;
 	display: block;
 }
-.label_profile_fields { 
+.label_profile_fields {
 	width: 18em;
 	float: left;
 	text-align: right;
@@ -358,7 +391,7 @@ fieldset {
 }
 
 legend {
-	font-family: 'Avant Garde', 'Century Gothic', AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	font-weight: bold;
 	font-size: 1.25em;
 }
@@ -371,17 +404,16 @@ textarea {
 	padding: 5px;
 	border-width: 1px;
 	border-style: solid;
-	border-color:#666;
+	border-color: #666;
 	font-size: 1em;
 	font-family: Helvetica,Verdana,Arial,sans-serif;
-	
 	-moz-box-shadow: inset 0px 1px 3px rgba(51,0,0,0.3);
 	-webkit-box-shadow: inset 0px 1px 3px rgba(51,0,0,0.3);
 	box-shadow: inset 0px 1px 3px rgba(51,0,0,0.3)
-	
 }
 #Header select {
-	font: .9em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	font-size: .9em;
+	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	width: 150px;
 	background-color: #efefef;
 	margin: 0px;
@@ -402,7 +434,8 @@ input.small_button {
 	margin: 3px;
 	padding: 3px;
 	border-width: 1px;
-	font: 1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	font-size: 1em;
+	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	color: #333;
 	border-color: #ccc #999 #666 #999;
 	background-color: #ededed;
@@ -584,7 +617,8 @@ li.archive_badges_li {
 	background: #fff url(<!-- tmpl_var S_PROGRAM_URL -->/img/centeredmenu.gif) bottom repeat-x;
 	width: 100%;
 	overflow: hidden;
-	font: 1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	font-size: 1em;
+	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	/* text-shadow: 1px 1px 2px #330033;*/
 }
 #centeredmenu ul {
@@ -649,7 +683,9 @@ li.archive_badges_li {
 	background-color: #cc9999;
 	border-bottom: 1px solid #666;
 	color: #fff;
-	font: 1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	font-weight: bold;
+	font-size: 1em;
+	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	text-shadow: 1px 1px 2px #330033;
 }
 #screentitle a,
@@ -707,7 +743,8 @@ li.archive_badges_li {
 	font-weight: bold;
 	border-top: 1px solid #333;
 	height: 22px;
-	font: 1em "Avant Garde", "Century Gothic", AvantGarde, Helvetica,Verdana,Arial,sans-serif;
+	font-size: 1em;
+	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	text-shadow: 1px 1px 2px #330033;
 }
 
@@ -748,9 +785,6 @@ li.archive_badges_li {
 	background-color: #fff;
 	width: 100%;
 	border: 0px;
-	/*
-	cellpadding="2" cellspacing="0" border="0" width="100%"
-	*/
 }
 .stripedtable td {
 	padding: 2px;
