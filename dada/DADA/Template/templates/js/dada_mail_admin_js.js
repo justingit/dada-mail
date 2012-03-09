@@ -256,8 +256,8 @@ function revertEditType(form_name) {
 
 function killMonitoredSending(form_name) { 
     
-    var confirm_msg =  "Are you sure you want to KILL this mailing? ";
-	    confirm_msg += " Once this mailing has been killed, it cannot ever be restarted.";
+    var confirm_msg =  "Are you sure you want to STOP this mass mailing? ";
+	    confirm_msg += " Once this mailing has been stopped, it cannot be restarted.";
 	
     if(!confirm(confirm_msg)){
         alert('Mailing saved from killing');
