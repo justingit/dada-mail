@@ -3,9 +3,9 @@
 
 <div id="navcontainer">
 
-
+<ul>
 <!-- tmpl_loop name="NAV" -->
-	<ul id="navlist">
+	
 	
 	 <!-- tmpl_unless Activated --> 
 	    <!-- tmpl_if hide_nav --> 
@@ -45,7 +45,7 @@
 	<!--/tmpl_if-->
 	  
 	<!-- tmpl_if SUBNAV -->
-		  <ul id="subnavlist">
+		  <ul>
 		   
 		<!-- tmpl_loop SUBNAV -->
 
@@ -95,8 +95,8 @@
 	<!--/tmpl_if-->
 	  
 	 </li>
-	</ul>
 <!--/tmpl_loop-->
+</ul>
 
 
 </div> 
