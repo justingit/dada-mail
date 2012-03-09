@@ -737,7 +737,7 @@ sub schedule_row {
       "<tr style=\"$row_style\"><td><p><strong>"
       . edit_schedule_href( $key, $record )
       . "</strong></p></td><td>$status</td><td>"
-      . remove_schedule_form( -key => $key, -label => '[x]' )
+      . remove_schedule_form( -key => $key, -label => '&#8855;' )
       . "</td></tr>";
     return $r;
 }

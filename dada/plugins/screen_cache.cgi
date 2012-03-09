@@ -231,7 +231,7 @@ return q{
 
 			<input type="hidden" name="filename" value="<!-- tmpl_var name -->" --> 
 
-			<input type="submit" class="alertive" value="[x]">
+			<input type="submit" class="alertive" value="&#8855;">
 		   </form> 
 
 		  </td> 
