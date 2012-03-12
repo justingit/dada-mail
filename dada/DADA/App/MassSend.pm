@@ -913,7 +913,7 @@ sub list_invite {
     
     my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
 
-    if($process =~ m/invit/i){ 
+    if($process =~ m/send invitation\.\.\./i){   # $process is dependent on the label of the button - which is not a good idea 
 
 		my ($num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued)  = $self->mass_mailout_info($list);
 
@@ -986,7 +986,7 @@ sub list_invite {
 				);
 		e_print($scrn); 
 		
-    }elsif($process =~ m/submit/i){ 
+    }elsif($process =~ m/send invitations/i){ # $process is dependent on the label of the button - which is not a good idea 
  
        # add these to a special 'invitation' list. we'll clear this list later. 
         my @address         = $q->param("address"); 
