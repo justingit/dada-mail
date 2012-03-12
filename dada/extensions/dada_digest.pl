@@ -273,6 +273,7 @@ sub send_digest {
 			my $digest_body  = digest_body(\%list_info, $profile, $archive, $profile->{Message_History}); 
 			
 			my $body = 'In this issue' . "\n\n" . $digest_index . "\n\n" . $digest_body;
+			   $body = safely_encode($body); 
 		       
 		       #$body = create_message($body, \%digest_list_info);
 
@@ -408,7 +409,9 @@ sub digest_body {
 													          -body_only      => 1,
 													          -entity_protect => 0, 
 													         );
-		
+		$good_message = safely_decode($good_message);
+		$subject      = safely_decode($subject);
+
 		$body .= '-' x 72 . "\n\n";
 		$body .= 'Date: ' . pretty_date($k) . "\n";
 		$body .= 'Subject: ' . $subject . "\n\n";
