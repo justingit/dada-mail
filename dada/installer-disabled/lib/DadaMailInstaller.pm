@@ -812,21 +812,31 @@ sub edit_config_dot_pm {
 	        open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $Config_LOC or croak $!;
 	        print $config_fh $config or croak $!;
 	        close $config_fh or croak $!;
-			installer_chmod(0775, $Config_LOC);
+	
+			installer_chmod(0755, $Config_LOC);
+			installer_chmod(0755, make_safer('../DADA'));
 	        return 1;
 	}
 }
 
 sub backup_config_dot_pm {
-    installer_chmod(0777, '../DADA');	
-	my $config = slurp($Config_LOC);
-	my $backup_loc = make_safer($Config_LOC . '-backup.' . time); 
-    open my $backup, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $backup_loc or croak $!;
-    print $backup $config or croak $!;
-    close $backup or croak $!;
-	installer_chmod(0775, $backup_loc);
 
+    installer_chmod( 0777, '../DADA' );
+
+    my $config     = slurp($Config_LOC);
+    my $backup_loc = make_safer( $Config_LOC . '-backup.' . time );
+    open my $backup, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')',
+      $backup_loc
+      or croak $!;
+    print $backup $config
+      or croak $!;
+    close $backup
+      or croak $!;
+
+    installer_chmod( 0755, $backup_loc );
+    installer_chmod( 0755, '../DADA' );
 }
+
 
 
 
