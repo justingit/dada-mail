@@ -737,7 +737,7 @@ sub schedule_row {
       "<tr style=\"$row_style\"><td><p><strong>"
       . edit_schedule_href( $key, $record )
       . "</strong></p></td><td>$status</td><td>"
-      . remove_schedule_form( -key => $key, -label => '&#8855;' )
+      . remove_schedule_form( -key => $key, -label => '[x]' )
       . "</td></tr>";
     return $r;
 }
@@ -1041,6 +1041,8 @@ sub date_widget {
 	
 	my $date = $form_vals->{mailing_date};		
 
+	#die $date; 
+	
 	#  0    1    2     3     4    5     6     7     8
 	my($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) 
 		= localtime($date);
@@ -1052,10 +1054,16 @@ sub date_widget {
 	my $default_mail_minute = $min;  # 31 
 	my $default_mail_am_pm  = 'am'; 
 	# Why 12 is in the pm, no? 
+	
+	# Hour for 12 am would be, "0" 
+	
 	if( $default_mail_hour > 12 ){ 
 		$default_mail_hour -= 12 ;
 		# And if so, 12 - 12 = 0. So, we have to have it show, "1" and not, "0"
 		$default_mail_am_pm = 'pm'; 
+	}
+	elsif($default_mail_hour == 0){ 
+		$default_mail_hour = '12'; 
 	}
 
 	my $r = '<div style="width:600px">';

@@ -268,7 +268,7 @@ sub mailing_date {
 	my $q    = shift; 
 
     my $min        = $q->param('mail_minute') || 0;
-    my $hour       = $q->param('mail_hour')   || 0;
+    my $hour       = $q->param('mail_hour')   || 12;
     my $mday       = $q->param('mail_day')    || 1;
     my $mon        = $q->param('mail_month')  || 0;
     my $year       = $q->param('mail_year')   || 0;
@@ -292,7 +292,8 @@ sub mailing_date {
     $min = int($min);
     require Time::Local;
     my $time = Time::Local::timelocal( 0, $min, $hour, $mday, $mon, $year );
-    return $time;
+    
+	return $time;
 
 }
 
@@ -588,102 +589,10 @@ sub printable_date {
 	
 	# DEV: Tests are needed for this and actually, a better method should be 
 	# used to create this... 
-	
-	
 	my $self = shift; 
 	my $date = shift; 
-	my %mail_month_values = (
-	0  => 'January', 
-	1  => 'February', 
-	2  => 'March', 
-	3  => 'April', 
-	4  => 'May', 
-	5  => 'June',
-	6  => 'July', 
-	7  => 'August', 
-	8  => 'September', 
-	9  => 'October', 
-	10 => 'November', 
-	11 => 'December', 
-	); 
-	
-	
-	
-	my %mail_day_values = (
-	
-	1  => '1st', 
-	2  => '2nd', 
-	3  => '3rd', 
-	4  => '4th', 
-	5  => '5th',
-	6  => '6th', 
-	7  => '7th', 
-	8  => '8th', 
-	9  => '9th', 
-	10 => '10th', 
-	11 => '11th',
-	12 => '12th', 
-	13 => '13th', 
-	14 => '14th', 
-	15 => '15th', 
-	16 => '16th', 
-	17 => '17th', 
-	18 => '18th', 
-	19 => '19th', 
-	20 => '20th', 
-	21 => '21st', 
-	22 => '22nd', 
-	23 => '23rd', 
-	24 => '24th', 
-	25 => '25th', 
-	26 => '26th', 
-	27 => '27th', 
-	28 => '28th', 
-	29 => '29th', 
-	30 => '30th', 
-	31 => '31st',
-	); 
-	
-	my %mail_minute_values = (
-	0 => '00',
-	1 => '01', 
-	2 => '02',
-	3 => '03',
-	4 => '04',
-	5 => '05',
-	6 => '06',
-	7 => '07',
-	8 => '08',
-	9 => '09',
-	); 
-
-
-	
-	
-		#  0    1    2     3     4    5     6     7     8
-	my($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($date);
-		
-	my $ending = 'a.m.'; 
-	
-	if($hour >= 12){ 
-		$hour -= 12
-			if $hour != 12; 
-		$ending = 'p.m.';
-	}
-	elsif($hour == 0) {
-		$hour = 12; 
-	}
-	
-	$min = '0' . $min if $min < 10; 
-	
-	# # This works?
-	# # return $mail_month_values{$mon} . ' ' . $mail_day_values{$mday} . ', ' . ($year + 1900) . ' - ' . $hour . ':' . $min . ' '. $ending; 
-
  	return scalar localtime($date); 
 
-
-#use POSIX 'strftime';
-#return POSIX::strftime("%d%b%y:%H:%M:%S", localtime($date));  # %b returns Mmm, not mmm
 
 } 
 
