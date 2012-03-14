@@ -5818,7 +5818,7 @@ C<Enable_POP3_File_Locking>. Sometimes, the pop3 locking stuff in Dada Mail simp
 
 =head2 Check_List_Owner_Return_Path_Header
 
-When testing the validity of a received message, Dada Mail will look to see if the, C<Return-Path> header matches what's set in the, C<From> header. If they do not match, this test fails and the message will be rejected. Setting, C<Check_List_Owner_Return_Path_Header> will disable this test. 
+When testing the validity of a received message, Dada Mail will look to see if the, C<Return-Path> header matches what's set in the, C<From> header. If they do not match, this test fails and the message will be rejected. Setting, C<Check_List_Owner_Return_Path_Header> to, C<0> will disable this test. 
 
 =head2 Check_Multiple_Return_Path_Headers
 
