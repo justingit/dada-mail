@@ -691,11 +691,11 @@ The, C<cpan> shell is how one usually installs CPAN modules. You'll need root ac
 usually, but you can install CPAN modules in your home directory. This topic is well over the 
 forté of this particular FAQ, but do see: 
 
-L<http://sial.org/howto/perl/life-with-cpan/non-root/> 
+L<http://perl-begin.org/topics/cpan/life-with-cpan/non-root/> 
 
 Actually, this entire site is very helpful: 
 
-L<http://sial.org/howto/perl/life-with-cpan>
+L<http://perl-begin.org/topics/cpan/life-with-cpan>
 
 So, say you need a Perl CPAN module that Dada Mail wants to use, like C<Gravatar::URL>. Once you have your CPAN shell all set up, you'd just ask C<cpan> to install it, like so: 
 
