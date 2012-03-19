@@ -2,22 +2,6 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
-=head1 4.9.2
-
-=head2 Summary 4.9.2
-
-This release of Dada Mail includes fixes for bugs found in the 4.9.2 version of Dada Mail.
-
-=head2 Bugfixes 4.9.2
-
-=head3 Revert ALL Text to Defaults works a little too easily
-
-https://github.com/justingit/dada-mail/issues/248
-
-=head3 Text characters not converted to HTML in archive subjects
-
-https://github.com/justingit/dada-mail/issues/249
-
 =head1 4.9.1
 
 =head2 Summary 4.9.1

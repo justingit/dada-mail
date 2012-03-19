@@ -48,6 +48,14 @@ You may now enable or disable sending a copy of Mass Mailings to the List Owner.
 
 L<https://github.com/justingit/dada-mail/issues/255>
 
+=head3 Revert ALL Text to Defaults works a little too easily
+
+https://github.com/justingit/dada-mail/issues/248
+
+=head3 Text characters not converted to HTML in archive subjects
+
+https://github.com/justingit/dada-mail/issues/249
+
 =head1 Changes 5.0.0
 
 =head2 Precedence header 
