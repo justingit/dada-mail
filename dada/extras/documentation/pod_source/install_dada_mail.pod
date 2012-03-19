@@ -4,7 +4,7 @@
 
 =head1 Step #1: Download Dada Mail
 
-Here's the direct download to Dada Mail v5.0.0 Release Candidate 3: 
+Here's the direct download to Dada Mail v5.0.0 
 
 L<https://github.com/downloads/justingit/dada-mail/dada-5_0_0.tar.gz>
 
@@ -35,7 +35,7 @@ Download the, C<uncompress_dada.cgi> script from here:
 =begin html 
 
 <ul>
-<li><strong><a href="https://github.com/justingit/dada-mail/raw/v5_0_0-rc4_2012_03_08/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
+<li><strong><a href="https://github.com/justingit/dada-mail/raw/v5_0_0-stable_2012_03_18/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
 
 =end html
 
@@ -236,7 +236,7 @@ most of the options available on the web-based interface are available in the co
 
 The below screencasts go through the installation process: 
 
-B<How to Download, Install and Configure Dada Mail v5.0.0>
+B<How to Download, Install and Configure Dada Mail v5>
 
 =for html <p><iframe width="800" height="437" src="http://www.youtube.com/embed/ZX4N6bBIvRk" frameborder="0" allowfullscreen></iframe>
 </p>
