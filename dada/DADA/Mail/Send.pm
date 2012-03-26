@@ -549,8 +549,12 @@ sub send {
 						# Nothin' needed. 
 					}
 					else { 
-						 # This goes against RFC
-						$fields{'Reply-To'} = $formatted_disc_email; 			
+						# Uh, unless it's a list invitation we're sending - why would we want 
+						# replies from a non-subscriber posting to the list? 
+						if($self->list_type ne 'invitelist'){ 						
+							# This goes against RFC
+							$fields{'Reply-To'} = $formatted_disc_email; 			
+						}
 					}
                } else { 
                     # um, nevermind. 
