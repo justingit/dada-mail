@@ -2292,6 +2292,7 @@ sub send_msg_too_big {
     my $full_msg_ref = shift;
     my $size         = shift;
     my $entity;
+
     eval {
         $entity = $parser->parse_data($$full_msg_ref);
         if ( !$entity ) {
@@ -2308,9 +2309,9 @@ sub send_msg_too_big {
                 -list    => $list,
                 -headers => {
                     To      => $from_address,
-                    Subject => $li->{msg_too_big_msg_subject}, 
+                    Subject => $li->{msg_too_big_msg_subject},
                 },
-                -body        => $li->{msg_too_big_msg}
+                -body        => $li->{msg_too_big_msg},
                 -tmpl_params => {
                     -list_settings_vars       => $li,
                     -list_settings_vars_param => { -dot_it => 1, },
@@ -2333,6 +2334,7 @@ sub send_msg_too_big {
             }
         );
     };
+
     if ( !$@ ) {
         return 1;
     }
