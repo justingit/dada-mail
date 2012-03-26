@@ -112,7 +112,7 @@ sub new {
   # Agent name
   $self->{_AGENT} = new RequestAgent;
   $self->{_AGENT}->agent("MIME-Lite-HTML $VERSION");
-  $self->{_AGENT}->from('mime-lite-html@alianwebserver.com' );
+  # $self->{_AGENT}->from('mime-lite-html@alianwebserver.com' );
 
   # remove javascript code or no ?
   if ($param{'remove_jscript'}) {
