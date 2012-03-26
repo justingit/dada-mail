@@ -320,23 +320,28 @@ sub get_header {
 
 
 
-sub strip_subjects_appended_list_name { 
+sub strip_subjects_appended_list_name {
 
+    my $self    = shift;
+    my $subject = shift;
 
-	my $self = shift; 
-	my $subject = shift; 
-	
-	
-	$subject = '' if ! $subject; 
-	
-	my $s_list = quotemeta($self->{list}); 
-	my $s_list_name = quotemeta($self->{ls}->param('list_name')); 
-	
-	$subject =~ s/\[($s_list|$s_list_name)\]//g; 
-	
-	return $subject; 
+    $subject = ''
+      if !$subject;
+
+    my $s_list        = quotemeta( $self->{list} );
+    my $s_list_name   = quotemeta( $self->{ls}->param('list_name') );
+    my $tmpl_tag_list = quotemeta('<!-- tmpl_var list_settings.list -->');
+    my $tmpl_tag_list_name =
+      quotemeta('<!-- tmpl_var list_settings.list_name -->');
+
+    $subject =~
+      s/\[($s_list|$s_list_name|$tmpl_tag_list|$tmpl_tag_list_name)\]//g;
+
+    return $subject;
 
 }
+
+
 
 
 
