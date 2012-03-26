@@ -339,6 +339,25 @@ sub include_javascript(\%$$) {
 }
 
 
+#
+sub cid  (\%$) {
+  my ($self, $url)=@_;
+
+  require URI;
+  require DADA::App::Guts; 
+
+  my $filename = DADA::App::Guts::uriescape((URI->new($url)->path_segments)[-1]);
+
+  # rfc say: don't use '/'. So I do a pack on it.
+  # but as string can get long, I need to revert it to have
+  # difference at begin of url to avoid max size of cid
+  # I remove scheme always same in a document.
+  $url = reverse(substr($url, 7));
+  return reverse(split("",unpack("h".length($url),$url))) . $filename;
+}
+
+
+
 
 
 
