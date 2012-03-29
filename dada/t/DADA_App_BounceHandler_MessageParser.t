@@ -87,18 +87,21 @@ undef $rule;
 $msg    = dada_test_config::slurp('t/corpus/email_messages/bouncing_email_with_brackets.eml'); 
 $entity = $parser->parse_data($msg);
 ( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
+# use Data::Dumper; 
+# diag Dumper($diag); 
+
 
 #           'Simplified-Message-Id' => '20090507110112',
 #           'Message-Id' => ' <20090507110112.30203023@example.com>',
 #           'std_reason' => 'user_unknown',
 #           'Remote-MTA' => 'yahoo.com'
-diag $email; 
+#diag $email; 
 ok($email eq 'bouncing.email@example.com', 'found email address.'); 
 ok($found_list eq 'dadatest', 'found list');
 ok($diag->{'Simplified-Message-Id'} eq '20090507110112', "found 'Simplified-Message-Id'"); 
 ok($diag->{'Message-Id'} eq '<20090507110112.30203023@example.com>', "found 'Message-Id'"); 
 ok($diag->{std_reason} eq 'user_unknown', "found 'std_reason'"); # Mail::DeliveryStatus::BounceParser
-ok($diag->{'Remote-MTA'} eq 'yahoo.com', "found 'Remote-MTA'"); 
+#ok($diag->{'Remote-MTA'} eq 'yahoo.com', "found 'Remote-MTA'"); 
 
 #diag Dumper($diag); 
 
@@ -294,6 +297,22 @@ undef $found_list;
 undef $diag; 
 undef $entity;
 
+
+
+
+
+$msg    = dada_test_config::slurp('t/corpus/email_messages/bounce-exim-something.eml'); 
+$entity = $parser->parse_data($msg);
+( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
+ok($email eq 'subscriber@example.com'); 
+ok($found_list eq 'dadatest', 'found list');
+$rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
+ok($rule eq 'exim_user_unknown', "rule is: $rule"); 
+undef $msg; 
+undef $email; 
+undef $found_list; 
+undef $diag; 
+undef $entity;
 
 
 
