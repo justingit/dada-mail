@@ -2,7 +2,60 @@
 
 =head1 Dada Mail Changelog for version 5.x.x
 
-=head1 5.0.0
+=head1 5.0.1
+
+=head2 Summary 5.0.1
+
+This release contains primarily  bugfixes found in the v5.0.0 release of Dada Mail. 
+
+=head1 Changes 5.0.1
+
+=head2 Bounce Handler: Exim support
+
+Better support has been added for bounces created by the Exim MTA
+
+=head1 Bugfixes 5.0.1
+
+=head3 new_list_screen.tmpl "Clone List Settings" problem
+
+https://github.com/justingit/dada-mail/issues/263
+
+=head3 "Message Too Big" template not used
+
+https://github.com/justingit/dada-mail/issues/264
+
+=head3 Discussion List Invitation gets List reply-to inserted
+
+https://github.com/justingit/dada-mail/issues/259
+
+=head3 Send a Webpage: embedding img URLs remove the file ending, leading to flags raised in mail filters (SpamAssassin)
+
+https://github.com/justingit/dada-mail/issues/257
+
+=head3 "Do not append the list/list shortname to archived messages" option doesn't seem to work,
+
+https://github.com/justingit/dada-mail/issues/265
+
+=head3 Webservers may block HTTP requests from Dada Mail, based on User Agent
+
+https://github.com/justingit/dada-mail/issues/267
+
+=head3 No finishing message when using Amazon SMTP server
+
+https://github.com/justingit/dada-mail/issues/266
+
+=head3 Mailing List Login Switcher is not in any order
+
+https://github.com/justingit/dada-mail/issues/269
+
+=head3 Bundled Params::Validate out of date
+
+https://github.com/justingit/dada-mail/issues/262
+
+=head3 server error when creating a new profile
+
+https://github.com/justingit/dada-mail/issues/268
+
 
 =head1 5.0.0
 
