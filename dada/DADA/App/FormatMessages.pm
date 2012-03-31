@@ -730,117 +730,118 @@ Given an entity, will do some transformations on the headers. It will:
 
 =cut
 
-sub _format_headers { 
+sub _format_headers {
 
-	my $self   = shift; 	 
-	my $entity = shift; 
-	return $entity 
-		if $self->{ls}->param('disable_discussion_sending') == 1; 
-	
-	
-	require Email::Address; 
-		
-	# DEV: this if() shouldn't really need to be here, if this is only used for 
-	# discussion messages
-	# 
-	
-		
-	if($self->{ls}->param('group_list') == 1){	
-		$entity->head->delete('Return-Path'); 
-	}else{ 
-	    if($self->reset_from_header){ 
-	    	$entity->head->delete('From'); 
-	    }
-	}
+    my $self   = shift;
+    my $entity = shift;
+    return $entity
+      if $self->no_list == 1
+          || $self->{ls}->param('disable_discussion_sending') == 1;
 
-	if($self->{ls}->param('prefix_list_name_to_subject') == 1){ 
-		my $new_subject = $self->_list_name_subject(
-			safely_decode(
-				$entity->head->get('Subject', 0)
-			)
-		);
-		$entity->head->delete('Subject');
-		$entity->head->add(   'Subject', safely_encode($new_subject));
-	}
-	
-	
-	# DEV:  Send mass mailings via sendmail, OTHER THAN via a discussion list, 
-	# still uses the -t flag - perhaps I should just go and change that? 
-	# I also really shouldn't have to do some of these checks twice, as 
-	# _format_headers should only be called for discussion lists. 
-	# 
-	
-	if(
-		   $self->mass_mailing              == 1
-		&& $self->{ls}->param('group_list') != 1
-		&& defined($self->{ls}->param('discussion_pop_email'))
-	) { 
-		if($entity->head->count('Cc')) { 
-			$entity->head->delete('Cc');
-		}
-		
-		if($entity->head->count('Bcc')) { 
-	    	$entity->head->delete('Bcc');
-    	}
+    require Email::Address;
+
+    # DEV: this if() shouldn't really need to be here, if this is only used for
+    # discussion messages
+    #
+
+    if ( $self->{ls}->param('group_list') == 1 ) {
+        $entity->head->delete('Return-Path');
+    }
+    else {
+        if ( $self->reset_from_header ) {
+            $entity->head->delete('From');
+        }
     }
 
-	
-	
-	$entity->head->delete('Message-ID'); 
-	
-	# If there ain't a TO: header, add one: 
-	# (usually, this happens (or doesn't happen) in program
-	
-	if ( ! $entity->head->get('To', 0) ) { 
-		$entity->head->add(
-			'To', 
-			safely_encode( $self->{ls}->param('list_owner_email'))
-		);
-	}
-	 
-	
-	# If there's already a To: header, put a phrase in it, to make it look
-	# nice...
-	
-	my $test_To = $entity->head->get('To', 0); 
-	chomp($test_To); 
-	$test_To = strip($test_To); 
-	
-	if($test_To =~ m{undisclosed\-recipients\:\;}i){ 
-        warn "I'm SILENTLY IGNORING a, 'undisclosed-recipients:;' header!"; 
-        
-    } else { 
-    
-        my @addrs = Email::Address->parse($entity->head->get('To', 0));
-        
-        if($addrs[1]){ 
+    if ( $self->{ls}->param('prefix_list_name_to_subject') == 1 ) {
+        my $new_subject = $self->_list_name_subject(
+            safely_decode( $entity->head->get( 'Subject', 0 ) ) );
+        $entity->head->delete('Subject');
+        $entity->head->add( 'Subject', safely_encode($new_subject) );
+    }
+
+    # DEV:  Send mass mailings via sendmail, OTHER THAN via a discussion list,
+    # still uses the -t flag - perhaps I should just go and change that?
+    # I also really shouldn't have to do some of these checks twice, as
+    # _format_headers should only be called for discussion lists.
+    #
+
+    if (   $self->mass_mailing == 1
+        && $self->{ls}->param('group_list') != 1
+        && defined( $self->{ls}->param('discussion_pop_email') ) )
+    {
+        if ( $entity->head->count('Cc') ) {
+            $entity->head->delete('Cc');
+        }
+
+        if ( $entity->head->count('Bcc') ) {
+            $entity->head->delete('Bcc');
+        }
+    }
+
+    $entity->head->delete('Message-ID');
+
+    # If there ain't a TO: header, add one:
+    # (usually, this happens (or doesn't happen) in program
+
+    if ( !$entity->head->get( 'To', 0 ) ) {
+        $entity->head->add( 'To',
+            safely_encode( $self->{ls}->param('list_owner_email') ) );
+    }
+
+    # If there's already a To: header, put a phrase in it, to make it look
+    # nice...
+
+    my $test_To = $entity->head->get( 'To', 0 );
+    chomp($test_To);
+    $test_To = strip($test_To);
+
+    if ( $test_To =~ m{undisclosed\-recipients\:\;}i ) {
+        warn "I'm SILENTLY IGNORING a, 'undisclosed-recipients:;' header!";
+
+    }
+    else {
+
+        my @addrs = Email::Address->parse( $entity->head->get( 'To', 0 ) );
+
+        if ( $addrs[1] ) {
+
             # more than 1? What's going on?!
             # who knows. Leave it at that!
 
-        }else{ 
-            
+        }
+        else {
+
             my $to_addy = $addrs[0];
-              
-            if(!$to_addy){ 
-            
-                warn "couldn't get a valid Email::Address object? SILENTLY (*wink wink*) ignorning"; 
-            
-            }elsif(!$to_addy->phrase){ 
-            	$entity->head->delete('To');
-				$entity->head->add('To', $self->format_phrase_address($self->{ls}->param('list_name'), $to_addy)); 
-            
+
+            if ( !$to_addy ) {
+
+                warn
+"couldn't get a valid Email::Address object? SILENTLY (*wink wink*) ignorning";
+
+            }
+            elsif ( !$to_addy->phrase ) {
+                $entity->head->delete('To');
+                $entity->head->add(
+                    'To',
+                    $self->format_phrase_address(
+                        $self->{ls}->param('list_name'), $to_addy
+                    )
+                );
+
             }
         }
-    }  
-  
-  
-   if($self->{ls}->param('discussion_pop_email')){ 
-         $entity->head->add('X-BeenThere', safely_encode($self->{ls}->param('discussion_pop_email'))); 
-   } 
-   
-	return $entity;
-	
+    }
+
+    if ( $self->{ls}->param('discussion_pop_email') ) {
+        $entity->head->add( 'X-BeenThere',
+            safely_encode( $self->{ls}->param('discussion_pop_email') ) );
+    }
+
+    return $entity;
+
 }
+
 
 
 
