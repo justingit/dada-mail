@@ -957,7 +957,7 @@ sub login_switch_widget {
     my $scrn; 
     
 
-	my @lists = available_lists(); 
+	my @lists = available_lists(-In_Order => 1); 
 	my %label = (); 
 	
 	# DEV TODO - This needs its own METHOD!!!

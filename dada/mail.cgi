@@ -5756,13 +5756,13 @@ sub edit_template {
         if ( $get_template_data_from_url == 1 ) {
 
             if ( $can_use_lwp_simple == 1 ) {
-				
+				$LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')');
                 if ( LWP::Simple::get( $li->{url_template} ) ) {
 					my $tmp_tmpl = LWP::Simple::get( $li->{url_template}); 
 					if($tmp_tmpl =~ m/$content_tag/){ 
 						$content_tag_found_in_url_template = 1; 
 					}
-                }
+				}
                 else {
 
                     $template_url_check = 0;
@@ -5821,6 +5821,7 @@ sub edit_template {
             elsif ( $q->param('get_template_data') eq 'from_url' ) {
                 eval { require LWP::Simple; };
                 if ( !$@ ) {
+					$LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')');
                     $template_info =
                       LWP::Simple::get( $q->param('url_template') );
                 }

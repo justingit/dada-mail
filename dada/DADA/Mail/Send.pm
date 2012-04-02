@@ -549,8 +549,12 @@ sub send {
 						# Nothin' needed. 
 					}
 					else { 
-						 # This goes against RFC
-						$fields{'Reply-To'} = $formatted_disc_email; 			
+						# Uh, unless it's a list invitation we're sending - why would we want 
+						# replies from a non-subscriber posting to the list? 
+						if($self->list_type ne 'invitelist'){ 						
+							# This goes against RFC
+							$fields{'Reply-To'} = $formatted_disc_email; 			
+						}
 					}
                } else { 
                     # um, nevermind. 
@@ -2605,7 +2609,7 @@ sub _email_batched_finished_notification {
 
 	# Amazon SES may have a limit of 1 message/sec, 
 	# so we give ourselves a little space after a mass mailing
-	if($self->{ls}->param('sending_method') eq 'amazon_ses'){ 
+	if($self->{ls}->param('sending_method') eq 'amazon_ses' || $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/){
 		sleep(1); 
 	}
 	#
@@ -2696,9 +2700,9 @@ sub _email_batched_finished_notification {
 	# warn q{ $self->{ls}->{sending_method} } . $self->{ls}->{sending_method}; 
 	my $disposition = 'inline'; 
 	my $type        = 'message/rfc822';
-	if($self->{ls}->param('sending_method') eq 'amazon_ses'){
-		$disposition = 'attachment'; 
-			$type = 'text/plain'; 
+	if($self->{ls}->param('sending_method') eq 'amazon_ses' || $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/){
+			$disposition = 'attachment'; 
+			$type        = 'text/plain'; 
 	}
 		
 	    $entity->attach(

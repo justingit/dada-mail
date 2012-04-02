@@ -1,0 +1,79 @@
+Received: by 10.50.170.72 with SMTP id ak8csp29683igc;
+        Thu, 29 Mar 2012 00:38:43 -0700 (PDT)
+Received: by 10.50.77.166 with SMTP id t6mr687117igw.61.1333006680177;
+        Thu, 29 Mar 2012 00:38:00 -0700 (PDT)
+Received-SPF: softfail (google.com: best guess record for domain of transitioning unknown does not designate <unknown> as permitted sender)
+Received: by 10.13.71.10 with POP3 id y10mf2133386iak.38;
+        Thu, 29 Mar 2012 00:38:00 -0700 (PDT)
+X-Gmail-Fetch-Info: bounces@example.com 1 mail.example.com 110 bounces+example.com
+Return-path: <>
+Envelope-to: bounces@example.com
+Delivery-date: Wed, 28 Mar 2012 14:21:10 -0500
+Received: from mailnull by hosting.hosting.com with local (Exim 4.69)
+	id 1SCyQg-0000qD-RA
+	for bounces@example.com; Wed, 28 Mar 2012 14:21:10 -0500
+X-Failed-Recipients: subscriber@example.com
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@hosting.hosting.com>
+To: bounces@example.com
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E1SCyQg-0000qD-RA@hosting.hosting.com>
+Date: Wed, 28 Mar 2012 14:21:10 -0500
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  subscriber@example.com
+    SMTP error from remote mail server after end of data:
+    host mta6.am0.yahoodns.net [74.6.136.65]: 554 delivery error:
+    dd Sorry your message to subscriber@example.com cannot be delivered. This account has been disabled or discontinued [#102]. - mta1029.mail.sk1.yahoo.com
+
+------ This is a copy of the message, including all the headers. ------
+
+Return-path: <bounces@example.com>
+Received: from hsnl by hosting.hosting.com with local (Exim 4.69)
+	(envelope-from <bounces@example.com>)
+	id 1SCxIU-0004Gr-FF
+	for subscriber@example.com; Wed, 28 Mar 2012 13:08:38 -0500
+Date: Wed, 28 Mar 2012 13:08:38 -0500
+From: "Newsletter" <newsletter@example.com>
+To: "Newsletter Subscriber" <subscriber@example.com>
+X-Priority: 3
+List: dadatest
+List-ID: <dadatest.hosting.hosting.com>
+List-Owner: <newsletter@example.com>
+List-Post: NO
+List-Subscribe: =?ISO-8859-1?Q?=3Chttp=3A//homeschoolnewsletters=2Ecom/cgi-bin/dada/mail?=
+ =?ISO-8859-1?Q?=2Ecgi/s/dadatest/vjonesabc123/yahoo=2Ecom/=3E?=
+List-Unsubscribe: =?ISO-8859-1?Q?=3Chttp=3A//homeschoolnewsletters=2Ecom/cgi-bin/dada/mail?=
+ =?ISO-8859-1?Q?=2Ecgi/ur/dadatest/vjonesabc123/yahoo=2Ecom/=3E?=
+List-URL: <http://example.com/cgi-bin/dada/mail.cgi/list/dadatest/>
+Message-ID: <20120328125504.18745808@example.com>
+Precedence: list
+X-Mailer: Pro Dada 4.9.0a Stable 12/07/11 
+Content-type: multipart/alternative; boundary="----------=_1332957304-31347-0"; charset=iso-8859-1
+MIME-Version: 1.0
+Subject: Magic Tree House Classroom Adventure
+
+This is a multi-part message in MIME format...
+
+------------=_1332957304-31347-0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+
+
+Text!
+
+------------=_1332957304-31347-0
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/html; charset="iso-8859-1"
+
+<h1>HTML!</h1> 
+
+------------=_1332957304-31347-0--

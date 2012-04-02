@@ -86,10 +86,12 @@ sub run_all_parses {
 	else { 
 		# Else, let's try other things: 
 	    my ( $gp_list, $gp_email, $gp_diagnostics ) = $self->generic_parse($entity);
-
-	    $list = $gp_list if $gp_list;
-	    $email ||= $gp_email;
-	    $diagnostics = $gp_diagnostics;
+		if(!$list) { 
+	    	$list = $gp_list;
+		}
+		if(!$email){ 
+	    	$email = $gp_email;
+	    }
 	    %{$diagnostics} = ( %{$diagnostics}, %{$gp_diagnostics} )
 			if $gp_diagnostics;
 	}
@@ -109,11 +111,16 @@ sub run_all_parses {
 
     if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
 
-        my ( $exim_list, $exim_email, $exim_diagnostics ) =
+		my ( $exim_list, $exim_email, $exim_diagnostics ) =
           $self->parse_for_exim($entity);
-        $list  ||= $exim_list;
-        $email ||= $exim_email;
-        %{$diagnostics} = (%{$exim_diagnostics}, %{$diagnostics} )
+
+		if(!$list){
+			$list = $exim_list;
+		}
+		if(!$email) { 
+        	$email = $exim_email;
+        }
+		%{$diagnostics} = (%{$exim_diagnostics}, %{$diagnostics} )
           if $exim_diagnostics;
     }
 
@@ -213,7 +220,7 @@ sub run_all_parses {
         $diagnostics->{'Simplified-Message-Id'} =
           strip( $diagnostics->{'Simplified-Message-Id'} );
     }
-
+	
     return ( $email, $list, $diagnostics );
 }
 
@@ -249,8 +256,7 @@ sub generic_parse {
         %return = %{$headers_diag};
     }
 
-    $list = $self->find_list_in_list_headers($entity);
-
+    $list   = $self->find_list_in_list_headers($entity);
     $list ||= $self->generic_body_parse_for_list($entity);
 
     $email = DADA::App::Guts::strip($email);
@@ -324,29 +330,11 @@ sub find_list_in_list_headers {
     my $entity = shift;
     my @parts  = $entity->parts;
     my $list;
+	
     if ( $entity->head->mime_type eq 'message/rfc822' ) {
         my $orig_msg_copy = $parts[0];
-        my $list_header = $orig_msg_copy->head->get( 'List', 0 );
-        $list = $list_header if $list_header !~ /\:/;
-
-		if ( !$list ) {
-	        $list_header = $orig_msg_copy->head->get( 'X-List', 0 );
-	        $list = $list_header if $list_header !~ /\:/;
-		}
-        if ( !$list ) {
-            my $list_id = $orig_msg_copy->head->get( 'List-ID', 0 );
-            if ( $list_id =~ /\<(.*?)\./ ) {
-                $list = $1 if $1 !~ /\:/;
-            }
-        }
-        if ( !$list ) {
-            my $list_sub = $orig_msg_copy->head->get( 'List-Subscribe', 0 );
-            if ( $list_sub =~ /l\=(.*?)\>/ ) {
-                $list = $1;
-            }
-        }
-        chomp $list;
-        return $list;
+		$list = $self->list_in_list_headers($orig_msg_copy); 
+        
     }
     else {
         my $i;
@@ -357,6 +345,36 @@ sub find_list_in_list_headers {
         }
     }
 }
+
+
+sub list_in_list_headers {
+    my $self   = shift;
+    my $entity = shift;
+    my $list   = undef;
+
+    my $list_header = $entity->head->get( 'List', 0 );
+    $list = $list_header if $list_header !~ /\:/;
+
+    if ( !$list ) {
+        $list_header = $entity->head->get( 'X-List', 0 );
+        $list = $list_header if $list_header !~ /\:/;
+    }
+    if ( !$list ) {
+        my $list_id = $entity->head->get( 'List-ID', 0 );
+        if ( $list_id =~ /\<(.*?)\./ ) {
+            $list = $1 if $1 !~ /\:/;
+        }
+    }
+    if ( !$list ) {
+        my $list_sub = $entity->head->get( 'List-Subscribe', 0 );
+        if ( $list_sub =~ /l\=(.*?)\>/ ) {
+            $list = $1;
+        }
+    }
+    chomp $list;
+    return $list;
+}
+
 
 sub find_message_id_in_headers {
 
@@ -482,7 +500,7 @@ sub generic_body_parse_for_list {
 
     my @parts = $entity->parts;
     if ( !@parts ) {
-        $list = $self->find_list_from_unsub_list($entity);
+        $list = $self->find_list_from_unsub_link($entity);
         return $list if $list;
     }
     else {
@@ -497,7 +515,7 @@ sub generic_body_parse_for_list {
     }
 }
 
-sub find_list_from_unsub_list {
+sub find_list_from_unsub_link {
 
     my $self   = shift;
     my $entity = shift;
@@ -517,6 +535,9 @@ sub find_list_from_unsub_list {
 # https://sourceforge.net/tracker2/?func=detail&aid=2351425&group_id=13002&atid=113002
             if ( $_ =~ m/$DADA::Config::PROGRAM_URL\/(u|list)\/(.*?)\// ) {
                 $list = $2;
+				if($list =~ m/\"\>/){ # We've picked up a screwy link in HTML.
+					undef $list;
+				}
             }
 
             # /DEV: BUGFIX
@@ -853,66 +874,117 @@ sub parse_for_exim {
     my ( $email, $list );
     my $diag = {};
 
+    my $pattern =
+      'This message was created automatically by mail delivery software';
+    my $end_pattern  = '------ This is a copy of the message';
+    my $end_pattern2 = '--- The header of the original message is following.';
+
     my @parts = $entity->parts;
     if ( !@parts ) {
         if ( $entity->head->mime_type =~ /text/ ) {
 
-            # Yeah real hard. Bring it onnnn!
-            if ( $entity->head->get( 'X-Failed-Recipients', 0 ) ) {
+            my $body = $entity->bodyhandle;
+            my $IO;
+            if ($body) {
+                if ( $IO = $body->open("r") ) {    # "r" for reading.
 
-                $email = $entity->head->get( 'X-Failed-Recipients', 0 );
-                $email =~ s/\n//;
-                $email          = strip($email);
-                $list           = $self->generic_body_parse_for_list($entity);
-                $diag->{Status} = '5.x.y';
-                $diag->{Guessed_MTA} = 'Exim';
-                return ( $list, $email, $diag );
+                    my $state = 0;
 
-            }
-            else {
+                    while ( defined( $_ = $IO->getline ) ) {
 
-                my $body = $entity->bodyhandle;
-                my $IO;
-                if ($body) {
+                        my $data = $_;
 
-                    if ( $IO = $body->open("r") ) {    # "r" for reading.
+                        $state = 1 if $data =~ /\Q$pattern/;
+                        $state = 0 if $data =~ /$end_pattern|$end_pattern2/;
 
-                        my $pattern =
-'This message was created automatically by mail delivery software (Exim).';
-                        my $end_pattern =
-                          '------ This is a copy of the message';
-                        my $state = 0;
+                        if ( $state == 1 ) {
+                            $diag->{Guessed_MTA} = 'Exim';
+                            $diag->{'Diagnostic-Code'} .= $data;
 
-                        while ( defined( $_ = $IO->getline ) ) {
+                            if ( $data =~ m/unknown local-part/ ) {
 
-                            my $data = $_;
+                                $diag->{'Status'} = '5.x.y';
 
-                            $state = 1 if $data =~ /\Q$pattern/;
-                            $state = 0 if $data =~ /$end_pattern/;
-
-                            if ( $state == 1 ) {
-
-                                $diag->{Guessed_MTA} = 'Exim';
-
-                                if ( $data =~ /(\S+\@\S+)/ ) {
-
-                                    $email = $1;
-                                    $email = strip($email);
-
-                                }
-                                elsif ( $data =~ m/unknown local-part/ ) {
-
-                                    $diag->{'Diagnostic-Code'} =
-                                      'unknown local-part';
-                                    $diag->{'Status'} = '5.x.y';
-
-                                }
                             }
+							elsif ($data =~ m/This user doesn\'t have a (.*?) account/) { 
+                                $diag->{'Status'} = '5.x.y';								
+							}
+                            elsif ( $data =~
+m/This account has been disabled or discontinued|or discontinued \[\#102\]/
+                              )
+                            {
+                                $diag->{'Status'} = '5.x.y';
+                            }
+                            else {
+                            }
+
+                            if ( $data =~ /(\S+\@\S+)/ ) {
+                                $email = $1;
+                                $email = strip($email);
+                                $email =~ s/^\<|\>$//g if $email;
+                            }
+
                         }
                     }
                 }
-                return ( $list, $email, $diag );
+				$IO->close;
             }
+            if ( $diag->{'Diagnostic-Code'} =~ m/yahoo.com/ )
+            {    # actually, I guess if the email address is from yahoo...
+                $diag->{'Remote-MTA'} = 'yahoo.com';
+            }
+
+            if ( $diag->{Guessed_MTA} eq 'Exim' ) {
+
+                # well, looks like we got something...
+                if ( $entity->head->get( 'X-Failed-Recipients', 0 ) ) {
+                    $email = $entity->head->get( 'X-Failed-Recipients', 0 );
+                    $email =~ s/\n//;
+                    $email = strip($email);
+                }
+                my $body = $entity->bodyhandle;
+                my $IO;
+                my $data = '';
+				my $copy  = '';
+                my $state = 0;
+                
+                if ($body) {
+                    if ( $IO = $body->open("r") ) {    # "r" for reading.
+						
+                        while ( defined( $_ = $IO->getline ) ) {
+							my $data = $_;
+							
+                            if ( $data =~ /$end_pattern|$end_pattern2/ ) {
+                                $state = 1;
+                                next;
+                            }
+                            if ( $state == 1 ) {
+                                $copy .= $data;
+                            }
+                        }
+                    }
+					$IO->close;  
+                    require MIME::Parser;
+                    my $parser = new MIME::Parser;
+                    $parser = optimize_mime_parser($parser);
+                    my $orig_entity;
+					
+					
+					$copy =~ s/^\r|\n//; 
+					$copy =~ s/^\r|\n//; 
+					
+                    eval { $orig_entity = $parser->parse_data($copy) };
+                    if ( !$@ ) {
+					$list = $self->list_in_list_headers($orig_entity); 
+					}
+					else { 
+						# print "errors! $@\n"; 
+					}
+                }
+
+            }
+            return ( $list, $email, $diag );
+
         }
         else {
             return ( undef, undef, {} );
@@ -924,6 +996,7 @@ sub parse_for_exim {
         return ( undef, undef, {} );
     }
 }
+
 
 sub parse_for_f__king_exchange {
     my $self   = shift;
