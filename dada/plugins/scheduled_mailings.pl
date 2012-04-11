@@ -1423,94 +1423,87 @@ $r .= '	</div> ';
 			
 }
 
+sub from_text_widget_tmpl { 
+	return q{ 
+		
+		<tr> 
+		 <td> 
+			<input type="radio" name="<!-- tmpl_var type -->_source" id="<!-- tmpl_var type -->_source" value="from_text" <!-- tmpl_if expr="(source eq 'from_text')" -->checked="checked"<!-- /tmpl_if --> />
+		</td> 
+		<td>
+			<p>Use the below message:</p> 
+		</td> 
+		</tr> 
+		<tr> 
+			<td>&nbsp;</td>
+			<td>
+			<!-- tmpl_if expr="(type eq 'HTML')" --> 
+			<!-- tmpl_if FCKEDITOR_URL -->
+					<!-- tmpl_if list_settings.enable_fckeditor --> 
+					    <script type="text/javascript">   
+					    	<!--
+					        var oFCKeditor = new FCKeditor('<!-- tmpl_var type -->_text') ;
+					        <!-- tmpl_include FCKeditor_default_js_options.tmpl --> 
+							<!-- tmpl_if default_text --> 
+								oFCKeditor.Value = "<!-- tmpl_var default_text ESCAPE="js" -->"; /* does the js escape work? */
+							<!-- /tmpl_if --> 
+					        oFCKeditor.Create() ;
+					        //-->
+					        </script> 
+					<!-- tmpl_else --> 
+						<textarea name="<!-- tmpl_var type -->_text" cols="80" rows="30" id="<!-- tmpl_var type -->_text"><!-- tmpl_var default_text ESCAPE="HTML" --></textarea>
+					<!-- /tmpl_if --> 
+			 <!-- tmpl_else--> 
+					<!-- tmpl_if CKEDITOR_URL -->
+						<!-- tmpl_if list_settings.enable_fckeditor --> 
+					    	<textarea name="<!-- tmpl_var type -->_text" cols="80" rows="30" id="<!-- tmpl_var type -->_text"><!-- tmpl_var default_text ESCAPE="HTML" --></textarea>
+							<script type="text/javascript">
+								CKEDITOR.replace( '<!-- tmpl_var type -->_text');
+							</script>
+						<!-- tmpl_else -->
+					      	<textarea name="<!-- tmpl_var type -->_text" cols="80" rows="30" id="<!-- tmpl_var type -->_text"><!-- tmpl_var default_text ESCAPE="HTML" --></textarea>
+						<!-- /tmpl_if --> 
+			 	<!-- tmpl_else -->
+			   		<textarea name="<!-- tmpl_var type -->_text" cols="80" rows="30" id="<!-- tmpl_var type -->_text"><!-- tmpl_var default_text ESCAPE="HTML" --></textarea>
+				<!--/tmpl_if--> 
+			<!--/tmpl_if-->
+		<!-- tmpl_else --> 
+			<textarea name="<!-- tmpl_var type -->_text" cols="80" rows="30" id="<!-- tmpl_var type -->_text"><!-- tmpl_var default_text ESCAPE="HTML" --></textarea>
+		<!-- /tmpl_if --> 
+			
+			</td> 
+			
+		</tr> 
+		
+		
+	}; 	
+}
 sub from_text_widget { 
 
 	my $type      = shift; 
 	my $form_vals = shift; 
 	my %form_vals = %$form_vals; 	
-	my $r; 
-	my $Default_Text = DADA::App::Guts::js_enc($form_vals{$type.'_ver'}->{text}); 
-	
-	$r = (
+	my $t = from_text_widget_tmpl(); 
+	my $r;
 
-		  $q->Tr(
-		  $q->td([
-		 	(
-		  
-		  $q->p(
-		  $q->radio_group(-name => "$type\_source", 
-						  -value => 'from_text', 
-						  							
-							   (($form_vals{$type.'_ver'}->{source} eq 'from_text') ? 
-							   (-default => 'from_text',) :
-							   (-default => '-',)),
-							   
-						  -labels => {'from_text' => ''},
-									
-					   ))
-		  ), 
-		  ($q->p('Use the below message:')
-		  )
-		  ]) #td
-		  ).  #tr
-		  $q->Tr(
-		  $q->td([
-		  (
-		  $q->p('&nbsp;'), 
-		  ), 
-		  (
-		  	
-		  	$q->p(
-		  	
-		  	(
-			$type eq 'HTML'              && 
-			$DADA::Config::FCKEDITOR_URL && 
-			$li->{enable_fckeditor} == 1
-			) ? (
-		
-		
-		  		qq{ 
-		  		
-		  		<!-- DEV: Hack! --> 
-		
-		  		<script type="text/javascript">
-					<!-- 
-                 	var oFCKeditor = new FCKeditor( '$type\_text' ) ;
-	                oFCKeditor.BasePath = "$DADA::Config::FCKEDITOR_URL/"
-	                oFCKeditor.Config['FullPage'] = true;
-	                oFCKeditor.Value = '$Default_Text';
-	                oFCKeditor.Height = 400;
-					oFCKeditor.Create() ;
-	                //-->
-                </script> 
-                
-                  }
-
-		  	
-		  	
-		  	)
-		  	
-		  	: (
-		  	
-		  	
-			$q->textarea(-name  => "$type\_text",
-						 -cols  => 70, 
-						 -rows  => 15, 
-						 -wrap  => 'OFF',
-						 -value => $form_vals{$type.'_ver'}->{text})
-			
-			
-			)
-			
-			
-			    )#p
-			)
-			]) #td
-			)  #tr
-		); 
+	my $r = DADA::Template::Widgets::screen(
+			{
+				-data => \$t, 
+				-vars => { 
+					default_text => $form_vals{$type.'_ver'}->{text}, 
+					source       => $form_vals{$type.'_ver'}->{source}, 
+					type         => $type, 
+				},
+				-expr => 1, 
+				-list_settings_vars       => $li, # Uh, ok - $li is global. That's stupid. 
+				-list_settings_vars_param => 
+					{
+							-dot_it => 1, 
+					},
+			},
+		);
 		
 	return $r; 
-	
 }
 
 
