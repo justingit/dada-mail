@@ -22,6 +22,7 @@ use DADA::App::Guts;
 use Fcntl qw(LOCK_SH);
 use Carp qw(croak carp); 
 
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
 
 sub _init { 
 	
@@ -320,22 +321,16 @@ sub parse_string {
     my $str  = shift;
 	my $type = shift || 'PlainText'; 
 
-	#warn "Auto Parsing Test!"; 
 	if($self->{ls}->param('tracker_auto_parse_links') == 1){ 
-		# warn "it's on!"; 
+		warn 'auto redirecting tags.'
+			if $t;
 		$str = $self->auto_redirect_tag($str, $type); 
 	}
 	else { 
-		# ... 
-		# warn "it's off."; 
 	}
 
-	#warn "now, the string looks like this! \n $str"; 
-	
     my $pat = $self->redirect_regex();
     $str =~ s/$pat/&redirect_encode($self, $mid, $1)/eg;
-
-    #	carp "here's the string: $str";
     return $str;
 }
 
@@ -365,8 +360,13 @@ sub auto_redirect_tag {
 		     return if $tag ne 'a';  # we only look closer at <a ...>
 			 my $link =  $attr{href}; 
 
+			warn '$link: ' . $link
+			 if $t; 
+			
 			# Skip links that are already tagged up!
 			if($link =~ m/(^(\<\!\-\-|\[|\<\?))|((\]|\-\-\>|\?\>)$)/){ 
+				warn '$link looks to contain tags? skipping.'
+				 if $t; 
 				return; 
 			}
 			else { 
@@ -374,7 +374,15 @@ sub auto_redirect_tag {
 			}
 
 			my $redirected_link = $self->redirect_tagify($link); 
+			warn '$redirected_link: ' . $redirected_link
+			 if $t; 
+			
 			my $qm_link         = quotemeta($link);
+			warn '$link: ' . $link
+				if $t; 
+			warn '$qm_link: ' . $qm_link
+				if $t; 
+			
 			$self->{auto_redirect_tmp} =~ s/(href\=|href\=\")$qm_link/$1$redirected_link/;
 		}
 	
@@ -536,8 +544,12 @@ sub get_redirect_tag_atts {
 			$atts->{$1} = $2; 
 		} 
 	}
-#	use Data::Dumper; 
-#	die Data::Dumper::Dumper($atts); 
+	
+	if($t){ 
+		warn 'found tag atts:'; 
+		require Data::Dumper; 
+		warn Data::Dumper::Dumper($atts); 
+	}
 	return $atts; 
 	
 }
@@ -561,9 +573,14 @@ sub redirect_encode {
 
 	my $url = $atts->{url}; 
 	delete($atts->{url}); 
+		
+	warn '$url: ' . $url
+		if $t; 
 	
 	if($self->can_be_redirected($url)){ 
-				
+		warn 'can_be_redirected returned true.'
+			if $t; 
+			
 	    my $key = $self->reuse_key( $mid, $url, $atts );
 		
 	    if ( !defined($key) ) {
