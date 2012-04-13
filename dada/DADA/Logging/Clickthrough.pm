@@ -321,16 +321,25 @@ sub parse_string {
     my $str  = shift;
 	my $type = shift || 'PlainText'; 
 
+	warn '$str before: ' . $str
+	 if $t; 
+	
 	if($self->{ls}->param('tracker_auto_parse_links') == 1){ 
 		warn 'auto redirecting tags.'
 			if $t;
 		$str = $self->auto_redirect_tag($str, $type); 
+		warn '$str after auto redirect: ' . $str
+			if $t; 
 	}
 	else { 
 	}
 
     my $pat = $self->redirect_regex();
-    $str =~ s/$pat/&redirect_encode($self, $mid, $1)/eg;
+    $str =~ s/($pat)/&redirect_encode($self, $mid, $1)/ge;
+
+	warn '$str final: ' . $str
+	 if $t;
+	
     return $str;
 }
 
@@ -628,8 +637,9 @@ sub redirect_encode {
     croak 'no mid! '
       if !defined $mid;
     my $redirect_tag = shift;
-	#die $redirect_tag; 
-
+	warn '$redirect_tag: ' . $redirect_tag
+		if $t; 
+		
 	# get the brackets out of the way
 
 	
@@ -650,9 +660,14 @@ sub redirect_encode {
 	    if ( !defined($key) ) {
 	        $key = $self->add( $mid, $url, $atts);
 	    }
-	    return $DADA::Config::PROGRAM_URL . '/r/'
+	    my $redirect_url =  $DADA::Config::PROGRAM_URL . '/r/'
 	      . $self->{name} . '/'
 	      . $key . '/';
+		warn '$redirect_url: ' . $redirect_url
+			if $t; 
+		
+		return $redirect_url; 
+		
 	}
 	else { 
 		carp "Given an invalid email to create a redirect from, '$url' - skipping!";
