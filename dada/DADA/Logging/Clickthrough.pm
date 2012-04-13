@@ -400,36 +400,100 @@ sub auto_redirect_tag {
 	}
 	else { 
 		
-		my $tmp_s = $s; 
+		# Find me the URLs in this string!
 		my @uris;
 		my $finder = URI::Find->new(sub {
 		    my($uri) = shift;
-			push @uris, $uri;
+			push(@uris, $uri->as_string);
+			warn '$uri: ' . $uri
+			 if $t;
 			return $uri; 
 		});
 		$finder->find(\$s);
-		foreach my $specific_url(@uris){ 
+		
+		require DADA::Security::Password; 
+		
+		my $links = [];
+		
+		# Get only unique URLS: 
+		my %seen;
+		my @unique_uris = grep { ! $seen{$_}++ } @uris;
+		# Sort by longest, to shortest: 
+		@unique_uris = sort {length $b <=> length $a} @unique_uris;
+		
+		for my $specific_url(@unique_uris){ 
 			
-			my $qm_link1 = quotemeta('[redirect='.$specific_url.']'); 
-			my $qm_link2 = quotemeta('url="'.$specific_url.'"'); 
+			# This is probably a job for Parse::RecDescent, but I'm a dumb, dumb, person
+			# Whoa, let's hide any URLs that already have redirect tags around them!
 			
-			# URI::Find changes the URL sometimes and adds a, "/" at the end. What?
+			
+			# A few cases we'll look for... 
+			
+			# Old School! 
+			push(@$links,
+					{ 
+						str   => '[redirect='.$specific_url.']', 
+						regex => quotemeta('[redirect='.$specific_url.']')
+					},
+				); 
+			push(@$links,
+					{ 
+						str   => '<?dada redirect url="' . $specific_url . '" ?>', 
+						regex => '\<\?dada(\s+)redirect(\s+)url\=(\"?)' . quotemeta($specific_url) . '(\"?)(\s+)\?\>',
+					},
+				); 
+			
+			# Annoying URI::Find Behavior: 
+			# Changes the URL sometimes and adds a, "/" at the end. Whazzah?
 			my $other_specific_url = $specific_url; 
 			   $other_specific_url =~ s/\/$//;
-			my $qm_link3 = quotemeta('[redirect='.$other_specific_url.']'); 
-			my $qm_link4 = quotemeta('url="'.$other_specific_url.'"');			if($tmp_s =~ m/$qm_link1|$qm_link2|$qm_link3|$qm_link4/g){ 
-				# ... 
-			}
-			else { 
-				my $redirected = $self->redirect_tagify($specific_url);
-				my $qm_link    = quotemeta($specific_url); 
-				$s =~ s/$qm_link/$redirected/;
-			}
+			# Old School! 
+			push(@$links,
+					{ 
+						str   => '[redirect='.$other_specific_url.']', 
+						regex => quotemeta('[redirect='.$other_specific_url.']')
+					},
+				); 
+			push(@$links,
+					{ 
+						str   => '<?dada redirect url="' . $other_specific_url . '" ?>', 
+						regex => '\<\?dada(\s+)redirect(\s+)url\=(\"?)' . quotemeta($other_specific_url) . '(\"?)(\s+)\?\>',
+					},
+				);
+			
 		}
+		
+		# Switch 'em out so my regex is...somewhat simple: 
+		my %out_of_the_way; 
+		for my $l(@$links){ 
+			my $key = '_CLICKTHROUGH_TMP_' . DADA::Security::Password::generate_rand_string('1234567890abcdefghijklmnopqestuvwxyz', 16) . '_CLICKTHROUGH_TMP_'; 
+			$out_of_the_way{$key} = $l; 
+			my $qm_l = $l->{regex}; 
+			$s =~ s/$qm_l/$key/g; 
+		}
+	
+		
+		for my $specific_url(@unique_uris){ 
+			warn '$specific_url ' . $specific_url
+				if $t; 
+			my $qm_link    = quotemeta($specific_url); 
+			my $redirected = $self->redirect_tagify($specific_url);
+			warn '$redirected ' . $redirected
+				if $t;
+			# (somewhat simple regex) 
+			$s =~ s/([^redirect\=\"])($qm_link)/$1$redirected/g;
+		}
+		
+		# Now, put 'em back!
+		for (keys %out_of_the_way){ 
+			my $str = $out_of_the_way{$_}->{str}; 
+			$s =~ s/$_/$str/g; 
+		}
+			
+	
 		return $s; 
 	}
-
-
+	
 }
 
 
