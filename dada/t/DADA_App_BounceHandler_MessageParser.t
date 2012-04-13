@@ -110,7 +110,7 @@ $rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
 # This is sooooo wrong, but I'd need to re-parse this bounce, which I'm 
 # I just don't have the time to, right now: 
 #
-ok($rule eq 'unknown_bounce_type', "rule is: $rule"); 
+ok($rule eq 'exim_user_unknown', "rule is: $rule"); 
 
 
 undef $msg; 
