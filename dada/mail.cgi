@@ -9506,21 +9506,26 @@ sub redirection {
 
 sub m_o_c {
 
+    my $list = xss_filter( $q->param('list') );
 
-    require DADA::Logging::Clickthrough;
-    my $r = DADA::Logging::Clickthrough->new({-list => $q->param('list')});
-	   if(defined($q->param('mid'))){
-       		$r->o_log(
-				{ 
-					-mid => $q->param('mid'),
-				}
-			);
-		}
+    if ( check_if_list_exists( -List => $list ) == 0 ) {
+        carp "list: '$list' does not exist, aborted logging of open message\n" . 
+			 '$ENV{PATH_INFO}: ' . $ENV{PATH_INFO}; 
+
+    }
+    else {
+        require DADA::Logging::Clickthrough;
+        my $r =
+          DADA::Logging::Clickthrough->new( { -list => $q->param('list') } );
+        if ( defined( $q->param('mid') ) ) {
+            $r->o_log( { -mid => $q->param('mid'), } );
+        }
+    }
     require MIME::Base64;
     print $q->header('image/png');
 
     # a simple, 1px png image.
-        my $str = <<EOF
+    my $str = <<EOF
 iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAMAAAAoyzS7AAAABGdBTUEAANbY1E9YMgAAABl0RVh0
 U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAGUExURf///wAAAFXC034AAAABdFJOUwBA
 5thmAAAADElEQVR42mJgAAgwAAACAAFPbVnhAAAAAElFTkSuQmCC
