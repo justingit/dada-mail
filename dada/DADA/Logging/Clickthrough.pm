@@ -383,7 +383,7 @@ sub auto_redirect_tag {
 			warn '$qm_link: ' . $qm_link
 				if $t; 
 			
-			$self->{auto_redirect_tmp} =~ s/(href\=|href\=\")$qm_link/$1$redirected_link/;
+				$self->{auto_redirect_tmp} =~ s/(href(\s*)\=(\s*)\"?)$qm_link/$1$redirected_link/;
 		}
 	
 	
