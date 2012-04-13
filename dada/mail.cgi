@@ -7053,9 +7053,10 @@ sub new_list {
 			my $lists_exist = $#available_lists + 1;
 
 			my $list_popup_menu = DADA::Template::Widgets::list_popup_menu(
-										-show_hidden      => 1,
-										-name             => 'clone_settings_from_this_list',
-										-empty_list_check => 1,
+										-show_hidden         => 1,
+										-name                => 'clone_settings_from_this_list',
+										-empty_list_check    => 1,
+										-show_list_shortname => 1, 
 									);
 
             my $scrn = DADA::Template::Widgets::wrap_screen(
