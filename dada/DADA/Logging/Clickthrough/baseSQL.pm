@@ -370,14 +370,14 @@ sub sc_log {
 		my $query =
 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event, details) VALUES (?, ?, ?, ?, ?' . $place_holder_string . ')';
         
-
-		#print 'query "' . $query . '"'; 
 		my $sth = $self->{dbh}->prepare($query);
 		if(defined($timestamp)){ 
-	        $sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'num_subscribers', $args->{-num});
+	        $sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'num_subscribers', $args->{-num})
+				or carp "cannot do statement! $DBI::errstr\n";
 		}
 		else { 
-	        $sth->execute($self->{name}, $remote_address, $args->{-mid}, 'num_subscribers', $args->{-num});			
+	        $sth->execute($self->{name}, $remote_address, $args->{-mid}, 'num_subscribers', $args->{-num})
+				or carp "cannot do statement! $DBI::errstr\n";
 		}
         $sth->finish;
 
