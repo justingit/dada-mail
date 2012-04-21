@@ -989,7 +989,7 @@ sub list_invite {
 				);
 		e_print($scrn); 
 		
-    }elsif($process =~ m/send invitations/i){ # $process is dependent on the label of the button - which is not a good idea 
+    }elsif($process =~ m/send a test invitation|send invitations/i){ # $process is dependent on the label of the button - which is not a good idea 
  
        # add these to a special 'invitation' list. we'll clear this list later. 
         my @address         = $q->param("address"); 
