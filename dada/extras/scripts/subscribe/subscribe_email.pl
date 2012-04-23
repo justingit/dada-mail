@@ -1,5 +1,7 @@
 #!/usr/bin/perl 
 
+use strict;
+
 package subscribe_email;
 use lib qw(
 	./ 
@@ -90,18 +92,28 @@ sub run {
 		   $q->param('email', $email); 
 
 		# Profile Fields
-		my $fields = {}; 
 	    for(@{$lh->subscriber_fields}){ 
 			if(exists($fields->{$_})){ 
 	        	$q->param($_, $fields->{$_}); 
 			}
 		}
 
-
+		if($verbose == 1){ 
+			print "Email: $email\n";
+			print "List: $list\n"; 
+			print "Fields:\n"; 
+			if(scalar(@{$lh->subscriber_fields}) >= 1) { 
+				for(@{$lh->subscriber_fields}){ 
+					print '*' . $_ . ': ' .  $q->param($_) . "\n";  
+				}	
+			}
+			print "\n"; 
+		}
+		
 	    require   DADA::App::Subscriptions; 
 	    my $das = DADA::App::Subscriptions->new; 
 
-	   		$r =  $das->subscribe(
+	   		my $r =  $das->subscribe(
 	        {
 	            -cgi_obj     => $q, 
 				-html_output => 0,
