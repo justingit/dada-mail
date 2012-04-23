@@ -2,19 +2,70 @@
 
 =head1 Dada Mail Changelog for version 5.x.x
 
+=head1 5.0.2
+
+=head2 Summary 5.0.2
+
+This release contains primarily  bugfixes found in the v5.0.1 release of Dada Mail. 
+
+=head2 Changes 5.0.2
+
+=head3 Support for CKEditor in Beatitude
+
+Missing support for CKEditor in Beatitude has been added. FCKeditor support should work 
+better, as well. 
+
+=head2 Bugfixes 5.0.2
+
+=head3 Beattide: FCKeditor corrupts UTF-8 characters
+
+https://github.com/justingit/dada-mail/issues/272
+
+=head3 Hidden profile field value lost on edit
+
+https://github.com/justingit/dada-mail/issues/278
+
+=head3 Installer gets confused during an upgrade if it cannot initially find the .dada_files directory
+
+https://github.com/justingit/dada-mail/issues/270
+
+=head3 Bounce Handler: nothing printed when running tests on the command line
+
+https://github.com/justingit/dada-mail/issues/271
+
+=head3 Clickthrough Redirect Links in PlainText messages aren't automatically created in some cases
+
+https://github.com/justingit/dada-mail/issues/273
+
+=head3 Incorrect date shown in Archive Message screen
+
+https://github.com/justingit/dada-mail/issues/274
+
+=head3 Clickthrough Tracking: poorly formatting HTML links not automatically created into clickthrough links
+
+https://github.com/justingit/dada-mail/issues/275
+
+=head3 Open Tracker returns error with invalid lists
+
+https://github.com/justingit/dada-mail/issues/277
+
+=head3 Sending a Test List Invitation Leads to an error
+
+https://github.com/justingit/dada-mail/issues/279
+
 =head1 5.0.1
 
 =head2 Summary 5.0.1
 
 This release contains primarily  bugfixes found in the v5.0.0 release of Dada Mail. 
 
-=head1 Changes 5.0.1
+=head2 Changes 5.0.1
 
-=head2 Bounce Handler: Exim support
+=head3 Bounce Handler: Exim support
 
 Better support has been added for bounces created by the Exim MTA
 
-=head1 Bugfixes 5.0.1
+=head2 Bugfixes 5.0.1
 
 =head3 new_list_screen.tmpl "Clone List Settings" problem
 
@@ -55,7 +106,6 @@ https://github.com/justingit/dada-mail/issues/262
 =head3 server error when creating a new profile
 
 https://github.com/justingit/dada-mail/issues/268
-
 
 =head1 5.0.0
 
