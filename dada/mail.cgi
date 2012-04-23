@@ -10044,6 +10044,15 @@ sub profile {
 					die $DADA::CONFIG::PROGRAM_NAME . ' ' . $DADA::Config::VER . ' Error! Attempting to save Profile Field with too large of a value!';
 				}
 			}
+			
+			# DEV: This is somewhat of a hack - so that we don't writeover hidden fields, we re-add them, here
+			# A little kludgey. 
+			
+			for my $field(@{$dpf->{manager}->fields({-show_hidden_fields => 1})}){
+				if($field =~ m/^$DADA::Config::HIDDEN_SUBSCRIBER_FIELDS_PREFIX/){ 
+	      			$edited->{$field} = $email_fields->{$field},
+				}
+			}
 			$dpf->insert(
 				{
 					-fields => $edited,
