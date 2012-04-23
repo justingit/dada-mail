@@ -9871,12 +9871,8 @@ sub profile_register {
 		return
 	}
 
-	my $email       = xss_filter($q->param('email'));
-	   $email       = cased($email);
-
-	my $email_again = xss_filter($q->param('email_again'));
-	   $email_again = cased($email_again);
-
+	my $email       = strip(cased(xss_filter($q->param('email'      ))));
+	my $email_again = strip(cased(xss_filter($q->param('email_again'))));
 	my $password    = xss_filter($q->param('password'));
 
 	require DADA::Profile;
@@ -9942,7 +9938,7 @@ sub profile_activate {
 		return
 	}
 
-	my $email     = xss_filter($q->param('email'));
+	my $email       = strip(cased(xss_filter($q->param('email'))));
 	my $auth_code = xss_filter($q->param('auth_code'));
 
 	require DADA::Profile;
