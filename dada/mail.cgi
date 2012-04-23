@@ -7053,9 +7053,10 @@ sub new_list {
 			my $lists_exist = $#available_lists + 1;
 
 			my $list_popup_menu = DADA::Template::Widgets::list_popup_menu(
-										-show_hidden      => 1,
-										-name             => 'clone_settings_from_this_list',
-										-empty_list_check => 1,
+										-show_hidden         => 1,
+										-name                => 'clone_settings_from_this_list',
+										-empty_list_check    => 1,
+										-show_list_shortname => 1, 
 									);
 
             my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -9505,21 +9506,26 @@ sub redirection {
 
 sub m_o_c {
 
+    my $list = xss_filter( $q->param('list') );
 
-    require DADA::Logging::Clickthrough;
-    my $r = DADA::Logging::Clickthrough->new({-list => $q->param('list')});
-	   if(defined($q->param('mid'))){
-       		$r->o_log(
-				{ 
-					-mid => $q->param('mid'),
-				}
-			);
-		}
+    if ( check_if_list_exists( -List => $list ) == 0 ) {
+        carp "list: '$list' does not exist, aborted logging of open message\n" . 
+			 '$ENV{PATH_INFO}: ' . $ENV{PATH_INFO}; 
+
+    }
+    else {
+        require DADA::Logging::Clickthrough;
+        my $r =
+          DADA::Logging::Clickthrough->new( { -list => $q->param('list') } );
+        if ( defined( $q->param('mid') ) ) {
+            $r->o_log( { -mid => $q->param('mid'), } );
+        }
+    }
     require MIME::Base64;
     print $q->header('image/png');
 
     # a simple, 1px png image.
-        my $str = <<EOF
+    my $str = <<EOF
 iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAMAAAAoyzS7AAAABGdBTUEAANbY1E9YMgAAABl0RVh0
 U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAGUExURf///wAAAFXC034AAAABdFJOUwBA
 5thmAAAADElEQVR42mJgAAgwAAACAAFPbVnhAAAAAElFTkSuQmCC
@@ -9865,12 +9871,8 @@ sub profile_register {
 		return
 	}
 
-	my $email       = xss_filter($q->param('email'));
-	   $email       = cased($email);
-
-	my $email_again = xss_filter($q->param('email_again'));
-	   $email_again = cased($email_again);
-
+	my $email       = strip(cased(xss_filter($q->param('email'      ))));
+	my $email_again = strip(cased(xss_filter($q->param('email_again'))));
 	my $password    = xss_filter($q->param('password'));
 
 	require DADA::Profile;
@@ -9936,7 +9938,7 @@ sub profile_activate {
 		return
 	}
 
-	my $email     = xss_filter($q->param('email'));
+	my $email       = strip(cased(xss_filter($q->param('email'))));
 	my $auth_code = xss_filter($q->param('auth_code'));
 
 	require DADA::Profile;
@@ -10036,6 +10038,15 @@ sub profile {
 				if(length($edited->{$_}) > 10240){
 					# Sigh.
 					die $DADA::CONFIG::PROGRAM_NAME . ' ' . $DADA::Config::VER . ' Error! Attempting to save Profile Field with too large of a value!';
+				}
+			}
+			
+			# DEV: This is somewhat of a hack - so that we don't writeover hidden fields, we re-add them, here
+			# A little kludgey. 
+			
+			for my $field(@{$dpf->{manager}->fields({-show_hidden_fields => 1})}){
+				if($field =~ m/^$DADA::Config::HIDDEN_SUBSCRIBER_FIELDS_PREFIX/){ 
+	      			$edited->{$field} = $email_fields->{$field},
 				}
 			}
 			$dpf->insert(

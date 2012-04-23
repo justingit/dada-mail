@@ -906,15 +906,11 @@ sub parse_for_exim {
                                 $diag->{'Status'} = '5.x.y';
 
                             }
-							elsif ($data =~ m/This user doesn\'t have a (.*?) account/) { 
+							# This should probably be moved to the Rules...
+							# And these are fairly genreal-purpose...
+							elsif ($data =~ m/This user doesn\'t have a (.*?) account|unknown user|This account has been disabled or discontinued|or discontinued \[\#102\]|User(.*?)does not exist|Invalid mailbox|mailbox unavailable|550\-5\.1\.1|550 5\.1\.1|Recipient does not exist here/) { 
                                 $diag->{'Status'} = '5.x.y';								
 							}
-                            elsif ( $data =~
-m/This account has been disabled or discontinued|or discontinued \[\#102\]/
-                              )
-                            {
-                                $diag->{'Status'} = '5.x.y';
-                            }
                             else {
                             }
 

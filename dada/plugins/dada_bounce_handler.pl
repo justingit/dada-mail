@@ -120,7 +120,7 @@ my $log;
 my $messages = 0;
 my $erase_score_card = 0;
 my $version;
-my $list;
+my $list = undef;
 my $admin_list;
 my $root_login;
 
@@ -187,7 +187,7 @@ sub init {
 sub run {
     if ( !$ENV{GATEWAY_INTERFACE} ) {
         my $r = cl_main();
-        if ($verbose || $help) {
+        if ($verbose || $help || $test || $version) {
             print $r;
         }
         exit;

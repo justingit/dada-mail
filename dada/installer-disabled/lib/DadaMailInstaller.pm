@@ -453,13 +453,27 @@ sub scrn_configure_dada_mail {
 		}	
 	}
 	
-	my $configured_dada_config_file = $DADA::Config::CONFIG_FILE;
-	my $configured_dada_files_loc = $configured_dada_config_file;
+	my $configured_dada_config_file; 
+	my $configured_dada_files_loc; 
+	
+	if($install_type eq 'upgrade'){ 
+		$configured_dada_config_file = $current_dada_files_parent_location . '/.dada_files/.configs/.dada_config'; 
+		$configured_dada_files_loc = $current_dada_files_parent_location; 
+		
+	}
+	else { 
+	   $configured_dada_config_file = $DADA::Config::CONFIG_FILE;
+	   $configured_dada_files_loc = $configured_dada_config_file;
 		$configured_dada_files_loc =~ s/\/\.dada_files\/\.configs\/\.dada_config//;
+	}
 	
 	my $DOC_VER = $DADA::Config::VER; 
 	   $DOC_VER =~ s/\s(.*?)$//;
 	   $DOC_VER =~ s/\./\_/g;
+
+	# I'm going to fill this back in: 
+	$q->param('install_type', $install_type); 
+	$q->param('current_dada_files_parent_location', $current_dada_files_parent_location); 
 	
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
@@ -1211,14 +1225,22 @@ sub check_setup {
 }
 
 
-sub install_dada_files_dir_at_from_params() { 
+sub install_dada_files_dir_at_from_params { 
+	
+	# None of the calls to this sub pass any variables. ?  
+	my $install_dada_files_dir_at = undef;
 	 
-	my $install_dada_files_dir_at = undef; 
-	if($q->param('dada_files_dir_setup') eq 'auto'){ 
-		$install_dada_files_dir_at = auto_dada_files_dir(); 
+	if($q->param('install_type') eq 'upgrade'){ 
+		$install_dada_files_dir_at = $q->param('current_dada_files_parent_location'); 
 	}
 	else { 
-		$install_dada_files_dir_at = $q->param('dada_files_loc'); 
+		
+		if($q->param('dada_files_dir_setup') eq 'auto'){ 
+			$install_dada_files_dir_at = auto_dada_files_dir(); 
+		}
+		else { 
+			$install_dada_files_dir_at = $q->param('dada_files_loc'); 
+		}
 	}
 	
 	# Take off that last slash - goodness, will that annoy me: 
@@ -1709,11 +1731,9 @@ sub move_installer_dir_ajax {
 
 sub show_current_dada_config { 
 	print $q->header('text/plain'); 
-    my $config_file_contents = undef;
-    if ( -e $DADA::Config::CONFIG_FILE ) {
-        $config_file_contents =
-          DADA::Template::Widgets::_slurp($DADA::Config::CONFIG_FILE);
-    }
+    my $config_file_loc = $q->param('config_file'); 
+        my $config_file_contents =
+          DADA::Template::Widgets::_slurp($config_file_loc);
 	print e_print($config_file_contents);
 }
 

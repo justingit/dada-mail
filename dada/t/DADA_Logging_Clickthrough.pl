@@ -482,44 +482,71 @@ ok($lc->report_by_message( 12345678901234 )->{view_archive} == 1, "view_archive 
 # auto_redirect_tag
 
 my $ar_str = q{ 
-	http://google.com
-	
-	[redirect=http://gmail.com]
-	
-	<?dada redirect url="http://yahoo.com" ?>
-	
-	http://google.com/test.html
-	
-	[redirect=http://gmail.com/test.html]
-	
-	<?dada redirect url="http://yahoo.com/test.html" ?>
-	
-	http://google.com/blah.cgi?f=test
-	
-	[redirect=http://gmail.com/blah.cgi?f=test]
-	
-	<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>
+http://example.com/ http://example.com/
+
+http://yahoo.com/
+
+http://google.com/
+
+[redirect=http://gmail.com/]
+
+<?dada redirect url="http://yahoo.com/" ?>
+
+http://google.com/test.html
+
+[redirect=http://gmail.com/test.html]
+
+<?dada redirect url="http://yahoo.com/test.html" ?>
+
+http://google.com/blah.cgi?f=test
+
+[redirect=http://gmail.com/blah.cgi?f=test]
+
+<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>
+
+Redirect this! http://yahoo.com/
+
+Or alone?
+http://yahoo.com/
+
+Or manually?
+<?dada redirect url="http://yahoo.com/" ?>
 }; 
+#diag '$ar_str' . $ar_str;
 $ar_str = $lc->auto_redirect_tag($ar_str, 'PlainText');
 my $should_be = q{ 
-	<?dada redirect url="http://google.com/" ?>
-	
-	[redirect=http://gmail.com/]
-	
-	<?dada redirect url="http://yahoo.com/" ?>
-	
-	<?dada redirect url="http://google.com/test.html" ?>
-	
-	[redirect=http://gmail.com/test.html]
-	
-	<?dada redirect url="http://yahoo.com/test.html" ?>
-	
-	<?dada redirect url="http://google.com/blah.cgi?f=test" ?>
-	
-	[redirect=http://gmail.com/blah.cgi?f=test]
-	
-	<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>
+<?dada redirect url="http://example.com/" ?> <?dada redirect url="http://example.com/" ?>
+
+<?dada redirect url="http://yahoo.com/" ?>
+
+<?dada redirect url="http://google.com/" ?>
+
+[redirect=http://gmail.com/]
+
+<?dada redirect url="http://yahoo.com/" ?>
+
+<?dada redirect url="http://google.com/test.html" ?>
+
+[redirect=http://gmail.com/test.html]
+
+<?dada redirect url="http://yahoo.com/test.html" ?>
+
+<?dada redirect url="http://google.com/blah.cgi?f=test" ?>
+
+[redirect=http://gmail.com/blah.cgi?f=test]
+
+<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>
+
+Redirect this! <?dada redirect url="http://yahoo.com/" ?>
+
+Or alone?
+<?dada redirect url="http://yahoo.com/" ?>
+
+Or manually?
+<?dada redirect url="http://yahoo.com/" ?>
 };
+#diag 'is now' . $ar_str;
+#diag '$should_be' . $should_be;
 
 ok($ar_str eq $should_be, "yeah, they match up!"); 
 undef $ar_str; 
@@ -543,30 +570,35 @@ my $ar_str = q{
 	<p><a href="[redirect=http://gmail.com/blah.cgi?f=test]">Gmail QS Test</a></p>
 	
 	<p><a href="<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>">Yahoo QS Test</a></p>
+	
+	<p><a href = "http://example.com/randomspaces.html">Huh?</a></p>
 }; 
 
 $should_be = q{
-	<p><a href="http://google.com">Gooooogle</a></p>
+	<p><a href="<?dada redirect url="http://google.com" ?>">Gooooogle</a></p>
 	
 	<p><a href="[redirect=http://gmail.com]">Gmail!</a></p>
 	
 	<p><a href="<?dada redirect url="http://yahoo.com" ?>">Yahoo!</a></p>
 	
-	<p><a href="http://google.com/test.html">Google Test</a></p>
+	<p><a href="<?dada redirect url="http://google.com/test.html" ?>">Google Test</a></p>
 	
 	<p><a href="[redirect=http://gmail.com/test.html]">Gmail Testl</a></p>
 	
 	<p><a href="<?dada redirect url="http://yahoo.com/test.html" ?>">Yahoo Test</a></p>
 	
-	<p><a href="http://google.com/blah.cgi?f=test">Google QS Test</a></p> 
+	<p><a href="<?dada redirect url="http://google.com/blah.cgi?f=test" ?>">Google QS Test</a></p> 
 	
 	<p><a href="[redirect=http://gmail.com/blah.cgi?f=test]">Gmail QS Test</a></p>
 	
 	<p><a href="<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>">Yahoo QS Test</a></p>
+	
+	<p><a href = "<?dada redirect url="http://example.com/randomspaces.html" ?>">Huh?</a></p>
 };
 
-ok($ar_str eq $should_be, "yeah, they match up! (HTML)"); 
+$ar_str = $lc->auto_redirect_tag($ar_str, 'HTML');
 
+ok($ar_str eq $should_be, "yeah, they match up! (HTML)"); 
 undef $ar_str; 
 undef $should_be;
 

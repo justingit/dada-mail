@@ -22,6 +22,7 @@ use DADA::App::Guts;
 use Fcntl qw(LOCK_SH);
 use Carp qw(croak carp); 
 
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
 
 sub _init { 
 	
@@ -320,22 +321,25 @@ sub parse_string {
     my $str  = shift;
 	my $type = shift || 'PlainText'; 
 
-	#warn "Auto Parsing Test!"; 
+	warn '$str before: ' . $str
+	 if $t; 
+	
 	if($self->{ls}->param('tracker_auto_parse_links') == 1){ 
-		# warn "it's on!"; 
+		warn 'auto redirecting tags.'
+			if $t;
 		$str = $self->auto_redirect_tag($str, $type); 
+		warn '$str after auto redirect: ' . $str
+			if $t; 
 	}
 	else { 
-		# ... 
-		# warn "it's off."; 
 	}
 
-	#warn "now, the string looks like this! \n $str"; 
-	
     my $pat = $self->redirect_regex();
-    $str =~ s/$pat/&redirect_encode($self, $mid, $1)/eg;
+    $str =~ s/($pat)/&redirect_encode($self, $mid, $1)/ge;
 
-    #	carp "here's the string: $str";
+	warn '$str final: ' . $str
+	 if $t;
+	
     return $str;
 }
 
@@ -365,8 +369,13 @@ sub auto_redirect_tag {
 		     return if $tag ne 'a';  # we only look closer at <a ...>
 			 my $link =  $attr{href}; 
 
+			warn '$link: ' . $link
+			 if $t; 
+			
 			# Skip links that are already tagged up!
 			if($link =~ m/(^(\<\!\-\-|\[|\<\?))|((\]|\-\-\>|\?\>)$)/){ 
+				warn '$link looks to contain tags? skipping.'
+				 if $t; 
 				return; 
 			}
 			else { 
@@ -374,8 +383,16 @@ sub auto_redirect_tag {
 			}
 
 			my $redirected_link = $self->redirect_tagify($link); 
+			warn '$redirected_link: ' . $redirected_link
+			 if $t; 
+			
 			my $qm_link         = quotemeta($link);
-			$self->{auto_redirect_tmp} =~ s/(href\=|href\=\")$qm_link/$1$redirected_link/;
+			warn '$link: ' . $link
+				if $t; 
+			warn '$qm_link: ' . $qm_link
+				if $t; 
+			
+				$self->{auto_redirect_tmp} =~ s/(href(\s*)\=(\s*)\"?)$qm_link/$1$redirected_link/;
 		}
 	
 	
@@ -392,36 +409,100 @@ sub auto_redirect_tag {
 	}
 	else { 
 		
-		my $tmp_s = $s; 
+		# Find me the URLs in this string!
 		my @uris;
 		my $finder = URI::Find->new(sub {
 		    my($uri) = shift;
-			push @uris, $uri;
+			push(@uris, $uri->as_string);
+			warn '$uri: ' . $uri
+			 if $t;
 			return $uri; 
 		});
 		$finder->find(\$s);
-		foreach my $specific_url(@uris){ 
+		
+		require DADA::Security::Password; 
+		
+		my $links = [];
+		
+		# Get only unique URLS: 
+		my %seen;
+		my @unique_uris = grep { ! $seen{$_}++ } @uris;
+		# Sort by longest, to shortest: 
+		@unique_uris = sort {length $b <=> length $a} @unique_uris;
+		
+		for my $specific_url(@unique_uris){ 
 			
-			my $qm_link1 = quotemeta('[redirect='.$specific_url.']'); 
-			my $qm_link2 = quotemeta('url="'.$specific_url.'"'); 
+			# This is probably a job for Parse::RecDescent, but I'm a dumb, dumb, person
+			# Whoa, let's hide any URLs that already have redirect tags around them!
 			
-			# URI::Find changes the URL sometimes and adds a, "/" at the end. What?
+			
+			# A few cases we'll look for... 
+			
+			# Old School! 
+			push(@$links,
+					{ 
+						str   => '[redirect='.$specific_url.']', 
+						regex => quotemeta('[redirect='.$specific_url.']')
+					},
+				); 
+			push(@$links,
+					{ 
+						str   => '<?dada redirect url="' . $specific_url . '" ?>', 
+						regex => '\<\?dada(\s+)redirect(\s+)url\=(\"?)' . quotemeta($specific_url) . '(\"?)(\s+)\?\>',
+					},
+				); 
+			
+			# Annoying URI::Find Behavior: 
+			# Changes the URL sometimes and adds a, "/" at the end. Whazzah?
 			my $other_specific_url = $specific_url; 
 			   $other_specific_url =~ s/\/$//;
-			my $qm_link3 = quotemeta('[redirect='.$other_specific_url.']'); 
-			my $qm_link4 = quotemeta('url="'.$other_specific_url.'"');			if($tmp_s =~ m/$qm_link1|$qm_link2|$qm_link3|$qm_link4/g){ 
-				# ... 
-			}
-			else { 
-				my $redirected = $self->redirect_tagify($specific_url);
-				my $qm_link    = quotemeta($specific_url); 
-				$s =~ s/$qm_link/$redirected/;
-			}
+			# Old School! 
+			push(@$links,
+					{ 
+						str   => '[redirect='.$other_specific_url.']', 
+						regex => quotemeta('[redirect='.$other_specific_url.']')
+					},
+				); 
+			push(@$links,
+					{ 
+						str   => '<?dada redirect url="' . $other_specific_url . '" ?>', 
+						regex => '\<\?dada(\s+)redirect(\s+)url\=(\"?)' . quotemeta($other_specific_url) . '(\"?)(\s+)\?\>',
+					},
+				);
+			
 		}
+		
+		# Switch 'em out so my regex is...somewhat simple: 
+		my %out_of_the_way; 
+		for my $l(@$links){ 
+			my $key = '_CLICKTHROUGH_TMP_' . DADA::Security::Password::generate_rand_string('1234567890abcdefghijklmnopqestuvwxyz', 16) . '_CLICKTHROUGH_TMP_'; 
+			$out_of_the_way{$key} = $l; 
+			my $qm_l = $l->{regex}; 
+			$s =~ s/$qm_l/$key/g; 
+		}
+	
+		
+		for my $specific_url(@unique_uris){ 
+			warn '$specific_url ' . $specific_url
+				if $t; 
+			my $qm_link    = quotemeta($specific_url); 
+			my $redirected = $self->redirect_tagify($specific_url);
+			warn '$redirected ' . $redirected
+				if $t;
+			# (somewhat simple regex) 
+			$s =~ s/([^redirect\=\"])($qm_link)/$1$redirected/g;
+		}
+		
+		# Now, put 'em back!
+		for (keys %out_of_the_way){ 
+			my $str = $out_of_the_way{$_}->{str}; 
+			$s =~ s/$_/$str/g; 
+		}
+			
+	
 		return $s; 
 	}
-
-
+	
 }
 
 
@@ -536,8 +617,12 @@ sub get_redirect_tag_atts {
 			$atts->{$1} = $2; 
 		} 
 	}
-#	use Data::Dumper; 
-#	die Data::Dumper::Dumper($atts); 
+	
+	if($t){ 
+		warn 'found tag atts:'; 
+		require Data::Dumper; 
+		warn Data::Dumper::Dumper($atts); 
+	}
 	return $atts; 
 	
 }
@@ -552,8 +637,9 @@ sub redirect_encode {
     croak 'no mid! '
       if !defined $mid;
     my $redirect_tag = shift;
-	#die $redirect_tag; 
-
+	warn '$redirect_tag: ' . $redirect_tag
+		if $t; 
+		
 	# get the brackets out of the way
 
 	
@@ -561,17 +647,27 @@ sub redirect_encode {
 
 	my $url = $atts->{url}; 
 	delete($atts->{url}); 
+		
+	warn '$url: ' . $url
+		if $t; 
 	
 	if($self->can_be_redirected($url)){ 
-				
+		warn 'can_be_redirected returned true.'
+			if $t; 
+			
 	    my $key = $self->reuse_key( $mid, $url, $atts );
 		
 	    if ( !defined($key) ) {
 	        $key = $self->add( $mid, $url, $atts);
 	    }
-	    return $DADA::Config::PROGRAM_URL . '/r/'
+	    my $redirect_url =  $DADA::Config::PROGRAM_URL . '/r/'
 	      . $self->{name} . '/'
 	      . $key . '/';
+		warn '$redirect_url: ' . $redirect_url
+			if $t; 
+		
+		return $redirect_url; 
+		
 	}
 	else { 
 		carp "Given an invalid email to create a redirect from, '$url' - skipping!";

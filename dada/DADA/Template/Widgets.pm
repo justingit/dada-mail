@@ -1948,9 +1948,9 @@ else {
 	my %date_params = date_params(); 
 	my %final_params = (
 		%Global_Template_Variables,					
+		%date_params,
 		%$template_vars,
 		%_ht_tmpl_set_params,
-		%date_params,
 	);
 	if(exists($args->{-list})){ 
 		$final_params{list} =  $args->{-list};  

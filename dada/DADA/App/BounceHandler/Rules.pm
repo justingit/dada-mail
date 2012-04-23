@@ -641,7 +641,7 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                 Examine => {
                     Message_Fields => {
                         Action                  => [qw(failed)],
-                        Status                  => [qw(5.0.0)],
+                        Status                  => [qw(5.0.0 5.5.0)],
                         'Diagnostic-Code_regex' => [ (qr/554 delivery error/) ],
                     },
                     Data => {
@@ -773,7 +773,25 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                 },
             }
         },
+        { 
+	
+			exim_retry_timeout_exceeded => {
+             Examine => {
+                 Message_Fields => {
+                     Guessed_MTA => [qw(Exim)],
+                     'Diagnostic-Code_regex' => [ (qr/retry timeout exceeded/) ],
 
+                 },
+                 Data => {
+                     Email => 'is_valid',
+                     List  => 'is_valid',
+                 }
+             },
+             Action => {
+                 add_to_score => 'softbounce_score',
+             },
+         }
+     },
         {
             exchange_user_unknown => {
                 Examine => {

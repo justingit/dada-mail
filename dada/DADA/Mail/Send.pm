@@ -1381,6 +1381,9 @@ sub mass_send {
 			# Tests
 			# Any mailing type, except, "list" 
 			# 
+			warn 'about to call _log_sub_count, $fields{\'Message-ID\'}:' . $fields{'Message-ID'} . ', $num_subscribers: ' . $num_subscribers
+				if $t;
+				
             $self->_log_sub_count(
                                    -msg_id          => $fields{'Message-ID'}, 
                                    -num_subscribers => $num_subscribers,
@@ -3019,7 +3022,7 @@ sub _log_sub_count {
 	my $self = shift; 
 	
 	my %args = (-msg_id          => undef, 
-				-num_subscribers => undef, 
+				-num_subscribers => 0, 
 				@_
 				);
 	
@@ -3051,6 +3054,8 @@ sub _log_sub_count {
 						-ls   => $self->{ls}, 
 					}
 				); 
+		   warn '_log_sub_count: $msg_id: ' . $msg_id . '$num_subscribers:' . $num_subscribers
+			if $t; 
 		   $r->sc_log(
 			{ 
 				-mid => $msg_id, 

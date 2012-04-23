@@ -119,7 +119,7 @@ sub test_bounces {
 
     my $self = shift;
     my ($args) = @_;
-    my $list;
+    my $list = undef;
     my $test_type;
 
     if ( exists( $args->{-list} ) ) {
@@ -201,7 +201,7 @@ sub test_files {
 
     my $self = shift;
     my ($args) = @_;
-    my $list;
+    my $list = undef;
     my $test_files;
     my $r = '';
     if ( exists( $args->{-list} ) ) {
@@ -540,7 +540,7 @@ sub parse_bounce {
     my ($args)  = @_;
 
     my $list    = undef; 
-	if(exists($args->{-list})){ 
+	if(exists($args->{-list}) && defined($args->{-list})){ 
 		$list = $args->{-list};
 	}
 	else { 
