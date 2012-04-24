@@ -1982,7 +1982,7 @@ sub url_test {
 	my $r = ''; 
 	require LWP::Simple; 
 	return $r if ! $url;
-	$LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); 
+	eval { $LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); };
 	if(!LWP::Simple::get($url)){ 
 		$r .= $q->p({-class => 'smallred'}, $q->i('Error fetching URL!'));
 	} 

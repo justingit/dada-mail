@@ -1,9 +1,10 @@
 package DADA::App::MassSend;
 
-#use warnings; 
 
-use lib qw(../../ ../../perllib);
-
+use lib qw(
+	../../ 
+	../../DADA/perllib
+);
 
 use DADA::Config qw(!:DEFAULT);  
 use DADA::App::Guts; 
@@ -656,7 +657,7 @@ sub send_url_email {
 						croak "You did not fill in a URL!"; 
 					}
                     require LWP::Simple;
-					$LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); 
+					eval { $LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); }; 
                     my $good_try = LWP::Simple::get($url);
                     $t           = html_to_plaintext(
 										{
@@ -681,7 +682,7 @@ sub send_url_email {
 				#/ Redirect tag check
 				if($ls->param('clickthrough_tracking') == 1){ # optimize this, just because fetching a URL could be slow. 
 					require   LWP::Simple;
-					$LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); 
+					eval { $LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); }; 
 		            my $rtc = LWP::Simple::get($url);
 					return undef if redirect_tag_check($rtc, $list, $root_login) eq undef;
 				}
@@ -695,7 +696,7 @@ sub send_url_email {
 				if($@){ 
 					$errors .= "Problems with sending a webpage! Make sure you've correctly entered the URL to your webpage!\n"; 
 					$errors .= "* Returned Error: $@"; 
-					$LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')');
+					eval { $LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); };
 					my $can_fetch = LWP::Simple::get($url);
 					if($can_fetch){ 
 						$errors .= "* Can successfully fetch, " . $url . "\n"; 

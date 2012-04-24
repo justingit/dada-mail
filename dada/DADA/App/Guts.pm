@@ -1,5 +1,12 @@
 package DADA::App::Guts;
 use 5.008_001; 
+
+use lib qw(
+	../../ 
+	../../DADA/perllib
+);
+
+
 use Encode qw(encode decode);
 use Params::Validate ':all';
 
@@ -32,7 +39,6 @@ noted here.
 
 
 
-use lib qw(../../ ../ ../../ ../../perllib);
 
 
 
