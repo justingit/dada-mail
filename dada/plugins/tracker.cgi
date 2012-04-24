@@ -360,6 +360,7 @@ sub default_tmpl {
   </td>
   </tr> 
 
+<!-- 
  <tr> 
   <td> 
    <p>
@@ -374,6 +375,7 @@ sub default_tmpl {
    </p>
   </td>
   </tr> 
+--> 
 
 
    <tr> 
@@ -2324,12 +2326,7 @@ redirect tags and then clickthrough-tracked links.
 
 When enabled, allows you to track open/viewing of messages. Will only work with HTML 
 messages and only if your subscribers individualy allow images to be shown in email 
-messages they receive. 
-
-=head3 Enable Subscriber Count Logging
-
-When enabled, tracks how many subscribers are on your mailing list when each mass
-mailing goes out
+messages they receive.
 
 =head3 Enable "Forward to a Friend" Logging 
 

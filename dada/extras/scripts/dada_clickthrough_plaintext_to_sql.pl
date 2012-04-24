@@ -110,7 +110,6 @@ foreach my $list(@lists){
 
             }
             elsif ( $url eq 'num_subscribers' ) {				
-               #  $report->{$mid}->{num_subscribers} = $extra;
 				$dlc->sc_log(
 					{
 						-timestamp => convert_timestamp($t), 

@@ -341,8 +341,6 @@ sub o_log {
 }
 
 sub sc_log {
-    #my ( $self, $mid, $sc ) = @_;
-
 	my $self      = shift; 
     my ($args)    = @_;
 	my $timestamp = undef; 
@@ -366,7 +364,7 @@ sub sc_log {
 	}
 	
 	
-    if ( $self->{ls}->param('enable_subscriber_count_logging') == 1 ) {
+    #if ( $self->{ls}->param('enable_subscriber_count_logging') == 1 ) {
 		my $query =
 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event, details) VALUES (?, ?, ?, ?, ?' . $place_holder_string . ')';
         
@@ -382,10 +380,10 @@ sub sc_log {
         $sth->finish;
 
         return 1;
-    }
-    else {
-        return 0;
-    }
+    #}
+    #else {
+    #    return 0;
+    #}
 }
 
 

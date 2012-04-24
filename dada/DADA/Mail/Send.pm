@@ -3035,18 +3035,16 @@ sub _log_sub_count {
 	return 
 		if $self->list_type ne 'list'; 
 	 	
-	return 
-		if $self->{ls}->param('enable_subscriber_count_logging') != 1; 
+	#return 
+	#	if $self->{ls}->param('enable_subscriber_count_logging') != 1; 
 	
 	my $msg_id    = $args{-msg_id}; 
 	   $msg_id    =~ s/\<|\>//g;
  	   $msg_id    =~ s/\.(.*)//; 
 			
 	my $num_subscribers = $args{-num_subscribers}; 
-			
-	# A new object every time this is called? No!, actually, only called once. Ok, ok. 
-	
-	if($self->{ls}->param('enable_subscriber_count_logging') == 1){ 	
+				
+	#if($self->{ls}->param('enable_subscriber_count_logging') == 1){ 	
 		require DADA::Logging::Clickthrough; 
 		my $r = DADA::Logging::Clickthrough->new(
 					{
@@ -3063,7 +3061,7 @@ sub _log_sub_count {
 			}
 		); 
 
-	}
+#	}
 }
 
 
