@@ -1149,7 +1149,7 @@ sub list_invite {
 			); 
 		   $fm->mass_mailing(1);
            $fm->use_email_templates(0); 
-           $fm->list_invitation(1); 
+           $fm->list_type('invitelist'); 
 		 my ($header_glob, $message_string); 
 		eval { 
         	($header_glob, $message_string) =  $fm->format_headers_and_body(-msg => $msg_as_string );
@@ -1618,6 +1618,7 @@ sub just_subscribed_mass_mailing {
 	require DADA::App::FormatMessages;  
 	my $fm = DADA::App::FormatMessages->new( -List => $args->{-list} );
 	$fm->mass_mailing(1);
+	$fm->list_type('just_subscribed');
 	$fm->use_email_templates(0); 
 
 	require DADA::MailingList::Settings;
@@ -1694,9 +1695,8 @@ sub just_unsubscribed_mass_mailing {
 	my $fm = DADA::App::FormatMessages->new( -List => $args->{-list} );
 	$fm->use_email_templates(0); 
 	$fm->mass_mailing(1);
-	$fm->just_unsubscribed_mass_mailing(1);
+	$fm->list_type('just_unsubscribed');
 	
-
 	require DADA::MailingList::Settings;
 	my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
 	my ($header_glob, $message_string) =  $fm->format_headers_and_body(
