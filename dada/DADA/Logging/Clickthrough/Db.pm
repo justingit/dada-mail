@@ -251,7 +251,6 @@ sub sc_log {
 		$timestamp = scalar(localtime()); 
 	}
 	
-	#if($self->{ls}->param('enable_subscriber_count_logging') == 1){ 
 	    chmod($DADA::Config::FILE_CHMOD , $self->clickthrough_log_location)
 	    	if -e $self->clickthrough_log_location; 
 		open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $self->clickthrough_log_location)
@@ -259,10 +258,9 @@ sub sc_log {
 		flock(LOG, LOCK_SH);
 		print LOG $timestamp . "\t" . $args->{-mid} . "\t" . 'num_subscribers' . "\t" . $args->{-num} . "\n";
 		close (LOG);
-	#	return 1; 
-	#}else{ 
-	#	return 0;
-	#}
+}
+sub logged_sc {
+	return 1; 
 }
 
 
