@@ -2,11 +2,79 @@
 
 =head1 Dada Mail Changelog for version 5.x.x
 
+=head1 5.0.3
+
+=head2 Summary 5.0.3
+
+This release contains primarily  bugfixes found in the v5.0.2 release of Dada Mail.
+Many of the issues fix deal with Discussion Mailing Lists 
+
+If upgrading from v5.0.0 - v5.0.2, you will not need to create a new config file.
+
+=head2 Changes 5.0.3
+
+=head3 Small List, Admin Template Changes
+
+The, following meta tag was added to the List and Admin templates: 
+
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	
+This is to help Internet Explorer for Windows use the latest HTML/css fancy features. 
+
+=head3 Tracker: Subscriber Count Checks
+
+It's been found that if you do not have, B<Enable Subscriber Count Logging> checked in the Tracker plugin, no 
+logs will be reported for your mass mailings. Because of this, this feature has been B<removed>, but will be 
+constantly enabled - so, one less thing to worry about. 
+
+There's also been an issue revealed that if a mass mailing is created, but for whatever reason, fails 
+to send out automatically, this type of tracking is never done, thus again, breaking the Tracker reports for 
+your mass mailing. The reason for a mass mailing being created, but not sent right away remains a mystery and
+does not happen every time a mass mailing is created, only a minority of the time, for some installations. 
+
+A check has been put in place to look for this type of tracking information and, if not found, the "Number of Subscribers" 
+tracking information will be put into the Tracker logs, without any further manual intervention. 
+
+=head2 Bugfixes 5.0.3
+
+=head3 Can't call method "agent" on an undefined value " when fetching a webpage
+
+https://github.com/justingit/dada-mail/issues/280
+
+This error will happen to some, when they try using the B<Send a Webpage> screen or use a 
+URL for a list template. This error cropped up when attempting to fix issue #267 
+(L<https://github.com/justingit/dada-mail/issues/267>) 
+
+=head3 Tracker: Disabling, "Enable Subscriber Count Logging" basically breaks Tracker reports
+
+https://github.com/justingit/dada-mail/issues/281
+
+The problem here is that if you disable counting the number of subscribers you have, when you do a 
+mass mailing, you basically disable tracking that message, since the tracker is looking for the 
+entry about the #subs you have, when creating its report table. Because of this, this type of tracking 
+will always be enabled.
+
+=head3 Discussion Lists may send List Invites without template tags parsed
+
+https://github.com/justingit/dada-mail/issues/282
+
+This problem happens with discussion lists (and shouldn't affect any other type of mailing list) 
+- you'll see that your invitations go to your invitees, without the template tags parsed. 
+
+=head3 "Welcome", "Farewell" mass email message not templated out for discussion lists
+
+https://github.com/justingit/dada-mail/issues/283
+
+Similar to issue#282, these messages are sent out, without being templated out. 
+
 =head1 5.0.2
 
 =head2 Summary 5.0.2
 
 This release contains primarily  bugfixes found in the v5.0.1 release of Dada Mail. 
+
+If upgrading from v5.0.0 - v5.0.1, you will not need to create a new config file.
+
 
 =head2 Changes 5.0.2
 
@@ -58,6 +126,9 @@ https://github.com/justingit/dada-mail/issues/279
 =head2 Summary 5.0.1
 
 This release contains primarily  bugfixes found in the v5.0.0 release of Dada Mail. 
+
+If upgrading from v5.0.0, you will not need to create a new config file.
+
 
 =head2 Changes 5.0.1
 
