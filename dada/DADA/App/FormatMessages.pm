@@ -83,14 +83,13 @@ my %allowed = (
 	reset_from_header              => 1, 
 	im_encoding_headers            => 0, 
 	mass_mailing                   => 0, 
-	just_unsubscribed_mass_mailing => 0, 
-	list_invitation                => 0, 	
+	list_type                      => 'list',
 	no_list                        => 0,
 	
 	override_validation_type     => undef, 
 );
 
-
+# list_type: # list, invitelist, just_subscribed, just_unsubscribed...
 
 =pod
 
@@ -430,8 +429,9 @@ sub _format_text {
 				if(
 					$self->no_list                                   != 1 &&
 					$self->mass_mailing                              == 1 &&
+					$self->list_type eq                            'list' &&
 					$self->{ls}->param('disable_discussion_sending') != 1 &&
-					$self->{ls}->param('group_list')                 == 1 &&  
+					$self->{ls}->param('group_list')                 == 1 &&
 					$self->{ls}->param('discussion_template_defang') == 1
 				) { 
 					
@@ -454,10 +454,10 @@ sub _format_text {
 				);
 				
 				if($self->mass_mailing == 1){ 
-					if($self->just_unsubscribed_mass_mailing == 1){ 
+					if($self->list_type eq 'just_unsubscribed'){ 
 						# ... well, nothing, really. 
 					}
-					elsif($self->list_invitation == 1){ 
+					elsif($self->list_type eq 'invitelist'){ 
 						$content = $self->subscription_confirmationation(
 							{
 								-str => $content, 

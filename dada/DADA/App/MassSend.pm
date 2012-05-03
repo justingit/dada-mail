@@ -1,9 +1,10 @@
 package DADA::App::MassSend;
 
-#use warnings; 
 
-use lib qw(../../ ../../perllib);
-
+use lib qw(
+	../../ 
+	../../DADA/perllib
+);
 
 use DADA::Config qw(!:DEFAULT);  
 use DADA::App::Guts; 
@@ -656,7 +657,7 @@ sub send_url_email {
 						croak "You did not fill in a URL!"; 
 					}
                     require LWP::Simple;
-					$LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); 
+					eval { $LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); }; 
                     my $good_try = LWP::Simple::get($url);
                     $t           = html_to_plaintext(
 										{
@@ -681,7 +682,7 @@ sub send_url_email {
 				#/ Redirect tag check
 				if($ls->param('clickthrough_tracking') == 1){ # optimize this, just because fetching a URL could be slow. 
 					require   LWP::Simple;
-					$LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); 
+					eval { $LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); }; 
 		            my $rtc = LWP::Simple::get($url);
 					return undef if redirect_tag_check($rtc, $list, $root_login) eq undef;
 				}
@@ -695,7 +696,7 @@ sub send_url_email {
 				if($@){ 
 					$errors .= "Problems with sending a webpage! Make sure you've correctly entered the URL to your webpage!\n"; 
 					$errors .= "* Returned Error: $@"; 
-					$LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')');
+					eval { $LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); };
 					my $can_fetch = LWP::Simple::get($url);
 					if($can_fetch){ 
 						$errors .= "* Can successfully fetch, " . $url . "\n"; 
@@ -1148,7 +1149,7 @@ sub list_invite {
 			); 
 		   $fm->mass_mailing(1);
            $fm->use_email_templates(0); 
-           $fm->list_invitation(1); 
+           $fm->list_type('invitelist'); 
 		 my ($header_glob, $message_string); 
 		eval { 
         	($header_glob, $message_string) =  $fm->format_headers_and_body(-msg => $msg_as_string );
@@ -1617,6 +1618,7 @@ sub just_subscribed_mass_mailing {
 	require DADA::App::FormatMessages;  
 	my $fm = DADA::App::FormatMessages->new( -List => $args->{-list} );
 	$fm->mass_mailing(1);
+	$fm->list_type('just_subscribed');
 	$fm->use_email_templates(0); 
 
 	require DADA::MailingList::Settings;
@@ -1693,9 +1695,8 @@ sub just_unsubscribed_mass_mailing {
 	my $fm = DADA::App::FormatMessages->new( -List => $args->{-list} );
 	$fm->use_email_templates(0); 
 	$fm->mass_mailing(1);
-	$fm->just_unsubscribed_mass_mailing(1);
+	$fm->list_type('just_unsubscribed');
 	
-
 	require DADA::MailingList::Settings;
 	my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
 	my ($header_glob, $message_string) =  $fm->format_headers_and_body(

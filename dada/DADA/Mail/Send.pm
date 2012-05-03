@@ -1175,13 +1175,6 @@ sub mass_send {
 			$self->list_type
 		);
         
-        # Seems like we should still be able to do this if basically if the lock is unlocked...
-        
-      #  my $restart_status = $mailout->status; 
-       # if($restart_status->{should_be_restarted} == 1){ 
-        
-
- 
         if($mailout->should_be_restarted == 1){ 
         
             warn '[' . $self->{list} . '] mailout is reporting the mailing should be restarted.'
@@ -1203,13 +1196,9 @@ sub mass_send {
     
     }else { 
 
-		
-		
         warn '[' . $self->{list} . '] Creating MailOut'
             if $t; 
 
-		
-	
 		$mailout->create({
                         -fields          => {%fields},
                         -list_type       => $self->list_type,
@@ -1244,11 +1233,9 @@ sub mass_send {
 
 
 
-    # I don't know why this is here...
+	# This is for the Tracker.
 	my $num_subscribers = $lh->num_subscribers;
 	   $self->num_subscribers($num_subscribers); 
-	
-
 	
 	if( ! $mailout->still_around ){ 
 		warn '[' . $self->{list} . ']  mailing Seems to have been removed. exit()ing'
@@ -3017,54 +3004,77 @@ sub _massaged_for_archive {
 
 
 
-sub _log_sub_count { 
+sub _log_sub_count {
 
-	my $self = shift; 
-	
-	my %args = (-msg_id          => undef, 
-				-num_subscribers => 0, 
-				@_
-				);
-	
-	return 
-	 	if $self->mass_test; 
-	
-	return 
-		if $self->restart_with; # Meaning, we're restarting the message 
-								# We probably shouldn't log #subs twice
-	return 
-		if $self->list_type ne 'list'; 
-	 	
-	return 
-		if $self->{ls}->param('enable_subscriber_count_logging') != 1; 
-	
-	my $msg_id    = $args{-msg_id}; 
-	   $msg_id    =~ s/\<|\>//g;
- 	   $msg_id    =~ s/\.(.*)//; 
-			
-	my $num_subscribers = $args{-num_subscribers}; 
-			
-	# A new object every time this is called? No!, actually, only called once. Ok, ok. 
-	
-	if($self->{ls}->param('enable_subscriber_count_logging') == 1){ 	
-		require DADA::Logging::Clickthrough; 
-		my $r = DADA::Logging::Clickthrough->new(
-					{
-						-list => $self->{list},
-						-ls   => $self->{ls}, 
-					}
-				); 
-		   warn '_log_sub_count: $msg_id: ' . $msg_id . '$num_subscribers:' . $num_subscribers
-			if $t; 
-		   $r->sc_log(
-			{ 
-				-mid => $msg_id, 
-				-num => $num_subscribers
-			}
-		); 
+    my $self = shift;
 
-	}
+    my %args = (
+        -msg_id          => undef,
+        -num_subscribers => 0,
+        @_
+    );
+
+    return
+      if $self->list_type ne 'list';
+
+    return
+      if $self->mass_test;
+
+
+	require DADA::Logging::Clickthrough;
+	my $r = DADA::Logging::Clickthrough->new(
+	    {
+	        -list => $self->{list},
+	        -ls   => $self->{ls},
+	    }
+	);
+	
+	my $msg_id = $args{-msg_id};
+	   $msg_id =~ s/\<|\>//g;
+	   $msg_id =~ s/\.(.*)//;
+	my $num_subscribers = $args{-num_subscribers};
+    
+	warn 'logged_sc is returning, "' . $r->logged_sc({-mid => $msg_id}) . '"'
+		if $t; 
+		
+    if ( $self->restart_with ) {
+		if($r->logged_sc({-mid => $msg_id})){ 
+        	# We got it. 
+			return;
+		}
+		else { 
+			# We don't got it?!
+			warn '_log_sub_count: $msg_id: ' 
+	          . $msg_id
+	          . '$num_subscribers:'
+	          . $num_subscribers
+	          if $t;
+	        $r->sc_log(
+	            {
+	                -mid => $msg_id,
+	                -num => $num_subscribers
+	            }
+	        );	
+		}
+    }
+    else {
+
+		warn '_log_sub_count: $msg_id: ' 
+          . $msg_id
+          . '$num_subscribers:'
+          . $num_subscribers
+          if $t;
+        $r->sc_log(
+            {
+                -mid => $msg_id,
+                -num => $num_subscribers
+            }
+        );
+
+    }
+
 }
+
 
 
 

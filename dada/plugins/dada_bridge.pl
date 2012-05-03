@@ -1736,6 +1736,7 @@ sub validate_msg {
 				print "\t\tMessage has more than one 'From' header? Unsupported email message - will reject!\n"
 					if $verbose;
 				$errors->{multiple_from_addresses} = 1;
+				
 			}
 			else { 
 		    	my @count = Email::Address->parse($entity->head->get( 'From', 0)); 
@@ -1815,7 +1816,7 @@ sub validate_msg {
             ( $errors, $notice ) =
               test_Check_List_Owner_Return_Path_Header( $entity, $errors, $li );
             print $notice
-              if $notice != 0 && $verbose;
+              if $verbose;
         }
 
     }

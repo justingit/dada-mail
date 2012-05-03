@@ -341,52 +341,88 @@ sub o_log {
 }
 
 sub sc_log {
-    #my ( $self, $mid, $sc ) = @_;
-
-	my $self      = shift; 
+    my $self      = shift;
     my ($args)    = @_;
-	my $timestamp = undef; 
-	if(exists($args->{-timestamp})){ 
-		$timestamp = $args->{-timestamp};
-	}
-	my $ts_snippet = ''; 
-	my $place_holder_string = ''; 
-	
-	if(defined($timestamp)){ 
-		$ts_snippet = 'timestamp,'; 
-		$place_holder_string .= ' ,?';
-	}
+    my $timestamp = undef;
+    if ( exists( $args->{-timestamp} ) ) {
+        $timestamp = $args->{-timestamp};
+    }
+    my $ts_snippet          = '';
+    my $place_holder_string = '';
 
-	my $remote_address = undef; 
-	if(!exists($args->{-remote_addr})){ 
-		$remote_address = $self->remote_addr;
-	}
-	else { 
-		$remote_address = $args->{-remote_addr}; 
-	}
-	
-	
-    if ( $self->{ls}->param('enable_subscriber_count_logging') == 1 ) {
-		my $query =
-'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event, details) VALUES (?, ?, ?, ?, ?' . $place_holder_string . ')';
-        
-		my $sth = $self->{dbh}->prepare($query);
-		if(defined($timestamp)){ 
-	        $sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'num_subscribers', $args->{-num})
-				or carp "cannot do statement! $DBI::errstr\n";
-		}
-		else { 
-	        $sth->execute($self->{name}, $remote_address, $args->{-mid}, 'num_subscribers', $args->{-num})
-				or carp "cannot do statement! $DBI::errstr\n";
-		}
-        $sth->finish;
+    if ( defined($timestamp) ) {
+        $ts_snippet = 'timestamp,';
+        $place_holder_string .= ' ,?';
+    }
 
-        return 1;
+    my $remote_address = undef;
+    if ( !exists( $args->{-remote_addr} ) ) {
+        $remote_address = $self->remote_addr;
     }
     else {
+        $remote_address = $args->{-remote_addr};
+    }
+
+    my $query =
+        'INSERT INTO '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+      . '(list, '
+      . $ts_snippet
+      . 'remote_addr, msg_id, event, details) VALUES (?, ?, ?, ?, ?'
+      . $place_holder_string . ')';
+
+    my $sth = $self->{dbh}->prepare($query);
+    if ( defined($timestamp) ) {
+        $sth->execute(
+            $self->{name}, $timestamp,        $remote_address,
+            $args->{-mid}, 'num_subscribers', $args->{-num}
+        ) or carp "cannot do statement! $DBI::errstr\n";
+    }
+    else {
+        $sth->execute(
+            $self->{name},     $remote_address, $args->{-mid},
+            'num_subscribers', $args->{-num}
+        ) or carp "cannot do statement! $DBI::errstr\n";
+    }
+    $sth->finish;
+
+    return 1;
+}
+
+
+
+
+sub logged_sc {
+    my $self = shift;
+    my ($args) = @_;
+    my $query =
+        'SELECT COUNT(*) from '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+      . ' WHERE list = ? AND msg_id = ? AND event = ?';
+
+    warn 'Query: ' . $query
+      if $t;
+
+    my $sth = $self->{dbh}->prepare($query);
+       $sth->execute( $self->{name}, $args->{-mid}, 'num_subscribers')
+      	or carp "cannot do statement! $DBI::errstr\n";
+
+    my $count = $sth->fetchrow_array;
+
+    $sth->finish;
+
+    warn '$count is ' . $count
+      if $t;
+
+    if ( $count eq undef ) {
         return 0;
     }
+    else {
+        return $count;
+    }
 }
+
+
 
 
 
