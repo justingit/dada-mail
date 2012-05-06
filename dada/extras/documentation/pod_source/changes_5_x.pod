@@ -67,6 +67,10 @@ https://github.com/justingit/dada-mail/issues/283
 
 Similar to issue#282, these messages are sent out, without being templated out. 
 
+=head3 Can't access 'redirect' field in object of class DADA::App::Subscriptions at mail.cgi line 6733
+
+https://github.com/justingit/dada-mail/issues/288
+
 =head1 5.0.2
 
 =head2 Summary 5.0.2

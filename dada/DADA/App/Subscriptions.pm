@@ -1528,7 +1528,7 @@ sub unsub_confirm {
                 if($ls->param('alt_url_unsub_success_w_qs') == 1){ 
                     $qs = 'list=' . $list . '&rm=unsub&status=1&email=' . uriescape($email);  
                 }
-                my $r = $self->redirect($ls->param('alt_url_unsub_success'), $qs);
+                my $r = $self->alt_redirect($ls->param('alt_url_unsub_success'), $qs);
                 $self->test ? return $r : print $fh safely_encode(  $r) and return;
             
             }else{                
