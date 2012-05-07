@@ -7,7 +7,7 @@
 =head2 Summary 5.0.3
 
 This release contains primarily  bugfixes found in the v5.0.2 release of Dada Mail.
-Many of the issues fix deal with Discussion Mailing Lists 
+Many of the issues fixed deal with Discussion Mailing Lists 
 
 If upgrading from v5.0.0 - v5.0.2, you will not need to create a new config file.
 
