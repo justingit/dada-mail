@@ -1,0 +1,102 @@
+Return-path: <simoni@vhost1.example.com>
+Envelope-to: listowner@example.com
+Delivery-date: Thu, 12 Apr 2012 00:00:08 -0400
+Received: from simoni by vhost1.example.com with local (Exim 4.69 (FreeBSD))
+	(envelope-from <simoni@vhost1.example.com>)
+	id 1SIBCa-000H5b-9j
+	for listowner@example.com; Thu, 12 Apr 2012 00:00:08 -0400
+Date: Thu, 12 Apr 2012 00:00:08 -0400
+From: MAILER-DAEMON@vhost1.example.com (Mail Delivery System)
+To: listowner@example.com
+Precedence: list
+Content-type: multipart/report; report-type=delivery-status;
+	boundary="36DA859EF88.1334195469/mx2.zoneedit.com"; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Subject: Undelivered Mail Returned to Sender
+Message-Id: <E1SIBCa-000H5b-9j@vhost1.example.com>
+
+This is a MIME-encapsulated message.
+--36DA859EF88.1334195469/mx2.zoneedit.com
+Content-Description: Notification
+Content-Type: text/plain; charset=us-ascii
+
+This is the mail system at host mx2.zoneedit.com.
+
+I'm sorry to have to inform you that your message could not
+be delivered to one or more recipients. It's attached below.
+
+For further assistance, please send mail to postmaster.
+
+If you do so, please include this problem report. You can
+delete your own text from the attached returned message.
+
+                   The mail system
+
+<subscriber@example.com>: delivery temporarily suspended: connect to
+    line.example.com[67.18.176.34]: Connection refused
+
+--36DA859EF88.1334195469/mx2.zoneedit.com
+Content-Description: Delivery report
+Content-Type: message/delivery-status
+
+Reporting-MTA: dns; mx2.zoneedit.com
+X-Postfix-Queue-ID: 36DA859EF88
+X-Postfix-Sender: rfc822; bounces@example.com
+Arrival-Date: Tue,  3 Apr 2012 13:54:03 -0700 (PDT)
+
+Final-Recipient: rfc822; subscriber@example.com
+Original-Recipient: rfc822;subscriber@example.com
+Action: failed
+Status: 4.4.1
+Diagnostic-Code: X-Postfix; delivery temporarily suspended: connect to
+    line.example.com[67.18.176.34]: Connection refused
+
+--36DA859EF88.1334195469/mx2.zoneedit.com
+Content-Description: Undelivered Message Headers
+Content-Type: text/rfc822-headers
+Content-Transfer-Encoding: quoted-printable
+
+Received-SPF: none (example.com: No applicable sender policy availa=
+ble) receiver=3Dmx2.zoneedit.com; identity=3Dmailfrom; envelope-from=3D"bou=
+nces@example.com"; helo=3Dvhost1.example.com; client-ip=3D12.16=
+1.105.151
+Received: from vhost1.example.com (vhost1.example.com [12.161.105.1=
+51])
+	by mx2.zoneedit.com (Postfix) with ESMTP id 36DA859EF88
+	for <subscriber@example.com>; Tue,  3 Apr 2012 13:54:03 -0700 (PDT)
+Received: from simoni by vhost1.example.com with local (Exim 4.69 (Free=
+BSD))
+	(envelope-from <bounces@example.com>)
+	id 1SFAlO-000PTp-6r
+	for subscriber@example.com; Tue, 03 Apr 2012 16:55:38 -0400
+Date: Tue, 03 Apr 2012 16:55:38 -0400
+From: "Dada Mail Announcement List" <listowner@example.com>
+To: "Dada Mail Announcement List Subscriber" <subscriber@example.com>
+X-Priority: 3
+Precedence: list
+List: dadatest
+List-Archive: <http://example.com/cgi-bin/dada/mail.cgi/archive/dad=
+a_announce/>
+List-ID: <dadatest.vhost1.example.com>
+List-Owner: <listowner@example.com>
+List-Post: NO
+List-Subscribe: =3D?UTF-8?Q?=3D3Chttp=3D3A//example=3D2Ecom/cgi-bin=
+/dada/mail=3D2Ecgi/s/dada?=3D
+ =3D?UTF-8?Q?=3D5Fannounce/subscriber/example=3D2Ecom/=3D3E?=3D
+List-Unsubscribe: =3D?UTF-8?Q?=3D3Chttp=3D3A//example=3D2Ecom/cgi-b=
+in/dada/mail=3D2Ecgi/u/dada?=3D
+ =3D?UTF-8?Q?=3D5Fannounce/subscriber/example=3D2Ecom/=3D3E?=3D
+List-URL: <http://example.com/cgi-bin/dada/mail.cgi/list/dada_annou=
+nce/>
+Message-ID: <20120403045348.56269773@example.com>
+X-Mailer: Pro Dada 5.0.1=20
+Content-type: multipart/alternative; boundary=3D"_----------=3D_13334432272=
+83300"; charset=3DUTF-8
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+Subject: Dada Mail v5.0.1 Released, Pro Dada Upgrades 25% off until the 25t=
+h, new Upgrade Screencast
+
+
+--36DA859EF88.1334195469/mx2.zoneedit.com--

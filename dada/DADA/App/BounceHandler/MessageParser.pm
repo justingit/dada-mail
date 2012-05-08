@@ -75,6 +75,14 @@ sub run_all_parses {
 	        %{$diagnostics} = ( %{$diagnostics}, %{$ses_diagnostics} )
 	          if $ses_diagnostics;
 	}
+	elsif($self->isa_rfc6522_bounce($entity)) { 
+	  my ( $rfc6522_list, $rfc6522_email, $rfc6522_diagnostics ) =
+          $self->parse_for_rfc6522($entity);
+        $list  ||= $rfc6522_list;
+        $email ||= $rfc6522_email;
+        %{$diagnostics} = ( %{$diagnostics}, %{$rfc6522_diagnostics} )
+          if $rfc6522_diagnostics;		
+	} 
 	elsif($self->bounce_from_secureserver_dot_net($entity)){ 
 		  my ( $ss_list, $ss_email, $ss_diagnostics ) =
 	          $self->parse_for_secureserver_dot_net($entity);
@@ -186,6 +194,7 @@ sub run_all_parses {
     # This is a special case - since this outside module adds pseudo diagonistic
     # reports, we'll say, add them if they're NOT already there:
 
+
     my ( $bp_list, $bp_email, $bp_diagnostics ) =
       $self->parse_using_m_ds_bp($entity);
 
@@ -196,6 +205,8 @@ sub run_all_parses {
 
     %{$diagnostics} = ( %{$diagnostics}, %{$bp_diagnostics} )
       if $bp_diagnostics;
+
+
 
     chomp($email) if $email;
 
@@ -330,12 +341,28 @@ sub find_list_in_list_headers {
     my $entity = shift;
     my @parts  = $entity->parts;
     my $list;
+	my $orig_msg_copy = undef; 
 	
-    if ( $entity->head->mime_type eq 'message/rfc822' ) {
-        my $orig_msg_copy = $parts[0];
-		$list = $self->list_in_list_headers($orig_msg_copy); 
-        
+    if ( $entity->head->mime_type eq 'message/rfc822') {
+        $orig_msg_copy = $parts[0];
+		$list = $self->list_in_list_headers($orig_msg_copy);         
     }
+	elsif($entity->head->mime_type eq 'text/rfc822-headers'){ 
+
+	    require MIME::Parser;
+	    my $parser = new MIME::Parser;
+	    $parser = optimize_mime_parser($parser);
+
+	    eval {
+	        $orig_msg_copy = $parser->parse_data( $entity->bodyhandle->as_string );
+	    };
+	    if ($@) {
+	        warn "Trouble parsing text/rfc822-headers message. $@";
+	    }
+	    else {
+	    }
+		$list = $self->list_in_list_headers($orig_msg_copy);
+	}
     else {
         my $i;
         for $i ( 0 .. $#parts ) {
@@ -350,11 +377,14 @@ sub find_list_in_list_headers {
 sub list_in_list_headers {
     my $self   = shift;
     my $entity = shift;
-    my $list   = undef;
-
-    my $list_header = $entity->head->get( 'List', 0 );
-    $list = $list_header if $list_header !~ /\:/;
-
+    my $list   = undef;	
+    my $list_header = $entity->head->get( 'List', 0 ) || undef;
+    if(defined($list_header)){ 
+		if($list_header !~ /\:/) { 
+			$list = $list_header;
+		}
+	}
+	
     if ( !$list ) {
         $list_header = $entity->head->get( 'X-List', 0 );
         $list = $list_header if $list_header !~ /\:/;
@@ -382,12 +412,28 @@ sub find_message_id_in_headers {
     my $entity = shift;
     my @parts  = $entity->parts;
     my $mid;
-    if ( $entity->head->mime_type eq 'message/rfc822' ) {
-        my $orig_msg_copy = $parts[0];
+    if ( $entity->head->mime_type eq 'message/rfc822' || $entity->head->mime_type eq 'text/rfc822-headers') {
+        my $orig_msg_copy = ''; 
 
+		if($entity->head->mime_type eq 'text/rfc822-headers') { 
+			
+			require MIME::Parser;
+            my $parser = new MIME::Parser;
+            $parser = optimize_mime_parser($parser);
+			
+			eval { $orig_msg_copy = $parser->parse_data($entity->bodyhandle->as_string) };
+			if ( $@ ) {
+				warn "Trouble parsing text/rfc822-headers message. $@"; 
+			}
+			else { 
+			}
+		}
+		else { 
+ 			$orig_msg_copy = $parts[0];
+		}
+	
 		# Amazon SES finds this in the, "X-Message-ID" header: 
 		# Amazon SES will also set its own Message-ID. Maddening!
-		
 		if($orig_msg_copy->head->get( 'X-Message-ID', 0 )){ 
 			$mid = $orig_msg_copy->head->get( 'X-Message-ID', 0 );
 		}
@@ -476,10 +522,17 @@ sub generic_delivery_status_parse {
         $diag->{Guessed_MTA} = 'Postfix';
     }
 
-    my ( $rfc, $remail ) = split( ';', $diag->{'Final-Recipient'} );
-    if ( $remail eq '<>' ) {    #example: Final-Recipient: LOCAL;<>
-        ( $rfc, $remail ) = split( ';', $diag->{'Original-Recipient'} );
-    }
+	my $rfc    = undef; 
+	my $remail = undef; 
+	if(exists($diag->{'Original-Recipient'})){ 
+		( $rfc, $remail ) = split( ';', $diag->{'Original-Recipient'} );
+	}
+	elsif(exists($diag->{'Final-Recipient'})){ 
+		( $rfc, $remail ) = split( ';', $diag->{'Final-Recipient'} );	
+		if ( $remail eq '<>' ) {    #example: Final-Recipient: LOCAL;<>
+	    	$remail = undef; 
+		}
+	}
     $email = $remail;
 
     for ( keys %$diag ) {
@@ -575,6 +628,23 @@ sub bounce_from_ses {
 	}
 }
 
+sub isa_rfc6522_bounce {
+    my $self   = shift;
+    my $entity = shift;
+#	print '$entity->effective_type ' . $entity->effective_type . "\n"; 
+#	print '$entity->head->mime_attr(\'content-type.report-type\'); ' . $entity->head->mime_attr('content-type.report-type') . "\n"; 
+	
+    if (   $entity->effective_type eq 'multipart/report'
+        && $entity->head->mime_attr('content-type.report-type') eq 'delivery-status' )
+    {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+
 sub bounce_from_secureserver_dot_net { 
 	my $self = shift; 
 	my $entity = shift; 
@@ -592,9 +662,16 @@ sub bounce_from_secureserver_dot_net {
 
 
 
-
-
 sub parse_for_amazon_ses { 
+	my $self = shift; 
+	my $entity = shift; 
+	my ( $list, $email, $diag ) = $self->parse_for_rfc6522($entity);
+	$diag->{Guessed_MTA} = 'Amazon_SES'; 
+	return ( $list, $email, $diag );
+}
+
+
+sub parse_for_rfc6522 { 
 	
 	my $self   = shift; 
 	my $entity = shift; 
@@ -604,6 +681,12 @@ sub parse_for_amazon_ses {
 	my $list; 
 	
 	my @parts = $entity->parts; 
+	
+	# Human readable 
+	my $notification = ''; 
+	if($parts[0]){ 
+		 $notification = $self->generic_human_readable_parse($parts[0]);
+	}
 	if($parts[1]){ 
 		my $mds_entity = $parts[1];
 		
@@ -613,19 +696,26 @@ sub parse_for_amazon_ses {
 	}
 	if($parts[2]){ 
 		my $orig_msg_entity = $parts[2];
-		if ( $orig_msg_entity->head->mime_type eq 'message/rfc822' ) {
+		if ( $orig_msg_entity->head->mime_type eq 'message/rfc822'
+		||  $orig_msg_entity->head->mime_type eq 'text/rfc822-headers'
+		 ) {
 			$list = $self->find_list_in_list_headers($orig_msg_entity);	
 			$diag->{'Message-Id'} = $self->find_message_id_in_headers($orig_msg_entity);
 		}
 	}
-	
-	
-	$diag->{Guessed_MTA} = 'Amazon_SES'; 
+	$diag->{'Notification'} = $notification; 
 	return ( $list, $email, $diag );
-    
-
+	
 }
 
+
+sub generic_human_readable_parse { 
+	my $self = shift;
+	my $entity = shift; 
+	
+	return $entity->bodyhandle->as_string; 
+	
+}
 
 
 sub parse_for_secureserver_dot_net { 
