@@ -287,6 +287,10 @@ sub cgi_default_tmpl {
 	
 		
 	<!-- tmpl_set name="title" value="Bounce Handler" -->	
+	
+	<!-- tmpl_set name="load_modalbox" value="1" -->	
+	
+
 	<div id="screentitle"> 
 		<div id="screentitlepadding">
 			<!-- tmpl_var title -->
@@ -1044,7 +1048,7 @@ sub cgi_scorecode_tmpl {
 		   	<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
 				<td>
 					<p>
-					<a href="<!-- tmpl_var PLUGIN_URL -->?flavor=cgi_bounce_score_search&amp;query=<!-- tmpl_var email ESCAPE="URL" -->">
+					<a href="<!-- tmpl_var PLUGIN_URL -->?flavor=cgi_bounce_score_search&amp;query=<!-- tmpl_var email ESCAPE="URL" -->&chrome=0" onclick="Modalbox.show(this.href, {title: this.title, width: 640, height:480}); return false;">
 					 <!-- tmpl_var email --></p>
 					</a>
 				</td>
@@ -1177,35 +1181,37 @@ sub cgi_show_plugin_config_template {
 
 sub cgi_bounce_score_search {
 
-
-    require HTML::Template;
     my $query = xss_filter( $q->param('query') );
 
-	 if ( !defined($query) ) {
-	        $q->redirect(
-	            -uri => $Plugin_Config->{Plugin_URL} );
-	        return;
-	    }
+    my $chrome = 1;
+    if ( defined( $q->param('chrome') ) ) {
+        $chrome = $q->param('chrome') || 0;
+    }
 
+    if ( !defined($query) ) {
+        $q->redirect( -uri => $Plugin_Config->{Plugin_URL} );
+        return;
+    }
 
-	require DADA::App::BounceHandler::Logs; 
-	my $bhl = DADA::App::BounceHandler::Logs->new;
-	my $results = $bhl->search(
-		{ 
-			-query => $query, 
-			-list  => $list, 
-			-file  => $Plugin_Config->{Log},
-		}
-	);
-	my $results_found = 0; 
-	if($results->[0]){ 
-		$results_found = 1; 
-	}
-	
-	require DADA::MailingList::Subscribers;
+    require DADA::App::BounceHandler::Logs;
+    my $bhl     = DADA::App::BounceHandler::Logs->new;
+    my $results = $bhl->search(
+        {
+            -query => $query,
+            -list  => $list,
+            -file  => $Plugin_Config->{Log},
+        }
+    );
+    my $results_found = 0;
+    if ( $results->[0] ) {
+        $results_found = 1;
+		@$results = reverse(@$results); 
+    }
+
+    require DADA::MailingList::Subscribers;
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
-    
-	my $valid_email        = 0;
+
+    my $valid_email        = 0;
     my $subscribed_address = 0;
     if ( DADA::App::Guts::check_for_valid_email($query) == 0 ) {
         $valid_email = 1;
@@ -1213,39 +1219,57 @@ sub cgi_bounce_score_search {
             $subscribed_address = 1;
         }
     }
-    
-
 
     my $tmpl = cgi_bounce_score_search_template();
 
-    require DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::wrap_screen(
-        {
-            -data           => \$tmpl,
-            -with           => 'admin',
-            -wrapper_params => {
-                -Root_Login => $root_login,
-                -List       => $list,
-            },
-            -vars => {
-                query              => $query,
-                subscribed_address => $subscribed_address,
-                valid_email        => $valid_email,
-                search_results     => $results,
-                results_found      => $results_found,
-                S_PROGRAM_URL      => $DADA::Config::S_PROGRAM_URL,
-                Plugin_URL         => $Plugin_Config->{Plugin_URL},
-                Plugin_Name        => $Plugin_Config->{Plugin_Name},
-            }, 
-			-list_settings_vars_param => {
-				-list   => $list,
-				-dot_it => 1,
-			},
-        }
-
+    my %tmpl_vars = (
+        query              => $query,
+        subscribed_address => $subscribed_address,
+        valid_email        => $valid_email,
+        search_results     => $results,
+        results_found      => $results_found,
+        S_PROGRAM_URL      => $DADA::Config::S_PROGRAM_URL,
+        Plugin_URL         => $Plugin_Config->{Plugin_URL},
+        Plugin_Name        => $Plugin_Config->{Plugin_Name},
     );
+    require DADA::Template::Widgets;
+    my $scrn = '';
+    if ( $chrome == 0 ) {
+        print $q->header();
+        $scrn = DADA::Template::Widgets::screen(
+            {
+                -data => \$tmpl,
+                -vars => { %tmpl_vars, },
+			-list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+			},
+            
+        );
+    }
+    else {
+
+        $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -data           => \$tmpl,
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+                -vars                     => { %tmpl_vars, },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+            }
+
+        );
+    }
     e_print($scrn);
 }
+
 
 sub cgi_bounce_score_search_template {
 
