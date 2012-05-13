@@ -1608,7 +1608,7 @@ sub message_blurb {
 
 	
 	$msg =~ s/\n|\r/ /g; 
-	$msg = DADA::App::Guts::convert_to_html_entities($msg); 
+	$msg = DADA::App::Guts::encode_html_entities($msg, "\200-\377"); 
 	
 	my $l    = length($msg); 
 	my $size = $args{-size}; 
