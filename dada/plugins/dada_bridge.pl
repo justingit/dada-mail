@@ -322,21 +322,33 @@ sub cgi_test_pop3_ajax {
 sub cgi_test_pop3_tmpl { 
 
 	return q{ 
-	<!-- tmpl_set name="title" value="Dada Bridge &#187; POP3 Login Test" --> 
-	<div id="screentitle"> 
-		<div id="screentitlepadding">
-			<!-- tmpl_var title --> 
+	<!-- tmpl_if chrome --> 
+	
+		<!-- tmpl_set name="title" value="Dada Bridge &#187; POP3 Login Test" --> 
+		<div id="screentitle"> 
+			<div id="screentitlepadding">
+				<!-- tmpl_var title --> 
+			</div>
+			<!-- tmpl_include help_link_widget.tmpl -->
 		</div>
-		<!-- tmpl_include help_link_widget.tmpl -->
-	</div>
+	
+	  <p id="breadcrumbs">
+	        <a href="<!-- tmpl_var Plugin_URL -->">
+			 <!-- tmpl_var Plugin_Name -->
+		</a> &#187; Test POP3 Login
+	   </p>
+	
+	<!-- /tmpl_if --> 
 	
 	<script type="text/javascript">
-	    //<![CDATA[
-		Event.observe(window, 'load', function() {
-		  test_pop3();				
-		});
+		<!-- tmpl_if chrome --> 
+		    //<![CDATA[
+			Event.observe(window, 'load', function() {
+			  test_pop3();				
+			});
+		<!-- /tmpl_if --> 
 		
-		 function test_pop3() { 
+		 test_pop3 = function() { 
 			new Ajax.Updater(
 				'test_pop3_results', '<!-- tmpl_var Plugin_URL -->', 
 				{ 
@@ -359,41 +371,72 @@ sub cgi_test_pop3_tmpl {
 	    //]]>
 	</script>
 		
-   <p id="breadcrumbs">
-        <a href="<!-- tmpl_var Plugin_URL -->">
-		 <!-- tmpl_var Plugin_Name -->
-	</a> &#187; Test POP3 Login
-   </p>
+ 
 
 	<div id="test_pop3_results_loading" style="display:none;"> 
 		<p class="alert">Loading...</p>
 	</div> 
 	<div id="test_pop3_results"> 			
 	</div> 
+	
+	<!-- tmpl_unless chrome --> 
+		<!-- this is sort of a lame way to go about things... --> 		
+		<script type="text/javascript">
+			//<![CDATA[
+				test_pop3();
+		  //]]>
+		</script>
+	<!-- /tmpl_unless --> 
 		
 	}
 	
 }
 sub cgi_test_pop3 {
 	
+	my $chrome = 1; 
+	if(defined($q->param('chrome'))){ 
+		$chrome = $q->param('chrome') || 0; 
+	}
+	
+	my %vars = (
+			screen       => 'using_dada_bridge',
+			Plugin_Name  => $Plugin_Config->{Plugin_Name}, 
+			Plugin_URL   => $Plugin_Config->{Plugin_URL},
+	); 
+	
 	my $tmpl = cgi_test_pop3_tmpl(); 
 	require    DADA::Template::Widgets; 
-	my $scrn = DADA::Template::Widgets::wrap_screen(
-						{ 
-							-data => \$tmpl, 
-							-with           => 'admin', 
-							-wrapper_params => { 
-								-Root_Login => $root_login,
-								-List       => $list,  
-							},
-						-vars => {
-							screen       => 'using_dada_bridge',
-							Plugin_Name  => $Plugin_Config->{Plugin_Name}, 
-							Plugin_URL   => $Plugin_Config->{Plugin_URL},
-						},
-						
-					}
-	); 
+	my $scrn; 
+	
+	if($chrome == 1){ 
+		
+		$scrn = DADA::Template::Widgets::wrap_screen(
+				{ 
+					-data => \$tmpl, 
+					-with           => 'admin', 
+					-wrapper_params => { 
+						-Root_Login => $root_login,
+						-List       => $list,  
+					},
+				-vars => {
+					%vars
+				},
+	
+			}
+		); 
+	}else {
+		print $q->header();  
+		$scrn = DADA::Template::Widgets::screen(
+				{ 
+					-data => \$tmpl, 
+					-with           => 'admin', 
+				-vars => {
+					%vars
+				},
+	
+			}
+		);		
+	}
 	e_print($scrn); 
 
 }
@@ -524,25 +567,52 @@ sub admin_cgi_manual_start_ajax {
 }
 sub admin_cgi_manual_start {
 	
-	my $tmpl = admin_cgi_manual_start_tmpl(); 
+
+
+	my $chrome = 1; 
+	if(defined($q->param('chrome'))){ 
+		$chrome = $q->param('chrome') || 0; 
+	}
 	
-	require    DADA::Template::Widgets; 
-	my $scrn = DADA::Template::Widgets::wrap_screen(
-		{ 
-			-data => \$tmpl, 
-			-with => 'admin', 
-			-wrapper_params => {
-                -Root_Login => $root_login,
-                -List       => $list,
-            },
-			
-			-vars => {
-				screen         => 'using_dada_bridge',
-				Plugin_Name    => $Plugin_Config->{Plugin_Name}, 
-				Plugin_URL     => $Plugin_Config->{Plugin_URL}, 
-			}, 
-		}
+
+	my %tmpl_vars = (
+		screen         => 'using_dada_bridge',
+		Plugin_Name    => $Plugin_Config->{Plugin_Name}, 
+		Plugin_URL     => $Plugin_Config->{Plugin_URL}, 
 	); 
+	my $tmpl = admin_cgi_manual_start_tmpl(); 
+	my $scrn; 
+	require    DADA::Template::Widgets; 
+	
+	if($chrome == 0){ 
+		print $q->header();
+		$scrn = DADA::Template::Widgets::screen(
+			{ 
+				-data => \$tmpl, 
+				-vars => {
+					%tmpl_vars
+				}, 
+			}
+		);
+	}
+	else { 
+	
+		$scrn = DADA::Template::Widgets::wrap_screen(
+			{ 
+				-data => \$tmpl, 
+				-with => 'admin', 
+				-wrapper_params => {
+	                -Root_Login => $root_login,
+	                -List       => $list,
+	            },
+
+				-vars => {
+					%tmpl_vars
+				}, 
+			}
+		);	
+	}
+	
 	e_print($scrn); 
 	
 }
@@ -554,21 +624,28 @@ sub admin_cgi_manual_start_tmpl {
 	
 	return q{ 
 		
+		<!-- tmpl_if chrome --> 
+		
 		<!-- tmpl_set name="title" value="Dada Bridge &#187; Manually Running Mailing..." --> 
+		
 		<div id="screentitle"> 
 			<div id="screentitlepadding">
 				<!-- tmpl_var title --> 
 			</div>
 			<!-- tmpl_include help_link_widget.tmpl -->
 		</div>
-					
+		<!-- /tmpl_if --> 
+		
 			<script type="text/javascript">
-			    //<![CDATA[
-				Event.observe(window, 'load', function() {
-				  manual_start();				
-				});
+				//<![CDATA[
+		 	
+		   		<!-- tmpl_if chrome --> 
+					Event.observe(window, 'load', function() {
+					  manual_start();				
+					});
+				<!-- /tmpl_if --> 
 				
-				 function manual_start(){ 
+				 manual_start = function(){ 
 
 					new Ajax.Updater(
 						'manual_start_results', '<!-- tmpl_var Plugin_URL -->', 
@@ -603,6 +680,15 @@ sub admin_cgi_manual_start_tmpl {
 		</div> 
 		<div id="manual_start_results"> 			
 		</div> 
+		
+		<!-- tmpl_unless chrome --> 
+			<!-- this is sort of a lame way to go about things... --> 		
+			<script type="text/javascript">
+				//<![CDATA[
+					manual_start();
+			  //]]>
+			</script> 
+		<!-- /tmpl_unless --> 
 			
 	};
 }
@@ -1541,10 +1627,10 @@ sub test_pop3 {
             $li = $ls->get();
         }
 
-        if ( $li->{disable_discussion_sending} == 1 ) {
-            e_print( "'$l' has this feature disabled - skipping.\n");
-        }
-        else {
+        #if ( $li->{disable_discussion_sending} == 1 ) {
+        #    e_print( "'$l' has this feature disabled - skipping.\n");
+        #}
+        #else {
 
             my $lock_file_fh = undef;
             if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
@@ -1578,7 +1664,7 @@ sub test_pop3 {
                 }
                 e_print( "\tLogging off of the POP Server.\n");
             }
-        }
+        #}
     }
     e_print( "\n\nPOP3 Login Test Complete.\n\n");
 }
@@ -3871,6 +3957,11 @@ sub default_cgi_template {
     return q{ 
 
 <!-- tmpl_set name="title" value="Dada Bridge" -->
+
+<!-- tmpl_set name="load_modalbox" value="1" -->
+
+
+
 <div id="screentitle"> 
 	<div id="screentitlepadding">
 		<!-- tmpl_var title --> 
@@ -4754,14 +4845,18 @@ Mailing List Security
 
 <form method="get" style="display:inline">
  <input name="flavor" type="hidden" value="test_pop3" />
-  <input type="submit" class="cautionary" value="Test Saved POP3 Login Information..." />
+  <input type="submit" class="cautionary" value="Test Saved POP3 Login Information..." 
+  onclick="Modalbox.show('<!-- tmpl_var Plugin_URL -->?flavor=test_pop3;chrome=0', {width: 640, height:480, title: 'Testing POP3 Login...', evalScripts: true}); return false;"
+/>
 </form> 
 
 
 
 <form method="get" style="display:inline">
  <input name="flavor" type="hidden" value="manual_start" />
-  <input type="submit" class="cautionary" value="Manually Check and Send Waiting Messages..." />
+  <input type="submit" class="cautionary" value="Manually Check and Send Waiting Messages..." 
+  onclick="Modalbox.show('<!-- tmpl_var Plugin_URL -->?flavor=manual_start;chrome=0', {width: 640, height:480, title: 'Checking and Sending Messages...', evalScripts: true}); return false;"
+/>
 
 </form> 
 
