@@ -2268,18 +2268,19 @@ sub mass_mailing_preferences {
 
     if ( !$process ) {
 
-        my @message_amount = ( 1 .. 180 );
+		require  DADA::Mail::MailOut;
+		my $mo = DADA::Mail::MailOut->new({ -list => $list });
+		my ($batch_sending_enabled, $batch_size, $batch_wait)  = $mo->batch_params();
 
-        unshift( @message_amount, $li->{mass_send_amount} )
-          if exists( $li->{mass_send_amount} );
+        my @message_amount = ( 1 .. 180 );
+		unshift( @message_amount, $batch_size );
 
         my @message_wait = (
             1 .. 60, 70,  80,  90,  100, 110, 110, 120,
             130,     140, 150, 160, 170, 180
         );
 
-        unshift( @message_wait, $li->{bulk_sleep_amount} )
-          if exists( $li->{bulk_sleep_amount} );
+        unshift( @message_wait, $batch_wait);
         my @message_label = (1);
         my %label_label = ( 1 => 'second(s)', );
 
@@ -2310,8 +2311,11 @@ sub mass_mailing_preferences {
 				-vars   => {
 					screen                 => 'mass_mailing_preferences',
 					done                   => $done,
+					batch_sending_enabled  => $batch_sending_enabled, 
 					mass_send_amount_menu  => $mass_send_amount_menu,
 					bulk_sleep_amount_menu => $bulk_sleep_amount_menu,
+					batch_size             => $batch_size, 
+					batch_wait             => $batch_wait, 
 				},
 				-list_settings_vars_param => {
 					-list    => $list,
@@ -2336,6 +2340,7 @@ sub mass_mailing_preferences {
                     restart_mailings_after_each_batch => 0,
                     smtp_connection_per_batch         => 0,
                     mass_mailing_send_to_list_owner   => 0, 
+					amazon_ses_auto_batch_settings    => 0, 
                 }
             }
         );
@@ -2393,7 +2398,7 @@ sub amazon_ses_get_stats {
 			my ($SentLast24Hours, $Max24HourSend, $MaxSendRate) = split(/\s+/, $data);     
 		
 			print $q->header(); 
-			print '<p class="positive">Your current Amazon SES sending limit is: ' . $MaxSendRate . ' message(s)/second with a limit of ' . $Max24HourSend . ' messages every 24 hours.</p>'; 
+			print '<p>Your current Amazon SES sending limit is: <strong>' . commify($MaxSendRate) . ' message(s)/second</strong> with a limit of <strong>' . commify($Max24HourSend) . ' messages</strong> every 24 hours. <strong>' . commify($SentLast24Hours) . ' messages</strong> have been sent in the last 24 hours.</p>'; 
 
 		}
 	}
@@ -2419,17 +2424,26 @@ sub previewBatchSendingSpeed {
 
     print $q->header();
 
-    my $enable_bulk_batching = xss_filter($q->param('enable_bulk_batching'));
-    my $mass_send_amount     = xss_filter($q->param('mass_send_amount'));
-    my $bulk_sleep_amount    = xss_filter($q->param('bulk_sleep_amount'));
-
+    my $enable_bulk_batching           = xss_filter($q->param('enable_bulk_batching'));
+    my $mass_send_amount               = xss_filter($q->param('mass_send_amount'));
+    my $bulk_sleep_amount              = xss_filter($q->param('bulk_sleep_amount'));
+	my $amazon_ses_auto_batch_settings = xss_filter($q->param('amazon_ses_auto_batch_settings')); 
+	
 	my $per_hour         = 0;
 	my $num_subs         = 0;
 	my $time_to_send     = 0;
 	my $somethings_wrong = 0;
 
+	
     if($enable_bulk_batching == 1){
 
+		if($amazon_ses_auto_batch_settings == 1){ 
+			require DADA::Mail::MailOut; 
+			my $mo = DADA::Mail::MailOut->new({-list => $list}); 
+			my $enabled; 
+			($enabled, $mass_send_amount, $bulk_sleep_amount, ) = $mo->batch_params({-amazon_ses_auto_batch_settings => 1});
+		}
+		
         if($bulk_sleep_amount > 0 && $mass_send_amount > 0){
 
             my $per_sec  = $mass_send_amount / $bulk_sleep_amount;

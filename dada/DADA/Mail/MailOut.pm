@@ -66,6 +66,7 @@ my %allowed = (
     #auto_pickup_status   => 0,
 
 	use_semaphore_locking => 0, 
+	_cache                => {},
 
 );
 
@@ -174,6 +175,101 @@ sub _sanity_test {
     return $self->_list_name_check( $args->{-list} );
 
 }
+
+
+
+sub batch_params {
+	
+    my $self = shift;
+	my ($args) = @_; 
+
+	
+	# We can override things, for previewing: 
+	my $sending_method = $self->{ls}->param('sending_method');
+	if(exists($args->{-sending_method})){ 
+		$sending_method = $args->{-sending_method};
+	}
+	
+	my $amazon_ses_auto_batch_settings = $self->{ls}->param('amazon_ses_auto_batch_settings');
+	if(exists($args->{-amazon_ses_auto_batch_settings})){ 
+		$amazon_ses_auto_batch_settings = $args->{-amazon_ses_auto_batch_settings};
+	}
+	
+	my $enable_bulk_batching = $self->{ls}->param('enable_bulk_batching');
+	if(exists($args->{-enable_bulk_batching})){ 
+		$enable_bulk_batching = $args->{-enable_bulk_batching};
+	}
+	
+	if($sending_method eq 'amazon_ses'){ 
+		if(exists($self->{_cache}->{batch_params})){ 
+			return @{$self->{_cache}->{batch_params}};
+		}
+	}
+	#/ We can override things, for previewing: 	
+	
+	
+	# Amazon SES: 
+    if (   $sending_method                 eq 'amazon_ses'
+        && $amazon_ses_auto_batch_settings == 1 )
+    {
+		my $batch_size = 0; 
+		my $batch_wait = 0; 
+		
+		my $result = `$DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script} -k $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file} -q`; 
+		my ($label, $data) = split("\n", $result); 
+		my ($SentLast24Hours, $Max24HourSend, $MaxSendRate) = split(/\s+/, $data);
+		#                  0          10_000             5
+
+#		$Max24HourSend = 100_000; 
+#		$MaxSendRate   = 5; 
+
+
+		# I kind of wonder what it is I should do about when it goes over the max per day, 
+		# Perhpas: 
+		if($SentLast24Hours >= $Max24HourSend) { 
+			return ( 
+				$enable_bulk_batching,
+	            0, 
+				300,
+			); 
+		}
+		
+		if($Max24HourSend < 86_400){ 
+		
+			$batch_size = 1; 			
+			$batch_size = $batch_size * $MaxSendRate; # 5
+			
+			$batch_wait = 86_400 / $Max24HourSend; # 8.64
+			$batch_wait = $batch_wait * $MaxSendRate; # 8.64 * 5 = 43.2
+			$batch_wait = $batch_wait + ($batch_wait * .10); # 38.8			
+		}
+		else { 
+					
+			$batch_size =  $MaxSendRate; # 5			
+			$batch_wait = $Max24HourSend / 86_400; # 100_000 / 86_400 = 1.1574...
+			$batch_wait = $batch_wait + ($batch_wait * .10); # 38.8	
+		}
+		
+		require POSIX;
+		my @return  = (
+            $enable_bulk_batching,
+            POSIX::floor($batch_size),
+            POSIX::ceil($batch_wait),
+        );
+		$self->{_cache}->{batch_params} = [@return];
+		return @return; 
+
+    }
+    else {
+        return (
+            $enable_bulk_batching,
+            $self->{ls}->param('mass_send_amount'),
+            $self->{ls}->param('bulk_sleep_amount'),
+        );
+    }
+}
+
+
 
 sub create {
 
@@ -1513,16 +1609,16 @@ sub process_stalled_after {
 
     warn '>>>> $last_access: ' . $last_access
         if $t; 
-        
-    my $sleep_amount = $self->{li}->{'bulk_sleep_amount'};
+    
+    my ($e, $batch_size, $batch_wait) = $self->batch_params;
 
-    warn '>>>> $sleep_amount: ' . $sleep_amount
+    warn '>>>> $batch_wait: ' . $batch_wait
         if $t; 
     
 	# I'm thinking it's really dangerous to have a countdown < 60, 
 	# Since we just may have a slow SMTP server on our hands... 
 	    
-	my $tardy_threshold = ( $sleep_amount * 3 ); 
+	my $tardy_threshold = ( $batch_wait * 3 ); 
 	if($tardy_threshold < 60){ 
 		$tardy_threshold = 60;
 	}
