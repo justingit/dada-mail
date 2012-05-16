@@ -49,7 +49,7 @@
 
 
 <div class="clearskiesbox">
-<!-- tmpl_if expr="list_settings.sending_method eq 'amazon_ses'" --> 
+<!-- tmpl_if show_amazon_ses_options --> 
 	<div id="amazon_ses_get_stats"></div> 
 	<div id="amazon_ses_get_stats_loading"></div> 
 <!-- /tmpl_if --> 
@@ -61,8 +61,7 @@
 
 
 
-	<!-- tmpl_if expr="list_settings.sending_method eq 'amazon_ses'" --> 
-	
+	<!-- tmpl_if show_amazon_ses_options -->
 		<p>
 		 <input type="checkbox" id="amazon_ses_auto_batch_settings" name="amazon_ses_auto_batch_settings" value="1" <!-- tmpl_if list_settings.amazon_ses_auto_batch_settings -->checked="checked"<!--/tmpl_if--> onChange="toggleManualBatchSettings(); return false;" />
 		<label for="amazon_ses_auto_batch_settings">
@@ -269,7 +268,9 @@
 					enable_bulk_batching:           $F('enable_bulk_batching'),
 					mass_send_amount:               $F('mass_send_amount'), 
 					bulk_sleep_amount:              $F('bulk_sleep_amount'), 
-					amazon_ses_auto_batch_settings: $F('amazon_ses_auto_batch_settings'),
+					<!-- tmpl_if show_amazon_ses_options --> 
+						amazon_ses_auto_batch_settings: $F('amazon_ses_auto_batch_settings'),
+					<!-- /tmpl_if --> 
 				},
 
 			onCreate: 	 function() {
@@ -320,11 +321,11 @@
 	}
 	
 	previewBatchSendingSpeed(); 
-	<!-- tmpl_if expr="list_settings.sending_method eq 'amazon_ses'" --> 
+	<!-- tmpl_if show_amazon_ses_options -->
 		amazon_ses_get_stats(); 
+		toggleManualBatchSettings(); 
 	<!-- /tmpl_if --> 
-	toggleManualBatchSettings(); 
-    //]]>
+	    //]]>
 
 </script>
 

@@ -179,85 +179,95 @@ sub _sanity_test {
 
 
 sub batch_params {
-	
+
     my $self = shift;
-	my ($args) = @_; 
+    my ($args) = @_;
 
-	
-	# We can override things, for previewing: 
-	my $sending_method = $self->{ls}->param('sending_method');
-	if(exists($args->{-sending_method})){ 
-		$sending_method = $args->{-sending_method};
-	}
-	
-	my $amazon_ses_auto_batch_settings = $self->{ls}->param('amazon_ses_auto_batch_settings');
-	if(exists($args->{-amazon_ses_auto_batch_settings})){ 
-		$amazon_ses_auto_batch_settings = $args->{-amazon_ses_auto_batch_settings};
-	}
-	
-	my $enable_bulk_batching = $self->{ls}->param('enable_bulk_batching');
-	if(exists($args->{-enable_bulk_batching})){ 
-		$enable_bulk_batching = $args->{-enable_bulk_batching};
-	}
-	
-	if($sending_method eq 'amazon_ses'){ 
-		if(exists($self->{_cache}->{batch_params})){ 
-			return @{$self->{_cache}->{batch_params}};
-		}
-	}
-	#/ We can override things, for previewing: 	
-	
-	
-	# Amazon SES: 
-    if (   $sending_method                 eq 'amazon_ses'
-        && $amazon_ses_auto_batch_settings == 1 )
+    # We can override things, for previewing:
+    my $sending_method = $self->{ls}->param('sending_method');
+    if ( exists( $args->{-sending_method} ) ) {
+        $sending_method = $args->{-sending_method};
+    }
+
+    my $amazon_ses_auto_batch_settings =
+      $self->{ls}->param('amazon_ses_auto_batch_settings');
+    if ( exists( $args->{-amazon_ses_auto_batch_settings} ) ) {
+        $amazon_ses_auto_batch_settings =
+          $args->{-amazon_ses_auto_batch_settings};
+    }
+
+    my $enable_bulk_batching = $self->{ls}->param('enable_bulk_batching');
+    if ( exists( $args->{-enable_bulk_batching} ) ) {
+        $enable_bulk_batching = $args->{-enable_bulk_batching};
+    }
+
+    # Amazon SES:
+    if (
+        ($sending_method eq 'amazon_ses'
+        || (   $self->{ls}->param('sending_method') eq 'smtp'
+            && $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/ ))
+        && $amazon_ses_auto_batch_settings == 1
+      )
+    {        if ( exists( $self->{_cache}->{batch_params} ) ) {
+            return @{ $self->{_cache}->{batch_params} };
+        }
+    }
+
+    #/ We can override things, for previewing:
+
+    # Amazon SES:
+    if (
+       ( $sending_method eq 'amazon_ses'
+        || (   $self->{ls}->param('sending_method') eq 'smtp'
+            && $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/ ))
+        && $amazon_ses_auto_batch_settings == 1
+      )
     {
-		my $batch_size = 0; 
-		my $batch_wait = 0; 
-		
-		my $result = `$DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script} -k $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file} -q`; 
-		my ($label, $data) = split("\n", $result); 
-		my ($SentLast24Hours, $Max24HourSend, $MaxSendRate) = split(/\s+/, $data);
-		#                  0          10_000             5
+        my $batch_size = 0;
+        my $batch_wait = 0;
 
-#		$Max24HourSend = 100_000; 
-#		$MaxSendRate   = 5; 
+        my $result =
+`$DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script} -k $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file} -q`;
+        my ( $label, $data ) = split( "\n", $result );
+        my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate ) =
+          split( /\s+/, $data );
 
+        #                  0          10_000             5
 
-		# I kind of wonder what it is I should do about when it goes over the max per day, 
-		# Perhpas: 
-		if($SentLast24Hours >= $Max24HourSend) { 
-			return ( 
-				$enable_bulk_batching,
-	            0, 
-				300,
-			); 
-		}
-		
-		if($Max24HourSend < 86_400){ 
-		
-			$batch_size = 1; 			
-			$batch_size = $batch_size * $MaxSendRate; # 5
-			
-			$batch_wait = 86_400 / $Max24HourSend; # 8.64
-			$batch_wait = $batch_wait * $MaxSendRate; # 8.64 * 5 = 43.2
-			$batch_wait = $batch_wait + ($batch_wait * .10); # 38.8			
-		}
-		else { 
-					
-			$batch_size =  $MaxSendRate; # 5			
-			$batch_wait = $Max24HourSend / 86_400; # 100_000 / 86_400 = 1.1574...
-			$batch_wait = $batch_wait + ($batch_wait * .10); # 38.8	
-		}
-		
-		require POSIX;
-		my @return  = (
+        #		$Max24HourSend = 100_000;
+        #		$MaxSendRate   = 5;
+
+# I kind of wonder what it is I should do about when it goes over the max per day,
+# Perhpas:
+        if ( $SentLast24Hours >= $Max24HourSend ) {
+            return ( $enable_bulk_batching, 0, 300, );
+        }
+
+        if ( $Max24HourSend < 86_400 ) {
+
+            $batch_size = 1;
+            $batch_size = $batch_size * $MaxSendRate;    # 5
+
+            $batch_wait = 86_400 / $Max24HourSend;             # 8.64
+            $batch_wait = $batch_wait * $MaxSendRate;          # 8.64 * 5 = 43.2
+            $batch_wait = $batch_wait + ( $batch_wait * .10 ); # 38.8
+        }
+        else {
+
+            $batch_size = $MaxSendRate;                        # 5
+            $batch_wait =
+              $Max24HourSend / 86_400;    # 100_000 / 86_400 = 1.1574...
+            $batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
+        }
+
+        require POSIX;
+        my @return = (
             $enable_bulk_batching,
             POSIX::floor($batch_size),
             POSIX::ceil($batch_wait),
         );
-		$self->{_cache}->{batch_params} = [@return];
-		return @return; 
+        $self->{_cache}->{batch_params} = [@return];
+        return @return;
 
     }
     else {
@@ -268,6 +278,7 @@ sub batch_params {
         );
     }
 }
+
 
 
 

@@ -2272,6 +2272,16 @@ sub mass_mailing_preferences {
 		my $mo = DADA::Mail::MailOut->new({ -list => $list });
 		my ($batch_sending_enabled, $batch_size, $batch_wait)  = $mo->batch_params();
 
+		my $show_amazon_ses_options = 0; 
+		if (
+	        $ls->param('sending_method') eq 'amazon_ses'
+	        || (   $ls->param('sending_method') eq 'smtp'
+	            && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
+			)
+	    {
+			$show_amazon_ses_options = 1; 
+		}
+		
         my @message_amount = ( 1 .. 180 );
 		unshift( @message_amount, $batch_size );
 
@@ -2309,13 +2319,14 @@ sub mass_mailing_preferences {
 					-List       => $list,  
 				},
 				-vars   => {
-					screen                 => 'mass_mailing_preferences',
-					done                   => $done,
-					batch_sending_enabled  => $batch_sending_enabled, 
-					mass_send_amount_menu  => $mass_send_amount_menu,
-					bulk_sleep_amount_menu => $bulk_sleep_amount_menu,
-					batch_size             => $batch_size, 
-					batch_wait             => $batch_wait, 
+					screen                  => 'mass_mailing_preferences',
+					done                    => $done,
+					batch_sending_enabled   => $batch_sending_enabled, 
+					mass_send_amount_menu   => $mass_send_amount_menu,
+					bulk_sleep_amount_menu  => $bulk_sleep_amount_menu,
+					batch_size              => $batch_size, 
+					batch_wait              => $batch_wait,
+					show_amazon_ses_options => $show_amazon_ses_options,  
 				},
 				-list_settings_vars_param => {
 					-list    => $list,
@@ -2385,7 +2396,9 @@ sub amazon_ses_get_stats {
 	
 	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
 	
-	if($ls->param('sending_method') eq 'amazon_ses'){ 
+	if(     $ls->param('sending_method') eq 'amazon_ses'
+		|| ($ls->param('sending_method') eq 'smtp' && $ls->param('smtp_server') =~ m/amazonaws\.com/)
+	){ 
 		
 		if(!-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script}){ 
 			print $q->header(); 
