@@ -180,6 +180,13 @@ sub _sanity_test {
 
 sub batch_params {
 
+	# DEV: Another idea would be to change the batch speed of 
+	# SES sending by fining what ($SentLast24Hours - $Max24HourSend) is
+	# and slowing down batch sending (more time between batches), when that limit gets closer. 
+	# Rather than a complete shutdown of sending. Hmm! 
+	# Or, just take into consideration how many active mailings are going, and 
+	# base sending around that. 2 active mailings, mailing sending speed is cut in basically half
+	
     my $self = shift;
     my ($args) = @_;
 
