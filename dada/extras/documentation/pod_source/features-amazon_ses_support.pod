@@ -41,7 +41,7 @@ Dada Mail's support for bounce handling w/SES sending is also B<Experimental>. W
 
 When you use Dada Mail with SES, Dada Mail I<will> set the C<Return-Path> header explicitly.
 
-Dada Mail's included bounce handler has rules specifically for Amazon SES. 
+Dada Mail's included Bounce Handler has rules specifically for Amazon SES. 
 
 One caveat of using Bounce Handler is that the Bounce Handler email address has to be verified by Amazon to receive the bounces, just like you would verify a sender. Best thing to do would be to create the bounce handler email address and verify it I<before> you configure the Bounce Handler and the rest of Dada Mail with this address, since Bounce Handler will not automatically verify itself - it'll most likely simply ignore the request. 
 
@@ -49,7 +49,7 @@ One caveat of using Bounce Handler is that the Bounce Handler email address has 
 
 =head2 Method: Amazon SES API
 
-=head3 Additional Things to Installl 
+=head3 Additional Things to Install
 
 Currently, Dada Mail relies heavily on the Amazon SES Developer Tools and the scripts that come with it to send out email messages using Amazon SES. You'll need to separately install these scripts.
 
@@ -64,7 +64,6 @@ Sending via Amazon SES is done with a persistent HTTP connection (as of v4.9.0 o
 =head3 Performance 
 
 It's not known how performance compares to the SES API. 
-
 
 =head2 Both Methods
 
@@ -255,6 +254,16 @@ B<Sign in to the AWS Management Console> at,
 L<https://console.aws.amazon.com/s3/home>
 
 Once at the Amazon AWS Console, click the, B<Amazon SES> tab, click on, B<Verified Senders> and click the button labeled, B<Verify a New Sender>. Enter in your List Owner. You will have to do this for each different List Owner you plan to use. 
+
+=head2 Set Your Mass Mailing Batch Settings
+
+You'll want to make sure to send below your Amazon SES sending quota. This can be done automatically by Dada Mail. 
+
+Go to: B<Mail Sending - Mass Mailing Preferences> and check the option, 
+
+B<Automatically set batching speeds based on your Amazon SES limits>
+
+Your batch settings will now grow or shrink, depending on your current Amazon SES sending limits. If you do go over your total 24 hour quota, mass mailings will not be sent out, and batches will be set to wait for 5 minutes, before trying to be sent again. When your 24 hour quota is lifted, sending will once again take place. 
 
 =head2 Both Methods: Request Full Production Access
 
