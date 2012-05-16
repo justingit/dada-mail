@@ -1193,8 +1193,10 @@ sub sending_monitor {
 
     $list = $admin_list;
 
+	my $mo = DADA::Mail::MailOut->new({-list => $list});
+	my ($batching_enabled, $batch_size, $batch_wait) = $mo->batch_params;
+	
     my $ls = DADA::MailingList::Settings->new({-list => $list});
-    my $li = $ls->get;
 
     # munging the message id.
     # kinda dumb, but it's sort of up in the air,
@@ -1216,8 +1218,8 @@ sub sending_monitor {
     # to read the actual screen.
 
      my $refresh_after = 10;
-     if($refresh_after < $li->{bulk_sleep_amount}){
-			$refresh_after = $li->{bulk_sleep_amount};
+     if($refresh_after < $batch_wait){
+			$refresh_after = $batch_wait;
 		}
 
 	# Type ala, list, invitation list, etc
@@ -1388,7 +1390,7 @@ sub sending_monitor {
 			
 		if(
 		$status->{should_be_restarted}								   == 1 && # It's dead in the water.
-		$li->{auto_pickup_dropped_mailings}                            == 1 && # Auto Pickup is turned on...
+		$ls->param('auto_pickup_dropped_mailings')                            == 1 && # Auto Pickup is turned on...
 		# $status->{total_sending_out_num} - $status->{total_sent_out} >  0 && # There's more subscribers to send out to
 		$restart_count                                                 <= 0 && # We haven't *just* restarted this thing
 		$status->{mailout_stale}                                       != 1 && # The mailout hasn't been sitting around too long without being restarted,
@@ -1419,8 +1421,8 @@ sub sending_monitor {
 		# let's say a mailing will be automatically started in... time since last - wait time.
 
 		my $will_restart_in = undef;
-		if(time - $status->{last_access} > ($li->{bulk_sleep_amount} * 1.5)){
-			my $tardy_threshold = $li->{bulk_sleep_amount} * 3;
+		if(time - $status->{last_access} > ($batch_wait * 1.5)){
+			my $tardy_threshold = $batch_wait * 3;
 			if($tardy_threshold < 60){
 				$tardy_threshold = 60;
 			}
@@ -1475,7 +1477,7 @@ sub sending_monitor {
 						its_killed                   => $status->{should_be_restarted},
 						header_subject               => safely_decode($status->{email_fields}->{Subject},1 ),
 						header_subject_label         => (length($header_subject_label) > 50) ? (substr($header_subject_label, 0, 49) . '...') : ($header_subject_label),
-						auto_pickup_dropped_mailings => $li->{auto_pickup_dropped_mailings},
+						auto_pickup_dropped_mailings => $ls->param('auto_pickup_dropped_mailings'),
 						sending_done                 => ($status->{percent_done} < 100) ? 0 : 1,
 						refresh_after                => $refresh_after,
 						killed_it                    => $q->param('killed_it') ? 1 : 0,
@@ -1518,7 +1520,7 @@ sub sending_monitor {
 					refresh_after                => $refresh_after,
 					tracker_url                  => $tracker_url, 
 					'list_settings.tracker_show_message_reports_in_mailing_monitor' 
-						=> $li->{tracker_show_message_reports_in_mailing_monitor},
+						=> $ls->param('tracker_show_message_reports_in_mailing_monitor'),
 					list_type_isa_list           => ($q->param('type') eq 'list')       ? 1 : 0,
 				}
 			}
