@@ -1205,13 +1205,7 @@ sub message_widget {
 	my %form_vals;
 	my $form_vals = $args{-form_vals}; 
 	%form_vals = %$form_vals; 
-	
-	
 	my $r; 
-	my $display = ""; 
-	if($type !~ m/plain/i){ 
-		$display = 'none;';  
-	}
 	
 	
 	$r .= '<fieldset style="background:#e6e6e6">';
@@ -1219,8 +1213,14 @@ $r .= qq {
 	 <legend>
       <a href="#" onclick="toggleDisplay('$type\_message');return false;">+   /-</a> $type Version
      </legend>
- <div id="$type\_message" style="display:$display">
 };
+
+if($li->{'show_message_body_' . lc($type) .'_ver'} == 1){ 
+	$r .= qq{<div id="$type\_message">};
+}
+else { 
+	$r .= qq{ <div id="$type\_message" style="display:none">};	
+}
 
 
 

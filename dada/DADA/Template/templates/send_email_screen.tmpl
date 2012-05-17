@@ -57,7 +57,7 @@
      </legend>
       
 		
-<div id="html_message" style="display:none"> 
+<div id="html_message" <!-- tmpl_if list_settings.show_message_body_html_ver --><!-- tmpl_else -->style="display:none"<!-- /tmpl_if -->> 
  <!-- tmpl_include html_message_form_field_widget.tmpl --> 
 </div>
 
@@ -71,9 +71,8 @@
 		  <a href="#" onclick="toggleDisplay('text_message');return false;">+/-</a> PlainText Version
 		 </legend>
 		 
- 
- <div id="text_message"> 
- <!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
+<div id="text_message" <!-- tmpl_if list_settings.show_message_body_plaintext_ver --><!-- tmpl_else -->style="display:none"<!-- /tmpl_if -->> 
+ <!-- tmpl_include plaintext_message_form_field_widget.tmpl -->  
 </div> 
 </fieldset> 
 
