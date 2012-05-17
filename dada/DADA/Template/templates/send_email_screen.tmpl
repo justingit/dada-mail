@@ -57,7 +57,7 @@
      </legend>
       
 		
-<div id="html_message" style="display:none"> 
+<div id="html_message" <!-- tmpl_if list_settings.show_message_body_html_ver --><!-- tmpl_else -->style="display:none"<!-- /tmpl_if -->> 
  <!-- tmpl_include html_message_form_field_widget.tmpl --> 
 </div>
 
@@ -72,7 +72,7 @@
 		 </legend>
 		 
  
- <div id="text_message"> 
+ <div id="text_message" <!-- tmpl_if list_settings.show_message_body_plaintext_ver --><!-- tmpl_else -->style="display:none"<!-- /tmpl_if -->> 
   <textarea name="text_message_body" id="text_message_body" cols="80" rows="30"></textarea>
   
 </div> 
