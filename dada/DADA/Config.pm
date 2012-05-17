@@ -4568,6 +4568,7 @@ encrypted.
 	# Send a copy to the List Owner
 	mass_mailing_send_to_list_owner    => 1, 
 
+	amazon_ses_auto_batch_settings     => 0, 
 
 	# For mass mailings, connect only once per batch? 
 	# 0 = no
