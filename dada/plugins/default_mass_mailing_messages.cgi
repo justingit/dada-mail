@@ -331,6 +331,10 @@ sub save_params {
 	
 	my $default_plaintext_message_content_data = $q->param('default_plaintext_message_content_data'); 
 	my $default_html_message_content_data      = $q->param('default_html_message_content_data'); 
+       
+       $default_plaintext_message_content_data =~ s/\r\n/\n/g; 
+       $default_html_message_content_data      =~ s/\r\n/\n/g;
+
 	my $pt_return   = 1; 
 	my $html_return = 1; 
 	if(length($default_plaintext_message_content_data) > 0){ 
