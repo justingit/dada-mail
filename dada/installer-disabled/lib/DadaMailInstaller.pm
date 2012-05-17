@@ -94,17 +94,18 @@ q{=cut
 ); 
 
 my $plugins_extensions = { 
-	change_root_password   => {installed => 0, loc => '../plugins/change_root_password.cgi'}, 
-	screen_cache           => {installed => 0, loc => '../plugins/screen_cache.cgi'}, 
-	log_viewer             => {installed => 0, loc => '../plugins/log_viewer.cgi'}, 
-	tracker                => {installed => 0, loc => '../plugins/tracker.cgi'}, 
-	dada_bridge            => {installed => 0, loc => '../plugins/dada_bridge.pl'}, 
-	dada_bounce_handler    => {installed => 0, loc => '../plugins/dada_bounce_handler.pl'}, 
-	scheduled_mailings     => {installed => 0, loc => '../plugins/scheduled_mailings.pl'}, 
-	multiple_subscribe     => {installed => 0, loc => '../extensions/multiple_subscribe.cgi'}, 
-	ajax_include_subscribe => {installed => 0, loc => '../extensions/ajax_include_subscribe.cgi'}, 	
-	blog_index             => {installed => 0, loc => '../extensions/blog_index.cgi'}, 
-	mailing_monitor        => {installed => 0, loc => '../plugins/mailing_monitor.cgi'}, 
+	change_root_password          => {installed => 0, loc => '../plugins/change_root_password.cgi'}, 
+	screen_cache                  => {installed => 0, loc => '../plugins/screen_cache.cgi'}, 
+	log_viewer                    => {installed => 0, loc => '../plugins/log_viewer.cgi'}, 
+	tracker                       => {installed => 0, loc => '../plugins/tracker.cgi'}, 
+	dada_bridge                   => {installed => 0, loc => '../plugins/dada_bridge.pl'}, 
+	dada_bounce_handler           => {installed => 0, loc => '../plugins/dada_bounce_handler.pl'}, 
+	scheduled_mailings            => {installed => 0, loc => '../plugins/scheduled_mailings.pl'}, 
+	multiple_subscribe            => {installed => 0, loc => '../extensions/multiple_subscribe.cgi'}, 
+	ajax_include_subscribe        => {installed => 0, loc => '../extensions/ajax_include_subscribe.cgi'}, 	
+	blog_index                    => {installed => 0, loc => '../extensions/blog_index.cgi'}, 
+	mailing_monitor               => {installed => 0, loc => '../plugins/mailing_monitor.cgi'}, 
+	default_mass_mailing_messages => {installed => 0, loc => '../plugins/default_mass_mailing_messages.cgi'}, 
 };
 $plugins_extensions->{change_root_password}->{code} = 
 q{#					{
@@ -183,7 +184,7 @@ q{#					{
 #					-Activated  => 0,
 #					},};
 
-$plugin_extensions->{default_mass_mailing_messages}->{code} =
+$plugins_extensions->{default_mass_mailing_messages}->{code} =
 q{#					{
 #					-Title      => 'Default Mass Mailing Messages',
 #					-Title_URL  => $PLUGIN_URL."/default_mass_mailing_messages.cgi",
@@ -437,6 +438,7 @@ sub scrn_configure_dada_mail {
 		$q->param('install_multiple_subscribe', 1); 
 		$q->param('install_ajax_include_subscribe', 1); 
 		$q->param('install_blog_index', 1); 
+		$q->param('install_default_mass_mailing_messages', 1); 
 	}
 
 =cut	
