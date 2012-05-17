@@ -330,7 +330,15 @@ sub x_message_body_content {
 		}
 		elsif(-e $self->param($param_name . '_src_url_or_path')){ 
 			my $fn = make_safer($self->param($param_name . '_src_url_or_path')); 
-			return slurp($fn); 
+			my $d = undef; 
+			eval { $d  = slurp($fn); }; 
+			if($@){ 
+				carp $@;
+				return '';  
+			}
+			else { 
+				return $d; 
+			}
 		}
 		else { # 'default'
 			return ''; 
@@ -346,7 +354,14 @@ sub x_message_body_content {
 		}
 		$fn = make_safer($fn);  
 		if(-e $fn){
-			$str = slurp($fn); 
+			eval { $str = slurp($fn); }; 
+			if($@){ 
+				carp $@;
+				return '';  
+			}
+			else { 
+				return $str; 
+			}
 		} 
 		return $str
 	}

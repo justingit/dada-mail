@@ -522,6 +522,13 @@ $ADMIN_MENU = [
 #					-Activated  => 0,
 #					},
 
+#					{
+#					-Title      => 'Default Mass Mailing Messages',
+#					-Title_URL  => $PLUGIN_URL."/default_mass_mailing_messages.cgi",
+#					-Function   => 'default_mass_mailing_messages',
+#					-Activated  => 0,
+#					},
+
 				],
 			},
 

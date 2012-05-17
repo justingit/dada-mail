@@ -183,6 +183,15 @@ q{#					{
 #					-Activated  => 0,
 #					},};
 
+$plugin_extensions->{default_mass_mailing_messages}->{code} =
+q{#					{
+#					-Title      => 'Default Mass Mailing Messages',
+#					-Title_URL  => $PLUGIN_URL."/default_mass_mailing_messages.cgi",
+#					-Function   => 'default_mass_mailing_messages',
+#					-Activated  => 0,
+#					},};
+
+
 # An unconfigured Dada Mail won't have these exactly handy to use. 
 $DADA::Config::PROGRAM_URL   = program_url_guess();
 $DADA::Config::S_PROGRAM_URL = program_url_guess();

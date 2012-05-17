@@ -588,6 +588,12 @@ sub send_url_email {
 							num_list_mailouts          => $num_list_mailouts, 
 							num_total_mailouts         => $num_total_mailouts,							
 							active_mailouts            => $active_mailouts,
+							
+							plaintext_message_body_content       => $ls->plaintext_message_body_content,
+							html_message_body_content            => $ls->html_message_body_content, 
+							html_message_body_content_js_escaped => js_enc($ls->html_message_body_content),
+							
+							
 						},
 						-list_settings_vars       => $ls->params, 
 						-list_settings_vars_param => 

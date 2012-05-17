@@ -39,7 +39,7 @@ run()
 sub _init { 
 	( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'default_messages'
+        -Function => 'default_mass_mailing_messages'
     );
 
 	$list = $admin_list;
@@ -73,8 +73,41 @@ sub cgi_default_tmpl {
 return q{ 
 	
 	
-	<!-- tmpl_set name="title" value="Default Messages" -->
+	<!-- tmpl_set name="title" value="Default Mass Mailing Messages" -->
 	<!-- tmpl_set name="load_modalbox" value="1" -->
+	
+	<div id="screentitle"> 
+		<div id="screentitlepadding">
+			<!-- tmpl_var title -->
+		</div>
+		<!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+	
+	<!-- tmpl_if done -->  
+		<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+	<!--/tmpl_if-->
+	
+	<!-- tmpl_if expr="(pt_return == 0)" -->		
+		<div class="badweatherbox">
+			Problem saving PlainText Message!
+		</div> 
+	<!-- /tmpl_if --> 
+	<!-- tmpl_if expr="(html_return == 0)" -->		
+		<div class="badweatherbox">
+			Problem saving HTML Message!
+		</div> 
+	<!-- /tmpl_if --> 
+
+	
+	
+	<p class="alert">
+		Set default copy for both your PlainText and HTML Mass Mailing Messages. Use dummy text/images
+		as placeholders to create a head-start for your next mass mailing. 
+	</p>
+	
+	
+	
+	
 	
 	<form action="<!-- tmpl_var Plugin_URL -->" method="post" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 	<input type="hidden" name="flavor" value="save_params" />
@@ -102,12 +135,12 @@ return q{
 				<label for="default_plaintext_message_content_src_url_or_path">Grab content from this webpage address (URL), or Server Path: </label>
 				<!-- tmpl_if plaintext_message_source_isa_url --> 
 					<a href="<!-- tmpl_var list_settings.default_plaintext_message_content_src_url_or_path -->" target="_blank">
-						(View Current URL)
+						(View <!-- tmpl_var list_settings.default_plaintext_message_content_src_url_or_path -->)
 					</a> 
 				<!-- /tmpl_if --> 
 				<!-- tmpl_if plaintext_message_source_isa_file --> 
 				<a href="<!-- tmpl_var Plugin_URL -->?flavor=view_file;fn=default_plaintext_message_content_src_url_or_path" title="PlainText Message" onclick="Modalbox.show(this.href, {title: this.title, width: 640, height:480}); return false;">
-					(View File...)
+					(View <!-- tmpl_var default_plaintext_message_content_src_url_or_path -->)
 				</a>
 				<!-- /tmpl_if -->
 				<!-- tmpl_if problems_fetching_plaintext_url -->
@@ -123,13 +156,62 @@ return q{
 				</td> 
 			</tr> 
 		</table> 
-		
 	</fieldset> 
-	
+
+
+	<fieldset> 
+		<legend>HTML Message</legend>
+
+		<table border="0" cellpadding="5" width="100%"> 
+			<tr> 
+			<td>
+			 <p>
+			  <input type="radio" id="default_html_message_content_src_default" name="default_html_message_content_src" value="default" <!-- tmpl_if expr="(list_settings.default_html_message_content_src eq 'default')" -->checked="checked"<!-- /tmpl_if --> />
+			<label for="default_html_message_content_src_default">Use the following HTML as content: </label><br /> 
+
+			<textarea cols="80" rows="30" name="default_html_message_content_data"><!-- tmpl_var default_html_message_content_data escape="HTML" --></textarea>
+			 </p>
+			</td> 
+
+
+			</tr>
+			<tr>
+				<td>
+				 <p>
+				  <input type="radio" id="default_html_message_content_src_url_or_path" name="default_html_message_content_src" value="url_or_path" <!-- tmpl_if expr="(list_settings.default_html_message_content_src eq 'url_or_path')" -->checked="checked"<!-- /tmpl_if --> />
+				<label for="default_html_message_content_src_url_or_path">Grab content from this webpage address (URL), or Server Path: </label>
+				<!-- tmpl_if html_message_source_isa_url --> 
+					<a href="<!-- tmpl_var list_settings.default_html_message_content_src_url_or_path -->" target="_blank">
+						(View <!-- tmpl_var list_settings.default_html_message_content_src_url_or_path -->)
+					</a> 
+				<!-- /tmpl_if --> 
+				<!-- tmpl_if html_message_source_isa_file --> 
+				<a href="<!-- tmpl_var Plugin_URL -->?flavor=view_file;fn=default_html_message_content_src_url_or_path" title="HTML Message" onclick="Modalbox.show(this.href, {title: this.title, width: 640, height:480}); return false;">
+					(View <!-- tmpl_var default_html_message_content_src_url_or_path -->)
+				</a>
+				<!-- /tmpl_if -->
+				<!-- tmpl_if problems_fetching_html_url -->
+					<span class="error">Can't fetch URL!</span>
+				<!-- /tmpl_if -->  
+				<!-- tmpl_if problems_opening_html_file --> 
+					<span class="error">Can't open file!</span>
+				<!-- /tmpl_if --> 
+				<br /> 
+
+				<input type="text" class="full"  name="default_html_message_content_src_url_or_path" value="<!-- tmpl_var list_settings.default_html_message_content_src_url_or_path escape="HTML" -->"/>
+				 </p>
+				</td> 
+			</tr> 
+		</table> 
+	</fieldset>
+
+
 	<div class="buttonfloat">
-	 <input type="submit" class="processing" name="process" value="Save" />
+	 <input type="reset"  class="cautionary" value="Clear Changes" />
+	 <input type="submit" class="processing" value="Save Changes" />
 	</div>
 	<div class="floatclear"></div>
+
 	
 	
 	
@@ -148,42 +230,60 @@ sub cgi_default {
 	require DADA::MailingList::Settings; 
 	my $ls = DADA::MailingList::Settings->new({-list => $list}); 	
 	
+	my $done        = $q->param('done')        || undef; 
+	my $pt_return   = 1; 
+	my $html_return = 1; 
+	if($done){ 
+		$pt_return   = $q->param('pt_return')   || undef; 
+		$html_return = $q->param('html_return') || undef; 
+	}
 	
 	my $default_plaintext_message_content_data = ''; 
 	if(-e $pt_fn){ 
-		$default_plaintext_message_content_data = slurp($pt_fn); 
+		eval { $default_plaintext_message_content_data = slurp($pt_fn); };
 	} 
 	my $default_html_message_content_data = ''; 
 	if(-e $html_fn){ 
-		$default_html_message_content_data = slurp($html_fn); 
+		eval { $default_html_message_content_data = slurp($html_fn); };
 	}
 
 
 	my $plaintext_message_source_isa_url  = isa_url($ls->param('default_plaintext_message_content_src_url_or_path'));
-	
 	my $plaintext_message_source_isa_file = 0; 
+	my $problems_fetching_plaintext_url   = 0; 
+	my $problems_opening_plaintext_file   = 0;
 	if(length($ls->param('default_plaintext_message_content_src_url_or_path')) > 0 && $plaintext_message_source_isa_url != 1){ 
 		$plaintext_message_source_isa_file = 1;
 	}
-
-	my $problems_fetching_plaintext_url = 0; 
-	my $problems_opening_plaintext_file = 0;
 	if(length($ls->param('default_plaintext_message_content_src_url_or_path')) > 0){ 
 		if($plaintext_message_source_isa_url == 1){ 
-			
-			if(grab_url($ls->param('default_plaintext_message_content_src_url_or_path'))){ 
-		
-			}
-			else { 
+			if(! grab_url($ls->param('default_plaintext_message_content_src_url_or_path'))){ 
 				$problems_fetching_plaintext_url = 1; 
 			}
 		}
 		elsif($plaintext_message_source_isa_file == 1) { 
-			if(-e $ls->param('default_plaintext_message_content_src_url_or_path')){ 
-				# ... 				
-			}
-			else { 
+			if(! -e $ls->param('default_plaintext_message_content_src_url_or_path')){ 
 				$problems_opening_plaintext_file = 1; 
+			}
+		}
+	}
+	# DEV: This is exact copy/paste job of the above. Not good. 
+	my $html_message_source_isa_url  = isa_url($ls->param('default_html_message_content_src_url_or_path'));
+	my $html_message_source_isa_file = 0; 
+	my $problems_fetching_html_url   = 0; 
+	my $problems_opening_html_file   = 0;
+	if(length($ls->param('default_html_message_content_src_url_or_path')) > 0 && $html_message_source_isa_url != 1){ 
+		$html_message_source_isa_file = 1;
+	}
+	if(length($ls->param('default_html_message_content_src_url_or_path')) > 0){ 
+		if($html_message_source_isa_url == 1){ 
+			if(! grab_url($ls->param('default_html_message_content_src_url_or_path'))){ 
+				$problems_fetching_html_url = 1; 
+			}
+		}
+		elsif($html_message_source_isa_file == 1) { 
+			if(! -e $ls->param('default_html_message_content_src_url_or_path')){ 
+				$problems_opening_html_file = 1; 
 			}
 		}
 	}
@@ -198,13 +298,24 @@ sub cgi_default {
                  -List       => $list,
              },
              -vars => {
+				Plugin_URL => $q->url, 
 				default_plaintext_message_content_data => $default_plaintext_message_content_data, 
 				default_html_message_content_data      => $default_html_message_content_data, 
-				Plugin_URL => $q->url, 
 				plaintext_message_source_isa_url       => $plaintext_message_source_isa_url,
 				plaintext_message_source_isa_file      => $plaintext_message_source_isa_file, 
 				problems_fetching_plaintext_url        => $problems_fetching_plaintext_url, 
 			    problems_opening_plaintext_file        => $problems_opening_plaintext_file, 
+
+				default_html_message_content_data      => $default_html_message_content_data, 
+				default_html_message_content_data      => $default_html_message_content_data, 
+				html_message_source_isa_url            => $html_message_source_isa_url,
+				html_message_source_isa_file           => $html_message_source_isa_file, 
+				problems_fetching_html_url             => $problems_fetching_html_url, 
+				problems_opening_html_file             => $problems_opening_html_file, 
+				
+				done                                   => $done, 
+				pt_return                              => $pt_return, 
+				html_return                            => $html_return, 
 			},
 			-list_settings_vars_param => { 
 				-list                 => $list,
@@ -260,7 +371,7 @@ sub save_file {
 	};
 	
 	if($@){ 
-		return undef; 
+		return 0; 
 	}
 	else { 
 		return 1; 
@@ -275,8 +386,8 @@ sub view_file {
 	
 	require DADA::MailingList::Settings; 
 	my $ls = DADA::MailingList::Settings->new({-list => $list}); 	
-	if($fn eq 'default_plaintext_message_content_src_url_or_path') { 
-		$data = slurp($ls->param('default_plaintext_message_content_src_url_or_path'));
+	if($fn eq 'default_plaintext_message_content_src_url_or_path' || $fn eq 'default_html_message_content_src_url_or_path') { 
+		$data = slurp($ls->param($fn));
 		e_print($q->pre(convert_to_html_entities($data))); 
 	}
 	else { 
