@@ -1,0 +1,49 @@
+<!-- begin archive_index_nav_table_widget.tmpl -->
+
+
+<table cellpadding="5" width="100%"> 
+ <tr>
+  <td valign="top" align="left" width="33%">
+   <p>
+    <strong>
+		<!-- tmpl_if prev_link --> 
+				&lt; &lt; 
+				<a href="<!-- tmpl_var prev_link -->">
+					Previous
+				</a>
+		<!-- tmpl_else --> 
+			&nbsp;
+		<!-- /tmpl_if --> 
+		
+    </strong>
+   </p>
+  </td> 
+  
+  <td valign="top" align="center" width="33%"> 
+   <p>
+    <strong>
+		<a href="<!-- tmpl_var PROGRAM_URL -->?flavor=<!-- tmpl_var flavor_label -->;<!-- tmpl_var list_settings.list -->">
+			Index
+		</a>
+	</strong>
+   </p>
+  </td>
+  
+  
+  <td valign="top" align="right" width="33%"> 
+   <p>
+    <strong>
+		<!-- tmpl_if next_link --> 
+			<a href="<!-- tmpl_var next_link -->">
+				Next
+			</a> &gt;&gt;
+		<!-- tmpl_else --> 
+			&nbsp;
+		<!-- /tmpl_if --> 
+    </strong>
+   </p>
+  </td>
+ </tr>
+</table>
+
+<!-- end archive_index_nav_table_widget.tmpl -->
