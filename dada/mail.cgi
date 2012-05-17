@@ -2393,7 +2393,7 @@ sub amazon_ses_get_stats {
 			my ($SentLast24Hours, $Max24HourSend, $MaxSendRate) = split(/\s+/, $data);     
 		
 			print $q->header(); 
-			print '<p class="positive">Your current Amazon SES sending limit is: ' . $MaxSendRate . ' message(s)/second with a limit of ' . $Max24HourSend . ' messages every 24 hours.</p>'; 
+			print '<p class="positive">Your current Amazon SES sending limit is: ' . commify($MaxSendRate) . ' message(s)/second with a limit of ' . commify($Max24HourSend) . ' messages every 24 hours.</p>'; 
 
 		}
 	}

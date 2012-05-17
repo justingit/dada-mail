@@ -10,25 +10,31 @@ Key:
 [*] Naw...
 [?] Someday
 
-[x] HTML Forms: Specify accept-charset in your <form> tag to tell the browser to submit user-entered data encoded in UTF-8:
+[ ] Markdown support - 
+Write "PlainText" messages in TextTile, and have them formatted when shown in messages, etc - option to turn into HTML when sending? 
+Power user option!
 
-	<form action="foo" accept-charset="UTF-8">...</form>
+[ ] ReWrite Digest stuff - 
+make a digest list a sublist, allow subscribers to subscribe to either, "list" or "sublist" (or change that in the profile screen)
+digest members not allowed to post to list. For now. Cronjob can be same as Dada Bridge cron, just extra step - time to run the digest? 
+What messages get sent out? Make the digest (RFC of format? Different options?), send 'er out. 
 
 
-[x] "Invite Only" List functionality. 
+[ ] Always archive messages, but don't always show the archived message. 
+Meaning, there's a new field, Called, "visibility" (or, whatever), that you can set to 1 or 0 - 
+If it's 1, it's shown, if it's 0, it's not. 
 
-[x] "You are Subscribed" Message sending to recent subscribed people. 
 
 [ ] A truly random pin for subs and unsubs. 
+This again, would need a new field in dada_subscribers and probably break compat with the non-SQL backends, which is a bummer. 
+Maybe just use a csv format for PlainText? (and only use such functionality, for pins... - not profile fields...) 
 
-[x] - Tracker - track use of "forward to a friend"
-	"Live tracking" right in mailing monitor
 
 [ ] - Ability to set a custom Feed URL (ie: Feedburner)
 
 [ ] Ability to have a, "I see your email has changed - want to change it in Dada Mail?" functionality in the list control panel. 
+(I don't understand this idea, anymore...) 
 
-[x] Ability to move "selected" list members from one list to another... so from Subscriber to Black or White List, Black List to Subscriber or White list, and White List to Subscriber or Black list
 
 [ ] Ability to NOT distribute messages to users (so for example if I'm using Mail Merge to create labels, I can clear those people I want to NOT print a label for).
 
@@ -80,9 +86,6 @@ Easier hooks/interface to Dada Mail subscribe
 				Email address present? 
 				(all the other email validation stuff...) 
 				
-[x] set_to_header_to_list_address setting needs to be re-named. 
-	* The functionality it was supposed to do, it doesn't 
-	* As it stands, if it's set to, "0", a reply-to header is added (or clobbers an already existing one) with the List Email address set. 
 	
 [ ] Some ideas from a user: 
 	* Make the List invite be more steamlined - so skip the screen that requires you to 
@@ -1028,21 +1031,14 @@ Change the Browser Sig for fetfching.... stuff.
 	Sort of - encoded in there
 	Also the nu school unsub url's don't *really* have the email addy in there...
 
-dada_digest - http://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=everything_else;action=display;num=1108658723;start=0#5
 
 
-[-] Test for SMTP Sending - Cause that's really annoying....
-	How about in its own window?
-		Actually, how about in line?!
-		How about AJAX this out? 
-		
+
 [] s/\n/<p>/ for physical address, privacy policy. 
 
 
 [-]remove Perl Modules that get d/l'd but, still aren't used?  (working on this...) 
 
-BOM ?!
-http://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=sending;action=display;num=1109068887;start=0
 
 todo: http://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=everything_else;action=display;num=1109103844;start=0#1
 
@@ -1066,7 +1062,6 @@ http://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=everything_else;action=di
 
 delete list should have to use a password too?
 
-[x] unsub emails should not have complete unsub stuff on them (pin, basically) 
 
 
 ----------

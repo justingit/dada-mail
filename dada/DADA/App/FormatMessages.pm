@@ -597,9 +597,15 @@ sub _add_opener_image {
 
 	my $self    = shift; 
 	my $content = shift; 
-	my $img_opener_code = '<!--open_img--><img src="' . $DADA::Config::PROGRAM_URL . '/spacer_image/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/spacer.png" width="1" height="1" /><!--/open_img-->';
-				#</body>
-	$content =~ s/(\<\/body(.*?)\>)/$img_opener_code\n$1/i;
+	my $img_opener_code = '<!--open_img--><img src="<!-- tmpl_var PROGRAM_URL -->/spacer_image/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/spacer.png" width="1" height="1" /><!--/open_img-->';
+	
+	if($content =~ m/\<\/body(.*?)\>/i){ 
+					#</body>
+		$content =~ s/(\<\/body(.*?)\>)/$img_opener_code\n$1/i;
+	}else { 
+		# No end body tag?!
+		$content .= "\n" . $img_opener_code
+	}
 	return $content; 
 }
 

@@ -334,7 +334,7 @@ sub show_log {
 	   $html .= '<pre>';
 	for(@$loglines){ 
 		$_ =~ s/\t/    /g;
-		$html .= convert_to_html_entities($_) . "\n";
+		$html .= encode_html_entities($_, "\200-\377") . "\n";
 	}
 	$html .= '</pre>';
 	return $html;
