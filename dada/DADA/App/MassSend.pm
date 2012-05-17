@@ -129,6 +129,7 @@ sub send_email {
 
     if ( !$process ) {
 
+			
         my (
             $num_list_mailouts, $num_total_mailouts,
             $active_mailouts,   $mailout_will_be_queued
@@ -165,6 +166,11 @@ sub send_email {
                     global_list_sending_checkbox_widget =>
                       DADA::Template::Widgets::global_list_sending_checkbox_widget(
                         $list),
+
+					plaintext_message_body_content       => $ls->plaintext_message_body_content,
+					html_message_body_content            => $ls->html_message_body_content, 
+					html_message_body_content_js_escaped => js_enc($ls->html_message_body_content),
+
                 },
                 -list_settings_vars       => $ls->params,
                 -list_settings_vars_param => { -dot_it => 1, },
