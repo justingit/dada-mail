@@ -2471,6 +2471,7 @@ sub previewBatchSendingSpeed {
 			}
 
 			$per_hour      = commify($per_hour);
+			$num_subs    = commify($num_subs);
 
 			$time_to_send = _formatted_runtime($total_hours * 60 * 60);
 
