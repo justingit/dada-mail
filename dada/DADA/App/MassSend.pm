@@ -930,29 +930,40 @@ sub list_invite {
         
 		my @addresses = $q->param('address'); 
  
-	  my $verified_addresses = []; 
-	  
+	  my $verified_addresses        = []; 
+	  my $invited_already_addresses = [];
 	  # Addresses hold CSV info - each item in the array is one line of CSV...
 	
 	  for my $a(@addresses){ 
 			my $pre_info = $lh->csv_to_cds($a); 
 			my $info     = {};
 			# DEV: Here I got again:
-		
 			$info->{email} = $pre_info->{email}; 
-
+			
 			my $new_fields = [];
 			my $i = 0; 
 			for(@$subscriber_fields){
 				push(@$new_fields, {name => $_, value => $pre_info->{fields}->{$_} }); 
-				$i++;
+				$i++; # and then, $i is never used, again?
 			}
-			$info->{fields} = $new_fields;
 			
+			$info->{fields} = $new_fields;
 			#And... Then this! 
 			$info->{csv_info} = $a;	
-			push(@$verified_addresses, $info); 
-			
+			$info->{'list_settings.invites_prohibit_reinvites'} = $ls->param('invites_prohibit_reinvites');
+			if($ls->param('invites_check_for_already_invited') == 1){ 
+				
+				# invited, already? 
+				if($lh->check_for_double_email( -Email => $info->{email}, -Type => 'invited_list' ) == 1 ) {  
+					push(@$invited_already_addresses, $info); 
+				}
+				else { 
+					push(@$verified_addresses, $info); 
+				}
+			}
+			else { 
+				push(@$verified_addresses, $info); 
+			}
 	    }
 	     
         require DADA::Template::Widgets;
@@ -972,14 +983,17 @@ sub list_invite {
 							mass_mailing_type                    => 'invite', 
 							Subject                              => $ls->param('invite_message_subject'), 
 							field_names                          => $field_names, 
+							
 							verified_addresses                   => $verified_addresses, 
+							invited_already_addresses            => $invited_already_addresses, 
+							
 							html_message_body_content            => $li->{invite_message_html}, 
 							html_message_body_content_js_escaped => js_enc($li->{invite_message_html}),
 							MAILOUT_AT_ONCE_LIMIT                => $DADA::Config::MAILOUT_AT_ONCE_LIMIT, 
 							mailout_will_be_queued               => $mailout_will_be_queued, 
-							num_list_mailouts          => $num_list_mailouts, 
-							num_total_mailouts         => $num_total_mailouts,
-							active_mailouts            => $active_mailouts,
+							num_list_mailouts                    => $num_list_mailouts, 
+							num_total_mailouts                   => $num_total_mailouts,
+							active_mailouts                      => $active_mailouts,
 						},
 						-list_settings_vars       => $li, 
 						-list_settings_vars_param => 
@@ -992,10 +1006,15 @@ sub list_invite {
 		
     }elsif($process =~ m/send a test invitation|send invitations/i){ # $process is dependent on the label of the button - which is not a good idea 
  
-       # add these to a special 'invitation' list. we'll clear this list later. 
-        my @address         = $q->param("address"); 
-        #my $new_email_count = 0; 
-
+        my @address                 = $q->param('address'); 
+		my @already_invited_address = $q->param('already_invited_address'); 
+		
+		# This is a little safety - there shouldn't be anything in
+		# @already_invited_address anyways. 
+		if($ls->param('invites_prohibit_reinvites') != 1) {
+		   @address = (@address, @already_invited_address);
+	 	}
+	
         for my $a(@address){ 
            	my $info   = $lh->csv_to_cds($a); 
             $lh->add_subscriber(
@@ -1010,6 +1029,17 @@ sub list_invite {
                     -email         => $info->{email}, 
                     -fields        => $info->{fields},
 					-type          => 'sub_confirm_list', 
+				    -dupe_check    => {
+										-enable  => 1, 
+										-on_dupe => 'ignore_add',  
+                					}, 
+				}
+            );
+            $lh->add_subscriber(
+                { 
+                    -email         => $info->{email}, 
+                    -fields        => $info->{fields},
+					-type          => 'invited_list', 
 				    -dupe_check    => {
 										-enable  => 1, 
 										-on_dupe => 'ignore_add',  

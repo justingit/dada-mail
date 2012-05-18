@@ -4643,6 +4643,11 @@ encrypted.
 
 	 # white list 
 	 enable_white_list            => 0,
+	
+# List Invite Prefs
+
+	invites_check_for_already_invited => 1, 
+	invites_prohibit_reinvites        => 1, 
 		
 # Your Mailing List Template Prefs
 

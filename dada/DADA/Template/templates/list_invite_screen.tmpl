@@ -37,20 +37,13 @@
 
 <input type="hidden" name="f" value="list_invite" />
 
-
-
-
-
 <!-- tmpl_if verified_addresses --> 
 
 	<fieldset> 
 	 <legend>
 		Your Invitees
 	 </legend>
-
-
 	 <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
-
 	 <table class="stripedtable">
 	  <tr>
 	   <td width="25">
@@ -63,9 +56,7 @@
 	   </strong>
 	  </p>
 	 </td>
-
 	<!-- tmpl_loop name="field_names" --> 
-    
 	    <td>
 	     <p>
 	      <strong>
@@ -74,11 +65,8 @@
 	     </p>
 	    </td> 
 	<!--/tmpl_loop --> 
-
 	  </tr>
-  
 	  <!-- tmpl_loop verified_addresses -->
-
 	    <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
 	     <td width="25">
 	      <input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" />
@@ -90,9 +78,7 @@
 	</label>
 	      </p>
 	     </td>
-
 	     <!-- tmpl_loop fields --> 
-        
 	        <td>
 	         <p>
 	          <!-- tmpl_var value default="&nbsp;" -->
@@ -100,25 +86,116 @@
 	        </td>
 	    <!-- /tmpl_loop --> 
 	  </tr>
-  
 	  <!-- tmpl_if __last__ --> 
-  
 	  </table>
 	  <p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var __counter__ -->&nbsp;</p> 
-  
 	  <!-- /tmpl_if --> 
-  
 	<!-- /tmpl_loop -->
-
-
 	<p>&nbsp;</p>
 	<p>&nbsp;</p>
 	</div>
-
-
 	</fieldset> 
-
 <!-- /tmpl_if --> 
+
+
+
+
+<!-- tmpl_if invited_already_addresses --> 
+
+	<fieldset> 
+	 <legend>
+	 	Already Invited Addresses</legend>
+	
+	<div class="clearskiesbox">
+		<p>
+		The below addresses have already been invited to your mailing list. 
+		
+		<!-- tmpl_unless list_settings.invites_prohibit_reinvites --> 
+			Check the addresses you would like to re-invite.
+		<!-- /tmpl_unless --> 
+		
+		</p>
+	</div> 
+		
+	 <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
+	 <table class="stripedtable">
+	  <tr>
+	   <td width="25">
+	    <p>&nbsp;</p>
+	   </td>
+	   <td>
+	   <p>
+	    <strong>
+	     Email
+	   </strong>
+	  </p>
+	 </td>
+	<!-- tmpl_loop name="field_names" --> 
+	    <td>
+	     <p>
+	      <strong>
+	       <!-- tmpl_var name --> 
+	      </strong>
+	     </p>
+	    </td> 
+	<!--/tmpl_loop --> 
+	  </tr>
+	  <!-- tmpl_loop invited_already_addresses -->
+	    <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+	     <td width="25">
+	      <!-- tmpl_if list_settings.invites_prohibit_reinvites -->
+			&nbsp;
+		  <!-- tmpl_else --> 
+			<input type="checkbox" name="already_invited_address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->"  /><!--checked="checked"-->
+	      <!-- /tmpl_if --> 
+		</td>
+	     <td>
+	      <p>
+	<label for="<!-- tmpl_var email -->">
+	       <!-- tmpl_var email -->
+	</label>
+	      </p>
+	     </td>
+	     <!-- tmpl_loop fields --> 
+	        <td>
+	         <p>
+	          <!-- tmpl_var value default="&nbsp;" -->
+	         </p>
+	        </td>
+	    <!-- /tmpl_loop --> 
+	  </tr>
+	  <!-- tmpl_if __last__ --> 
+	   
+	   <!-- tmpl_unless list_settings.invites_prohibit_reinvites -->
+		   <tr>
+			<td>
+				<input id="check_all_already_invited_addresses" type="checkbox" onClick="toggleCheckBoxes(this, 'already_invited_address')"/>
+		    </td>
+			<!-- tmpl_loop fields --> 
+		        <td>
+		         <p>
+					<!-- tmpl_if __first__ -->
+						<label for="check_all_already_invited_addresses">Check All Addresses</label>
+					<!-- tmpl_else --> 
+		         		&nbsp;
+					<!-- /tmpl_if --> 
+		         </p>
+		        </td>
+	    <!-- /tmpl_loop -->
+		</tr>
+		<!-- /tmpl_unless -->	   
+	  </table>
+	  <p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var __counter__ -->&nbsp;</p> 
+	  <!-- /tmpl_if --> 
+	
+	<!-- /tmpl_loop -->
+	
+	<p>&nbsp;</p>
+	<p>&nbsp;</p>
+	</div>
+	</fieldset> 
+<!-- /tmpl_if -->
+
 
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
 

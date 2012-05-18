@@ -341,7 +341,8 @@ sub get_list_types {
 		white_list          => 1, 
 		sub_confirm_list    => 1, 
 		unsub_confirm_list  => 1, 
-		invitelist          => 1, 
+		invitelist          => 1,
+		invited_list        => 1,  
 		sub_request_list    => 1,
 		bounced_list        => 1,			
 	};

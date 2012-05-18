@@ -4496,7 +4496,9 @@ sub subscription_options {
                     add_unsubs_to_black_list             => 0,
                     allow_blacklisted_to_subscribe       => 0,
                     allow_admin_to_subscribe_blacklisted => 0,
-                    enable_white_list => 0,
+                    enable_white_list                    => 0,
+					invites_check_for_already_invited    => 0, 
+					invites_prohibit_reinvites           => 0,
                 }
             }
         );
