@@ -5,7 +5,14 @@ my $need_this_many_entries = 5;
 
 
 
-use lib qw(./ ./DADA/perllib);
+use lib qw(
+	./ 
+	./DADA/perllib
+
+	../../
+	../../DADA/perllib
+
+);
 use CGI::Carp qw(fatalsToBrowser); 
 use Carp; 
 $Carp::Verbose = 1;
