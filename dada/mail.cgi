@@ -572,6 +572,7 @@ sub run {
 	'remove_all_subscribers'     =>    \&remove_all_subscribers,
 	'view_list_options'          =>    \&list_cp_options,
 	'membership'                 =>    \&membership,
+	'admin_change_profile_password' => \&admin_change_profile_password, 
 	'mailing_list_history'       =>    \&mailing_list_history, 
 	'add'                        =>    \&add,
 	'check_status'               =>    \&check_status,
@@ -3693,6 +3694,38 @@ sub mailing_list_history {
 	print $q->header(); 
 	print $scrn;
 
+}
+
+
+
+sub admin_change_profile_password { 
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'membership'
+    );
+	my $list = $admin_list; 
+	my $profile_password = xss_filter($q->param('profile_password')); 
+    my $email            = xss_filter( $q->param('email') );
+	my $type             = xss_filter( $q->param('type') );
+
+    require DADA::Profile; 
+	my $prof = DADA::Profile->new( { -email => $email } );
+
+	$prof->update(
+		{
+			-password => $profile_password,
+		}
+	);
+	# Reactivate the Account. ?
+	$prof->activate();
+		
+	print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+          . '?f=membership;email='
+          . $email
+          . ';type='
+          . $type
+          . ';done=1' );
+    return;
 }
 
 
