@@ -26,8 +26,10 @@ my $verbose = $q->param('verbose') || 1;
 my $Plugin_Config                = {}; 
    $Plugin_Config->{Plugin_Name} = 'Password Protect Directories'; 
    $Plugin_Config->{Plugin_URL}  = $q->url; 
-	$Plugin_Config->{Allow_Manual_Run} = 1; 
-
+   $Plugin_Config->{Allow_Manual_Run} = 1; 
+   $Plugin_Config->{Manual_Run_Passcode} = undef; 
+   $Plugin_Config->{Base_Absolute_Path}  = $ENV{DOCUMENT_ROOT} . '/';
+   $Plugin_Config->{Base_URL} = 'http://' . $ENV{HTTP_HOST} . '/'; 
 
 &init_vars; 
 
@@ -133,6 +135,17 @@ sub default_tmpl {
 
     my $tmpl = q{ 
 
+		<script type="text/javascript">
+		//<![CDATA[
+
+		function show_change_default_password_form(){ 
+			Effect.BlindUp('change_default_password_button');
+			Effect.BlindDown('change_default_password_form');	
+		}
+
+	//]]>
+	</script>		
+		
 <!-- tmpl_set name="title" value="Password Protect Directories" --> 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
@@ -150,7 +163,26 @@ sub default_tmpl {
 	<p><strong>Problems were found with the information you just submitted:</strong></p> 
 	<ul>
 	<!-- tmpl_loop errors --> 
-		<li><!-- tmpl_var error --></li>
+		<li>
+		<!-- tmpl_if expr="(error eq 'error_missing_name')" -->
+			<strong>Name</strong> is missing.
+		<!-- /tmpl_if --> 
+		<!-- tmpl_if expr="(error eq 'error_missing_url')" -->
+			<strong>URL</strong> is missing.
+		<!-- /tmpl_if --> 
+		<!-- tmpl_if expr="(error eq 'error_url_no_exists')" -->
+			<strong>URL</strong> does not look like a valid URL.
+		<!-- /tmpl_if --> 
+		<!-- tmpl_if expr="(error eq 'error_missing_path')" -->
+			<strong>Path</strong> is missing.
+		<!-- /tmpl_if --> 
+		<!-- tmpl_if expr="(error eq 'error_path_no_exists')" -->
+			<strong>Path</strong> does not look like a valid Server Path.
+		<!-- /tmpl_if --> 
+		<!-- tmpl_if expr="(error eq 'error_use_custom_error_page_set_funny')" -->
+			"Use a Custom Error Page" Isn't a 1 or a 0
+		<!-- /tmpl_if --> 
+		</li>
 	<!-- /tmpl_loop --> 
 	</ul>
 	</div>
@@ -169,52 +201,40 @@ sub default_tmpl {
 				<legend><!-- tmpl_var name --></legend>
 			
 				<table class="stripedtable">
-		
-				<!--  <tr> 
-					<td><strong>ID</strong></td> <td><!-- tmpl_var id --></td> 
+				 	<tr class="alt"> 
+					<td width="200px">
+					<strong>Protected URL</strong></td><td><a href="<!-- tmpl_var url -->" target="_blank"><!-- tmpl_var url --></a></td>
 					</tr>
-		 
-						<tr> 
-						<td><strong>Name</strong></td><td><!-- tmpl_var name --></td>
-						</tr>
-		
-				--> 
-		
-		
+				
 				 	<tr> 
-					<td><strong>Path</strong></td><td><!-- tmpl_var path --></td>
+					<td width="200px">
+					<strong>Corresponding Server Path</strong></td><td><!-- tmpl_var path --></td>
 					</tr>
-				 	<tr> 
-
-					<td><strong>url</strong></td><td><!-- tmpl_var url --></td>
+				 	
+					<tr class="alt"> 
+					<td><strong>Using a Custom Error Page?</strong></td><td><!-- tmpl_if use_custom_error_page -->Yes.<!-- tmpl_else -->No.<!-- /tmpl_if --></td>
 					</tr>
-				 	<tr> 
-
-					<td><strong>use_custom_error_page</strong></td><td><!-- tmpl_var use_custom_error_page --></td>
+				 
+					<tr>
+					<td width="200px">
+					<strong>Custom Error Page (Path)</strong></td><td><!-- tmpl_var custom_error_page --></td>
 					</tr>
-				 	<tr> 
-
-					<td><strong>custom_error_page</strong></td><td><!-- tmpl_var custom_error_page --></td>
-					</tr>
-				<!--  	
-				<tr> 
-
-					<td><strong>default_password</strong></td><td><!-- tmpl_var default_password --></td>
+					
+					<tr class="alt"> 
+					<td width="200px">
+					<strong>Default Password</strong></td><td><!-- tmpl_if default_password --><em>********</em><!-- tmpl_else --><em>(None Set)</em><!-- /tmpl_if --></td>
 				</tr>
-				--> 
 			</table> 
 			<div class="buttonfloat">
 		
-				<form action="<!-- tmpl_var Plugin_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+				<form action="<!-- tmpl_var Plugin_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" style="display: inline; margin: 0;"> 
 					<input type="hidden" name="f" value="edit_dir" /> 
 					<input type="hidden" name="id" value="<!-- tmpl_var id -->" /> 
 					<input type="submit" class="processing" value="Edit " />
-	
-		
 				</form>
 			
 			
-			<form action="<!-- tmpl_var Plugin_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+			<form action="<!-- tmpl_var Plugin_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" style="display: inline; margin: 0;"> 
 				<input type="hidden" name="f" value="delete_dir" /> 
 				<input type="hidden" name="id" value="<!-- tmpl_var id -->" /> 
 		
@@ -243,7 +263,7 @@ sub default_tmpl {
 
 <form action="<!-- tmpl_var Plugin_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
 <table class="stripedtable">
-<tr>
+<tr class="alt">
 	<td width="200px">
 	 <label>
 	  Name
@@ -253,26 +273,29 @@ sub default_tmpl {
 	 <input type="text" name="name" value="" class="full" />
 	</td>
 </tr>
+
 <tr>
 <td width="200px">
 	 <label>
-	  Path
+	  Protected URL
 	 </label>
 	</td>
 	<td align="left">
-	 <input type="text" name="path" value="" class="full" />
+	 <input type="text" name="url" value="<!-- tmpl_var Base_URL -->" class="full" />
 	</td>
 </tr>
-<tr>
+
+<tr class="alt">
 <td width="200px">
 	 <label>
-	  URL
+	  Corresponding Server Path
 	 </label>
 	</td>
 	<td align="left">
-	 <input type="text" name="url" value="" class="full" />
+	 <input type="text" name="path" value="<!-- tmpl_var Base_Absolute_Path -->" class="full" />
 	</td>
 </tr>
+
 <tr>
 <td width="200px">
 	 <label>
@@ -284,10 +307,10 @@ sub default_tmpl {
 	</td>
 </tr>
 
-<tr>
+<tr class="alt">
 <td width="200px">
 	 <label>
-	  Custom Error Page:
+Custom Error Page (Path):
 	 </label>
 	</td>
 	<td align="left">
@@ -295,7 +318,26 @@ sub default_tmpl {
 	</td>
 </tr>
 
-<!-- tmpl_unless edit --> 
+<!-- tmpl_if edit --> 
+
+<tr>
+<td width="200px">
+	 <label>
+	  Default Password (if any):
+	 </label>
+	</td>
+	<td align="left">
+			<div id="change_default_password_button">
+				<input type="button" value="Click to Change Default Password..." class="cautionary" onclick="show_change_default_password_form();" />
+			</div> 
+			<div id="change_default_password_form" style="display:none">
+						<input type="password" name="default_password" value="" />
+			</div>
+	</td>
+</tr>
+
+
+<!-- tmpl_else --> 
 
 	<tr>
 	<td width="200px">
@@ -308,7 +350,7 @@ sub default_tmpl {
 		</td>
 	</tr>
 
-<!-- /tmpl_unless --> 
+<!-- /tmpl_if --> 
 
 
 </table>
@@ -329,6 +371,41 @@ sub default_tmpl {
 </form> 
 
 </fieldset> 
+
+<!-- tmpl_unless edit --> 
+
+	<!-- tmpl_if root_login --> 
+
+		<fieldset> 
+		 <legend>Manually Run <!-- tmpl_var Plugin_Name --></legend>
+
+		<p>
+		 <label for="cronjob_url">Manual Run URL:</label><br /> 
+		<input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var Plugin_URL -->?run=1&verbose=1&passcode=<!-- tmpl_var Manual_Run_Passcode -->" />
+		</p>
+		<!-- tmpl_unless Allow_Manual_Run --> 
+		    <span class="error">(Currently disabled)</a>
+		<!-- /tmpl_unless -->
+
+
+		<p> <label for="cronjob_command">curl command example (for a cronjob):</label><br /> 
+		<input type="text" class="full" id="cronjob_command" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --data run=1\;passcode=<!-- tmpl_var Manual_Run_Passcode -->\;verbose=0  --url <!-- tmpl_var Plugin_URL -->" />
+		<!-- tmpl_unless curl_location --> 
+			<span class="error">Can't find the location to curl!</span><br />
+		<!-- /tmpl_unless --> 
+
+		<!-- tmpl_unless Allow_Manual_Run --> 
+		    <span class="error">(Currently disabled)</a>
+		<!-- /tmpl_unless --> 
+
+		</p>
+		</li>
+		</ul> 
+		</fieldset>
+
+	<!-- /tmpl_if --> 
+<!-- /tmpl_unless --> 
+
 
 
 };
@@ -355,8 +432,8 @@ sub default {
 		my $entry = $htp->get({-id => $id });
 		$edit = 1; 
 		$q->param('name', $entry->{name});
-		$q->param('path', $entry->{path});
 		$q->param('url', $entry->{url});
+		$q->param('path', $entry->{path});
 		
 		$q->param('use_custom_error_page', $entry->{use_custom_error_page});
 		$q->param('custom_error_page', $entry->{custom_error_page});
@@ -371,6 +448,10 @@ sub default {
 			}
 		}
 	}
+	
+	my $curl_location = `which curl`;
+       $curl_location = strip( make_safer($curl_location) );
+
     my $tmpl = default_tmpl();
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -381,6 +462,7 @@ sub default {
                 -Root_Login => $root_login,
                 -List       => $ls->param('list'),
             },
+			-expr => 1, 
             -vars => {
                 done                             => $q->param('done') || 0,
 				Plugin_URL                       => $Plugin_Config->{Plugin_URL}, 
@@ -389,7 +471,16 @@ sub default {
 				errors                           => $errors, 
 				edit                             => $edit, 
 				id                               => $id, 
+				curl_location                    => $curl_location, 
+				root_login                       => $root_login, 
+				
+				Allow_Manual_Run => $Plugin_Config->{Allow_Manual_Run},
+			   Manual_Run_Passcode => $Plugin_Config->{Manual_Run_Passcode},
+			   Base_Absolute_Path => $Plugin_Config->{Base_Absolute_Path},
+			   Base_URL  => $Plugin_Config->{Base_URL},
+			
             },
+
             -list_settings_vars_param => {
                 -list   => $list,
                 -dot_it => 1,
@@ -410,9 +501,9 @@ sub default {
 
 
 sub new_dir { 
-    my $name = xss_filter( $q->param('name') ) || "Untitled";
-    my $path = xss_filter( $q->param('path') ) || undef;
+    my $name = xss_filter( $q->param('name') ) || undef;
     my $url  = xss_filter( $q->param('url') )  || undef;
+    my $path = xss_filter( $q->param('path') ) || undef;
     my $use_custom_error_page = xss_filter( $q->param('use_custom_error_page') ) || 0;
     my $custom_error_page = xss_filter( $q->param('custom_error_page') )|| undef;
     my $default_password = xss_filter( $q->param('default_password') ) || undef;
@@ -424,8 +515,8 @@ sub new_dir {
 		{ 
 			-fields => { 
 		        -name                  => $name,
-		        -path                  => $path ,
 				-url                   => $url,
+		        -path                  => $path ,
 				-use_custom_error_page => $use_custom_error_page,
 				-custom_error_page     => $custom_error_page,
 				-default_password      => $default_password,
@@ -433,17 +524,20 @@ sub new_dir {
 		}		
 	); 
 	if($status == 1){ 
-	
-		   $htp->create(
-				{ 
-			        -name                  => $name,
-			        -path                  => $path ,
-					-url                   => $url,
-					-use_custom_error_page => $use_custom_error_page,
-					-custom_error_page     => $custom_error_page,
-					-default_password      => $default_password,
-				}
-			);
+
+	   $htp->create(
+			{ 
+		        -name                  => $name,
+				-url                   => $url,
+		        -path                  => $path ,
+				-use_custom_error_page => $use_custom_error_page,
+				-custom_error_page     => $custom_error_page,
+				-default_password      => $default_password,
+			}
+		);
+		for my $id2(@{$htp->get_all_ids}) {  
+			$htp->setup_directory({-id => $id2});
+		}			
 		print $q->redirect(-uri => $Plugin_Config->{Plugin_URL} . '?done=1'); 
 	}
 	else { 
@@ -458,9 +552,9 @@ sub new_dir {
 
 sub process_edit_dir { 
 	
-	my $name = xss_filter( $q->param('name') ) || "Untitled";
-    my $path = xss_filter( $q->param('path') ) || undef;
+	my $name = xss_filter( $q->param('name') ) || undef;
     my $url  = xss_filter( $q->param('url') )  || undef;
+    my $path = xss_filter( $q->param('path') ) || undef;
     my $use_custom_error_page = xss_filter( $q->param('use_custom_error_page') ) || 0;
     my $custom_error_page = xss_filter( $q->param('custom_error_page') )|| undef;
     my $default_password = xss_filter( $q->param('default_password') ) || undef;
@@ -472,8 +566,8 @@ sub process_edit_dir {
 		{ 
 			-fields => { 
 		        -name                  => $name,
-		        -path                  => $path ,
 				-url                   => $url,
+		        -path                  => $path ,
 				-use_custom_error_page => $use_custom_error_page,
 				-custom_error_page     => $custom_error_page,
 				-default_password      => $default_password,
@@ -487,13 +581,16 @@ sub process_edit_dir {
 				{ 
 					-id                    => $id, 
 			        -name                  => $name,
-			        -path                  => $path ,
 					-url                   => $url,
+			        -path                  => $path ,
 					-use_custom_error_page => $use_custom_error_page,
 					-custom_error_page     => $custom_error_page,
 					-default_password      => $default_password,
 				}
 			);
+			my $htp     = htpasswdWriter->new({-list => $list});
+			   $htp->setup_directory({-id => $id});
+			
 		print $q->redirect(-uri => $Plugin_Config->{Plugin_URL} . '?done=1'); 
 	}
 	else { 
@@ -511,6 +608,7 @@ sub process_edit_dir {
 sub delete_dir { 
 	my $id = $q->param('id'); 
 	my $htp     = htpasswdWriter->new({-list => $list});
+	   $htp->remove_directory_files({-id => $id}); 
 	   $htp->remove({-id => $id});
 	print $q->redirect(-uri => $Plugin_Config->{Plugin_URL} . '?done=1'); 
 	
@@ -585,11 +683,19 @@ sub validate_protected_dir {
 		carp "you need to pass the fields in, -fields"; 
 		return (0, $errors); 
 	}
-	if(!exists($args->{-fields}->{-name}) || !defined($args->{-fields}->{-name})) { 
+	if(!exists($args->{-fields}->{-name}) || !defined($args->{-fields}->{-name}) || length($args->{-fields}->{-name}) <= 0) { 
 		$errors->{missing_name} = 1;
 		$status = 0; 
 	}
-	if(!exists($args->{-fields}->{-path}) || !defined($args->{-fields}->{-path})) { 
+	if(!exists($args->{-fields}->{-url}) || !defined($args->{-fields}->{-url})  || length($args->{-fields}->{-url}) <= 0) { 
+		$errors->{missing_url} = 1; 
+		$status = 0; 
+	}	
+	if(! isa_url($args->{-fields}->{-url})){ 
+		$errors->{url_no_exists} = 1; 
+		$status = 0; 		
+	}
+	if(!exists($args->{-fields}->{-path}) || !defined($args->{-fields}->{-path}) || length($args->{-fields}->{-path}) <= 0) { 
 		$errors->{missing_path} = 1;
 		$status = 0; 
 	}
@@ -597,29 +703,12 @@ sub validate_protected_dir {
 		$errors->{path_no_exists} = 1; 
 		$status = 0; 		
 	} 
-	if(!exists($args->{-fields}->{-url}) || !defined($args->{-fields}->{-url})) { 
-		$errors->{missing_url} = 1; 
-		$status = 0; 
-	}
-	
-	if(! isa_url($args->{-fields}->{-url})){ 
-		$errors->{url_no_exists} = 1; 
-		$status = 0; 		
-	}
 	if($args->{-fields}->{-use_custom_error_page} !~ m/1|0/) { 
 		$errors->{use_custom_error_page_set_funny} = 1; 
 		$status = 0; 		
 	}
 	
-	return ($status, $errors);
-	
-	#-name                  => $name,
-    #-path                  => $path ,
-	#-url                   => $url,
-	#-use_custom_error_page => $use_custom_error_page,
-	#-custom_error_page     => $custom_error_page,
-	#-default_password      => $default_password,
-		
+	return ($status, $errors);		
 }
 sub create { 
 	my $self  = shift; 
@@ -635,21 +724,24 @@ sub insert {
 	my $query =
       'INSERT INTO '
       . 'dada_password_protected_directories'
-      . '(list, name, path, url, use_custom_error_page, custom_error_page, default_password) VALUES (?, ?, ?, ?, ?, ?, ?)';
+      . '(list, name, url, path, use_custom_error_page, custom_error_page, default_password) VALUES (?, ?, ?, ?, ?, ?, ?)';
 
     warn 'QUERY: ' . $query
       if $t;
 
     my $sth = $self->{dbh}->prepare($query);
-
+	my $password = undef; 
+	if(exists($args->{ -default_password }) && defined($args->{ -default_password }) && length($args->{ -default_password }) > 0){ 
+		$password = DADA::Security::Password::encrypt_passwd($args->{ -default_password } )
+	}
     $sth->execute(
 		$self->{list}, 
         $args->{ -name },
-        $args->{ -path },
 		$args->{ -url },
+        $args->{ -path },
 		$args->{ -use_custom_error_page },
 		$args->{ -custom_error_page },
-		DADA::Security::Password::encrypt_passwd($args->{ -default_password } ), 
+		$password, 
       )
       or croak "cannot do statement (at insert)! $DBI::errstr\n";
     $sth->finish;
@@ -661,10 +753,17 @@ sub insert {
 sub update {
 	my $self = shift; 
 	my ($args) = @_; 
+	
+	my $password = undef; 
+	if(exists($args->{ -default_password }) && defined($args->{ -default_password }) && length($args->{ -default_password }) > 0){ 
+		$password = DADA::Security::Password::encrypt_passwd($args->{ -default_password } )
+	}
+	
+	
 	my $query =
       'UPDATE '
       . 'dada_password_protected_directories'
-      . ' SET name = ?, path = ?, url = ?, use_custom_error_page = ?, custom_error_page = ? where id = ?';
+      . ' SET name = ?, url = ?, path = ?, use_custom_error_page = ?, custom_error_page = ?, default_password = ? where id = ?';
 
     warn 'QUERY: ' . $query
       if $t;
@@ -673,10 +772,11 @@ sub update {
 
     $sth->execute(
         $args->{ -name },
-        $args->{ -path },
 		$args->{ -url },
+        $args->{ -path },
 		$args->{ -use_custom_error_page },
 		$args->{ -custom_error_page },
+		$password, 
 		$args->{ -id }, 
       )
       or croak "cannot do statement (at insert)! $DBI::errstr\n";
@@ -760,6 +860,22 @@ sub get {
 	
 }
 
+sub remove_directory_files { 
+    my $self = shift;
+    my ($args) = @_;
+	
+	if(!exists($args->{-id})){ 
+		croak "Cannot use this method without passing the '-id' param "; 
+	}
+	my $entry = $self->get({-id => $args->{-id}}); 
+	if(-e $entry->{path} . '/.htaccess'){ 
+		unlink($entry->{path} . '/.htaccess'); 
+	}
+	if(-e $entry->{path} . '/.htpasswd'){ 
+		unlink($entry->{path} . '/.htpasswd'); 
+	}
+	
+}
 
 sub remove {
 	
@@ -824,7 +940,7 @@ sub write_htaccess {
 	open my $htaccess, '>', $entry->{path} . '/' . '.htaccess' or die $! ;
 	print $htaccess "
 AuthType Basic
-AuthName \"" . $entry->{name} . "\"
+AuthName \"" . convert_to_html_entities($entry->{name}) . "\"
 AuthUserFile " . $entry->{path} . "/.htpasswd
 Require valid-user
 ";

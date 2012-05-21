@@ -94,17 +94,18 @@ q{=cut
 ); 
 
 my $plugins_extensions = { 
-	change_root_password   => {installed => 0, loc => '../plugins/change_root_password.cgi'}, 
-	screen_cache           => {installed => 0, loc => '../plugins/screen_cache.cgi'}, 
-	log_viewer             => {installed => 0, loc => '../plugins/log_viewer.cgi'}, 
-	tracker                => {installed => 0, loc => '../plugins/tracker.cgi'}, 
-	dada_bridge            => {installed => 0, loc => '../plugins/dada_bridge.pl'}, 
-	dada_bounce_handler    => {installed => 0, loc => '../plugins/dada_bounce_handler.pl'}, 
-	scheduled_mailings     => {installed => 0, loc => '../plugins/scheduled_mailings.pl'}, 
-	multiple_subscribe     => {installed => 0, loc => '../extensions/multiple_subscribe.cgi'}, 
-	ajax_include_subscribe => {installed => 0, loc => '../extensions/ajax_include_subscribe.cgi'}, 	
-	blog_index             => {installed => 0, loc => '../extensions/blog_index.cgi'}, 
-	mailing_monitor        => {installed => 0, loc => '../plugins/mailing_monitor.cgi'}, 
+	change_root_password         => {installed => 0, loc => '../plugins/change_root_password.cgi'}, 
+	screen_cache                 => {installed => 0, loc => '../plugins/screen_cache.cgi'}, 
+	log_viewer                   => {installed => 0, loc => '../plugins/log_viewer.cgi'}, 
+	tracker                      => {installed => 0, loc => '../plugins/tracker.cgi'}, 
+	dada_bridge                  => {installed => 0, loc => '../plugins/dada_bridge.pl'}, 
+	dada_bounce_handler          => {installed => 0, loc => '../plugins/dada_bounce_handler.pl'}, 
+	scheduled_mailings           => {installed => 0, loc => '../plugins/scheduled_mailings.pl'}, 
+	multiple_subscribe           => {installed => 0, loc => '../extensions/multiple_subscribe.cgi'}, 
+	ajax_include_subscribe       => {installed => 0, loc => '../extensions/ajax_include_subscribe.cgi'}, 	
+	blog_index                   => {installed => 0, loc => '../extensions/blog_index.cgi'}, 
+	mailing_monitor              => {installed => 0, loc => '../plugins/mailing_monitor.cgi'}, 
+	password_protect_directories => {installed => 0, loc => '../plugins/password_protect_directories.cgi'}, 
 };
 $plugins_extensions->{change_root_password}->{code} = 
 q{#					{
@@ -181,6 +182,13 @@ q{#					{
 #					-Title_URL  => $PLUGIN_URL."/mailing_monitor.cgi",
 #					-Function   => 'mailing_monitor',
 #					-Activated  => 0,
+#					},};
+$plugins_extensions->{password_protect_directories}->{code} =
+q{#					{
+#					-Title      => 'Password Protected Directories',
+#					-Title_URL  => $PLUGIN_URL."/password_protect_directories.cgi",
+#					-Function   => 'password_protect_directories',
+#					-Activated  => 1,
 #					},};
 
 # An unconfigured Dada Mail won't have these exactly handy to use. 

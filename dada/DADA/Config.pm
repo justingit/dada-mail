@@ -718,6 +718,17 @@ $PLUGIN_CONFIGS ||= {
 		tail_command                        => undef,
 
 	},
+	
+	password_protect_directories => {
+
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
+		Allow_Manual_Run                    => undef,
+		Manual_Run_Passcode                 => undef,
+		Base_Absolute_Path                  => undef, 
+		Base_URL                            => undef, 
+
+	}, 
 
 };
 
@@ -2195,6 +2206,14 @@ $ADMIN_MENU ||= [
 #					-Function   => 'mailing_monitor',
 #					-Activated  => 0,
 #					},
+
+#					{
+#					-Title      => 'Password Protected Directories',
+#					-Title_URL  => $PLUGIN_URL."/password_protect_directories.cgi",
+#					-Function   => 'password_protect_directories',
+#					-Activated  => 1,
+#					},
+
 
 				],
 			},
