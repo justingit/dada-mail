@@ -3729,6 +3729,17 @@ sub admin_change_profile_password {
 			}
 		);
 	}
+	
+	# DEV: This is going to get repeated quite a bit..
+	require DADA::Profile::Htpasswd;
+	foreach my $p_list(@{$prof->subscribed_to}) { 
+		my $htp     = DADA::Profile::Htpasswd->new({-list => $p_list});
+		for my $id(@{$htp->get_all_ids}) {  
+			$htp->setup_directory({-id => $id});
+		}
+	}
+	#
+	
 		
 	print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
           . '?f=membership;email='
@@ -10119,6 +10130,19 @@ sub profile {
 				require DADA::Profile::Session;
 				my $prof_sess = DADA::Profile::Session->new->logout;
 				profile_login();
+				
+				# DEV: This is going to get repeated quite a bit..
+				require DADA::Profile::Htpasswd;
+				foreach my $p_list(@{$prof->subscribed_to}) { 
+					my $htp     = DADA::Profile::Htpasswd->new({-list => $p_list});
+					for my $id(@{$htp->get_all_ids}) {  
+						$htp->setup_directory({-id => $id});
+					}
+				}
+				#
+				
+				
+				
 			}
 			else {
 				$q->param('errors', 1);
@@ -10269,10 +10293,18 @@ sub profile {
 						-to_sanitize => [qw(list_settings.list_owner_email list_settings.info list_settings.privacy_policy )],
 					}
 				);
-				push(@$filled, {%{$i}, %{$li}, PROGRAM_URL => $DADA::Config::PROGRAM_URL})
+				
+				require DADA::Profile::Htpasswd;
+				my $htp = DADA::Profile::Htpasswd->new({-list => $i->{list}}); 
+				my $protected_directories = $htp->get_all_entries; 
+				
+				push(@$filled, 
+					{%{$i}, 
+					%{$li}, 
+					
+					protected_directories => $protected_directories, 
+					PROGRAM_URL => $DADA::Config::PROGRAM_URL})
 			}
-			#require Data::Dumper;
-			#die Data::Dumper::Dumper($filled);
 
 			my $scrn = '';
 		    require DADA::Template::Widgets;

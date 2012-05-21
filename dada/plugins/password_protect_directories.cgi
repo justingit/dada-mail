@@ -15,13 +15,14 @@ use CGI::Carp "fatalsToBrowser";
 use DADA::Config 5.0.0 qw(!:DEFAULT);
 use DADA::App::Guts; 
 use DADA::MailingList::Settings;
+use DADA::Profile::Htpasswd;
 
 # we need this for cookies things
 use CGI;
 my $q = new CGI;
 $q->charset($DADA::Config::HTML_CHARSET);
 $q = decode_cgi_obj($q);
-my $verbose = $q->param('verbose') || 1; 
+my $verbose = $q->param('verbose') || 0; 
 
 my $Plugin_Config                = {}; 
    $Plugin_Config->{Plugin_Name} = 'Password Protect Directories'; 
@@ -62,7 +63,7 @@ sub run {
 	
 	if ( !$ENV{GATEWAY_INTERFACE} ) {
 	
-		DADA::Mail::MailOut::refresh_directories( { -verbose => $verbose } );
+		refresh_directories( { -verbose => $verbose } );
         # this (hopefully) means we're running on the cl...
     }
 	elsif (   keys %{ $q->Vars }
@@ -120,7 +121,7 @@ sub refresh_directories {
 	foreach my $list(available_lists()) { 
 		print "List: $list\n"
 			 if $verbose; 
-		my $htp     = htpasswdWriter->new({-list => $list});
+		my $htp     = DADA::Profile::Htpasswd->new({-list => $list});
 		for my $id(@{$htp->get_all_ids}) {  
 			print "id: $id\n"
 				 if $verbose; 
@@ -419,7 +420,7 @@ Custom Error Page (Path):
 
 sub default {
 	
-	my $htp     = htpasswdWriter->new({-list => $list});
+	my $htp     = DADA::Profile::Htpasswd->new({-list => $list});
 	my $entries = $htp->get_all_entries; 
 	
 	my $problems = $q->param('problems') || 0; 
@@ -428,7 +429,7 @@ sub default {
 	my $id       = undef; 
 	if($f eq 'edit_dir'){ 
 		$id = $q->param('id') || undef; 
-		my $htp = htpasswdWriter->new({-list => $list});
+		my $htp = DADA::Profile::Htpasswd->new({-list => $list});
 		my $entry = $htp->get({-id => $id });
 		$edit = 1; 
 		$q->param('name', $entry->{name});
@@ -509,7 +510,7 @@ sub new_dir {
     my $default_password = xss_filter( $q->param('default_password') ) || undef;
 	
 	
-	my $htp = htpasswdWriter->new({-list => $list});
+	my $htp = DADA::Profile::Htpasswd->new({-list => $list});
 	
 	my ($status, $errors) = $htp->validate_protected_dir(
 		{ 
@@ -560,7 +561,7 @@ sub process_edit_dir {
     my $default_password = xss_filter( $q->param('default_password') ) || undef;
 	my $id               = xss_filter( $q->param('id') ) || undef;
 	
-	my $htp = htpasswdWriter->new({-list => $list});
+	my $htp = DADA::Profile::Htpasswd->new({-list => $list});
 	
 	my ($status, $errors) = $htp->validate_protected_dir(
 		{ 
@@ -588,7 +589,7 @@ sub process_edit_dir {
 					-default_password      => $default_password,
 				}
 			);
-			my $htp     = htpasswdWriter->new({-list => $list});
+			my $htp     = DADA::Profile::Htpasswd->new({-list => $list});
 			   $htp->setup_directory({-id => $id});
 			
 		print $q->redirect(-uri => $Plugin_Config->{Plugin_URL} . '?done=1'); 
@@ -607,387 +608,9 @@ sub process_edit_dir {
 
 sub delete_dir { 
 	my $id = $q->param('id'); 
-	my $htp     = htpasswdWriter->new({-list => $list});
+	my $htp     = DADA::Profile::Htpasswd->new({-list => $list});
 	   $htp->remove_directory_files({-id => $id}); 
 	   $htp->remove({-id => $id});
 	print $q->redirect(-uri => $Plugin_Config->{Plugin_URL} . '?done=1'); 
 	
 }
-
-
-
-
-
-
-
-
-package htpasswdWriter;
-use DADA::App::Guts; 
-use Carp qw(croak carp); 
-my $t = 0; 
-
-my %fields;
-
-my $dbi_obj;
-
-my $default_pass = 'test'; 
-
-
-sub new {
-
-    my $class = shift;
-    my ($args) = @_;
-
-    my $self = {};
-    bless $self, $class;
-    $self->_init($args);
-    return $self;
-
-}
-
-sub _init {
-
-    my $self = shift;
-
-    my ($args) = @_;
-
-    #$self->{'log'} = new DADA::Logging::Usage;
-
-    $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
-    if ( $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ ) {
-        require DADA::App::DBIHandle;
-        $dbi_obj = DADA::App::DBIHandle->new;
-        $self->{dbh} = $dbi_obj->dbh_obj;
-    }
-	if(!exists($args->{-list})){ 
-		die "no list!";
-	}
-	else { 
-		$self->{list} = $args->{-list}; 
-	}
-}
-sub hello { 
-	my $self = shift; 
-	print "hello!\n"; 
-}
-
-
-sub validate_protected_dir { 
-	my $self = shift; 
-	my ($args) = @_; 
-	
-	my $status = 1; 
-	my $errors = {}; 
-	
-	if(!exists($args->{-fields})){ 
-		carp "you need to pass the fields in, -fields"; 
-		return (0, $errors); 
-	}
-	if(!exists($args->{-fields}->{-name}) || !defined($args->{-fields}->{-name}) || length($args->{-fields}->{-name}) <= 0) { 
-		$errors->{missing_name} = 1;
-		$status = 0; 
-	}
-	if(!exists($args->{-fields}->{-url}) || !defined($args->{-fields}->{-url})  || length($args->{-fields}->{-url}) <= 0) { 
-		$errors->{missing_url} = 1; 
-		$status = 0; 
-	}	
-	if(! isa_url($args->{-fields}->{-url})){ 
-		$errors->{url_no_exists} = 1; 
-		$status = 0; 		
-	}
-	if(!exists($args->{-fields}->{-path}) || !defined($args->{-fields}->{-path}) || length($args->{-fields}->{-path}) <= 0) { 
-		$errors->{missing_path} = 1;
-		$status = 0; 
-	}
-	if(! -d $args->{-fields}->{-path}){ 
-		$errors->{path_no_exists} = 1; 
-		$status = 0; 		
-	} 
-	if($args->{-fields}->{-use_custom_error_page} !~ m/1|0/) { 
-		$errors->{use_custom_error_page_set_funny} = 1; 
-		$status = 0; 		
-	}
-	
-	return ($status, $errors);		
-}
-sub create { 
-	my $self  = shift; 
-	my ($args) = @_; 
-	# A bunch of data testing... 
-	$self->insert($args);
-}
-
-sub insert {
-	my $self = shift; 
-	my ($args) = @_; 
-
-	my $query =
-      'INSERT INTO '
-      . 'dada_password_protected_directories'
-      . '(list, name, url, path, use_custom_error_page, custom_error_page, default_password) VALUES (?, ?, ?, ?, ?, ?, ?)';
-
-    warn 'QUERY: ' . $query
-      if $t;
-
-    my $sth = $self->{dbh}->prepare($query);
-	my $password = undef; 
-	if(exists($args->{ -default_password }) && defined($args->{ -default_password }) && length($args->{ -default_password }) > 0){ 
-		$password = DADA::Security::Password::encrypt_passwd($args->{ -default_password } )
-	}
-    $sth->execute(
-		$self->{list}, 
-        $args->{ -name },
-		$args->{ -url },
-        $args->{ -path },
-		$args->{ -use_custom_error_page },
-		$args->{ -custom_error_page },
-		$password, 
-      )
-      or croak "cannot do statement (at insert)! $DBI::errstr\n";
-    $sth->finish;
-
-	
-}
-
-
-sub update {
-	my $self = shift; 
-	my ($args) = @_; 
-	
-	my $password = undef; 
-	if(exists($args->{ -default_password }) && defined($args->{ -default_password }) && length($args->{ -default_password }) > 0){ 
-		$password = DADA::Security::Password::encrypt_passwd($args->{ -default_password } )
-	}
-	
-	
-	my $query =
-      'UPDATE '
-      . 'dada_password_protected_directories'
-      . ' SET name = ?, url = ?, path = ?, use_custom_error_page = ?, custom_error_page = ?, default_password = ? where id = ?';
-
-    warn 'QUERY: ' . $query
-      if $t;
-
-    my $sth = $self->{dbh}->prepare($query);
-
-    $sth->execute(
-        $args->{ -name },
-		$args->{ -url },
-        $args->{ -path },
-		$args->{ -use_custom_error_page },
-		$args->{ -custom_error_page },
-		$password, 
-		$args->{ -id }, 
-      )
-      or croak "cannot do statement (at insert)! $DBI::errstr\n";
-    $sth->finish;
-
-	
-}
-
-
-
-
-sub id_exists {
-	
-    my $self  = shift;
-    my ($args) = @_;
-
-	# This is saying, if we don't have a dbh handle, we don't have a proper 
-	# "handle" on a profile. 
-	
-	if(! exists($self->{dbh})){ 
-		return 0; 
-	}
-    my $query =
-      'SELECT COUNT(*) FROM '
-      . 'dada_password_protected_directories'
-      . ' WHERE id = ?';
-
-    my $sth = $self->{dbh}->prepare($query);
-
-    warn 'QUERY: ' . $query
-		if $t; 
-
-    $sth->execute($args->{-id} )
-      or croak "cannot do statement (at exists)! $DBI::errstr\n";
-    my @row = $sth->fetchrow_array();
-    $sth->finish;
-
-	# autoviv?
-    if($row[0]){ 
-		return 1; 
-	}
-	else { 
-		return 0; 
-	}
-
-}
-
-
-sub get {
-
-    my $self = shift;
-    my ($args) = @_;
-
-	if(! $self->id_exists( { -id => $args->{-id} } ) ){ 
-		return undef; 
-		# die "blah blah blah"; 
-	}
-
-    my $query =
-      'SELECT * FROM '
-      . 'dada_password_protected_directories'
-      . " WHERE id = ?";
-
-    warn 'QUERY: ' . $query
-      if $t;
-
-    my $sth = $self->{dbh}->prepare($query);
-
-    $sth->execute( $args->{-id} )
-      or croak "cannot do statement (at get)! $DBI::errstr\n";
-
-    my $info = {};
-    my $hashref      = {};
-
-  FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
-        $info = $hashref;
-        last FETCH;
-    }
-
-	return $info; 
-	
-}
-
-sub remove_directory_files { 
-    my $self = shift;
-    my ($args) = @_;
-	
-	if(!exists($args->{-id})){ 
-		croak "Cannot use this method without passing the '-id' param "; 
-	}
-	my $entry = $self->get({-id => $args->{-id}}); 
-	if(-e $entry->{path} . '/.htaccess'){ 
-		unlink($entry->{path} . '/.htaccess'); 
-	}
-	if(-e $entry->{path} . '/.htpasswd'){ 
-		unlink($entry->{path} . '/.htpasswd'); 
-	}
-	
-}
-
-sub remove {
-	
-    my $self = shift;
-    my ($args) = @_;
-	
-	if(!exists($args->{-id})){ 
-		croak "Cannot use this method without passing the '-id' param "; 
-	}
-
-    my $query =
-      'DELETE  from '
-      . 'dada_password_protected_directories'
-      . ' WHERE id = ? ';
-
-	warn 'QUERY: ' . $query
-		if $t;
-
-    my $sth = $self->{dbh}->prepare($query);
-
-	my $rv = $sth->execute( $args->{ -id } )
-      or croak "cannot do statment (at remove)! $DBI::errstr\n";
-
-    $sth->finish;
-
-    return $rv;
-
-}
-
-sub get_all_ids { 
-
-	my $self = shift; 
-	my ($args) = @_;
-	my $query = 'SELECT id FROM ' . 'dada_password_protected_directories' . ' WHERE list = ? GROUP BY id ORDER BY id DESC;';
-    my $ids = $self->{dbh}->selectcol_arrayref($query, {}, ($self->{list}));
-	return $ids; 
-}
-
-sub get_all_entries { 
-	my $self    = shift; 
-	my $entries = []; 
-	for my $id(@{$self->get_all_ids}){ 
-		push(@$entries, $self->get({-id => $id})); 
-	}
-	return $entries; 
-}
-
-sub setup_directory { 
-	my $self = shift; 
-	my ($args) = @_; 
-	$self->write_htaccess($args);
-	$self->write_htpasswd($args);
-	return 1; 
-}
-sub write_htaccess { 
-	
-	my $self = shift;
-	my ($args) = @_; 
-	
-	my $entry = $self->get({-id => $args->{-id}}); 
-	
-	open my $htaccess, '>', $entry->{path} . '/' . '.htaccess' or die $! ;
-	print $htaccess "
-AuthType Basic
-AuthName \"" . convert_to_html_entities($entry->{name}) . "\"
-AuthUserFile " . $entry->{path} . "/.htpasswd
-Require valid-user
-";
-if($entry->{use_custom_error_page} == 1 && defined($entry->{custom_error_page})){ 
-	print $htaccess "ErrorDocument 401 " . $entry->{custom_error_page} . "\n";
-}
-else { 
-	print $htaccess "ErrorDocument 401 /dada/mail.cgi?f=profile&error_profile_login=1\n";
-}
-
-	close $htaccess; 
-}
-
-sub write_htpasswd { 
-	my $self = shift;
-	my ($args) = @_; 
-	
-	my $entry = $self->get({-id => $args->{-id}}); 
-	open my $htpasswd, '>', $entry->{path} . '/' . '.htpasswd' or die $! ;
-	my $pt = $DADA::Config::SQL_PARAMS{profile_table}; 
-	my $st = $DADA::Config::SQL_PARAMS{subscriber_table};
-	
-	my $query = qq{SELECT $st.email, $pt.password 
-	FROM $st 
-	LEFT JOIN $pt 
-	ON $st.email = $pt.email 
-	WHERE  $st.list_type = 'list'  AND $st.list = ? AND $st.list_status = 1};
-	
-	my $sth = $self->{dbh}->prepare($query);
-    $sth->execute( $self->{list} )
-      or croak "cannot do statment! $DBI::errstr\n";
-
-	 while ( my ( $email, $password ) = $sth->fetchrow_array ) {
-		
-		if(defined($password)){ 
-			print $htpasswd $email . ':' . $password . "\n";
-		}
-		else { 
-			print $htpasswd $email . ':' . $entry->{default_password} . "\n";
-		}
-	}
-
-	close $htpasswd; 
-	
-	$sth->finish;
-    
-	return 1; 
-};
-
-1;
