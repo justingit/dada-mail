@@ -3711,13 +3711,24 @@ sub admin_change_profile_password {
     require DADA::Profile; 
 	my $prof = DADA::Profile->new( { -email => $email } );
 
-	$prof->update(
-		{
-			-password => $profile_password,
-		}
-	);
-	# Reactivate the Account. ?
-	$prof->activate();
+	if($prof->exists){ 
+		
+		$prof->update(
+			{
+				-password => $profile_password,
+			}
+		);
+		# Reactivate the Account. ?
+		$prof->activate();
+	}
+	else { 
+		$prof->insert(
+			{
+				-password  => $profile_password,
+				-activated => 1, 
+			}
+		);
+	}
 		
 	print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
           . '?f=membership;email='

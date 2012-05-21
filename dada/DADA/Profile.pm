@@ -113,7 +113,7 @@ sub _init {
 sub exists {
 	
     my $self = shift;
-    my ($args) = @_;
+  #  my ($args) = @_;
 
 	# This is saying, if we don't have a dbh handle, we don't have a proper 
 	# "handle" on a profile. 
