@@ -7,6 +7,8 @@ use Carp qw(croak carp);
 my $type; 
 my $backend; 
 use DADA::Config qw(!:DEFAULT); 	
+use DADA::App::Guts; 
+
 BEGIN { 
 	$type = $DADA::Config::SETTINGS_DB_TYPE;
 	if($type eq 'SQL'){ 
@@ -308,6 +310,72 @@ sub param {
 	
 }
 
+sub x_message_body_content { 
+	my $self = shift; 
+	my $type = shift || undef; 
+	die '$type cannot be undef!' 
+		if $type eq undef;  
+	my $param_name = ''; 
+	if($type =~ m/html/i){ 
+		$param_name = 'default_html_message_content'
+	}
+	else { 
+		$param_name = 'default_plaintext_message_content'; 
+	}
+	
+	my $str = '';
+	if($self->param($param_name . '_src') eq 'url_or_path'){ 
+		if(isa_url($self->param($param_name . '_src_url_or_path'))){ 
+			grab_url($self->param($param_name . '_src_url_or_path'));
+		}
+		elsif(-e $self->param($param_name . '_src_url_or_path')){ 
+			my $fn = make_safer($self->param($param_name . '_src_url_or_path')); 
+			my $d = undef; 
+			eval { $d  = slurp($fn); }; 
+			if($@){ 
+				carp $@;
+				return '';  
+			}
+			else { 
+				return $d; 
+			}
+		}
+		else { # 'default'
+			return ''; 
+		}
+	}
+	else { 
+		my $fn; 
+		if($type =~ m/html/i){ 
+			$fn = $DADA::Config::TEMPLATES . '/' . $param_name . '-' . $self->{name} . '.html'; 
+		}
+		else { 
+			$fn = $DADA::Config::TEMPLATES . '/' . $param_name . '-' . $self->{name} . '.txt'; 
+		}
+		$fn = make_safer($fn);  
+		if(-e $fn){
+			eval { $str = slurp($fn); }; 
+			if($@){ 
+				carp $@;
+				return '';  
+			}
+			else { 
+				return $str; 
+			}
+		} 
+		return $str
+	}
+
+}
+sub plaintext_message_body_content { 
+	my $self = shift; 
+	return $self->x_message_body_content('plaintext');
+}
+sub html_message_body_content { 
+	my $self = shift; 
+	return $self->x_message_body_content('html');
+}
+
 
 sub save_w_params {
 
@@ -464,7 +532,7 @@ DADA::MailingList::Subscribers - API for the Dada Mailing List Settings
 		{
 			list_name => "my list", 
 		}
-	)
+	);
  
  # save a setting, from a CGI paramater, with a fallback variable: 
  $ls->save_w_params(

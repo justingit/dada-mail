@@ -2196,6 +2196,13 @@ $ADMIN_MENU ||= [
 #					-Activated  => 0,
 #					},
 
+#					{
+#					-Title      => 'Default Mass Mailing Messages',
+#					-Title_URL  => $PLUGIN_URL."/default_mass_mailing_messages.cgi",
+#					-Function   => 'default_mass_mailing_messages',
+#					-Activated  => 0,
+#					},
+
 				],
 			},
 
@@ -4856,6 +4863,13 @@ encrypted.
 
 # dada_digest.pl 
 last_digest_sent                        => undef, 
+
+# default messages 
+default_plaintext_message_content_src             => 'default', # default/url_or_path
+default_plaintext_message_content_src_url_or_path => undef, 
+default_html_message_content_src                  => 'default', # default/url_or_path
+default_html_message_content_src_url_or_path      => undef, 
+
     
 ) unless keys %LIST_SETUP_DEFAULTS;
 

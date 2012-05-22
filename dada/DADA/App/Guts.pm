@@ -110,7 +110,8 @@ require Exporter;
   decode_cgi_obj
   safely_decode
   safely_encode
-
+  slurp
+  grab_url
 );
 
 
@@ -2677,6 +2678,40 @@ sub safely_encode {
 	else { 
 		return $_[0];
 	}	
+}
+
+sub slurp {
+
+    my ($file) = @_;
+
+    local ($/) = wantarray ? $/ : undef;
+    local (*F);
+    my $r;
+    my (@r);
+
+    open( F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
+      || croak "open $file: $!";
+    @r = <F>;
+    close(F) || croak "close $file: $!";
+
+    return $r[0] unless wantarray;
+    return @r;
+
+}
+
+sub grab_url { 
+	my $url = shift; 
+	eval { require LWP::Simple };
+	if($@){
+		carp "LWP::Simple not installed! $!"; 
+		return undef;
+	}else{ 
+		eval { $LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); };
+		my $tmp = undef; 
+		   $tmp = LWP::Simple::get($url);
+		   $tmp = safely_decode($tmp); 
+		   return $tmp; 
+	}
 }
 
 

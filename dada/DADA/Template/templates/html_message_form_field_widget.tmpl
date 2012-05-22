@@ -13,20 +13,20 @@
 			        //-->
 			        </script> 
 			<!-- tmpl_else --> 
-				<textarea name="html_message_body" cols="80" rows="30" id="html_message_body"><!-- tmpl_var html_message_body_content --></textarea>
+				<textarea name="html_message_body" cols="80" rows="30" id="html_message_body"><!-- tmpl_var html_message_body_content  escape="HTML" --></textarea>
 			<!-- /tmpl_if --> 
 	 <!-- tmpl_else--> 
 			<!-- tmpl_if CKEDITOR_URL -->
 				<!-- tmpl_if list_settings.enable_fckeditor --> 
-			    	<textarea name="html_message_body" cols="80" rows="30" id="html_message_body"><!-- tmpl_var html_message_body_content --></textarea>
+			    	<textarea name="html_message_body" cols="80" rows="30" id="html_message_body"><!-- tmpl_var html_message_body_content  escape="HTML" --></textarea>
 					<script type="text/javascript">
 						CKEDITOR.replace( 'html_message_body' );
 					</script>
 				<!-- tmpl_else -->
-			      	<textarea name="html_message_body" cols="80" rows="30" id="html_message_body"><!-- tmpl_var html_message_body_content --></textarea>
+			      	<textarea name="html_message_body" cols="80" rows="30" id="html_message_body"><!-- tmpl_var html_message_body_content  escape="HTML" --></textarea>
 				<!-- /tmpl_if --> 
 	 	<!-- tmpl_else -->
-	   		<textarea name="html_message_body" cols="80" rows="30" id="html_message_body"><!-- tmpl_var html_message_body_content --></textarea>
+	   		<textarea name="html_message_body" cols="80" rows="30" id="html_message_body"><!-- tmpl_var html_message_body_content  escape="HTML" --></textarea>
 		<!--/tmpl_if--> 
 	<!--/tmpl_if-->
 
