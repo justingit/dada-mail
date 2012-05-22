@@ -4758,6 +4758,8 @@ encrypted.
 	enable_fckeditor                => 1, 
 	enable_mass_subscribe           => 0, 
     
+	show_message_body_plaintext_ver => 1, 
+	show_message_body_html_ver      => 0, 
 
 # Send me the list password.    
     pass_auth_id                    => undef, 
