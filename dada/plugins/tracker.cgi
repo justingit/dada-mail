@@ -1188,7 +1188,7 @@ sub edit_prefs {
 sub message_report_tmpl {
     
 my $tmpl = q{ 
-	
+		
 	<!-- tmpl_unless chrome --> 
 		<html> 
 		 <head>
@@ -1203,6 +1203,7 @@ my $tmpl = q{
 	
 	
 	<!-- tmpl_if chrome --> 
+	
 		<!-- tmpl_set name="title" value="Tracker &#187; Message Report" --> 
 		<div id="screentitle"> 
 			<div id="screentitlepadding">
@@ -1698,9 +1699,9 @@ my $tmpl = q{
 
  
 <div> 
-	<div style="max-height: 300px; overflow: auto; border:1px solid black;width:500px">
+	<div style="max-height: 300px; overflow: auto; border:1px solid black;width:640px">
 	
-	<table class="stripedtable" style="width:500px">
+	<table class="stripedtable" style="width:600px">
 	 <tr> 
 	  <td> 
 	   <strong>Date</strong>
@@ -1710,19 +1711,35 @@ my $tmpl = q{
 	  </td> 
 	 </tr> 
 	
-	<!-- tmpl_loop soft_bounce_report --> 
-	<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
-	  <td> 
-	   <!-- tmpl_var timestamp --> 
-	  </td> 
-	  <td> 
-	   <a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="URL" -->">
-		<!-- tmpl_var email --> 
-	  </td> 
-	 </tr> 
 	
+	<!-- tmpl_if chrome --> 
+		<!-- tmpl_loop soft_bounce_report --> 
+			<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
+			  <td> 
+			   <!-- tmpl_var timestamp --> 
+			  </td> 
+			  <td> 
+				<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="URL" -->&chrome=0" title="Bounce Log for <!-- tmpl_var email escape="HTML" -->" onclick="Modalbox.show(this.href, {title: this.title, width: 640, height:480}); return false;">
+				 <!-- tmpl_var email -->
+			    </a>
+			  </td> 
+			 </tr> 
+		<!-- /tmpl_loop -->	
+	<!-- tmpl_else --> 
+		<!-- tmpl_loop hard_bounce_report --> 
+			<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
+			  <td> 
+			   <!-- tmpl_var timestamp --> 
+			  </td> 
+			  <td> 
+				<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="HTML" -->">
+					<!-- tmpl_var email escape="HTML" -->
+				</a>
+			  </td> 
+			 </tr> 
+		<!-- /tmpl_loop --> 
+	<!-- /tmpl_if -->
 	
-	<!-- /tmpl_loop --> 
 	</table> 
 		<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var soft_bounce -->&nbsp;</p> 
 	</div> 
@@ -1741,8 +1758,8 @@ my $tmpl = q{
 <fieldset> 
 <legend>Hard Bounces</legend>
 <div> 
-	<div style="max-height: 300px; overflow: auto; border:1px solid black; width:500px">
-		<table class="stripedtable" style="width:500px">
+	<div style="max-height: 300px; overflow: auto; border:1px solid black; width:640px">
+		<table class="stripedtable" style="width:600px">
 	 <tr> 
 	  <td> 
 	   <strong>Date</strong>
@@ -1752,19 +1769,38 @@ my $tmpl = q{
 	  </td> 
 	 </tr> 
 	
-	<!-- tmpl_loop hard_bounce_report --> 
-	<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
-	  <td> 
-	   <!-- tmpl_var timestamp --> 
-	  </td> 
-	  <td> 
-	   <a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="HTML" -->">
-		<!-- tmpl_var email --> 
-	  </td> 
-	 </tr> 
+	<!-- tmpl_if chrome --> 
+		<!-- tmpl_loop hard_bounce_report --> 
+			<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
+			  <td> 
+			   <!-- tmpl_var timestamp --> 
+			  </td> 
+			  <td> 
+				<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="URL" -->&chrome=0" title="Bounce Log for <!-- tmpl_var email escape="HTML" -->" onclick="Modalbox.show(this.href, {title: this.title, width: 640, height:480}); return false;	">
+				 <!-- tmpl_var email -->
+			    </a>
+			  </td> 
+			 </tr> 
+		<!-- /tmpl_loop -->	
+	<!-- tmpl_else --> 
+		<!-- tmpl_loop hard_bounce_report --> 
+			<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
+			  <td> 
+			   <!-- tmpl_var timestamp --> 
+			  </td> 
+			  <td> 
+				<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="HTML" -->">
+					<!-- tmpl_var email escape="HTML" -->
+				</a>
+			  </td> 
+			 </tr> 
+		<!-- /tmpl_loop --> 
+	<!-- /tmpl_if --> 
 	
 	
-	<!-- /tmpl_loop --> 
+	
+	
+	
 	</table> 
 	<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var hard_bounce -->&nbsp;</p> 
 	
@@ -1899,6 +1935,7 @@ sub message_report {
 		            },
 		            -vars => {
 						%tmpl_vars, 
+						load_modalbox              => 1, 
 		            },
 		        },
 		    );		
@@ -1964,7 +2001,7 @@ sub by_domain_img {
 	}
 	
 	require URI::GoogleChart; 
-	my $chart = URI::GoogleChart->new("pie", 480, 300,
+	my $chart = URI::GoogleChart->new("pie", 600, 300,
 	    data => [@values],
 	    rotate => -90,
 	    label => [@labels],
