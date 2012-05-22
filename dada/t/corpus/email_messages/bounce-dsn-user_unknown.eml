@@ -1,0 +1,84 @@
+Return-path: <simoni@vhost1.example.com>
+Envelope-to: newsletter@example.com
+Delivery-date: Sun, 06 May 2012 00:00:08 -0400
+Received: from simoni by vhost1.example.com with local (Exim 4.69 (FreeBSD))
+	(envelope-from <simoni@vhost1.example.com>)
+	id 1SQsdk-000IIc-6K
+	for newsletter@example.com; Sun, 06 May 2012 00:00:08 -0400
+Date: Sun, 06 May 2012 00:00:08 -0400
+From: MAILER-DAEMON@molosso04.example.com (Mail Delivery System)
+To: newsletter@example.com
+Precedence: list
+Content-type: multipart/report; report-type=delivery-status;
+	boundary="B80621C02FDC.1336215005/molosso04.example.com"; charset=UTF-8
+MIME-Version: 1.0
+Subject: Undelivered Mail Returned to Sender
+Message-Id: <E1SQsdk-000IIc-6K@vhost1.example.com>
+
+This is a MIME-encapsulated message.
+--B80621C02FDC.1336215005/molosso04.example.com
+Content-Description: Notification
+Content-Type: text/plain; charset=us-ascii
+
+This is the mail system at host molosso04.example.com.
+
+I'm sorry to have to inform you that your message could not
+be delivered to one or more recipients. It's attached below.
+
+For further assistance, please send mail to postmaster.
+
+If you do so, please include this problem report. You can
+delete your own text from the attached returned message.
+
+                   The mail system
+
+<final.recipient@example.com> (expanded from <subscriber@example.com>): host
+    mail.example.com[81.88.48.107] said: 550 5.1.1 User unknown (in reply
+    to RCPT TO command)
+
+--B80621C02FDC.1336215005/molosso04.example.com
+Content-Description: Delivery report
+Content-Type: message/delivery-status
+
+Reporting-MTA: dns; molosso04.example.com
+X-Postfix-Queue-ID: B80621C02FDC
+X-Postfix-Sender: rfc822; bounces@example.com
+Arrival-Date: Sat,  5 May 2012 12:49:48 +0200 (CEST)
+
+Final-Recipient: rfc822; final.recipient@example.com
+Original-Recipient: rfc822;subscriber@example.com
+Action: failed
+Status: 5.1.1
+Remote-MTA: dns; mail.example.com
+Diagnostic-Code: smtp; 550 5.1.1 User unknown
+
+--B80621C02FDC.1336215005/molosso04.example.com
+Content-Description: Undelivered Message Headers
+Content-Type: text/rfc822-headers
+
+Received: from vhost1.example.com (vhost1.example.com [12.161.105.151])
+	by molosso04.example.com (Postfix) with ESMTPS id B80621C02FDC
+	for <subscriber@example.com>; Sat,  5 May 2012 12:49:48 +0200 (CEST)
+Received: from simoni by vhost1.example.com with local (Exim 4.69 (FreeBSD))
+	(envelope-from <bounces@example.com>)
+	id 1SQcY8-0009K1-T8
+	for subscriber@example.com; Sat, 05 May 2012 06:49:16 -0400
+Date: Sat, 05 May 2012 06:49:16 -0400
+From: "Dada Mail Announcement List" <newsletter@example.com>
+To: "Dada Mail Announcement List Subscriber" <subscriber@example.com>
+X-Priority: 3
+Precedence: list
+List: dadatest
+List-Archive: <http://example.com/cgi-bin/dada/mail.cgi/archive/dadatest/>
+List-ID: <dadatest.vhost1.example.com>
+List-Owner: <newsletter@example.com>
+List-Post: NO
+List-Subscribe: =?UTF-8?Q?=3Chttp=3A//dadamailproject=2Ecom/cgi-bin/dada/mail=2Ecgi/s/dadatest/subscriber/example=2Ecom/=3E?=
+List-Unsubscribe: =?UTF-8?Q?=3Chttp=3A//dadamailproject=2Ecom/cgi-bin/dada/mail=2Ecgi/u/dadatest/subscriber/example=2Ecom//=3E?=
+Message-ID: <20120505064916.66382935@example.com>
+X-Mailer: Dada Mail 5.0.2
+Content-type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Dada Mail Announcement List Mailing List Subscription Confirmation
+
+--B80621C02FDC.1336215005/molosso04.example.com--

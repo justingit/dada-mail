@@ -94,17 +94,20 @@ sub find_rule_to_use {
           MESSAGEFIELD:
             for my $pos_match ( @{ $message_fields->{$m_field} } ) {
                 if ( $is_regex == 1 ) {
-                    if ( $diagnostics->{$real_field} =~ m/$pos_match/ ) {
-                        $ThingsToMatch{$m_field} = 1;
-                        next MESSAGEFIELD;
-                    }
+					if(exists($diagnostics->{$real_field})){ 
+	                    if ( $diagnostics->{$real_field} =~ m/$pos_match/ ) {
+	                        $ThingsToMatch{$m_field} = 1;
+	                        next MESSAGEFIELD;
+	                    }
+					}
                 }
                 else {
-
-                    if ( $diagnostics->{$real_field} eq $pos_match ) {
-                        $ThingsToMatch{$m_field} = 1;
-                        next MESSAGEFIELD;
-                    }
+					if(exists($diagnostics->{$real_field})){ 		
+	                    if ( $diagnostics->{$real_field} eq $pos_match ) {
+	                        $ThingsToMatch{$m_field} = 1;
+	                        next MESSAGEFIELD;
+	                    }
+					}
 
                 }
             }
@@ -928,6 +931,30 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                 },
             }
         },
+
+
+      	 {
+	            bounce_4dot4dot1_error => {
+	                Examine => {
+	                    Message_Fields => {
+	                        Status                  => [qw(4.4.1)],
+	                        Action                  => [qw(failed)],
+							'Diagnostic-Code_regex' =>  [ (qr/(C|c)onnection refused/) ],
+	                    },
+	                    Data => {
+	                        Email => 'is_valid',
+	                        List  => 'is_valid',
+	                    }
+	                },
+	                Action => {
+
+	                    #unsubscribe_bounced_email => 'from_list',
+	                    add_to_score => 'hardbounce_score',
+	                },
+	            }
+	        },
+
+
 
         {
             permanent_move_failure => {

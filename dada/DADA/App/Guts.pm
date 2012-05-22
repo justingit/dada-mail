@@ -84,7 +84,7 @@ require Exporter;
   uriescape
   lc_email
   make_safer
-  convert_to_html_entities
+  encode_html_entities
   webify_plain_text
   check_list_setup
   make_all_list_files
@@ -1438,14 +1438,15 @@ sub make_safer {
 	}
 
 }
-sub convert_to_html_entities { 
+sub encode_html_entities { 
 	
-	my $s = shift; 
+	my $s            = shift; 
+	my $unsafe_chars = shift || undef; 
 	
 	eval {require HTML::Entities}; 
 	if(!$@){ 
 	
-		$s = HTML::Entities::encode_entities($s, "\200-\377" ); #, "\200-\377" 
+		$s = HTML::Entities::encode_entities($s, $unsafe_chars ); #, "\200-\377" 
 		
 	}else{ 
         # require HTML::EntitiesPurePerl 
@@ -1453,7 +1454,7 @@ sub convert_to_html_entities {
     	eval {require HTML::EntitiesPurePerl}; 
     	if(!$@){ 
 			
-        	$s = HTML::EntitiesPurePerl::encode_entities($s, "\200-\377" ); #", \200-\377"
+        	$s = HTML::EntitiesPurePerl::encode_entities($s, $unsafe_chars); #", \200-\377"
     	}
 	}
 	# These are done by the above (if there's no argument in, encode_entities - right?
@@ -1487,7 +1488,7 @@ sub webify_plain_text {
 		# so, I use the below for Text Versions of HTML messages
 		
 		require HTML::FromText;
-		$args->{-str} = convert_to_html_entities($args->{-str}); 
+		$args->{-str} = encode_html_entities($args->{-str}, "\200-\377"); 
 	    $r = HTML::FromText::text2html($args->{-str}, 
 			metachars => 1, 
 			urls      => 1, 
@@ -1507,7 +1508,7 @@ sub webify_plain_text {
 			$multi_line = 1; 
 		}
 
-		$args->{-str} = convert_to_html_entities($args->{-str}); 
+		$args->{-str} = encode_html_entities($args->{-str}, "\200-\377"); 
 	
 		require HTML::TextToHTML;
 		my $conv = HTML::TextToHTML->new; 

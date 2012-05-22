@@ -318,6 +318,52 @@ undef $entity;
 
 
 
+$msg    = dada_test_config::slurp('t/corpus/email_messages/bounce-dsn-user_unknown.eml'); 
+$entity = $parser->parse_data($msg);
+( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
+ok($email eq 'subscriber@example.com'); 
+ok($found_list eq 'dadatest', "found list ($found_list)");
+$rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
+
+#diag 'email: ' . $email; 
+#diag 'list: ' . $list; 
+#diag Dumper($diag); 
+#diag 'rule: ' . $rule; 
+
+ok($rule eq 'delivery_error_550', "rule is: $rule"); 
+undef $msg; 
+undef $email; 
+undef $found_list; 
+undef $diag; 
+undef $entity;
+
+
+
+
+
+$msg    = dada_test_config::slurp('t/corpus/email_messages/bounce-dsn-4.4.1.eml'); 
+$entity = $parser->parse_data($msg);
+( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
+ok($email eq 'subscriber@example.com'); 
+ok($found_list eq 'dadatest', "found list ($found_list)");
+$rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
+
+#diag 'email: ' . $email; 
+#diag 'list: ' . $list; 
+#diag Dumper($diag); 
+#diag 'rule: ' . $rule; 
+
+ok($rule eq 'bounce_4dot4dot1_error', "rule is: $rule"); 
+undef $msg; 
+undef $email; 
+undef $found_list; 
+undef $diag; 
+undef $entity;
+
+
+
+
+
 
 
 

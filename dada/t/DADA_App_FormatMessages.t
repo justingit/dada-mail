@@ -23,6 +23,41 @@ my $ls   = DADA::MailingList::Settings->new({-list => $list});
 my $li   = $ls->get;
 my $fm = DADA::App::FormatMessages->new(-yeah_no_list => 1); 
 
+
+# _add_opener_image
+my $c = 'blah blah blah'; 
+$c = $fm->_add_opener_image($c); 
+#diag $c; 
+like($c, qr/open_img/); 
+undef $c; 
+
+my $c = q{ 
+<html>
+<body> 
+	Blah Balh Blah.
+};
+$c = $fm->_add_opener_image($c); 
+#diag $c; 
+like($c, qr/open_img/); 
+undef $c; 
+
+
+my $c = q{ 
+<html>
+<body> 
+	Blah Balh Blah.
+</body> 
+</html> 
+
+};
+$c = $fm->_add_opener_image($c); 
+#diag $c; 
+like($c, qr/open_img/); 
+undef $c;
+
+#/ _add_opener_image
+
+
 $filename = 't/corpus/email_messages/simple_template.txt';
 #open my $MSG, '<', $filename or die $!; 
 #my $msg1 = do { local $/; <$MSG> }  or die $!; 
