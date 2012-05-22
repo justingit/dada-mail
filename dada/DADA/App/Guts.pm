@@ -281,7 +281,7 @@ sub make_pin {
 		
 		$pin = ((($pin + $pin_helper) * $DADA::Config::PIN_NUM ) - $pin_helper); 
 				
-		if($args{-crypt} == 1){ 
+		if($args{'-crypt'} == 1){ 
 			require DADA::Security::Password; 
 
 			

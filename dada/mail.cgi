@@ -572,6 +572,7 @@ sub run {
 	'remove_all_subscribers'     =>    \&remove_all_subscribers,
 	'view_list_options'          =>    \&list_cp_options,
 	'membership'                 =>    \&membership,
+	'admin_change_profile_password' => \&admin_change_profile_password, 
 	'mailing_list_history'       =>    \&mailing_list_history, 
 	'add'                        =>    \&add,
 	'check_status'               =>    \&check_status,
@@ -3723,6 +3724,60 @@ sub mailing_list_history {
 	print $q->header(); 
 	print $scrn;
 
+}
+
+
+
+sub admin_change_profile_password { 
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'membership'
+    );
+	my $list = $admin_list; 
+	my $profile_password = xss_filter($q->param('profile_password')); 
+    my $email            = xss_filter( $q->param('email') );
+	my $type             = xss_filter( $q->param('type') );
+
+    require DADA::Profile; 
+	my $prof = DADA::Profile->new( { -email => $email } );
+
+	if($prof->exists){ 
+		
+		$prof->update(
+			{
+				-password => $profile_password,
+			}
+		);
+		# Reactivate the Account. ?
+		$prof->activate();
+	}
+	else { 
+		$prof->insert(
+			{
+				-password  => $profile_password,
+				-activated => 1, 
+			}
+		);
+	}
+	
+	# DEV: This is going to get repeated quite a bit..
+	require DADA::Profile::Htpasswd;
+	foreach my $p_list(@{$prof->subscribed_to}) { 
+		my $htp     = DADA::Profile::Htpasswd->new({-list => $p_list});
+		for my $id(@{$htp->get_all_ids}) {  
+			$htp->setup_directory({-id => $id});
+		}
+	}
+	#
+	
+		
+	print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+          . '?f=membership;email='
+          . $email
+          . ';type='
+          . $type
+          . ';done=1' );
+    return;
 }
 
 
@@ -10107,6 +10162,19 @@ sub profile {
 				require DADA::Profile::Session;
 				my $prof_sess = DADA::Profile::Session->new->logout;
 				profile_login();
+				
+				# DEV: This is going to get repeated quite a bit..
+				require DADA::Profile::Htpasswd;
+				foreach my $p_list(@{$prof->subscribed_to}) { 
+					my $htp     = DADA::Profile::Htpasswd->new({-list => $p_list});
+					for my $id(@{$htp->get_all_ids}) {  
+						$htp->setup_directory({-id => $id});
+					}
+				}
+				#
+				
+				
+				
 			}
 			else {
 				$q->param('errors', 1);
@@ -10257,10 +10325,18 @@ sub profile {
 						-to_sanitize => [qw(list_settings.list_owner_email list_settings.info list_settings.privacy_policy )],
 					}
 				);
-				push(@$filled, {%{$i}, %{$li}, PROGRAM_URL => $DADA::Config::PROGRAM_URL})
+				
+				require DADA::Profile::Htpasswd;
+				my $htp = DADA::Profile::Htpasswd->new({-list => $i->{list}}); 
+				my $protected_directories = $htp->get_all_entries; 
+				
+				push(@$filled, 
+					{%{$i}, 
+					%{$li}, 
+					
+					protected_directories => $protected_directories, 
+					PROGRAM_URL => $DADA::Config::PROGRAM_URL})
 			}
-			#require Data::Dumper;
-			#die Data::Dumper::Dumper($filled);
 
 			my $scrn = '';
 		    require DADA::Template::Widgets;

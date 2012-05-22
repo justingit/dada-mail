@@ -106,6 +106,7 @@ my $plugins_extensions = {
 	blog_index                    => {installed => 0, loc => '../extensions/blog_index.cgi'}, 
 	mailing_monitor               => {installed => 0, loc => '../plugins/mailing_monitor.cgi'}, 
 	default_mass_mailing_messages => {installed => 0, loc => '../plugins/default_mass_mailing_messages.cgi'}, 
+	password_protect_directories => {installed => 0, loc => '../plugins/password_protect_directories.cgi'}, 
 };
 $plugins_extensions->{change_root_password}->{code} = 
 q{#					{
@@ -182,6 +183,13 @@ q{#					{
 #					-Title_URL  => $PLUGIN_URL."/mailing_monitor.cgi",
 #					-Function   => 'mailing_monitor',
 #					-Activated  => 0,
+#					},};
+$plugins_extensions->{password_protect_directories}->{code} =
+q{#					{
+#					-Title      => 'Password Protected Directories',
+#					-Title_URL  => $PLUGIN_URL."/password_protect_directories.cgi",
+#					-Function   => 'password_protect_directories',
+#					-Activated  => 1,
 #					},};
 
 $plugins_extensions->{default_mass_mailing_messages}->{code} =

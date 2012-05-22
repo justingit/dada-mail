@@ -59,7 +59,6 @@
 	<!-- /tmpl_if --> 
 
 
-<h1>Log Into Your Profile Control Panel:</h1> 
 
 	<!-- tmpl_if error_profile_login --> 
 		<ul> 
@@ -90,6 +89,7 @@
 	<!-- /tmpl_if --> 
 
 <fieldset> 
+	<legend>Log Into Your Profile</legend>
 	
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
 	
@@ -112,15 +112,6 @@
 
 </fieldset> 
 
-
-
-
-
-<h1>Register for a new <!-- tmpl_var PROGRAM_NAME --> Profile</h1> 
-
-<p>
-	Register a Profile to easily manage all your <!-- PROGRAM_NAME --> Subscriptions.
-</p> 
 
 <!-- tmpl_if error_profile_register --> 
 	<ul> 
@@ -156,6 +147,12 @@
 <!-- /tmpl_if --> 
 
 <fieldset> 
+
+<legend>Register for a New <!-- tmpl_var PROGRAM_NAME --> Profile</legend> 
+
+<p>
+	Register a Profile to easily manage all your <!-- PROGRAM_NAME --> Subscriptions.
+</p> 
 
 
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
@@ -196,8 +193,6 @@
 </fieldset> 
 
 
-<h1>Forgot Your Profile Password?</h1> 
-
 <!-- tmpl_if error_profile_reset_password --> 
 	 <p class="error">
 		User Unknown - have you registered?
@@ -205,6 +200,7 @@
 <!-- /tmpl_if --> 
 
 <fieldset> 
+<legend>Forgot Your Profile Password?</legend>
 
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
 	<input type="hidden" name="f" value='profile_reset_password' /> 

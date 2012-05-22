@@ -208,6 +208,30 @@ Your Mailing List Subscriptions
 	</div> 
 
 
+	
+	<!-- tmpl_if protected_directories --> 
+	
+	<div style="width:100%;background:#fff;border:1px solid black;padding:5px">
+	
+		<h2>Protected Directories</h2>
+			<p>Access these directories with your Profile Username/Password.
+		<ul>		
+			<!-- tmpl_loop protected_directories --> 
+				<p>
+					<li>
+						<strong>
+							<a href="<!-- tmpl_var url -->" target="_blank"><!-- tmpl_var name --></a>
+						</strong> 
+					</li>
+				</p>
+			<!-- /tmpl_loop --> 
+		</ul>
+	</div> 
+	
+	<!-- /tmpl_if --> 
+
+
+
 	<ul> 
 	    <!-- tmpl_if list_settings.group_list --> 
 			<li>
@@ -236,7 +260,6 @@ Your Mailing List Subscriptions
 
 	     <!-- /tmpl_if --> 
 	</ul>
-	
 	
 <ul>
 		<li>
