@@ -590,8 +590,7 @@ sub domain_breakdown_img {
 		title => 'Total Subscribers: ' . commify($num_subs),
 	);
 	
-	use HTML::Entities;
-	my $enc_chart = encode_entities($chart);
+	my $enc_chart = encode_html_entities($chart);
 
   	my $tmpl = domain_breakdown_img_tmpl();
     require DADA::Template::Widgets;
@@ -715,8 +714,7 @@ sub subscriber_history_img {
 
 	);
 	
-	use HTML::Entities;
-	my $enc_chart = encode_entities($chart);
+	my $enc_chart = encode_html_entities($chart);
 
   	my $tmpl = subscriber_history_img_tmpl();
     require DADA::Template::Widgets;
@@ -820,8 +818,7 @@ sub data_ot_img {
 	chxl => '0:|' . join('|', @$chxl), 
 	);
 	
-	use HTML::Entities;
-	my $enc_chart = encode_entities($chart);
+	my $enc_chart = encode_html_entities($chart);
 	
 	if(!exists($ct_ot->[0])) { 
 		$enc_chart = undef; 
@@ -1977,8 +1974,7 @@ sub by_domain_img {
 		title => '',
 	);
 	
-	use HTML::Entities;
-	my $enc_chart = encode_entities($chart);
+	my $enc_chart = encode_html_entities($chart);
 	
 	
 }
@@ -2086,8 +2082,7 @@ sub country_geoip_data {
 	    chld => $chld,
 	    data => [@number],
 	);
-	use HTML::Entities;
-	my $enc_chart = encode_entities($chart);
+	my $enc_chart = encode_html_entities($chart);
 	
 	require Geography::Countries; 
 	my $ht_report = [];

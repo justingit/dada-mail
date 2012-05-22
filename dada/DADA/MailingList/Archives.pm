@@ -479,7 +479,9 @@ at the bottom of each archive index
 =cut 
 
 
-# This should be template'd out
+# This looks like it creates navigation for lists of archives, rather than for individual archives...
+# One day, this should be replaced with Data::Pageset
+
 sub create_index_nav { 
 
 	my $self          = shift; 
@@ -524,16 +526,16 @@ sub create_index_nav {
 	
 		# next holds previous, previous holds next; 
 		if($back >= 0){		
-			$next_link = qq{<a href="$DADA::Config::PROGRAM_URL?flavor=$af;list=} . uriescape($self->{list}) . qq{;start=$back">Next</a> &gt;&gt;}; 
+			$next_link = qq{$DADA::Config::PROGRAM_URL?flavor=$af;list=} . uriescape($self->{list}) . qq{;start=$back};
 		}else{
-			$next_link = "&nbsp;"; 
+			$next_link = undef; 
 		}
 		
 		if(($forward-1)  < $#{$entries}){
 		
-			$prev_link = qq{&lt; &lt;<a href="$DADA::Config::PROGRAM_URL?flavor=$af;list=} . uriescape($self->{list}) . qq{;start=$forward">Previous</a>}; 
+			$prev_link = qq{$DADA::Config::PROGRAM_URL?flavor=$af;list=} . uriescape($self->{list}) . qq{;start=$forward}; 
 		}else{
-			$prev_link = "&nbsp;";
+			$prev_link = undef;
 		
 		}
 	
@@ -542,56 +544,35 @@ sub create_index_nav {
 	
 	
 		if($back >= 0){
-			$prev_link = qq{&lt;&lt; <a href="$DADA::Config::PROGRAM_URL?flavor=$af;list=} . uriescape($self->{list}) . qq{;start=$back">Previous</a>}; 
+			$prev_link = qq{$DADA::Config::PROGRAM_URL?flavor=$af;list=} . uriescape($self->{list}) . qq{;start=$back}; 
 		}else{
-			$prev_link = "&nbsp;"; 
+			$prev_link = undef; 
 		}
 		
 		if($forward-1  < $#{$entries}){
-			$next_link = qq{<a href="$DADA::Config::PROGRAM_URL?flavor=$af;list=} . uriescape($self->{list}) . qq{;start=$forward">Next</a> &gt;&gt;}; 
+			$next_link = qq{$DADA::Config::PROGRAM_URL?flavor=$af;list=} . uriescape($self->{list}) . qq{;start=$forward}; 
 		}else{
-			$next_link = "&nbsp;";
+			$next_link = undef;
 		
 		}
 		
 	}
 	
-	my $index_link = qq{<a href="$DADA::Config::PROGRAM_URL?flavor=$af;list=} . uriescape($self->{list}) . qq{">Archive Index</a>};
-	
-	my $table = qq{ 
+	require DADA::Template::Widgets;
+    return DADA::Template::Widgets::screen(
+        {
+            -screen => 'archive_index_nav_table_widget.tmpl',
+            -list   => $self->{name},
+            -vars   => {
+				flavor_label => $af, 
+				prev_link    => $prev_link, 
+				next_link    => $next_link, 
+            },
+            -list_settings_vars       => $self->{ls}->params,
+            -list_settings_vars_param => { -dot_it => 1 },
 
-	<table cellpadding="5" width="100%"> 
-	 <tr>
-	  <td valign="top" align="left" width="33%">
-	   <p>
-	    <strong>
-	     $prev_link
-	    </strong>
-	   </p>
-	  </td> 
-	  
-	  <td valign="top" align="center" width="33%"> 
-	   <p>
-	    <strong>
-	     $index_link
-	    </strong>
-	   </p>
-	  </td>
-	  
-	  
-	  <td valign="top" align="right" width="33%"> 
-	   <p>
-	    <strong>
-	     $next_link
-	    </strong>
-	   </p>
-	  </td>
-	 </tr>
-	</table> 
-
-	};
-	
-	return $table; 
+        }
+    );
 }
 
 
@@ -612,80 +593,57 @@ like this:
 
 =cut
 
-sub make_nav_table { 
+sub make_nav_table {
 
+    my $self = shift;
 
-    # No - seriously, wtf is this method doing here?! (This is stupid)
-	my $self = shift; 
-	
-	my %args = (-List      =>    undef, 
-				-Id        =>    undef, 
-				-Function  =>    'visitor',
-				@_);
-	
-	my $id            = $args{-Id}; 
-	# ?!?!?!
-	my $list          = $args{-List}; 
-	my $function      = $args{-Function}; 
-	my $flavor_label; 
-	
-	if($function eq "admin"){ 
-		$flavor_label = "view_archive"; 
-	}else{ 
-		$flavor_label = "archive"; 
-	}  
-	 
-	my ($prev, $next); 
-	 
-	($prev, $next) = $self->get_neighbors($id); 
-	
-	my $prev_subject  = $self->get_archive_subject($prev); 
-	my $next_subject  = $self->get_archive_subject($next); 
-	
+    my %args = (
+        -List     => undef,
+        -Id       => undef,
+        -Function => 'visitor',
+        @_
+    );
 
-	my $prev_link;
-	my $next_link;
-	
-	if (defined($prev)){
-		$prev_link = qq{&lt;&lt; Previous: <a href="$DADA::Config::PROGRAM_URL?flavor=$flavor_label;list=} . uriescape($list) . qq{;id=$prev">$prev_subject</a>}; 
-	}else{ 
-		$prev_link = "&nbsp;"; 
-	} 
-	
-	if (defined($next)){
-		$next_link = qq{Next: <a href="$DADA::Config::PROGRAM_URL?flavor=$flavor_label;list=} . uriescape($list) . qq{;id=$next">$next_subject</a>  &gt;&gt;}; 
-	}else{ 
-		$next_link = "&nbsp;"; 
-	} 
-	
-	my $index_link = qq{<a href="$DADA::Config::PROGRAM_URL?flavor=$flavor_label;list=} . uriescape($list) . qq{">Archive Index</a> };
-	
-	my $table = qq{ 
-	
-	<table cellpadding="5"> 
-	 <tr>
-	  <td valign="top" align="left" width="33%">
-	   <p>
-	    <strong>
-	     $prev_link
-	    </strong>
-	   </p>
-	  </td> 
-	  <td valign="top" align="center" width="33%">
-	   <p>| <strong>$index_link</strong> |</p>
-	  </td> 
-	  <td valign="top" align="right" width="33%"> 
-	   <p><strong>$next_link</strong></p>
-	  </td>
-	 </tr>
-	</table> 
-	
-	};
-	
-	
-	$table = $self->_parse_in_list_info(-data => $table); 
-	return $table;
+    my $id = $args{-Id};
 
+    # ?!?!?!
+    my $list     = $args{-List};
+    my $function = $args{-Function};
+    my $flavor_label;
+
+    if ( $function eq "admin" ) {
+        $flavor_label = "view_archive";
+    }
+    else {
+        $flavor_label = "archive";
+    }
+
+    my ( $prev, $next );
+
+    ( $prev, $next ) = $self->get_neighbors($id);
+
+    my $prev_subject = $self->get_archive_subject($prev);
+    my $next_subject = $self->get_archive_subject($next);
+
+    require DADA::Template::Widgets;
+    return DADA::Template::Widgets::screen(
+        {
+            -screen => 'archive_nav_table_widget.tmpl',
+            -list   => $list,
+            -vars   => {
+                prev => $prev,
+                next => $next,
+                prev_subject =>
+                  $self->_parse_in_list_info( -data => $prev_subject ),
+                next_subject =>
+                  $self->_parse_in_list_info( -data => $next_subject ),
+                flavor_label => $flavor_label,
+            },
+            -list_settings_vars       => $self->{ls}->params,
+            -list_settings_vars_param => { -dot_it => 1 },
+
+        }
+    );
 }
 
 
@@ -1608,7 +1566,7 @@ sub message_blurb {
 
 	
 	$msg =~ s/\n|\r/ /g; 
-	$msg = DADA::App::Guts::convert_to_html_entities($msg); 
+	$msg = DADA::App::Guts::encode_html_entities($msg, "\200-\377"); 
 	
 	my $l    = length($msg); 
 	my $size = $args{-size}; 
