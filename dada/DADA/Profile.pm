@@ -1036,6 +1036,49 @@ sub send_update_profile_email_email {
     return 1;
 }
 
+sub send_update_email_notification { 
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	if(exists($DADA::Config::PROFILE_OPTIONS->{update_email_options}->{send_notification_to_profile_email}){ 
+		if($DADA::Config::PROFILE_OPTIONS->{update_email_options}->{send_notification_to_profile_email} == 1){ 
+			# ... 
+		}
+		else { 
+			return 1; 
+		}
+	}
+	
+	
+	
+	
+	if(! exists( $args->{-prev_email} ) ){ 
+		croak "You MUST pass the old email  in, '-prev_email' paramater!"; 
+	}
+	my $info = $self->get({-dotted => 1}); 
+	
+	require DADA::App::Messages;
+    DADA::App::Messages::send_generic_email(
+        {
+            -headers => {
+                Subject => $DADA::Config::PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE_SUBJECT,
+                From => $self->_config_profile_email,
+                To   => $self->_config_profile_email,
+            },
+            -body        => $DADA::Config::PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE,,
+            -tmpl_params => {
+                -vars => {
+					'profile.prev_email'             => $args->{-prev_email}, 
+                   	'profile.email'                  => $self->{email},					
+                },
+            },
+        }
+    );
+    return 1;
+
+	
+}
+
 
 
 sub is_valid_activation {
