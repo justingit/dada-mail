@@ -488,23 +488,32 @@ sub profile_update_email_report {
 	my $d_info = $self->get({-dotted => 1}); 
     require DADA::MailingList::Subscriber::Validate;
     my $subs = [];
+	my $skip_list = []; 
+	my $default_skip = [qw(
+		closed_list
+		over_subscription_quota
+		already_sent_sub_confirmation
+		no_list
+	)];
+	
+	if(exists($DADA::Config::PROFILE_OPTIONS->{update_email_options}->{subscription_check_skip})){ 
+		if($DADA::Config::PROFILE_OPTIONS->{update_email_options}->{subscription_check_skip} eq 'auto'){ 
+			$skip_list  = $default_skip;  
+		}
+		else { 
+			$skip_list = $DADA::Config::PROFILE_OPTIONS->{update_email_options}->{subscription_check_skip};
+		}
+	}
+	else { 
+		$skip_list = $default_skip;
+	}
     for my $list (@$lists) {
         my $sv =
           DADA::MailingList::Subscriber::Validate->new( { -list => $list } );
         my ( $sub_status, $sub_errors ) = $sv->subscription_check(
             {
                 -email => $info->{update_email},
-                -skip  => [
-					'closed_list', # DEV: I guess this is more of a design idea - 
-								   # Should a subscriber, who is on a closed list, 
-								   # be allowed to update their email address? \
-								   # Since an address corresponds to a person, it make sense, 
-								   # Although, I guess this could be used for nefarious purposes. 
-								   # Ugh. Would like this to be some sort of option... 
-                    'over_subscription_quota',
-                    'already_sent_sub_confirmation',
-                    'no_list',
-                ],
+                -skip  => $skip_list,
             }
         );
         require DADA::MailingList::Settings;
@@ -913,7 +922,7 @@ sub send_profile_activation_email {
             -email   => $self->{email},
             -headers => {
                 Subject => $DADA::Config::PROFILE_ACTIVATION_MESSAGE_SUBJECT,
-                From    => $self->_config_profile_email,
+                From    => $self->_config_profile_email(1),
                 To      => $self->{email},
             },
             -body        => $DADA::Config::PROFILE_ACTIVATION_MESSAGE,
@@ -948,7 +957,7 @@ sub send_profile_reset_password_email {
             -headers => {
                 Subject =>
                   $DADA::Config::PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT,
-                From => $self->_config_profile_email,
+                From => $self->_config_profile_email(1),
                 To   => $self->{email},
             },
             -body        => $DADA::Config::PROFILE_RESET_PASSWORD_MESSAGE,
@@ -1018,7 +1027,7 @@ sub send_update_profile_email_email {
             -headers => {
                 Subject =>
                   $DADA::Config::PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT,
-                From => $self->_config_profile_email,
+                From => $self->_config_profile_email(1),
                 To   => $args->{-updated_email},
             },
             -body        => $DADA::Config::PROFILE_UPDATE_EMAIL_MESSAGE,
@@ -1063,7 +1072,7 @@ sub send_update_email_notification {
         {
             -headers => {
                 Subject => $DADA::Config::PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE_SUBJECT,
-                From => $self->_config_profile_email,
+                From => $self->_config_profile_email(1),
                 To   => $self->_config_profile_email,
             },
             -body        => $DADA::Config::PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE,,
@@ -1143,6 +1152,9 @@ sub _rand_str {
 
 sub _config_profile_email {
     my $self = shift;
+	my $n    = shift || undef; 
+ 
+	
     if ( length($DADA::Config::PROFILE_OPTIONS->{profile_email}) > 0) {
 		my @good_addresses = (); 
 		require Email::Address;
@@ -1153,8 +1165,24 @@ sub _config_profile_email {
 				push(@good_addresses, $a->format);
 			}
 		}
+		# Do we have >= 1 address that are good? 
 		if(scalar(@good_addresses) >= 1){
-			return join(', ', @good_addresses);
+			my $r = ''; 
+			# We gotta limit on how many we want back? 
+			if(defined($n) && $self->_is_integer($n)){ 
+				# Is it more than how many are available? 
+				if($n > scalar(@good_addresses)){ 
+					# Well, let's lower that a bit
+					$n = scalar(@good_addresses);
+				}
+				# join!
+				$r = join(', ', $good_addresses[0, ($n - 1)]);
+			}
+			else { 
+				# Well then join them all
+				$r = join(', ', @good_addresses);
+			}
+			return $r; 
 		}
 		else { 
 			return $self->_magic_config_profile_email;			
@@ -1175,6 +1203,13 @@ sub _magic_config_profile_email {
     my $ls = DADA::MailingList::Settings->new( { -list => $l[0] } );
     return $ls->param('list_owner_email');
 }
+
+sub _is_integer {
+	my $self = shift; 
+	my $n    = shift; 
+    defined $n && $n =~ /^[+-]?\d+$/;
+}
+
 
 
 1;

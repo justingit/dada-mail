@@ -505,8 +505,11 @@ $PROFILE_OPTIONS ||= {
 	enable_captcha                  => 1, 
 	enable_magic_subscription_forms => 1, 
 	
-	update_email_options            => { 
+	update_email_options            => 
+	{ 
 		send_notification_to_profile_email => 0, 
+		subscription_check_skip            => 'auto', 
+		
 	},
 	cookie_params =>
 	{ 
@@ -520,6 +523,7 @@ $PROFILE_OPTIONS ||= {
 		enable_gravators     => 1, 
 		default_gravatar_url => undef,
 	},
+	
 };
 
 
