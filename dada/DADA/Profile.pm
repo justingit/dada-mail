@@ -2,7 +2,8 @@ package DADA::Profile;
 
 use lib qw (
   ../
-  ../perllib
+  ../DADA/perllib
+
 );
 
 use Carp qw(carp croak);
@@ -1040,7 +1041,7 @@ sub send_update_email_notification {
 	my $self   = shift; 
 	my ($args) = @_; 
 	
-	if(exists($DADA::Config::PROFILE_OPTIONS->{update_email_options}->{send_notification_to_profile_email}){ 
+	if(exists($DADA::Config::PROFILE_OPTIONS->{update_email_options}->{send_notification_to_profile_email})){ 
 		if($DADA::Config::PROFILE_OPTIONS->{update_email_options}->{send_notification_to_profile_email} == 1){ 
 			# ... 
 		}
@@ -1142,21 +1143,37 @@ sub _rand_str {
 
 sub _config_profile_email {
     my $self = shift;
-    if ( length($DADA::Config::PROFILE_OPTIONS->{profile_email}) > 0
-        && DADA::App::Guts::check_for_valid_email($DADA::Config::PROFILE_OPTIONS->{profile_email})
-        == 0 )
-    {
-        return $DADA::Config::PROFILE_OPTIONS->{profile_email};
+    if ( length($DADA::Config::PROFILE_OPTIONS->{profile_email}) > 0) {
+		my @good_addresses = (); 
+		require Email::Address;
+		my @addrs = Email::Address->parse( $DADA::Config::PROFILE_OPTIONS->{profile_email} );
+
+		for my $a(@addrs) { 
+			if(DADA::App::Guts::check_for_valid_email($a->address) == 0){ 
+				push(@good_addresses, $a->format);
+			}
+		}
+		if(scalar(@good_addresses) >= 1){
+			return join(', ', @good_addresses);
+		}
+		else { 
+			return $self->_magic_config_profile_email;			
+		}
     }
     else {
-
-        # magically.
-        require DADA::App::Guts;
-        my @l = DADA::App::Guts::available_lists();
-        require DADA::MailingList::Settings;
-        my $ls = DADA::MailingList::Settings->new( { -list => $l[0] } );
-        return $ls->param('list_owner_email');
+		return $self->_magic_config_profile_email;
     }
+}
+
+sub _magic_config_profile_email { 
+	my $self = shift; 
+	
+    # magically.
+    require DADA::App::Guts;
+    my @l = DADA::App::Guts::available_lists();
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $l[0] } );
+    return $ls->param('list_owner_email');
 }
 
 
