@@ -392,7 +392,7 @@ sub view_file {
 	my $ls = DADA::MailingList::Settings->new({-list => $list}); 	
 	if($fn eq 'default_plaintext_message_content_src_url_or_path' || $fn eq 'default_html_message_content_src_url_or_path') { 
 		$data = slurp($ls->param($fn));
-		e_print($q->pre(convert_to_html_entities($data))); 
+		e_print($q->pre(encode_html_entities($data))); 
 	}
 	else { 
 		croak('sorry I cannot show, ' . $fn);

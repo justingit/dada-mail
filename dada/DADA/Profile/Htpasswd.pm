@@ -324,7 +324,7 @@ sub write_htaccess {
 	open my $htaccess, '>', $entry->{path} . '/' . '.htaccess' or die $! ;
 	print $htaccess "
 AuthType Basic
-AuthName \"" . convert_to_html_entities($entry->{name}) . "\"
+AuthName \"" . encode_html_entities($entry->{name}) . "\"
 AuthUserFile " . $entry->{path} . "/.htpasswd
 Require valid-user
 ";
