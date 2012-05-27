@@ -60,6 +60,9 @@ For more information about this feature, see:
 
 L<http://dadamailproject.com/d/features-profiles.pod.html#subscription_check_skip>
 
+=head3 List Invitations: Already Been Invited Check
+
+When you send a List Invitation, a check can now be done to see if the addresses have already been invited and if so, not be repeatedly invited again. 
 
 =head2 Changes 5.1.0 
 
