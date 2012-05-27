@@ -614,3 +614,181 @@ sub delete_dir {
 	print $q->redirect(-uri => $Plugin_Config->{Plugin_URL} . '?done=1'); 
 	
 }
+
+__END__
+
+=pod
+
+=head1 Password Protected Directories Plugin
+
+The Password Protected Directories plugin allows you to create an Apache Webserver-style C<.htaccess> and C<.htpasswd> file in specific directories that will then prompt a visitor for a username and password, before they can access the directory itself. 
+
+The B<username> used will be one of your mailing list's subscribers B<email address>> The B<password> will be either their B<Dada Mail Profile password>, or if the subscriber doesn't have a Dada Mail Profile, you may set a default password. 
+
+Since the password use is the Dada Mail Profile password, the user will be able to create, change and reset their own password. List Owners will also be able to reset this Profile Password in the, I<Membership E<gt>E<gt> View> Screen. Search the address you want to work with, click on their email address and once the screen has refreshed, scrolle down to, B<Member Profile> and look under, B<Profile Password> for a form to change this password. 
+
+Profile passwords are saved in an encryped form, using C<crypt> and can't be unencrypted. When this plugin creates the .htpasswd file, it will simple copy the saved, encrypted password to this file, from the Dada Profile database table. 
+
+Currently, only Apache-style, C<.htaccess>/C<.htpasswd> files are supported. 
+
+=head1 Installation 
+
+This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin manually.
+
+If you install the plugin using the Dada Mail installer, you will still have set the cronjob manually, which is covered below.
+
+=head2 Change permissions of "password_protect_directories.cgi" to 755
+
+The, C<password_protect_directories.cgi> plugin will be located in your, I<dada/plugins> diretory. Change the script to, C<755>
+
+=head2 Configure your .dada_config file
+
+Now, edit your C<.dada_config> file, so that it shows the plugin in the left-hand menu, under the, B<Plugins> heading: 
+
+First, see if the following lines are present in your C<.dada_config> file: 
+
+ # start cut for list control panel menu
+ =cut
+
+ =cut
+ # end cut for list control panel menu
+
+If they are, remove them. 
+
+Then, find these lines: 
+
+ #					{
+ #					-Title      => 'Password Protected Directories',
+ #					-Title_URL  => $PLUGIN_URL."/password_protect_directories.cgi",
+ #					-Function   => 'password_protect_directories',
+ #					-Activated  => 1,
+ #					},
+
+Uncomment the lines, by taking off the, "#"'s: 
+
+ 					{
+ 					-Title      => 'Password Protected Directories',
+ 					-Title_URL  => $PLUGIN_URL."/password_protect_directories.cgi",
+ 					-Function   => 'password_protect_directories',
+ 					-Activated  => 1,
+ 					},
+
+Save your C<.dada_config> file.
+
+=head1 Using Password Protected Directories
+
+Once installed, log into a mailing list and under B<Plugins> click the link labeled, B<Password Protected Directories>
+
+A form labeled, B<New Password Protected Directory> will allow you to set up a new directory to password protect. You may set up as many password protected directories as you may like. 
+
+=head2 Name
+
+This allows you to set a name for your password-protected directory. This will be shown in the dialogue box, asking for the visitor's username and password
+
+=head2 Protected URL 
+
+This should hold the URL for the B<directory> that you want to password protect. For example: 
+
+L<http://example.com/secret>
+
+You should I<not> set this to a file in that directory: 
+
+L<http://example.com/secret/index.html>
+
+=head2 Corresponding Server Path
+
+This should hold the B<Absolute Server Path> to where this directory is located on the server. For example: 
+
+C</home/youraccount/public_html/secret>
+
+To start you off, the B<best guess> absolute path to your public html directory is pre-filled in - in our example, C</home/youraccount/public_html/> - you will need to simply make sure this is correct and then fill in the directory path of where the directory you typed for, B<Protected URL> resides. 
+
+=head2 Use a Custom Error Page
+
+If checked, any problems with the login will go to the page listed under, B<Custom Error Page (Path):>
+
+=head2 Custom Error Page (Path): 
+
+This should hold the path of your custom error page and confusingly, should B<not> hold an absolute path, but rather the path, starting with a, C</> from your public html directory to the error page. For example: 
+
+C</error_logging_in.html>
+
+In our example, this will redirect us to the following URL, for the, C<http://example.com> site: 
+
+L<http://example.com/error_logging_in.html> 
+
+Make sure to not set this to a page inside your password protected directory, as that will just not work. 
+
+=head2 Default Password 
+
+This optionally, may hold a default password that any subscriber of your mailing list may use, if they B<do not have> a Dada Mail Profile. 
+
+=head1 BUGS AND LIMITATIONS
+
+Currently, if you have more than one mailing list that attempts to password protect the same directory, one mailing list will overwrite the C<.htaccess> and C<.htpasswd> created by any other mailing list. 
+
+If you already have a C<.htaccess> and/or C<.htpasswd> file in the directory you attempt to password protect, created manually/outside of this plugin, it will also be overwritten by this plugin.
+
+
+=head1 SEE ALSO
+
+The Mailing List Sending FAQ has a whole lot of information about Dada Mail's Password Protected Directories, plugin features and Batch Sending:
+
+L<http://dadamailproject.com/support/documentation/FAQ-mailing_list_sending.pod.html>
+
+=head1 AUTHOR
+
+Justin Simoni 
+
+See: http://dadamailproject.com/contact
+
+=head1 LICENCE AND COPYRIGHT
+
+Copyright (c) 1999 - 2012 Justin Simoni All rights reserved. 
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, 
+Boston, MA  02111-1307, USA.
+
+	=cut
+
+	=head2 Setting the cronjob
+
+	Generally, setting the cronjob to have this plugin run automatically just means that you have to have a cronjob access a specific URL. The URL looks something like this:
+
+	 http://example.com/cgi-bin/dada/plugins/password_protect_directories.cgi?run=1&verbose=1
+
+	Where, I<http://example.com/cgi-bin/dada/plugins/password_protect_directories.cgi> is the URL to your copy of this plugin. 
+
+	A B<Best Guess> at what the entire cronjob that's needed (using the, C<curl> command to access the actual URL) to be set manually will appear in this plugin's list control panel under the fieldset labled, B<Manually Run Password Protected Directories> in the textbox labeled, B<curl command example (for a cronjob):>. It'll look something like this: 
+
+	 /usr/bin/curl  -s --get --data run=1\;passcode=\;verbose=0  --url http://example.com/cgi-bin/dada/plugins/password_protect_directories.cgi
+
+	Where, I<http://example.com/cgi-bin/dada/plugins/password_protect_directories.cgi> is the URL to this plugin. We suggest running this cronjob every 5 to 15 minutes. A complete cronjob, with the time set for, "every 5 minutes" would look like this: 
+
+	 */5 * * * * /usr/bin/curl  -s --get --data run=1\;passcode=\;verbose=0  --url http://example.com/cgi-bin/dada/plugins/password_protect_directories.cgi
+
+	=head3 Command Line
+
+	This plugin can also be called directory on the command line and that can itself be used for the cronjob: 
+
+		cd /home/youraccount/cgi-bin/dada/plugins; /usr/bin/perl ./password_protect_directories.cgi
+
+	You may pass the, C<--noverbose> flag to have the script return nothing at all:
+
+		cd /home/youraccount/cgi-bin/dada/plugins; /usr/bin/perl ./password_protect_directories.cgi --noverbose
+
+	By default, it will print out the Password Protected Directories report. 
+
+	=cut
