@@ -732,9 +732,11 @@ If you already have a C<.htaccess> and/or C<.htpasswd> file in the directory you
 
 =head1 SEE ALSO
 
-The Mailing List Sending FAQ has a whole lot of information about Dada Mail's Password Protected Directories, plugin features and Batch Sending:
+The B<Authentication, Authorization and Access Control> doc from Apache has an overview on the nuts and bolts of how this works: 
 
-L<http://dadamailproject.com/support/documentation/FAQ-mailing_list_sending.pod.html>
+L<http://httpd.apache.org/docs/2.0/howto/auth.html>
+
+
 
 =head1 AUTHOR
 
