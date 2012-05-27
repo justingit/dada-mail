@@ -123,18 +123,25 @@ First, find the following lines in your C<.dada_config> file:
 		enable_captcha                  => 1, 
 		enable_magic_subscription_forms => 1, 
 	
+		update_email_options            => 
+		{ 
+			send_notification_to_profile_email => 0, 
+			subscription_check_skip            => 'auto', 
+		
+		},
 		cookie_params =>
 		{ 
 			-name    => 'dada_profile',  
-			-path    => '/',
-			-expires => '+7d',		
+		    -path    => '/',
+		    -expires => '+1y',		
 		},
-
+	
 		gravatar_options => 
 		{
 			enable_gravators     => 1, 
 			default_gravatar_url => undef,
 		},
+	
 	};
 
 	=cut
@@ -164,6 +171,16 @@ When a registration email or reset password email goes out, it'll go out on beha
 
  profile_email => 'me@mydomain.com', 
 
+a little more fancy: 
+
+ profile_email => '"My First and Last Name!" <me@mydomain.com>', 
+
+You may set two email addresses: 
+
+ profile_email => '"My First and Last Name!" <me@mydomain.com>, "Another User" <someone.else@example.com>', 
+
+Although the C<From:> header that goes out will only hold B<one> email address.
+
 If Profiles are enabled and this variable is left blank, the list owner email address of one of your mailing lists will be used. 
 
 =head3 enable_captcha
@@ -173,6 +190,60 @@ Registration for Dada Mail Profiles can be verified using a CAPTCHA. We recommen
 =head3 enable_magic_subscription_forms
 
 B<Magic> subscription forms are pre-filled out with the subscriber's email address, if they're logged into Dada Mail. To enable this feature, set this variable to, C<1> 
+
+=head3 update_email_options
+
+These options come into play if users use the option to update their Dada Mail Profile email address. This will also update the email address used for their mailing list subscriptions. 
+
+=head4 send_notification_to_profile_email
+
+If set to, C<1>, a notification email address about the Profile email address change will be set to whomever is set in the, C<profile_email> variable. If more than one address is set in this variable, it will be addressed to all the email addresses. 
+
+=head4 subscription_check_skip
+
+This variable requires a deep explanation: 
+
+When a user attempts to change their Dada Mail Profile email address, this new email address will first be validated by Dada Mail to make sure that it's not already on your mailing list, isn't black listed, things like that. To make customization easier, you may skip certain checks. By default, the following checks are skipped: 
+
+=over
+
+=item *  closed_list
+
+The mailing list is closed to new subscribers
+
+=item * over_subscription_quota
+
+The mailing list is over any subscription quota sent
+
+=item * already_sent_sub_confirmation
+
+The mailing list had already sent a subscription confirmation email to the new address. 
+
+=item *  no_list
+
+The list doesn't actually exist!
+
+=back
+
+A complete listing of what checks are done (and what may be skipped) may be found at: 
+
+L<http://dadamailproject.com/d/MailingList_Subscribers.pm.html#subscription_check>
+
+To set your own list of checks to skip, you may change the, C<subscription_check_skip> setting to an array ref holding the checks to skip. For example: 
+
+			subscription_check_skip            => [qw(
+				closed_list
+				over_subscription_quota
+				already_sent_sub_confirmation
+				no_list
+				
+				invite_only_list
+				
+			)],
+
+In this example, we added the, C<invite_only_list> test to be skipped, so that if we have a B<Invitation Only> list, we can still allow our subscription to change their email address. 
+
+By default, this setting is set simply to, C<auto>, which will tell Dada Mail to use the default set of tests to skip. 
 
 =head3 cookie_params
 

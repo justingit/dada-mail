@@ -295,7 +295,7 @@ sub get_all_ids {
 	my ($args) = @_;
 	my $query = 'SELECT id FROM ' . 'dada_password_protected_directories' . ' WHERE list = ? GROUP BY id ORDER BY id DESC;';
     my $ids = $self->{dbh}->selectcol_arrayref($query, {}, ($self->{list}));
-	return $ids; 
+	return $ids || []; 
 }
 
 sub get_all_entries { 

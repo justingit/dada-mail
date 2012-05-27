@@ -85,7 +85,7 @@ use lib qw(
 #	use constant ERRORS_TO_BROWSER => 2;
 #
 
-use constant ERRORS_TO_BROWSER => 1;
+use constant ERRORS_TO_BROWSER => 2;
 
 #
 # If you don't want Dada Mail to show any error messages in your web browser, 
@@ -10561,6 +10561,11 @@ sub profile_update_email {
 			$prof->update_email;
 			#/ This should probably go in the update_email method...
 
+			$prof->send_update_email_notification(
+				{ 
+					-prev_email => cased($profile_info->{'profile.email'}), 
+				}
+			);
 
 			# Now, just log us in:
 			require DADA::Profile::Session;
@@ -10609,19 +10614,22 @@ sub profile_update_email {
 					}
 				);
 			   e_print($scrn);
+
 		}
 	}
 	else {
-		
+
 		require    DADA::Template::Widgets;
 		my $scrn = DADA::Template::Widgets::wrap_screen(
 				{
 					-screen => 'profile_update_email_error.tmpl',
+					-with  => 'list', 
 					-vars   => {
 					},
 				}
 			);
 		   e_print($scrn);
+
 	}
 }
 
