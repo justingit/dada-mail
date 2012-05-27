@@ -28,6 +28,26 @@ function mailing_list_history(){
 		}	
 		});
 }
+function doSomething(){ 
+	new Ajax.Updater(
+		'update_email_results', '<!-- tmpl_var S_PROGRAM_URL -->', 
+		{ 
+		    method: 'post', 
+			parameters: {
+				f:             'update_email_results',
+				updated_email: $F('updated_email'),
+				email:         '<!-- tmpl_var email -->'
+			},
+		onCreate: 	 function() {
+			$('update_email_results_loading').update('<p class="alert">Loading...</p>');
+		},
+		onComplete: 	 function() {
+			$('update_email_results_loading').update('<p class="alert">&nbsp;</p>');
+			Effect.BlindDown('update_email_results');
+		}	
+		});
+}
+
 //]]>
 </script> 
 
@@ -68,7 +88,7 @@ function mailing_list_history(){
 <!-- /tmpl_if -->
 
 <fieldset> 
-<legend>Membership</legend>
+<legend><!-- tmpl_var email --> Membership</legend>
 
 
 <!-- tmpl_unless member_of_num --> 
@@ -132,6 +152,23 @@ function mailing_list_history(){
 
 
 <!-- /tmpl_if --> 
+
+
+<fieldset> 
+<legend>Update Address</legend>
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+	<input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email -->" class="midi" />	 
+	<input type="button" value="Validate..." class="cautionary" onclick="doSomething();" />
+</form> 
+
+<div id="update_email_results_loading" style="display:none"></div>
+<div id="update_email_results"  style="display:none"></div> 
+
+</fieldset> 
+
+
+
 
 </fieldset> 
 

@@ -572,6 +572,8 @@ sub run {
 	'remove_all_subscribers'     =>    \&remove_all_subscribers,
 	'view_list_options'          =>    \&list_cp_options,
 	'membership'                 =>    \&membership,
+	'update_email_results'       =>    \&update_email_results, 
+	'admin_update_email'         =>    \&admin_update_email, 
 	'mailing_list_history'       =>    \&mailing_list_history, 
 	'add'                        =>    \&add,
 	'check_status'               =>    \&check_status,
@@ -3655,6 +3657,139 @@ m/^(list|black_list|white_list|authorized_senders|bounced_list)$/
 }
 
 
+sub update_email_results { 
+
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'membership'
+    );
+    $list = $admin_list;
+
+	require DADA::MailingList::Subscribers; 
+	my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
+
+	require DADA::MailingList::Subscriber::Validate;
+    my $sv = DADA::MailingList::Subscriber::Validate->new( { -list => $list } );
+
+	require DADA::MailingList::Settings; 
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+	
+	my %list_types = (
+        list               => 'Subscribers',
+        black_list         => 'Black Listed',
+        authorized_senders => 'Authorized Senders',
+        white_list         => 'White Listed',
+        sub_request_list   => 'Subscription Requests',
+        bounced_list       => 'Bouncing Addresses',
+    );
+	my %error_title = (
+		 invalid_email    => 'Invalid Email Address', 
+		 subscribed       => 'Already Subscribed', 
+		 mx_lookup_failed => 'MX Lookup Failed', 
+		 black_listed     => 'Black Listed', 
+		 not_white_listed => 'Not on the White List', 
+	); 
+
+
+
+	my $email         = cased(xss_filter($q->param('email'))); 
+	my $updated_email = cased(xss_filter($q->param('updated_email'))); 
+	my $all_reports = [];
+	my $all_status  = 1;
+	# old address
+	
+	
+	for my $type(@{$lh->subscribed_to({-email => $email})}){ 
+		my $sub_report = [];		
+		# new address
+		my ( $sub_status, $sub_errors ) = $sv->subscription_check(
+	        {
+	            -email => $updated_email,
+	            -type  => $type, 
+				-skip  => [
+	                'closed_list',
+	                'over_subscription_quota',
+	                'already_sent_sub_confirmation',
+	                'invite_only_list',
+					($ls->param('allow_admin_to_subscribe_blacklisted') == 1) ? 
+                    (
+                    	'black_listed', 
+                    ) : (),
+	            ],
+	        }
+	    );
+		if($sub_status == 0){ 
+			$all_status = 0; 
+		}
+		my $errors = [];
+		for(keys %$sub_errors){ 
+			push(@$errors, {error => $_, error_title => $error_title{$_}}); 
+		}
+		push(@$all_reports, { type_title => $list_types{$type}, type => $type, status => $sub_status, errors => $errors}); 
+	}
+
+	my $subscribed_to = [];
+	for my $l(@{$lh->subscribed_to({-email => $email})}){ 
+		push(
+			@$subscribed_to, 
+			{
+				type => $l, type_tite => $list_types{$l}, 
+			}
+		);
+	}
+	use Data::Dumper; 
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::screen(
+		{ 
+			-screen => 'update_email_results_widget.tmpl',
+			-expr   => 1,
+			-vars   => { 
+				email         => $email, 
+				updated_email => $updated_email, 
+				all_status    => $all_status,
+				all_reports   => $all_reports, 
+				validate_dump => Dumper($all_reports),
+			},
+		}
+	); 
+	print $q->header(); 
+	e_print($scrn);
+
+}
+
+sub admin_update_email { 
+	my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'membership'
+    );
+    $list = $admin_list;
+
+	my $email         = cased(xss_filter($q->param('email'))); 
+	my $updated_email = cased(xss_filter($q->param('updated_email'))); 
+	
+	require DADA::MailingList::Subscribers; 
+	my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
+	
+	
+	for my $type(@{$lh->subscribed_to({-email => $email})}){ 
+		$lh->remove_subscriber(
+			{
+				-email => cased($email)
+			}
+		);
+		$lh->add_subscriber(
+			{
+				-email => cased($updated_email)
+			}
+		);
+	}		
+	
+	# A bunch of profile stuff? 
+	# /A bunch of profile stuff? 
+	
+	print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=membership&email=' . $updated_email . '&type=list'); 
+}
+
 
 sub mailing_list_history { 
     my ( $admin_list, $root_login ) = check_list_security(
@@ -3691,7 +3826,7 @@ sub mailing_list_history {
 		}
 	); 
 	print $q->header(); 
-	print $scrn;
+	e_print($scrn);
 
 }
 
