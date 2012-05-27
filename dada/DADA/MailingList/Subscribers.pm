@@ -1461,6 +1461,8 @@ The errors, which are fairly self-explainitory are as follows:
 
 =item * closed_list
 
+=item * invite_only_list
+
 =item * mx_lookup_failed
 
 =item * black_listed
