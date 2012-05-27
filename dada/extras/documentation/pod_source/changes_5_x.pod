@@ -2,6 +2,121 @@
 
 =head1 Dada Mail Changelog for version 5.x.x
 
+=head1 5.1.0
+
+=head2 Summary 5.1.0 
+
+FILL ME IN
+
+=head2 Features 5.1.0
+
+=head3 New Plugin: Password Protected Directories
+
+This plugin allows you to password protect a directory, only allowing your mailing 
+list subscribers access. For more information, see: 
+
+L<http://dadamailproject.com/d/password_protect_directories.cgi.html>
+
+=head3 New Plugin: Default Mass Mailing Messages
+
+This plugin allows you to set default copy for your Mailing List Messages, that will appear in your B<Send a Message>, 
+B<Send a Webpage> screens, as well as in B<Beatitude>. For more information, see: 
+
+L<http://dadamailproject.com/d/default_mass_mailing_messages.cgi>
+
+=head3 Amazon SES: Auto-Adjusting Batch Settings
+
+Amazon SES mailing sending quotas start off small, and then grow, depending on your
+usage of the service. Keeping current on this changing quota is an annoyance, especially 
+when starting to use SES. This new feature allows you to simply let Dada Mail figure out the 
+most optimal batch setting for your mailing list. This feature works with either the SES API or using the 
+SES SMTP interface. 
+
+=head3 Profiles
+
+=head4 Profile Passwords  in the List Control Panel
+
+List Owners now how the option to reset a user's Profile Password in the List Control Panel, under: B<Membershio E<gt>E<gt> View> (and select a member of your mailing list)
+
+=head4 Email Notifications of changed Profile email addresses
+
+You now how the option to receive a notification of any changes made by a user of their Profile email address. 
+
+For more information about this feature, see: 
+
+L<http://dadamailproject.com/d/features-profiles.pod.html#send_notification_to_profile_email> 
+
+=head4 Multiple Admin Profile Email Addresses supported
+
+You may set more than one email addresses used for administration email notification, profile activation, etc, email messages. 
+
+For more information about this feature, see: 
+
+L<http://dadamailproject.com/d/features-profiles.pod.html#profile_email> 
+
+=head4 Customize Email Validation Steps for Profile Email Address Changes
+
+For more information about this feature, see: 
+
+L<http://dadamailproject.com/d/features-profiles.pod.html#subscription_check_skip>
+
+
+=head2 Changes 5.1.0 
+
+=head3 Send a Message Screen: Show/Hide PlainText/HTML Versions
+
+You may now set which Mailing List Message Version textboxes are visible by default, in the, B<Your List Control Panel E<gt>E<gt> Options> screen. 
+
+=head3 Dada Bridge 
+
+=head4 Modal Box for  POP3 test and Checking Awaiting Messages
+
+Instad of bringing you to a new screen, these two functions pop open a modal box instead. 
+
+=head3 Bounce Handler
+
+=head4 Modal Box for viewing Bounce Scores
+
+Intead of bringing you to a new screen, Bounce Handler shows individual email address bounce history in a modal box. 
+
+=head4 Modal Box for POP3 test
+
+Instad of bringing you to a new screen, a modal box is used instead. 
+
+=head3 Tracker: tracker_add_missing_num_subs.cgi script
+
+A new script called, C<tracker_add_missing_num_subs.cgi> is included with Dada Mail, in attempt to retrieve missing 
+Tracker reports from previous versions of Dada Mail. For more information, see: 
+
+L<http://dadamailproject.com/d/tracker_add_missing_num_subs.cgi.html>
+
+=head4 Support added for RFC 6522-style Delivery Status Notification Reports,
+
+This includes reports sent from Amazon SES. 
+
+=head2 Bugfixes 5.1.0
+
+=head3 "Opens" not tracked on malformed HTML messages (beginning <body> tag, but no end </body> tag)
+
+L<https://github.com/justingit/dada-mail/issues/289>
+
+=head3 Bounce Handler uses, "Final-Recipient" instead of, "Original-Recipient" when trying to find bouncing address
+
+L<https://github.com/justingit/dada-mail/issues/290>
+
+=head3 Bounce Handler does not understand, "text/rfc822-headers" mime type
+
+L<https://github.com/justingit/dada-mail/issues/291>
+
+=head3 Tracker plugin requires HTML::Entities
+
+L<https://github.com/justingit/dada-mail/issues/292>
+
+=head3 embedded HTML in Archives.pm, "make_nav_table" and "create_index_nav" methods
+
+L<https://github.com/justingit/dada-mail/issues/293>
+
+
 =head1 5.0.3
 
 =head2 Summary 5.0.3
