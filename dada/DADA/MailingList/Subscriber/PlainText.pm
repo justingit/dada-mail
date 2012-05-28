@@ -225,7 +225,7 @@ sub remove {
 
 
 
-sub subscribed_to {
+sub member_of {
 	
     my $self = shift;	
 	my $found = [];

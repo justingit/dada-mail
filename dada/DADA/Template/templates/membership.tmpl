@@ -30,11 +30,43 @@ function mailing_list_history(){
 }
 
 
+
+
+function doSomething(){ 
+	
+	var for_all_lists = 0; 
+	if(Form.Element.getValue('for_all_mailing_lists') == 1 && $('for_all_mailing_lists').checked == true){ 
+		for_all_lists = 1;
+	}
+	new Ajax.Updater(
+		'update_email_results', '<!-- tmpl_var S_PROGRAM_URL -->', 
+		{ 
+		    method: 'post', 
+			parameters: {
+				f:             'update_email_results',
+				updated_email: $F('updated_email'),
+				email:         '<!-- tmpl_var email -->',
+				for_all_lists: for_all_lists
+			},
+		onCreate: 	 function() {
+			$('update_email_results_loading').update('<p class="alert">Loading...</p>');
+		},
+		onComplete: 	 function() {
+			$('update_email_results_loading').update('<p class="alert">&nbsp;</p>');
+			Effect.BlindDown('update_email_results');
+		}	
+		});
+}
+
+
+
+
 function show_change_profile_password_form(){ 
 	Effect.BlindUp('change_profile_password_button');
 	Effect.BlindDown('change_profile_password_form');	
 }
-	
+
+
 //]]>
 </script> 
 
@@ -75,7 +107,7 @@ function show_change_profile_password_form(){
 <!-- /tmpl_if -->
 
 <fieldset> 
-<legend>Membership</legend>
+<legend><!-- tmpl_var email --> Membership</legend>
 
 
 <!-- tmpl_unless member_of_num --> 
@@ -139,6 +171,30 @@ function show_change_profile_password_form(){
 
 
 <!-- /tmpl_if --> 
+
+
+<fieldset> 
+<legend>Update Address</legend>
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+
+	<p>	
+	<input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email -->" class="midi" />
+	</p>
+	<p>
+		<input type="checkbox" name="for_all_mailing_lists" id="for_all_mailing_lists" value="1" <!-- tmpl_unless root_login -->disabled="disabled"<!-- /tmpl_unless --> />
+		<label for="for_all_mailing_lists">Update for All Mailing Lists <!-- tmpl_unless root_login -->(Requires <!-- tmpl_var PROGRAM_NAME --> Root Login)<!--/tmpl_unless --></label>
+	</p>	 
+	<input type="button" value="Validate..." class="cautionary" onclick="doSomething();" />
+</form> 
+
+<div id="update_email_results_loading" style="display:none"></div>
+<div id="update_email_results"  style="display:none"></div> 
+
+</fieldset> 
+
+
+
 
 </fieldset> 
 

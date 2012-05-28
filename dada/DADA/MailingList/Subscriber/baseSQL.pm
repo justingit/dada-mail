@@ -396,10 +396,9 @@ sub remove {
 
 }
 
-sub subscribed_to {
+sub member_of {
 	
     my $self = shift;	
-	# SELECT list_type FROM dada_subscribers WHERE email = '101example@example.com' AND  list = 'list' AND list_status = '1'
     my $query =
         'SELECT list_type FROM '
       . $self->{sql_params}->{subscriber_table}

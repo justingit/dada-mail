@@ -573,6 +573,8 @@ sub run {
 	'view_list_options'          =>    \&list_cp_options,
 	'membership'                 =>    \&membership,
 	'admin_change_profile_password' => \&admin_change_profile_password, 
+	'update_email_results'       =>    \&update_email_results, 
+	'admin_update_email'         =>    \&admin_update_email, 
 	'mailing_list_history'       =>    \&mailing_list_history, 
 	'add'                        =>    \&add,
 	'check_status'               =>    \&check_status,
@@ -3528,7 +3530,7 @@ sub membership {
         }
 
         my $subscribed_to_lt = {};
-        for ( @{ $lh->subscribed_to( { -email => $email } ) } ) {
+        for ( @{ $lh->member_of( { -email => $email } ) } ) {
             $subscribed_to_lt->{$_} = 1;
         }
 
@@ -3686,6 +3688,273 @@ m/^(list|black_list|white_list|authorized_senders|bounced_list)$/
 }
 
 
+sub update_email_results { 
+
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'membership'
+    );
+    $list = $admin_list;
+
+	my %list_types = (
+        list               => 'Subscribers',
+        black_list         => 'Black Listed',
+        authorized_senders => 'Authorized Senders',
+        white_list         => 'White Listed',
+        sub_request_list   => 'Subscription Requests',
+        bounced_list       => 'Bouncing Addresses',
+    );
+	my %error_title = (
+		 invalid_email    => 'Invalid Email Address', 
+		 subscribed       => 'Already Subscribed', 
+		 mx_lookup_failed => 'MX Lookup Failed', 
+		 black_listed     => 'Black Listed', 
+		 not_white_listed => 'Not on the White List', 
+	);
+	
+	my $for_all_lists     = $q->param('for_all_lists') || 0; 
+	my $lists_to_validate = [];
+	my $email         = cased(xss_filter($q->param('email'))); 
+	my $updated_email = cased(xss_filter($q->param('updated_email'))); 
+
+	if($for_all_lists == 1 && $root_login == 1){ 
+		require DADA::Profile; 
+		my $prof = DADA::Profile->new({-email => $email}); 
+		$lists_to_validate = $prof->subscribed_to; 
+	}
+	else { 
+		push(@$lists_to_validate, $list); 	
+	}
+	
+	require DADA::MailingList::Subscribers; 
+	require DADA::MailingList::Subscriber::Validate;
+	require DADA::MailingList::Settings; 
+	
+	# old address
+	
+	my $all_list_reports = [];
+	my $all_list_status = 1;
+	
+	for my $to_validate_list(@$lists_to_validate) { 
+		
+		my $all_reports = [];
+		my $all_status  = 1;
+		
+		my $lh = DADA::MailingList::Subscribers->new({-list => $to_validate_list});   
+		my $sv = DADA::MailingList::Subscriber::Validate->new( { -list => $to_validate_list } );
+		my $ls = DADA::MailingList::Settings->new( { -list => $to_validate_list } );
+		
+		for my $type(@{$lh->member_of({-email => $email})}){ 
+			my $sub_report = [];		
+			# new address
+			my ( $sub_status, $sub_errors ) = $sv->subscription_check(
+		        {
+		            -email => $updated_email,
+		            -type  => $type, 
+					-skip  => [
+		                'closed_list',
+		                'over_subscription_quota',
+		                'already_sent_sub_confirmation',
+		                'invite_only_list',
+						($ls->param('allow_admin_to_subscribe_blacklisted') == 1) ? 
+	                    (
+	                    	'black_listed', 
+	                    ) : (),
+		            ],
+		        }
+		    );
+			if($sub_status == 0){ 
+				$all_status      = 0; 
+				$all_list_status = 0; 
+			}
+			my $errors = [];
+			for(keys %$sub_errors){ 
+				push(@$errors, {error => $_, error_title => $error_title{$_}}); 
+			}
+			push(@$all_reports, { type_title => $list_types{$type}, type => $type, status => $sub_status, errors => $errors}); 
+		}
+
+		push(@$all_list_reports, 
+			{
+				list        => $to_validate_list, 
+				list_name   => $ls->param('list_name'), 
+				all_status  => $all_status,
+				all_reports => $all_reports, 
+			}
+		); 
+		
+	}
+	use Data::Dumper; 
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::screen(
+		{ 
+			-screen => 'update_email_results_widget.tmpl',
+			-expr   => 1,
+			-vars   => { 
+				email              => $email, 
+				updated_email      => $updated_email, 
+				all_list_status    => $all_list_status,
+				all_list_reports   => $all_list_reports, 
+				for_all_lists      => $for_all_lists, 
+				root_login         => $root_login, 
+				validate_dump      => Dumper($all_list_reports),
+
+			},
+		}
+	); 
+	print $q->header(); 
+	e_print($scrn);
+
+}
+
+sub admin_update_email { 
+
+	# Validate
+	my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'membership'
+    );
+    $list = $admin_list;
+
+	# Get some params
+	my $email         = cased(xss_filter($q->param('email'))); 
+	my $updated_email = cased(xss_filter($q->param('updated_email'))); 
+	my $for_all_lists = $q->param('for_all_lists') || 0; 
+	
+	require DADA::MailingList::Subscribers; 	
+	require DADA::Profile; 
+	
+	my $og_prof = DADA::Profile->new({-email => $email}); 
+	
+	# One, or many lists we're updating?? 
+	my $lists_to_update = [];
+	if($for_all_lists == 1 && $root_login == 1){ 
+			$lists_to_update = $og_prof->subscribed_to; 
+	}
+	else { 
+		push(@$lists_to_update, $list); 
+	}
+	
+	# Switch the addresses around
+	# But only for lists, and sublists of that lists 
+	# that this address is a member of
+	# 
+	for my $u_list(@$lists_to_update) { 
+		my $lh = DADA::MailingList::Subscribers->new({-list => $u_list}); 
+		for my $type(@{$lh->member_of({-email => $email})}){ 
+			$lh->remove_subscriber(
+				{
+					-email => cased($email)
+				}
+			);
+			$lh->add_subscriber(
+				{
+					-email => cased($updated_email)
+				}
+			);
+		}		
+	}
+	
+	# PROFILES
+	
+	# All Lists? EASY
+	if($for_all_lists == 1){ 
+		if(! $og_prof->exists){ 
+			# Make one (old email) 
+			$og_prof->insert({
+			    -password  => $og_prof->_rand_str(8),
+			    -activated => 1,
+			}); 
+		}
+		$og_prof->update({ 
+			-activated      => 1, 
+			-update_email	=> $updated_email, 
+		}); 
+		# Then this method changes the updated email to the email..
+		# And changes the profiles fields, as well... 
+		$og_prof->update_email;
+	}
+	else { 
+
+		# JUST one list? 
+		# it gets a little crazy... 
+		
+		# Basically what we want to do is this: 
+		# If the OLD address is subscribed to > 1 list, don't mess with the current
+		# profile information, 
+		# If the NEW address already has profile information, do not overwrite it
+		# 
+	
+		# Remember, this only works with the, "list" sublist... 
+		my $og_subscriptions = $og_prof->subscribed_to; 
+	
+		if(! $og_prof->exists){ 
+			# Make one (old email) 
+			$og_prof->insert({
+			    -password  => $og_prof->_rand_str(8),
+			    -activated => 1,
+			}); 
+		}
+
+		# Is there another mailing list that has the old address as a subscriber? 
+		# Remember, we already changed over ONE of the subscriptions. 
+	
+		if(scalar(@$og_subscriptions) >= 1){ 
+		
+			my $updated_prof = DADA::Profile->new({-email => $updated_email});
+			# This already around? 
+			if($updated_prof->exists){ 
+			
+				# Got any information? 
+				if($updated_prof->{fields}->are_empty){ 
+				
+					# No info in there yet? 
+					$updated_prof->{fields}->insert({
+						-fields => $og_prof->{fields}->get, 
+						-mode   => 'writeover', 
+					}); 		
+				}
+			}
+			else {
+			
+				# So there's not a profile, yet? 
+				# COPY (don't move) the old profile info, 
+				# to the new profile
+				# (inludeds fields) 
+				my $new_prof = $og_prof->copy({ 
+					-from => $email, 
+					-to   => $updated_email, 
+				}); 
+			}
+		}
+		else { 
+		
+			# So, no other mailing list has a subscription for the new email address
+			# 
+			my $updated_prof = DADA::Profile->new({-email => $updated_email});
+			# But does this profile already exists for the updated address? 
+			if($updated_prof->exists){ 
+			
+				 # Well, nothing, since it already exists.
+			}
+			else { 
+			
+				# updated our old email profile, to the new email 
+				# Only ONE subscription, w/Profile
+				# First save the updated email
+				$og_prof->update({ 
+					-activated      => 1, 
+					-update_email	=> $updated_email, 
+				}); 
+				# Then this method changes the updated email to the email..
+				# And changes the profiles fields, as well... 
+				$og_prof->update_email;		
+			}
+		}
+	}
+	print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=membership&email=' . $updated_email . '&type=list'); 
+}
+
 
 sub mailing_list_history { 
     my ( $admin_list, $root_login ) = check_list_security(
@@ -3722,7 +3991,7 @@ sub mailing_list_history {
 		}
 	); 
 	print $q->header(); 
-	print $scrn;
+	e_print($scrn);
 
 }
 
