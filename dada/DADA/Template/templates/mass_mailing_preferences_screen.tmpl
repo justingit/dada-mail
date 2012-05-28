@@ -31,7 +31,8 @@
 
 
 <p>
- Make sure to set these options to be below any hourly limitations that may be imposed on your hosting account!
+ Setting your batch settings to send at a higher rate than what is allowed 
+ for your hosting account will cause problems with email delivery. 
 </p>
     
 
@@ -60,18 +61,6 @@
 </div>
 
 
-
-	<!-- tmpl_if show_amazon_ses_options -->
-		<p>
-		 <input type="checkbox" id="amazon_ses_auto_batch_settings" name="amazon_ses_auto_batch_settings" value="1" <!-- tmpl_if list_settings.amazon_ses_auto_batch_settings -->checked="checked"<!--/tmpl_if--> onChange="toggleManualBatchSettings(); return false;" />
-		<label for="amazon_ses_auto_batch_settings">
-			Automatically set batching speeds based on your Amazon SES limits
-		</label><br /> 
-		Batch settings will automatically adjust, when your Amazon SES limits change. 
-		</p>
-
-	<!-- /tmpl_if --> 
-
 <div id="manual_batch_settings"> 
 	
 	<fieldset> 
@@ -85,10 +74,26 @@
     </p>
    </fieldset>
 
-</div> 
+</div>
 
+<table cellpadding="5">
+	<!-- tmpl_if show_amazon_ses_options -->
+			<tr>
+		  <td>
+		 
 	
-  </td>
+		  <input type="checkbox" id="amazon_ses_auto_batch_settings" name="amazon_ses_auto_batch_settings" value="1" <!-- tmpl_if list_settings.amazon_ses_auto_batch_settings -->checked="checked"<!--/tmpl_if--> onChange="toggleManualBatchSettings(); return false;" />
+		</td>
+		<td>
+		<label for="amazon_ses_auto_batch_settings">
+			Automatically set batching speeds based on your Amazon SES limits
+		</label>
+		<br />
+		Batch settings will automatically adjust, when your Amazon SES limits change. </p>
+		</td>
+	</tr>
+	<!-- /tmpl_if --> 
+
  </tr>
  
 
@@ -112,9 +117,7 @@
 
 	 <tr>
 	  <td>
-	   <p>
 	    <input type="checkbox" name="smtp_connection_per_batch" id="smtp_connection_per_batch" value="1" <!-- tmpl_if list_settings.smtp_connection_per_batch -->checked="checked"<!-- /tmpl_if --> />
-	   </p>
 	  </td>
 	  <td>
 	   <p>
@@ -148,44 +151,16 @@
 	  </td>
 	 </tr>
 	
-	
-	 <tr>
-	  <td>
-	   <input type="checkbox" name="mass_mailing_send_to_list_owner" id="mass_mailing_send_to_list_owner" value="1" <!-- tmpl_if list_settings.mass_mailing_send_to_list_owner -->checked="checked"<!--/tmpl_if--> />
-	  </td>
-	  <td>
-	   <p>
-	    <label for="mass_mailing_send_to_list_owner">
-	     Send Mass Mailing Messages to the List Owner
-	    </label>
-	    <br />
-		The List Owner will receive a copy of all mass mailings sent to your Mailing List. 
-	   </p>
-	  </td>
-	 </tr>
-	
-
-	 <tr>
-	  <td>
-	   <input type="checkbox" name="get_finished_notification" id="get_finished_notification" value="1" <!-- tmpl_if list_settings.get_finished_notification -->checked="checked"<!--/tmpl_if--> />
-	  </td>
-	  <td>
-	   <p>
-	    <label for="get_finished_notification">
-	     Send Finishing Message
-	    </label>
-	    <br />
-	    The List Owner will be emailed when all the messages of mass mailings have been sent.
-	   </p>
-	  </td>
-	 </tr>
-	
-	
+</table>
 	
 </table>
 
 
+
+
 </fieldset>
+
+
 
 <fieldset>
 <legend>
@@ -243,6 +218,49 @@
 </table>
 
 </fieldset>
+
+<fieldset> 
+	<legend>Notifications</legend>
+	
+<table> 
+	 <tr>
+	  <td>
+	   <input type="checkbox" name="mass_mailing_send_to_list_owner" id="mass_mailing_send_to_list_owner" value="1" <!-- tmpl_if list_settings.mass_mailing_send_to_list_owner -->checked="checked"<!--/tmpl_if--> />
+	  </td>
+	  <td>
+	   <p>
+	    <label for="mass_mailing_send_to_list_owner">
+	     Send Mass Mailing Messages to the List Owner
+	    </label>
+	    <br />
+		The List Owner will receive a copy of all mass mailings sent to your Mailing List. 
+	   </p>
+	  </td>
+	 </tr>
+	
+
+	 <tr>
+	  <td>
+	   <input type="checkbox" name="get_finished_notification" id="get_finished_notification" value="1" <!-- tmpl_if list_settings.get_finished_notification -->checked="checked"<!--/tmpl_if--> />
+	  </td>
+	  <td>
+	   <p>
+	    <label for="get_finished_notification">
+	     Send Finishing Message
+	    </label>
+	    <br />
+	    The List Owner will be emailed when all the messages of mass mailings have been sent.
+	   </p>
+	  </td>
+	 </tr>
+	
+	</td>
+	</tr>
+</table> 
+	
+</fieldset>
+
+
 
 <input type="hidden" name="process" value="1" />
 <input type="hidden" name="f"       value="mass_mailing_preferences" />
