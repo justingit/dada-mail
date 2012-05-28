@@ -123,9 +123,10 @@ Replaced by the, <mailing_monitor.cgi> plugin
 
 =item * multi_admin_subscribers.cgi
 
-Will be removed in a future version of Dada Mail.
+Has been removed as of v5.1.0 of Dada Mail
 
 =item * dada_digest.pl
+
 Will be removed in a future version of Dada Mail. This script does not kindly reflect the code or documentation quality we'd like to strive for in the Dada Mail project. 
 
 

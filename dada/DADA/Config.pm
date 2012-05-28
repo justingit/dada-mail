@@ -2194,13 +2194,6 @@ $ADMIN_MENU ||= [
 #					},
 
 #					{
-#					-Title      => 'Multi List Sub/Unsub Check',
-#					-Title_URL  => $PLUGIN_URL."/multi_admin_subscribers.cgi",
-#					-Function   => 'multi_admin_subscribers',
-#					-Activated  => 1,
-#					},
-
-#					{
 #					-Title      => 'View List Settings',
 #					-Title_URL  => $PLUGIN_URL."/view_list_settings.cgi",
 #					-Function   => 'view_list_settings',

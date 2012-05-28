@@ -32,7 +32,7 @@ function mailing_list_history(){
 
 
 
-function doSomething(){ 
+function updateEmail(){ 
 	
 	var for_all_lists = 0; 
 	if(Form.Element.getValue('for_all_mailing_lists') == 1 && $('for_all_mailing_lists').checked == true){ 
@@ -176,19 +176,31 @@ function show_change_profile_password_form(){
 <fieldset> 
 <legend>Update Address</legend>
 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" onSubmit="updateEmail();return false">
 
 	<p>	
-	<input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email -->" class="midi" />
+	<label for="updated_email">New Address:</label> <input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email -->" class="midi" />
 	</p>
-	<p>
-		<input type="checkbox" name="for_all_mailing_lists" id="for_all_mailing_lists" value="1" <!-- tmpl_unless root_login -->disabled="disabled"<!-- /tmpl_unless --> />
-		<label for="for_all_mailing_lists">Update for All Mailing Lists <!-- tmpl_unless root_login -->(Requires <!-- tmpl_var PROGRAM_NAME --> Root Login)<!--/tmpl_unless --></label>
-	</p>	 
-	<input type="button" value="Validate..." class="cautionary" onclick="doSomething();" />
+	<!-- tmpl_if can_have_subscriber_fields --> 
+	
+		<p>
+			<input type="checkbox" name="for_all_mailing_lists" id="for_all_mailing_lists" value="1" <!-- tmpl_unless root_login -->disabled="disabled"<!-- /tmpl_unless --> />
+			<label for="for_all_mailing_lists">Update for All Mailing Lists <!-- tmpl_unless root_login --></label> <span class="error">(Requires <!-- tmpl_var PROGRAM_NAME --> Root Login)<!--/tmpl_unless --></span>
+		</p>
+	
+	<!-- tmpl_else --> 
+		<input type="hidden" name="for_all_mailing_lists" id="for_all_mailing_lists" value="0"  />
+		
+	<!-- /tmpl_if --> 
+	
+	 <div class="buttonfloat">	 
+	<input type="button" value="Validate..." class="cautionary" onclick="updateEmail();return false;" />
+</div> 
+	<div class="floatclear"></div>
+	
 </form> 
 
-<div id="update_email_results_loading" style="display:none"></div>
+<div id="update_email_results_loading"><p class="alert">&nbsp;</p></div>
 <div id="update_email_results"  style="display:none"></div> 
 
 </fieldset> 
@@ -199,13 +211,17 @@ function show_change_profile_password_form(){
 </fieldset> 
 
 
-
-<h1>Mailing List History</h1> 
+<fieldset> 
+<legend>Mailing List History</legend> 
 
 <div id="mailing_list_history_loading"></div>
+<div style=" max-height: 300px; overflow: auto;">
 <div id="mailing_list_history" style="display:none;"></div>
+</div> 
 
+</fieldset> 
 
+<!-- tmpl_if can_have_subscriber_fields --> 
 
 
 <fieldset>
@@ -273,27 +289,39 @@ function show_change_profile_password_form(){
 	<!-- /tmpl_if -->
 	
 
-	<fieldset> 
-	<legend>Profile Password</legend>
-		<div id="change_profile_password_button">
-			<input type="button" value="Click to change Profile Password..." class="cautionary" onclick="show_change_profile_password_form();" />
-		</div> 
-		<div id="change_profile_password_form" style="display:none">
-			<form name="change_profile_password" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-				<input type="hidden" name="f" value="admin_change_profile_password" /> 
-				<input type="hidden" name="email" value="<!-- tmpl_var email -->" />
-				<input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+	
+		<fieldset> 
+		<legend>Profile Password</legend>
+	
+		<!-- tmpl_if root_login --> 
+	
+			<div id="change_profile_password_button">
+				<input type="button" value="Click to change Profile Password..." class="cautionary" onclick="show_change_profile_password_form();" />
+			</div> 
+			<div id="change_profile_password_form" style="display:none">
+				<form name="change_profile_password" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+					<input type="hidden" name="f" value="admin_change_profile_password" /> 
+					<input type="hidden" name="email" value="<!-- tmpl_var email -->" />
+					<input type="hidden" name="type" value="<!-- tmpl_var type -->" />
 				
-				<p>
-					<input type="password" name="profile_password" value="" />
-					<input type="submit" value="Change Profile Password" />
-			</form> 
-		</div>	
-	</fieldset> 
-	<div class="floatclear"></div>
+					<p>
+						<input type="password" name="profile_password" value="" />
+						<input type="submit" value="Change Profile Password" />
+				</form> 
+			</div>	
+		</fieldset> 
+		<div class="floatclear"></div>
+	
+		<!-- tmpl_else -->
+		<div class="clearskiesbox">
+			<p>
+				You must be logged in with the <!-- tmpl_var PROGRAM_NAME --> Root Password to be able to change an address's Profile Password. 
+			</p>
+		</div>
+		<!-- /tmpl_if --> 
+	</fieldset>
 
-
-</fieldset>
+<!-- /tmpl_if --> 
 
 
 <p>

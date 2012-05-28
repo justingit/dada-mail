@@ -3674,6 +3674,9 @@ m/^(list|black_list|white_list|authorized_senders|bounced_list)$/
                     bounced_list_removed_from_list =>
                       $bounced_list_removed_from_list,
 
+					can_have_subscriber_fields =>
+                      $lh->can_have_subscriber_fields,
+
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -3696,6 +3699,10 @@ sub update_email_results {
     );
     $list = $admin_list;
 
+	require DADA::MailingList::Subscribers; 
+	require DADA::MailingList::Subscriber::Validate;
+	require DADA::MailingList::Settings; 
+
 	my %list_types = (
         list               => 'Subscribers',
         black_list         => 'Black Listed',
@@ -3717,18 +3724,21 @@ sub update_email_results {
 	my $email         = cased(xss_filter($q->param('email'))); 
 	my $updated_email = cased(xss_filter($q->param('updated_email'))); 
 
-	if($for_all_lists == 1 && $root_login == 1){ 
-		require DADA::Profile; 
-		my $prof = DADA::Profile->new({-email => $email}); 
-		$lists_to_validate = $prof->subscribed_to; 
+	my $list_lh = DADA::MailingList::Subscribers->new({-list => $list}); 
+	
+	if($list_lh->can_have_subscriber_fields) { 
+		if($for_all_lists == 1 && $root_login == 1){ 
+			require DADA::Profile; 
+			my $prof = DADA::Profile->new({-email => $email}); 
+			$lists_to_validate = $prof->subscribed_to; 
+		}
+		else { 
+			push(@$lists_to_validate, $list); 	
+		}
 	}
 	else { 
 		push(@$lists_to_validate, $list); 	
 	}
-	
-	require DADA::MailingList::Subscribers; 
-	require DADA::MailingList::Subscriber::Validate;
-	require DADA::MailingList::Settings; 
 	
 	# old address
 	
@@ -3822,17 +3832,27 @@ sub admin_update_email {
 	my $for_all_lists = $q->param('for_all_lists') || 0; 
 	
 	require DADA::MailingList::Subscribers; 	
-	require DADA::Profile; 
+
+	my $og_prof = undef; 
 	
-	my $og_prof = DADA::Profile->new({-email => $email}); 
+	my $list_lh = DADA::MailingList::Subscribers->new({-list => $list}); 
+	if($list_lh->can_have_subscriber_fields) { 
+		require DADA::Profile; 
+		$og_prof = DADA::Profile->new({-email => $email}); 	
+	}
 	
 	# One, or many lists we're updating?? 
 	my $lists_to_update = [];
-	if($for_all_lists == 1 && $root_login == 1){ 
-			$lists_to_update = $og_prof->subscribed_to; 
+	if($list_lh->can_have_subscriber_fields) { 
+		if($for_all_lists == 1 && $root_login == 1){ 
+				$lists_to_update = $og_prof->subscribed_to; 
+		}
+		else { 
+			push(@$lists_to_update, $list); 
+		}
 	}
 	else { 
-		push(@$lists_to_update, $list); 
+		push(@$lists_to_update, $list); 		
 	}
 	
 	# Switch the addresses around
@@ -3856,6 +3876,11 @@ sub admin_update_email {
 	}
 	
 	# PROFILES
+	
+	if(! $list_lh->can_have_subscriber_fields) { 
+		print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=membership&email=' . $updated_email . '&type=list&done=1'); 
+		return;
+	}
 	
 	# All Lists? EASY
 	if($for_all_lists == 1){ 
@@ -3952,7 +3977,7 @@ sub admin_update_email {
 			}
 		}
 	}
-	print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=membership&email=' . $updated_email . '&type=list'); 
+	print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=membership&email=' . $updated_email . '&type=list&done=1'); 
 }
 
 
@@ -3977,7 +4002,7 @@ sub mailing_list_history {
 	for($i = 0; $i <= (scalar(@$r) - 1); $i++){ 
 		$r->[$i]->{show_email} = 0;
 	}
-
+	@$r = reverse(@$r);
 
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::screen(

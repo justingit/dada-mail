@@ -10,6 +10,16 @@ FILL ME IN
 
 =head2 Features 5.1.0
 
+=head3 Update Subscriber Email Address
+
+The ability to update a subscriber's email address has been added to Dada Mail. 
+
+This feature supports updated an email address on the current mailing list, or 
+through every mailing list. 
+
+Profile information is also updated with the new email address, or copied over, if a profile for the 
+updated email address already exists. 
+
 =head3 New Plugin: Password Protected Directories
 
 This plugin allows you to password protect a directory, only allowing your mailing 
@@ -96,6 +106,11 @@ L<http://dadamailproject.com/d/tracker_add_missing_num_subs.cgi.html>
 =head4 Support added for RFC 6522-style Delivery Status Notification Reports,
 
 This includes reports sent from Amazon SES. 
+
+=head3 multi_admin_subscribers.cgi Plugin: Removed
+
+The C<multi_admin_subscribers.cgi> plugin, labeled has been deprecated. Similar functionality is 
+allowed using the, B<Update Email Address> feature. 
 
 =head2 Bugfixes 5.1.0
 
