@@ -181,11 +181,9 @@ sub _sanity_test {
 sub batch_params {
 
 	# DEV: Another idea would be to change the batch speed of 
-	# SES sending by fining what ($SentLast24Hours - $Max24HourSend) is
+	# SES sending by finding what ($SentLast24Hours - $Max24HourSend) is
 	# and slowing down batch sending (more time between batches), when that limit gets closer. 
 	# Rather than a complete shutdown of sending. Hmm! 
-	# Or, just take into consideration how many active mailings are going, and 
-	# base sending around that. 2 active mailings, mailing sending speed is cut in basically half
 	
     my $self = shift;
     my ($args) = @_;
@@ -267,6 +265,50 @@ sub batch_params {
             $batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
         }
 
+		# This slows the batch settings down, if there's > 1 mailout going on
+		# at one time. 
+		if($DADA::Config::MAILOUT_AT_ONCE_LIMIT > 1){ 
+			my (
+			$monitor_mailout_report, 
+			$total_mailouts, 
+			$active_mailouts, 
+			$paused_mailouts, 
+			$queued_mailouts,
+			$inactive_mailouts
+			) = monitor_mailout(
+				{
+					-verbose => 0, 
+					-action  => 0, 
+				}
+			);
+			
+			# If the batch size is larger than how many messages we have, 
+			# better to divide that up, rather than the span between messages
+			# Round DOWN just to be on the safe side of things. 
+			if($batch_size > $active_mailouts) { 
+				require POSIX;
+				if($active_mailouts > 1){ 
+					if($active_mailouts < $DADA::Config::MAILOUT_AT_ONCE_LIMIT){ 
+						$batch_size = POSIX::floor(($batch_size / $active_mailouts));
+					}
+					else { 
+						$batch_wait = POSIX::floor(($batch_size / $DADA::Config::MAILOUT_AT_ONCE_LIMIT));					
+					}
+				}								
+			}
+			else { 
+				# else, make the wait longer
+				if($active_mailouts > 1){ 
+					if($active_mailouts < $DADA::Config::MAILOUT_AT_ONCE_LIMIT){ 
+						$batch_wait = ($batch_wait * $active_mailouts);
+					}
+					else { 
+						$batch_wait = ($batch_wait * $DADA::Config::MAILOUT_AT_ONCE_LIMIT);					
+					}
+				}				
+			}
+		}		
+			
         require POSIX;
         my @return = (
             $enable_bulk_batching,
