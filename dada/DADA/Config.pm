@@ -404,18 +404,18 @@ The SQL password.
 	user             => '',          
 	pass             => '',
 
-	subscriber_table                => 'dada_subscribers',
-	profile_table                   => 'dada_profiles', 
-	profile_fields_table 	        => 'dada_profile_fields', 
-	profile_fields_attributes_table => 'dada_profile_fields_attributes',
-	archives_table                  => 'dada_archives', 
-	settings_table                  => 'dada_settings', 
-	session_table                   => 'dada_sessions', 
-	bounce_scores_table             => 'dada_bounce_scores', 
-	clickthrough_urls_table         => 'dada_clickthrough_urls', 
-	clickthrough_url_log_table      => 'dada_clickthrough_url_log', 		
-	mass_mailing_event_log_table    => 'dada_mass_mailing_event_log',
-	
+	subscriber_table                   => 'dada_subscribers',
+	profile_table                      => 'dada_profiles', 
+	profile_fields_table 	           => 'dada_profile_fields', 
+	profile_fields_attributes_table    => 'dada_profile_fields_attributes',
+	archives_table                     => 'dada_archives', 
+	settings_table                     => 'dada_settings', 
+	session_table                      => 'dada_sessions', 
+	bounce_scores_table                => 'dada_bounce_scores', 
+	clickthrough_urls_table            => 'dada_clickthrough_urls', 
+	clickthrough_url_log_table         => 'dada_clickthrough_url_log', 		
+	mass_mailing_event_log_table       => 'dada_mass_mailing_event_log',
+	password_protect_directories_table => 'dada_password_protect_directories', 
 ) unless keys %SQL_PARAMS; 
 
 
@@ -709,7 +709,7 @@ $PLUGIN_CONFIGS ||= {
 
 	},
 
-    blog_index => {
+	blog_index => {
 
 		Default_List                        => undef,
 		Entries                             => undef,
@@ -717,15 +717,22 @@ $PLUGIN_CONFIGS ||= {
 		Allow_QS_Overrides                  => undef,
 		Template                            => undef,
 
-    }, 
+	}, 
 
-    log_viewer => {	
+	log_viewer => {	
 
 		Plugin_URL                          => undef,
 		tail_command                        => undef,
 
 	},
-	
+
+	default_mass_mailing_messages => {
+
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
+
+	},
+
 	password_protect_directories => {
 
 		Plugin_Name                         => undef,
@@ -5422,17 +5429,19 @@ sub _config_import {
 	# aren't set right, but it will save people headaches, in the long run: 
 	
 	my %default_table_names = (
-		subscriber_table                => 'dada_subscribers',
-		profile_table                   => 'dada_profiles', 
-		profile_fields_table 	        => 'dada_profile_fields', 
-		profile_fields_attributes_table => 'dada_profile_fields_attributes',
-		archives_table                  => 'dada_archives', 
-		settings_table                  => 'dada_settings', 
-		session_table                   => 'dada_sessions', 
-		bounce_scores_table             => 'dada_bounce_scores', 
-		clickthrough_urls_table         => 'dada_clickthrough_urls',
-		clickthrough_url_log_table      => 'dada_clickthrough_url_log', 		
-		mass_mailing_event_log_table    => 'dada_mass_mailing_event_log',
+		subscriber_table                   => 'dada_subscribers',
+		profile_table                      => 'dada_profiles', 
+		profile_fields_table 	           => 'dada_profile_fields', 
+		profile_fields_attributes_table    => 'dada_profile_fields_attributes',
+		archives_table                     => 'dada_archives', 
+		settings_table                     => 'dada_settings', 
+		session_table                      => 'dada_sessions', 
+		bounce_scores_table                => 'dada_bounce_scores', 
+		clickthrough_urls_table            => 'dada_clickthrough_urls',
+		clickthrough_url_log_table         => 'dada_clickthrough_url_log', 		
+		mass_mailing_event_log_table       => 'dada_mass_mailing_event_log',
+		password_protect_directories_table => 'dada_password_protect_directories', 
+		
 	); 
 	for(keys %default_table_names){ 
 		if(!exists($SQL_PARAMS{$_})){ 

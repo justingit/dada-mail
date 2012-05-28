@@ -96,3 +96,16 @@ msg_id text,
 url text
 );
 
+CREATE TABLE IF NOT EXISTS dada_password_protect_directories (
+id serial,
+list varchar(16),
+name text,
+url text,
+path text,
+use_custom_error_page char(1),
+custom_error_page text,
+default_password text
+);
+
+
+

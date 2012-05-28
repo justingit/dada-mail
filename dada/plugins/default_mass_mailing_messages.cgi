@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-package default_messages;
+package default_mass_mailing_messages;
 use strict;
 
 # make sure the DADA lib is in the lib paths!
@@ -19,6 +19,10 @@ $q = decode_cgi_obj($q);
 use CGI::Carp qw(fatalsToBrowser);
 use Carp qw(croak carp); 
 
+
+
+
+
 use Fcntl qw(
 	LOCK_SH
 	O_RDONLY
@@ -32,6 +36,31 @@ my $root_login;
 my $list; 
 my $pt_fn; 
 my $html_fn; 
+
+my $Plugin_Config                = {}; 
+   $Plugin_Config->{Plugin_Name} = 'Password Protect Directories'; 
+   $Plugin_Config->{Plugin_URL}  = $q->url; 
+
+
+&init_vars; 
+
+sub init_vars {
+
+# DEV: This NEEDS to be in its own module - perhaps DADA::App::PluginHelper or something?
+
+    while ( my $key = each %$Plugin_Config ) {
+
+        if ( exists( $DADA::Config::PLUGIN_CONFIGS->{default_mass_mailing_messages}->{$key} ) ) {
+
+            if ( defined( $DADA::Config::PLUGIN_CONFIGS->{default_mass_mailing_messages}->{$key} ) ) {
+
+                $Plugin_Config->{$key} =
+                  $DADA::Config::PLUGIN_CONFIGS->{default_mass_mailing_messages}->{$key};
+
+            }
+        }
+    }
+}
 
 run()
   unless caller();
@@ -67,6 +96,13 @@ sub run {
 		&cgi_default;
 	}
 }
+
+
+sub test_sub { 
+	return 'Hello, World!'; 
+}
+
+
 
 sub cgi_default_tmpl {
 

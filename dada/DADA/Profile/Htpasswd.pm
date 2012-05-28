@@ -34,7 +34,20 @@ sub _init {
 
     #$self->{'log'} = new DADA::Logging::Usage;
 
-    $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
+   
+	if(!exists($args->{-list})){ 
+		die "no list!";
+	}
+	else { 
+		$self->{list} = $args->{-list}; 
+	}
+	$self->_sql_init($args); 
+}
+
+sub _sql_init {
+
+    my $self = shift;
+   $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
     if ( $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ ) {
         require DADA::App::DBIHandle;
         $dbi_obj = DADA::App::DBIHandle->new;
@@ -43,13 +56,11 @@ sub _init {
 	else { 
 		croak "SQL Backend only!"; 
 	}
-	if(!exists($args->{-list})){ 
-		die "no list!";
-	}
-	else { 
-		$self->{list} = $args->{-list}; 
-	}
+	
+	
 }
+
+
 sub hello { 
 	my $self = shift; 
 	print "hello!\n"; 
@@ -107,7 +118,7 @@ sub insert {
 
 	my $query =
       'INSERT INTO '
-      . 'dada_password_protected_directories'
+      .  $self->{sql_params}->{password_protect_directories_table}
       . '(list, name, url, path, use_custom_error_page, custom_error_page, default_password) VALUES (?, ?, ?, ?, ?, ?, ?)';
 
     warn 'QUERY: ' . $query
@@ -146,7 +157,7 @@ sub update {
 	
 	my $query =
       'UPDATE '
-      . 'dada_password_protected_directories'
+      . $self->{sql_params}->{password_protect_directories_table}
       . ' SET name = ?, url = ?, path = ?, use_custom_error_page = ?, custom_error_page = ?, default_password = ? where id = ?';
 
     warn 'QUERY: ' . $query
@@ -185,7 +196,7 @@ sub id_exists {
 	}
     my $query =
       'SELECT COUNT(*) FROM '
-      . 'dada_password_protected_directories'
+      . $self->{sql_params}->{password_protect_directories_table}
       . ' WHERE id = ?';
 
     my $sth = $self->{dbh}->prepare($query);
@@ -221,7 +232,7 @@ sub get {
 
     my $query =
       'SELECT * FROM '
-      . 'dada_password_protected_directories'
+      . $self->{sql_params}->{password_protect_directories_table}
       . " WHERE id = ?";
 
     warn 'QUERY: ' . $query
@@ -272,7 +283,7 @@ sub remove {
 
     my $query =
       'DELETE  from '
-      . 'dada_password_protected_directories'
+      . $self->{sql_params}->{password_protect_directories_table}
       . ' WHERE id = ? ';
 
 	warn 'QUERY: ' . $query
@@ -293,7 +304,7 @@ sub get_all_ids {
 
 	my $self = shift; 
 	my ($args) = @_;
-	my $query = 'SELECT id FROM ' . 'dada_password_protected_directories' . ' WHERE list = ? GROUP BY id ORDER BY id DESC;';
+	my $query = 'SELECT id FROM ' . $self->{sql_params}->{password_protect_directories_table} . ' WHERE list = ? GROUP BY id ORDER BY id DESC;';
     my $ids = $self->{dbh}->selectcol_arrayref($query, {}, ($self->{list}));
 	return $ids || []; 
 }

@@ -212,6 +212,13 @@ $PLUGIN_CONFIGS = {
 
 	},
 
+	default_mass_mailing_messages => {
+
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
+
+	},
+
 	password_protect_directories => {
 
 		Plugin_Name                         => undef,
@@ -221,7 +228,7 @@ $PLUGIN_CONFIGS = {
 		Base_Absolute_Path                  => undef, 
 		Base_URL                            => undef, 
 
-	}, 
+	},
 
 };
 

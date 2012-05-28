@@ -1,4 +1,6 @@
 #!/usr/bin/perl
+package password_protect_directories;
+
 use strict; 
 
 $|++;
@@ -43,12 +45,12 @@ sub init_vars {
 
     while ( my $key = each %$Plugin_Config ) {
 
-        if ( exists( $DADA::Config::PLUGIN_CONFIGS->{htpasswd_Manager}->{$key} ) ) {
+        if ( exists( $DADA::Config::PLUGIN_CONFIGS->{password_protect_directories}->{$key} ) ) {
 
-            if ( defined( $DADA::Config::PLUGIN_CONFIGS->{htpasswd_Manager}->{$key} ) ) {
+            if ( defined( $DADA::Config::PLUGIN_CONFIGS->{password_protect_directories}->{$key} ) ) {
 
                 $Plugin_Config->{$key} =
-                  $DADA::Config::PLUGIN_CONFIGS->{htpasswd_Manager}->{$key};
+                  $DADA::Config::PLUGIN_CONFIGS->{password_protect_directories}->{$key};
 
             }
         }
@@ -108,6 +110,11 @@ sub run {
 		    &default;
 		}
 	}
+}
+
+
+sub test_sub { 
+	return 'Hello, World!'; 
 }
 
 sub cgi_refresh_directories { 
