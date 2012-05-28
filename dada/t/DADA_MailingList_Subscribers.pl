@@ -1897,7 +1897,7 @@ for ( 'list', 'black_list', 'white_list' ) {
 }
 
 my $st = []; 
-$st = $lh->subscribed_to({-email => 'test@example.com'}); 
+$st = $lh->member_of({-email => 'test@example.com'}); 
 ok(scalar(@$st) == 3, "3 list types returned."); 
 
 #use Data::Dumper; 

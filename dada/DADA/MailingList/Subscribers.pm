@@ -164,14 +164,14 @@ sub copy_subscriber {
     return $dmls->copy($args);
 }
 
-sub subscribed_to { 
+sub member_of { 
 	my $self = shift; 
 	my ($args) = @_;
 	$args->{-list} = $self->{list};
 	
  my $dmls =
       DADA::MailingList::Subscriber->new( $args );
-    return $dmls->subscribed_to($args);	
+    return $dmls->member_of($args);	
 }
 
 sub admin_remove_subscribers { 
