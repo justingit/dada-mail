@@ -36,7 +36,8 @@ function doSomething(){
 			parameters: {
 				f:             'update_email_results',
 				updated_email: $F('updated_email'),
-				email:         '<!-- tmpl_var email -->'
+				email:         '<!-- tmpl_var email -->',
+				all_mailing_lists: 1
 			},
 		onCreate: 	 function() {
 			$('update_email_results_loading').update('<p class="alert">Loading...</p>');
@@ -158,7 +159,14 @@ function doSomething(){
 <legend>Update Address</legend>
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-	<input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email -->" class="midi" />	 
+
+	<p>	
+	<input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email -->" class="midi" />
+	</p>
+	<p>
+		<input type="checkbox" name="all_mailing_lists" id="all_mailing_lists" value="1" />
+		<label for="all_mailing_lists">Update for All Mailing Lists</label>
+	</p>	 
 	<input type="button" value="Validate..." class="cautionary" onclick="doSomething();" />
 </form> 
 

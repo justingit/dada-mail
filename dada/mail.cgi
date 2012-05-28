@@ -85,7 +85,7 @@ use lib qw(
 #	use constant ERRORS_TO_BROWSER => 2;
 #
 
-use constant ERRORS_TO_BROWSER => 1;
+use constant ERRORS_TO_BROWSER => 2;
 
 #
 # If you don't want Dada Mail to show any error messages in your web browser, 
@@ -3665,15 +3665,6 @@ sub update_email_results {
     );
     $list = $admin_list;
 
-	require DADA::MailingList::Subscribers; 
-	my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
-
-	require DADA::MailingList::Subscriber::Validate;
-    my $sv = DADA::MailingList::Subscriber::Validate->new( { -list => $list } );
-
-	require DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-	
 	my %list_types = (
         list               => 'Subscribers',
         black_list         => 'Black Listed',
@@ -3688,54 +3679,79 @@ sub update_email_results {
 		 mx_lookup_failed => 'MX Lookup Failed', 
 		 black_listed     => 'Black Listed', 
 		 not_white_listed => 'Not on the White List', 
-	); 
-
-
-
+	);
+	
+	my $all_mailing_lists = $q->param('all_mailing_lists') || 0; 
+	my $lists_to_validate = [];
 	my $email         = cased(xss_filter($q->param('email'))); 
 	my $updated_email = cased(xss_filter($q->param('updated_email'))); 
-	my $all_reports = [];
-	my $all_status  = 1;
+
+	if($all_mailing_lists == 1){ 
+		require DADA::Profile; 
+		my $prof = DADA::Profile->new({-email => $email}); 
+		$lists_to_validate = $prof->subscribed_to; 
+	}
+	else { 
+		push(@$lists_to_validate, $list); 	
+	}
+	
+	require DADA::MailingList::Subscribers; 
+	require DADA::MailingList::Subscriber::Validate;
+	require DADA::MailingList::Settings; 
+	
 	# old address
 	
+	my $all_list_reports = [];
+	my $all_list_status = 1;
 	
-	for my $type(@{$lh->subscribed_to({-email => $email})}){ 
-		my $sub_report = [];		
-		# new address
-		my ( $sub_status, $sub_errors ) = $sv->subscription_check(
-	        {
-	            -email => $updated_email,
-	            -type  => $type, 
-				-skip  => [
-	                'closed_list',
-	                'over_subscription_quota',
-	                'already_sent_sub_confirmation',
-	                'invite_only_list',
-					($ls->param('allow_admin_to_subscribe_blacklisted') == 1) ? 
-                    (
-                    	'black_listed', 
-                    ) : (),
-	            ],
-	        }
-	    );
-		if($sub_status == 0){ 
-			$all_status = 0; 
-		}
-		my $errors = [];
-		for(keys %$sub_errors){ 
-			push(@$errors, {error => $_, error_title => $error_title{$_}}); 
-		}
-		push(@$all_reports, { type_title => $list_types{$type}, type => $type, status => $sub_status, errors => $errors}); 
-	}
-
-	my $subscribed_to = [];
-	for my $l(@{$lh->subscribed_to({-email => $email})}){ 
-		push(
-			@$subscribed_to, 
-			{
-				type => $l, type_tite => $list_types{$l}, 
+	for my $to_validate_list(@$lists_to_validate) { 
+		
+		my $all_reports = [];
+		my $all_status  = 1;
+		
+		my $lh = DADA::MailingList::Subscribers->new({-list => $to_validate_list});   
+		my $sv = DADA::MailingList::Subscriber::Validate->new( { -list => $to_validate_list } );
+		my $ls = DADA::MailingList::Settings->new( { -list => $to_validate_list } );
+		
+		for my $type(@{$lh->subscribed_to({-email => $email})}){ 
+			my $sub_report = [];		
+			# new address
+			my ( $sub_status, $sub_errors ) = $sv->subscription_check(
+		        {
+		            -email => $updated_email,
+		            -type  => $type, 
+					-skip  => [
+		                'closed_list',
+		                'over_subscription_quota',
+		                'already_sent_sub_confirmation',
+		                'invite_only_list',
+						($ls->param('allow_admin_to_subscribe_blacklisted') == 1) ? 
+	                    (
+	                    	'black_listed', 
+	                    ) : (),
+		            ],
+		        }
+		    );
+			if($sub_status == 0){ 
+				$all_status      = 0; 
+				$all_list_status = 0; 
 			}
-		);
+			my $errors = [];
+			for(keys %$sub_errors){ 
+				push(@$errors, {error => $_, error_title => $error_title{$_}}); 
+			}
+			push(@$all_reports, { type_title => $list_types{$type}, type => $type, status => $sub_status, errors => $errors}); 
+		}
+
+		push(@$all_list_reports, 
+			{
+				list        => $to_validate_list, 
+				list_name   => $ls->param('list_name'), 
+				all_status  => $all_status,
+				all_reports => $all_reports, 
+			}
+		); 
+		
 	}
 	use Data::Dumper; 
     require DADA::Template::Widgets;
@@ -3744,11 +3760,11 @@ sub update_email_results {
 			-screen => 'update_email_results_widget.tmpl',
 			-expr   => 1,
 			-vars   => { 
-				email         => $email, 
-				updated_email => $updated_email, 
-				all_status    => $all_status,
-				all_reports   => $all_reports, 
-				validate_dump => Dumper($all_reports),
+				email              => $email, 
+				updated_email      => $updated_email, 
+				all_list_status    => $all_list_status,
+				all_list_reports   => $all_list_reports, 
+				validate_dump      => Dumper($all_list_reports),
 			},
 		}
 	); 
@@ -3783,10 +3799,95 @@ sub admin_update_email {
 			}
 		);
 	}		
+
+
+	# Basically what we want to do is this: 
+	# If the OLD address is subscribed to > 1 list, don't mess with the current
+	# profile information, 
+	# If the NEW address already has profile information, do not overwrite it
+	# 
 	
-	# A bunch of profile stuff? 
-	# /A bunch of profile stuff? 
+	warn "here. " . __LINE__; 
 	
+	require DADA::Profile; 
+	my $og_prof = DADA::Profile->new({-email => $email}); 
+	
+	# Remember, this only works with the, "list" sublist... 
+	my $og_subscriptions = $og_prof->subscribed_to; 
+	
+	if(! $og_prof->exists){ 
+		warn "here. " . __LINE__; 
+		# Make one (old email) 
+		$og_prof->insert({
+		    -password  => $og_prof->_rand_str(8),
+		    -activated => 1,
+		}); 
+	}
+
+	# Is there another mailing list that has the old address as a subscriber? 
+	# Remember, we already changed over ONE of the subscriptions. 
+	
+	if(scalar(@$og_subscriptions) >= 1){ 
+		warn "here. " . __LINE__; 
+		
+		my $updated_prof = DADA::Profile->new({-email => $updated_email});
+		# This already around? 
+		if($updated_prof->exists){ 
+			warn "here. " . __LINE__; 
+			
+			# Got any information? 
+			if($updated_prof->{fields}->are_empty){ 
+				warn "here. " . __LINE__; 
+				
+				# No info in there yet? 
+				$updated_prof->{fields}->insert({
+					-fields => $og_prof->{fields}->get, 
+					-mode   => 'writeover', 
+				}); 		
+			}
+		}
+		else {
+			warn "here. " . __LINE__; 
+			
+			# So there's not a profile, yet? 
+			# COPY (don't move) the old profile info, 
+			# to the new profile
+			# (inludeds fields) 
+			my $new_prof = $og_prof->copy({ 
+				-from => $email, 
+				-to   => $updated_email, 
+			}); 
+		}
+	}
+	else { 
+		warn "here. " . __LINE__; 
+		
+		# So, no other mailing list has a subscription for the new email address
+		# 
+		my $updated_prof = DADA::Profile->new({-email => $updated_email});
+		# But does this profile already exists for the updated address? 
+		if($updated_prof->exists){ 
+			warn "here. " . __LINE__; 
+			
+			 # Well, nothing, since it already exists.
+		}
+		else { 
+			warn "here. " . __LINE__; 
+			
+			# updated our old email profile, to the new email 
+			# Only ONE subscription, w/Profile
+			# First save the updated email
+			$og_prof->update({ 
+				-activated      => 1, 
+				-update_email	=> $updated_email, 
+			}); 
+			# Then this method changes the updated email to the email..
+			# And changes the profiles fields, as well... 
+			$og_prof->update_email;		
+		}
+	}
+	warn "here. " . __LINE__; 
+
 	print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=membership&email=' . $updated_email . '&type=list'); 
 }
 

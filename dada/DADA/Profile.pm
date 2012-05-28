@@ -2,7 +2,7 @@ package DADA::Profile;
 
 use lib qw (
   ../
-  ../perllib
+  ../DADA/perllib
 );
 
 use Carp qw(carp croak);
@@ -382,6 +382,37 @@ sub remove {
     return $rv;
 }
 
+
+
+sub copy { 
+
+	my $self = shift; 
+    my ($args) = @_;
+    if ( !exists( $args->{ -from } ) ) {
+        die "you MUST pass the, '-from' paramater!";
+    }
+    if ( !exists( $args->{ -to } ) ) {
+        die "you MUST pass the, '-to' paramater!";
+    }
+
+	require DADA::Profile::Fields; 
+	my $og_dpf = DADA::Profile::Fields->new({-email => $args->{-from}});
+	my $new_prof = DADA::Profile->new({-email => $args->{-to}});	 
+	$new_prof->insert(
+		{ 
+			-confirmed => 1, 
+			-mode      => 'writeover', 
+			-password  => $self->_rand_str(8),
+		}
+	); 
+	$new_prof->{fields}->insert({
+		-fields => $og_dpf->get, 
+		-mode   => 'writeover', 
+	}); 
+	return $new_prof; 
+	
+}
+
 sub subscribed_to_list {
 	
     my $self = shift;
@@ -401,6 +432,9 @@ sub subscribed_to_list {
 
 sub subscribed_to {
 
+	# weirdly, a profile does not have to exists, for this to work. 
+	# What? 
+	
     my $self = shift;
     my ($args) = @_;
 
@@ -548,6 +582,10 @@ sub update_email {
 			-mode      => 'writeover', 
 		}
 	); 
+	# Why isn't the old profile fields stuff not removed? 
+	my $old_prof_fields = DADA::Profile::Fields->new({-email => $info->{email}}); 
+	   $old_prof_fields->remove;
+		undef($old_prof_fields); 
 	$self->{email} = $info->{update_email};
 	return 1; 
 }
