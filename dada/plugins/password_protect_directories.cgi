@@ -430,6 +430,12 @@ Custom Error Page (Path):
 
 sub default {
 	
+	if($DADA::Config::SUBSCRIBER_DB_TYPE !~ /SQL/i){ 
+		sql_backend_only_message(); 
+		return; 
+	}
+	
+	
 	my $htp     = DADA::Profile::Htpasswd->new({-list => $list});
 	my $entries = $htp->get_all_entries; 
 	
@@ -559,6 +565,42 @@ sub new_dir {
 		&default; 
 		return; 
 	}
+}
+
+
+sub sql_backend_only_message { 
+	my $tmpl = q{ 
+		<!-- tmpl_set name="title" value="Password Protect Directories" --> 
+		<div id="screentitle"> 
+			<div id="screentitlepadding">
+				<!-- tmpl_var title --> 
+			</div>
+			<!-- tmpl_include help_link_widget.tmpl -->
+		</div>
+		
+		<h1>Sorry,</h1>
+		<p>This plugin will only work, if you have installed and configured Dada Mail to use one of the SQL backends.</p>
+	};
+	
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -data           => \$tmpl,
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $ls->param('list'),
+            },, 
+            -vars => {
+            },
+
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );	
+	e_print($scrn);
 }
 
 sub process_edit_dir { 
