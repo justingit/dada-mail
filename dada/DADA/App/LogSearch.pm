@@ -155,9 +155,17 @@ sub subscription_search {
 			-line  => $l
 		}
 	);
+	
 		next if ! keys %$llr; 
-        if (   $llr->{list} eq $args->{-list}
-            && $llr->{email} eq $args->{-email} )
+        if (   
+			$llr->{list} eq $args->{-list}
+            
+			&& (
+				$llr->{email} eq $args->{-email} 
+				|| 
+				$llr->{updated_email} eq $args->{-email}
+				)
+			)
         {
             push( @$results, $llr );
         }
@@ -183,6 +191,7 @@ sub log_line_report {
         white_list         => 'White Listed',
         sub_request_list   => 'Subscription Requests',
         bounced_list       => 'Bouncing Addresses',
+		invitelist         => 'List Invitations', 
     );
 
 	# An attempt at optimization
@@ -199,6 +208,7 @@ sub log_line_report {
 
     my $sublist     = undef;
     my $base_action = undef;
+	my $new_email = undef; 
 
     # Subscribed to announce.sub_confirm_list	nillajess@yahoo.com
 
@@ -217,17 +227,28 @@ sub log_line_report {
         $base_action = 'confirmation_sent';
         $sublist     = $1;
     }
+
+    elsif ( $action =~ m/Updated Subscription for/ ) {
+		# Updated Subscription for choir.    love@love.com:new@new.com
+		
+        $action =~ m/Updated Subscription for $list\.(.*?)$/;
+        $base_action = 'subscription_updated';
+        $sublist     = $1;
+		($email, $new_email) = split(':', $email)
+    }
+
     $date =~ s/(\[|\])//g;
 
     return {
-        date       => $date,
-        list       => $list,
-		list_name  => $List_Names->{$list}, 
-        ip         => $ip,
-        email      => $email,
-        type       => $sublist,
-        type_title => $list_types{$sublist},
-        action     => $base_action,
+        date           => $date,
+        list           => $list,
+		list_name      => $List_Names->{$list}, 
+        ip             => $ip,
+        email          => $email,
+        type           => $sublist,
+        type_title     => $list_types{$sublist},
+        action         => $base_action,
+		updated_email  => $new_email, # used for subscription updates
     };
 
 }

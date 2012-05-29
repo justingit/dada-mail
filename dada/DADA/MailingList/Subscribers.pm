@@ -256,7 +256,7 @@ sub remove_subscriber {
 	
     my $dmls =
       DADA::MailingList::Subscriber->new( { %{$args}, -list => $self->{list} } );
-	$dmls->remove;
+	$dmls->remove($args);
 	return 1; 
 }
 

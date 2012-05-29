@@ -14,6 +14,10 @@ sub add {
     my $lh =
       DADA::MailingList::Subscribers->new( { -list => $args->{ -list } } );
 
+	if(!exists($args->{-log_it})){ 
+		$args->{-log_it} = 1; 
+	}
+	
     if ( !exists $args->{ -type } ) {
         $args->{ -type } = 'list';
     }
@@ -83,13 +87,15 @@ sub add {
         }
     );
 
-    if ( $DADA::Config::LOG{subscriptions} == 1 ) {
-        $added->{'log'}->mj_log( 
-			$added->{list},
-            'Subscribed to ' . $added->{list} . '.' . $added->type,
-            $added->email 
-		);
-    }
+	if($args->{-log_it} == 1) { 
+	    if ( $DADA::Config::LOG{subscriptions} == 1 ) {
+	        $added->{'log'}->mj_log( 
+				$added->{list},
+	            'Subscribed to ' . $added->{list} . '.' . $added->type,
+	            $added->email 
+			);
+	    }
+	}
     return $added;
 
 }
@@ -214,10 +220,17 @@ sub move {
 sub remove { 
 	
 	my $self = shift; 
+	my ($args) = @_; 
+	
+	if(!exists($args->{-log_it})){ 
+		$args->{-log_it} = 1; 
+	}
+	
 	# Notice, for the PlainText backend, we're still going with this old chestnut -
 	$self->{lh}->remove_from_list(
 		-Email_List =>[$self->email], 
 		-Type       => $self->type,
+		-log_it     => $args->{-log_it}, 
 	);
 	return undef; 
 }

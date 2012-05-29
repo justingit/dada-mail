@@ -3859,20 +3859,32 @@ sub admin_update_email {
 	# But only for lists, and sublists of that lists 
 	# that this address is a member of
 	# 
+	require DADA::Logging::Usage;
+    my $log = new DADA::Logging::Usage;
+
 	for my $u_list(@$lists_to_update) { 
 		my $lh = DADA::MailingList::Subscribers->new({-list => $u_list}); 
 		for my $type(@{$lh->member_of({-email => $email})}){ 
 			$lh->remove_subscriber(
 				{
-					-email => cased($email)
+					-email  => cased($email),
+					-type   => $type, 
+					-log_it => 0, 
 				}
 			);
 			$lh->add_subscriber(
 				{
-					-email => cased($updated_email)
+					-email  => cased($updated_email), 
+					-type   => $type, 
+					-log_it => 0,
 				}
 			);
-		}		
+			$log->mj_log(
+				$u_list, 
+				'Updated Subscription for ' . $u_list . '.' . $type,  
+				$email . ':' . $updated_email
+			);
+		}	
 	}
 	
 	# PROFILES
@@ -3998,6 +4010,9 @@ sub mailing_list_history {
             -email => $email,
         }
     );
+	#use Data::Dumper; 
+	#die Dumper($r); 
+	
 	my $i;
 	for($i = 0; $i <= (scalar(@$r) - 1); $i++){ 
 		$r->[$i]->{show_email} = 0;

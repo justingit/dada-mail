@@ -5,7 +5,7 @@
 <ul>
 <!-- tmpl_loop history --> 
 
-	<!-- tmpl_if expr="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list') || (type eq 'sub_request_list') || (type eq 'bounced_list'))" -->
+	<!-- tmpl_if expr="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list') || (type eq 'sub_request_list') || (type eq 'bounced_list')  || (type eq 'invitelist'))" -->
 	
 		<li>
 			
@@ -18,6 +18,7 @@
 			<!-- /tmpl_if -->
 			 to
 		<!-- /tmpl_if -->
+		
 		<!-- tmpl_if expr="(action eq 'unsubscribed')" --> 
 			&#8592; <!-- tmpl_if show_email --><a href="<!-- tmpl_var S_PROGRAM_URL -->?f=membership;email=<!-- tmpl_var email escape=URL -->;type=<!-- tmpl_var type -->"><!-- tmpl_var email --></a><!-- /tmpl_if -->
 			<!-- tmpl_if expr="(type eq 'list')" -->
@@ -27,6 +28,7 @@
 			<!-- /tmpl_if -->
 			from
 		<!-- /tmpl_if -->
+		
 		<!-- tmpl_if expr="(action eq 'confirmation_sent')" -->
 			&#8596; <!-- tmpl_if show_email --><a href="<!-- tmpl_var S_PROGRAM_URL -->?f=membership;email=<!-- tmpl_var email escape=URL -->;type=<!-- tmpl_var type -->"><!-- tmpl_var email --></a><!-- /tmpl_if -->
 			<!-- tmpl_if expr="(type eq 'list')" -->
@@ -37,7 +39,19 @@
 			for 
 		<!-- /tmpl_if -->
 		
-		<!-- tmpl_if expr="((action eq 'subscribed') || (action eq 'unsubscribed')  || (action eq 'confirmation_sent'))" --> 
+		
+		<!-- tmpl_if expr="(action eq 'subscription_updated')" --> 
+			&#8596; 
+				<strong>Address Updated</strong> from, 
+				<!-- tmpl_if show_email --><a href="<!-- tmpl_var S_PROGRAM_URL -->?f=membership;email=<!-- tmpl_var email escape=URL -->;type=<!-- tmpl_var type -->"><!-- tmpl_var email --></a><!-- tmpl_else --><!-- tmpl_var email --><!-- /tmpl_if -->
+				to,
+				<!-- tmpl_if show_email --><a href="<!-- tmpl_var S_PROGRAM_URL -->?f=membership;email=<!-- tmpl_var updated_email escape=URL -->;type=<!-- tmpl_var type -->"><!-- tmpl_var updated_email --></a><!-- tmpl_else --><!-- tmpl_var updated_email --><!-- /tmpl_if -->					
+					
+			 on
+		<!-- /tmpl_if -->
+		
+		
+		<!-- tmpl_if expr="((action eq 'subscribed') || (action eq 'unsubscribed')  || (action eq 'confirmation_sent') || (action eq 'subscription_updated'))" --> 
 	
 			
 			
