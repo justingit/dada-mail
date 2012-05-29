@@ -187,6 +187,9 @@ sub default_tmpl {
 		<!-- tmpl_if expr="(error eq 'error_path_no_exists')" -->
 			<strong>Path</strong> does not look like a valid Server Path.
 		<!-- /tmpl_if --> 
+		<!-- tmpl_if expr="(error eq 'error_path_not_writable')" --> 
+			<strong>Path</strong> is not writable by this plugin.
+		<!-- /tmpl_if --> 
 		<!-- tmpl_if expr="(error eq 'error_use_custom_error_page_set_funny')" -->
 			"Use a Custom Error Page" Isn't a 1 or a 0
 		<!-- /tmpl_if --> 

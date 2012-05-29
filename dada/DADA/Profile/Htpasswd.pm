@@ -98,6 +98,13 @@ sub validate_protected_dir {
 		$errors->{path_no_exists} = 1; 
 		$status = 0; 		
 	} 
+
+	if(! -w $args->{-fields}->{-path}){ 
+		$errors->{path_not_writable} = 1; 
+		$status = 0; 		
+	} 
+
+	 
 	if($args->{-fields}->{-use_custom_error_page} !~ m/1|0/) { 
 		$errors->{use_custom_error_page_set_funny} = 1; 
 		$status = 0; 		

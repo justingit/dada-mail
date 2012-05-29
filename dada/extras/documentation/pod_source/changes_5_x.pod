@@ -6,7 +6,7 @@
 
 =head2 Summary 5.1.0 
 
-This release of Dada Mail contains a well of new features, plugins and bug fixes. 
+This release of Dada Mail contains a wealth of new features, plugins and bug fixes. v5.1.0 is a very major release of Dada Mail.
 
 If upgrading from any previous version of Dada Mail, we highly suggest B<Creating a new .dada_config file>, when using the included Dada Mail installer, as many items in the starter C<.dada_config> file has now changed. 
 

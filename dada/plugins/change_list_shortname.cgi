@@ -219,17 +219,24 @@ return q{
 		</div> 
 		
 	<!-- tmpl_else --> 
-		<h1>Good to Go!</h1>
-		<p>Your new List Short Name checks out!</p> 
+		<fieldset> 
+		<legend>Verification Successul</legend>
+		<p>Your new List Short Name checks out.</p> 
 		
 		
-		<p><strong>Please make a backup of your current Dada Mail database, before contuing.</strong></p> 
+		<p><strong>Please make a backup of your current Dada Mail database, before continuing.</strong></p> 
 		
 		<form action="<!-- tmpl_var Plugin_URL -->"  method="post" >
 			<input type="hidden" name="flavor" id="flavor" value="change_list_shortname" />
 			<input type="hidden" name="new_name" id="new_name" value="<!-- tmpl_var new_name -->" /> 
+			<div class="buttonfloat">
 			<input type="submit" value="Change your list short name from, &quot;<!-- tmpl_var list_settings.list -->&quot; to, &quot;<!-- tmpl_var new_name -->&quot;" class="processing" /> 
+			</div> 
+			<div class="floatclear"></div>
+			
 		</form>
+		</fieldset> 
+		
 	<!-- /tmpl_if --> 
 
 };
@@ -317,6 +324,7 @@ my $query_string =
 "UPDATE  $p{subscriber_table} SET list = ? WHERE list = ?;
 UPDATE  $p{archives_table} SET list = ? WHERE list = ?; 	
 UPDATE  $p{settings_table} SET list = ? WHERE list = ?; 
+UPDATE  $p{settings_table} SET value = ? WHERE value = ? and setting = 'list';
 UPDATE  $p{bounce_scores_table} SET list = ? WHERE list = ?; 
 UPDATE  $p{clickthrough_url_log_table} SET list = ? WHERE list = ?; 
 UPDATE  $p{mass_mailing_event_log_table} SET list = ? WHERE list = ?; 
