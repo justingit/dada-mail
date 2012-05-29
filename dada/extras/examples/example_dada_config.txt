@@ -547,6 +547,7 @@ $ADMIN_MENU = [
 #					-Activated  => 1,
 #					},
 
+#					{
 #					-Title      => 'Password Protected Directories',
 #					-Title_URL  => $PLUGIN_URL."/password_protect_directories.cgi",
 #					-Function   => 'password_protect_directories',
