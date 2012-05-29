@@ -2109,7 +2109,7 @@ msg_id text,
 url text
 );
 
-CREATE TABLE IF NOT EXISTS dada_password_protect_directories (
+CREATE TABLE dada_password_protect_directories (
 id serial,
 list varchar(16),
 name text,
@@ -2167,7 +2167,11 @@ default_password text
 		};
 		if($@){ 
 			carp $@;
-			return 0; 
+			# This is lame - PG < 9.1 does not supper CREATE IF NOT EXISTS... so this 
+			# errors out... 
+			if($DADA::Config::SQL_PARAMS{dbtype} ne 'Pg'){ 
+				return 0; 
+			}
 		}
 	} 
 
