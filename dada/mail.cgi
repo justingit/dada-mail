@@ -85,7 +85,7 @@ use lib qw(
 #	use constant ERRORS_TO_BROWSER => 2;
 #
 
-use constant ERRORS_TO_BROWSER => 2;
+use constant ERRORS_TO_BROWSER => 1;
 
 #
 # If you don't want Dada Mail to show any error messages in your web browser, 

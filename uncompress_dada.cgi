@@ -6,7 +6,7 @@ use strict;
 
 
 # You may have to update this, depending on the version of Dada Mail!
-my $gz = 'dada-5_0_3.tar.gz';
+my $gz = 'dada-5_1_0-beta1.tar.gz';
 
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
