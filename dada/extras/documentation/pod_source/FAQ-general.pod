@@ -95,57 +95,9 @@ The only place that this variable is hardcoded is in the, C<$PROGRAM_URL> variab
 
 =head2 How do I change the list short name? 
 
-There's officially no support to change the list short name in Dada Mail. We do not suggest you do this.
+There's a plugin called, B<Change Your List Short Name> that can do this for you: 
 
-If you are running one of the SQL backends for Dada Mail, you may use the below SQL to change the list short name, for most of Dada Mail.
-
-Before running, make a full backup of your Dada Mail SQL database, as changes could potentialy be irreversable.
-
-	UPDATE dada_archives SET list = 'new' WHERE list = 'old'; 
-	
-	UPDATE dada_bounce_scores SET list = 'new' WHERE list = 'old'; 
-	
-	UPDATE dada_clickthrough_url_log SET list = 'new' WHERE list = 'old'; 
-	
-	UPDATE dada_mass_mailing_event_log SET list = 'new' WHERE list = 'old'; 
-	
-	UPDATE dada_settings SET list = 'new' WHERE list = 'old'; 
-	
-	UPDATE dada_settings SET value = 'new' WHERE value = 'old' and setting = 'list';
-	
-	UPDATE dada_subscribers SET list = 'new' WHERE list = 'old'; 
-
-In the above SQL, change, C<new> to the new list short name you would like to use and, C<old> to the old list short name you would like to rename.
-
-Make sure the new list short name: 
-
-=over
-
-=item * Does not currently exist! 
-
-=item * is all lowercase
-
-=item * is no more than 16 characters 
-
-=item * only consists of alpha-numeric characters
-
-=back 
-
-After running, make sure to clear your Dada Mail screen cache, as links will need to be updated. 
-
-Although this will modify your SQL database to use this new short name, this will not: 
-
-=over
-
-=item * Update any subscription forms you may have embedded on your site's pages
-
-=item * Update any plaintext logs that Dada Mail keeps
-
-=item * Update any subscription or unsubscription links
-
-These links in already existing emails will be B<broken>.
-
-=back
+L<http://dadamailproject.com/d/change_list_shortname.cgi.html>
 
 =head2 How do I fetch/reset the Dada Mail Root Password?
 

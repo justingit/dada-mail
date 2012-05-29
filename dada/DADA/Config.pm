@@ -743,6 +743,13 @@ $PLUGIN_CONFIGS ||= {
 		Base_URL                            => undef, 
 
 	}, 
+	
+	change_list_shortname => { 
+
+			Plugin_Name                         => undef,
+			Plugin_URL                          => undef,
+
+	},
 
 };
 
@@ -2218,13 +2225,20 @@ $ADMIN_MENU ||= [
 #					-Title      => 'Default Mass Mailing Messages',
 #					-Title_URL  => $PLUGIN_URL."/default_mass_mailing_messages.cgi",
 #					-Function   => 'default_mass_mailing_messages',
-#					-Activated  => 0,
+#					-Activated  => 1,
 #					},
 
 #					-Title      => 'Password Protected Directories',
 #					-Title_URL  => $PLUGIN_URL."/password_protect_directories.cgi",
 #					-Function   => 'password_protect_directories',
 #					-Activated  => 1,
+#					},
+
+#					{
+#					-Title      => 'Change Your List Short Name',
+#					-Title_URL  => $PLUGIN_URL."/change_list_shortname.cgi",
+#					-Function   => 'change_list_shortname',
+#					-Activated  => 0,
 #					},
 
 				],

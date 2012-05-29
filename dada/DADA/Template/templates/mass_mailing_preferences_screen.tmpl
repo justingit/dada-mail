@@ -85,7 +85,7 @@
 		  <input type="checkbox" id="amazon_ses_auto_batch_settings" name="amazon_ses_auto_batch_settings" value="1" <!-- tmpl_if list_settings.amazon_ses_auto_batch_settings -->checked="checked"<!--/tmpl_if--> onChange="toggleManualBatchSettings(); return false;" />
 		</td>
 		<td>
-		<label for="amazon_ses_auto_batch_settings">
+		<p><label for="amazon_ses_auto_batch_settings">
 			Automatically set batching speeds based on your Amazon SES limits
 		</label>
 		<br />
@@ -93,9 +93,6 @@
 		</td>
 	</tr>
 	<!-- /tmpl_if --> 
-
- </tr>
- 
 
  <tr>
   <td>
@@ -149,9 +146,15 @@
 	-->
 
 	  </td>
+
+
 	 </tr>
 	
 </table>
+
+</td>
+
+</tr>
 	
 </table>
 
@@ -240,9 +243,11 @@
 	
 
 	 <tr>
-	  <td>
+	 
+	 <td>
 	   <input type="checkbox" name="get_finished_notification" id="get_finished_notification" value="1" <!-- tmpl_if list_settings.get_finished_notification -->checked="checked"<!--/tmpl_if--> />
 	  </td>
+	
 	  <td>
 	   <p>
 	    <label for="get_finished_notification">
@@ -252,12 +257,9 @@
 	    The List Owner will be emailed when all the messages of mass mailings have been sent.
 	   </p>
 	  </td>
-	 </tr>
-	
-	</td>
 	</tr>
-</table> 
-	
+	</table> 
+
 </fieldset>
 
 

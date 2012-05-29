@@ -106,7 +106,8 @@ my $plugins_extensions = {
 	blog_index                    => {installed => 0, loc => '../extensions/blog_index.cgi'}, 
 	mailing_monitor               => {installed => 0, loc => '../plugins/mailing_monitor.cgi'}, 
 	default_mass_mailing_messages => {installed => 0, loc => '../plugins/default_mass_mailing_messages.cgi'}, 
-	password_protect_directories => {installed => 0, loc => '../plugins/password_protect_directories.cgi'}, 
+	password_protect_directories  => {installed => 0, loc => '../plugins/password_protect_directories.cgi'}, 
+	change_list_shortname         => {installed => 0, loc => '../plugins/change_list_shortname.cgi'},  
 };
 $plugins_extensions->{change_root_password}->{code} = 
 q{#					{
@@ -197,8 +198,17 @@ q{#					{
 #					-Title      => 'Default Mass Mailing Messages',
 #					-Title_URL  => $PLUGIN_URL."/default_mass_mailing_messages.cgi",
 #					-Function   => 'default_mass_mailing_messages',
+#					-Activated  => 1,
+#					},};
+$plugins_extensions->{change_list_shortname}->{code} =
+q{#					{
+#					-Title      => 'Change Your List Short Name',
+#					-Title_URL  => $PLUGIN_URL."/change_list_shortname.cgi",
+#					-Function   => 'change_list_shortname',
 #					-Activated  => 0,
 #					},};
+
+
 
 
 # An unconfigured Dada Mail won't have these exactly handy to use. 
@@ -447,6 +457,8 @@ sub scrn_configure_dada_mail {
 		$q->param('install_ajax_include_subscribe', 1); 
 		$q->param('install_blog_index', 1); 
 		$q->param('install_default_mass_mailing_messages', 1); 
+		$q->param('install_change_list_shortname, 1); 
+		
 	}
 
 =cut	

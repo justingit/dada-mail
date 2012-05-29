@@ -6,49 +6,75 @@
 
 =head2 Summary 5.1.0 
 
-FILL ME IN
+This release of Dada Mail contains a well of new features, plugins and bug fixes. 
+
+If upgrading from any previous version of Dada Mail, we highly suggest B<Creating a new .dada_config file>, when using the included Dada Mail installer, as many items in the starter C<.dada_config> file has now changed. 
 
 =head2 Features 5.1.0
 
 =head3 Update Subscriber Email Address
 
-The ability to update a subscriber's email address has been added to Dada Mail. 
+You now have the ability to update a subscriber's email address, through the List Control Panel. 
 
-This feature supports updated an email address on the current mailing list, or 
-through every mailing list. 
+Individual subscribers have had the ability to update their email address, using Dada Mail's B<Profiles>, but the List Owner has never had the ability to do this on-behalf of their subscribers. This new feature fixes this hole in Dada Mail's functionality. 
 
-Profile information is also updated with the new email address, or copied over, if a profile for the 
-updated email address already exists. 
+You can now updat an email address on your current mailing list, or 
+on every mailing list.  
+
+Profile information is also updated with the new email address, or copied over, if a Profile for the updated email address already exists. A lot of work has been done to make sure you do not lose Profile information. 
+
+=head3 New Plugin: Change List Shortname
+
+Each Dada Mail mailing list has a, B<List Shortname> - the internal name used by Dada Mail to differentiate mailing lists from one another. The list shortname is also used for values in subscription forms and subscripiton/unsubscription/confirmation links. Sometimes it's desired to change this list shortname. 
+
+This plugin now gives you that ability. 
+
+See the docs on the plugin for more information: 
+
+L<http://dadamailproject.com/d/change_list_shortname.cgi.html>
 
 =head3 New Plugin: Password Protected Directories
 
-This plugin allows you to password protect a directory, only allowing your mailing 
-list subscribers access. For more information, see: 
+Dada Mail's mailing lists, along with each addresses Profile holds valuable information that can be repurposed for various tasks. 
+
+This plugin allows you to password protect a directory, only allowing your mailing list subscribers access, using their subscription to your mailing list and their Dada Mail Profile password as credentials. 
+
+See the docs on the plugin for more information: 
 
 L<http://dadamailproject.com/d/password_protect_directories.cgi.html>
 
 =head3 New Plugin: Default Mass Mailing Messages
 
-This plugin allows you to set default copy for your Mailing List Messages, that will appear in your B<Send a Message>, 
-B<Send a Webpage> screens, as well as in B<Beatitude>. For more information, see: 
+Having default copy available, in the PlainText and/or HTML Versions of your mailing list messages, ready to be used as a starter for your next mailing list message would be convenient. 
+
+This plugin allows you to set that default copy for your Mailing List Messages, that will appear in your B<Send a Message>, 
+B<Send a Webpage> screens, as well as in B<Beatitude>.
+
+See the docs on the plugin for more information: 
 
 L<http://dadamailproject.com/d/default_mass_mailing_messages.cgi>
 
+=head3 Send a Message Screen: Show/Hide PlainText/HTML Versions
+
+You may now set which Mailing List Message Version textboxes are visible by default, in the, B<Your List Control Panel E<gt>E<gt> Options> screen. 
+
+For example, this becomes useful if you send primarily HTML messages, you have one of the support WYSIWYG editors installed and are using the new B<Mass Mailing Messages> plugin to set default copy to edit within the WYSIWYG editor. 
+
 =head3 Amazon SES: Auto-Adjusting Batch Settings
 
-Amazon SES mailing sending quotas start off small, and then grow, depending on your
-usage of the service. Keeping current on this changing quota is an annoyance, especially 
-when starting to use SES. This new feature allows you to simply let Dada Mail figure out the 
-most optimal batch setting for your mailing list. This feature works with either the SES API or using the 
-SES SMTP interface. 
+Amazon SES is a powerful third-part mailing service that allows you to have a mailing list on a relatively cheap hosting account, without having to deal with or worry about the sometimes lacking hourly email quotas allowed. 
+
+The problem with Amazon SES is that the mailing sending quotas may start off small, but then grow depending on your usage of the service. Keeping current on this changing quota is an annoyance, especially when the quota is temporarily small and sending must be done slowly. 
+
+Now built into Dada Mail is the ability to automatically set the optimal batch settings needed for Amazon SES sending. You may now simply let Dada Mail figure out what is the most optimal batch setting for your mailing list. This feature works with either the SES API or using the SES SMTP interface. 
 
 =head3 Profiles
 
 =head4 Profile Passwords  in the List Control Panel
 
-List Owners now how the option to reset a user's Profile Password in the List Control Panel, under: B<Membershio E<gt>E<gt> View> (and select a member of your mailing list)
+List Owners now how the option to reset a user's Profile Password in the List Control Panel, under: B<Membership E<gt>E<gt> View> (then, select a member of your mailing list)
 
-=head4 Email Notifications of changed Profile email addresses
+=head4 Email Notifications of Changed Profile Email Addresses
 
 You now how the option to receive a notification of any changes made by a user of their Profile email address. 
 
@@ -56,9 +82,9 @@ For more information about this feature, see:
 
 L<http://dadamailproject.com/d/features-profiles.pod.html#send_notification_to_profile_email> 
 
-=head4 Multiple Admin Profile Email Addresses supported
+=head4 Multiple Admin Profile Email Addresses Supported
 
-You may set more than one email addresses used for administration email notification, profile activation, etc, email messages. 
+You may now set more than one email addresses used for administration email notification, profile activation, etc, email messages. 
 
 For more information about this feature, see: 
 
@@ -72,34 +98,33 @@ L<http://dadamailproject.com/d/features-profiles.pod.html#subscription_check_ski
 
 =head3 List Invitations: Already Been Invited Check
 
-When you send a List Invitation, a check can now be done to see if the addresses have already been invited and if so, not be repeatedly invited again. 
+List Invitations are a powerful tool in Dada Mail, as they allow you to invite a new member to join your mailing list, and thus allowing the potential member themselves to make a decision on whether they would like to join, or not. 
+
+It becomes a hassle, though, the more you use this feature, as it's difficult to keep track of who you've already invited. Constantly asking someone to join your mailing list is not the type of behaviour we suggest. 
+
+Before you send a List Invitation, you may now have checks done to see if the addresses you want to invite haven't already been invited in the past, saving you from pestering potential members. 
 
 =head2 Changes 5.1.0 
 
-=head3 Send a Message Screen: Show/Hide PlainText/HTML Versions
-
-You may now set which Mailing List Message Version textboxes are visible by default, in the, B<Your List Control Panel E<gt>E<gt> Options> screen. 
-
 =head3 Dada Bridge 
 
-=head4 Modal Box for  POP3 test and Checking Awaiting Messages
+=head4 Modal Box usedfor POP3 test and Checking Awaiting Messages
 
-Instad of bringing you to a new screen, these two functions pop open a modal box instead. 
+Instead of bringing you to a new screen, these two functions pop open a modal box instead. 
 
 =head3 Bounce Handler
 
-=head4 Modal Box for viewing Bounce Scores
+=head4 Modal Box used for viewing Bounce Scores
 
-Intead of bringing you to a new screen, Bounce Handler shows individual email address bounce history in a modal box. 
+Intead of bringing you to a new screen, Bounce Handler shows an individual  email address's bounce history in a modal box. 
 
-=head4 Modal Box for POP3 test
+=head4 Modal Box used for POP3 test
 
 Instad of bringing you to a new screen, a modal box is used instead. 
 
 =head3 Tracker: tracker_add_missing_num_subs.cgi script
 
-A new script called, C<tracker_add_missing_num_subs.cgi> is included with Dada Mail, in attempt to retrieve missing 
-Tracker reports from previous versions of Dada Mail. For more information, see: 
+A new script called, C<tracker_add_missing_num_subs.cgi> is included with Dada Mail, in attempt to retrieve missing  Tracker reports from previous versions of Dada Mail. For more information, please see: 
 
 L<http://dadamailproject.com/d/tracker_add_missing_num_subs.cgi.html>
 
@@ -107,10 +132,9 @@ L<http://dadamailproject.com/d/tracker_add_missing_num_subs.cgi.html>
 
 This includes reports sent from Amazon SES. 
 
-=head3 multi_admin_subscribers.cgi Plugin: Removed
+=head3 multi_admin_subscribers.cgi Plugin: REMOVED
 
-The C<multi_admin_subscribers.cgi> plugin, labeled has been deprecated. Similar functionality is 
-allowed using the, B<Update Email Address> feature. 
+The C<multi_admin_subscribers.cgi> plugin, labeled as B<DEPRECATED> has now been permanently removed from the Dada Mail distribution. Similar functionality is  allowed using the, B<Update Email Address> feature. 
 
 =head2 Bugfixes 5.1.0
 
@@ -134,12 +158,11 @@ L<https://github.com/justingit/dada-mail/issues/292>
 
 L<https://github.com/justingit/dada-mail/issues/293>
 
-
 =head1 5.0.3
 
 =head2 Summary 5.0.3
 
-This release contains primarily  bugfixes found in the v5.0.2 release of Dada Mail.
+This release contains primarily bugfixes found in the v5.0.2 release of Dada Mail.
 Many of the issues fixed deal with Discussion Mailing Lists 
 
 If upgrading from v5.0.0 - v5.0.2, you will not need to create a new config file.

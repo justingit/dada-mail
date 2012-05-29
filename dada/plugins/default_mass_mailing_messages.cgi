@@ -474,7 +474,7 @@ Then, find these lines:
  #					-Title      => 'Default Mass Mailing Messages',
  #					-Title_URL  => $PLUGIN_URL."/default_mass_mailing_messages.cgi",
  #					-Function   => 'default_mass_mailing_messages',
- #					-Activated  => 0,
+ #					-Activated  => 1,
  #					},
 
 Uncomment the lines, by taking off the, "#"'s: 
@@ -483,7 +483,7 @@ Uncomment the lines, by taking off the, "#"'s:
  					-Title      => 'Default Mass Mailing Messages',
  					-Title_URL  => $PLUGIN_URL."/default_mass_mailing_messages.cgi",
  					-Function   => 'default_mass_mailing_messages',
- 					-Activated  => 0,
+ 					-Activated  => 1,
  					},
 
 Save your C<.dada_config> file.
