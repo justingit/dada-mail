@@ -206,30 +206,6 @@ function confirm_profile_removal(form_name) {
 	</div> 
 
 
-	
-	<!-- tmpl_if protected_directories --> 
-	
-<fieldset style="width:auto"> 
-		
-		<legend>Protected Directories</legend>
-			<p>Access these directories with your Profile Username/Password.
-		<ul>		
-			<!-- tmpl_loop protected_directories --> 
-				<p>
-					<li>
-						<strong>
-							<a href="<!-- tmpl_var url -->" target="_blank"><!-- tmpl_var name --></a>
-						</strong> 
-					</li>
-				</p>
-			<!-- /tmpl_loop --> 
-		</ul>
-	</fieldset> 
-	
-	<!-- /tmpl_if --> 
-
-
-
 	<ul> 
 	    <!-- tmpl_if list_settings.group_list --> 
 			<li>
@@ -301,6 +277,31 @@ function confirm_profile_removal(form_name) {
 
 </fieldset> 
 <!-- /tmpl_if --> 
+
+
+<!-- tmpl_if protected_directories --> 
+	<!-- tmpl_if expr="profile_feature_protected_directories == 1" -->	
+	<fieldset> 
+		
+			<legend>Protected Directories</legend>
+				<p>Access these directories with your Profile Username/Password.
+			<ul>		
+				<!-- tmpl_loop protected_directories --> 
+					<p>
+						<li>
+							<strong>
+								<a href="<!-- tmpl_var url -->" target="_blank"><!-- tmpl_var name --></a>
+							</strong> 
+						</li>
+					</p>
+				<!-- /tmpl_loop --> 
+			</ul>
+		</fieldset> 
+	
+	<!-- /tmpl_if -->
+
+<!-- /tmpl_if --> 
+
 
 
 <!-- tmpl_if expr="profile_feature_update_email_address == 1" -->

@@ -102,14 +102,16 @@ Dada Mail Profile options can be globally configured in your C<.dada_config> fil
 	
 		features => 
 		{ 
+			help                        => 1,
 			login                       => 1, 
 			register                    => 1, 
 			password_reset              => 1, 
 			profile_fields              => 1,  
-			mailing_list_subscriptions  => 1,  
+			mailing_list_subscriptions  => 1,
+			protected_directories       => 1,  
 			update_email_address        => 1, 
 			change_password             => 1, 
-			delete_profile              => 1, 
+			delete_profile              => 1,
 		},
 		cookie_params =>
 		{ 
@@ -230,6 +232,10 @@ C<feature> holds paramaters representing most of the major user-facing features 
 
 =over
 
+=item * help
+
+C<help> allows you to show/hide the, B<What are Dada Mail Profiles?> link and screen. C<1> to enable, C<0> to disable.
+
 =item * login
 
 C<login> allows your users to log into their Profile. Disabling this feature will basically disable much of Profiles, so be careful when disabling. 
@@ -250,6 +256,10 @@ C<profile_fields> controls whether the user may edit their own Subscriber Profil
 
 C<mailing_list_subscriptions> controls whether the, B<Your Mailing List Subscriptions> section is visible to your user in their Profile (once logged in).
 
+=item * protected_directories
+
+C<protected_directories> controls whether The, B<Password Protected Directories> section is visible to your user in their Profile (once logged in). If disabled, Protected Directories will B<still be available> if any are set up, just not listed in the user's Profile. 
+
 =item * update_email_address
 
 C<update_email_address> controls whether the, B<Update Your Profile Email Address > section is visible to your user in their Profile (once logged in). If disabled, a user's Profile password can still be edited by a List Owner, if logged in with the Dada Mail Root Password. 
@@ -257,6 +267,8 @@ C<update_email_address> controls whether the, B<Update Your Profile Email Addres
 =item * delete_profile
 
 C<delete_profile> control whether the, B<Delete This Profile> section is visible to your user in their Profile (once logged in). 
+
+=back
 
 =head3 gravatar_options
 

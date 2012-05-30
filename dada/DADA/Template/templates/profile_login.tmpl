@@ -3,11 +3,13 @@
 <!-- tmpl_set name="title" value="Profile Login" --> 
 <!-- tmpl_set name="show_profile_widget" value="0" --> 
 
-<p style="text-align:right">
-	<a href="<!-- tmpl_var PROGRAM_URL -->/profile_help/">
-		What are <!-- tmpl_var PROGRAM_NAME --> Profiles?
-	</a> 
-</p>
+<!-- tmpl_if expr="profile_feature_help == 1" -->
+	<p style="text-align:right">
+		<a href="<!-- tmpl_var PROGRAM_URL -->/profile_help/">
+			What are <!-- tmpl_var PROGRAM_NAME --> Profiles?
+		</a> 
+	</p>
+<!-- /tmpl_if --> 
 
 <!-- tmpl_if removal --> 
 	<div class="clearskiesbox">

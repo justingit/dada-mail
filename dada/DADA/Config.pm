@@ -520,11 +520,13 @@ $PROFILE_OPTIONS ||= {
 	
 	features => 
 	{ 
+		help                        => 1, 
 		login                       => 1, 
 		register                    => 1, 
 		password_reset              => 1, 
 		profile_fields              => 1,  
 		mailing_list_subscriptions  => 1,  
+		protected_directories       => 1,
 		update_email_address        => 1, 
 		change_password             => 1, 
 		delete_profile              => 1, 

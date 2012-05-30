@@ -1256,17 +1256,19 @@ sub feature_enabled {
 	if(!defined($feature)){
 		# For templates, basically. 
 		my $defaults = {
+			help                        => 1,
 			login                       => 1, 
 			register                    => 1, 
 			password_reset              => 1, 
 			profile_fields              => 1,  
-			mailing_list_subscriptions  => 1,  
+			mailing_list_subscriptions  => 1,
+			protected_directories       => 1,  
 			update_email_address        => 1, 
 			change_password             => 1, 
 			delete_profile              => 1, 
 		};
 		my $pf = {};
-		for(keys %$enabled){ 
+		for(keys %$defaults){ 
 			if(!exists($enabled->{$_})){ 
 				$pf->{'profile_feature_' . $_} = $defaults->{$_}; 
 			}

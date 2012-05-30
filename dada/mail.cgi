@@ -10397,6 +10397,12 @@ sub profile_help {
 		return;
 	}
 
+	require DADA::Profile;
+	if(! DADA::Profile::feature_enabled('help') == 1){ 
+		default();
+		return;
+	}
+
     require DADA::Template::Widgets;
     my $scrn =  DADA::Template::Widgets::wrap_screen(
 		{
@@ -10644,6 +10650,8 @@ sub profile {
 		   my $filled = [];
 		   my $has_subscriptions = 0;
 
+		   my $protected_directories = [];
+		
 		   for my $i(@$subscriptions){
 
 				if($i->{subscribed} == 1){
@@ -10664,18 +10672,18 @@ sub profile {
 					}
 				);
 				
+				
 				require DADA::Profile::Htpasswd;
 				my $htp = DADA::Profile::Htpasswd->new({-list => $i->{list}}); 
-				my $protected_directories = $htp->get_all_entries; 
-				
+				my $l_p_d = $htp->get_all_entries; 
+				if(scalar(@$l_p_d) > 0){ 
+					@$protected_directories = (@$protected_directories, @$l_p_d); 
+				}
 				push(@$filled, 
 					{%{$i}, 
 					%{$li}, 
-					
-					protected_directories => $protected_directories, 
 					PROGRAM_URL => $DADA::Config::PROGRAM_URL})
 			}
-
 			my $scrn = '';
 		    require DADA::Template::Widgets;
 		    $scrn .=  DADA::Template::Widgets::wrap_screen(
@@ -10703,7 +10711,10 @@ sub profile {
 																-default_gravatar_url => $DADA::Config::PROFILE_OPTIONS->{gravatar_options}->{default_gravatar_url},
 															}
 														),
+						protected_directories => $protected_directories, 
 						%{DADA::Profile::feature_enabled()},
+
+						
 					}
 				}
 			);

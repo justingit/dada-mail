@@ -788,7 +788,9 @@ The B<Authentication, Authorization and Access Control> doc from Apache has an o
 
 L<http://httpd.apache.org/docs/2.0/howto/auth.html>
 
+=head1 Thanks
 
+This plugin was originally commissioned by Jeff Berger for "Websites That Work" -- L<http://www.websitesthatworkusa.com>.
 
 =head1 AUTHOR
 

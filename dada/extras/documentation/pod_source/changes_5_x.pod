@@ -43,6 +43,9 @@ See the docs on the plugin for more information:
 
 L<http://dadamailproject.com/d/password_protect_directories.cgi.html>
 
+This feature was commissioned by Jeff Berger for "Websites That Work" -- L<http://www.websitesthatworkusa.com>.
+
+
 =head3 New Plugin: Default Mass Mailing Messages
 
 Having default copy available, in the PlainText and/or HTML Versions of your mailing list messages, ready to be used as a starter for your next mailing list message would be convenient. 
@@ -102,7 +105,11 @@ List Invitations are a powerful tool in Dada Mail, as they allow you to invite a
 
 It becomes a hassle, though, the more you use this feature, as it's difficult to keep track of who you've already invited. Constantly asking someone to join your mailing list is not the type of behaviour we suggest. 
 
-Before you send a List Invitation, you may now have checks done to see if the addresses you want to invite haven't already been invited in the past, saving you from pestering potential members. 
+Before you send a List Invitation, you may now have checks done to see if the addresses you want to invite haven't already been invited in the past, saving you from pestering potential members.
+
+=head3 Enable/Disable Major Profile Features
+
+You now have the option to enable and disable major features of Dada Mail Profiles, including user login, user registration, user Profile password reset, etc. 
 
 =head2 Changes 5.1.0 
 
