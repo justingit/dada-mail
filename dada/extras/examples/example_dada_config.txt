@@ -88,19 +88,31 @@ $PROFILE_OPTIONS = {
 		subscription_check_skip            => 'auto', 
 		
 	},
-	cookie_params =>
-	{ 
-		-name    => 'dada_profile',  
-	    -path    => '/',
-	    -expires => '+1y',		
-	},
-	
+		
 	gravatar_options => 
 	{
 		enable_gravators     => 1, 
 		default_gravatar_url => undef,
 	},
 	
+	features => 
+	{ 
+		login                       => 1, 
+		register                    => 1, 
+		password_reset              => 1, 
+		profile_fields              => 1,  
+		mailing_list_subscriptions  => 1,  
+		update_email_address        => 1, 
+		change_password             => 1, 
+		delete_profile              => 1, 
+	},
+	cookie_params =>
+	{ 
+		-name    => 'dada_profile',  
+	    -path    => '/',
+	    -expires => '+1y',		
+	},
+
 };
 
 =cut

@@ -130,80 +130,78 @@ function confirm_profile_removal(form_name) {
 
 
 
+<!-- tmpl_if expr="profile_feature_profile_fields == 1" -->
 
-<!-- tmpl_if subscriber_fields --> 
-
-   
-<fieldset> 
+	<!-- tmpl_if subscriber_fields --> 
+		<fieldset> 
 	
-<legend>
-	Subscriber Profile Fields
-</legend> 
-	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-		<input type="hidden" name="f"        value="profile" /> 
-		<input type="hidden" name="process"  value="edit_subscriber_fields" /> 
+		<legend>
+			Subscriber Profile Fields
+		</legend> 
+			<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+				<input type="hidden" name="f"        value="profile" /> 
+				<input type="hidden" name="process"  value="edit_subscriber_fields" /> 
 
 		
-    <!-- tmpl_loop subscriber_fields --> 
+		    <!-- tmpl_loop subscriber_fields --> 
     
-        <p>
-        <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
+		        <p>
+		        <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
         
-        <!-- tmpl_if label --> 
-			<!-- tmpl_var label escape=HTML -->: 
-        <!-- tmpl_else --> 
-			<!-- tmpl_var name escape=HTML -->: 
-		<!-- /tmpl_if -->
+		        <!-- tmpl_if label --> 
+					<!-- tmpl_var label escape=HTML -->: 
+		        <!-- tmpl_else --> 
+					<!-- tmpl_var name escape=HTML -->: 
+				<!-- /tmpl_if -->
 		
-        </label>
-        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
-        </p>
+		        </label>
+		        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
+		        </p>
 
-    <!-- /tmpl_loop -->
-	<div class="buttonfloat">	
-    <input type="submit"  class="plain"  value="Update Information" /> 
-	</div>
-	<div class="floatclear"></div>
-	</form>
-
-<!-- /tmpl_if --> 
-
-</fieldset> 
-
-
-<fieldset> 
-	
-<legend>
-Your Mailing List Subscriptions
-</legend> 
-
-	<!-- tmpl_if has_subscriptions --> 
-
-	<!-- tmpl_else --> 
-		<p class="alert">
-			You are not currently subscribed to any mailing list.
-		</p>
+		    <!-- /tmpl_loop -->
+		
+			<div class="buttonfloat">	
+		    <input type="submit"  class="plain"  value="Update Information" /> 
+			</div>
+			<div class="floatclear"></div>
+			</form>
+		</fieldset> 
 	<!-- /tmpl_if --> 
+<!-- /tmpl_if--> 
+
+<!-- tmpl_if expr="profile_feature_mailing_list_subscriptions == 1" -->
 
 
+	<fieldset> 
+	
+		<legend>
+			Your Mailing List Subscriptions
+		</legend> 
 
+		<!-- tmpl_if has_subscriptions --> 
 
-<!-- tmpl_loop subscriptions --> 
+		<!-- tmpl_else --> 
+			<p class="alert">
+				You are not currently subscribed to any mailing list.
+			</p>
+		<!-- /tmpl_if --> 
+
+	<!-- tmpl_loop subscriptions --> 
 
 	
 
-	<!-- tmpl_if subscribed --> 
+		<!-- tmpl_if subscribed --> 
 	
-		<h2>
-			<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->">
-				<!-- tmpl_var list_settings.list_name --> 
-			</a>
-		</h2>
+			<h2>
+				<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->">
+					<!-- tmpl_var list_settings.list_name --> 
+				</a>
+			</h2>
 	
 	
-	<div style="max-height: 200px; overflow: auto;background:#fff; padding:5px;border:1px solid black">
-		<p>
-			<!-- tmpl_var list_settings.info -->
+		<div style="max-height: 200px; overflow: auto;background:#fff; padding:5px;border:1px solid black">
+			<p>
+				<!-- tmpl_var list_settings.info -->
 		</p>
 	</div> 
 
@@ -298,160 +296,159 @@ Your Mailing List Subscriptions
 	
 
 	<!-- /tmpl_if --> 
-
-
-	
-	
 	
 <!-- /tmpl_loop -->
 
 </fieldset> 
+<!-- /tmpl_if --> 
 
 
-	
-<fieldset> 
-	<legend> 
-	   Update Your Profile Email Address
-	   </legend>
+<!-- tmpl_if expr="profile_feature_update_email_address == 1" -->
+
+	<fieldset> 
+		<legend> 
+		   Update Your Profile Email Address
+		   </legend>
 
 	 
-	<div id="update_profile_email">
+		<div id="update_profile_email">
 
-<p class="alert">
-	The Profile Email Address and Subscriptions using your current email address (<!-- tmpl_var profile.email -->) 
-	will be replaced with this new email address, where it's allowed: 
-</p>
+	<p class="alert">
+		The Profile Email Address and Subscriptions using your current email address (<!-- tmpl_var profile.email -->) 
+		will be replaced with this new email address, where it's allowed: 
+	</p>
 
 
 
-<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-	<input type="hidden" name="f"        value="profile" /> 
-	<input type="hidden" name="process"  value="update_email" />
+	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+		<input type="hidden" name="f"        value="profile" /> 
+		<input type="hidden" name="process"  value="update_email" />
 	
 
-		<!-- tmpl_if errors_update_email --> 
-			<!-- tmpl_if error_invalid_email --> 
-				<p class="error"> 
-					* The email address you submitted is not valid.
-				</p> 
-			<!-- /tmpl_if --> 
+			<!-- tmpl_if errors_update_email --> 
+				<!-- tmpl_if error_invalid_email --> 
+					<p class="error"> 
+						* The email address you submitted is not valid.
+					</p> 
+				<!-- /tmpl_if --> 
 
-			<!-- tmpl_if error_profile_exists --> 
+				<!-- tmpl_if error_profile_exists --> 
 
-				<p class="error"> 
-					* A Profile already exists for the email address, <!-- tmpl_var updated_email -->.
-				</p> 
+					<p class="error"> 
+						* A Profile already exists for the email address, <!-- tmpl_var updated_email -->.
+					</p> 
 
-			<!-- /tmpl_if --> 
+				<!-- /tmpl_if --> 
 
 
-		<!-- tmpl_else --> 
+			<!-- tmpl_else --> 
 
+			<!-- /tmpl_if -->
+		  <p>
+	        <label for="updated_email" class="label_profile_fields">
+	        Your New Profile Email Address: 
+	        </label>
+	        <input type="text" name="updated_email" id="updated_email" value=""  />
+	        </p>
+
+		<div class="buttonfloat">	
+	    <input type="submit" class="plain" value="Confirm and Update Your New Profile Email Address" /> 
+		</div>
+		<div class="floatclear"></div>
+
+
+	</form>
+	</div> 
+
+	</fieldset>
+	
+<!-- /tmpl_if -->
+
+
+
+
+<!-- tmpl_if expr="profile_feature_change_password == 1" -->
+
+	<fieldset> 
+	
+	<legend> 
+	  Change Your Profile Password
+	   </legend>
+     
+		
+	<div id="change_profile_password">
+
+	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+		<input type="hidden" name="f"        value="profile" /> 
+		<input type="hidden" name="process"  value="change_password" />
+	
+		<!-- tmpl_if errors_change_password --> 
+				<p class="error">
+					Make sure that you re-typed your password correctly. 
+				</p>
 		<!-- /tmpl_if -->
-	  <p>
-        <label for="updated_email" class="label_profile_fields">
-        Your New Profile Email Address: 
-        </label>
-        <input type="text" name="updated_email" id="updated_email" value=""  />
-        </p>
-
-	<div class="buttonfloat">	
-    <input type="submit" class="plain" value="Confirm and Update Your New Profile Email Address" /> 
-	</div>
-	<div class="floatclear"></div>
-
-
-</form>
-</div> 
-
-</fieldset>
-
-
-
-
-
-
-<fieldset> 
 	
-<legend> 
-  Change Your Profile Password
-   </legend>
+	
+		  <p>
+	        <label for="password" class="label_profile_fields">
+	        New Password: 
+	        </label>
+	        <input type="password" name="password" id="password" value=""  />
+	        </p>
+
+		  <p>
+	        <label for="again_password" class="label_profile_fields">
+	        New Password Again: 
+	        </label>
+	        <input type="password" name="again_password" id="again_password" value=""  />
+	       </p>
+
+		<div class="buttonfloat">	
+	    <input type="submit"  class="plain"  value="Change Password" /> 
+		</div>
+		<div class="floatclear"></div>
+
+
+	</form>
+
+	</div> 
+
+	</fieldset> 
+
+<!-- /tmpl_if --> 
+
+
+
+<!-- tmpl_if expr="profile_feature_delete_profile == 1" -->
+
+
+	<fieldset> 
+	   <legend>
+	 	Delete This Profile
+	   </legend>
      
 		
-<div id="change_profile_password">
-
-<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-	<input type="hidden" name="f"        value="profile" /> 
-	<input type="hidden" name="process"  value="change_password" />
+	<div id="delete_profile">
+	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+		<input type="hidden" name="f"        value="profile" /> 
+		<input type="hidden" name="process"  value="delete_profile" />
 	
-	<!-- tmpl_if errors_change_password --> 
-			<p class="error">
-				Make sure that you re-typed your password correctly. 
-			</p>
-	<!-- /tmpl_if -->
+		<p>
+			Deleting your profile will remove all your profile information, but 
+			all your subscriptions to subscribed mailing lists will remain.
+		</p> 
 	
+		<div class="buttonfloat">	
+	    <input type="submit" value="Delete Your Profile" class="alertive" onclick="return confirm_profile_removal(this.form);" /> 
+		</div>
+		<div class="floatclear"></div>
+	</form>
+
+	</div> 
 	
-	  <p>
-        <label for="password" class="label_profile_fields">
-        New Password: 
-        </label>
-        <input type="password" name="password" id="password" value=""  />
-        </p>
+	</fieldset>
 
-	  <p>
-        <label for="again_password" class="label_profile_fields">
-        New Password Again: 
-        </label>
-        <input type="password" name="again_password" id="again_password" value=""  />
-       </p>
-
-	<div class="buttonfloat">	
-    <input type="submit"  class="plain"  value="Change Password" /> 
-	</div>
-	<div class="floatclear"></div>
-
-
-</form>
-
-</div> 
-
-</fieldset> 
-
-
-
-
-
-<fieldset> 
-
-   <legend>
- Delete This Profile
-   </legend>
-     
-		
-<div id="delete_profile">
-	
-	
-	
-<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-	<input type="hidden" name="f"        value="profile" /> 
-	<input type="hidden" name="process"  value="delete_profile" />
-	
-	<p>
-		Deleting your profile will remove all your profile information, but 
-		all your subscriptions to subscribed mailing lists will remain.
-	</p> 
-	
-	<div class="buttonfloat">	
-    <input type="submit" value="Delete Your Profile" class="alertive" onclick="return confirm_profile_removal(this.form);" /> 
-	</div>
-	<div class="floatclear"></div>
-
-
-</form>
-
-</div> 
-	
-</fieldset>
+<!-- /tmpl_if --> 
 
 
 

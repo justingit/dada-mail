@@ -1247,6 +1247,50 @@ sub _is_integer {
     defined $n && $n =~ /^[+-]?\d+$/;
 }
 
+sub feature_enabled { 	
+	#my $self = shift; 
+	my $feature || undef; 
+	my $enabled = $DADA::Config::PROFILE_OPTIONS->{features}; 
+
+
+	if(!defined($feature)){
+		# For templates, basically. 
+		my $defaults = {
+			login                       => 1, 
+			register                    => 1, 
+			password_reset              => 1, 
+			profile_fields              => 1,  
+			mailing_list_subscriptions  => 1,  
+			update_email_address        => 1, 
+			change_password             => 1, 
+			delete_profile              => 1, 
+		};
+		my $pf = {};
+		for(keys %$enabled){ 
+			if(!exists($enabled->{$_})){ 
+				$pf->{'profile_feature_' . $_} = $defaults->{$_}; 
+			}
+			else { 
+				$pf->{'profile_feature_' . $_} = $enabled->{$_}; 
+			}
+		}
+		return $pf;
+	}
+	else { 
+		if(exists($enabled->{$feature})){ 
+			if($enabled->{$feature} == 1){ 
+				return 1;
+			}
+			else { 
+				return 0; 
+			}
+		}
+		else { 
+			return 0; 
+		}
+	}
+}
+
 
 
 1;

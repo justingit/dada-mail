@@ -10143,6 +10143,7 @@ sub profile_login {
 		default();
 		return
 	}
+	require DADA::Profile; 
 	###
 	my $all_errors = [];
 	my $named_errs = {};
@@ -10206,7 +10207,7 @@ sub profile_login {
 						CAPTCHA_string               => $CAPTCHA_string,
 						welcome                      => $q->param('welcome')					   || '',
 						removal                      => $q->param('removal')                       || '',
-
+						%{DADA::Profile::feature_enabled()}
 					}
 				}
 			);
@@ -10265,16 +10266,22 @@ sub profile_register {
 	if(
 		$DADA::Config::PROFILE_OPTIONS->{enabled}    != 1      ||
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
-	){		default();
-		return
+	){		
+		default();
+		return;
+	}
+	require DADA::Profile;
+	my $prof = DADA::Profile->new({-email => $email});
+
+	if(! DADA::Profile::feature_enabled('register') == 1){ 
+		default();
+		return;
 	}
 
 	my $email       = strip(cased(xss_filter($q->param('email'      ))));
 	my $email_again = strip(cased(xss_filter($q->param('email_again'))));
-	my $password    = xss_filter($q->param('password'));
+	my $password    = strip(xss_filter($q->param('password')));
 
-	require DADA::Profile;
-	my $prof = DADA::Profile->new({-email => $email});
 
 
 	if($prof->exists() &&
@@ -10329,6 +10336,7 @@ sub profile_register {
 
 sub profile_activate {
 
+	
 	if(
 		$DADA::Config::PROFILE_OPTIONS->{enabled}    != 1      ||
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
@@ -10336,10 +10344,15 @@ sub profile_activate {
 		return
 	}
 
+	require DADA::Profile;
+	if(! DADA::Profile::feature_enabled('register') == 1){ 
+		default();
+		return;
+	}
+	
 	my $email       = strip(cased(xss_filter($q->param('email'))));
 	my $auth_code = xss_filter($q->param('auth_code'));
 
-	require DADA::Profile;
 
 
 	my $prof = DADA::Profile->new({-email => $email});
@@ -10456,6 +10469,12 @@ sub profile {
 
 		}
 		elsif($q->param('process') eq 'change_password'){
+			
+			if(! DADA::Profile::feature_enabled('change_password') == 1){ 
+				default();
+				return;
+			}
+			
 			my $new_password       = xss_filter($q->param('password'));
 			my $again_new_password = xss_filter($q->param('again_password'));
 			# DEV: See?! Why are we doing this manually? Can we use is_valid_registration() perhaps?
@@ -10494,6 +10513,11 @@ sub profile {
 
 		}
 		elsif($q->param('process') eq 'update_email'){
+
+			if(! DADA::Profile::feature_enabled('update_email_address') == 1){ 
+				default();
+				return;
+			}
 
 			# So, send the confirmation email for update to the NEW email address?
 			# What if the OLD email address is activated? Guess we'll have to go with the
@@ -10585,6 +10609,11 @@ sub profile {
 		}
 		elsif ($q->param('process') eq 'delete_profile'){
 
+			if(! DADA::Profile::feature_enabled('delete_profile') == 1){ 
+				default();
+				return;
+			}
+			
 			$prof_sess->logout;
 			$prof->remove;
 
@@ -10674,6 +10703,7 @@ sub profile {
 																-default_gravatar_url => $DADA::Config::PROFILE_OPTIONS->{gravatar_options}->{default_gravatar_url},
 															}
 														),
+						%{DADA::Profile::feature_enabled()},
 					}
 				}
 			);
@@ -10724,6 +10754,12 @@ sub profile_reset_password {
 		$DADA::Config::PROFILE_OPTIONS->{enabled}    != 1      ||
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
 	){
+		default();
+		return;
+	}
+
+	require DADA::Profile;
+	if(! DADA::Profile::feature_enabled('password_reset') == 1){ 
 		default();
 		return;
 	}
@@ -10833,6 +10869,13 @@ sub profile_update_email {
 	my $confirmed = xss_filter($q->param('confirmed'));
 
 	require DADA::Profile;
+	
+	if(! DADA::Profile::feature_enabled('update_email_address') == 1){ 
+		default();
+		return;
+	}
+	
+	
 	my $prof = DADA::Profile->new({-email => $email});
 	my $info = $prof->get;
 
