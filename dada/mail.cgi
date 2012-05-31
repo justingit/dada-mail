@@ -10192,6 +10192,7 @@ sub profile_login {
 				{
 					-screen => 'profile_login.tmpl',
 					-with   => 'list', 
+					-expr => 1,
 					-vars   => {
 						errors                       => $all_errors,
 						%$named_errs,
@@ -10208,7 +10209,7 @@ sub profile_login {
 						welcome                      => $q->param('welcome')					   || '',
 						removal                      => $q->param('removal')                       || '',
 						%{DADA::Profile::feature_enabled()}
-					}
+					}, 
 				}
 			);
 			e_print($scrn);
@@ -10690,6 +10691,7 @@ sub profile {
 				{
 					-screen => 'profile_home.tmpl',
 					-with   => 'list', 
+					-expr => 1,
 					-vars   => {
 						errors                      => $q->param('errors') || 0,
 						'profile.email'             => $email,
