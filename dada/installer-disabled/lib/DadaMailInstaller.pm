@@ -467,7 +467,7 @@ sub scrn_configure_dada_mail {
 		$q->param('install_ajax_include_subscribe', 1); 
 		$q->param('install_blog_index', 1); 
 		$q->param('install_default_mass_mailing_messages', 1); 
-		$q->param('install_password_protect_directories', 1); 
+		# $q->param('install_password_protect_directories', 1); 
 		$q->param('install_change_list_shortname', 1); 
 		
 	}
