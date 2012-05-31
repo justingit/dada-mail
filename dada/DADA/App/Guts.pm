@@ -2153,13 +2153,14 @@ default_password text
 );
 };
 
-	my @statements = split(';', $schema{$DADA::Config::SQL_PARAMS{dbtype}}, 2);
+	my @statements = split(';', $schema{$DADA::Config::SQL_PARAMS{dbtype}}, 3);
 
 	for(@statements){ 
 	
 		require DADA::App::DBIHandle; 
 		my $dbi_obj = DADA::App::DBIHandle->new; 
 		my $dbh = $dbi_obj->dbh_obj;
+		warn 'query: ' . $_ . "\n" . '-' x 72 . "\n";;
 		eval {  
 			my $sth = $dbh->prepare($_) or croak $DBI::errstr; 
 			$sth->execute

@@ -99,7 +99,6 @@ msg_id text,
 url text
 );
 
-
 CREATE TABLE IF NOT EXISTS dada_password_protect_directories (
 id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
 list varchar(16),
