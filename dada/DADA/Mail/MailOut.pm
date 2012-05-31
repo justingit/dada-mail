@@ -231,12 +231,9 @@ sub batch_params {
         my $batch_size = 0;
         my $batch_wait = 0;
 
-        my $result =
-`$DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script} -k $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file} -q`;
-        my ( $label, $data ) = split( "\n", $result );
-        my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate ) =
-          split( /\s+/, $data );
-
+		require DADA::App::AmazonSES; 
+		my $ses = DADA::App::AmazonSES->new; 
+	    my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
         #                  0          10_000             5
 
         #		$Max24HourSend = 100_000;

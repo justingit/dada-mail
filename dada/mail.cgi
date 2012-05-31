@@ -2405,19 +2405,33 @@ sub amazon_ses_get_stats {
 		|| ($ls->param('sending_method') eq 'smtp' && $ls->param('smtp_server') =~ m/amazonaws\.com/)
 	){ 
 		
+		my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate );
+		my $found_ses_get_stats_script = 1; 
 		if(!-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script}){ 
-			print $q->header(); 
-			print '<p class="error">Cannot find, "' . $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script} .'"</p>'; 
-			return; 
+			$found_ses_get_stats_script = 0; 
 		}
 		else { 
-			my $result = `$DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script} -k $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file} -q`; 
-			my ($label, $data) = split("\n", $result); 
-			my ($SentLast24Hours, $Max24HourSend, $MaxSendRate) = split(/\s+/, $data);     
+			require DADA::App::AmazonSES; 
+			my $ses = DADA::App::AmazonSES->new; 
+		    my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
 		
 			print $q->header(); 
-			print '<p>Your current Amazon SES sending limit is: <strong>' . commify($MaxSendRate) . ' message(s)/second</strong> with a limit of <strong>' . commify($Max24HourSend) . ' messages</strong> every 24 hours. <strong>' . commify($SentLast24Hours) . ' messages</strong> have been sent in the last 24 hours.</p>'; 
+			require DADA::Template::Widgets;
+			e_print(DADA::Template::Widgets::screen(
+				{
+					-screen => 'amazon_ses_get_stats_widget.tmpl',
+					-vars   => {
+						MaxSendRate                => commify($MaxSendRate),
+						Max24HourSend              => commify($Max24HourSend),
+						SentLast24Hours            => commify($SentLast24Hours),
+						found_ses_get_stats_script => $found_ses_get_stats_script,  
 
+						ses_get_stats_script       => $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script},
+						
+					}
+				}
+			));
+			
 		}
 	}
 	else { 
