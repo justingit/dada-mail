@@ -198,7 +198,7 @@ q{#					{
 
 $plugins_extensions->{password_protect_directories}->{code} =
 q{#					{
-#					-Title      => 'Password Protected Directories',
+#					-Title      => 'Password Protect Directories',
 #					-Title_URL  => $PLUGIN_URL."/password_protect_directories.cgi",
 #					-Function   => 'password_protect_directories',
 #					-Activated  => 1,

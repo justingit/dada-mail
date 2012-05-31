@@ -204,7 +204,7 @@ sub default_tmpl {
 	<!-- tmpl_if entries --> 
 
 		<fieldset> 
-			<legend>Current Password Protected Directories</legend> 
+			<legend>Current Password Protect Directories</legend> 
 		
 				<!-- tmpl_loop entries --> 
 		
@@ -671,9 +671,9 @@ __END__
 
 =pod
 
-=head1 Password Protected Directories Plugin
+=head1 Password Protect Directories Plugin
 
-The Password Protected Directories plugin allows you to create an Apache Webserver-style C<.htaccess> and C<.htpasswd> file in specific directories that will then prompt a visitor for a username and password, before they can access the directory itself. 
+The Password Protect Directories plugin allows you to create an Apache Webserver-style C<.htaccess> and C<.htpasswd> file in specific directories that will then prompt a visitor for a username and password, before they can access the directory itself. 
 
 The B<username> used will be one of your mailing list's subscribers B<email address>> The B<password> will be either their B<Dada Mail Profile password>, or if the subscriber doesn't have a Dada Mail Profile, you may set a default password. 
 
@@ -710,7 +710,7 @@ If they are, remove them.
 Then, find these lines: 
 
  #					{
- #					-Title      => 'Password Protected Directories',
+ #					-Title      => 'Password Protect Directories',
  #					-Title_URL  => $PLUGIN_URL."/password_protect_directories.cgi",
  #					-Function   => 'password_protect_directories',
  #					-Activated  => 1,
@@ -719,7 +719,7 @@ Then, find these lines:
 Uncomment the lines, by taking off the, "#"'s: 
 
  					{
- 					-Title      => 'Password Protected Directories',
+ 					-Title      => 'Password Protect Directories',
  					-Title_URL  => $PLUGIN_URL."/password_protect_directories.cgi",
  					-Function   => 'password_protect_directories',
  					-Activated  => 1,
@@ -727,11 +727,11 @@ Uncomment the lines, by taking off the, "#"'s:
 
 Save your C<.dada_config> file.
 
-=head1 Using Password Protected Directories
+=head1 Using Password Protect Directories
 
-Once installed, log into a mailing list and under B<Plugins> click the link labeled, B<Password Protected Directories>
+Once installed, log into a mailing list and under B<Plugins> click the link labeled, B<Password Protect Directories>
 
-A form labeled, B<New Password Protected Directory> will allow you to set up a new directory to password protect. You may set up as many password protected directories as you may like. 
+A form labeled, B<New Password Protected Directory> will allow you to set up a new directory to password protect. You may set up as many Password Protect Directories as you may like. 
 
 =head2 Name
 
@@ -827,7 +827,7 @@ Boston, MA  02111-1307, USA.
 
 	Where, I<http://example.com/cgi-bin/dada/plugins/password_protect_directories.cgi> is the URL to your copy of this plugin. 
 
-	A B<Best Guess> at what the entire cronjob that's needed (using the, C<curl> command to access the actual URL) to be set manually will appear in this plugin's list control panel under the fieldset labled, B<Manually Run Password Protected Directories> in the textbox labeled, B<curl command example (for a cronjob):>. It'll look something like this: 
+	A B<Best Guess> at what the entire cronjob that's needed (using the, C<curl> command to access the actual URL) to be set manually will appear in this plugin's list control panel under the fieldset labled, B<Manually Run Password Protect Directories> in the textbox labeled, B<curl command example (for a cronjob):>. It'll look something like this: 
 
 	 /usr/bin/curl  -s --get --data run=1\;passcode=\;verbose=0  --url http://example.com/cgi-bin/dada/plugins/password_protect_directories.cgi
 
@@ -845,6 +845,6 @@ Boston, MA  02111-1307, USA.
 
 		cd /home/youraccount/cgi-bin/dada/plugins; /usr/bin/perl ./password_protect_directories.cgi --noverbose
 
-	By default, it will print out the Password Protected Directories report. 
+	By default, it will print out the Password Protect Directories report. 
 
 	=cut

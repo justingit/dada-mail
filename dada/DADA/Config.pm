@@ -570,7 +570,7 @@ The default setting is the online version that we provide - but it is a paid ser
 
 =cut
 
-$HELP_LINKS_URL ||= 'http://dadamailproject.com/pro_dada/5.0.0';
+$HELP_LINKS_URL ||= 'http://dadamailproject.com/pro_dada/5.1.0';
 
 
 =pod
@@ -2243,7 +2243,7 @@ $ADMIN_MENU ||= [
 #					},
 
 #					{
-#					-Title      => 'Password Protected Directories',
+#					-Title      => 'Password Protect Directories',
 #					-Title_URL  => $PLUGIN_URL."/password_protect_directories.cgi",
 #					-Function   => 'password_protect_directories',
 #					-Activated  => 1,

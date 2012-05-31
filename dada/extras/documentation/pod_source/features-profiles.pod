@@ -16,9 +16,9 @@ Profiles allow your users to:
 
 =item * Bypass Mailing List subscription confirmations 
 
-=item * Access Password Protected Directories
+=item * Access Password Protect Directories
 
-Password Protected Directories can be set up using the following plugin: 
+Password Protect Directories can be set up using the following plugin: 
 
 L<http://dadamailproject.com/d/password_protect_directories.cgi.html>
 
@@ -41,7 +41,7 @@ Once logged in, your users can:
 
 =item * View their Your Mailing List Subscriptions 
 
-This section also always your users to interact with the mailing list: view archives, unsubscribe from the list, post to the list (if it is a discussion list). Any password protected directories (set up with the Password Protect plugin) will also be available here. 
+This section also always your users to interact with the mailing list: view archives, unsubscribe from the list, post to the list (if it is a discussion list). Any Password Protect Directories (set up with the Password Protect plugin) will also be available here. 
 
 =item * Update their Profile email address 
 
@@ -258,7 +258,7 @@ C<mailing_list_subscriptions> controls whether the, B<Your Mailing List Subscrip
 
 =item * protected_directories
 
-C<protected_directories> controls whether The, B<Password Protected Directories> section is visible to your user in their Profile (once logged in). If disabled, Protected Directories will B<still be available> if any are set up, just not listed in the user's Profile. 
+C<protected_directories> controls whether The, B<Password Protect Directories> section is visible to your user in their Profile (once logged in). If disabled, Protected Directories will B<still be available> if any are set up, just not listed in the user's Profile. 
 
 =item * update_email_address
 
