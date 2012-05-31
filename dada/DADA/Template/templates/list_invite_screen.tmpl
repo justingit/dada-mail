@@ -1,5 +1,6 @@
 <!-- begin list_invite_screen.tmpl -->
 
+
 <!-- tmpl_set name="title" value="Membership &#187; Invite" -->
 
 
@@ -28,6 +29,23 @@
 	
  </div> 
 </div>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+	function show_customize_invite_message(){ 
+		Effect.BlindUp('customize_invite_message_button');
+		Effect.BlindDown('customize_invite_message_form');	
+	}
+
+//]]>
+</script> 
+
+
+
+
+
 
 <!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
 
@@ -94,7 +112,14 @@
 	<p>&nbsp;</p>
 	<p>&nbsp;</p>
 	</div>
-	</fieldset> 
+	</fieldset>
+	
+<!-- tmpl_else -->
+	<div class="badweatherbox">
+	<p> 
+		No addresses have passed verification. 
+	</p> 
+</div>
 <!-- /tmpl_if --> 
 
 
@@ -197,63 +222,76 @@
 <!-- /tmpl_if -->
 
 
-<!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
+
+<div id="customize_invite_message_button">
+	<div style="text-align:center">
+		<input type="button" value="Customize Your List Invitation Message..." class="cautionary bigger_button" onclick="show_customize_invite_message();" />
+	</div>
+	
+</div> 
+
+<div id="customize_invite_message_form" style="display:none">
+	
+	 
+	<!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
 
 
-<fieldset>
-<legend>Message Body</legend>
+	<fieldset>
+	<legend>Message Body</legend>
 
 
  
-     <fieldset style="background:#e6e6e6"> 
+	     <fieldset style="background:#e6e6e6"> 
 
-     <legend>
-      <a href="#" onclick="toggleDisplay('html_message');return false;">+   /-</a>HTML Version
-     </legend>
+	     <legend>
+	      <a href="#" onclick="toggleDisplay('html_message');return false;">+   /-</a>HTML Version
+	     </legend>
       
 
 
 			
- <div id="html_message" style="display:none"> 
+	 <div id="html_message" style="display:none"> 
  
-	<p>
-	 <input type="checkbox" id="use_html_message" name="use_html_message" value="1" /> 
-	 <label for="use_html_message">
-	  Use the HTML Version
-	 </label>
-    </p>
+		<p>
+		 <input type="checkbox" id="use_html_message" name="use_html_message" value="1" /> 
+		 <label for="use_html_message">
+		  Use the HTML Version
+		 </label>
+	    </p>
     
-	<!-- tmpl_include html_message_form_field_widget.tmpl --> 
+		<!-- tmpl_include html_message_form_field_widget.tmpl --> 
 
-</div>
+	</div>
 
-</fieldset> 
+	</fieldset> 
 
- <fieldset style="background:#e6e6e6"> 
+	 <fieldset style="background:#e6e6e6"> 
   
-		 <legend>
-		  <a href="#" onclick="toggleDisplay('text_message');return false;">+/-</a>PlainText Version
-		 </legend>
+			 <legend>
+			  <a href="#" onclick="toggleDisplay('text_message');return false;">+/-</a>PlainText Version
+			 </legend>
 		 
  
- <div id="text_message"> 
+	 <div id="text_message"> 
 	
-	<p>
-	 <input type="checkbox" id="use_text_message" name="use_text_message" value="1" checked="checked" /> 
-	 <label for="use_text_message">
-	  Use the PlainText Version
-	 </label>
-    </p>
+		<p>
+		 <input type="checkbox" id="use_text_message" name="use_text_message" value="1" checked="checked" /> 
+		 <label for="use_text_message">
+		  Use the PlainText Version
+		 </label>
+	    </p>
 	
 	
-  <textarea name="text_message_body" id="text_message_body" cols="80" rows="30"><!-- tmpl_var list_settings.invite_message_text escape="HTML" --></textarea> 
-</div> 
-</fieldset>
-</fieldset>
+	  <textarea name="text_message_body" id="text_message_body" cols="80" rows="30"><!-- tmpl_var list_settings.invite_message_text escape="HTML" --></textarea> 
+	</div> 
+	</fieldset>
+	</fieldset>
 
+</div> 
 
 <!-- tmpl_include name="send_a_list_message_button_widget.tmpl" --> 
 
 
 </form> 
+
 <!-- end list_invite_screen.tmpl -->
