@@ -1323,18 +1323,15 @@ sub mass_send {
        return; 
     }
 
-
+	my ($batch_sending_enabled, $batch_size, $batch_wait)  = $mailout->batch_params();
 
 	# how many messages get sent between batches? 
 	my $letters = 1; 
-	warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' $self->{ls}->param(\'mass_send_amount\') has been set to: ' . $self->{ls}->param('mass_send_amount')
+	warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' $batch_size has been set to: ' . $batch_size
 	    if $t; 
-	$mailout->log('$self->{ls}->param(\'mass_send_amount\') has been set to: ' . $self->{ls}->param('mass_send_amount')); 
+	$mailout->log('$batch_size has been set to: ' . $batch_size); 
 	
-	    
-	if(defined($self->{ls}->param('mass_send_amount'))){ 
-		$letters = $self->{ls}->param('mass_send_amount');  # why am I making this its own variable?! # And why wouldn't it be defined?
-	}
+	$letters = $batch_size;  # why am I making this its own variable?! # And why wouldn't it be defined?
 	
 		# we need to create a new file that has the subscribers and their pin 
 		# number. Those two things will be separated with a '::' so we can split 
@@ -1914,13 +1911,13 @@ sub mass_send {
 								# to more reflect the batch settings 
 								# 
 								
-								my $sleep_for_this_amount = $self->{ls}->param('bulk_sleep_amount');
+								my $sleep_for_this_amount = $batch_wait;
 								if($self->{ls}->param('adjust_batch_sleep_time') == 1){ 
 									my $batch_time_took = time - $batch_start_time;
 									if($batch_time_took > 0){ 
 										#warn "SLEEP: This batch took: $batch_time_took seconds"; 
-										if($batch_time_took >= $self->{ls}->param('bulk_sleep_amount')){ 
-											#warn "SLEEP: batch time took MORE time than bulk_sleep_amount - skipping sleeping"; 
+										if($batch_time_took >= $batch_wait){ 
+											#warn "SLEEP: batch time took MORE time than $batch_wait - skipping sleeping"; 
 											$sleep_for_this_amount = 0;
 										}
 										else {

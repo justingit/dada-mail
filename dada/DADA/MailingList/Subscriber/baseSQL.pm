@@ -16,6 +16,11 @@ sub add {
     my $class = shift;
     my ($args) = @_;
 	
+	if(!exists($args->{-log_it})){ 
+		$args->{-log_it} = 1; 
+	}
+	
+	
 	my $lh = undef; 
 	
 	if(exists($args->{-dpfm_obj})){ 
@@ -134,13 +139,15 @@ sub add {
         }
     );
 
-    if ( $DADA::Config::LOG{subscriptions} == 1 ) {
-        $added->{'log'}->mj_log( 
-			$added->{list},
-            'Subscribed to ' . $added->{list} . '.' . $added->type,
-            $added->email 
-		);
-    }
+	if($args->{-log_it} == 1) { 
+	    if ( $DADA::Config::LOG{subscriptions} == 1 ) {
+	        $added->{'log'}->mj_log( 
+				$added->{list},
+	            'Subscribed to ' . $added->{list} . '.' . $added->type,
+	            $added->email 
+			);
+	    }
+	}
     return $added;
 
 }
@@ -334,8 +341,10 @@ sub move {
 sub remove {
 
     my $self = shift;
-
-
+	my ($args) = @_; 
+	if(!exists($args->{-log_it})){ 
+		$args->{-log_it} = 1; 
+	}
 	
     my $query = "DELETE FROM " . $self->{sql_params}->{subscriber_table} . " 
 				 WHERE email   = ?
@@ -382,24 +391,23 @@ sub remove {
 
    #warn '$rv ' . $rv; 
     $sth->finish;
-
-	if ($DADA::Config::LOG{subscriptions}) { 
-	    $self->{'log'}->mj_log( 
-			$self->{list},
-	        "Unsubscribed from " . $self->{list} . "." . $self->type,
-			$self->email
-		);
+	if($args->{-log_it} == 1) { 
+		if ($DADA::Config::LOG{subscriptions}) { 
+		    $self->{'log'}->mj_log( 
+				$self->{list},
+		        "Unsubscribed from " . $self->{list} . "." . $self->type,
+				$self->email
+			);
+		}
 	}
-
     undef $self;
 	return $rv;	
 
 }
 
-sub subscribed_to {
+sub member_of {
 	
     my $self = shift;	
-	# SELECT list_type FROM dada_subscribers WHERE email = '101example@example.com' AND  list = 'list' AND list_status = '1'
     my $query =
         'SELECT list_type FROM '
       . $self->{sql_params}->{subscriber_table}

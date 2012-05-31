@@ -1,0 +1,38 @@
+<!-- begin amazon_ses_get_stats_widget.tmpl --> 
+
+<!-- tmpl_if found_ses_get_stats_script --> 
+
+	<p>
+		Your current Amazon SES sending limit is: 
+			<strong>
+				<!-- tmpl_var MaxSendRate --> message(s)/second
+			</strong>
+		with a limit of 
+		<strong>
+			<!-- tmpl_var Max24HourSend --> messages
+		</strong> 
+		every 24 hours. 
+	
+		<strong>
+			<!-- tmpl_var SentLast24Hours --> messages
+		</strong>
+	
+		have been sent in the last 24 hours.
+	</p>
+
+<!-- tmpl_else --> 
+	<p class="error">
+		Cannot find, 
+		<code>
+			ses_get_stats_script
+		</code> 
+		at, 
+		<em>
+			<!-- tmpl_var ses_get_stats_script -->
+		</em>
+	</p> 
+<!-- /tmpl_if --> 
+
+
+
+<!-- end amazon_ses_get_stats_widget.tmpl --> 

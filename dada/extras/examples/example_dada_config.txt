@@ -82,18 +82,39 @@ $PROFILE_OPTIONS = {
 	enable_captcha                  => 1, 
 	enable_magic_subscription_forms => 1, 
 	
-	cookie_params =>
+	update_email_options            => 
 	{ 
-		-name    => 'dada_profile',  
-		-path    => '/',
-		-expires => '+7d',		
+		send_notification_to_profile_email => 0, 
+		subscription_check_skip            => 'auto', 
+		
 	},
-
+		
 	gravatar_options => 
 	{
 		enable_gravators     => 1, 
 		default_gravatar_url => undef,
 	},
+	
+	features => 
+	{ 
+		help                        => 1,
+		login                       => 1, 
+		register                    => 1, 
+		password_reset              => 1, 
+		profile_fields              => 1,  
+		mailing_list_subscriptions  => 1,
+		protected_directories       => 1,  
+		update_email_address        => 1, 
+		change_password             => 1, 
+		delete_profile              => 1,
+	},
+	cookie_params =>
+	{ 
+		-name    => 'dada_profile',  
+	    -path    => '/',
+	    -expires => '+1y',		
+	},
+
 };
 
 =cut
@@ -202,6 +223,24 @@ $PLUGIN_CONFIGS = {
 
 		Plugin_URL                          => undef,
 		tail_command                        => undef,
+
+	},
+
+	default_mass_mailing_messages => {
+
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
+
+	},
+
+	password_protect_directories => {
+
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
+		Allow_Manual_Run                    => undef,
+		Manual_Run_Passcode                 => undef,
+		Base_Absolute_Path                  => undef, 
+		Base_URL                            => undef, 
 
 	},
 
@@ -502,13 +541,6 @@ $ADMIN_MENU = [
 #					},
 
 #					{
-#					-Title      => 'Multi List Sub/Unsub Check',
-#					-Title_URL  => $PLUGIN_URL."/multi_admin_subscribers.cgi",
-#					-Function   => 'multi_admin_subscribers',
-#					-Activated  => 1,
-#					},
-
-#					{
 #					-Title      => 'View List Settings',
 #					-Title_URL  => $PLUGIN_URL."/view_list_settings.cgi",
 #					-Function   => 'view_list_settings',
@@ -519,6 +551,27 @@ $ADMIN_MENU = [
 #					-Title      => 'Mailing Monitor',
 #					-Title_URL  => $PLUGIN_URL."/mailing_monitor.cgi",
 #					-Function   => 'mailing_monitor',
+#					-Activated  => 0,
+#					},
+
+#					{
+#					-Title      => 'Default Mass Mailing Messages',
+#					-Title_URL  => $PLUGIN_URL."/default_mass_mailing_messages.cgi",
+#					-Function   => 'default_mass_mailing_messages',
+#					-Activated  => 1,
+#					},
+
+#					{
+#					-Title      => 'Password Protect Directories',
+#					-Title_URL  => $PLUGIN_URL."/password_protect_directories.cgi",
+#					-Function   => 'password_protect_directories',
+#					-Activated  => 1,
+#					},
+
+#					{
+#					-Title      => 'Change Your List Short Name',
+#					-Title_URL  => $PLUGIN_URL."/change_list_shortname.cgi",
+#					-Function   => 'change_list_shortname',
 #					-Activated  => 0,
 #					},
 

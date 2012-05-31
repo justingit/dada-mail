@@ -164,14 +164,14 @@ sub copy_subscriber {
     return $dmls->copy($args);
 }
 
-sub subscribed_to { 
+sub member_of { 
 	my $self = shift; 
 	my ($args) = @_;
 	$args->{-list} = $self->{list};
 	
  my $dmls =
       DADA::MailingList::Subscriber->new( $args );
-    return $dmls->subscribed_to($args);	
+    return $dmls->member_of($args);	
 }
 
 sub admin_remove_subscribers { 
@@ -256,7 +256,7 @@ sub remove_subscriber {
 	
     my $dmls =
       DADA::MailingList::Subscriber->new( { %{$args}, -list => $self->{list} } );
-	$dmls->remove;
+	$dmls->remove($args);
 	return 1; 
 }
 
@@ -1460,6 +1460,8 @@ The errors, which are fairly self-explainitory are as follows:
 =item * subscribed
 
 =item * closed_list
+
+=item * invite_only_list
 
 =item * mx_lookup_failed
 

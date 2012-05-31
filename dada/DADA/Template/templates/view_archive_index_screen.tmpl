@@ -88,14 +88,17 @@
 <table class="stripedtable">
   <tr>
    	<td width="25">
-    	<input type="checkbox" onClick="toggleCheckBoxes(this, 'address')"/>
+    	<input type="checkbox" onClick="toggleCheckBoxes(this, 'address')" />
    	</td>
 	<td>
-	 <input type="submit" class="small_button" value="Delete Checked" /></form>
+	 <input type="submit" class="small_button" value="Delete Checked" />
+	</form>
+
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" style="display:inline;margin:0">  
 		   <input type="hidden" name="f" value="purge_all_archives" />  
 		   <input type="submit" class="small_button" value="Purge All Archive Messages" onclick="return removeAllArchives(this.form);" />
 	   </form> 
+
 	 </td>
 	</tr>
 </table>

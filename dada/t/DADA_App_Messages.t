@@ -94,7 +94,7 @@ like($msg, qr/To:(.*?)$email_name\@$email_domain/, "To: set correctly 1");
 
 
 my $pin = DADA::App::Guts::make_pin(-Email => $email, -List => $list); 
-my $confirm_url = quotemeta($DADA::Config::PROGRAM_URL . '/n/'. $list . '/' . $email_name . '/' . $email_domain . '/'.$pin.'/'); 
+my $confirm_url = quotemeta('/n/'. $list . '/' . $email_name . '/' . $email_domain . '/'.$pin.'/'); 
 
 like($msg_str, qr/$confirm_url/, 'Confirmation link found and correct.'); 
 like($msg_str, qr/$li->{list_name}/, "List Name Found"); 
@@ -516,7 +516,7 @@ ok(
 
 $pin = DADA::App::Guts::make_pin(-Email => $email, -List => $list); 
 
-$confirm_url = quotemeta($DADA::Config::PROGRAM_URL . '/u/'. $list . '/' . $email_name . '/' . $email_domain . '/'.$pin.'/'); 
+$confirm_url = quotemeta('/u/'. $list . '/' . $email_name . '/' . $email_domain . '/'.$pin.'/'); 
 
 like($msg_str, qr/$confirm_url/,            'Confirmation link found and correct.'); 
 like($msg_str, qr/$li->{list_name}/,        "List Name Found"); 
@@ -1015,15 +1015,16 @@ TODO: {
 	);
 }
 
+#diag q{decode_header($entity->head->get('Subject', 0))} . decode_header($entity->head->get('Subject', 0)); 
 ok(
 	decode_header($entity->head->get('Subject', 0))
 	eq
-	"$DADA::Config::PROGRAM_NAME Error - $email_name\@$email_domain Not Allowed to Post On $li->{list_name} (original message attached)", 
+	"Not Allowed to Post On $li->{list_name} (your original message is attached)", 
 	"Subject: Set Correctly"
 );
 
 
-my $natp_msg = quotemeta('Sorry, it doesn\'t seem that you are allowed to post on:'); 
+my $natp_msg = quotemeta('But, it doesn\'t seem that you currently have permission to do so.'); 
 diag '$msg_str0' . $msg_str0; 
 like($msg_str0, qr/$natp_msg/, "Body Set Correctly");
 like($msg_str0, qr/$li->{list_name}/, "List Name Found"); 

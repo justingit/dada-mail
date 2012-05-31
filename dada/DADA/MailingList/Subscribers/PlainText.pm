@@ -579,6 +579,7 @@ sub remove_from_list {
 	
 	my %args = (-Email_List => undef, 
 	            -Type       => 'list',
+				-log_it     => 1, 
 	            @_); 
 
 	my $list     = $self->{list}; 
@@ -698,12 +699,14 @@ sub remove_from_list {
 				  #missed the boat! 
 				  $count++;
 				  # js - log it
-					$self->{'log'}->mj_log(
-						$self->{list},
-						"Unsubscribed from $list.$type", 
-						$check_this
-					) if $DADA::Config::LOG{subscriptions}; 
-			  }
+					if($args{-log_it} == 1) { 
+						$self->{'log'}->mj_log(
+							$self->{list},
+							"Unsubscribed from $list.$type", 
+							$check_this
+						) if $DADA::Config::LOG{subscriptions}; 
+			  		}
+			}
 		}
 		
 		close (MAIN_LIST) or 

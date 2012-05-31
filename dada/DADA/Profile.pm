@@ -2,7 +2,7 @@ package DADA::Profile;
 
 use lib qw (
   ../
-  ../perllib
+  ../DADA/perllib
 );
 
 use Carp qw(carp croak);
@@ -113,7 +113,7 @@ sub _init {
 sub exists {
 	
     my $self = shift;
-    my ($args) = @_;
+  #  my ($args) = @_;
 
 	# This is saying, if we don't have a dbh handle, we don't have a proper 
 	# "handle" on a profile. 
@@ -382,6 +382,37 @@ sub remove {
     return $rv;
 }
 
+
+
+sub copy { 
+
+	my $self = shift; 
+    my ($args) = @_;
+    if ( !exists( $args->{ -from } ) ) {
+        die "you MUST pass the, '-from' paramater!";
+    }
+    if ( !exists( $args->{ -to } ) ) {
+        die "you MUST pass the, '-to' paramater!";
+    }
+
+	require DADA::Profile::Fields; 
+	my $og_dpf = DADA::Profile::Fields->new({-email => $args->{-from}});
+	my $new_prof = DADA::Profile->new({-email => $args->{-to}});	 
+	$new_prof->insert(
+		{ 
+			-confirmed => 1, 
+			-mode      => 'writeover', 
+			-password  => $self->_rand_str(8),
+		}
+	); 
+	$new_prof->{fields}->insert({
+		-fields => $og_dpf->get, 
+		-mode   => 'writeover', 
+	}); 
+	return $new_prof; 
+	
+}
+
 sub subscribed_to_list {
 	
     my $self = shift;
@@ -401,6 +432,9 @@ sub subscribed_to_list {
 
 sub subscribed_to {
 
+	# weirdly, a profile does not have to exists, for this to work. 
+	# What? 
+	
     my $self = shift;
     my ($args) = @_;
 
@@ -487,23 +521,32 @@ sub profile_update_email_report {
 	my $d_info = $self->get({-dotted => 1}); 
     require DADA::MailingList::Subscriber::Validate;
     my $subs = [];
+	my $skip_list = []; 
+	my $default_skip = [qw(
+		closed_list
+		over_subscription_quota
+		already_sent_sub_confirmation
+		no_list
+	)];
+	
+	if(exists($DADA::Config::PROFILE_OPTIONS->{update_email_options}->{subscription_check_skip})){ 
+		if($DADA::Config::PROFILE_OPTIONS->{update_email_options}->{subscription_check_skip} eq 'auto'){ 
+			$skip_list  = $default_skip;  
+		}
+		else { 
+			$skip_list = $DADA::Config::PROFILE_OPTIONS->{update_email_options}->{subscription_check_skip};
+		}
+	}
+	else { 
+		$skip_list = $default_skip;
+	}
     for my $list (@$lists) {
         my $sv =
           DADA::MailingList::Subscriber::Validate->new( { -list => $list } );
         my ( $sub_status, $sub_errors ) = $sv->subscription_check(
             {
                 -email => $info->{update_email},
-                -skip  => [
-					'closed_list', # DEV: I guess this is more of a design idea - 
-								   # Should a subscriber, who is on a closed list, 
-								   # be allowed to update their email address? \
-								   # Since an address corresponds to a person, it make sense, 
-								   # Although, I guess this could be used for nefarious purposes. 
-								   # Ugh. Would like this to be some sort of option... 
-                    'over_subscription_quota',
-                    'already_sent_sub_confirmation',
-                    'no_list',
-                ],
+                -skip  => $skip_list,
             }
         );
         require DADA::MailingList::Settings;
@@ -548,6 +591,10 @@ sub update_email {
 			-mode      => 'writeover', 
 		}
 	); 
+	# Why isn't the old profile fields stuff not removed? 
+	my $old_prof_fields = DADA::Profile::Fields->new({-email => $info->{email}}); 
+	   $old_prof_fields->remove;
+		undef($old_prof_fields); 
 	$self->{email} = $info->{update_email};
 	return 1; 
 }
@@ -912,7 +959,7 @@ sub send_profile_activation_email {
             -email   => $self->{email},
             -headers => {
                 Subject => $DADA::Config::PROFILE_ACTIVATION_MESSAGE_SUBJECT,
-                From    => $self->_config_profile_email,
+                From    => $self->_config_profile_email(1),
                 To      => $self->{email},
             },
             -body        => $DADA::Config::PROFILE_ACTIVATION_MESSAGE,
@@ -947,7 +994,7 @@ sub send_profile_reset_password_email {
             -headers => {
                 Subject =>
                   $DADA::Config::PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT,
-                From => $self->_config_profile_email,
+                From => $self->_config_profile_email(1),
                 To   => $self->{email},
             },
             -body        => $DADA::Config::PROFILE_RESET_PASSWORD_MESSAGE,
@@ -1017,7 +1064,7 @@ sub send_update_profile_email_email {
             -headers => {
                 Subject =>
                   $DADA::Config::PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT,
-                From => $self->_config_profile_email,
+                From => $self->_config_profile_email(1),
                 To   => $args->{-updated_email},
             },
             -body        => $DADA::Config::PROFILE_UPDATE_EMAIL_MESSAGE,
@@ -1034,6 +1081,49 @@ sub send_update_profile_email_email {
         }
     );
     return 1;
+}
+
+sub send_update_email_notification { 
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	if(exists($DADA::Config::PROFILE_OPTIONS->{update_email_options}->{send_notification_to_profile_email})){ 
+		if($DADA::Config::PROFILE_OPTIONS->{update_email_options}->{send_notification_to_profile_email} == 1){ 
+			# ... 
+		}
+		else { 
+			return 1; 
+		}
+	}
+	
+	
+	
+	
+	if(! exists( $args->{-prev_email} ) ){ 
+		croak "You MUST pass the old email  in, '-prev_email' paramater!"; 
+	}
+	my $info = $self->get({-dotted => 1}); 
+	
+	require DADA::App::Messages;
+    DADA::App::Messages::send_generic_email(
+        {
+            -headers => {
+                Subject => $DADA::Config::PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE_SUBJECT,
+                From => $self->_config_profile_email(1),
+                To   => $self->_config_profile_email,
+            },
+            -body        => $DADA::Config::PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE,,
+            -tmpl_params => {
+                -vars => {
+					'profile.prev_email'             => $args->{-prev_email}, 
+                   	'profile.email'                  => $self->{email},					
+                },
+            },
+        }
+    );
+    return 1;
+
+	
 }
 
 
@@ -1099,22 +1189,110 @@ sub _rand_str {
 
 sub _config_profile_email {
     my $self = shift;
-    if ( length($DADA::Config::PROFILE_OPTIONS->{profile_email}) > 0
-        && DADA::App::Guts::check_for_valid_email($DADA::Config::PROFILE_OPTIONS->{profile_email})
-        == 0 )
-    {
-        return $DADA::Config::PROFILE_OPTIONS->{profile_email};
+	my $n    = shift || undef; 
+ 
+	
+    if ( length($DADA::Config::PROFILE_OPTIONS->{profile_email}) > 0) {
+		my @good_addresses = (); 
+		require Email::Address;
+		my @addrs = Email::Address->parse( $DADA::Config::PROFILE_OPTIONS->{profile_email} );
+
+		for my $a(@addrs) { 
+			if(DADA::App::Guts::check_for_valid_email($a->address) == 0){ 
+				push(@good_addresses, $a->format);
+			}
+		}
+		# Do we have >= 1 address that are good? 
+		if(scalar(@good_addresses) >= 1){
+			my $r = ''; 
+			# We gotta limit on how many we want back? 
+			if(defined($n) && $self->_is_integer($n)){ 
+				# Is it more than how many are available? 
+				if($n > scalar(@good_addresses)){ 
+					# Well, let's lower that a bit
+					$n = scalar(@good_addresses);
+				}
+				# join!
+				$r = join(', ', $good_addresses[0, ($n - 1)]);
+			}
+			else { 
+				# Well then join them all
+				$r = join(', ', @good_addresses);
+			}
+			return $r; 
+		}
+		else { 
+			return $self->_magic_config_profile_email;			
+		}
     }
     else {
-
-        # magically.
-        require DADA::App::Guts;
-        my @l = DADA::App::Guts::available_lists();
-        require DADA::MailingList::Settings;
-        my $ls = DADA::MailingList::Settings->new( { -list => $l[0] } );
-        return $ls->param('list_owner_email');
+		return $self->_magic_config_profile_email;
     }
 }
+
+sub _magic_config_profile_email { 
+	my $self = shift; 
+	
+    # magically.
+    require DADA::App::Guts;
+    my @l = DADA::App::Guts::available_lists();
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $l[0] } );
+    return $ls->param('list_owner_email');
+}
+
+sub _is_integer {
+	my $self = shift; 
+	my $n    = shift; 
+    defined $n && $n =~ /^[+-]?\d+$/;
+}
+
+sub feature_enabled { 	
+	#my $self = shift; 
+	my $feature || undef; 
+	my $enabled = $DADA::Config::PROFILE_OPTIONS->{features}; 
+
+
+	if(!defined($feature)){
+		# For templates, basically. 
+		my $defaults = {
+			help                        => 1,
+			login                       => 1, 
+			register                    => 1, 
+			password_reset              => 1, 
+			profile_fields              => 1,  
+			mailing_list_subscriptions  => 1,
+			protected_directories       => 1,  
+			update_email_address        => 1, 
+			change_password             => 1, 
+			delete_profile              => 1, 
+		};
+		my $pf = {};
+		for(keys %$defaults){ 
+			if(!exists($enabled->{$_})){ 
+				$pf->{'profile_feature_' . $_} = $defaults->{$_}; 
+			}
+			else { 
+				$pf->{'profile_feature_' . $_} = $enabled->{$_}; 
+			}
+		}
+		return $pf;
+	}
+	else { 
+		if(exists($enabled->{$feature})){ 
+			if($enabled->{$feature} == 1){ 
+				return 1;
+			}
+			else { 
+				return 0; 
+			}
+		}
+		else { 
+			return 0; 
+		}
+	}
+}
+
 
 
 1;

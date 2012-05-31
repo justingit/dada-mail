@@ -18,7 +18,7 @@
 
 
 
-<form name="default_form" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+<form name="default_form" id="default_form" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
 
 
@@ -29,11 +29,10 @@
  Batch Sending Options
 </legend>
 
-<div id="previewBatchSendingSpeed"></div> 
-<div id="amazon_ses_get_stats"></div> 
 
 <p>
- Make sure to set these options to be below any hourly limitations that may be imposed on your hosting account!
+ Setting your batch settings to send at a higher rate than what is allowed 
+ for your hosting account will cause problems with email delivery. 
 </p>
     
 
@@ -48,16 +47,52 @@
      Enable Batch Sending
     </label>
    </p>
-   <blockquote> 
+
+
+<div class="clearskiesbox">
+<!-- tmpl_if show_amazon_ses_options --> 
+	<div id="amazon_ses_get_stats"></div> 
+	<div id="amazon_ses_get_stats_loading"></div> 
+<!-- /tmpl_if --> 
+
+<div id="previewBatchSendingSpeed"></div> 
+<div id="previewBatchSendingSpeed_loading"></div> 
+
+</div>
+
+
+<div id="manual_batch_settings"> 
+	
+	<fieldset> 
     <p>
-     Send: <!-- tmpl_var mass_send_amount_menu --> message(s) per batch
+     Send: 
+
+	<!-- tmpl_var mass_send_amount_menu -->
+ message(s) per batch
      <br /> 
      and then wait and sleep: <!-- tmpl_var bulk_sleep_amount_menu --> seconds, before sending the next batch.
     </p>
-   </blockquote>
-  </td>
- </tr>
- 
+   </fieldset>
+
+</div>
+
+<table cellpadding="5">
+	<!-- tmpl_if show_amazon_ses_options -->
+			<tr>
+		  <td>
+		 
+	
+		  <input type="checkbox" id="amazon_ses_auto_batch_settings" name="amazon_ses_auto_batch_settings" value="1" <!-- tmpl_if list_settings.amazon_ses_auto_batch_settings -->checked="checked"<!--/tmpl_if--> onChange="toggleManualBatchSettings(); return false;" />
+		</td>
+		<td>
+		<p><label for="amazon_ses_auto_batch_settings">
+			Automatically set batching speeds based on your Amazon SES limits
+		</label>
+		<br />
+		Batch settings will automatically adjust, when your Amazon SES limits change. </p>
+		</td>
+	</tr>
+	<!-- /tmpl_if --> 
 
  <tr>
   <td>
@@ -79,9 +114,7 @@
 
 	 <tr>
 	  <td>
-	   <p>
 	    <input type="checkbox" name="smtp_connection_per_batch" id="smtp_connection_per_batch" value="1" <!-- tmpl_if list_settings.smtp_connection_per_batch -->checked="checked"<!-- /tmpl_if --> />
-	   </p>
 	  </td>
 	  <td>
 	   <p>
@@ -113,46 +146,24 @@
 	-->
 
 	  </td>
-	 </tr>
-	
-	
-	 <tr>
-	  <td>
-	   <input type="checkbox" name="mass_mailing_send_to_list_owner" id="mass_mailing_send_to_list_owner" value="1" <!-- tmpl_if list_settings.mass_mailing_send_to_list_owner -->checked="checked"<!--/tmpl_if--> />
-	  </td>
-	  <td>
-	   <p>
-	    <label for="mass_mailing_send_to_list_owner">
-	     Send Mass Mailing Messages to the List Owner
-	    </label>
-	    <br />
-		The List Owner will receive a copy of all mass mailings sent to your Mailing List. 
-	   </p>
-	  </td>
-	 </tr>
-	
 
-	 <tr>
-	  <td>
-	   <input type="checkbox" name="get_finished_notification" id="get_finished_notification" value="1" <!-- tmpl_if list_settings.get_finished_notification -->checked="checked"<!--/tmpl_if--> />
-	  </td>
-	  <td>
-	   <p>
-	    <label for="get_finished_notification">
-	     Send Finishing Message
-	    </label>
-	    <br />
-	    The List Owner will be emailed when all the messages of mass mailings have been sent.
-	   </p>
-	  </td>
+
 	 </tr>
 	
-	
+</table>
+
+</td>
+
+</tr>
 	
 </table>
 
 
+
+
 </fieldset>
+
+
 
 <fieldset>
 <legend>
@@ -211,6 +222,48 @@
 
 </fieldset>
 
+<fieldset> 
+	<legend>Notifications</legend>
+	
+<table> 
+	 <tr>
+	  <td>
+	   <input type="checkbox" name="mass_mailing_send_to_list_owner" id="mass_mailing_send_to_list_owner" value="1" <!-- tmpl_if list_settings.mass_mailing_send_to_list_owner -->checked="checked"<!--/tmpl_if--> />
+	  </td>
+	  <td>
+	   <p>
+	    <label for="mass_mailing_send_to_list_owner">
+	     Send Mass Mailing Messages to the List Owner
+	    </label>
+	    <br />
+		The List Owner will receive a copy of all mass mailings sent to your Mailing List. 
+	   </p>
+	  </td>
+	 </tr>
+	
+
+	 <tr>
+	 
+	 <td>
+	   <input type="checkbox" name="get_finished_notification" id="get_finished_notification" value="1" <!-- tmpl_if list_settings.get_finished_notification -->checked="checked"<!--/tmpl_if--> />
+	  </td>
+	
+	  <td>
+	   <p>
+	    <label for="get_finished_notification">
+	     Send Finishing Message
+	    </label>
+	    <br />
+	    The List Owner will be emailed when all the messages of mass mailings have been sent.
+	   </p>
+	  </td>
+	</tr>
+	</table> 
+
+</fieldset>
+
+
+
 <input type="hidden" name="process" value="1" />
 <input type="hidden" name="f"       value="mass_mailing_preferences" />
 <div class="buttonfloat">
@@ -231,18 +284,23 @@
 			{ 
 			    method: 'post', 
 				parameters: {
-					f:                    'previewBatchSendingSpeed', 
-					enable_bulk_batching: $F('enable_bulk_batching'),
-					mass_send_amount:     $F('mass_send_amount'), 
-					bulk_sleep_amount:    $F('bulk_sleep_amount')
+					f:                              'previewBatchSendingSpeed', 
+					enable_bulk_batching:           $F('enable_bulk_batching'),
+					mass_send_amount:               $F('mass_send_amount'), 
+					bulk_sleep_amount:              $F('bulk_sleep_amount'), 
+					<!-- tmpl_if show_amazon_ses_options --> 
+						amazon_ses_auto_batch_settings: $F('amazon_ses_auto_batch_settings'),
+					<!-- /tmpl_if --> 
 				},
 
 			onCreate: 	 function() {
+				$('previewBatchSendingSpeed').hide(); 
+				$('previewBatchSendingSpeed_loading').update('<p class="alert">Loading...</p>');
+				
 			},
 			onComplete: 	 function() {
-
+				$('previewBatchSendingSpeed_loading').update('');
 				$('previewBatchSendingSpeed').show(); 
-			
 			}
 
 
@@ -257,17 +315,37 @@
 					f:                    'amazon_ses_get_stats', 
 				},
 			onCreate: 	 function() {
+				$('amazon_ses_get_stats').hide(); 
+				$('amazon_ses_get_stats_loading').update('<p class="alert">Loading...</p>');
 			},
 			onComplete: 	 function() {
-
+				$('amazon_ses_get_stats_loading').update('');
 				$('amazon_ses_get_stats').show(); 
 			
 			}
 			});
 	}
+	
+	function toggleManualBatchSettings() { 
+		var amazon_ses_auto_batch_settings = $('default_form').amazon_ses_auto_batch_settings.checked;
+		if(amazon_ses_auto_batch_settings == true){ 
+			Effect.BlindUp('manual_batch_settings');
+		}
+		else { 
+			var togglin = document.getElementById( 'manual_batch_settings' );
+			if(togglin.style.display != ""){	
+					Effect.BlindDown('manual_batch_settings');
+			}
+		}
+		previewBatchSendingSpeed(); 
+	}
+	
 	previewBatchSendingSpeed(); 
-	amazon_ses_get_stats(); 
-    //]]>
+	<!-- tmpl_if show_amazon_ses_options -->
+		amazon_ses_get_stats(); 
+		toggleManualBatchSettings(); 
+	<!-- /tmpl_if --> 
+	    //]]>
 
 </script>
 

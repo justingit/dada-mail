@@ -572,6 +572,9 @@ sub run {
 	'remove_all_subscribers'     =>    \&remove_all_subscribers,
 	'view_list_options'          =>    \&list_cp_options,
 	'membership'                 =>    \&membership,
+	'admin_change_profile_password' => \&admin_change_profile_password, 
+	'update_email_results'       =>    \&update_email_results, 
+	'admin_update_email'         =>    \&admin_update_email, 
 	'mailing_list_history'       =>    \&mailing_list_history, 
 	'add'                        =>    \&add,
 	'check_status'               =>    \&check_status,
@@ -1193,8 +1196,10 @@ sub sending_monitor {
 
     $list = $admin_list;
 
+	my $mo = DADA::Mail::MailOut->new({-list => $list});
+	my ($batching_enabled, $batch_size, $batch_wait) = $mo->batch_params;
+	
     my $ls = DADA::MailingList::Settings->new({-list => $list});
-    my $li = $ls->get;
 
     # munging the message id.
     # kinda dumb, but it's sort of up in the air,
@@ -1216,8 +1221,8 @@ sub sending_monitor {
     # to read the actual screen.
 
      my $refresh_after = 10;
-     if($refresh_after < $li->{bulk_sleep_amount}){
-			$refresh_after = $li->{bulk_sleep_amount};
+     if($refresh_after < $batch_wait){
+			$refresh_after = $batch_wait;
 		}
 
 	# Type ala, list, invitation list, etc
@@ -1388,7 +1393,7 @@ sub sending_monitor {
 			
 		if(
 		$status->{should_be_restarted}								   == 1 && # It's dead in the water.
-		$li->{auto_pickup_dropped_mailings}                            == 1 && # Auto Pickup is turned on...
+		$ls->param('auto_pickup_dropped_mailings')                            == 1 && # Auto Pickup is turned on...
 		# $status->{total_sending_out_num} - $status->{total_sent_out} >  0 && # There's more subscribers to send out to
 		$restart_count                                                 <= 0 && # We haven't *just* restarted this thing
 		$status->{mailout_stale}                                       != 1 && # The mailout hasn't been sitting around too long without being restarted,
@@ -1419,8 +1424,8 @@ sub sending_monitor {
 		# let's say a mailing will be automatically started in... time since last - wait time.
 
 		my $will_restart_in = undef;
-		if(time - $status->{last_access} > ($li->{bulk_sleep_amount} * 1.5)){
-			my $tardy_threshold = $li->{bulk_sleep_amount} * 3;
+		if(time - $status->{last_access} > ($batch_wait * 1.5)){
+			my $tardy_threshold = $batch_wait * 3;
 			if($tardy_threshold < 60){
 				$tardy_threshold = 60;
 			}
@@ -1475,7 +1480,7 @@ sub sending_monitor {
 						its_killed                   => $status->{should_be_restarted},
 						header_subject               => safely_decode($status->{email_fields}->{Subject},1 ),
 						header_subject_label         => (length($header_subject_label) > 50) ? (substr($header_subject_label, 0, 49) . '...') : ($header_subject_label),
-						auto_pickup_dropped_mailings => $li->{auto_pickup_dropped_mailings},
+						auto_pickup_dropped_mailings => $ls->param('auto_pickup_dropped_mailings'),
 						sending_done                 => ($status->{percent_done} < 100) ? 0 : 1,
 						refresh_after                => $refresh_after,
 						killed_it                    => $q->param('killed_it') ? 1 : 0,
@@ -1518,7 +1523,7 @@ sub sending_monitor {
 					refresh_after                => $refresh_after,
 					tracker_url                  => $tracker_url, 
 					'list_settings.tracker_show_message_reports_in_mailing_monitor' 
-						=> $li->{tracker_show_message_reports_in_mailing_monitor},
+						=> $ls->param('tracker_show_message_reports_in_mailing_monitor'),
 					list_type_isa_list           => ($q->param('type') eq 'list')       ? 1 : 0,
 				}
 			}
@@ -2268,18 +2273,29 @@ sub mass_mailing_preferences {
 
     if ( !$process ) {
 
-        my @message_amount = ( 1 .. 180 );
+		require  DADA::Mail::MailOut;
+		my $mo = DADA::Mail::MailOut->new({ -list => $list });
+		my ($batch_sending_enabled, $batch_size, $batch_wait)  = $mo->batch_params();
 
-        unshift( @message_amount, $li->{mass_send_amount} )
-          if exists( $li->{mass_send_amount} );
+		my $show_amazon_ses_options = 0; 
+		if (
+	        $ls->param('sending_method') eq 'amazon_ses'
+	        || (   $ls->param('sending_method') eq 'smtp'
+	            && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
+			)
+	    {
+			$show_amazon_ses_options = 1; 
+		}
+		
+        my @message_amount = ( 1 .. 180 );
+		unshift( @message_amount, $batch_size );
 
         my @message_wait = (
             1 .. 60, 70,  80,  90,  100, 110, 110, 120,
             130,     140, 150, 160, 170, 180
         );
 
-        unshift( @message_wait, $li->{bulk_sleep_amount} )
-          if exists( $li->{bulk_sleep_amount} );
+        unshift( @message_wait, $batch_wait);
         my @message_label = (1);
         my %label_label = ( 1 => 'second(s)', );
 
@@ -2308,10 +2324,14 @@ sub mass_mailing_preferences {
 					-List       => $list,  
 				},
 				-vars   => {
-					screen                 => 'mass_mailing_preferences',
-					done                   => $done,
-					mass_send_amount_menu  => $mass_send_amount_menu,
-					bulk_sleep_amount_menu => $bulk_sleep_amount_menu,
+					screen                  => 'mass_mailing_preferences',
+					done                    => $done,
+					batch_sending_enabled   => $batch_sending_enabled, 
+					mass_send_amount_menu   => $mass_send_amount_menu,
+					bulk_sleep_amount_menu  => $bulk_sleep_amount_menu,
+					batch_size              => $batch_size, 
+					batch_wait              => $batch_wait,
+					show_amazon_ses_options => $show_amazon_ses_options,  
 				},
 				-list_settings_vars_param => {
 					-list    => $list,
@@ -2336,6 +2356,7 @@ sub mass_mailing_preferences {
                     restart_mailings_after_each_batch => 0,
                     smtp_connection_per_batch         => 0,
                     mass_mailing_send_to_list_owner   => 0, 
+					amazon_ses_auto_batch_settings    => 0, 
                 }
             }
         );
@@ -2380,21 +2401,37 @@ sub amazon_ses_get_stats {
 	
 	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
 	
-	if($ls->param('sending_method') eq 'amazon_ses'){ 
+	if(     $ls->param('sending_method') eq 'amazon_ses'
+		|| ($ls->param('sending_method') eq 'smtp' && $ls->param('smtp_server') =~ m/amazonaws\.com/)
+	){ 
 		
+		my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate );
+		my $found_ses_get_stats_script = 1; 
 		if(!-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script}){ 
-			print $q->header(); 
-			print '<p class="error">Cannot find, "' . $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script} .'"</p>'; 
-			return; 
+			$found_ses_get_stats_script = 0; 
 		}
 		else { 
-			my $result = `$DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script} -k $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file} -q`; 
-			my ($label, $data) = split("\n", $result); 
-			my ($SentLast24Hours, $Max24HourSend, $MaxSendRate) = split(/\s+/, $data);     
+			require DADA::App::AmazonSES; 
+			my $ses = DADA::App::AmazonSES->new; 
+		    my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
 		
 			print $q->header(); 
-			print '<p class="positive">Your current Amazon SES sending limit is: ' . commify($MaxSendRate) . ' message(s)/second with a limit of ' . commify($Max24HourSend) . ' messages every 24 hours.</p>'; 
+			require DADA::Template::Widgets;
+			e_print(DADA::Template::Widgets::screen(
+				{
+					-screen => 'amazon_ses_get_stats_widget.tmpl',
+					-vars   => {
+						MaxSendRate                => commify($MaxSendRate),
+						Max24HourSend              => commify($Max24HourSend),
+						SentLast24Hours            => commify($SentLast24Hours),
+						found_ses_get_stats_script => $found_ses_get_stats_script,  
 
+						ses_get_stats_script       => $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script},
+						
+					}
+				}
+			));
+			
 		}
 	}
 	else { 
@@ -2419,17 +2456,26 @@ sub previewBatchSendingSpeed {
 
     print $q->header();
 
-    my $enable_bulk_batching = xss_filter($q->param('enable_bulk_batching'));
-    my $mass_send_amount     = xss_filter($q->param('mass_send_amount'));
-    my $bulk_sleep_amount    = xss_filter($q->param('bulk_sleep_amount'));
-
+    my $enable_bulk_batching           = xss_filter($q->param('enable_bulk_batching'));
+    my $mass_send_amount               = xss_filter($q->param('mass_send_amount'));
+    my $bulk_sleep_amount              = xss_filter($q->param('bulk_sleep_amount'));
+	my $amazon_ses_auto_batch_settings = xss_filter($q->param('amazon_ses_auto_batch_settings')); 
+	
 	my $per_hour         = 0;
 	my $num_subs         = 0;
 	my $time_to_send     = 0;
 	my $somethings_wrong = 0;
 
+	
     if($enable_bulk_batching == 1){
 
+		if($amazon_ses_auto_batch_settings == 1){ 
+			require DADA::Mail::MailOut; 
+			my $mo = DADA::Mail::MailOut->new({-list => $list}); 
+			my $enabled; 
+			($enabled, $mass_send_amount, $bulk_sleep_amount, ) = $mo->batch_params({-amazon_ses_auto_batch_settings => 1});
+		}
+		
         if($bulk_sleep_amount > 0 && $mass_send_amount > 0){
 
             my $per_sec  = $mass_send_amount / $bulk_sleep_amount;
@@ -2442,6 +2488,7 @@ sub previewBatchSendingSpeed {
 			}
 
 			$per_hour      = commify($per_hour);
+			$num_subs    = commify($num_subs);
 
 			$time_to_send = _formatted_runtime($total_hours * 60 * 60);
 
@@ -3497,7 +3544,7 @@ sub membership {
         }
 
         my $subscribed_to_lt = {};
-        for ( @{ $lh->subscribed_to( { -email => $email } ) } ) {
+        for ( @{ $lh->member_of( { -email => $email } ) } ) {
             $subscribed_to_lt->{$_} = 1;
         }
 
@@ -3641,6 +3688,9 @@ m/^(list|black_list|white_list|authorized_senders|bounced_list)$/
                     bounced_list_removed_from_list =>
                       $bounced_list_removed_from_list,
 
+					can_have_subscriber_fields =>
+                      $lh->can_have_subscriber_fields,
+
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -3654,6 +3704,307 @@ m/^(list|black_list|white_list|authorized_senders|bounced_list)$/
     }
 }
 
+
+sub update_email_results { 
+
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'membership'
+    );
+    $list = $admin_list;
+
+	require DADA::MailingList::Subscribers; 
+	require DADA::MailingList::Subscriber::Validate;
+	require DADA::MailingList::Settings; 
+
+	my %list_types = (
+        list               => 'Subscribers',
+        black_list         => 'Black Listed',
+        authorized_senders => 'Authorized Senders',
+        white_list         => 'White Listed',
+        sub_request_list   => 'Subscription Requests',
+        bounced_list       => 'Bouncing Addresses',
+    );
+	my %error_title = (
+		 invalid_email    => 'Invalid Email Address', 
+		 subscribed       => 'Already Subscribed', 
+		 mx_lookup_failed => 'MX Lookup Failed', 
+		 black_listed     => 'Black Listed', 
+		 not_white_listed => 'Not on the White List', 
+	);
+	
+	my $for_all_lists     = $q->param('for_all_lists') || 0; 
+	my $lists_to_validate = [];
+	my $email         = cased(xss_filter($q->param('email'))); 
+	my $updated_email = cased(xss_filter($q->param('updated_email'))); 
+
+	my $list_lh = DADA::MailingList::Subscribers->new({-list => $list}); 
+	
+	if($list_lh->can_have_subscriber_fields) { 
+		if($for_all_lists == 1 && $root_login == 1){ 
+			require DADA::Profile; 
+			my $prof = DADA::Profile->new({-email => $email}); 
+			$lists_to_validate = $prof->subscribed_to; 
+		}
+		else { 
+			push(@$lists_to_validate, $list); 	
+		}
+	}
+	else { 
+		push(@$lists_to_validate, $list); 	
+	}
+	
+	# old address
+	
+	my $all_list_reports = [];
+	my $all_list_status = 1;
+	
+	for my $to_validate_list(@$lists_to_validate) { 
+		
+		my $all_reports = [];
+		my $all_status  = 1;
+		
+		my $lh = DADA::MailingList::Subscribers->new({-list => $to_validate_list});   
+		my $sv = DADA::MailingList::Subscriber::Validate->new( { -list => $to_validate_list } );
+		my $ls = DADA::MailingList::Settings->new( { -list => $to_validate_list } );
+		
+		for my $type(@{$lh->member_of({-email => $email})}){ 
+			my $sub_report = [];		
+			# new address
+			my ( $sub_status, $sub_errors ) = $sv->subscription_check(
+		        {
+		            -email => $updated_email,
+		            -type  => $type, 
+					-skip  => [
+		                'closed_list',
+		                'over_subscription_quota',
+		                'already_sent_sub_confirmation',
+		                'invite_only_list',
+						($ls->param('allow_admin_to_subscribe_blacklisted') == 1) ? 
+	                    (
+	                    	'black_listed', 
+	                    ) : (),
+		            ],
+		        }
+		    );
+			if($sub_status == 0){ 
+				$all_status      = 0; 
+				$all_list_status = 0; 
+			}
+			my $errors = [];
+			for(keys %$sub_errors){ 
+				push(@$errors, {error => $_, error_title => $error_title{$_}}); 
+			}
+			push(@$all_reports, { type_title => $list_types{$type}, type => $type, status => $sub_status, errors => $errors}); 
+		}
+
+		push(@$all_list_reports, 
+			{
+				list        => $to_validate_list, 
+				list_name   => $ls->param('list_name'), 
+				all_status  => $all_status,
+				all_reports => $all_reports, 
+			}
+		); 
+		
+	}
+	use Data::Dumper; 
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::screen(
+		{ 
+			-screen => 'update_email_results_widget.tmpl',
+			-expr   => 1,
+			-vars   => { 
+				email              => $email, 
+				updated_email      => $updated_email, 
+				all_list_status    => $all_list_status,
+				all_list_reports   => $all_list_reports, 
+				for_all_lists      => $for_all_lists, 
+				root_login         => $root_login, 
+				validate_dump      => Dumper($all_list_reports),
+
+			},
+		}
+	); 
+	print $q->header(); 
+	e_print($scrn);
+
+}
+
+sub admin_update_email { 
+
+	# Validate
+	my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'membership'
+    );
+    $list = $admin_list;
+
+	# Get some params
+	my $email         = cased(xss_filter($q->param('email'))); 
+	my $updated_email = cased(xss_filter($q->param('updated_email'))); 
+	my $for_all_lists = $q->param('for_all_lists') || 0; 
+	
+	require DADA::MailingList::Subscribers; 	
+
+	my $og_prof = undef; 
+	
+	my $list_lh = DADA::MailingList::Subscribers->new({-list => $list}); 
+	if($list_lh->can_have_subscriber_fields) { 
+		require DADA::Profile; 
+		$og_prof = DADA::Profile->new({-email => $email}); 	
+	}
+	
+	# One, or many lists we're updating?? 
+	my $lists_to_update = [];
+	if($list_lh->can_have_subscriber_fields) { 
+		if($for_all_lists == 1 && $root_login == 1){ 
+				$lists_to_update = $og_prof->subscribed_to; 
+		}
+		else { 
+			push(@$lists_to_update, $list); 
+		}
+	}
+	else { 
+		push(@$lists_to_update, $list); 		
+	}
+	
+	# Switch the addresses around
+	# But only for lists, and sublists of that lists 
+	# that this address is a member of
+	# 
+	require DADA::Logging::Usage;
+    my $log = new DADA::Logging::Usage;
+
+	for my $u_list(@$lists_to_update) { 
+		my $lh = DADA::MailingList::Subscribers->new({-list => $u_list}); 
+		for my $type(@{$lh->member_of({-email => $email})}){ 
+			$lh->remove_subscriber(
+				{
+					-email  => cased($email),
+					-type   => $type, 
+					-log_it => 0, 
+				}
+			);
+			$lh->add_subscriber(
+				{
+					-email  => cased($updated_email), 
+					-type   => $type, 
+					-log_it => 0,
+				}
+			);
+			$log->mj_log(
+				$u_list, 
+				'Updated Subscription for ' . $u_list . '.' . $type,  
+				$email . ':' . $updated_email
+			);
+		}	
+	}
+	
+	# PROFILES
+	
+	if(! $list_lh->can_have_subscriber_fields) { 
+		print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=membership&email=' . $updated_email . '&type=list&done=1'); 
+		return;
+	}
+	
+	# All Lists? EASY
+	if($for_all_lists == 1){ 
+		if(! $og_prof->exists){ 
+			# Make one (old email) 
+			$og_prof->insert({
+			    -password  => $og_prof->_rand_str(8),
+			    -activated => 1,
+			}); 
+		}
+		$og_prof->update({ 
+			-activated      => 1, 
+			-update_email	=> $updated_email, 
+		}); 
+		# Then this method changes the updated email to the email..
+		# And changes the profiles fields, as well... 
+		$og_prof->update_email;
+	}
+	else { 
+
+		# JUST one list? 
+		# it gets a little crazy... 
+		
+		# Basically what we want to do is this: 
+		# If the OLD address is subscribed to > 1 list, don't mess with the current
+		# profile information, 
+		# If the NEW address already has profile information, do not overwrite it
+		# 
+	
+		# Remember, this only works with the, "list" sublist... 
+		my $og_subscriptions = $og_prof->subscribed_to; 
+	
+		if(! $og_prof->exists){ 
+			# Make one (old email) 
+			$og_prof->insert({
+			    -password  => $og_prof->_rand_str(8),
+			    -activated => 1,
+			}); 
+		}
+
+		# Is there another mailing list that has the old address as a subscriber? 
+		# Remember, we already changed over ONE of the subscriptions. 
+	
+		if(scalar(@$og_subscriptions) >= 1){ 
+		
+			my $updated_prof = DADA::Profile->new({-email => $updated_email});
+			# This already around? 
+			if($updated_prof->exists){ 
+			
+				# Got any information? 
+				if($updated_prof->{fields}->are_empty){ 
+				
+					# No info in there yet? 
+					$updated_prof->{fields}->insert({
+						-fields => $og_prof->{fields}->get, 
+						-mode   => 'writeover', 
+					}); 		
+				}
+			}
+			else {
+			
+				# So there's not a profile, yet? 
+				# COPY (don't move) the old profile info, 
+				# to the new profile
+				# (inludeds fields) 
+				my $new_prof = $og_prof->copy({ 
+					-from => $email, 
+					-to   => $updated_email, 
+				}); 
+			}
+		}
+		else { 
+		
+			# So, no other mailing list has a subscription for the new email address
+			# 
+			my $updated_prof = DADA::Profile->new({-email => $updated_email});
+			# But does this profile already exists for the updated address? 
+			if($updated_prof->exists){ 
+			
+				 # Well, nothing, since it already exists.
+			}
+			else { 
+			
+				# updated our old email profile, to the new email 
+				# Only ONE subscription, w/Profile
+				# First save the updated email
+				$og_prof->update({ 
+					-activated      => 1, 
+					-update_email	=> $updated_email, 
+				}); 
+				# Then this method changes the updated email to the email..
+				# And changes the profiles fields, as well... 
+				$og_prof->update_email;		
+			}
+		}
+	}
+	print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=membership&email=' . $updated_email . '&type=list&done=1'); 
+}
 
 
 sub mailing_list_history { 
@@ -3673,11 +4024,14 @@ sub mailing_list_history {
             -email => $email,
         }
     );
+	#use Data::Dumper; 
+	#die Dumper($r); 
+	
 	my $i;
 	for($i = 0; $i <= (scalar(@$r) - 1); $i++){ 
 		$r->[$i]->{show_email} = 0;
 	}
-
+	@$r = reverse(@$r);
 
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::screen(
@@ -3691,8 +4045,62 @@ sub mailing_list_history {
 		}
 	); 
 	print $q->header(); 
-	print $scrn;
+	e_print($scrn);
 
+}
+
+
+
+sub admin_change_profile_password { 
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'membership'
+    );
+	my $list = $admin_list; 
+	my $profile_password = xss_filter($q->param('profile_password')); 
+    my $email            = xss_filter( $q->param('email') );
+	my $type             = xss_filter( $q->param('type') );
+
+    require DADA::Profile; 
+	my $prof = DADA::Profile->new( { -email => $email } );
+
+	if($prof->exists){ 
+		
+		$prof->update(
+			{
+				-password => $profile_password,
+			}
+		);
+		# Reactivate the Account. ?
+		$prof->activate();
+	}
+	else { 
+		$prof->insert(
+			{
+				-password  => $profile_password,
+				-activated => 1, 
+			}
+		);
+	}
+	
+	# DEV: This is going to get repeated quite a bit..
+	require DADA::Profile::Htpasswd;
+	foreach my $p_list(@{$prof->subscribed_to}) { 
+		my $htp     = DADA::Profile::Htpasswd->new({-list => $p_list});
+		for my $id(@{$htp->get_all_ids}) {  
+			$htp->setup_directory({-id => $id});
+		}
+	}
+	#
+	
+		
+	print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+          . '?f=membership;email='
+          . $email
+          . ';type='
+          . $type
+          . ';done=1' );
+    return;
 }
 
 
@@ -6371,7 +6779,9 @@ sub list_cp_options {
             {
                 -associate => $q,
                 -settings  => {
-                    enable_fckeditor            => 0,
+                    enable_fckeditor                 => 0,
+					show_message_body_plaintext_ver  => 0, 
+					show_message_body_html_ver       => 0,
                 }
             }
         );
@@ -9747,6 +10157,7 @@ sub profile_login {
 		default();
 		return
 	}
+	require DADA::Profile; 
 	###
 	my $all_errors = [];
 	my $named_errs = {};
@@ -9795,6 +10206,7 @@ sub profile_login {
 				{
 					-screen => 'profile_login.tmpl',
 					-with   => 'list', 
+					-expr => 1,
 					-vars   => {
 						errors                       => $all_errors,
 						%$named_errs,
@@ -9810,8 +10222,8 @@ sub profile_login {
 						CAPTCHA_string               => $CAPTCHA_string,
 						welcome                      => $q->param('welcome')					   || '',
 						removal                      => $q->param('removal')                       || '',
-
-					}
+						%{DADA::Profile::feature_enabled()}
+					}, 
 				}
 			);
 			e_print($scrn);
@@ -9869,16 +10281,22 @@ sub profile_register {
 	if(
 		$DADA::Config::PROFILE_OPTIONS->{enabled}    != 1      ||
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
-	){		default();
-		return
+	){		
+		default();
+		return;
+	}
+	require DADA::Profile;
+	my $prof = DADA::Profile->new({-email => $email});
+
+	if(! DADA::Profile::feature_enabled('register') == 1){ 
+		default();
+		return;
 	}
 
 	my $email       = strip(cased(xss_filter($q->param('email'      ))));
 	my $email_again = strip(cased(xss_filter($q->param('email_again'))));
-	my $password    = xss_filter($q->param('password'));
+	my $password    = strip(xss_filter($q->param('password')));
 
-	require DADA::Profile;
-	my $prof = DADA::Profile->new({-email => $email});
 
 
 	if($prof->exists() &&
@@ -9933,6 +10351,7 @@ sub profile_register {
 
 sub profile_activate {
 
+	
 	if(
 		$DADA::Config::PROFILE_OPTIONS->{enabled}    != 1      ||
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
@@ -9940,10 +10359,15 @@ sub profile_activate {
 		return
 	}
 
+	require DADA::Profile;
+	if(! DADA::Profile::feature_enabled('register') == 1){ 
+		default();
+		return;
+	}
+	
 	my $email       = strip(cased(xss_filter($q->param('email'))));
 	my $auth_code = xss_filter($q->param('auth_code'));
 
-	require DADA::Profile;
 
 
 	my $prof = DADA::Profile->new({-email => $email});
@@ -9985,6 +10409,12 @@ sub profile_help {
 		$DADA::Config::PROFILE_OPTIONS->{enabled}    != 1      ||
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
 	){		default();
+		return;
+	}
+
+	require DADA::Profile;
+	if(! DADA::Profile::feature_enabled('help') == 1){ 
+		default();
 		return;
 	}
 
@@ -10060,6 +10490,12 @@ sub profile {
 
 		}
 		elsif($q->param('process') eq 'change_password'){
+			
+			if(! DADA::Profile::feature_enabled('change_password') == 1){ 
+				default();
+				return;
+			}
+			
 			my $new_password       = xss_filter($q->param('password'));
 			my $again_new_password = xss_filter($q->param('again_password'));
 			# DEV: See?! Why are we doing this manually? Can we use is_valid_registration() perhaps?
@@ -10075,6 +10511,19 @@ sub profile {
 				require DADA::Profile::Session;
 				my $prof_sess = DADA::Profile::Session->new->logout;
 				profile_login();
+				
+				# DEV: This is going to get repeated quite a bit..
+				require DADA::Profile::Htpasswd;
+				foreach my $p_list(@{$prof->subscribed_to}) { 
+					my $htp     = DADA::Profile::Htpasswd->new({-list => $p_list});
+					for my $id(@{$htp->get_all_ids}) {  
+						$htp->setup_directory({-id => $id});
+					}
+				}
+				#
+				
+				
+				
 			}
 			else {
 				$q->param('errors', 1);
@@ -10085,6 +10534,11 @@ sub profile {
 
 		}
 		elsif($q->param('process') eq 'update_email'){
+
+			if(! DADA::Profile::feature_enabled('update_email_address') == 1){ 
+				default();
+				return;
+			}
 
 			# So, send the confirmation email for update to the NEW email address?
 			# What if the OLD email address is activated? Guess we'll have to go with the
@@ -10176,6 +10630,11 @@ sub profile {
 		}
 		elsif ($q->param('process') eq 'delete_profile'){
 
+			if(! DADA::Profile::feature_enabled('delete_profile') == 1){ 
+				default();
+				return;
+			}
+			
 			$prof_sess->logout;
 			$prof->remove;
 
@@ -10206,6 +10665,8 @@ sub profile {
 		   my $filled = [];
 		   my $has_subscriptions = 0;
 
+		   my $protected_directories = [];
+		
 		   for my $i(@$subscriptions){
 
 				if($i->{subscribed} == 1){
@@ -10225,17 +10686,26 @@ sub profile {
 						-to_sanitize => [qw(list_settings.list_owner_email list_settings.info list_settings.privacy_policy )],
 					}
 				);
-				push(@$filled, {%{$i}, %{$li}, PROGRAM_URL => $DADA::Config::PROGRAM_URL})
+				
+				
+				require DADA::Profile::Htpasswd;
+				my $htp = DADA::Profile::Htpasswd->new({-list => $i->{list}}); 
+				my $l_p_d = $htp->get_all_entries; 
+				if(scalar(@$l_p_d) > 0){ 
+					@$protected_directories = (@$protected_directories, @$l_p_d); 
+				}
+				push(@$filled, 
+					{%{$i}, 
+					%{$li}, 
+					PROGRAM_URL => $DADA::Config::PROGRAM_URL})
 			}
-			#require Data::Dumper;
-			#die Data::Dumper::Dumper($filled);
-
 			my $scrn = '';
 		    require DADA::Template::Widgets;
 		    $scrn .=  DADA::Template::Widgets::wrap_screen(
 				{
 					-screen => 'profile_home.tmpl',
 					-with   => 'list', 
+					-expr => 1,
 					-vars   => {
 						errors                      => $q->param('errors') || 0,
 						'profile.email'             => $email,
@@ -10257,6 +10727,10 @@ sub profile {
 																-default_gravatar_url => $DADA::Config::PROFILE_OPTIONS->{gravatar_options}->{default_gravatar_url},
 															}
 														),
+						protected_directories => $protected_directories, 
+						%{DADA::Profile::feature_enabled()},
+
+						
 					}
 				}
 			);
@@ -10307,6 +10781,12 @@ sub profile_reset_password {
 		$DADA::Config::PROFILE_OPTIONS->{enabled}    != 1      ||
 		$DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/
 	){
+		default();
+		return;
+	}
+
+	require DADA::Profile;
+	if(! DADA::Profile::feature_enabled('password_reset') == 1){ 
 		default();
 		return;
 	}
@@ -10416,6 +10896,13 @@ sub profile_update_email {
 	my $confirmed = xss_filter($q->param('confirmed'));
 
 	require DADA::Profile;
+	
+	if(! DADA::Profile::feature_enabled('update_email_address') == 1){ 
+		default();
+		return;
+	}
+	
+	
 	my $prof = DADA::Profile->new({-email => $email});
 	my $info = $prof->get;
 
@@ -10453,6 +10940,11 @@ sub profile_update_email {
 			$prof->update_email;
 			#/ This should probably go in the update_email method...
 
+			$prof->send_update_email_notification(
+				{ 
+					-prev_email => cased($profile_info->{'profile.email'}), 
+				}
+			);
 
 			# Now, just log us in:
 			require DADA::Profile::Session;
@@ -10501,19 +10993,22 @@ sub profile_update_email {
 					}
 				);
 			   e_print($scrn);
+
 		}
 	}
 	else {
-		
+
 		require    DADA::Template::Widgets;
 		my $scrn = DADA::Template::Widgets::wrap_screen(
 				{
 					-screen => 'profile_update_email_error.tmpl',
+					-with  => 'list', 
 					-vars   => {
 					},
 				}
 			);
 		   e_print($scrn);
+
 	}
 }
 

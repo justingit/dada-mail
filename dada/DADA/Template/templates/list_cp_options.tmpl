@@ -15,6 +15,55 @@
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
+<fieldset> 
+<legend>Message Body Authoring</legend> 
+
+<p>
+	These preferences will be honored in the, <strong>Send a Message</strong> screen and in the <strong>Beatitude Plugin</strong>
+</p>
+
+<table cellpadding="5" border="0"> 
+	<tr> 
+		<td>
+			<p><strong>By default, reveal:</strong></p> 
+			
+<table cellpadding="5" border="0"> 
+	<tr> 
+		<td>
+			<p>
+				<input type="checkbox" name="show_message_body_plaintext_ver" id="show_message_body_plaintext_ver" <!-- tmpl_if list_settings.show_message_body_plaintext_ver -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
+			</p>
+		</td>
+		<td>
+			<p>
+				<label for="show_message_body_plaintext_ver">
+					PlainText Version
+				</label>
+			</p>
+		</td>
+	</tr>
+	<tr> 
+		<td>
+			<p>
+				<input type="checkbox" name="show_message_body_html_ver" id="show_message_body_html_ver" <!-- tmpl_if list_settings.show_message_body_html_ver -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
+			</p>
+		</td>
+		<td>
+			<p>
+				<label for="show_message_body_html_ver">
+					HTML Version
+				</label>
+			</p>
+		</td>
+	</tr>
+</table>
+</td>
+</tr>
+</table> 
+
+
+</fieldset> 
+
 
 <fieldset> 
 

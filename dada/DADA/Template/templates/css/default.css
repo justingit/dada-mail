@@ -421,6 +421,10 @@ input.small_button {
 	font-size: .9em;
 }
 
+input.bigger_button { 
+	font-size: 1.75em; 
+}
+
 #Header input.small_button {
 	padding-top: 1px;
 	padding-bottom: 1px;

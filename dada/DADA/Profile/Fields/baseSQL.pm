@@ -199,6 +199,31 @@ sub get {
 
 }
 
+
+sub are_empty { 
+	my $self = shift; 
+	my $empty = 1; 
+	my $f = $self->get; 
+
+	delete($f->{email_name});
+	delete($f->{email_domain});
+	delete($f->{email});
+	
+	if(!keys %{$f}){ 
+		return 1; 
+	}
+
+	for my $k(keys %{$f}){ 
+		if(defined($f->{$k}) && length($f->{$k}) > 0){ 
+			return 0; 
+		}
+		else { 
+			# ... 
+		}
+	}	
+	return 1; 
+}
+
 sub exists {
     my $self = shift;
     my ($args) = @_;

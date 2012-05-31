@@ -110,7 +110,8 @@ require Exporter;
   decode_cgi_obj
   safely_decode
   safely_encode
-
+  slurp
+  grab_url
 );
 
 
@@ -280,7 +281,7 @@ sub make_pin {
 		
 		$pin = ((($pin + $pin_helper) * $DADA::Config::PIN_NUM ) - $pin_helper); 
 				
-		if($args{-crypt} == 1){ 
+		if($args{'-crypt'} == 1){ 
 			require DADA::Security::Password; 
 
 			
@@ -2037,33 +2038,21 @@ sub SQL_check_setup {
 		$table_count = $table_count + $tables_to_look_for{$_}; 
 	}
 	
-
-	if($table_count == 9){ 
-		if(
-			$tables_to_look_for{$DADA::Config::SQL_PARAMS{clickthrough_url_log_table}} == 0 
-			&& 
-			$tables_to_look_for{$DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}} == 0
-		){ 
-
-			my $r = create_missing_4_5_0_tables(); 
-			if( $r == 0){ 
-				return 0; 
-			}
-			else { 
-				$table_count = $table_count + 2; 
-			}
+	if($table_count < 12) { 
+		
+		my $r = create_probable_missing_tables(); 
+		if( $r == 0){ 
+			return 0; 
+		}
+		else { 
 		}
 	}
-	if($table_count < 11){ 
-		return 0; 
-	}
-	else { 
+
 		return 1; 
-	}
 
 }
 
-sub create_missing_4_5_0_tables { 
+sub create_probable_missing_tables { 
 
 
 	my %schema = (); 
@@ -2086,7 +2075,19 @@ timestamp TIMESTAMP DEFAULT NOW(),
 remote_addr text,
 msg_id text, 
 url text
-);	
+);
+
+CREATE TABLE IF NOT EXISTS dada_password_protect_directories (
+id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
+list varchar(16),
+name text,
+url text,
+path text,
+use_custom_error_page char(1),
+custom_error_page text,
+default_password text
+);
+
 };
 $schema{Pg} = q{ 
 CREATE TABLE dada_mass_mailing_event_log (
@@ -2107,6 +2108,18 @@ remote_addr text,
 msg_id text, 
 url text
 );
+
+CREATE TABLE dada_password_protect_directories (
+id serial,
+list varchar(16),
+name text,
+url text,
+path text,
+use_custom_error_page char(1),
+custom_error_page text,
+default_password text
+);
+
 };
 $schema{SQLite} = q{ 
 CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log (
@@ -2127,15 +2140,27 @@ remote_addr text,
 msg_id text,
 url text
 );	
+
+CREATE TABLE IF NOT EXISTS dada_password_protect_directories (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+list varchar(16),
+name text,
+url text,
+path text,
+use_custom_error_page char(1),
+custom_error_page text,
+default_password text
+);
 };
 
-	my @statements = split(';', $schema{$DADA::Config::SQL_PARAMS{dbtype}}, 2);
+	my @statements = split(';', $schema{$DADA::Config::SQL_PARAMS{dbtype}}, 3);
 
 	for(@statements){ 
 	
 		require DADA::App::DBIHandle; 
 		my $dbi_obj = DADA::App::DBIHandle->new; 
 		my $dbh = $dbi_obj->dbh_obj;
+		warn 'query: ' . $_ . "\n" . '-' x 72 . "\n";;
 		eval {  
 			my $sth = $dbh->prepare($_) or croak $DBI::errstr; 
 			$sth->execute
@@ -2143,7 +2168,11 @@ url text
 		};
 		if($@){ 
 			carp $@;
-			return 0; 
+			# This is lame - PG < 9.1 does not supper CREATE IF NOT EXISTS... so this 
+			# errors out... 
+			if($DADA::Config::SQL_PARAMS{dbtype} ne 'Pg'){ 
+				return 0; 
+			}
 		}
 	} 
 
@@ -2677,6 +2706,40 @@ sub safely_encode {
 	else { 
 		return $_[0];
 	}	
+}
+
+sub slurp {
+
+    my ($file) = @_;
+
+    local ($/) = wantarray ? $/ : undef;
+    local (*F);
+    my $r;
+    my (@r);
+
+    open( F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
+      || croak "open $file: $!";
+    @r = <F>;
+    close(F) || croak "close $file: $!";
+
+    return $r[0] unless wantarray;
+    return @r;
+
+}
+
+sub grab_url { 
+	my $url = shift; 
+	eval { require LWP::Simple };
+	if($@){
+		carp "LWP::Simple not installed! $!"; 
+		return undef;
+	}else{ 
+		eval { $LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); };
+		my $tmp = undef; 
+		   $tmp = LWP::Simple::get($url);
+		   $tmp = safely_decode($tmp); 
+		   return $tmp; 
+	}
 }
 
 
