@@ -3753,7 +3753,7 @@ sub update_email_results {
 	else { 
 		push(@$lists_to_validate, $list); 	
 	}
-	
+
 	# old address
 	
 	my $all_list_reports = [];
@@ -3808,7 +3808,7 @@ sub update_email_results {
 		); 
 		
 	}
-	use Data::Dumper; 
+	use Data::Dumper; 	
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::screen(
 		{ 
@@ -3844,7 +3844,6 @@ sub admin_update_email {
 	my $email         = cased(xss_filter($q->param('email'))); 
 	my $updated_email = cased(xss_filter($q->param('updated_email'))); 
 	my $for_all_lists = $q->param('for_all_lists') || 0; 
-	
 	require DADA::MailingList::Subscribers; 	
 
 	my $og_prof = undef; 
@@ -3917,13 +3916,26 @@ sub admin_update_email {
 			    -activated => 1,
 			}); 
 		}
-		$og_prof->update({ 
-			-activated      => 1, 
-			-update_email	=> $updated_email, 
-		}); 
-		# Then this method changes the updated email to the email..
-		# And changes the profiles fields, as well... 
-		$og_prof->update_email;
+		my $updated_prof = DADA::Profile->new({-email => $updated_email});
+		# This already around? 
+		if(! $updated_prof->exists){ 
+			$og_prof->update({ 
+				-activated      => 1, 
+				-update_email	=> $updated_email, 
+			}); 
+			# Then this method changes the updated email to the email..
+			# And changes the profiles fields, as well... 
+			$og_prof->update_email;
+		}
+		# so, the old prof have any subscriptions? 
+		my $old_prof = DADA::Profile->new({-email => $email}); 
+		if($old_prof->exists){ 
+			# Again, this will only touch, "list" sublist...
+			if(scalar(@{$old_prof->subscribed_to}) == 0) { 
+				# Then we can remove it, 
+				$old_prof->remove;
+			}
+		}
 	}
 	else { 
 
@@ -4002,6 +4014,16 @@ sub admin_update_email {
 				$og_prof->update_email;		
 			}
 		}
+		# so, the old prof have any subscriptions? 
+		my $old_prof = DADA::Profile->new({-email => $email}); 
+		if($old_prof->exists){ 
+			# Again, this will only touch, "list" sublist...
+			if(scalar(@{$old_prof->subscribed_to}) == 0) { 
+				# Then we can remove it, 
+				$old_prof->remove;
+			}
+		}
+		
 	}
 	print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=membership&email=' . $updated_email . '&type=list&done=1'); 
 }
@@ -4632,6 +4654,23 @@ sub add_email {
 					}	
 				}
 			}
+			
+			if(
+				$DADA::Config::PROFILE_OPTIONS->{enabled}    == 1 &&
+				$DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/
+			){
+				eval { 
+					require DADA::Profile::Htpasswd;
+					my $htp     = DADA::Profile::Htpasswd->new({-list => $list});
+					for my $id(@{$htp->get_all_ids}) {  
+						$htp->setup_directory({-id => $id});
+					}
+				};
+				if($@){ 
+					warn "Problem updated Password Protected Directories: $@"; 
+				}
+			}
+			
 
 			my $flavor_to_return_to = 'view_list'; 
 			if($return_to eq 'membership'){ # or, others...
