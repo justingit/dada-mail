@@ -4918,8 +4918,6 @@ encrypted.
 
 	clickthrough_tracking                               => 1,
 	enable_open_msg_logging                             => 0, 
-	# Not used anymore - always counted. 
-	# enable_subscriber_count_logging                     => 1, 
 	enable_bounce_logging                               => 1,
 	enable_forward_to_a_friend_logging                  => 1, 
 	enable_view_archive_logging                         => 1, 	
