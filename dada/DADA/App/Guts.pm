@@ -2160,7 +2160,7 @@ default_password text
 		require DADA::App::DBIHandle; 
 		my $dbi_obj = DADA::App::DBIHandle->new; 
 		my $dbh = $dbi_obj->dbh_obj;
-		warn 'query: ' . $_ . "\n" . '-' x 72 . "\n";;
+		# warn 'query: ' . $_ . "\n" . '-' x 72 . "\n";;
 		eval {  
 			my $sth = $dbh->prepare($_) or croak $DBI::errstr; 
 			$sth->execute
