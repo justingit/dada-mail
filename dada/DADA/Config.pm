@@ -4918,8 +4918,6 @@ encrypted.
 
 	clickthrough_tracking                               => 1,
 	enable_open_msg_logging                             => 0, 
-	# Not used anymore - always counted. 
-	# enable_subscriber_count_logging                     => 1, 
 	enable_bounce_logging                               => 1,
 	enable_forward_to_a_friend_logging                  => 1, 
 	enable_view_archive_logging                         => 1, 	
@@ -5218,8 +5216,8 @@ and to say that you've got the freshest tools on the Web.
 
 =cut
 
-$VERSION = 5.1.0; 
-$VER     = '5.1.0 Stable - 5/31/12';
+$VERSION = 5.1.1; 
+$VER     = '5.1.1 Stable - 6/5/12';
 
 #
 #

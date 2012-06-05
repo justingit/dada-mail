@@ -2,6 +2,28 @@
 
 =head1 Dada Mail Changelog for version 5.x.x
 
+=head1 5.1.1
+
+=head2 Summary 5.1.1
+
+This release contains primarily bugfixes found in the v5.0.2 release of Dada Mail. 
+
+If upgrading from B<v5.1.0> you will not need to create a new config file.
+
+If upgrading from B<v4.9.1> or lower, you will want to create a new config file, during the install process. 
+
+=head2 Bugfixes 5.1.1
+
+
+=head3 Email Update "For All Lists" doesn't update all lists, just current list
+
+L<https://github.com/justingit/dada-mail/issues/294>
+
+=head3 Saving Tracker prefs will fail
+
+L<https://github.com/justingit/dada-mail/issues/295>
+
+
 =head1 5.1.0
 
 =head2 Summary 5.1.0 

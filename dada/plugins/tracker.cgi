@@ -360,24 +360,6 @@ sub default_tmpl {
   </td>
   </tr> 
 
-<!-- 
- <tr> 
-  <td> 
-   <p>
-    <input type="checkbox" name="enable_subscriber_count_logging" id="enable_subscriber_count_logging"  value="1" <!-- tmpl_if list_settings.enable_subscriber_count_logging -->checked="checked"<!--/tmpl_if --> 
-   </p>
-  </td> 
-  <td> 
-   <p>
-    <label for="enable_subscriber_count_logging"> 
-     Enable Subscriber Count Logging
-    </label> 
-   </p>
-  </td>
-  </tr> 
---> 
-
-
    <tr> 
   <td> 
    <p>
@@ -1167,7 +1149,6 @@ sub edit_prefs {
             -settings  => {
                 clickthrough_tracking                           => 0,
                 enable_open_msg_logging                         => 0,
-                enable_subscriber_count_logging                 => 0,
 				enable_forward_to_a_friend_logging              => 0, 
 				enable_view_archive_logging                     => 0,
                 enable_bounce_logging                           => 0,
