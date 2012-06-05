@@ -5216,7 +5216,7 @@ and to say that you've got the freshest tools on the Web.
 
 =cut
 
-$VERSION = 5.1.0; 
+$VERSION = 5.1.1; 
 $VER     = '5.1.1 Stable - 6/5/12';
 
 #
