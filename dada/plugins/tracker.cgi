@@ -925,7 +925,7 @@ sub clickthrough_table_tmpl {
 				</tr> 
 
 				<!-- tmpl_loop report_by_message_index --> 
-				<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
+				<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
 				 <td> 
 		          <p>
 		          
@@ -1528,7 +1528,7 @@ my $tmpl = q{
 		
 		
 			<!-- tmpl_loop url_report --> 
-			<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
+			<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
 			 <td> 
 			 <p> 
 	
@@ -1558,7 +1558,7 @@ my $tmpl = q{
 	
 	</table> 
 	</div> 
-	<!-- tmpl_else -> 
+	<!-- tmpl_else --> 
 	
 		<p class="alert">Nothing to report.</p> 
 		
@@ -1695,7 +1695,7 @@ my $tmpl = q{
 	
 	<!-- tmpl_if chrome --> 
 		<!-- tmpl_loop soft_bounce_report --> 
-			<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
+			<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
 			  <td> 
 			   <!-- tmpl_var timestamp --> 
 			  </td> 
@@ -1708,7 +1708,7 @@ my $tmpl = q{
 		<!-- /tmpl_loop -->	
 	<!-- tmpl_else --> 
 		<!-- tmpl_loop hard_bounce_report --> 
-			<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
+			<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
 			  <td> 
 			   <!-- tmpl_var timestamp --> 
 			  </td> 
@@ -1752,7 +1752,7 @@ my $tmpl = q{
 	
 	<!-- tmpl_if chrome --> 
 		<!-- tmpl_loop hard_bounce_report --> 
-			<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
+			<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
 			  <td> 
 			   <!-- tmpl_var timestamp --> 
 			  </td> 
@@ -1765,7 +1765,7 @@ my $tmpl = q{
 		<!-- /tmpl_loop -->	
 	<!-- tmpl_else --> 
 		<!-- tmpl_loop hard_bounce_report --> 
-			<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
+			<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
 			  <td> 
 			   <!-- tmpl_var timestamp --> 
 			  </td> 
@@ -2017,7 +2017,7 @@ sub country_geoip_chart_tmpl{
 			</tr> 
 
 			<!-- tmpl_loop c_geo_ip_report --> 
-			<tr <!-- tmpl_if __odd__> class="alt"<!-- /tmpl_if -->> 
+			<tr <!-- tmpl_if __odd__ --> class="alt"<!-- /tmpl_if -->> 
 			<td>
 			<!-- tmpl_var country --> 
 			</td> 
@@ -2137,7 +2137,7 @@ sub url_report_tmpl {
 	
 	<table class="stripedtable"> 
 	 <!-- tmpl_loop url_report --> 
-		<tr <!-- tmpl_if __odd__>class="alt"<!-- /tmpl_if -->> 
+		<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
 		 <td> 
 		  <p> 
 		   <!-- tmpl_var url --> 
