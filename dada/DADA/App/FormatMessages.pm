@@ -1373,6 +1373,15 @@ sub _apply_template {
 			$new_data = strip($self->{ls}->param('mailing_list_message_html')) || '<!-- tmpl_var message_body -->';
 		}
 		
+		$new_data = $self->message_body_tagged(
+			{
+				-str => $new_data, 
+				-type => $args{-type}, 
+			}
+		);				
+		
+		
+		
 		if($args{-type} eq 'HTML'){  
 		
 			my $bodycontent     = undef; 
@@ -1549,6 +1558,34 @@ sub unsubscription_confirmationation {
 		return $args->{-str};	
 }
 
+sub can_find_message_body_tag {
+
+    my $self = shift;
+    my ($args) = @_;
+    if ( !exists( $args->{-str} ) ) {
+        die "You MUST pass the, '-str' paramater!";
+    }
+
+    my @message_body_tags = (
+		'<!-- tmpl_var message_body -->',
+	);
+    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
+        1 )
+    {
+        push( @message_body_tags, '[message_body]' );
+    }
+
+    for my $message_body_tag (@message_body_tags) {
+        $message_body_tag = quotemeta($message_body_tag);
+        if ( $args->{-str} =~ m/$message_body_tag/ ) {
+            return 1;
+        }
+    }
+
+    return 0;
+
+}
+
 
 
 
@@ -1628,6 +1665,24 @@ Unsubscribe Automatically:
     }
 
     return $args->{-str};
+}
+
+
+sub message_body_tagged { 
+    my $self = shift;
+
+    my ($args) = @_;
+
+    die "no -str! $!" if !exists( $args->{-str} );
+    die "no -type! $!" if !exists( $args->{-type} );
+
+    if ( $self->can_find_message_body_tag( { -str => $args->{-str} } ) ) {
+        # ...
+    }
+    else {
+		$args->{-str} = '<!-- tmpl_var message_body -->' . $args->{-str};
+	}
+	return $args->{-str};
 }
 
 

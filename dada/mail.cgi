@@ -6442,6 +6442,15 @@ sub edit_type {
                     unsub_link_found_in_html_mlm => $dfm->can_find_unsub_link(
                         { -str => $li->{mailing_list_message_html} }
                     ),
+
+                    message_body_tag_found_in_pt_mlm => $dfm->can_find_message_body_tag(
+                        { -str => $li->{mailing_list_message} }
+                    ),
+                    message_body_tag_found_in_html_mlm => $dfm->can_find_message_body_tag(
+                        { -str => $li->{mailing_list_message_html} }
+                    ),
+
+
                     sub_confirm_link_found_in_confirmation_message =>
                       $dfm->can_find_sub_confirm_link(
                         { -str => $li->{confirmation_message} }
