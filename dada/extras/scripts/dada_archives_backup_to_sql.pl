@@ -32,9 +32,6 @@ my $user             = $DADA::Config::SQL_PARAMS{user};
 my $pass             = $DADA::Config::SQL_PARAMS{pass};
 my $dbtype           = $DADA::Config::SQL_PARAMS{dbtype};
 
-use lib qw(./ ../ ../../ ../../../ ./../../DADA ../../perllib); 
-
-
 my $dbh; 
 
 use CGI qw(:standard); 
