@@ -497,10 +497,12 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 				<!-- /tmpl_loop --> 
 			</ul> 
 		<!-- /tmpl_if --> 
-	
-		<div class="clearskiesbox">
-			<div id="amazon_ses_get_stats"></div> 
-		</div> 
+		
+		<!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" -->
+			<div class="clearskiesbox">
+				<div id="amazon_ses_get_stats"></div> 
+			</div> 
+		<!-- /tmpl_if --> 
 	
 		<fieldset>
 		<legend>
