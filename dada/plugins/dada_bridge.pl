@@ -212,6 +212,7 @@ sub run {
     else {
         &cgi_main();
     }
+
 }
 
 sub test_sub {
@@ -298,8 +299,38 @@ sub cgi_manual_start {
         print '<pre>'
           if $verbose;
         start();
-        print '</pre>'
-          if $verbose;
+		 print '</pre>'
+	     	if $verbose;
+
+
+
+
+
+
+        print '<pre>'
+	          if $verbose;
+	
+		require DADA::Mail::MailOut;
+        if ($run_list) {
+            DADA::Mail::MailOut::monitor_mailout(
+                { 
+					-verbose => $verbose, 
+					-list    => $list, 
+				} 
+			);
+        }
+        else {
+            DADA::Mail::MailOut::monitor_mailout( 
+				{ 
+					-verbose => $verbose
+				} 
+			);
+        }
+		 print '</pre>'
+	     	if $verbose;
+
+
+
     }
     else {
         print $q->header();
@@ -3977,7 +4008,7 @@ sub default_cgi_template {
 	<div class="badweatherbox">
 		  <p><strong>
 			Information Not Saved! Please Fix Problems Below.
-		<strong/></p>
+		</strong></p>
 	</div> 
 <!--/tmpl_unless--> 
 <form name="default_form" action="<!-- tmpl_var Plugin_URL --> "method="post">
