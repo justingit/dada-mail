@@ -10,8 +10,13 @@ Key:
 [*] Naw...
 [?] Someday
 
+[ ] way to see every mailinglist, an address is subscribed on? Maybe a way for a root login to go into a user's Profile? 
+
+[ ] Sending a test message should pull up profile info, if the email address that you send a test message to, is the list owner. 
+
 [ ] Oh, also, I notice that even if I, as the Pro Dada Root user, hide the Mass Mailing section so that list admin log-ins won't be able to see it, the program still defaults to showing them the Mass Mailing >> Send a Message screen when they first log in. That seems less than secure...
 
+[ ] Invite mailings should probably use tmp lists in then db, since if anything goes wrong before that list is removed, your next invite gets all screwed up. And what about multiple invite mass mailings going at one time?!
 
 [ ] Manual in ePub format
 
