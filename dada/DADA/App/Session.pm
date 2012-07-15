@@ -157,9 +157,6 @@ sub login_cookie {
                   # instead, which works reliably for everyone.
 				  $session->flush();
 				  
-				  if($DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{enabled} == 1){ 
-						$self->kcfinder_session_begin; 
-				  }
     }else{ 
 		
 				   $cookie = $q->cookie(-name    => $DADA::Config::LOGIN_COOKIE_NAME, 
@@ -173,71 +170,6 @@ sub login_cookie {
 		
 		
 	return $cookie; 
-}
-
-sub kcfinder_session_begin { 
-	
-	my $self = shift; 
-	require PHP::Session; 
-	require CGI::Lite; 
-	
-	my $cgi = new CGI::Lite; 
-	my $cookies = $cgi->parse_cookies;
-	my $sess_id = ''; 
-	if ($cookies->{$DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{session_name}}) {
-		$sess_id = $cookies->{$DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{session_name}};
-	}
-	else { 
-		carp "no PHP session?"; 
-		$sess_id = 'sess_1234'; 
-	}
-	
-    my $session = PHP::Session->new(
-		$sess_id, 
-		{
-			create    => 1,
-			save_path => $DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{session_dir},
-		}
-	);
-	my $KCFINDER = {
-		disabled  => (! $DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{enabled}), 
-		uploadDir =>    $DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{upload_dir},
-		uploadURL =>    $DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{upload_url},
-	};
-	
-	$session->set(KCFINDER => $KCFINDER); 
-    $session->save;
-	return 1;
-	
-}
-
-sub kcfinder_session_end { 
-	my $self = shift; 
-	my $self = shift; 
-	require PHP::Session; 
-	require CGI::Lite; 
-
-	my $cgi = new CGI::Lite; 
-	my $cookies = $cgi->parse_cookies;
-	my $sess_id = ''; 
-	if ($cookies->{$DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{session_name}}) {
-		$sess_id = $cookies->{$DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{session_name}};
-	}
-	else { 
-		carp "no PHP session?"; 
-		$sess_id = 'sess_1234'; 
-	}
-
-    my $session = PHP::Session->new(
-		$sess_id, 
-		{
-			create    => 1,
-			save_path => $DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{session_dir},
-		}
-	);
-	$session->unregister('KCFINDER');
-    $session->save;
-	return 1;
 }
 
 
@@ -414,9 +346,6 @@ sub logout_cookie {
 							-path    =>  '/');
 	}
 	
-	if($DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{enabled} == 1){ 
-		$self->kcfinder_session_end; 
-	}
 	
 	return $cookie; 
 	
