@@ -10027,9 +10027,9 @@ sub js {
       unittest.js
       scriptaculous.js
       modalbox.js
-
-	  prototype_scriptaculous_package.js
-	
+      
+      prototype_scriptaculous_package.js
+      tiny_mce_config.js
 
     );
 

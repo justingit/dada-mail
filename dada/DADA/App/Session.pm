@@ -189,7 +189,7 @@ sub kcfinder_session_begin {
 	}
 	else { 
 		carp "no PHP session?"; 
-		$sess_id = 'sess_1234'; 
+	#	$sess_id = 'sess_1234'; 
 	}
 	
     my $session = PHP::Session->new(
