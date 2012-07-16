@@ -67,60 +67,62 @@
 
 <fieldset> 
 
-<legend>FCKeditor/CKeditor Options</legend> 
+<legend>WYSIWYG Editor Options</legend> 
 
-
-<div class="clearskiesbox">
-<ul>
-	
-<!-- tmpl_if FCKEDITOR_URL --> 
-<li>
- <p>FCKeditor is currently configured in <!-- tmpl_var PROGRAM_NAME --> at: 
-	
-		<a href="<!-- tmpl_var FCKEDITOR_URL ESCAPE="HTML" -->" target="_blank">
-		<!-- tmpl_var FCKEDITOR_URL ESCAPE="HTML" -->
-	</a>
-</p></li>
-<!-- tmpl_else -->  
-   <li>
-	<p>
-			FCKeditor does <em>not</em> seem to be configured in <!-- tmpl_var PROGRAM_NAME -->
-	</p></li>
-<!-- /tmpl_if -->
-
-
-
-<!-- tmpl_if CKEDITOR_URL --> 
-<li> <p>CKeditor is currently configured in <!-- tmpl_var PROGRAM_NAME --> at: 
-	<a href="<!-- tmpl_var CKEDITOR_URL ESCAPE="HTML" -->" target="_blank">
-		<!-- tmpl_var CKEDITOR_URL ESCAPE="HTML" -->
-	</a>
-</p></li>
-<!-- tmpl_else --> 
-	<li>
-	<p>
-		CKeditor does <em>not</em> seem to be configured in <!-- tmpl_var PROGRAM_NAME -->
-	</p></li>
-<!-- /tmpl_if -->
-</ul> 
-</div> 
 
 <table cellpadding="5" border="0"> 
+		
+
+<!-- tmpl_if ckeditor_enabled --> 
+	<!-- tmpl_if ckeditor_url --> 
 	<tr> 
-		<td>
-			<p>
-				<input type="checkbox" name="enable_fckeditor" id="enable_fckeditor" <!-- tmpl_if list_settings.enable_fckeditor -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
-			</p>
-		</td>
-		<td>
-			<p>
-				<label for="enable_fckeditor">
-					Enable FCKeditor/CKeditor
-				</label>
-			</p>
-		</td>
+	 <td>
+		<input type="radio" name="use_wysiwyg_editor" id="use_wysiwyg_editor_ckeditor" value="ckeditor" <!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'ckeditor')" -->checked="checked"<!--/tmpl_if -->  />
+	</td>
+	<td>
+			<label for="use_wysiwyg_editor_ckeditor">Use CKeditor</label>
+	</td>
 	</tr>
-</table>
+	
+	<!-- /tmpl_if -->
+<!-- /tmpl_if --> 
+<!-- tmpl_if tiny_mce_enabled --> 
+	<!-- tmpl_if tiny_mce_url --> 
+		<tr> 
+		 <td>
+		
+		<input type="radio" name="use_wysiwyg_editor" id="use_wysiwyg_editor_tiny_mce" value="tiny_mce" <!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'tiny_mce')" -->checked="checked"<!--/tmpl_if -->  />
+			<label for="use_wysiwyg_editor_tiny_mce">Use Tiny MCE</label>
+	</td> 
+	 </tr>
+		
+	<!-- /tmpl_if -->
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if fckeditor_enabled --> 
+	<!-- tmpl_if fckeditor_url --> 
+	<tr> 
+	 <td>
+		<input type="radio" name="use_wysiwyg_editor" id="use_wysiwyg_editor_fckeditor" value="fckeditor" <!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'fckeditor')" -->checked="checked"<!--/tmpl_if -->  />
+	</td>
+	<td>
+		<label for="use_wysiwyg_editor_fckeditor">Use FCKeditor</label>
+	</td>
+	</tr>
+	<!-- /tmpl_if -->
+<!-- /tmpl_if --> 
+
+
+	
+		<tr> 
+		 <td>
+		
+		<input type="radio" name="use_wysiwyg_editor" id="use_wysiwyg_editor_none" value="none" <!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'none')" -->checked="checked"<!--/tmpl_if -->  />
+			<label for="use_wysiwyg_editor_none">None</label>
+	</td> 
+	 </tr>
+	
+	</table>
 				
 </fieldset> 
 

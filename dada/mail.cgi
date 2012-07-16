@@ -5689,6 +5689,7 @@ sub edit_archived_msg {
 
 #$q->checkbox(-name => 'delete_' . $tb->{address}, -value => 1, -label => '' ), 'Delete?', $q->br(),
 
+					# CHANGE!
                     if ( $subtype =~ /html/ && $DADA::Config::FCKEDITOR_URL ) {
 
                         require DADA::Template::Widgets;
@@ -6821,15 +6822,25 @@ sub list_cp_options {
 				-Root_Login => $root_login,
 				-List       => $list,  
 			},
-			
-                                               -list   => $list,
-                                               -vars   => {
-													screen    => 'list_cp_options',
-													done      => xss_filter($q->param('done')),
-												},
-											-list_settings_vars       => $li,
-                                            -list_settings_vars_param => {-dot_it => 1},
-                                           });
+
+			-list   => $list,
+			-vars   => {
+				screen    => 'list_cp_options',
+				done      => xss_filter($q->param('done')),
+				
+				ckeditor_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled},
+				ckeditor_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{url},
+
+				fckeditor_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{enabled},
+				fckeditor_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{url},
+
+				tiny_mce_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled},
+				tiny_mce_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{url},
+
+			},
+			-list_settings_vars       => $li,
+			-list_settings_vars_param => {-dot_it => 1},
+			});
 
 		e_print($scrn);
     }
@@ -6839,7 +6850,7 @@ sub list_cp_options {
             {
                 -associate => $q,
                 -settings  => {
-                    enable_fckeditor                 => 0,
+                    #enable_fckeditor                 => 0,
 					show_message_body_plaintext_ver  => 0, 
 					show_message_body_html_ver       => 0,
                 }

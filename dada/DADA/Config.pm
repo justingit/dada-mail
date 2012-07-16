@@ -4799,7 +4799,10 @@ encrypted.
     disabled_screen_view            => 'grey_out', 
 
 # List CP -> Options
-	enable_fckeditor                => 1, 
+#	enable_fckeditor                => 1, 
+	use_wysiwyg_editor              => 'none', 
+	enable_file_browser             => 0,
+
 	enable_mass_subscribe           => 0, 
     
 	show_message_body_plaintext_ver => 1, 
