@@ -6851,6 +6851,7 @@ sub list_cp_options {
                 -associate => $q,
                 -settings  => {
                     #enable_fckeditor                 => 0,
+					use_wysiwyg_editor               => 'none',
 					show_message_body_plaintext_ver  => 0, 
 					show_message_body_html_ver       => 0,
                 }
