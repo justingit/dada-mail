@@ -71,7 +71,6 @@
 
 
 <table cellpadding="5" border="0"> 
-		
 
 <!-- tmpl_if ckeditor_enabled --> 
 	<!-- tmpl_if ckeditor_url --> 
@@ -80,7 +79,7 @@
 		<input type="radio" name="use_wysiwyg_editor" id="use_wysiwyg_editor_ckeditor" value="ckeditor" <!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'ckeditor')" -->checked="checked"<!--/tmpl_if -->  />
 	</td>
 	<td>
-			<label for="use_wysiwyg_editor_ckeditor">Use CKeditor</label>
+		<label for="use_wysiwyg_editor_ckeditor">Use CKeditor</label>
 	</td>
 	</tr>
 	
@@ -92,6 +91,10 @@
 		 <td>
 		
 		<input type="radio" name="use_wysiwyg_editor" id="use_wysiwyg_editor_tiny_mce" value="tiny_mce" <!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'tiny_mce')" -->checked="checked"<!--/tmpl_if -->  />
+
+	</td>
+	<td>
+
 			<label for="use_wysiwyg_editor_tiny_mce">Use Tiny MCE</label>
 	</td> 
 	 </tr>
@@ -118,6 +121,10 @@
 		 <td>
 		
 		<input type="radio" name="use_wysiwyg_editor" id="use_wysiwyg_editor_none" value="none" <!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'none')" -->checked="checked"<!--/tmpl_if -->  />
+	</td>
+	<td>
+
+
 			<label for="use_wysiwyg_editor_none">None</label>
 	</td> 
 	 </tr>

@@ -1698,7 +1698,7 @@ $WYSIWYG_EDITOR_OPTIONS ||= {
 		enabled => 0, 
 		url     => '', 
 	}, 
-	tinymce => { 
+	tiny_mce => { 
 		enabled => 0, 
 		url     => '', 
 	},

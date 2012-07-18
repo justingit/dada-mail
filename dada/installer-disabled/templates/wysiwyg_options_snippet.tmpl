@@ -1,0 +1,25 @@
+$WYSIWYG_EDITOR_OPTIONS = { 
+	fckeditor => { 
+		enabled => <!-- tmpl_var fckeditor_enabled default="0" -->, 
+		url     => '<!-- tmpl_var fckeditor_url -->', 
+	}, 
+	ckeditor    => { 
+		enabled => 0, 
+		url     => '', 
+	}, 
+	tiny_mce => { 
+		enabled => 0, 
+		url     => '', 
+	},
+};
+
+$FILE_BROWSER_OPTIONS = { 
+	kcfinder  => { 
+		enabled      => 0, 
+		url          => '', 
+		upload_dir   => '', 
+		upload_url   => '',
+		session_name => 'PHPSESSID', 
+		session_dir  => '/tmp',
+	},
+};

@@ -559,6 +559,10 @@ sub scrn_configure_dada_mail {
 				configured_dada_files_loc      => $configured_dada_files_loc, 
 				DOC_VER                        => $DOC_VER, 
 				DOC_URL                        => 'http://dadamailproject.com/support/documentation-' . $DOC_VER, 
+				
+				support_files_dir_path         => support_files_dir_path_guess(),
+				support_files_dir_url         => support_files_dir_url_guess(),
+				
 
             },
         }
@@ -825,6 +829,16 @@ sub install_dada_mail {
 	if($@){ 
         $log .= "* WARNING: Couldn't complete installing plugins/extensions! $@\n";
         $errors->{cant_install_plugins_extensions} = 1;
+	}
+	else { 
+        $log .= "* Success!\n";		
+	} 
+	
+	$log .= "* Installing WYSIWYG Editors...\n";
+	eval {install_wysiwyg_editors($args);}; 
+	if($@){ 
+        $log .= "* WARNING: Couldn't complete installing WYSIWYG editors! $@\n";
+        $errors->{cant_install_wysiwyg_editors} = 1;
 	}
 	else { 
         $log .= "* Success!\n";		
@@ -1390,6 +1404,53 @@ qq|\%LIST_SETUP_INCLUDE = (
 	
 
 }
+sub install_wysiwyg_editors { 
+
+	my ($args) = @_;
+    my $dot_configs_file_loc = make_safer(
+		$args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config'
+	);
+	
+	my $config_file = slurp($dot_configs_file_loc);
+	
+	
+	
+	my $support_files_dir_path = $q->param('support_files_dir_path'); 
+	if(-d $support_files_dir_path && defined($q->param('support_files_dir_url'))){ 
+		require File::Copy::Recursive;
+		my $source_package = make_safer('../extras/packages/fckeditor'); 
+		my $target_loc     = make_safer($support_files_dir_path . '/fckeditor');
+		installer_dircopy($source_package, $target_loc); 
+		
+		my $wysiwyg_options_snippet = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'wysiwyg_options_snippet.tmpl',
+	            -vars   => {
+					fckeditor_enabled => 1, 
+					fckeditor_url     => $q->param('support_files_dir_url') . '/fckeditor',
+	            }
+	        }
+	    );
+	    my $sm = quotemeta('# start cut for WYSIWYG Editor Options'); 
+	    my $em = quotemeta('# end cut for WYSIWYG Editor Options');
+	 
+	
+	    $config_file =~ s/($sm)(.*?)($em)/$wysiwyg_options_snippet/sm; 
+	
+		if($args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files') { 
+
+		}
+		else { 
+			# write it back? 
+			installer_chmod(0777, $dot_configs_file_loc); 
+			open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($dot_configs_file_loc) or croak $!;
+			print $config_fh $config_file or croak $!;
+			close $config_fh or croak $!;
+			installer_chmod(0644, $dot_configs_file_loc);	
+		}	
+	}	
+	return 1; 
+}
 
 sub uncomment_admin_menu_entry { 
 
@@ -1407,6 +1468,15 @@ sub program_url_guess {
     my $program_url = $Self_URL;
     $program_url =~ s{installer\/install\.cgi}{mail.cgi};
     return $program_url;
+}
+
+
+sub support_files_dir_path_guess { 
+	return $ENV{DOCUMENT_ROOT}; 
+}
+
+sub support_files_dir_url_guess { 
+	return $q->url(-base => 1);
 }
 
 sub hack_in_scriptalicious {
@@ -1854,6 +1924,13 @@ sub installer_rmdir {
 	my $dir = shift; 
 	my $r = rmdir($dir); 	
 	return $r; 
+}
+
+sub installer_dircopy { 
+	my ($source, $target) = @_; 
+	require File::Copy::Recursive; 
+	File::Copy::Recursive::dircopy($source, $target) 
+		or die $!;
 }
 
 

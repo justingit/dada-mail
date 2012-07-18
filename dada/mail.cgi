@@ -6822,7 +6822,7 @@ sub list_cp_options {
 				-Root_Login => $root_login,
 				-List       => $list,  
 			},
-
+			-expr   => 1, 
 			-list   => $list,
 			-vars   => {
 				screen    => 'list_cp_options',

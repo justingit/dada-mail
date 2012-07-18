@@ -157,7 +157,7 @@ sub login_cookie {
                   # instead, which works reliably for everyone.
 				  $session->flush();
 				  
-				  if($DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{enabled} == 1){ 
+				  if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
 						$self->kcfinder_session_begin; 
 				  }
     }else{ 
@@ -184,25 +184,24 @@ sub kcfinder_session_begin {
 	my $cgi = new CGI::Lite; 
 	my $cookies = $cgi->parse_cookies;
 	my $sess_id = ''; 
-	if ($cookies->{$DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{session_name}}) {
-		$sess_id = $cookies->{$DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{session_name}};
+	if ($cookies->{$DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_name}}) {
+		$sess_id = $cookies->{$DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_name}};
 	}
 	else { 
 		carp "no PHP session?"; 
-	#	$sess_id = 'sess_1234'; 
 	}
 	
     my $session = PHP::Session->new(
 		$sess_id, 
 		{
 			create    => 1,
-			save_path => $DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{session_dir},
+			save_path => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_dir},
 		}
 	);
 	my $KCFINDER = {
-		disabled  => (! $DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{enabled}), 
-		uploadDir =>    $DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{upload_dir},
-		uploadURL =>    $DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{upload_url},
+		disabled  => (! $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled}), 
+		uploadDir =>    $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir},
+		uploadURL =>    $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url},
 	};
 	
 	$session->set(KCFINDER => $KCFINDER); 
@@ -220,8 +219,8 @@ sub kcfinder_session_end {
 	my $cgi = new CGI::Lite; 
 	my $cookies = $cgi->parse_cookies;
 	my $sess_id = ''; 
-	if ($cookies->{$DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{session_name}}) {
-		$sess_id = $cookies->{$DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{session_name}};
+	if ($cookies->{$DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_name}}) {
+		$sess_id = $cookies->{$DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_name}};
 	}
 	else { 
 		carp "no PHP session?"; 
@@ -232,7 +231,7 @@ sub kcfinder_session_end {
 		$sess_id, 
 		{
 			create    => 1,
-			save_path => $DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{session_dir},
+			save_path => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_dir},
 		}
 	);
 	$session->unregister('KCFINDER');
@@ -414,7 +413,7 @@ sub logout_cookie {
 							-path    =>  '/');
 	}
 	
-	if($DADA::Config::CKEDITOR_OPTIONS->{kcfinder_options}->{enabled} == 1){ 
+	if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
 		$self->kcfinder_session_end; 
 	}
 	

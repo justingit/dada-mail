@@ -236,6 +236,8 @@ sub WYSIWG_Vars {
 		$Vars{TINY_MCE_URL} = $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{url}; 
 	}
 	
+#	use Data::Dumper; 
+#	die Dumper({%Vars}); 
 	return %Vars;
 }
 
@@ -262,6 +264,8 @@ sub make_wysiwyg_vars {
 		$vars{using_no_wysiwyg_editor} = 1; 
 	}
 	
+#	use Data::Dumper; 
+#	die Dumper({%vars}); 
 	return %vars; 
 
 }
@@ -2338,6 +2342,11 @@ sub wrap_screen {
 		return $template; 
 	}
 	elsif($with eq 'admin'){ 
+		my %wysiwyg_vars = ();
+		if(exists($args->{-wrapper_params}->{-List})){ 
+			%wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($args->{-wrapper_params}->{-List});  
+			$vars = {(%$vars, %wysiwyg_vars)};
+		}
 		require DADA::Template::HTML; 	
 		my $template = DADA::Template::HTML::admin_template(
 			%{$args->{-wrapper_params}}, 
