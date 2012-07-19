@@ -104,10 +104,18 @@ sub cgi_default_tmpl {
 return q{ 
 	
 	<!-- tmpl_set name="load_modalbox" value="1" -->
+	<!-- tmpl_set name="title" value="Plugins &#187; Change List Shortname" -->
+	<div id="screentitle"> 
+		<div id="screentitlepadding">
+			<!-- tmpl_var title --> 
+		</div>
+		<!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+	
 	
 	<fieldset> 
 	
-	<!-- tmpl_set name="title" value="Change List Shortname" -->
+	
     <form action="<!-- tmpl_var Plugin_URL -->" method="post" id="change_name_form" name="change_name_form" onSubmit="Modalbox.show('<!-- tmpl_var Plugin_URL -->', {title: 'Confirm List Shortname Change...', width: 640, height:480, params: Form.serialize('change_name_form')}); return false;" value="Verify your List Short Name Change...">
 		<input type="hidden" name="flavor" id="flavor" value="verify_change_list_shortname" />
 		<p><label for="new_name">Your New List Short Name:</label><input type="text" name="new_name" id="new_name" value="" maxlength="16" /></p>
@@ -159,7 +167,7 @@ sub cgi_default {
 
 sub sql_backend_only_message { 
 	my $tmpl = q{ 
-		<!-- tmpl_set name="title" value="Change List Shortname" --> 
+		<!-- tmpl_set name="title" value="Plugins &#187; Change List Shortname" --> 
 		<div id="screentitle"> 
 			<div id="screentitlepadding">
 				<!-- tmpl_var title --> 

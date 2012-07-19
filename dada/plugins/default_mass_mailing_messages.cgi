@@ -109,7 +109,7 @@ sub cgi_default_tmpl {
 return q{ 
 	
 	
-	<!-- tmpl_set name="title" value="Default Mass Mailing Messages" -->
+	<!-- tmpl_set name="title" value="Plugins &#187; Default Mass Mailing Messages" -->
 	<!-- tmpl_set name="load_modalbox" value="1" -->
 	
 	<div id="screentitle"> 

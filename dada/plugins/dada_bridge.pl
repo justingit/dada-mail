@@ -355,7 +355,7 @@ sub cgi_test_pop3_tmpl {
 	return q{ 
 	<!-- tmpl_if chrome --> 
 	
-		<!-- tmpl_set name="title" value="Dada Bridge &#187; POP3 Login Test" --> 
+		<!-- tmpl_set name="title" value="Plugins &#187; Dada Bridge &#187; POP3 Login Test" --> 
 		<div id="screentitle"> 
 			<div id="screentitlepadding">
 				<!-- tmpl_var title --> 
@@ -657,7 +657,7 @@ sub admin_cgi_manual_start_tmpl {
 		
 		<!-- tmpl_if chrome --> 
 		
-		<!-- tmpl_set name="title" value="Dada Bridge &#187; Manually Running Mailing..." --> 
+		<!-- tmpl_set name="title" value="Plugins &#187; Dada Bridge &#187; Manually Running Mailing..." --> 
 		
 		<div id="screentitle"> 
 			<div id="screentitlepadding">
@@ -4038,14 +4038,18 @@ sub default_cgi_template {
 
   <blockquote class="positive">
  <p>
-   The 
-   <strong> 
-    List Email 
-   </strong>
-   address is the email address you will be sending to, to have your messages 
-   broadcast to your entire Subscription List. This email account needs to be created, 
+
+The <strong>List Email</strong> address is the email address to which you will be sending, 
+to have your messages broadcast to your entire Subscription List.
+
+
+
+   This email account needs to be created, 
    if it's not already available. Make sure this address is not being used 
    for <strong>any</strong> other purpose.
+
+
+
 
  </p> 
  <p>
@@ -4581,7 +4585,7 @@ General
        <td>
         <p>
          <label for="send_moderation_msg">
-          Send a, &quot;Message Received, Awaiting Moderation&quot; Message
+          Send a &quot;Message Received, Awaiting Moderation&quot; Message
          </label><br /> 
          The original poster will receive a message stating that the message has been received, but requires moderation.
         </p>
@@ -4595,7 +4599,7 @@ General
        <td>
         <p>
          <label for="send_moderation_accepted_msg">
-          Send an, &quot;Acceptance&quot; Message
+          Send an &quot;Acceptance&quot; Message
          </label><br /> 
          The original poster will receive a message stating that the moderated message was accepted.
         </p>
@@ -4609,7 +4613,7 @@ General
        <td>
         <p>
          <label for="send_moderation_rejection_msg">
-          Send a, &quot;Rejection&quot; Message
+          Send a &quot;Rejection&quot; Message
          </label><br /> 
          The original poster will receive a message stating that the moderated message was rejected.
         </p>

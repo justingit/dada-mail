@@ -1,9 +1,13 @@
 <!-- begin manage_script_screen.tmpl --> 
 
-<!-- tmpl_set name="title" value="About <!-- tmpl_var PROGRAM_NAME -->" --> 
-<h1>
-	Script Information
-</h1>
+<!-- tmpl_set name="title" value="pp Information &#187; About <!-- tmpl_var PROGRAM_NAME -->" --> 
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		App Information &#187; About <!-- tmpl_var PROGRAM_NAME -->
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+
 <p>
 	This is <!-- tmpl_var name="PROGRAM_NAME" --> version <strong><!-- tmpl_var name="VER" --></strong> .
 </p>
@@ -237,7 +241,7 @@
 	Technical Definition of Spam
 </h2>
 <p>
-	An electronic message is "spam"if (A) the recipient's personal identity and context are irrelevant because the message is equally applicable to many other potential recipients; AND (B) the recipient has not verifiably granted deliberate, explicit, and still-revocable permission for it to be sent.
+	An electronic message is &quot;spam&quot; if (A) the recipient's personal identity and context are irrelevant because the message is equally applicable to many other potential recipients; AND (B) the recipient has not verifiably granted deliberate, explicit, and still-revocable permission for it to be sent.
 </p>
 
 

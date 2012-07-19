@@ -46,7 +46,6 @@ check_if_template_exists
 available_templates
 open_template
 list_template
-make_feature_menu
 admin_header_params
 HTML_Footer
 

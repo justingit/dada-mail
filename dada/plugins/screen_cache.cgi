@@ -167,7 +167,14 @@ sub view_template {
 return q{ 
 	<!-- begin clear_screen_cache.tmpl --> 
 
-	<!-- tmpl_set name="title" value="Screen Cache" -->
+	<!-- tmpl_set name="title" value="Plugins &#187; Screen Cache" -->
+	<div id="screentitle"> 
+		<div id="screentitlepadding">
+			<!-- tmpl_var title --> 
+		</div>
+		<!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+
 
 	<div class="clearskiesbox">
 	
