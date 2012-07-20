@@ -1460,7 +1460,7 @@ sub install_wysiwyg_editors {
 			$tmpl_vars{i_kcfinder_enabled} = 1; 
 			$tmpl_vars{i_kcfinder_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/kcfinder';
 
-			my $upload_dir = make_safer($support_files_dir_path . '/file_uploads'); 
+			my $upload_dir = make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name . '/file_uploads'); 
 			$tmpl_vars{i_kcfinder_upload_dir} = $upload_dir; 
 			$tmpl_vars{i_kcfinder_upload_url} = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/file_uploads';
 			
