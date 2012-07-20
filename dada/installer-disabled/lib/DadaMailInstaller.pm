@@ -48,6 +48,8 @@ my $Dada_Files_Dir_Name = '.dada_files';
 #
 my $Config_LOC          = '../DADA/Config.pm';
 
+my $Support_Files_Dir_Name  = 'dada_mail_support_files'; 
+
 # Save the errors this creates in a variable
 #
 my $Big_Pile_Of_Errors  = undef; 
@@ -562,6 +564,7 @@ sub scrn_configure_dada_mail {
 				
 				support_files_dir_path         => support_files_dir_path_guess(),
 				support_files_dir_url         => support_files_dir_url_guess(),
+				Support_Files_Dir_Name        => $Support_Files_Dir_Name
 				
 
             },
@@ -1413,24 +1416,69 @@ sub install_wysiwyg_editors {
 	
 	my $config_file = slurp($dot_configs_file_loc);
 	
-	
-	
 	my $support_files_dir_path = $q->param('support_files_dir_path'); 
+	
+	
 	if(-d $support_files_dir_path && defined($q->param('support_files_dir_url'))){ 
-		require File::Copy::Recursive;
-		my $source_package = make_safer('../extras/packages/fckeditor'); 
-		my $target_loc     = make_safer($support_files_dir_path . '/fckeditor');
-		installer_dircopy($source_package, $target_loc); 
+
+
+		my %tmpl_vars = (
+			fckeditor_enabled => 0, 
+			fckeditor_url     => '', 
+			
+			ckeditor_enabled  => 0, 
+			ckeditor_url      => '', 
+			
+			tiny_mce_enabled  => 0, 
+			tiny_mce_url      => '', 
+			
+			kcfinder_enabled  => 0, 
+			kcfinder_url      => '', 
+
+		); 
+		if(! -d $support_files_dir_path . '/' . $Support_Files_Dir_Name){ 
+			installer_mkdir(make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name), $DADA::Config::DIR_CHMOD);
+		}
+		
+		if($q->param('wysiwyg_editor_install_fckeditor') == 1){ 
+			install_and_configure_fckeditor($args); 
+			$tmpl_vars{i_fckeditor_enabled} = 1; 
+			$tmpl_vars{i_fckeditor_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/fckeditor';
+		}
+		if($q->param('wysiwyg_editor_install_ckeditor') == 1){ 
+			install_and_configure_ckeditor($args); 
+			$tmpl_vars{i_ckeditor_enabled} = 1; 
+			$tmpl_vars{i_ckeditor_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/ckeditor';
+		}
+		if($q->param('wysiwyg_editor_install_tiny_mce') == 1){ 
+			install_and_configure_tiny_mce($args); 
+			$tmpl_vars{i_tiny_mce_enabled} = 1; 
+			$tmpl_vars{i_tiny_mce_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name .'/tiny_mce';
+		}
+		if($q->param('file_browser_install_kcfinder') == 1){ 
+			install_and_configure_kcfinder($args); 
+			$tmpl_vars{i_kcfinder_enabled} = 1; 
+			$tmpl_vars{i_kcfinder_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/kcfinder';
+
+			my $upload_dir = make_safer($support_files_dir_path . '/file_uploads'); 
+			$tmpl_vars{i_kcfinder_upload_dir} = $upload_dir; 
+			$tmpl_vars{i_kcfinder_upload_url} = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/file_uploads';
+			
+			if(! -d  $upload_dir){ 
+				installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
+			}
+			
+		}
 		
 		my $wysiwyg_options_snippet = DADA::Template::Widgets::screen(
 	        {
 	            -screen => 'wysiwyg_options_snippet.tmpl',
 	            -vars   => {
-					fckeditor_enabled => 1, 
-					fckeditor_url     => $q->param('support_files_dir_url') . '/fckeditor',
+					%tmpl_vars
 	            }
 	        }
 	    );
+		
 	    my $sm = quotemeta('# start cut for WYSIWYG Editor Options'); 
 	    my $em = quotemeta('# end cut for WYSIWYG Editor Options');
 	 
@@ -1451,6 +1499,100 @@ sub install_wysiwyg_editors {
 	}	
 	return 1; 
 }
+
+
+sub install_and_configure_fckeditor { 
+	my ($args) = @_; 
+	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
+	my $source_package = make_safer('../extras/packages/fckeditor'); 
+	my $target_loc     = make_safer($install_path . '/fckeditor');
+	installer_dircopy($source_package, $target_loc); 	
+}
+sub install_and_configure_ckeditor { 
+	my ($args) = @_; 
+	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
+	my $source_package = make_safer('../extras/packages/ckeditor'); 
+	my $target_loc     = make_safer($install_path . '/ckeditor');
+	installer_dircopy($source_package, $target_loc); 	
+}
+sub install_and_configure_tiny_mce { 
+	my ($args) = @_; 
+	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
+	my $source_package = make_safer('../extras/packages/tiny_mce'); 
+	my $target_loc     = make_safer($install_path . '/tiny_mce');
+	installer_dircopy($source_package, $target_loc); 	
+}
+sub install_and_configure_kcfinder { 
+	my ($args) = @_; 
+	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
+	my $source_package = make_safer('../extras/packages/kcfinder'); 
+	my $target_loc     = make_safer($install_path . '/kcfinder');
+	installer_dircopy($source_package, $target_loc); 	
+
+	if($q->param('wysiwyg_editor_install_fckeditor') == 1){ 
+		my $fckeditor_config_js = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'fckconfig_js.tmpl',
+	            -vars   => {
+	            	support_files_dir_url  => $q->param('support_files_dir_url'), 
+					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
+				}
+	        }
+	    );
+		my $fckeditor_config_loc = make_safer($install_path . '/fckeditor/fckconfig.js'); 
+		installer_chmod(0777, $fckeditor_config_loc); 
+		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $fckeditor_config_loc or croak $!;
+		print $config_fh $fckeditor_config_js or croak $!;
+		close $config_fh or croak $!;
+		installer_chmod(0644, $fckeditor_config_loc);
+		undef $config_fh;
+	}
+	
+	if($q->param('wysiwyg_editor_install_ckeditor') == 1){ 
+		my $ckeditor_config_js = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'ckeditor_config_js.tmpl',
+	            -vars   => {
+	            	support_files_dir_url  => $q->param('support_files_dir_url'), 
+					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
+				}
+	        }
+	    );
+		my $ckeditor_config_loc = make_safer($install_path . '/ckeditor/config.js'); 
+		installer_chmod(0777, $ckeditor_config_loc); 
+		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $ckeditor_config_loc or croak $!;
+		print $config_fh $ckeditor_config_js or croak $!;
+		close $config_fh or croak $!;
+		installer_chmod(0644, $ckeditor_config_loc);
+		undef $config_fh;
+		
+	}
+	if($q->param('wysiwyg_editor_install_tiny_mce') == 1){ 
+		
+		# Currently, I'm just going to do a regex, for tiny_mce, 
+		# although I"m sure this'll get more complicated...
+
+		my $kcfinder_config_loc = make_safer($install_path . '/kcfinder/config.php');
+		
+		my $config_file = slurp($kcfinder_config_loc);
+		my $pat         = quotemeta(q{//'_tinyMCEPath' => "/tiny_mce",}); 
+		my $rep         = q{'_tinyMCEPath' => "} . $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/tiny_mce",';
+		 $config_file   =~ s/$pat/$rep/sm;
+		 
+		installer_chmod(0777, $kcfinder_config_loc); 
+
+		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $kcfinder_config_loc or croak $!;
+		print $config_fh $config_file or croak $!;
+		close $config_fh or croak $!;
+		
+		installer_chmod(0644, $kcfinder_config_loc);
+
+		undef $config_fh;
+		
+	}
+	
+}
+
 
 sub uncomment_admin_menu_entry { 
 

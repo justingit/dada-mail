@@ -26,7 +26,6 @@ Key:
 		   config.filebrowserFlashUploadUrl = '/kcfinder/upload.php?type=flash';
 		};
 		
-	[ ] any way I can turn off file browser button? 
 	[ ] KCFinder need this uncommented, (if not using session info from, /tmp?
 		//'_sessionDir' => "/full/directory/path",
 	[ ] TinyMCE - 	
