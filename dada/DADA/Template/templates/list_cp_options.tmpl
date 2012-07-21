@@ -29,11 +29,7 @@
 			
 <table cellpadding="5" border="0"> 
 	<tr> 
-		<td>
-			<p>
-				<input type="checkbox" name="show_message_body_plaintext_ver" id="show_message_body_plaintext_ver" <!-- tmpl_if list_settings.show_message_body_plaintext_ver -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
-			</p>
-		</td>
+		
 		<td>
 			<p>
 				<label for="show_message_body_plaintext_ver">
@@ -41,6 +37,13 @@
 				</label>
 			</p>
 		</td>
+		
+		<td>
+			<p>
+				<input type="checkbox" name="show_message_body_plaintext_ver" id="show_message_body_plaintext_ver" <!-- tmpl_if list_settings.show_message_body_plaintext_ver -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
+			</p>
+		</td>
+		
 	</tr>
 	<tr> 
 		<td>
@@ -109,7 +112,7 @@
 		<input type="radio" name="use_wysiwyg_editor" id="use_wysiwyg_editor_fckeditor" value="fckeditor" <!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'fckeditor')" -->checked="checked"<!--/tmpl_if -->  />
 	</td>
 	<td>
-		<label for="use_wysiwyg_editor_fckeditor">Use FCKeditor</label>
+		<label for="use_wysiwyg_editor_fckeditor">Use FCKeditor</label> (Not Recommended)
 	</td>
 	</tr>
 	<!-- /tmpl_if -->
