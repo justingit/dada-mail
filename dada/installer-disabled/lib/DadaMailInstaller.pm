@@ -50,6 +50,8 @@ my $Config_LOC          = '../DADA/Config.pm';
 
 my $Support_Files_Dir_Name  = 'dada_mail_support_files'; 
 
+my $File_Upload_Dir         = 'file_uploads';
+
 # Save the errors this creates in a variable
 #
 my $Big_Pile_Of_Errors  = undef; 
@@ -1460,11 +1462,12 @@ sub install_wysiwyg_editors {
 			$tmpl_vars{i_kcfinder_enabled} = 1; 
 			$tmpl_vars{i_kcfinder_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/kcfinder';
 
-			my $upload_dir = make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name . '/file_uploads'); 
+			my $upload_dir = make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir); 
 			$tmpl_vars{i_kcfinder_upload_dir} = $upload_dir; 
-			$tmpl_vars{i_kcfinder_upload_url} = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/file_uploads';
+			$tmpl_vars{i_kcfinder_upload_url} = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
 			
 			if(! -d  $upload_dir){ 
+				# No need to backup this.
 				installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
 			}
 			
@@ -1506,13 +1509,19 @@ sub install_and_configure_fckeditor {
 	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
 	my $source_package = make_safer('../extras/packages/fckeditor'); 
 	my $target_loc     = make_safer($install_path . '/fckeditor');
-	installer_dircopy($source_package, $target_loc); 	
+	if(-d $target_loc){
+		backup_dir($target_loc);	
+	}
+	installer_dircopy($source_package, $target_loc); 
 }
 sub install_and_configure_ckeditor { 
 	my ($args) = @_; 
 	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
 	my $source_package = make_safer('../extras/packages/ckeditor'); 
 	my $target_loc     = make_safer($install_path . '/ckeditor');
+	if(-d $target_loc){
+		backup_dir($target_loc);	
+	}
 	installer_dircopy($source_package, $target_loc); 	
 }
 sub install_and_configure_tiny_mce { 
@@ -1520,6 +1529,9 @@ sub install_and_configure_tiny_mce {
 	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
 	my $source_package = make_safer('../extras/packages/tiny_mce'); 
 	my $target_loc     = make_safer($install_path . '/tiny_mce');
+	if(-d $target_loc){
+		backup_dir($target_loc);	
+	}
 	installer_dircopy($source_package, $target_loc); 	
 }
 sub install_and_configure_kcfinder { 
@@ -1527,6 +1539,9 @@ sub install_and_configure_kcfinder {
 	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
 	my $source_package = make_safer('../extras/packages/kcfinder'); 
 	my $target_loc     = make_safer($install_path . '/kcfinder');
+	if(-d $target_loc){
+		backup_dir($target_loc);	
+	}
 	installer_dircopy($source_package, $target_loc); 	
 
 	if($q->param('wysiwyg_editor_install_fckeditor') == 1){ 
@@ -2096,7 +2111,22 @@ sub installer_dircopy {
 	File::Copy::Recursive::dircopy($source, $target) 
 		or die $!;
 }
-
+sub backup_dir { 
+	my $source = shift; 
+	   $source =~ s/\/$//;
+	my $target = shift; 
+	
+	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+	my $timestamp = sprintf("%4d-%02d-%02d", $year+1900,$mon+1,$mday) . '-' . time;
+	
+	my $target = make_safer(
+		$source . '-backup-' . $timestamp
+	); 
+	
+	require File::Copy::Recursive; 
+	File::Copy::Recursive::dirmove($source, $target) 
+		or die $!;
+}
 
 sub auto_dada_files_dir {
     return guess_home_dir();
