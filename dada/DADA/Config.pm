@@ -4799,14 +4799,14 @@ encrypted.
     disabled_screen_view            => 'grey_out', 
 
 # List CP -> Options
-#	enable_fckeditor                => 1, 
-	use_wysiwyg_editor              => 'none', 
-	enable_file_browser             => 0,
+
+	use_wysiwyg_editor              => 'ckeditor', 
+	enable_file_browser             => 1,
+
+	show_message_body_plaintext_ver => 0, 
+	show_message_body_html_ver      => 1, 
 
 	enable_mass_subscribe           => 0, 
-    
-	show_message_body_plaintext_ver => 1, 
-	show_message_body_html_ver      => 0, 
 
 # Send me the list password.    
     pass_auth_id                    => undef, 
