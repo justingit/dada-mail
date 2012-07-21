@@ -1645,49 +1645,24 @@ $ENFORCE_CLOSED_LOOP_OPT_IN ||= 0;
 
 =head2 FCKEditor Integration - $FCKEDITOR_URL
 
-Currently, Dada Mail can use an inline HTML WYSIWYG Editor called FCKEditor for 
-authoring of the HTML version of the mailing list message. To do this, 
-you need to install FCKEditor. 
+C<$FCKEDITOR_URL> is not used anymore. Please see the C<$WYSIWYG_EDITOR_OPTIONS> and C<$FILE_BROWSER_OPTIONS>
+variables. 
 
-These screencasts could also help you out: 
+=head2 CKeditor Integration - $CKEDITOR_URL (Experimental!) 
 
-http://www.youtube.com/watch?v=AgNTNygI4MM&hd=1
-
-http://www.youtube.com/watch?v=uRdDOO5n_Cc&hd=1
-
-How to install FCKeditor: 
-
-Download FCKeditor at: 
-
-http://www.fckeditor.net/download/default.html
-
-Uncompress the distribution you receive. It should make a directory called, "fckeditor"
-
-You'll want to put this entire directory into your public html directory of your hosting accout. Take note of the URL you'll need to access this directory. 
-
-Set the C<$FCKEDITOR_URL> variable to this URL. 
-
-Done!
-
-One thing to make sure is that you're install FCKeditor under the same subdomain as your Dada Mail is installed. For example, if Dada Mail is at: 
-
-L<http://www.example.com/cgi-bin/dada/mail.cgi>
-
-FCKeditor has to be installed at something like: 
-
-L<http://www.example.com/fckeditor>
-
-and not, 
-
-L<http://different-subdomain.example.com/fckeditor>
-
-To tweak the configuration of how FCKeditor works within Dada Mail (advanced stuff), see the: 
-
-/dada/DADA/Template/templates/FCKeditor_default_js_options.tmpl
-
-file. 
+C<$CKEDITOR_URL> is not used anymore. Please see the C<$WYSIWYG_EDITOR_OPTIONS> and C<$FILE_BROWSER_OPTIONS>
+variables. 
 
 =cut
+
+=head2 $WYSIWYG_EDITOR_OPTIONS
+
+=head2 $FILE_BROWSER_OPTIONS
+
+Please see the docs on WYSIWYG Editors and File Browsers at: 
+
+L<features-wysiwyg_editors.pod.html>
+
 
 $WYSIWYG_EDITOR_OPTIONS ||= { 
 	fckeditor => { 
