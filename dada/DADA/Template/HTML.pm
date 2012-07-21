@@ -221,7 +221,10 @@ sub admin_template {
 		$footer_props = HTML_Footer() . '| <strong><a href="http://dadamailproject.com/purchase/pro.html" target="_blank">Go Pro</a></strong>';
     }
 
-
+	my %wysiwyg_vars = ();
+	if($list) { 
+		 %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);  	
+	}
 	my $final_admin_template = DADA::Template::Widgets::screen( 
 									{
 										-data => \$admin_template, 
@@ -234,7 +237,10 @@ sub admin_template {
 												root_login          => $args{-Root_Login},
 												content             => '[_dada_content]',	
 												footer_props        => $footer_props, 
+												%wysiwyg_vars,
 												%{ $args{ -vars } }, # content, etc
+												
+												
 											}, 
 										-list_settings_vars_param => { 
 																	-list   => $list, 
