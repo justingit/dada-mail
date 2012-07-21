@@ -168,7 +168,9 @@ sub save_from_params {
 	
 	for my $t('PlainText', 'HTML'){ 
 		$form_vals{$t.'_ver'}->{source}                    = $q->param($t.'_source'); 
-		$form_vals{$t.'_ver'}->{text}                      = $q->param($t.'_text'); 
+
+#		$form_vals{$t.'_ver'}->{text}                      = $q->param($t.'_text'); 
+
 		$form_vals{$t.'_ver'}->{url}                       = $q->param($t.'_url');
 		$form_vals{$t.'_ver'}->{file}                      = $q->param($t.'_file'); 
 	    $form_vals{$t.'_ver'}->{use_email_template}        = $q->param($t.'_use_email_template')        || 0; 
@@ -190,6 +192,11 @@ sub save_from_params {
 			$form_vals{last_schedule_run} = time;
 		}
 	}
+	
+	# See what I did, here?
+	$form_vals{'PlainText_ver'}->{text}                 = $q->param('PlainText_text'); 
+	$form_vals{'HTML_ver'}->{text}                      = $q->param('html_message_body'); 
+	
 	
 	
 	
