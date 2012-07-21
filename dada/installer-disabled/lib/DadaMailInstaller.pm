@@ -1548,7 +1548,14 @@ sub install_and_configure_kcfinder {
 		undef $config_fh;
 	}
 	
+
 	if($q->param('wysiwyg_editor_install_ckeditor') == 1){ 
+		
+		# http://docs.cksource.com/CKEditor_3.x/Developers_Guide/Setting_Configurations
+		# The best way to set the CKEditor configuration is in-page, when creating editor instances. 
+		# This method lets you avoid modifying the original distribution files in the CKEditor 
+		# installation folder, making the upgrade task easier. 
+		
 		my $ckeditor_config_js = DADA::Template::Widgets::screen(
 	        {
 	            -screen => 'ckeditor_config_js.tmpl',
@@ -1558,7 +1565,7 @@ sub install_and_configure_kcfinder {
 				}
 	        }
 	    );
-		my $ckeditor_config_loc = make_safer($install_path . '/ckeditor/config.js'); 
+		my $ckeditor_config_loc = make_safer($install_path . '/ckeditor/dada_mail_config.js'); 
 		installer_chmod(0777, $ckeditor_config_loc); 
 		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $ckeditor_config_loc or croak $!;
 		print $config_fh $ckeditor_config_js or croak $!;
@@ -1567,26 +1574,41 @@ sub install_and_configure_kcfinder {
 		undef $config_fh;
 		
 	}
+	
 	if($q->param('wysiwyg_editor_install_tiny_mce') == 1){ 
 		
 		# Currently, I'm just going to do a regex, for tiny_mce, 
 		# although I"m sure this'll get more complicated...
-
 		my $kcfinder_config_loc = make_safer($install_path . '/kcfinder/config.php');
 		
 		my $config_file = slurp($kcfinder_config_loc);
 		my $pat         = quotemeta(q{//'_tinyMCEPath' => "/tiny_mce",}); 
 		my $rep         = q{'_tinyMCEPath' => "} . $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/tiny_mce",';
 		 $config_file   =~ s/$pat/$rep/sm;
-		 
 		installer_chmod(0777, $kcfinder_config_loc); 
-
 		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $kcfinder_config_loc or croak $!;
 		print $config_fh $config_file or croak $!;
 		close $config_fh or croak $!;
-		
 		installer_chmod(0644, $kcfinder_config_loc);
-
+		undef $config_fh;
+		
+		
+		my $tiny_mce_config_js = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'tiny_mce_config_js.tmpl',
+	            -vars   => {
+	            	support_files_dir_url  => $q->param('support_files_dir_url'), 
+					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
+					kcfinder_enabled       => $q->param('file_browser_install_kcfinder'), 
+				}
+	        }
+	    );
+		my $tiny_mce_config_loc = make_safer($install_path . '/tiny_mce/dada_mail_config.js'); 
+		installer_chmod(0777, $tiny_mce_config_loc); 
+		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $tiny_mce_config_loc or croak $!;
+		print $config_fh $tiny_mce_config_js or croak $!;
+		close $config_fh or croak $!;
+		installer_chmod(0644, $tiny_mce_config_loc);
 		undef $config_fh;
 		
 	}
