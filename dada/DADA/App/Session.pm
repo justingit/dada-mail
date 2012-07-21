@@ -224,7 +224,6 @@ sub kcfinder_session_end {
 	}
 	else { 
 		carp "no PHP session?"; 
-		$sess_id = 'sess_1234'; 
 	}
 
     my $session = PHP::Session->new(
