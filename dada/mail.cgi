@@ -8900,9 +8900,6 @@ sub login {
                                                            -password => $admin_password);
 
 
-			if(){ 
-				
-			}
             require DADA::App::ScreenCache;
             my $c = DADA::App::ScreenCache->new;
             $c->remove('login_switch_widget.' . $list . '.scrn');
