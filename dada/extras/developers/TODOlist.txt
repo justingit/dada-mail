@@ -10,12 +10,12 @@ Key:
 [*] Naw...
 [?] Someday
 
-[ ] FCKEDITOR: 
-	[ ] Remove all connectors except, "php" 
+[x] FCKEDITOR: 
+	[x] Remove all connectors except, "php" 
 
 
-[ ] CKEDitor needs a custom toolbar config to start off with - no form fields/flash, stuff like that. 
-	[ ] Needs specific config for fcfinder - ala: 
+[x] CKEDitor needs a custom toolbar config to start off with - no form fields/flash, stuff like that. 
+	[x] Needs specific config for fcfinder - ala: 
 	
 		CKEDITOR.editorConfig = function(config) {
 		   config.filebrowserBrowseUrl      = '/kcfinder/browse.php?type=files';
@@ -26,9 +26,9 @@ Key:
 		   config.filebrowserFlashUploadUrl = '/kcfinder/upload.php?type=flash';
 		};
 		
-	[ ] KCFinder need this uncommented, (if not using session info from, /tmp?
+	[x] KCFinder need this uncommented, (if not using session info from, /tmp?
 		//'_sessionDir' => "/full/directory/path",
-	[ ] TinyMCE - 	
+	[x] TinyMCE - 	
 		//'_tinyMCEPath' => "/tiny_mce",
 	    
 	

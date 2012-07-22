@@ -1421,85 +1421,86 @@ sub install_wysiwyg_editors {
 	my $support_files_dir_path = $q->param('support_files_dir_path'); 
 	
 	
-	if(-d $support_files_dir_path && defined($q->param('support_files_dir_url'))){ 
+	if(! -d $support_files_dir_path) { 
+		croak "Can't install WYSIWYG Editors, Directory, '$support_files_dir_path' does not exist!"; 
+	}
 
-
-		my %tmpl_vars = (
-			fckeditor_enabled => 0, 
-			fckeditor_url     => '', 
-			
-			ckeditor_enabled  => 0, 
-			ckeditor_url      => '', 
-			
-			tiny_mce_enabled  => 0, 
-			tiny_mce_url      => '', 
-			
-			kcfinder_enabled  => 0, 
-			kcfinder_url      => '', 
-
-		); 
-		if(! -d $support_files_dir_path . '/' . $Support_Files_Dir_Name){ 
-			installer_mkdir(make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name), $DADA::Config::DIR_CHMOD);
-		}
+	my %tmpl_vars = (
+		fckeditor_enabled => 0, 
+		fckeditor_url     => '', 
 		
-		if($q->param('wysiwyg_editor_install_fckeditor') == 1){ 
-			install_and_configure_fckeditor($args); 
-			$tmpl_vars{i_fckeditor_enabled} = 1; 
-			$tmpl_vars{i_fckeditor_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/fckeditor';
-		}
-		if($q->param('wysiwyg_editor_install_ckeditor') == 1){ 
-			install_and_configure_ckeditor($args); 
-			$tmpl_vars{i_ckeditor_enabled} = 1; 
-			$tmpl_vars{i_ckeditor_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/ckeditor';
-		}
-		if($q->param('wysiwyg_editor_install_tiny_mce') == 1){ 
-			install_and_configure_tiny_mce($args); 
-			$tmpl_vars{i_tiny_mce_enabled} = 1; 
-			$tmpl_vars{i_tiny_mce_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name .'/tiny_mce';
-		}
-		if($q->param('file_browser_install_kcfinder') == 1){ 
-			install_and_configure_kcfinder($args); 
-			$tmpl_vars{i_kcfinder_enabled} = 1; 
-			$tmpl_vars{i_kcfinder_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/kcfinder';
+		ckeditor_enabled  => 0, 
+		ckeditor_url      => '', 
+		
+		tiny_mce_enabled  => 0, 
+		tiny_mce_url      => '', 
+		
+		kcfinder_enabled  => 0, 
+		kcfinder_url      => '', 
 
-			my $upload_dir = make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir); 
-			$tmpl_vars{i_kcfinder_upload_dir} = $upload_dir; 
-			$tmpl_vars{i_kcfinder_upload_url} = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
-			
-			if(! -d  $upload_dir){ 
-				# No need to backup this.
-				installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
-			}
-			
-		}
-		
-		my $wysiwyg_options_snippet = DADA::Template::Widgets::screen(
-	        {
-	            -screen => 'wysiwyg_options_snippet.tmpl',
-	            -vars   => {
-					%tmpl_vars
-	            }
-	        }
-	    );
-		
-	    my $sm = quotemeta('# start cut for WYSIWYG Editor Options'); 
-	    my $em = quotemeta('# end cut for WYSIWYG Editor Options');
-	 
+	); 
+	if(! -d $support_files_dir_path . '/' . $Support_Files_Dir_Name){ 
+		installer_mkdir(make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name), $DADA::Config::DIR_CHMOD);
+	}
 	
-	    $config_file =~ s/($sm)(.*?)($em)/$wysiwyg_options_snippet/sm; 
-	
-		if($args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files') { 
+	if($q->param('wysiwyg_editor_install_fckeditor') == 1){ 
+		install_and_configure_fckeditor($args); 
+		$tmpl_vars{i_fckeditor_enabled} = 1; 
+		$tmpl_vars{i_fckeditor_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/fckeditor';
+	}
+	if($q->param('wysiwyg_editor_install_ckeditor') == 1){ 
+		install_and_configure_ckeditor($args); 
+		$tmpl_vars{i_ckeditor_enabled} = 1; 
+		$tmpl_vars{i_ckeditor_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/ckeditor';
+	}
+	if($q->param('wysiwyg_editor_install_tiny_mce') == 1){ 
+		install_and_configure_tiny_mce($args); 
+		$tmpl_vars{i_tiny_mce_enabled} = 1; 
+		$tmpl_vars{i_tiny_mce_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name .'/tiny_mce';
+	}
+	if($q->param('file_browser_install_kcfinder') == 1){ 
+		install_and_configure_kcfinder($args); 
+		$tmpl_vars{i_kcfinder_enabled} = 1; 
+		$tmpl_vars{i_kcfinder_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/kcfinder';
 
+		my $upload_dir = make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir); 
+		$tmpl_vars{i_kcfinder_upload_dir} = $upload_dir; 
+		$tmpl_vars{i_kcfinder_upload_url} = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
+		
+		if(! -d  $upload_dir){ 
+			# No need to backup this.
+			installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
 		}
-		else { 
-			# write it back? 
-			installer_chmod(0777, $dot_configs_file_loc); 
-			open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($dot_configs_file_loc) or croak $!;
-			print $config_fh $config_file or croak $!;
-			close $config_fh or croak $!;
-			installer_chmod(0644, $dot_configs_file_loc);	
-		}	
+		
+	}
+	
+	my $wysiwyg_options_snippet = DADA::Template::Widgets::screen(
+        {
+            -screen => 'wysiwyg_options_snippet.tmpl',
+            -vars   => {
+				%tmpl_vars
+            }
+        }
+    );
+	
+    my $sm = quotemeta('# start cut for WYSIWYG Editor Options'); 
+    my $em = quotemeta('# end cut for WYSIWYG Editor Options');
+ 
+
+    $config_file =~ s/($sm)(.*?)($em)/$wysiwyg_options_snippet/sm; 
+
+	if($args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files') { 
+
+	}
+	else { 
+		# write it back? 
+		installer_chmod(0777, $dot_configs_file_loc); 
+		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($dot_configs_file_loc) or croak $!;
+		print $config_fh $config_file or croak $!;
+		close $config_fh or croak $!;
+		installer_chmod(0644, $dot_configs_file_loc);	
 	}	
+	
 	return 1; 
 }
 
@@ -1554,7 +1555,7 @@ sub install_and_configure_kcfinder {
 				}
 	        }
 	    );
-		my $fckeditor_config_loc = make_safer($install_path . '/fckeditor/fckconfig.js'); 
+		my $fckeditor_config_loc = make_safer($install_path . '/fckeditor/dada_mail_config.js'); 
 		installer_chmod(0777, $fckeditor_config_loc); 
 		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $fckeditor_config_loc or croak $!;
 		print $config_fh $fckeditor_config_js or croak $!;
@@ -2114,7 +2115,7 @@ sub installer_dircopy {
 sub backup_dir { 
 	my $source = shift; 
 	   $source =~ s/\/$//;
-	my $target = shift; 
+	my $target = undef; 
 	
 	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 	my $timestamp = sprintf("%4d-%02d-%02d", $year+1900,$mon+1,$mday) . '-' . time;

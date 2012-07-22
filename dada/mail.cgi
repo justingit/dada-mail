@@ -5687,40 +5687,17 @@ sub edit_archived_msg {
                     m/attach/i )
                 {    # text: display it...
 
-#$q->checkbox(-name => 'delete_' . $tb->{address}, -value => 1, -label => '' ), 'Delete?', $q->br(),
 
-					# CHANGE!
-                    if ( $subtype =~ /html/ && $DADA::Config::FCKEDITOR_URL ) {
-
-                        require DADA::Template::Widgets;
-                        $form_blob .= DADA::Template::Widgets::screen(
-                            {
-                                -screen => 'edit_archived_msg_textarea.widget',
-                                -vars   => {
-                                    name  => $tb->{address},
-                                    value => js_enc(
-                                        safely_decode(
-                                            $tb->{entity}
-                                              ->bodyhandle->as_string()
-                                        )
-                                    ),
-                                }
-                            }
-                        );
-                    }
-                    else {
-
-                        $form_blob .= $q->p(
-                            $q->textarea(
-                                -value => safely_decode(
-                                    $tb->{entity}->bodyhandle->as_string
-                                ),
-                                -rows => 15,
-                                -name => $tb->{address}
-                            )
-                        );
-
-                    }
+					# Needs to be WYSIWYG Editor-ized
+                    $form_blob .= $q->p(
+                        $q->textarea(
+                            -value => safely_decode(
+                                $tb->{entity}->bodyhandle->as_string
+                            ),
+                            -rows => 15,
+                            -name => $tb->{address}
+                        )
+                    );
 
                 }
                 else {
