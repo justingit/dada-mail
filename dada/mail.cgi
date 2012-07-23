@@ -1912,6 +1912,22 @@ sub list_options {
 
     if ( !$process ) {
 	
+	   my $send_subscription_notice_to_popup_menu = $q->popup_menu(
+			-name     => 'send_subscription_notice_to',
+			-id       => 'send_subscription_notice_to',
+			-default  => $ls->param('send_subscription_notice_to'),
+			-labels   => {list => 'Your Subscribers', 'list_owner' => 'The List Owner'},
+			'-values' => [qw(list list_owner)],
+		);
+	   my $send_unsubscription_notice_to_popup_menu = $q->popup_menu(
+			-name     => 'send_unsubscription_notice_to',
+			-id       => 'send_unsubscription_notice_to',
+			-default  => $ls->param('send_unsubscription_notice_to'),
+			-labels   => {list => 'Your Subscribers', 'list_owner' => 'The List Owner'},
+			'-values' => [qw(list list_owner)],
+		);
+
+	
  	   require    DADA::Template::Widgets;
 	   my $scrn = DADA::Template::Widgets::wrap_screen(
 	        {
@@ -1926,10 +1942,12 @@ sub list_options {
 	            -vars   => {
 	                screen => 'list_options',
 	                title  => 'Mailing List Options',
-	                done              => $done,
-	                CAPTCHA_TYPE      => $DADA::Config::CAPTCHA_TYPE,
-	                can_use_mx_lookup => $can_use_mx_lookup,
-	                can_use_captcha   => $can_use_captcha,
+	                done                                     => $done,
+	                CAPTCHA_TYPE                             => $DADA::Config::CAPTCHA_TYPE,
+	                can_use_mx_lookup                        => $can_use_mx_lookup,
+	                can_use_captcha                          => $can_use_captcha,
+					send_subscription_notice_to_popup_menu   => $send_subscription_notice_to_popup_menu, 
+					send_unsubscription_notice_to_popup_menu => $send_unsubscription_notice_to_popup_menu, 
 	            },
 	            -list_settings_vars_param => {
 	                -list   => $list,
@@ -6408,6 +6426,10 @@ sub edit_type {
         send_archive_message_html
         you_are_already_subscribed_message
         email_your_subscribed_msg
+
+		admin_subscription_notice_message
+		admin_unsubscription_notice_message
+		
         )
       )
     {
@@ -6507,7 +6529,16 @@ sub edit_type {
             invite_message_text
             invite_message_html
             invite_message_subject
-          ))
+          
+			admin_subscription_notice_message
+			admin_subscription_notice_message_subject
+			
+			admin_unsubscription_notice_message
+			admin_unsubscription_notice_message_subject
+			
+			
+
+			))
         {
           
             # a very odd place to put this, but, hey,  easy enough.
@@ -6525,35 +6556,40 @@ sub edit_type {
             {
                 -associate => $q,
                 -settings  => {
-                    confirmation_message_subject               => undef,
-                    confirmation_message                       => undef,
-                    subscribed_message_subject                 => undef,
-                    subscribed_message                         => undef,
-					subscribed_by_list_owner_message_subject   => undef, 
-					subscribed_by_list_owner_message           => undef,
-					unsubscribed_by_list_owner_message_subject => undef, 
-					unsubscribed_by_list_owner_message         => undef,  
-                    unsubscribed_message_subject               => undef,
-                    unsubscribed_message                       => undef,
-                    unsub_confirmation_message_subject         => undef,
-                    unsub_confirmation_message                 => undef,
-                    mailing_list_message_from_phrase           => undef,
-                    mailing_list_message_to_phrase             => undef,
-                    mailing_list_message_subject               => undef,
-                    mailing_list_message                       => undef,
-                    mailing_list_message_html                  => undef,
-                    send_archive_message_subject               => undef,
-                    send_archive_message                       => undef,
-                    send_archive_message_html                  => undef,
-                    you_are_already_subscribed_message_subject => undef,
-                    you_are_already_subscribed_message         => undef,
-					you_are_not_subscribed_message_subject     => undef, 
-					you_are_not_subscribed_message             => undef, 
-                    invite_message_from_phrase                 => undef,
-                    invite_message_to_phrase                   => undef,
-                    invite_message_text                        => undef,
-                    invite_message_html                        => undef,
-                    invite_message_subject                     => undef,
+                    confirmation_message_subject                => undef,
+                    confirmation_message                        => undef,
+                    subscribed_message_subject                  => undef,
+                    subscribed_message                          => undef,
+					subscribed_by_list_owner_message_subject    => undef, 
+					subscribed_by_list_owner_message            => undef,
+					unsubscribed_by_list_owner_message_subject  => undef, 
+					unsubscribed_by_list_owner_message          => undef,  
+                    unsubscribed_message_subject                => undef,
+                    unsubscribed_message                        => undef,
+                    unsub_confirmation_message_subject          => undef,
+                    unsub_confirmation_message                  => undef,
+                    mailing_list_message_from_phrase            => undef,
+                    mailing_list_message_to_phrase              => undef,
+                    mailing_list_message_subject                => undef,
+                    mailing_list_message                        => undef,
+                    mailing_list_message_html                   => undef,
+                    send_archive_message_subject                => undef,
+                    send_archive_message                        => undef,
+                    send_archive_message_html                   => undef,
+                    you_are_already_subscribed_message_subject  => undef,
+                    you_are_already_subscribed_message          => undef,
+					you_are_not_subscribed_message_subject      => undef, 
+					you_are_not_subscribed_message              => undef, 
+                    invite_message_from_phrase                  => undef,
+                    invite_message_to_phrase                    => undef,
+                    invite_message_text                         => undef,
+                    invite_message_html                         => undef,
+                    invite_message_subject                      => undef,
+					admin_subscription_notice_message           => undef, 
+					admin_subscription_notice_message_subject   => undef, 
+					admin_unsubscription_notice_message         => undef,
+					admin_unsubscription_notice_message_subject => undef,
+
                     enable_email_template_expr                 => 0,
                 }
             }

@@ -862,6 +862,8 @@ sub _encode_header {
 	return $value 
 	 	unless $self->im_encoding_headers;
 	
+	require MIME::EncWords;
+	
 	if(
 	   $label eq 'Subject'           || 
 	   $label eq 'List'              ||
@@ -873,7 +875,6 @@ sub _encode_header {
 	){ 
 
 	
-		require MIME::EncWords;
 		$new_value = 
 		MIME::EncWords::encode_mimewords(
 			$value, 

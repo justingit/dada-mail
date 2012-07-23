@@ -502,131 +502,172 @@ sub send_unsubscribed_message {
 }
 
 
+sub send_owner_happenings {
 
+    my ($args) = @_;
 
+    my $ls;
+    if ( !exists( $args->{-ls_obj} ) ) {
+        require DADA::MailingList::Settings;
+        $ls = DADA::MailingList::Settings->new( { -list => $args->{-list} } );
+    }
+    else {
+        $ls = $args->{-ls_obj};
+    }
 
+    if ( !exists( $args->{-role} ) ) {
+        $args->{-role} = 'subscribed';
+    }
+    my $status = $args->{-role};
 
+    if ( !exists( $args->{-note} ) ) {
+        $args->{-note} = '';
+    }
 
+    if ( $status eq "subscribed" ) {
+        if ( $ls->param('get_sub_notice') == 0 ) {
+            return;
+        }
+    }
+    elsif ( $status eq "unsubscribed" ) {
+        if ( $ls->param('get_unsub_notice') == 0 ) {
+            return;
+        }
+    }
 
+    my $lh;
+    if ( $args->{-lh_obj} ) {
+        $lh = $args->{-lh_obj};
+    }
+    else {
+        $lh =
+          DADA::MailingList::Subscribers->new( { -list => $args->{-list} } );
+    }
+    my $num_subscribers = $lh->num_subscribers;
 
-sub send_owner_happenings { 
+    # This is a hack - if the subscriber has recently been removed, you
+    # won't be able to get the subscriber fields - since there's no way to
+    # get fields of a removed subscriber.
+    # So! We'll go and grab the profile info, instead.
+    my $prof_fields  = {};
+    my $unsub_fields = {};
+    if ( $status eq "unsubscribed" ) {
+        $unsub_fields->{'subscriber.email'} = $args->{-email};
+        (
+            $unsub_fields->{'subscriber.email_name'},
+            $unsub_fields->{'subscriber.email_domain'}
+        ) = split( '@', $args->{-email}, 2 );
 
-	my ($args) = @_; 
+        require DADA::Profile;
+        my $prof = DADA::Profile->new( { -email => $args->{-email} } );
+        if ($prof) {
+            if ( $prof->exists ) {
+                $prof_fields = $prof->{fields}->get;
+                for ( keys %$prof_fields ) {
+                    $unsub_fields->{ 'subscriber.' . $_ } = $prof_fields->{$_};
+                }
+            }
+        }
+    }
 
-	my $ls; 
-	if(!exists($args->{-ls_obj})){ 
-		require DADA::MailingList::Settings; 
-		$ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
-	}
-	else { 
-		$ls = $args->{-ls_obj};
-	}
-	my $li    = $ls->get;
-	
-	my $status  = $args->{-role};
-	 
-	if(!exists($args->{-note})){ 
-		$args->{-note} = ''; 
-	}
-	
-	
-	my $send_it = 1; 
-	
-	if($status eq "subscribed"){  
-	   if(exists($li->{get_sub_notice})){ 
-		 if($li->{get_sub_notice} == 0){         
-			$send_it = 0; 
-			}
-		 }   
-	   }elsif($status eq "unsubscribed"){  
-		if(exists($li->{get_unsub_notice})){ 
-		  if($li->{get_unsub_notice} == 0){ 
-			$send_it = 0; 
-		   }
-		}   
-	  } 
-		
-	if($send_it == 1){ 
-		
-		my $lh; 
-		if($args->{-lh_obj}){ 
-			$lh = $args->{-lh_obj};
-		}
-		else { 
-			$lh = DADA::MailingList::Subscribers->new({-list => $args->{-list}}); 
-		}
-		
-		my $num_subscribers = $lh->num_subscribers;   
-		
-		# This is a hack - if the subscriber has recently been removed, you 
-		# won't be able to get the subscriber fields - since there's no way to 
-		# get fields of a removed subscriber. 
-		# So! We'll go and grab the profile info, instead. 
-		my $prof_fields  = {};
-		my $unsub_fields = {};
-		if($status eq "unsubscribed"){
-			$unsub_fields->{ 'subscriber.email'} = $args->{-email};
-			(
-				$unsub_fields->{ 'subscriber.email_name'},
-				$unsub_fields->{ 'subscriber.email_domain'}
-			) = split(
-				'@', 
-				$args->{-email},
-				2
-			);
-			
-			require DADA::Profile; 
-			my $prof = DADA::Profile->new({-email => $args->{-email}});
-			if($prof){ 
-				if($prof->exists){ 
-					$prof_fields = $prof->{fields}->get;
-					for ( keys %$prof_fields ) {
-			            $unsub_fields->{ 'subscriber.' . $_ } = $prof_fields->{$_};
-			        } 					
-				}
-			}
-		}
-		#/This is a hack - if the subscriber has recently been removed, you 
-		
-		
-		send_generic_email(
-			{ 
-				-list => $args->{-list}, 
-				-headers => {
-					'Reply-To'     => $args->{-email}, 
-				    To             =>  '"' . escape_for_sending($DADA::Config::SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE) . '" <' . $li->{list_owner_email} . '>', 
-				    Subject        =>  $DADA::Config::SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT,
-				},
-				-body => $DADA::Config::SUBSCRIPTION_NOTICE_MESSAGE, 
-				
-				-tmpl_params => { 
-					-list_settings_vars_param => {-list => $args->{-list}}, 
+    my $msg_template = {
+        subject => '',
+        msg     => '',
+    };
+    if ( $status eq "subscribed" ) {
+        $msg_template->{subject} =
+          $ls->param('admin_subscription_notice_message_subject');
+        $msg_template->{msg} = $ls->param('admin_subscription_notice_message');
 
-		            -vars                     => {
-		                                        num_subscribers => $num_subscribers,
-		                                        status          => $status, 
-		                                        note            => $args->{-note}, 
-		                                        REMOTE_ADDR     => $ENV{REMOTE_ADDR}, 
+    }
+    elsif ( $status eq "unsubscribed" ) {
+        $msg_template->{subject} =
+          $ls->param('admin_unsubscription_notice_message_subject');
+        $msg_template->{msg} =
+          $ls->param('admin_unsubscription_notice_message');
+    }
 
-		                                     },
+    require DADA::Template::Widgets;
+    for (qw(subject msg)) {
+        my $tmpl    = $msg_template->{$_};
+        my $content = DADA::Template::Widgets::screen(
+            {
+                -data => \$tmpl,
+                -vars => {
+                    num_subscribers => $num_subscribers,
+                    status          => $status,
+                    note            => $args->{-note},
+                    REMOTE_ADDR     => $ENV{REMOTE_ADDR},
 
-					($status eq "subscribed") ? (
-		            	-subscriber_vars_param    => {-list => $args->{-list}, -email => $args->{-email}, -type => 'list'},
-				    ) : (
-						#-subscriber_vars          => {'subscriber.email' => $args->{-email}},
-						-subscriber_vars          => $unsub_fields, 
-					)
-				},
-				-test => $args->{-test}, 
-			}
-		); 
+                },
+                -list_settings_vars_param => { -list => $args->{-list} },
+                ( $status eq "subscribed" )
+                ? (
+                    -subscriber_vars_param => {
+                        -list  => $args->{-list},
+                        -email => $args->{-email},
+                        -type  => 'list'
+                    },
+                  )
+                : ( -subscriber_vars => $unsub_fields, )
+            }
+        );
+        $msg_template->{$_} = $content;
 
-	# Logging?
+    }
 
-	} # if($send_it == 1){ 
+    require DADA::App::FormatMessages;
+    my $fm = DADA::App::FormatMessages->new( -List => $args->{-list} );
+    $fm->use_email_templates(0);
 
+    my $formatted_from = $fm->_encode_header(
+        'From',
+        $fm->format_phrase_address(
+            $ls->param('list_name'),
+            $ls->param('list_owner_email'),
+        )
+    );
+
+    my $send_to = 'list_owner';
+    if ( $status eq "subscribed" ) {
+        $send_to = $ls->param('send_subscription_notice_to');
+    }
+    else {
+        $send_to = $ls->param('send_unsubscription_notice_to');
+    }
+
+    if ( $send_to eq 'list' ) {
+        $fm->mass_mailing(1);
+        require DADA::Mail::Send;
+        my $mh = DADA::Mail::Send->new( { -list => $args->{-list} } );
+        $mh->list_type('list');
+        my $message_id = $mh->mass_send(
+            {
+                -msg => {
+                    From    => $formatted_from,
+                    Subject => $msg_template->{subject},
+                    Body    => $msg_template->{msg},
+                },
+            }
+        );
+
+    }
+    else {
+        send_generic_email(
+            {
+                -list    => $args->{-list},
+                -headers => {
+                    From    => $formatted_from,
+                    To      => $formatted_from,
+                    Subject => $msg_template->{subject},
+                },
+                -body => $msg_template->{msg},
+                -test => $args->{-test},
+            }
+
+        );
+    }
 }
-
 
 
 
