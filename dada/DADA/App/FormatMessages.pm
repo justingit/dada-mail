@@ -472,6 +472,23 @@ sub _format_text {
 							}
 						);				
 					}
+					
+					if($entity->head->mime_type eq 'text/html') { 
+						if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1) { 
+							eval { 
+								require DADA::App::FormatMessages::Filters::InlineEmbeddedImages; 
+								my $iei = DADA::App::FormatMessages::Filters::InlineEmbeddedImages->new; 
+								$content = $iei->filter({-html_msg => $content});
+							};
+							if($@){ 
+								carp "Problems with filter: $@"; 
+							}
+							else { 
+								# ... 
+							}	
+						}
+					}
+					
 				}
 				
 			  if($self->no_list != 1){
