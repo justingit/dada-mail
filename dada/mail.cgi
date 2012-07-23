@@ -2012,6 +2012,9 @@ sub list_options {
 					send_last_archived_msg_mass_mailing     => 0, 
                     captcha_sub                             => 0,
 					unsub_link_behavior                     => undef, 
+					
+					send_subscription_notice_to             => undef, 
+					send_unsubscription_notice_to           => undef,  
                 }
             }
         );
