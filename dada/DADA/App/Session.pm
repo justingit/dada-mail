@@ -7,7 +7,7 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::Security::Password; 
 use DADA::MailingList::Settings; 
 use DADA::App::Guts; 
-
+use Carp qw(carp croak); 
 
 my $dbi_obj; 
 
@@ -156,7 +156,7 @@ sub login_cookie {
                   # automatically, and recommend that people use an explicit flush()
                   # instead, which works reliably for everyone.
 				  $session->flush();
-
+				  
     }else{ 
 		
 				   $cookie = $q->cookie(-name    => $DADA::Config::LOGIN_COOKIE_NAME, 

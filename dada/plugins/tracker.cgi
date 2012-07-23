@@ -115,7 +115,7 @@ sub default_tmpl {
 
     my $tmpl = q{ 
 
-<!-- tmpl_set name="title" value="Tracker" --> 
+<!-- tmpl_set name="title" value="Plugins &#187; Tracker" --> 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
 		<!-- tmpl_var title --> 
@@ -481,7 +481,7 @@ sub default_tmpl {
 <p><code>
 &lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;
 </code></p>
-<p>Replace, <code>http://example.com</code> with the URL you would like to track clickthroughs. 
+<p>Replace <code>http://example.com</code> with the URL you would like to track clickthroughs. 
 </fieldset> 
 
 };
@@ -1185,7 +1185,7 @@ my $tmpl = q{
 	
 	<!-- tmpl_if chrome --> 
 	
-		<!-- tmpl_set name="title" value="Tracker &#187; Message Report" --> 
+		<!-- tmpl_set name="title" value="Plugins &#187; Tracker &#187; Message Report" --> 
 		<div id="screentitle"> 
 			<div id="screentitlepadding">
 				<!-- tmpl_var title --> 
@@ -2381,7 +2381,7 @@ You would write this URL inside a redirect tag, like this:
 
  <?dada redirect url="http://example.com" ?>
 
-Replace, "http://example.com" with whatever URL you would like to track.
+Replace "http://example.com" with whatever URL you would like to track.
 
 This redirect tag will be replaced by Dada Mail with a URL that, when clicked, will record 
 the click and redirect your user to the URL you specified within the tag. 

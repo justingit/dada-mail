@@ -3506,6 +3506,12 @@ sub membership {
     my $bounced_list_removed_from_list =
       $q->param('bounced_list_removed_from_list') || 0;
 
+	my $is_valid_email = 1; 
+	if(check_for_valid_email($email)   == 1){ 
+		$is_valid_email = 0; 
+	}
+	
+	
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
@@ -3543,9 +3549,11 @@ sub membership {
 
         my $fields = [];
 
-        my $subscriber_info =
-          $lh->get_subscriber( { -email => $email, -type => $type } );
-
+        my $subscriber_info = {};
+		if($is_valid_email){ 
+           $subscriber_info = $lh->get_subscriber( { -email => $email, -type => $type } );
+		}
+		
         # DEV: This is repeated quite a bit...
         require DADA::ProfileFieldsManager;
         my $pfm         = DADA::ProfileFieldsManager->new;
@@ -3562,9 +3570,11 @@ sub membership {
         }
 
         my $subscribed_to_lt = {};
-        for ( @{ $lh->member_of( { -email => $email } ) } ) {
-            $subscribed_to_lt->{$_} = 1;
-        }
+		if($is_valid_email) { 
+	        for ( @{ $lh->member_of( { -email => $email } ) } ) {
+	            $subscribed_to_lt->{$_} = 1;
+	        }
+		}
 
         my $add_to = {
             list               => 1,
@@ -3708,6 +3718,8 @@ m/^(list|black_list|white_list|authorized_senders|bounced_list)$/
 
 					can_have_subscriber_fields =>
                       $lh->can_have_subscriber_fields,
+
+					is_valid_email => $is_valid_email,
 
                 },
                 -list_settings_vars_param => {
@@ -6464,6 +6476,15 @@ sub edit_type {
                     unsub_link_found_in_html_mlm => $dfm->can_find_unsub_link(
                         { -str => $li->{mailing_list_message_html} }
                     ),
+
+                    message_body_tag_found_in_pt_mlm => $dfm->can_find_message_body_tag(
+                        { -str => $li->{mailing_list_message} }
+                    ),
+                    message_body_tag_found_in_html_mlm => $dfm->can_find_message_body_tag(
+                        { -str => $li->{mailing_list_message_html} }
+                    ),
+
+
                     sub_confirm_link_found_in_confirmation_message =>
                       $dfm->can_find_sub_confirm_link(
                         { -str => $li->{confirmation_message} }
@@ -8914,6 +8935,7 @@ sub login {
                                                            -list    => $list,
                                                            -password => $admin_password);
 
+
             require DADA::App::ScreenCache;
             my $c = DADA::App::ScreenCache->new;
             $c->remove('login_switch_widget.' . $list . '.scrn');
@@ -9105,8 +9127,9 @@ sub remove_subscribers {
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
     my ( $d_count, $bl_count ) = $lh->admin_remove_subscribers(
         {
-            -addresses => [@address],
-            -type      => $type,
+            -addresses        => [@address],
+            -type             => $type,
+			-validation_check => 0, 
         }
     );
 

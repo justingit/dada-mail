@@ -196,7 +196,13 @@ sub default_tmpl {
 
 
 
-	<!-- tmpl_set name="title" value="Mailing Monitor" --> 
+	<!-- tmpl_set name="title" value="Plugins &#187; Mailing Monitor" --> 
+	<div id="screentitle"> 
+		<div id="screentitlepadding">
+			<!-- tmpl_var title --> 
+		</div>
+		<!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 
 		<script type="text/javascript">
 		    //<![CDATA[

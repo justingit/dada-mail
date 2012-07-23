@@ -53,7 +53,7 @@ sub template {
 
     return q{ 
     
-	<!-- tmpl_set name="title" value="View List Settings" -->
+	<!-- tmpl_set name="title" value="Plugins &#187; View List Settings" -->
     <!-- tmpl_loop list_settings --> 
     
         <p> 

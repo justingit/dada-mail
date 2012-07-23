@@ -286,7 +286,7 @@ sub cgi_default_tmpl {
 	</script>
 	
 		
-	<!-- tmpl_set name="title" value="Bounce Handler" -->	
+	<!-- tmpl_set name="title" value="Plugins &#187; Bounce Handler" -->	
 	
 	<!-- tmpl_set name="load_modalbox" value="1" -->	
 	
@@ -767,7 +767,7 @@ sub cgi_parse_bounce_template {
 
     return q{ 
 		
-		<!-- tmpl_set name="title" value="Parsing Bounces..." --> 
+		<!-- tmpl_set name="title" value="Plugins &#187; Bounce Handler &#187; Parsing Bounces..." --> 
 		
 			<script type="text/javascript">
 			    //<![CDATA[
@@ -1137,7 +1137,7 @@ sub cgi_show_plugin_config_template {
     return q{ 
     
     
-    <!-- tmpl_set name="title" value="Plugin Configuration" --> 
+    <!-- tmpl_set name="title" value="Plugins &#187; Bounce Handler &#187; Configuration" --> 
 
   <p id="breadcrumbs">
    <a href="<!-- tmpl_var Plugin_URL -->"> 
@@ -1275,7 +1275,7 @@ sub cgi_bounce_score_search_template {
 
     my $template = q{
 
-	<!-- tmpl_set name="title" value="Bounce Log Search Results" --> 
+	<!-- tmpl_set name="title" value="Plugins &#187; Bounce Handler &#187; Bounce Log Search Results" --> 
 	
   <p id="breadcrumbs">
    <a href="<!-- tmpl_var Plugin_URL -->"> 

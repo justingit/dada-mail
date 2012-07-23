@@ -185,7 +185,7 @@ sub main_tmpl {
 	
 	return q{ 
 		
-		<!-- tmpl_set name="title" value="Log Viewer" -->
+		<!-- tmpl_set name="title" value="Plugins &#187; Log Viewer" -->
 		
 		<script type="text/javascript">
 		    //<![CDATA[
