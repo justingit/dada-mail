@@ -2,6 +2,7 @@
 
 <!-- tmpl_set name="title" value="Mass Mailing &#187; Send a Message" -->
 <!-- tmpl_set name="load_wysiwyg_editor" value="1" -->
+<!-- tmpl_set name="load_modalbox" value="1" -->
 
 
 <div id="screentitle"> 
@@ -40,28 +41,72 @@
 	  
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
 
+
+<div id="message_body_help" style="display:none;">
+
+<h2>
+ <!-- tmpl_var PROGRAM_NAME --> supports sending messages formatted in HTML, Plaintext, or both!
+</h2> 
+
+<ul>
+<li><p>
+	You only need to create one version of your message: HTML <em>or</em> PlainText. 
+</p>
+</li>
+
+<li><p>
+	You <strong>may</strong> create two versions of your message. 
+	Both copies will be embedded in the same email you send. 
+	Your PlainText version will be shown to users whose mail reader cannot view your HTML version. 
+</p>
+</li>
+
+<li><p>
+	If you create an HTML version of your message, but not a PlainText version, 
+	a PlainText version will be created automatically for you by <!-- tmpl_var PROGRAM_NAME -->, 
+	so that everyone will be able to view your message. 
+</p>
+</li>
+
+<li><p>
+	If you create a PlainText version of your message, but not an HTML version, 
+	no HTML version will be created. 
+</p>
+</li>
+
+</ul>
+
+<div style="text-align: center;">
+	<input value="Thanks!" onclick="Modalbox.hide()" type="button" class="small_button" />
+</div> 
+
+	</div>
+
 <fieldset> 
 
-<legend>Message Body</legend>
+<legend>Message Body [<a href="#" onclick="Modalbox.show($('message_body_help'), {title: 'Message Body Help', width: 640, height:325}); return false;">?</a>]</legend>
+
+<!-- style="border-left:1px solid black" class="format_type_container_active" --> 
+<!--  class="format_type_container_regular" --> 
 
 <div id="format_type_container">
 
-<ul id="format_type_list">
- <li>
-  <a href="#" id="toggleHTML" style="border-left:1px solid black" class="format_type_container_active">HTML Version</a>
+<ul>
+ <li id="toggleHTML_li" class="active">
+  <a href="#" id="toggleHTML">HTML Version</a>
  </li>
- <li>
-  <a href="#" id="togglePlainText"  class="format_type_container_regular">PlainText Version</a>
+ <li id="togglePlainText_li">
+  <a href="#" id="togglePlainText">PlainText Version</a>
  </li>
 </ul>
 </div>
 <div style="clear:both"></div>
 
-<div id="html_message" style="background-color:#fff;border:1px solid black;border-top:0;"> 
+<div id="html_message" style="background-color:#fff;border:1px solid black;border-top:0;padding:0;margin:0;"> 
 <!-- tmpl_include html_message_form_field_widget.tmpl --> 
 </div>
 
-<div id="text_message" style="display:none;background-color:#fff;border:1px solid black;border-top:0;"> 
+<div id="text_message" style="display:none;background-color:#fff;border:1px solid black;border-top:0;padding:0;margin:0;"> 
 <!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
 </div> 
 
@@ -71,10 +116,8 @@
 
 	$('togglePlainText').observe('click', function(event) {
 		event.stop();	
-		$('togglePlainText').removeClassName('format_type_container_regular');
-		$('toggleHTML').addClassName('format_type_container_regular');
-		$('togglePlainText').addClassName('format_type_container_active');
-		$('toggleHTML').removeClassName('format_type_container_active');
+		$('togglePlainText_li').addClassName('active');
+		$('toggleHTML_li').removeClassName('active');
 	  	new Effect.Parallel([
 			Effect.Fade('html_message'),
 			Effect.Appear('text_message')
@@ -84,10 +127,8 @@
 	});
 	$('toggleHTML').observe('click', function(event) {
 		event.stop();
-		$('toggleHTML').removeClassName('format_type_container_regular');
-		$('togglePlainText').addClassName('format_type_container_regular');
-		$('toggleHTML').addClassName('format_type_container_active');
-		$('togglePlainText').removeClassName('format_type_container_active');
+		$('toggleHTML_li').addClassName('active');
+		$('togglePlainText_li').removeClassName('active');
 		new Effect.Parallel([
 			Effect.Fade('text_message'),
 			Effect.Appear('html_message')
