@@ -788,3 +788,62 @@ div.alt,
 	color: #666;
 	background-color: #ffe1af;
 }
+
+
+
+
+#format_type_container { 
+	padding-bottom:0;
+	margin-bottom:0;
+}
+#format_type_container ul
+{
+padding-left: 0;
+margin-left: 0;
+
+padding-bottom:0;
+margin-bottom:0;
+
+background-color: #ededed;
+/*border-bottom:1px solid black;*/
+float: left;
+width: 100%;
+
+font-size: 1em;
+font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
+
+
+}
+
+#format_type_container ul li { display: inline; }
+
+#format_type_container ul li a
+{
+margin: 0px;
+padding: 5px 10px;
+text-decoration: none;
+color: #000;
+
+float: left;
+
+border-right: 1px solid #000;
+border-top:  1px solid #000;
+}
+
+#format_type_container ul li a:hover
+{
+	background: #ffe1af;
+	color: #000;
+}
+
+.format_type_container_regular { 
+	background: #e6e6e6;
+	border-bottom: 1px solid black;
+}
+.format_type_container_active { 
+	font-weight: bold; 
+	font-size: 1.1em;
+	background-color:#fff;
+	border-bottom: 1px solid #fff;
+	
+}
