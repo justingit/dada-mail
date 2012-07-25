@@ -111,6 +111,11 @@ function toggleDisplay(target) {
 	} 	
 }
 
+function toggleTwo(targetOpen, targetClose) { 
+	Effect.BlindUp($(targetClose));
+	Effect.BlindDown($(targetOpen));	
+}
+
 
 
 function ChangeMassMailingButtonLabel() { 
