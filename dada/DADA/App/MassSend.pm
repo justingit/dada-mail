@@ -139,7 +139,6 @@ sub send_email {
 
 
         require DADA::Template::Widgets;
-
 		my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);  
 
 
@@ -567,7 +566,10 @@ sub send_url_email {
         
 		my ($num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued)  = $self->mass_mailout_info($list);
 
+
         require DADA::Template::Widgets;
+		my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);  
+
         my $scrn = DADA::Template::Widgets::wrap_screen(
 				 	{
 						-screen => 'send_url_email_screen.tmpl',
@@ -602,6 +604,7 @@ sub send_url_email {
 							plaintext_message_body_content       => $ls->plaintext_message_body_content,
 							html_message_body_content            => $ls->html_message_body_content, 
 							html_message_body_content_js_escaped => js_enc($ls->html_message_body_content),
+							%wysiwyg_vars,
 							
 							
 						},
