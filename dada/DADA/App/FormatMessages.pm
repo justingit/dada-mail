@@ -427,34 +427,9 @@ sub _format_text {
 			# Begin filtering done before the template is applied 
 	
 			if($content){ # do I need this?
-				# This means, we've got a discussion list:
-				if(
-					$self->no_list                                   != 1 &&
-					$self->mass_mailing                              == 1 &&
-					$self->list_type eq                            'list' &&
-					$self->{ls}->param('disable_discussion_sending') != 1 &&
-					$self->{ls}->param('group_list')                 == 1
-				) { 
-					if($self->{ls}->param('discussion_template_defang') == 1) { 
-						try {
-							$content = $self->template_defang({-data => $content});
-						} catch { 
-							carp "Problem defanging template: $_"; 
-						}
-					}
-					if($entity->head->mime_type eq 'text/html'){ 
-						try { 
-							$content = $self->_remove_opener_image({-data => $content});
-						} catch { 
-							carp "Problem removing existing opener images: $_"; 
-						}
-					}
-				}
-
+				
 				if($entity->head->mime_type eq 'text/html') { 
-					
-					$content = $self->filter_out_past_mlm_template({-html_msg => $content});
-					
+						
 					if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1) { 
 						try {
 							require DADA::App::FormatMessages::Filters::InlineEmbeddedImages; 
@@ -463,11 +438,49 @@ sub _format_text {
 						} catch {
 							carp "Problems with filter: $_";
 						};
-					}
-					
+					}	
 				}
 				
-				
+				# This means, we've got a discussion list:
+				if(
+					$self->no_list                                   != 1 &&
+					$self->mass_mailing                              == 1 &&
+					$self->list_type eq                            'list' &&
+					$self->{ls}->param('disable_discussion_sending') != 1 &&
+					$self->{ls}->param('group_list')                 == 1
+				) { 
+
+					if($entity->head->mime_type eq 'text/html'){ 
+						try { 
+							$content = $self->_remove_opener_image({-data => $content});
+						} catch { 
+							carp "Problem removing existing opener images: $_"; 
+						}
+					}
+					
+					try {
+						require DADA::App::FormatMessages::Filters::CleanUpReplies; 
+						my $iei = DADA::App::FormatMessages::Filters::CleanUpReplies->new; 
+						$content = $iei->filter(
+							{
+								-html_msg => $content, 
+								-list     => $self->{list}
+							}
+						);
+					} catch {
+						carp "Problems with filter: $_";
+					};		
+					
+					if($self->{ls}->param('discussion_template_defang') == 1) { 
+						try {
+							$content = $self->template_defang({-data => $content});
+						} catch { 
+							carp "Problem defanging template: $_"; 
+						}
+					}
+								
+				} #/ discussion lists
+ 	
 				# End filtering done before the template is applied 
 				
 				$content = $self->_apply_template(
@@ -639,7 +652,7 @@ sub _add_opener_image {
 }
 
 
-
+# This would be a nice filter to re-implement for getting archives ready for viewing. 
 sub _remove_opener_image { 
 	my $self    = shift; 
 	my $content = shift; 
@@ -649,28 +662,6 @@ sub _remove_opener_image {
     return $content; 
 }
 
-# To do this for PlainText, you'd probably want to stick with one quoted mech - 
-# like, 
-# > Here's my quoted text!
-# And then find out what the opening and sig portions of your message look like, 
-# And then filter out the template tags change them to, (.*?) or whatever
-# And then add that quoted text - do a search and replace on that? 
-
-sub filter_out_past_mlm_template { 
-	my $self = shift; 
-	my ($args) = @_; 
-	
-	my $o_ogb = quotemeta('<!--opening-->'); 
-	my $o_oge = quotemeta('<!--/opening-->'); 
-	
-	my $s_ogb = quotemeta('<!--signature-->'); 
-	my $s_oge = quotemeta('<!--/signature-->');
-	
-	$args->{-html_msg} =~ s/$o_ogb(.*?)$o_oge//smg;
-	$args->{-html_msg} =~ s/$s_ogb(.*?)$s_oge//smg;
-	
-	return $args->{-html_msg}
-}
 
 
 

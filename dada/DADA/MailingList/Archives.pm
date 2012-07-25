@@ -1013,16 +1013,12 @@ sub _entity_from_raw_msg {
 
 
 sub _remove_opener_image { 
-
-	my $self  = shift; 
-	my $str   = shift;
-	
-	my $open  = quotemeta('<!--open_img-->');
-	my $close = quotemeta('<!--/open_img-->'); 
-	   $str =~ s/$open(.*?)$close//g;
-	   
-	return $str; 
-	
+	my $self    = shift; 
+	my $content = shift; 
+	my $sm = quotemeta('<!--open_img-->'); 
+	my $em = quotemeta('<!--/open_img-->'); 
+	$content =~ s/($sm)(.*?)($em)//smg; 
+    return $content;
 }
 
 
