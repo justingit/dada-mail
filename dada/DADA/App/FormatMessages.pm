@@ -11,7 +11,7 @@ use Encode qw(encode decode);
 use MIME::Parser;
 use MIME::Entity; 
 use DADA::App::Guts; 
-
+use Try::Tiny; 
 
 use Carp qw(croak carp); 
 
@@ -415,43 +415,64 @@ sub _format_text {
 			
 			my $body    = $entity->bodyhandle;
 			my $content = $entity->bodyhandle->as_string;
-			
-			$content = safely_decode($content);
-		   
-		
+			   $content = safely_decode($content);
 			#
 			# body_as_string gives you encoded version.
 			# Don't get it this way, unless you've got a great reason 
 			# my $content = $entity->body_as_string;
-			# Same thing - this means it could be in quoted/printable,etc. 
+			# Same thing - this means it could be in quoted/printable,etc.
 			
+			
+					   
+			# Begin filtering done before the template is applied 
+	
 			if($content){ # do I need this?
+				# This means, we've got a discussion list:
 				if(
 					$self->no_list                                   != 1 &&
 					$self->mass_mailing                              == 1 &&
 					$self->list_type eq                            'list' &&
 					$self->{ls}->param('disable_discussion_sending') != 1 &&
-					$self->{ls}->param('group_list')                 == 1 &&
-					$self->{ls}->param('discussion_template_defang') == 1
+					$self->{ls}->param('group_list')                 == 1
 				) { 
-					
-					eval { 
-						$content = $self->template_defang(
-							{
-								-data => $content, 
-							}
-						);
-					};
-					if($@){ 
-						carp "Problem defanging template: $@"; 
+					if($self->{ls}->param('discussion_template_defang') == 1) { 
+						try {
+							$content = $self->template_defang({-data => $content});
+						} catch { 
+							carp "Problem defanging template: $_"; 
+						}
 					}
-				
+					if($entity->head->mime_type eq 'text/html'){ 
+						try { 
+							$content = $self->remove_opener_image({-data => $content});
+						} catch { 
+							carp "Problem removing existing opener images: $_"; 
+						}
+					}
 				}
 
+				if($entity->head->mime_type eq 'text/html') { 
+					if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1) { 
+						try {
+							require DADA::App::FormatMessages::Filters::InlineEmbeddedImages; 
+							my $iei = DADA::App::FormatMessages::Filters::InlineEmbeddedImages->new; 
+							$content = $iei->filter({-html_msg => $content});
+						} catch {
+							carp "Problems with filter: $_";
+						};
+					}
+				}
+				
+				
+				# End filtering done before the template is applied 
+				
 				$content = $self->_apply_template(
 					-data => $content, 
 					-type => $entity->head->mime_type, 
 				);
+				
+				# Begin filtering done after the template is applied 
+				
 				
 				if($self->mass_mailing == 1){ 
 					if($self->list_type eq 'just_unsubscribed'){ 
@@ -473,27 +494,12 @@ sub _format_text {
 						);				
 					}
 					
-					if($entity->head->mime_type eq 'text/html') { 
-						if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1) { 
-							eval { 
-								require DADA::App::FormatMessages::Filters::InlineEmbeddedImages; 
-								my $iei = DADA::App::FormatMessages::Filters::InlineEmbeddedImages->new; 
-								$content = $iei->filter({-html_msg => $content});
-							};
-							if($@){ 
-								carp "Problems with filter: $@"; 
-							}
-							else { 
-								# ... 
-							}	
-						}
-					}
 					
 				}
 				
 			  if($self->no_list != 1){
 			
-				   $content = $self->_parse_in_list_info(
+				   $content = $self->_expand_macro_tags(
 						-data => $content, 
 						-type => $entity->head->mime_type, 
 					);
@@ -514,12 +520,14 @@ sub _format_text {
 					}
 				}
 				
+				# End filtering done after the template is applied 
+				
+				
 				# simple validation
 				require DADA::Template::Widgets; 
 				my ($valid, $errors);
 					
 				my $expr = 0; 
-				
 				if($self->no_list == 1){ 
 					$expr = 1; 
 				}
@@ -536,21 +544,21 @@ sub _format_text {
 						-expr => $expr, 
 					}
 				); 
-				
 				if($valid == 0){ 
 					my $munge = quotemeta('/fake/path/for/non/file/template'); 
 					$errors =~ s/$munge/line/; 
 					croak "Problems with email message! Invalid template markup: '$errors' \n" . '-' x 72 . "\n" . $content ; 
 				}
 				# /simple validation
+				
+				
+				
 		       my $io = $body->open('w');
-
-				  $content = safely_encode($content); 
-
-				  $io->print( $content );				    
-				  $io->close;
-				  $entity->sync_headers('Length'      =>  'COMPUTE',
-									    'Nonstandard' =>  'ERASE');
+			  $content = safely_encode($content); 
+			  $io->print( $content );				    
+			  $io->close;
+			  $entity->sync_headers('Length'      =>  'COMPUTE',
+								    'Nonstandard' =>  'ERASE');
 			}
 
 		}
@@ -624,6 +632,17 @@ sub _add_opener_image {
 		$content .= "\n" . $img_opener_code
 	}
 	return $content; 
+}
+
+
+
+sub remove_opener_image { 
+	my $self    = shift; 
+	my $content = shift; 
+	my $sm = quotemeta('<!--open_img-->'); 
+	my $em = quotemeta('<!--/open_img-->'); 
+	$content =~ s/($sm)(.*?)($em)//smg; 
+    return $content; 
 }
 
 
@@ -1103,9 +1122,9 @@ sub _list_name_subject {
 
 =pod
 
-=head2 _parse_in_list_info
+=head2 _expand_macro_tags
 
- $data = $self->_parse_in_list_info(-data => $data, 
+ $data = $self->_expand_macro_tags(-data => $data, 
                                     -type => (PlainText/HTML), 
                                    );
 								        
@@ -1115,11 +1134,9 @@ B<-type> can be either PlainText or HTML
 
 =cut
 
-# DEV: This is a bad name for this - it should be called something 
-# more on the lines of expanding macro stuff, since all the parsing in list info 
-# stuff isn't here. 
 
-sub _parse_in_list_info { 
+
+sub _expand_macro_tags { 
 
 	my $self = shift; 
 	
@@ -1195,10 +1212,10 @@ sub template_defang {
     my ($args) = @_;
     my $str    = $args->{-data};
 
-    my $b1   = quotemeta('<!--');
-    my $e1 = quotemeta('-->');
+    my $b1  = quotemeta('<!--');
+    my $e1  = quotemeta('-->');
 
-    my $b2   = quotemeta('<');
+    my $b2 = quotemeta('<');
     my $e2 = quotemeta('>');
 
     my $b3 = quotemeta('[');
@@ -1390,6 +1407,25 @@ sub _apply_template {
 			$new_data = strip($self->{ls}->param('mailing_list_message_html')) || '<!-- tmpl_var message_body -->';
 		}
 		
+		
+		# if(some-user-set-setting) { 
+		if(
+			$self->no_list                                   != 1 &&
+			$self->mass_mailing                              == 1 &&
+			$self->list_type eq                            'list' &&
+			$self->{ls}->param('disable_discussion_sending') != 1 &&
+			$self->{ls}->param('group_list')                 == 1
+		) { 
+			$new_data = $self->_depersonalize_mlm_template(
+					{ 
+						-msg => $new_data, 
+					}
+				); 
+		}
+		# / depersonalize 
+	
+		
+		# This adds a message body tag, if you haven't done that, already. 
 		$new_data = $self->message_body_tagged(
 			{
 				-str => $new_data, 
@@ -1448,7 +1484,7 @@ sub _apply_template {
 				if $self->use_list_template; 			
 	}
 	
-	$new_data = $self->_parse_in_list_info(-data => $new_data, 
+	$new_data = $self->_expand_macro_tags(-data => $new_data, 
 								          -type => $args{-type}, 
 								        );
 	
@@ -1474,6 +1510,41 @@ $new_data
 	
 	return $new_data; 
 	
+}
+
+sub _depersonalize_mlm_template { 
+	
+	my $self = shift; 
+	my ($args) = @_; 
+	if(!exists($args->{-msg})){ 
+		croak "you MUST pass the, '-msg' paramater!"; 
+	}
+	
+	my $tags = [ 
+		{ 
+			og => '<!-- tmpl_var list_subscribe_link -->',
+			re => '<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->', 
+		},
+		{
+			og => '<!-- tmpl_var list_unsubscribe_link -->', 
+			re => '<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->', 
+		}, 
+		{
+			og => '<!-- tmpl_var PROGRAM_URL -->/profile_login/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/', 
+			re => '<!-- tmpl_var PROGRAM_URL -->/profile_login/">', 
+		},
+#		{
+#			og => 'Using the address: <!-- tmpl_var subscriber.email -->', 
+#			re => '', 
+#		}
+	];
+	for my $tag(@$tags) { 
+		my $og = quotemeta($tag->{og});
+		my $re = $tag->{re}; 		
+		$args->{-msg} =~ s/$og/$re/smg; 
+	}
+	
+	$args->{-msg}	
 }
 
 sub can_find_sub_confirm_link { 
