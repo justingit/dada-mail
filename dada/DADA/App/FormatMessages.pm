@@ -649,6 +649,13 @@ sub _remove_opener_image {
     return $content; 
 }
 
+# To do this for PlainText, you'd probably want to stick with one quoted mech - 
+# like, 
+# > Here's my quoted text!
+# And then find out what the opening and sig portions of your message look like, 
+# And then filter out the template tags change them to, (.*?) or whatever
+# And then add that quoted text - do a search and replace on that? 
+
 sub filter_out_past_mlm_template { 
 	my $self = shift; 
 	my ($args) = @_; 
