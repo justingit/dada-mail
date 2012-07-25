@@ -404,6 +404,9 @@ if($ENV{PATH_INFO}){
 		if($pi_pin eq '='){ 
 			undef $pi_pin;
 		}
+		if($pi_list =~ m/\=$/){ 
+			$pi_list =~ s/\=$//; 
+		}
 		
         $q->param('flavor', $pi_flavor)
             if $pi_flavor;
