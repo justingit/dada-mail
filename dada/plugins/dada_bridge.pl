@@ -1925,8 +1925,7 @@ sub validate_msg {
       if $verbose;
 
     if ( lc_email($from_address) eq lc_email( $li->{list_owner_email} ) ) {
-        print "\t* From: address is the list owner address ; ("
-          . $li->{list_owner_email} . ')' . "\n"
+        print "\t* From: address is the list owner address (" . $li->{list_owner_email} . ")\n"
           if $verbose;
 
         if ( $Plugin_Config->{Check_List_Owner_Return_Path_Header} ) {
