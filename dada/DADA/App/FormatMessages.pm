@@ -444,7 +444,7 @@ sub _format_text {
 					}
 					if($entity->head->mime_type eq 'text/html'){ 
 						try { 
-							$content = $self->remove_opener_image({-data => $content});
+							$content = $self->_remove_opener_image({-data => $content});
 						} catch { 
 							carp "Problem removing existing opener images: $_"; 
 						}
@@ -452,6 +452,9 @@ sub _format_text {
 				}
 
 				if($entity->head->mime_type eq 'text/html') { 
+					
+					$content = $self->filter_out_past_mlm_template({-html_msg => $content});
+					
 					if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1) { 
 						try {
 							require DADA::App::FormatMessages::Filters::InlineEmbeddedImages; 
@@ -461,6 +464,7 @@ sub _format_text {
 							carp "Problems with filter: $_";
 						};
 					}
+					
 				}
 				
 				
@@ -636,13 +640,29 @@ sub _add_opener_image {
 
 
 
-sub remove_opener_image { 
+sub _remove_opener_image { 
 	my $self    = shift; 
 	my $content = shift; 
 	my $sm = quotemeta('<!--open_img-->'); 
 	my $em = quotemeta('<!--/open_img-->'); 
 	$content =~ s/($sm)(.*?)($em)//smg; 
     return $content; 
+}
+
+sub filter_out_past_mlm_template { 
+	my $self = shift; 
+	my ($args) = @_; 
+	
+	my $o_ogb = quotemeta('<!--opening-->'); 
+	my $o_oge = quotemeta('<!--/opening-->'); 
+	
+	my $s_ogb = quotemeta('<!--signature-->'); 
+	my $s_oge = quotemeta('<!--/signature-->');
+	
+	$args->{-html_msg} =~ s/$o_ogb(.*?)$o_oge//smg;
+	$args->{-html_msg} =~ s/$s_ogb(.*?)$s_oge//smg;
+	
+	return $args->{-html_msg}
 }
 
 
