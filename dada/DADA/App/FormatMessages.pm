@@ -457,14 +457,14 @@ sub _format_text {
 							carp "Problem removing existing opener images: $_"; 
 						}
 					}
-					
 					try {
 						require DADA::App::FormatMessages::Filters::CleanUpReplies; 
-						my $iei = DADA::App::FormatMessages::Filters::CleanUpReplies->new; 
-						$content = $iei->filter(
+						my $cur = DADA::App::FormatMessages::Filters::CleanUpReplies->new; 
+						$content = $cur->filter(
 							{
-								-html_msg => $content, 
-								-list     => $self->{list}
+								-msg  => $content, 
+								-type => $entity->head->mime_type, 
+								-list => $self->{list},
 							}
 						);
 					} catch {
@@ -478,6 +478,7 @@ sub _format_text {
 							carp "Problem defanging template: $_"; 
 						}
 					}
+					
 								
 				} #/ discussion lists
  	
@@ -655,7 +656,8 @@ sub _add_opener_image {
 # This would be a nice filter to re-implement for getting archives ready for viewing. 
 sub _remove_opener_image { 
 	my $self    = shift; 
-	my $content = shift; 
+	my ($args)  = @_; 
+	my $content = $args->{-data}; 
 	my $sm = quotemeta('<!--open_img-->'); 
 	my $em = quotemeta('<!--/open_img-->'); 
 	$content =~ s/($sm)(.*?)($em)//smg; 
@@ -1549,7 +1551,7 @@ sub _depersonalize_mlm_template {
 		}, 
 		{
 			og => '<!-- tmpl_var PROGRAM_URL -->/profile_login/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/', 
-			re => '<!-- tmpl_var PROGRAM_URL -->/profile_login/">', 
+			re => '<!-- tmpl_var PROGRAM_URL -->/profile_login/', 
 		},
 #		{
 #			og => 'Using the address: <!-- tmpl_var subscriber.email -->', 
