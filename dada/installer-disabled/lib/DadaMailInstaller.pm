@@ -2110,7 +2110,7 @@ sub installer_dircopy {
 	my ($source, $target) = @_; 
 	require File::Copy::Recursive; 
 	File::Copy::Recursive::dircopy($source, $target) 
-		or die $!;
+		or die "can't copy directory from, '$source' to, '$target' because: $!";
 }
 sub backup_dir { 
 	my $source = shift; 
