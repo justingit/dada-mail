@@ -2,6 +2,7 @@
 
 <!-- tmpl_set name="title" value="Mass Mailing &#187; Send a Message" -->
 <!-- tmpl_set name="load_wysiwyg_editor" value="1" -->
+<!-- tmpl_set name="load_modalbox" value="1" -->
 
 
 <div id="screentitle"> 
@@ -33,52 +34,29 @@
 
 <!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
 
- 
-	
+<!-- tmpl_include send_email_message_body_help_widget.tmpl -->
+
+
 <form name="send_email" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
- 
  <input type="hidden" name="f" value="send_email" />
  <input type="hidden" name="advanced" value="yes" />
 	  
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
+<fieldset> 
+<legend>Message Body [<a href="#" onclick="Modalbox.show($('message_body_help'), {title: 'Message Body Help', width: 640, height:325}); return false;">?</a>]</legend>
 
+<!-- tmpl_include message_format_type_toggler_widget.tmpl --> 
 
-
-
-<fieldset>
-<legend>Message Body</legend>
-
-
- 
-     <fieldset style="background:#e6e6e6"> 
-
-     <legend>
-      <a href="#" onclick="toggleDisplay('html_message'); return false;">+/-</a> HTML Version
-     </legend>
-      
-		
-<div id="html_message" <!-- tmpl_if list_settings.show_message_body_html_ver --><!-- tmpl_else -->style="display:none"<!-- /tmpl_if -->> 
- <!-- tmpl_include html_message_form_field_widget.tmpl --> 
+<div id="html_message" style="background-color:#fff;border:1px solid black;border-top:0;padding:0;margin:0;"> 
+<!-- tmpl_include html_message_form_field_widget.tmpl --> 
 </div>
 
-</fieldset> 
-
-
-
- <fieldset style="background:#e6e6e6"> 
-  
-		 <legend>
-		  <a href="#" onclick="toggleDisplay('text_message');return false;">+/-</a> PlainText Version
-		 </legend>
-		 
- 
- <div id="text_message" <!-- tmpl_if list_settings.show_message_body_plaintext_ver --><!-- tmpl_else -->style="display:none"<!-- /tmpl_if -->> 
- <!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
+<div id="text_message" style="display:none;background-color:#fff;border:1px solid black;border-top:0;padding:0;margin:0;"> 
+<!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
 </div> 
-</fieldset> 
 
-
-</fieldset> 
+</fieldset>
+ 
 
 <!-- tmpl_include send_email_archive_options_widget.tmpl -->
 
@@ -86,69 +64,8 @@
 
 <!-- tmpl_include partial_sending_options_widget.tmpl --> 
 
+<!-- tmpl_include file_attachments_widget.tmpl -->
 
-<fieldset> 
-
-<legend>
-       <a href="#" id="partial_sending_options_widget_label" onclick="toggleDisplay('file_attachments');return false;">
-      +/- 
-     </a>File Attachments
-</legend>
-
-
-
-<div id="file_attachments" style="display:none"> 
-
-         <p>
-         <input type="file" name="attachment_1"  size="36" /><br /> 
-         <input type="file" name="attachment_2"  size="36" /><br /> 
-         <input type="file" name="attachment_3"  size="36" /><br />  
-
-         <!-- tmpl_if comment --> 
-
-			You can continue to add to this list, like so: 
-
-	         <input type="file" name="attachment_4"  size="36" /><br />          
-	         <input type="file" name="attachment_5"  size="36" /><br />          
-
-			Just reflect the number of attachments you have in the, "attachment" 
-			hidden form field, below: 
-		
-		<!-- /tmpl_if --> 
-
-         </p>
-         
-	    <input type="hidden" name="attachment" value="3" />
-
-</div> 
-
-
-
-</fieldset> 
-
-<!-- tmpl_if comment --> 
-
-	  <tr>
-	   <td align="right">
-	    <p>
-	     <strong>
-	      Options:
-	     </strong>
-	    </p>
-	   </td>
-	   <td>
-	    <p>
-	     <input type="checkbox" name="apply_template" id="apply_template" value="1"  tmpl_if apply_list_template_to_html_msgs checked="checked" tmpl_if />
-	     <label for="apply_template">
-	      Apply the list template to the HTML message
-	     </label>
-	    </p>
-	   </td>
-	  </tr>
-
-<!-- /tmpl_if --> 
-
-	  
 <!-- tmpl_include subscriber_field_tags_listing_widget.tmpl --> 
  
 <!-- tmpl_include send_a_list_message_button_widget.tmpl -->

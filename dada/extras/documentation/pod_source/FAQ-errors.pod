@@ -748,39 +748,7 @@ http://example.com/cgi-bin/dada/mail.cgi?f=email_password&list=listshortname
 
 Where, B<http://example.com/cgi-bin/dada/mail.cgi> is the URL to your Dada Mail and, B<listshortname> is the listshortname that's giving you trouble.
 
-=head1 FCKeditor
-
-=head2 FCKeditor doesn't seem to work with Internet Explorer 9
-
-It's possible that FCKeditor and Internet Explorer 9 are not compatible with each other. 
-
-According to this bug report, the only optional available is to move to CKeditor: 
-
-L<http://dev.ckeditor.com/ticket/6576>
-
-CKeditor does not come with a bundled, free file manager for uploading images that are automatically inserted in your mailing list message, which is unfortunate. 
-
-Free alternatives exist, with varying quality. One to try: 
-
-L<http://kcfinder.sunhater.com/>
-
-The other fix presented is to use the following header: 
-
-	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" /> 
-
-In Dada Mail's admin template, located at: 
-
-I<dada/DADA/Template/templates/admin_template.tmpl> 
-
-You could need to replace this line: 
-
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-with, 
-
-	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" /> 
-
-It's not completely tested if this change will break other parts of Dada Mail, for Internet Explorer 9 users. 
+ 
 
 =head1 Hosting Company-Specific Problems
 

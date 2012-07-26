@@ -10,6 +10,29 @@ Key:
 [*] Naw...
 [?] Someday
 
+[x] FCKEDITOR: 
+	[x] Remove all connectors except, "php" 
+
+
+[x] CKEDitor needs a custom toolbar config to start off with - no form fields/flash, stuff like that. 
+	[x] Needs specific config for fcfinder - ala: 
+	
+		CKEDITOR.editorConfig = function(config) {
+		   config.filebrowserBrowseUrl      = '/kcfinder/browse.php?type=files';
+		   config.filebrowserImageBrowseUrl = '/kcfinder/browse.php?type=images';
+		   config.filebrowserFlashBrowseUrl = '/kcfinder/browse.php?type=flash';
+		   config.filebrowserUploadUrl      = '/kcfinder/upload.php?type=files';
+		   config.filebrowserImageUploadUrl = '/kcfinder/upload.php?type=images';
+		   config.filebrowserFlashUploadUrl = '/kcfinder/upload.php?type=flash';
+		};
+		
+	[x] KCFinder need this uncommented, (if not using session info from, /tmp?
+		//'_sessionDir' => "/full/directory/path",
+	[x] TinyMCE - 	
+		//'_tinyMCEPath' => "/tiny_mce",
+	    
+	
+
 [ ] way to see every mailinglist, an address is subscribed on? Maybe a way for a root login to go into a user's Profile? 
 
 [ ] Sending a test message should pull up profile info, if the email address that you send a test message to, is the list owner. 

@@ -449,7 +449,7 @@ sub edit  {
 				$message .= '<p class="error">!!! '.  DADA::App::Guts::pretty($_)  .'</p>' for keys %$status;
 			}
 		}else{ 
-			$message = $DADA::Config::GOOD_JOB_MESSAGE;
+			$message = '<p class="positive">Your changes have been saved successfully!</p>';
 			$key = $mss->save_from_params({-cgi_obj => $q });
 			
 		}
@@ -1435,44 +1435,14 @@ sub from_text_widget_tmpl {
 		</td> 
 		</tr> 
 		<tr> 
-			<td>&nbsp;</td>
-			<td>
-			<!-- tmpl_if expr="(type eq 'HTML')" --> 
-			<!-- tmpl_if FCKEDITOR_URL -->
-					<!-- tmpl_if list_settings.enable_fckeditor --> 
-					    <script type="text/javascript">   
-					    	<!--
-					        var oFCKeditor = new FCKeditor('<!-- tmpl_var type -->_text') ;
-					        <!-- tmpl_include FCKeditor_default_js_options.tmpl --> 
-							<!-- tmpl_if default_text --> 
-								oFCKeditor.Value = "<!-- tmpl_var default_text ESCAPE="js" -->"; /* does the js escape work? */
-							<!-- /tmpl_if --> 
-					        oFCKeditor.Create() ;
-					        //-->
-					        </script> 
-					<!-- tmpl_else --> 
-						<textarea name="<!-- tmpl_var type -->_text" cols="80" rows="30" id="<!-- tmpl_var type -->_text"><!-- tmpl_var default_text ESCAPE="HTML" --></textarea>
-					<!-- /tmpl_if --> 
-			 <!-- tmpl_else--> 
-					<!-- tmpl_if CKEDITOR_URL -->
-						<!-- tmpl_if list_settings.enable_fckeditor --> 
-					    	<textarea name="<!-- tmpl_var type -->_text" cols="80" rows="30" id="<!-- tmpl_var type -->_text"><!-- tmpl_var default_text ESCAPE="HTML" --></textarea>
-							<script type="text/javascript">
-								CKEDITOR.replace( '<!-- tmpl_var type -->_text');
-							</script>
-						<!-- tmpl_else -->
-					      	<textarea name="<!-- tmpl_var type -->_text" cols="80" rows="30" id="<!-- tmpl_var type -->_text"><!-- tmpl_var default_text ESCAPE="HTML" --></textarea>
-						<!-- /tmpl_if --> 
-			 	<!-- tmpl_else -->
-			   		<textarea name="<!-- tmpl_var type -->_text" cols="80" rows="30" id="<!-- tmpl_var type -->_text"><!-- tmpl_var default_text ESCAPE="HTML" --></textarea>
-				<!--/tmpl_if--> 
-			<!--/tmpl_if-->
+		<td>&nbsp;</td>
+		<td>
+		<!-- tmpl_if expr="(type eq 'HTML')" --> 
+			<!-- tmpl_include html_message_form_field_widget.tmpl --> 
 		<!-- tmpl_else --> 
 			<textarea name="<!-- tmpl_var type -->_text" cols="80" rows="30" id="<!-- tmpl_var type -->_text"><!-- tmpl_var default_text ESCAPE="HTML" --></textarea>
 		<!-- /tmpl_if --> 
-			
-			</td> 
-			
+		</td> 	
 		</tr> 
 		
 		
@@ -1486,13 +1456,22 @@ sub from_text_widget {
 	my $t = from_text_widget_tmpl(); 
 	my $r;
 
+	my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);  
+
+
 	my $r = DADA::Template::Widgets::screen(
 			{
 				-data => \$t, 
 				-vars => { 
-					default_text => $form_vals{$type.'_ver'}->{text}, 
+					#default_text => $form_vals{$type.'_ver'}->{text},
+					
+					html_message_body_content            => $form_vals{$type.'_ver'}->{text},
+					html_message_body_content_js_escaped => js_enc($form_vals{$type.'_ver'}->{text}),
+					
 					source       => $form_vals{$type.'_ver'}->{source}, 
 					type         => $type, 
+					
+					%wysiwyg_vars,
 				},
 				-expr => 1, 
 				-list_settings_vars       => $li, # Uh, ok - $li is global. That's stupid. 

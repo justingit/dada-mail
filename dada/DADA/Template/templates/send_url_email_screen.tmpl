@@ -2,6 +2,7 @@
 
 <!-- tmpl_set name="title" value="Mass Mailing &#187; Send a Webpage" -->
 <!-- tmpl_set name="load_wysiwyg_editor" value="1" -->
+<!-- tmpl_set name="load_modalbox" value="1" -->
 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
@@ -57,52 +58,36 @@
 		</div>
 		<!--/tmpl_if--> 
 
-		
+<!-- tmpl_include send_url_email_message_body_help_widget.tmpl -->		
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
 
 
-   <fieldset> 
-  
-		 <legend>
-		  Message Body
-		 </legend>
-		 
-		 
-		 
-  <fieldset style="background:#e6e6e6"> 
-  
-		 <legend>
-		  HTML Version (Your Webpage)
-		 </legend>
-		 
-		 <p>
-		  <input type="radio" name="content_from" id="content_from_url" value="url" checked="checked" />
+   	
+	
+	<fieldset> 
+		<legend>Message Body [<a href="#" onclick="Modalbox.show($('message_body_help'), {title: 'Webpage Message Body Help', width: 640, height:325}); return false;">?</a>]</legend>
+		<!-- tmpl_include message_format_type_toggler_widget.tmpl --> 
+  	    <div id="html_message" style="background-color:#fff;border:1px solid black;border-top:0;padding:0;margin:0;">
+		<br />  
+		<p>
+		<input type="radio" name="content_from" id="content_from_url" value="url" checked="checked" />
 			  <label for="content_from_url">
 		   Grab content from this webpage address (URL):
 		  </label>
 		  <br />
 		  <input type="text" name="url" id="url" class="full" value="http://" />
-		 </p>
-		 
-		 <p>
+		</p>
+		<p>
 		  <input type="radio" name="content_from" id="content_from_textarea" value="content_from_textarea" />
 			  <label for="content_from_textarea">
 			   Use the following HTML as content:
 			  </label>
-		  <br />
+		  </p>
 		  
-		<!-- tmpl_include html_message_form_field_widget.tmpl -->
-		 
-		 
-		 </p>
-		 <fieldset>
-		  <legend>
-		   <a href="#" onclick="toggleDisplay('advanced_options');return false;">
-			+/- 
-		   </a>Advanced Options
-		  </legend>
 
-		<div id="advanced_options" style="display:none"> 
+		<!-- tmpl_include html_message_form_field_widget.tmpl --> 
+	
+<h2>Advanced Options</h2>
 		<table>
 		  <tr>
 		   <td>
@@ -226,30 +211,19 @@
 		   </td>
 		  </tr>
 		 </table>
-		</div> 
-	</fieldset>
 
 
-</fieldset> 
 
+</div> 
 
 
  
-
-
-
-  <fieldset style="background:#e6e6e6"> 
-
-		 <legend><a href="#" onclick="toggleDisplay('text_message');return false;">+/-</a>
-		  Plain Text Version
-		 </legend>
-  <div id="text_message" style="display:none"> 
-
- 
-		 <p>
+<div id="text_message" style="display:none;background-color:#fff;border:1px solid black;border-top:0;padding:0;margin:0;"> 
+		<br /> 
+		<p>
 		  <input type="radio" name="auto_create_plaintext" id="auto_create_plaintext" value="1" checked="checked" />
 		  <label for="auto_create_plaintext">
-		   Create a plain text version automatically
+		   Create a PlainText version automatically
 		  </label>
 		  <br />
 		  <em>
@@ -259,25 +233,20 @@
 		 <p>
 		  <input type="radio" name="auto_create_plaintext" id="no_auto_create_plaintext" value="0" />
 		  <label for="no_auto_create_plaintext">
-		   Use the text below as the plain text version:
+		   Use the text below as the PlainText version:
 		  </label>
 		 </p>
 		 <p>
 			 <!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
 		 </p>
-		 <input type="hidden" name="f" value="send_url_email" />
-		 
-	</div> 
-	</fieldset> 
-	
-	 </fieldset> 
 
-		<!-- tmpl_if list_settings.archive_messages -->
-			 
-			 <!-- tmpl_include send_email_archive_options_widget.tmpl -->
-			 <hr />
-			 
-		<!--/tmpl_if-->
+
+
+		 <input type="hidden" name="f" value="send_url_email" />
+	</div> 
+</fieldset>
+
+		 <!-- tmpl_include send_email_archive_options_widget.tmpl -->			 
 		 
 		 <!-- tmpl_include multiple_list_sending_widget.tmpl --> 
 		

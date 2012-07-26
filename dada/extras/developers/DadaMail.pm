@@ -148,6 +148,8 @@ Parse::RecDescent
 
 id/D/DC/DCONWAY/Text-Balanced-1.98.tar.gz
 
+PHP::Session
+
 Scalar-List-Utils
 
 Text::CSV
@@ -157,6 +159,8 @@ Text::Tabs
 Text::Wrap
 
 Time::Local
+
+Try::Tiny
 
 URI::Escape
 

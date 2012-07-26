@@ -2427,20 +2427,20 @@ The syntax looked like this:
 
 This tag format is still supported, but consider it deprecated. 
 
-=head3 Clickthrough Tags and WYSIWYG editors (FCKeditor/CKeditor) 
+=head3 Clickthrough Tags and WYSIWYG editors (CKeditor/Tiny MCE/FCKeditor) 
 
-In-browser WYSIWYG editors, like FCKeditor and CKeditor have a hard time working with Dada Mail's redirect tags, 
+In-browser WYSIWYG editors have a hard time working with Dada Mail's redirect tags, 
 and will corrupt the tags by turning many of the characters into their entities, like this: 
 
 	<a href="&lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;">
 	 Go to my Example site!
 	</a>
 
-If you use FCKeditor or CKeditor with Dada Mail, we suggest using the, B<Clickthrough 
-Track All Message Links> option in Dada Mail, or disable FCKeditor/CKeditor.  
+If you use a WYSIWYG editor with Dada Mail, we suggest using the, B<Clickthrough 
+Track All Message Links> option in Dada Mail, or disable the WYSIWYG Editor.
 
 Copying and pasting HTML from a separate program which does not corrupt the tag 
-(like Dreamweaver),  will still be affected, if you simply paste the HTML into FCKeditor/CKeditor, 
+(like Dreamweaver),  will still be affected even if you simply paste the HTML into the WYSIWYG editor and
 even if you do it into the HTML Source. 
 
 For most other Desktop-based WYSIWYG editors, including Dreamweaver, 

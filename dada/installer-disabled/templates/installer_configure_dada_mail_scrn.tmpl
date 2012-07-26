@@ -478,9 +478,54 @@ for it to work correctly. For help on setting the cronjob, see the
 
 <p><input type="checkbox" name="install_default_mass_mailing_messages" id="install_default_mass_mailing_messages" value="1"  /><label for="install_default_mass_mailing_messages">Default Mass Mailing Messages</label></p> 
 
-<p><input type="checkbox" name="install_password_protect_directories" id="install_password_protect_directories" value="1"  /><label for="install_password_protect_directories">Password Protect Directories</label><span class="alert">Optionally Requires Additional Configuration (cronjob)</span>	</p> 
-
 <p><input type="checkbox" name="install_change_list_shortname" id="install_change_list_shortname" value="1"  /><label for="install_change_list_shortname">Change Your List Short Name</label></p> 
+
+
+<p><input type="checkbox" name="install_password_protect_directories" id="install_password_protect_directories" value="1"  /><label for="install_password_protect_directories">Password Protect Directories</label> <span class="alert">Optionally Requires Additional Configuration (cronjob)</span>	</p> 
+</fieldset> 
+
+<fieldset> 
+	
+<legend>WYSIWYG Editors</legend>
+
+<fieldset> 
+	<legend>Support Files Directory</legend>
+	<div class="clearskiesbox"> 
+		The installer will use the location you set below to install/configure the WYSIWYG editor(s) and file browser. 
+	</div>
+</p>
+
+<p>
+	<label for="support_files_dir_path">Support File Directory Path:</label><br />
+	<input type="text" name="support_files_dir_path"  id="support_files_dir_path" style="width:70%" value="<!-- tmpl_var support_files_dir_path -->" /><strong>/<!-- tmpl_var Support_Files_Dir_Name --></strong>
+	<br />
+	<label for="support_files_dir_url">Corresponding Support File Directory URL:</label>
+	<br />
+	<input type="text" name="support_files_dir_url" id="support_files_dir_url" style="width:70%" value="<!-- tmpl_var support_files_dir_url -->" /><strong>/<!-- tmpl_var Support_Files_Dir_Name --></strong>
+</p>
+
+</fieldset> 
+
+<p>
+	<input type="checkbox" name="wysiwyg_editor_install_ckeditor" id="wysiwyg_editor_install_ckeditor" value="1" checked="checked"/>			
+<label for="wysiwyg_editor_install_ckeditor">Install CKeditor</label>
+</p>
+
+<p>
+	<input type="checkbox" name="wysiwyg_editor_install_tiny_mce" id="wysiwyg_editor_install_tiny_mce" value="1" checked="checked"/>			
+<label for="wysiwyg_editor_install_tiny_mce">Install Tiny MCE</label>
+</p>
+
+<p>
+	<input type="checkbox" name="wysiwyg_editor_install_fckeditor" id="wysiwyg_editor_install_fckeditor" value="1" checked="checked"/>			
+<label for="wysiwyg_editor_install_fckeditor">Install FCKeditor (Not Recommended)</label>
+</p>
+		
+<h2>File Browsers</h2>
+
+<input type="checkbox" name="file_browser_install_kcfinder" id="file_browser_install_kcfinder" value="1" checked="checked"/>			
+<label for="file_browser_install_kcfinder">Install KCFinder</label>
+
 
 
 </fieldset> 

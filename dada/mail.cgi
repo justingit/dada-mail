@@ -404,6 +404,9 @@ if($ENV{PATH_INFO}){
 		if($pi_pin eq '='){ 
 			undef $pi_pin;
 		}
+		if($pi_list =~ m/\=$/){ 
+			$pi_list =~ s/\=$//; 
+		}
 		
         $q->param('flavor', $pi_flavor)
             if $pi_flavor;
@@ -5708,39 +5711,17 @@ sub edit_archived_msg {
                     m/attach/i )
                 {    # text: display it...
 
-#$q->checkbox(-name => 'delete_' . $tb->{address}, -value => 1, -label => '' ), 'Delete?', $q->br(),
 
-                    if ( $subtype =~ /html/ && $DADA::Config::FCKEDITOR_URL ) {
-
-                        require DADA::Template::Widgets;
-                        $form_blob .= DADA::Template::Widgets::screen(
-                            {
-                                -screen => 'edit_archived_msg_textarea.widget',
-                                -vars   => {
-                                    name  => $tb->{address},
-                                    value => js_enc(
-                                        safely_decode(
-                                            $tb->{entity}
-                                              ->bodyhandle->as_string()
-                                        )
-                                    ),
-                                }
-                            }
-                        );
-                    }
-                    else {
-
-                        $form_blob .= $q->p(
-                            $q->textarea(
-                                -value => safely_decode(
-                                    $tb->{entity}->bodyhandle->as_string
-                                ),
-                                -rows => 15,
-                                -name => $tb->{address}
-                            )
-                        );
-
-                    }
+					# Needs to be WYSIWYG Editor-ized
+                    $form_blob .= $q->p(
+                        $q->textarea(
+                            -value => safely_decode(
+                                $tb->{entity}->bodyhandle->as_string
+                            ),
+                            -rows => 15,
+                            -name => $tb->{address}
+                        )
+                    );
 
                 }
                 else {
@@ -6860,15 +6841,25 @@ sub list_cp_options {
 				-Root_Login => $root_login,
 				-List       => $list,  
 			},
-			
-                                               -list   => $list,
-                                               -vars   => {
-													screen    => 'list_cp_options',
-													done      => xss_filter($q->param('done')),
-												},
-											-list_settings_vars       => $li,
-                                            -list_settings_vars_param => {-dot_it => 1},
-                                           });
+			-expr   => 1, 
+			-list   => $list,
+			-vars   => {
+				screen    => 'list_cp_options',
+				done      => xss_filter($q->param('done')),
+				
+				ckeditor_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled},
+				ckeditor_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{url},
+
+				fckeditor_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{enabled},
+				fckeditor_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{url},
+
+				tiny_mce_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled},
+				tiny_mce_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{url},
+
+			},
+			-list_settings_vars       => $li,
+			-list_settings_vars_param => {-dot_it => 1},
+			});
 
 		e_print($scrn);
     }
@@ -6878,7 +6869,8 @@ sub list_cp_options {
             {
                 -associate => $q,
                 -settings  => {
-                    enable_fckeditor                 => 0,
+                    #enable_fckeditor                 => 0,
+					use_wysiwyg_editor               => 'none',
 					show_message_body_plaintext_ver  => 0, 
 					show_message_body_html_ver       => 0,
                 }
@@ -10067,9 +10059,9 @@ sub js {
       unittest.js
       scriptaculous.js
       modalbox.js
-
-	  prototype_scriptaculous_package.js
-	
+      
+      prototype_scriptaculous_package.js
+      tiny_mce_config.js
 
     );
 
