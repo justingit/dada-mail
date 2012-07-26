@@ -163,7 +163,6 @@ sub send_email {
                       $lh->can_have_subscriber_fields,
 
 # I don't really have this right now...
-#  apply_list_template_to_html_msgs => $li->{apply_list_template_to_html_msgs} ? $li->{apply_list_template_to_html_msgs} : 0,
                     MAILOUT_AT_ONCE_LIMIT =>
                       $DADA::Config::MAILOUT_AT_ONCE_LIMIT,
                     mailout_will_be_queued => $mailout_will_be_queued,
@@ -352,7 +351,6 @@ sub send_email {
         $msg_as_string = safely_decode($msg_as_string);
 
         $fm->Subject( $headers{Subject} );
-        $fm->use_list_template( $q->param('apply_template') );
  
 		my ( $final_header, $final_body ); 
 		eval {

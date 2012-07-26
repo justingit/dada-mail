@@ -35,10 +35,7 @@ DADA::App::FormatMessages
    
  # Use information you find in the headers 
   $fm->use_header_info(1);
- 
- # Use the list template   
-   $fm->use_list_template(1); 
- 
+
  # Use the email template.
    $fm->use_email_templates(1);  
  
@@ -72,7 +69,6 @@ to worry about, but we'll go through some detail.
 
 my %allowed = (
 	Subject                        => undef, 
-	use_list_template              => 0, 
 	use_html_email_template        => 1,
 	use_plaintext_email_template   => 1, 
 	use_header_info                => 0, 
@@ -179,9 +175,7 @@ sub _init  {
         $self->{list} = $args->{-List};
     
         $self->Subject($self->{ls}->param('list_name')); 
-        
-		$self->use_list_template($self->{ls}->param('apply_list_template_to_html_msgs') ); 
-		
+        		
 		# just a shortcut...
 		# warn "_init in DADA::App::FormatMessages saving - mime_encode_words_in_headers"; 
 		if($self->{ls}->param('mime_encode_words_in_headers') == 1){ 
@@ -246,10 +240,6 @@ the headers and $body_str, that holds the body of your message.
 =head2 Subject
 
 Set the subject of a message
-
-=head2 use_list_template
-
-If set to a true value, will apply the list template to the HTML part of your message 
 
 =head2 use_email_templates
 
@@ -1500,12 +1490,6 @@ sub _apply_template {
 		$new_data = $data; 
 	}
 	
-	
-	if($args{-type} eq 'HTML'){  
-
-		$new_data = $self->_apply_list_template($new_data)
-				if $self->use_list_template; 			
-	}
 	
 	$new_data = $self->_expand_macro_tags(-data => $new_data, 
 								          -type => $args{-type}, 

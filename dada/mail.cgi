@@ -6320,7 +6320,6 @@ sub edit_template {
                 {
                     -associate => $q,
                     -settings  => {
-                        apply_list_template_to_html_msgs => 0,
                         url_template                     => '',
                         get_template_data                => '',
                     }

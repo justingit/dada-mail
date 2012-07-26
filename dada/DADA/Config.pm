@@ -4692,7 +4692,6 @@ encrypted.
 
 	get_template_data                => 'from_default_template',
 	url_template                     => '',
-	apply_list_template_to_html_msgs => 0, 
 	
 # Create a Back Link prefs
     
