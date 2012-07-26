@@ -974,6 +974,7 @@ sub cgi_default {
 		rewrite_anounce_from_header                => 0,
 		discussion_pop_use_ssl                     => 0,
 		discussion_template_defang                 => 0,
+		discussion_clean_up_replies                => 0, 
 	); 
 
     # Validation, basically.
@@ -1020,7 +1021,7 @@ sub cgi_default {
 		    );
 			
             print $q->redirect(
-                -uri => $Plugin_Config->{Plugin_URL} . '?saved=1' );
+                -uri => $Plugin_Config->{Plugin_URL} . '?done=1' );
             return;
         }
         else {
@@ -1028,7 +1029,7 @@ sub cgi_default {
 			for ( keys %dada_bridge_settings_defaults) {
 				$li->{$_} = $q->param($_);
 			}
-			$q->param('saved', 0);
+			$q->param('done', 0);
 			$discussion_pop_password = $q->param('discussion_pop_password'); 
         }
     }
@@ -1089,7 +1090,7 @@ sub cgi_default {
 
     my $tmpl = default_cgi_template();
 
-	my $saved = $q->param('saved') || 0;
+	my $done = $q->param('done') || 0;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -expr => 1,
@@ -1111,7 +1112,7 @@ sub cgi_default {
 
                 curl_location => $curl_location,
 				can_use_ssl   => $can_use_ssl, 
-                saved         => $saved,
+                done         => $done,
                 authorized_senders             => $authorized_senders,
                 show_authorized_senders_table  => $show_authorized_senders_table,
 
@@ -3999,9 +4000,9 @@ sub default_cgi_template {
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
 
-<!-- tmpl_if saved -->
-	<!-- tmpl_var GOOD_JOB_MESSAGE  -->
-<!-- /tmpl_if -->
+<!-- tmpl_if done -->
+	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+<!--/tmpl_if-->
 
 <!-- tmpl_unless list_email_status -->
 	<div class="badweatherbox">
@@ -4455,8 +4456,8 @@ General
 	 <em>(you can still "Reply-All" to send the reply to the sender, as well as the mailing list)</em></p>
 	</td>
 	</tr> 
-	<tr> 
 
+	<tr> 
 	<td>
 	<p>
 	 <input type="radio" name="set_to_header_to_list_address" value="0" <!--tmpl_unless list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_unless--> />
@@ -4466,6 +4467,12 @@ General
 </p> 
 </td> 
 </tr> 
+
+
+ 
+
+
+
 </table>
 
 
@@ -4474,6 +4481,19 @@ General
 
 
 
+	<tr> 
+	<td>
+	<p>
+	 <input type="checkbox" name="discussion_clean_up_replies" id="discussion_clean_up_replies" value="1" <!--tmpl_if list_settings.discussion_clean_up_replies -->checked="checked"<!--/tmpl_if--> />
+	</p></td> 
+	<td> 
+	<label for="discussion_clean_up_replies">Attempt to clean up replies</label>
+	 <em>(Experimental)</em><br /> 
+	An attempt will be made to remove quoted Opening and Signature parts from replies. The Opening and Signature parts usually hold 
+	mailing list/unsubscribe/profile information that often gets repeated, forming long chains at the bottom of mailing list messages. 
+</p> 
+</td> 
+</tr>
 
 
 <!-- tmpl_if Allow_Open_Discussion_List -->

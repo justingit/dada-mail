@@ -4840,7 +4840,7 @@ encrypted.
     send_invalid_msgs_to_owner            => 0, 
     send_msg_copy_to                      => 0, 
     rewrite_anounce_from_header           => 1,
-
+	discussion_clean_up_replies           => 0, 
 
 	not_allowed_to_post_msg_subject   => 'Not Allowed to Post On <!-- tmpl_var list_settings.list_name --> (your original message is attached)', 
 	not_allowed_to_post_msg           =>  $NOT_ALLOWED_TO_POST_MSG, 

@@ -457,19 +457,21 @@ sub _format_text {
 							carp "Problem removing existing opener images: $_"; 
 						}
 					}
-					try {
-						require DADA::App::FormatMessages::Filters::CleanUpReplies; 
-						my $cur = DADA::App::FormatMessages::Filters::CleanUpReplies->new; 
-						$content = $cur->filter(
-							{
-								-msg  => $content, 
-								-type => $entity->head->mime_type, 
-								-list => $self->{list},
-							}
-						);
-					} catch {
-						carp "Problems with filter: $_";
-					};		
+					if($self->{ls}->param('discussion_clean_up_replies') == 1) { 
+						try {
+							require DADA::App::FormatMessages::Filters::CleanUpReplies; 
+							my $cur = DADA::App::FormatMessages::Filters::CleanUpReplies->new; 
+							$content = $cur->filter(
+								{
+									-msg  => $content, 
+									-type => $entity->head->mime_type, 
+									-list => $self->{list},
+								}
+							);
+						} catch {
+							carp "Problems with filter: $_";
+						};		
+					}
 					
 					if($self->{ls}->param('discussion_template_defang') == 1) { 
 						try {
