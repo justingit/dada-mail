@@ -46,12 +46,12 @@ Key:
 [ ] Docs on moving from "Basic Mailing List" to Dada Mail
 [ ] Docs on moving/migrating from MailMan to Dada Mail
 
-[ ] if the, <!-- tmpl_var message_body --> is not in the mailing list message template, the message just isn't sent - this 
+[x] if the, <!-- tmpl_var message_body --> is not in the mailing list message template, the message just isn't sent - this 
 should be checked and warned against, as well as auto-inserted, if there is a problem. 
 
-[ ] Remove the save button in FCKeditor
+[x] Remove the save button in FCKeditor
 
-[ ] Bundle FCkeditor/Ckeditor? 
+[x] Bundle FCkeditor/Ckeditor? 
 
 [ ] Markdown support - 
 Write "PlainText" messages in TextTile, and have them formatted when shown in messages, etc - option to turn into HTML when sending? 
