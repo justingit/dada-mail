@@ -449,7 +449,7 @@ sub edit  {
 				$message .= '<p class="error">!!! '.  DADA::App::Guts::pretty($_)  .'</p>' for keys %$status;
 			}
 		}else{ 
-			$message = $DADA::Config::GOOD_JOB_MESSAGE;
+			$message = '<p class="positive">Your changes have been saved successfully!</p>';
 			$key = $mss->save_from_params({-cgi_obj => $q });
 			
 		}
