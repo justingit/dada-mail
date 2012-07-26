@@ -8,6 +8,8 @@ use DADA::Security::Password;
 use DADA::MailingList::Settings; 
 use DADA::App::Guts; 
 use Carp qw(carp croak); 
+use Try::Tiny; 
+
 
 my $dbi_obj; 
 
@@ -158,8 +160,12 @@ sub login_cookie {
 				  $session->flush();
 				  
 				  if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
-						$self->kcfinder_session_begin; 
-				  }
+						try { 
+							$self->kcfinder_session_begin; 
+				  		} catch { 
+							carp "initializing kcfinder session return an error: $_"; 
+						}
+				}
     }else{ 
 		
 				   $cookie = $q->cookie(-name    => $DADA::Config::LOGIN_COOKIE_NAME, 
@@ -412,10 +418,13 @@ sub logout_cookie {
 							-path    =>  '/');
 	}
 	
-	if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
-		$self->kcfinder_session_end; 
+	try { 
+		if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
+			$self->kcfinder_session_end; 
+		}
+	} catch { 
+		carp "ending kcfinder session return an error: $_"; 
 	}
-	
 	return $cookie; 
 	
 } 
