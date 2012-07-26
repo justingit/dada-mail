@@ -83,15 +83,15 @@ sub filter {
 	if(! exists($args->{-type} )) { 
 		croak "you MUST pass the, '-type' paramater!"; 
 	}
-	if(! exists($args->{-type} )) { 
-		croak "you MUST pass the, '--list' paramater!"; 
+	if(! exists($args->{-list} )) { 
+		croak "you MUST pass the, '-list' paramater!"; 
 	}
 
 	if($args->{-type} eq 'text/html') { 
-		return for_html($args); 
+		return $self->for_html($args); 
 	}
 	elsif($args->{-type} eq 'text/plain') {
-		return for_plaintext($args); 
+		return $self->for_plaintext($args); 
 	}
 }
 
@@ -110,7 +110,7 @@ sub for_html {
 
 	$args->{-msg} =~ s/$o_ogb(.*?)$o_oge//smg;
 	$args->{-msg} =~ s/$s_ogb(.*?)$s_oge//smg;
-	return $args->{-msg}
+	return $args->{-msg};
 }
 
 
@@ -131,7 +131,7 @@ sub for_plaintext {
 
 	my $msg_body_tag = quotemeta('<!-- tmpl_var message_body -->'); 
 	return $args->{-msg}
-		if $args->{-msg} !~ m/$msg_body_tag/;
+		if $og_msg !~ m/$msg_body_tag/;
 	
 	my $og_opener = $self->_get_opener($og_msg); 
 
@@ -152,6 +152,7 @@ sub for_plaintext {
 		$msg             =~ s/$opener_regex//;
 		$msg             = $self->_remove_quoted_sig($msg);
 		 
+		#carp 'now looks like this:' . "\n$msg\n";
 		return $msg; 
 }
 sub _get_opener { 
@@ -260,6 +261,7 @@ sub _remove_quoted_sig {
 	my @r    = (); 
 	my $free = 0; 
 	 foreach my $l(@l) { 
+		chomp($l); 
 		
 		# after we found the sig mark?  
 		if($free == 1){ 
@@ -274,11 +276,15 @@ sub _remove_quoted_sig {
 		}
 	}
 	my $r = join("\n", reverse(@r)); 
-#	if(length($r) > 10){ 
-#		return $str; 
-#	}
+	if(length($r) > 10){ 
+		return $str; 
+	}
 }
 
+
+sub DESTROY { 
+	
+}
 
 
 1;
