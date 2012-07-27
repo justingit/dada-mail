@@ -373,7 +373,8 @@ legend {
 input[type="text"],
 input[type="password"],
 select,
-textarea {
+textarea,
+.fake_input {
 	margin: 3px;
 	padding: 5px;
 	border-width: 1px;
@@ -384,6 +385,12 @@ textarea {
 	-moz-box-shadow: inset 0px 1px 3px rgba(51,0,0,0.3);
 	-webkit-box-shadow: inset 0px 1px 3px rgba(51,0,0,0.3);
 	box-shadow: inset 0px 1px 3px rgba(51,0,0,0.3)
+}
+.fake_input { 
+	margin-left:0; 
+	background-color:#ededed; 
+	font-style: italic;
+	
 }
 #Header select {
 	font-size: .9em;
@@ -423,6 +430,10 @@ input.small_button {
 
 input.bigger_button { 
 	font-size: 1.75em; 
+	
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
 }
 
 #Header input.small_button {

@@ -398,7 +398,7 @@ sub cl_help {
 sub install_or_upgrade { 
 	
 	my $dada_files_parent_dir = $DADA::Config::CONFIG_FILE;
-	   $dada_files_parent_dir =~ s/\/.dada_files\/\.configs\/\.dada_config//;
+	   $dada_files_parent_dir =~ s/\/$Dada_Files_Dir_Name\/\.configs\/\.dada_config//;
 	my $found_existing_dada_files_dir = test_complete_dada_files_dir_structure_exists($dada_files_parent_dir);
 	
    my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -407,6 +407,7 @@ sub install_or_upgrade {
 			-with   => 'list', 
             -vars => {
 				dada_files_parent_dir               => $dada_files_parent_dir, 
+				Dada_Files_Dir_Name                 => $Dada_Files_Dir_Name, 
 				found_existing_dada_files_dir       => $found_existing_dada_files_dir ,
 				current_dada_files_parent_location  => $q->param('current_dada_files_parent_location'), 
 				error_cant_find_dada_files_location => $q->param('error_cant_find_dada_files_location'), 
@@ -503,14 +504,14 @@ sub scrn_configure_dada_mail {
 	my $configured_dada_files_loc; 
 	
 	if($install_type eq 'upgrade'){ 
-		$configured_dada_config_file = $current_dada_files_parent_location . '/.dada_files/.configs/.dada_config'; 
+		$configured_dada_config_file = $current_dada_files_parent_location . '/' . $Dada_Files_Dir_Name .'/.configs/.dada_config'; 
 		$configured_dada_files_loc = $current_dada_files_parent_location; 
 		
 	}
 	else { 
 	   $configured_dada_config_file = $DADA::Config::CONFIG_FILE;
 	   $configured_dada_files_loc = $configured_dada_config_file;
-		$configured_dada_files_loc =~ s/\/\.dada_files\/\.configs\/\.dada_config//;
+		$configured_dada_files_loc =~ s/\/$Dada_Files_Dir_Name\/\.configs\/\.dada_config//;
 	}
 	
 	my $DOC_VER = $DADA::Config::VER; 
@@ -816,7 +817,7 @@ sub install_dada_mail {
 			$args->{-install_dada_files_loc} eq auto_dada_files_dir() && 
 			$args->{-dada_files_dir_setup}   eq 'auto'
 		){ 
-			$log .= "* No need to edit $Config_LOC file - you've set the .dada_files location to, 'auto!'\n";
+			$log .= "* No need to edit $Config_LOC file - you've set the $Dada_Files_Dir_Name location to, 'auto!'\n";
 		}
 		else { 	
 	        if ( edit_config_dot_pm( $args->{-install_dada_files_loc} ) == 1 ) {

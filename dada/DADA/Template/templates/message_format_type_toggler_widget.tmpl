@@ -2,12 +2,22 @@
 
 <div id="format_type_container">
 <ul>
- <li id="toggleHTML_li" class="active">
-  <a href="#" id="toggleHTML">HTML Version</a>
- </li>
- <li id="togglePlainText_li">
-  <a href="#" id="togglePlainText">PlainText Version</a>
- </li>
+ <!-- tmpl_if expr="(screen eq 'send_email')" -->
+	 <li id="toggleHTML_li" <!-- tmpl_unless expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" -->class="active"<!-- /tmpl_unless --> >
+	  <a href="#" id="toggleHTML">HTML Version</a>
+	 </li>
+	 <li id="togglePlainText_li" <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" -->class="active"<!-- /tmpl_if --> >
+	  <a href="#" id="togglePlainText"> PlainText Version  </a>
+	 </li>
+<!-- tmpl_else -->
+	<li id="toggleHTML_li" class="active">
+	 <a href="#" id="toggleHTML">HTML Version</a>
+	</li>
+	<li id="togglePlainText_li">
+	 <a href="#" id="togglePlainText"> PlainText Version  </a>
+	</li>
+<!-- /tmpl_if --> 
+ 
 </ul>
 </div>
 <div style="clear:both"></div>

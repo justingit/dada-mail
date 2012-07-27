@@ -2,6 +2,8 @@
 
 =head1 WYSIWYG Editors and File Browsers
 
+Dada Mail supports the use of third party WYSIWYG HTML editors to allow you to compose and edit HTML mailing list messages. This allows you to send rich text messages, right in Dada Mail's list control panel, without needing to know any HTML. The HTML produced by these WYSIWYG editors is actually pretty good for the use of HTML emails, as most of the text formatting is done with inline css styles and these editors also have the ability to make simple HTML tables for basic layouts. 
+
 =head1 Supported Editors 
 
 Dada Mail supports the following WYSIWYG HTML editors: 
@@ -16,11 +18,9 @@ Dada Mail supports the following WYSIWYG HTML editors:
 
 =back
 
-FCKeditor is only supported for backwards compatibility with previous versions of Dada Mail, and is not recommended to be used. We will be removing it and support for FCKEditor in a future version of Dada Mail. 
+FCKeditor is only supported for backwards compatibility with previous versions of Dada Mail, and is not what we recommend that you us . We will be removing support for FCKEditor in a future version of Dada Mail. 
 
-Dada Mail will use these WYSIWYG editors in place of any text areas used to create/edit HTML versions of email messages. You'll see these form fields in the, B<Send a Message>, B<Send a Webpage> screens; as well as in the B<Beatitude> Plugin. 
-
-=head2 Supported File Browsers
+=head2 Supported File Browsers - KCFinder
 
 As well as the core WYSIWYG functionality, Dada Mail also supports the B<KCFinder> File Browser, allowing you to browse a directory on the server itself, as well as upload new files. Images uploaded may then be inserted into your HTML messages. 
 
@@ -34,7 +34,8 @@ For each of your mailing lists, only one WYSIWYG editor may be used at one time.
 
 =head1 Installing and Configurating
 
-By far, the easiest way to install and configure any of the WYSIWYG editors/file browser that Dada Mail supports is to use the included Dada Mail Installer. When using the installer, you will simply need to set the absolute path you would like the editors to be installed under, as well as set the corresponding URL - the Dada Mail Installer will do the rest.
+By far the easiest way to install and configure any of the WYSIWYG editors/file browser that Dada Mail supports is to use the included Dada Mail Installer. When using the installer, you will simply need to set the absolute path to a directory that you would like the editors to be installed under, as well as set the corresponding URL - the Dada Mail Installer will do the rest. A sane default should already be filled in for you. 
+
 
 =head1 Manual Installation and Configuration
 
@@ -103,5 +104,13 @@ KCFinder does not require this additional JavaScript file, but it's own default 
 	    'disabled' => true,
 
 Setting the, C<disabled> variable to, C<false> (it's confusing, we know!) will circumvent the security of the KCFinder that's afforded by the sessioning system and leave your account open to unauthorized file uploads and potential exploits. So don't do that! 
+
+=head2 Image Drag and Drop Support
+
+When using a supported browser, Dada Mail supports dragging and dropping  images into the HTML WYSIWYG editor. 
+
+Image data is embedded in the HTML source of the message you write. Dada Mail will convert this embedded data into a file that will be saved in the KCFinder  image/file upload directory. The image will then be available  by browsing your upload directory, using the file browser/uploader itself. 
+
+
 
 =cut

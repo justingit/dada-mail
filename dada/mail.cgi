@@ -6832,6 +6832,9 @@ sub list_cp_options {
 
 
    require DADA::Template::Widgets;
+
+	my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);  
+
    my $scrn =   DADA::Template::Widgets::wrap_screen(
 		{
 			-screen => 'list_cp_options.tmpl',
@@ -6845,7 +6848,7 @@ sub list_cp_options {
 			-vars   => {
 				screen    => 'list_cp_options',
 				done      => xss_filter($q->param('done')),
-				
+							
 				ckeditor_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled},
 				ckeditor_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{url},
 
@@ -6854,7 +6857,8 @@ sub list_cp_options {
 
 				tiny_mce_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled},
 				tiny_mce_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{url},
-
+				%wysiwyg_vars,
+				
 			},
 			-list_settings_vars       => $li,
 			-list_settings_vars_param => {-dot_it => 1},

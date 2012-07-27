@@ -77,6 +77,16 @@
 
 		}
 		
+		function ToggleWYSIWYGOptions() { 
+			if($('install_wysiwyg_editors').checked == true){ 
+				Effect.BlindDown('install_wysiwyg_editors_options');
+
+			}
+			else { 
+				Effect.BlindUp('install_wysiwyg_editors_options');
+			}	
+		}
+		
 		
 
 		function toggleDisplay(target) {

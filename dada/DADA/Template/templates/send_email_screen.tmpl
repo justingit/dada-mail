@@ -4,7 +4,6 @@
 <!-- tmpl_set name="load_wysiwyg_editor" value="1" -->
 <!-- tmpl_set name="load_modalbox" value="1" -->
 
-
 <div id="screentitle"> 
 	<div id="screentitlepadding">
 	 	<!-- tmpl_var title --> 
@@ -47,11 +46,11 @@
 
 <!-- tmpl_include message_format_type_toggler_widget.tmpl --> 
 
-<div id="html_message" style="background-color:#fff;border:1px solid black;border-top:0;padding:0;margin:0;"> 
+<div id="html_message" style="<!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" -->display:none;<!-- /tmpl_if -->background-color:#fff;border:1px solid black;border-top:0;padding:0;margin:0;"> 
 <!-- tmpl_include html_message_form_field_widget.tmpl --> 
 </div>
 
-<div id="text_message" style="display:none;background-color:#fff;border:1px solid black;border-top:0;padding:0;margin:0;"> 
+<div id="text_message" style="<!-- tmpl_unless expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" -->display:none;<!-- /tmpl_unless -->background-color:#fff;border:1px solid black;border-top:0;padding:0;margin:0;"> 
 <!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
 </div> 
 

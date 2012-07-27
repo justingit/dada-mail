@@ -69,7 +69,7 @@ print pre(`mv $installer_loc $new_installer_loc`);
 
 print pre(`chmod 755 $new_installer_loc/install.cgi`);
 
-print p("done!");
+print p("Done!");
 
 print
 "<h1 style=\"text-align:center\"><a href=\"./$new_installer_loc/install.cgi\">Install and Configure Dada Mail!</a></h1>";
