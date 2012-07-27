@@ -2,7 +2,84 @@
 
 =head1 Dada Mail Changelog for version 5.x.x
 
-=head1 5.1.1
+=head1 5.2.0
+
+=head2 Summary 5.2.0 
+
+This release of Dada Mail features the support for a new WYSIWYG editor, TinyMCE, as well as support for a new file browser called, KCFInder. All three supported WYSIWYG editors (FCKeditor, CKeditor, Tiny MCE), 
+as well as KCFinder are bundled with Dada Mail and can be installed and configured within the Dada Mail Installer, without any additional work needed. 
+
+If upgrading from any previous version of Dada Mail, we highly suggest B<Creating a new .dada_config file>, when using the included Dada Mail installer, as many items in the starter C<.dada_config> file have now changed. 
+
+=head2 Features 5.2.0
+
+=head3 WYSIWYG/File Browsers
+
+Dada Mail now supports and comes bundled with the following WYSIWYG editors: 
+
+=over
+
+=item * CKEditor
+
+=item * Tiny MCE
+
+=item * FCKEditor
+
+=back
+
+Dada Mail also comes bundled with the file browser/file upload utility called, KCFinder. This utility allows file file browsing and file (image) uploading for all three included WYSIWYG editor. 
+
+=head3 Dada Mail Installer Support 
+
+The Dada Mail Installer now has the ability to configure and install all three WYSIWYG editors, as well as the file browser. Installing all these utilities is optional, but much easier than doing it manually. The editors and browser are bundled with Dada Mail in the, I<dada/extras/packages> directory. 
+
+=head3 Tabbed Interface for PlainText/HTML Mailing List Messages
+
+Dada Mail now allows you to toggle between the 
+
+=head4 Added Support for Tiny MCE
+
+Along with Support for CKeditor and FCKeditor, Dada Mail now supports the Tiny MCE WYSIWYG HTML editor in its Send a Message and Send a Webpage screens. 
+
+
+=head2 Bugfixes 5.2.0
+
+=head3 First Archive message shows incorrect link
+
+L<https://github.com/justingit/dada-mail/issues/303>
+
+=head3 Lack of "message_body" tag in Mailing List Message Template leads to completely blank mailing list message
+
+L<https://github.com/justingit/dada-mail/issues/304>
+
+=head3 Sending Preferences: Amazon SES has strange, blank blue box with nothing in it. 
+
+L<https://github.com/justingit/dada-mail/issues/305>
+
+=head3 Dada Bridge does not run the mailing monitor, when done checking messages
+
+L<https://github.com/justingit/dada-mail/issues/306>
+
+=head3 Impossible to delete invalid-in-form email address in "Membership >> View" screen
+
+L<https://github.com/justingit/dada-mail/issues/307>
+
+=head2 Changes 5.2.0
+
+=head3 WYSIWYG Editors
+
+=head4 FCKeditor is listed as, deprecated
+
+FCKeditor has now been deprecated in Dada Mail for many reasons: Internet Explorer 9 does not work well with FCKeditor, the included File Browser in FCKeditor is very buggy and has unfixed security issues and CKeditor is its natural replacement. We do not suggest using FCKeditor, but it is bundled with Dada Mail currently for backwards compatibility. 
+
+=head4 $FCKEDITOR_URL and $CKEDITOR_URL Config variables - removed
+
+Both the C<$FCKEDITOR_URL> and C<$CKEDITOR_URL> variables will not function as 
+before - use the new C<$WYSIWYG_OPTIONS> variable to configure these editors. Having these variables in your C<.dada_config> file will not cause Dada Mail to error, yet. 
+
+=head4 "By default, reveal: PlainText Version|HTML Version" option removed
+
+The Send a Message/Webpage screens now have a tabbed interface for HTML/PlainText messages, so this option has been removed. In Beatitude, both versions will be shown, by default. 
 
 =head2 Summary 5.1.1
 
@@ -30,7 +107,7 @@ L<https://github.com/justingit/dada-mail/issues/295>
 
 This release of Dada Mail contains a wealth of new features, plugins and bug fixes. v5.1.0 is a B<very major release of Dada Mail>.
 
-If upgrading from any previous version of Dada Mail, we highly suggest B<Creating a new .dada_config file>, when using the included Dada Mail installer, as many items in the starter C<.dada_config> file has now changed. 
+If upgrading from any previous version of Dada Mail, we highly suggest B<Creating a new .dada_config file>, when using the included Dada Mail installer, as many items in the starter C<.dada_config> file have now changed. 
 
 =head2 Features 5.1.0
 

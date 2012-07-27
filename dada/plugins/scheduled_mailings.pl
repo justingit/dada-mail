@@ -1215,12 +1215,7 @@ $r .= qq {
      </legend>
 };
 
-if($li->{'show_message_body_' . lc($type) .'_ver'} == 1){ 
 	$r .= qq{<div id="$type\_message">};
-}
-else { 
-	$r .= qq{ <div id="$type\_message" style="display:none">};	
-}
 
 
 
