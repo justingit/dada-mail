@@ -29,18 +29,34 @@ Dada Mail now supports and comes bundled with the following WYSIWYG editors:
 
 Dada Mail also comes bundled with the file browser/file upload utility called, KCFinder. This utility allows file file browsing and file (image) uploading for all three included WYSIWYG editor. 
 
-=head3 Dada Mail Installer Support 
+=head4 Dada Mail Installer Support 
 
 The Dada Mail Installer now has the ability to configure and install all three WYSIWYG editors, as well as the file browser. Installing all these utilities is optional, but much easier than doing it manually. The editors and browser are bundled with Dada Mail in the, I<dada/extras/packages> directory. 
-
-=head3 Tabbed Interface for PlainText/HTML Mailing List Messages
-
-Dada Mail now allows you to toggle between the 
 
 =head4 Added Support for Tiny MCE
 
 Along with Support for CKeditor and FCKeditor, Dada Mail now supports the Tiny MCE WYSIWYG HTML editor in its Send a Message and Send a Webpage screens. 
 
+=head4 Support for Drag and Drop images (in some browsers) 
+
+Instead of having to go through the File Browser to upload an image, you can simply drag an image into one of the WYSIWYG editors. The image will then be saved in your file browser's file uploads directory and will be able to be used again for a future mass mailing. 
+
+This doesn't work for all browsers, but is confirmed to be support in Firefox 14+.
+
+=head4 Discussion Lists: Experimental Support for Cleaning up long quoted replies of mailing list openings/signatures
+
+Look for the option labeled, B<Attempt to clean up replies> in Dada Bridge. 
+
+
+=head3 Tabbed Interface for PlainText/HTML Mailing List Messages
+
+Dada Mail now allows you to toggle between the HTML, and PlainText versions of your mailing list message with a tabbed interface, instead of showing/hiding each type. 
+
+=head3 Subscription/Unsubscription Admin notices may now go to the entire mailing list 
+
+It's now an option to send the Subscription and Unsubscription Notices that usually go to the List Owner, to your entire list. This could be useful for a discussion list. 
+
+I<This feature was commissioned by David Smith for the Adytum Builders discussion list L<http://adytumbuilders.net/>>
 
 =head2 Bugfixes 5.2.0
 
