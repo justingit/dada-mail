@@ -158,6 +158,8 @@ Dada Bridge is really missing digest support. Digests should be able to be autom
 
 =head2 Bundle FCKeditor/CKEditor within Dada Mail
 
+B<FCKEDITOR, CKEDITOR and Tiny MCE are now bundled with Dada Mail.>
+
 It may be possible to somehow bundle FCKeditor within Dada Mail, for a installation-free support. FCKeditor will, "just be available" 
 
 =head2 Smart Groups/Save Partial Sending Options
