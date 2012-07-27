@@ -6,8 +6,11 @@
 
 =head2 Summary 5.2.0 
 
-This release of Dada Mail features the support for a new WYSIWYG editor, TinyMCE, as well as support for a new file browser called, KCFInder. All three supported WYSIWYG editors (FCKeditor, CKeditor, Tiny MCE), 
-as well as KCFinder are bundled with Dada Mail and can be installed and configured within the Dada Mail Installer, without any additional work needed. 
+Dada Mail v5.2.0 release focuses on WYSIWYG editors, which allow you to author your HTML email messages in rich text, right from within the List Control Panel. 
+
+Dada Mail now comes bundled with three different WYSIWYG editors: CKEditor, Tiny MCE and FCKeditor. KCfinder, an image/file browser/uploader is also bundled. Dragging and Dropping images to be used in your email messages is also supported in Dada Mail. All these utilities can be installed easily using the included Dada Mail Installer. 
+
+We've streamlined the Send a Message and Send a Webpage screens to better utilize and more cleanly present these editors, while still allowing you full flexibility on how you author your messages: We've moved to a tabbed interface for the mailing list message, so that you can easily toggle between your HTML Version and your PlainText version, without unnecessary scrolling. 
 
 If upgrading from any previous version of Dada Mail, we highly suggest B<Creating a new .dada_config file>, when using the included Dada Mail installer, as many items in the starter C<.dada_config> file have now changed. 
 
@@ -84,9 +87,33 @@ L<https://github.com/justingit/dada-mail/issues/307>
 
 =head3 WYSIWYG Editors
 
-=head4 FCKeditor is listed as, deprecated
+=head4 Dada Bridge: Mailing List Message Template Tags for Discussion Lists Will be, "de-Personalized"
 
-FCKeditor has now been deprecated in Dada Mail for many reasons: Internet Explorer 9 does not work well with FCKeditor, the included File Browser in FCKeditor is very buggy and has unfixed security issues and CKeditor is its natural replacement. We do not suggest using FCKeditor, but it is bundled with Dada Mail currently for backwards compatibility. 
+By default, the Mailing List Messages that ship with Dada Mail have template tags and links that point to various resources for subscribers of a mailing list. This includes changing the status of a subscription and logging into a subscriber's Profile. These links are personalized for the subscriber, so to avoid any additional entering of information/clicks. 
+
+These links cause havoc, though, on a discussion list, where messages are replied to and the original message is often quoted, and copied with the reply, as well as forwarded to people, off the list. The once-personal links now can be clicked by a third party, initializing such things as unsubscriptions. You may edit your Mailing List Message Templates to removed this personalization, but it is another step to set up a successful mailing list. 
+
+Starting with v5.2.0 of Dada Mail, these links will be, "de-Personalized" automatically for discussion lists. For example, a link that goes goes to a specific addresses' profile (or a form to log into a profile), that has their email address already embedded within the link, to pass automatically to Dada Mail: 
+
+L<ttp://example.com/cgi-bin/dada/mail.cgi/profile_login/user/example.com>
+
+will have the embedded email address removed: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi/profile_login/>
+
+Similarily, Subscription and Unsubscription links: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi/u/listname/user/example.com>
+
+will be changed to, 
+
+L<http://example.com/cgi-bin/dada/mail.cgi/u/listname/>
+
+To avoid problems. 
+
+=head4 FCKeditor listed as "Deprecated"
+
+FCKeditor has now been deprecated in Dada Mail for many reasons: Internet Explorer 9 does not work well with FCKeditor, the included File Browser in FCKeditor is very buggy and has unfixed security issues and CKeditor is its natural replacement. We do not suggest using FCKeditor, but it is bundled with Dada Mail currently for backwards compatibility. We do bundle CKEditor and Tiny MCE, either of which will work better the FCKeditor. 
 
 =head4 $FCKEDITOR_URL and $CKEDITOR_URL Config variables - removed
 
