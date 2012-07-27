@@ -1240,16 +1240,16 @@ sub start {
         if ( ( $active_mailouts + $queued_mailouts) >= $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
             e_print( "There are currently, "
               . ( $active_mailouts + $queued_mailouts )
-              . " mass mailout(s) running or queued. Going to wait until that number falls below, "
+              . " Mass Mailing(s) running or queued. Going to wait until that number falls below, "
               . $DADA::Config::MAILOUT_AT_ONCE_LIMIT
-              . " mass mailout(s) \n")
+              . " Mass Mailing(s) \n")
               if $verbose;
             return;
         }
         else {
             e_print( "Currently, "
               . ( $active_mailouts + $queued_mailouts )
-              . " mass mailout(s) running or queued. \n\n"
+              . " Mass Mailing(s) running or queued. \n\n"
               . "That's below our limit ($DADA::Config::MAILOUT_AT_ONCE_LIMIT). \n"
               . "Checking awaiting  messages:\n\n")
               if $verbose;

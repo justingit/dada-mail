@@ -29,7 +29,7 @@ if ( -e 'dada' ) {
 }
 
 print p("Uncompressing $gz...");
-print pre(`gunzip $gz`);
+`gunzip $gz`;
 
 my $tar = $gz;
    $tar =~ s/\.gz$//;

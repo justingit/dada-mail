@@ -441,7 +441,7 @@ ok(keys %$queue_mailout_1_status, "status() returned a hashref!");
 
 #diag('$queue_mailout_1_status->{queued_mailout} ' . $queue_mailout_1_status->{queued_mailout}); 
 
-ok($queue_mailout_1_status->{queued_mailout} == 0, "Mailout is not queued."); 
+ok($queue_mailout_1_status->{queued_mailout} == 0, "Mass Mailing is not queued."); 
 
 
 sleep(1); 
@@ -459,7 +459,7 @@ ok($q_pm_2 == 1, " create() returns 1!");
 my $queue_mailout_2_status = $queue_mailout_2->status(); 
 
 ok(keys %$queue_mailout_2_status, "status() returned a hashref!");
-ok($queue_mailout_2_status->{queued_mailout} == 1, "Mailout *IS*  queued."); 
+ok($queue_mailout_2_status->{queued_mailout} == 1, "Mass Mailing *IS*  queued."); 
 
 
 
@@ -478,7 +478,7 @@ ok($q_pm_3 == 1, " create() returns 1!");
 my $queue_mailout_3_status = $queue_mailout_3->status(); 
 
 ok(keys %$queue_mailout_3_status, "status() returned a hashref!");
-ok($queue_mailout_3_status->{queued_mailout} == 1, "Mailout *IS*  queued."); 
+ok($queue_mailout_3_status->{queued_mailout} == 1, "Mass Mailing *IS*  queued."); 
 
 
 
@@ -493,13 +493,13 @@ undef $queue_mailout_1;
 $queue_mailout_2_status = $queue_mailout_2->status(); 
 
 ok(keys %$queue_mailout_2_status, "status() returned a hashref!");
-ok($queue_mailout_2_status->{queued_mailout} == 0, "Mailout IS NOT NOW  queued."); 
+ok($queue_mailout_2_status->{queued_mailout} == 0, "Mass Mailing IS NOT NOW  queued."); 
 
 # get a fresh status: 
 $queue_mailout_3_status = $queue_mailout_3->status(); 
 # But, this one should still be queued...
 ok(keys %$queue_mailout_3_status, "status() returned a hashref!");
-ok($queue_mailout_3_status->{queued_mailout} == 1, "Mailout *IS* STILL  queued."); 
+ok($queue_mailout_3_status->{queued_mailout} == 1, "Mass Mailing *IS* STILL  queued."); 
 
 
 

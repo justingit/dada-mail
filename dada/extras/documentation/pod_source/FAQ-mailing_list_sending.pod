@@ -22,7 +22,7 @@ This type of mailing is a little different from the other types of mailings Dada
 
 =item * Mailout
 
-The same thing as a Mass Mailing. These can be used interchangably.
+The same thing as a Mass Mailing. These can be used interchangably. We do prefer, "Mass Mailing" 
 
 =back
 
@@ -285,15 +285,15 @@ I<This option is currently experimental>.
 
 If you're using the Dada Bridge plugin, it also has the same functionality as the B<Mailing Monitor> plugin built in (although, no report will ever be printed out). Because of this, you won't be absolutely required to run both, but if you want to run both, stagger the timing of the cronjobs - if you're running Dada Bridge every 5 minutes, run the B<Mailing Monitor> plugin every 6. 
 
-=head2 I'm a nerd. Any documentation on the Mailout/Auto Pickup API? 
+=head2 I'm a nerd. Any documentation on the Mass Mailings/Auto Pickup API? 
 
 Indeed, see: L<http://dadamailproject.com/support/documentation/Mail_MailOut.pm.html>
 
 in Dada Mail itself, see the B<Mailing Monitor> plugin noted above, or the C<sending_monitor()> subroutine in the mail.cgi file. 
 
-=head1 Multiple Mailouts at the Same Time
+=head1 Multiple Mass Mailings at the Same Time
 
-Multiple Mailouts can go on at one time. 
+Multiple Mass Mailings can go on at one time. 
 
 By default (conservatively) Dada Mail only allows you to have B<one> mailout at one time. You can change this in your config using the variable, C<$MAILOUT_AT_ONCE_LIMIT>.
 
@@ -317,9 +317,9 @@ If you do unpause a mailout, it B<will> jump back in line where it once was. For
 
 If you then unpassed the 10:00am one, it will jump back where it once was, but since the 11:00am mailout is going, it won't restart until either the 11:00 am mailout has unexpectantly stopped, or the 11:00am mailout has finished.
 
-=head2 Stale Mailouts
+=head2 Stale Mass Mailings
 
-Mailouts can become B<stale>, meaning, they've been inactive in mail sending for a specific period of time and won't automatically restart. This is to stop mailings that, for whatever reason, aren't active not become all of a sudden, active and start sending out a message that may be a little bit old in the news department. 
+Mass Mailings can become B<stale>, meaning, they've been inactive in mail sending for a specific period of time and won't automatically restart. This is to stop mailings that, for whatever reason, aren't active not become all of a sudden, active and start sending out a message that may be a little bit old in the news department. 
 
 By default, mailouts that haven't sent anything in a day are considered stale. 
 You may change this time in the Config.pm variable, C<$MAILOUT_STALE_AFTER>, which expresses this time in B<seconds>. 
