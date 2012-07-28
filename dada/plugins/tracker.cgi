@@ -354,7 +354,7 @@ sub default_tmpl {
   <td> 
    <p>
     <label for="enable_open_msg_logging"> 
-     Enable Open Messages Logging
+     Enable Open Message Logging
     </label> 
    </p>
   </td>
@@ -2335,7 +2335,7 @@ in your mass mailing message.
 When enabled, ALL links found in an email message will be tracked by converting them into 
 redirect tags and then clickthrough-tracked links.
 
-=head3 Enable Open Messages Logging
+=head3 Enable Open Message Logging
 
 When enabled, allows you to track open/viewing of messages. Will only work with HTML 
 messages and only if your subscribers individualy allow images to be shown in email 
