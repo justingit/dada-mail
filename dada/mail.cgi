@@ -1046,6 +1046,7 @@ sub previewMessageReceivers {
 					-partial_listing   => $partial_sending,
 					-type              => 'list',
 					-include_from      => [@alternative_list],
+					-show_list_column  => 1, 
 				}
 			);
 		}
