@@ -22,7 +22,7 @@
 <legend>WYSIWYG Editor Options</legend> 
 
 
-<!-- tmpl_if using_no_wysiwyg_editor --> 
+<!-- tmpl_if expr="((using_no_wysiwyg_editor == 1) && (list_settings.use_wysiwyg_editor ne 'none'))" --> 
 <div class="badweatherbox">
 <p>
  <strong>Warning!</strong>
