@@ -501,7 +501,7 @@ Be careful with using Dada Mail-style template tags, like this,
 
 	<!-- tmpl_var im_a_tag -->
 
-I<especially within links>. These tags will mostly be broken. Try instead to use old-style Dada Mail tags for
+I<Especially within links>. These tags will mostly be broken. Try instead to use old-style Dada Mail tags for
 the time being: 
 
 	[im_a_tag]

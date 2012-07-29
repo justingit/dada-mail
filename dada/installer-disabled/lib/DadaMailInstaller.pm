@@ -1413,6 +1413,12 @@ qq|\%LIST_SETUP_INCLUDE = (
 sub install_wysiwyg_editors { 
 
 	my ($args) = @_;
+	
+	my $install = $q->param('support_files_dir_path') || 0; 
+	if($install == 0){ 
+		return 1; 
+	}
+	
     my $dot_configs_file_loc = make_safer(
 		$args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config'
 	);

@@ -195,15 +195,23 @@ One plugin, Bounce Handler, also requires you to fill out the credentials for th
 
 =head2 WYSIWYG Editors
 
-Optionally, you may also configure the WYSIWYG editors that come bundled with Dada Mail. These WYSIWYG editors will allow you to author and edit your HTML Mailing List Messages right in your List Control Panel. 
+Optionally, you may also configure the WYSIWYG editors that come bundled with the Dada Mail distribution. These WYSIWYG editors will enable you to author and edit your HTML Mailing List Messages right in your List Control Panel. 
+
+=head3 Install and Configure WYSIWYG Editors 
+
+If you would like to use the bundled WYSIWYG editors with Dada Mail, check the option, B< Install and Configure WYSIWYG Editors > - which is checked by default. Uncheck this option, if you'd like to skip setting up the WYSIWYG editors - the various options will be hidden. 
 
 =head3 Support Files Directory
 
-The only thing that the Installer needs to install and configure the WYSIWYG editors, is a location to install them at. The installer will need this location in two forms, the B<Absolute Directory on where to place the support file directory> and the B<Corresponding URL> to that directory. 
+To install the WYSIWYG editors, the Installer will copy over the WYSIWYG editors to  a new directory on your hosting account called, B<dada_mail_support_files>. You will need to tell the Installer where this new directory should reside.  B<Absolute Directory> and the B<Corresponding URL>. 
 
-Unlike the C<.dada_files> directory, you want to be able to access this directory via your web browser, since the WYSIWYG editors are little web-based apps in their own right. The File Browser (KCFinder) allows you to upload images to use in your mailing list messages, and those images will also need to be publically accessable. 
+Unlike the C<.dada_files> directory, you will want to be able to access the B<dada_mail_support_files> directory through your web browser. The File Browser (KCFinder) enables you to upload images to use in your mailing list messages, and those images will also need to be publically accessable. 
 
-By default a I<pretty good guess> is made, to set both the server absolute path to your public HTML directory, as well as the corresponding URL to access this directory via a web browser. If the default location looks fine, keep it as-is. If you'd like to customize/fix where this directory lives, please do so. Under this directory, the Installer will make new directory called, C<dada_mail_support_files> and under this directory, install the WYSIWYG editors (C<ckeditor>, C<tiny_mce>, C<fckeditor>, the File Browser/Image Uploader (C<kcfinder>), as well as the directory that images/files are uploaded to, (C<file_uploads>. 
+By default a I<pretty good guess> is made as what to set both the Server Absolute Path to your base public HTML directory, as well as the corresponding URL to access that same directory through your web browser. 
+
+If the default location looks fine, keep it as-is. If you'd like to customize/fix where this directory should live, you may do so. 
+
+The Installer will create the, <dada_mail_support_files> and under the directory you set and install the WYSIWYG editors (C<ckeditor>, C<tiny_mce>, C<fckeditor>, the File Browser/Image Uploader (C<kcfinder>), as well as the directory that images/files are uploaded to, (C<file_uploads>). 
 
 =head2 Completing the Installation and Configuration. 
 
