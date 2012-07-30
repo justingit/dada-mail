@@ -87,7 +87,7 @@
 	<li> 
 This mailing list will not be listed on the 
      <a href="<!-- tmpl_var PROGRAM_URL -->" target="_blank">
-      <!-- tmpl_var PROGRAM_NAME --> main screen</a>. 
+      <!-- tmpl_var PROGRAM_NAME --> main screen</a> 
     </li>
 <li>
 	
@@ -99,13 +99,13 @@ This mailing list will not be listed on the
  </li>
 <li>
 People will still be able to subscribe/unsubscribe 
-     with the proper information.
+     with the proper information
     </li>
 
 <li>
 	
-     You will also have to manually enter this list's 
-     Short Name when logging into the list control panel.
+     You will also have to manually enter this mailing list's 
+     Short Name when logging into the list control panel
     </li>
 </ul> 
 
@@ -192,7 +192,7 @@ People will still be able to subscribe/unsubscribe
 		 <td width="99%">
 		  <p>
 		   <label for="skip_sub_confirm_if_logged_in">
-		    Skip Subscription Confirmation Process if the subscriber already has a <!-- tmpl_var PROGRAM_NAME --> profile.
+		    Skip Subscription Confirmation Process if the subscriber already has a <!-- tmpl_var PROGRAM_NAME --> profile
 		   </label>
 		   <br /> 
 
@@ -215,8 +215,9 @@ People will still be able to subscribe/unsubscribe
 	      Limit Subscription Confirmation Sending 
 	     </label>
 	     <br />
-		When enabled, only one confirmation message can be sent out at one time per subscriber, without the subscriber manually requesting (basically, clicking a button) a new subscription confirmation to be sent. 
-		This helps cut down on unneeded message sending and abuse of the subscription confirmation system. 
+		When enabled, only one confirmation message can be sent out at one time per subscriber, without the subscriber manually requesting (basically, by clicking a button) that a new subscription confirmation be sent.
+		
+		
 	    </p>
 	   </td>
 	  </tr>
@@ -231,7 +232,7 @@ People will still be able to subscribe/unsubscribe
 	   <td width="99%">
 	    <p>
 	     <label for="email_your_subscribed_msg">
-	      If a current subscriber attempts to subscribe again, send a, "You're Already Subscribed!" message via email, instead of showing this error in their web browser. 
+	      If a current subscriber attempts to subscribe again, send a, "You're Already Subscribed!" message via email, instead of showing this error in their web browser
 	     </label>
 	     <br />
 	       Usually, if a subscriber attempts to subscribe to a list they're already subscribed to, they'll receive an error stating that they are already subscribed to a particular list. 
@@ -239,7 +240,7 @@ People will still be able to subscribe/unsubscribe
 	      </p>
 
 	      <p>
-	       With this option checked, an email will instead be sent to the subscriber, stating they are already subscribed and an error will not be raised by <!-- tmpl_var PROGRAM_NAME --> 
+	       With this option checked, an email will instead be sent to the subscriber, stating they are already subscribed, and an error will not be raised by <!-- tmpl_var PROGRAM_NAME -->.
 	      </p> 
 
 	   </td>
@@ -364,11 +365,11 @@ People will still be able to subscribe/unsubscribe
    <td width="99%">
     <p>
      <label for="get_sub_notice">
-      Receive Subscription Notices
+      Send Subscription Notices
      </label>
      <br />
-     Be notified every time someone subscribes to your list with a short email.
-    </p>
+     Send Subscription Notices to: <!-- tmpl_var send_subscription_notice_to_popup_menu -->
+	    </p>
    </td>
   </tr>
   <tr>
@@ -394,7 +395,7 @@ People will still be able to subscribe/unsubscribe
 	  <td>
 	   <p>
 	    <label for="send_newest_archive">
-	     Send the Newest Archived Message to All New Subscribers. 
+	     Send the Newest Archived Message to All New Subscribers 
 	    </label>
 	    <br />
 	    Visitors that sign up themselves will receive a copy of the last archived message after they complete the subscription process. 
@@ -414,7 +415,7 @@ People will still be able to subscribe/unsubscribe
    <td width="99%">
     <p>
      <label for="captcha_sub">
-      Enable CAPTCHA'ing
+      Enable CAPTCHA
      </label>
      <br />
      Before someone is allowed to subscribe, they will have to type in a random string of letters that appear in an image that they are also
@@ -560,7 +561,7 @@ Unsubscription Confirmations
 		 <td width="99%">
 		  <p>
 		   <label for="skip_unsub_confirm_if_logged_in">
-		    Skip Unsubscription Confirmation Process if the subscriber already has a <!-- tmpl_var PROGRAM_NAME --> profile.
+		    Skip Unsubscription Confirmation Process if the subscriber already has a <!-- tmpl_var PROGRAM_NAME --> profile
 		   </label>
 		   <br /> 
 
@@ -581,8 +582,15 @@ Unsubscription Confirmations
 		      Limit Unsubscription Confirmation Sending 
 		     </label>
 		     <br />
-			When enabled, only one confirmation message can be sent out at one time per subscriber, without the subscriber manually requesting (basically, clicking a button) a new unsubsciption confirmation to be sent. 
-			This helps cut down on unneeded message sending and abuse of the unsubscription confirmation system. 
+
+			
+			When enabled, only one confirmation message can be sent out at one time per subscriber, without the subscriber manually requesting (basically, by clicking a button) that a new unsubscription confirmation be sent.
+
+			This helps cut down on unneeded message-sending and abuse of the unsubscription confirmation system. 
+			
+
+			
+			
 		    </p>
 		   </td>
 		  </tr>
@@ -595,7 +603,7 @@ Unsubscription Confirmations
 		   <td width="99%">
 		    <p>
 		     <label for="email_you_are_not_subscribed_msg">
-		If someone not currently subscribed to your mailing list attempts to unsubscribe, send a, "You are not Subscribed!" message via email,  instead of showing this error in their web browser. 
+		If someone not currently subscribed to your mailing list attempts to unsubscribe, send a, "You are not Subscribed!" message via email,  instead of showing this error in their web browser
 		     </label>
 		  </p> 
 		   </td>
@@ -696,10 +704,10 @@ Unsubscription Confirmations
    <td width="99%">
     <p>
      <label for="get_unsub_notice"> 
-      Receive Unsubscription Notices
+      Send Unsubscription Notices
      </label>
      <br />
-     Be notified every time someone unsubscribes to your list with a short email.
+     Send Unsubscription Notices to: <!-- tmpl_var send_unsubscription_notice_to_popup_menu -->
     </p>
    </td>
   </tr>
@@ -800,7 +808,10 @@ Unsubscription Confirmations
 						Enable Adding Subscribers from within the List Control Panel
 					</label><br /> 
 					 When enabled, this will allow you to add subscribers, via the List Control Panel without any email confirmation. 
-					</p> 
+					
+					This helps cut down on unneeded message-sending and abuse of the unsubscription confirmation system.</p> 
+					
+					
 					<p>
 					 <em>
 					  You will want to disable this feature, if you would closely follow the 
@@ -821,7 +832,7 @@ Unsubscription Confirmations
 						<td>
 							<p>
 								<label for="send_subscribed_by_list_owner_message">
-									Send a "Welcome" Message to Addresses Subscribed in the List Control Panel.  
+									Send a "Welcome" Message to Addresses Subscribed in the List Control Panel  
 								</label><br /> 
 							
 							</p>
@@ -876,7 +887,7 @@ Unsubscription Confirmations
 				<td>
 					<p>
 						<label for="send_unsubscribed_by_list_owner_message">
-							Send a "Farewell" Message to Addresses Unsubscribed in the List Control Panel.  
+							Send a "Farewell" Message to Addresses Unsubscribed in the List Control Panel
 						</label><br /> 
 					
 					</p>

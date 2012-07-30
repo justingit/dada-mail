@@ -7,8 +7,8 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::Security::Password; 
 use DADA::MailingList::Settings; 
 use DADA::App::Guts; 
-
-
+use Carp qw(carp croak); 
+use Try::Tiny; 
 my $dbi_obj; 
 
 sub new {
@@ -156,7 +156,14 @@ sub login_cookie {
                   # automatically, and recommend that people use an explicit flush()
                   # instead, which works reliably for everyone.
 				  $session->flush();
-
+				  
+				  if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
+						try { 
+							$self->kcfinder_session_begin; 
+				  		} catch { 
+							carp "initializing kcfinder session return an error: $_"; 
+						}
+				}
     }else{ 
 		
 				   $cookie = $q->cookie(-name    => $DADA::Config::LOGIN_COOKIE_NAME, 
@@ -170,6 +177,69 @@ sub login_cookie {
 		
 		
 	return $cookie; 
+}
+
+sub kcfinder_session_begin { 
+	
+	my $self = shift; 
+	require PHP::Session; 
+	require CGI::Lite; 
+	
+	my $cgi = new CGI::Lite; 
+	my $cookies = $cgi->parse_cookies;
+	my $sess_id = ''; 
+	if ($cookies->{$DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_name}}) {
+		$sess_id = $cookies->{$DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_name}};
+	}
+	else { 
+		carp "no PHP session?"; 
+	}
+	
+    my $session = PHP::Session->new(
+		$sess_id, 
+		{
+			create    => 1,
+			save_path => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_dir},
+		}
+	);
+	my $KCFINDER = {
+		disabled  => (! $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled}), 
+		uploadDir =>    $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir},
+		uploadURL =>    $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url},
+	};
+	
+	$session->set(KCFINDER => $KCFINDER); 
+    $session->save;
+	return 1;
+	
+}
+
+sub kcfinder_session_end { 
+	my $self = shift; 
+	my $self = shift; 
+	require PHP::Session; 
+	require CGI::Lite; 
+
+	my $cgi = new CGI::Lite; 
+	my $cookies = $cgi->parse_cookies;
+	my $sess_id = ''; 
+	if ($cookies->{$DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_name}}) {
+		$sess_id = $cookies->{$DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_name}};
+	}
+	else { 
+		carp "no PHP session?"; 
+	}
+
+    my $session = PHP::Session->new(
+		$sess_id, 
+		{
+			create    => 1,
+			save_path => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_dir},
+		}
+	);
+	$session->unregister('KCFINDER');
+    $session->save;
+	return 1;
 }
 
 
@@ -346,7 +416,13 @@ sub logout_cookie {
 							-path    =>  '/');
 	}
 	
-	
+	try { 
+		if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
+			$self->kcfinder_session_end; 
+		}
+	} catch { 
+		carp "ending kcfinder session return an error: $_"; 
+	}
 	return $cookie; 
 	
 } 

@@ -1250,24 +1250,24 @@ sub mass_send {
     # Meaning, queueing is ON! Enabled! Big red button! Blinky blinky!
     if($status->{queue} == 1){ 
     
-        warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' queueing is enabled.'
+        warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' queueing is enabled.'
             if $t; 
     	$mailout->log('Queueing is enabled.'); 
 		
-        warn  '[' . $self->{list} . ']   Mailout:' . $mailout_id . ' $status->{queue_place} ' . $status->{queue_place}
+        warn  '[' . $self->{list} . ']   Mass Mailing:' . $mailout_id . ' $status->{queue_place} ' . $status->{queue_place}
 			if $t; 
 		$mailout->log('$status->{queue_place} ' . $status->{queue_place}); 
 			
 		if($self->mass_test == 1){ 
 			
-			warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' Queueing is on, but we\'re side-stepping the queueing check to send a test mailing out...'
+			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Queueing is on, but we\'re side-stepping the queueing check to send a test mailing out...'
 				if $t; 
 			$mailout->log('Queueing is on, but we\'re side-stepping the queueing check to send a test mailing out...'); 
 			
 		}else { 
 					
     	    if($status->{queue_place} > ($DADA::Config::MAILOUT_AT_ONCE_LIMIT - 1)){
-	            # carp '[' . $self->{list} . '] Mailout:' . $mailout_id . ' Queueing is on, and this mailing falls above the queueing limit';
+	            # carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Queueing is on, and this mailing falls above the queueing limit';
 				# Experimental...
 				$mailout->log('Warning: Queueing is on, and this mailing falls above the queueing limit');
             
@@ -1276,7 +1276,7 @@ sub mass_send {
 	            return $fields{'Message-ID'};
 	        }
 	        else { 
-	            warn '[' . $self->{list} . '] Mailout:' . $mailout_id . 'This message is below the mailout limit and shouldn\'t have delays in sending.'
+	            warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 'This message is below the mailout limit and shouldn\'t have delays in sending.'
 	                if $t; 
 				$mailout->log('This message is below the mailout limit and shouldn\'t have delays in sending.'); 
 				
@@ -1285,7 +1285,7 @@ sub mass_send {
     }
 	
     
-    warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' $status->{paused}  is reporting ' . $status->{paused}
+    warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $status->{paused}  is reporting ' . $status->{paused}
         if $t; 
     if($status->{paused} > 0){ 
         carp 'Sending is currently paused.'; 
@@ -1295,14 +1295,14 @@ sub mass_send {
     }
 
 	if($status->{integrity_check} != 1){ 
-		carp '[' . $self->{list} . '] Mailout:' . $mailout_id . ' is currently reporting an integrity check warning! Pausing mailing and returning.'; 
+		carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' is currently reporting an integrity check warning! Pausing mailing and returning.'; 
 		
-		$mailout->log('Warning: Mailout:' . $mailout_id . ' is currently reporting an integrity check warning! Pausing mailing and returning.'); 
+		$mailout->log('Warning: Mass Mailing:' . $mailout_id . ' is currently reporting an integrity check warning! Pausing mailing and returning.'); 
 		$mailout->pause;
 		return; 
 	}
     
-    warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' $status->{percent_done} is reporting '  . $status->{percent_done}
+    warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $status->{percent_done} is reporting '  . $status->{percent_done}
         if $t; 
 	$mailout->log('$status->{percent_done} is reporting '  . $status->{percent_done}); 
 #
@@ -1314,11 +1314,11 @@ sub mass_send {
 #    }
 #
 
-    warn '[' . $self->{list} . '] Mailout:' . $mailout_id . '$status->{is_batch_locked} is reporting ' . $status->{is_batch_locked}
+    warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . '$status->{is_batch_locked} is reporting ' . $status->{is_batch_locked}
         if $t; 
         
     if($status->{is_batch_locked} == 1){ 
-        carp '[' . $self->{list} . '] Mailout:' . $mailout_id . ' Sending process is currently locked, not resending message until lock is unlock or seen as stale...'; 
+        carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Sending process is currently locked, not resending message until lock is unlock or seen as stale...'; 
  		$mailout->log('Warning: Sending process is currently locked, not resending message until lock is unlock or seen as stale...'); 
        return; 
     }
@@ -1327,7 +1327,7 @@ sub mass_send {
 
 	# how many messages get sent between batches? 
 	my $letters = 1; 
-	warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' $batch_size has been set to: ' . $batch_size
+	warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $batch_size has been set to: ' . $batch_size
 	    if $t; 
 	$mailout->log('$batch_size has been set to: ' . $batch_size); 
 	
@@ -1342,7 +1342,7 @@ sub mass_send {
 	my $pid; 
 
 
-    warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' About to fork off mass mailing...'
+    warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' About to fork off mass mailing...'
 		if $t; 
 	$mailout->log('About to fork off mass mailing...'); 
 	
@@ -1381,7 +1381,7 @@ sub mass_send {
             # I wonder if it'll work that I switch the database connection here. 
             # Would that impact everyone? 
             # Probably not. (rats.); 
-            warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' Fork successful. (From Parent)'
+            warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Fork successful. (From Parent)'
 				if $t; 
 				
 			# Here's the new stuff: 
@@ -1431,7 +1431,7 @@ sub mass_send {
                 
         } elsif (defined $pid) { # $pid is zero here if defined
             
-			warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' Fork successful. (From Child)'
+			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Fork successful. (From Child)'
 				if $t;
 				            
                 
@@ -1541,7 +1541,7 @@ sub mass_send {
 			# Let's tell em we're in control: 
 			#
 			$mailout->set_controlling_pid($$);
-			warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' Setting the controlling PID to: "' . $$ . '"'
+			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Setting the controlling PID to: "' . $$ . '"'
 		        if $t;
 			#
 			# 
@@ -1569,7 +1569,7 @@ sub mass_send {
 			
 			my $lock = $mailout->lock_file($mailout->subscriber_list);
 			
-			warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' opened MAILLIST'
+			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' opened MAILLIST'
 			    if $t; 
 			$mailout->log('opened MAILLIST'); 
 			
@@ -1602,7 +1602,7 @@ sub mass_send {
 			my $check_restart_state = 0; 
 			# only check the state IF we need to, otherwise, skip the check and save some cycles. 
 			if($self->restart_with){ 
-			    warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' restart_with defined'
+			    warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' restart_with defined'
 			        if $t; 
                 $check_restart_state = 1; 
             }
@@ -1647,7 +1647,7 @@ sub mass_send {
 			##################################################################			
 			
 				
-            warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' locking batch' 
+            warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' locking batch' 
                 if $t; 
             $mailout->batch_lock;
 
@@ -1688,12 +1688,12 @@ sub mass_send {
 				# ALL mailings, so it is quite resource-intensive.
 				
 				my $is_mailout_paused = $mailout->paused; 
-				warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . 
+				warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . 
 				     ' $mailout->paused reporting: ' . $is_mailout_paused
 				 	if $t; 
 				
 				if($is_mailout_paused > 0){                            
-					carp '[' . $self->{list} . ']  Mailout:' . $mailout_id . 
+					carp '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . 
 					     ' Mailing has been paused - exit()ing';
 					$mailout->log('Warning: Mailing has been paused - exit()ing'); 
 					$mailout->unlock_batch_lock;
@@ -1701,7 +1701,7 @@ sub mass_send {
 				}
 				
 				if($status->{integrity_check} != 1){ 
-					carp '[' . $self->{list} . '] Mailout:' . $mailout_id . 
+					carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 
 					     ' is currently reporting an integrity check warning! 
 					       Pausing mailing and returning.';
 					$mailout->log('Warning: Mailing is currently reporting an 
@@ -1734,7 +1734,7 @@ sub mass_send {
 				# only start sending at a point where we're supposed to...
 				# so wait - mailing count starts at 1?
 				
-				warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' $check_restart_state set to ' . $check_restart_state
+				warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $check_restart_state set to ' . $check_restart_state
 				    if $t; 
 				    
 				##############################################################
@@ -1745,21 +1745,21 @@ sub mass_send {
                     if($self->restart_with){ 
                         my $mo_counter_at = $mailout->counter_at; 
                         
-                        	warn '[' . $self->{list} . '] Mailout:' . 
+                        	warn '[' . $self->{list} . '] Mass Mailing:' . 
                                  $mailout_id . ' $mailout->counter_at ' . 
                                  $mo_counter_at
                             	if $t; 
                         
                         if($mo_counter_at > ($mailing_count - 1)){ 
                         
-                           warn '[' . $self->{list} . '] Mailout:' . 
+                           warn '[' . $self->{list} . '] Mass Mailing:' . 
                                 $mailout_id . ' Skipping Mailing #' . 
                                 $mailing_count . 
                                 '( $mo_counter_at > ($mailing_count - 1 )'
                             if $t; 
                             next; 
                         } else { 
-                        	warn '[' . $self->{list} . '] Mailout:' . 
+                        	warn '[' . $self->{list} . '] Mass Mailing:' . 
                                  $mailout_id . 
                                  ' setting check_restart_state to 0'
                                 if $t; 
@@ -1768,7 +1768,7 @@ sub mass_send {
                     
                     }
                     else { 
-                        warn '[' . $self->{list} . '] Mailout:' . 
+                        warn '[' . $self->{list} . '] Mass Mailing:' . 
                               $mailout_id . ' restart_with reports, 0'
                             if $t; 
                     }
@@ -1799,13 +1799,13 @@ sub mass_send {
                     -Sending_To       => $fields{To}, 
                 };
                 
-                warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' sending mail'
+                warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' sending mail'
                     if $t; 
                 
 				my $send_return = $self->send(%nfields, from_mass_send => 1); # The from_mass_send is a hack. 
                 # How, about, if this returns, "-1", the mailing didn't work, and we should just retry again, somehow
 				if($send_return == -1){ 
-					carp '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' Bailing out of Mailing for now - last message was unable to be sent! exit()ing!';
+					carp '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' Bailing out of Mailing for now - last message was unable to be sent! exit()ing!';
 					$mailout->log('Warning: Bailing out of Mailing for now - last message was unable to be sent! exit()ing!'); 
 					exit(0);
 				}
@@ -1813,7 +1813,7 @@ sub mass_send {
 					 # ...
 				}
 
-                warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' counting subscriber.'
+                warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' counting subscriber.'
                     if $t; 
                
      			# Ah, ok, so I don't even have to rollback, as the subscriber gets counted here. Brilliant! 
@@ -1822,7 +1822,7 @@ sub mass_send {
                  
 				$mailout->log($nfields{To} . ' sent message #' . $new_count);
 
-                warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' $new_count set to, ' . $new_count
+                warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $new_count set to, ' . $new_count
                 	if $t; 
         
                if($mailing_count != $new_count){ 
@@ -1839,24 +1839,24 @@ sub mass_send {
 				else {
 				
 					if($self->{ls}->param('enable_bulk_batching') == 1){ 
-				         warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' enable_bulk_batching is set to 1'
+				         warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' enable_bulk_batching is set to 1'
 				            if $t; 
 			            
 				    	if($n_people == $n_letters){ 
 			    	
-				    	     warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' reached the amount of messages for this batch (' . $n_letters . ')'
+				    	     warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' reached the amount of messages for this batch (' . $n_letters . ')'
 				    	        if $t; 
 				
 							# Undefined after each batch, if it is defined
 							if(defined($self->net_smtp_obj)){
 
-								warn '[' . $self->{list} . '] Mailout:' . $mailout_id . 'Quitting a SMTP connection for this batch that\'s still going on... ' 
+								warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 'Quitting a SMTP connection for this batch that\'s still going on... ' 
 									if $t; 
 								
 								$self->net_smtp_obj->quit
 				               		or carp "problems 'QUIT'ing SMTP server.";
 			
-								 warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' Purging Net::STMP object, since we have reached the final message of the batch.'
+								 warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Purging Net::STMP object, since we have reached the final message of the batch.'
 								    if $t;
 		
 								$self->net_smtp_obj(undef); 
@@ -1866,7 +1866,7 @@ sub mass_send {
 								$self->ses_obj(undef);
 							}
 							
-							warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' calling Mail::MailOut::status() '
+							warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' calling Mail::MailOut::status() '
 								if $t;
 			                my $batch_status = $mailout->status({-mail_fields => 0}); 
 		                
@@ -1882,19 +1882,19 @@ sub mass_send {
 	                        
                         
 							if($batch_status->{queued_mailout} == 1){  
-								carp '[' . $self->{list} . '] Mailout:' . $mailout_id . ' Mailing has been queued - exit()ing'; 
+								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Mailing has been queued - exit()ing'; 
 								$mailout->log('Warning: Mailing has been queued - exit()ing'); 
 								$mailout->unlock_batch_lock;
 								exit(0); 
 							}
 							if($batch_status->{paused} > 0){                          
-								carp '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' Mailing has been paused - exit()ing';
+								carp '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' Mailing has been paused - exit()ing';
 								$mailout->log('Warning: Mailing has been paused - exit()ing'); 
 								$mailout->unlock_batch_lock;
 								exit(0);
 							}
 							if($batch_status->{integrity_check} != 1){ 
-								carp '[' . $self->{list} . '] Mailout:' . $mailout_id . ' is currently reporting an integrity check warning! Pausing mailing and returning.'; 
+								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' is currently reporting an integrity check warning! Pausing mailing and returning.'; 
 								$mailout->log('Warning: Mailing is currently reporting an integrity check warning! Pausing mailing and returning.'); 
 								$mailout->unlock_batch_lock;
 								$mailout->pause;
@@ -1903,7 +1903,7 @@ sub mass_send {
 						
 	                        if($self->{ls}->param('restart_mailings_after_each_batch') != 1) { 
                           
-	                             warn '[' . $self->{list} . '] Mailout:' . $mailout_id . ' restart_mailings_after_each_batch is NOT enabled.'
+	                             warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' restart_mailings_after_each_batch is NOT enabled.'
 	                                if $t; 
                             
 								##############################################
@@ -1934,7 +1934,7 @@ sub mass_send {
 								##############################################
 									
 								my $before_sleep_time = time; 
-								warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' Sleeping for ' . $sleep_for_this_amount . ' seconds. See you in the morning. Time: ' . $before_sleep_time
+								warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' Sleeping for ' . $sleep_for_this_amount . ' seconds. See you in the morning. Time: ' . $before_sleep_time
 									if $t; 
 							
 								#
@@ -1947,11 +1947,11 @@ sub mass_send {
 								#
 								#
 							
-								warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' I\'m awake! from sleep()ing, Time: ' . time . ', Slept for: ' . (time - $before_sleep_time) . ' seconds. '
+								warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' I\'m awake! from sleep()ing, Time: ' . time . ', Slept for: ' . (time - $before_sleep_time) . ' seconds. '
 									if $t; 
 								
 								if( ! $mailout->still_around ){
-									warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' Seems to have been removed. exit()ing'
+									warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' Seems to have been removed. exit()ing'
 							            if $t; 
 									exit(0); 
 								}
@@ -1961,12 +1961,12 @@ sub mass_send {
 									
 									# Good to go.
 								
-									warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . " Controlling PID check says we're ($$) still in control."
+									warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . " Controlling PID check says we're ($$) still in control."
 										if $t;
 										
 								}
 								else { 
-									warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . 
+									warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . 
 										 ' Problem! Another process (Current PID: ' . $$ . ', Controlling PID: ' . 
 										   $batch_status->{controlling_pid} .' has taken over sending for this mailing! ' . 
 										   ' exit()ing to allow that process to do it\'s business!'; 
@@ -1982,13 +1982,13 @@ sub mass_send {
                             
 	                       } else { 
                         
-	                            warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' restart_mailings_after_each_batch is enabled.'
+	                            warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' restart_mailings_after_each_batch is enabled.'
 	                                if $t; 
                             
 	                            close(MAILLIST)
 	                                or carp "Problems closing the temporary sending file (" . $mailout->subscriber_list ."), Reason: $!";
 
-	                            warn  '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' unlocking batch lock.'
+	                            warn  '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' unlocking batch lock.'
 	                                if $t; 
                                 
 								$mailout->unlock_file($lock);
@@ -2001,7 +2001,7 @@ sub mass_send {
 	                            # cleanup, so let's not go quite yet. 
                             
 	                            if($batch_status->{total_sent_out} < $batch_status->{total_sending_out_num}){ # We have more mailings to do. 
-	                                warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' As far as I can tell, there\'s more mailing to do.'
+	                                warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' As far as I can tell, there\'s more mailing to do.'
 	                                    if $t; 
 	                                exit(0); 
 	                            }
@@ -2023,7 +2023,7 @@ sub mass_send {
 					  
 						}
 						else { 
-						    warn  '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' More messages to be sent in this batch ' 
+						    warn  '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' More messages to be sent in this batch ' 
 						        if $t; 
 					
 						}
@@ -2033,12 +2033,12 @@ sub mass_send {
 	            } # if($self->mass_test == 1){ 
 			} # while(defined($mail_info = <MAILLIST>)){ 
 			
-			warn  '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' We\'ve gone through the MAILLIST, it seems?'
+			warn  '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' We\'ve gone through the MAILLIST, it seems?'
 			    if $t; 
 			
 			if(defined($self->net_smtp_obj)){ 
 				# Guess we gotta quit the connection that's still going on... 
-				warn  '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' Quitting a SMTP connection that\'s still going on... '
+				warn  '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' Quitting a SMTP connection that\'s still going on... '
 					if $t; 
 				$self->net_smtp_obj->quit
                		or carp "problems 'QUIT'ing SMTP server.";
@@ -2059,7 +2059,7 @@ sub mass_send {
 			
 			if( $self->{ls}->param('get_finished_notification')  == 1){ 			
 			    
-			    warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' sending finished notification' 
+			    warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' sending finished notification' 
 			        if $t; 
 			        
                 $self->_email_batched_finished_notification(
@@ -2075,9 +2075,9 @@ sub mass_send {
 			}
 			# End Old, Complicated, Crufty Stuff....
 	
-			$mailout->log('List Mailing Completed ' . "Mailout: $mailout_id  subject:$fields{Subject}, $log_mail_start_time, $log_mail_end_time, Mailing Amount:$mailing_amount");
+			$mailout->log('List Mailing Completed ' . "Mass Mailing: $mailout_id  subject:$fields{Subject}, $log_mail_start_time, $log_mail_end_time, Mailing Amount:$mailing_amount");
 
-			warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' closing MAILLIST'
+			warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' closing MAILLIST'
 			    if $t; 
 			    
 			close(MAILLIST)
@@ -2085,7 +2085,7 @@ sub mass_send {
 			
 			
 			#warn "unlocking batch.."; 
-			warn  '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' unlocking batch lock' 
+			warn  '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' unlocking batch lock' 
 			    if $t; 
 			
 			
@@ -2094,7 +2094,7 @@ sub mass_send {
 		    $mailout->unlock_batch_lock; 
 
 			#warn "Cleaning up my mess...";
-			warn  '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' cleaning up!'
+			warn  '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' cleaning up!'
 			    if $t; 
 			    
             $mailout->clean_up; 
@@ -2103,7 +2103,7 @@ sub mass_send {
 			# Undef'ing net_smtp_obj if needed... 
 			if(defined($self->net_smtp_obj)){ 	
 				
-				warn  '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' Quitting a SMTP connection at end of mass_send' 
+				warn  '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' Quitting a SMTP connection at end of mass_send' 
 					if $t;
 					
 				$self->net_smtp_obj->quit
@@ -2118,18 +2118,18 @@ sub mass_send {
 			}
 			
 
-			warn  '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' We\'re done. exit()ing!' 
+			warn  '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' We\'re done. exit()ing!' 
 			    if $t;
            	exit(0);		 
 
 		} elsif ($! =~ /No more process/) {
-			warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' Getting error in fork: $! - sleeping for 5 seconds and retrying (don\'t hold your breath)'
+			warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' Getting error in fork: $! - sleeping for 5 seconds and retrying (don\'t hold your breath)'
 			     if $t; 
 			# EAGAIN, supposedly recoverable fork error
 			sleep 5;
 			redo FORK;
 		} else {
-			warn '[' . $self->{list} . ']  Mailout:' . $mailout_id . ' Fork wasn\'t so successful.'
+			warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' Fork wasn\'t so successful.'
 				if $t;
 			# weird fork error
 			croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error in Mail.pm, Unable to Fork new process to mass e-mail list message: $!\n";

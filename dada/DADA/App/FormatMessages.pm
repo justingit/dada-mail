@@ -11,7 +11,7 @@ use Encode qw(encode decode);
 use MIME::Parser;
 use MIME::Entity; 
 use DADA::App::Guts; 
-
+use Try::Tiny; 
 
 use Carp qw(croak carp); 
 
@@ -35,10 +35,7 @@ DADA::App::FormatMessages
    
  # Use information you find in the headers 
   $fm->use_header_info(1);
- 
- # Use the list template   
-   $fm->use_list_template(1); 
- 
+
  # Use the email template.
    $fm->use_email_templates(1);  
  
@@ -72,7 +69,6 @@ to worry about, but we'll go through some detail.
 
 my %allowed = (
 	Subject                        => undef, 
-	use_list_template              => 0, 
 	use_html_email_template        => 1,
 	use_plaintext_email_template   => 1, 
 	use_header_info                => 0, 
@@ -179,9 +175,7 @@ sub _init  {
         $self->{list} = $args->{-List};
     
         $self->Subject($self->{ls}->param('list_name')); 
-        
-		$self->use_list_template($self->{ls}->param('apply_list_template_to_html_msgs') ); 
-		
+        		
 		# just a shortcut...
 		# warn "_init in DADA::App::FormatMessages saving - mime_encode_words_in_headers"; 
 		if($self->{ls}->param('mime_encode_words_in_headers') == 1){ 
@@ -246,10 +240,6 @@ the headers and $body_str, that holds the body of your message.
 =head2 Subject
 
 Set the subject of a message
-
-=head2 use_list_template
-
-If set to a true value, will apply the list template to the HTML part of your message 
 
 =head2 use_email_templates
 
@@ -415,43 +405,84 @@ sub _format_text {
 			
 			my $body    = $entity->bodyhandle;
 			my $content = $entity->bodyhandle->as_string;
-			
-			$content = safely_decode($content);
-		   
-		
+			   $content = safely_decode($content);
 			#
 			# body_as_string gives you encoded version.
 			# Don't get it this way, unless you've got a great reason 
 			# my $content = $entity->body_as_string;
-			# Same thing - this means it could be in quoted/printable,etc. 
+			# Same thing - this means it could be in quoted/printable,etc.
 			
+			
+					   
+			# Begin filtering done before the template is applied 
+	
 			if($content){ # do I need this?
+				
+				if($entity->head->mime_type eq 'text/html') { 
+						
+					if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1) { 
+						try {
+							require DADA::App::FormatMessages::Filters::InlineEmbeddedImages; 
+							my $iei = DADA::App::FormatMessages::Filters::InlineEmbeddedImages->new; 
+							$content = $iei->filter({-html_msg => $content});
+						} catch {
+							carp "Problems with filter: $_";
+						};
+					}	
+				}
+				
+				# This means, we've got a discussion list:
 				if(
 					$self->no_list                                   != 1 &&
 					$self->mass_mailing                              == 1 &&
 					$self->list_type eq                            'list' &&
 					$self->{ls}->param('disable_discussion_sending') != 1 &&
-					$self->{ls}->param('group_list')                 == 1 &&
-					$self->{ls}->param('discussion_template_defang') == 1
+					$self->{ls}->param('group_list')                 == 1
 				) { 
-					
-					eval { 
-						$content = $self->template_defang(
-							{
-								-data => $content, 
-							}
-						);
-					};
-					if($@){ 
-						carp "Problem defanging template: $@"; 
-					}
-				
-				}
 
+					if($entity->head->mime_type eq 'text/html'){ 
+						try { 
+							$content = $self->_remove_opener_image({-data => $content});
+						} catch { 
+							carp "Problem removing existing opener images: $_"; 
+						}
+					}
+					if($self->{ls}->param('discussion_clean_up_replies') == 1) { 
+						try {
+							require DADA::App::FormatMessages::Filters::CleanUpReplies; 
+							my $cur = DADA::App::FormatMessages::Filters::CleanUpReplies->new; 
+							$content = $cur->filter(
+								{
+									-msg  => $content, 
+									-type => $entity->head->mime_type, 
+									-list => $self->{list},
+								}
+							);
+						} catch {
+							carp "Problems with filter: $_";
+						};		
+					}
+					
+					if($self->{ls}->param('discussion_template_defang') == 1) { 
+						try {
+							$content = $self->template_defang({-data => $content});
+						} catch { 
+							carp "Problem defanging template: $_"; 
+						}
+					}
+					
+								
+				} #/ discussion lists
+ 	
+				# End filtering done before the template is applied 
+				
 				$content = $self->_apply_template(
 					-data => $content, 
 					-type => $entity->head->mime_type, 
 				);
+				
+				# Begin filtering done after the template is applied 
+				
 				
 				if($self->mass_mailing == 1){ 
 					if($self->list_type eq 'just_unsubscribed'){ 
@@ -472,11 +503,13 @@ sub _format_text {
 							}
 						);				
 					}
+					
+					
 				}
 				
 			  if($self->no_list != 1){
 			
-				   $content = $self->_parse_in_list_info(
+				   $content = $self->_expand_macro_tags(
 						-data => $content, 
 						-type => $entity->head->mime_type, 
 					);
@@ -497,12 +530,14 @@ sub _format_text {
 					}
 				}
 				
+				# End filtering done after the template is applied 
+				
+				
 				# simple validation
 				require DADA::Template::Widgets; 
 				my ($valid, $errors);
 					
 				my $expr = 0; 
-				
 				if($self->no_list == 1){ 
 					$expr = 1; 
 				}
@@ -519,21 +554,21 @@ sub _format_text {
 						-expr => $expr, 
 					}
 				); 
-				
 				if($valid == 0){ 
 					my $munge = quotemeta('/fake/path/for/non/file/template'); 
 					$errors =~ s/$munge/line/; 
 					croak "Problems with email message! Invalid template markup: '$errors' \n" . '-' x 72 . "\n" . $content ; 
 				}
 				# /simple validation
+				
+				
+				
 		       my $io = $body->open('w');
-
-				  $content = safely_encode($content); 
-
-				  $io->print( $content );				    
-				  $io->close;
-				  $entity->sync_headers('Length'      =>  'COMPUTE',
-									    'Nonstandard' =>  'ERASE');
+			  $content = safely_encode($content); 
+			  $io->print( $content );				    
+			  $io->close;
+			  $entity->sync_headers('Length'      =>  'COMPUTE',
+								    'Nonstandard' =>  'ERASE');
 			}
 
 		}
@@ -608,6 +643,19 @@ sub _add_opener_image {
 	}
 	return $content; 
 }
+
+
+# This would be a nice filter to re-implement for getting archives ready for viewing. 
+sub _remove_opener_image { 
+	my $self    = shift; 
+	my ($args)  = @_; 
+	my $content = $args->{-data}; 
+	my $sm = quotemeta('<!--open_img-->'); 
+	my $em = quotemeta('<!--/open_img-->'); 
+	$content =~ s/($sm)(.*?)($em)//smg; 
+    return $content; 
+}
+
 
 
 
@@ -862,6 +910,8 @@ sub _encode_header {
 	return $value 
 	 	unless $self->im_encoding_headers;
 	
+	require MIME::EncWords;
+	
 	if(
 	   $label eq 'Subject'           || 
 	   $label eq 'List'              ||
@@ -873,7 +923,6 @@ sub _encode_header {
 	){ 
 
 	
-		require MIME::EncWords;
 		$new_value = 
 		MIME::EncWords::encode_mimewords(
 			$value, 
@@ -1086,9 +1135,9 @@ sub _list_name_subject {
 
 =pod
 
-=head2 _parse_in_list_info
+=head2 _expand_macro_tags
 
- $data = $self->_parse_in_list_info(-data => $data, 
+ $data = $self->_expand_macro_tags(-data => $data, 
                                     -type => (PlainText/HTML), 
                                    );
 								        
@@ -1098,11 +1147,9 @@ B<-type> can be either PlainText or HTML
 
 =cut
 
-# DEV: This is a bad name for this - it should be called something 
-# more on the lines of expanding macro stuff, since all the parsing in list info 
-# stuff isn't here. 
 
-sub _parse_in_list_info { 
+
+sub _expand_macro_tags { 
 
 	my $self = shift; 
 	
@@ -1178,10 +1225,10 @@ sub template_defang {
     my ($args) = @_;
     my $str    = $args->{-data};
 
-    my $b1   = quotemeta('<!--');
-    my $e1 = quotemeta('-->');
+    my $b1  = quotemeta('<!--');
+    my $e1  = quotemeta('-->');
 
-    my $b2   = quotemeta('<');
+    my $b2 = quotemeta('<');
     my $e2 = quotemeta('>');
 
     my $b3 = quotemeta('[');
@@ -1373,6 +1420,34 @@ sub _apply_template {
 			$new_data = strip($self->{ls}->param('mailing_list_message_html')) || '<!-- tmpl_var message_body -->';
 		}
 		
+		
+		# if(some-user-set-setting) { 
+		if(
+			$self->no_list                                   != 1 &&
+			$self->mass_mailing                              == 1 &&
+			$self->list_type eq                            'list' &&
+			$self->{ls}->param('disable_discussion_sending') != 1 &&
+			$self->{ls}->param('group_list')                 == 1
+		) { 
+			$new_data = $self->_depersonalize_mlm_template(
+					{ 
+						-msg => $new_data, 
+					}
+				); 
+		}
+		# / depersonalize 
+	
+		
+		# This adds a message body tag, if you haven't done that, already. 
+		$new_data = $self->message_body_tagged(
+			{
+				-str => $new_data, 
+				-type => $args{-type}, 
+			}
+		);				
+		
+		
+		
 		if($args{-type} eq 'HTML'){  
 		
 			my $bodycontent     = undef; 
@@ -1416,13 +1491,7 @@ sub _apply_template {
 	}
 	
 	
-	if($args{-type} eq 'HTML'){  
-
-		$new_data = $self->_apply_list_template($new_data)
-				if $self->use_list_template; 			
-	}
-	
-	$new_data = $self->_parse_in_list_info(-data => $new_data, 
+	$new_data = $self->_expand_macro_tags(-data => $new_data, 
 								          -type => $args{-type}, 
 								        );
 	
@@ -1448,6 +1517,41 @@ $new_data
 	
 	return $new_data; 
 	
+}
+
+sub _depersonalize_mlm_template { 
+	
+	my $self = shift; 
+	my ($args) = @_; 
+	if(!exists($args->{-msg})){ 
+		croak "you MUST pass the, '-msg' paramater!"; 
+	}
+	
+	my $tags = [ 
+		{ 
+			og => '<!-- tmpl_var list_subscribe_link -->',
+			re => '<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->', 
+		},
+		{
+			og => '<!-- tmpl_var list_unsubscribe_link -->', 
+			re => '<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->', 
+		}, 
+		{
+			og => '<!-- tmpl_var PROGRAM_URL -->/profile_login/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/', 
+			re => '<!-- tmpl_var PROGRAM_URL -->/profile_login/', 
+		},
+#		{
+#			og => 'Using the address: <!-- tmpl_var subscriber.email -->', 
+#			re => '', 
+#		}
+	];
+	for my $tag(@$tags) { 
+		my $og = quotemeta($tag->{og});
+		my $re = $tag->{re}; 		
+		$args->{-msg} =~ s/$og/$re/smg; 
+	}
+	
+	$args->{-msg}	
 }
 
 sub can_find_sub_confirm_link { 
@@ -1549,6 +1653,34 @@ sub unsubscription_confirmationation {
 		return $args->{-str};	
 }
 
+sub can_find_message_body_tag {
+
+    my $self = shift;
+    my ($args) = @_;
+    if ( !exists( $args->{-str} ) ) {
+        die "You MUST pass the, '-str' paramater!";
+    }
+
+    my @message_body_tags = (
+		'<!-- tmpl_var message_body -->',
+	);
+    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
+        1 )
+    {
+        push( @message_body_tags, '[message_body]' );
+    }
+
+    for my $message_body_tag (@message_body_tags) {
+        $message_body_tag = quotemeta($message_body_tag);
+        if ( $args->{-str} =~ m/$message_body_tag/ ) {
+            return 1;
+        }
+    }
+
+    return 0;
+
+}
+
 
 
 
@@ -1628,6 +1760,24 @@ Unsubscribe Automatically:
     }
 
     return $args->{-str};
+}
+
+
+sub message_body_tagged { 
+    my $self = shift;
+
+    my ($args) = @_;
+
+    die "no -str! $!" if !exists( $args->{-str} );
+    die "no -type! $!" if !exists( $args->{-type} );
+
+    if ( $self->can_find_message_body_tag( { -str => $args->{-str} } ) ) {
+        # ...
+    }
+    else {
+		$args->{-str} = '<!-- tmpl_var message_body -->' . $args->{-str};
+	}
+	return $args->{-str};
 }
 
 

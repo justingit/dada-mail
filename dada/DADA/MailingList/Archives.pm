@@ -619,11 +619,19 @@ sub make_nav_table {
     }
 
     my ( $prev, $next );
-
     ( $prev, $next ) = $self->get_neighbors($id);
 
-    my $prev_subject = $self->get_archive_subject($prev);
-    my $next_subject = $self->get_archive_subject($next);
+    my $prev_subject;
+    my $next_subject;
+
+    if ($prev) {
+        $prev_subject = $self->_parse_in_list_info(
+            -data => $self->get_archive_subject($prev) );
+    }
+    if ($next) {
+        $next_subject = $self->_parse_in_list_info(
+            -data => $self->get_archive_subject($next) );
+    }
 
     require DADA::Template::Widgets;
     return DADA::Template::Widgets::screen(
@@ -631,12 +639,10 @@ sub make_nav_table {
             -screen => 'archive_nav_table_widget.tmpl',
             -list   => $list,
             -vars   => {
-                prev => $prev,
-                next => $next,
-                prev_subject =>
-                  $self->_parse_in_list_info( -data => $prev_subject ),
-                next_subject =>
-                  $self->_parse_in_list_info( -data => $next_subject ),
+                prev         => $prev,
+                next         => $next,
+                prev_subject => $prev_subject,
+                next_subject => $next_subject,
                 flavor_label => $flavor_label,
             },
             -list_settings_vars       => $self->{ls}->params,
@@ -645,6 +651,7 @@ sub make_nav_table {
         }
     );
 }
+
 
 
 
@@ -1013,16 +1020,12 @@ sub _entity_from_raw_msg {
 
 
 sub _remove_opener_image { 
-
-	my $self  = shift; 
-	my $str   = shift;
-	
-	my $open  = quotemeta('<!--open_img-->');
-	my $close = quotemeta('<!--/open_img-->'); 
-	   $str =~ s/$open(.*?)$close//g;
-	   
-	return $str; 
-	
+	my $self    = shift; 
+	my $content = shift; 
+	my $sm = quotemeta('<!--open_img-->'); 
+	my $em = quotemeta('<!--/open_img-->'); 
+	$content =~ s/($sm)(.*?)($em)//smg; 
+    return $content;
 }
 
 

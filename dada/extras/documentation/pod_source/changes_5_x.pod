@@ -2,7 +2,127 @@
 
 =head1 Dada Mail Changelog for version 5.x.x
 
-=head1 5.1.1
+=head1 5.2.0
+
+=head2 Summary 5.2.0 
+
+Dada Mail v5.2.0 release focuses on WYSIWYG editors, which allow you to author your HTML email messages in rich text, right from within the List Control Panel. 
+
+Dada Mail now comes bundled with three different WYSIWYG editors: CKEditor, Tiny MCE and FCKeditor. KCfinder, an image/file browser/uploader is also bundled. Dragging and Dropping images to be used in your email messages is also supported in Dada Mail. All these utilities can be installed easily using the included Dada Mail Installer. 
+
+We've streamlined the Send a Message and Send a Webpage screens to better utilize and more cleanly present these editors, while still allowing you full flexibility on how you author your messages: We've moved to a tabbed interface for the mailing list message, so that you can easily toggle between your HTML Version and your PlainText version, without unnecessary scrolling. 
+
+If upgrading from any previous version of Dada Mail, we highly suggest B<Creating a new .dada_config file>, when using the included Dada Mail installer, as many items in the starter C<.dada_config> file have now changed. 
+
+=head2 Features 5.2.0
+
+=head3 WYSIWYG/File Browsers
+
+Dada Mail now supports and comes bundled with the following WYSIWYG editors: 
+
+=over
+
+=item * CKEditor
+
+=item * Tiny MCE
+
+=item * FCKEditor
+
+=back
+
+Dada Mail also comes bundled with the file browser/file upload utility called, KCFinder. This utility allows file file browsing and file (image) uploading for all three included WYSIWYG editor. 
+
+=head4 Dada Mail Installer Support 
+
+The Dada Mail Installer now has the ability to configure and install all three WYSIWYG editors, as well as the file browser. Installing all these utilities is optional, but much easier than doing it manually. The editors and browser are bundled with Dada Mail in the, I<dada/extras/packages> directory. 
+
+=head4 Added Support for Tiny MCE
+
+Along with Support for CKeditor and FCKeditor, Dada Mail now supports the Tiny MCE WYSIWYG HTML editor in its Send a Message and Send a Webpage screens. 
+
+=head4 Support for Drag and Drop images (in some browsers) 
+
+Instead of having to go through the File Browser to upload an image, you can simply drag an image into one of the WYSIWYG editors. The image will then be saved in your file browser's file uploads directory and will be able to be used again for a future mass mailing. 
+
+This doesn't work for all browsers, but is confirmed to be support in Firefox 14+.
+
+=head4 Discussion Lists: Experimental Support for Cleaning up long quoted replies of mailing list openings/signatures
+
+Look for the option labeled, B<Attempt to clean up replies> in Dada Bridge. 
+
+
+=head3 Tabbed Interface for PlainText/HTML Mailing List Messages
+
+Dada Mail now allows you to toggle between the HTML, and PlainText versions of your mailing list message with a tabbed interface, instead of showing/hiding each type. 
+
+=head3 Subscription/Unsubscription Admin notices may now go to the entire mailing list 
+
+It's now an option to send the Subscription and Unsubscription Notices that usually go to the List Owner, to your entire list. This could be useful for a discussion list. 
+
+I<This feature was commissioned by David Smith for the Adytum Builders discussion list L<http://adytumbuilders.net/>>
+
+=head2 Bugfixes 5.2.0
+
+=head3 First Archive message shows incorrect link
+
+L<https://github.com/justingit/dada-mail/issues/303>
+
+=head3 Lack of "message_body" tag in Mailing List Message Template leads to completely blank mailing list message
+
+L<https://github.com/justingit/dada-mail/issues/304>
+
+=head3 Sending Preferences: Amazon SES has strange, blank blue box with nothing in it. 
+
+L<https://github.com/justingit/dada-mail/issues/305>
+
+=head3 Dada Bridge does not run the mailing monitor, when done checking messages
+
+L<https://github.com/justingit/dada-mail/issues/306>
+
+=head3 Impossible to delete invalid-in-form email address in "Membership >> View" screen
+
+L<https://github.com/justingit/dada-mail/issues/307>
+
+=head2 Changes 5.2.0
+
+=head3 WYSIWYG Editors
+
+=head4 Dada Bridge: Mailing List Message Template Tags for Discussion Lists Will be, "de-Personalized"
+
+By default, the Mailing List Messages that ship with Dada Mail have template tags and links that point to various resources for subscribers of a mailing list. This includes changing the status of a subscription and logging into a subscriber's Profile. These links are personalized for the subscriber, so to avoid any additional entering of information/clicks. 
+
+These links cause havoc, though, on a discussion list, where messages are replied to and the original message is often quoted, and copied with the reply, as well as forwarded to people, off the list. The once-personal links now can be clicked by a third party, initializing such things as unsubscriptions. You may edit your Mailing List Message Templates to removed this personalization, but it is another step to set up a successful mailing list. 
+
+Starting with v5.2.0 of Dada Mail, these links will be, "de-Personalized" automatically for discussion lists. For example, a link that goes goes to a specific addresses' profile (or a form to log into a profile), that has their email address already embedded within the link, to pass automatically to Dada Mail: 
+
+L<ttp://example.com/cgi-bin/dada/mail.cgi/profile_login/user/example.com>
+
+will have the embedded email address removed: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi/profile_login/>
+
+Similarily, Subscription and Unsubscription links: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi/u/listname/user/example.com>
+
+will be changed to, 
+
+L<http://example.com/cgi-bin/dada/mail.cgi/u/listname/>
+
+To avoid problems. 
+
+=head4 FCKeditor listed as "Deprecated"
+
+FCKeditor has now been deprecated in Dada Mail for many reasons: Internet Explorer 9 does not work well with FCKeditor, the included File Browser in FCKeditor is very buggy and has unfixed security issues and CKeditor is its natural replacement. We do not suggest using FCKeditor, but it is bundled with Dada Mail currently for backwards compatibility. We do bundle CKEditor and Tiny MCE, either of which will work better the FCKeditor. 
+
+=head4 $FCKEDITOR_URL and $CKEDITOR_URL Config variables - removed
+
+Both the C<$FCKEDITOR_URL> and C<$CKEDITOR_URL> variables will not function as 
+before - use the new C<$WYSIWYG_OPTIONS> variable to configure these editors. Having these variables in your C<.dada_config> file will not cause Dada Mail to error, yet. 
+
+=head4 "By default, reveal: PlainText Version|HTML Version" option removed
+
+The Send a Message/Webpage screens now have a tabbed interface for HTML/PlainText messages, so this option has been removed. In Beatitude, both versions will be shown, by default. 
 
 =head2 Summary 5.1.1
 
@@ -30,7 +150,7 @@ L<https://github.com/justingit/dada-mail/issues/295>
 
 This release of Dada Mail contains a wealth of new features, plugins and bug fixes. v5.1.0 is a B<very major release of Dada Mail>.
 
-If upgrading from any previous version of Dada Mail, we highly suggest B<Creating a new .dada_config file>, when using the included Dada Mail installer, as many items in the starter C<.dada_config> file has now changed. 
+If upgrading from any previous version of Dada Mail, we highly suggest B<Creating a new .dada_config file>, when using the included Dada Mail installer, as many items in the starter C<.dada_config> file have now changed. 
 
 =head2 Features 5.1.0
 

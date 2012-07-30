@@ -109,7 +109,7 @@ sub cgi_default_tmpl {
 return q{ 
 	
 	
-	<!-- tmpl_set name="title" value="Default Mass Mailing Messages" -->
+	<!-- tmpl_set name="title" value="Plugins &#187; Default Mass Mailing Messages" -->
 	<!-- tmpl_set name="load_modalbox" value="1" -->
 	
 	<div id="screentitle"> 
@@ -488,7 +488,7 @@ Uncomment the lines, by taking off the, "#"'s:
 
 Save your C<.dada_config> file.
 
-=head1 Default Text and FCKeditor/CKeditor
+=head1 Default Text and CKeditor/Tiny MCE/FCKeditor
 
 Setting default text/copy for the HTML message will work when using one of the WYSIWYG editors that Dada Mail 
 supports. Some guidelines: 
@@ -501,7 +501,7 @@ Be careful with using Dada Mail-style template tags, like this,
 
 	<!-- tmpl_var im_a_tag -->
 
-I<especially within links>. These tags will mostly be broken. Try instead to use old-style Dada Mail tags for
+I<Especially within links>. These tags will mostly be broken. Try instead to use old-style Dada Mail tags for
 the time being: 
 
 	[im_a_tag]
@@ -519,7 +519,7 @@ Full HTML documents, like so:
 	 </body> 
 	</html> 
 
-May have everything, except the content in the body removed by FCKeditor/CKeditor. That may mean that any styles 
+May have everything, except the content in the body removed by CKeditor/Tiny MCE/FCKeditor. That may mean that any styles 
 that are saved in the head of the document will be lost. 
 
 =back

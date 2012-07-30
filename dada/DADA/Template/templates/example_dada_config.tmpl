@@ -69,6 +69,38 @@ $LIST_IN_ORDER = 1;
 # end cut for SQL Backend
 
 
+# start cut for WYSIWYG Editor Options
+=cut
+
+$WYSIWYG_EDITOR_OPTIONS = { 
+	fckeditor => { 
+		enabled => 0, 
+		url     => '', 
+	}, 
+	ckeditor    => { 
+		enabled => 0, 
+		url     => '', 
+	}, 
+	tiny_mce => { 
+		enabled => 0, 
+		url     => '', 
+	},
+};
+
+$FILE_BROWSER_OPTIONS = { 
+	kcfinder  => { 
+		enabled      => 0, 
+		url          => '', 
+		upload_dir   => '', 
+		upload_url   => '',
+		session_name => 'PHPSESSID', 
+		session_dir  => '/tmp',
+	},
+};
+
+=cut
+# end cut for WYSIWYG Editor Options
+
 =cut
 # start cut for Dada Mail Profile Options
 

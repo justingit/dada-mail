@@ -77,13 +77,18 @@ sub _init {
 	if ( length( strip( $args->{ -email } ) ) <= 0 ) {
 	    croak("You MUST supply an email address in the -email paramater!");
 	}
+	if( !exists($args->{-validation_check})){ 
+		$args->{-validation_check} = 1; 
+	}
 	if(
 		$args->{-type} ne 'black_list' &&
-		$args->{-type} ne 'white_list' 
+		$args->{-type} ne 'white_list'
 	){ 
-	    if(DADA::App::Guts::check_for_valid_email($args->{-email}) == 1){ 
-	        croak "email, '" . $args->{-email} ."' passed in, -email is not valid"; 
-	    }
+		if($args->{-validation_check} == 1) { 		
+		    if(DADA::App::Guts::check_for_valid_email($args->{-email}) == 1){ 
+		        croak "email, '" . $args->{-email} ."' passed in, -email is not valid"; 
+		    }
+		}
 	}
 	$self->{email} = $args->{-email};
 	

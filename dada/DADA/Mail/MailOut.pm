@@ -533,7 +533,7 @@ sub create_directory {
     my $self = shift;
 
     if ( -d $self->mailout_directory_name() ) {
-        croak "Mailout directory, '"
+        croak "Mass Mailing directory, '"
             . $self->mailout_directory_name
             . "' already exists?!";
     }
@@ -547,7 +547,7 @@ sub create_directory {
     }
 
     if ( !-d $self->mailout_directory_name ) {
-        croak "Mailout Directory never created at: '"
+        croak "Mass Mailing Directory never created at: '"
             . $self->mailout_directory_name . "'";
     }
 
@@ -890,7 +890,7 @@ sub pause {
     
 
     if($self->paused){ 
-        carp "Mailout is already paused."; 
+        carp "Mass Mailing is already paused."; 
     
         return undef; 
     }
@@ -1705,7 +1705,7 @@ sub still_around {
 	if(! -e $self->dir) { 
 	# The above is probably much more economical than the below: 
 	#if(DADA::Mail::MailOut::mailout_exists($self->list,  $self->_internal_message_id, $self->mailout_type) == 0){ 
-		carp  '[' . $self->list . ']   Mailout:"' . $self->_internal_message_id .
+		carp  '[' . $self->list . ']   Mass Mailing:"' . $self->_internal_message_id .
 		' attempting to send a mass mailing that doesn\'t exist anymore? Failed "still_around" test '; 
 		  return undef;  
 	}
@@ -2201,7 +2201,7 @@ sub current_mailouts {
 	        }
 	        else { 
 		
-				# DEV: 2203220  	 3.0.0 - Stale Mailout can still clog up mail queue
+				# DEV: 2203220  	 3.0.0 - Stale Mass Mailing can still clog up mail queue
 				# https://sourceforge.net/tracker2/?func=detail&aid=2203220&group_id=13002&atid=113002
 				# The trick is just to move stale mailouts to the bottom of the queue
 				# The other option is to pause stale mailouts, which isn't the worst thing, 
@@ -2487,13 +2487,13 @@ sub monitor_mailout {
             for(keys %$mailing){ 
                 $weird_report .= $_ . ' => ' . $mailing->{$_} . ",\t"; 
             }
-            carp "Mailout malformed? $weird_report"; 
+            carp "Mass Mailing malformed? $weird_report"; 
         
         }
     }
     
 
-    $r .= "Total Mailouts: $total_mailouts, Active Mailouts: $active_mailouts, Paused Mailouts: $paused_mailouts, Queued Mailouts: $queued_mailouts, Inactive Mailouts: $inactive_mailouts\n\n";
+    $r .= "Total Mass Mailings: $total_mailouts, Active Mass Mailings: $active_mailouts, Paused Mass Mailings: $paused_mailouts, Queued Mass Mailings: $queued_mailouts, Inactive Mass Mailings: $inactive_mailouts\n\n";
    
 	my $active_mailouts_num = $active_mailouts; 
 
@@ -2680,7 +2680,7 @@ sub monitor_mailout {
                 if($status->{queued_mailout}){ 
                     $r .=  "\t\t\tMass Mailing is queued for future sending.\n";
                        
-                    $r .=  "\t\t\tMass Mailing is #" .  ($status->{queue_place} + 1) . " of: " . ($status->{queue_total}+1) . " Mailouts.\n";
+                    $r .=  "\t\t\tMass Mailing is #" .  ($status->{queue_place} + 1) . " of: " . ($status->{queue_total}+1) . " Mass Mailingss.\n";
                         
                 }
                         
@@ -2782,7 +2782,7 @@ sub DESTROY {
 
 =head1 NAME
 
-DADA::Mail::MailOut - Helps Monitor a Mass Mailout
+DADA::Mail::MailOut - Helps Monitor a Mass Mailings
 
 
 =head1 VERSION
@@ -2803,7 +2803,7 @@ Refer to the version of Dada Mail that this module comes in.
     # Create a new DADA::Mail::MailOut object: 
     my $mailout = DADA::Mail::MailOut->new({-list => $list}); 
     
-    # Make a new Mailout: 
+    # Make a new Mass Mailing: 
     $mailout->create(
                     -fields   => {%fields},
                     -list_type => 'list',

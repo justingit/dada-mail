@@ -10,13 +10,48 @@ Key:
 [*] Naw...
 [?] Someday
 
+[x] FCKEDITOR: 
+	[x] Remove all connectors except, "php" 
 
-[ ] if the, <!-- tmpl_var message_body --> is not in the mailing list message template, the message just isn't sent - this 
+
+[x] CKEDitor needs a custom toolbar config to start off with - no form fields/flash, stuff like that. 
+	[x] Needs specific config for fcfinder - ala: 
+	
+		CKEDITOR.editorConfig = function(config) {
+		   config.filebrowserBrowseUrl      = '/kcfinder/browse.php?type=files';
+		   config.filebrowserImageBrowseUrl = '/kcfinder/browse.php?type=images';
+		   config.filebrowserFlashBrowseUrl = '/kcfinder/browse.php?type=flash';
+		   config.filebrowserUploadUrl      = '/kcfinder/upload.php?type=files';
+		   config.filebrowserImageUploadUrl = '/kcfinder/upload.php?type=images';
+		   config.filebrowserFlashUploadUrl = '/kcfinder/upload.php?type=flash';
+		};
+		
+	[x] KCFinder need this uncommented, (if not using session info from, /tmp?
+		//'_sessionDir' => "/full/directory/path",
+	[x] TinyMCE - 	
+		//'_tinyMCEPath' => "/tiny_mce",
+	    
+	
+
+[ ] way to see every mailinglist, an address is subscribed on? Maybe a way for a root login to go into a user's Profile? 
+
+[ ] Sending a test message should pull up profile info, if the email address that you send a test message to, is the list owner. 
+
+[ ] Oh, also, I notice that even if I, as the Pro Dada Root user, hide the Mass Mailing section so that list admin log-ins won't be able to see it, the program still defaults to showing them the Mass Mailing >> Send a Message screen when they first log in. That seems less than secure...
+
+[ ] Invite mailings should probably use tmp lists in then db, since if anything goes wrong before that list is removed, your next invite gets all screwed up. And what about multiple invite mass mailings going at one time?!
+
+[ ] Manual in ePub format
+
+[ ] Docs on moving from "Basic Mailing List" to Dada Mail
+[ ] Docs on moving/migrating from MailMan to Dada Mail
+
+[x] if the, <!-- tmpl_var message_body --> is not in the mailing list message template, the message just isn't sent - this 
 should be checked and warned against, as well as auto-inserted, if there is a problem. 
 
-[ ] Remove the save button in FCKeditor
+[x] Remove the save button in FCKeditor
 
-[ ] Bundle FCkeditor/Ckeditor? 
+[x] Bundle FCkeditor/Ckeditor? 
 
 [ ] Markdown support - 
 Write "PlainText" messages in TextTile, and have them formatted when shown in messages, etc - option to turn into HTML when sending? 

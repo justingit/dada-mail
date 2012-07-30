@@ -149,7 +149,7 @@ sub default_screen {
 
 return <<EOF
 
-<!-- tmpl_set name="title" value="Change Your <!-- tmpl_var PROGRAM_NAME --> Root Password" -->
+<!-- tmpl_set name="title" value="Plugins &#187; Change Your <!-- tmpl_var PROGRAM_NAME --> Root Password" -->
 <div id="screentitle"> 
 	<div id="screentitlepadding">
 		<!-- tmpl_var title --> 

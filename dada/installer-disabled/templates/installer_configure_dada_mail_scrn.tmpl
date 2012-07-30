@@ -84,7 +84,7 @@
 			</form>
 
 			<!-- tmpl_if expr="(install_type eq 'install')" -->
-				<strong>Choose a different location</strong> for your .dada_files directory below, 
+				<strong>Choose a different location</strong> for your <!-- tmpl_var Dada_Files_Dir_Name --> directory below, 
 				or <strong><a href="<!-- tmpl_var Self_URL -->">start over and Upgrade</a></strong>.
 				
 			<!-- /tmpl_if --> 
@@ -200,7 +200,7 @@
 			Manual Configuration of the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory
 		</legend> 
 		<p> 
-		 <input type="text" name="dada_files_loc" value="<!-- tmpl_var home_dir_guess -->" style="width:70%" />/<em><strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em>
+		 <input type="text" name="dada_files_loc" value="<!-- tmpl_var home_dir_guess -->" class="midi" style="text-align:right" /><span class="fake_input">/<!-- tmpl_var Dada_Files_Dir_Name --></span>
 		</p> 
 
 		</fieldset>
@@ -248,7 +248,7 @@
 
 
 <p>
-<input type="text" id="program_url" name="program_url" class="full" value="<!-- tmpl_var program_url_guess -->" />
+<input type="text" id="program_url" name="program_url" class="midi" value="<!-- tmpl_var program_url_guess -->" />
 </p> 
 
 </fieldset> 
@@ -478,10 +478,76 @@ for it to work correctly. For help on setting the cronjob, see the
 
 <p><input type="checkbox" name="install_default_mass_mailing_messages" id="install_default_mass_mailing_messages" value="1"  /><label for="install_default_mass_mailing_messages">Default Mass Mailing Messages</label></p> 
 
-<p><input type="checkbox" name="install_password_protect_directories" id="install_password_protect_directories" value="1"  /><label for="install_password_protect_directories">Password Protect Directories</label><span class="alert">Optionally Requires Additional Configuration (cronjob)</span>	</p> 
-
 <p><input type="checkbox" name="install_change_list_shortname" id="install_change_list_shortname" value="1"  /><label for="install_change_list_shortname">Change Your List Short Name</label></p> 
 
+
+<p><input type="checkbox" name="install_password_protect_directories" id="install_password_protect_directories" value="1"  /><label for="install_password_protect_directories">Password Protect Directories</label> <span class="alert">Optionally Requires Additional Configuration (cronjob)</span>	</p> 
+</fieldset> 
+
+<fieldset> 
+	
+<legend>WYSIWYG Editors (Optional) [<a href="#" onclick="toggleDisplay('wysiwyg_editor_help');return false;">?</a>]</legend>
+<div id="wysiwyg_editor_help" style="display:none" class="clearskiesbox"> 
+<p>Dada Mail supports the use of third party WYSIWYG HTML editors to allow you to 
+compose and edit HTML mailing list messages. This allows you to send rich text messages, 
+right in Dada Mail's list control panel, without needing to know any HTML. The 
+HTML produced by these WYSIWYG editors is actually pretty good for the use of HTML 
+emails, as most of the text formatting is done with inline css styles and these 
+editors also have the ability to make simple HTML tables for basic layouts. 
+</p>
+<p>
+	The Installer will use the Absolute Path and Corresponding URL you set below to 
+	install/configure the WYSIWYG editor(s) and file browser. 
+	Unlike the <strong><!-- tmpl_var Dada_Files_Dir_Name --></strong> 
+	directory location, you will want this directory to be publicly accessible.
+</p> 
+
+
+
+</div> 
+
+<p>
+	<p>
+		<input type="checkbox" name="install_wysiwyg_editors" id="install_wysiwyg_editors" value="1" checked="checked" onClick="ToggleWYSIWYGOptions();"/>			
+	<label for="install_wysiwyg_editors">Install and Configure WYSIWYG Editors</label>
+	</p>
+	
+</p>
+
+<div id="install_wysiwyg_editors_options">
+
+
+	<p>
+		<label for="support_files_dir_path">Server Absolute Path to the <!-- tmpl_var PROGRAM_NAME --> Support Files Directory:</label><br />
+		<input type="text" name="support_files_dir_path"  id="support_files_dir_path" class="midi" style="text-align:right" value="<!-- tmpl_var support_files_dir_path -->" /><span class="fake_input">/<!-- tmpl_var Support_Files_Dir_Name --></span>
+		<br />
+		<label for="support_files_dir_url">Corresponding URL to the Support Files Directory</label>
+		<br />
+		<input type="text" name="support_files_dir_url" id="support_files_dir_url" class="midi" style="text-align:right" value="<!-- tmpl_var support_files_dir_url -->" /><span class="fake_input">/<!-- tmpl_var Support_Files_Dir_Name --></span>
+	</p>
+
+
+	<p>
+		<input type="checkbox" name="wysiwyg_editor_install_ckeditor" id="wysiwyg_editor_install_ckeditor" value="1" checked="checked" />			
+	<label for="wysiwyg_editor_install_ckeditor">Install CKeditor</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="wysiwyg_editor_install_tiny_mce" id="wysiwyg_editor_install_tiny_mce" value="1" checked="checked" />			
+	<label for="wysiwyg_editor_install_tiny_mce">Install Tiny MCE</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="wysiwyg_editor_install_fckeditor" id="wysiwyg_editor_install_fckeditor" value="1"/>			
+	<label for="wysiwyg_editor_install_fckeditor">Install FCKeditor (Not Recommended)</label>
+	</p>
+		
+	<h2>File Browsers/Uploaders</h2>
+
+	<input type="checkbox" name="file_browser_install_kcfinder" id="file_browser_install_kcfinder" value="1" checked="checked"/>			
+	<label for="file_browser_install_kcfinder">Install KCFinder</label>
+
+</div> 
 
 </fieldset> 
 
@@ -490,7 +556,7 @@ for it to work correctly. For help on setting the cronjob, see the
 <input type="hidden" name="f" value="check" /> 
 
 <p style="text-align:center">
- <input type="submit" value="        Configure  <!-- tmpl_var PROGRAM_NAME -->!        " class="processing" /> 
+ <input type="submit" value="       &#187; Configure  <!-- tmpl_var PROGRAM_NAME -->! &#171;       " class="processing bigger_button" /> 
 </p>
 
 

@@ -15,112 +15,82 @@
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
-<fieldset> 
-<legend>Message Body Authoring</legend> 
 
+
+<fieldset> 
+
+<legend>WYSIWYG Editor Options</legend> 
+
+
+<!-- tmpl_if expr="((using_no_wysiwyg_editor == 1) && (list_settings.use_wysiwyg_editor ne 'none'))" --> 
+<div class="badweatherbox">
 <p>
-	These preferences will be honored in the, <strong>Send a Message</strong> screen and in the <strong>Beatitude Plugin</strong>
-</p>
+ <strong>Warning!</strong>
+<p>You're currently selected WYSIWYG editor is currently not being used, because of a misconfiguration.</p>
+</div>
+
+<!-- /tmpl_if --> 
 
 <table cellpadding="5" border="0"> 
+
+<!-- tmpl_if ckeditor_enabled --> 
+	<!-- tmpl_if ckeditor_url --> 
 	<tr> 
-		<td>
-			<p><strong>By default, reveal:</strong></p> 
-			
-<table cellpadding="5" border="0"> 
-	<tr> 
-		<td>
-			<p>
-				<input type="checkbox" name="show_message_body_plaintext_ver" id="show_message_body_plaintext_ver" <!-- tmpl_if list_settings.show_message_body_plaintext_ver -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
-			</p>
-		</td>
-		<td>
-			<p>
-				<label for="show_message_body_plaintext_ver">
-					PlainText Version
-				</label>
-			</p>
-		</td>
+	 <td>
+		<input type="radio" name="use_wysiwyg_editor" id="use_wysiwyg_editor_ckeditor" value="ckeditor" <!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'ckeditor')" -->checked="checked"<!--/tmpl_if -->  />
+	</td>
+	<td>
+		<label for="use_wysiwyg_editor_ckeditor">Use CKeditor</label>
+	</td>
 	</tr>
-	<tr> 
-		<td>
-			<p>
-				<input type="checkbox" name="show_message_body_html_ver" id="show_message_body_html_ver" <!-- tmpl_if list_settings.show_message_body_html_ver -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
-			</p>
-		</td>
-		<td>
-			<p>
-				<label for="show_message_body_html_ver">
-					HTML Version
-				</label>
-			</p>
-		</td>
-	</tr>
-</table>
-</td>
-</tr>
-</table> 
-
-
-</fieldset> 
-
-
-<fieldset> 
-
-<legend>FCKeditor/CKeditor Options</legend> 
-
-
-<div class="clearskiesbox">
-<ul>
 	
-<!-- tmpl_if FCKEDITOR_URL --> 
-<li>
- <p>FCKeditor is currently configured in <!-- tmpl_var PROGRAM_NAME --> at: 
-	
-		<a href="<!-- tmpl_var FCKEDITOR_URL ESCAPE="HTML" -->" target="_blank">
-		<!-- tmpl_var FCKEDITOR_URL ESCAPE="HTML" -->
-	</a>
-</p></li>
-<!-- tmpl_else -->  
-   <li>
-	<p>
-			FCKeditor does <em>not</em> seem to be configured in <!-- tmpl_var PROGRAM_NAME -->
-	</p></li>
-<!-- /tmpl_if -->
+	<!-- /tmpl_if -->
+<!-- /tmpl_if --> 
+<!-- tmpl_if tiny_mce_enabled --> 
+	<!-- tmpl_if tiny_mce_url --> 
+		<tr> 
+		 <td>
+		
+		<input type="radio" name="use_wysiwyg_editor" id="use_wysiwyg_editor_tiny_mce" value="tiny_mce" <!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'tiny_mce')" -->checked="checked"<!--/tmpl_if -->  />
 
+	</td>
+	<td>
 
+			<label for="use_wysiwyg_editor_tiny_mce">Use Tiny MCE</label>
+	</td> 
+	 </tr>
+		
+	<!-- /tmpl_if -->
+<!-- /tmpl_if --> 
 
-<!-- tmpl_if CKEDITOR_URL --> 
-<li> <p>CKeditor is currently configured in <!-- tmpl_var PROGRAM_NAME --> at: 
-	<a href="<!-- tmpl_var CKEDITOR_URL ESCAPE="HTML" -->" target="_blank">
-		<!-- tmpl_var CKEDITOR_URL ESCAPE="HTML" -->
-	</a>
-</p></li>
-<!-- tmpl_else --> 
-	<li>
-	<p>
-		CKeditor does <em>not</em> seem to be configured in <!-- tmpl_var PROGRAM_NAME -->
-	</p></li>
-<!-- /tmpl_if -->
-</ul> 
-</div> 
-
-<table cellpadding="5" border="0"> 
+<!-- tmpl_if fckeditor_enabled --> 
+	<!-- tmpl_if fckeditor_url --> 
 	<tr> 
-		<td>
-			<p>
-				<input type="checkbox" name="enable_fckeditor" id="enable_fckeditor" <!-- tmpl_if list_settings.enable_fckeditor -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
-			</p>
-		</td>
-		<td>
-			<p>
-				<label for="enable_fckeditor">
-					Enable FCKeditor/CKeditor
-				</label>
-			</p>
-		</td>
+	 <td>
+		<input type="radio" name="use_wysiwyg_editor" id="use_wysiwyg_editor_fckeditor" value="fckeditor" <!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'fckeditor')" -->checked="checked"<!--/tmpl_if -->  />
+	</td>
+	<td>
+		<label for="use_wysiwyg_editor_fckeditor">Use FCKeditor</label> (Not Recommended)
+	</td>
 	</tr>
-</table>
+	<!-- /tmpl_if -->
+<!-- /tmpl_if --> 
+
+
+	
+		<tr> 
+		 <td>
+		
+		<input type="radio" name="use_wysiwyg_editor" id="use_wysiwyg_editor_none" value="none" <!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'none')" -->checked="checked"<!--/tmpl_if -->  />
+	</td>
+	<td>
+
+
+			<label for="use_wysiwyg_editor_none">Don't use a WYSIWYG Editor</label>
+	</td> 
+	 </tr>
+	
+	</table>
 				
 </fieldset> 
 

@@ -6,7 +6,7 @@ use strict;
 
 
 # You may have to update this, depending on the version of Dada Mail!
-my $gz = 'dada-5_1_1.tar.gz';
+my $gz = 'dada-5_2_0.tar.gz';
 
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
@@ -29,7 +29,7 @@ if ( -e 'dada' ) {
 }
 
 print p("Uncompressing $gz...");
-print pre(`gunzip $gz`);
+`gunzip $gz`;
 
 my $tar = $gz;
    $tar =~ s/\.gz$//;
@@ -56,20 +56,18 @@ else {
 }
 
 print p("Changing permissions of dada/mail.cgi to, 755");
-print pre(`chmod 755 dada/mail.cgi`);
-
-print pre(`chmod 777 dada/DADA/Config.pm`);
+`chmod 755 dada/mail.cgi`;
+`chmod 777 dada/DADA/Config.pm`;
 
 my $installer_loc     = 'dada/installer-disabled';
 my $new_installer_loc = 'dada/installer';
 
 print p("Enabling installer at $installer_loc by moving it to, $new_installer_loc\n");
 
-print pre(`mv $installer_loc $new_installer_loc`);
+`mv $installer_loc $new_installer_loc`;
+`chmod 755 $new_installer_loc/install.cgi`;
 
-print pre(`chmod 755 $new_installer_loc/install.cgi`);
-
-print p("done!");
+print p("Done!");
 
 print
 "<h1 style=\"text-align:center\"><a href=\"./$new_installer_loc/install.cgi\">Install and Configure Dada Mail!</a></h1>";

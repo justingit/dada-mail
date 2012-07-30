@@ -1,0 +1,51 @@
+<!-- begin message_format_type_toggler_widget.tmpl --> 
+
+<div id="format_type_container">
+<ul>
+ <!-- tmpl_if expr="(screen eq 'send_email')" -->
+	 <li id="toggleHTML_li" <!-- tmpl_unless expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" -->class="active"<!-- /tmpl_unless --> >
+	  <a href="#" id="toggleHTML">HTML Version</a>
+	 </li>
+	 <li id="togglePlainText_li" <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" -->class="active"<!-- /tmpl_if --> >
+	  <a href="#" id="togglePlainText"> PlainText Version  </a>
+	 </li>
+<!-- tmpl_else -->
+	<li id="toggleHTML_li" class="active">
+	 <a href="#" id="toggleHTML">HTML Version</a>
+	</li>
+	<li id="togglePlainText_li">
+	 <a href="#" id="togglePlainText"> PlainText Version  </a>
+	</li>
+<!-- /tmpl_if --> 
+ 
+</ul>
+</div>
+<div style="clear:both"></div>
+<script type="text/javascript">
+
+	$('togglePlainText').observe('click', function(event) {
+		event.stop();	
+		$('togglePlainText_li').addClassName('active');
+		$('toggleHTML_li').removeClassName('active');
+	  	new Effect.Parallel([
+			Effect.Fade('html_message'),
+			Effect.Appear('text_message')
+	  	], { 
+	    	duration: 0
+  		});
+	});
+	$('toggleHTML').observe('click', function(event) {
+		event.stop();
+		$('toggleHTML_li').addClassName('active');
+		$('togglePlainText_li').removeClassName('active');
+		new Effect.Parallel([
+			Effect.Fade('text_message'),
+			Effect.Appear('html_message')
+		], { 
+			duration: 0
+		});
+	});
+</script>
+
+<!-- end message_format_type_toggler_widget.tmpl --> 
+

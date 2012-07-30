@@ -492,10 +492,17 @@ sub fancy_print_out_list {
         $args->{ -partial_listing } = {};
     }
 
+	my $show_list_column = 0; 
+	if(exists($args->{-show_list_column})){ 
+		$show_list_column = $args->{-show_list_column}; 
+		
+	}
+
     my $subscribers = $self->subscription_list($args);
     for (@$subscribers) {
-        $_->{no_email_links} = 1;
-        $_->{no_checkboxes}  = 1;
+        $_->{no_email_links}   = 1;
+        $_->{no_checkboxes}    = 1;
+		$_->{show_list_column} = $show_list_column, 
     }
 
     my $field_names = [];
@@ -508,11 +515,12 @@ sub fancy_print_out_list {
         {
             -screen => 'fancy_print_out_list_widget.tmpl',
             -vars   => {
-                field_names    => $field_names,
-                subscribers    => $subscribers,
-                no_checkboxes  => 1,
-                no_email_links => 1,
-                count          => scalar @{$subscribers},
+                field_names      => $field_names,
+                subscribers      => $subscribers,
+                no_checkboxes    => 1,
+                no_email_links   => 1,
+                show_list_column => $show_list_column, 
+                count            => scalar @{$subscribers},
             }, 
 			-expr => 1, 
         }

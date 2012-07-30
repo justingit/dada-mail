@@ -307,25 +307,26 @@ ok(
 	"\"$li->{list_name}\" \<$lo_name\@$lo_domain\>", 
 	"From: Set Correctly"
 );
+diag q{decode_header($entity->head->get('To', 0))} . decode_header($entity->head->get('To', 0)); 
 ok(
 	decode_header($entity->head->get('To', 0))
 	eq
-	"\"$li->{list_name} List Owner\" \<$lo_name\@$lo_domain\>", 
+	"\"$li->{list_name}\" \<$lo_name\@$lo_domain\>", 
 	"To: Set Correctly 3"
 );
 my   $sub = $entity->head->get('Subject', 0); 
 chomp $sub; 
 
 diag "'" . decode_header($sub) ."'"; 
-diag "'" . "subscribed $email_name\@$email_domain" . "'"; 
+diag "'" . "Subscribed $email_name\@$email_domain" . "'"; 
 ok(
 	decode_header($sub)
 	eq
-	"subscribed $email_name\@$email_domain", 
+	"Subscribed $email_name\@$email_domain", 
 	"Subject: Set Correctly2"
 );
 
-like($msg_str, qr/There is now a total of: 1 subscribers./, "Misc. Body stuff found (2)"); 
+like($msg_str, qr/There are now a total of: 1 subscribers./, "Misc. Body stuff found (2)"); 
 
 ok(unlink($mh->test_send_file)); 
 undef $msg; 
@@ -728,7 +729,7 @@ ok(
 ok(
 	decode_header($entity->head->get('To', 0))
 	eq
-	"\"$li->{list_name} List Owner\" \<$lo_name\@$lo_domain\>", 
+	"\"$li->{list_name}\" \<$lo_name\@$lo_domain\>", 
 	"To: Set Correctly 7"
 );
 
@@ -737,15 +738,15 @@ $sub = $entity->head->get('Subject', 0);
 chomp $sub;
  
 diag '"' . decode_header($sub) . '"'; 
-diag '"' . "unsubscribed $email_name\@$email_domain" . '"';
+diag '"' . "Unsubscribed $email_name\@$email_domain" . '"';
 ok(
 	decode_header($sub)
 	eq
-	"unsubscribed $email_name\@$email_domain", 
+	"Unsubscribed $email_name\@$email_domain", 
 	"Subject: Set Correctly"
 );
 
-like($msg_str, qr/There is now a total of: 0 subscribers./, "Misc. Body stuff found (2)"); 
+like($msg_str, qr/There are now a total of: 0 subscribers./, "Misc. Body stuff found (2)"); 
 
 ok(unlink($mh->test_send_file));
 undef $msg; 
@@ -1272,24 +1273,7 @@ dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
 
 
-sub slurp { 
-	
-		
-		my ($file) = @_;
 
-        local($/) = wantarray ? $/ : undef;
-        local(*F);
-        my $r;
-        my (@r);
-
-        open(F, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $file) || die "open $file: $!";
-        @r = <F>;
-        close(F) || die "close $file: $!";
-
-        return $r[0] unless wantarray;
-        return @r;
-
-}
 sub decode_header { 
 #	my $self   = shift; 
 	my $header = shift; 

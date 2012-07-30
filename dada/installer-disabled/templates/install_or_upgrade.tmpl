@@ -5,8 +5,8 @@
 
 <!-- tmpl_if found_existing_dada_files_dir --> 
 	<div class="clearskiesbox">
-		<p>Found an existing .dada_files directory at:</p>
-		<p><em><!-- tmpl_var dada_files_parent_dir -->/.dada_files</em></p> 
+		<p>Found an existing <!-- tmpl_var Dada_Files_Dir_Name --> directory at:</p>
+		<p style="text-align:center"><strong><!-- tmpl_var dada_files_parent_dir -->/.dada_files</strong></p> 
 		<p>Want to upgrade?</p>
 	</div> 
 <!-- /tmpl_if -->
@@ -30,13 +30,13 @@
 		</div>
 		<!-- /tmpl_if --> 
 		<p><label for="current_dada_files_parent_location">Current .dada_files Location:</label><br/>
-			<input type="text" name="current_dada_files_parent_location" value="<!-- tmpl_if found_existing_dada_files_dir --><!-- tmpl_var dada_files_parent_dir --><!-- /tmpl_if -->" /><strong>/.dada_files</strong>
+			<input type="text" name="current_dada_files_parent_location" value="<!-- tmpl_if found_existing_dada_files_dir --><!-- tmpl_var dada_files_parent_dir --><!-- /tmpl_if -->" style="text-align:right" class="midi" /><span class="fake_input">/<!-- tmpl_var Dada_Files_Dir_Name --></span>
 		</p>
 		</div>
 		
 		<div style="text-align:center">
 
-	<input type="submit" name="submitbutton" value="Continue..." class="processing" />
+	<input type="submit" name="submitbutton" value="&#187; Continue &#171;" class="processing bigger_button" />
 </div>
 	</form>
 </fieldset> 

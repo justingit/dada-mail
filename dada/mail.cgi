@@ -404,6 +404,9 @@ if($ENV{PATH_INFO}){
 		if($pi_pin eq '='){ 
 			undef $pi_pin;
 		}
+		if($pi_list =~ m/\=$/){ 
+			$pi_list =~ s/\=$//; 
+		}
 		
         $q->param('flavor', $pi_flavor)
             if $pi_flavor;
@@ -1043,6 +1046,7 @@ sub previewMessageReceivers {
 					-partial_listing   => $partial_sending,
 					-type              => 'list',
 					-include_from      => [@alternative_list],
+					-show_list_column  => 1, 
 				}
 			);
 		}
@@ -1912,6 +1916,22 @@ sub list_options {
 
     if ( !$process ) {
 	
+	   my $send_subscription_notice_to_popup_menu = $q->popup_menu(
+			-name     => 'send_subscription_notice_to',
+			-id       => 'send_subscription_notice_to',
+			-default  => $ls->param('send_subscription_notice_to'),
+			-labels   => {list => 'Your Subscribers', 'list_owner' => 'The List Owner'},
+			'-values' => [qw(list list_owner)],
+		);
+	   my $send_unsubscription_notice_to_popup_menu = $q->popup_menu(
+			-name     => 'send_unsubscription_notice_to',
+			-id       => 'send_unsubscription_notice_to',
+			-default  => $ls->param('send_unsubscription_notice_to'),
+			-labels   => {list => 'Your Subscribers', 'list_owner' => 'The List Owner'},
+			'-values' => [qw(list list_owner)],
+		);
+
+	
  	   require    DADA::Template::Widgets;
 	   my $scrn = DADA::Template::Widgets::wrap_screen(
 	        {
@@ -1926,10 +1946,12 @@ sub list_options {
 	            -vars   => {
 	                screen => 'list_options',
 	                title  => 'Mailing List Options',
-	                done              => $done,
-	                CAPTCHA_TYPE      => $DADA::Config::CAPTCHA_TYPE,
-	                can_use_mx_lookup => $can_use_mx_lookup,
-	                can_use_captcha   => $can_use_captcha,
+	                done                                     => $done,
+	                CAPTCHA_TYPE                             => $DADA::Config::CAPTCHA_TYPE,
+	                can_use_mx_lookup                        => $can_use_mx_lookup,
+	                can_use_captcha                          => $can_use_captcha,
+					send_subscription_notice_to_popup_menu   => $send_subscription_notice_to_popup_menu, 
+					send_unsubscription_notice_to_popup_menu => $send_unsubscription_notice_to_popup_menu, 
 	            },
 	            -list_settings_vars_param => {
 	                -list   => $list,
@@ -1994,6 +2016,9 @@ sub list_options {
 					send_last_archived_msg_mass_mailing     => 0, 
                     captcha_sub                             => 0,
 					unsub_link_behavior                     => undef, 
+					
+					send_subscription_notice_to             => undef, 
+					send_unsubscription_notice_to           => undef,  
                 }
             }
         );
@@ -3488,6 +3513,12 @@ sub membership {
     my $bounced_list_removed_from_list =
       $q->param('bounced_list_removed_from_list') || 0;
 
+	my $is_valid_email = 1; 
+	if(check_for_valid_email($email)   == 1){ 
+		$is_valid_email = 0; 
+	}
+	
+	
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
@@ -3525,9 +3556,11 @@ sub membership {
 
         my $fields = [];
 
-        my $subscriber_info =
-          $lh->get_subscriber( { -email => $email, -type => $type } );
-
+        my $subscriber_info = {};
+		if($is_valid_email){ 
+           $subscriber_info = $lh->get_subscriber( { -email => $email, -type => $type } );
+		}
+		
         # DEV: This is repeated quite a bit...
         require DADA::ProfileFieldsManager;
         my $pfm         = DADA::ProfileFieldsManager->new;
@@ -3544,9 +3577,11 @@ sub membership {
         }
 
         my $subscribed_to_lt = {};
-        for ( @{ $lh->member_of( { -email => $email } ) } ) {
-            $subscribed_to_lt->{$_} = 1;
-        }
+		if($is_valid_email) { 
+	        for ( @{ $lh->member_of( { -email => $email } ) } ) {
+	            $subscribed_to_lt->{$_} = 1;
+	        }
+		}
 
         my $add_to = {
             list               => 1,
@@ -3690,6 +3725,8 @@ m/^(list|black_list|white_list|authorized_senders|bounced_list)$/
 
 					can_have_subscriber_fields =>
                       $lh->can_have_subscriber_fields,
+
+					is_valid_email => $is_valid_email,
 
                 },
                 -list_settings_vars_param => {
@@ -5675,39 +5712,17 @@ sub edit_archived_msg {
                     m/attach/i )
                 {    # text: display it...
 
-#$q->checkbox(-name => 'delete_' . $tb->{address}, -value => 1, -label => '' ), 'Delete?', $q->br(),
 
-                    if ( $subtype =~ /html/ && $DADA::Config::FCKEDITOR_URL ) {
-
-                        require DADA::Template::Widgets;
-                        $form_blob .= DADA::Template::Widgets::screen(
-                            {
-                                -screen => 'edit_archived_msg_textarea.widget',
-                                -vars   => {
-                                    name  => $tb->{address},
-                                    value => js_enc(
-                                        safely_decode(
-                                            $tb->{entity}
-                                              ->bodyhandle->as_string()
-                                        )
-                                    ),
-                                }
-                            }
-                        );
-                    }
-                    else {
-
-                        $form_blob .= $q->p(
-                            $q->textarea(
-                                -value => safely_decode(
-                                    $tb->{entity}->bodyhandle->as_string
-                                ),
-                                -rows => 15,
-                                -name => $tb->{address}
-                            )
-                        );
-
-                    }
+					# Needs to be WYSIWYG Editor-ized
+                    $form_blob .= $q->p(
+                        $q->textarea(
+                            -value => safely_decode(
+                                $tb->{entity}->bodyhandle->as_string
+                            ),
+                            -rows => 15,
+                            -name => $tb->{address}
+                        )
+                    );
 
                 }
                 else {
@@ -6306,7 +6321,6 @@ sub edit_template {
                 {
                     -associate => $q,
                     -settings  => {
-                        apply_list_template_to_html_msgs => 0,
                         url_template                     => '',
                         get_template_data                => '',
                     }
@@ -6408,6 +6422,10 @@ sub edit_type {
         send_archive_message_html
         you_are_already_subscribed_message
         email_your_subscribed_msg
+
+		admin_subscription_notice_message
+		admin_unsubscription_notice_message
+		
         )
       )
     {
@@ -6442,6 +6460,15 @@ sub edit_type {
                     unsub_link_found_in_html_mlm => $dfm->can_find_unsub_link(
                         { -str => $li->{mailing_list_message_html} }
                     ),
+
+                    message_body_tag_found_in_pt_mlm => $dfm->can_find_message_body_tag(
+                        { -str => $li->{mailing_list_message} }
+                    ),
+                    message_body_tag_found_in_html_mlm => $dfm->can_find_message_body_tag(
+                        { -str => $li->{mailing_list_message_html} }
+                    ),
+
+
                     sub_confirm_link_found_in_confirmation_message =>
                       $dfm->can_find_sub_confirm_link(
                         { -str => $li->{confirmation_message} }
@@ -6507,7 +6534,16 @@ sub edit_type {
             invite_message_text
             invite_message_html
             invite_message_subject
-          ))
+          
+			admin_subscription_notice_message
+			admin_subscription_notice_message_subject
+			
+			admin_unsubscription_notice_message
+			admin_unsubscription_notice_message_subject
+			
+			
+
+			))
         {
           
             # a very odd place to put this, but, hey,  easy enough.
@@ -6525,35 +6561,40 @@ sub edit_type {
             {
                 -associate => $q,
                 -settings  => {
-                    confirmation_message_subject               => undef,
-                    confirmation_message                       => undef,
-                    subscribed_message_subject                 => undef,
-                    subscribed_message                         => undef,
-					subscribed_by_list_owner_message_subject   => undef, 
-					subscribed_by_list_owner_message           => undef,
-					unsubscribed_by_list_owner_message_subject => undef, 
-					unsubscribed_by_list_owner_message         => undef,  
-                    unsubscribed_message_subject               => undef,
-                    unsubscribed_message                       => undef,
-                    unsub_confirmation_message_subject         => undef,
-                    unsub_confirmation_message                 => undef,
-                    mailing_list_message_from_phrase           => undef,
-                    mailing_list_message_to_phrase             => undef,
-                    mailing_list_message_subject               => undef,
-                    mailing_list_message                       => undef,
-                    mailing_list_message_html                  => undef,
-                    send_archive_message_subject               => undef,
-                    send_archive_message                       => undef,
-                    send_archive_message_html                  => undef,
-                    you_are_already_subscribed_message_subject => undef,
-                    you_are_already_subscribed_message         => undef,
-					you_are_not_subscribed_message_subject     => undef, 
-					you_are_not_subscribed_message             => undef, 
-                    invite_message_from_phrase                 => undef,
-                    invite_message_to_phrase                   => undef,
-                    invite_message_text                        => undef,
-                    invite_message_html                        => undef,
-                    invite_message_subject                     => undef,
+                    confirmation_message_subject                => undef,
+                    confirmation_message                        => undef,
+                    subscribed_message_subject                  => undef,
+                    subscribed_message                          => undef,
+					subscribed_by_list_owner_message_subject    => undef, 
+					subscribed_by_list_owner_message            => undef,
+					unsubscribed_by_list_owner_message_subject  => undef, 
+					unsubscribed_by_list_owner_message          => undef,  
+                    unsubscribed_message_subject                => undef,
+                    unsubscribed_message                        => undef,
+                    unsub_confirmation_message_subject          => undef,
+                    unsub_confirmation_message                  => undef,
+                    mailing_list_message_from_phrase            => undef,
+                    mailing_list_message_to_phrase              => undef,
+                    mailing_list_message_subject                => undef,
+                    mailing_list_message                        => undef,
+                    mailing_list_message_html                   => undef,
+                    send_archive_message_subject                => undef,
+                    send_archive_message                        => undef,
+                    send_archive_message_html                   => undef,
+                    you_are_already_subscribed_message_subject  => undef,
+                    you_are_already_subscribed_message          => undef,
+					you_are_not_subscribed_message_subject      => undef, 
+					you_are_not_subscribed_message              => undef, 
+                    invite_message_from_phrase                  => undef,
+                    invite_message_to_phrase                    => undef,
+                    invite_message_text                         => undef,
+                    invite_message_html                         => undef,
+                    invite_message_subject                      => undef,
+					admin_subscription_notice_message           => undef, 
+					admin_subscription_notice_message_subject   => undef, 
+					admin_unsubscription_notice_message         => undef,
+					admin_unsubscription_notice_message_subject => undef,
+
                     enable_email_template_expr                 => 0,
                 }
             }
@@ -6792,6 +6833,9 @@ sub list_cp_options {
 
 
    require DADA::Template::Widgets;
+
+	my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);  
+
    my $scrn =   DADA::Template::Widgets::wrap_screen(
 		{
 			-screen => 'list_cp_options.tmpl',
@@ -6800,15 +6844,26 @@ sub list_cp_options {
 				-Root_Login => $root_login,
 				-List       => $list,  
 			},
-			
-                                               -list   => $list,
-                                               -vars   => {
-													screen    => 'list_cp_options',
-													done      => xss_filter($q->param('done')),
-												},
-											-list_settings_vars       => $li,
-                                            -list_settings_vars_param => {-dot_it => 1},
-                                           });
+			-expr   => 1, 
+			-list   => $list,
+			-vars   => {
+				screen    => 'list_cp_options',
+				done      => xss_filter($q->param('done')),
+							
+				ckeditor_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled},
+				ckeditor_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{url},
+
+				fckeditor_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{enabled},
+				fckeditor_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{url},
+
+				tiny_mce_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled},
+				tiny_mce_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{url},
+				%wysiwyg_vars,
+				
+			},
+			-list_settings_vars       => $li,
+			-list_settings_vars_param => {-dot_it => 1},
+			});
 
 		e_print($scrn);
     }
@@ -6818,9 +6873,8 @@ sub list_cp_options {
             {
                 -associate => $q,
                 -settings  => {
-                    enable_fckeditor                 => 0,
-					show_message_body_plaintext_ver  => 0, 
-					show_message_body_html_ver       => 0,
+                    #enable_fckeditor                 => 0,
+					use_wysiwyg_editor               => 'none',
                 }
             }
         );
@@ -8878,6 +8932,7 @@ sub login {
                                                            -list    => $list,
                                                            -password => $admin_password);
 
+
             require DADA::App::ScreenCache;
             my $c = DADA::App::ScreenCache->new;
             $c->remove('login_switch_widget.' . $list . '.scrn');
@@ -9069,8 +9124,9 @@ sub remove_subscribers {
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
     my ( $d_count, $bl_count ) = $lh->admin_remove_subscribers(
         {
-            -addresses => [@address],
-            -type      => $type,
+            -addresses        => [@address],
+            -type             => $type,
+			-validation_check => 0, 
         }
     );
 
@@ -10005,9 +10061,9 @@ sub js {
       unittest.js
       scriptaculous.js
       modalbox.js
-
-	  prototype_scriptaculous_package.js
-	
+      
+      prototype_scriptaculous_package.js
+      tiny_mce_config.js
 
     );
 

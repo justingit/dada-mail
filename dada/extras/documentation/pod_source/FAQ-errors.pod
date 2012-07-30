@@ -748,6 +748,8 @@ http://example.com/cgi-bin/dada/mail.cgi?f=email_password&list=listshortname
 
 Where, B<http://example.com/cgi-bin/dada/mail.cgi> is the URL to your Dada Mail and, B<listshortname> is the listshortname that's giving you trouble.
 
+ 
+
 =head1 Hosting Company-Specific Problems
 
 =head2 Hosting Companies that don't give access to a "true" home directory

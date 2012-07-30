@@ -39,7 +39,7 @@ sub run {
 
         $data = <<EOF
 
-<!-- tmpl_set name="title" value="	Admin Plugin Example" -->
+<!-- tmpl_set name="title" value="Plugins &#187; Admin Plugin Example" -->
 <p>I echo whatever you type in:</p> 
 <form> 
 <input type="text" name="echo" /> 
@@ -68,7 +68,7 @@ EOF
 
         my $escape = $q->escapeHTML( $q->param('echo') );
         $data = <<EOF
-<!-- tmpl_set name="title" value="	Admin Plugin Example" -->
+<!-- tmpl_set name="title" value="Plugins &#187; Admin Plugin Example" -->
 <h1>Results:</h1>
 <p><!-- tmpl_var result --></p>  
 		

@@ -190,8 +190,9 @@ sub admin_remove_subscribers {
 	for my $address(@$addresses){ 
 		my $c = $self->remove_subscriber(
 			{ 
-				-email => $address, 
-				-type  => $type, 
+				-email             => $address, 
+				-type              => $type, 
+				-validation_check  => 0, 
 			}
 		); 
 		$d_count = $d_count + $c; 
@@ -253,7 +254,7 @@ sub remove_subscriber {
 	if(exists($self->{-dpfm_obj})){ 
 		$args->{-dpfm_obj} = $self->{-dpfm_obj}; 
 	}
-	
+		
     my $dmls =
       DADA::MailingList::Subscriber->new( { %{$args}, -list => $self->{list} } );
 	$dmls->remove($args);

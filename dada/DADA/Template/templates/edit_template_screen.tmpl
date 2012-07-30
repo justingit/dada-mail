@@ -10,7 +10,7 @@
 </div>
 
 <!-- tmpl_if done -->
-	<!--tmpl_var GOOD_JOB_MESSAGE -->
+	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!--/tmpl_if-->
 
 <p>
@@ -122,30 +122,6 @@
 
 </fieldset> 
 
-<fieldset> 
-	<legend>Options</legend> 
-
-<table cellpadding="5">
- <tr>
-  <td>
-   <p>
-    <input type="checkbox" id="apply_list_template_to_html_msgs" name="apply_list_template_to_html_msgs" value="1" <!-- tmpl_if list_settings.apply_list_template_to_html_msgs -->checked="checked"<!--/tmpl_if--> />
-   </p>
-  </td>
-  <td>
-   <p>
-    <label for="apply_list_template_to_html_msgs">
-     	Wrap your HTML Mailing List Messages in your Mailing List Template
-    </label>
-  </td>
- </tr>
-</table>
-
-
- 
-</fieldset> 
-
-
  <p>
 	
 	<input type="hidden" name="process" value="true" />
@@ -248,7 +224,7 @@ This tag is
    <code>&lt;!-- tmpl_var show_profile_widget --&gt;</code>  
 </td>
   <td>
-  Will have a value of, 1 if profiles are enabled, 0 if not. 
+  Will have a value of: 1 if profiles are enabled; 0 if not. 
   </td>
  </tr>
 
@@ -267,7 +243,7 @@ This tag is
    <code>&lt;!-- tmpl_var subscribed_to_list --&gt;</code>  
 </td>
   <td>
-  Will have a value of, 1 if the visitor to <!-- tmpl_var PROGRAM_NAME --> is subscribed to your list. 
+  Will have a value of: 1 if the visitor to <!-- tmpl_var PROGRAM_NAME --> is subscribed to your list. 
   </td>
  </tr>
 

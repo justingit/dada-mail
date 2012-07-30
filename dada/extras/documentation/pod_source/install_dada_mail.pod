@@ -4,9 +4,9 @@
 
 =head1 Step #1: Download Dada Mail
 
-Here's the direct download to Dada Mail v5.1.1 
+Here's the direct download to Dada Mail v5.2.0 
 
-L<https://github.com/downloads/justingit/dada-mail/dada-5_1_1.tar.gz>
+L<https://github.com/downloads/justingit/dada-mail/dada-5_2_0.tar.gz>
 
 =head2 Pro Dada Subscriber?
 
@@ -14,9 +14,9 @@ Download Pro Dada at:
 
 L<http://dadamailproject.com/pro_dada>
 
-=head1 Step #2 Upload the, "dada-5_1_1.tar.gz" distro to your cgi-bin
+=head1 Step #2 Upload the, "dada-5_2_0.tar.gz" distro to your cgi-bin
 
-Download the C<dada-5_1_1.tar.gz> distro (you will B<not> have to uncompress the distribution) and then upload it to your hosting account's I<cgi-bin>.
+Download the C<dada-5_2_0.tar.gz> distro (you will B<not> have to uncompress the distribution) and then upload it to your hosting account's I<cgi-bin>.
 
 =begin html
 
@@ -35,17 +35,17 @@ Download the, C<uncompress_dada.cgi> script from here:
 =begin html 
 
 <ul>
-<li><strong><a href="https://raw.github.com/justingit/dada-mail/v5_1_1-stable_2012_06_05/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
+<li><strong><a href="https://raw.github.com/justingit/dada-mail/v5_2_0-stable_2012_07_26/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
 
 =end html
 
-and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> - right alongside the I<dada-5_1_1.tar.gz> distro you just put up. 
+and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> - right alongside the I<dada-5_2_0.tar.gz> distro you just put up. 
 
 =head1 Step #4 Change permissions of the, "uncompress_dada.cgi" file to, "755"
 
 =head1 Step #5 Visit the, "uncompress_dada.cgi" script in your web browser. 
 
-The, C<uncompress_dada.cgi> should attempt to uncompress the I<dada-5_1_1.tar.gz> distro, change the necessary permissions of various files and prep the actual installer for you to use. 
+The, C<uncompress_dada.cgi> should attempt to uncompress the I<dada-5_2_0.tar.gz> distro, change the necessary permissions of various files and prep the actual installer for you to use. 
 
 Once it's finished running, you should be presented a link to use the actual installer. Click the link at the end of the screen and go ahead and configure Dada Mail! 
 
@@ -56,7 +56,7 @@ Once it's finished running, you should be presented a link to use the actual ins
 <p>See, <a href="./FAQ-install_upgrade.pod.html#prepping_dada_mail_manually">Prepping Dada Mail Manually</a> if this doesn't happen and you get a message in your browser window, sort of like this: </p>
 
 <pre>
-Can't find dada-5_1_1.tar to uncompress!
+Can't find dada-5_2_0.tar to uncompress!
 
 You may have to uncompress and prep Dada Mail manually.
 </pre> 
@@ -192,6 +192,26 @@ Optionally, you may also install many of the plugins and extensions that come wi
 Some of the plugins/extensions have additional configuration that will need to done, before they work completely. For the majority of these plugins/extensions, you'll need to also set a cron job. 
 
 One plugin, Bounce Handler, also requires you to fill out the credentials for the bounce handler email account you need to set up to capture bounced emails. 
+
+=head2 WYSIWYG Editors
+
+Optionally, you may also configure the WYSIWYG editors that come bundled with the Dada Mail distribution. These WYSIWYG editors will enable you to author and edit your HTML Mailing List Messages right in your List Control Panel. 
+
+=head3 Install and Configure WYSIWYG Editors 
+
+If you would like to use the bundled WYSIWYG editors with Dada Mail, check the option, B< Install and Configure WYSIWYG Editors > - which is checked by default. Uncheck this option, if you'd like to skip setting up the WYSIWYG editors - the various options will be hidden. 
+
+=head3 Support Files Directory
+
+To install the WYSIWYG editors, the Installer will copy over the WYSIWYG editors to  a new directory on your hosting account called, B<dada_mail_support_files>. You will need to tell the Installer where this new directory should reside.  B<Absolute Directory> and the B<Corresponding URL>. 
+
+Unlike the C<.dada_files> directory, you will want to be able to access the B<dada_mail_support_files> directory through your web browser. The File Browser (KCFinder) enables you to upload images to use in your mailing list messages, and those images will also need to be publically accessable. 
+
+By default a I<pretty good guess> is made as what to set both the Server Absolute Path to your base public HTML directory, as well as the corresponding URL to access that same directory through your web browser. 
+
+If the default location looks fine, keep it as-is. If you'd like to customize/fix where this directory should live, you may do so. 
+
+The Installer will create the, <dada_mail_support_files> and under the directory you set and install the WYSIWYG editors (C<ckeditor>, C<tiny_mce>, C<fckeditor>, the File Browser/Image Uploader (C<kcfinder>), as well as the directory that images/files are uploaded to, (C<file_uploads>). 
 
 =head2 Completing the Installation and Configuration. 
 

@@ -39,7 +39,7 @@
 			Mailing List Message
 		</legend>
 		<p>
-			Make sure to place the, <code>&lt;!-- tmpl_var message_body --&gt;</code> tag in the body of this email message!
+			Make sure to place the <code>&lt;!-- tmpl_var message_body --&gt;</code> tag in the body of this email message!
 		</p>
 
 		<fieldset>
@@ -79,6 +79,12 @@
 				Yikes! Couldn't find an Unsubscribe Link (<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, somewhere, an unsubscribe link will be automatically appended to the top of your message. 
 			</p>
 		<!-- /tmpl_if --> 
+		<!-- tmpl_if message_body_tag_found_in_pt_mlm --> 
+		<!-- tmpl_else --> 
+		<p class="error">
+			Yikes! Couldn't find the <code>&lt;!-- tmpl_var message_body --&gt;</code> tag in your template! Please place this tag in your template, to ensure proper formatting.  
+		</p>			
+		<!-- /tmpl_if --> 
 		
 		
 		<p>
@@ -104,6 +110,12 @@
 				Yikes! Couldn't find an Unsubscribe Link (<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, somewhere, an unsubscribe link will be automatically appended to the top of your message. 
 			</p>
 		<!-- /tmpl_if -->
+		<!-- tmpl_if message_body_tag_found_in_html_mlm --> 
+		<!-- tmpl_else --> 
+		<p class="error">
+			Yikes! Couldn't find the <code>&lt;!-- tmpl_var message_body --&gt;</code> tag in your template! Please place this tag in your template, to ensure proper formatting.  
+		</p>			
+		<!-- /tmpl_if --> 
 		
 		
 		<p>
@@ -123,7 +135,7 @@
 		This email message is sent when someone requests to be subscribed to your list. 
 	</p>
 	<p>
-		Make sure to place the, <code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code> tag in the body of this email message!
+		Make sure to place the <code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code> tag in the body of this email message!
 	</p>
 	
 	<!-- tmpl_if list_settings.enable_closed_loop_opt_in --> 
@@ -191,7 +203,7 @@
 	<!-- /tmpl_if --> 
 	
 	<p>
-		Make sure to place the, <strong>&lt;!-- tmpl_var list_confirm_unsubscribe_link --&gt;</strong> tag in the body of this email message!
+		Make sure to place the <code>&lt;!-- tmpl_var list_confirm_unsubscribe_link --&gt;</code> tag in the body of this email message!
 	</p>
 	
 		<p>
@@ -541,6 +553,41 @@
 <textarea name="you_are_already_subscribed_message" id="you_are_already_subscribed_message" rows="10" cols="50" ><!-- tmpl_var list_settings.you_are_already_subscribed_message escape=HTML --></textarea> 
 	</p>
 </fieldset>
+
+
+
+<fieldset>
+	<legend>
+		Subscription Notice 
+	</legend>
+
+    <p>
+    <label for="admin_subscription_notice_message_subject" class="label_by_5">Subject:</label> <input type="text" name="admin_subscription_notice_message_subject" id="admin_subscription_notice_message_subject" value="<!-- tmpl_var list_settings.admin_subscription_notice_message_subject escape=HTML -->" class="midi" />
+    </p>
+    
+    <p><label for="admin_subscription_notice_message">PlainText Message:</label>
+    
+	<p>
+<textarea name="admin_subscription_notice_message" id="admin_subscription_notice_message" rows="10" cols="50" ><!-- tmpl_var list_settings.admin_subscription_notice_message escape="HTML" --></textarea> 
+	</p>
+</fieldset>
+<fieldset>
+	<legend>
+		Unsubscription Notice 
+	</legend>
+
+    <p>
+    <label for="admin_unsubscription_notice_message_subject" class="label_by_5">Subject:</label> <input type="text" name="admin_unsubscription_notice_message_subject" id="admin_unsubscription_notice_message_subject" value="<!-- tmpl_var list_settings.admin_unsubscription_notice_message_subject escape=HTML -->" class="midi" />
+    </p>
+    
+    <p><label for="admin_unsubscription_notice_message">PlainText Message:</label>
+    
+	<p>
+<textarea name="admin_unsubscription_notice_message" id="admin_unsubscription_notice_message" rows="10" cols="50" ><!-- tmpl_var list_settings.admin_unsubscription_notice_message escape="HTML" --></textarea> 
+	</p>
+</fieldset>
+
+
 
 <fieldset>
 	<legend>

@@ -212,6 +212,7 @@ sub run {
     else {
         &cgi_main();
     }
+
 }
 
 sub test_sub {
@@ -298,8 +299,38 @@ sub cgi_manual_start {
         print '<pre>'
           if $verbose;
         start();
-        print '</pre>'
-          if $verbose;
+		 print '</pre>'
+	     	if $verbose;
+
+
+
+
+
+
+        print '<pre>'
+	          if $verbose;
+	
+		require DADA::Mail::MailOut;
+        if ($run_list) {
+            DADA::Mail::MailOut::monitor_mailout(
+                { 
+					-verbose => $verbose, 
+					-list    => $list, 
+				} 
+			);
+        }
+        else {
+            DADA::Mail::MailOut::monitor_mailout( 
+				{ 
+					-verbose => $verbose
+				} 
+			);
+        }
+		 print '</pre>'
+	     	if $verbose;
+
+
+
     }
     else {
         print $q->header();
@@ -324,7 +355,7 @@ sub cgi_test_pop3_tmpl {
 	return q{ 
 	<!-- tmpl_if chrome --> 
 	
-		<!-- tmpl_set name="title" value="Dada Bridge &#187; POP3 Login Test" --> 
+		<!-- tmpl_set name="title" value="Plugins &#187; Dada Bridge &#187; POP3 Login Test" --> 
 		<div id="screentitle"> 
 			<div id="screentitlepadding">
 				<!-- tmpl_var title --> 
@@ -626,7 +657,7 @@ sub admin_cgi_manual_start_tmpl {
 		
 		<!-- tmpl_if chrome --> 
 		
-		<!-- tmpl_set name="title" value="Dada Bridge &#187; Manually Running Mailing..." --> 
+		<!-- tmpl_set name="title" value="Plugins &#187; Dada Bridge &#187; Manually Running Mailing..." --> 
 		
 		<div id="screentitle"> 
 			<div id="screentitlepadding">
@@ -943,6 +974,7 @@ sub cgi_default {
 		rewrite_anounce_from_header                => 0,
 		discussion_pop_use_ssl                     => 0,
 		discussion_template_defang                 => 0,
+		discussion_clean_up_replies                => 0, 
 	); 
 
     # Validation, basically.
@@ -989,7 +1021,7 @@ sub cgi_default {
 		    );
 			
             print $q->redirect(
-                -uri => $Plugin_Config->{Plugin_URL} . '?saved=1' );
+                -uri => $Plugin_Config->{Plugin_URL} . '?done=1' );
             return;
         }
         else {
@@ -997,7 +1029,7 @@ sub cgi_default {
 			for ( keys %dada_bridge_settings_defaults) {
 				$li->{$_} = $q->param($_);
 			}
-			$q->param('saved', 0);
+			$q->param('done', 0);
 			$discussion_pop_password = $q->param('discussion_pop_password'); 
         }
     }
@@ -1058,7 +1090,7 @@ sub cgi_default {
 
     my $tmpl = default_cgi_template();
 
-	my $saved = $q->param('saved') || 0;
+	my $done = $q->param('done') || 0;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -expr => 1,
@@ -1080,7 +1112,7 @@ sub cgi_default {
 
                 curl_location => $curl_location,
 				can_use_ssl   => $can_use_ssl, 
-                saved         => $saved,
+                done         => $done,
                 authorized_senders             => $authorized_senders,
                 show_authorized_senders_table  => $show_authorized_senders_table,
 
@@ -1208,16 +1240,16 @@ sub start {
         if ( ( $active_mailouts + $queued_mailouts) >= $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
             e_print( "There are currently, "
               . ( $active_mailouts + $queued_mailouts )
-              . " mass mailout(s) running or queued. Going to wait until that number falls below, "
+              . " Mass Mailing(s) running or queued. Going to wait until that number falls below, "
               . $DADA::Config::MAILOUT_AT_ONCE_LIMIT
-              . " mass mailout(s) \n")
+              . " Mass Mailing(s) \n")
               if $verbose;
             return;
         }
         else {
             e_print( "Currently, "
               . ( $active_mailouts + $queued_mailouts )
-              . " mass mailout(s) running or queued. \n\n"
+              . " Mass Mailing(s) running or queued. \n\n"
               . "That's below our limit ($DADA::Config::MAILOUT_AT_ONCE_LIMIT). \n"
               . "Checking awaiting  messages:\n\n")
               if $verbose;
@@ -1894,8 +1926,7 @@ sub validate_msg {
       if $verbose;
 
     if ( lc_email($from_address) eq lc_email( $li->{list_owner_email} ) ) {
-        print "\t* From: address is the list owner address ; ("
-          . $li->{list_owner_email} . ')' . "\n"
+        print "\t* From: address is the list owner address (" . $li->{list_owner_email} . ")\n"
           if $verbose;
 
         if ( $Plugin_Config->{Check_List_Owner_Return_Path_Header} ) {
@@ -3969,15 +4000,15 @@ sub default_cgi_template {
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
 
-<!-- tmpl_if saved -->
-	<!-- tmpl_var GOOD_JOB_MESSAGE  -->
-<!-- /tmpl_if -->
+<!-- tmpl_if done -->
+	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+<!--/tmpl_if-->
 
 <!-- tmpl_unless list_email_status -->
 	<div class="badweatherbox">
 		  <p><strong>
 			Information Not Saved! Please Fix Problems Below.
-		<strong/></p>
+		</strong></p>
 	</div> 
 <!--/tmpl_unless--> 
 <form name="default_form" action="<!-- tmpl_var Plugin_URL --> "method="post">
@@ -4007,14 +4038,18 @@ sub default_cgi_template {
 
   <blockquote class="positive">
  <p>
-   The 
-   <strong> 
-    List Email 
-   </strong>
-   address is the email address you will be sending to, to have your messages 
-   broadcast to your entire Subscription List. This email account needs to be created, 
+
+The <strong>List Email</strong> address is the email address to which you will be sending, 
+to have your messages broadcast to your entire Subscription List.
+
+
+
+   This email account needs to be created, 
    if it's not already available. Make sure this address is not being used 
    for <strong>any</strong> other purpose.
+
+
+
 
  </p> 
  <p>
@@ -4425,8 +4460,8 @@ General
 	 <em>(you can still "Reply-All" to send the reply to the sender, as well as the mailing list)</em></p>
 	</td>
 	</tr> 
-	<tr> 
 
+	<tr> 
 	<td>
 	<p>
 	 <input type="radio" name="set_to_header_to_list_address" value="0" <!--tmpl_unless list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_unless--> />
@@ -4436,6 +4471,12 @@ General
 </p> 
 </td> 
 </tr> 
+
+
+ 
+
+
+
 </table>
 
 
@@ -4444,6 +4485,19 @@ General
 
 
 
+	<tr> 
+	<td>
+	<p>
+	 <input type="checkbox" name="discussion_clean_up_replies" id="discussion_clean_up_replies" value="1" <!--tmpl_if list_settings.discussion_clean_up_replies -->checked="checked"<!--/tmpl_if--> />
+	</p></td> 
+	<td> 
+	<label for="discussion_clean_up_replies">Attempt to clean up replies</label>
+	 <em>(Experimental)</em><br /> 
+	An attempt will be made to remove quoted Opening and Signature parts from replies. The Opening and Signature parts usually hold 
+	mailing list/unsubscribe/profile information that often gets repeated, forming long chains at the bottom of mailing list messages. 
+</p> 
+</td> 
+</tr>
 
 
 <!-- tmpl_if Allow_Open_Discussion_List -->
@@ -4550,7 +4604,7 @@ General
        <td>
         <p>
          <label for="send_moderation_msg">
-          Send a, &quot;Message Received, Awaiting Moderation&quot; Message
+          Send a &quot;Message Received, Awaiting Moderation&quot; Message
          </label><br /> 
          The original poster will receive a message stating that the message has been received, but requires moderation.
         </p>
@@ -4564,7 +4618,7 @@ General
        <td>
         <p>
          <label for="send_moderation_accepted_msg">
-          Send an, &quot;Acceptance&quot; Message
+          Send an &quot;Acceptance&quot; Message
          </label><br /> 
          The original poster will receive a message stating that the moderated message was accepted.
         </p>
@@ -4578,7 +4632,7 @@ General
        <td>
         <p>
          <label for="send_moderation_rejection_msg">
-          Send a, &quot;Rejection&quot; Message
+          Send a &quot;Rejection&quot; Message
          </label><br /> 
          The original poster will receive a message stating that the moderated message was rejected.
         </p>

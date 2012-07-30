@@ -115,7 +115,7 @@ sub default_tmpl {
 
     my $tmpl = q{ 
 
-<!-- tmpl_set name="title" value="Tracker" --> 
+<!-- tmpl_set name="title" value="Plugins &#187; Tracker" --> 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
 		<!-- tmpl_var title --> 
@@ -354,7 +354,7 @@ sub default_tmpl {
   <td> 
    <p>
     <label for="enable_open_msg_logging"> 
-     Enable Open Messages Logging
+     Enable Open Message Logging
     </label> 
    </p>
   </td>
@@ -481,7 +481,7 @@ sub default_tmpl {
 <p><code>
 &lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;
 </code></p>
-<p>Replace, <code>http://example.com</code> with the URL you would like to track clickthroughs. 
+<p>Replace <code>http://example.com</code> with the URL you would like to track clickthroughs. 
 </fieldset> 
 
 };
@@ -1185,7 +1185,7 @@ my $tmpl = q{
 	
 	<!-- tmpl_if chrome --> 
 	
-		<!-- tmpl_set name="title" value="Tracker &#187; Message Report" --> 
+		<!-- tmpl_set name="title" value="Plugins &#187; Tracker &#187; Message Report" --> 
 		<div id="screentitle"> 
 			<div id="screentitlepadding">
 				<!-- tmpl_var title --> 
@@ -2335,7 +2335,7 @@ in your mass mailing message.
 When enabled, ALL links found in an email message will be tracked by converting them into 
 redirect tags and then clickthrough-tracked links.
 
-=head3 Enable Open Messages Logging
+=head3 Enable Open Message Logging
 
 When enabled, allows you to track open/viewing of messages. Will only work with HTML 
 messages and only if your subscribers individualy allow images to be shown in email 
@@ -2381,7 +2381,7 @@ You would write this URL inside a redirect tag, like this:
 
  <?dada redirect url="http://example.com" ?>
 
-Replace, "http://example.com" with whatever URL you would like to track.
+Replace "http://example.com" with whatever URL you would like to track.
 
 This redirect tag will be replaced by Dada Mail with a URL that, when clicked, will record 
 the click and redirect your user to the URL you specified within the tag. 
@@ -2427,20 +2427,17 @@ The syntax looked like this:
 
 This tag format is still supported, but consider it deprecated. 
 
-=head3 Clickthrough Tags and WYSIWYG editors (FCKeditor/CKeditor) 
+=head3 Clickthrough Tags and WYSIWYG editors (CKeditor/Tiny MCE/FCKeditor) 
 
-In-browser WYSIWYG editors, like FCKeditor and CKeditor have a hard time working with Dada Mail's redirect tags, 
-and will corrupt the tags by turning many of the characters into their entities, like this: 
+In-browser HTML WYSIWYG editors have a hard time working with Dada Mail's redirect tags, and will corrupt the tags by turning many of the characters into their entities, like this: 
 
 	<a href="&lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;">
 	 Go to my Example site!
 	</a>
 
-If you use FCKeditor or CKeditor with Dada Mail, we suggest using the, B<Clickthrough 
-Track All Message Links> option in Dada Mail, or disable FCKeditor/CKeditor.  
+If you use a WYSIWYG editor with Dada Mail, we suggest using the, B<Clickthrough Track All Message Links> option in Dada Mail, or disable the WYSIWYG Editor.
 
-Copying and pasting HTML from a separate program which does not corrupt the tag 
-(like Dreamweaver),  will still be affected, if you simply paste the HTML into FCKeditor/CKeditor, 
+Copying and pasting HTML from a separate program which does not corrupt the tag (like Dreamweaver),  will still be affected even if you simply paste the HTML into the WYSIWYG editor and
 even if you do it into the HTML Source. 
 
 For most other Desktop-based WYSIWYG editors, including Dreamweaver, 

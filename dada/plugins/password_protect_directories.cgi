@@ -154,7 +154,7 @@ sub default_tmpl {
 	//]]>
 	</script>		
 		
-<!-- tmpl_set name="title" value="Password Protect Directories" --> 
+<!-- tmpl_set name="title" value="Plugins &#187; Password Protect Directories" --> 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
 		<!-- tmpl_var title --> 
@@ -570,7 +570,7 @@ sub new_dir {
 
 sub sql_backend_only_message { 
 	my $tmpl = q{ 
-		<!-- tmpl_set name="title" value="Password Protect Directories" --> 
+		<!-- tmpl_set name="title" value="Plugins &#187; Password Protect Directories" --> 
 		<div id="screentitle"> 
 			<div id="screentitlepadding">
 				<!-- tmpl_var title --> 

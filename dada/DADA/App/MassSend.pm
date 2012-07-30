@@ -134,7 +134,14 @@ sub send_email {
             $num_list_mailouts, $num_total_mailouts,
             $active_mailouts,   $mailout_will_be_queued
         ) = $self->mass_mailout_info($list);
+
+
+
+
         require DADA::Template::Widgets;
+		my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);  
+
+
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'send_email_screen.tmpl',
@@ -156,7 +163,6 @@ sub send_email {
                       $lh->can_have_subscriber_fields,
 
 # I don't really have this right now...
-#  apply_list_template_to_html_msgs => $li->{apply_list_template_to_html_msgs} ? $li->{apply_list_template_to_html_msgs} : 0,
                     MAILOUT_AT_ONCE_LIMIT =>
                       $DADA::Config::MAILOUT_AT_ONCE_LIMIT,
                     mailout_will_be_queued => $mailout_will_be_queued,
@@ -170,6 +176,8 @@ sub send_email {
 					plaintext_message_body_content       => $ls->plaintext_message_body_content,
 					html_message_body_content            => $ls->html_message_body_content, 
 					html_message_body_content_js_escaped => js_enc($ls->html_message_body_content),
+					
+					%wysiwyg_vars,
 
                 },
                 -list_settings_vars       => $ls->params,
@@ -343,7 +351,6 @@ sub send_email {
         $msg_as_string = safely_decode($msg_as_string);
 
         $fm->Subject( $headers{Subject} );
-        $fm->use_list_template( $q->param('apply_template') );
  
 		my ( $final_header, $final_body ); 
 		eval {
@@ -557,7 +564,10 @@ sub send_url_email {
         
 		my ($num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued)  = $self->mass_mailout_info($list);
 
+
         require DADA::Template::Widgets;
+		my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);  
+
         my $scrn = DADA::Template::Widgets::wrap_screen(
 				 	{
 						-screen => 'send_url_email_screen.tmpl',
@@ -592,6 +602,7 @@ sub send_url_email {
 							plaintext_message_body_content       => $ls->plaintext_message_body_content,
 							html_message_body_content            => $ls->html_message_body_content, 
 							html_message_body_content_js_escaped => js_enc($ls->html_message_body_content),
+							%wysiwyg_vars,
 							
 							
 						},
