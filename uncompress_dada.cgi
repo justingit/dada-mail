@@ -56,18 +56,16 @@ else {
 }
 
 print p("Changing permissions of dada/mail.cgi to, 755");
-print pre(`chmod 755 dada/mail.cgi`);
-
-print pre(`chmod 777 dada/DADA/Config.pm`);
+`chmod 755 dada/mail.cgi`;
+`chmod 777 dada/DADA/Config.pm`;
 
 my $installer_loc     = 'dada/installer-disabled';
 my $new_installer_loc = 'dada/installer';
 
 print p("Enabling installer at $installer_loc by moving it to, $new_installer_loc\n");
 
-print pre(`mv $installer_loc $new_installer_loc`);
-
-print pre(`chmod 755 $new_installer_loc/install.cgi`);
+`mv $installer_loc $new_installer_loc`;
+`chmod 755 $new_installer_loc/install.cgi`;
 
 print p("Done!");
 
