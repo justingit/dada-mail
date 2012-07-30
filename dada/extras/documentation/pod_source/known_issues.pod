@@ -136,7 +136,7 @@ If you're using version 4 or higher of Dada Mail, in the config, find the $TEMPL
 change, 1 to 0: 
 
  $TEMPLATE_SETTINGS ||= { 
- 	oldstyle_backwards_compatibility => 1, 
+ 	oldstyle_backwards_compatibility => 0, 
 } ;
 
 and no more problems. 
