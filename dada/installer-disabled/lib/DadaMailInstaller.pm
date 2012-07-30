@@ -1921,18 +1921,18 @@ sub test_can_write_config_dot_pm {
 sub test_database_has_all_needed_tables {
 
     my $default_table_names = {
-        dada_subscribers               => 1,
-        dada_profiles                  => 1,
-        dada_profile_fields            => 1,
-        dada_profile_fields_attributes => 1,
-        dada_archives                  => 1,
-        dada_settings                  => 1,
-        dada_sessions                  => 1,
-        dada_bounce_scores             => 1,
-        dada_clickthrough_urls         => 1,
-        dada_clickthrough_url_log      => 1,
-        dada_mass_mailing_event_log    => 1,
-
+        dada_subscribers                   => 1,
+        dada_profiles                      => 1,
+        dada_profile_fields                => 1,
+        dada_profile_fields_attributes     => 1,
+        dada_archives                      => 1,
+        dada_settings                      => 1,
+        dada_sessions                      => 1,
+        dada_bounce_scores                 => 1,
+        dada_clickthrough_urls             => 1,
+        dada_clickthrough_url_log          => 1,
+        dada_mass_mailing_event_log        => 1,
+#       dada_password_protect_directories  =>  1, # maybe? This is created by Dada Mail o first run, anyways. 
     };
     my $dbh;
 
