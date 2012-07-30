@@ -841,15 +841,19 @@ sub install_dada_mail {
 	} 
 	
 	$log .= "* Installing WYSIWYG Editors...\n";
-	eval {install_wysiwyg_editors($args);}; 
-	if($@){ 
-        $log .= "* WARNING: Couldn't complete installing WYSIWYG editors! $@\n";
-        $errors->{cant_install_wysiwyg_editors} = 1;
+	if($args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files') { 
+		$log .= "* Skipping WYSIWYG setup...\n";	
 	}
 	else { 
-        $log .= "* Success!\n";		
-	} 
-	
+		eval {install_wysiwyg_editors($args);}; 
+		if($@){ 
+	        $log .= "* WARNING: Couldn't complete installing WYSIWYG editors! $@\n";
+	        $errors->{cant_install_wysiwyg_editors} = 1;
+		}
+		else { 
+	        $log .= "* Success!\n";		
+		} 
+	}
 
     # That's it.
     $log .= "* Installation and Configuration Complete!\n";
@@ -1411,11 +1415,10 @@ qq|\%LIST_SETUP_INCLUDE = (
 
 }
 sub install_wysiwyg_editors { 
-
 	my ($args) = @_;
 	
-	my $install = $q->param('support_files_dir_path') || 0; 
-	if($install == 0){ 
+	my $install = $q->param('install_wysiwyg_editors') || 0; 
+	if($install != 1){ 
 		return 1; 
 	}
 	
@@ -1496,17 +1499,12 @@ sub install_wysiwyg_editors {
 
     $config_file =~ s/($sm)(.*?)($em)/$wysiwyg_options_snippet/sm; 
 
-	if($args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files') { 
-
-	}
-	else { 
-		# write it back? 
-		installer_chmod(0777, $dot_configs_file_loc); 
-		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($dot_configs_file_loc) or croak $!;
-		print $config_fh $config_file or croak $!;
-		close $config_fh or croak $!;
-		installer_chmod(0644, $dot_configs_file_loc);	
-	}	
+	# write it back? 
+	installer_chmod(0777, $dot_configs_file_loc); 
+	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($dot_configs_file_loc) or croak $!;
+	print $config_fh $config_file or croak $!;
+	close $config_fh or croak $!;
+	installer_chmod(0644, $dot_configs_file_loc);	
 	
 	return 1; 
 }
