@@ -840,11 +840,11 @@ sub install_dada_mail {
         $log .= "* Success!\n";		
 	} 
 	
-	$log .= "* Installing WYSIWYG Editors...\n";
 	if($args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files') { 
 		$log .= "* Skipping WYSIWYG setup...\n";	
 	}
 	else { 
+		$log .= "* Installing WYSIWYG Editors...\n";
 		eval {install_wysiwyg_editors($args);}; 
 		if($@){ 
 	        $log .= "* WARNING: Couldn't complete installing WYSIWYG editors! $@\n";
