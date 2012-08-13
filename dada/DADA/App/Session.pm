@@ -102,7 +102,7 @@ sub _init  {
 
 
 
-sub login_cookie { 
+sub login_cookies { 
 
 	my $self = shift; 
 	
@@ -114,7 +114,7 @@ sub login_cookie {
 	die 'no CGI Object (-cgi_obj)' if ! $args{-cgi_obj};
 	
 	
-	my $cookie; 
+	my $cookies = []; 
 	
 	my $q = $args{-cgi_obj};
 	
@@ -147,8 +147,8 @@ sub login_cookie {
 				   $session->expire('Admin_Password', $DADA::Config::COOKIE_PARAMS{-expires});
 				   $session->expire('Admin_List', $DADA::Config::COOKIE_PARAMS{-expires});
 				   
-				   $cookie = $q->cookie(-name    => $DADA::Config::LOGIN_COOKIE_NAME, 
-										-value   => $session->id, 
+				   $cookies->[0] = $q->cookie(-name    => $DADA::Config::LOGIN_COOKIE_NAME, 
+										  -value   => $session->id, 
 										%DADA::Config::COOKIE_PARAMS);
 										
 				  
@@ -157,16 +157,20 @@ sub login_cookie {
                   # instead, which works reliably for everyone.
 				  $session->flush();
 				  
+				
 				  if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
 						try { 
-							$self->kcfinder_session_begin; 
+							my $kcfinder_cookie = $self->kcfinder_session_begin;
+							if(defined($kcfinder_cookie)){ 
+								$cookies->[1] = $kcfinder_cookie;
+							}
 				  		} catch { 
 							carp "initializing kcfinder session return an error: $_"; 
 						}
 				}
     }else{ 
 		
-				   $cookie = $q->cookie(-name    => $DADA::Config::LOGIN_COOKIE_NAME, 
+				   $cookies->[0] = $q->cookie(-name    => $DADA::Config::LOGIN_COOKIE_NAME, 
 						                -value   => {
 									    	admin_list     => $args{-list}, 
 									  		admin_password => $cipher_pass
@@ -176,7 +180,7 @@ sub login_cookie {
 		}
 		
 		
-	return $cookie; 
+	return $cookies; 
 }
 
 sub kcfinder_session_begin { 
@@ -184,6 +188,7 @@ sub kcfinder_session_begin {
 	my $self = shift; 
 	require PHP::Session; 
 	require CGI::Lite; 
+	my $new_sess = 0; 
 	
 	my $cgi = new CGI::Lite; 
 	my $cookies = $cgi->parse_cookies;
@@ -192,7 +197,21 @@ sub kcfinder_session_begin {
 		$sess_id = $cookies->{$DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_name}};
 	}
 	else { 
-		carp "no PHP session?"; 
+		$new_sess = 1;
+	}
+	
+	if($new_sess == 1){ 
+		require DADA::Security::Password; 
+		$sess_id = DADA::Security::Password::generate_rand_string('abcdefghijklmnopqrstuvwxyz123456789', 32); 
+		
+	}
+	
+	# This makes the session directory, just in case! 
+	my $dada_sess_dir = make_safer($DADA::Config::TMP . '/php_sessions'); 
+	if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_dir} eq $dada_sess_dir){ 
+		if(! -d $dada_sess_dir){ 
+			mkdir($dada_sess_dir, $DADA::Config::DIR_CHMOD );
+		}
 	}
 	
     my $session = PHP::Session->new(
@@ -210,7 +229,19 @@ sub kcfinder_session_begin {
 	
 	$session->set(KCFINDER => $KCFINDER); 
     $session->save;
-	return 1;
+	
+	if($new_sess == 1){ 
+		require CGI; 
+		my $cookie = CGI::cookie(
+			-name => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_name},
+			-value  => $sess_id,
+			 %DADA::Config::COOKIE_PARAMS,
+			);
+		return $cookie; 
+	}
+	else { 
+		return undef; 
+	}
 	
 }
 

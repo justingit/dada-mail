@@ -8928,9 +8928,11 @@ sub login {
 
         if($dada_session->logged_into_diff_list(-cgi_obj => $q) != 1){
 
-            my $login_cookie = $dada_session->login_cookie(-cgi_obj => $q,
-                                                           -list    => $list,
-                                                           -password => $admin_password);
+            my $login_cookies = $dada_session->login_cookies(
+				-cgi_obj => $q,
+				-list    => $list,
+                -password => $admin_password
+			);
 
 
             require DADA::App::ScreenCache;
@@ -8946,7 +8948,8 @@ sub login {
                 $log->mj_log($admin_list, 'login', 'remote_host:' . $rh . ', ip_address:' . $ra);
             }
 
-            print $q->header(-cookie  => [$dumb_cookie, $login_cookie],
+			my $cookies = [$dumb_cookie, @$login_cookies];
+            print $q->header(-cookie  => $cookies,
                               -nph     => $DADA::Config::NPH,
                               -Refresh =>'0; URL=' . $referer);
 
