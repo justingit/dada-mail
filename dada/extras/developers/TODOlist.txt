@@ -10,6 +10,9 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+[ ] Does the auto-unsubscription tag stuff only happen for mass mailings, and not for text mass mailings? 
+
 [x] FCKEDITOR: 
 	[x] Remove all connectors except, "php" 
 
