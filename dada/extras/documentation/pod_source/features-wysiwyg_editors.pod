@@ -10,7 +10,7 @@ Dada Mail supports the following WYSIWYG HTML editors:
 
 =over
 
-=item * CKeditor
+=item * CKEditor
 
 =item * FCKeditor
 
@@ -18,13 +18,13 @@ Dada Mail supports the following WYSIWYG HTML editors:
 
 =back
 
-FCKeditor is only supported for backwards compatibility with previous versions of Dada Mail, and is not what we recommend that you us . We will be removing support for FCKEditor in a future version of Dada Mail. 
+FCKeditor is only supported for backwards compatibility with previous versions of Dada Mail, and is not what we recommend that you us . We will be removing support for FCKeditor in a future version of Dada Mail. 
 
 =head2 Supported File Browsers - KCFinder
 
 As well as the core WYSIWYG functionality, Dada Mail also supports the B<KCFinder> File Browser, allowing you to browse a directory on the server itself, as well as upload new files. Images uploaded may then be inserted into your HTML messages. 
 
-Dada Mail supports B<KCFinder> in all three WYSIWYG editors that it also supports. Dada Mail does I<not> ship with support for the B<CKFinder> file browser, which is developed by the same company that develops CKeditor, because it requires an additional commercial license. KCFinder is free software. 
+Dada Mail supports B<KCFinder> in all three WYSIWYG editors that it also supports. Dada Mail does I<not> ship with support for the B<CKFinder> file browser, which is developed by the same company that develops CKEditor, because it requires an additional commercial license. KCFinder is free software. 
 
 Dada Mail also does not ship with FCKeditor's default file browser "connector", as it is difficult to set up correctly, buggy and has a reputation for being very insecure. 
 
@@ -64,7 +64,7 @@ C<enabled> can be set to C<1> to enable the editor, or C<0> to disable. Disabled
 
 C<url> should hold the base URL for the editor itself - make sure to have a full URL, starting with, "C<http://>"
 
-Configuration for the KCFinder file browser to work with Dada MAil is done in the C<$FILE_BROWSER_OPTIONS> variable, which should look like this: 
+Configuration for the KCFinder file browser to work with Dada Mail is done in the C<$FILE_BROWSER_OPTIONS> variable, which should look like this: 
 
 	$FILE_BROWSER_OPTIONS ||= { 
 		kcfinder  => { 
@@ -87,17 +87,42 @@ C<upload_dir> should hold the absolute server path to the directory you would li
 
 C<upload_url> should hold the corresponding URL to the C<upload_dir> variable - the  C<upload_dir> and C<upload_url> should map to each other. 
 
-C<session_name> and C<session_dir> are used to configure and manage the sessioning information between Dada Mail and KCFinder. KCFinder will only work in Dada Mail, if the correct sessioning information is based from Dada Mail, to KCFinder. For more information, please see KCFinder's docs on Integration and Sessioning: 
+C<session_name> and C<session_dir> are used to configure and manage the sessioning information between Dada Mail and KCFinder. KCFinder will only work in Dada Mail, if the correct sessioning information is passed from Dada Mail, to KCFinder. For more information, please see KCFinder's docs on Integration and Sessioning: 
 
 L<http://kcfinder.sunhater.com/docs/integrate>
 
-The default values for C<session_name> and C<session_dir> should work for the majority of users. Additional configuration for all three supported editors will be required to get KCFinder working with Dada Mail and these editors, which is also explained on that page. There's potential that the values set in C<session_name> and C<session_dir> I<won't work for your environment>. We'd like to know about it and what does work for you. 
+The default values for C<session_name> and C<session_dir> should work for the majority of users. Additional configuration for all three supported editors will be required to get KCFinder working with Dada Mail and these editors, which is also explained on that page. There's potential that the values set in C<session_name> and C<session_dir> I<won't work for your environment>. We'd like to know about it and what does work for you. This doc does not go over what exactly needs to be configured in Dada Mail, as the best way to configure the WYSIWYG Editor/KCFinder/Dada Mail is still in flux. Best thing to do is to set up these editors and KCFinder with the Dada Mail Installer and study its configuration. We'd love your feedback.
 
 =head2 Additional Configuration Files
 
-All three supported editors also expect an additional configuration file called, C<dada_mail_config.js> to be saved in the base URL of the editor. These configuration file should hold any additional configuration you would like for Dada Mail specifically. 
+CKEditor and Tiny MCE also expect an additional configuration file called, C<dada_mail_config.js> to be saved in the base URL of the editor. These configuration file should hold any additional configuration you would like for Dada Mail specifically. Setting up these editors to work with KCFinder is not covered in the configuration examples below. 
 
-KCFinder does not require this additional JavaScript file, but it's own default configuration file, C<kcfinder/config.php> may be edited by the Dada Mail Installer. Of particular importance is a variable B<not> changed by Dada Mail, which look like this: 
+Below are bare-bone examples of what these configuration files should hold: 
+
+=head3 Tiny MCE
+
+	tinyMCE.init({
+			theme : "advanced",
+			theme_advanced_toolbar_location : "top",
+			theme_advanced_toolbar_align : "left",
+			mode : "specific_textareas",
+			editor_selector : "html_message_body"
+			
+	});
+
+=head3 CKEditor
+
+There is nothing specific that the CKEditor needs in its C<dada_mail_config.js>. You can start by copying the C<config.js> file to a file called, C<dada_mail_config.js> and make any additional changes that you would like in that file. 
+
+=head3 FCKeditor
+
+Similar to CKEditor, there is nothing specific that the FCKeditor needs in its C<dada_mail_config.js>. You can start by copying the C<fckconfig.js> file to a file called, C<dada_mail_config.js> and make any additional changes that you would like in that file. 
+
+=head2 KCFinder
+
+KCFinder does not require this additional JavaScript file, but it's own default configuration file, C<kcfinder/config.php> will be edited by the Dada Mail Installer. 
+
+When looking over this config file, One thing of particular importance is a variable B<not> changed by Dada Mail, which look like this: 
 
 	$_CONFIG = array(
 	
