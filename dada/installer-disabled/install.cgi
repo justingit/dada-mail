@@ -1,5 +1,13 @@
 #!/usr/bin/perl -T
 use strict;
+
+use lib qw(
+	./lib
+	../DADA
+	../DADA/perllib
+	); 
+
+
 use Carp qw(croak carp);
 use CGI::Carp qw(fatalsToBrowser);
 
@@ -7,6 +15,5 @@ use CGI::Carp qw(fatalsToBrowser);
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 
-use lib qw(./lib); 
 use DadaMailInstaller; 
     DadaMailInstaller->run();

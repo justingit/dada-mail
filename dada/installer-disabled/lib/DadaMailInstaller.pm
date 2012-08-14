@@ -1,5 +1,9 @@
 package DadaMailInstaller; 
 
+use lib qw(
+  ../../
+  ../../DADA/perllib
+);
 # Gimme some errors in my browser for debugging
 use Carp qw(croak carp);
 use CGI::Carp qw(fatalsToBrowser);
@@ -16,12 +20,7 @@ BEGIN {
         require Config;
     }
 }
-use lib qw(
-  ../../
-  ../../DADA/perllib
-  ../
-  ../DADA/perllib
-);
+
 
 # Init my CGI obj. 
 use CGI;
@@ -1624,19 +1623,19 @@ sub install_and_configure_kcfinder {
 	if(! -d $sess_dir){ 
 		installer_mkdir( $sess_dir, $DADA::Config::DIR_CHMOD )
 	}
-	my $kcfinder_config_js = DADA::Template::Widgets::screen(
+	my $kcfinder_config_php = DADA::Template::Widgets::screen(
         {
-            -screen => 'kcfinder_config_js.tmpl',
+            -screen => 'kcfinder_config_php.tmpl',
             -vars   => {
 				i_tinyMCEPath => $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/tiny_mce',
 				i_sessionDir  => $sess_dir,
 			}
         }
     );
-	my $kcfinder_config_loc = make_safer($install_path . '/kcfinder/config.js'); 
+	my $kcfinder_config_loc = make_safer($install_path . '/kcfinder/config.php'); 
 	installer_chmod(0777, $kcfinder_config_loc); 
 	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $kcfinder_config_loc or croak $!;
-	print $config_fh $kcfinder_config_js or croak $!;
+	print $config_fh $kcfinder_config_php or croak $!;
 	close $config_fh or croak $!;
 	installer_chmod(0644, $kcfinder_config_loc);
 	undef $config_fh;
