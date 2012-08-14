@@ -1,5 +1,6 @@
 package DADA::App::Guts;
 use 5.008_001; 
+use Try::Tiny; 
 
 use lib qw(
 	../../ 
@@ -2403,50 +2404,61 @@ sub spam_me_not_encode {
 
 
 
-sub mailhide_encode { 
+sub mailhide_encode {
 
-    my $str = shift; 
-    
-    eval { require Captcha::reCAPTCHA::Mailhide; };
-	
-    if($@){ 
-        # carp 'Captcha::reCAPTCHA::Mailhide support is not installed ' . $@; 
-        return $str;    
+    my $str = shift;
+
+    try {
+        require Captcha::reCAPTCHA::Mailhide;
     }
-	else { 
-		
-		if(
-			! defined($DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key}) ||
-			! defined($DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key})
-	    ){
-			warn 'You need to configure reCaptcha Mailhide!';
-			return $str; 
-		}
-	}
-    
-    # DEV: Should I put a test to make sure that $RECAPTHCA_MAILHIDE_PARAMS is filled out correclty?    
-    
-    #my $rcmh = Captcha::reCAPTCHA::Mailhide->new; 
-    my $rcmh = Captcha::reCAPTCHA::Mailhide->new; 
+    catch {
+        carp
+"Problems with loading Mailhide support (Captcha::reCAPTCHA::Mailhide): $_";
+    };
+
+    if (   !defined( $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key} )
+        || !defined( $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key} )
+        || $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key}  eq ''
+        || $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key} eq '' )
+    {
+        carp 'reCaptcha Mailhide doesn\'t seem to be configured? both public_key and private_key have to be filled out.';
+        return $str;
+    }
+
+# DEV: Should I put a test to make sure that $RECAPTHCA_MAILHIDE_PARAMS is filled out correctly?
+
+    my $rcmh = Captcha::reCAPTCHA::Mailhide->new;
     require Email::Address;
-    my $addy = undef; 
-    
-    if (defined($str)){
-        eval { 
-            $addy = (Email::Address->parse($str))[0]->address; 
-            
-            
-       };
+    my $addy = undef;
+
+    if ( defined($str) ) {
+        eval {
+            $addy = ( Email::Address->parse($str) )[0]->address;
+
+        };
     }
-        
-    if($addy){ 
-        my $mh_addy = $rcmh->mailhide_html( $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key}, $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key}, $addy);        
-       $str =~ s/$addy/$mh_addy/g;
-    
+
+    if ($addy) {
+        my $mh_addy = $addy;
+        try {
+            $mh_addy =
+              $rcmh->mailhide_html(
+                $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key},
+                $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key},
+                $addy );
+        }
+        catch {
+            carp "Wasn't able to successfully Mailhide encode the email address: $_";
+        };
+
+        $str =~ s/$addy/$mh_addy/g;
+
     }
-    return $str; 
-    
+    return $str;
+
 }
+
+
 
 sub gravatar_img_url { 
 
