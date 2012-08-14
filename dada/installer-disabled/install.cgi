@@ -3,7 +3,7 @@ use strict;
 
 use lib qw(
 	./lib
-	../DADA
+	../
 	../DADA/perllib
 	); 
 
