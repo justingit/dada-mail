@@ -12,7 +12,6 @@ use strict;
 #---------------------------------------------------------------------#
 # Required:
 
-use CGI::Carp qw(fatalsToBrowser); 
 
 
 
@@ -28,6 +27,7 @@ use lib qw(
 	../../../../perl 
 	../../../../perllib
 );
+use CGI::Carp qw(fatalsToBrowser); 
 
 
 use DADA::Config 5.0.0 qw(!:DEFAULT);
