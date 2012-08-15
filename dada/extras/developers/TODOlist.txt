@@ -9,6 +9,10 @@ Key:
 [x] Done. 
 [*] Naw...
 [?] Someday
+[ ] Redo Mass Mailing Batch sending docs
+[ ] Minimal subscription form output, instead of the gigantic monstrosity that's made, now
+[ ] Update Rich Text Editor docs to attempt to explain... what directories are generated where in the installer. 
+
 
 [ ] Switch from Prototype/Scriptaculous to JQuery
 
