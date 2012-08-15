@@ -60,7 +60,7 @@
       </td>
       <td>
        <p>
-        <label for="archives_available_only_to_subscribers">
+        <label for="archives_available_only_to_subscribers" <!-- tmpl_unless PROFILE_ENABLED -->class="disabled"<!-- /tmpl_unless -->>
          Only Allow Subscribers to View Archived Messages
         </label><br /> 
 		Only subscribers logged in will be able to view the publicly available archives. 
@@ -68,12 +68,12 @@
 
        <!-- tmpl_unless PROFILE_ENABLED -->
 
-	    <p class="error">
-	     <em>
-	      Disabled. <!-- tmpl_var PROGRAM_NAME --> Profiles are not enabled.
-	     </em>
+		<div class="badweatherbox">
+	    <p>
+	     <strong>
+	      Disabled.</strong> <!-- tmpl_var PROGRAM_NAME --> Profiles are not enabled.
 	    </p>
-
+		</div> 
         <!--/tmpl_unless-->
 
 
@@ -126,10 +126,10 @@
     Visitors will be able to forward archived messages they find interesting to friends.
    </p>
    
-    <table cellspacing="5" <!-- tmpl_unless can_use_captcha -->class="disabled"<!--/tmpl_unless--> >
+    <table cellspacing="5" >
      <tr>
       <td>
-       <input type="checkbox" name="captcha_archive_send_form" id="captcha_archive_send_form" value="1" <!-- tmpl_if list_settings.captcha_archive_send_form -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless can_use_captcha -->disabled="disabled"<!--/tmpl_unless-->/>
+       <input type="checkbox" name="captcha_archive_send_form" id="captcha_archive_send_form" value="1" <!-- tmpl_if list_settings.captcha_archive_send_form -->checked="checked"<!--/tmpl_if--> />
       </td>
       <td>
        <p>
@@ -140,12 +140,13 @@
        
        <!-- tmpl_unless can_use_captcha -->
 	    
-	    <p class="error">
-	     <em>
-	      Disabled. You need to successfully configure your current CAPTCHA system (<!-- tmpl_var CAPTCHA_TYPE -->)
-	     </em>
+		<div class="badweatherbox">
+	    <p>
+	      <strong>Disabled.</strong> The CAPTCHA system (<strong><!-- tmpl_var CAPTCHA_TYPE --></strong>) needs to be successfully configured. 
+	   
 	    </p>
-	    
+    </div> 
+
         <!--/tmpl_unless-->
 
 

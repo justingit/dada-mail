@@ -167,6 +167,8 @@ use DADA::App::Guts;
 
 use DADA::MailingList::Subscribers;
 
+use Try::Tiny;
+
 use CGI;
     CGI->nph(1)
      if $DADA::Config::NPH == 1;
@@ -1908,11 +1910,13 @@ sub list_options {
         $can_use_mx_lookup = 1;
     }
 
-    my $can_use_captcha = 0;
-    eval { require DADA::Security::AuthenCAPTCHA; };
-    if ( !$@ ) {
-        $can_use_captcha = 1;
-    }
+	my $can_use_captcha = 1; 
+	try { 
+		require DADA::Security::AuthenCAPTCHA; 
+	} catch {
+		carp "CAPTCHA Not working correctly?: $_";  
+		$can_use_captcha = 0;
+	};
 
     if ( !$process ) {
 	
@@ -5289,11 +5293,14 @@ sub archive_options {
 
         if(!$process){
 
-			my $can_use_captcha = 0;
-			eval { require DADA::Security::AuthenCAPTCHA; };
-			if(!$@){
-				$can_use_captcha = 1;
-			}
+			my $can_use_captcha = 1; 
+			try { 
+				require DADA::Security::AuthenCAPTCHA; 
+			} catch {
+				carp "CAPTCHA Not working correctly?: $_";  
+				$can_use_captcha = 0;
+			};
+			
 		
 		require DADA::Template::Widgets;
         my $scrn =  DADA::Template::Widgets::wrap_screen(
@@ -5401,34 +5408,32 @@ sub adv_archive_options {
             $can_use_html_scrubber = 0;
         }
 
-        my $can_use_recaptcha_mailhide = 0;
-
-
-        eval { require Captcha::reCAPTCHA::Mailhide; };
-
-        if ( !$@ ) {
-
-            if (
-                !defined(
-                    $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key}
-                )
-                || !defined(
-                    $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key}
-                )
-              )
-            {
-                warn
-'You need to configure Recaptcha Mailhide in your configuration.';
-            }
-
-            $can_use_recaptcha_mailhide = 1;
-        }
-
-        my $can_use_gravatar_url = 0;
+		my $can_use_recaptcha_mailhide = 1; 
+		try { 
+			 require Captcha::reCAPTCHA::Mailhide; 
+		} catch {
+			carp "reCAPTCHA Mailhide not working correctly?: $_";  
+			$can_use_recaptcha_mailhide = 0;
+		} finally { 
+		    if (   !defined( $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key} )
+		        || !defined( $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key} )
+		        || $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key}  eq ''
+		        || $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key} eq '' )
+		    {
+				$can_use_recaptcha_mailhide = 0;
+			}
+		
+		};
+		
         my $gravatar_img_url     = '';
-        eval { require Gravatar::URL };
-        if ( !$@ ) {
-            $can_use_gravatar_url = 1;
+        my $can_use_gravatar_url = 1;
+        try { 
+			require Gravatar::URL 
+		} catch { 
+			$can_use_gravatar_url = 0; 
+		};
+		
+		if ( $can_use_gravatar_url == 1) { 
             require Email::Address;
             if ( isa_url( $li->{default_gravatar_url} ) ) {
 
@@ -5442,9 +5447,7 @@ sub adv_archive_options {
                     email => $ls->param('list_owner_email') );
             }
         }
-        else {
-            $can_use_gravatar_url = 0;
-        }
+    
 
 		require DADA::Template::Widgets;
 		my $scrn =  DADA::Template::Widgets::wrap_screen(
@@ -8495,11 +8498,13 @@ sub send_archive {
     # CAPTCHA STUFF
 
     my $captcha_fail    = 0;
-	my $can_use_captcha = 0;
-	eval { require DADA::Security::AuthenCAPTCHA; };
-	if(!$@){
-		$can_use_captcha = 1;
-	}
+	my $can_use_captcha = 1; 
+	try { 
+		require DADA::Security::AuthenCAPTCHA; 
+	} catch {
+		carp "CAPTCHA Not working correctly?: $_";  
+		$can_use_captcha = 0;
+	};
 
     if($li->{captcha_archive_send_form} == 1 && $can_use_captcha == 1){
         require   DADA::Security::AuthenCAPTCHA;
@@ -10285,13 +10290,14 @@ sub profile_login {
 			my $CAPTCHA_string  = '';
 			my $cap             = undef;
 			if($DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1){
-				eval {
-					require DADA::Security::AuthenCAPTCHA;
-					$cap = DADA::Security::AuthenCAPTCHA->new;
+				my $can_use_captcha = 1; 
+				try { 
+					require DADA::Security::AuthenCAPTCHA; 
+				} catch {
+					carp "CAPTCHA Not working correctly?: $_";  
+					$can_use_captcha = 0;
 				};
-				if(!$@){
-					$can_use_captcha = 1;
-				}
+				
 			}
 
 		   if($can_use_captcha == 1){

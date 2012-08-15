@@ -6,6 +6,8 @@ use lib qw (
 );
 
 use Carp qw(carp croak);
+use Try::Tiny; 
+
 use DADA::Config;
 use DADA::App::Guts;
 
@@ -789,14 +791,15 @@ sub is_valid_registration {
         $status = 0;
     }
 
-    my $can_use_captcha = 0;
     my $cap             = undef;
-    if ( $DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1 ) {
-        eval { require DADA::Security::AuthenCAPTCHA; };
-        if ( !$@ ) {
-            $can_use_captcha = 1;
-        }
-    }
+	my $can_use_captcha = 1; 
+	try { 
+		require DADA::Security::AuthenCAPTCHA; 
+	} catch {
+		carp "CAPTCHA Not working correctly?: $_";  
+		$can_use_captcha = 0;
+	};
+
     if ( $can_use_captcha == 1 ) {
         $cap = DADA::Security::AuthenCAPTCHA->new;
         my $result = $cap->check_answer(
