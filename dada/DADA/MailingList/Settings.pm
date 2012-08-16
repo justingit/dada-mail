@@ -221,15 +221,12 @@ sub post_process_get {
         $li->{$_} = $DADA::Config::LIST_SETUP_OVERRIDES{$_};
     }
 
-    # This just causes all sorts of warnings. Uggh.
-    no warnings;
     if ( !exists( $li->{admin_email} ) ) {
         $li->{admin_email} = $li->{list_owner_email};
     }
     elsif ( $li->{admin_email} eq undef ) {
         $li->{admin_email} = $li->{list_owner_email};
     }
-    use warnings;
 
     if ( $DADA::Config::ENFORCE_CLOSED_LOOP_OPT_IN != 1 ) {
 		# ... 
