@@ -6070,6 +6070,16 @@ sub html_code {
 				screen             => 'html_code',
 				list               => $list,
 				subscription_form  => DADA::Template::Widgets::subscription_form({-list => $list, -ignore_cgi => 1}),
+				minimal_subscription_form => DADA::Template::Widgets::screen(
+					{ 
+						-screen => 'minimal_subscription_form.tmpl',
+						-list_settings_vars_param =>
+						{
+							-list                     => $list,
+							-dot_it                   => 1,
+						},
+					}
+				),
 			},
 			-list_settings_vars_param =>
 			{

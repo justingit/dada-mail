@@ -6,7 +6,7 @@ use strict;
 
 
 # You may have to update this, depending on the version of Dada Mail!
-my $gz = 'dada-5_2_0.tar.gz';
+my $gz = 'dada-5_2_1.tar.gz';
 
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
@@ -22,11 +22,14 @@ if ( !-e $gz ) {
     exit;
 }
 
-print h1('Dada Mail!');
+print h1('Adventures with Dada Mail!');
 if ( -e 'dada' ) {
-    print p("STOP. 'dada' directory already exists!");
+    print p("STOPPING! 'dada' directory already exists! Please manually move this directory, before running this script!");
     exit;
 }
+
+print p(i("Starting Adventure..."));
+
 
 print p("Uncompressing $gz...");
 `gunzip $gz`;
@@ -41,7 +44,7 @@ if ( !-e $tar ) {
     exit;
 }
 else {
-    print p("Success!");
+    print p(i("Success!"));
 }
 
 print p("Unrolling $tar");
@@ -52,7 +55,7 @@ if ( !-e 'dada' ) {
     exit;
 }
 else {
-    print p("Success!");
+    print p(i("Success!"));
 }
 
 print p("Changing permissions of dada/mail.cgi to, 755");
@@ -67,7 +70,7 @@ print p("Enabling installer at $installer_loc by moving it to, $new_installer_lo
 `mv $installer_loc $new_installer_loc`;
 `chmod 755 $new_installer_loc/install.cgi`;
 
-print p("Done!");
+print p(i("Done!"));
 
 print
 "<h1 style=\"text-align:center\"><a href=\"./$new_installer_loc/install.cgi\">Install and Configure Dada Mail!</a></h1>";
