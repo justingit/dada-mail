@@ -4,7 +4,7 @@ package log_viewer;
 
 use strict; 
 
-use CGI::Carp qw(fatalsToBrowser); 
+use CGI::Carp qw(fatalsToBrowser);
 
 # make sure the DADA lib is in the lib paths!
 use lib qw(../ ../DADA/perllib ../../../../perl ../../../../perllib); 

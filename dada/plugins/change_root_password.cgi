@@ -4,7 +4,7 @@ use strict;
 # make sure the DADA lib is in the lib paths!
 use lib qw(../ ../DADA/perllib ../../../../perl ../../../../perllib); 
 
-use CGI::Carp qw(fatalsToBrowser); 
+use CGI::Carp qw(fatalsToBrowser);
 
 # use some of those Modules
 use DADA::Config 5.0.0;

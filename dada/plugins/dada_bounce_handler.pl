@@ -33,8 +33,9 @@ use lib qw(
 
 );
 
-use DADA::Config;
 use CGI::Carp qw(fatalsToBrowser);
+
+use DADA::Config;
 use DADA::App::Guts;
 use DADA::Mail::Send;
 use DADA::MailingList::Subscribers;

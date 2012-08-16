@@ -29,12 +29,8 @@ BEGIN {
 #---------------------------------------------------------------------#
 
 
- #---------------------------------------------------------------------#
+#---------------------------------------------------------------------#
 # The Path to your Perl *Libraries*:
-# This IS NOT the path to Perl. The path to Perl is the first line of
-# this script.
-#
-#
 
 use lib qw(
 	./
@@ -44,87 +40,11 @@ use lib qw(
 	../../../perllib
 );
 
-# This list may need to be added to. Find the absolute to path to this
-# very file. This:
-#
-#        /home/youraccount/www/cgi-bin/dada/mail.cgi
-#
-# Is an example of what the absolute path to this file may be.
-#
-# Get rid of, "/mail.cgi"
-#
-#        /home/youraccount/www/cgi-bin/dada
-#
-# Add that line after, "./DADA/perllib" above.
-#
-# Add "DADA/perllib" from the absolute path you just made right
-# after your last entry into the Path to your Perl Libraries:
-#
-#    /home/youraccount/www/cgi-bin/dada
-#    /home/youraccount/www/cgi-bin/dada/DADA/perllib
-#
-# and you should be good to go.
-#
-# If this doesn't do the job - make sure ALL the directories, including the
-# DADA directory have permissions of: 755 and all files have permissions
-# of: 644
 #---------------------------------------------------------------------#
 
-
-
-
-#---------------------------------------------------------------------#
-#
-# If you'd like error messages to be printed out in your browser, set the
-# following to 1, like this:
-
-#	use constant ERRORS_TO_BROWSER => 1;
-
-# To always include a stack trace, set it to 2, like this:
-#
-#	use constant ERRORS_TO_BROWSER => 2;
-#
-
-use constant ERRORS_TO_BROWSER => 1;
-
-#
-# If you don't want Dada Mail to show any error messages in your web browser, 
-# comment remove all the lines (below) between the markers: 
-
-	# Start Web Browser Error Reporting
-	
-	# End Web Browser Error Reporting
-
-
-
-
-
-# Start Web Browser Error Reporting
-#---------------------------------------------------------------------#
-
-use Carp qw(croak carp);
-use CGI::Carp qw(fatalsToBrowser set_message);
-    BEGIN {
-       $Carp::Verbose = 1 if ERRORS_TO_BROWSER >= 2;
-       sub handle_errors {
-          my $msg = shift;
-          print q{<h1>Program Error (Server Error 500)</h1>
-                  <hr />
-             <p>
-              <em>
-              More information about this error may be available in the
-              server error log and/or program error log.
-              </em>
-             </p>
-             <hr />
-               };
-         print "<pre>$msg</pre>" if ERRORS_TO_BROWSER >= 1;
-       }
-      set_message(\&handle_errors);
-    }
+use CGI::Carp qw(fatalsToBrowser);
 
 #---------------------------------------------------------------------#
-# End Web Browser Error Reporting
 
 
 

@@ -32,7 +32,8 @@ Dada Mail also does not ship with FCKeditor's default file browser "connectors",
 
 =head1 Mailing List Configuration
 
-For each of your mailing lists, only one type of WYSIWYG editor may be used at one time. You may configure which WYSIWYG editor to work with, or to use no WYSIWYG editor at all. 
+You choose which WYSIWYG editor you would like to use (or to use no editor at all) in the list control panel under, 
+B<Your List Control Panel - Options>
 
 =head1 Installing and Configurating - use the Dada Mail Installer
 
@@ -164,10 +165,8 @@ Below are bare-bone examples of what these configuration files should hold.
 			theme_advanced_toolbar_location : "top",
 			theme_advanced_toolbar_align : "left",
 			mode : "specific_textareas",
-			editor_selector : "html_message_body"
-			verify_html : false, 
-			
-			
+			editor_selector : "html_message_body",
+			verify_html : false		
 	});
 
 =head3 CKEditor
