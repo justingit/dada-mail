@@ -26,7 +26,7 @@ The same thing as a Mass Mailing. These can be used interchangably. We do prefer
 
 =back
 
-=head2 Summary (What to do, without the, "Why")
+=head2 Summary
 
 These changes should be done in your list control panel, Under, B<Manage List - Sending List Options>
 
@@ -62,13 +62,11 @@ Read below on how to set up a cronjob (scheduled task) to monitor your mailing f
 
 =back
 
-If you do all these steps, you will be on your way to trouble-free mailing list sending. 
-
 =head1 Sending Messages in Batches
 
 =head2 What's "Batch Sending" 
 
-Batch Sending is used primarily to I<slow down> a mass mailing and space out message sending over a longer period of time. It has basically two parts to it: 
+Batch Sending is used primarily to I<slow down> a mass mailing and I<space out message sending> over a longer period of time. It has basically two parts to it: 
 
 =over
 
@@ -82,12 +80,12 @@ During a Mass Mailing, Dada Mail will send a specific amount of messages out, wa
 
 Batch sending does B<not> work by sending a specific amount of messages during a specific amount of time. Close to that, but not that. 
 
-Batch setting is configured in the list's control panel: Log into your list and go to: B<Mail Sending - Mass Mailing Preferences>. You should see the settings to change. Pretty simple. 
+Batch setting is configured in the list's control panel: Log into your list and go to: B<Mail Sending - Mass Mailing Preferences>. 
 
 
-=head2 Should I send my mailing in batches? What are the benefits?
+=head2 Should I send my mailing in batches? 
 
-Yes. Yes you should. 
+Yes. 
 
 One benefit of batch sending is that you'll receive a message in your Dada Mail usage logs when a batch is completed, with some verbose information on the status of your list mailing. 
 
@@ -100,24 +98,20 @@ It sort of looks like this (broken up into a few lines:
  <20061013004408.77295734@example.com> total_sending_out_num: 1014 type: list   
  total_sent_out: 4
 
-Handy. 
-
 
 =head2 Why would I want to throttle down the speed of a mailing by using batching? 
 
-Good question! If you think about it, why wouldn't you want to send as many messages as fast as possible?
-
-Sounds like a good idea, but consider these B<extremely> important points: 
+Consider these B<extremely> important points: 
 
 =over
 
-=item * Mail Server Restrictions?
+=item * Hourly Email Sending Limitations
 
-Check up with your host - 
+Check up with your hosting company: 
 
-I almost B<guarantee you> that if you're on a shared hosting account - which is probably the vast majority of people who have personal sites, or small business sites, B<you have a limit imposed by the mail server on how many messages you can send out over a period of time>. Guarantee you.  
+If you're on a shared hosting account, B<you have a limit imposed by the mail server on how many messages you can send out over a period of time>. 
 
-For el-cheapo hosting accounts - ones that cost between $10 - $60 a month, you're probably limited to B<500 messages/hour>. Don't take this as truth though, check with your B<own> hosting company and get the exact amount that they say is, "OK". Set your batch settings a little lower than what the limit is - since you may receive sub/unsub requests, etc. 
+For inexpensive hosting accounts - ones that cost between $5 - $50 a month, you're probably limited to B<500 messages/hour>. Please check with your B<own> hosting company and get the exact amount that they say is, "OK". Set your batch settings a little lower than what the limit is - since you may receive sub/unsub requests, etc. 
 
 So, if your hosting account limits you to 500/messages an hour, try setting your batches to something like: B<1 message, every 8 seconds>. In fact, that may be the factory default setting. 
 
@@ -163,49 +157,21 @@ So have a heart, batch at something that's realistic. If you're on a shared serv
 =back
 
 
-=head2 Why are the batch settings so limited? 
-
-They're not. 
-
-Currently, without hacking about, you can send 1 to 180 messages and then wait 1 to 180 seconds. Sounds like not a lot of wiggle room, but it should be plenty - 
-
-Consider that one message, every 180 seconds (the slowest setting you can have) is 30 messages B<an hour>. That's slooooow. 
-
-Sending 180 messages, every second (the fastest setting you can have) is a rate of 10,800 messages a B<minute> - 648,000 messages an hour. If your mail server can even support that, hats off - unless it's specifically tuned to send copius amounts of mail, there's no way you'll be able to get up to that speed. 
-
-Honestly.
-
-The fastest you're going to get, in pretty good conditions is B<25,000> messages an hour(?) (untested, thus the question mark)
-
-Hope I helped to dispell that myth. 
-
 =head1 Auto Pickup Options
 
-The, B<Auto-Pickup Dropped List Message Mailings> is going to be your best friend. 
 
-Once enabled, this feature will make sure the process of sending out a mailing will succeed to completion. 
+Once enabled, this feature will help make sure the process of sending out a mailing will succeed to completion. 
 
-You can configure the feature in the list control panel. Log into your list and under B<Mail Sending - Mass Mailing Preferences>, you should see the settings to change. 
+You can configure the feature in your List Control Panel, under B<Mail Sending - Mass Mailing Preferences>. 
 
-=head2 Why do you need to use the Auto Pickup feature?
+Unlike traditional Mailing List Managers (Mailman, Majordomo, EZelm), B<Dada Mail does not run as a daemon> - (and this is simplifying things) which is a program that is B<always running>, just waiting to fill out requests. 
 
-Unlike traditional Mailing List Managers (Mailman, Majordomo, EZelm), B<Dada Mail does not run as a daemon> - (and this is simplifying things) which is a program that is B<always running>, just waiting to do something. 
+Shared server environments usually have a set limit on the amount of memory a program process can consume, how large the process itself can be, how many files it can have open and most importantly for us, B<how long a process can run for>. It can be a restrictive environment. 
 
-Daemons usually aren't allowed to run in shared server environments, so that's why Dada Mail isn't one. Shared server environments also usually have a set limit on the amount of memory a program process can consume, how large the process itself can be, how many files it can have open and most importantly for us, B<how long a process can run for>. 
+This poses some problems, for this simple fact: Sending out a message to a lot of people takes time. 
 
-So, that's the kind of environment we're working under. Quite restrictive. 
+If your Subscribers list is long enough to go over the limitation of how long a process can run for, your mass mailing is going to fail, midway through, unless we use the Auto Pickup feature. 
 
-This poses some problems, for this simple fact: Sending out a message to a lot of people takes a lot of time. If you've read the above, you've realized that you want to B<send your mailing list sendouts in batches>. No question. 
-
-If your subscriber list is long enough to go over the limitation of how long a process can run for - which is pretty easy, your mailing is going to fail, mid way through somewhere, and this is bad.... if! you do not have a way to reload a list that has stopped at a specific part of your list, automatically. Which is what the auto-pickup feature does. So - no fretting. 
-
-Should you use it? Yes. Please, yes. It's going to help you make a successful mailing list and it'll allow you to send a mailout slower, which, as we went over in the batch sending FAQ's is actually a good thing. 
-
-=head2
-
-How do you use the Auto Pickup Options? 
-
-You can configure the feature in the list control panel. Log into your list and under B<Mail Sending - Mass Mailing Preferences>, you should see the settings to change. 
 
 You have two settings to which to play with: 
 
@@ -237,11 +203,8 @@ The screen should refresh every few seconds to update the status of your mailing
 
 B<If you are not on the Sending Monitor screen, the Auto-Pickup feature will not work.> 
 
-B<If you are not on the Sending Monitor screen, the Auto-Pickup feature will not work.> 
 
-B<If you are not on the Sending Monitor screen, the Auto-Pickup feature will not work.> 
-
-=head2 During a mailout, is it safe to navigate away from the Sending Monitor screen? 
+=head2 During a Mass Mailing, is it safe to navigate away from the Sending Monitor screen? 
 
 Yes! Absolutely. 
 
@@ -252,8 +215,6 @@ But! If a mailing is dropped, it won't be restarted, until you go back to this S
 But, if you do navigate away by mistake, it's not the end of the world, just navigate back. 
 
 =head2 How do you get back to the Sending Monitor screen if you navigate away?
-
-Quite easily:  
 
 Log into your list via the list control panel. Under Send a Message, click on, B<Monitor Your Mailings>. This screen will give you a list of the mailouts currently active. Click on the subject of the mailout you'd like to monitor. And you're back. 
 
@@ -279,15 +240,13 @@ When set to, B<1> after every time Dada Mail is run via the, C<mail.cgi> script,
 
 The problem is, you never are guaranteed when Dada Mail is going to be run, so your mailing monitoring will be somewhat lopsided. 
 
-I<This option is currently experimental>. 
-
 =head3 Dada Bridge
 
-If you're using the Dada Bridge plugin, it also has the same functionality as the B<Mailing Monitor> plugin built in (although, no report will ever be printed out). Because of this, you won't be absolutely required to run both, but if you want to run both, stagger the timing of the cronjobs - if you're running Dada Bridge every 5 minutes, run the B<Mailing Monitor> plugin every 6. 
+If you're using the Dada Bridge plugin, it also has the same functionality as the B<Mailing Monitor> plugin built in. 
 
-=head2 I'm a nerd. Any documentation on the Mass Mailings/Auto Pickup API? 
+=head2 Mass Mailings/Auto Pickup API 
 
-Indeed, see: L<http://dadamailproject.com/support/documentation/Mail_MailOut.pm.html>
+See: L<http://dadamailproject.com/support/documentation/Mail_MailOut.pm.html>
 
 in Dada Mail itself, see the B<Mailing Monitor> plugin noted above, or the C<sending_monitor()> subroutine in the mail.cgi file. 
 
@@ -363,7 +322,7 @@ Some notes from a BlueHost User:
 
 =item * Hourly Limit
 
-BlueHost's default limit is a puny 50/hour, in the name of
+BlueHost's default limit can be as low as a puny 50/hour, in the name of
 spam prevention.  But they will happily lift that to a maximum
 of 500/hour if you call their (excellent, toll-free, 24/7) support
 line and present even a shred of evidence that your need
@@ -396,13 +355,7 @@ batch should be completed in under a minute -- long before
 BlueHost kills the sending process.  But I haven't tested this
 approach on BlueHost, so I can't swear that it'll work.
     
-=back
-
-=head2 Cyboretum
-
-http://www.cyboretum.com
-
-Currently, there is no limit to outbound email sending, B<within reason>. Contact them directly if you have any q's. 
+=back 
 
 =head2 Dreamhost
 
@@ -422,35 +375,5 @@ Please note this is NOT 100 emails per hour. A single email to 100 people in the
 =for html </em></blockquote>
 
 For this host, you would definetely want to set batching, at a rate of B<1 email>, every B<37 seconds> or so. This limit is pretty strict. 
-
-
-=head1 Debugging a Failed Mailing List Sendout
-
-=head2 Logs
-
-Set up the various logs available in Dada Mail. We'll be going through the various logs specific for list sending. 
-
-=over
-
-=item * Program Error Log
-
-This log is vitaly important and much of the following advice will center around the error log, so it has to be set up. 
-
-Here's how: 
-
-L<http://dadamailproject.com/d/Config.pm.html#_program_error_log>
-
-=item * Setup Debugging for various CPAN modules
-
-If you're using SMTP sending, set up the debugging/trace settings for Net::SMTP and Net::POP3. This is done in the Config.pm file, in the variable, C<%CPAN_DEBUG_SETTINGS>. More information: 
-
-    http://dadamailproject.com/support/documentation/Config.pm.html#_cpan_debug_settings
-
-Again, for mail sending, you'll want to set the, B<Net_SMTP> and B<Net_POP3> (if you're using POP-before-SMTP sending> to, B<1>. 
-
-
-=back
-
-
 
 =cut
