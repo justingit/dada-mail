@@ -2,6 +2,45 @@
 
 =head1 Dada Mail Changelog for version 5.x.x
 
+=head1 5.2.1. 
+
+=head2 Summary 5.2.1
+
+This release contains primarily bugfixes found in the v5.2.0 release of Dada Mail. 
+
+Some of the bugs fixed in this release deal with the KCFinder. If upgrading from 
+B<v5.2.0> and you are experiencing problems with KCFinder you may want to create 
+a new C<.dada_config> file, when upgrading. Otherwise, you will not need to 
+create a new config file.
+
+If upgrading from B<v5.1.1> or lower, you will want to create a new config file, during the install process. 
+
+=head2 Features 5.2.1
+
+=head3 "Minimal" Subscription Form Generation
+
+Dada Mail now auto-creates "minimal" subscription form HTML for you to easily copy, customize and paste into your site, in: B<Appearance and Templates -  Subscription Form HTML>
+
+=head2 Changes 5.2.1
+
+=head3 Security - In Browser Error Messages: Gone!
+
+Dada Mail does not now show Server Error 500 error messages in the browser window, if a server error happens. Rather, it will show its own custom and generic error message. You will 
+need to read the error log to see what actually went wrong. This is to tighten up security, as error messages could potentially hold sensitive information, such as file paths. 
+
+=head3 Tracker: "Clickthrough Track All Message Links" enabled by default
+
+=head2 Bugfixes 5.2.1 
+
+=head3 Upgrade 500 error due to reCAPTCHA
+
+L<https://github.com/justingit/dada-mail/issues/308>
+
+=head3 KCFinder does not allow file upload/browse 
+
+L<https://github.com/justingit/dada-mail/issues/309>
+
+
 =head1 5.2.0
 
 =head2 Summary 5.2.0 
