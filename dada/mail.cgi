@@ -6070,7 +6070,12 @@ sub html_code {
 				screen             => 'html_code',
 				list               => $list,
 				subscription_form  => DADA::Template::Widgets::subscription_form({-list => $list, -ignore_cgi => 1}),
-			}
+			},
+			-list_settings_vars_param =>
+			{
+				-list                     => $list,
+				-dot_it                   => 1,
+			},
 		}
 	);
     e_print($scrn);
