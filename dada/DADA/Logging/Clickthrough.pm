@@ -25,8 +25,8 @@ use Carp qw(croak carp);
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
 
 sub _init { 
-	
 	my $self   = shift; 
+	
 	my ($args) = @_; 
 
     if($self->{-new_list} != 1){ 
@@ -387,12 +387,16 @@ sub auto_redirect_tag {
 			 if $t; 
 			
 			my $qm_link         = quotemeta($link);
-			warn '$link: ' . $link
+			warn '$link: "' . $link . '"'
 				if $t; 
-			warn '$qm_link: ' . $qm_link
+			warn '$qm_link: "' . $qm_link . '"'
 				if $t; 
 			
-				$self->{auto_redirect_tmp} =~ s/(href(\s*)\=(\s*)\"?)$qm_link/$1$redirected_link/;
+			warn '$redirected_link: "' . $redirected_link . '"' 
+				if $t; 
+				
+			$self->{auto_redirect_tmp} =~ s/(href(\s*)\=(\s*)\"?)$qm_link/$1$redirected_link/;
+			
 		}
 	
 	
@@ -401,7 +405,11 @@ sub auto_redirect_tag {
 		
 		my $p = HTML::LinkExtor->new(\&html_cb);
 		$p->parse($s); 
+				
+		
 		$s = $self->{auto_redirect_tmp}; 
+		
+		
 		$self->{auto_redirect_tmp} = '';
 		return $s;
 		

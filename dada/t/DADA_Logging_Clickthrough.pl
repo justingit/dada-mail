@@ -17,19 +17,26 @@ my $list = dada_test_config::create_test_list;
 my $ls = DADA::MailingList::Settings->new( { -list => $list } );
    $ls->save(
 	{ 
-		clickthrough_tracking              => 1,
-		enable_open_msg_logging            => 1,
-		enable_bounce_logging              => 1,
-		enable_forward_to_a_friend_logging => 1, 
-		enable_view_archive_logging        => 1, 
+		clickthrough_tracking                               => 1,
+		enable_open_msg_logging                             => 1, 
+		enable_bounce_logging                               => 1,
+		enable_forward_to_a_friend_logging                  => 1, 
+		enable_view_archive_logging                         => 1, 	
+		tracker_record_view_count                           => 10, 
+		tracker_clean_up_reports                            => 1, 
+		tracker_auto_parse_links                            => 1, 
+		tracker_show_message_reports_in_mailing_monitor     => 0,
 	}
 ); 
 
-my $key; 
 
+my $key; 
 
 my $lc = DADA::Logging::Clickthrough->new( { -list => $list } );
 ok( $lc->isa('DADA::Logging::Clickthrough') );
+
+
+
 
 
 my @redirect_urls = (
@@ -93,6 +100,8 @@ my $existing  = {};
 my $test_url2 = 'http://test.example.com/';
 
 
+
+
 # Make sure we never make the URL twice...
 my $i = 0;
 for ( $i = 0 ; $i < 50 ; $i++ ) {
@@ -113,6 +122,8 @@ diag '$coded ' . $coded;
 
 # It's the same as before, you see?
 ok( $ps eq $coded, "same as before?" );
+
+
 
 ################################################
 # Zee Plain Text!
@@ -143,6 +154,10 @@ my $r_email = string_from_dada_style_args( { -fields => {%fields}, } );
 
 my $qm_coded = quotemeta($coded);
 like( $r_email, qr/$qm_coded/ );
+
+
+
+
 
 #
 ################################################
@@ -179,6 +194,8 @@ $qm_coded = quotemeta($coded);
 like( $r_email, qr/$qm_coded/ );
 
 ################################################
+
+
 
 ################################################
 # Zee "Multipart/Alternative"!
@@ -229,6 +246,8 @@ like( $r_email, qr/$qm_coded/ );
 
 like( $r_email, qr/This is the PlainText Ver\:\n$qm_coded/ );
 
+
+
 my $html_check = quotemeta(
     qq{<p>This is the HTML Ver:</p>
 <a href="$coded">Click Here</a>}
@@ -236,28 +255,35 @@ my $html_check = quotemeta(
 
 like( $r_email, qr/$html_check/ );
 
+
+
 ################################################
 
 my ( $r_mid, $r_url ) = $lc->fetch($key);
 ok( $r_mid eq $test_mid );
 ok( $r_url eq $test_url );
 
+
 #ok( $lc->clickthrough_log_location eq $DADA::Config::LOGS . '/' . $list
 #     . '-clickthrough.log' );
-
 # if it's not on, it returns, "0";
 #ok( $lc->r_log({-mid => $test_mid, -url => $test_url }) == 0 );
-
 # This is kinda strange - we have to reinit the object:
 
 
 #diag "still here."; 
 
+
+
+=cut
 undef($lc);
 $lc = DADA::Logging::Clickthrough->new( { -list => $list } );
+=cut
+
 
 # Now, it should do what I want it to do:
 ok( $lc->r_log({-mid =>  $test_mid, -url => $test_url }) == 1 );
+
 
 
 #diag "still here.";
@@ -597,9 +623,31 @@ $should_be = q{
 
 $ar_str = $lc->auto_redirect_tag($ar_str, 'HTML');
 
+diag $ar_str;
+ 
 ok($ar_str eq $should_be, "yeah, they match up! (HTML)"); 
 undef $ar_str; 
 undef $should_be;
+
+
+
+
+
+
+
+=cut
+my $ar_str = q{<p><a href = "http://example.com/randomspaces.html">Huh?</a></p>}; 
+
+my $should_be = q{<p><a href = "<?dada redirect url="http://example.com/randomspaces.html" ?>">Huh?</a></p>};
+
+my $ar_str = $lc->auto_redirect_tag($ar_str, 'HTML');
+
+diag $ar_str;
+ 
+ok($ar_str eq $should_be, "yeah, they match up! (HTML)"); 
+undef $ar_str; 
+undef $should_be;
+=cut
 
 
 
