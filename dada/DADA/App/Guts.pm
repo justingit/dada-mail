@@ -1,6 +1,5 @@
 package DADA::App::Guts;
 use 5.008_001; 
-use Try::Tiny; 
 
 use lib qw(
 	../../ 
@@ -10,6 +9,7 @@ use lib qw(
 
 use Encode qw(encode decode);
 use Params::Validate ':all';
+use Try::Tiny; 
 
 # evaluate these once at compile time
 use constant HAS_URI_ESCAPE_XS => eval { require URI::Escape::XS; 1; }; # Much faster, but requires C compiler.

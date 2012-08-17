@@ -4,7 +4,7 @@ use lib qw(
           ../../ ./ ../ ./dada ../dada ./DADA ../DADA ./DADA/perllib ../DADA/perllib); 
 
 use Encode; 
-
+use Try::Tiny; 
 use CGI::Carp qw(croak carp); 
 use DADA::Config qw(!:DEFAULT);  
 
