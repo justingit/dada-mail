@@ -12,6 +12,9 @@ use lib qw(
 	../../../../perllib
 );
 
+use CGI::Carp qw(fatalsToBrowser);
+
+
 BEGIN {
    if($] > 5.008){
       require Errno;

@@ -4885,7 +4885,7 @@ encrypted.
 	enable_view_archive_logging                         => 1, 	
 	tracker_record_view_count                           => 10, 
 	tracker_clean_up_reports                            => 1, 
-	tracker_auto_parse_links                            => 0, 
+	tracker_auto_parse_links                            => 1, 
 	tracker_show_message_reports_in_mailing_monitor     => 0, 
 
 # Bounce Handler
@@ -5178,8 +5178,8 @@ and to say that you've got the freshest tools on the Web.
 
 =cut
 
-$VERSION = 5.2.0; 
-$VER     = '5.2.0 Stable - 7/30/12';
+$VERSION = 5.2.1; 
+$VER     = '5.2.1 Stable - 8/17/12';
 
 #
 #

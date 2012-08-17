@@ -3,12 +3,16 @@
 <!-- tmpl_set name="title" value="Appearance and Templates &#187; Subscription Form HTML" -->
 <div id="screentitle"> 
 	<div id="screentitlepadding">
-		<!-- tmpl_var title --> 
+		Appearance and Templates &#187; Subscription Form HTML
 	</div> 
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
 
 
+
+
+<h1>Full Subscription Form</h1>
+	
 <fieldset>
 <legend>
 HTML</legend>
@@ -38,14 +42,40 @@ JavaScript</legend>
 
 </fieldset>
 
-<fieldset style="background:#fff">
+<fieldset>
 <legend>
 Working Preview</legend>
 <!-- tmpl_var subscription_form  -->
 
 </fieldset> 
 
- 
+<hr /> 
+
+<h1>Minimal Subscription Form</h1> 
+
+	
+	<fieldset>
+	<legend>
+	HTML</legend>
+
+	 <p>
+	  Copy the code in the text box and add it to any page on your site.
+	 </p>
+	 <textarea name="min_code" cols="50" rows="12"><!-- tmpl_var minimal_subscription_form --></textarea>
+	</fieldset>
+	
+	<fieldset>
+	<legend>
+	Working Preview</legend>
+<!-- tmpl_include minimal_subscription_form.tmpl -->
+	</fieldset>
+	
+	
+</fieldset> 
+
+
+
+
 
 
 <!-- end html_code_screen.tmpl -->

@@ -220,14 +220,24 @@ Email Address Protection
    </p>
   </td>
   <td>
-   <label for="archive_protect_email_recaptcha_mailhide">
+   <label for="archive_protect_email_recaptcha_mailhide"  <!-- tmpl_unless can_use_recaptcha_mailhide -->class="disabled"<!-- /tmpl_unless -->>
     reCAPTCHA MailHide
    </label>
    <a href="http://www.google.com/recaptcha/mailhide/" target="_blank">
     (More Info)
-   </a> <!-- tmpl_unless can_use_recaptcha_mailhide -->
-	      <span class="error">Disabled. Make sure have to configure reCAPTCHA MailHide in the .dada_config file and the Perl CPAN module Captcha::reCAPTCHA::Mailhide is installed..</span>
-        <!-- /tmpl_unless --> 
+   </a> 
+
+ <!-- tmpl_unless can_use_recaptcha_mailhide -->
+    
+	<div class="badweatherbox">
+    <p>
+      <strong>reCAPTCHA MailHide Disabled.</strong> reCAPTCHA MailHide needs to be successfully configured. 
+
+    </p>
+</div> 
+
+    <!--/tmpl_unless-->
+
   </td>
  </tr>
  
@@ -344,16 +354,16 @@ Email Address Protection
    </ul> 
    </p>
    
-   <table <!-- tmpl_unless can_use_xml_rpc -->class="disabled"<!--/tmpl_unless--> >
+   <table>
     <tr>
      <td>
       <p>
-       <input type="checkbox" name="ping_archives_rss" id="ping_archives_rss" value="1" <!-- tmpl_if list_settings.ping_archives_rss -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless can_use_xml_rpc -->disabled="disabled"<!--/tmpl_unless--> />
+       <input type="checkbox" name="ping_archives_rss" id="ping_archives_rss" value="1" <!-- tmpl_if list_settings.ping_archives_rss -->checked="checked"<!--/tmpl_if--> />
       </p>
      </td>
      <td>
       <p>
-       <label for="ping_archives_rss">
+       <label for="ping_archives_rss" <!-- tmpl_unless can_use_xml_rpc -->class="disabled"<!--/tmpl_unless-->>
         Ping/Notify Site Update Services
        </label>
       </p>
@@ -380,12 +390,13 @@ Email Address Protection
 	      </p>
 	      
 <!-- tmpl_else --> 
-	      
-	      <p class="error">
-	       <em>
-	        Disabled. The XMLRPC::Lite module needs to be installed.
-	       </em>
+	      <div class="badweatherbox">
+	      <p>
+	       <strong>
+	        Disabled. 
+	       </strong>The XMLRPC::Lite module needs to be installed.
 	      </p>
+		</div> 
 	      
 <!--/tmpl_if-->
       
@@ -475,9 +486,12 @@ Gravatars
 </legend>
 
 <!-- tmpl_unless can_use_gravatar_url --> 
-	<p class="error">
-	  Disabled. You will need to install the <a href="http://search.cpan.org/~mschwern/Gravatar-URL/" target="_blank" >Gravatar::URL CPAN module</a>
+	<div class="badweatherbox">
+	<p>
+	  <strong>Disabled.</strong> You will need to install the <a href="http://search.cpan.org/~mschwern/Gravatar-URL/" target="_blank" >Gravatar::URL CPAN module</a>
 	</p>
+</div> 
+
 <!-- /tmpl_unless -->
 
 <table>
@@ -489,18 +503,20 @@ Gravatars
   </td>
   <td>
    <p>
-    <label for="enable_gravatars">
+    <label for="enable_gravatars" <!-- tmpl_unless can_use_gravatar_url -->class="disabled"<!-- /tmpl_unless -->>
      Enable Gravatar Icons
     </label>
     </p>
 
+<!-- tmpl_if can_use_gravatar_url --> 
+
 <div style="height:90px">
 	
 <p>
-<!-- tmpl_if can_use_gravatar_url --> 
+
 <img src="<!-- tmpl_var gravatar_img_url -->" width="80" height="80" style="float:left;padding:5px;" />
 </p>
-<!-- /tmpl_if -->  
+
  <p>
   A Gravatar Icon (
    <a href="http://gravatar.com/" target="_blank">http://gravatar.com/</a>
@@ -520,7 +536,7 @@ Gravatars
 
 </p>
 
-
+<!-- /tmpl_if -->  
 
   </td>
  </tr>

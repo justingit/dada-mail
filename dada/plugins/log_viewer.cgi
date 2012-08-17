@@ -4,7 +4,7 @@ package log_viewer;
 
 use strict; 
 
-use CGI::Carp qw(fatalsToBrowser); 
+use CGI::Carp qw(fatalsToBrowser);
 
 # make sure the DADA lib is in the lib paths!
 use lib qw(../ ../DADA/perllib ../../../../perl ../../../../perllib); 
@@ -249,12 +249,12 @@ sub main_tmpl {
 			<table cellpadding="5"> 
 			 <tr> 
 			  <td valign="bottom"> 
-				<p>Show this log:<br /> 
+				<p><label for="log_name">View Log:</label><br /> 
 				 <!-- tmpl_var logs_popup_menu --> 
 				</p> 
 			</td> 
 		 	<td valign="bottom"> 
-			  <p>Show the last:<br /> 
+			  <p><label for="lines">And The Last:</label><br /> 
 				<select name="lines" id="lines" onclick="view_logs();"> 
 					<!-- tmpl_loop log_lines --> 
 						<option value="<!-- tmpl_var line_count -->"><!-- tmpl_var line_count --></option> 

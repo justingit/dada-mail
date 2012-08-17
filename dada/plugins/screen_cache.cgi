@@ -7,7 +7,8 @@ use strict;
 # make sure the DADA lib is in the lib paths!
 use lib qw(../ ../DADA/perllib);
 
-use CGI::Carp qw(fatalsToBrowser); 
+use CGI::Carp qw(fatalsToBrowser);
+
 use DADA::Config 5.0.0;
 # we need this for cookies things
 use CGI;

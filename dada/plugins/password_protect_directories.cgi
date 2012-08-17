@@ -13,7 +13,8 @@ use lib qw(
 	../DADA/perllib
 );
 
-use CGI::Carp "fatalsToBrowser";
+use CGI::Carp qw(fatalsToBrowser);
+
 use DADA::Config 5.0.0 qw(!:DEFAULT);
 use DADA::App::Guts; 
 use DADA::MailingList::Settings;

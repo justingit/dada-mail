@@ -7,7 +7,7 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts; 
 
 use Carp qw(carp croak); 
-
+use Try::Tiny; 
 
 use vars qw($AUTOLOAD); 
 use strict; 
@@ -449,12 +449,14 @@ sub confirm {
     
     if($ls->param('captcha_sub') == 1){
 	 
-		my $can_use_captcha = 0; 
-		eval { require DADA::Security::AuthenCAPTCHA; };
-		if(!$@){ 
-			$can_use_captcha = 1;        
-		}
-
+		my $can_use_captcha = 1; 
+		try { 
+			require DADA::Security::AuthenCAPTCHA; 
+		} catch {
+			carp "CAPTCHA Not working correctly?: $_";  
+			$can_use_captcha = 0;
+		};
+		
 	   if($can_use_captcha == 1){ 
 
 	        warn '>>>> Captcha step is enabled...'

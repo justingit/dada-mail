@@ -1,5 +1,9 @@
 package DadaMailInstaller; 
 
+use lib qw(
+  ../../
+  ../../DADA/perllib
+);
 # Gimme some errors in my browser for debugging
 use Carp qw(croak carp);
 use CGI::Carp qw(fatalsToBrowser);
@@ -16,12 +20,7 @@ BEGIN {
         require Config;
     }
 }
-use lib qw(
-  ../../
-  ../../DADA/perllib
-  ../
-  ../DADA/perllib
-);
+
 
 # Init my CGI obj. 
 use CGI;
@@ -1477,6 +1476,8 @@ sub install_wysiwyg_editors {
 		$tmpl_vars{i_kcfinder_upload_dir} = $upload_dir; 
 		$tmpl_vars{i_kcfinder_upload_url} = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
 		
+		$tmpl_vars{i_session_dir} = $args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/php_sessions';
+		
 		if(! -d  $upload_dir){ 
 			# No need to backup this.
 			installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
@@ -1598,22 +1599,6 @@ sub install_and_configure_kcfinder {
 	
 	if($q->param('wysiwyg_editor_install_tiny_mce') == 1){ 
 		
-		# Currently, I'm just going to do a regex, for tiny_mce, 
-		# although I"m sure this'll get more complicated...
-		my $kcfinder_config_loc = make_safer($install_path . '/kcfinder/config.php');
-		
-		my $config_file = slurp($kcfinder_config_loc);
-		my $pat         = quotemeta(q{//'_tinyMCEPath' => "/tiny_mce",}); 
-		my $rep         = q{'_tinyMCEPath' => "} . $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/tiny_mce",';
-		 $config_file   =~ s/$pat/$rep/sm;
-		installer_chmod(0777, $kcfinder_config_loc); 
-		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $kcfinder_config_loc or croak $!;
-		print $config_fh $config_file or croak $!;
-		close $config_fh or croak $!;
-		installer_chmod(0644, $kcfinder_config_loc);
-		undef $config_fh;
-		
-		
 		my $tiny_mce_config_js = DADA::Template::Widgets::screen(
 	        {
 	            -screen => 'tiny_mce_config_js.tmpl',
@@ -1633,6 +1618,27 @@ sub install_and_configure_kcfinder {
 		undef $config_fh;
 		
 	}
+	
+	my $sess_dir = make_safer($args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/php_sessions'); 
+	if(! -d $sess_dir){ 
+		installer_mkdir( $sess_dir, $DADA::Config::DIR_CHMOD )
+	}
+	my $kcfinder_config_php = DADA::Template::Widgets::screen(
+        {
+            -screen => 'kcfinder_config_php.tmpl',
+            -vars   => {
+				i_tinyMCEPath => $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/tiny_mce',
+				i_sessionDir  => $sess_dir,
+			}
+        }
+    );
+	my $kcfinder_config_loc = make_safer($install_path . '/kcfinder/config.php'); 
+	installer_chmod(0777, $kcfinder_config_loc); 
+	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $kcfinder_config_loc or croak $!;
+	print $config_fh $kcfinder_config_php or croak $!;
+	close $config_fh or croak $!;
+	installer_chmod(0644, $kcfinder_config_loc);
+	undef $config_fh;
 	
 }
 

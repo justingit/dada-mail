@@ -29,12 +29,8 @@ BEGIN {
 #---------------------------------------------------------------------#
 
 
- #---------------------------------------------------------------------#
+#---------------------------------------------------------------------#
 # The Path to your Perl *Libraries*:
-# This IS NOT the path to Perl. The path to Perl is the first line of
-# this script.
-#
-#
 
 use lib qw(
 	./
@@ -44,87 +40,11 @@ use lib qw(
 	../../../perllib
 );
 
-# This list may need to be added to. Find the absolute to path to this
-# very file. This:
-#
-#        /home/youraccount/www/cgi-bin/dada/mail.cgi
-#
-# Is an example of what the absolute path to this file may be.
-#
-# Get rid of, "/mail.cgi"
-#
-#        /home/youraccount/www/cgi-bin/dada
-#
-# Add that line after, "./DADA/perllib" above.
-#
-# Add "DADA/perllib" from the absolute path you just made right
-# after your last entry into the Path to your Perl Libraries:
-#
-#    /home/youraccount/www/cgi-bin/dada
-#    /home/youraccount/www/cgi-bin/dada/DADA/perllib
-#
-# and you should be good to go.
-#
-# If this doesn't do the job - make sure ALL the directories, including the
-# DADA directory have permissions of: 755 and all files have permissions
-# of: 644
 #---------------------------------------------------------------------#
 
-
-
-
-#---------------------------------------------------------------------#
-#
-# If you'd like error messages to be printed out in your browser, set the
-# following to 1, like this:
-
-#	use constant ERRORS_TO_BROWSER => 1;
-
-# To always include a stack trace, set it to 2, like this:
-#
-#	use constant ERRORS_TO_BROWSER => 2;
-#
-
-use constant ERRORS_TO_BROWSER => 1;
-
-#
-# If you don't want Dada Mail to show any error messages in your web browser, 
-# comment remove all the lines (below) between the markers: 
-
-	# Start Web Browser Error Reporting
-	
-	# End Web Browser Error Reporting
-
-
-
-
-
-# Start Web Browser Error Reporting
-#---------------------------------------------------------------------#
-
-use Carp qw(croak carp);
-use CGI::Carp qw(fatalsToBrowser set_message);
-    BEGIN {
-       $Carp::Verbose = 1 if ERRORS_TO_BROWSER >= 2;
-       sub handle_errors {
-          my $msg = shift;
-          print q{<h1>Program Error (Server Error 500)</h1>
-                  <hr />
-             <p>
-              <em>
-              More information about this error may be available in the
-              server error log and/or program error log.
-              </em>
-             </p>
-             <hr />
-               };
-         print "<pre>$msg</pre>" if ERRORS_TO_BROWSER >= 1;
-       }
-      set_message(\&handle_errors);
-    }
+use CGI::Carp qw(fatalsToBrowser);
 
 #---------------------------------------------------------------------#
-# End Web Browser Error Reporting
 
 
 
@@ -166,6 +86,8 @@ my $c = DADA::App::ScreenCache->new;
 use DADA::App::Guts;
 
 use DADA::MailingList::Subscribers;
+
+use Try::Tiny;
 
 use CGI;
     CGI->nph(1)
@@ -1908,11 +1830,13 @@ sub list_options {
         $can_use_mx_lookup = 1;
     }
 
-    my $can_use_captcha = 0;
-    eval { require DADA::Security::AuthenCAPTCHA; };
-    if ( !$@ ) {
-        $can_use_captcha = 1;
-    }
+	my $can_use_captcha = 1; 
+	try { 
+		require DADA::Security::AuthenCAPTCHA; 
+	} catch {
+		carp "CAPTCHA Not working correctly?: $_";  
+		$can_use_captcha = 0;
+	};
 
     if ( !$process ) {
 	
@@ -5289,11 +5213,14 @@ sub archive_options {
 
         if(!$process){
 
-			my $can_use_captcha = 0;
-			eval { require DADA::Security::AuthenCAPTCHA; };
-			if(!$@){
-				$can_use_captcha = 1;
-			}
+			my $can_use_captcha = 1; 
+			try { 
+				require DADA::Security::AuthenCAPTCHA; 
+			} catch {
+				carp "CAPTCHA Not working correctly?: $_";  
+				$can_use_captcha = 0;
+			};
+			
 		
 		require DADA::Template::Widgets;
         my $scrn =  DADA::Template::Widgets::wrap_screen(
@@ -5401,34 +5328,32 @@ sub adv_archive_options {
             $can_use_html_scrubber = 0;
         }
 
-        my $can_use_recaptcha_mailhide = 0;
-
-
-        eval { require Captcha::reCAPTCHA::Mailhide; };
-
-        if ( !$@ ) {
-
-            if (
-                !defined(
-                    $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key}
-                )
-                || !defined(
-                    $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key}
-                )
-              )
-            {
-                warn
-'You need to configure Recaptcha Mailhide in your configuration.';
-            }
-
-            $can_use_recaptcha_mailhide = 1;
-        }
-
-        my $can_use_gravatar_url = 0;
+		my $can_use_recaptcha_mailhide = 1; 
+		try { 
+			 require Captcha::reCAPTCHA::Mailhide; 
+		} catch {
+			carp "reCAPTCHA Mailhide not working correctly?: $_";  
+			$can_use_recaptcha_mailhide = 0;
+		} finally { 
+		    if (   !defined( $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key} )
+		        || !defined( $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key} )
+		        || $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key}  eq ''
+		        || $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key} eq '' )
+		    {
+				$can_use_recaptcha_mailhide = 0;
+			}
+		
+		};
+		
         my $gravatar_img_url     = '';
-        eval { require Gravatar::URL };
-        if ( !$@ ) {
-            $can_use_gravatar_url = 1;
+        my $can_use_gravatar_url = 1;
+        try { 
+			require Gravatar::URL 
+		} catch { 
+			$can_use_gravatar_url = 0; 
+		};
+		
+		if ( $can_use_gravatar_url == 1) { 
             require Email::Address;
             if ( isa_url( $li->{default_gravatar_url} ) ) {
 
@@ -5442,9 +5367,7 @@ sub adv_archive_options {
                     email => $ls->param('list_owner_email') );
             }
         }
-        else {
-            $can_use_gravatar_url = 0;
-        }
+    
 
 		require DADA::Template::Widgets;
 		my $scrn =  DADA::Template::Widgets::wrap_screen(
@@ -6147,7 +6070,22 @@ sub html_code {
 				screen             => 'html_code',
 				list               => $list,
 				subscription_form  => DADA::Template::Widgets::subscription_form({-list => $list, -ignore_cgi => 1}),
-			}
+				minimal_subscription_form => DADA::Template::Widgets::screen(
+					{ 
+						-screen => 'minimal_subscription_form.tmpl',
+						-list_settings_vars_param =>
+						{
+							-list                     => $list,
+							-dot_it                   => 1,
+						},
+					}
+				),
+			},
+			-list_settings_vars_param =>
+			{
+				-list                     => $list,
+				-dot_it                   => 1,
+			},
 		}
 	);
     e_print($scrn);
@@ -8495,11 +8433,13 @@ sub send_archive {
     # CAPTCHA STUFF
 
     my $captcha_fail    = 0;
-	my $can_use_captcha = 0;
-	eval { require DADA::Security::AuthenCAPTCHA; };
-	if(!$@){
-		$can_use_captcha = 1;
-	}
+	my $can_use_captcha = 1; 
+	try { 
+		require DADA::Security::AuthenCAPTCHA; 
+	} catch {
+		carp "CAPTCHA Not working correctly?: $_";  
+		$can_use_captcha = 0;
+	};
 
     if($li->{captcha_archive_send_form} == 1 && $can_use_captcha == 1){
         require   DADA::Security::AuthenCAPTCHA;
@@ -8928,9 +8868,11 @@ sub login {
 
         if($dada_session->logged_into_diff_list(-cgi_obj => $q) != 1){
 
-            my $login_cookie = $dada_session->login_cookie(-cgi_obj => $q,
-                                                           -list    => $list,
-                                                           -password => $admin_password);
+            my $login_cookies = $dada_session->login_cookies(
+				-cgi_obj => $q,
+				-list    => $list,
+                -password => $admin_password
+			);
 
 
             require DADA::App::ScreenCache;
@@ -8946,7 +8888,8 @@ sub login {
                 $log->mj_log($admin_list, 'login', 'remote_host:' . $rh . ', ip_address:' . $ra);
             }
 
-            print $q->header(-cookie  => [$dumb_cookie, $login_cookie],
+			my $cookies = [$dumb_cookie, @$login_cookies];
+            print $q->header(-cookie  => $cookies,
                               -nph     => $DADA::Config::NPH,
                               -Refresh =>'0; URL=' . $referer);
 
@@ -10282,13 +10225,14 @@ sub profile_login {
 			my $CAPTCHA_string  = '';
 			my $cap             = undef;
 			if($DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1){
-				eval {
-					require DADA::Security::AuthenCAPTCHA;
-					$cap = DADA::Security::AuthenCAPTCHA->new;
+				my $can_use_captcha = 1; 
+				try { 
+					require DADA::Security::AuthenCAPTCHA; 
+				} catch {
+					carp "CAPTCHA Not working correctly?: $_";  
+					$can_use_captcha = 0;
 				};
-				if(!$@){
-					$can_use_captcha = 1;
-				}
+				
 			}
 
 		   if($can_use_captcha == 1){

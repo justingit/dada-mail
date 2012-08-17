@@ -3,11 +3,11 @@ use strict;
 
 # make sure the DADA lib is int he lib paths!
 use lib qw(
-  ../
-  ../DADA/perllib
-  ../../../../perl
-  ../../../../perllib
+	../ 
+	../DADA/perllib
 );
+
+use CGI::Carp qw(fatalsToBrowser);
 
 # use some of those Modules
 use DADA::Config qw(!:DEFAULT);

@@ -406,15 +406,15 @@ People will still be able to subscribe/unsubscribe
 
  </table>
   
- <table cellspacing="5" <!-- tmpl_unless can_use_captcha -->class="disabled"<!--/tmpl_unless--> >
+ <table cellspacing="5"  >
 
     <tr>
    <td>
-    <input type="checkbox" name="captcha_sub" id="captcha_sub" value="1" <!-- tmpl_if list_settings.captcha_sub -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless can_use_captcha -->disabled="disabled"<!--/tmpl_unless-->/>
+    <input type="checkbox" name="captcha_sub" id="captcha_sub" value="1" <!-- tmpl_if list_settings.captcha_sub -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td width="99%">
     <p>
-     <label for="captcha_sub">
+     <label for="captcha_sub" <!-- tmpl_unless can_use_captcha -->class="disabled"<!-- /tmpl_unless -->>
       Enable CAPTCHA
      </label>
      <br />
@@ -423,15 +423,17 @@ People will still be able to subscribe/unsubscribe
     </p>
     
     
-    <!-- tmpl_unless can_use_captcha -->
+	 <!-- tmpl_unless can_use_captcha -->
 	    
-	    <p class="error">
-	     <em>
-	      Disabled. You need to successfully configure your current CAPTCHA system (<!-- tmpl_var CAPTCHA_TYPE -->)
-	    </em>
+		<div class="badweatherbox">
+	    <p>
+	      <strong>Disabled.</strong> The CAPTCHA system (<strong><!-- tmpl_var CAPTCHA_TYPE --></strong>) needs to be successfully configured. 
+	   
 	    </p>
-	    
-    <!--/tmpl_unless-->
+    </div> 
+
+        <!--/tmpl_unless-->
+
 
 
    </td>
@@ -903,14 +905,14 @@ Unsubscription Confirmations
 
 <fieldset> 
 	<legend>Misc.</legend>
-	 <table cellspacing="5" <!-- tmpl_unless can_use_mx_lookup -->class="disabled"<!--/tmpl_unless--> >
+	 <table cellspacing="5" >
 	  <tr>
 	   <td>
 	    <input type="checkbox" name="mx_check" id="mx_check" value="1" <!-- tmpl_if list_settings.mx_check -->checked="checked"<!--/tmpl_if--> <!-- tmpl_unless can_use_mx_lookup -->disabled="disabled"<!--/tmpl_unless--> />
 	   </td>
 	   <td> 
 	    <p>
-	     <label for="mx_check">
+	     <label for="mx_check"  <!-- tmpl_unless can_use_mx_lookup -->class="disabled"<!--/tmpl_unless-->>
 	      Look Up Hostnames When Validating Email Addresses (MX Lookup)
 	     </label>
 	     <br />
@@ -919,11 +921,11 @@ Unsubscription Confirmations
 		in the list control panel currently do not use MX Lookups.)
 	    </p>
 	<!-- tmpl_unless can_use_mx_lookup -->
-		    <p class="error">
-		     <em>
-		      Disabled. The Net::DNS module needs to be installed.
-		     </em>
+		<div class="badweatherbox">
+		    <p>
+		     <strong>Disabled.</strong> The Net::DNS module needs to be installed.
 		    </p>
+		</div>
 	<!--/tmpl_unless-->
 
 	   </td>

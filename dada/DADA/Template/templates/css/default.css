@@ -315,6 +315,12 @@ font-weight:bold;
 color: #000;
 }
 
+label.disabled { 
+	color: #999;
+	background-color: transparent;
+	border: 0;
+}
+
 .label_by_5 {
 	width: 4em;
 	float: left;
