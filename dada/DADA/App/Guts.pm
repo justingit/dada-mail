@@ -2408,13 +2408,18 @@ sub mailhide_encode {
 
     my $str = shift;
 
+	my $can_use_mailhide = 1; 
     try {
         require Captcha::reCAPTCHA::Mailhide;
     }
     catch {
         carp
 "Problems with loading Mailhide support (Captcha::reCAPTCHA::Mailhide): $_";
+	$can_use_mailhide = 0; 
     };
+	if($can_use_mailhide == 0){ 
+		return $str; 
+	}
 
     if (   !defined( $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key} )
         || !defined( $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key} )
@@ -2426,6 +2431,8 @@ sub mailhide_encode {
     }
 
 # DEV: Should I put a test to make sure that $RECAPTHCA_MAILHIDE_PARAMS is filled out correctly?
+
+die "here!"; 
 
     my $rcmh = Captcha::reCAPTCHA::Mailhide->new;
     require Email::Address;
