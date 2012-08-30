@@ -14,6 +14,13 @@ Key:
 [ ] Update Rich Text Editor docs to attempt to explain... what directories are generated where in the installer. 
 
 
+[ ] Tracker 
+	FASTER Queries to the DB, what's the problem 
+	Drop PlainText support? 
+	Support tracking by email address
+	Show data, normalized by subscription size. 
+	Smaller Redirect links
+	
 [ ] Switch from Prototype/Scriptaculous to JQuery
 
 [ ] way to see every mailinglist, an address is subscribed on? Maybe a way for a root login to go into a user's Profile? 
