@@ -2432,8 +2432,6 @@ sub mailhide_encode {
 
 # DEV: Should I put a test to make sure that $RECAPTHCA_MAILHIDE_PARAMS is filled out correctly?
 
-die "here!"; 
-
     my $rcmh = Captcha::reCAPTCHA::Mailhide->new;
     require Email::Address;
     my $addy = undef;
