@@ -1147,8 +1147,7 @@ sub _from_url {
 	# Create a user agent object
 	require LWP::UserAgent;
 	my $ua = LWP::UserAgent->new;
-
-#	$ua->agent("MyApp/0.1 ");
+	   $ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); 
 
 	if(defined($record->{$type . '_ver'}->{proxy})){ 
 		$ua->proxy(
@@ -1177,7 +1176,7 @@ sub _from_url {
 	    return $res->content;
 	}
 	else {
-	    warn $res->status_line;
+	    carp "Problem fetching webpage, '$url':" . $res->status_line;
 		return undef; 
 	}
 }
