@@ -8544,7 +8544,6 @@ sub send_archive {
 
         require DADA::App::FormatMessages;
         my $fm = DADA::App::FormatMessages->new(-List => $list);
-           $fm->use_list_template(0);
            $fm->use_email_templates(0);
            $fm->use_header_info(1);
 
