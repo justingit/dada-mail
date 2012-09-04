@@ -153,7 +153,12 @@ sub for_plaintext {
 		$msg             = $self->_remove_quoted_sig($msg);
 		 
 		#carp 'now looks like this:' . "\n$msg\n";
-		return $msg; 
+		if(defined(strip($msg))){ 
+			return $msg; 
+		}
+		else { 
+			return $args->{-msg};
+		}
 }
 sub _get_opener { 
 	my $self = shift; 
