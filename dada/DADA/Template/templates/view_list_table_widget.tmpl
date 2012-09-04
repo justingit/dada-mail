@@ -1,6 +1,7 @@
 <!-- begin view_list_table_widget.tmpl --> 
 
 
+
  <table class="stripedtable">
   <tr>
 	 <!-- tmpl_unless no_checkboxes --> 
@@ -50,6 +51,7 @@
    </td>
   <!-- tmpl_loop field_names --> 
    <td>
+	<div class="clickthis">Default Text</div>
     <p>
 	   	<!-- tmpl_if expr="(order_by ne name)" -->
 			<a href="javascript:change_order('<!-- tmpl_var name escape="HTML" -->', 'asc');">
