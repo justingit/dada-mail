@@ -156,6 +156,26 @@ Rather, it's best to download them directly from the editors/etc. own site. The 
 
 CKEditor, Tiny MCE and FCKEditor also expect an additional configuration file called, C<dada_mail_config.js> to be saved in the base URL of the editor. These configuration file should hold any additional configuration you would like for Dada Mail specifically. Again, setting up these editors to work with KCFinder is not covered in the configuration examples below - for now, we suggest using the Dada Mail Installer for that type of integration, or using your own custom configuration. 
 
+Copies of the default configuration files are stored in Dada Mail as HTML::Template templates and the configuration files themselves are created during install. These default templates reside at: 
+
+=over
+
+=item * Tiny MCE: 
+
+I<dada/installer-disabled/templates/tiny_mce_config_js.tmpl>
+
+=item * CKEditor
+
+I<dada/installer-disabled/templates/ckeditor_config_js.tmpl>
+
+=item * FCKeditor
+
+I<dada/installer-disabled/templates/fckconfig_js.tmpl>
+
+=back
+
+Customizing these templates I<before> an installation/upgrade will change the actual configuration file Dada Mail creates. 
+
 Below are bare-bone examples of what these configuration files should hold.
 
 =head3 Tiny MCE
