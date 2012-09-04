@@ -1047,7 +1047,7 @@ sub restart_mass_send {
                                 $self->{list}, 
 							    "Restarting List Sending", 
 							     "Internal ID: " . $id, 
-							     "Tupe: " . $type, 
+							     "Type: " . $type, 
 							     
 							   )   if $DADA::Config::LOG{mass_mailings};   
 							    
@@ -1177,9 +1177,9 @@ sub mass_send {
         
         if($mailout->should_be_restarted == 1){ 
         
-            warn '[' . $self->{list} . '] mailout is reporting the mailing should be restarted.'
+            warn '[' . $self->{list} . '] mass mailing is reporting the mailing should be restarted.'
                 if $t; 
-			$mailout->log(' mailout is reporting the mailing should be restarted.');
+			$mailout->log('mass mailing is reporting that it should be restarted.');
                         
             my $raw_msg = $mailout->reload(); 
             
@@ -1196,7 +1196,7 @@ sub mass_send {
     
     }else { 
 
-        warn '[' . $self->{list} . '] Creating MailOut'
+        warn '[' . $self->{list} . '] Creating Mass Mailing'
             if $t; 
 
 		$mailout->create({
@@ -1238,7 +1238,7 @@ sub mass_send {
 	   $self->num_subscribers($num_subscribers); 
 	
 	if( ! $mailout->still_around ){ 
-		warn '[' . $self->{list} . ']  mailing Seems to have been removed. exit()ing'
+		warn '[' . $self->{list} . ']  Mass mailing seems to have been removed. exit()ing'
             if $t;
 		exit(0); 
 	}
@@ -1260,9 +1260,9 @@ sub mass_send {
 			
 		if($self->mass_test == 1){ 
 			
-			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Queueing is on, but we\'re side-stepping the queueing check to send a test mailing out...'
+			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Queueing is on, but we\'re side-stepping the queueing check to send a test mass mailing out...'
 				if $t; 
-			$mailout->log('Queueing is on, but we\'re side-stepping the queueing check to send a test mailing out...'); 
+			$mailout->log('Queueing is on, but we\'re side-stepping the queueing check to send a test mass mailing out...'); 
 			
 		}else { 
 					
@@ -1532,12 +1532,8 @@ sub mass_send {
 			#
 			# pretty sure $status is still in affect...
 			
-			my ($ssec, $smin, $shour, $sday, $smonth, $syear) = (localtime($mail_start_time))[0,1,2,3,4,5];
-			my $log_mail_start_time = sprintf("Mailing Started: %02d/%02d/%02d %02d:%02d:%02d",  $smonth+1, $sday, $syear+1900, $shour, $smin, $ssec);	
-	        # $log_mail_start_time isn't used until about 200 lines. Perchance we should move this?!
-	
-	
-	
+			my $log_mail_start_time = scalar(localtime($mail_start_time)); 	
+
 			# Let's tell em we're in control: 
 			#
 			$mailout->set_controlling_pid($$);
@@ -2052,10 +2048,7 @@ sub mass_send {
 			
 			# Old, crufty, complicated stuff...
 			$mailing_amount   = $mailing_count; 
-			my $mail_end_time = time;
-			my ($dsec, $dmin, $dhour, $dday, $dmonth, $dyear) = (localtime($mail_end_time))[0,1,2,3,4,5];   
-			# These sorts of lines need their own subroutine...
-			my $log_mail_end_time = sprintf("Mailing Completed: %02d/%02d/%02d %02d:%02d:%02d",  $dmonth+1, $dday, $dyear+1900, $dhour, $dmin, $dsec);	
+			my $log_mail_end_time = scalar(localtime(time));
 			
 			if( $self->{ls}->param('get_finished_notification')  == 1){ 			
 			    
@@ -2065,7 +2058,7 @@ sub mass_send {
                 $self->_email_batched_finished_notification(
                     -fields       => \%fields, 
                     -start_time   => $mail_start_time, 
-                    -end_time     => $mail_end_time, 
+                    -end_time     => $log_mail_end_time, 
                     
                     -emails_sent  => $ending_status->{total_sent_out},
                     
@@ -2074,9 +2067,16 @@ sub mass_send {
                                                         
 			}
 			# End Old, Complicated, Crufty Stuff....
-	
-			$mailout->log('List Mailing Completed ' . "Mass Mailing: $mailout_id  subject:$fields{Subject}, $log_mail_start_time, $log_mail_end_time, Mailing Amount:$mailing_amount");
-
+			my $mass_mail_finished_log = "Message-Id: $mailout_id\tSubject: $fields{Subject}\tStarted: $log_mail_start_time\tFinished: $log_mail_end_time\tMailing Amount: $mailing_amount"; 			
+			if($DADA::Config::LOG{mass_mailings} == 1){ 
+				$self->{mj_log}->mj_log(
+					$self->{list}, 
+					'Mass Mailing Completed',
+					$mass_mail_finished_log
+				); 
+			}
+			$mailout->log($mass_mail_finished_log);
+			
 			warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' closing MAILLIST'
 			    if $t; 
 			    
