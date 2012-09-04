@@ -1347,7 +1347,7 @@ logged, change the variable to a '0' if you don't.
     mass_mailings => 1,
 
     # log batchess of mass mailings?
-    mass_mailing_batche => 1,
+    mass_mailing_batches => 1,
 
     # log control panel login/logouts?
     logins => 1,
