@@ -463,6 +463,7 @@ sub _format_text {
 						};		
 					}
 					
+					
 					if($self->{ls}->param('discussion_template_defang') == 1) { 
 						try {
 							$content = $self->template_defang({-data => $content});
@@ -475,7 +476,7 @@ sub _format_text {
 				} #/ discussion lists
  	
 				# End filtering done before the template is applied 
-				
+								 
 				$content = $self->_apply_template(
 					-data => $content, 
 					-type => $entity->head->mime_type, 
@@ -1393,7 +1394,8 @@ sub _apply_template {
 				@_,
 				); 
 
-	die "no data! $!" if ! $args{-data}; 
+	die 'No message passed for type: ' . $args{-type} 
+		if ! $args{-data}; 
 	die "no type! $!" if ! $args{-type}; 
 
  	# These are stupid.   
