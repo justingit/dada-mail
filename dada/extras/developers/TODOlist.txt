@@ -9,13 +9,17 @@ Key:
 [x] Done. 
 [*] Naw...
 [?] Someday
-[ ] Redo Mass Mailing Batch sending docs
-[ ] Minimal subscription form output, instead of the gigantic monstrosity that's made, now
-[ ] Update Rich Text Editor docs to attempt to explain... what directories are generated where in the installer. 
 
 
+[x] Redo Mass Mailing Batch sending docs
+[x] Minimal subscription form output, instead of the gigantic monstrosity that's made, now
+[x] Update Rich Text Editor docs to attempt to explain... what directories are generated where in the installer. 
+
+
+[ ] Simple Subscriber Stats in the L hand admin menu - 1 - 999; 1k - 999k; 1M+..
 [ ] Tracker 
-	FASTER Queries to the DB, what's the problem 
+	FASTER Queries to the DB, what's the problem ?
+		[ ] Is it really all that slow? 
 	Drop PlainText support? 
 	Support tracking by email address
 	Show data, normalized by subscription size. 
