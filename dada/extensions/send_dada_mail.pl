@@ -83,8 +83,6 @@ sub deliver {
     
     my $fm = DADA::App::FormatMessages->new(-List => $list); 
        $fm->mass_mailing(1); 
-	    # $fm->Subject($message_subject);
-       $fm->use_list_template(1); 
 		
        
     
