@@ -171,7 +171,7 @@
 	      <!-- tmpl_if list_settings.invites_prohibit_reinvites -->
 			&nbsp;
 		  <!-- tmpl_else --> 
-			<input type="checkbox" name="already_invited_address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->"  /><!--checked="checked"-->
+			<input type="checkbox" name="already_invited_address" class="already_invited_address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->"  /><!--checked="checked"-->
 	      <!-- /tmpl_if --> 
 		</td>
 	     <td>
@@ -194,7 +194,7 @@
 	   <!-- tmpl_unless list_settings.invites_prohibit_reinvites -->
 		   <tr>
 			<td>
-				<input id="check_all_already_invited_addresses" type="checkbox" onClick="toggleCheckBoxes(this, 'already_invited_address')"/>
+				<input class="toggleCheckboxes" type="checkbox" data-target_class="already_invited_address" />
 		    </td>
 			<!-- tmpl_loop fields --> 
 		        <td>

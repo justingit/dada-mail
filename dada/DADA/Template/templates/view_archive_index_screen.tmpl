@@ -55,7 +55,7 @@
   
 	   <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if--> title="<!-- tmpl_var message_blurb -->">
 	    <td width="25">
-	     <input type="checkbox" name="address" value="<!-- tmpl_var id -->" />
+	     <input type="checkbox" name="address" class="address" value="<!-- tmpl_var id -->" />
 	    </td>
 	    
 	    <td> 
@@ -88,7 +88,9 @@
 <table class="stripedtable">
   <tr>
    	<td width="25">
-    	<input type="checkbox" onClick="toggleCheckBoxes(this, 'address')" />
+		<!-- no offense, but why is the checkbox named, "address?" --> 
+		<input class="toggleCheckboxes" type="checkbox" data-target_class="address" />
+
    	</td>
 	<td>
 	 <input type="submit" class="small_button" value="Delete Checked" />

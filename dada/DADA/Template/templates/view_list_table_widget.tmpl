@@ -24,16 +24,16 @@
     <p>
 
 		<!-- tmpl_if expr="(order_by ne 'email')" -->
-			<a href="javascript:change_order('email', 'asc');">
+			<a href="#" class="change_order" data-by="email" data-dir="asc">
 		<!-- /tmpl_if --> 
 		
 		<!-- tmpl_if expr="(order_by eq 'email') && (order_dir eq 'asc')" -->
-			<a href="javascript:change_order('email', 'desc');">
+			<a href="#" class="change_order" data-by="email" data-dir="desc">
 		<!-- /tmpl_if --> 
 		
 		
 		<!-- tmpl_if expr="(order_by eq 'email') && (order_dir eq 'desc')" -->
-			<a href="javascript:change_order('email', 'asc');">
+			<a href="#" class="change_order" data-by="email" data-dir="asc">
 		<!-- /tmpl_if -->
      <strong>
 		Email
@@ -51,16 +51,15 @@
    </td>
   <!-- tmpl_loop field_names --> 
    <td>
-	<div class="clickthis">Default Text</div>
     <p>
 	   	<!-- tmpl_if expr="(order_by ne name)" -->
-			<a href="javascript:change_order('<!-- tmpl_var name escape="HTML" -->', 'asc');">
+			<a href="#" class="change_order" data-by="<!-- tmpl_var name escape="HTML" -->" data-dir="asc">
 		<!-- /tmpl_if --> 
 		<!-- tmpl_if expr="(order_by eq name) && (order_dir eq 'asc')" -->
-    		<a href="javascript:change_order('<!-- tmpl_var name escape="HTML" -->', 'desc');">
+    		<a href="#" class="change_order" data-by="<!-- tmpl_var name escape="HTML" -->" data-dir="desc">
 		<!-- /tmpl_if -->
 		<!-- tmpl_if expr="(order_by eq name) && (order_dir eq 'desc')" -->
-			<a href="javascript:change_order('<!-- tmpl_var name escape="HTML" -->', 'asc');">
+			<a href="#" class="change_order" data-by="<!-- tmpl_var name escape="HTML" -->" data-dir="asc">
 		<!-- /tmpl_if -->
      <strong>
 	  <!-- tmpl_if label --> 
@@ -91,7 +90,7 @@
 		
 	    <td width="25">
 	  
-			<input type="checkbox" name="address" value="<!-- tmpl_var email escape="HTML" -->" />
+			<input type="checkbox" name="address" class="address" value="<!-- tmpl_var email escape="HTML" -->" />
 
 		</td>
 			    <!-- /tmpl_unless --> 

@@ -4,74 +4,6 @@
 <!-- tmpl_if comment --> 
 <!-- tmpl_set name="load_modalbox" value="0" -->
 <!-- /tmpl_if --> 
-<script type="text/javascript">
-//<![CDATA[
-
-	$(document).ready(function() {
-		$(window).load(function() {
-			view_list_viewport();
-		}); 
-		
-		$(".clickthis").live("click", function(event){
-				alert($(this).text());
-		});
-
-
-	});
-	
-	function view_list_viewport(){ 	
-		$("#view_list_viewport_loading").html( '<p class="alert">Loading...</p>' );
-		var request = $.ajax({
-		  url: "<!-- tmpl_var S_PROGRAM_URL -->",
-		  type: "POST",
-		  cache: false,
-		  data: {
-			f:         'view_list',
-			mode:      'viewport', 
-			type:      $("#type").val(),
-			page:      $("#page").val(),
-			query:     $("#query").val(),
-			order_by:  $("#order_by").val(),
-			order_dir: $("#order_dir").val()
-		  },
-		  dataType: "html"
-		});
-		request.done(function(content) {
-		  $("#view_list_viewport").html( content );
-		  $("#view_list_viewport_loading").html( '<p class="alert">&nbsp;</p>' );
-		});
-	}
-
-	function turn_page(page_to_turn_to) { 
-		$("#page").val(page_to_turn_to);
-		view_list_viewport();
-	}
-	function change_type(type_to_go_to) { 
-		$("#type").val(type_to_go_to);
-		$("#page").val(1); 
-		view_list_viewport();
-	}
-	function search_list(){ 
-		$("#page").val(1); 
-		$("#query").val($("#search_query").val()); 
-		view_list_viewport();
-	}
-	function clear_search(){ 
-		$("#query").val(''); 
-		$("#page").val(1); 
-		view_list_viewport(); 
-	}
-	function change_order(order_by, order_dir) { 
-		$("#order_by").val(order_by); 
-		$("#order_dir").val(order_dir); 
-		$("#page").val(1); 
-		view_list_viewport();	 
-	}
-
-
-//]]>
-</script>
-
 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
@@ -79,8 +11,6 @@
 	</div>
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
-
-	<div class="clickthis">Default Text</div>
 	
 <form id="viewport_values">
 	<input type="hidden" id="type"      name="type"      value="<!-- tmpl_var type escape="HTML" -->" />	

@@ -1,76 +1,6 @@
 <!-- begin membership.tmpl -->
 
 
-<script type="text/javascript">
-//<![CDATA[
-
-	
-	
-Event.observe(window, 'load', function() {
-	mailing_list_history();	
-});
-
-function mailing_list_history(){ 
-	new Ajax.Updater(
-		'mailing_list_history', '<!-- tmpl_var S_PROGRAM_URL -->', 
-		{ 
-		    method: 'post', 
-			parameters: {
-				f:       'mailing_list_history',
-				email:   '<!-- tmpl_var email -->',
-			},
-		onCreate: 	 function() {
-			$('mailing_list_history_loading').update('<p class="alert">Loading...</p>');
-		},
-		onComplete: 	 function() {
-			$('mailing_list_history_loading').update('<p class="alert">&nbsp;</p>');
-			Effect.BlindDown('mailing_list_history');
-		}	
-	});
-}
-
-
-
-
-function updateEmail(){ 
-	
-	var is_for_all_lists = 0; 
-	if(Form.Element.getValue('for_all_mailing_lists') == 1 && $('for_all_mailing_lists').checked == true){ 
-		is_for_all_lists = 1;
-	}
-	new Ajax.Updater(
-		'update_email_results', '<!-- tmpl_var S_PROGRAM_URL -->', 
-		{ 
-		    method: 'post', 
-			parameters: {
-				f:             'update_email_results',
-				updated_email: $F('updated_email'),
-				email:         '<!-- tmpl_var email -->',
-				for_all_lists: is_for_all_lists
-			},
-		onCreate: 	 function() {
-			$('update_email_results_loading').update('<p class="alert">Loading...</p>');
-		},
-		onComplete: 	 function() {
-			$('update_email_results_loading').update('<p class="alert">&nbsp;</p>');
-			Effect.BlindDown('update_email_results');
-		}	
-		});
-}
-
-
-
-
-function show_change_profile_password_form(){ 
-	Effect.BlindUp('change_profile_password_button');
-	Effect.BlindDown('change_profile_password_form');	
-}
-
-
-//]]>
-</script> 
-
-
 <!-- tmpl_set name="title" value="Membership" -->
 
 <div id="screentitle"> 
@@ -189,7 +119,7 @@ function show_change_profile_password_form(){
 		<legend>Update Address</legend>
 
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" onSubmit="updateEmail();return false">
-
+			<input type="hidden" name="original_email" id="original_email" value="<!-- tmpl_var email -->" />
 			<p>	
 			<label for="updated_email">New Address:</label> <input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email -->" class="midi" />
 			</p>
@@ -308,7 +238,7 @@ function show_change_profile_password_form(){
 			<!-- tmpl_if root_login --> 
 	
 				<div id="change_profile_password_button">
-					<input type="button" value="Click to Change Profile Password..." class="cautionary" onclick="show_change_profile_password_form();" />
+					<input type="button" value="Click to Change Profile Password..." class="cautionary change_profile_password" />
 				</div> 
 				<div id="change_profile_password_form" style="display:none">
 					<form name="change_profile_password" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
