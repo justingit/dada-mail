@@ -17,6 +17,10 @@ $(document).ready(function() {
 	}); 
 	
 	// Membership >> View List
+	$(".change_type").live("click", function(event){
+		change_type($(this).attr("data-type"));
+		event.preventDefault();
+	});
 	$(".turn_page").live("click", function(event){
 		turn_page($(this).attr("data-page"));
 		event.preventDefault();
@@ -37,7 +41,40 @@ $(document).ready(function() {
 		clear_search();
 		event.preventDefault();
 	});
-	
+	$('#search_query').live('keydown', function(){	
+		$( "#search_query" ).autocomplete({
+			source: function( request, response ) {
+				$.ajax({
+					url: "<!-- tmpl_var S_PROGRAM_URL -->",
+					type: "POST",
+					dataType: "json",
+					data: {
+						f: 'search_list_auto_complete',
+						length: 10,
+						type: $("#type").val(),
+						query: request.term
+					},
+					success: function( data ) {
+						response( $.map( data, function( item ) {
+							return {
+								value: item.email,
+							}
+						}));
+					},
+					error: function(){ 
+						alert('something is wrong');
+					},
+				});
+			},
+			minLength: 3,
+			open: function() {
+				$( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+			},
+			close: function() {
+				$( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+			}
+		});
+	});
 	
 	
 	// Membership >> user@example.com

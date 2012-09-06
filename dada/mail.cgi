@@ -491,6 +491,7 @@ sub run {
 	'admin_help'                 =>    \&admin_help,
 	'delete_list'                =>    \&delete_list,
 	'view_list'                  =>    \&view_list,
+	'search_list_auto_complete'  =>    \&search_list_auto_complete, 
 	'list_activity'              =>    \&list_activity,
 	'view_bounce_history'        =>    \&view_bounce_history, 
 	'subscription_requests'      =>    \&subscription_requests,
@@ -3073,6 +3074,37 @@ sub view_list {
 	}
 }
 
+sub search_list_auto_complete { 
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'view_list'
+    );
+    $list = $admin_list;
+
+	my $query                            = xss_filter( $q->param('query') )                          || undef;
+	my $type                             = xss_filter($q->param('type'))                             || 'list';
+	
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+
+        my ( $total_num, $subscribers ) = $lh->search_list(
+            {
+                -query     => $query,
+                -type      => $type,
+                '-length'  => 10,
+            }
+        );
+
+	my $r = [];
+	for my $result(@$subscribers) { 
+		push(@$r, {'email' =>  $result->{email}});
+	}
+	 
+	use JSON; 
+	my $json = JSON->new->allow_nonref;
+	 print $q->header('application/json'); 
+	 print $json->encode($r);	
+	
+}
 
 
 sub list_activity { 
