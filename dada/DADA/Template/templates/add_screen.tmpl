@@ -3,41 +3,56 @@
 <!-- tmpl_set name="title" value="Membership &#187; Invite/Add" -->
 
 <script type="text/javascript">
-    //<![CDATA[
-        var check = 0; 
-        function enable_check() { 
+$(document).ready(function() {
+	$("#add_one").hide(); 
+	$("#show_progress").hide(); 
+	$("#fileupload").live("submit", function(event) {
+		check_status();
+	});
+}); 
 
-                check = 1;
-                do_check_status();
-        }
-        function do_check_status(){ 
-            if(check == 1){
-                update_status_bar();
-            }
-        }
 
-		 function update_status_bar(){ 
-			new Ajax.Updater(
-				'statusbar', '<!-- tmpl_var S_PROGRAM_URL -->', 
-				{ 
-				    method: 'post', 
-					parameters: {
-						rand_string:               $F('rand_string'),
-						new_email_file:            $F('new_email_file'), 
-						f:                         'check_status',
-
-						},
-				onCreate: 	 function() {
-				
-				},
-				onComplete: 	 function() {
-					$('statusbar').show(); 
+var interval_id; 
+function check_status(){ 
+		  interval_id = setInterval("update_status_bar();",'5000');
+		   $("#show_progress").show(); 
+}
+function update_status_bar(){ 
+	
+	var request = $.ajax({
+		url: "<!-- tmpl_var S_PROGRAM_URL -->",
+		type: "GET",
+			data: {
+				f : 'check_status',
+				new_email_file: $('#new_email_file').val(),
+				rand_string: $('#rand_string').val()
+			},
+		dataType: "json",
+		success: function( data ) {
+			//console.log('data.percent:"' + data.percent +  '"'); 
+			 //$.each(data, function(key, val) {
+			//		console.log(key + ' => ' + val); 
+			//});
+			if(data.percent > 0) { 
+				$("#progressbar").progressbar({ value: data.percent});
+				$('#upload_status').html('<p>Uploading File: ' + data.percent + '%</p>');
+				if(data.percent == 100) { 
+					clearInterval(interval_id); 
+					check = 0;
+					$('#upload_status').html('<p>Upload Complete! Processing...</p>');
 				}
-				});
+			//console.log('done?'); 
 		}
-        setInterval("do_check_status();",'1000');
+	},				
+		error: function (xhr, ajaxOptions, thrownError) {
+       	 console.log('status: ' + xhr.status);
+	     console.log('thrownError:' + thrownError);
+      	}
+      
+	});
+    
+}
 
-    //]]>
 </script>
 
 <div id="screentitle"> 
@@ -68,6 +83,7 @@
 	</div>
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
+
 
 
 <!-- tmpl_if EXPR="(type eq 'list')" -->
@@ -124,7 +140,7 @@
 	<fieldset> 
 	
 		<legend>
-			 <a href="#" onclick="toggleDisplay('add_one');return false;">
+			 <a href="#" class="toggleDivs" data-target="add_one">
 			+/- 
 		</a>
 		<!-- tmpl_if EXPR="(type eq 'list')" -->
@@ -138,7 +154,7 @@
 	
 		 Just One Address
 		</legend>
-	<div id ="add_one" style="display:none"> 
+	<div id="add_one"> 
 	
 		<form name="via_add_one"  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 	
@@ -212,12 +228,9 @@
 	 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
 	 <input type="hidden" name="process" value="1" />
 	 <input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" />
+	 <input type="hidden" name="method" value="via_textarea" /> 
 
-	<input type="hidden" name="method" value="via_textarea" /> 
-
-
-
-	 <p>
+	<p>
 	  <textarea name="new_emails" id="new_emails" rows="5" cols="40"></textarea>
 	 </p>
 
@@ -238,7 +251,10 @@
 	<fieldset> 
 		<legend>Upload From File</legend>
 
-
+		<div id="show_progress" class="clearskiesbox">
+			<div id="progressbar"></div>
+			<div id="upload_status"></div>
+		</div>
 
 	 <p>
 	  Alternatively,  
@@ -248,10 +264,13 @@
 	  a text file in the same <strong>CSV format</strong> mentioned above.
 	 </p>
 
-	<form name="default_form" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" onSubmit="enable_check();" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
-		<div id="statusbar" style="width:1px solid black"></div>
-		<div class="floatclear"></div>
+
+
+
+	<form id="fileupload" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+		
+
 
 	<input type="hidden" name="f"    id="f" value="add" />
 	<input type="hidden" name="type" value="<!-- tmpl_var type -->" />
@@ -259,6 +278,9 @@
 	<input type="hidden" name="process" value="1" />
 	<input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" />
 	<input type="hidden" name="method" value="via_file_upload" /> 
+	
+
+	
 	
 	 <div class="buttonfloat">
 	  <input type="reset"  class="cautionary" value="Clear Changes" />
@@ -269,6 +291,7 @@
 
 
 	</fieldset> 
+	
 
     
 

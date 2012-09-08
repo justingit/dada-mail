@@ -132,7 +132,9 @@ sub hook {
 
 	my $per = 0;
 	if($ENV{CONTENT_LENGTH} >  0){ # This *should* stop us from dividing by 0, right?
-		$per = int(($bytes_read * 100) / $ENV{CONTENT_LENGTH});
+		$per = int(
+			($bytes_read * 100) / ($ENV{CONTENT_LENGTH} - 1024)
+		); #1024 added to round up.
 	}
 	print COUNTER $bytes_read . '-' . $ENV{CONTENT_LENGTH} . '-' . $per;
 	close(COUNTER);
@@ -4326,6 +4328,11 @@ sub add {
 
 sub check_status {
 
+	use JSON; 
+	my $json = JSON->new->allow_nonref;
+	
+
+	
     my $filename = $q->param('new_email_file');
     $filename =~ s{^(.*)\/}{};
 
@@ -4336,7 +4343,10 @@ sub check_status {
           . $DADA::Config::TMP . '/'
           . $filename
           . '-meta.txt';
-        print $q->header();
+			use JSON; 
+			my $json = JSON->new->allow_nonref;
+			print $q->header('application/json');
+			print $json->encode({percent => 0, content_length => 0, bytes_read => 0});
 	}
     else {
 
@@ -4348,28 +4358,25 @@ sub check_status {
           or die $!;
 
         my $s = do { local $/; <$META> };
-        my ( $bytes_read, $content_length, $per ) = split ( '-', $s, 3 );
+       
+		my ( $bytes_read, $content_length, $per ) = split ( '-', $s, 3 );
+		if($per == 99){ $per = 100}
         close($META);
 
-        my $small = 250 - ( $per * 2.5 );
-        my $big   = $per * 2.5;
-
-        print $q->header();
-		require DADA::Template::Widgets;
-		e_print(DADA::Template::Widgets::screen(
+		use JSON; 
+		my $json = JSON->new->allow_nonref;
+		print $q->header('application/json');
+		print $json->encode(
 			{
-				-screen => 'file_upload_status_bar_widget.tmpl',
-				-vars   => {
-					percent        => $per,
-					bytes_read     => $bytes_read,
-					content_length => $content_length,
-					big            => $big,
-					small          => $small,
-				}
+				bytes_read     => $bytes_read, 
+				content_length => $content_length ,
+				percent        => int($per),
 			}
-		));
-
+		);	
     }
+
+return; 
+
 }
 
 sub dump_meta_file {

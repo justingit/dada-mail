@@ -96,6 +96,11 @@ $(document).ready(function() {
 			$(this).attr("data-target_class")
 		);
 	});
+	
+	$('.toggleDivs').live("click", function(event){ 
+		toggleDisplay($(this).attr("data-target")); 
+		event.preventDefault();
+	}); 
 
 });
 
@@ -217,6 +222,11 @@ function toggleCheckboxes(status, target_class) {
 	});
 }
 
+function toggleDisplay(target) {
+	$('#' + target).toggle('blind');
+}
+
+
 
 
 
@@ -312,24 +322,10 @@ function real_message() {
 
 }
 
-function toggleDisplay(target) {
 
-	if (document.getElementById){
-		var togglin = document.getElementById( target );
-		if(togglin.style.display == ""){
-			// Scriptalicious
-			Effect.BlindUp(togglin.id);
-			
-			// target.dispaly = 'none'; 
-		}else{  
-			// Scriptalicious                          
-			Effect.BlindDown(togglin.id);
-			
-			// target.dispaly = ''; 
-		}  
-		
-	} 	
-}
+
+
+
 
 function toggleTwo(targetOpen, targetClose) { 
 	Effect.BlindUp($(targetClose));

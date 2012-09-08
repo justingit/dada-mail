@@ -1,5 +1,14 @@
 <!-- begin adv_sending_preferences_screen.tmpl -->
 
+<script type="text/javascript">
+$(document).ready(function() {
+	$("#misc_options").hide(); 
+}); 
+</script> 
+
+
+
+
 <!-- tmpl_set name="title" value="Mail Sending &#187; Advanced Sending Preferences" -->
 <div id="screentitle"> 
 	<div id="screentitlepadding">
@@ -7,9 +16,6 @@
 	</div> 
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
-
-
-
 
 
 <!-- tmpl_if done -->
@@ -162,10 +168,10 @@
 
 <fieldset> 
  <legend> 
-   <a href="#" id="misc_options_label" onclick="toggleDisplay('misc_options', 'misc_options_label');return false;">+/-</a> Misc. Options
+   <a href="#" id="misc_options_label" class="toggleDivs" data-target="misc_options">+/-</a> Misc. Options
  </legend> 
  
- <div id="misc_options" style="display:none;width:90%">
+ <div id="misc_options" style="width:90%">
  
 
 
