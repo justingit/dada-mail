@@ -2,59 +2,6 @@
 
 <!-- tmpl_set name="title" value="Membership &#187; Invite/Add" -->
 
-<script type="text/javascript">
-$(document).ready(function() {
-	$("#add_one").hide(); 
-	$("#show_progress").hide(); 
-	$("#fileupload").live("submit", function(event) {
-		check_status();
-	});
-}); 
-
-
-var interval_id; 
-function check_status(){ 
-		  interval_id = setInterval("update_status_bar();",'5000');
-		   $("#show_progress").show(); 
-}
-function update_status_bar(){ 
-	
-	var request = $.ajax({
-		url: "<!-- tmpl_var S_PROGRAM_URL -->",
-		type: "GET",
-			data: {
-				f : 'check_status',
-				new_email_file: $('#new_email_file').val(),
-				rand_string: $('#rand_string').val()
-			},
-		dataType: "json",
-		success: function( data ) {
-			//console.log('data.percent:"' + data.percent +  '"'); 
-			 //$.each(data, function(key, val) {
-			//		console.log(key + ' => ' + val); 
-			//});
-			if(data.percent > 0) { 
-				$("#progressbar").progressbar({ value: data.percent});
-				$('#upload_status').html('<p>Uploading File: ' + data.percent + '%</p>');
-				if(data.percent == 100) { 
-					clearInterval(interval_id); 
-					check = 0;
-					$('#upload_status').html('<p>Upload Complete! Processing...</p>');
-				}
-			//console.log('done?'); 
-		}
-	},				
-		error: function (xhr, ajaxOptions, thrownError) {
-       	 console.log('status: ' + xhr.status);
-	     console.log('thrownError:' + thrownError);
-      	}
-      
-	});
-    
-}
-
-</script>
-
 <div id="screentitle"> 
 	<div id="screentitlepadding">
 		 Membership (<!-- tmpl_var type_title -->)
@@ -83,7 +30,7 @@ function update_status_bar(){
 	</div>
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
-
+<div id="add_screen"></div>
 
 
 <!-- tmpl_if EXPR="(type eq 'list')" -->
@@ -136,6 +83,8 @@ function update_status_bar(){
 <!-- tmpl_if list_is_closed -->
 
 <!-- tmpl_else --> 
+
+
 
 	<fieldset> 
 	
@@ -299,5 +248,6 @@ function update_status_bar(){
 	 </fieldset>
 
 <!-- /tmpl_if -->
+
 
 <!-- end add_screen.tmpl -->
