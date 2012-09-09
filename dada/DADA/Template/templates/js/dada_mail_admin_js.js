@@ -14,7 +14,32 @@ $(document).ready(function() {
 		if($("#mailing_list_history").length) { 
 			mailing_list_history();
 		}
+		
+		// Membership >> Invite/Add
+		if($("#add_screen").length) { 
+			$("#add_one").hide(); 
+			$("#show_progress").hide(); 
+			$("#fileupload").live("submit", function(event) {
+				check_status();
+			});
+		}
+		
+		// Mail Sending >> Mass Mailing Preferences 
+		if($("#mass_mailing_preferences").length){ 
+			if($("#amazon_ses_get_stats").length) { 
+				amazon_ses_get_stats(); 
+			}
+			else { 
+				// amazon_ses_get_stats does a previewBatchSendingSpeed(), 
+				// so no need to do it, twice. 
+				previewBatchSendingSpeed();
+			}
+			toggleManualBatchSettings(); 
+		}
+	
 	}); 
+
+
 	
 	// Membership >> View List
 	$(".change_type").live("click", function(event){
@@ -77,11 +102,23 @@ $(document).ready(function() {
 	});
 	
 	
+	
 	// Membership >> user@example.com
 	$(".change_profile_password").live("click", function(event){
 		show_change_profile_password_form();
 		event.preventDefault();
 	});
+	
+	
+	// Mail Sending >> Mass Mailing Preferences 
+	$(".previewBatchSendingSpeed").live("change", function(event){ 
+		previewBatchSendingSpeed();
+	});
+
+	$("#amazon_ses_auto_batch_settings").live("click", function(event){ 
+		toggleManualBatchSettings();
+	});
+	
 	
 
 	/* Global */ 
@@ -101,9 +138,50 @@ $(document).ready(function() {
 		toggleDisplay($(this).attr("data-target")); 
 		event.preventDefault();
 	}); 
+	
+
 
 });
 
+// Membership >> Invite/Add
+var interval_id; // Global. Blech.
+function check_status(){ 
+		interval_id = setInterval("update_status_bar();",'5000');
+		$("#show_progress").show(); 
+}
+function update_status_bar(){ 
+	var request = $.ajax({
+		url: "<!-- tmpl_var S_PROGRAM_URL -->",
+		type: "GET",
+			data: {
+				f : 'check_status',
+				new_email_file: $('#new_email_file').val(),
+				rand_string: $('#rand_string').val()
+			},
+		dataType: "json",
+		success: function( data ) {
+			//console.log('data.percent:"' + data.percent +  '"'); 
+			 //$.each(data, function(key, val) {
+			//		console.log(key + ' => ' + val); 
+			//});
+			if(data.percent > 0) { 
+				$("#progressbar").progressbar({ value: data.percent});
+				$('#upload_status').html('<p>Uploading File: ' + data.percent + '%</p>');
+				if(data.percent == 100) { 
+					clearInterval(interval_id); 
+					check = 0;
+					$('#upload_status').html('<p>Upload Complete! Processing...</p>');
+				}
+			//console.log('done?'); 
+		}
+	},				
+		error: function (xhr, ajaxOptions, thrownError) {
+       	 console.log('status: ' + xhr.status);
+	     console.log('thrownError:' + thrownError);
+      	}
+
+	});
+}
 
 
 
@@ -209,6 +287,74 @@ function show_change_profile_password_form(){
 	$("#change_profile_password_button" ).hide( 'blind' );
 	$("#change_profile_password_form" ).show( 'blind' );
 }
+
+
+
+// Mail Sending >> Mass Mailing Preferences 
+function previewBatchSendingSpeed(){ 
+	$("#previewBatchSendingSpeed").hide();
+	$("#previewBatchSendingSpeed_loading").show().html( '<p class="alert">Loading...</p>' );
+	
+	var enable_bulk_batching = 0; 
+	if($('#enable_bulk_batching').prop('checked') == true){ 
+		enable_bulk_batching = 1; 
+	}
+	var amazon_ses_auto_batch_settings = 0; 
+	if($("#amazon_ses_get_stats").length) { 	
+		if($('#amazon_ses_auto_batch_settings').prop('checked') == true){ 
+			amazon_ses_auto_batch_settings = 1; 
+		}
+	}
+	
+	var request = $.ajax({
+		url: "<!-- tmpl_var S_PROGRAM_URL -->",
+		type: "POST",
+		cache: false,
+		data: {
+			f:                              'previewBatchSendingSpeed', 
+			enable_bulk_batching:           enable_bulk_batching,
+			mass_send_amount:               $('#mass_send_amount').val(), 
+			bulk_sleep_amount:              $('#bulk_sleep_amount').val(),
+			amazon_ses_auto_batch_settings: amazon_ses_auto_batch_settings
+		},
+		dataType: "html"
+	});
+	request.done(function(content) {
+		$("#previewBatchSendingSpeed_loading").hide();
+		$("#previewBatchSendingSpeed").html( content ).show( 'blind' );
+	});
+}
+
+function amazon_ses_get_stats(){ 
+	$("#amazon_ses_get_stats_loading").html( '<p class="alert">Loading...</p>' );
+	
+	var request = $.ajax({
+		url: "<!-- tmpl_var S_PROGRAM_URL -->",
+		type: "POST",
+		cache: false,
+		data: {
+			f:                    'amazon_ses_get_stats', 
+		},
+		dataType: "html"
+	});
+	request.done(function(content) {
+		$("#amazon_ses_get_stats").html( content );
+		$("#amazon_ses_get_stats_loading").html( '<p class="alert">&nbsp;</p>' );
+		$("#amazon_ses_get_stats" ).show( 'blind' );
+	});
+}
+function toggleManualBatchSettings() { 
+	if($("#amazon_ses_auto_batch_settings").prop("checked") == true){ 
+		$("#manual_batch_settings" ).hide( 'blind' );
+	}
+	else { 
+		if( $('#manual_batch_settings').is(":hidden") ) {
+			$("#manual_batch_settings" ).show( 'blind' );
+		}
+	}
+	previewBatchSendingSpeed(); 
+}
+
 
 
 

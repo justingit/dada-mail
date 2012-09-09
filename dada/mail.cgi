@@ -2255,14 +2255,14 @@ sub mass_mailing_preferences {
             -name     => "mass_send_amount",
             -id       => "mass_send_amount",
             -value    => [@message_amount],
-            -onChange => 'previewBatchSendingSpeed()',
+            -class => 'previewBatchSendingSpeed',
         );
 
         my $bulk_sleep_amount_menu = $q->popup_menu(
             -name     => "bulk_sleep_amount",
             -id       => "bulk_sleep_amount",
             -value    => [@message_wait],
-            -onChange => 'previewBatchSendingSpeed()',
+            -class => 'previewBatchSendingSpeed',
         );
 
         require DADA::Template::Widgets;

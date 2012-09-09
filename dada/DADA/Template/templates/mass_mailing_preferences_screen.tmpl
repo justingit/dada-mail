@@ -1,4 +1,6 @@
 <!-- begin mass_mailing_preferences_screen.tmpl -->
+<div id="mass_mailing_preferences"></div> 
+
 
 <!-- tmpl_set name="title" value="Mail Sending &#187; Mass Mailing Preferences" -->
 <div id="screentitle"> 
@@ -39,7 +41,7 @@
 <table> 
  <tr>
   <td>
-   <input type="checkbox" name="enable_bulk_batching" id="enable_bulk_batching" value="1" <!-- tmpl_if list_settings.enable_bulk_batching -->checked="checked"<!--/tmpl_if--> onChange="previewBatchSendingSpeed()" />
+   <input type="checkbox" name="enable_bulk_batching" id="enable_bulk_batching" class="previewBatchSendingSpeed" value="1" <!-- tmpl_if list_settings.enable_bulk_batching -->checked="checked"<!--/tmpl_if--> />
   </td>
   <td>
    <p>
@@ -54,10 +56,8 @@
 	<div id="amazon_ses_get_stats"></div> 
 	<div id="amazon_ses_get_stats_loading"></div> 
 <!-- /tmpl_if --> 
-
 <div id="previewBatchSendingSpeed"></div> 
 <div id="previewBatchSendingSpeed_loading"></div> 
-
 </div>
 
 
@@ -82,7 +82,7 @@
 		  <td>
 		 
 	
-		  <input type="checkbox" id="amazon_ses_auto_batch_settings" name="amazon_ses_auto_batch_settings" value="1" <!-- tmpl_if list_settings.amazon_ses_auto_batch_settings -->checked="checked"<!--/tmpl_if--> onChange="toggleManualBatchSettings(); return false;" />
+		  <input type="checkbox" id="amazon_ses_auto_batch_settings" id="amazon_ses_auto_batch_settings" value="1" <!-- tmpl_if list_settings.amazon_ses_auto_batch_settings -->checked="checked"<!--/tmpl_if--> />
 		</td>
 		<td>
 		<p><label for="amazon_ses_auto_batch_settings">
@@ -277,80 +277,6 @@ Since sending to your entire mailing list is usually a lengthy process (for most
 
 </form> 
 
-
-<script type="text/javascript">
-    //<![CDATA[
-
-	 function previewBatchSendingSpeed(){ 
-		new Ajax.Updater(
-			'previewBatchSendingSpeed', '<!-- tmpl_var S_PROGRAM_URL -->', 
-			{ 
-			    method: 'post', 
-				parameters: {
-					f:                              'previewBatchSendingSpeed', 
-					enable_bulk_batching:           $F('enable_bulk_batching'),
-					mass_send_amount:               $F('mass_send_amount'), 
-					bulk_sleep_amount:              $F('bulk_sleep_amount'), 
-					<!-- tmpl_if show_amazon_ses_options --> 
-						amazon_ses_auto_batch_settings: $F('amazon_ses_auto_batch_settings'),
-					<!-- /tmpl_if --> 
-				},
-
-			onCreate: 	 function() {
-				$('previewBatchSendingSpeed').hide(); 
-				$('previewBatchSendingSpeed_loading').update('<p class="alert">Loading...</p>');
-				
-			},
-			onComplete: 	 function() {
-				$('previewBatchSendingSpeed_loading').update('');
-				$('previewBatchSendingSpeed').show(); 
-			}
-
-
-			});
-	}
-	 function amazon_ses_get_stats(){ 
-		new Ajax.Updater(
-			'amazon_ses_get_stats', '<!-- tmpl_var S_PROGRAM_URL -->', 
-			{ 
-			    method: 'post', 
-				parameters: {
-					f:                    'amazon_ses_get_stats', 
-				},
-			onCreate: 	 function() {
-				$('amazon_ses_get_stats').hide(); 
-				$('amazon_ses_get_stats_loading').update('<p class="alert">Loading...</p>');
-			},
-			onComplete: 	 function() {
-				$('amazon_ses_get_stats_loading').update('');
-				$('amazon_ses_get_stats').show(); 
-			
-			}
-			});
-	}
-	
-	function toggleManualBatchSettings() { 
-		var amazon_ses_auto_batch_settings = $('default_form').amazon_ses_auto_batch_settings.checked;
-		if(amazon_ses_auto_batch_settings == true){ 
-			Effect.BlindUp('manual_batch_settings');
-		}
-		else { 
-			var togglin = document.getElementById( 'manual_batch_settings' );
-			if(togglin.style.display != ""){	
-					Effect.BlindDown('manual_batch_settings');
-			}
-		}
-		previewBatchSendingSpeed(); 
-	}
-	
-	previewBatchSendingSpeed(); 
-	<!-- tmpl_if show_amazon_ses_options -->
-		amazon_ses_get_stats(); 
-		toggleManualBatchSettings(); 
-	<!-- /tmpl_if --> 
-	    //]]>
-
-</script>
 
 
 
