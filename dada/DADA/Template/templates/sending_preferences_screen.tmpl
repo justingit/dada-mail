@@ -1,8 +1,8 @@
 <!-- being sending_preferences_screen.tmpl --> 
 
-<!-- tmpl_set name="title" value="Mail Sending &#187; Sending Preferences" -->
-<!-- tmpl_set name="load_modalbox" value="1" -->
 
+
+<!-- tmpl_set name="title" value="Mail Sending &#187; Sending Preferences" -->
 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
@@ -11,6 +11,11 @@
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
 
+<div id="sending_preferences"></div> 
+
+<!-- tmpl_if done -->
+	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+<!--/tmpl_if-->
 
 
 <!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" --> 
@@ -477,7 +482,7 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 		<!-- /tmpl_if -->		
 		
 		<!-- tmpl_if amazon_ses_has_needed_cpan_modules --> 
-			<p class="positive"> 
+			<p class="positive" id="has_needed_cpan_modules"> 
 				All needed CPAN modules are installed!
 			</p> 
 		<!-- tmpl_else --> 
@@ -509,12 +514,13 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 		 Amazon SES Tools
 		</legend>
 		<p>
-		<input type="text" name="amazon_ses_verify_email" id="amazon_ses_verify_email" value="<!-- tmpl_var list_settings.list_owner_email -->" /> <input type="button" class="" value="Verify Address for Sending" onClick="amazon_verify_email();" /> 
+		<input type="text" name="amazon_ses_verify_email" id="amazon_ses_verify_email" value="<!-- tmpl_var list_settings.list_owner_email -->" /> 
+		<input type="button" class="amazon_verify_email" value="Verify Address for Sending" /> 
 		</p> 
 		<div id="amazon_ses_verify_email_results"> 
 		</div> 
-		<div id="amazon_ses_verify_email_loading" style="display:none;"> 
-		<p class="positive">Loading...</p>
+		<div id="amazon_ses_verify_email_loading"> 
+		<p class="positive">&nbsp;</p>
 		</div> 
 		
 	</fieldset> 
@@ -533,7 +539,7 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 <div class="buttonfloat">
  <input type="reset"  class="cautionary" value="Clear Changes" />
  <input type="submit" class="processing" value="Save Changes" />
-<input type="button"  value="Save, Then Test" class="processing" onClick="test_sending_preferences();" /> 
+<input type="button"  value="Save, Then Test" class="processing test_sending_preferences" /> 
 </div>
 </form> 
 <div class="floatclear"></div>
@@ -541,108 +547,10 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 
 <fieldset> 
 
-	<script type="text/javascript">
-	    //<![CDATA[
-	
-		 function get_sending_method() { 
-			var sending_method = '';
-			if(document.default_form.sending_method.length){
-				for (var i=0; i < document.default_form.sending_method.length; i++){
-					if (document.default_form.sending_method[i].checked){
-							sending_method = document.default_form.sending_method[i].value;	
-					}
-				}
-			}
-			return sending_method; 
-		}
-
-		 function amazon_verify_email() { 
-			new Ajax.Updater(
-				'amazon_ses_verify_email_results', '<!-- tmpl_var S_PROGRAM_URL -->', 
-				{ 
-				    method: 'post', 
-					parameters: {
-						f: 'amazon_ses_verify_email',
-						amazon_ses_verify_email: $F('amazon_ses_verify_email')
-						},
-
-				onCreate: 	 function() {
-					$('amazon_ses_verify_email_results').hide(); 
-					$('amazon_ses_verify_email_loading').show();
-
-				},
-				onComplete: 	 function() {
-
-					$('amazon_ses_verify_email_loading').hide();
-					Effect.BlindDown('amazon_ses_verify_email_results');
-
-				}	
-
-
-				});
-		}
-		
-		
-		 function test_sending_preferences(){ 
-			var sending_method = get_sending_method(); 
-		
-			
-			Modalbox.show(
-				'<!-- tmpl_var S_PROGRAM_URL -->', {
-				title: 'Testing Sending Preferences...', 
-				width: 640, height: 480,
-				method: 'post', 
-				params: {
-					add_sendmail_f_flag:       $F('add_sendmail_f_flag'), 
-					smtp_server:               $F('smtp_server'), 
-					smtp_port:                 $F('smtp_port'),
-					use_smtp_ssl:              $F('use_smtp_ssl'),			
-					use_sasl_smtp_auth:        $F('use_sasl_smtp_auth'), 
-					sasl_auth_mechanism:       $F('sasl_auth_mechanism'), 
-					sasl_smtp_username:        $F('sasl_smtp_username'), 
-					sasl_smtp_password:        $F('sasl_smtp_password'), 
-					use_pop_before_smtp:       $F('use_pop_before_smtp'), 
-					pop3_server:               $F('pop3_server'), 
-					pop3_username:             $F('pop3_username'), 
-					pop3_password:             $F('pop3_password'), 
-					pop3_use_ssl:              $F('pop3_use_ssl'), 
-					set_smtp_sender:           $F('set_smtp_sender'),
-					process:                   $F('process'),
-					f:                         'sending_preferences_test',
-					sending_method:             sending_method, 
-					},
-				
-				});
-
-		}
-		
-		 function amazon_ses_get_stats() { 
-			new Ajax.Updater(
-				'amazon_ses_get_stats', '<!-- tmpl_var S_PROGRAM_URL -->', 
-				{ 
-				    method: 'post', 
-					parameters: {
-						f:                    'amazon_ses_get_stats', 
-					},
-
-				onCreate: 	 function() {
-				},
-				onComplete: 	 function() {
-
-					$('amazon_ses_get_stats').show(); 
-				}
-				});
-		}
-		
-		<!-- tmpl_if amazon_ses_has_needed_cpan_modules --> 
-			amazon_ses_get_stats();
-		<!-- /tmpl_if --> 
-		
-	    //]]>
-	</script>
-
 
 </fieldset>
- 
+<div id="dialog-modal" title="Basic modal dialog"></div>
+
+
 
 <!-- end sending_preferences_screen.tmpl --> 

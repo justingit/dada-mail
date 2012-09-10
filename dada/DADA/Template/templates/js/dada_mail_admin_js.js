@@ -24,6 +24,13 @@ $(document).ready(function() {
 			});
 		}
 		
+		// Mail Sending >> Sending Preferences 
+		if($("#sending_preferences").length) { 
+			if($("#has_needed_cpan_modules").length){ 
+				amazon_ses_get_stats();
+			}
+		}
+		
 		// Mail Sending >> Mass Mailing Preferences 
 		if($("#mass_mailing_preferences").length){ 
 			if($("#amazon_ses_get_stats").length) { 
@@ -109,6 +116,18 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 	
+	// Mail Sending >> Sending Preferences 
+    $(".test_sending_preferences").live("click", function(event){ 
+		event.preventDefault();
+		test_sending_preferences();
+	});
+
+    $(".amazon_verify_email").live("click", function(event){ 
+		event.preventDefault();
+		amazon_verify_email();
+	});
+	
+	
 	
 	// Mail Sending >> Mass Mailing Preferences 
 	$(".previewBatchSendingSpeed").live("change", function(event){ 
@@ -139,6 +158,22 @@ $(document).ready(function() {
 		event.preventDefault();
 	}); 
 	
+	$( "#dialog-modal" ).dialog({				
+		autoOpen: false,
+		width: 640,
+		minHeight: 0,
+		modal: true,
+		position: "top",
+		show: "blind",
+		hide: "blind",
+		title: "Loading...",
+		draggable: false,
+		open: function(){
+	            jQuery('.ui-widget-overlay').bind('click',function(){
+	                jQuery('#dialog-modal').dialog('close');
+	            })
+	        }
+	});
 
 
 });
@@ -289,6 +324,55 @@ function show_change_profile_password_form(){
 }
 
 
+// Mailing Sending >> Sending Preferences
+function test_sending_preferences(){ 	
+	modalMenuAjax(
+		{
+		 url: "<!-- tmpl_var S_PROGRAM_URL -->",
+		  type: "POST",
+		  cache: false,
+		  data: {
+				f:                         'sending_preferences_test',
+				add_sendmail_f_flag:       $('#add_sendmail_f_flag').val(), 
+				smtp_server:               $('#smtp_server').val(), 
+				smtp_port:                 $('#smtp_port').val(),
+				use_smtp_ssl:              $('#use_smtp_ssl').val(),			
+				use_sasl_smtp_auth:        $('#use_sasl_smtp_auth').val(), 
+				sasl_auth_mechanism:       $('#sasl_auth_mechanism').val(), 
+				sasl_smtp_username:        $('#sasl_smtp_username').val(), 
+				sasl_smtp_password:        $('#sasl_smtp_password').val(), 
+				use_pop_before_smtp:       $('#use_pop_before_smtp').val(), 
+				pop3_server:               $('#pop3_server').val(), 
+				pop3_username:             $('#pop3_username').val(), 
+				pop3_password:             $('#pop3_password').val(), 
+				pop3_use_ssl:              $('#pop3_use_ssl').val(), 
+				set_smtp_sender:           $('#set_smtp_sender').val(),
+				process:                   $('#process').val(),
+				sending_method:             $('input[name=sending_method]:checked').val()
+			},
+			dataType: 'html', 
+		}
+	); 
+}
+function amazon_verify_email() { 
+	$("#amazon_ses_verify_email_results").hide('blind');
+	$("#amazon_ses_verify_email_loading").html( '<p class="alert">Loading...</p>' );
+	var request = $.ajax({
+	  url: "<!-- tmpl_var S_PROGRAM_URL -->",
+	  type: "POST",
+	  cache: false,
+	  data: {
+			f: 'amazon_ses_verify_email',
+			amazon_ses_verify_email: $("#amazon_ses_verify_email").val()
+	  },
+	  dataType: "html"
+	});
+	request.done(function(content) {
+	  $("#amazon_ses_verify_email_results").html( content ).show('blind');
+	  $("#amazon_ses_verify_email_loading").html( '<p class="alert">&nbsp;</p>' );
+	});
+}
+
 
 // Mail Sending >> Mass Mailing Preferences 
 function previewBatchSendingSpeed(){ 
@@ -371,6 +455,29 @@ function toggleCheckboxes(status, target_class) {
 function toggleDisplay(target) {
 	$('#' + target).toggle('blind');
 }
+function modalMenuAjax(params) { 
+	$("#dialog-modal").html('').dialog('open');
+	var request = $.ajax({
+	 	 url: params.url,
+		 type:  params.type,
+		 cache: params.cache,
+		 data:  params.data,
+		 dataType: params.dataType,
+		 error: function(){ 
+			alert('something is wrong');
+		},
+		success: function(data) { 
+			$('#dialog-modal').dialog('close');
+			$("#dialog-modal").html(data);	
+		},
+		complete: function(data) {
+		    $("#dialog-modal").dialog({ title: "Results" });
+			$("#dialog-modal").dialog('open');
+		},
+	});
+}
+
+
 
 
 
