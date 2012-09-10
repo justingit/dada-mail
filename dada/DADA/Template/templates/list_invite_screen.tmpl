@@ -29,22 +29,7 @@
 	
  </div> 
 </div>
-
-
-<script type="text/javascript">
-//<![CDATA[
-
-	function show_customize_invite_message(){ 
-		Effect.BlindUp('customize_invite_message_button');
-		Effect.BlindDown('customize_invite_message_form');	
-	}
-
-//]]>
-</script> 
-
-
-
-
+<div id="list_invite_screen"></div> 
 
 
 <!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
@@ -225,12 +210,12 @@
 
 <div id="customize_invite_message_button">
 	<div style="text-align:center">
-		<input type="button" value="Customize Your List Invitation Message..." class="cautionary bigger_button" onclick="show_customize_invite_message();" />
+		<input type="button" value="Customize Your List Invitation Message..." class="cautionary bigger_button show_customize_invite_message" />
 	</div>
 	
 </div> 
 
-<div id="customize_invite_message_form" style="display:none">
+<div id="customize_invite_message_form">
 	
 	 
 	<!-- tmpl_include message_headers_fieldset_widget.tmpl --> 

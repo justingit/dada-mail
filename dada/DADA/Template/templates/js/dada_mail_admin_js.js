@@ -3,7 +3,7 @@
 
 $(document).ready(function() {
 	
-	$(window).load(function() {
+//	$(window).load(function() {
 		
 		// Membership >> View List	
 		if($("#view_list_viewport").length) { 
@@ -24,9 +24,18 @@ $(document).ready(function() {
 			});
 		}
 		
+		// Membership >> Invite
+		if($("#list_invite_screen").length){ 
+			$("#customize_invite_message_form").hide(); 
+			$('.show_customize_invite_message').live("click", function(event) { 
+				event.preventDefault();
+				show_customize_invite_message(); 
+			});
+		}
 		// Mail Sending >> Sending Preferences 
 		if($("#sending_preferences").length) { 
 			if($("#has_needed_cpan_modules").length){ 
+				event.preventDefault();
 				amazon_ses_get_stats();
 			}
 		}
@@ -44,7 +53,7 @@ $(document).ready(function() {
 			toggleManualBatchSettings(); 
 		}
 	
-	}); 
+//	}); 
 
 
 	
@@ -107,6 +116,8 @@ $(document).ready(function() {
 			}
 		});
 	});
+	
+
 	
 	
 	
@@ -322,6 +333,13 @@ function show_change_profile_password_form(){
 	$("#change_profile_password_button" ).hide( 'blind' );
 	$("#change_profile_password_form" ).show( 'blind' );
 }
+
+// Membership >> Invite 
+function show_customize_invite_message(){ 
+	$('#customize_invite_message_button').hide('blind');
+	$('#customize_invite_message_form').show('blind');	
+}
+
 
 
 // Mailing Sending >> Sending Preferences
