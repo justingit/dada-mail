@@ -168,7 +168,9 @@
 	<!-- tmpl_else --> 
 		<fieldset> 
 		<legend>
-			&quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; Directory Location [<a href="#" onclick="toggleDisplay('dada_files_help');return false;">?</a>]
+			&quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; Directory Location [
+			 <a href="#" class="toggleDivs" data-target="dada_files_help">
+				?</a>]
 		</legend>
 	
 		<div id="dada_files_help" class="clearskiesbox" style="display:none"> 
@@ -220,7 +222,10 @@
 
 <legend>
 
-<!-- tmpl_var PROGRAM_NAME --> URL [<a href="#" onclick="toggleDisplay('program_url_help');return false;">?</a>]
+<!-- tmpl_var PROGRAM_NAME --> URL [
+
+<a href="#" class="toggleDivs" data-target="program_url_help">
+?</a>]
 
 </legend> 
 
@@ -258,7 +263,10 @@
 <fieldset> 
 
 <legend>
-	<!-- tmpl_var PROGRAM_NAME --> Root Password [<a href="#" onclick="toggleDisplay('root_pass_help');return false;">?</a>]
+	<!-- tmpl_var PROGRAM_NAME --> Root Password [
+	<a href="#" class="toggleDivs" data-target="root_pass_help">
+		
+		?</a>]
 </legend> 
 
 
@@ -304,7 +312,9 @@ access <em>any</em> mailing list.</p>
 
 <fieldset> 
 
-<legend><!-- tmpl_var PROGRAM_NAME --> Backend [<a href="#" onclick="toggleDisplay('backend_help');return false;">?</a>]</legend> 
+<legend><!-- tmpl_var PROGRAM_NAME --> Backend [
+	<a href="#" class="toggleDivs" data-target="backend_help">
+	?</a>]</legend> 
 
 <!-- tmpl_if error_sql_connection  --> 
 	<div class="badweatherbox">
@@ -413,7 +423,9 @@ If using either the SQL backends, make sure to create a new database before conf
 
 
 <fieldset> 
-<legend>Plugins/Extensions (Optional) [<a href="#" onclick="toggleDisplay('plugins_extensions_help');return false;">?</a>]</legend>
+<legend>Plugins/Extensions (Optional) [
+	<a href="#" class="toggleDivs" data-target="plugins_extensions_help">
+	?</a>]</legend>
 
 <div id="plugins_extensions_help" class="clearskiesbox" style="display:none"> 
 
@@ -446,7 +458,9 @@ for it to work correctly. For help on setting the cronjob, see the
 
 <p><input type="checkbox" name="install_dada_bounce_handler" id="install_dada_bounce_handler" value="1" /><label for="install_dada_bounce_handler">Bounce Handler</label> <span class="alert">Requires Additional Configuration (cronjob)</span></p> 
 <fieldset> 
-	<legend>Additional Bounce Handler Configuration [<a href="#" onclick="toggleDisplay('bounce_handler_configuration_help');return false;">?</a>]</legend>
+	<legend>Additional Bounce Handler Configuration [
+		<a href="#" class="toggleDivs" data-target="bounce_handler_configuration_help">
+	?</a>]</legend>
 	
 	<div id="bounce_handler_configuration_help" style="display:none" class="clearskiesbox">
 		<p>
@@ -486,7 +500,9 @@ for it to work correctly. For help on setting the cronjob, see the
 
 <fieldset> 
 	
-<legend>WYSIWYG Editors (Optional) [<a href="#" onclick="toggleDisplay('wysiwyg_editor_help');return false;">?</a>]</legend>
+<legend>WYSIWYG Editors (Optional) [
+	<a href="#" class="toggleDivs" data-target="wysiwyg_editor_help">
+?</a>]</legend>
 <div id="wysiwyg_editor_help" style="display:none" class="clearskiesbox"> 
 <p>Dada Mail supports the use of third party WYSIWYG HTML editors to allow you to 
 compose and edit HTML mailing list messages. This allows you to send rich text messages, 

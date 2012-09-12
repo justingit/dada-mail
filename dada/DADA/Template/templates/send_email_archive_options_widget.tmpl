@@ -8,8 +8,9 @@
 
 <fieldset>
 
-<legend><a href="#" onclick="toggleDisplay('archive_options_widget');return false;">
- +/-
+<legend>
+	  <a href="#" class="toggleDivs" data-target="archive_options_widget">
+		 +/-
  </a>
  Archiving
 </legend>
@@ -20,7 +21,7 @@
   <tr> 
    <td>
     <p>
-     <input type="checkbox" name="archive_message" id="archive_message" <!-- tmpl_if list_settings.archive_messages -->checked="checked"<!--/tmpl_if--> value="1" onChange="ChangeMassMailingButtonLabel()" />
+     <input type="checkbox" name="archive_message" id="archive_message" <!-- tmpl_if list_settings.archive_messages -->checked="checked"<!--/tmpl_if--> value="1" class="ChangeMassMailingButtonLabel" />
     </p>
    </td>
    <td>
@@ -34,7 +35,7 @@
   <tr>
    <td>
     <p>
-     <input type="checkbox" name="archive_no_send" id="archive_no_send" value="1" onChange="ChangeMassMailingButtonLabel()" />
+     <input type="checkbox" name="archive_no_send" id="archive_no_send" value="1" class="ChangeMassMailingButtonLabel" />
     </p>
    </td>
    <td>

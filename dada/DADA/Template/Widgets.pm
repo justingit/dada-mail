@@ -510,7 +510,7 @@ sub global_list_sending_checkbox_widget {
 	
 	return  $q->checkbox_group(
 		-name       => 'alternative_list',
-		-id         => 'alternative_list', 
+		-class      => 'alternative_list', 
 		 '-values'  => [@f_a_lists],
 	   	-linebreak  =>'true',
 	    -labels     => \%list_names,

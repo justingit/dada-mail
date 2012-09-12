@@ -2,7 +2,6 @@
 
 <!-- tmpl_set name="title" value="Mass Mailing &#187; Send a Message" -->
 <!-- tmpl_set name="load_wysiwyg_editor" value="1" -->
-<!-- tmpl_set name="load_modalbox" value="1" -->
 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
@@ -10,6 +9,9 @@
 	</div>
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
+
+<div id="send_email_screen"></div> 
+<div id="dialog-modal"></div>
 
 
 
@@ -33,26 +35,41 @@
 
 <!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
 
-<!-- tmpl_include send_email_message_body_help_widget.tmpl -->
 
 
-<form name="send_email" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+<form name="mass_mailing" id="mass_mailing" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
  <input type="hidden" name="f" value="send_email" />
  <input type="hidden" name="advanced" value="yes" />
 	  
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
 <fieldset> 
-<legend>Message Body [<a href="#" onclick="Modalbox.show($('message_body_help'), {title: 'Message Body Help', width: 640, height:325}); return false;">?</a>]</legend>
+<legend>Message Body [<a href="#" class="message_body_help">?</a>]</legend>
 
-<!-- tmpl_include message_format_type_toggler_widget.tmpl --> 
 
-<div id="html_message" style="<!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" -->display:none;<!-- /tmpl_if -->background-color:#fff;border:1px solid black;border-top:0;padding:0;margin:0;"> 
-<!-- tmpl_include html_message_form_field_widget.tmpl --> 
-</div>
+	
+<div id="tabs"> 
+	
+	<ul>
+			<li>
+				<a href="#html_message">
+					HTML Version
+				</a>
+			</li>
+			<li <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" -->class="ui-tabs-selected"<!-- /tmpl_if -->>
+				<a href="#plaintext_message">
+					PlainText Version
+				</a>
+			</li>
+		</ul>
+	<div id="html_message"> 
+	<!-- tmpl_include html_message_form_field_widget.tmpl --> 
+	</div>	
+	<div id="plaintext_message"> 
+	<!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
+	</div>
 
-<div id="text_message" style="<!-- tmpl_unless expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" -->display:none;<!-- /tmpl_unless -->background-color:#fff;border:1px solid black;border-top:0;padding:0;margin:0;"> 
-<!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
 </div> 
+ 
 
 </fieldset>
  

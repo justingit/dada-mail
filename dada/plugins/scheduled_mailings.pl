@@ -872,7 +872,7 @@ $f.= q{
 	$f .= qq{ 
 		<fieldset> 
 		<legend>
-		       <a href="#" onclick="toggleDisplay('advanced_options');return false;">
+		<a href="#" class="toggleDivs" data-target="advanced_options">
 		      +/- 
 		     </a>Advanced Options
 		</legend>
@@ -1212,7 +1212,7 @@ sub message_widget {
 	$r .= '<fieldset style="background:#e6e6e6">';
 $r .= qq { 	
 	 <legend>
-      <a href="#" onclick="toggleDisplay('$type\_message');return false;">+   /-</a> $type Version
+	<a href="#" class="toggleDivs" data-target="$type\_message">+/-</a> $type Version
      </legend>
 };
 
@@ -1237,7 +1237,7 @@ $r .= qq{
 	
 	<p>
 	  <strong>
-	   <a href="#" onclick="toggleDisplay('$type\_advanced_options');return false;">
+	<a href="#" class="toggleDivs" data-target="$type\_advanced_options">
 		+/- Advanced Options...
 	   </a>
 	  </strong>
@@ -1783,7 +1783,7 @@ $r .= q{
 	<fieldset> 
 
 	<legend>
-	       <a href="#" onclick="toggleDisplay('file_attachments');return false;">
+	<a href="#" class="toggleDivs" data-target="file_attachments">
 	      +/- 
 	     </a>File Attachments
 	</legend>

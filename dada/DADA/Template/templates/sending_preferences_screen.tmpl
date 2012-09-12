@@ -12,6 +12,7 @@
 </div>
 
 <div id="sending_preferences"></div> 
+<div id="dialog-modal"></div>
 
 <!-- tmpl_if done -->
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
@@ -74,8 +75,9 @@
 	<fieldset> 
 	
 		<legend>  	
-		<a href="#" onclick="toggleDisplay('adv_sendmail_options');return false;">
-			+/- 
+			
+		<a href="#" class="toggleDivs" data-target="adv_sendmail_options">
+		+/- 
 		</a>
 		 Advanced sendmail Options
 		</legend>
@@ -206,7 +208,8 @@ This will ultimately set the 'Return-Path' email header to the list administrati
     
 	<fieldset>
 	<legend>
- 	<a href="#" onclick="toggleDisplay('smtp_authentication');return false;">
+	
+	<a href="#" class="toggleDivs" data-target="smtp_authentication">
 		+/- 
 	</a>
     SMTP Authentication    
@@ -405,7 +408,7 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 	<fieldset>
 
 	<legend>  	
-	<a href="#" onclick="toggleDisplay('adv_smtp_options');return false;">
+	<a href="#" class="toggleDivs" data-target="adv_smtp_options">
 		+/- 
 	</a>
 	 Advanced SMTP Options
@@ -549,7 +552,6 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 
 
 </fieldset>
-<div id="dialog-modal" title="Basic modal dialog"></div>
 
 
 
