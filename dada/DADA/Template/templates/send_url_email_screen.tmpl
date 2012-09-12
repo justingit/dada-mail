@@ -2,7 +2,6 @@
 
 <!-- tmpl_set name="title" value="Mass Mailing &#187; Send a Webpage" -->
 <!-- tmpl_set name="load_wysiwyg_editor" value="1" -->
-<!-- tmpl_set name="load_modalbox" value="1" -->
 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
@@ -11,10 +10,17 @@
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
 
+<div id="send_url_email"></div> 
+<div id="dialog-modal"></div>
+
+
+
+
+
 <!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
 
 
-<form name="send_email" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
+<form name="mass_mailing" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
  
 <!-- tmpl_unless can_use_mime_lite_html -->
 	 
@@ -58,17 +64,30 @@
 		</div>
 		<!--/tmpl_if--> 
 
-<!-- tmpl_include send_url_email_message_body_help_widget.tmpl -->		
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
-
-
-   	
 	
 	<fieldset> 
-		<legend>Message Body [<a href="#" onclick="Modalbox.show($('message_body_help'), {title: 'Webpage Message Body Help', width: 640, height:325}); return false;">?</a>]</legend>
-		<!-- tmpl_include message_format_type_toggler_widget.tmpl --> 
-  	    <div id="html_message" style="background-color:#fff;border:1px solid black;border-top:0;padding:0;margin:0;">
-		<br />  
+		<legend>Message Body [<a href="#" class="message_body_help">?</a>]</legend>
+
+
+		<div id="tabs"> 
+
+			<ul>
+					<li>
+						<a href="#html_message">
+							HTML Version
+						</a>
+					</li>
+					<li>
+						<a href="#plaintext_message">
+							PlainText Version
+						</a>
+					</li>
+				</ul>
+				
+	
+<!--  style="background-color:#fff;border:1px solid black;border-top:0;padding:0;margin:0;" --> 
+  	    <div id="html_message">
 		<p>
 		<input type="radio" name="content_from" id="content_from_url" value="url" checked="checked" />
 			  <label for="content_from_url">
@@ -212,14 +231,13 @@
 		  </tr>
 		 </table>
 
-
-
 </div> 
 
 
- 
-<div id="text_message" style="display:none;background-color:#fff;border:1px solid black;border-top:0;padding:0;margin:0;"> 
-		<br /> 
+ <!--  style="display:none;background-color:#fff;border:1px solid black;border-top:0;padding:0;margin:0;" --> 
+
+<div id="plaintext_message"> 
+		 
 		<p>
 		  <input type="radio" name="auto_create_plaintext" id="auto_create_plaintext" value="1" checked="checked" />
 		  <label for="auto_create_plaintext">
@@ -244,6 +262,9 @@
 
 		 <input type="hidden" name="f" value="send_url_email" />
 	</div> 
+	
+</div> 
+
 </fieldset>
 
 		 <!-- tmpl_include send_email_archive_options_widget.tmpl -->			 

@@ -512,6 +512,7 @@ sub run {
 	'subscription_options'       =>    \&subscription_options,
 	'send_email'                 =>    \&send_email,
 	'message_body_help'          =>    \&message_body_help, 
+	'url_message_body_help'      =>    \&url_message_body_help, 
 	'previewMessageReceivers'    =>    \&previewMessageReceivers,
 	'sending_monitor'            =>    \&sending_monitor,
 	'print_mass_mailing_log'     =>    \&print_mass_mailing_log,
@@ -940,6 +941,22 @@ sub message_body_help {
 		)
 	); 
 }
+sub url_message_body_help { 
+	my ($admin_list, $root_login) = check_list_security(
+										-cgi_obj  => $q,
+                                        -Function => 'send_email'
+									);
+	require DADA::Template::Widgets; 
+	print $q->header(); 
+	e_print(
+		DADA::Template::Widgets::screen(
+			{ 
+				-screen => 'send_url_email_message_body_help_widget.tmpl',
+			}
+		)
+	); 
+}	
+
 
 sub previewMessageReceivers {
 

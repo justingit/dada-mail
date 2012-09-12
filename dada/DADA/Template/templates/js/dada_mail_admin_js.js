@@ -18,7 +18,6 @@ $(document).ready(function() {
 					itsatest = true;
 				}
 				sendMailingListMessage($(event.target).closest('form').attr('id'), itsatest);
-				
 			});
 			
 			$(".ChangeMassMailingButtonLabel").live("click", function(event){ 
@@ -27,6 +26,24 @@ $(document).ready(function() {
 			ChangeMassMailingButtonLabel();
 			$( "#tabs" ).tabs();
 		}
+		
+		// Mail Sending >> Send a Webpage
+		
+		
+		if($("#send_url_email").length){ 
+			$(".message_body_help").live("click", function(event){ 
+				event.preventDefault();
+				modalMenuAjax({url: "<!-- tmpl_var S_PROGRAM_URL -->",data: {f:'url_message_body_help'}});
+			});
+			$(".ChangeMassMailingButtonLabel").live("click", function(event){ 
+				ChangeMassMailingButtonLabel();	
+			}); 
+			ChangeMassMailingButtonLabel();			$( "#tabs" ).tabs();
+		}
+		
+		
+		
+		
 		
 		
 		
@@ -665,7 +682,6 @@ function ChangeMassMailingButtonLabel() {
 
     
 function sendMailingListMessage(fid, itsatest) {
-		
 	/* This is for the Send a Webpage - did they fill in a URL? */
 	if($("#f").val() == 'send_url_email'){ 
 		if($('input[name=sending_method]:checked').val() == 'url'){ 
