@@ -6,45 +6,45 @@ $(document).ready(function() {
 //	$(window).load(function() {
 		
 		//Mail Sending >> Send a Message 
-		if($("#send_email_screen").length){ 
-			$(".message_body_help").live("click", function(event){ 
+		if($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length){ 
+			
+			$("#mass_mailing").on("submit", function(event){ 
 				event.preventDefault();
-				modalMenuAjax({url: "<!-- tmpl_var S_PROGRAM_URL -->",data: {f:'message_body_help'}});
 			});
-			
-			$("#mass_mailing").live("submit", function(event){ 
-				var itsatest = false;
-				if($(event.target).hasClass('justatest')){ 
-					itsatest = true;
+			$(".sendmassmailing").on("click", function(event){ 
+				//var fid = $(event.target).closest('form').attr('id'); 
+				var fid = 'mass_mailing';
+				
+				var itsatest = $(this).hasClass("justatest");
+				var submit_it = sendMailingListMessage(fid, itsatest);
+				if(submit_it == true) { 
+					$('#' + fid).off('submit');
+					$('#' + fid).submit();
 				}
-				sendMailingListMessage($(event.target).closest('form').attr('id'), itsatest);
-			});
-			
-			$(".ChangeMassMailingButtonLabel").live("click", function(event){ 
+				else { 
+					//alert("It stays off!"); 
+				}
+			});	
+			$(".ChangeMassMailingButtonLabel").on("click", function(event){ 
 				ChangeMassMailingButtonLabel();	
 			}); 
 			ChangeMassMailingButtonLabel();
 			$( "#tabs" ).tabs();
 		}
-		
+
+		if($("#send_email_screen").length){ 
+			$(".message_body_help").on("click", function(event){ 
+				event.preventDefault();
+				modalMenuAjax({url: "<!-- tmpl_var S_PROGRAM_URL -->",data: {f:'message_body_help'}});
+			});
+		}
 		// Mail Sending >> Send a Webpage
-		
-		
 		if($("#send_url_email").length){ 
-			$(".message_body_help").live("click", function(event){ 
+			$(".message_body_help").on("click", function(event){ 
 				event.preventDefault();
 				modalMenuAjax({url: "<!-- tmpl_var S_PROGRAM_URL -->",data: {f:'url_message_body_help'}});
 			});
-			$(".ChangeMassMailingButtonLabel").live("click", function(event){ 
-				ChangeMassMailingButtonLabel();	
-			}); 
-			ChangeMassMailingButtonLabel();			$( "#tabs" ).tabs();
 		}
-		
-		
-		
-		
-		
 		
 		
 		// Membership >> View List	
@@ -58,7 +58,7 @@ $(document).ready(function() {
 		}
 		
 		// Membership >> Invite/Add
-		if($("#add_screen").length) { 
+		if($("#add").length) { 
 			$("#add_one").hide(); 
 			$("#show_progress").hide(); 
 			$("#fileupload").live("submit", function(event) {
@@ -66,8 +66,26 @@ $(document).ready(function() {
 			});
 		}
 		
+		// Membership >> Add (step 2) 
+		if($("#add_email").length) { 			
+			$("#confirm_add").on("submit", function(event){ 
+				event.preventDefault();
+			});
+			$(".addingemail").on("click", function(event) { 
+				var go = 1; 
+				if($(this).hasClass("warnAboutMassSubscription")){ 
+					go = warnAboutMassSubscription(); 
+				}
+				if(go == true){ 
+					$('#confirm_add').off('submit');
+					$('#confirm_add').submit();
+				}
+			});
+		}
+		
+				
 		// Membership >> Invite
-		if($("#list_invite_screen").length){ 
+		if($("#list_invite").length){ 
 			$("#customize_invite_message_form").hide(); 
 			$('.show_customize_invite_message').live("click", function(event) { 
 				event.preventDefault();
@@ -198,6 +216,11 @@ $(document).ready(function() {
 	
 
 	/* Global */ 
+	$(".previous").live("click", function(event){
+		event.preventDefault();
+		history.back();
+	}); 
+	
 	$(".fade_me").live("click", function(event){
 		$('#alertbox').effect( 'fade' );
 		event.preventDefault();
@@ -695,7 +718,7 @@ function sendMailingListMessage(fid, itsatest) {
 		}
 	}
 	
-	var itsatest_label;
+	var itsatest_label = '';
 	if(itsatest == true){ 
 		itsatest_label = "*test*"
 	}
@@ -708,13 +731,13 @@ function sendMailingListMessage(fid, itsatest) {
 	if($("#Subject").val().length <= 0){ 
 	    var no_subject_msg = "The Subject: header of this message has been left blank. Send anyways?"; 
 	    if(!confirm(no_subject_msg)){
-			alert('Mailing safely aborted.');
+			alert('Mass Mailing canceled.');
 			return false;
 		}
 	}
 	if($("#im_sure").prop("checked") == false){
 		if(!confirm(confirm_msg)){
-			alert('Mailing safely aborted.');
+			alert('Mass Mailing canceled.');
 			return false;
 		}
 	}
@@ -724,11 +747,10 @@ function sendMailingListMessage(fid, itsatest) {
 	else { 
 		$("#" + fid).attr("target", "_self");
 	}
-	//$("#" + fid).submit(); 
 	return true; 
 }
 
-function warnAboutMassSubscription(form_name) { 
+function warnAboutMassSubscription() { 
 	
 	var confirm_msg =  "Are you sure you want to subscribe the selected email address(es) to your list? ";
     confirm_msg += "\n\n";
@@ -739,14 +761,12 @@ function warnAboutMassSubscription(form_name) {
     confirm_msg += " If wanting to add unconfirmed email address(es), use the \"Send Invitation... >>\"";	
     confirm_msg += " option to allow the subscriber to confirm their own subscription.";	
 	
-
 	if(!confirm(confirm_msg)){
-		alert('Subscription Stopped.');
+		alert('Mass Subscription Stopped.');
 		return false;
 	}
-	
-	/* Do I still need this? */
-	form_name.target = "_self";
+	else { 
+	}	return true; 
 }
 
 

@@ -29,15 +29,12 @@
 	
  </div> 
 </div>
-<div id="list_invite_screen"></div> 
+<div id="list_invite"></div> 
 
 
 <!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
 
-<form name="send_email" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-
-
-
+<form name="mass_mailing" id="mass_mailing" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 <input type="hidden" name="f" value="list_invite" />
 
 <!-- tmpl_if verified_addresses --> 
@@ -224,42 +221,34 @@
 	<fieldset>
 	<legend>Message Body</legend>
 
+	<div id="tabs"> 
+		<ul>
+			<li>
+				<a href="#html_message">
+					HTML Version
+				</a>
+			</li>
+			<li class="ui-tabs-selected">
+				<a href="#plaintext_message">
+					PlainText Version
+				</a>
+			</li>
+			</ul>
 
- 
-	     <fieldset style="background:#e6e6e6"> 
 
-	     <legend>
-		<a href="#" class="toggleDivs" data-target="html_message">
-	      +/-</a>HTML Version
-	     </legend>
-      
+	 <div id="html_message"> 
 
-
-			
-	 <div id="html_message" style="display:none"> 
- 
 		<p>
 		 <input type="checkbox" id="use_html_message" name="use_html_message" value="1" /> 
 		 <label for="use_html_message">
 		  Use the HTML Version
 		 </label>
 	    </p>
-    
 		<!-- tmpl_include html_message_form_field_widget.tmpl --> 
-
 	</div>
 
-	</fieldset> 
 
-	 <fieldset style="background:#e6e6e6"> 
-  
-			 <legend>
-				<a href="#" class="toggleDivs" data-target="text_message">
-			 +/-</a>PlainText Version
-			 </legend>
-		 
- 
-	 <div id="text_message"> 
+	 <div id="plaintext_message"> 
 	
 		<p>
 		 <input type="checkbox" id="use_text_message" name="use_text_message" value="1" checked="checked" /> 
@@ -267,16 +256,15 @@
 		  Use the PlainText Version
 		 </label>
 	    </p>
-	
-	
 	  <textarea name="text_message_body" id="text_message_body" cols="80" rows="30"><!-- tmpl_var list_settings.invite_message_text escape="HTML" --></textarea> 
 	</div> 
 	</fieldset>
-	</fieldset>
+	</div> 
+
 
 </div> 
 
-<!-- tmpl_include name="send_a_list_message_button_widget.tmpl" --> 
+<!-- tmpl_include send_a_list_message_button_widget.tmpl --> 
 
 
 </form> 
