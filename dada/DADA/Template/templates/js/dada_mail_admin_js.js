@@ -46,6 +46,19 @@ $(document).ready(function() {
 			});
 		}
 		
+		// Mail Sending >> Mailing Monitor Index
+		if($("#sending_monitor_index").length){ 
+			refreshpage(60, "<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor"); 
+		}
+		if($("#sending_monitor_container").length){ 
+			update_sending_monitor_interface(
+				$("#message_id").val(), 
+				$("#message_type").val(), 
+				$("#target_id").val(),
+				$("#refresh_after").val()
+			);
+		}
+		
 		
 		// Membership >> View List	
 		if($("#view_list_viewport").length) { 
@@ -268,11 +281,47 @@ $(document).ready(function() {
 				});
 	        }
 	});
-	
-	
-
-
 });
+
+
+// Mass Mailings >> Monitor Your Mailings 
+
+var sending_monitor_interface_interval_id; // Global. Blech.
+function update_sending_monitor_interface(message_id, type, target_id, refresh_after) { 
+	//console.log("message_id " + message_id); 
+	//console.log("type" + type); 
+	//console.log("refresh_after " + refresh_after); 
+	//console.log("target_id " + target_id); 
+	var r = refresh_after * 1000;
+	var refresh_loop = function() { 
+		//console.log("refresh!"); 
+		var request = $.ajax({
+		  url: "<!-- tmpl_var S_PROGRAM_URL -->",
+		  type: "POST",
+		  cache: false,
+		  data: {
+			f:    'sending_monitor',
+			id:   message_id, 
+			type: type,
+			process:      'ajax',
+		  },
+		  dataType: "html"
+		});
+		request.done(function(content) {
+		  $("#" + target_id).html(content);
+		  //console.log($("#progressbar_percent").val()); 
+	 	  $( "#progressbar" ).progressbar({value: ($("#progressbar_percent").val()/1)});
+		});
+	}
+	sending_monitor_interface_interval_id = setInterval(
+		refresh_loop,
+		r
+	);
+	refresh_loop();
+}
+
+
+
 
 // Membership >> Invite/Add
 var interval_id; // Global. Blech.
@@ -855,37 +904,18 @@ var refreshTimerId = 0;
 var refreshLoc     = ''; 
 var refreshTime    = ''; 
 function refreshpage(sec, url){ 
-
     var refreshAfter = sec/1 * 1000; 
 		refreshTime = refreshAfter/1000; 
-		
    if(url){ 
-    	
     	refreshLocation = url; 
 		refreshLoc      = refreshLocation;  
     	refreshTimerId = setInterval("doRefresh(refreshLocation);",refreshAfter);
-
     }
 
 }
-
 function doRefresh(loc) { 
-
 	window.location.replace(loc); 
-
 }
-
-function updateRefresh(){ 
-
-	if(document.refresh_control.refresh_on.checked){ 
-		refreshpage(refreshTime, refreshLoc); 
-	}
-	else {
-		clearInterval(refreshTimerId); 
-	}
-
-}
-
 function removeSubscriberField(form_name) {
 		
 	var confirm_msg =  "Are you sure you want to ";

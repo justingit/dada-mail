@@ -3,40 +3,19 @@
 
 <!-- tmpl_set name="title" value="Mass Mailing &#187; Monitor Your Mailings" -->
 
+<div id="sending_monitor_container"></div>
 
-
-
-
+<form name="sending_monitor_params" id="sending_monitor_params"> 
+	<input type="hidden" name="message_id"           id="message_id"           value="<!-- tmpl_var message_id -->" /> 
+	<input type="hidden" name="message_type"         id="message_type"         value="<!-- tmpl_var message_type -->" /> 
+	<input type="hidden" name="target_id"            id="target_id"            value="sending_monitor_interface" />
+	<input type="hidden" name="show_tracker"         id="show_tracker"         value="<!-- tmpl_var list_settings.tracker_show_message_reports_in_mailing_monitor -->" />  	
+	<input type="hidden" name="refresh_after"        id="refresh_after"        value="<!-- tmpl_var refresh_after -->" /> 
+	<input type="hidden" name="show_tracker_reports" id="show_tracker_reports" value="<!-- tmpl_var list_settings.tracker_show_message_reports_in_mailing_monitor -->" />
+	
+</form>
 
 <script type="text/javascript">
-    //<![CDATA[
-	Event.observe(window, 'load', function() {
-	  update_sending_monitor();	
-		<!-- tmpl_if list_type_isa_list --> 
-			<!-- tmpl_if list_settings.tracker_show_message_reports_in_mailing_monitor --> 
-				refresh_tracker();
-			<!-- /tmpl_if --> 
-		<!-- /tmpl_if --> 
-	});
-	
-	 function update_sending_monitor() { 
-		new Ajax.PeriodicalUpdater(
-			'sending_monitor_ajax', '<!-- tmpl_var S_PROGRAM_URL -->', 
-			{ 
-			    method: 'post', 
-				frequency: '<!-- tmpl_var refresh_after -->',
-				evalScripts: true, 
-				parameters: {
-					f:            'sending_monitor',
-					process:      'ajax',
-					id: 		  '<!-- tmpl_var message_id -->', 
-					type: 		  '<!-- tmpl_var message_type -->'
-				},
-		}
-		);
-	}
-	
-
     function refresh_tracker()
     {
         document.getElementById('tracker_plugin').contentWindow.location.reload();
@@ -48,7 +27,8 @@
 
 
 
-<div id="sending_monitor_ajax"></div> 
+
+<div id="sending_monitor_interface"></div> 
 
 <!-- tmpl_if list_type_isa_list --> 
 	<!-- tmpl_if list_settings.tracker_show_message_reports_in_mailing_monitor --> 
@@ -63,6 +43,7 @@
 
 	<!-- /tmpl_if --> 
 <!-- /tmpl_if --> 
+
 
 
 
