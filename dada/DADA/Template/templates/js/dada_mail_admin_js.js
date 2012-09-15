@@ -51,12 +51,25 @@ $(document).ready(function() {
 			refreshpage(60, "<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor"); 
 		}
 		if($("#sending_monitor_container").length){ 
+			
+		
 			update_sending_monitor_interface(
 				$("#message_id").val(), 
 				$("#message_type").val(), 
 				$("#target_id").val(),
 				$("#refresh_after").val()
 			);
+			
+			
+			if($("#tracker_plugin").length){ 
+				refresh_tracker_plugin(
+					$("#tracker_url").val(),
+					$("#message_id").val(), 
+					'tracker_plugin'
+				); 
+			}
+			
+			
 		}
 		
 		
@@ -286,15 +299,9 @@ $(document).ready(function() {
 
 // Mass Mailings >> Monitor Your Mailings 
 
-var sending_monitor_interface_interval_id; // Global. Blech.
-function update_sending_monitor_interface(message_id, type, target_id, refresh_after) { 
-	//console.log("message_id " + message_id); 
-	//console.log("type" + type); 
-	//console.log("refresh_after " + refresh_after); 
-	//console.log("target_id " + target_id); 
+function update_sending_monitor_interface(message_id, type, target_id, refresh_after) { 	 
 	var r = refresh_after * 1000;
-	var refresh_loop = function() { 
-		//console.log("refresh!"); 
+	var refresh_loop = function(no_loop) { 
 		var request = $.ajax({
 		  url: "<!-- tmpl_var S_PROGRAM_URL -->",
 		  type: "POST",
@@ -303,23 +310,52 @@ function update_sending_monitor_interface(message_id, type, target_id, refresh_a
 			f:    'sending_monitor',
 			id:   message_id, 
 			type: type,
-			process:      'ajax',
+			process:      'ajax'
 		  },
 		  dataType: "html"
 		});
 		request.done(function(content) {
 		  $("#" + target_id).html(content);
-		  //console.log($("#progressbar_percent").val()); 
 	 	  $( "#progressbar" ).progressbar({value: ($("#progressbar_percent").val()/1)});
 		});
+		if(no_loop != 1){ 
+			setTimeout(
+				refresh_loop,
+				r
+			);
+		}
 	}
-	sending_monitor_interface_interval_id = setInterval(
+	setTimeout(
 		refresh_loop,
 		r
 	);
-	refresh_loop();
+	refresh_loop(1);
 }
-
+function refresh_tracker_plugin(tracker_url, message_id, target_id) { 	
+	var tracker_refresh_loop = function(no_loop) { 
+		$("#tracker_plugin").load(tracker_url, 
+			{
+				chrome: 0, 
+				f:     "m", 
+				mid:    message_id
+			}//, 
+			//function() {
+			//	
+			//}
+		);
+		if(no_loop != 1){ 
+			setTimeout(
+				tracker_refresh_loop,
+				5000
+			);
+		}
+	}
+	setTimeout(
+		tracker_refresh_loop,
+		5000
+	);
+	tracker_refresh_loop(1);
+}
 
 
 
