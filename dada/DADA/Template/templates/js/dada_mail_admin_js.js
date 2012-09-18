@@ -406,41 +406,53 @@ function refresh_tracker_plugin(tracker_url, message_id, target_id) {
 // Membership >> Invite/Add
 var interval_id; // Global. Blech.
 function check_status(){ 
-		interval_id = setInterval("update_status_bar();",'5000');
 		$("#show_progress").show(); 
+		update_status_bar();
 }
 function update_status_bar(){ 
-	var request = $.ajax({
-		url: "<!-- tmpl_var S_PROGRAM_URL -->",
-		type: "GET",
-			data: {
-				f : 'check_status',
-				new_email_file: $('#new_email_file').val(),
-				rand_string: $('#rand_string').val()
-			},
-		dataType: "json",
-		success: function( data ) {
-			//console.log('data.percent:"' + data.percent +  '"'); 
-			 //$.each(data, function(key, val) {
-			//		console.log(key + ' => ' + val); 
-			//});
-			if(data.percent > 0) { 
-				$("#progressbar").progressbar({ value: data.percent});
-				$('#upload_status').html('<p>Uploading File: ' + data.percent + '%</p>');
-				if(data.percent == 100) { 
-					clearInterval(interval_id); 
-					check = 0;
-					$('#upload_status').html('<p>Upload Complete! Processing...</p>');
+	
+	var update_status_bar_loop = function(no_loop) { 
+		var request = $.ajax({
+			url: "<!-- tmpl_var S_PROGRAM_URL -->",
+			type: "GET",
+				data: {
+					f : 'check_status',
+					new_email_file: $('#new_email_file').val(),
+					rand_string: $('#rand_string').val()
+				},
+			dataType: "json",
+			success: function( data ) {
+				//console.log('data.percent:"' + data.percent +  '"'); 
+				 //$.each(data, function(key, val) {
+				//		console.log(key + ' => ' + val); 
+				//});
+				if(data.percent > 0) { 
+					$("#progressbar").progressbar({ value: data.percent});
+					$('#upload_status').html('<p>Uploading File: ' + data.percent + '%</p>');
+					if(data.percent == 100) { 
+						no_loop = 1;
+						$('#upload_status').html('<p>Upload Complete! Processing...</p>');
+					}
+				//console.log('done?'); 
 				}
-			//console.log('done?'); 
+			},				
+			error: function (xhr, ajaxOptions, thrownError) {
+			     	 console.log('status: ' + xhr.status);
+			    	console.log('thrownError:' + thrownError);
+			}
+		});
+		if(no_loop != 1){ 
+			setTimeout(
+				update_status_bar_loop,
+				5000
+			);
 		}
-	},				
-		error: function (xhr, ajaxOptions, thrownError) {
-       	 console.log('status: ' + xhr.status);
-	     console.log('thrownError:' + thrownError);
-      	}
-
-	});
+		setTimeout(
+			update_status_bar_loop,
+			5000
+		);
+	}
+	update_status_bar_loop(1);
 }
 
 
