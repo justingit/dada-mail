@@ -50,9 +50,27 @@ $(document).ready(function() {
 		if($("#sending_monitor_index").length){ 
 			refreshpage(60, "<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor"); 
 		}
-		if($("#sending_monitor_container").length){ 
-			
 		
+		if($("#sending_monitor_container").length || $("#sending_monitor_index").length){
+			$('body').on('submit','.stop_mass_mailing', function(event) {
+				event.preventDefault();
+			});
+			$('body').on('click', '.killMonitoredSending',  function(event){ 
+				//var fid = 'stop_mass_mailing';
+				var submit_it = killMonitoredSending();
+				if(submit_it == true) { 
+					$('body').off('submit', '.stop_mass_mailing');
+					$(event.target).closest('form').submit(); 
+				}
+				else { 
+					// alert("It stays off!"); 
+				}
+			});
+		} 
+
+
+		if($("#sending_monitor_container").length){ 
+
 			update_sending_monitor_interface(
 				$("#message_id").val(), 
 				$("#message_type").val(), 
@@ -60,6 +78,21 @@ $(document).ready(function() {
 				$("#refresh_after").val()
 			);
 			
+			$('body').on('submit','#pause_mass_mailing', function(event) {
+				event.preventDefault();
+			});			
+			$('body').on('click', '.pauseMonitoredSending',  function(event){ 
+				//var fid = $(event.target).closest('form').attr('id'); 
+				var fid = 'pause_mass_mailing';
+				var submit_it = pauseMonitoredSending();
+				if(submit_it == true) { 
+					$('body').off('submit', '#pause_mass_mailing');
+					$('#' + fid).submit();
+				}
+				else { 
+					// alert("It stays off!"); 
+				}
+			});
 			
 			if($("#tracker_plugin").length){ 
 				refresh_tracker_plugin(
@@ -142,6 +175,13 @@ $(document).ready(function() {
 			}
 			toggleManualBatchSettings(); 
 		}
+		
+		// Plugins >> Tracker
+		if($("#plugins_tracker_message_report").length) { 
+			update_plugins_tracker_message_report(); 
+		}
+		
+		
 	
 //	}); 
 
@@ -239,7 +279,8 @@ $(document).ready(function() {
 		toggleManualBatchSettings();
 	});
 	
-	
+
+
 
 	/* Global */ 
 	$(".previous").live("click", function(event){
@@ -294,6 +335,9 @@ $(document).ready(function() {
 				});
 	        }
 	});
+	
+
+	
 });
 
 
@@ -338,21 +382,21 @@ function refresh_tracker_plugin(tracker_url, message_id, target_id) {
 				chrome: 0, 
 				f:     "m", 
 				mid:    message_id
-			}//, 
-			//function() {
-			//	
-			//}
+			}, 
+			function() {
+				update_plugins_tracker_message_report();
+			}
 		);
 		if(no_loop != 1){ 
 			setTimeout(
 				tracker_refresh_loop,
-				5000
+				180000
 			);
 		}
 	}
 	setTimeout(
 		tracker_refresh_loop,
-		5000
+		180000
 	);
 	tracker_refresh_loop(1);
 }
@@ -625,6 +669,168 @@ function toggleManualBatchSettings() {
 		}
 	}
 	previewBatchSendingSpeed(); 
+}
+
+// Plugins >> Tracker
+	function update_plugins_tracker_message_report(){ 
+		if($("#can_use_country_geoip_data").val() == 1){ 
+			country_geoip_chart_clickthroughs();	
+			country_geoip_chart_opens();
+			country_geoip_chart_forwards();
+			country_geoip_chart_view_archive(); 
+		}
+		ct_ot_img(); 
+		opens_ot_img();
+		forwards_ot_img(); 
+		view_archive_ot_img();
+	}
+			
+	function country_geoip_chart_clickthroughs(){ 
+		
+		$("#show_table_results_loading").html( '<p class="alert">Loading...</p>' );
+		var request = $.ajax({
+		  url: $("#plugin_url").val(),
+		  type: "POST",
+		  cache: false,
+		  data: {
+			f:       'country_geoip_chart',
+			mid:     '<!-- tmpl_var mid -->',
+			type:    'clickthroughs'
+		  },
+		  dataType: "html"
+		});
+		request.done(function(content) {
+		  $("#country_geoip_chart_clickthroughs").html( content );
+		  $("#country_geoip_chart_clickthroughs_loading").html( '<p class="alert">&nbsp;</p>' );
+		});
+	}
+	function country_geoip_chart_opens(){ 
+		$("#country_geoip_chart_opens_loading").html( '<p class="alert">Loading...</p>' );
+		var request = $.ajax({
+		  url: $("#plugin_url").val(),
+		  type: "POST",
+		  cache: false,
+		  data: {
+			f:       'country_geoip_chart',
+			mid:     $("#tracker_message_id").val(),
+			type:    'opens'
+		  },
+		  dataType: "html"
+		});
+		request.done(function(content) {
+		  $("#country_geoip_chart_opens").html( content );
+		  $("#country_geoip_chart_opens_loading").html( '<p class="alert">&nbsp;</p>' );
+		});
+	}
+	function country_geoip_chart_forwards(){ 
+		$("#country_geoip_chart_forwards_loading").html( '<p class="alert">Loading...</p>' );
+		var request = $.ajax({
+		  url: $("#plugin_url").val(),
+		  type: "POST",
+		  cache: false,
+		  data: {
+			f:       'country_geoip_chart',
+			mid:     $("#tracker_message_id").val(),
+			type:    'forward_to_a_friend'
+		  },
+		  dataType: "html"
+		});
+		request.done(function(content) {
+		  $("#country_geoip_chart_forwards").html( content );
+		  $("#country_geoip_chart_forwards_loading").html( '<p class="alert">&nbsp;</p>' );
+		});
+	}		
+	function country_geoip_chart_view_archive(){
+		$("#country_geoip_chart_view_archive_loading").html( '<p class="alert">Loading...</p>' );
+		var request = $.ajax({
+		  url: $("#plugin_url").val(),
+		  type: "POST",
+		  cache: false,
+		  data: {
+			f:       'country_geoip_chart',
+			mid:     $("#tracker_message_id").val(),
+			type:    'view_archive'
+		 },
+		  dataType: "html"
+		});
+		request.done(function(content) {
+		  $("#country_geoip_chart_view_archive").html( content );
+		  $("#country_geoip_chart_view_archive_loading").html( '<p class="alert">&nbsp;</p>' );
+		});
+	}
+	function ct_ot_img(){ 
+		$("#ct_ot_img_loading").html( '<p class="alert">Loading...</p>' );
+		var request = $.ajax({
+		  url: $("#plugin_url").val(),
+		  type: "POST",
+		  cache: false,
+		  data: {
+			f:       'data_ot_img',
+			mid:     $("#tracker_message_id").val(),
+			type:    'clickthroughs'
+		 },
+		  dataType: "html"
+		});
+		request.done(function(content) {
+		  $("#ct_ot_img").html( content );
+		  $("#ct_ot_img_loading").html( '<p class="alert">&nbsp;</p>' );
+		});
+	}
+function opens_ot_img(){ 
+	
+	$("#opens_ot_img_loading").html( '<p class="alert">Loading...</p>' );
+	var request = $.ajax({
+		  url: $("#plugin_url").val(),
+	  type: "POST",
+	  cache: false,
+	  data: {
+		f:       'data_ot_img',
+		mid:     $("#tracker_message_id").val(),
+		type:    'opens'
+	 },
+	  dataType: "html"
+	});
+	request.done(function(content) {
+	  $("#opens_ot_img").html( content );
+	  $("#opens_ot_img_loading").html( '<p class="alert">&nbsp;</p>' );
+	});
+}
+function forwards_ot_img(){ 
+	$("#forwards_ot_img_loading").html( '<p class="alert">Loading...</p>' );
+	var request = $.ajax({
+	  url: $("#plugin_url").val(),
+	  type: "POST",
+	  cache: false,
+	  data: {
+		f:       'data_ot_img',
+		mid:     $("#tracker_message_id").val(),
+		type:    'forward_to_a_friend'
+	 },
+	  dataType: "html"
+	});
+	request.done(function(content) {
+	  $("#forwards_ot_img").html( content );
+	  $("#forwards_ot_img_loading").html( '<p class="alert">&nbsp;</p>' );
+	});
+}	
+function view_archive_ot_img(){ 
+	
+	$("#view_archive_ot_img_loading").html( '<p class="alert">Loading...</p>' );
+	var request = $.ajax({
+	  url: $("#plugin_url").val(),
+	  type: "POST",
+	  cache: false,
+	  data: {
+		f:       'data_ot_img',
+		mid:     $("#tracker_message_id").val(),
+		type:    'view_archive'
+	 },
+	  dataType: "html"
+	});
+	request.done(function(content) {
+	  $("#view_archive_ot_img").html( content );
+	  $("#view_archive_ot_img_loading").html( '<p class="alert">&nbsp;</p>' );
+	});
 }
 
 
@@ -912,27 +1118,31 @@ function revertEditType(form_name) {
 
 
 
-function killMonitoredSending(form_name) { 
-    
-    var confirm_msg =  "Are you sure you want to STOP this mass mailing? ";
-	    confirm_msg += " Once this mailing has been stopped, it cannot be restarted.";
+function killMonitoredSending() { 
 	
+    var confirm_msg =  "Are you sure you want to STOP this Mass Mailing?";
+	    confirm_msg += " Once this mailing has been stopped, it cannot be restarted.";
     if(!confirm(confirm_msg)){
-        alert('Mailing saved from killing');
+        alert('Continuing...');
         return false;
     }
+	else { 
+		return true; 
+	}
     
 }
 
-function pauseMonitoredSending(form_name) { 
+function pauseMonitoredSending() { 
     
     var confirm_msg =  "Are you sure you want to PAUSE this mailing? ";
 	    confirm_msg += " Email sending will be stopped immediately after this current batch has completed. Email sending may be resumed at any time.";
-	
     if(!confirm(confirm_msg)){
-        alert('Mailing was not paused.');
+        alert('Continuing...');
         return false;
     }
+	else { 
+		return true; 
+	}
     
 }
 

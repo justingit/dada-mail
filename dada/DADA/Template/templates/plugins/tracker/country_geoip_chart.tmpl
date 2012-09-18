@@ -1,0 +1,47 @@
+<!-- tmpl_if c_geo_ip_report --> 
+	<table class="stripedtable">
+	<tr> 
+	<td> 
+	
+	<div> 
+		<div style="max-height: 225px; overflow: auto; border:1px solid black">
+	 	<table class="stripedtable">
+	<tr style="background:#fff"> 
+	<td> 
+	<p><strong>Country</strong></p> 
+	</td> 
+	<td>
+	<p><strong><!-- tmpl_var type --></strong></p> 
+	</td> 
+	</tr> 
+
+	<!-- tmpl_loop c_geo_ip_report --> 
+	<tr <!-- tmpl_if __odd__ --> class="alt"<!-- /tmpl_if -->> 
+	<td>
+	<!-- tmpl_var country --> 
+	</td> 
+	<td align="right"> 
+	<!-- tmpl_var count --> 
+	</td> 
+	</tr> 
+	<!-- /tmpl_loop --> 
+	</table> 
+	</div> 
+	</div> 
+
+	</td> 
+	<td> 
+	<p>
+	 <img src="<!-- tmpl_var c_geo_ip_img -->" style="border:1px solid black" />
+	</p> 
+	</td> 
+	</table>
+<!-- tmpl_else --> 
+	<p class="alert">Nothing to report.</p> 
+<!-- /tmpl_if --> 
+
+	<!-- tmpl_unless chrome --> 
+		</body> 
+		</html> 
+		
+	<!-- /tmpl_unless -->

@@ -1,0 +1,372 @@
+<!-- tmpl_set name="title" value="Plugins &#187; Tracker" --> 
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+<div id="tracker"></div> 
+
+
+
+<!-- tmpl_if done --> 
+	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+<!-- /tmpl_if --> 
+
+
+<script type="text/javascript">
+		  
+	$(document).ready(function() {
+		  $("body").on("click", '.tracker_turn_page', function(event){
+			tracker_turn_page($(this).attr("data-page"));
+			event.preventDefault();
+		});
+		$(".purge_log").on('click', function(event){ 
+			purge_log();
+			event.preventDefault();
+		}); 
+		
+		  show_table();	
+		  subscriber_history_img(); 
+		  domain_breakdown_img(); 
+	});
+	
+	function tracker_turn_page(page_to_turn_to) { 
+		$("#tracker_page").val(page_to_turn_to); 
+		show_table();
+		subscriber_history_img(); // not sure why that needs to be done... 
+	}
+	
+	
+	 function show_table(){ 
+			
+			$("#show_table_results_loading").html( '<p class="alert">Loading...</p>' );
+			var request = $.ajax({
+			  url: "<!-- tmpl_var Plugin_URL -->",
+			  type: "POST",
+			  cache: false,
+			  data: {
+				f:       'clickthrough_table',
+				page:   $("#tracker_page").val(),
+			  },
+			  dataType: "html"
+			});
+			request.done(function(content) {
+			  $("#show_table_results").html( content );
+			  $("#show_table_results_loading").html( '<p class="alert">&nbsp;</p>' );
+			});
+		}
+				
+		function subscriber_history_img(){ 
+			
+			$("#subscriber_history_img_loading").html( '<p class="alert">Loading...</p>' );
+			var request = $.ajax({
+			  url: "<!-- tmpl_var Plugin_URL -->",
+			  type: "POST",
+			  cache: false,
+			  data: {
+				f:       'subscriber_history_img',
+				page:   $("#page").val(),
+			  },
+			  dataType: "html"
+			});
+			request.done(function(content) {
+			  $("#subscriber_history_img").html( content );
+			  $("#subscriber_history_img_loading").html( '<p class="alert">&nbsp;</p>' );
+			});
+			
+		}
+		function domain_breakdown_img(){ 
+			$("#domain_breakdown_img_loading").html( '<p class="alert">Loading...</p>' );
+			var request = $.ajax({
+			  url: "<!-- tmpl_var Plugin_URL -->",
+			  type: "POST",
+			  cache: false,
+			  data: {
+				f:       'domain_breakdown_img',
+			  },
+			  dataType: "html"
+			});
+			request.done(function(content) {
+			  $("#domain_breakdown_img").html( content );
+			  $("#domain_breakdown_img_loading").html( '<p class="alert">&nbsp;</p>' );
+			});
+		}
+		function purge_log(){ 	
+			var confirm_msg =  "Are you sure you want to delete this log? ";
+			    confirm_msg += "There is no way to undo this deletion.";
+			if(confirm(confirm_msg)){
+				var request = $.ajax({
+				  url: "<!-- tmpl_var Plugin_URL -->",
+				  type: "POST",
+				  cache: false,
+				  data: {
+					f:       'ajax_delete_log',
+				  },
+				  dataType: "html"
+				});
+				request.done(function(content) {
+				 	show_table();
+					subscriber_history_img();
+				});		
+				// something like request.error(function () { ... });
+				//onFailure: function() { 
+				//	alert('Warning! Something went wrong when attempting to remove the log file.'); 
+				//	}
+			}
+			else { 
+				alert('Log deletion canceled.'); 
+				return false; 
+			}
+		}
+	    //]]>
+	</script>
+
+	<form> 
+	 <input type="hidden" name="tracker_page" value="1" id="tracker_page" /> 
+	</form> 
+
+<fieldset> 
+	<legend>
+	 Tracker Summaries
+	</legend>
+
+	<div id="show_table_results_loading"></div>		
+	<div id="show_table_results"></div>
+	
+	<div id="subscriber_history_img_loading"></div>
+	<div id="subscriber_history_img"> </div> 
+
+</fieldset> 
+
+<fieldset> 
+ <legend>Export Logs</legend> 
+ <table> 
+  <tr> 
+   <td> 
+  <form action="<!-- tmpl_var Plugin_URL -->" method="post">
+   <input type="hidden" name="f" value="download_logs" /> 
+   <input type="hidden" name="log_type" value="clickthrough" /> 
+   <input type="submit" value="Download Clickthrough Logs (.csv)" class="processing" />
+  </form> 
+ </td> 
+<td> 
+<form action="<!-- tmpl_var Plugin_URL -->" method="post">
+ <input type="hidden" name="f" value="download_logs" /> 
+ <input type="hidden" name="log_type" value="activity" /> 
+ <input type="submit" value="Download Mass Mailing Event Logs (.csv)" class="processing" />
+</form>
+</td> 
+<td> 
+<form action="<!-- tmpl_var Plugin_URL -->" method="post">
+ <input type="button" value="Purge ALL Clickthrough Logs" class="alertive purge_log"/>
+</form> 
+</td> 
+</tr> 
+</table> 
+</fieldset> 
+
+
+
+<fieldset>
+<legend> 
+ Current Subscribers by Email Address Domain
+</legend>  
+<div id="domain_breakdown_img_loading">
+</div>
+<div id="domain_breakdown_img"> 
+</div> 
+
+</fieldset> 
+
+
+<fieldset> 
+<legend>
+ Preferences
+</legend> 
+
+<form method="post"> 
+<input type="hidden" name="f" value="edit_prefs" /> 
+<table border="0"> 
+ <tr> 
+  <td> 
+   <p>
+    <input type="checkbox" name="clickthrough_tracking" id="clickthrough_tracking"  value="1" <!-- tmpl_if list_settings.clickthrough_tracking -->checked="checked"<!--/tmpl_if --> 
+   </p>
+  </td> 
+  <td> 
+   <p>
+    <label for="clickthrough_tracking"> 
+     Enable Clickthrough Tracking
+    </label> 
+   </p>
+
+
+
+
+
+	<table <!-- tmpl_unless can_use_auto_redirect_tag -->class="disabled"<!--/tmpl_unless-->>	 <tr> 
+	  <td> 
+  	<input type="checkbox" id="tracker_auto_parse_links" name="tracker_auto_parse_links"  value="1" <!-- tmpl_if list_settings.tracker_auto_parse_links -->checked="checked"<!--/tmpl_if -->/>
+	  </td> 
+	  <td> 
+		
+		<p>
+		 <label for="tracker_auto_parse_links">Clickthrough Track All Message Links</label> 
+		 <br /> 
+		 All message links will be parsed into redirect links and tracked. 
+		</p> 
+		
+		<!-- tmpl_unless can_use_auto_redirect_tag -->
+			<p class="error"> 
+				Disabled. You must have the HTML::LinkExtor and URI::Find CPAN modules installed. 
+			</p>
+		<!-- /tmpl_unless --> 
+	  </td> 
+	</tr> 
+	
+	</table>
+
+
+  </td>
+  </tr> 
+
+   <tr> 
+  <td> 
+   <p>
+    <input type="checkbox" name="enable_open_msg_logging" id="enable_open_msg_logging"  value="1" <!-- tmpl_if list_settings.enable_open_msg_logging -->checked="checked"<!--/tmpl_if --> 
+   </p>	
+  </td> 
+  <td> 
+   <p>
+    <label for="enable_open_msg_logging"> 
+     Enable Open Message Logging
+    </label> 
+   </p>
+  </td>
+  </tr> 
+
+   <tr> 
+  <td> 
+   <p>
+    <input type="checkbox" name="enable_forward_to_a_friend_logging" id="enable_forward_to_a_friend_logging"  value="1" <!-- tmpl_if list_settings.enable_forward_to_a_friend_logging -->checked="checked"<!--/tmpl_if --> 
+   </p>
+  </td> 
+  <td> 
+   <p>
+    <label for="enable_forward_to_a_friend_logging"> 
+     Enable &quot;Forward to a Friend&quot; Logging
+    </label> 
+   </p>
+  </td>
+  </tr>
+
+   <tr> 
+  <td> 
+   <p>
+    <input type="checkbox" name="enable_view_archive_logging" id="enable_view_archive_logging"  value="1" <!-- tmpl_if list_settings.enable_view_archive_logging -->checked="checked"<!--/tmpl_if --> 
+   </p>
+  </td> 
+  <td> 
+   <p>
+    <label for="enable_view_archive_logging"> 
+     Enable Archive Views Logging
+    </label> 
+   </p>
+  </td>
+  </tr>
+
+
+
+
+  
+   <tr> 
+  <td> 
+   <p>
+    <input type="checkbox" name="enable_bounce_logging" id="enable_bounce_logging"  value="1" <!-- tmpl_if list_settings.enable_bounce_logging -->checked="checked"<!--/tmpl_if --> 
+   </p>
+  </td> 
+  <td> 
+   <p>
+    <label for="enable_bounce_logging"> 
+     Enable Bounce Logging
+    </label> 
+   </p>
+  </td>
+  </tr>
+  
+ <tr> 
+  <td> 
+   <p>
+	&nbsp;
+   </p>
+  </td> 
+  <td> 
+   <p>
+     View: <!-- tmpl_var tracker_record_view_count_widget --> Records at once. 
+<br /><em>(More entries = a slower interface)</em>
+   </p>
+  </td>
+  </tr>
+
+   <tr> 
+  <td> 
+   <p>
+    <input type="checkbox" name="tracker_clean_up_reports" id="tracker_clean_up_reports"  value="1" <!-- tmpl_if list_settings.tracker_clean_up_reports -->checked="checked"<!--/tmpl_if --> 
+   </p>
+  </td> 
+  <td> 
+   <p>
+    <label for="tracker_clean_up_reports"> 
+    Clean Up Tracker Reports
+    </label> 
+   </p>
+  </td>
+  </tr>
+
+   <tr> 
+  <td> 
+   <p>
+    <input type="checkbox" name="tracker_show_message_reports_in_mailing_monitor" id="tracker_show_message_reports_in_mailing_monitor"  value="1" <!-- tmpl_if list_settings.tracker_show_message_reports_in_mailing_monitor -->checked="checked"<!--/tmpl_if --> 
+   </p>
+  </td> 
+  <td> 
+   <p>
+    <label for="tracker_show_message_reports_in_mailing_monitor"> 
+    Show Message Reports in Mailing Monitor
+    </label> 
+   </p>
+  </td>
+  </tr>
+
+
+  
+</table> 
+
+
+
+
+
+<div class="buttonfloat">   
+ <input type="submit" class="processing" value="Save Tracker Preferences" /> 
+ </div>
+<div class="floatclear"></div>
+</form> 
+</fieldset> 
+
+
+
+<fieldset> 
+<legend>Tracker Help</legend> 
+<p>
+ Clickthrough logging works for URLs in mailing list
+ messages when the URLs are placed in the  <code>&lt;?dada redirect url=&quot;...&quot; ?&gt;</code> comment. 
+</p>
+
+<p>For example:</p> 
+<p><code>
+&lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;
+</code></p>
+<p>Replace <code>http://example.com</code> with the URL you would like to track clickthroughs. 
+</fieldset> 
+

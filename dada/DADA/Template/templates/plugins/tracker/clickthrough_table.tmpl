@@ -1,0 +1,188 @@
+<!-- tmpl_if report_by_message_index --> 
+	
+
+	
+	<table class="stripedtable">
+	 <tr> 
+	<td width="33%" align="left"> 
+
+	<strong>
+		
+		<a href="#" class="tracker_turn_page" data-page="<!-- tmpl_var first_page -->">
+			First
+		</a>
+	</strong>
+	</td> 
+
+	<td width="33%" align="center"> 
+	<p>
+
+	<!-- tmpl_if previous_page --> 
+		<strong>
+			<a href="#" class="tracker_turn_page" data-page="<!-- tmpl_var previous_page -->">
+		</strong>
+	<!-- tmpl_else --> 
+	<!-- /tmpl_if -->
+	&nbsp;&nbsp;&nbsp;&nbsp;
+		<!-- tmpl_loop pages_in_set --> 
+			<!-- tmpl_if on_current_page --> 
+				<strong> 
+				 <!-- tmpl_var page --> 
+				</strong> 
+			<!-- tmpl_else --> 
+				<a href="#" class="tracker_turn_page" data-page="<!-- tmpl_var page -->">
+				 <!-- tmpl_var page --> 
+				</a>
+			<!-- /tmpl_if --> 
+
+		<!-- /tmpl_loop --> 
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<!-- tmpl_if next_page -->
+		<strong>
+			<a href="#" class="tracker_turn_page" data-page="<!-- tmpl_var next_page -->">				
+				Next</a></strong>
+		<!-- tmpl_else --> 
+		<!-- /tmpl_if --> 
+		</p>
+	</td> 
+
+	<td width="33%" align="right"> 
+
+	<strong>
+		<a href="#" class="tracker_turn_page" data-page="<!-- tmpl_var last_page -->">		
+		Last</a></strong>
+
+	</td>
+
+	</tr> 
+	</table>
+
+	<div> 
+		<div style="max-height: 300px; overflow: auto; border:1px solid black">
+
+		  <table class="stripedtable">
+		   <tr> 
+		    <td> 
+			 <p>
+			  <strong> 
+				Subject
+			  </strong> 
+			 </p>
+			</td> 
+		    <td> 
+			 <p>
+			  <strong> 
+				Sent
+			  </strong> 
+			 </p>
+			</td>
+		    <td> 
+			 <p>
+			  <strong> 
+				Subscribers
+			  </strong> 
+			 </p>
+			</td>
+		    <td> 
+			 <p>
+			  <strong> 
+				Clickthroughs
+			  </strong> 
+			 </p>
+			</td>
+		    <td> 
+			 <p>
+			  <strong> 
+				Opens
+			  </strong> 
+			 </p>
+			</td>
+		    <td> 
+			 <p>
+			  <strong> 
+				Bounces (soft/hard)
+			  </strong> 
+			 </p>
+			</td>
+			</tr> 
+
+			<!-- tmpl_loop report_by_message_index --> 
+			<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
+			 <td> 
+	          <p>
+	          
+				<!-- tmpl_if message_subject -->
+				 	 <strong>
+					<a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+					<!-- tmpl_var message_subject escape="HTML" -->
+					</a> 
+					
+					<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_archive&list=<!-- tmpl_var list -->&id=<!-- tmpl_var mid -->">
+					 </strong>
+						(View) 
+					</a> 
+				<!-- tmpl_else --> 
+					 <strong>
+					<a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+					#<!-- tmpl_var mid --> (unarchived message)
+					</a>
+					 </strong>
+				<!-- /tmpl_if --> 
+	 		   
+			  </p>
+			 </td> 
+			 <td> 
+			  <p>
+				<!-- tmpl_var date --> 
+		      </p> 
+		     </td> 
+		     <td> 
+		      <p>
+		       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+			    <!-- tmpl_var num_subscribers  --> 
+			   </a> 
+		      </p>
+			 </td> 
+		     <td> 
+		      <p>
+		       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+			    <!-- tmpl_var count   --> 
+			   </a> 
+		      </p>
+			 </td> 
+		     <td> 
+		      <p>
+		       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+			    <!-- tmpl_var open   --> 
+			   </a> 
+		      </p>
+			 </td> 
+		     <td> 
+		      <p>
+		       <a href="<!-- tmpl_var Plugin_URL -->?f=m&mid=<!-- tmpl_var mid -->">
+			    <!-- tmpl_var soft_bounce  default="-" --> /<!-- tmpl_var hard_bounce default="-" --> 
+			   </a> 
+		      </p>
+			 </td> 
+		  </tr> 
+
+		<!-- /tmpl_loop --> 
+
+	     </table> 
+	</div>		
+
+	</div> 
+	<!-- tmpl_if comment --> 
+	
+	<fieldset> 
+		<pre>
+		<!-- tmpl_var report_by_message_id_dump escape="HTML" --> 
+		</pre> 
+	</fieldset> 
+	<!-- /tmpl_if --> 
+	
+<!-- tmpl_else --> 
+	<p class="alert">
+	  No logs to report.
+    </p>
+<!-- /tmpl_if --> 

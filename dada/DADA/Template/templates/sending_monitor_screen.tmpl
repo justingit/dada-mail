@@ -85,21 +85,21 @@
 	    </form> 
     
     
-	    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" style="display:inline"> 
+	    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" style="display:inline" id="pause_mass_mailing"> 
 	    <input type="hidden" name="f" value="sending_monitor" /> 
 	    <input type="hidden" name="id" value="<!-- tmpl_var message_id -->" /> 
 	    <input type="hidden" name="type" value="<!-- tmpl_var message_type -->" /> 
 	    <input type="hidden" name="process" value="pause" /> 
-	    <input type="submit" value="|| Pause Mailing"  onclick="return pauseMonitoredSending(this.form);" <!-- tmpl_if is_paused -->disabled="disabled" class="disabled"<!-- tmpl_else -->class="cautionary"<!--/tmpl_if --> />
+	    <input type="submit" value="|| Pause Mailing" <!-- tmpl_if is_paused -->disabled="disabled" class="disabled"<!-- tmpl_else -->class="cautionary pauseMonitoredSending"<!--/tmpl_if --> />
 	    </form> 
     
     
-	    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" style="display:inline"> 
+	    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" style="display:inline" class="stop_mass_mailing"> 
 	    <input type="hidden" name="f" value="sending_monitor" /> 
 	    <input type="hidden" name="id" value="<!-- tmpl_var message_id -->" /> 
 	    <input type="hidden" name="type" value="<!-- tmpl_var message_type -->" /> 
 	    <input type="hidden" name="process" value="kill" /> 
-	    <input type="submit" value="&#8855; STOP Mailing" onclick="return killMonitoredSending(this.form);" <!-- tmpl_unless is_paused --><!-- tmpl_if sending_done -->disabled="disabled" class="disabled"<!-- tmpl_else --> class="alertive" <!--/tmpl_if --><!-- tmpl_else --> class="alertive" <!--/tmpl_unless --> />
+	    <input type="submit" value="&#8855; STOP Mailing" <!-- tmpl_unless is_paused --><!-- tmpl_if sending_done -->disabled="disabled" class="disabled"<!-- tmpl_else --> class="alertive killMonitoredSending" <!--/tmpl_if --><!-- tmpl_else --> class="alertive killMonitoredSending" <!--/tmpl_unless --> />
 	    </form> 
 
 	</div> 
