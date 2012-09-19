@@ -15,15 +15,8 @@
 				</script> 
 	<!-- /tmpl_if --> 
 	<!-- tmpl_if using_ckeditor --> 
-			    	<textarea name="html_message_body" cols="80" rows="30" id="html_message_body"><!-- tmpl_var html_message_body_content  escape="HTML" --></textarea>
-					<script type="text/javascript">
-						CKEDITOR.replace(
-							'html_message_body', 
-							{ 
-							        customConfig : '<!-- tmpl_var CKEDITOR_URL -->/dada_mail_config.js',
-									toolbar :      'DadaMail_Admin'
-							});
-					</script>
+		<div id="using_ckeditor"></div> 
+    	<textarea name="html_message_body" cols="80" rows="30" id="html_message_body" class="html_message_body"><!-- tmpl_var html_message_body_content  escape="HTML" --></textarea>
 	<!-- /tmpl_if --> 
 	
 	<!-- tmpl_if using_tiny_mce --> 

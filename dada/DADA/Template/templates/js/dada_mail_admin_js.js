@@ -28,6 +28,7 @@ $(document).ready(function() {
 			$(".ChangeMassMailingButtonLabel").on("click", function(event){ 
 				ChangeMassMailingButtonLabel();	
 			}); 
+
 			ChangeMassMailingButtonLabel();
 			$( "#tabs" ).tabs();
 		}
@@ -37,6 +38,17 @@ $(document).ready(function() {
 				event.preventDefault();
 				modalMenuAjax({url: "<!-- tmpl_var S_PROGRAM_URL -->",data: {f:'message_body_help'}});
 			});
+			
+			if($("#using_ckeditor").length){ 
+				$(".html_message_body" ).ckeditor(
+					function() {}, 
+					{
+						customConfig : '<!-- tmpl_var CKEDITOR_URL -->/dada_mail_config.js',	
+						toolbar :      'DadaMail_Admin'
+					}
+				);
+			}
+			
 		}
 		// Mail Sending >> Send a Webpage
 		if($("#send_url_email").length){ 
@@ -154,7 +166,6 @@ $(document).ready(function() {
 		// Mail Sending >> Sending Preferences 
 		if($("#sending_preferences").length) { 
 			if($("#has_needed_cpan_modules").length){ 
-				event.preventDefault();
 				amazon_ses_get_stats();
 			}
 		}
