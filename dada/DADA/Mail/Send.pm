@@ -402,10 +402,16 @@ sub send {
     }	
 	
 	
+	
+	if(
+	   !defined($local_li->{smtp_server}) &&
+	   $local_li->{sending_method} eq 'smtp'       
+	){ 
+		die "SMTP Server has been left blank!";
+	}
 
 	
 	if(
-	   defined($local_li->{smtp_server}) &&
 	   $local_li->{sending_method} eq 'smtp'       
 	){ 
 		
@@ -844,7 +850,7 @@ sub send {
 			#warn "sent! " . time; 
 		}
 		else { 
-			die "Unknown Sending Method: " . $local_li->{sending_method}; 
+			die 'Unknown Sending Method: "' . $local_li->{sending_method} . '"'; 
 		}
         
        
