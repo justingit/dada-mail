@@ -404,14 +404,22 @@ function refresh_tracker_plugin(tracker_url, message_id, target_id) {
 
 
 // Membership >> Invite/Add
-var interval_id; // Global. Blech.
+
 function check_status(){ 
-		$("#show_progress").show(); 
+		$("#show_progress").show();
+		keep_updating_status_bar = 1; 
 		update_status_bar();
 }
+
+var keep_updating_status_bar = 0; 
 function update_status_bar(){ 
 	
 	var update_status_bar_loop = function(no_loop) { 
+		
+		if(keep_updating_status_bar == 0){ 
+			return; 
+		}
+		console.log('update_status_bar_loop called'); 
 		var request = $.ajax({
 			url: "<!-- tmpl_var S_PROGRAM_URL -->",
 			type: "GET",
@@ -430,6 +438,7 @@ function update_status_bar(){
 					$("#progressbar").progressbar({ value: data.percent});
 					$('#upload_status').html('<p>Uploading File: ' + data.percent + '%</p>');
 					if(data.percent == 100) { 
+						keep_updating_status_bar = 0;
 						no_loop = 1;
 						$('#upload_status').html('<p>Upload Complete! Processing...</p>');
 					}
@@ -444,15 +453,14 @@ function update_status_bar(){
 		if(no_loop != 1){ 
 			setTimeout(
 				update_status_bar_loop,
-				5000
+				1000
 			);
 		}
-		setTimeout(
-			update_status_bar_loop,
-			5000
-		);
 	}
-	update_status_bar_loop(1);
+	setTimeout(
+		update_status_bar_loop,
+		1000
+	);
 }
 
 
