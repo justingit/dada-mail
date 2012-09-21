@@ -999,7 +999,9 @@ sub list_invite {
 							-List       => $list,  
 						},
 						-expr => 1, 
-						-vars   => {						
+						-vars   => {		
+							using_no_wysiwyg_editor              => 1, 
+											
 							screen                               => 'add',
 							list_type_isa_list                   => 1, # I think this only works with Subscribers at the moment, so no need to do a harder check... 
 							# This is sort of weird, as it default to the "Send a Message" Subject
