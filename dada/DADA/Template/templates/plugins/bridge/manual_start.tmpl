@@ -1,0 +1,53 @@
+<!-- tmpl_if chrome --> 
+	
+	<!-- tmpl_set name="title" value="Plugins &#187; Dada Bridge &#187; Manually Running Mailing..." --> 
+	
+	<div id="screentitle"> 
+		<div id="screentitlepadding">
+			<!-- tmpl_var title --> 
+		</div>
+		<!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+	<!-- /tmpl_if --> 
+	
+		<script type="text/javascript">
+			//<![CDATA[
+	 	
+	   		<!-- tmpl_if chrome --> 
+				Event.observe(window, 'load', function() {
+				  manual_start();				
+				});
+			<!-- /tmpl_if --> 
+			
+			 manual_start = function(){ 
+
+				new Ajax.Updater(
+					'manual_start_results', '<!-- tmpl_var Plugin_URL -->', 
+					{ 
+					    method: 'post', 
+						parameters: {
+							flavor:       'admin_cgi_manual_start_ajax'
+						},
+					onCreate: 	 function() {
+						Form.Element.setValue('manual_start_button', 'Checking...');
+						$('manual_start_results').hide();
+						$('manual_start_results_loading').show();
+					},
+					onComplete: 	 function() {
+
+						$('manual_start_results_loading').hide();
+						Effect.BlindDown('manual_start_results');
+						Form.Element.setValue('manual_start_button', 'Check For Messages');
+					}	
+					});
+			}
+		    //]]>
+		</script>
+
+
+<form name="some_form" id="some_form"> 
+	<input type="button" value="Check For Messages" id="manual_start_button" class="processing bridge_manual_start" /> 
+</form>
+<div id="manual_start_results_loading"></div> 
+<div id="manual_start_results"> 			
+</div> 

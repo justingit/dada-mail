@@ -1,0 +1,29 @@
+
+<!-- tmpl_set name="title" value="Dada Bridge &#187; Plugin Configuration" --> 
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+
+    <table> 
+    
+    <!-- tmpl_loop configs --> 
+    
+    <tr> 
+      <td> 
+       <p> 
+         <strong> 
+          <!-- tmpl_var name --> 
+          </strong>
+        </p>
+       </td> 
+       <td> 
+        <p>
+        <!-- tmpl_var value --> 
+        </p>
+        </td> 
+        </tr> 
+    <!-- /tmpl_loop --> 
+    </table>

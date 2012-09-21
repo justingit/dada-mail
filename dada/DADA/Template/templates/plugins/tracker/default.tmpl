@@ -5,125 +5,16 @@
 	</div>
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
-<div id="tracker"></div> 
+<div id="plugins_tracker_default"></div> 
 
 
 
 <!-- tmpl_if done --> 
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!-- /tmpl_if --> 
-
-
-<script type="text/javascript">
-		  
-	$(document).ready(function() {
-		  $("body").on("click", '.tracker_turn_page', function(event){
-			tracker_turn_page($(this).attr("data-page"));
-			event.preventDefault();
-		});
-		$(".purge_log").on('click', function(event){ 
-			purge_log();
-			event.preventDefault();
-		}); 
-		
-		  show_table();	
-		  subscriber_history_img(); 
-		  domain_breakdown_img(); 
-	});
-	
-	function tracker_turn_page(page_to_turn_to) { 
-		$("#tracker_page").val(page_to_turn_to); 
-		show_table();
-		subscriber_history_img(); // not sure why that needs to be done... 
-	}
-	
-	
-	 function show_table(){ 
-			
-			$("#show_table_results_loading").html( '<p class="alert">Loading...</p>' );
-			var request = $.ajax({
-			  url: "<!-- tmpl_var Plugin_URL -->",
-			  type: "POST",
-			  cache: false,
-			  data: {
-				f:       'clickthrough_table',
-				page:   $("#tracker_page").val(),
-			  },
-			  dataType: "html"
-			});
-			request.done(function(content) {
-			  $("#show_table_results").html( content );
-			  $("#show_table_results_loading").html( '<p class="alert">&nbsp;</p>' );
-			});
-		}
-				
-		function subscriber_history_img(){ 
-			
-			$("#subscriber_history_img_loading").html( '<p class="alert">Loading...</p>' );
-			var request = $.ajax({
-			  url: "<!-- tmpl_var Plugin_URL -->",
-			  type: "POST",
-			  cache: false,
-			  data: {
-				f:       'subscriber_history_img',
-				page:   $("#page").val(),
-			  },
-			  dataType: "html"
-			});
-			request.done(function(content) {
-			  $("#subscriber_history_img").html( content );
-			  $("#subscriber_history_img_loading").html( '<p class="alert">&nbsp;</p>' );
-			});
-			
-		}
-		function domain_breakdown_img(){ 
-			$("#domain_breakdown_img_loading").html( '<p class="alert">Loading...</p>' );
-			var request = $.ajax({
-			  url: "<!-- tmpl_var Plugin_URL -->",
-			  type: "POST",
-			  cache: false,
-			  data: {
-				f:       'domain_breakdown_img',
-			  },
-			  dataType: "html"
-			});
-			request.done(function(content) {
-			  $("#domain_breakdown_img").html( content );
-			  $("#domain_breakdown_img_loading").html( '<p class="alert">&nbsp;</p>' );
-			});
-		}
-		function purge_log(){ 	
-			var confirm_msg =  "Are you sure you want to delete this log? ";
-			    confirm_msg += "There is no way to undo this deletion.";
-			if(confirm(confirm_msg)){
-				var request = $.ajax({
-				  url: "<!-- tmpl_var Plugin_URL -->",
-				  type: "POST",
-				  cache: false,
-				  data: {
-					f:       'ajax_delete_log',
-				  },
-				  dataType: "html"
-				});
-				request.done(function(content) {
-				 	show_table();
-					subscriber_history_img();
-				});		
-				// something like request.error(function () { ... });
-				//onFailure: function() { 
-				//	alert('Warning! Something went wrong when attempting to remove the log file.'); 
-				//	}
-			}
-			else { 
-				alert('Log deletion canceled.'); 
-				return false; 
-			}
-		}
-	    //]]>
-	</script>
-
 	<form> 
-	 <input type="hidden" name="tracker_page" value="1" id="tracker_page" /> 
+	 <input type="hidden" name="tracker_page" id="tracker_page" value="1"  /> 
+	 <input type="hidden" name="plugin_url"   id="plugin_url"   value="<!-- tmpl_var Plugin_Url -->" /> 
 	</form> 
 
 <fieldset> 
@@ -172,10 +63,8 @@
 <legend> 
  Current Subscribers by Email Address Domain
 </legend>  
-<div id="domain_breakdown_img_loading">
-</div>
-<div id="domain_breakdown_img"> 
-</div> 
+<div id="domain_breakdown_img_loading"></div>
+<div id="domain_breakdown_img"> </div> 
 
 </fieldset> 
 
@@ -200,10 +89,6 @@
      Enable Clickthrough Tracking
     </label> 
    </p>
-
-
-
-
 
 	<table <!-- tmpl_unless can_use_auto_redirect_tag -->class="disabled"<!--/tmpl_unless-->>	 <tr> 
 	  <td> 

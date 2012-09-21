@@ -106,11 +106,11 @@ $(document).ready(function() {
 				}
 			});
 			
-			if($("#tracker_plugin").length){ 
+			if($("#tracker_reports").length){ 
 				refresh_tracker_plugin(
 					$("#tracker_url").val(),
 					$("#message_id").val(), 
-					'tracker_plugin'
+					'tracker_reports_container'
 				); 
 			}
 			
@@ -187,12 +187,8 @@ $(document).ready(function() {
 			toggleManualBatchSettings(); 
 		}
 		
-		// Plugins >> Tracker
-		if($("#plugins_tracker_message_report").length) { 
-			update_plugins_tracker_message_report(); 
-		}
-		
-		
+
+	
 	
 //	}); 
 
@@ -291,6 +287,25 @@ $(document).ready(function() {
 	});
 	
 
+	// Plugins >> Tracker
+	if($("#plugins_tracker_message_report").length) { 
+		update_plugins_tracker_message_report(); 
+	}
+	if($("#plugins_tracker_default").length) { 
+		  tracker_show_table();	
+		  tracker_subscriber_history_img(); 
+		  tracker_domain_breakdown_img();
+
+		  $("body").on("click", '.tracker_turn_page', function(event){
+			tracker_turn_page($(this).attr("data-page"));
+			event.preventDefault();
+		});
+		$(".tracker_purge_log").on('click', function(event){ 
+			tracker_purge_log();
+			event.preventDefault();
+		});
+	}
+
 
 
 	/* Global */ 
@@ -388,7 +403,7 @@ function update_sending_monitor_interface(message_id, type, target_id, refresh_a
 }
 function refresh_tracker_plugin(tracker_url, message_id, target_id) { 	
 	var tracker_refresh_loop = function(no_loop) { 
-		$("#tracker_plugin").load(tracker_url, 
+		$("#tracker_reports_container").load(tracker_url, 
 			{
 				chrome: 0, 
 				f:     "m", 
@@ -863,6 +878,99 @@ function view_archive_ot_img(){
 	  $("#view_archive_ot_img_loading").html( '<p class="alert">&nbsp;</p>' );
 	});
 }
+
+
+// Plugins >> Tracker
+
+function tracker_turn_page(page_to_turn_to) { 
+	$("#tracker_page").val(page_to_turn_to); 
+	tracker_show_table();
+	tracker_subscriber_history_img(); // not sure why that needs to be done... 
+}
+
+
+function tracker_show_table(){ 
+		
+	$("#show_table_results_loading").html( '<p class="alert">Loading...</p>' );
+	var request = $.ajax({
+	  url: $("#plugin_url").val(),
+	  type: "POST",
+	  cache: false,
+	  data: {
+		f:       'clickthrough_table',
+		page:   $("#tracker_page").val(),
+	  },
+	  dataType: "html"
+	});
+	request.done(function(content) {
+	  $("#show_table_results").html( content );
+	  $("#show_table_results_loading").html( '<p class="alert">&nbsp;</p>' );
+	});
+}
+		
+function tracker_subscriber_history_img(){ 
+	
+	$("#subscriber_history_img_loading").html( '<p class="alert">Loading...</p>' );
+	var request = $.ajax({
+	  url: $("#plugin_url").val(),
+	  type: "POST",
+	  cache: false,
+	  data: {
+		f:       'subscriber_history_img',
+		page:   $("#tracker_page").val(),
+	  },
+	  dataType: "html"
+	});
+	request.done(function(content) {
+	  $("#subscriber_history_img").html( content );
+	  $("#subscriber_history_img_loading").html( '<p class="alert">&nbsp;</p>' );
+	});
+	
+}
+function tracker_domain_breakdown_img(){ 
+	$("#domain_breakdown_img_loading").html( '<p class="alert">Loading...</p>' );
+	var request = $.ajax({
+	  url: $("#plugin_url").val(),
+	  type: "POST",
+	  cache: false,
+	  data: {
+		f:       'domain_breakdown_img',
+	  },
+	  dataType: "html"
+	});
+	request.done(function(content) {
+	  $("#domain_breakdown_img").html( content );
+	  $("#domain_breakdown_img_loading").html( '<p class="alert">&nbsp;</p>' );
+	});
+}
+function tracker_purge_log(){ 	
+	var confirm_msg =  "Are you sure you want to delete this log? ";
+	    confirm_msg += "There is no way to undo this deletion.";
+	if(confirm(confirm_msg)){
+		var request = $.ajax({
+		  url: $("#plugin_url").val(),
+		  type: "POST",
+		  cache: false,
+		  data: {
+			f:       'ajax_delete_log',
+		  },
+		  dataType: "html"
+		});
+		request.done(function(content) {
+		 	tracker_show_table();
+			tracker_subscriber_history_img();
+		});		
+		// something like request.error(function () { ... });
+		//onFailure: function() { 
+		//	alert('Warning! Something went wrong when attempting to remove the log file.'); 
+		//	}
+	}
+	else { 
+		alert('Log deletion canceled.'); 
+		return false; 
+	}
+}
+
 
 
 
