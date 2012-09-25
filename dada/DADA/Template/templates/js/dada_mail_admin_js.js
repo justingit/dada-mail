@@ -300,7 +300,7 @@ $(document).ready(function() {
 			tracker_turn_page($(this).attr("data-page"));
 			event.preventDefault();
 		});
-		$(".tracker_purge_log").on('click', function(event){ 
+		$("body").on("click", '.tracker_purge_log', function(event){ 
 			tracker_purge_log();
 			event.preventDefault();
 		});
