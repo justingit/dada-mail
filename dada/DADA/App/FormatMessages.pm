@@ -504,8 +504,6 @@ sub _format_text {
 							}
 						);				
 					}
-					
-					
 				}
 				
 			  if($self->no_list != 1){
@@ -564,7 +562,7 @@ sub _format_text {
 				
 				
 				
-		       my $io = $body->open('w');
+			  my $io = $body->open('w');
 			  $content = safely_encode($content); 
 			  $io->print( $content );				    
 			  $io->close;

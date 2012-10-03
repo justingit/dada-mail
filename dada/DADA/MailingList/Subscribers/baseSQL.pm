@@ -210,6 +210,34 @@ sub domain_stats {
 
 }
 
+sub domain_stats_json { 
+	my $self    = shift;
+	my $count   = shift || 10;  
+	my $stats = $self->domain_stats($count);
+	
+	require         Data::Google::Visualization::DataTable;
+	my $datatable = Data::Google::Visualization::DataTable->new();
+
+	$datatable->add_columns(
+	       { id => 'domain',     label => "Domain",        type => 'string',},
+	       { id => 'number',     label => "Number",        type => 'number',},
+	);
+
+	for(keys %$stats){ 
+		$datatable->add_rows(
+	        [
+	               { v => $_ },
+	               { v => $stats->{$_} },
+	       ],
+		);
+	}
+
+	# Fancy-pants
+	return $datatable->output_javascript(
+		pretty  => 1,
+	);
+	
+}
 sub SQL_subscriber_profile_join_statement {
 
     my $self = shift;

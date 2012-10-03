@@ -93,6 +93,7 @@ sub run {
 		'download_clickthrough_logs' => \&download_clickthrough_logs, 
 		'download_activity_logs'     => \&download_activity_logs, 
 		'domain_breakdown_img'       => \&domain_breakdown_img, 
+		'domain_breakdown_json'      => \&domain_breakdown_json, 
 		'country_geoip_chart'        => \&country_geoip_chart, 
 		'data_ot_img'                  => \&data_ot_img, 
 	);
@@ -193,8 +194,22 @@ sub domain_breakdown_img {
 	print $q->header(); 
     e_print($scrn);
 
+}
+
+sub domain_breakdown_json { 
+
+	require DADA::MailingList::Subscribers; 
+	my $lh       = DADA::MailingList::Subscribers->new({-list => $list});
+	print $q->header(
+		'-Cache-Control' => 'no-cache, must-revalidate',
+		-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+		-type            =>  'application/json',
+	);
+	print $lh->domain_stats_json(15); 
 	
 }
+
+
 
 sub percent { 
 	my ($num, $total) = @_; 
