@@ -199,11 +199,13 @@ sub domain_stats {
 	foreach(@index){ 
 		$other = $other + $domains->{$_};
 	}
-	my $final = {};
+	my $final = [];
 	foreach(@top){ 
-		$final->{$_} = $domains->{$_};
+		push(@$final, {domain => $_, number => $domains->{$_}});
 	}
-	$final->{other} = $other; 
+	if($other > 0) { 
+		push(@$final, {domain => 'other', number => $other}); 
+	}
 	
 	# Return!
 	return $final;
@@ -223,11 +225,11 @@ sub domain_stats_json {
 	       { id => 'number',     label => "Number",        type => 'number',},
 	);
 
-	for(keys %$stats){ 
+	for(@$stats){ 
 		$datatable->add_rows(
 	        [
-	               { v => $_ },
-	               { v => $stats->{$_} },
+	               { v => $_->{domain} },
+	               { v => $_->{number} },
 	       ],
 		);
 	}

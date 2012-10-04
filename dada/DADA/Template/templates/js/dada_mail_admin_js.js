@@ -1,6 +1,11 @@
 <!-- begin js/dada_mail_admin.tmpl -->
 
 
+
+
+//google.setOnLoadCallback(function() {
+
+
 $(document).ready(function() {
 	
 //	$(window).load(function() {
@@ -293,8 +298,12 @@ $(document).ready(function() {
 	}
 	if($("#plugins_tracker_default").length) { 
 		  tracker_show_table();	
-		  tracker_subscriber_history_img(); 
-		  tracker_domain_breakdown_img();
+		 // tracker_subscriber_history_img(); 
+		  // tracker_domain_breakdown_img();
+		  google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
+		  google.setOnLoadCallback(drawSubscriberHistoryChart());
+
+
 
 		  $("body").on("click", '.tracker_turn_page', function(event){
 			tracker_turn_page($(this).attr("data-page"));
@@ -304,6 +313,8 @@ $(document).ready(function() {
 			tracker_purge_log();
 			event.preventDefault();
 		});
+		
+		
 	}
 
 
@@ -365,6 +376,10 @@ $(document).ready(function() {
 
 	
 });
+
+
+//});
+
 
 
 // Mass Mailings >> Monitor Your Mailings 
@@ -927,7 +942,8 @@ function tracker_subscriber_history_img(){
 	});
 	
 }
-function tracker_domain_breakdown_img(){ 
+/*
+function tracker_domain_breakdown_img() { 
 	$("#domain_breakdown_img_loading").html( '<p class="alert">Loading...</p>' );
 	var request = $.ajax({
 	  url: $("#plugin_url").val(),
@@ -943,6 +959,71 @@ function tracker_domain_breakdown_img(){
 	  $("#domain_breakdown_img_loading").html( '<p class="alert">&nbsp;</p>' );
 	});
 }
+*/
+
+function drawTrackerDomainBreakdownChart() { 
+	$("#domain_break_down_chart_loading").html( '<p class="alert">Loading...</p>' );
+    $.ajax({
+		  url: $("#plugin_url").val(),
+          dataType:"json",
+			data: {
+				f: 'domain_breakdown_json',
+			},
+          async: true,
+		success: function( jsonData ) {
+
+			 // Create our data table out of JSON data loaded from server.
+		      var data = new google.visualization.DataTable(jsonData);
+
+		      // Instantiate and draw our chart, passing in some options.
+		      var chart = new google.visualization.PieChart(document.getElementById('domain_break_down_chart'));
+		      var options = {
+		        title:  $('#domain_break_down_chart').attr("data-title"),
+				width:  $('#domain_break_down_chart').attr("data-width"),
+				height: $('#domain_break_down_chart').attr("data-height"),
+				pieSliceTextStyle: {color: '#999999'},
+				backgroundColor:{
+					stroke: '#000000',
+			        strokeWidth: 1
+				},
+				colors: ["FFA900","FFAE11","FFB422","FFBA33","FFBF44","FFC555","FFCB66","FFD177","FFD688","FFDC99","FFE2AA","FFE8BB","FFEDCC","FFF3DD","FFF9EE"]
+		      };
+		      chart.draw(data, options);
+			$("#domain_break_down_chart_loading").html( '<p class="alert">&nbsp;</p>' );
+		},
+       });
+}
+
+ function drawSubscriberHistoryChart() {
+  	$("#subscriber_history_chart_loading").html( '<p class="alert">Loading...</p>' );
+
+	 var request = $.ajax({
+          url: $("#plugin_url").val(),
+		  data: {
+			f:       'subscriber_history_json',
+		  },
+		  cache: false, 
+          dataType:"json",
+          async: true,
+		success: function(jsonData) {
+			var data = new google.visualization.DataTable(jsonData);
+		    var options = {
+				width: 720, 
+				height: 480,
+				backgroundColor:{
+					stroke: '#000000',
+			        strokeWidth: 1
+				}		
+			};
+		    var chart = new google.visualization.LineChart(document.getElementById('subscriber_history_chart'));
+		    chart.draw(data, options);
+			$("#subscriber_history_chart_loading").html( '<p class="alert">&nbsp;</p>' );
+		},
+		}
+		);
+  }
+
+
 function tracker_purge_log(){ 	
 	var confirm_msg =  "Are you sure you want to delete this log? ";
 	    confirm_msg += "There is no way to undo this deletion.";
