@@ -300,8 +300,8 @@ $(document).ready(function() {
 		  tracker_show_table();	
 		 // tracker_subscriber_history_img(); 
 		  // tracker_domain_breakdown_img();
-		  google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
 		  google.setOnLoadCallback(drawSubscriberHistoryChart());
+		  google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
 
 
 
@@ -900,7 +900,8 @@ function view_archive_ot_img(){
 function tracker_turn_page(page_to_turn_to) { 
 	$("#tracker_page").val(page_to_turn_to); 
 	tracker_show_table();
-	tracker_subscriber_history_img(); // not sure why that needs to be done... 
+	google.setOnLoadCallback(drawSubscriberHistoryChart());
+	
 }
 
 
@@ -967,7 +968,7 @@ function drawTrackerDomainBreakdownChart() {
 		  url: $("#plugin_url").val(),
           dataType:"json",
 			data: {
-				f: 'domain_breakdown_json',
+				f:      'domain_breakdown_json',				
 			},
           async: true,
 		success: function( jsonData ) {
@@ -996,11 +997,12 @@ function drawTrackerDomainBreakdownChart() {
 
  function drawSubscriberHistoryChart() {
   	$("#subscriber_history_chart_loading").html( '<p class="alert">Loading...</p>' );
-
 	 var request = $.ajax({
           url: $("#plugin_url").val(),
 		  data: {
 			f:       'subscriber_history_json',
+			page:   $("#tracker_page").val(),
+			
 		  },
 		  cache: false, 
           dataType:"json",
@@ -1008,7 +1010,7 @@ function drawTrackerDomainBreakdownChart() {
 		success: function(jsonData) {
 			var data = new google.visualization.DataTable(jsonData);
 		    var options = {
-				width: 720, 
+				width:  720, 
 				height: 480,
 				backgroundColor:{
 					stroke: '#000000',
@@ -1039,7 +1041,7 @@ function tracker_purge_log(){
 		});
 		request.done(function(content) {
 		 	tracker_show_table();
-			tracker_subscriber_history_img();
+		    google.setOnLoadCallback(drawSubscriberHistoryChart());
 		});		
 		// something like request.error(function () { ... });
 		//onFailure: function() { 

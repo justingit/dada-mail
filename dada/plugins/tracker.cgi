@@ -205,13 +205,12 @@ sub domain_breakdown_json {
 
 	require DADA::MailingList::Subscribers; 
 	my $lh       = DADA::MailingList::Subscribers->new({-list => $list});
-	print $q->header(
-		'-Cache-Control' => 'no-cache, must-revalidate',
-		-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
-		-type            =>  'application/json',
-	);
-	print $lh->domain_stats_json(15); 
-	
+	$lh->domain_stats_json(
+		{ 
+			-count => 15,
+			-printout => 1, 
+		}
+	); 
 }
 
 
@@ -335,141 +334,15 @@ sub subscriber_history_img {
 sub subscriber_history_json { 
 	
 	my $page = $q->param('page') || 1; 
-	my ($total, $msg_ids) = $rd->get_all_mids(
-		{ 
-			-page    => $page, 
-			-entries => $ls->param('tracker_record_view_count'),  
-			
+	
+	$rd->message_history_json(
+		{
+			-page     => $page, 
+			-printout => 1
 		}
 	);
-	
- 	my $report_by_message_index = $rd->report_by_message_index({-all_mids => $msg_ids}) || [];
-	
-	# Needs potentially less data points 
-	# and labels for start/end of chart. 
-	my $num_subscribers = []; 
-	my $opens           = [];
-	my $clickthroughs   = [];
-	my $soft_bounces    = [];
-	my $hard_bounces    = [];
-	my $first_date      = undef;
-	my $last_date       = undef; 
-
-	require         Data::Google::Visualization::DataTable;
-	my $datatable = Data::Google::Visualization::DataTable->new();
-
-	
-	
-	$datatable->add_columns(
-		   { id => 'date',          label => 'Date',         type => 'string'}, 
-	       { id => 'subscribers',   label => "Subscribers",  type => 'number'},
-	       { id => 'opens',         label => "Opens",        type => 'number'},
-	       { id => 'clickthroughs', label => "Clickthroughs",        type => 'number'},
-	       { id => 'soft_bounces',  label => "Soft Bounces", type => 'number'},
-	       { id => 'hard_bounces',  label => "Hard Bounces", type => 'number'},
-	);
-	
-	
-	for(reverse @$report_by_message_index){ 
-		if($rd->verified_mid($_->{mid})){
-			
-			if($ls->param('tracker_clean_up_reports') == 1){ 
-				next unless exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/
-			}
-		
-			my $date; 
-			my $num_subscribers = $_->{num_subscribers}; 
-			my $opens = 0;
-			my $clickthroughs = 0;
-			my $soft_bounces = 0;
-			my $hard_bounces = 0;  
-			
-			#push(@$num_subscribers, $_->{num_subscribers});
-			if(defined($_->{open})){ 
-				$opens = $_->{open};	
-			}
-			if(defined($_->{count})){ 
-				$clickthroughs = $_->{count};	
-			}
-			if(defined($_->{soft_bounce})){ 
-				$soft_bounces = $_->{soft_bounce};	
-			}
-			if(defined($_->{hard_bounce})){ 
-				$hard_bounces = $_->{hard_bounce};	
-			}
-			#if(!defined($first_date	)){ 
-			#	$first_date = DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
-			#}
-			#$last_date = DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
-			
-			$datatable->add_rows(
-				{
-			        date =>  { v => $_->{mid}, f => DADA::App::Guts::date_this( -Packed_Date => $_->{mid}) },
-			
-			
-	              subscribers => $num_subscribers ,
-	                opens => $opens ,
-	                clickthroughs => $clickthroughs,
-	                soft_bounces => $soft_bounces, 
-	                hard_bounces => $hard_bounces ,
-				}
-			); 				
-		}
-	} 
-
-	# Fancy-pants
-	print $q->header('text/plain');
-	
-	print $datatable->output_javascript(
-		pretty  => 1,
-	);
 
 
-=cut
-
-
-#	require     URI::GoogleChart; 
-#	my $chart = URI::GoogleChart->new("lines", 720, 400,
-    my $data = [
- 		{ range => "a", v => $num_subscribers },
- 		{ range => "a", v => $opens },
- 		{ range => "a", v => $clickthroughs },
- 		{ range => "a", v => $soft_bounces },
- 		{ range => "a", v => $hard_bounces },
-
-  	];
-
- 	range => {
-		a => { round => 0, show => "left" },
-	},	
-	color => [qw(green blue aqua ffcc00 red)],
-	label => ["Subscribers", "Opens", "Clickthroughs", "Soft Bounces", "Hard Bounces"],
-	chxt => 'x',
-	chxl => '0:|' . $first_date . '|' . $last_date, 
-
-	);
-	
-	my $enc_chart = encode_html_entities($chart);
-
-    require DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::screen(
-        {
-            -screen           => 'plugins/tracker/subscriber_history_img.tmpl',
-            -vars => {
-              #  report_by_message_index   => $rd->report_by_message_index,
-				num_subscribers_chart_url => $enc_chart,
-				Plugin_URL                => $Plugin_Config->{Plugin_URL}, 
-				has_entries               => scalar @$report_by_message_index, 
-            },
-            -list_settings_vars_param => {
-                -list   => $list,
-                -dot_it => 1,
-            },
-        }
-    );
-	print $q->header(); 
-    e_print($scrn);
-=cut
 }
 
 

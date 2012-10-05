@@ -871,6 +871,8 @@ sub export_logs {
 sub can_use_country_geoip_data { 
 	return 1; 
 }
+
+# TO DESTROY!!!
 sub country_geoip_data { 
 	
 	my $self   = shift; 
@@ -883,7 +885,7 @@ sub country_geoip_data {
 		$args->{-mid} = undef; 
 	}
 	if(!exists($args->{-type})){ 
-		$args->{type} = 'clickthroughs'; 
+		$args->{-type} = 'clickthroughs'; 
 	}
 	if(!exists($args->{-db})){ 
 		croak "You MUST pass the path to the geo ip database in, '-db'";
@@ -947,6 +949,107 @@ sub country_geoip_data {
 	return $per_country; 
 	
 }
+
+
+sub country_geoip_data_new { 
+	
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	if(!exists($args->{-count})){ 
+		$args->{-count} = 20; 
+	}
+	if(!exists($args->{-mid})){ 
+		$args->{-mid} = undef; 
+	}
+	if(!exists($args->{-type})){ 
+		$args->{-type} = 'clickthroughs'; 
+	}
+	if(!exists($args->{-db})){ 
+		croak "You MUST pass the path to the geo ip database in, '-db'";
+	}
+#	select remote_addr from dada_clickthrough_url_log where msg_id = '20110502135133'; 
+	my $query; 
+	
+	if($args->{-type} eq 'clickthroughs'){ 
+		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?'; 
+	}
+	elsif($args->{-type} eq 'opens'){ 
+		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'open\' AND list = ?'; 	
+	}
+	elsif($args->{-type} eq 'forward_to_a_friend') { 
+		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'forward_to_a_friend\' AND list = ?'; 			
+	}
+	elsif($args->{-type} eq 'view_archive') { 
+		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'view_archive\' AND list = ?'; 			
+	}
+		
+	if(defined($args->{-mid})){ 
+		$query .= ' AND msg_id=?'; 
+	}
+	my $sth = $self->{dbh}->prepare($query);
+	
+	#	die $query; 
+		
+	if(defined($args->{-mid})){ 
+		$sth->execute($self->{name}, $args->{-mid});
+	}
+	else { 
+		$sth->execute($self->{name});
+	}
+	my $ips = []; 
+
+	while ( ( my $ip ) = $sth->fetchrow_array ) {
+		push(@$ips, $ip);
+	}	
+
+	my $loc = {}; 
+	
+	require Geo::IP::PurePerl;
+	my $gi = Geo::IP::PurePerl->new($args->{-db});
+	my $addr_name   = {};
+	my $per_country = {}; 
+	foreach(@$ips){ 
+		my $country = $gi->country_code_by_addr($_);
+		
+		# Cache the Country name by IP...
+	    $addr_name->{$country} = $gi->country_name_by_addr($_);
+		
+		if(defined($country)){ 
+			if(!exists($per_country->{$country})){ 
+				$per_country->{$country} = 0; 
+			}
+			$per_country->{$country}++;
+		}
+		else { 
+			if(!exists($per_country->{'unknown'})){ 
+				$per_country->{unknown} = 0;
+			}
+			$per_country->{'unknown'}++;
+		}
+	}
+	my $r = [];
+	foreach(keys %$per_country){ 
+		if($_ eq 'unknown'){ 
+			push(@$r, {
+				code => $_, 
+				name => 'Unknown',
+				count => $per_country->{$_}, 
+			});
+		}
+		else { 
+			
+			push(@$r, {
+				code => $_, 
+				name => $addr_name->{$_},
+				count => $per_country->{$_}, 
+			}); 
+		}
+	}
+	return $r;  
+	
+}
+
 
 
 sub data_over_time {
