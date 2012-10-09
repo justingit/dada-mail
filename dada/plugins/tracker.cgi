@@ -96,6 +96,7 @@ sub run {
 		'domain_breakdown_img'       => \&domain_breakdown_img, 
 		'domain_breakdown_json'      => \&domain_breakdown_json, 
 		'country_geoip_chart'        => \&country_geoip_chart, 
+		'country_geoip_json'         => \&country_geoip_json,
 		'data_ot_img'                  => \&data_ot_img, 
 	);
 	if ($f) {
@@ -753,23 +754,24 @@ sub by_domain_img {
 
 
 sub country_geoip_chart {
+	
+		
 		my $mid  = $q->param('mid')   || undef; 
 		my $type = $q->param('type') || undef; 
-
-		my ($c_geo_ip_report, $c_geo_ip_img) = country_geoip_data(
-				{ 
-					-mid  => $mid, 
-					-type => $type, 
-				}
-			); 
-					
+		
+		my $report = $rd->country_geoip_data(
+			{ 
+				-mid  => $mid, 
+				-type => $type, 
+				-db   => $Plugin_Config->{Geo_IP_Db},
+			}
+		);
 	    require DADA::Template::Widgets;
 	    my $scrn = DADA::Template::Widgets::screen(
 	        {
 	            -screen           => 'plugins/tracker/country_geoip_chart.tmpl',
 				-vars => { 
-					c_geo_ip_report => $c_geo_ip_report, 
-					c_geo_ip_img    => $c_geo_ip_img,
+					c_geo_ip_report => $report, 
 					type            => ucfirst($type),
 				}
 	        }
@@ -779,6 +781,18 @@ sub country_geoip_chart {
 	
 }
 
+sub country_geoip_json {
+	my $mid  = $q->param('mid')   || undef; 
+	my $type = $q->param('type') || undef; 
+	$rd->country_geoip_json({ 
+		-mid      => $mid, 
+		-type     => $type, 
+		-db       => $Plugin_Config->{Geo_IP_Db},
+		-printout => 1,
+		});
+}
+
+=cut
 sub country_geoip_data {
 	 
 	my ($args) = @_;
@@ -817,7 +831,7 @@ sub country_geoip_data {
 	return ($ht_report, $enc_chart); 
 	
 }
-
+=cut
 
 
 sub url_report {

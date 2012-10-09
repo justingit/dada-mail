@@ -10082,6 +10082,8 @@ sub js {
       prototype_scriptaculous_package.js
       tiny_mce_config.js
 
+	  jquery.tablesorter.js
+
     );
 
     my %lt = ();

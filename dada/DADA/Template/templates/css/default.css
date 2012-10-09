@@ -907,3 +907,53 @@ div.alt,
 #osx-container h2 {margin:10px 0 6px;}
 #osx-container p {margin-bottom:10px;}
 #osx-container span {color:#777;}
+
+
+
+
+
+
+
+
+/* TableSorter */
+/* tables */
+table.tablesorter {
+}
+table.tablesorter thead tr th, table.tablesorter tfoot tr th {
+	
+	background-color: #e6EEEE;
+	
+	/*background-color: #e6EEEE;
+	border: 1px solid #FFF;
+	font-size: 8pt;
+		padding: 4px;
+		padding:0px;*/
+}
+table.tablesorter thead tr .header {
+/*	background-image: url(bg.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	*/
+	cursor: pointer;
+}
+table.tablesorter tbody td {
+/*	color: #3D3D3D;
+	padding: 4px;
+	padding:0px;
+	background-color: #FFF;
+	vertical-align: top;*/
+}
+table.tablesorter tbody tr.odd td {
+	background-color:#ededed;
+}
+table.tablesorter thead tr .headerSortUp {
+	/*background-image: url(asc.gif);*/
+}
+table.tablesorter thead tr .headerSortDown {
+	/*background-image: url(desc.gif);*/
+}
+table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
+background-color: #8dbdd8;
+}
+
+

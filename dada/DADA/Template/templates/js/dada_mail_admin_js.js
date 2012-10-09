@@ -295,6 +295,8 @@ $(document).ready(function() {
 	// Plugins >> Tracker
 	if($("#plugins_tracker_message_report").length) { 
 		update_plugins_tracker_message_report(); 
+		
+		
 	}
 	if($("#plugins_tracker_default").length) { 
 		  tracker_show_table();	
@@ -302,9 +304,7 @@ $(document).ready(function() {
 		  // tracker_domain_breakdown_img();
 		  google.setOnLoadCallback(drawSubscriberHistoryChart());
 		  google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
-
-
-
+		
 		  $("body").on("click", '.tracker_turn_page', function(event){
 			tracker_turn_page($(this).attr("data-page"));
 			event.preventDefault();
@@ -739,6 +739,13 @@ function toggleManualBatchSettings() {
 			country_geoip_chart_opens();
 			country_geoip_chart_forwards();
 			country_geoip_chart_view_archive(); 
+			
+			google.setOnLoadCallback(country_geoip_chart_clickthroughs_json());	
+			
+			
+			
+			
+			
 		}
 		ct_ot_img(); 
 		opens_ot_img();
@@ -748,14 +755,14 @@ function toggleManualBatchSettings() {
 			
 	function country_geoip_chart_clickthroughs(){ 
 		
-		$("#show_table_results_loading").html( '<p class="alert">Loading...</p>' );
+		$("#country_geoip_chart_clickthroughs_loading").html( '<p class="alert">Loading...</p>' );
 		var request = $.ajax({
 		  url: $("#plugin_url").val(),
 		  type: "POST",
 		  cache: false,
 		  data: {
 			f:       'country_geoip_chart',
-			mid:     '<!-- tmpl_var mid -->',
+			mid:     $('#tracker_message_id').val(),
 			type:    'clickthroughs'
 		  },
 		  dataType: "html"
@@ -763,7 +770,37 @@ function toggleManualBatchSettings() {
 		request.done(function(content) {
 		  $("#country_geoip_chart_clickthroughs").html( content );
 		  $("#country_geoip_chart_clickthroughs_loading").html( '<p class="alert">&nbsp;</p>' );
+		
+			$("#geo_ip_by_country_Clickthroughs").tablesorter(); 
+		
+		
 		});
+	}
+	function country_geoip_chart_clickthroughs_json(){ 
+		$("#country_geoip_clickthrough_map_loading").html( '<p class="alert">Loading...</p>' );
+		$.ajax({
+			url: $("#plugin_url").val(),
+			type: "POST",
+			data: {
+				f:       'country_geoip_json',
+				mid:     $('#tracker_message_id').val(),
+				type:    'clickthroughs'
+			},
+			dataType:"json",
+			cache: false,
+			async: true,
+			success: function( jsonData ) {
+				// Create our data table out of JSON data loaded from server.
+				var data = new google.visualization.DataTable(jsonData);
+				var options = {width: 640};
+				var chart = new google.visualization.GeoChart(document.getElementById('country_geoip_clickthrough_map'));
+				chart.draw(data, options);
+				$("#country_geoip_clickthrough_map_loading").html( '<p class="alert">&nbsp;</p>' );
+			}				
+		});
+
+
+    
 	}
 	function country_geoip_chart_opens(){ 
 		$("#country_geoip_chart_opens_loading").html( '<p class="alert">Loading...</p>' );
