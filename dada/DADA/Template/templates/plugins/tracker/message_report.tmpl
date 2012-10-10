@@ -201,24 +201,26 @@
 	
 </fieldset> 
 
-<!-- tmpl_if can_use_country_geoip_data --> 
+
 <fieldset> 
 <legend> 
 	Clickthroughs by Country
 </legend>
 
-
+<!-- tmpl_if can_use_country_geoip_data --> 
 <table class="stripedtable">
 <tr> 
 <td> 
 	
-<div id="country_geoip_chart_clickthroughs_loading"></div> 
-<div id="country_geoip_chart_clickthroughs"></div>
+<div id="country_geoip_clickthroughs_table_loading"></div> 
+<div id="country_geoip_clickthroughs_table"></div>
 	</td> 
-	<td> 
-<div id="country_geoip_clickthrough_map_loading"></div> 
-<div id="country_geoip_clickthrough_map"></div> 
+	<td>
+<div id="country_geoip_clickthroughs_map_loading"></div> 
+<div id="country_geoip_clickthroughs_map"></div> 
 	</td> 
+</tr>
+
 	</table>
 <!-- tmpl_else --> 
 	<p class="alert">Nothing to report.</p> 
@@ -226,7 +228,6 @@
 
 </fieldset> 
 
-<!-- /tmpl_if --> 
 
 
 
@@ -234,84 +235,115 @@
 
 <fieldset> 
 <legend>Clickthroughs Over Time</Legend> 
-<div id="ct_ot_img_loading"> 
-</div> 
-<div id="ct_ot_img"> 
-</div> 
+	
+<div id="over_time_clickthroughs_graph_loading"></div> 
+<div id="over_time_clickthroughs_graph"></div> 
+
+
 </fieldset>
 
 
-<!-- tmpl_if can_use_country_geoip_data --> 
+
 <fieldset> 
 <legend> 
 	Message Opens by Country
 </legend>
-	<div id="country_geoip_chart_opens_loading"> 
-	</div> 
-	<div id="country_geoip_chart_opens"> 
-	</div>
+<!-- tmpl_if can_use_country_geoip_data --> 
+	<table class="stripedtable">
+	 <tr> 
+	  <td> 
+	   <div id="country_geoip_opens_table_loading"></div> 
+	   <div id="country_geoip_opens_table"></div>
+	  </td> 
+	  <td> 
+	   <div id="country_geoip_opens_map_loading"></div> 
+	   <div id="country_geoip_opens_map"></div>
+	  </td> 
+	 </tr>
+	</table>
+	<!-- tmpl_else --> 
+		<p class="alert">Nothing to report.</p> 
+	<!-- /tmpl_if -->
 </fieldset>
-<!-- /tmpl_if --> 
+
 
 <fieldset> 
 <legend>Message Opens Over Time</Legend> 
-<div id="opens_ot_img_loading"> 
-</div> 
-<div id="opens_ot_img"> 
-</div> 
+
+<div id="over_time_opens_graph_loading"></div> 
+<div id="over_time_opens_graph"></div> 
+
+
+
 </fieldset>
 
 
-
-<!-- tmpl_if can_use_country_geoip_data --> 
 <fieldset> 
 <legend> 
 	Archive Views by Country
 </legend>
-
-<div id="country_geoip_chart_view_archive_loading"> 
-</div> 
-<div id="country_geoip_chart_view_archive"> 
-</div> 
+<!-- tmpl_if can_use_country_geoip_data --> 
+	<table class="stripedtable">
+	 <tr> 
+	  <td> 
+	   <div id="country_geoip_view_archive_table_loading"></div> 
+	   <div id="country_geoip_view_archive_table"></div>
+	  </td> 
+	  <td> 
+	   <div id="country_geoip_view_archive_map_loading"></div> 
+	   <div id="country_geoip_view_archive_map"></div>
+	  </td> 
+	 </tr>
+	</table>
+	<!-- tmpl_else --> 
+		<p class="alert">Nothing to report.</p> 
+	<!-- /tmpl_if -->
 </fieldset>
-<!-- /tmpl_if --> 
+
+
+
 
 
 <fieldset> 
 <legend>Archive Views Over Time</Legend> 
-<div id="view_archive_ot_img_loading"> 
-</div> 
-<div id="view_archive_ot_img"> 
-</div> 
+<div id="over_time_view_archive_graph_loading"></div> 
+<div id="over_time_view_archive_graph"></div>
+
+
 </fieldset>
 
 
 
 
-<!-- tmpl_if can_use_country_geoip_data --> 
 <fieldset> 
 <legend> 
 	&quot;Forward to a Friend&quot; by Country
 </legend>
-
-<div id="country_geoip_chart_forwards_loading"> 
-</div> 
-<div id="country_geoip_chart_forwards"> 
-</div> 
+<!-- tmpl_if can_use_country_geoip_data --> 
+	<table class="stripedtable">
+	 <tr> 
+	  <td> 
+	   <div id="country_geoip_forwards_table_loading"></div> 
+	   <div id="country_geoip_forwards_table"></div>
+	  </td> 
+	  <td> 
+	   <div id="country_geoip_forwards_map_loading"></div> 
+	   <div id="country_geoip_forwards_map"></div>
+	  </td> 
+	 </tr>
+	</table>
+	<!-- tmpl_else --> 
+		<p class="alert">Nothing to report.</p> 
+	<!-- /tmpl_if -->
 </fieldset>
-<!-- /tmpl_if --> 
-
 
 <fieldset> 
-<legend>&quot;Forward to a Friend&quot; Over Time</Legend> 
-<div id="forwards_ot_img_loading"> 
-</div> 
-<div id="forwards_ot_img"> 
-</div> 
+<legend>	&quot;Forward to a Friend&quot; Over Time</Legend>
+	
+<div id="over_time_forwards_graph_loading"></div> 
+<div id="over_time_forwards_graph"></div>
+
 </fieldset>
-
-
-
 
 
 

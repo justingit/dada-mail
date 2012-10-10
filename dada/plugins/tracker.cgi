@@ -95,9 +95,10 @@ sub run {
 		'download_activity_logs'     => \&download_activity_logs, 
 		'domain_breakdown_img'       => \&domain_breakdown_img, 
 		'domain_breakdown_json'      => \&domain_breakdown_json, 
-		'country_geoip_chart'        => \&country_geoip_chart, 
+		'country_geoip_table'        => \&country_geoip_table, 
 		'country_geoip_json'         => \&country_geoip_json,
-		'data_ot_img'                  => \&data_ot_img, 
+		'data_over_time_json'        => \&data_over_time_json, 
+		'bounce_stats_json'          => \&bounce_stats_json, 
 	);
 	if ($f) {
 	    if ( exists( $Mode{$f} ) ) {
@@ -374,61 +375,34 @@ sub every_nth {
 	return [@group];
 }
 
-sub data_ot_img { 
-	
+
+sub data_over_time_json { 
 	my $msg_id = $q->param('mid'); 
-	my $type   = $q->param('type'); 
+	my $type   = $q->param('type');
+	my $label  = $q->param('label'); 
 	
-	my $ct_ot = $rd->data_over_time(
+	$rd->data_over_time_json(
 		{
-			-msg_id => $msg_id,
-			-type   => $type, 
+			-msg_id   => $msg_id,
+			-type     => $type, 
+			-label    => $label, 
+			-printout => 1
 		}
 	); 
-	my $range = [];
-	my $chxl  = [];
 	
-	foreach(@$ct_ot){ 
-		push(@$chxl, $_->{mdy}); 
-		push(@$range, $_->{count}); 
+}
+
+sub bounce_stats_json { 
+		my $msg_id = $q->param('mid'); 
+		my $bounce_type = $q->param('bounce_type') || 'soft'; 
+		$rd->bounce_stats_json(
+			{
+				-mid             => $msg_id,
+				-bounce_type     => $bounce_type, 
+				-printout        => 1
+			}
+		);
 		
-	}
-	
-	$chxl = every_nth($chxl, 5); 
-	
-	require     URI::GoogleChart; 
-	my $chart = URI::GoogleChart->new("lines", 720, 250,
-    data => [
- 		{ range => "a", v => $range },
-  	],
- 	range => {
-		a => { round => 0, show => "left" },
-	},	
-	color => ['blue'],
-	label => ["# " . ucfirst($type)],
-	chxt => 'x',
-	chm  => 'B,99ccff,0,0,0',
-	chg  => '0,10',
-	chxl => '0:|' . join('|', @$chxl), 
-	);
-	
-	my $enc_chart = encode_html_entities($chart);
-	
-	if(!exists($ct_ot->[0])) { 
-		$enc_chart = undef; 
-	}
-    require DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::screen(
-        {
-            -screen           => 'plugins/tracker/data_ot_img.tmpl',
-            -vars => {
-				data_ot_img_url => $enc_chart,
-				
-            },
-        }
-    );
-	print $q->header(); 
-    e_print($scrn);		
 }
 
 
@@ -753,26 +727,30 @@ sub by_domain_img {
 }
 
 
-sub country_geoip_chart {
+sub country_geoip_table {
 	
 		
-		my $mid  = $q->param('mid')   || undef; 
-		my $type = $q->param('type') || undef; 
+		my $mid  = $q->param('mid')    || undef; 
+		my $type = $q->param('type')   || undef; 
+		my $label = $q->param('label') || undef; 		
 		
 		my $report = $rd->country_geoip_data(
 			{ 
-				-mid  => $mid, 
-				-type => $type, 
-				-db   => $Plugin_Config->{Geo_IP_Db},
+				-mid   => $mid, 
+				-type  => $type, 
+				-label => $label, 
+				-db     => $Plugin_Config->{Geo_IP_Db},
 			}
 		);
 	    require DADA::Template::Widgets;
 	    my $scrn = DADA::Template::Widgets::screen(
 	        {
-	            -screen           => 'plugins/tracker/country_geoip_chart.tmpl',
+	            -screen             => 'plugins/tracker/country_geoip_table.tmpl',
 				-vars => { 
 					c_geo_ip_report => $report, 
-					type            => ucfirst($type),
+					type            => $type,
+					label           => $label, 
+					
 				}
 	        }
 	    );
@@ -782,12 +760,15 @@ sub country_geoip_chart {
 }
 
 sub country_geoip_json {
-	my $mid  = $q->param('mid')   || undef; 
-	my $type = $q->param('type') || undef; 
+	my $mid  = $q->param('mid')    || undef; 
+	my $type = $q->param('type')   || undef; 
+	my $label = $q->param('label') || undef; 
+	
 	$rd->country_geoip_json({ 
 		-mid      => $mid, 
 		-type     => $type, 
 		-db       => $Plugin_Config->{Geo_IP_Db},
+		-label    => $label, 
 		-printout => 1,
 		});
 }

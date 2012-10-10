@@ -300,8 +300,6 @@ $(document).ready(function() {
 	}
 	if($("#plugins_tracker_default").length) { 
 		  tracker_show_table();	
-		 // tracker_subscriber_history_img(); 
-		  // tracker_domain_breakdown_img();
 		  google.setOnLoadCallback(drawSubscriberHistoryChart());
 		  google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
 		
@@ -735,56 +733,60 @@ function toggleManualBatchSettings() {
 // Plugins >> Tracker
 	function update_plugins_tracker_message_report(){ 
 		if($("#can_use_country_geoip_data").val() == 1){ 
-			country_geoip_chart_clickthroughs();	
-			country_geoip_chart_opens();
-			country_geoip_chart_forwards();
-			country_geoip_chart_view_archive(); 
 			
-			google.setOnLoadCallback(country_geoip_chart_clickthroughs_json());	
+			country_geoip_table('clickthroughs',       'Clickthroughs', 'country_geoip_clickthroughs_table');	
+			country_geoip_table('opens',               'Opens',         'country_geoip_opens_table');	
+			country_geoip_table('view_archive',        'Archive Views', 'country_geoip_view_archive_table');
+			country_geoip_table('forward_to_a_friend', 'Forwards',      'country_geoip_forwards_table');	
+				
 			
-			
-			
-			
+			google.setOnLoadCallback(country_geoip_map('clickthroughs',       'Clickthroughs', 'country_geoip_clickthroughs_map'));	
+			google.setOnLoadCallback(country_geoip_map('opens',               'Opens',         'country_geoip_opens_map'));	
+			google.setOnLoadCallback(country_geoip_map('view_archive',        'Archive Views', 'country_geoip_view_archive_map'));	
+			google.setOnLoadCallback(country_geoip_map('forward_to_a_friend', 'Forwards',      'country_geoip_forwards_map'));	
 			
 		}
-		ct_ot_img(); 
-		opens_ot_img();
-		forwards_ot_img(); 
-		view_archive_ot_img();
+		
+		google.setOnLoadCallback(data_over_time_graph('clickthroughs',       'Clickthroughs', 'over_time_clickthroughs_graph'));
+		google.setOnLoadCallback(data_over_time_graph('opens',               'Opens',         'over_time_opens_graph'));
+		google.setOnLoadCallback(data_over_time_graph('view_archive',        'Archive Views', 'over_time_view_archive_graph'));
+		google.setOnLoadCallback(data_over_time_graph('forward_to_a_friend', 'Forwards',      'over_time_forwards_graph'));
+		
 	}
 			
-	function country_geoip_chart_clickthroughs(){ 
+	function country_geoip_table(type, label, target_div){ 
 		
-		$("#country_geoip_chart_clickthroughs_loading").html( '<p class="alert">Loading...</p>' );
+		$("#" + target_div + "_loading").html( '<p class="alert">Loading...</p>' );
 		var request = $.ajax({
 		  url: $("#plugin_url").val(),
 		  type: "POST",
 		  cache: false,
 		  data: {
-			f:       'country_geoip_chart',
+			f:       'country_geoip_table',
 			mid:     $('#tracker_message_id').val(),
-			type:    'clickthroughs'
+			type:    type,
+			label:   label, 
 		  },
 		  dataType: "html"
 		});
 		request.done(function(content) {
-		  $("#country_geoip_chart_clickthroughs").html( content );
-		  $("#country_geoip_chart_clickthroughs_loading").html( '<p class="alert">&nbsp;</p>' );
-		
-			$("#geo_ip_by_country_Clickthroughs").tablesorter(); 
+		  $("#" + target_div).html( content );
+		  $("#" + target_div + "_loading").html( '<p class="alert">&nbsp;</p>' );
+		  $("#sortable_table_" + type).tablesorter(); 
 		
 		
 		});
 	}
-	function country_geoip_chart_clickthroughs_json(){ 
-		$("#country_geoip_clickthrough_map_loading").html( '<p class="alert">Loading...</p>' );
+	function country_geoip_map(type, label, target_div){ 
+		$("#" + target_div + "_loading").html( '<p class="alert">Loading...</p>' );
 		$.ajax({
 			url: $("#plugin_url").val(),
 			type: "POST",
 			data: {
 				f:       'country_geoip_json',
 				mid:     $('#tracker_message_id').val(),
-				type:    'clickthroughs'
+				type:    type, 
+				label:   label
 			},
 			dataType:"json",
 			cache: false,
@@ -793,143 +795,47 @@ function toggleManualBatchSettings() {
 				// Create our data table out of JSON data loaded from server.
 				var data = new google.visualization.DataTable(jsonData);
 				var options = {width: 640};
-				var chart = new google.visualization.GeoChart(document.getElementById('country_geoip_clickthrough_map'));
+				var chart = new google.visualization.GeoChart(document.getElementById(target_div));
 				chart.draw(data, options);
-				$("#country_geoip_clickthrough_map_loading").html( '<p class="alert">&nbsp;</p>' );
+				$("#" + target_div + "_loading").html( '<p class="alert">&nbsp;</p>' );
 			}				
 		});
 
 
     
 	}
-	function country_geoip_chart_opens(){ 
-		$("#country_geoip_chart_opens_loading").html( '<p class="alert">Loading...</p>' );
-		var request = $.ajax({
-		  url: $("#plugin_url").val(),
-		  type: "POST",
-		  cache: false,
-		  data: {
-			f:       'country_geoip_chart',
-			mid:     $("#tracker_message_id").val(),
-			type:    'opens'
-		  },
-		  dataType: "html"
-		});
-		request.done(function(content) {
-		  $("#country_geoip_chart_opens").html( content );
-		  $("#country_geoip_chart_opens_loading").html( '<p class="alert">&nbsp;</p>' );
-		});
-	}
-	function country_geoip_chart_forwards(){ 
-		$("#country_geoip_chart_forwards_loading").html( '<p class="alert">Loading...</p>' );
-		var request = $.ajax({
-		  url: $("#plugin_url").val(),
-		  type: "POST",
-		  cache: false,
-		  data: {
-			f:       'country_geoip_chart',
-			mid:     $("#tracker_message_id").val(),
-			type:    'forward_to_a_friend'
-		  },
-		  dataType: "html"
-		});
-		request.done(function(content) {
-		  $("#country_geoip_chart_forwards").html( content );
-		  $("#country_geoip_chart_forwards_loading").html( '<p class="alert">&nbsp;</p>' );
-		});
-	}		
-	function country_geoip_chart_view_archive(){
-		$("#country_geoip_chart_view_archive_loading").html( '<p class="alert">Loading...</p>' );
-		var request = $.ajax({
-		  url: $("#plugin_url").val(),
-		  type: "POST",
-		  cache: false,
-		  data: {
-			f:       'country_geoip_chart',
-			mid:     $("#tracker_message_id").val(),
-			type:    'view_archive'
-		 },
-		  dataType: "html"
-		});
-		request.done(function(content) {
-		  $("#country_geoip_chart_view_archive").html( content );
-		  $("#country_geoip_chart_view_archive_loading").html( '<p class="alert">&nbsp;</p>' );
-		});
-	}
-	function ct_ot_img(){ 
-		$("#ct_ot_img_loading").html( '<p class="alert">Loading...</p>' );
-		var request = $.ajax({
-		  url: $("#plugin_url").val(),
-		  type: "POST",
-		  cache: false,
-		  data: {
-			f:       'data_ot_img',
-			mid:     $("#tracker_message_id").val(),
-			type:    'clickthroughs'
-		 },
-		  dataType: "html"
-		});
-		request.done(function(content) {
-		  $("#ct_ot_img").html( content );
-		  $("#ct_ot_img_loading").html( '<p class="alert">&nbsp;</p>' );
-		});
-	}
-function opens_ot_img(){ 
 	
-	$("#opens_ot_img_loading").html( '<p class="alert">Loading...</p>' );
-	var request = $.ajax({
-		  url: $("#plugin_url").val(),
-	  type: "POST",
-	  cache: false,
-	  data: {
-		f:       'data_ot_img',
-		mid:     $("#tracker_message_id").val(),
-		type:    'opens'
-	 },
-	  dataType: "html"
-	});
-	request.done(function(content) {
-	  $("#opens_ot_img").html( content );
-	  $("#opens_ot_img_loading").html( '<p class="alert">&nbsp;</p>' );
-	});
-}
-function forwards_ot_img(){ 
-	$("#forwards_ot_img_loading").html( '<p class="alert">Loading...</p>' );
-	var request = $.ajax({
-	  url: $("#plugin_url").val(),
-	  type: "POST",
-	  cache: false,
-	  data: {
-		f:       'data_ot_img',
-		mid:     $("#tracker_message_id").val(),
-		type:    'forward_to_a_friend'
-	 },
-	  dataType: "html"
-	});
-	request.done(function(content) {
-	  $("#forwards_ot_img").html( content );
-	  $("#forwards_ot_img_loading").html( '<p class="alert">&nbsp;</p>' );
-	});
-}	
-function view_archive_ot_img(){ 
+	function data_over_time_graph(type, label, target_div){ 
+	  	$("#" + target_div + "_loading").html( '<p class="alert">Loading...</p>' );
+		 var request = $.ajax({
+	          url: $("#plugin_url").val(),
+			  data: {
+				f:       'data_over_time_json',
+				mid:     $("#tracker_message_id").val(),
+				type: 	 type, 
+				label:   label, 
+			  },
+			  cache: false, 
+	          dataType:"json",
+	          async: true,
+			success: function(jsonData) {
+				var data = new google.visualization.DataTable(jsonData);
+			    var options = {
+					width:  720, 
+					height: 480,
+					backgroundColor:{
+						stroke: '#000000',
+				        strokeWidth: 1
+					}		
+				};
+			    var chart = new google.visualization.AreaChart(document.getElementById(target_div));
+			    chart.draw(data, options);
+				$("#" + target_div + "_loading").html( '<p class="alert">&nbsp;</p>' );
+			},
+			});	
+	}
 	
-	$("#view_archive_ot_img_loading").html( '<p class="alert">Loading...</p>' );
-	var request = $.ajax({
-	  url: $("#plugin_url").val(),
-	  type: "POST",
-	  cache: false,
-	  data: {
-		f:       'data_ot_img',
-		mid:     $("#tracker_message_id").val(),
-		type:    'view_archive'
-	 },
-	  dataType: "html"
-	});
-	request.done(function(content) {
-	  $("#view_archive_ot_img").html( content );
-	  $("#view_archive_ot_img_loading").html( '<p class="alert">&nbsp;</p>' );
-	});
-}
+
 
 
 // Plugins >> Tracker
@@ -980,24 +886,8 @@ function tracker_subscriber_history_img(){
 	});
 	
 }
-/*
-function tracker_domain_breakdown_img() { 
-	$("#domain_breakdown_img_loading").html( '<p class="alert">Loading...</p>' );
-	var request = $.ajax({
-	  url: $("#plugin_url").val(),
-	  type: "POST",
-	  cache: false,
-	  data: {
-		f:       'domain_breakdown_img',
-	  },
-	  dataType: "html"
-	});
-	request.done(function(content) {
-	  $("#domain_breakdown_img").html( content );
-	  $("#domain_breakdown_img_loading").html( '<p class="alert">&nbsp;</p>' );
-	});
-}
-*/
+
+
 
 function drawTrackerDomainBreakdownChart() { 
 	$("#domain_break_down_chart_loading").html( '<p class="alert">Loading...</p>' );
@@ -1019,13 +909,20 @@ function drawTrackerDomainBreakdownChart() {
 		        title:  $('#domain_break_down_chart').attr("data-title"),
 				width:  $('#domain_break_down_chart').attr("data-width"),
 				height: $('#domain_break_down_chart').attr("data-height"),
-				pieSliceTextStyle: {color: '#999999'},
+				pieSliceTextStyle: {color: '#FFFFFF'},
 				backgroundColor:{
 					stroke: '#000000',
-			        strokeWidth: 1
+			        strokeWidth: 1, 
+					
 				},
-				colors: ["FFA900","FFAE11","FFB422","FFBA33","FFBF44","FFC555","FFCB66","FFD177","FFD688","FFDC99","FFE2AA","FFE8BB","FFEDCC","FFF3DD","FFF9EE"]
+					colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
+					is3D: true
 		      };
+			//	colors: ["ff0000","ff00ff","0000ff","00ffff","00ff00","ffff00", "ff6666","ff66ff","6666ff","66ffff","66ff66","ffff66","ff9999","ff99ff","9999ff","99ffe0", "99ff99", "ffff99"]
+			//colors: ["FFA900","FFAE11","FFB422","FFBA33","FFBF44","FFC555","FFCB66","FFD177","FFD688","FFDC99","FFE2AA","FFE8BB","FFEDCC","FFF3DD","FFF9EE"]
+			
+		
+		
 		      chart.draw(data, options);
 			$("#domain_break_down_chart_loading").html( '<p class="alert">&nbsp;</p>' );
 		},

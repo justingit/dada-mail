@@ -994,8 +994,8 @@ sub country_geoip_json {
 	my $datatable = Data::Google::Visualization::DataTable->new();
 
 	$datatable->add_columns(
-	       { id => 'location',  label => "Location",                 type => 'string',},
-	       { id => 'color',     label => ucfirst($args->{-type}),    type => 'number',},
+	       { id => 'location',  label => "Location",       type => 'string',},
+	       { id => 'color',     label => $args->{-label},  type => 'number',},
 	);
 
 	for(@$report){ 
@@ -1094,6 +1094,162 @@ sub data_over_time {
 	
 }
 
+sub data_over_time_json { 
+	my $self   = shift; 
+	my ($args) = @_;
+	
+	my $report = $self->data_over_time($args);
+	
+	require Data::Google::Visualization::DataTable; 
+	my $datatable = Data::Google::Visualization::DataTable->new();
+
+	$datatable->add_columns(
+		   { id => 'date',          label => 'Date',           type => 'string'}, 
+		   { id => 'number',         label => $args->{-label},  type => 'number',},
+	);
+
+	for(@$report){ 
+		$datatable->add_rows(
+	        [
+	               { v => $_->{mdy}  },
+	               { v => $_->{count} },
+	       ],
+		);
+	}
+
+
+	my $json = $datatable->output_javascript(
+		pretty  => 1,
+	);
+	
+	if($args->{-printout} == 1){ 
+		require CGI; 
+		my $q = CGI->new; 
+		print $q->header(
+			'-Cache-Control' => 'no-cache, must-revalidate',
+			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+			-type            =>  'application/json',
+		);
+		print $json; 
+	}
+	else { 
+		return $json; 
+	}
+}
+
+
+
+sub bounce_stats { 
+	
+	my $self = shift; 
+	my ($args) = @_; 
+	my $mid = $args->{-mid};
+	my $count; 
+	if(!exists($args->{-count})){ 
+		$count = 15; 
+	}
+	else { 
+		$count = $args->{-count};
+	}
+	
+	my $report = $self->report_by_message( $mid );
+    
+	my $type = 'soft'; 
+	if(exists($args->{-bounce_type})){ 
+		$type = $args->{-bounce_type};
+	}
+	my $bounces;
+	
+	if($type eq 'soft'){ 
+		$bounces = $report->{'soft_bounce_report'};
+	}
+	else { 
+		$bounces = $report->{'hard_bounce_report'};
+	}
+#		my $domains = shift; 
+
+	my $data = {};
+
+	for my $bounce_report(@$bounces ){ 
+
+		my $email = $bounce_report->{email};
+
+		my ($name, $domain) = split('@', $email); 
+		if(!exists($data->{$domain})){ 
+			$data->{$domain} = 0;
+		}
+		$data->{$domain} = $data->{$domain} + 1; 	
+	}
+	# Sorted Index
+	my @index = sort { $data->{$b} <=> $data->{$a} } keys %$data; 
+
+	# Top n
+	my @top = splice(@index,0,($count-1));
+
+	# Everyone else
+	my $other = 0; 
+	foreach(@index){ 
+		$other = $other + $data->{$_};
+	}
+	my $final = [];
+	foreach(@top){ 
+		push(@$final, {domain => $_, number => $data->{$_}});
+		
+		#$final->{$_} = $data->{$_};
+	}
+	if($other > 0){ 
+	#	$final->{other} = $other;
+		push(@$final, {domain => 'other', number => $other}); 
+	
+	}		
+	
+	return $final; 
+
+}
+
+sub bounce_stats_json { 
+	my $self = shift; 
+	my ($args) = @_; 
+	my $stats = $self->bounce_stats($args);
+	 
+
+	require         Data::Google::Visualization::DataTable;
+	my $datatable = Data::Google::Visualization::DataTable->new();
+
+	$datatable->add_columns(
+	       { id => 'domain',     label => "Domain",        type => 'string',},
+	       { id => 'number',     label => "Number",        type => 'number',},
+	);
+
+	for(@$stats){ 
+		$datatable->add_rows(
+	        [
+	               { v => $_->{domain} },
+	               { v => $_->{number} },
+	       ],
+		);
+	}
+
+	# Fancy-pants
+	my $json = $datatable->output_javascript(
+		pretty  => 1,
+	);
+	if($args->{-printout} == 1){ 
+		require CGI; 
+		my $q = CGI->new; 
+		
+		print $q->header(
+			'-Cache-Control' => 'no-cache, must-revalidate',
+			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+			-type            =>  'application/json',
+		);
+		print $json; 
+	}
+	else { 
+		return $json;
+	}
+	
+}
 
 
 
