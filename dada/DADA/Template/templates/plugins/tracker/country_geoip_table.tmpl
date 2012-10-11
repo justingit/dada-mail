@@ -1,10 +1,9 @@
 <!-- begin country_geoip_table.tmpl --> 
 
 <!-- tmpl_if c_geo_ip_report --> 
-	
 	<div> 
-	 <div style="max-height: 400px; overflow: auto; border:1px solid black">
-	  <table id="sortable_table_<!-- tmpl_var type -->" class="stripedtable tablesorter"><!-- stripedtable -->	
+	 <div style="max-height: 400px; max-width:350px; overflow: auto; border:1px solid black 	overflow-y: scroll; overflow-x: hidden;">
+	  <table id="sortable_table_<!-- tmpl_var type -->" class="stripedtable tablesorter" style="width:325px">
        <thead> 			
 	    <tr> 
 	     <th align="left">Country</th> 
@@ -15,7 +14,7 @@
 	   <!-- tmpl_loop c_geo_ip_report --> 
 	   	<tr <!-- tmpl_if __odd__ --> class="odd"<!-- tmpl_else -->class="even"<!-- /tmpl_if -->> 
         <td><!-- tmpl_var name --></td> 
-        <td align="right"><!-- tmpl_var count --></td>
+        <td style="text-align:right; width: 50px"><!-- tmpl_var count --></td>
        </tr> 
 	  <!-- /tmpl_loop --> 
       </tbody>

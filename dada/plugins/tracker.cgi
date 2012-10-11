@@ -84,17 +84,13 @@ sub run {
 	my %Mode = (
 	    'default'                    => \&default,
 	    'm'                          => \&message_report,
-	    'url'                        => \&url_report,
 	    'edit_prefs'                 => \&edit_prefs,
 	    'download_logs'              => \&download_logs,
 	    'ajax_delete_log'            => \&ajax_delete_log,
 		'clickthrough_table'         => \&clickthrough_table, 
-		'subscriber_history_img'     => \&subscriber_history_img, 
 		'subscriber_history_json'   => \&subscriber_history_json, 
 		'download_clickthrough_logs' => \&download_clickthrough_logs, 
 		'download_activity_logs'     => \&download_activity_logs, 
-		'domain_breakdown_img'       => \&domain_breakdown_img, 
-		'domain_breakdown_json'      => \&domain_breakdown_json, 
 		'country_geoip_table'        => \&country_geoip_table, 
 		'country_geoip_json'         => \&country_geoip_json,
 		'data_over_time_json'        => \&data_over_time_json, 
@@ -162,58 +158,8 @@ sub default {
 
 
 
-sub domain_breakdown_img { 
 
-	require DADA::MailingList::Subscribers; 
-	my $lh       = DADA::MailingList::Subscribers->new({-list => $list});
-	my $stats    = $lh->domain_stats(15); 
-	my $num_subs = $lh->num_subscribers;
-	
-	my @values = (); 
-	my @labels = (); 
-	foreach(keys %$stats){ 
-		push(@values, $stats->{$_}), 
-		push(@labels, $_ . ' ' . percent($stats->{$_}, $num_subs) .  '% (' . commify($stats->{$_}) . ')' ); 	
-	}
-	
-	require URI::GoogleChart; 
-	my $chart = URI::GoogleChart->new("pie", 640, 300,
-	    data => [@values],
-	    rotate => -90,
-	    label => [@labels],
-	    encoding => "s",
-	    background => "white",
-		margin => [150, 150, 10, 10],
-		title => 'Total Subscribers: ' . commify($num_subs),
-	);
-	
-	my $enc_chart = encode_html_entities($chart);
 
-    require DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::screen(
-        {
-            -screen           => 'plugins/tracker/domain_breakdown_img.tmpl',
-            -vars => {
-				domain_breakdown_chart_url => $enc_chart,
-            },
-        }
-    );
-	print $q->header(); 
-    e_print($scrn);
-
-}
-
-sub domain_breakdown_json { 
-
-	require DADA::MailingList::Subscribers; 
-	my $lh       = DADA::MailingList::Subscribers->new({-list => $list});
-	$lh->domain_stats_json(
-		{ 
-			-count => 15,
-			-printout => 1, 
-		}
-	); 
-}
 
 
 
@@ -227,111 +173,7 @@ sub percent {
 }
 
 
-sub subscriber_history_img { 
-	
-	my $page = $q->param('page') || 1; 
-	my ($total, $msg_ids) = $rd->get_all_mids(
-		{ 
-			-page    => $page, 
-			-entries => $ls->param('tracker_record_view_count'),  
-			
-		}
-	);
-	
- 	my $report_by_message_index = $rd->report_by_message_index({-all_mids => $msg_ids}) || [];
-	
-	# Needs potentially less data points 
-	# and labels for start/end of chart. 
-	my $num_subscribers = []; 
-	my $opens           = [];
-	my $clickthroughs   = [];
-	my $soft_bounces    = [];
-	my $hard_bounces    = [];
-	my $first_date      = undef;
-	my $last_date       = undef; 
 
-	for(reverse @$report_by_message_index){ 
-		if($rd->verified_mid($_->{mid})){
-			
-			if($ls->param('tracker_clean_up_reports') == 1){ 
-				next unless exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/
-			}
-		
-			push(@$num_subscribers, $_->{num_subscribers});
-			if(defined($_->{open})){ 
-				push(@$opens,    $_->{open});	
-			}
-			else { 
-				push(@$opens,  0);
-			}					
-			
-			if(defined($_->{count})){ 
-				push(@$clickthroughs,    $_->{count});	
-			}
-			else { 
-				push(@$clickthroughs,  0);
-			}					
-			
-			if(defined($_->{soft_bounce})){ 
-				push(@$soft_bounces,    $_->{soft_bounce});	
-			}
-			else { 
-				push(@$soft_bounces,  0);
-			}
-			if(defined($_->{hard_bounce})){ 
-				push(@$hard_bounces,    $_->{hard_bounce});	
-			}
-			else { 
-				push(@$hard_bounces,  0);
-			}
-			if(!defined($first_date	)){ 
-				$first_date = DADA::App::Guts::date_this( -Packed_Date => $_->{mid});
-			}
-			$last_date = DADA::App::Guts::date_this( -Packed_Date => $_->{mid});				
-		}
-	} 
-
-	require     URI::GoogleChart; 
-	my $chart = URI::GoogleChart->new("lines", 720, 400,
-    data => [
- 		{ range => "a", v => $num_subscribers },
- 		{ range => "a", v => $opens },
- 		{ range => "a", v => $clickthroughs },
- 		{ range => "a", v => $soft_bounces },
- 		{ range => "a", v => $hard_bounces },
-
-  	],
- 	range => {
-		a => { round => 0, show => "left" },
-	},	
-	color => [qw(green blue aqua ffcc00 red)],
-	label => ["Subscribers", "Opens", "Clickthroughs", "Soft Bounces", "Hard Bounces"],
-	chxt => 'x',
-	chxl => '0:|' . $first_date . '|' . $last_date, 
-
-	);
-	
-	my $enc_chart = encode_html_entities($chart);
-
-    require DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::screen(
-        {
-            -screen           => 'plugins/tracker/subscriber_history_img.tmpl',
-            -vars => {
-              #  report_by_message_index   => $rd->report_by_message_index,
-				num_subscribers_chart_url => $enc_chart,
-				Plugin_URL                => $Plugin_Config->{Plugin_URL}, 
-				has_entries               => scalar @$report_by_message_index, 
-            },
-            -list_settings_vars_param => {
-                -list   => $list,
-                -dot_it => 1,
-            },
-        }
-    );
-	print $q->header(); 
-    e_print($scrn);
-}
 
 sub subscriber_history_json { 
 	
@@ -598,7 +440,6 @@ sub message_report {
 		 push(@$s_url_report, {url => $v, count => $u_url_report->{$v}}); 
 	}
 	
-	my ($soft_bounce_image, $hard_bounce_image) = bounces_by_domain($m_report); 
 	
 	
 	my %tmpl_vars = (
@@ -614,8 +455,6 @@ sub message_report {
 		forward_to_a_friend        => commify($m_report->{'forward_to_a_friend'}) || 0,
 		soft_bounce_report         => $m_report->{'soft_bounce_report'}           || [],
 		hard_bounce_report         => $m_report->{'hard_bounce_report'}           || [],
-		soft_bounce_image          => $soft_bounce_image, 
-		hard_bounce_image          => $hard_bounce_image, 
 		can_use_country_geoip_data => $rd->can_use_country_geoip_data, 
 		Plugin_URL                 => $Plugin_Url,
 		Plugin_Name                => $Plugin_Config->{Plugin_Name},
@@ -654,77 +493,6 @@ sub message_report {
 
 }
 
-
-sub bounces_by_domain { 
-
-	my $m_report = shift; 
-		 
-	return (
-		by_domain_img(
-			$m_report->{'soft_bounce_report'}
-		), 
-		by_domain_img(
-			$m_report->{'hard_bounce_report'}
-		)
-	); 
-}
-
-sub by_domain_img { 
-	my $domains = shift; 
-	my $count   = shift || 15; 
-	
-	my $data = {};
-	
-	for my $bounce_report(@$domains ){ 
-
-		my $email = $bounce_report->{email};
-
-		my ($name, $domain) = split('@', $email); 
-		if(!exists($data->{$domain})){ 
-			$data->{$domain} = 0;
-		}
-		$data->{$domain} = $data->{$domain} + 1; 	
-	}
-	# Sorted Index
-	my @index = sort { $data->{$b} <=> $data->{$a} } keys %$data; 
-	
-	# Top n
-	my @top = splice(@index,0,($count-1));
-	
-	# Everyone else
-	my $other = 0; 
-	foreach(@index){ 
-		$other = $other + $data->{$_};
-	}
-	my $final = {};
-	foreach(@top){ 
-		$final->{$_} = $data->{$_};
-	}
-	if($other > 0){ 
-		$final->{other} = $other;
-	}
-	my @values = (); 
-	my @labels = (); 
-	foreach(keys %$final){ 
-		push(@values, $final->{$_}), 
-		push(@labels, $_ . ' - ' . $final->{$_} ); 	
-	}
-	
-	require URI::GoogleChart; 
-	my $chart = URI::GoogleChart->new("pie", 600, 300,
-	    data => [@values],
-	    rotate => -90,
-	    label => [@labels],
-	    encoding => "s",
-	    background => "white",
-		margin => [150, 150, 10, 10],
-		title => '',
-	);
-	
-	my $enc_chart = encode_html_entities($chart);
-	
-	
-}
 
 
 sub country_geoip_table {
@@ -773,77 +541,7 @@ sub country_geoip_json {
 		});
 }
 
-=cut
-sub country_geoip_data {
-	 
-	my ($args) = @_;
-	
-	$args->{-db} = $Plugin_Config->{Geo_IP_Db}; 
-	
-	my $report = $rd->country_geoip_data($args); 
 
-	my @country = (); 
-	my @number  = (); 
-	foreach(keys %$report){ 
-		next if $_ eq 'unknown'; 
-		push(@country, $_); 
-	 	push(@number , $report->{$_}); 
-	}
-	my $chld = join('', @country);
-	require URI::GoogleChart;
-	my $chart = URI::GoogleChart->new("world", 440, 220,
-	    color => ["white", "white", "red"],
-	    background => "EAF7FE", # water blue
-	    chld => $chld,
-	    data => [@number],
-	);
-	my $enc_chart = encode_html_entities($chart);
-	
-	require Geography::Countries; 
-	my $ht_report = [];
-	for ( sort { $report->{$b} <=> $report->{$a} } keys %$report ) {
-		
-		my $country_name =  Geography::Countries::country($_);
-		if(!defined($country_name)){ 
-			$country_name = $_; 
-		}
-		push(@$ht_report, {country_code => $_, country => $country_name, count => $report->{$_}});
-	}
-	return ($ht_report, $enc_chart); 
-	
-}
-=cut
-
-
-sub url_report {
-
-	my $tmpl = url_report_tmpl(); 
-	
-    my $m_report = $rd->report_by_url( $q->param('mid'), $q->param('url') );
-	my $url_report = []; 	
-    for ( sort { $a <=> $b } @$m_report ) {
-		push (@$url_report, {url => $_});
-    }
-    require DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::wrap_screen(
-        {
-            -screen           => 'plugins/tracker/url_report.tmpl',
-            -with           => 'admin',
-            -wrapper_params => {
-                -Root_Login => $root_login,
-                -List       => $ls->param('list'),
-            },
-			-vars => { 
-				mid        => $q->param('mid'), 
-				subject    => find_message_subject( $q->param('mid') ), 
-				url        => $q->param('url'),
-				url_report => $url_report,
-			}
-        }
-    );
-    e_print($scrn);
-
-}
 
 
 

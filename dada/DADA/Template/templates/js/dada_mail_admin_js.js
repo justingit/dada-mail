@@ -125,7 +125,7 @@ $(document).ready(function() {
 		
 		// Membership >> View List	
 		if($("#view_list_viewport").length) { 
-			view_list_viewport();
+			view_list_viewport();	
 		}
 		
 		// Membership >> user@example.com
@@ -301,7 +301,6 @@ $(document).ready(function() {
 	if($("#plugins_tracker_default").length) { 
 		  tracker_show_table();	
 		  google.setOnLoadCallback(drawSubscriberHistoryChart());
-		  google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
 		
 		  $("body").on("click", '.tracker_turn_page', function(event){
 			tracker_turn_page($(this).attr("data-page"));
@@ -525,6 +524,8 @@ function view_list_viewport(){
 	request.done(function(content) {
 	  $("#view_list_viewport").html( content );
 	  $("#view_list_viewport_loading").html( '<p class="alert">&nbsp;</p>' );
+	
+		google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
 	});
 }
 function turn_page(page_to_turn_to) { 
@@ -553,8 +554,59 @@ function change_order(order_by, order_dir) {
 	view_list_viewport();	 
 }
 
-
-
+var domain_breakdown_chart; // you've got to be serious... 
+var domain_breakdown_chart_data; 
+function drawTrackerDomainBreakdownChart() { 
+	$("#domain_break_down_chart_loading").html( '<p class="alert">Loading...</p>' );
+    $.ajax({
+		  url: "<!-- tmpl_var S_PROGRAM_URL -->",
+          dataType:"json",
+			data: {
+				f:      'domain_breakdown_json',
+				type:    $("#type").val(),
+			},
+          async: true,
+		success: function( jsonData ) {
+		      domain_breakdown_chart_data = new google.visualization.DataTable(jsonData);
+		      domain_breakdown_chart = new google.visualization.PieChart(document.getElementById('domain_break_down_chart'));
+		      var options = {
+			chartArea:{
+				left:20,
+				top:20,
+				width:"90%",
+				height:"90%"
+				},
+		        title:  $('#domain_break_down_chart').attr("data-title"),
+				width:  $('#domain_break_down_chart').attr("data-width"),
+				height: $('#domain_break_down_chart').attr("data-height"),
+				pieSliceTextStyle: {color: '#FFFFFF'},
+				backgroundColor:{
+					stroke: '#000000',
+			        strokeWidth: 1, 
+					
+				},
+					colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
+					is3D: true
+		      };
+		      domain_breakdown_chart.draw(domain_breakdown_chart_data, options);
+			$("#domain_break_down_chart_loading").html( '<p class="alert">&nbsp;</p>' );
+			google.visualization.events.addListener(domain_breakdown_chart, 'select', selectHandler);
+			
+		},
+       });	
+}
+function selectHandler(event) {	
+	var selection = domain_breakdown_chart.getSelection();
+    var message = '';
+     var item = selection[0];
+     var str = domain_breakdown_chart_data.getFormattedValue(item.row, 0);
+  // alert(str); 
+  if(str != 'other') { 
+	  $("#query").val($("#search_query").val("@" + str)); 
+	  $("#page").val(1); 
+	   search_list()
+	}
+}
 
 // Membership >> user@example.com
 function mailing_list_history(){ 
@@ -732,6 +784,9 @@ function toggleManualBatchSettings() {
 
 // Plugins >> Tracker
 	function update_plugins_tracker_message_report(){ 
+		
+		$( "#tabs" ).tabs();
+		
 		if($("#can_use_country_geoip_data").val() == 1){ 
 			
 			country_geoip_table('clickthroughs',       'Clickthroughs', 'country_geoip_clickthroughs_table');	
@@ -751,6 +806,9 @@ function toggleManualBatchSettings() {
 		google.setOnLoadCallback(data_over_time_graph('opens',               'Opens',         'over_time_opens_graph'));
 		google.setOnLoadCallback(data_over_time_graph('view_archive',        'Archive Views', 'over_time_view_archive_graph'));
 		google.setOnLoadCallback(data_over_time_graph('forward_to_a_friend', 'Forwards',      'over_time_forwards_graph'));
+
+		google.setOnLoadCallback(bounce_breakdown_chart('soft', 'Soft Bounces', 'soft_bounce_graph'));
+		google.setOnLoadCallback(bounce_breakdown_chart('hard', 'Hard Bounces', 'hard_bounce_graph'));
 		
 	}
 			
@@ -794,7 +852,12 @@ function toggleManualBatchSettings() {
 			success: function( jsonData ) {
 				// Create our data table out of JSON data loaded from server.
 				var data = new google.visualization.DataTable(jsonData);
-				var options = {width: 640};
+				var options = {
+					region: 'world', 
+					width: 640,
+					keepAspectRatio: true, 
+					backgroundColor: "#FFFFFF"
+				};
 				var chart = new google.visualization.GeoChart(document.getElementById(target_div));
 				chart.draw(data, options);
 				$("#" + target_div + "_loading").html( '<p class="alert">&nbsp;</p>' );
@@ -821,8 +884,14 @@ function toggleManualBatchSettings() {
 			success: function(jsonData) {
 				var data = new google.visualization.DataTable(jsonData);
 			    var options = {
+					chartArea:{
+						left:60,
+						top:20,
+						width:"70%",
+						height:"70%"
+						},
 					width:  720, 
-					height: 480,
+					height: 400,
 					backgroundColor:{
 						stroke: '#000000',
 				        strokeWidth: 1
@@ -834,8 +903,41 @@ function toggleManualBatchSettings() {
 			},
 			});	
 	}
-	
-
+	function bounce_breakdown_chart(type, label, target_div) { 
+		$("#" + target_div + "_loading").html( '<p class="alert">Loading...</p>' );
+	    $.ajax({
+			  url: $("#plugin_url").val(),
+	          dataType:"json",
+				data: {
+					f:          'bounce_stats_json',
+					mid:         $('#tracker_message_id').val(),
+					bounce_type: type, 
+					label:       label
+				},
+	          async: true,
+			success: function( jsonData ) {
+			      var data = new google.visualization.DataTable(jsonData);
+			      var chart = new google.visualization.PieChart(document.getElementById(target_div));
+			      var options = {
+					chartArea:{
+						left:20,
+						top:20,
+						width:"90%",
+						height:"90%"
+						},
+					title:  $('#' + target_div).attr("data-title"),
+					width:  $('#' + target_div).attr("data-width"),
+					height: $('#' + target_div).attr("data-height"),
+				
+					pieSliceTextStyle: {color: '#FFFFFF'},
+						colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
+						is3D: true
+			      };
+			      chart.draw(data, options);
+				  $("#" + target_div + "_loading").html( '<p class="alert">&nbsp;</p>' );
+			},
+	       });
+	}	
 
 
 // Plugins >> Tracker
@@ -862,73 +964,18 @@ function tracker_show_table(){
 	  dataType: "html"
 	});
 	request.done(function(content) {
-	  $("#show_table_results").html( content );
-	  $("#show_table_results_loading").html( '<p class="alert">&nbsp;</p>' );
+	  $("#show_table_results").hide('fade', 
+		function(){ 
+			$("#show_table_results").html( content );
+			$("#show_table_results").show('fade'); 
+		    $("#show_table_results_loading").html( '<p class="alert">&nbsp;</p>' );
+		}
+	  ); 
+
 	});
 }
-		
-function tracker_subscriber_history_img(){ 
-	
-	$("#subscriber_history_img_loading").html( '<p class="alert">Loading...</p>' );
-	var request = $.ajax({
-	  url: $("#plugin_url").val(),
-	  type: "POST",
-	  cache: false,
-	  data: {
-		f:       'subscriber_history_img',
-		page:   $("#tracker_page").val(),
-	  },
-	  dataType: "html"
-	});
-	request.done(function(content) {
-	  $("#subscriber_history_img").html( content );
-	  $("#subscriber_history_img_loading").html( '<p class="alert">&nbsp;</p>' );
-	});
-	
-}
 
-
-
-function drawTrackerDomainBreakdownChart() { 
-	$("#domain_break_down_chart_loading").html( '<p class="alert">Loading...</p>' );
-    $.ajax({
-		  url: $("#plugin_url").val(),
-          dataType:"json",
-			data: {
-				f:      'domain_breakdown_json',				
-			},
-          async: true,
-		success: function( jsonData ) {
-
-			 // Create our data table out of JSON data loaded from server.
-		      var data = new google.visualization.DataTable(jsonData);
-
-		      // Instantiate and draw our chart, passing in some options.
-		      var chart = new google.visualization.PieChart(document.getElementById('domain_break_down_chart'));
-		      var options = {
-		        title:  $('#domain_break_down_chart').attr("data-title"),
-				width:  $('#domain_break_down_chart').attr("data-width"),
-				height: $('#domain_break_down_chart').attr("data-height"),
-				pieSliceTextStyle: {color: '#FFFFFF'},
-				backgroundColor:{
-					stroke: '#000000',
-			        strokeWidth: 1, 
-					
-				},
-					colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
-					is3D: true
-		      };
-			//	colors: ["ff0000","ff00ff","0000ff","00ffff","00ff00","ffff00", "ff6666","ff66ff","6666ff","66ffff","66ff66","ffff66","ff9999","ff99ff","9999ff","99ffe0", "99ff99", "ffff99"]
-			//colors: ["FFA900","FFAE11","FFB422","FFBA33","FFBF44","FFC555","FFCB66","FFD177","FFD688","FFDC99","FFE2AA","FFE8BB","FFEDCC","FFF3DD","FFF9EE"]
-			
-		
-		
-		      chart.draw(data, options);
-			$("#domain_break_down_chart_loading").html( '<p class="alert">&nbsp;</p>' );
-		},
-       });
-}
-
+var SubscriberHistoryChart; 
  function drawSubscriberHistoryChart() {
   	$("#subscriber_history_chart_loading").html( '<p class="alert">Loading...</p>' );
 	 var request = $.ajax({
@@ -944,16 +991,27 @@ function drawTrackerDomainBreakdownChart() {
 		success: function(jsonData) {
 			var data = new google.visualization.DataTable(jsonData);
 		    var options = {
+				chartArea:{
+					left:60,
+					top:20,
+					width:"70%",
+					height:"70%"
+					},
 				width:  720, 
-				height: 480,
+				height: 400,
 				backgroundColor:{
 					stroke: '#000000',
 			        strokeWidth: 1
 				}		
 			};
-		    var chart = new google.visualization.LineChart(document.getElementById('subscriber_history_chart'));
-		    chart.draw(data, options);
+		    var SubscriberHistoryChart = new google.visualization.LineChart(document.getElementById('subscriber_history_chart'));
+			$("#subscriber_history_chart").hide('fade', function(){ 
+			 		
+			}); 
+			   SubscriberHistoryChart.draw(data, options);
+			$("#subscriber_history_chart").show('fade'); 
 			$("#subscriber_history_chart_loading").html( '<p class="alert">&nbsp;</p>' );
+
 		},
 		}
 		);

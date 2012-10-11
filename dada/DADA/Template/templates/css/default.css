@@ -777,12 +777,15 @@ li.archive_badges_li {
 }
 
 .stripedtable {
+	border: 1px solid red; /* for testing. */
+
 	border-collapse: collapse;
 	background-color: #fff;
 	width: 100%;
 	border: 0px;
 }
 .stripedtable td {
+	vertical-align: top;
 	padding: 2px;
 	margin: 0px;
 }

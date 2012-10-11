@@ -751,36 +751,46 @@ sub report_by_message {
     my $l;
 
     my $num_sub_query =
-'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? AND event = ?';
+        'SELECT details FROM '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+      . ' WHERE list = ? AND msg_id = ? AND event = ?';
     $report->{num_subscribers} =
       $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 },
         $self->{name}, $msg_id, 'num_subscribers' )->[0];
 
     my $misc_count_query =
-'SELECT COUNT(msg_id) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? AND event = ?';
+        'SELECT COUNT(msg_id) FROM '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+      . ' WHERE list = ? AND msg_id = ? AND event = ?';
 
-	for(
-		qw(
-			open
-			soft_bounce
-			hard_bounce
-			forward_to_a_friend
-			view_archive
-		)
-	){
-	$report->{$_} = $self->{dbh}->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, $_ )->[0];
-   }
+    for (
+        qw(
+        open
+        soft_bounce
+        hard_bounce
+        forward_to_a_friend
+        view_archive
+        )
+      )
+    {
+        $report->{$_} =
+          $self->{dbh}
+          ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id,
+            $_ )->[0];
+    }
 
     my $url_clickthroughs_query =
-'SELECT url, COUNT(url) AS count FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' where list = ? AND msg_id = ? GROUP BY url';
+        'SELECT url, COUNT(url) AS count FROM '
+      . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table}
+      . ' where list = ? AND msg_id = ? GROUP BY url';
     my $sth = $self->{dbh}->prepare($url_clickthroughs_query);
-    $sth->execute($self->{name}, $msg_id);
+    $sth->execute( $self->{name}, $msg_id );
     my $url_report = [];
     my $row        = undef;
-    $report->{clickthroughs} = 0; 
+    $report->{clickthroughs} = 0;
     while ( $row = $sth->fetchrow_hashref ) {
         push( @$url_report, { url => $row->{url}, count => $row->{count} } );
-		$report->{clickthroughs} = $report->{clickthroughs} + $row->{count};
+        $report->{clickthroughs} = $report->{clickthroughs} + $row->{count};
     }
     $sth->finish;
     undef $sth;
@@ -788,15 +798,30 @@ sub report_by_message {
 
     for my $bounce_type (qw(soft_bounce hard_bounce)) {
         my $bounce_query =
-'SELECT timestamp, details from ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? AND event = ? ORDER BY timestamp';
+            'SELECT timestamp, details from '
+          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+          . ' WHERE list = ? AND msg_id = ? AND event = ? ORDER BY details';
         my $sth = $self->{dbh}->prepare($bounce_query);
-        $sth->execute($self->{name},  $msg_id, $bounce_type );
-        my $bounce_report = [];
+        $sth->execute( $self->{name}, $msg_id, $bounce_type );
+        my @bounce_report = ();
         while ( $row = $sth->fetchrow_hashref ) {
-            push( @$bounce_report,
-                { timestamp => $row->{timestamp}, email => $row->{details} } );
+			my ($name, $domain) = split('@', $row->{details}); 
+            push( @bounce_report,
+                { 
+					timestamp    => $row->{timestamp}, 
+					email        => $row->{details}, 
+					email_name   => $name, 
+					email_domain => $domain, 
+				} 
+			);
         }
-        $report->{ $bounce_type . '_report' } = $bounce_report;
+		# sort by domain... 
+		my @sorted = map  { $_->[0] }
+		          sort { $a->[1] cmp $b->[1] }
+		          map  { [$_, $_->{email_domain}] }
+		               @bounce_report;
+		
+        $report->{ $bounce_type . '_report' } = [@sorted];
         $sth->finish;
     }
     return $report;

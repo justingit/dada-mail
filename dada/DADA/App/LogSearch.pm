@@ -253,15 +253,129 @@ sub log_line_report {
 
 }
 
+sub sub_unsub_trends { 
+	my $self = shift;
+	my $type = 'list'; 
+	 
+	my ($args) = @_; 
+	my $r = []; 
+	require File::ReadBackwards; 
+    my $bw = File::ReadBackwards->new( $DADA::Config::PROGRAM_USAGE_LOG ) or
+                        die "can't read '" . $DADA::Config::PROGRAM_USAGE_LOG . "' $!" ;
+
+	my $limit = 180; 
+	my $count = 0; 
+	my %trends = ();
+	my @dates; 
+		
+    while( defined(my  $log_line = $bw->readline ) ) {
+		chomp($log_line); 
+		my $llr = $self->log_line_report(
+			{ 
+				-list  => $args->{-list}, 
+				-line => $log_line,
+			}
+		); 
+		if(keys %$llr){
+			if($llr->{type} eq $type && ($llr->{action} eq 'subscribed' || $llr->{action} eq 'unsubscribed')){ 
+				#push(@$r, $llr);
+				# Dates Looks like this: [Sat Sep 10 00:30:31 2011]
+				#$count++; 
+				
+				# Munge the date, we just are interested in whole days. 
+				my $date = $llr->{date}; 
+				   $date =~ s/\[|\]//g;
+				my ($n_day, $n_month, $num_day, $time, $year) = split(' ', $date, 5);
+				my $day_str = join(' ', $n_day, $n_month, $num_day, $year);
+				
+				# Init if we need to. 
+				if(!exists($trends{$day_str})){ 
+					$trends{$day_str} = {subscribed => 0, unsubscribed => 0};
+					push(@dates, $day_str); 
+				}
+				$trends{$day_str}->{$llr->{action}}++;
+				
+				if(scalar(keys %trends) >= $limit){ #count, basically. 
+					delete $trends{$day_str};
+					pop(@dates);
+					last;
+				}
+			}
+		}
+    }
+	$bw->close;
+	my @r_trends = (); 
+	my $cum_sub = 0; 
+	my $cum_unsub = 0;  
+	
+	for my $d(reverse @dates){ 
+		$cum_sub   += $trends{$d}->{subscribed};
+		$cum_unsub += $trends{$d}->{unsubscribed};
+		push(@r_trends, { 
+			date => $d, 
+			subscribed              => $trends{$d}->{subscribed},
+			unsubscribed            => $trends{$d}->{unsubscribed},
+			cumulative_subscribed   => $cum_sub,
+			cumulative_unsubscribed => $cum_unsub,
+		}); 
+	}
+	return [@r_trends];
+}
+sub sub_unsub_trends_json { 
+	my $self = shift; 
+	my ($args) = @_; 
+	
+	my $trends = $self->sub_unsub_trends($args);
+	require Data::Google::Visualization::DataTable; 
+	my $datatable = Data::Google::Visualization::DataTable->new();
+
+	$datatable->add_columns(
+		   { id => 'date',                    label => 'Date',                    type => 'string'}, 
+		   { id => 'cumulative_subscribed',   label => 'Cumulative Subscriptions',   type => 'number',},
+		   { id => 'cumulative_unsubscribed', label => 'Cumulative Unubscriptions', type => 'number',},
+		   { id => 'subscribed',              label => 'Subscriptions',   type => 'number',},
+		   { id => 'unsubscribed',            label => 'Unubscriptions', type => 'number',},
+	);
+
+	for(@$trends){ 
+		$datatable->add_rows(
+	        [
+	               { v => $_->{date}},
+	               { v => $_->{cumulative_subscribed} },
+	               { v => $_->{cumulative_unsubscribed} },
+	               { v => $_->{subscribed} },
+	               { v => $_->{unsubscribed} },
+	       ],
+		);
+	}
+
+
+	my $json = $datatable->output_javascript(
+		pretty  => 1,
+	);
+	
+	if($args->{-printout} == 1){ 
+		require CGI; 
+		my $q = CGI->new; 
+		print $q->header(
+			'-Cache-Control' => 'no-cache, must-revalidate',
+			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+			-type            =>  'application/json',
+		);
+		print $json; 
+	}
+	else { 
+		return $json; 
+	}
+}
+
 
 sub list_activity { 
 	
 	my $self = shift; 
 	my ($args) = @_; 
 	my $r = []; 
-	
 	require File::ReadBackwards; 
-	
     my $bw = File::ReadBackwards->new( $DADA::Config::PROGRAM_USAGE_LOG ) or
                         die "can't read '" . $DADA::Config::PROGRAM_USAGE_LOG . "' $!" ;
 

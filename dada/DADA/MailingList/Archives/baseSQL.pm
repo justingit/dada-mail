@@ -329,10 +329,10 @@ sub search_entries {
 	my @results; 
 
 	my $query  = 'SELECT archive_id FROM '. $self->{sql_params}->{archives_table} . 
-			     ' WHERE list = ? AND (raw_msg LIKE ? OR subject LIKE ?) ORDER BY archive_id DESC';
+			     ' WHERE list = ? AND (raw_msg LIKE ? OR message LIKE ? OR subject LIKE ?) ORDER BY archive_id DESC';
 
 	my $sth = $self->{dbh}->prepare($query); 
-	   $sth->execute($self->{name}, '%'.$keyword.'%', '%'.$keyword.'%')
+	   $sth->execute($self->{name}, '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%')
 			or croak "cannot do statement! $DBI::errstr";
 	while((my $archives_id) = $sth->fetchrow_array){		
 		push(@results, $archives_id); 

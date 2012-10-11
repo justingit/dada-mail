@@ -169,7 +169,22 @@ sub search_list {
 
 sub domain_stats { 
 	my $self    = shift;
-	my $count   = shift || 10;  
+
+	my ($args) = @_; 
+	
+	my $count;
+	if(exists($args->{-count})) { 
+		$count = $args->{-count}; 
+	}
+	else { 
+		$count = 15; 
+	}
+	
+	my $type = 'list'; 
+	if(exists($args->{-type})){ 
+		$type = $args->{-type};
+	}
+	
 	my $domains = {};
 	
 	my $query = "SELECT email FROM " . 
@@ -178,7 +193,7 @@ sub domain_stats {
 
 	# Count All the Domains
 	my $sth = $self->{dbh}->prepare($query);
-	$sth->execute('list', 1, $self->{list});
+	$sth->execute($type, 1, $self->{list});
 	 while ( ( my $email ) = $sth->fetchrow_array ) {
 		my ($name, $domain) = split('@', $email); 
 		if(!exists($domains->{$domain})){ 
@@ -221,7 +236,12 @@ sub domain_stats_json {
 	if(!exists($args->{-printout})){ 
 		$args->{-printout} = 0; 
 	}
-	my $stats = $self->domain_stats($args->{-count});
+	my $stats = $self->domain_stats(
+		{ 
+			-count => $args->{-count},
+			-type  => $args->{-type},
+		}
+	);
 	
 	require         Data::Google::Visualization::DataTable;
 	my $datatable = Data::Google::Visualization::DataTable->new();

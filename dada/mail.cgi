@@ -493,6 +493,7 @@ sub run {
 	'admin_help'                 =>    \&admin_help,
 	'delete_list'                =>    \&delete_list,
 	'view_list'                  =>    \&view_list,
+	'domain_breakdown_json'      =>    \&domain_breakdown_json,
 	'search_list_auto_complete'  =>    \&search_list_auto_complete, 
 	'list_activity'              =>    \&list_activity,
 	'view_bounce_history'        =>    \&view_bounce_history, 
@@ -3110,6 +3111,26 @@ sub view_list {
 		print $q->header(); 
 	    e_print($scrn);
 	}
+}
+sub domain_breakdown_json { 
+
+  my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'view_list'
+    );
+    $list = $admin_list;
+
+	my $type = $q->param('type') || 'list'; 
+	
+	require DADA::MailingList::Subscribers; 
+	my $lh       = DADA::MailingList::Subscribers->new({-list => $list});
+	$lh->domain_stats_json(
+		{ 
+			-type  => $type, 
+			-count => 15,
+			-printout => 1, 
+		}
+	); 
 }
 
 sub search_list_auto_complete { 

@@ -138,342 +138,327 @@
 
 
 	</fieldset>
+
+
+
+	<div id="tabs"> 
+		<ul>
+			<li>
+			<a href="#clickthroughs">
+			Clickthroughs
+			</a>
+			</li>
+			<li>
+			<a href="#opens">
+			Opens
+			</a>
+			</li>
+			<li>
+			<a href="#archive_views">
+			Archive Views
+			</a>
+			</li>
+			<li>
+			<a href="#forwards">
+			Forwards
+			</a>
+			</li>
+			<li>
+			<a href="#bounces">
+			Bounces
+			</a>
+			</li>
+		</ul>
+
+	<div id="clickthroughs">
 		
-	<fieldset> 
-	<legend> 
-		Clickthroughs by URL
-	</legend> 
-	
-	<!-- tmpl_if url_report --> 
-	
-	
-	<div style="max-height: 200px; overflow: auto; border: 1px solid black;">
- 	<table class="stripedtable">
-	
-		<tr style="background:#fff"> 
-		<td> 
-			<p><strong>URL</strong></p> 
-		</td> 
-		<td> 
-			<p><strong># Clickthroughs</strong></p>
-		</td> 
-		</tr> 
-		
-		
-		
-			<!-- tmpl_loop url_report --> 
-			<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
-			 <td> 
-			 <p> 
 	
 
-	<!-- tmpl_if comment --> 
-			    <a href="<!-- tmpl_var Plugin_URL -->?f=url&mid=<!-- tmpl_var mid -->&url=<!-- tmpl_var url escape="HTML" -->"> 
-	<!-- /tmpl_if --> 
 
+		<h2>Clickthroughs by Country</h2>
+		
+		<!-- tmpl_if can_use_country_geoip_data --> 
+		<table class="stripedtable">
+		<tr> 
+		<td width="350"> 
+
+		<div id="country_geoip_clickthroughs_table_loading"></div> 
+		<div id="country_geoip_clickthroughs_table"></div>
+			</td> 
+			<td>
+		<div id="country_geoip_clickthroughs_map_loading"></div> 
+		<div id="country_geoip_clickthroughs_map"></div> 
+			</td> 
+		</tr>
+
+			</table>
+		<!-- tmpl_else --> 
+			<p class="alert">Nothing to report.</p> 
+		<!-- /tmpl_if --> 
+
+		
+		<h2>Clickthroughs Over Time</h2> 
+		<div id="over_time_clickthroughs_graph_loading"></div> 
+		<div id="over_time_clickthroughs_graph"></div> 	
+		<h2>Clickthroughs by URL</h2>
+				<!-- tmpl_if url_report --> 
+
+				<div style="max-height: 200px; overflow: auto; border: 1px solid black;">
+			 	<table class="stripedtable">
+					<tr style="background:#fff"> 
+					<td> 
+						<p><strong>URL</strong></p> 
+					</td> 
+					<td> 
+						<p><strong># Clickthroughs</strong></p>
+					</td> 
+					</tr> 
+						<!-- tmpl_loop url_report --> 
+						<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
+						 <td> 
+						 <p> 
+				<!-- tmpl_if comment --> 
+						    <a href="<!-- tmpl_var Plugin_URL -->?f=url&mid=<!-- tmpl_var mid -->&url=<!-- tmpl_var url escape="HTML" -->"> 
+				<!-- /tmpl_if --> 
 					<a href="<!-- tmpl_var url -->" target="_blank"> 
 					<!-- tmpl_var url escape="HTML" -->
 					</a> 
 					<!-- tmpl_if comment --> 
 					</a> 
-					<!-- /tmpl_if --> 
+					<!-- /tmpl_if --> 	
+						</p> 
+						</td> 
+						<td align="right"> 
+						 <p>
+							<!-- tmpl_var count --> 
+						 </p> 
+						</td> 
+						</tr> 
+				    <!-- /tmpl_loop -->
+				</table> 
+				</div> 
+				<!-- tmpl_else --> 
+					<p class="alert">Nothing to report.</p> 
+				<!-- /tmpl_if --> 
+	</div> 
+	<div id="opens">
+		<h2>Message Opens by Country</h2>
+		<!-- tmpl_if can_use_country_geoip_data --> 
+			<table class="stripedtable">
+			 <tr> 
+			<td width="350"> 
+			   <div id="country_geoip_opens_table_loading"></div> 
+			   <div id="country_geoip_opens_table"></div>
+			  </td> 
+			  <td> 
+			   <div id="country_geoip_opens_map_loading"></div> 
+			   <div id="country_geoip_opens_map"></div>
+			  </td> 
+			 </tr>
+			</table>
+			<!-- tmpl_else --> 
+				<p class="alert">Nothing to report.</p> 
+			<!-- /tmpl_if -->
+	<h2>Message Opens Over Time</h2> 
+	<div id="over_time_opens_graph_loading"></div> 
+	<div id="over_time_opens_graph"></div> 
+
+	</div> 
+	
+	<div id="archive_views">
+	<h2>Archive Views by Country</h2>
+		<!-- tmpl_if can_use_country_geoip_data --> 
+			<table class="stripedtable">
+			 <tr> 
+			<td width="350"> 
+			   <div id="country_geoip_view_archive_table_loading"></div> 
+			   <div id="country_geoip_view_archive_table"></div>
+			  </td> 
+			  <td> 
+			   <div id="country_geoip_view_archive_map_loading"></div> 
+			   <div id="country_geoip_view_archive_map"></div>
+			  </td> 
+			 </tr>
+			</table>
+			<!-- tmpl_else --> 
+				<p class="alert">Nothing to report.</p> 
+			<!-- /tmpl_if -->
+		<h2>Archive Views Over Time</h2> 
+		<div id="over_time_view_archive_graph_loading"></div> 
+		<div id="over_time_view_archive_graph"></div>
+	</div> 
+	
+	<div id="forwards">
+		
+		<h2>&quot;Forward to a Friend&quot; by Country</h2>
+		<!-- tmpl_if can_use_country_geoip_data --> 
+			<table class="stripedtable">
+			 <tr> 
+			<td width="350"> 
+			   <div id="country_geoip_forwards_table_loading"></div> 
+			   <div id="country_geoip_forwards_table"></div>
+			  </td> 
+			  <td> 
+			   <div id="country_geoip_forwards_map_loading"></div> 
+			   <div id="country_geoip_forwards_map"></div>
+			  </td> 
+			 </tr>
+			</table>
+			<!-- tmpl_else --> 
+				<p class="alert">Nothing to report.</p> 
+			<!-- /tmpl_if -->
+
+	<h2>&quot;Forward to a Friend&quot; Over Time</h2>
+		<div id="over_time_forwards_graph_loading"></div> 
+		<div id="over_time_forwards_graph"></div>
+	</div> 
+	
+	<div id="bounces">
+		
+
+
+		<h2>Soft Bounces</h2> 
+
+		<table class="stripedtable">
+			<tr> 
+				<td> 
+					
+			<div> 
+			 <div style="max-height: 400px; max-width:350px; overflow: auto; border:1px solid black 	overflow-y: scroll; overflow-x: hidden;">
+
+				<!-- tmpl_if soft_bounce_report --> 
+				
+				<table class="stripedtable" style="width:325px">
+			 
+				<tr> 
+				  <td> 
+				   <strong>Email Address</strong>
+				  </td> 
+				 </tr> 
+
+
+				<!-- tmpl_if chrome --> 
+					<!-- tmpl_loop soft_bounce_report --> 
+						<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
+						  <td> 
+							<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="URL" -->&chrome=0" title="Bounce Log for <!-- tmpl_var email escape="HTML" -->" onclick="Modalbox.show(this.href, {title: this.title, width: 640, height:480}); return false;">
+							 <!-- tmpl_var email -->
+						    </a>
+						  </td> 
+						 </tr> 
+					<!-- /tmpl_loop -->	
+				<!-- tmpl_else --> 
+					<!-- tmpl_loop hard_bounce_report --> 
+						<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
+						  <td> 
+							<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="HTML" -->">
+								<!-- tmpl_var email escape="HTML" -->
+							</a>
+						  </td> 
+						 </tr> 
+					<!-- /tmpl_loop --> 
+				<!-- /tmpl_if -->
+
+				</table> 
+					<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var soft_bounce -->&nbsp;</p> 
+				</div> 
+				<!-- tmpl_else --> 
+				<p class="alert">No soft bounces to report.</p> 
+				<!-- /tmpl_if -->
+				
+				</div> 
+			</td>
+			<td>
+				<div id="soft_bounce_graph_loading"></div> 
+				<div id="soft_bounce_graph" data-width="640" data-height="400" data-title="Soft Bounces"></div> 
+			</td>
+		   </tr>
+		</table>
+
+
+	
+
+
+
+		<!-- tmpl_if hard_bounce_report --> 
+		<h2>Hard Bounces</h2>
+		<table class="stripedtable">
+			<tr> 
+				<td> 
+					
+		
+		
+					<div> 
+					 <div style="max-height: 400px; max-width:350px; overflow: auto; border:1px solid black 	overflow-y: scroll; overflow-x: hidden;">
+							<table class="stripedtable" style="width:325px">
+						 <tr> 
+						  <td> 
+						   <strong>Email Address</strong>
+						  </td> 
+						 </tr> 
+
+						<!-- tmpl_if chrome --> 
+							<!-- tmpl_loop hard_bounce_report --> 
+								<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
+								  <td> 
+									<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="URL" -->&chrome=0" title="Bounce Log for <!-- tmpl_var email escape="HTML" -->" onclick="Modalbox.show(this.href, {title: this.title, width: 640, height:480}); return false;	">
+									 <!-- tmpl_var email -->
+								    </a>
+								  </td> 
+								 </tr> 
+							<!-- /tmpl_loop -->	
+						<!-- tmpl_else --> 
+							<!-- tmpl_loop hard_bounce_report --> 
+								<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
+								  <td> 
+									<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="HTML" -->">
+										<!-- tmpl_var email escape="HTML" -->
+									</a>
+								  </td> 
+								 </tr> 
+							<!-- /tmpl_loop --> 
+						<!-- /tmpl_if --> 
+						</table>
+						<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var hard_bounce -->&nbsp;</p> 
 						
-			</p> 
-			</td> 
-			<td align="right"> 
-			 <p>
-				<!-- tmpl_var count --> 
-			 </p> 
-			</td> 
-			</tr> 
+						</div> 
+						<!-- tmpl_else --> 
+							<p class="alert">No hard bounces to report.</p>	
+						<!-- /tmpl_if -->
+						</div> 
+				</td>
+				<td>
+					<div id="hard_bounce_graph_loading"></div> 
+					<div id="hard_bounce_graph" data-width="640" data-height="400" data-title="Hard Bounces"></div> 
+				</td>
+			</tr>
+		</table> 
 		
-	    <!-- /tmpl_loop --> 
+			
 
 	
-	</table> 
-	</div> 
-	<!-- tmpl_else --> 
+	</div>
 	
-		<p class="alert">Nothing to report.</p> 
-		
-	<!-- /tmpl_if --> 
+	</div>
+
+
+
+
+
+
+
+
+
+
 	
-	
-</fieldset> 
-
-
-<fieldset> 
-<legend> 
-	Clickthroughs by Country
-</legend>
-
-<!-- tmpl_if can_use_country_geoip_data --> 
-<table class="stripedtable">
-<tr> 
-<td> 
-	
-<div id="country_geoip_clickthroughs_table_loading"></div> 
-<div id="country_geoip_clickthroughs_table"></div>
-	</td> 
-	<td>
-<div id="country_geoip_clickthroughs_map_loading"></div> 
-<div id="country_geoip_clickthroughs_map"></div> 
-	</td> 
-</tr>
-
-	</table>
-<!-- tmpl_else --> 
-	<p class="alert">Nothing to report.</p> 
-<!-- /tmpl_if --> 
-
-</fieldset> 
 
 
 
 
 
 
-<fieldset> 
-<legend>Clickthroughs Over Time</Legend> 
-	
-<div id="over_time_clickthroughs_graph_loading"></div> 
-<div id="over_time_clickthroughs_graph"></div> 
 
 
-</fieldset>
-
-
-
-<fieldset> 
-<legend> 
-	Message Opens by Country
-</legend>
-<!-- tmpl_if can_use_country_geoip_data --> 
-	<table class="stripedtable">
-	 <tr> 
-	  <td> 
-	   <div id="country_geoip_opens_table_loading"></div> 
-	   <div id="country_geoip_opens_table"></div>
-	  </td> 
-	  <td> 
-	   <div id="country_geoip_opens_map_loading"></div> 
-	   <div id="country_geoip_opens_map"></div>
-	  </td> 
-	 </tr>
-	</table>
-	<!-- tmpl_else --> 
-		<p class="alert">Nothing to report.</p> 
-	<!-- /tmpl_if -->
-</fieldset>
-
-
-<fieldset> 
-<legend>Message Opens Over Time</Legend> 
-
-<div id="over_time_opens_graph_loading"></div> 
-<div id="over_time_opens_graph"></div> 
-
-
-
-</fieldset>
-
-
-<fieldset> 
-<legend> 
-	Archive Views by Country
-</legend>
-<!-- tmpl_if can_use_country_geoip_data --> 
-	<table class="stripedtable">
-	 <tr> 
-	  <td> 
-	   <div id="country_geoip_view_archive_table_loading"></div> 
-	   <div id="country_geoip_view_archive_table"></div>
-	  </td> 
-	  <td> 
-	   <div id="country_geoip_view_archive_map_loading"></div> 
-	   <div id="country_geoip_view_archive_map"></div>
-	  </td> 
-	 </tr>
-	</table>
-	<!-- tmpl_else --> 
-		<p class="alert">Nothing to report.</p> 
-	<!-- /tmpl_if -->
-</fieldset>
-
-
-
-
-
-<fieldset> 
-<legend>Archive Views Over Time</Legend> 
-<div id="over_time_view_archive_graph_loading"></div> 
-<div id="over_time_view_archive_graph"></div>
-
-
-</fieldset>
-
-
-
-
-<fieldset> 
-<legend> 
-	&quot;Forward to a Friend&quot; by Country
-</legend>
-<!-- tmpl_if can_use_country_geoip_data --> 
-	<table class="stripedtable">
-	 <tr> 
-	  <td> 
-	   <div id="country_geoip_forwards_table_loading"></div> 
-	   <div id="country_geoip_forwards_table"></div>
-	  </td> 
-	  <td> 
-	   <div id="country_geoip_forwards_map_loading"></div> 
-	   <div id="country_geoip_forwards_map"></div>
-	  </td> 
-	 </tr>
-	</table>
-	<!-- tmpl_else --> 
-		<p class="alert">Nothing to report.</p> 
-	<!-- /tmpl_if -->
-</fieldset>
-
-<fieldset> 
-<legend>	&quot;Forward to a Friend&quot; Over Time</Legend>
-	
-<div id="over_time_forwards_graph_loading"></div> 
-<div id="over_time_forwards_graph"></div>
-
-</fieldset>
-
-
-
-<fieldset> 
-<legend>Bounces</legend> 
-<!-- tmpl_if soft_bounce_report --> 
-<fieldset> 
-<legend>Soft Bounces</legend> 
-
- 
-<div> 
-	<div style="max-height: 300px; overflow: auto; border:1px solid black;width:640px">
-	
-	<table class="stripedtable" style="width:600px">
-	 <tr> 
-	  <td> 
-	   <strong>Date</strong>
-	  </td> 
-	  <td> 
-	   <strong>Email Address</strong>
-	  </td> 
-	 </tr> 
-	
-	
-	<!-- tmpl_if chrome --> 
-		<!-- tmpl_loop soft_bounce_report --> 
-			<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
-			  <td> 
-			   <!-- tmpl_var timestamp --> 
-			  </td> 
-			  <td> 
-				<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="URL" -->&chrome=0" title="Bounce Log for <!-- tmpl_var email escape="HTML" -->" onclick="Modalbox.show(this.href, {title: this.title, width: 640, height:480}); return false;">
-				 <!-- tmpl_var email -->
-			    </a>
-			  </td> 
-			 </tr> 
-		<!-- /tmpl_loop -->	
-	<!-- tmpl_else --> 
-		<!-- tmpl_loop hard_bounce_report --> 
-			<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
-			  <td> 
-			   <!-- tmpl_var timestamp --> 
-			  </td> 
-			  <td> 
-				<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="HTML" -->">
-					<!-- tmpl_var email escape="HTML" -->
-				</a>
-			  </td> 
-			 </tr> 
-		<!-- /tmpl_loop --> 
-	<!-- /tmpl_if -->
-	
-	</table> 
-		<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var soft_bounce -->&nbsp;</p> 
-	</div> 
-
-	</div> 
-	<p>
-	<img src="<!-- tmpl_var soft_bounce_image -->" style="border:1px solid black" /> 
-	<p>
-	
-	</fieldset> 
-<!-- tmpl_else --> 
-<p class="alert">No soft bounces to report.</p> 
-<!-- /tmpl_if --> 
-
-<!-- tmpl_if hard_bounce_report --> 
-<fieldset> 
-<legend>Hard Bounces</legend>
-<div> 
-	<div style="max-height: 300px; overflow: auto; border:1px solid black; width:640px">
-		<table class="stripedtable" style="width:600px">
-	 <tr> 
-	  <td> 
-	   <strong>Date</strong>
-	  </td> 
-	  <td> 
-	   <strong>Email Address</strong>
-	  </td> 
-	 </tr> 
-	
-	<!-- tmpl_if chrome --> 
-		<!-- tmpl_loop hard_bounce_report --> 
-			<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
-			  <td> 
-			   <!-- tmpl_var timestamp --> 
-			  </td> 
-			  <td> 
-				<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="URL" -->&chrome=0" title="Bounce Log for <!-- tmpl_var email escape="HTML" -->" onclick="Modalbox.show(this.href, {title: this.title, width: 640, height:480}); return false;	">
-				 <!-- tmpl_var email -->
-			    </a>
-			  </td> 
-			 </tr> 
-		<!-- /tmpl_loop -->	
-	<!-- tmpl_else --> 
-		<!-- tmpl_loop hard_bounce_report --> 
-			<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
-			  <td> 
-			   <!-- tmpl_var timestamp --> 
-			  </td> 
-			  <td> 
-				<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="HTML" -->">
-					<!-- tmpl_var email escape="HTML" -->
-				</a>
-			  </td> 
-			 </tr> 
-		<!-- /tmpl_loop --> 
-	<!-- /tmpl_if --> 
-	
-	
-	
-	
-	
-	</table> 
-	<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var hard_bounce -->&nbsp;</p> 
-	
-	
-	</div> 
-	</div> 
-	
-	<p>
-	<img src="<!-- tmpl_var hard_bounce_image -->" style="border:1px solid black" /> 
-	<p>
-	
-	</fieldset> 
-	<!-- tmpl_else --> 
-	<p class="alert">No hard bounces to report.</p>	
-<!-- /tmpl_if -->
-</legend> 
-</fieldset> 
 
 
 
