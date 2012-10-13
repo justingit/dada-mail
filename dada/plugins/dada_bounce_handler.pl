@@ -245,380 +245,8 @@ sub cgi_main {
     }
 }
 
-sub cgi_default_tmpl {
 
-    return q { 
 
-	<script type="text/javascript">
-	    //<![CDATA[
-		Event.observe(window, 'load', function() {
-		  show_bounce_scorecard();	
-		});
-
-		function show_bounce_scorecard(){ 
-	
-			new Ajax.Updater(
-				'bounce_scorecard', '<!-- tmpl_var Plugin_URL -->', 
-				{ 
-				    method: 'post', 
-					parameters: {
-						flavor:       'cgi_scorecard',
-						page:         $F('page')
-					},
-				onCreate: 	 function() {
-					$('bounce_scorecard_loading').update('<p class="alert">Loading...</p>');
-				},
-				onComplete: 	 function() {
-
-					$('bounce_scorecard_loading').update('<p class="alert">&nbsp;</p>');
-					Effect.BlindDown('bounce_scorecard');
-				}	
-			}
-		);
-
-		}
-		
-		function turn_page(page_to_turn_to) { 
-			Form.Element.setValue('page', page_to_turn_to) ; 
-			show_bounce_scorecard();
-		}
-	//]]>
-			
-	</script>
-	
-		
-	<!-- tmpl_set name="title" value="Plugins &#187; Bounce Handler" -->	
-	
-	<!-- tmpl_set name="load_modalbox" value="1" -->	
-	
-
-	<div id="screentitle"> 
-		<div id="screentitlepadding">
-			<!-- tmpl_var title -->
-		</div>
-		<!-- tmpl_include help_link_widget.tmpl -->
-	</div>
-
- 
-		<!-- tmpl_unless plugin_configured --> 
-		
-			<div class="badweatherbox">
-			  <p><strong>
-			   Warning! <!-- tmpl_var Plugin_Name --> Not Configured!
-			  </strong></p> 
-	
-			<p>
-			 You must set up the Bounce Handler Email Address in the plugin-specific configuration. 
-			</p> 
-	 		
-			 </div>
-		
-		<!-- /tmpl_unless --> 
-		
-		<!-- tmpl_if done -->
-			<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
-		<!--/tmpl_if-->
-		
-<fieldset> 
- <legend> 
-Bounce Email Scorecard
- </legend> 
- <div id="bounce_scorecard_loading"><p>&nbsp;</p></div>
-<div id="bounce_scorecard"></div> 
-
-<form> 
-<input type="hidden" name="page" value="1" id="page" /> 
-</form> 
-
- 
-</fieldset> 
-
-
-
-
-<fieldset> 
- <legend>Manually Run <!-- tmpl_var Plugin_Name --></legend> 
-
-<form action="<!-- tmpl_var Plugin_URL -->">
-
-<input type="checkbox" name="bounce_test" id="bounce_test" value="bounces" /><label for="test"><label for="bounce_test">Test With Awaiting Messages</label>
-
-<p><label for="parse_amount">Review</label> up to <!-- tmpl_var parse_amount_widget --> Messages.</p>
-
-<input type="hidden" name="flavor" value="cgi_parse_bounce" /> 
-<div class="buttonfloat"> 
-
-<input type="submit" class="cautionary" value="Parse Bounces..." />
-</div> 
-
-<div class="floatclear"></div> 
-
-</form>
-
-<p>
- <label for="cronjob_url">Manual Run URL:</label><br /> 
-<input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var Plugin_URL -->?run=1&verbose=1&passcode=<!-- tmpl_var Manual_Run_Passcode -->" />
-</p>
-<!-- tmpl_unless Allow_Manual_Run --> 
-    <span class="error">(Currently disabled)</a>
-<!-- /tmpl_unless -->
-
-
-<p> <label for="cronjob_command">curl command example (for a cronjob):</label><br /> 
-<input type="text" class="full" id="cronjob_command" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --data run=1\;passcode=<!-- tmpl_var Manual_Run_Passcode -->\;verbose=0  --url <!-- tmpl_var Plugin_URL -->" />
-<!-- tmpl_unless curl_location --> 
-	<span class="error">Can't find the location to curl!</span><br />
-<!-- /tmpl_unless --> 
-
-<!-- tmpl_unless Allow_Manual_Run --> 
-    <span class="error">(Currently disabled)</a>
-<!-- /tmpl_unless --> 
-
-</p>
-</li>
-</ul> 
-</fieldset> 
-
-
-
-
-<fieldset> 
-<legend>
-Scorecard Preferences
-</legend> 
-
-<form action="<!-- tmpl_var Plugin_URL -->" method="post">
-
-<input type="hidden" name="flavor" value="edit_prefs" /> 
-<p>
-	Addresses that bounce back reports because of <strong>temporary</strong> 
-	problems, like the mailbox being full or a network problem are given the
-	<strong>Soft Bounce Score</strong>
-</p>
-<table border="0"> 
- <tr> 
-  <td> 
-   <p>
-   	<label style="width: 12em;float: left;text-align: right;margin-right: 0.5em;display: block">"Soft" Bounce Score</label>
-	</p>
-  </td> 
-  <td> 
-	<!-- tmpl_var bounce_handler_softbounce_score_popup_menu -->
-  </td>
-  </tr>
-</table> 
-
-<p>
-	Address that bounce back reports because of <strong>permanent</strong>
-	problems, like the address not existing anymore, or messages being blocked
-	from being received are given the <strong>Hard Bounce Score</strong>
-</p>
-
-<table border="0"> 
-
- <tr> 
-  <td> 
-	
-   <label style="width: 12em;float: left;text-align: right;margin-right: 0.5em;display: block">"Hard" Bounce Score</label>
-  </td> 
-  <td> 
-	<!-- tmpl_var bounce_handler_hardbounce_score_popup_menu -->
-  </td>
-  </tr>
-</table> 
-
-
-   <p>
-	All addresses that currently have a score on the Bounce Scorecard will be 
-	lessened by the <strong>Decay Rate</strong>, each time a mass mailing is sent to 
-	the mailing list. This helps make sure <strong>temporary problems</strong> do 
-	not inadvertantly remove addresses from your list <strong>permanently</strong>.
-	</p>
-
-
-<table border="0"> 
-<tr>
-<td>
-
-   	<label style="width: 12em;float: left;text-align: right;margin-right: 0.5em;display: block">Decay Rate</label>
-  </td> 
-  <td> 
-	<!-- tmpl_var bounce_handler_decay_score_popup_menu -->
-  </td>
-  </tr>
-</table> 
-
-<p>
-	Addresses that reach the <strong>Score Threshold</strong> will be unsubscribed
-	from your mailing list. 
-</p>
-<table border="0"> 
-<tr>
-<td>
-
-   	 <label style="width: 12em;float: left;text-align: right;margin-right: 0.5em;display: block">Bounce Score Threshold</label>
-  </td> 
-  <td> 
-	<!-- tmpl_var bounce_handler_threshold_score_popup_menu -->
-  </td>
-  </tr>
-</table> 
-
-
-<table cellpadding="5"> 
-<tr>
-<td>
-<input type="checkbox" name="bounce_handler_forward_msgs_to_list_owner" id="bounce_handler_forward_msgs_to_list_owner" value="1" <!-- tmpl_if list_settings.bounce_handler_forward_msgs_to_list_owner -->checked="checked"<!-- /tmpl_if --> />
-</td>
-<td>
-<label for="bounce_handler_forward_msgs_to_list_owner">Forward bounces to the List Owner After Processing</label>
-<br />Bounce Messages will be delivered to the List Owner (after being parsed and scored) for manual inspection. 
-</td>
-</tr> 
-</table>
-
-</td>
-</tr>
-</table> 
-
-<table cellpadding="5"> 
-<tr> 
-<td> 
-	<p>Addresses the reach the <strong>Bounce Score Threshold</strong> Should:</p>
-</td>
-</tr>
-<tr>
-<td>
-	 <p><input type="radio" name="bounce_handler_when_threshold_reached" value="unsub_subscriber" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'unsub_subscriber')" -->checked="checked"<!-- /tmpl_if --> /><label>Be Unsubscribed Right Away</label><br />
-	 <input type="radio" name="bounce_handler_when_threshold_reached"  value="move_to_bounced_sublist" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'move_to_bounced_sublist')" -->checked="checked"<!-- /tmpl_if --> /><label>Be Moved to the, "Bounced Addresses" Sublist</label>
-</p> 
-
-</td>
-
-</tr>
-</table> 
-
-<div class="buttonfloat">   
- <input type="submit" class="processing" value="Save Preferences" /> 
- </div>
-<div class="floatclear"></div>
-</form> 
-</fieldset>
-
-
-<fieldset>
- <legend> 
-  <!-- tmpl_var Plugin_Name --> Configuration</h1>
- </legend> 
- 
- 
- 
-
-<table cellpadding="5">
- <tr> 
-  <td>
-   <p><strong>Your Bounce Handler POP3 Username:</strong>
-   </td> 
-   <td> 
-    <p>
-
-<!-- tmpl_if Username --> 
-	<!-- tmpl_var Username -->
-<!-- tmpl_else --> 
-	<span class="error">Not Set!</span>
-<!-- /tmpl_if --> 
-
-</p>
-   </td> 
-   </tr> 
-   <tr> 
-   <td>
-    <p><strong>On:</strong>
-    </p>
-    </td>
-    <td>
-     <p>
-
-	<!-- tmpl_if Server --> 
-      <!-- tmpl_var Server --></p>
-	<!-- tmpl_else --> 
-		<span class="error">Not Set!</span>
-	<!-- /tmpl_if -->	
-
-   </td> 
-   </tr> 
-   
-  </table> 
-  
- <div class="buttonfloat"> 
- <form action="<!-- tmpl_var Plugin_URL -->"> 
-  <input type="hidden" name="flavor" value="cgi_show_plugin_config" /> 
-  <input type="submit" value="View All Plugin Configurations..." class="cautionary" /> 
- </form> 
- </div> 
-
-<div class="floatclear"></div> 
-  
-</fieldset> 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<fieldset> 
-
-<legend>Mailing List Configuration</legend>
-
-<!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" --> 
-	<p>Messages for this list are  being sent via <strong>the sendmail command <!-- tmpl_if list_settings.add_sendmail_f_flag -->with the '-f' flag<!--/tmpl_if--></strong>:</p>
-
-	<blockquote>
-	<p>
-	 <em>
-	  <!-- tmpl_var MAIL_SETTINGS --><!-- tmpl_if list_settings.add_sendmail_f_flag --> <strong>-f<!--tmpl_var list_settings.admin_email --><!--/tmpl_if--></strong></em></p>
-	</blockquote>
-<!-- /tmpl_if --> 
-
-<!-- tmpl_if expr="(list_settings.sending_method eq 'smtp')" --> 
-
-	<p>Messages for this mailing list are being sent via: <strong>SMTP</strong>. 
-
-	<!-- tmpl_if list_settings.set_smtp_sender --> 
-
-		<p>The SMTP Sender is being set to: <strong><!-- tmpl_var list_settings.admin_email --></strong>. This should
-		be the same address as the above <strong>Bounce Handler POP3 Username</strong></p> 
-	
-	<!-- tmpl_else --> 
-
-		<p>The SMTP Sender has not be explicitly set.  Bounces may go to the list owner (<!-- tmpl_var list_settings.list_owner_email -->) or to 
-		a server default address.</p> 
-
-	<!--/tmpl_if-->
-
-<!--/tmpl_if-->
-
-<!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" --> 
-	<p>Messages are currently being sent via Amazon SES.</p>
-	
-	<p>Outgoing messages will have the Return-Path header set to the List Administrator Email (<strong><!-- tmpl_var list_settings.admin_email --></strong>)
-
-<!-- /tmpl_if -->
-
-</legend> 
-
-
-};
-
-}
 
 sub cgi_default {
 
@@ -627,8 +255,6 @@ sub cgi_default {
 	
 	my $done = $q->param('done') || 0; 
 	
-    my $tmpl = cgi_default_tmpl();
-
     my @amount = (
         1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  25,  50,
         100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650,
@@ -685,7 +311,7 @@ sub cgi_default {
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-            -data           => \$tmpl,
+            -screen         => 'plugins/bounce_handler/default.tmpl',
             -with           => 'admin',
 			-expr           => 1, 
             -wrapper_params => {
@@ -764,73 +390,15 @@ sub ajax_parse_bounces_results {
     print $r;
 }
 
-sub cgi_parse_bounce_template {
 
-    return q{ 
-		
-		<!-- tmpl_set name="title" value="Plugins &#187; Bounce Handler &#187; Parsing Bounces..." --> 
-		
-			<script type="text/javascript">
-			    //<![CDATA[
-				Event.observe(window, 'load', function() {
-				  parse_bounces();				
-				});
-				
-				 function parse_bounces(){ 
 
-					new Ajax.Updater(
-						'parse_bounce_results', '<!-- tmpl_var Plugin_URL -->', 
-						{ 
-						    method: 'post', 
-							parameters: {
-								parse_amount: $F('parse_amount'),
-								bounce_test:  $F('bounce_test'),
-								flavor:       'ajax_parse_bounces_results'
-								
-							},
-						onCreate: 	 function() {
-							Form.Element.setValue('parse_bounces_button', 'Parsing...');
-							$('parse_bounce_results').hide();
-							$('parse_bounce_results_loading').show();
-						},
-						onComplete: 	 function() {
-
-							$('parse_bounce_results_loading').hide();
-							Effect.BlindDown('parse_bounce_results');
-							Form.Element.setValue('parse_bounces_button', 'Parse Bounces');
-						}	
-						});
-				}
-			    //]]>
-			</script>
-	
-	   <p id="breadcrumbs">
-	        <a href="<!-- tmpl_var Plugin_URL -->">
-			 <!-- tmpl_var Plugin_Name -->
-		</a> &#187; Parsing Bounces
-	   </p>
-	<form name="some_form" id="some_form"> 
-		<input type="hidden" id="parse_amount"  name="parse_amount"  value="<!-- tmpl_if parse_amount --><!-- tmpl_var parse_amount --><!-- tmpl_else --><!-- tmpl_var MessagesAtOnce --><!-- /tmpl_if -->" /> 
-		<input type="hidden" id="bounce_test"   name="bounce_test"   value="<!-- tmpl_if bounce_test --><!-- tmpl_var bounce_test --><!-- tmpl_else --><!-- /tmpl_if -->" />
-		<input type="button" value="Parse Bounces" id="parse_bounces_button" class="processing" onClick="parse_bounces();" /> 
-	</form>
-	
-		<div id="parse_bounce_results_loading" style="display:none;"> 
-			<p class="alert">Loading...</p>
-		</div> 
-		<div id="parse_bounce_results"> 			
-		</div> 
-			
-	};
-}
 
 sub cgi_parse_bounce {
 
-    my $tmpl = cgi_parse_bounce_template();
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-            -data           => \$tmpl,
+            -screen         => 'plugins/bounce_handler/parse_bounce.tmpl',
             -with           => 'admin',
             -wrapper_params => {
                 -Root_Login => $root_login,
@@ -947,13 +515,10 @@ sub cgi_scorecard {
         }
     }
 
-    my $tmpl = cgi_scorecode_tmpl();
-
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::screen(
         {
-            -data => \$tmpl,
-
+            -screen => 'plugins/bounce_handler/scorecard.tmpl',
             -vars => {
                 Plugin_URL    => $Plugin_Config->{Plugin_URL},
                 Plugin_Name   => $Plugin_Config->{Plugin_Name},
@@ -973,122 +538,8 @@ sub cgi_scorecard {
 
 }
 
-sub cgi_scorecode_tmpl {
-
-    return <<EOF
 
 
-<!-- tmpl_if num_rows --> 
-
-	<p class="alert">The Bounce Scorecard keeps track of subscribed address on your mailing list that bounce back message reports. Click on any address to see
- these message report summaries.</p> 
-
-	<table width="100%">
-	 <tr> 
-	<td width="33%" align="left"> 
-
-	<strong><a href="javascript:turn_page(<!-- tmpl_var first_page -->);">First</a></strong>
-
-	</td> 
-
-	<td width="33%" align="center"> 
-	<p>
-
-	<!-- tmpl_if previous_page --> 
-		<strong><a href="javascript:turn_page(<!-- tmpl_var previous_page -->);">Previous</a></strong>
-	<!-- tmpl_else --> 
-	<!-- /tmpl_if -->
-	&nbsp;&nbsp;&nbsp;&nbsp;
-		<!-- tmpl_loop pages_in_set --> 
-			<!-- tmpl_if on_current_page --> 
-				<strong> 
-				 <!-- tmpl_var page --> 
-				</strong> 
-			<!-- tmpl_else --> 
-				<a href="javascript:turn_page(<!-- tmpl_var page -->);">
-				 <!-- tmpl_var page --> 
-				</a>
-			<!-- /tmpl_if --> 
-
-		<!-- /tmpl_loop --> 
-		&nbsp;&nbsp;&nbsp;&nbsp;
-		<!-- tmpl_if next_page -->
-		<strong><a href="javascript:turn_page(<!-- tmpl_var next_page -->);">Next</a></strong>
-		<!-- tmpl_else --> 
-		<!-- /tmpl_if --> 
-		</p>
-	</td> 
-
-	<td width="33%" align="right"> 
-
-	<strong><a href="javascript:turn_page(<!-- tmpl_var last_page -->);">Last</a></strong>
-
-	</td>
-
-	</tr> 
-	</table>
-
-	<div> 
-		<div style="max-height: 300px; overflow: auto; border:1px solid black">
-
-		  <table class="stripedtable">
-		   <tr style="background:#fff"> 
-		   		<td>
-					<p>
-						<strong>Email</strong>
-					</p>
-				</td>
-				<td>
-					<p>
-						<strong>Score</strong>
-					</p>
-				</td>
-			</tr> 
-
-			<!-- tmpl_loop scorecard --> 
-		   	<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
-				<td>
-					<p>
-					<a href="<!-- tmpl_var PLUGIN_URL -->?flavor=cgi_bounce_score_search&amp;query=<!-- tmpl_var email ESCAPE="URL" -->&chrome=0" onclick="Modalbox.show(this.href, {title: this.title, width: 640, height:480}); return false;">
-					 <!-- tmpl_var email --></p>
-					</a>
-				</td>
-				<td>
-					<p><!-- tmpl_var score --></p>
-				</td>
-			</tr> 
-			
-			<!-- /tmpl_loop --> 
-
-	     </table> 
-	</div>		
-
-	</div> 
-
-
-	
-<form action="<!-- tmpl_var Plugin_URL -->" method="post"> 
-<input type="hidden" name="flavor" value="cgi_erase_scorecard" /> 
-	<div class="buttonfloat">
-	 <input type="submit" class="alertive" onclick="if(!confirm('Are you sure you want to Erase the Bounce Scorecard? This cannot be undone.')){alert('Scorecard Not Erased.');return false;}" name="process" value="Erase Score Card" />
-	</div>
-	<br />
-	<div class="floatclear"></div>
-
-</form> 
-
-		
-	
-	
-<!-- tmpl_else --> 
-	<p class="error">
-	 Currently, there are no bounced addresses saved in the scorecard.
-</p>
-<!-- /tmpl_if --> 
-
-EOF
-      ;
-}
 
 sub cgi_erase_scorecard {
 
@@ -1114,10 +565,9 @@ sub cgi_show_plugin_config {
     }
 
     require DADA::Template::Widgets;
-    my $tmpl = cgi_show_plugin_config_template();
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-            -data           => \$tmpl,
+            -screen         => 'plugins/bounce_handler/plugin_config.tmpl',
             -with           => 'admin',
             -wrapper_params => {
                 -Root_Login => $root_login,
@@ -1133,52 +583,7 @@ sub cgi_show_plugin_config {
     e_print($scrn);
 }
 
-sub cgi_show_plugin_config_template {
 
-    return q{ 
-    
-    
-    <!-- tmpl_set name="title" value="Plugins &#187; Bounce Handler &#187; Configuration" --> 
-
-  <p id="breadcrumbs">
-   <a href="<!-- tmpl_var Plugin_URL -->"> 
-   <!-- tmpl_var Plugin_Name --> 
-   </a> 
-   
-   &#187;
-   
-        Plugin Configuration
-   </a> 
-   
-   
-  </p> 
-
-        <table> 
-        
-        <!-- tmpl_loop configs --> 
-        
-        <tr> 
-          <td> 
-           <p> 
-             <strong> 
-              <!-- tmpl_var name --> 
-              </strong>
-            </p>
-           </td> 
-           <td> 
-            <p>
-            <!-- tmpl_var value --> 
-            </p>
-            </td> 
-            </tr> 
-            
-        <!-- /tmpl_loop --> 
- 
-        </table> 
-     
-};
-
-}
 
 sub cgi_bounce_score_search {
 
@@ -1220,10 +625,8 @@ sub cgi_bounce_score_search {
             $subscribed_address = 1;
         }
     }
-
-    my $tmpl = cgi_bounce_score_search_template();
-
-    my %tmpl_vars = (
+	
+	my %tmpl_vars = (
         query              => $query,
         subscribed_address => $subscribed_address,
         valid_email        => $valid_email,
@@ -1239,7 +642,7 @@ sub cgi_bounce_score_search {
         print $q->header();
         $scrn = DADA::Template::Widgets::screen(
             {
-                -data => \$tmpl,
+                -screen => 'plugins/bounce_handler/bounce_score_search.tmpl',
                 -vars => { %tmpl_vars, },
 			-list_settings_vars_param => {
                 -list   => $list,
@@ -1253,7 +656,7 @@ sub cgi_bounce_score_search {
 
         $scrn = DADA::Template::Widgets::wrap_screen(
             {
-                -data           => \$tmpl,
+                -screen         => 'bounce_score_search.tmpl',
                 -with           => 'admin',
                 -wrapper_params => {
                     -Root_Login => $root_login,
@@ -1272,73 +675,7 @@ sub cgi_bounce_score_search {
 }
 
 
-sub cgi_bounce_score_search_template {
 
-    my $template = q{
-
-	<!-- tmpl_set name="title" value="Plugins &#187; Bounce Handler &#187; Bounce Log Search Results" --> 
-	
-  <p id="breadcrumbs">
-   <a href="<!-- tmpl_var Plugin_URL -->"> 
-   <!-- tmpl_var Plugin_Name --> 
-   </a> 
-   
-   &#187;
-   
-   Search Results for: <!-- tmpl_var query ESCAPE="HTML" --> 
-  </p> 
- 
- 
-  
-
-    <h1>
-     Search Results For: <!-- tmpl_var query ESCAPE="HTML" --> 
-    </h1> 
-   
-   <!-- tmpl_if valid_email --> 
-   
-       <!-- tmpl_if subscribed_address --> 
-            <p class="alert">
-            <!-- tmpl_var query ESCAPE="HTML" --> is currently subscribed to your list (<!-- tmpl_var list_settings.list_name ESCAPE="HTML" -->) - 
-            <strong> 
-            <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=membership&email=<!-- tmpl_var query ESCAPE="URL" -->&type=list">
-             More Information...
-             </a> 
-            </strong>
-            </p>       
-       <!-- tmpl_else --> 
-       
-                <p class="error">
-            <!-- tmpl_var query ESCAPE="HTML" --> is currently not subscribed to your list (<!-- tmpl_var list_settings.list_name ESCAPE="HTML" -->)
-            </p
-       
-       <!-- /tmpl_if --> 
-   
-   <!-- /tmpl_if --> 
-   
-   <!-- tmpl_if results_found --> 
-   
-	<!-- tmpl_include bouncing_search_results_widget.tmpl -->
-            
-
-
-    <!-- tmpl_else --> 
-    
-        <p>
-         Sorry, no results were found when searching for: 
-         <em> 
-          <!-- tmpl_var query  ESCAPE="HTML" -->
-         </em>
-        </p>
-    
-    <!-- /tmpl_if --> 
-    
-
-};
-
-    return $template;
-
-}
 
 sub cl_main {
 
@@ -1375,207 +712,8 @@ sub cl_main {
 }
 
 sub help {
-    return q{ 
-
-arguments: 
------------------------------------------------------------
---help                 		
---verbose
---test ('bounces' | 'pop3'|filename | dirname)
---messages         n
---server           server
---username         username
---password         password
---log              filename
---erase_score_card
---version
------------------------------------------------------------
-for a general overview and more instructions, try:
-
-pod2text ./dada_bounce_handler.pl | less
-
------------------------------------------------------------
-
-* pop3 server params: --server --username --password
-
-You can pass the POP3 server params to the script via these options. 
-The arguments passed will writeover any set in the script. This comes
-in handy if, say, you're not comfortable putting the POP3 password in
-the script itself. You may be crafty and have the password saved in
-a more secure location and created a wrapper script that then calls
-this script - I'll leave that to your imagination. 
-
-But anyways: 
-
- prompt>./dada_bounce_handler \
-  --server mail.myhost.com\
-  --username dadabounce\
-  --password secretgodmoney
-
- All three of these options are optional and you can use them with 
- any of the tests, discussed above. 
-
-* --verbose
-
-passing the --verbose parameter is like giving this script some 
-coffee.  Similar to what you'd see if you ran the script using: 
-
- prompt>./dada_bounce_handler --test bounces
- 
-But bounce handling will go through to completion. 
-
-* --help
-
-Obligatory help text printed out. Written as geeky as possible. 
-
-* --version
-
-Will print the version of Dada Mail. 
-Good for debugging. Looks like this: 
-
- Dada Mail version: 2.10.9
-
-* --log
-
-If you pass a filename to the script, it'll write a log of the action
-it takes per email. A log entry looks much like this: 
-
- [Sun May 11 16:57:23 2003]      justin  unsubscribe_bounced_email from_list \
-     fdsafsa890sadf89@hotmail.com     Status: 5.x.y, Action: ,
-
-The format is: 
-
- time \t list \t action \t email \t diagnostics
-
-If you don't want to pass the log each time, you can set a log in the
-B<$Plugin_Config->{Log}> variable - 
-
-
-* Nifty Tip
-
-If you explicitly set the B<$LOGS> Config.pm variable to an absolute path to a directory, 
-set $Plugin_Config->{Log} (in this script) to: 
-
- my $Plugin_Config->{Log} = $LOGS . '/bounces.txt';
-
-If you're using the Log Viewer plugin,  the plugin will automatically find this file and add it to the logs it will show. 
-
-* --messages
-
-I decided that it would be silly to run dada_bounce_handler.pl by 
-blindly trying to handle every bounced message that may be waiting
-for it every time its run. Perhaps you have a list that created 1,000
-bounces (not unheard of), rummaging through 1,000 messages may take time, 
-so instead, I encourage you to set how many messages should be looked
-at every time the script is run. 
-
-I like to use this as a final test; I can test one real message towards
-completion and make sure everything is OK. 
-
-If you do want to handle, say 1000 messages at a day, I would suggest to
-set the number of messages it handles to something like 100 and set your
-cronjob to run 10 times, perhaps 15 minutes apart. Your call, though. 
-
-* --erase_score_card
-
-Removes the score card of bounced email addresses. This makes sense, once you read, "More on Scores..." thingy below.
-
------------------------------------------------------------
-
-Testing Bounce Handler via the Command Line
-
-You can pass the B<--test> argument to dada_bounce_handler.pl to make
-sure everything is workings as it should. The B<--test> argument needs to 
-take one of a few paramaters: 
-
-
-* pop3
-
- prompt>./dada_bounce_handler.pl --test pop3
-
-This will test only your POP3 login. If it's successful, it'll return 
-the number of messages waiting: 
-
- prompt>./dada_bounce_handler.pl --test pop3
- POP3 Login succeeded.
- Message count: 5 
-
-If the login failed, you'll get back a message that reads: 
-
- prompt>./dada_bounce_handler.pl --test pop3
- POP3 login failed.
-
-* filename or directory
-
-if you pass an argument that's a filename, dada_bounce_handler.pl 
-will attempt to parse that file as if it's a bounced message. If you
-pass a directory as an argument, dada_bounce_handler.pl will attempt
-to parse all the files in that directory as if they were bounced 
-messages. 
-
-dada_bounce_handler.pl won't act on these test messages, but will do
-everything until that point. You'll get back a verbose message of the
-going's on of the script: 
- 
- prompt> perl dada_bounce_handler.pl  --test message8.txt 
- test #1: message8.txt
- ------------------------------------------------------------
- ------------------------------------------------------------------------
- Content-type: multipart/report
- Effective-type: multipart/report
- Body-file: NONE
- Subject: Returned mail: see transcript for details
- Num-parts: 3
- --
-     Content-type: text/plain
-     Effective-type: text/plain
-     Body-file: NONE
-     --
-     Content-type: message/delivery-status
-     Effective-type: message/delivery-status
-     Body-file: NONE
-     --
-     Content-type: message/rfc822
-     Effective-type: message/rfc822
-     Body-file: NONE
-     Num-parts: 1
-     --
-         Content-type: text/plain
-         Effective-type: text/plain
-         Body-file: NONE
-         Subject: Simoni Creative - Dada Mail Mailing List Confirmation
-         --
- ------------------------------------------------------------------------
- List: dada_announce
- Email: de4est@centurytel.net    
- 
- Last-Attempt-Date: Sun, 13 Apr 2003 20
- Action: failed
- Status: 5.1.1
- Diagnostic-Code: SMTP; 550 5.1.1 <de4est@centurytel.net>... User unknown
- Final-Recipient: RFC822; de4est@centurytel.net
- Remote-MTA: DNS; [209.142.136.158]
- 
- Using Rule: default
-
-The first chunk of output is a skeleton of the bounced message. If it looks 
-similar to what's above, you most likely gave the bounce handler a real email
-message. 
-
-After that, will be listed the findings of the bounce handler. 
-The List and Email address will be listed, followed by some diagnostic
-code. 
-
-The last thing printed out is the rule, and we'll get to that shortly. 
-
-* bounces
-
-Setting the test argument to B<bounces> will actually perform the
-test on any live bounce email messages in the mailbox. 
-You'll see similar output that you would if you were testing a file.
-
-};
-
+	require DADA::Template::Widgets; 
+    return DADA::Template::Widgets::screen({ -screen => 'plugins/bounce_handler/cl_help.tmpl' });
 }
 
 sub version {

@@ -128,6 +128,10 @@ $(document).ready(function() {
 			view_list_viewport();	
 		}
 		
+		// Membership >> List Activity
+		if($("#list_activity").length){ 
+			google.setOnLoadCallback(sub_unsub_trend_chart());
+		}
 		// Membership >> user@example.com
 		if($("#mailing_list_history").length) { 
 			mailing_list_history();
@@ -292,11 +296,25 @@ $(document).ready(function() {
 	});
 	
 
+	// Plugins >> Bounce Handler 
+	if($("#plugins_bounce_handler_default").length) { 
+		bounce_handler_show_scorecard();
+		  $("body").on("click", '.bounce_handler_turn_page', function(event){
+			bounce_handler_turn_page($(this).attr("data-page"));
+			event.preventDefault();
+		});		
+	}
+	if($("#plugins_bounce_handler_parse_bounce").length){ 
+		bounce_handler_parse_bounces(); 
+		$("#parse_bounces_button").on("click", function(event){ 
+			bounce_handler_parse_bounces(); 
+		}); 
+	}
+	
+	
 	// Plugins >> Tracker
 	if($("#plugins_tracker_message_report").length) { 
 		update_plugins_tracker_message_report(); 
-		
-		
 	}
 	if($("#plugins_tracker_default").length) { 
 		  tracker_show_table();	
@@ -309,7 +327,37 @@ $(document).ready(function() {
 		$("body").on("click", '.tracker_purge_log', function(event){ 
 			tracker_purge_log();
 			event.preventDefault();
+		});	
+	}
+	// Plugins >> Password Protect Directories
+	if($("#plugins_password_protect_directories_default").length) { 
+		$("#change_password_button").live("click", function(event){ 
+			password_protect_directories_show_change_password_form();
 		});
+	}
+	
+	// Plugins >> Log Viewer
+	if($("#plugin_log_viewer_default").length){ 
+		view_logs_results();
+		
+		$("#log_name").on("change", function(event){ 
+			view_logs_results();		
+	    });	
+		$("#lines").on("change", function(event){ 
+			view_logs_results();		
+	    });
+		$("#refresh_button").on("click", function(event){ 
+			view_logs_results();		
+	    });
+		$("#delete_log").on("click", function(event){ 
+			delete_log();
+		}); 
+		
+	
+	
+	
+	
+		
 		
 		
 	}
@@ -608,6 +656,68 @@ function selectHandler(event) {
 	}
 }
 
+
+// Membership >> List Activity
+function sub_unsub_trend_chart() {
+	$("#amount").on("change", function(event){ 
+		draw_sub_unsub_trend_chart();		
+    });
+
+/* 
+backgroundColor: { 
+	stroke: '#000000',
+	strokeWidth: 1,
+},
+*/
+
+    var options = {
+		width:  720, 
+		height: 480, 
+		chartArea:{
+			left:60,
+			top:20,
+			width:"70%",
+			height:"70%"
+			},
+		
+		colors: ['blue', 'red', 'green', 'orange'], 
+		title: "Subscription Trends",
+		animation:{
+			duration: 1000,
+			easing: 'out',
+		},
+    };
+    var data;
+    var sub_unsub_trend_c = new google.visualization.AreaChart(document.getElementById('sub_unsub_trends'));
+
+	function draw_sub_unsub_trend_chart() {
+		$("#amount").prop('disabled', true);
+		google.visualization.events.addListener(sub_unsub_trend_c, 'ready', function() {
+			$("#amount").prop('disabled', false);	
+		});
+
+		$("#sub_unsub_trends_loading").html( '<p class="alert">Loading...</p>' );
+		$.ajax({
+			url: "http://localhost/cgi-bin/test_dada/mail.cgi",
+			data: {
+				f:    'sub_unsub_trends_json', 
+				days: $("#amount option:selected").val()
+			},
+			dataType:"json",
+			async: true,
+			success: function( jsonData ) {
+				data = new google.visualization.DataTable(jsonData);
+				sub_unsub_trend_c.draw(data, options);
+				$("#sub_unsub_trends_loading").html( '<p class="alert">&nbsp;</p>' );			
+			},
+		});
+	}
+	
+	draw_sub_unsub_trend_chart();
+  }
+
+
+
 // Membership >> user@example.com
 function mailing_list_history(){ 
 	$("#mailing_list_history_loading").html( '<p class="alert">Loading...</p>' );
@@ -781,6 +891,50 @@ function toggleManualBatchSettings() {
 	}
 	previewBatchSendingSpeed(); 
 }
+// Plugins >> Bounce Bounce Handler
+
+function bounce_handler_show_scorecard() { 
+	$("#bounce_scorecard_loading").html( '<p class="alert">Loading...</p>' );	
+	var request = $.ajax({
+	  url: $("#plugin_url").val(),
+	  type: "POST",
+	  cache: false,
+	  data: {
+			flavor:       'cgi_scorecard',
+			page:     	  $('#bounce_handler_page').val(),
+	  },
+	  dataType: "html"
+	});
+	request.done(function(content) {
+	  $("#bounce_scorecard").html( content );
+	  $("#bounce_scorecard_loading").html( '<p class="alert">&nbsp;</p>' );
+	});
+}
+function bounce_handler_turn_page(page_to_turn_to) {
+	$("#bounce_handler_page").val(page_to_turn_to); 
+	bounce_handler_show_scorecard();
+}
+function bounce_handler_parse_bounces() { 
+	$("#parse_bounce_results_loading").html( '<p class="alert">Loading</p>' );
+	$("#parse_bounces_button").val( 'Parsing...' );	
+	var request = $.ajax({
+	  url: $("#plugin_url").val(),
+	  type: "POST",
+	  cache: false,
+	  data: {
+			flavor:       'ajax_parse_bounces_results',
+			parse_amount: $('#parse_amount').val(),
+			bounce_test:  $('#bounce_test').val()
+	  },
+	  dataType: "html"
+	});
+	request.done(function(content) {
+	  $("#parse_bounce_results").html( content );
+	  $("#parse_bounces_button").val( 'Parse Bounces' );	
+	  $("#parse_bounce_results_loading").html( '<p class="alert">&nbsp;</p>' );
+	
+	});
+}
 
 // Plugins >> Tracker
 	function update_plugins_tracker_message_report(){ 
@@ -941,13 +1095,57 @@ function toggleManualBatchSettings() {
 
 
 // Plugins >> Tracker
-
 function tracker_turn_page(page_to_turn_to) { 
 	$("#tracker_page").val(page_to_turn_to); 
 	tracker_show_table();
 	google.setOnLoadCallback(drawSubscriberHistoryChart());
 	
 }
+
+// Plugins >> Log Viewer
+function view_logs_results() { 
+	$("#refresh_button").val( 'Loading....' );
+	var request = $.ajax({
+	  url: $("#plugin_url").val(),
+	  type: "POST",
+	  cache: false,
+	  data: {
+			flavor:       'ajax_view_logs_results',
+			log_name:     $('#log_name').val(),
+			lines:        $('#lines').val()
+	  },
+	  dataType: "html"
+	});
+	request.done(function(content) {
+	  $("#view_logs_results").html( content );
+	  $("#refresh_button").val( 'Refresh' );
+	});
+}
+function delete_log() { 
+	var confirm_msg =  "Are you sure you want to delete this log? ";
+	    confirm_msg += "There is no way to undo this deletion.";
+	if(confirm(confirm_msg)){
+		var request = $.ajax({
+		  url: $("#plugin_url").val(),
+		  type: "POST",
+		  cache: false,
+		  data: {
+				flavor:       'ajax_delete_log',
+				log_name:     $('#log_name').val(),
+		  },
+		  dataType: "html"
+		});
+		request.done(function(content) {
+			view_logs_results();
+		});	
+	}
+	else { 
+		alert('Log deletion canceled.'); 
+	}
+}
+
+
+
 
 
 function tracker_show_table(){ 
@@ -1045,6 +1243,14 @@ function tracker_purge_log(){
 		return false; 
 	}
 }
+
+// Plugins >> Password Protect Directories
+function password_protect_directories_show_change_password_form(){
+	$("#change_default_password_button" ).hide( 'blind' );
+	$("#change_default_password_form" ).show( 'blind' );
+}
+
+
 
 
 
@@ -1159,17 +1365,6 @@ function check_newest_version() {
 	var check = "http://dadamailproject.com/cgi-bin/support/version.cgi?version=<!-- tmpl_var VER ESCAPE=URL -->";
 	window.open(check, 'version', 'width=325,height=300,top=20,left=20');
 }
-
-function add_delete_list() {
-
-	var address_list = document.the_form.delete_list.value;
-	var Address =      document.the_form.email_list.selectedIndex;
-	var new_address =  document.the_form.email_list.options[Address].value;
-	var append_list =  address_list+"\\n"+new_address;
-	document.the_form.delete_list.value = append_list;
-
-}
-
 function just_test_message() {
 
 	document.the_form.process.value="just_test_message";

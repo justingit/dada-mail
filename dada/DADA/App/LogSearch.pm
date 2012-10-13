@@ -263,7 +263,10 @@ sub sub_unsub_trends {
     my $bw = File::ReadBackwards->new( $DADA::Config::PROGRAM_USAGE_LOG ) or
                         die "can't read '" . $DADA::Config::PROGRAM_USAGE_LOG . "' $!" ;
 
-	my $limit = 180; 
+	my $days = 180;
+	if(exists($args->{-days})){ 
+		$days = $args->{-days};
+	}
 	my $count = 0; 
 	my %trends = ();
 	my @dates; 
@@ -295,7 +298,7 @@ sub sub_unsub_trends {
 				}
 				$trends{$day_str}->{$llr->{action}}++;
 				
-				if(scalar(keys %trends) >= $limit){ #count, basically. 
+				if(scalar(keys %trends) >= $days){ #count
 					delete $trends{$day_str};
 					pop(@dates);
 					last;

@@ -1,0 +1,56 @@
+	<!-- tmpl_set name="title" value="Plugins &#187; Bounce Handler &#187; Bounce Log Search Results" --> 
+	
+<p id="breadcrumbs">
+ <a href="<!-- tmpl_var Plugin_URL -->"> 
+ <!-- tmpl_var Plugin_Name --> 
+ </a> 
+ 
+ &#187;
+ 
+ Search Results for: <!-- tmpl_var query ESCAPE="HTML" --> 
+</p> 
+
+
+
+
+  <h1>
+   Search Results For: <!-- tmpl_var query ESCAPE="HTML" --> 
+  </h1> 
+ 
+ <!-- tmpl_if valid_email --> 
+ 
+     <!-- tmpl_if subscribed_address --> 
+          <p class="alert">
+          <!-- tmpl_var query ESCAPE="HTML" --> is currently subscribed to your list (<!-- tmpl_var list_settings.list_name ESCAPE="HTML" -->) - 
+          <strong> 
+          <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=membership&email=<!-- tmpl_var query ESCAPE="URL" -->&type=list">
+           More Information...
+           </a> 
+          </strong>
+          </p>       
+     <!-- tmpl_else --> 
+     
+              <p class="error">
+          <!-- tmpl_var query ESCAPE="HTML" --> is currently not subscribed to your list (<!-- tmpl_var list_settings.list_name ESCAPE="HTML" -->)
+          </p
+     
+     <!-- /tmpl_if --> 
+ 
+ <!-- /tmpl_if --> 
+ 
+ <!-- tmpl_if results_found --> 
+ 
+	<!-- tmpl_include bouncing_search_results_widget.tmpl -->
+          
+
+
+  <!-- tmpl_else --> 
+  
+      <p>
+       Sorry, no results were found when searching for: 
+       <em> 
+        <!-- tmpl_var query  ESCAPE="HTML" -->
+       </em>
+      </p>
+  
+  <!-- /tmpl_if -->

@@ -1,0 +1,66 @@
+<!-- tmpl_set name="title" value="Plugins &#187; Log Viewer" -->
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		Plugins &#187; Log Viewer
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+<div id="plugin_log_viewer_default"></div> 
+
+
+<form> 
+	 <input type="hidden" name="plugin_url"   id="plugin_url"   value="<!-- tmpl_var Plugin_Url -->" /> 
+</form> 
+
+<!-- tmpl_if log_names --> 
+	<div id="view_logs_results_loading"><p class="alert">&nbsp;</p></div> 
+	<form method="post">
+	<table cellpadding="5"> 
+	 <tr> 
+	  <td valign="bottom"> 
+		<p><label for="log_name">View Log:</label><br /> 
+		 <!-- tmpl_var logs_popup_menu --> 
+		</p> 
+	</td> 
+ 	<td valign="bottom"> 
+	  <p><label for="lines">And The Last:</label><br /> 
+		<select name="lines" id="lines"> 
+			<!-- tmpl_loop log_lines --> 
+				<option value="<!-- tmpl_var line_count -->"><!-- tmpl_var line_count --></option> 
+			<!-- /tmpl_loop --> 
+		</select> lines
+	</p> 
+	</td> 
+ 	<td valign="bottom"> 
+	<br /><input type="button" value="Refresh" id="refresh_button" />
+	</td> 
+	<td valign="bottom"> 
+	<input type="hidden" name="flavor" value="download" /> 
+	<br /><input type="submit"  value="Download Entire Log" id="download_button" />
+	</td>
+		
+		
+ 	<td valign="bottom"> 
+	<br /><input type="button" value="Delete Log" id="delete_log" /> 
+			</form> 
+	</td>
+<td valign="bottom"> <br />
+	<form method="get"> 
+     <input type="hidden" name="flavor" value="search_logs" /> 
+     <input type="text" name="query" value="" /> 
+     <input type="submit" value="Search All Logs" class="processing" /> 
+    </form>
+		</td> 
+   </tr> 
+</table> 
+<div id="view_logs_results"></div> 
+	
+
+
+<!-- tmpl_else -->
+	<p>
+	 <em>
+	  There are no <!-- tmpl_var PROGRAM_NAME --> logs set.
+	 </em>
+   </p>
+<!-- /tmpl_if --> 

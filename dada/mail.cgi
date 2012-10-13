@@ -496,6 +496,7 @@ sub run {
 	'domain_breakdown_json'      =>    \&domain_breakdown_json,
 	'search_list_auto_complete'  =>    \&search_list_auto_complete, 
 	'list_activity'              =>    \&list_activity,
+	'sub_unsub_trends_json'      =>    \&sub_unsub_trends_json, 
 	'view_bounce_history'        =>    \&view_bounce_history, 
 	'subscription_requests'      =>    \&subscription_requests,
 	'remove_all_subscribers'     =>    \&remove_all_subscribers,
@@ -3206,6 +3207,33 @@ sub list_activity {
     );
 
 }
+
+
+
+
+sub sub_unsub_trends_json { 
+	
+	my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'list_activity'
+    );
+    $list = $admin_list;
+    
+	my $days = xss_filter(strip($q->param('days'))); 
+	
+	require DADA::App::LogSearch; 
+	my $dals = DADA::App::LogSearch->new; 
+	my $r = $dals->sub_unsub_trends_json(
+		{
+			-list     => $list,
+			-printout => 1 , 
+			-days     => $days, 
+		}
+	);
+}
+
+
+
 
 
 sub view_bounce_history {

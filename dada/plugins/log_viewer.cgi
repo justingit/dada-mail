@@ -146,7 +146,6 @@ sub cgi_view {
         -id       => 'log_name',
         '-values' => [ keys %$logs ],
         -default  => $log_name,
-        -onClick  => "view_logs();",
     );
 	my $log_lines = []; 
 	for(100, 1,10,20,25,50,100,200,500,1000, 10000, 100000, 1000000){ 
@@ -157,12 +156,10 @@ sub cgi_view {
                       
     my @log_names = keys %$logs; 
     
-	my $tmpl = main_tmpl(); 
-	
 	require DADA::Template::Widgets; 
 	my $scrn = DADA::Template::Widgets::wrap_screen(
 		{ 
-			-data           => \$tmpl, 
+			-screen         => 'plugins/log_viewer/default.tmpl', 
 			-with           => 'admin',
             -wrapper_params => {
                 -Root_Login => $root_login,
@@ -180,138 +177,6 @@ sub cgi_view {
 	e_print($scrn); 
 	    
 }
-
-sub main_tmpl { 
-	
-	return q{ 
-		
-		<!-- tmpl_set name="title" value="Plugins &#187; Log Viewer" -->
-		
-		<script type="text/javascript">
-		    //<![CDATA[
-			Event.observe(window, 'load', function() {
-			  view_logs();				
-			});
-			
-			 function view_logs(){ 
-				new Ajax.Updater(
-					'view_logs_results', '<!-- tmpl_var Plugin_URL -->', 
-					{ 
-					    method: 'post', 
-						parameters: {
-							flavor:       'ajax_view_logs_results',
-							log_name:     $F('log_name'),
-							lines:        $F('lines')
-						},
-					onCreate: 	 function() {
-						Form.Element.setValue('refresh_button', 'Loading...');
-					},
-					onComplete: 	 function() {
-
-						$('view_logs_results').show();
-					Form.Element.setValue('refresh_button', 'Refresh');
-					}	
-					});
-			}
-			function purge_log(){ 
-				
-				var confirm_msg =  "Are you sure you want to delete this log? ";
-				    confirm_msg += "There is no way to undo this deletion.";
-				if(confirm(confirm_msg)){
-						new Ajax.Request(
-						  '<!-- tmpl_var Plugin_URL -->', 
-						{
-						  method: 'post',
-						 	parameters: {
-								flavor: 'ajax_delete_log', 
-								log_name:     $F('log_name')
-						  },
-						  onSuccess: function() {
-							view_logs()
-						  }, 
-						onFailure: function() { 
-							alert('Warning! Something went wrong when attempting to remove the log file.'); 
-						}
-						}
-						);
-				}
-				else { 
-					alert('Log deletion canceled.'); 
-				}
-			}
-		    //]]>
-		</script>
-		
-		
-		<!-- tmpl_if log_names --> 
-		
-			<form method="post">
-			<table cellpadding="5"> 
-			 <tr> 
-			  <td valign="bottom"> 
-				<p><label for="log_name">View Log:</label><br /> 
-				 <!-- tmpl_var logs_popup_menu --> 
-				</p> 
-			</td> 
-		 	<td valign="bottom"> 
-			  <p><label for="lines">And The Last:</label><br /> 
-				<select name="lines" id="lines" onclick="view_logs();"> 
-					<!-- tmpl_loop log_lines --> 
-						<option value="<!-- tmpl_var line_count -->"><!-- tmpl_var line_count --></option> 
-					<!-- /tmpl_loop --> 
-				</select> lines
-			</p> 
-			</td> 
-		 	<td valign="bottom"> 
-			<br /><input type="button" value="Refresh" id="refresh_button" onClick="view_logs();" />
-			</td> 
-			<td valign="bottom"> 
-			<input type="hidden" name="flavor" value="download" /> 
-			<br /><input type="submit"  value="Download Entire Log" id="download_button" />
-			</td>
-				
-				
-		 	<td valign="bottom"> 
-			<br /><input type="button" value="Delete Log"  onclick="purge_log();" /> 
-					</form> 
-			</td>
-	<td valign="bottom"> <br />
-			<form method="get"> 
-		     <input type="hidden" name="flavor" value="search_logs" /> 
-		     <input type="text" name="query" value="" /> 
-		     <input type="submit" value="Search All Logs" class="processing" /> 
-		    </form>
-	 		</td> 
-		   </tr> 
-		</table> 
-
-			
-
-			
-
-			<div id="view_logs_results">
-			
-			</div> 
-			<div id="view_logs_results_loading" style="display:none"> 
-				<p class="alert">Loading...</p>
-			</div> 
-			
-
-		
-		<!-- tmpl_else -->
-			<p>
-			 <em>
-			  There are no <!-- tmpl_var PROGRAM_NAME --> logs set.
-			 </em>
-		   </p>
-		<!-- /tmpl_if --> 
-		
-		
-		
-	};
-	
-}
-
 
 
 
@@ -344,8 +209,6 @@ sub show_log {
 
 
 sub ajax_delete_log { 
-
-    
     my @log_names = keys %$logs;     
     if(exists($logs->{$log_name})){ 
         my $file = $Logs{$log_name};

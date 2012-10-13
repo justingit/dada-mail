@@ -1,0 +1,196 @@
+arguments: 
+-----------------------------------------------------------
+--help                 		
+--verbose
+--test ('bounces' | 'pop3'|filename | dirname)
+--messages         n
+--server           server
+--username         username
+--password         password
+--log              filename
+--erase_score_card
+--version
+-----------------------------------------------------------
+for a general overview and more instructions, try:
+
+pod2text ./dada_bounce_handler.pl | less
+
+-----------------------------------------------------------
+
+* pop3 server params: --server --username --password
+
+You can pass the POP3 server params to the script via these options. 
+The arguments passed will writeover any set in the script. This comes
+in handy if, say, you're not comfortable putting the POP3 password in
+the script itself. You may be crafty and have the password saved in
+a more secure location and created a wrapper script that then calls
+this script - I'll leave that to your imagination. 
+
+But anyways: 
+
+ prompt>./dada_bounce_handler \
+  --server mail.myhost.com\
+  --username dadabounce\
+  --password secretgodmoney
+
+ All three of these options are optional and you can use them with 
+ any of the tests, discussed above. 
+
+* --verbose
+
+passing the --verbose parameter is like giving this script some 
+coffee.  Similar to what you'd see if you ran the script using: 
+
+ prompt>./dada_bounce_handler --test bounces
+ 
+But bounce handling will go through to completion. 
+
+* --help
+
+Obligatory help text printed out. Written as geeky as possible. 
+
+* --version
+
+Will print the version of Dada Mail. 
+Good for debugging. Looks like this: 
+
+ Dada Mail version: 2.10.9
+
+* --log
+
+If you pass a filename to the script, it'll write a log of the action
+it takes per email. A log entry looks much like this: 
+
+ [Sun May 11 16:57:23 2003]      justin  unsubscribe_bounced_email from_list \
+     fdsafsa890sadf89@hotmail.com     Status: 5.x.y, Action: ,
+
+The format is: 
+
+ time \t list \t action \t email \t diagnostics
+
+If you don't want to pass the log each time, you can set a log in the
+B<$Plugin_Config->{Log}> variable - 
+
+
+* Nifty Tip
+
+If you explicitly set the B<$LOGS> Config.pm variable to an absolute path to a directory, 
+set $Plugin_Config->{Log} (in this script) to: 
+
+ my $Plugin_Config->{Log} = $LOGS . '/bounces.txt';
+
+If you're using the Log Viewer plugin,  the plugin will automatically find this file and add it to the logs it will show. 
+
+* --messages
+
+I decided that it would be silly to run dada_bounce_handler.pl by 
+blindly trying to handle every bounced message that may be waiting
+for it every time its run. Perhaps you have a list that created 1,000
+bounces (not unheard of), rummaging through 1,000 messages may take time, 
+so instead, I encourage you to set how many messages should be looked
+at every time the script is run. 
+
+I like to use this as a final test; I can test one real message towards
+completion and make sure everything is OK. 
+
+If you do want to handle, say 1000 messages at a day, I would suggest to
+set the number of messages it handles to something like 100 and set your
+cronjob to run 10 times, perhaps 15 minutes apart. Your call, though. 
+
+* --erase_score_card
+
+Removes the score card of bounced email addresses. This makes sense, once you read, "More on Scores..." thingy below.
+
+-----------------------------------------------------------
+
+Testing Bounce Handler via the Command Line
+
+You can pass the B<--test> argument to dada_bounce_handler.pl to make
+sure everything is workings as it should. The B<--test> argument needs to 
+take one of a few paramaters: 
+
+
+* pop3
+
+ prompt>./dada_bounce_handler.pl --test pop3
+
+This will test only your POP3 login. If it's successful, it'll return 
+the number of messages waiting: 
+
+ prompt>./dada_bounce_handler.pl --test pop3
+ POP3 Login succeeded.
+ Message count: 5 
+
+If the login failed, you'll get back a message that reads: 
+
+ prompt>./dada_bounce_handler.pl --test pop3
+ POP3 login failed.
+
+* filename or directory
+
+if you pass an argument that's a filename, dada_bounce_handler.pl 
+will attempt to parse that file as if it's a bounced message. If you
+pass a directory as an argument, dada_bounce_handler.pl will attempt
+to parse all the files in that directory as if they were bounced 
+messages. 
+
+dada_bounce_handler.pl won't act on these test messages, but will do
+everything until that point. You'll get back a verbose message of the
+going's on of the script: 
+ 
+ prompt> perl dada_bounce_handler.pl  --test message8.txt 
+ test #1: message8.txt
+ ------------------------------------------------------------
+ ------------------------------------------------------------------------
+ Content-type: multipart/report
+ Effective-type: multipart/report
+ Body-file: NONE
+ Subject: Returned mail: see transcript for details
+ Num-parts: 3
+ --
+     Content-type: text/plain
+     Effective-type: text/plain
+     Body-file: NONE
+     --
+     Content-type: message/delivery-status
+     Effective-type: message/delivery-status
+     Body-file: NONE
+     --
+     Content-type: message/rfc822
+     Effective-type: message/rfc822
+     Body-file: NONE
+     Num-parts: 1
+     --
+         Content-type: text/plain
+         Effective-type: text/plain
+         Body-file: NONE
+         Subject: Simoni Creative - Dada Mail Mailing List Confirmation
+         --
+ ------------------------------------------------------------------------
+ List: dada_announce
+ Email: de4est@centurytel.net    
+ 
+ Last-Attempt-Date: Sun, 13 Apr 2003 20
+ Action: failed
+ Status: 5.1.1
+ Diagnostic-Code: SMTP; 550 5.1.1 <de4est@centurytel.net>... User unknown
+ Final-Recipient: RFC822; de4est@centurytel.net
+ Remote-MTA: DNS; [209.142.136.158]
+ 
+ Using Rule: default
+
+The first chunk of output is a skeleton of the bounced message. If it looks 
+similar to what's above, you most likely gave the bounce handler a real email
+message. 
+
+After that, will be listed the findings of the bounce handler. 
+The List and Email address will be listed, followed by some diagnostic
+code. 
+
+The last thing printed out is the rule, and we'll get to that shortly. 
+
+* bounces
+
+Setting the test argument to B<bounces> will actually perform the
+test on any live bounce email messages in the mailbox. 
+You'll see similar output that you would if you were testing a file.
