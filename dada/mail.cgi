@@ -1306,7 +1306,7 @@ sub sending_monitor {
 
         print "
 
-        <script>
+        <script type=\"text/javascript\">
         refreshpage($restart_time);
         </script>
         </body>
@@ -1372,7 +1372,7 @@ sub sending_monitor {
 			my $reload_url = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&id=' . $id . '&process=restart&type=' . $type . '&restart_count=1'; 
 
 			print $q->header(); 
-			print "<script> 
+			print "<script type=\"text/javascript\"> 
 			window.location.replace('$reload_url'); 
 			</script>";
 			return;

@@ -205,10 +205,6 @@ There's also a Dada Mail Extension that'll allow someone to subscribe to more th
 
 L<http://dadamailproject.com/support/documentation/multiple_subscribe.cgi.html> 
 
-And another extension that will allow you to embed an AJAX-enabled subscription form: 
-
-L<http://dadamailproject.com/support/documentation-dada-3_0_1/ajax_include_subscribe.cgi.html>
-
 =head3 Using the Dada Mail API to subscribe new addresses
 
 See the following docs that pertain to using the Dada Mail API directly or indirectly to use its subscription capabilities: 
@@ -1107,6 +1103,8 @@ There are other images you may swap out for their static kin - do a directory se
 And replace this with your static URL, in a similar way. 
 
 =head3 javascript files
+
+TODO: All this information is now, outdated. 
 
 Dada Mail's javascript files are in the, I<dada/DADA/Template/templates/js> directory. Copy this directory and place this copy in 
 a different location of your hosting account, where the files can be served statically. 

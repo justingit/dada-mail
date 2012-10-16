@@ -30,8 +30,6 @@ Captcha::reCAPTCHA
 
 CGI
 
-CGI::Ajax
-
 CGI::Session
 
 CGI::Session::ExpireSessions

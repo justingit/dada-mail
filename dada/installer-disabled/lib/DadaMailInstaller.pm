@@ -105,7 +105,6 @@ my $plugins_extensions = {
 	dada_bounce_handler           => {installed => 0, loc => '../plugins/dada_bounce_handler.pl'}, 
 	scheduled_mailings            => {installed => 0, loc => '../plugins/scheduled_mailings.pl'}, 
 	multiple_subscribe            => {installed => 0, loc => '../extensions/multiple_subscribe.cgi'}, 
-	ajax_include_subscribe        => {installed => 0, loc => '../extensions/ajax_include_subscribe.cgi'}, 	
 	blog_index                    => {installed => 0, loc => '../extensions/blog_index.cgi'}, 
 	mailing_monitor               => {installed => 0, loc => '../plugins/mailing_monitor.cgi'}, 
 	default_mass_mailing_messages => {installed => 0, loc => '../plugins/default_mass_mailing_messages.cgi'}, 
@@ -172,14 +171,6 @@ q{#					{
 #					-Title      => 'Multiple Subscribe',
 #					-Title_URL  => $EXT_URL."/multiple_subscribe.cgi",
 #					-Function   => 'multiple_subscribe',
-#					-Activated  => 1,
-#					},};
-
-$plugins_extensions->{ajax_include_subscribe}->{code} = 
-q{#					{
-#					-Title      => 'Ajax\'d Subscription Form',
-#					-Title_URL  => $EXT_URL."/ajax_include_subscribe.cgi?mode=html",
-#					-Function   => 'ajax_include_subscribe',
 #					-Activated  => 1,
 #					},};
 
@@ -468,7 +459,6 @@ sub scrn_configure_dada_mail {
 		$q->param('install_log_viewer', 1); 
 		$q->param('install_tracker', 1); 
 		$q->param('install_multiple_subscribe', 1); 
-		$q->param('install_ajax_include_subscribe', 1); 
 		$q->param('install_blog_index', 1); 
 		$q->param('install_default_mass_mailing_messages', 1); 
 		# $q->param('install_password_protect_directories', 1); 

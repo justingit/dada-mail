@@ -233,13 +233,6 @@ $PLUGIN_CONFIGS = {
 
 	},
 
-	ajax_include_subscribe => {
-
-		Plugin_URL                          => undef,
-		Default_List                        => undef,
-
-	},
-
     blog_index => {
 
 		Default_List                        => undef,
@@ -621,13 +614,6 @@ $ADMIN_MENU = [
 #					-Title      => 'Multiple Subscribe',
 #					-Title_URL  => $EXT_URL."/multiple_subscribe.cgi",
 #					-Function   => 'multiple_subscribe',
-#					-Activated  => 1,
-#					},
-
-#					{
-#					-Title      => 'Ajax\'d Subscription Form',
-#					-Title_URL  => $EXT_URL."/ajax_include_subscribe.cgi?mode=html",
-#					-Function   => 'ajax_include_subscribe',
 #					-Activated  => 1,
 #					},
 
