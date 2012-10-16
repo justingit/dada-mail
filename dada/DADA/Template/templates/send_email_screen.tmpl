@@ -2,6 +2,7 @@
 
 <!-- tmpl_set name="title" value="Mass Mailing &#187; Send a Message" -->
 <!-- tmpl_set name="load_wysiwyg_editor" value="1" -->
+<!-- tmpl_set name="load_modalbox" value="1" -->
 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
@@ -43,7 +44,8 @@
 	  
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
 <fieldset> 
-<legend>Message Body [<a href="#" class="message_body_help">?</a>]</legend>
+<!-- <legend>Message Body [<a href="#" class="message_body_help">?</a>]</legend>-->
+<legend>Message Body [<a href="#" onclick="Modalbox.show($('message_body_help'), {title: 'Message Body Help', width: 640, height:325}); return false;">?</a>]</legend>
 
 
 	
@@ -90,5 +92,6 @@
 
 
  
+<!-- tmpl_include send_email_message_body_help_widget.tmpl -->
 
 <!-- end send_email_screen.tmpl -->

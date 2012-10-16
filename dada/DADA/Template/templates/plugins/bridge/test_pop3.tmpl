@@ -1,5 +1,4 @@
 <!-- tmpl_if chrome --> 
-
 	<!-- tmpl_set name="title" value="Plugins &#187; Dada Bridge &#187; POP3 Login Test" --> 
 	<div id="screentitle"> 
 		<div id="screentitlepadding">
@@ -10,55 +9,14 @@
 
   <p id="breadcrumbs">
         <a href="<!-- tmpl_var Plugin_URL -->">
-		 <!-- tmpl_var Plugin_Name -->
+		 Plugins &#187; Dada Bridge &#187; POP3 Login Test
 	</a> &#187; Test POP3 Login
    </p>
-
 <!-- /tmpl_if --> 
 
-<script type="text/javascript">
-	<!-- tmpl_if chrome --> 
-	    //<![CDATA[
-		Event.observe(window, 'load', function() {
-		  test_pop3();				
-		});
-	<!-- /tmpl_if --> 
-	
-	 test_pop3 = function() { 
-		new Ajax.Updater(
-			'test_pop3_results', '<!-- tmpl_var Plugin_URL -->', 
-			{ 
-			    method: 'post', 
-				parameters: {
-					flavor:       'cgi_test_pop3_ajax'
-					
-				},
-			onCreate: 	 function() {
-				$('test_pop3_results').hide();
-				$('test_pop3_results_loading').show();
-			},
-			onComplete: 	 function() {
-				$('test_pop3_results_loading').hide();
-				Effect.BlindDown('test_pop3_results');
-			}	
-		}
-		);
-	}
-    //]]>
-</script>
 	
 
 <!-- <p class="alert">Loading...</p> --> 
 
-<div id="test_pop3_results_loading"> 
-</div> <div id="test_pop3_results"> 			</div> 
-
-<!-- tmpl_unless chrome --> 
-	<!-- this is sort of a lame way to go about things... --> 		
-	<script type="text/javascript">
-		//<![CDATA[
-			test_pop3();
-	  //]]>
-	</script>
-<!-- /tmpl_unless --> 
-	
+<div id="test_pop3_results_loading"><p class="alert">&nbsp;</p></div>
+<div id="test_pop3_results"></div> 

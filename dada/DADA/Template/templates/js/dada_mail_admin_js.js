@@ -6,46 +6,43 @@
 //google.setOnLoadCallback(function() {
 
 
-$(document).ready(function() {
+$jq(document).ready(function() {
 	
-//	$(window).load(function() {
+//	$jq(window).load(function() {
 		
 		//Mail Sending >> Send a Message 
-		if($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length){ 
+		if($jq("#send_email_screen").length || $jq("#send_url_email").length || $jq("#list_invite").length){ 
 			
-			$("#mass_mailing").on("submit", function(event){ 
+			$jq("#mass_mailing").on("submit", function(event){ 
 				event.preventDefault();
 			});
-			$(".sendmassmailing").on("click", function(event){ 
-				//var fid = $(event.target).closest('form').attr('id'); 
+			$jq(".sendmassmailing").on("click", function(event){ 
+				//var fid = $jq(event.target).closest('form').attr('id'); 
 				var fid = 'mass_mailing';
 				
-				var itsatest = $(this).hasClass("justatest");
+				var itsatest = $jq(this).hasClass("justatest");
 				var submit_it = sendMailingListMessage(fid, itsatest);
 				if(submit_it == true) { 
-					$('#' + fid).off('submit');
-					$('#' + fid).submit();
+					$jq('#' + fid).off('submit');
+					$jq('#' + fid).submit();
 				}
 				else { 
 					//alert("It stays off!"); 
 				}
 			});	
-			$(".ChangeMassMailingButtonLabel").on("click", function(event){ 
+			$jq(".ChangeMassMailingButtonLabel").on("click", function(event){ 
 				ChangeMassMailingButtonLabel();	
 			}); 
 
 			ChangeMassMailingButtonLabel();
-			$( "#tabs" ).tabs();
+			$jq( "#tabs" ).tabs();
 		}
 
-		if($("#send_email_screen").length){ 
-			$(".message_body_help").on("click", function(event){ 
-				event.preventDefault();
-				modalMenuAjax({url: "<!-- tmpl_var S_PROGRAM_URL -->",data: {f:'message_body_help'}});
-			});
+		if($jq("#send_email_screen").length){ 
+
 			
-			if($("#using_ckeditor").length){ 
-				$(".html_message_body" ).ckeditor(
+			if($jq("#using_ckeditor").length){ 
+				$jq(".html_message_body" ).ckeditor(
 					function() {}, 
 					{
 						customConfig : '<!-- tmpl_var CKEDITOR_URL -->/dada_mail_config.js',	
@@ -56,28 +53,38 @@ $(document).ready(function() {
 			
 		}
 		// Mail Sending >> Send a Webpage
-		if($("#send_url_email").length){ 
-			$(".message_body_help").on("click", function(event){ 
-				event.preventDefault();
-				modalMenuAjax({url: "<!-- tmpl_var S_PROGRAM_URL -->",data: {f:'url_message_body_help'}});
-			});
+		if($jq("#send_url_email").length){ 
+
+			
+			if($jq("#using_ckeditor").length){ 
+				$jq(".html_message_body" ).ckeditor(
+					function() {}, 
+					{
+						customConfig : '<!-- tmpl_var CKEDITOR_URL -->/dada_mail_config.js',	
+						toolbar :      'DadaMail_Admin'
+					}
+				);
+			}
+			
+			
+			
 		}
 		
 		// Mail Sending >> Mailing Monitor Index
-		if($("#sending_monitor_index").length){ 
+		if($jq("#sending_monitor_index").length){ 
 			refreshpage(60, "<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor"); 
 		}
 		
-		if($("#sending_monitor_container").length || $("#sending_monitor_index").length){
-			$('body').on('submit','.stop_mass_mailing', function(event) {
+		if($jq("#sending_monitor_container").length || $jq("#sending_monitor_index").length){
+			$jq('body').on('submit','.stop_mass_mailing', function(event) {
 				event.preventDefault();
 			});
-			$('body').on('click', '.killMonitoredSending',  function(event){ 
+			$jq('body').on('click', '.killMonitoredSending',  function(event){ 
 				//var fid = 'stop_mass_mailing';
 				var submit_it = killMonitoredSending();
 				if(submit_it == true) { 
-					$('body').off('submit', '.stop_mass_mailing');
-					$(event.target).closest('form').submit(); 
+					$jq('body').off('submit', '.stop_mass_mailing');
+					$jq(event.target).closest('form').submit(); 
 				}
 				else { 
 					// alert("It stays off!"); 
@@ -86,35 +93,35 @@ $(document).ready(function() {
 		} 
 
 
-		if($("#sending_monitor_container").length){ 
+		if($jq("#sending_monitor_container").length){ 
 
 			update_sending_monitor_interface(
-				$("#message_id").val(), 
-				$("#message_type").val(), 
-				$("#target_id").val(),
-				$("#refresh_after").val()
+				$jq("#message_id").val(), 
+				$jq("#message_type").val(), 
+				$jq("#target_id").val(),
+				$jq("#refresh_after").val()
 			);
 			
-			$('body').on('submit','#pause_mass_mailing', function(event) {
+			$jq('body').on('submit','#pause_mass_mailing', function(event) {
 				event.preventDefault();
 			});			
-			$('body').on('click', '.pauseMonitoredSending',  function(event){ 
-				//var fid = $(event.target).closest('form').attr('id'); 
+			$jq('body').on('click', '.pauseMonitoredSending',  function(event){ 
+				//var fid = $jq(event.target).closest('form').attr('id'); 
 				var fid = 'pause_mass_mailing';
 				var submit_it = pauseMonitoredSending();
 				if(submit_it == true) { 
-					$('body').off('submit', '#pause_mass_mailing');
-					$('#' + fid).submit();
+					$jq('body').off('submit', '#pause_mass_mailing');
+					$jq('#' + fid).submit();
 				}
 				else { 
 					// alert("It stays off!"); 
 				}
 			});
 			
-			if($("#tracker_reports").length){ 
+			if($jq("#tracker_reports").length){ 
 				refresh_tracker_plugin(
-					$("#tracker_url").val(),
-					$("#message_id").val(), 
+					$jq("#tracker_url").val(),
+					$jq("#message_id").val(), 
 					'tracker_reports_container'
 				); 
 			}
@@ -124,68 +131,68 @@ $(document).ready(function() {
 		
 		
 		// Membership >> View List	
-		if($("#view_list_viewport").length) { 
+		if($jq("#view_list_viewport").length) { 
 			view_list_viewport();	
 		}
 		
 		// Membership >> List Activity
-		if($("#list_activity").length){ 
+		if($jq("#list_activity").length){ 
 			google.setOnLoadCallback(sub_unsub_trend_chart());
 		}
 		// Membership >> user@example.com
-		if($("#mailing_list_history").length) { 
+		if($jq("#mailing_list_history").length) { 
 			mailing_list_history();
 		}
 		
 		// Membership >> Invite/Add
-		if($("#add").length) { 
-			$("#add_one").hide(); 
-			$("#show_progress").hide(); 
-			$("#fileupload").live("submit", function(event) {
+		if($jq("#add").length) { 
+			$jq("#add_one").hide(); 
+			$jq("#show_progress").hide(); 
+			$jq("#fileupload").live("submit", function(event) {
 				check_status();
 			});
 		}
 		
 		// Membership >> Add (step 2) 
-		if($("#add_email").length) { 			
-			$("#confirm_add").on("submit", function(event){ 
+		if($jq("#add_email").length) { 			
+			$jq("#confirm_add").on("submit", function(event){ 
 				event.preventDefault();
 			});
-			$(".addingemail").on("click", function(event) { 
+			$jq(".addingemail").on("click", function(event) { 
 				var go = 1; 
-				if($(this).hasClass("warnAboutMassSubscription")){ 
+				if($jq(this).hasClass("warnAboutMassSubscription")){ 
 					go = warnAboutMassSubscription(); 
 				}
 				if(go == true){ 
-					$('#confirm_add').off('submit');
-					$('#confirm_add').submit();
+					$jq('#confirm_add').off('submit');
+					$jq('#confirm_add').submit();
 				}
 			});
 		}
 		
 				
 		// Membership >> Invite
-		if($("#list_invite").length){ 
-			$("#customize_invite_message_form").hide(); 
-			$('.show_customize_invite_message').live("click", function(event) { 
+		if($jq("#list_invite").length){ 
+			$jq("#customize_invite_message_form").hide(); 
+			$jq('.show_customize_invite_message').live("click", function(event) { 
 				event.preventDefault();
 				show_customize_invite_message(); 
 			});
 		}
 		// Mail Sending >> Sending Preferences 
-		if($("#sending_preferences").length) { 
-			if($("#has_needed_cpan_modules").length){ 
+		if($jq("#sending_preferences").length) { 
+			if($jq("#has_needed_cpan_modules").length){ 
 				amazon_ses_get_stats();
 			}
 		}
 		
 		// Mail Sending >> Adv Sending Preferences
-		if($("#adv_sending_preferences").length) { 
-			$("#misc_options").hide(); 
+		if($jq("#adv_sending_preferences").length) { 
+			$jq("#misc_options").hide(); 
 		}
 		// Mail Sending >> Mass Mailing Preferences 
-		if($("#mass_mailing_preferences").length){ 
-			if($("#amazon_ses_get_stats").length) { 
+		if($jq("#mass_mailing_preferences").length){ 
+			if($jq("#amazon_ses_get_stats").length) { 
 				amazon_ses_get_stats(); 
 			}
 			else { 
@@ -204,45 +211,45 @@ $(document).ready(function() {
 
 	
 	// Membership >> View List
-	$(".change_type").live("click", function(event){
-		change_type($(this).attr("data-type"));
+	$jq(".change_type").live("click", function(event){
+		change_type($jq(this).attr("data-type"));
 		event.preventDefault();
 	});
-	$(".turn_page").live("click", function(event){
-		turn_page($(this).attr("data-page"));
+	$jq(".turn_page").live("click", function(event){
+		turn_page($jq(this).attr("data-page"));
 		event.preventDefault();
 	});
-	$(".change_order").live("click", function(event){
-		change_order($(this).attr("data-by"), $(this).attr("data-dir"));
+	$jq(".change_order").live("click", function(event){
+		change_order($jq(this).attr("data-by"), $jq(this).attr("data-dir"));
 		event.preventDefault();
 	});
-	$(".search_list").live("click", function(event){			
+	$jq(".search_list").live("click", function(event){			
 		search_list();
 		event.preventDefault();
 	});
-	$("#search_form").live("submit", function(event) {
+	$jq("#search_form").live("submit", function(event) {
     	search_list();
 		event.preventDefault();
 	});
-	$(".clear_search").live("click", function(event){
+	$jq(".clear_search").live("click", function(event){
 		clear_search();
 		event.preventDefault();
 	});
-	$('#search_query').live('keydown', function(){	
-		$( "#search_query" ).autocomplete({
+	$jq('#search_query').live('keydown', function(){	
+		$jq( "#search_query" ).autocomplete({
 			source: function( request, response ) {
-				$.ajax({
+				$jq.ajax({
 					url: "<!-- tmpl_var S_PROGRAM_URL -->",
 					type: "POST",
 					dataType: "json",
 					data: {
 						f: 'search_list_auto_complete',
 						length: 10,
-						type: $("#type").val(),
+						type: $jq("#type").val(),
 						query: request.term
 					},
 					success: function( data ) {
-						response( $.map( data, function( item ) {
+						response( $jq.map( data, function( item ) {
 							return {
 								value: item.email,
 							}
@@ -255,10 +262,10 @@ $(document).ready(function() {
 			},
 			minLength: 3,
 			open: function() {
-				$( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+				$jq( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
 			},
 			close: function() {
-				$( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+				$jq( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
 			}
 		});
 	});
@@ -268,18 +275,18 @@ $(document).ready(function() {
 	
 	
 	// Membership >> user@example.com
-	$(".change_profile_password").live("click", function(event){
+	$jq(".change_profile_password").live("click", function(event){
 		show_change_profile_password_form();
 		event.preventDefault();
 	});
 	
 	// Mail Sending >> Sending Preferences 
-    $(".test_sending_preferences").live("click", function(event){ 
+    $jq(".test_sending_preferences").live("click", function(event){ 
 		event.preventDefault();
 		test_sending_preferences();
 	});
 
-    $(".amazon_verify_email").live("click", function(event){ 
+    $jq(".amazon_verify_email").live("click", function(event){ 
 		event.preventDefault();
 		amazon_verify_email();
 	});
@@ -287,69 +294,99 @@ $(document).ready(function() {
 	
 	
 	// Mail Sending >> Mass Mailing Preferences 
-	$(".previewBatchSendingSpeed").live("change", function(event){ 
+	$jq(".previewBatchSendingSpeed").live("change", function(event){ 
 		previewBatchSendingSpeed();
 	});
 
-	$("#amazon_ses_auto_batch_settings").live("click", function(event){ 
+	$jq("#amazon_ses_auto_batch_settings").live("click", function(event){ 
 		toggleManualBatchSettings();
 	});
 	
 
 	// Plugins >> Bounce Handler 
-	if($("#plugins_bounce_handler_default").length) { 
+	if($jq("#plugins_bounce_handler_default").length) { 
 		bounce_handler_show_scorecard();
-		  $("body").on("click", '.bounce_handler_turn_page', function(event){
-			bounce_handler_turn_page($(this).attr("data-page"));
+		  $jq("body").on("click", '.bounce_handler_turn_page', function(event){
+			bounce_handler_turn_page($jq(this).attr("data-page"));
 			event.preventDefault();
 		});		
 	}
-	if($("#plugins_bounce_handler_parse_bounce").length){ 
+	if($jq("#plugins_bounce_handler_parse_bounce").length){ 
 		bounce_handler_parse_bounces(); 
-		$("#parse_bounces_button").on("click", function(event){ 
+		$jq("#parse_bounces_button").on("click", function(event){ 
 			bounce_handler_parse_bounces(); 
 		}); 
 	}
 	
+	// Plugins >> Dada Bridge
+	if($jq("#plugins_bridge_default").length) { 
+		
+		$jq(".plugins_bridge_test_pop3").live("click", function(event){ 
+			event.preventDefault();
+			plugins_bridge_test_pop3();
+		});
+		
+		
+		$jq(".plugins_bridge_manually_check_messages").live("click", function(event){ 
+			event.preventDefault();
+			plugins_bridge_manually_check_messages();
+		});
+		
+		
+		
+		
+	    
+	}
+	
+	// Plugins >> Mailing Monitor
+	if($jq("#plugins_mailing_monitor_default").length){ 
+		
+		plugins_mailing_monitor();
+		$jq("#mailing_monitor_button").live("click", function(event){ 
+			event.preventDefault();
+			plugins_mailing_monitor();
+		});	
+
+	}
 	
 	// Plugins >> Tracker
-	if($("#plugins_tracker_message_report").length) { 
+	if($jq("#plugins_tracker_message_report").length) { 
 		update_plugins_tracker_message_report(); 
 	}
-	if($("#plugins_tracker_default").length) { 
+	if($jq("#plugins_tracker_default").length) { 
 		  tracker_show_table();	
 		  google.setOnLoadCallback(drawSubscriberHistoryChart());
 		
-		  $("body").on("click", '.tracker_turn_page', function(event){
-			tracker_turn_page($(this).attr("data-page"));
+		  $jq("body").on("click", '.tracker_turn_page', function(event){
+			tracker_turn_page($jq(this).attr("data-page"));
 			event.preventDefault();
 		});
-		$("body").on("click", '.tracker_purge_log', function(event){ 
+		$jq("body").on("click", '.tracker_purge_log', function(event){ 
 			tracker_purge_log();
 			event.preventDefault();
 		});	
 	}
 	// Plugins >> Password Protect Directories
-	if($("#plugins_password_protect_directories_default").length) { 
-		$("#change_password_button").live("click", function(event){ 
+	if($jq("#plugins_password_protect_directories_default").length) { 
+		$jq("#change_password_button").live("click", function(event){ 
 			password_protect_directories_show_change_password_form();
 		});
 	}
 	
 	// Plugins >> Log Viewer
-	if($("#plugin_log_viewer_default").length){ 
+	if($jq("#plugin_log_viewer_default").length){ 
 		view_logs_results();
 		
-		$("#log_name").on("change", function(event){ 
+		$jq("#log_name").on("change", function(event){ 
 			view_logs_results();		
 	    });	
-		$("#lines").on("change", function(event){ 
+		$jq("#lines").on("change", function(event){ 
 			view_logs_results();		
 	    });
-		$("#refresh_button").on("click", function(event){ 
+		$jq("#refresh_button").on("click", function(event){ 
 			view_logs_results();		
 	    });
-		$("#delete_log").on("click", function(event){ 
+		$jq("#delete_log").on("click", function(event){ 
 			delete_log();
 		}); 
 		
@@ -365,40 +402,40 @@ $(document).ready(function() {
 
 
 	/* Global */ 
-	$(".previous").live("click", function(event){
+	$jq(".previous").live("click", function(event){
 		event.preventDefault();
 		history.back();
 	}); 
 	
-	$(".fade_me").live("click", function(event){
-		$('#alertbox').effect( 'fade' );
+	$jq(".fade_me").live("click", function(event){
+		$jq('#alertbox').effect( 'fade' );
 		event.preventDefault();
 	});
 
-	$('.toggleCheckboxes').live("click", function(event){	
+	$jq('.toggleCheckboxes').live("click", function(event){	
 		toggleCheckboxes(
-			$(this).prop("checked"), 
-			$(this).attr("data-target_class")
+			$jq(this).prop("checked"), 
+			$jq(this).attr("data-target_class")
 		);
 	});
-	$('.linkToggleCheckboxes').live("click", function(event){	
+	$jq('.linkToggleCheckboxes').live("click", function(event){	
 		event.preventDefault();
 		var state = true; 
-		if($(this).attr("data-state") == "false"){ 
+		if($jq(this).attr("data-state") == "false"){ 
 			state = false; 
 		}
 		toggleCheckboxes(
 			state,
-			$(this).attr("data-target_class")
+			$jq(this).attr("data-target_class")
 		);
 	}); 
 	
-	$('.toggleDivs').live("click", function(event){ 
+	$jq('.toggleDivs').live("click", function(event){ 
 		event.preventDefault();
-		toggleDisplay($(this).attr("data-target")); 
+		toggleDisplay($jq(this).attr("data-target")); 
 	}); 
-	
-	$( "#dialog-modal" ).dialog({				
+/*	
+	$jq( "#dialog-modal" ).dialog({				
 		autoOpen: false,
 		width: 640,
 		minHeight: 0,
@@ -409,15 +446,15 @@ $(document).ready(function() {
 		title: "Loading...",
 		draggable: false,
 		open: function(){
-	            $('.ui-widget-overlay').bind('click',function(){
-	                $('#dialog-modal').dialog('close');
+	            $jq('.ui-widget-overlay').bind('click',function(){
+	                $jq('#dialog-modal').dialog('close');
 	            });
-				$("#dialog-modal-close").bind('click', function() {
-				    $('#dialog-modal').dialog('close');
+				$jq("#dialog-modal-close").bind('click', function() {
+				    $jq('#dialog-modal').dialog('close');
 				});
 	        }
 	});
-	
+*/	
 
 	
 });
@@ -432,7 +469,7 @@ $(document).ready(function() {
 function update_sending_monitor_interface(message_id, type, target_id, refresh_after) { 	 
 	var r = refresh_after * 1000;
 	var refresh_loop = function(no_loop) { 
-		var request = $.ajax({
+		var request = $jq.ajax({
 		  url: "<!-- tmpl_var S_PROGRAM_URL -->",
 		  type: "POST",
 		  cache: false,
@@ -445,8 +482,8 @@ function update_sending_monitor_interface(message_id, type, target_id, refresh_a
 		  dataType: "html"
 		});
 		request.done(function(content) {
-		  $("#" + target_id).html(content);
-	 	  $( "#progressbar" ).progressbar({value: ($("#progressbar_percent").val()/1)});
+		  $jq("#" + target_id).html(content);
+	 	  $jq( "#progressbar" ).progressbar({value: ($jq("#progressbar_percent").val()/1)});
 		});
 		if(no_loop != 1){ 
 			setTimeout(
@@ -463,7 +500,7 @@ function update_sending_monitor_interface(message_id, type, target_id, refresh_a
 }
 function refresh_tracker_plugin(tracker_url, message_id, target_id) { 	
 	var tracker_refresh_loop = function(no_loop) { 
-		$("#tracker_reports_container").load(tracker_url, 
+		$jq("#tracker_reports_container").load(tracker_url, 
 			{
 				chrome: 0, 
 				f:     "m", 
@@ -492,7 +529,7 @@ function refresh_tracker_plugin(tracker_url, message_id, target_id) {
 // Membership >> Invite/Add
 
 function check_status(){ 
-		$("#show_progress").show();
+		$jq("#show_progress").show();
 		keep_updating_status_bar = 1; 
 		update_status_bar();
 }
@@ -506,27 +543,27 @@ function update_status_bar(){
 			return; 
 		}
 		console.log('update_status_bar_loop called'); 
-		var request = $.ajax({
+		var request = $jq.ajax({
 			url: "<!-- tmpl_var S_PROGRAM_URL -->",
 			type: "GET",
 				data: {
 					f : 'check_status',
-					new_email_file: $('#new_email_file').val(),
-					rand_string: $('#rand_string').val()
+					new_email_file: $jq('#new_email_file').val(),
+					rand_string: $jq('#rand_string').val()
 				},
 			dataType: "json",
 			success: function( data ) {
 				//console.log('data.percent:"' + data.percent +  '"'); 
-				 //$.each(data, function(key, val) {
+				 //$jq.each(data, function(key, val) {
 				//		console.log(key + ' => ' + val); 
 				//});
 				if(data.percent > 0) { 
-					$("#progressbar").progressbar({ value: data.percent});
-					$('#upload_status').html('<p>Uploading File: ' + data.percent + '%</p>');
+					$jq("#progressbar").progressbar({ value: data.percent});
+					$jq('#upload_status').html('<p>Uploading File: ' + data.percent + '%</p>');
 					if(data.percent == 100) { 
 						keep_updating_status_bar = 0;
 						no_loop = 1;
-						$('#upload_status').html('<p>Upload Complete! Processing...</p>');
+						$jq('#upload_status').html('<p>Upload Complete! Processing...</p>');
 					}
 				//console.log('done?'); 
 				}
@@ -553,65 +590,65 @@ function update_status_bar(){
 
 /* Membership >> View List */
 function view_list_viewport(){ 	
-	$("#view_list_viewport_loading").html( '<p class="alert">Loading...</p>' );
-	var request = $.ajax({
+	$jq("#view_list_viewport_loading").html( '<p class="alert">Loading...</p>' );
+	var request = $jq.ajax({
 	  url: "<!-- tmpl_var S_PROGRAM_URL -->",
 	  type: "POST",
 	  cache: false,
 	  data: {
 		f:         'view_list',
 		mode:      'viewport', 
-		type:      $("#type").val(),
-		page:      $("#page").val(),
-		query:     $("#query").val(),
-		order_by:  $("#order_by").val(),
-		order_dir: $("#order_dir").val()
+		type:      $jq("#type").val(),
+		page:      $jq("#page").val(),
+		query:     $jq("#query").val(),
+		order_by:  $jq("#order_by").val(),
+		order_dir: $jq("#order_dir").val()
 	  },
 	  dataType: "html"
 	});
 	request.done(function(content) {
-	  $("#view_list_viewport").html( content );
-	  $("#view_list_viewport_loading").html( '<p class="alert">&nbsp;</p>' );
+	  $jq("#view_list_viewport").html( content );
+	  $jq("#view_list_viewport_loading").html( '<p class="alert">&nbsp;</p>' );
 	
 		google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
 	});
 }
 function turn_page(page_to_turn_to) { 
-	$("#page").val(page_to_turn_to);
+	$jq("#page").val(page_to_turn_to);
 	view_list_viewport();
 }
 function change_type(type_to_go_to) { 
-	$("#type").val(type_to_go_to);
-	$("#page").val(1); 
+	$jq("#type").val(type_to_go_to);
+	$jq("#page").val(1); 
 	view_list_viewport();
 }
 function search_list(){ 
-	$("#page").val(1); 
-	$("#query").val($("#search_query").val()); 
+	$jq("#page").val(1); 
+	$jq("#query").val($jq("#search_query").val()); 
 	view_list_viewport();
 }
 function clear_search(){ 
-	$("#query").val(''); 
-	$("#page").val(1); 
+	$jq("#query").val(''); 
+	$jq("#page").val(1); 
 	view_list_viewport(); 
 }
 function change_order(order_by, order_dir) { 
-	$("#order_by").val(order_by); 
-	$("#order_dir").val(order_dir); 
-	$("#page").val(1); 
+	$jq("#order_by").val(order_by); 
+	$jq("#order_dir").val(order_dir); 
+	$jq("#page").val(1); 
 	view_list_viewport();	 
 }
 
 var domain_breakdown_chart; // you've got to be serious... 
 var domain_breakdown_chart_data; 
 function drawTrackerDomainBreakdownChart() { 
-	$("#domain_break_down_chart_loading").html( '<p class="alert">Loading...</p>' );
-    $.ajax({
+	$jq("#domain_break_down_chart_loading").html( '<p class="alert">Loading...</p>' );
+    $jq.ajax({
 		  url: "<!-- tmpl_var S_PROGRAM_URL -->",
           dataType:"json",
 			data: {
 				f:      'domain_breakdown_json',
-				type:    $("#type").val(),
+				type:    $jq("#type").val(),
 			},
           async: true,
 		success: function( jsonData ) {
@@ -624,9 +661,9 @@ function drawTrackerDomainBreakdownChart() {
 				width:"90%",
 				height:"90%"
 				},
-		        title:  $('#domain_break_down_chart').attr("data-title"),
-				width:  $('#domain_break_down_chart').attr("data-width"),
-				height: $('#domain_break_down_chart').attr("data-height"),
+		        title:  $jq('#domain_break_down_chart').attr("data-title"),
+				width:  $jq('#domain_break_down_chart').attr("data-width"),
+				height: $jq('#domain_break_down_chart').attr("data-height"),
 				pieSliceTextStyle: {color: '#FFFFFF'},
 				backgroundColor:{
 					stroke: '#000000',
@@ -637,7 +674,7 @@ function drawTrackerDomainBreakdownChart() {
 					is3D: true
 		      };
 		      domain_breakdown_chart.draw(domain_breakdown_chart_data, options);
-			$("#domain_break_down_chart_loading").html( '<p class="alert">&nbsp;</p>' );
+			$jq("#domain_break_down_chart_loading").html( '<p class="alert">&nbsp;</p>' );
 			google.visualization.events.addListener(domain_breakdown_chart, 'select', selectHandler);
 			
 		},
@@ -650,8 +687,8 @@ function selectHandler(event) {
      var str = domain_breakdown_chart_data.getFormattedValue(item.row, 0);
   // alert(str); 
   if(str != 'other') { 
-	  $("#query").val($("#search_query").val("@" + str)); 
-	  $("#page").val(1); 
+	  $jq("#query").val($jq("#search_query").val("@" + str)); 
+	  $jq("#page").val(1); 
 	   search_list()
 	}
 }
@@ -659,7 +696,7 @@ function selectHandler(event) {
 
 // Membership >> List Activity
 function sub_unsub_trend_chart() {
-	$("#amount").on("change", function(event){ 
+	$jq("#amount").on("change", function(event){ 
 		draw_sub_unsub_trend_chart();		
     });
 
@@ -691,24 +728,24 @@ backgroundColor: {
     var sub_unsub_trend_c = new google.visualization.AreaChart(document.getElementById('sub_unsub_trends'));
 
 	function draw_sub_unsub_trend_chart() {
-		$("#amount").prop('disabled', true);
+		$jq("#amount").prop('disabled', true);
 		google.visualization.events.addListener(sub_unsub_trend_c, 'ready', function() {
-			$("#amount").prop('disabled', false);	
+			$jq("#amount").prop('disabled', false);	
 		});
 
-		$("#sub_unsub_trends_loading").html( '<p class="alert">Loading...</p>' );
-		$.ajax({
+		$jq("#sub_unsub_trends_loading").html( '<p class="alert">Loading...</p>' );
+		$jq.ajax({
 			url: "http://localhost/cgi-bin/test_dada/mail.cgi",
 			data: {
 				f:    'sub_unsub_trends_json', 
-				days: $("#amount option:selected").val()
+				days: $jq("#amount option:selected").val()
 			},
 			dataType:"json",
 			async: true,
 			success: function( jsonData ) {
 				data = new google.visualization.DataTable(jsonData);
 				sub_unsub_trend_c.draw(data, options);
-				$("#sub_unsub_trends_loading").html( '<p class="alert">&nbsp;</p>' );			
+				$jq("#sub_unsub_trends_loading").html( '<p class="alert">&nbsp;</p>' );			
 			},
 		});
 	}
@@ -720,8 +757,8 @@ backgroundColor: {
 
 // Membership >> user@example.com
 function mailing_list_history(){ 
-	$("#mailing_list_history_loading").html( '<p class="alert">Loading...</p>' );
-	var request = $.ajax({
+	$jq("#mailing_list_history_loading").html( '<p class="alert">Loading...</p>' );
+	var request = $jq.ajax({
 		url: "<!-- tmpl_var S_PROGRAM_URL -->",
 		type: "POST",
 		cache: false,
@@ -732,51 +769,77 @@ function mailing_list_history(){
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$("#mailing_list_history").html( content );
-		$("#mailing_list_history_loading").html( '<p class="alert">&nbsp;</p>' );
-		$("#mailing_list_history" ).show( 'blind' );
+		$jq("#mailing_list_history").html( content );
+		$jq("#mailing_list_history_loading").html( '<p class="alert">&nbsp;</p>' );
+		$jq("#mailing_list_history" ).show( 'blind' );
 	});
 }
 function updateEmail(){ 
 	var is_for_all_lists = 0; 
 	if(
-		$('#for_all_mailing_lists').val() == 1 && 
-		$("#for_all_mailing_lists").prop("checked") == true
+		$jq('#for_all_mailing_lists').val() == 1 && 
+		$jq("#for_all_mailing_lists").prop("checked") == true
 	) { 
 		is_for_all_lists = 1;
 	}
-	$("#update_email_results_loading").html( '<p class="alert">Loading...</p>' );
-	var request = $.ajax({
+	$jq("#update_email_results_loading").html( '<p class="alert">Loading...</p>' );
+	var request = $jq.ajax({
 		url: "<!-- tmpl_var S_PROGRAM_URL -->",
 		type: "POST",
 		cache: false,
 		data: {
 				f: 'update_email_results',
-				updated_email: $("#updated_email").val(),
-				email:         $("#original_email").val(),
+				updated_email: $jq("#updated_email").val(),
+				email:         $jq("#original_email").val(),
 				for_all_lists: is_for_all_lists
 		},
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$("#update_email_results").html( content );
-		$("#update_email_results_loading").html( '<p class="alert">&nbsp;</p>' );
-		$("#update_email_results" ).show( 'blind' );
+		$jq("#update_email_results").html( content );
+		$jq("#update_email_results_loading").html( '<p class="alert">&nbsp;</p>' );
+		$jq("#update_email_results" ).show( 'blind' );
 	});
 }
 function show_change_profile_password_form(){
-	$("#change_profile_password_button" ).hide( 'blind' );
-	$("#change_profile_password_form" ).show( 'blind' );
+	$jq("#change_profile_password_button" ).hide( 'blind' );
+	$jq("#change_profile_password_form" ).show( 'blind' );
 }
 
 // Membership >> Invite 
 function show_customize_invite_message(){ 
-	$('#customize_invite_message_button').hide('blind');
-	$('#customize_invite_message_form').show('blind');	
+	$jq('#customize_invite_message_button').hide('blind');
+	$jq('#customize_invite_message_form').show('blind');	
 }
 
-
-
+function test_sending_preferences() { 
+	Modalbox.show(
+		'<!-- tmpl_var S_PROGRAM_URL -->', {
+		title: 'Testing Sending Preferences...', 
+		width: 640, height: 480,
+		method: 'post', 
+		params: {
+			f:                         'sending_preferences_test',
+			add_sendmail_f_flag:       $jq('#add_sendmail_f_flag').val(), 
+			smtp_server:               $jq('#smtp_server').val(), 
+			smtp_port:                 $jq('#smtp_port').val(),
+			use_smtp_ssl:              $jq('#use_smtp_ssl').val(),			
+			use_sasl_smtp_auth:        $jq('#use_sasl_smtp_auth').val(), 
+			sasl_auth_mechanism:       $jq('#sasl_auth_mechanism').val(), 
+			sasl_smtp_username:        $jq('#sasl_smtp_username').val(), 
+			sasl_smtp_password:        $jq('#sasl_smtp_password').val(), 
+			use_pop_before_smtp:       $jq('#use_pop_before_smtp').val(), 
+			pop3_server:               $jq('#pop3_server').val(), 
+			pop3_username:             $jq('#pop3_username').val(), 
+			pop3_password:             $jq('#pop3_password').val(), 
+			pop3_use_ssl:              $jq('#pop3_use_ssl').val(), 
+			set_smtp_sender:           $jq('#set_smtp_sender').val(),
+			process:                   $jq('#process').val(),
+			sending_method:             $jq('input[name=sending_method]:checked').val()
+			},		
+		});	
+}
+/*
 // Mailing Sending >> Sending Preferences
 function test_sending_preferences(){ 	
 	modalMenuAjax(
@@ -786,86 +849,87 @@ function test_sending_preferences(){
 		  cache: false,
 		  data: {
 				f:                         'sending_preferences_test',
-				add_sendmail_f_flag:       $('#add_sendmail_f_flag').val(), 
-				smtp_server:               $('#smtp_server').val(), 
-				smtp_port:                 $('#smtp_port').val(),
-				use_smtp_ssl:              $('#use_smtp_ssl').val(),			
-				use_sasl_smtp_auth:        $('#use_sasl_smtp_auth').val(), 
-				sasl_auth_mechanism:       $('#sasl_auth_mechanism').val(), 
-				sasl_smtp_username:        $('#sasl_smtp_username').val(), 
-				sasl_smtp_password:        $('#sasl_smtp_password').val(), 
-				use_pop_before_smtp:       $('#use_pop_before_smtp').val(), 
-				pop3_server:               $('#pop3_server').val(), 
-				pop3_username:             $('#pop3_username').val(), 
-				pop3_password:             $('#pop3_password').val(), 
-				pop3_use_ssl:              $('#pop3_use_ssl').val(), 
-				set_smtp_sender:           $('#set_smtp_sender').val(),
-				process:                   $('#process').val(),
-				sending_method:             $('input[name=sending_method]:checked').val()
+				add_sendmail_f_flag:       $jq('#add_sendmail_f_flag').val(), 
+				smtp_server:               $jq('#smtp_server').val(), 
+				smtp_port:                 $jq('#smtp_port').val(),
+				use_smtp_ssl:              $jq('#use_smtp_ssl').val(),			
+				use_sasl_smtp_auth:        $jq('#use_sasl_smtp_auth').val(), 
+				sasl_auth_mechanism:       $jq('#sasl_auth_mechanism').val(), 
+				sasl_smtp_username:        $jq('#sasl_smtp_username').val(), 
+				sasl_smtp_password:        $jq('#sasl_smtp_password').val(), 
+				use_pop_before_smtp:       $jq('#use_pop_before_smtp').val(), 
+				pop3_server:               $jq('#pop3_server').val(), 
+				pop3_username:             $jq('#pop3_username').val(), 
+				pop3_password:             $jq('#pop3_password').val(), 
+				pop3_use_ssl:              $jq('#pop3_use_ssl').val(), 
+				set_smtp_sender:           $jq('#set_smtp_sender').val(),
+				process:                   $jq('#process').val(),
+				sending_method:             $jq('input[name=sending_method]:checked').val()
 			},
 			dataType: 'html', 
 		}
 	); 
 }
+*/
 function amazon_verify_email() { 
-	$("#amazon_ses_verify_email_results").hide('blind');
-	$("#amazon_ses_verify_email_loading").html( '<p class="alert">Loading...</p>' );
-	var request = $.ajax({
+	$jq("#amazon_ses_verify_email_results").hide('blind');
+	$jq("#amazon_ses_verify_email_loading").html( '<p class="alert">Loading...</p>' );
+	var request = $jq.ajax({
 	  url: "<!-- tmpl_var S_PROGRAM_URL -->",
 	  type: "POST",
 	  cache: false,
 	  data: {
 			f: 'amazon_ses_verify_email',
-			amazon_ses_verify_email: $("#amazon_ses_verify_email").val()
+			amazon_ses_verify_email: $jq("#amazon_ses_verify_email").val()
 	  },
 	  dataType: "html"
 	});
 	request.done(function(content) {
-	  $("#amazon_ses_verify_email_results").html( content ).show('blind');
-	  $("#amazon_ses_verify_email_loading").html( '<p class="alert">&nbsp;</p>' );
+	  $jq("#amazon_ses_verify_email_results").html( content ).show('blind');
+	  $jq("#amazon_ses_verify_email_loading").html( '<p class="alert">&nbsp;</p>' );
 	});
 }
 
 
 // Mail Sending >> Mass Mailing Preferences 
 function previewBatchSendingSpeed(){ 
-	$("#previewBatchSendingSpeed").hide();
-	$("#previewBatchSendingSpeed_loading").show().html( '<p class="alert">Loading...</p>' );
+	$jq("#previewBatchSendingSpeed").hide();
+	$jq("#previewBatchSendingSpeed_loading").show().html( '<p class="alert">Loading...</p>' );
 	
 	var enable_bulk_batching = 0; 
-	if($('#enable_bulk_batching').prop('checked') == true){ 
+	if($jq('#enable_bulk_batching').prop('checked') == true){ 
 		enable_bulk_batching = 1; 
 	}
 	var amazon_ses_auto_batch_settings = 0; 
-	if($("#amazon_ses_get_stats").length) { 	
-		if($('#amazon_ses_auto_batch_settings').prop('checked') == true){ 
+	if($jq("#amazon_ses_get_stats").length) { 	
+		if($jq('#amazon_ses_auto_batch_settings').prop('checked') == true){ 
 			amazon_ses_auto_batch_settings = 1; 
 		}
 	}
 	
-	var request = $.ajax({
+	var request = $jq.ajax({
 		url: "<!-- tmpl_var S_PROGRAM_URL -->",
 		type: "POST",
 		cache: false,
 		data: {
 			f:                              'previewBatchSendingSpeed', 
 			enable_bulk_batching:           enable_bulk_batching,
-			mass_send_amount:               $('#mass_send_amount').val(), 
-			bulk_sleep_amount:              $('#bulk_sleep_amount').val(),
+			mass_send_amount:               $jq('#mass_send_amount').val(), 
+			bulk_sleep_amount:              $jq('#bulk_sleep_amount').val(),
 			amazon_ses_auto_batch_settings: amazon_ses_auto_batch_settings
 		},
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$("#previewBatchSendingSpeed_loading").hide();
-		$("#previewBatchSendingSpeed").html( content ).show( 'blind' );
+		$jq("#previewBatchSendingSpeed_loading").hide();
+		$jq("#previewBatchSendingSpeed").html( content ).show( 'blind' );
 	});
 }
 
 function amazon_ses_get_stats(){ 
-	$("#amazon_ses_get_stats_loading").html( '<p class="alert">Loading...</p>' );
+	$jq("#amazon_ses_get_stats_loading").html( '<p class="alert">Loading...</p>' );
 	
-	var request = $.ajax({
+	var request = $jq.ajax({
 		url: "<!-- tmpl_var S_PROGRAM_URL -->",
 		type: "POST",
 		cache: false,
@@ -875,18 +939,18 @@ function amazon_ses_get_stats(){
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$("#amazon_ses_get_stats").html( content );
-		$("#amazon_ses_get_stats_loading").html( '<p class="alert">&nbsp;</p>' );
-		$("#amazon_ses_get_stats" ).show( 'blind' );
+		$jq("#amazon_ses_get_stats").html( content );
+		$jq("#amazon_ses_get_stats_loading").html( '<p class="alert">&nbsp;</p>' );
+		$jq("#amazon_ses_get_stats" ).show( 'blind' );
 	});
 }
 function toggleManualBatchSettings() { 
-	if($("#amazon_ses_auto_batch_settings").prop("checked") == true){ 
-		$("#manual_batch_settings" ).hide( 'blind' );
+	if($jq("#amazon_ses_auto_batch_settings").prop("checked") == true){ 
+		$jq("#manual_batch_settings" ).hide( 'blind' );
 	}
 	else { 
-		if( $('#manual_batch_settings').is(":hidden") ) {
-			$("#manual_batch_settings" ).show( 'blind' );
+		if( $jq('#manual_batch_settings').is(":hidden") ) {
+			$jq("#manual_batch_settings" ).show( 'blind' );
 		}
 	}
 	previewBatchSendingSpeed(); 
@@ -894,54 +958,97 @@ function toggleManualBatchSettings() {
 // Plugins >> Bounce Bounce Handler
 
 function bounce_handler_show_scorecard() { 
-	$("#bounce_scorecard_loading").html( '<p class="alert">Loading...</p>' );	
-	var request = $.ajax({
-	  url: $("#plugin_url").val(),
+	$jq("#bounce_scorecard_loading").html( '<p class="alert">Loading...</p>' );	
+	var request = $jq.ajax({
+	  url: $jq("#plugin_url").val(),
 	  type: "POST",
 	  cache: false,
 	  data: {
 			flavor:       'cgi_scorecard',
-			page:     	  $('#bounce_handler_page').val(),
+			page:     	  $jq('#bounce_handler_page').val(),
 	  },
 	  dataType: "html"
 	});
 	request.done(function(content) {
-	  $("#bounce_scorecard").html( content );
-	  $("#bounce_scorecard_loading").html( '<p class="alert">&nbsp;</p>' );
+	  $jq("#bounce_scorecard").html( content );
+	  $jq("#bounce_scorecard_loading").html( '<p class="alert">&nbsp;</p>' );
 	});
 }
 function bounce_handler_turn_page(page_to_turn_to) {
-	$("#bounce_handler_page").val(page_to_turn_to); 
+	$jq("#bounce_handler_page").val(page_to_turn_to); 
 	bounce_handler_show_scorecard();
 }
 function bounce_handler_parse_bounces() { 
-	$("#parse_bounce_results_loading").html( '<p class="alert">Loading</p>' );
-	$("#parse_bounces_button").val( 'Parsing...' );	
-	var request = $.ajax({
-	  url: $("#plugin_url").val(),
+	$jq("#parse_bounce_results_loading").html( '<p class="alert">Loading</p>' );
+	$jq("#parse_bounces_button").val( 'Parsing...' );	
+	var request = $jq.ajax({
+	  url: $jq("#plugin_url").val(),
 	  type: "POST",
 	  cache: false,
 	  data: {
 			flavor:       'ajax_parse_bounces_results',
-			parse_amount: $('#parse_amount').val(),
-			bounce_test:  $('#bounce_test').val()
+			parse_amount: $jq('#parse_amount').val(),
+			bounce_test:  $jq('#bounce_test').val()
 	  },
 	  dataType: "html"
 	});
 	request.done(function(content) {
-	  $("#parse_bounce_results").html( content );
-	  $("#parse_bounces_button").val( 'Parse Bounces' );	
-	  $("#parse_bounce_results_loading").html( '<p class="alert">&nbsp;</p>' );
+	  $jq("#parse_bounce_results").html( content );
+	  $jq("#parse_bounces_button").val( 'Parse Bounces' );	
+	  $jq("#parse_bounce_results_loading").html( '<p class="alert">&nbsp;</p>' );
 	
 	});
 }
 
+// Plugins >> Dada Bridge 
+
+function plugins_bridge_test_pop3() { 
+	Modalbox.show(
+		$jq("#plugin_url").val(), {
+		title: 'Test Results...', 
+		width: 640, height: 480,
+		method: 'post', 
+		params: {
+			flavor: 'cgi_test_pop3_ajax',
+		},
+	});
+}
+function plugins_bridge_manually_check_messages() { 
+	Modalbox.show(
+		$jq("#plugin_url").val(), {
+		title: 'Test Results...', 
+		width: 640, height: 480,
+		method: 'post', 
+		params: {
+			flavor: 'admin_cgi_manual_start_ajax',
+		},
+	});	
+}
+
+// Plugins >> Mailing Monitor 
+function plugins_mailing_monitor(){ 
+	$jq("#mailing_monitor_results_loading").html( '<p class="alert">Loading...</p>' );	
+	var request = $jq.ajax({
+	  url: $jq("#plugin_url").val(),
+	  type: "POST",
+	  cache: false,
+	  data: {
+			flavor:       'mailing_monitor_results',
+	  },
+	  dataType: "html"
+	});
+	request.done(function(content) {
+	  $jq("#mailing_monitor_results").html( content );
+	  $jq("#mailing_monitor_results_loading").html( '<p class="alert">&nbsp;</p>' );
+	});
+	
+}
 // Plugins >> Tracker
 	function update_plugins_tracker_message_report(){ 
 		
-		$( "#tabs" ).tabs();
+		$jq( "#tabs" ).tabs();
 		
-		if($("#can_use_country_geoip_data").val() == 1){ 
+		if($jq("#can_use_country_geoip_data").val() == 1){ 
 			
 			country_geoip_table('clickthroughs',       'Clickthroughs', 'country_geoip_clickthroughs_table');	
 			country_geoip_table('opens',               'Opens',         'country_geoip_opens_table');	
@@ -968,35 +1075,35 @@ function bounce_handler_parse_bounces() {
 			
 	function country_geoip_table(type, label, target_div){ 
 		
-		$("#" + target_div + "_loading").html( '<p class="alert">Loading...</p>' );
-		var request = $.ajax({
-		  url: $("#plugin_url").val(),
+		$jq("#" + target_div + "_loading").html( '<p class="alert">Loading...</p>' );
+		var request = $jq.ajax({
+		  url: $jq("#plugin_url").val(),
 		  type: "POST",
 		  cache: false,
 		  data: {
 			f:       'country_geoip_table',
-			mid:     $('#tracker_message_id').val(),
+			mid:     $jq('#tracker_message_id').val(),
 			type:    type,
 			label:   label, 
 		  },
 		  dataType: "html"
 		});
 		request.done(function(content) {
-		  $("#" + target_div).html( content );
-		  $("#" + target_div + "_loading").html( '<p class="alert">&nbsp;</p>' );
-		  $("#sortable_table_" + type).tablesorter(); 
+		  $jq("#" + target_div).html( content );
+		  $jq("#" + target_div + "_loading").html( '<p class="alert">&nbsp;</p>' );
+		  $jq("#sortable_table_" + type).tablesorter(); 
 		
 		
 		});
 	}
 	function country_geoip_map(type, label, target_div){ 
-		$("#" + target_div + "_loading").html( '<p class="alert">Loading...</p>' );
-		$.ajax({
-			url: $("#plugin_url").val(),
+		$jq("#" + target_div + "_loading").html( '<p class="alert">Loading...</p>' );
+		$jq.ajax({
+			url: $jq("#plugin_url").val(),
 			type: "POST",
 			data: {
 				f:       'country_geoip_json',
-				mid:     $('#tracker_message_id').val(),
+				mid:     $jq('#tracker_message_id').val(),
 				type:    type, 
 				label:   label
 			},
@@ -1014,7 +1121,7 @@ function bounce_handler_parse_bounces() {
 				};
 				var chart = new google.visualization.GeoChart(document.getElementById(target_div));
 				chart.draw(data, options);
-				$("#" + target_div + "_loading").html( '<p class="alert">&nbsp;</p>' );
+				$jq("#" + target_div + "_loading").html( '<p class="alert">&nbsp;</p>' );
 			}				
 		});
 
@@ -1023,12 +1130,12 @@ function bounce_handler_parse_bounces() {
 	}
 	
 	function data_over_time_graph(type, label, target_div){ 
-	  	$("#" + target_div + "_loading").html( '<p class="alert">Loading...</p>' );
-		 var request = $.ajax({
-	          url: $("#plugin_url").val(),
+	  	$jq("#" + target_div + "_loading").html( '<p class="alert">Loading...</p>' );
+		 var request = $jq.ajax({
+	          url: $jq("#plugin_url").val(),
 			  data: {
 				f:       'data_over_time_json',
-				mid:     $("#tracker_message_id").val(),
+				mid:     $jq("#tracker_message_id").val(),
 				type: 	 type, 
 				label:   label, 
 			  },
@@ -1053,18 +1160,18 @@ function bounce_handler_parse_bounces() {
 				};
 			    var chart = new google.visualization.AreaChart(document.getElementById(target_div));
 			    chart.draw(data, options);
-				$("#" + target_div + "_loading").html( '<p class="alert">&nbsp;</p>' );
+				$jq("#" + target_div + "_loading").html( '<p class="alert">&nbsp;</p>' );
 			},
 			});	
 	}
 	function bounce_breakdown_chart(type, label, target_div) { 
-		$("#" + target_div + "_loading").html( '<p class="alert">Loading...</p>' );
-	    $.ajax({
-			  url: $("#plugin_url").val(),
+		$jq("#" + target_div + "_loading").html( '<p class="alert">Loading...</p>' );
+	    $jq.ajax({
+			  url: $jq("#plugin_url").val(),
 	          dataType:"json",
 				data: {
 					f:          'bounce_stats_json',
-					mid:         $('#tracker_message_id').val(),
+					mid:         $jq('#tracker_message_id').val(),
 					bounce_type: type, 
 					label:       label
 				},
@@ -1079,16 +1186,16 @@ function bounce_handler_parse_bounces() {
 						width:"90%",
 						height:"90%"
 						},
-					title:  $('#' + target_div).attr("data-title"),
-					width:  $('#' + target_div).attr("data-width"),
-					height: $('#' + target_div).attr("data-height"),
+					title:  $jq('#' + target_div).attr("data-title"),
+					width:  $jq('#' + target_div).attr("data-width"),
+					height: $jq('#' + target_div).attr("data-height"),
 				
 					pieSliceTextStyle: {color: '#FFFFFF'},
 						colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
 						is3D: true
 			      };
 			      chart.draw(data, options);
-				  $("#" + target_div + "_loading").html( '<p class="alert">&nbsp;</p>' );
+				  $jq("#" + target_div + "_loading").html( '<p class="alert">&nbsp;</p>' );
 			},
 	       });
 	}	
@@ -1096,7 +1203,7 @@ function bounce_handler_parse_bounces() {
 
 // Plugins >> Tracker
 function tracker_turn_page(page_to_turn_to) { 
-	$("#tracker_page").val(page_to_turn_to); 
+	$jq("#tracker_page").val(page_to_turn_to); 
 	tracker_show_table();
 	google.setOnLoadCallback(drawSubscriberHistoryChart());
 	
@@ -1104,34 +1211,34 @@ function tracker_turn_page(page_to_turn_to) {
 
 // Plugins >> Log Viewer
 function view_logs_results() { 
-	$("#refresh_button").val( 'Loading....' );
-	var request = $.ajax({
-	  url: $("#plugin_url").val(),
+	$jq("#refresh_button").val( 'Loading....' );
+	var request = $jq.ajax({
+	  url: $jq("#plugin_url").val(),
 	  type: "POST",
 	  cache: false,
 	  data: {
 			flavor:       'ajax_view_logs_results',
-			log_name:     $('#log_name').val(),
-			lines:        $('#lines').val()
+			log_name:     $jq('#log_name').val(),
+			lines:        $jq('#lines').val()
 	  },
 	  dataType: "html"
 	});
 	request.done(function(content) {
-	  $("#view_logs_results").html( content );
-	  $("#refresh_button").val( 'Refresh' );
+	  $jq("#view_logs_results").html( content );
+	  $jq("#refresh_button").val( 'Refresh' );
 	});
 }
 function delete_log() { 
 	var confirm_msg =  "Are you sure you want to delete this log? ";
 	    confirm_msg += "There is no way to undo this deletion.";
 	if(confirm(confirm_msg)){
-		var request = $.ajax({
-		  url: $("#plugin_url").val(),
+		var request = $jq.ajax({
+		  url: $jq("#plugin_url").val(),
 		  type: "POST",
 		  cache: false,
 		  data: {
 				flavor:       'ajax_delete_log',
-				log_name:     $('#log_name').val(),
+				log_name:     $jq('#log_name').val(),
 		  },
 		  dataType: "html"
 		});
@@ -1150,23 +1257,23 @@ function delete_log() {
 
 function tracker_show_table(){ 
 		
-	$("#show_table_results_loading").html( '<p class="alert">Loading...</p>' );
-	var request = $.ajax({
-	  url: $("#plugin_url").val(),
+	$jq("#show_table_results_loading").html( '<p class="alert">Loading...</p>' );
+	var request = $jq.ajax({
+	  url: $jq("#plugin_url").val(),
 	  type: "POST",
 	  cache: false,
 	  data: {
 		f:       'clickthrough_table',
-		page:   $("#tracker_page").val(),
+		page:   $jq("#tracker_page").val(),
 	  },
 	  dataType: "html"
 	});
 	request.done(function(content) {
-	  $("#show_table_results").hide('fade', 
+	  $jq("#show_table_results").hide('fade', 
 		function(){ 
-			$("#show_table_results").html( content );
-			$("#show_table_results").show('fade'); 
-		    $("#show_table_results_loading").html( '<p class="alert">&nbsp;</p>' );
+			$jq("#show_table_results").html( content );
+			$jq("#show_table_results").show('fade'); 
+		    $jq("#show_table_results_loading").html( '<p class="alert">&nbsp;</p>' );
 		}
 	  ); 
 
@@ -1175,12 +1282,12 @@ function tracker_show_table(){
 
 var SubscriberHistoryChart; 
  function drawSubscriberHistoryChart() {
-  	$("#subscriber_history_chart_loading").html( '<p class="alert">Loading...</p>' );
-	 var request = $.ajax({
-          url: $("#plugin_url").val(),
+  	$jq("#subscriber_history_chart_loading").html( '<p class="alert">Loading...</p>' );
+	 var request = $jq.ajax({
+          url: $jq("#plugin_url").val(),
 		  data: {
 			f:       'subscriber_history_json',
-			page:   $("#tracker_page").val(),
+			page:   $jq("#tracker_page").val(),
 			
 		  },
 		  cache: false, 
@@ -1203,12 +1310,12 @@ var SubscriberHistoryChart;
 				}		
 			};
 		    var SubscriberHistoryChart = new google.visualization.LineChart(document.getElementById('subscriber_history_chart'));
-			$("#subscriber_history_chart").hide('fade', function(){ 
+			$jq("#subscriber_history_chart").hide('fade', function(){ 
 			 		
 			}); 
 			   SubscriberHistoryChart.draw(data, options);
-			$("#subscriber_history_chart").show('fade'); 
-			$("#subscriber_history_chart_loading").html( '<p class="alert">&nbsp;</p>' );
+			$jq("#subscriber_history_chart").show('fade'); 
+			$jq("#subscriber_history_chart_loading").html( '<p class="alert">&nbsp;</p>' );
 
 		},
 		}
@@ -1220,8 +1327,8 @@ function tracker_purge_log(){
 	var confirm_msg =  "Are you sure you want to delete this log? ";
 	    confirm_msg += "There is no way to undo this deletion.";
 	if(confirm(confirm_msg)){
-		var request = $.ajax({
-		  url: $("#plugin_url").val(),
+		var request = $jq.ajax({
+		  url: $jq("#plugin_url").val(),
 		  type: "POST",
 		  cache: false,
 		  data: {
@@ -1246,8 +1353,8 @@ function tracker_purge_log(){
 
 // Plugins >> Password Protect Directories
 function password_protect_directories_show_change_password_form(){
-	$("#change_default_password_button" ).hide( 'blind' );
-	$("#change_default_password_form" ).show( 'blind' );
+	$jq("#change_default_password_button" ).hide( 'blind' );
+	$jq("#change_default_password_form" ).show( 'blind' );
 }
 
 
@@ -1261,17 +1368,18 @@ function password_protect_directories_show_change_password_form(){
 
 /* Global */
 function toggleCheckboxes(status, target_class) {
-	$('.' + target_class).each( function() {
-		$(this).prop("checked",status);
+	$jq('.' + target_class).each( function() {
+		$jq(this).prop("checked",status);
 	});
 }
 
 function toggleDisplay(target) {
-	$('#' + target).toggle('blind');
+	$jq('#' + target).toggle('blind');
 }
+/*
 function modalMenuAjax(params) { 
-	$("#dialog-modal").html('').dialog('open');
-	var request = $.ajax({
+	$jq("#dialog-modal").html('').dialog('open');
+	var request = $jq.ajax({
 	 	 url: params.url,
 		 type:  params.type,
 		 cache: params.cache,
@@ -1281,16 +1389,16 @@ function modalMenuAjax(params) {
 			alert('something is wrong');
 		},
 		success: function(data) { 
-			$('#dialog-modal').dialog('close');
-			$("#dialog-modal").html(data);	
+			$jq('#dialog-modal').dialog('close');
+			$jq("#dialog-modal").html(data);	
 		},
 		complete: function(data) {
-		    $("#dialog-modal").dialog({ title: "Results" });
-			$("#dialog-modal").dialog('open');
+		    $jq("#dialog-modal").dialog({ title: "Results" });
+			$jq("#dialog-modal").dialog('open');
 		},
 	});
 }
-
+*/
 
 
 
@@ -1384,33 +1492,33 @@ function real_message() {
 
 
 function toggleTwo(targetOpen, targetClose) { 
-	Effect.BlindUp($(targetClose));
-	Effect.BlindDown($(targetOpen));	
+	Effect.BlindUp($jq(targetClose));
+	Effect.BlindDown($jq(targetOpen));	
 }
 
 
 
 function ChangeMassMailingButtonLabel() { 
-	if($("#archive_message").prop("checked") == true && $("#archive_no_send").prop("checked") == true) { 
-		$("#submit_mass_mailing").prop('value', 'Archive Message');
-		$('#submit_test_mailing').hide();	
-		$('#send_test_messages_to').hide();
+	if($jq("#archive_message").prop("checked") == true && $jq("#archive_no_send").prop("checked") == true) { 
+		$jq("#submit_mass_mailing").prop('value', 'Archive Message');
+		$jq('#submit_test_mailing').hide();	
+		$jq('#send_test_messages_to').hide();
 	}
 	else { 
-		$("#submit_mass_mailing").prop('value', $("#default_mass_mailing_button_label").val());
-		$('#submit_test_mailing').show();
-		$('#send_test_messages_to').show();
+		$jq("#submit_mass_mailing").prop('value', $jq("#default_mass_mailing_button_label").val());
+		$jq('#submit_test_mailing').show();
+		$jq('#send_test_messages_to').show();
 	}	
 }
 
     
 function sendMailingListMessage(fid, itsatest) {
 	/* This is for the Send a Webpage - did they fill in a URL? */
-	if($("#f").val() == 'send_url_email'){ 
-		if($('input[name=sending_method]:checked').val() == 'url'){ 
+	if($jq("#f").val() == 'send_url_email'){ 
+		if($jq('input[name=sending_method]:checked').val() == 'url'){ 
 			if(
-				$("#url").val() == 'http://' 
-			||  $("#url").val().length <= 0
+				$jq("#url").val() == 'http://' 
+			||  $jq("#url").val().length <= 0
 			){ 
 				alert('You have not filled in a URL! Mass Mailing Stopped.'); 
 				return false;
@@ -1428,24 +1536,24 @@ function sendMailingListMessage(fid, itsatest) {
 	    confirm_msg += " mailing to be sent?";
 	    confirm_msg += " Mailing list sending cannot be easily stopped.";
 	
-	if($("#Subject").val().length <= 0){ 
+	if($jq("#Subject").val().length <= 0){ 
 	    var no_subject_msg = "The Subject: header of this message has been left blank. Send anyways?"; 
 	    if(!confirm(no_subject_msg)){
 			alert('Mass Mailing canceled.');
 			return false;
 		}
 	}
-	if($("#im_sure").prop("checked") == false){
+	if($jq("#im_sure").prop("checked") == false){
 		if(!confirm(confirm_msg)){
 			alert('Mass Mailing canceled.');
 			return false;
 		}
 	}
-	if($("#new_win").prop("checked") == true){ 
-		$("#" + fid).attr("target", "_blank");
+	if($jq("#new_win").prop("checked") == true){ 
+		$jq("#" + fid).attr("target", "_blank");
 	}
 	else { 
-		$("#" + fid).attr("target", "_self");
+		$jq("#" + fid).attr("target", "_self");
 	}
 	return true; 
 }

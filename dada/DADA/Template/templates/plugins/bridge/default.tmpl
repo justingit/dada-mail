@@ -10,6 +10,7 @@
 	</div>
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
+<div id="plugins_bridge_default"></div> 
 
 <!-- tmpl_if done -->
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
@@ -23,6 +24,7 @@
 	</div> 
 <!--/tmpl_unless--> 
 <form name="default_form" action="<!-- tmpl_var Plugin_URL --> "method="post">
+	 <input type="hidden" name="plugin_url"   id="plugin_url"   value="<!-- tmpl_var Plugin_Url -->" /> 
 
 
 
@@ -910,19 +912,13 @@ Mailing List Security
 
 <form method="get" style="display:inline">
  <input name="flavor" type="hidden" value="test_pop3" />
-  <input type="submit" class="cautionary" value="Test Saved POP3 Login Information..." 
-  onclick="Modalbox.show('<!-- tmpl_var Plugin_URL -->?flavor=test_pop3;chrome=0', {width: 640, height:480, title: 'Testing POP3 Login...', evalScripts: true}); return false;"
-/>
+ <input type="submit" class="cautionary plugins_bridge_test_pop3" value="Test Saved POP3 Login Information..." />
 </form> 
 
 
 
 <form method="get" style="display:inline">
- <input name="flavor" type="hidden" value="manual_start" />
-  <input type="submit" class="cautionary" value="Manually Check and Send Waiting Messages..." 
-  onclick="Modalbox.show('<!-- tmpl_var Plugin_URL -->?flavor=manual_start;chrome=0', {width: 640, height:480, title: 'Checking and Sending Messages...', evalScripts: true}); return false;"
-/>
-
+  <input type="button" class="cautionary plugins_bridge_manually_check_messages" value="Manually Check and Send Waiting Messages..." />
 </form> 
 
  </div> 

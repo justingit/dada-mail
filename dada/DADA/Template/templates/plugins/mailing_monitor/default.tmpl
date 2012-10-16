@@ -1,0 +1,54 @@
+<!-- tmpl_set name="title" value="Plugins &#187; Mailing Monitor" --> 
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		Plugins &#187; Mailing Monitor
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+<div id="plugins_mailing_monitor_default"></div> 
+
+<fieldset> 
+<legend><!-- tmpl_var Plugin_Name --></legend>
+<form> 
+	<input type="hidden" name="plugin_url"          id="plugin_url"          value="<!-- tmpl_var Plugin_Url -->" /> 
+	<input type="button" value="Refresh Monitor" id="mailing_monitor_button" class="processing" /> 
+</form>
+
+<div id="mailing_monitor_results_loading"> 
+<p class="alert">&nbsp;</p>
+</div> 
+<div id="mailing_monitor_results"></div> 
+
+
+</fieldset> 
+	
+<!-- tmpl_if root_login --> 
+
+	<fieldset> 
+	 <legend>Manually Run <!-- tmpl_var Plugin_Name --></legend>
+
+	<p>
+	 <label for="cronjob_url">Manual Run URL:</label><br /> 
+	<input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var Plugin_URL -->?run=1&verbose=1&passcode=<!-- tmpl_var Manual_Run_Passcode -->" />
+	</p>
+	<!-- tmpl_unless Allow_Manual_Run --> 
+	    <span class="error">(Currently disabled)</a>
+	<!-- /tmpl_unless -->
+
+
+	<p> <label for="cronjob_command">curl command example (for a cronjob):</label><br /> 
+	<input type="text" class="full" id="cronjob_command" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --data run=1\;passcode=<!-- tmpl_var Manual_Run_Passcode -->\;verbose=0  --url <!-- tmpl_var Plugin_URL -->" />
+	<!-- tmpl_unless curl_location --> 
+		<span class="error">Can't find the location to curl!</span><br />
+	<!-- /tmpl_unless --> 
+
+	<!-- tmpl_unless Allow_Manual_Run --> 
+	    <span class="error">(Currently disabled)</a>
+	<!-- /tmpl_unless --> 
+
+	</p>
+	</li>
+	</ul> 
+	</fieldset>
+
+<!-- /tmpl_if --> 
