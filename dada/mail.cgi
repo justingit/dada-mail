@@ -2501,7 +2501,7 @@ sub previewBatchSendingSpeed {
 			}
 		}
 	));
-
+	return; 
 
 
 }

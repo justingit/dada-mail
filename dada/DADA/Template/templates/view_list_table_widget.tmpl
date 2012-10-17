@@ -1,26 +1,30 @@
 <!-- begin view_list_table_widget.tmpl --> 
 
 
-
+<div> 
+<div style="height: 300px; overflow: auto;">
  <table class="stripedtable">
+
+<thead> 			
+		
   <tr>
 	 <!-- tmpl_unless no_checkboxes --> 
-   		<td width="25">
+   		<th width="25">
     		<p>&nbsp;</p>
-   		</td>
+   		</th>
 	<!-- /tmpl_unless --> 
 	
 	<!-- tmpl_if show_list_column --> 
-	<td>
+	<th>
 	    <p>
 	     <strong>
 	      List
 	     </strong>
 	    </p>
-	   </td>
+	</th>
 	<!-- /tmpl_if --> 
 	
-   <td>
+   <th>
     <p>
 
 		<!-- tmpl_if expr="(order_by ne 'email')" -->
@@ -48,9 +52,9 @@
 		<!-- /tmpl_if -->     
 	</a>
     </p>
-   </td>
+   </th>
   <!-- tmpl_loop field_names --> 
-   <td>
+   <th>
     <p>
 	   	<!-- tmpl_if expr="(order_by ne name)" -->
 			<a href="#" class="change_order" data-by="<!-- tmpl_var name escape="HTML" -->" data-dir="asc">
@@ -78,10 +82,12 @@
 		<!-- /tmpl_if -->
 	</a>
     </p>
-   </td>
+   </th>
   <!--/tmpl_loop --> 
   </tr>
+</thead>
 
+<tbody style=" height: 200px; overflow: auto;"> 
 <!-- tmpl_loop subscribers -->
 	   
 	   <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
@@ -137,9 +143,11 @@
 	    <!-- /tmpl_loop --> 
 	   </tr>
 <!-- /tmpl_loop -->
-   
+</tbody> 
   </table>
 
+</div> 
+</div> 
 
 
 <!-- end  begin view_list_table_widget.tmpl --> 

@@ -132,7 +132,7 @@ $jq(document).ready(function() {
 		
 		// Membership >> View List	
 		if($jq("#view_list_viewport").length) { 
-			view_list_viewport();	
+			view_list_viewport(1);	
 		}
 		
 		// Membership >> List Activity
@@ -434,28 +434,6 @@ $jq(document).ready(function() {
 		event.preventDefault();
 		toggleDisplay($jq(this).attr("data-target")); 
 	}); 
-/*	
-	$jq( "#dialog-modal" ).dialog({				
-		autoOpen: false,
-		width: 640,
-		minHeight: 0,
-		modal: true,
-		position: "top",
-		show: "blind",
-		hide: "blind",
-		title: "Loading...",
-		draggable: false,
-		open: function(){
-	            $jq('.ui-widget-overlay').bind('click',function(){
-	                $jq('#dialog-modal').dialog('close');
-	            });
-				$jq("#dialog-modal-close").bind('click', function() {
-				    $jq('#dialog-modal').dialog('close');
-				});
-	        }
-	});
-*/	
-
 	
 });
 
@@ -589,7 +567,7 @@ function update_status_bar(){
 
 
 /* Membership >> View List */
-function view_list_viewport(){ 	
+function view_list_viewport(initial){ 	
 	$jq("#view_list_viewport_loading").html( '<p class="alert">Loading...</p>' );
 	var request = $jq.ajax({
 	  url: "<!-- tmpl_var S_PROGRAM_URL -->",
@@ -607,10 +585,19 @@ function view_list_viewport(){
 	  dataType: "html"
 	});
 	request.done(function(content) {
-	  $jq("#view_list_viewport").html( content );
-	  $jq("#view_list_viewport_loading").html( '<p class="alert">&nbsp;</p>' );
+		
+		if(initial == 1){ 
+			$jq("#view_list_viewport").hide();
+			$jq("#view_list_viewport").html( content );
+			$jq("#view_list_viewport").show('fade');
+		}
+		else { 
+			$jq("#view_list_viewport").html( content );
+		}
+		
+		$jq("#view_list_viewport_loading").html( '<p class="alert">&nbsp;</p>' );
 	
-		google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
+			google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
 	});
 }
 function turn_page(page_to_turn_to) { 
@@ -654,6 +641,14 @@ function drawTrackerDomainBreakdownChart() {
 		success: function( jsonData ) {
 		      domain_breakdown_chart_data = new google.visualization.DataTable(jsonData);
 		      domain_breakdown_chart = new google.visualization.PieChart(document.getElementById('domain_break_down_chart'));
+/*			 title:  $jq('#domain_break_down_chart').attr("data-title"),
+backgroundColor:{
+	stroke: '#000000',
+    strokeWidth: 1, 
+	
+},
+*/
+
 		      var options = {
 			chartArea:{
 				left:20,
@@ -661,15 +656,9 @@ function drawTrackerDomainBreakdownChart() {
 				width:"90%",
 				height:"90%"
 				},
-		        title:  $jq('#domain_break_down_chart').attr("data-title"),
-				width:  $jq('#domain_break_down_chart').attr("data-width"),
+		       	width:  $jq('#domain_break_down_chart').attr("data-width"),
 				height: $jq('#domain_break_down_chart').attr("data-height"),
 				pieSliceTextStyle: {color: '#FFFFFF'},
-				backgroundColor:{
-					stroke: '#000000',
-			        strokeWidth: 1, 
-					
-				},
 					colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
 					is3D: true
 		      };
@@ -769,9 +758,11 @@ function mailing_list_history(){
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$jq("#mailing_list_history").html( content );
+		$jq("#mailing_list_history").hide()
+		.html( content )
+		.show( 'fade' );
+		
 		$jq("#mailing_list_history_loading").html( '<p class="alert">&nbsp;</p>' );
-		$jq("#mailing_list_history" ).show( 'blind' );
 	});
 }
 function updateEmail(){ 
@@ -872,7 +863,7 @@ function test_sending_preferences(){
 }
 */
 function amazon_verify_email() { 
-	$jq("#amazon_ses_verify_email_results").hide('blind');
+	$jq("#amazon_ses_verify_email_results").hide('fade');
 	$jq("#amazon_ses_verify_email_loading").html( '<p class="alert">Loading...</p>' );
 	var request = $jq.ajax({
 	  url: "<!-- tmpl_var S_PROGRAM_URL -->",
@@ -885,16 +876,20 @@ function amazon_verify_email() {
 	  dataType: "html"
 	});
 	request.done(function(content) {
-	  $jq("#amazon_ses_verify_email_results").html( content ).show('blind');
+	  $jq("#amazon_ses_verify_email_results")
+		.html( content )
+		.show('fade');
 	  $jq("#amazon_ses_verify_email_loading").html( '<p class="alert">&nbsp;</p>' );
 	});
 }
 
 
 // Mail Sending >> Mass Mailing Preferences 
-function previewBatchSendingSpeed(){ 
-	$jq("#previewBatchSendingSpeed").hide();
-	$jq("#previewBatchSendingSpeed_loading").show().html( '<p class="alert">Loading...</p>' );
+function previewBatchSendingSpeed(){ 	
+	$jq("#previewBatchSendingSpeed_loading").hide()
+	.html( '<p class="alert">Loading...</p>' )
+	.show('fade');
+	
 	
 	var enable_bulk_batching = 0; 
 	if($jq('#enable_bulk_batching').prop('checked') == true){ 
@@ -921,14 +916,20 @@ function previewBatchSendingSpeed(){
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$jq("#previewBatchSendingSpeed_loading").hide();
-		$jq("#previewBatchSendingSpeed").html( content ).show( 'blind' );
+		$jq("#previewBatchSendingSpeed").hide("fade", function(){ 
+			$jq("#previewBatchSendingSpeed").html( content );
+			$jq("#previewBatchSendingSpeed_loading").html( '' );
+			$jq("#previewBatchSendingSpeed" ).show( 'fade' );
+		}); 
 	});
+	
+
 }
 
 function amazon_ses_get_stats(){ 
-	$jq("#amazon_ses_get_stats_loading").html( '<p class="alert">Loading...</p>' );
-	
+	$jq("#amazon_ses_get_stats_loading").hide()
+	.html( '<p class="alert">Loading...</p>' )
+	.show('fade'); 
 	var request = $jq.ajax({
 		url: "<!-- tmpl_var S_PROGRAM_URL -->",
 		type: "POST",
@@ -939,18 +940,20 @@ function amazon_ses_get_stats(){
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$jq("#amazon_ses_get_stats").html( content );
-		$jq("#amazon_ses_get_stats_loading").html( '<p class="alert">&nbsp;</p>' );
-		$jq("#amazon_ses_get_stats" ).show( 'blind' );
+		$jq("#amazon_ses_get_stats").hide("fade", function(){ 
+			$jq("#amazon_ses_get_stats").html( content );
+			$jq("#amazon_ses_get_stats_loading").html( '' );
+			$jq("#amazon_ses_get_stats" ).show( 'fade' );
+		}); 
 	});
 }
 function toggleManualBatchSettings() { 
 	if($jq("#amazon_ses_auto_batch_settings").prop("checked") == true){ 
-		$jq("#manual_batch_settings" ).hide( 'blind' );
+		$jq("#manual_batch_settings" ).hide( 'fade' );
 	}
 	else { 
 		if( $jq('#manual_batch_settings').is(":hidden") ) {
-			$jq("#manual_batch_settings" ).show( 'blind' );
+			$jq("#manual_batch_settings" ).show( 'fade' );
 		}
 	}
 	previewBatchSendingSpeed(); 
@@ -1269,8 +1272,8 @@ function tracker_show_table(){
 	  dataType: "html"
 	});
 	request.done(function(content) {
-	  $jq("#show_table_results").hide('fade', 
-		function(){ 
+	  $jq("#show_table_results")
+		.hide('fade', function(){ 
 			$jq("#show_table_results").html( content );
 			$jq("#show_table_results").show('fade'); 
 		    $jq("#show_table_results_loading").html( '<p class="alert">&nbsp;</p>' );
@@ -1310,9 +1313,8 @@ var SubscriberHistoryChart;
 				}		
 			};
 		    var SubscriberHistoryChart = new google.visualization.LineChart(document.getElementById('subscriber_history_chart'));
-			$jq("#subscriber_history_chart").hide('fade', function(){ 
-			 		
-			}); 
+			$jq("#subscriber_history_chart")
+				.hide('fade'); 
 			   SubscriberHistoryChart.draw(data, options);
 			$jq("#subscriber_history_chart").show('fade'); 
 			$jq("#subscriber_history_chart_loading").html( '<p class="alert">&nbsp;</p>' );
@@ -1501,8 +1503,8 @@ function toggleTwo(targetOpen, targetClose) {
 function ChangeMassMailingButtonLabel() { 
 	if($jq("#archive_message").prop("checked") == true && $jq("#archive_no_send").prop("checked") == true) { 
 		$jq("#submit_mass_mailing").prop('value', 'Archive Message');
-		$jq('#submit_test_mailing').hide();	
-		$jq('#send_test_messages_to').hide();
+		$jq('#submit_test_mailing').hide('fade');	
+		$jq('#send_test_messages_to').hide('fade');
 	}
 	else { 
 		$jq("#submit_mass_mailing").prop('value', $jq("#default_mass_mailing_button_label").val());

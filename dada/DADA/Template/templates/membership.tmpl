@@ -153,21 +153,20 @@
 	</fieldset> 
 
 
-	<fieldset> 
-	<legend>Mailing List History</legend> 
+	<h1>Mailing List History</h1> 
+	<div>
+	<div style="height: 300px; overflow: auto;border-top:1px solid black;border-bottom:1px solid black">
+		<div id="mailing_list_history_loading"></div>
+		<div id="mailing_list_history"></div>
+	</div>
+	</div>  
+	
 
-	<div id="mailing_list_history_loading"></div>
-	<div style=" max-height: 300px; overflow: auto;">
-	<div id="mailing_list_history" style="display:none;"></div>
-	</div> 
-
-	</fieldset> 
 
 	<!-- tmpl_if can_have_subscriber_fields --> 
 
 
-	<fieldset>
-		<legend>Member Profile</legend>
+	<h1>Member Profile</h1>
 	
 		<!-- tmpl_if fields --> 
 		<fieldset> 
@@ -261,7 +260,6 @@
 				</p>
 			</div>
 			<!-- /tmpl_if --> 
-		</fieldset>
 
 	<!-- /tmpl_if --> 
 
