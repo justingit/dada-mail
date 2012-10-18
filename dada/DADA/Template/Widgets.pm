@@ -1,7 +1,8 @@
 package DADA::Template::Widgets;
 use lib qw(
-
-          ../../ ./ ../ ./dada ../dada ./DADA ../DADA ./DADA/perllib ../DADA/perllib); 
+	../../ 
+	../../DADA/perllib
+); 
 
 use Encode; 
 use Try::Tiny; 
@@ -40,7 +41,7 @@ if(! $DADA::Config::ALTERNATIVE_HTML_TEMPLATE_PATH ){
 	if(!$@){
 
 	   $Templates  =  File::Spec->rel2abs($wierd_abs_path);
-	   $Templates  =~ s/Widgets\.pm$//g;
+	   $Templates  =~ s/DADA\/Template\/Widgets\.pm$//g;
 	   $Templates  =~ s/\/$//; # cut off the first slash, if it's there; 
 	   $Templates .= '/templates';
 	   
@@ -65,7 +66,7 @@ if(! $DADA::Config::ALTERNATIVE_HTML_TEMPLATE_PATH ){
 }
 		
 my $second_guess_template  = $wierd_abs_path; 
-   $second_guess_template  =~ s/Widgets\.pm$//g;
+   $second_guess_template  =~ s/DADA\/Template\/Widgets\.pm$//g;
    $second_guess_template  =~ s/\/$//;
    $second_guess_template .= '/templates';
    $second_guess_template  = '/' . $second_guess_template;
@@ -77,9 +78,9 @@ my $second_guess_template  = $wierd_abs_path;
 	eval { $getpwuid_call = ( getpwuid $> )[7] };
 	if(!$@){ 
 		# They're called guess, right? right...
-		push(@guesses, $getpwuid_call . '/cgi-bin/dada/DADA/Template/templates');
-		push(@guesses, $getpwuid_call . '/public_html/cgi-bin/dada/DADA/Template/templates');
-		push(@guesses, $getpwuid_call . '/public_html/dada/DADA/Template/templates');
+		push(@guesses, $getpwuid_call . '/cgi-bin/dada/templates');
+		push(@guesses, $getpwuid_call . '/public_html/cgi-bin/templates');
+		push(@guesses, $getpwuid_call . '/public_html/dada/templates');
 	}
 
 require Exporter; 
@@ -90,10 +91,7 @@ use vars (@ISA, @EXPORT);
 @EXPORT = qw( 
  
 templates_dir
-
-
 priority_popup_menu
-
 list_popup_menu
 list_popup_login_form
 default_screen
@@ -105,7 +103,6 @@ subscription_form
 archive_send_form
 profile_widget
 _raw_screen
-
 global_list_sending_checkbox_widget
 
 );
@@ -114,6 +111,7 @@ use strict;
 use vars qw( @EXPORT );
 
 my %Global_Template_Variables = (
+SUPPORT_FILES_DIR_URL  => $DADA::Config::SUPPORT_FILES_DIR_URL, 
 
 ROOT_PASS_IS_ENCRYPTED => $DADA::Config::ROOT_PASS_IS_ENCRYPTED, 
 PROGRAM_NAME           => $DADA::Config::PROGRAM_NAME, 
@@ -2295,7 +2293,7 @@ sub wrap_screen {
 	my $vars = { 
 		content => $tmpl, 
 	};
-	for(qw(title show_profile_widget load_wysiwyg_editor load_modalbox)){ 
+	for(qw(title show_profile_widget load_wysiwyg_editor load_modalbox SUPPORT_FILES_DIR_URL)){ 
 		if(exists($params->{$_})){ 
 			# variables within variables... 
 			$vars->{$_} = $params->{$_}; 

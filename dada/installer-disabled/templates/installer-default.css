@@ -17,11 +17,28 @@ body {
 	background: #fff;
 }
 
+
 /* ----- IDS: General Page Layout ----- */
 
 /* non-admin */
 #PageWrapper {
 }
+
+html, body {
+	height: 100%;
+}
+#PageWrapper {
+	min-height: 100%;
+}
+#ContentWrapper {
+	overflow: auto;
+	padding-bottom: 50px;
+}
+
+
+
+
+
 
 /* BOTH */
 #Header {
@@ -30,7 +47,7 @@ body {
 	margin: 0 auto; /* page centering for all but IE */
 	padding:0px;
 	background-color: #669999;
-	background-image: url('<!-- tmpl_var PROGRAM_URL -->/img/header_bg.gif/');
+	background-image: url('../images/header_bg.gif');
 	background-repeat: repeat-y;
 	text-align: left;
 	font-size: 1.1em;
@@ -46,12 +63,12 @@ body {
 #Title {
 	float: right;
 	padding-right: 10px;
-	margin-top: 20px;
+	padding-top: 20px;
 	color: #fff;
 }
 #Title img {
 	vertical-align: bottom;
-	margin-top: -20px;
+	padding-top: -20px;
 	border: 1px solid #666;
 	margin-right: 5px;
 	margin-left: 5px;
@@ -102,7 +119,6 @@ body {
 }
 
 /* BOTH */
-/* It would be nice if this footer was, "sticky" - any takers for implementation? :) */
 #Footer {
 	border-top: 1px solid #666;
 	background-color: #669999;
@@ -112,6 +128,13 @@ body {
 	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	text-shadow: 1px 1px 2px #330033;
 	clear: both;
+	
+	position: relative;
+	margin-top: -50px; /* negative value of footer height */
+	height: 50px;
+	clear:both;
+	
+	
 }
 #Footer a {
 	color: #fff;
@@ -610,7 +633,7 @@ li.archive_badges_li {
 	clear: left;
 	float: left;
 	padding: 0;
-	background: #fff url(<!-- tmpl_var S_PROGRAM_URL -->/img/centeredmenu.gif) bottom repeat-x;
+	background: #fff url('../images/centeredmenu.gif') bottom repeat-x;
 	width: 100%;
 	overflow: hidden;
 	font-size: 1em;
@@ -827,7 +850,7 @@ div.alt,
 	float: left;
 	*/
 	padding: 0;
-	background: transparent url(<!-- tmpl_var S_PROGRAM_URL -->/img/centeredmenu.gif) bottom repeat-x;
+	background: transparent url('../images/centeredmenu.gif') bottom repeat-x;
 	width: 100%;
 	overflow: hidden;
 	font-size: 1em;

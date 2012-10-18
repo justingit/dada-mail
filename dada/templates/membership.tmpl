@@ -1,6 +1,5 @@
 <!-- begin membership.tmpl -->
 
-
 <!-- tmpl_set name="title" value="Membership" -->
 
 <div id="screentitle"> 
@@ -9,7 +8,10 @@
 	</div>
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
-
+<form> 
+	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" /> 
+	<input type="hidden" id="email"         name="email"         value="<!-- tmpl_var email -->" /> 
+</form> 
 
 <!-- tmpl_unless is_valid_email --> 
 <div class="badweatherbox">

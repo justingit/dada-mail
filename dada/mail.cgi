@@ -3159,7 +3159,7 @@ sub search_list_auto_complete {
 		push(@$r, {'email' =>  $result->{email}});
 	}
 	 
-	use JSON; 
+	require JSON; 
 	my $json = JSON->new->allow_nonref;
 	 print $q->header('application/json'); 
 	 print $json->encode($r);	
@@ -4413,7 +4413,7 @@ sub add {
 
 sub check_status {
 
-	use JSON; 
+	require JSON; 
 	my $json = JSON->new->allow_nonref;
 	
 
@@ -4428,7 +4428,6 @@ sub check_status {
           . $DADA::Config::TMP . '/'
           . $filename
           . '-meta.txt';
-			use JSON; 
 			my $json = JSON->new->allow_nonref;
 			print $q->header('application/json');
 			print $json->encode({percent => 0, content_length => 0, bytes_read => 0});
@@ -4447,8 +4446,7 @@ sub check_status {
 		my ( $bytes_read, $content_length, $per ) = split ( '-', $s, 3 );
 		if($per == 99){ $per = 100}
         close($META);
-
-		use JSON; 
+ 
 		my $json = JSON->new->allow_nonref;
 		print $q->header('application/json');
 		print $json->encode(
@@ -10105,155 +10103,6 @@ U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAGUExURf///wAAAFXC034AAAABdFJOUwBA
 EOF
 ;
     print MIME::Base64::decode_base64($str);
-
-}
-
-
-
-sub js {
-    my $js_lib = xss_filter( $q->param('js_lib') );
-
-    my @allowed_js = qw(
-
-	  dada_mail_admin_js.js
-
-	  prototype.js
-      builder.js
-      controls.js
-      dragdrop.js
-      effects.js
-      slider.js
-      sound.js
-      unittest.js
-      scriptaculous.js
-      modalbox.js
-      
-      prototype_scriptaculous_package.js
-      tiny_mce_config.js
-
-	  jquery.tablesorter.js
-
-    );
-
-    my %lt = ();
-    for (@allowed_js) { $lt{$_} = 1; }
-
-    require DADA::Template::Widgets;
-#warn '$js_lib ' . $js_lib;
-
-    if ( $lt{$js_lib} == 1 ) {
-        if ( $c->cached('js/' . $js_lib . '.scrn') ) {
-			$c->show('js/' . $js_lib . '.scrn'); return;
-		}
-        my $r = $q->header('text/javascript');
-        $r .= DADA::Template::Widgets::screen( { -screen => 'js/' . $js_lib } );
-        e_print($r);
-        $c->cache( 'js/' . $js_lib . '.scrn', \$r );
-
-    }
-    else {
-
-        # nothing for now...
-    }
-
-}
-
-sub css {
-
-	my $css_file = xss_filter( $q->param('css_file') );
-    
-	my $allowed_css = {
-		'default.css' => 1, 
-		'modalbox.css'    => 1, 
-	};
-	if(!exists($allowed_css->{$css_file})){ 
-		return; 
-	}
-	
-	require DADA::Template::Widgets;
-    e_print( $q->header('text/css') ); 
-	e_print(  DADA::Template::Widgets::screen( { -screen => 'css/' . $css_file } ));
-    
-}
-
-
-
-
-sub img {
-
-    my $img_name = xss_filter( $q->param('img_name') );
-
-    my @allowed_images = qw(
-
-      3f0.png
-      badge_blinklist.png
-      badge_blogmarks.png
-      badge_delicious.png
-      badge_digg.png
-      badge_fark.png
-      badge_feed.png
-      badge_furl.png
-      badge_magnolia.png
-      badge_newsvine.png
-      badge_reddit.png
-      badge_segnalo.png
-      badge_simpy.png
-      badge_smarking.png
-      badge_spurl.png
-      badge_wists.png
-      badge_yahoo.png
-
-	  centeredmenu.gif
-	
-      cff.png
-
-      dada_mail_logo.png
-
-      dada_mail_screenshot.jpg
-
-	header_bg.gif
-
-      spinner.gif
-
-    );
-
-    my %lt = ();
-    for (@allowed_images) { $lt{$_} = 1; }
-
-    require DADA::Template::Widgets;
-
-    if ( $lt{$img_name} == 1 ) {
-        if ( $c->cached( 'img/' . $img_name ) ) {
-            $c->show( 'img/' . $img_name );
-            return;
-        }
-        my $r;
-        if ( $img_name =~ m/\.png$/ ) {
-            $r = $q->header('image/png');
-        }
-        elsif ( $img_name =~ m/\.gif$/ ) {
-            $r = $q->header('image/gif');
-        }
-        elsif ( $img_name =~ m/\.jpg$/ ) {
-            $r = $q->header('image/jpg');
-        }
-		else { 
-			die "can't show image!"; 
-		}
-        $r .= DADA::Template::Widgets::_raw_screen(
-            {
-                -screen   => 'img/' . $img_name,
-                -encoding => 0,
-            }
-        ); 
-        print $r;
-        $c->cache( 'img/' . $img_name, \$r );
-
-    }
-    else {
-
-        # nothing for now...
-    }
 
 }
 

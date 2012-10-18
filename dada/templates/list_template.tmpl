@@ -8,7 +8,7 @@
   <title><!-- tmpl_var title --></title>
 
 
-  <link rel="stylesheet" href="<!-- tmpl_var PROGRAM_URL -->/css/default.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_DIR_URL -->/static/css/default.css" type="text/css" media="screen" />
 
 <!-- tmpl_if list_settings.show_archives --> 
 	<!-- tmpl_if list_settings.publish_archives_rss --> 
@@ -23,7 +23,7 @@
   <div id="PageWrapper">
  	<div id="Header">
 		<a href="<!-- tmpl_var PROGRAM_URL -->">
-			<img src="<!-- tmpl_var PROGRAM_URL -->/img/dada_mail_logo.png/" title="<!-- tmpl_var PROGRAM_NAME -->" alt="<!-- tmpl_var PROGRAM_NAME -->" />
+			<img src="<!-- tmpl_var SUPPORT_FILES_DIR_URL -->/static/images/dada_mail_logo.png" title="<!-- tmpl_var PROGRAM_NAME -->" alt="<!-- tmpl_var PROGRAM_NAME -->" />
 	    </a>
 			<!-- tmpl_if show_profile_widget --> 
 				<!-- tmpl_var profile_widget --> 
@@ -63,13 +63,13 @@
 		
 		</div><!-- ends Content -->
 	</div> <!-- ends ContentWrapper -->
+</div><!-- ends id="PageWrapper" -->
 
-	<div id="Footer">
-		<div id="FooterPadding">
-			<p><!-- tmpl_var footer_props --></p>
-		</div>
+<div id="Footer">
+	<div id="FooterPadding">
+		<p><!-- tmpl_var footer_props --></p>
 	</div>
+</div>
 	
-  </div><!-- ends id="PageWrapper" -->
  </body>
 </html>

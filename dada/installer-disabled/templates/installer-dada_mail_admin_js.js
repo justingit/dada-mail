@@ -1,15 +1,5 @@
-<!-- begin js/dada_mail_admin.tmpl -->
-
-
-
-
-//google.setOnLoadCallback(function() {
-
-
 $jq(document).ready(function() {
-	
-//	$jq(window).load(function() {
-		
+			
 		//Mail Sending >> Send a Message 
 		if($jq("#send_email_screen").length || $jq("#send_url_email").length || $jq("#list_invite").length){ 
 			
@@ -45,7 +35,7 @@ $jq(document).ready(function() {
 				$jq(".html_message_body" ).ckeditor(
 					function() {}, 
 					{
-						customConfig : '<!-- tmpl_var CKEDITOR_URL -->/dada_mail_config.js',	
+						customConfig : '../ckeditor/dada_mail_config.js',	
 						toolbar :      'DadaMail_Admin'
 					}
 				);
@@ -60,7 +50,7 @@ $jq(document).ready(function() {
 				$jq(".html_message_body" ).ckeditor(
 					function() {}, 
 					{
-						customConfig : '<!-- tmpl_var CKEDITOR_URL -->/dada_mail_config.js',	
+						customConfig : '../ckeditor/dada_mail_config.js',	
 						toolbar :      'DadaMail_Admin'
 					}
 				);
@@ -72,7 +62,7 @@ $jq(document).ready(function() {
 		
 		// Mail Sending >> Mailing Monitor Index
 		if($jq("#sending_monitor_index").length){ 
-			refreshpage(60, "<!-- tmpl_var S_PROGRAM_URL -->?f=sending_monitor"); 
+			refreshpage(60,  $jq("#s_program_url").val() + "?f=sending_monitor"); 
 		}
 		
 		if($jq("#sending_monitor_container").length || $jq("#sending_monitor_index").length){
@@ -203,12 +193,6 @@ $jq(document).ready(function() {
 			toggleManualBatchSettings(); 
 		}
 		
-
-	
-	
-//	}); 
-
-
 	
 	// Membership >> View List
 	$jq(".change_type").live("click", function(event){
@@ -239,7 +223,7 @@ $jq(document).ready(function() {
 		$jq( "#search_query" ).autocomplete({
 			source: function( request, response ) {
 				$jq.ajax({
-					url: "<!-- tmpl_var S_PROGRAM_URL -->",
+					url: $jq("#s_program_url").val(),
 					type: "POST",
 					dataType: "json",
 					data: {
@@ -270,10 +254,6 @@ $jq(document).ready(function() {
 		});
 	});
 	
-
-	
-	
-	
 	// Membership >> user@example.com
 	$jq(".change_profile_password").live("click", function(event){
 		show_change_profile_password_form();
@@ -302,6 +282,36 @@ $jq(document).ready(function() {
 		toggleManualBatchSettings();
 	});
 	
+	
+	// Version Check 
+	$jq('#check_version').live('click',  function(event){ 
+		event.preventDefault();
+		check_newest_version($jq('#check_version').attr("data-ver")); 
+	}); 
+	
+	// Installer 
+
+	if($jq("#install_or_upgrade").length){ 
+		$jq('.installer_changeDisplayStateDivs').live("click", function(event){ 
+			changeDisplayState($jq(this).attr("data-target"), $jq(this).attr("data-state")); 
+		});
+	}
+	if($jq("#installer_configure_dada_mail").length){ 
+		$jq("#backend").on("change", function(event){ 
+			installer_toggleSQL_options();	
+		});
+		$jq('.radiochangeDisplayState').live("click",  function(event){ 
+			changeDisplayState($jq(this).attr("data-target"), $jq(this).attr("data-state")); 
+		});
+		
+		installer_toggleSQL_options();
+	}
+	if($jq("#installer_install_dada_mail").length){ 
+		$jq('#move_installer_dir').live("click",  function(event){ 
+			event.preventDefault();
+			installer_move_installer_dir(); 
+		});	
+	}
 
 	// Plugins >> Bounce Handler 
 	if($jq("#plugins_bounce_handler_default").length) { 
@@ -434,11 +444,12 @@ $jq(document).ready(function() {
 		event.preventDefault();
 		toggleDisplay($jq(this).attr("data-target")); 
 	}); 
+	$jq('.radio_toggleDivs').live("click", function(event){ 
+		toggleDisplay($jq(this).attr("data-target")); 
+	});
+
 	
 });
-
-
-//});
 
 
 
@@ -448,7 +459,7 @@ function update_sending_monitor_interface(message_id, type, target_id, refresh_a
 	var r = refresh_after * 1000;
 	var refresh_loop = function(no_loop) { 
 		var request = $jq.ajax({
-		  url: "<!-- tmpl_var S_PROGRAM_URL -->",
+		  url: 	$jq("#s_program_url").val(),
 		  type: "POST",
 		  cache: false,
 		  data: {
@@ -522,7 +533,7 @@ function update_status_bar(){
 		}
 		console.log('update_status_bar_loop called'); 
 		var request = $jq.ajax({
-			url: "<!-- tmpl_var S_PROGRAM_URL -->",
+			url: $jq("#s_program_url").val(),
 			type: "GET",
 				data: {
 					f : 'check_status',
@@ -570,7 +581,7 @@ function update_status_bar(){
 function view_list_viewport(initial){ 	
 	$jq("#view_list_viewport_loading").html( '<p class="alert">Loading...</p>' );
 	var request = $jq.ajax({
-	  url: "<!-- tmpl_var S_PROGRAM_URL -->",
+	  url: $jq("#s_program_url").val(),
 	  type: "POST",
 	  cache: false,
 	  data: {
@@ -631,7 +642,7 @@ var domain_breakdown_chart_data;
 function drawTrackerDomainBreakdownChart() { 
 	$jq("#domain_break_down_chart_loading").html( '<p class="alert">Loading...</p>' );
     $jq.ajax({
-		  url: "<!-- tmpl_var S_PROGRAM_URL -->",
+		  url: $jq("#s_program_url").val(),
           dataType:"json",
 			data: {
 				f:      'domain_breakdown_json',
@@ -748,12 +759,12 @@ backgroundColor: {
 function mailing_list_history(){ 
 	$jq("#mailing_list_history_loading").html( '<p class="alert">Loading...</p>' );
 	var request = $jq.ajax({
-		url: "<!-- tmpl_var S_PROGRAM_URL -->",
+		url: $jq("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			f:       'mailing_list_history',
-			email:   '<!-- tmpl_var email -->'
+			email:   $jq("#email").val()
 		},
 		dataType: "html"
 	});
@@ -775,7 +786,7 @@ function updateEmail(){
 	}
 	$jq("#update_email_results_loading").html( '<p class="alert">Loading...</p>' );
 	var request = $jq.ajax({
-		url: "<!-- tmpl_var S_PROGRAM_URL -->",
+		url: $jq("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
@@ -805,7 +816,7 @@ function show_customize_invite_message(){
 
 function test_sending_preferences() { 
 	Modalbox.show(
-		'<!-- tmpl_var S_PROGRAM_URL -->', {
+		$jq("#s_program_url").val(), {
 		title: 'Testing Sending Preferences...', 
 		width: 640, height: 480,
 		method: 'post', 
@@ -830,43 +841,15 @@ function test_sending_preferences() {
 			},		
 		});	
 }
-/*
-// Mailing Sending >> Sending Preferences
-function test_sending_preferences(){ 	
-	modalMenuAjax(
-		{
-		 url: "<!-- tmpl_var S_PROGRAM_URL -->",
-		  type: "POST",
-		  cache: false,
-		  data: {
-				f:                         'sending_preferences_test',
-				add_sendmail_f_flag:       $jq('#add_sendmail_f_flag').val(), 
-				smtp_server:               $jq('#smtp_server').val(), 
-				smtp_port:                 $jq('#smtp_port').val(),
-				use_smtp_ssl:              $jq('#use_smtp_ssl').val(),			
-				use_sasl_smtp_auth:        $jq('#use_sasl_smtp_auth').val(), 
-				sasl_auth_mechanism:       $jq('#sasl_auth_mechanism').val(), 
-				sasl_smtp_username:        $jq('#sasl_smtp_username').val(), 
-				sasl_smtp_password:        $jq('#sasl_smtp_password').val(), 
-				use_pop_before_smtp:       $jq('#use_pop_before_smtp').val(), 
-				pop3_server:               $jq('#pop3_server').val(), 
-				pop3_username:             $jq('#pop3_username').val(), 
-				pop3_password:             $jq('#pop3_password').val(), 
-				pop3_use_ssl:              $jq('#pop3_use_ssl').val(), 
-				set_smtp_sender:           $jq('#set_smtp_sender').val(),
-				process:                   $jq('#process').val(),
-				sending_method:             $jq('input[name=sending_method]:checked').val()
-			},
-			dataType: 'html', 
-		}
-	); 
-}
-*/
+
+
+
+
 function amazon_verify_email() { 
 	$jq("#amazon_ses_verify_email_results").hide('fade');
 	$jq("#amazon_ses_verify_email_loading").html( '<p class="alert">Loading...</p>' );
 	var request = $jq.ajax({
-	  url: "<!-- tmpl_var S_PROGRAM_URL -->",
+	  url: $jq("#s_program_url").val(),
 	  type: "POST",
 	  cache: false,
 	  data: {
@@ -903,7 +886,7 @@ function previewBatchSendingSpeed(){
 	}
 	
 	var request = $jq.ajax({
-		url: "<!-- tmpl_var S_PROGRAM_URL -->",
+		url: $jq("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
@@ -931,7 +914,7 @@ function amazon_ses_get_stats(){
 	.html( '<p class="alert">Loading...</p>' )
 	.show('fade'); 
 	var request = $jq.ajax({
-		url: "<!-- tmpl_var S_PROGRAM_URL -->",
+		url: $jq("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
@@ -958,6 +941,54 @@ function toggleManualBatchSettings() {
 	}
 	previewBatchSendingSpeed(); 
 }
+
+// Installer 
+
+
+	function installer_toggleSQL_options() { 
+		
+		//var sql_picker = document.getElementById('backend');
+		//var selected  = sql_picker.options[sql_picker.selectedIndex].value;
+		var selected = $jq("#backend option:selected").val();
+		if(selected == 'mysql' || selected == 'Pg'){ 
+		
+			if($jq('#sql_info').is(':hidden')){ 
+				$jq('#sql_info').show('blind');
+			}
+		}
+		else { 
+			if($jq('#sql_info').is(':visible')){ 
+				$jq('#sql_info').hide('blind');
+			}
+		}
+	}	
+	
+	function installer_move_installer_dir(){ 
+
+		 $jq("#move_results").hide();
+		var request = $jq.ajax({
+		  url: $jq("#self_url").val(),
+		  type: "POST",
+		  cache: false,
+		  data: {
+				f:       'move_installer_dir_ajax',
+		  },
+		  dataType: "html"
+		});
+		request.done(function(content) {
+		  $jq("#move_results").html( content );
+		  $jq("#move_results").show( 'blind' );
+		});
+	}
+	
+	
+	
+
+
+
+
+
+
 // Plugins >> Bounce Bounce Handler
 
 function bounce_handler_show_scorecard() { 
@@ -1378,44 +1409,22 @@ function toggleCheckboxes(status, target_class) {
 function toggleDisplay(target) {
 	$jq('#' + target).toggle('blind');
 }
-/*
-function modalMenuAjax(params) { 
-	$jq("#dialog-modal").html('').dialog('open');
-	var request = $jq.ajax({
-	 	 url: params.url,
-		 type:  params.type,
-		 cache: params.cache,
-		 data:  params.data,
-		 dataType: params.dataType,
-		 error: function(){ 
-			alert('something is wrong');
-		},
-		success: function(data) { 
-			$jq('#dialog-modal').dialog('close');
-			$jq("#dialog-modal").html(data);	
-		},
-		complete: function(data) {
-		    $jq("#dialog-modal").dialog({ title: "Results" });
-			$jq("#dialog-modal").dialog('open');
-		},
-	});
+function changeDisplayState(target, state) {
+	if(state == 'show'){ 
+		if($jq('#' + target).is(':hidden')){ 
+			$jq('#' + target).show('blind');
+		}
+	}
+	else { 
+		if($jq('#' + target).is(':visible')){ 
+			$jq('#' + target).hide('blind');
+		}
+	}
 }
-*/
-
-
-
-
-
-
-
-
-
-
 
 
 
 var refreshLocation = ''; 
-
 function preview() {
 	var new_window = window.open("", "preview", "top=100,left=100,resizable,scrollbars,width=400,height=200");
 }
@@ -1470,9 +1479,9 @@ function change_template() {
 	document.the_form.process.value="true";
 }
 
-function check_newest_version() {
+function check_newest_version(ver) {
 
-	var check = "http://dadamailproject.com/cgi-bin/support/version.cgi?version=<!-- tmpl_var VER ESCAPE=URL -->";
+	var check = "http://dadamailproject.com/cgi-bin/support/version.cgi?version=" + ver;
 	window.open(check, 'version', 'width=325,height=300,top=20,left=20');
 }
 function just_test_message() {
@@ -1695,4 +1704,3 @@ function removeSubscriberField(form_name) {
     form_name.target = "_self";
     
 }
-<!-- end js/dada_mail_admin.tmpl -->

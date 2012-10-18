@@ -3,18 +3,21 @@
 <!-- tmpl_set name="title" value="Installing/Configuring <!-- tmpl_var PROGRAM_NAME -->" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
+<div id="installer_install_dada_mail"></div> 
+
 
 <fieldset> 
 <legend>
-	<a href="#" class="toggleDivs" data-target="install_log">
-+/-</a> Installation Log:
+	Installation Log:
 </legend>
-<div id="install_log" style="display:none"> 
+<div id="install_log"> 
 	<!-- tmpl_var install_log -->
 </div> 
- 
-</fieldset> 
+ </fieldset> 
 
+<form> 
+	<input type="hidden" name="self_url" id="self_url" value="<!-- tmpl_var Self_URL -->" />
+</form> 
 
  <h1>Almost Done!</h1> 
 
@@ -25,7 +28,9 @@
 		You'll have to manually edit your, <strong><em>dada/DADA/Config.pm</em></strong> file. For security reasons, 
 		this installer cannot edit it, itself. 
 	</p> 
-	
+
+<fieldset> 
+		
 	<p>Find this line in the source code of the <strong><em>dada/DADA/Config.pm</em></strong> file: </p> 
 	
 	<input type="text" class="full" value="$PROGRAM_CONFIG_FILE_DIR = 'auto';" />
@@ -36,7 +41,9 @@
 	
 	<input type="text" class="full" value="$PROGRAM_CONFIG_FILE_DIR = '<!-- tmpl_var install_dada_files_loc -->/<!-- tmpl_var Dada_Files_Dir_Name -->/.configs';" /> 
 
-	
+
+	</fieldset>
+			
 	<p>
 		And save the copy of the <strong><em>dada/DADA/Config.pm</em></strong> file on your hosting account. 
 	</p> 
@@ -53,14 +60,10 @@
 
 <form> 
 <div style="text-align:center"> 
-<input type="button" value="Move the, 'dada/installer' Directory, Disable the, 'install.cgi' script" class="cautionary" onClick="move_installer_dir();" />	
+<input type="button" value="Move the, 'dada/installer' Directory, Disable the, 'install.cgi' script" class="cautionary" id="move_installer_dir" />	
 </div> 
 </form> 
-
-<div id="move_results" style="display:none"> 
-
-
-</div> 
+<div id="move_results"></div> 
 
 
 
