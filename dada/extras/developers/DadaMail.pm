@@ -62,6 +62,8 @@ File::Spec
 
 GD::SecurityImage;
 
+Data::Google::Visualization::DataTable
+
 HTML::Entities::Numbered
 
 HTML::Tagset

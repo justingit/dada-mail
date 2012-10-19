@@ -735,7 +735,7 @@ backgroundColor: {
 
 		$jq("#sub_unsub_trends_loading").html( '<p class="alert">Loading...</p>' );
 		$jq.ajax({
-			url: "http://localhost/cgi-bin/test_dada/mail.cgi",
+			url: $jq("#s_program_url").val(),
 			data: {
 				f:    'sub_unsub_trends_json', 
 				days: $jq("#amount option:selected").val()

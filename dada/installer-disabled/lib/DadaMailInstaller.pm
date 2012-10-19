@@ -398,7 +398,7 @@ sub install_or_upgrade {
 			-with   => 'list', 
             -vars => {
 				# These are tricky.... 
-				SUPPORT_FILES_DIR_URL               => $Self_URL . '?f=screen&screen=',
+				SUPPORT_FILES_URL               => $Self_URL . '?f=screen&screen=',
 
 
 				dada_files_parent_dir               => $dada_files_parent_dir, 
@@ -527,7 +527,7 @@ sub scrn_configure_dada_mail {
             -vars => {
 				
 				# These are tricky.... 
-				SUPPORT_FILES_DIR_URL               => $Self_URL . '?f=screen&screen=',
+				SUPPORT_FILES_URL               => $Self_URL . '?f=screen&screen=',
 				
 				install_type                => $install_type, 
 				current_dada_files_parent_location => $current_dada_files_parent_location, 
@@ -664,7 +664,7 @@ sub scrn_install_dada_mail {
             -vars => { 
 	
 			# These are tricky.... 
-			SUPPORT_FILES_DIR_URL               => $Self_URL . '?f=screen&screen=',
+			SUPPORT_FILES_URL               => $Self_URL . '?f=screen&screen=',
 			
 			
 			 install_log                  => webify_plain_text({-str =>$log}), 
@@ -836,7 +836,7 @@ sub install_dada_mail {
 		}
     }
 
-	$log .= "* Setting up Support Files Directory...";
+	$log .= "* Setting up Support Files Directory...\n";
 	eval {setup_support_files_dir($args);}; 
 	if($@){ 
         $log .= "* WARNING: Couldn't set up support files directory! $@\n";
@@ -1036,6 +1036,8 @@ sub create_dada_config_file {
                 ROOT_PASSWORD          => $pass,
                 ROOT_PASS_IS_ENCRYPTED => 1,
                 dada_files_dir         => $loc,
+				support_files_dir_path => $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name, 
+				support_files_dir_url  => $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name, 
 				Big_Pile_Of_Errors     => $Big_Pile_Of_Errors, 
 				Trace                  => $Trace, 
                 ( $args->{-backend} ne 'default' || $args->{-backend} eq '' )

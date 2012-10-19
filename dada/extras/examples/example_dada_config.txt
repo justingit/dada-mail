@@ -14,6 +14,7 @@ $PROGRAM_USAGE_LOG        = $LOGS . '/dada.txt';
 #---------------------------------------------------------------------#
 
 
+
 # Start Root Password
 
 $PROGRAM_ROOT_PASSWORD    = 't';
@@ -21,6 +22,10 @@ $ROOT_PASS_IS_ENCRYPTED   = 0;
 
 # End Root Password
 
+$SUPPORT_FILES = { 
+	dir => '<!-- tmpl_var support_files_dir_path -->', 
+	url => '<!-- tmpl_var support_files_dir_url -->', 
+};
 
 
 # start cut for SQL Backend

@@ -111,7 +111,7 @@ use strict;
 use vars qw( @EXPORT );
 
 my %Global_Template_Variables = (
-SUPPORT_FILES_DIR_URL  => $DADA::Config::SUPPORT_FILES_DIR_URL, 
+SUPPORT_FILES_URL  => $DADA::Config::SUPPORT_FILES->{url}, 
 
 ROOT_PASS_IS_ENCRYPTED => $DADA::Config::ROOT_PASS_IS_ENCRYPTED, 
 PROGRAM_NAME           => $DADA::Config::PROGRAM_NAME, 
@@ -2293,7 +2293,7 @@ sub wrap_screen {
 	my $vars = { 
 		content => $tmpl, 
 	};
-	for(qw(title show_profile_widget load_wysiwyg_editor load_modalbox SUPPORT_FILES_DIR_URL)){ 
+	for(qw(title show_profile_widget load_wysiwyg_editor load_modalbox SUPPORT_FILES_URL)){ 
 		if(exists($params->{$_})){ 
 			# variables within variables... 
 			$vars->{$_} = $params->{$_}; 
