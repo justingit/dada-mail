@@ -3159,8 +3159,8 @@ sub search_list_auto_complete {
 		push(@$r, {'email' =>  $result->{email}});
 	}
 	 
-	require JSON; 
-	my $json = JSON->new->allow_nonref;
+	require JSON::PP; 
+	my $json = JSON::PP->new->allow_nonref;
 	 print $q->header('application/json'); 
 	 print $json->encode($r);	
 	
@@ -4413,8 +4413,8 @@ sub add {
 
 sub check_status {
 
-	require JSON; 
-	my $json = JSON->new->allow_nonref;
+	require JSON::PP; 
+	my $json = JSON::PP->new->allow_nonref;
 	
 
 	
@@ -4428,7 +4428,7 @@ sub check_status {
           . $DADA::Config::TMP . '/'
           . $filename
           . '-meta.txt';
-			my $json = JSON->new->allow_nonref;
+			my $json = JSON::PP->new->allow_nonref;
 			print $q->header('application/json');
 			print $json->encode({percent => 0, content_length => 0, bytes_read => 0});
 	}
@@ -4447,7 +4447,7 @@ sub check_status {
 		if($per == 99){ $per = 100}
         close($META);
  
-		my $json = JSON->new->allow_nonref;
+		my $json = JSON::PP->new->allow_nonref;
 		print $q->header('application/json');
 		print $json->encode(
 			{

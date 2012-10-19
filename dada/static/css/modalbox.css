@@ -57,7 +57,7 @@
 #MB_loading {
 	padding: 1.5em;
 	text-indent: -10000px;
-	background: transparent url(<!-- tmpl_var PROGRAM_URL -->/img/spinner.gif) 50% 0 no-repeat;
+	background: transparent url('../images/spinner.gif') 50% 0 no-repeat;
 }
 
 /* Color scheme */

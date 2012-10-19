@@ -2293,7 +2293,7 @@ sub wrap_screen {
 	my $vars = { 
 		content => $tmpl, 
 	};
-	for(qw(title show_profile_widget load_wysiwyg_editor load_modalbox SUPPORT_FILES_URL)){ 
+	for(qw(title show_profile_widget load_wysiwyg_editor load_modalbox load_google_viz SUPPORT_FILES_URL)){ 
 		if(exists($params->{$_})){ 
 			# variables within variables... 
 			$vars->{$_} = $params->{$_}; 

@@ -6,6 +6,8 @@
 	
 		<!-- tmpl_set name="title" value="Plugins &#187; Tracker &#187; Message Report" --> 
 		<!-- tmpl_set name="load_modalbox" value="1" -->
+		<!-- tmpl_set name="load_google_viz" value="1" -->
+		
 		
 		<div id="screentitle"> 
 			<div id="screentitlepadding">
@@ -189,7 +191,7 @@
 			</td> 
 			<td>
 		<div id="country_geoip_clickthroughs_map_loading"></div> 
-		<div id="country_geoip_clickthroughs_map"></div> 
+		<div id="country_geoip_clickthroughs_map" data-width="640" data-height="400" style="width:640px;height:400px"></div> 
 			</td> 
 		</tr>
 
@@ -201,7 +203,7 @@
 		
 		<h2>Clickthroughs Over Time</h2> 
 		<div id="over_time_clickthroughs_graph_loading"></div> 
-		<div id="over_time_clickthroughs_graph"></div> 	
+		<div id="over_time_clickthroughs_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div> 	
 		<h2>Clickthroughs by URL</h2>
 				<!-- tmpl_if url_report --> 
 
@@ -254,7 +256,7 @@
 			  </td> 
 			  <td> 
 			   <div id="country_geoip_opens_map_loading"></div> 
-			   <div id="country_geoip_opens_map"></div>
+			   <div id="country_geoip_opens_map" data-width="640" data-height="400" style="width:640px;height:400px"></div>
 			  </td> 
 			 </tr>
 			</table>
@@ -263,7 +265,7 @@
 			<!-- /tmpl_if -->
 	<h2>Message Opens Over Time</h2> 
 	<div id="over_time_opens_graph_loading"></div> 
-	<div id="over_time_opens_graph"></div> 
+	<div id="over_time_opens_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div> 
 
 	</div> 
 	
@@ -278,7 +280,7 @@
 			  </td> 
 			  <td> 
 			   <div id="country_geoip_view_archive_map_loading"></div> 
-			   <div id="country_geoip_view_archive_map"></div>
+			   <div id="country_geoip_view_archive_map" data-width="640" data-height="400" style="width:640px;height:400px"></div>
 			  </td> 
 			 </tr>
 			</table>
@@ -287,7 +289,7 @@
 			<!-- /tmpl_if -->
 		<h2>Archive Views Over Time</h2> 
 		<div id="over_time_view_archive_graph_loading"></div> 
-		<div id="over_time_view_archive_graph"></div>
+		<div id="over_time_view_archive_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div>
 	</div> 
 	
 	<div id="forwards">
@@ -302,7 +304,7 @@
 			  </td> 
 			  <td> 
 			   <div id="country_geoip_forwards_map_loading"></div> 
-			   <div id="country_geoip_forwards_map"></div>
+			   <div id="country_geoip_forwards_map" data-width="640" data-height="400" style="width:640px;height:400px"></div>
 			  </td> 
 			 </tr>
 			</table>
@@ -312,7 +314,7 @@
 
 	<h2>&quot;Forward to a Friend&quot; Over Time</h2>
 		<div id="over_time_forwards_graph_loading"></div> 
-		<div id="over_time_forwards_graph"></div>
+		<div id="over_time_forwards_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div>
 	</div> 
 	
 	<div id="bounces">

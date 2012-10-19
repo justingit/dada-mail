@@ -531,7 +531,7 @@ function update_status_bar(){
 		if(keep_updating_status_bar == 0){ 
 			return; 
 		}
-		console.log('update_status_bar_loop called'); 
+		// console.log('update_status_bar_loop called'); 
 		var request = $jq.ajax({
 			url: $jq("#s_program_url").val(),
 			type: "GET",
@@ -1123,11 +1123,13 @@ function plugins_mailing_monitor(){
 		  dataType: "html"
 		});
 		request.done(function(content) {
-		  $jq("#" + target_div).html( content );
+
+			$jq("#" + target_div).hide();
+			$jq("#" + target_div).html( content );
+			$jq("#" + target_div).show('fade');
+						
 		  $jq("#" + target_div + "_loading").html( '<p class="alert">&nbsp;</p>' );
 		  $jq("#sortable_table_" + type).tablesorter(); 
-		
-		
 		});
 	}
 	function country_geoip_map(type, label, target_div){ 
@@ -1149,7 +1151,8 @@ function plugins_mailing_monitor(){
 				var data = new google.visualization.DataTable(jsonData);
 				var options = {
 					region: 'world', 
-					width: 640,
+					width:  $jq('#' + target_div).attr("data-width"),
+					height: $jq('#' + target_div).attr("data-height"),
 					keepAspectRatio: true, 
 					backgroundColor: "#FFFFFF"
 				};
@@ -1185,12 +1188,15 @@ function plugins_mailing_monitor(){
 						width:"70%",
 						height:"70%"
 						},
-					width:  720, 
-					height: 400,
+						width:  $jq('#' + target_div).attr("data-width"),
+						height: $jq('#' + target_div).attr("data-height"),
 					backgroundColor:{
-						stroke: '#000000',
-				        strokeWidth: 1
-					}		
+						stroke: '#FFFFFF',
+				        strokeWidth: 0
+					}, 
+					hAxis: { 
+						slantedText: true
+					}
 				};
 			    var chart = new google.visualization.AreaChart(document.getElementById(target_div));
 			    chart.draw(data, options);
@@ -1220,9 +1226,9 @@ function plugins_mailing_monitor(){
 						width:"90%",
 						height:"90%"
 						},
-					title:  $jq('#' + target_div).attr("data-title"),
-					width:  $jq('#' + target_div).attr("data-width"),
-					height: $jq('#' + target_div).attr("data-height"),
+						title:  $jq('#' + target_div).attr("data-title"),
+						width:  $jq('#' + target_div).attr("data-width"),
+						height: $jq('#' + target_div).attr("data-height"),
 				
 					pieSliceTextStyle: {color: '#FFFFFF'},
 						colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
@@ -1344,8 +1350,7 @@ var SubscriberHistoryChart;
 				}		
 			};
 		    var SubscriberHistoryChart = new google.visualization.LineChart(document.getElementById('subscriber_history_chart'));
-			$jq("#subscriber_history_chart")
-				.hide('fade'); 
+			$jq("#subscriber_history_chart").hide('fade'); 
 			   SubscriberHistoryChart.draw(data, options);
 			$jq("#subscriber_history_chart").show('fade'); 
 			$jq("#subscriber_history_chart_loading").html( '<p class="alert">&nbsp;</p>' );
