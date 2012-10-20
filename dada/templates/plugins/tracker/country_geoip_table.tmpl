@@ -13,8 +13,16 @@
        <tbody>
 	   <!-- tmpl_loop c_geo_ip_report --> 
 	   	<tr <!-- tmpl_if __odd__ --> class="odd"<!-- tmpl_else -->class="even"<!-- /tmpl_if -->> 
-        <td><!-- tmpl_var name --></td> 
-        <td style="text-align:right; width: 50px"><!-- tmpl_var count --></td>
+        <td>
+			<a href="#" class="individual_country_geoip" data-type="<!-- tmpl_var type -->" data-country="<!-- tmpl_var code -->">
+				<!-- tmpl_var name -->
+			</a>
+		</td> 
+        <td style="text-align:right; width: 50px">
+			<a href="#" class="individual_country_geoip" data-type="<!-- tmpl_var type -->" data-country="<!-- tmpl_var code -->">
+			<!-- tmpl_var count -->
+			</a>
+		</td>
        </tr> 
 	  <!-- /tmpl_loop --> 
       </tbody>

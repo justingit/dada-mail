@@ -900,10 +900,60 @@ sub can_use_country_geoip_data {
 
 
 
+sub ip_data { 
+	my $self   = shift; 
+	my ($args) = @_; 
+
+	if(!exists($args->{-count})){ 
+		$args->{-count} = 20; 
+	}
+	if(!exists($args->{-mid})){ 
+		$args->{-mid} = undef; 
+	}
+	if(!exists($args->{-type})){ 
+		$args->{-type} = 'clickthroughs'; 
+	}
+
+#	select remote_addr from dada_clickthrough_url_log where msg_id = '20110502135133'; 
+	my $query; 
+	if($args->{-type} eq 'clickthroughs'){ 
+		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?'; 
+	}
+	elsif($args->{-type} eq 'opens'){ 
+		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'open\' AND list = ?'; 	
+	}
+	elsif($args->{-type} eq 'forward_to_a_friend') { 
+		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'forward_to_a_friend\' AND list = ?'; 			
+	}
+	elsif($args->{-type} eq 'view_archive') { 
+		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'view_archive\' AND list = ?'; 			
+	}
+
+	if(defined($args->{-mid})){ 
+		$query .= ' AND msg_id=?'; 
+	}
+	my $sth = $self->{dbh}->prepare($query);
+
+	#	die $query; 
+
+	if(defined($args->{-mid})){ 
+		$sth->execute($self->{name}, $args->{-mid});
+	}
+	else { 
+		$sth->execute($self->{name});
+	}
+	my $ips = []; 
+
+	while ( ( my $ip ) = $sth->fetchrow_array ) {
+		push(@$ips, $ip);
+	}	
+	return $ips; 
+	
+}
 sub country_geoip_data { 
 	
 	my $self   = shift; 
-	my ($args) = @_; 
+	my ($args) = @_; 	
 	
 	if(!exists($args->{-count})){ 
 		$args->{-count} = 20; 
@@ -917,41 +967,8 @@ sub country_geoip_data {
 	if(!exists($args->{-db})){ 
 		croak "You MUST pass the path to the geo ip database in, '-db'";
 	}
-#	select remote_addr from dada_clickthrough_url_log where msg_id = '20110502135133'; 
-	my $query; 
-	
-	if($args->{-type} eq 'clickthroughs'){ 
-		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?'; 
-	}
-	elsif($args->{-type} eq 'opens'){ 
-		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'open\' AND list = ?'; 	
-	}
-	elsif($args->{-type} eq 'forward_to_a_friend') { 
-		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'forward_to_a_friend\' AND list = ?'; 			
-	}
-	elsif($args->{-type} eq 'view_archive') { 
-		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'view_archive\' AND list = ?'; 			
-	}
-		
-	if(defined($args->{-mid})){ 
-		$query .= ' AND msg_id=?'; 
-	}
-	my $sth = $self->{dbh}->prepare($query);
-	
-	#	die $query; 
-		
-	if(defined($args->{-mid})){ 
-		$sth->execute($self->{name}, $args->{-mid});
-	}
-	else { 
-		$sth->execute($self->{name});
-	}
-	my $ips = []; 
 
-	while ( ( my $ip ) = $sth->fetchrow_array ) {
-		push(@$ips, $ip);
-	}	
-
+	my $ips = $self->ip_data($args); 
 	my $loc = {}; 
 	
 	require Geo::IP::PurePerl;
@@ -1021,6 +1038,7 @@ sub country_geoip_json {
 	$datatable->add_columns(
 	       { id => 'location',  label => "Location",       type => 'string',},
 	       { id => 'color',     label => $args->{-label},  type => 'number',},
+#	       { id => 'type',      label => 'Type',           type => 'string',},
 	);
 
 	for(@$report){ 
@@ -1028,6 +1046,8 @@ sub country_geoip_json {
 	        [
 	               { v => $_->{code}, f => $_->{name}},
 	               { v => $_->{count} },
+#	               { v => $args->{-type} },
+	
 	       ],
 		);
 	}
@@ -1053,6 +1073,127 @@ sub country_geoip_json {
 	
 }
 
+sub individual_country_geoip { 
+	 
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	if(!exists($args->{-mid})){ 
+		$args->{-mid} = undef; 
+	}
+	if(!exists($args->{-type})){ 
+		$args->{-type} = 'clickthroughs'; 
+	}
+	if(!exists($args->{-country})){ 
+		$args->{-country} = 'US'; 
+	}
+	
+	#if(!exists($args->{-db})){ 
+	#	croak "You MUST pass the path to the geo ip database in, '-db'";
+	#}
+	
+	my $report = $self->ip_data($args);
+	
+
+	
+	
+	require Geo::IP::PurePerl;
+	my $gi = Geo::IP::PurePerl->open("/home/simoni/dadamailproject.com/cgi-bin/dada/DADA/data/GeoLiteCity.dat");
+	my $d      = {};
+	my $cities = {} ;
+	
+	my $ips = $self->ip_data($args); 
+	for my $ip(@$ips){ 
+		my ($country_code,$country_code3,$country_name,$region,
+		    $city,$postal_code,$latitude,$longitude,
+		    $metro_code,$area_code ) = $gi->get_city_record($ip);
+		
+		if($country_code eq $args->{-country}){ 
+			
+			
+			if(! $city){
+				$city = 'Other'; 
+			}
+			if($country_code eq 'US'){ 
+				$city = $city . ', ' . $region;
+			}
+			if(!$metro_code){ 
+				$metro_code = 'Unknown'; 
+			}
+				
+			if(!exists($d->{"$city\:$metro_code"})){
+				$d->{"$city\:$metro_code"} = 0; 
+				$cities->{"$city\:$metro_code"} = { 
+					lat   => $latitude, 
+					long => $longitude, 
+				};
+			} 
+			$d->{"$city\:$metro_code"}++; 
+		}
+	}
+	my @r; 
+	for(keys %$d){ 
+		my ($city, $metro_code) = split(':', $_); 
+		push(@r, 
+			{ 
+			lat        =>  $cities->{$_}->{lat}, 
+			long       => $cities->{$_}->{long}, 
+			city       => $city, 
+			count      => $d->{$_}, 
+		});
+	} 
+	return [@r]; 
+}
+
+sub individual_country_geoip_json { 
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	my $report = $self->individual_country_geoip($args);
+	
+	require Data::Google::Visualization::DataTable; 
+	my $datatable = Data::Google::Visualization::DataTable->new();
+
+
+	$datatable->add_columns(
+	       { id => 'latitude',     label => "Latitude",        type => 'number',},
+	       { id => 'longitude',    label => "Longitude",       type => 'number',},
+	       { id => 'DESCRIPTION',  label => "Description",     type => 'string',},
+	       { id => 'marker_color', label => "Clickthroughs",   type => 'number',},
+	);
+	
+	
+	for my $r(@$report) { 
+		$datatable->add_rows(
+	        [   
+	               { v => $r->{lat},   },
+	               { v => $r->{long},  },
+				   { v => $r->{city},  },
+				   { v => $r->{count},},
+	       ],
+		);
+	}
+	
+	my $json = $datatable->output_javascript(
+		pretty  => 1,
+	);
+	
+	if($args->{-printout} == 1){ 
+		require CGI; 
+		my $q = CGI->new; 
+		print $q->header(
+			'-Cache-Control' => 'no-cache, must-revalidate',
+			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+			-type            =>  'application/json',
+		);
+		print $json; 
+	}
+	else { 
+		return $json; 
+	}
+	
+	
+}
 
 
 sub data_over_time {

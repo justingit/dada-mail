@@ -93,6 +93,7 @@ sub run {
 		'download_activity_logs'     => \&download_activity_logs, 
 		'country_geoip_table'        => \&country_geoip_table, 
 		'country_geoip_json'         => \&country_geoip_json,
+		'individual_country_geoip_json' => \&individual_country_geoip_json, 
 		'data_over_time_json'        => \&data_over_time_json, 
 		'bounce_stats_json'          => \&bounce_stats_json, 
 	);
@@ -510,6 +511,9 @@ sub country_geoip_table {
 				-db     => $Plugin_Config->{Geo_IP_Db},
 			}
 		);
+		for(@$report){ 
+			$_->{type} = $type; 
+		}	
 	    require DADA::Template::Widgets;
 	    my $scrn = DADA::Template::Widgets::screen(
 	        {
@@ -530,13 +534,31 @@ sub country_geoip_table {
 sub country_geoip_json {
 	my $mid  = $q->param('mid')    || undef; 
 	my $type = $q->param('type')   || undef; 
-	my $label = $q->param('label') || undef; 
-	
+
+	my $labels = { 
+		clickthroughs       => 'Clickthroughs', 
+		opens               => 'Opens', 
+		forward_to_a_friend => 'Forwards', 
+		view_archive        => 'Archive Views', 
+	};
 	$rd->country_geoip_json({ 
 		-mid      => $mid, 
 		-type     => $type, 
 		-db       => $Plugin_Config->{Geo_IP_Db},
-		-label    => $label, 
+		-label    => $labels->{$type}, 
+		-printout => 1,
+		});
+}
+sub individual_country_geoip_json {
+	my $mid     = $q->param('mid')     || undef; 
+	my $type    = $q->param('type')    || undef; 
+	my $country = $q->param('country') || undef; 
+	
+	$rd->individual_country_geoip_json({ 
+		-mid      => $mid, 
+		-type     => $type, 
+#		-db       => $Plugin_Config->{Geo_IP_Db},
+		-country  => $country, 
 		-printout => 1,
 		});
 }
