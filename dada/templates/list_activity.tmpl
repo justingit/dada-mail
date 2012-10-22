@@ -16,12 +16,13 @@
 
 <h1>Subscription Trends</h1> 
 <form>
+	<div id="sub_unsub_trends_loading"></div> 
 	<p>
 	Display the last: 
 	<select id="amount">> 
 		<option value="7">7 days</option>
 		<option value="14">2 weeks</option>
-		<option value="30">1 month</option> 
+		<option value="30" selected="selected">1 month</option> 
 		<option value="60">2 months</option>
 		<option value="90">3 months</option>
 		<option  value="183">6 months</option>
@@ -31,7 +32,6 @@
 	</select>
 </p>
 </form>
-<div id="sub_unsub_trends_loading"></div> 
 <div id="sub_unsub_trends" style="width:720px;height:480px"></div> 
 
 

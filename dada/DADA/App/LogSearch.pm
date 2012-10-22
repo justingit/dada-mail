@@ -256,7 +256,7 @@ sub log_line_report {
 sub sub_unsub_trends { 
 	my $self = shift;
 	my $type = 'list'; 
-	 
+	my $time = time; 
 	my ($args) = @_; 
 	my $r = []; 
 	require File::ReadBackwards; 
@@ -267,6 +267,9 @@ sub sub_unsub_trends {
 	if(exists($args->{-days})){ 
 		$days = $args->{-days};
 	}
+	my $day_limit = scalar(localtime(past_date($time, ($days + 1))));
+	my $limit_day_str = simplified_date_str($day_limit); 
+	
 	my $count = 0; 
 	my %trends = ();
 	my @dates; 
@@ -288,29 +291,47 @@ sub sub_unsub_trends {
 				# Munge the date, we just are interested in whole days. 
 				my $date = $llr->{date}; 
 				   $date =~ s/\[|\]//g;
-				my ($n_day, $n_month, $num_day, $time, $year) = split(' ', $date, 5);
-				my $day_str = join(' ', $n_day, $n_month, $num_day, $year);
+				my $day_str = simplified_date_str($date); 
 				
 				# Init if we need to. 
 				if(!exists($trends{$day_str})){ 
 					$trends{$day_str} = {subscribed => 0, unsubscribed => 0};
-					push(@dates, $day_str); 
+					#push(@dates, $day_str); 
 				}
 				$trends{$day_str}->{$llr->{action}}++;
+			
 				
-				if(scalar(keys %trends) >= $days){ #count
+				if(
+					($day_str eq $limit_day_str) || # We reach the date string
+					(scalar(keys %trends) >= $days) # We have more entries, then days we're looking for.
+					){ #count
 					delete $trends{$day_str};
-					pop(@dates);
+
 					last;
 				}
 			}
 		}
     }
 	$bw->close;
+	
 	my @r_trends = (); 
 	my $cum_sub = 0; 
 	my $cum_unsub = 0;  
+
+
+	# Fill in missing dates. 
+	# Most likely, there are days nothing happened. 
+	for(1 .. $days){ 
+		my $s_date = simplified_date_str(scalar(localtime(past_date($time, $_))));
+		#print '!$s_date:' . $s_date . "\n";
+		if(!exists($trends{$s_date})){ 
+			
+			$trends{$s_date} = {subscribed => 0, unsubscribed => 0};
+		}
+		push(@dates, $s_date); 
+	}
 	
+	# This will neglect any data that's out of our date range.
 	for my $d(reverse @dates){ 
 		$cum_sub   += $trends{$d}->{subscribed};
 		$cum_unsub += $trends{$d}->{unsubscribed};
@@ -324,6 +345,26 @@ sub sub_unsub_trends {
 	}
 	return [@r_trends];
 }
+sub simplified_date_str { 
+	my $date = shift; 
+	my ($day, $month, $num_day, $time, $year) = split(' ', $date, 5);
+	return join(' ', $day, $month, $num_day, $year);
+	
+}
+sub past_date {
+    my $time = shift;
+    my $days = shift || 1;
+	return $time if $days == 0; 
+    my $now  = defined $time ? $time : time;
+    my $then = $now - 60 * 60 * 24 * $days;
+    my $ndst = ( localtime $now )[8] > 0;
+    my $tdst = ( localtime $then )[8] > 0;
+
+    # Added '=' to avoid warning (and return)
+    $then -= ( $tdst - $ndst ) * 60 * 60;
+    return $then;
+}
+
 sub sub_unsub_trends_json { 
 	my $self = shift; 
 	my ($args) = @_; 
