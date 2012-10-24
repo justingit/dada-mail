@@ -11,7 +11,7 @@
 		
 		<div id="screentitle"> 
 			<div id="screentitlepadding">
-				<!-- tmpl_var title --> 
+				Plugins &#187; <a href="<!-- tmpl_var Plugin_URL -->">Tracker</a> &#187; Message Report
 			</div>
 			<!-- tmpl_include help_link_widget.tmpl -->
 		</div>
@@ -61,13 +61,13 @@
 	<td> 
 	 <p>
 	  <strong>
-	    Clickthroughs
+	    	  <a href="#" class="to_clickthroughs">Clickthroughs</a>
 	  </strong> 
 	 </p> 
 	 </td> 
 	 <td align="right"> 
 	 <p>
-	  <!-- tmpl_var clickthroughs -->
+	  <a href="#" class="to_clickthroughs"><!-- tmpl_var clickthroughs --></a>
 	 </p>
 	</td> 
 	</tr>
@@ -77,13 +77,16 @@
 	<td> 
 	 <p>
 	  <strong>
-	   	 Opens
+	   		  <a href="#" class="to_opens"> Opens</a>
 	  </strong> 
 	 </p> 
 	 </td> 
 	 <td align="right"> 
 	 <p>
-	  <!-- tmpl_var opens --> 
+	  <a href="#" class="to_opens">
+		<!-- tmpl_var opens -->
+	 </a> 
+	
 	 </p>
 	</td> 
 	</tr>
@@ -93,13 +96,13 @@
 	<td> 
 	 <p>
 	  <strong>
-	   Archive Views
+	   <a href="#" class="to_archive_views">Archive Views</a>
 	  </strong> 
 	 </p> 
 	 </td> 
 	 <td align="right"> 
 	 <p>
-	  <!-- tmpl_var view_archive --> 
+	  <a href="#" class="to_archive_views"><!-- tmpl_var view_archive --></a> 
 	 </p>
 	</td> 
 	</tr>
@@ -110,13 +113,13 @@
 	<td> 
 	 <p>
 	  <strong>
-	   Forwards
+	   	   <a href="#" class="to_forwards">Forwards</a>
 	  </strong> 
 	 </p> 
 	 </td> 
 	 <td align="right"> 
 	 <p>
-	  <!-- tmpl_var forward_to_a_friend --> 
+	  <a href="#" class="to_forwards"><!-- tmpl_var forward_to_a_friend --></a>
 	 </p>
 	</td> 
 	</tr>
@@ -126,21 +129,19 @@
 	<td> 
 	 <p>
 	  <strong>
-	   Bounces (soft/hard)
+	   <a href="#" class="to_bounces">Bounces (soft/hard)</a>
 	  </strong> 
 	 </p> 
 	 </td> 
 	 <td align="right"> 
 	 <p>
-	  <!-- tmpl_var soft_bounce default="0" -->/<!-- tmpl_var hard_bounce -->
+	  <a href="#" class="to_bounces"><!-- tmpl_var soft_bounce default="0" -->/<!-- tmpl_var hard_bounce  default="0" --></a>
 	 </p>
 	</td> 
 	</tr>	
 	
 	</table> 
-	
-
-
+	</div> 
 	</fieldset>
 
 
@@ -206,14 +207,15 @@
 		<div id="over_time_clickthroughs_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div> 	
 		<h2>Clickthroughs by URL</h2>
 				<!-- tmpl_if url_report --> 
-
-				<div style="max-height: 200px; overflow: auto; border: 1px solid black;">
+			  <div> 
+			 <!-- <div style="max-width:350px; max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;"> -->
+				 <div style="max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;">
 			 	<table class="stripedtable">
 					<tr style="background:#fff"> 
 					<td> 
 						<p><strong>URL</strong></p> 
 					</td> 
-					<td> 
+					<td> <!--  style="width:50px" -->
 						<p><strong># Clickthroughs</strong></p>
 					</td> 
 					</tr> 
@@ -241,6 +243,8 @@
 				    <!-- /tmpl_loop -->
 				</table> 
 				</div> 
+				</div> 
+			
 				<!-- tmpl_else --> 
 					<p class="alert">Nothing to report.</p> 
 				<!-- /tmpl_if --> 
@@ -317,60 +321,16 @@
 		<div id="over_time_forwards_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div>
 	</div> 
 	
+	
+	
 	<div id="bounces">
 		
-
-
-		<h2>Soft Bounces</h2> 
-
+		<h2>Soft Bounces</h2>
 		<table class="stripedtable">
-			<tr> 
-				<td> 
-					
-			<div> 
-			 <div style="max-height: 400px; max-width:350px; overflow: auto; border:1px solid black 	overflow-y: scroll; overflow-x: hidden;">
-
-				<!-- tmpl_if soft_bounce_report --> 
-				
-				<table class="stripedtable" style="width:325px">
-			 
-				<tr> 
-				  <td> 
-				   <strong>Email Address</strong>
-				  </td> 
-				 </tr> 
-
-
-				<!-- tmpl_if chrome --> 
-					<!-- tmpl_loop soft_bounce_report --> 
-						<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
-						  <td> 
-							<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="URL" -->&chrome=0" title="Bounce Log for <!-- tmpl_var email escape="HTML" -->" onclick="Modalbox.show(this.href, {title: this.title, width: 640, height:480}); return false;">
-							 <!-- tmpl_var email -->
-						    </a>
-						  </td> 
-						 </tr> 
-					<!-- /tmpl_loop -->	
-				<!-- tmpl_else --> 
-					<!-- tmpl_loop hard_bounce_report --> 
-						<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
-						  <td> 
-							<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="HTML" -->">
-								<!-- tmpl_var email escape="HTML" -->
-							</a>
-						  </td> 
-						 </tr> 
-					<!-- /tmpl_loop --> 
-				<!-- /tmpl_if -->
-
-				</table> 
-					<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var soft_bounce -->&nbsp;</p> 
-				</div> 
-				<!-- tmpl_else --> 
-				<p class="alert">No soft bounces to report.</p> 
-				<!-- /tmpl_if -->
-				
-				</div> 
+		 <tr> 
+		  <td> 
+				<div id="soft_bounce_table_loading"></div> 
+				<div id="soft_bounce_table" style="width:350px;height:400px"></div>
 			</td>
 			<td>
 				<div id="soft_bounce_graph_loading"></div> 
@@ -378,117 +338,53 @@
 			</td>
 		   </tr>
 		</table>
-
-
-	
-
-
-
-		<!-- tmpl_if hard_bounce_report --> 
+		
+		
 		<h2>Hard Bounces</h2>
 		<table class="stripedtable">
-			<tr> 
-				<td> 
-					
+		 <tr> 
+		  <td> 
+				<div id="hard_bounce_table_loading"></div> 
+				<div id="hard_bounce_table" style="width:350px;height:400px"></div>
+			</td>
+			<td>
+				<div id="hard_bounce_graph_loading"></div> 
+				<div id="hard_bounce_graph" data-width="640" data-height="400" data-title="Hard Bounces"></div> 
+			</td>
+		   </tr>
+		</table>
 		
 		
-					<div> 
-					 <div style="max-height: 400px; max-width:350px; overflow: auto; border:1px solid black 	overflow-y: scroll; overflow-x: hidden;">
-							<table class="stripedtable" style="width:325px">
-						 <tr> 
-						  <td> 
-						   <strong>Email Address</strong>
-						  </td> 
-						 </tr> 
 
-						<!-- tmpl_if chrome --> 
-							<!-- tmpl_loop hard_bounce_report --> 
-								<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
-								  <td> 
-									<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="URL" -->&chrome=0" title="Bounce Log for <!-- tmpl_var email escape="HTML" -->" onclick="Modalbox.show(this.href, {title: this.title, width: 640, height:480}); return false;	">
-									 <!-- tmpl_var email -->
-								    </a>
-								  </td> 
-								 </tr> 
-							<!-- /tmpl_loop -->	
-						<!-- tmpl_else --> 
-							<!-- tmpl_loop hard_bounce_report --> 
-								<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
-								  <td> 
-									<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="HTML" -->">
-										<!-- tmpl_var email escape="HTML" -->
-									</a>
-								  </td> 
-								 </tr> 
-							<!-- /tmpl_loop --> 
-						<!-- /tmpl_if --> 
-						</table>
-						<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var hard_bounce -->&nbsp;</p> 
-						
-						</div> 
-						<!-- tmpl_else --> 
-							<p class="alert">No hard bounces to report.</p>	
-						<!-- /tmpl_if -->
-						</div> 
-				</td>
-				<td>
-					<div id="hard_bounce_graph_loading"></div> 
-					<div id="hard_bounce_graph" data-width="640" data-height="400" data-title="Hard Bounces"></div> 
-				</td>
-			</tr>
-		</table> 
-		
-			
-
-	
-	</div>
-	
-	</div>
+	</div> 
 
 
-
-
-
-
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
+</div> 
 
 
 
 <!-- tmpl_if chrome -->
 
 	<fieldset> 
-	<legend>Export Message Logs</legend> 
+		<legend>Export Message Logs</legend> 
 
-	<div class="buttonfloat">
-	<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-	<input type="hidden" name="f" value="download_activity_logs" /> 
-	<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
-	 <input type="submit" class="processing" name="process" value="Download Raw Activity Logs (.csv)" />
-	</form> 
-	</div>
+		<div class="buttonfloat">
+		<form action="<!-- tmpl_var PluginURL -->" method="post"> 
+		<input type="hidden" name="f" value="download_activity_logs" /> 
+		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
+		 <input type="submit" class="processing" name="process" value="Download Raw Activity Logs (.csv)" />
+		</form> 
+		</div>
 
 
-	<div class="buttonfloat">
-	<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-	<input type="hidden" name="f" value="download_clickthrough_logs" /> 
-	<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
-	 <input type="submit" class="processing" name="process" value="Download Raw Clickthrough Logs (.csv)" />
-	</form> 
-	</div>
-	<div class="floatclear"></div>
+		<div class="buttonfloat">
+		<form action="<!-- tmpl_var PluginURL -->" method="post"> 
+		<input type="hidden" name="f" value="download_clickthrough_logs" /> 
+		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
+		 <input type="submit" class="processing" name="process" value="Download Raw Clickthrough Logs (.csv)" />
+		</form> 
+		</div>
+		<div class="floatclear"></div>
 	</fieldset> 
 
 <!-- /tmpl_if -->

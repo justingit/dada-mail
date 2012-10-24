@@ -366,15 +366,23 @@ $jq(document).ready(function() {
 			event.preventDefault();
 			individual_country_geoip_map($jq(this).attr("data-type"), $jq(this).attr("data-country"), "country_geoip_" + $jq(this).attr("data-type") + "_map"); 
 		}); 
+		
+		$jq("body").on("click", '.individual_country_cumulative_geoip_table', function(event){
+			event.preventDefault();
+			individual_country_cumulative_geoip_table($jq(this).attr("data-type"), $jq(this).attr("data-country"), "country_geoip_" + $jq(this).attr("data-type") + "_map"); 
+		});
+		
 		$jq("body").on("click", '.back_to_geoip_map', function(event){
 			event.preventDefault();
 			country_geoip_map($jq(this).attr("data-type"), "country_geoip_" + $jq(this).attr("data-type") + "_map"); 
 		});
+
+		
 		
 		}
 	
 	if($jq("#plugins_tracker_default").length) { 
-		  tracker_show_table();	
+		  message_history_html();	
 		  google.setOnLoadCallback(drawSubscriberHistoryChart());
 		
 		  $jq("body").on("click", '.tracker_turn_page', function(event){
@@ -1083,7 +1091,27 @@ function plugins_mailing_monitor(){
 // Plugins >> Tracker
 function update_plugins_tracker_message_report(){ 
 	
-	$jq( "#tabs" ).tabs();
+	var $tabs = $jq( "#tabs" ).tabs();
+	$jq('body').on('click', '.to_clickthroughs',  function(event){ 
+		    $tabs.tabs('select', 0); 
+	    return false;
+	});
+	$jq('body').on('click', '.to_opens',  function(event){ 
+	    $tabs.tabs('select', 1); 
+	    return false;
+	});
+	$jq('body').on('click', '.to_archive_views',  function(event){ 
+	    $tabs.tabs('select', 2); 
+	    return false;
+	});
+	$jq('body').on('click', '.to_forwards',  function(event){ 
+	    $tabs.tabs('select', 3); 
+	    return false;
+	});
+	$jq('body').on('click', '.to_bounces',  function(event){ 
+	    $tabs.tabs('select', 4); 
+	    return false;
+	});
 	
 	if($jq("#can_use_country_geoip_data").val() == 1){ 
 		
@@ -1105,8 +1133,13 @@ function update_plugins_tracker_message_report(){
 	google.setOnLoadCallback(data_over_time_graph('view_archive',        'Archive Views', 'over_time_view_archive_graph'));
 	google.setOnLoadCallback(data_over_time_graph('forward_to_a_friend', 'Forwards',      'over_time_forwards_graph'));
 
+	
+	
 	google.setOnLoadCallback(bounce_breakdown_chart('soft', 'Soft Bounces', 'soft_bounce_graph'));
 	google.setOnLoadCallback(bounce_breakdown_chart('hard', 'Hard Bounces', 'hard_bounce_graph'));
+	
+	message_bounce_report_table('soft', 'soft_bounce_table'); 
+	message_bounce_report_table('hard', 'hard_bounce_table'); 
 	
 }
 
@@ -1242,12 +1275,29 @@ function individual_country_geoip_map(type, country, target_div){
 	
 		$jq("#" +target_div).hide("fade", function(){ 
 			chart.draw(data, options);
-			$jq("#" + target_div + "_loading").html( '<p class="alert"><a href="#" data-type="' + type + '" class="back_to_geoip_map">Back to World Map</a></p>' );
+			$jq("#" + target_div + "_loading").html( '<p class="alert"><a href="#" data-type="' + type + '" class="back_to_geoip_map">&lt; &lt;Back to World Map</a> | <a href="#"  data-type="' + type + '" data-country="' + country + '" class="individual_country_cumulative_geoip_table">Table View</a></p>' );
 			$jq("#" + target_div).show( 'fade' );
 		});
-		
-		
-
+}
+function individual_country_cumulative_geoip_table(type, country, target_div){ 
+	$jq("#" + target_div + "_loading").html( '<p class="alert">Loading...</p>' );
+	 var content = $jq.ajax({
+         url: $jq("#plugin_url").val(),
+		 data: { 
+			f:       'individual_country_geoip_report_table',
+			mid:     $jq('#tracker_message_id').val(),
+			type:    'ALL', 	
+			country: country			
+		 },
+         dataType:"json",
+         async: false
+         }).responseText;
+	
+		$jq("#" +target_div).hide("fade", function(){ 
+			$jq("#" + target_div).html(content); 
+			$jq("#" + target_div + "_loading").html( '<p class="alert"><a href="#" data-type="' + type + '" data-country="' + country + '"  class="individual_country_geoip">&lt; &lt; Back to Country Map</a></p>' );
+			$jq("#" + target_div).show( 'fade' );
+		});
 }
 function data_over_time_graph(type, label, target_div){ 
   	$jq("#" + target_div + "_loading").html( '<p class="alert">Loading...</p>' );
@@ -1287,6 +1337,31 @@ function data_over_time_graph(type, label, target_div){
 		},
 		});	
 }
+function message_bounce_report_table(bounce_type, target_div){ 
+	
+	$jq("#" + target_div + "_loading").html( '<p class="alert">Loading...</p>' );
+	var request = $jq.ajax({
+	  url: $jq("#plugin_url").val(),
+	  type: "POST",
+	  cache: false,
+	  data: {
+		f:             'message_bounce_report_table',
+		mid:     	    $jq('#tracker_message_id').val(),
+		bounce_type:    bounce_type
+	  },
+	  dataType: "html"
+	});
+	request.done(function(content) {
+
+		$jq("#" + target_div).hide();
+		$jq("#" + target_div).html( content );
+		$jq("#" + target_div).show('fade');
+					
+	  $jq("#" + target_div + "_loading").html( '<p class="alert">&nbsp;</p>' );
+//	  $jq("#sortable_table_" + type).tablesorter(); 
+	});
+}
+
 function bounce_breakdown_chart(type, label, target_div) { 
 	$jq("#" + target_div + "_loading").html( '<p class="alert">Loading...</p>' );
     $jq.ajax({
@@ -1327,7 +1402,7 @@ function bounce_breakdown_chart(type, label, target_div) {
 // Plugins >> Tracker
 function tracker_turn_page(page_to_turn_to) { 
 	$jq("#tracker_page").val(page_to_turn_to); 
-	tracker_show_table();
+	message_history_html();
 	google.setOnLoadCallback(drawSubscriberHistoryChart());
 }
 
@@ -1377,7 +1452,7 @@ function delete_log() {
 
 
 
-function tracker_show_table(){ 
+function message_history_html(){ 
 		
 	$jq("#show_table_results_loading").html( '<p class="alert">Loading...</p>' );
 	var request = $jq.ajax({
@@ -1385,7 +1460,7 @@ function tracker_show_table(){
 	  type: "POST",
 	  cache: false,
 	  data: {
-		f:       'clickthrough_table',
+		f:       'message_history_html',
 		page:   $jq("#tracker_page").val(),
 	  },
 	  dataType: "html"
@@ -1408,7 +1483,7 @@ var SubscriberHistoryChart;
 	 var request = $jq.ajax({
           url: $jq("#plugin_url").val(),
 		  data: {
-			f:       'subscriber_history_json',
+			f:       'message_history_json',
 			page:   $jq("#tracker_page").val(),
 			
 		  },
@@ -1425,11 +1500,7 @@ var SubscriberHistoryChart;
 					height:"70%"
 					},
 				width:  720, 
-				height: 400,
-				backgroundColor:{
-					stroke: '#000000',
-			        strokeWidth: 1
-				}		
+				height: 400	
 			};
 		    var SubscriberHistoryChart = new google.visualization.LineChart(document.getElementById('subscriber_history_chart'));
 			$jq("#subscriber_history_chart").hide('fade'); 
@@ -1457,7 +1528,7 @@ function tracker_purge_log(){
 		  dataType: "html"
 		});
 		request.done(function(content) {
-		 	tracker_show_table();
+		 	message_history_html();
 		    google.setOnLoadCallback(drawSubscriberHistoryChart());
 		});		
 		// something like request.error(function () { ... });

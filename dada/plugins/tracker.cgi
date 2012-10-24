@@ -82,20 +82,23 @@ sub run {
 	
 	my $f = $q->param('f') || undef;
 	my %Mode = (
-	    'default'                    => \&default,
-	    'm'                          => \&message_report,
-	    'edit_prefs'                 => \&edit_prefs,
-	    'download_logs'              => \&download_logs,
-	    'ajax_delete_log'            => \&ajax_delete_log,
-		'clickthrough_table'         => \&clickthrough_table, 
-		'subscriber_history_json'   => \&subscriber_history_json, 
-		'download_clickthrough_logs' => \&download_clickthrough_logs, 
-		'download_activity_logs'     => \&download_activity_logs, 
-		'country_geoip_table'        => \&country_geoip_table, 
-		'country_geoip_json'         => \&country_geoip_json,
-		'individual_country_geoip_json' => \&individual_country_geoip_json, 
-		'data_over_time_json'        => \&data_over_time_json, 
-		'bounce_stats_json'          => \&bounce_stats_json, 
+	    'default'                         => \&default,
+	    'm'                               => \&message_report,
+	    'edit_prefs'                      => \&edit_prefs,
+	    'download_logs'                   => \&download_logs,
+	    'ajax_delete_log'                 => \&ajax_delete_log,
+		'message_history_html'            => \&message_history_html, 
+		'message_history_json'            => \&message_history_json, 
+		'download_clickthrough_logs'      => \&download_clickthrough_logs, 
+		'download_activity_logs'          => \&download_activity_logs, 
+		'country_geoip_table'             => \&country_geoip_table, 
+		'country_geoip_json'              => \&country_geoip_json,
+		'individual_country_geoip_json'   => \&individual_country_geoip_json, 
+		'individual_country_geoip_report_table' => \&individual_country_geoip_report_table, 
+		'data_over_time_json'             => \&data_over_time_json, 
+		'message_bounce_report_table'     => \&message_bounce_report_table, 
+		'bounce_stats_json'               => \&bounce_stats_json, 
+		'clear_data_cache'                => \&clear_data_cache, 
 	);
 	if ($f) {
 	    if ( exists( $Mode{$f} ) ) {
@@ -176,7 +179,7 @@ sub percent {
 
 
 
-sub subscriber_history_json { 
+sub message_history_json { 
 	
 	my $page = $q->param('page') || 1; 
 	
@@ -220,13 +223,13 @@ sub every_nth {
 
 
 sub data_over_time_json { 
-	my $msg_id = $q->param('mid'); 
+	my $mid    = $q->param('mid'); 
 	my $type   = $q->param('type');
 	my $label  = $q->param('label'); 
 	
 	$rd->data_over_time_json(
 		{
-			-msg_id   => $msg_id,
+			-mid      => $mid,
 			-type     => $type, 
 			-label    => $label, 
 			-printout => 1
@@ -235,12 +238,23 @@ sub data_over_time_json {
 	
 }
 
+sub message_bounce_report_table { 
+	my $mid = $q->param('mid'); 
+	my $bounce_type = $q->param('bounce_type') || 'soft'; 
+	$rd->message_bounce_report_table(
+		{
+			-mid             => $mid,
+			-bounce_type     => $bounce_type, 
+			-printout        => 1
+		}
+	);
+}
 sub bounce_stats_json { 
-		my $msg_id = $q->param('mid'); 
+		my $mid = $q->param('mid'); 
 		my $bounce_type = $q->param('bounce_type') || 'soft'; 
 		$rd->bounce_stats_json(
 			{
-				-mid             => $msg_id,
+				-mid             => $mid,
 				-bounce_type     => $bounce_type, 
 				-printout        => 1
 			}
@@ -249,66 +263,104 @@ sub bounce_stats_json {
 }
 
 
+sub clear_data_cache { 
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new;
+	$dc->flush(
+		{
+			-list => $list
+		}
+	); 
+	print $q->redirect( -uri => $Plugin_Config->{Plugin_URL} . '?done=1' );
+    
+}
 
 
-sub clickthrough_table { 
+
+
+sub message_history_html { 
 	
 	my $page = $q->param('page') || 1; 
 	require DADA::Template::Widgets;
+	my $html; 
 	
-	my ($total, $msg_ids) = $rd->get_all_mids(
-		{ 
-			-page    => $page, 
-			-entries => $ls->param('tracker_record_view_count'),  
-		}
-	);
-
-
-	require Data::Pageset;
-	my $page_info = Data::Pageset->new(
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new; 
+	
+	$html = $dc->retrieve(
 		{
-		'total_entries'       => $total, 
-		'entries_per_page'    => $ls->param('tracker_record_view_count'), # needs to be tweakable...  
-		'current_page'        => $page,
-		'mode'                => 'slide', # default fixed
- 		}
+			-list    => $list, 
+			-name    => 'message_history_html', 
+			-page    => $page, 
+			-entries => $ls->param('tracker_record_view_count'), 
+		}
 	);
+	if(! defined($html)){ 
+		
+		my ($total, $msg_ids) = $rd->get_all_mids(
+			{ 
+				-page    => $page, 
+				-entries => $ls->param('tracker_record_view_count'),  
+			}
+		);
 
-	my $pages_in_set = [];
-	foreach my $page_num (@{$page_info->pages_in_set()}) {
-		if($page_num == $page_info->current_page()) {
-			push(@$pages_in_set, {page => $page_num, on_current_page => 1});
+
+		require Data::Pageset;
+		my $page_info = Data::Pageset->new(
+			{
+			'total_entries'       => $total, 
+			'entries_per_page'    => $ls->param('tracker_record_view_count'), # needs to be tweakable...  
+			'current_page'        => $page,
+			'mode'                => 'slide', # default fixed
+	 		}
+		);
+
+		my $pages_in_set = [];
+		foreach my $page_num (@{$page_info->pages_in_set()}) {
+			if($page_num == $page_info->current_page()) {
+				push(@$pages_in_set, {page => $page_num, on_current_page => 1});
+			}
+			else { 
+				push(@$pages_in_set, {page => $page_num, on_current_page => undef});
+			}
 		}
-		else { 
-			push(@$pages_in_set, {page => $page_num, on_current_page => undef});
-		}
+
+		my $report_by_message_id = $rd->report_by_message_index({-all_mids => $msg_ids}) || []; 
+	#	require Data::Dumper; 
+	#	my $report_by_message_id_dump = Data::Dumper::Dumper($report_by_message_id); 
+	    require    DADA::Template::Widgets;
+	    $html = DADA::Template::Widgets::screen(
+	        {
+	            -screen           => 'plugins/tracker/clickthrough_table.tmpl',
+	            -vars => {
+	                report_by_message_index   => $report_by_message_id,
+	#				report_by_message_id_dump => $report_by_message_id_dump, 
+					first_page                => $page_info->first_page(), 
+					last_page                 => $page_info->last_page(), 
+					next_page                 => $page_info->next_page(), 
+					previous_page             => $page_info->previous_page(), 
+					pages_in_set              => $pages_in_set,  		
+					Plugin_URL                => $Plugin_Config->{Plugin_URL}, 
+	            },
+	            -list_settings_vars_param => {
+	                -list   => $list,
+	                -dot_it => 1,
+	            },
+	        }
+	    );
+		$dc->cache(
+			{ 
+				-list    => $list, 
+				-name    => 'message_history_html', 
+				-page    => $page, 
+				-entries => $ls->param('tracker_record_view_count'), 
+				-data    => \$html, 
+			}
+		);
+	
 	}
-
-	my $report_by_message_id = $rd->report_by_message_index({-all_mids => $msg_ids}) || []; 
-#	require Data::Dumper; 
-#	my $report_by_message_id_dump = Data::Dumper::Dumper($report_by_message_id); 
-    require    DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::screen(
-        {
-            -screen           => 'plugins/tracker/clickthrough_table.tmpl',
-            -vars => {
-                report_by_message_index   => $report_by_message_id,
-#				report_by_message_id_dump => $report_by_message_id_dump, 
-				first_page                => $page_info->first_page(), 
-				last_page                 => $page_info->last_page(), 
-				next_page                 => $page_info->next_page(), 
-				previous_page             => $page_info->previous_page(), 
-				pages_in_set              => $pages_in_set,  		
-				Plugin_URL                => $Plugin_Config->{Plugin_URL}, 
-            },
-            -list_settings_vars_param => {
-                -list   => $list,
-                -dot_it => 1,
-            },
-        }
-    );
 	print $q->header(); 
-    e_print($scrn);
+    e_print($html);
 
 }
 
@@ -422,11 +474,8 @@ sub message_report {
 		$Plugin_Url = $q->param('tracker_url');
 	}
 	
-#	die '$Plugin_Url ' . $Plugin_Url; 
-	
-	
     my $m_report = $rd->report_by_message( $q->param('mid') );
-
+	
 	# This is strange, as we have to first break it out of the data structure, 
 	# and stick it back in: 
 	
@@ -503,31 +552,53 @@ sub country_geoip_table {
 		my $type = $q->param('type')   || undef; 
 		my $label = $q->param('label') || undef; 		
 		
-		my $report = $rd->country_geoip_data(
-			{ 
-				-mid   => $mid, 
-				-type  => $type, 
-				-label => $label, 
-				-db     => $Plugin_Config->{Geo_IP_Db},
+		my $html; 
+
+		require DADA::App::DataCache; 
+		my $dc = DADA::App::DataCache->new; 
+
+		$html = $dc->retrieve(
+			{
+				-list    => $list, 
+				-name    => 'country_geoip_table' . '.' . $mid . '.' . $type,
 			}
 		);
-		for(@$report){ 
-			$_->{type} = $type; 
-		}	
-	    require DADA::Template::Widgets;
-	    my $scrn = DADA::Template::Widgets::screen(
-	        {
-	            -screen             => 'plugins/tracker/country_geoip_table.tmpl',
-				-vars => { 
-					c_geo_ip_report => $report, 
-					type            => $type,
-					label           => $label, 
+		if(! defined($html)){
 					
+			my $report = $rd->country_geoip_data(
+				{ 
+					-mid   => $mid, 
+					-type  => $type, 
+					-label => $label, 
+					-db     => $Plugin_Config->{Geo_IP_Db},
 				}
-	        }
-	    );
+			);
+			for(@$report){ 
+				$_->{type} = $type; 
+			}	
+		    require DADA::Template::Widgets;
+		    $html = DADA::Template::Widgets::screen(
+		        {
+		            -screen             => 'plugins/tracker/country_geoip_table.tmpl',
+					-vars => { 
+						c_geo_ip_report => $report, 
+						type            => $type,
+						label           => $label, 
+					
+					}
+		        }
+		    );
+			$dc->cache(
+				{ 
+					-list    => $list, 
+					-name    => 'country_geoip_table' . '.' . $mid . '.' . $type,
+					-data    => \$html, 
+				}
+			);
+		}
+		
 		print $q->header(); 
-	    e_print($scrn);
+	    e_print($html);
 	
 }
 
@@ -562,6 +633,36 @@ sub individual_country_geoip_json {
 		-printout => 1,
 		});
 }
+sub individual_country_geoip_report {
+	my $mid     = $q->param('mid')     || undef; 
+	my $type    = $q->param('type')    || undef; 
+	my $country = $q->param('country') || undef; 
+	
+	$rd->individual_country_geoip_report({ 
+		-mid      => $mid, 
+		-type     => $type, 
+#		-db       => $Plugin_Config->{Geo_IP_Db},
+		-country  => $country, 
+		-printout => 1,
+		});
+}
+sub individual_country_geoip_report_table {
+	my $mid     = $q->param('mid')     || undef; 
+	my $type    = $q->param('type')    || undef; 
+	my $country = $q->param('country') || undef; 
+	my $chrome  = $q->param('chrome')  || 0; 
+	
+	$rd->individual_country_geoip_report_table({ 
+		-mid      => $mid, 
+		-type     => $type, 
+#		-db       => $Plugin_Config->{Geo_IP_Db},
+		-country  => $country, 
+		-chrome   => $chrome, 
+		-printout => 1,
+		Plugin_URL => $Plugin_Config->{Plugin_URL}, 
+		});
+}
+
 
 
 

@@ -693,8 +693,7 @@ sub redirect_tagify {
 
 
 
-sub message_history_json { 
-	
+sub message_history_json { 	
 	my $self = shift; 
 	my ($args) = @_; 
 	
@@ -708,86 +707,113 @@ sub message_history_json {
 	if(!exists($args->{-printout})){ 
 		$args->{-printout} = 0;
 	}
+	my $json; 
 	
-	my ($total, $msg_ids) = $self->get_all_mids(
-		{ 
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new; 
+	
+	$json = $dc->retrieve(
+		{
+			-list    => $self->{name}, 
+			-name    => 'message_history_json', 
 			-page    => $page, 
-			-entries => $self->{ls}->param('tracker_record_view_count'),  
-			
+			-entries => $self->{ls}->param('tracker_record_view_count'), 
 		}
 	);
 	
- 	my $report_by_message_index = $self->report_by_message_index({-all_mids => $msg_ids}) || [];
 	
-	my $num_subscribers = []; 
-	my $opens           = [];
-	my $clickthroughs   = [];
-	my $soft_bounces    = [];
-	my $hard_bounces    = [];
-	my $first_date      = undef;
-	my $last_date       = undef; 
+	if(! defined($json)){ 
+		warn "well, that didn't work."; 
+		my ($total, $msg_ids) = $self->get_all_mids(
+			{ 
+				-page    => $page, 
+				-entries => $self->{ls}->param('tracker_record_view_count'),  
+			
+			}
+		);
+	
+	 	my $report_by_message_index = $self->report_by_message_index({-all_mids => $msg_ids}) || [];
+	
+		my $num_subscribers = []; 
+		my $opens           = [];
+		my $clickthroughs   = [];
+		my $soft_bounces    = [];
+		my $hard_bounces    = [];
+		my $first_date      = undef;
+		my $last_date       = undef; 
 
-	require         Data::Google::Visualization::DataTable;
-	my $datatable = Data::Google::Visualization::DataTable->new();
+		require         Data::Google::Visualization::DataTable;
+		my $datatable = Data::Google::Visualization::DataTable->new();
 
-	$datatable->add_columns(
-		   { id => 'date',          label => 'Date',         type => 'string'}, 
-	       { id => 'subscribers',   label => "Subscribers",  type => 'number'},
-	       { id => 'opens',         label => "Opens",        type => 'number'},
-	       { id => 'clickthroughs', label => "Clickthroughs",        type => 'number'},
-	       { id => 'soft_bounces',  label => "Soft Bounces", type => 'number'},
-	       { id => 'hard_bounces',  label => "Hard Bounces", type => 'number'},
-	);
+		$datatable->add_columns(
+			   { id => 'date',          label => 'Date',         type => 'string'}, 
+		       { id => 'subscribers',   label => "Subscribers",  type => 'number'},
+		       { id => 'opens',         label => "Opens",        type => 'number'},
+		       { id => 'clickthroughs', label => "Clickthroughs",        type => 'number'},
+		       { id => 'soft_bounces',  label => "Soft Bounces", type => 'number'},
+		       { id => 'hard_bounces',  label => "Hard Bounces", type => 'number'},
+		);
 	
 	
-	for(reverse @$report_by_message_index){ 
-		if($self->verified_mid($_->{mid})){
+		for(reverse @$report_by_message_index){ 
+			if($self->verified_mid($_->{mid})){
 			
-			if($self->{ls}->param('tracker_clean_up_reports') == 1){ 
-				next unless exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/
-			}
-		
-			my $date; 
-			my $num_subscribers = $_->{num_subscribers}; 
-			my $opens = 0;
-			my $clickthroughs = 0;
-			my $soft_bounces = 0;
-			my $hard_bounces = 0;  
-			
-			if(defined($_->{open})){ 
-				$opens = $_->{open};	
-			}
-			if(defined($_->{count})){ 
-				$clickthroughs = $_->{count};	
-			}
-			if(defined($_->{soft_bounce})){ 
-				$soft_bounces = $_->{soft_bounce};	
-			}
-			if(defined($_->{hard_bounce})){ 
-				$hard_bounces = $_->{hard_bounce};	
-			}
-			
-			$datatable->add_rows(
-				{
-			        date          =>  { 
-										v => $_->{mid}, 
-										f => DADA::App::Guts::date_this( -Packed_Date => $_->{mid}) 
-										},
-	                subscribers   => $num_subscribers ,
-	                opens         => $opens ,
-	                clickthroughs => $clickthroughs,
-	                soft_bounces  => $soft_bounces, 
-	                hard_bounces  => $hard_bounces ,
+				if($self->{ls}->param('tracker_clean_up_reports') == 1){ 
+					next unless exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/
 				}
-			); 				
-		}
-	} 
+		
+				my $date; 
+				my $num_subscribers = $_->{num_subscribers}; 
+				my $opens = 0;
+				my $clickthroughs = 0;
+				my $soft_bounces = 0;
+				my $hard_bounces = 0;  
+			
+				if(defined($_->{open})){ 
+					$opens = $_->{open};	
+				}
+				if(defined($_->{count})){ 
+					$clickthroughs = $_->{count};	
+				}
+				if(defined($_->{soft_bounce})){ 
+					$soft_bounces = $_->{soft_bounce};	
+				}
+				if(defined($_->{hard_bounce})){ 
+					$hard_bounces = $_->{hard_bounce};	
+				}
+			
+				$datatable->add_rows(
+					{
+				        date          =>  { 
+											v => $_->{mid}, 
+											f => DADA::App::Guts::date_this( -Packed_Date => $_->{mid}) 
+											},
+		                subscribers   => $num_subscribers ,
+		                opens         => $opens ,
+		                clickthroughs => $clickthroughs,
+		                soft_bounces  => $soft_bounces, 
+		                hard_bounces  => $hard_bounces ,
+					}
+				); 				
+			}
+		} 
 
 
-	my $json = $datatable->output_javascript(
-		pretty  => 1,
-	);
+		$json = $datatable->output_javascript(
+			pretty  => 1,
+		);
+		$dc->cache(
+			{ 
+				-list    => $self->{name}, 
+				-name    => 'message_history_json', 
+				-page    => $page, 
+				-entries => $self->{ls}->param('tracker_record_view_count'), 
+				-data    => \$json, 
+			}
+		);
 	
+	}
+
 	if($args->{-printout} == 1){ 
 		require CGI; 
 		my $q = CGI->new; 

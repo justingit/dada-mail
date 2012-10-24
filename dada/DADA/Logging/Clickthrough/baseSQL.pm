@@ -662,169 +662,201 @@ sub get_all_mids {
 
 sub report_by_message_index {
 
+	my $st = time; 
+	
     my $self          = shift;
 	my ($args)        = @_; 
+	my $sorted_report = [];
+
+# !!! This does not take into effect the range of message ids... 
+=cut	
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new;
 	
-    my $sorted_report = [];
-    my $report        = {};
-    my $l;
+	my $sorted_report_dump = $dc->retrieve(
+		{
+			-list    => $self->{name}, 
+			-name    => 'report_by_message_index', 
+		}
+	);
+	$sorted_report = eval($sorted_report_dump);
+
+	if(! defined($sorted_report)){
+=cut
+
+	    my $report        = {};
+	    my $l;
 	
-	my $total   = undef; 
-	my $msg_id1 = []; 
 	
-	if(exists($args->{-all_mids})){ 
-		$msg_id1 = $args->{-all_mids};
-	}
-	else { 
-		# Not using total, right now... 
-		($total, $msg_id1) = $self->get_all_mids();
-	}
+		my $total   = undef; 
+		my $msg_id1 = []; 
+	
+		if(exists($args->{-all_mids})){ 
+			$msg_id1 = $args->{-all_mids};
+		}
+		else { 
+			# Not using total, right now... 
+			($total, $msg_id1) = $self->get_all_mids();
+		}
 	
 	
-    for my $msg_id (@$msg_id1) {
+	    for my $msg_id (@$msg_id1) {
 		
-		next 
-			unless defined $msg_id;
+			next 
+				unless defined $msg_id;
 		
-        $report->{$msg_id}->{msg_id} = $msg_id;
+	        $report->{$msg_id}->{msg_id} = $msg_id;
 
-        # Clickthroughs
-        my $clickthrough_count_query =
-'SELECT COUNT(msg_id) FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} .' WHERE list = ?  AND msg_id = ?';
-        $report->{$msg_id}->{count} =
-          $self->{dbh}
-          ->selectcol_arrayref( $clickthrough_count_query, {}, $self->{name}, $msg_id )->[0];
+	        # Clickthroughs
+	        my $clickthrough_count_query =
+	'SELECT COUNT(msg_id) FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} .' WHERE list = ?  AND msg_id = ?';
+	        $report->{$msg_id}->{count} =
+	          $self->{dbh}
+	          ->selectcol_arrayref( $clickthrough_count_query, {}, $self->{name}, $msg_id )->[0];
 
-        my $misc_count_query =
-'SELECT COUNT(msg_id) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
+	        my $misc_count_query =
+	'SELECT COUNT(msg_id) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
 
-	for(
-		qw(
-			open
-			soft_bounce
-			hard_bounce
-			forward_to_a_friend
-			view_archive
-		)
-	){ 
-		$report->{$msg_id}->{$_} =
-          $self->{dbh}
-          ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, $_ )->[0];
+		for(
+			qw(
+				open
+				soft_bounce
+				hard_bounce
+				forward_to_a_friend
+				view_archive
+			)
+		){ 
+			$report->{$msg_id}->{$_} =
+	          $self->{dbh}
+	          ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, $_ )->[0];
+		}
+
+	        my $num_sub_query =
+	'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
+
+	        $report->{$msg_id}->{num_subscribers} = $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 }, $self->{name}, $msg_id, 'num_subscribers' )->[0];
+
+	    }
+
+	    require DADA::MailingList::Archives;
+	    my $mja = DADA::MailingList::Archives->new( { -list => $self->{name} } );
+
+	    # Now, sorted:
+	    for ( sort { $b <=> $a } keys %$report ) {
+	        $report->{$_}->{mid} = $_;    # this again.
+	        $report->{$_}->{date} =
+	          DADA::App::Guts::date_this( -Packed_Date => $_, );
+			$report->{$_}->{S_PROGRAM_URL} = $DADA::Config::S_PROGRAM_URL; 
+			$report->{$_}->{list} = $self->{name}; 
+	        if ( $mja->check_if_entry_exists($_) ) {
+	            $report->{$_}->{message_subject} = $mja->get_archive_subject($_)
+	              || $_;
+	        }
+	        else {
+	        }
+
+	        push( @$sorted_report, $report->{$_} );
+	    }
+=cut
+		require Data::Dumper; 
+		my $sorted_report_dump = Data::Dumper->new([$sorted_report]); 
+		   $sorted_report_dump->Purity(1)->Terse(1)->Deepcopy(1);
+		$dc->cache(
+			{ 
+				-list    => $self->{name}, 
+				-name    => 'report_by_message_index'
+				-data    => \$sorted_report_dump->Dump, 
+			}
+		);
 	}
+=cut
 
-        my $num_sub_query =
-'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
-
-        $report->{$msg_id}->{num_subscribers} = $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 }, $self->{name}, $msg_id, 'num_subscribers' )->[0];
-
-    }
-
-    require DADA::MailingList::Archives;
-    my $mja = DADA::MailingList::Archives->new( { -list => $self->{name} } );
-
-    # Now, sorted:
-    for ( sort { $b <=> $a } keys %$report ) {
-        $report->{$_}->{mid} = $_;    # this again.
-        $report->{$_}->{date} =
-          DADA::App::Guts::date_this( -Packed_Date => $_, );
-		$report->{$_}->{S_PROGRAM_URL} = $DADA::Config::S_PROGRAM_URL; 
-		$report->{$_}->{list} = $self->{name}; 
-        if ( $mja->check_if_entry_exists($_) ) {
-            $report->{$_}->{message_subject} = $mja->get_archive_subject($_)
-              || $_;
-        }
-        else {
-        }
-
-        push( @$sorted_report, $report->{$_} );
-    }
-
+	carp 'report_by_message_index took: ' . ($st - time) . ' seconds '; 
     return $sorted_report;
 }
 
 sub report_by_message {
 
     my $self   = shift;
-    my $msg_id = shift;
+    my $mid    = shift;
 
-    my $report = {};
+	my $m_report = {};
+    my $report   = {};
     my $l;
 
-    my $num_sub_query =
-        'SELECT details FROM '
-      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-      . ' WHERE list = ? AND msg_id = ? AND event = ?';
-    $report->{num_subscribers} =
-      $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 },
-        $self->{name}, $msg_id, 'num_subscribers' )->[0];
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new;
+	
+	my $m_report_dump = $dc->retrieve(
+		{
+			-list    => $self->{name}, 
+			-name    => 'report_by_message' . '.' . $mid, 
+		}
+	);
+	$m_report = eval($m_report_dump);
 
-    my $misc_count_query =
-        'SELECT COUNT(msg_id) FROM '
-      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-      . ' WHERE list = ? AND msg_id = ? AND event = ?';
-
-    for (
-        qw(
-        open
-        soft_bounce
-        hard_bounce
-        forward_to_a_friend
-        view_archive
-        )
-      )
-    {
-        $report->{$_} =
-          $self->{dbh}
-          ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id,
-            $_ )->[0];
-    }
-
-    my $url_clickthroughs_query =
-        'SELECT url, COUNT(url) AS count FROM '
-      . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table}
-      . ' where list = ? AND msg_id = ? GROUP BY url';
-    my $sth = $self->{dbh}->prepare($url_clickthroughs_query);
-    $sth->execute( $self->{name}, $msg_id );
-    my $url_report = [];
-    my $row        = undef;
-    $report->{clickthroughs} = 0;
-    while ( $row = $sth->fetchrow_hashref ) {
-        push( @$url_report, { url => $row->{url}, count => $row->{count} } );
-        $report->{clickthroughs} = $report->{clickthroughs} + $row->{count};
-    }
-    $sth->finish;
-    undef $sth;
-    $report->{url_report} = $url_report;
-
-    for my $bounce_type (qw(soft_bounce hard_bounce)) {
-        my $bounce_query =
-            'SELECT timestamp, details from '
-          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-          . ' WHERE list = ? AND msg_id = ? AND event = ? ORDER BY details';
-        my $sth = $self->{dbh}->prepare($bounce_query);
-        $sth->execute( $self->{name}, $msg_id, $bounce_type );
-        my @bounce_report = ();
-        while ( $row = $sth->fetchrow_hashref ) {
-			my ($name, $domain) = split('@', $row->{details}); 
-            push( @bounce_report,
-                { 
-					timestamp    => $row->{timestamp}, 
-					email        => $row->{details}, 
-					email_name   => $name, 
-					email_domain => $domain, 
-				} 
-			);
-        }
-		# sort by domain... 
-		my @sorted = map  { $_->[0] }
-		          sort { $a->[1] cmp $b->[1] }
-		          map  { [$_, $_->{email_domain}] }
-		               @bounce_report;
+	if(!defined($m_report)){
 		
-        $report->{ $bounce_type . '_report' } = [@sorted];
-        $sth->finish;
-    }
-    return $report;
+	    my $num_sub_query =
+	        'SELECT details FROM '
+	      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+	      . ' WHERE list = ? AND msg_id = ? AND event = ?';
+	    $report->{num_subscribers} =
+	      $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 },
+	        $self->{name}, $mid, 'num_subscribers' )->[0];
+
+	    my $misc_count_query =
+	        'SELECT COUNT(msg_id) FROM '
+	      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+	      . ' WHERE list = ? AND msg_id = ? AND event = ?';
+
+	    for (
+	        qw(
+	        open
+	        soft_bounce
+	        hard_bounce
+	        forward_to_a_friend
+	        view_archive
+	        )
+	      )
+	    {
+	        $report->{$_} =
+	          $self->{dbh}
+	          ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $mid,
+	            $_ )->[0];
+	    }
+
+	    my $url_clickthroughs_query =
+	        'SELECT url, COUNT(url) AS count FROM '
+	      . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table}
+	      . ' where list = ? AND msg_id = ? GROUP BY url';
+	    my $sth = $self->{dbh}->prepare($url_clickthroughs_query);
+	    $sth->execute( $self->{name}, $mid );
+	    my $url_report = [];
+	    my $row        = undef;
+	    $report->{clickthroughs} = 0;
+	    while ( $row = $sth->fetchrow_hashref ) {
+	        push( @$url_report, { url => $row->{url}, count => $row->{count} } );
+	        $report->{clickthroughs} = $report->{clickthroughs} + $row->{count};
+	    }
+	    $sth->finish;
+	    undef $sth;
+	    $report->{url_report} = $url_report;
+
+		$m_report = $report; 
+		require Data::Dumper; 
+		my $m_report_dump = Data::Dumper->new([$m_report]); 
+		   $m_report_dump->Purity(1)->Terse(1)->Deepcopy(1);
+		$dc->cache(
+			{ 
+				-list    => $self->{name}, 
+				-name    => 'report_by_message' . '.' . $mid, 
+				-data    => \$m_report_dump->Dump, 
+			}
+		);
+
+	}
+    return $m_report;
 }
 
 sub export_logs {
@@ -904,9 +936,9 @@ sub ip_data {
 	my $self   = shift; 
 	my ($args) = @_; 
 
-	if(!exists($args->{-count})){ 
-		$args->{-count} = 20; 
-	}
+#	if(!exists($args->{-count})){ 
+#		$args->{-count} = 20; 
+#	}
 	if(!exists($args->{-mid})){ 
 		$args->{-mid} = undef; 
 	}
@@ -917,17 +949,20 @@ sub ip_data {
 #	select remote_addr from dada_clickthrough_url_log where msg_id = '20110502135133'; 
 	my $query; 
 	if($args->{-type} eq 'clickthroughs'){ 
-		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?'; 
+		$query = 'SELECT timestamp, remote_addr, url FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?'; 
 	}
 	elsif($args->{-type} eq 'opens'){ 
-		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'open\' AND list = ?'; 	
+		$query = 'SELECT timestamp, remote_addr, event FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'open\' AND list = ?'; 	
 	}
 	elsif($args->{-type} eq 'forward_to_a_friend') { 
-		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'forward_to_a_friend\' AND list = ?'; 			
+		$query = 'SELECT timestamp, remote_addr, event FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'forward_to_a_friend\' AND list = ?'; 			
 	}
 	elsif($args->{-type} eq 'view_archive') { 
-		$query = 'SELECT remote_addr FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'view_archive\' AND list = ?'; 			
+		$query = 'SELECT timestamp, remote_addr, event FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'view_archive\' AND list = ?'; 			
 	}
+	elsif($args->{-type} eq 'ALL') {
+		$query = 'SELECT timestamp, remote_addr, event FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE (event = \'open\' OR event = \'forward_to_a_friend\' OR event = \'view_archive\') AND list = ?'; 				
+	} 
 
 	if(defined($args->{-mid})){ 
 		$query .= ' AND msg_id=?'; 
@@ -944,9 +979,38 @@ sub ip_data {
 	}
 	my $ips = []; 
 
-	while ( ( my $ip ) = $sth->fetchrow_array ) {
-		push(@$ips, $ip);
+	my $row; 
+	while ( $row = $sth->fetchrow_hashref ) {
+		if($args->{-type} eq 'clickthroughs'){ 
+			push(@$ips, {
+				timestamp => $row->{timestamp}, 
+				ip        => $row->{remote_addr}, 
+				event     => 'clickthrough', 
+				url       => $row->{url}, 
+				
+			});
+		}
+		else { 
+			push(@$ips, {
+				timestamp => $row->{timestamp}, 
+				ip        => $row->{remote_addr}, 
+				event     => $row->{event}, 
+			});
+		}
 	}	
+	$sth->finish; 
+
+	if($args->{-type} eq 'ALL') {
+		my $ct_ips = $self->ip_data(
+			{ 
+				-type => 'clickthroughs', 
+				-mid  => $args->{-mid}, 
+			}
+		); 
+		foreach(@$ct_ips){ 
+			push(@$ips, $_);
+		}
+	}
 	return $ips; 
 	
 }
@@ -955,9 +1019,9 @@ sub country_geoip_data {
 	my $self   = shift; 
 	my ($args) = @_; 	
 	
-	if(!exists($args->{-count})){ 
-		$args->{-count} = 20; 
-	}
+#	if(!exists($args->{-count})){ 
+#		$args->{-count} = 20; 
+#	}
 	if(!exists($args->{-mid})){ 
 		$args->{-mid} = undef; 
 	}
@@ -968,18 +1032,18 @@ sub country_geoip_data {
 		croak "You MUST pass the path to the geo ip database in, '-db'";
 	}
 
-	my $ips = $self->ip_data($args); 
+	my $ip_data = $self->ip_data($args); 
 	my $loc = {}; 
 	
-	require Geo::IP::PurePerl;
+	require  Geo::IP::PurePerl;
 	my $gi = Geo::IP::PurePerl->new($args->{-db});
 	my $addr_name   = {};
 	my $per_country = {}; 
-	foreach(@$ips){ 
-		my $country = $gi->country_code_by_addr($_);
+	foreach(@$ip_data){ 
+		my $country = $gi->country_code_by_addr($_->{'ip'});
 		
 		# Cache the Country name by IP...
-	    $addr_name->{$country} = $gi->country_name_by_addr($_);
+	    $addr_name->{$country} = $gi->country_name_by_addr($_->{'ip'});
 		
 		if(defined($country)){ 
 			if(!exists($per_country->{$country})){ 
@@ -1029,33 +1093,55 @@ sub country_geoip_json {
 	if(!exists($args->{-printout})){ 
 		$args->{-printout} = 0;
 	}
+	my $json; 
 	
-	my $report = $self->country_geoip_data($args);	
-	
-	require Data::Google::Visualization::DataTable; 
-	my $datatable = Data::Google::Visualization::DataTable->new();
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new; 
 
-	$datatable->add_columns(
-	       { id => 'location',  label => "Location",       type => 'string',},
-	       { id => 'color',     label => $args->{-label},  type => 'number',},
-#	       { id => 'type',      label => 'Type',           type => 'string',},
+	$json = $dc->retrieve(
+		{
+			-list    => $self->{name}, 
+			-name    => 'country_geoip_json' . '.' . $args->{-mid} . '.' . $args->{-type}, 
+		}
 	);
-
-	for(@$report){ 
-		$datatable->add_rows(
-	        [
-	               { v => $_->{code}, f => $_->{name}},
-	               { v => $_->{count} },
-#	               { v => $args->{-type} },
 	
-	       ],
+	if(! defined($json)){ 
+	
+		my $report = $self->country_geoip_data($args);	
+	
+		require Data::Google::Visualization::DataTable; 
+		my $datatable = Data::Google::Visualization::DataTable->new();
+
+		$datatable->add_columns(
+		       { id => 'location',  label => "Location",       type => 'string',},
+		       { id => 'color',     label => $args->{-label},  type => 'number',},
+	#	       { id => 'type',      label => 'Type',           type => 'string',},
 		);
+
+		for(@$report){ 
+			$datatable->add_rows(
+		        [
+		               { v => $_->{code}, f => $_->{name}},
+		               { v => $_->{count} },
+	#	               { v => $args->{-type} },
+	
+		       ],
+			);
+		}
+
+
+		$json = $datatable->output_javascript(
+			pretty  => 1,
+		);
+		$dc->cache(
+			{ 
+				-list    => $self->{name}, 
+				-name    => 'country_geoip_json' . '.' . $args->{-mid} . '.' . $args->{-type}, 
+				-data    => \$json, 
+			}
+		);
+		
 	}
-
-
-	my $json = $datatable->output_javascript(
-		pretty  => 1,
-	);
 	
 	if($args->{-printout} == 1){ 
 		require CGI; 
@@ -1093,20 +1179,16 @@ sub individual_country_geoip {
 	#}
 	
 	my $report = $self->ip_data($args);
-	
-
-	
-	
 	require Geo::IP::PurePerl;
 	my $gi = Geo::IP::PurePerl->open("/home/simoni/dadamailproject.com/cgi-bin/dada/DADA/data/GeoLiteCity.dat");
-	my $d      = {};
-	my $cities = {} ;
-	
-	my $ips = $self->ip_data($args); 
-	for my $ip(@$ips){ 
+	my $d           = {};
+	my $cities      = {} ;
+	my $ips_by_city = {};
+	my $ip_data     = $self->ip_data($args); 
+	for my $i_data(@$ip_data){ 
 		my ($country_code,$country_code3,$country_name,$region,
 		    $city,$postal_code,$latitude,$longitude,
-		    $metro_code,$area_code ) = $gi->get_city_record($ip);
+		    $metro_code,$area_code ) = $gi->get_city_record($i_data->{'ip'});
 		
 		if($country_code eq $args->{-country}){ 
 			
@@ -1125,10 +1207,12 @@ sub individual_country_geoip {
 				$d->{"$city\:$metro_code"} = 0; 
 				$cities->{"$city\:$metro_code"} = { 
 					lat   => $latitude, 
-					long => $longitude, 
+					long  => $longitude, 
 				};
+				$ips_by_city->{$city} = [];
 			} 
 			$d->{"$city\:$metro_code"}++; 
+			push(@{$ips_by_city->{$city}}, $i_data);  
 		}
 	}
 	my @r; 
@@ -1136,47 +1220,79 @@ sub individual_country_geoip {
 		my ($city, $metro_code) = split(':', $_); 
 		push(@r, 
 			{ 
-			lat        =>  $cities->{$_}->{lat}, 
+			lat        => $cities->{$_}->{lat}, 
 			long       => $cities->{$_}->{long}, 
 			city       => $city, 
 			count      => $d->{$_}, 
+			ip_data    => $ips_by_city->{$city},
 		});
 	} 
-	return [@r]; 
+	# sort by city
+	my @sorted = map { $_->[0] }
+      sort { $a->[1] cmp $b->[1] }
+      map { [ $_, $_->{city} ] } @r;
+	return [@sorted]; 
 }
 
-sub individual_country_geoip_json { 
+sub individual_country_geoip_json {
+	
 	my $self   = shift; 
 	my ($args) = @_; 
 	
-	my $report = $self->individual_country_geoip($args);
 	
-	require Data::Google::Visualization::DataTable; 
-	my $datatable = Data::Google::Visualization::DataTable->new();
+	my $json;
+	
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new; 
+
+	my $report = $self->individual_country_geoip($args);
 
 
-	$datatable->add_columns(
-	       { id => 'latitude',     label => "Latitude",        type => 'number',},
-	       { id => 'longitude',    label => "Longitude",       type => 'number',},
-	       { id => 'DESCRIPTION',  label => "Description",     type => 'string',},
-	       { id => 'marker_color', label => "Clickthroughs",   type => 'number',},
+	$json = $dc->retrieve(
+		{
+			-list    => $self->{name}, 
+			-name    => 'individual_country_geoip' . '.' . $args->{-mid} . '.' . $args->{-type} . '.' . $args->{-country}, 
+		}
 	);
 	
+	if(! defined($json)){
+		
+		my $report = $self->individual_country_geoip($args);
 	
-	for my $r(@$report) { 
-		$datatable->add_rows(
-	        [   
-	               { v => $r->{lat},   },
-	               { v => $r->{long},  },
-				   { v => $r->{city},  },
-				   { v => $r->{count},},
-	       ],
+		require Data::Google::Visualization::DataTable; 
+		my $datatable = Data::Google::Visualization::DataTable->new();
+
+
+		$datatable->add_columns(
+		       { id => 'latitude',     label => "Latitude",        type => 'number',},
+		       { id => 'longitude',    label => "Longitude",       type => 'number',},
+		       { id => 'DESCRIPTION',  label => "Description",     type => 'string',},
+		       { id => 'marker_color', label => "Clickthroughs",   type => 'number',},
+		);
+	
+	
+		for my $r(@$report) { 
+			$datatable->add_rows(
+		        [   
+		               { v => $r->{lat},   },
+		               { v => $r->{long},  },
+					   { v => $r->{city},  },
+					   { v => $r->{count},},
+		       ],
+			);
+		}
+	
+		$json = $datatable->output_javascript(
+			pretty  => 1,
+		);
+		$dc->cache(
+			{ 
+				-list    => $self->{name}, 
+				-name    => 'individual_country_geoip' . '.' . $args->{-mid} . '.' . $args->{-type} . '.' . $args->{-country}, 
+				-data    => \$json, 
+			}
 		);
 	}
-	
-	my $json = $datatable->output_javascript(
-		pretty  => 1,
-	);
 	
 	if($args->{-printout} == 1){ 
 		require CGI; 
@@ -1191,8 +1307,146 @@ sub individual_country_geoip_json {
 	else { 
 		return $json; 
 	}
+}
+sub individual_country_geoip_report { 
+	my $self   = shift; 
+	my ($args) = @_;  
+
+	my %labels = (
+		open                => 'Open', 
+		clickthrough        => 'Clickthrough', 
+		view_archive 	    => 'Archive View',
+		forward_to_a_friend => 'Forward',  
+	); 
+	
+	my $report = $self->individual_country_geoip($args);
+
+
+
+	# This needs to be munged - count each specific IPS: 
+	for my $loc(@$report) { 
+		my $unique_ips = {};
+		my $ip_history = {};
+		for my $ipdata(@{$loc->{ip_data}}){ 
+			if(!exists($unique_ips->{$ipdata->{ip}})){ 
+				$unique_ips->{$ipdata->{ip}} = 0;
+				$ip_history->{$ipdata->{ip}} = [];
+			}
+			$unique_ips->{$ipdata->{ip}}++;
+			my $time = $self->timestamp_to_time($ipdata->{timestamp});
+
+			push(@{$ip_history->{$ipdata->{ip}}}, { 
+				timestamp   => $ipdata->{timestamp},
+				time        => $time, 
+				ctime       => scalar(localtime($time)), 
+                url         => $ipdata->{url},
+                event       => $ipdata->{event},
+				event_label => $labels{$ipdata->{event}},
+			}); 
+		}
+		$loc->{unique_ips} = [];
+		
+		# Sort ip events by date
+		my $sorted_ip_history = {};
+		for my $unsorted_ips(keys %$ip_history){ 
+			$sorted_ip_history->{$unsorted_ips} = [];
+			
+			
+			my $u_ip_data = $ip_history->{$unsorted_ips};
+			
+			my @sorted_ips = map { $_->[0] }
+	          sort { $a->[1] <=> $b->[1] }
+	          map { [ $_, $_->{'time'} ] } @$u_ip_data;
+	
+			 $sorted_ip_history->{$unsorted_ips} = [@sorted_ips]; 
+		}
+		undef($ip_history); # garbage collect? 
+		#/ Sort ip events by date
+		
+		
+		for my $u_ips(keys %$unique_ips){ 
+			push(@{$loc->{unique_ips}}, {
+				ip         => $u_ips, 
+				count      => $unique_ips->{$u_ips}, 
+				ip_history => $sorted_ip_history->{$u_ips},
+			}); 
+		}
+		$loc->{unique_ip_count} = scalar(@{$loc->{unique_ips}}); 
+		delete($loc->{ip_data});
+	} 
+
+=cut
+	use CGI qw(:standard); 
+	print header('text/plain');
+	use Data::Dumper; 
+	print Dumper($report);  
+=cut
+
+	return $report;
 	
 	
+}
+sub timestamp_to_time {
+	my $self = shift;  	
+	my $timestamp = shift;
+	
+	require Time::Local; 
+	 
+	my ($date, $time) = split(' ', $timestamp); 
+	my ($year, $month, $day) = split('-', $date); 
+	my ($hour, $minute, $second) = split(':', $time); 
+	$second = int($second - 0.5) ;
+	return Time::Local::timelocal( $second, $minute, $hour, $day, $month-1, $year );
+}
+
+sub individual_country_geoip_report_table { 
+	my $self   = shift; 
+	my ($args) = @_;
+	my $html; 
+	
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new; 
+
+	$html = $dc->retrieve(
+		{
+			-list    => $self->{name}, 
+			-name    => 'individual_country_geoip_report_table' . '.' . $args->{-mid} . '.' . $args->{-country}. '.' . $args->{-type} . '.' . $args->{-chrome},
+		}
+	);
+	if(!defined($html)){ 
+	
+	
+		my $report = $self->individual_country_geoip_report($args);
+	
+		require DADA::Template::Widgets; 
+		$html = DADA::Template::Widgets::screen(
+	        {
+	            -screen           => 'plugins/tracker/individual_country_geoip_report_table.tmpl',
+	            -vars => {
+					report => $report, 
+					num_bounces   => scalar(@$report), 
+					title         => $args->{-type},  
+					country       => $args->{-country}, 
+					chrome        => $args->{-chrome}, 
+					mid           => $args->{-mid}, 
+					Plugin_URL    => $args->{Plugin_URL}, 
+	            },
+	        }
+	    );	
+		$dc->cache(
+			{ 
+				-list    => $self->{name}, 
+				-name    => 'individual_country_geoip_report_table' . '.' . $args->{-mid} . '.' . $args->{-country}. '.' . $args->{-type} . '.' . $args->{-chrome},
+				-data    => \$html, 
+			}
+		);
+	}
+	
+	
+	use CGI qw(:standard); 
+	print header(); 
+	print $html; 
+    
 }
 
 
@@ -1200,13 +1454,13 @@ sub data_over_time {
 	 
 	my $self   = shift; 
 	my ($args) = @_; 
-	my $msg_id = undef; 
+	my $mid    = undef; 
 	my $data   = {};
 	my $order  = [];
 	my $r      = [];
 	
-	if(exists($args->{-msg_id})){ 
-		$msg_id = $args->{-msg_id};
+	if(exists($args->{-mid})){ 
+		$mid = $args->{-mid};
 	}
 	if(!exists($args->{-type})){ 
 		$args->{-type} = 'clickthroughs';
@@ -1225,15 +1479,15 @@ sub data_over_time {
 		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'view_archive\' AND list = ? '; 					
 	}
 	 
-	if($msg_id){ 
+	if($mid){ 
 		$query .= ' AND msg_id = ?'; 
 	}
 	$query .= ' ORDER BY timestamp'; 
 	
 	
     my $sth = $self->{dbh}->prepare($query);
-	if($msg_id){ 		
-	    $sth->execute($self->{name}, $msg_id)
+	if($mid){ 		
+	    $sth->execute($self->{name}, $mid)
 	      or croak "cannot do statement! $DBI::errstr\n";
 	}
 	else { 
@@ -1264,29 +1518,51 @@ sub data_over_time_json {
 	my $self   = shift; 
 	my ($args) = @_;
 	
-	my $report = $self->data_over_time($args);
+	my $json; 
 	
-	require Data::Google::Visualization::DataTable; 
-	my $datatable = Data::Google::Visualization::DataTable->new();
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new; 
 
-	$datatable->add_columns(
-		   { id => 'date',          label => 'Date',           type => 'string'}, 
-		   { id => 'number',         label => $args->{-label},  type => 'number',},
+	$json = $dc->retrieve(
+		{
+			-list    => $self->{name}, 
+			-name    => 'data_over_time_json' . '.' . $args->{-mid} . '.' . $args->{-type}, 
+		}
 	);
+	
+	if(! defined($json)){ 
+		
+		my $report = $self->data_over_time($args);
+	
+		require Data::Google::Visualization::DataTable; 
+		my $datatable = Data::Google::Visualization::DataTable->new();
 
-	for(@$report){ 
-		$datatable->add_rows(
-	        [
-	               { v => $_->{mdy}  },
-	               { v => $_->{count} },
-	       ],
+		$datatable->add_columns(
+			   { id => 'date',          label => 'Date',           type => 'string'}, 
+			   { id => 'number',         label => $args->{-label},  type => 'number',},
+		);
+
+		for(@$report){ 
+			$datatable->add_rows(
+		        [
+		               { v => $_->{mdy}  },
+		               { v => $_->{count} },
+		       ],
+			);
+		}
+
+
+		$json = $datatable->output_javascript(
+			pretty  => 1,
+		);
+		$dc->cache(
+			{ 
+				-list    => $self->{name}, 
+				-name    => 'data_over_time_json' . '.' . $args->{-mid} . '.' . $args->{-type}, 
+				-data    => \$json, 
+			}
 		);
 	}
-
-
-	my $json = $datatable->output_javascript(
-		pretty  => 1,
-	);
 	
 	if($args->{-printout} == 1){ 
 		require CGI; 
@@ -1305,6 +1581,98 @@ sub data_over_time_json {
 
 
 
+sub message_bounce_report { 
+	
+	my $self = shift; 
+	my ($args) = @_; 
+	
+	if(!exists($args->{-mid})){ 
+		croak "You MUST pass the, '-mid' paramater!"; 
+	}
+	my $mid = $args->{-mid};
+	my $type = 'soft'; 
+	if(exists($args->{-bounce_type})){ 
+		$type = $args->{-bounce_type};
+	}
+	
+        my $bounce_query =
+            'SELECT timestamp, details from '
+          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+          . ' WHERE list = ? AND msg_id = ? AND event = ? ORDER BY details';
+        my $sth = $self->{dbh}->prepare($bounce_query);
+
+        $sth->execute( $self->{name}, $mid, $type . '_bounce' );
+        my @bounce_report = ();
+        while (my $row = $sth->fetchrow_hashref ) {
+            my ( $name, $domain ) = split( '@', $row->{details} );
+            push(
+                @bounce_report,
+                {
+                    timestamp    => $row->{timestamp},
+                    email        => $row->{details},
+                    email_name   => $name,
+                    email_domain => $domain,
+                }
+            );
+        }		
+        # sort by domain...
+        my @sorted = map { $_->[0] }
+          sort { $a->[1] cmp $b->[1] }
+          map { [ $_, $_->{email_domain} ] } @bounce_report;
+        $sth->finish;
+
+		return [@sorted]; 
+		
+}
+sub message_bounce_report_table { 
+	my $self   = shift; 
+	my ($args) = @_; 
+	my $html; 
+	
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new; 
+
+	$html = $dc->retrieve(
+		{
+			-list    => $self->{name}, 
+			-name    => 'message_bounce_report_table' . '.' . $args->{-mid} . '.' . $args->{-bounce_type} , 
+		}
+	);
+	if(! defined($html)){ 
+	
+		my $title; 
+		if($args->{-bounce_type} eq 'soft'){ 
+			$title => 'Soft'; 
+		}
+		else { 
+			$title => 'Hard'; 
+		}
+		my $report = $self->message_bounce_report($args);
+		require DADA::Template::Widgets; 
+	    $html = DADA::Template::Widgets::screen(
+	        {
+	            -screen           => 'plugins/tracker/message_bounce_report_table.tmpl',
+	            -vars => {
+					bounce_report => $report, 
+					num_bounces   => scalar(@$report), 
+					title         => $title,  
+	            },
+	        }
+	    );	
+		$dc->cache(
+			{ 
+				-list    => $self->{name}, 
+				-name    => 'message_bounce_report_table' . '.' . $args->{-mid} . '.' . $args->{-bounce_type} , 
+				-data    => \$html, 
+			}
+		);
+	}
+	use CGI qw(:standard); 
+	print header(); 
+	e_print($html); 
+}
+
+
 sub bounce_stats { 
 	
 	my $self = shift; 
@@ -1318,25 +1686,17 @@ sub bounce_stats {
 		$count = $args->{-count};
 	}
 	
-	my $report = $self->report_by_message( $mid );
-    
 	my $type = 'soft'; 
 	if(exists($args->{-bounce_type})){ 
 		$type = $args->{-bounce_type};
 	}
-	my $bounces;
 	
-	if($type eq 'soft'){ 
-		$bounces = $report->{'soft_bounce_report'};
-	}
-	else { 
-		$bounces = $report->{'hard_bounce_report'};
-	}
-#		my $domains = shift; 
-
+	my $report = $self->message_bounce_report($args);
+	
+	
 	my $data = {};
 
-	for my $bounce_report(@$bounces ){ 
+	for my $bounce_report(@$report ){ 
 
 		my $email = $bounce_report->{email};
 
@@ -1376,30 +1736,56 @@ sub bounce_stats {
 sub bounce_stats_json { 
 	my $self = shift; 
 	my ($args) = @_; 
-	my $stats = $self->bounce_stats($args);
-	 
-
-	require         Data::Google::Visualization::DataTable;
-	my $datatable = Data::Google::Visualization::DataTable->new();
-
-	$datatable->add_columns(
-	       { id => 'domain',     label => "Domain",        type => 'string',},
-	       { id => 'number',     label => "Number",        type => 'number',},
-	);
-
-	for(@$stats){ 
-		$datatable->add_rows(
-	        [
-	               { v => $_->{domain} },
-	               { v => $_->{number} },
-	       ],
-		);
+	
+	if(!exists($args->{-count})){ 
+		$args->{-count} = 15; 
 	}
 
-	# Fancy-pants
-	my $json = $datatable->output_javascript(
-		pretty  => 1,
+	my $json; 
+	
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new; 
+
+	$json = $dc->retrieve(
+		{
+			-list    => $self->{name}, 
+			-name    => 'bounce_stats_json' . '.' . $args->{-mid} . '.' . $args->{-count} . '.' . $args->{-bounce_type} , 
+		}
 	);
+	
+	if(!defined($json)){ 
+		my $stats = $self->bounce_stats($args);
+	 
+
+		require         Data::Google::Visualization::DataTable;
+		my $datatable = Data::Google::Visualization::DataTable->new();
+
+		$datatable->add_columns(
+		       { id => 'domain',     label => "Domain",        type => 'string',},
+		       { id => 'number',     label => "Number",        type => 'number',},
+		);
+
+		for(@$stats){ 
+			$datatable->add_rows(
+		        [
+		               { v => $_->{domain} },
+		               { v => $_->{number} },
+		       ],
+			);
+		}
+
+		$json = $datatable->output_javascript(
+			pretty  => 1,
+		);
+		$dc->cache(
+			{ 
+				-list    => $self->{name}, 
+				-name    => 'bounce_stats_json' . '.' . $args->{-mid} . '.' . $args->{-count} . '.' . $args->{-bounce_type} , 
+				-data    => \$json, 
+			}
+		);
+	}
+	
 	if($args->{-printout} == 1){ 
 		require CGI; 
 		my $q = CGI->new; 

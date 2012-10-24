@@ -1,0 +1,30 @@
+<!-- tmpl_if bounce_report --> 
+	<div> 
+	  <div style="max-width:350px; max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;">
+	
+	
+	<table class="stripedtable" style="width:325px">
+	<tr> 
+	  <td> 
+	   <strong>Email Address</strong>
+	  </td> 
+	 </tr> 
+
+<!-- tmpl_loop bounce_report --> 
+	<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
+	  <td> 
+		<a href="./dada_bounce_handler.pl?flavor=cgi_bounce_score_search&query=<!-- tmpl_var email escape="URL" -->&chrome=0" title="Bounce Log for <!-- tmpl_var email escape="HTML" -->" onclick="Modalbox.show(this.href, {title: this.title, width: 640, height:480}); return false;">
+		 <!-- tmpl_var email -->
+	    </a>
+	  </td> 
+	 </tr>
+<!-- /tmpl_loop -->
+
+</table> 
+<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var num_bounces -->&nbsp;</p> 
+ </div>
+</div>
+
+<!-- tmpl_else --> 
+	<p class="alert">No <!-- tmpl_var title --> bounces to report.</p> 
+<!-- /tmpl_if -->
