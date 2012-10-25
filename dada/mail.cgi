@@ -995,12 +995,18 @@ sub preview_message_receivers {
     my $partial_sending = {};
     for my $field(@$undotted_fields){
 		if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){
+			next if length($q->param('field_value_' . $field->{name})) <= 0 || $q->param('field_value_' . $field->{name}) eq ''; 
 		    $partial_sending->{$field->{name}} = {equal_to => $q->param('field_value_' . $field->{name})};
 		}
 		elsif($q->param('field_comparison_type_' . $field->{name}) eq 'like'){
+			next if length($q->param('field_value_' . $field->{name})) <= 0 || $q->param('field_value_' . $field->{name}) eq ''; 
+			
 			$partial_sending->{$field->{name}} = {like => $q->param('field_value_' . $field->{name})};
 		}
     }
+
+#	use Data::Dumper; 
+#	die Dumper($partial_sending);
 
     if(keys %$partial_sending) {
 		if($DADA::Config::MULTIPLE_LIST_SENDING_TYPE eq 'merged'){
@@ -1046,7 +1052,12 @@ sub preview_message_receivers {
 			}
 	   }
     } else {
-        e_print($q->p($q->em('Currently, all ' . $q->strong( $lh->num_subscribers ) . ' subscribers of, ' . $list .' will receive this message.')));
+		if($alternative_list[0]){
+			e_print($q->p($q->em('Every Subscriber of each of these mailing lists: ' . $list . ', ' . join(', ', @alternative_list) .' will receive this message.')));
+		} 
+		else { 
+        	e_print($q->p($q->em('All ' . $q->strong( commify($lh->num_subscribers) ) . ' Subscribers of your mailing list will receive this message.')));
+		}
     }
 
 
