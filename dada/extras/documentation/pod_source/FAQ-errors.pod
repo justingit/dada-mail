@@ -618,10 +618,21 @@ http://example.com/cgi-bin/dada/mail.cgi?f=email_password&list=listshortname
 
 Where, B<http://example.com/cgi-bin/dada/mail.cgi> is the URL to your Dada Mail and, B<listshortname> is the listshortname that's giving you trouble.
 
- 
+=head2 Beatitude (scheduled_mailings.pl)
+
+=head3 Byte order is not compatible
+
+The error will look similar to this, 
+
+	[Sat Sep 1 02:19:42 2012] scheduled_mailings.pl: Byte order is not compatible at /usr/local/lib/perl5/5.8.8/x86_64-linux/Storable.pm line 417, at ../DADA/perllib/MLDBM/Serializer/Storable.pm line 27
+
+Try restoring your Schedules, by using going to the Restore Mailing Lists screen in Dada Mail - ie: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi?f=restore_lists> 
+
+You will only need to restore your mailing list Schedules. 
 
 =head1 Hosting Company-Specific Problems
-
 
 =head2 Frontpage Extensions-enabled accounts
 

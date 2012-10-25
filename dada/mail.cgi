@@ -8544,7 +8544,6 @@ sub send_archive {
 
         require DADA::App::FormatMessages;
         my $fm = DADA::App::FormatMessages->new(-List => $list);
-           $fm->use_list_template(0);
            $fm->use_email_templates(0);
            $fm->use_header_info(1);
 
@@ -10221,13 +10220,13 @@ sub profile_login {
 	}
 	else {
 			my $scrn = '';
-			my $can_use_captcha = 0;
+			my $can_use_captcha = 1;
 			my $CAPTCHA_string  = '';
 			my $cap             = undef;
 			if($DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1){
-				my $can_use_captcha = 1; 
 				try { 
 					require DADA::Security::AuthenCAPTCHA; 
+					$cap  = DADA::Security::AuthenCAPTCHA->new;
 				} catch {
 					carp "CAPTCHA Not working correctly?: $_";  
 					$can_use_captcha = 0;
