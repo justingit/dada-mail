@@ -2,6 +2,7 @@
 <!-- tmpl_set name="title" value="Install <!-- tmpl_var PROGRAM_NAME -->" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
+<div id="install_or_upgrade"></div> 
 
 <!-- tmpl_if found_existing_dada_files_dir --> 
 	<div class="clearskiesbox">
@@ -13,8 +14,8 @@
 
 <fieldset> 	
 	<form action="<!-- tmpl_var Self_URL -->" method="post" id="installform"> 
-	<p><input type="radio" name="install_type" id="install" value="install" <!-- tmpl_unless found_existing_dada_files_dir -->checked="checked"<!-- /tmpl_unless --> onChange="ToggleOtherChoices('hide', 'upgrade_options'); return false;" /><label for="install">Installation</label></p>
-	<p><input type="radio" name="install_type" id="upgrade" value="upgrade" <!-- tmpl_if found_existing_dada_files_dir -->checked="checked"<!-- /tmpl_if --> onChange="ToggleOtherChoices('show', 'upgrade_options'); return false;" /><label for="upgrade">Upgrade</label></p>
+	<p><input type="radio" name="install_type" id="install" value="install" <!-- tmpl_unless found_existing_dada_files_dir -->checked="checked"<!-- /tmpl_unless --> class="installer_changeDisplayStateDivs" data-state="hide" data-target="upgrade_options" /><label for="install">Installation</label></p>
+	<p><input type="radio" name="install_type" id="upgrade" value="upgrade" <!-- tmpl_if found_existing_dada_files_dir -->checked="checked"<!-- /tmpl_if -->  class="installer_changeDisplayStateDivs" data-state="show" data-target="upgrade_options" /><label for="upgrade">Upgrade</label></p>
 	
 	<div id="upgrade_options" <!-- tmpl_unless found_existing_dada_files_dir -->style="display:none"<!-- /tmpl_unless -->>
 	<input type="hidden" name="f" value="check_install_or_upgrade" />

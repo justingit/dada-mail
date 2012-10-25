@@ -64,7 +64,7 @@ to disable C<mod_rewrite> for Dada Mail.
 
 If the C<mod_security> Apache module is enabled for your hosting is enabled, it may get in the way of normal, safe operations of Dada Mail. 
 
-One solution would be to disable c<mod_security> in whole or in part for Dada Mail by creating an C<.htaccess> file with the correct directive to disable C<mod_security>. Depending on the version of C<mod_security> you're using, that directive will be different. An example would be: 
+One solution would be to disable C<mod_security> in whole or in part for Dada Mail by creating an C<.htaccess> file with the correct directive to disable C<mod_security>. Depending on the version of C<mod_security> you're using, that directive will be different. An example would be: 
 
 	<IfModule mod_security.c>
 		SecFilterInheritance Off

@@ -1,0 +1,289 @@
+<!-- begin mass_mailing_preferences_screen.tmpl -->
+<div id="mass_mailing_preferences"></div> 
+<form> 
+	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" />
+</form> 
+
+
+
+<!-- tmpl_set name="title" value="Mail Sending &#187; Mass Mailing Preferences" -->
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 
+	</div> 
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+
+
+
+<!-- tmpl_if done -->
+	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+<!--/tmpl_if-->
+
+
+
+
+
+<form name="default_form" id="default_form" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+
+
+
+
+<fieldset>
+
+<legend>
+ Batch Sending Options
+</legend>
+
+
+<p>
+ Setting your batch settings to send at a higher rate than what is allowed 
+ for your hosting account will cause problems with email delivery. 
+</p>
+    
+
+<table> 
+ <tr>
+  <td>
+   <input type="checkbox" name="enable_bulk_batching" id="enable_bulk_batching" class="previewBatchSendingSpeed" value="1" <!-- tmpl_if list_settings.enable_bulk_batching -->checked="checked"<!--/tmpl_if--> />
+  </td>
+  <td>
+   <p>
+    <label for="enable_bulk_batching">
+     Enable Batch Sending
+    </label>
+   </p>
+
+
+<div class="clearskiesbox">
+<!-- tmpl_if show_amazon_ses_options --> 
+	<div id="amazon_ses_get_stats_loading"></div> 
+	<div id="amazon_ses_get_stats"></div> 
+
+<!-- /tmpl_if --> 
+<div id="previewBatchSendingSpeed_loading"></div> 
+<div id="previewBatchSendingSpeed"></div> 
+</div>
+
+
+<div id="manual_batch_settings"> 
+	
+	<fieldset> 
+    <p>
+     Send: 
+
+	<!-- tmpl_var mass_send_amount_menu -->
+ message(s) per batch
+     <br /> 
+     and then wait and sleep: <!-- tmpl_var bulk_sleep_amount_menu --> second(s), before sending the next batch.
+    </p>
+   </fieldset>
+
+</div>
+
+<table cellpadding="5">
+	<!-- tmpl_if show_amazon_ses_options -->
+			<tr>
+		  <td>
+		 
+	
+		  <input type="checkbox" id="amazon_ses_auto_batch_settings" id="amazon_ses_auto_batch_settings" value="1" <!-- tmpl_if list_settings.amazon_ses_auto_batch_settings -->checked="checked"<!--/tmpl_if--> />
+		</td>
+		<td>
+		<p><label for="amazon_ses_auto_batch_settings">
+			Automatically set batching speeds based on your Amazon SES limits
+		</label>
+		<br />
+		Batch settings will automatically adjust, when your Amazon SES limits change. </p>
+		</td>
+	</tr>
+	<!-- /tmpl_if --> 
+
+ <tr>
+  <td>
+   <input type="checkbox" name="adjust_batch_sleep_time" id="adjust_batch_sleep_time" value="1" <!-- tmpl_if list_settings.adjust_batch_sleep_time -->checked="checked"<!--/tmpl_if--> />
+  </td>
+  <td>
+   <p>
+    <label for="adjust_batch_sleep_time">
+     Adjust Sleep Time 
+    </label>
+    <br />
+
+    The time <!-- tmpl_var PROGRAM_NAME --> <code>sleep()</code>s between batches will be adjusted, 
+    depending on how long the batch took to complete.
+   </p>
+  </td>
+ </tr>
+
+
+	 <tr>
+	  <td>
+	    <input type="checkbox" name="smtp_connection_per_batch" id="smtp_connection_per_batch" value="1" <!-- tmpl_if list_settings.smtp_connection_per_batch -->checked="checked"<!-- /tmpl_if --> />
+	  </td>
+	  <td>
+	   <p>
+	    <label for="smtp_connection_per_batch"> 
+	     Use One SMTP Connection per Batch <em>(Experimental)</em> 
+	    </label>
+	    <br />
+	<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" --> 
+		<p class="alert">
+			SMTP Sending is enabled.
+		</p>
+	<!-- tmpl_else --> 
+		<p class="alert">
+			SMTP Sending is disabled.
+		</p>	
+	<!-- /tmpl_if --> 
+
+	<p>
+	Instead of connecting to the SMTP server for each message sent, one connection will be made for each batch. 
+	</p>
+
+	<p>
+	Checking this option may help mass sending times. 
+	</p>
+	<!-- 
+	<p>Your SMTP Server may not allow for more than one message to be sent per connection, so if sending appears not to be working, 
+		do not use this option.
+	</p>
+	-->
+
+	  </td>
+
+
+	 </tr>
+	
+</table>
+
+</td>
+
+</tr>
+	
+</table>
+
+
+
+
+</fieldset>
+
+
+
+<fieldset>
+<legend>
+ Auto Pickup Options
+</legend> 
+
+<table>
+ <tr>
+  <td>
+   <input type="checkbox" name="auto_pickup_dropped_mailings" id="auto_pickup_dropped_mailings" value="1" <!-- tmpl_if list_settings.auto_pickup_dropped_mailings -->checked="checked"<!--/tmpl_if--> />
+  </td>
+  <td>
+   <p>
+    <label for="auto_pickup_dropped_mailings">
+     Auto-Pickup Dropped List Message Mailings
+    </label>
+    <br />
+
+
+Since sending to your entire mailing list is usually a lengthy process (for most mailing lists), it can sometimes get interrupted by the server and won't proceed to completion. Activating this feature safeguards against this problem by automatically reloading a mailing from the point that it was dropped.
+
+
+    
+    
+    <table>
+     <tr>
+      <td>
+       <input type="checkbox" name="restart_mailings_after_each_batch" id="restart_mailings_after_each_batch" value="1" <!-- tmpl_if list_settings.restart_mailings_after_each_batch -->checked="checked"<!--/tmpl_if--> />
+      </td>
+      <td>
+       <p>
+        <label for="restart_mailings_after_each_batch">
+         Reload Mailings After Each Batch
+        </label>
+        <br />
+       
+        Instead of having <!-- tmpl_var PROGRAM_NAME --> automatically <code>sleep()</code> between mailings, enabling this option will 
+        reload the mailing between batches manually. 
+	</p>
+	
+	<p>This option should <em>only</em> be used if the <code>sleep()</code> Perl function is not working properly. 
+	   Enabling this option will also <strong>require</strong> you to use the web-based mailing monitor for successfully mailings.
+
+        
+    
+       </p>
+      </td>
+     </tr>
+    
+    </table>
+
+
+    
+   </p>
+  </td> 
+ </tr>
+
+</table>
+
+</fieldset>
+
+<fieldset> 
+	<legend>Notifications</legend>
+	
+<table> 
+	 <tr>
+	  <td>
+	   <input type="checkbox" name="mass_mailing_send_to_list_owner" id="mass_mailing_send_to_list_owner" value="1" <!-- tmpl_if list_settings.mass_mailing_send_to_list_owner -->checked="checked"<!--/tmpl_if--> />
+	  </td>
+	  <td>
+	   <p>
+	    <label for="mass_mailing_send_to_list_owner">
+	     Send Mass Mailing Messages to the List Owner
+	    </label>
+	    <br />
+		The List Owner will receive a copy of all mass mailings sent to your Mailing List. 
+	   </p>
+	  </td>
+	 </tr>
+	
+
+	 <tr>
+	 
+	 <td>
+	   <input type="checkbox" name="get_finished_notification" id="get_finished_notification" value="1" <!-- tmpl_if list_settings.get_finished_notification -->checked="checked"<!--/tmpl_if--> />
+	  </td>
+	
+	  <td>
+	   <p>
+	    <label for="get_finished_notification">
+	     Send Finishing Message
+	    </label>
+	    <br />
+	    The List Owner will be emailed when all the messages of mass mailings have been sent.
+	   </p>
+	  </td>
+	</tr>
+	</table> 
+
+</fieldset>
+
+
+
+<input type="hidden" name="process" value="1" />
+<input type="hidden" name="f"       value="mass_mailing_preferences" />
+<div class="buttonfloat">
+ <input type="reset"  class="cautionary" value="Clear Changes" />
+ <input type="submit" class="processing" value="Save Sending Options" />
+</div>
+<div class="floatclear"></div>
+
+</form> 
+
+
+
+
+
+<!-- end mass_mailing_preferences_screen.tmpl -->

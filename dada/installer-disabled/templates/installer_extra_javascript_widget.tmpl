@@ -1,116 +1,18 @@
 <!-- begin installer_extra_javascript_widget.tmpl --> 
 
-<script src="<!-- tmpl_var my_S_PROGRAM_URL -->/js/dada_mail_admin_js.js" type="text/javascript"></script>
-<script src="<!-- tmpl_var my_S_PROGRAM_URL -->/js/prototype.js" type="text/javascript"></script>
-<script src="<!-- tmpl_var my_S_PROGRAM_URL -->/js/scriptaculous.js?load=effects" type="text/javascript"></script>
+<!-- jQuery -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.js"></script>
+<script>
+	var $jq = jQuery.noConflict();
+</script> 
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.js"></script>
+<script src="<!-- tmpl_var Self_URL -->?f=screen&screen=installer-dada_mail.js" type="text/javascript"></script>
+
+<!-- tmpl_if comment --> 
+
 <script type="text/javascript"> 
 		
-	 //<![CDATA[
-	
-		function ToggleOtherChoices(state, id) { 
-			var togglin = document.getElementById( id );
-			if(state == 'hide'){
-				if(togglin.style.display == ""){	
-					Effect.BlindUp(id);
-				}
-				else { 
-					/* ... */
-				}
-			}
-			if(state == 'show'){ 
-				if(togglin.style.display == "none"){
-					Effect.BlindDown(id);
-				}
-			}
-			else { 
-				/* ... */
-			}
 
-		}
-		function ToggleConfigurationOptions(state){ 
-			var togglin = document.getElementById( 'configuration' );
-			if(state == 'hide'){
-				if(togglin.style.display == ""){	
-					Effect.BlindUp('configuration');
-				}
-				else { 
-					/* ... */
-				}
-			}
-			if(state == 'show'){ 
-				if(togglin.style.display == "none"){
-					Effect.BlindDown('configuration');
-				}
-			}
-			else { 
-				/* ... */
-			}
-		}
-	
-		function ToggleSQLOptions() { 
-			
-			var sql_picker = document.getElementById('backend');
-			var selected  = sql_picker.options[sql_picker.selectedIndex].value;
-			 	
-			if(selected == 'mysql' || selected == 'Pg'){ 
-			
-				var togglin = document.getElementById( 'sql_info' );
-				if(togglin.style.display != ""){	
-						Effect.BlindDown('sql_info');
-				}
-			}
-			else { 
-				Effect.BlindUp('sql_info');
-			}
-		}	
-		function Toggle_dada_files_dirOptions() { 
-			var dada_files_dir_setup_choice = Form.getInputs('installform','radio','dada_files_dir_setup').find(function(radio) { return radio.checked; }).value;				
-			if(dada_files_dir_setup_choice == 'auto'){ 
-				Effect.BlindUp('manual_dada_files_dir_setup');
-			}
-			else { 
-				var togglin = document.getElementById( 'manual_dada_files_dir_setup' );
-				if(togglin.style.display != ""){	
-						Effect.BlindDown('manual_dada_files_dir_setup');
-				}
-			}
-
-		}
-		
-		function ToggleWYSIWYGOptions() { 
-			if($('install_wysiwyg_editors').checked == true){ 
-				Effect.BlindDown('install_wysiwyg_editors_options');
-
-			}
-			else { 
-				Effect.BlindUp('install_wysiwyg_editors_options');
-			}	
-		}
-		
-		
-
-		function toggleDisplay(target) {
-
-			if (document.getElementById){
-				var togglin = document.getElementById( target );
-				if(togglin.style.display == ""){
-					// Scriptalicious
-					Effect.BlindUp(togglin.id);
-
-					// target.dispaly = 'none'; 
-				}else{  
-					// Scriptalicious                          
-					Effect.BlindDown(togglin.id);
-
-					// target.dispaly = ''; 
-				}  
-
-			} 	
-		}
-		
-		
-		
-			   
 
 				 function move_installer_dir(){ 
 
@@ -147,14 +49,11 @@
 		
 		}
 		
-		
-		
-		
-		
-	window.onload=setStuffUp; 
+	
 	
 	//]]>
     
 	</script>
+<!-- /tmpl_if --> 
 	
 <!-- end installer_extra_javascript_widget.tmpl -->

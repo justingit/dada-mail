@@ -101,11 +101,10 @@ my $plugins_extensions = {
 	screen_cache                  => {installed => 0, loc => '../plugins/screen_cache.cgi'}, 
 	log_viewer                    => {installed => 0, loc => '../plugins/log_viewer.cgi'}, 
 	tracker                       => {installed => 0, loc => '../plugins/tracker.cgi'}, 
-	dada_bridge                   => {installed => 0, loc => '../plugins/dada_bridge.pl'}, 
-	dada_bounce_handler           => {installed => 0, loc => '../plugins/dada_bounce_handler.pl'}, 
+	bridge                   => {installed => 0, loc => '../plugins/bridge.cgi'}, 
+	bounce_handler           => {installed => 0, loc => '../plugins/bounce_handler.cgi'}, 
 	scheduled_mailings            => {installed => 0, loc => '../plugins/scheduled_mailings.pl'}, 
 	multiple_subscribe            => {installed => 0, loc => '../extensions/multiple_subscribe.cgi'}, 
-	ajax_include_subscribe        => {installed => 0, loc => '../extensions/ajax_include_subscribe.cgi'}, 	
 	blog_index                    => {installed => 0, loc => '../extensions/blog_index.cgi'}, 
 	mailing_monitor               => {installed => 0, loc => '../plugins/mailing_monitor.cgi'}, 
 	default_mass_mailing_messages => {installed => 0, loc => '../plugins/default_mass_mailing_messages.cgi'}, 
@@ -144,19 +143,19 @@ q{#					{
 #					-Activated  => 1,
 #					},};
 
-$plugins_extensions->{dada_bridge}->{code} = 
+$plugins_extensions->{bridge}->{code} = 
 q{#					{
 #					-Title      => 'Discussion Lists',
-#					-Title_URL  => $PLUGIN_URL."/dada_bridge.pl",
-#					-Function   => 'dada_bridge',
+#					-Title_URL  => $PLUGIN_URL."/bridge.cgi",
+#					-Function   => 'bridge',
 #					-Activated  => 1,
 #					},};
 
-$plugins_extensions->{dada_bounce_handler}->{code} = 
+$plugins_extensions->{bounce_handler}->{code} = 
 q{#					{
 #					-Title      => 'Bounce Handler',
-#					-Title_URL  => $PLUGIN_URL."/dada_bounce_handler.pl",
-#					-Function   => 'dada_bounce_handler',
+#					-Title_URL  => $PLUGIN_URL."/bounce_handler.cgi",
+#					-Function   => 'bounce_handler',
 #					-Activated  => 1,
 #					},};
 
@@ -172,14 +171,6 @@ q{#					{
 #					-Title      => 'Multiple Subscribe',
 #					-Title_URL  => $EXT_URL."/multiple_subscribe.cgi",
 #					-Function   => 'multiple_subscribe',
-#					-Activated  => 1,
-#					},};
-
-$plugins_extensions->{ajax_include_subscribe}->{code} = 
-q{#					{
-#					-Title      => 'Ajax\'d Subscription Form',
-#					-Title_URL  => $EXT_URL."/ajax_include_subscribe.cgi?mode=html",
-#					-Function   => 'ajax_include_subscribe',
 #					-Activated  => 1,
 #					},};
 
@@ -228,7 +219,7 @@ q{#					{
 $DADA::Config::PROGRAM_URL   = program_url_guess();
 $DADA::Config::S_PROGRAM_URL = program_url_guess();
 
-use DADA::Config 5.0.0;
+use DADA::Config 6.0.0;
     $DADA::Config::USER_TEMPLATE = '';
 use DADA::App::Guts;
 use DADA::Template::Widgets;
@@ -254,6 +245,7 @@ sub run {
             check                    => \&check,
             move_installer_dir_ajax  => \&move_installer_dir_ajax,
 			show_current_dada_config => \&show_current_dada_config, 
+			screen                   => \&screen,
 
         );
         my $flavor = $q->param('f');
@@ -405,17 +397,24 @@ sub install_or_upgrade {
             -screen => 'install_or_upgrade.tmpl',
 			-with   => 'list', 
             -vars => {
+				# These are tricky.... 
+				SUPPORT_FILES_URL               => $Self_URL . '?f=screen&screen=',
+
+
 				dada_files_parent_dir               => $dada_files_parent_dir, 
 				Dada_Files_Dir_Name                 => $Dada_Files_Dir_Name, 
 				found_existing_dada_files_dir       => $found_existing_dada_files_dir ,
 				current_dada_files_parent_location  => $q->param('current_dada_files_parent_location'), 
 				error_cant_find_dada_files_location => $q->param('error_cant_find_dada_files_location'), 
+				Self_URL                            => $Self_URL, 
+				
+				
 			},
 		}
 	); 
 	
 	# Let's get some fancy js stuff!
-    $scrn = hack_in_scriptalicious($scrn);
+    $scrn = hack_in_js($scrn);
 	# Uh, do are darnest to get the $PROGRAM_URL stuff working correctly, 
 	$scrn = hack_program_url($scrn); 
     
@@ -468,7 +467,6 @@ sub scrn_configure_dada_mail {
 		$q->param('install_log_viewer', 1); 
 		$q->param('install_tracker', 1); 
 		$q->param('install_multiple_subscribe', 1); 
-		$q->param('install_ajax_include_subscribe', 1); 
 		$q->param('install_blog_index', 1); 
 		$q->param('install_default_mass_mailing_messages', 1); 
 		# $q->param('install_password_protect_directories', 1); 
@@ -528,6 +526,9 @@ sub scrn_configure_dada_mail {
 			-expr   => 1, 
             -vars => {
 				
+				# These are tricky.... 
+				SUPPORT_FILES_URL               => $Self_URL . '?f=screen&screen=',
+				
 				install_type                => $install_type, 
 				current_dada_files_parent_location => $current_dada_files_parent_location, 
 				
@@ -574,7 +575,7 @@ sub scrn_configure_dada_mail {
     );
 
     # Let's get some fancy js stuff!
-    $scrn = hack_in_scriptalicious($scrn);
+    $scrn = hack_in_js($scrn);
 	# Uh, do are darnest to get the $PROGRAM_URL stuff working correctly, 
 	$scrn = hack_program_url($scrn); 
 
@@ -661,6 +662,11 @@ sub scrn_install_dada_mail {
             -screen => 'installer_install_dada_mail_scrn.tmpl',
 			-with   => 'list', 
             -vars => { 
+	
+			# These are tricky.... 
+			SUPPORT_FILES_URL               => $Self_URL . '?f=screen&screen=',
+			
+			
 			 install_log                  => webify_plain_text({-str =>$log}), 
 			 status                       => $status, 
 			install_dada_files_loc        => $install_dada_files_loc,
@@ -671,12 +677,13 @@ sub scrn_install_dada_mail {
 			PROGRAM_URL                   => program_url_guess(),
             S_PROGRAM_URL                 => program_url_guess(),
 			submitted_PROGRAM_URL         => $q->param('program_url'),
+			Self_URL                      => $Self_URL, 
 
 			
 	 		}
         }
     );
-    $scrn = hack_in_scriptalicious($scrn);
+    $scrn = hack_in_js($scrn);
 
 	# Uh, do are darnest to get the $PROGRAM_URL stuff working correctly, 
 	$scrn = hack_program_url($scrn); 
@@ -829,6 +836,17 @@ sub install_dada_mail {
 		}
     }
 
+	$log .= "* Setting up Support Files Directory...\n";
+	eval {setup_support_files_dir($args);}; 
+	if($@){ 
+        $log .= "* WARNING: Couldn't set up support files directory! $@\n";
+        $errors->{cant_set_up_support_files_directory} = 1;
+	}
+	else { 
+        $log .= "* Success!\n";		
+	} 
+
+	
 	$log .= "* Installing plugins/extensions...\n";
 	eval {edit_config_file_for_plugins($args);}; 
 	if($@){ 
@@ -1018,6 +1036,8 @@ sub create_dada_config_file {
                 ROOT_PASSWORD          => $pass,
                 ROOT_PASS_IS_ENCRYPTED => 1,
                 dada_files_dir         => $loc,
+				support_files_dir_path => $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name, 
+				support_files_dir_url  => $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name, 
 				Big_Pile_Of_Errors     => $Big_Pile_Of_Errors, 
 				Trace                  => $Trace, 
                 ( $args->{-backend} ne 'default' || $args->{-backend} eq '' )
@@ -1348,29 +1368,29 @@ sub edit_config_file_for_plugins {
 					$config_file =~ s/$orig_code/$uncommented_code/;
 
 					# Fancy stuff for bounce handler, 
-					if($plugins_data eq 'dada_bounce_handler'){ 
+					if($plugins_data eq 'bounce_handler'){ 
 						# uncomment the plugins config, 
 						$config_file =~ s/$plugins_config_begin_cut//; 
 						$config_file =~ s/$plugins_config_end_cut//; 
 					 	# then, we have to fill in all the stuff in.
 					 	# Not a fav. tecnique!
-					my $plugins_config_dada_bounce_handler_orig = quotemeta(
+					my $plugins_config_bounce_handler_orig = quotemeta(
 q|	Bounce_Handler => {
 		Server                      => undef,
 		Username                    => undef,
 		Password                    => undef,|
 					);
-					my $dada_bounce_handler_address  = clean_up_var($q->param('dada_bounce_handler_address')); 
-					my $dada_bounce_handler_server   = clean_up_var($q->param('dada_bounce_handler_server'));
-					my $dada_bounce_handler_username = clean_up_var($q->param('dada_bounce_handler_username')); 
-					my $dada_bounce_handler_password = clean_up_var($q->param('dada_bounce_handler_password')); 
+					my $bounce_handler_address  = clean_up_var($q->param('bounce_handler_address')); 
+					my $bounce_handler_server   = clean_up_var($q->param('bounce_handler_server'));
+					my $bounce_handler_username = clean_up_var($q->param('bounce_handler_username')); 
+					my $bounce_handler_password = clean_up_var($q->param('bounce_handler_password')); 
 
-					my $plugins_config_dada_bounce_handler_replace_with = 
+					my $plugins_config_bounce_handler_replace_with = 
 "	Bounce_Handler => {
-		Server                      => '$dada_bounce_handler_server',
-		Username                    => '$dada_bounce_handler_username',
-		Password                    => '$dada_bounce_handler_password',";
-					$config_file =~ s/$plugins_config_dada_bounce_handler_orig/$plugins_config_dada_bounce_handler_replace_with/; 
+		Server                      => '$bounce_handler_server',
+		Username                    => '$bounce_handler_username',
+		Password                    => '$bounce_handler_password',";
+					$config_file =~ s/$plugins_config_bounce_handler_orig/$plugins_config_bounce_handler_replace_with/; 
 					# Now, do the same for list settings defaults: 
 					$config_file =~ s/$list_settings_defaults_begin_cut//; 
 					$config_file =~ s/$list_settings_defaults_end_cut//; 
@@ -1388,7 +1408,7 @@ q|%LIST_SETUP_INCLUDE = (
 qq|\%LIST_SETUP_INCLUDE = (
 	set_smtp_sender              => 1, # For SMTP
 	add_sendmail_f_flag          => 1, # For Sendmail Command
-	admin_email                  => '$dada_bounce_handler_address',
+	admin_email                  => '$bounce_handler_address',
 );|; 
 						$config_file =~ s/$plugins_config_list_settings_default_orig/$plugins_config_list_settings_default_replace_with/;
 					}
@@ -1413,6 +1433,31 @@ qq|\%LIST_SETUP_INCLUDE = (
 	
 
 }
+
+
+sub setup_support_files_dir { 
+	my ($args) = @_;
+		
+	my $support_files_dir_path = $q->param('support_files_dir_path'); 
+	if(! -d $support_files_dir_path) { 
+		croak "Can't install set up Support Files Directory: '$support_files_dir_path' does not exist!"; 
+	}
+	if(! -d $support_files_dir_path . '/' . $Support_Files_Dir_Name){ 
+		installer_mkdir(make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name), $DADA::Config::DIR_CHMOD);
+	}
+	
+	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
+	
+	my $source_package = make_safer('../static'); 
+	my $target_loc     = make_safer($install_path . '/static');
+	if(-d $target_loc){
+		backup_dir($target_loc);	
+	}
+	installer_dircopy($source_package, $target_loc); 
+	return 1; 
+}
+
+
 sub install_wysiwyg_editors { 
 	my ($args) = @_;
 	
@@ -1670,7 +1715,7 @@ sub support_files_dir_url_guess {
 	return $q->url(-base => 1);
 }
 
-sub hack_in_scriptalicious {
+sub hack_in_js {
     my $scrn = shift;
 
     my $js = DADA::Template::Widgets::screen(
@@ -2033,11 +2078,60 @@ sub move_installer_dir_ajax {
 
 
 sub show_current_dada_config { 
-	print $q->header('text/plain'); 
+	print $q->header('text/css'); 
     my $config_file_loc = $q->param('config_file'); 
         my $config_file_contents =
           DADA::Template::Widgets::_slurp($config_file_loc);
 	print e_print($config_file_contents);
+}
+sub screen { 
+	my $screen = $q->param('screen'); 
+	if($screen eq '/static/css/default.css'){ 
+		print $q->header('text/css');
+		my $t = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'installer-default.css',
+	            -vars => {
+
+	            },
+	        }
+	    );	
+		my $hack_css_url = quotemeta(q{url('../images/header_bg.gif')}); 
+		my $r            = q{url('} . $Self_URL . q{?f=screen&screen=/images/installer-header_bg.gif')}; 
+		   $t =~ s/$hack_css_url/$r/g;
+		print $t; 
+	}
+	elsif($screen eq '/static/images/dada_mail_logo.png'){ 
+		print $q->header('image/png');
+		print DADA::Template::Widgets::_raw_screen(
+            {
+                -screen   => 'installer-dada_mail_logo.png',
+                -encoding => 0,
+            }
+        ); 		
+	}
+	elsif($screen eq '/images/installer-header_bg.gif'){ 
+		print $q->header('image/gif');
+		print DADA::Template::Widgets::_raw_screen(
+            {
+                -screen   => 'installer-header_bg.gif',
+                -encoding => 0,
+            }
+        ); 		
+		
+		
+	}
+	elsif($screen eq 'installer-dada_mail.js'){ 
+		print $q->header('text/javascript');
+		print DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'installer-dada_mail.js',
+	        }
+	    );	
+		
+		
+		
+	}
 }
 
 sub move_installer_dir { 

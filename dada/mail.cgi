@@ -63,7 +63,7 @@ use CGI::Carp qw(fatalsToBrowser);
 $|++;
 
 
-use DADA::Config 5.0.0;
+use DADA::Config 6.0.0;
 
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
@@ -132,7 +132,9 @@ sub hook {
 
 	my $per = 0;
 	if($ENV{CONTENT_LENGTH} >  0){ # This *should* stop us from dividing by 0, right?
-		$per = int(($bytes_read * 100) / $ENV{CONTENT_LENGTH});
+		$per = int(
+			($bytes_read * 100) / ($ENV{CONTENT_LENGTH} - 1024)
+		); #1024 added to round up.
 	}
 	print COUNTER $bytes_read . '-' . $ENV{CONTENT_LENGTH} . '-' . $per;
 	close(COUNTER);
@@ -491,7 +493,10 @@ sub run {
 	'admin_help'                 =>    \&admin_help,
 	'delete_list'                =>    \&delete_list,
 	'view_list'                  =>    \&view_list,
+	'domain_breakdown_json'      =>    \&domain_breakdown_json,
+	'search_list_auto_complete'  =>    \&search_list_auto_complete, 
 	'list_activity'              =>    \&list_activity,
+	'sub_unsub_trends_json'      =>    \&sub_unsub_trends_json, 
 	'view_bounce_history'        =>    \&view_bounce_history, 
 	'subscription_requests'      =>    \&subscription_requests,
 	'remove_all_subscribers'     =>    \&remove_all_subscribers,
@@ -508,7 +513,9 @@ sub run {
 	'delete_email'               =>    \&delete_email,
 	'subscription_options'       =>    \&subscription_options,
 	'send_email'                 =>    \&send_email,
-	'previewMessageReceivers'    =>    \&previewMessageReceivers,
+	'message_body_help'          =>    \&message_body_help, 
+	'url_message_body_help'      =>    \&url_message_body_help, 
+	'preview_message_receivers'    =>    \&preview_message_receivers,
 	'sending_monitor'            =>    \&sending_monitor,
 	'print_mass_mailing_log'     =>    \&print_mass_mailing_log,
 	'preview_form'               =>    \&preview_form,
@@ -919,7 +926,41 @@ sub send_email {
 		);
 }
 
-sub previewMessageReceivers {
+
+
+sub message_body_help { 
+	my ($admin_list, $root_login) = check_list_security(
+										-cgi_obj  => $q,
+                                        -Function => 'send_email'
+									);
+	require DADA::Template::Widgets; 
+	print $q->header(); 
+	e_print(
+		DADA::Template::Widgets::screen(
+			{ 
+				-screen => 'send_email_message_body_help_widget.tmpl',
+			}
+		)
+	); 
+}
+sub url_message_body_help { 
+	my ($admin_list, $root_login) = check_list_security(
+										-cgi_obj  => $q,
+                                        -Function => 'send_email'
+									);
+	require DADA::Template::Widgets; 
+	print $q->header(); 
+	e_print(
+		DADA::Template::Widgets::screen(
+			{ 
+				-screen => 'send_url_email_message_body_help_widget.tmpl',
+			}
+		)
+	); 
+}	
+
+
+sub preview_message_receivers {
 
     my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
                                                 -Function => 'send_email');
@@ -954,12 +995,18 @@ sub previewMessageReceivers {
     my $partial_sending = {};
     for my $field(@$undotted_fields){
 		if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){
+			next if length($q->param('field_value_' . $field->{name})) <= 0 || $q->param('field_value_' . $field->{name}) eq ''; 
 		    $partial_sending->{$field->{name}} = {equal_to => $q->param('field_value_' . $field->{name})};
 		}
 		elsif($q->param('field_comparison_type_' . $field->{name}) eq 'like'){
+			next if length($q->param('field_value_' . $field->{name})) <= 0 || $q->param('field_value_' . $field->{name}) eq ''; 
+			
 			$partial_sending->{$field->{name}} = {like => $q->param('field_value_' . $field->{name})};
 		}
     }
+
+#	use Data::Dumper; 
+#	die Dumper($partial_sending);
 
     if(keys %$partial_sending) {
 		if($DADA::Config::MULTIPLE_LIST_SENDING_TYPE eq 'merged'){
@@ -1005,7 +1052,12 @@ sub previewMessageReceivers {
 			}
 	   }
     } else {
-        e_print($q->p($q->em('Currently, all ' . $q->strong( $lh->num_subscribers ) . ' subscribers of, ' . $list .' will receive this message.')));
+		if($alternative_list[0]){
+			e_print($q->p($q->em('Every Subscriber of each of these mailing lists: ' . $list . ', ' . join(', ', @alternative_list) .' will receive this message.')));
+		} 
+		else { 
+        	e_print($q->p($q->em('All ' . $q->strong( commify($lh->num_subscribers) ) . ' Subscribers of your mailing list will receive this message.')));
+		}
     }
 
 
@@ -1265,7 +1317,7 @@ sub sending_monitor {
 
         print "
 
-        <script>
+        <script type=\"text/javascript\">
         refreshpage($restart_time);
         </script>
         </body>
@@ -1331,7 +1383,7 @@ sub sending_monitor {
 			my $reload_url = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&id=' . $id . '&process=restart&type=' . $type . '&restart_count=1'; 
 
 			print $q->header(); 
-			print "<script> 
+			print "<script type=\"text/javascript\"> 
 			window.location.replace('$reload_url'); 
 			</script>";
 			return;
@@ -2252,14 +2304,14 @@ sub mass_mailing_preferences {
             -name     => "mass_send_amount",
             -id       => "mass_send_amount",
             -value    => [@message_amount],
-            -onChange => 'previewBatchSendingSpeed()',
+            -class => 'previewBatchSendingSpeed',
         );
 
         my $bulk_sleep_amount_menu = $q->popup_menu(
             -name     => "bulk_sleep_amount",
             -id       => "bulk_sleep_amount",
             -value    => [@message_wait],
-            -onChange => 'previewBatchSendingSpeed()',
+            -class => 'previewBatchSendingSpeed',
         );
 
         require DADA::Template::Widgets;
@@ -2460,7 +2512,7 @@ sub previewBatchSendingSpeed {
 			}
 		}
 	));
-
+	return; 
 
 
 }
@@ -3072,7 +3124,58 @@ sub view_list {
 	    e_print($scrn);
 	}
 }
+sub domain_breakdown_json { 
 
+  my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'view_list'
+    );
+    $list = $admin_list;
+
+	my $type = $q->param('type') || 'list'; 
+	
+	require DADA::MailingList::Subscribers; 
+	my $lh       = DADA::MailingList::Subscribers->new({-list => $list});
+	$lh->domain_stats_json(
+		{ 
+			-type  => $type, 
+			-count => 15,
+			-printout => 1, 
+		}
+	); 
+}
+
+sub search_list_auto_complete { 
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'view_list'
+    );
+    $list = $admin_list;
+
+	my $query                            = xss_filter( $q->param('query') )                          || undef;
+	my $type                             = xss_filter($q->param('type'))                             || 'list';
+	
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+
+        my ( $total_num, $subscribers ) = $lh->search_list(
+            {
+                -query     => $query,
+                -type      => $type,
+                '-length'  => 10,
+            }
+        );
+
+	my $r = [];
+	for my $result(@$subscribers) { 
+		push(@$r, {'email' =>  $result->{email}});
+	}
+	 
+	require JSON::PP; 
+	my $json = JSON::PP->new->allow_nonref;
+	 print $q->header('application/json'); 
+	 print $json->encode($r);	
+	
+}
 
 
 sub list_activity { 
@@ -3115,6 +3218,33 @@ sub list_activity {
     );
 
 }
+
+
+
+
+sub sub_unsub_trends_json { 
+	
+	my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'list_activity'
+    );
+    $list = $admin_list;
+    
+	my $days = xss_filter(strip($q->param('days'))); 
+	
+	require DADA::App::LogSearch; 
+	my $dals = DADA::App::LogSearch->new; 
+	my $r = $dals->sub_unsub_trends_json(
+		{
+			-list     => $list,
+			-printout => 1 , 
+			-days     => $days, 
+		}
+	);
+}
+
+
+
 
 
 sub view_bounce_history {
@@ -4294,6 +4424,11 @@ sub add {
 
 sub check_status {
 
+	require JSON::PP; 
+	my $json = JSON::PP->new->allow_nonref;
+	
+
+	
     my $filename = $q->param('new_email_file');
     $filename =~ s{^(.*)\/}{};
 
@@ -4304,7 +4439,9 @@ sub check_status {
           . $DADA::Config::TMP . '/'
           . $filename
           . '-meta.txt';
-        print $q->header();
+			my $json = JSON::PP->new->allow_nonref;
+			print $q->header('application/json');
+			print $json->encode({percent => 0, content_length => 0, bytes_read => 0});
 	}
     else {
 
@@ -4316,28 +4453,24 @@ sub check_status {
           or die $!;
 
         my $s = do { local $/; <$META> };
-        my ( $bytes_read, $content_length, $per ) = split ( '-', $s, 3 );
+       
+		my ( $bytes_read, $content_length, $per ) = split ( '-', $s, 3 );
+		if($per == 99){ $per = 100}
         close($META);
-
-        my $small = 250 - ( $per * 2.5 );
-        my $big   = $per * 2.5;
-
-        print $q->header();
-		require DADA::Template::Widgets;
-		e_print(DADA::Template::Widgets::screen(
+ 
+		my $json = JSON::PP->new->allow_nonref;
+		print $q->header('application/json');
+		print $json->encode(
 			{
-				-screen => 'file_upload_status_bar_widget.tmpl',
-				-vars   => {
-					percent        => $per,
-					bytes_read     => $bytes_read,
-					content_length => $content_length,
-					big            => $big,
-					small          => $small,
-				}
+				bytes_read     => $bytes_read, 
+				content_length => $content_length ,
+				percent        => int($per),
 			}
-		));
-
+		);	
     }
+
+return; 
+
 }
 
 sub dump_meta_file {
@@ -9981,153 +10114,6 @@ U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAGUExURf///wAAAFXC034AAAABdFJOUwBA
 EOF
 ;
     print MIME::Base64::decode_base64($str);
-
-}
-
-
-
-sub js {
-    my $js_lib = xss_filter( $q->param('js_lib') );
-
-    my @allowed_js = qw(
-
-	  dada_mail_admin_js.js
-
-	  prototype.js
-      builder.js
-      controls.js
-      dragdrop.js
-      effects.js
-      slider.js
-      sound.js
-      unittest.js
-      scriptaculous.js
-      modalbox.js
-      
-      prototype_scriptaculous_package.js
-      tiny_mce_config.js
-
-    );
-
-    my %lt = ();
-    for (@allowed_js) { $lt{$_} = 1; }
-
-    require DADA::Template::Widgets;
-#warn '$js_lib ' . $js_lib;
-
-    if ( $lt{$js_lib} == 1 ) {
-        if ( $c->cached('js/' . $js_lib . '.scrn') ) {
-			$c->show('js/' . $js_lib . '.scrn'); return;
-		}
-        my $r = $q->header('text/javascript');
-        $r .= DADA::Template::Widgets::screen( { -screen => 'js/' . $js_lib } );
-        e_print($r);
-        $c->cache( 'js/' . $js_lib . '.scrn', \$r );
-
-    }
-    else {
-
-        # nothing for now...
-    }
-
-}
-
-sub css {
-
-	my $css_file = xss_filter( $q->param('css_file') );
-    
-	my $allowed_css = {
-		'default.css' => 1, 
-		'modalbox.css'    => 1, 
-	};
-	if(!exists($allowed_css->{$css_file})){ 
-		return; 
-	}
-	
-	require DADA::Template::Widgets;
-    e_print( $q->header('text/css') ); 
-	e_print(  DADA::Template::Widgets::screen( { -screen => 'css/' . $css_file } ));
-    
-}
-
-
-
-
-sub img {
-
-    my $img_name = xss_filter( $q->param('img_name') );
-
-    my @allowed_images = qw(
-
-      3f0.png
-      badge_blinklist.png
-      badge_blogmarks.png
-      badge_delicious.png
-      badge_digg.png
-      badge_fark.png
-      badge_feed.png
-      badge_furl.png
-      badge_magnolia.png
-      badge_newsvine.png
-      badge_reddit.png
-      badge_segnalo.png
-      badge_simpy.png
-      badge_smarking.png
-      badge_spurl.png
-      badge_wists.png
-      badge_yahoo.png
-
-	  centeredmenu.gif
-	
-      cff.png
-
-      dada_mail_logo.png
-
-      dada_mail_screenshot.jpg
-
-	header_bg.gif
-
-      spinner.gif
-
-    );
-
-    my %lt = ();
-    for (@allowed_images) { $lt{$_} = 1; }
-
-    require DADA::Template::Widgets;
-
-    if ( $lt{$img_name} == 1 ) {
-        if ( $c->cached( 'img/' . $img_name ) ) {
-            $c->show( 'img/' . $img_name );
-            return;
-        }
-        my $r;
-        if ( $img_name =~ m/\.png$/ ) {
-            $r = $q->header('image/png');
-        }
-        elsif ( $img_name =~ m/\.gif$/ ) {
-            $r = $q->header('image/gif');
-        }
-        elsif ( $img_name =~ m/\.jpg$/ ) {
-            $r = $q->header('image/jpg');
-        }
-		else { 
-			die "can't show image!"; 
-		}
-        $r .= DADA::Template::Widgets::_raw_screen(
-            {
-                -screen   => 'img/' . $img_name,
-                -encoding => 0,
-            }
-        ); 
-        print $r;
-        $c->cache( 'img/' . $img_name, \$r );
-
-    }
-    else {
-
-        # nothing for now...
-    }
 
 }
 

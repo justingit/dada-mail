@@ -205,10 +205,6 @@ There's also a Dada Mail Extension that'll allow someone to subscribe to more th
 
 L<http://dadamailproject.com/support/documentation/multiple_subscribe.cgi.html> 
 
-And another extension that will allow you to embed an AJAX-enabled subscription form: 
-
-L<http://dadamailproject.com/support/documentation-dada-3_0_1/ajax_include_subscribe.cgi.html>
-
 =head3 Using the Dada Mail API to subscribe new addresses
 
 See the following docs that pertain to using the Dada Mail API directly or indirectly to use its subscription capabilities: 
@@ -329,7 +325,7 @@ Dada Mail handles announce only lists with ease - a standard installation will b
 
 Dada Mail can also be set up to allow discussion lists, you'll have to also install the B<Dada Bridge> plugin. 
 
-http://dadamailproject.com/support/documentation/dada_bridge.pl.html
+http://dadamailproject.com/support/documentation/bridge.cgi.html
 
 The Dada Bridge Plugin can also be set up to provide announce-only message sending from your mail reader - 
 
@@ -338,7 +334,7 @@ The Dada Bridge Plugin can also be set up to provide announce-only message sendi
 
 See the B<Bounce Handler> plugin: 
 
-http://dadamailproject.com/support/documentation/dada_bounce_handler.pl.html
+http://dadamailproject.com/support/documentation/bounce_handler.cgi.html
 
 =head2 How do I create the HTML Subscription form code to place on my web pages to allow people to subscribe to my list? 
 
@@ -1014,7 +1010,7 @@ since you I<are not> sending messages through this host's mail servers.
 Invalid email addresses on your list just make mass mailing go slower. Use the bounce handler 
 to remove those addresses from your mailing list: 
 
-L<./dada_bounce_handler.pl.html>
+L<./bounce_handler.cgi.html>
 
 =item * Adjust your batch settings
 
@@ -1108,6 +1104,8 @@ And replace this with your static URL, in a similar way.
 
 =head3 javascript files
 
+TODO: All this information is now, outdated. 
+
 Dada Mail's javascript files are in the, I<dada/DADA/Template/templates/js> directory. Copy this directory and place this copy in 
 a different location of your hosting account, where the files can be served statically. 
 
@@ -1115,7 +1113,7 @@ In these examples, we'll use: B<http://example.com/static_dada_files/js>
 
 In the B<admin_template.tmpl> file, find: 
 
-	  <script src="<!-- tmpl_var S_PROGRAM_URL -->/js/dada_mail_admin_js.js"         type="text/javascript"></script>
+	  <script src="<!-- tmpl_var S_PROGRAM_URL -->/js/dada_mail.js"         type="text/javascript"></script>
 	  <script src="<!-- tmpl_var S_PROGRAM_URL -->/js/prototype_scriptaculous_package.js" type="text/javascript"></script>
 	
 	<!-- tmpl_if load_modalbox --> 
@@ -1124,7 +1122,7 @@ In the B<admin_template.tmpl> file, find:
 
 In our example, we would change this to: 
 
-	  <script src="http://example.com/static_dada_files/js/dada_mail_admin_js.js"         type="text/javascript"></script>
+	  <script src="http://example.com/static_dada_files/js/dada_mail.js"         type="text/javascript"></script>
 	  <script src="http://example.com/static_dada_files/js/prototype_scriptaculous_package.js" type="text/javascript"></script>
 	
 	<!-- tmpl_if load_modalbox --> 

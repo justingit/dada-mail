@@ -26,12 +26,12 @@ my $list = dada_test_config::create_test_list;
 
 my $ls = DADA::MailingList::Settings->new({-list => $list}); 
 my $li = $ls->get; 
-do "plugins/dada_bridge.pl"; 
+do "plugins/bridge.cgi"; 
 
 
 
 
-ok(dada_bridge->test_sub() eq q{Hello, World!}); 
+ok(bridge->test_sub() eq q{Hello, World!}); 
 
 my $test_msg = undef; 
 my $entity   = undef; 
@@ -59,7 +59,7 @@ Blah Blah Blah
 $entity = $parser->parse_data($test_msg);
 
 
-($errors, $notice) = dada_bridge::test_Check_List_Owner_Return_Path_Header($entity, $errors, $li); 
+($errors, $notice) = bridge::test_Check_List_Owner_Return_Path_Header($entity, $errors, $li); 
 
 
 ok($errors->{list_owner_return_path_set_funny} == 0, "list_owner_return_path_set_funny has been set to, 0");
@@ -80,7 +80,7 @@ $test_msg = '';
 my $status = undef; 
 
 
-($status, $errors) = dada_bridge::inject(
+($status, $errors) = bridge::inject(
 	{ 
 		-list      => $list, 
 		-msg       => $test_msg, 
@@ -101,7 +101,7 @@ $errors = {};
 undef $status; 
 
 
-($status, $errors) = dada_bridge::inject(
+($status, $errors) = bridge::inject(
 	{ 
 		-list      => $list, 
 		-msg       => '', 
@@ -129,7 +129,7 @@ $ls->param('rewrite_anounce_from_header', 0                     );
 $ls->param('enable_bulk_batching',        0                     ); 
 $ls->param('get_finished_notification',   0                     ); 
 
-($status, $errors) = dada_bridge::inject(
+($status, $errors) = bridge::inject(
 	{ 
 		-list      => $list, 
 		-msg       => $msg, 
@@ -178,7 +178,7 @@ unlink $mh->test_send_file;
 $ls->param('charset',                        "utf-8\tutf-8"        ); 
 $ls->param('mime_encode_words_in_headers',   1                     ); 
 
-($status, $errors) = dada_bridge::inject(
+($status, $errors) = bridge::inject(
 	{ 
 		-list      => $list, 
 		-msg       => $msg, 
@@ -252,7 +252,7 @@ undef $test_msg;
 
 
 $test_msg = slurp('t/corpus/email_messages/from_header_phrase_spoof.eml'); 
-($status, $errors) = dada_bridge::validate_msg($list, \$test_msg, $ls->get);
+($status, $errors) = bridge::validate_msg($list, \$test_msg, $ls->get);
 
 #use Data::Dumper; 
 #diag Data::Dumper::Dumper($errors); 
@@ -268,7 +268,7 @@ undef $test_msg;
 $ls->param('group_list', 1); 
 
 
-($status, $errors) = dada_bridge::inject(
+($status, $errors) = bridge::inject(
 	{ 
 		-list      => $list, 
 		-msg       => $msg, 
@@ -303,11 +303,11 @@ diag "NOW WE START.";
 
 
 $msg = slurp('t/corpus/email_messages/simple_utf8_msg.eml'); 
-($status, $errors) = dada_bridge::validate_msg($list, \$msg, $ls->get);
+($status, $errors) = bridge::validate_msg($list, \$msg, $ls->get);
 
 ok($status == 1, "status returning 1"); 
 
-($status, $errors) = dada_bridge::inject(
+($status, $errors) = bridge::inject(
 	{ 
 		-list      => $list, 
 		-msg       => $msg, 

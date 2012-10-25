@@ -169,7 +169,22 @@ sub search_list {
 
 sub domain_stats { 
 	my $self    = shift;
-	my $count   = shift || 10;  
+
+	my ($args) = @_; 
+	
+	my $count;
+	if(exists($args->{-count})) { 
+		$count = $args->{-count}; 
+	}
+	else { 
+		$count = 15; 
+	}
+	
+	my $type = 'list'; 
+	if(exists($args->{-type})){ 
+		$type = $args->{-type};
+	}
+	
 	my $domains = {};
 	
 	my $query = "SELECT email FROM " . 
@@ -178,7 +193,7 @@ sub domain_stats {
 
 	# Count All the Domains
 	my $sth = $self->{dbh}->prepare($query);
-	$sth->execute('list', 1, $self->{list});
+	$sth->execute($type, 1, $self->{list});
 	 while ( ( my $email ) = $sth->fetchrow_array ) {
 		my ($name, $domain) = split('@', $email); 
 		if(!exists($domains->{$domain})){ 
@@ -199,17 +214,72 @@ sub domain_stats {
 	foreach(@index){ 
 		$other = $other + $domains->{$_};
 	}
-	my $final = {};
+	my $final = [];
 	foreach(@top){ 
-		$final->{$_} = $domains->{$_};
+		push(@$final, {domain => $_, number => $domains->{$_}});
 	}
-	$final->{other} = $other; 
+	if($other > 0) { 
+		push(@$final, {domain => 'other', number => $other}); 
+	}
 	
 	# Return!
 	return $final;
 
 }
 
+sub domain_stats_json { 
+	my $self    = shift;
+	my ($args)  = @_; 
+	if(!exists($args->{-count})){ 
+		$args->{-count} = 10; 
+	}
+	if(!exists($args->{-printout})){ 
+		$args->{-printout} = 0; 
+	}
+	my $stats = $self->domain_stats(
+		{ 
+			-count => $args->{-count},
+			-type  => $args->{-type},
+		}
+	);
+	
+	require         Data::Google::Visualization::DataTable;
+	my $datatable = Data::Google::Visualization::DataTable->new();
+
+	$datatable->add_columns(
+	       { id => 'domain',     label => "Domain",        type => 'string',},
+	       { id => 'number',     label => "Number",        type => 'number',},
+	);
+
+	for(@$stats){ 
+		$datatable->add_rows(
+	        [
+	               { v => $_->{domain} },
+	               { v => $_->{number} },
+	       ],
+		);
+	}
+
+	# Fancy-pants
+	my $json = $datatable->output_javascript(
+		pretty  => 1,
+	);
+	if($args->{-printout} == 1){ 
+		require CGI; 
+		my $q = CGI->new; 
+		
+		print $q->header(
+			'-Cache-Control' => 'no-cache, must-revalidate',
+			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+			-type            =>  'application/json',
+		);
+		print $json; 
+	}
+	else { 
+		return $json;
+	}
+	
+}
 sub SQL_subscriber_profile_join_statement {
 
     my $self = shift;

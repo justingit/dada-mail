@@ -1,0 +1,36 @@
+<!-- begin subscriber_field_tags_listing_widget.tmpl --> 
+
+<!-- tmpl_if can_have_subscriber_fields --> 
+<!-- 
+    
+     <fieldset>
+      <legend>  
+	  <a href="#" class="toggleDivs" data-target="subscriber_profile_field_tags">
+      +/-
+     </a> Subscriber Profile Field Tags
+
+      </legend>
+
+
+    <div id="subscriber_profile_field_tags" style="display:none">  
+--> 
+     
+		<p>You can use the following tags for personalization of your message:</p>
+
+ 		<ul> 
+       <!-- tmpl_loop fields -->
+        <li>
+	 		<p>
+         		<code>&lt;!-- tmpl_var <!-- tmpl_var name --> --&gt;</code>
+        	</p>
+
+		</li>
+       <!--/tmpl_loop --> 
+      </ul>
+<!--   </div> 
+     </fieldset> 
+ --> 
+
+<!-- /tmpl_if --> 
+
+<!-- end subscriber_field_tags_listing_widget.tmpl --> 

@@ -2,13 +2,13 @@
 
 <!-- tmpl_set name="title" value="Install <!-- tmpl_var PROGRAM_NAME -->" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
+<div id="installer_configure_dada_mail"></div> 
 
-<!-- <h1>Install <!-- tmpl_var PROGRAM_NAME --></h1>  -->
 	
 <!-- tmpl_if errors --> 
-	<h2>
+	<h1>
 		Problems When Attempting to Install!
-	</h2>
+	</h1>
 	<div class="badweatherbox"> 
 	 <p><strong>Yikes!</strong>
 		<p>Some problems were encountered, when attempting to install and configure 
@@ -111,7 +111,7 @@
 			<legend>Upgrade Options</legend>	
 
 				<p>
-			<input type="radio" name="if_dada_files_already_exists"	id="keep_dir_create_new_config" value="keep_dir_create_new_config" checked="checked" onClick="ToggleConfigurationOptions('show');"  /> 
+			<input type="radio" name="if_dada_files_already_exists"	id="keep_dir_create_new_config" value="keep_dir_create_new_config" checked="checked" class="radiochangeDisplayState" data-target="configuration" data-state="show"  /> 
 			<label for="keep_dir_create_new_config">
 				Create a new .dada_config  file
 			</label><br />
@@ -121,7 +121,7 @@
 			</p>
 
 	
-			<p><input type="radio" name="if_dada_files_already_exists"	id="skip_configure_dada_files" value="skip_configure_dada_files" onClick="ToggleConfigurationOptions('hide');" /> 
+			<p><input type="radio" name="if_dada_files_already_exists"	id="skip_configure_dada_files" value="skip_configure_dada_files" class="radiochangeDisplayState" data-target="configuration" data-state="hide" /> 
 			<label for="skip_configure_dada_files">
 				Use the current .dada_config  file
 					</label>
@@ -168,7 +168,9 @@
 	<!-- tmpl_else --> 
 		<fieldset> 
 		<legend>
-			&quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; Directory Location [<a href="#" onclick="toggleDisplay('dada_files_help');return false;">?</a>]
+			&quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; Directory Location [
+			 <a href="#" class="toggleDivs" data-target="dada_files_help">
+				?</a>]
 		</legend>
 	
 		<div id="dada_files_help" class="clearskiesbox" style="display:none"> 
@@ -183,13 +185,13 @@
 		</div> 
 
 		<p>
-		 <input type="radio" checked="checked" id="dada_files_dir_setup_auto"  name="dada_files_dir_setup" value="auto" onChange="Toggle_dada_files_dirOptions(); return false;">
+		 <input type="radio" checked="checked" id="dada_files_dir_setup_auto"  name="dada_files_dir_setup" value="auto" class="radiochangeDisplayState" data-target="manual_dada_files_dir_setup" data-state="hide" />
 			<label for="dada_files_dir_setup_auto">AUTO 
 			Use <!-- tmpl_var PROGRAM_NAME -->'s best guess.  </label>(<em> <!-- tmpl_var home_dir_guess --></em>). 
 		</p> 
 
 		 <p>
-		  <input type="radio"  id="dada_files_dir_setup_manual" name="dada_files_dir_setup" value="manual" onChange="Toggle_dada_files_dirOptions(); return false;">
+		  <input type="radio"  id="dada_files_dir_setup_manual" name="dada_files_dir_setup" value="manual" class="radiochangeDisplayState" data-target="manual_dada_files_dir_setup" data-state="show" />
 		<label for="dada_files_dir_setup_manual"> 
 		 MANUAL.
 		</label>  Explicitly set the Absolute Path to where the <em><strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em> directory should be installed:</p>
@@ -216,11 +218,15 @@
 	
 
 <h1>Configuration</h1> 	
+
 <fieldset> 
 
 <legend>
 
-<!-- tmpl_var PROGRAM_NAME --> URL [<a href="#" onclick="toggleDisplay('program_url_help');return false;">?</a>]
+<!-- tmpl_var PROGRAM_NAME --> URL [
+
+<a href="#" class="toggleDivs" data-target="program_url_help">
+?</a>]
 
 </legend> 
 
@@ -254,11 +260,43 @@
 </fieldset> 
 
 
+<fieldset> 
+	<legend>Support Files Directory</legend>
+	
+	<div class="clearskiesbox">
+		<p>
+			The Installer will use the Absolute Path and Corresponding URL you set below to 
+			copy over the static files used in Dada Mail: images, stylesheets, and javascript files. 
+		</p>
+		<p>
+			This directory can also be used to install any supported WYSIWYG editor(s) and file browsers
+			 (see below)
+			</p> 
+			<p>
+				You will want this directory to be publicly accessible - for example: this directory cannot be in your cgi-bin.
+			</p> 
+	</div> 
+	
+	<p>
+		<label for="support_files_dir_path">Server Absolute Path to the <!-- tmpl_var PROGRAM_NAME --> Support Files Directory:</label><br />
+		<input type="text" name="support_files_dir_path"  id="support_files_dir_path" class="midi" style="text-align:right" value="<!-- tmpl_var support_files_dir_path -->" /><span class="fake_input">/<!-- tmpl_var Support_Files_Dir_Name --></span>
+		<br />
+		<label for="support_files_dir_url">Corresponding URL to the Support Files Directory</label>
+		<br />
+		<input type="text" name="support_files_dir_url" id="support_files_dir_url" class="midi" style="text-align:right" value="<!-- tmpl_var support_files_dir_url -->" /><span class="fake_input">/<!-- tmpl_var Support_Files_Dir_Name --></span>
+	</p>
+	
+	
+</fieldset> 
+
 
 <fieldset> 
 
 <legend>
-	<!-- tmpl_var PROGRAM_NAME --> Root Password [<a href="#" onclick="toggleDisplay('root_pass_help');return false;">?</a>]
+	<!-- tmpl_var PROGRAM_NAME --> Root Password [
+	<a href="#" class="toggleDivs" data-target="root_pass_help">
+		
+		?</a>]
 </legend> 
 
 
@@ -304,7 +342,9 @@ access <em>any</em> mailing list.</p>
 
 <fieldset> 
 
-<legend><!-- tmpl_var PROGRAM_NAME --> Backend [<a href="#" onclick="toggleDisplay('backend_help');return false;">?</a>]</legend> 
+<legend><!-- tmpl_var PROGRAM_NAME --> Backend [
+	<a href="#" class="toggleDivs" data-target="backend_help">
+	?</a>]</legend> 
 
 <!-- tmpl_if error_sql_connection  --> 
 	<div class="badweatherbox">
@@ -341,7 +381,7 @@ If using either the SQL backends, make sure to create a new database before conf
 	
 </div>
 <p>
-	<select name="backend" id="backend" onChange="ToggleSQLOptions(); return false;"> 
+	<select name="backend" id="backend"> 
 		<option value="default">Default Backend</option>
 		<!-- tmpl_if can_use_DBI --> 
 			<option value="mysql" <!-- tmpl_unless can_use_MySQL -->disabled="disabled"<!-- tmpl_else -->selected="selected"<!-- /tmpl_unless -->><!-- tmpl_if can_use_MySQL -->MySQL (recommended)<!-- tmpl_else -->MySQL (not available)<!-- /tmpl_if --></option> 
@@ -413,7 +453,9 @@ If using either the SQL backends, make sure to create a new database before conf
 
 
 <fieldset> 
-<legend>Plugins/Extensions (Optional) [<a href="#" onclick="toggleDisplay('plugins_extensions_help');return false;">?</a>]</legend>
+<legend>Plugins/Extensions (Optional) [
+	<a href="#" class="toggleDivs" data-target="plugins_extensions_help">
+	?</a>]</legend>
 
 <div id="plugins_extensions_help" class="clearskiesbox" style="display:none"> 
 
@@ -441,27 +483,29 @@ for it to work correctly. For help on setting the cronjob, see the
 
 <p><input type="checkbox" name="install_tracker" id="install_tracker" value="1" /><label for="install_tracker">Tracker</label></p> 
 
-<p><input type="checkbox" name="install_dada_bridge" id="install_dada_bridge" value="1" /><label for="install_dada_bridge">Discussion Lists</label> <span class="alert">Requires Additional Configuration (cronjob)</span>	
+<p><input type="checkbox" name="install_bridge" id="install_bridge" value="1" /><label for="install_bridge">Discussion Lists</label> <span class="alert">Requires Additional Configuration (cronjob)</span>	
 </p> 
 
-<p><input type="checkbox" name="install_dada_bounce_handler" id="install_dada_bounce_handler" value="1" /><label for="install_dada_bounce_handler">Bounce Handler</label> <span class="alert">Requires Additional Configuration (cronjob)</span></p> 
+<p><input type="checkbox" name="install_bounce_handler" id="install_bounce_handler" value="1" /><label for="install_bounce_handler">Bounce Handler</label> <span class="alert">Requires Additional Configuration (cronjob)</span></p> 
 <fieldset> 
-	<legend>Additional Bounce Handler Configuration [<a href="#" onclick="toggleDisplay('bounce_handler_configuration_help');return false;">?</a>]</legend>
+	<legend>Additional Bounce Handler Configuration [
+		<a href="#" class="toggleDivs" data-target="bounce_handler_configuration_help">
+	?</a>]</legend>
 	
 	<div id="bounce_handler_configuration_help" style="display:none" class="clearskiesbox">
 		<p>
 			The Bounce Handler requires a new POP3 email account to be created, in order to work correctly. Make sure the email address isn't used for 
-			any other purpose, except for the bounce handler. See the <a href="<!-- tmpl_var DOC_URL -->/dada_bounce_handler.pl.html"  target="_blank">documentation for this plugin</a> for additional information. 
+			any other purpose, except for the bounce handler. See the <a href="<!-- tmpl_var DOC_URL -->/bounce_handler.cgi.html"  target="_blank">documentation for this plugin</a> for additional information. 
 			</p> 
 	</div> 
 	
-	<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="dada_bounce_handler_address">Bounce Handler Email Address:</label> <input type="text" name="dada_bounce_handler_address" id="dada_bounce_handler_address" value="" /></p>
+	<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_address">Bounce Handler Email Address:</label> <input type="text" name="bounce_handler_address" id="bounce_handler_address" value="" /></p>
 
-	<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="dada_bounce_handler_server">Mail Server:</label> <input type="text" name="dada_bounce_handler_server" id="dada_bounce_handler_server" value="" /></p>
+	<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_server">Mail Server:</label> <input type="text" name="bounce_handler_server" id="bounce_handler_server" value="" /></p>
 
-	<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="dada_bounce_handler_username">Username:</label> <input type="text" name="dada_bounce_handler_username" id="dada_bounce_handler_username" value="" /></p>
+	<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_username">Username:</label> <input type="text" name="bounce_handler_username" id="bounce_handler_username" value="" /></p>
 
-	<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="dada_bounce_handler_password">Password:</label> <input type="text" name="dada_bounce_handler_password" id="dada_bounce_handler_password" value="" /></p>
+	<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_password">Password:</label> <input type="text" name="bounce_handler_password" id="bounce_handler_password" value="" /></p>
 	 
 
 
@@ -471,8 +515,6 @@ for it to work correctly. For help on setting the cronjob, see the
  <span class="alert">Requires Additional Configuration (cronjob)</span></p> 
 
 <p><input type="checkbox" name="install_multiple_subscribe" id="install_multiple_subscribe" value="1" /><label for="install_multiple_subscribe">Multiple Subscribe</label></p> 
-
-<p><input type="checkbox" name="install_ajax_include_subscribe" id="install_ajax_include_subscribe" value="1" /><label for="install_ajax_include_subscribe">Ajax'd Subscription Form</label></p> 
 
 <p><input type="checkbox" name="install_blog_index" id="install_blog_index" value="1"  /><label for="install_blog_index">Archive Blog Index</label></p> 
 
@@ -486,46 +528,31 @@ for it to work correctly. For help on setting the cronjob, see the
 
 <fieldset> 
 	
-<legend>WYSIWYG Editors (Optional) [<a href="#" onclick="toggleDisplay('wysiwyg_editor_help');return false;">?</a>]</legend>
+<legend>WYSIWYG Editors (Optional) [
+	<a href="#" class="toggleDivs" data-target="wysiwyg_editor_help">
+?</a>]</legend>
 <div id="wysiwyg_editor_help" style="display:none" class="clearskiesbox"> 
 <p>Dada Mail supports the use of third party WYSIWYG HTML editors to allow you to 
 compose and edit HTML mailing list messages. This allows you to send rich text messages, 
-right in Dada Mail's list control panel, without needing to know any HTML. The 
-HTML produced by these WYSIWYG editors is actually pretty good for the use of HTML 
+right in Dada Mail's list control panel, without needing to know any HTML.</p>
+
+<p>The HTML produced by these WYSIWYG editors is actually pretty good for the use of HTML 
 emails, as most of the text formatting is done with inline css styles and these 
 editors also have the ability to make simple HTML tables for basic layouts. 
 </p>
-<p>
-	The Installer will use the Absolute Path and Corresponding URL you set below to 
-	install/configure the WYSIWYG editor(s) and file browser. 
-	Unlike the <strong><!-- tmpl_var Dada_Files_Dir_Name --></strong> 
-	directory location, you will want this directory to be publicly accessible.
-</p> 
-
 
 
 </div> 
 
 <p>
 	<p>
-		<input type="checkbox" name="install_wysiwyg_editors" id="install_wysiwyg_editors" value="1" checked="checked" onClick="ToggleWYSIWYGOptions();"/>			
+		<input type="checkbox" name="install_wysiwyg_editors" id="install_wysiwyg_editors" value="1" checked="checked" class="radio_toggleDivs" data-target="install_wysiwyg_editors_options" />			
 	<label for="install_wysiwyg_editors">Install and Configure WYSIWYG Editors</label>
 	</p>
 	
 </p>
 
 <div id="install_wysiwyg_editors_options">
-
-
-	<p>
-		<label for="support_files_dir_path">Server Absolute Path to the <!-- tmpl_var PROGRAM_NAME --> Support Files Directory:</label><br />
-		<input type="text" name="support_files_dir_path"  id="support_files_dir_path" class="midi" style="text-align:right" value="<!-- tmpl_var support_files_dir_path -->" /><span class="fake_input">/<!-- tmpl_var Support_Files_Dir_Name --></span>
-		<br />
-		<label for="support_files_dir_url">Corresponding URL to the Support Files Directory</label>
-		<br />
-		<input type="text" name="support_files_dir_url" id="support_files_dir_url" class="midi" style="text-align:right" value="<!-- tmpl_var support_files_dir_url -->" /><span class="fake_input">/<!-- tmpl_var Support_Files_Dir_Name --></span>
-	</p>
-
 
 	<p>
 		<input type="checkbox" name="wysiwyg_editor_install_ckeditor" id="wysiwyg_editor_install_ckeditor" value="1" checked="checked" />			

@@ -30,8 +30,6 @@ Captcha::reCAPTCHA
 
 CGI
 
-CGI::Ajax
-
 CGI::Session
 
 CGI::Session::ExpireSessions
@@ -63,6 +61,8 @@ Exporter::Lite
 File::Spec
 
 GD::SecurityImage;
+
+Data::Google::Visualization::DataTable
 
 HTML::Entities::Numbered
 

@@ -1019,6 +1019,8 @@ sub list_invite {
 							num_list_mailouts                    => $num_list_mailouts, 
 							num_total_mailouts                   => $num_total_mailouts,
 							active_mailouts                      => $active_mailouts,
+							
+							using_no_wysiwyg_editor              => 1,
 						},
 						-list_settings_vars       => $li, 
 						-list_settings_vars_param => 

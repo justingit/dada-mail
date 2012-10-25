@@ -1,0 +1,83 @@
+<!-- begin partial_sending_options_widget.tmpl --> 
+
+
+
+
+<!-- tmpl_if can_have_subscriber_fields --> 
+
+<!-- 
+    <fieldset>
+     <legend>
+      
+	  <a href="#" class="toggleDivs" data-target="partial_sending_options_widget">
+      +/- 
+     </a>Partial Mailing List Sending
+     </legend>    
+     
+     <div id="partial_sending_options_widget" style="display:none;width:90%">
+--> 
+    <p>
+     Send your Mailing List Message  to your Subscribers where their:
+    </p> 
+    
+	<div id="field_comparisons"> 
+    <table> 
+	
+    <!-- tmpl_loop undotted_fields --> 
+        <tr> 
+         <td> 
+          <p>
+           <strong>
+            <!-- tmpl_var label -->:
+           </strong> 
+          </p>
+         </td> 
+         <td>
+          <p>
+           <select name="field_comparison_type_<!-- tmpl_var name -->" id="field_comparison_type_<!-- tmpl_var name -->">
+            
+			<!-- tmpl_if field_comparison_type --> 
+				<option value="<!-- tmpl_var field_comparison_type -->" selected="selected"><!-- tmpl_var field_comparison_type --></option>	
+			<!-- /tmpl_if --> 
+			
+			<option value="like">Is Like</option>
+            <option value="equal_to">Is Equal To</option> 
+           </select> 
+          </p>
+         </td>
+         <td>
+          <p>
+           <input type="text" name="field_value_<!-- tmpl_var name -->" id="field_value_<!-- tmpl_var name -->" value="<!-- tmpl_var field_value -->"/>
+          </p>
+         </td>
+        </tr> 
+    <!-- /tmpl_loop --> 
+    
+    </table> 
+    </div> 
+	
+    <div class="buttonfloat">
+     <input type="button" value="Preview Who's Getting This Message..." class="cautionary preview_message_receivers" />  
+    </div>
+    
+    <div class="floatclear">
+    </div>
+	<div id="preview_message_receivers_loading"></div> 
+    <div id="preview_message_receivers_results"></div> 
+
+<!-- 
+     </div> 
+    </fieldset>
+--> 
+	
+	
+    
+    
+<!-- tmpl_else --> 
+
+    <!-- Multiple Subscriber Fields isn't support with this backend (Apparently) --> 
+
+<!-- /tmpl_if --> 
+
+    
+<!-- end partial_sending_options_widget.tmpl --> 

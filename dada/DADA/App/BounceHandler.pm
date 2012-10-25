@@ -165,7 +165,7 @@ sub test_pop3 {
     if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
 
         $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
-            { name => 'dada_bounce_handler.lock', } );
+            { name => 'bounce_handler.lock', } );
     }
 
     my ( $pop3_obj, $pop3_status, $pop3_log ) =
@@ -184,7 +184,7 @@ sub test_pop3 {
     if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
         DADA::App::POP3Tools::_unlock_pop3_check(
             {
-                name => 'dada_bounce_handler.lock',
+                name => 'bounce_handler.lock',
                 fh   => $lock_file_fh,
             },
         );
@@ -341,7 +341,7 @@ sub parse_all_bounces {
         my $lock_file_fh;
         if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
             $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
-                { name => 'dada_bounce_handler.lock' } );
+                { name => 'bounce_handler.lock' } );
         }
 
         my ( $pop3_obj, $pop3status, $pop3log ) =
@@ -419,9 +419,9 @@ sub parse_all_bounces {
                     if ($@) {
 
                         warn
-"dada_bounce_handler.pl - irrecoverable error processing message. Skipping message (sorry!): $@";
+"bounce_handler.cgi - irrecoverable error processing message. Skipping message (sorry!): $@";
                         $log .=
-"dada_bounce_handler.pl - irrecoverable error processing message. Skipping message (sorry!): $@";
+"bounce_handler.cgi - irrecoverable error processing message. Skipping message (sorry!): $@";
 
                         $need_to_delete = 1;
 
@@ -484,7 +484,7 @@ sub parse_all_bounces {
         if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
             DADA::App::POP3Tools::_unlock_pop3_check(
                 {
-                    name => 'dada_bounce_handler.lock',
+                    name => 'bounce_handler.lock',
                     fh   => $lock_file_fh,
                 },
             );

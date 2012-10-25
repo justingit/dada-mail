@@ -1,0 +1,12 @@
+<!-- begin list_search_form_widget.tmpl --> 
+    <form id="search_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" style="display: inline; margin: 0;" >
+      <input type="text"   name="query" id="search_query" class="small_input" value="<!-- tmpl_var query default="" escape="HTML" -->" />
+      <input type="hidden" name="f"    value="view_list" />
+      <input type="hidden" name="type" value="<!-- tmpl_var type default="list" -->" />
+      <input type="button" class="small_button search_list" value="Search <!-- tmpl_var type_title escape="HTML" -->" />
+	  <!-- tmpl_if query --> 
+		<input type="button" class="small_button clear_search" value="Clear" />
+      
+	 <!-- /tmpl_if --> 
+    </form>
+<!-- end list_search_form_widget.tmpl --> 

@@ -1,0 +1,211 @@
+<!-- begin view_list_viewport_widget.tmpl -->
+
+<!-- tmpl_include list_type_switch_widget.tmpl -->
+
+<!-- tmpl_unless total_num -->
+	
+	<!-- tmpl_if query --> 
+			<p class="alert">
+				No Results were found.
+			</p>
+			<p><label for="query">Search Again:</label></p> 
+			<!-- tmpl_include list_search_form_widget.tmpl -->
+			
+			
+			
+	<!-- tmpl_else --> 
+	
+		<p class="alert">
+		 There are currently no members of, <!-- tmpl_var type_title -->.
+	
+		    <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
+		
+				<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
+					<!-- tmpl_if EXPR="(type eq 'list')" -->
+							Invite
+							<!-- tmpl_if list_settings.enable_mass_subscribe -->
+					/ Add
+							<!-- /tmpl_if -->
+						<!-- tmpl_else --> 
+							Add
+						<!-- /tmpl_if -->
+		    	</a>
+		   	<!-- /tmpl_if -->
+		</p>
+	
+	<!-- /tmpl_if --> 
+	
+<!-- tmpl_else -->
+
+	<br />
+	
+	<div style="padding-top:10px">
+		&nbsp;<!-- ugly hack to get the below table down a bit. -->
+	</div>
+	
+	<table class="stripedtable">
+	 <tr>
+	  <td>
+
+
+	<!-- tmpl_if query --> 
+ 		Search Results 
+	
+			<strong>
+		     <!-- tmpl_var first -->
+		    </strong>
+		    to 
+		    <strong>
+		     <!-- tmpl_var last -->
+		    </strong>
+			of
+			<strong>
+				<!-- tmpl_var total_num_commified --> 
+		   </strong>
+		
+		  for, <em><!-- tmpl_var query escape=HTML --></em>
+		
+
+
+
+	<!-- tmpl_else --> 
+	
+   	 <!-- tmpl_var type_title -->
+	    <strong>
+	     <!-- tmpl_var first -->
+	    </strong>
+	    to 
+	    <strong>
+	     <!-- tmpl_var last -->
+	    </strong>
+		of
+		<strong>
+			<!-- tmpl_var num_subscribers --> 
+	   </strong>
+
+	
+		<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
+					<!-- tmpl_if EXPR="(type eq 'list')" -->
+						Invite
+						<!-- tmpl_if list_settings.enable_mass_subscribe -->
+						/ Subscribe
+						<!-- /tmpl_if -->
+					<!-- tmpl_else --> 
+						Add
+					<!-- /tmpl_if -->
+	    	</a>...
+	   	<!-- /tmpl_if -->
+
+	<!-- /tmpl_if -->
+	
+
+	
+	  </td>
+	
+	<td style="text-align:center">
+		<!-- tmpl_include view_list_slide_nav_widget.tmpl -->
+	</td>
+
+	
+	<td style="text-align:right">
+		<!-- tmpl_include list_search_form_widget.tmpl --> 
+	</td> 
+	
+	 </tr>
+	</table>
+
+
+	<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+	
+	 	<!-- tmpl_include view_list_table_widget.tmpl --> 
+	
+	<table class="stripedtable">
+	  <tr>
+	   		<td width="25">
+	    		<input class="toggleCheckboxes" type="checkbox" data-target_class="address" />
+	   		</td>
+
+		
+			<td>
+				
+	
+	<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
+
+		 <input type="hidden" name="process" value="delete" />
+		 <input type="hidden" name="f"       value="remove_subscribers" />
+		 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+		<!-- tmpl_if expr="(type eq 'list')" -->
+		 	<input type="submit" class="small_button" value="&#8592; Unsubscribe Checked Subscribers" />
+		<!-- tmpl_else --> 
+			<input type="submit" class="small_button" value="&#8592; Remove Checked <!-- tmpl_var type_title -->" />
+		<!-- /tmpl_if --> 
+		
+	<!-- /tmpl_if -->
+
+	<!-- tmpl_if EXPR="(type eq 'sub_request_list')" -->
+
+		 <input type="hidden" name="f"       value="subscription_requests" />
+		 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+		 <input type="submit" name="process" class="small_button" value="Approve Checked Subscription Requests" />
+		 <input type="submit" name="process" class="small_button" value="Deny Checked Subscription Requests" />
+
+	<!-- /tmpl_if -->
+	
+	<!-- tmpl_if EXPR="(type eq 'bounced_list')" -->
+	
+			<input type="hidden" name="f"     value="process_bouncing_addresses" />
+			 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+			
+			 <input type="submit" name="process" class="small_button"  value="&#8594; Move Selected Bouncing Address Back to Subscribers" />
+			 <input type="submit" name="process" class="small_button"  value="&#8855; Remove Selected Bouncing Addresses" />
+			
+	<!-- /tmpl_if -->
+	
+	</form>
+	<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
+		<!-- tmpl_unless query -->
+			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" style="display:inline;margin:0">
+			 <input type="hidden" name="f"       value="remove_all_subscribers" />
+			 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+			<!-- tmpl_if expr="(type eq 'list')" -->
+			  <input type="submit" class="small_button" value="&#8656; Unsubscribe ALL <!-- tmpl_var type_title -->" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   />
+			<!-- tmpl_else --> 
+			  <input type="submit" class="small_button" value="&#8656; Remove ALL <!-- tmpl_var type_title -->" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   />
+			<!-- /tmpl_if --> 
+			</form>
+		<!-- /tmpl_unless -->
+	<!-- /tmpl_if -->
+	
+</td>
+
+<!-- tmpl_if total_num -->
+	<!-- tmpl_if EXPR="(type eq 'black_list')" -->
+		<!-- tmpl_if can_filter_subscribers_through_blacklist --> 
+			<!-- tmpl_unless query --> 
+				<td>
+				 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="blacklist_filter_form">
+				  <input type="hidden" name="f" value="filter_using_black_list" />
+				  <div class="buttonfloat">
+				   <input type="submit" class="small_button" value="Filter Subscribers Through the Black List" />
+				  </div>
+				 </form>
+				</td>
+			<!-- /tmpl_unless -->
+		<!--/tmpl_if-->
+	<!--/tmpl_if-->
+<!--/tmpl_if-->
+
+<td style="text-align:right">
+	<!-- tmpl_include list_download_widget.tmpl -->	
+</td>
+
+
+			</tr> 
+		</table>
+		
+	
+
+<!-- /tmpl_unless -->
+
+<!-- end view_list_viewport_widget.tmpl -->

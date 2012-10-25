@@ -1,0 +1,266 @@
+	
+<!-- tmpl_set name="title" value="Plugins &#187; Password Protect Directories" --> 
+<div id="screentitle"> 
+<div id="screentitlepadding">
+	<!-- tmpl_var title --> 
+</div>
+<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+<div id="plugins_password_protect_directories_default"></div> 
+
+
+<!-- tmpl_if done --> 
+<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if problems --> 
+<div class="badweatherbox">
+
+<p><strong>Problems were found with the information you just submitted:</strong></p> 
+<ul>
+<!-- tmpl_loop errors --> 
+	<li>
+	<!-- tmpl_if expr="(error eq 'error_missing_name')" -->
+		<strong>Name</strong> is missing.
+	<!-- /tmpl_if --> 
+	<!-- tmpl_if expr="(error eq 'error_missing_url')" -->
+		<strong>URL</strong> is missing.
+	<!-- /tmpl_if --> 
+	<!-- tmpl_if expr="(error eq 'error_url_no_exists')" -->
+		<strong>URL</strong> does not look like a valid URL.
+	<!-- /tmpl_if --> 
+	<!-- tmpl_if expr="(error eq 'error_missing_path')" -->
+		<strong>Path</strong> is missing.
+	<!-- /tmpl_if --> 
+	<!-- tmpl_if expr="(error eq 'error_path_no_exists')" -->
+		<strong>Path</strong> does not look like a valid Server Path.
+	<!-- /tmpl_if --> 
+	<!-- tmpl_if expr="(error eq 'error_path_not_writable')" --> 
+		<strong>Path</strong> is not writable by this plugin.
+	<!-- /tmpl_if --> 
+	<!-- tmpl_if expr="(error eq 'error_use_custom_error_page_set_funny')" -->
+		"Use a Custom Error Page" Isn't a 1 or a 0
+	<!-- /tmpl_if --> 
+	</li>
+<!-- /tmpl_loop --> 
+</ul>
+</div>
+<!-- /tmpl_if --> 
+
+<!-- tmpl_unless edit --> 
+
+<!-- tmpl_if entries --> 
+
+	<fieldset> 
+		<legend>Current Password Protect Directories</legend> 
+	
+			<!-- tmpl_loop entries --> 
+	
+			<fieldset> 
+			<legend><!-- tmpl_var name --></legend>
+		
+			<table class="stripedtable">
+			 	<tr class="alt"> 
+				<td width="200px">
+				<strong>Protected URL</strong></td><td><a href="<!-- tmpl_var url -->" target="_blank"><!-- tmpl_var url --></a></td>
+				</tr>
+			
+			 	<tr> 
+				<td width="200px">
+				<strong>Corresponding Server Path</strong></td><td><!-- tmpl_var path --></td>
+				</tr>
+			 	
+				<tr class="alt"> 
+				<td><strong>Using a Custom Error Page?</strong></td><td><!-- tmpl_if use_custom_error_page -->Yes.<!-- tmpl_else -->No.<!-- /tmpl_if --></td>
+				</tr>
+			 
+				<tr>
+				<td width="200px">
+				<strong>Custom Error Page (Path)</strong></td><td><!-- tmpl_var custom_error_page --></td>
+				</tr>
+				
+				<tr class="alt"> 
+				<td width="200px">
+				<strong>Default Password</strong></td><td><!-- tmpl_if default_password --><em>********</em><!-- tmpl_else --><em>(None Set)</em><!-- /tmpl_if --></td>
+			</tr>
+		</table> 
+		<div class="buttonfloat">
+	
+			<form action="<!-- tmpl_var Plugin_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" style="display: inline; margin: 0;"> 
+				<input type="hidden" name="f" value="edit_dir" /> 
+				<input type="hidden" name="id" value="<!-- tmpl_var id -->" /> 
+				<input type="submit" class="processing" value="Edit " />
+			</form>
+		
+		
+		<form action="<!-- tmpl_var Plugin_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" style="display: inline; margin: 0;"> 
+			<input type="hidden" name="f" value="delete_dir" /> 
+			<input type="hidden" name="id" value="<!-- tmpl_var id -->" /> 
+	
+			<input type="submit" class="alertive" value="Delete " />
+				</form> 
+		
+				</div>
+			<div class="floatclear"></div>
+			
+
+		</fieldset> 
+
+		<!-- /tmpl_loop --> 
+	</fieldset> 
+
+<!-- /tmpl_if --> 
+<!-- /tmpl_unless --> 
+
+
+<fieldset> 
+<!-- tmpl_unless edit --> 
+<legend>New Password Protected Directory</legend> 
+<!-- tmpl_else --> 
+<legend>Edit Password Protected Directory</legend> 
+<!-- /tmpl_unless --> 
+
+<form action="<!-- tmpl_var Plugin_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+<table class="stripedtable">
+<tr class="alt">
+<td width="200px">
+ <label>
+  Name
+ </label>
+</td>
+<td align="left">
+ <input type="text" name="name" value="" class="full" />
+</td>
+</tr>
+
+<tr>
+<td width="200px">
+ <label>
+  Protected URL
+ </label>
+</td>
+<td align="left">
+ <input type="text" name="url" value="<!-- tmpl_var Base_URL -->" class="full" />
+</td>
+</tr>
+
+<tr class="alt">
+<td width="200px">
+ <label>
+  Corresponding Server Path
+ </label>
+</td>
+<td align="left">
+ <input type="text" name="path" value="<!-- tmpl_var Base_Absolute_Path -->" class="full" />
+</td>
+</tr>
+
+<tr>
+<td width="200px">
+ <label>
+  Use a Custom Error Page? 
+ </label>
+</td>
+<td align="left">
+ <input type="checkbox" name="use_custom_error_page" value="1" />
+</td>
+</tr>
+
+<tr class="alt">
+<td width="200px">
+ <label>
+Custom Error Page (Path):
+ </label>
+</td>
+<td align="left">
+ <input type="text" name="custom_error_page" value="" class="full" />
+</td>
+</tr>
+
+<!-- tmpl_if edit --> 
+
+<tr>
+<td width="200px">
+ <label>
+  Default Password (if any):
+ </label>
+</td>
+<td align="left">
+		<div id="change_default_password_button">
+			<input type="button" value="Click to Change Default Password..." class="cautionary" id="change_password_button">
+		</div> 
+		<div id="change_default_password_form" style="display:none">
+					<input type="password" name="default_password" value="" />
+		</div>
+</td>
+</tr>
+
+
+<!-- tmpl_else --> 
+
+<tr>
+<td width="200px">
+	 <label>
+	  Default Password
+	 </label>
+	</td>
+	<td align="left">
+	 <input type="text" name="default_password" value="" class="full" />
+	</td>
+</tr>
+
+<!-- /tmpl_if --> 
+
+
+</table>
+
+<!-- tmpl_unless edit --> 
+<input type="hidden" name="f" value="new_dir" /> 
+<!-- tmpl_else --> 
+<input type="hidden" name="id" value="<!-- tmpl_var id -->" /> 
+<input type="hidden" name="f" value="process_edit_dir" /> 
+<!-- /tmpl_unless --> 
+
+<div class="buttonfloat">
+<input type="reset"  class="cautionary" value="Clear All Changes" />
+<input type="submit" class="processing" value="Save All Changes" />
+</div>
+<div class="floatclear"></div>
+
+</form> 
+
+</fieldset> 
+
+<!-- tmpl_unless edit --> 
+
+<!-- tmpl_if root_login --> 
+
+	<fieldset> 
+	 <legend>Manually Run <!-- tmpl_var Plugin_Name --></legend>
+
+	<p>
+	 <label for="cronjob_url">Manual Run URL:</label><br /> 
+	<input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var Plugin_URL -->?run=1&verbose=1&passcode=<!-- tmpl_var Manual_Run_Passcode -->" />
+	</p>
+	<!-- tmpl_unless Allow_Manual_Run --> 
+	    <span class="error">(Currently disabled)</a>
+	<!-- /tmpl_unless -->
+
+
+	<p> <label for="cronjob_command">curl command example (for a cronjob):</label><br /> 
+	<input type="text" class="full" id="cronjob_command" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --data run=1\;passcode=<!-- tmpl_var Manual_Run_Passcode -->\;verbose=0  --url <!-- tmpl_var Plugin_URL -->" />
+	<!-- tmpl_unless curl_location --> 
+		<span class="error">Can't find the location to curl!</span><br />
+	<!-- /tmpl_unless --> 
+
+	<!-- tmpl_unless Allow_Manual_Run --> 
+	    <span class="error">(Currently disabled)</a>
+	<!-- /tmpl_unless --> 
+
+	</p>
+	</li>
+	</ul> 
+	</fieldset>
+
+<!-- /tmpl_if --> 
+<!-- /tmpl_unless --> 

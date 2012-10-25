@@ -127,8 +127,6 @@ sub run {
 
 sub cgi_default { 
 	
-	my $tmpl = default_tmpl(); 
-
 	my $curl_location = `which curl`;
        $curl_location = strip( make_safer($curl_location) );
     
@@ -136,7 +134,7 @@ sub cgi_default {
 	require DADA::Template::Widgets; 
 	my $scrn = DADA::Template::Widgets::wrap_screen(
 						{ 
-							-data => \$tmpl, 
+							-screen => 'plugins/mailing_monitor/default.tmpl', 
 							-with           => 'admin', 
 							-wrapper_params => { 
 								-Root_Login => $root_login,
@@ -191,107 +189,6 @@ sub mailing_monitor_results {
 	}
 
 
-}
-
-sub default_tmpl { 
-	
-	return q{ 
-
-
-
-	<!-- tmpl_set name="title" value="Plugins &#187; Mailing Monitor" --> 
-	<div id="screentitle"> 
-		<div id="screentitlepadding">
-			<!-- tmpl_var title --> 
-		</div>
-		<!-- tmpl_include help_link_widget.tmpl -->
-	</div>
-
-		<script type="text/javascript">
-		    //<![CDATA[
-			Event.observe(window, 'load', function() {
-			  mailing_monitor();				
-			});
-
-			 function mailing_monitor(){ 
-
-				new Ajax.Updater(
-					'mailing_monitor_results', '<!-- tmpl_var Plugin_URL -->', 
-					{ 
-					    method: 'post', 
-						parameters: {
-							flavor:       'mailing_monitor_results'
-
-						},
-					onCreate: 	 function() {
-						Form.Element.setValue('mailing_monitor_button', 'Refreshing...');
-						$('mailing_monitor_results').hide();
-						$('mailing_monitor_results_loading').show();
-					},
-					onComplete: 	 function() {
-
-						$('mailing_monitor_results_loading').hide();
-						Effect.BlindDown('mailing_monitor_results');
-						Form.Element.setValue('mailing_monitor_button', 'Refresh Monitor');
-					}	
-					});
-			}
-		    //]]>
-		</script>
-
-
-
-
-
-<fieldset> 
-<legend><!-- tmpl_var Plugin_Name --></legend>
-<form name="some_form" id="some_form"> 
-	<input type="button" value="Refresh Monitor" id="mailing_monitor_button" class="processing" onClick="mailing_monitor();" /> 
-</form>
-
-	<div id="mailing_monitor_results_loading" style="display:none;"> 
-		<p class="alert">Loading...</p>
-	</div> 
-	<div id="mailing_monitor_results">
-	</div> 
-
-
-</fieldset> 
-		 
-
-	<!-- tmpl_if root_login --> 
-
-		<fieldset> 
-		 <legend>Manually Run <!-- tmpl_var Plugin_Name --></legend>
-
-		<p>
-		 <label for="cronjob_url">Manual Run URL:</label><br /> 
-		<input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var Plugin_URL -->?run=1&verbose=1&passcode=<!-- tmpl_var Manual_Run_Passcode -->" />
-		</p>
-		<!-- tmpl_unless Allow_Manual_Run --> 
-		    <span class="error">(Currently disabled)</a>
-		<!-- /tmpl_unless -->
-
-
-		<p> <label for="cronjob_command">curl command example (for a cronjob):</label><br /> 
-		<input type="text" class="full" id="cronjob_command" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --data run=1\;passcode=<!-- tmpl_var Manual_Run_Passcode -->\;verbose=0  --url <!-- tmpl_var Plugin_URL -->" />
-		<!-- tmpl_unless curl_location --> 
-			<span class="error">Can't find the location to curl!</span><br />
-		<!-- /tmpl_unless --> 
-
-		<!-- tmpl_unless Allow_Manual_Run --> 
-		    <span class="error">(Currently disabled)</a>
-		<!-- /tmpl_unless --> 
-
-		</p>
-		</li>
-		</ul> 
-		</fieldset>
-
-	<!-- /tmpl_if --> 
-		
-		
-};
 }
 
 =head1 Mailing Monitor Plugin

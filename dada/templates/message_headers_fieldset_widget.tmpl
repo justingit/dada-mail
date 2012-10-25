@@ -1,0 +1,177 @@
+<!-- begin message_headers_fieldset_widget --> 
+
+
+<fieldset> 
+ <legend>
+  Message Headers
+ </legend>
+	<p>
+		  <strong>
+			<a href="#" class="toggleDivs" data-target="headers">
+			+/-
+		   </a> Additional Headers
+		  </strong>
+	</p>
+
+	<div id="headers" style="display:none">  
+	   <table width="100%">
+
+	  <tr>
+	   <td style="text-align:right">
+	    <p align="right">
+	     <label for="To">
+	      To:
+	     </label>
+	    </p>
+	   </td>
+	   <td width="99%">
+	    <p><span style="font-family:Helvetica,Verdana,Arial,sans-serif; ">
+		<!-- tmpl_var list_settings.mailing_list_message_to_phrase  escape="HTML" --> &lt;...&gt;
+		<!-- tmpl_if comment --> 
+		
+		 <!-- tmpl_if To --> 
+			<input type="text" name="To" id="To" value="<!-- tmpl_var To  escape="HTML" -->" disabled="disabled" class="full" />
+		<!-- tmpl_else --> 
+	     	<input type="text" name="To" id="To" value="<!-- tmpl_var list_settings.mailing_list_message_to_phrase  escape="HTML" --> &lt;...&gt;" disabled="disabled" class="full" />
+		<!-- /tmpl_if --> 
+
+		<!-- /tmpl_if --> 
+	</span>
+	    </p>
+	   </td>
+	  </tr>
+
+	  <tr>
+	   <td style="text-align:right">
+	    <p align="right">
+	     <label for="From">
+	      From:
+	     </label>
+	    </p>
+	   </td>
+	   <td width="99%">
+	   <p>
+		<span style="font-family:Helvetica,Verdana,Arial,sans-serif; ">
+			<!-- tmpl_if comment --> 
+		 <!-- tmpl_if From --> 
+			<input type="text" name="From" id="From" value="<!-- tmpl_var From  escape="HTML" -->" disabled="disabled" class="full" />
+	     <!-- tmpl_else --> 
+	     	<input type="text" name="From" id="From" value="<!-- tmpl_var list_settings.mailing_list_message_from_phrase  escape="HTML" --> &lt;<!-- tmpl_var list_settings.list_owner_email  escape="HTML" -->&gt;" disabled="disabled" class="full" />
+		<!-- /tmpl_if -->
+		<!-- /tmpl_if --> 
+		
+		 <!-- tmpl_var list_settings.mailing_list_message_from_phrase  escape="HTML" --> &lt;<!-- tmpl_var list_settings.list_owner_email  escape="HTML" -->&gt;
+	    
+		 </span>
+	 	</p>
+	   </td>
+	  </tr>
+	  
+	  
+	  <tr>
+	   <td style="text-align:right">
+	    <p>
+	     <label for="Reply-To">
+	      Reply-To:
+	     </label>
+	    </p>
+	   </td>
+	   <td>
+	    <p>
+	     <input type="text" name="Reply-To" id="Reply-To" value="" class="full" />
+	    </p>
+	   </td>
+	  </tr>
+	  
+	<!-- tmpl_if list_settings.print_errors_to_header -->
+		  
+		  <tr>
+		   <td style="text-align:right">
+		    <p>
+		     <label for="Errors-To">
+		      Errors-To:
+		    </label>
+		    </p>
+		   </td>
+		   <td>
+		    <p>
+		     <input type="text" name="Errors-To" id="Errors-To" value="<!-- tmpl_var list_settings.admin_email  escape="HTML" -->" class="full" />
+		    </p>
+		   </td>
+		  </tr>
+		  
+	<!-- /tmpl_if -->
+
+	<!-- tmpl_if list_settings.print_return_path_header -->
+		  
+		  <tr>
+		   <td style="text-align:right">
+		    <p>
+		     <label for="Return-Path">
+		      Return-Path:
+		     </label>
+		    </p>
+		   </td>
+		   <td>
+		    <p>
+		     <input type="text" name="Return-Path" id="Return-Path" value="<!-- tmpl_var list_settings.admin_email -->" class="full" />
+		    </p>
+		   </td>
+		  </tr>
+		  
+	<!-- /tmpl_if -->
+
+<!-- tmpl_if priority_popup_menu --> 
+
+	 	 <tr>
+		   <td style="text-align:right">
+		    <p>
+		     <label>
+		      Priority:
+		     </label>
+		    </p>
+		   </td>
+		   <td>
+		    <p>
+		     <!-- tmpl_var name="priority_popup_menu" -->
+		    </p>
+		   </td>
+		  </tr>
+<!-- /tmpl_if --> 
+	  
+  </table> 
+  </div>
+  
+  
+   <table width="100%">
+
+  <tr>
+   <td style="text-align:right">
+    <p>
+     <label for="Subject">
+      Subject:
+     </label>
+    </p>
+   </td>
+   <td width="99%">
+    <p>
+	 <!-- tmpl_if Subject --> 
+		<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var Subject escape="HTML"  -->" class="full" />
+     <!-- tmpl_else --> 
+     	<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var list_settings.mailing_list_message_subject escape="HTML" -->" class="full" />
+	<!-- /tmpl_if -->
+    </p>
+   </td>
+  </tr>
+  
+	
+	  
+	  
+
+ </table>
+
+
+ 
+</fieldset>
+
+<!-- begin message_headers_fieldset_widget --> 

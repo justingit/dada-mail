@@ -1,0 +1,122 @@
+
+<!-- tmpl_if num_rows --> 
+
+	<p class="alert">The Bounce Scorecard keeps track of subscribed address on your mailing list that bounce back message reports. Click on any address to see
+ these message report summaries.</p> 
+
+	<table width="100%">
+	 <tr> 
+	<td width="33%" align="left"> 
+
+	<strong>
+		<a href="#" class="bounce_handler_turn_page" data-page="<!-- tmpl_var first_page -->">
+			First
+		</a>
+	</strong>
+	</td> 
+
+	<td width="33%" align="center"> 
+	<p>
+
+	<!-- tmpl_if previous_page --> 
+		<strong>
+			<a href="#" class="bounce_handler_turn_page" data-page="<!-- tmpl_var previous_page -->">
+				Previous
+			</a>
+		</strong>
+	<!-- tmpl_else --> 
+	<!-- /tmpl_if -->
+	&nbsp;&nbsp;&nbsp;&nbsp;
+		<!-- tmpl_loop pages_in_set --> 
+			<!-- tmpl_if on_current_page --> 
+				<strong> 
+				 <!-- tmpl_var page --> 
+				</strong> 
+			<!-- tmpl_else --> 
+				<a href="#" class="bounce_handler_turn_page" data-page="<!-- tmpl_var page -->">
+				 	<!-- tmpl_var page --> 
+				</a>
+			<!-- /tmpl_if --> 
+
+		<!-- /tmpl_loop --> 
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<!-- tmpl_if next_page -->
+		<strong>
+			<a href="#" class="bounce_handler_turn_page" data-page="<!-- tmpl_var next_page -->">
+				Next
+			</a>
+		</strong>
+		<!-- tmpl_else --> 
+		<!-- /tmpl_if --> 
+		</p>
+	</td> 
+
+	<td width="33%" align="right"> 
+
+	<strong>
+		<a href="#" class="bounce_handler_turn_page" data-page="<!-- tmpl_var last_page -->">
+			Last
+		</a>
+	</strong>
+	</td>
+
+	</tr> 
+	</table>
+
+	<div> 
+		<div style="max-height: 300px; overflow: auto; border:1px solid black">
+
+		  <table class="stripedtable">
+		   <tr style="background:#fff"> 
+		   		<td>
+					<p>
+						<strong>Email</strong>
+					</p>
+				</td>
+				<td>
+					<p>
+						<strong>Score</strong>
+					</p>
+				</td>
+			</tr> 
+
+			<!-- tmpl_loop scorecard --> 
+		   	<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+				<td>
+					<p>
+					<a href="<!-- tmpl_var PLUGIN_URL -->?flavor=cgi_bounce_score_search&amp;query=<!-- tmpl_var email ESCAPE="URL" -->&chrome=0" title="<!-- tmpl_var email ESCAPE="HTML" -->" onclick="Modalbox.show(this.href, {title: this.title, width: 640, height:480}); return false;">
+					 <!-- tmpl_var email --></p>
+					</a>
+				</td>
+				<td>
+					<p><!-- tmpl_var score --></p>
+				</td>
+			</tr> 
+			
+			<!-- /tmpl_loop --> 
+
+	     </table> 
+	</div>		
+
+	</div> 
+
+
+	
+<form action="<!-- tmpl_var Plugin_URL -->" method="post"> 
+<input type="hidden" name="flavor" value="cgi_erase_scorecard" /> 
+	<div class="buttonfloat">
+	 <input type="submit" class="alertive" onclick="if(!confirm('Are you sure you want to Erase the Bounce Scorecard? This cannot be undone.')){alert('Scorecard Not Erased.');return false;}" name="process" value="Erase Score Card" />
+	</div>
+	<br />
+	<div class="floatclear"></div>
+
+</form> 
+
+		
+	
+	
+<!-- tmpl_else --> 
+	<p class="error">
+	 Currently, there are no bounced addresses saved in the scorecard.
+</p>
+<!-- /tmpl_if -->

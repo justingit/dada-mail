@@ -1,0 +1,74 @@
+<!-- begin list_popup_login_form.tmpl -->
+
+<form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+ <input type="hidden" name="f"       value="login" />
+ <input type="hidden" name="process" value="true" />
+
+<!-- tmpl_if referer --> 
+
+	<input type="hidden" name="referer" value="<!-- tmpl_var referer -->" /> 
+	
+<!-- tmpl_else --> 
+
+	<!-- tmpl_if url --> 
+	
+		<input type="hidden" name="referer" value="<!-- tmpl_var url --><!-- tmpl_if query_string -->?<!-- tmpl_var query_string --><!-- /tmpl_if --><!-- tmpl_if path_info -->/<!-- tmpl_var path_info --><!-- /tmpl_if -->" /> 
+
+	<!-- tmpl_else --> 
+		
+	<!-- /tmpl_if --> 
+	
+<!-- /tmpl_if --> 
+
+
+ <p>
+	You may use either your <strong>List Password</strong> or <!-- tmpl_var PROGRAM_NAME --> Root Password to to log into the List Control Panel. 
+	Your <!-- tmpl_var PROGRAM_NAME --> Root Password will work for all Mailing Lists. 
+</p>
+
+ <table align="center" cellpadding="5">
+  <tr>
+   <td>
+    <p>
+     <label for="admin_list">
+      Select
+     </label>
+     your Mailing List:
+    </p>
+   </td>
+   <td style="text-align:right">
+    <p>
+     Type in your
+     <label for="admin_password">
+      Password:
+     </label>
+    </p>
+   </td>
+  </tr>
+  <tr>
+   <td valign="top">
+    <!-- tmpl_var name="list_popup_menu" -->
+    
+    <!-- tmpl_if show_other_link --> 
+        <br />
+        <a href="<!-- tmpl_var name="PROGRAM_URL" -->?f=<!-- tmpl_var ADMIN_FLAVOR_NAME -->;login_widget=text_box">
+         other...
+        </a>
+    <!-- /tmpl_if --> 
+   </td>
+   <td valign="top" align="right">
+    <input type="password" name="admin_password" id="admin_password" size="16" style="vertical-align:top;" maxlength="24" /><!-- HACK: vertical-align is for IE -->
+    <input type="submit" class="plain" value="Login" />
+   </td>
+  </tr>
+ </table>
+ 
+	 <!-- tmpl_if DISABLE_OUTSIDE_LOGINS --> 
+	     <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" /> 
+	 <!--/tmpl_if--> 
+
+
+
+</form> 
+
+<!-- end list_popup_login_form.tmpl -->

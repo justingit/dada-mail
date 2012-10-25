@@ -14,6 +14,7 @@ $PROGRAM_USAGE_LOG        = $LOGS . '/dada.txt';
 #---------------------------------------------------------------------#
 
 
+
 # Start Root Password
 
 $PROGRAM_ROOT_PASSWORD    = 't';
@@ -21,6 +22,10 @@ $ROOT_PASS_IS_ENCRYPTED   = 0;
 
 # End Root Password
 
+$SUPPORT_FILES = { 
+	dir => '<!-- tmpl_var support_files_dir_path -->', 
+	url => '<!-- tmpl_var support_files_dir_url -->', 
+};
 
 
 # start cut for SQL Backend
@@ -230,13 +235,6 @@ $PLUGIN_CONFIGS = {
 		Plugin_URL                          => undef,
 		Allow_Manual_Run                    => undef,
 		Manual_Run_Passcode                 => undef,
-
-	},
-
-	ajax_include_subscribe => {
-
-		Plugin_URL                          => undef,
-		Default_List                        => undef,
 
 	},
 
@@ -553,15 +551,15 @@ $ADMIN_MENU = [
 
 #					{
 #					-Title      => 'Discussion Lists',
-#					-Title_URL  => $PLUGIN_URL."/dada_bridge.pl",
-#					-Function   => 'dada_bridge',
+#					-Title_URL  => $PLUGIN_URL."/bridge.cgi",
+#					-Function   => 'bridge',
 #					-Activated  => 1,
 #					},
 
 #					{
 #					-Title      => 'Bounce Handler',
-#					-Title_URL  => $PLUGIN_URL."/dada_bounce_handler.pl",
-#					-Function   => 'dada_bounce_handler',
+#					-Title_URL  => $PLUGIN_URL."/bounce_handler.cgi",
+#					-Function   => 'bounce_handler',
 #					-Activated  => 1,
 #					},
 
@@ -621,13 +619,6 @@ $ADMIN_MENU = [
 #					-Title      => 'Multiple Subscribe',
 #					-Title_URL  => $EXT_URL."/multiple_subscribe.cgi",
 #					-Function   => 'multiple_subscribe',
-#					-Activated  => 1,
-#					},
-
-#					{
-#					-Title      => 'Ajax\'d Subscription Form',
-#					-Title_URL  => $EXT_URL."/ajax_include_subscribe.cgi?mode=html",
-#					-Function   => 'ajax_include_subscribe',
 #					-Activated  => 1,
 #					},
 

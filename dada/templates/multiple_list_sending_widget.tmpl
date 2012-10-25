@@ -1,0 +1,77 @@
+<!-- begin multiple_list_sending_widget.tmpl --> 
+
+<!-- 
+	<!-- tmpl_if comment --> 
+		I'm being  bit lazy here, as I should see if they have an SQL backend 
+		(which, is what can_have_subscriber_fields does, just not explicitly)
+	<!-- /tmpl_if --> 
+	
+	<!-- tmpl_if can_have_subscriber_fields -->
+
+	<!-- tmpl_if MULTIPLE_LIST_SENDING --> 
+
+ 	   <fieldset>
+     
+		 <legend>
+			<a href="#" class="toggleDivs" data-target="multiple_list_sending_widget">
+	      +/- 
+	     </a>Multiple Mailing List Sending
+	     </legend>    
+     
+	     <div id="multiple_list_sending_widget" style="display:none;width:90%">
+--> 	
+		
+
+				 <p class="alert">
+				  * Multiple Mailing List Sending has been enabled
+				 </p>
+				 <p>
+				  <em>Also</em> send a copy of this message to subscribers of the following mailing lists:
+				</p>
+				
+				 <div class="simplebox" style="max-height:150px;overflow:auto;">
+			  
+					<!-- tmpl_var global_list_sending_checkbox_widget --> 
+	
+		 		</div>
+	
+		  <p>
+		    <a href="#" class="linkToggleCheckboxes" data-state="true" data-target_class="alternative_list">Check All</a> 
+		|
+		
+		
+		    <a href="#" class="linkToggleCheckboxes" data-state="false" data-target_class="alternative_list">Uncheck All</a> 
+		
+		  </p>
+	
+		<!-- tmpl_if MULTIPLE_LIST_SENDING_TYPE_INDIVIDUAL --> 
+			<p>
+			 <input type="checkbox" name="multi_list_send_no_dupes" id="multi_list_send_no_dupes" value="1" checked="checked" />
+		
+			<label for="multi_list_send_no_dupes">
+			  Send Only One Message/Subscriber
+			 </label>
+			<br /> 
+			Subscribers who have email addresses subscribed to more than one mailing list will receive only one copy of this message.
+		  </p>
+		<!-- tmpl_else --> 
+			<input style="display:none" type="checkbox" name="multi_list_send_no_dupes" id="multi_list_send_no_dupes" value="1" checked="checked" />
+		<!-- /tmpl_if --> 
+		
+<!-- 		
+		</div> 
+	
+	    </fieldset>
+--> 
+
+	<!-- /tmpl_if --> 
+		
+		<!-- tmpl_else --> 
+	
+			<!-- multiple list sending is not supported (apparently) -->
+	
+		<!-- /tmpl_if -->
+	
+	
+	
+<!-- end multiple_list_sending_widget.tmpl --> 

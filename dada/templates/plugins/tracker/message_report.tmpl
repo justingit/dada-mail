@@ -1,0 +1,390 @@
+<div id="plugins_tracker_message_report"></div> 
+
+
+
+<!-- tmpl_if chrome --> 
+	
+		<!-- tmpl_set name="title" value="Plugins &#187; Tracker &#187; Message Report" --> 
+		<!-- tmpl_set name="load_modalbox" value="1" -->
+		<!-- tmpl_set name="load_google_viz" value="1" -->
+		
+		
+		<div id="screentitle"> 
+			<div id="screentitlepadding">
+				Plugins &#187; <a href="<!-- tmpl_var Plugin_URL -->">Tracker</a> &#187; Message Report
+			</div>
+			<!-- tmpl_include help_link_widget.tmpl -->
+		</div>
+	<!-- /tmpl_if --> 
+		
+	<!-- tmpl_if chrome --> 
+		
+		<h1>Tracking Info For: 
+		 <!-- tmpl_var subject escape="HTML" --> 
+		</h1> 
+	
+	<!-- /tmpl_if --> 
+
+	<form id="tracker_message_info">
+		<input type="hidden" id="plugin_url" name="plugin_url" value="<!-- tmpl_var Plugin_URL -->" /> 
+		<input type="hidden" id="tracker_message_id" name="tracker_message_id" value="<!-- tmpl_var mid -->" />
+		<input type="hidden" id="can_use_country_geoip_data" name="can_use_country_geoip_data" value="<!-- tmpl_var can_use_country_geoip_data -->" />
+	</form> 
+	
+	<fieldset> 
+	<legend>The Basics</legend> 
+
+	<div style=" border: 1px solid black;">
+ 	<table class="stripedtable">
+	<tr> 
+	<td>
+	<p>
+	 <strong> 
+	  Subscribers 
+     </strong> 
+    </p>
+	</td> 
+	<td align="right"> 
+	 </p> 
+	<!-- tmpl_if num_subscribers --> 
+		<!-- tmpl_var num_subscribers -->
+	<!-- tmpl_else --> 
+		???
+	<!-- /tmpl_if -->
+	</p> 
+	</td>
+	</tr> 
+
+
+
+	<tr class="alt">
+	<td> 
+	 <p>
+	  <strong>
+	    	  <a href="#" class="to_clickthroughs">Clickthroughs</a>
+	  </strong> 
+	 </p> 
+	 </td> 
+	 <td align="right"> 
+	 <p>
+	  <a href="#" class="to_clickthroughs"><!-- tmpl_var clickthroughs --></a>
+	 </p>
+	</td> 
+	</tr>
+		
+	
+	<tr>
+	<td> 
+	 <p>
+	  <strong>
+	   		  <a href="#" class="to_opens"> Opens</a>
+	  </strong> 
+	 </p> 
+	 </td> 
+	 <td align="right"> 
+	 <p>
+	  <a href="#" class="to_opens">
+		<!-- tmpl_var opens -->
+	 </a> 
+	
+	 </p>
+	</td> 
+	</tr>
+	
+	
+	<tr class="alt">
+	<td> 
+	 <p>
+	  <strong>
+	   <a href="#" class="to_archive_views">Archive Views</a>
+	  </strong> 
+	 </p> 
+	 </td> 
+	 <td align="right"> 
+	 <p>
+	  <a href="#" class="to_archive_views"><!-- tmpl_var view_archive --></a> 
+	 </p>
+	</td> 
+	</tr>
+	
+	
+	
+	<tr>
+	<td> 
+	 <p>
+	  <strong>
+	   	   <a href="#" class="to_forwards">Forwards</a>
+	  </strong> 
+	 </p> 
+	 </td> 
+	 <td align="right"> 
+	 <p>
+	  <a href="#" class="to_forwards"><!-- tmpl_var forward_to_a_friend --></a>
+	 </p>
+	</td> 
+	</tr>
+	
+	
+	<tr class="alt">
+	<td> 
+	 <p>
+	  <strong>
+	   <a href="#" class="to_bounces">Bounces (soft/hard)</a>
+	  </strong> 
+	 </p> 
+	 </td> 
+	 <td align="right"> 
+	 <p>
+	  <a href="#" class="to_bounces"><!-- tmpl_var soft_bounce default="0" -->/<!-- tmpl_var hard_bounce  default="0" --></a>
+	 </p>
+	</td> 
+	</tr>	
+	
+	</table> 
+	</div> 
+	</fieldset>
+
+
+
+	<div id="tabs"> 
+		<ul>
+			<li>
+			<a href="#clickthroughs">
+			Clickthroughs
+			</a>
+			</li>
+			<li>
+			<a href="#opens">
+			Opens
+			</a>
+			</li>
+			<li>
+			<a href="#archive_views">
+			Archive Views
+			</a>
+			</li>
+			<li>
+			<a href="#forwards">
+			Forwards
+			</a>
+			</li>
+			<li>
+			<a href="#bounces">
+			Bounces
+			</a>
+			</li>
+		</ul>
+
+	<div id="clickthroughs">
+		
+	
+
+
+		<h2>Clickthroughs by Country</h2>
+		
+		<!-- tmpl_if can_use_country_geoip_data --> 
+		<table class="stripedtable">
+		<tr> 
+		<td width="350"> 
+
+		<div id="country_geoip_clickthroughs_table_loading"></div> 
+		<div id="country_geoip_clickthroughs_table"></div>
+			</td> 
+			<td>
+		<div id="country_geoip_clickthroughs_map_loading"></div> 
+		<div id="country_geoip_clickthroughs_map" data-width="640" data-height="400" style="width:640px;height:400px"></div> 
+			</td> 
+		</tr>
+
+			</table>
+		<!-- tmpl_else --> 
+			<p class="alert">Nothing to report.</p> 
+		<!-- /tmpl_if --> 
+
+		
+		<h2>Clickthroughs Over Time</h2> 
+		<div id="over_time_clickthroughs_graph_loading"></div> 
+		<div id="over_time_clickthroughs_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div> 	
+		<h2>Clickthroughs by URL</h2>
+				<!-- tmpl_if url_report --> 
+			  <div> 
+			 <!-- <div style="max-width:350px; max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;"> -->
+				 <div style="max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;">
+			 	<table class="stripedtable">
+					<tr style="background:#fff"> 
+					<td> 
+						<p><strong>URL</strong></p> 
+					</td> 
+					<td> <!--  style="width:50px" -->
+						<p><strong># Clickthroughs</strong></p>
+					</td> 
+					</tr> 
+						<!-- tmpl_loop url_report --> 
+						<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
+						 <td> 
+						 <p> 
+				<!-- tmpl_if comment --> 
+						    <a href="<!-- tmpl_var Plugin_URL -->?f=url&mid=<!-- tmpl_var mid -->&url=<!-- tmpl_var url escape="HTML" -->"> 
+				<!-- /tmpl_if --> 
+					<a href="<!-- tmpl_var url -->" target="_blank"> 
+					<!-- tmpl_var url escape="HTML" -->
+					</a> 
+					<!-- tmpl_if comment --> 
+					</a> 
+					<!-- /tmpl_if --> 	
+						</p> 
+						</td> 
+						<td align="right"> 
+						 <p>
+							<!-- tmpl_var count --> 
+						 </p> 
+						</td> 
+						</tr> 
+				    <!-- /tmpl_loop -->
+				</table> 
+				</div> 
+				</div> 
+			
+				<!-- tmpl_else --> 
+					<p class="alert">Nothing to report.</p> 
+				<!-- /tmpl_if --> 
+	</div> 
+	<div id="opens">
+		<h2>Message Opens by Country</h2>
+		<!-- tmpl_if can_use_country_geoip_data --> 
+			<table class="stripedtable">
+			 <tr> 
+			<td width="350"> 
+			   <div id="country_geoip_opens_table_loading"></div> 
+			   <div id="country_geoip_opens_table"></div>
+			  </td> 
+			  <td> 
+			   <div id="country_geoip_opens_map_loading"></div> 
+			   <div id="country_geoip_opens_map" data-width="640" data-height="400" style="width:640px;height:400px"></div>
+			  </td> 
+			 </tr>
+			</table>
+			<!-- tmpl_else --> 
+				<p class="alert">Nothing to report.</p> 
+			<!-- /tmpl_if -->
+	<h2>Message Opens Over Time</h2> 
+	<div id="over_time_opens_graph_loading"></div> 
+	<div id="over_time_opens_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div> 
+
+	</div> 
+	
+	<div id="archive_views">
+	<h2>Archive Views by Country</h2>
+		<!-- tmpl_if can_use_country_geoip_data --> 
+			<table class="stripedtable">
+			 <tr> 
+			<td width="350"> 
+			   <div id="country_geoip_view_archive_table_loading"></div> 
+			   <div id="country_geoip_view_archive_table"></div>
+			  </td> 
+			  <td> 
+			   <div id="country_geoip_view_archive_map_loading"></div> 
+			   <div id="country_geoip_view_archive_map" data-width="640" data-height="400" style="width:640px;height:400px"></div>
+			  </td> 
+			 </tr>
+			</table>
+			<!-- tmpl_else --> 
+				<p class="alert">Nothing to report.</p> 
+			<!-- /tmpl_if -->
+		<h2>Archive Views Over Time</h2> 
+		<div id="over_time_view_archive_graph_loading"></div> 
+		<div id="over_time_view_archive_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div>
+	</div> 
+	
+	<div id="forwards">
+		
+		<h2>&quot;Forward to a Friend&quot; by Country</h2>
+		<!-- tmpl_if can_use_country_geoip_data --> 
+			<table class="stripedtable">
+			 <tr> 
+			<td width="350"> 
+			   <div id="country_geoip_forwards_table_loading"></div> 
+			   <div id="country_geoip_forwards_table"></div>
+			  </td> 
+			  <td> 
+			   <div id="country_geoip_forwards_map_loading"></div> 
+			   <div id="country_geoip_forwards_map" data-width="640" data-height="400" style="width:640px;height:400px"></div>
+			  </td> 
+			 </tr>
+			</table>
+			<!-- tmpl_else --> 
+				<p class="alert">Nothing to report.</p> 
+			<!-- /tmpl_if -->
+
+	<h2>&quot;Forward to a Friend&quot; Over Time</h2>
+		<div id="over_time_forwards_graph_loading"></div> 
+		<div id="over_time_forwards_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div>
+	</div> 
+	
+	
+	
+	<div id="bounces">
+		
+		<h2>Soft Bounces</h2>
+		<table class="stripedtable">
+		 <tr> 
+		  <td> 
+				<div id="soft_bounce_table_loading"></div> 
+				<div id="soft_bounce_table" style="width:350px;height:400px"></div>
+			</td>
+			<td>
+				<div id="soft_bounce_graph_loading"></div> 
+				<div id="soft_bounce_graph" data-width="640" data-height="400" data-title="Soft Bounces"></div> 
+			</td>
+		   </tr>
+		</table>
+		
+		
+		<h2>Hard Bounces</h2>
+		<table class="stripedtable">
+		 <tr> 
+		  <td> 
+				<div id="hard_bounce_table_loading"></div> 
+				<div id="hard_bounce_table" style="width:350px;height:400px"></div>
+			</td>
+			<td>
+				<div id="hard_bounce_graph_loading"></div> 
+				<div id="hard_bounce_graph" data-width="640" data-height="400" data-title="Hard Bounces"></div> 
+			</td>
+		   </tr>
+		</table>
+		
+		
+
+	</div> 
+
+
+</div> 
+
+
+
+<!-- tmpl_if chrome -->
+
+	<fieldset> 
+		<legend>Export Message Logs</legend> 
+
+		<div class="buttonfloat">
+		<form action="<!-- tmpl_var PluginURL -->" method="post"> 
+		<input type="hidden" name="f" value="download_activity_logs" /> 
+		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
+		 <input type="submit" class="processing" name="process" value="Download Raw Activity Logs (.csv)" />
+		</form> 
+		</div>
+
+
+		<div class="buttonfloat">
+		<form action="<!-- tmpl_var PluginURL -->" method="post"> 
+		<input type="hidden" name="f" value="download_clickthrough_logs" /> 
+		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
+		 <input type="submit" class="processing" name="process" value="Download Raw Clickthrough Logs (.csv)" />
+		</form> 
+		</div>
+		<div class="floatclear"></div>
+	</fieldset> 
+
+<!-- /tmpl_if -->

@@ -1,0 +1,273 @@
+<!-- begin adv_sending_preferences_screen.tmpl -->
+
+<!-- tmpl_set name="title" value="Mail Sending &#187; Advanced Sending Preferences" -->
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 
+	</div> 
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+<div id="adv_sending_preferences"></div>
+
+<!-- tmpl_if done -->
+	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+<!--/tmpl_if-->
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+
+
+<fieldset> 
+ <legend> 
+  Advanced
+ </legend> 
+ 
+
+<table cellpadding="5">
+ 
+ <tr>
+  <td>
+   <p>
+    <strong>
+     Default Character Set
+    </strong>
+   </p>
+  </td>
+  <td>
+   <p>
+    <!-- tmpl_var charset_popup_menu -->
+   </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <p>
+    <strong>
+     Default Plain Text Message Encoding
+    </strong>
+   </p>
+  </td>
+  <td>
+   <p>
+    <!-- tmpl_var plaintext_encoding_popup_menu -->
+   </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+   <p>
+    <strong>
+     Default HTML Message Encoding
+    </strong>
+   </p>
+  </td>
+  <td>
+   <p>
+    <!-- tmpl_var html_encoding_popup_menu -->
+   </p>
+  </td>
+ </tr>
+
+
+</table>
+
+<table cellpadding="5">
+ 
+
+
+
+
+	<tr>
+	  <td>
+	   <p>
+	    <input type="checkbox" name="mime_encode_words_in_headers" id="mime_encode_words_in_headers" value="1" <!-- tmpl_if list_settings.mime_encode_words_in_headers -->checked="checked"<!--/tmpl_if--> />
+	   </p>
+	  </td>
+	  <td>
+	   <p>
+	    <label for="mime_encode_words_in_headers">
+	     Encode Message Headers
+	    </label>
+	    <br />
+	   		Non-ASCII characters will be specially encoded in the To, From, Cc and Subject headers. 
+	   </p>
+		<!-- tmpl_unless can_mime_encode --> 
+			<p class="error">
+			 Warning! The MIME::EncWords CPAN module needs to be installed, for this option to work correctly!
+			</p>
+		<!-- /tmpl_unless --> 
+	  </td>
+	 </tr>
+
+ 
+ <tr>
+  <td>
+   <p>
+    <input type="checkbox" name="verp_return_path" id="verp_return_path" value="1" <!-- tmpl_if list_settings.verp_return_path -->checked="checked"<!--/tmpl_if--> />
+   </p>
+  </td>
+  <td>
+   <p>
+    <label for="verp_return_path">
+     Use VERP
+    </label>
+    <br />
+    VERP, or Variable Envelope Return Paths, can help identify 
+    bounced email messages. 
+    (<a href="http://cr.yp.to/proto/verp.txt" target="_blank">More&nbsp;Information</a>.)
+   </p>
+   <p>
+    <strong>
+     Note: 
+    </strong>
+    VERP will only work if you are using SMTP sending, or if you 
+    successfully set the Return-Path header when sending via the 
+    sendmail command. This is done by setting the '-f' flag 
+    (best bet) or 'Return-Path' header.
+   </p>
+  </td>
+ </tr>
+
+ 
+<tr>
+  <td>
+   <p>
+    <input type="checkbox" name="use_domain_sending_tunings" id="use_domain_sending_tunings" value="1" <!-- tmpl_if list_settings.use_domain_sending_tunings -->checked="checked"<!--/tmpl_if--> />
+   </p>
+  </td>
+  <td>
+   <p>
+    <label for="use_domain_sending_tunings">
+     Tune Mail Sending For Specific Domains <em>(Experimental)</em>
+    </label>
+    <br/>
+     Set specific mail sending settings for specific domain names. 
+   </p>
+   
+   <p style="text-align:right">
+    <strong> 
+     <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_tuning_options">Configure Domain-Specific Sending Tunings...</a>
+    </strong> 
+
+</p>
+
+  </td>
+ </tr>
+</table>
+
+
+
+</fieldset> 
+
+<fieldset> 
+ <legend> 
+   <a href="#" id="misc_options_label" class="toggleDivs" data-target="misc_options">+/-</a> Misc. Options
+ </legend> 
+ 
+ <div id="misc_options" style="width:90%">
+ 
+
+
+<table cellpadding="5">
+
+
+	 <tr>
+	  <td>
+	   <p>
+	    <strong>
+	     Default Priority
+	    </strong>
+	   </p>
+	  </td>
+	  <td>
+	   <p>
+	    <!-- tmpl_var priority_popup_menu -->
+	   </p>
+	  </td>
+	 </tr>
+
+	<tr>
+	  <td>
+	   <p>
+	    <input type="checkbox" name="print_return_path_header" id="print_return_path_header" value="1" <!-- tmpl_if list_settings.print_return_path_header -->checked="checked"<!--/tmpl_if--> />
+	   </p>
+	  </td>
+	  <td>
+	   <p>
+	    <label for="print_return_path_header">
+	     Print the 'Return-Path' header in all list emails
+	    </label>
+	    <br />
+	    The 'Return-Path' header works much like setting the '-f' flag. 
+	    Alternatives to Sendmail (like qmail) allow you to use the 
+	    'Return-Path' header.
+	   </p>
+	  </td>
+	 </tr>
+	
+	
+ <tr>
+  <td>
+   <p>
+    <input type="checkbox" name="strip_message_headers" id="strip_message_headers" value="1" <!-- tmpl_if list_settings.strip_message_headers -->checked="checked"<!--/tmpl_if--> />
+   </p>
+  </td>
+  <td>
+   <p>
+    <label for="strip_message_headers">
+     Send all emails with only the address contained in the 'To' and 'From' message headers
+    </label>
+    <br />
+    Some SMTP servers get confused when 'To:' and 'From:' mail 
+    headers contain both the name and address 
+    ( &quot;John Smith&quot; &lt;john@smith.com&gt;). With this 
+    option, all messages sent will contain only the address 
+    ( john@smith.com ).
+    <em>
+     Most likely, you will not need this option.
+    </em>
+   </p>
+  </td>
+ </tr>
+ 
+ 
+  <tr>
+  <td>
+   <p>
+    <input type="checkbox" name="print_errors_to_header" id="print_errors_to_header" value="1" <!-- tmpl_if list_settings.print_errors_to_header -->checked="checked"<!--/tmpl_if--> />
+   </p>
+  </td>
+  <td>
+   <p>
+    <label for="print_errors_to_header">
+     Print the 'Errors-To' header in all list emails
+    </label>
+    <br />
+    The 'Errors-To' header is used to tell mail servers where to 
+    direct a message when an error in delivery occurs. 
+    <em>
+     This header has been deprecated</em>.
+   </p>
+  </td>
+ </tr>
+ </table>
+
+ </div> 
+
+ </fieldset> 
+
+
+
+
+ 
+<input type="hidden" name="process" value="1" />
+<input type="hidden" name="f"       value="adv_sending_preferences" />
+<div class="buttonfloat">
+ <input type="reset"  class="cautionary" value="Clear Changes" />
+ <input type="submit" class="processing" value="Save Changes" />
+</div>
+<div class="floatclear"></div>
+
+</form> 
+
+
+
+<!-- end adv_sending_preferences_screen.tmpl -->

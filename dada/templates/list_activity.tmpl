@@ -1,0 +1,45 @@
+<!-- begin list_activity --> 
+
+<!-- tmpl_set name="title" value="Membership &#187; Recent Activity" -->
+<!-- tmpl_set name="load_google_viz" value="1" -->
+
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title -->
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+<div id="list_activity"></div> 
+<form> 
+	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" />
+</form>
+
+<h1>Subscription Trends</h1> 
+<form>
+	<div id="sub_unsub_trends_loading"></div> 
+	<p>
+	Display the last: 
+	<select id="amount">> 
+		<option value="7">7 days</option>
+		<option value="14">2 weeks</option>
+		<option value="30" selected="selected">1 month</option> 
+		<option value="60">2 months</option>
+		<option value="90">3 months</option>
+		<option  value="183">6 months</option>
+		<option value="365">1 year</option> 
+		<option value="730">2 years</option> 
+		<option value="1095">3 years</option> 
+	</select>
+</p>
+</form>
+<div id="sub_unsub_trends" style="width:720px;height:480px"></div> 
+
+
+
+
+<h1>Recent Subscription Activity</h1> 
+	<!-- tmpl_include filtered_list_activity_widget.tmpl -->
+
+
+
+<!-- end list_activity --> 

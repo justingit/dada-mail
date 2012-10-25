@@ -1,0 +1,42 @@
+<!-- begin sending_preferences_test_widget.tmpl --> 
+
+
+<p>You changes have been saved!</p> 
+	
+	<p>
+		
+		<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" --> 
+			Testing SMTP Sending... 
+		<!--/tmpl_if --> 
+		<!-- tmpl_if expr="list_settings.sending_method eq 'sendmail'" --> 
+			Testing Sending via sendmail... 
+		<!--/tmpl_if --> 
+		<!-- tmpl_if expr="list_settings.sending_method eq 'amazon_ses'" --> 
+			Testing Sending via Amazon SES....
+		<!--/tmpl_if -->
+	</p>
+	<!-- tmpl_if report --> 
+		<h2>
+			Results:
+		</h2><!-- tmpl_loop report -->
+		<p>
+			<strong><!-- tmpl_var SMTP_command --></strong> <!-- tmpl_var message -->
+		</p><!-- /tmpl_loop -->
+	<!-- /tmpl_if --> 
+	<!-- tmpl_if raw_log --> 
+		<h2>
+			Raw Log:
+		</h2>
+<pre><!-- tmpl_var raw_log --></pre>
+<!-- /tmpl_if --> 
+
+
+<p>
+	Check your email inbox for, <!-- tmpl_var list_settings.list_owner_email --> to see if you've received a message from <!-- tmpl_var PROGRAM_NAME -->.
+</p>
+<p>
+	If a message has been received, email sending for your list is working properly!
+</p>
+
+<!-- end sending_preferences_test_widget.tmpl --> 
+

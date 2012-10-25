@@ -1,0 +1,254 @@
+<!-- begin manage_script_screen.tmpl --> 
+
+<!-- tmpl_set name="title" value="pp Information &#187; About <!-- tmpl_var PROGRAM_NAME -->" --> 
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		App Information &#187; About <!-- tmpl_var PROGRAM_NAME -->
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+
+<p>
+	This is <!-- tmpl_var name="PROGRAM_NAME" --> version <strong><!-- tmpl_var name="VER" --></strong> .
+</p>
+<p>
+	<strong>
+		<a href="#" class="toggleDivs" data-target="extended_info">
+			+/- More Information</a></strong>
+</p>
+<div id="extended_info" style="display:none">
+	<table cellspacing="0" cellpadding="5">
+		<tr>
+			<td>
+				<p class="small">
+					Perl Library Locations:
+				</p>
+			</td>
+			<td>
+				<ul>
+					<!-- tmpl_loop at_incs -->
+					<li>
+						<p class="small" style="margin:0;">
+							<!-- tmpl_var name -->
+						</p>
+					</li><!-- /tmpl_loop -->
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="small">
+					Server Software:
+				</p>
+			</td>
+			<td>
+				<p class="small">
+					<!-- tmpl_var name="server_software" -->
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="small">
+					Operating System:
+				</p>
+			</td>
+			<td>
+				<p class="small">
+					<!-- tmpl_var name="operating_system" -->
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="small">
+					Perl Version:
+				</p>
+			</td>
+			<td>
+				<p class="small">
+					<!-- tmpl_var name="perl_version" -->
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="small">
+					path(s) to <em>sendmail</em>
+				</p>
+			</td>
+			<td>
+				<p class="small">
+					<!-- tmpl_var name="sendmail_locations" -->
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="small">
+					path to <em>curl</em>:
+				</p>
+			</td>
+			<td>
+				<p class="small">
+					<!-- tmpl_var name="curl_location" -->
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="small">
+					path to <em>wget</em>:
+				</p>
+			</td>
+			<td>
+				<p class="small">
+					<!-- tmpl_var name="wget_location" -->
+				</p>
+			</td>
+		</tr>
+	</table>
+</div>
+
+
+
+<p>
+ It's a good idea to periodically check for updates to this script, 
+ as bug fixes and features may be added that you may want to take 
+ advantage of.
+</p>
+<p style="text-align:center">
+ <input type="button" class="plain" id="check_version" value="Check Version" data-ver="<!-- tmpl_var VERSION escape=URI -->" />
+</p>
+<hr />
+
+
+<!-- tmpl_if GIVE_PROPS_IN_ADMIN --> 
+
+<h1>
+ Purchase Pro Dada and the Dada Mail Manual
+</h1>
+<p>
+ If you find Dada Mail incredibly useful, please support
+ <a href="http://dadamailproject.com/purchase/pro.html" target="_blank">The Dada Mail Project.</a></p> 
+
+
+
+<p>I really appreciate all the support received! Thanks!</p> 
+
+
+	<form method="get" action="http://dadamailproject.com/purchase/pro.html" target="_blank" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+		<input type="hidden" name="ref" value="ms_scrn" /> 
+		<p style="text-align:center">
+		<input type="submit" value="Purchase Pro Dada!" class="processing" />  
+		</p>
+	</form> 
+
+
+<p>
+ Support from you goes towards the cost of development of the software (coding, hosting, free support)
+ as well as my personal endeavors, including paying my higher education student loans and continuing as a 
+ visual artist. 
+</p>
+
+<hr />
+
+<!-- /tmpl_if --> 
+
+
+<h1>
+ Visit the Support Site
+</h1>
+<p>
+ An entire support site has been set up just for Dada Mail. There, 
+ you'll be able to browse through faqs, instructions, tips and tricks, 
+ and whatever else we can muster.
+</p>
+<p style="text-align:center">
+ <strong>
+  <a href="http://dadamailproject.com/support/" target="_blank">
+   http://dadamailproject.com/support/
+  </a>
+ </strong>
+</p>
+<hr />
+
+<h1>
+ Join the Dada Mail Project Announcements Mailing List
+</h1>
+
+<form action="http://dadamailproject.com/cgi-bin/dada/mail.cgi" method="get" target="_blank" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+ <input type="hidden" name="f"      value="subscribe" />
+ <input type="hidden" name="list"   value="dada_announce" />
+ <input type="text"   name="email"  value="<!-- tmpl_var name="list_owner_email" -->" size="24" maxlength="1024" />
+ <input type="submit" class="processing" value="Subscribe" />
+</form>
+<hr />
+
+
+<h1>
+ License Agreement
+</h1>
+<p>
+ Dada Mail is Open Source Software and is released under the 
+ <strong>
+  <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html" target="_blank">
+   GNU Public License v2</a></strong>.
+</p>
+<hr />
+
+
+
+<h1>
+	Dada Mail and Spam
+</h1>
+
+<p>To avoid sending out unsolicited bulk messages using Dada Mail, make sure to never
+	add unverified, unconfirmed addresses to any Dada Mail mailing list.
+   Always allow your  subscriber to confirm their own subscription to any Dada Mail mailing list. 
+	<a href="http://dadamailproject.com/installation/using_dada_mail.html" target="_blank">Just follow the Closed-Loop Opt in System - </a>
+	and you'll be a super star.
+</p>
+
+<p>
+	<em>This below verbatim from the Spamhaus project's, "<a href="http://www.spamhaus.org/definition.html" target="_blank">The Definition of Spam</a>"</em>
+</p>
+<h2>
+	The Definition of Spam
+</h2>
+<p>
+	<strong>The word "Spam" as applied to Email means "Unsolicited Bulk Email".</strong>
+</p>
+<p>
+	Unsolicited means that the Recipient has not granted verifiable permission for the message to be sent. Bulk means that the message is sent as part of a larger collection of messages, all having substantively identical content.
+</p>
+<p>
+	<strong>A message is Spam only if it is both Unsolicited and Bulk</strong>.
+</p>
+<ul>
+	<li>
+		<p>
+			Unsolicited Email is normal email<br>
+			(examples: first contact enquiries, job enquiries, sales enquiries)
+		</p>
+	</li>
+	<li>
+		<p>
+			Bulk Email is normal email<br>
+			(examples: subscriber newsletters, customer communications, discussion lists)
+		</p>
+	</li>
+</ul>
+<h2>
+	Technical Definition of Spam
+</h2>
+<p>
+	An electronic message is &quot;spam&quot; if (A) the recipient's personal identity and context are irrelevant because the message is equally applicable to many other potential recipients; AND (B) the recipient has not verifiably granted deliberate, explicit, and still-revocable permission for it to be sent.
+</p>
+
+
+
+
+
+
+<!-- end manage_script_screen.tmpl -->

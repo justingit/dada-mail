@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <!-- <!-- tmpl_var PROGRAM_NAME --> <!-- tmpl_var VER --> -->
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title><!-- tmpl_var title --></title>
+
+
+  <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/default.css" type="text/css" media="screen" />
+
+<!-- tmpl_if list_settings.show_archives --> 
+	<!-- tmpl_if list_settings.publish_archives_rss --> 
+ 		<link rel="alternate" type="application/rss+xml"  title="RSS"  href="<!-- tmpl_var PROGRAM_URL -->/archive_rss/<!-- tmpl_var list_settings.list -->/" />
+ 		<link rel="alternate" type="application/atom+xml" title="Atom" href="<!-- tmpl_var PROGRAM_URL -->/archive_atom/<!-- tmpl_var list_settings.list -->/" />
+	<!-- /tmpl_if --> 
+<!-- /tmpl_if --> 
+
+ </head>
+ 
+ <body id="Dada">
+  <div id="PageWrapper">
+ 	<div id="Header">
+		<a href="<!-- tmpl_var PROGRAM_URL -->">
+			<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/dada_mail_logo.png" title="<!-- tmpl_var PROGRAM_NAME -->" alt="<!-- tmpl_var PROGRAM_NAME -->" />
+	    </a>
+			<!-- tmpl_if show_profile_widget --> 
+				<!-- tmpl_var profile_widget --> 
+			<!-- /tmpl_if --> 
+	    <div class="floatclear"></div>
+	  </div><!-- ends Header -->
+	
+	<div id="ContentWrapper">
+		<div id="Content">	
+			
+		<h1><!-- tmpl_var title --></h1>
+		<!-- tmpl_if list_settings.list --> 
+			<!-- tmpl_if subscribed_to_list --> 
+				<div class="clearskiesbox">
+					<p>
+						You are currently subscribed to, <!-- tmpl_var list_settings.list_name -->!
+					</p> 
+				</div> 
+			<!-- tmpl_else --> 
+			<!-- /tmpl_if -->
+		<!-- /tmpl_if -->
+		
+		
+	    <!-- tmpl_var content --> 
+		
+		
+		<!-- tmpl_if list_settings.website_name --> 
+			<!-- tmpl_if list_settings.website_url --> 
+				<p>
+			     Go back to 
+			       <a href="<!-- tmpl_var list_settings.website_url -->">
+				  		<!-- tmpl_var list_settings.website_name -->
+				   </a>
+			    </p>
+			<!-- /tmpl_if --> 
+		<!-- /tmpl_if -->
+		
+		</div><!-- ends Content -->
+	</div> <!-- ends ContentWrapper -->
+</div><!-- ends id="PageWrapper" -->
+
+<div id="Footer">
+	<div id="FooterPadding">
+		<p><!-- tmpl_var footer_props --></p>
+	</div>
+</div>
+	
+ </body>
+</html>

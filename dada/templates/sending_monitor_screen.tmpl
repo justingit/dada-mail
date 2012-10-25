@@ -1,0 +1,325 @@
+<!-- begin sending_monitor_screen.tmpl -->
+
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		Mass Mailing &#187; Monitor Your Mailings
+		<!-- tmpl_if header_subject_label --> 
+			 &#187;
+			 <!-- tmpl_var name="header_subject_label" escape="HTML" --> 
+		<!-- /tmpl_if --> 
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+
+
+
+<!-- tmpl_if mailout_exists -->
+
+	<!-- tmpl_if sending_done --> 
+		<div class="clearskiesbox">
+	    <p> 
+	     Your mailing looks finished! You may navigate away from this window!
+	    </p>
+		</div>
+	<!-- tmpl_else --> 
+	    <!-- tmpl_if its_killed -->
+			<div class="badweatherbox">
+	        <p> 
+	         Message Sending seems to have stopped. 
+	        </p>
+			</div>
+	    <!--/tmpl_if-->
+	    <!-- tmpl_if status_mailout_stale --> 
+	    	<div class="badweatherbox">
+	        <p> 
+	         The time since the last message sent has elapsed past a certain period and is considered, 
+				&quot;Stale&quot; You may continue the mailing by clicking, &quot;Pickup Mailing&quot;
+	        </p>
+			</div>
+	    <!-- /tmpl_if -->
+	<!--/tmpl_if-->
+
+
+	<!-- tmpl_unless integrity_check --> 
+
+		<div class="badweatherbox">
+		  <p>
+			<strong>
+		   Warning! Mass Mailing seems broken!
+		  </strong> 
+		</p>
+		<p>
+		 Metadata about Mass Mailing is missing/corrupted or an internal process goofed up.
+		 <br />  
+		 Mass Mailing will be paused and cannot be resumed.</p> 
+	 		
+		 </div> 
+	
+	<!-- /tmpl_unless --> 
+
+	<p class="alert"> 
+	   To guarantee this mass mailing keeps sending out, keep this window open!
+	  </p>
+
+
+	<div style="text-align:center"> 
+  
+    
+	    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" style="display:inline"> 
+	    <input type="hidden" name="f" value="sending_monitor" /> 
+	    <input type="hidden" name="id" value="<!-- tmpl_var message_id -->" /> 
+	    <input type="hidden" name="type" value="<!-- tmpl_var message_type -->" /> 
+	    <input type="hidden" name="process" value="restart" /> 
+	    <input type="submit" value="[+] Pickup Mailing" <!-- tmpl_unless its_killed -->disabled="disabled" class="disabled" <!-- tmpl_else -->class="processing"<!--/tmpl_unless-->  />
+	    </form> 
+    
+    
+    
+    
+	    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" style="display:inline"> 
+	    <input type="hidden" name="f" value="sending_monitor" /> 
+	    <input type="hidden" name="id" value="<!-- tmpl_var message_id -->" /> 
+	    <input type="hidden" name="type" value="<!-- tmpl_var message_type -->" /> 
+	    <input type="hidden" name="process" value="resume" /> 
+	    <input type="submit" value="|&gt; Resume Mailing"  <!-- tmpl_unless is_paused -->disabled="disabled" class="disabled"<!-- tmpl_else -->class="cautionary"<!--/tmpl_unless --> />
+	    </form> 
+    
+    
+	    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" style="display:inline" id="pause_mass_mailing"> 
+	    <input type="hidden" name="f" value="sending_monitor" /> 
+	    <input type="hidden" name="id" value="<!-- tmpl_var message_id -->" /> 
+	    <input type="hidden" name="type" value="<!-- tmpl_var message_type -->" /> 
+	    <input type="hidden" name="process" value="pause" /> 
+	    <input type="submit" value="|| Pause Mailing" <!-- tmpl_if is_paused -->disabled="disabled" class="disabled"<!-- tmpl_else -->class="cautionary pauseMonitoredSending"<!--/tmpl_if --> />
+	    </form> 
+    
+    
+	    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" style="display:inline" class="stop_mass_mailing"> 
+	    <input type="hidden" name="f" value="sending_monitor" /> 
+	    <input type="hidden" name="id" value="<!-- tmpl_var message_id -->" /> 
+	    <input type="hidden" name="type" value="<!-- tmpl_var message_type -->" /> 
+	    <input type="hidden" name="process" value="kill" /> 
+	    <input type="submit" value="&#8855; STOP Mailing" <!-- tmpl_unless is_paused --><!-- tmpl_if sending_done -->disabled="disabled" class="disabled"<!-- tmpl_else --> class="alertive killMonitoredSending" <!--/tmpl_if --><!-- tmpl_else --> class="alertive killMonitoredSending" <!--/tmpl_unless --> />
+	    </form> 
+
+	</div> 
+
+
+
+
+
+	 <table width="500" cellpadding="0" cellspacing="0" align="center"> 
+	  <tr> 
+	   <td> 
+	    <h1> 
+	     <!-- tmpl_var name="header_subject_label" escape="HTML" --> 
+	    </h1> 
+	   </td>
+	   <td> 
+	    <h1 style="text-align:right">
+	     <!-- tmpl_var percent_done -->%
+	    </h1>
+	   </td> 
+	  </tr> 
+	 </table> 
+ 	
+
+	<style>
+	.ui-progressbar .ui-progressbar-value { background-image: url(<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/jquery.ui/pbar-ani.gif); }
+	</style>
+	<div id="progressbarWrapper" style="width:500px;height:22px;margin-left:auto;margin-right:auto" class="ui-widget-default">
+	<div id="progressbar" style="height:100%;"></div>
+	</div> 
+	<form><input type="hidden" id="progressbar_percent" value="<!-- tmpl_var percent_done -->" /></form>  
+	 <div> 
+
+	  <table align="center" width="502" >
+	   <tr> 
+	    <td> 
+	     <h3>
+		<!-- tmpl_if total_sent_out --> 
+			<!-- tmpl_if total_sending_out_num --> 
+	      		<!-- tmpl_var total_sent_out --> of <!-- tmpl_var total_sending_out_num --> messages sent
+   			<!-- /tmpl_if --> 
+   		<!-- /tmpl_if --> 
+
+	    <!-- tmpl_if  total_sent_out --> 
+	
+			<!-- tmpl_if mailing_time --> 
+	
+		
+					in: <!-- tmpl_var mailing_time_formatted --> 
+		
+	
+			<!-- /tmpl_if -->
+	
+	
+			      </h3>
+    
+				<h3>
+				<!-- tmpl_if hourly_rate --> 
+				 Average Sending Rate: <!-- tmpl_var hourly_rate --> messages/hour
+				<!-- /tmpl_if -->
+			</h3> 
+	
+
+		 	<h3> 
+		      Last Message Sent: <!-- tmpl_var time_since_last_sendout --> ago. 
+		     </h3> 
+    
+		    <!-- /tmpl_if --> 
+    
+    
+		    <!-- tmpl_unless is_paused --> 
+    
+		        <!-- tmpl_if will_restart_in --> 
+		            <h3> 
+		             Mailing Automatically Reloading in: <!-- tmpl_var will_restart_in -->
+		            </h3>
+		        <!-- /tmpl_if --> 
+    
+		    <!-- /tmpl_unless --> 
+
+    
+		    </td> 
+		   </tr> 
+		  </table>
+
+		  </div> 
+
+		
+
+ 
+		  <ul> 
+	  
+		<!-- tmpl_unless sending_done --> 
+			 <li><p class="alert"> This screen will refresh every <!-- tmpl_var refresh_after --> seconds.</p></li>
+		<!-- /tmpl_unless --> 
+
+		<!-- tmpl_if auto_pickup_dropped_mailings --> 
+	    	<li>
+	        <p class="alert">
+	         Auto Pickup of Dropped Mailings is enabled!
+	        </p> 
+	    	</li>
+	    <!-- tmpl_else --> 
+			<li>
+	        <p class="error">
+	         Auto Pickup of Dropped Mailings is disabled.
+	        </p> 
+	    	</li>
+		<!--/tmpl_if -->
+
+		<!-- tmpl_if integrity_check --> 
+	        <!-- tmpl_if is_paused --> 
+	        <li>
+	          <p class="error">
+	              Mail Sending is currently paused. Click, "Resume Mailing" to resume.
+	           </p>	
+			</li>
+	        <!--/tmpl_if --> 
+
+		    <!-- tmpl_if sending_done --> 
+	  		<!-- tmpl_else --> 
+	    	<!--/tmpl_if--> 
+       
+			<!-- tmpl_if queue --> 
+			    <!-- tmpl_if queued_mailout --> 
+					<!-- tmpl_if is_paused --> 
+						<li>
+			           <p class="error"> 
+				         Your message is currently queued but has lost its place in the queue,  since it is also paused. <br />Resuming this mailing will 
+				 		 put it back into the queue line, at its original place. 
+				        </p>
+						</li>
+					<!-- tmpl_else --> 
+						<li>
+			 	       <p class="error"> 
+				         Your message is currently queued and will be sent after other mailouts have completed. 
+				        </p>
+			        	</li>
+						<li>
+				        <p class="error">
+				         This mailout is currently #<!-- tmpl_var queue_place --> of a total of <!-- tmpl_var queue_total --> mailouts.
+				        </p>
+			        	</li>
+				        <li>
+						<p class="error">This mailout will start when it is in the # <!-- tmpl_var MAILOUT_AT_ONCE_LIMIT --> place in the queue.</p>
+						</li>
+			    	<!-- /tmpl_if --> 
+			    <!-- /tmpl_if --> 
+			<!-- /tmpl_if --> 
+			</ul> 
+
+			<!-- tmpl_else --> 
+				<!-- ... --> 
+			<!-- /tmpl_if --> 
+
+
+
+<fieldset> 
+	
+<legend>
+	<a href="#" class="toggleDivs" data-target="verbose_sending_information">
+	 +/-
+ </a> Verbose Sending Information
+</legend>
+
+<div id="verbose_sending_information" style="display:none">
+ <table class="tagchart"> 
+ 
+ <!-- tmpl_loop sending_status --> 
+  <tr>  
+   <td> 
+   <strong> 
+    <!-- tmpl_var key -->
+   </strong>
+  </td>
+  <td> 
+   <!-- tmpl_var value --> 
+  </td>
+  </tr>
+ <!-- /tmpl_loop --> 
+ 
+ </table> 
+
+</div> 
+</fieldset> 
+
+
+
+<div class="buttonfloat">
+ <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" target="_blank">
+  <input type="hidden" name="f"    value="print_mass_mailing_log"                              /> 
+  <input type="hidden" name="id"   value="<!-- tmpl_var message_id escape="HTML" -->"          /> 
+  <input type="hidden" name="type" value="<!-- tmpl_var message_type -->"                      /> 
+  <input type="submit"             value="Open Mass Mailing Log in a New Window" class="plain" /> 
+ </form> 
+</div>
+<div class="floatclear"></div>
+
+<!--tmpl_else--> 
+
+    <!-- tmpl_if killed_it -->
+    	<div class="clearskiesbox" id="alertbox">
+        <p>
+         Your Mass Mailing was successfully stopped.
+        </p>
+		<div style="text-align: center;">
+
+		<input type="button" class="small_button fade_me" value="Thanks!" />
+		</div>
+	</div>    
+    <!-- tmpl_else --> 
+        
+	<div class="clearskiesbox">
+        <p> 
+         This Mass Mailing has completed.
+        </p>
+	</div>
+	
+    <!-- /tmpl_if --> 
+
+<!--/tmpl_if --> 
+
+<!-- end sending_monitor_screen.tmpl --> 

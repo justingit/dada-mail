@@ -14,7 +14,7 @@ use DADA::Config;
 
 
 
-my $dir = 'DADA/Template/templates'; 
+my $dir = 'templates'; 
 
 #Work on this one later...
 # archive_screen.tmpl

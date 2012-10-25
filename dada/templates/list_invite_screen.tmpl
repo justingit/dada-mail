@@ -1,0 +1,272 @@
+<!-- begin list_invite_screen.tmpl -->
+
+
+<!-- tmpl_set name="title" value="Membership &#187; Invite" -->
+
+
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		 Manage Subscribers (Subscribers) 
+		<!-- tmpl_if list_type_isa_list -->
+			Invite
+			<!-- tmpl_if list_settings.enable_mass_subscribe -->
+				/ Add
+			<!-- /tmpl_if -->
+		<!-- tmpl_else --> 
+			Add
+		<!-- /tmpl_if -->
+		&#187;
+		 Verify 
+		&#187;
+		<!-- tmpl_if list_type_isa_list -->
+			<strong>Send Invitation</strong>
+			<!-- tmpl_if list_settings.enable_mass_subscribe -->
+				/ Subscribe
+			<!-- /tmpl_if -->
+		<!-- tmpl_else --> 
+			Add
+		<!-- /tmpl_if -->
+	
+ </div> 
+</div>
+<div id="list_invite"></div> 
+
+
+<!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
+
+<form name="mass_mailing" id="mass_mailing" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+<input type="hidden" name="f" value="list_invite" />
+
+<!-- tmpl_if verified_addresses --> 
+
+	<fieldset> 
+	 <legend>
+		Your Invitees
+	 </legend>
+	 <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
+	 <table class="stripedtable">
+	  <tr>
+	   <td width="25">
+	    <p>&nbsp;</p>
+	   </td>
+	   <td>
+	   <p>
+	    <strong>
+	     Email
+	   </strong>
+	  </p>
+	 </td>
+	<!-- tmpl_loop name="field_names" --> 
+	    <td>
+	     <p>
+	      <strong>
+	       <!-- tmpl_var name --> 
+	      </strong>
+	     </p>
+	    </td> 
+	<!--/tmpl_loop --> 
+	  </tr>
+	  <!-- tmpl_loop verified_addresses -->
+	    <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+	     <td width="25">
+	      <input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" />
+	     </td>
+	     <td>
+	      <p>
+	<label for="<!-- tmpl_var email -->">
+	       <!-- tmpl_var email -->
+	</label>
+	      </p>
+	     </td>
+	     <!-- tmpl_loop fields --> 
+	        <td>
+	         <p>
+	          <!-- tmpl_var value default="&nbsp;" -->
+	         </p>
+	        </td>
+	    <!-- /tmpl_loop --> 
+	  </tr>
+	  <!-- tmpl_if __last__ --> 
+	  </table>
+	  <p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var __counter__ -->&nbsp;</p> 
+	  <!-- /tmpl_if --> 
+	<!-- /tmpl_loop -->
+	<p>&nbsp;</p>
+	<p>&nbsp;</p>
+	</div>
+	</fieldset>
+	
+<!-- tmpl_else -->
+	<div class="badweatherbox">
+	<p> 
+		No addresses have passed verification. 
+	</p> 
+</div>
+<!-- /tmpl_if --> 
+
+
+
+
+<!-- tmpl_if invited_already_addresses --> 
+
+	<fieldset> 
+	 <legend>
+	 	Already Invited Addresses</legend>
+	
+	<div class="clearskiesbox">
+		<p>
+		The below addresses have already been invited to your mailing list. 
+		
+		<!-- tmpl_unless list_settings.invites_prohibit_reinvites --> 
+			Check the addresses you would like to re-invite.
+		<!-- /tmpl_unless --> 
+		
+		</p>
+	</div> 
+		
+	 <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
+	 <table class="stripedtable">
+	  <tr>
+	   <td width="25">
+	    <p>&nbsp;</p>
+	   </td>
+	   <td>
+	   <p>
+	    <strong>
+	     Email
+	   </strong>
+	  </p>
+	 </td>
+	<!-- tmpl_loop name="field_names" --> 
+	    <td>
+	     <p>
+	      <strong>
+	       <!-- tmpl_var name --> 
+	      </strong>
+	     </p>
+	    </td> 
+	<!--/tmpl_loop --> 
+	  </tr>
+	  <!-- tmpl_loop invited_already_addresses -->
+	    <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+	     <td width="25">
+	      <!-- tmpl_if list_settings.invites_prohibit_reinvites -->
+			&nbsp;
+		  <!-- tmpl_else --> 
+			<input type="checkbox" name="already_invited_address" class="already_invited_address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->"  /><!--checked="checked"-->
+	      <!-- /tmpl_if --> 
+		</td>
+	     <td>
+	      <p>
+	<label for="<!-- tmpl_var email -->">
+	       <!-- tmpl_var email -->
+	</label>
+	      </p>
+	     </td>
+	     <!-- tmpl_loop fields --> 
+	        <td>
+	         <p>
+	          <!-- tmpl_var value default="&nbsp;" -->
+	         </p>
+	        </td>
+	    <!-- /tmpl_loop --> 
+	  </tr>
+	  <!-- tmpl_if __last__ --> 
+	   
+	   <!-- tmpl_unless list_settings.invites_prohibit_reinvites -->
+		   <tr>
+			<td>
+				<input class="toggleCheckboxes" type="checkbox" data-target_class="already_invited_address" />
+		    </td>
+			<!-- tmpl_loop fields --> 
+		        <td>
+		         <p>
+					<!-- tmpl_if __first__ -->
+						<label for="check_all_already_invited_addresses">Check All Addresses</label>
+					<!-- tmpl_else --> 
+		         		&nbsp;
+					<!-- /tmpl_if --> 
+		         </p>
+		        </td>
+	    <!-- /tmpl_loop -->
+		</tr>
+		<!-- /tmpl_unless -->	   
+	  </table>
+	  <p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var __counter__ -->&nbsp;</p> 
+	  <!-- /tmpl_if --> 
+	
+	<!-- /tmpl_loop -->
+	
+	<p>&nbsp;</p>
+	<p>&nbsp;</p>
+	</div>
+	</fieldset> 
+<!-- /tmpl_if -->
+
+
+
+<div id="customize_invite_message_button">
+	<div style="text-align:center">
+		<input type="button" value="Customize Your List Invitation Message..." class="cautionary bigger_button show_customize_invite_message" />
+	</div>
+	
+</div> 
+
+<div id="customize_invite_message_form">
+	
+	 
+	<!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
+
+
+	<fieldset>
+	<legend>Message Body</legend>
+
+	<div id="tabs"> 
+		<ul>
+			<li>
+				<a href="#html_message">
+					HTML Version
+				</a>
+			</li>
+			<li class="ui-tabs-selected">
+				<a href="#plaintext_message">
+					PlainText Version
+				</a>
+			</li>
+			</ul>
+
+
+	 <div id="html_message"> 
+
+		<p>
+		 <input type="checkbox" id="use_html_message" name="use_html_message" value="1" /> 
+		 <label for="use_html_message">
+		  Use the HTML Version
+		 </label>
+	    </p>
+		<!-- tmpl_include html_message_form_field_widget.tmpl --> 
+	</div>
+
+
+	 <div id="plaintext_message"> 
+	
+		<p>
+		 <input type="checkbox" id="use_text_message" name="use_text_message" value="1" checked="checked" /> 
+		 <label for="use_text_message">
+		  Use the PlainText Version
+		 </label>
+	    </p>
+	  <textarea name="text_message_body" id="text_message_body" cols="80" rows="30"><!-- tmpl_var list_settings.invite_message_text escape="HTML" --></textarea> 
+	</div> 
+	</fieldset>
+	</div> 
+
+
+</div> 
+
+<!-- tmpl_include send_a_list_message_button_widget.tmpl --> 
+
+
+</form> 
+
+<!-- end list_invite_screen.tmpl -->

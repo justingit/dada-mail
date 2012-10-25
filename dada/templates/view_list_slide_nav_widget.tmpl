@@ -1,0 +1,43 @@
+<!-- begin view_list_slide_nav_widget.tmpl --> 
+
+<table width="100%" cellpadding="0" cellspacing="0">
+ <tr> 
+<td align="left"> 
+<strong><a href="#" class="turn_page" data-page="<!-- tmpl_var first_page -->">&lt;&lt;</a></strong>
+</td> 
+<td align="center"> 
+
+
+<!-- tmpl_if previous_page --> 
+	<strong><a href="#" class="turn_page" data-page="<!-- tmpl_var previous_page -->">&lt; </a></strong>
+<!-- tmpl_else --> 
+<!-- /tmpl_if -->
+	<!-- tmpl_loop pages_in_set --> 
+		<!-- tmpl_if on_current_page --> 
+			<strong> 
+			 <!-- tmpl_var page --> 
+			</strong> 
+		<!-- tmpl_else --> 
+			<a href="#" class="turn_page" data-page="<!-- tmpl_var page -->">
+			 <!-- tmpl_var page --> 
+			</a>
+		<!-- /tmpl_if --> 
+
+	<!-- /tmpl_loop --> 
+	<!-- tmpl_if next_page -->
+	 <strong><a href="#"  class="turn_page" data-page="<!-- tmpl_var next_page -->"> &gt;</a></strong>
+	<!-- tmpl_else --> 
+	<!-- /tmpl_if --> 
+	
+</td> 
+
+<td style="text-align:right">
+
+<strong><a href="#" class="turn_page" data-page="<!-- tmpl_var last_page -->">&gt;&gt;</a></strong>
+
+</td>
+
+</tr> 
+</table>
+
+<!-- end view_list_slide_nav_widget.tmpl --> 

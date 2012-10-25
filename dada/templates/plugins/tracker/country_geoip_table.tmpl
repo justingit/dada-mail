@@ -1,0 +1,38 @@
+<!-- begin country_geoip_table.tmpl --> 
+
+<!-- tmpl_if c_geo_ip_report --> 
+	<div> 
+	 <div style="max-height: 400px; max-width:350px; overflow: auto; border:1px solid black 	overflow-y: scroll; overflow-x: hidden;">
+	  <table id="sortable_table_<!-- tmpl_var type -->" class="stripedtable tablesorter" style="width:325px">
+       <thead> 			
+	    <tr> 
+	     <th align="left">Country</th> 
+	     <th  align="right"><!-- tmpl_var label --></th> 
+	    </tr> 
+       </thead> 
+       <tbody>
+	   <!-- tmpl_loop c_geo_ip_report --> 
+	   	<tr <!-- tmpl_if __odd__ --> class="odd"<!-- tmpl_else -->class="even"<!-- /tmpl_if -->> 
+        <td>
+			<a href="#" class="individual_country_geoip" data-type="<!-- tmpl_var type -->" data-country="<!-- tmpl_var code -->">
+				<!-- tmpl_var name -->
+			</a>
+		</td> 
+        <td style="text-align:right; width: 50px">
+			<a href="#" class="individual_country_geoip" data-type="<!-- tmpl_var type -->" data-country="<!-- tmpl_var code -->">
+			<!-- tmpl_var count -->
+			</a>
+		</td>
+       </tr> 
+	  <!-- /tmpl_loop --> 
+      </tbody>
+     </table> 
+    </div> 
+   </div> 
+
+<!-- tmpl_else --> 
+	<p class="alert">Nothing to report.</p> 
+<!-- /tmpl_if --> 
+
+<!-- end country_geoip_table.tmpl --> 
+
