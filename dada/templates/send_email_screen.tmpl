@@ -38,6 +38,9 @@
 
 
 <form name="mass_mailing" id="mass_mailing" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+
+ <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" />
+
  <input type="hidden" name="f" value="send_email" />
  <input type="hidden" name="advanced" value="yes" />
 	  
@@ -75,18 +78,78 @@
 </fieldset>
  
 
-<!-- tmpl_include send_email_archive_options_widget.tmpl -->
+<fieldset> 
+<legend>Options</legend>
 
-<!-- tmpl_include multiple_list_sending_widget.tmpl --> 
 
-<!-- tmpl_include partial_sending_options_widget.tmpl --> 
+<div id="tabs_mass_mailing_options">
+	<ul>
+		<li>
+			<a href="#send_email_archive_options">
+ 				Archiving
+			</a>
+		</li>
+		<!-- tmpl_if MULTIPLE_LIST_SENDING --> 
+		
+			<li>
+				<a href="#multiple_list_sending">
+	 				Multiple List Sending
+				</a>
+			</li>
+		<!-- /tmpl_if --> 
+		<!-- tmpl_if can_have_subscriber_fields --> 
+			<li>
+				<a href="#partial_sending_options">
+	 				 Partial Mailing List Sending 
+				</a>
+			</li>
+		<!-- /tmpl_if --> 
+		<li>
+			<a href="#file_attachments">
+ 				 File Attachments
+			</a>
+		</li>
+		<!-- tmpl_if can_have_subscriber_fields --> 
+		<li>
+			<a href="#subscriber_field_tags_listing">
+ 				 Subscriber Fields
+			</a>
+		</li>
+		<!-- /tmpl_if --> 
 
-<!-- tmpl_include file_attachments_widget.tmpl -->
+		</ul>
+		
+	<div id="send_email_archive_options">		
+	<!-- tmpl_include send_email_archive_options_widget.tmpl -->
+	</div> 
+	<!-- tmpl_if MULTIPLE_LIST_SENDING --> 
+		<div id="multiple_list_sending">		
+		<!-- tmpl_include multiple_list_sending_widget.tmpl --> 
+		</div> 
+	<!-- /tmpl_if --> 
+	
+	<!-- tmpl_if can_have_subscriber_fields --> 
+		<div id="partial_sending_options">		
+		<!-- tmpl_include partial_sending_options_widget.tmpl --> 
+		</div> 
+	<!-- /tmpl_if --> 
+	
+	<div id="file_attachments">		
+	<!-- tmpl_include file_attachments_widget.tmpl -->
+	</div> 
 
-<!-- tmpl_include subscriber_field_tags_listing_widget.tmpl --> 
- 
+	<!-- tmpl_if can_have_subscriber_fields --> 
+		<div id="subscriber_field_tags_listing">		
+		<!-- tmpl_include subscriber_field_tags_listing_widget.tmpl --> 
+		</div> 
+	<!-- /tmpl_if --> 
+</div> 
+
+
+</fieldset> 
 <!-- tmpl_include send_a_list_message_button_widget.tmpl -->
- 
+
+
 </form>
 
 

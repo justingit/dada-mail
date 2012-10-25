@@ -1,0 +1,168 @@
+=pod
+
+=head1 Dada Mail 5 to Dada Mail 6 Upgrade Guide
+
+=head1 Focus
+
+The focus of this major release of Dada Mail is to make room for future growth of the app, by creating a good foundation for future features. 
+
+=head2 JavaScript UI/UX Breathing/Growing Room
+
+Dada Mail's UI/UX has been migrated to jQuery, from Prototype, where development has all but ceased. 
+The vast majority of Dada Mail's extra functionality through JavaScript is done in an unobtrusive way. A great example
+of new features allowed with this JS library move is the rewritten and redesigned Tracker plugin. 
+
+=head2 Towards a new web framework
+
+Dada Mail is written with the thinnest of veneer of a web framework, and the next major version of Dada Mail may be a migration 
+to a more robust web framework such as CGI::Application, Catalyst, or Mojolicious. v6 of Dada Mail moves the various components that 
+make up Dada Mail (Perl code, JavaScript code, templates, images, stylesheets) into consolidated bundles of files and directories that 
+are more sensible than previous versions. 
+
+=head1 Database Schema
+
+There are B<no> changes in any of the database schemas between Dada Mail 5 and Dada Mail 6. 
+
+Upgrading is fairly straightforward, with no need for any Dada Mail 5 to Dada Mail 6 SQL upgrade scripts. 
+
+When using the Dada Mail Installer (which you should use, when upgrading), you will definitely want to create a new C<.dada_config> 
+file, when asked, as there is one new config variable, C<$SUPPORT_FILES> that needs to be set up correctly. 
+
+=head1 Template Changes
+
+=head2 "templates" directory move
+
+In v5, template files lived in the directory: 
+
+I<dada/DADA/Template/templates> 
+
+They are now located in: 
+
+I<dada/templates>
+
+=head2 Plugins: Templated out
+
+There was a voluminous amount of inline HTML in the plugins/extensions that are shipped with Dada Mail. This HTML is now saved in separate template files, which you can find in, 
+
+I<dada/templates/plugins> 
+
+Each plugin has its own directory for its templates, eg: I<dada/templates/plugins/tracker>, etc. 
+
+The Scheduled Mailings plugin still has program generated and inline HTML.  
+
+=head2 JavaScript, images and css files removed from templates directory, relocated in, "static" directory
+
+Many static files that used to reside in the, I<templates> directory have been moved to the, I<static> directory, to be
+served directly from the webserver. These include JavaScript, image and cascading stylesheet files. 
+
+This change should help performance of the app. These files are also not cached in Dada Mail's Screen Cache, as they're going to be served faster by 
+the webserver simply as static files. 
+
+=head3 Inline JavaScript removed from template files
+
+The vast majority of JavaScript that may have been found inline in the template files has been removed. You will now find that 
+code in the, I<static/javascripts/dada_mail.js> file. 
+
+=head1 JavaScript
+
+=head2 Migration from Prototype/Scriptaculous to jQuery/jQueryUI
+
+Most of the JavaScript that relies on the Prototype/Scriptaculous libraries has been migrated to jQuery/jQueryUI. Some remains, 
+and jQuery has been configured in, C<NoConflict> mode. We hope to move all Prototype/Scriptaculous code to jQuery eventually. 
+
+=head1 Static Files directory location, $SUPPORT_FILES config variable, Installation and Configuration
+
+Dada Mail now separates out its static files needed for the app, from the dynamic template files. These static files ship
+with the app under the directory, 
+
+I<dada/static> 
+
+When you install Dada Mail using the included Installer, this entire directory will 
+be copied to the publically accessable directory that you specify, so that they may be served 
+directly by the webserver. JavaScript, images and cascading style sheets will be served from this directory. 
+
+In previous versions of Dada Mail, these files were served via Dada Mail, creating a new running instance of the app per request, 
+which is slow, awkward and confusing. 
+
+Both the server path, and URL to this directory will be saved in your C<.dada_config> file, under
+the varible, C<$SUPPORT_FILES>. This variable is required to be correctly configured, for Dada Mail to work. 
+
+This does create an additional thing that needs to be configured for Dada Mail to be successfully installed, but we 
+feel this extra step is worth it, for performance and for future features of the app. 
+
+=head1 List Control Panel Screen
+
+=head2 Mass Mailing >> Send a Message
+
+Options for Mass Mailing, including File Attachments, Archive Options, etc have been moved to a tabbed interface. 
+
+=head2 Membership >> View
+
+=head3 Breakdown by Domain Graph
+
+The Breakdown by Domain graph, that used to be in the Tracker plugin has been moved to the Membership >> View screen. Clicking on any of the pie slices
+ will perform a search on the domain you have selected. 
+
+=head3 Search Autocomplete 
+
+The search form has autocomplete, which searches and matches on email addresses
+
+=head2 Membership >> Recent Activity
+
+=head3 Subscription Trends graph
+
+The B<Recent Activity> screen now has a graph labeled, B<Subscription Trends>. This graph 
+shows daily, as well as cumulative data on Subscriptions and Unsubscriptions on your mailing list. 
+
+=head1 DataCache
+
+Dada Mail now has a data cache, for things like generated JSON files. This data cache can be 
+managed with the new, C<DADA::App::DataCache> module and can be enabled/disabled using the C<$DADA_CACHE>
+ config variable. Old cached data will be removed periodically (1 hour), automatically. The data cache is located in the, 
+
+I<.dada_files/.tmp/_dada_cache>
+
+directory. The files, as well as the directory itself, may be safely removed at any time. 
+
+=head1 Plugins
+
+=head2 Tracker
+
+The Tracker plugin has been essentially: completely rewritten, and its features have been expanded. 
+All charts, graphs and maps generated are now interactive and mousing over various parts of the chart/graph/map will
+reveal additional information. The UX itself has been redesigned, as well.
+
+The new charts/graphs/maps are powered by the Google Visualization API. Data, in the JSON format is created for Dada Mail using the Perl CPAN module, 
+JSON (L<http://search.cpan.org/~makamaka/JSON/>). This module will need to be installed on your hosting platform for these charts/graphs/maps to be created. 
+
+Although not part of the standard Perl Library, the module proves to be so useful, that it's usually already installed on many hosting platforms (like LWP, CGI, etc). 
+
+=head3 Expanded location-based information
+
+As well as country-specific information, Tracker now supports showing information on a city-specific level. 
+
+=head3 City Reports by IP Address
+
+Reports are now generated per country, breaking down then by city, and then by individual IP address that may have caused an event, 
+(a message open, clickthrough, forward, archive view) and listed in chronological order. 
+
+=head3 Included City Geo IP Data
+
+Dada Mail now comes with both a country Geo IP database, as well as a city-level Geo IP database. The city-level database is fairly large - ~20 megs., but it's 
+utility is worth its size. Geo IP data is provided by L<http://maxmind.com>, who also provide more accurate country/city data, on a subscription. 
+
+=head2 Bounce Handler 
+
+=head3 Filename change: dada_bounce_handler.pl to bounce_handler.cgi
+
+Make sure to update any cronjobs, links, etc. 
+
+=head2 Bridge
+
+=head3 Filename change: dada_bridge.pl to bridge.cgi
+
+Make sure to update any cronjobs, links, etc. 
+
+=head1 Extensions
+
+=head2 dada_digest.pl - REMOVED

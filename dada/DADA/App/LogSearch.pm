@@ -368,35 +368,61 @@ sub past_date {
 sub sub_unsub_trends_json { 
 	my $self = shift; 
 	my ($args) = @_; 
-	
-	my $trends = $self->sub_unsub_trends($args);
-	require Data::Google::Visualization::DataTable; 
-	my $datatable = Data::Google::Visualization::DataTable->new();
-
-	$datatable->add_columns(
-		   { id => 'date',                    label => 'Date',                    type => 'string'}, 
-		   { id => 'cumulative_subscribed',   label => 'Cumulative Subscriptions',   type => 'number',},
-		   { id => 'cumulative_unsubscribed', label => 'Cumulative Unubscriptions', type => 'number',},
-		   { id => 'subscribed',              label => 'Subscriptions',   type => 'number',},
-		   { id => 'unsubscribed',            label => 'Unubscriptions', type => 'number',},
-	);
-
-	for(@$trends){ 
-		$datatable->add_rows(
-	        [
-	               { v => $_->{date}},
-	               { v => $_->{cumulative_subscribed} },
-	               { v => $_->{cumulative_unsubscribed} },
-	               { v => $_->{subscribed} },
-	               { v => $_->{unsubscribed} },
-	       ],
-		);
+	if(! exists($args->{-days})){ 
+		$args->{-days} = 30;
 	}
+	
+	
+	my $json; 
+	
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new; 
 
-
-	my $json = $datatable->output_javascript(
-		pretty  => 1,
+	$json = $dc->retrieve(
+		{
+			-list    => $args->{-list}, 
+			-name    => 'sub_unsub_trends_json' . '.' . $args->{-days},
+		}
 	);
+	if(!defined($json)){ 
+	
+		my $trends = $self->sub_unsub_trends($args);
+		require Data::Google::Visualization::DataTable; 
+		my $datatable = Data::Google::Visualization::DataTable->new();
+
+		$datatable->add_columns(
+			   { id => 'date',                    label => 'Date',                    type => 'string'}, 
+			   { id => 'cumulative_subscribed',   label => 'Cumulative Subscriptions',   type => 'number',},
+			   { id => 'cumulative_unsubscribed', label => 'Cumulative Unubscriptions', type => 'number',},
+			   { id => 'subscribed',              label => 'Subscriptions',   type => 'number',},
+			   { id => 'unsubscribed',            label => 'Unubscriptions', type => 'number',},
+		);
+
+		for(@$trends){ 
+			$datatable->add_rows(
+		        [
+		               { v => $_->{date}},
+		               { v => $_->{cumulative_subscribed} },
+		               { v => $_->{cumulative_unsubscribed} },
+		               { v => $_->{subscribed} },
+		               { v => $_->{unsubscribed} },
+		       ],
+			);
+		}
+
+
+		$json = $datatable->output_javascript(
+			pretty  => 1,
+		);
+		$dc->cache(
+			{ 
+				-list    => $args->{-list}, 
+				-name    => 'sub_unsub_trends_json' . '.' . $args->{-days},
+				-data    => \$json, 
+			}
+		);
+		
+	}
 	
 	if($args->{-printout} == 1){ 
 		require CGI; 

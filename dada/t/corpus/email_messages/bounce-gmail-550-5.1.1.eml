@@ -12,7 +12,7 @@ Received: from web1015.opentransfer.com (unknown [173.83.247.194])
 Received: from web1015.opentransfer.com (localhost [127.0.0.1])
 	by web1015.opentransfer.com (8.14.4/8.14.4) with ESMTP id pB62ATuC008830
 	for <justin@example.com>; Mon, 5 Dec 2011 21:10:29 -0500
-X-opentransfer-URL:  http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl 
+X-opentransfer-URL:  http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi 
 Received: (from c74244@localhost)
 	by web1015.opentransfer.com (8.14.4/8.14.4) id pB62ATZb008822;
 	Mon, 5 Dec 2011 21:10:29 -0500

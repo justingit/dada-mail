@@ -23,7 +23,7 @@ And change it to:
 
 =over
 
-=item * The dada_bridge.pl plugin
+=item * The bridge.cgi plugin
 
 =item * The SQL backend for List Settings
 
@@ -53,7 +53,7 @@ If you do not want to install the entire 2.10.11b program over the 2.10.11 versi
 
 =over
 
-=item * dada/plugins/dada_bridge.pl
+=item * dada/plugins/bridge.cgi
 
 =item * dada/DADA/Config.pm
 
@@ -89,7 +89,7 @@ And change it to:
 
 =head2 Mystery Girl
 
-The dada_bounce_handler.pl script has been moved from I<dada/extensions> to I<dada/plugins>, since the script acts more like a plugin, than an extension. 
+The bounce_handler.cgi script has been moved from I<dada/extensions> to I<dada/plugins>, since the script acts more like a plugin, than an extension. 
 
 =head2 Dada-ized FormMail
 
@@ -133,7 +133,7 @@ L<http://dadamailproject.com/support/documentation/change_root_password.cgi.html
 
 for more information. 
 
-=head2 dada_bridge.pl moderation system - Many Changes! 
+=head2 bridge.cgi moderation system - Many Changes! 
 
 The moderation system in Dada Mail, pre 2.10.11 really wasn't a moderation system at all, but simply a list of email addresses that can send to an announce-only mailing list, other than the list owner. 
 
@@ -195,7 +195,7 @@ Logging in the Dada Mail usage log still happens and the logging is much more ve
 
 This only work with the Mail::Bulkmail backend, which has also been dropped. 
 
-=item * dada_bounce_handler.pl and Mail-DeliveryStatus-BounceParser 
+=item * bounce_handler.cgi and Mail-DeliveryStatus-BounceParser 
 
 Mystery Girl now takes advantage of the Mail-DeliveryStatus-BounceParser CPAN module, in conjunction with its own bounce parser routines (not replaced, in other words)
 
@@ -327,7 +327,7 @@ Check, <Bune Mail Sending For Specific Domains>, save your changes and then clic
 
 =head2 Better Spam Protection for Discussion Lists
 
-This feature is a part of dada_bridge.pl. Under the header, B<Mailing List Security> check the option: B<Ignore messages labeled as, "SPAM" by SpamAssassin filters.> Note! If you do B<have> access to SpamAssassin, this feature isn't going to work for you.
+This feature is a part of bridge.cgi. Under the header, B<Mailing List Security> check the option: B<Ignore messages labeled as, "SPAM" by SpamAssassin filters.> Note! If you do B<have> access to SpamAssassin, this feature isn't going to work for you.
 
 There's currently two ways to look at the message for the SpamAssassin score. The first one: B<Looking for the embedded SpamAssassin Headers>, is the one you want us, if it's available. It'll look for headers in incoming messages that look like this: 
 
@@ -598,7 +598,7 @@ The following features require the Archive Postgres/MySQL backend:
 
 =back
 
-It's also suggested that if you use the dada_bridge.pl plugin, to use the SQL backend.
+It's also suggested that if you use the bridge.cgi plugin, to use the SQL backend.
 
 =head1 2.9
 
@@ -617,7 +617,7 @@ don't have to do anything special;
 
 =head2 dada_send.pl has been removed from the distribution
 
-There is NO version of dada_send.pl for Dada Mail 2.9. For an alternative, try the dada_bridge.pl plugin, which provides almost complete overlap of features. 
+There is NO version of dada_send.pl for Dada Mail 2.9. For an alternative, try the bridge.cgi plugin, which provides almost complete overlap of features. 
 
 =head2 Program Usage Log - set by default!
 
@@ -697,7 +697,7 @@ Like many of the links that are exposed to email messages, redirect links are no
 
 =head2 MIME-Tools - bundled with Dada Mail!
 
-MIME-Tools, the collection of Perl Modules needed by dada_bounce_handler.pl and  the Dada Bridge Plugin are now included with Dada Mail and DO NOT need to be installed separately. 
+MIME-Tools, the collection of Perl Modules needed by bounce_handler.cgi and  the Dada Bridge Plugin are now included with Dada Mail and DO NOT need to be installed separately. 
 
 
 =head2 MIME::Base64 MIME::QuotedPrint - not in distro - may need to install manually

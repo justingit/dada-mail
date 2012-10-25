@@ -21,7 +21,7 @@ use CGI::Carp qw(fatalsToBrowser);
 use Carp qw(croak carp); 
 
 
-use DADA::Config 5.0.0; 
+use DADA::Config 6.0.0; 
 #use DADA::App::Guts; 
 
 

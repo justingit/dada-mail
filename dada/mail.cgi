@@ -63,7 +63,7 @@ use CGI::Carp qw(fatalsToBrowser);
 $|++;
 
 
-use DADA::Config 5.0.0;
+use DADA::Config 6.0.0;
 
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
@@ -515,7 +515,7 @@ sub run {
 	'send_email'                 =>    \&send_email,
 	'message_body_help'          =>    \&message_body_help, 
 	'url_message_body_help'      =>    \&url_message_body_help, 
-	'previewMessageReceivers'    =>    \&previewMessageReceivers,
+	'preview_message_receivers'    =>    \&preview_message_receivers,
 	'sending_monitor'            =>    \&sending_monitor,
 	'print_mass_mailing_log'     =>    \&print_mass_mailing_log,
 	'preview_form'               =>    \&preview_form,
@@ -960,7 +960,7 @@ sub url_message_body_help {
 }	
 
 
-sub previewMessageReceivers {
+sub preview_message_receivers {
 
     my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q,
                                                 -Function => 'send_email');

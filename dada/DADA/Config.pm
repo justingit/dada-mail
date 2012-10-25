@@ -2146,15 +2146,15 @@ $ADMIN_MENU ||= [
 
 #					{
 #					-Title      => 'Discussion Lists',
-#					-Title_URL  => $PLUGIN_URL."/dada_bridge.pl",
-#					-Function   => 'dada_bridge',
+#					-Title_URL  => $PLUGIN_URL."/bridge.cgi",
+#					-Function   => 'bridge',
 #					-Activated  => 1,
 #					},
 
 #					{
 #					-Title      => 'Bounce Handler',
-#					-Title_URL  => $PLUGIN_URL."/dada_bounce_handler.pl",
-#					-Function   => 'dada_bounce_handler',
+#					-Title_URL  => $PLUGIN_URL."/bounce_handler.cgi",
+#					-Function   => 'bounce_handler',
 #					-Activated  => 1,
 #					},
 
@@ -5172,8 +5172,8 @@ and to say that you've got the freshest tools on the Web.
 
 =cut
 
-$VERSION = 5.2.1; 
-$VER     = '5.2.1 Stable - 8/17/12';
+$VERSION = 6.0.0; 
+$VER     = '6.0.0 Alpha 1 - 10/24/12';
 
 #
 #

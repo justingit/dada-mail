@@ -1,15 +1,15 @@
 #!/usr/bin/perl
 
-package dada_bounce_handler;
+package bounce_handler;
 use strict;
 $|++;
 
 #---------------------------------------------------------------------#
-# dada_bounce_handler.pl
+# bounce_handler.cgi
 #
 # Documentation:
 #
-#  http://dadamailproject.com/d/dada_bounce_handler.pl.html
+#  http://dadamailproject.com/d/bounce_handler.cgi.html
 #
 #---------------------------------------------------------------------#
 
@@ -215,7 +215,7 @@ sub cgi_main {
 
         ( $admin_list, $root_login ) = check_list_security(
             -cgi_obj  => $q,
-            -Function => 'dada_bounce_handler'
+            -Function => 'bounce_handler'
         );
 
         $list = $admin_list;
@@ -320,7 +320,7 @@ sub cgi_default {
             },
             -vars => {
 	
-				screen              => 'using_dada_bounce_handler',
+				screen              => 'using_bounce_handler',
 				
                 MAIL_SETTINGS       => $DADA::Config::MAIL_SETTINGS,
                 Username            => $Plugin_Config->{Username},
@@ -746,7 +746,7 @@ Bounce Handler For Dada Mail
 The below documentation go into detail on how to install and configure Bounce Handler. A user guide for Bounce Handler is
  available in the Dada Mail Manual chapter, B<Using the Dada Bounce Handler>: 
 
-L<http://dadamailproject.com/pro_dada/using_dada_bounce_handler.html>
+L<http://dadamailproject.com/pro_dada/using_bounce_handler.html>
 
 =head1 Description
 
@@ -762,7 +762,7 @@ The usual action that is taken is to apply a B<score> to the email address that 
 
 =head1 Obtaining a Copy of the Plugin
 
-Bounce Handler is located in the, I<dada/plugins> directory of the main Dada Mail distribution, under the name, B<dada_bounce_handler.pl>
+Bounce Handler is located in the, I<dada/plugins> directory of the main Dada Mail distribution, under the name, B<bounce_handler.cgi>
 
 =head1 Requirements
 
@@ -836,7 +836,7 @@ B<Your Mailing List -  Change List Information>
 
 How to do this exactly is covered, below
 
-=item * chmod 755 the dada_bounce_handler.pl script
+=item * chmod 755 the bounce_handler.cgi script
 
 =item * run the plugin via a web browser. 
 
@@ -951,16 +951,16 @@ Then, find these lines:
 
 
  #					{-Title      => 'Bounce Handler',
- #					 -Title_URL  => $PLUGIN_URL."/dada_bounce_handler.pl",
- #					 -Function   => 'dada_bounce_handler',
+ #					 -Title_URL  => $PLUGIN_URL."/bounce_handler.cgi",
+ #					 -Function   => 'bounce_handler',
  #					 -Activated  => 1,
  #					},
 
 Uncomment the lines, by taking off the, "#"'s: 
 
  					{-Title      => 'Bounce Handler',
- 					 -Title_URL  => $PLUGIN_URL."/dada_bounce_handler.pl",
- 					 -Function   => 'dada_bounce_handler',
+ 					 -Title_URL  => $PLUGIN_URL."/bounce_handler.cgi",
+ 					 -Function   => 'bounce_handler',
  					 -Activated  => 1,
  					},
 
@@ -1032,9 +1032,9 @@ but we'll be explaining in depth on what the cronjob you need to set B<is>.
 Generally, setting the cronjob to have Bounce Handler run automatically, just 
 means that you have to have a cronjob access a specific URL (via a utility, like curl). The URL looks something like this: 
 
- http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&verbose=1
+ http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi?run=1&verbose=1
 
-Where, L<http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl> is the URL to your copy of C<dada_bounce_handler.pl>
+Where, L<http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi> is the URL to your copy of C<bounce_handler.cgi>
 
 You'll see the specific URL used for your installation of Dada Mail in the web-based control panel for Bounce Handler, under the fieldset legend, B<Manually Run Bounce Handler>, under the heading, B<Manual Run URL:>
 
@@ -1047,7 +1047,7 @@ in the web-based crontrol panel for Bounce Handler, under the fieldset legend, B
 
 =head4 passcode
 
-Since anyone (or anything) can run your Bounce Handler, by following that same URL, (C<http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&verbose=1>), you can set up a simple B<Passcode>, to have some semblence of security over who runs the program. 
+Since anyone (or anything) can run your Bounce Handler, by following that same URL, (C<http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi?run=1&verbose=1>), you can set up a simple B<Passcode>, to have some semblence of security over who runs the program. 
 
 Set a B<passcode> in Bounce Handler's Config variable, B<Manual_Run_Passcode>. This is done in your C<.dada_config> file - the same place the B<mail server>, B<username> and B<password> were set. Find the lines in your C<.dada_config> file that look like this: 
 
@@ -1078,7 +1078,7 @@ Find the config paramater named, B<Manual_Run_Passcode> and set it to whatever y
 
 Then change the URL to include this passcode. In our examples, it would then look like this: 
 
- http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&passcode=sneaky
+ http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi?run=1&passcode=sneaky
 
 The example cronjob for curl in Bounce Handler's list control panel should also update use the new passcode. 
 
@@ -1086,7 +1086,7 @@ The example cronjob for curl in Bounce Handler's list control panel should also 
 
 Sets how many messages should be checked and parsed in one execution of the program. Example: 
 
- http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl?run=1&messages=10
+ http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi?run=1&messages=10
 
 =head3 verbose
 
@@ -1094,7 +1094,7 @@ When set to, B<1>, you'll receive the a report of how Bounce Handler is doing pa
 
 If you set B<verbose> to, "0", under normal operation, Bounce Handler won't show any output, but if there's a server error, you'll receive an email about it. This is probably a good thing. Example (for cronjob-run curl command): 
 
- * * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0 --url http://example.com/cgi-bin/dada/plugins/dada_bounce_handler.pl
+ * * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0 --url http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi
 
 =head3 test
 
@@ -1104,7 +1104,7 @@ Runs Bounce Handler in test mode by checking the bounces and parsing them, but n
 
 There's a slew of optional arguments you can give to this script. To use Bounce Handler via the command line, first change into the directory that Bounce Handler resides in, and issue the command: 
 
- ./dada_bounce_handler.pl --help
+ ./bounce_handler.cgi --help
 
 For a full list of paramaters. 
 
@@ -1112,11 +1112,11 @@ You may set the cronjob via the command line interface, rather than the web-base
 
 =head2 Command Line Interface for Cronjobs: 
 
-The secret is to actually have two commands in one. The first command changes into the same directory as the C<dada_bounce_handler.pl> script, the second invokes the script with the paramaters you'd like. 
+The secret is to actually have two commands in one. The first command changes into the same directory as the C<bounce_handler.cgi> script, the second invokes the script with the paramaters you'd like. 
 
 For example: 
 
- */5 * * * * cd /home/myaccount/cgi-bin/dada/plugins; /usr/bin/perl ./dada_bounce_handler.pl  >/dev/null 2>&1
+ */5 * * * * cd /home/myaccount/cgi-bin/dada/plugins; /usr/bin/perl ./bounce_handler.cgi  >/dev/null 2>&1
 
 Where, I</home/myaccount/cgi-bin/dada/plugins> is the full path to the directory the C<dada_bounc_handler.pl> script resides.
 

@@ -575,7 +575,7 @@ Used specifically in the, "Send a Webpage" screen, using this tag in the message
 
 =head2 New Module: DADA::App::POP3Tools
 
-B<DADA::App::POP3Tools> Holds all the stuff needed for POP3 connections and replaces the various, independent schemes in dada_bounce_handler.pl, dada_bridge.pl and the DADA::Mail::Send module. 
+B<DADA::App::POP3Tools> Holds all the stuff needed for POP3 connections and replaces the various, independent schemes in bounce_handler.cgi, dada_bridge.pl and the DADA::Mail::Send module. 
 
 
 =head1 2.10.14 Stable - Released 5/9/07
@@ -1338,7 +1338,7 @@ Logging in the Dada Mail usage log still happens and the logging is much more ve
 
 This only work with the Mail::Bulkmail backend, which has also been dropped. 
 
-=item * dada_bounce_handler.pl and Mail-DeliveryStatus-BounceParser 
+=item * bounce_handler.cgi and Mail-DeliveryStatus-BounceParser 
 
 Mystery Girl now takes advantage of the Mail-DeliveryStatus-BounceParser CPAN module, in conjunction with its own bounce parser routines (not replaced, in other words)
 
@@ -2043,7 +2043,7 @@ Each type of bounce has a score associated with it and there's a threshold that 
 
 More information on this feature is located in the Mystery Girl docs:
 
-http://dadamailproject.com/support/documentation/dada_bounce_handler.pl.html
+http://dadamailproject.com/support/documentation/bounce_handler.cgi.html
 
 =back
 
@@ -2615,7 +2615,7 @@ CC, Bcc Infinite Loop Bug Solved.
 Initial moderation supported -
 
 Moderators in Dada Mail: a sublist of email addresses that can also send to an announce-only or discussion list without having to be on the subscription list itself.
-dada_bounce_handler.pl
+bounce_handler.cgi
 
 unsubscribed message sent to list owner and former subscriber
 Message Sending
@@ -3497,7 +3497,7 @@ All in all, the diff -u file for mail.cgi itself is about 3800 lines long :)
 [ 1075515 ] 2.8.15 - Help Link URLs are incomplete
 [ 1095349 ] 2.8.15 - Misc Typos
 [ 1124419 ] 2.8.15 - Button Styles needs to be removed from the Config
-[ 1072837 ] 2.8.15 - dada_bounce_handler.pl - line 2140
+[ 1072837 ] 2.8.15 - bounce_handler.cgi - line 2140
 [ 1087666 ] S_PROGRAM_URL skipped when logging in 
 [ 1070269 ] 2.8.15 - congrats screen encrypted password warning msg
 [ 1070242 ] 2.8.15 - template directory not found

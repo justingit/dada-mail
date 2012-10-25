@@ -13,7 +13,7 @@ arguments:
 -----------------------------------------------------------
 for a general overview and more instructions, try:
 
-pod2text ./dada_bounce_handler.pl | less
+pod2text ./bounce_handler.cgi | less
 
 -----------------------------------------------------------
 
@@ -28,7 +28,7 @@ this script - I'll leave that to your imagination.
 
 But anyways: 
 
- prompt>./dada_bounce_handler \
+ prompt>./bounce_handler \
   --server mail.myhost.com\
   --username dadabounce\
   --password secretgodmoney
@@ -41,7 +41,7 @@ But anyways:
 passing the --verbose parameter is like giving this script some 
 coffee.  Similar to what you'd see if you ran the script using: 
 
- prompt>./dada_bounce_handler --test bounces
+ prompt>./bounce_handler --test bounces
  
 But bounce handling will go through to completion. 
 
@@ -83,7 +83,7 @@ If you're using the Log Viewer plugin,  the plugin will automatically find this 
 
 * --messages
 
-I decided that it would be silly to run dada_bounce_handler.pl by 
+I decided that it would be silly to run bounce_handler.cgi by 
 blindly trying to handle every bounced message that may be waiting
 for it every time its run. Perhaps you have a list that created 1,000
 bounces (not unheard of), rummaging through 1,000 messages may take time, 
@@ -105,40 +105,40 @@ Removes the score card of bounced email addresses. This makes sense, once you re
 
 Testing Bounce Handler via the Command Line
 
-You can pass the B<--test> argument to dada_bounce_handler.pl to make
+You can pass the B<--test> argument to bounce_handler.cgi to make
 sure everything is workings as it should. The B<--test> argument needs to 
 take one of a few paramaters: 
 
 
 * pop3
 
- prompt>./dada_bounce_handler.pl --test pop3
+ prompt>./bounce_handler.cgi --test pop3
 
 This will test only your POP3 login. If it's successful, it'll return 
 the number of messages waiting: 
 
- prompt>./dada_bounce_handler.pl --test pop3
+ prompt>./bounce_handler.cgi --test pop3
  POP3 Login succeeded.
  Message count: 5 
 
 If the login failed, you'll get back a message that reads: 
 
- prompt>./dada_bounce_handler.pl --test pop3
+ prompt>./bounce_handler.cgi --test pop3
  POP3 login failed.
 
 * filename or directory
 
-if you pass an argument that's a filename, dada_bounce_handler.pl 
+if you pass an argument that's a filename, bounce_handler.cgi 
 will attempt to parse that file as if it's a bounced message. If you
-pass a directory as an argument, dada_bounce_handler.pl will attempt
+pass a directory as an argument, bounce_handler.cgi will attempt
 to parse all the files in that directory as if they were bounced 
 messages. 
 
-dada_bounce_handler.pl won't act on these test messages, but will do
+bounce_handler.cgi won't act on these test messages, but will do
 everything until that point. You'll get back a verbose message of the
 going's on of the script: 
  
- prompt> perl dada_bounce_handler.pl  --test message8.txt 
+ prompt> perl bounce_handler.cgi  --test message8.txt 
  test #1: message8.txt
  ------------------------------------------------------------
  ------------------------------------------------------------------------

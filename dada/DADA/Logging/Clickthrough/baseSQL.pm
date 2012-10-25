@@ -757,21 +757,6 @@ sub report_by_message_index {
 
 	        push( @$sorted_report, $report->{$_} );
 	    }
-=cut
-		require Data::Dumper; 
-		my $sorted_report_dump = Data::Dumper->new([$sorted_report]); 
-		   $sorted_report_dump->Purity(1)->Terse(1)->Deepcopy(1);
-		$dc->cache(
-			{ 
-				-list    => $self->{name}, 
-				-name    => 'report_by_message_index'
-				-data    => \$sorted_report_dump->Dump, 
-			}
-		);
-	}
-=cut
-
-	carp 'report_by_message_index took: ' . ($st - time) . ' seconds '; 
     return $sorted_report;
 }
 
@@ -783,79 +768,54 @@ sub report_by_message {
 	my $m_report = {};
     my $report   = {};
     my $l;
-
-	require DADA::App::DataCache; 
-	my $dc = DADA::App::DataCache->new;
-	
-	my $m_report_dump = $dc->retrieve(
-		{
-			-list    => $self->{name}, 
-			-name    => 'report_by_message' . '.' . $mid, 
-		}
-	);
-	$m_report = eval($m_report_dump);
-
-	if(!defined($m_report)){
 		
-	    my $num_sub_query =
-	        'SELECT details FROM '
-	      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-	      . ' WHERE list = ? AND msg_id = ? AND event = ?';
-	    $report->{num_subscribers} =
-	      $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 },
-	        $self->{name}, $mid, 'num_subscribers' )->[0];
+    my $num_sub_query =
+        'SELECT details FROM '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+      . ' WHERE list = ? AND msg_id = ? AND event = ?';
+    $report->{num_subscribers} =
+      $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 },
+        $self->{name}, $mid, 'num_subscribers' )->[0];
 
-	    my $misc_count_query =
-	        'SELECT COUNT(msg_id) FROM '
-	      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-	      . ' WHERE list = ? AND msg_id = ? AND event = ?';
+    my $misc_count_query =
+        'SELECT COUNT(msg_id) FROM '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+      . ' WHERE list = ? AND msg_id = ? AND event = ?';
 
-	    for (
-	        qw(
-	        open
-	        soft_bounce
-	        hard_bounce
-	        forward_to_a_friend
-	        view_archive
-	        )
-	      )
-	    {
-	        $report->{$_} =
-	          $self->{dbh}
-	          ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $mid,
-	            $_ )->[0];
-	    }
+    for (
+        qw(
+        open
+        soft_bounce
+        hard_bounce
+        forward_to_a_friend
+        view_archive
+        )
+      )
+    {
+        $report->{$_} =
+          $self->{dbh}
+          ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $mid,
+            $_ )->[0];
+    }
 
-	    my $url_clickthroughs_query =
-	        'SELECT url, COUNT(url) AS count FROM '
-	      . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table}
-	      . ' where list = ? AND msg_id = ? GROUP BY url';
-	    my $sth = $self->{dbh}->prepare($url_clickthroughs_query);
-	    $sth->execute( $self->{name}, $mid );
-	    my $url_report = [];
-	    my $row        = undef;
-	    $report->{clickthroughs} = 0;
-	    while ( $row = $sth->fetchrow_hashref ) {
-	        push( @$url_report, { url => $row->{url}, count => $row->{count} } );
-	        $report->{clickthroughs} = $report->{clickthroughs} + $row->{count};
-	    }
-	    $sth->finish;
-	    undef $sth;
-	    $report->{url_report} = $url_report;
+    my $url_clickthroughs_query =
+        'SELECT url, COUNT(url) AS count FROM '
+      . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table}
+      . ' where list = ? AND msg_id = ? GROUP BY url';
+    my $sth = $self->{dbh}->prepare($url_clickthroughs_query);
+    $sth->execute( $self->{name}, $mid );
+    my $url_report = [];
+    my $row        = undef;
+    $report->{clickthroughs} = 0;
+    while ( $row = $sth->fetchrow_hashref ) {
+        push( @$url_report, { url => $row->{url}, count => $row->{count} } );
+        $report->{clickthroughs} = $report->{clickthroughs} + $row->{count};
+    }
+    $sth->finish;
+    undef $sth;
+    $report->{url_report} = $url_report;
 
-		$m_report = $report; 
-		require Data::Dumper; 
-		my $m_report_dump = Data::Dumper->new([$m_report]); 
-		   $m_report_dump->Purity(1)->Terse(1)->Deepcopy(1);
-		$dc->cache(
-			{ 
-				-list    => $self->{name}, 
-				-name    => 'report_by_message' . '.' . $mid, 
-				-data    => \$m_report_dump->Dump, 
-			}
-		);
-
-	}
+	$m_report = $report; 
     return $m_report;
 }
 
@@ -1174,13 +1134,13 @@ sub individual_country_geoip {
 		$args->{-country} = 'US'; 
 	}
 	
-	#if(!exists($args->{-db})){ 
-	#	croak "You MUST pass the path to the geo ip database in, '-db'";
-	#}
+	if(!exists($args->{-db})){ 
+		croak "You MUST pass the path to the geo ip database in, '-db'";
+	}
 	
 	my $report = $self->ip_data($args);
 	require Geo::IP::PurePerl;
-	my $gi = Geo::IP::PurePerl->open("/home/simoni/dadamailproject.com/cgi-bin/dada/DADA/data/GeoLiteCity.dat");
+	my $gi = Geo::IP::PurePerl->open($args->{-db});
 	my $d           = {};
 	my $cities      = {} ;
 	my $ips_by_city = {};

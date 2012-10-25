@@ -71,7 +71,7 @@ $Plugin_Config->{Template}           = q{
 
 
 
-use DADA::Config 5.0.0;
+use DADA::Config 6.0.0;
 
 use HTML::Template; 
 

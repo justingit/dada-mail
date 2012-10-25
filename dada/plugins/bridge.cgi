@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-package dada_bridge;
+package bridge;
 
 
 use strict;
@@ -9,10 +9,10 @@ delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 #---------------------------------------------------------------------#
 # Dada Bridge
 # For instructions, see the pod of this file. try:
-#  pod2text ./dada_bridge.pl | less
+#  pod2text ./bridge.cgi | less
 #
 # Or try online:
-#  http://dadamailproject.com/d/dada_bridge.pl.html
+#  http://dadamailproject.com/d/bridge.cgi.html
 #
 #---------------------------------------------------------------------#
 # REQUIRED:
@@ -29,7 +29,7 @@ use lib qw(
 
 use CGI::Carp qw(fatalsToBrowser);
 
-use DADA::Config 5.0.0;
+use DADA::Config 6.0.0;
 
 use CGI;
 CGI->nph(1) if $DADA::Config::NPH == 1;
@@ -58,7 +58,7 @@ $Plugin_Config->{Plugin_URL} = $q->url;
 # script from a URL? (CGI mode?)
 # The URL would look like this:
 #
-# http://example.com/cgi-bin/dada/plugins/dada_bridge.pl?run=1
+# http://example.com/cgi-bin/dada/plugins/bridge.cgi?run=1
 
 $Plugin_Config->{Allow_Manual_Run} = 1;
 
@@ -238,7 +238,7 @@ sub cgi_main {
 
         ( $admin_list, $root_login ) = check_list_security(
             -cgi_obj    => $q,
-            -Function   => 'dada_bridge',
+            -Function   => 'bridge',
         );
 
         $list = $admin_list;
@@ -362,7 +362,7 @@ sub cgi_test_pop3 {
 	}
 	
 	my %vars = (
-			screen       => 'using_dada_bridge',
+			screen       => 'using_bridge',
 			Plugin_Name  => $Plugin_Config->{Plugin_Name}, 
 			Plugin_URL   => $Plugin_Config->{Plugin_URL},
 	); 
@@ -527,56 +527,6 @@ sub admin_cgi_manual_start_ajax {
 	print '</pre>'; # DEV no like. 
 	    
 }
-sub admin_cgi_manual_start {
-	
-
-
-	my $chrome = 1; 
-	if(defined($q->param('chrome'))){ 
-		$chrome = $q->param('chrome') || 0; 
-	}
-	
-
-	my %tmpl_vars = (
-		screen         => 'using_dada_bridge',
-		Plugin_Name    => $Plugin_Config->{Plugin_Name}, 
-		Plugin_URL     => $Plugin_Config->{Plugin_URL}, 
-	); 
-	my $scrn; 
-	require    DADA::Template::Widgets; 
-	
-	if($chrome == 0){ 
-		print $q->header();
-		$scrn = DADA::Template::Widgets::screen(
-			{ 
-				-screen => 'plugins/bridge/manual_start.tmpl', 
-				-vars   => {
-					%tmpl_vars
-				}, 
-			}
-		);
-	}
-	else { 
-	
-		$scrn = DADA::Template::Widgets::wrap_screen(
-			{ 
-				-screen => 'plugins/bridge/manual_start.tmpl', 
-				-with => 'admin', 
-				-wrapper_params => {
-	                -Root_Login => $root_login,
-	                -List       => $list,
-	            },
-
-				-vars => {
-					%tmpl_vars
-				}, 
-			}
-		);	
-	}
-	
-	e_print($scrn); 
-	
-}
 
 
 
@@ -585,7 +535,7 @@ sub cgi_mod {
 
 	my ($admin_list, $root_login, $checksout) = check_list_security(    
 		-cgi_obj         => $q,
-        -Function        => 'dada_bridge',
+        -Function        => 'bridge',
 		-manual_override => 1, 
     );
 
@@ -794,7 +744,7 @@ sub cgi_default {
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get();
 
-	my %dada_bridge_settings_defaults = (
+	my %bridge_settings_defaults = (
 		disable_discussion_sending                 => 0,
 		group_list                                 => 0,
 		prefix_list_name_to_subject                => 0,
@@ -871,7 +821,7 @@ sub cgi_default {
 		        {
 		            -associate => $q,
 		            -settings  => {
-						%dada_bridge_settings_defaults
+						%bridge_settings_defaults
 		            }
 		        }
 		    );
@@ -882,7 +832,7 @@ sub cgi_default {
         }
         else {
 
-			for ( keys %dada_bridge_settings_defaults) {
+			for ( keys %bridge_settings_defaults) {
 				$li->{$_} = $q->param($_);
 			}
 			$q->param('done', 0);
@@ -957,7 +907,7 @@ sub cgi_default {
             },
             -vars => {
 
-				screen                     => 'using_dada_bridge',
+				screen                     => 'using_bridge',
 				Plugin_URL                 => $Plugin_Config->{Plugin_URL},
                 Plugin_Name                => $Plugin_Config->{Plugin_Name},
                 Allow_Open_Discussion_List => $Plugin_Config->{Allow_Open_Discussion_List},
@@ -1147,7 +1097,7 @@ sub start {
         if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
             $lock_file_fh =
               DADA::App::POP3Tools::_lock_pop3_check(
-                { name => 'dada_bridge.lock' } );
+                { name => 'bridge.lock' } );
         }
 
         my ($pop3_obj, $pop3_status, $pop3_log) = pop3_login(
@@ -1187,7 +1137,7 @@ sub start {
                       . " ) is larger than the maximum size allowed ( "
                       . $Plugin_Config->{Max_Size_Of_Any_Message} . " )\n")
                       if $verbose;
-                    warn "dada_bridge.pl $App_Version: Warning! Message size ( "
+                    warn "bridge.cgi $App_Version: Warning! Message size ( "
                       . $msgnums->{$msgnum}
                       . " ) is larger than the maximum size allowed ( "
                       . $Plugin_Config->{Max_Size_Of_Any_Message} . ")";
@@ -1217,7 +1167,7 @@ sub start {
                               . " )\n")
                               if $verbose;
                             warn
-"dada_bridge.pl $App_Version: Warning! Message size ( "
+"bridge.cgi $App_Version: Warning! Message size ( "
                               . $msgnums->{$msgnum}
                               . " ) is larger than the soft maximum size allowed ( "
                               . $Plugin_Config->{Soft_Max_Size_Of_Any_Message}
@@ -1268,9 +1218,9 @@ sub start {
                             if ($@) {
 
                                 warn
-"dada_bridge.pl - irrecoverable error processing message. Skipping message (sorry!): $@";
+"bridge.cgi - irrecoverable error processing message. Skipping message (sorry!): $@";
                                 e_print(
-"dada_bridge.pl - irrecoverable error processing message. Skipping message (sorry!): $@")
+"bridge.cgi - irrecoverable error processing message. Skipping message (sorry!): $@")
                                   if $verbose;
 
                             }
@@ -1315,7 +1265,7 @@ sub start {
             if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
                 DADA::App::POP3Tools::_unlock_pop3_check(
                     {
-                        name => 'dada_bridge.lock',
+                        name => 'bridge.lock',
                         fh   => $lock_file_fh,
                     }
                 );
@@ -1355,7 +1305,7 @@ sub message_was_deleted_check {
     if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
         $lock_file_fh =
           DADA::App::POP3Tools::_lock_pop3_check(
-            { name => 'dada_bridge.lock', } );
+            { name => 'bridge.lock', } );
     }
 
     my ($pop3_obj, $pop3_status, $pop3_log) = pop3_login(
@@ -1416,7 +1366,7 @@ sub message_was_deleted_check {
     if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
         DADA::App::POP3Tools::_unlock_pop3_check(
             {
-                name => 'dada_bridge.lock',
+                name => 'bridge.lock',
                 fh   => $lock_file_fh,
             }
         );
@@ -1436,7 +1386,7 @@ arguments:
 -----------------------------------------------------------
 for a general overview and more instructions, try:
 
-pod2text ./dada_bridge.pl | less
+pod2text ./bridge.cgi | less
 
 -----------------------------------------------------------
 
@@ -1467,14 +1417,14 @@ have to be used, but this problem has been... problematic.
 
 Example: 
 
- prompt>dada_bridge.pl --test pop3 --list yourlistshortname
+ prompt>bridge.cgi --test pop3 --list yourlistshortname
 
 Will test the pop3 connection of a list with a shortname of, 
 yourlistshortname
 
 Another Example: 
 
- prompt>dada_bridge.pl --verbose --list yourlistshortname
+ prompt>bridge.cgi --verbose --list yourlistshortname
 
 Will check for messages to deliver for list, 
 yourlistshortname> and outputting a lot of information on the command line. 
@@ -1524,7 +1474,7 @@ sub test_pop3 {
 
                 $lock_file_fh =
                   DADA::App::POP3Tools::_lock_pop3_check(
-                    { name => 'dada_bridge.lock', } );
+                    { name => 'bridge.lock', } );
             }
 
             my ($pop3_obj, $pop3_status, $pop3_log) = pop3_login(
@@ -1544,7 +1494,7 @@ sub test_pop3 {
                 if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
                     DADA::App::POP3Tools::_unlock_pop3_check(
                         {
-                            name => 'dada_bridge.lock',
+                            name => 'bridge.lock',
                             fh   => $lock_file_fh,
                         }
                     );
@@ -3039,12 +2989,12 @@ sub handle_errors {
         $entity->head->replace( 'Message-ID', $fake_message_id );
 
         warn
-"dada_bridge.pl - message has no Message-Id header!...? Creating FAKE Message-Id ($fake_message_id) , to avoid any conflicts...";
+"bridge.cgi - message has no Message-Id header!...? Creating FAKE Message-Id ($fake_message_id) , to avoid any conflicts...";
 
     }
 
     warn
-"dada_bridge.pl rejecting sending of received message - \tFrom: $from\tSubject: $subject\tMessage-ID: $message_id\tReasons: $reasons";
+"bridge.cgi rejecting sending of received message - \tFrom: $from\tSubject: $subject\tMessage-ID: $message_id\tReasons: $reasons";
 
     print "\t* Error delivering message! Reasons:\n"
       if $verbose;
@@ -3199,7 +3149,7 @@ sub append_message_to_file {
     my $rp   = find_return_path($msg);
 
     my $file =
-      $DADA::Config::TMP . '/dada_bridge_received_msgs-' . $list . '.mbox';
+      $DADA::Config::TMP . '/bridge_received_msgs-' . $list . '.mbox';
 
     print "Saving message at: '$file' \n"
       if $verbose;
@@ -3268,7 +3218,7 @@ sub cgi_show_plugin_config {
                 -List       => $list,
             },
             -vars => {
-				screen      => 'using_dada_bridge',
+				screen      => 'using_bridge',
                 Plugin_URL  => $Plugin_Config->{Plugin_URL},
                 Plugin_Name => $Plugin_Config->{Plugin_Name},
                 configs     => $configs,
@@ -3334,7 +3284,7 @@ sub cgi_edit_email_msgs {
 				},
                 -list   => $list,
                 -vars   => {
-                    screen                       => 'using_dada_bridge',
+                    screen                       => 'using_bridge',
                     title                        => 'Email Templates',
                     done                         => $done,
                     Plugin_Name                  => $Plugin_Config->{Plugin_Name},
@@ -3489,9 +3439,9 @@ sub inject {
         if ($@) {
 
             warn
-"dada_bridge.pl - irrecoverable error processing message. Skipping message (sorry!): $@";
+"bridge.cgi - irrecoverable error processing message. Skipping message (sorry!): $@";
             print
-"dada_bridge.pl - irrecoverable error processing message. Skipping message (sorry!): $@"
+"bridge.cgi - irrecoverable error processing message. Skipping message (sorry!): $@"
               if $verbose;
             return ( 0, { irrecoverable_error => 1 } );
 
@@ -4110,7 +4060,7 @@ sub mod_dir {
 The below documentation go into detail on how to install and configure Dada Bridge. A user guide for Dada Bridge is
  available in the Dada Mail Manual chapter, B<Using Dada Bridge>: 
 
-L<http://dadamailproject.com/pro_dada/using_dada_bridge.html>
+L<http://dadamailproject.com/pro_dada/using_bridge.html>
 
 =head1 Description 
 
@@ -4199,7 +4149,7 @@ If you do not have this available, I do urgently suggest you do not use archivin
 
 =head1 Obtaining The Plugin
 
-Dada Bridge is located in the, I<dada/plugins> directory of the Dada Mail distribution, under the name: I<dada_bridge.pl>
+Dada Bridge is located in the, I<dada/plugins> directory of the Dada Mail distribution, under the name: I<bridge.cgi>
 
 =head1 Installation 
 
@@ -4212,13 +4162,13 @@ If you install the plugin using the Dada Mail installer, you will still have set
 =over 
 
 
-=item * chmod 755 the dada_bridge.pl script
+=item * chmod 755 the bridge.cgi script
 
-The, C<dada_bridge.pl> script should be in your I<dada/plugins> directory. 
+The, C<bridge.cgi> script should be in your I<dada/plugins> directory. 
 
-=item * Run dada_bridge.pl in your web browser.
+=item * Run bridge.cgi in your web browser.
 
-In other words, visit it in your web browser L<http://example.com/cgi-bin/dada/plugins/dada_bridge.pl> 
+In other words, visit it in your web browser L<http://example.com/cgi-bin/dada/plugins/bridge.cgi> 
 
 =item * Set the cronjob
 
@@ -4256,9 +4206,9 @@ There's a few ways that Dada Bridge can do the second part, and we'll go in deta
 
 =head2 Configuring Dada Bridge's Plugin Side
 
-=head2 #1 Change the permissions of the, dada_bridge.pl script to, "755"
+=head2 #1 Change the permissions of the, bridge.cgi script to, "755"
 
-Find the C<dada_bridge.pl> script in your I<dada/plugins> directory. Change its permissions to, C<755> 
+Find the C<bridge.cgi> script in your I<dada/plugins> directory. Change its permissions to, C<755> 
 
 =head2 #2 Configure your outside config file (.dada_config)
 
@@ -4279,16 +4229,16 @@ Then, find these lines:
 
 
  #					{-Title      => 'Discussion Lists',
- #					 -Title_URL  => $PLUGIN_URL."/dada_bridge.pl",
- #					 -Function   => 'dada_bridge',
+ #					 -Title_URL  => $PLUGIN_URL."/bridge.cgi",
+ #					 -Function   => 'bridge',
  #					 -Activated  => 1,
  #					},
 
 Uncomment the lines, by taking off the, "#"'s: 
 
  					{-Title      => 'Discussion Lists',
- 					 -Title_URL  => $PLUGIN_URL."/dada_bridge.pl",
- 					 -Function   => 'dada_bridge',
+ 					 -Title_URL  => $PLUGIN_URL."/bridge.cgi",
+ 					 -Function   => 'bridge',
  					 -Activated  => 1,
  					},
 
@@ -4310,9 +4260,9 @@ We're going to assume that you already know how to set up the actual cronjob, bu
 
 Generally, setting the cronjob to have Dada Bridge run automatically just means that you have to have a cronjob access a specific URL. The URL looks something like this:
 
- http://example.com/cgi-bin/dada/plugins/dada_bridge.pl?run=1&verbose=1
+ http://example.com/cgi-bin/dada/plugins/bridge.cgi?run=1&verbose=1
 
-Where, I<http://example.com/cgi-bin/dada/plugins/dada_bridge.pl> is the URL to your copy of dada_bridge.pl
+Where, I<http://example.com/cgi-bin/dada/plugins/bridge.cgi> is the URL to your copy of bridge.cgi
 
 You'll see the specific URL used for your installation of Dada Mail in the web-based control panel for Dada Bridge, under the fieldset legend, B<Manually Run Dada Bridge>. under the heading, B<Manual Run URL:>
 
@@ -4329,7 +4279,7 @@ Here's the entire cronjob explained:
 In this example, I'll be running the script every 5 minutes ( */5 * * * * ) - tailor to your taste.
 
 
-	*/5 * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0\; --url http://example.com/cgi-bin/dada/plugins/dada_bridge.pl
+	*/5 * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0\; --url http://example.com/cgi-bin/dada/plugins/bridge.cgi
 
 =head2 Disallowing running Dada Bridge manually (via URL) 
 
@@ -4346,7 +4296,7 @@ If you'd like, you can set up a simple B<Passcode>, to have some semblence of se
 
 In this example, you'll then have to change the URL in these examples to:
 
- http://example.com/cgi-bin/dada/plugins/dada_bridge.pl?run=1&passcode=sneaky
+ http://example.com/cgi-bin/dada/plugins/bridge.cgi?run=1&passcode=sneaky
 
 =head3 Other options you may pass
 
@@ -4358,7 +4308,7 @@ You can control quite a few things by setting variables right in the query strin
 
 As mentioned above, the C<Manual_Run_Passcode> allows you to set some sort of security while running in this mode. Passing the actual password is done in the query string:
 
- http://example.com/cgi-bin/dada/plugins/dada_bridge.pl?run=1&passcode=sneaky
+ http://example.com/cgi-bin/dada/plugins/bridge.cgi?run=1&passcode=sneaky
 
 =item * verbose
 
@@ -4366,7 +4316,7 @@ By default, you'll receive the a report of how Dada Bridge is doing downloading 
 
 This is sometimes not so desired, especially in a cron environment, since all this informaiton will be emailed to you (or someone) everytime the script is run. You can run Dada Bridge with a cron that looks like this:
 
- */5 * * * * /usr/local/bin/curl -s --get --data run=1 --url http://example.com/cgi-bin/dada/plugins/dada_bridge.pl >/dev/null 2>&1
+ */5 * * * * /usr/local/bin/curl -s --get --data run=1 --url http://example.com/cgi-bin/dada/plugins/bridge.cgi >/dev/null 2>&1
 
 The, >/dev/null 2>&1 line throws away any values returned.
 
@@ -4374,7 +4324,7 @@ Since all the information being returned from the program is done sort of indire
 
 If you set verbose to, C<0>, under normal operation, Dada Bridge won't show any output, but if there's a server error, you'll receive an email about it. This is probably a good thing. Example:
 
- * * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0 --url http://example.com/cgi-bin/dada/plugins/dada_bridge.pl
+ * * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0 --url http://example.com/cgi-bin/dada/plugins/bridge.cgi
 
 =item * test
 
@@ -4386,13 +4336,13 @@ Runs Dada Bridge in test mode by checking the messages awaiting and parsing them
 
 You may want to check your version of curl and see if there's a speific way to pass a query string. For example, this:
 
- */5 * * * * /usr/local/bin/curl -s http://example.com/cgi-bin/dada/plugins/dada_bridge.pl?run=1&passcode=sneaky
+ */5 * * * * /usr/local/bin/curl -s http://example.com/cgi-bin/dada/plugins/bridge.cgi?run=1&passcode=sneaky
 
 Doesn't work for me.
 
 I have to use the --get and --data flags, like this:
 
- */5 * * * * /usr/local/bin/curl -s --get --data run=1\;passcode=sneaky --url http://example.com/cgi-bin/dada/plugins/dada_bridge.pl
+ */5 * * * * /usr/local/bin/curl -s --get --data run=1\;passcode=sneaky --url http://example.com/cgi-bin/dada/plugins/bridge.cgi
 
 my query string is this part:
 
@@ -4406,21 +4356,21 @@ Finally, I also had to pass the actual URL of the plugin using the --url flag.
 
 There's a slew of optional arguments you can give to this script. To use Dada Bridge via the command line, first change into the directory that Dada Bridge resides in, and issue the command:
 
- ./dada_bridge.pl --help
+ ./bridge.cgi --help
 
 =head2 Command Line Interface for Cronjobs: 
 
-You can also invoke C<dada_bridge.pl> from the command line interface for cronjobs. The secret is to actually have two commands in one. The first command changes into the same directory as the C<dada_bridge.pl> script, the second invokes the script with the paramaters you'd like. 
+You can also invoke C<bridge.cgi> from the command line interface for cronjobs. The secret is to actually have two commands in one. The first command changes into the same directory as the C<bridge.cgi> script, the second invokes the script with the paramaters you'd like. 
 
 For example: 
 
- */5 * * * * cd /home/myaccount/cgi-bin/dada/plugins; /usr/bin/perl ./dada_bridge.pl  >/dev/null 2>&1
+ */5 * * * * cd /home/myaccount/cgi-bin/dada/plugins; /usr/bin/perl ./bridge.cgi  >/dev/null 2>&1
 
-Where, I</home/myaccount/cgi-bin/dada/plugins> is the full path to the directory the C<dada_bridge.pl> script is located. 
+Where, I</home/myaccount/cgi-bin/dada/plugins> is the full path to the directory the C<bridge.cgi> script is located. 
 
 =head1 Remember to enable sending using this method! 
 
-By default, the ability for dada_bridge.pl to send and receive messages is disabled on a per-list basis. To enable sending, log into your list control panel and go to the dada_bridge.pl admin screen. 
+By default, the ability for bridge.cgi to send and receive messages is disabled on a per-list basis. To enable sending, log into your list control panel and go to the bridge.cgi admin screen. 
 
 Uncheck: 
 
@@ -4430,7 +4380,7 @@ And you're off to the races.
 
 =head1 Plugin Configuration Settings
 
-The below settings are available to you, if you wish to further configure the plugin. You'll find the settings within the plugin itself - look at the top of the, C<dada_bridge.pl> script. 
+The below settings are available to you, if you wish to further configure the plugin. You'll find the settings within the plugin itself - look at the top of the, C<bridge.cgi> script. 
 
 B<BUT>, we suggest that you set these plugin config settings in your outside config file (C<.dada_config>). 
 
@@ -4544,11 +4494,11 @@ and:
 
   pass sneaky
 
-(changing them to their real values) when prompted. This is basically what dada_bridge.pl does itself. 
+(changing them to their real values) when prompted. This is basically what bridge.cgi does itself. 
 
-If you don't have a command line, try adding an account in a desktop mail reader. If these credentials work there, they'll most likely work for dada_bridge.pl. 
+If you don't have a command line, try adding an account in a desktop mail reader. If these credentials work there, they'll most likely work for bridge.cgi. 
 
-If your account information is correct and also logs in when you test the pop3 login information through dada_bridge.pl yourself, check to see if there isn't an email filter attached the account that looks at messages before they're delivered to the POP3 Mailbox and outright deletes messages because it triggered a flag. 
+If your account information is correct and also logs in when you test the pop3 login information through bridge.cgi yourself, check to see if there isn't an email filter attached the account that looks at messages before they're delivered to the POP3 Mailbox and outright deletes messages because it triggered a flag. 
 
 This could be the cause of mysterious occurences of messages never reaching the POP3 Mailbox. 
 

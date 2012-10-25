@@ -101,8 +101,8 @@ my $plugins_extensions = {
 	screen_cache                  => {installed => 0, loc => '../plugins/screen_cache.cgi'}, 
 	log_viewer                    => {installed => 0, loc => '../plugins/log_viewer.cgi'}, 
 	tracker                       => {installed => 0, loc => '../plugins/tracker.cgi'}, 
-	dada_bridge                   => {installed => 0, loc => '../plugins/dada_bridge.pl'}, 
-	dada_bounce_handler           => {installed => 0, loc => '../plugins/dada_bounce_handler.pl'}, 
+	bridge                   => {installed => 0, loc => '../plugins/bridge.cgi'}, 
+	bounce_handler           => {installed => 0, loc => '../plugins/bounce_handler.cgi'}, 
 	scheduled_mailings            => {installed => 0, loc => '../plugins/scheduled_mailings.pl'}, 
 	multiple_subscribe            => {installed => 0, loc => '../extensions/multiple_subscribe.cgi'}, 
 	blog_index                    => {installed => 0, loc => '../extensions/blog_index.cgi'}, 
@@ -143,19 +143,19 @@ q{#					{
 #					-Activated  => 1,
 #					},};
 
-$plugins_extensions->{dada_bridge}->{code} = 
+$plugins_extensions->{bridge}->{code} = 
 q{#					{
 #					-Title      => 'Discussion Lists',
-#					-Title_URL  => $PLUGIN_URL."/dada_bridge.pl",
-#					-Function   => 'dada_bridge',
+#					-Title_URL  => $PLUGIN_URL."/bridge.cgi",
+#					-Function   => 'bridge',
 #					-Activated  => 1,
 #					},};
 
-$plugins_extensions->{dada_bounce_handler}->{code} = 
+$plugins_extensions->{bounce_handler}->{code} = 
 q{#					{
 #					-Title      => 'Bounce Handler',
-#					-Title_URL  => $PLUGIN_URL."/dada_bounce_handler.pl",
-#					-Function   => 'dada_bounce_handler',
+#					-Title_URL  => $PLUGIN_URL."/bounce_handler.cgi",
+#					-Function   => 'bounce_handler',
 #					-Activated  => 1,
 #					},};
 
@@ -219,7 +219,7 @@ q{#					{
 $DADA::Config::PROGRAM_URL   = program_url_guess();
 $DADA::Config::S_PROGRAM_URL = program_url_guess();
 
-use DADA::Config 5.0.0;
+use DADA::Config 6.0.0;
     $DADA::Config::USER_TEMPLATE = '';
 use DADA::App::Guts;
 use DADA::Template::Widgets;
@@ -1368,29 +1368,29 @@ sub edit_config_file_for_plugins {
 					$config_file =~ s/$orig_code/$uncommented_code/;
 
 					# Fancy stuff for bounce handler, 
-					if($plugins_data eq 'dada_bounce_handler'){ 
+					if($plugins_data eq 'bounce_handler'){ 
 						# uncomment the plugins config, 
 						$config_file =~ s/$plugins_config_begin_cut//; 
 						$config_file =~ s/$plugins_config_end_cut//; 
 					 	# then, we have to fill in all the stuff in.
 					 	# Not a fav. tecnique!
-					my $plugins_config_dada_bounce_handler_orig = quotemeta(
+					my $plugins_config_bounce_handler_orig = quotemeta(
 q|	Bounce_Handler => {
 		Server                      => undef,
 		Username                    => undef,
 		Password                    => undef,|
 					);
-					my $dada_bounce_handler_address  = clean_up_var($q->param('dada_bounce_handler_address')); 
-					my $dada_bounce_handler_server   = clean_up_var($q->param('dada_bounce_handler_server'));
-					my $dada_bounce_handler_username = clean_up_var($q->param('dada_bounce_handler_username')); 
-					my $dada_bounce_handler_password = clean_up_var($q->param('dada_bounce_handler_password')); 
+					my $bounce_handler_address  = clean_up_var($q->param('bounce_handler_address')); 
+					my $bounce_handler_server   = clean_up_var($q->param('bounce_handler_server'));
+					my $bounce_handler_username = clean_up_var($q->param('bounce_handler_username')); 
+					my $bounce_handler_password = clean_up_var($q->param('bounce_handler_password')); 
 
-					my $plugins_config_dada_bounce_handler_replace_with = 
+					my $plugins_config_bounce_handler_replace_with = 
 "	Bounce_Handler => {
-		Server                      => '$dada_bounce_handler_server',
-		Username                    => '$dada_bounce_handler_username',
-		Password                    => '$dada_bounce_handler_password',";
-					$config_file =~ s/$plugins_config_dada_bounce_handler_orig/$plugins_config_dada_bounce_handler_replace_with/; 
+		Server                      => '$bounce_handler_server',
+		Username                    => '$bounce_handler_username',
+		Password                    => '$bounce_handler_password',";
+					$config_file =~ s/$plugins_config_bounce_handler_orig/$plugins_config_bounce_handler_replace_with/; 
 					# Now, do the same for list settings defaults: 
 					$config_file =~ s/$list_settings_defaults_begin_cut//; 
 					$config_file =~ s/$list_settings_defaults_end_cut//; 
@@ -1408,7 +1408,7 @@ q|%LIST_SETUP_INCLUDE = (
 qq|\%LIST_SETUP_INCLUDE = (
 	set_smtp_sender              => 1, # For SMTP
 	add_sendmail_f_flag          => 1, # For Sendmail Command
-	admin_email                  => '$dada_bounce_handler_address',
+	admin_email                  => '$bounce_handler_address',
 );|; 
 						$config_file =~ s/$plugins_config_list_settings_default_orig/$plugins_config_list_settings_default_replace_with/;
 					}
@@ -2121,11 +2121,11 @@ sub screen {
 		
 		
 	}
-	elsif($screen eq 'installer-dada_mail_admin_js.js'){ 
+	elsif($screen eq 'installer-dada_mail.js'){ 
 		print $q->header('text/javascript');
 		print DADA::Template::Widgets::screen(
 	        {
-	            -screen => 'installer-dada_mail_admin_js.js',
+	            -screen => 'installer-dada_mail.js',
 	        }
 	    );	
 		

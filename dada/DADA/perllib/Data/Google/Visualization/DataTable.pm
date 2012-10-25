@@ -8,7 +8,7 @@ use warnings;
 
 use Carp qw(croak carp);
 use Storable qw(dclone);
-use JSON::XS;
+use JSON;
 use Time::Local;
 
 =head1 NAME
@@ -176,7 +176,7 @@ sub new {
 		columns              => [],
 		column_mapping       => {},
 		rows                 => [],
-		json_xs              => JSON::XS->new()->canonical(1)->allow_nonref,
+		json_xs              => JSON->new()->canonical(1)->allow_nonref,
 		all_columns_have_ids => 0,
 		column_count         => 0,
 		pedantic             => 1,

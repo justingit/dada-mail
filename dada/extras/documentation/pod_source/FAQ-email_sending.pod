@@ -166,7 +166,7 @@ If you were hoping that you can just use SSL connections with Dada Mail - you ca
 
 Yes, see: 
 
-L<http://dadamailproject.com/support/documentation/dada_bounce_handler.pl.html>
+L<http://dadamailproject.com/support/documentation/bounce_handler.cgi.html>
 
 =head2 Where are my bounce messages going? 
 
@@ -240,7 +240,7 @@ And, that's it.
 
 Now that you know how to set the B<Return-Path> header, put it to some good use! Set up the Bounce Handler for Dada Mail: 
 
-http://dadamailproject.com/support/documentation/dada_bounce_handler.pl.html
+http://dadamailproject.com/support/documentation/bounce_handler.cgi.html
 
 =head1 Dada Mail and Google Apps for Domains
 

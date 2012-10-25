@@ -471,10 +471,13 @@ ok($lc->r_log(
 # Let's keep going on this... 
 
 my $m_report = $lc->report_by_message( 12345678901234 );
-ok($m_report->{hard_bounce_report}->[0]->{email} eq 'hardboing@example.com');
+# These aren't reported, anymore. 
+#ok($m_report->{hard_bounce_report}->[0]->{email} eq 'hardboing@example.com');
 ok($m_report->{hard_bounce} == 1); 
 
-ok($m_report->{soft_bounce_report}->[0]->{email} eq 'softboing@example.com');
+# These aren't reported, anymore. 
+#ok($m_report->{soft_bounce_report}->[0]->{email} eq 'softboing@example.com');
+
 ok($m_report->{soft_bounce} == 1); 
 ok($m_report->{open} == 101); 
 ok($m_report->{num_subscribers} == 5); 
@@ -488,6 +491,8 @@ $lc->forward_to_a_friend_log(
 );
 $report = $lc->report_by_message_index; 
 ok($report->[0]->{forward_to_a_friend} == 1, "forward to a friend");
+
+
 ok($lc->report_by_message( 12345678901234 )->{forward_to_a_friend} == 1, "forward_to_a_friend 2");
 
 

@@ -131,7 +131,7 @@ Easier hooks/interface to Dada Mail subscribe
 
 
 
-[ ] Simple Subscribe/Unsubscribe by email mechanism in dada_bridge.pl 
+[ ] Simple Subscribe/Unsubscribe by email mechanism in bridge.cgi 
 	message just has,
 	subscribe
 or 
@@ -822,23 +822,23 @@ It seems like a lot of work.
         
 [ ] Work on Bounce Handler * Medium Priority * 
     
-    [ x] Update command line interface/docs to match dada_bridge.pl CLI API where features overlap. 
+    [ x] Update command line interface/docs to match bridge.cgi CLI API where features overlap. 
     [ x] Web-based way to check/parse/score awaiting bounces for use with cronjobs
     [ x] Web-based way to view scorecard
     [ x] Web-based way to search through scorecard
     [ ] Web-based way to remove addresses on scorecard
 
-[ ] Work on dada_bridge.pl * Medium Priority * 
+[ ] Work on bridge.cgi * Medium Priority * 
     
     [ ] Come up with Catchy Name
     [ -] Update command line interface/docs to match Bounce Handler CLI API where features overlap. 
     [ ] Flesh out (finally) extensible moderation system. 
         Refer to:
-        <http://dadamailproject.com/support/documentation-dada-2_11-alpha_5/projects.pod.html#enhancements_to_the_moderation_system_in_discussion_lists__dada_bridge_pl_>
+        <http://dadamailproject.com/support/documentation-dada-2_11-alpha_5/projects.pod.html#enhancements_to_the_moderation_system_in_discussion_lists__bridge_pl_>
     [?] Any Sponsors?
 
 [ ] work on Beatitude
-    [ ] Update command line interface/docs to match dada_bridge.pl CLI API where features overlap. 
+    [ ] Update command line interface/docs to match bridge.cgi CLI API where features overlap. 
 
 
     
@@ -929,7 +929,7 @@ http://www.quirksmode.org/dom/maxlength.html
 
 [] add a, "resend" button to the archive editor
 [] create a, "drafts" archive.  
-[] enable sending a message straight into STDIN from dada_bridge.pl (perchance)
+[] enable sending a message straight into STDIN from bridge.cgi (perchance)
 [x] add documentation about whiz-bang new FCKeditor stuff (test more)
 
 Archives have the [listshortname], etc appended to subject - used to not, need pref for that. 
@@ -942,7 +942,7 @@ header, as another way of figuring out what the origin of bounced messages were 
 
 (mumblings) 
 
-[-] Hook up Spamassassin to dada_bridge.pl, reject messages that score, "n" on the tests - pref to flat out reject, or bounce back.
+[-] Hook up Spamassassin to bridge.cgi, reject messages that score, "n" on the tests - pref to flat out reject, or bounce back.
 
 May also be good to have in the, "Send a Message" screen, so you know just how your message will be treated; 
 
@@ -1057,9 +1057,9 @@ Send a Message/Send a webpage, etc need the same options, "open in a new window,
 	
 	(it also says, 5's the sweet spot - weird ain't?)
 	
-[-] Moderation in dada_bridge.pl...
+[-] Moderation in bridge.cgi...
 
-[] look for text/enriched to wrap dada templates in dada_bridge.pl?
+[] look for text/enriched to wrap dada templates in bridge.cgi?
 
 
 Change the Browser Sig for fetfching.... stuff. 
@@ -1080,10 +1080,10 @@ Change the Browser Sig for fetfching.... stuff.
 todo: http://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=everything_else;action=display;num=1109103844;start=0#1
 
 
-I have to tab out the discussion lists options in dada_bridge.pl - perhaps rename the, "discussion lists" link to be more general, 
+I have to tab out the discussion lists options in bridge.cgi - perhaps rename the, "discussion lists" link to be more general, 
 like email address setup? 
 
-" Some good information on the dada_bridge.pl and elaborate more on templates and customizing dadamail to mimick the rest of your website style.
+" Some good information on the bridge.cgi and elaborate more on templates and customizing dadamail to mimick the rest of your website style.
  
 The latest magicbook I have is 2.8.12. so maybe this is already in there......
 but I found the templates chapter a bit slim. "

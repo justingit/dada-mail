@@ -551,15 +551,15 @@ $ADMIN_MENU = [
 
 #					{
 #					-Title      => 'Discussion Lists',
-#					-Title_URL  => $PLUGIN_URL."/dada_bridge.pl",
-#					-Function   => 'dada_bridge',
+#					-Title_URL  => $PLUGIN_URL."/bridge.cgi",
+#					-Function   => 'bridge',
 #					-Activated  => 1,
 #					},
 
 #					{
 #					-Title      => 'Bounce Handler',
-#					-Title_URL  => $PLUGIN_URL."/dada_bounce_handler.pl",
-#					-Function   => 'dada_bounce_handler',
+#					-Title_URL  => $PLUGIN_URL."/bounce_handler.cgi",
+#					-Function   => 'bounce_handler',
 #					-Activated  => 1,
 #					},
 

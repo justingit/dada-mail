@@ -5,7 +5,7 @@
 
 <!-- tmpl_if can_have_subscriber_fields --> 
 
-
+<!-- 
     <fieldset>
      <legend>
       
@@ -15,7 +15,7 @@
      </legend>    
      
      <div id="partial_sending_options_widget" style="display:none;width:90%">
-
+--> 
     <p>
      Send your Mailing List Message  to your Subscribers where their:
     </p> 
@@ -34,7 +34,7 @@
          </td> 
          <td>
           <p>
-           <select name="field_comparison_type_<!-- tmpl_var name -->" id="field_comparison_type_<!-- tmpl_var name -->"> <!--  onChange="get_partial_list()" -->  
+           <select name="field_comparison_type_<!-- tmpl_var name -->" id="field_comparison_type_<!-- tmpl_var name -->">
             
 			<!-- tmpl_if field_comparison_type --> 
 				<option value="<!-- tmpl_var field_comparison_type -->" selected="selected"><!-- tmpl_var field_comparison_type --></option>	
@@ -47,7 +47,7 @@
          </td>
          <td>
           <p>
-           <input type="text" name="field_value_<!-- tmpl_var name -->" id="field_value_<!-- tmpl_var name -->" value="<!-- tmpl_var field_value -->"/> <!-- onKeyUp="get_partial_list()" -->  
+           <input type="text" name="field_value_<!-- tmpl_var name -->" id="field_value_<!-- tmpl_var name -->" value="<!-- tmpl_var field_value -->"/>
           </p>
          </td>
         </tr> 
@@ -57,66 +57,18 @@
     </div> 
 	
     <div class="buttonfloat">
-     <input type="button" value="Preview Who's Getting This Message..." class="cautionary" onClick="get_partial_list()" />  
+     <input type="button" value="Preview Who's Getting This Message..." class="cautionary preview_message_receivers" />  
     </div>
     
     <div class="floatclear">
     </div>
-	<div id="previewMessageReceivers_loading" style="display:none">
-		<p class="alert">Loading...</p>
-	</div> 
-       <div id="previewMessageReceivers"> 
-      </div> 
+	<div id="preview_message_receivers_loading"></div> 
+    <div id="preview_message_receivers_results"></div> 
+
+<!-- 
      </div> 
     </fieldset>
-
-
-	<script type="text/javascript">
-	    //<![CDATA[
-
-		 function get_partial_list(){ 
-
-
-			var f_params = {}; 
-			
-			var al                       = new Array();
-			var alternative_lists        = ''; 
-			var multi_list_send_no_dupes = 0; 
-			
-			
-			$("#field_comparisons :input").each(function() {
-			      f_params[this.name] = this.value; 
-			});
-			$("input:checkbox[name=alternative_list]:checked").each(function() {
-		  		al.push(this.value); 
-			});
-			alternative_lists = al.join(','); 
-			if(
-				$('#multi_list_send_no_dupes').val() == 1 && 
-				$("#multi_list_send_no_dupes").prop("checked") == true
-			) { 
-				multi_list_send_no_dupes = 1;
-			}
-			f_params['f']                        = 'previewMessageReceivers';
-			f_params['alternative_lists']        = alternative_lists,
-			f_params['multi_list_send_no_dupes'] = multi_list_send_no_dupes,
-			
-			$('#previewMessageReceivers_loading').show(); 
-			$('#previewMessageReceivers').hide(); 	
-			var request = $.ajax({
-				url: "<!-- tmpl_var S_PROGRAM_URL -->",
-				type: "POST",
-				cache: false,
-				data: f_params,
-				dataType: "html"
-			});
-			request.done(function(content) {
-				$("#previewMessageReceivers_loading").hide();
-				$("#previewMessageReceivers").html( content ).show( 'blind' );
-			});
-		}
-	    //]]>
-	</script>
+--> 
 	
 	
     

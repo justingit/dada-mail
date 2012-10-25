@@ -22,6 +22,7 @@ use DADA::App::Guts;
 		
 use vars qw($AUTOLOAD); 
 use Carp qw(croak carp);
+use Try::Tiny; 
 
 use Fcntl qw(
 	:DEFAULT 
@@ -1154,8 +1155,15 @@ sub mass_send {
     # save a copy of the message for later pickup.
     $self->saved_message($self->_massaged_for_archive(\%fields));
 
-
-
+	# Clear out the data cache, please: 
+	try {
+		require DADA::App::DataCache; 
+		my $dc = DADA::App::DataCache->new; 
+		   $dc->flush({-list => $self->{list}}); 
+	} catch {
+		carp "Problems removing data cache: $_"; 
+	};
+	
     
 	require DADA::MailingList::Subscribers;
 	       $DADA::MailingList::Subscribers::dbi_obj = $dbi_obj; 

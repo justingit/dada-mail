@@ -29,10 +29,11 @@ $q->charset($DADA::Config::HTML_CHARSET);
 $q = decode_cgi_obj($q);
 
 
-my $Plugin_Config             = {}; 
-$Plugin_Config->{Plugin_Name} = 'Tracker'; 
-$Plugin_Config->{Plugin_URL}  = $q->url; 
-$Plugin_Config->{Geo_IP_Db}   = '../DADA/data/GeoIP.dat'; 
+my $Plugin_Config                  = {}; 
+$Plugin_Config->{Plugin_Name}      = 'Tracker'; 
+$Plugin_Config->{Plugin_URL}       = $q->url; 
+$Plugin_Config->{GeoIP_Db}         = '../data/GeoIP.dat'; 
+$Plugin_Config->{GeoLiteCity_Db}   = '../data/GeoLiteCity.dat'; 
 
 
 
@@ -570,7 +571,7 @@ sub country_geoip_table {
 					-mid   => $mid, 
 					-type  => $type, 
 					-label => $label, 
-					-db     => $Plugin_Config->{Geo_IP_Db},
+					-db     => $Plugin_Config->{GeoIP_Db},
 				}
 			);
 			for(@$report){ 
@@ -615,7 +616,7 @@ sub country_geoip_json {
 	$rd->country_geoip_json({ 
 		-mid      => $mid, 
 		-type     => $type, 
-		-db       => $Plugin_Config->{Geo_IP_Db},
+		-db       => $Plugin_Config->{GeoIP_Db},
 		-label    => $labels->{$type}, 
 		-printout => 1,
 		});
@@ -628,7 +629,7 @@ sub individual_country_geoip_json {
 	$rd->individual_country_geoip_json({ 
 		-mid      => $mid, 
 		-type     => $type, 
-#		-db       => $Plugin_Config->{Geo_IP_Db},
+		-db       => $Plugin_Config->{GeoLiteCity_Db},
 		-country  => $country, 
 		-printout => 1,
 		});
@@ -641,7 +642,7 @@ sub individual_country_geoip_report {
 	$rd->individual_country_geoip_report({ 
 		-mid      => $mid, 
 		-type     => $type, 
-#		-db       => $Plugin_Config->{Geo_IP_Db},
+		-db       => $Plugin_Config->{GeoLiteCity_Db},
 		-country  => $country, 
 		-printout => 1,
 		});
@@ -655,7 +656,7 @@ sub individual_country_geoip_report_table {
 	$rd->individual_country_geoip_report_table({ 
 		-mid      => $mid, 
 		-type     => $type, 
-#		-db       => $Plugin_Config->{Geo_IP_Db},
+		-db       => $Plugin_Config->{GeoLiteCity_Db},
 		-country  => $country, 
 		-chrome   => $chrome, 
 		-printout => 1,
@@ -1002,7 +1003,7 @@ The name of this plugin
 The URL of this plugin. This is usually found by default, but sometimes the default
 doesn't work correctly. If this happens to you, fill it out in this variable
 
-=head2 Geo_IP_Db
+=head2 GeoIP_Db
 
 This variable holds the file path to the location ofthe GeoIP database. The GeoIP 
 database is a IP Address -> Location lookup table, to quickly and easily figure out 

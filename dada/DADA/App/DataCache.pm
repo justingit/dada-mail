@@ -86,12 +86,12 @@ sub cached {
 	my ($args) = shift; 
 	my $filename = $self->filename($args);
 	
-	warn 'filename: ' . $filename; 
+	#warn 'filename: ' . $filename; 
 	# take off the date, 
 	my $filename_snippet = $filename; 
 	$filename_snippet =~ s/\.([0-9]{10})\.txt$//g; 
 	my $date = $1; 
-	warn '$date: ' . $date; 
+	#warn '$date: ' . $date; 
 	
 	my @matches; 
 	# Now, look for that: 
@@ -288,7 +288,7 @@ sub filename {
 	if(! exists($args->{-name})){ 
 		croak "I need a name for the cached data!"; 
 	}	
-	carp '$args->{-name}' . $args->{-name}; 
+	#carp '$args->{-name}' . $args->{-name}; 
 	
 	my $filename = ''; 
 	if(exists($args->{-list})){ 
@@ -306,7 +306,7 @@ sub filename {
 	}
 	$filename .= time; 
 	$filename .= '.txt'; 
-	carp "filename: $filename"; 
+	#carp "filename: $filename"; 
 	return $filename; 
 	
 }
