@@ -429,6 +429,16 @@ sub _format_text {
 							carp "Problems with filter: $_";
 						};
 					}	
+					
+					if($self->{ls}->param('group_list') != 1){ 
+						try {
+							require DADA::App::FormatMessages::Filters::UnescapeTemplateTags; 
+							my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new; 
+							$content = $utt->filter({-html_msg => $content});
+						} catch {
+							carp "Problems with filter: $_";
+						};
+					}
 				}
 				
 				# This means, we've got a discussion list:
@@ -470,6 +480,15 @@ sub _format_text {
 						} catch { 
 							carp "Problem defanging template: $_"; 
 						}
+					}
+					else { 
+						try {
+							require DADA::App::FormatMessages::Filters::UnescapeTemplateTags; 
+							my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new; 
+							$content = $utt->filter({-html_msg => $content});
+						} catch {
+							carp "Problems with filter: $_";
+						};
 					}
 					
 								
