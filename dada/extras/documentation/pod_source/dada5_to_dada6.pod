@@ -167,6 +167,12 @@ Make sure to update any cronjobs, links, etc.
 
 Make sure to update any cronjobs, links, etc. 
 
+=head2 Scheduled Mailings - DEPRECATED
+
+The current scheduled_mailings.pl plugin, as it currently stands, needs a rewrite and isn't currently benefitting from the advances of code style, best practices and techniques offered by the rest of Dada Mail. 
+
+Unless rewritten, it will be removed in a future version of Dada Mail. 
+
 =head1 Extensions
 
 =head2 dada_digest.pl - REMOVED
